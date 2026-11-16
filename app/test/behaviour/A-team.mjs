@@ -842,7 +842,7 @@ t('SHEET-03', 'Six set cards (item, ability, moves, nature, stats); tapping one 
     for (const n of ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']) has(tx, n, 'Team Sheet');
     /* Nov 14, Tale of the Tape: each Pokémon is a column; its column read with the row labels must show item, Ability and stats */
     for (const n of ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']) { const c = await r.ui.teamSheetCard(n) || ''; ok(/ Item .+ Ability /.test(c) && /HP \d+ \d+/.test(c), `${n}'s column misses item / Ability / stats: ` + c.slice(0, 120)); }
-    has(tx, /(Most common spread|yours|your nature)/i);
+    has(tx, /(Most common spread|most common|yours|your nature)/i /* say it once (Nov 16): the key says 'Spreads: each one's most common' */);
     // each card opens Edit Set for its own Pokémon: by click, by Enter, by Space (a card is a role=button with tabindex 0)
     for (const [n, how] of [['Garchomp', 'click'], ['Incineroar', 'Enter'], ['Sneasler', 'Space']]) {
       if (how === 'click') await r.ui.tapLabel(n + ': edit its set', 1200); else { ok(await r.ui.focusSheetCard(n), `${n}'s card can't take keyboard focus`); await r.ui.press(how, 1200); }
@@ -854,7 +854,7 @@ t('SHEET-03', 'Six set cards (item, ability, moves, nature, stats); tapping one 
   const r = await myTeam(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text();
   for (const n of ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']) has(tx, n, 'Team Sheet');
   ok((tx.match(/Item /g) || []).length >= 6 && (tx.match(/Ability /g) || []).length >= 6 && (tx.match(/HP \d+ \d+/g) || []).length >= 6, 'cards miss item / ability / stats');
-  has(tx, /(Most common spread|yours|your nature)/i); await r.ui.tapLabel('Garchomp', 1200); ok(await r.ui.current() === 'report', 'My Team did not open'); const p = await r.ui.editPanel(); ok(p && p.title === 'Edit Garchomp', 'no "Edit Garchomp" panel'); await r.close();
+  has(tx, /(Most common spread|most common|yours|your nature)/i /* say it once (Nov 16): the key says 'Spreads: each one's most common' */); await r.ui.tapLabel('Garchomp', 1200); ok(await r.ui.current() === 'report', 'My Team did not open'); const p = await r.ui.editPanel(); ok(p && p.title === 'Edit Garchomp', 'no "Edit Garchomp" panel'); await r.close();
   for (const [w, cols] of [[1280, 3], [390, 1]]) { const x = await myTeam({team: TEAM, width: w}); await x.ui.go('Team Sheet', 900); const c = await x.ui.sheetColumns(); ok(c === cols, `${w} wide: ${c} columns, want ${cols}`); await x.close(); } });
 
 t('SHEET-04', 'Team Sheet with no team: "No team yet…" and "Open My Team"', async () => {
