@@ -44,7 +44,7 @@ V2.wtSearch = () => { const E = V2.esc, U = V2.wtUi, label = f => f.k === 'mon' 
   return `<div class="wt-find"><label class="np-field wt-q">${V2.ICON.search}<input type="search" id="tsIn" data-wtq value="${E(U.q)}" placeholder="Search winning teams" aria-label="Search winning teams by Pokémon, item, move or ability" autocomplete="off" role="combobox" aria-expanded="${!!U.q}" aria-controls="wt-sug"></label>${V2.wtSug()}</div>${chips}`; };
 V2.wtSug = () => { const E = V2.esc, U = V2.wtUi, q = norm(U.q || ''); if (!q) return '';
   const have = new Set(U.f.map(f => f.k + ':' + f.v)), r = tsTerms().filter(x => !have.has(x.k + ':' + x.v) && norm(x.label).includes(q)).sort((a, b) => (norm(b.label).startsWith(q) ? 1 : 0) - (norm(a.label).startsWith(q) ? 1 : 0) || b.c - a.c).slice(0, 8);
-  return `<div class="wt-sug" id="wt-sug" role="listbox" aria-label="Matches">${r.length ? r.map((x, i) => `<button type="button" role="option" aria-selected="${i === 0}" class="wt-opt" data-tsk="${x.k}" data-tsv="${E(x.v)}"><span class="on">${E(x.label)}</span><span class="np-chip">${TS_KIND[x.k]}</span><small>${x.c} team${x.c === 1 ? '' : 's'}</small></button>`).join('') : '<p class="tm-sub">Nothing in the winning teams matches that.</p>'}</div>`; };
+  return `<div class="wt-sug" id="wt-sug" role="listbox" aria-label="Matches">${r.length ? r.map((x, i) => `<button type="button" role="option" id="wt-o${i}" tabindex="-1" aria-selected="${i === 0}" class="wt-opt" data-tsk="${x.k}" data-tsv="${E(x.v)}"><span class="on">${E(x.label)}</span><span class="np-chip">${TS_KIND[x.k]}</span><small>${x.c} team${x.c === 1 ? '' : 's'}</small></button>`).join('') : '<p class="tm-sub">Nothing in the winning teams matches that.</p>'}</div>`; };
 V2.wtResults = () => { const E = V2.esc, U = V2.wtUi, pool = tsPool(), hits = pool.filter(x => U.f.every(f => tsMatch(x.t, f))).sort((a, b) => (b.ev.src === 'official') - (a.ev.src === 'official') || a.t.place - b.t.place || (b.ev.date > a.ev.date ? 1 : -1));
   const cap = 8 + U.fmore * 8, c = new Map(); hits.forEach(x => new Set(x.t.mons.map(m => m.n)).forEach(n => { if (!U.f.some(f => f.k === 'mon' && f.v === n)) c.set(n, (c.get(n) || 0) + 1); }));
   const mates = [...c].sort((a, b) => b[1] - a[1]).slice(0, 6);
@@ -108,7 +108,13 @@ document.addEventListener('click', async e => { const b = e.target.closest && e.
   else if (d.tsmore != null) U.fmore++;
   V2.redraw(); });
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-wtq]'); if (!i) return; V2.wtUi.q = i.value; const s = document.querySelector('.wt-sug'), w = i.closest('.wt-find');
-  if (s) s.remove(); if (w) w.insertAdjacentHTML('beforeend', V2.wtSug()); i.setAttribute('aria-expanded', String(!!i.value)); });
+  if (s) s.remove(); if (w) w.insertAdjacentHTML('beforeend', V2.wtSug()); V2.wtK = 0; i.setAttribute('aria-expanded', String(!!i.value)); V2.wtMark(i); });
+/* audit Nov 16 (keyboard): a real combobox: Up/Down move the highlighted match (screen readers follow it), Enter picks it, Escape closes;
+   the matches are not Tab stops */
+V2.wtMark = i => { const os = [...document.querySelectorAll('.wt-sug .wt-opt')]; os.forEach((o, k) => o.setAttribute('aria-selected', String(k === (V2.wtK || 0))));
+  const o = os[V2.wtK || 0]; if (o && i.getAttribute('aria-expanded') === 'true') { i.setAttribute('aria-activedescendant', o.id); o.scrollIntoView({block: 'nearest'}); } else i.removeAttribute('aria-activedescendant'); };
 document.addEventListener('keydown', e => { const i = e.target.closest && e.target.closest('[data-wtq]'); if (!i) return;
-  if (e.key === 'Enter') { const o = document.querySelector('.wt-sug .wt-opt'); if (o) { e.preventDefault(); o.click(); } }
-  else if (e.key === 'Escape') { V2.wtUi.q = ''; i.value = ''; const s = document.querySelector('.wt-sug'); if (s) s.remove(); } });
+  const os = [...document.querySelectorAll('.wt-sug .wt-opt')];
+  if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && os.length) { e.preventDefault(); i.setAttribute('aria-expanded', 'true'); V2.wtK = ((V2.wtK || 0) + (e.key === 'ArrowDown' ? 1 : -1) + os.length) % os.length; V2.wtMark(i); }
+  else if (e.key === 'Enter') { const o = os[V2.wtK || 0] || os[0]; if (o) { e.preventDefault(); o.click(); } }
+  else if (e.key === 'Escape') { V2.wtUi.q = ''; i.value = ''; V2.wtK = 0; const s = document.querySelector('.wt-sug'); if (s) s.remove(); i.setAttribute('aria-expanded', 'false'); i.removeAttribute('aria-activedescendant'); } });
