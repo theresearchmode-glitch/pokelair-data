@@ -241,7 +241,7 @@ buildShareCard = async function () { const ms = members(); if (!ms.length) retur
   if (dark) { const g = x.createRadialGradient(600, -120, 0, 600, -120, 760); g.addColorStop(0, 'rgba(255,232,0,.10)'); g.addColorStop(1, 'rgba(255,232,0,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H); }
   // logo tile + wordmark
   const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
-  await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 44, 34, 290, 290 * 196 / 761.34); } catch (e) {}
+  await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 44, 34, npLogoW(logo, 290), 290 * 196 / 761.34); } catch (e) {}
   x.textBaseline = 'alphabetic';
   // readiness, top right
   const RD = prepOf(ms); x.textAlign = 'right';

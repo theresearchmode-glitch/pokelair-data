@@ -33,7 +33,12 @@ function scFit(ctx, text, max) { let t = text; while (t.length > 3 && ctx.measur
 /* Share images draw the stored logo SVG as a picture, where the site's colour overrides (blue PLOT circle, no yellow shadow)
    never reach it. This fills each var(--x, fallback) in it with the value the live header logo uses, so every share card
    matches the logo on the site in both looks (Sim, Nov 5: "our share card still uses our old logo"). */
-function npLogoSvg(dark) { const raw = NP_SVG[dark ? 'hdrD' : 'hdrL'];
+/* the new logo "Sly Devil" (Sim, Nov 16): share images use its flat version (no soft shadow), one logo for light and dark images; where it
+   isn't loaded (today's live site) the old logo stays. Drawn at its own proportions (npLogoK), never stretched */
+function npLogoK(im) { return im && im.naturalWidth ? im.naturalHeight / im.naturalWidth : 196 / 761.34; }
+/* the new logo is flatter (163/947 vs 196/761): it keeps the old logo's height in images, so it reads as large, and its width follows */
+function npLogoW(im, w) { return w * (196 / 761.34) / npLogoK(im); }
+function npLogoSvg(dark) { if (typeof NP_LOGO === 'object' && NP_LOGO && NP_LOGO.flat) return NP_LOGO.flat; const raw = NP_SVG[dark ? 'hdrD' : 'hdrL'];
   /* Polish (Nov 10): a share image in the other mode than the page uses that logo's own colours (a dark image made from the light
      page drew NASTY in the light page's dark ink: invisible on black) */
   if (!!dark !== (document.documentElement.dataset.look === 'dark')) return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => fb);
@@ -112,7 +117,7 @@ ARB.tab = (x, P, X, Y, s) => { x.fillStyle = P.blue; ARB.para(x, X + s / 2, Y - 
 /* the logo on share cards; X/Y the top left, w the width */
 ARB.logo = async (x, dark, X, Y, w) => { /* Sim (Nov 5): the original logo, N(chevron)STY with the circled PLOT */
   const im = new Image(); im.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
-  await new Promise(r => { im.onload = r; im.onerror = r; }); try { x.drawImage(im, X, Y, w, w * 196 / 761.34); } catch (e) {} };
+  await new Promise(r => { im.onload = r; im.onerror = r; }); try { x.drawImage(im, X, Y, npLogoW(im, w), w * 196 / 761.34); } catch (e) {} };
 ARB.imgs = ms => { const src = id => (window.__SPR && window.__SPR[id]) || 'sp/' + id + '.webp'; return Promise.all(ms.map(m => { const id = typeof SPRITE_ID === 'object' && SPRITE_ID ? SPRITE_ID[m.p.n] : null; return id ? scImg(src(id)) : Promise.resolve(null); })); };
 ARB.fonts = async () => { try { await Promise.all(['800 40px Unbounded', '900 40px Unbounded', '600 20px "Instrument Sans"', '500 20px "Instrument Sans"'].map(f => document.fonts.load(f, 'Aa0123%'))); } catch (e) {} };
 ARB.lines = (x, text, max) => { if (x.measureText(text).width <= max) return [text]; const w = text.split(' '); let best = null;
@@ -238,7 +243,7 @@ async function buildSheetImage(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   /* foot: the logo and the line */
   x.fillStyle = P.line; x.fillRect(40, 1262, W - 80, 2);
   const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
-  await new Promise(res => { logo.onload = res; logo.onerror = res; }); try { x.drawImage(logo, 36, 1276, 230, 230 * 196 / 761.34); } catch (e) {}
+  await new Promise(res => { logo.onload = res; logo.onerror = res; }); try { x.drawImage(logo, 36, 1276, npLogoW(logo, 230), 230 * 196 / 761.34); } catch (e) {}
   x.textAlign = 'right'; x.font = `italic 800 26px ${DISP}`; x.fillStyle = P.ink; const t2 = 'your win rate.', t1 = 'Sharply raise ', w2 = x.measureText(t2).width;
   x.fillStyle = P.pen; x.fillText(t2, W - 40, 1314); x.fillStyle = P.ink; x.fillText(t1, W - 40 - w2, 1314);
   x.font = `600 15px ${BODY}`; x.fillStyle = P.faint; x.fillText('NastyPlot, unofficial fan tool', W - 40, 1338); x.textAlign = 'left';

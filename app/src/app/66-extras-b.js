@@ -99,7 +99,7 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   /* footer: the logo and the line */
   x.fillStyle = P.line; x.fillRect(56, 1236, W - 112, 3);
   const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
-  await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 50, 1252, 300, 300 * 196 / 761.34); } catch (e) {}
+  await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 50, 1252, npLogoW(logo, 300), 300 * 196 / 761.34); } catch (e) {}
   x.textAlign = 'right'; x.font = '400 50px "Instrument Sans",system-ui,sans-serif'; x.fillStyle = P.pen; x.fillText('Sharply raise your win rate.', W - 56, 1302);
   x.font = '700 18px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('NASTYPLOT · UNOFFICIAL FAN TOOL', W - 56, 1332); x.textAlign = 'left';
   return c; }
