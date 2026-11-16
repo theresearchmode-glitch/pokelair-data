@@ -3,6 +3,10 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
+## AUTHORITY (Sim, ~10 PM Sun Nov 15): FULL authority until 10:00 AM Mon Nov 16; take the outside reviews' advice even against her earlier
+picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim; never delete a feature. Backstops A (:23) and B (:53)
+updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
+
 ## NOW (Nov 15, written time: 2:50 PM (2:50:51)  date: Sun Nov 15, 2026 by the clock; Sim's authority until 8:00 AM Mon Nov 16 (extended 12:30 PM Sun); summary 7:40 AM Mon)
 - Scope (Sim): finish building, checks, audits, pristine and ready to be the live site; the switch to live waits for Sim's go.
 - Backstops trig_01P8wwfASshsPdbcFcM3qNMv (:23) and trig_012D8AdnvLFxfYqeBtDUoc7o (:53) carry the work order to 8 AM Mon; then STOPPED,
