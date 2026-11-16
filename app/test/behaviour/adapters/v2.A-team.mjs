@@ -196,7 +196,7 @@ export default (ui, pg, o) => {
     tapThreatInSheet: name => click(`.mu-sh [data-muthr="${name}"]`, 600),
     threatPressedInSheet: () => pg.evaluate(() => { const e = document.querySelector('.mu-sh [data-muthr][aria-pressed="true"]'); return e ? e.dataset.muthr : null; }),
     /** Top 12 grid: cells per threat row (rows in order) */
-    gridRows: () => pg.evaluate(() => { const t = [...document.querySelectorAll('#main [role=table]')].find(e => e.getClientRects().length); return t ? [...t.querySelectorAll('[data-muthr]')].map(r => ({name: r.getAttribute('aria-label').split(':')[0], cells: r.querySelectorAll('[role=cell]').length})) : null; }),
+    gridRows: () => pg.evaluate(() => { const t = [...document.querySelectorAll('#main [role=table]')].find(e => e.getClientRects().length); return t ? [...t.querySelectorAll('[role=row][data-muthr]')].map(r => ({name: ((r.querySelector('.mu-thb') || r).getAttribute('aria-label') || '').replace(/^Open /, '').split(':')[0], /* Nov 15 (B3): the row is a real row; its label is on the threat's button */ cells: r.querySelectorAll('[role=cell]').length})) : null; }),
     tapGridRow: i => tapFound(i => { const t = [...document.querySelectorAll('#main [role=table]')].find(e => e.getClientRects().length); return t ? t.querySelectorAll('[data-muthr]')[i] : null; }, i, 'grid row ' + i, 900),
     // Nov 12 (PLAY-02): the two-Mega pick sits in the Types part of Things to Know (Defense view): "Show: <Mega> · <Mega>" links
     pickTypeChartMega: name => tapFound(n => [...document.querySelectorAll('#main .ty2 [data-v2megapick]')].find(e => e.getClientRects().length && e.innerText.replace(/\s+/g, ' ').trim() === n) || null, name, 'Mega pick ' + name, 700),

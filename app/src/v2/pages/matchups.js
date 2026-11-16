@@ -56,7 +56,7 @@ V2.muGrid = (RD, ms) => { const rows = CH.gridRows(RD, 12);
   const cell = (r, m) => { const c = CH.cellOf(r, m), L = CH.LVC[c]; return `<span role="cell" class="mu-c ${V2.MUC[c]}" title="${V2.esc(m.d)} vs ${V2.esc(r.t.d)}: ${L[1]}" aria-label="${V2.esc(m.d)}: ${L[1]}">${L[2]}</span>`; };
   return `<div class="mu-grid" role="table" aria-label="Your six against the top 12 threats" style="--n:${ms.length}">
     <div class="mu-gr mu-gh" role="row"><span role="columnheader"><span class="vh">Threat</span></span>${ms.map(m => `<span role="columnheader" title="${V2.esc(m.d)}">${V2.muImg(m.p.n)}<span class="vh">${V2.esc(m.d)}</span></span>`).join('')}</div>
-    ${rows.map(r => `<button type="button" class="mu-gr" role="row" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${CH.LV[r.level]}"><span class="th" role="rowheader">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}<small>${CH.LV[r.level]}</small></span></span>${ms.map(m => cell(r, m)).join('')}</button>`).join('')}</div>
+    ${rows.map(r => `<div class="mu-gr" role="row" data-muthr="${V2.esc(r.t.n)}"><span class="th" role="rowheader"><button type="button" class="mu-thb" data-muthr="${V2.esc(r.t.n)}" aria-label="Open ${V2.esc(r.t.d)}: ${CH.LV[r.level]}">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}<small>${CH.LV[r.level]}</small></span></button></span>${ms.map(m => cell(r, m)).join('')}</div>`).join('')}</div>
     <div class="mu-key">${Object.entries(CH.LVC).map(([c, L]) => `<span><i class="mu-c ${V2.MUC[c]}" aria-hidden="true">${L[2]}</i>${L[1]}</span>`).join('')}</div>
     <p class="fine">Rows are the top 12 threats by top-cut share, worst first. Tap one for the full matchup.</p>`; };
 

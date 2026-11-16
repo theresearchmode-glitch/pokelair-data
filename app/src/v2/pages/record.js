@@ -38,7 +38,10 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   else if (d.ygres) { const ms = members(), x = logGame(d.ygres, q.leads.filter(n => ms.some(m => m.p.n === n)), q.opp); if (!x) return; persist();
     q.last = {t: x.t, r: x.r}; q.leads = []; q.opp = []; V2.closeSheet(true); V2.redraw(); }
   else if (d.ygundo) { unlogGame(+d.ygundo); q.last = null; persist(); V2.redraw(); toast('Game removed'); } });
-document.addEventListener('input', e => { if (e.target.matches && e.target.matches('[data-ygq]')) { V2.ql.q = e.target.value; V2.ygRe(true); } });
+// typing redraws only the matches (code review B2: rebuilding the whole panel moved the cursor to the end and broke IME typing)
+document.addEventListener('input', e => { if (!(e.target.matches && e.target.matches('[data-ygq]'))) return; V2.ql.q = e.target.value;
+  const t = document.createElement('template'); t.innerHTML = V2.ygHtml(); const nh = t.content.querySelector('.yg2-hits'), oh = document.querySelector('.yg2 .yg2-hits');
+  if (nh && oh) oh.innerHTML = nh.innerHTML; else V2.ygRe(true); });
 document.addEventListener('keydown', e => { if (e.key === 'Enter' && e.target.matches && e.target.matches('[data-ygq]')) { const h = document.querySelector('[data-ygopp]'); if (h) { e.preventDefault(); h.click(); } } });
 
 // today's 'Paste its log' (64-my-record.js): opens Battle's replay sheet, which logs the game for this same six (Nov 15, LOG-02 / X-13)

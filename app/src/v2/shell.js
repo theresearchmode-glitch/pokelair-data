@@ -80,7 +80,7 @@ V2.closeSheet = (quiet, swap) => { const S = V2._sheet; if (!S) return; V2._shee
   if (S.onClose) try { S.onClose(!!swap); } catch (e) {} /* Nov 15: onClose learns whether another sheet is replacing this one */ if (!quiet && S.back && S.back.isConnected) S.back.focus({preventScroll: true}); };
 document.addEventListener('click', e => { if (V2._sheet && e.target.closest('[data-v2close]')) V2.closeSheet(); });
 document.addEventListener('keydown', e => { const S = V2._sheet; if (!S) return;
-  if (e.key === 'Escape') { e.preventDefault(); V2.closeSheet(); return; }
+  if (e.key === 'Escape') { const t = e.target; if (t && t.matches && t.matches('[data-btfind]') && t.value) return; /* code review B1: a filled Their Six box clears first (its own handler); the next Escape closes */ e.preventDefault(); V2.closeSheet(); return; }
   // focus stays in the sheet (Sim's check, Nov 12: in the info sheet Tab left after 6 stops, because the inactive tabs, tabindex -1,
   // were counted as stops). Only controls that really take Tab count: not tabindex -1, not disabled, shown, not in a closed fold.
   if (e.key !== 'Tab') return; const shown = x => x.getClientRects().length && !x.closest('[hidden],[inert]') && !(x.closest('details:not([open])') && !(x.matches('summary') && x.parentElement.matches('details:not([open])')));

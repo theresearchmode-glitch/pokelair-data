@@ -56,7 +56,9 @@
 .mu-gh{min-height:0;border-bottom:0}.mu-gh img{width:44px;height:44px;margin:0 auto;object-fit:contain}
 .mu-gr .th{display:flex;align-items:center;gap:var(--s2);min-width:0}.mu-gr .th img{width:40px;height:40px;flex:none;object-fit:contain}
 .mu-gr .nm{min-width:0;font:600 var(--t15)/1.3 var(--b)}.mu-gr .nm small{display:block;font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}.mu-gr .nm .mg.none{display:none}
-button.mu-gr:hover .nm{color:var(--plot-text)}
+div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(--plot-text)}
+/* code review B3: the row is a real table row; its threat is a real button (the whole row still opens it) */
+.mu-thb{display:flex;align-items:center;gap:var(--s2);min-width:0;width:100%;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}.mu-thb img{width:40px;height:40px;flex:none;object-fit:contain}
 .mu-key{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);margin:var(--s4) 0 var(--s2);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .mu-key span{display:inline-flex;align-items:center;gap:var(--s2)}.mu-key .mu-c{width:32px;height:24px;margin:0;font-size:var(--t13)}
 /* phones: the threat's name gets its own line, the six cells sit under the six sprites */
