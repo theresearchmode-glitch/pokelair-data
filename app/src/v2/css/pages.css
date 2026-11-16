@@ -2780,7 +2780,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .wk-hmon .np-mon{--iw:112px}.wk-hs{font-size:var(--t28)}.wk h2{font-size:var(--t28)}.wk-tile{min-height:120px;padding:var(--s2)}.wk-tile>span{font-size:var(--t22)}.wk-tile b.u{font-size:var(--t13)}}
 @media (max-width:429.98px){.wk-mast h1{font-size:var(--t34)}.wk-hl{padding-right:var(--s4)}.wk-hn{font-size:var(--t17)}.wk-tm .np-mon{--iw:48px}.wk-tm b{font-size:var(--t15)}}
 /* This Week on phones: the counts as an even 3-column table, New Tech's points under the words, headlines one size down */
-@media (max-width:699.98px){.wk-cn{display:grid;grid-template-columns:7.5em repeat(2,minmax(0,1fr));gap:var(--s2)}.wk-cl{min-width:0}.wk-mrow>div{display:grid;gap:var(--s1);width:100%}
+@media (max-width:699.98px){.wk-cn{display:grid;grid-template-columns:7.5em max-content max-content;gap:var(--s2) var(--s4)}.wk-cl{min-width:0}.wk-mrow>div{display:grid;gap:var(--s1);width:100%}
   .wk-tr{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"m t" "m p"}.wk-tr>.np-mon{grid-area:m}.wk-tt{grid-area:t}.wk-tr .wk-pts{grid-area:p;justify-self:start}}
 @media (max-width:429.98px){.wk h2{font-size:var(--t24)}.wk-hs{font-size:var(--t24)}.wk-hl{gap:var(--s2)}.wk-hmon .np-mon{--iw:96px}}
 
