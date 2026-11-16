@@ -2507,7 +2507,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tp-pile{grid-template-columns:minmax(0,1fr)}.tp-open{min-width:0}.tp-open .tr-btns>*{max-width:100%;white-space:normal;text-align:center}
 @media (min-width:1100px) and (max-width:1279.98px){.tp-ct b{font-size:var(--t17)}.tp-lead .np-mon,.tp-lead .np-mon .st{--iw:64px}}
 .tp-open{grid-template-columns:minmax(0,1fr)}
-.tp-name{white-space:nowrap}.tp-ph{min-height:72px}.tp-ph>div{min-width:0}
+.tp-name{white-space:nowrap}@media (max-width:699.98px){.tp-name{white-space:normal}} /* phones: the pile name wraps as it did before Nov 16 (one line cut "The Good Matchups" at 320-340) */.tp-ph{min-height:72px}.tp-ph>div{min-width:0}
 @media (min-width:1100px) and (max-width:1599.98px){.tp-ph{gap:var(--s2)}.tp-pile.g .tp-name,.tp-pile.p .tp-name{font-size:var(--t15)}.tp-pile.g .tp-n,.tp-pile.p .tp-n{font-size:var(--t34)}}
 .tp-open{margin-top:var(--s6);clip-path:polygon(0 -24px,100% -24px,100% 0,calc(100% - 16px) 100%,0 100%)}.tp-open .tp-start{top:calc(var(--s3)*-1.5)}
 .tp-four{flex-wrap:wrap}@media (min-width:1100px) and (max-width:1439.98px){.tp-four{display:grid;grid-template-columns:repeat(2,max-content);align-items:end;gap:var(--s1) var(--s2)}} /* front pair over back pair, no lone sprite (Sim, Nov 16) */.tp-four .big .np-mon,.tp-four .big .np-mon .st{--iw:64px}.tp-four .np-mon,.tp-four .np-mon .st{--iw:48px}
