@@ -50,6 +50,7 @@ html,body{overflow-x:clip}
    menu names 24px apart below 1100 (36 above), so the margins stay even */
 @media (max-width:1099.98px){.np-nav{gap:var(--s6)}}
 @media (max-width:899.98px){.np-nav{gap:var(--s3)}}
+@media (min-width:414px) and (max-width:999.98px){.np-gofwd[hidden]{display:none}}@media (min-width:700px) and (max-width:899.98px){.np-nav{gap:var(--s2)}}@media (min-width:900px) and (max-width:1099.98px){.np-nav{gap:var(--s4)}} /* Nov 16 audit: the new logo + "My Team" on one line pushed Day/Night past the edge at 700-900; Forward's empty spot is used while it is hidden (as on phones) and the menu gaps are a step tighter */
 @media (min-width:700px) and (max-width:759.98px){.np-head .logo svg{height:30px}}
 @media (max-width:359.98px){.np-head .logo svg{height:26px}}
 @media (max-width:329.98px){.np-head .tools{gap:var(--s1)}}
