@@ -3050,15 +3050,15 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-k{margin:0 0 var(--s3);font:900 var(--t20)/1.2 var(--u);font-style:italic}
 .pk-build{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,4fr);gap:var(--s10);align-items:start}
 .pk-usual{order:2}.pk-set{order:1}.pk-lists{order:3;display:grid;gap:var(--s6)}
-.pk-set dl{display:grid;gap:var(--s4);margin:0 0 var(--s5)}.pk-set dt{font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
-.pk-set dd{display:grid;margin:var(--s1) 0 0}.pk-set dd b{font:700 var(--t20)/1.3 var(--b)}.pk-set dd small{font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pk-set dl{display:grid;gap:var(--s3);margin:0 0 var(--s4)}.pk-set dt{font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
+.pk-set dd{display:grid;margin:var(--s1) 0 0}.pk-set dd b{font:700 var(--t17)/1.3 var(--b)}.pk-set dd small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .pk-slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3);margin:0 0 var(--s4);padding:0;list-style:none}
-.pk-slots li{display:grid;align-content:center;gap:var(--s1);min-height:88px;padding:var(--s3) var(--s5);background:repeating-linear-gradient(-55deg,transparent 0 6px,color-mix(in srgb,var(--on-type) 10%,transparent) 6px 8px) var(--tc);color:var(--on-type);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
-.pk-slots b{min-width:0;font:900 var(--t20)/1.15 var(--u);font-style:italic}.pk-slots.pk-slots1{grid-template-columns:minmax(0,1fr)}.pk-slots1 li{min-height:var(--s16)} /* V2.fitWords: one per row on narrow phones */.pk-slots small{font:600 var(--t13)/1.4 var(--b)}
+.pk-slots li{display:grid;align-content:center;gap:2px;min-height:var(--s16);padding:var(--s2) var(--s4) var(--s2) var(--s5);background:repeating-linear-gradient(-55deg,transparent 0 6px,color-mix(in srgb,var(--on-type) 10%,transparent) 6px 8px) var(--tc);color:var(--on-type);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.pk-slots b{min-width:0;font:900 var(--t17)/1.15 var(--u);font-style:italic}.pk-slots.pk-slots1{grid-template-columns:minmax(0,1fr)}.pk-slots1 li{min-height:var(--s16)} /* V2.fitWords: one per row on narrow phones */.pk-slots small{font:600 var(--t13)/1.4 var(--b)}
 .pk-ub{margin:0;font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .pk-empty{margin:0}
 @media (max-width:1099px){.pk-build{grid-template-columns:repeat(2,minmax(0,1fr))}.pk-usual{grid-column:1/-1;order:0}}
-@media (max-width:699px){.pk-build{grid-template-columns:minmax(0,1fr);gap:var(--s8)}.pk-h h2{font-size:var(--t26)}.pk-jumps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.pk-jumps button{padding:0 var(--s2);font-size:var(--t13)}}
+@media (max-width:699px){.pk-build{grid-template-columns:minmax(0,1fr);gap:var(--s6)}.pk-h h2{font-size:var(--t26)}.pk-jumps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.pk-jumps button{padding:0 var(--s2);font-size:var(--t13)}}
 /* Pokémon page part 2 "Who it teams with": the partners as a fanned hand (outer Cards tilt more and sit lower, as in Winning Hands) */
 .pk-fan{display:flex;justify-content:center;gap:var(--s4);margin:0;padding:var(--s4) 0 0;list-style:none}@media (min-width:900px) and (max-width:1099px){.pk-fan{padding-inline:var(--s3);gap:var(--s6)}} /* a 6deg tilt leans ~12 px: room at the sides and between Cards (they poked out at 700-1024 and touched at 700, audit Nov 15) */
 .pk-fan li{flex:0 1 220px;display:grid;justify-items:center;align-content:start;gap:var(--s3);margin-top:calc(var(--s3)*(var(--i) - (var(--k) - 1)/2)*(var(--i) - (var(--k) - 1)/2))}
@@ -3133,7 +3133,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-fold:not(.open)>*:not(.pk-h):not(.pk-sum){display:none}.pk-fold.open .pk-sum p{display:none} /* every width (uniform; the desktop page was 4,200-5,750 px) */
 @media (max-width:699px){.pk-lsum{display:flex}}
 @media (max-width:699px){.pk-jumps{display:flex;flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x proximity;margin-inline:calc(var(--s4)*-1);padding-inline:var(--s4);scroll-padding-inline:var(--s4)}.pk-jumps>*{flex:none;scroll-snap-align:start}} /* phones: the jump links in one swipe row */
-@media (max-width:699px){.pk-set dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.pk-set dl>div:last-child:nth-child(odd){grid-column:1/-1}} /* phones: the typical set two by two (it was 4 rows down a half-empty width) */
+@media (max-width:699px){.pk-set dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}.pk-set dl>div:last-child:nth-child(odd){grid-column:1/-1}} /* phones: the typical set two by two (it was 4 rows down a half-empty width) */
 @media (max-width:699px){.pk-lsum{order:3}.pk-lists:not(.open){display:none}.pk-lists{order:4}}.pk-lsum{display:none}@media (max-width:699px){.pk-build .pk-lsum{display:flex}} /* part 1 on phones: the full lists behind one tap (order: after the typical set and Usually) */
 @media (min-width:900px){.pk{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s12)}.pk>*{grid-column:1/-1}.pk>.pk-fold:not(.open){grid-column:auto}.pk>.pk-fold.pk-solo{grid-column:1/-1}} /* wide screens: folded parts two side by side (one line each ran a whole row); an opened part takes the full width */
 .bd-busyw{position:relative}.bd-busyw.first{min-height:min(70vh,var(--s24)*6)}.bd-busyw .bd-busy{position:sticky;top:var(--s24);z-index:1;margin:0 0 var(--s3)}.bd-prev{opacity:.4;pointer-events:none;transition:opacity .2s} /* Build: the last result stays while a new one is built (no jump) */
@@ -3185,3 +3185,5 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-bt i{position:absolute;inset:0 auto 0 0;width:var(--w);border-radius:2px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,var(--surface)),var(--c) 70%);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 60%,var(--ink)),0 0 6px color-mix(in srgb,var(--c) 20%,transparent)}
 .pk-bt i::after{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:color-mix(in srgb,var(--surface) 30%,transparent)}
 @media (max-width:379px){.pk-bsr{grid-template-columns:64px auto minmax(0,1fr)}.pk-bsd .pk-bsr{grid-template-columns:64px auto minmax(0,1fr) 32px}.pk-bsr dd>b{min-width:48px;font-size:var(--t22)}}
+/* touch (Nov 16 helper sweep): 44 px tap area for the two small text links left, the line unmoved */.bt-sub .np-link,.nprow .np-link{position:relative}.bt-sub .np-link::after,.nprow .np-link::after{content:"";position:absolute;inset:-12px -4px}
+/* Nov 16: the link keeps its › on its line; the line wraps under the text when there is no room */.pk-sum .np-link{white-space:nowrap}@media (max-width:699px){.pk-build .pk-lsum{flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 var(--s4)}}

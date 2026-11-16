@@ -40,7 +40,6 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // 1. How to build it (today's Usually, Typical set, Moves, Items; the same helpers and words as the sheet)
 V2.pkBuild = p => { const E = V2.esc, n = p.n, st = (() => { try { return setFor(p) || {}; } catch (e) { return {}; } })();
   const ti = (() => { try { return topItems(p); } catch (e) { return null; } })(), SB = lairSetBits(p), pm = (() => { try { return (popularMoves(p) || []).slice(0, 4).map(m => m.name); } catch (e) { return []; } })();
-  const usual = [ti && ti.it && ti.it[0] ? ti.it[0][0] : null, SB.na ? SB.na[0] : null, SB.w || null].filter(Boolean);
   const mvShare = new Map((st.mv || []).map(([nm, v]) => [nm, v]));
   // the typical set: each value large; a second option sits under it as "or ..."
   const two = arr => arr && arr.length ? `<b>${E(arr[0])}</b>${arr.length > 1 ? `<small>or ${arr.slice(1).map(E).join(' or ')}</small>` : ''}` : '';
@@ -51,7 +50,7 @@ V2.pkBuild = p => { const E = V2.esc, n = p.n, st = (() => { try { return setFor
     <button type="button" class="np-btn2" data-mssets="${E(n)}"><span>Popular Sets</span></button></div>`;
   // Usually: the four usual moves as big slots in their type colour, each with its share of sets when the Moves list has it
   const slots = pm.length ? `<div class="pk-usual"><h3 class="pk-k u">Usually</h3><ul class="pk-slots">${pm.map(m => { const mv = mvByName.get(m), t = mv && V2.TYPES.includes(mv.type) ? mv.type : 'Normal', v = mvShare.get(m);
-      return `<li style="--tc:var(--ty-${t})"><b class="u">${E(m)}</b>${v != null ? `<small>${E(pctFmt(+v))} of sets</small>` : ''}</li>`; }).join('')}</ul>${usual.length ? `<p class="pk-ub">${E(usual.join(' · '))}</p>` : ''}</div>` : '';
+      return `<li style="--tc:var(--ty-${t})"><b class="u">${E(m)}</b>${v != null ? `<small>${E(pctFmt(+v))} of sets</small>` : ''}</li>`; }).join('')}</ul></div>` : ''; /* say it once (Nov 16): the 'Life Orb · Adamant · points' line under the tiles repeated the Typical set beside it */
   // Moves and Items: today's lists with their bars, shares and notes
   const bars = (arr, k) => (arr || []).slice(0, k).map(([nm, v]) => `<div class="ms-br"><span>${E(nm)}</span><i style="--v:${Math.max(2, Math.min(100, +v || 0))}" aria-hidden="true"></i><b>${v == null ? '' : E(pctFmt(+v))}</b></div>`).join('');
   const sbM = (() => { try { return setBasis(p, st, 'mv'); } catch (e) { return null; } })(), stn = lairStones(p, st);
