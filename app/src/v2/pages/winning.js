@@ -56,7 +56,7 @@ V2.wtResults = () => { const E = V2.esc, U = V2.wtUi, pool = tsPool(), hits = po
   return `<section class="wt-res" aria-live="polite"><p class="wt-cnt"><b class="u">${homeNum(hits.length)}</b>&nbsp;team${hits.length === 1 ? '' : 's'} match${hits.length ? `, ${hits.filter(x => x.t.place === 1).length} won their event` : ''}<span class="wt-pool"> · searched all ${homeNum(pool.length)} event team sheets</span></p>
     ${mates.length && hits.length >= 3 ? `<p class="wt-mates"><span>Often with:</span>${mates.map(([n, k]) => `<button type="button" class="np-chip" data-tsadd="${E(n)}">${E(V2.disp(n))}&nbsp;<b>${Math.round(100 * k / hits.length)}%</b></button>`).join('')}</p>` : ''}
     ${hits.length ? `<div class="wt-rows">${hits.slice(0, cap).map(row).join('')}</div>` : '<p class="tm-sub">No winning team has all of these. Remove a filter.</p>'}
-    ${hits.length > cap ? `<button type="button" class="np-btn2 wt-more" data-tsmore><span>Show More · ${hits.length - cap} left</span></button>` : ''}</section>`; };
+    ${hits.length > cap ? `<button type="button" class="np-link wt-more" data-tsmore>Show More · ${hits.length - cap} left ›</button>` : ''}</section>`; };
 
 // full sweep, Nov 15: in a fanned hand each name must fit the strip of its card left showing before the next card (at 700-768 five
 // champion names ran under the next card); shrink a name 1px at a time, never below 13px. Runs after every draw (safe to repeat) and on resize.
@@ -83,7 +83,7 @@ V2.pages.tournaments = {place: 'meta', after() { V2.wtFit(); }, draw() { const E
     ${three[0] ? V2.wtHand(three[0], 1, same) : ''}${three.length > 1 ? `<div class="wt-two">${three.slice(1).map((x, i) => V2.wtHand(x, i + 2, same)).join('')}</div>` : ''}</section>`;
   const more = all.length > 3 ? `<section class="wt-more-s">${U.more ? `<h2 class="u wt-mh">More Winning Teams</h2><div class="wt-rows">${shown.map(x => V2.wtRow(x, false)).join('')}</div>
       <p class="wt-mbtns">${left > 0 ? `<button type="button" class="np-btn2" data-wtmore><span>Show More · ${left} left</span></button>` : ''}<button type="button" class="np-link" data-wtless>Show Fewer</button></p>`
-    : `<button type="button" class="np-btn2 wt-open" data-wtmore><span>More Winning Teams · Showing the top 3 of ${all.length} teams</span></button>`}</section>` : '';
+    : `<button type="button" class="np-link wt-open" data-wtmore>More Winning Teams · ${all.length} in all ›</button>`}</section>` : '';
   return `<div class="ra gsp wt">${top}${tabs}<div class="gs-body">${ctl}${hands}${more}</div></div>`; }};
 
 // ---- actions ----

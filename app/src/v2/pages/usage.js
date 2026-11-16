@@ -59,7 +59,7 @@ V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
     body = `<div class="gs-title"><h2 class="u">The Podium</h2><p class="gs-key fine">${rows.some(R => R.u != null) ? 'The ten most used, in order. Tap one to see how it is played.' : 'The ten most used, in order. This list ranks them; it gives no percentages.'}</p></div>
       <div class="us-podium"><div class="us-steps">${pod}</div><div class="us-benches">${halves.map(h => `<div class="gs-row us-bench" style="--c:4">${h.map(R => V2.usFig(R, 'bench')).join('')}</div>`).join('')}</div></div>
       ${pick ? V2.usHow(pick, d) : ''}
-      ${rest.length ? `${U.all ? `<div class="us-list">${rest.map(R => V2.usFig(R, 'row')).join('')}</div>` : ''}<button type="button" class="np-btn2 us-rest" data-usrest aria-expanded="${U.all}"><span>${U.all ? 'Show the top 10' : `Ranks 11–${rows[rows.length - 1].t.r} · the rest of the list`}</span></button>` : ''}
+      ${rest.length ? `${U.all ? `<div class="us-list">${rest.map(R => V2.usFig(R, 'row')).join('')}</div>` : ''}<button type="button" class="np-link us-rest" data-usrest aria-expanded="${U.all}">${U.all ? 'Show the top 10' : `Ranks 11–${rows[rows.length - 1].t.r} ›`}</button>` : ''}
       ${d.more && d.more.length ? `<p class="fine">Also ranked ${d.more[0].r}–${d.more[d.more.length - 1].r}: ${d.more.slice(0, 40).map(m => { const p = byName.get(m.n); return E(p ? p.d : m.n); }).join(', ')}${d.more.length > 40 ? ` and ${d.more.length - 40} more` : ''}</p>` : ''}${d.note ? `<p class="fine">${E(d.note)}</p>` : ''}`; }
   return `<div class="ra gsp us"><div class="gs-top">${head}<div class="ra-spotw">${V2.usSpot(rows[0], d)}</div></div>${tabs}<div class="gs-body">${srcs}${body}</div></div>`; }};
 
