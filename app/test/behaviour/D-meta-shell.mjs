@@ -583,7 +583,7 @@ t('SETS-05', 'Sets source switch Best data / Tournaments / Showdown, remembered 
   expect(has(String(await ls('cc2.setSrc')), 'tour'), 'source not remembered: ' + await ls('cc2.setSrc')); }));
 
 // =============================== TOP · Winning Teams ===============================
-t('TOP-01', 'Winning Teams source line with update date', run({team: TEAM}, async ({ui}) => {
+t('TOP-01', 'Winning Teams source line with update date', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Winning Teams'); if (NEW) { /* say it once (Nov 16): the line keeps its source; its own date shows only when it differs from the footer's "Data as of" */
     expect(/Top 4 from online tournaments with 32\+ players, top 8 from official events/.test(await ui.text()), 'no source line'); expect(/data as of [A-Z][a-z]{2} \d/i.test(await d.footerText()), 'no date in the footer'); return; }
   expect(/Top 4 from online tournaments with 32\+ players, top 8 from official events, updated [A-Z][a-z]{2} \d/.test(await ui.text()), 'no source line'); }));
@@ -602,7 +602,7 @@ t('TOP-04', 'Your Team strip: checks badge with six; asks for six when not full'
 t('TOP-04b', 'Your Team strip with five Pokémon asks to add six', run({team: FIVE}, async ({ui}) => {
   await ui.go('Winning Teams'); expect(has(await ui.text(), (NEW ? 'Add six Pokémon on My Team to compare.' : 'Add six Pokémon on My team to compare.')), 'no "add six" line'); }));
 t('TOP-05', 'Team list: top 3, "More Winning Teams" shows more, "Show fewer" folds back', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Winning Teams'); const n0 = await d.teamCards(); expect(n0 === 3, 'cards: ' + n0); expect(/Showing the top 3 of \d+/.test(await ui.text()), 'no "Showing the top 3 of N"');
+  await ui.go('Winning Teams'); const n0 = await d.teamCards(); expect(n0 === 3, 'cards: ' + n0); expect((NEW ? /More Winning Teams · \d+ in all/ /* one system (Nov 16): the show-more link 'More Winning Teams · N in all ›'; the three cards show it's the top 3 */ : /Showing the top 3 of \d+/).test(await ui.text()), 'no count of all the winning teams');
   await ui.tap(/More Winning Teams/); const n1 = await d.teamCards(); expect(n1 > 3, 'more not shown: ' + n1); await ui.tap((NEW ? /^Show Fewer/i : /^Show fewer/i)); expect(await d.teamCards() === 3, 'did not fold back'); }));
 t('TOP-06', 'Card actions: Load team (confirm, Undo), Practice against, Compare', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Winning Teams'); await ui.tap(/^Load team$/i); expect(has(await ui.text(), 'Replace your current team?'), 'no confirm'); await ui.tap(/^Cancel$/);

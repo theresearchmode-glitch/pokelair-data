@@ -61,7 +61,7 @@ t('HOME-04', 'Data line names the month, the source and "Data as of <date>"', as
   has(tx, /Most used in (January|February|March|April|May|June|July|August|September|October|November|December), (Showdown ladder|Ranked ladder|Online tournaments|Official events)[^.]*\. Data as of [A-Z][a-z]{2} \d{1,2}/, 'Home data line'); });
 
 t('HOME-05', 'This week in the ratings: chips with arrow + number open the matching info sheet', async () => {
-  const r = await homePage(); const tx = await r.ui.text(); has(tx, /This [Ww]eek in the [Rr]atings/); /* Title Case on the new site (Sim's Nov 12 rule) */
+  const r = await homePage(); const tx = await r.ui.text(); has(tx, NEW ? /This Week/ /* say it once (Nov 16): the Meta strip's This Week view */ : /This [Ww]eek in the [Rr]atings/); /* Title Case on the new site (Sim's Nov 12 rule) */
   // new build (decisions.md Nov 12, Sim "add a few more"): up to 7 rows on desktop, each "<name> ▲ up N points" (shown scale)
   const chips = await r.ui.ratingMoves(); ok(chips.length >= 1 && chips.length <= (NEW ? 7 : 6), `${chips.length} rating-move chips`);
   for (const c of chips) ok((NEW ? /[▲▼] (up|down) \d+ points$/ : /[▲▼] \d+$/).test(c.text), `chip "${c.text}" has no arrow and number`);
@@ -1120,7 +1120,7 @@ t('X-02', 'First visit: sample six "Sun Tailwind (sample)", saved and open, defa
     const r = await aopen({fresh: true}); await r.ui.go('My Team', 2500); const tx = await r.ui.text(); ok(await r.ui.teamHeading() === 'Sun Tailwind (sample)', 'heading: ' + await r.ui.teamHeading());
     has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. (?:Build [Yy]our [Oo]wn|Build Me a Team(?: ›)?)(?: ·)? Import a [Tt]eam(?: ›)? /, 'sample note');
     const bo = NEW ? (NEW ? 'Build Me a Team' : 'Build Your Own') : 'Build your own'; ok(await r.ui.linkHref(bo) === '#build', '"' + bo + '" leads to ' + await r.ui.linkHref(bo));
-    await r.ui.tapText(/^Import a team$/, 900); const p = await r.ui.editPanel(); ok(p && p.title === 'Paste a Team', '"Import a team" did not open Import (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
+    await r.ui.tapText(/^Import a team( ›)?$/, 900); const p = await r.ui.editPanel(); ok(p && p.title === 'Paste a Team', '"Import a team" did not open Import (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
     await r.ui.go('Saved Teams', 900); has(await r.ui.savedCardOf('Sun Tailwind (sample)') || '', /^Sun Tailwind \(sample\) Open now /, 'saved sample');
     await r.ui.tapText(/^← My Team$/, 900); ok(await r.ui.current() === 'report', 'Saved Teams did not close');
     await r.ui.go('My Box', 900); ok(await r.ui.current() === 'box', 'My Box did not open'); has(await r.ui.text(), / My Box 36 Pokémon · 2 boxes /, 'My Box'); await r.close(); return; }

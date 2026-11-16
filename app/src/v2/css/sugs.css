@@ -183,3 +183,7 @@
 .pk-rate em.tier-tag,.gs-big i.tier-tag{color:var(--tier-ink)}
 .ra-tk{background:var(--tc,var(--plate));color:var(--tier-ink)}
 /* Test Run (Nov 16; helper: three stacked fills): inside the open card the prep cells sit on the card itself, split by thin rules, not grey boxes in a white box on the grid table */.tp-open .tr-cell{background:none;padding-inline:0;border-top:1px solid var(--rule)}
+/* Meta filters on phones (Nov 16; advisor: one control row): the six chips sit in ONE row that swipes sideways (as the tiers below), all
+   still visible; was 3 rows, 253px. The Types picker still opens full width under the row. */
+@media (max-width:699px){.gs-ctl .ra-filt{display:flex;flex-wrap:nowrap;gap:var(--s2);overflow-x:auto;overscroll-behavior-x:contain;margin-inline:calc(var(--gut) * -1);padding-inline:var(--gut);scroll-padding-inline:var(--gut);scrollbar-width:none}.gs-ctl .ra-filt>*{flex:0 0 auto}}
+@media (max-width:699px){.gs-ctl .ra-filt>*{min-width:56px;justify-content:center}} /* "All" stays a 44px+ tap in the swipe row */

@@ -160,6 +160,9 @@ V2.bdJumpSpy = () => {}; // tabs mark the chosen section themselves (Look Q4 B)
 // a tap shows that section; if the bar has scrolled away, the page comes back to the top of the section
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdjump]'); if (!b) return; V2.bdUi.jtab = b.dataset.bdjump; V2.redraw();
   const nav = document.querySelector('.bd-jump'), low = document.querySelector('.bd-lower'); if (nav && low && low.getBoundingClientRect().top < nav.getBoundingClientRect().bottom) low.scrollIntoView({block: 'start'});
+  /* Nov 16 (CORES-13): where every section shows (wider screens), a jump tab scrolls to its section, below the sticky bar */
+  const sec = document.querySelector({others: '#main .bd-others', wins: '#main .bd-wins', cores: '#main .bd-cores'}[V2.bdUi.jtab] || '#none');
+  if (sec && sec.getClientRects().length && nav) { const stuck = (parseFloat(getComputedStyle(nav).top) || 0) + nav.getBoundingClientRect().height, y = sec.getBoundingClientRect().top + scrollY - stuck - 16; if (sec.getBoundingClientRect().top > stuck + 40) scrollTo({top: Math.max(0, y), behavior: V2.smooth ? V2.smooth() : 'auto'}); }
   const nb = document.querySelector(`[data-bdjump="${V2.bdUi.jtab}"]`); if (nb && e.detail === 0) nb.focus({preventScroll: true}); });
 // (code review C2: an earlier Build after stood here; the one in use is set below)
 
