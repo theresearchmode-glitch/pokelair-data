@@ -155,3 +155,8 @@
 .ra-seg a.on{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate)}
 @media (max-width:699px){.ra-seg a{padding:0 var(--s2)}} /* phones: "Popular Sets" on one line from 360 up */
 @media (max-width:699px){.ra-seg{display:flex}.ra-seg a{flex:1 1 auto;min-width:min-content;text-align:center}} /* phones: columns size to their words, so one-word "Archetypes" is never cut; two-word names wrap */
+/* ONE section-heading size (Nov 16; advisor C: H1 display, H2 Unbounded 28-34): every section H2 is 24 on phones and 28 from 700px.
+   These were 20-26. Pokémon names that are H2s for structure (Calc sides, the Lead card) are names, not section heads, and keep their size. */
+.bd-hd h2,.bt-lgl h2,.bt-yours h2,.ev-plate .ev-ph,.dc2-kbh h2,.st-team .st-h2,.bx-teamhd h2,.bt-labrow .bt-lab{font-size:var(--t24)}
+@media (min-width:700px){.bd-hd h2,.bt-lgl h2,.bt-yours h2,.ev-plate .ev-ph,.dc2-kbh h2,.st-team .st-h2,.bx-teamhd h2,.bt-labrow .bt-lab{font-size:var(--t28)}}
+@media (max-width:699px){.pk-h h2{font-size:var(--t24)}}
