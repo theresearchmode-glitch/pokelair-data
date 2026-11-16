@@ -1098,3 +1098,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:54 AM: Sim: 'recommended for good is all good to go': footer with the new logo approved; publishing the Preview with focus ring, How We Calculate, Count abilities, header logo A and footer.
 - 8:56 AM: Audit P1 (WCAG 2.5.3, no visible change): KO board tiles' names start with 'KO:'; Saved Teams copy button named 'Copy for Showdown: <team>'.
 - 8:58 AM: Audit P1 colours (tier colours kept, Sim's earlier choice): Track chart lines and dots get a thin ink edge (amber/green tier lines now read against the white card, WCAG 1.4.11; picture track-chart-edges.png); Events selected chip count at full strength (night 3.9 -> 5.05:1, day 17:1).
+- 9:00 AM: Sim: 'Yes!' to the Track chart ink edges (to the Preview).
+- 9:03 AM: Audit P1 (WCAG 1.4.12): Build winning-event names and My Box names wrap instead of '…' (Build's long name was cut at 320 even at normal spacing); raised spacing: nothing clipped on Build/My Box; layout 0. Left as a known minor limit: This Week's one-word tile title (e.g. Tailwind) can touch the tile edge under raised letter spacing (wrapping would split the word).
