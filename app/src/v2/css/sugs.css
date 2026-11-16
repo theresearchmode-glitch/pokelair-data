@@ -201,3 +201,4 @@
 .ev-counts{display:grid;gap:var(--s3);justify-items:start;margin-top:var(--s6)}
 /* Damage Calc under 380px (Nov 16, re-verify #9): the option pips crossed "WEATHER"/"TERRAIN" (decorative, hidden there); the Swap disc sits beside the sprites, clear of the names; the small move cards use smaller words so nothing runs past their edge */@media (max-width:379px){.dc2-fc .pips{display:none}.dc2-swap{align-self:start;margin-top:var(--s10)}.dc2-hand .dc2-mv .nm{font-size:var(--t13)}.dc2-hand .dc2-mv .rg{font-size:var(--t20)}.dc2-hand .dc2-mv{overflow-wrap:normal}.dc2-hand .dc2-mv small{font-size:var(--t13)}}
 @media (max-width:359px){.dc2-hand .dc2-mv{padding-inline:6px}.dc2-hand .dc2-mv .rg{font-size:var(--t17)}}
+@media (max-width:379px){.dc2-hand .dc2-mv .nm{margin-bottom:var(--s1)}} /* the 13px name clears the number below it */
