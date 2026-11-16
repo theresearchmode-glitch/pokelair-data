@@ -27,6 +27,9 @@ Every decision is in docs/rebuild/decisions.md (from the 1:03 PM entry on). Pict
 - Correction: some of my early checks used #report/#top/#ratings, which open Home in the new site; re-done on the real pages, results held.
 
 ## Still open for you (each with a reason)
+- Length with folds OPEN (the advisor's new budget: phone 4 screens Home / My Team / Meta, 3 for the rest; today's approved limits measure folds
+  closed). Measured Nov 16, 12:10 AM at 390 (closed -> open screens): Home 4.8 -> 4.8, My Team 5.0 -> 8.0, Build 1.6 -> 3.7, Battle 2.2 -> 2.2,
+  Meta 4.0 -> 5.3, Pokémon page 4.7, Usage 4.5, Winning Teams 4.0, Events 5.9 -> 6.0, This Week 6.1 -> 6.5. Your call whether to adopt it.
 - Suggestions: settings behind "Adjust ›" (the answer's words say "above" and come from code shared with today's live site; needs a wording change).
 - Colours: B-tier purple = "Tournament ready" purple; C-tier blue = "Top tier" blue (the helper's flag): a colour call for you.
 - Heading rule: section heads unified; the ~19 Unbounded sub-headings (Usually, Typical set, Rising...) left as they are (the WOW).

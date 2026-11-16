@@ -7,6 +7,19 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Nov 16, written time: 12:22 AM (12:22:18)  date: Mon Nov 16, 2026 by the clock; Sim's FULL authority until 10:00 AM Mon Nov 16; summary 9:40 AM; then STOPPED + HANDOVER + phone note + delete backstops trig_01P8wwfASshsPdbcFcM3qNMv, trig_012D8AdnvLFxfYqeBtDUoc7o)
+- Branch claude/design6, last commit 0338c97. Preview last published v178 (Base Stats B); publish after the full run on t216 (run216.txt).
+- Done tonight (decisions.md from 10:2x PM): Base Stats B less bubbly (Sim: "good to go"); How to build it smaller; say it once (date once in the
+  footer + snapshot fallback; Meta kick; Home This Week into the Meta strip; Battle Win/Loss after four picked; Battle tools bar tools only);
+  one system (show-more link, ONE fold marker, › on blue links, one chip, one segmented control 44px, one section-heading size, one tier
+  colour, Test Run box-in-box); pages (Meta phone swipe rows for tiers and filters 5.2 -> 4.0 screens; Home underdog large; Home 4.8 screens;
+  My Team Saved as a status; Grandstand legend into '?'); touch (all measured targets 44px+; Game Plan Q5 decided); Build jump tabs scroll.
+- Helpers used (Sim asked: liberally): touch, say-it-once, buttons/folds inventory, arrows test-safety, tints/tiers, a11y audit (running).
+- Tests: A 138/0 on t216; B baseline 31 known (All Suggestions / Plan settings not translated); C 83/0; D baseline 51 known (old-site tests).
+- Known false alarms in the layout check: calc 44-64, types 5, guide 22 (pre-existing, Preview-only style guide).
+- Open for Sim: summary-nov16.md "Still open for you" (Suggestions Adjust, B/C tier vs band colours, length budget with folds open).
+- Next: final nuclear stress test + audit (Sim: the last thing), then the 9:40 AM summary with pictures.
+
 ## NOW (Nov 15, written time: 2:50 PM (2:50:51)  date: Sun Nov 15, 2026 by the clock; Sim's authority until 8:00 AM Mon Nov 16 (extended 12:30 PM Sun); summary 7:40 AM Mon)
 - Scope (Sim): finish building, checks, audits, pristine and ready to be the live site; the switch to live waits for Sim's go.
 - Backstops trig_01P8wwfASshsPdbcFcM3qNMv (:23) and trig_012D8AdnvLFxfYqeBtDUoc7o (:53) carry the work order to 8 AM Mon; then STOPPED,
