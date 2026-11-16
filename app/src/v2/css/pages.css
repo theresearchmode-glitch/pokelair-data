@@ -1430,7 +1430,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* start: two big slanted choices */
 .pp2-modes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}
 .pp2-mode{display:grid;align-content:start;gap:var(--s2);min-height:136px;padding:var(--s5) var(--s8) var(--s5) var(--s5);text-align:left;background:var(--wash);clip-path:polygon(0 0,100% 0,calc(100% - 24px) 100%,0 100%)}
-.pp2-mode b{font-size:var(--t22)}.pp2-mode span{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pp2-mode .six{display:flex;gap:var(--s1)}
+.pp2-mode b{font-size:var(--t22)}.pp2-mode span{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pp2-mode .six{display:flex;gap:var(--s1);min-width:0}
+/* full sweep, Nov 15: the six pictures (308px) widened the card's column past its 248px content at 347 and 700-768, so the line and the
+   last picture ran under the slanted edge; the column now stays inside the card and the pictures share it (up to 48px each) */
+.pp2-mode{grid-template-columns:minmax(0,1fr)}.pp2-mode .six>*{flex:0 1 48px;min-width:0}.pp2-mode .six img{width:100%;height:auto}
 .pp2-mode[aria-checked="true"]{background:color-mix(in srgb,var(--plot) 18%,var(--surface))}.pp2-mode[aria-checked="true"] b{color:var(--plot-text)}.pp2-mode:disabled{opacity:.6;cursor:not-allowed}
 /* the meter: four slanted pips for 'Bring four', two for 'Lead two' */
 .pp2-bar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6)}

@@ -58,7 +58,14 @@ V2.wtResults = () => { const E = V2.esc, U = V2.wtUi, pool = tsPool(), hits = po
     ${hits.length ? `<div class="wt-rows">${hits.slice(0, cap).map(row).join('')}</div>` : '<p class="tm-sub">No winning team has all of these. Remove a filter.</p>'}
     ${hits.length > cap ? `<button type="button" class="np-btn2 wt-more" data-tsmore><span>Show More · ${hits.length - cap} left</span></button>` : ''}</section>`; };
 
-V2.pages.tournaments = {place: 'meta', draw() { const E = V2.esc, d = META.teams, U = V2.wtUi, G = V2.wtGroups();
+// full sweep, Nov 15: in a fanned hand each name must fit the strip of its card left showing before the next card (at 700-768 five
+// champion names ran under the next card); shrink a name 1px at a time, never below 13px. Runs after every draw (safe to repeat) and on resize.
+V2.wtFit = () => { for (const fan of document.querySelectorAll('#main .wt-fan:not(.wt-mini)')) { const cards = [...fan.querySelectorAll('.wt-card')], hs = cards.map(c => c.querySelector('.mc-id h3')); hs.forEach(h => { if (h) h.style.fontSize = ''; });
+  if (getComputedStyle(fan).display === 'grid' || !hs[0]) continue; const w = h => { const r = document.createRange(); r.selectNodeContents(h); return r.getBoundingClientRect().width; };
+  let fs = parseFloat(getComputedStyle(hs[0]).fontSize); const fits = () => cards.every((c, i) => { const h = hs[i]; if (!h) return true; const nx = cards[i + 1], room = (nx ? nx.getBoundingClientRect().left : c.getBoundingClientRect().right) - h.getBoundingClientRect().left - 6; return w(h) <= room; });
+  while (!fits() && fs > 13) { fs -= 1; hs.forEach(h => { if (h) h.style.fontSize = fs + 'px'; }); } } }; /* one size per hand (the smallest any name needs), so the six read as a set */
+{ let t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { if (document.querySelector('#main .wt-fan')) V2.wtFit(); }, 120); }); }
+V2.pages.tournaments = {place: 'meta', after() { V2.wtFit(); }, draw() { const E = V2.esc, d = META.teams, U = V2.wtUi, G = V2.wtGroups();
   if (!U.grp || !G.some(([g]) => g === U.grp)) U.grp = G.length ? G[0][0] : null;
   const tabs = `${V2.tourTabs('tournaments')}`;
   /* Nov 15 (audit #6): the header counts the top-cut list, the search looks through every event team sheet; each line now says which; re-audit nov15b #9: the group numbers are teams (32 + 58 = 90), so 'from official events', and the button says 'teams' */
