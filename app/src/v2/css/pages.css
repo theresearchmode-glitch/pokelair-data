@@ -3250,3 +3250,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:359.98px){.dc2-hand .dc2-mv .nm{font-size:var(--t13);letter-spacing:-.03em}.dc2-hand .dc2-mv{padding-inline:var(--s1)}} /* 320-359: the longest one-word moves (Flamethrower) fit at 13px */
 .tc-h h1{text-wrap:balance} /* morning helper (confirmed): a long one-word name joined to "hard." ran off the screen at 320 (Crabominable +46px); the break is allowed and the lines are balanced */
 .tc>.tc-h,.tc-h h1{min-width:0} /* the page grid sized its column to the headline (350px at 320): the headline may now shrink, so it wraps within the screen */
+@media (max-width:389.98px){.pk-pc .mc-nm{font-size:var(--t13);overflow-wrap:normal}} /* morning helper (confirmed): partner names broke mid-word at 320 (Incineroa/r) and Kingambit ran 2px over at 360; 13px fits them whole */
+@media (max-width:359.98px){.pk-pc .mc-nm{letter-spacing:-.03em}} /* 320-359: Whimsicott fits whole */
+@media (max-width:359.98px){.pk-pc .mc-id{left:var(--s2);right:var(--s2)}} /* 320-359: the name area 110px instead of 94, so Whimsicott and Basculegion fit whole (clear of the cut corner) */
