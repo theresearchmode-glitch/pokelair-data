@@ -12,7 +12,7 @@ V2.wtGroups = () => { const g = new Map(); V2.wtList().forEach(x => g.set(x.t.se
 V2.wtPlace = t => { const m = String(t.record || '').match(/#(\d+)/); return m ? +m[1] : 0; };
 V2.wtOfficial = t => /official/.test(t.record || '');
 V2.wtChecks = (g, long) => { if (!g) return ''; const miss = g.items.filter(x => !x.ok && !x.skip && !x.note).map(x => x.label.toLowerCase());
-  return `<span class="wt-ck${g.pass === g.n ? ' all' : ''}"><b class="u">${g.pass}/${g.n}</b> checks${long && miss.length ? `, missing ${V2.esc(miss.join(', '))}` : ''}</span>`; };
+  return `<span class="wt-ck${g.pass === g.n ? ' all' : ''}"><b class="u">${g.pass}/${g.n}</b> checks${long && miss.length ? `, missing ${V2.esc(miss.join(', ')).replace(/ (\S+)$/, '&nbsp;$1')}` /* re-verify #14: the last word never sits alone */ : ''}</span>`; };
 V2.wtChips = names => { const L = String(teamPlanLabel(names) || '').split(' · ').filter(Boolean); return L.length ? `<span class="wt-chips">${L.map(x => `<span class="wt-chip">${V2.esc(x)}</span>`).join('')}</span>` : ''; }; /* today's style names (teamPlanLabel), as plain chips: archChips writes its own colours */
 // one Card: tap opens the Pokémon's info sheet (as everywhere a Card is shown)
 V2.wtCard = (n, iw, i) => { const p = byName.get(n); if (!p) return ''; const d = V2.disp(n);
