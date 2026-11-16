@@ -189,9 +189,15 @@ document.addEventListener('focusin', e => { const t = e.target; try { if (!t.mat
     bot = (bar && getComputedStyle(bar).display !== 'none' ? bar.getBoundingClientRect().top : innerHeight) - 8;
   if (r.top < top) scrollBy(0, r.top - top); else if (r.bottom > bot && r.height < bot - top) scrollBy(0, r.bottom - bot); });
 V2.setTheme = t => { document.documentElement.dataset.theme = t; document.documentElement.dataset.look = t === 'night' ? 'dark' : 'light'; /* the shared share-image code reads data-look (code review C8) */ V2.LS.set('np2.theme', t); V2.redraw(); }; // in place: focus stays on Day/Night (A5)
-V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, svg = V2.theme() === 'night' ? L.hdrD : L.hdrL;
-  /* the footer copy gets its own mask ids, so the two logos on one page never share an id */
-  return svg ? (small ? svg.replace(/nphdr(L|D)/g, 'nphdr$1f') : svg) : '<b class="u">NastyPlot</b>'; };
+/* Sim, Nov 16: the theme can change without the theme button (the phone or app switching to dark on its own: head.html listens for it);
+   whatever changes it, the page redraws once, so theme-drawn parts (the button's label, Build's lighting) follow */
+try { let last = document.documentElement.dataset.theme; new MutationObserver(() => { const t = document.documentElement.dataset.theme; if (t === last) return; last = t;
+  clearTimeout(V2._thT); V2._thT = setTimeout(() => { if (V2.redraw && V2.draw) V2.redraw(); }, 50); }).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']}); } catch (e) {}
+V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, f = svg => small ? svg.replace(/nphdr(L|D)/g, 'nphdr$1f') : svg;
+  /* the footer copy gets its own mask ids, so the two logos on one page never share an id.
+     Sim, Nov 16: at night the header showed the day logo (navy letters, unreadable) when the theme changed without a redraw (the phone or app
+     switching to dark on its own); both logos are drawn and the theme attribute shows the right one, so they can never be out of step */
+  return L.hdrL && L.hdrD ? `<span class="np-lg-d">${f(L.hdrL)}</span><span class="np-lg-n">${f(L.hdrD)}</span>` : '<b class="u">NastyPlot</b>'; };
 // say it once (Nov 16): a page's own data date shows only when it differs from the footer's 'Data as of' (V2.otherDay('Nov 10') -> '' when the same)
 V2.otherDay = d => { const a = V2.asOf && V2.asOf(); return d && a && new RegExp('\\b' + d.replace(/\s+/g, '\\s') + '\\b').test(a) ? '' : (d || ''); };
 // the data's date (Sim's review item 18): "Data as of Nov 11", plus "(N days old)" when stale; shared with today's site
