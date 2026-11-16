@@ -110,7 +110,7 @@ V2.muSheetRedraw = () => { const w = V2._sheet && V2._sheet.wrap, s = w && w.que
 document.addEventListener('click', e => { const t = e.target.closest && e.target; if (!t) return;
   const th = t.closest('[data-muthr]');
   if (th && th.closest('.mu-sh')) { V2.muSel = V2.muSel === th.dataset.muthr ? null : th.dataset.muthr; V2.muSheetRedraw(); const d = document.querySelector('.mu-sh .mu-det'); if (d) d.scrollIntoView({block: 'nearest'}); return; }
-  if (th && th.closest('#main')) { V2.muOpen(th.dataset.muthr, th); return; }
+  if (th && th.closest('#main')) { V2.muOpen(th.dataset.muthr, th.matches('button') ? th : (th.querySelector('button') || th)); return; } /* a grid row hands over its threat button, so focus can return there (sweep, Nov 15) */
   if (t.closest('[data-mumore]')) { ui.tlMore = !ui.tlMore; V2.redraw(); const b = document.querySelector('[data-mumore]'); if (b && e.detail === 0) b.focus({preventScroll: true}); return; } // keyboard: focus stays on the button
   if (t.closest('[data-muall]')) { ui.threatsAll = true; V2.redraw(); return; }
   if (t.closest('[data-mufull]')) { V2.closeSheet(true); LS.set('np2.seg.thr', 'all'); V2.redraw(); const m = document.getElementById('tm-mu'); if (m) m.scrollIntoView({block: 'start'}); return; }

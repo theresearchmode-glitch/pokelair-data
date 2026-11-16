@@ -90,7 +90,7 @@ document.addEventListener('keydown', e => { const S = V2._sheet; if (!S) return;
   // focus stays in the sheet (Sim's check, Nov 12: in the info sheet Tab left after 6 stops, because the inactive tabs, tabindex -1,
   // were counted as stops). Only controls that really take Tab count: not tabindex -1, not disabled, shown, not in a closed fold.
   if (e.key !== 'Tab') return; const shown = x => x.getClientRects().length && !x.closest('[hidden],[inert]') && !(x.closest('details:not([open])') && !(x.matches('summary') && x.parentElement.matches('details:not([open])')));
-  const f = [...S.wrap.querySelectorAll('.np-sheet :is(a[href],button,input,select,textarea,summary,[tabindex])'), ...document.querySelectorAll('.np-toast :is(a[href],button)')].filter(x => x.tabIndex >= 0 && !x.disabled && shown(x)); /* B9b: a toast's Undo is a stop too */
+  const f = [...S.wrap.querySelectorAll('.np-sheet :is(a[href],button,input,select,textarea,summary,[tabindex])')].filter(x => x.tabIndex >= 0 && !x.disabled && shown(x)); /* the toast is not in this loop: while a sheet is open it sits under the backdrop (Sim, Nov 11), so its Undo can't be seen there (sweep, Nov 15) */
   if (!f.length) return; const i = f.indexOf(document.activeElement);
   if (i < 0) { e.preventDefault(); (e.shiftKey ? f[f.length - 1] : f[0]).focus(); return; }
   if (e.shiftKey && i === 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); } });
@@ -274,6 +274,9 @@ addEventListener('hashchange', e => { let was = ''; try { was = new URL(e.oldURL
   const a = document.activeElement, used = !!(a && a !== document.body && a !== document.documentElement); V2.draw(); scrollTo(0, y);
   // code review B9a: when the player was using the page (a link or button had focus), focus moves to the new page's heading, so
   // keyboard and screen-reader users land on the new page instead of at the end of the document; tabindex only while focused
+  // a link to a part of a page (#method=rating, #about=priv) scrolls there: focus the first control in view, not the h1 above it (sweep, Nov 15)
+  if (used && !V2._sheet && /=/.test(location.hash)) { requestAnimationFrame(() => requestAnimationFrame(() => { const top = (document.querySelector('.np-head') || {}).offsetHeight || 0;
+    const f = [...document.querySelectorAll('#main :is(summary,a[href],button)')].find(x => { const q = x.getBoundingClientRect(); return q.height && q.top >= top && q.bottom <= innerHeight; }); if (f) f.focus({preventScroll: true}); })); return; }
   if (used && !V2._sheet) { const h = document.querySelector('#main h1') || document.getElementById('main'); if (h) { h.setAttribute('tabindex', '-1'); h.setAttribute('data-pgfocus', ''); h.focus({preventScroll: true}); h.addEventListener('blur', () => { h.removeAttribute('tabindex'); h.removeAttribute('data-pgfocus'); }, {once: true}); } } });
 
 // ---------- Back button (Sim, Nov 12: "go to where we previously were"; pressing again goes further back) ----------
