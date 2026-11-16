@@ -182,3 +182,4 @@
 .tier-tag{justify-self:start;padding:var(--s1) var(--s4) 2px var(--s3);background:var(--tc);color:var(--tier-ink);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
 .pk-rate em.tier-tag,.gs-big i.tier-tag{color:var(--tier-ink)}
 .ra-tk{background:var(--tc,var(--plate));color:var(--tier-ink)}
+/* Test Run (Nov 16; helper: three stacked fills): inside the open card the prep cells sit on the card itself, split by thin rules, not grey boxes in a white box on the grid table */.tp-open .tr-cell{background:none;padding-inline:0;border-top:1px solid var(--rule)}
