@@ -38,7 +38,7 @@ const LANE = {
   // the same line as data, {k: 'fix' | 'swap' | 'opt', tag, text}, for the rebuild's own markup (R4, Nov 11); null when the plan has no lane
   lineParts(pl) { const L = pl && pl._lane; if (!L) return null;
     if (L.k === 'fix') { const f = L.fixes[0], w = {clause: 'two of your Pokémon hold the same item, so the team can’t be registered; this frees it',
-        mega: `adds a Mega: teams with no Mega won about ${L.fixes[0].pts} fewer games in 100`, reach: `makes the team ready for the top threats: teams that are win about ${Math.round(LANE.PTS.reach)} more in 100`}[f.k];
+        mega: `adds a Mega: teams with no Mega won about ${L.fixes[0].pts} fewer games in 100`, reach: `answers more of the top threats (Matchups): teams that answer them win about ${Math.round(LANE.PTS.reach)} more games in 100`}[f.k];
       return {k: 'fix', tag: 'Fix', text: w}; }
     if (L.k === 'swap') return {k: 'swap', tag: 'Small edge', text: `about ${L.real} more win${L.real === 1 ? "" : "s"} in 100 games in real play`};
     const note = pl.gap && ((pl.gap.fix && pl.gap.fix.length) || (pl.gap.why || []).some(w => /^Meets the /.test(w)));
