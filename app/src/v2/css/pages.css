@@ -2061,7 +2061,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .tm-hero.mt .mt-head{grid-template-columns:minmax(0,1fr) minmax(0,48%);align-items:start}.tm-hero.mt .mt-belt .w span{text-wrap:balance;text-align:center} /* the belt never takes more than about half: a long band word wraps evenly (Sim, Nov 15 night) */.tm-hero.mt .mt-right{grid-column:1/-1}
   .tm-hero.mt .mt-belt .np-score b{font-size:var(--d64)}.mt-id .tm-name{font-size:var(--t24)}.mt-id{gap:var(--s1)}.mt-id .tm-links{margin-top:0}.tm-hero.mt{gap:var(--s4)}
   .mt-band{font-size:var(--t13);letter-spacing:.02em;column-gap:var(--s2)}.mt-band span{white-space:nowrap}
-  .mt-edit{padding:var(--s2) var(--s3);gap:var(--s2)}.tm-six.mh .sx-plan{padding:var(--s2) var(--s3)}}
+  .mt-edit{padding:var(--s2) var(--s3);gap:var(--s2)}.tm-six.mh .sx-plan{padding:var(--s3)}} /* Nov 16 (Sim's Q5, under her authority): 12px so the Game Plan link's 44px tap area fits inside the slanted panel */
 @media (max-width:399px){.mt-band span:nth-child(2){white-space:normal}}
 @media (max-width:699px){.tm-hero.mt .mt-id{display:contents}.tm-hero.mt .mt-id>*{grid-column:1/-1}.tm-hero.mt .mt-id>.fn-k,.tm-hero.mt .mt-id>.tm-name{grid-column:1}
   .tm-hero.mt .mt-id>.fn-k{grid-row:1;align-self:end}.tm-hero.mt .mt-id>.tm-name{grid-row:2;align-self:start}.tm-hero.mt .mt-belt{grid-column:2;grid-row:1/3}
