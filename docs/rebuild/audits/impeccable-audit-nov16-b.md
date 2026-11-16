@@ -4,21 +4,21 @@ Target: the artifact as published now (version 1794829960-e628, 6:52 AM; byte-id
 Evidence: impeccable detector on 25 pages x day/night x 390x844 / 820x1180 / 1440x900 (150 page scans, scratchpad/aud2/det-*.json);
 my own pixel-contrast, focus and layout measurements on the published file; the accessibility deep-pass helper (on check317, two builds
 earlier; its top items re-verified on check319, marked below); this morning's stress reports (perf, visual, words) where noted.
-The speed helper is still running; Performance is scored from this morning's measured stress run.
+Performance: the speed deep-pass helper (check317, same code paths; docs/rebuild/audits/perf-deep-nov16.md), added after first delivery.
 
 ## Audit Health Score
 
 | # | Dimension | Score | Key Finding |
 |---|-----------|-------|-------------|
 | 1 | Accessibility | 2 | Keyboard focus ring is invisible on every slanted control (buttons, tabs, chips, team cards, calc): 0 pixels change when focused. Verified on the published page |
-| 2 | Performance | 3 | No route over its limit; one ~1.2 s startup task on a 4x-slow CPU (the Preview's built-in data) |
+| 2 | Performance | 2 | On a mid-range phone (4x slower CPU) My Team keeps the phone busy ~13 s after a first visit (a background checklist job); common taps 250-400 ms; Slow 4G shows a blank page ~8 s |
 | 3 | Theming | 3 | Colours come from tokens (49 raw rgb() outside tokens.css, mostly shadows); night "113" chip count at 80% opacity is 3.9:1 |
 | 4 | Responsive Design | 3 | Count abilities "Yes" cut off at 567-575; text-spacing test clips 4 spots; small print runs ~110-120 characters per line at 820 |
 | 5 | Implementation Integrity | 3 | Coherent, product-specific system; How We Calculate glues text together ("replaysThe newest…", "leads.Used for") |
-| **Total** | | **14/20** | **Good** |
+| **Total** | | **13/20** | **Acceptable** |
 
-Morning score was 15/20. The drop is new evidence, not a regression: the accessibility deep pass finished after the morning audit and
-found the focus-ring problem, which was already there.
+Morning score was 15/20. The drop is new evidence, not a regression: the accessibility and speed deep passes finished after the
+morning audit and found problems that were already there (first delivered as 14/20 before the speed report arrived).
 
 ## Implementation Integrity Verdict
 Pass. The site reads as one designed product: slanted Unbounded headlines, the boxy slanted shapes, bold colour fields and the sprite
@@ -27,8 +27,8 @@ art are consistent across all 25 pages, and colours come from tokens. The detect
 decisions): the brief wins, so they are not defects. Verified real: the glued text on How We Calculate.
 
 ## Executive Summary
-- Audit Health Score: **14/20 (Good)**
-- Issues: P0 1 · P1 9 · P2 6 · P3 3
+- Audit Health Score: **13/20 (Acceptable)**
+- Issues: P0 1 · P1 12 · P2 11 · P3 3
 - Top issues: (1) invisible keyboard focus on slanted controls; (2) calc table row headers empty at phone width; (3) every page has the
   same browser title; (4) glued text on How We Calculate; (5) Track chart amber/green lines too faint
 - Next: fix P0 first (one shared fix covers every slanted control), then the P1s one at a time
@@ -53,7 +53,16 @@ decisions): the brief wins, so they are not defects. Verified real: the glued te
 - **Visible label not in name:** calc KO board buttons show "KO" but are named by the matchup; "Copy for Showdown" split in Saved Teams. WCAG 2.5.3 (helper, check317). /impeccable clarify
 - **Night Events chip count "113" 3.9:1** (13px at 80% opacity on the selected chip). WCAG 1.4.3. Verified (opacity 0.8 measured). /impeccable colorize
 
+- **[P1] My Team: ~13 s of background work on a mid-range phone after the first visit** (72 long tasks, longest 378 ms; taps delayed up to 788 ms). Cause: the checklist-claims job (app/src/app/06-helpers.js ckWinRefresh) checks its time budget only between teams; it reruns every data day. Fix: compute those rates in the daily data job, or yield inside each team. Helper, CPU profile. /impeccable optimize
+- **[P1] Common taps 250-400 ms at 4x** (Meta Find per keystroke 360, Remove 384, Apply 352). Cause: every change redraws the whole shell and forces a full layout (scrollTo); the Find box has no debounce. Helper, trace. /impeccable optimize
+- **[P1] Slow networks: blank page ~8 s on Slow 4G (gzip), ~23 s if the host doesn't compress.** One 3.9 MB page; #app empty until the 2.2 MB script runs; data script before the CSS. Helper. Unsure whether the artifact host compresses. A static first screen would be a design change (needs Sim). /impeccable optimize
+
 ### P2
+- Meta desktop layout shift 0.110 on first load when the fonts arrive (no font preload, no matched fallback) (helper). /impeccable optimize
+- A redraw ~0.7 s after load inserts the data note and shifts the page 24 px (Preview) (helper). /impeccable optimize
+- Night sprite glow still on for mouse screens on 9 pages (calc 196, events 169 elements), against the Nov 9 smooth-scroll rule; frames held at 16.7 ms headless, so unsure Sim feels it. A visual change, needs Sim (helper). /impeccable optimize
+- Sprites ~5x heavier than shown (384 px files shown at 28-64 px; calc 3.75 MB of images on a first phone visit) (helper). /impeccable optimize
+- Memory: My Team adds 52 MB; heap still creeping 0.3 MB per loop (likely the 50,000-entry duel cache; unverified) (helper). /impeccable optimize
 - Slider (`.np-slide`) focus shows only two thin edges (helper). /impeccable harden
 - Tournaments search list: no arrow-key movement, Escape leaves it "expanded" (helper). /impeccable harden
 - Import a Team from Home: closing the sheet leaves you on My Team, focus not back on Home (helper). /impeccable harden
@@ -89,7 +98,7 @@ decisions): the brief wins, so they are not defects. Verified real: the glued te
 - 16 dialogs: labelled, modal, focus kept inside, Escape returns to the opener; skip link, focus to H1 on page change; no keyboard traps.
 - Reduced motion stops every animation; 320px has no page-level side scroll; no target under 24px.
 - Colour system: tokens everywhere, a complete night mode, ticket and tile text all above 4.5:1 after this morning's fixes.
-- No route over its speed limit; scrolling smooth on the measured pages.
+- Scrolling stays at 16.7 ms frames (wheel and touch); sheets open with 0 layout shift; garbage storage, blocked storage and a page that throws all recover cleanly.
 
 ## Recommended Actions
 1. **[P0] `/impeccable harden`**: visible focus on every slanted control (one shared fix).
@@ -97,5 +106,6 @@ decisions): the brief wins, so they are not defects. Verified real: the glued te
 3. **[P1] `/impeccable clarify`**: How We Calculate glued text; KO and Copy for Showdown names start with their visible words.
 4. **[P1] `/impeccable colorize`**: Track chart amber/green lines to 3:1+, night chip count to 4.5:1.
 5. **[P1] `/impeccable adapt`**: Count abilities at 567-575; the four text-spacing clips.
-6. **[P2] `/impeccable typeset`**: line length of small print at tablet width.
-7. **`/impeccable polish`**: final pass.
+6. **[P1] `/impeccable optimize`**: My Team background job, whole-shell redraws and Find debounce, then font preload and smaller sprites.
+7. **[P2] `/impeccable typeset`**: line length of small print at tablet width.
+8. **`/impeccable polish`**: final pass.
