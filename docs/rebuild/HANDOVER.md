@@ -7,6 +7,17 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Nov 16, 1:26 PM Eastern by the clock; executive authority until 8 PM)
+- LOGO, Sim 12:52 PM (overrides the older "imp alone below 414" in the backstop prompts): the FULL wordmark on phones too, smaller is fine;
+  the imp is for the browser tab / icons. Built: below 414 the wordmark sized to the room beside the tools (20px at 320, 28px from 390), uses
+  Forward's spot while Forward is hidden (commit 2918a09; Preview v187).
+- Preview v187 (1:00 PM). Since then on the branch (tests running, then the next Preview): This Week counts, Search names vs type pills,
+  suggestion grammar ('teams that are win'), Calc Terrain value, 44px tap areas for every action link, How We Calculate Track banner on phones,
+  Archetypes ranks. Fresh-eyes audit of v186: 14/20, findings handled one by one (decisions.md).
+- Waiting on Sim (pictures sent 1:26 PM): Q1 keep centred lone tiles (rec. A), Q2 footer links (rec. A keep), Q3 Winning Teams small card names (rec. A keep).
+- Sim's after-4 PM sheet: docs/rebuild/test-runs/sim-nov16-after4.md. Parked ideas list for Sim: docs/rebuild/parked-ideas-nov16.md.
+- Lesson: before/after layout checks must load a team (the My Team header regression was invisible with no team).
+
 ## NOW (Nov 16, written time: 3:53 AM (3:53:41)  date: Mon Nov 16, 2026 by the clock; FULL authority until 10:00 AM; summary 9:40 AM; then STOPPED + HANDOVER + phone note + delete backstops trig_01P8wwfASshsPdbcFcM3qNMv, trig_012D8AdnvLFxfYqeBtDUoc7o)
 - Branch claude/design6, last commits ac15b13 (nuclear stress test fixes) and 9505d07 (log). GitHub checks all pass on ac15b13 (fields-audit can't run here).
 - Nuclear stress test done (started 2:09 AM): four helper reports in docs/rebuild/audits/stress-{words,a11y,perf,visual,func}-nov16.md, each item with a status.
