@@ -187,3 +187,6 @@
    still visible; was 3 rows, 253px. The Types picker still opens full width under the row. */
 @media (max-width:699px){.gs-ctl .ra-filt{display:flex;flex-wrap:nowrap;gap:var(--s2);overflow-x:auto;overscroll-behavior-x:contain;margin-inline:calc(var(--gut) * -1);padding-inline:var(--gut);scroll-padding-inline:var(--gut);scrollbar-width:none}.gs-ctl .ra-filt>*{flex:0 0 auto}}
 @media (max-width:699px){.gs-ctl .ra-filt>*{min-width:56px;justify-content:center}} /* "All" stays a 44px+ tap in the swipe row */
+/* Base Stats labels (Nov 16, a11y helper: Defense amber 2.98:1, HP/Atk/Spe ~4.4 in day mode): the stat name is its colour mixed toward
+   ink for reading; the bar keeps the bright stat colour. Night keeps the bright colour (it reads well on the dark panel). */
+:root:not([data-theme="night"]) .pk-bsr dt{color:color-mix(in srgb,var(--c) 62%,var(--ink))}
