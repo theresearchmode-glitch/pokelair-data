@@ -45,6 +45,9 @@ Fixed tonight (each measured before and after, logged in decisions.md):
 - Words: the footer and Events count days the same way ("6 days"); "Nothing to fix" no longer sits beside "1 fix" ("1 idea"); "1st place, 9-1" for
   screen readers.
 - Accessibility: no heading skips (2 -> 0); Search says "3 results" instead of re-reading the list; 0 unnamed buttons with every fold open.
+- Final re-check on the published Preview v181 (all 23 pages, 320 / 390 / 768 / 1024 / 1440, day and night): 0 findings on 20 pages; Calc, Type Chart
+  and Guide show only their known false alarms (same counts before tonight's changes). Tests: My Team 138/0, Battle 83/0, Build and Meta only
+  their known old-site failures (none new). Every check GitHub runs passes (fields-audit can't run in this container).
 
 ## Still open for you (each with a reason)
 - Damage Calc vs My Team for YOUR Pokémon (stress test B5): the calc gives your Mega Charizard Y Timid "estimated spread"; My Team shows Modest with
