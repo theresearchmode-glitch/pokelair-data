@@ -123,7 +123,13 @@ V2.dcDetails = (C) => { const E = V2.esc, {A, D, mv, r} = C; let notes = [], nc 
 
 // each Pokemon fits the room its Card actually has: below the ATTACKER / DEFENDER label and at least 8 px above its name (a Mega's blue
 // "Mega" line counts as part of the name), whatever the card's size or the name's length (Sim's brief 1: clear space under the feet)
-V2.dcFit = () => { for (const pc of document.querySelectorAll('.dc2-pc')) { const card = pc.querySelector('.ms-card'), mon = pc.querySelector('.mc-mon'), lab = pc.querySelector('.dc2-role'), h2 = pc.querySelector('.mc-id h2');
+V2.dcFit = () => { /* Nov 16 audit: a long name (Paldean Tauros (Combat)) took the sprite's room and the sprite shrank to a thumbnail under the label; both cards now grow by the same amount so the sprite keeps at least 64px and the two stay level */
+  const pcs = [...document.querySelectorAll('.dc2-pc')]; let extra = 0;
+  pcs.forEach(pc => { const card = pc.querySelector('.ms-card'); if (card) card.style.removeProperty('--ch'); });
+  pcs.forEach(pc => { const card = pc.querySelector('.ms-card'), lab = pc.querySelector('.dc2-role'), h2 = pc.querySelector('.mc-id h2'); if (!card || !lab || !h2) return;
+    const c = card.getBoundingClientRect(), room = (h2.getBoundingClientRect().top - c.top - 13) - (lab.getBoundingClientRect().bottom - c.top + 2); extra = Math.max(extra, Math.ceil(64 - room)); });
+  if (extra > 0) pcs.forEach(pc => { const card = pc.querySelector('.ms-card'); if (card) card.style.setProperty('--ch', (card.offsetHeight + extra) + 'px'); });
+  for (const pc of pcs) { const card = pc.querySelector('.ms-card'), mon = pc.querySelector('.mc-mon'), lab = pc.querySelector('.dc2-role'), h2 = pc.querySelector('.mc-id h2');
     if (!card || !mon || !lab || !h2) continue; const nm = mon.querySelector('.np-mon'), st = mon.querySelector('.np-mon .st'); [nm, st].forEach(e => e && e.style.removeProperty('--iw')); mon.style.top = '';
     const c = card.getBoundingClientRect(), top = lab.getBoundingClientRect().bottom - c.top + 2, bottom = h2.getBoundingClientRect().top - c.top - 13;
     const room = Math.floor(Math.min(bottom - top, c.width - 16)), want = parseFloat(getComputedStyle(mon.querySelector('.np-mon') || mon).getPropertyValue('--iw')) || room;
