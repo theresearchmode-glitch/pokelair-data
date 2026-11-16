@@ -3,7 +3,7 @@
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
 The Nov 11 handover is kept below as history; where they disagree, this section is newer.
 
-## AUTHORITY (Sim, ~10 PM Sun Nov 15; EXTENDED 6:23 AM Mon to 6:00 PM Mon Nov 16; summary 5:40 PM): FULL authority until 6:00 PM Mon Nov 16 (was 10:00 AM); take the outside reviews' advice even against her earlier
+## AUTHORITY (Sim; EXTENDED 6:45 AM Mon to 4:00 PM WED Nov 18, unlimited usage, any helpers/skills/subagents, 'pristine'; summary 3:40 PM Wed): FULL authority until 4:00 PM Wed Nov 18; take the outside reviews' advice even against her earlier
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
