@@ -148,3 +148,10 @@
 .dc2-tok button[aria-pressed="true"]{background:var(--plate);color:var(--on-plate)}
 :root[data-theme="night"] .dc2-tok button[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
 @media (max-width:439px){.dc2-tok{grid-template-columns:minmax(0,1.2fr) repeat(4,minmax(0,1fr))}}@media (max-width:399px){.dc2-tok{gap:2px}.dc2-tok button{padding:0 4px;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}} /* narrow phones: "Hits both" keeps clear of the slant */
+/* ONE segmented control (Nov 16, one system item 4): Meta's link segments (Ratings / Usage / Sets; Winning Teams / Events / Archetypes)
+   take the shell switch's look: flush track, 10px slant, 44px, the lit plate for the page you're on */
+.ra-seg{padding:0;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.ra-seg a{min-height:var(--tap);padding:0 var(--s5)}
+.ra-seg a.on{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate)}
+@media (max-width:699px){.ra-seg a{padding:0 var(--s2)}} /* phones: "Popular Sets" on one line from 360 up */
+@media (max-width:699px){.ra-seg{display:flex}.ra-seg a{flex:1 1 auto;min-width:min-content;text-align:center}} /* phones: columns size to their words, so one-word "Archetypes" is never cut; two-word names wrap */
