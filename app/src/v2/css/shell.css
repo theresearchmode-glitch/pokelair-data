@@ -84,3 +84,10 @@ html,body{overflow-x:clip}
 @media (min-width:480px) and (max-width:699px){.np-head .np-lg img{height:32px}}
 @media (max-width:413px){.np-head .np-lg img{height:32px}}
 .np-head .logo{flex:none}
+/* Footer with the new logo (Nov 16): the Sly Devil logo is about 2.4x as wide as the old one, which pushed the links under the text at 1280
+   (an empty left half). From 1100 the logo sits above the tagline in the left column (as on phones) and the links keep the right side;
+   700-1099 the links sit under the text, as before. Clear space under the logo is at least the imp's head (brief), 16px */
+.np-foot img.np-lg{margin-bottom:var(--s4)}
+@media (min-width:700px){.np-foot{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"lg" "tx" "nav";row-gap:0;align-items:center}
+  .np-foot>.np-lg{grid-area:lg}.np-foot>.np-ftxt{grid-area:tx}.np-foot>nav{grid-area:nav;margin:var(--s3) 0 0;justify-self:start}.np-foot>.np-fsrc{grid-column:1/-1}}
+@media (min-width:1100px){.np-foot{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"lg nav" "tx nav";column-gap:var(--s10)}.np-foot>nav{margin:0;justify-self:end}}
