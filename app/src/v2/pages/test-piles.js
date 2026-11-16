@@ -35,7 +35,7 @@ V2.tpOpen = (x, ms, top) => { const E = V2.esc, pr = x.pr, P = V2.tpPile(x.e), n
   const tools = V2.battleToolsBar('gauntlet');
   return `<div class="tr tp">${tools}${V2.trHead(rows.length)}
     <p class="tr-lede">Take a test run: the latest top tournament teams, least prepared first.</p>
-    <details class="tr-how" data-trfold><summary><span class="u">How it works</span><small>Same calcs as your Matchups, both ways</small></summary><p>Your six against real top tournament teams, with the same calcs as your Matchups: how many of their Pokémon you're ready for, and how many of yours they're ready for. A red <b class="w">!</b> marks one of theirs you have no answer to. Preparation, not a forecast: the player still decides the game.</p></details>
+    <details class="tr-how" data-trfold><summary><span class="u">How it works</span><small>Same calcs as your Matchups, both ways</small></summary><p>Your six against real top tournament teams, with the same calcs as your Matchups: how many of their Pokémon you have an answer for, and how many of yours they have an answer for. A red <b class="w">!</b> marks one of theirs you have no answer to. Preparation, not a forecast: the player still decides the game.</p></details>
     <section class="tp-table"><div class="tp-th"><h2 class="u">Three Piles</h2><p>We dealt all ${rows.length} top teams into three piles. Work through the pink pile first. Tap a card to flip it over.</p></div>
       <div class="tp-piles">${pile('p', 'The Problems', "they're better prepared")}${pile('c', 'The Coin Flips', 'about even')}${pile('g', 'The Good Matchups', "you're better prepared")}</div></section>
     <p class="fine tr-foot">Real damage calcs, least prepared matchups first ${V2.tip('gauntcalc')}</p></div>`; }; })();

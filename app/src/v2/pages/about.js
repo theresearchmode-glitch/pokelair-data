@@ -13,7 +13,7 @@ V2.ABT_SAVED = [
   ['Fonts', "NastyPlot's own files", 'Fonts load from NastyPlot itself, so no font service sees a request from your device.']];
 V2.ABT_TITLE = {what: 'What NastyPlot Is', disc: 'Disclaimer & Trademarks', data: 'Where the Data Comes From', warr: 'No Guarantee', names: 'Player Names', contact: 'Removal & Contact', free: 'Not for Money'};
 V2.pages.about = {place: '', draw() { const E = V2.esc, want = ((location.hash || '').split('=')[1] || '');
-  const parts = (typeof ABT_PARTS === 'function' ? ABT_PARTS('') : []).filter(p => p[0] !== 'priv');
+  const parts = (typeof ABT_PARTS === 'function' ? ABT_PARTS('') : []).filter(p => p[0] !== 'priv').map(p => p.map(x => typeof x === 'string' ? x.split("which threats you're ready for").join('which threats you have an answer for') : x)); /* word list (Nov 16): Matchups is about answers, not readiness */
   if (want) setTimeout(() => { const d = document.getElementById('abt-' + want); if (d) d.scrollIntoView({block: 'start'}); }, 60);
   const rows = parts.map(([k, , , sub, body]) => `<details class="inf-row" id="abt-${k}"${want === k ? ' open' : ''}><summary><b>${E(V2.ABT_TITLE[k] || k)}</b><span>${sub}</span></summary><div class="inf-fine">${V2.wl(body).replace(/class="chghost abtshow"/, 'class="np-link"').replace(/>Show email</, '>Show Email<')}</div></details>`).join('');
   const saved = V2.ABT_SAVED.map(([a, b, full]) => `<li><p class="inf-rc"><b>${E(a)}</b><i aria-hidden="true"></i><span>${E(b)}</span></p><p class="fine">${E(full)}</p></li>`).join('');
