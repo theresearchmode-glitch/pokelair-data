@@ -323,18 +323,20 @@ V2.checkShared = () => { let raw = ''; try { raw = location.hash || ''; } catch 
 V2.openShared = x => { loadShared(x); V2.closeSheet(true); V2.ui.sel = 0; if (!/^#team/.test(location.hash)) location.hash = '#team'; render(); toast(`Loaded ${x.n ? '“' + x.n + '”' : 'a shared team'} (${x.slots.length} Pokémon)`, true); };
 
 // ---------- Import and Clear Team (R4, Nov 11): today's importPaste and clearTeam, same messages ----------
-V2.openImport = () => {
+V2.openImport = (o = {}) => { let done = false;
   V2.sheet(`<div class="imp2"><div class="np-eyebrow">Import</div><h2 class="u">Paste a Team</h2>
     <p class="tm-sub">A Showdown team or a NastyPlot team link. Undo brings yours back.</p>
     <textarea class="imp2-in" data-impin rows="9" spellcheck="false" autocomplete="off" aria-label="Paste a Showdown team to import" placeholder="Paste here: a team from Showdown, Pokémon Zone, Pikalytics or Victory Road"></textarea>
     <p class="imp2-note" data-impnote role="status" aria-live="polite"></p>
     <div class="imp2-acts"><button type="button" class="np-btn" data-impgo>Replace My Team</button><p class="fine">Pokepaste links can't be opened from here; copy the team text instead.</p></div>
-    ${typeof regNote === 'function' ? regNote('fine imp2-reg') : ''}</div>`, {label: 'Import a Team', small: true, focus: '[data-impin]'});
+    ${typeof regNote === 'function' ? regNote('fine imp2-reg') : ''}</div>`, {label: 'Import a Team', small: true, focus: '[data-impin]',
+    /* audit Nov 16 (focus order): opened from Home, closing it without importing goes back to Home with focus on its Import button */
+    onClose: swap => { if (swap || done || !o.fromHome) return; location.hash = '#home'; setTimeout(() => { const b = document.querySelector('[data-v2homeimport]'); if (b) b.focus(); }, 150); }});
   const go = document.querySelector('[data-impgo]'); if (!go) return;
   go.addEventListener('click', () => { const r = importPaste((document.querySelector('[data-impin]') || {}).value);
-    if (r.shared) { V2.openShared(r.shared); return; }
+    if (r.shared) { done = true; V2.openShared(r.shared); return; }
     if (r.error) { const n = document.querySelector('[data-impnote]'); if (n) n.textContent = r.error; return; }
-    V2.closeSheet(true); V2.ui.sel = 0; render(); toast(r.msg, true); }); };
+    done = true; V2.closeSheet(true); V2.ui.sel = 0; render(); toast(r.msg, true); }); };
 V2.clearTeam = () => { clearTeam(); V2.ui.sel = 0; render(); toast('Team cleared', true); };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2import]')) V2.openImport(); else if (e.target.closest('[data-v2clear]')) V2.clearTeam(); });
 window.addEventListener('hashchange', () => { if (/team=/.test(location.hash)) V2.checkShared(); });

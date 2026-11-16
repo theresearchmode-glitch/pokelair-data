@@ -179,4 +179,4 @@ document.addEventListener('click', async e => { const L = e.target.closest('[dat
   if (Cp) { const x = evTeam(Cp.dataset.hmcopy); if (!x) return; const r = sheetPaste(x.t.mons); toast((await V2.copy(r.text)) ? (r.filled ? 'Team copied for Showdown. ' + SD_NOTE_TOUR : 'Team copied for Showdown') : 'Copy failed. Try again.'); return; }
   if (P) { const x = evTeam(P.dataset.hmprep); if (!x) return; const ns = x.t.mons.map(m => m.n); V2.btSetOpp(ns, {who: x.t.player, label: teamWho(x.t), key: ns.slice().sort().join('|'), ev: evShort(x.ev.name)}); /* remembered in recent opponents too, today's rule (HOME-10) */ location.hash = '#battle'; toast(`Opponent set: ${teamWho(x.t)}`); } });
 // "Import from Showdown" (HOME-07): My Team with the Import box open, as today
-document.addEventListener('click', e => { if (!e.target.closest('[data-v2homeimport]')) return; location.hash = '#team'; setTimeout(() => V2.openImport(), 120); });
+document.addEventListener('click', e => { if (!e.target.closest('[data-v2homeimport]')) return; location.hash = '#team'; setTimeout(() => V2.openImport({fromHome: true}), 120); });
