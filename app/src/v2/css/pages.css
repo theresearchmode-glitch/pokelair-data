@@ -3164,3 +3164,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* 700-1099 with a long band word: name and score side by side, the buttons on their own row under them (V2.mtBeltFit; at 700 'Tournament'
    needed 188px in a 151px belt and ran into Update Team) */
 @media (min-width:700px) and (max-width:1099px){.tm-hero.mt.mt-wide .mt-head{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.tm-hero.mt.mt-wide .mt-right{grid-column:1/-1}}
+/* Home's tool list (Nov 15 night): links in even columns, 44px tall each */
+.hm-tlinks{list-style:none;margin:var(--s4) 0 0;padding:0;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0 var(--s6)}
+.hm-tlinks a{display:flex;align-items:center;gap:var(--s1);min-height:var(--tap);border-bottom:1px solid var(--rule)}
+@media (max-width:1099px){.hm-tlinks{grid-template-columns:repeat(3,minmax(0,1fr))}}@media (max-width:699px){.hm-tlinks{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s4)}}

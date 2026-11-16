@@ -116,8 +116,8 @@ export default (ui, pg, o) => {
     /** the start buttons under the tagline, as shown */
     homeStartButtons: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-go a')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
     /** the tool tiles' names (the tile's bold name, without its "›") */
-    homeTools: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-tool')].filter(e => e.getClientRects().length).map(e => { const b = e.querySelector('b'); return b ? b.childNodes[0].textContent.trim() : ''; })),
-    tapTool: name => tapFound(n => [...document.querySelectorAll('#main .hm-tool')].find(e => e.getClientRects().length && e.querySelector('b') && e.querySelector('b').childNodes[0].textContent.trim() === n) || null, name, 'tool ' + name, 700),
+    homeTools: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-tlinks a, #main .hm-tool')].filter(e => e.getClientRects().length).map(e => { const b = e.querySelector('b'); return (b ? b.childNodes[0].textContent : e.childNodes[0].textContent).trim(); })), /* Nov 15 night: the tools are links */
+    tapTool: name => tapFound(n => [...document.querySelectorAll('#main .hm-tlinks a, #main .hm-tool')].find(e => e.getClientRects().length && ((e.querySelector('b') ? e.querySelector('b').childNodes[0].textContent : e.childNodes[0].textContent).trim() === n)) || null, name, 'tool ' + name, 700),
     /** This week in the ratings, the rows on show: {name, text, label} (desktop: its own column; under 900 px: the switch's "This week") */
     ratingMoves: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-mv')].filter(e => e.getClientRects().length).map(e => ({name: e.dataset.v2mon, text: e.innerText.replace(/\s+/g, ' ').trim(), label: e.getAttribute('aria-label')}))),
     welcomeCardText: () => txt('#main .hm-welcome'),

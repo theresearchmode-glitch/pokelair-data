@@ -89,7 +89,7 @@ t('HOME-07', '"Import from Showdown" opens My Team with the Import box ready', a
 t('HOME-08', 'All 11 Tools: each card opens the page named on it', async () => {
   if (NEW) { /* new build (Home piece 4, decisions.md Nov 12, published Preview v76): "Everything NastyPlot does.", 12 tiles (today's 11
     + How We Calculate); each opens the page today's site files the tool under (32-views.js VIEW_PARENT/VIEW_ALIAS): Battle, Meta or Build */
-    const r = await homePage(); has(await r.ui.text(), /Everything NastyPlot does\. 12 tools/);
+    const r = await homePage(); has(await r.ui.text(), /Everything NastyPlot does\./); /* Nov 15 night (say it once): the tools are a list of links, no '12 tools' line */
     const B = 'matchup', M = 'meta', BU = 'auto', want = {[NEW ? 'Battle' : 'Battle Mode']: B, [NEW ? 'Winning Teams' : 'Teams']: M, 'Type Chart': B, Ratings: M, 'Damage Calc': B, Events: M, 'Test Run': B, 'Popular Sets': M, 'Speed Tiers': B, Archetypes: M, 'Winning Cores': BU, 'How We Calculate': M};
     const tools = await r.ui.homeTools(); ok(tools.length === 12, `${tools.length} tool cards: ${tools.join(', ')}`);
     for (const [name, v] of Object.entries(want)) { ok(tools.includes(name), 'no tool card ' + name); await r.ui.go('Home', 300); await r.ui.tapTool(name); const now = await r.ui.current(); ok(now === v || (v === 'auto' && now === 'build'), `${name} opened ${now}`); }
@@ -127,7 +127,7 @@ t('HOME-10', 'vs panel: your six, a lead/back/bench plan, Prep vs the Champion s
   ok((et.match(/Add a Pokémon/g) || []).length >= 6, 'empty Home team has fewer than six "+ Add a Pokémon" tiles'); await e.ui.tapText('Add your six'); ok(await e.ui.current() === 'report', '"Add your six" did not open My Team'); await e.close(); });
 
 t('HOME-11', 'Sample-team note on Home and My Team; "Import a team" opens Import', async () => {
-  const r = await aopen({fresh: true}); has(await r.ui.text(), 'This is a sample team, here to show how NastyPlot works.', 'Home');
+  const r = await aopen({fresh: true}); has(await r.ui.text(), NEW ? 'A sample team, here to show how NastyPlot works.' : 'This is a sample team, here to show how NastyPlot works.', 'Home'); /* Nov 15 night: Home's note is one line (its two links are the hero's buttons) */
   await r.ui.go('My Team', 1500); await r.ui.settle(); has(await r.ui.text(), 'This is a sample team, here to show how NastyPlot works.', 'My Team');
   has(await r.ui.text(), NEW ? /Build Me a Team/ : /Build [Yy]our [Oo]wn/); await r.ui.tapText(NEW ? 'Import a Team' : 'Import a team', 1000); /* Sim, Nov 14 naming */ const p = await r.ui.editPanel(); /* new build: the import sheet is headed "Paste a Team" (as HOME-07 / IO-01's new-build branches) */ ok(p && (NEW ? p.title === 'Paste a Team' : /Import a team/.test(p.text)), 'Import panel did not open'); await r.close(); });
 
@@ -158,6 +158,8 @@ t('HOME-14', 'Top of the Meta: 10 rated rows, Hidden gems switch changes the lis
   await r.ui.tapPokemon(gems[0].replace(/-Mega.*/, '')); ok(await r.ui.infoSheet(), 'row did not open the info sheet'); await r.ui.closeInfoSheet(); has(await r.ui.text(), (NEW ? 'All Ratings ›' : 'All ratings ›')); await r.close(); });
 
 t('HOME-15', 'More on Home fold: pairs, what changed, cores, "Log a game" → Battle; stays open after reload', async () => {
+  if (NEW) { /* Nov 15 night (say it once): More on Home's four parts live on their own pages; check each home */ const r = await aopen({team: TEAM});
+    await r.ui.go('Practice', 1500); has(await r.ui.text(), /Doubles is played in pairs/i, 'Practice'); await r.ui.go('Battle', 1200); has(await r.ui.text(), /Your Games/, 'Battle'); await r.ui.go('This Week', 1500); has(await r.ui.text(), /Rising/, 'This Week'); await r.ui.go('home', 1200); await r.ui.tapTool('Winning Cores'); await r.ui.settle(); has(await r.ui.text(), /Core/i, 'Build (via Winning Cores)'); await r.close(); return; }
   const r = await homePage(); await r.ui.openFold('More on Home'); const f = await r.ui.foldContent('More on Home');
   // new build: "Log a Game" in Title Case (decisions.md Nov 11, Title Case on buttons)
   for (const s of [/Doubles Is Played in Pairs/i, /What changed this week/i, /Rising/, /Falling/, /#\d+ → #\d+/, /Winning Cores/i, (NEW ? /All Cores ›/ : /All cores ›/), (NEW ? /Your Games/i : /Your battles/i), NEW ? /Log a Game/ : /Log a game/]) has(f, s, 'More on Home');

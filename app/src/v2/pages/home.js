@@ -25,7 +25,8 @@ V2.homeFight = () => { const E = V2.esc, ms = members(), has = ms.length > 0, n 
     : `<div class="fn-belt none"><b class="u" aria-hidden="true">?</b><div class="w"><span class="u">No score yet</span><small>Add six to get your Strength Score</small></div></div>`;
   const yours = has ? ord.map(m => fighter(m.p.n, m.heldItem || m.item || '', lead.includes(m))).join('')
     : Array.from({length: 6}, (_, i) => `<button type="button" class="ff add" data-v2search aria-label="Add a Pokémon to slot ${i + 1}"><span class="ff-plus u" aria-hidden="true">+</span><b>Add a Pokémon</b><small>slot ${i + 1}</small></button>`).join('');
-  const sample = /\(sample\)\s*$/i.test(title) ? `<p class="fine hm-sample">This is a sample team, here to show how NastyPlot works. <span class="tm-sample-acts"><a class="np-link" href="#build">Build Me a Team</a><span class="tm-sep" aria-hidden="true"> · </span><button type="button" class="np-link" data-v2homeimport>Import a Team</button></span></p>` : '';
+  // say it once (Nov 15 night): Build Me a Team and Import a Team are the hero's own buttons right above, so the note keeps one line
+  const sample = /\(sample\)\s*$/i.test(title) ? `<p class="fine hm-sample">A sample team, here to show how NastyPlot works.</p>` : '';
   const you = `<div class="fn-corner hm-you"><div class="fn-chd"><p class="fn-k">Your corner</p><p class="u fn-name">${has ? E(title) : 'Your six goes here.'}${wx ? ` <small class="fn-wx">${E(wx)}</small>` : ''}</p>${sample}</div><div class="fn-six">${yours}</div><p class="fn-cacts">${has ? '<a class="np-link" href="#team">Open My Team ›</a>' : '<a class="np-link" href="#meta" data-hmwelcome>Copy a Top Team ›</a>'}</p></div>`;
   let them = '';
   if (C) { const {ev, t} = C, key = ev.id + '#' + ev.top.indexOf(t), sure = V2.hmUi.sure === key;
@@ -95,12 +96,22 @@ V2.HOME_TOOLS = [['Battle', 'Their six in, your four, the leads and turn 1 out',
   ['Test Run', 'Run your team into the top 20 tournament teams', 'battle'], ['Popular Sets', 'Moves, items and natures players run', 'meta'],
   ['Speed Tiers', 'Who moves first, with Tailwind and Trick Room', 'battle'], ['Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', 'meta'],
   ['Winning Cores', 'Pairs and trios that win the most', 'build'], ['How We Calculate', 'Where every number comes from', 'meta']];
-V2.homeTools = () => `<section class="fn-tools hm-tools"><p class="fn-k">The full card</p><h2 class="u">Everything NastyPlot does.</h2><p class="hm-sub">${V2.HOME_TOOLS.length} tools, one tap each</p>
-  <div class="fn-tg">${V2.HOME_TOOLS.map(([n, d, to]) => `<a class="hm-tool" href="#${to}"><b class="u">${V2.esc(n)}</b><span>${V2.esc(d)}</span></a>`).join('')}</div></section>`;
+// Say it once (Nov 15 night, design review A/E): the 12 big tool tiles repeated the menu; now a compact list of links (each tool's line
+// stays as its hover title and spoken label), so Home is shorter and nothing is lost
+V2.homeTools = () => `<section class="fn-tools hm-tools"><p class="fn-k">The full card</p><h2 class="u">Everything NastyPlot does.</h2>
+  <ul class="hm-tlinks">${V2.HOME_TOOLS.map(([n, d, to]) => `<li><a class="np-link" href="#${to}" title="${V2.esc(d)}" aria-label="${V2.esc(n)}: ${V2.esc(d)}">${V2.esc(n)} <span aria-hidden="true">›</span></a></li>`).join('')}</ul></section>`;
 // Home piece 5 (mock-up R2): the More on Home fold, closed by default, with today's four parts and words (60-concept-h.js):
 // Doubles is played in pairs (homePairs), What changed this week (homeTrendData), Winning cores (RES.cores) and Your battles
 // (logStats on S.log), then the ratings' source line. Data helpers shared in 05-home-data.js (today's Home proven unchanged).
 V2.hmUi.more = (() => { try { return localStorage.getItem('np2.fold.homemore') === '1'; } catch (e) { return false; } })();
+// Say it once (Nov 15 night): 'Doubles is played in pairs' (the pairs most brought together, from real replays) moved from Home's
+// More on Home fold to Team Preview Practice, the page about choosing what to bring (same markup and numbers)
+V2.pairsHtml = () => { const E = V2.esc, img = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''; };
+  const games = RES && RES.tc && RES.tc.games, pairs = homePairs(CH.metaSix(), 4);
+  const pr = pairs.length >= 2 ? `<div class="hm-mp"><p class="np-eyebrow">Team preview · Showdown replays${games ? ` · ${homeNum(games)} games` : ''}</p><h3 class="u">Doubles is played in <span>pairs.</span></h3>
+    <div class="hm-pairs">${pairs.map(x => `<button type="button" class="hm-pair" data-v2mon="${E(x.b.n)}" aria-label="${E(x.a.d)} and ${E(x.b.d)}: brought together ${x.pct}%"><span class="hm-pi">${img(x.a.n)}${img(x.b.n)}</span><span><b class="hm-pp">${x.pct}<span class="unit">%</span></b><span class="hm-pn">${V2.rowName(x.a.d)} + ${V2.rowName(x.b.d)}</span><small>${homeNum(x.g)} games</small></span></button>`).join('')}</div>
+    <p class="hm-hint">% = how often the pair is brought together when both are on the team.</p></div>` : '';
+  return pr; };
 V2.homeMore = () => { const E = V2.esc, img = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''; };
   const games = RES && RES.tc && RES.tc.games, pairs = homePairs(CH.metaSix(), 4);
   const pr = pairs.length >= 2 ? `<div class="hm-mp"><p class="np-eyebrow">Team preview · Showdown replays${games ? ` · ${homeNum(games)} games` : ''}</p><h3 class="u">Doubles is played in <span>pairs.</span></h3>
@@ -156,7 +167,7 @@ V2.fitUsed = () => { const steps = ['--t34', '--t28', '--t26', '--t24', '--t22',
     b.style.hyphens = 'auto'; }); };
 addEventListener('resize', () => { if (V2.route() === 'home') requestAnimationFrame(V2.fitUsed); });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (V2.route && V2.route() === 'home') V2.fitUsed(); });
-V2.pages.home = {place: 'home', draw() { return `<div class="hm2 fn">${V2.homeFight()}${V2.homeNew()}${V2.homeWelcome()}${V2.homeRing()}${V2.homeMeta()}${V2.homeTools()}${V2.homeMore()}</div>`; }, after() { V2.fitUsed(); }};
+V2.pages.home = {place: 'home', draw() { return `<div class="hm2 fn">${V2.homeFight()}${V2.homeNew()}${V2.homeWelcome()}${V2.homeRing()}${V2.homeMeta()}${V2.homeTools()}</div>`; } /* say it once (Nov 15 night): More on Home's four parts live on their own pages (pairs -> Practice, What Changed -> This Week, Cores -> Build, Your Games -> Battle) */, after() { V2.fitUsed(); }};
 // Load this team (HOME-09): with a team of your own, the first tap asks ("Tap again"); the second loads it with Undo (today's loadSheet)
 // Sim Q10c (Nov 15): one replace-team confirmation everywhere, the same question and buttons as Winning Teams' cards and Events
 V2.hmSure = k => `<div class="wt-acts wt-sure" role="group" aria-label="Load this team"><span class="wt-q">Replace your current team?</span><button type="button" class="np-btn" data-hmload="${V2.esc(k)}"><span>Replace</span></button><button type="button" class="np-btn2" data-hmx><span>Cancel</span></button></div>`;
