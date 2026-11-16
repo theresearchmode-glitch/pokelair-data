@@ -3224,3 +3224,11 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sg-logo{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--s6);align-items:end}
 .sg-logo figure{display:grid;gap:var(--s2);margin:0}.sg-logo img{display:block;width:auto;max-width:100%}.sg-logo figcaption{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .sg-logo{margin-bottom:var(--s8)}.sg-logo~.swatches+.fine{max-width:72ch}
+/* Sim's standing rule (Nov 9; Q-B, Nov 16 "yes go for it"): sprite glow off on mouse screens except feature sprites, for smooth scrolling.
+   Nov 14 did it for Meta's stand only; now every page: small and mid sprites (grids, tickets' fives, team rows) draw without the drop-shadow
+   rim and blurred pool; flagged feature sprites (.ft/.sel) and the big showpieces (event and This Week heroes, spotlights, Usage art,
+   Home's usage art; 120px+) keep theirs. Touch screens are unchanged */
+@media (hover:hover) and (pointer:fine){
+  .np-mon:not(.ft,.sel):not(:is(.tk-hero,.wk-hmon,.wk-fr,.gs-plate,.us-art,.hm-used) *) img,
+  :root[data-theme="night"] .np-mon:not(.ft,.sel):not(:is(.tk-hero,.wk-hmon,.wk-fr,.gs-plate,.us-art,.hm-used) *) img{filter:none}
+  :root[data-theme="night"] .np-mon:not(.ft,.sel):not(:is(.tk-hero,.wk-hmon,.wk-fr,.gs-plate,.us-art,.hm-used) *) .pool{filter:none}}
