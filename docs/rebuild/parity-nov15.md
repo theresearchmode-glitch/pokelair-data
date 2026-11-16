@@ -47,3 +47,10 @@ Still open (genuine gaps, in this order):
 3. All Suggestions has no pool switch of its own (BUILD-04, COV-03/06) and its sheet design (Bigger Plans fold, notes, Undo bar) is waiting on Sim.
 4. Plan settings: Count abilities, Refresh plans (AUTO-03/04, BUILD-07, SUGG-02); Never suggest now done.
 5. A core's "% of all teams" only as a hover title (touch can't see it).
+
+## Update (time: 7:53 PM (7:53:45)  date: Sun Nov 15, 2026)
+Done: 1 Fix your items first (01052de), 2 Set check tips (d8fc13a); plus the parity audit's finds: stale-data and new-regulation note back
+(one line on Home and Meta), saved Day/Night from today's site carries over, rules caption on the items card, Usage sources in today's order.
+Theme: "go back to following the device" now happens on its own while nothing is saved (B11); a saved choice still sticks.
+Still open, each a design choice for Sim (pictures in the morning summary): 3 All Suggestions sheet + pool switch; 4 Plan settings
+(Count abilities, Refresh plans): where they live; 5 a core's "% of all teams" for touch screens (today a hover title).
