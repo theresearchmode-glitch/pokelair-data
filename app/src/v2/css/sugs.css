@@ -228,6 +228,10 @@
 /* nuclear stress test (Nov 16): This Week's five Most Used tiles were meant to sit 3 + 2 on phones, but the 4px column gap pushed three
    33.3% tiles past the row, so they fell 2 + 2 + 1 with the fifth alone; no column gap (the tiles' own padding spaces them) */
 @media (max-width:429px){.wk-top ul{column-gap:0}}
+/* Sim, Nov 16 morning (her iPhone, a team scoring 86): the score plate grew with "Tournament ready" and pushed "Set as Opponent" over it and off
+   the edge at 360-393, and squeezed it to 16px at 320-340 (the overnight checks only used the sample's "Top tier"); with a long band word
+   (home.js marks it .long) the button takes its own row under the plate on phones; short words keep the plate and button side by side */
+@media (max-width:499px){.fn-mid:has(.fn-belt.long){grid-template-columns:minmax(0,1fr);justify-items:center;row-gap:var(--s3)}.fn-mid:has(.fn-belt.long) .fn-prep{width:auto;max-width:100%}}
 /* nuclear stress test (Nov 16): a link's "›" could wrap alone onto its own line (3 found over 23 pages at 320/360/768); links and buttons
    avoid a lone last word (measured 3 -> 1), and the editing panel's short "Pokémon Page ›" stays on one line (-> 0). Text unchanged. */
 a,button,summary{text-wrap:pretty}.sx-info{white-space:nowrap}

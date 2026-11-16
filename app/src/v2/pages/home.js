@@ -21,8 +21,8 @@ V2.homeFight = () => { const E = V2.esc, ms = members(), has = ms.length > 0, n 
   let G = null; try { const RD = has ? prepOf(ms) : null; G = RD ? CH.gradeOf(RD, proChecks(ms, true), ms) : null; } catch (e) {}
   const band = G ? ({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[G.band] || 'solid' : 'solid';
   let wx = ''; try { const k = has ? wxKeyOf(ms) : null; if (k) wx = wxName(k); } catch (e) {} // today's weather word (HOME-16)
-  const belt = s != null && G ? `<div class="np-score fn-belt" style="--bd:var(--band-${band})"><b class="u">${s}</b><div class="w"><span class="u">${E(CH.wordOf(G.s))}</span><small>Strength Score</small></div></div>`
-    : `<div class="fn-belt none"><b class="u" aria-hidden="true">?</b><div class="w"><span class="u">No score yet</span><small>Add six to get your Strength Score</small></div></div>`;
+  const belt = s != null && G ? `<div class="np-score fn-belt${CH.wordOf(G.s).length >= 10 ? ' long' : ''}" style="--bd:var(--band-${band})"><b class="u">${s}</b><div class="w"><span class="u">${E(CH.wordOf(G.s))}</span><small>Strength Score</small></div></div>`
+    : `<div class="fn-belt none long"><b class="u" aria-hidden="true">?</b><div class="w"><span class="u">No score yet</span><small>Add six to get your Strength Score</small></div></div>`;
   const yours = has ? ord.map(m => fighter(m.p.n, m.heldItem || m.item || '', lead.includes(m))).join('')
     : Array.from({length: 6}, (_, i) => `<button type="button" class="ff add" data-v2search aria-label="Add a Pokémon to slot ${i + 1}"><span class="ff-plus u" aria-hidden="true">+</span><b>Add a Pokémon</b><small>slot ${i + 1}</small></button>`).join('');
   // say it once (Nov 15 night): Build Me a Team and Import a Team are the hero's own buttons right above, so the note keeps one line
