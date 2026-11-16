@@ -2,7 +2,7 @@
 // Pages register themselves in V2.pages; the shell draws the frame and the current page from location.hash (#home, #team...).
 // Art: one place for every Pokémon picture (V2.art), so the art can be swapped in one line (ownership rule, Nov 11).
 const V2 = window.V2 = {pages: {}, ART_BASE: window.NP_ART || 'art/'};
-V2.art = id => V2.ART_BASE + id + '.webp';
+V2.art = id => id == null || id === '' ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' : V2.ART_BASE + id + '.webp'; /* code review C8: a Pokémon with no picture asked for v2art/undefined.webp; now a blank 1px image */
 V2.esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m]);
 V2.LS = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
 // the five places, in the order players use them (Sim, Nov 11: Home is in the menu)
@@ -33,11 +33,14 @@ V2.ICON = {fwd: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path
   sun: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7 7 17M17 7l1.7-1.7"/></g></svg>',
   moon: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>'};
 // one toast at a time, always just above the team dock and the phone bar (whichever is higher on screen)
+// smooth scrolling only when the device doesn't ask for reduced motion (code review C7: eight scrolls ignored it)
+V2.smooth = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'; } catch (e) { return 'auto'; } };
 V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach(x => x.remove());
   const t = document.createElement('div'); t.className = 'np-toast'; t.setAttribute('role', 'status'); t.innerHTML = html; document.body.append(t);
   const tops = [...document.querySelectorAll('.np-dock,.np-bar')].map(e => e.getBoundingClientRect()).filter(r => r.height && r.top < innerHeight).map(r => r.top);
   if (tops.length) t.style.setProperty('--tb', (innerHeight - Math.min(...tops) + 12) + 'px'); // a custom property, so an open sheet can still move it (components.css)
-  clearTimeout(V2._tt); V2._tt = setTimeout(() => t.remove(), ms); return t; };
+  // code review B9b: a toast stays while it has keyboard focus or the pointer (its Undo was gone after 4 s even mid-reach)
+  const gone = () => { if (t.matches(':focus-within,:hover')) { V2._tt = setTimeout(gone, 1000); return; } t.remove(); }; clearTimeout(V2._tt); V2._tt = setTimeout(gone, ms); return t; };
 // ---------- phones: keep an open sheet above the on-screen keyboard (Sim, Nov 11: the keyboard covered Save Team) ----------
 // iOS draws the keyboard over fixed elements; visualViewport says how much of the screen is left, so --kb lifts and shortens
 // the sheet (components.css), and the box being typed in is scrolled into view inside it.
@@ -72,11 +75,11 @@ addEventListener('popstate', () => { if (V2.hist.skip) { V2.hist.skip--; return;
 V2.sheet = (html, o = {}) => { const prev = V2._sheet, back = prev ? prev.back : document.activeElement; V2.closeSheet(true, true); V2.histOpen();
   const wrap = document.createElement('div'); wrap.className = 'np-sheetwrap';
   wrap.innerHTML = `<div class="np-scrim" data-v2close></div><div class="np-sheet${o.small ? ' sm' : ''}${o.fit ? ' fit' : ''}" role="dialog" aria-modal="true" aria-label="${V2.esc(o.label || 'Details')}" tabindex="-1"><button class="x" type="button" data-v2close aria-label="Close">✕</button>${html}</div>`;
-  document.body.append(wrap); document.documentElement.classList.add('np-locked');
+  document.body.append(wrap); document.documentElement.classList.add('np-locked'); { const app = document.getElementById('app'); if (app) app.inert = true; } /* B9e: the page behind an open sheet is inert */
   V2._sheet = {wrap, back, onClose: o.onClose};
   const first = wrap.querySelector(o.focus || '.np-sheet'); (first || wrap.querySelector('.np-sheet')).focus({preventScroll: true});
   return wrap.querySelector('.np-sheet'); };
-V2.closeSheet = (quiet, swap) => { const S = V2._sheet; if (!S) return; V2._sheet = null; S.wrap.remove(); document.documentElement.classList.remove('np-locked'); if (!swap) V2.histClose();
+V2.closeSheet = (quiet, swap) => { const S = V2._sheet; if (!S) return; V2._sheet = null; S.wrap.remove(); document.documentElement.classList.remove('np-locked'); { const app = document.getElementById('app'); if (app) app.inert = false; } if (!swap) V2.histClose();
   if (S.onClose) try { S.onClose(!!swap); } catch (e) {} /* Nov 15: onClose learns whether another sheet is replacing this one */ if (!quiet && S.back && S.back.isConnected) S.back.focus({preventScroll: true}); };
 document.addEventListener('click', e => { if (V2._sheet && e.target.closest('[data-v2close]')) V2.closeSheet(); });
 document.addEventListener('keydown', e => { const S = V2._sheet; if (!S) return;
@@ -84,7 +87,7 @@ document.addEventListener('keydown', e => { const S = V2._sheet; if (!S) return;
   // focus stays in the sheet (Sim's check, Nov 12: in the info sheet Tab left after 6 stops, because the inactive tabs, tabindex -1,
   // were counted as stops). Only controls that really take Tab count: not tabindex -1, not disabled, shown, not in a closed fold.
   if (e.key !== 'Tab') return; const shown = x => x.getClientRects().length && !x.closest('[hidden],[inert]') && !(x.closest('details:not([open])') && !(x.matches('summary') && x.parentElement.matches('details:not([open])')));
-  const f = [...S.wrap.querySelectorAll('.np-sheet :is(a[href],button,input,select,textarea,summary,[tabindex])')].filter(x => x.tabIndex >= 0 && !x.disabled && shown(x));
+  const f = [...S.wrap.querySelectorAll('.np-sheet :is(a[href],button,input,select,textarea,summary,[tabindex])'), ...document.querySelectorAll('.np-toast :is(a[href],button)')].filter(x => x.tabIndex >= 0 && !x.disabled && shown(x)); /* B9b: a toast's Undo is a stop too */
   if (!f.length) return; const i = f.indexOf(document.activeElement);
   if (i < 0) { e.preventDefault(); (e.shiftKey ? f[f.length - 1] : f[0]).focus(); return; }
   if (e.shiftKey && i === 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); } });
@@ -174,7 +177,7 @@ document.addEventListener('focusin', e => { const t = e.target; try { if (!t.mat
   const r = t.getBoundingClientRect(), hd = document.querySelector('.np-head'), bar = document.querySelector('.np-bar'), top = (hd ? hd.getBoundingClientRect().bottom : 0) + 8,
     bot = (bar && getComputedStyle(bar).display !== 'none' ? bar.getBoundingClientRect().top : innerHeight) - 8;
   if (r.top < top) scrollBy(0, r.top - top); else if (r.bottom > bot && r.height < bot - top) scrollBy(0, r.bottom - bot); });
-V2.setTheme = t => { document.documentElement.dataset.theme = t; V2.LS.set('np2.theme', t); V2.redraw(); }; // in place: focus stays on Day/Night (A5)
+V2.setTheme = t => { document.documentElement.dataset.theme = t; document.documentElement.dataset.look = t === 'night' ? 'dark' : 'light'; /* the shared share-image code reads data-look (code review C8) */ V2.LS.set('np2.theme', t); V2.redraw(); }; // in place: focus stays on Day/Night (A5)
 V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, svg = V2.theme() === 'night' ? L.hdrD : L.hdrL;
   /* the footer copy gets its own mask ids, so the two logos on one page never share an id */
   return svg ? (small ? svg.replace(/nphdr(L|D)/g, 'nphdr$1f') : svg) : '<b class="u">NastyPlot</b>'; };
@@ -231,6 +234,8 @@ V2.redraw = () => { const app = document.getElementById('app'); if (!app || !app
   const y = scrollY, act = document.activeElement, key = V2.focusKey(act), r = V2.shell(), t = document.createElement('template'); t.innerHTML = r.html;
   V2.morphKids(app, t.content); scrollTo(0, y);
   if (key && !act.isConnected) { const e = [...document.querySelectorAll('#app ' + key.sel)][Math.max(0, key.i)]; if (e) e.focus({preventScroll: true}); }
+  /* a page's after() runs after EVERY redraw, not only on entry: it must be safe to repeat (measure and lay out; anything that opens,
+     focuses or announces must guard itself to run once, as #sheet and the Pokémon page's name focus do; code review B9c) */
   if (r.P && r.P.after) try { r.P.after(); } catch (e) { console.error(e); } if (V2.fitWords) try { V2.fitWords(); } catch (e) { console.error(e); } };
 // the whole page as HTML (header, the page, footer, phone bar); V2.draw puts it in fresh, V2.redraw merges it in place
 // one page's error never blanks the whole site (audit SHELL-34; today's safe() wrapper does the same per section): the header, menus
@@ -262,7 +267,11 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
 V2.boxFrom = null;
 V2.pageName = h => { const k = String(h || '#team').replace(/^#/, '').split('=')[0]; return {home: 'Home', team: 'My Team', build: 'Build', battle: 'Battle', meta: 'Meta'}[k] || V2.placeTitle(h) || 'My Team'; };
 addEventListener('hashchange', e => { let was = ''; try { was = new URL(e.oldURL).hash; } catch (x) {} const y = V2.navStep(was);
-  if (V2.route() === 'box' && was && !/^#box\b/.test(was) && !/^#(team|box)=/.test(was)) V2.boxFrom = was; V2.draw(); scrollTo(0, y); });
+  if (V2.route() === 'box' && was && !/^#box\b/.test(was) && !/^#(team|box)=/.test(was)) V2.boxFrom = was;
+  const a = document.activeElement, used = !!(a && a !== document.body && a !== document.documentElement); V2.draw(); scrollTo(0, y);
+  // code review B9a: when the player was using the page (a link or button had focus), focus moves to the new page's heading, so
+  // keyboard and screen-reader users land on the new page instead of at the end of the document; tabindex only while focused
+  if (used && !V2._sheet) { const h = document.querySelector('#main h1') || document.getElementById('main'); if (h) { h.setAttribute('tabindex', '-1'); h.setAttribute('data-pgfocus', ''); h.focus({preventScroll: true}); h.addEventListener('blur', () => { h.removeAttribute('tabindex'); h.removeAttribute('data-pgfocus'); }, {once: true}); } } });
 
 // ---------- Back button (Sim, Nov 12: "go to where we previously were"; pressing again goes further back) ----------
 // Every page change is already one step in the browser's history (its address). Each step is marked with how deep in the site it is
@@ -306,9 +315,12 @@ document.addEventListener('click', e => { if (!(e.target.closest && e.target.clo
 // whatever the redraw put under the finger. One capture-phase listener, as today; the two per-button guards in sugs.js stay harmless.
 V2.TAP_ACT = /* today's set mapped to the new buttons (plan, absave, abuse, chrm, rec, qa, evload, abaround, clearTeam) + the audit's Use/Save/core/Load + the log's Win/Loss */
   '[data-v2plan],[data-v2plana],[data-v2qa],[data-v2rm],[data-v2fix],[data-mufix],[data-v2clear],[data-bduse],[data-bdsave],[data-bdcore],[data-hmload],[data-hmaround],[data-bdgo],[data-btlres]';
-V2._tapAt = 0;
-document.addEventListener('click', e => { const now = Date.now(); if (now - V2._tapAt < 450) { e.stopImmediatePropagation(); e.preventDefault(); return; }
-  const b = e.target && e.target.closest && e.target.closest(V2.TAP_ACT); if (b) V2._tapAt = now; }, true);
+V2._tapAt = 0; V2._tapXY = [0, 0];
+// code review B9d: only a second tap near the same spot counts as the double tap (it blocked every click on the site for 450 ms, ✕ and
+// Undo included); a keyboard Enter (no position) on the same control within 450 ms is still ignored
+document.addEventListener('click', e => { const now = Date.now(), kb = !e.detail && !e.clientX && !e.clientY;
+  if (now - V2._tapAt < 450 && (kb ? e.target === V2._tapEl : Math.hypot(e.clientX - V2._tapXY[0], e.clientY - V2._tapXY[1]) < 24)) { e.stopImmediatePropagation(); e.preventDefault(); return; }
+  const b = e.target && e.target.closest && e.target.closest(V2.TAP_ACT); if (b) { V2._tapAt = now; V2._tapXY = [e.clientX, e.clientY]; V2._tapEl = e.target; } }, true);
 // ---------- ↑/↓ through a name box's suggestions (audit JUMP-04 / X-09; today's search and name boxes have it) ----------
 // One rule for every box: ↓ from the box moves focus to the first suggestion, ↑/↓ move between them, ↑ from the first goes back to
 // the box. Focus shows the site's usual focus ring, Enter/Space picks (they are buttons and links). The add box (six.js) keeps its own.

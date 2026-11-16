@@ -1,5 +1,10 @@
 // ---------- win model (trained on real tournament games, player skill removed) + your own battle log ----------
-function modelOK(){const m=META.model;return !!(m&&m.ships&&m.mons&&Object.keys(m.mons).length)}
+// code review C8: the model is used only when its fields have the right shape (a missing or mistyped table threw deep in a page);
+// otherwise the site falls back to the check-based score, as before the model arrives. Checked once per model object.
+function modelOK(){const m=META.model;if(!(m&&m.ships&&m.mons&&typeof m.mons==='object'&&Object.keys(m.mons).length))return false;if(modelOK._m===m)return modelOK._ok;
+  const obj=x=>x&&typeof x==='object'&&!Array.isArray(x),opt=(k,f)=>m[k]==null||f(m[k]),fin=x=>typeof x==='number'&&isFinite(x);
+  const ok=!!obj(m.pairs)&&['monSd','pairSd','sets','team','ctr','dist','setRange','setFreq','eval'].every(k=>opt(k,obj))&&opt('tested',Array.isArray)&&['meanX','supK','calib','half','pairSd0'].every(k=>opt(k,fin));
+  modelOK._m=m;modelOK._ok=ok;return ok}
 function modelX(names){const m=META.model;let x=0;for(const n of names)x+=m.mons[n]||0;
   for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++){const a=names[i]<names[j]?names[i]+'|'+names[j]:names[j]+'|'+names[i];x+=m.pairs[a]||0}return x}
 // Set features (item, Ability and moves per Pokémon; Abilities as "Sneasler#Unburden" once the model ships them, Nov 8), when the model kept them: each member's usual item (or Mega Stone) and its 4 moves.

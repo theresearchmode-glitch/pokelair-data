@@ -51,5 +51,5 @@ document.addEventListener('keydown', e => { const i = e.target.closest && e.targ
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2setmon],[data-v2setsrc]'); if (!b) return; const d = b.dataset;
   if (d.v2setmon && byName.get(d.v2setmon)) { ui.setMon = d.v2setmon; try { LS.set('cc2.setMon', d.v2setmon); } catch (x) {} V2.stUi.q = ''; }
   else if (d.v2setsrc && SET_SRC[d.v2setsrc]) { ui.setSrc = d.v2setsrc; try { LS.set('cc2.setSrc', d.v2setsrc); } catch (x) {} }
-  V2.redraw(); if (d.v2setmon) { const h = document.querySelector('.st-how'); if (h && b.closest('.us-mates, .st-hits')) h.scrollIntoView({behavior: 'smooth', block: 'start'}); } });
+  V2.redraw(); if (d.v2setmon) { const h = document.querySelector('.st-how'); if (h && b.closest('.us-mates, .st-hits')) h.scrollIntoView({behavior: V2.smooth(), block: 'start'}); } });
 (() => { const band = () => innerWidth >= 700 ? 1 : 0; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (document.querySelector('.st')) V2.redraw(); }, 150); }); })();

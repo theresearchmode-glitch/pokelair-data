@@ -22,7 +22,7 @@ V2.buildHits = q => { q = String(q || '').trim().toLowerCase(); if (!q) return '
   const r = searchMon(q, 40).slice(0, 6); /* today's search (04-search.js, shared): Megas included, word-start matching (audit AUTO-05) */
   return r.length ? r.map(p => `<button type="button" class="np-hit" data-bdpick="${V2.esc(p.n)}">${SPRITE_ID[p.n] ? `<img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy">` : ''}<b>${V2.esc(p.d || p.n)}</b></button>`).join('')
     : `<p class="fine">No Pokémon called “${V2.esc(q)}”.</p>`; };
-V2.pages.build = {place: 'build', draw() { return `<div class="bd2">${V2.buildHead()}<section class="bd-result" aria-live="polite">${ui.ab && ui.ab.busy ? '<p class="fine">Building from real winning teams…</p>' : ''}</section></div>`; }};
+V2.pages.build = {place: 'build'}; // code review C2: one draw and one after, set further down (draw ~L146, wrapped by build-sheet.js; after ~L187)
 // the pool: today's rule (34-events.js): save, and rebuild if results are showing
 document.addEventListener('v2slide', e => { if (e.detail.key !== 'bdsrc') return; ui.abSrc = e.detail.value === 'all' ? 'all' : 'box'; try { LS.set('cc2.absrc', ui.abSrc); } catch (x) {} if (ui.ab && !ui.ab.busy) runAutoBuild(); V2.redraw(); });
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-bdfind]'); if (!i) return; V2.bdUi.find = i.value; const h = document.querySelector('[data-bdhits]'); if (h) h.innerHTML = V2.buildHits(i.value); });
@@ -74,9 +74,9 @@ V2.buildAnswer0 = () => { const E = V2.esc, r = ui.ab;
   return `<section class="bd-ans" style="--band:var(--band-${band})"><div class="bd-lock"><p class="np-eyebrow">${n > 1 ? `Option ${k + 1} of ${n} · ` : ''}${kind}</p><h2 class="u">${V2.dotWrap(E(t.label))}</h2>
     <div class="np-score bd-score"><b>${s}</b><div class="w"><span>${E(word)}</span><small>Strength Score</small></div></div>${G ? `${CH.pctTxt(G) ? `<p class="bd-rank">${E(CH.pctTxt(G))}</p>` : ''}${V2.buildBrk(G)}` : ''}${t.fresh ? '<p class="bd-fresh">A fresh take: built on raw power and fit instead of popularity, with at most 2 meta staples. Fewer people will have prepared for it.</p>' : ''}
     ${chips.length ? `<div class="bd-chips">${chips.map(c => `<span class="np-chip">${E(c)}</span>`).join('')}</div>` : ''}</div><div class="bd-six" style="background:${V2.buildLight(t.mons)}">${six}</div></section>${why}${acts}`; };
-V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div></div>`;
+// (code review C2: an earlier Build draw stood here; the one in use is set below)
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bduse],[data-bdsave],[data-bdcopy]'); if (!b) return; const t = abTeam('doubles'); if (!t) return;
-  if (b.hasAttribute('data-bduse')) { keepUndo(); S.format = 'doubles'; S.slots = t.mons.map(m => ({n: m.n, a: null, lock: false})); S.loadedId = null; if (typeof persist === 'function') persist(); location.hash = '#team'; toast('Using the built team. Suggestions and the game plan now describe it.', true); return; }
+  if (b.hasAttribute('data-bduse')) { keepUndo(); S.format = 'doubles'; S.slots = t.mons.map(m => ({n: m.n, a: null, lock: false})); S.loadedId = null; if (typeof clearCaches === 'function') clearCaches(); if (typeof persist === 'function') persist(); location.hash = '#team'; /* code review C6: as render() does (save + fresh caches), without redrawing the page it is leaving */ toast('Using the built team. Suggestions and the game plan now describe it.', true); return; }
   if (b.hasAttribute('data-bdsave')) { if (S.teams.length >= 10) return; const key = t.mons.map(m => m.n).sort().join('|'), dup = S.teams.find(x => x.slots.map(s => s.n).filter(Boolean).sort().join('|') === key); if (dup) { toast(`Already saved as "${dup.name}"`); return; }
     const id = 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6), name = `${t.label || 'Built team'}`.slice(0, 40); S.teams.push({id, name, slots: t.mons.map(m => ({n: m.n, a: null, lock: false})), format: 'doubles', saved: Date.now()}); if (typeof persist === 'function') persist(); toast(`Saved "${name}"`); V2.redraw(); return; }
   if (b.hasAttribute('data-bdcopy')) { const txt = slotsPaste(t.mons.map(m => ({n: m.n, a: null, lock: false}))); try { navigator.clipboard.writeText(txt).then(() => toast('Team copied for Showdown'), () => toast('Could not copy here: open Export on My Team')); } catch (x) { toast('Could not copy here: open Export on My Team'); } } });
@@ -110,10 +110,10 @@ V2.buildCores = bp => { const E = V2.esc, rows = coreRows(), wide = !!(V2.CORES_
     <div class="bd-csw">${V2.slide('bdckind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full Teams']], coreUi.kind, 'Kind of core')}${V2.slide('bdcsort', [['win', 'Top Rated'], ['use', 'Most Used']], coreUi.sort, 'Sort cores')}${V2.buildCoreFind()}</div>
     <p class="bd-hint">From ${homeNum(RES && RES.teams)} tournament teams. Average team wins ${E(winFmt(base * 100))} of games. ${coreUi.sort === 'use' ? 'Ranked by how many teams used it.' : 'Ranked by win rate, pulled toward the average.'} <button type="button" class="np-link" data-bdcwhy>How Cores Are Ranked ›</button></p>
     ${shown.length ? `<ol class="bd-clist">${shown.map(row).join('')}</ol>` : '<p class="bd-cnone">No cores match. Try another Pokémon.</p>'}${rows.length > shown.length ? `<button type="button" class="np-link bd-cmore" data-bdcmore>Show ${Math.min(step, rows.length - shown.length)} More ${kindW.replace(/\b[a-z]/g, c => c.toUpperCase())}</button>` : ''}</section>`; };
-V2.pages.build.draw = () => `<div class="bd2">${V2.buildHead()}<div class="bd-result" aria-live="polite">${V2.buildAnswer()}</div><div class="bd-lower">${V2.buildOthers() || ''}${V2.buildCores()}</div></div>`;
+// (code review C2: an earlier Build draw stood here; the one in use is set below)
 document.addEventListener('v2slide', e => { const k = e.detail.key; if (k !== 'bdckind' && k !== 'bdcsort') return; if (k === 'bdckind') coreUi.kind = e.detail.value; else coreUi.sort = e.detail.value; coreUi.more = 0; V2.redraw(); });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdshow],[data-bdcore],[data-bdcmore]'); if (!b) return;
-  if (b.dataset.bdshow != null) { ui.abIdx = ui.abIdx || {}; ui.abIdx.doubles = +b.dataset.bdshow; V2.redraw(); const a = document.querySelector('.bd-ans'); if (a) a.scrollIntoView({behavior: 'smooth', block: 'start'}); return; }
+  if (b.dataset.bdshow != null) { ui.abIdx = ui.abIdx || {}; ui.abIdx.doubles = +b.dataset.bdshow; V2.redraw(); const a = document.querySelector('.bd-ans'); if (a) a.scrollIntoView({behavior: V2.smooth(), block: 'start'}); return; }
   if (b.hasAttribute('data-bdcmore')) { coreUi.more = (coreUi.more || 0) + 1; V2.redraw(); return; }
   const ns = b.dataset.bdcore.split('|'), cur = S.slots.filter(s => byName.get(s.n)), have = new Set(cur.map(s => s.n));
   // a six played at a recent event loads with that player's moves and items, as today's useCore (48-cores.js, Nov 9: names alone
@@ -161,7 +161,7 @@ V2.bdJumpSpy = () => {}; // tabs mark the chosen section themselves (Look Q4 B)
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bdjump]'); if (!b) return; V2.bdUi.jtab = b.dataset.bdjump; V2.redraw();
   const nav = document.querySelector('.bd-jump'), low = document.querySelector('.bd-lower'); if (nav && low && low.getBoundingClientRect().top < nav.getBoundingClientRect().bottom) low.scrollIntoView({block: 'start'});
   const nb = document.querySelector(`[data-bdjump="${V2.bdUi.jtab}"]`); if (nb && e.detail === 0) nb.focus({preventScroll: true}); });
-V2.pages.build.after = () => V2.bdJumpSpy();
+// (code review C2: an earlier Build after stood here; the one in use is set below)
 
 // ---------- Build: cores with a Pokémon (today's CORES-04 filter: "With a Pokémon…", a chip with ×; the same name box as Build around) ----------
 V2.bdUi.cfind = V2.bdUi.cfind || '';

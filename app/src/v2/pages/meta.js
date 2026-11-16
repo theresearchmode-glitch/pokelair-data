@@ -102,7 +102,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.raty) { const t = d.raty; U.ty = U.ty.includes(t) ? U.ty.filter(x => x !== t) : U.ty.length >= 2 ? [U.ty[1], t] : [...U.ty, t]; }
   else if (d.raall != null) { U.all = !U.all; V2.raSave(); if (!U.all) { V2.redraw(); const l = document.querySelector('.ra-list'); if (l) l.scrollIntoView({block: 'start'}); return; } }
   else if (d.ratier) { U.open = {...U.open, [d.ratier]: !U.open[d.ratier]}; V2.raSave(); }
-  else if (d.rajump) { U.all = true; U.open = {...U.open, [d.rajump]: true}; V2.raSave(); V2.redraw(); const t = document.getElementById('ra-t-' + d.rajump); if (t) t.scrollIntoView({behavior: 'smooth', block: 'start'}); return; }
+  else if (d.rajump) { U.all = true; U.open = {...U.open, [d.rajump]: true}; V2.raSave(); V2.redraw(); const t = document.getElementById('ra-t-' + d.rajump); if (t) t.scrollIntoView({behavior: V2.smooth(), block: 'start'}); return; }
   /* keep your place (Nov 15, SHELL-31): the tapped chip stays under the finger; the list above it may change height on a redraw */
   const key = Object.keys(d).filter(k => /^ra/.test(k)).map(k => `[data-${k.replace(/[A-Z]/g, c => '-' + c.toLowerCase())}="${d[k]}"]`).join(''), y0 = b.getBoundingClientRect().top;
   V2.redraw(); try { const nb = key && document.querySelector(key); if (nb) { const dy = nb.getBoundingClientRect().top - y0; if (Math.abs(dy) > 1) scrollBy(0, dy); } } catch (x) {} });

@@ -27,7 +27,10 @@ if (process.argv.includes('--v2')) {
   { const {spawnSync} = await import('node:child_process'); const g = spawnSync(process.execPath, [dir + 'test/v2-guard.mjs'], {stdio: 'inherit'}); if (g.status !== 0) process.exit(1); }
   const P = JSON.parse(fs.readFileSync(dir + 'parts-v2.json', 'utf8')), rd = f => fs.readFileSync(dir + f, 'utf8').replace(/\n$/, '');
   const layers = P.css.map(([n]) => n).join(', ');
-  const css = `@layer ${layers};\n` + P.css.map(([n, f]) => `@layer ${n} {\n${rd(f)}\n}`).join('\n');
+  // code review C3 (Nov 15): /* */ comments are dropped from the shipped CSS (69 KB of 490), as the live build does; the source keeps them.
+  // `--keep-comments` keeps them. JS comments stay for now (the new pages hold many multi-line HTML templates).
+  const noCom = c => process.argv.includes('--keep-comments') ? c : c.replace(/\/\*[\s\S]*?\*\//g, '');
+  const css = `@layer ${layers};\n` + P.css.map(([n, f]) => `@layer ${n} {\n${noCom(rd(f))}\n}`).join('\n');
   const helpers = rd('src/app/15-visual-helpers.js'), i0 = helpers.indexOf('SPRITE_ID ='), sprite = helpers.slice(helpers.indexOf('{', i0), helpers.indexOf('}', i0) + 1);
   JSON.parse(sprite); // fails the build if the shared sprite table ever stops being plain JSON
   const meta = fs.existsSync(dir + 'src/v2/art/meta.json') ? rd('src/v2/art/meta.json') : '{}';

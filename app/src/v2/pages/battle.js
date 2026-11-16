@@ -191,7 +191,7 @@ V2.btLogSheet = () => { V2.battleLog(V2.btPlan().P); const {pick} = V2.btLogPick
 V2.btReplaySheet = () => `<div class="bt-rep"><h2 class="u">Log from a Showdown Replay</h2><p class="bt-sub">On the replay page, open the log (or download the replay), then paste the log here or choose the file. Load the team you played with first.</p>
   <textarea class="np-field" data-btrepin rows="5" placeholder="|player|p1|…" aria-label="Replay log"></textarea>
   <div class="row"><button type="button" class="np-btn" data-btrepgo><span>Log a Game</span></button><label class="np-btn2"><span>Choose Replay File</span><input type="file" data-btrepfile accept=".html,.htm,.txt,.log" hidden></label></div><p class="fine" data-btrepout aria-live="polite"></p></div>`;
-V2.btAddReplay = text => { const x = parseReplay(text), out = document.querySelector('[data-btrepout]');
+V2.btAddReplay = text => { let x; try { x = parseReplay(text); } catch (e) { console.error(e); x = {error: "That log couldn't be read. Paste the whole battle log from the replay."}; } const out = document.querySelector('[data-btrepout]'); /* code review C8: no crash on a bad paste */
   if (x.error) { if (out) out.textContent = x.error; return; } if (!Array.isArray(S.log)) S.log = [];
   S.log.push({t: Date.now(), r: x.r, b: x.b, tm: members().map(m => m.p.n), o: x.o}); if (S.log.length > 400) S.log = S.log.slice(-400); persist();
   if (out) out.textContent = `${x.r === 'W' ? 'Win' : 'Loss'} logged: ${x.me} vs ${x.them}, you brought ${x.b.map(n => (byName.get(n) || {}).d || n).join(', ')}.`;
@@ -222,6 +222,6 @@ V2.BT_TOOLS = () => { let n = 0; try { n = gauntletTeams().length; } catch (e) {
 V2.battleToolsBar = (cur = 'battle') => { const L = Array.isArray(S.log) ? S.log.length : 0, on = k => k === cur ? ' aria-current="page" class="on"' : '';
   return `<nav class="bt-tools" aria-label="Battle tools"><a href="#battle"${on('battle')}>Battle</a>${V2.BT_TOOLS().map(([h, t, s]) => `<a href="#${h}"${on(h)}>${t}${s ? `<small>${s}</small>` : ''}</a>`).join('')}<a href="#battle" class="r" data-btlogjump>Your Games</a></nav>`; };
 V2.battleMoreTools = () => `<section class="bt-more"><h2 class="u">More Ways to Prep</h2><ul>${V2.BT_TOOLS().map(([h, t, s, d]) => `<li><a href="#${h}"><span>${t}<small>${V2.esc(d)}</small></span><i aria-hidden="true">›</i></a></li>`).join('')}</ul></section>`;
-document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-btlogjump]'); if (!a) return; e.preventDefault(); const l = document.querySelector('.bt-log'); if (l) l.scrollIntoView({behavior: 'smooth', block: 'start'}); });
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-btlogjump]'); if (!a) return; e.preventDefault(); const l = document.querySelector('.bt-log'); if (l) l.scrollIntoView({behavior: V2.smooth(), block: 'start'}); });
 // Battle Q3 B (Nov 13): a tile in Your Six on the empty Battle page opens that Pokémon's info sheet (as Build's six, Sim Nov 12)
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('.bt-yours [data-tmsel]'); if (!t) return; e.preventDefault(); try { const D = V2.teamData(), m = D && D.ms[+t.dataset.tmsel]; if (m) V2.openMon(m.p.n); } catch (err) {} });

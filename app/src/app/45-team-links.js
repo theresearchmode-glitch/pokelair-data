@@ -66,8 +66,10 @@ function boxLink() { const c = boxCode(); return c ? teamLinkBase() + '#box=' + 
 function decodeBox(text) { const t = String(text || '').trim(); if (!t) return null;
   const m = t.match(/box=([A-Za-z0-9_-]{8,})/) || (/^[A-Za-z0-9_-]{12,}$/.test(t) ? [0, t] : null); if (!m) return null;
   let o; try { o = JSON.parse(tlUnB64(m[1])); } catch (e) { return null; } if (!o || o.v !== 1 || !Array.isArray(o.b)) return null;
-  const seen = new Set(), out = []; for (const n of o.b.slice(0, 400)) { const p = typeof n === 'string' && byName.get(n); if (!p || p.m || seen.has(p.n)) continue; seen.add(p.n); out.push(p.n); }
-  return {names: out, skipped: o.b.length - out.length}; }
+  // code review C8: 'skipped' counts only Pokémon this regulation doesn't have (it counted duplicates and Megas too, which aren't
+  // left out: a Mega is owned as its base form, and a repeat is the same Pokémon)
+  const seen = new Set(), out = []; let gone = 0; for (const n of o.b.slice(0, 400)) { const p = typeof n === 'string' && byName.get(n); if (!p) { gone++; continue; } const q = p.m ? (byName.get(p.b) || p) : p; if (q.m || seen.has(q.n)) continue; seen.add(q.n); out.push(q.n); }
+  return {names: out, skipped: gone}; }
 // copyText: moved to 06-helpers.js (R4, Nov 11; shared with the rebuild)
 function applyBox(x, mode) { ui.boxUndo = S.box.slice(); const before = S.box.length;
   if (mode === 'replace') S.box = x.names.slice(); else { const have = new Set(S.box); for (const n of x.names) if (!have.has(n)) S.box.push(n); }

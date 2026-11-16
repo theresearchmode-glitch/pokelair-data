@@ -293,7 +293,7 @@ V2.shDraw0 = async (tok) => { const U = V2.shUi, box = document.querySelector('[
   if (U.url) { try { URL.revokeObjectURL(U.url); } catch (e) {} U.url = null; }
   let blob = null; if (c) try { blob = await new Promise(r => c.toBlob(r, 'image/png')); } catch (e) {}
   if (tok !== V2.shTok) { if (sv) sv.disabled = true; return; }
-  U.blob = blob; U.url = blob ? URL.createObjectURL(blob) : null; if (!document.contains(box)) return;
+  if (U.url) try { URL.revokeObjectURL(U.url); } catch (e) {} U.blob = blob; U.url = blob ? URL.createObjectURL(blob) : null; if (!document.contains(box)) return;
   box.className = 'sh2-img' + (kind === 'card' ? '' : ' tall');
   box.innerHTML = U.url ? `<img src="${U.url}" alt="${SV ? V2.esc(SV.name) + ' as a NastyPlot team poster' : U.kind === 'sheet' ? 'Your team as a NastyPlot team sheet: every set, nature and stat' : U.kind === 'slab' ? 'Your team as a NastyPlot share card, The Slab' : U.kind === 'poster' ? 'Your team as a NastyPlot team poster' : 'Your team as a NastyPlot share card'}">` : '<p class="fine">Could not draw the image in this view.</p>';
   if (sv) sv.disabled = !blob; };

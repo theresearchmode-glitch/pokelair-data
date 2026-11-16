@@ -23,7 +23,11 @@ V2.spHead = (D, view) => { const E = V2.esc, tr = spdUi.tr, cond = [spdUi.tw ? '
     <div class="sp2-wx chips" role="group" aria-label="Weather">${wxb('auto', D.autoW ? `Your Weather (${E(D.autoW)})` : 'Your Weather (None)')}${wxb('', 'No Weather')}${wxb('sun', 'Sun')}${wxb('rain', 'Rain')}${wxb('sand', 'Sand')}${wxb('snow', 'Snow')}</div>`; };
 
 // desktop race track (1024+): x by Speed, your six in lanes above the line, the field in lanes below, so no two names touch
-V2.spTrack = D => { const rows = D.rows, tr = spdUi.tr, Wd = (() => { const el = document.querySelector('.sp2'); if (!el) return 1200; const cs = getComputedStyle(el); return Math.max(600, el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)); })(), pad = 48;
+// code review B12: on the first draw .sp2 doesn't exist yet; estimate from the window and the gutter (it fell back to 1200 and cut the
+// outer Pokémon off at 1024-1199), then after() checks the real width once and redraws if it was off
+V2.spW = () => { const el = document.querySelector('.sp2'); if (el) { const cs = getComputedStyle(el); return Math.max(600, el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)); }
+  const g = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gut')) || 48; return Math.max(600, document.documentElement.clientWidth - 2 * g); };
+V2.spTrack = D => { const rows = D.rows, tr = spdUi.tr, Wd = V2.spW(), pad = 48; V2._spWUsed = Wd;
   const vs = rows.map(r => r.v), mx = Math.max(...vs), mn = Math.min(...vs), span = mx - mn || 1;
   const x = v => Math.round(pad + (Wd - 2 * pad) * (tr ? v - mn : mx - v) / span);
   const lanes = (list, wid) => { const last = []; return list.map(r => { const X = x(r.v); let k = 0; while (last[k] != null && Math.abs(X - last[k]) < wid) k++; last[k] = X; return {...r, X, k}; }); };
@@ -49,7 +53,7 @@ V2.spSums = D => { const E = V2.esc; if (!D.sums.length) return '';
   return `<div class="sp2-sum">${D.sums.map(({p, beat, tip, os, cond}) => `<p><b>${E(V2.disp(p.n))}</b> ${os ? `${outspeedTxt(os, {tr: spdUi.tr})} threats${cond ? ` (${E(cond)})` : ''}` : `moves first against ${beat} of the ${D.thr.length} here`}${!tip ? ''
     : tip.need != null ? `<small>${tip.need - tip.cur} more Speed points (${tip.need} total) outspeeds ${E(V2.disp(tip.above.p.n))}</small>` : `<small>Can't outspeed ${E(V2.disp(tip.above.p.n))} with this nature</small>`}</p>`).join('')}</div>`; };
 
-V2.pages.speed = {place: 'battle', draw() { let D; try { D = speedData(); } catch (e) { console.error(e); D = null; }
+V2.pages.speed = {place: 'battle', after() { if (V2._spWUsed && document.querySelector('.sp2') && Math.abs(V2.spW() - V2._spWUsed) > 4 && V2._spFix !== V2._spWUsed) { V2._spFix = V2._spWUsed; V2.redraw(); } }, draw() { let D; try { D = speedData(); } catch (e) { console.error(e); D = null; }
   const view = V2.spView(), wide = matchMedia('(min-width:1024px)').matches;
   if (!D) return `<div class="sp2">${V2.battleToolsBar('speed')}<p class="tm-sub">Speed Tiers couldn't load. Try again in a moment.</p></div>`;
   const empty = !D.mine.length ? `<div class="sp2-empty"><p class="tm-sub">Add Pokémon on My Team to place them against the top ${D.thr.length}.</p><a class="np-btn" href="#team">Go to My Team</a></div>` : '';

@@ -48,7 +48,7 @@ V2.pages.practice = {place: 'battle', draw() { const E = V2.esc, P = META.practi
 // taps: today's rules (63-practice.js)
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.pp2 [data-ppmode],.pp2 [data-ppgo],.pp2 [data-ppick],.pp2 [data-ppreset],.pp2 [data-pprev],.pp2 [data-ppskip],.pp2 [data-pphome],.pp2 [data-ppnext]'); if (!b) return; const d = b.dataset;
   if (d.ppmode) { if (b.disabled) return; pr.mode = d.ppmode; V2.redraw(); return; }
-  if (d.ppgo != null || d.ppskip != null || d.ppnext != null) { prStart(d.ppgo || pr.mode || 'real'); V2.redraw(); if (d.ppnext != null || d.ppskip != null) scrollTo({top: 0, behavior: 'smooth'}); return; }
+  if (d.ppgo != null || d.ppskip != null || d.ppnext != null) { prStart(d.ppgo || pr.mode || 'real'); V2.redraw(); if (d.ppnext != null || d.ppskip != null) scrollTo({top: 0, behavior: V2.smooth()}); return; }
   if (d.pphome != null) { pr.step = 'start'; V2.redraw(); return; }
   if (d.ppreset != null) { pr.pick = []; pr.lead = []; V2.redraw(); return; }
   if (d.ppick) { const n = d.ppick;
@@ -56,4 +56,4 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
     else if (pr.pick.includes(n)) { if (pr.lead.includes(n)) pr.lead = pr.lead.filter(x => x !== n); else if (pr.lead.length < 2) pr.lead.push(n); else { pr.lead.shift(); pr.lead.push(n); } }
     else { toast('Four are picked. Tap "Start the Pick Again" to change them.'); return; }
     V2.redraw(); return; }
-  if (d.pprev != null) { if (pr.pick.length !== 4 || pr.lead.length !== 2) return; prReveal(); V2.redraw(); scrollTo({top: 0, behavior: 'smooth'}); } });
+  if (d.pprev != null) { if (pr.pick.length !== 4 || pr.lead.length !== 2) return; prReveal(); V2.redraw(); scrollTo({top: 0, behavior: V2.smooth()}); } });

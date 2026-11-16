@@ -67,7 +67,7 @@ document.addEventListener('input', e => { const i = e.target.closest && e.target
   const n = document.querySelector('[data-usq]'); if (n) { n.focus(); try { n.setSelectionRange(at, at); } catch (x) {} } });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ussrc],[data-uspick],[data-usrest]'); if (!b) return; const U = V2.usUi, d = b.dataset;
   if (d.ussrc) { ui.metaSrc = d.ussrc; U.pick = null; }
-  else if (d.uspick) { U.pick = d.uspick; V2.redraw(); const h = document.querySelector('[data-ushow]'); if (h && !V2.usUi._hover) h.scrollIntoView({behavior: 'smooth', block: 'nearest'}); return; }
+  else if (d.uspick) { U.pick = d.uspick; V2.redraw(); const h = document.querySelector('[data-ushow]'); if (h && !V2.usUi._hover) h.scrollIntoView({behavior: V2.smooth(), block: 'nearest'}); return; }
   else if (d.usrest != null) U.all = !U.all;
   V2.redraw(); });
 // mouse screens: pointing at a Pokémon on the podium swaps "How it is played" (the brief's "Point at or tap")

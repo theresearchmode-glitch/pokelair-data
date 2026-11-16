@@ -498,7 +498,7 @@ t('CALC-07', 'result: Sneasler Close Combat into Mega Charizard Y; Garchomp Eart
 t('CALC-08', '"Report a mistake" under the result opens feedback pre-filled with the calc', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
   expect(await ui.sees('Report a mistake'), 'no "Report a mistake"');
-  await ui.tapIn('Report a mistake', 800); const d = await ui.openDialog();
+  await ui.tapIn('Report a mistake', 800); const d = (await ui.openDialog()) || (NEW ? await ui.text() : ''); /* Nov 15: the rebuild opens the Feedback page (not a sheet), with 'Sent with what was on screen: ...' */
   expect(d && /Mega Charizard Y/.test(d) && /Sneasler/.test(d), 'feedback sheet not pre-filled with the calc: ' + (d || '').slice(0, 200)); await close(); });
 
 t('CALC-09', 'best hits table: your hits on them / their hits on you', async () => {

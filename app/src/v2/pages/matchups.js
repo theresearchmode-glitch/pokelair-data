@@ -114,7 +114,7 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   if (t.closest('[data-mumore]')) { ui.tlMore = !ui.tlMore; V2.redraw(); const b = document.querySelector('[data-mumore]'); if (b && e.detail === 0) b.focus({preventScroll: true}); return; } // keyboard: focus stays on the button
   if (t.closest('[data-muall]')) { ui.threatsAll = true; V2.redraw(); return; }
   if (t.closest('[data-mufull]')) { V2.closeSheet(true); LS.set('np2.seg.thr', 'all'); V2.redraw(); const m = document.getElementById('tm-mu'); if (m) m.scrollIntoView({block: 'start'}); return; }
-  if (t.closest('[data-mufix]')) { const pl = (ui.planList || [])[0]; if (!pl) return; V2.closeSheet(true); applyPlan(pl); persist(); V2.redraw(); V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`); } });
+  if (t.closest('[data-mufix]')) { const pl = (ui.planList || [])[0]; if (!pl) return; V2.closeSheet(true); applyPlan(pl); render(); /* code review C6: the normal save-and-refresh path (persist + fresh caches + redraw), as its siblings use */ V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`); } });
 // the view switch (the shared slider) and the remembered open threats in All 30 (today's ui.thrOpen)
 document.addEventListener('v2slide', e => { if (e.detail.key !== 'thr') return; LS.set('np2.seg.thr', e.detail.value); V2.redraw(); });
 // "See all 30" from the stand-outs

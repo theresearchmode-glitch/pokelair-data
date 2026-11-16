@@ -4,7 +4,9 @@
 // they redraw the rebuild's current page instead. Function declarations, so the shared logic finds them anywhere in the closure.
 function safe(name, fn) { try { fn(); } catch (err) { try { console.error('NastyPlot: ' + name, err); } catch (e) {} } }
 // like today's render(): every redraw after a change saves the team (persist), so Undo and Apply are kept on reload
-function render() { persist(); fixMetaSrc(); clearCaches(); if (window.V2 && V2.draw) V2.redraw(); }
+function render() { persist(); fixMetaSrc(); clearCaches(); if (window.V2 && V2.draw) V2.redraw();
+  // code review B9b: an open Edit Set follows the team (an Undo used to leave it showing the old set); if its Pokémon is gone, it closes
+  if (window.V2 && V2.ed && document.querySelector('.ed2')) { const s = S.slots[V2.ed.i]; if (s && byName.get(s.n)) { try { V2.edRefresh(); } catch (e) {} } else if (V2.closeSheet) V2.closeSheet(true); } }
 // like today's scheduleRender: wait a moment so the daily documents arriving together land in one redraw, and only then pick the
 // usage source (fixMetaSrc), so it never settles on whichever document happened to arrive first
 function scheduleRender() { clearTimeout(V2._rq); V2._rq = setTimeout(() => { fixMetaSrc(); clearCaches(); V2.redraw(); }, 700); }

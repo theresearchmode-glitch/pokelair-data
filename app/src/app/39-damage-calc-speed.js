@@ -558,7 +558,7 @@ document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.
   if(t.id)dcRerender(t);else renderCalc()});
 // A field button redraws the whole calculator; the button you tapped stays at the same spot on screen (Sim, Oct 30: the page
 // jumped about 77px and the numbers seemed to flicker). Runs before the screen paints.
-function dcPin(b,fn){const at=['data-dcw','data-dct','data-dcdir','data-dcterr'].find(a=>b.hasAttribute(a)),sel=at?`[${at}="${CSS.escape(b.getAttribute(at))}"]`:(b.id?'#'+b.id:null),top=b.getBoundingClientRect().top,y=scrollY;
+function dcPin(b,fn){if(typeof V2==='object'&&V2&&V2.redraw){fn();return} /* code review B13: the rebuild keeps its own scroll on redraw; this pinning's late scrollTo calls fought it */const at=['data-dcw','data-dct','data-dcdir','data-dcterr'].find(a=>b.hasAttribute(a)),sel=at?`[${at}="${CSS.escape(b.getAttribute(at))}"]`:(b.id?'#'+b.id:null),top=b.getBoundingClientRect().top,y=scrollY;
   fn();const fix=()=>{const n=sel&&document.querySelector('#dcOut '+sel);if(n){const d=n.getBoundingClientRect().top-top;if(Math.abs(d)>1)scrollBy(0,d)}else if(Math.abs(scrollY-y)>1)scrollTo(0,y)};fix();
   /* again after the next frame (Nov 4 sweep): at 1280 the layout right after the redraw is briefly 60px off, so the first fix overshot */
   try{requestAnimationFrame(()=>{fix();setTimeout(fix,120)})}catch(e){}}

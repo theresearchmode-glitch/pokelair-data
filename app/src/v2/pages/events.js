@@ -92,4 +92,4 @@ document.addEventListener('click', async e => { const b = e.target.closest && e.
   else if (d.evvs) { const x = evTeam(d.evvs); if (!x) return; const ns = x.t.mons.map(m => m.n); V2.btSetOpp(ns, {who: x.t.player, label: teamWho(x.t), key: ns.slice().sort().join('|'), ev: evShort(x.ev.name)}); location.hash = '#battle'; toast(`Opponent set: ${teamWho(x.t)}`); return; }
   V2.redraw(); });
 // a ticket is a button except the latest result, which is an article with its own button; a tap anywhere on it opens the placings too
-document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('article.tk[data-evgo]'); if (!a || e.target.closest('button')) return; a.querySelector('.tk-go')?.click(); });
+/* code review C8: a tap on a ticket's body is handled by the [data-evgo] listener above (the card carries it); a second listener here clicked its button too: two redraws, two scrolls */
