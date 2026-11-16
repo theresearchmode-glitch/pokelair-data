@@ -44,10 +44,19 @@ V2.sgCard = ({pl, k, g0, attr, side, hidden, why, main}) => { const g1 = g0 != n
     ${nr ? `<details class="sg2-why"><summary><span class="q">Why?</span><span class="n">${nr} reason${nr === 1 ? '' : 's'}</span></summary><ul>${wk}${L.map(l => `<li>${V2.undotHtml(l)}</li>`).join('')}</ul></details>` : ''}</li>`; };
 
 // ---------- the section: the settings, then the suggestions (the first; Show more opens the next two; then See all) ----------
+/* speed audit Nov 16 (4x CPU profile: the winners pass is ~9 s of work, each team's score alone >50 ms): on phones it starts only when
+   Suggestions or Team Checks (the two places that quote it) come within a screen of view, or after 8 s with no tap or scroll; until then
+   they say "most recent event winners", as before. On wide screens the sections are in view, so it starts at once, as before */
+V2.ckWinSoon = () => { if (V2._ckGo) { safe('checklist claims', ckWinRefresh); return; } if (V2._ckWait) return; V2._ckWait = 1;
+  const go = () => { if (V2._ckGo) return; V2._ckGo = 1; V2._ckWait = 0; try { V2._ckObs && V2._ckObs.disconnect(); } catch (e) {} clearTimeout(V2._ckT); removeEventListener('scroll', poke); safe('checklist claims', ckWinRefresh); };
+  const poke = () => { clearTimeout(V2._ckT); V2._ckT = setTimeout(go, 8000); };
+  setTimeout(() => { const els = [...document.querySelectorAll('.tm-sgs,.tm-cks')]; if (!els.length || typeof IntersectionObserver !== 'function') { go(); return; }
+    V2._ckObs = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) go(); }, {rootMargin: '100% 0px'}); els.forEach(e => V2._ckObs.observe(e)); }, 0);
+  addEventListener('scroll', poke, {passive: true}); poke(); };
 V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.plan.plans || [];
   // the winner rates some reasons and the team checks quote ("75% of 113 recent event winners…"): today's measurement, started
   // as today's render() starts it (once per data version; it redraws the page when it has the numbers)
-  safe('checklist claims', ckWinRefresh);
+  V2.ckWinSoon();
   let body;
   if (S2.pending) { const last = V2._sgLast;
     // while the next suggestions are worked out the ones on screen stay, faded and not tappable (as today), so nothing jumps
