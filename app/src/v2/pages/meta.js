@@ -65,7 +65,7 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
     <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta" class="on" aria-current="page">Ratings</a><a href="#usage">Usage</a><a href="#sets">Popular Sets</a></nav></div>`;
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Ratings</span></p><h1 class="u"><span>Who wins</span> <span class="pl">right now.</span></h1>
     <p class="ra-lede">Every Pokémon rated 0–100 from real tournament results, not opinion.</p>
-    <p class="ra-kick">Rated 0–100 from real results: Reg ${E(reg)} doubles${teams ? `, ${E(basisNum(teams))} teams` : ''}${typeof V2.tip === 'function' ? `<span class="ra-nw">${V2.tip('numbers')}</span>` : ''}</p>
+    <p class="ra-kick">Reg ${E(reg)} doubles${teams ? ` · ${E(basisNum(teams))} teams` : ''}${typeof V2.tip === 'function' ? `<span class="ra-nw">${V2.tip('numbers')}</span>` : ''}</p>
     <p class="ra-links"><a class="np-link" href="#method=rating">How Ratings Work ›</a><a class="np-link" href="#track">Track Record ›</a></p></section>`;
   const gems = all.filter(x => isGem(x.p)).length, f = U.f, chip = (k, l) => `<button type="button" class="ra-chip" data-raflag="${k}" aria-pressed="${!!f[k]}">${l}</button>`;
   const filt = `<div class="ra-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-raq value="${E(U.q)}" placeholder="Find a Pokémon or type" aria-label="Find a Pokémon or type" autocomplete="off"></label><p class="ra-count"><b class="u">${filtered ? rows.length : all.length}</b> ${filtered ? `of ${all.length} match` : 'rated'}</p></div>

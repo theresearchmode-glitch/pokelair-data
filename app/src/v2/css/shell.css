@@ -71,6 +71,6 @@ html,body{overflow-x:clip}
 .np-fsrc{flex-basis:100%;margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.np-fsrcb{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;font:inherit;color:inherit;cursor:pointer;white-space:nowrap}.np-fsrcb:hover{color:var(--plot-text)}
 @media (max-width:699px){.np-foot{padding-top:var(--s6)}.np-ftxt{margin-top:var(--s1)}.np-foot nav{margin-top:var(--s2);column-gap:var(--s4);row-gap:0}} /* phones: tighter, so the restored parts cost as little height as possible */
 /* data note (parity, Nov 15): today's healthBar/regBar as one calm line above Home and the Meta pages; the amber mark is My Team's legal mark */
-.np-dnote{display:flex;align-items:flex-start;gap:var(--s3);margin:var(--s6) var(--gut) 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.np-dnote{display:flex;align-items:flex-start;gap:var(--s3);margin:var(--s6) var(--gut) var(--s4);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .np-dnote b{color:var(--ink);font-weight:700}.np-dnote span{min-width:0}
 .np-dnote i{flex:none;width:12px;height:6px;margin-top:var(--s2);background:var(--band-work);transform:skewX(-24deg)}

@@ -419,7 +419,7 @@ t('SHELL-34', 'Broken data for one page never breaks the others', withDocs({'met
 
 // =============================== RATE · Ratings ===============================
 t('RATE-01', 'Ratings head: kicker with team count and date; "How ratings work →" opens the method section', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Ratings'); expect(/Rated 0–100 from real results: Reg M.C doubles, [\d,]+ teams, data as of [A-Z][a-z]{2} \d/.test(await ui.text()), 'kicker missing');
+  await ui.go('Ratings'); expect(NEW ? /Reg M.C doubles · [\d,]+ teams/.test(await ui.text()) /* say it once (Nov 16): the subtitle says "rated 0–100 from real tournament results"; the date is in the footer */ : /Rated 0–100 from real results: Reg M.C doubles, [\d,]+ teams, data as of [A-Z][a-z]{2} \d/.test(await ui.text()), 'kicker missing');
   expect(has(await ui.text(), 'Track Record ›'), 'no Track Record link');
   await ui.tap((NEW ? /^How Ratings Work ›$/ : (NEW ? /^How Ratings Work →$/ : /^How ratings work →$/))); await ui.pg.waitForTimeout(500); expect(await ui.current() === 'method', 'link opened ' + await ui.current());
   expect(await d.foldIsOpen('Pokémon Ratings'), 'Pokémon Ratings section not open'); expect(await d.inView('Pokémon Ratings'), 'section not scrolled into view'); }));
