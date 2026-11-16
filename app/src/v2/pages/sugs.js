@@ -3,6 +3,8 @@
 // this file only draws them in the new design and passes taps back. The planner run itself is in team.js (V2.plan).
 
 // ---------- the settings: today's sliders, same choices, same saved settings, same messages ----------
+/* advisor (Nov 15): Suggestions answer first; the settings follow, still visible, under a small label (Nov 16) */
+V2.sgAdj = () => `<div class="sg2-adj"><p class="sg2-adjk">Adjust suggestions</p>${V2.sgCtl()}</div>`;
 V2.sgCtl = () => `<div class="sg2-ctl" role="group" aria-label="Suggestion settings">
   <div class="sg2-c sg2-pool"><span class="sg2-k">Suggest from</span>${V2.slide('sgpool', [['box', 'My Box'], ['boxfill', 'Box + Catch'], ['all', 'Whole Roster']], ui.pool, 'Suggest from')}</div>
   <div class="sg2-c"><span class="sg2-k">Megas on team</span>${V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on the team')}</div>
@@ -54,15 +56,15 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
     // card and no Apply: the quiet line stays and the swaps wait behind See all suggestions (same rule as Matchups' Best fix)
     const up = top.length && g0 != null ? Math.round(planGrade(top[0].pl)) - Math.round(g0) : null;
     if (top.length && up != null && up <= 0) { body = `${gap || `<p class="tm-sub">Nothing raises this team’s Strength Score right now.</p>`}${all}`; V2._sgLast = body;
-      return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.sgCtl()}${V2.undoBar()}${body}</section>`; }
+      return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${body}${V2.sgAdj()}</section>`; }
     body = !top.length ? (side ? `${gap}<p class="tm-sub">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p>${all}` /* Nov 15: the fix cards (items, Protect) showed in every branch but this one */
-        : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool above, or see Matchups for what to watch.</p>')
+        : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool below, or see Matchups for what to watch.</p>')
       : `${gap}<p class="tm-sub">${P.nothing ? 'Optional swaps:' : side ? 'Nothing raises this team’s Strength Score right now. These swaps keep every check and about the same score, with a different look:' : 'What to change, best first.'}</p>
       <ol class="tm-sug">${top.map((x, k) => V2.sgCard({pl: x.pl, k, g0, attr: 'data-v2plan', side, hidden: k > 0 && !open, main: !k})).join('')}</ol>
       ${hid > 0 && !open ? `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgmore aria-expanded="false">Show ${hid} More Suggestion${hid === 1 ? '' : 's'} ›</button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button>'}</span>` : all}`;
     V2._sgLast = body; }
   if (!S2.pending && !(S.excl || []).length && !/data-v2excl/.test(body)) body += '<p class="sg2-links"><button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button></p>'; /* always reachable */
-  return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.sgCtl()}${V2.undoBar()}${body}</section>`; };
+  return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${body}${V2.sgAdj()}</section>`; };
 // the Protect fix: only 0-2 of the six run Protect while their usual sets do; Add Protect puts it in those sets (today's
 // LANE.protFix / protApply and its [data-protfix] handler, 36-lanes.js; the words from LANE.protWords)
 // today's "Fix your items first" (54-items.js itemFixHtml): an Item Clause clash or an item that does nothing, with a one-tap "Give X Y"
