@@ -4,7 +4,7 @@
 // word list (Matchups, Team Checks...). '#method=<key>' opens the page with that part unfolded (the "How Ratings Work" links).
 // today's helper draws a coloured letter; the new site writes tier letters as words ("S tier"), so here it is the letter alone
 // npLegend (shared) colours the Strength Score bands with CH.gcol, which only today's site has; here the bands use the new site's tokens (day + night)
-if (typeof CH === 'object' && !CH.gcol) CH.gcol = L => `var(--band-${({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[String(L || '')[0]] || 'solid'})`;
+if (typeof CH === 'object' && !CH.gcol) CH.gcol = L => `var(--band-${({A: 'top', B: 'ready', C: 'solid', D: 'work-text', F: 'miss'})[String(L || '')[0]] || 'solid'})`; /* D as text: the readable amber (a11y, Nov 16) */
 const tierChip = T => `<b class="u">${T.k}</b>`;
 V2.MTH = [['Your team', [['grade', 'Strength Score', 'How strong the team is altogether, out of 100'], ['ready', 'Matchups', 'Real damage calcs against the 30 Pokémon that make top cut most'], ['checks', 'Team Checks', 'What most winning tournament teams have: 4 basics and 3 notes']]],
   ['Pokémon', [['rating', 'Pokémon Ratings (0–100)', 'Proven results: top cuts, strong players, wins'], ['data', 'Usage, Sets and Sources', 'Where every number comes from']]],
