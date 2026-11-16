@@ -18,7 +18,7 @@ V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T 
   return `<section class="pk-top" aria-labelledby="pk-name"><div class="pk-card">${card}</div><div class="pk-is">
     <p class="pk-kick"><span class="pk-rank u">${rank ? E(rank) : 'No results yet'}</span><span>Pokémon Champions · VGC doubles</span></p>
     <h1 class="u" id="pk-name">${V2.nameHtml(V2.disp(n))}</h1>
-    <div class="pk-rate"><b class="u">${rs}</b><span><em class="u">${E(T.k)} tier</em><small>Rating · ${E(rRange(r))}${H.thinR ? ' · early read' : ''}</small></span></div>
+    <div class="pk-rate"><b class="u">${rs}</b><span><em class="u tier-tag" style="--tc:var(--tier-${E(T.k.toLowerCase())})">${E(T.k)} tier</em><small>Rating · ${E(rRange(r))}${H.thinR ? ' · early read' : ''}</small></span></div>
     ${gauge}<div class="pk-nums">${nums}</div>
     <div class="pk-acts"><button type="button" class="np-btn" data-hmaround="${E(n)}"><span>Build Around It</span></button><button type="button" class="np-btn2" data-mssets="${E(n)}"><span>Popular Sets</span></button>${V2.addBtn ? V2.addBtn(n) : ''}</div></div></section>`; };
 // Base Stats: one panel, six lanes (a plate in the stat's colour, a streak growing to a point where the stat lands, the number past it),

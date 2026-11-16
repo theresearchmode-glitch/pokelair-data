@@ -177,3 +177,8 @@
 @media (max-width:699px){.fn-dog,.hm-ud.fn-dog{grid-template-columns:minmax(0,1fr);justify-items:start;gap:var(--s2)}.fn-dog .hm-udst2{justify-self:center}.fn-dog .np-mon{--iw:160px}}
 /* Home's Meta strip, third view (Nov 16): This Week's moves */
 .hm-top[data-show="2"] .hm-p2{display:block}.hm-top .hm-sub .hm-p2{display:none}.hm-top[data-show="2"] .hm-sub .hm-p2{display:inline}
+/* ONE tier colour language (Nov 16; advisor G; helper found 'S tier' in four looks): a Pokémon's tier is always its tier colour from
+   tokens (--tier-s..f) with dark ink, slanted like the Meta tier bands; blue stays for 'selected / yours' */
+.tier-tag{justify-self:start;padding:var(--s1) var(--s4) 2px var(--s3);background:var(--tc);color:var(--tier-ink);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.pk-rate em.tier-tag,.gs-big i.tier-tag{color:var(--tier-ink)}
+.ra-tk{background:var(--tc,var(--plate));color:var(--tier-ink)}
