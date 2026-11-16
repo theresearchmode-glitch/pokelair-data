@@ -72,6 +72,6 @@
   --grain:.05;--score-ink:#D6D1CA;
   --plate-hi:#3E3D56;--plate-lo:#2C2B3D;--main-hi:#63C0F8;--main-lo:#3FA2E2;--band-glow:0 0 22px rgba(79,178,240,.4);--floor-line:rgba(214,218,255,.3);--page-wash:linear-gradient(180deg,#0C0C14 0,#12121C 280px,#191928 450px,#14141F 620px,#12121B 100%);--scrim:rgba(6,6,12,.45);
   color-scheme:dark}
-@media (max-width:1179px){:root{--gut:48px}}
-@media (max-width:699px){:root{--gut:16px}}
+@media (max-width:1179.98px){:root{--gut:48px}}
+@media (max-width:699.98px){:root{--gut:16px}}
 /* Sim Q1 (Nov 15): 'them' / Team B is magenta (--them), clearly apart from red (--bad); measured: day fill #B4238F white text 5.87:1, text #9A1A7B 7.17:1 on the page; night fill #E57FD3 dark text 7.36:1, text #EC9BDF 9.15:1 */

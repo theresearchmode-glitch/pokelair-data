@@ -4,13 +4,13 @@
 .sg2-c{display:grid;gap:var(--s2);min-width:0;justify-items:start}
 .sg2-pool{grid-column:1/-1}
 .sg2-k{font:600 var(--t13)/1.5 var(--b);letter-spacing:.04em;color:var(--ink-3)}
-@media (max-width:519px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.sg2-c{justify-items:stretch}}
+@media (max-width:519.98px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.sg2-c{justify-items:stretch}}
 .sg2-ctl+.tm-sub{margin-top:var(--s5)}
 /* a wide Suggestions column (big desktops): all three settings in one row */
 .tm-sgs{container-type:inline-size}
 @container (min-width:900px){.sg2-ctl{grid-template-columns:repeat(3,max-content)}.sg2-pool{grid-column:auto}}
 /* a narrow Suggestions column at any screen width (tablets with the fold open): the sliders take their phone form (components.css) */
-@container (max-width:599px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.sg2-c{justify-items:stretch} /* to 599 (audit Nov 16): the phone layout, so nothing runs past the edge at 520-599 */
+@container (max-width:599.98px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.sg2-c{justify-items:stretch} /* to 599 (audit Nov 16): the phone layout, so nothing runs past the edge at 520-599 */
   .sg2-ctl .np-slide{display:grid;width:100%;max-width:100%}.sg2-ctl .np-slide button{flex-direction:column;gap:var(--s1);min-height:56px;padding:var(--s2) var(--s1);font-size:var(--t13);white-space:normal;text-align:center;line-height:1.2}.sg2-ctl .np-slide .np-ic{width:20px;height:20px}}
 /* the cards: the next two open with Show more (hidden until then); the kind line and Why? under each */
 .tm-sug li[hidden]{display:none}
@@ -59,7 +59,7 @@
 /* desktop: an open fold is too long for the narrow column (it would leave the wide one empty): Team Checks moves to its own
    full-width row under Suggestions, and the fold's three parts sit side by side */
 @media (min-width:1180px){.tm-work:has(.sg2-fold[open]){grid-template-areas:"set mu" "sg sg" "ck ck"}.tm-work:has(.tm-yg):has(.sg2-fold[open]){grid-template-areas:"set mu" "yg sg" "ck ck"}}
-@media (min-width:700px) and (max-width:1179px){.tm-work:has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "ck ck"}.tm-work:has(.tm-yg):has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "mu yg" "ck ck"}}
+@media (min-width:700px) and (max-width:1179.98px){.tm-work:has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "ck ck"}.tm-work:has(.tm-yg):has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "mu yg" "ck ck"}}
 .tm-cks{container-type:inline-size}
 @container (min-width:900px){.sg2-fb{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);align-items:start;column-gap:var(--s10)}}
 /* problem rows: severity tag, what's wrong; a row with fixes folds open to its Quick add picks */
@@ -111,7 +111,7 @@
 .sg2-vd .regnote{margin-top:var(--s3)}
 /* All Suggestions sheet */
 .sga2{padding:var(--s8)}.sga2 h2{font-size:var(--t28);margin:var(--s2) 0}
-@media (max-width:699px){.sga2{padding:var(--s6) var(--s4)}}
+@media (max-width:699.98px){.sga2{padding:var(--s6) var(--s4)}}
 /* "?" explainers: a small slanted mark beside the term; the bubble is a solid surface over the page */
 /* A15 (Sim's fix plan): the "?" looks the same (a 24px slanted tile) but its tap area is 44x44: the button is 44 square and
    transparent, the tile is drawn by ::before, and negative margins keep the room it takes in the line exactly as before */
@@ -125,13 +125,13 @@
 
 /* Build's recent winners use this fold with a one-line row: event | six | arrow (pages.css can't reach it: sugs is the later layer) */
 .sg2-fold.bd-win>summary{grid-template-columns:minmax(0,1fr) auto auto;gap:var(--s4);padding:var(--s2) 0}.sg2-fold.bd-win>summary::after{grid-column:3;grid-row:1}
-@media (max-width:519px){.sg2-fold.bd-win>summary{grid-template-columns:minmax(0,1fr) auto;row-gap:var(--s1)}.sg2-fold.bd-win>summary::after{grid-column:2;grid-row:1/span 2}}
+@media (max-width:519.98px){.sg2-fold.bd-win>summary{grid-template-columns:minmax(0,1fr) auto;row-gap:var(--s1)}.sg2-fold.bd-win>summary::after{grid-column:2;grid-row:1/span 2}}
 /* Build Blueprint "Reference sheets" (Nov 14): place plate | event | the six | Open / Close (this layer comes after pages.css) */
 .bp-ref .bd-win{--fold-mt:0;--fold-bt:0}
 .bp-ref .bd-win>summary{grid-template-columns:auto minmax(0,1fr) auto auto;gap:var(--s2) var(--s4);padding:var(--s4) var(--s2)}
 .bp-ref .bd-win>summary::after{content:"Open ›";grid-column:4;grid-row:1;font:700 var(--t15)/1 var(--b);rotate:none;transition:none}
 .bp-ref .bd-win[open]>summary::after{content:"Close ×";rotate:none}
-@media (max-width:699px){.bp-ref .bd-win>summary{grid-template-columns:auto minmax(0,1fr) auto;align-items:center;row-gap:var(--s2)}.bp-ref .bd-win>summary .bp-wplace{grid-column:1;grid-row:1}.bp-ref .bd-win>summary .bd-wtop{grid-column:2/4;grid-row:1}
+@media (max-width:699.98px){.bp-ref .bd-win>summary{grid-template-columns:auto minmax(0,1fr) auto;align-items:center;row-gap:var(--s2)}.bp-ref .bd-win>summary .bp-wplace{grid-column:1;grid-row:1}.bp-ref .bd-win>summary .bd-wtop{grid-column:2/4;grid-row:1}
   .bp-ref .bd-win>summary .bd-wsix{grid-column:1/3;grid-row:2}.bp-ref .bd-win>summary::after{grid-column:3;grid-row:2}}
 /* ONE fold marker (Nov 16, one system; the advisor's root cause B): every text fold ends in the same grey › on the right, turning down
    when open. Loaded last so it settles every page's own marker. How We Calculate's tiles stay tiles; Build's reference sheets keep "Open ›". */
@@ -147,22 +147,22 @@
 .dc2-tok button{border:0;border-radius:0;background:color-mix(in srgb,var(--ink) 9%,transparent);color:var(--ink);padding:0 6px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 .dc2-tok button[aria-pressed="true"]{background:var(--plate);color:var(--on-plate)}
 :root[data-theme="night"] .dc2-tok button[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
-@media (max-width:439px){.dc2-tok{grid-template-columns:minmax(0,1.2fr) repeat(4,minmax(0,1fr))}}@media (max-width:399px){.dc2-tok{gap:2px}.dc2-tok button{padding:0 4px;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}} /* narrow phones: "Hits both" keeps clear of the slant */
+@media (max-width:439.98px){.dc2-tok{grid-template-columns:minmax(0,1.2fr) repeat(4,minmax(0,1fr))}}@media (max-width:399.98px){.dc2-tok{gap:2px}.dc2-tok button{padding:0 4px;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}} /* narrow phones: "Hits both" keeps clear of the slant */
 /* ONE segmented control (Nov 16, one system item 4): Meta's link segments (Ratings / Usage / Sets; Winning Teams / Events / Archetypes)
    take the shell switch's look: flush track, 10px slant, 44px, the lit plate for the page you're on */
 .ra-seg{padding:0;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
 .ra-seg a{min-height:var(--tap);padding:0 var(--s5)}
 .ra-seg a.on{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate)}
-@media (max-width:699px){.ra-seg a{padding:0 var(--s2)}} /* phones: "Popular Sets" on one line from 360 up */
-@media (max-width:699px){.ra-seg{display:flex}.ra-seg a{flex:1 1 auto;min-width:min-content;text-align:center}} /* phones: columns size to their words, so one-word "Archetypes" is never cut; two-word names wrap */
+@media (max-width:699.98px){.ra-seg a{padding:0 var(--s2)}} /* phones: "Popular Sets" on one line from 360 up */
+@media (max-width:699.98px){.ra-seg{display:flex}.ra-seg a{flex:1 1 auto;min-width:min-content;text-align:center}} /* phones: columns size to their words, so one-word "Archetypes" is never cut; two-word names wrap */
 /* ONE section-heading size (Nov 16; advisor C: H1 display, H2 Unbounded 28-34): every section H2 is 24 on phones and 28 from 700px.
    These were 20-26. Pokémon names that are H2s for structure (Calc sides, the Lead card) are names, not section heads, and keep their size. */
 .bd-hd h2,.bt-lgl h2,.bt-yours h2,.ev-plate .ev-ph,.dc2-kbh h2,.st-team .st-h2,.bx-teamhd h2,.bt-labrow .bt-lab{font-size:var(--t24)}
 @media (min-width:700px){.bd-hd h2,.bt-lgl h2,.bt-yours h2,.ev-plate .ev-ph,.dc2-kbh h2,.st-team .st-h2,.bx-teamhd h2,.bt-labrow .bt-lab{font-size:var(--t28)}}
-@media (max-width:699px){.pk-h h2{font-size:var(--t24)}}
+@media (max-width:699.98px){.pk-h h2{font-size:var(--t24)}}
 /* Meta on phones (Nov 16; the advisor: "Grandstand as one swipe row per tier", 5.2 -> ~2 screens): each tier's Pokémon sit in ONE row that
    swipes sideways under its tier band; "See All N ›" still opens the rest. Desktop and iPad keep the stepped stand. */
-@media (max-width:699px){
+@media (max-width:699.98px){
   .gs-rows{display:flex;gap:var(--s2);overflow-x:auto;overscroll-behavior-x:contain;scroll-snap-type:x proximity;padding:0 0 var(--s2);margin:0 calc(var(--gut) * -1);padding-inline:var(--gut);scroll-padding-inline:var(--gut);scrollbar-width:thin}
   .gs-rows .gs-row{display:contents}.gs-rows .gs-row::before,.gs-rows .gs-row::after{display:none}
   .gs-rows .gs-mon{flex:0 0 calc(var(--gsw) + var(--s6));scroll-snap-align:start;padding-bottom:0}
@@ -174,7 +174,7 @@
 .tm-sample-acts{display:inline-flex;flex-wrap:wrap;column-gap:var(--s5);white-space:normal}
 /* Home underdog on phones (Nov 16): the sprite was squeezed to ~50px in a 112px column with an empty strip beside narrow text; now the
    featured Pokémon sits large on top and the words use the full width (Sim: no empty strips beside text; the underdog gets its moment) */
-@media (max-width:699px){.fn-dog,.hm-ud.fn-dog{grid-template-columns:minmax(0,1fr);justify-items:start;gap:var(--s2)}.fn-dog .hm-udst2{justify-self:center}.fn-dog .np-mon{--iw:160px}}
+@media (max-width:699.98px){.fn-dog,.hm-ud.fn-dog{grid-template-columns:minmax(0,1fr);justify-items:start;gap:var(--s2)}.fn-dog .hm-udst2{justify-self:center}.fn-dog .np-mon{--iw:160px}}
 /* Home's Meta strip, third view (Nov 16): This Week's moves */
 .hm-top[data-show="2"] .hm-p2{display:block}.hm-top .hm-sub .hm-p2{display:none}.hm-top[data-show="2"] .hm-sub .hm-p2{display:inline}
 /* ONE tier colour language (Nov 16; advisor G; helper found 'S tier' in four looks): a Pokémon's tier is always its tier colour from
@@ -185,26 +185,26 @@
 /* Test Run (Nov 16; helper: three stacked fills): inside the open card the prep cells sit on the card itself, split by thin rules, not grey boxes in a white box on the grid table */.tp-open .tr-cell{background:none;padding-inline:0;border-top:1px solid var(--rule)}
 /* Meta filters on phones (Nov 16; advisor: one control row): the six chips sit in ONE row that swipes sideways (as the tiers below), all
    still visible; was 3 rows, 253px. The Types picker still opens full width under the row. */
-@media (max-width:699px){.gs-ctl .ra-filt{display:flex;flex-wrap:nowrap;gap:var(--s2);overflow-x:auto;overscroll-behavior-x:contain;margin-inline:calc(var(--gut) * -1);padding-inline:var(--gut);scroll-padding-inline:var(--gut);scrollbar-width:none}.gs-ctl .ra-filt>*{flex:0 0 auto}}
-@media (max-width:699px){.gs-ctl .ra-filt>*{min-width:56px;justify-content:center}} /* "All" stays a 44px+ tap in the swipe row */
+@media (max-width:699.98px){.gs-ctl .ra-filt{display:flex;flex-wrap:nowrap;gap:var(--s2);overflow-x:auto;overscroll-behavior-x:contain;margin-inline:calc(var(--gut) * -1);padding-inline:var(--gut);scroll-padding-inline:var(--gut);scrollbar-width:none}.gs-ctl .ra-filt>*{flex:0 0 auto}}
+@media (max-width:699.98px){.gs-ctl .ra-filt>*{min-width:56px;justify-content:center}} /* "All" stays a 44px+ tap in the swipe row */
 /* Base Stats labels (Nov 16, a11y helper: Defense amber 2.98:1, HP/Atk/Spe ~4.4 in day mode): the stat name is its colour mixed toward
    ink for reading; the bar keeps the bright stat colour. Night keeps the bright colour (it reads well on the dark panel). */
 :root:not([data-theme="night"]) .pk-bsr dt{color:color-mix(in srgb,var(--c) 62%,var(--ink))}
 /* This Week weather tiles (Nov 16, a11y: on the small tiles the 44px gold sun sat under "Sun" and its % at 1.82:1): a smaller sun tucked into the corner, so the white words sit on the red-orange (4.65:1) */.wk-tiles .wx-sun{background-image:radial-gradient(circle at 100% 0,var(--podium-1) 0 26px,var(--wx-mid) 27px 32px,transparent 33px),repeating-conic-gradient(from 0deg at 100% 0,var(--wx-mid) 0 5deg,transparent 5deg 15deg)}
-/* Battle Your Six on narrow phones (Nov 16, re-verify #7: "Whimsicot/t" at 320): tighter gaps and padding, names break only between words */.bt-sx b{overflow-wrap:normal}@media (max-width:699px){.bt-sixrow{gap:var(--s2)}.bt-sx{padding-inline:2px}}
-/* This Week movers on the narrowest phones (Nov 16, re-verify #5: names ran 3px into the points badge at 320): the badge sits under the name, as the This Week tech rows do on phones */@media (max-width:379px){.wk-mr{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"m t" "m p";row-gap:var(--s1)}.wk-mr>.np-mon{grid-area:m}.wk-mr .wk-mt{grid-area:t}.wk-mr .wk-pts{grid-area:p;justify-self:start}}
-/* Type Chart picks under 380px (Nov 16, re-verify #8: "Fighting" cut by the slant at 320): narrower letters (as below 360) and a 5px slant */@media (max-width:379px){.tc-tp{font-stretch:75%;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}}
-/* Usage / Sets spotlight on narrow phones (Nov 16, re-verify #12: "37.7%51.8%", sprite over the rating line at 320): each fact keeps its width and wraps instead of overrunning; the sprite fits its column */@media (max-width:419px){.gs-facts{grid-template-columns:repeat(3,min-content);column-gap:var(--s3)}}@media (max-width:379px){.gs-plate .np-mon{--iw:96px}.gs-plate{min-height:150px}}
-@media (max-width:359px){.gs-facts{column-gap:var(--s2)}}
-/* Events tickets under 340 (Nov 16, re-verify #1: long one-word names crossed the perforation by up to 12px at 320): the date stub gives up 13px, no word breaks (Sim Q17) */@media (max-width:339px){.tk:not(.big){grid-template-columns:56px minmax(0,1fr) 72px}}
-/* Home corner rows (Nov 16, re-verify #13: at 320 the item dropped lower in short rows, "Lead" broke after a dangling dot): name and item sit together, centred; on narrow phones "Lead" takes its own line without the dot */.ff{grid-template-rows:auto auto;align-content:center}@media (max-width:419px){.ff .ff-sep{display:none}.ff .ff-ld{display:block}}
+/* Battle Your Six on narrow phones (Nov 16, re-verify #7: "Whimsicot/t" at 320): tighter gaps and padding, names break only between words */.bt-sx b{overflow-wrap:normal}@media (max-width:699.98px){.bt-sixrow{gap:var(--s2)}.bt-sx{padding-inline:2px}}
+/* This Week movers on the narrowest phones (Nov 16, re-verify #5: names ran 3px into the points badge at 320): the badge sits under the name, as the This Week tech rows do on phones */@media (max-width:379.98px){.wk-mr{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"m t" "m p";row-gap:var(--s1)}.wk-mr>.np-mon{grid-area:m}.wk-mr .wk-mt{grid-area:t}.wk-mr .wk-pts{grid-area:p;justify-self:start}}
+/* Type Chart picks under 380px (Nov 16, re-verify #8: "Fighting" cut by the slant at 320): narrower letters (as below 360) and a 5px slant */@media (max-width:379.98px){.tc-tp{font-stretch:75%;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}}
+/* Usage / Sets spotlight on narrow phones (Nov 16, re-verify #12: "37.7%51.8%", sprite over the rating line at 320): each fact keeps its width and wraps instead of overrunning; the sprite fits its column */@media (max-width:419.98px){.gs-facts{grid-template-columns:repeat(3,min-content);column-gap:var(--s3)}}@media (max-width:379.98px){.gs-plate .np-mon{--iw:96px}.gs-plate{min-height:150px}}
+@media (max-width:359.98px){.gs-facts{column-gap:var(--s2)}}
+/* Events tickets under 340 (Nov 16, re-verify #1: long one-word names crossed the perforation by up to 12px at 320): the date stub gives up 13px, no word breaks (Sim Q17) */@media (max-width:339.98px){.tk:not(.big){grid-template-columns:56px minmax(0,1fr) 72px}}
+/* Home corner rows (Nov 16, re-verify #13: at 320 the item dropped lower in short rows, "Lead" broke after a dangling dot): name and item sit together, centred; on narrow phones "Lead" takes its own line without the dot */.ff{grid-template-rows:auto auto;align-content:center}@media (max-width:419.98px){.ff .ff-sep{display:none}.ff .ff-ld{display:block}}
 .ev-counts{display:grid;gap:var(--s3);justify-items:start;margin-top:var(--s6)}
-/* Damage Calc under 380px (Nov 16, re-verify #9): the option pips crossed "WEATHER"/"TERRAIN" (decorative, hidden there); the Swap disc sits beside the sprites, clear of the names; the small move cards use smaller words so nothing runs past their edge */@media (max-width:379px){.dc2-fc .pips{display:none}.dc2-swap{align-self:start;margin-top:var(--s10)}.dc2-hand .dc2-mv .nm{font-size:var(--t13)}.dc2-hand .dc2-mv .rg{font-size:var(--t20)}.dc2-hand .dc2-mv{overflow-wrap:normal}.dc2-hand .dc2-mv small{font-size:var(--t13)}}
-@media (max-width:359px){.dc2-hand .dc2-mv{padding-inline:6px}.dc2-hand .dc2-mv .rg{font-size:var(--t17)}}
-@media (max-width:379px){.dc2-hand .dc2-mv .nm{margin-bottom:var(--s1)}} /* the 13px name clears the number below it */
-/* Build blueprint at 320 (Nov 16, re-verify #11: the score breakdown ran 27px past the frame): the line wraps inside its column */@media (max-width:359px){.bp .bp-meas{grid-template-columns:minmax(0,1fr)}.bp .bp-meas .bd-brk{width:auto;min-width:0}}
-@media (max-width:359px){.bp .bp-stamp{font-size:var(--t17)}} /* the tilted band stamp stays inside the frame at 320 */
-@media (max-width:379px){.us-bench .gs-mon,.us-mates .gs-mon{padding-inline:0}} /* Usage tiles at 320 (re-verify #12): "Basculegion" fits its tile */
+/* Damage Calc under 380px (Nov 16, re-verify #9): the option pips crossed "WEATHER"/"TERRAIN" (decorative, hidden there); the Swap disc sits beside the sprites, clear of the names; the small move cards use smaller words so nothing runs past their edge */@media (max-width:379.98px){.dc2-fc .pips{display:none}.dc2-swap{align-self:start;margin-top:var(--s10)}.dc2-hand .dc2-mv .nm{font-size:var(--t13)}.dc2-hand .dc2-mv .rg{font-size:var(--t20)}.dc2-hand .dc2-mv{overflow-wrap:normal}.dc2-hand .dc2-mv small{font-size:var(--t13)}}
+@media (max-width:359.98px){.dc2-hand .dc2-mv{padding-inline:6px}.dc2-hand .dc2-mv .rg{font-size:var(--t17)}}
+@media (max-width:379.98px){.dc2-hand .dc2-mv .nm{margin-bottom:var(--s1)}} /* the 13px name clears the number below it */
+/* Build blueprint at 320 (Nov 16, re-verify #11: the score breakdown ran 27px past the frame): the line wraps inside its column */@media (max-width:359.98px){.bp .bp-meas{grid-template-columns:minmax(0,1fr)}.bp .bp-meas .bd-brk{width:auto;min-width:0}}
+@media (max-width:359.98px){.bp .bp-stamp{font-size:var(--t17)}} /* the tilted band stamp stays inside the frame at 320 */
+@media (max-width:379.98px){.us-bench .gs-mon,.us-mates .gs-mon{padding-inline:0}} /* Usage tiles at 320 (re-verify #12): "Basculegion" fits its tile */
 /* Archetypes (Nov 16, re-verify #4: at 1440 Grassy Terrain's sprites ended at 39% of a wide tile): the key Pokémon spread across the tile */.ar-km{justify-content:space-evenly}
 /* Night chips (Nov 16, re-verify #15: selected vs unselected differed 1.25:1): a selected chip is filled with the selected blue, so it reads at a glance; day keeps the black plate */:root[data-theme="night"] .np-chip[aria-pressed="true"],:root[data-theme="night"] .np-chip.on,:root[data-theme="night"] .ra-chip[aria-pressed="true"],:root[data-theme="night"] .dc2-tok button[aria-pressed="true"]{background:color-mix(in srgb,var(--plot) 42%,var(--surface));color:var(--ink);box-shadow:none;outline:1.5px solid var(--plot);outline-offset:-1.5px}
 .sg2-adj{margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--rule)}.sg2-adjk{margin:0 0 var(--s2);font:700 var(--t13)/1.5 var(--b);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
@@ -219,7 +219,7 @@
   .mc-giant,.inf-no,.mc-orbit,.mc-glow{display:none}
 }
 /* nuclear stress test (Nov 16): at 360 four stand-out cards ran names and verdicts together; three across up to 404 (390 with a desktop scrollbar still touched by 4px; 414 measured clean) */
-@media (min-width:360px) and (max-width:404px){.mu-cards .nm{font-stretch:88%}.mu-cards li{flex-basis:33.333%}}
+@media (min-width:360px) and (max-width:404.98px){.mu-cards .nm{font-stretch:88%}.mu-cards li{flex-basis:33.333%}}
 /* nuclear stress test (Nov 16): Usage's four bench figures at 320 (72px sprites + padding = 304px) overran a 273px row when the window
    has a scrollbar, cutting "Indeedee (F)"; 64px sprites, no side padding, so four always fit */
 /* nuclear stress test (Nov 16): the underdog's colour field faded to nothing at 75%, so on wide screens the panel read as ending at 70% width
@@ -227,49 +227,49 @@
 .fn-dog,.hm-ud.fn-dog{background:linear-gradient(110deg,rgba(var(--cp),.3),rgba(var(--cp),.1) 70%,rgba(var(--cp),.06))}
 /* nuclear stress test (Nov 16): This Week's five Most Used tiles were meant to sit 3 + 2 on phones, but the 4px column gap pushed three
    33.3% tiles past the row, so they fell 2 + 2 + 1 with the fifth alone; no column gap (the tiles' own padding spaces them) */
-@media (max-width:429px){.wk-top ul{column-gap:0}}
+@media (max-width:429.98px){.wk-top ul{column-gap:0}}
 /* Sim, Nov 16 morning (her iPhone, a team scoring 86): the score plate grew with "Tournament ready" and pushed "Set as Opponent" over it and off
    the edge at 360-393, and squeezed it to 16px at 320-340 (the overnight checks only used the sample's "Top tier"); with a long band word
    (home.js marks it .long) the button takes its own row under the plate on phones; short words keep the plate and button side by side */
-@media (max-width:499px){.fn-mid:has(.fn-belt.long){grid-template-columns:minmax(0,1fr);justify-items:center;row-gap:var(--s3)}.fn-mid:has(.fn-belt.long) .fn-prep{width:auto;max-width:100%}}
+@media (max-width:499.98px){.fn-mid:has(.fn-belt.long){grid-template-columns:minmax(0,1fr);justify-items:center;row-gap:var(--s3)}.fn-mid:has(.fn-belt.long) .fn-prep{width:auto;max-width:100%}}
 /* nuclear stress test (Nov 16): a link's "›" could wrap alone onto its own line (3 found over 23 pages at 320/360/768); links and buttons
    avoid a lone last word (measured 3 -> 1), and the editing panel's short "Pokémon Page ›" stays on one line (-> 0). Text unchanged. */
 a,button,summary{text-wrap:pretty}.sx-info{white-space:nowrap}
 /* nuclear stress test (Nov 16): on 320-339 phones "Winner's team" needed 114px of 113, so 9 tickets wrapped it and 3 did not; one line in the
    approved 88% letters (92px), the same on every ticket. (Ticket names keep "M-C" together with a word joiner, events.js.) */
-@media (max-width:359px){.tk-k{white-space:nowrap;font-stretch:88%}}
+@media (max-width:359.98px){.tk-k{white-space:nowrap;font-stretch:88%}}
 /* nuclear stress test (Nov 16): when a move wraps in any Card, V2.fitWords marks the Hand mh-mv2 and every chip takes the two-line height */
 .mh-mv.mh-mv2 li{display:grid;align-content:center;min-height:calc(2lh + var(--s2))}
 /* nuclear stress test (Nov 16): Home corner links on narrow phones wrapped unevenly ("Copy for Showdown" centred on two lines beside
    left-aligned links); each corner's links stack in one left-aligned column */
-@media (max-width:479px){.fn-corner .fn-cacts,.fn-corner.them .fn-cacts{flex-direction:column;align-items:flex-start;gap:0}.fn-corner .fn-cacts .np-link{text-align:left}}
+@media (max-width:479.98px){.fn-corner .fn-cacts,.fn-corner.them .fn-cacts{flex-direction:column;align-items:flex-start;gap:0}.fn-corner .fn-cacts .np-link{text-align:left}}
 /* nuclear stress test (Nov 16): Usage "How X is played" at three columns put Natures under the long Moves list (that column ~3x the
    others, an empty block on the right); Moves spans two rows and Natures packs in beside it */
-@media (min-width:900px) and (max-width:1279px){.us-groups{grid-auto-flow:row dense}.us-groups>.us-bars:first-child{grid-row:span 2}} /* 443 -> 336px tall; at two columns it made things taller, so three only */
+@media (min-width:900px) and (max-width:1279.98px){.us-groups{grid-auto-flow:row dense}.us-groups>.us-bars:first-child{grid-row:span 2}} /* 443 -> 336px tall; at two columns it made things taller, so three only */
 /* nuclear stress test (Nov 16): on the calc table (1024 and up) "Hits both" pressed against its 64px tile's slanted edges; tiles sized to the
    measured room (132px at 1024, 158 at 1280, 179 at 1440; the old pair ran 3px over at 1024) */
-@media (min-width:1024px) and (max-width:1279px){.dc2-tok{column-gap:var(--s1)}}
+@media (min-width:1024px) and (max-width:1279.98px){.dc2-tok{column-gap:var(--s1)}}
 @media (min-width:1280px){.dc2-tok{grid-template-columns:repeat(2,72px)}.dc2-tok button{width:72px}}
 @media (min-width:1440px){.dc2-tok{grid-template-columns:repeat(2,76px)}.dc2-tok button{width:76px}}
-@media (max-width:379px){.us-bench{--gsw:64px}.us-bench .us-fig{padding-inline:0}.us-bench .us-fig .np-mon{--iw:64px}}
+@media (max-width:379.98px){.us-bench{--gsw:64px}.us-bench .us-fig{padding-inline:0}.us-bench .us-fig .np-mon{--iw:64px}}
 /* Sim Q2 (Nov 16, A): an Undo inside an open sheet sits at its top, in the Undo bar style, clear of the sheet's close button */
 .np-sheet-undo{flex-wrap:nowrap;margin:0 var(--s12) var(--s4) 0;padding:var(--s2) var(--s2) var(--s2) var(--s4)}.np-sheet-undo>span{flex:1 1 0;text-wrap:balance}.np-sheet-undo .np-btn2{flex:none}
-@media (max-width:699px){.np-sheet-undo{margin-right:var(--s10)}}
+@media (max-width:699.98px){.np-sheet-undo{margin-right:var(--s10)}}
 /* Sim Q6 (Nov 16): four settings - Suggest from across the width, then Megas on team, Swap my Mega and Count abilities three across (phones too);
    on a wide column all four in one row */
 .sg2-ctl{grid-template-columns:repeat(3,max-content)}
 @container (min-width:1100px){.sg2-ctl{grid-template-columns:repeat(4,max-content)}.sg2-pool{grid-column:auto}}
-@container (min-width:900px) and (max-width:1099px){.sg2-pool{grid-column:1/-1}}
-@container (max-width:519px){.sg2-ctl{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s2)}}
-@media (max-width:519px){.sg2-ctl{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s2)}}
+@container (min-width:900px) and (max-width:1099.98px){.sg2-pool{grid-column:1/-1}}
+@container (max-width:519.98px){.sg2-ctl{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s2)}}
+@media (max-width:519.98px){.sg2-ctl{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s2)}}
 /* Sim Q6: with Refresh Suggestions the links row split 2 + 1 on phones; under 520 the links stack in one left-aligned column (as Home's corner links) */
-@media (max-width:519px){.sg2-links{display:flex;flex-direction:column;align-items:flex-start;gap:0}}
-@container (max-width:519px){.sg2-links{flex-direction:column;align-items:flex-start;gap:0}}
+@media (max-width:519.98px){.sg2-links{display:flex;flex-direction:column;align-items:flex-start;gap:0}}
+@container (max-width:519.98px){.sg2-links{flex-direction:column;align-items:flex-start;gap:0}}
 /* Q6 follow-up (layout check: Megas' 0/1/2 were 30-38px wide three across): Megas keeps room for three 44px buttons; under 360 it takes its own row
    and Swap / Count abilities sit two across */
-@container (max-width:599px){.sg2-ctl{grid-template-columns:136px minmax(0,1fr) minmax(0,1fr)}} /* audit Nov 16: 520-599 the three max-content columns ran past the edge (Count abilities 'Yes' cut at 567-575) */
-@media (max-width:519px){.sg2-ctl{grid-template-columns:136px minmax(0,1fr) minmax(0,1fr)}}
-@media (max-width:359px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr))}.sg2-ctl>.sg2-c:nth-child(2){grid-column:1/-1}}
+@container (max-width:599.98px){.sg2-ctl{grid-template-columns:136px minmax(0,1fr) minmax(0,1fr)}} /* audit Nov 16: 520-599 the three max-content columns ran past the edge (Count abilities 'Yes' cut at 567-575) */
+@media (max-width:519.98px){.sg2-ctl{grid-template-columns:136px minmax(0,1fr) minmax(0,1fr)}}
+@media (max-width:359.98px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr))}.sg2-ctl>.sg2-c:nth-child(2){grid-column:1/-1}}
 /* the three switches line up along the bottom when a label wraps (390: "Swap my / Mega?" beside one-line "Megas on team") */
 .sg2-ctl{align-items:end}
 /* Nov 16 audit (detector, day mode): blue text on the tinted Team Cards (Home corner "Lead") and the underdog panel's links measured 4.2-4.47:1
@@ -308,5 +308,5 @@ p,li,small{text-wrap:pretty}
    is drawn inside: a band in the page colour at the edge, then the blue ring, so it shows on black, blue, pale and night fills */
 :root{--fring:var(--plot)}:root[data-theme="night"]{--fring:var(--ink)} /* night: light ring, so it shows on the blue main button and stays apart from the blue 'selected' outline */
 :root[data-theme] .np-fin:focus-visible{outline:3px solid var(--fring);outline-offset:-6px;box-shadow:inset 0 0 0 3px var(--bg)} /* in the last layer (sugs), so it wins over "selected" outlines such as night chips: the build puts each sheet in its own cascade layer */
-@container (min-width:520px) and (max-width:599px){.sg2-ctl{column-gap:var(--s4)}} /* audit Nov 16: at 520-599 the 32px gaps left the two choice columns 7px narrower than their buttons */
+@container (min-width:520px) and (max-width:599.98px){.sg2-ctl{column-gap:var(--s4)}} /* audit Nov 16: at 520-599 the 32px gaps left the two choice columns 7px narrower than their buttons */
 :root[data-theme="night"] .ra-seg a.on{background:color-mix(in srgb,var(--plot) 42%,var(--surface));color:var(--ink);outline:1.5px solid var(--plot);outline-offset:-1.5px} /* Nov 16 (design audit): night page tabs show "selected" in the same blue as every other night chip and switch (they were a grey plate) */

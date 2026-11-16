@@ -8,9 +8,9 @@
 .mu-pane{container-type:inline-size}
 .tm-mus{container-type:inline-size}
 /* the view switch in a narrow column (half of an iPad): the phone slider's stacked look, so all three choices fit */
-@container (max-width:519px){.mu-pick .np-slide{display:grid;width:100%;max-width:100%}.mu-pick .np-slide button{flex-direction:column;gap:var(--s1);min-height:56px;padding:var(--s2) var(--s1);font-size:var(--t13);white-space:normal;text-align:center;line-height:1.2}}
+@container (max-width:519.98px){.mu-pick .np-slide{display:grid;width:100%;max-width:100%}.mu-pick .np-slide button{flex-direction:column;gap:var(--s1);min-height:56px;padding:var(--s2) var(--s1);font-size:var(--t13);white-space:normal;text-align:center;line-height:1.2}}
 /* phones: the three counts sit side by side as three even columns, number over word (no count left alone on a second line) */
-@media (max-width:519px){.tm-mus .tm-legend,.mu-sh .tm-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}.tm-mus .tm-legend b,.mu-sh .tm-legend b{display:block;margin:0 0 var(--s1)}}
+@media (max-width:519.98px){.tm-mus .tm-legend,.mu-sh .tm-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}.tm-mus .tm-legend b,.mu-sh .tm-legend b{display:block;margin:0 0 var(--s1)}}
 /* calc level tag: a shape and a word, never the colour alone */
 .mu-lv{display:inline-flex;align-items:center;gap:6px;flex:none;white-space:nowrap;padding:6px var(--s3) 6px var(--s2);font:700 var(--t13)/1 var(--b);color:var(--ink);background:var(--wash);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 .mu-lv i{font-style:normal;font-weight:800}
@@ -31,7 +31,7 @@
 /* wide enough for two columns without squeezing a name onto two lines: 1-5 down the left, 6-10 down the right */
 @container (min-width:760px){.mu-rows{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(5,auto);grid-auto-flow:column}.mu-rows li:nth-child(5){border-bottom:0}}
 .mu-more{display:none;min-height:var(--tap);margin-top:var(--s1)}
-@media (max-width:1179px){.mu-rows:not(.is-more) li:nth-child(n+6){display:none}.mu-rows:not(.is-more) li:nth-child(5){border-bottom:0}.mu-more{display:inline-flex;align-items:center}}
+@media (max-width:1179.98px){.mu-rows:not(.is-more) li:nth-child(n+6){display:none}.mu-rows:not(.is-more) li:nth-child(5){border-bottom:0}.mu-more{display:inline-flex;align-items:center}}
 .mu-pane>.mu-more[data-muall]{display:inline-flex;align-items:center}
 .mu-h3{margin-top:var(--s6)}.mu-bsub{margin-top:var(--s2)}
 /* the next 20: small tiles, worst first, the verdict as a slanted bar under each */
@@ -41,9 +41,9 @@
 .mu-tile::after{content:"";position:absolute;left:var(--s2);right:var(--s2);bottom:var(--s1);height:4px;transform:skewX(var(--slant));background:color-mix(in srgb,var(--ink) 26%,transparent)}
 .mu-tile.vf::after{background:var(--plot)}.mu-tile.vu::after{background:var(--bad)}
 .mu-tile:hover{background:color-mix(in srgb,var(--plot) 12%,var(--wash))}
-@container (max-width:600px){.mu-tiles{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@container (max-width:600.98px){.mu-tiles{grid-template-columns:repeat(5,minmax(0,1fr))}}
 /* narrow: the verdict moves under the name, so names and calc words never break mid-phrase */
-@container (max-width:340px){.mu-row{grid-template-columns:24px 44px minmax(0,1fr);grid-template-areas:"k i n" "k i v";row-gap:var(--s1);padding:var(--s2) 0}
+@container (max-width:340.98px){.mu-row{grid-template-columns:24px 44px minmax(0,1fr);grid-template-areas:"k i n" "k i v";row-gap:var(--s1);padding:var(--s2) 0}
   .mu-row .k{grid-area:k}.mu-row img{grid-area:i}.mu-row .nm{grid-area:n}.mu-row .tm-v,.mu-row .mu-lv{grid-area:v;justify-self:start}}
 
 /* Top 12 grid: a cell per Pokémon, colour plus a shape (✓ ~ ✗ –) */
@@ -62,7 +62,7 @@ div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(-
 .mu-key{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s5);margin:var(--s4) 0 var(--s2);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .mu-key span{display:inline-flex;align-items:center;gap:var(--s2)}.mu-key .mu-c{width:32px;height:24px;margin:0;font-size:var(--t13)}
 /* phones: the threat's name gets its own line, the six cells sit under the six sprites */
-@container (max-width:480px){.mu-gr{grid-template-columns:repeat(var(--n),minmax(0,1fr));row-gap:var(--s1)}.mu-gr .th{grid-column:1/-1}.mu-gh>:first-child{display:none}.mu-gh img{width:40px;height:40px}}
+@container (max-width:480.98px){.mu-gr{grid-template-columns:repeat(var(--n),minmax(0,1fr));row-gap:var(--s1)}.mu-gr .th{grid-column:1/-1}.mu-gh>:first-child{display:none}.mu-gh img{width:40px;height:40px}}
 
 /* All 30: Threat preparation, then Biggest threats */
 .mu-prep{margin-top:var(--s3)}.mu-big1{margin:var(--s3) 0 var(--s1);font-size:var(--t24);line-height:1.15}
@@ -82,14 +82,14 @@ div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(-
 .mu-why li{display:grid;grid-template-columns:20px minmax(0,1fr);gap:var(--s2);font:400 var(--t15)/1.5 var(--b)}
 .mu-why li i{font-style:normal;font-weight:800}.mu-why .ok i{color:var(--plot-text)}.mu-why .part i{color:var(--mid-text)}.mu-why .no i{color:var(--bad-text)}
 .mu-why li.t2{display:block;font-size:var(--t13);color:var(--ink-3)}
-@container (max-width:560px){.mu-thr>summary{grid-template-columns:44px minmax(0,1fr) 12px}.mu-thr .ev{grid-column:2/3}.mu-thr>ul,.mu-thr>p{margin-left:0}}
+@container (max-width:560.98px){.mu-thr>summary{grid-template-columns:44px minmax(0,1fr) 12px}.mu-thr .ev{grid-column:2/3}.mu-thr>ul,.mu-thr>p{margin-left:0}}
 .mu-note{margin-top:var(--s4)}
 .mu-big{margin-top:var(--s3)}
 .mu-big li{display:grid;grid-template-columns:56px minmax(0,1fr) auto;align-items:start;gap:var(--s3);padding:var(--s3) 0;border-top:1px solid var(--rule)}
 .mu-big img{width:56px;height:56px;object-fit:contain}
 .mu-big .nm{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font:700 var(--t16)/1.3 var(--b)}.mu-big .nm .mg.none{display:none}.mu-big .ty{display:inline-flex;gap:var(--s1)}
 .mu-big .t{margin-top:var(--s1);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.mu-big .no{color:var(--bad-text)}
-@container (max-width:480px){.mu-big li{grid-template-columns:44px minmax(0,1fr)}.mu-big img{width:44px;height:44px}.mu-big li>.mu-lv{grid-column:2;justify-self:start}}
+@container (max-width:480.98px){.mu-big li{grid-template-columns:44px minmax(0,1fr)}.mu-big img{width:44px;height:44px}.mu-big li>.mu-lv{grid-column:2;justify-self:start}}
 
 /* the threat sheet */
 .mu-sh{padding:var(--s8)}
@@ -123,26 +123,26 @@ div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(-
 .mu-best .sw{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin:var(--s3) 0 var(--s4);font:600 var(--t15)/1.3 var(--b)}
 .mu-best .sw img{width:44px;height:44px;object-fit:contain}.mu-best .sw b{margin:0 var(--s2);color:var(--plot-text)}
 .mu-acts{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s8)}
-@media (max-width:699px){.mu-sh{padding:var(--s6) var(--gut) var(--s8)}.mu-shh{padding-right:var(--s10)}.mu-shh h2{font-size:var(--t28)}
+@media (max-width:699.98px){.mu-sh{padding:var(--s6) var(--gut) var(--s8)}.mu-shh{padding-right:var(--s10)}.mu-shh h2{font-size:var(--t28)}
   .mu-stiles{grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1)}.mu-dots{grid-template-columns:repeat(2,minmax(0,1fr))}.mu-det{padding:var(--s4)}
   .mu-dh,.mu-wr{grid-template-columns:44px minmax(0,1fr)}.mu-dh img,.mu-wr img{width:44px;height:44px}.mu-dh>.mu-lv,.mu-wr>.mu-lv{grid-column:2;justify-self:start}
   .mu-acts>*{flex:1}}
 /* phones: each of your six stands over its answer, three across, so long names never run out of the panel */
-@media (max-width:699px){.mu-dots{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s2)}.mu-dots li{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;gap:var(--s1)}}
+@media (max-width:699.98px){.mu-dots{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s2)}.mu-dots li{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center;gap:var(--s1)}}
 .mu-skey{margin:var(--s3) 0 0}
-@media (max-width:519px){.mu-skey{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s1) var(--s4)}.mu-skey .k{grid-column:1/-1}}.mu-g{font-style:normal;font-weight:800}.mu-g.l0{color:var(--bad-text)}.mu-g.l1{color:var(--mid-text)}.mu-g.l2,.mu-g.l3{color:var(--plot-text)}
+@media (max-width:519.98px){.mu-skey{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s1) var(--s4)}.mu-skey .k{grid-column:1/-1}}.mu-g{font-style:normal;font-weight:800}.mu-g.l0{color:var(--bad-text)}.mu-g.l1{color:var(--mid-text)}.mu-g.l2,.mu-g.l3{color:var(--plot-text)}
 .mu-sh .mu-cols .tm-legend{margin-top:var(--s2)}
 
 /* Stand-outs (Sim, Nov 11): two short lists and one line for the even ones */
 .mu-out li{display:block}
-@container (max-width:759px){.mu-out{grid-template-columns:minmax(0,1fr)}}
+@container (max-width:759.98px){.mu-out{grid-template-columns:minmax(0,1fr)}}
 .mu-h3 small{font:600 var(--t15)/1 var(--b);color:var(--ink-3);margin-left:var(--s1)}
 .mu-rest{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s3);margin:var(--s3) 0 0;color:var(--ink-2);font:400 var(--t15)/1.5 var(--b)}.mu-rest .np-link{min-height:var(--tap);display:inline-flex;align-items:center}
 .mu-row.mu-nk{grid-template-columns:44px minmax(0,1fr) auto}
-@container (max-width:340px){.mu-row.mu-nk{grid-template-columns:44px minmax(0,1fr);grid-template-areas:"i n" "i v"}}
+@container (max-width:340.98px){.mu-row.mu-nk{grid-template-columns:44px minmax(0,1fr);grid-template-areas:"i n" "i v"}}
 /* narrow Matchups (phones, the iPad's half column): the four views as an even 2 by 2, each label on one line (polish check
    "uneven", Nov 11); the picked one wears the plate itself instead of the sliding thumb */
-@container (max-width:440px){.mu-pick .np-slide{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}.mu-pick .np-slide .thumb{display:none}
+@container (max-width:440.98px){.mu-pick .np-slide{grid-auto-flow:row;grid-template-columns:repeat(2,minmax(0,1fr))}.mu-pick .np-slide .thumb{display:none}
   .mu-pick .np-slide button{flex-direction:row;min-height:var(--tap);white-space:nowrap}
   .mu-pick .np-slide button[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo))}}
 /* Height cuts (Nov 12, Sim: "trim, but nothing removed or buried"): Stand-outs rows without group headings, a little tighter
@@ -155,13 +155,13 @@ div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(-
   .tm-mus .mu-out .mu-row img{grid-area:i}.tm-mus .mu-out .mu-row .nm{grid-area:n}.tm-mus .mu-out .mu-row .tm-v{grid-area:v;justify-self:start}}
 /* A13 follow-up (Sim, Nov 12: "Stand-outs" showed blue text on a black plate on phones): in the 2 x 2 view switch the chosen
    button paints its own plate (the sliding one is hidden), so in day mode it takes the same light-blue plate as every other choice */
-@container (max-width:440px){:root:not([data-theme="night"]) .mu-pick .np-slide button[aria-pressed="true"]{background:color-mix(in srgb,var(--plot) 16%,var(--surface))}}
+@container (max-width:440.98px){:root:not([data-theme="night"]) .mu-pick .np-slide button[aria-pressed="true"]{background:color-mix(in srgb,var(--plot) 16%,var(--surface))}}
 /* 320-wide phones (Sim, Nov 12: option B): a stand-out row keeps name and verdict on one line (36px picture, 15/13 type) */
-@container (max-width:340px){.tm-mus .mu-row.mu-nk{grid-template-columns:36px minmax(0,1fr) auto;grid-template-areas:none;row-gap:0;padding:0}.tm-mus .mu-row.mu-nk img{width:36px;height:36px}.tm-mus .mu-row.mu-nk .nm{font-size:var(--t15)}.tm-mus .mu-row.mu-nk img,.tm-mus .mu-row.mu-nk .nm,.tm-mus .mu-row.mu-nk .tm-v{grid-area:auto}.tm-mus .mu-row .tm-v{font-size:var(--t13)}}
+@container (max-width:340.98px){.tm-mus .mu-row.mu-nk{grid-template-columns:36px minmax(0,1fr) auto;grid-template-areas:none;row-gap:0;padding:0}.tm-mus .mu-row.mu-nk img{width:36px;height:36px}.tm-mus .mu-row.mu-nk .nm{font-size:var(--t15)}.tm-mus .mu-row.mu-nk img,.tm-mus .mu-row.mu-nk .nm,.tm-mus .mu-row.mu-nk .tm-v{grid-area:auto}.tm-mus .mu-row .tm-v{font-size:var(--t13)}}
 /* review fix (Nov 13, Stand-Outs gap): the calc note is the row's last line, so names and badges line up across a row */
 .mu-row.mu-nk{grid-template-areas:"i n v" "i d d";row-gap:0}.mu-row.mu-nk img{grid-area:i}.mu-row.mu-nk .nm{grid-area:n}.mu-row.mu-nk .tm-v{grid-area:v}
 .mu-row.mu-nk>.mu-dis{grid-area:d;display:block;font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-@container (max-width:340px){.mu-row.mu-nk{grid-template-areas:"i n" "i v" "i d";row-gap:var(--s1)}}
+@container (max-width:340.98px){.mu-row.mu-nk{grid-template-areas:"i n" "i v" "i d";row-gap:var(--s1)}}
 /* the note row adds no gap to rows without a note (c13: My Team 1440 went 2 px over its 1,800 limit) */
 @media (min-width:1180px){.tm-mus .mu-out .mu-row.mu-nk{row-gap:0}.tm-mus .mu-out .mu-row.mu-nk .tm-v{margin-top:var(--s1)}.tm-mus .mu-out .mu-row.mu-nk>.mu-dis{margin-top:var(--s1)}}
 /* The Hand, piece 4 (brief s5): each stand-out threat is a small Card with its name, verdict and any "Calc disagrees" under it;
@@ -172,8 +172,8 @@ div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(-
 .mu-card{display:block;width:100%;max-width:120px}.mu-card .ms-card{height:132px;margin:0}.mu-card .mc-giant{font-size:var(--t34)}.mu-card .mc-id{display:none}
 .mu-card .mc-mon .np-mon,.mu-card .mc-mon .np-mon .st{--iw:84px}.mu-card .mc-orbit,.mu-card .ms-card::before{display:none}
 .mu-cards .nm{font:700 var(--t13)/1.25 var(--b);overflow-wrap:normal}.mu-cards .tm-v{justify-self:center}.mu-cards .mu-dis{font-size:var(--t13);line-height:1.3}
-@media (max-width:1099px){.mu-cards li{flex-basis:25%}}
-@media (max-width:359px){.mu-cards .nm{font-stretch:88%}.mu-cards li{flex-basis:33.333%}} /* re-check Nov 15: four across cut the verdict words at 320; three across, the last two centred */
+@media (max-width:1099.98px){.mu-cards li{flex-basis:25%}}
+@media (max-width:359.98px){.mu-cards .nm{font-stretch:88%}.mu-cards li{flex-basis:33.333%}} /* re-check Nov 15: four across cut the verdict words at 320; three across, the last two centred */
 .tm-mus .mu-cards .mu-out{display:contents;margin:0}
 .tm-mus .mu-cards .mu-out .mu-row.mu-nk{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:none;justify-items:center;row-gap:var(--s1);padding:0 var(--s1);min-height:0;border:0}
 .tm-mus .mu-cards .mu-out .mu-row .nm,.tm-mus .mu-cards .mu-out .mu-row .tm-v,.tm-mus .mu-cards .mu-out .mu-row .mu-dis{grid-area:auto;justify-self:center;margin:0}
@@ -183,9 +183,9 @@ div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(-
 .tm-mus .mu-cards .mu-card .mc-mon .np-mon,.tm-mus .mu-cards .mu-card .mc-mon .np-mon .st{--iw:112px}.tm-mus .mu-cards .mu-out .mu-row .mu-dis{width:100%;justify-self:stretch}
 .tm-mus .mu-cards .mu-card img{width:100%;height:auto}.tm-mus .mu-cards .mu-out .mu-row .mu-dis{width:auto;max-width:128px;justify-self:center}
 .tm-mus .mu-cards .mu-out .mu-row .mu-dis{max-width:100%;text-wrap:balance}
-@media (max-width:699px){.tm-mus .mu-cards .mu-card .ms-card{height:100px}.tm-mus .mu-cards .mu-card .mc-mon .np-mon,.tm-mus .mu-cards .mu-card .mc-mon .np-mon .st{--iw:76px}.tm-mus .mu-cards .mu-card{max-width:86px}.tm-mus .mu-cards .mu-out .mu-row .tm-v{font-size:var(--t13);padding:0 var(--s1);gap:2px;clip-path:none;background:none;white-space:nowrap}.tm-mus .mu-cards .mu-out .mu-row .tm-v i{width:8px}}
+@media (max-width:699.98px){.tm-mus .mu-cards .mu-card .ms-card{height:100px}.tm-mus .mu-cards .mu-card .mc-mon .np-mon,.tm-mus .mu-cards .mu-card .mc-mon .np-mon .st{--iw:76px}.tm-mus .mu-cards .mu-card{max-width:86px}.tm-mus .mu-cards .mu-out .mu-row .tm-v{font-size:var(--t13);padding:0 var(--s1);gap:2px;clip-path:none;background:none;white-space:nowrap}.tm-mus .mu-cards .mu-out .mu-row .tm-v i{width:8px}}
 /* Nov 15 (full check, a 5-of-6 team on phones): a row with a "Calc disagrees" note had no place for the note, so the grid's auto-placement
    pushed the verdict onto the name. The verdict keeps its column on the first line; the note gets the line under the name and verdict. */
 .mu-row .tm-v{grid-row:1}.mu-row .mu-dis{grid-row:2;grid-column:3/-1;justify-self:start;width:max-content;max-width:100%;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .mu-row.mu-nk .mu-dis{grid-column:2/-1}
-@container (max-width:340px){.mu-row .tm-v{grid-row:auto}.mu-row .mu-dis{grid-area:auto;grid-column:3/-1;grid-row:3}.mu-row.mu-nk .mu-dis{grid-column:2/-1}}
+@container (max-width:340.98px){.mu-row .tm-v{grid-row:auto}.mu-row .mu-dis{grid-area:auto;grid-column:3/-1;grid-row:3}.mu-row.mu-nk .mu-dis{grid-column:2/-1}}

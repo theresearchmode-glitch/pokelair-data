@@ -77,7 +77,7 @@ V2.pages.box = {place: 'box', draw() { const D = V2.bxData(), E = V2.esc, n = S.
 
 // ---------- actions ----------
 const bxRe = () => V2.redraw();
-V2.bxNarrow = () => matchMedia('(max-width:899px)').matches;
+V2.bxNarrow = () => matchMedia('(max-width:899.98px)').matches;
 V2.bxPick = n => { V2.bx.sel = n; V2.bx.form = null; if (V2.bxNarrow()) { bxRe(); V2.sheet(V2.bxSum(n, {sheet: true}), {label: V2.disp(n), small: true}); return; } bxRe();
   const t = document.querySelector(`[data-bxsel="${CSS.escape(n)}"]`); if (t) t.focus({preventScroll: true}); };
 V2.bxToast = t => V2.toast(V2.esc(t) + ' <button type="button" data-bxundo>Undo</button>', 6000);

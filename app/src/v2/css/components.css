@@ -26,9 +26,9 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-tabs [aria-selected="true"],.np-tabs [aria-current="location"]{color:var(--ink)}
 .np-tabs [aria-selected="true"]::after,.np-tabs [aria-current="location"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
 .np-tabs small{font:600 var(--t13)/1 var(--b);color:var(--ink-3);margin-left:4px}
-@media (max-width:699px){.np-tabs{gap:var(--s4)}}
+@media (max-width:699.98px){.np-tabs{gap:var(--s4)}}
 /* narrowest phones: every tab must still fit (nothing cut off at the edge); the counts move into the sections themselves */
-@media (max-width:379px){.np-tabs{gap:var(--s3)}.np-tabs a,.np-tabs button{font-size:var(--t13)}.np-tabs small{display:none}}
+@media (max-width:379.98px){.np-tabs{gap:var(--s3)}.np-tabs a,.np-tabs button{font-size:var(--t13)}.np-tabs small{display:none}}
 /* a Pokémon standing on its floor: the art on a pool of its own normalised colour (--cp); feet on one line (--fo) */
 .np-mon{position:relative;text-align:center;--iw:110px}
 /* the stage holds the art, its colour pool and the selected panel, so none of them can reach the name below (Sim, Nov 11) */
@@ -65,7 +65,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-score .w small{display:block;margin-top:6px;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
 .np-score[style*="band-top"] .w span,[style*="band-top"] .np-score:not([style]) .w span{text-shadow:var(--band-glow)} /* Build Q4 B (Sim, Nov 13): the night glow only on "Top tier", as kept on Nov 12 */
 .np-score.sm b{font-size:var(--d64)}.np-score.sm .w{padding-bottom:4px}.np-score.sm .w span{font-size:var(--t20)}
-@media (max-width:699px){.np-score b{font-size:var(--d120)}}
+@media (max-width:699.98px){.np-score b{font-size:var(--d120)}}
 /* list row and the soft rule */
 .np-row{display:flex;justify-content:space-between;align-items:center;min-height:52px;border-bottom:1px solid var(--rule);font:600 var(--t15)/1.2 var(--b)}
 
@@ -75,7 +75,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-slide button[aria-pressed="true"]{color:var(--on-plate)}
 .np-slide .thumb{position:absolute;z-index:0;top:0;bottom:0;left:0;width:calc(100% / var(--n));translate:calc(100% * var(--i)) 0;background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);transition:translate .22s cubic-bezier(.2,.8,.2,1)}
 /* phones: the icon sits above its name, like today's iPhone-style picker, so 3-4 choices always fit the width */
-@media (max-width:519px){.np-slide{display:grid;width:100%;max-width:100%}.np-slide button{flex-direction:column;gap:var(--s1);min-height:56px;padding:var(--s2) var(--s1);font-size:var(--t13);white-space:normal;text-align:center;line-height:1.2}.np-slide .np-ic{width:20px;height:20px}}
+@media (max-width:519.98px){.np-slide{display:grid;width:100%;max-width:100%}.np-slide button{flex-direction:column;gap:var(--s1);min-height:56px;padding:var(--s2) var(--s1);font-size:var(--t13);white-space:normal;text-align:center;line-height:1.2}.np-slide .np-ic{width:20px;height:20px}}
 /* field and search */
 .np-field{display:flex;align-items:center;gap:var(--s2);min-height:52px;padding:0 var(--s4);border:1.5px solid var(--ink);transform:skewX(-10deg);color:var(--ink-3)}
 .np-field>*{transform:skewX(10deg)}.np-field input{flex:1;min-width:0;border:0;background:none;font:500 var(--t15)/1 var(--b);color:var(--ink);outline:0}
@@ -86,41 +86,41 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-forms .k{display:flex;justify-content:space-between;align-items:center;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2);margin-bottom:var(--s2)}.np-forms .k .np-link{display:inline-flex;align-items:center;min-height:var(--tap);margin:calc(var(--s3) * -1) 0}
 .np-forms .r{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,160px);gap:var(--s2)}
 .np-forms .np-mon{--iw:80px}
-@media (max-width:699px){.np-forms .r{grid-auto-columns:minmax(0,1fr)}}
+@media (max-width:699.98px){.np-forms .r{grid-auto-columns:minmax(0,1fr)}}
 /* sheet: a solid surface over the lit page, which is softly blurred, never dimmed dark (the glass decision) */
 .np-scrim{position:fixed;inset:0;z-index:40;background:var(--scrim);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
 .np-sheet{position:fixed;z-index:41;left:50%;top:48px;bottom:48px;width:min(1120px,calc(100% - 64px));translate:-50% 0;overflow:auto;background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--shadow-lift)}
 .np-sheet .x{position:sticky;top:0;float:right;min-width:var(--tap);min-height:var(--tap);font:600 var(--t20)/1 var(--b);color:var(--ink-2)}
 .np-sheet .x{position:sticky;z-index:5;background:var(--surface);border-radius:50%} /* i42 (Nov 13): the X stays on top of scrolled content (a tilted panel painted over it), on the sheet's own surface */
-@media (max-width:699px){.np-sheet{top:auto;bottom:0;left:0;width:100%;max-height:92vh;translate:none;border-radius:var(--r-xl) var(--r-xl) 0 0}}
+@media (max-width:699.98px){.np-sheet{top:auto;bottom:0;left:0;width:100%;max-height:92vh;translate:none;border-radius:var(--r-xl) var(--r-xl) 0 0}}
 /* toast */
 .np-toast{position:fixed;z-index:50;left:50%;bottom:var(--tb,var(--s6));translate:-50% 0;display:flex;align-items:center;gap:var(--s4);max-width:calc(100% - 32px);padding:var(--s3) var(--s5);background:var(--plate);color:var(--on-plate);
   font:600 var(--t15)/1.3 var(--b);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
 .np-toast button{color:var(--plot);font-weight:700;min-height:var(--tap)}
-@media (max-width:699px){.np-toast{left:var(--gut);right:var(--gut);translate:none;max-width:none;justify-content:space-between;bottom:var(--tb,calc(64px + env(safe-area-inset-bottom,0px)))}}
+@media (max-width:699.98px){.np-toast{left:var(--gut);right:var(--gut);translate:none;max-width:none;justify-content:space-between;bottom:var(--tb,calc(64px + env(safe-area-inset-bottom,0px)))}}
 /* V2.toast() lifts it above the team dock and phone bar */
 /* the underdog (empty and loading screens; Sim, Nov 11, review item 13: "no free-floating glows"): the featured Pokémon stands on
    a floor in its own colour, the selected Pokémon's floor ring and pool (V2.mon with ft; .np-mon.ft above). No cloud behind it. */
 .np-under{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s6);align-items:center}.np-under .np-mon{--iw:200px}
 .np-under h3{font-size:var(--t28);margin:var(--s2) 0}.np-under h3 span{color:var(--plot-text)}.np-under p{font-size:var(--t15);color:var(--ink-2)}
 .np-under .acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s4)}.np-under .acts .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
-@media (max-width:699px){.np-under{grid-template-columns:1fr;justify-items:center;text-align:center}.np-under .np-mon{--iw:168px}.np-under .np-eyebrow,.np-under .acts{justify-content:center}}
+@media (max-width:699.98px){.np-under{grid-template-columns:1fr;justify-items:center;text-align:center}.np-under .np-mon{--iw:168px}.np-under .np-eyebrow,.np-under .acts{justify-content:center}}
 /* team dock: frosted bar with your team on every page except My Team */
 .np-dock{position:sticky;bottom:0;z-index:15;display:flex;align-items:center;gap:var(--s6);padding:var(--s3) var(--gut);border-top:1px solid var(--rule);
   background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.2);-webkit-backdrop-filter:blur(14px) saturate(1.2)}
 .np-dock .six{display:flex;gap:var(--s2)}.np-dock .six img{width:44px;height:44px;object-fit:contain}
 .np-dock .np-btn2{margin-left:auto}
-@media (max-width:699px){.np-dock{bottom:calc(56px + env(safe-area-inset-bottom,0px));gap:var(--s3)}.np-dock .np-btn2{display:none}.np-dock .six{flex:1;min-width:0;justify-content:flex-end}.np-dock .six img{flex:0 1 36px;min-width:0;width:36px;height:36px}}
-@media (max-width:379px){.np-dock .fine{display:none}}
+@media (max-width:699.98px){.np-dock{bottom:calc(56px + env(safe-area-inset-bottom,0px));gap:var(--s3)}.np-dock .np-btn2{display:none}.np-dock .six{flex:1;min-width:0;justify-content:flex-end}.np-dock .six img{flex:0 1 36px;min-width:0;width:36px;height:36px}}
+@media (max-width:379.98px){.np-dock .fine{display:none}}
 
 /* sheets: the page behind never scrolls while one is open */
 .np-locked{overflow:hidden}
 .np-sheet:focus{outline:0}
 .np-sheet.sm{top:12vh;bottom:auto;max-height:76vh;width:min(640px,calc(100% - 64px))}
-@media (max-width:699px){.np-sheet.sm{top:auto;bottom:0;width:100%;max-height:88vh}}
+@media (max-width:699.98px){.np-sheet.sm{top:auto;bottom:0;width:100%;max-height:88vh}}
 /* phones: an open sheet sits above the on-screen keyboard (--kb, set from visualViewport in shell.js; 0 when no keyboard) */
 :root{--kb:0px}
-@media (max-width:699px){.np-sheet{bottom:var(--kb);max-height:min(92vh,calc(100vh - var(--kb) - var(--s10)))}.np-sheet.sm{bottom:var(--kb);max-height:min(88vh,calc(100vh - var(--kb) - var(--s10)))}}
+@media (max-width:699.98px){.np-sheet{bottom:var(--kb);max-height:min(92vh,calc(100vh - var(--kb) - var(--s10)))}.np-sheet.sm{bottom:var(--kb);max-height:min(88vh,calc(100vh - var(--kb) - var(--s10)))}}
 /* search */
 .np-find{padding:var(--s8)}.np-find h2{font-size:var(--t28);margin-bottom:var(--s4)}
 .np-find .hits{margin-top:var(--s4);display:grid}
@@ -133,18 +133,18 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-hit .ty,.np-monsheet .ty{display:flex;gap:var(--s1);flex-wrap:wrap}.np-hit .ty{flex-wrap:nowrap}
 .np-hit .mg{margin-right:var(--s1)}.np-hit .mg.none{display:none}
 .np-hit .nm{display:grid;gap:2px;min-width:0}.np-hit .nm small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)} /* a page's line, a Pokémon's rating (Nov 15) */
-@media (max-width:379px){.np-find{padding:var(--s6) var(--s4)}.np-hit{grid-template-columns:40px 1fr}.np-hit img{width:40px;height:40px}.np-hit .ty{grid-column:2}}
+@media (max-width:379.98px){.np-find{padding:var(--s6) var(--s4)}.np-hit{grid-template-columns:40px 1fr}.np-hit img{width:40px;height:40px}.np-hit .ty{grid-column:2}}
 /* the simple Pokémon sheet (the full info sheet replaces it in R4) */
 .np-monsheet{display:flex;align-items:center;gap:var(--s8);padding:var(--s8)}
 .np-monsheet h2{font-size:var(--t34);margin-bottom:var(--s3)}.np-monsheet .fine{margin-top:var(--s3)}
-@media (max-width:699px){.np-monsheet{flex-direction:column;text-align:center}.np-monsheet .ty{justify-content:center}}
+@media (max-width:699.98px){.np-monsheet{flex-direction:column;text-align:center}.np-monsheet .ty{justify-content:center}}
 /* slider icons: today's line drawings, drawn in the text colour so they turn light on the sliding plate */
 .np-slide .np-ic{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .np-slide button{transition:color .25s cubic-bezier(.2,.8,.2,1)}
 @media (prefers-reduced-motion:reduce){.np-slide .thumb{transition:none}}
 .np-btn:disabled,.np-btn2:disabled{opacity:.45;cursor:not-allowed}
 /* a sheet open on a phone fills the bottom of the screen: its messages show at the top so they never cover its buttons */
-@media (max-width:699px){.np-locked .np-toast{bottom:auto;top:calc(var(--s4) + env(safe-area-inset-top,0px))}}
+@media (max-width:699.98px){.np-locked .np-toast{bottom:auto;top:calc(var(--s4) + env(safe-area-inset-top,0px))}}
 /* a full-width sheet that is only as tall as its content (Saved Teams with a few teams) */
 @media (min-width:700px){.np-sheet.fit{bottom:auto;max-height:calc(100% - 96px)}}
 .np-asof{white-space:nowrap}
@@ -159,7 +159,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-tabs a::before,.np-tabs button::before,.np-nav a::before,.np-foot nav a::before,.sg2-nact a::before,.sg2-undo .np-btn2::before,.np-toast button::before,.tm-sample .np-link::before,.sx-gpl::before,.hm-imp .np-link::before,.hm-acts .np-link::before,.hm-all::before,.hm-fav::before,.hm-sample .np-link::before,.bd-side .np-link::before,.bd-cmore::before,.bt-acts .np-link::before,.bd-hint .np-link::before,.bd-cacts .np-link::before,.bd-brk .np-link::before,.bd-wacts .np-link::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
 /* A9 (Sim, Nov 12): the selected Pokémon's floor ring sits lower and flatter, under the feet, so it no longer crosses the picture
    (was 118% wide, 30% tall, 34% down); on phones the selected picture stays inside its tile (it was 120px in a 111px tile) */
-@media (max-width:699px){.np-mon.sel img{scale:1}}
+@media (max-width:699.98px){.np-mon.sel img{scale:1}}
 .np-megatag{position:absolute;z-index:2;left:0;top:0;padding:var(--s1) var(--s2);font:800 var(--t13)/1 var(--u);font-style:italic;font-synthesis:style;color:var(--on-main);background:var(--plot);transform:skewX(var(--slant))}
 /* A13 (Sim, Nov 12: option C): in day mode a chosen option is a light blue plate with blue text, so the one main action stays the
    only black plate on a screen (4.7:1 contrast). Night mode keeps its lit plates. */

@@ -19,14 +19,14 @@
 /* My Box quick link: a box icon next to Day/Night (Sim, Nov 11: the box deserves eyes; an icon, not a menu place) */
 .np-boxlink{position:relative}.np-boxlink .np-ic{width:24px;height:24px}.np-boxlink[aria-current="page"]{color:var(--ink)}
 .np-boxlink[aria-current="page"]::after{content:"";position:absolute;left:var(--s2);right:var(--s2);bottom:0;height:5px;background:var(--plot);transform:skewX(var(--slant))}
-@media (max-width:899px){.np-head .tools{gap:var(--s2)}}
+@media (max-width:899.98px){.np-head .tools{gap:var(--s2)}}
 .np-foot{display:flex;align-items:center;gap:var(--s10);padding:var(--s8) var(--gut);border-top:1px solid var(--rule);font-size:var(--t15);color:var(--ink-2)}
 .np-foot svg{height:24px;width:auto;flex:none}.np-foot>span{flex:1;min-width:0}.np-foot nav{margin-left:auto;display:flex;gap:var(--s8)}.np-foot nav a{display:inline-flex;align-items:center;min-height:var(--tap);white-space:nowrap}
 .np-main{min-height:60vh}
 /* phone: logo + search on top, the five places in a bottom bar */
 .np-bar{display:none}
-@media (max-width:899px){.np-nav{gap:var(--s3)}.np-search .lbl,.np-search kbd{display:none}}
-@media (max-width:699px){
+@media (max-width:899.98px){.np-nav{gap:var(--s3)}.np-search .lbl,.np-search kbd{display:none}}
+@media (max-width:699.98px){
   .np-goback{margin:0 calc(var(--s2) * -1) 0 calc(var(--s3) * -1)}
   .np-head{height:60px;gap:var(--s3)}.np-head .logo svg{height:30px}.np-nav{display:none}.np-head .tools{margin-left:auto}
   .np-bar{position:fixed;left:0;right:0;bottom:0;z-index:20;display:grid;grid-template-columns:repeat(5,1fr);padding:0 0 env(safe-area-inset-bottom,0px);
@@ -35,7 +35,7 @@
   .np-bar a[aria-current="page"]{color:var(--ink)}
   .np-bar a[aria-current="page"]::before{content:"";width:22px;height:5px;margin-bottom:-12px;background:var(--plot);transform:skewX(var(--slant))}
   .np-foot{display:block;padding-bottom:calc(var(--s16) + 24px)}.np-foot>svg{display:block;margin-bottom:var(--s2)}.np-foot nav{margin:var(--s3) 0 0;flex-wrap:wrap;gap:var(--s4)}}
-@media (max-width:359px){.np-foot nav{flex-direction:column;gap:0}}
+@media (max-width:359.98px){.np-foot nav{flex-direction:column;gap:0}}
 /* Sim, Nov 11 (iPhone): no sideways scroll anywhere, whatever a page holds (clip keeps the sticky header working) */
 html,body{overflow-x:clip}
 /* touch screens (iPhone, iPad): the frosted glass stays (Sim: "i liked the glass"), a little more opaque so text under the bars
@@ -48,28 +48,28 @@ html,body{overflow-x:clip}
 @media (hover:none){input,select,textarea,.np-field input{font-size:var(--t16)}}
 /* header fit with the My Box icon (measured 300-2560): a smaller logo on the smallest phones and 700-759 windows,
    menu names 24px apart below 1100 (36 above), so the margins stay even */
-@media (max-width:1099px){.np-nav{gap:var(--s6)}}
-@media (max-width:899px){.np-nav{gap:var(--s3)}}
-@media (min-width:700px) and (max-width:759px){.np-head .logo svg{height:30px}}
-@media (max-width:359px){.np-head .logo svg{height:26px}}
-@media (max-width:329px){.np-head .tools{gap:var(--s1)}}
-@media (max-width:359px){.np-head{gap:var(--s2)}.np-goback{margin-right:calc(var(--s1) * -1)}.np-goback~.tools .np-search{padding:0 var(--s2)}}
+@media (max-width:1099.98px){.np-nav{gap:var(--s6)}}
+@media (max-width:899.98px){.np-nav{gap:var(--s3)}}
+@media (min-width:700px) and (max-width:759.98px){.np-head .logo svg{height:30px}}
+@media (max-width:359.98px){.np-head .logo svg{height:26px}}
+@media (max-width:329.98px){.np-head .tools{gap:var(--s1)}}
+@media (max-width:359.98px){.np-head{gap:var(--s2)}.np-goback{margin-right:calc(var(--s1) * -1)}.np-goback~.tools .np-search{padding:0 var(--s2)}}
 /* A8 proposal (Sim's fix plan, rule C9: text behind the bars must never be legible): the glass stays, but the tint is 96% on
    every screen (was 82% header / 86% phone bar on mouse screens, 92% on touch), and where a browser can't blur, the bars are solid */
 .np-head,.np-bar,.np-dock{background:color-mix(in srgb,var(--bg) 96%,transparent)}
 @supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.np-head,.np-bar,.np-dock{background:var(--bg)}}
 /* 320-wide phones (Sim, Nov 12: option D): footer links share rows instead of one per line */
-@media (max-width:359px){.np-foot nav{flex-direction:row;flex-wrap:wrap;gap:0 var(--s4)}}
-@media (max-width:419px){.np-head .logo svg{height:26px}.np-head .tools{gap:var(--s1)}.np-gofwd{margin-right:0}} /* Back + Forward on narrow phones (Nov 12): nothing past the edge, no overlapping tap areas */
-@media (min-width:700px) and (max-width:759px){.np-head{gap:var(--s3)}}@media (max-width:359px){.np-head .logo svg{height:22px}} /* Back + Forward: 700-719 ran 7-17px past the edge, 320 ran 10px (measured Nov 12) */
-@media (max-width:359px){.np-head .logo svg{height:20px}.np-gofwd{margin-left:calc(var(--s2) * -1)}} /* 320-359: Forward tap area no longer covers the end of the logo (was 8px) */
-@media (max-width:699px){.np-goback{margin-right:calc(var(--s4) * -1)}}@media (max-width:359px){.np-gofwd{margin-left:calc(var(--s3) * -1)}} /* Sim, Nov 12: Back and Forward the same distance from the logo (15px each on phones) */
-@media (max-width:359px){.np-goback{margin-right:calc(var(--s3) * -1)}} /* 320-359: Back 15px from the logo too, like Forward */
+@media (max-width:359.98px){.np-foot nav{flex-direction:row;flex-wrap:wrap;gap:0 var(--s4)}}
+@media (max-width:419.98px){.np-head .logo svg{height:26px}.np-head .tools{gap:var(--s1)}.np-gofwd{margin-right:0}} /* Back + Forward on narrow phones (Nov 12): nothing past the edge, no overlapping tap areas */
+@media (min-width:700px) and (max-width:759.98px){.np-head{gap:var(--s3)}}@media (max-width:359.98px){.np-head .logo svg{height:22px}} /* Back + Forward: 700-719 ran 7-17px past the edge, 320 ran 10px (measured Nov 12) */
+@media (max-width:359.98px){.np-head .logo svg{height:20px}.np-gofwd{margin-left:calc(var(--s2) * -1)}} /* 320-359: Forward tap area no longer covers the end of the logo (was 8px) */
+@media (max-width:699.98px){.np-goback{margin-right:calc(var(--s4) * -1)}}@media (max-width:359.98px){.np-gofwd{margin-left:calc(var(--s3) * -1)}} /* Sim, Nov 12: Back and Forward the same distance from the logo (15px each on phones) */
+@media (max-width:359.98px){.np-goback{margin-right:calc(var(--s3) * -1)}} /* 320-359: Back 15px from the logo too, like Forward */
 .np-foot nav a{min-width:var(--tap);justify-content:center} /* footer links never under 44px wide ("About" was 43 at 390, Nov 12) */
 /* Sim, Nov 15 (Q2 A): today's footer parts back: the tagline, Privacy and Contact, Sources and Credits (from the same list as About) */
 .np-foot{flex-wrap:wrap;row-gap:var(--s3)}.np-ftxt{flex:1 0 320px;max-width:100%;min-width:0;display:grid;gap:var(--s1)} /* at least 320 px: when the links don't fit beside it they wrap below (it shrank to 9 px at 820, under the links) */.np-ftag{margin:0;font:800 var(--t20)/1.3 var(--u);font-style:italic;color:var(--ink)}.np-ftag span{color:var(--plot-text)}
 .np-fsrc{flex-basis:100%;margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.np-fsrcb{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;font:inherit;color:inherit;cursor:pointer;white-space:nowrap}.np-fsrcb:hover{color:var(--plot-text)}
-@media (max-width:699px){.np-foot{padding-top:var(--s6)}.np-ftxt{margin-top:var(--s1)}.np-foot nav{margin-top:var(--s2);column-gap:var(--s4);row-gap:0}} /* phones: tighter, so the restored parts cost as little height as possible */
+@media (max-width:699.98px){.np-foot{padding-top:var(--s6)}.np-ftxt{margin-top:var(--s1)}.np-foot nav{margin-top:var(--s2);column-gap:var(--s4);row-gap:0}} /* phones: tighter, so the restored parts cost as little height as possible */
 /* data note (parity, Nov 15): today's healthBar/regBar as one calm line above Home and the Meta pages; the amber mark is My Team's legal mark */
 .np-dnote{display:flex;align-items:flex-start;gap:var(--s3);margin:var(--s6) var(--gut) var(--s4);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .np-dnote b{color:var(--ink);font-weight:700}.np-dnote span{min-width:0}
@@ -80,9 +80,9 @@ html,body{overflow-x:clip}
 .np-foot img.np-lg{height:32px}
 /* PROPOSAL for Sim (measured Nov 16): the brief's sizes don't fit beside Back, Forward, Search and Menu below 1000 wide, so: the imp alone
    below 414 (the brief: under the 28px minimum, use the imp), logo-small 28-32px from 414 to 999, the full logo 44px from 1000 */
-@media (max-width:999px){.np-head .np-lg img{height:28px}}
-@media (min-width:480px) and (max-width:699px){.np-head .np-lg img{height:32px}}
-@media (max-width:413px){.np-head .np-lg img{height:32px}}
+@media (max-width:999.98px){.np-head .np-lg img{height:28px}}
+@media (min-width:480px) and (max-width:699.98px){.np-head .np-lg img{height:32px}}
+@media (max-width:413.98px){.np-head .np-lg img{height:32px}}
 .np-head .logo{flex:none}
 /* Footer with the new logo (Nov 16): the Sly Devil logo is about 2.4x as wide as the old one, which pushed the links under the text at 1280
    (an empty left half). From 1100 the logo sits above the tagline in the left column (as on phones) and the links keep the right side;
