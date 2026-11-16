@@ -18,6 +18,7 @@
   --x4:#8E1B1B;--pk-main:var(--plate);--on-pk-main:var(--on-plate);--on-x4:#FFFFFF;--st-hp:#21804A;--st-atk:#C2470F;--st-def:#B58300;--st-spa:#2B66D6;--st-spd:#7E45D1;--st-spe:#C8346A;--on-st:#FFFFFF;--on-st-def:#17161A;
   --band-top:#0078BF;--band-ready:#7B4BD6;--band-solid:#6B6570;--band-work:#E9A800;--band-miss:var(--bad-text); /* Sim, Nov 13 (My Team Q3 B): "Missing a basic" in the site's red, now that red is allowed */
   --band-work-text:var(--mid-text); /* Nov 16 (a11y): "Needs work" as text; the bright amber is for fills */
+  --plot-text-deep:#035C97; /* Nov 16 audit: blue text on tinted Team Cards / panels (4.2-4.47:1 with --plot-text); 5.07:1+ on every measured tint */
   --contact:rgba(30,20,50,.42);--shadow-lift:0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18),0 24px 40px -18px rgba(30,20,50,.30);
   --lit-edge:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.08);
   --grain:.035;--score-ink:var(--ink);
@@ -32,6 +33,7 @@
   --ty-Dragon:#5060E1;--ty-Ground:#9A6230;--ty-Fighting:#BE5718;--ty-Poison:#8E3FC8;--ty-Dark:#5A4A56;--ty-Steel:#447C90;--ty-Fire:#D2411E;--ty-Water:#2774D4;--ty-Grass:#28843C;--ty-Fairy:#BF3CB7;--ty-Flying:#3076C7;--ty-Ghost:#6A4BB8;--ty-Psychic:#D6316F;--ty-Ice:#187E97;--ty-Rock:#7D754B;--ty-Electric:#946F00;--ty-Normal:#737571;--ty-Bug:#677C0F;
   /* tickets (Events, This Week winners; Nov 15): fine lines, the tear line and the stub's shade over a type colour, the same in both themes */
   --tk-line:rgba(255,255,255,.09);--tk-tear:rgba(255,255,255,.55);--tk-shade:rgba(10,8,20,.22);--tk-ink:#1A1408;
+  --tk-scrim:rgba(26,20,8,.15); /* Nov 16 audit: under white text on type-coloured tickets (3.6-4.2:1 -> 4.6:1+) */
   /* weather scenes (Archetypes, This Week; Nov 15): light marks over a type colour, the same in both themes */
   --wx-lo:rgba(255,255,255,.10);--wx-mid:rgba(255,255,255,.2);--wx-hi:rgba(255,255,255,.34);--wx-dk:rgba(10,8,20,.28);
   /* paper (Track Record's receipt, slips and chart sheet; Nov 15): white with dark words in both themes, waiting on Sim's yes; stamps use
@@ -63,6 +65,7 @@
   --x4:#B71C1C;--pk-main:var(--plot);--on-pk-main:var(--on-mark);--on-x4:#FFFFFF;--st-hp:#2E9E5B;--st-atk:#E0601F;--st-def:#D9A21A;--st-spa:#5B8DF0;--st-spd:#A27BEA;--st-spe:#E5578A;--on-st:#12121B;--on-st-def:#12121B;
   --band-top:#62BEF7;--band-ready:#C9B0FF;--band-solid:#B0AAB8;--band-work:#F0C768;--band-miss:var(--bad-text);
   --band-work-text:var(--band-work); /* Nov 16 (a11y): "Needs work" as text; the bright amber is for fills */
+  --plot-text-deep:var(--plot-text); /* night: the light blue already passes on dark tints */
   --contact:transparent;--shadow-lift:0 1px 2px rgba(0,0,0,.35),0 8px 16px -6px rgba(0,0,0,.45),0 24px 40px -16px rgba(0,0,0,.6);
   --lit-edge:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.35);
   --grain:.05;--score-ink:#D6D1CA;

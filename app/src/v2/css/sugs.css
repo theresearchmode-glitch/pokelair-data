@@ -272,3 +272,28 @@ a,button,summary{text-wrap:pretty}.sx-info{white-space:nowrap}
 @media (max-width:359px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr))}.sg2-ctl>.sg2-c:nth-child(2){grid-column:1/-1}}
 /* the three switches line up along the bottom when a label wraps (390: "Swap my / Mega?" beside one-line "Megas on team") */
 .sg2-ctl{align-items:end}
+/* Nov 16 audit (detector, day mode): blue text on the tinted Team Cards (Home corner "Lead") and the underdog panel's links measured 4.2-4.47:1
+   (WCAG AA needs 4.5); on those tinted surfaces the blue is a deeper shade (5.07:1+ measured) */
+.ff,.hm-ud,.fn-dog{--plot-text:var(--plot-text-deep)}
+/* Nov 16 audit: the Pokémon page's move tiles drew a 10% white stripe over the type colour, which dropped white text to 3.8-4.2:1 on 15 of 18
+   types (the fills alone pass, 4.6+); the stripe is now a 12% dark one, same pattern, and raises the contrast instead */
+.pk-slots li{background:repeating-linear-gradient(-55deg,transparent 0 6px,color-mix(in srgb,var(--tk-ink) 12%,transparent) 6px 8px) var(--tc)}
+/* Nov 16 audit: search and name boxes used the browser's default placeholder grey (4.4:1 on the page); the site's own secondary ink (5.9:1 day, 8:1 night) */
+input::placeholder,textarea::placeholder{color:var(--ink-3);opacity:1}
+/* Nov 16 audit (detector "straggler"): paragraphs avoid a lone last word too, as links already do; 137 -> 79 one-word last lines over 23 pages at
+   390 and 1280, for about 7px of page height per page */
+p,li,small{text-wrap:pretty}
+/* Nov 16 audit (detector, day and night): white words on the type-coloured tickets, the Events plate and This Week's headline measured 3.6-4.2:1;
+   a 15% dark layer under the ticket lines brings every type colour to 4.6:1+ (official tickets are gold with dark ink and stay as they are) */
+.tk:not(.off),.ev-oh,.wk-hl{background:repeating-linear-gradient(135deg,var(--tk-line) 0 1px,transparent 1px 7px),linear-gradient(var(--tk-scrim),var(--tk-scrim)),linear-gradient(115deg,var(--ta),var(--tb))}
+/* the Damage Calc's lit field cards (Grassy, Rain...) faded toward white under white words (3.7:1): the fade now goes slightly darker instead */
+.dc2-fc.lit:not([style*="wx-sun"]){background:linear-gradient(135deg,color-mix(in srgb,var(--fc) 85%,var(--tk-ink)),color-mix(in srgb,var(--fc) 80%,var(--tk-ink)))}
+/* Nov 16 audit (detector pixel contrast, day): the small blue "Mega" above names on Cards read 3.9-4.49:1 over the card art; the deeper blue */
+.mg{--plot-text:var(--plot-text-deep)}
+/* Sim Q4 (Nov 16, recommended): one style for text folds - title, its one-line summary, and the grey › on the right that turns when open.
+   About's rows and Events' "What counts as an event?" had no marker (and Events' title was link blue); How We Calculate's tiles stay tiles */
+.inf-row summary{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s4)}.inf-row summary>*{grid-column:1}
+.inf-row>summary::after,.ev-what>summary::after{content:"›";grid-column:2;grid-row:1/span 2;align-self:center;margin:0 0 0 auto;font:700 var(--t20)/1 var(--b);color:var(--ink-3);transition:rotate .2s}
+.inf-row[open]>summary::after,.ev-what[open]>summary::after{rotate:90deg}
+.ev-what summary{list-style:none;color:var(--ink);gap:var(--s4)}.ev-what summary::-webkit-details-marker{display:none}
+@media (prefers-reduced-motion:reduce){.inf-row>summary::after,.ev-what>summary::after{transition:none}}

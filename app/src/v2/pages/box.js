@@ -122,7 +122,7 @@ document.addEventListener('click', async e => { const t = e.target.closest && e.
   else if (d.bxrm) { const p = byName.get(d.bxrm), tiles = [...document.querySelectorAll('[data-bxsel]')], at = Math.max(0, tiles.findIndex(x => x.dataset.bxsel === d.bxrm));
     boxRemove(d.bxrm); V2.closeSheet(true); render(); V2.bxToast(`Removed ${p ? p.d : d.bxrm} from your box`);
     const now = [...document.querySelectorAll('[data-bxsel]')].filter(x => x.getClientRects().length), f = now[Math.min(at, now.length - 1)]; if (f) f.focus({preventScroll: false}); }
-  else if (d.bxundo !== undefined) { if (boxRestore()) { render(); toast('Box restored'); } }
+  else if (d.bxundo !== undefined) { document.querySelectorAll('.np-sheet-undo').forEach(x => x.remove()); if (boxRestore()) { render(); toast('Box restored'); } }
   else if (d.bxreset !== undefined) { if (!V2.bx.ask) { V2.bx.ask = true; bxRe(); clearTimeout(V2.bx._t); V2.bx._t = setTimeout(() => { V2.bx.ask = false; if (V2.route() === 'box') bxRe(); }, 3500); return; }
     V2.bx.ask = false; boxReset(); V2.bx.page = 0; V2.bx.sel = null; render(); V2.bxToast('Box reset to the default list'); }
   else if (d.bxlink === 'copy') { const l = boxLink(); if (!l) { toast('Add some Pokémon to your box first'); return; }
