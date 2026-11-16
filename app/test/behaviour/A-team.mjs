@@ -1118,7 +1118,7 @@ t('X-02', 'First visit: sample six "Sun Tailwind (sample)", saved and open, defa
     team" (opens Import). It is saved and open; My Box holds the default 36 ("36 Pokémon · 2 boxes"). The Saved Teams sheet is closed
     with its "← My Team" before going to My Box, as a player would (the sheet covers the page) */
     const r = await aopen({fresh: true}); await r.ui.go('My Team', 2500); const tx = await r.ui.text(); ok(await r.ui.teamHeading() === 'Sun Tailwind (sample)', 'heading: ' + await r.ui.teamHeading());
-    has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. (?:Build [Yy]our [Oo]wn|Build Me a Team(?: ›)?) · Import a [Tt]eam(?: ›)? /, 'sample note');
+    has(tx, / Sun Tailwind \(sample\) This is a sample team, here to show how NastyPlot works\. (?:Build [Yy]our [Oo]wn|Build Me a Team(?: ›)?)(?: ·)? Import a [Tt]eam(?: ›)? /, 'sample note');
     const bo = NEW ? (NEW ? 'Build Me a Team' : 'Build Your Own') : 'Build your own'; ok(await r.ui.linkHref(bo) === '#build', '"' + bo + '" leads to ' + await r.ui.linkHref(bo));
     await r.ui.tapText(/^Import a team$/, 900); const p = await r.ui.editPanel(); ok(p && p.title === 'Paste a Team', '"Import a team" did not open Import (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
     await r.ui.go('Saved Teams', 900); has(await r.ui.savedCardOf('Sun Tailwind (sample)') || '', /^Sun Tailwind \(sample\) Open now /, 'saved sample');

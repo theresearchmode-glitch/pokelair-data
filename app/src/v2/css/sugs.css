@@ -167,3 +167,8 @@
   .gs-rows .gs-row{display:contents}.gs-rows .gs-row::before,.gs-rows .gs-row::after{display:none}
   .gs-rows .gs-mon{flex:0 0 calc(var(--gsw) + var(--s6));scroll-snap-align:start;padding-bottom:0}
   .gs{gap:var(--s4)}.gs-rows{padding-bottom:0}}
+/* My Team (Nov 16; advisor: 'Saved ✓' is a status): when the team is already saved, Saved ✓ reads as a quiet status (no outline, blue check),
+   still a 44px button that opens the save sheet to rename; Share, Saved Teams and More keep their outlines (Sim's Nov 11-12 row).
+   The sample note's two links sit apart with space, not a dot, now that each ends in › */
+.tm-acts .tm-saved{border-color:transparent;background:none;transform:none;padding-left:0;color:var(--ink-2);justify-content:flex-start}.tm-acts .tm-saved>span{transform:none}.tm-acts .tm-saved b{color:var(--good-text)}
+.tm-sample-acts{display:inline-flex;flex-wrap:wrap;column-gap:var(--s5);white-space:normal}
