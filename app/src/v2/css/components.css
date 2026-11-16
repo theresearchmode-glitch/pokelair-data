@@ -23,8 +23,8 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 /* tabs */
 .np-tabs{display:flex;gap:var(--s8);border-bottom:1px solid var(--rule)}
 .np-tabs a,.np-tabs button{position:relative;padding:var(--s3) 0;font:600 var(--t15)/1.2 var(--b);color:var(--ink-2);white-space:nowrap;min-height:var(--tap)}
-.np-tabs [aria-selected="true"]{color:var(--ink)}
-.np-tabs [aria-selected="true"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
+.np-tabs [aria-selected="true"],.np-tabs [aria-current="location"]{color:var(--ink)}
+.np-tabs [aria-selected="true"]::after,.np-tabs [aria-current="location"]::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
 .np-tabs small{font:600 var(--t13)/1 var(--b);color:var(--ink-3);margin-left:4px}
 @media (max-width:699px){.np-tabs{gap:var(--s4)}}
 /* narrowest phones: every tab must still fit (nothing cut off at the edge); the counts move into the sections themselves */

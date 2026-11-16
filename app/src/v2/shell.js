@@ -274,7 +274,7 @@ V2.redraw = () => { const app = document.getElementById('app'); if (!app || !app
   else if (act && act !== document.body && act.isConnected && document.activeElement !== act && !(V2._sheet)) { if (!act.matches('a[href],button,input,select,textarea,summary,[tabindex]')) { act.tabIndex = -1; act.addEventListener('blur', () => act.removeAttribute('tabindex'), {once: true}); } act.focus({preventScroll: true}); }
   /* a page's after() runs after EVERY redraw, not only on entry: it must be safe to repeat (measure and lay out; anything that opens,
      focuses or announces must guard itself to run once, as #sheet and the Pokémon page's name focus do; code review B9c) */
-  if (r.P && r.P.after) try { r.P.after(); } catch (e) { console.error(e); } if (V2.fitWords) try { V2.fitWords(); } catch (e) { console.error(e); } };
+  if (r.P && r.P.after) try { r.P.after(); } catch (e) { console.error(e); } if (V2.fitWords) try { V2.fitWords(); } catch (e) { console.error(e); } V2.setTitle(); };
 // the whole page as HTML (header, the page, footer, phone bar); V2.draw puts it in fresh, V2.redraw merges it in place
 // one page's error never blanks the whole site (audit SHELL-34; today's safe() wrapper does the same per section): the header, menus
 // and footer still draw, the page says what happened, and the error goes to the console for the checks to catch
@@ -289,6 +289,11 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
 <main class="np-main" id="main">${(place === 'home' || place === 'meta') && r !== 'pokemon' ? V2.dataNote() : ''}${P ? V2.safeDraw(P) : ''}</main>
 <footer class="np-foot">${V2.logo(true)}<div class="np-ftxt">${place === 'home' ? '' : '<p class="np-ftag u">Sharply raise <span>your win rate.</span></p>'}<span>NastyPlot is an unofficial, fan&#8209;made tool.${V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span></div><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#about=priv">Privacy</a><a href="#about=contact">Contact</a>${V2.FB && V2.FB.ok ? '<a href="#feedback">Send Feedback</a>' : ''}${V2.OWN ? `<a href="#owner">Owner</a>` : ``}<button type="button" class="np-fsrcb" data-fsrc aria-expanded="false" aria-controls="np-fsrc">Sources and Credits</button></nav><p class="np-fsrc" id="np-fsrc" hidden>${(() => { try { return DATA_SOURCES.map(x => V2.esc(x.name)).join(' · '); } catch (e) { return ''; } })()}. Each used by its own rules; details in <a class="np-link" href="#about=data">About</a>.</p></footer>
 <nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
+/* audit Nov 16 (WCAG 2.4.2): each page has its own browser title, its name as the menu and search show it ("Meta · NastyPlot"); Home keeps "NastyPlot";
+   Pokémon pages set their own fuller title (pages/pokemon.js) */
+V2.setTitle = () => { try { const r = V2.route(); if (r === 'pokemon') return; const h = document.querySelector('#main h1');
+  const nm = ((V2.findPlaces || []).find(([k, n]) => k === r && typeof n === 'string') || [])[1];
+  const t = r === 'home' ? 'NastyPlot' : nm ? nm + ' · NastyPlot' : h ? h.textContent.replace(/\s+/g, ' ').trim().slice(0, 60) + ' · NastyPlot' : 'NastyPlot'; if (document.title !== t) document.title = t; } catch (e) {} };
 V2.draw = () => { const app = document.getElementById('app'); if (!app) return; const {P, html} = V2.shell();
   // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the
   // pictures already on screen and put them back in place of their identical new copies (same src), so nothing re-decodes.
@@ -298,7 +303,7 @@ V2.draw = () => { const app = document.getElementById('app'); if (!app) return; 
     for (const a of [...o.attributes]) if (a.name !== 'src' && !n.hasAttribute(a.name)) o.removeAttribute(a.name);
     for (const a of [...n.attributes]) if (a.name !== 'src' && a.name !== 'loading' && o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
     o.removeAttribute('loading'); n.replaceWith(o); }
-  if (P && P.after) try { P.after(); } catch (e) { console.error(e); } if (V2.fitWords) try { V2.fitWords(); } catch (e) { console.error(e); } };
+  if (P && P.after) try { P.after(); } catch (e) { console.error(e); } if (V2.fitWords) try { V2.fitWords(); } catch (e) { console.error(e); } V2.setTitle(); };
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2theme]'); if (t) V2.setTheme(V2.theme() === 'night' ? 'day' : 'night'); });
 // My Box toggles (Sim, Nov 12): the box icon opens My Box; pressed again while in the box, it goes back to the screen you came from
 // (that screen's address, so a team or box link isn't replayed); straight into the box with no screen before it: My Team

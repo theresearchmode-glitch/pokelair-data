@@ -1312,7 +1312,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .dc2-grid th{padding:var(--s1);text-align:center;font-weight:600;color:var(--ink-2)}.dc2-grid tbody th{display:flex;align-items:center;gap:var(--s1);text-align:left;white-space:nowrap}
 .dc2-grid td{min-width:var(--s16);padding:var(--s1);text-align:center;background:var(--wash)}.dc2-grid td b{display:block;font-size:var(--t15)}.dc2-grid td small{display:block;font-weight:500;color:var(--ink-2)}
 .dc2-grid .k1{background:var(--bad);color:var(--on-mark)}.dc2-grid .k1 small{color:var(--on-mark)}.dc2-grid .k1m{background:var(--ko-tint)}.dc2-grid .k2{background:color-mix(in srgb,var(--mid) 45%,transparent)}.dc2-grid .k2m{background:color-mix(in srgb,var(--mid) 22%,transparent)}.dc2-grid .z{color:var(--ink-3)}
-@media (max-width:699px){.dc2-grid td small{display:none}.dc2-grid tbody th span{display:none}.dc2-grid td{min-width:0}}
+@media (max-width:699px){.dc2-grid td small{display:none}.dc2-grid tbody th span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap} /* audit Nov 16: hidden from view, still the row name for screen readers */.dc2-grid td{min-width:0}}
 .dc2-grid .k1,.dc2-grid .k1 small{color:var(--on-mark)} /* readable on the red in day (white) and night (dark ink) */
 @media (max-width:699px){.dc2 .ms-card{--ch:192px}} /* phone cards a little taller so the Pokemon stays big above a two-line Mega name */
 @media (min-width:1024px){.dc2-pc.attacker .ms-card{--ch:216px}.dc2-pc.attacker{width:208px}}

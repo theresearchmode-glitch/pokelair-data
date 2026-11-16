@@ -428,7 +428,7 @@ V2.pages.team = {place: 'team', draw() {
   // the three counts (brief s1) are left out: Sim, Nov 12, 'no Matchups summary in the header' (TEAM-15); question to Sim with pictures
   const mtNums = nm ? `<div class="mt-nums"><p class="lf"><b class="u">${D.mu.fav}</b><span>Favoured</span></p><p class="le"><b class="u">${D.mu.even}</b><span>Even match</span></p><p class="lu"><b class="u">${D.mu.unf}</b><span>Unfavoured</span></p></div>` : '';
   const mtHead = `${mtBand}<div class="tm-lock mt-head">${mtId}${mtBelt}<div class="mt-right">${acts.replace(/ tm-svl/g, '')}</div></div>`;
-  const jump = `<nav class="np-tabs tm-jump" aria-label="On this page">${V2.isHand(D) ? '' : '<a href="#team" data-tmjump="tm-set" aria-selected="true">Set</a>'}<a href="#team" data-tmjump="tm-mu"${V2.isHand(D) ? ' aria-selected="true"' : ''}>Matchups</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks</a>${legalMark}<button type="button" class="tm-tsbtn" data-v2sheetopen aria-label="Team Sheet">Team Sheet <span aria-hidden="true">↗</span></button></nav>`;
+  const jump = `<nav class="np-tabs tm-jump" aria-label="On this page">${V2.isHand(D) ? '' : '<a href="#team" data-tmjump="tm-set" aria-current="location">Set</a>'}<a href="#team" data-tmjump="tm-mu"${V2.isHand(D) ? ' aria-current="location"' : ''}>Matchups</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks</a>${legalMark}<button type="button" class="tm-tsbtn" data-v2sheetopen aria-label="Team Sheet">Team Sheet <span aria-hidden="true">↗</span></button></nav>`;
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set (group six: six.js)
   const setSec = V2.isHand(D) ? '' : V2.setSecHtml(D, sel); // The Hand: the editing strip under the Hand replaces the Set section (brief s3)
   // 2. Matchups: real-game verdicts lead, the calc reading underneath (Sim, Nov 10); views and threat sheet in pages/matchups.js (hook)
@@ -456,11 +456,11 @@ after() { V2.mtBeltFit();
 V2.jumpSync = () => { const nav = document.querySelector('.tm-jump'); if (!nav) return; const as = [...nav.querySelectorAll('[data-tmjump]')]; if (!as.length) return;
   // (Sim approved A7, Claude's recommendation for wide screens): from 700px the sections sit side by side, so "where you are" has
   // no single answer; there no section is marked (no underline) rather than a wrong one
-  if (matchMedia('(min-width:700px)').matches) { for (const a of as) if (a.getAttribute('aria-selected') !== 'false') a.setAttribute('aria-selected', 'false'); return; }
+  if (matchMedia('(min-width:700px)').matches) { for (const a of as) a.removeAttribute('aria-current'); return; }
   const line = nav.getBoundingClientRect().bottom + 24; let cur = as[0], best = -Infinity;
   for (const a of as) { const s = document.getElementById(a.dataset.tmjump); if (!s) continue; const t = s.getBoundingClientRect().top; if (t <= line && (t > best + 1 || (Math.abs(t - best) <= 1 && a.dataset.tmjump === V2._jumpPick))) { best = Math.max(best, t); cur = a; } }
   if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) cur = as[as.length - 1];
-  for (const a of as) { const on = a === cur; if ((a.getAttribute('aria-selected') === 'true') !== on) a.setAttribute('aria-selected', on ? 'true' : 'false'); } };
+  for (const a of as) { const on = a === cur; if ((a.getAttribute('aria-current') === 'location') !== on) { if (on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); } } }; /* audit Nov 16: aria-current (links can't be "selected") */
 let jumpRaf = 0; addEventListener('scroll', () => { if (jumpRaf) return; jumpRaf = requestAnimationFrame(() => { jumpRaf = 0; if (V2.route() === 'team') V2.jumpSync(); }); }, {passive: true});
 addEventListener('resize', () => { if (V2.route() === 'team') V2.jumpSync(); });
 // a look at the empty My Team without emptying anyone's team (the redesign preview links here; it changes nothing)

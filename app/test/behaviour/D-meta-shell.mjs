@@ -191,7 +191,7 @@ t('THEME-03', 'Share image has its own Light/Dark choice (see WEEK-02)', run({te
 
 // =============================== SHELL · global parts ===============================
 t('SHELL-01', 'Tab title, icon and the slanted Unbounded headline font', run({team: TEAM}, async ({ui, d}) => {
-  expect(await d.pageTitle() === 'NastyPlot', 'tab title: ' + await d.pageTitle()); expect(await d.hasFavicon(), 'no favicon');
+  expect(/^(.+ · )?NastyPlot$/.test(await d.pageTitle()), 'tab title: ' + await d.pageTitle()); /* audit Nov 16 (WCAG 2.4.2): "NastyPlot" on Home, "<page> · NastyPlot" elsewhere */ expect(await d.hasFavicon(), 'no favicon');
   await ui.go('This Week'); const f = await d.headlineFont(); expect(/Unbounded/i.test(f.family) && /italic|oblique/.test(f.style), 'headline font: ' + JSON.stringify(f)); }));
 
 t('SHELL-02', 'Header controls in order, nothing overflowing (desktop)', run({team: TEAM}, async ({d}) => {
