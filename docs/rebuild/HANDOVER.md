@@ -16,6 +16,9 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
   (.claude/settings.json, Sim's yes; never put a model line in a commit: the repo guard refuses it).
 - Next: code review B9 (focus on page change, Undo inside sheets, after() repeats, double-tap guard, inert), B12, B13, B8 (latent
   sync), then C1-C8 cleanup, then the uniformity audit's findings.
+- OUTSIDE REVIEWS (Sim, Nov 15 night: 'make sure you are incorporating all of the outside reviews and audits im getting'): every review
+  Sim sends is saved in docs/rebuild/audits/ with each point mapped to a plan and a status; none is dropped. Latest:
+  audits/design-review-nov15-advisor.md (say it once, two fold patterns, heading rule, three button levels, Home to five sections...).
 - AFTER THE SWITCH (Sim, Nov 15, Q1 A): code review B8 cross-device sync, its own careful step tested on two devices; then C1 delete the
   old site's dead code (the live site still runs it until the switch).
 - BEFORE THE SWITCH (checklist): publish the live page with the same runtime capabilities today's live artifact declares (db/user for

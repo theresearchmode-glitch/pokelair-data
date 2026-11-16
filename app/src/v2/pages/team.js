@@ -386,7 +386,7 @@ V2.ui = V2.ui || {sel: 0, mu: 'top'};
 V2.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it']; // the four calc levels (word list)
 // Sim, Nov 15 night: on phones a long band word ('Tournament ready') can't fit beside the name (it was cut off, or squeezed the name to a
 // letter-wide column); then the score belt takes its own full-width row under the name, at full size. Safe to repeat (after every draw).
-V2.mtBeltFit = () => { const h = document.querySelector('.tm-hero.mt'); if (!h) return; h.classList.remove('mt-wide'); if (innerWidth >= 700) return; const sp = h.querySelector('.mt-belt .w span'), belt = h.querySelector('.mt-belt .np-score'); if (!sp || !belt) return;
+V2.mtBeltFit = () => { const h = document.querySelector('.tm-hero.mt'); if (!h) return; h.classList.remove('mt-wide'); if (innerWidth >= 1100) return; /* phones and 700-1099 (the belt is narrow in both) */ const sp = h.querySelector('.mt-belt .w span'), belt = h.querySelector('.mt-belt .np-score'); if (!sp || !belt) return;
   const longest = Math.max(...sp.textContent.trim().split(/\s+/).map(wd => { const r = document.createElement('span'); r.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap'; const cs = getComputedStyle(sp); r.style.font = cs.font; r.style.fontStyle = cs.fontStyle; r.textContent = wd; document.body.append(r); const w = r.getBoundingClientRect().width; r.remove(); return w; }));
   const cs = getComputedStyle(belt), room = belt.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); if (longest > room) h.classList.add('mt-wide'); };
 { let t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { if (V2.mtBeltFit) V2.mtBeltFit(); }, 120); }); }
