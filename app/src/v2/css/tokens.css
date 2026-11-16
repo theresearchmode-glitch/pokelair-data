@@ -3,6 +3,7 @@
 :root{
   /* My Box rays over the box wallpaper and the picked Pokémon's panel (R4, Nov 11) */
   --ray:rgba(255,255,255,.34);--ray-art:rgba(255,255,255,.4);
+  --logo-pink:#E8364F;--logo-blue:#0078BF;--logo-ink:#17161A;--logo-white:#FFFFFF; /* the Sly Devil logo's colours (Nov 16): the same in day and night (the logo carries its own white sticker edge) */
   --bg:#FBFAF7;--surface:#FFFFFF;--wash:#F4F0EA;--ink:#17161A;--ink-2:#48454F;--ink-3:#66636E;--rule:rgba(23,22,26,.11);
   --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--them:#B4238F;--them-text:#9A1A7B;--pick-text:#C41E35;
   --plate:#17161A;--on-plate:#FBFAF7;--main:#17161A;--on-main:#FBFAF7;

@@ -7,6 +7,15 @@ V2.pages.guide = {place: null, draw() {
   <h1 class="u">Every piece, one rule each.</h1>
   <p class="lede">The building blocks of the new NastyPlot, drawn from the design system. Switch day and night at the top right and resize the window: each piece must look right at its smallest and largest size. Team shown: the sample team (Sun, Tailwind).</p>
 
+  ${(() => { try { if (typeof NP_LOGO !== 'object') return ''; const u = k => 'data:image/svg+xml,' + encodeURIComponent(NP_LOGO[k]); /* the logo (Sim, Nov 16): her designer's "Sly Devil"; the rules from its guide */
+    return `<h2 class="u">Logo</h2>
+  <div class="sg-logo"><figure><img src="${u('full')}" alt="NastyPlot logo" height="44"><figcaption>Full logo, 44px · desktop header (1000px and wider), screens</figcaption></figure>
+  <figure><img src="${u('small')}" alt="NastyPlot logo, small" height="32"><figcaption>Small logo, 28–32px · phones and tablets (414–999px), footer</figcaption></figure>
+  <figure><img src="${u('markSmall')}" alt="NastyPlot imp" height="32"><figcaption>The imp · header under 414px; icons</figcaption></figure>
+  <figure><img src="${u('flat')}" alt="NastyPlot logo, flat" height="32"><figcaption>Flat (no soft shadow) · inside share images</figcaption></figure></div>
+  <div class="swatches">${sw('Nasty pink', '--logo-pink')}${sw('Plot blue', '--logo-blue')}${sw('Ink', '--logo-ink')}${sw('Sticker white', '--logo-white')}</div>
+  <p class="fine" style="margin-top:12px">One logo for day and night: its white sticker edge carries its own background. The full logo is never under 28px tall; smaller than that, use the imp. Keep clear space of at least the imp's head on every side. Never recolour, stretch, rotate or add effects, never put the blue on yellow, and never add Poké Balls, type icons, sprites or the word "Pokémon" to it. The imp is the logo's character, not a mascot: never beside grades, ratings or data.</p>`; } catch (e) { return ''; } })()}
+
   <h2 class="u">Colour</h2>
   <div class="swatches">${sw('Page', '--bg')}${sw('Surface', '--surface')}${sw('Wash', '--wash')}${sw('Ink', '--ink')}${sw('Ink 2', '--ink-2')}${sw('Ink 3', '--ink-3')}${sw('PLOT blue', '--plot')}${sw('Pink', '--pick')}${sw('Good', '--good')}${sw('Mid', '--mid')}${sw('Low', '--low')}${sw('Main action', '--main')}</div>
 

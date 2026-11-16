@@ -3220,3 +3220,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    spacing) and My Box names (cut when a reader raises letter/word spacing); at normal spacing box names still fit on one line */
 .bd-wev{white-space:normal;overflow:visible;text-overflow:clip;text-wrap:balance}
 .bx-t>b{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
+/* style guide: the logo row (Nov 16) */
+.sg-logo{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--s6);align-items:end}
+.sg-logo figure{display:grid;gap:var(--s2);margin:0}.sg-logo img{display:block;width:auto;max-width:100%}.sg-logo figcaption{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.sg-logo{margin-bottom:var(--s8)}.sg-logo~.swatches+.fine{max-width:72ch}
