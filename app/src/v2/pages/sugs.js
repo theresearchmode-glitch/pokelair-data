@@ -177,10 +177,19 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   if (!b) { if (!(e.target.closest && e.target.closest('.sg2-tipop'))) V2.tipClose(); return; }
   e.preventDefault(); const was = document.querySelector('.sg2-tipop'); V2.tipClose(); if (was && was.dataset.k === b.dataset.v2tip) return;
   const T0 = TIPS[b.dataset.v2tip], T = T0 && [V2.wl(T0[0]), V2.wl(T0[1])]; if (!T) return; const p = document.createElement('div'); p.className = 'sg2-tipop'; p.dataset.k = b.dataset.v2tip; p.setAttribute('role', 'dialog'); p.setAttribute('aria-label', T[0]);
-  p.innerHTML = `<b class="u">${V2.esc(T[0])}</b><p>${V2.esc(T[1])}</p><a class="np-link" href="#method">How We Calculate ›</a>`; document.body.append(p); b.setAttribute('aria-expanded', 'true');
+  p.innerHTML = `<b class="u">${V2.esc(T[0])}</b><p>${V2.esc(T[1])}</p><a class="np-link" href="#method">How We Calculate ›</a>`; p.id = 'np-tipop'; p.tabIndex = -1; document.body.append(p); b.setAttribute('aria-expanded', 'true'); b.setAttribute('aria-controls', 'np-tipop');
   // place it from the drawn 24px tile, not the 44px tap area around it (A15), so it sits where it always did
   const q = b.getBoundingClientRect(), g = Math.max(0, (q.height - 24) / 2), r = {left: q.left + g, width: q.width - 2 * g, top: q.top + g, bottom: q.bottom - g}, w = Math.min(340, innerWidth - 32); p.style.width = w + 'px'; p.style.left = Math.max(16, Math.min(innerWidth - w - 16, r.left + r.width / 2 - w / 2)) + 'px';
-  const below = r.bottom + 8 + p.offsetHeight < innerHeight - 72; p.style.top = (below ? r.bottom + 8 : Math.max(16, r.top - 8 - p.offsetHeight)) + scrollY + 'px'; });
+  const below = r.bottom + 8 + p.offsetHeight < innerHeight - 72; p.style.top = (below ? r.bottom + 8 : Math.max(16, r.top - 8 - p.offsetHeight)) + scrollY + 'px';
+  /* stress test (Nov 16): opened from the keyboard, focus moves into the tip so its words are read (it was never reached); Escape returns to the '?' */
+  if (e.detail === 0) p.focus({preventScroll: true}); });
+/* Tab out of the tip continues after its '?' in the page (the tip sits at the end of the page, so focus fell to <body>) */
+document.addEventListener('keydown', e => { if (e.key !== 'Tab') return; const p = document.querySelector('.sg2-tipop'); if (!p || !p.contains(document.activeElement)) return;
+  const b = document.querySelector('[data-v2tip][aria-expanded="true"]'); if (!b) return; const inside = [...p.querySelectorAll('a,button')], last = inside[inside.length - 1];
+  if (e.shiftKey && document.activeElement === p) { e.preventDefault(); V2.tipClose(); b.focus(); return; }
+  if (!e.shiftKey && document.activeElement === (last || p)) { e.preventDefault(); const all = [...document.querySelectorAll('a[href],button:not([disabled]),input,select,textarea,summary,[tabindex="0"]')].filter(x => !p.contains(x) && x.getClientRects().length);
+    const nx = all[all.indexOf(b) + 1]; V2.tipClose(); (nx || b).focus(); } });
+document.addEventListener('focusout', e => { const p = document.querySelector('.sg2-tipop'); if (!p || !p.contains(e.target)) return; setTimeout(() => { const q = document.querySelector('.sg2-tipop'), f = document.activeElement; if (!q || q.contains(f) || (f && f.matches && f.matches('[data-v2tip]'))) return; V2.tipClose(); }, 0); }); /* after the move: removing the tip itself fires focusout */
 document.addEventListener('keydown', e => { if (e.key === 'Escape' && document.querySelector('.sg2-tipop')) { const b = document.querySelector('[data-v2tip][aria-expanded="true"]'); V2.tipClose(); if (b) b.focus(); } });
 addEventListener('scroll', () => { if (document.querySelector('.sg2-tipop')) V2.tipClose(); }, {passive: true});
 
