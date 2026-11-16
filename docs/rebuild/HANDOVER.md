@@ -7,6 +7,15 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Nov 16, written time: 3:53 AM (3:53:41)  date: Mon Nov 16, 2026 by the clock; FULL authority until 10:00 AM; summary 9:40 AM; then STOPPED + HANDOVER + phone note + delete backstops trig_01P8wwfASshsPdbcFcM3qNMv, trig_012D8AdnvLFxfYqeBtDUoc7o)
+- Branch claude/design6, last commits ac15b13 (nuclear stress test fixes) and 9505d07 (log). GitHub checks all pass on ac15b13 (fields-audit can't run here).
+- Nuclear stress test done (started 2:09 AM): four helper reports in docs/rebuild/audits/stress-{words,a11y,perf,visual,func}-nov16.md, each item with a status.
+  Fixed: 2 high + 8 medium visual items, 4 of 5 confirmed function bugs (B1 is Sim's Nov 11 rule -> her Q4), 6 odd function items, words #4/6/7/8/9/17,
+  a11y #4-#8. Open for Sim (summary-nov16.md): B5 calc vs My Team set; ticket names at 320 (Q17); Build one-tap load; new Undo paths; 200% zoom hint.
+- Tests on t295 (all changes): A 138/0; B, C, D running into run295.txt. Baselines: B 31 known (old_r118-B-build.txt.ids); C 83/0; D 50 known (d244.ids,
+  match with [A-Za-z0-9-] so the b-suffixed ids count).
+- Next: when run295 matches, publish the Preview (pubprep, 400 files / 346 v2art), checklist i57 (version 47 -> 48), final re-check pass, 9:40 AM summary.
+
 ## NOW (Nov 16, written time: 12:22 AM (12:22:18)  date: Mon Nov 16, 2026 by the clock; Sim's FULL authority until 10:00 AM Mon Nov 16; summary 9:40 AM; then STOPPED + HANDOVER + phone note + delete backstops trig_01P8wwfASshsPdbcFcM3qNMv, trig_012D8AdnvLFxfYqeBtDUoc7o)
 - Branch claude/design6, last commit 0338c97. Preview last published v178 (Base Stats B); publish after the full run on t216 (run216.txt).
 - Done tonight (decisions.md from 10:2x PM): Base Stats B less bubbly (Sim: "good to go"); How to build it smaller; say it once (date once in the
