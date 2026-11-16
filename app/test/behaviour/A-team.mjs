@@ -262,7 +262,7 @@ t('TEAM-11', 'Set as lead: plan says "your pick" (saved to the account); "Use Na
 
 t('TEAM-12', 'Game plan line names two leads, two back, two bench', async () => {
   const {ui} = await view('team', {team: TEAM}, 'My Team'); ok(/^Game [Pp]lan vs the meta's top six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\.$/.test(await ui.gamePlanLine() || ''), 'plan line: ' + await ui.gamePlanLine());
-  const r = await myTeam({team: ['Garchomp', 'Incineroar']}); ok(/in team order/.test(await r.ui.gamePlanLine() || ''), 'under 4: no "in team order" line'); await r.close(); });
+  const r = await myTeam({team: ['Garchomp', 'Incineroar']}); if (NEW) ok(!(await r.ui.gamePlanLine()), 'a team being built shows a Game Plan line: ' + await r.ui.gamePlanLine()); /* Sim, Nov 15 night: no Lead/Back/Bench or plan until all six are in */ else ok(/in team order/.test(await r.ui.gamePlanLine() || ''), 'under 4: no "in team order" line'); await r.close(); });
 
 t('TEAM-13', 'Team actions row: Save/Update label, ⋯ menu; empty team keeps only Saved Teams, My Box, ⋯ Import', async () => {
   if (NEW) { /* new build (Sim, Nov 11-12): Save Team, Share, Saved Teams and More ⋯ on the page; the More menu holds Team Sheet, Copy for

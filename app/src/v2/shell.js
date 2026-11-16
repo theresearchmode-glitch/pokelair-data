@@ -275,8 +275,9 @@ addEventListener('hashchange', e => { let was = ''; try { was = new URL(e.oldURL
   // code review B9a: when the player was using the page (a link or button had focus), focus moves to the new page's heading, so
   // keyboard and screen-reader users land on the new page instead of at the end of the document; tabindex only while focused
   // a link to a part of a page (#method=rating, #about=priv) scrolls there: focus the first control in view, not the h1 above it (sweep, Nov 15)
-  if (used && !V2._sheet && /=/.test(location.hash)) { requestAnimationFrame(() => requestAnimationFrame(() => { const top = (document.querySelector('.np-head') || {}).offsetHeight || 0;
+  if (used && !V2._sheet && /=/.test(location.hash) && V2.route() !== 'pokemon') { requestAnimationFrame(() => requestAnimationFrame(() => { const cur = document.activeElement; if (cur && cur !== document.body && cur.closest && cur.closest('#main')) return; /* the page placed focus itself */ const top = (document.querySelector('.np-head') || {}).offsetHeight || 0;
     const f = [...document.querySelectorAll('#main :is(summary,a[href],button)')].find(x => { const q = x.getBoundingClientRect(); return q.height && q.top >= top && q.bottom <= innerHeight; }); if (f) f.focus({preventScroll: true}); })); return; }
+  const fa = document.activeElement; if (fa && fa !== document.body && fa.closest && fa.closest('#main')) return; /* the page already placed focus itself (the Pokémon page's name) */
   if (used && !V2._sheet) { const h = document.querySelector('#main h1') || document.getElementById('main'); if (h) { h.setAttribute('tabindex', '-1'); h.setAttribute('data-pgfocus', ''); h.focus({preventScroll: true}); h.addEventListener('blur', () => { h.removeAttribute('tabindex'); h.removeAttribute('data-pgfocus'); }, {once: true}); } } });
 
 // ---------- Back button (Sim, Nov 12: "go to where we previously were"; pressing again goes further back) ----------
