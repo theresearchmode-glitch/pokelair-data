@@ -1305,6 +1305,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:1024px){.dc2-mv.play .nm{white-space:normal}} /* the name wraps beside the range (the one-line name ran into it) */
 .dc2-mv.play{grid-template-columns:minmax(min-content,1fr) auto} /* the name column is never narrower than its longest word; the number breaks at its dash instead (Sim, Nov 16: A) */
 @media (min-width:1024px) and (max-width:1399.98px){.dc2-mv.play .nm{font-size:var(--t17)}.dc2-mv.play .rg{font-size:var(--t24)}} /* the narrow table card: phone/tablet sizes (0 of 345 attackers collide) */
+@media (min-width:1024px) and (max-width:1099.98px){.dc2-fc b{font-size:var(--t20)}} /* Weather/Terrain value one step smaller where the tile is narrowest ("Psychic", "Electric" were cut by up to 7px at 1024-1055; Nov 16 audit) */
 /* no effect, as the mock-up: the face greys out but the card keeps its type chip and edge; the reason reads in the type colour */
 .dc2 .dc2-mv.none,:root:not([data-theme="night"]) .dc2 .dc2-mv.none{background:linear-gradient(color-mix(in srgb,var(--type-none) 22%,var(--mvc-face)),color-mix(in srgb,var(--type-none) 22%,var(--mvc-face))) padding-box,linear-gradient(135deg,var(--tc),var(--card-edge-mid) 40%,var(--tc) 70%,color-mix(in srgb,var(--tc) 60%,var(--card-ink))) border-box}
 .dc2-mv.none .np-type{background:var(--tc)}.dc2-mv.none .ko{color:var(--tc)}:root[data-theme="night"] .dc2-mv.none .ko{color:color-mix(in srgb,var(--tc) 55%,var(--mvc-ink))}
