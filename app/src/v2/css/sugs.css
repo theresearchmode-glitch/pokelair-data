@@ -10,7 +10,7 @@
 .tm-sgs{container-type:inline-size}
 @container (min-width:900px){.sg2-ctl{grid-template-columns:repeat(3,max-content)}.sg2-pool{grid-column:auto}}
 /* a narrow Suggestions column at any screen width (tablets with the fold open): the sliders take their phone form (components.css) */
-@container (max-width:519px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.sg2-c{justify-items:stretch}
+@container (max-width:599px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.sg2-c{justify-items:stretch} /* to 599 (audit Nov 16): the phone layout, so nothing runs past the edge at 520-599 */
   .sg2-ctl .np-slide{display:grid;width:100%;max-width:100%}.sg2-ctl .np-slide button{flex-direction:column;gap:var(--s1);min-height:56px;padding:var(--s2) var(--s1);font-size:var(--t13);white-space:normal;text-align:center;line-height:1.2}.sg2-ctl .np-slide .np-ic{width:20px;height:20px}}
 /* the cards: the next two open with Show more (hidden until then); the kind line and Why? under each */
 .tm-sug li[hidden]{display:none}
@@ -267,7 +267,7 @@ a,button,summary{text-wrap:pretty}.sx-info{white-space:nowrap}
 @container (max-width:519px){.sg2-links{flex-direction:column;align-items:flex-start;gap:0}}
 /* Q6 follow-up (layout check: Megas' 0/1/2 were 30-38px wide three across): Megas keeps room for three 44px buttons; under 360 it takes its own row
    and Swap / Count abilities sit two across */
-@container (max-width:519px){.sg2-ctl{grid-template-columns:136px minmax(0,1fr) minmax(0,1fr)}}
+@container (max-width:599px){.sg2-ctl{grid-template-columns:136px minmax(0,1fr) minmax(0,1fr)}} /* audit Nov 16: 520-599 the three max-content columns ran past the edge (Count abilities 'Yes' cut at 567-575) */
 @media (max-width:519px){.sg2-ctl{grid-template-columns:136px minmax(0,1fr) minmax(0,1fr)}}
 @media (max-width:359px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr))}.sg2-ctl>.sg2-c:nth-child(2){grid-column:1/-1}}
 /* the three switches line up along the bottom when a label wraps (390: "Swap my / Mega?" beside one-line "Megas on team") */
@@ -308,3 +308,4 @@ p,li,small{text-wrap:pretty}
    is drawn inside: a band in the page colour at the edge, then the blue ring, so it shows on black, blue, pale and night fills */
 :root{--fring:var(--plot)}:root[data-theme="night"]{--fring:var(--ink)} /* night: light ring, so it shows on the blue main button and stays apart from the blue 'selected' outline */
 :root[data-theme] .np-fin:focus-visible{outline:3px solid var(--fring);outline-offset:-6px;box-shadow:inset 0 0 0 3px var(--bg)} /* in the last layer (sugs), so it wins over "selected" outlines such as night chips: the build puts each sheet in its own cascade layer */
+@container (min-width:520px) and (max-width:599px){.sg2-ctl{column-gap:var(--s4)}} /* audit Nov 16: at 520-599 the 32px gaps left the two choice columns 7px narrower than their buttons */
