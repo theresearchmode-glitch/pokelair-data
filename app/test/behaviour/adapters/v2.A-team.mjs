@@ -13,7 +13,7 @@ const TOASTS = () => { try { if (window.__npT) return; window.__npT = [];
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', hook); else hook(); } catch (e) {} };
 const NOT = what => { throw new Error('not in v2 yet: ' + what); };
 // today's raw selectors that tests pass to has() -> the new build's element with the same meaning
-const SEL = {'#toastUndo': '.np-toast #toastUndo, .np-sheet-undo #toastUndo', '#toastBoxUndo': '.np-toast [data-bxundo], .np-sheet-undo [data-bxundo]', '[data-qlres]': '.yg2 [data-ygres]', '#jump input': '[data-v2q]'};
+const SEL = {'#toastUndo': '.np-sheet-undo button, .np-toast #toastUndo', '#toastBoxUndo': '.np-sheet-undo button, .np-toast [data-bxundo]', '[data-qlres]': '.yg2 [data-ygres]', '#jump input': '[data-v2q]'};
 // today's name-box selectors -> the new build's search inputs (and the button that opens each, if it's not open yet)
 // today's edit panel name box = the add box in the Edit Set sheet's empty spot ([data-adq]); else the search sheet
 const NAMEBOX = {'#chEdit input[placeholder]': ['[data-adq],[data-v2q]', '[data-v2search]'], '#boxAdd': ['[data-bxq]', '[data-bxadd]'], '#jump input': ['[data-v2q]', '[data-v2search]'], '#qlOppIn': ['[data-ygq]', null]};
@@ -55,7 +55,7 @@ export default (ui, pg, o) => {
     toasts: () => pg.evaluate(() => (window.__npT || []).slice()),
     clearToasts: () => pg.evaluate(() => { window.__npT = []; }),
     waitToast: (re, ms = 6000) => waitFor(async () => (await pg.evaluate(() => (window.__npT || []).slice())).find(t => re.test(t)) || null, ms),
-    tapToastUndo: () => click('.np-toast #toastUndo, .np-toast [data-bxundo], .np-sheet-undo #toastUndo, .np-sheet-undo [data-bxundo], .np-sheet-undo [data-v2undo]'), /* Sim Q2 (Nov 16): with a sheet open the Undo sits in the sheet */
+    tapToastUndo: () => click('.np-sheet-undo button, .np-toast #toastUndo, .np-toast [data-bxundo]'), /* Sim Q2 (Nov 16): with a sheet open the Undo sits in the sheet */
     /** the pictures on the toast showing now (srcs); null when no toast is showing, so "no picture" can't pass on a missing toast */
     toastImages: () => pg.evaluate(() => { const t = [...document.querySelectorAll('.np-toast')].filter(e => e.getClientRects().length); return t.length ? t.flatMap(e => [...e.querySelectorAll('img,svg image,[style*="background-image"]')].map(i => i.getAttribute('src') || i.getAttribute('href') || i.getAttribute('style'))) : null; }),
     press: async (k, wait = 400) => { await pg.keyboard.press(k); await pg.waitForTimeout(wait); },
@@ -303,7 +303,7 @@ export default (ui, pg, o) => {
     typeRename: async name => { const l = pg.locator('.svt2 [data-svname]').filter({visible: true}).first(); await l.fill(name); await pg.waitForTimeout(200); },
     addRetiredSinglesTeam: name => ui.peek(`S.teams.push({id:'tsg',name:${JSON.stringify(name)},slots:[{n:'Garchomp',a:null,lock:false}],format:'singles',saved:Date.now()});render()`).then(() => pg.waitForTimeout(600)),
     // box
-    tapBoxUndo: () => click('.np-toast [data-bxundo], .np-toast #toastUndo, .np-sheet-undo [data-bxundo], .np-sheet-undo #toastUndo', 900),
+    tapBoxUndo: () => click('.np-sheet-undo button, .np-toast [data-bxundo], .np-toast #toastUndo', 900),
     typeBoxLink: async t => { if (!(await vis('[data-bxlinkin]'))) await click('[data-bxlink="open"]', 400); await pg.locator('[data-bxlinkin]').fill(t, {timeout: 5000}); await pg.waitForTimeout(200); },
     /** every Pokémon in the box, as shown: box by box (boxes of 30), then back to the box that was showing */
     boxNames: async () => { const read = () => pg.evaluate(() => [...document.querySelectorAll('#main .bx-grid [data-bxsel]')].filter(e => e.getClientRects().length).map(e => e.dataset.bxsel));

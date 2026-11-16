@@ -47,9 +47,12 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
      the top of the sheet (the Undo bar style Suggestions uses); the words stay in the toast; the bar goes with the next change or the sheet */
   { const sh = document.querySelector('.np-sheet'), ub = t.querySelector('#toastUndo,[data-v2undo],[data-bxundo]'); document.querySelectorAll('.np-sheet-undo').forEach(x => x.remove());
     if (sh && ub) { const bar = document.createElement('div'), m = document.createElement('span'); bar.className = 'sg2-undo np-sheet-undo'; bar.setAttribute('role', 'status');
-      m.textContent = t.textContent.replace(/\s*Undo\s*$/, ''); ub.classList.add('np-btn2'); ub.innerHTML = '<span>Undo</span>'; bar.append(m, ub);
+      /* the toast keeps its own Undo (full test run, Nov 16: Clear Team closes its sheet right after, and an Undo moved into it went with it);
+         the sheet's bar has a twin that presses the toast's, and the toast stays (under the backdrop) while the bar is up */
+      const tw = document.createElement('button'); tw.type = 'button'; tw.className = 'np-btn2'; tw.innerHTML = '<span>Undo</span>'; tw.addEventListener('click', () => { if (ub.isConnected) ub.click(); bar.remove(); });
+      m.textContent = t.textContent.replace(/\s*Undo\s*$/, ''); bar.append(m, tw); V2._ubar = bar;
       const host = [...sh.children].find(c => !c.classList.contains('x') && c.tagName !== 'BUTTON') || sh; host.prepend(bar); } }
-  const gone = () => { if (t.matches(':focus-within,:hover')) { V2._tt = setTimeout(gone, 1000); return; } t.remove(); }; clearTimeout(V2._tt); V2._tt = setTimeout(gone, ms); return t; };
+  const gone = () => { if (t.matches(':focus-within,:hover') || (V2._ubar && V2._ubar.isConnected && t.contains(t.querySelector('#toastUndo,[data-v2undo],[data-bxundo]')))) { V2._tt = setTimeout(gone, 1000); return; } t.remove(); }; clearTimeout(V2._tt); V2._tt = setTimeout(gone, ms); return t; };
 // ---------- phones: keep an open sheet above the on-screen keyboard (Sim, Nov 11: the keyboard covered Save Team) ----------
 // iOS draws the keyboard over fixed elements; visualViewport says how much of the screen is left, so --kb lifts and shortens
 // the sheet (components.css), and the box being typed in is scrolled into view inside it.
@@ -193,11 +196,15 @@ V2.setTheme = t => { document.documentElement.dataset.theme = t; document.docume
    whatever changes it, the page redraws once, so theme-drawn parts (the button's label, Build's lighting) follow */
 try { let last = document.documentElement.dataset.theme; new MutationObserver(() => { const t = document.documentElement.dataset.theme; if (t === last) return; last = t;
   clearTimeout(V2._thT); V2._thT = setTimeout(() => { if (V2.redraw && V2.draw) V2.redraw(); }, 50); }).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']}); } catch (e) {}
-V2.logo = (small) => { const L = typeof NP_SVG === 'object' ? NP_SVG : {}, f = svg => small ? svg.replace(/nphdr(L|D)/g, 'nphdr$1f') : svg;
-  /* the footer copy gets its own mask ids, so the two logos on one page never share an id.
-     Sim, Nov 16: at night the header showed the day logo (navy letters, unreadable) when the theme changed without a redraw (the phone or app
-     switching to dark on its own); both logos are drawn and the theme attribute shows the right one, so they can never be out of step */
-  return L.hdrL && L.hdrD ? `<span class="np-lg-d">${f(L.hdrL)}</span><span class="np-lg-n">${f(L.hdrD)}</span>` : '<b class="u">NastyPlot</b>'; };
+/* The logo "Sly Devil" (Sim, Nov 16; files from her designer in docs/brand/sly-devil, NP_LOGO from experiments/gen-logo-sly.mjs).
+   ONE logo for day and night: its white sticker edge carries its own background, so the light/night pair and the night overrides are gone.
+   Drawn as an image (no ids to clash between the header and footer copies, and its soft shadow is painted once, not on every scroll frame).
+   Header: the full logo at 44px on wide screens, logo-small (no block shadow, simpler face) on phones; footer: logo-small.
+   The link around it carries the name ("NastyPlot, Home"), so the image itself is alt="" */
+V2.logo = (foot) => { const L = typeof NP_LOGO === 'object' ? NP_LOGO : null; if (!L) return '<b class="u">NastyPlot</b>';
+  const u = V2._lgu || (V2._lgu = {full: 'data:image/svg+xml,' + encodeURIComponent(L.full), small: 'data:image/svg+xml,' + encodeURIComponent(L.small), mark: 'data:image/svg+xml,' + encodeURIComponent(L.markSmall)});
+  return foot ? `<img class="np-lg" src="${u.small}" alt="NastyPlot" width="183" height="32" decoding="async">`
+    : `<picture class="np-lg"><source media="(max-width:413px)" srcset="${u.mark}"><source media="(max-width:999px)" srcset="${u.small}"><img src="${u.full}" alt="" width="241" height="44" decoding="async"></picture>`; };
 // say it once (Nov 16): a page's own data date shows only when it differs from the footer's 'Data as of' (V2.otherDay('Nov 10') -> '' when the same)
 V2.otherDay = d => { const a = V2.asOf && V2.asOf(); return d && a && new RegExp('\\b' + d.replace(/\s+/g, '\\s') + '\\b').test(a) ? '' : (d || ''); };
 // the data's date (Sim's review item 18): "Data as of Nov 11", plus "(N days old)" when stale; shared with today's site

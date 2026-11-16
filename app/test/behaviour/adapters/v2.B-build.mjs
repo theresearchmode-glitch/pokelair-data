@@ -154,8 +154,8 @@ export default (ui, pg) => {
     // ---------------- shared bits ----------------
     toast: toastNow,
     waitForToast: (m, ms = 6000) => until(async () => { const t = await toastNow(); return t && (m instanceof RegExp ? m.test(t) : t.toLowerCase().includes(String(m).toLowerCase())) ? t : ''; }, ms, `toast ${m}`),
-    toastOffersUndo: () => vis('.np-toast #toastUndo, .np-sheet-undo #toastUndo'),
-    undoToast: () => click('.np-toast #toastUndo, .np-sheet-undo #toastUndo', 600),
+    toastOffersUndo: () => vis('.np-sheet-undo button, .np-toast #toastUndo'),
+    undoToast: () => click('.np-sheet-undo button, .np-toast #toastUndo', 600),
     /** is the visible pressable control with this text pressed? (the new sliders' buttons carry aria-pressed) null if not found */
     pressed: async (m, within = 'body') => (within === AREAS.cores && await tabTo('cores'), pg.evaluate(([m, re, w]) => { const r = re ? new RegExp(re[0], re[1].includes('i') ? re[1] : re[1] + 'i') /* Title Case labels here */ : null, t = e => (e.innerText || '').replace(/\s+/g, ' ').trim();
       const root = document.querySelector(w) || document.body;
