@@ -10,13 +10,15 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 - Today on the Preview (v164-v167): Pokémon page part 6; two helper audits' fixes (share race, Mega stats, no mid-word breaks via V2.fitWords,
   Hand level Cards, poster/card/sheet image details, Pokémon page colours and gaps, Battle 390 height); partners two across to 899; Forms (Sim A);
   Team Card for a team being built (Sim A).
-- In progress: THE SWITCH. V2.openMon now opens #pokemon=<name> (monsheet.js; the old sheet is V2.openMonSheet, nothing opens it). Labels
-  'Info Sheet' -> 'Pokémon Page'. Page gained Speed Tiers / How Ratings Work / Track Record links. Fixed: Popular Sets went to #meta (now #sets);
-  Add to My Team on the page stays on the page. Tests translated (PKMN-01..07 for the page; adapters read the page where they read the sheet).
-  Final full run on t89 pending, then commit + Preview.
-- Helper agent (worktree): writing missing v2.D-meta-shell.mjs helpers (78 Meta tests fail mostly 'not in v2 yet'); merge its branch after.
-- For Sim when back (~5 PM): the Pokémon page is long on phones (7,300-9,500 px); question with pictures q/len-now-s.png, q/len-fold-s.png
-  (scratchpad): recommend folding parts 3-6 on phones with a one-line summary each (8,319 -> 4,928 for Kingambit at 390).
+- Updated time: 7:34 PM (7:34:30)  date: Sun Nov 15, 2026. Done since 2:50 PM (all pushed to claude/design6, Preview v172): Pokémon page folds; Build keeps its page while building;
+  footer restored (overlap fixed); Never Suggest; set tips; the parity audit's gaps (data note, theme carry-over, rules caption,
+  Usage order); the function sweep's 10 sure findings; code review A1-A6 and B1-B5, B10, B11, B14. Commits work in Auto mode
+  (.claude/settings.json, Sim's yes; never put a model line in a commit: the repo guard refuses it).
+- Next: code review B9 (focus on page change, Undo inside sheets, after() repeats, double-tap guard, inert), B12, B13, B8 (latent
+  sync), then C1-C8 cleanup, then the uniformity audit's findings.
+- BEFORE THE SWITCH (checklist): publish the live page with the same runtime capabilities today's live artifact declares (db/user for
+  saving, feedback, usage); read today's live artifact first (not yet read, unsure what it declares). The plain v2 build has no Preview
+  stand-in (checked: 0 matches for __NP_PREVIEW). fields-audit needs the Showdown sim installed (not run in the cloud machine).
 - Height limits for the Pokémon page added to c13-check.mjs (POKEMON_L, measured + 50), noted in page-heights.md for Sim's review.
 
 ## LATER UPDATE (Nov 15, written time: 5:53 AM (5:53:29)  date: Sun Nov 15, 2026 by the clock)
