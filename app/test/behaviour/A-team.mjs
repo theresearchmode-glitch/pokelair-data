@@ -392,7 +392,7 @@ t('SUG-04', 'Suggestion cards: Apply, "Why?" reasons, "Show N more" then "See al
 
 t('SUG-05', 'Apply swaps the Pokémon in with an Undo toast; the one swapped out isn\'t offered straight back', async () => {
   const r = await myTeam(); const c = (await r.ui.suggestionCards())[0]; const m = c.match(/(?:→ )?(.+?) for (.+?)(?=[+±−-]\d)/); ok(m, 'card names no swap: ' + c);
-  const [inn, out] = [m[1].replace(/^.*→ /, '').trim(), m[2].trim()]; await r.ui.applySuggestionCard(0); await r.ui.settle();
+  const [inn, out] = [m[1].replace(/^.*→ /, '').replace(/\s*(In your box|To catch)$/, '').trim(), m[2].trim()]; /* Nov 17: the card now says In your box / To catch (COV-04) */ await r.ui.applySuggestionCard(0); await r.ui.settle();
   ok(await r.ui.waitToast(/^Applied: /), 'no "Applied:" toast'); ok(await r.ui.has('#toastUndo'), 'toast has no Undo');
   const tiles = (await r.ui.sixTiles()).join('|'); ok(tiles.includes(inn) && !tiles.includes(out), `tiles after Apply: ${tiles} (expected ${inn} in, ${out} out)`);
   for (const x of await r.ui.suggestionCards()) ok(!x.replace(/^\W*/, '').startsWith(out + ' for '), 'swapped-out Pokémon offered straight back: ' + x); await r.close(); });
