@@ -7,6 +7,18 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Nov 17, written time: 9:31 AM (9:31:08)  date: Tue Nov 17, 2026 by the clock; Sim's executive authority until 5:00 PM Tue Nov 17)
+- Two outside reviews in progress, each tracked item by item: docs/rebuild/audits/player-review-nov17.md and
+  docs/rebuild/audits/prelaunch-checks-nov17.md. Sim (morning): "recommended for all is good to go" (= yes to 3h, a data-job
+  change on main).
+- Done and pushed (41df9ec): player review 2d, 3a, 3b, 3e, 3f, 3g, 3j (3c no change); pre-launch 1 (no old numbers before today's:
+  loading panel until all 15 daily documents answer; app/test/data-swap.mjs in GitHub's checks).
+- GitHub run 1295 (81ab574, first complete run with the every-view quality check): all green, including the quality check
+  (28 min); Safari-engine A-team (reporting only) 137/1: SUG-05 "toast has no Undo". Locally SUG-05 passes 3/3 in Safari's
+  engine; unsure if a timing flake or real (local WebKit version may differ). Watch the next run.
+- Pushes cancel the previous run (concurrency): push in batches, then let a run finish.
+- Next: 3d (Stand-Outs rows), pre-launch 3e banner check, 5a-5c, 6a-6e, 3h (main), 4a-4e; Preview + checklist + pictures; summary.
+
 ## NOW (Nov 17, written time: 2:25 AM (2:25:44)  date: Tue Nov 17, 2026 by the clock; Sim's executive authority until 5:00 PM Tue Nov 17; summary with pictures before 5 PM; then STOPPED + HANDOVER + phone note)
 - Branch claude/design6, last commit 14a8b77; Preview v192 (397 files, 346 v2art), checklist i57 version 56.
 - Overnight (Sim: 'recommended for all', big items fine; decisions.md from 11:40 PM): review FP-1/2/4 planner fixes (f08d5e6) and FP-5
