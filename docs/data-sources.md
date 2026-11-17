@@ -16,7 +16,7 @@ Checked by visiting each source; "unsure" means I couldn't confirm it.
 1. **Smogon "chaos" stats (smogon.com/stats/2026-10/chaos/)**: per Pokémon at 0/1500/1630/1760+: stat-point spreads, items,
    Abilities, moves, teammates, checks & counters; also a best-of-3 (open team sheet) file. **Correction (checked in code):
    we already read these** (ladder.mjs → meta_ladder.json `sp`, `tm`, `cc`), and the damage calc and speed checks already use
-   the most common 1760+ spread (commonSpread, 39-damage-calc-speed.js). I was wrong twice: we do have stat points, and speed
+   the most common 1630+ spread (corrected Nov 17: ladder.mjs CUT = 1630; was written "1760+") (commonSpread, 39-damage-calc-speed.js). I was wrong twice: we do have stat points, and speed
    comparisons don't use guessed spreads. What's true: the GRADE model doesn't use stat points (tournament sheets lack them).
 2. **pokedata.ovh** (decision Nov 8: NOT used for now): open team sheets and results of real-life Regionals: 9 events, 23,478 battles (per Pokémon Zone and
    MetaPulse). The full field, not just top cut. **Unsure** where pokedata gets it (possibly RK9, which our rules say we
