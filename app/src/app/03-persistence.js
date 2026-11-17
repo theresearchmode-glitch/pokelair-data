@@ -53,8 +53,12 @@ function syncNote(st){ui.syncSt=st;const t=syncText(st);
 // of an array to part 2 and stamps both parts with the same id; here they are joined back in order. Part 2 is used only when
 // its stamp matches part 1, so a refresh caught halfway never mixes two days; with no part 2 the document is used as it is.
 function joinParts(a,b){const o=Object.assign({},a);for(const k in b){if(k==='_part')continue;const x=o[k],y=b[k];o[k]=Array.isArray(x)&&Array.isArray(y)?x.concat(y):x&&y&&typeof x==='object'&&typeof y==='object'&&!Array.isArray(x)?Object.assign({},x,y):y}delete o._part;return o}
-function metaJoin(d,k,cb){let p1=null,p2=null,got1=false;const emit=()=>{if(!got1)return;const a=p1&&p1.exists?p1.data():null,b=p2&&p2.exists?p2.data():null;
-    const v=a&&b&&a._part&&b._part&&a._part.id===b._part.id?joinParts(a,b):a&&a._part?(()=>{const o=Object.assign({},a);delete o._part;return o})():a;cb({exists:!!v,data:()=>v})};
+// speed (Nov 17, helper report): an empty or unmatched second part used to send the same document again (cleaning, ratings, a full
+// redraw and a planner restart, twice); now a document goes on only when its first part or a matching second part is new
+var META_EMITS={};
+function metaJoin(d,k,cb){let p1=null,p2=null,got1=false,sent=null;const emit=()=>{if(!got1)return;const a=p1&&p1.exists?p1.data():null,b=p2&&p2.exists?p2.data():null;
+    const two=!!(a&&b&&a._part&&b._part&&a._part.id===b._part.id);if(sent&&sent[0]===p1&&sent[1]===(two?p2:null))return;sent=[p1,two?p2:null];META_EMITS[k]=(META_EMITS[k]||0)+1;
+    const v=two?joinParts(a,b):a&&a._part?(()=>{const o=Object.assign({},a);delete o._part;return o})():a;cb({exists:!!v,data:()=>v})};
   d.doc('meta/'+k).onSnapshot(s=>{p1=s;got1=true;emit()});try{d.doc('meta/'+k+'_2').onSnapshot(s=>{p2=s;emit()},()=>{})}catch(e){}}
 (async()=>{try{
   const c=window.__NP_CLAUDE||window.claude;if(!c||!c.use)return;/* __NP_CLAUDE: the Preview build's data (Nov 12: inside the Claude app window.claude can't be replaced) */
