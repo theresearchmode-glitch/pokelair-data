@@ -1,6 +1,8 @@
 // The full quality check (app/test/qcheck.cjs: contained, no text on text, sizes on the scale, tap targets, no code as text) on
 // every built page of the new site, in GitHub's checks (code review C-I8, Nov 17: it only ever ran by hand).
 // Findings already judged are listed in app/test/qcheck-known.json; any NEW finding fails. KNOWN=write saves today's as the list.
+// Leaves out the style guide page ('guide': internal, hidden at launch; its demo controls measured 1 px differently on GitHub's
+// machine, Nov 17). ROUTES=guide checks it on purpose.
 // Usage: PAGE=app/dist/v2.html node app/test/qcheck-all.mjs   (a --v2 --preview-data build; real data, as RULES.md asks)
 //        WIDTHS=320,390,820,1280,1920 THEMES=day,night ROUTES=home,team (defaults: those widths, both themes, every page)
 import {chromium} from 'playwright'; import {execFileSync} from 'node:child_process'; import fs from 'node:fs'; import path from 'node:path'; import {fileURLToPath} from 'node:url';
@@ -8,7 +10,7 @@ const HERE = fileURLToPath(new URL('.', import.meta.url)), PAGE = path.resolve(p
 const WIDTHS = process.env.WIDTHS || '320,390,820,1280,1920', THEMES = process.env.THEMES || 'day,night';
 let routes = process.env.ROUTES ? process.env.ROUTES.split(',') : null;
 if (!routes) { const b = await chromium.launch(), p = await b.newPage(); await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500);
-  routes = await p.evaluate(() => Object.keys(V2.pages).filter(r => !/^(sheet|team-empty|coming|gallery)$/.test(r))); await b.close(); }
+  routes = await p.evaluate(() => Object.keys(V2.pages).filter(r => !/^(sheet|team-empty|coming|gallery|guide)$/.test(r))); await b.close(); }
 const found = [], t0 = Date.now();
 for (const r of routes) { let out = '';
   try { out = execFileSync('node', [HERE + 'qcheck.cjs'], {env: {...process.env, PF: PAGE, HASH: '#' + r, WIDTHS, THEMES, QALL: '1'}, encoding: 'utf8', maxBuffer: 1 << 26}); }
