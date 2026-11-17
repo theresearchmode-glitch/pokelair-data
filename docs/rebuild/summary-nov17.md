@@ -50,3 +50,34 @@ Preview: v192 (397 files, 346 v2art). Branch claude/design6. Nothing went to mai
   What stays open: old player names are still in the public git history. Removing them needs a history rewrite and a
   force-push to main; that is your call, and I won't do it without your yes.
 - Waiting on Sim: the switch to live (one explicit yes).
+
+## Late morning (updated time: 10:29 AM (10:29:01)  date: Tue Nov 17, 2026 by the clock)
+Two outside reviews worked through, item by item (docs/rebuild/audits/player-review-nov17.md, prelaunch-checks-nov17.md; Plans
+page sections "Player review (Nov 17)" and "Pre-launch checks (Nov 17)"). Every fix: re-checked first, a test that fails before,
+pictures. Preview v196 has them all.
+- Done: numbers say their source; no old numbers before today's (loading screen, with your animation); Home "Most used last month.";
+  tied ratings share a rank; Mirror match; weak spots; pairs "brought together"; sample box; Stand-Outs even rows; Winning Teams
+  search on the first phone screen; Speed "You +1"; Megas' fixed Ability; contrast; 44px tap areas; clearer Import messages; Track
+  Record groups on the tier lines (on this branch, live with the switch).
+- Not shipped, for you: 4d "what really beats it" (measured: one Pokémon's real-game effect is about 1 point, too small to call;
+  options A keep the type chart (recommended), B show the small numbers, C wait for error ranges); 4a tap-to-pick grid and 4e Add to
+  calendar (new controls; recommended after the switch / with the public site).
+
+## Next regulation: proposal (pre-launch item 4; your decision)
+Checked: one setting exists (PAGE_REG = 'M-C'), but "M-C" is typed out 65 times in 39 source files and the legal-item list is fixed.
+1. One switch: every page reads the regulation from the daily data (perf.json "reg", already there) instead of typing "M-C".
+   Why: the day it changes, nothing needs editing by hand.
+2. Old numbers: ratings, Winning Teams, Events and Track Record are archived per regulation and start fresh, with a "Reg M-C" view
+   kept. Why: mixing two regulations' results would mislead.
+3. Saved teams and box Pokémon that turn illegal are flagged with a note, never deleted. Why: players keep what they built.
+4. A one-line notice on the day it changes (the page already has a "New regulation" note for the data side).
+Size: medium (a day of careful work + tests). Nothing starts without your yes.
+
+## Where this conflicts with earlier rules or decisions
+- Nov 9 "no new features until finished": review section 4 asks for additions; I did the ones that fix wrong or missing information
+  (4b +1, 4c) and put the new controls (4a, 4e) to you.
+- RULES.md "no design decision without Sim's yes and pictures": under your authority I made small looks (loading screen, mirror label,
+  chip and Stand-Outs rows); all are Preview-only with pictures sent; nothing went live.
+- 3h on main: your yes covered changing main's data job, but main's live page labels its own groups, so I built it on this branch
+  instead (live with the switch). Tell me if you want main changed now.
+- Pushes cancel the previous GitHub run, so I batch pushes and let runs finish.
