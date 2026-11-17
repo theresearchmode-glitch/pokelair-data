@@ -529,7 +529,7 @@ t('SUGG-07b', 'Add Protect: the toast offers Undo, and Undo takes Protect back o
   await ui.setMoves(1, ['Earthquake', 'Rock Slide', 'Dragon Claw', 'Stomping Tantrum']); await ui.setMoves(2, ['Fake Out', 'Flare Blitz', 'Parting Shot', 'Knock Off']); await ui.setMoves(4, ['Fake Out', 'Grassy Glide', 'Wood Hammer', 'U-turn']); await ui.setMoves(5, mv);
   await ui.go('My Team'); await ui.waitMySuggestions(); await ui.tap(/^Add Protect$/, ui.area('My team page'), 800); await ui.waitForToast(/^Protect added/);
   expect(await ui.toastOffersUndo(), 'the toast offers no Undo'); await ui.undoToast(); expect(JSON.stringify((await ui.slotSet(5)).mv.doubles) === JSON.stringify(mv), 'Undo did not take Protect back out'); await close(); },
-  {known: 'the "Protect added" toast offers no Undo (the change is not stored as an undo step)'});
+  {}); /* known mark removed Nov 17: fixed (keepUndo in LANE.protApply) */
 
 t('SUGG-08', 'Nothing to fix: card with Battle and Sets, then side-grades that keep every check', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.applyMySuggestion(0); const s = await ui.waitMySuggestions();

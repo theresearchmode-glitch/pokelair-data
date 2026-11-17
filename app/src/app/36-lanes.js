@@ -55,7 +55,7 @@ const LANE = {
     return `<div class="chlanecard fix"><p><span class="chlane ln-fix"><b>Fix</b> ${W.fix}</span></p>
       <p class="t2">${W.who} ${f.who.map(m => `<b>${esc(m.d)}</b>`).join(' and ')}.</p><button type="button" class="chghost" data-protfix>${W.btn}</button></div>`; },
   // the move swapped out for Protect: the one its popular set runs least (else the last one)
-  protApply(ms) { const f = LANE.protFix(ms); if (!f) return; for (const m of f.who) { const s = S.slots[m.i]; if (!s) continue;
+  protApply(ms) { const f = LANE.protFix(ms); if (!f) return; keepUndo(); /* known-bug SUGG-07b (Nov 17): the toast offered Undo with nothing saved */ for (const m of f.who) { const s = S.slots[m.i]; if (!s) continue;
       const pop = (popularMoves(m.p) || []).map(x => x && (x.name || x)), cur = LANE.moves(m).slice(0, 4); while (cur.length < 4) cur.push('');
       let j = -1, worst = -1; cur.forEach((n, k) => { const r = n ? pop.indexOf(n) : 99; const rr = r < 0 ? 98 : r; if (rr > worst) { worst = rr; j = k; } });
       if (j < 0) j = 3; cur[j] = 'Protect'; s.mv = s.mv || {}; s.mv[S.format] = cur; }
