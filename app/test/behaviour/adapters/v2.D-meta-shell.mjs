@@ -91,7 +91,7 @@ export default (ui, pg) => {
     // ---------------- shared page helpers (Nov 15, for Events, Archetypes, This Week, Track Record) ----------------
     scrollY: () => pg.evaluate(() => Math.round(scrollY)),
     eventDetailTop: () => pg.evaluate(() => { const o = document.querySelector('.ev-open'); return o ? Math.round(o.getBoundingClientRect().top) : null; }),
-    scrollTo: async y => { await pg.mouse.move(640, 400); await pg.evaluate(y => scrollTo(0, y), y); await pg.mouse.wheel(0, 1); await wait(300); },
+    scrollTo: async y => { await pg.mouse.move(640, 400); await pg.evaluate(y => scrollTo(0, y), y); await pg.mouse.wheel(0, 1).catch(() => pg.evaluate(() => dispatchEvent(new Event('scroll')))) /* phone-mode WebKit has no mouse wheel (Nov 17) */; await wait(300); },
     /** open the "?" whose label matches (the new build's [data-v2tip] bubbles). Translation: where a page explains with a question fold
      *  instead of a "?" (Events: "What counts as an event?"), that fold is the explainer: it is opened and tipText reads its body. */
     openTip: async m => { const how = await ev(m => { const re = new RegExp(m, 'i'), main = document.querySelector('#main') || document.body;
@@ -186,7 +186,7 @@ export default (ui, pg) => {
     tapBackLink: async () => { await tapEl(() => [...document.querySelectorAll('#main button, #main a')].filter(__dvis).find(b => /^[←‹]/.test(__dtx(b))) || null, null, 'a ← back link in the page', 600); },
     browserBack: async () => { await pg.goBack({timeout: 3000}).catch(() => {}); await wait(700); },
     address: () => pg.url(),
-    scrollToBottom: async () => { await pg.evaluate(() => scrollTo(0, document.documentElement.scrollHeight)); await pg.mouse.wheel(0, 50); await wait(400); },
+    scrollToBottom: async () => { await pg.evaluate(() => scrollTo(0, document.documentElement.scrollHeight)); await pg.mouse.wheel(0, 50).catch(() => pg.evaluate(() => dispatchEvent(new Event('scroll')))); await wait(400); },
     /** the current section's accent: the colour of the lit main tab's marker (the new site draws it with --plot); no lit tab: --plot itself */
     accent: () => ev(() => { const a = [...document.querySelectorAll('.np-nav a, .np-bar a')].filter(__dvis).find(a => a.getAttribute('aria-current') === 'page');
       let c = a ? getComputedStyle(a, '::after').backgroundColor : ''; if (!c || c === 'rgba(0, 0, 0, 0)') { const t = document.createElement('i'); t.style.color = 'var(--plot)'; document.body.append(t); c = getComputedStyle(t).color; t.remove(); } return c.toUpperCase(); }),
