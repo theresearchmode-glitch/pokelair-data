@@ -7,6 +7,7 @@
 // (daily usage ranks for trends) and out/matches.json (game-level results for the team model).
 // PokéLair's daily refresh copies these files into the page's data. Run: node update.mjs
 import {pid, hasKey} from './pid.mjs';
+import {updateModes} from './tour-modes.mjs';
 import fs from 'node:fs';
 import {topcut} from './topcut.mjs';
 import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
@@ -75,6 +76,11 @@ for (const t of todo) {
 }
 fs.writeFileSync('data/index.json', JSON.stringify(index));
 console.log(`list ${list.length} tournaments, fetched ${fetched}, cached ${Object.keys(index.tournaments).length}`);
+// 1b) round format per event (Sim, Nov 17: single games first): best-of-1 or best-of-3 per phase into data/tour-modes.json,
+// asked once per event, newest first, up to MAX_MODES (120) a run: the first run backfills about 108 events (12 min), later runs a few (structural only; tour-modes.mjs, experiments/tour-modes-test.mjs)
+{ const MODES = readJSON('data/tour-modes.json', {}), r = await updateModes(index, get, {modes: MODES, max: +(process.env.MAX_MODES || 120), log: m => console.log(m)});
+  if (r.added) fs.writeFileSync('data/tour-modes.json', JSON.stringify(r.modes));
+  console.log(`round formats: ${r.added} new of ${r.tried} asked, ${Object.keys(r.modes).length} events known`); }
 
 // standard Reg M-C events only: themed and restricted cups are kept on disk but left out of every number below
 // and only the active regulation's events: never two regulations in the same numbers (formats.mjs)
