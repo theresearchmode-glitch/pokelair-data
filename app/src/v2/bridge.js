@@ -11,7 +11,7 @@ function render() { persist(); fixMetaSrc(); clearCaches(); if (window.V2 && V2.
 // like today's scheduleRender: wait a moment so the daily documents arriving together land in one redraw, and only then pick the
 // usage source (fixMetaSrc), so it never settles on whichever document happened to arrive first
 function scheduleRender() { clearTimeout(V2._rq);
-  if (window.V2 && V2.dataReady && !V2._dataOk && V2.dataReady()) { fixMetaSrc(); clearCaches(); V2.redraw(); return; } /* the last daily document: draw now, not 700 ms later */
+  if (window.V2 && V2.dataReady && !V2._dataOk && V2.dataReady()) { fixMetaSrc(); clearCaches(); V2.warmDraw(); return; } /* the last daily document: draw now, not 700 ms later */
   V2._rq = setTimeout(() => { fixMetaSrc(); clearCaches(); V2.redraw(); }, 700); }
 // V2.dataReady (the wait for today's numbers, pre-launch check 1) lives in shell.js: V2 doesn't exist yet when this file runs
 

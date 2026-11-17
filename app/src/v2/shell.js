@@ -304,6 +304,11 @@ V2.safeDraw = P => { try { return P.draw(); } catch (e) { console.error(e); retu
    teams, the Game Plan's lead and bench flipped, Strength Score 92 -> 93). Numbers are drawn only once every daily document has answered
    (META_SEEN, 03-persistence.js), or there is no data store (a plain file, the tests, signed out), or after 8 s (a document that never
    answers: the built-in numbers rather than nothing). Until then the main area shows the loading panel (V2.loadingHtml). */
+// speed fix 2 (Nov 17, pre-launch 2c): when today's numbers arrive, the ratings for every Pokémon and your team's report are worked out
+// as their own steps (both are kept and reused by the drawing), then the page is drawn: three shorter tasks instead of one ~1 s freeze.
+// The loading panel stays up until the draw, so nothing old or half-done shows.
+V2.warmDraw = () => { const steps = [() => ratings(), () => { const ms = members(); if (ms.length) prepOf(ms); }]; let i = 0;
+  const next = () => { if (i < steps.length) { try { steps[i++](); } catch (e) {} setTimeout(next, 0); } else V2.redraw(); }; setTimeout(next, 0); };
 V2.dataReady = () => { if (V2._dataOk) return true; let ok = false;
   try { const c = window.__NP_CLAUDE || window.claude; ok = !c || !c.use || META_NODB || META_KEYS.every(k => META_SEEN.has(k)) || performance.now() > 8000; } catch (e) { ok = true; }
   return ok ? (V2._dataOk = true) : false; };
