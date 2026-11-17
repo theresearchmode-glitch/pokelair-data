@@ -83,6 +83,17 @@ if (process.argv.includes('--v2')) {
     if (esb) jsOut = esb.transformSync(js, {loader: 'js', minifyWhitespace: true, charset: 'utf8', legalComments: 'none'}).code; }
   const page = head.replace('<meta charset="utf-8">', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + `\n<script>\n${jsOut}\n</script>\n</body></html>\n`;
   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
+  /* Sim, Nov 16 (B-I3, option B): a static first screen. A phone used to show a blank page for about 2 s while the script ran (first paint
+     2,016 -> 628 ms measured at 4x CPU with the header already in the HTML). The build opens the page it just made, copies the header and
+     the phone bar the script draws (current-page marks removed: the right one is set by the first draw), and puts them in #app, so the
+     same header shows at once and the first draw replaces it with no visible change. Skipped with --no-static or without Playwright. */
+  if (!process.argv.includes('--no-static')) { let chromium = null; try { ({chromium} = await import('playwright')); } catch (e) { console.log('v2: playwright not installed, no static first screen'); }
+    if (chromium) { const b = await chromium.launch(), pg = await b.newPage({viewport: {width: 1280, height: 900}});
+      try { await pg.goto('file://' + dir + 'dist/v2.html#home'); await pg.waitForFunction(() => document.querySelector('#app .np-head'), null, {timeout: 15000});
+        const parts = await pg.evaluate(() => { const g = s => { const e = document.querySelector('#app ' + s); if (!e) return ''; const c = e.cloneNode(true); c.querySelectorAll('[aria-current]').forEach(x => x.removeAttribute('aria-current')); return c.outerHTML; };
+          return g('.np-skip') + g('.np-head') + '<main class="np-main" id="main"></main>' + g('.np-bar'); });
+        if (parts.includes('np-head') && page.includes('<div id="app"></div>')) { fs.writeFileSync(dir + 'dist/v2.html', page.replace('<div id="app"></div>', `<div id="app">${parts}</div>`)); console.log(`v2: static first screen ${(parts.length / 1024).toFixed(0)} KB`); }
+      } catch (e) { console.log('v2: static first screen skipped (' + String(e.message).slice(0, 80) + ')'); } finally { await b.close(); } } }
   // the font files beside the built page (fonts/ is the default place the page reads them from)
   fs.mkdirSync(dir + 'dist/fonts', {recursive: true}); for (const f of fs.readdirSync(dir + 'src/v2/fonts')) if (f.endsWith('.woff2')) fs.copyFileSync(dir + 'src/v2/fonts/' + f, dir + 'dist/fonts/' + f);
   console.log(`built dist/v2.html (${(page.length / 1024).toFixed(0)} KB; ${P.css.length} CSS layers, ${P.data.length} data files, ${P.scripts.length} scripts${(P.logic || []).length ? `, ${P.logic.length} shared logic files` : ''})`);

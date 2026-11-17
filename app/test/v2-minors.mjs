@@ -7,7 +7,7 @@ import {chromium} from 'playwright'; import path from 'node:path'; import fs fro
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') + msg); if (!c) fails.push(msg); };
 ok(!/Ready for every top threat/.test(fs.readFileSync(PAGE, 'utf8')), 'A1-M1: the page never says "Ready for every top threat"');
-{ const h = fs.readFileSync(PAGE, 'utf8'); if (h.includes('__NP_PREVIEW=1')) ok(/const D=JSON\.parse\("/.test(h), 'B-m5: the Preview\'s data is read with JSON.parse, not as a big object literal'); }
+{ const h = fs.readFileSync(PAGE, 'utf8'); ok(/<div id="app"><a class="vh np-skip"[\s\S]*?class="np-head"/.test(h), 'B-I3: the header is in the page before the script runs (static first screen)'); if (h.includes('__NP_PREVIEW=1')) ok(/const D=JSON\.parse\("/.test(h), 'B-m5: the Preview\'s data is read with JSON.parse, not as a big object literal'); }
 const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 1280, height: 900}});
 await p.addInitScript(() => { window.__PL_TEST = 1; });
 await p.goto('file://' + PAGE + '#build'); await p.waitForTimeout(2500);
