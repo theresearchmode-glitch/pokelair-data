@@ -6,7 +6,11 @@ const PW=require('playwright'),chromium=process.env.BROWSER==='webkit'?PW.webkit
 const b=await chromium.launch();let total=0;
 for(const th of TH)for(const w of W){const touch=w<1100;const ctx=await b.newContext({viewport:{width:w,height:900},hasTouch:touch,isMobile:touch&&w<700});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
  await p.addInitScript(()=>{window.__PL_TEST=1});await p.addInitScript(t=>{try{localStorage.setItem('np2.theme',t)}catch(e){}},th);
- await p.goto('file://'+process.env.PF+(process.env.HASH||''));await p.waitForTimeout(2500);
+ /* WebKit loads no web fonts from file:// (measured Nov 17: 0 fonts, so text ran wide and looked clipped); serve the page's folder
+    inside the browser as https://np.test/ instead (no server) */
+ if(process.env.BROWSER==='webkit'){const fs=require('fs'),path=require('path'),dir=path.dirname(process.env.PF);await ctx.route('https://np.test/**',r=>{const f=path.join(dir,decodeURIComponent(new URL(r.request().url()).pathname));if(!fs.existsSync(f)||fs.statSync(f).isDirectory())return r.fulfill({status:404,body:''});
+  const ct={'.html':'text/html','.woff2':'font/woff2','.css':'text/css','.webp':'image/webp','.png':'image/png','.jpg':'image/jpeg','.svg':'image/svg+xml','.js':'text/javascript'}[path.extname(f)]||'application/octet-stream';return r.fulfill({status:200,body:fs.readFileSync(f),contentType:ct})});
+  await p.goto('https://np.test/'+path.basename(process.env.PF)+(process.env.HASH||''))}else await p.goto('file://'+process.env.PF+(process.env.HASH||''));await p.waitForTimeout(2500);
  const SETUP=process.env.SETUPF?require('fs').readFileSync(process.env.SETUPF,'utf8'):process.env.SETUP;if(SETUP){try{await p.evaluate(SETUP)}catch(e){errs.push('setup '+e.message)}await p.waitForTimeout(1200);}
  const r=await p.evaluate(([root,touch])=>{const o=[],R=document.querySelector(root)||document.body,vw=document.documentElement.clientWidth,SC=[13,15,16,17,20,22,24,26,28,34];
   const vis=e=>{const c=getComputedStyle(e);return c.visibility!=='hidden'&&+c.opacity>0.05&&c.display!=='none'};
