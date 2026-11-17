@@ -34,6 +34,9 @@ export const DOCS = {'meta/results': L.results, 'meta/perf': perfDoc(L, fx('perf
 const PAGE = ROOT + `app/test/behaviour/_page-${process.pid}.html`;
 let built = false;
 function page() { if (built) return PAGE; let h = fs.readFileSync(PAGE_SRC, 'utf8');
+  /* code review C-M6 (Nov 16): today's page gets its hook by this string; if the string ever changes, say so instead of running without it
+     (the new site carries its own hook, test-hook.js, switched on by window.__PL_TEST, and its adapter works without it) */
+  if ((process.env.ADAPTER || 'current') !== 'v2' && !h.includes('render();setView(view,false);')) throw new Error('harness: today\'s page lost its hook point (render();setView(view,false);): the tests would run without __ev');
   h = h.replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);');
   fs.writeFileSync(PAGE, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + h);
   // the new site reads its self-hosted fonts from fonts/ beside the page (Nov 12): copy them next to this test copy too
