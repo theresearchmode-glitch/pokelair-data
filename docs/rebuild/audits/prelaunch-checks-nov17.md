@@ -39,7 +39,7 @@ parked by Sim's Nov 9 rule until she says), NO CHANGE (checked).
 - 3e NO CHANGE (checked) "This Preview uses a saved copy of the data" banner must be tied to preview mode only. Checked: it shows only when window.__NP_PREVIEW is set (shell.js V2.dataNote), which only the --preview-data build sets; build.mjs refuses --public with --preview-data (ran it: "--public and --preview-data do not mix"); a --v2 --public build has __NP_PREVIEW=1 0 times; GitHub's v2-public.mjs fails if it ever appears.
 
 ## 4. The next regulation (decide now)
-- 4 FOR SIM "M-C" appears 112 times; legal items are a fixed M-C list; no single regulation setting; saved teams don't
+- 4 APPROVED (Sim, Nov 17: the proposal in summary-nov17.md, incl. the M-D safety net) "M-C" appears 112 times; legal items are a fixed M-C list; no single regulation setting; saved teams don't
   record their regulation. Needs: one switch, what happens to ratings / Winning Teams / Events / Track Record, flag (not
   delete) illegal saved teams and box Pokémon, a notice on the day.
 

@@ -44,7 +44,7 @@ KO Board, Test Run's piles, Track Record.
 - 3j FIXED My Box first visit: 36 Pokémon unlabelled while the team says "(sample)": label it if it's a sample box. Checked: a first visit gets DEFAULT_BOX (01-state.js). While the box is unchanged: "36 Pokémon (sample) · 2 boxes" and "A sample box to start with: add the Pokémon you own and remove the rest." Any change drops it. Test: v2-minors 3j (fails before, passes after); A-team BOX test accepts both. Pictures: pics/nov17/box-sample-{390,1280}-{before,after}.png.
 
 ## 4. Missing inside existing tools
-- 4a FOR SIM Battle Their Six: tap-to-pick grid of the 30 most common Pokémon. Not blocked by any rule (Sim, Nov 17: the Nov 9 'finish before adding' rule was about the redesign process, not new features). Sim picks when; recommendation: build it once Step 1's checks are done, so the switch isn't delayed.
+- 4a DECIDED (Sim, Nov 17: right after Step 1's checks) Battle Their Six: tap-to-pick grid of the 30 most common Pokémon. Not blocked by any rule (Sim, Nov 17: the Nov 9 'finish before adding' rule was about the redesign process, not new features). Sim picks when; recommendation: build it once Step 1's checks are done, so the switch isn't delayed.
 - 4b FIXED Speed Tiers: your own +1, Unburden after the item, their Choice Scarf. Checked in code: Unburden already shows a second, doubled
   number once the item is used, and an opponent's Scarf speed is already used when Scarf is its top item. Added the missing one: a "You +1"
   chip (your six one Speed stage up, stage first, then items and Tailwind, as the game does; the speed-target tip turns off, as for the
@@ -57,13 +57,13 @@ KO Board, Test Run's piles, Track Record.
   Tournaments, Megas showed the base form's Ability with % (Mega Charizard Y "Blaze 84%"); Popular Sets and Usage now say "Always Drought (a
   Mega's Ability is fixed)". Spreads with share: FOR SIM, needs new data from the daily job (the tournament data has no stat points).
   Tests: v2-minors 4c x3 (fail before, pass after). Pictures: pics/nov17/sets-mega-{tour,ingame}-1280.png.
-- 4d FOR SIM Pokémon page "What beats it": add the meta Pokémon that really beat it. Built and measured, then not shipped: the real-games
+- 4d DECIDED (Sim, Nov 17: A, keep the type chart) Pokémon page "What beats it": add the meta Pokémon that really beat it. Built and measured, then not shipped: the real-games
   pair effects (ctrVal, player skill taken out) are small one Pokémon at a time. Garchomp against the 30 most used: -1.0 points (Politoed)
   to +1.65 (Mega Raichu Y); the 1.5-point "Unfavoured" line Matchups uses is for a whole six summed, so no single Pokémon clears it, and
   the data has no error ranges to tell a real 1-point effect from noise. Unsure it means anything per pair; a "beats it" list would
   overstate. Options for Sim: (A) leave the type chart as the answer (recommended: it's what we can stand behind); (B) a "toughest in real
   games" line with the measured points, labelled small; (C) wait for error ranges from the model (a data-job change).
-- 4e FOR SIM Events "Next Events": Add to calendar. Needs a calendar-file download; the Preview declares no downloads permission and I'm unsure a plain download works inside the Claude page (not tested). Recommendation: build it with the public site in January (why: it works there for sure).
+- 4e DECIDED (Sim, Nov 17: with the public site) Events "Next Events": Add to calendar. Needs a calendar-file download; the Preview declares no downloads permission and I'm unsure a plain download works inside the Claude page (not tested). Recommendation: build it with the public site in January (why: it works there for sure).
 
 ## Where this meets earlier rules or decisions (for Sim)
 - (Corrected Nov 17: Sim's Nov 9 rule was about the redesign process and working systems, not a ban on new features; I had applied it too broadly.) Section 4 adds pieces inside existing tools; the reviewer
