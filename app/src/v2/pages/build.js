@@ -53,7 +53,7 @@ V2.buildAnswer0 = () => { const E = V2.esc, r = ui.ab;
     : res.short != null ? `Only ${res.short} usable Pokémon in your box for doubles. Add more in My Box, or switch to Whole Roster.` : 'No legal team from this pool.'}</p>`;
   const t = abTeam('doubles'), n = res.teams.length, k = ((ui.abIdx && ui.abIdx.doubles) || 0) % n;
   let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
-  const s = G ? Math.round(G.s) : t.score, band = G ? V2.BAND_K[G.band] || 'solid' : 'solid', word = G ? CH.wordOf(G.s) : '';
+  const s = G ? Math.round(G.s) : '–' /* never the builder's own number under the Strength Score label (code review A1-M4) */, band = G ? V2.BAND_K[G.band] || 'solid' : 'solid', word = G ? CH.wordOf(G.s) : '';
   // Sim, Nov 12 (decision 8): the Mega count rides in the eyebrow, so the chips never leave one alone on a row
   const kind = (t.proven ? (t.proven.swapped ? 'Proven team, 1\u00a0swap' : 'Proven team') : t.fresh ? 'Fresh take' : 'Built team') + (t.megas > 1 ? ` · ${t.megas}\u00a0Mega\u00a0options` : ''); /* review (Nov 13): no word left alone on a line */
   const chips = (t.gp || []).slice(0, 3);
@@ -90,7 +90,7 @@ V2.buildOthers = () => { const res = ui.ab && ui.ab.doubles; if (!res || !res.te
   const item = (t, i) => { let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
     const rows = t._rd && t._rd.rows || [], ans = rows.filter(x => x.level >= 2).length, bas = CK ? CK.items.filter(x => !x.skip && !x.note) : [], band = G ? V2.BAND_K[G.band] || 'solid' : 'solid';
     return `<div class="bd-alt"><div class="bd-alt-top"><div><p class="bd-kk">Option ${i + 1} · ${t.proven ? (t.proven.swapped ? 'Proven team, 1\u00a0swap' : 'Proven team') : t.fresh ? 'Fresh take' : 'Built team'}</p><h3 class="u">${V2.dotWrap(E(t.label))}</h3></div>
-      <div class="bd-alt-sc" style="--band:var(--band-${band})"><b class="u">${G ? Math.round(G.s) : t.score}</b><span>${G ? E(CH.wordOf(G.s)) : ''}<small>${G ? E(CH.pctShort(G)) : ''}</small></span></div></div>
+      <div class="bd-alt-sc" style="--band:var(--band-${band})"><b class="u">${G ? Math.round(G.s) : '–'}</b><span>${G ? E(CH.wordOf(G.s)) : ''}<small>${G ? E(CH.pctShort(G)) : ''}</small></span></div></div>
       <div class="bd-alt-six">${t.mons.map(m => `<button type="button" class="bd-alt-pk" data-v2mon="${E(m.n)}" aria-label="${E(V2.disp(m.n))}: open its info">${V2.mon(m.n, {iw: 60, bare: true})}<b>${V2.nameHtml(m.d)}</b></button>`).join('')}</div>
       <div class="bd-alt-meta"><span>${ans}/${rows.length} matchups with an answer · ${bas.filter(x => x.ok).length}/${bas.length} team checks</span><button type="button" class="np-link" data-bdshow="${i}">Show This One ›</button></div></div>`; };
   const list = res.teams.map((t, i) => i === cur ? '' : item(t, i)).join('');

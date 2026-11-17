@@ -37,6 +37,7 @@ V2.pages.compare = {place: 'team', draw() { const RA = cxResolve(ui.cx.A), RB = 
   if (!RA || !RB) return `<section class="cx2">${head}<p class="tm-sub cx2-hint">Pick two teams: your team, a saved one, an event winner or a pasted Showdown team. Every row below is worked out the same way as on My Team.</p></section>`;
   const IA = CX.cache.get(cxKey(RA.slots)), IB = CX.cache.get(cxKey(RB.slots));
   if (!IA || !IB) { V2.cxWork(); return `<section class="cx2">${head}<p class="tm-sub cx2-busy" role="status">Working out both teams: Strength Score, matchups, checks and speed…</p></section>`; }
+  if (IA.err || IB.err) return `<section class="cx2">${head}<p class="tm-sub cx2-hint" role="status">One of these teams couldn't be worked out. Try another team, or change this one on My Team.</p></section>`;
   const rows = V2.cxRows(IA, IB), diff = rows.filter(r => r.diff), same = rows.filter(r => !r.diff);
   const says = ['thr', 'sc', 'field', 'grade', 'ready', 'weak'].map(k => (rows.find(r => r.k === k) || {}).say).concat(rows.filter(r => r.k.startsWith('ck:')).map(r => r.say)).filter(Boolean);
   const cell = (r, v) => CX2[r.k.startsWith('ck:') ? 'ck' : r.k](v);
@@ -50,7 +51,7 @@ V2.pages.compare = {place: 'team', draw() { const RA = cxResolve(ui.cx.A), RB = 
     ${same.length ? `<details class="cx2-same"${ui.cx.same ? ' open' : ''}><summary>Same on Both <span class="fine">${same.length} row${same.length === 1 ? '' : 's'}</span></summary>${V2.cxHrow()}<div class="cx2-grid">${same.map(row).join('')}</div></details>` : ''}
     <p class="fine cx2-foot">The Strength Score and matchups are worked out exactly as on My Team: how each team's matchups look against the top 30 threats, not a prediction of this match. Speeds are the likely stat (your spread, or the most common one), in each team's own weather.</p></section>`; }};
 // work out what isn't cached yet, one side per frame, so the page answers at once (as today)
-V2.cxWork = () => { if (V2.cxBusy) return; V2.cxBusy = true; const step = () => requestAnimationFrame(() => setTimeout(() => { try { const R = [cxResolve(ui.cx.A), cxResolve(ui.cx.B)].find(r => r && !CX.cache.has(cxKey(r.slots))); if (R) { cxInfo(R.slots); step(); return; } } catch (e) {} V2.cxBusy = false; if (V2.route() === 'compare') V2.redraw(); }, 0)); step(); };
+V2.cxWork = () => { if (V2.cxBusy) return; V2.cxBusy = true; const step = () => requestAnimationFrame(() => setTimeout(() => { let R = null; try { R = [cxResolve(ui.cx.A), cxResolve(ui.cx.B)].find(r => r && !CX.cache.has(cxKey(r.slots))); if (R) { cxInfo(R.slots); step(); return; } } catch (e) { if (R) try { CX.cache.set(cxKey(R.slots), {err: true}); } catch (x) {} /* remembered, so the page says so instead of trying again forever (code review A1-M9) */ } V2.cxBusy = false; if (V2.route() === 'compare') V2.redraw(); }, 0)); step(); };
 
 // Sim Q10d (Nov 15): titled 'Change Team X' when that side already has a team (the button you tapped says Change), 'Pick Team X' when empty
 // the picker, as a sheet: My Team, saved teams, event winners (newest first), or a pasted Showdown team
