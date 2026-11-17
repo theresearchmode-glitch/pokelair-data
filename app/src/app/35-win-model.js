@@ -51,7 +51,9 @@ function teamX(names,ms){let x=modelX(names);const M=META.model,byN=new Map((ms|
 // lacks it. Sim, Nov 8: a no-Mega team graded 98 while real no-Mega teams win 34%. Move-based ones need the sets (ms).
 function teamBasicsOf(names,ms){if(names.length!==6)return null;const o={noMega:names.some(n=>(byName.get(n)||{}).m)?0:1};
   if(ms&&ms.length===6){const mv=ms.map(m=>((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(z=>z&&(z.name||z)).filter(Boolean)),has=n=>mv.some(L=>L.includes(n));
-    o.protectLow=mv.filter(L=>L.includes('Protect')).length<=2?1:0;
+    /* Sim, Nov 16 (batch 2B): the whole Protect family counts (Detect, Spiky Shield, King's Shield...), as the suggestions count it; measured on
+       18,642 later games: as accurate as Protect alone (log-loss 0.68084 vs 0.68088), and the score now agrees with the advice */
+    {const PF=typeof LANE==='object'&&LANE.PROT?LANE.PROT:new Set(['Protect','Detect','Spiky Shield',"King's Shield",'Baneful Bunker','Silk Trap','Burning Bulwark','Obstruct']);o.protectLow=mv.filter(L=>L.some(n=>PF.has(n))).length<=2?1:0}
     {const trU=mv.map((L,i)=>L.includes('Trick Room')?i:-1).filter(i=>i>=0);o.trNoSlow=trU.length&&names.filter((n,i)=>!trU.includes(i)&&((byName.get(n)||{}).sp??100)<=60).length<2?1:0}
     o.noSpeed=has('Tailwind')||has('Trick Room')||has('Icy Wind')||has('Electroweb')||ms.some(m=>/Choice Scarf/.test(m.heldItem||m.item||''))?0:1;
     o.noFakeOut=has('Fake Out')?0:1}

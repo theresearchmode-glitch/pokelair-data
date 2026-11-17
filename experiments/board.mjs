@@ -24,7 +24,7 @@ const spF = new Map(); for (const f of Object.keys(MT.sets || {})) { const sp = 
    TEAMF): no Mega on the six; 2 or fewer Protect users when the deck is known (unknown deck: 0, as model.mjs) */
 const teamX = (t, d) => { const T = MT.team; if (!T) return 0; let v = 0; const m = teams[t];
   if (T.noMega && !m.some(n => /-Mega/.test(n))) v += T.noMega;
-  if (T.protectLow && d != null && M.decks && M.decks[d]) { const f = M.decks[d].map(j => M.feats[j]); const PF = process.env.PROT_FAMILY === '1' ? ['Protect', 'Detect', 'Spiky Shield', "King's Shield", 'Baneful Bunker', 'Silk Trap', 'Burning Bulwark', 'Obstruct'] : ['Protect']; /* code review A2-I5 test */
+  if (T.protectLow && d != null && M.decks && M.decks[d]) { const f = M.decks[d].map(j => M.feats[j]); const PF = process.env.PROT_FAMILY !== '0' ? ['Protect', 'Detect', 'Spiky Shield', "King's Shield", 'Baneful Bunker', 'Silk Trap', 'Burning Bulwark', 'Obstruct'] : ['Protect']; /* code review A2-I5 test */
     if (m.filter(n => PF.some(x => f.includes(n + ':' + x))).length <= 2) v += T.protectLow; }
   return v; };
 const pairX = (t, d) => { const m = teams[t]; let v = teamX(t, d); for (const n of m) v += MT.mons[n] || 0;
