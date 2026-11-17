@@ -7,6 +7,19 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Nov 17, written time: 2:25 AM (2:25:44)  date: Tue Nov 17, 2026 by the clock; Sim's executive authority until 5:00 PM Tue Nov 17; summary with pictures before 5 PM; then STOPPED + HANDOVER + phone note)
+- Branch claude/design6, last commit 14a8b77; Preview v192 (397 files, 346 v2art), checklist i57 version 56.
+- Overnight (Sim: 'recommended for all', big items fine; decisions.md from 11:40 PM): review FP-1/2/4 planner fixes (f08d5e6) and FP-5
+  card/poster spacing (d79b62b); C-I7 tests wait for the page to be ready (f70faff; same results, +0.6% time; the SUG-05 flake never
+  reproduced in Chrome); B-m4 contain: paint NOT applied (cut the glow, no gain; design notes corrected); B-m6 memory measured, bounded, left;
+  C-I8: BROWSER=webkit for the suites (test reading fixed: dropdown text, spacing, joined capitals), app/test/qcheck.cjs + qcheck-all.mjs
+  with 86 known findings (line-box false alarms looked at: calc, types; guide is the style guide); CI jobs behaviour-webkit (reporting) and
+  quality-v2 (blocking on new findings). Daily ckwin step held off main until the switch (main's page doesn't read it).
+- Local setup this machine needed: node_modules/pokemon-showdown linked from the scratchpad (psd/), for fields-audit.
+- Waiting on Sim: glance at Edit Set dropdowns on her iPhone (pics/nov17/edit-dropdown-*.png); NP_PID_KEY under Repository secrets ->
+  Actions, then the main names fix (#15) again; the switch to live; after-4 device checks (test-runs/sim-nov16-after4.md).
+- Next: C-I9 (file sizes) parked unless Sim wants it (a refactor, no visible gain); summary before 5 PM.
+
 ## NOW (Nov 16, 1:26 PM Eastern by the clock; executive authority until 8 PM)
 - LOGO, Sim 12:52 PM (overrides the older "imp alone below 414" in the backstop prompts): the FULL wordmark on phones too, smaller is fine;
   the imp is for the browser tab / icons. Built: below 414 the wordmark sized to the room beside the tools (20px at 320, 28px from 390), uses
