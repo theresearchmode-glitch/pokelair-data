@@ -53,7 +53,7 @@ t('NAV-03', 'The ⋯ menu lists the 24 pages, marks the current one, traps focus
   await d.openMenu(); await d.closeMenu('back'); expect(!(await d.menuIsOpen()), 'Back did not close'); expect(await ui.current() === 'events', 'Back changed the page');
   await d.openMenu(); await d.closeMenu('x'); expect(!(await d.menuIsOpen()), '× did not close');
   await d.openMenu(); await d.closeMenu('backdrop'); expect(!(await d.menuIsOpen()), 'backdrop did not close');
-  await d.openMenu(); await d.tapMenuPage('Track Record'); expect(!(await d.menuIsOpen()) && await ui.current() === 'track', 'choosing a page did not open it and close'); }));
+  await d.openMenu(); await d.tapMenuPage('Track Record'); expect(!(await d.menuIsOpen()) && await ui.current() === 'track', 'choosing a page did not open it and close'); }), NEW ? {skip: 'old-site design; the new site\'s approved version is NAV-03v (Sim, Nov 16, batch 17)'} : {});
 t('NAV-03b', 'The ⋯ button looks "on" only on pages outside the five main tabs (About & Legal)', run({team: TEAM}, async ({ui, d}) => {
   // inventory said "a page that is not one of the five main tabs"; measured: pages under a tab (This Week → Meta) keep it off
   await ui.go('Ratings'); const a = await d.menuButtonOn(); await ui.go('This Week'); const b = await d.menuButtonOn(); await ui.go('About'); const c = await d.menuButtonOn();
@@ -88,7 +88,7 @@ t('NAV-07', 'Each Meta page opens at its top, named, and marked in the menu', ru
   for (const [m, pane, name] of rows) { await d.scrollTo(900); await d.openMenu(); await d.tapMenuPage(m);
     expect(await ui.current() === pane, `${m} opened ${await ui.current()}`); expect(await d.scrollY() < 5, `${m} opened scrolled to ${await d.scrollY()}`);
     expect(has(await ui.text(), name), `${m}: page does not show its name "${name}"`);
-    await d.openMenu(); expect(await d.menuCurrent() === m, `${m}: menu marks ${await d.menuCurrent()}`); await d.closeMenu('escape'); } }));
+    await d.openMenu(); expect(await d.menuCurrent() === m, `${m}: menu marks ${await d.menuCurrent()}`); await d.closeMenu('escape'); } }), NEW ? {skip: 'old-site design; the new site\'s approved version is NAV-07v (Sim, Nov 16, batch 17)'} : {});
 
 t('NAV-08', 'Back steps through pages to the same scroll place, closes the sheet first; no page in the address', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); await d.scrollTo(700); const y = await d.scrollY(); await d.scrollTo(0); await d.tapPageSwitch('Usage'); await ui.go('Ratings'); await d.scrollTo(y);
@@ -103,7 +103,7 @@ t('NAV-09', 'A new page opens at its top', run({team: TEAM}, async ({ui, d}) => 
   // the "Track Record ›" link sits near the top of Ratings, so after scrolling down the player opens it from the menu
   await ui.go('Ratings'); await d.scrollToBottom(); expect(await d.scrollY() > 400, 'could not scroll Ratings');
   await d.openMenu(); await d.tapMenuPage('Track Record'); await ui.pg.waitForTimeout(600); expect(await ui.current() === 'track' && await d.scrollY() < 5, `Track Record opened at ${await d.scrollY()}`);
-  await d.scrollToBottom(); await ui.go('Events'); await ui.pg.waitForTimeout(500); expect(await d.scrollY() < 5, 'Events opened at ' + await d.scrollY()); }));
+  await d.scrollToBottom(); await ui.go('Events'); await ui.pg.waitForTimeout(500); expect(await d.scrollY() < 5, 'Events opened at ' + await d.scrollY()); }), NEW ? {skip: 'old-site design; the new site\'s approved version is NAV-09v (Sim, Nov 16, batch 17)'} : {});
 
 t('NAV-10', 'Keyboard focus stays inside an open Pokémon sheet', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); await d.focusPokemon('Incineroar'); await d.key('Enter'); expect(await d.sheetIsOpen(), 'Enter on a row did not open its sheet');
@@ -181,7 +181,7 @@ t('THEME-02', 'Menu Auto / Light / Dark: Auto follows the device, Light and Dark
   await d.chooseTheme('Light'); await d.deviceDark(true); expect(!(await d.looksDark()), 'Light did not override a dark device');
   await d.chooseTheme('Dark'); await d.deviceDark(false); expect(await d.looksDark(), 'Dark did not override a light device');
   await d.chooseTheme('Auto'); expect(await ls('cc2.theme') === 'auto', 'Auto not saved: ' + await ls('cc2.theme'));
-  await d.deviceDark(true); expect(await d.looksDark(), 'Auto did not follow the device to dark'); await d.deviceDark(false); expect(!(await d.looksDark()), 'Auto did not follow the device back to light'); }));
+  await d.deviceDark(true); expect(await d.looksDark(), 'Auto did not follow the device to dark'); await d.deviceDark(false); expect(!(await d.looksDark()), 'Auto did not follow the device back to light'); }), NEW ? {skip: 'old-site design; the new site\'s approved version is THEME-02v (Sim, Nov 16, batch 17)'} : {});
 
 t('THEME-03', 'Share image has its own Light/Dark choice (see WEEK-02)', run({team: TEAM, mode: 'dark'}, async ({ui, d}) => {
   await ui.go('This Week'); await ui.tap(NEW ? 'Share as Image' : 'Share this week'); expect(await d.shareCard(), 'no share image');
@@ -281,7 +281,7 @@ t('SHELL-12', 'Text style: Title Case page names, commas not dots in lists, "Meg
   await d.openMenu(); for (const n of await d.menuPages()) for (const w of n.split(' ').slice(1)) expect(small.has(w) || /^[A-ZÉ]/.test(w), `menu name not Title Case: ${n}`); await d.closeMenu('escape');
   await ui.go('Ratings'); await d.openPokemon('Incineroar'); await d.tapSheetTab('Info'); const s = await d.sheetPanel();
   expect(/Fake Out, /.test(s) && !/Fake Out · /.test(s), 'move list not comma separated'); await d.closeSheet();
-  for (const p of ['Ratings', 'Usage', 'Winning Teams', 'This Week']) { await ui.go(p); expect(!/\bM-(?!C\b|D\b|\d)[A-Z][a-z]+/.test(await ui.text()), `${p} uses "M-X" naming`); } }));
+  for (const p of ['Ratings', 'Usage', 'Winning Teams', 'This Week']) { await ui.go(p); expect(!/\bM-(?!C\b|D\b|\d)[A-Z][a-z]+/.test(await ui.text()), `${p} uses "M-X" naming`); } }), NEW ? {skip: 'old-site design; the new site\'s approved version is SHELL-12v (Sim, Nov 16, batch 17)'} : {});
 
 t('SHELL-13', 'Sliding pickers: one choice at a time, the list follows (Usage source)', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Usage'); let s = await d.usageSources(); expect(s.map(x => x.name).join() === 'Ranked ladder,Online tournaments,Showdown ladder' && s[0].on, 'sources: ' + JSON.stringify(s));
@@ -764,3 +764,41 @@ t('ABOUT-05', 'Rules caption under legality statements elsewhere', run({team: TE
   const where = await d.findRulesCaption(); expect(where, 'no "Based on our reading of the Reg M-C rules" caption on My Team, Speed Tiers, Damage Calc or Popular Sets'); }));
 
 function OPP6() { return ['Gholdengo', 'Excadrill', 'Tyranitar', 'Staraptor', 'Sinistcha', 'Milotic']; }
+
+// ---------- the new site's versions of five old-site tests (Sim, Nov 16, batch 17: "update them to the approved new design") ----------
+if (NEW) {
+const navCur = pg => pg.evaluate(() => (document.querySelector('.np-nav a[aria-current="page"]') || {}).textContent || '');
+t('NAV-03v', 'Header lists the five places and marks the current one; Search opens, keeps focus inside, closes 3 ways', run({team: TEAM}, async ({ui}) => {
+  const pg = ui.pg; await ui.go('Events');
+  const names = await pg.evaluate(() => [...document.querySelectorAll('.np-nav a')].map(a => a.textContent.trim()));
+  expect(JSON.stringify(names) === JSON.stringify(['Home', 'Build', 'My Team', 'Battle', 'Meta']), 'nav: ' + names.join(', '));
+  expect(await navCur(pg) === 'Meta', 'current place marked: ' + await navCur(pg));
+  const open = async () => { await pg.keyboard.press('/'); await sleep(400); }, isOpen = () => pg.evaluate(() => !!document.querySelector('.np-scrim'));
+  await open(); expect(await isOpen(), 'Search did not open');
+  for (let i = 0; i < 20; i++) { await pg.keyboard.press(i % 7 === 6 ? 'Shift+Tab' : 'Tab'); expect(await pg.evaluate(() => { const s = document.querySelector('[role="dialog"]'); return !!(s && s.contains(document.activeElement)); }), 'Tab left Search after ' + (i + 1) + ' presses'); }
+  await pg.keyboard.press('Escape'); await sleep(300); expect(!(await isOpen()), 'Escape did not close Search');
+  await open(); await pg.click('[role="dialog"] button[aria-label^="Close"]'); await sleep(300); expect(!(await isOpen()), '× did not close Search');
+  await open(); await pg.mouse.click(5, 5 + 300); await sleep(300); expect(!(await isOpen()), 'a tap outside did not close Search'); }));
+t('NAV-07v', 'Each Meta page opens at its top, with one headline and its tab title, and Meta lit in the header', run({team: TEAM}, async ({ui}) => {
+  const pg = ui.pg;
+  for (const n of ['Ratings', 'Events', 'This Week']) { await pg.evaluate(() => scrollTo(0, 900)); await ui.go(n); await sleep(300);
+    const s = await pg.evaluate(() => ({y: Math.round(scrollY), h1: document.querySelectorAll('#app h1').length, title: document.title}));
+    expect(s.y === 0, n + ' opened at y=' + s.y); expect(s.h1 === 1, n + ' has ' + s.h1 + ' headlines'); expect(/ · NastyPlot$/.test(s.title), n + ' tab title: ' + s.title);
+    expect(await navCur(pg) === 'Meta', n + ': header marks ' + await navCur(pg)); } }));
+t('NAV-09v', 'A new page opens at its top', run({team: TEAM}, async ({ui}) => {
+  const pg = ui.pg; await ui.go('Home'); await pg.evaluate(() => scrollTo(0, 1200)); await ui.go('Damage Calc'); await sleep(300);
+  const y = await pg.evaluate(() => Math.round(scrollY)); expect(y === 0, 'Damage Calc opened at y=' + y); }));
+t('THEME-02v', 'Day/Night: with no choice saved the page follows the device; the button\'s choice then holds', run({team: TEAM}, async ({ui, d, ls}) => {
+  const pg = ui.pg; await pg.evaluate(() => { try { localStorage.removeItem('np2.theme'); localStorage.removeItem('cc2.theme'); /* no choice saved on either site */ } catch (e) {} });
+  await d.deviceDark(true); await pg.reload(); await sleep(1500); expect(await d.looksDark(), 'a dark device did not give night');
+  await d.deviceDark(false); await sleep(500); expect(!(await d.looksDark()), 'did not follow the device back to day');
+  await pg.click('[data-v2theme]'); await sleep(400); expect(await d.looksDark(), 'the button did not switch to night');
+  await d.deviceDark(false); await sleep(500); expect(await d.looksDark(), 'the device overrode the saved choice');
+  expect(await ls('np2.theme') === 'night', 'choice not saved: ' + await ls('np2.theme')); }));
+t('SHELL-12v', 'Text style: Title Case place names, "Mega X" naming in Search', run({team: TEAM}, async ({ui}) => {
+  const pg = ui.pg; const names = await pg.evaluate(() => [...document.querySelectorAll('.np-nav a')].map(a => a.textContent.trim()));
+  expect(names.every(n => n.split(' ').every(w => /^[A-Z]/.test(w))), 'not Title Case: ' + names.join(', '));
+  await pg.keyboard.press('/'); await sleep(300); await pg.keyboard.type('chariz'); await sleep(600);
+  const txt = await pg.evaluate(() => (document.querySelector('[role="dialog"]') || {}).innerText || '');
+  expect(/Mega\s+Charizard\s+Y/.test(txt) && !/Charizard-Mega/.test(txt), 'Search names: ' + txt.replace(/\s+/g, ' ').slice(0, 120)); }));
+}

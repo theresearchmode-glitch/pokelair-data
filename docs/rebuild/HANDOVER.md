@@ -58,6 +58,9 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
   audits/design-review-nov15-advisor.md (say it once, two fold patterns, heading rule, three button levels, Home to five sections...).
 - AFTER THE SWITCH (Sim, Nov 15, Q1 A): code review B8 cross-device sync, its own careful step tested on two devices; then C1 delete the
   old site's dead code (the live site still runs it until the switch).
+- Sim's batch answers (Nov 16, 9:06 PM, docs/rebuild/questions-nov17.md): AT THE SWITCH remove the old site's CSS (18); the theme is
+  called Night everywhere (16); git history is not rewritten for old player names (14; revisit if the repo is ever public);
+  PUBLIC SITE (January): usage counts as totals only, with no ID at all (13); the breakpoint merge comes after the switch (7).
 - BEFORE THE SWITCH (checklist): build the live page with `node app/build.mjs --v2 --public` (no test hook, no demo routes; checked by
   app/test/v2-public.mjs, code review C-I5 + A1-M5, Nov 17). Publish the live page with the same runtime capabilities today's live artifact declares (db/user for
   saving, feedback, usage); read today's live artifact first (not yet read, unsure what it declares). The plain v2 build has no Preview
