@@ -718,7 +718,7 @@ t('TRACK-03', 'biggest hits / misses; tap a Pokémon for its sheet', async () =>
 
 t('TRACK-04', 'week by week chart with a line per band', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Track Record'); const tx = await ui.pageText();
-  expect(/Week by week/i.test(tx) && /Rated 90\+ Rated 70–89/.test(tx), 'no week-by-week chart with band legend');
+  expect(/Week by week/i.test(tx) && /Rated 90\+ Rated (?:70|80)–89/.test(tx) /* 3h (Nov 17): tier-line groups once the data says so */, 'no week-by-week chart with band legend');
   expect(await ui.trackChartLines() >= 4, 'chart has no band lines'); await close(); });
 
 t('TRACK-06', 'events checked fold and "How ratings work →"', async () => {

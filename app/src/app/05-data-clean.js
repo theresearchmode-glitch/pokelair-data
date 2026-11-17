@@ -73,6 +73,8 @@ function cleanCalendar(v) { try {
 // from 64-track.js
 function cleanTrack(v) { try {
   if (!v || typeof v !== 'object' || !Array.isArray(v.ev) || !/^\d{4}-\d{2}-\d{2}$/.test(String(v.since || ''))) return null;
+  /* 3h (Nov 17): the groups' cut-offs, when the data names them (three falling numbers); otherwise the old 80 / 60 / 40 */
+  if (typeof trSetCut === 'function') { const b = v.bands; trSetCut(Array.isArray(b) && b.length === 3 && b.every(x => isFinite(+x)) && +b[0] > +b[1] && +b[1] > +b[2] ? b.map(Number) : [80, 60, 40]); }
   const n4 = a => Array.isArray(a) && a.length === 4 && a.every(x => isFinite(+x) && +x >= 0) ? a.map(Number) : null;
   const ev = v.ev.slice(-2000).map(e => { if (!Array.isArray(e)) return null; const bs = n4(e[7]), ap = n4(e[8]), teams = +e[6];
     if (!bs || !ap || !(teams > 0) || !/^\d{4}-\d{2}-\d{2}$/.test(String(e[1]))) return null;

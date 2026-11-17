@@ -10,12 +10,14 @@
 //        event wins, best event name] (only Pokémon rated 70+ on average or seen in a top 8)
 //   mb   per band: [Pokémon whose average rating is in the band, of them seen in a top 8]
 //   fw   scoreboard.mjs's games check (snapshot 14+ days old, 300+ later games): [date, accuracy, games]
-// Bands: 80+, 60-79, 40-59, under 40 (index 0..3).
+// Bands (player review 3h, Sim's yes Nov 17): 80+, 70-79, 60-69, under 60 on the saved rating (index 0..3) = shown 90+ (S), 80-89 (A),
+// 70-79 (B), under 70: each group is a tier players know. Was 80 / 60 / 40 (shown 90+, 70-89, 53-69, under 53). The cut-offs are
+// written to track.json as "bands", and every stored event is regrouped from its snapshot, so the page's labels always match the data.
 import fs from 'node:fs';
 const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('ratings_log.json'), E = rd('events.json'), SB = rd('scoreboard.json'), prev = rd('track.json') || {};
 if (!L || !Array.isArray(L.days) || !L.days.length) { console.log('track: no ratings snapshots yet, skipped'); process.exit(0); }
-const CAP = 240 * 1024, TOP = 8, band = r => r >= 80 ? 0 : r >= 60 ? 1 : r >= 40 ? 2 : 3;
+const CAP = 240 * 1024, TOP = 8, BANDS = [80, 70, 60], band = r => r >= BANDS[0] ? 0 : r >= BANDS[1] ? 1 : r >= BANDS[2] ? 2 : 3;
 const snaps = L.days.filter(s => s && s.d && s.r).sort((a, b) => a.d < b.d ? -1 : 1), sByD = new Map(snaps.map(s => [s.d, s]));
 const snapFor = d => { let s = null; for (const x of snaps) if (x.d < d) s = x; return s; };
 const ev = new Map((Array.isArray(prev.ev) ? prev.ev : []).filter(e => Array.isArray(e) && e[0]).map(e => [e[0], e]));
@@ -27,6 +29,10 @@ if (E && Array.isArray(E.events) && Array.isArray(E.dict)) for (const e of E.eve
   const bs = [0, 0, 0, 0], ap = [0, 0, 0, 0]; for (const r of Object.values(s.r)) bs[band(r)]++;
   const tops = [...c].filter(([n]) => s.r[n] != null).map(([n, o]) => { ap[band(s.r[n])] += o.c; return [n, s.r[n], o.c, o.p]; }).sort((a, b) => b[2] - a[2] || b[1] - a[1]);
   ev.set(e.id, [e.id, e.date, String(e.name).slice(0, 80), e.players, e.src === 'official' ? 1 : 0, s.d, top.length, bs, ap, tops]); }
+// events checked before the cut-offs changed (or with other cut-offs) are regrouped from their own snapshot and their top-8 list
+const prevBands = JSON.stringify(prev.bands || [80, 60, 40]); if (prevBands !== JSON.stringify(BANDS)) for (const e of ev.values()) {
+  const s = sByD.get(e[5]); if (!s || !Array.isArray(e[9])) continue; const bs = [0, 0, 0, 0], ap = [0, 0, 0, 0];
+  for (const r of Object.values(s.r)) bs[band(r)]++; for (const t of e[9]) ap[band(t[1])] += t[2]; e[7] = bs; e[8] = ap; }
 const evs = [...ev.values()].sort((a, b) => a[1] < b[1] ? -1 : a[1] > b[1] ? 1 : b[3] - a[3]);
 // per Pokémon, over the events whose snapshot is still kept (120 days)
 const M = new Map(), seen = evs.filter(e => e[9] && sByD.has(e[5]));
@@ -44,7 +50,7 @@ const mv = (() => { const z = snaps[snaps.length - 1], from = new Date(Date.pars
   const ch = Object.keys(z.r).filter(n => n in a.r && z.r[n] >= 60 && Math.abs(z.r[n] - a.r[n]) >= 2).map(n => [n, z.r[n], z.r[n] - a.r[n]])
     .sort((x, y) => Math.abs(y[2]) - Math.abs(x[2]) || y[1] - x[1]).slice(0, 12);
   return ch.length ? [a.d, z.d, ch] : null; })();
-const out = {v: 1, updated: new Date().toISOString(), since: snaps[0].d, snaps: snaps.length, last: snaps[snaps.length - 1].d, top: TOP, ev: evs, mons, mb, fw, mv};
+const out = {v: 1, bands: BANDS, updated: new Date().toISOString(), since: snaps[0].d, snaps: snaps.length, last: snaps[snaps.length - 1].d, top: TOP, ev: evs, mons, mb, fw, mv};
 // under the cap: the oldest events lose their per-Pokémon lists first (their band totals stay)
 for (let i = 0; Buffer.byteLength(JSON.stringify(out)) > CAP && i < evs.length - 20; i++) evs[i][9] = null;
 fs.writeFileSync('out/track.json', JSON.stringify(out));
