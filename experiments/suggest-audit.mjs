@@ -47,8 +47,8 @@ const STEP = `(()=>{fixSlots();planCache={key:null,plans:[]};const ms=members(),
     let ts=pl._ts;if(ts===undefined&&t.length===6){try{ts=tsOf(t)}catch(e){ts=null}}/* Nov 8 (commit f05576d, Phase 3): suggestions are chosen by the grade; readiness is background with a floor of -8, so the audit follows that floor */if(ts!=null&&base!=null&&ts<base-(side?2:8))f((ts-base)+' readiness points');
     const gb=ms.length===6?gradeTeam(ms):null,gp=planGrade(pl);/* a fix for an unmet check may cost more, but only with its cost written on the card (Sim, Nov 8: never 'none'; Phase 3 'stated amount') */const stated=((pl.gap&&pl.gap.why)||[]).some(w=>/grade points?/.test(w));if(gb!=null&&gp!=null&&gp<gb-(side?2:3)&&!stated)f('grade '+gb+' → '+gp);});
   if(row(g0,'weather').lone&&!plans.slice(0,2).some(pl=>pl.gap&&pl.gap.fix.includes('weather')))flags.push('nothing in the first two suggestions fixes the weather nobody uses');
-  const top=L[0];if(top){if(!ui.swOut||ui.swKey!==S.slots.map(x=>x.n||'').join())ui.swOut=new Set();top.ch.forEach(x=>{if(x.out)ui.swOut.add(x.out.p.b)});
-    top.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability||null,lock:false}});ui.swKey=S.slots.map(x=>x.n||'').join()}
+  const top=L[0];if(top){/* as applyPlan: the page's own key (swOutNow, review FP-4 Nov 16) */if(!swOutNow())ui.swOut=new Set();top.ch.forEach(x=>{if(x.out)ui.swOut.add(x.out.p.b)});
+    top.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability||null,lock:false}});ui.swKey=null}
   return JSON.stringify({team:ms.map(m=>m.p.n).sort().join(),flags,applied:top?top.ch.map(x=>(x.out?x.out.p.n+'>':'+')+x.c.p.n).join(' '):null})})()`;
 await pg.evaluate(() => window.__ev(`window.gp0x=ms=>gamePlan(ms.map(m=>({...m,_mv:memberMoves(m).moves})));S.box=[];ui.pool='all';S.maxMega=1;S.megaGoal=1;`));
 for (const [label, t] of teams) {

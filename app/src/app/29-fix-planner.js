@@ -124,7 +124,10 @@ function gapTarget(gp0,top){const order=['weather','trfit','terrain','support'],
 // frozen page per edit on a mid-range phone before, Oct 31). Both run exactly the same code, so the plans are identical.
 // Pokémon that Apply just swapped out (Nov 7 audit: suggestion loops, Sylveon for Primarina then Primarina for Sylveon). They stay
 // out of the suggestions while the team is the one Apply left; any other change to the team (an edit, a loaded team) clears them.
-function swOutNow(){if(!ui.swOut||!ui.swOut.size)return null;if(ui.swKey!==S.slots.map(x=>x.n||'').join()){ui.swOut=null;return null}return ui.swOut}
+/* review FP-4 (Nov 16): the key covers each set (moves, item, nature, stat points), so any edit clears the list, as the comment above says */
+const swKeyOf=()=>S.slots.map(x=>[x.n||'',JSON.stringify(x.mv||null),JSON.stringify(x.it||null),JSON.stringify(x.sp||null)].join('~')).join('|');
+/* the key is taken the first time it is asked for after Apply (the sets are filled in by then), so only a later edit clears the list */
+function swOutNow(){if(!ui.swOut||!ui.swOut.size)return null;if(ui.swKey==null)ui.swKey=swKeyOf();if(ui.swKey!==swKeyOf()){ui.swOut=null;return null}return ui.swOut}
 function planFixes(ms,pool,useA,opts){const g=planFixesG(ms,pool,useA,opts);let r;do r=g.next();while(!r.done);return r.value}
 function* planFixesG(ms,pool,useA,opts){
   const maxMega=megaGoal();const full=ms.length===6;
@@ -312,11 +315,11 @@ function applyPlan(pl){keepUndo();
     // Nov 9: the card graded the newcomer as a typical build (its Ability not "chosen", 35-win-model.js SET_UNKNOWN_AVG); writing that
     // Ability as chosen made Apply grade it exactly, so the result missed the card by a rank point. Same Ability shown either way.
     pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.abChosen?x.c.mem.ability:null,lock:false}});
-    ui.swKey=S.slots.map(x=>x.n||'').join();
+    ui.swKey=null;
     undoMark(pl.ch.map(x=>x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`).join(', '));}
 // A one-change quick add (Quick add under a problem, or an addition on Build), R4 Nov 11, shared with the rebuild: keeps Undo and
 // the Undo bar, puts the newcomer in its spot; returns the toast. The caller redraws.
-function applyQuick(pl){const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.ability,lock:false};undoMark(x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`);
+function applyQuick(pl){const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.abChosen?x.c.mem.ability:null,lock:false}; /* as Apply writes it, so the same swap gets the same score (review FP-1, Nov 16) */undoMark(x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`);
   return `${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`}
 // Which suggestions show, in order (R4, Nov 11; shared with the rebuild): plans that would lower readiness by 5+ go after the
 // ones that keep or raise it (the plans array is reordered in place, as before), then the extra ones "More suggestions" opened.
@@ -327,7 +330,10 @@ function planListOf(plans,baseTS,shown){const planTS=pl=>{if(!baseTS||pl.team.le
 // A suggestion's reasons, the ones its Why? lists (R4, Nov 11: moved unchanged out of renderPlans, shared with the rebuild).
 // X = {ms, a: analyze(playForm(ms)), plans, covered: offenseRows(...).covered, baseTS: {score} or null}; k = its place in the list
 // (threat lines are worked out for the first plans.length+6). keep=false works the reasons out without storing them on the plan.
-function planWhy(pl,k,X,keep=true){const {ms,a,plans,covered,baseTS}=X;const st=pl.st;
+function planWhy(pl,k,X,keep=true){const {ms,plans,covered,baseTS}=X;const st=pl.st;
+    /* review FP-2 (Nov 16): the before side is the planner's own read of the team (plans.baseA), made the same way as each plan's st.a;
+       X.a turned a second Mega back to its base form, so on two-Mega teams Why? listed type changes the swap didn't make */
+    const a=plans&&plans.baseA||X.a;
     const ts=!baseTS||pl.team.length!==6?null:pl._ts===undefined?(pl._ts=tsOf(pl.team)):pl._ts,dT=ts!=null?ts-baseTS.score:null;
     const fixed=a.rows.filter((t,j)=>t.w>t.r&&!(st.a.rows[j].w>st.a.rows[j].r)).map(t=>t.atk);
     const nowRes=a.rows.filter((t,j)=>t.r===0&&st.a.rows[j].r>0).map(t=>t.atk);
