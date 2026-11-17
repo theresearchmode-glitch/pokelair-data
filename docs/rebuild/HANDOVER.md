@@ -7,6 +7,15 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Nov 17, written time: 6:59 PM (6:59:32)  date: Tue Nov 17, 2026; EXECUTIVE AUTHORITY EXTENDED until 9:00 AM Wed Nov 18 (Sim, 6:58 PM); summary with pictures before 9 AM)
+- Preview v201 published (397 files). Since: header arrows symmetrical 20|20 with 44px taps; range band back, 'likely' words gone (Sim).
+- Data (Step 3): 4 helper reports in docs/rebuild/research/ (data-integrity, score-drift, cross-source, score-gaps). Sim's yes to all 3:
+  format labels in the daily job (ON MAIN 4d348f5b: tour-modes.mjs; first run backfills ~108 events), sealed check ONCE after the
+  labels (reminder trig 6:00 AM Nov 18), CLAUDE.md cross-check line corrected.
+- Reminders: Plans hourly (7 PM trig_013FVqpKy1516aEuVDXZ8B8T), format+sealed 6:00 AM, summary 8:10 AM (trig_0116dy21MB69NQMKZaPMxenQ).
+- Ideas added: Mystery Gift page (Sim, op.gg-like; source must be official or OK'd).
+- Next: audit v199 #13-#22 (certain bugs first; design ones with pictures), Preview v202, GitHub run on the fixes.
+
 ## NOW (Nov 17, written time: 5:13 PM (5:13:47)  date: Tue Nov 17, 2026; authority until 10:00 PM; summary with pictures before 10 PM)
 - On the branch since v200 (commits 15a8ae3f, d6f8209c; each fix has a v2-minors check that fails before): audit v199 #2 Track cards,
   #3 Meta tab bar, #6 Home Lead, #7 Speed Tiers note (kept the top-30 shares: today's feature), #11 real tap areas (Type Chart, Events All).

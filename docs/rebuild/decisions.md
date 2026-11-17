@@ -1309,3 +1309,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:12 PM: Sim: option B: remove the range band on the Pokémon page's 0-100 bar (marker only), after removing 'likely 81-92'.
 - 6:33 PM: Sim (later): the shaded range band on the Pokémon page bar is okay (keep it); the 'likely 81-92' text stays removed. Phone header arrows: Claude decides, but back->logo and logo->forward spacing must be symmetrical.
 - 6:54 PM: Sim: yes to all 3 data recommendations: (1) record each round's format in the daily data job (built and tested on the branch first, then main), (2) run the sealed check once, after the format labels exist, (3) correct CLAUDE.md's cross-check line (crosscheck.mjs checks membership only, not percentages).
+- 6:59 PM: Sim extended executive authority until 9:00 AM Wed Nov 18 (summary with pictures before 9 AM). Same scope: design/visual changes still need her yes with pictures; the switch to live needs her explicit yes.
