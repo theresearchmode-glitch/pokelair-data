@@ -57,7 +57,12 @@ KO Board, Test Run's piles, Track Record.
   Tournaments, Megas showed the base form's Ability with % (Mega Charizard Y "Blaze 84%"); Popular Sets and Usage now say "Always Drought (a
   Mega's Ability is fixed)". Spreads with share: FOR SIM, needs new data from the daily job (the tournament data has no stat points).
   Tests: v2-minors 4c x3 (fail before, pass after). Pictures: pics/nov17/sets-mega-{tour,ingame}-1280.png.
-- 4d OPEN Pokémon page "What beats it": add the meta Pokémon that really beat it.
+- 4d FOR SIM Pokémon page "What beats it": add the meta Pokémon that really beat it. Built and measured, then not shipped: the real-games
+  pair effects (ctrVal, player skill taken out) are small one Pokémon at a time. Garchomp against the 30 most used: -1.0 points (Politoed)
+  to +1.65 (Mega Raichu Y); the 1.5-point "Unfavoured" line Matchups uses is for a whole six summed, so no single Pokémon clears it, and
+  the data has no error ranges to tell a real 1-point effect from noise. Unsure it means anything per pair; a "beats it" list would
+  overstate. Options for Sim: (A) leave the type chart as the answer (recommended: it's what we can stand behind); (B) a "toughest in real
+  games" line with the measured points, labelled small; (C) wait for error ranges from the model (a data-job change).
 - 4e OPEN Events "Next Events": Add to calendar.
 
 ## Where this meets earlier rules or decisions (for Sim)
