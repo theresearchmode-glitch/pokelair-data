@@ -90,6 +90,8 @@ jobs:
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-ckwin.mjs
         if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-paste.mjs
+        if: ${{ !cancelled() }}
       - run: node app/test/tokens-doc.mjs
         if: ${{ !cancelled() }}
       - run: node app/test/perf-docs.mjs

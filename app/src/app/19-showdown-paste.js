@@ -33,15 +33,19 @@ function exportPaste() {
 }
 // Nature and stat points from a paste: 'EVs: 2 HP / 32 Atk / 32 Spe' (Champions stat points, 0-32 each) and 'Jolly Nature'.
 // Classic EVs (any value over 32) are converted at 8 EVs per stat point. Returns {nat, v: [hp, atk, def, spa, spd, spe]} or null.
+const okNat0 = nat => nat && typeof NATURES !== 'undefined' ? (NATURES.includes(nat) ? nat : ['Docile', 'Serious', 'Bashful', 'Quirky'].includes(nat) && NATURES.includes('Hardy') ? 'Hardy' : null) : null;
 function pasteSpread(lines) { const ev = (lines.find(l => /^EVs:/i.test(l)) || '').replace(/^EVs:\s*/i, ''), natL = lines.find(l => /^\w+\s+Nature\s*$/i.test(l));
   const nat = natL ? natL.replace(/\s+Nature\s*$/i, '').trim() : null, K = {hp: 0, atk: 1, def: 2, spa: 3, spd: 4, spe: 5}, v = [0, 0, 0, 0, 0, 0]; let any = false;
   for (const part of ev.split('/')) { const m = part.trim().match(/^(\d+)\s+(HP|Atk|Def|SpA|SpD|Spe)$/i); if (!m) continue; v[K[m[2].toLowerCase()]] = +m[1]; any = true; }
   // classic EVs (0-252) → stat points: 252 → 32, 4 → 1 (round to nearest), never over the total (Oct 30 audit: 252 became 31)
+  /* code review A2-M3: one stat over 32 used to make the whole line read as classic EVs ("EVs: 33 HP" -> 4 HP points); classic EVs only
+     when the total is also over what stat points allow; otherwise the line is stat points with a value too big, and it is skipped */
+  const capSP = typeof SP_TOTAL === 'number' ? SP_TOTAL : 66; if (v.some(x => x > 32) && v.reduce((a, b) => a + b, 0) <= capSP) return {nat: okNat0(nat), v, ev: true, over32: true};
   if (v.some(x => x > 32)) { for (let i = 0; i < 6; i++) v[i] = Math.min(32, Math.floor((v[i] + 4) / 8));
     const cap = typeof SP_TOTAL === 'number' ? SP_TOTAL : 66; let over = v.reduce((a, b) => a + b, 0) - cap;
     while (over > 0) { let k = -1; for (let i = 0; i < 6; i++) if (v[i] > 0 && v[i] < 32 && (k < 0 || v[i] < v[k])) k = i; if (k < 0) k = v.indexOf(Math.max(...v)); v[k]--; over--; } }
   /* the four other neutral natures (Docile, Serious, Bashful, Quirky) read as Hardy: the same stats, and the calc's list has Hardy (Nov) */
-  const okNat = nat && typeof NATURES !== 'undefined' ? (NATURES.includes(nat) ? nat : ['Docile', 'Serious', 'Bashful', 'Quirky'].includes(nat) && NATURES.includes('Hardy') ? 'Hardy' : null) : null;
+  const okNat = okNat0(nat);
   // ev: false when the paste has no readable EVs line (none at all, as on tournament team sheets, or one with nothing
   // parseable in it): the stat points are then assumed, not 0. "EVs: 0 HP" is a readable line, so it means 0.
   return any || okNat ? {nat: okNat, v, ev: any} : null; }
@@ -80,6 +84,8 @@ function parsePaste(text) {
     const paren = head.match(/\(([^()]+)\)\s*$/); const speciesName = paren ? paren[1] : head;
     let p = speciesFromPaste(speciesName);
     if (!p) { notes.push(`Skipped "${speciesName}": not on the M-C roster`); continue; }
+    /* code review A2-M2: "Charizard-Mega-Y @ Charizardite X" kept Mega Y without a word; the form named wins, and the paste is told */
+    if (item && p.m && STONE_RE.test(item) && byName.get(p.b)) { const mf = megaFormFor(byName.get(p.b), {it: [[item, 100]]}); if (mf && mf.m && mf.n !== p.n) notes.push(`${p.d}: kept as named (${item} is for ${mf.d})`); }
     if (item && !p.m && STONE_RE.test(item)) { const mf = megaFormFor(p, {it: [[item, 100]]}); if (mf !== p) p = mf;
       // Meowstic has a Mega for each gender: Showdown writes the female as "Meowstic-F" (stress test, Oct 28)
       if (p.n === 'Meowstic-M-Mega' && (female || pnorm(speciesName) === 'meowsticf') && byName.get('Meowstic-F-Mega')) p = byName.get('Meowstic-F-Mega'); }
@@ -90,7 +96,8 @@ function parsePaste(text) {
     const learn = new Set((LEARN[p.n] || []).map(k => MV[k].name)), mv = [];
     for (const l of lines.filter(l => l.startsWith('-'))) { const name = l.replace(/^-\s*/, '').replace(/\s*\[.*\]$/, '').trim();
       const m = [...mvByName.values()].find(x => pnorm(x.name) === pnorm(name));
-      if (m && learn.has(m.name)) mv.push(m.name); else notes.push(`${p.d}: skipped move "${name}"`); }
+      if (m && learn.has(m.name) && mv.includes(m.name)) notes.push(`${p.d}: a second "${m.name}" left out`); /* code review A2-M1 */
+      else if (m && learn.has(m.name)) mv.push(m.name); else notes.push(`${p.d}: skipped move "${name}"`); }
     if (slots.some(s => byName.get(s.n).b === p.b)) { notes.push(`Skipped a second ${p.b} (one per species)`); continue; }
     const slot = {n: p.n, a: ability, lock: false};
     if (mv.length) { const c = mv.slice(0, 4); while (c.length < 4) c.push(''); slot.mv = {doubles: c}; }
@@ -99,6 +106,7 @@ function parsePaste(text) {
     const sp = pasteSpread(lines), spSum = sp ? sp.v.reduce((a, x) => a + x, 0) : 0;
     // a nature with no EVs line (team sheets list none): your nature with the most common stat points, marked as assumed (stress test, Oct 28)
     if (sp && !sp.ev) { slot.sp = {doubles: {nat: sp.nat, assumed: true}}; assumed.push(p.d); }
+    else if (sp && sp.over32) notes.push(`${p.d}: skipped stat points (one stat over 32)`);
     else if (sp && spSum > SP_TOTAL) notes.push(`${p.d}: skipped stat points (${spSum} in total; Champions allows ${SP_TOTAL})`); else if (sp) slot.sp = {doubles: {nat: sp.nat, v: sp.v}};
     slots.push(slot);
   }
@@ -118,10 +126,14 @@ function importPaste(raw) { const sh = typeof decodeTeam === 'function' ? decode
   const got = new Set(r.slots.map(s => byName.get(s.n).b)), sp = n => { const p = speciesFromPaste(n); return p ? p.b : null; };
   const dup = r.notes.map(n => { const x = n.match(/^Skipped a second (.+?) \(one per species\)/); return x ? ((byName.get(x[1]) || {}).d || x[1]) : null; }).filter(Boolean).concat((r.over || []).filter(n => got.has(sp(n))).map(n => (byName.get(sp(n)) || {}).d || n));
   const over = (r.over || []).filter(n => !got.has(sp(n))), dupN = [...new Set(dup)];
+  const misc = r.notes.filter(n => /: a second "|: kept as named \(|: skipped stat points \(one stat over 32\)/.test(n)), megas = r.slots.filter(s => (byName.get(s.n) || {}).m).length;
   return {msg: `Imported ${r.slots.length} Pokémon` + (skm.length ? `. Not in Reg M-C, left out: ${skm.slice(0, 3).join(', ')}${skm.length > 3 ? ` and ${skm.length - 3} more` : ''}` : '')
     + (sk.length ? `. Not in Champions, skipped: ${sk.slice(0, 3).join(', ')}${sk.length > 3 ? ` and ${sk.length - 3} more` : ''}` : '')
     + (dup.length ? `. One of each Pokémon per team: left out ${dup.length} more ${dupN.slice(0, 3).join(', ')}${dupN.length > 3 ? ` and ${dupN.length - 3} others` : ''}` : '')
-    + (over.length ? `. Only 6 fit: left out ${over.slice(0, 3).join(', ')}${over.length > 3 ? ` and ${over.length - 3} more` : ''}` : '')}; }
+    + (over.length ? `. Only 6 fit: left out ${over.slice(0, 3).join(', ')}${over.length > 3 ? ` and ${over.length - 3} more` : ''}` : '')
+    /* code review A2-M1..M4: a repeated move, a stone for another form, a stat over 32, more than one Mega: said, never silent */
+    + (misc.length ? `. ${misc.slice(0, 3).join('; ')}${misc.length > 3 ? ` and ${misc.length - 3} more` : ''}` : '')
+    + (megas > 1 ? `. ${megas} Megas: you can only Mega one per game` : '')}; }
 function renderPastePanel() {
   const el = $('pastePanel'); if (!ui.paste) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;
