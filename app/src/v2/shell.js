@@ -114,7 +114,7 @@ V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: [
   // Nov 12: "é" became an empty query, which matched every name, so the most-used Pokémon showed up)
   const norm = x => x.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]/g, ''), nq = norm(q);
   if (!nq) return {places: V2.findOk().filter(([, n]) => n.toLowerCase().includes(q)), mons: []};
-  const places = V2.findOk().filter(([k, n]) => n.toLowerCase().includes(q) || (q.length >= 4 && new RegExp('\\b' + q.replace(/[^a-z0-9 ]/g, '')).test((V2.placeLines[k] || '').toLowerCase()))).slice(0, 6); /* Nov 15: by a word of its line too ('damage', 'speed') */
+  const places = V2.findOk().filter(([k, n]) => n.toLowerCase().includes(q) || (V2.placeAlias[n] || []).some(a => a.includes(q)) || (q.length >= 4 && new RegExp('\\b' + q.replace(/[^a-z0-9 ]/g, '')).test((V2.placeLines[k] || '').toLowerCase()))).slice(0, 6); /* Nov 15: by a word of its line too ('damage', 'speed') */
   const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
     return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
   return {places, mons}; };
@@ -177,7 +177,11 @@ V2.findPlaces = [...V2.places, ['box', 'My Box'], ['compare', 'Compare Teams'], 
   /* Nov 15 (parity with today's search): every page can be found, by its name or a word of its line */
   ['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['tournaments', 'Winning Teams'], ['events', 'Events'], ['archetypes', 'Archetypes'], ['weekly', 'This Week'],
   ['speed', 'Speed Tiers'], ['calc', 'Damage Calc'], ['types', 'Type Chart'], ['practice', 'Team Preview Practice'], ['gauntlet', 'Test Run'],
-  ['track', 'Track Record'], ['method', 'How We Calculate'], ['about', 'About & Legal'], ['feedback', 'Send Feedback']];
+  ['track', 'Track Record'], ['method', 'How We Calculate'], ['about', 'About & Legal'], ['feedback', 'Send Feedback'],
+  /* known-bug BROKEN-10 (Nov 17): Build's two tools by name, the core section reached straight from search */
+  ['build', 'Build Me a Team'], ['build', 'Build Around a Core', () => { V2.bdUi.jtab = 'cores'; V2.bdUi.toCores = true; V2.redraw(); }]]; /* the same way Home's core cards open Build at the cores (CORES-13) */
+// today's site's menu names and plurals still find the new page (returning players), shown under the new name
+V2.placeAlias = {'Build Me a Team': ['build for me'], 'Build Around a Core': ['cores', 'winning cores'], Battle: ['battle a team'], Ratings: ['pokémon ratings', 'pokemon ratings', 'meta rankings']};
 V2.findOk = () => V2.findPlaces.filter(([k]) => k !== 'feedback' || (V2.FB && V2.FB.ok)); /* Send Feedback only where it can send (function sweep, Nov 15: listed in the Preview) */
 // one line per page, shown when the search box is empty (today's search lists its tools) and searched too ("speed", "damage")
 V2.TOOLS = ['home', 'build', 'team', 'battle', 'meta', 'tournaments', 'sets', 'speed', 'calc', 'types', 'practice', 'gauntlet', 'compare', 'box']; // the empty search's list (14, Home first)
