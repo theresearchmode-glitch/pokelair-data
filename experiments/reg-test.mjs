@@ -33,6 +33,14 @@ const index = {a: {d: '2026-10-20', name: 'Weekly'}, b: {d: '2026-10-21', name: 
 ok(regOf(index.a) === SITE_REG.id, 'events saved before Nov 1 (no format stored) count as Reg M-C');
 ok(Object.keys(index).filter(id => sameReg(index[id], 'M-C')).join() === 'a,b', 'Reg M-C numbers use only Reg M-C events');
 ok(Object.keys(index).filter(id => sameReg(index[id], 'M-D')).join() === 'c', 'Reg M-D numbers use only Reg M-D events');
+// Nov 17 date guard: Limitless still tags events after M-C's official end (Dec 1, 5:59 PM PST) as M-C
+const late = {x: {d: '2026-12-01T20:00:00.000Z', f: 'M-C'}, y: {d: '2026-12-03T17:00:00.000Z', f: 'M-C'}, z: {d: '2026-12-05T17:00:00.000Z', f: 'M-D'}};
+ok(Object.keys(late).filter(id => sameReg(late[id], 'M-C')).join() === 'x', 'an event tagged M-C but dated after M-C ends never counts for M-C');
+ok(Object.keys(late).filter(id => sameReg(late[id], 'M-D')).join() === 'y,z', '... it counts for M-D, with the events tagged M-D');
+const tagged = Array.from({length: 30}, (_, i) => ({format: 'M-C', date: day('2026-12-02', Math.floor(i / 4)) + 'T17:00:00.000Z', players: 60}));
+const det = detectReg([...mc.filter(t => t.date >= '2026-11-20'), ...tagged], {}, null, '2026-12-10');
+ok(det.id === 'M-D' || (det.now && det.now.id === 'M-D'), 'detection sees M-D even while Limitless still tags its events M-C (' + (det.id + (det.now ? ' now ' + det.now.id : '')) + ')');
+ok(activeReg('/nonexistent/reg.json').end === '2026-12-02' && !inRegWindow('2026-12-03', activeReg('/nonexistent/reg.json')), 'official events after M-C ends are outside M-C\'s window');
 const win = {since: '2026-09-01', end: '2026-11-02'};
 ok(inRegWindow('2026-10-24', win) && !inRegWindow('2026-11-07', win) && !inRegWindow('2026-08-20', win), 'official events: only inside the regulation\'s dates');
 const tmp = new URL('./reg-test-tmp.json', import.meta.url).pathname;
@@ -59,7 +67,7 @@ const newReg = detectReg([...mc.filter(t => t.date < '2026-10-28'), ...md(6)], {
 let pg = await load({...newReg, seen: newReg.seen});
 const home = await bar(pg, 'home');
 ok(/New regulation \(Reg M-D\) started Nov 2, 2026/.test(home) && /numbers below are from Reg M-C until there's enough/.test(home), 'Home banner: ' + home.slice(0, 120));
-ok(/6 Reg M-D events so far · switches at 20/.test(home) && /never mixed/.test(home), 'banner says how far along it is and that the two are never mixed');
+ok(/6 Reg M-D events so far(?: ·|,) switches at 20/.test(home) && /never mixed/.test(home), 'banner says how far along it is and that the two are never mixed');
 ok(/Reg M-D/.test(await bar(pg, 'ratings')) && /Reg M-D/.test(await bar(pg, 'meta')), 'banner on the Meta pages (Pokémon ratings, Usage)');
 ok(!(await bar(pg, 'calc')) && !(await bar(pg, 'report')), 'no banner on My team or the calc');
 const head = await pg.evaluate(() => { window.__ev("setView('ratings')"); const k = document.querySelector('#lair .chpghead .chk'); return k ? k.textContent : ''; });
