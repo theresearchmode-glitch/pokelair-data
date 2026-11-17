@@ -38,7 +38,7 @@
   "body": "src/v2/body.html",
   "data": [
     "src/data/data.js",
-    "src/data/logos.js",
+    
     "src/data/logo-sly.js",
     "src/data/items-list.js",
     "src/data/move-acc.js",

@@ -38,7 +38,7 @@ function scFit(ctx, text, max) { let t = text; while (t.length > 3 && ctx.measur
 function npLogoK(im) { return im && im.naturalWidth ? im.naturalHeight / im.naturalWidth : 196 / 761.34; }
 /* the new logo is flatter (163/947 vs 196/761): it keeps the old logo's height in images, so it reads as large, and its width follows */
 function npLogoW(im, w) { return w * (196 / 761.34) / npLogoK(im); }
-function npLogoSvg(dark) { if (typeof NP_LOGO === 'object' && NP_LOGO && NP_LOGO.flat) return NP_LOGO.flat; const raw = NP_SVG[dark ? 'hdrD' : 'hdrL'];
+function npLogoSvg(dark) { if (typeof NP_LOGO === 'object' && NP_LOGO && NP_LOGO.flat) return NP_LOGO.flat; const raw = typeof NP_SVG === 'object' ? NP_SVG[dark ? 'hdrD' : 'hdrL'] : ''; /* the new site ships NP_LOGO only (code review B-I4) */
   /* Polish (Nov 10): a share image in the other mode than the page uses that logo's own colours (a dark image made from the light
      page drew NASTY in the light page's dark ink: invisible on black) */
   if (!!dark !== (document.documentElement.dataset.look === 'dark')) return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => fb);

@@ -4,7 +4,7 @@
 import fs from 'fs';
 const dir = 'docs/brand/sly-devil/svg/', out = {};
 // only the versions the page draws (header, phone header, share images); the icons are their own files
-const pick = {full: 'nastyplot-logo', small: 'nastyplot-logo-small', flat: 'nastyplot-logo-flat', smallFlat: 'nastyplot-logo-small-flat', markSmall: 'nastyplot-mark-small'};
+const pick = {full: 'nastyplot-logo', small: 'nastyplot-logo-small', flat: 'nastyplot-logo-flat', /* smallFlat dropped Nov 17: used nowhere (code review B-I4, 14 KB) */ markSmall: 'nastyplot-mark-small'};
 // numbers kept to 2 decimals inside the paths (the viewBox is ~950 units for a 220px logo, so 0.005 units is about 0.001px: no visible
 // change) to keep the page light; the designer's files in docs/brand/sly-devil stay exactly as delivered
 const trim = svg => svg.replace(/(-?\d+\.\d{3,})/g, n => String(+(+n).toFixed(2)));
