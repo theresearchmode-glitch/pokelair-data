@@ -591,8 +591,10 @@ t('SUGG-14b', 'No-plan wording is exact: the score as shown elsewhere, and no "n
 
 t('SUGG-15', 'Mega-over-goal note and game-plan gap note on My team and All suggestions', async () => {
   { const {ui, close} = await open({team: ['Charizard-Mega-Y', 'Garchomp-Mega-Z', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler'], box: BOX}); await ui.go('My Team'); await ui.setMegas(1);
-  const note = 'Your team has 2 Megas and Megas on team is set to 1. Turn on "Let plans swap my Mega" to see swaps without them.';
-  has(await ui.waitMySuggestions(), note, 'My team'); await ui.go('All Suggestions'); await ui.waitSwaps(); has(await ui.text(), note, 'All suggestions'); await close(); }
+  // Nov 17: each site names its own switch (today's 'Let plans swap my Mega', the new site's 'Swap my Mega?')
+  const note = 'Your team has 2 Megas and Megas on team is set to 1.', how = /(Turn on "Let plans swap my Mega"|Set "Swap my Mega\?" to Yes) to see swaps without them\./;
+  const t1 = await ui.waitMySuggestions(); has(t1, note, 'My team'); expect(how.test(t1), 'My team: how to see swaps without them: ' + t1.slice(0, 200));
+  await ui.go('All Suggestions'); await ui.waitSwaps(); const t2 = await ui.text(); has(t2, note, 'All suggestions'); expect(how.test(t2), 'All suggestions: how to see swaps without them'); await close(); }
   // the game-plan gap note: nothing in the box closes the gap
   { const box = ['Garchomp', 'Incineroar', 'Kingambit', 'Sneasler', 'Basculegion', 'Archaludon', 'Azumarill'];
     const {ui, close} = await open({team: [...NO_SPEED, 'Archaludon'], box}); await ui.go('My Team'); await ui.setSuggestFrom('My box'); await ui.waitMySuggestions(); await ui.readMore(ui.area('My team suggestions'));
