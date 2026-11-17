@@ -52,7 +52,7 @@ const TEAMF = process.env.TEAM_FEATS === '0' ? [] : ['noMega', 'protectLow', ...
 // Kept as an experiment only: TR_FEAT=1 turns it on. Speeds from the site's roster (app/src/data/data.js).
 const SPD = (() => { try { const t = fs.readFileSync('app/src/data/data.js', 'utf8').match(/const ROSTER=(\[.*?\]);/s); return new Map(JSON.parse(t[1]).map(r => [r.n, r.sp])); } catch (e) { return new Map(); } })();
 const deckTF = !TEAMF.length || !hasSets ? [] : M.decks.map(fs_ => { const nm = fs_.map(f => M.feats[f]), mv = nm.filter(n => n.includes(':'));
-  if (mv.length < 16) return null; const prot = mv.filter(n => /:Protect$/.test(n)).length;
+  if (mv.length < 16) return null; const prot = mv.filter(n => (process.env.PROT_FAMILY === '1' ? /:(Protect|Detect|Spiky Shield|King's Shield|Baneful Bunker|Silk Trap|Burning Bulwark|Obstruct)$/ : /:Protect$/).test(n)).length; /* PROT_FAMILY=1: the whole Protect family (code review A2-I5 test, Nov 16) */
   const trU = new Set(mv.filter(n => /:Trick Room$/.test(n)).map(n => n.slice(0, n.indexOf(':')))), deckMons = new Set(mv.map(n => n.slice(0, n.indexOf(':'))));
   const slow = [...deckMons].filter(n => !trU.has(n) && (SPD.get(n) ?? 100) <= 60).length;
   return {trNoSlow: trU.size && slow < 2 ? 1 : 0, protectLow: prot <= 2 ? 1 : 0, noSpeed: nm.some(n => /:(Tailwind|Trick Room|Icy Wind|Electroweb)$/.test(n) || /@Choice Scarf$/.test(n)) ? 0 : 1, noFakeOut: mv.some(n => /:Fake Out$/.test(n)) ? 0 : 1}; });
