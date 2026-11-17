@@ -792,7 +792,7 @@ t('SHARE-06', 'Team link: "Copy team link" copies #team=…; opening it offers "
 t('LOG-01', 'Your games card on a full six: "None logged yet." and "Log a game"', async () => {
   // the new build's section reads "Your Games / None logged yet / Log a Game" (Title Case heading and button, Sim's rule)
   const {ui} = await view('team', {team: TEAM}, 'My Team'); const c = await ui.myGamesCard();
-  ok(c && (NEW ? /^Your Games None logged yet Log a Game$/.test(c) : /Your games: this six/.test(c) && /None logged yet\./.test(c) && /Log a game/.test(c)), 'card: ' + c); });
+  ok(c && (NEW ? /^Your Games None logged yet After 5 logged games, Build for Me weighs your own results and this record shows what beats you\. Log a Game$/.test(c) /* + what logging unlocks (player review 2b, Nov 17) */ : /Your games: this six/.test(c) && /None logged yet\./.test(c) && /Log a game/.test(c)), 'card: ' + c); });
 
 t('LOG-02', 'Log a game: two leads, their six from Battle mode, Win → "1–0"; saved to the account', async () => {
   const r = await myTeam({team: TEAM, opp: OPP}); await r.ui.openLogForm(); const f = await r.ui.myGamesCard();
