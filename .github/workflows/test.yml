@@ -41,7 +41,9 @@ jobs:
   # on WebKit. Reported, not blocking yet: SUG-05 failed 1 of 8 runs on WebKit (a timing slip, not reproduced in Chrome).
   behaviour-webkit:
     name: new site behaviour in Safari's engine (A-team)
-    runs-on: ubuntu-latest
+    # ubuntu-24.04, not -latest: Playwright 1.49.1's WebKit needs libicu74, libvpx9, libxml2, libx264-164, which the newer
+    # image doesn't have (first CI run, Nov 17: 'Package libicu74 has no installation candidate')
+    runs-on: ubuntu-24.04
     timeout-minutes: 35
     continue-on-error: true
     steps:
