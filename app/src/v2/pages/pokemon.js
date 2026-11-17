@@ -8,7 +8,7 @@ V2.bars = p => lairBars(p).map(([l, ...r]) => [l === 'Converts to top cut' ? 'To
 V2.monSlug = n => encodeURIComponent(String(n).toLowerCase());
 V2.monFromHash = () => { let k = ''; try { k = decodeURIComponent((location.hash.split('=')[1] || '')).toLowerCase(); } catch (e) {} return k && typeof ROSTER === 'object' ? ROSTER.find(q => q.n.toLowerCase() === k) || null : null; };
 V2.STATS = [['HP', 'hp'], ['Attack', 'atk'], ['Defense', 'def'], ['Sp. Atk', 'spa'], ['Sp. Def', 'spd'], ['Speed', 'spe']];
-// the top: the Card; the rank tag; the name; the rating with its tier and likely range; the 0-100 gauge; the three numbers; the actions
+// the top: the Card; the rank tag; the name; the rating with its tier (Sim, Nov 17: no 'likely 81-92' range, it read as unsure); the 0-100 gauge; the three numbers; the actions
 V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), rank = rankTxt(p, 'cap');
   const lo = +RS(Math.max(1, r.total - (r.band || 0))), hi = +RS(Math.min(99, r.total + (r.band || 0))), sp = SHT.speeds(p), run = sp.find(x => x.main) || sp.find(x => x.k === 'max');
   const num = (b, l, s, few) => `<div class="pk-n${few ? ' few' : ''}"><b class="u">${b}</b><span>${l}${s ? `<small>${s}</small>` : ''}</span></div>`;
@@ -20,7 +20,7 @@ V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T 
   return `<section class="pk-top" aria-labelledby="pk-name"><div class="pk-card">${card}</div><div class="pk-is">
     <p class="pk-kick"><span class="pk-rank u">${rank ? E(rank) : 'No results yet'}</span><span>Pokémon Champions · VGC doubles</span></p>
     <h1 class="u" id="pk-name">${V2.nameHtml(V2.disp(n))}</h1>
-    <div class="pk-rate"><b class="u">${rs}</b><span><em class="u tier-tag" style="--tc:var(--tier-${E(T.k.toLowerCase())})">${E(T.k)} tier</em><small>Rating · ${E(rRange(r))}${H.thinR ? ' · early read' : ''}</small></span></div>
+    <div class="pk-rate"><b class="u">${rs}</b><span><em class="u tier-tag" style="--tc:var(--tier-${E(T.k.toLowerCase())})">${E(T.k)} tier</em><small>Rating${H.thinR ? ' · early read' : ''}</small></span></div>
     ${gauge}<div class="pk-nums">${nums}</div>
     <div class="pk-acts"><button type="button" class="np-btn" data-hmaround="${E(n)}"><span>Build Around It</span></button><button type="button" class="np-btn2" data-mssets="${E(n)}"><span>Popular Sets</span></button>${V2.addBtn ? V2.addBtn(n) : ''}</div></div></section>`; };
 // Base Stats: one panel, six lanes (a plate in the stat's colour, a streak growing to a point where the stat lands, the number past it),
