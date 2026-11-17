@@ -113,12 +113,22 @@ Corrections to the reference README:
   ("%", "games", "/ 100") one size smaller and in --ink-2.
 - Unbounded only at 15px and up (Sim, Nov 11): headlines, big numbers, plates, the filled button. Anything smaller is
   Instrument Sans (600-700). Unbounded has no true italic; small sizes look distorted when slanted.
+  Named exception (Sim, Nov 16, batch 3B; pictures: pics/nov17/unbounded-13px-before-after.png): Unbounded may go down to 13px for
+  (a) short stamps and tags on a plate or ticket (Mega, KO, 1st, Called it, Start here, Biggest rise, #1 right now, No. 1, Your style,
+  Your team, Latest result, the small plate labels) and (b) a name fitted down to its card so it matches its neighbours (fitWords).
+  Instrument Sans there flattened the stamps. app/test/v2-unbounded.mjs lists these kinds and fails on any new one.
+- Eyebrows (Sim, Nov 16, batch 6A): written in sentence case in the code, shown in capitals (text-transform). The rule is about the
+  source text; the capitals are the approved look.
 
 ## 4. Space, size, shape
 - Spacing on a 4px grid (1, 2 and 6 allowed for hairlines and optical fixes): 4 8 12 16 20 24 32 40 48 64 96.
 - Page gutters: 16 (phone) / 32 (tablet) / 96 (desktop 1440+), max content width 1440, centred.
 - Breakpoints: 700 (phone to tablet), 1000 (two-column work area), 1440 (three columns). Layouts are fluid between them
   and must hold at every width from 320 to 2560 and while the window is being dragged.
+  The shipped CSS (counted Nov 16, batch 7A: document now, merge after the switch) uses more: the main edges are 700 (245 rules),
+  1100 (89), 360 (52), 900 (44), 1024 (35), 380 (30), 480 (18), 520 (17), 1280 (18), 1180 (22), 600 (15), and about 50 one-off widths
+  (414, 1366, 1680...). Most one-offs fit a single component (a name, a button row) at an odd width Sim tests. Merging them to about
+  6 is a large change (about 170 media rules plus a full width sweep), planned for after the switch.
 - Corners: 4 / 6 / 10 / 18 / round. Round only in chosen spots (Sim, Nov 12, 8:46 PM; was "round only for avatars and slider knobs"): small count badges, dots on slider tracks, the day/night switch, small pop-up tips, and Pokémon circles in compact lists. Buttons, plates and chips stay slanted: they are part of the WOW.
 - Slant: one angle, -24deg skew for marks (the 18x8 team mark, eyebrow mark, nav underline); plates and buttons use the
   clip-path slant (11-14px offset at each end). Tilted panels: skewY(-7deg).
