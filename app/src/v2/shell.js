@@ -275,7 +275,7 @@ V2.morphField = (o, n) => { if (o.nodeName === 'SELECT') { V2.morphKids(o, n); o
   if (o.type === 'checkbox' || o.type === 'radio') o.checked = n.hasAttribute('checked'); else if (o.value !== (n.getAttribute('value') ?? n.textContent ?? '')) o.value = n.getAttribute('value') ?? (o.nodeName === 'TEXTAREA' ? n.textContent : ''); };
 V2.redraw = () => { const app = document.getElementById('app'); if (!app || !app.firstChild) { V2.draw(); return; }
   const y = scrollY, act = document.activeElement, key = V2.focusKey(act), r = V2.shell(), t = document.createElement('template'); t.innerHTML = r.html;
-  V2.morphKids(app, t.content); scrollTo(0, y);
+  V2.morphKids(app, t.content); if (scrollY !== y) scrollTo(0, y); /* only when the merge moved it (code review B-m2) */
   if (key && !act.isConnected) { const e = [...document.querySelectorAll('#app ' + key.sel)][Math.max(0, key.i)]; if (e) e.focus({preventScroll: true}); }
   /* stress test (Nov 16): a focused heading kept by the merge loses its temporary tabindex (copied from the fresh HTML) and the browser drops focus to <body>; put both back */
   else if (act && act !== document.body && act.isConnected && document.activeElement !== act && !(V2._sheet)) { if (!act.matches('a[href],button,input,select,textarea,summary,[tabindex]')) { act.tabIndex = -1; act.addEventListener('blur', () => act.removeAttribute('tabindex'), {once: true}); } act.focus({preventScroll: true}); }
