@@ -1,7 +1,7 @@
 // Team Card and Poster: a long team name's lines are spaced by the size they are drawn at (code review FP-5, Nov 16).
 // The fallback loops ("for (fz = 40; ... && !TL; fz -= 2)") stepped the size down once more after the name fitted, so the
 // lines were drawn at one size and spaced by a smaller one (they touched). Only names too long for two lines reach it.
-// Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/share-fz.mjs   (a --v2 --preview-data build)
+// Exit 1 on any failure (2 fail on the build before the fix).   PAGE=app/dist/v2.html node app/test/share-fz.mjs   (a --v2 --preview-data build)
 import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') + msg); if (!c) fails.push(msg); };

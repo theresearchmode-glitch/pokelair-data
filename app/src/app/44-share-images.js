@@ -138,7 +138,7 @@ ARB.card = async function () { const ms = members().slice(0, 6); if (!ms.length)
   else if (RD) { ARB.numeral(x, P, CH.readyN(RD) || RD.score + '%', W - 60, 132, 104, 'right'); x.textAlign = 'right'; ARB.fnt(x, '600 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('Matchups: beaten or handled', W - 60, 168); x.textAlign = 'left'; }
   /* the title on its slanted tab: one line as big as fits, else two lines (never cut off) */
   let fz = 70, TL = null; for (; fz >= 34; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); if (x.measureText(f.name).width <= 640) { TL = [f.name]; break; } if (fz <= 50) { const L2 = ARB.lines(x, f.name, 640); if (L2) { TL = L2; break; } } }
-  if (!TL) for (fz = 40; fz >= 26 && !TL; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); TL = ARB.wrapN(x, f.name, 640, 3); }
+  if (!TL) for (fz = 40; fz >= 26; fz -= 2) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); TL = ARB.wrapN(x, f.name, 640, 3); if (TL) break; } /* break keeps fz at the drawn size (review FP-5) */
   if (!TL) { fz = 26; TL = [scFit(x, f.name, 640)]; }
   const ty0 = TL.length > 2 ? 64 : TL.length > 1 ? 84 : 116; ARB.tab(x, P, 56, ty0, 40); x.fillStyle = P.ink; TL.forEach((l, i) => x.fillText(l, 112, ty0 + i * fz * 1.02));
   const sy = ty0 + (TL.length - 1) * fz * 1.02 + 40;
@@ -166,7 +166,7 @@ ARB.poster = async function (ms, opt) { opt = opt || {}; if (!ms || !ms.length) 
   ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('My team, Pokémon Champions, Reg M-C doubles', 60, 86);
   /* the name, as big as fits, up to two lines, on its slanted tab */
   let fz = 104, L = null; for (; fz >= 52; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); L = ARB.lines(x, f.name, W - 190); if (L && (L.length === 1 || fz <= 92)) break; }
-  if (!L) for (fz = 60; fz >= 40 && !L; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); L = ARB.wrapN(x, f.name, W - 190, 3); }
+  if (!L) for (fz = 60; fz >= 40; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); L = ARB.wrapN(x, f.name, W - 190, 3); if (L) break; } /* as above (FP-5) */
   if (!L) { fz = 40; L = [scFit(x, f.name, W - 190)]; } let ty = 110 + fz * .9; ARB.tab(x, P, 60, ty - fz * .12, fz * .62); for (const l of L) { x.fillStyle = P.ink; x.fillText(l, 60 + fz * .78, ty); ty += fz * 1.02; }
   if (f.arch && f.arch !== f.name) { ARB.fnt(x, '700 28px "Instrument Sans", sans-serif'); const t = scFit(x, f.arch, 700), w = x.measureText(t).width + 44, yy = ty - fz * 1.02 + 30; x.fillStyle = P.plate; ARB.para(x, 64 + w / 2, yy, w, 48, 6); x.fill(); x.fillStyle = '#fff'; x.fillText(t, 86, yy + 33); }
   /* the six: 3 by 2 art tiles */
