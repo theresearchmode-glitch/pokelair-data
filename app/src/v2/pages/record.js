@@ -32,7 +32,9 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   if (d.yglog !== undefined) V2.ygOpen();
   else if (d.yglead) { q.leads = q.leads.includes(d.yglead) ? q.leads.filter(x => x !== d.yglead) : [...q.leads, d.yglead].slice(-2); V2.ygRe(); }
   else if (d.ygoppx !== undefined) { q.opp.splice(+d.ygoppx, 1); V2.ygRe(); }
-  else if (d.ygopp) { if (!q.opp.includes(d.ygopp) && q.opp.length < 6) q.opp.push(d.ygopp); q.q = ''; V2.ygRe(true); }
+  else if (d.ygopp) { const p = byName.get(d.ygopp); /* one of each Pokémon, Mega or not, as Battle checks (code review A1-M8) */
+    if (p && q.opp.some(x => byName.get(x) && byName.get(x).b === p.b)) { toast(`${p.d} is already in their six`); return; }
+    if (!q.opp.includes(d.ygopp) && q.opp.length < 6) q.opp.push(d.ygopp); q.q = ''; V2.ygRe(true); }
   else if (d.ygbm !== undefined) { q.opp = (S.opp || []).filter(n => byName.has(n)).slice(0, 6); V2.ygRe(); }
   // only leads on this six are logged (today's page can keep an old team's pair: bug queue 2)
   else if (d.ygres) { const ms = members(), x = logGame(d.ygres, q.leads.filter(n => ms.some(m => m.p.n === n)), q.opp); if (!x) return; persist();

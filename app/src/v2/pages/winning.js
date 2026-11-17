@@ -97,7 +97,7 @@ document.addEventListener('click', async e => { const b = e.target.closest && e.
   if (d.wtload != null) { V2.wtLoad(+d.wtload); return; }
   if (d.wtx != null) { U.sure = null; V2.redraw(); return; }
   if (d.wtcopy != null) { const t = META.teams && META.teams.teams[+d.wtcopy]; if (!t) return; const r = sdNames(t.mons, t.player); toast((await V2.copy(r.text)) ? (r.note ? 'Team copied for Showdown. ' + r.note : 'Team copied for Showdown') : 'Copy failed. Try again.'); return; }
-  if (d.wtvs != null) { const t = META.teams && META.teams.teams[+d.wtvs]; if (!t) return; V2.btSetOpp(t.mons, {who: t.player, label: teamWho(t), key: t.mons.slice().sort().join('|'), ev: evShort(t.event)}); /* Nov 15: the head said 'Vs Challenger' for a winner (no label / event) */ location.hash = '#battle'; toast(`Opponent set: ${teamWho(t)}`); return; }
+  if (d.wtvs != null) { const t = META.teams && META.teams.teams[+d.wtvs]; if (!t) return; V2.btSetOpp(t.mons.filter(n => byName.get(n)).slice(0, 6) /* known Pokémon only, as elsewhere (code review A1-M6) */, {who: t.player, label: teamWho(t), key: t.mons.slice().sort().join('|'), ev: evShort(t.event)}); /* Nov 15: the head said 'Vs Challenger' for a winner (no label / event) */ location.hash = '#battle'; toast(`Opponent set: ${teamWho(t)}`); return; }
   if (d.wtgrp) { U.grp = d.wtgrp; U.more = 0; U.sure = null; }
   else if (d.wtmore != null) U.more++;
   else if (d.wtless != null) { U.more = 0; const h = document.querySelector('.wt-hands'); V2.redraw(); if (h) document.querySelector('.wt-more-s')?.scrollIntoView({block: 'nearest'}); return; }
