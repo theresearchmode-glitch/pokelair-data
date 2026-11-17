@@ -12,12 +12,12 @@ V2.bpModel = () => { const res = ui.ab && !ui.ab.busy && ui.ab.doubles; if (!res
   const core = (t.why || []).map(w => w.match(/^(.*): ([\d,]+) tournament teams, ([\d.]+)% wins$/)).find(Boolean);
   return {res, t, n, k, G, CK, s: G ? Math.round(G.s) : '–' /* never the builder's own number (code review A1-M4) */, band: G ? V2.BAND_K[G.band] || 'solid' : 'solid', word: G ? CH.wordOf(G.s) : '', kind, rows, basics, notes, core,
     ans: rows.filter(x => x.level >= 2).length, sh: rows.filter(x => x.level === 1).length, no: rows.filter(x => x.level === 0).length, nCatch: t.mons.filter(m => !m.box).length}; };
-V2.bpFig = (m, i, coreNames, showTags) => { const E = V2.esc, p = byName.get(m.n), R = monRating(p), d = V2.disp(m.n), mega = /^Mega /.test(d), inCore = coreNames.includes(d) || coreNames.includes(m.d);
+V2.bpFig = (m, i, coreNames, showTags) => { const E = V2.esc, p = byName.get(m.n), R = monRating(p), d = V2.disp(m.n), mega = /^Mega /.test(d);
   const tag = [!m.box ? 'to catch' : '', m.offMeta ? 'off‑meta' : ''].filter(Boolean).join(' · ');
-  return `<button type="button" class="bp-fig" data-v2mon="${E(m.n)}" aria-label="${E(d)}${m.role ? ', ' + E(String(m.role).replace(', Mega', '')) : ''}${m.it ? ', ' + E(m.it) : ''}${R ? `, ${E(R.tier)} tier ${R.n}` : ''}${tag ? ', ' + tag : ''}${inCore ? ', in the best core' : ''}: open its info">
-    <span class="bp-no u" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>${inCore ? '<span class="bp-core" aria-hidden="true">Core</span>' : ''}
+  return `<button type="button" class="bp-fig" data-v2mon="${E(m.n)}" aria-label="${E(d)}${m.n === ui.abLock ? ', your pick' : ''}${m.it ? ', ' + E(m.it) : ''}${R ? `, ${E(R.tier)} tier ${R.n}` : ''}${tag ? ', ' + tag : ''}: open its info">
+    <span class="bp-no u" aria-hidden="true">${String(i + 1).padStart(2, '0')}</span>
     <span class="bp-art" aria-hidden="true"><i class="bp-ring"></i>${V2.mon(m.n, {bare: true})}</span><i class="bp-base" aria-hidden="true" style="--b1:var(--ty-${p ? p.t[0] : 'Normal'});--b2:var(--ty-${p ? p.t[1] || p.t[0] : 'Normal'})"></i>
-    <span class="bp-role u">${m.n === ui.abLock ? 'Your pick' : E(String(m.role || '').replace(', Mega', '').split(',')[0])}</span><span class="bp-mg u">${mega ? 'Mega' : '&nbsp;'}</span><b>${E(mega ? d.slice(5) : d)}</b><small>${E(m.it || '')}</small><small class="r">${R ? `${E(R.tier)} tier ${R.n}` : ''}${showTags && tag ? ' · ' + tag : ''}</small></button>`; };
+    ${ui.abLock ? `<span class="bp-role u">${m.n === ui.abLock ? 'Your pick' : '&nbsp;'}</span>` : '' /* Sim, Nov 17: no role headings (Sun, Tailwind, Priority) and no Core badge: 'makes it more confusing'; only the Pokémon you built around is marked */}<span class="bp-mg u">${mega ? 'Mega' : '&nbsp;'}</span><b>${E(mega ? d.slice(5) : d)}</b><small>${E(m.it || '')}</small><small class="r">${R ? `${E(R.tier)} tier ${R.n}` : ''}${showTags && tag ? ' · ' + tag : ''}</small></button>`; };
 V2.bpSpec = () => { const E = V2.esc, lk = ui.abLock && byName.get(ui.abLock);
   const src = V2.slide('bdsrc', [['box', 'My Box'], ['all', 'Whole Roster']], ui.abSrc === 'all' ? 'all' : 'box', 'Build from');
   const meg = V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on team');

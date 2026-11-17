@@ -15,6 +15,8 @@ await p.getByRole('button', {name: 'Build Me a Team'}).first().click();
 await p.waitForSelector('[data-bdcopy]', {timeout: 30000}).catch(() => {});
 const has = await p.$('[data-bdcopy]');
 ok(!!has, 'Build made a team with its Copy and Save buttons');
+const lab = await p.evaluate(() => ({core: document.querySelectorAll('.bp-core').length, roles: [...document.querySelectorAll('.bp-role')].map(e => e.textContent.trim()).filter(t => t && t !== '\u00a0')}));
+ok(lab.core === 0 && lab.roles.length === 0, `Sim (Nov 17): Build's team cards carry no Core badge and no role heading (${JSON.stringify(lab)})`);
 const toastAfter = async fn => { await p.evaluate(() => document.querySelectorAll('.np-toast').forEach(t => t.remove())); await fn(); await p.waitForTimeout(500);
   return p.evaluate(() => [...document.querySelectorAll('.np-toast')].map(t => t.textContent).join(' | ')); };
 if (has) {
