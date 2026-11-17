@@ -2275,6 +2275,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .wt-two .wt-card .mc-id h3,.wt-fan .wt-card .mc-id h3 .mg{font-family:var(--b)}.wt-two .wt-card .mc-id h3{font:700 var(--t13)/1.2 var(--b);font-style:normal}
 .wt .wt-card .mc-id h3 .mg{display:block;font:700 var(--t13)/1.1 var(--b);font-style:normal;color:var(--plot-text)}
 @media (max-width:1099.98px){.wt-top{grid-template-columns:minmax(0,1fr)}}
+/* player review 2d (Nov 17): under 1100 the search leads; Your Team sits under it */
+.wt-spot-n{display:none}
+@media (max-width:1099.98px){.wt-top .wt-spot-w{display:none}.wt-spot-n{display:block;margin:var(--s6) 0}}
 @media (max-width:699.98px){.wt .wt-fan:not(.wt-mini) .wt-card .mc-id h3{font:700 var(--t13)/1.2 var(--b);font-style:normal}}
 @media (max-width:699.98px){.wt .ra-seg a{font-size:var(--t13);white-space:nowrap}.wt-hh h3{font-size:var(--t20)}}
 @media (max-width:699.98px){.wt .ra-seg,.ev .ra-seg,.ar .ra-seg{grid-template-columns:auto auto auto}}

@@ -23,7 +23,7 @@ KO Board, Test Run's piles, Track Record.
 - 2b FIXED Your Games empty states don't say what logging unlocks (after 5 games: Build weighs own results; what you lose to). (checked what 5 games unlock: personalAdj in Build, MYREC_MIN record insights; line added on My Team and Battle; Home has no empty games state)
 - 2c FIXED Site search finds only Pokémon, saved teams, pages ("trick room" = No matches); add moves, items, abilities, styles (search finds moves, items, Abilities from the 976 winning team sheets and team styles; a move/item/Ability opens Winning Teams filtered by it, a style opens its guide)
   and send each somewhere useful (Winning Teams search already works for these).
-- 2d OPEN Winning Teams search sits ~1.5 phone screens down under "Your Team 4/4 checks": move it near the top.
+- 2d FIXED Winning Teams search sits ~1.5 phone screens down under "Your Team 4/4 checks": under 1100 wide, Your Team now comes after the search and group chips (measured, 390x844: search 804px -> 546px, on the first screen; 320 wide: 856 -> 578; desktop unchanged). Test: v2-minors "Player review 2d" (fails before, passes after). Picture: pics/nov17/winning-search-390-after.png.
 
 ## 3. Polish, page by page
 - 3a OPEN Home "Most used in October" in mid-November: newest data or say how old.
