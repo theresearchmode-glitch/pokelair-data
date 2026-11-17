@@ -43,11 +43,20 @@ export const sdReg = fmt => { const m = String(fmt || '').match(/^gen9championsv
 export const nextRegIds = id => { const [a, b] = String(id).split('-'); return b && b < 'Z' ? [`${a}-${String.fromCharCode(b.charCodeAt(0) + 1)}`] : []; };
 export function readReg(file = 'out/reg.json') { try { const r = JSON.parse(fs.readFileSync(file, 'utf8')); return r && REG_ID.test(r.id) ? r : null; } catch (e) { return null; } }
 // the regulation the numbers are built from, and the window its events fall in (end = the day a newer one started, if any)
+// the first day (UTC) on which a regulation no longer counts, for official events' date windows (inRegWindow)
+const endDay = id => REG_END[id] ? REG_END[id].slice(0, 10) : null;
 export function activeReg(file) { const r = readReg(file);
-  if (!r) return {...SITE_REG, name: regName(SITE_REG.id), end: null};
-  return {id: r.id, name: regName(r.id), sd: r.sd || (r.id === SITE_REG.id ? SITE_REG.sd : sdGuess(r.id, String(r.since || '').slice(0, 4))), since: r.since || SITE_REG.since, end: r.now && r.now.id !== r.id ? r.now.since : null}; }
+  if (!r) return {...SITE_REG, name: regName(SITE_REG.id), end: endDay(SITE_REG.id)};
+  return {id: r.id, name: regName(r.id), sd: r.sd || (r.id === SITE_REG.id ? SITE_REG.sd : sdGuess(r.id, String(r.since || '').slice(0, 4))), since: r.since || SITE_REG.since, end: r.now && r.now.id !== r.id ? r.now.since : endDay(r.id)}; }
+// Official end of each regulation (Nov 17). Limitless can keep tagging events with the old regulation after it ends (checked
+// Nov 17: events listed from Dec 3 tagged "Regulation Set M-C"), so an event dated at or after the end never counts for it,
+// whatever its tag: it counts for the next regulation. M-C ends Dec 1, 5:59 PM PST (pokemon.com "Get Ready for Regulation Set
+// M-C"). Add each regulation's end here when it is official.
+export const REG_END = {'M-C': '2026-12-02T01:59:00Z'};
+export const regAt = (f, date) => { let id = f; for (let i = 0; i < 4; i++) { const end = REG_END[id], t = Date.parse(String(date || ''));
+  if (!end || !isFinite(t) || t < Date.parse(end)) break; const nx = nextRegIds(id)[0]; if (!nx) break; id = nx; } return id; };
 // an event's regulation: saved with it from Nov 1; older saved events are all Reg M-C (the only format the job ever fetched)
-export const regOf = e => (e && typeof e.f === 'string' && e.f) || SITE_REG.id;
+export const regOf = e => regAt((e && typeof e.f === 'string' && e.f) || SITE_REG.id, e && (e.d || e.date));
 export const sameReg = (e, id) => regOf(e) === id;
 export const inRegWindow = (date, reg) => { const d = String(date || '').slice(0, 10); return !!d && d >= reg.since && (!reg.end || d < reg.end); };
 // list: Limitless tournaments of any format [{format, date, players}]; sd: {showdownFormat: {n, first}} from replay searches;
@@ -55,7 +64,7 @@ export const inRegWindow = (date, reg) => { const d = String(date || '').slice(0
 export function detectReg(list, sd, prev, today) {
   today = today || new Date().toISOString().slice(0, 10);
   let id = prev && REG_ID.test(prev.id) ? prev.id : SITE_REG.id, since = (prev && prev.since) || SITE_REG.since, sdId = (prev && prev.sd) || SITE_REG.sd;
-  const fam = id.split('-')[0] + '-', seen = {}, rows = (Array.isArray(list) ? list : []).map(t => ({f: String(t && t.format || ''), d: String(t && t.date || '').slice(0, 10), p: +(t && t.players) || 0}))
+  const fam = id.split('-')[0] + '-', seen = {}, rows = (Array.isArray(list) ? list : []).map(t => ({f: REG_ID.test(String(t && t.format || '')) ? regAt(String(t.format), t.date) : String(t && t.format || ''), d: String(t && t.date || '').slice(0, 10), p: +(t && t.players) || 0}))
     .filter(t => t.f.startsWith(fam) && REG_ID.test(t.f) && /^\d{4}-\d{2}-\d{2}$/.test(t.d));
   const last = rows.reduce((a, t) => t.d > a ? t.d : a, ''), cut = last ? new Date(Date.parse(last) - 6 * 864e5).toISOString().slice(0, 10) : '';
   for (const t of rows) { const s = seen[t.f] = seen[t.f] || {events: 0, players: 0, first: t.d, last: t.d, week: 0};
