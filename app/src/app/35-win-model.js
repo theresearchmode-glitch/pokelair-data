@@ -127,9 +127,12 @@ function tsInfo(team){const s=tsOf(team);return s==null?null:{score:s}}
 function tsTitle(base,t,team){const a=CH.hand(base),b=CH.hand(t&&t.rows?t:team?prepOf(team):null);return a&&b?`Ready for ${a.x}/${a.n} → ${b.x}/${b.n} top threats`:`${base.score}% → ${t.score}% ready for the top 30 threats`}
 // A team's grade, the big number on My team (readiness + team strength − missed checks), for any six (Nov 7, Sim: "it says +2
 // ready but my score went from 93 to 91"). Suggestions are judged and labelled by it, so the card matches what Apply does.
+// a member's nature and stat points as a cache-key part (code review A2-I4 + A1-I2, Nov 17: the grade memo and Test Run's cache
+// ignored them, so a spread edit kept the old number); 'c' = the common spread
+function spreadKey(m){const c=m&&m.spread;return c?(c.nat||'')+'/'+[c.hp,c.atk,c.def,c.spa,c.spd,c.spe].join('.'):'c'}
 const gradeMemo=new Map();
 function gradeTeam(team){if(!team||team.length<6||typeof CH!=='object'||!CH.gradeOf)return null;
-  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')).sort().join('|');
+  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')+'~'+spreadKey(m)).sort().join('|');
   if(gradeMemo.has(k))return gradeMemo.get(k);let g=null;
   try{const ms=typeof assignItems==='function'?assignItems(team):team,RD=THR.teamReport(ms),G=CH.gradeOf(RD,proChecks(ms,true),ms);g=G?G.s:null;
     // a six that real players ran and lost with more than the field average is never an upgrade, whatever its grade

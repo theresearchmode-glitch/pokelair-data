@@ -3,7 +3,7 @@
 // (38-gauntlet-data.js: gauntletTeams, gauntletScore, gauntletPrep); the rows, sort, counts and words follow today's renderGauntlet.
 V2.trCache = {key: null, rows: null};
 V2.trRows = ms => { const T = gauntletTeams(); if (!T.length) return [];
-  const key = metaVersion + '|' + ms.map(m => m.p.n + '/' + m.ability + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',')).join('|');
+  const key = metaVersion + '|' + ms.map(m => m.p.n + '/' + m.ability + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',') + '~' + spreadKey(m)).join('|'); /* nature + stat points too (code review A1-I2) */
   if (V2.trCache.key !== key) V2.trCache = {key, rows: T.map((t, ix) => { const names = t.mons.filter(n => byName.get(n)), theirs = names.map(n => byName.get(n)).map(oppMember); if (theirs.length < 4) return null;
     const g = gauntletScore(ms, theirs, true); let pr = null; try { pr = gauntletPrep(ms, names); } catch (e) { pr = null; }
     const un = pr ? pr.you.map((r, j) => r.level === 0 ? j : -1).filter(j => j >= 0) : g.loose;

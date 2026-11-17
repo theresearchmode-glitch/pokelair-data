@@ -49,6 +49,9 @@ jobs:
       # privacy (code review C-C2, Nov 17): no real player name in the committed test data or the built Preview page
       - run: node app/test/no-names.mjs && node app/build.mjs --v2 --preview-data && node app/test/no-names.mjs app/dist/v2.html
         if: ${{ !cancelled() }}
+      # caches follow nature and stat points (code review A2-I4 + A1-I2): the suggestion baseline and Test Run (needs the --preview-data build above)
+      - run: PAGE=app/dist/v2.html node app/test/v2-caches.mjs
+        if: ${{ !cancelled() }}
       # the new site never says "Ready for" / "N% ready" (word list: Matchups; Sim, Nov 12): reads every built page, fold, sheet and "?"
       - run: node app/build.mjs --v2 && node experiments/v2-words.mjs
         if: ${{ !cancelled() }}
