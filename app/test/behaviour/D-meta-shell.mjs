@@ -77,7 +77,7 @@ t('NAV-05', 'Second-level sliders Rating/Usage/Sets and Winning Teams/Events/Arc
 
 t('NAV-05b', 'The slider tells screen readers the page that is shown (one choice marked)', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); await d.tapPageSwitch('Usage'); const s = await d.pageSwitch(); expect(s.announced.join() === 'Usage', 'marked as current for screen readers: ' + s.announced.join(', ')); }),
-  {known: 'after switching with the slider, "Rating" keeps aria-selected="true" while "Usage" gets aria-pressed="true" (the visible pill is right; measured on Usage)'});
+  NEW ? {} : {known: 'after switching with the slider, "Rating" keeps aria-selected="true" while "Usage" gets aria-pressed="true" (the visible pill is right; measured on Usage)'});
 t('NAV-06', 'Back links on Meta sub-pages', run({team: TEAM}, async ({ui, d}) => {
   for (const [p, label] of [['This Week', '← Meta'], ['How We Calculate', '← Meta'], ['About', '← Meta'], ['Track Record', '← Pokémon Ratings']]) {
     await ui.go(p); expect(await d.backLink() === label, `${p}: back link "${await d.backLink()}"`); await d.tapBackLink(); expect(await ui.current() === 'ratings', `${p}: back opened ${await ui.current()}`); } }));
@@ -116,7 +116,7 @@ t('NAV-11', 'Section colours: all Meta pages share one accent; Battle, Home, Bui
 
 t('BROKEN-04', 'Reload reopens the page you were on', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Events'); await ui.reload(); expect(await ui.current() === 'events', 'reload opened ' + await ui.current()); }),
-  {known: 'the last page is saved (cc2.view) but never read; reload always opens Home. Sim to decide if Home-on-reload is intended'});
+  NEW ? {} : {known: 'the last page is saved (cc2.view) but never read; reload always opens Home. Sim to decide if Home-on-reload is intended'});
 
 // =============================== JUMP · search ===============================
 t('JUMP-01', 'Search opens from the header button, Ctrl+K (toggles) and "/" (not while typing)', run({team: TEAM}, async ({ui, d}) => {
@@ -551,7 +551,7 @@ t('META-03', 'Usage search filters every rank; says when nothing matches', run({
   expect(/\d+ match(es)?/.test(await ui.text()), 'no match count'); }));
 t('META-03b', 'The "rest of the list" button hides while searching', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Usage'); expect(await d.restButtonShown(), 'no rest-of-list button before searching'); await d.usageSearch('ra'); expect(!(await d.restButtonShown()), '"Ranks 11–60" button still shows while searching'); }),
-  {known: 'the button gets the hidden attribute but its CSS (display:flex) overrides it, so it stays on screen while searching (measured at 1280)'});
+  NEW ? {} : {known: 'the button gets the hidden attribute but its CSS (display:flex) overrides it, so it stays on screen while searching (measured at 1280)'});
 t('META-04', 'Usage rows: rank, name, types, usage and team count; trend badges where ranks moved', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Usage'); await d.chooseUsageSource('Online tournaments'); const r = await d.usageRows(); expect(r.length === 10 && r[0].rank === 1, 'rows: ' + r.length);
   expect(r.every(x => /\d+(\.\d)?%/.test(x.text) && /[\d,]+ teams/.test(x.text)), 'a row lacks usage % or team count: ' + r[0].text);
@@ -566,7 +566,7 @@ t('META-06', 'Top 10, then "Ranks 11–60" shows the rest and flips', run({team:
 t('META-07', 'Usage without data says so', run({team: TEAM, account: false}, async ({ui}) => { await ui.go('Usage'); expect(has(await ui.text(), 'No meta data loaded yet'), 'no no-data line'); }));
 t('BROKEN-13', 'No-data message works on the public site (does not mention Claude)', run({team: TEAM, account: false}, async ({ui}) => {
   await ui.go('Usage'); expect(!/Claude/.test(await ui.text()), 'no-data text mentions Claude: ' + (await ui.text()).match(/[^.]*Claude[^.]*\./)); }),
-  {known: 'Usage says "Live data appears here when the page is opened in Claude." (public launch concern)'});
+  NEW ? {} : {known: 'Usage says "Live data appears here when the page is opened in Claude." (public launch concern)'});
 
 // =============================== SETS · Popular Sets (= B-build SETS-02..07, different numbering) ===============================
 t('SETS-01', 'Look up a Pokémon: its sets show and stay after reload (B SETS-02)', run({team: TEAM}, async ({ui, d, ls}) => {
@@ -733,7 +733,7 @@ t('METHOD-03', 'Ten remembered sections; each opens with content', run({team: TE
 t('RULE-WORDS', 'Meta pages, menu and search use the approved words (Matchups, Strength Score, Test run…)', run({team: TEAM}, async ({ui, d}) => {
   const bad = [/Ready for the Top Threats/i, /\breadiness\b/i, /\bGauntlet\b/, /\bElo\b/, /\bwin edge\b/i, /\bpts\b/, /\bFix it\b/, /\bgrade\b/i];
   const found = []; for (const p of [...META_PAGES, 'This Week', 'Track Record', 'How We Calculate']) { await ui.go(p); const tx = await ui.text(); for (const b of bad) if (b.test(tx)) found.push(`${p}: ${tx.match(b)[0]}`); }
-  expect(!found.length, 'old words: ' + found.join('; ')); }), {known: 'How We Calculate still says "Ready for the Top Threats" (word list: Matchups) and "grade" (Strength Score)'});
+  expect(!found.length, 'old words: ' + found.join('; ')); }), NEW ? {} : {known: 'How We Calculate still says "Ready for the Top Threats" (word list: Matchups) and "grade" (Strength Score)'});
 t('METHOD-04', 'Links and tips open How We Calculate at the right section', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); await d.openTip('numbers'); await d.tapInTip('How We Calculate'); expect(await ui.current() === 'method', 'tip link opened ' + await ui.current());
   expect(await d.inView('How to Read Our Numbers') || await d.anyOpenInView(), 'no section in view'); }));
