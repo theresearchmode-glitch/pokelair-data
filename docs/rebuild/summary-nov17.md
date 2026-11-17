@@ -69,6 +69,8 @@ Checked: one setting exists (PAGE_REG = 'M-C'), but "M-C" is typed out 65 times 
    Why: the day it changes, nothing needs editing by hand.
 2. Old numbers: ratings, Winning Teams, Events and Track Record are archived per regulation and start fresh, with a "Reg M-C" view
    kept. Why: mixing two regulations' results would mislead.
+   CORRECTION (Nov 17, found by the Reg M-D helper): "with a 'Reg M-C' view kept" conflicts with your Nov 7 decision 2 (no
+   last-regulation view; reg-md-plan.md:69). Recommended: archive the files, show no M-C view (the launch is a month into M-D). Your call.
 3. Saved teams and box Pokémon that turn illegal are flagged with a note, never deleted. Why: players keep what they built.
 4. A one-line notice on the day it changes (the page already has a "New regulation" note for the data side).
 Size: medium (a day of careful work + tests). Nothing starts without your yes.

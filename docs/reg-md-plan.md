@@ -4,7 +4,7 @@
 | Fact | Status | Source |
 |---|---|---|
 | Reg M-C runs until **Dec 1**; M-D starts **Dec 1 or 2** | Official schedule (Nintendo of America), Game8 says Dec 2 | GameRant, CQ Esports (Sep 2), Game8 |
-| **Mega Heatran** arrives with M-D, the **first Legendary** in Champions | Officially announced, widely reported | GameRant, CQ Esports |
+| **Mega Heatran** arrives with M-D, the **first Legendary** in Champions | Teased in the official Worlds trailer, not confirmed (corrected Nov 17: was 'officially announced'; IGN: 'teased in the trailer but has not been confirmed otherwise'); no date | IGN, GameRant, CQ Esports |
 | Mega Heatran: Fire/Steel, stats 91/120/106/175/141/67, sprite exists (PokéAPI id 10311) | Confirmed data; **ability not published yet** | PokéAPI |
 | Rest of the M-D roster, new Megas, rule changes | **Unknown** (only unverified leak videos) | — |
 | Last switch (M-B to M-C): 35 Pokémon/forms added, **none removed**, 4 new items, rules unchanged | Checked against Showdown | docs/reg-md-research.md |
