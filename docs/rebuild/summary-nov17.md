@@ -28,6 +28,11 @@ Preview: v192 (397 files, 346 v2art). Branch claude/design6. Nothing went to mai
    Pictures: pics/nov17/edit-dropdown-webkit.png (grey box) and pics/nov17/edit-dropdown-chrome.png (as designed).
    If your iPhone shows the grey box, my recommendation: hide the phone's own box and draw our arrow (reason: the
    field then looks the same on every device). That's a look change, so it waits for your yes.
-2. NP_PID_KEY: it must be under Settings > Secrets and variables > Actions > Repository secrets, then I redo the main
+2. Unsure, for older iPhones: in an older Safari engine (WebKit 18.2, the Linux test build) the page jumps up about 700 px
+   after Apply on My Team, because that engine loses the page's scroll range after a redraw. Newer Safari (26.6) doesn't.
+   If you or a friend has an iPhone still on iOS 18: scroll down on My Team, tap Apply on a suggestion, see if the page jumps.
+   I couldn't fix it in that engine (every way of restoring the scroll stops at its wrong limit), and it's not proven on a
+   real iPhone, so nothing changed on the site.
+3. NP_PID_KEY: it must be under Settings > Secrets and variables > Actions > Repository secrets, then I redo the main
    names fix (the daily job needs it).
-3. The switch to live, when you're ready.
+4. The switch to live, when you're ready.
