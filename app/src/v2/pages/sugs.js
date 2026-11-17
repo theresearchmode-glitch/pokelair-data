@@ -9,7 +9,7 @@ V2.sgCtl = () => `<div class="sg2-ctl" role="group" aria-label="Suggestion setti
   <div class="sg2-c sg2-pool"><span class="sg2-k">Suggest from</span>${V2.slide('sgpool', [['box', 'My Box'], ['boxfill', 'Box + Catch'], ['all', 'Whole Roster']], ui.pool, 'Suggest from')}</div>
   <div class="sg2-c"><span class="sg2-k">Megas on team</span>${V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on the team')}</div>
   <div class="sg2-c"><span class="sg2-k">Swap my Mega?</span>${V2.slide('sgswap', [['0', 'No'], ['1', 'Yes']], $('swapMega').checked ? '1' : '0', 'Suggestions can swap out my Mega')}</div>
-  <div class="sg2-c sg2-abil"><span class="sg2-k">Count abilities?</span>${V2.slide('sgabil', [['0', 'No'], ['1', 'Yes']], $('useAbil').checked ? '1' : '0', 'Count abilities like Levitate in matchups and suggestions')}</div></div>${V2.exclLine()}`; /* Sim Q6 (Nov 16): Count abilities beside Megas and Swap (today's page has it; the new build kept it always on, hidden) */
+  <div class="sg2-c sg2-abil"><span class="sg2-k">Count Abilities?</span>${V2.slide('sgabil', [['0', 'No'], ['1', 'Yes']], $('useAbil').checked ? '1' : '0', 'Count Abilities like Levitate in matchups and suggestions')}</div></div>${V2.exclLine()}`; /* Sim Q6 (Nov 16): Count abilities beside Megas and Swap (today's page has it; the new build kept it always on, hidden) */
 // Swap my Mega? is kept in this browser on the new build (today's page forgets it on reload while Megas on team is kept: SUG-03b)
 try { if (V2.LS.get('np2.swapMega') === '1') $('swapMega').checked = true; } catch (e) {}
 try { if (V2.LS.get('np2.useAbil') === '0') $('useAbil').checked = false; } catch (e) {} /* Count abilities, kept in this browser too */

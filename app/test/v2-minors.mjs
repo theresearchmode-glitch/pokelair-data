@@ -74,7 +74,7 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
 { await p.goto('file://' + PAGE + '#pokemon=garchomp'); await p.waitForTimeout(2000); const t = await p.evaluate(() => (document.querySelector('#main .pk-n:last-child') || {}).textContent || '');
   ok(/Choice Scarf/.test(t) || !/Speed/.test(t), `Player review 1e (Nov 17): a Speed with the usual Choice Scarf says so (Garchomp: ${t.replace(/\s+/g, ' ').trim()})`); }
 { await p.evaluate(() => { try { localStorage.clear(); } catch (e) {} }); await p.goto('file://' + PAGE + '#team'); await p.reload(); await p.waitForTimeout(2200);
-  const t = await p.evaluate(() => document.querySelector('#main').innerText); ok(/After 5 logged games, Build for Me weighs your own results/.test(t), 'Player review 2b (Nov 17): empty Your Games says what logging unlocks'); }
+  const t = await p.evaluate(() => document.querySelector('#main').innerText); ok(/After 5 logged games, Build Me a Team weighs your own results/.test(t), 'Player review 2b (Nov 17): empty Your Games says what logging unlocks'); }
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(1800); await p.evaluate(() => V2.openSearch()); await p.fill('[data-v2q]', 'trick room'); await p.waitForTimeout(400);
   const hits = await p.evaluate(() => [...document.querySelectorAll('[data-v2hits] .np-hit')].map(h => h.innerText.replace(/\s+/g, ' ').trim()));
   ok(hits.some(h => /^Move Trick Room/.test(h)) && hits.some(h => /^Team style Trick Room/.test(h)), `Player review 2c (Nov 17): site search finds the move and the team style 'Trick Room' (${hits.slice(0, 4).join(' | ')})`);
@@ -226,6 +226,15 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
       const T = t.closest('.ra-sub').getBoundingClientRect(); return [Math.round(T.top + scrollY), Math.round(T.top - h.getBoundingClientRect().bottom)]; })]); }
   await p.setViewportSize({width: 1280, height: 900}); const ys = tt.map(x => x[1][0]);
   ok(Math.max(...ys) <= 450 && tt.every(x => x[1][1] >= 0 && x[1][1] <= 24), `Sim (Nov 17, Q2 recommended): on phones the Pokémon / Tournaments tabs come right after the headline and intro line on every Meta page (${tt.map(x => x[0] + ' ' + x[1][0] + ' (+' + x[1][1] + ')').join(', ')} px)`); }
+{ const ch = []; for (const w of [320, 390, 599, 700, 1280]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#speed'); await p.waitForTimeout(1500);
+    ch.push(await p.evaluate(w => { const cs = [...document.querySelectorAll('.sp2 .np-chip')].filter(c => c.getClientRects().length), sizes = [...new Set(cs.map(c => getComputedStyle(c).fontSize))];
+      const wx = [...document.querySelectorAll('.sp2-wx .np-chip')], rows = {}; wx.forEach(c => { const t = Math.round(c.getBoundingClientRect().top); rows[t] = (rows[t] || 0) + 1; }); const r = Object.values(rows);
+      return [w, sizes.join('/'), r.join('+')]; }, w)); }
+  await p.setViewportSize({width: 1280, height: 900});
+  ok(ch.every(x => !x[1].includes('/')) && ch.filter(x => x[0] < 600).every(x => new Set(x[2].split('+')).size === 1), `Audit v199 #12 (Nov 17): Speed Tiers chips are one size, and on phones the weather chips fill even rows (${ch.map(x => x[0] + ': ' + x[1] + ', rows ' + x[2]).join('; ')})`); }
+{ const wl = []; await p.setViewportSize({width: 1280, height: 900}); for (const r of ['battle', 'team', 'weekly', 'method']) { await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1500);
+    wl.push(...await p.evaluate(r => { const t = document.querySelector('#main').textContent; return [[/Build for Me\b/, 'Build for Me'], [/Count abilities/, 'Count abilities'], [/items, moves and abilities/, 'abilities (lower case)'], [/in the checklist/, 'the checklist']].filter(([re]) => re.test(t)).map(x => r + ': ' + x[1]); }, r)); }
+  ok(!wl.length, `Audit v199 #16 (Nov 17): word-list names on Battle, My Team, This Week and How We Calculate (Build Me a Team, Abilities, Team Checks) (slips: ${wl.join(', ') || 'none'})`); }
 { const sp = []; for (const [w, r] of [[390, 'build'], [390, 'speed'], [1280, 'calc'], [1280, 'battle'], [390, 'team']]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1800);
     sp.push(await p.evaluate(() => { const im = [...document.querySelectorAll('#main img[src*=".webp"]')].filter(i => i.getClientRects().length); const sm = im.filter(i => i.getAttribute('src').includes('-s/'));
       const big = sm.filter(i => { const m = i.closest('.np-mon'), iw = m ? parseFloat(((m.getAttribute('style') || '').match(/--iw:([\d.]+)px/) || [])[1]) : NaN; return m && !(iw <= 80); }); return [sm.length, big.length]; })); }
