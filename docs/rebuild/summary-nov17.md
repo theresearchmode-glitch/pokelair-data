@@ -74,6 +74,7 @@ Checked: one setting exists (PAGE_REG = 'M-C'), but "M-C" is typed out 65 times 
 Size: medium (a day of careful work + tests). Nothing starts without your yes.
 
 ## Where this conflicts with earlier rules or decisions
+- CORRECTED (Sim, Nov 17): I had read the Nov 9 "finish before adding" rule as a ban on new features; it was about the redesign process and working systems. 4a and the before-launch ideas are not blocked by it; you pick when. Earlier wording below kept for the record:
 - Nov 9 "no new features until finished": review section 4 asks for additions; I did the ones that fix wrong or missing information
   (4b +1, 4c) and put the new controls (4a, 4e) to you.
 - RULES.md "no design decision without Sim's yes and pictures": under your authority I made small looks (loading screen, mirror label,

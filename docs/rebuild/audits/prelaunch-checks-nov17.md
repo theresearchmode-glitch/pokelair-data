@@ -66,6 +66,6 @@ parked by Sim's Nov 9 rule until she says), NO CHANGE (checked).
 ## Where this meets earlier rules or decisions (for Sim)
 - 3a-3d are January launch work, parked by Sim's Nov 9 rule ("the January launch work is parked until Sim says"). Listed,
   not started.
-- 6a-6c and 6e add messages inside existing tools: small additions, against the Nov 9 "no new features until finished"
+- 6a-6c and 6e add messages inside existing tools: small additions (the Nov 9 rule doesn't block them: Sim clarified Nov 17 it was about the redesign process)
   rule only loosely (they finish Import rather than add a tool); doing them under "recommended for all".
 - 4 needs Sim's plan; a proposal goes in the summary.

@@ -211,8 +211,10 @@ One name per idea, everywhere on the site:
 
 ## Focus and honesty (Sim, Nov 9)
 After Claude's honest review, Sim agreed:
-- No new features until what we have is finished and refined (Sim, Nov 9). Work = finishing, fixing and refining what
-  exists (Team Sheet, share image, the grade) and the process fixes. (Darkrai's Preview spot is gone: replaced by the featured
+- Finish before adding (Sim, Nov 9; clarified Nov 17): this was about the redesign process and making sure the site's systems
+  work well, not a ban on new features. While a system is being rebuilt or fixed, finish and test it before adding to it. New
+  features are welcome as planned steps on the Plans page (Sim decides which and when); don't use this rule to block or defer
+  them. Work then (Nov 9) = finishing, fixing and refining what existed (Team Sheet, share image, the grade) and the process fixes. (Darkrai's Preview spot is gone: replaced by the featured
   underdog, see above; Shady Paw is cut.)
 - Multitask where it helps (Sim, Nov 9): look-only work (sweeps, measurements, background runs) can run alongside a change; always
   tell Sim when we are multitasking. Changes themselves stay one at a time:

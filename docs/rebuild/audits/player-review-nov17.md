@@ -44,7 +44,7 @@ KO Board, Test Run's piles, Track Record.
 - 3j FIXED My Box first visit: 36 Pokémon unlabelled while the team says "(sample)": label it if it's a sample box. Checked: a first visit gets DEFAULT_BOX (01-state.js). While the box is unchanged: "36 Pokémon (sample) · 2 boxes" and "A sample box to start with: add the Pokémon you own and remove the rest." Any change drops it. Test: v2-minors 3j (fails before, passes after); A-team BOX test accepts both. Pictures: pics/nov17/box-sample-{390,1280}-{before,after}.png.
 
 ## 4. Missing inside existing tools
-- 4a FOR SIM Battle Their Six: tap-to-pick grid of the 30 most common Pokémon. A new control inside Battle; Sim's Nov 9 rule says no new features until what we have is finished. Recommendation: after the switch (why: it adds, it doesn't fix).
+- 4a FOR SIM Battle Their Six: tap-to-pick grid of the 30 most common Pokémon. Not blocked by any rule (Sim, Nov 17: the Nov 9 'finish before adding' rule was about the redesign process, not new features). Sim picks when; recommendation: build it once Step 1's checks are done, so the switch isn't delayed.
 - 4b FIXED Speed Tiers: your own +1, Unburden after the item, their Choice Scarf. Checked in code: Unburden already shows a second, doubled
   number once the item is used, and an opponent's Scarf speed is already used when Scarf is its top item. Added the missing one: a "You +1"
   chip (your six one Speed stage up, stage first, then items and Tailwind, as the game does; the speed-target tip turns off, as for the
@@ -66,7 +66,7 @@ KO Board, Test Run's piles, Track Record.
 - 4e FOR SIM Events "Next Events": Add to calendar. Needs a calendar-file download; the Preview declares no downloads permission and I'm unsure a plain download works inside the Claude page (not tested). Recommendation: build it with the public site in January (why: it works there for sure).
 
 ## Where this meets earlier rules or decisions (for Sim)
-- Sim, Nov 9: "No new features until what we have is finished". Section 4 adds pieces inside existing tools; the reviewer
+- (Corrected Nov 17: Sim's Nov 9 rule was about the redesign process and working systems, not a ban on new features; I had applied it too broadly.) Section 4 adds pieces inside existing tools; the reviewer
   calls them gaps, not new tools. Sim, Nov 17: "go about it as you see best fit" (worked on after 1-3, Preview only).
 - RULES.md: no design or visual decision without Sim's yes and pictures. Everything here goes to the Preview with pictures
   and waits for her before live.
