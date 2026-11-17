@@ -2,13 +2,31 @@
 // Sim's pick: 'Scoreboard + match cards' (mock-ups docs/rebuild/mocks/gauntlet, A). The logic is today's shared code
 // (38-gauntlet-data.js: gauntletTeams, gauntletScore, gauntletPrep); the rows, sort, counts and words follow today's renderGauntlet.
 V2.trCache = {key: null, rows: null};
-V2.trRows = ms => { const T = gauntletTeams(); if (!T.length) return [];
-  const key = metaVersion + '|' + ms.map(m => m.p.n + '/' + m.ability + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',') + '~' + spreadKey(m)).join('|'); /* nature + stat points too (code review A1-I2) */
-  if (V2.trCache.key !== key) V2.trCache = {key, rows: T.map((t, ix) => { const names = t.mons.filter(n => byName.get(n)), theirs = names.map(n => byName.get(n)).map(oppMember); if (theirs.length < 4) return null;
-    const g = gauntletScore(ms, theirs, true); let pr = null; try { pr = gauntletPrep(ms, names); } catch (e) { pr = null; }
+V2.trKey = ms => metaVersion + '|' + ms.map(m => m.p.n + '/' + m.ability + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',') + '~' + spreadKey(m)).join('|'); /* nature + stat points too (code review A1-I2) */
+// one top team's row: the verdicts of your six against it (null when fewer than 4 of its Pokémon are known)
+V2.trOne = (ms, t, ix, half) => { const names = t.mons.filter(n => byName.get(n)), theirs = names.map(n => byName.get(n)).map(oppMember); if (theirs.length < 4) return null;
+    const g = half && half.g || gauntletScore(ms, theirs, true); if (half && !half.g) { half.g = g; return undefined; } /* the warm-up does it in two short steps */
+    let pr = null; try { pr = gauntletPrep(ms, names); } catch (e) { pr = null; }
     const un = pr ? pr.you.map((r, j) => r.level === 0 ? j : -1).filter(j => j >= 0) : g.loose;
-    return {ix, t, theirs, pr, un, r: g.r, e: pr ? pr.yN - pr.tN : 0}; }).filter(Boolean).sort((a, b) => a.e - b.e)};
+    return {ix, t, theirs, pr, un, r: g.r, e: pr ? pr.yN - pr.tN : 0}; };
+V2.trRows = ms => { const T = gauntletTeams(); if (!T.length) return [];
+  const key = V2.trKey(ms), w = V2.trWarmC && V2.trWarmC.key === key ? V2.trWarmC.done : null; /* rows already worked out while the page was idle */
+  if (V2.trCache.key !== key) V2.trCache = {key, rows: T.map((t, ix) => w && w.has(ix) ? w.get(ix) : V2.trOne(ms, t, ix)).filter(Boolean).sort((a, b) => a.e - b.e)};
   return V2.trCache.rows; };
+/* code review B-I5 (Nov 17): Test Run's first draw worked out all 20 matchups at once (182 ms here, about 700 ms on a mid-range phone).
+   While the visitor is on another Battle page (one tap from Test Run), the rows are worked out ahead in short idle steps (two per
+   team), never while they scroll, tap or type; opening Test Run then uses them. Nothing on screen changes. */
+V2.trWarmC = null;
+V2.trWarm = () => { try { const P = V2.pages[V2.route()]; if (document.hidden || V2.route() === 'gauntlet' || !P || P.place !== 'battle' || typeof members !== 'function') return; /* only on the Battle pages, one tap from Test Run */ const ms = members(); if (ms.length !== 6) return;
+    const T = gauntletTeams(); if (!T.length) return; const key = V2.trKey(ms); if (V2.trCache.key === key) return;
+    if (!V2.trWarmC || V2.trWarmC.key !== key) V2.trWarmC = {key, done: new Map(), busy: false}; const W = V2.trWarmC; if (W.busy || W.done.size >= T.length) return; W.busy = true;
+    const later = f => typeof requestIdleCallback === 'function' ? requestIdleCallback(f, {timeout: 2000}) : setTimeout(f, 50);
+    const step = () => { if (V2.trWarmC !== W) return; if (Date.now() - V2.trBusyAt < 600) { setTimeout(() => later(step), 400); return; }
+      if (V2.trKey(members()) !== key) { W.busy = false; return; } const ix = T.findIndex((t, i) => !W.done.has(i)); if (ix < 0) { W.busy = false; return; }
+      try { if (!W.half || W.half.ix !== ix) W.half = {ix}; const row = V2.trOne(members(), T[ix], ix, W.half); if (row !== undefined) { W.done.set(ix, row); W.half = null; } } catch (e) { W.done.set(ix, null); W.half = null; } later(step); };
+    later(step); } catch (e) {} };
+V2.trBusyAt = 0; for (const ev of ['scroll', 'wheel', 'pointerdown', 'keydown', 'input']) addEventListener(ev, () => { V2.trBusyAt = Date.now(); }, {passive: true, capture: true});
+setInterval(V2.trWarm, 4000);
 V2.trCp = n => { const m = (typeof ART_META === 'object' && ART_META[SPRITE_ID[n]]) || [150, 150, 165]; return `${m[0]},${m[1]},${m[2]}`; };
 V2.trUi = {more: false};
 TIPS.gauntcalc = ['How each verdict is worked out', "Each verdict is a real damage calc with your sets against each team's usual sets, the same as the Matchups on My Team. The suggested four come from the Battle planner. Least prepared matchups first."];
