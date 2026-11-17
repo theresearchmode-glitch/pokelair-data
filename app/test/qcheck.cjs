@@ -2,7 +2,7 @@
 // run for every page by app/test/qcheck-all.mjs. QALL=1 prints every finding (else the first 12).
 // Quality check for one page state: every element contained, no text overlapping text, sizes on the scale, tap targets on touch.
 // env: PF (page file), HASH, SETUP (js run in page, may return a promise), ROOT (selector, default #main), WIDTHS, THEMES
-const {chromium}=require('playwright');(async()=>{const W=(process.env.WIDTHS||'320,360,390,430,600,820,1024,1100,1280,1440,1920').split(',').map(Number),TH=(process.env.THEMES||'day,night').split(',');
+const PW=require('playwright'),chromium=process.env.BROWSER==='webkit'?PW.webkit:PW.chromium; /* BROWSER=webkit: Safari's engine (Nov 17) */(async()=>{const W=(process.env.WIDTHS||'320,360,390,430,600,820,1024,1100,1280,1440,1920').split(',').map(Number),TH=(process.env.THEMES||'day,night').split(',');
 const b=await chromium.launch();let total=0;
 for(const th of TH)for(const w of W){const touch=w<1100;const ctx=await b.newContext({viewport:{width:w,height:900},hasTouch:touch,isMobile:touch&&w<700});const p=await ctx.newPage();const errs=[];p.on('pageerror',e=>errs.push(e.message));
  await p.addInitScript(()=>{window.__PL_TEST=1});await p.addInitScript(t=>{try{localStorage.setItem('np2.theme',t)}catch(e){}},th);
