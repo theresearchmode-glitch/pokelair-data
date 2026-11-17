@@ -10,6 +10,8 @@ ok(r.status === 0, 'the public build runs');
 const h = fs.readFileSync(OUT, 'utf8');
 ok(!/__ev\s*=/.test(h) && !/\beval\(/.test(h), 'no test hook (no __ev, no eval) in the page');
 ok(!h.includes('__NP_PREVIEW=1'), 'no Preview data or stand-ins in the page');
+{ const js = [...h.matchAll(/<script>([\s\S]*?)<\/script>/g)].map(x => x[1]).join('\n'), c = (js.match(/\/\* /g) || []).length + (js.match(/^\s*\/\/ /mg) || []).length;
+  ok(c < 10, `the scripts ship without their comments (code review B-I1; ${c} comment marks left, about 2,700 before)`); }
 const b = await chromium.launch(), p = await b.newPage({viewport: {width: 1280, height: 900}}), errs = [];
 p.on('pageerror', e => errs.push(String(e))); await p.addInitScript(() => { window.__PL_TEST = 1; });
 await p.goto('file://' + OUT + '#home'); await p.waitForTimeout(2500);
