@@ -145,7 +145,9 @@ concept Sim sent on Nov 10 (hero, Strength Score, pairs, team preview, speed, th
 - This replaces the Nov 10 decision "colour pools only on the Home hero and the Strength Score": Sim's word wins.
 - Built so scrolling stays smooth on Sim's Windows desktop (the reason glow was limited before): pools are static
   radial gradients painted once per scene (no CSS filter: blur, no backdrop-filter, no box-shadow glows on sprites, no
-  animation tied to scroll, no will-change on filtered sprites), each scene isolated (contain: paint). The old rule "sprite
+  animation tied to scroll, no will-change on filtered sprites). Scenes are NOT isolated with contain: paint (measured Nov 17,
+  experiments/contain-check.mjs: it changed 19,884-75,330 pixels per page at 390 wide, because glows spill past their section on
+  purpose, and scrolling was already at 60 frames a second with or without it in the headless check). The old rule "sprite
   glow off on mouse screens" was about drop-shadow FILTERS on every sprite and stays; scene glow is a different, cheap
   technique. Measured against docs/rebuild/baseline.json before it ships; if a page scrolls worse, the pools get cheaper
   (smaller, fewer stops), never removed.

@@ -1,6 +1,6 @@
 // B-m4 look-only experiment (code review, Nov 17): does isolating each page section (contain: paint) change any pixel, and does
 // it make scrolling cheaper? Injects the CSS at run time (no site change). For each page x width, night theme:
-//   pixels: full-page screenshot without vs with; counts differing pixels (any channel differs by > 8)
+//   pixels: full-page screenshot without vs with (both from the top, after a scroll pass; plus the same page shot twice as the noise floor); counts differing pixels (any channel differs by > 8)
 //   scroll: 4x CPU throttle, scrolls 40 px a frame for 150 frames, frame time mean and 95th percentile (headless estimate only)
 // Usage: PAGE=app/dist/v2.html node experiments/contain-check.mjs
 import {chromium} from 'playwright'; import path from 'node:path';
@@ -21,9 +21,10 @@ const scroll = async pg => { const s = await pg.context().newCDPSession(pg); awa
 for (const w of WIDTHS) for (const rt of ROUTES) {
   const pg = await b.newPage({viewport: {width: w, height: 900}}); await pg.addInitScript(() => { try { localStorage.setItem('cc2.theme', '"night"'); } catch (e) {} });
   await pg.goto('file://' + PAGE + '#' + rt); await pg.waitForTimeout(3000); await pg.evaluate(() => { document.documentElement.dataset.theme = 'night'; }); await pg.waitForTimeout(400);
-  const a = 'data:image/png;base64,' + (await pg.screenshot({fullPage: true})).toString('base64'); const s0 = await scroll(pg);
+  const s0 = await scroll(pg); await pg.evaluate(() => scrollTo(0, 0)); await pg.waitForTimeout(400);
+  const a = 'data:image/png;base64,' + (await pg.screenshot({fullPage: true})).toString('base64'), a2 = 'data:image/png;base64,' + (await pg.screenshot({fullPage: true})).toString('base64');
   await pg.addStyleTag({content: CSS}); await pg.waitForTimeout(400);
-  const c = 'data:image/png;base64,' + (await pg.screenshot({fullPage: true})).toString('base64'); const s1 = await scroll(pg);
-  const n = await diff(pg, a, c); const secs = await pg.evaluate(() => document.querySelectorAll('#main > *').length);
-  console.log(`${rt.padEnd(14)} ${String(w).padStart(4)}  sections ${secs}  pixels changed ${n}  scroll ms/frame without ${s0.mean} (p95 ${s0.p95}) with ${s1.mean} (p95 ${s1.p95})`); await pg.close(); }
+  await pg.evaluate(() => scrollTo(0, 0)); await pg.waitForTimeout(400); const c = 'data:image/png;base64,' + (await pg.screenshot({fullPage: true})).toString('base64'); const s1 = await scroll(pg);
+  const n = await diff(pg, a, c), noise = await diff(pg, a, a2); const secs = await pg.evaluate(() => document.querySelectorAll('#main > *').length);
+  console.log(`${rt.padEnd(14)} ${String(w).padStart(4)}  sections ${secs}  pixels changed ${n} (same page twice: ${noise})  scroll ms/frame without ${s0.mean} (p95 ${s0.p95}) with ${s1.mean} (p95 ${s1.p95})`); await pg.close(); }
 await b.close();
