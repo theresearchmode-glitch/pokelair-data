@@ -161,9 +161,10 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   await q.waitForTimeout(3500); const ord = (await q.evaluate(() => window.__ord.slice(0, 3))).join(' > ');
   ok(/^ratings > draw/.test(ord), `Speed fix 2 (Nov 17, pre-launch 2c): when today's numbers arrive the ratings are worked out as their own step before the page is drawn (${ord})`); await ctx.close(); }
 { await p.goto('file://' + PAGE + '#about'); await p.waitForTimeout(2500);
-  const st = await p.evaluate(() => window.__ev(`(() => { const mf = memberFrom; let n = 0; memberFrom = function () { n++; return mf.apply(this, arguments); };
-    try { const g = planFixesG(members(), suggestPool(), true); g.next(); return n; } finally { memberFrom = mf; } })()`));
-  ok(st > 0 && st <= 30, `Speed fix 3 (Nov 17, pre-launch 2d): the planner's first step builds at most 30 candidates, not the whole pool at once (${st} built)`); }
+  const st = await p.evaluate(() => window.__ev(`(() => { const mf = memberFrom, pn = performance.now; let n = 0, fake = pn.call(performance); memberFrom = function () { n++; return mf.apply(this, arguments); };
+    performance.now = () => (fake += 10); /* a slow phone: every clock reading 10 ms later */
+    try { const g = planFixesG(members(), suggestPool(), true); g.next(); return n; } finally { memberFrom = mf; performance.now = pn; } })()`));
+  ok(st > 0 && st <= 5, `Speed fix 3 (Nov 17, pre-launch 2d): on a slow clock the planner's first step stops after a few candidates (pauses by time, not by count; ${st} built)`); }
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500);
   const rn = await p.evaluate(() => window.__ev(`(() => { const R = {id: 'M-C', since: '2026-09-01', now: {id: 'M-D', since: '2026-12-02', events: 3, need: {events: 20}}}, P = META.perf, o1 = META.reg, o2 = P && P.reg; META.reg = R; if (P) P.reg = R; try { return V2.dataNote().replace(/<[^>]+>/g, ''); } finally { META.reg = o1; if (P) P.reg = o2; } })()`));
   ok(/3 Reg M-D events so far, switches at 20\./.test(rn), `Known-bug SHELL-05 (Nov 17): the new-regulation note says how far along it is (${String(rn).slice(0, 200)})`); }

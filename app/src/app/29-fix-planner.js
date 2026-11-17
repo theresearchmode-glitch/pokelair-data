@@ -130,6 +130,8 @@ const swKeyOf=()=>S.slots.map(x=>[x.n||'',JSON.stringify(x.mv||null),JSON.string
 function swOutNow(){if(!ui.swOut||!ui.swOut.size)return null;if(ui.swKey==null)ui.swKey=swKeyOf();if(ui.swKey!==swKeyOf()){ui.swOut=null;return null}return ui.swOut}
 function planFixes(ms,pool,useA,opts){const g=planFixesG(ms,pool,useA,opts);let r;do r=g.next();while(!r.done);return r.value}
 function* planFixesG(ms,pool,useA,opts){
+  // speed (Nov 17, pre-launch 2d): every loop below pauses once about 25 ms have passed (a phone's scroll frame budget), same order, same results
+  let t0=performance.now();const due=()=>performance.now()-t0>25,rs=()=>{t0=performance.now()};
   const maxMega=megaGoal();const full=ms.length===6;
   const emptyIdx=S.slots.map((s,i)=>byName.get(s.n)?-1:i).filter(i=>i>=0);
   const base=stateScore(ms,useA);
@@ -139,9 +141,9 @@ function* planFixesG(ms,pool,useA,opts){
   // evidence floor (Oct 28 audit): suggestions come from Pokémon real players actually run, unless you ask for off-meta.
   // Best of ladder/tournament usage and the share of Limitless teams: 2%+, or 0.5%+ for Pokémon in your box, whichever pool is
   // picked (sweep, Oct 31: Box + catch dropped your own box Pokémon that My box offered, so the bigger pool gave worse plans).
-  // speed (Nov 17, pre-launch 2d): built in pieces with a pause every 30 Pokémon (the whole pool at once was a 200 ms step on a phone); same list, same order
+  // speed (Nov 17, pre-launch 2d): built in pieces (the whole pool at once was a 200 ms step on a phone); same list, same order
   const swo=swOutNow(),cands=[];{let k=0;for(const p of pool){if(!(!ms.some(m=>m.base===p.b)&&!(swo&&swo.has(p.b))&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)?.5:2))))continue;const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
-    cands.push({p,mem:{...mm,i:-1,p,d:p.d,moves:pm,_mv:pm.some(isCoverage)?pm:[]}});if(++k%30===0)yield}}
+    cands.push({p,mem:{...mm,i:-1,p,d:p.d,moves:pm,_mv:pm.some(isCoverage)?pm:[]}});if(due()){yield;rs()}}}
   // never more Megas than the goal, or (when the team is already over it: Megas on team 0 with a Mega in) than it has now
   const mega0=ms.filter(m=>m.mega).length,legal=(team)=>{const n=team.filter(m=>m.mega).length;return n<=maxMega||n<=mega0};
   const singles=[];
@@ -149,7 +151,7 @@ function* planFixesG(ms,pool,useA,opts){
   for(const c of cands){
     if(!full&&emptyIdx.length){const t=[...ms,c.mem];if(legal(t))singles.push({ch:[{out:null,slot:emptyIdx[0],c}],team:t})}
     if(full)for(const m of ms){if(!canOut(m))continue;if(m.mega&&!c.p.m&&!swapMega)continue;
-      const t=ms.map(x=>x===m?{...c.mem,i:m.i}:x);if(legal(t))singles.push({ch:[{out:m,slot:m.i,c}],team:t})}}
+      const t=ms.map(x=>x===m?{...c.mem,i:m.i}:x);if(legal(t))singles.push({ch:[{out:m,slot:m.i,c}],team:t})}if(due()){yield;rs()}}
   // Lower is better: the team's model score (teamValue), plus the type-balance emphasis (typeEmphasis),
   // a cost for losing an active archetype, and a small cost per change so plans stay minimal.
   // Mega goal: every Mega the finished team would still be short of costs a lot, so plans that bring one in rise to the top
@@ -169,9 +171,9 @@ function* planFixesG(ms,pool,useA,opts){
   const ip0=typeof itemProblemCount==='function'?itemProblemCount(ms):0;
   const ipOf=pl=>{if(pl._ip===undefined)pl._ip=typeof itemProblemCount==='function'?itemProblemCount(pl.team):0;return pl._ip};
   const keepOK=pl=>ipOf(pl)<=ip0&&(OFFMETA||pl.ch.every(x=>!x.out||U(x.out.p)<15||evidPct(x.c.p)>=5));
-  {const keep=singles.filter(keepOK);singles.length=0;singles.push(...keep)}
+  {const keep=[];for(const pl of singles){if(keepOK(pl))keep.push(pl);if(due()){yield;rs()}}singles.length=0;singles.push(...keep)}
   const basePl=evalPlan({ch:[],team:ms});
-  for(const pl of singles){evalPlan(pl);yield}singles.sort((x,y)=>x.score-y.score);
+  for(const pl of singles){evalPlan(pl);yield;rs()}singles.sort((x,y)=>x.score-y.score);
   if(opts&&opts.singlesOnly)return {singles,basePl,base,full};
   // two changes, built from the strongest single changes
   // best 8 single changes per slot, so two-change plans can combine fixes for different slots
@@ -181,8 +183,8 @@ function* planFixesG(ms,pool,useA,opts){
     if(A.c.p.b===B.c.p.b)continue;
     if(A.out&&B.out){if(A.out===B.out)continue;const t=ms.map(x=>x===A.out?{...A.c.mem,i:x.i}:x===B.out?{...B.c.mem,i:x.i}:x);if(legal(t))doubles.push({ch:[{...A},{...B}],team:t})}
     else if(!A.out&&!B.out&&emptyIdx.length>=2){const t=[...ms,A.c.mem,B.c.mem];if(legal(t))doubles.push({ch:[{...A,slot:emptyIdx[0]},{...B,slot:emptyIdx[1]}],team:t})}}
-  yield;{const keep=[];let k=0;for(const pl of doubles){if(keepOK(pl))keep.push(pl);if(++k%25===0)yield}doubles.length=0;doubles.push(...keep)} /* speed (Nov 17): pauses inside, same plans kept */
-  for(const pl of doubles){evalPlan(pl);yield}
+  yield;rs();{const keep=[];for(const pl of doubles){if(keepOK(pl))keep.push(pl);if(due()){yield;rs()}}doubles.length=0;doubles.push(...keep)} /* speed (Nov 17): pauses inside, same plans kept */
+  for(const pl of doubles){evalPlan(pl);yield;rs()}
   const clean=base.a.excess===0&&!base.a.unresisted.length;
   // a plan must never make the type rating worse, and must beat the current team by a clear margin
   // and must never take away the team's speed control or start a weather clash
