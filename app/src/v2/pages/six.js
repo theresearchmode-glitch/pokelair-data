@@ -8,7 +8,7 @@ V2.noteWord = n => n === 'most run' ? 'most used' : n;
 // The Hand (Sim's pick, Nov 14; brief docs/rebuild/mocks/my-team-hand/BRIEF.md, section 2), piece 2: a full team's six as Cards (the info
 // sheet's ms-card) in Lead / Back / Bench, each with its rating plate and, under it, the item, the Ability and the four moves as bars.
 // Tapping a Card picks it (data-tmsel, as today's tiles). Teams of one to five keep today's tiles until Sim has seen pictures (brief s7).
-V2.handHtml = (D, sel) => { const {ms, L} = D, E = V2.esc, role = m => ms.length < 6 ? `spot ${m.i + 1}` : L.lead.includes(m) ? 'Lead' : L.back.includes(m) ? 'Back' : 'Bench'; /* no role is said until all six are in */
+V2.handHtml = (D, sel, strip) => { const {ms, L} = D, E = V2.esc, role = m => ms.length < 6 ? `spot ${m.i + 1}` : L.lead.includes(m) ? 'Lead' : L.back.includes(m) ? 'Back' : 'Bench'; /* no role is said until all six are in */
   const card = m => { const k = ms.indexOf(m), on = m === sel, lk = !!(S.slots[m.i] && S.slots[m.i].lock), R = monRating(m.p), it = m.heldItem || m.item || 'No item';
     const lock = lk ? '<svg class="sx-lk" viewBox="0 0 24 24" role="img" aria-label="Locked"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M9 11V8a3 3 0 0 1 6 0v3"/></svg>' : '';
     const mv = m.moves.filter(Boolean).map(v => { const ty = V2.TYPES.includes(v.type) ? v.type : 'Normal'; return `<li style="--tc:var(--ty-${ty})">${E(v.name)}</li>`; }).join('');
@@ -19,9 +19,9 @@ V2.handHtml = (D, sel) => { const {ms, L} = D, E = V2.esc, role = m => ms.length
   // Sim, Nov 15 (night, 2nd): while the team is being built (one to five) nothing is labelled Lead / Back / Bench: the six spots in the
   // player's own order, empty ones as 'Add' Cards (the same name box, data-v2addto); the roles are worked out once all six are in
   if (ms.length < 6) { const at = i => ms.find(m => m.i === i), add = i => `<div class="sx-slot mh-slot mh-empty"><button type="button" class="sx-add mh-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="mh-addart" aria-hidden="true">+</span><b class="u">Add</b><small>Spot ${i + 1}</small></button></div>`;
-    return `<div class="mh-hand mh-build"><div class="sx-grp mh-grp" role="group" aria-label="Your six"><p class="mh-gh"><b class="u">Your Six</b><span>${ms.length} of 6 in. Lead, Back and Bench are worked out once all six are in.</span></p><div class="mh-pair mh-six">${[0, 1, 2, 3, 4, 5].map(i => at(i) ? card(at(i)) : add(i)).join('')}</div></div></div>`; }
+    return `<div class="mh-hand mh-build"><div class="sx-grp mh-grp" role="group" aria-label="Your six"><p class="mh-gh"><b class="u">Your Six</b><span>${ms.length} of 6 in. Lead, Back and Bench are worked out once all six are in.</span></p><div class="mh-pair mh-six">${(() => { const cols = innerWidth < 700 ? 2 : 3, si = strip && sel ? sel.i : -1, end = si < 0 ? -1 : Math.min(5, Math.floor(si / cols) * cols + cols - 1); return [0, 1, 2, 3, 4, 5].map(i => (at(i) ? card(at(i)) : add(i)) + (i === end ? strip : '')).join(''); })()}</div></div></div>`; }
   const G = [['Lead', 'start the battle', L.lead], ['Back', 'come in next', L.back], ['Bench', 'stay out this game', L.bench]];
-  return `<div class="mh-hand">${G.map(([name, note, g]) => `<div class="sx-grp mh-grp${name === 'Lead' ? ' lead' : ''}" role="group" aria-label="${name}"><p class="mh-gh" role="heading" aria-level="2"><b class="u">${name}</b><span>${note}</span></p><div class="mh-pair">${g.map(card).join('')}</div></div>`).join('')}</div>`; };
+  return `<div class="mh-hand">${G.map(([name, note, g]) => `<div class="sx-grp mh-grp${name === 'Lead' ? ' lead' : ''}" role="group" aria-label="${name}"><p class="mh-gh" role="heading" aria-level="2"><b class="u">${name}</b><span>${note}</span></p><div class="mh-pair">${g.map(card).join('')}</div></div>${strip && g.includes(sel) ? strip : ''}`).join('')}</div>`; };
 // The Hand, piece 3 (brief section 3): the editing strip replaces the Set section. Only what the Card does not show: its place in the plan,
 // nature and stat points with their "most run" notes; then Edit Set, Info Sheet, Set as Lead / Use NastyPlot's pick (today's buttons, not
 // drawn in the brief: picture for Sim), Lock, Remove. Same hooks as today (data-v2edit, data-v2mon, data-v2lead, data-v2lock, data-v2rm).
@@ -29,7 +29,7 @@ V2.editStripHtml = (D, sel) => { const {ms, L} = D, E = V2.esc; if (!sel || !ms.
   const rt = L.lead.length && ms.length === 6 ? roleText(sel, L, x => escName(x.d)) : '';
   return `<section class="mt-edit" id="tm-set" aria-label="Editing ${E(sel.d)}"><div class="mt-ename"><p class="mt-ek">Editing</p> <h2 class="u">${V2.nameHtml(sel.d)}</h2> ${rt ? `<p class="sx-rt">${rt}</p>` : ''}</div>
     <dl class="sx-kv mt-ekv">${N.nat ? `<div><dt>Nature</dt> <dd>${E(N.nat)}${N.natNote ? ` <small>${V2.noteWord(N.natNote)}</small>` : ''}</dd></div>` : ''}${N.words ? `<div><dt>Stat points</dt> <dd>${E(N.words)}${N.ptsNote ? ` <small>${V2.noteWord(N.ptsNote)}</small>` : ''}</dd></div>` : ''}</dl>
-    ${(() => { const mv = sel.moves.filter(Boolean); return mv.length ? `<ul class="mh-mv mt-emv" aria-label="Moves">${mv.map(v => { const ty = V2.TYPES.includes(v.type) ? v.type : 'Normal'; return `<li style="--tc:var(--ty-${ty})">${E(v.name)}</li>`; }).join('')}</ul>` : ''; })()}<div class="mt-eacts"><button type="button" class="np-btn2" data-v2edit="${sel.i}"><span>Edit Set</span></button><button type="button" class="np-link sx-info" data-v2mon="${E(sel.p.n)}">Pokémon Page ›</button>${lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : ''}${L.by === 'you' ? `<button type="button" class="sx-a sx-reset" data-v2lead="">Use NastyPlot's Pick</button>` : ''}
+    ${(() => { const mv = sel.moves.filter(Boolean); return mv.length ? `<ul class="mh-mv mt-emv" aria-label="Moves">${mv.map(v => { const ty = V2.TYPES.includes(v.type) ? v.type : 'Normal'; return `<li style="--tc:var(--ty-${ty})">${E(v.name)}</li>`; }).join('')}</ul>` : ''; })()}<div class="mt-eacts"><button type="button" class="np-btn2" data-v2rep="${sel.i}" aria-label="Replace ${E(sel.d)}: pick the Pokémon to take its place"><span>Replace</span></button><button type="button" class="np-btn2" data-v2edit="${sel.i}"><span>Edit Set</span></button><button type="button" class="np-link sx-info" data-v2mon="${E(sel.p.n)}">Pokémon Page ›</button>${lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : ''}${L.by === 'you' ? `<button type="button" class="sx-a sx-reset" data-v2lead="">Use NastyPlot's Pick</button>` : ''}
       <button type="button" class="sx-a${lk ? ' on' : ''}" data-v2lock="${sel.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(sel.d)}: suggestions never swap out a locked Pokémon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg>${lk ? 'Unlock' : 'Lock'}</button><button type="button" class="sx-a" data-v2rm="${sel.i}" aria-label="Remove ${E(sel.d)} from your team"><i aria-hidden="true">−</i>Remove</button></div></section>`; };
 V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
   const ord = [...L.lead, ...L.back, ...L.bench], role = m => L.lead.includes(m) ? 'Lead' : L.back.includes(m) ? 'Back' : 'Bench';
@@ -51,7 +51,14 @@ V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
       + `<button type="button" class="sx-a${lk ? ' on' : ''}" data-v2lock="${sel.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(sel.d)}: suggestions never swap out a locked Pokémon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg>${lk ? 'Unlock' : 'Lock'}</button>`
       + (lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : '')
       + `</div></div>`; })() : ''; // Edit Set lives only in the Set section (Sim, Nov 12: "your recommendation"; rule C3, nothing twice)
-  return `<div class="tm-six sx${V2.isHand(D) ? ' mh' : ''}">${V2.isHand(D) ? V2.handHtml(D, sel) + V2.editStripHtml(D, sel) : `<div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${act}`}${plan}</div>`; };
+  return `<div class="tm-six sx${V2.isHand(D) ? ' mh' : ''}">${V2.isHand(D) ? (V2.mtInline() ? V2.handHtml(D, sel, V2.editStripHtml(D, sel)) : V2.handHtml(D, sel) + V2.editStripHtml(D, sel)) : `<div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${act}`}${plan}</div>`; };
+// Sim (Nov 17, B): under 1100px the Cards stack, so the editing panel opens right under the tapped Card's pair (full team) or row
+// (team being built) instead of under all six; from 1100px the six sit in one row and the panel stays right under it
+V2.mtInline = () => innerWidth < 1100;
+(() => { const band = () => innerWidth >= 1100 ? 2 : innerWidth >= 700 ? 1 : 0; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (V2.route && V2.route() === 'team') V2.redraw(); }, 120); }); })();
+// Replace: the Add box on a filled spot; picking swaps it in one step (Undo brings the old one back)
+V2.openReplace = i => { const m = memberOf(S.slots[i], i); if (!m) return V2.openAdd(i); V2.ed.i = i; V2.ed.rep = i; V2.sheet(V2.addHtml(i, m.d), {label: 'Replace ' + m.d, focus: '[data-adq]'}); };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2rep]'); if (b) V2.openReplace(+b.dataset.v2rep); });
 V2.isHand = D => D.ms.length >= 1 && !!D.L; /* any team of one to six (Sim, Nov 15 night); an empty team keeps its own empty screen */
 
 // the set card (TEAM-10; Sim, Nov 11: no second big picture, the six above already shows it on its floor ring): its place in the plan, the rating with its tier, item, Ability, nature and stat points (yours or what
@@ -82,11 +89,11 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
 // type, "In your box" and its share of tournament teams (useText). Arrow keys move, Enter adds, Escape closes the list only.
 // Picking adds it (today's addMon) and the sheet turns into that Pokémon's Edit Set. The sheet sits outside the page, so a redraw
 // while typing (the day's data arriving) never touches the text.
-V2.addHtml = i => `<div class="ed2 sx-addsh"><div class="np-eyebrow">Spot ${i + 1}</div><h2 class="u">Add a Pokémon</h2>
+V2.addHtml = (i, rep) => `<div class="ed2 sx-addsh"><div class="np-eyebrow">Spot ${i + 1}</div><h2 class="u">${rep ? 'Replace ' + V2.esc(rep) : 'Add a Pokémon'}</h2>
   <label class="np-field">${V2.ICON.search}<input type="search" data-adq="${i}" placeholder="Name, e.g. garch or mega sal" aria-label="Pokémon for spot ${i + 1}" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sx-hits"></label>
   <div class="hits sx-hits" id="sx-hits" role="listbox" aria-label="Matches" data-adhits></div>
-  <p class="fine sx-addhint">Type part of a name: a base name lists its forms and Mega too.</p></div>`;
-V2.openAdd = i => { V2.ed.i = i; V2.sheet(V2.editHtml(), {label: 'Add a Pokémon', focus: '[data-adq]'}); };
+  <p class="fine sx-addhint">${rep ? 'Pick the Pokémon to take its place. Undo brings ' + V2.esc(rep) + ' back.' : 'Type part of a name: a base name lists its forms and Mega too.'}</p></div>`;
+V2.openAdd = i => { V2.ed.i = i; V2.ed.rep = null; V2.sheet(V2.editHtml(), {label: 'Add a Pokémon', focus: '[data-adq]'}); };
 V2.ad = {list: [], k: 0};
 V2.adDraw = inp => { const out = document.querySelector('[data-adhits]'); if (!out) return; const q = inp.value.trim(), E = V2.esc;
   if (!q) { V2.ad = {list: [], k: 0}; out.innerHTML = ''; inp.setAttribute('aria-expanded', 'false'); return; }
@@ -97,7 +104,7 @@ V2.adDraw = inp => { const out = document.querySelector('[data-adhits]'); if (!o
 V2.adMove = (inp, d) => { const n = V2.ad.list.length; if (!n) return; V2.ad.k = (V2.ad.k + d + n) % n;
   document.querySelectorAll('[data-adhits] .sx-hit').forEach((o, k) => o.setAttribute('aria-selected', k === V2.ad.k)); inp.setAttribute('aria-activedescendant', 'sx-o' + V2.ad.k);
   const o = document.getElementById('sx-o' + V2.ad.k); if (o) o.scrollIntoView({block: 'nearest'}); };
-V2.adPick = (i, n) => { const p = byName.get(n); if (!p || !slotPool(i)(p) || memberOf(S.slots[i], i)) return; keepUndo(); addMon(i, p); render(); toast(p.d + ' added', true); /* code review C8: Undo, as adding from the Box has */ V2.ed.i = i; V2.edRefresh(); };
+V2.adPick = (i, n) => { const p = byName.get(n), was = memberOf(S.slots[i], i), rep = V2.ed.rep === i; if (!p || !slotPool(i)(p) || (was && !rep)) return; keepUndo(); addMon(i, p); V2.ed.rep = null; render(); toast(rep && was ? `Replaced ${was.d} with ${p.d}` : p.d + ' added', true); /* code review C8: Undo, as adding from the Box has */ V2.ed.i = i; V2.edRefresh(); };
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2addto]'); if (a) { V2.openAdd(+a.dataset.v2addto); return; }
   const o = e.target.closest && e.target.closest('[data-adpick]'), inp = document.querySelector('[data-adq]'); if (o && inp) V2.adPick(+inp.dataset.adq, o.dataset.adpick); });
 document.addEventListener('input', e => { if (e.target.matches && e.target.matches('[data-adq]')) V2.adDraw(e.target); });

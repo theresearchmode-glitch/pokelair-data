@@ -3186,6 +3186,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .mh-hand.mh-build{grid-template-columns:minmax(0,1fr)}.mh-build .mh-six{grid-template-columns:repeat(6,minmax(0,1fr))}.mh-build .mh-gh span{white-space:normal}
 @media (max-width:1099.98px){.mh-build .mh-six{grid-template-columns:repeat(3,minmax(0,1fr))}.mh-build .mh-slot{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699.98px){.mh-build .mh-six{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* Sim (Nov 17, B): the editing panel opens under the tapped Card's row and spans the whole row */
+.mh-six>.mt-edit,.mh-hand>.mt-edit{grid-column:1/-1;margin-top:0}
 /* 700-1099 with a long band word: name and score side by side, the buttons on their own row under them (V2.mtBeltFit; at 700 'Tournament'
    needed 188px in a 151px belt and ran into Update Team) */
 @media (min-width:700px) and (max-width:1099.98px){.tm-hero.mt.mt-wide .mt-head{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.tm-hero.mt.mt-wide .mt-right{grid-column:1/-1}}
