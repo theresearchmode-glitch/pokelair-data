@@ -195,10 +195,10 @@ document.addEventListener('focusin', e => { const t = e.target; try { if (!t.mat
   const r = t.getBoundingClientRect(), hd = document.querySelector('.np-head'), bar = document.querySelector('.np-bar'), top = (hd ? hd.getBoundingClientRect().bottom : 0) + 8,
     bot = (bar && getComputedStyle(bar).display !== 'none' ? bar.getBoundingClientRect().top : innerHeight) - 8;
   if (r.top < top) scrollBy(0, r.top - top); else if (r.bottom > bot && r.height < bot - top) scrollBy(0, r.bottom - bot); });
-V2.setTheme = t => { document.documentElement.dataset.theme = t; document.documentElement.dataset.look = t === 'night' ? 'dark' : 'light'; /* the shared share-image code reads data-look (code review C8) */ V2.LS.set('np2.theme', t); V2.redraw(); }; // in place: focus stays on Day/Night (A5)
+V2.setTheme = t => { V2._thLast = t; /* the observer below then knows this change is already redrawn (code review B-m1: it redrew twice) */ document.documentElement.dataset.theme = t; document.documentElement.dataset.look = t === 'night' ? 'dark' : 'light'; /* the shared share-image code reads data-look (code review C8) */ V2.LS.set('np2.theme', t); V2.redraw(); }; // in place: focus stays on Day/Night (A5)
 /* Sim, Nov 16: the theme can change without the theme button (the phone or app switching to dark on its own: head.html listens for it);
    whatever changes it, the page redraws once, so theme-drawn parts (the button's label, Build's lighting) follow */
-try { let last = document.documentElement.dataset.theme; new MutationObserver(() => { const t = document.documentElement.dataset.theme; if (t === last) return; last = t;
+try { V2._thLast = document.documentElement.dataset.theme; new MutationObserver(() => { const t = document.documentElement.dataset.theme; if (t === V2._thLast) return; V2._thLast = t;
   clearTimeout(V2._thT); V2._thT = setTimeout(() => { if (V2.redraw && V2.draw) V2.redraw(); }, 50); }).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']}); } catch (e) {}
 /* The logo "Sly Devil" (Sim, Nov 16; files from her designer in docs/brand/sly-devil, NP_LOGO from experiments/gen-logo-sly.mjs).
    ONE logo for day and night: its white sticker edge carries its own background, so the light/night pair and the night overrides are gone.
