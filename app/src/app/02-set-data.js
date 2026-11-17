@@ -128,7 +128,10 @@ const DATA_AT={};
 function noteDataDate(k,v){try{const t=v&&(v.updated||v.pulled||v.date);const ms=t?Date.parse(String(t).length===10?t+'T12:00:00':t):NaN;if(!isNaN(ms))DATA_AT[k]=ms;showDataDate()}catch(e){}}
 // days are counted as calendar days, as Events counts them (stress test Nov 16: the footer said "5 days old" while Events said "6 days ago" for the same date)
 const calDays=(a,b)=>{const x=new Date(a),y=new Date(b);return Math.round((Date.UTC(y.getFullYear(),y.getMonth(),y.getDate())-Date.UTC(x.getFullYear(),x.getMonth(),x.getDate()))/864e5)};
-function dataDateText(){const ts=Object.values(DATA_AT);if(!ts.length)return '';const last=Math.max(...ts),days=calDays(last,Date.now());
+/* code review A2-M8: the date of the data the scores stand on (results, teams, events, model: the oldest of those that arrived), so one fresher
+   side part can never make it read newer than the scores; the newest of everything only when none of those has arrived */
+const DATA_CORE=['results','teams','events','model'];
+function dataDateText(){const ts=Object.values(DATA_AT);if(!ts.length)return '';const core=DATA_CORE.filter(k=>DATA_AT[k]!=null).map(k=>DATA_AT[k]);const last=core.length?Math.min(...core):Math.max(...ts),days=calDays(last,Date.now());
   return 'Data as of '+new Date(last).toLocaleDateString('en-US',{month:'short',day:'numeric'})+(days>2?' ('+days+' days old)':'')}
 function showDataDate(){try{if(typeof renderHealth==='function')renderHealth()}catch(e){}const t=dataDateText();if(!t)return;const el=document.getElementById('eyebrow');
   if(el&&!el.querySelector('.datadate')){const sp=document.createElement('span');sp.className='datadate';el.append(' · ',sp)}

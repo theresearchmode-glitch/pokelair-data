@@ -110,6 +110,9 @@ function modelLine(){const m=META.model;if(!m||!m.eval)return '';const e=m.eval,
 // supports (held-out: the model told top 8 from the rest only 59% of the time, 50% at regionals). Teams are judged by facts
 // instead: the share of the top-30 threats they're ready for (55-threats.js), and 0 when the Item Clause makes them illegal.
 // tsOf keeps its old name so every caller (Fix plans, Quick add, Best additions, Build for me, saved teams) switches at once.
+/* code review A2-M9 (documented, Nov 16): an Item Clause clash makes tsOf 0 on purpose (an illegal team is never counted as strong in the
+   background numbers: track record, winners' medians); the Strength Score itself (CH.gradeOf) keeps its number and flags the team
+   'Not legal yet', so a player sees the score their six would get once the items are fixed */
 function tsOf(team){if(!team||team.length!==6)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;
   if(typeof itemClash==='function'&&itemClash(ms).length)return 0;const r=THR.teamReport(ms);return r?r.score:null}catch(e){return null}}
 // the full report for any six (or fewer), with the items each member would really hold
