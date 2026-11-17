@@ -103,6 +103,9 @@ export async function open(o = {}) {
   }, [DOCS, state, {fresh: !!o.fresh, mode: o.mode, account: o.account, stored: o.stored}]);
   await pg.goto('file://' + page() + (o.hash || ''));
   await pg.waitForTimeout(o.wait ?? 1500);
+  /* review C-I7 (Nov 17): then wait for the page itself, not only the clock: fonts loaded, the first draw done (new site) and the
+     main thread quiet for two idle turns (it waits longer on a busy machine, where a fixed wait was too short; at most 10 s) */
+  await settle(pg);
   const ui = ADAPTER.bind(pg, o); for (const X of EXTRAS) Object.assign(ui, X.fn(ui, pg, o));
   for (const X of EXTRAS) if (X.group === CUR_GROUP) Object.assign(ui, X.fn(ui, pg, o));
   const acct = () => pg.evaluate(() => window.__acct['data/users/u_test/state'] || null);
@@ -123,4 +126,9 @@ export const visibleText = (pg, sel = 'body') => pg.evaluate(s => { const e = do
 export const sleep = ms => new Promise(r => setTimeout(r, ms));
 /** retry a check until it passes or time runs out (Nov 11: a fast PC checked before the page finished redrawing).
  *  fn returns truthy when the condition holds; resolves true/false. */
+/** wait until the page is ready: fonts loaded, the new site's first draw done, and two idle turns of the main thread (C-I7) */
+export async function settle(pg, ms = 10000) { try { await pg.evaluate(ms => new Promise(res => { const end = Date.now() + ms;
+  const idle = n => (window.requestIdleCallback || (f => setTimeout(() => f({didTimeout: false}), 50)))(d => n <= 1 || Date.now() > end ? res(true) : idle(d.didTimeout ? n : n - 1), {timeout: 1000});
+  const go = () => (typeof V2 === 'object' && V2 && !V2.drawN && Date.now() < end) ? setTimeout(go, 50) : (document.fonts && document.fonts.ready || Promise.resolve()).then(() => idle(2));
+  go(); }), ms); } catch (e) { /* a page that navigates away mid-wait: the fixed wait above still applies */ } }
 export async function eventually(fn, ms = 4000, step = 150) { const end = Date.now() + ms; for (;;) { try { if (await fn()) return true; } catch (e) {} if (Date.now() > end) return false; await sleep(step); } }
