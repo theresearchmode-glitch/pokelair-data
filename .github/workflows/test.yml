@@ -143,6 +143,9 @@ jobs:
       # pre-launch check 1 (Nov 17): no page draws the built-in numbers and then swaps to today's (data store answers 1.2 s late)
       - run: PAGE=app/dist/v2.html node app/test/data-swap.mjs
         if: ${{ !cancelled() }}
+      # pre-launch check 5c (Nov 17): forms-strip labels read at 4.5:1 or more, day and night
+      - run: PAGE=app/dist/v2.html node app/test/forms-contrast.mjs
+        if: ${{ !cancelled() }}
       - run: node app/test/tokens-doc.mjs
         if: ${{ !cancelled() }}
       - run: node app/test/perf-docs.mjs

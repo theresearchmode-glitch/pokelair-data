@@ -47,8 +47,8 @@ parked by Sim's Nov 9 rule until she says), NO CHANGE (checked).
 - 5a OPEN Tap targets 19-22 px: Winning Teams "Set as Opponent ›" / "Compare ›"; My Team "Game Plan ›"; Battle "Change on
   My Team ›"; Track Record "How Ratings Work ›"; Feedback "Show Email"; About Fine Print (5 links); Events "Victory Road
   season calendar"; search fields on Winning Teams and Type Chart (check the visible box vs the 22 px input).
-- 5b OPEN Ratings search ("Find a Pokémon or type") shows no focus ring by keyboard.
-- 5c OPEN Garchomp forms strip "92 · S tier" blue on light blue 4.13:1 (< 4.5:1); check other forms strips.
+- 5b NO CHANGE (checked; unsure what the reviewer saw) Ratings search ("Find a Pokémon or type") shows no focus ring by keyboard. Checked by Tab in Chromium and WebKit, 390 and 1440, both Meta views: focus lands on the box and a 3px blue ring is drawn round the visible box (components.css .np-field:focus-within); the inner input itself has outline none, which is likely what the check read. Pictures: scratchpad raq-390.png / raq-1440.png (ring visible).
+- 5c FIXED Garchomp forms strip "92 · S tier" blue on light blue 4.13:1 (< 4.5:1); check other forms strips. Cause: the label runs at 85% opacity; on the current form's blue tile that is 4.14:1 (computed from the raw colours; full opacity 5.5:1). The current tile's label is now at full opacity. Measured with app/test/forms-contrast.mjs (12 Pokémon with forms, day and night, 54 labels; now in GitHub's checks): 11 under 4.5:1 before (all the current tile in day mode, 4.14), 0 after. Pictures: pics/nov17/forms-contrast-{before,after}.png.
 - 5d OPEN (lower priority) 930 buttons: spoken name doesn't start with the visible words (voice control).
 
 ## 6. Messages when something goes wrong
