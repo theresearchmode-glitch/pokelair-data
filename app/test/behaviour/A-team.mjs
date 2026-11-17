@@ -422,7 +422,7 @@ t('SUG-09', 'When nothing raises the score: a no-gain message instead of plain A
 
 t('SUG-10', 'Problems and Team Checks: count line, Ice row with Quick add; "Swap out Rillaboom" applies with Undo', async () => {
   /* new build (A2, Sim approved Nov 12): the fold is "Things to Know"; the checks are listed once, in the section above it; Types joined the fold, Sim approved Nov 12 */
-  const r = await myTeam(), t0 = await r.ui.text(), FT = NEW ? 'Things to Know' : 'Problems and Team Checks'; has(t0, NEW ? /Things to Know 7 things, types, legal/ : /Problems and Team Checks 7 to look at, 2\/4 checks, legal/);
+  const r = await myTeam(), t0 = await r.ui.text(), FT = NEW ? 'Things to Know' : 'Problems and Team Checks'; has(t0, NEW ? /Things to Know 7 (?:things, types|weak spots, type chart), legal/ : /Problems and Team Checks 7 to look at, 2\/4 checks, legal/);
   await r.ui.openFold(FT, true, 1500); const f0 = await r.ui.foldContent(FT), f = FT === 'Things to Know' ? f0 + '\n' + await r.ui.pg.evaluate(() => { document.querySelectorAll('#tm-ck details').forEach(d => { d.open = true; }); return document.querySelector('#tm-ck').innerText; }) : f0;
   for (const s of [NEW ? /[Ww]eakness Ice 3 weak/ : /Weakness Ice 3 weak/, /Quick add/, /Swap out Rillaboom/, NEW ? /Show \d+ More/ : /Show \d+ more/, NEW ? /Team Checks/ : /Team checks 2 of 4 checks/, /Mega Evolution/, /No major weak spot/, /Weak spots spread out/, NEW ? /Handles the top threats/ : /Ready for the top threats/, /Notes, not counted/, /Speed control/, /Spread damage/, /Lead support/, /No answer for/, /Shaky against/, /Type balance/]) has(f, s, 'Problems fold');
   ok(await r.ui.foldOpen('Weakness Ice') === true, 'first fixable problem not opened automatically');

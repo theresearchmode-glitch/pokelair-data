@@ -167,7 +167,9 @@ V2.fixFold = D => { const ms = D.ms; if (!ms || !ms.length) return ''; const use
   const chips = [V.score != null && CH.hand(V.RD) ? `<span><b>${CH.hand(V.RD).x}/${CH.hand(V.RD).n}</b> handled${V2.tip('readiness')}</span>` : '', CK ? `<span><b>${CK.pass}/${CK.n}</b> checks${V2.tip('checklist')}</span>` : '', `<span class="${V.illegal ? 'bad' : 'ok'}"><b>${V.illegal ? 'Not legal' : 'Legal'}</b></span>`].join('');
   const vd = `<div class="sg2-vd ${V.lvl}"><dl>${V.rows.filter(r => !/^Checklist$/.test(r[0])).map(r => `<div><dt>${r[0]}</dt><dd>${V2.undotHtml(r[1])}</dd></div>`).join('')}</dl>${typeof regNote === 'function' ? regNote('fine') : ''}</div>`;
   // A2: the fold holds the things to know and the read that appears nowhere else; the checks are listed once, above
-  const sub = [pr.real.length ? `${pr.real.length} thing${pr.real.length === 1 ? '' : 's'}` : 'Nothing to know', 'types', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
+  // player review 3f (Nov 17): name what the fold holds: the weak spots (weaknesses, 4x, coverage gaps, missing Mega, fringe picks), the
+  // type chart, the legal check ("7 weak spots, type chart, legal"; was "7 things, types, legal")
+  const sub = [pr.real.length ? `${pr.real.length} weak spot${pr.real.length === 1 ? '' : 's'}` : 'No weak spots', 'type chart', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
   // A6 (Sim's fix plan): one live "Working out…" message at load, not two; Suggestions' own line is the one read out
   const isOpen = !!LS.get('cc2.chf.rfix', null), probs = P ? pr.html : `<p class="tm-sub">Working out the fixes for your team…</p>${V2.fx.last ? `<div class="sg2-stale" inert aria-busy="true">${V2.fx.last}</div>` : ''}`;
   if (P) V2.fx.last = pr.html;
