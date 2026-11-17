@@ -13,7 +13,9 @@
 //   const t = group('A-team');
 //   t('TEAM-03', 'Remove a Pokémon with its ×', async () => { const {pg, ui} = await open({team: TEAM}); ... ; ui.close(); });
 // Run: node app/test/behaviour/run.mjs [A-team|B-build|C-battle|D-meta-shell] [--only=ID,ID]   PAGE=path ADAPTER=name
-import fs from 'node:fs'; import zlib from 'node:zlib'; import {fileURLToPath} from 'node:url'; import {chromium} from 'playwright';
+import fs from 'node:fs'; import zlib from 'node:zlib'; import {fileURLToPath} from 'node:url'; import {chromium, webkit} from 'playwright';
+/* BROWSER=webkit runs a group in Safari's engine (review C-I8, Nov 17: Sim tests on iPhone and iPad; the suites were Chromium only) */
+export const BROWSER = process.env.BROWSER === 'webkit' ? 'webkit' : 'chromium';
 import {perfDoc} from '../../data-docs.mjs';
 
 export const HERE = fileURLToPath(new URL('.', import.meta.url)), ROOT = HERE + '../../../';
@@ -69,7 +71,7 @@ export async function closeAll() { if (browser) await browser.close(); browser =
 // the page a test opened last (FAILSHOT=dir in run.mjs saves a picture + its text when a test fails; Nov 12, SAVED-06 PC-only)
 let LAST = null; export const lastPage = () => LAST;
 export async function open(o = {}) {
-  if (!browser) browser = await chromium.launch();
+  if (!browser) browser = await (BROWSER === 'webkit' ? webkit : chromium).launch();
   const width = o.width || 1280, touch = o.touch ?? width < 700;
   const ctx = await browser.newContext({viewport: {width, height: o.height || 900}, deviceScaleFactor: 1, isMobile: touch, hasTouch: touch,
     colorScheme: o.mode === 'dark' ? 'dark' : 'light'});

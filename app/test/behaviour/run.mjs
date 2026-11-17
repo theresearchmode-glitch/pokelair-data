@@ -26,6 +26,6 @@ for (const T of H.tests()) { if (only.length && !only.includes(T.id) && !only.in
   console.log(`  ${r.padEnd(5)} ${T.id}  ${T.title}${why ? '  -> ' + why : ''}`); }
 await H.closeAll();
 const n = k => res.filter(x => x.r === k).length;
-console.log(`\nbehaviour: ${n('pass')} pass, ${n('FAIL')} FAIL, ${n('known')} known bugs, ${n('FIXED?')} fixed?, ${n('skip')} skipped; ${Math.round((Date.now() - t0) / 1000)}s  (adapter ${process.env.ADAPTER || 'current'})`);
+console.log(`\nbehaviour: ${n('pass')} pass, ${n('FAIL')} FAIL, ${n('known')} known bugs, ${n('FIXED?')} fixed?, ${n('skip')} skipped; ${Math.round((Date.now() - t0) / 1000)}s  (${process.env.BROWSER === 'webkit' ? 'webkit, ' : ''}adapter ${process.env.ADAPTER || 'current'})`);
 fs.writeFileSync(HERE + 'results.json', JSON.stringify({ran: new Date().toISOString(), adapter: process.env.ADAPTER || 'current', res: res.map(({fn, ...x}) => x)}, null, 1));
 process.exit(n('FAIL') ? 1 : 0);
