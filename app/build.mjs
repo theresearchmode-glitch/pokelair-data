@@ -24,6 +24,9 @@ const asJsonParse = (src) => process.argv.includes('--no-json-parse') ? src : sr
 // parts-v2.json and stops; today's dist/page.html is not touched. CSS goes into cascade layers (tokens, base, components, shell,
 // pages) so no selector ever needs to out-shout another. The data files and SPRITE_ID are shared with today's page.
 if (process.argv.includes('--v2')) {
+  /* --public: the build for real visitors (the live site at the switch, the public site in January). It leaves out the test hook
+     (eval, code review C-I5), and pairs with no --preview-data, so the demo routes (#guide, #sheet, #team-empty; A1-M5) stay out too. */
+  const PUBLIC = process.argv.includes('--public'); if (PUBLIC && process.argv.includes('--preview-data')) { console.error('--public and --preview-data do not mix'); process.exit(1); }
   // guard rails first: the build stops if the new CSS breaks the design rules (app/test/v2-guard.mjs)
   { const {spawnSync} = await import('node:child_process'); const g = spawnSync(process.execPath, [dir + 'test/v2-guard.mjs'], {stdio: 'inherit'}); if (g.status !== 0) process.exit(1); }
   const P = JSON.parse(fs.readFileSync(dir + 'parts-v2.json', 'utf8')), rd = f => fs.readFileSync(dir + f, 'utf8').replace(/\n$/, '');
@@ -39,7 +42,7 @@ if (process.argv.includes('--v2')) {
   // closed after the first draw. 15-visual-helpers.js brings SPRITE_ID itself when it is included.
   const L = P.logic || [], hasIds = L.some(f => f.endsWith('15-visual-helpers.js'));
   if (L.length && !L[0].endsWith('00-main.js')) throw new Error('parts-v2.json logic must start with src/app/00-main.js (it opens the closure)');
-  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\n` + L.map(rd).join('\n') + '\n' + P.scripts.map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
+  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\n` + L.map(rd).join('\n') + '\n' + P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js'))).map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
   // where the pictures live: art/ beside the page by default; --art=<folder>/ when published next to other files (the redesign artifact)
   const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};</script>\n` : '';
   // --preview-data (redesign artifact only): a copy of today's daily data (out/*.json) answers the page's data requests, so a

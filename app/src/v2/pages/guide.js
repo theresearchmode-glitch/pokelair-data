@@ -70,3 +70,5 @@ document.addEventListener('click', e => {
   if (e.target.closest('[data-v2sheet]')) V2.sheet(`<div style="padding:var(--s8)"><h2 class="u" style="font-size:var(--t28)">A sheet</h2><p style="margin-top:var(--s3);color:var(--ink-2)">A solid surface over the page. Close it with ✕, Escape or a tap outside; the keyboard returns to the button that opened it.</p></div>`, {label: 'Example sheet'});
   if (e.target.closest('[data-v2toast]')) V2.toast('Garchomp added to your team <button type="button">Undo</button>');
 });
+// the style guide is a Preview-only page (code review A1-M5; Sim, Nov 16: hide it at launch): its dock and Undo are demos, not real data
+if (!window.__NP_PREVIEW) delete V2.pages.guide;

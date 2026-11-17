@@ -466,7 +466,7 @@ V2.jumpSync = () => { const nav = document.querySelector('.tm-jump'); if (!nav) 
 let jumpRaf = 0; addEventListener('scroll', () => { if (jumpRaf) return; jumpRaf = requestAnimationFrame(() => { jumpRaf = 0; if (V2.route() === 'team') V2.jumpSync(); }); }, {passive: true});
 addEventListener('resize', () => { if (V2.route() === 'team') V2.jumpSync(); });
 // a look at the empty My Team without emptying anyone's team (the redesign preview links here; it changes nothing)
-V2.pages['team-empty'] = {place: 'team', draw: () => V2.emptyHtml({preview: true})};
+if (window.__NP_PREVIEW) V2.pages['team-empty'] = {place: 'team', draw: () => V2.emptyHtml({preview: true})}; /* a Preview-only look at the empty My Team (code review A1-M5) */
 
 // ---------- How Scoring Works (Nov 12: today's fold, kept; Sim: at the end of "Why this score?", words updated to the word list) ----------
 // Today's eight paragraphs (body.html "How scoring works"); each shows its first sentence and "More". Wording changed only where the

@@ -58,7 +58,8 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
   audits/design-review-nov15-advisor.md (say it once, two fold patterns, heading rule, three button levels, Home to five sections...).
 - AFTER THE SWITCH (Sim, Nov 15, Q1 A): code review B8 cross-device sync, its own careful step tested on two devices; then C1 delete the
   old site's dead code (the live site still runs it until the switch).
-- BEFORE THE SWITCH (checklist): publish the live page with the same runtime capabilities today's live artifact declares (db/user for
+- BEFORE THE SWITCH (checklist): build the live page with `node app/build.mjs --v2 --public` (no test hook, no demo routes; checked by
+  app/test/v2-public.mjs, code review C-I5 + A1-M5, Nov 17). Publish the live page with the same runtime capabilities today's live artifact declares (db/user for
   saving, feedback, usage); read today's live artifact first (not yet read, unsure what it declares). The plain v2 build has no Preview
   stand-in (checked: 0 matches for __NP_PREVIEW). fields-audit needs the Showdown sim installed (not run in the cloud machine).
 - Height limits for the Pokémon page added to c13-check.mjs (POKEMON_L, measured + 50), noted in page-heights.md for Sim's review.

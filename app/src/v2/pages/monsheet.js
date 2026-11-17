@@ -128,7 +128,7 @@ document.addEventListener('keydown', e => { const b = e.target.closest && e.targ
   // Home / End jump to the first / last tab (today's tabs do; the tab pattern's keys, PKMN-04)
   const ks = [...document.querySelectorAll('.ms2 [data-mstab]')].map(x => x.dataset.mstab), i = ks.indexOf(b.dataset.mstab), j = e.key === 'Home' ? 0 : e.key === 'End' ? ks.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : ks.length - 1)) % ks.length; V2.msShow(ks[j], true); });
 // the redesign preview links here: My Team with Garchomp's sheet open (changes nothing)
-V2.pages['sheet'] = {place: 'team', draw: () => V2.pages.team.draw(), after() { V2.pages.team.after(); if (V2._sheetDemoAt === location.href) return; V2._sheetDemoAt = location.href; setTimeout(() => V2.openMonSheet('Garchomp'), 60); }}; /* code review B9c: opens once per visit, not on every redraw */
+if (window.__NP_PREVIEW) V2.pages['sheet'] = {place: 'team', draw: () => V2.pages.team.draw(), after() { V2.pages.team.after(); if (V2._sheetDemoAt === location.href) return; V2._sheetDemoAt = location.href; setTimeout(() => V2.openMonSheet('Garchomp'), 60); }}; /* code review B9c: opens once per visit, not on every redraw; a Preview-only demo (A1-M5) */
 addEventListener('hashchange', () => { if (V2.route() !== 'sheet') V2._sheetDemoAt = null; });
 
 // today's "Popular sets" on the sheet (PKMN-03; 25-ratings-page.js data-lsets): remembers the Pokémon for the sets page, which today's
