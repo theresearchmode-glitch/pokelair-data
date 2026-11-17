@@ -39,7 +39,16 @@ without checking first. (docs/rebuild/RULES.md section 0.)
 ## Design philosophy (Sim, Nov 12): usability and easy accessibility are key factors in every design decision
 (docs/rebuild/RULES.md section 0b).
 
-## Usage warning (Sim, Nov 6)
+## Be proactive and efficient (Sim, Nov 17; a standing rule)
+Make the website process run as smoothly and quickly as possible. Think ahead: what will the next steps need (data, research,
+measurements, decisions), and start it early instead of waiting until it blocks. Use helper agents in parallel for research,
+data pulls, measurements and look-only audits, without asking first (usage is not a problem for now; just tell Sim what is
+running). Keep the site itself to one change at a time in the main thread, tested, as before. Start long-running data pulls and
+checks early and work on something else while they run; batch pushes so GitHub runs finish. Name the next decisions Sim will
+need before they block the work. This replaces "lean usage: no helpers unless Sim agrees" and the heavy-task warning below
+(both kept for the record; Sim, Nov 17: "usage is not a problem for right now").
+
+## Usage warning (Sim, Nov 6; paused Nov 17: usage is not a problem for now, see 'Be proactive and efficient')
 Before starting a task that will be heavy on usage, warn Sim first and let her decide. Heavy means things like: many helper
 agents, long multi-hour runs with lots of back-and-forth, big redesigns or full-site rewrites, repeated large screenshot
 batches, or anything likely to take more than about an hour of active work. Give a rough size (light / medium / heavy), what
@@ -66,7 +75,7 @@ audits and research sweeps, not our one-change-at-a-time work.
 - Authority (Sim, Nov 11): when Sim gives Claude decision-making authority (e.g. "executive control until 7PM EST"), reply first with
   an express confirmation that you understand and got it, restating the scope and the end time. Decide on your own recommendation
   until then, log every decision in docs/rebuild/decisions.md, and give her a summary of the decisions when the time is up.
-- Lean usage: no helper agents unless she agrees, minimal screenshots.
+- Lean usage (Nov 6): replaced Nov 17 by 'Be proactive and efficient': helpers in parallel without asking; tell Sim what runs.
 - Local PC chat (Sim, Nov 11): Sim has a local Claude Code chat on her Windows PC (RTX 3080, faster than the cloud machine,
   doesn't restart). Whenever a task would go faster there (test runs, polish checks, screenshot batches, image work on the
   GPU, anything heavy in a browser), say so up front and give her a ready-to-paste prompt: what to pull, what to run, where

@@ -11,6 +11,14 @@ reading. decisions.md entries go through log-decision.sh (it reads the clock its
 time: the 't' field comes from now.sh. Every session runs `git config core.hooksPath .githooks` first: the commit-msg guard
 refuses placeholder/estimated times and times later than the clock.
 
+## 00e. Be proactive and efficient (Sim, Nov 17, rule written 10:55 AM Eastern by the clock; standing rule)
+- Think ahead: what the next steps will need (data, research, measurements, Sim's decisions), and start it early.
+- Helper agents run in parallel for research, data pulls, measurements and look-only audits, without asking first; tell Sim what runs.
+  Usage is not a problem for now (Sim, Nov 17). This replaces the Nov 6 lean-usage and heavy-task-warning lines.
+- The site itself still changes one thing at a time in the main thread, tested, with pictures.
+- Long jobs start early; other work goes on while they run. Pushes are batched so GitHub runs finish.
+- Name the next decisions Sim will need before they block the work.
+
 ## 00. Honesty and openness (Sim, Nov 12, 5:12 PM Eastern; applies AT ALL TIMES, to every chat; never to be repeated)
 Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped for an hour while holding her authority.
 1. Sim's questions come first, always. When Sim asks a question, it is answered before anything else, every time. No question
