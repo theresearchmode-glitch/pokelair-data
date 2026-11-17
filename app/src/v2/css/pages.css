@@ -1669,7 +1669,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* the poster */
 .fn-hero{position:relative;display:grid;gap:var(--s5);padding:var(--s4) var(--gut) 0;background:radial-gradient(70% 60% at 50% 55%,color-mix(in srgb,var(--plot) 18%,transparent),transparent 75%)}
 .fn-band{display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s2) var(--s8);margin:0;padding:var(--s2) 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font:800 var(--t13)/1.5 var(--b);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-2)}
-.fn-band .live{color:var(--bad-text)}.fn-band .live::before{content:"";display:inline-block;width:8px;height:8px;margin-right:var(--s2);background:var(--bad);vertical-align:1px;transform:skewX(var(--slant))}
+/* Sim, Nov 16 (batch 1C): the live mark and VS are PLOT blue; red stays for danger only */
+.fn-band .live{color:var(--plot-text)}.fn-band .live::before{content:"";display:inline-block;width:8px;height:8px;margin-right:var(--s2);background:var(--plot);vertical-align:1px;transform:skewX(var(--slant))}
 .fn-top{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:var(--s4) var(--s10)}
 .fn-h{margin:0;font-size:var(--d64);line-height:.95}.fn-h .pl{display:block;color:var(--plot-text)}
 .fn-go{display:grid;gap:var(--s3);justify-items:start}.fn-go>p:first-child{margin:0;font:400 var(--t17)/1.5 var(--b);color:var(--ink-2)}
@@ -1686,7 +1687,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .fn-belt{display:grid;justify-items:center;gap:var(--s1);padding:var(--s4) var(--s6);background:linear-gradient(180deg,color-mix(in srgb,var(--bd) 26%,transparent),transparent);border-top:4px solid var(--bd);clip-path:polygon(12px 0,calc(100% - 12px) 0,100% 100%,0 100%)}
 .fn-belt b{font-size:var(--d120);line-height:.85}.fn-belt span{display:grid}.fn-belt i{font-size:var(--t24);color:var(--plot-text)}.fn-belt small{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .fn-belt.none{--bd:var(--ink-3)}.fn-belt.none b{color:var(--ink-3)}
-.fn-vs{margin:0;font-size:var(--d64);line-height:1;color:transparent;-webkit-text-stroke:2px var(--bad)}
+.fn-vs{margin:0;font-size:var(--d64);line-height:1;color:transparent;-webkit-text-stroke:2px var(--plot)}
+/* Sim, Nov 16 (batch 2B): one blue main action per screen; at night "Set as Opponent" is a raised dark plate (by day both are already dark) */
+:root[data-theme="night"] .np-btn.fn-prep{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));color:var(--on-plate)}
 .fn-plan{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:center;gap:var(--s1) var(--s4);margin:0;padding:var(--s3) var(--s5);font:400 var(--t15)/1.5 var(--b);text-align:center;background:var(--wash);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}.fn-plan>b{font-size:var(--t17);color:var(--plot-text)}
 /* new here */
 .fn-new{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s10);align-items:start;padding:0 var(--gut)}.fn-new h2{margin:var(--s2) 0;font-size:var(--t34)}.fn-new .h3-go{margin-top:var(--s4)}

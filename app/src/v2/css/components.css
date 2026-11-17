@@ -89,6 +89,8 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 @media (max-width:699.98px){.np-forms .r{grid-auto-columns:minmax(0,1fr)}}
 /* sheet: a solid surface over the lit page, which is softly blurred, never dimmed dark (the glass decision) */
 .np-scrim{position:fixed;inset:0;z-index:40;background:var(--scrim);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px)}
+/* Sim, Nov 16 (batch 4C; code review B-I2: the blur cost 8-9 slow frames per scroll on desktop): on mouse screens no blur, a deeper dim */
+@media (hover:hover) and (pointer:fine){.np-scrim{backdrop-filter:none;-webkit-backdrop-filter:none;background:var(--scrim-deep)}}
 .np-sheet{position:fixed;z-index:41;left:50%;top:48px;bottom:48px;width:min(1120px,calc(100% - 64px));translate:-50% 0;overflow:auto;background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--shadow-lift)}
 .np-sheet .x{position:sticky;top:0;float:right;min-width:var(--tap);min-height:var(--tap);font:600 var(--t20)/1 var(--b);color:var(--ink-2)}
 .np-sheet .x{position:sticky;z-index:5;background:var(--surface);border-radius:50%} /* i42 (Nov 13): the X stays on top of scrolled content (a tilted panel painted over it), on the sheet's own surface */
