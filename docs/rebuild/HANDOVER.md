@@ -7,7 +7,7 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
-## NOW (Nov 17, written time: 1:30 PM (1:30:05)  date: Tue Nov 17, 2026 Tue Nov 17, 2026 by the clock; authority until 5:00 PM)
+## NOW (Nov 17, written time: 1:30 PM (1:30:05)  date: Tue Nov 17, 2026 Tue Nov 17, 2026 by the clock; authority EXTENDED until 10:00 PM Tue Nov 17 by Sim; summary before 10 PM)
 - All 5 helpers reported (docs/rebuild/research/: regmd-readiness, data-inventory, nov12-recheck, known-sorted, speed-report).
 - Done today after 11 AM (branch claude/design6; each with a test that fails before): Popular Sets stat-point spreads (pr-4c);
   In your box / To catch on suggestions; after Remove the Add spot comes into view; Your Games note row; Yes/No at 700-760;
