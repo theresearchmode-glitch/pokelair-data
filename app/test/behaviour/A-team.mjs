@@ -444,7 +444,7 @@ t('MU-01', 'Matchups view switch Top 10 | Top 12 grid | All 30 is remembered', a
 t('MU-02', 'Top 10 threats with real-games verdict and calc level; phone shows 5 + "Show 5 more"; row opens threat sheet', async () => {
   const r = await myTeam({team: TEAM, width: 390}); if (await r.ui.chosen('Stand-outs') === true) await r.ui.choose('Top 10', 1200); let rows = await r.ui.topThreatRows(); // new build opens on Stand-outs (Sim, Nov 11) ok(rows.length === 5, `${rows.length} rows on a phone`);
   /* new build (A4, Sim approved Nov 12): one verdict per row; the calc shows only when it disagrees ("Calc disagrees: X") */
-  for (const x of rows) ok(NEW ? /^\d+ .+ (Favoured|Even match|Unfavoured)( Calc disagrees: (Beats it|Handles it|Shaky|No answer))?$/.test(x) || /^\d+ .+Calc disagrees: (Beats it|Handles it|Shaky|No answer).* (Favoured|Unfavoured)$/.test(x) : /^\d+ .+ (Favoured|Even match|Unfavoured) Calc: (Beats it|Handles it|Shaky|No answer)$/.test(x), 'row reads ' + x);
+  for (const x0 of rows) { const x = x0.replace(/ ?Mirror match/, ''); /* Nov 17 (3e): a threat also on the team says "Mirror match" */ ok(NEW ? /^\d+ .+ (Favoured|Even match|Unfavoured)( Calc disagrees: (Beats it|Handles it|Shaky|No answer))?$/.test(x) || /^\d+ .+Calc disagrees: (Beats it|Handles it|Shaky|No answer).* (Favoured|Unfavoured)$/.test(x) : /^\d+ .+ (Favoured|Even match|Unfavoured) Calc: (Beats it|Handles it|Shaky|No answer)$/.test(x), 'row reads ' + x); }
   const tx = await r.ui.text(); has(tx, /Verdicts from real tournament games/); has(tx, /Unfavoured \d+ Even match \d+ Favoured \d+|\d+ Favoured \d+ Even match \d+ Unfavoured/); has(tx, /Damage calc: No answer \d+, Shaky \d+, Handles it \d+, Beats it \d+/);
   await r.ui.tapText((NEW ? 'Show 5 More' : 'Show 5 more'), 700); rows = await r.ui.topThreatRows(); ok(rows.length === 10, `${rows.length} rows after Show 5 more`); ok(await r.ui.sees((NEW ? 'Show Top 5 Only' : 'Show top 5 only')), (NEW ? 'no "Show Top 5 Only"' : 'no "Show top 5 only"'));
   await r.ui.tapThreat('Archaludon'); const s = await r.ui.threatSheet(); ok(s && /Archaludon/.test(s) && await r.ui.threatPressedInSheet() === 'Archaludon', 'threat sheet did not open on Archaludon'); await r.close();
@@ -638,7 +638,7 @@ t('EDIT-09', '"Full popular sets ›" closes the panel and opens Popular sets on
   ok(await r.ui.current() === 'sets', 'Popular sets did not open'); has(await r.ui.text(), 'Garchomp', 'Popular sets'); await r.close(); });
 
 t('EDIT-10', 'Weak / Resists fold shows resistances and the ability text', async () => {
-  const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); await r.ui.openFold('Weak'); const f = await r.ui.foldContent('Weak');
+  const r = await myTeam(); await r.ui.openEditPanel('Garchomp'); await r.ui.openFold('Weak to'); const f = await r.ui.foldContent('Weak to'); /* Nov 17: 'Weak' also matched Things to Know's '7 weak spots' (3f) */
   has(f, /Ice 4×|Ice/, 'fold'); has(f, /Resists/, 'fold'); has(f, /Rough Skin|contact/i, 'fold (ability text)'); await r.close(); });
 
 t('EDIT-11', '"Remove <name> from the team" in the panel: Undo toast, panel becomes "Add a Pokémon"', async () => {
