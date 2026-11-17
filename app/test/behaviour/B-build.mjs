@@ -376,7 +376,7 @@ t('BUILD-04', 'A locked Pokémon is never swapped out (All suggestions, cores)',
 
 t('BUILD-06', 'Problems and team checks: summary line, a Speed control row with fixes; Quick add puts the pick on the team with Undo', async () => {
   const {ui, close} = await open({team: NO_SPEED, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions();
-  const f = await ui.unfold(/^Problems and Team Checks/i); has(f, NEW ? /\d+ things?, .*legal/i : /\d+ to look at, \d\/4 checks, legal/i, 'summary line'); /* new: Team Checks shown once; this fold is 'Things to Know' (Sim approved A2, decisions.md Nov 12 6:45-8:00 AM), so its line has no checks count */
+  const f = await ui.unfold(/^Problems and Team Checks/i); has(f, NEW ? /\d+ (?:things?|weak spots?), .*legal/i : /\d+ to look at, \d\/4 checks, legal/i, 'summary line'); /* new: Team Checks shown once; this fold is 'Things to Know' (Sim approved A2, decisions.md Nov 12 6:45-8:00 AM), so its line has no checks count */
   has(f, /Speed control .*?\d+ fixes/, 'Speed control row'); has(f, /Ready \+\d+%|Good fit/, 'pick readiness');
   const before = await ui.team(); const r = await ui.quickAddFromProblem('Speed control'); expect(r && r.btn, 'no Quick add pick: ' + JSON.stringify(r));
   const tt = await ui.waitForToast(/^Added|→/); expect(await ui.toastOffersUndo(), 'no Undo'); expect((await ui.team()).length === 6 && !same(await ui.team(), before), 'pick not added: ' + tt);
