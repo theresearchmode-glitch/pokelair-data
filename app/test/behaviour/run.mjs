@@ -10,8 +10,12 @@ for (const g of groups) await import(`./${g}.mjs`);
    it fails as "known"; anything else that fails is new and makes the run exit 1, so CI can guard the new site. */
 const KV2 = process.env.ADAPTER === 'v2' ? (() => { try { return JSON.parse(fs.readFileSync(HERE + 'known-v2.json', 'utf8')); } catch (e) { return {}; } })() : {};
 const knownOf = T => T.known || (KV2[T.group] && KV2[T.group][T.id]) || '';
+/* code review C-M1 (Nov 16): an ID names one test inside its group; --only takes ID or group:ID (an ID used in several groups runs in
+   each, and says so), and a group that registers the same ID twice stops the run */
+{ const seen = new Set(); for (const T of H.tests()) { const k = T.group + ':' + T.id; if (seen.has(k)) { console.error('duplicate test ID in one group: ' + k); process.exit(2); } seen.add(k); }
+  for (const o of only.filter(o => !o.includes(':'))) { const gs = H.tests().filter(T => T.id === o).map(T => T.group); if (gs.length > 1) console.log(`  note: ${o} is in ${gs.join(' and ')}; use group:ID for one`); } }
 const res = [], t0 = Date.now();
-for (const T of H.tests()) { if (only.length && !only.includes(T.id)) continue;
+for (const T of H.tests()) { if (only.length && !only.includes(T.id) && !only.includes(T.group + ':' + T.id)) continue;
   if (T.skip) { res.push({...T, r: 'skip', why: T.skip}); console.log(`  skip  ${T.id}  ${T.title}  (${T.skip})`); continue; }
   H.setGroup(T.group); let r = 'pass', why = '';
   try { await Promise.race([T.fn(), new Promise((_, j) => setTimeout(() => j(new Error('timed out after 60s')), 60000))]); } catch (e) { r = knownOf(T) ? 'known' : 'FAIL'; why = String(e.message || e).slice(0, 300); }

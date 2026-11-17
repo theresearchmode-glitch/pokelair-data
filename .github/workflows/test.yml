@@ -96,6 +96,8 @@ jobs:
         if: ${{ !cancelled() }}
       - run: node app/test/perf-docs.mjs
         if: ${{ !cancelled() }}
+      - run: node app/test/test-ids.mjs
+        if: ${{ !cancelled() }}
       - run: node app/test/v2-public.mjs   # last of the v2 steps: it leaves dist/v2.html as the public build
         if: ${{ !cancelled() }}
       # the new site never says "Ready for" / "N% ready" (word list: Matchups; Sim, Nov 12): reads every built page, fold, sheet and "?"
