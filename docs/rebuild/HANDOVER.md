@@ -7,6 +7,20 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Nov 17, written time: 1:30 PM (1:30:05)  date: Tue Nov 17, 2026 Tue Nov 17, 2026 by the clock; authority until 5:00 PM)
+- All 5 helpers reported (docs/rebuild/research/: regmd-readiness, data-inventory, nov12-recheck, known-sorted, speed-report).
+- Done today after 11 AM (branch claude/design6; each with a test that fails before): Popular Sets stat-point spreads (pr-4c);
+  In your box / To catch on suggestions; after Remove the Add spot comes into view; Your Games note row; Yes/No at 700-760;
+  Search Pokémon before items; Home Add tiles open the Add box; Mega note wording; speed fix 1 (each daily document once),
+  fix 2 (no 1 s freeze: 818 -> 506 ms My Team), fix 3 (planner waits while scrolling: stalls 333 -> 183 ms); SUGG-09 no jump
+  after Apply; Add Protect Undo; Compare notes; regulation count; M-D date guard (formats.mjs REG_END, branch only).
+- Waiting on Sim: Remove on My Team A / B (recommended) / C (pics/nov17/remove-*.png); date guard to main; M-C view
+  (default none); All Suggestions layout; My Team phone length (5.67 screens; options with the Remove choice); sprite size (240px
+  set being measured for a quality picture).
+- Lesson: run all four behaviour groups on a --art build (not --preview-data) before pushing anything that changes card text
+  (run 1299 went red on test reading).
+- Plans page: quick update about once an hour (Sim); next reminder trig_01KRdMxZYheaEHqbus1NpJN2 at 2:20 PM.
+
 ## NOW (Nov 17, written time: 10:56 AM (10:56:52)  date: Tue Nov 17, 2026 by the clock; authority until 5:00 PM)
 - Plans page = ONE game plan to January (v38): Step 1 Finish (+ switch), 2 Reg M-D, 3 Strength Score, 4 Launch, Ideas. Old page
   archived in docs/rebuild/plans-archive-nov17.html. Sim decided all open items (recommendations), wants the switch in a few days.
