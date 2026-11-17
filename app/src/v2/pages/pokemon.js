@@ -10,13 +10,13 @@ V2.monFromHash = () => { let k = ''; try { k = decodeURIComponent((location.hash
 V2.STATS = [['HP', 'hp'], ['Attack', 'atk'], ['Defense', 'def'], ['Sp. Atk', 'spa'], ['Sp. Def', 'spd'], ['Speed', 'spe']];
 // the top: the Card; the rank tag; the name; the rating with its tier (Sim, Nov 17: no 'likely 81-92' range, it read as unsure); the 0-100 gauge; the three numbers; the actions
 V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), rank = rankTxt(p, 'cap');
-  const sp = SHT.speeds(p) /* Sim, Nov 17 (B): no range band on the bar */, run = sp.find(x => x.main) || sp.find(x => x.k === 'max');
+  const lo = +RS(Math.max(1, r.total - (r.band || 0))), hi = +RS(Math.min(99, r.total + (r.band || 0))), sp = SHT.speeds(p) /* Sim, Nov 17 (later): the shaded band stays, the 'likely' words do not */, run = sp.find(x => x.main) || sp.find(x => x.k === 'max');
   const num = (b, l, s, few) => `<div class="pk-n${few ? ' few' : ''}"><b class="u">${b}</b><span>${l}${s ? `<small>${s}</small>` : ''}</span></div>`;
   const nums = (H.hU != null ? num(E(V2.shareTxt(H)), 'of teams', H.tot ? 'of ' + E(basisNum(H.tot, true)) : '') : num('None yet', 'of teams', 'no games yet', true))
     + (H.hW != null ? (H.hG >= 30 ? num(E(pctFmt(H.hW)), 'win rate', Math.round(H.hG).toLocaleString('en-US') + ' games') : num('Too few', 'win rate', H.hG ? Math.round(H.hG) + ' games' : 'no tournament games yet', true)) : num('None yet', 'win rate', 'no games yet', true)) /* always three numbers (audit Nov 15: a half-empty row) */
     + (run ? num(run.v, 'Speed', `at level 50${/Choice Scarf/.test(run.note || '') ? ', with Choice Scarf' : ''}`) : ''); /* player review 1e (Nov 17): the usual set's Scarf is in the number, so say so */
   const card = V2.msCard(p, n, `<p class="mc-nm u">${V2.nameHtml(V2.disp(n))}</p>`, `<div class="ms-ty">${(p.t || []).map(V2.typeChip).join('')}</div>`);
-  const gauge = `<div class="pk-gauge" aria-hidden="true"><i class="pk-mk" style="--v:${+rs}"></i><span style="--v:0">0</span><span style="--v:50">50</span><span style="--v:100">100</span></div>`;
+  const gauge = `<div class="pk-gauge" aria-hidden="true"><i class="pk-rg" style="--lo:${lo};--hi:${hi}"></i><i class="pk-mk" style="--v:${+rs}"></i><span style="--v:0">0</span><span style="--v:50">50</span><span style="--v:100">100</span></div>`;
   return `<section class="pk-top" aria-labelledby="pk-name"><div class="pk-card">${card}</div><div class="pk-is">
     <p class="pk-kick"><span class="pk-rank u">${rank ? E(rank) : 'No results yet'}</span><span>Pokémon Champions · VGC doubles</span></p>
     <h1 class="u" id="pk-name">${V2.nameHtml(V2.disp(n))}</h1>

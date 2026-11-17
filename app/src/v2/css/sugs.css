@@ -332,3 +332,7 @@ p,li,small{text-wrap-style:pretty}
    the logo) needs a layout change: open item for Sim with pictures, not done here (a tap-area-only try took taps from the back arrow). */
 .tc-tm{position:relative}.tc-tm::before{content:"";position:absolute;inset:0 -2px}
 .ev-fc{min-width:54px;justify-content:center}
+/* Sim (Nov 17): back / logo / forward on phones and small tablets: 20px between each arrow and the logo on both sides (symmetrical, Sim's
+   rule; desktop has 18 with more room), so the arrows' 44px tap areas no longer overlap the logo; the logo's own tap area is 44 wide (invisible). */
+@media (max-width:759.98px){.np-head .np-goback{margin-right:-2px}.np-head .np-gofwd{margin-left:-2px}.np-head .logo{position:relative}.np-head .logo::before{content:"";position:absolute;inset:0 -12px}.np-head :is(.np-goback,.np-gofwd){position:relative;z-index:1}}
+@media (max-width:359.98px){.np-head .np-goback{margin-right:2px}.np-head .np-gofwd{margin-left:2px}}
