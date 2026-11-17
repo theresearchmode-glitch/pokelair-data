@@ -45,7 +45,12 @@ KO Board, Test Run's piles, Track Record.
 
 ## 4. Missing inside existing tools
 - 4a OPEN Battle Their Six: tap-to-pick grid of the 30 most common Pokémon.
-- 4b OPEN Speed Tiers: your own +1, Unburden after the item, their Choice Scarf.
+- 4b FIXED Speed Tiers: your own +1, Unburden after the item, their Choice Scarf. Checked in code: Unburden already shows a second, doubled
+  number once the item is used, and an opponent's Scarf speed is already used when Scarf is its top item. Added the missing one: a "You +1"
+  chip (your six one Speed stage up, stage first, then items and Tailwind, as the game does; the speed-target tip turns off, as for the
+  other conditions). Checked by hand against the game's order (200 -> 300; 201 with Scarf -> 451), not against the Showdown engine (not
+  installed here). The six chips sit even (2+2+2 on phones, 3+3 at 699, one row on desktop: the last chip now spans only when alone).
+  Test: v2-minors 4b (fails before, passes after). Picture: pics/nov17/speed-up-390.png.
 - 4c PART FIXED Popular Sets: stat-point spreads with share; % for natures and teammates. Checked: Tournaments and Showdown already show % for
   natures and teammates (Modest 66%, "Garchomp 59% of its teams"); "Best data" takes them from Showdown's sample sets, which have no numbers,
   so it now says where the numbers are (mixing sources would show Timid above Modest with the smaller %). Found and fixed on the way: on

@@ -11,7 +11,7 @@ V2.spNote = (r, W) => [r.s.label, r.s.scarf ? 'Choice Scarf' : '', r.wxUp ? `${r
   (typeof spdAbNote === 'function' ? spdAbNote(r.ab) : '').replace(/^ · /, ''), `base ${r.p.st[5]}`].filter(Boolean).join(' · ');
 V2.spTie = (rows, r) => rows.some(o => o !== r && o.v === r.v && o.me !== r.me);
 
-V2.spHead = (D, view) => { const E = V2.esc, tr = spdUi.tr, cond = [spdUi.tw ? 'your Tailwind' : '', spdUi.twOpp ? 'their Tailwind' : '', spdUi.icy ? 'their −1 Speed' : '',
+V2.spHead = (D, view) => { const E = V2.esc, tr = spdUi.tr, cond = [spdUi.tw ? 'your Tailwind' : '', spdUi.up ? 'your six at +1 Speed' : '', spdUi.twOpp ? 'their Tailwind' : '', spdUi.icy ? 'their −1 Speed' : '',
     spdUi.par ? 'they\'re paralyzed' : '', tr ? 'Trick Room: the slowest moves first' : ''].filter(Boolean);
   const wx = spdUi.wx === 'auto' ? (D.autoW ? `weather: ${D.autoW}, from your team` : 'no weather on your team') : spdUi.wx ? `weather: ${spdUi.wx}` : 'no weather';
   const tog = (k, t) => `<button type="button" class="np-chip" data-spd="${k}" aria-pressed="${!!spdUi[k]}">${t}</button>`;
@@ -19,7 +19,7 @@ V2.spHead = (D, view) => { const E = V2.esc, tr = spdUi.tr, cond = [spdUi.tw ? '
   return `<section class="sp2-h"><p class="np-eyebrow"><span>Battle · Speed Tiers · level 50</span></p><h1 class="u"><span>Who moves first.</span> <span class="pl">${D.mine.length ? `Your six vs the top\u00a0${D.thr.length}.` : `The top ${D.thr.length}.`}</span></h1>
     <p class="tm-sub">${tr ? 'Slowest first' : 'Fastest first'}, with each side's usual spread and item; ${E(wx)}${cond.length ? `; ${E(cond.join(', '))}` : ''}.</p></section>
     <div class="sp2-ctl"><div class="np-slide" role="group" aria-label="Show as" style="--n:2;--i:${view === 'list' ? 1 : 0}"><span class="thumb" aria-hidden="true"></span><button type="button" data-spview="track" aria-pressed="${view !== 'list'}"><span>Track</span></button><button type="button" data-spview="list" aria-pressed="${view === 'list'}"><span>List</span></button></div>
-      <div class="chips" role="group" aria-label="Speed conditions">${tog('tw', 'Your Tailwind')}${tog('twOpp', 'Their Tailwind')}${tog('icy', 'Them −1')}${tog('par', 'They\'re Paralyzed')}${tog('tr', 'Trick Room')}</div></div>
+      <div class="chips" role="group" aria-label="Speed conditions">${tog('tw', 'Your Tailwind')}${tog('up', 'You +1')}${tog('twOpp', 'Their Tailwind')}${tog('icy', 'Them −1')}${tog('par', 'They\'re Paralyzed')}${tog('tr', 'Trick Room')}</div></div>
     <div class="sp2-wx chips" role="group" aria-label="Weather">${wxb('auto', D.autoW ? `Your Weather (${E(D.autoW)})` : 'Your Weather (None)')}${wxb('', 'No Weather')}${wxb('sun', 'Sun')}${wxb('rain', 'Rain')}${wxb('sand', 'Sand')}${wxb('snow', 'Snow')}</div>`; };
 
 // desktop race track (1024+): x by Speed, your six in lanes above the line, the field in lanes below, so no two names touch

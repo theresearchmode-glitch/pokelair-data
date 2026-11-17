@@ -30,11 +30,11 @@ function likelySpeed0(p,mem){const it=topItem(p),cs=(mem&&mem.spread)||commonSpr
   const v=calcStat(p,'Spe',sp,mul);return {v,scarf,label:(dn?'0 Speed points, Speed-lowering nature':up?'32 Speed points, Speed-boosting nature':sp?'32 Speed points':'0 Speed points')+(nat?`, ${nat} (estimated)`:' (estimated)'),nat}}
 // ---- speed tiers ----
 // wx: the weather in play ('auto' = the one your team sets, if exactly one); par: they're paralyzed (×0.5)
-let spdUi={tw:false,twOpp:false,tr:false,icy:false,par:false,wx:'auto'},spdLast=null;
+let spdUi={tw:false,twOpp:false,tr:false,icy:false,par:false,up:false,wx:'auto'} /* up: your six at +1 Speed (player review 4b, Nov 17) */,spdLast=null;
 // One row's speed under the conditions: item (Scarf ×1.5), weather speed ability ×2, Tailwind ×2, −1 stage, paralysis ×0.5.
 // Unburden: also the speed once its item is used (×2), shown as a second number.
 // The game's order: the stat stage first, then the modifiers chained in 4096ths (rounded once), then paralysis halves it.
-function spdCalc(base,scarf,ability,weather,o){let v=base;if(o.icy)v=Math.floor(v*BOOST(-1));
+function spdCalc(base,scarf,ability,weather,o){let v=base;if(o.icy)v=Math.floor(v*BOOST(-1));if(o.up)v=Math.floor(v*BOOST(1));
   // o.unb: Unburden active (its item is used), ×2 in the same chain
   const wm=typeof speedMul==='function'?speedMul(ability,weather):1,mods=[scarf?6144:4096,wm>1?8192:4096,o.tw?8192:4096,o.unb?8192:4096];
   let m=4096;for(const x of mods)if(x!==4096)m=(m*x+2048)>>12;if(m!==4096){const y=v*m/4096;v=Math.max(1,y%1>.5?Math.ceil(y):Math.floor(y))}
@@ -63,17 +63,17 @@ function speedData(){const ms=members(),mine=ms.map(m=>m.p),mineSet=new Set(mine
   const myMem=new Map(ms.map(m=>[m.p.n,m])),myItem=new Map([...myMem].map(([n,m])=>[n,m.item]));
   const autoW=typeof sideField==='function'?sideField(ms).weather:'',W=spdUi.wx==='auto'?autoW:spdUi.wx;
   const rows=[...mine.map(p=>({p,me:true})),...thr.map(p=>({p,me:false}))].map(r=>{const mem=r.me?myMem.get(r.p.n):null,s={...likelySpeed(r.p,mem)};
-    const ab=mem?mem.ability:abilityOf({p:r.p}),o={tw:r.me?spdUi.tw:spdUi.twOpp,icy:!r.me&&spdUi.icy,par:!r.me&&spdUi.par};
+    const ab=mem?mem.ability:abilityOf({p:r.p}),o={tw:r.me?spdUi.tw:spdUi.twOpp,icy:!r.me&&spdUi.icy,par:!r.me&&spdUi.par,up:r.me&&spdUi.up};
     const v=spdCalc(s.v,s.scarf,ab,W,o),wxUp=typeof speedMul==='function'&&speedMul(ab,W)>1;
     // Unburden: doubled once its item is used (Sneasler's seed or herb), unless Scarf/no item
     const unb=ab==='Unburden'&&!s.scarf?spdCalc(s.v,s.scarf,ab,W,{...o,unb:true}):null;return {...r,s,v,ab,wxUp,unb}});
   rows.sort((a,b)=>spdUi.tr?a.v-b.v:b.v-a.v);
   const sums=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&((r.ab==='Stall')!==(me.ab==='Stall')?r.ab==='Stall':spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
-    let tip=null;if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy&&!spdUi.par&&!me.wxUp){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
+    let tip=null;if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy&&!spdUi.par&&!spdUi.up&&!me.wxUp){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
       const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
       if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
         tip={above,need,cur}}}
-    const os=outspeedOf(me.v,W,{tr:spdUi.tr,tw:spdUi.twOpp,icy:spdUi.icy,par:spdUi.par}),cond=[spdUi.tw?'your Tailwind':'',spdUi.twOpp?'their Tailwind':'',spdUi.tr?'Trick Room':''].filter(Boolean).join(', ');
+    const os=outspeedOf(me.v,W,{tr:spdUi.tr,tw:spdUi.twOpp,icy:spdUi.icy,par:spdUi.par}),cond=[spdUi.tw?'your Tailwind':'',spdUi.up?'you at +1':'',spdUi.twOpp?'their Tailwind':'',spdUi.tr?'Trick Room':''].filter(Boolean).join(', ');
     return {p,me,beat,tip,os,cond}});
   return {mine,thr,rows,W,autoW,sums}}
 function renderSpeed(){const el=$('spdOut');if(!el)return;
