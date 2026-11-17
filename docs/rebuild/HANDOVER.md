@@ -7,6 +7,15 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Nov 17, written time: 3:51 PM (3:51:10)  date: Tue Nov 17, 2026; authority until 10:00 PM Tue Nov 17; summary with pictures before 10 PM)
+- Preview v200 (397 files, checked): Remove/Replace B (Sim: recommended); My Team buttons at 700-820 (audit v199 #1).
+- Sprites A (Sim: recommended) cannot ship on Claude-hosted pages: an artifact holds AT MOST 511 FILES per version (deploy
+  refused 743). Preview builds use --one-art-size (rebuild-preview.sh). SWITCH STEP: the live artifact build must also pass
+  --one-art-size (live holds ~350 files already). The public January site carries app/src/v2/art-s/ and builds without the flag.
+- Decision logged 3:50 PM; Sim told in the next message. M-D date guard is on main (d0662883, Sim's go).
+- Next: audit v199 findings one at a time (docs/rebuild/audits/audit-v199-nov17.md); then My Team phone length, desktop
+  columns, All Suggestions layout (pictures for Sim); X-05 clear buttons; start-up scroll stall; d4-check.
+
 ## NOW (Nov 17, written time: 1:30 PM (1:30:05)  date: Tue Nov 17, 2026 Tue Nov 17, 2026 by the clock; authority EXTENDED until 10:00 PM Tue Nov 17 by Sim; summary before 10 PM)
 - All 5 helpers reported (docs/rebuild/research/: regmd-readiness, data-inventory, nov12-recheck, known-sorted, speed-report).
 - Done today after 11 AM (branch claude/design6; each with a test that fails before): Popular Sets stat-point spreads (pr-4c);
