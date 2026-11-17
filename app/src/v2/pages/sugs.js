@@ -134,7 +134,10 @@ document.addEventListener('click', e => { if (!e.target.closest) return;
 // a second tap within half a second is ignored, as on today's page (a double tap can't apply two suggestions)
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2plan],[data-v2plana]'); if (!b) return; const now = Date.now(); if (now - (V2._sgTap || 0) < 450) return; V2._sgTap = now;
   const fromAll = b.dataset.v2plana != null, pl = fromAll ? V2.sgAll.list[+b.dataset.v2plana] : (ui.planList || [])[+b.dataset.v2plan]; if (!pl) return;
-  if (fromAll) V2.closeSheet(true); applyPlan(pl); render(); V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`); });
+  // known-bug SUGG-09 (Nov 17): the parts above Suggestions change height on the redraw, so Suggestions jumped about 120px; keep it where it was
+  const sec = !fromAll && b.closest('section'), id = sec && sec.id, y0 = sec ? sec.getBoundingClientRect().top : null;
+  if (fromAll) V2.closeSheet(true); applyPlan(pl); render(); V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`);
+  if (id) { const keep = () => { const el = document.getElementById(id); if (el) { const d = el.getBoundingClientRect().top - y0; if (Math.abs(d) > 1) scrollBy(0, d); } }; keep(); requestAnimationFrame(keep); } });
 
 // ---------- Problems and Team Checks (in the Team Checks section): a fold, closed until opened, remembered per device ----------
 // Today's rows (problemRows), Quick add picks (quickList / quickInfo), the team checks (proChecks, ckState, CK_TXT) and the verdict

@@ -23,7 +23,6 @@
   "COV-12": "not yet sorted (Nov 17): fails on the new site, reason not yet checked one by one. Failed with: not at the bottom",
   "SUGG-02": "feature not built on the new site yet (code review C-C1). Failed with: not in v2 yet: Plan settings (Pick from, Let plans swap my Mega, Count abilities, Refresh plans, Never suggest)",
   "SUGG-04": "old-site layout (sorted Nov 17): expects the old Bigger Plans card rows (\"X \u2192 Y N teams\"). The real part (In your box / To catch) is fixed (v2-minors \"Known-bug COV-04\").",
-  "SUGG-09": "POSSIBLE REAL BUG on the new site (code review C-C1): check and fix. Failed with: the place under the finger was not kept: Apply 602 \u2192 null, Suggestions 300 \u2192 179",
   "SUGG-10": "not yet sorted (Nov 17): fails on the new site, reason not yet checked one by one. Failed with: timed out waiting for Undo bar in Bigger plans",
   "SUGG-12": "not yet sorted (Nov 17): fails on the new site, reason not yet checked one by one. Failed with: More suggestions missing /More suggestions \\d+ more suggestions?, including different options and rarely used picks/: \u00ab18 suggestions All Su",
   "SUGG-14": "not yet sorted (Nov 17): fails on the new site, reason not yet checked one by one. Failed with: no-plan note missing /No change from this pool raises the team's Strength Score \\(it's at [\\d.]+\\)\\. Keep this team, or try \"Whole roster\" o",
