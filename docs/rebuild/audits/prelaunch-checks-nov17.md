@@ -44,9 +44,12 @@ parked by Sim's Nov 9 rule until she says), NO CHANGE (checked).
   delete) illegal saved teams and box Pokémon, a notice on the day.
 
 ## 5. Accessibility (axe-core WCAG 2.2 AA, 96 views, plus manual)
-- 5a OPEN Tap targets 19-22 px: Winning Teams "Set as Opponent ›" / "Compare ›"; My Team "Game Plan ›"; Battle "Change on
-  My Team ›"; Track Record "How Ratings Work ›"; Feedback "Show Email"; About Fine Print (5 links); Events "Victory Road
-  season calendar"; search fields on Winning Teams and Type Chart (check the visible box vs the 22 px input).
+- 5a FIXED Tap targets 19-22 px (Winning Teams "Set as Opponent ›" / "Compare ›", My Team "Game Plan ›", Battle "Change on My Team ›",
+  Track Record "How Ratings Work ›", Feedback "Show Email", About's source links). Measured all at 19-22px (390 and 1440). Now 44px tall
+  (the site's tap size) with matching negative margins, so nothing moves: full-page screenshots of all six pages are pixel-identical
+  before and after. Exempt and left as they are: links inside a sentence (Events "Victory Road season calendar", About's licence lines),
+  per WCAG 2.5.8. Search fields: the visible box is 52px and tapping it focuses the field (checked), so no change. Test:
+  app/test/tap-size.mjs (12 failures before, 0 after; in GitHub's checks). Picture: pics/nov17/tap-areas-*-390.png (tap areas shaded).
 - 5b NO CHANGE (checked; unsure what the reviewer saw) Ratings search ("Find a Pokémon or type") shows no focus ring by keyboard. Checked by Tab in Chromium and WebKit, 390 and 1440, both Meta views: focus lands on the box and a 3px blue ring is drawn round the visible box (components.css .np-field:focus-within); the inner input itself has outline none, which is likely what the check read. Pictures: scratchpad raq-390.png / raq-1440.png (ring visible).
 - 5c FIXED Garchomp forms strip "92 · S tier" blue on light blue 4.13:1 (< 4.5:1); check other forms strips. Cause: the label runs at 85% opacity; on the current form's blue tile that is 4.14:1 (computed from the raw colours; full opacity 5.5:1). The current tile's label is now at full opacity. Measured with app/test/forms-contrast.mjs (12 Pokémon with forms, day and night, 54 labels; now in GitHub's checks): 11 under 4.5:1 before (all the current tile in day mode, 4.14), 0 after. Pictures: pics/nov17/forms-contrast-{before,after}.png.
 - 5d OPEN (lower priority) 930 buttons: spoken name doesn't start with the visible words (voice control).

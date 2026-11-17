@@ -146,6 +146,9 @@ jobs:
       # pre-launch check 5c (Nov 17): forms-strip labels read at 4.5:1 or more, day and night
       - run: PAGE=app/dist/v2.html node app/test/forms-contrast.mjs
         if: ${{ !cancelled() }}
+      # pre-launch check 5a (Nov 17): standalone text links at least 24px tall
+      - run: PAGE=app/dist/v2.html node app/test/tap-size.mjs
+        if: ${{ !cancelled() }}
       - run: node app/test/tokens-doc.mjs
         if: ${{ !cancelled() }}
       - run: node app/test/perf-docs.mjs
