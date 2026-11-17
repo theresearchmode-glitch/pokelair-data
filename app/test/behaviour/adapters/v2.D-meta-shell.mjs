@@ -13,7 +13,7 @@ export default (ui, pg) => {
     return (0, eval)('(' + src + ')')(a); }, [fn.toString(), arg]);
   const wait = ms => pg.waitForTimeout(ms);
   const until = async (fn, ms = 4000, step = 100) => { const t = Date.now(); let v; while (Date.now() - t < ms) { v = await fn(); if (v) return v; await wait(step); } return v; };
-  const rowsOf = sel => ev(sel => [...document.querySelectorAll(sel)].filter(__dvis).map(e => { const a = e.getAttribute('aria-label') || '', m = a.match(/^(.*?), rated (\d+)(?:, number (\d+))?/) || [];
+  const rowsOf = sel => ev(sel => [...document.querySelectorAll(sel)].filter(__dvis).map(e => { const a = e.getAttribute('aria-label') || '', m = a.match(/^(.*?), rated (\d+)(?:, number (\d+))?/) || (a.match(/^(.*?) (\d+): rated(?: number (\d+))?/) /* pl-5d (Nov 17): tiles say their visible words first */) || [];
     let t = e.closest('[data-tier]'); if (!t || !t.matches('section')) { let s = e.previousElementSibling; while (s && !s.matches('.ra-tier')) s = s.previousElementSibling; t = s; }
     return {id: e.dataset.v2mon, name: m[1], rating: +m[2], rank: m[3] ? +m[3] : null, tier: t ? t.dataset.tier : null}; }), sel);
   const D = {

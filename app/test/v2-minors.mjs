@@ -168,6 +168,12 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500);
   const rn = await p.evaluate(() => window.__ev(`(() => { const R = {id: 'M-C', since: '2026-09-01', now: {id: 'M-D', since: '2026-12-02', events: 3, need: {events: 20}}}, P = META.perf, o1 = META.reg, o2 = P && P.reg; META.reg = R; if (P) P.reg = R; try { return V2.dataNote().replace(/<[^>]+>/g, ''); } finally { META.reg = o1; if (P) P.reg = o2; } })()`));
   ok(/3 Reg M-D events so far, switches at 20\./.test(rn), `Known-bug SHELL-05 (Nov 17): the new-regulation note says how far along it is (${String(rn).slice(0, 200)})`); }
+{ const lin = [];
+  for (const [route, sel] of [['meta', '.gs-mon'], ['speed', '.sp2-m'], ['home', '.hm-used'], ['home', '.hm-rk'], ['usage', '.us-fig']]) {
+    await p.goto('file://' + PAGE + '#' + route); await p.waitForTimeout(2000);
+    lin.push(await p.evaluate(sel => { const norm = x => x.toLowerCase().replace(/[^a-z0-9%.# ]+/g, ' ').replace(/\s+/g, ' ').trim(); const e = [...document.querySelectorAll('#main ' + sel)].find(x => x.getClientRects().length && x.getAttribute('aria-label')); if (!e) return sel + ' none';
+      const vis = norm((e.querySelector('.us-tx') || e).innerText).split(' ').slice(0, 2).join(' ') /* a Usage figure's podium number is decoration; its label text is .us-tx */, al = norm(e.getAttribute('aria-label')); return al.startsWith(vis) ? '' : sel + ': "' + vis + '" vs "' + al.slice(0, 50) + '"'; }, sel)); }
+  const bad = lin.filter(Boolean); ok(!bad.length, `pl-5d (Nov 17): spoken names start with the visible words (rating tiles, speed rows, Home most used and ranks, Usage figures)${bad.length ? ': ' + bad.join(' | ') : ''}`); }
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500); await p.evaluate(() => V2.openSearch()); await p.waitForTimeout(300);
   await p.fill('[data-v2q]', 'garch'); await p.waitForTimeout(400);
   const hits = await p.evaluate(() => [...document.querySelectorAll('[data-v2hits] .np-hit')].map(h => h.querySelector('b') ? h.querySelector('b').textContent.trim() : '').slice(0, 4).join(' | '));
