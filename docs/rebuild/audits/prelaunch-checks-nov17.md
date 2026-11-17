@@ -36,7 +36,7 @@ parked by Sim's Nov 9 rule until she says), NO CHANGE (checked).
 - 3b LAUNCH PLAN Link previews: no og:/twitter: tags (logo package has social/link-preview-1200x630.png).
 - 3c LAUNCH PLAN No web manifest (icons exist).
 - 3d LAUNCH PLAN #hash routes: search engines see Home only; decide on real addresses (e.g. each Pokémon page).
-- 3e OPEN (check now) "This Preview uses a saved copy of the data" banner must be tied to preview mode only.
+- 3e NO CHANGE (checked) "This Preview uses a saved copy of the data" banner must be tied to preview mode only. Checked: it shows only when window.__NP_PREVIEW is set (shell.js V2.dataNote), which only the --preview-data build sets; build.mjs refuses --public with --preview-data (ran it: "--public and --preview-data do not mix"); a --v2 --public build has __NP_PREVIEW=1 0 times; GitHub's v2-public.mjs fails if it ever appears.
 
 ## 4. The next regulation (decide now)
 - 4 FOR SIM "M-C" appears 112 times; legal items are a fixed M-C list; no single regulation setting; saved teams don't
