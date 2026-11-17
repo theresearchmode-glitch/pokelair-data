@@ -63,9 +63,9 @@ jobs:
   # text, sizes on the scale, tap targets, no code as text; 5 widths, day and night, on the frozen data. Findings already judged
   # are in app/test/qcheck-known.json; any new one fails.
   quality-v2:
-    name: new site full quality check (every page)
+    name: new site full quality check (every page and view)
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 55   # every view added Nov 17: measured 1,693 s here
     steps:
       - name: Wait for the rest of a multi-commit change
         run: sleep 120
