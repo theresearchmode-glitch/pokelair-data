@@ -78,6 +78,14 @@ export async function open(o = {}) {
   const pg = await ctx.newPage(), errs = []; LAST = pg;
   pg.on('pageerror', e => errs.push(e.message.slice(0, 200)));
   const state = o.team || o.box || o.opp || o.saved ? ADAPTER.stateFor(o) : null;
+  /* WebKit leaves a styled dropdown's options out of innerText (measured Nov 17: Edit Set's Ability field read "Ability Mega Ability",
+     Chrome "Ability Mega Ability Drought ★"; the dropdown shows its value on screen in both). The tests read text the way Chrome
+     does, so on WebKit only innerText includes each dropdown's option texts, as Chrome's does. */
+  if (BROWSER === 'webkit') await pg.addInitScript(() => { const d = Object.getOwnPropertyDescriptor(HTMLElement.prototype, 'innerText');
+    Object.defineProperty(HTMLElement.prototype, 'innerText', {configurable: true, set: d.set, get() {
+      const sels = this.tagName === 'SELECT' ? [] : [...this.querySelectorAll('select')].filter(x => x.getClientRects().length); if (!sels.length) return d.get.call(this);
+      const tmp = sels.map(x => { const t = document.createElement('span'); t.textContent = [...x.options].map(o => o.text).join('\n'); t.style.cssText = 'display:block'; x.after(t); return t; });
+      try { return d.get.call(this); } finally { tmp.forEach(t => t.remove()); } }}); });
   await pg.addInitScript(([D, st, o]) => {
     window.__PL_TEST = 1;
     // copies are recorded here as well as sent to the real clipboard (Nov 11: reading the clipboard back fails on Windows)

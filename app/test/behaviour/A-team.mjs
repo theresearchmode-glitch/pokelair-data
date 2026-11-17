@@ -602,7 +602,7 @@ t('EDIT-05', 'Stat points: live total, over-66 warning, Save stat points; Team S
   if (NEW) has(await r.ui.panelField('Stat points') || '', /^Stat points Your pick Use the most common 66 of 66 /, 'Stat points field'); else has((await r.ui.editPanel()).text, /Yours/);
   // the new build's Team Sheet is a sheet over My Team, so its Garchomp card is read on its own (the page text starts with My Team's)
   await r.ui.closeEditPanel(); await r.ui.go('Team Sheet', 900); const tx = await r.ui.text(); const g = NEW ? await r.ui.teamSheetCard('Garchomp') || '' : tx.slice(tx.indexOf('Garchomp'), tx.indexOf('Garchomp') + 400);
-  if (NEW) has(g, /^Garchomp .* Your spread HP \d+ 32 /, 'Team Sheet Garchomp');
+  if (NEW) has(g, /^Garchomp .* Your spread HP \d+ 32\b/, 'Team Sheet Garchomp');
   has(g, /HP \d+ 32/, 'Team Sheet Garchomp'); has(g, /Spe \d+ 0/, 'Team Sheet Garchomp'); await r.close(); });
 
 t('EDIT-06', 'Ability picker: a rarer ability names the common one; "Use Prankster" restores', async () => {
@@ -1054,7 +1054,7 @@ t('PKMN-05', 'Build, stats, abilities, type matchups, speed: usual set, base sta
 t('PKMN-06', 'How to build it and partners: typical set, moves and items with %, a partner opens its own page', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
   for (const x of [/Typical set ABILITY \w+ \d+%/i, /in-game ranked battles/, /Items \S.* \d+%/, /Who it teams with/]) has(s, x, 'page');
-  const partner = (s.match(/Who it teams with Brought with \w+ \w+ (\w+)/) || [])[1] || 'Sneasler'; await r.ui.tapInPage(partner);
+  /* the first proper-case name after 'Brought with' (the big faint capitals before it read joined in WebKit, Nov 17, C-I8) */ const partner = (s.match(/Who it teams with Brought with .*?\b([A-Z][a-z][\w-]*)/) || [])[1] || 'Sneasler'; await r.ui.tapInPage(partner);
   ok(new RegExp(partner, 'i').test(await r.ui.pageHash()), 'partner page did not open: ' + await r.ui.pageHash()); await r.close(); });
 
 t('PKMN-07', 'Why it rates N: its bars, What the data says, other tier lists, How Ratings Work and Track Record links', async () => {
