@@ -310,7 +310,7 @@ V2.dataReady = () => { if (V2._dataOk) return true; let ok = false;
 setTimeout(() => { if (!V2._dataOk) { V2._dataOk = true; fixMetaSrc(); clearCaches(); V2.redraw(); } }, 8000);
 // pre-launch check 1 (Nov 17): shown in the main area until today's numbers are in (V2.dataReady, bridge.js): the logo and one line,
 // announced once (role=status), so a slow phone shows that something is coming instead of old numbers or an empty page
-V2.loadingHtml = () => `<section class="np-loading" aria-busy="true"><div class="np-ldlogo" aria-hidden="true">${V2.logo(true)}</div><p class="np-ldtxt" role="status">Getting today’s numbers…</p></section>`;
+V2.loadingHtml = () => `<section class="np-loading" aria-busy="true"><div class="np-ldlogo" aria-hidden="true">${V2.logo(true)}</div><p class="np-ldtxt" role="status">Getting today’s numbers…</p><div class="np-ldbar" aria-hidden="true"></div></section>`;
 V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place || r;
   const nav = V2.places.map(([k, n]) => `<a href="#${k}"${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
   return {P, html: `<a class="vh np-skip" href="#main" data-v2skip>Skip to the page</a>
