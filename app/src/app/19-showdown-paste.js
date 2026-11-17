@@ -59,6 +59,17 @@ function pasteItemOK(it) { const NOT = ['Choice Band', 'Choice Specs', 'Assault 
   const known = new Set([...pool, ...legal, ...(typeof CALC_ITEMS !== 'undefined' ? CALC_ITEMS : []), ...extra]);
   return known.has(it); }
 const pnorm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+/* pre-launch check 6a (Nov 17): a typo ("Garchmp") was reported as "not on the M-C roster"; the closest roster name is offered instead,
+   when it is close enough (edit distance at most 2, or 3 for long names) and only one name is that close */
+function pasteSuggest(name) { const k = pnorm(name); if (k.length < 4) return null; const lim = k.length >= 9 ? 3 : 2; let best = null, bd = 99, tie = false;
+  const ed = (a, b) => { if (Math.abs(a.length - b.length) > lim) return 99; let prev = Array.from({length: b.length + 1}, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) { const cur = [i]; for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; } return prev[b.length]; };
+  const seen = new Set(); for (const p of ROSTER) { if (p.m) continue; const d = p.d; if (seen.has(d)) continue; seen.add(d); const x = ed(k, pnorm(d));
+    if (x < bd) { bd = x; best = d; tie = false; } else if (x === bd && d !== best) tie = true; }
+  return bd <= lim && !tie ? best : null; }
+/* pre-launch check 6b: a block that reads like a sentence (no "@", no Ability or move lines, and a first line of 5+ words or over 30
+   characters) is not a Pokémon at all */
+const pasteProse = lines => lines.length && !lines.some(l => /^(-|Ability:|EVs:|IVs:|Level:|Tera Type:)/i.test(l) || / @ /.test(l)) && (lines[0].split(/\s+/).length >= 5 || lines[0].length > 30);
 function speciesFromPaste(name) {
   const k = pnorm(name); if (!k) return null;
   for (const p of ROSTER) if (pnorm(p.n) === k) return p;
@@ -83,7 +94,8 @@ function parsePaste(text) {
     const female = /\(F\)\s*$/.test(head); head = head.replace(/\s*\((M|F)\)\s*$/, '');
     const paren = head.match(/\(([^()]+)\)\s*$/); const speciesName = paren ? paren[1] : head;
     let p = speciesFromPaste(speciesName);
-    if (!p) { notes.push(`Skipped "${speciesName}": not on the M-C roster`); continue; }
+    if (!p) { if (pasteProse(lines)) { notes.push(`Skipped "${lines[0].slice(0, 30)}${lines[0].length > 30 ? '…' : ''}": not a team`); continue; }
+      const sug = pasteSuggest(speciesName); notes.push(sug ? `Skipped "${speciesName}": did you mean ${sug}?` : `Skipped "${speciesName}": not on the M-C roster`); continue; }
     /* code review A2-M2: "Charizard-Mega-Y @ Charizardite X" kept Mega Y without a word; the form named wins, and the paste is told */
     if (item && p.m && STONE_RE.test(item) && byName.get(p.b)) { const mf = megaFormFor(byName.get(p.b), {it: [[item, 100]]}); if (mf && mf.m && mf.n !== p.n) notes.push(`${p.d}: kept as named (${item} is for ${mf.d})`); }
     if (item && !p.m && STONE_RE.test(item)) { const mf = megaFormFor(p, {it: [[item, 100]]}); if (mf !== p) p = mf;
@@ -117,17 +129,22 @@ function parsePaste(text) {
 // yet), {error} when nothing could be read, or {msg} once the team was replaced (Undo kept).
 function importPaste(raw) { const sh = typeof decodeTeam === 'function' ? decodeTeam(raw) : null; if (sh) return {shared: sh};
   const r = parsePaste(raw);
-  if (!r.slots.length) return {error: r.notes.length ? r.notes.join('. ') + '.' : 'No Pokémon found. Paste the team text, one Pokémon per block.'};
+  if (!r.slots.length) return {error: r.notes.length && r.notes.every(n => /: not a team$/.test(n)) ? "This doesn't look like a team. Paste the team text from Showdown or a team sheet, one Pokémon per block." /* 6b */
+    : r.notes.length ? (r.notes.join('. ') + '.').replace(/\?\./g, '?') : 'No Pokémon found. Paste the team text, one Pokémon per block.'};
   keepUndo(); S.slots = normSlots(r.slots); S.loadedId = null; ui.paste = null;
   const sk = r.notes.map(n => { const x = n.match(/^(.+?): skipped (item|move|ability) "(.+?)"/); return x ? `${x[3]} (${x[1]})` : null; }).filter(Boolean);
   const skm = r.notes.map(n => { const x = n.match(/^Skipped "(.+?)": not on the M-C roster/); return x ? x[1] : null; }).filter(Boolean);
+  const typo = r.notes.map(n => { const x = n.match(/^Skipped "(.+?)": did you mean (.+?)\?$/); return x ? `${x[1]} (did you mean ${x[2]}?)` : null; }).filter(Boolean); /* 6a */
+  /* 6c (Nov 17): Item Clause: the same held item on two or more Pokémon is said at import (Team Checks also catches it later) */
+  const itc = {}; r.slots.forEach(sl => { const it = sl.it && sl.it.doubles; if (it) (itc[it] = itc[it] || []).push(byName.get(sl.n).d); });
+  const clash = Object.entries(itc).filter(([, a]) => a.length > 1);
   /* stress test (Nov 16): a repeated Pokémon was dropped without a word (6 Incineroar: "Imported 1 Pokémon"), and a repeat past the sixth
      block was blamed on "Only 6 fit"; repeats are now named as repeats, and "Only 6 fit" lists only the different Pokémon left out */
   const got = new Set(r.slots.map(s => byName.get(s.n).b)), sp = n => { const p = speciesFromPaste(n); return p ? p.b : null; };
   const dup = r.notes.map(n => { const x = n.match(/^Skipped a second (.+?) \(one per species\)/); return x ? ((byName.get(x[1]) || {}).d || x[1]) : null; }).filter(Boolean).concat((r.over || []).filter(n => got.has(sp(n))).map(n => (byName.get(sp(n)) || {}).d || n));
   const over = (r.over || []).filter(n => !got.has(sp(n))), dupN = [...new Set(dup)];
   const misc = r.notes.filter(n => /: a second "|: kept as named \(|: skipped stat points \(one stat over 32\)/.test(n)), megas = r.slots.filter(s => (byName.get(s.n) || {}).m).length;
-  return {msg: `Imported ${r.slots.length} Pokémon` + (skm.length ? `. Not in Reg M-C, left out: ${skm.slice(0, 3).join(', ')}${skm.length > 3 ? ` and ${skm.length - 3} more` : ''}` : '')
+  return {msg: `Imported ${r.slots.length} Pokémon` + (typo.length ? `. Not found: ${typo.slice(0, 3).join(', ')}${typo.length > 3 ? ` and ${typo.length - 3} more` : ''}` : '') + (clash.length ? `. Item Clause: ${clash.map(([it, a]) => `${a.length} hold ${it} (${a.join(', ')})`).join('; ')}; only one of each item per team` : '') + (skm.length ? `. Not in Reg M-C, left out: ${skm.slice(0, 3).join(', ')}${skm.length > 3 ? ` and ${skm.length - 3} more` : ''}` : '')
     + (sk.length ? `. Not in Champions, skipped: ${sk.slice(0, 3).join(', ')}${sk.length > 3 ? ` and ${sk.length - 3} more` : ''}` : '')
     + (dup.length ? `. One of each Pokémon per team: left out ${dup.length} more ${dupN.slice(0, 3).join(', ')}${dupN.length > 3 ? ` and ${dupN.length - 3} others` : ''}` : '')
     + (over.length ? `. Only 6 fit: left out ${over.slice(0, 3).join(', ')}${over.length > 3 ? ` and ${over.length - 3} more` : ''}` : '')

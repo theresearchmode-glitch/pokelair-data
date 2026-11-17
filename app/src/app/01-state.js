@@ -1,5 +1,9 @@
 // ---------- state ----------
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+/* pre-launch check 6e (Nov 17): saved data that can't be read used to fall back to the sample team without a word, and the next save
+   overwrote it. Now it is copied to cc2.state.unreadable first (never overwritten by a save) and the page says so once (V2 shell). */
+var STATE_UNREADABLE=false;(()=>{try{const v=localStorage.getItem('cc2.state');if(!v)return;let ok=false;try{const o=JSON.parse(v);ok=!!o&&typeof o==='object'&&!Array.isArray(o)}catch(e){}
+  if(!ok){STATE_UNREADABLE=true;localStorage.setItem('cc2.state.unreadable',v)}}catch(e){}})();
 let S=LS.get('cc2.state',null);
 // Nov 15 (code review A3): a damaged field is repaired on its own; the rest of a player's saved state (teams, log, choices) is kept.
 // Only something that isn't a saved state at all starts fresh. fixSlots/fixTeams/fixLog then check each entry.

@@ -1,3 +1,8 @@
+// pre-launch check 6d (Nov 17): team names stop at 40 characters (a long paste was cut mid-word without a word). From 30 characters the
+// field shows how many are used ("34/40"); the spoken label says the limit
+V2.nameCnt = v => String(v || '').length >= 30 ? `${String(v).length}/40` : '';
+document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-v2savename],[data-svname]'); if (!i) return;
+  const c = i.parentElement.querySelector('[data-v2cnt]'); if (c) c.textContent = V2.nameCnt(i.value); });
 if (typeof TIPS === 'object' && TIPS.checklist && TIPS.checklist[0] === 'Checklist') TIPS.checklist = ['How Team Checks work', TIPS.checklist[1]]; /* word list (naming audit #15, Nov 16): the tip was read out as 'What is Checklist?' */
 // ---------- My Team (R4, Nov 11) ----------
 // Everything the page shows is worked out by today's shared logic; this file only gathers it (teamData) and draws it.
@@ -101,7 +106,7 @@ document.addEventListener('keydown', e => { const c = e.target && e.target.close
 V2.openSave = () => { if (!members().length) return; const lo = S.teams.find(t => t.id === S.loadedId), full = S.teams.length >= 10, n = S.teams.length;
   const sh = V2.sheet(`<div class="sv2"><h2 class="u">Save Team</h2>
     <p class="tm-sub">${lo ? `Open now: <b>${V2.esc(lo.name)}</b>. Update it, or save ${members().length === 6 ? 'this six' : 'it'} as a new team.` : `Give this ${members().length === 6 ? 'six' : 'team'} a name.`} <span class="sv2-n">${n} of 10 saved</span></p>
-    <form data-v2saveform><label class="np-field"><input data-v2savename maxlength="40" placeholder="Team name, e.g. Rain Archaludon" aria-label="Team name" autocomplete="off" value="${V2.esc(lo ? lo.name : '')}"></label>
+    <form data-v2saveform><label class="np-field"><input data-v2savename maxlength="40" placeholder="Team name, e.g. Rain Archaludon" aria-label="Team name, up to 40 characters" autocomplete="off" value="${V2.esc(lo ? lo.name : '')}"><span class="np-cnt" data-v2cnt aria-hidden="true">${V2.nameCnt(lo ? lo.name : '')}</span></label>
     <div class="sv2-acts">${lo ? `<button type="submit" class="np-btn">Update Team</button><button type="button" class="np-btn2" data-v2savenew${full ? ' disabled' : ''}><span>Save as New</span></button>`
       : `<button type="submit" class="np-btn"${full ? ' disabled' : ''}>Save Team</button>`}<button type="button" class="np-link" data-v2close>Cancel</button></div></form>
     ${full ? '<p class="fine sv2-full">You have 10 saved teams. Update the open team, or delete one in Saved Teams to save a new one.</p>' : ''}</div>`, {label: 'Save Team', small: true, focus: lo ? '[data-v2saveform] .np-btn' : '[data-v2savename]'}); // Sim, Nov 11: updating needs no typing, so on phones the keyboard stays down until you tap the name
@@ -119,7 +124,7 @@ V2.svUi = {sort: 'recent', ren: null, del: null, cmp: null};
 V2.savedHtml = () => { const U = V2.svUi, rows = savedRows(U.sort), n = rows.length;
   const card = ({t, r, ck, G}) => { const on = t.id === S.loadedId, id = V2.esc(t.id), nm = V2.esc(t.name), s = G ? Math.round(G.s) : null;
     const six = r.ms.map(m => `<li>${V2.mon(m.p.n, {iw: 56})}</li>`).join('') + Array.from({length: Math.max(0, 6 - r.ms.length)}, () => '<li class="svt2-empty"><i></i><span>Empty</span></li>').join('');
-    const head = U.ren === t.id ? `<form class="svt2-ren" data-svrenform="${id}"><label class="np-field"><input data-svname maxlength="40" value="${nm}" aria-label="Team name" autocomplete="off"></label><button type="submit" class="np-btn2"><span>Save</span></button><button type="button" class="np-link" data-svact="renx">Cancel</button></form>`
+    const head = U.ren === t.id ? `<form class="svt2-ren" data-svrenform="${id}"><label class="np-field"><input data-svname maxlength="40" value="${nm}" aria-label="Team name, up to 40 characters" autocomplete="off"><span class="np-cnt" data-v2cnt aria-hidden="true">${V2.nameCnt(t.name)}</span></label><button type="submit" class="np-btn2"><span>Save</span></button><button type="button" class="np-link" data-svact="renx">Cancel</button></form>`
       : `<header><h3 class="u">${nm}</h3>${on ? '<span class="np-chip">Open now</span>' : ''}</header>`;
     const score = s != null ? `<div class="np-score sm" style="--band:var(--band-${({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[G.band] || 'solid'})"><b>${s}</b><div class="w"><span>${V2.esc(CH.wordOf(G.s))}</span><small>Strength Score</small></div></div>`
       : `<p class="svt2-part">${r.ms.length < 6 ? `${r.ms.length} of 6 picked` : 'Not rated yet'}</p>`;

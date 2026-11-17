@@ -55,11 +55,13 @@ parked by Sim's Nov 9 rule until she says), NO CHANGE (checked).
 - 5d OPEN (lower priority) 930 buttons: spoken name doesn't start with the visible words (voice control).
 
 ## 6. Messages when something goes wrong
-- 6a OPEN Import typos ("Garchmp") say "not on the M-C roster": suggest the closest name.
-- 6b OPEN A sentence pasted as a team: say it doesn't look like a team (as the empty paste does).
-- 6c OPEN Item Clause at import (4x Choice Scarf imports silently): flag it at import.
-- 6d OPEN Team names cut at 40 characters mid-word without warning: show the limit while typing.
-- 6e OPEN Unreadable saved data falls back to the sample team silently: tell the player in one line.
+- 6a FIXED Import typos ("Garchmp") say "not on the M-C roster": suggest the closest name. Now "Not found: Garchmp (did you mean Garchomp?)", listed apart from "Not in Reg M-C" (closest roster name within 2 letters, 3 for long names, only when one name is that close).
+- 6b FIXED A sentence pasted as a team: say it doesn't look like a team (as the empty paste does). Now: "This doesn't look like a team. Paste the team text from Showdown or a team sheet, one Pokémon per block." (a block with no "@", Ability or move lines and a sentence-like first line).
+- 6c FIXED Item Clause at import (4x Choice Scarf imports silently): flag it at import. Now "Imported 4 Pokémon. Item Clause: 4 hold Choice Scarf (Garchomp, Sneasler, Rillaboom, Kingambit); only one of each item per team".
+- 6d FIXED Team names cut at 40 characters mid-word without warning: show the limit while typing. From 30 characters the field shows "36/40"; the spoken label says "Team name, up to 40 characters" (save and rename fields).
+- 6e FIXED Unreadable saved data falls back to the sample team silently: tell the player in one line. Now the unreadable data is copied to cc2.state.unreadable before anything can overwrite it, and the page says once: "Your saved teams on this device couldn't be read, so the sample team is showing. A copy of the old data was kept."
+
+- 6a-6e tests: v2-minors "Pre-launch 6a".."6e" (all 5 fail before, pass after). Pictures: pics/nov17/name-counter-390.png, import-typo-390.png, import-clause-390.png, unreadable-notice-390.png.
 
 ## Where this meets earlier rules or decisions (for Sim)
 - 3a-3d are January launch work, parked by Sim's Nov 9 rule ("the January launch work is parked until Sim says"). Listed,
