@@ -137,8 +137,10 @@ Most players don't know what moves to run. Any team the site builds or that a pl
 COMPLETE tournament set (item + Ability + four moves that real players run together, update.mjs `cs`). In the grade, a set the
 player hasn't changed counts as a typical build of that Pokémon (Sim chose this Nov 8 after a test: typical build predicted
 winners 55.3% vs 54.5-54.8% for grading the exact popular set). Whatever the player changes is graded exactly as they chose. Our popular-set numbers must agree with established
-sites (Pikalytics tournaments, Pokémon Zone, MetaVGC, PokéBase); crosscheck.mjs checks this daily, and any disagreement gets
-explained, not ignored.
+sites (Pikalytics tournaments, Pokémon Zone, MetaVGC, PokéBase); any disagreement gets explained, not ignored.
+Corrected (Sim, Nov 17): crosscheck.mjs only checks daily that their top item is in our top 2 and their top move in our top 4; it
+does not compare percentages, Abilities or complete sets, and Pikalytics' copy has been frozen since about Nov 9
+(docs/rebuild/research/cross-source-nov17.md). Wider checks are planned in Step 3; until then, don't claim the numbers "agree".
 
 ## When a phase counts as done (Sim, Nov 8)
 A phase is done only when it passes a check that is INDEPENDENT of the thing being changed: real later results, and Sim's own
