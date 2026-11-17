@@ -146,7 +146,9 @@ function undoBarHtml(){const t=undoTop();return t?`<div class="chundo" role="sta
 function undoBarSync(){document.querySelectorAll('.chundohost').forEach(h=>{const x=undoBarHtml();if(h.innerHTML!==x)h.innerHTML=x})}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-undobar]');if(!b)return;const t=undoTop();if(!t)return;ui.undoStack.pop();
   S.slots=JSON.parse(JSON.stringify(t.slots));fixSlots();S.loadedId=t.loadedId;ui.undo=null;keepScroll(()=>render());toast(`Undone: ${t.label}`)});
-document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#toastUndo');if(!b||!ui.undo)return;const u=ui.undo;ui.undo=null;
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#toastUndo');if(!b||!ui.undo)return;
+  /* code review A2-M7: an Undo toast undoes only its own change; if the team was changed again since, nothing is rolled back */
+  if(ui.undoAfter&&ui.undoAfter!==JSON.stringify(S.slots)){ui.undo=null;ui.undoAfter=null;toast('The team changed since then, so nothing was undone');return}const u=ui.undo;ui.undo=null;ui.undoAfter=null;
   S.slots=u.slots;fixSlots();S.loadedId=u.loadedId;keepScroll(()=>render());toast('Change undone')});
 
 // How often recent event winners pass each check, measured live from the Events data (each winner's real team and moves),
