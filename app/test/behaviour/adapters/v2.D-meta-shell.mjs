@@ -243,9 +243,10 @@ export default (ui, pg) => {
     moreButtons: (within = 'body') => ev(w => [...document.querySelectorAll(w + ' button')].filter(__dvis).map(__dtx).filter(t => /^(More|Less)$/.test(t)), within),
     // ---------- toasts and undo ----------
     tapUndo: async () => { await pg.click('#toastUndo'); await wait(500); },
+    /* skips the old list kept on screen, inert, while the planner works (sugs.js); WebKit, Nov 17: the tap landed there */
     applySuggestion: async () => { const before = JSON.stringify(await ui.team());
-      await until(() => ev(() => [...document.querySelectorAll('#main [data-v2plan]')].filter(__dvis).some(b => !b.disabled)), 8000);
-      await tapEl(() => [...document.querySelectorAll('#main [data-v2plan]')].filter(__dvis).find(b => !b.disabled) || null, null, 'an Apply button on a suggestion', 500);
+      await until(() => ev(() => [...document.querySelectorAll('#main [data-v2plan]')].filter(__dvis).filter(b => !b.closest('[inert]')).some(b => !b.disabled)), 8000);
+      await tapEl(() => [...document.querySelectorAll('#main [data-v2plan]')].filter(__dvis).filter(b => !b.closest('[inert]')).find(b => !b.disabled) || null, null, 'an Apply button on a suggestion', 500);
       await until(async () => JSON.stringify(await ui.team()) !== before, 4000); await wait(700); },
     tapUndoBar: async () => { await tapEl(() => [...document.querySelectorAll('#main [data-undobar]')].find(__dvis) || null, null, 'the Undo bar', 1200); },
     // ---------- "?" tips (.sg2-tipop) ----------

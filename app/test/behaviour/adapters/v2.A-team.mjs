@@ -210,7 +210,7 @@ export default (ui, pg, o) => {
         const inn = nm(c.querySelector('.tm-sw.in')), out = sides.length > 1 && !sides[0].classList.contains('in') ? nm(sides[0]) : ''; return out ? `${inn} for ${out}` : `+ ${inn} added`; });
       const mv = li.querySelector('.tm-mv'), b = mv && mv.querySelector('b'), sp = mv && mv.querySelector('span'), ap = li.querySelector('[data-v2plan]');
       return [chs.join(', '), b ? `${b.innerText.trim()} (${sp ? sp.innerText.replace(/\s+/g, ' ').trim() : ''})` : '', ap ? ap.innerText.trim() : ''].filter(Boolean).join(' '); })),
-    applySuggestionCard: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('#main [data-v2plan]')].filter(e => e.getClientRects().length)[i]; b.click(); }, i).then(() => pg.waitForTimeout(1500)),
+    applySuggestionCard: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('#main [data-v2plan]')].filter(e => e.getClientRects().length && !e.closest('[inert]'))[i]; /* not the inert old list (Nov 17) */ b.click(); }, i).then(() => pg.waitForTimeout(1500)),
     /** the Undo bar above the suggestions ("Applied <label> Undo"), null when there is none (same reading as today's adapter) */
     undoBar: () => pg.evaluate(() => { const e = [...document.querySelectorAll('#main [data-undobar]')].find(e => e.getClientRects().length); return e ? e.parentElement.innerText.replace(/\s+/g, ' ').trim() : null; }),
     undoLastApplied: () => click('#main [data-undobar]', 1500),
