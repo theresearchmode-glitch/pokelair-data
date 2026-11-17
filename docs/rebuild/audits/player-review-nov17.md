@@ -9,11 +9,11 @@ inside existing tools, make features findable. Keep: no errors, no sideways scro
 KO Board, Test Run's piles, Track Record.
 
 ## 1. Numbers that disagree between pages (trust; first)
-- 1a OPEN Sneasler "of teams": 35.6% Home (Showdown ladder, Oct) / 37.7% Ratings + Usage / 39% This Week.
-- 1b OPEN Mega Charizard Y "of teams": 21.6% empty My Team / 17.1% Popular Sets / 25% This Week.
-- 1c OPEN Team styles: Archetypes Tailwind 49% / TR 17% (of 90 top-cut teams) vs This Week 56% / 31% (all teams that week).
-- 1d OPEN Volcarona page: "Usually" has Overheat (38% of sets) but the Moves list leaves it out; check other Pokémon.
-- 1e OPEN Pokémon page Speed uses the player's own item without saying so (Garchomp 231 = Choice Scarf).
+- 1a FIXED Sneasler "of teams": 35.6% Home (Showdown ladder, Oct) / 37.7% Ratings + Usage / 39% This Week.
+- 1b FIXED Mega Charizard Y "of teams": 21.6% empty My Team / 17.1% Popular Sets / 25% This Week.
+- 1c FIXED Team styles: Archetypes Tailwind 49% / TR 17% (of 90 top-cut teams) vs This Week 56% / 31% (all teams that week).
+- 1d FIXED Volcarona page: "Usually" has Overheat (38% of sets) but the Moves list leaves it out; check other Pokémon.
+- 1e FIXED Pokémon page Speed uses the player's own item without saying so (Garchomp 231 = Choice Scarf). (checked: it is the usual set's Scarf, not the player's own; the label now says "with Choice Scarf")
 - 1f OPEN "Strong players" = 1,300+ in Team Preview Practice but 1630+ on Home and Popular Sets.
 - Fix asked: every % names its base the same way everywhere; numbers with the player's set say so; one definition of
   "strong players" or each label says which.

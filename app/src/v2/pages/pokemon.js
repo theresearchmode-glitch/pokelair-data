@@ -14,7 +14,7 @@ V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T 
   const num = (b, l, s, few) => `<div class="pk-n${few ? ' few' : ''}"><b class="u">${b}</b><span>${l}${s ? `<small>${s}</small>` : ''}</span></div>`;
   const nums = (H.hU != null ? num(E(V2.shareTxt(H)), 'of teams', H.tot ? 'of ' + E(basisNum(H.tot, true)) : '') : num('None yet', 'of teams', 'no games yet', true))
     + (H.hW != null ? (H.hG >= 30 ? num(E(pctFmt(H.hW)), 'win rate', Math.round(H.hG).toLocaleString('en-US') + ' games') : num('Too few', 'win rate', H.hG ? Math.round(H.hG) + ' games' : 'no tournament games yet', true)) : num('None yet', 'win rate', 'no games yet', true)) /* always three numbers (audit Nov 15: a half-empty row) */
-    + (run ? num(run.v, 'Speed', 'at level 50') : '');
+    + (run ? num(run.v, 'Speed', `at level 50${/Choice Scarf/.test(run.note || '') ? ', with Choice Scarf' : ''}`) : ''); /* player review 1e (Nov 17): the usual set's Scarf is in the number, so say so */
   const card = V2.msCard(p, n, `<p class="mc-nm u">${V2.nameHtml(V2.disp(n))}</p>`, `<div class="ms-ty">${(p.t || []).map(V2.typeChip).join('')}</div>`);
   const gauge = `<div class="pk-gauge" aria-hidden="true"><i class="pk-rg" style="--lo:${lo};--hi:${hi}"></i><i class="pk-mk" style="--v:${+rs}"></i><span style="--v:0">0</span><span style="--v:50">50</span><span style="--v:100">100</span></div>`;
   return `<section class="pk-top" aria-labelledby="pk-name"><div class="pk-card">${card}</div><div class="pk-is">
