@@ -274,6 +274,8 @@ a,button,summary{text-wrap-style:pretty}.sx-info{white-space:nowrap}
 @container (max-width:599.98px){.sg2-ctl{grid-template-columns:136px minmax(0,1fr) minmax(0,1fr)}} /* audit Nov 16: 520-599 the three max-content columns ran past the edge (Count abilities 'Yes' cut at 567-575) */
 @media (max-width:519.98px){.sg2-ctl{grid-template-columns:136px minmax(0,1fr) minmax(0,1fr)}}
 @media (max-width:359.98px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr))}.sg2-ctl>.sg2-c:nth-child(2){grid-column:1/-1}}
+/* Nov 17: a Suggestions column under 328px at any screen width (700-760: the two-column My Team) took the three-across row, so each Yes/No was 30px and its slant cut the letters; under 328 a Yes/No can't keep 44px, so the small-phone layout */
+@container (max-width:327.98px){.sg2-ctl{grid-template-columns:repeat(2,minmax(0,1fr))}.sg2-ctl>.sg2-c:nth-child(2){grid-column:1/-1}}
 /* the three switches line up along the bottom when a label wraps (390: "Swap my / Mega?" beside one-line "Megas on team") */
 .sg2-ctl{align-items:end}
 /* Nov 16 audit (detector, day mode): blue text on the tinted Team Cards (Home corner "Lead") and the underdog panel's links measured 4.2-4.47:1
