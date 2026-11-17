@@ -1,5 +1,5 @@
 {
- "updated": "2026-11-17T04:31:09.498Z",
+ "updated": "2026-11-17T10:21:08.932Z",
  "today": {
   "date": "2026-11-17",
   "model": {
@@ -23,7 +23,7 @@
   },
   "replays": {
    "games": 20000,
-   "rated1300": 7001
+   "rated1300": 7072
   },
   "warnings": [
    "Win model held-out accuracy: 0.5501 vs 0.5608 recently"
@@ -522,7 +522,7 @@
    },
    "replays": {
     "games": 20000,
-    "rated1300": 7001
+    "rated1300": 7072
    },
    "warnings": [
     "Win model held-out accuracy: 0.5501 vs 0.5608 recently"
