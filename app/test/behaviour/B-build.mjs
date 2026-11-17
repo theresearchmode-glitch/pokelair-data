@@ -163,7 +163,7 @@ t('AUTO-08', 'Result card: kicker, title, option count, Strength Score + band + 
   has(r, /^(Proven team(, 1 swap)?|Fresh take|Your build)\b/, 'kicker'); has(r, /Option 1 of \d/, 'option count'); has(r, SCORE_BAND, 'score');
   has(r, /(Top|Bottom) \d+% of tournament teams/, 'rank line'); expect((await ui.builtSix()).length === 6, 'not six tiles');
   has(r, NEW ? /\d+\s*\/30\s*Matchups with an answer/ : /\d+\/30 ready for top threats/, 'readiness'); /* new site: the word list's 'Matchups' (Nov 9) */ has(r, NEW ? /\d\/4\s*Team checks: the 4 basics/ : /\d\/4 team checks/, 'checks'); /* new site: 'Team checks: the 4 basics' (word list, title case) */ not(r, /team checks\W+checks/, 'checks line (stray "checks")');
-  has(r, (NEW ? /(\d+% won|Best core, [\d,]+ teams)/ : /(players brought this exact team|tournament teams, [\d.]+% wins)/), 'why bullets'); has(r, NEW ? /Top 30 threats: \d+ (Shaky|No answer|Handles it|Beats it)/ : /ready for the top 30 threats: handles \d+/, 'readiness why'); /* new site: the word list's Matchups levels */
+  has(r, (NEW ? /(\d+% won|Best trio, [\d,]+ teams)/ : /(players brought this exact team|tournament teams, [\d.]+% wins)/), 'why bullets'); has(r, NEW ? /Top 30 threats: \d+ (Shaky|No answer|Handles it|Beats it)/ : /ready for the top 30 threats: handles \d+/, 'readiness why'); /* new site: the word list's Matchups levels */
   has(r, /Mega option/, 'Mega options chip');
   if (NEW) { /* new: no Sets and roles fold; each figure shows its role, item and tier (The Blueprint, BRIEF.md sections 0 and 4). Abilities are not shown (reported). */
     const six = await ui.builtSix(); for (let i = 0; i < 6; i++) { const t = await ui.builtTileLabel(i), it = await ui.peek(`(abTeam('doubles').mons[${i}]||{}).it`);
