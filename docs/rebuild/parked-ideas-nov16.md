@@ -55,3 +55,10 @@ Claude's recommendation in brackets: **Do** / **Later** / **Drop?**, with the re
 - Upgrade Build and My Team with the new vision; more Undo (deleted saved team, Edit Set, multi-step); shorter pages; data-host/fluid-type talk. [**Later**, one at a time.]
 
 Unsure how to read: "Celebrate a better Strength Score" (accepted partly; unclear if built); Sim's "those are good" on older items (decisions.md ~line 241).
+
+## Sprite sizes (code review B-I6), plan, measured Nov 16 night
+- Today: 346 sprites, 7,657 KB in all, each 219 x 384 px (about 22 KB). Many are shown at about 24-64 px (Calc, Meta lists, My Box).
+- A small set at 96 px tall: about 4 KB each (1,616 KB for all 346). Meta at 1440 downloads 95 sprites (2,149 KB, reviewer): would be about 400 KB.
+- One sprite sheet with all 346 at 96 px: 1,503 KB, loaded once; only worth it on pages that show many small sprites.
+- Blocker for the Preview: the artifact holds at most 511 files and has 397; a second set adds 346.
+- Plan: build the 96 px set (srcset in V2.art, small sizes pick it) for the public site in January, where there is no file cap; keep today's set in the Preview. decoding="async" is already on every sprite (done Nov 16).
