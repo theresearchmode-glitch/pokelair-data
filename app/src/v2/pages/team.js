@@ -34,10 +34,12 @@ V2.plan = {key: null, plans: null, job: null};
 V2.planKey = () => planKeyOf($('useAbil').checked);
 V2.planStart = ms => { const key = V2.planKey(); if (V2.plan.key === key || (V2.plan.job && V2.plan.job.key === key)) return;
   const job = {key, g: planAllG(ms, suggestPool(), true, analyze(playForm(ms), true))}; /* today's whole pass, hidden gems for Quick add included (R4 sugs hook) */ V2.plan.job = job;
-  const step = () => { if (V2.plan.job !== job) return; const t = performance.now(); let r;
+  // speed (Nov 17, pre-launch 2d): the planner waits while the page is being scrolled (its slices caused the 200-330 ms stalls)
+  const step = () => { if (V2.plan.job !== job) return; if (performance.now() - (V2.lastScroll || -1e9) < 250) { setTimeout(step, 150); return; } const t = performance.now(); let r;
     try { for (;;) { r = job.g.next(); if (r.done) break; if (performance.now() - t > 30) { setTimeout(step, 0); return; } } } catch (e) { console.error(e); r = {value: []}; }
     V2.plan = {key, plans: r.value || [], job: null}; if (V2.route() === 'team') V2.redraw(); };
-  setTimeout(step, 0); };
+  if (window.requestIdleCallback) requestIdleCallback(step, {timeout: 1500}); else setTimeout(step, 0); };
+if (!V2._scrollWatch) { V2._scrollWatch = 1; addEventListener('scroll', () => { V2.lastScroll = performance.now(); }, {passive: true}); }
 // which suggestions show (shared with today's page: planListOf, CH.sideGrades) and what each does to the Strength Score
 V2.sugData = (ms, RD) => { if (ms.length < 1) return null; V2.planStart(ms); const P = V2.plan.key === V2.planKey() ? V2.plan.plans : null; if (!P) return {pending: true};
   let g0 = P.gBase != null ? P.gBase : null; if (g0 == null) { try { g0 = ms.length === 6 ? gradeTeam(ms) : null; } catch (e) {} }

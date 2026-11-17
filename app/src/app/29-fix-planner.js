@@ -139,8 +139,9 @@ function* planFixesG(ms,pool,useA,opts){
   // evidence floor (Oct 28 audit): suggestions come from Pokémon real players actually run, unless you ask for off-meta.
   // Best of ladder/tournament usage and the share of Limitless teams: 2%+, or 0.5%+ for Pokémon in your box, whichever pool is
   // picked (sweep, Oct 31: Box + catch dropped your own box Pokémon that My box offered, so the bigger pool gave worse plans).
-  const swo=swOutNow(),cands=pool.filter(p=>!ms.some(m=>m.base===p.b)&&!(swo&&swo.has(p.b))&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)?.5:2))).map(p=>{const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
-    return {p,mem:{...mm,i:-1,p,d:p.d,moves:pm,_mv:pm.some(isCoverage)?pm:[]}}});
+  // speed (Nov 17, pre-launch 2d): built in pieces with a pause every 30 Pokémon (the whole pool at once was a 200 ms step on a phone); same list, same order
+  const swo=swOutNow(),cands=[];{let k=0;for(const p of pool){if(!(!ms.some(m=>m.base===p.b)&&!(swo&&swo.has(p.b))&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)?.5:2))))continue;const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
+    cands.push({p,mem:{...mm,i:-1,p,d:p.d,moves:pm,_mv:pm.some(isCoverage)?pm:[]}});if(++k%30===0)yield}}
   // never more Megas than the goal, or (when the team is already over it: Megas on team 0 with a Mega in) than it has now
   const mega0=ms.filter(m=>m.mega).length,legal=(team)=>{const n=team.filter(m=>m.mega).length;return n<=maxMega||n<=mega0};
   const singles=[];
@@ -180,7 +181,7 @@ function* planFixesG(ms,pool,useA,opts){
     if(A.c.p.b===B.c.p.b)continue;
     if(A.out&&B.out){if(A.out===B.out)continue;const t=ms.map(x=>x===A.out?{...A.c.mem,i:x.i}:x===B.out?{...B.c.mem,i:x.i}:x);if(legal(t))doubles.push({ch:[{...A},{...B}],team:t})}
     else if(!A.out&&!B.out&&emptyIdx.length>=2){const t=[...ms,A.c.mem,B.c.mem];if(legal(t))doubles.push({ch:[{...A,slot:emptyIdx[0]},{...B,slot:emptyIdx[1]}],team:t})}}
-  {const keep=doubles.filter(keepOK);doubles.length=0;doubles.push(...keep)}
+  yield;{const keep=[];let k=0;for(const pl of doubles){if(keepOK(pl))keep.push(pl);if(++k%25===0)yield}doubles.length=0;doubles.push(...keep)} /* speed (Nov 17): pauses inside, same plans kept */
   for(const pl of doubles){evalPlan(pl);yield}
   const clean=base.a.excess===0&&!base.a.unresisted.length;
   // a plan must never make the type rating worse, and must beat the current team by a clear margin

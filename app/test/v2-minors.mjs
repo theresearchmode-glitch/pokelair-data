@@ -150,6 +150,10 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.evaluate(() => window.__ev('clearSlot(5);render()')); await q.waitForTimeout(9000);
   const own = await q.evaluate(() => [...document.querySelectorAll('.tm-chg')].map(c => c.getAttribute('aria-label') + ' [' + ((c.querySelector('.tm-own') || {}).textContent || '') + ']').join(' | '));
   ok(/\[(In your box|To catch)\]/.test(own) && !/\[\]/.test(own), `Known-bug COV-04 (Nov 17): each suggestion says whether the Pokémon coming in is in your box or still to catch (${own.slice(0, 160)})`); await ctx.close(); }
+{ await p.goto('file://' + PAGE + '#about'); await p.waitForTimeout(2500);
+  const st = await p.evaluate(() => window.__ev(`(() => { const mf = memberFrom; let n = 0; memberFrom = function () { n++; return mf.apply(this, arguments); };
+    try { const g = planFixesG(members(), suggestPool(), true); g.next(); return n; } finally { memberFrom = mf; } })()`));
+  ok(st > 0 && st <= 30, `Speed fix 3 (Nov 17, pre-launch 2d): the planner's first step builds at most 30 candidates, not the whole pool at once (${st} built)`); }
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500); await p.evaluate(() => V2.openSearch()); await p.waitForTimeout(300);
   await p.fill('[data-v2q]', 'garch'); await p.waitForTimeout(400);
   const hits = await p.evaluate(() => [...document.querySelectorAll('[data-v2hits] .np-hit')].map(h => h.querySelector('b') ? h.querySelector('b').textContent.trim() : '').slice(0, 4).join(' | '));
