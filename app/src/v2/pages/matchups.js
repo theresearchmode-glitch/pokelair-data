@@ -41,7 +41,7 @@ V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).fil
   // depends on the team; a line says how many more and opens All 30
   const N = 4, grp = (t, a) => a.length ? `<ol class="tm-rows mu-out" aria-label="${t}: ${a.length}">${a.slice(0, N).map(row).join('')}</ol>` : '';
   const more = [unf.length > N ? `${unf.length - N} more Unfavoured` : '', fav.length > N ? `${fav.length - N} more Favoured` : ''].filter(Boolean).join(' and ');
-  return `${V2._hand ? '<div class="mu-cards">' : ''}${grp('Unfavoured', unf)}${grp('Favoured', fav)}${V2._hand ? '</div>' : ''}${more ? `<p class="tm-sub mu-outmore">${more} in <button type="button" class="np-link" data-muall30>All 30 ›</button></p>` : ''}${!unf.length && !fav.length ? '<p class="tm-sub">Real games call every top threat an even match for this team.</p>' : ''}
+  return `${V2._hand ? `<div class="mu-cards" data-n="${Math.min(N, unf.length) + Math.min(N, fav.length)}">` : ''}${grp('Unfavoured', unf)}${grp('Favoured', fav)}${V2._hand ? '</div>' : ''}${more ? `<p class="tm-sub mu-outmore">${more} in <button type="button" class="np-link" data-muall30>All 30 ›</button></p>` : ''}${!unf.length && !fav.length ? '<p class="tm-sub">Real games call every top threat an even match for this team.</p>' : ''}
 `; }; // Nov 12 height cut: no "The other N are even matches. See all 30" line; the counts line above says how many are even and
   // the "All 30" view button sits just above the rows (the data-muall30 handler below stays for any other link)
 

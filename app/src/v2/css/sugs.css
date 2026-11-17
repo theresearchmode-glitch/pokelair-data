@@ -220,6 +220,10 @@
 }
 /* nuclear stress test (Nov 16): at 360 four stand-out cards ran names and verdicts together; three across up to 404 (390 with a desktop scrollbar still touched by 4px; 414 measured clean) */
 @media (min-width:360px) and (max-width:404.98px){.mu-cards .nm{font-stretch:88%}.mu-cards li{flex-basis:33.333%}}
+/* player review 3d (Nov 17): rows stay even for the card count (data-n). Under 405 wide (3 across) 4 or 8 cards go 2 across instead of
+   3+1 / 3+3+2; 405-1099 (4 across) 5 or 6 cards go 3 across instead of 4+1 / 4+2. Two across keeps the verdict words whole (Nov 15). Here, not in matchups.css: this layer (sugs) comes last and sets 3 across at 360-404 */
+@media (max-width:404.98px){.mu-cards[data-n="4"] li,.mu-cards[data-n="8"] li{flex-basis:50%}}
+@media (min-width:405px) and (max-width:1099.98px){.mu-cards[data-n="5"] li,.mu-cards[data-n="6"] li{flex-basis:33.333%}}
 /* nuclear stress test (Nov 16): Usage's four bench figures at 320 (72px sprites + padding = 304px) overran a 273px row when the window
    has a scrollbar, cutting "Indeedee (F)"; 64px sprites, no side padding, so four always fit */
 /* nuclear stress test (Nov 16): the underdog's colour field faded to nothing at 75%, so on wide screens the panel read as ending at 70% width
