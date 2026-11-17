@@ -31,14 +31,20 @@ CH.gradeFull = s => CH.grade(s);
 CH.gradeOld = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F';
 // this exact six's own record (δ in team-strength units, and its games), from model.sixes
 CH.sixOf = ms => { const S = META.model && META.model.sixes; if (!S || !ms || ms.length !== 6) return null; const v = S[ms.map(m => (m.p || m).n).sort().join('|')]; if (!Array.isArray(v)) return null;
-  // Deep Check, Nov 8: the record was earned with the sets real players ran, so it only counts for Pokémon on a set like
-  // theirs. A Pokémon counts as changed when you gave it a move outside its 6 most-run moves, or an item outside its 3
-  // most-run items (an imported real team sheet keeps its record); a six with every set changed keeps none of it.
-  const off = m => { try { const pm = new Set((typeof popularMoves === 'function' ? popularMoves(m.p) : []).map(x => x && (x.name || x)));
-      const mv = (m.custom ? (m.moves || []) : []).map(x => x && (x.name || x)).filter(Boolean);
-      const ti = typeof topItems === 'function' ? (topItems(m.p) || []).slice(0, 3).map(x => Array.isArray(x) ? x[0] : x) : [];
-      return (pm.size && mv.some(x => !pm.has(x))) || (m.heldItem && !m.itemDefault && !m.p.m && ti.length && !ti.includes(m.heldItem)); } catch (e) { return false; } };
-  const mine = ms.filter(m => m && m.p && off(m)).length, share = (6 - mine) / 6;
+  // Deep Check, Nov 8: the record was earned with the sets real players ran, so it only counts for Pokémon on a set like theirs.
+  // Sim, Nov 16 (batch 9B): a Pokémon counts as changed when you gave it a move or a held item that real tournament players never
+  // ran on it (its tournament set data), so an imported real team sheet keeps its whole record (611 of 709 real sheets measured; the
+  // stricter "top 6 moves / top 3 items" took part of the record from 550 of them). A six with every set changed keeps none of it.
+  // (Code review A2-I1: this check used to throw on every team and was swallowed, so no edit ever counted.)
+  const ran = (L, x) => (L || []).some(r => (Array.isArray(r) ? r[0] : r) === x);
+  const off = m => { const st = typeof defSet === 'function' ? defSet(m.p) : null; if (!st) return false;
+    const pm = new Set((typeof popularMoves === 'function' ? popularMoves(m.p) : []).map(x => x && (x.name || x)));
+    const mv = (m.custom ? (m.moves || []) : []).map(x => x && (x.name || x)).filter(Boolean);
+    const mvOff = (st.mv || []).length > 0 && mv.some(x => !pm.has(x) && !ran(st.mv, x));
+    const it = m.heldItem && !m.itemDefault && !m.p.m ? (typeof canonItem === 'function' ? canonItem(m.heldItem) : m.heldItem) : null;
+    const T = typeof topItems === 'function' ? topItems(m.p) : null, its = [...((T && T.it) || []), ...(st.it || [])].map(r => Array.isArray(r) ? r[0] : r).map(x => typeof canonItem === 'function' ? canonItem(x) : x);
+    return mvOff || !!(it && its.length && !its.includes(it)); };
+  const mine = ms.filter(m => m && m.p && off(m)).length, share = (6 - mine) / 6; if (!share) return null; /* none of the record is this team's: it reads as our estimate, not 'based on N real games' */
   return {d: (+v[0] || 0) * share, g: +v[1] || 0, share}; };
 // how sure the rating is (Nov 8, step 5): the spread of the team's strength from how much real evidence stands behind each of
 // its Pokémon and pairs (model.monSd / pairSd), widened by CH.SD_K, the factor that made those spreads match later results

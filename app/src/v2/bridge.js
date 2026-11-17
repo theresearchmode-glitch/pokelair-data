@@ -24,3 +24,10 @@ function keepScroll(fn) { fn(); }
 try { Object.assign(TC, AR.TC_FIX); } catch (e) {}
 // box changes from the shared logic (applyBox, 45-team-links.js): the rebuild's toast with the box's own Undo (pages/box.js)
 function toastBox(t) { V2.bxToast(t); }
+/* Sim, Nov 16 (batch 10A; code review A2-I2 + A2-I3): the Strength Score's number, band word and band colour all come from the ONE
+   number shown (rounded), with no "sticky" band. Before: 79.5 showed "80 · Solid", and a team could show "81 · Tournament ready" in the
+   Solid colour because the colour kept its old band for 1.5 points. New site only; today's live site keeps its own rules. */
+{ const grade0 = CH.grade, word0 = CH.wordOf;
+  CH.grade = s => grade0(s == null ? s : Math.round(s));
+  CH.wordOf = s => word0(s == null ? s : Math.round(s));
+  CH.sticky = (ms, s) => CH.gradeFull(s); /* no buffer, and no np.gl write on every score */ }
