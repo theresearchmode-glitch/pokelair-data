@@ -189,8 +189,9 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
 { const sp = []; for (const [w, r] of [[390, 'build'], [390, 'speed'], [1280, 'calc'], [1280, 'battle'], [390, 'team']]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1800);
     sp.push(await p.evaluate(() => { const im = [...document.querySelectorAll('#main img[src*=".webp"]')].filter(i => i.getClientRects().length); const sm = im.filter(i => i.getAttribute('src').includes('-s/'));
       const big = sm.filter(i => { const m = i.closest('.np-mon'), iw = m ? parseFloat(((m.getAttribute('style') || '').match(/--iw:([\d.]+)px/) || [])[1]) : NaN; return m && !(iw <= 80); }); return [sm.length, big.length]; })); }
-  await p.setViewportSize({width: 1280, height: 900}); const used = sp.reduce((a, x) => a + x[0], 0), wrong = sp.reduce((a, x) => a + x[1], 0);
-  ok(used > 0 && wrong === 0, `Sprites A (Nov 17): small spots use the 240px files (${used} on 5 pages) and no sprite set larger than 80px gets one (${wrong})`); }
+  await p.setViewportSize({width: 1280, height: 900}); const used = sp.reduce((a, x) => a + x[0], 0), wrong = sp.reduce((a, x) => a + x[1], 0), one = await p.evaluate(() => !!window.NP_ONE_ART);
+  if (one) ok(used === 0, `Sprites A on Claude hosting (Nov 17): a --one-art-size build asks for no small file, since an artifact holds at most 511 files (${used} small on 5 pages)`);
+  else ok(used > 0 && wrong === 0, `Sprites A (Nov 17): small spots use the 240px files (${used} on 5 pages) and no sprite set larger than 80px gets one (${wrong})`); }
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500); await p.evaluate(() => V2.openSearch()); await p.waitForTimeout(300);
   const fnd = []; for (const q of ['cores', 'build for me', 'battle a team', 'pokémon ratings']) { await p.fill('[data-v2q]', q); await p.waitForTimeout(300); fnd.push(q + ' > ' + await p.evaluate(() => { const b = document.querySelector('[data-v2hits] .np-hit b'); return b ? b.textContent : 'nothing'; })); }
   await p.fill('[data-v2q]', 'cores'); await p.waitForTimeout(300); if (await p.$('[data-v2hits] .np-hit')) await p.click('[data-v2hits] .np-hit'); await p.waitForTimeout(1200);

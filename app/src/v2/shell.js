@@ -6,7 +6,8 @@ V2.art = (id, big) => id == null || id === '' ? 'data:image/gif;base64,R0lGODlhA
 // Sim (Nov 17, sprites A): every direct sprite image is drawn 80px or smaller (measured on every page, 320-1920), so it takes the 240px file
 // (art-s/, looks the same at iPhone 3x; all sprites 7.6 -> 4.7 MB); V2.mon keeps today's 384px file unless it is set to 80px or less.
 // If a small file is missing the image falls back to the full-size one (V2.artFix).
-V2.ART_SMALL = V2.ART_BASE.replace(/\/?$/, '') + '-s/';
+// Claude-hosted builds (--one-art-size: an artifact holds at most 511 files) keep one size: the small spots use the 384px file too.
+V2.ART_SMALL = window.NP_ONE_ART ? V2.ART_BASE : V2.ART_BASE.replace(/\/?$/, '') + '-s/';
 V2.artFix = e => { const i = e.target; if (i && i.tagName === 'IMG' && i.src.includes('-s/') && !i.dataset.full) { i.dataset.full = 1; i.src = i.src.replace(/-s\/(\d+\.webp)/, '/$1'); } };
 addEventListener('error', V2.artFix, true); /* code review C8: a Pokémon with no picture asked for v2art/undefined.webp; now a blank 1px image */
 V2.esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m]);
