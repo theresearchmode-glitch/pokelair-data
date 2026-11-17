@@ -1124,7 +1124,7 @@ t('X-02', 'First visit: sample six "Sun Tailwind (sample)", saved and open, defa
     await r.ui.tapText(/^Import a team( ›)?$/, 900); const p = await r.ui.editPanel(); ok(p && p.title === 'Paste a Team', '"Import a team" did not open Import (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
     await r.ui.go('Saved Teams', 900); has(await r.ui.savedCardOf('Sun Tailwind (sample)') || '', /^Sun Tailwind \(sample\) Open now /, 'saved sample');
     await r.ui.tapText(/^← My Team$/, 900); ok(await r.ui.current() === 'report', 'Saved Teams did not close');
-    await r.ui.go('My Box', 900); ok(await r.ui.current() === 'box', 'My Box did not open'); has(await r.ui.text(), / My Box 36 Pokémon · 2 boxes /, 'My Box'); await r.close(); return; }
+    await r.ui.go('My Box', 900); ok(await r.ui.current() === 'box', 'My Box did not open'); has(await r.ui.text(), / My Box 36 Pokémon(?: \(sample\))? · 2 boxes /, 'My Box'); await r.close(); return; }
   const r = await aopen({fresh: true}); await r.ui.go('My Team', 2500); has(await r.ui.text(), 'Sun Tailwind (sample)'); has(await r.ui.text(), 'This is a sample team');
   await r.ui.go('Saved Teams', 900); has(await r.ui.savedCardOf('Sun Tailwind (sample)') || '', 'Open now', 'saved sample'); await r.ui.go('My Box', 900); has(await r.ui.text(), '36 Pokémon'); await r.close(); });
 

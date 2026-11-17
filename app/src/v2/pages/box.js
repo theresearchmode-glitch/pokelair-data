@@ -1,3 +1,7 @@
+// player review 3j (Nov 17): a first visit's box is the built-in sample (DEFAULT_BOX, as cleaned at load in 02-set-data.js); while it is
+// unchanged it says so, as the sample team does
+V2.boxSample = () => { try { const d = new Set(DEFAULT_BOX.map(b => b === 'Rotom' ? 'Rotom-Wash' : b).filter(b => byName.has(b) && !byName.get(b).m));
+  return S.box.length === d.size && S.box.every(b => d.has(b)); } catch (e) { return false; } };
 // ---------- My Box (R4, Nov 11) ----------
 // Sim's chosen concept (docs/redesign/box/NOTES.md, Nov 10): an in-game Pokémon box in the light design. Boxes of 30 (six across
 // on wide screens, five on phones), a wallpaper mixed from the types inside, the picked Pokémon lifted onto a tile with its
@@ -57,7 +61,7 @@ V2.bxEmpty = () => { const n = V2.underdog(), d = V2.esc(V2.disp(n));
 
 V2.pages.box = {place: 'box', draw() { const D = V2.bxData(), E = V2.esc, n = S.box.length;
   const head = `<div class="bx-lead"><div class="np-eyebrow"><span><a class="np-back" href="#team">← My Team</a> · The Pokémon you own</span></div><h1 class="u">My Box</h1>
-    <p class="bx-count">${n} Pokémon${n ? ` · ${D.pages} box${D.pages > 1 ? 'es' : ''}` : ''}</p><p class="bx-why">Build and the suggestions pick from these when set to “My Box”.</p>
+    <p class="bx-count">${n} Pokémon${V2.boxSample() ? ' (sample)' : ''}${n ? ` · ${D.pages} box${D.pages > 1 ? 'es' : ''}` : ''}</p><p class="bx-why">${V2.boxSample() ? 'A sample box to start with: add the Pokémon you own and remove the rest. ' : ''}Build and the suggestions pick from these when set to “My Box”.</p>
     <button type="button" class="bx-add" data-bxadd><span>Add a Pokémon</span><b aria-hidden="true">+</b></button></div>`;
   const sort = `<div class="bx-sort"><span class="lbl">Arrange by</span>${V2.slide('box-sort', BX_SORTS, D.so === 'za' ? 'az' : D.so, 'Arrange by')}</div>`;
   const tools = `<div class="bx-tools"><ul class="bx-links"><li><button type="button" data-bxlink="copy">Copy Box Link</button></li><li><button type="button" data-bxlink="open" aria-expanded="${!!V2.bx.linkOpen}">Open a Box Link</button>
