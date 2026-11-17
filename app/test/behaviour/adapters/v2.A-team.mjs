@@ -207,7 +207,7 @@ export default (ui, pg, o) => {
     // suggestions, read from the visible card into today's wording
     suggestionCards: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-sug > li')].filter(e => e.getClientRects().length).map(li => {
       const chs = [...li.querySelectorAll('.tm-chg')].map(c => { const sides = [...c.querySelectorAll('.tm-sw')], nm = s => s ? s.innerText.replace(/\s+/g, ' ').trim() : '';
-        const inn = nm(c.querySelector('.tm-sw.in')), out = sides.length > 1 && !sides[0].classList.contains('in') ? nm(sides[0]) : ''; return out ? `${inn} for ${out}` : `+ ${inn} added`; });
+        const inn = nm(c.querySelector('.tm-sw.in')).replace(/\s*(In your box|To catch)$/, '') /* Nov 17: COV-04 line */, out = sides.length > 1 && !sides[0].classList.contains('in') ? nm(sides[0]) : ''; return out ? `${inn} for ${out}` : `+ ${inn} added`; });
       const mv = li.querySelector('.tm-mv'), b = mv && mv.querySelector('b'), sp = mv && mv.querySelector('span'), ap = li.querySelector('[data-v2plan]');
       return [chs.join(', '), b ? `${b.innerText.trim()} (${sp ? sp.innerText.replace(/\s+/g, ' ').trim() : ''})` : '', ap ? ap.innerText.trim() : ''].filter(Boolean).join(' '); })),
     applySuggestionCard: (i = 0) => pg.evaluate(i => { const b = [...document.querySelectorAll('#main [data-v2plan]')].filter(e => e.getClientRects().length && !e.closest('[inert]'))[i]; /* not the inert old list (Nov 17) */ b.click(); }, i).then(() => pg.waitForTimeout(1500)),

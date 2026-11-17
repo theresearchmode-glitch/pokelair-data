@@ -37,7 +37,7 @@ const AREAS = {'built team': '#main .bd-result', 'cores': '#main .bd-cores', 'in
 const NO_AREA = {'Plan settings': 'Plan settings (Pick from, Let plans swap my Mega, Count abilities, Refresh plans, Never suggest)'};
 // one suggestion card (li) read into today's wording: 'my' = My Team's card, 'big' = today's Bigger plans card. Runs in the page.
 const CARD = (li, mode) => { const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : '';
-  const chs = [...li.querySelectorAll('.tm-chg')].map(c => { const sw = [...c.querySelectorAll('.tm-sw')], inn = T(c.querySelector('.tm-sw.in')), out = sw.length > 1 && !sw[0].classList.contains('in') ? T(sw[0]) : ''; return {inn, out}; });
+  const chs = [...li.querySelectorAll('.tm-chg')].map(c => { const sw = [...c.querySelectorAll('.tm-sw')], inn = T(c.querySelector('.tm-sw.in')).replace(/\s*(In your box|To catch)$/, '') /* Nov 17: the card says whether it's yours (COV-04) */, out = sw.length > 1 && !sw[0].classList.contains('in') ? T(sw[0]) : ''; return {inn, out}; });
   const mv = li.querySelector('.tm-mv'), b = mv && mv.querySelector('b'), sp = mv && mv.querySelector('span'), w = mv && mv.querySelector('em');
   const score = b ? `${T(b)} (${T(sp)})${w ? ', ' + T(w) : ''}` : '', lane = T(li.querySelector('.sg2-ln')), btn = T(li.querySelector('[data-v2plan],[data-v2plana]')), why = T(li.querySelector('.sg2-why'));
   const eb = T(li.querySelector('.np-eyebrow'));
