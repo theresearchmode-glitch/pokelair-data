@@ -11,7 +11,9 @@ Preview: v192 (397 files, 346 v2art). Branch claude/design6. Nothing went to mai
 - Tests wait for the page to be ready, not a fixed 1.5 s (C-I7): same results in all four groups, +0.6% time.
 - Safari's engine (C-I8): the My Team tests now run in WebKit too: 138 pass, 0 fail. The 4 first failures were the tests
   reading text differently, not site bugs. The full quality check on every page ran in WebKit with real fonts: nothing
-  Safari-only. The full quality check now runs in GitHub on every change (fails on any new finding).
+  Safari-only. Both were added to GitHub's checks (the quality check fails on any new finding; the Safari job only reports). Their
+  first GitHub runs failed on setup (a missing browser; the style guide page measured 1 px differently there), fixed;
+  not yet confirmed passing on GitHub.
 - Measured and left alone (with reasons in decisions.md):
   - contain: paint on glow sections (B-m4) cut into the glow (20-75 thousand pixels per page), no scroll gain: not applied.
   - Memory after My Team (B-m6): +23 MB, flat, not a leak: no change.
