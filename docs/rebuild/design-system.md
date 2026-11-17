@@ -1,4 +1,4 @@
-# NastyPlot design system (rebuild R2, draft 1, Nov 10)
+# NastyPlot design system (rebuild R2, draft 1, Nov 10; colours, shadow and section 9 brought up to date with the shipped CSS Nov 17)
 
 The one source for how the rebuilt site looks. Every page is built only from these tokens and components; anything new
 is added here first. Sources: the "flair" concept (docs/redesign/concepts/, docs/redesign/box/), Sim's rules in CLAUDE.md,
@@ -9,7 +9,7 @@ sizes on the scale) as the mock-ups are made, and anything that changes is noted
 ## 1. Principles (in order; a later one never overrides an earlier one)
 1. Real data, nothing lost: every feature in docs/rebuild/inventory/ survives and passes its behaviour test.
 2. The Pokémon carry the page: their art is the largest, most vivid thing on every screen.
-3. Readable first: contrast passes in light and Dusk, every Pokémon named, no shrinking one label to fit.
+3. Readable first: contrast passes in day and Night, every Pokémon named, no shrinking one label to fit.
 4. Colour is borrowed from the Pokémon on screen (floor pools, the selected panel, the box wallpaper); that is the theme and
    stays as it is. Fixed colours: the logo blue, section marks, bands, verdicts, and the meaning colours (Sim, Nov 12, 8:46 PM):
    a small fixed set, red = danger, green = good, amber = caution, used ONLY for small status marks (tags, verdict words,
@@ -24,36 +24,40 @@ sizes on the scale) as the mock-ups are made, and anything that changes is noted
 8. Keep the WOW: when a fix could go plainer or stay bold, stay bold.
 
 ## 2. Colour tokens
-Names are roles, not colours. Light is the default; Dusk is the dark mode ("dusk, not black").
+Names are roles, not colours. Day is the default; Night is the dark mode (data-theme="night"; earlier drafts called it
+"Dusk", the same mode). The values below are the shipped ones (Nov 17); section 11 lists all 195 tokens with both values,
+generated from app/src/v2/css/tokens.css, and CI fails if this doc falls behind it (app/test/tokens-doc.mjs).
 
-| Token | Light | Dusk | Use |
+| Token | Day | Night | Use |
 |---|---|---|---|
-| --bg | #FBFAF7 | #1B1A22 | page |
-| --surface | #FFFFFF | #24232C | the one card colour (sheets, panels, table rows on hover) |
-| --wash | #F4F0EA | #2A2832 | base under borrowed colour (box wallpaper, ray panels) |
-| --ink | #17161A | #ECE8E2 | headlines, body text |
-| --ink-2 | #48454F | #C9C3CC | secondary text, labels |
-| --ink-3 | #66636E | #A39CA6 | captions, the smallest text (still must pass 4.5:1) |
-| --rule | rgba(23,22,26,.11) | rgba(236,232,226,.12) | hairline dividers |
-| --plot | #0078BF | #4FB2F0 | logo PLOT blue: second line of headlines, links, focus, slanted marks, active state |
-| --pick | #E8364F (text #C41E35) | #FF5C77 | the logo's NASTY pink: the selected Pokémon's cursor and name (Sim, Nov 11: not blue) |
-| --plate | #17161A | #ECE8E2 | slanted black plates and the filled button (text: --bg) |
+| --bg | #FBFAF7 | #12121B | page |
+| --surface | #FFFFFF | #1D1C29 | the one card colour (sheets, panels, table rows on hover) |
+| --wash | #F4F0EA | #201F2D | base under borrowed colour (box wallpaper, ray panels) |
+| --ink | #17161A | #E4E0DA | headlines, body text |
+| --ink-2 | #48454F | #C4BFCB | secondary text, labels |
+| --ink-3 | #66636E | #B0AAB8 | captions, the smallest text (still must pass 4.5:1) |
+| --rule | rgba(23,22,26,.11) | rgba(228,224,236,.10) | hairline dividers |
+| --plot | #0078BF (text #0068AD) | #62BEF7 | logo PLOT blue: second line of headlines, links, focus, slanted marks, active state |
+| --pick | #E8364F (text #C41E35) | #F0708A (text #F58DA1) | the logo's NASTY pink: the selected Pokémon's cursor and name (Sim, Nov 11: not blue) |
+| --plate | #17161A | #343348 | slanted plates and the filled button (text: --on-plate) |
+| --them | #B4238F (text #9A1A7B) | #E57FD3 (text #EC9BDF) | the other team / Team B (Sim, Nov 15 Q1: magenta, clearly apart from red) |
 
-Bands (Strength Score; the "never red" rule was removed by Sim, Nov 12, 8:36 PM; current colours below unchanged until she picks): Top tier --band-top #0078BF, Tournament ready --band-ready #7B4BD6, Solid --band-solid
-#6B6570, Needs work --band-work #E9A800 (text on it: --ink), Missing a basic --band-miss = --bad-text (red; Sim, Nov 13, My Team Q3 B; was #8A7C6E). Dusk uses the "-ink"
-lighter versions (#4FB2F0, #C9B0FF, #A39CA6, #FFD166, #B8AA9C).
+Bands (Strength Score; the "never red" rule was removed by Sim, Nov 12, 8:36 PM): Top tier --band-top #0078BF, Tournament
+ready --band-ready #7B4BD6, Solid --band-solid #6B6570, Needs work --band-work #E9A800 (text: --band-work-text = --mid-text),
+Missing a basic --band-miss = --bad-text (red; Sim, Nov 13, My Team Q3 B). Night: #62BEF7, #C9B0FF, #B0AAB8, #F0C768, #FF8A80.
 
-Verdicts: Favoured / Beats it --good #2E9E5B (Dusk #5FD08F); Handles it --plot; Even match / Shaky --mid #E9A800
-(Dusk #FFD166); Unfavoured / No answer --low #8A7C6E (Dusk #B8AA9C).
-Meaning colours (Sim, Nov 12, 8:46 PM; small status marks only, rule 4): danger --bad #D93A3A, text --bad-text #B3261E
-(6.26 on --bg) / Dusk --bad #FF7A70, text #FF8A80 (8.15); good = --good / --good-text; caution = --mid / --mid-text.
+Verdicts: Favoured / Beats it --good = --plot (blue; Sim, Nov 12, 8:53 PM; it was green #2E9E5B in draft 1); Handles it
+--plot; Even match / Shaky --mid #E9A800 (Night #F0C768); Unfavoured / No answer --low #8A7C6E (Night #B8AA9C).
+Meaning colours (Sim, Nov 12, 8:46 PM; small status marks only, rule 4): danger --bad #D93A3A, text --bad-text #B3261E /
+Night --bad #FF7A70, text #FF8A80; good = --good / --good-text; caution = --mid / --mid-text.
 Where red goes is shown to Sim with pictures first (first use: Battle's high-danger warnings, "Hurts you", the Unfavoured verdict).
 
-Measured contrast (Nov 10, WCAG ratio on --bg): light ink-2 8.98, ink-3 5.63 (5.17 on --wash), --plot 4.53 (passes, just;
-use --plot-text #0068AD 5.61 for small link text); Dusk ink-2 9.99, ink-3 6.46 (5.82 on --surface), --plot 7.36.
-The light verdict and band FILL colours are too pale for text (--good 3.27, --mid 2.00, --band-miss 3.88), so text uses
-darker partners: --good-text #16693B (6.45), --mid-text #8A5A00 (5.68), --low-text #6E6153 (5.75), all also pass on
---wash. Dusk fills pass as text (5FD08F 8.96, FFD166 11.96, B8AA9C 7.61).
+Measured contrast (Nov 17, WCAG ratio on --bg, by app/test/tokens-doc.mjs): Day ink-2 8.98, ink-3 5.63, --plot 4.53 (passes,
+just; small link text uses --plot-text 5.61), --pick-text 5.61, --them-text 7.17, --bad-text 6.26; Night ink-2 10.34,
+ink-3 8.23, --plot 9.07, --pick-text 8.16, --them-text 9.15, --bad-text 8.15.
+The day verdict and band FILL colours are too pale for text (--mid 2.00, --low 3.88, --band-work 2.00), so text uses darker
+partners: --mid-text #8A5A00 (5.68), --low-text #6E6153 (5.75), --good-text = --plot-text (5.61). Night fills pass as text
+(--mid 11.59, --low 8.22). Tier letters (--tier-*) are fills with --tier-ink / --tier-lit text on them, never text on the page.
 
 Borrowed-colour limits (Nov 11): a colour taken from a sprite is clamped to lightness 25-75% and its saturation capped before use, so a very pale (Whimsicott) or very dark (Darkrai) Pokémon never makes text on its panel unreadable; contrast is then measured as usual.
 
@@ -61,8 +65,8 @@ Type colours: one fixed set of 18 (the concept's TY map), used only for type chi
 as large fields. Borrowed colour: computed from each sprite (the concept's dominant-hue method), mixed with --wash at
 30-58% so names on it pass contrast; checked by the polish check on every box and panel.
 
-Dark Pokémon on Dusk: some art is nearly black (Paldean Tauros 10250-10252, Darkrai, Corviknight, Umbreon) and
-disappears on #1B1A22 without help (seen on the full contact sheet, Nov 10). On Dusk every sprite stands on its borrowed
+Dark Pokémon on Night: some art is nearly black (Paldean Tauros 10250-10252, Darkrai, Corviknight, Umbreon) and
+disappears on the night page without help (seen on the full contact sheet, Nov 10). On Night every sprite stands on its borrowed
 --wash panel or gets a soft light contact glow under it (feature sprites only on mouse screens); pale Pokémon get the
 mirror rule in light mode (a deep enough panel, the agreed "pale Pokémon stand out" rule).
 
@@ -76,7 +80,7 @@ mirror rule in light mode (a deep enough panel, the agreed "pale Pokémon stand 
 
 Sim chose these in conversation on Nov 11. They override anything earlier in this file that disagrees.
 
-- **Night mode = the reference's night (section 6 there).** It replaces the "dusk" values. The tokens live in docs/rebuild/mocks/tokens.css, which keeps the internal name `dusk` for now. One blue main action per screen (Save Team). Other plates are raised dark surfaces with a lit top edge. Outline buttons have a 42% light border. Grain is about 5% at night and about 3.5% by day.
+- **Night mode = the reference's night (section 6 there).** It replaces the "dusk" values. The tokens live in app/src/v2/css/tokens.css (the mock-ups' own copy, docs/rebuild/mocks/tokens.css, keeps the old `dusk` name and values; it is history, not the source). One blue main action per screen (Save Team). Other plates are raised dark surfaces with a lit top edge. Outline buttons have a 42% light border. Grain is about 5% at night and about 3.5% by day.
 - **The selected Pokémon stands on the tilted panel** (skewY -7deg, 6px corners) in its normalised colour, scaled up 8% from its feet, with its name in ink at weight 800. This replaces the pink corner brackets. `--pick` is no longer used for selection.
 - **Borrowed colour is always normalised**: keep the hue, saturation at least 72%, lightness 56% (`--cp`). This applies to floor pools, the selection panel and the Set panel.
 - **Shared floor on desktop** (a 1px line fading at both ends, with a soft spill below; no Bench divider). Each Pokémon is grounded in its own colour: by day a contact shadow inside a pool of its colour, at night a pool of light plus a thin rim on the art.
@@ -119,14 +123,14 @@ Corrections to the reference README:
 - Slant: one angle, -24deg skew for marks (the 18x8 team mark, eyebrow mark, nav underline); plates and buttons use the
   clip-path slant (11-14px offset at each end). Tilted panels: skewY(-7deg).
 - Tap targets: 44px minimum on touch, 36px on mouse screens.
-- Shadow: one lift shadow for "picked up" things (0 18px 30px -16px rgba(30,20,50,.5)); one soft contact shadow under
+- Shadow: one lift shadow for "picked up" things (--shadow-lift, three layers: day 0 1px 2px rgba(30,20,50,.10), 0 8px 16px -6px rgba(30,20,50,.18), 0 24px 40px -18px rgba(30,20,50,.30); night the same shape in black at .35/.45/.6); one soft contact shadow under
   standing Pokémon. No glows on mouse screens except feature sprites (smooth scrolling on Sim's Windows desktop).
 
 ## 4b. Glow (Sim, Nov 10: "the glow ... is so gorgeous and eye catching. please make sure we dont lose that")
 The soft coloured light behind the Pokémon is a signature of the design, not decoration to trim. Reference: the dark Home
 concept Sim sent on Nov 10 (hero, Strength Score, pairs, team preview, speed, this week: each scene lit by its Pokémon).
 - Every scene with Pokémon in it gets its glow: large soft pools of the Pokémon's own borrowed colours behind and under
-  them, strongest in Dusk; in light mode the same pools as a gentle tint. The giant number (Strength Score) and the hero
+  them, strongest at Night; by day the same pools as a gentle tint. The giant number (Strength Score) and the hero
   carry the strongest glow. Pokémon stand in the light with a reflection/contact shadow.
 - This replaces the Nov 10 decision "colour pools only on the Home hero and the Strength Score": Sim's word wins.
 - Built so scrolling stays smooth on Sim's Windows desktop (the reason glow was limited before): pools are static
@@ -179,7 +183,7 @@ concept Sim sent on Nov 10 (hero, Strength Score, pairs, team preview, speed, th
 ## 8. Checks every page passes (automated where possible)
 - Behaviour tests (app/test/behaviour) for every inventory feature on the page.
 - Polish check rewritten for this system: type scale, 4px grid, Unbounded slanted for every headline and number, line
-  height 1.5, contrast in light and Dusk, no text out of its box, no lone tile or half-filled row, no empty half on desktop,
+  height 1.5, contrast in day and Night, no text out of its box, no lone tile or half-filled row, no empty half on desktop,
   no boxes in boxes, one size per kind of control, 320-2560 with no sideways scroll.
 - The agreed-rules list in docs/rebuild-plan.md ("Must match what we already agreed").
 - Smooth-scroll measurement against docs/rebuild/baseline.json.
@@ -197,7 +201,7 @@ Why: the old pages grew because every feature was added to the bottom and nothin
 | iPad 820 x 1180 | 3 screens, about 3,500px | 3 screens, about 3,500px |
 | Desktop 1440 x 900 | 2 screens, about 1,800px | 3 screens, about 2,700px |
 
-A page over its limit is not finished.
+These limits are a target for future work, not a gate (Sim, Nov 16, 6:53 AM: "a target for future work, not a gate that blocks the switch"; decisions.md). A page over its limit is measured and noted, and cutting it is planned work, never a reason to hold a page back.
 
 **9.2 The limits are starting points, not facts.** They came from one mock-up.
 - If a page can't fit, never shrink text, tighten spacing or drop a feature to make it fit. Stop and send Sim the page, its height, what is taking the space, and two options for what to move behind a tap. Sim decides.
@@ -255,3 +259,323 @@ Status of each item is in docs/rebuild-plan.md, "Review rules".
 8. **Setup and tests.** A package.json makes `npm ci` work. While working, run the affected behaviour group; run the full run before anything replaces a live page. A test that passes on one machine and fails on another is reported, never hidden. Any change to a test is reported to Sim with the reason.
 9. **Ownership is open.** The art and the name are not settled. All art is loaded from one place in the code so it can be swapped.
 10. **Conflicts are raised, not settled silently.**
+
+## 11. Token reference (generated)
+
+<!-- tokens:start (generated by app/test/tokens-doc.mjs --write; do not edit by hand) -->
+
+Generated from app/src/v2/css/tokens.css: 195 tokens (195 by day, 85 changed by night). Contrast is the WCAG ratio of a solid colour on that theme's page background (--bg), shown only for plain colours; text needs 4.5 (3 for large text and marks).
+
+**Core colours** (14)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --bg | `#FBFAF7` | `#12121B` | 1.00 / 1.00 |
+| --surface | `#FFFFFF` | `#1D1C29` | 1.04 / 1.11 |
+| --wash | `#F4F0EA` | `#201F2D` | 1.09 / 1.15 |
+| --ink | `#17161A` | `#E4E0DA` | 17.25 / 14.16 |
+| --ink-2 | `#48454F` | `#C4BFCB` | 8.98 / 10.34 |
+| --ink-3 | `#66636E` | `#B0AAB8` | 5.63 / 8.23 |
+| --rule | `rgba(23,22,26,.11)` | `rgba(228,224,236,.10)` |  |
+| --plot | `#0078BF` | `#62BEF7` | 4.53 / 9.07 |
+| --plot-text | `#0068AD` | `#62BEF7` | 5.61 / 9.07 |
+| --pick | `#E8364F` | `#F0708A` | 3.97 / 6.55 |
+| --pick-text | `#C41E35` | `#F58DA1` | 5.61 / 8.16 |
+| --plate | `#17161A` | `#343348` | 17.25 / 1.52 |
+| --on-plate | `#FBFAF7` | `#F1EDE7` | 1.00 / 15.96 |
+| --plate-link | `#62BEF7` | `#62BEF7` | 1.97 / 9.07 |
+
+**--band-*** (7)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --band-top | `#0078BF` | `#62BEF7` | 4.53 / 9.07 |
+| --band-ready | `#7B4BD6` | `#C9B0FF` | 5.27 / 9.87 |
+| --band-solid | `#6B6570` | `#B0AAB8` | 5.41 / 8.23 |
+| --band-work | `#E9A800` | `#F0C768` | 2.00 / 11.59 |
+| --band-miss | `var(--bad-text)` | `var(--bad-text)` | 6.26 / 8.15 |
+| --band-work-text | `var(--mid-text)` | `var(--band-work)` | 5.68 / 11.59 |
+| --band-glow | `none` | `0 0 22px rgba(79,178,240,.4)` |  |
+
+**--bp-*** (4)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --bp-paper | `#fbfcfe` | `transparent` | 1.02 / – |
+| --bp-grid | `#0078bf17` | `#62bef712` |  |
+| --bp-grid5 | `#0078bf2e` | `#62bef724` |  |
+| --bp-ink | `#0a68a8` | `#62bef7` | 5.65 / 9.07 |
+
+**--card-*** (9)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --card-face-1 | `#FFFFFF` | `#1A1924` | 1.04 / 1.07 |
+| --card-face-2 | `#ECEAF2` | `#0C0C13` | 1.14 / 1.05 |
+| --card-ink | `#17161A` | `#F4F2EE` | 17.25 / 16.65 |
+| --card-giant | `rgba(23,22,26,.11)` | `rgba(255,255,255,.10)` |  |
+| --card-line | `rgba(23,22,26,.035)` | `rgba(255,255,255,.03)` |  |
+| --card-sheen | `rgba(255,255,255,.55)` | `rgba(255,255,255,.07)` |  |
+| --card-edge-mid | `#FFFFFF` | same | 1.04 / 18.62 |
+| --card-glow | `.16` | `.30` |  |
+| --card-shade | `rgba(30,20,50,.18)` | `transparent` |  |
+
+**Display sizes** (4)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --d64 | `64px` | same |  |
+| --d120 | `120px` | same |  |
+| --d168 | `168px` | same |  |
+| --d-hero | `clamp(34px,6vw,68px)` | same |  |
+
+**--logo-*** (4)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --logo-pink | `#E8364F` | same | 3.97 / 4.50 |
+| --logo-blue | `#0078BF` | same | 4.53 / 3.93 |
+| --logo-ink | `#17161A` | same | 17.25 / 1.03 |
+| --logo-white | `#FFFFFF` | same | 1.04 / 18.62 |
+
+**--main-*** (3)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --main | `#17161A` | `#3FA2E2` | 17.25 / 6.63 |
+| --main-hi | `var(--main)` | `#63C0F8` | 17.25 / 9.24 |
+| --main-lo | `var(--main)` | `#3FA2E2` | 17.25 / 6.63 |
+
+**--mvc-*** (3)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --mvc-face | `#FFFFFF` | `#15141E` | 1.04 / 1.02 |
+| --mvc-ink | `#17161A` | `#F4F2EE` | 17.25 / 16.65 |
+| --mvc-sub | `#5E5A66` | `#B0AAB8` | 6.43 / 8.23 |
+
+**--on-*** (8)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --on-main | `#FBFAF7` | `#08131E` | 1.00 / 1.01 |
+| --on-mark | `#FFFFFF` | `#12121B` | 1.04 / 1.00 |
+| --on-pk-main | `var(--on-plate)` | `var(--on-mark)` | 1.00 / 1.00 |
+| --on-x4 | `#FFFFFF` | `#FFFFFF` | 1.04 / 18.62 |
+| --on-st | `#FFFFFF` | `#12121B` | 1.04 / 1.00 |
+| --on-st-def | `#17161A` | `#12121B` | 17.25 / 1.00 |
+| --on-type | `#FFFFFF` | same | 1.04 / 18.62 |
+| --on-wx | `#1C1708` | `#1C1708` | 17.12 / 1.04 |
+
+**--podium-*** (3)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --podium-1 | `#f2b705` | same | 1.74 / 10.24 |
+| --podium-2 | `#b9c0cc` | same | 1.75 / 10.17 |
+| --podium-3 | `#d08a4e` | same | 2.71 / 6.58 |
+
+**Corners (--r-*)** (4)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --r-s | `4px` | same |  |
+| --r-m | `6px` | same |  |
+| --r-l | `10px` | same |  |
+| --r-xl | `18px` | same |  |
+
+**--rc-*** (8)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --rc-paper | `#FFFFFF` | same | 1.04 / 18.62 |
+| --rc-ink | `#17161A` | same | 17.25 / 1.03 |
+| --rc-ink2 | `#48454F` | same | 8.98 / 1.99 |
+| --rc-rule | `rgba(23,22,26,.28)` | same |  |
+| --rc-shadow | `rgba(10,8,20,.28)` | same |  |
+| --rc-tape | `rgba(0,120,191,.32)` | same |  |
+| --rc-good | `#0068AD` | same | 5.61 / 3.18 |
+| --rc-bad | `#B3261E` | same | 6.26 / 2.85 |
+
+**Space (--s1 ... --s24, the 4px grid)** (11)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --s1 | `4px` | same |  |
+| --s2 | `8px` | same |  |
+| --s3 | `12px` | same |  |
+| --s4 | `16px` | same |  |
+| --s5 | `20px` | same |  |
+| --s6 | `24px` | same |  |
+| --s8 | `32px` | same |  |
+| --s10 | `40px` | same |  |
+| --s12 | `48px` | same |  |
+| --s16 | `64px` | same |  |
+| --s24 | `96px` | same |  |
+
+**--st-*** (6)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --st-hp | `#21804A` | `#2E9E5B` | 4.73 / 5.46 |
+| --st-atk | `#C2470F` | `#E0601F` | 4.79 / 5.20 |
+| --st-def | `#B58300` | `#D9A21A` | 3.24 / 8.10 |
+| --st-spa | `#2B66D6` | `#5B8DF0` | 5.06 / 5.77 |
+| --st-spd | `#7E45D1` | `#A27BEA` | 5.50 / 5.81 |
+| --st-spe | `#C8346A` | `#E5578A` | 4.84 / 5.37 |
+
+**Type sizes (--t13 ... )** (10)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --t13 | `13px` | same |  |
+| --t15 | `15px` | same |  |
+| --t16 | `16px` | same |  |
+| --t17 | `17px` | same |  |
+| --t20 | `20px` | same |  |
+| --t22 | `22px` | same |  |
+| --t24 | `24px` | same |  |
+| --t26 | `26px` | same |  |
+| --t28 | `28px` | same |  |
+| --t34 | `34px` | same |  |
+
+**--table-*** (3)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --table | `rgba(23,22,26,.035)` | `rgba(255,255,255,.025)` |  |
+| --table-line | `rgba(23,22,26,.06)` | `rgba(255,255,255,.045)` |  |
+| --table-edge | `rgba(23,22,26,.12)` | `rgba(255,255,255,.10)` |  |
+
+**--tier-*** (9)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --tier-s | `#ffb400` | same | 1.71 / 10.44 |
+| --tier-a | `#ff6a3d` | same | 2.73 / 6.54 |
+| --tier-b | `#b45cff` | same | 3.40 / 5.24 |
+| --tier-c | `#2f9bff` | same | 2.77 / 6.43 |
+| --tier-d | `#22b58a` | same | 2.50 / 7.13 |
+| --tier-f | `#8a90a6` | same | 3.04 / 5.87 |
+| --tier-ink | `#14110f` | same | 18.01 / 1.01 |
+| --tier-lit | `#ffffff` | same | 1.04 / 18.62 |
+| --tier-shade | `#14110f` | same | 18.01 / 1.01 |
+
+**--tk-*** (5)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --tk-line | `rgba(255,255,255,.09)` | same |  |
+| --tk-tear | `rgba(255,255,255,.55)` | same |  |
+| --tk-shade | `rgba(10,8,20,.22)` | same |  |
+| --tk-ink | `#1A1408` | same | 17.53 / 1.02 |
+| --tk-scrim | `rgba(26,20,8,.15)` | same |  |
+
+**--ty-*** (18)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --ty-Dragon | `#5060E1` | same | 4.91 / 3.64 |
+| --ty-Ground | `#9A6230` | same | 4.83 / 3.69 |
+| --ty-Fighting | `#BE5718` | same | 4.41 / 4.05 |
+| --ty-Poison | `#8E3FC8` | same | 5.44 / 3.28 |
+| --ty-Dark | `#5A4A56` | same | 7.89 / 2.26 |
+| --ty-Steel | `#447C90` | same | 4.44 / 4.02 |
+| --ty-Fire | `#D2411E` | same | 4.46 / 4.00 |
+| --ty-Water | `#2774D4` | same | 4.44 / 4.02 |
+| --ty-Grass | `#28843C` | same | 4.52 / 3.95 |
+| --ty-Fairy | `#BF3CB7` | same | 4.43 / 4.03 |
+| --ty-Flying | `#3076C7` | same | 4.43 / 4.03 |
+| --ty-Ghost | `#6A4BB8` | same | 6.08 / 2.94 |
+| --ty-Psychic | `#D6316F` | same | 4.44 / 4.01 |
+| --ty-Ice | `#187E97` | same | 4.50 / 3.96 |
+| --ty-Rock | `#7D754B` | same | 4.45 / 4.01 |
+| --ty-Electric | `#946F00` | same | 4.44 / 4.02 |
+| --ty-Normal | `#737571` | same | 4.46 / 4.00 |
+| --ty-Bug | `#677C0F` | same | 4.50 / 3.96 |
+
+**--tyn-*** (18)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --tyn-Dragon | `#3E50E0` | same | 5.87 / 3.04 |
+| --tyn-Ground | `#E08A3E` | same | 2.56 / 6.98 |
+| --tyn-Fighting | `#E67A37` | same | 2.79 / 6.39 |
+| --tyn-Poison | `#9B3EE0` | same | 4.84 / 3.69 |
+| --tyn-Dark | `#8F8F8F` | same | 3.10 / 5.76 |
+| --tyn-Steel | `#3EB5E0` | same | 2.26 / 7.88 |
+| --tyn-Fire | `#E35B3B` | same | 3.45 / 5.16 |
+| --tyn-Water | `#3E86E0` | same | 3.54 / 5.05 |
+| --tyn-Grass | `#3EE062` | same | 1.67 / 10.68 |
+| --tyn-Fairy | `#E03ED6` | same | 3.45 / 5.17 |
+| --tyn-Flying | `#3E89E0` | same | 3.43 / 5.19 |
+| --tyn-Ghost | `#6C3EE0` | same | 5.91 / 3.02 |
+| --tyn-Psychic | `#E03E7A` | same | 3.91 / 4.56 |
+| --tyn-Ice | `#3DC0E1` | same | 2.05 / 8.71 |
+| --tyn-Rock | `#E0C33E` | same | 1.67 / 10.68 |
+| --tyn-Electric | `#FFC71F` | same | 1.50 / 11.92 |
+| --tyn-Normal | `#8F8F8F` | same | 3.10 / 5.76 |
+| --tyn-Bug | `#C4E836` | same | 1.35 / 13.25 |
+
+**--wx-*** (6)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --wx-lo | `rgba(255,255,255,.10)` | same |  |
+| --wx-mid | `rgba(255,255,255,.2)` | same |  |
+| --wx-hi | `rgba(255,255,255,.34)` | same |  |
+| --wx-dk | `rgba(10,8,20,.28)` | same |  |
+| --wx-sun | `#E3A51C` | `#D99A1B` | 2.08 / 7.61 |
+| --wx-sun-hi | `#F2C44D` | `#F0C25A` | 1.57 / 11.14 |
+
+**Other** (38)
+
+| Token | Day | Night | On --bg (day / night) |
+|---|---|---|---|
+| --ray | `rgba(255,255,255,.34)` | `rgba(255,255,255,.045)` |  |
+| --ray-art | `rgba(255,255,255,.4)` | `rgba(255,255,255,.05)` |  |
+| --them | `#B4238F` | `#E57FD3` | 5.62 / 7.36 |
+| --them-text | `#9A1A7B` | `#EC9BDF` | 7.17 / 9.15 |
+| --good | `var(--plot)` | `var(--plot)` | 4.53 / 9.07 |
+| --good-text | `var(--plot-text)` | `var(--plot-text)` | 5.61 / 9.07 |
+| --mid | `#E9A800` | `#F0C768` | 2.00 / 11.59 |
+| --mid-text | `#8A5A00` | `#F0C768` | 5.68 / 11.59 |
+| --low | `#8A7C6E` | `#B8AA9C` | 3.88 / 8.22 |
+| --low-text | `#6E6153` | `#B8AA9C` | 5.75 / 8.22 |
+| --bad | `#D93A3A` | `#FF7A70` | 4.36 / 7.33 |
+| --bad-text | `#B3261E` | `#FF8A80` | 6.26 / 8.15 |
+| --x4 | `#8E1B1B` | `#B71C1C` | 8.66 / 2.83 |
+| --pk-main | `var(--plate)` | `var(--plot)` | 17.25 / 9.07 |
+| --plot-text-deep | `#035C97` | `#81CBF9` | 6.75 / 10.50 |
+| --contact | `rgba(30,20,50,.42)` | `transparent` |  |
+| --shadow-lift | `0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18),0 24px 40px -18px rgba(30,20,50,.30)` | `0 1px 2px rgba(0,0,0,.35),0 8px 16px -6px rgba(0,0,0,.45),0 24px 40px -16px rgba(0,0,0,.6)` |  |
+| --lit-edge | `inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.08)` | `inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.35)` |  |
+| --grain | `.035` | `.05` |  |
+| --score-ink | `var(--ink)` | `#D6D1CA` | 17.25 / 12.26 |
+| --plate-hi | `var(--plate)` | `#3E3D56` | 17.25 / 1.78 |
+| --plate-lo | `var(--plate)` | `#2C2B3D` | 17.25 / 1.35 |
+| --floor-line | `rgba(23,22,26,.13)` | `rgba(214,218,255,.3)` |  |
+| --type-none | `#8E908C` | same | 3.09 / 5.78 |
+| --page-wash | `none` | `linear-gradient(180deg,#0C0C14 0,#12121C 280px,#191928 450px,#14141F 620px,#12121B 100%)` |  |
+| --scrim | `rgba(23,22,26,.28)` | `rgba(6,6,12,.45)` |  |
+| --u | `"Unbounded","Instrument Sans",system-ui,sans-serif` | same |  |
+| --b | `"Instrument Sans",system-ui,sans-serif` | same |  |
+| --unit | `.62em` | same |  |
+| --shade | `30,20,50` | same |  |
+| --rim | `255,255,255` | same |  |
+| --slant | `-24deg` | same |  |
+| --tilt | `-7deg` | same |  |
+| --gut | `96px` | same |  |
+| --tap | `44px` | same |  |
+| --tr-electric | `#F4DC3C` | `#E9D23A` | 1.33 / 12.18 |
+| --ko-tint | `rgba(217,58,58,.10)` | `rgba(255,122,112,.14)` |  |
+| --hp-left | `#2DA84A` | `#3FC060` | 2.95 / 7.91 |
+
+**Set by screen width**
+
+| Width | Token | Value |
+|---|---|---|
+| (max-width:1179.98px) | --gut | `48px` |
+| (max-width:699.98px) | --gut | `16px` |
+
+<!-- tokens:end -->

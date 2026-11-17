@@ -6,7 +6,7 @@ V2.art = id => id == null || id === '' ? 'data:image/gif;base64,R0lGODlhAQABAIAA
 V2.esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m]);
 V2.LS = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
 // the five places, in the order players use them (Sim, Nov 11: Home is in the menu)
-// type colours live in tokens.css (--ty-Dragon...); an unknown type falls back to --type-none
+// type colours live in app/src/v2/css/tokens.css (--ty-Dragon...); an unknown type falls back to --type-none
 V2.TYPES = ['Dragon','Ground','Fighting','Poison','Dark','Steel','Fire','Water','Grass','Fairy','Flying','Ghost','Psychic','Ice','Rock','Electric','Normal','Bug'];
 V2.typeChip = t => `<span class="np-type"${V2.TYPES.includes(t) ? ` style="--tc:var(--ty-${t})"` : ''}>${V2.esc(t)}</span>`;
 // a Pokémon by its site name (ROSTER .n), drawn standing on its floor; opts: {sel, sub, iw}
