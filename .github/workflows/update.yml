@@ -66,6 +66,9 @@ jobs:
       # our numbers against the outside sources (out/crosscheck.json; summary and warnings in the Data health step)
       - run: node crosscheck.mjs || node skip.mjs "crosscheck skipped"
       - run: node ratings-snapshot.mjs || node skip.mjs "ratings snapshot skipped"
+      # the checklist's 'recent winners' numbers, worked out once here instead of on every visitor's phone (code review B-C1, Nov 16;
+      # stored in out/events.json as ckwin; the page uses them only when their stamps match today's data)
+      - run: node ckwin-snapshot.mjs || node skip.mjs "checklist numbers skipped (the page works them out itself)"
       - run: node scoreboard.mjs || node skip.mjs "scoreboard skipped"
       # the ratings' track record: each saved snapshot against the events played after it (out/track.json, page meta/track)
       - run: node track.mjs || node skip.mjs "track record skipped"

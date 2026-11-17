@@ -27,7 +27,11 @@ function cleanEvents(v) { try {
     if (!top.length) return null;
     return {id: str(e.id, 120), name: str(e.name, 140), date: str(e.date, 10), players: +e.players || 0, src: e.src === 'official' ? 'official' : 'limitless', top,
       field: (Array.isArray(e.field) ? e.field : []).map(f => Array.isArray(f) ? [g(f[0]), +f[1] || 0] : null).filter(f => f && byName.has(f[0])).slice(0, 8)}; }).filter(Boolean);
-  return events.length ? {source: str(v.source, 200), updated: str(v.updated, 40), events} : null; } catch (e) { return null; } }
+  /* the checklist's daily numbers (ckwin-snapshot.mjs, code review B-C1): kept only when every part has the expected shape */
+  const nn = x => x == null ? null : (isFinite(+x) ? +x : null), C = v.ckwin, R = C && C.v && C.v.rates;
+  const ckwin = C && typeof C === 'object' && R && typeof R === 'object' && Object.values(R).every(a => Array.isArray(a) && a.length === 2 && a.every(n => isFinite(+n)))
+    ? {ev: str(C.ev, 40), n: +C.n || 0, model: str(C.model, 40), mega: +C.mega, v: {rates: Object.fromEntries(Object.entries(R).slice(0, 30).map(([k, a]) => [str(k, 20), [+a[0], +a[1]]])), two: nn(C.v.two), wmed: nn(C.v.wmed), wq75: nn(C.v.wq75), se2med: nn(C.v.se2med)}} : null;
+  return events.length ? {source: str(v.source, 200), updated: str(v.updated, 40), events, ...(ckwin ? {ckwin} : {})} : null; } catch (e) { return null; } }
 // from 63-practice.js
 function cleanPractice(v) { try {
   if (!v || typeof v !== 'object' || !Array.isArray(v.dict) || !Array.isArray(v.opp) || !Array.isArray(v.rounds)) return null;

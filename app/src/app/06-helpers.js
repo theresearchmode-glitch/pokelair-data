@@ -182,6 +182,9 @@ function ckWinRefresh(){const E=META.events;if(!E)return;
   // instead of the ~120-team pass (load speed, Nov 1). New data has new dates, so it's measured again.
   const skey=JSON.stringify([Object.keys(DATA_AT).sort().map(k=>k+DATA_AT[k]),E.events.length,(E.events[0]||{}).id||'',(E.events[E.events.length-1]||{}).id||'',megaGoal(),modelOK()]);
   {const c=LS.get('np.ckwin',null);if(c&&c.k===skey&&c.v&&c.v.rates){ckWin=Object.assign({},c.v,{key,busy:false,track:ckWin.track||null});safe('checklist claims',()=>bgRender());return}}
+  // code review B-C1 (Nov 16): the daily data job works these numbers out once (ckwin-snapshot.mjs) and stores them with the events, stamped
+  // with the events' and the model's dates and the Mega setting; when all match, the visitor's phone skips the ~120-team pass
+  {const P=E.ckwin,Md=META.model;if(P&&P.v&&P.v.rates&&P.ev===E.updated&&P.n===E.events.length&&Md&&P.model===Md.updated&&P.mega===megaGoal()&&modelOK()){ckWin=Object.assign({},P.v,{key,busy:false,track:ckWin.track||null});try{LS.set('np.ckwin',{k:skey,v:P.v})}catch(e){}safe('checklist claims',()=>bgRender());return}}
   const list=E.events.map(ev=>ev.top[0]).filter(t=>t&&t.place===1&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n)));if(list.length<20)return;
   ckWin.busy=true;const acc={},wts=[],se2s=[];let i=0,two=0,n=0,pend=null;
   // runs only while the browser is idle, in short slices, so it never competes with scrolling (Nov 5)
