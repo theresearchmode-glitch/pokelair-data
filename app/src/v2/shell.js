@@ -118,14 +118,23 @@ V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: [
   const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
     return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
   return {places, mons}; };
-V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="Find a Pokémon, a saved team or a page" aria-label="Find a Pokémon, a saved team or a page" autocomplete="off"></label><p class="vh" data-v2hitsay role="status"></p><div class="hits" data-v2hits></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
+V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="Find a Pokémon, move, item, team style or page" aria-label="Find a Pokémon, move, item, Ability, team style, saved team or page" autocomplete="off"></label><p class="vh" data-v2hitsay role="status"></p><div class="hits" data-v2hits></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
   const inp = sh.querySelector('[data-v2q]'), out = sh.querySelector('[data-v2hits]');
   // saved teams by name too (today's search does): choosing one opens it, like Open in Saved Teams
   const teams = q => { q = q.trim().toLowerCase(); return q && typeof S === 'object' ? S.teams.filter(t => t.format !== 'singles' && String(t.name).toLowerCase().includes(q)).slice(0, 4) : []; };
-  const draw = () => { const r = V2.find(inp.value), tm = teams(inp.value);
+  /* player review 2c (Nov 17): moves, items, Abilities (from the winning team sheets, tsTerms) and team styles (Archetypes) too; a move,
+     item or Ability opens Winning Teams filtered by it, a style opens its Archetype guide */
+  const terms = q => { q = q.trim().toLowerCase(); if (q.length < 3) return {t: [], st: []}; let t = [], st = [];
+    try { t = tsTerms().filter(x => x.k !== 'mon' && x.label.toLowerCase().includes(q)).sort((a, b) => (b.label.toLowerCase().startsWith(q) ? 1 : 0) - (a.label.toLowerCase().startsWith(q) ? 1 : 0) || b.c - a.c).slice(0, 5); } catch (e) {}
+    try { st = GUIDE_ORDER.filter(k => ARCH[k] && ARCH[k].name.toLowerCase().includes(q)).slice(0, 2); } catch (e) {}
+    return {t, st}; };
+  const KW = {move: 'Move', item: 'Item', ability: 'Ability'};
+  const draw = () => { const r = V2.find(inp.value), tm = teams(inp.value), T = terms(inp.value);
     out.innerHTML = !inp.value.trim() ? '<p class="fine">Type a Pokémon\'s name, a saved team, or a page like Battle.</p>' + V2.TOOLS.map(k => { const pl = V2.findPlaces.find(x => x[0] === k && !x[2]); return pl ? `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${pl[1]}</b><small>${V2.esc(V2.placeLines[k] || '')}</small></span></a>` : ''; }).join('') /* the tools, as today's empty search lists them (Nov 15) */
-      : !r.places.length && !r.mons.length && !tm.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>`
+      : !r.places.length && !r.mons.length && !tm.length && !T.t.length && !T.st.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>`
       : r.places.map(([k, n, act]) => act ? `<button type="button" class="np-hit" data-v2place="${V2.findPlaces.findIndex(x => x[1] === n)}"><span class="pg">Page</span><b>${n}</b></button>` : `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${n}</b>${V2.placeLines[k] ? `<small>${V2.esc(V2.placeLines[k])}</small>` : ''}</span></a>`).join('')
+        + T.st.map(k => `<a class="np-hit" href="#archetypes" data-v2close data-v2style="${V2.esc(k)}"><span class="pg">Team style</span><span class="nm"><b>${V2.esc(ARCH[k].name)}</b><small>How it plays and how to beat it</small></span></a>`).join('')
+        + T.t.map(x => `<a class="np-hit" href="#tournaments" data-v2close data-v2term="${V2.esc(x.k)}" data-v2termv="${V2.esc(x.v)}"><span class="pg">${KW[x.k] || 'Term'}</span><span class="nm"><b>${V2.esc(x.label)}</b><small>On ${x.c.toLocaleString('en-US')} winning team sheet${x.c === 1 ? '' : 's'}</small></span></a>`).join('')
         + tm.map(t => `<button type="button" class="np-hit" data-svact="open" data-id="${V2.esc(t.id)}"><span class="pg">Saved team</span><b>${V2.esc(t.name)}</b></button>`).join('')
         + r.mons.map(p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`).join(''); };
   /* a11y stress (Nov 16): the list itself re-announced every hit on each keystroke; now a short status says how many (or that nothing matched) */
@@ -133,6 +142,10 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
   inp.addEventListener('input', draw2);
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = out.querySelector('.np-hit'); if (h) { e.preventDefault(); h.click(); } } });
   draw(); };
+/* a move, item or Ability from the search filters Winning Teams by it; a team style opens its Archetype guide (player review 2c) */
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2term],[data-v2style]'); if (!a) return;
+  if (a.dataset.v2style) { if (V2.arUi) V2.arUi.open = a.dataset.v2style; const t0 = Date.now(), go = () => { const g = location.hash === '#archetypes' && document.querySelector('.ar-guide'); if (g) g.scrollIntoView({block: 'start'}); else if (Date.now() - t0 < 3000) requestAnimationFrame(go); }; requestAnimationFrame(go); /* land on the guide, as a style tap on Archetypes does */ }
+  else if (V2.wtUi) { V2.wtUi.f = [{k: a.dataset.v2term, v: a.dataset.v2termv}]; V2.wtUi.q = ''; V2.wtUi.fmore = 0; } }, true);
 // a Pokémon picked anywhere opens its info sheet; pages replace V2.openMon when the full sheet is built (R4)
 V2.openMon = n => { const p = V2.byName.get(n); if (!p) return;
   V2.sheet(`<div class="np-monsheet">${V2.mon(n, {iw: 220, bare: true})}<div><h2 class="u">${V2.esc(V2.disp(n))}</h2><div class="ty">${(p.t || []).map(V2.typeChip).join('')}</div><p class="fine">Abilities: ${(p.a || []).map(V2.esc).join(', ')}</p>${V2.addBtn ? V2.addBtn(n) : ''}</div></div>`, {label: V2.disp(n), small: true}); };

@@ -21,7 +21,7 @@ KO Board, Test Run's piles, Track Record.
 ## 2. Features players won't find
 - 2a FIXED Home "Everything NastyPlot does" misses Team Preview Practice, Compare Teams, This Week, Track Record, Usage, My Box. (Home's list now has all six; HOME-08 checks 18 and that each opens its page)
 - 2b FIXED Your Games empty states don't say what logging unlocks (after 5 games: Build weighs own results; what you lose to). (checked what 5 games unlock: personalAdj in Build, MYREC_MIN record insights; line added on My Team and Battle; Home has no empty games state)
-- 2c OPEN Site search finds only Pokémon, saved teams, pages ("trick room" = No matches); add moves, items, abilities, styles
+- 2c FIXED Site search finds only Pokémon, saved teams, pages ("trick room" = No matches); add moves, items, abilities, styles (search finds moves, items, Abilities from the 976 winning team sheets and team styles; a move/item/Ability opens Winning Teams filtered by it, a style opens its guide)
   and send each somewhere useful (Winning Teams search already works for these).
 - 2d OPEN Winning Teams search sits ~1.5 phone screens down under "Your Team 4/4 checks": move it near the top.
 

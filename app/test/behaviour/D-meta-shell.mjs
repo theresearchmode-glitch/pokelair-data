@@ -424,7 +424,7 @@ t('SHELL-34', 'Broken data for one page never breaks the others', withDocs({'met
 
 // =============================== RATE · Ratings ===============================
 t('RATE-01', 'Ratings head: kicker with team count and date; "How ratings work →" opens the method section', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Ratings'); expect(NEW ? /Reg M.C doubles · [\d,]+ teams/.test(await ui.text()) /* say it once (Nov 16): the subtitle says "rated 0–100 from real tournament results"; the date is in the footer */ : /Rated 0–100 from real results: Reg M.C doubles, [\d,]+ teams, data as of [A-Z][a-z]{2} \d/.test(await ui.text()), 'kicker missing');
+  await ui.go('Ratings'); expect(NEW ? /Reg M.C doubles · [\d,]+ tournament teams/.test(await ui.text()) /* say it once (Nov 16): the subtitle says "rated 0–100 from real tournament results"; the date is in the footer */ : /Rated 0–100 from real results: Reg M.C doubles, [\d,]+ teams, data as of [A-Z][a-z]{2} \d/.test(await ui.text()), 'kicker missing');
   expect(has(await ui.text(), 'Track Record ›'), 'no Track Record link');
   await ui.tap((NEW ? /^How Ratings Work ›$/ : (NEW ? /^How Ratings Work →$/ : /^How ratings work →$/))); await ui.pg.waitForTimeout(500); expect(await ui.current() === 'method', 'link opened ' + await ui.current());
   expect(await d.foldIsOpen('Pokémon Ratings'), 'Pokémon Ratings section not open'); expect(await d.inView('Pokémon Ratings'), 'section not scrolled into view'); }));
@@ -671,7 +671,7 @@ t('WEEK-03', 'Rising and Falling: "a% → b% of teams", points; tap opens the sh
   await ui.go('This Week'); const tx = await ui.text(); expect(has(tx, 'Rising') && has(tx, 'Falling'), 'no Rising/Falling');
   expect(/\d+(\.\d)?% → \d+(\.\d)?% of teams ▲\d/.test(tx) && /▼\d/.test(tx), 'rows lack the change'); await d.openPokemon(await d.firstPokemon()); expect(await d.sheetIsOpen(), 'no sheet'); }));
 t('WEEK-04', 'Most used this week: five tiles open their sheet', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('This Week'); expect(has(await ui.text(), 'Most used this week, % of teams.'), 'no caption'); const ids = await d.pokemonOnPage();
+  await ui.go('This Week'); expect(has(await ui.text(), "Most used this week, % of this week's tournament teams."), 'no caption'); const ids = await d.pokemonOnPage();
   expect(ids.length >= 13, 'few tappable Pokémon: ' + ids.length); await d.openPokemon('Sneasler'); expect(await d.sheetName() === 'Sneasler', 'tile did not open Sneasler'); }));
 t('WEEK-05', 'New tech: kind word, "a% → b% of its teams", Details shows team counts', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('This Week'); const tx = await ui.text(); expect((NEW ? /(Move|Item|Ability) .+ \d+(\.\d)?% → \d+(\.\d)?% of its teams \(\d+ .+ teams this week, \d+ the week before\) ▲\d+/ : /(Move|Item|Ability) .+ \d+(\.\d)?% → \d+(\.\d)?% of its teams ▲\d+/).test(tx), 'no new tech rows');
@@ -680,7 +680,7 @@ t('WEEK-06', 'Winners this week open that event on Events', run({team: TEAM}, as
   await ui.go('This Week'); expect(has(await ui.text(), 'Winners This Week'), 'no winners'); await d.tapWinner();
   expect(await ui.current() === 'events' && has(await ui.text(), '‹ All events'), 'winner did not open its event'); }));
 t('WEEK-07', 'Team styles with % and real changes only', run({team: TEAM}, async ({ui}) => {
-  await ui.go('This Week'); const tx = await ui.text(); expect(has(tx, '% of teams using each style'), 'no styles caption'); expect(/Tailwind \d+(\.\d)?%/.test(tx), 'no style %'); }));
+  await ui.go('This Week'); const tx = await ui.text(); expect(has(tx, "% of this week's tournament teams using each style"), 'no styles caption'); expect(/Tailwind \d+(\.\d)?%/.test(tx), 'no style %'); }));
 t('WEEK-08', 'New in top cut: first top 8 this regulation, or "nothing new"', run({team: TEAM}, async ({ui}) => {
   await ui.go('This Week'); const tx = await ui.text(); expect(/First top 8 this regulation/.test(tx) || has(tx, 'Nothing new reached a top 8 this week.'), 'no New in top cut part'); }));
 t('WEEK-09', 'How we decide what changed: fold with thresholds and date', run({team: TEAM}, async ({ui, d}) => {
