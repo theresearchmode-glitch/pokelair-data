@@ -205,6 +205,14 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
       return Math.min(...L.map(e => { const t = e.closest('.ff').getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e); const r = rg.getBoundingClientRect(), f = y => (y - t.top) / t.height; /* the tile is slanted 10px: right edge leans in toward the bottom, left edge toward the top */
         return Math.round(Math.min(t.right - 10 * f(r.bottom) - r.right, r.left - (t.left + 10 * (1 - f(r.top))))); })); })); }
   await p.setViewportSize({width: 1280, height: 900}); ok(ld.every(x => x >= 4), `Audit v199 #6 (Nov 17): Home's 'Lead' stays clear of the tile's slanted edge at 360-1920 (closest ${ld.join(' / ')} px from the slant)`); }
+{ const ta = []; const tctx = await b.newContext({hasTouch: true}), tq = await tctx.newPage();
+  for (const [w, r, sel] of [[820, 'build', '.np-nav a'], [820, 'build', '.bd-side .np-link'], [820, 'battle', '.bt-lfour'], [1024, 'calc', '.dc2-top .np-link'], [320, 'types', '.tc-tm'], [320, 'events', '.ev-fc']]) { /* the phone header logo is an open layout item for Sim (overlaps the arrows), not checked here */
+    await tq.setViewportSize({width: w, height: 900}); await tq.goto('file://' + PAGE + '#' + r); await tq.waitForTimeout(1500);
+    ta.push(...await tq.evaluate(([sel, w, r]) => [...document.querySelectorAll(sel)].filter(x => x.getClientRects().length).map(e => { e.scrollIntoView({block: 'center'}); const R = e.getBoundingClientRect(), cx = R.left + R.width / 2, cy = R.top + R.height / 2;
+      const hit = (x, y) => { const h = document.elementFromPoint(x, y); return h && (h === e || e.contains(h)); }, ext = (dx, dy) => { let d = 0; while (d < 80 && hit(cx + dx * (d + 1), cy + dy * (d + 1))) d++; return d; };
+      return [w + ' ' + r + ' ' + (e.textContent.trim() || 'logo').slice(0, 12), ext(-1, 0) + ext(1, 0) + 1, ext(0, -1) + ext(0, 1) + 1]; }), [sel, w, r])); }
+  await tctx.close(); const small = ta.filter(x => x[1] < 44 || x[2] < 44);
+  ok(ta.length > 10 && !small.length, `Audit v199 #11 (Nov 17): measured by where a tap lands, every listed button and link is at least 44 x 44 (${ta.length} checked; too small: ${small.map(x => x[0] + ' ' + x[1] + 'x' + x[2]).join(', ') || 'none'})`); }
 { const sp = []; for (const [w, r] of [[390, 'build'], [390, 'speed'], [1280, 'calc'], [1280, 'battle'], [390, 'team']]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1800);
     sp.push(await p.evaluate(() => { const im = [...document.querySelectorAll('#main img[src*=".webp"]')].filter(i => i.getClientRects().length); const sm = im.filter(i => i.getAttribute('src').includes('-s/'));
       const big = sm.filter(i => { const m = i.closest('.np-mon'), iw = m ? parseFloat(((m.getAttribute('style') || '').match(/--iw:([\d.]+)px/) || [])[1]) : NaN; return m && !(iw <= 80); }); return [sm.length, big.length]; })); }

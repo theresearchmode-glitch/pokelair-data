@@ -325,3 +325,9 @@ p,li,small{text-wrap-style:pretty}
    full tap height with negative margins, so the tap area grows and the layout around them stays where it was. Links inside a sentence
    (Events' "Victory Road season calendar") are exempt and stay as they are. In sugs.css: the last CSS layer, so no page rule overrides it (Game Plan's did). */
 .wt-acts .np-link,.sx-gpl,.bt-sub .np-link,.trk-links .np-link,.abtmail .np-link,.abtsn a{display:inline-block;padding-block:calc((var(--tap) - 1lh) / 2);margin-block:calc((1lh - var(--tap)) / 2)} /* inline-block, not flex: flex dropped the space before "›" */
+/* audit v199 #11 (Nov 17), measured by where a tap lands: Type Chart team buttons were 42px wide at 320, the logo 28px wide on phones,
+   Events' "All" chip 33px (its slanted shape cuts the tap area). The Type Chart buttons get an invisible wider tap area (nothing moves);
+   the chip is 54px wide at least, so its tap area after the slant is 44. The phone header (logo 23-28px, back/forward arrows overlapping
+   the logo) needs a layout change: open item for Sim with pictures, not done here (a tap-area-only try took taps from the back arrow). */
+.tc-tm{position:relative}.tc-tm::before{content:"";position:absolute;inset:0 -2px}
+.ev-fc{min-width:54px;justify-content:center}
