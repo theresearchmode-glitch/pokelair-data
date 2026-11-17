@@ -26,7 +26,7 @@ document.addEventListener('click', e => { if (!(e.target.closest && e.target.clo
 // ---------- the cards' reasons: today's planWhy over the same plans renderPlans works them out for ----------
 // (the plans, then up to 3 side options when nothing improves the team), so Why? lists today's reasons word for word
 V2.sgX = ms => { const useA = $('useAbil').checked, RD = prepOf(ms), P = V2.plan.plans || [];
-  return {ms, a: analyze(playForm(ms), useA), plans: P, covered: offenseRows(ms, useA).covered, baseTS: RD && RD.score != null ? {score: RD.score} : null}; };
+  return {ms, a: analyze(playForm(ms), useA), plans: P, covered: offenseRows(ms, useA).covered, baseTS: RD && RD.score != null ? RD : null /* the whole report, so Why? can say how many top threats each plan handles (it needs the rows; review FP-3) */}; };
 V2.sgReasons = ms => { const X = V2.sgX(ms), P = X.plans, list = [...P]; [...list, ...planExtra(P, list)].forEach((pl, k) => { try { planWhy(pl, k, X); } catch (e) { console.error(e); } }); return X; };
 // today's page says " · " lists in words (undotText, shared): the same rule on the shared texts drawn here, text only (never inside tags)
 V2.undot = s => undotText(String(s), ', ', /;/.test(s));
@@ -41,7 +41,7 @@ V2.sgCard = ({pl, k, g0, attr, side, hidden, why, main}) => { const g1 = g0 != n
   const wk = W.wk ? `<li>Weak spots: <b>${V2.esc(W.wk[0])}</b> → <b>${V2.esc(W.wk[1])}</b></li>` : '', L = W.lines.filter(Boolean), nr = L.length + (wk ? 1 : 0);
   return `<li${hidden ? ' hidden' : ''}><span class="np-eyebrow">Suggestion ${k + 1}</span>${d != null ? `<div class="tm-mv"><b>${d > 0 ? '+' + d : d < 0 ? '−' + Math.abs(d) : '±0'}</b><span>${r0} → ${r1}</span>${word ? `<em class="sg2-band">${V2.esc(word)}</em>` : ''}</div>` : ''}<div class="tm-swaps">${pl.ch.map(V2.sgSwap).join('')}</div>
     ${ln ? `<p class="sg2-ln ${ln.k}"><b>${ln.tag}</b> ${ln.text}</p>` : ''}${main ? `<button type="button" class="np-btn" ${attr}="${k}">Apply</button>` : `<button type="button" class="np-btn2" ${attr}="${k}"><span>Apply</span></button>`}
-    ${nr ? `<details class="sg2-why"><summary><span class="q">Why?</span><span class="n">${nr} reason${nr === 1 ? '' : 's'}</span></summary><ul>${wk}${L.map(l => `<li>${V2.undotHtml(l)}</li>`).join('')}</ul></details>` : ''}</li>`; };
+    ${nr ? `<details class="sg2-why"><summary><span class="q">Why?</span><span class="n">${nr} reason${nr === 1 ? '' : 's'}</span></summary><ul>${wk}${L.map(l => `<li>${V2.undotHtml(V2.wl(l))}</li>`).join('')}</ul></details>` : ''}</li>`; };
 
 // ---------- the section: the settings, then the suggestions (the first; Show more opens the next two; then See all) ----------
 /* speed audit Nov 16 (4x CPU profile: the winners pass is ~9 s of work, each team's score alone >50 ms): on phones it starts only when

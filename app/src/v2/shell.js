@@ -229,6 +229,7 @@ V2.wl = (t, hand) => String(t == null ? '' : t)
   .replace(/Ready for \d+% of the top (\d+) threats/g, (m, n) => hand ? `Beats or handles ${hand.x} of the top ${hand.n}` : m)
   .replace(/([Rr])eady for (\d+)\/(\d+) top threats/g, (m, r, x, n) => `${r === 'R' ? 'B' : 'b'}eats or handles ${x} of ${n} top threats`)
   .replace(/Ready for (\d+)\/(\d+) → (\d+)\/(\d+) top threats/g, 'Beats or handles $1 → $3 of $2 top threats')
+  .replace(/Ready for top threats: (\d+)\/(\d+) → (\d+)\/(\d+)/g, 'Beats or handles $1 → $3 of the top $2 threats') /* the suggestion Why? line (FP-3, Nov 16) */
   .replace(/(\d+)% → (\d+)% ready for the top (\d+) threats/g, 'Matchups $1% → $2% against the top $3 threats')
   .replace(/(\d+)% ready for the top (\d+) threats/g, 'Matchups $1% against the top $2 threats')
   .replace(/(.+) is ready for more of the top (\d+) threats \((\d+)% vs (\d+)% ready\)/g, '$1 has the better matchups against the top $2 threats ($3% vs $4%, weighted by how often each threat makes top cut)')
