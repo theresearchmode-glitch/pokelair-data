@@ -46,7 +46,12 @@ KO Board, Test Run's piles, Track Record.
 ## 4. Missing inside existing tools
 - 4a OPEN Battle Their Six: tap-to-pick grid of the 30 most common Pokémon.
 - 4b OPEN Speed Tiers: your own +1, Unburden after the item, their Choice Scarf.
-- 4c OPEN Popular Sets: stat-point spreads with share; % for natures and teammates.
+- 4c PART FIXED Popular Sets: stat-point spreads with share; % for natures and teammates. Checked: Tournaments and Showdown already show % for
+  natures and teammates (Modest 66%, "Garchomp 59% of its teams"); "Best data" takes them from Showdown's sample sets, which have no numbers,
+  so it now says where the numbers are (mixing sources would show Timid above Modest with the smaller %). Found and fixed on the way: on
+  Tournaments, Megas showed the base form's Ability with % (Mega Charizard Y "Blaze 84%"); Popular Sets and Usage now say "Always Drought (a
+  Mega's Ability is fixed)". Spreads with share: FOR SIM, needs new data from the daily job (the tournament data has no stat points).
+  Tests: v2-minors 4c x3 (fail before, pass after). Pictures: pics/nov17/sets-mega-{tour,ingame}-1280.png.
 - 4d OPEN Pokémon page "What beats it": add the meta Pokémon that really beat it.
 - 4e OPEN Events "Next Events": Add to calendar.
 
