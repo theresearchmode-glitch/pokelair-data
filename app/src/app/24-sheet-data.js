@@ -38,10 +38,11 @@ const lTier = t => LTIERS.find(x => t >= x.min) || LTIERS[LTIERS.length - 1];
 function lairRows() { const R = ratings();
   return ROSTER.map(p => ({p, r: R.get(p.n)})).filter(x => x.r).sort((a, b) => b.r.total - a.r.total || a.p.d.localeCompare(b.p.d)); }
 /* Rank next to the score (Nov 2): position among the Pokémon WITH results (a placeholder rating has no rank); ties share
-   a rank (1 + how many rate strictly higher). Cached per ratings map. */
+   a rank (1 + how many rate strictly higher). Ties are judged on the SHOWN rating (RS): two Pokémon both showing 97 are both #1
+   (player review 3b, Nov 17: the raw score made 97/97 rank #1/#2 while 96/96 shared #3). Cached per ratings map. */
 let lairRankCache = {R: null, m: null, of: 0};
 function lairRank(p) { if (!p) return null; const R = ratings(); if (lairRankCache.R !== R) { const xs = lairRows().filter(x => x.r.tc), m = new Map();
-    xs.forEach((x, i) => m.set(x.p.n, i && xs[i - 1].r.total === x.r.total ? m.get(xs[i - 1].p.n) : i + 1)); lairRankCache = {R, m, of: xs.length}; }
+    xs.forEach((x, i) => m.set(x.p.n, i && RS(xs[i - 1].r.total) === RS(x.r.total) ? m.get(xs[i - 1].p.n) : i + 1)); lairRankCache = {R, m, of: xs.length}; }
   const k = lairRankCache.m.get(p.n); return k ? {rank: k, of: lairRankCache.of} : null; }
 /* what the N in "of N" counts (Sim, Nov 4): the long form says it in full, 'cap' is the short form for tight spots,
    short (1) is just "#20"; '' when it has no results yet */

@@ -26,14 +26,14 @@ KO Board, Test Run's piles, Track Record.
 - 2d FIXED Winning Teams search sits ~1.5 phone screens down under "Your Team 4/4 checks": under 1100 wide, Your Team now comes after the search and group chips (measured, 390x844: search 804px -> 546px, on the first screen; 320 wide: 856 -> 578; desktop unchanged). Test: v2-minors "Player review 2d" (fails before, passes after). Picture: pics/nov17/winning-search-390-after.png.
 
 ## 3. Polish, page by page
-- 3a OPEN Home "Most used in October" in mid-November: newest data or say how old.
-- 3b OPEN Tied ratings ranked inconsistently (97/97 = #1/#2, 96/96 = #3/#3): one rule or show the decimal.
-- 3c OPEN My Team Matchups: 22 of 30 "Even match": lead with the threats that need a plan.
+- 3a FIXED Home "Most used in October" in mid-November: newest data or say how old. Checked smogon.com/stats: October is the newest month (each posts on the 1st of the next). Heading "Most used right now." -> "Most used last month." (only while true, else "Most used on the ladder."); line "October, Showdown ladder 1630+. November's numbers arrive Dec 1." (the note drops after that date). Usage spotlight tag "Most used right now" -> "Most used". Month names in the big heading were tried and rejected: they spilled out of the box at 768-1100 (measured 6-118px). Tests: v2-minors 3a x4 (fail before, pass after). Pictures: pics/nov17/home-most-used-{390,1280}-{before,after}.png.
+- 3b FIXED Tied ratings ranked inconsistently (97/97 = #1/#2, 96/96 = #3/#3): one rule or show the decimal. Cause: ranks followed the hidden raw score (95 vs 94), the page shows the rescaled one (97/97). Ties are now judged on the shown rating, so 97/97 are both #1 and the next is #3 (Sim's Nov 2 rule "ties share a rank", applied to what players see). Measured: 6 wrong pairs before, 0 after (321 rated). Test: v2-minors 3b. Pictures: pics/nov17/ratings-ties-{390,1280}-{before,after}.png.
+- 3c NO CHANGE (checked) My Team Matchups: 22 of 30 "Even match": lead with the threats that need a plan. Checked on the built page (390 wide, sample team): the section already opens on Stand-Outs, the 4 Unfavoured first, then the 4 Favoured; the 22 Even match sit under "All 30" (Sim, Nov 11 and Nov 13 Q1 B). Nothing to change; tell Sim in case the reviewer saw an older build.
 - 3d OPEN Stand-Outs on a phone: 8 cards in rows of 3 (3+3+2): keep rows even.
 - 3e OPEN Mirror threat (Mega Charizard Y vs your own Mega Charizard Y): leave out or label "mirror match".
 - 3f OPEN "Things to Know: 7 things, types, legal": name what it holds.
 - 3g OPEN Team Preview Practice pair %: reads like a win rate; it's "brought together": say so beside the number (Home too).
-- 3h OPEN Track Record groups (90+, 70-89, 53-69, under 53) differ from tier lines (S 90 A 80 B 70 C 60 D 50).
+- 3h FOR SIM Track Record groups (90+, 70-89, 53-69, under 53) differ from tier lines (S 90 A 80 B 70 C 60 D 50). Checked: the groups are cut in the daily data job (track.mjs line 18, band = 80/60/40 on the saved raw rating) and stored per event in out/track.json; the page only labels them (64-track-data.js TR_CUT). Lining them up needs a change to the data job on main and a rebuild of the stored events, so it waits for Sim's go. Recommendation: cut at raw 80/70/60 = shown 90+ (S), 80-89 (A), 70-79 (B), under 70. Why: each group then matches a tier players already know. Cost: the "N×" figure on Track Record will change; it gets re-measured, not assumed.
 - 3i FOR SIM About "Everything We Save" talks of the Claude account: needs public-site wording (January launch plan).
 - 3j OPEN My Box first visit: 36 Pokémon unlabelled while the team says "(sample)": label it if it's a sample box.
 

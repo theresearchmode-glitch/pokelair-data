@@ -43,5 +43,10 @@ Preview: v192 (397 files, 346 v2art). Branch claude/design6. Nothing went to mai
   'Best core' is now 'Best trio' (always three Pokémon).
 - Quality check now opens every view (it missed Top 10); full run going, then into GitHub's checks.
 - Plans page: 'After the redesign' checklist (56 items with sources).
-- Waiting on Sim: the repo is public (old player names in git history): make it private (recommended) after tracing what
-  reads it from outside; the switch to live (one explicit yes).
+- Your question: "private costs money, correct?" Partly. Checked on docs.github.com (GitHub's plans; Actions billing):
+  a private repo itself is free, but our test runs (GitHub Actions) are free only on public repos; private repos get
+  2,000 free minutes a month. Not yet measured: our monthly minutes, but one run has several jobs (one alone up to 55 min)
+  and we run many a day, so it would very likely go over and cost money. So the repo stays public, as you chose.
+  What stays open: old player names are still in the public git history. Removing them needs a history rewrite and a
+  force-push to main; that is your call, and I won't do it without your yes.
+- Waiting on Sim: the switch to live (one explicit yes).
