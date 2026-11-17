@@ -10,7 +10,7 @@ let bad = 0, seen = 0; const where = {};
 const scan = (label, data) => eachPlayer(data, v => { seen++; if (!OK(v)) { bad++; where[label] = (where[label] || 0) + 1; } });
 for (const f of fs.readdirSync(FX).filter(f => f.endsWith('.json.gz'))) scan('fixture/' + f, JSON.parse(zlib.gunzipSync(fs.readFileSync(FX + f)).toString('utf8')));
 const page = process.argv[2];
-if (page) { const h = fs.readFileSync(page, 'utf8'), m = h.match(/const D=(\{.*?\});const real=/s);
-  if (m) scan(page, JSON.parse(m[1].replace(/\\u003c/g, '<'))); else console.log(page + ': no embedded Preview data (the live build reads its data at run time)'); }
+if (page) { const h = fs.readFileSync(page, 'utf8'), m = h.match(/const D=(\{.*?\});const real=/s), j = h.match(/const D=JSON\.parse\(((?:"(?:[^"\\]|\\.)*"))\)/s);
+  if (j) scan(page, JSON.parse(JSON.parse(j[1].replace(/\\u003c/g, '<')))); else if (m) scan(page, JSON.parse(m[1].replace(/\\u003c/g, '<'))); else console.log(page + ': no embedded Preview data (the live build reads its data at run time)'); }
 console.log(`no-names: ${seen} player fields checked, ${bad} not an ID or stand-in` + (bad ? ' in ' + JSON.stringify(where) : ''));
 process.exit(bad ? 1 : 0);
