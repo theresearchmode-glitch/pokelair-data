@@ -575,7 +575,7 @@ t('EDIT-03', 'Slot header: Lock → "Locked" (tile shows locked), types, Mega/ra
     const r = await myTeam(); await r.ui.openEditPanel('Mega Charizard Y'); const p = await r.ui.editPanel();
     const want = await r.ui.peek("(() => { const P = byName.get('Charizard-Mega-Y'), R = monRating(P); let H = null; try { H = lairHead(P); } catch (e) {} return [(P.t || []).join(' '), R ? R.n : null, R ? R.tier : null, H ? V2.shareTxt(H) : null]; })()");
     ok(want && want[1] != null && want[2] && want[3], 'no rating / share to compare: ' + JSON.stringify(want));
-    const head = `✕ Edit Set Mega Charizard Y ${want[0]} ${want[1]} ${want[2]} tier rating ${want[3]} of teams `; ok(p.text.startsWith(head), `Edit Set header reads "${p.text.slice(0, head.length + 20)}", want "${head}"`);
+    const head = `✕ Edit Set Mega Charizard Y ${want[0]} ${want[1]} ${want[2]} tier rating ${want[3]} of tournament teams `; ok(p.text.startsWith(head), `Edit Set header reads "${p.text.slice(0, head.length + 20)}", want "${head}"`);
     ok(want[0] === 'Fire Flying', 'types: ' + want[0]); has(p.text, /Ability Mega Ability Drought/, 'Edit Set'); has(p.text, /Item Mega Stone Charizardite Y/, 'Edit Set');
     ok(await r.ui.panelLockText() === 'Lock', 'lock reads ' + await r.ui.panelLockText()); let t0 = await r.ui.tileLock('Mega Charizard Y'); ok(t0 && !t0.locked && !t0.padlock, 'tile already locked: ' + JSON.stringify(t0));
     await r.ui.panelLock(); ok(await r.ui.panelLockText() === 'Locked', 'lock did not read "Locked": ' + await r.ui.panelLockText()); has((await r.ui.editPanel()).text, /Locked Suggestions never swap out a locked Pokémon\./, 'Edit Set foot');
@@ -583,7 +583,7 @@ t('EDIT-03', 'Slot header: Lock → "Locked" (tile shows locked), types, Mega/ra
     ok(t0 && t0.locked && t0.padlock && t0.padlockLabel === 'Locked' && /^Mega Charizard Y, \w+(, [^,]+)*, locked$/.test(t0.label) /* The Hand (Sim, Nov 14, brief s7): the Card's label also says its rating and item */, 'tile not shown locked: ' + JSON.stringify(t0));
     const g = await r.ui.tileLock('Garchomp'); ok(g && !g.locked && !g.padlock, 'Garchomp\'s tile shows locked too: ' + JSON.stringify(g)); await r.close(); return; }
   const r = await myTeam(); await r.ui.openEditPanel('Mega Charizard Y'); const p = await r.ui.editPanel();
-  for (const s of [/Fire Flying/, /Mega/, /S tier \d+/, /[\d.]+% of teams/]) has(p.text, s, 'slot header'); ok(/^Lock$/.test(await r.ui.panelLockText()), 'lock reads ' + await r.ui.panelLockText());
+  for (const s of [/Fire Flying/, /Mega/, /S tier \d+/, /[\d.]+% of tournament teams/]) has(p.text, s, 'slot header'); ok(/^Lock$/.test(await r.ui.panelLockText()), 'lock reads ' + await r.ui.panelLockText());
   await r.ui.panelLock(); ok(/^Locked$/.test(await r.ui.panelLockText()), 'lock did not read "Locked"'); await r.ui.closeEditPanel(); ok(/^Unlock/.test(await r.ui.tileLockLabel('Mega Charizard Y') || ''), 'tile padlock not locked'); await r.close(); });
 
 t('EDIT-04', 'Nature picker: choosing saves at once ("Nature saved"), set card says "yours"; "Use <most run>" restores', async () => {

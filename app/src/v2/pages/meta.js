@@ -22,7 +22,7 @@ V2.raRow = x => { const E = V2.esc, p = x.p, r = x.r, k = lairRank(p), N = V2.ra
   return `<button type="button" class="ra-row" data-v2mon="${E(p.n)}" data-raspot="${E(p.n)}" aria-label="${E(p.d)}, rated ${RS(r.total)}${k ? ', number ' + k.rank : ''}${N.u != null ? ', on ' + E(V2.raPct(N.u)) + ' of teams' : ''}${N.w != null ? ', ' + E(winFmt(N.w)) + ' wins in ' + Math.round(N.g).toLocaleString('en-US') + ' games' : ''}${mine ? ', on your team' : ''}: open its page">
     <span class="ra-rk u">${k ? k.rank : '–'}</span>${V2.mon(p.n, {bare: true})}
     <span class="ra-nm"><span class="ra-nl"><b>${gem ? '<span class="ra-gem" title="Hidden gem">◆</span> ' : ''}${V2.nameHtml(p.d)}</b>${tag}</span><span class="ra-ty">${p.t.map(V2.typeChip).join('')}</span>
-      <span class="ra-ph">${N.u != null ? `<b>${E(V2.raPct(N.u))}</b> on teams` : ''}${N.w != null ? ` · <b>${E(winFmt(N.w))}</b> win rate` : ''}</span></span>
+      <span class="ra-ph">${N.u != null ? `<b>${E(V2.raPct(N.u))}</b> of tournament teams` : ''}${N.w != null ? ` · <b>${E(winFmt(N.w))}</b> win rate` : ''}</span></span>
     <span class="ra-bar" aria-hidden="true"><i style="width:${RS(r.total)}%"></i></span><span class="ra-sc u"${bandAt(r.total)}>${RS(r.total)}${unsure ? '<small title="Few games: an estimate">?</small>' : ''}</span>
     <span class="ra-ut">${N.u != null ? `${E(V2.raPct(N.u))}` : '–'}</span><span class="ra-wr">${N.w != null ? `<b>${E(winFmt(N.w))}</b><small>${E(V2.raGames(N.g))}</small>` : '<b>–</b><small>too few games</small>'}</span></button>`; };
 V2.raPct = v => (+v).toFixed(1) + '%';
@@ -51,7 +51,7 @@ V2.raSpot = n => { const E = V2.esc, U = V2.raUi, megas = !!U.f.mega && !V2.raFi
   return `<div class="gs-spot ra-spot" style="--ta:var(--ty-${p.t[0]});--tb:var(--ty-${p.t[1] || p.t[0]})"><div class="gs-plate">${V2.mon(p.n, {bare: true})}</div>
     <div class="gs-sinfo"><p class="gs-tag u">${E(tag)}</p><h2 class="u">${V2.nameHtml(p.d)}</h2><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
       <p class="gs-big"><b class="u">${RS(r.total)}</b><span><i class="u">${T.k} tier</i><small>${E2(T.d)}</small></span></p>
-      <div class="gs-facts"><p><span>On teams</span><b class="u">${N.u != null ? E(V2.raPct(N.u)) : '–'}</b></p><p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div>
+      <div class="gs-facts"><p><span>On tournament teams</span><b class="u">${N.u != null ? E(V2.raPct(N.u)) : '–'}</b></p><p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div>
       <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Pokémon Page</span></button><button type="button" class="np-btn2" data-hmaround="${E(p.n)}"><span>Build Around It</span></button></div>
       ${mine ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : ''}</div></div>`; };
 // the stand shows everyone, the Megas view and No Megas; search, types, hidden gems and the box keep the list until Sim has seen them (brief section 7)
@@ -65,7 +65,7 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
     <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta" class="on" aria-current="page">Ratings</a><a href="#usage">Usage</a><a href="#sets">Popular Sets</a></nav></div>`;
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Ratings</span></p><h1 class="u"><span>Who wins</span> <span class="pl">right now.</span></h1>
     <p class="ra-lede">Every Pokémon rated 0–100 from real tournament results, not opinion.</p>
-    <p class="ra-kick">Reg ${E(reg)} doubles${teams ? ` · ${E(basisNum(teams))} teams` : ''}${typeof V2.tip === 'function' ? `<span class="ra-nw">${V2.tip('numbers')}</span>` : ''}</p>
+    <p class="ra-kick">Reg ${E(reg)} doubles${teams ? ` · ${E(basisNum(teams))} tournament teams` : ''}${typeof V2.tip === 'function' ? `<span class="ra-nw">${V2.tip('numbers')}</span>` : ''}</p>
     <p class="ra-links"><a class="np-link" href="#method=rating">How Ratings Work ›</a><a class="np-link" href="#track">Track Record ›</a></p></section>`;
   const gems = all.filter(x => isGem(x.p)).length, f = U.f, chip = (k, l) => `<button type="button" class="ra-chip" data-raflag="${k}" aria-pressed="${!!f[k]}">${l}</button>`;
   const filt = `<div class="ra-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-raq value="${E(U.q)}" placeholder="Find a Pokémon or type" aria-label="Find a Pokémon or type" autocomplete="off"></label><p class="ra-count" role="status"><b class="u">${filtered ? rows.length : all.length}</b> ${filtered ? `of ${all.length} match` : 'rated'}</p></div>

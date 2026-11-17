@@ -56,7 +56,9 @@ V2.pkBuild = p => { const E = V2.esc, n = p.n, st = (() => { try { return setFor
   // Moves and Items: today's lists with their bars, shares and notes
   const bars = (arr, k) => (arr || []).slice(0, k).map(([nm, v]) => `<div class="ms-br"><span>${E(nm)}</span><i style="--v:${Math.max(2, Math.min(100, +v || 0))}" aria-hidden="true"></i><b>${v == null ? '' : E(pctFmt(+v))}</b></div>`).join('');
   const sbM = (() => { try { return setBasis(p, st, 'mv'); } catch (e) { return null; } })(), stn = lairStones(p, st);
-  const mvs = st.mv && st.mv.length ? `<div class="pk-list"><h3 class="pk-k u">Moves</h3>${bars(st.mv, 5)}${sbM ? `<p class="fine">${E(V2.txt(sbM.html))}</p>` : ''}</div>` : '';
+  /* player review 1d (Nov 17): the top 5 left out a move 'Usually' names (Volcarona's Overheat, 38%); the list keeps every Usually move */
+  const mvList = (st.mv || []).filter((x, i) => i < 5 || pm.includes(x[0]));
+  const mvs = st.mv && st.mv.length ? `<div class="pk-list"><h3 class="pk-k u">Moves</h3>${bars(mvList, mvList.length)}${sbM ? `<p class="fine">${E(V2.txt(sbM.html))}</p>` : ''}</div>` : '';
   const items = stn.mg && stn.stn >= 50 ? `<div class="pk-list"><h3 class="pk-k u">Items</h3><p>${Math.round(stn.stn)}% hold ${stn.megas.length > 1 ? 'a Mega Stone' : E(stoneFor(stn.mg) || 'its Mega Stone')} to Mega Evolve${stn.megas.length > 1 && stn.top ? `, most often ${E(stn.top[0])}` : ''}.${stn.rest >= 5 && st.it && st.it[0] ? ' The rest mostly run ' + E(st.it[0][0]) + '.' : ''}</p><a class="np-link pk-tap" href="#pokemon=${V2.monSlug(stn.mg.n)}">See ${E(stn.mg.d)} ›</a></div>`
     : p.m ? `<div class="pk-list"><h3 class="pk-k u">Items</h3><p>Always holds ${E(stoneFor(p) || 'its Mega Stone')}.</p></div>` : st.it && st.it.length ? `<div class="pk-list"><h3 class="pk-k u">Items</h3>${bars(st.it, 3)}</div>` : '';
   const noSets = !(st.mv && st.mv.length) && !(st.it && st.it.length);
