@@ -1,0 +1,60 @@
+# Pre-launch checks (outside review, Nov 17): tracking
+
+Sim sent this review on Nov 17 (morning) with "recommended for all is good to go". Each item: re-check on the current
+branch, fix, a test that fails before, pictures for Sim. Status words: OPEN, FIXED, FOR SIM, LAUNCH PLAN (January work,
+parked by Sim's Nov 9 rule until she says), NO CHANGE (checked).
+
+## Verified correct by the reviewer (keep; a selling point at launch)
+- Damage Calc: 30,838 hits identical to @smogon/calc in all 16 rolls (40 top Pokémon, weather, terrain, crits, Helping
+  Hand, screens, Friend Guard, -1 to +2); the 362 marked failing are right (Armor Tail, Psychic Terrain, Soundproof).
+- Speed Tiers match Showdown (no toggle, their Tailwind, them -1, paralysis; Trick Room reverses).
+- Keyboard focus visible (one exception, 5b), search traps and returns focus, skip link works.
+- One title and one main heading per page; reduced motion stops animation; no sideways scroll at 320.
+- Broken saved data, blocked saving, empty team, missing images, broken links, bad pastes handled cleanly.
+
+## 1. Pages show old numbers first, then swap (fix first)
+- 1 OPEN Every page draws with the built-in data, then ~1.2 s later redraws with the current data: Home 10,209 -> 13,826
+  teams, Sneasler 46.6% -> 35.6%; Game Plan lead/bench flips; Strength Score 92 -> 93; Ratings S tier 9 of 228 -> 11 of
+  321. Fix: numbers, plans and ratings drawn only from the final data; a neutral placeholder until it's ready.
+
+## 2. First load on phones (simulated mid-range phone)
+- 2a OPEN 1.4-1.6 MB per first visit; 4G: Home usable 2.4 s, My Team 2.8 s; main content 2.1 s / 3.8 s.
+- 2b OPEN Slow 4G: ~3 s (2.75-5.75 s) showing only header icons and tab bar: no logo, words or loading sign.
+- 2c OPEN Start-up blocks the processor 1.1-1.8 s, one single 1 s freeze (taps do nothing).
+- 2d OPEN My Team one ~200 ms scroll hitch.
+- Goals: logo + headline + progress within ~1 s on slow 4G; no 1 s freeze; My Team main content within 2.5 s on 4G.
+
+## 3. Before the public site (January)
+- 3a LAUNCH PLAN Saving goes through Claude's page storage; public site needs its own; About "Everything We Save" rewrite
+  (same as player review 3i).
+- 3b LAUNCH PLAN Link previews: no og:/twitter: tags (logo package has social/link-preview-1200x630.png).
+- 3c LAUNCH PLAN No web manifest (icons exist).
+- 3d LAUNCH PLAN #hash routes: search engines see Home only; decide on real addresses (e.g. each Pokémon page).
+- 3e OPEN (check now) "This Preview uses a saved copy of the data" banner must be tied to preview mode only.
+
+## 4. The next regulation (decide now)
+- 4 FOR SIM "M-C" appears 112 times; legal items are a fixed M-C list; no single regulation setting; saved teams don't
+  record their regulation. Needs: one switch, what happens to ratings / Winning Teams / Events / Track Record, flag (not
+  delete) illegal saved teams and box Pokémon, a notice on the day.
+
+## 5. Accessibility (axe-core WCAG 2.2 AA, 96 views, plus manual)
+- 5a OPEN Tap targets 19-22 px: Winning Teams "Set as Opponent ›" / "Compare ›"; My Team "Game Plan ›"; Battle "Change on
+  My Team ›"; Track Record "How Ratings Work ›"; Feedback "Show Email"; About Fine Print (5 links); Events "Victory Road
+  season calendar"; search fields on Winning Teams and Type Chart (check the visible box vs the 22 px input).
+- 5b OPEN Ratings search ("Find a Pokémon or type") shows no focus ring by keyboard.
+- 5c OPEN Garchomp forms strip "92 · S tier" blue on light blue 4.13:1 (< 4.5:1); check other forms strips.
+- 5d OPEN (lower priority) 930 buttons: spoken name doesn't start with the visible words (voice control).
+
+## 6. Messages when something goes wrong
+- 6a OPEN Import typos ("Garchmp") say "not on the M-C roster": suggest the closest name.
+- 6b OPEN A sentence pasted as a team: say it doesn't look like a team (as the empty paste does).
+- 6c OPEN Item Clause at import (4x Choice Scarf imports silently): flag it at import.
+- 6d OPEN Team names cut at 40 characters mid-word without warning: show the limit while typing.
+- 6e OPEN Unreadable saved data falls back to the sample team silently: tell the player in one line.
+
+## Where this meets earlier rules or decisions (for Sim)
+- 3a-3d are January launch work, parked by Sim's Nov 9 rule ("the January launch work is parked until Sim says"). Listed,
+  not started.
+- 6a-6c and 6e add messages inside existing tools: small additions, against the Nov 9 "no new features until finished"
+  rule only loosely (they finish Import rather than add a tool); doing them under "recommended for all".
+- 4 needs Sim's plan; a proposal goes in the summary.
