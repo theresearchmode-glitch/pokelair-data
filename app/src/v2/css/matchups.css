@@ -161,6 +161,7 @@ div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(-
 /* review fix (Nov 13, Stand-Outs gap): the calc note is the row's last line, so names and badges line up across a row */
 .mu-row.mu-nk{grid-template-areas:"i n v" "i d d";row-gap:0}.mu-row.mu-nk img{grid-area:i}.mu-row.mu-nk .nm{grid-area:n}.mu-row.mu-nk .tm-v{grid-area:v}
 .mu-row.mu-nk>.mu-dis{grid-area:d;display:block;font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.mu-dis .mu-mir{display:block;font-weight:700;color:var(--ink-2)} /* player review 3e (Nov 17): "Mirror match" on its own line above any calc note */
 @container (max-width:340.98px){.mu-row.mu-nk{grid-template-areas:"i n" "i v" "i d";row-gap:var(--s1)}}
 /* the note row adds no gap to rows without a note (c13: My Team 1440 went 2 px over its 1,800 limit) */
 @media (min-width:1180px){.tm-mus .mu-out .mu-row.mu-nk{row-gap:0}.tm-mus .mu-out .mu-row.mu-nk .tm-v{margin-top:var(--s1)}.tm-mus .mu-out .mu-row.mu-nk>.mu-dis{margin-top:var(--s1)}}
