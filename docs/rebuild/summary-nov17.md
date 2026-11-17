@@ -35,3 +35,13 @@ Preview: v192 (397 files, 346 v2art). Branch claude/design6. Nothing went to mai
 3. NP_PID_KEY: it must be under Settings > Secrets and variables > Actions > Repository secrets, then I redo the main
    names fix (the daily job needs it).
 4. The switch to live, when you're ready.
+
+## Morning (Sim awake; updated time: 6:59 AM (6:59:24)  date: Tue Nov 17, 2026 by the clock)
+- Q1 done: Edit Set dropdowns draw our own arrow (Preview v193; pics/nov17/edit-dropdown-before-after-*.png).
+- Q3 done: player names to IDs on main; GitHub run read the key (222,584 names, guard clean).
+- Sim's iPhone finds fixed (Preview v194): Matchups Top 10 verdicts back on the right; Build cards without Core/role labels;
+  'Best core' is now 'Best trio' (always three Pokémon).
+- Quality check now opens every view (it missed Top 10); full run going, then into GitHub's checks.
+- Plans page: 'After the redesign' checklist (56 items with sources).
+- Waiting on Sim: the repo is public (old player names in git history): make it private (recommended) after tracing what
+  reads it from outside; the switch to live (one explicit yes).

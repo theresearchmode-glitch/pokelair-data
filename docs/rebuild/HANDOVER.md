@@ -19,6 +19,9 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
 - Waiting on Sim: glance at Edit Set dropdowns on her iPhone (pics/nov17/edit-dropdown-*.png); NP_PID_KEY under Repository secrets ->
   Actions, then the main names fix (#15) again; the switch to live; after-4 device checks (test-runs/sim-nov16-after4.md).
 - Next: C-I9 (file sizes) parked unless Sim wants it (a refactor, no visible gain); summary before 5 PM.
+- Morning (time: 6:59 AM (6:59:24)  date: Tue Nov 17, 2026): Preview v194; main names fix confirmed; Plans page 'After the redesign' (v32). Open: every-view
+  quality check run (scratchpad/qviews.log) then its known list + CI VIEWS on; repo is public (Sim to decide; trace outside readers
+  first: watchdog.mjs reads raw.githubusercontent); switch to live waits for Sim's explicit yes.
 
 ## NOW (Nov 16, 1:26 PM Eastern by the clock; executive authority until 8 PM)
 - LOGO, Sim 12:52 PM (overrides the older "imp alone below 414" in the backstop prompts): the FULL wordmark on phones too, smaller is fine;
