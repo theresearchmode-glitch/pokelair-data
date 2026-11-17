@@ -91,7 +91,7 @@ if (process.argv.includes('--v2')) {
     if (chromium) { const b = await chromium.launch(), pg = await b.newPage({viewport: {width: 1280, height: 900}});
       try { await pg.goto('file://' + dir + 'dist/v2.html#home'); await pg.waitForFunction(() => document.querySelector('#app .np-head'), null, {timeout: 15000});
         const parts = await pg.evaluate(() => { const g = s => { const e = document.querySelector('#app ' + s); if (!e) return ''; const c = e.cloneNode(true); c.querySelectorAll('[aria-current]').forEach(x => x.removeAttribute('aria-current')); return c.outerHTML; };
-          return g('.np-skip') + g('.np-head') + '<main class="np-main" id="main"></main>' + g('.np-bar'); });
+          return g('.np-skip') + g('.np-head') + '<main class="np-main" id="main">' + (window.V2 && V2.loadingHtml ? V2.loadingHtml() : '') + '</main>' + g('.np-bar'); }); /* pre-launch 2b (Nov 17): the loading panel from the first paint (slow 4G showed an empty page for ~3 s) */
         if (parts.includes('np-head') && page.includes('<div id="app"></div>')) { fs.writeFileSync(dir + 'dist/v2.html', page.replace('<div id="app"></div>', `<div id="app">${parts}</div>`)); console.log(`v2: static first screen ${(parts.length / 1024).toFixed(0)} KB`); }
       } catch (e) { console.log('v2: static first screen skipped (' + String(e.message).slice(0, 80) + ')'); } finally { await b.close(); } } }
   // the font files beside the built page (fonts/ is the default place the page reads them from)

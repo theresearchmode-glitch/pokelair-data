@@ -25,7 +25,7 @@ parked by Sim's Nov 9 rule until she says), NO CHANGE (checked).
 
 ## 2. First load on phones (simulated mid-range phone)
 - 2a OPEN 1.4-1.6 MB per first visit; 4G: Home usable 2.4 s, My Team 2.8 s; main content 2.1 s / 3.8 s.
-- 2b OPEN Slow 4G: ~3 s (2.75-5.75 s) showing only header icons and tab bar: no logo, words or loading sign.
+- 2b FIXED Slow 4G: ~3 s (2.75-5.75 s) showing only header icons and tab bar: no logo, words or loading sign. The static first screen (in the page before any code runs) now holds the loading panel: logo, "Getting today's numbers…" and the moving bar (CSS only, so it moves before the code runs). Checked with JavaScript off at 390: before, empty main; after, the panel. Cost: static screen 72 -> 99 KB (the wordmark image). Test: v2-minors "Pre-launch 2b" (fails before, passes after). Pictures: pics/nov17/static-first-screen-390-{before,after}.png. Not yet measured on a throttled slow-4G phone profile.
 - 2c OPEN Start-up blocks the processor 1.1-1.8 s, one single 1 s freeze (taps do nothing).
 - 2d OPEN My Team one ~200 ms scroll hitch.
 - Goals: logo + headline + progress within ~1 s on slow 4G; no 1 s freeze; My Team main content within 2.5 s on 4G.
