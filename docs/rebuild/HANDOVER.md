@@ -7,6 +7,15 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Nov 17, written time: 5:13 PM (5:13:47)  date: Tue Nov 17, 2026; authority until 10:00 PM; summary with pictures before 10 PM)
+- On the branch since v200 (commits 15a8ae3f, d6f8209c; each fix has a v2-minors check that fails before): audit v199 #2 Track cards,
+  #3 Meta tab bar, #6 Home Lead, #7 Speed Tiers note (kept the top-30 shares: today's feature), #11 real tap areas (Type Chart, Events All).
+  Polish check old vs new: 0 new findings on each page touched. Behaviour groups running on a --art frozen-data build (app/dist/zz-art.html).
+- Waiting on Sim (pictures sent, re-asked at her return): Q1 Track card dots (which: grey / pink / none recommended / tear line);
+  Q2 Meta tabs under every headline (mock, recommended). Low priority, picture ready (pics/nov17/phone-header-arrows.png): phone header
+  back/logo/forward tap boxes overlap (logo 18-28px); fix = spread the arrows about 24px (layout change).
+- Parked: #8 rated counts (Meta already explains 321). Next: #9 source chips, #12 Speed chips, #13-#22; then Preview v201.
+
 ## NOW (Nov 17, written time: 3:51 PM (3:51:10)  date: Tue Nov 17, 2026; authority until 10:00 PM Tue Nov 17; summary with pictures before 10 PM)
 - Preview v200 (397 files, checked): Remove/Replace B (Sim: recommended); My Team buttons at 700-820 (audit v199 #1).
 - Sprites A (Sim: recommended) cannot ship on Claude-hosted pages: an artifact holds AT MOST 511 FILES per version (deploy
