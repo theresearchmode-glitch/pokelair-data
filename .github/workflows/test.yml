@@ -54,6 +54,8 @@ jobs:
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-folds.mjs
         if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-partial.mjs
+        if: ${{ !cancelled() }}
       # the new site never says "Ready for" / "N% ready" (word list: Matchups; Sim, Nov 12): reads every built page, fold, sheet and "?"
       - run: node app/build.mjs --v2 && node experiments/v2-words.mjs
         if: ${{ !cancelled() }}
