@@ -7,7 +7,7 @@
 // DEAD-09, DEAD-16. Judged intended, no separate test: BROKEN-01 (shell "Data as of" hidden; the per-page stamps of SHELL-03 are the
 // visible ones), BROKEN-02 (page title hidden; each page names itself, NAV-07), BROKEN-03 (two theme controls: both tested in THEME-01/02
 // and must agree), DUP-11 (tested once in TOP-05), ODD-14 (About's "← Meta", NAV-06), ODD-15, ODD-17, ODD-18 (content / unsure).
-import {group, open, expect, TEAM, DOCS} from './harness.mjs';
+import {group, open, expect, TEAM, DOCS, sleep} from './harness.mjs';
 const NEW = (process.env.ADAPTER || 'current') === 'v2'; // the rebuild's approved wording
 const t = group('D-meta-shell');
 
@@ -193,6 +193,11 @@ t('THEME-03', 'Share image has its own Light/Dark choice (see WEEK-02)', run({te
 t('SHELL-01', 'Tab title, icon and the slanted Unbounded headline font', run({team: TEAM}, async ({ui, d}) => {
   expect(/^(.+ · )?NastyPlot$/.test(await d.pageTitle()), 'tab title: ' + await d.pageTitle()); /* audit Nov 16 (WCAG 2.4.2): "NastyPlot" on Home, "<page> · NastyPlot" elsewhere */ expect(await d.hasFavicon(), 'no favicon');
   await ui.go('This Week'); const f = await d.headlineFont(); expect(/Unbounded/i.test(f.family) && /italic|oblique/.test(f.style), 'headline font: ' + JSON.stringify(f)); }));
+
+t('SHELL-01c', 'Tab title follows in-app navigation (Ratings, Damage Calc, Events), not only the first load', run({team: TEAM}, async ({ui, d}) => {
+  /* code review A1-I1 (Nov 17): a leftover listener on the Pokémon page reset every other page's title to "NastyPlot" after navigating */
+  if (!NEW) return; for (const pg of ['Ratings', 'Damage Calc', 'Events']) { await ui.go(pg); await sleep(700);
+    const ttl = await d.pageTitle(); expect(/^.+ · NastyPlot$/.test(ttl), `after going to ${pg}: "${ttl}" (want "<page> · NastyPlot")`); } }));
 
 t('SHELL-02', 'Header controls in order, nothing overflowing (desktop)', run({team: TEAM}, async ({d}) => {
   const c = await d.headerControls(); const want = ['Home', 'Build', 'My Team', 'Battle', 'Meta', 'Search', 'Day mode', 'More pages'];

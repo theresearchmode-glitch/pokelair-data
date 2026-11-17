@@ -166,8 +166,7 @@ V2.pages.pokemon = {place: 'meta', after() { V2.fitMsName('.pk-card .mc-id>.mc-n
   return `<div class="ra pk"><nav class="pk-trail" aria-label="You are here"><a href="#meta">Meta</a><span aria-hidden="true">›</span><a href="#meta">Ratings</a><span aria-hidden="true">›</span><span aria-current="page">${E(V2.disp(p.n))}</span></nav>
     ${V2.pkTop(p)}${V2.pkForms(p).strip}${V2.pkStats(p)}${(() => { const pr = V2.pkPartners(p); return V2.pkJumps([['pk-name', 'Is it good?'], ['pk-s1', 'How to build it'], ...(pr ? [['pk-s2', 'Who it teams with']] : []), ['pk-s3', 'What beats it'], ['pk-s4', 'How fast it is'], ['pk-s6', `Why it rates ${RS(rating(p).total)}`], ...(ROSTER.filter(q => q.b === p.b).length > 1 ? [['pk-s7', 'Forms side by side']] : [])]) + V2.pkBuild(p) + pr + V2.pkTypes(p) + V2.pkSpeed(p) + V2.pkAbilities(p) + V2.pkWhy(p); })()}
     ${V2.pkForms(p).table}</div>`.replace(/(<i class="pk-no u" aria-hidden="true">)\d+(<\/i>)/g, (m, a, b) => a + (++k) + b).replace(/^/, '').replace(/[\s\S]*/, h => V2.pkFoldAll(h, p)); }};
-// the tab title goes back to the site's own when you leave a Pokémon page
-V2.title0 = document.title; addEventListener('hashchange', () => { if (V2.route() !== 'pokemon') try { document.title = V2.title0; } catch (e) {} });
+// (code review A1-I1, Nov 17: a hashchange listener here reset every other page's title to 'NastyPlot' after V2.setTitle had set it; V2.setTitle handles every route, so it is gone)
 addEventListener('resize', () => requestAnimationFrame(() => { if (V2.route() === 'pokemon') { V2.fitMsName('.pk-card .mc-id>.mc-nm'); V2.pkFlags(); } }));
 
 // phones: part 1's full Moves and Items lists fold behind "All Moves and Items ›" (Usually and the typical set already sum them up)
