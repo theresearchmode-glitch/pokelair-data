@@ -10,7 +10,11 @@ function render() { persist(); fixMetaSrc(); clearCaches(); if (window.V2 && V2.
     if (!(shownEmpty && nowEmpty)) try { V2.edRefresh(); } catch (e) {} } } /* an Undo, Remove or Add redraws it (an emptied slot shows 'Add a Pokémon'); an empty slot's name box being typed in is left alone */
 // like today's scheduleRender: wait a moment so the daily documents arriving together land in one redraw, and only then pick the
 // usage source (fixMetaSrc), so it never settles on whichever document happened to arrive first
-function scheduleRender() { clearTimeout(V2._rq); V2._rq = setTimeout(() => { fixMetaSrc(); clearCaches(); V2.redraw(); }, 700); }
+function scheduleRender() { clearTimeout(V2._rq);
+  if (window.V2 && V2.dataReady && !V2._dataOk && V2.dataReady()) { fixMetaSrc(); clearCaches(); V2.redraw(); return; } /* the last daily document: draw now, not 700 ms later */
+  V2._rq = setTimeout(() => { fixMetaSrc(); clearCaches(); V2.redraw(); }, 700); }
+// V2.dataReady (the wait for today's numbers, pre-launch check 1) lives in shell.js: V2 doesn't exist yet when this file runs
+
 // toasts from the shared logic (Undo, applied suggestions): the rebuild's toast; its Undo button uses today's Undo handler (#toastUndo, 06-helpers.js)
 function toast(t, undo) { if (undo && ui.undo) try { ui.undoAfter = JSON.stringify(S.slots); } catch (e) {} /* the team as this Undo leaves it (code review A2-M7) */ V2.toast(V2.esc(t) + (undo && ui.undo ? ' <button type="button" id="toastUndo">Undo</button>' : '')); }
 /* stress test (Nov 16, B3): a newer change (e.g. Apply, which shows its own Undo bar) replaced the Undo point but left the older

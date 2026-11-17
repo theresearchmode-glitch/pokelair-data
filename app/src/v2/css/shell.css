@@ -23,6 +23,11 @@
 .np-foot{display:flex;align-items:center;gap:var(--s10);padding:var(--s8) var(--gut);border-top:1px solid var(--rule);font-size:var(--t15);color:var(--ink-2)}
 .np-foot svg{height:24px;width:auto;flex:none}.np-foot>span{flex:1;min-width:0}.np-foot nav{margin-left:auto;display:flex;gap:var(--s8)}.np-foot nav a{display:inline-flex;align-items:center;min-height:var(--tap);white-space:nowrap}
 .np-main{min-height:60vh}
+/* pre-launch check 1 (Nov 17): the loading panel until today's numbers are in; it fades in after 300 ms, so a fast load never flashes it */
+.np-loading{display:grid;place-items:center;align-content:center;gap:var(--s4);min-height:60vh;padding:var(--s12) var(--s4);text-align:center;animation:np-ldin .2s ease-out .3s both}
+.np-ldlogo svg{display:block;height:48px;width:auto}.np-ldtxt{margin:0;font:500 var(--t17)/1.5 var(--b);color:var(--ink-2)}
+@keyframes np-ldin{from{opacity:0}to{opacity:1}}
+@media (prefers-reduced-motion:reduce){.np-loading{animation:none}}
 /* phone: logo + search on top, the five places in a bottom bar */
 .np-bar{display:none}
 @media (max-width:899.98px){.np-nav{gap:var(--s3)}.np-search .lbl,.np-search kbd{display:none}}

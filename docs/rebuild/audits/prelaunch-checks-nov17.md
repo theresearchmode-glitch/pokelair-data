@@ -13,9 +13,15 @@ parked by Sim's Nov 9 rule until she says), NO CHANGE (checked).
 - Broken saved data, blocked saving, empty team, missing images, broken links, bad pastes handled cleanly.
 
 ## 1. Pages show old numbers first, then swap (fix first)
-- 1 OPEN Every page draws with the built-in data, then ~1.2 s later redraws with the current data: Home 10,209 -> 13,826
+- 1 FIXED (tests running) Every page draws with the built-in data, then about 1.2 s later redraws with the current data: Home 10,209 -> 13,826
   teams, Sneasler 46.6% -> 35.6%; Game Plan lead/bench flips; Strength Score 92 -> 93; Ratings S tier 9 of 228 -> 11 of
   321. Fix: numbers, plans and ratings drawn only from the final data; a neutral placeholder until it's ready.
+  Done: numbers are drawn only once all 15 daily documents have answered (or there's no data store, or after 8 s); until then the
+  main area shows the logo and "Getting today's numbers…" (role=status, fades in after 300 ms so a fast load never flashes it).
+  The last document draws at once (the 700 ms wait is skipped). Measured with the store 1.2 s late (app/test/data-swap.mjs, now in
+  GitHub's checks): before, 8 failures (10,209 -> 13,826; 46.6 -> 35.6; Game Plan flip; 92 -> 93; 9 -> 11; no loading sign); after, 0,
+  today's numbers first at about 1.4 s (before: old ones at 0.1 s, today's at about 1.9 s). Pictures: pics/nov17/loading-{320,390,1440}-{light,dark}.png.
+  Also helps 2b (slow 4G now shows the logo and a loading line once the page's code has run).
 
 ## 2. First load on phones (simulated mid-range phone)
 - 2a OPEN 1.4-1.6 MB per first visit; 4G: Home usable 2.4 s, My Team 2.8 s; main content 2.1 s / 3.8 s.

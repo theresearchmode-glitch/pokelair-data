@@ -140,6 +140,9 @@ jobs:
       # Team Card / Poster: a long name's lines are spaced by the size they are drawn at (review FP-5)
       - run: PAGE=app/dist/v2.html node app/test/share-fz.mjs
         if: ${{ !cancelled() }}
+      # pre-launch check 1 (Nov 17): no page draws the built-in numbers and then swaps to today's (data store answers 1.2 s late)
+      - run: PAGE=app/dist/v2.html node app/test/data-swap.mjs
+        if: ${{ !cancelled() }}
       - run: node app/test/tokens-doc.mjs
         if: ${{ !cancelled() }}
       - run: node app/test/perf-docs.mjs
