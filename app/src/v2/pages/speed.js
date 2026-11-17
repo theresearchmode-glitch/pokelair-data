@@ -50,7 +50,8 @@ V2.spList = D => `<ol class="sp2-list">${D.rows.map(r => `<li class="${r.me ? 'm
 
 // one line per member of yours: today's outspeed share of the top 30 and the Speed points to pass the threat just above
 V2.spSums = D => { const E = V2.esc; if (!D.sums.length) return '';
-  return `<div class="sp2-sum">${D.sums.map(({p, beat, tip, os, cond}) => `<p><b>${E(V2.disp(p.n))}</b> ${os ? `${outspeedTxt(os, {tr: spdUi.tr})} threats${cond ? ` (${E(cond)})` : ''}` : `moves first against ${beat} of the ${D.thr.length} here`}${!tip ? ''
+  const n30 = (D.sums.find(x => x.os) || {}).os; // audit v199 #7 (Nov 17): the shares count the top 30, the track shows 20 of them; say so once
+  return `${n30 ? `<p class="sp2-sum-k">Each share counts all top ${n30.n} threats; the track shows the ${D.thr.length} most used that aren't on your team.</p>` : ''}<div class="sp2-sum">${D.sums.map(({p, beat, tip, os, cond}) => `<p><b>${E(V2.disp(p.n))}</b> ${os ? `${outspeedTxt(os, {tr: spdUi.tr})} threats${cond ? ` (${E(cond)})` : ''}` : `moves first against ${beat} of the ${D.thr.length} here`}${!tip ? ''
     : tip.need != null ? `<small>${tip.need - tip.cur} more Speed points (${tip.need} total) outspeeds ${E(V2.disp(tip.above.p.n))}</small>` : `<small>Can't outspeed ${E(V2.disp(tip.above.p.n))} with this nature</small>`}</p>`).join('')}</div>`; };
 
 V2.pages.speed = {place: 'battle', after() { if (V2._spWUsed && document.querySelector('.sp2') && Math.abs(V2.spW() - V2._spWUsed) > 4 && V2._spFix !== V2._spWUsed) { V2._spFix = V2._spWUsed; V2.redraw(); } }, draw() { let D; try { D = speedData(); } catch (e) { console.error(e); D = null; }

@@ -1133,6 +1133,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2-list .tag{font:700 var(--t13)/1.5 var(--b);color:var(--plot-text);white-space:nowrap}
 @media (min-width:1024px){.sp2-list{columns:2;column-gap:var(--s12)}.sp2-list li{break-inside:avoid}}
 .sp2-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 var(--s8);margin-top:var(--s8)}
+.sp2-sum-k{margin:var(--s8) 0 0;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.sp2-sum-k+.sp2-sum{margin-top:var(--s2)}
 .sp2-sum p{margin:0;padding:var(--s2) 0;border-top:1px solid var(--rule);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.sp2-sum b{color:var(--ink)}.sp2-sum small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
 @media (max-width:899.98px){.sp2-sum{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:599.98px){.sp2-sum{grid-template-columns:minmax(0,1fr)}.sp2-h h1{font-size:var(--t28)}.sp2-ctl .np-slide{width:100%}
@@ -2288,7 +2289,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .wt-spot-n{display:none}
 @media (max-width:1099.98px){.wt-top .wt-spot-w{display:none}.wt-spot-n{display:block;margin:var(--s6) 0}}
 @media (max-width:699.98px){.wt .wt-fan:not(.wt-mini) .wt-card .mc-id h3{font:700 var(--t13)/1.2 var(--b);font-style:normal}}
-@media (max-width:699.98px){.wt .ra-seg a{font-size:var(--t13);white-space:nowrap}.wt-hh h3{font-size:var(--t20)}}
+@media (max-width:699.98px){.wt-hh h3{font-size:var(--t20)}} /* audit v199 #3: Winning Teams no longer shrinks the shared Tournaments tab bar (it now matches Events, Archetypes, This Week) */
 @media (max-width:699.98px){.wt .ra-seg,.ev .ra-seg,.ar .ra-seg{grid-template-columns:auto auto auto}}
 .wt-open{max-width:100%;white-space:normal;text-align:center}.wt-open span{white-space:normal}
 .wt-two>.wt-hand{min-width:0}
@@ -2848,7 +2849,11 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .trk-sp{display:grid;place-items:end center;width:88px;margin:var(--s2) 0;border-radius:var(--r-s);background:repeating-linear-gradient(135deg,var(--tk-line) 0 1px,transparent 1px 7px),linear-gradient(115deg,var(--ta),var(--tb))}.trk-sp .np-mon{--iw:80px}
 .trk-st{display:grid;align-content:center;gap:var(--s1);min-width:0;padding:var(--s3)}.trk-st b{font:900 var(--t17)/1.25 var(--u);font-style:italic;overflow-wrap:break-word}.trk-st span{font:400 var(--t13)/1.5 var(--b);color:var(--rc-ink2)}
 .trk-sr{display:grid;align-content:center;justify-items:center;min-width:72px;padding:var(--s3);border-left:2px dashed var(--rc-rule)}.trk-sr small{font:700 var(--t13)/1.5 var(--b);text-transform:uppercase;letter-spacing:.06em;color:var(--rc-ink2)}.trk-sr b{font:900 var(--t34)/1 var(--u);font-style:italic}
-.trk-slip .trk-stamp{position:static;justify-self:start;margin:var(--s2) 0 var(--s1) var(--s1);font-size:var(--t13);transform:rotate(-8deg)} /* Nov 15 (re-audit #6): in the text column's flow, under the words */
+.trk-slip .trk-stamp{position:static;justify-self:start;margin:var(--s2) 0 var(--s1) var(--s1);font-size:var(--t13);transform:rotate(-8deg)}
+/* Audit v199 #2 (Nov 17): at 1100-1365 a card is narrower than on a phone (284-343px), so the phone's compact card follows the card's own width */
+.trk-slips>li{container-type:inline-size}
+@container (max-width:379.98px){.trk-sp{width:64px}.trk-sp .np-mon{--iw:60px}.trk-sr{min-width:64px;padding-inline:var(--s2)}.trk-st{padding-inline:var(--s2)}.trk-st b{font-size:var(--t15)}.trk-slip .trk-stamp{white-space:nowrap;padding-inline:var(--s2);margin-left:0;letter-spacing:.01em}}
+@container (max-width:299.98px){.trk-sr{padding-inline:var(--s1)}.trk-sr small{letter-spacing:.03em}} /* 320-wide phones: 'Charizard Y' stays whole */ /* Nov 15 (re-audit #6): in the text column's flow, under the words */
 .trk-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 /* how we check */
 .trk-how h2{margin-bottom:var(--s4)}
@@ -2913,7 +2918,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:1100px) and (max-width:1279.98px){.wt .wt-card{--cw:160px;--ch:224px}.wt .wt-card .mc-mon .np-mon,.wt .wt-card .mc-mon .np-mon .st{--iw:120px}
   .wt .wt-two .wt-card{--cw:76px;--ch:108px;--ov:2px}.wt .wt-two .wt-card .mc-mon .np-mon,.wt .wt-two .wt-card .mc-mon .np-mon .st{--iw:68px}.wt .wt-two .wt-card .mc-id h3{font-size:var(--t13)}}
 .wt-acts .np-link,[data-wtless],[data-evsets]{position:relative}.wt-acts .np-link::after,[data-wtless]::after,[data-evsets]::after{content:"";position:absolute;inset:-12px -8px}
-@media (max-width:359.98px){.wt .ra-seg a,.ev .ra-seg a,.ar .ra-seg a{font-size:var(--t13);padding:0 var(--s1)}}
+@media (max-width:359.98px){.wt .ra-seg a,.ev .ra-seg a,.ar .ra-seg a,.wk .ra-seg a{font-size:var(--t13);padding:0 var(--s1)}}
 @media (min-width:1100px){.mh-gh span{white-space:nowrap}.mh-hand{grid-template-rows:auto auto;row-gap:0}.mh-hand .mh-grp{display:grid;grid-row:span 2;grid-template-rows:subgrid;align-content:start}.mh-gh{align-self:end}} /* audit Nov 15: the three headers share one row (subgrid), so Lead, Back and Bench Cards start level */ /* 'stay out this game' on one line, so the three headers are one height */
 /* re-check Nov 15, This Week at 320: the label on its own line, the two counts under it (they ran into each other); a change note may wrap */
 @media (max-width:389.98px){.wk-cn{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:0}.wk-cl{grid-column:1/-1}.wk-chg b{white-space:normal}}
