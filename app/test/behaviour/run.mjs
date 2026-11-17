@@ -6,12 +6,16 @@ const args = process.argv.slice(2), only = (args.find(a => a.startsWith('--only=
 const groups = args.filter(a => !a.startsWith('--')).length ? args.filter(a => !a.startsWith('--')) : fs.readdirSync(HERE).filter(f => /^[A-Z]-.*\.mjs$/.test(f)).map(f => f.replace('.mjs', ''));
 const H = await import('./harness.mjs');
 for (const g of groups) await import(`./${g}.mjs`);
+/* code review C-C1 (Nov 17): the new site's own list of expected failures, each with its reason (known-v2.json, by group). A test on
+   it fails as "known"; anything else that fails is new and makes the run exit 1, so CI can guard the new site. */
+const KV2 = process.env.ADAPTER === 'v2' ? (() => { try { return JSON.parse(fs.readFileSync(HERE + 'known-v2.json', 'utf8')); } catch (e) { return {}; } })() : {};
+const knownOf = T => T.known || (KV2[T.group] && KV2[T.group][T.id]) || '';
 const res = [], t0 = Date.now();
 for (const T of H.tests()) { if (only.length && !only.includes(T.id)) continue;
   if (T.skip) { res.push({...T, r: 'skip', why: T.skip}); console.log(`  skip  ${T.id}  ${T.title}  (${T.skip})`); continue; }
   H.setGroup(T.group); let r = 'pass', why = '';
-  try { await Promise.race([T.fn(), new Promise((_, j) => setTimeout(() => j(new Error('timed out after 60s')), 60000))]); } catch (e) { r = T.known ? 'known' : 'FAIL'; why = String(e.message || e).slice(0, 300); }
-  if (r === 'pass' && T.known) { r = 'FIXED?'; why = 'marked known (' + T.known + ') but passed: remove the mark'; }
+  try { await Promise.race([T.fn(), new Promise((_, j) => setTimeout(() => j(new Error('timed out after 60s')), 60000))]); } catch (e) { r = knownOf(T) ? 'known' : 'FAIL'; why = String(e.message || e).slice(0, 300); }
+  if (r === 'pass' && knownOf(T)) { r = 'FIXED?'; why = 'marked known (' + knownOf(T) + ') but passed: remove the mark'; }
   if (r === 'FAIL' && process.env.FAILSHOT) { try { const pg = H.lastPage(); fs.mkdirSync(process.env.FAILSHOT, {recursive: true}); const f = process.env.FAILSHOT.replace(/[\\/]$/, '') + '/' + T.id;
     await pg.screenshot({path: f + '.png', fullPage: true}); fs.writeFileSync(f + '.txt', await pg.evaluate(() => document.body.innerText)); } catch (e) { console.log('  (FAILSHOT: ' + String(e.message).slice(0, 80) + ')'); } }
   res.push({group: T.group, id: T.id, title: T.title, r, why});

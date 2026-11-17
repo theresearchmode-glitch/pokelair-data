@@ -17,6 +17,26 @@ concurrency:
   group: test-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  # The new site's behaviour tests (code review C-C1, Nov 17): one job per group, since a full run is ~40 min, over one job's limit.
+  # Each runs on the test fixture; a failure on known-v2.json (each with its reason) is reported as "known"; any other failure fails.
+  behaviour-v2:
+    name: new site behaviour (${{ matrix.group }})
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [A-team, B-build, C-battle, D-meta-shell]
+    steps:
+      - name: Wait for the rest of a multi-commit change
+        run: sleep 120
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm ci && npx playwright install --with-deps chromium
+      - run: node app/build.mjs --v2 --art=../src/v2/art/
+      - run: PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs ${{ matrix.group }}
   # Code tests (Sim, Nov 9, "split the tests"): every check runs on a FROZEN copy of the data (the out/ folder of commit
   # TEST_DATA below: the last data on which everything passed), so red here means the CODE broke, not that today's data
   # changed a result. Change TEST_DATA only on purpose (e.g. a new regulation), to a commit whose data passes every check.
