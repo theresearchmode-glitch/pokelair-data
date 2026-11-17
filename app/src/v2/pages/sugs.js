@@ -32,8 +32,10 @@ V2.sgReasons = ms => { const X = V2.sgX(ms), P = X.plans, list = [...P]; [...lis
 V2.undot = s => undotText(String(s), ', ', /;/.test(s));
 V2.undotHtml = h => { h = String(h); const list = /;/.test(h.replace(/<[^>]*>/g, '')); return h.split(/(<[^>]*>)/).map(x => x.startsWith('<') ? x : undotText(x, ', ', list)).join(''); };
 // one suggestion as a card (also used by All Suggestions); the score change from today's planGrade, the kind line from today's LANE
-V2.sgSide = (m, cls) => { const P = m.p || m; return `<span class="tm-sw${cls}"><img src="${V2.art(SPRITE_ID[P.n])}" alt=""><span>${V2.nameHtml(m.d || V2.disp(P.n))}</span></span>`; };
-V2.sgSwap = x => `<div class="tm-chg" aria-label="${x.out ? V2.esc(x.out.d) + ' out, ' : 'Add '}${V2.esc(x.c.p.d)}${x.out ? ' in' : ''}">${x.out ? V2.sgSide(x.out, '') : '<span class="tm-sw"></span>'}<span class="tm-ar" aria-hidden="true">${x.out ? '→' : '+'}</span>${V2.sgSide(x.c.p, ' in')}</div>`;
+// known-bug COV-04/SUGG-04 (Nov 17): the Pokémon coming in says whether it's in your box or still to catch (today's page: Box / TO CATCH)
+V2.sgOwn = P => { try { return inBox(P) ? 'In your box' : ui.pool !== 'all' ? 'To catch' : ''; } catch (e) { return ''; } };
+V2.sgSide = (m, cls) => { const P = m.p || m, own = cls === ' in' ? V2.sgOwn(P) : ''; return `<span class="tm-sw${cls}"><img src="${V2.art(SPRITE_ID[P.n])}" alt=""><span>${V2.nameHtml(m.d || V2.disp(P.n))}${own ? `<small class="tm-own">${own}</small>` : ''}</span></span>`; };
+V2.sgSwap = x => `<div class="tm-chg" aria-label="${x.out ? V2.esc(x.out.d) + ' out, ' : 'Add '}${V2.esc(x.c.p.d)}${x.out ? ' in' : ''}${V2.sgOwn(x.c.p) ? ', ' + V2.sgOwn(x.c.p).toLowerCase() : ''}">${x.out ? V2.sgSide(x.out, '') : '<span class="tm-sw"></span>'}<span class="tm-ar" aria-hidden="true">${x.out ? '→' : '+'}</span>${V2.sgSide(x.c.p, ' in')}</div>`;
 V2.sgCard = ({pl, k, g0, attr, side, hidden, why, main}) => { const g1 = g0 != null ? planGrade(pl) : null, ok = g0 != null && g1 != null, r0 = ok ? Math.round(g0) : null, r1 = ok ? Math.round(g1) : null, d = ok ? r1 - r0 : null;
   const word = ok && CH.wordOf(g0) !== CH.wordOf(g1) ? CH.wordOf(g1) : '', ln = (() => { try { if (!pl._lane) LANE.of(pl, members(), g0); } catch (e) {} return LANE.lineParts(pl); })(); // plans from the planner's extra list have no lane yet: work it out, as today's 23-coverage.js does (Nov 10 fix; audit SUGG-06)
   // Why?: the plan's own reasons (else, for a side option, what keeps it level), the weak-spot change first (as today)
