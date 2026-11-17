@@ -80,6 +80,8 @@ jobs:
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-trwarm.mjs
         if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-minors.mjs
+        if: ${{ !cancelled() }}
       - run: node app/test/tokens-doc.mjs
         if: ${{ !cancelled() }}
       - run: node app/test/perf-docs.mjs
