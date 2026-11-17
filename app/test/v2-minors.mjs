@@ -23,5 +23,8 @@ if (has) {
   await p.evaluate(() => window.__ev('V2.canStore = false'));
   const t2 = await toastAfter(() => p.click('[data-bdsave]'));
   ok(/for this visit/.test(t2), `A1-M3: Save says "for this visit" when the browser can't keep it (toast: ${t2.slice(0, 80)})`); }
+await p.goto('file://' + PAGE + '#meta'); await p.waitForTimeout(2500);
+const im = await p.evaluate(() => { const i = [...document.querySelectorAll('img[src*=".webp"]')]; return {n: i.length, a: i.filter(x => x.decoding === 'async').length}; });
+ok(im.n > 0 && im.a === im.n, `B-I6 (part): every sprite decodes off the main thread (${im.a} of ${im.n} on Meta)`);
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

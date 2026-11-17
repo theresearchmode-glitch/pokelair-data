@@ -22,7 +22,7 @@ V2.cxfTape = (IA, IB) => { const parts = [];
 V2.cxfCol = (side, rows) => { const E = V2.esc, k = side.toLowerCase(), v = r => r ? r[k] : null, thr = rows.find(r => r.k === 'thr'), ws = rows.find(r => /weak spots/i.test(r.label)), fl = rows.find(r => r.k === 'field'), ar = rows.find(r => r.k === 'arch');
   const L = v(thr) || [], ck = v(ws), F = v(fl) || [];
   return `<div class="cxf-col ${k}"><h3 class="u"><span class="cxf-badge u" aria-hidden="true">${side}</span>Only Team ${side} handles</h3>
-    ${L.length ? `<ul class="cxf-thr">${L.slice(0, 5).map(r => `<li><img src="${V2.art(SPRITE_ID[r.t.n])}" alt="" loading="lazy">${V2.rowName(r.t.d)}</li>`).join('')}${L.length > 5 ? `<li class="fine">+${L.length - 5} more</li>` : ''}</ul>` : '<p class="fine">None of the top threats</p>'}
+    ${L.length ? `<ul class="cxf-thr">${L.slice(0, 5).map(r => `<li><img src="${V2.art(SPRITE_ID[r.t.n])}" alt="" loading="lazy" decoding="async">${V2.rowName(r.t.d)}</li>`).join('')}${L.length > 5 ? `<li class="fine">+${L.length - 5} more</li>` : ''}</ul>` : '<p class="fine">None of the top threats</p>'}
     <dl class="cxf-facts">${ws ? `<div><dt>${E(ws.label)}</dt><dd class="${ck == null ? '' : ck ? 'ok' : 'no'}">${ck == null ? '–' : ck ? '<span aria-hidden="true">✓</span> Yes' : '<span aria-hidden="true">✗</span> No'}</dd></div>` : ''}
       <div><dt>Weather / terrain</dt><dd class="cxf-tm">${F.length ? F.map(x => E(x.name)).join(', ') : 'None'}</dd></div><div><dt>Archetype</dt><dd>${ar && v(ar) && v(ar).label ? E(String(v(ar).label)) : '–'}</dd></div></dl></div>`; };
 (() => { const before = V2.pages.compare.draw; V2.pages.compare.draw = () => { const RA = cxResolve(ui.cx.A), RB = cxResolve(ui.cx.B); if (!RA || !RB) return before();

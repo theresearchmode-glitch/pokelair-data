@@ -9,7 +9,7 @@ V2.muView = () => { const v = LS.get('np2.seg.thr', 'out'); return V2.MUV.some(x
 V2.MUG = ['✗', '~', '✓', '✓✓']; // a shape per calc level, so the colour is never the only signal
 V2.MUC = {win: 'cw', trade: 'ct', lose: 'cl', none: 'cn'}; // grid cells: CH.cellOf's four answers
 V2.VCLS = {'Favoured': 'vf', 'Even match': 've', 'Unfavoured': 'vu'};
-V2.muImg = n => `<img src="${V2.art(SPRITE_ID[n])}" alt="" loading="lazy">`;
+V2.muImg = n => `<img src="${V2.art(SPRITE_ID[n])}" alt="" loading="lazy" decoding="async">`;
 V2.muLv = l => `<span class="mu-lv l${l}"><i aria-hidden="true">${V2.MUG[l]}</i>${CH.LV[l]}</span>`;
 
 // ---------- the section ----------

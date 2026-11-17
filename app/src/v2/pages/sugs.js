@@ -260,4 +260,4 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   if (d.exadd) { const p = byName.get(d.exadd); if (p && !isExcl(p)) { S.excl.push(p.n); toast(`${p.d} won't be suggested${!p.m && ROSTER.some(q => q.m && ownKey(q) === p.n) ? ' (nor its Mega)' : ''}`); } render(); V2.exclOpen('[data-exq]'); } });
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-exq]'); if (!i) return; const out = document.querySelector('[data-exhits]'); if (!out) return;
   const r = i.value.trim() ? V2.find(i.value).mons.filter(p => !isExcl(p)).slice(0, 6) : [];
-  out.innerHTML = r.map(p => `<button type="button" class="np-hit" data-exadd="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b></span><span class="pg">Add</span></button>`).join(''); });
+  out.innerHTML = r.map(p => `<button type="button" class="np-hit" data-exadd="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b></span><span class="pg">Add</span></button>`).join(''); });
