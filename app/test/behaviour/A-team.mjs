@@ -155,7 +155,7 @@ t('HOME-14', 'Top of the Meta: 10 rated rows, Hidden gems switch changes the lis
   // new build (decisions.md Nov 12, Sim chose the headline "The Meta, right now."; piece 3 rows from the mock-up, Preview v75): headline
   // first, then "NastyPlot ratings, from N tournament teams"; each row "<rank> <name> <letter> tier <rating>" (word list: "S tier"); hint words differ
   const r = await homePage(); const tx = await r.ui.text(); has(tx, NEW ? /The Meta, right now\. NastyPlot ratings, from [\d,]+ tournament teams/ : /NastyPlot ratings: from [\d,]+ tournament teams Top of the Meta/);
-  const top = await r.ui.homeTopRows(); ok(top.length === 10, `${top.length} rows`); ok((NEW ? /\b1 \S+(?: \S+)?(?: [XYZ])? [SABCD] tier \d+ 2 / : /Sneasler S \d+ #1|\S+ [SABCD] \d+ #1/).test(tx), 'rows don\'t read "Name S 97 #1"');
+  const top = await r.ui.homeTopRows(); ok(top.length === 10, `${top.length} rows`); ok((NEW ? /\b1 \S+(?: \S+)?(?: [XYZ])? [SABCD] tier \d+ [12] / /* Nov 17 (3b): two showing the same rating share #1 */ : /Sneasler S \d+ #1|\S+ [SABCD] \d+ #1/).test(tx), 'rows don\'t read "Name S 97 #1"');
   ok(await r.ui.chosen('Top rated') === true, '"Top rated" not chosen by default'); await r.ui.choose('Hidden gems');
   const gems = await r.ui.homeTopRows(); ok(gems.length >= 1 && gems.join() !== top.join(), 'Hidden gems list did not change'); ok(await r.ui.chosen('Hidden gems') === true, 'Hidden gems not shown as chosen');
   const before = tx.match(NEW ? /Highest ratings right now[^.]*\./ : /Highest NastyPlot ratings[^.]*\./); ok(!(await r.ui.text()).includes(before ? before[0] : '@@'), 'hint line did not change for Hidden gems');
