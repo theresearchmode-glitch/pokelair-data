@@ -94,7 +94,8 @@ t('HOME-08', 'All 11 Tools: each card opens the page named on it', async () => {
     + How We Calculate); each opens the page today's site files the tool under (32-views.js VIEW_PARENT/VIEW_ALIAS): Battle, Meta or Build */
     const r = await homePage(); has(await r.ui.text(), /Everything NastyPlot does\./); /* Nov 15 night (say it once): the tools are a list of links, no '12 tools' line */
     const want = {Battle: 'matchup', 'Winning Teams': 'top', 'Type Chart': 'types', Ratings: 'meta', 'Damage Calc': 'calc', Events: 'events', 'Test Run': 'gauntlet', 'Popular Sets': 'sets', 'Speed Tiers': 'speed', Archetypes: 'arch', 'Winning Cores': 'auto', 'How We Calculate': 'method'}; /* stress test (Nov 16): each link opens the page it names, not its hub */
-    const tools = await r.ui.homeTools(); ok(tools.length === 12, `${tools.length} tool cards: ${tools.join(', ')}`);
+    const tools = await r.ui.homeTools(); ok(tools.length === 18, `${tools.length} tool cards: ${tools.join(', ')}`); /* player review 2a (Nov 17): +6 */
+    for (const [name, h] of [['Team Preview Practice', 'practice'], ['Compare Teams', 'compare'], ['This Week', 'weekly'], ['Track Record', 'track'], ['Usage', 'usage'], ['My Box', 'box']]) { ok(tools.includes(name), 'no tool card ' + name); await r.ui.go('Home', 300); await r.ui.tapTool(name); const hh = await r.pg.evaluate(() => location.hash); ok(hh.startsWith('#' + h), `${name} opened ${hh}`); }
     for (const [name, v] of Object.entries(want)) { ok(tools.includes(name), 'no tool card ' + name); await r.ui.go('Home', 300); await r.ui.tapTool(name); const now = await r.ui.current(); ok(now === v || (v === 'auto' && now === 'build'), `${name} opened ${now}`); }
     noErrs(r); await r.close(); return; }
   const r = await homePage(); has(await r.ui.text(), /All 11 Tools/);

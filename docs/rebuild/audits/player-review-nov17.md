@@ -19,7 +19,7 @@ KO Board, Test Run's piles, Track Record.
   "strong players" or each label says which.
 
 ## 2. Features players won't find
-- 2a OPEN Home "Everything NastyPlot does" misses Team Preview Practice, Compare Teams, This Week, Track Record, Usage, My Box.
+- 2a FIXED Home "Everything NastyPlot does" misses Team Preview Practice, Compare Teams, This Week, Track Record, Usage, My Box. (Home's list now has all six; HOME-08 checks 18 and that each opens its page)
 - 2b OPEN Your Games empty states don't say what logging unlocks (after 5 games: Build weighs own results; what you lose to).
 - 2c OPEN Site search finds only Pokémon, saved teams, pages ("trick room" = No matches); add moves, items, abilities, styles
   and send each somewhere useful (Winning Teams search already works for these).

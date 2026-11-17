@@ -96,7 +96,12 @@ V2.HOME_TOOLS = [['Battle', 'Their six in, your four, the leads and turn 1 out',
   ['Damage Calc', 'Real damage with stats, items and spread moves', 'calc'], ['Events', 'Every recent tournament, top cut and full sets', 'events'],
   ['Test Run', 'Run your team into the top 20 tournament teams', 'gauntlet'], ['Popular Sets', 'Moves, items and natures players run', 'sets'],
   ['Speed Tiers', 'Who moves first, with Tailwind and Trick Room', 'speed'], ['Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', 'archetypes'],
-  ['Winning Cores', 'Pairs and trios that win the most', 'build'], ['How We Calculate', 'Where every number comes from', 'method']];
+  ['Winning Cores', 'Pairs and trios that win the most', 'build'],
+  /* player review 2a (Nov 17): six tools players wouldn't otherwise find */
+  ['Team Preview Practice', 'Pick your four against real ladder teams', 'practice'], ['Compare Teams', 'Two teams side by side', 'compare'],
+  ['This Week', 'What rose and fell in this week\u2019s tournaments', 'weekly'], ['Track Record', 'How our ratings held up in later events', 'track'],
+  ['Usage', 'The most used Pok\u00e9mon, by source', 'usage'], ['My Box', 'The Pok\u00e9mon you own, for Build and suggestions', 'box'],
+  ['How We Calculate', 'Where every number comes from', 'method']];
 // Say it once (Nov 15 night, design review A/E): the 12 big tool tiles repeated the menu; now a compact list of links (each tool's line
 // stays as its hover title and spoken label), so Home is shorter and nothing is lost
 V2.homeTools = () => `<section class="fn-tools hm-tools"><p class="fn-k">The full card</p><h2 class="u">Everything NastyPlot does.</h2>
