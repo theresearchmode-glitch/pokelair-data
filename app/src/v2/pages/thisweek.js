@@ -13,12 +13,12 @@ V2.wkMover = (r, up, nA, nB, big) => { const E = V2.esc, d = wkDelta(r.xa, nA, r
 V2.wkSide = (L, up, nA, nB) => `<section class="wk-side ${up ? 'up' : 'dn'}"><h3 class="wk-st u">${up ? 'Rising' : 'Falling'}</h3>${L.length ? `${V2.wkMover(L[0], up, nA, nB, true)}${L.length > 1 ? `<ul class="wk-ml">${L.slice(1, 4).map(r => V2.wkMover(r, up, nA, nB)).join('')}</ul>` : ''}`
   : `<p class="wk-none">${up ? 'No Pokémon rose enough to call it a trend.' : 'No Pokémon dropped enough to call it a trend.'}</p>`}</section>`;
 V2.pages.weekly = {place: 'meta', draw() { const E = V2.esc, W = META.weekly;
-  const shell = inner => `<div class="ra gsp wk">${V2.tourTabs('weekly')}${inner}</div>`;
-  if (!W) return shell(`<header class="wk-mast"><h1 class="u">This Week</h1></header><p class="tm-sub">This week's changes appear after the next data refresh.</p>`);
+  const shell = inner => `<div class="ra gsp wk">${inner}</div>`; // Sim (Nov 17, Q2): the tabs sit under the headline, as on every Meta page
+  if (!W) return shell(`<header class="wk-mast"><h1 class="u">This Week</h1>${V2.tourTabs('weekly')}</header><p class="tm-sub">This week's changes appear after the next data refresh.</p>`);
   const A = W.a, B = W.b, nA = A.n, nB = B.n, T = W.th;
   const cnt = (lab, w, say) => `<p class="wk-cn" role="group" aria-label="${E(say)}"><span class="wk-cl">${lab}</span><span><b class="u">${CH.n(w.n)}</b> teams</span><span><b class="u">${w.ev}</b> events</span></p>`;
   const mast = `<header class="wk-mast"><p class="wk-dl"><span>Tournament teams, ${WK.range(A)} against ${WK.range(B)}</span>${W.updated && V2.otherDay(WK.d(W.updated.slice(0, 10))) ? `<span>Updated ${E(WK.d(W.updated.slice(0, 10)))}</span>` : ''}</p>
-    <h1 class="u">This Week</h1><div class="wk-mrow"><div>${cnt('This week', A, `This week, ${WK.range(A)}`)}${cnt('Week before', B, `The week before, ${WK.range(B)}`)}</div><button type="button" class="np-btn" data-wkshare><span>Share as Image</span></button></div></header>`;
+    <h1 class="u">This Week</h1>${V2.tourTabs('weekly')}<div class="wk-mrow"><div>${cnt('This week', A, `This week, ${WK.range(A)}`)}${cnt('Week before', B, `The week before, ${WK.range(B)}`)}</div><button type="button" class="np-btn" data-wkshare><span>Share as Image</span></button></div></header>`;
   const moves = W.enough ? `<div class="wk-sides">${V2.wkSide(W.up, true, nA, nB)}${V2.wkSide(W.down, false, nA, nB)}</div><p class="fine wk-cap">Share of tournament teams, last week to this week.</p>`
     : `<p class="wk-none">Not enough teams to compare this week (each week needs ${T.teams}+).</p>`;
   const top = W.top.length ? `<section class="wk-top"><h2 class="u">Most Used This Week</h2><ul>${W.top.slice(0, 5).map(r => `<li><button type="button" class="wk-tm" style="${V2.evTy(r.p.n)}" data-v2mon="${E(r.p.n)}" aria-label="${E(r.p.d)}: ${WK.pc1(r.xa, nA)}% of teams this week">${V2.mon(r.p.n, {bare: true})}<b class="u">${WK.pc1(r.xa, nA)}%</b><span>${E(r.p.d)}</span></button></li>`).join('')}</ul><p class="fine wk-cap">Most used this week, % of this week's tournament teams.</p></section>` : '';

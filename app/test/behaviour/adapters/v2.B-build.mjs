@@ -368,8 +368,8 @@ export default (ui, pg) => {
     /** a teammate under "Usually alongside" (today's Teammates chips) */
     tapTeammate: n => click(`#main .us-mates [data-v2setmon="${n}"]`, 900),
     /** the source switch's chosen label (Best data / Tournaments / Showdown) */
-    setsSource: () => pg.evaluate(() => { const b = [...document.querySelectorAll('#main [data-v2setsrc][aria-pressed="true"]')].find(e => e.getClientRects().length); return b ? b.innerText.trim() : null; }),
-    tapSetsSource: label => pg.evaluate(l => { const b = [...document.querySelectorAll('#main [data-v2setsrc]')].find(e => e.getClientRects().length && e.innerText.trim() === l); if (!b) throw new Error('no source ' + l); b.click(); }, label).then(() => pg.waitForTimeout(700)),
+    setsSource: () => pg.evaluate(() => { const b = [...document.querySelectorAll('#main [data-v2setsrc][aria-pressed="true"]')].find(e => e.getClientRects().length); const t = b ? b.innerText.trim() : null; return ({'Online tournaments': 'Tournaments', 'Showdown ladder': 'Showdown'})[t] || t; }), /* audit v199 #9 (Nov 17): the new site uses the word-list names */
+    tapSetsSource: label => pg.evaluate(l => { l = ({Tournaments: 'Online tournaments', Showdown: 'Showdown ladder'})[l] || l; const b = [...document.querySelectorAll('#main [data-v2setsrc]')].find(e => e.getClientRects().length && e.innerText.trim() === l); if (!b) throw new Error('no source ' + l); b.click(); }, label).then(() => pg.waitForTimeout(700)),
     /** where the sets start on screen (px): "How <Pokémon> is built" (a teammate tap scrolls there, as today's scrolls the pane to its top) */
     paneTop: () => pg.evaluate(() => { const p = [...document.querySelectorAll('#main .st-how')].find(e => e.getClientRects().length) || [...document.querySelectorAll('#main .gs-body')].find(e => e.getClientRects().length); return p ? Math.round(p.getBoundingClientRect().top) : null; }),
     setsText: () => txt('#main .st'),

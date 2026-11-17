@@ -1,5 +1,5 @@
 // ---------- Meta > Pokémon > Sets (Nov 14): "How it's built right now." (Sim's Grandstand brief, section 5) ----------
-// Look up a Pokémon (remembered, cc2.setMon), the source switch Best data / Tournaments / Showdown (remembered, cc2.setSrc), "Your team"
+// Look up a Pokémon (remembered, cc2.setMon), the source switch Best data / Online tournaments / Showdown ladder (remembered, cc2.setSrc), "Your team"
 // on a bench (the one viewed lit blue), "How <Pokémon> is built" (Your line, moves bars beside item / ability / nature), "Usually alongside",
 // the source note. Every feature of today's Popular Sets (meta-features.md SETS-01..05) from today's shared logic: setFor, findIn, SET_SRC,
 // setSources, rankLine, rankTxt (src/app/21-sets.js, 02-set-data.js, 24-sheet-data.js).
@@ -9,6 +9,8 @@ V2.stMon = () => { const team = members(); let p = byName.get(ui.setMon);
   if (!p) { try { const r = lairRows(); p = r && r[0] ? r[0].p : null; } catch (e) {} if (p) ui.setMon = p.n; }
   if (!ui.setSrcLoaded) { ui.setSrcLoaded = true; try { const v = LS.get('cc2.setSrc', null); if (SET_SRC[v]) ui.setSrc = v; } catch (e) {} }
   return p; };
+// audit v199 #9 (Nov 17): the word list's source names, the same as Usage's chips (today's shared SET_SRC keeps 'Tournaments' / 'Showdown')
+V2.setSrcName = {ingame: 'Best data', tour: 'Online tournaments', ladder: 'Showdown ladder'};
 V2.stSet = p => { const src = SET_SRC[ui.setSrc] ? ui.setSrc : 'ingame';
   if (src === 'ingame') { const st = setFor(p, 'doubles', 'ingame'), d = META[SRC.ingame], row = findIn(d, p); return {src, t: st, line: rankLine(d, row) || mainSource(st), note: setSources(st, 'doubles', p)}; }
   const d = META[SRC[src]], row = findIn(d, p); return {src, t: row, line: rankLine(d, row) || (d ? V2.esc(d.source || '') : 'No data loaded yet'), note: ''}; };
@@ -39,9 +41,9 @@ V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = m
   const S2 = p ? V2.stSet(p) : null;
   const ctl = `<div class="gs-ctl"><div class="ra-find st-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-stq value="${E(U.q)}" placeholder="Look up a Pokémon" aria-label="Look up a Pokémon" autocomplete="off"></label>
       ${q ? `<div class="st-hits" role="listbox" aria-label="Matches">${hits.length ? hits.map(x => `<button type="button" class="ra-chip" data-v2setmon="${E(x.n)}">${E(x.d)}</button>`).join('') : '<p class="tm-sub">No Pokémon matches that.</p>'}</div>` : ''}</div>
-    <div class="ra-filt us-srcs" role="group" aria-label="Doubles data source">${Object.entries(SET_SRC).map(([k, v]) => `<button type="button" class="ra-chip" data-v2setsrc="${k}" aria-pressed="${S2 ? S2.src === k : k === 'ingame'}">${v}</button>`).join('')}</div>
+    <div class="ra-filt us-srcs" role="group" aria-label="Doubles data source">${Object.keys(SET_SRC).map(k => `<button type="button" class="ra-chip" data-v2setsrc="${k}" aria-pressed="${S2 ? S2.src === k : k === 'ingame'}">${V2.setSrcName[k] || SET_SRC[k]}</button>`).join('')}</div>
     ${S2 ? `<p class="fine us-src">${S2.line}</p>` : ''}</div>`;
-  if (!p) return `<div class="ra gsp us st"><div class="gs-top">${head}</div>${tabs}<div class="gs-body">${ctl}<p class="tm-sub">Look up a Pokémon to see its popular sets.</p></div></div>`;
+  if (!p) return `<div class="ra gsp us st"><div class="gs-top">${head}${tabs}</div><div class="gs-body">${ctl}<p class="tm-sub">Look up a Pokémon to see its popular sets.</p></div></div>`;
   const mine = team.find(m => m.p.n === p.n), t = S2.t;
   const yours = team.length ? `<section class="st-team"><h2 class="u st-h2">Your Team</h2>${(innerWidth < 700 && team.length > 3 ? [team.slice(0, 3), team.slice(3)] : [team]).map(r => V2.stBench(r.map(m => V2.stFig(m.p, '', m.p.n === p.n)), 'st-six')).join('')}</section>` : '';
   const your = mine ? `<p class="st-mine">Your ${E(mine.d)}: ${E(mine.ability)}${mine.item ? ` @ <b>${E(mine.item)}</b>${mine.heldItem ? ' (your pick)' : ''}` : ''} · ${mine.moves.filter(Boolean).map(x => E(x.name)).join(', ')}${mine.custom ? ' (your moves)' : ''}</p>` : '';
@@ -50,7 +52,7 @@ V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = m
     : `<p class="tm-sub">Not among the top Pokémon in this list. "Best data" covers every Pokémon.</p>`;
   const tm = (t && t.tm || []).slice(0, 6).filter(([n]) => byName.get(n)), rows = innerWidth < 700 && tm.length > 3 ? [tm.slice(0, 3), tm.slice(3)] : [tm];
   const mates = tm.length ? `<section class="us-mates"><p class="np-eyebrow"><span>Teammates</span></p><h3 class="u">Usually alongside</h3>${rows.map(r => `<div class="gs-row us-bench" style="--c:${innerWidth < 700 ? 3 : r.length}">${r.map(([n, v]) => V2.stFig(byName.get(n), v != null ? `${Math.round(+v)}% of its teams` : '', false)).join('')}</div>`).join('')}</section>` : '';
-  return `<div class="ra gsp us st"><div class="gs-top">${head}<div class="ra-spotw">${V2.stSpot(p, !!mine)}</div></div>${tabs}<div class="gs-body">${ctl}${yours}
+  return `<div class="ra gsp us st"><div class="gs-top">${head}${tabs}<div class="ra-spotw">${V2.stSpot(p, !!mine)}</div></div><div class="gs-body">${ctl}${yours}
     <section class="us-how st-how"${` style="--ty-a:var(--ty-${p.t[0]});--ty-b:var(--ty-${p.t[1] || p.t[0]})"`}><div class="us-hh"><h2 class="u">How ${E(p.d)} is built</h2></div>${your}${build}${mates}${S2.note ? `<p class="fine st-note">${S2.note}</p>` : ''}</section></div></div>`; }};
 
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-stq]'); if (!i) return; V2.stUi.q = i.value; const at = i.selectionStart; V2.redraw();

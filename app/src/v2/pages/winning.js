@@ -73,12 +73,12 @@ V2.pages.tournaments = {place: 'meta', after() { V2.wtFit(); }, draw() { const E
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Winning Teams</span></p><h1 class="u"><span>The teams that</span> <span class="pl">won it.</span></h1>
     <p class="ra-lede">Top-cut teams from real tournaments. Load one, practice against it, or compare it with yours.</p>${facts}</section>`;
   const src = d ? `<p class="fine wt-src">${E(ttSourceText(d.source))}${d.updated && V2.otherDay(new Date(d.updated).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) ? ', updated ' + E(new Date(d.updated).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) : ''}</p>` : '';
-  const top = `<div class="gs-top wt-top">${head}<div class="ra-spotw wt-spot-w">${V2.wtYours()}</div></div>`;
+  const top = `<div class="gs-top wt-top">${head}${tabs}<div class="ra-spotw wt-spot-w">${V2.wtYours()}</div></div>`;
   /* player review 2d (Nov 17): on phones and tablets the search comes first; Your Team moves under it (shown once per width) */
   const spotN = `<div class="ra-spotw wt-spot-n">${V2.wtYours()}</div>`;
-  if (!G.length) return `<div class="ra gsp wt">${top}${tabs}<div class="gs-body"><p class="tm-sub">Top teams appear here after the next data refresh.</p></div></div>`;
+  if (!G.length) return `<div class="ra gsp wt">${top}<div class="gs-body"><p class="tm-sub">Top teams appear here after the next data refresh.</p></div></div>`;
   const ctl = `<div class="wt-ctl">${V2.wtSearch()}${U.f.length ? '' : `<div class="ra-filt wt-grps" role="group" aria-label="Which teams">${G.map(([g, n]) => `<button type="button" class="ra-chip" data-wtgrp="${E(g)}" aria-pressed="${g === U.grp}">${E(g)} <b>${n}</b></button>`).join('')}</div>`}</div>${src}`;
-  if (U.f.length) return `<div class="ra gsp wt">${top}${tabs}<div class="gs-body">${ctl}${spotN}${V2.wtResults()}</div></div>`;
+  if (U.f.length) return `<div class="ra gsp wt">${top}<div class="gs-body">${ctl}${spotN}${V2.wtResults()}</div></div>`;
   const all = V2.wtList().filter(x => x.t.section === U.grp), three = all.slice(0, 3), evs = new Set(three.map(x => x.t.event)), same = evs.size === 1;
   const step = 6, shown = U.more ? all.slice(3, 3 + step * U.more) : [], left = all.length - 3 - shown.length;
   const hands = `<section class="wt-hands"><div class="wt-th"><h2 class="u">The Winning Hands</h2><p>${same ? `${E(three[0].t.event)}. ` : ''}Tap a card for its page.</p></div>
@@ -86,7 +86,7 @@ V2.pages.tournaments = {place: 'meta', after() { V2.wtFit(); }, draw() { const E
   const more = all.length > 3 ? `<section class="wt-more-s">${U.more ? `<h2 class="u wt-mh">More Winning Teams</h2><div class="wt-rows">${shown.map(x => V2.wtRow(x, false)).join('')}</div>
       <p class="wt-mbtns">${left > 0 ? `<button type="button" class="np-btn2" data-wtmore><span>Show More · ${left} left</span></button>` : ''}<button type="button" class="np-link" data-wtless>Show Fewer</button></p>`
     : `<button type="button" class="np-link wt-open" data-wtmore>More Winning Teams · ${all.length} in all ›</button>`}</section>` : '';
-  return `<div class="ra gsp wt">${top}${tabs}<div class="gs-body">${ctl}${spotN}${hands}${more}</div></div>`; }};
+  return `<div class="ra gsp wt">${top}<div class="gs-body">${ctl}${spotN}${hands}${more}</div></div>`; }};
 
 // ---- actions ----
 V2.wtLoad = k => { const t = META.teams && META.teams.teams[k]; if (!t) return; V2.wtUi.sure = null;

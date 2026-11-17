@@ -72,8 +72,8 @@ export default (ui, pg) => {
     setsShowing: () => ev(() => [...document.querySelectorAll('.st .gs-spot, .st .us-src, .st .st-how')].filter(__dvis).map(e => e.textContent.replace(/\s+/g, ' ').trim()).join(' ')), /* textContent: the headings are capitals by CSS only */
     setsTeamRow: () => ev(() => [...document.querySelectorAll('.st-six [data-v2setmon]')].filter(__dvis).map(b => ({id: b.dataset.v2setmon, on: b.getAttribute('aria-pressed') === 'true'}))),
     tapSetsTeam: async id => { await pg.click(`.st-six [data-v2setmon="${id}"]`); await wait(600); },
-    setsSources: () => ev(() => [...document.querySelectorAll('[data-v2setsrc]')].map(b => ({name: __dtx(b), on: b.getAttribute('aria-pressed') === 'true'}))),
-    chooseSetsSource: async name => { await ev(n => { const b = [...document.querySelectorAll('[data-v2setsrc]')].find(b => __dtx(b) === n); if (!b) throw new Error('no source ' + n); b.click(); }, name); await wait(600); },
+    setsSources: () => ev(() => [...document.querySelectorAll('[data-v2setsrc]')].map(b => ({name: ({'Online tournaments': 'Tournaments', 'Showdown ladder': 'Showdown'})[__dtx(b)] || __dtx(b), on: b.getAttribute('aria-pressed') === 'true'}))), /* audit v199 #9: word-list names on the new site */
+    chooseSetsSource: async name => { name = ({Tournaments: 'Online tournaments', Showdown: 'Showdown ladder'})[name] || name; await ev(n => { const b = [...document.querySelectorAll('[data-v2setsrc]')].find(b => __dtx(b) === n); if (!b) throw new Error('no source ' + n); b.click(); }, name); await wait(600); },
     // ---------------- Usage (Nov 14, The Podium): the top 10 stand on the podium and benches; tapping one shows "How <Pokémon> is played" ----------------
     usageSourceLine: () => ev(() => __dtx(document.querySelector('.us-src'))),
     usageSources: () => ev(() => [...document.querySelectorAll('[data-ussrc]')].map(b => ({name: __dtx(b), on: b.getAttribute('aria-pressed') === 'true'}))),

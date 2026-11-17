@@ -65,17 +65,17 @@ V2.pages.events = {place: 'meta', draw() { const E = V2.esc, D = META.events, U 
   const ev = D ? D.events : [], on = ev.filter(e => e.src !== 'official').length;
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Events</span></p><h1 class="u"><span>Every result,</span> <span class="pl">event by event.</span></h1>
     <p class="ra-lede">Recent tournaments and who won them, with every top-cut team sheet inside.</p>${D ? V2.evCounts() : ''}</section>`;
-  const top = `<div class="gs-top wt-top ev-top">${head}<div class="ra-spotw">${V2.evPlate()}</div></div>`;
-  if (!D) return `<div class="ra gsp ev">${top}${tabs}<div class="gs-body"><p class="tm-sub">Tournament results appear here after the next data refresh.</p></div></div>`;
+  const top = `<div class="gs-top wt-top ev-top">${head}${tabs}<div class="ra-spotw">${V2.evPlate()}</div></div>`;
+  if (!D) return `<div class="ra gsp ev">${top}<div class="gs-body"><p class="tm-sub">Tournament results appear here after the next data refresh.</p></div></div>`;
   const opened = U.open && ev.find(e => e.id === U.open);
-  if (opened) return `<div class="ra gsp ev">${top}${tabs}<div class="gs-body">${V2.evOpen(opened)}</div></div>`;
+  if (opened) return `<div class="ra gsp ev">${top}<div class="gs-body">${V2.evOpen(opened)}</div></div>`;
   let list = ev; if (U.filter === 'official') list = list.filter(e => e.src === 'official'); else if (U.filter === 'big') list = list.filter(e => e.players >= 100);
   const cap = 13 + U.more * 12, shown = list.slice(0, cap), small = shown.slice(1);
   const n = {all: ev.length, official: ev.filter(e => e.src === 'official').length, big: ev.filter(e => e.players >= 100).length};
   const seg = `<div class="ev-f" role="group" aria-label="Which events">${[['all', 'All'], ['official', 'Official'], ['big', '100+ players']].map(([k, t]) => `<button type="button" class="np-chip ev-fc" data-evf="${k}" aria-pressed="${U.filter === k}">${t}<small>${n[k]}</small></button>`).join('')}</div>`;
   /* the two-column wall keeps every row full: an odd last ticket runs the full width (filters can leave an odd count) */
   const wall = shown.length ? `${V2.ticket(shown[0], true)}<div class="tk-wall${small.length % 2 ? ' odd' : ''}">${small.map(e => V2.ticket(e)).join('')}</div>` : '<p class="tm-sub">No events here yet.</p>';
-  return `<div class="ra gsp ev">${top}${tabs}<div class="gs-body"><section class="ev-wall"><header class="ev-wh"><h2 class="u">The Ticket Wall</h2><p>Newest first. Each ticket shows the winner's six, the winner's first Pokémon up front. Tap a ticket for the event's placings.</p></header>
+  return `<div class="ra gsp ev">${top}<div class="gs-body"><section class="ev-wall"><header class="ev-wh"><h2 class="u">The Ticket Wall</h2><p>Newest first. Each ticket shows the winner's six, the winner's first Pokémon up front. Tap a ticket for the event's placings.</p></header>
     ${seg}${wall}${list.length > cap ? `<button type="button" class="np-link ev-more" data-evmore>Show More · ${list.length - cap} left ›</button>` : ''}</section></div></div>`; }};
 // bring an opened event (or, on the way back, its card) just under the sticky header, once the page has drawn
 V2.evScrollTo = sel => { let n = 0; const go = () => { const el = document.querySelector(sel); if (!el) { if (++n < 20) requestAnimationFrame(go); return; } const h = (document.querySelector('.np-head') || {}).offsetHeight || 0; scrollTo({top: Math.max(0, el.getBoundingClientRect().top + scrollY - h - 16)});

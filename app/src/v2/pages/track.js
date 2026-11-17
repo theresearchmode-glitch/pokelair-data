@@ -6,8 +6,9 @@
 // legend, Coming as the data grows, Events Checked, and How Ratings Work. Band colours are the tier colours of each band's rating.
 // The paper (the receipt, the slips, the chart sheet) is white with dark words in both themes: a design choice waiting on Sim's yes.
 V2.trBandC = b => { try { const k = lTier([80, 60, 40, 0][b]).k.toLowerCase(); return `var(--tier-${k})`; } catch (e) { return 'var(--ink-3)'; } };
+// Sim (Nov 17, 'recommended'): no dots on the cards: the big number already says 'Rated N', each fact on its own line
 V2.trSlip = (m, hit, text, i) => { const E = V2.esc, p = byName.get(m.n); if (!p) return '';
-  return `<li><button type="button" class="trk-slip ${hit ? 'hit' : 'miss'}" style="--i:${i}" data-v2mon="${E(m.n)}" aria-label="${E(p.d)}, rated ${RS(m.r)}, ${E(text.replace(/<[^>]+>/g, ''))}. ${hit ? 'Called it' : 'Missed'}.">
+  return `<li><button type="button" class="trk-slip ${hit ? 'hit' : 'miss'}" style="--i:${i}" data-v2mon="${E(m.n)}" aria-label="${E(p.d)}, rated ${RS(m.r)}, ${E(text.replace(/<br>/g, ', ').replace(/<[^>]+>/g, ''))}. ${hit ? 'Called it' : 'Missed'}.">
     <span class="trk-sp" style="${V2.evTy(m.n)}" aria-hidden="true">${V2.mon(m.n, {bare: true})}</span><span class="trk-st" aria-hidden="true"><b class="u">${E(p.d).replace(/ (\S{1,2})$/, '\u00a0$1')}</b><span>${text}</span><i class="trk-stamp u ${hit ? 'hit' : 'miss'}" aria-hidden="true">${hit ? 'Called it' : 'Missed'}</i></span>
     <span class="trk-sr" aria-hidden="true"><small>Rated</small><b class="u">${RS(m.r)}</b></span></button></li>`; }; /* Nov 15 (re-audit #6): the stamp sits in the text column under the words, so it can't cover the rating or the text */
 V2.trChart = T => { const W = new Map(); for (const e of T.ev) { const k = trWeek(e.date); if (!W.has(k)) W.set(k, []); W.get(k).push(e); }
@@ -47,9 +48,9 @@ V2.pages.track = {place: 'meta', draw() { const E = V2.esc, T = META.track;
   const lows = ms.filter(m => m.r < 50 && m.c > 0).sort((a, b) => b.w - a.w || b.c - a.c || a.r - b.r).slice(0, 3);
   const highs = n >= TR_MIN.misses ? ms.filter(m => m.r >= 75 && m.c === 0 && m.ev >= TR_MIN.misses).sort((a, b) => b.r - a.r).slice(0, 3) : [];
   const won = m => m.w ? (m.w === 1 ? `won ${E(V2.evTitle(m.best))}` : `won ${m.w} events`) : `on ${m.c} top-8 team${m.c === 1 ? '' : 's'}${m.best ? ` (${E(V2.evTitle(m.best))})` : ''}`;
-  const misses = [...lows.map(m => [m, `Rated only ${RS(m.r)} · ${won(m)}`]), ...highs.map(m => [m, `Rated ${RS(m.r)} · no top 8 in ${m.ev} events`])];
+  const misses = [...lows.map(m => [m, won(m)]), ...highs.map(m => [m, `no top 8 in ${m.ev} events`])];
   const calls = n ? `<section class="trk-calls"><header><h2 class="u">The Calls</h2><p>Three we called and three we missed.</p></header><div class="trk-cols">
-      <div><h3 class="u">Biggest Hits</h3>${hits.length ? `<ul class="trk-slips">${hits.map((m, i) => V2.trSlip(m, true, `Rated ${RS(m.r)} · on ${m.c} top-8 team${m.c === 1 ? '' : 's'} in ${m.ev} event${m.ev === 1 ? '' : 's'}${m.w ? ` · won ${m.w === 1 ? E(V2.evTitle(m.best)) : m.w + ' events'}` : ''}`, i)).join('')}</ul>` : '<p class="trk-none">None yet.</p>'}</div>
+      <div><h3 class="u">Biggest Hits</h3>${hits.length ? `<ul class="trk-slips">${hits.map((m, i) => V2.trSlip(m, true, `on ${m.c} top-8 team${m.c === 1 ? '' : 's'} in ${m.ev} event${m.ev === 1 ? '' : 's'}${m.w ? `<br>won ${m.w === 1 ? E(V2.evTitle(m.best)) : m.w + ' events'}` : ''}`, i)).join('')}</ul>` : '<p class="trk-none">None yet.</p>'}</div>
       <div><h3 class="u">Biggest Misses</h3>${misses.length ? `<ul class="trk-slips">${misses.map(([m, t], i) => V2.trSlip(m, false, t, i)).join('')}</ul>` : '<p class="trk-none">None yet.</p>'}${n < TR_MIN.misses ? `<p class="fine">High ratings that miss every top 8 show here after ${TR_MIN.misses} events.</p>` : ''}</div></div>
     <p class="fine">"Rated" is the average of the ratings saved before each event. Tap a Pokémon for its page.</p></section>` : '';
   const chart = n ? V2.trChart(T) : null, firstWk = n ? trWeek(T.ev[0].date) : T.since, chartAt = trAdd(firstWk, 7 * (TR_MIN.weeks - 1));
