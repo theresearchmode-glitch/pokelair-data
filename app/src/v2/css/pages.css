@@ -505,6 +505,7 @@
 /* actions on screens 700+: an even two by two (the two buttons, then Saved Teams and More) */
 @media (min-width:700px){.tm-acts{display:grid;grid-template-columns:repeat(2,max-content);justify-content:start;align-items:center;gap:var(--s3) var(--s6)}}
 @media (min-width:900px) and (max-width:1179.98px){.tm-acts{justify-content:end}}
+/* audit v199 (Nov 17): at 700-879 the two-by-two put 'Share as Image' 1px from its slanted edges; one column there (each button the column's width) */
 @media (max-width:399.98px){.tm-acts .tm-svl small{display:none}.tm-acts .np-btn2{font-size:var(--t13);padding:0 var(--s2)}}
 /* Your Games as one line (Sim, Nov 11): record or "None logged yet" beside Log a Game */
 .tm-yg-hd{flex-wrap:nowrap;justify-content:space-between}.tm-yg-0 span{font:500 var(--t16)/1.5 var(--b);color:var(--ink-2)}
@@ -2020,6 +2021,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .mt-nums b{font:900 var(--t34)/1 var(--u);font-style:italic}.mt-nums span{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
 .mt-nums .lf b{color:var(--plot-text)}.mt-nums .lu b{color:var(--bad-text)}
 .tm-hero.mt .tm-acts{grid-area:auto;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3);justify-content:stretch}.tm-hero.mt .tm-acts>*{justify-content:center;grid-column:auto}
+/* audit v199 (Nov 17): at 700-879 the two-by-two put 'Share as Image' 1px from its slanted edges; one column there */
+@media (min-width:700px) and (max-width:879.98px){.tm-hero.mt .tm-acts{grid-template-columns:minmax(0,1fr)}}
 /* iPad keeps one row; iPhone stacks: name block, belt, numbers, buttons */
 @media (max-width:1099.98px){.tm-hero.mt .mt-head{grid-template-columns:minmax(0,4fr) minmax(0,3fr) minmax(0,4fr);gap:var(--s4)}.tm-hero.mt .mt-belt .np-score b{font-size:var(--d64)}.mt-id .tm-name{font-size:var(--t28)}.mt-nums b{font-size:var(--t28)}}
 @media (max-width:699.98px){.tm-hero.mt .mt-head{grid-template-columns:minmax(0,1fr)}.mt-band span:nth-child(3){display:none}.mt-band{flex-wrap:nowrap}}
