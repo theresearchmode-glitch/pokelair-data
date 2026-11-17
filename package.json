@@ -1,0 +1,17 @@
+{
+  "name": "nastyplot",
+  "private": true,
+  "description": "NastyPlot: a team builder for Pokémon Champions VGC doubles. Dependencies are for the build, tests and data jobs only; the site itself ships as one HTML file.",
+  "type": "commonjs",
+  "scripts": {
+    "build:v2": "node app/build.mjs --v2",
+    "test": "node app/test/run.mjs",
+    "test:v2": "node app/test/v2-guard.mjs && node app/test/tokens-doc.mjs && node app/build.mjs --v2 --preview-data && PAGE=app/dist/v2.html node app/test/v2-caches.mjs && PAGE=app/dist/v2.html node app/test/v2-folds.mjs && PAGE=app/dist/v2.html node app/test/v2-partial.mjs"
+  },
+  "devDependencies": {
+    "@pkmn/dex": "0.10.11",
+    "@smogon/calc": "0.12.0",
+    "playwright": "1.49.1",
+    "pokemon-showdown": "github:smogon/pokemon-showdown#1242c1e2d9763ba5b85d33f13aecb89bae19ae3d"
+  }
+}

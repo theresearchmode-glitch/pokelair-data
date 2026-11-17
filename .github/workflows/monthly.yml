@@ -17,7 +17,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium
+      - run: npm ci && npx playwright install --with-deps chromium
       - run: node app/build.mjs
       - run: node monthly-check.mjs
       - name: Commit the result
