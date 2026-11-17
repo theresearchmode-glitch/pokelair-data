@@ -1998,6 +1998,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .st .gs-mon.on .gs-tx b{color:var(--plot-text)}.st .gs-mon.on .np-mon{transform:translateY(calc(var(--s1)*-1))}.st .gs-mon.on .gs-base{box-shadow:0 0 0 2px var(--plot)}
 .st-mine{margin:0;padding-left:var(--s3);border-left:4px solid var(--plot);font:500 var(--t15)/1.5 var(--b)}
 .st-cols{display:grid;grid-template-columns:minmax(0,3fr) minmax(0,2fr);gap:var(--s4) var(--s8)}.st-side{display:grid;gap:var(--s4);align-content:start}
+/* pr-4c (Nov 17): stat points sit under Moves on wide screens (the side column was already the longer one), after Nature on phones */
+.st-cols{grid-template-rows:auto 1fr}.st-side{grid-row:span 2}.st-sp{grid-column:1;align-self:start;display:grid;gap:var(--s2)}.st-sp .st-nonum{margin:0}
 .st-stone{margin:0;font:500 var(--t15)/1.5 var(--b)}.st-note{margin:0}.st-pill{white-space:normal}
 @media (max-width:699.98px){.st-cols{grid-template-columns:minmax(0,1fr)}.st-six{--gsw:56px}.st-six .gs-tx b{font-size:var(--t13);font-stretch:88%}}
 @media (hover:hover) and (pointer:fine){.st .gs-row .np-mon img,:root[data-theme="night"] .st .gs-row .np-mon img{filter:none}}
