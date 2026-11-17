@@ -17,6 +17,7 @@
 //   OFFICIAL_CACHE  replay folder: answer requests from <dir>/<sha1(url)>.txt and never touch the network (tests)
 import fs from 'node:fs'; import crypto from 'node:crypto';
 import {readJSON, dec, ROSTER, mapMon, validItem, bad} from './names.mjs';
+import {opid, okeys, keyScore} from './pid.mjs';
 export const UA = 'NastyPlot data job (github.com/theresearchmode-glitch/pokelair-data; simran.jsbagga@gmail.com)';
 const TOP = +(process.env.OFFICIAL_TOP || 64), REG = process.env.OFFICIAL_REG || 'M-C', REG_START = '2026-09-01', CACHE = process.env.OFFICIAL_CACHE || '';
 const DIR = 'data/official', VR = 'https://victoryroad.pro/wp-json/wp/v2/pages', LQ = 'https://liquipedia.net/pokemon/api.php';
@@ -105,19 +106,15 @@ export function parseLiquipedia(wt) {
   return {players: g('player_number') ? +g('player_number') : null, sdate: g('sdate'), place}; }
 // ---- the run ----
 const nkey = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
-// The same person written two ways, scored (0 = not the same): 4 same text, 3 same words in another order ("Wu Yichun" /
-// "Yichun Wu"), 2 one unbroken part of the longer name ("Duc Invernizzi" / "Minh Duc Invernizzi"), 1 the shorter name's
-// words in order inside the longer one with the same first name ("Jonathan Barradas" / "Jonathan Josue Barradas Ruiz";
-// Victory Road prints first name + one surname). Used only next to another key (same placement, or best of a list).
-const toks = s => String(s || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().split(/[^a-z0-9]+/).filter(Boolean);
-export function personScore(a, b) { if (nkey(a) === nkey(b)) return 4; const A = toks(a), B = toks(b); if (!A.length || !B.length) return 0;
-  if (A.length === B.length && A.slice().sort().join() === B.slice().sort().join()) return 3;
-  const [s, l] = A.length <= B.length ? [A, B] : [B, A]; if (s.length < 2) return 0;
-  for (let i = 0; i + s.length <= l.length; i++) if (s.every((x, j) => l[i + j] === x)) return 2;
-  if (s[0] !== l[0]) return 0; let j = 0; for (const x of l) if (x === s[j]) j++; return j === s.length ? 1 : 0; }
+// The same person written two ways (pid.mjs keyScore): player names are never stored (Sim, Nov 10), only an ID and keyed
+// versions of the name's words, which still tell two spellings of one person apart from two people. Used only next to
+// another key (same placement, or best of a list). a and b: a name (in memory, straight from a download) or stored keys.
+export const personScore = (a, b) => keyScore(a, b);
 export const samePerson = (a, b) => personScore(a, b) > 0;
-// the best match for a name among [name, value] pairs (highest score), or undefined
+// the best match among [keys, value] pairs (highest score), or undefined
 export const findPerson = (pairs, name, min = 1) => { let best, bs = min - 1; for (const [k, v] of pairs) { const sc = personScore(k, name); if (sc > bs) { bs = sc; best = v; } } return best; };
+// Liquipedia's page reduced to what the checks use, with names turned into keys (the page text itself is not kept)
+const lqStore = Q => ({players: Q.players, sdate: Q.sdate, place: [...Q.place].map(([n, r]) => [okeys(n), r])});
 async function run() {
   fs.mkdirSync(DIR, {recursive: true});
   const index = readJSON(`${DIR}/index.json`, {events: {}});
@@ -141,7 +138,7 @@ async function run() {
       for (const r of rows) { let T = had.get(r.paste);
         if (!T) { const X = await readPaste(r.paste); if (X) T = {mons: X.mons}; else console.log(`official: paste ${r.paste} (${p.slug} #${r.st}) not readable yet`); }
         if (!T) { failed++; continue; }
-        teams.push({st: r.st, player: r.player, country: r.country, rec: r.rec, paste: r.paste, sprites: r.sprites.map(spriteName), mons: T.mons}); }
+        teams.push({st: r.st, player: opid(r.player), pk: okeys(r.player), rec: r.rec, paste: r.paste, sprites: r.sprites.map(spriteName), mons: T.mons}); }
       fs.writeFileSync(`${DIR}/${p.slug}.json`, JSON.stringify({slug: p.slug, name: base.name, date: P.date, players: P.masters, capacity: P.capacity, teams}));
       index.events[p.slug] = {...base, done: !failed, teams: teams.length, failed};
       console.log(`official: ${base.name} (${P.date}), ${P.masters} Masters, ${teams.length}/${rows.length} team sheets${failed ? `, ${failed} to retry next run` : ''}`);
@@ -157,28 +154,28 @@ async function run() {
     const J = JSON.parse(await get(url)), norm = t => t.replace(/ /g, '_');
     const back = new Map(((J.query && J.query.redirects) || []).map(r => [norm(r.to), norm(r.from)]));
     for (const pg of (J.query && J.query.pages) || []) { const t = norm(pg.title), s = titles.get(t) || titles.get(back.get(t)); if (!s) continue;
-      lq[s] = pg.missing ? {missing: true, title: t} : {title: t, rev: pg.revisions[0].timestamp, fetched: now.toISOString().slice(0, 10), wt: pg.revisions[0].slots.main.content}; }
+      lq[s] = pg.missing ? {missing: true, title: t} : {title: t, rev: pg.revisions[0].timestamp, fetched: now.toISOString().slice(0, 10), q: lqStore(parseLiquipedia(pg.revisions[0].slots.main.content))}; }
     fs.writeFileSync(`${DIR}/liquipedia.json`, JSON.stringify(lq));
   } catch (e) { console.log(`official: Liquipedia check skipped: ${e.message}`); } }
   // 3) the output, newest first, and its checks
   const evs = evSlugs.map(s => ({s, E: readJSON(`${DIR}/${s}.json`, null)})).filter(x => x.E && x.E.teams.length).sort((a, b) => b.E.date < a.E.date ? -1 : 1);
   const checks = [];
   // players: Victory Road's attendance; when its page gives none, Liquipedia's player count, else the venue's Masters capacity
-  for (const {s, E} of evs) { const L = lq[s], Q = L && L.wt ? parseLiquipedia(L.wt) : null;
+  for (const {s, E} of evs) { const L = lq[s], Q = L && L.q ? L.q : L && L.wt ? lqStore(parseLiquipedia(L.wt)) : null;
     E.playersFrom = E.players != null ? 'Victory Road' : Q && Q.players != null ? 'Liquipedia' : E.capacity != null ? 'Victory Road (capacity)' : '';
     if (E.players == null) E.players = Q && Q.players != null ? Q.players : E.capacity != null ? E.capacity : null;
     const c = {event: E.name, date: E.date, players: E.players, playersFrom: E.playersFrom, teams: E.teams.length, flags: []};
-    for (const t of E.teams) { const a = t.mons.map(m => m.n).sort().join(), b = t.sprites.slice().sort().join(); if (a !== b) c.flags.push(`#${t.st} ${t.player}: sheet ${a} vs page ${b}`); }
-    if (!L || L.missing || !L.wt) c.liquipedia = L && L.missing ? 'no Liquipedia page' : 'not checked';
+    for (const t of E.teams) { const a = t.mons.map(m => m.n).sort().join(), b = t.sprites.slice().sort().join(); if (a !== b) c.flags.push(`#${t.st}: sheet ${a} vs page ${b}`); }
+    if (!L || L.missing || !Q) c.liquipedia = L && L.missing ? 'no Liquipedia page' : 'not checked';
     else { c.liquipedia = {title: L.title, rev: L.rev, players: Q.players, sdate: Q.sdate, placed: 0, agree: 0};
       // player counts differ by a few between sites (late drops, who counts a no-show): a note within 1% (at least 3), a flag beyond
       if (Q.players != null && E.playersFrom === 'Victory Road' && Q.players !== E.players) (Math.abs(Q.players - E.players) > Math.max(3, .01 * E.players) ? c.flags : (c.notes = c.notes || [])).push(`players: Victory Road ${E.players}, Liquipedia ${Q.players}`);
       if (Q.sdate && Q.sdate !== E.date) c.flags.push(`start date: Victory Road ${E.date}, Liquipedia ${Q.sdate}`);
-      for (const t of E.teams) { const r = findPerson(Q.place, t.player, 2); if (!r) continue;  /* across a whole list, no loose (score 1) matches */ c.liquipedia.placed++; if (t.st >= r[0] && t.st <= r[1]) c.liquipedia.agree++; else c.flags.push(`#${t.st} ${t.player}: Liquipedia places ${r[0] === r[1] ? r[0] : r.join('–')}`); } }
+      for (const t of E.teams) { const r = findPerson(Q.place, t.pk || t.player, 2); if (!r) continue;  /* across a whole list, no loose (score 1) matches */ c.liquipedia.placed++; if (t.st >= r[0] && t.st <= r[1]) c.liquipedia.agree++; else c.flags.push(`#${t.st}: Liquipedia places ${r[0] === r[1] ? r[0] : r.join('–')}`); } }
     checks.push(c); }
   const out = {updated: now.toISOString(), source: `Victory Road + VR Pastes · official VGC events (Masters top ${TOP}) · checked against Liquipedia`,
     attribution: 'Standings and team sheets: Victory Road (victoryroad.pro, vrpastes.com). Placement check: Liquipedia (liquipedia.net), CC-BY-SA 3.0.',
-    events: evs.map(({E}) => ({name: E.name, date: E.date, players: E.players, teams: E.teams.map(t => ({player: t.player, st: t.st, mons: t.mons.map(m => ({n: m.n || m.sp, i: m.i, a: m.a, nt: m.nt, mv: m.mv}))}))})),
+    events: evs.map(({E}) => ({name: E.name, date: E.date, players: E.players, teams: E.teams.map(t => ({player: opid(t.player), pk: okeys(t.pk || t.player), st: t.st, mons: t.mons.map(m => ({n: m.n || m.sp, i: m.i, a: m.a, nt: m.nt, mv: m.mv}))}))})),
     checks};
   // 4) gate: the new file against the previous out/official.json, team by team (same event date and placement)
   const prev = readJSON('out/official.json', null), cmp = compare(prev, out);
@@ -198,7 +195,7 @@ async function run() {
   const flagged = checks.filter(c => c.flags.length);
   console.log(`official: ${out.events.length} events, ${newTeams} teams, ${calls} requests${bad.items ? `, ${bad.items} items not on the Reg ${REG} list left blank` : ''}; checks: ${flagged.length ? flagged.map(c => `${c.event}: ${c.flags.length} (${c.flags.slice(0, 2).join('; ')})`).join(' | ') : 'all agree'}`);
   if (flagged.some(c => c.flags.some(f => /Liquipedia places|players:|start date/.test(f)))) console.log('::warning::official: Liquipedia disagrees with Victory Road on some placements, player counts or dates (see out/official.json checks)'); }
-// Per team (matched by event date + placement): player name, six Pokémon, and each Pokémon's item, ability, nature, moves.
+// Per team (matched by event date + placement): player (by ID and name keys), six Pokémon, and each Pokémon's item, ability, nature, moves.
 export function compare(A, B) {
   const r = {previous: A ? A.source || 'unknown' : 'none', events: [], pass: true};
   if (!A) { r.summary = 'no previous file'; return r; }
@@ -207,7 +204,7 @@ export function compare(A, B) {
     const E = {event: b.name, players: [a.players, b.players], teams: 0, player: 0, six: 0, mons: 0, item: 0, ability: 0, nature: 0, moves: 0, examples: []};
     const byS = new Map(a.teams.map(t => [t.st, t]));
     for (const t of b.teams) { const o = byS.get(t.st); if (!o) continue; E.teams++;
-      if (samePerson(o.player, t.player)) E.player++; else if (E.examples.length < 8) E.examples.push(`#${t.st} player: ${o.player} vs ${t.player}`);
+      if (samePerson(o.pk || o.player, t.pk || t.player)) E.player++; else if (E.examples.length < 8) E.examples.push(`#${t.st} player: a different player`);
       const six = o.mons.map(m => m.n).sort().join() === t.mons.map(m => m.n).sort().join(); if (six) E.six++; else if (E.examples.length < 8) E.examples.push(`#${t.st} six: ${o.mons.map(m => m.n).join('/')} vs ${t.mons.map(m => m.n).join('/')}`);
       for (const m of t.mons) { const p = o.mons.find(x => x.n === m.n); if (!p) continue; E.mons++;
         for (const [k, f] of [['item', 'i'], ['ability', 'a'], ['nature', 'nt']]) { if ((p[f] || '') === (m[f] || '')) E[k]++; else if (E.examples.length < 8) E.examples.push(`#${t.st} ${m.n} ${k}: ${p[f] || '—'} vs ${m[f] || '—'}`); }

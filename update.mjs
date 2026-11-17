@@ -6,6 +6,7 @@
 // whom), and builds out/meta_tour.json (sets from real teams), out/teams.json (recent top finishes), out/history.json
 // (daily usage ranks for trends) and out/matches.json (game-level results for the team model).
 // PokéLair's daily refresh copies these files into the page's data. Run: node update.mjs
+import {pid, hasKey} from './pid.mjs';
 import fs from 'node:fs';
 import {topcut} from './topcut.mjs';
 import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
@@ -53,16 +54,19 @@ for (const t of todo) {
     // never replace standings we already have with an empty or much shorter list (a half-outage answers [] for a while)
     { const old = readJSON(`data/t/${t.id}.json`, null), n0 = old && Array.isArray(old.e) ? old.e.length : 0;
       if (!Array.isArray(s) || (n0 >= 4 && s.length < n0 * .5)) { console.log(`kept ${t.id}: standings came back with ${Array.isArray(s) ? s.length : 'no'} players (had ${n0})`); continue; } }
-    if (!logged && s[0]) { console.log('sample standing', JSON.stringify(s[0]).slice(0, 600)); }
-    const e = s.map(x => [String(x.player || x.name || ''), x.record ? x.record.wins : 0, x.record ? x.record.losses : 0, (x.decklist || []).map(key)]);
+    if (!logged && s[0]) { console.log('sample standing fields:', Object.keys(s[0]).join(', ')); }  /* field names only: the Actions log is public */
+    // player names become ID numbers here, before anything is saved (pid.mjs; Sim, Nov 10)
+    const e = s.map(x => [pid(x.player || x.name || ''), x.record ? x.record.wins : 0, x.record ? x.record.losses : 0, (x.decklist || []).map(key)]);
     fs.writeFileSync(`data/t/${t.id}.json`, JSON.stringify({d: t.date, p: t.players, e, f: t.format || FORMAT}));
-    const e2 = s.map(x => ({id: String(x.player || ''), nm: String(x.name || ''), pl: x.placing ?? null, w: x.record ? x.record.wins : 0, l: x.record ? x.record.losses : 0, ti: x.record ? (x.record.ties || 0) : 0, dk: (x.decklist || []).map(mv)}));
+    const e2 = s.map(x => ({id: pid(x.player || ''), nm: pid(x.player || x.name || ''), pl: x.placing ?? null, w: x.record ? x.record.wins : 0, l: x.record ? x.record.losses : 0, ti: x.record ? (x.record.ties || 0) : 0, dk: (x.decklist || []).map(mv)}));
     fs.writeFileSync(`data/t2/${t.id}.json`, JSON.stringify({v: 3, d: t.date, p: t.players, name: t.name, f: t.format || FORMAT, e: e2}));
     let pr = [];
     if (hasP(t.id) && (now - new Date(t.date)) >= 3 * 864e5) { logged = true; index.tournaments[t.id] = {d: t.date, p: t.players, name: t.name, f: t.format || FORMAT}; fetched++; continue; }
     try { const P = await get(`/tournaments/${t.id}/pairings`);
-      if (!logged && P[0]) console.log('sample pairing', JSON.stringify(P[0]).slice(0, 300));
-      pr = (Array.isArray(P) ? P : []).map(x => [x.round ?? null, String(x.player1 ?? ''), String(x.player2 ?? ''), x.winner == null ? null : String(x.winner)]); } catch (err) { console.log('no pairings', t.id, err.message); }
+      if (!logged && P[0]) console.log('sample pairing fields:', Object.keys(P[0]).join(', '));
+      // winner is an account (becomes its ID; accounts can be short numbers) or a result code ('0' a draw, '-1' no result), kept as is
+      const W = w => w == null ? null : String(w) === '0' || String(w) === '-1' ? String(w) : pid(w);
+      pr = (Array.isArray(P) ? P : []).map(x => [x.round ?? null, pid(x.player1 ?? ''), pid(x.player2 ?? ''), W(x.winner)]); } catch (err) { console.log('no pairings', t.id, err.message); }
     // a failed or shorter pairings fetch never overwrites the pairings already saved
     { const old = readJSON(`data/p/${t.id}.json`, null); if (!(Array.isArray(old) && old.length > pr.length)) fs.writeFileSync(`data/p/${t.id}.json`, JSON.stringify(pr)); }
     logged = true;
