@@ -3047,7 +3047,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-rate{display:flex;align-items:flex-end;gap:var(--s4)}.pk-rate>b{font:900 var(--d120)/.9 var(--u);font-style:italic}
 .pk-rate span{display:grid;gap:var(--s1);padding-bottom:var(--s3)}.pk-rate em{font:900 var(--t34)/1 var(--u);font-style:italic;color:var(--plot-text)}.pk-rate small{font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .pk-gauge{position:relative;height:var(--s8);margin-bottom:var(--s5);border-bottom:2px solid var(--rule)}
-.pk-gauge .pk-rg{position:absolute;bottom:0;left:calc(var(--lo)*1%);width:calc((var(--hi) - var(--lo))*1%);height:var(--s3);background:color-mix(in srgb,var(--plot) 35%,transparent)}
+
 .pk-gauge .pk-mk{position:absolute;bottom:0;left:calc(var(--v)*1%);width:var(--s2);height:var(--s6);background:var(--plot);transform:translateX(-50%) skewX(-10deg)}
 .pk-gauge span{position:absolute;top:calc(100% + var(--s1));left:calc(var(--v)*1%);font:600 var(--t13)/1 var(--b);color:var(--ink-3);transform:translateX(-50%)}.pk-gauge span:first-of-type{transform:none}.pk-gauge span:last-of-type{transform:translateX(-100%)}
 .pk-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4);padding:var(--s4) 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
