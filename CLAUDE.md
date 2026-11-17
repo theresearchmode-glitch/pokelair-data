@@ -104,6 +104,9 @@ detail right. So:
   before/after screenshots of each batch for impact, not only for rule-following.
 
 ## Plans are always checklists (Sim, Nov 8)
+Sim, Nov 17: the Plans page is ONE clean game plan to the January launch (Step 1 finish the redesign + switch, Step 2 Reg M-D,
+Step 3 launch, Step 4 grade work, Ideas): only what's left. Add new work as a step in the right part, tick it when done; the
+old sections are archived in docs/rebuild/plans-archive-nov17.html.
 ORDER OF WORK (Sim, Nov 10, latest): 1) the rebuild into the new design, 2) then integrating Regulation M-D, 3) then the
 launch plan. Rebuild plan: docs/rebuild-plan.md and the Plans page section "Rebuild into the new design" (Claude leads; Sim
 approves the direction, each page and the switch; nothing starts until she says go). What the redesign chat decided and made:
