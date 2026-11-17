@@ -14,7 +14,7 @@ KO Board, Test Run's piles, Track Record.
 - 1c FIXED Team styles: Archetypes Tailwind 49% / TR 17% (of 90 top-cut teams) vs This Week 56% / 31% (all teams that week).
 - 1d FIXED Volcarona page: "Usually" has Overheat (38% of sets) but the Moves list leaves it out; check other Pokémon.
 - 1e FIXED Pokémon page Speed uses the player's own item without saying so (Garchomp 231 = Choice Scarf). (checked: it is the usual set's Scarf, not the player's own; the label now says "with Choice Scarf")
-- 1f OPEN "Strong players" = 1,300+ in Team Preview Practice but 1630+ on Home and Popular Sets.
+- 1f FIXED "Strong players" = 1,300+ in Team Preview Practice but 1630+ on Home and Popular Sets. (checked: two scales, not one word used twice: replay rating 1,300+ vs Smogon's 1630+ stats cut-off; Practice's footnote now says so; 'strong players' is used only on Practice)
 - Fix asked: every % names its base the same way everywhere; numbers with the player's set say so; one definition of
   "strong players" or each label says which.
 

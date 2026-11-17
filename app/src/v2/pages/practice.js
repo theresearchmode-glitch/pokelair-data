@@ -4,7 +4,7 @@
 V2.ppCp = n => { const m = (typeof ART_META === 'object' && ART_META[SPRITE_ID[n]]) || [150, 150, 165]; return `${m[0]},${m[1]},${m[2]}`; };
 V2.ppTy = n => ((byName.get(n) || {}).t || []).map(V2.typeChip).join('');
 V2.ppMeter = (nP, nL) => `<div class="pp2-meter" role="img" aria-label="Bring four, ${nP} of 4; lead two, ${nL} of 2"><span class="grp"><span class="lab">1 · Bring four <b>${nP}/4</b></span>${[0, 1, 2, 3].map(i => `<i class="${i < nP ? 'on' : ''}"></i>`).join('')}</span><span class="grp"><span class="lab">2 · Lead two <b>${nL}/2</b></span>${[0, 1].map(i => `<i class="${i < nL ? 'on ld' : ''}"></i>`).join('')}</span></div>`;
-V2.ppFoot = P => { const range = P.from && P.to ? ` (${prDay(P.from)} – ${prDay(P.to)})` : ''; return `<p class="fine pp2-src">From the Showdown ladder${range}. "Strong players" are ladder players rated ${prN(P.minR)}+. A similar team is the same six, or five of the six the same.</p>`; };
+V2.ppFoot = P => { const range = P.from && P.to ? ` (${prDay(P.from)} – ${prDay(P.to)})` : ''; return `<p class="fine pp2-src">From the Showdown ladder${range}. "Strong players" are ladder players rated ${prN(P.minR)}+ on these replays (the replay rating; the 1630+ on usage numbers is Smogon's separate stats cut-off). A similar team is the same six, or five of the six the same.</p>`; };
 V2.ppScore = s => s.played ? `<p class="pp2-score" aria-label="Your practice score"><b class="u">${s.streak}</b> in a row, <b class="u">${s.best}</b> best, <b class="u">${s.matched}</b> of ${s.played} matched</p>` : '';
 V2.ppHead = h => `<section class="pp2-h"><p class="np-eyebrow"><span>Battle · Team Preview Practice</span></p><h1 class="u">${h}</h1></section>`;
 
