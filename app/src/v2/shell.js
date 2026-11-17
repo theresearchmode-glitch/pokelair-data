@@ -254,13 +254,20 @@ V2.focusKey = el => { if (!el || el === document.body || !el.closest || !el.clos
 V2.dataSig = e => [...e.attributes].filter(a => a.name.startsWith('data-')).map(a => a.name + '=' + a.value).sort().join('&');
 V2.morph = (o, n) => { if (o.nodeType !== n.nodeType || o.nodeName !== n.nodeName || (o.nodeType === 1 && (o.id !== n.id || V2.dataSig(o) !== V2.dataSig(n)))) { o.replaceWith(n); return; }
   if (o.nodeType !== 1) { if (o.nodeValue !== n.nodeValue) o.nodeValue = n.nodeValue; return; }
+  /* code review A1-I3 (Nov 17): a redraw used to close every fold the visitor had opened (the fresh HTML has no "open"). A fold keeps
+     the visitor's choice while the page's own wish for it is unchanged; when the page changes its mind, the page wins. */
+  const fold = o.nodeName === 'DETAILS', want = fold && n.hasAttribute('open'), keep = fold && o._pg === want ? o.open : null; if (fold) o._pg = want;
   if (o.isEqualNode(n)) { if ('value' in o && /^(INPUT|TEXTAREA|SELECT)$/.test(o.nodeName)) V2.morphField(o, n); return; }
   for (const a of [...o.attributes]) if (!n.hasAttribute(a.name)) o.removeAttribute(a.name);
   for (const a of [...n.attributes]) if (o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
   // a select merges its options inside morphField (and sets its value after): merging them a second time here dropped the options the
   // first pass had just moved in, so a longer list fell back to its first option (Nov 14: the calc's set boxes after a new Pokemon)
   if (/^(INPUT|TEXTAREA|SELECT)$/.test(o.nodeName)) { V2.morphField(o, n); if (o.nodeName === 'SELECT') return; }
+  if (keep !== null && o.open !== keep) o.open = keep;
   V2.morphKids(o, n); };
+// the page's wish for a fold, noted when the visitor first taps it (until then the fold is as the page drew it). A tap, not the
+// "toggle" event: browsers also fire "toggle" when a fold is first drawn open, which would note the wrong wish.
+document.addEventListener('click', e => { const s = e.target && e.target.closest && e.target.closest('summary'), d = s && s.parentElement; if (d && d.nodeName === 'DETAILS' && d._pg === undefined) d._pg = d.open; }, true);
 V2.morphKids = (o, n) => { const oc = [...o.childNodes], nc = [...n.childNodes], k = Math.min(oc.length, nc.length);
   for (let i = 0; i < k; i++) V2.morph(oc[i], nc[i]); for (let i = k; i < oc.length; i++) oc[i].remove(); for (let i = k; i < nc.length; i++) o.append(nc[i]); };
 // a form field ends up as a full redraw would leave it (value and ticks from the new page), so code that clears a box still works
@@ -294,7 +301,9 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
 V2.setTitle = () => { try { const r = V2.route(); if (r === 'pokemon') return; const h = document.querySelector('#main h1');
   const nm = ((V2.findPlaces || []).find(([k, n]) => k === (r === 'team-empty' ? 'team' : r) && typeof n === 'string') || [])[1]; /* design audit #14: the empty-team view is My Team too */
   const t = r === 'home' ? 'NastyPlot' : nm ? nm + ' · NastyPlot' : h ? h.textContent.replace(/\s+/g, ' ').trim().slice(0, 60) + ' · NastyPlot' : 'NastyPlot'; if (document.title !== t) document.title = t; } catch (e) {} };
-V2.draw = () => { const app = document.getElementById('app'); if (!app) return; const {P, html} = V2.shell();
+/* V2.drawN counts arrivals (a full draw), so a page can do arrival-only things, like scrolling to a linked part, once per arrival and
+   never again on a redraw (code review A1-I4, Nov 17) */
+V2.draw = () => { const app = document.getElementById('app'); if (!app) return; V2.drawN = (V2.drawN || 0) + 1; const {P, html} = V2.shell();
   // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the
   // pictures already on screen and put them back in place of their identical new copies (same src), so nothing re-decodes.
   const keep = new Map(); for (const i of app.querySelectorAll('img[src]')) { const k = i.getAttribute('src'); if (!keep.has(k)) keep.set(k, []); keep.get(k).push(i); }
