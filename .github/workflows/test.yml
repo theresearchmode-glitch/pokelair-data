@@ -81,7 +81,7 @@ jobs:
           node-version: '22'
       - run: npm ci && npx playwright install --with-deps chromium
       - run: node app/build.mjs --v2 --preview-data
-      - run: PAGE=app/dist/v2.html VIEWS=0 node app/test/qcheck-all.mjs   # VIEWS=0 until the views' known list is made (Nov 17)
+      - run: PAGE=app/dist/v2.html node app/test/qcheck-all.mjs
   # Code tests (Sim, Nov 9, "split the tests"): every check runs on a FROZEN copy of the data (the out/ folder of commit
   # TEST_DATA below: the last data on which everything passed), so red here means the CODE broke, not that today's data
   # changed a result. Change TEST_DATA only on purpose (e.g. a new regulation), to a commit whose data passes every check.
