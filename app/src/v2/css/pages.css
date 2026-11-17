@@ -601,7 +601,7 @@
 /* Home Q3 B (proposal): the same overlap on tablets, where Home sits in a narrow column (700-899): same fix */
 @media (min-width:700px) and (max-width:899.98px){.hm-three{grid-template-columns:1fr 2fr 1fr}.hm-used.one .hm-ut b{font-size:var(--t20)}}@media (min-width:700px) and (max-width:799.98px){.hm-used:not(.one) .hm-ut b{font-stretch:88%}} /* the side names fit their narrower columns (approved narrower letters) */
 .hm-ut small{font:500 var(--t13)/1.35 var(--b);color:var(--ink-2)}.hm-ut .num{font:900 var(--t22)/1 var(--u);font-style:italic;color:var(--ink)}.hm-ut .unit{font-family:var(--b);font-style:normal;font-weight:600;font-size:var(--t13)}
-.hm-src{margin:var(--s4) 0 0;text-align:center}
+.hm-src{margin:var(--s4) 0 0;text-align:center;text-wrap-style:pretty} /* 3a (Nov 17): no lone "Dec 1." on the last line */
 
 
 /* the #1 name steps down the type scale when the three-tile area is narrow, so it never runs into its neighbours (iPad, Nov 12) */

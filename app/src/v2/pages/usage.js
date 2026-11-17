@@ -30,10 +30,10 @@ V2.usHow = (R, d) => { const E = V2.esc, t = R.t, p = R.p, nm = V2.usName(R), sb
     ${groups.length ? `<div class="us-groups">${groups.join('')}</div>` : '<p class="tm-sub">No set details for this one yet.</p>'}${cc}${mates}
     <div class="us-add">${add}<p class="fine">% = share of its sets${t0src(R)}.</p></div></section>`; };
 const t0src = R => R.p && !(META[SRC[ui.metaSrc]] && (META[SRC[ui.metaSrc]].top || []).find(x => x.n === R.t.n && x.mv && x.mv.length)) ? '. Sets come from tournament teams where this list gives none' : '';
-// the spotlight: the most used Pokémon of this list (tag "Most used right now")
+// the spotlight: the most used Pokémon of this list (tag "Most used"; was "right now", player review 3a Nov 17)
 V2.usSpot = (R, d) => { if (!R || !R.p) return ''; const E = V2.esc, p = R.p, x = lairRows().find(y => y.p.n === p.n), N = V2.raNums(p), st = V2.addState(p.n);
   return `<div class="gs-spot ra-spot" style="--ta:var(--ty-${p.t[0]});--tb:var(--ty-${p.t[1] || p.t[0]})"><div class="gs-plate">${V2.mon(p.n, {bare: true})}</div>
-    <div class="gs-sinfo"><p class="gs-tag u">Most used right now</p><h2 class="u">${V2.nameHtml(p.d)}</h2><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
+    <div class="gs-sinfo"><p class="gs-tag u">Most used</p><h2 class="u">${V2.nameHtml(p.d)}</h2><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
       <div class="gs-facts"><p><span>Usage rank</span><b class="u">#${R.t.r}</b></p><p><span>${R.u != null ? 'On ' + E(({ingame: 'ranked ladder', tour: 'online tournament', ladder: 'Showdown ladder'})[ui.metaSrc] || 'these') + ' teams' : 'On tournament teams'}</span><b class="u">${R.u != null ? (+R.u).toFixed(1) + '%' : N.u != null ? E(V2.raPct(N.u)) : '–'}</b></p><p><span>Win rate</span><b class="u">${R.t.w ? (+R.t.w).toFixed(1) + '%' : N.w != null ? E(winFmt(N.w)) : '–'}</b></p></div>
       <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Pokémon Page</span></button>${st === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${E(p.n)}"><span>Add to My Team</span></button>` : ''}</div>
       ${st === 'have' ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : ''}${x ? `<p class="fine">Rated ${RS(x.r.total)} · ${lTier(x.r.total).k} tier</p>` : ''}</div></div>`; };

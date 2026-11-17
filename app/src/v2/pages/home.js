@@ -40,10 +40,22 @@ V2.homeFight = () => { const E = V2.esc, ms = members(), has = ms.length > 0, n 
     <div class="fn-top"><h1 class="u fn-h hm-tag"><span>Sharply raise</span> <span class="pl">your win rate.</span></h1><div class="fn-go"><p class="hm-intro">Score your team, see what beats it, and plan every match, from ${n ? homeNum(n) + ' real tournament teams' : 'real tournament results'}.</p>
       <div class="h3-go hm-go">${go}<a class="np-btn2" href="#battle"><span>Battle</span></a></div><p class="hm-imp">Already have a team? <button type="button" class="np-link" data-v2homeimport>Import a Team ›</button></p></div></div>
     <div class="fn-ring${C ? '' : ' solo'}">${you}<div class="fn-mid">${belt}${C ? '<p class="u fn-vs" aria-hidden="true">VS</p>' : ''}${prep}</div>${them}</div>${plan}</section>`; };
+// Player review 3a (Nov 17): the ladder numbers are monthly (Smogon posts each month on the 1st of the next), so say how old they are:
+// ". November's numbers arrive Dec 1." Shown only until that date; '' when the month is unknown.
+V2.homeNext = (now = Date.now()) => { const d = typeof META === 'object' && META && META[S.format], m = /^(\d{4})-(\d{2})/.exec(d && d.period || ''); if (!m) return '';
+  const nx = new Date(Date.UTC(+m[1], +m[2], 15)), due = new Date(Date.UTC(+m[1], +m[2] + 1, 1)); if (now >= due.getTime()) return '';
+  return `. ${nx.toLocaleString('en-US', {month: 'long', timeZone: 'UTC'})}'s numbers arrive ${due.toLocaleString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'})}.`; };
+// the heading says how old the numbers are without a month name (a long month spilled out of the heading box at 768-1100, measured Nov 17):
+// "Most used last month." when the data is last calendar month's, else "Most used on the ladder."; the line names the month once
+// ("October, Showdown ladder 1630+"). Player review 3a, Nov 17.
+V2.homeHead = (now = Date.now()) => { const line = homeSrcLine().replace(/\.\s*Data as of .*$/i, ''), m = /^Most used in ([A-Z][a-z]+), (.+)$/.exec(line);
+  const d = typeof META === 'object' && META && META[S.format], p = /^(\d{4})-(\d{2})/.exec(d && d.period || ''), n = new Date(now), last = new Date(Date.UTC(n.getUTCFullYear(), n.getUTCMonth() - 1, 15));
+  const isLast = p && +p[1] === last.getUTCFullYear() && +p[2] === last.getUTCMonth() + 1;
+  return m ? {h: isLast ? 'Most used last month.' : 'Most used on the ladder.', src: `${m[1]}, ${m[2]}`} : {h: 'Most used on the ladder.', src: line}; };
 // Ringside: the three most used right now (today's hero "Most used right now", HOME-02/03/04): the same buttons, sizes fitted by V2.fitUsed
 V2.homeRing = () => { const E = V2.esc, six = CH.metaSix();
   const used = (p, rank) => p ? `<button type="button" class="hm-used${rank === 1 ? ' one' : ''}" data-v2mon="${E(p.n)}" aria-label="${E(V2.disp(p.n))}, most used #${rank}, ${homePct(p)}% of teams: open its info">${V2.mon(p.n, {bare: true})}<span class="hm-ut"><b>${V2.nameHtml(V2.disp(p.n))}</b><small><span class="num">${homePct(p)}<span class="unit">%</span></span> of ladder teams${rank === 1 ? ' · #1' : ''}</small></span></button>` : '';
-  return `<section class="fn-ringside"><div class="fn-rh"><p class="fn-k">Ringside</p><h2 class="u">Most used right now.</h2><p class="fine hm-src">${E(homeSrcLine().replace(/\.\s*Data as of .*$/i, ''))}</p></div>
+  return `<section class="fn-ringside"><div class="fn-rh"><p class="fn-k">Ringside</p><h2 class="u">${E(V2.homeHead().h)}</h2><p class="fine hm-src">${E(V2.homeHead().src)}${E(V2.homeNext())}</p></div>
     <div class="fn-crowd"><div class="hm-three"><i class="hm-floor" aria-hidden="true"></i>${used(six[1], 2)}${used(six[0], 1)}${used(six[2], 3)}</div></div></section>`; };
 // Piece 2: the duel (mock-up "duel"; today's HOME-09 / HOME-10): the Champion's six beside your six. Both sides share the same
 // rows (head, six, plan, actions: one grid, subgrid rows), so the two sixes always start on the same line (Sim, Nov 12).
