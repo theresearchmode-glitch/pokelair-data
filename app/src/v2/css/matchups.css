@@ -187,5 +187,8 @@ div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(-
 /* Nov 15 (full check, a 5-of-6 team on phones): a row with a "Calc disagrees" note had no place for the note, so the grid's auto-placement
    pushed the verdict onto the name. The verdict keeps its column on the first line; the note gets the line under the name and verdict. */
 .mu-row .tm-v{grid-row:1}.mu-row .mu-dis{grid-row:2;grid-column:3/-1;justify-self:start;width:max-content;max-width:100%;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+/* Sim, Nov 17 (iPhone): pinned to row 1 with no column, the verdict was auto-placed into the 28px number column (only 'E' or 'U'
+   showed and the number, picture and name slid right) on every Top 10 row wider than 340; it goes back to its own last column */
+@container (min-width:341px){.mu-row:not(.mu-nk) .tm-v{grid-column:-2}}
 .mu-row.mu-nk .mu-dis{grid-column:2/-1}
 @container (max-width:340.98px){.mu-row .tm-v{grid-row:auto}.mu-row .mu-dis{grid-area:auto;grid-column:3/-1;grid-row:3}.mu-row.mu-nk .mu-dis{grid-column:2/-1}}
