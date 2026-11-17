@@ -40,8 +40,10 @@ V2.pages.compare = {place: 'team', draw() { const RA = cxResolve(ui.cx.A), RB = 
   if (IA.err || IB.err) return `<section class="cx2">${head}<p class="tm-sub cx2-hint" role="status">One of these teams couldn't be worked out. Try another team, or change this one on My Team.</p></section>`;
   const rows = V2.cxRows(IA, IB), diff = rows.filter(r => r.diff), same = rows.filter(r => !r.diff);
   const says = ['thr', 'sc', 'field', 'grade', 'ready', 'weak'].map(k => (rows.find(r => r.k === k) || {}).say).concat(rows.filter(r => r.k.startsWith('ck:')).map(r => r.say)).filter(Boolean);
-  const cell = (r, v) => CX2[r.k.startsWith('ck:') ? 'ck' : r.k](v);
-  const row = r => `<div class="cx2-row"><div class="cx2-lab">${V2.esc(CX2_LABEL[r.k] || V2.wl(r.label))}</div><div class="cx2-c a">${cell(r, r.a)}</div><div class="cx2-c b">${cell(r, r.b)}</div></div>`;
+  // known-bug CMP-04b (Nov 17): speed control, spread damage and lead support are notes, not counted (word list, Nov 9): no ✓/✗ for them, a plain 'Has it' / 'No' and a 'note' tag
+  const NOTE = new Set([...((IA.CK || {items: []}).items), ...((IB.CK || {items: []}).items)].filter(i => i.note).map(i => 'ck:' + i.k));
+  const cell = (r, v) => NOTE.has(r.k) ? `<span class="cx2-note">${v == null ? '–' : v ? 'Has it' : 'No'}</span>` : CX2[r.k.startsWith('ck:') ? 'ck' : r.k](v);
+  const row = r => `<div class="cx2-row${NOTE.has(r.k) ? ' cx2-nrow' : ''}"><div class="cx2-lab">${V2.esc(CX2_LABEL[r.k] || V2.wl(r.label))}${NOTE.has(r.k) ? ' <small class="cx2-nk">note</small>' : ''}</div><div class="cx2-c a">${cell(r, r.a)}</div><div class="cx2-c b">${cell(r, r.b)}</div></div>`;
   V2.cxHrow = () => '<div class="cx2-row cx2-hrow"><div class="cx2-lab"></div><div class="cx2-c a"><b class="cx2-tm a">Team A</b></div><div class="cx2-c b"><b class="cx2-tm b">Team B</b></div></div>';
   const tm = s => V2.esc(s).replace(/Team A/g, '<b class="cx2-tm a">Team A</b>').replace(/Team B/g, '<b class="cx2-tm b">Team B</b>');
   return `<section class="cx2">${head}

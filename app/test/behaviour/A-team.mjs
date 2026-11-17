@@ -1022,7 +1022,7 @@ t('CMP-04', 'Comparison: "What\'s different" (Tailwind, sun vs rain), Strength S
 t('CMP-04b', 'Compare lists Speed control as a note, not a counted team check', async () => {
   const r = await myTeam({team: TEAM, saved: SAVED}); await r.ui.teamAction('Compare with…'); await r.ui.pickCompareTeam('Rain test'); await r.ui.waitText(/What.s different|line up the same/, 15000); await r.ui.openFold(NEW ? 'Same on Both' : 'Same on both', true, 500);
   ok(!(await r.ui.compareCheckRows()).some(x => /Speed control/.test(x)), 'Speed control shown as a team check row'); await r.close(); },
-  {known: 'inventory #19: Compare still lists "Speed control" as a team check row (a note, not counted, since Nov 9)'});
+  {known: NEW ? '' : 'inventory #19: Compare still lists "Speed control" as a team check row (a note, not counted, since Nov 9)'}); /* fixed on the new site Nov 17 */
 
 // ================= 12. Pokémon info sheet =================
 if (NEW) { // Nov 15 (Sim): the Pokémon page replaces the info sheet; the same promises, checked on the page
