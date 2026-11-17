@@ -506,6 +506,8 @@
 @media (max-width:399.98px){.tm-acts .tm-svl small{display:none}.tm-acts .np-btn2{font-size:var(--t13);padding:0 var(--s2)}}
 /* Your Games as one line (Sim, Nov 11): record or "None logged yet" beside Log a Game */
 .tm-yg-hd{flex-wrap:nowrap;justify-content:space-between}.tm-yg-0 span{font:500 var(--t16)/1.5 var(--b);color:var(--ink-2)}
+/* the 'what logging unlocks' note (player review 2b, Nov 17) goes on its own full row under that line; squeezed between them it ran to 7 lines at 390 (Nov 12 re-check) */
+.tm-yg-hd:has(.tm-yg-why){flex-wrap:wrap}.tm-yg-hd .tm-yg-why{order:3;flex:1 1 100%}
 .yg2-why{margin:var(--s2) 0 var(--s4)}
 /* the set's four moves as soft tinted rows with a coloured edge (Sim's review, Nov 11, item 6: solid blocks were louder than the Pokémon) */
 .tm-moves .np-type{justify-content:flex-start;text-align:left;min-height:var(--tap);padding:0 var(--s3);clip-path:none;border-radius:var(--r-s);border-left:4px solid var(--tcn,var(--type-none));

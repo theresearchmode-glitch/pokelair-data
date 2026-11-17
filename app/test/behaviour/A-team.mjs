@@ -650,7 +650,7 @@ t('EDIT-12', '"Save team" opens "Edit team" with the save box and all six editor
     name box focused, no set editors); each set is edited in Edit Set, whose strip of the six switches Pokémon (EDIT-02 covers the strip
     more closely) */
     const r = await myTeam(); await r.ui.tapText(/^Save team$/, 1000); const p = await r.ui.editPanel(); ok(p && p.title === 'Save Team', 'save sheet title: ' + (p && p.title));
-    ok(await r.ui.focusName() === 'Team name', 'the name box is not focused (focus on "' + await r.ui.focusName() + '")'); ok(!/Edit team|Save stat points/i.test(p.text), 'the save sheet holds set editors: ' + p.text.slice(0, 120));
+    ok(/^Team name\b/.test(await r.ui.focusName() || ''), 'the name box is not focused (focus on "' + await r.ui.focusName() + '")') /* Nov 17: 6d made the label "Team name, up to 40 characters" */; ok(!/Edit team|Save stat points/i.test(p.text), 'the save sheet holds set editors: ' + p.text.slice(0, 120));
     await r.ui.closeEditPanel(); ok(!(await r.ui.editPanel()), 'save sheet did not close');
     await r.ui.openEditPanel('Garchomp'); const st = await r.ui.editStrip(), six = (await r.ui.team()).map(n => (n === 'Charizard-Mega-Y' ? 'Mega Charizard Y' : n));
     ok(st.join() === six.map(n => 'Edit ' + n).join(), 'Edit Set strip: ' + st.join(',') + ' (team ' + six.join(',') + ')');

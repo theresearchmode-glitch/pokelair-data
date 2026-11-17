@@ -72,7 +72,10 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // Remove and Lock in the action strip (TEAM-09): today's toggleLock and clearSlot (31-set-edits.js); Remove keeps Undo, as today
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2lock],[data-v2rm]'); if (!t) return;
   if (t.dataset.v2lock != null) { toggleLock(+t.dataset.v2lock); render(); const b = document.querySelector(`[data-v2lock="${t.dataset.v2lock}"]`); if (b) b.focus({preventScroll: true}); return; }
-  const was = clearSlot(+t.dataset.v2rm); render(); if (was) toast(`Removed ${was.d}`, true); });
+  const i = +t.dataset.v2rm, was = clearSlot(i); render(); if (was) toast(`Removed ${was.d}`, true);
+  // Sim, Nov 17: after Remove the new Add spot was 685px above the screen (390 wide); bring it into view and give it the focus
+  requestAnimationFrame(() => { const a = document.querySelector(`[data-v2addto="${i}"]`); if (!a) return; 
+    a.scrollIntoView({block: 'center'}); a.focus({preventScroll: true}); }); }); /* instant: a smooth scroll was cut short by the redraw's late layout (stopped at 9px, under the header) */
 
 // ---------- adding into a spot (ADD-01, ADD-02): the name box opens in the Edit Set sheet, focused ----------
 // Live search with today's monChoices (base names, "mega sal", "hisuian arc"; Species Clause for this spot), each row with its
