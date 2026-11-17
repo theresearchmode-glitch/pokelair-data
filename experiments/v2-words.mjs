@@ -6,10 +6,11 @@
 // bubble and the sheets, and reads the visible text plus aria-label and title attributes. Exit 1 if anything is found.
 // Usage: node app/build.mjs --v2 && node experiments/v2-words.mjs [page.html]   (default app/dist/v2.html)
 import {fileURLToPath, pathToFileURL} from 'node:url'; import path from 'node:path'; import fs from 'node:fs'; import {createRequire} from 'node:module';
+import {perfDoc} from '../app/data-docs.mjs';
 const ROOT = path.resolve(fileURLToPath(new URL('..', import.meta.url))), require = createRequire(import.meta.url);
 let pw; try { pw = require(path.join(ROOT, 'node_modules/playwright')); } catch (e) { pw = require('playwright'); }
 const rd = f => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'out', f), 'utf8')); } catch (e) { return null; } };
-const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json')};
+const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': perfDoc(L, rd('perf.json')), 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json')};
 const file = process.argv[2] || path.join(ROOT, 'app/dist/v2.html');
 const BAD = [/ready for/i, /\d+\s*%\s*ready/i];
 const b = await pw.chromium.launch(), found = new Map(); let reads = 0;

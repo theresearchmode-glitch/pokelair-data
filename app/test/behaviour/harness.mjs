@@ -14,6 +14,7 @@
 //   t('TEAM-03', 'Remove a Pokémon with its ×', async () => { const {pg, ui} = await open({team: TEAM}); ... ; ui.close(); });
 // Run: node app/test/behaviour/run.mjs [A-team|B-build|C-battle|D-meta-shell] [--only=ID,ID]   PAGE=path ADAPTER=name
 import fs from 'node:fs'; import zlib from 'node:zlib'; import {fileURLToPath} from 'node:url'; import {chromium} from 'playwright';
+import {perfDoc} from '../../data-docs.mjs';
 
 export const HERE = fileURLToPath(new URL('.', import.meta.url)), ROOT = HERE + '../../../';
 export const PAGE_SRC = process.env.PAGE || ROOT + 'app/dist/page.html';
@@ -24,7 +25,7 @@ export const OPP = ['Incineroar', 'Garchomp', 'Sneasler', 'Kingambit', 'Whimsico
 // ---------- frozen data, served as the page's shared database documents ----------
 const fx = f => { try { return JSON.parse(zlib.gunzipSync(fs.readFileSync(HERE + 'fixture/' + f + '.json.gz')).toString('utf8')); } catch (e) { return null; } };
 const L = fx('limitless') || {};
-export const DOCS = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null,
+export const DOCS = {'meta/results': L.results, 'meta/perf': perfDoc(L, fx('perf')),
   'meta/doubles_tour': fx('meta_tour'), 'meta/teams': fx('teams'), 'meta/model': fx('model'), 'meta/doubles': fx('meta_ladder'),
   'meta/doubles_ingame': fx('meta_ingame'), 'meta/history': fx('history'), 'meta/events': fx('events'), 'meta/weekly': fx('weekly'),
   'meta/track': fx('track'), 'meta/practice': fx('practice'), 'meta/calendar': fx('calendar')};

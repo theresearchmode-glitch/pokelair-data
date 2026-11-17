@@ -1,5 +1,6 @@
 // Builds the PokéLair page from src/ (parts.json lists the order). Output: dist/page.html, published as the artifact.
 import fs from 'node:fs';
+import {perfDoc} from './data-docs.mjs';
 const parts = JSON.parse(fs.readFileSync(new URL('./parts.json', import.meta.url)));
 import {fileURLToPath} from 'node:url';
 // fileURLToPath works on Windows too (URL.pathname gives "/C:/..." there)
@@ -47,7 +48,7 @@ if (process.argv.includes('--v2')) {
   // replaced, so the data is also handed over as window.__NP_CLAUDE, which the page reads first.
   let prevTag = '';
   if (process.argv.includes('--preview-data')) { const o = f => { try { return JSON.parse(fs.readFileSync(dir + '../out/' + f, 'utf8')); } catch (e) { return null; } }, L = o('limitless.json') || {};
-    const D = {'meta/results': L.results, 'meta/perf': L.adj ? Object.assign({adj: L.adj}, o('perf.json') || {}, {updated: String(L.updated || '').slice(0, 10)}) : null, /* Nov 15: all of out/perf.json as the morning refresh writes it (ratings-snapshot.mjs); with adj alone the page fell back to its built-in Nov 1 ratings */ 'meta/doubles_tour': o('meta_tour.json'), 'meta/teams': o('teams.json'), 'meta/calendar': o('calendar.json'), 'meta/weekly': o('weekly.json'), 'meta/model': o('model.json'), 'meta/doubles': o('meta_ladder.json'), 'meta/events': o('events.json'), 'meta/track': o('track.json'), 'meta/history': o('history.json'), 'meta/practice': o('practice.json'), 'meta/doubles_ingame': o('meta_ingame.json')};
+    const D = {'meta/results': L.results, 'meta/perf': perfDoc(L, o('perf.json')), /* Nov 15: all of out/perf.json as the morning refresh writes it (ratings-snapshot.mjs); with adj alone the page fell back to its built-in Nov 1 ratings */ 'meta/doubles_tour': o('meta_tour.json'), 'meta/teams': o('teams.json'), 'meta/calendar': o('calendar.json'), 'meta/weekly': o('weekly.json'), 'meta/model': o('model.json'), 'meta/doubles': o('meta_ladder.json'), 'meta/events': o('events.json'), 'meta/track': o('track.json'), 'meta/history': o('history.json'), 'meta/practice': o('practice.json'), 'meta/doubles_ingame': o('meta_ingame.json')};
     // privacy (Sim's review item 19, Nov 11): no real player name goes into the Preview's page source. Each name becomes the same
     // neutral stand-in everywhere it appears ("Player 12"), so matching a team to its own sets still works; none is shown on screen.
     { const ids = new Map(), anon = n => typeof n === 'string' && n ? (ids.has(n) || ids.set(n, 'Player ' + (ids.size + 1)), ids.get(n)) : n;
