@@ -194,7 +194,7 @@ V2.theme = () => document.documentElement.dataset.theme === 'night' ? 'night' : 
 // pages: a source past its usual age is named with its day, and a new or changed regulation is said plainly. Empty when all is current.
 V2.dataNote = () => { const E = V2.esc, out = [];
   try { const r = typeof regInfo === 'function' && regInfo();
-    if (r && r.now) out.push(`<b>New regulation: Reg ${E(r.now.id)} started ${E(regDay(r.now.since))}.</b> Numbers are from Reg ${E(r.id)} until there's enough Reg ${E(r.now.id)} data; the two are never mixed.`);
+    if (r && r.now) out.push(`<b>New regulation: Reg ${E(r.now.id)} started ${E(regDay(r.now.since))}.</b> Numbers are from Reg ${E(r.id)} until there's enough Reg ${E(r.now.id)} data; the two are never mixed. ${r.now.events ? `${r.now.events.toLocaleString('en-US')} Reg ${E(r.now.id)} event${r.now.events === 1 ? '' : 's'} so far${r.now.need ? `, switches at ${r.now.need}` : ''}.` : `Seen on the Showdown ladder; no Reg ${E(r.now.id)} tournaments yet.`}`); /* known-bug SHELL-05 (Nov 17): how far along it is, as today's page says */
     else if (r && r.id !== PAGE_REG) out.push(`<b>Numbers are from Reg ${E(r.id)}.</b> Anything new in Reg ${E(r.id)} may be missing until NastyPlot is updated for it.`); } catch (e) {}
   try { const st = typeof healthStale === 'function' ? healthStale() : [];
     if (st.length && window.__NP_PREVIEW) out.push(`<b>This Preview uses a saved copy of the data</b> from ${E(st[0].day)}; the live site updates every morning.`);

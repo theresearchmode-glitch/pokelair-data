@@ -164,6 +164,9 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   const st = await p.evaluate(() => window.__ev(`(() => { const mf = memberFrom; let n = 0; memberFrom = function () { n++; return mf.apply(this, arguments); };
     try { const g = planFixesG(members(), suggestPool(), true); g.next(); return n; } finally { memberFrom = mf; } })()`));
   ok(st > 0 && st <= 30, `Speed fix 3 (Nov 17, pre-launch 2d): the planner's first step builds at most 30 candidates, not the whole pool at once (${st} built)`); }
+{ await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500);
+  const rn = await p.evaluate(() => window.__ev(`(() => { const R = {id: 'M-C', since: '2026-09-01', now: {id: 'M-D', since: '2026-12-02', events: 3, need: {events: 20}}}, P = META.perf, o1 = META.reg, o2 = P && P.reg; META.reg = R; if (P) P.reg = R; try { return V2.dataNote().replace(/<[^>]+>/g, ''); } finally { META.reg = o1; if (P) P.reg = o2; } })()`));
+  ok(/3 Reg M-D events so far, switches at 20\./.test(rn), `Known-bug SHELL-05 (Nov 17): the new-regulation note says how far along it is (${String(rn).slice(0, 200)})`); }
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500); await p.evaluate(() => V2.openSearch()); await p.waitForTimeout(300);
   await p.fill('[data-v2q]', 'garch'); await p.waitForTimeout(400);
   const hits = await p.evaluate(() => [...document.querySelectorAll('[data-v2hits] .np-hit')].map(h => h.querySelector('b') ? h.querySelector('b').textContent.trim() : '').slice(0, 4).join(' | '));
