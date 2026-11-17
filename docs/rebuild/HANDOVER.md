@@ -7,6 +7,16 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Nov 17, written time: 10:56 AM (10:56:52)  date: Tue Nov 17, 2026 by the clock; authority until 5:00 PM)
+- Plans page = ONE game plan to January (v38): Step 1 Finish (+ switch), 2 Reg M-D, 3 Strength Score, 4 Launch, Ideas. Old page
+  archived in docs/rebuild/plans-archive-nov17.html. Sim decided all open items (recommendations), wants the switch in a few days.
+- New standing rule (RULES.md 00e): be proactive and efficient; helpers in parallel without asking.
+- Helpers running (Nov 17 ~10:50-11:00 AM): data inventory + spreads (worktree), phone speed measurement (scratchpad/speed/),
+  Reg M-D date + regulation switch plan (scratchpad/regmd/), known-bug sorter (scratchpad/known/), Nov 12 design re-check
+  (scratchpad/nov12/). Integrate their findings one change at a time.
+- Pushed 96907929 (qcheck known list re-recorded: calc only). Preview v196.
+- Done today: both reviews except speed 2a/2c/2d, 5d (sized), spreads (helper). See the two trackers in docs/rebuild/audits/.
+
 ## NOW (Nov 17, written time: 9:31 AM (9:31:08)  date: Tue Nov 17, 2026 by the clock; Sim's executive authority until 5:00 PM Tue Nov 17)
 - Two outside reviews in progress, each tracked item by item: docs/rebuild/audits/player-review-nov17.md and
   docs/rebuild/audits/prelaunch-checks-nov17.md. Sim (morning): "recommended for all is good to go" (= yes to 3h, a data-job
