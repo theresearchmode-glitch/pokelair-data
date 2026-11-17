@@ -113,6 +113,7 @@ detail right. So:
   before/after screenshots of each batch for impact, not only for rule-following.
 
 ## Plans are always checklists (Sim, Nov 8)
+Update rhythm (Sim, Nov 17): a quick Plans page update about once an hour (ticks, notes, new steps), not after every task.
 Sim, Nov 17: the Plans page is ONE clean game plan to the January launch (Step 1 finish the redesign + switch, Step 2 Reg M-D,
 Step 3 Strength Score (before the launch, Sim), Step 4 launch, Ideas): only what's left. Add new work as a step in the right part, tick it when done; the
 old sections are archived in docs/rebuild/plans-archive-nov17.html.
