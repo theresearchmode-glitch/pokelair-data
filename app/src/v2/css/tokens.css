@@ -72,6 +72,14 @@
   /* paper (Track Record's receipt, slips and chart sheet; Nov 15): white with dark words in both themes, waiting on Sim's yes; stamps use
      the day-theme good and bad text colours, which pass on white */
   --rc-paper:#FFFFFF;--rc-ink:#17161A;--rc-ink2:#48454F;--rc-rule:rgba(23,22,26,.28);--rc-shadow:rgba(10,8,20,.28);--rc-tape:rgba(0,120,191,.32);--rc-good:#0068AD;--rc-bad:#B3261E;
+  /* Home, The Stampede, band 2 "Call six out of the herd" (Nov 18; sd-six.css): the receipt and the plan board are paper (white receipt, warm
+     graph paper by day; dim paper at night, as the mock-up), dark words on them in both themes; your side blue, theirs magenta (Battle's
+     colours, day values: they sit on paper in both themes); white buttons and light-blue rings, beams and chevrons on the ink band */
+  --sd-paper:#FFFFFF;--sd-board:#F3F0EA;--sd-paper-ink:#17161A;--sd-paper-ink2:#48454F;--sd-paper-rule:rgba(23,22,26,.3);--sd-grid:rgba(23,22,26,.07);--sd-grid5:rgba(23,22,26,.12);
+  --sd-paper-shadow:rgba(0,0,0,.5);--sd-paper-btn:#17161A;--sd-on-paper-btn:#FFFFFF;--sd-q:#0068AD;--sd-you:#0068AD;--sd-them:#B4238F;--sd-on-tag:#FFFFFF;
+  --sd-btn:#FFFFFF;--sd-btn-ink:#17161A;--sd-ring:#62BEF7;--sd-ring-glow:rgba(98,190,247,.5);--sd-ring-open:rgba(255,255,255,.62);--sd-beam:rgba(255,255,255,.075);--sd-lines:rgba(255,255,255,.035);
+  --sd-chev:#62BEF7;--sd-mask:#000000; /* --sd-mask: an opaque mask layer (the receipt's torn edge), not a colour anyone sees */
+  --d-sdsix:clamp(34px,10.4cqi,64px);--d-sdq:clamp(64px,46cqi,168px);--d-sdn:clamp(56px,30cqi,120px);--d-sdof:clamp(28px,15cqi,56px);--d-sdnp:clamp(48px,20cqi,72px); /* band 2's headline (fills the line-up's width, 34 to 64), the receipt's "?", its score and its "/100" (fill the receipt) */
   /* type colours borrowed as tints (move rows, move picker, box wallpaper): hue kept, saturation 72%+, lightness 56%; near-grey types
      (Normal, Dark) stay neutral grey (Sim, Nov 11, review item 12) */
   --tyn-Dragon:#3E50E0;--tyn-Ground:#E08A3E;--tyn-Fighting:#E67A37;--tyn-Poison:#9B3EE0;--tyn-Dark:#8F8F8F;--tyn-Steel:#3EB5E0;--tyn-Fire:#E35B3B;--tyn-Water:#3E86E0;--tyn-Grass:#3EE062;--tyn-Fairy:#E03ED6;--tyn-Flying:#3E89E0;--tyn-Ghost:#6C3EE0;--tyn-Psychic:#E03E7A;--tyn-Ice:#3DC0E1;--tyn-Rock:#E0C33E;--tyn-Electric:#FFC71F;--tyn-Normal:#8F8F8F;--tyn-Bug:#C4E836;
@@ -87,6 +95,7 @@
   color-scheme:light}
 :root[data-theme="night"]{
   --bp-paper:transparent;--bp-grid:#62bef712;--bp-grid5:#62bef724;--bp-ink:#62bef7;
+  --sd-paper:#DDD5C5;--sd-board:#D6CEBF;--sd-grid:rgba(23,22,26,.08);--sd-grid5:rgba(23,22,26,.14);--sd-beam:rgba(255,255,255,.05);--sd-lines:rgba(255,255,255,.025);--sd-paper-shadow:rgba(0,0,0,.6); /* band 2 at night: dim paper (the mock-up's), the rest as by day */
   --wx-sun:#D99A1B;--wx-sun-hi:#F0C25A;--tr-electric:#E9D23A;--on-wx:#1C1708;--table:rgba(255,255,255,.025);--table-line:rgba(255,255,255,.045);--table-edge:rgba(255,255,255,.10);--mvc-face:#15141E;--mvc-ink:#F4F2EE;--mvc-sub:#B0AAB8;--ko-tint:rgba(255,122,112,.14);--hp-left:#3FC060;
   --card-face-1:#1A1924;--card-face-2:#0C0C13;--card-ink:#F4F2EE;--card-giant:rgba(255,255,255,.10);--card-line:rgba(255,255,255,.03);--card-sheen:rgba(255,255,255,.07);--card-glow:.30;--card-shade:transparent;
   --ray:rgba(255,255,255,.045);--ray-art:rgba(255,255,255,.05);

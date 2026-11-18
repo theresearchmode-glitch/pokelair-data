@@ -1203,4 +1203,4 @@ t('HOME-11b', 'Sample note "Build your own" on My Team opens Build', async () =>
 t('HOME-10b', 'Home empty tile "Add a Pokémon to slot N" opens the add box for that slot', async () => {
   const r = await aopen({team: []}); await r.ui.tapLabel('Add a Pokémon to slot 3', 1200); const p = await r.ui.editPanel(); const nb = await r.ui.nameBox();
   ok(p && /Add a Pokémon/.test(p.title) && await r.ui.panelSlot() === 2 && nb && nb.focused, 'tile opened ' + await r.ui.current() + ' without the slot-3 add box'); await r.close(); },
-  {known: 'inventory #17: Home\'s empty tiles say "Add a Pokémon to slot N" but only open My Team'});
+  {known: NEW ? '' /* the new site's open rings open the slot's Add box (Nov 18) */ : 'inventory #17: Home\'s empty tiles say "Add a Pokémon to slot N" but only open My Team'});

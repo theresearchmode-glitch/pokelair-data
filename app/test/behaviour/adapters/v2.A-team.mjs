@@ -114,7 +114,7 @@ export default (ui, pg, o) => {
     /** the big headline (the tagline) */
     homeHeadline: () => txt('#main .hm-hero h1') || '',
     /** the start buttons under the tagline, as shown */
-    homeStartButtons: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-go a')].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
+    homeStartButtons: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-go a, #main [data-sdgo]' /* The Stampede (Nov 18): the start buttons carry data-sdgo (hero: Score My Team / Build Me a Team; six band: Battle) */)].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
     /** the tool tiles' names (the tile's bold name, without its "›") */
     homeTools: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-tlinks a, #main .hm-tool')].filter(e => e.getClientRects().length).map(e => { const b = e.querySelector('b'); return (b ? b.childNodes[0].textContent : e.childNodes[0].textContent).trim(); })), /* Nov 15 night: the tools are links */
     tapTool: name => tapFound(n => [...document.querySelectorAll('#main .hm-tlinks a, #main .hm-tool')].find(e => e.getClientRects().length && ((e.querySelector('b') ? e.querySelector('b').childNodes[0].textContent : e.childNodes[0].textContent).trim() === n)) || null, name, 'tool ' + name, 700),
@@ -124,7 +124,7 @@ export default (ui, pg, o) => {
     closeWhatsNew: () => click('[data-hmnewx]'),
     /** The Meta, right now: the rows of the list on show (names) */
     homeTopRows: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-top .hm-rk')].filter(e => e.getClientRects().length).map(e => e.dataset.v2mon)),
-    homePlanLine: () => pg.evaluate(() => { const e = [...document.querySelectorAll('#main .hm-you .hm-plan, #main .fn-hero > .hm-plan') /* Fight Night (Nov 14): the plan runs under both corners */].find(e => e.getClientRects().length); const m = e && e.innerText.replace(/\s+/g, ' ').match(/Game [Pp]lan[^.]*\./); return m ? m[0] : null; }),
+    homePlanLine: () => pg.evaluate(() => { const e = [...document.querySelectorAll('#main .hm-you .hm-plan, #main .fn-hero > .hm-plan, #main .sds-plan' /* The Stampede (Nov 18): the plan line on the six band's plan board */) /* Fight Night (Nov 14): the plan runs under both corners */].find(e => e.getClientRects().length); const m = e && e.innerText.replace(/\s+/g, ' ').match(/Game [Pp]lan[^.]*\./); return m ? m[0] : null; }),
 
     // ---------- My Team ----------
     /** the team's name as the page shows it: a heading if there is one, else the eyebrow "My Team · <saved name>" */
@@ -232,7 +232,7 @@ export default (ui, pg, o) => {
     tapStrip: i => click(`.ed2 .ed-pk[data-k="${i}"]`, 800),
     panelLock: () => click('.ed2 [data-ed="lock"]', 700),
     panelLockText: () => txt('.ed2 [data-ed="lock"]'),
-    panelSlot: () => pg.evaluate(() => { const b = document.querySelector('.ed2 .ed-pk[aria-pressed="true"]'); return b ? +b.dataset.k : 0; }),
+    panelSlot: () => pg.evaluate(() => { const b = document.querySelector('.ed2 .ed-pk[aria-pressed="true"]'); if (b) return +b.dataset.k; const q = document.querySelector('.np-sheet [data-adq]'); return q && q.dataset.adq !== '' ? +q.dataset.adq : 0; }), /* Nov 18: the Add box has no slot strip; its name box says which slot it fills (data-adq) */
     pickInPanel: async (what, value, j = 0) => { const sel = {nature: '.ed2 select[data-ed="nat"]', ability: '.ed2 select[data-ed="ab"]', item: '.ed2 select[data-ed="it"]', move: `.ed2 select[data-ed="mv"][data-j="${j}"]`}[what];
       const loc = pg.locator(sel).first(); const opt = await loc.evaluate((s, v) => { const nm = t => t.split(' · ')[0].replace(/[★\s]+$/, '').replace(/ \([\d.]+%\)$/, '').trim(); const o = [...s.options].find(o => nm(o.text) === v || o.value === v); return o ? o.value : null; }, value);
       if (opt == null) throw new Error('no ' + what + ' option ' + value); await loc.selectOption(opt); await pg.waitForTimeout(900); },
