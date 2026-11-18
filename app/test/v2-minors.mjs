@@ -89,6 +89,12 @@ const MQ = async () => {
   // MQ-1a (answer 1a): the parcel (kraft > label > Copy Code) is a named exception to "no boxes in boxes", written where the exceptions live
   { const ds = fs.readFileSync(new URL('../../docs/rebuild/design-system.md', import.meta.url), 'utf8');
     ok(/Named exception \(Sim, Nov 18, morning questions 1a[^\n]*\n[^\n]*\.pr-parcel/.test(ds), 'MQ-1a: design-system.md names the Post Room parcel as the exception to "no boxes in boxes" (Sim, Nov 18, 1a)'); }
+  // MQ-1b (answer 1b): every label's middle column is headed "Sent", the date right under it, and how it is given on the line below;
+  // on #gifts and on Home's compact parcel (they share V2.prLabel)
+  for (const [hash, sel] of [['#gifts', '#main .pr-counter .pr-meta'], ['#home', '.sdp .pr-meta']]) { const q = await open(hash);
+    const r = await q.evaluate(sel => [...document.querySelectorAll(sel)].map(m => { const d = m.children[1]; return d ? [...d.children].map(c => c.tagName + ':' + c.textContent.trim()).join(' / ') : 'none'; }), sel);
+    ok(r.length > 0 && r.every(x => /^DT:Sent \/ DD:([A-Z][a-z]{2} \d{1,2}(, \d{4})?|Date not confirmed) \/ DD:(Serial code|Event gift)$/.test(x)), `MQ-1b ${hash}: the label's middle column reads "Sent", the date, then how it is given (${r.join(' | ')})`);
+    await q.close(); }
 };
 if (process.env.ONLY === 'MQ') { await MQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- MQ end ----

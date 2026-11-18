@@ -45,7 +45,7 @@
 .pr-spell{user-select:none}
 .pr-label .np-btn.pr-copy{flex:none;background:var(--pr-ink);color:var(--pr-paper);box-shadow:none}
 .pr-none{margin:var(--s3) 0 0;font:500 var(--t15)/1.5 var(--b)}
-.pr-meta dd.pr-also{margin-top:var(--s1);font:400 var(--t13)/1.5 var(--b);color:var(--pr-ink2)}
+.pr-meta dd.pr-also,.pr-meta dd.pr-via{margin-top:var(--s1);font:400 var(--t13)/1.5 var(--b);color:var(--pr-ink2)}
 .pr-bars{display:block;width:100%;height:32px;margin-top:var(--s3);fill:var(--pr-ink)}
 .pr-src{margin:var(--s2) 0 0;font:400 var(--t13)/1.5 var(--b);color:var(--pr-ink2)}.pr-src a{color:var(--pr-num);text-decoration:underline}
 @container prp (max-width:519.98px){.pr-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.pr-what{grid-column:1/-1}.pr-crow>*{flex:1 1 100%}.pr-label .np-btn.pr-copy{width:100%}.pr-cv{--pr-cvs:var(--t22)}}

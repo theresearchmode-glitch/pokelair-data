@@ -5,7 +5,8 @@
 // Shared pieces (one family: Home's post band, stampede-post.js, and the Dispatch coupon use these too). Each returns HTML.
 //   V2.prParcel(gift, {compact})  a kraft parcel: tape, the shipping label (V2.prLabel) and the days-left rubber stamp (V2.prRubber).
 //                                 compact: a smaller parcel for a band or a coupon (label in one column, smaller type, no barcode).
-//   V2.prLabel(gift, {compact})   the white shipping label alone: "Mystery Gift", Contents, how it is given + sent date, Collect by,
+//   V2.prLabel(gift, {compact})   the white shipping label alone: "Mystery Gift", Contents, Sent (the date, how it is given under it;
+//                                 Sim, Nov 18, 1b: a date under "Serial code" read as the code), Collect by,
 //                                 the code (V2.prCode) with a Copy Code button (data-prcopy; handled on every page), a barcode.
 //   V2.prCode(code)               the code, digits in blue and letters in ink (so 1/I and 0/O differ), with screen-reader text that
 //                                 spells it ("L, A, 1, ..."); the visible code stays selectable text. '' for no code.
@@ -92,7 +93,7 @@ V2.prLabel = (gift, o = {}) => { const g = gift && gift.raw ? gift : V2.prG(gift
   const code = g.code ? V2.prCopyRow(g.code) : `<p class="pr-none">${V2.PR_NOCODE[g.how]}</p>`;
   const src = g.src.length && !o.compact ? `<p class="pr-src">Source: ${g.src.slice(0, 2).map(x => `<a href="${E(x.url)}" target="_blank" rel="noopener noreferrer">${E(x.name || 'Source')}</a>`).join(' and ')}</p>` : '';
   return `<div class="pr-label${o.compact ? ' pr-cpt' : ''}"><p class="pr-lt u">Mystery Gift</p><dl class="pr-meta"><div class="pr-what"><dt>Contents</dt><dd class="u">${E(g.name)}</dd>${g.extras.length && !o.compact ? `<dd class="pr-also">Also inside: ${g.extras.map(E).join(', ')}</dd>` : ''}</div>
-    <div><dt>${V2.PR_HOW[g.how]}</dt><dd>${Number.isFinite(g.start) ? 'Sent ' + V2.prDate(g.start, {month: 'short', day: 'numeric'}, g.dayStart) : 'Sent date not confirmed'}</dd></div>
+    <div class="pr-sent"><dt>Sent</dt><dd>${Number.isFinite(g.start) ? V2.prDate(g.start, {month: 'short', day: 'numeric'}, g.dayStart) : 'Date not confirmed'}</dd><dd class="pr-via">${V2.PR_HOW[g.how]}</dd></div>
     <div><dt>Collect by</dt><dd>${end}</dd></div></dl>${code}${o.compact ? '' : V2.prBars(g.code || g.id)}${src}${left != null && left >= 0 ? `<span class="vh">, ${left === 0 ? 'last day to collect it' : `${left} ${left === 1 ? 'day' : 'days'} left`}</span>` : ''}</div>`; };
 V2.prParcel = (gift, o = {}) => { const g = gift && gift.raw ? gift : V2.prG(gift); if (!g) return '';
   return `<article class="pr-parcel${o.compact ? ' pr-cpt' : ''}" aria-label="Mystery Gift: ${V2.esc(g.name)}"><i class="pr-tape" aria-hidden="true"></i>${V2.prLabel(g, o)}<div aria-hidden="true">${V2.prRubber(g)}</div></article>`; };
