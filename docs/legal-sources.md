@@ -57,6 +57,16 @@ The Post Room (#gifts), The Champions Dispatch (#news) and Home's post band read
 - A code with only one outlet stays out (the gift may still be listed, with `note: "Code not verified"`).
 - The page says when the list was last checked ("Gift list checked ...") and that a code can stop early.
 
+### Who updates what (9c)
+- **News: automatic.** `post-news.mjs` reads the official feed's list once a day (one request, through `http.mjs`) and adds new
+  stories to `POST.news` as headline, date, type and link. If the feed can't be read or its shape changed, post.js is kept as it
+  is and the step fails (yesterday's list stays). Tested by `experiments/post-news-test.mjs` (no network).
+- **Gifts: suggested only.** A new Campaign or Championships item is written to `out/post-suggest.json`; a person reads the
+  official page and adds a gift to post.js only if it is a Mystery Gift (Serial Code or Event Gift; Sim, Nov 18). The script
+  never writes a gift.
+- **Codes: manual.** A person adds each code by the 2-outlet rule above.
+- Status (Nov 18): the script and its test exist; it is **not yet a step of the daily job** (`.github/workflows/update.yml`).
+
 ## Player names (privacy)
 
 Player names and teams come from public tournament results (adult Masters division only). A player can ask to have their

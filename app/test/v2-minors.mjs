@@ -105,6 +105,11 @@ const MQ = async () => {
     const sec = (ls.split('### Codes: the 2-outlet rule (9b)')[1] || '').split('\n## ')[0];
     ok(/2 or more reputable outlets on different sites/.test(sec) && /Analytics Insight[^\n]*never counts/.test(sec) && /const OUTLETS = \[/.test(pt) && /outlets that count/.test(pt),
       `MQ-9b: legal-sources.md writes the 2-outlet rule for codes (which outlets count; Analytics Insight never does) and post-data-test enforces that list (section ${sec ? sec.length + ' chars' : 'missing'})`); }
+  // MQ-9c (answer 9c): news automatic, gifts suggested, codes manual: post-news.mjs and its own test (experiments/post-news-test.mjs), and the split written down
+  { const ls = fs.readFileSync(process.env.MQ_LEGAL || new URL('../../docs/legal-sources.md', import.meta.url), 'utf8'); let res = '';
+    try { res = (await import('node:child_process')).execFileSync('node', [new URL('../../experiments/post-news-test.mjs', import.meta.url).pathname], {encoding: 'utf8', stdio: 'pipe'}).trim().split('\n').pop(); } catch (e) { res = 'failed: ' + String(e.stdout || e.message).trim().split('\n').pop(); }
+    ok(res === 'ALL PASS' && /### Who updates what \(9c\)/.test(ls) && /News: automatic/.test(ls) && /Gifts: suggested only/.test(ls) && /Codes: manual/.test(ls),
+      `MQ-9c: the split (news automatic, gifts suggested, codes manual) is written down and post-news-test passes (${res})`); }
   // MQ-2c (answer 2c): the Back Page's column names are the word list's: "Top Ratings" and "Next Events" (were The Standings / Fixtures), full paper and Home's small one
   { const q = await open('#news'); const r = await q.evaluate(() => { const h = [...document.querySelectorAll('#main .dp-bc h3')].map(x => x.textContent.trim()), all = document.body.innerText;
       return {h: h.join(' | '), labels: [...document.querySelectorAll('#main .dp-bc[aria-label]')].map(x => x.getAttribute('aria-label')).join(' | '), old: /The Standings|Fixtures/.test(all)}; });
