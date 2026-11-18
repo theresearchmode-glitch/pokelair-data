@@ -1916,6 +1916,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .gs-mon.one .gs-fig::before{content:'';position:absolute;inset:-12% 0 0;background:radial-gradient(closest-side,color-mix(in srgb,var(--tier-s) 45%,transparent),transparent)}
 .gs-one{position:absolute;top:0;left:var(--s1);z-index:1;padding:0 var(--s1);background:var(--tier-s);color:var(--tier-ink);font:900 var(--t13)/1.4 var(--u);font-style:italic;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
 .gs-tx{display:grid;justify-items:center;padding-top:var(--s4);width:100%;min-width:0}
+/* audit v199 #13 (Nov 17): every item on a shelf is as tall as the tallest (flex row), the name row takes the spare space, so the
+   numbers line up even when a name takes two lines; every item keeps the 8px row of the 'on your team' bar, so the bar never lifts its number */
+.gs-mon{grid-template-rows:auto 1fr}.gs-row .gs-tx{grid-template-rows:auto 1fr auto var(--s2);align-items:start}
 .gs-mg{min-height:16px;font:900 var(--t13)/1.2 var(--u);font-style:italic;color:var(--plot-text);text-transform:uppercase}
 .gs-tx b{max-width:100%;font:700 var(--t13)/1.25 var(--b);overflow-wrap:normal}
 .gs-sc{display:flex;align-items:baseline;gap:2px}.gs-sc .u{font:900 var(--t24)/1.1 var(--u);font-style:italic}.gs-sc small{font:700 var(--t13)/1 var(--b)}

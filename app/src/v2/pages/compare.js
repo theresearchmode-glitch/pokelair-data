@@ -34,7 +34,7 @@ V2.cxRows = (IA, IB) => cxFacts(IA, IB).map(r => { if (r.diff) return r; let d =
 V2.pages.compare = {place: 'team', draw() { const RA = cxResolve(ui.cx.A), RB = cxResolve(ui.cx.B); if (!RA) ui.cx.A = null; if (!RB) ui.cx.B = null;
   const head = `<div class="cx2-top"><div class="np-eyebrow"><span><a class="np-back" href="#team">← My Team</a> · Compare · two teams side by side</span></div><h1 class="u">Compare Teams</h1></div>
     <div class="cx2-heads">${V2.cxHead('A', RA)}${RA && RB ? '<button type="button" class="np-link cx2-swap" data-cxswap2>Swap A and B</button>' : '<span class="cx2-swap"></span>'}${V2.cxHead('B', RB)}</div>`;
-  if (!RA || !RB) return `<section class="cx2">${head}<p class="tm-sub cx2-hint">Pick two teams: your team, a saved one, an event winner or a pasted Showdown team. Every row below is worked out the same way as on My Team.</p></section>`;
+  if (!RA || !RB) return `<section class="cx2">${head}<p class="tm-sub cx2-hint">Pick two teams: your team, a saved one, an event winner or a pasted Showdown team. Once both are picked, every row is worked out the same way as on My Team.</p></section>`;
   const IA = CX.cache.get(cxKey(RA.slots)), IB = CX.cache.get(cxKey(RB.slots));
   if (!IA || !IB) { V2.cxWork(); return `<section class="cx2">${head}<p class="tm-sub cx2-busy" role="status">Working out both teams: Strength Score, matchups, checks and speed…</p></section>`; }
   if (IA.err || IB.err) return `<section class="cx2">${head}<p class="tm-sub cx2-hint" role="status">One of these teams couldn't be worked out. Try another team, or change this one on My Team.</p></section>`;
