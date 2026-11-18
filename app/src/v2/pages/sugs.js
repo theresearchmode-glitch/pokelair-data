@@ -138,14 +138,23 @@ document.addEventListener('click', e => { if (!e.target.closest) return;
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2plan],[data-v2plana]'); if (!b) return; const now = Date.now(); if (now - (V2._sgTap || 0) < 450) return; V2._sgTap = now;
   const fromAll = b.dataset.v2plana != null, pl = fromAll ? V2.sgAll.list[+b.dataset.v2plana] : (ui.planList || [])[+b.dataset.v2plan]; if (!pl) return;
   // known-bug SUGG-09 (Nov 17): the parts above Suggestions change height on the redraw, so Suggestions jumped about 120px; keep it where it was
-  const sec = !fromAll && b.closest('section'), id = sec && sec.id, y0 = sec ? sec.getBoundingClientRect().top : null;
-  if (fromAll) V2.closeSheet(true); applyPlan(pl); render(); V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`);
-  // Nov 18: on a slow phone the parts above redraw later than the next frame, so the place is held for up to 5 s, and let go the
-  // moment the player scrolls, taps or presses a key (their own move always wins)
-  if (id) { const t0 = performance.now(), ev = ['wheel', 'touchstart', 'pointerdown', 'keydown']; let on = true; const off = () => { on = false; ev.forEach(n => removeEventListener(n, off, true)); };
+  const sec = !fromAll && b.closest('section'), id = sec && sec.id, y0 = sec ? sec.getBoundingClientRect().top : null, k = b.dataset.v2plan, a0 = b.getBoundingClientRect().top;
+  if (fromAll) V2.closeSheet(true); applyPlan(pl); render();
+  // Nov 18: on a slow phone the parts above redraw later than the next frame, so the place is held, and let go the moment the player
+  // scrolls, taps or presses a key (their own move always wins)
+  // Nov 18 (SUGG-09 inside Suggestions): the new Undo bar sits above the faded list while the next suggestions are worked out, so
+  // holding the section's top let the Apply under the finger drop by the bar's height (600 -> 775 at 4x CPU), then move again when
+  // the new list came. What is held is the place under the finger: an Apply (the faded copy's, then the next suggestion's) where the
+  // tapped one was; with no Apply left (nothing to fix), the section's top where it was. Held until the list has settled: at least
+  // 5 s, while the planner works, and 1 s after (20 s at most). Done in script, so it works without scroll anchoring (Safari).
+  if (id) { const t0 = performance.now(), ev = ['wheel', 'touchstart', 'pointerdown', 'keydown']; let on = true, t1 = t0; const off = () => { on = false; ev.forEach(n => removeEventListener(n, off, true)); };
     ev.forEach(n => addEventListener(n, off, {capture: true, passive: true}));
-    const keep = () => { if (!on) return; const el = document.getElementById(id); if (el) { const d = el.getBoundingClientRect().top - y0; if (Math.abs(d) > 1) scrollBy(0, d); }
-      if (performance.now() - t0 < 5000) requestAnimationFrame(keep); else off(); }; keep(); } });
+    const hold = () => { const el = document.getElementById(id); if (!el) return; const seen = e => e.getClientRects().length, A = [el.querySelector(`[data-v2plan="${k}"]`), ...el.querySelectorAll('[data-v2plan]')].find(e => e && seen(e));
+      const d = A ? A.getBoundingClientRect().top - a0 : el.getBoundingClientRect().top - y0; if (Math.abs(d) > 1) scrollBy(0, d); if (el.querySelector('.sg2-wait')) t1 = performance.now(); };
+    const keep = () => { if (!on) return; hold(); const t = performance.now(); if ((t - t0 < 5000 || t - t1 < 1000) && t - t0 < 20000) requestAnimationFrame(keep); else off(); };
+    hold(); requestAnimationFrame(keep); }
+  // one message per Apply (A6): decided where the player will see the bar, after the place is held
+  V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`); });
 
 // ---------- Problems and Team Checks (in the Team Checks section): a fold, closed until opened, remembered per device ----------
 // Today's rows (problemRows), Quick add picks (quickList / quickInfo), the team checks (proChecks, ckState, CK_TXT) and the verdict

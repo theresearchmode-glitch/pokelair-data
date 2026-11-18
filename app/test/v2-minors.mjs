@@ -315,12 +315,39 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.addStyleTag({content: 'html,body{overflow-anchor:none}'}); // as a browser without scroll anchoring
   await q.evaluate(() => window.__ev(`(() => { const T = ['Incineroar','Garchomp','Sneasler','Kingambit','Basculegion','Sinistcha']; S.slots.forEach((s, i) => { s.n = T[i]; }); persist(); V2.redraw(); })()`));
   await q.waitForSelector('#tm-sg [data-v2plan]', {timeout: 20000}).catch(() => {});
+  // the place under the finger (Nov 18, SUGG-09 inside Suggestions): an Apply (the faded copy's while the planner works, then the next
+  // suggestion's) where the tapped one was; with none left, Suggestions' top
+  const at = () => q.evaluate(() => { const s = document.querySelector('#tm-sg'), A = s && [...s.querySelectorAll('[data-v2plan]')].find(e => e.getClientRects().length); return s ? Math.round((A || s).getBoundingClientRect().top) + (A ? ' Apply' : ' top') : null; });
   const y0 = await q.evaluate(() => { const s = document.querySelector('#tm-sg'), a = s && s.querySelector('[data-v2plan]'); if (!a) return null; scrollBy(0, a.getBoundingClientRect().top - innerHeight * 2 / 3); return Math.round(s.getBoundingClientRect().top); });
-  const a = await q.$('#tm-sg [data-v2plan]'); let y1 = null;
-  if (y0 != null && a) { await a.click(); await q.waitForTimeout(700);
+  const a = await q.$('#tm-sg [data-v2plan]'); let y1 = null, a0 = null;
+  if (y0 != null && a) { a0 = await at(); await a.click(); await q.waitForTimeout(700);
     await q.evaluate(() => { const d = document.createElement('div'); d.style.height = '120px'; d.id = 'zz-late'; const m = document.querySelector('#main'); m.insertBefore(d, m.firstChild); });
-    await q.waitForTimeout(1200); y1 = await q.evaluate(() => { const s = document.querySelector('#tm-sg'); return s ? Math.round(s.getBoundingClientRect().top) : null; }); }
-  ok(y0 != null && y1 != null && Math.abs(y1 - y0) <= 4, `SUGG-09 (Nov 18): after Apply, Suggestions stays put when the parts above change height later (top ${y0} -> ${y1})`);
+    await q.waitForTimeout(1200); y1 = await at(); }
+  const want = y1 && / Apply$/.test(y1) ? parseInt(a0) : y0;
+  ok(y0 != null && y1 != null && Math.abs(parseInt(y1) - want) <= 4, `SUGG-09 (Nov 18): after Apply, the place under the finger stays put when the parts above change height later (${a0}, Suggestions top ${y0} -> ${y1})`);
+  await q.close(); }
+// SUGG-09, inside Suggestions (Nov 18): with the CPU 4x slower, the faded list sat under the new 'Applied … Undo' bar while the next
+// suggestions were worked out, so the Apply under the finger dropped about 175px (600 -> 775), then moved again when the new list came.
+// Every frame from the tap until the list has settled: an Apply (the faded copy's, then the next suggestion's) stays where the tapped one
+// was; with no Apply left (nothing to fix), Suggestions stays where it was. One six ends with a next suggestion, one with none.
+for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'Incineroar', 'Whimsicott', 'Sneasler']], ['nothing to fix', ['Incineroar', 'Garchomp', 'Sneasler', 'Kingambit', 'Basculegion', 'Sinistcha']]]) {
+  const q = await b.newPage({viewport: {width: 390, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.addStyleTag({content: 'html,body{overflow-anchor:none}'}); // as Safari: no scroll anchoring
+  await q.evaluate(T => window.__ev(`(() => { const T = ${JSON.stringify(T)}; S.slots.forEach((s, i) => { s.n = T[i]; }); persist(); V2.redraw(); })()`), T);
+  await q.waitForFunction(() => { const s = document.querySelector('#tm-sg'); return s && !s.querySelector('[aria-busy=true]') && !/Working out/.test(s.innerText) && s.querySelector('[data-v2plan]'); }, null, {timeout: 30000}).catch(() => {});
+  const cdp = await q.context().newCDPSession(q); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 4});
+  const s0 = await q.evaluate(() => { const s = document.querySelector('#tm-sg'), a = s && s.querySelector('[data-v2plan]'); if (!a) return null; scrollBy(0, a.getBoundingClientRect().top - 600); return Math.round(s.getBoundingClientRect().top); });
+  const a = await q.$('#tm-sg [data-v2plan]'), seen = [], bad = []; let busy = 0, live = 0, msg = '';
+  if (s0 != null && a) { const y0 = await a.evaluate(e => Math.round(e.getBoundingClientRect().top)); await a.click(); const t0 = Date.now(); let calm = 0;
+    while (Date.now() - t0 < 30000) { // measured in a frame, after the page's own frame work, as the player sees it
+      const r = await q.evaluate(() => new Promise(res => requestAnimationFrame(() => { const s = document.querySelector('#tm-sg'), A = s && [...s.querySelectorAll('[data-v2plan]')].find(e => e.getClientRects().length);
+        const u = s && s.querySelector('.sg2-undo'), U = u && u.getBoundingClientRect(), t = document.querySelector('.np-toast');
+        res({ap: A ? Math.round(A.getBoundingClientRect().top) : null, stale: !!(A && A.closest('.sg2-stale')), sec: s ? Math.round(s.getBoundingClientRect().top) : null, busy: !!(s && (s.querySelector('[aria-busy=true]') || /Working out/.test(s.innerText))),
+          bar: !!(U && U.top >= 0 && U.bottom <= innerHeight), toast: !!(t && t.getClientRects().length && /^Applied/.test(t.innerText))}); })));
+      if (!msg) msg = r.bar && r.toast ? 'two' : r.bar ? 'bar' : r.toast ? 'toast' : ''; if (r.busy) busy++; else if (r.ap != null && !r.stale) live++;
+      const at = r.ap != null ? ['Apply' + (r.stale ? ' (faded)' : ''), r.ap, y0] : ['Suggestions', r.sec, s0]; seen.push(at[0][0] + at[1]); if (Math.abs(at[1] - at[2]) > 4) bad.push(`${at[0]} ${at[2]} -> ${at[1]} at ${Date.now() - t0} ms`);
+      if (r.busy) calm = 0; else if (!calm) calm = Date.now(); else if (Date.now() - calm > 1500) break; await q.waitForTimeout(80); } }
+  ok(s0 != null && busy > 0 && (nm === 'nothing to fix' ? !live : live > 0) && (msg === 'bar' || msg === 'toast') && !bad.length, `SUGG-09 inside Suggestions (Nov 18), ${nm}, 4x slower CPU: what is under the finger after Apply never moves, through the working state and when the new list comes (${bad.length ? bad.slice(0, 3).join('; ') : 'held'}; ${busy} working frames, ${live} with a new Apply, message: ${msg || 'none'}; ${[...new Set(seen)].slice(0, 8).join(' ')})`);
   await q.close(); }
 // X-05 helper's find (Nov 18): Build's sticky Recent Winners / Cores bar covered one row of the 'Build around' name list on a phone
 { const q = await b.newPage({viewport: {width: 390, height: 844}}); await q.addInitScript(() => { window.__PL_TEST = 1; });
