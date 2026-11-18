@@ -41,7 +41,7 @@ V2.sdHero = () => {
     : `<a class="sdh-b1" data-sdgo href="#build">Build Me a Team</a><a class="sdh-b2" data-sdgo href="#team"><span>Score My Team</span></a>`;
   const say = R.length ? `Every one of the ${num(R.length)} Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating${D.teams ? `, worked out from ${num(D.teams)} real tournament teams` : ''}.`
     : 'Every Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating.';
-  return `<section class="sd-band sd-hero sdh${V2.sdhUi.surged ? '' : ' sdh-surge'}" aria-labelledby="sdh-h">
+  return `<section class="sd-band sd-hero sdh${V2.sdhUi.surged || !V2.sdMotion() ? '' : ' sdh-surge'}" aria-labelledby="sdh-h">
     <div class="sdh-fold"><div class="sdh-scene">
       <svg class="sdh-lines" aria-hidden="true" focusable="false"></svg>
       <div class="sdh-crowd" aria-hidden="true"></div><i class="sdh-haze" aria-hidden="true"></i>
@@ -144,7 +144,9 @@ V2.sdHeroAfter = () => { const S = document.querySelector('#main .sdh'), U = V2.
 V2.SDH_PXS = 40; // the ticker's speed, px per second
 // prep (before the names are measured): build or take down the track and the button; otherwise: refresh the copy when the shown
 // names change, and the duration from the list's width
-V2.sdhTick = (S, prep) => { const U = V2.sdhUi, tk = S.querySelector('.sdh-tick'), ul = tk && tk.querySelector('ul'); if (!ul) return;
+// Motion is OFF until Sim's yes on the videos (docs/rebuild/pics/nov18/stampede-motion-*); window.NP_SD_MOTION = 1 turns it on for checks
+V2.sdMotion = () => !!window.NP_SD_MOTION;
+V2.sdhTick = (S, prep) => { const U = V2.sdhUi, tk = S.querySelector('.sdh-tick'), ul = tk && tk.querySelector('ul'); if (!ul || !V2.sdMotion()) return;
   const mq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null, run = !!mq && !mq.matches;
   if (mq && !U.mq) { U.mq = 1; mq.addEventListener('change', () => V2.sdhLayout()); }
   let tr = tk.querySelector('.sdh-trk');

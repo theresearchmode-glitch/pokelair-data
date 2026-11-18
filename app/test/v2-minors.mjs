@@ -669,7 +669,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
 /* Home, The Stampede: motion (Nov 18; css/sd-motion.css, V2.sdhTick in stampede-hero.js). A watcher records, every frame from the first
    draw for 1.5 s, every animation or transition running inside the hero, so a surge, a marquee or a stray transition is caught. */
 { const watch = async (w, h, rm, after) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: rm}); const q = await ctx.newPage();
-    await q.addInitScript(() => { window.__PL_TEST = 1; const seen = window.__sdhSeen = {n: 0, names: {}, ends: 0, first: ''}; const t0 = performance.now();
+    await q.addInitScript(() => { window.__PL_TEST = 1; window.NP_SD_MOTION = 1; /* motion is off until Sim's yes; the checks turn it on */ const seen = window.__sdhSeen = {n: 0, names: {}, ends: 0, first: ''}; const t0 = performance.now();
       const tick = () => { const S = document.querySelector('#main .sdh'); if (S) { if (!seen.first) seen.first = S.className; for (const a of S.getAnimations({subtree: true})) if (a.playState === 'running') { seen.n++; const nm = a.animationName || a.transitionProperty || 'anim'; seen.names[nm] = 1;
         if (a.animationName && a.animationName.startsWith('sdh-surge')) { const t = a.effect.getComputedTiming(); seen.ends = Math.max(seen.ends, t.endTime); } } } if (performance.now() - t0 < 6000) requestAnimationFrame(tick); };
       requestAnimationFrame(tick); });
@@ -692,7 +692,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     ok(t.uls === 2 && t.same && t.hid && t.anim === 'sdh-mq' && t.pz >= 44 && t.inWin && t.paused && t.resumed && t.hs <= 0, `Stampede motion 3 (${w}): the ticker scrolls as list + matching aria-hidden copy (copy buttons tabindex -1), the ${t.pz}px pause button (${t.label}) pauses and restarts it, no sideways scroll (${JSON.stringify(t)})`); }
   // 4. a keyboard user: tabbing into the ticker stops it at its start, so the focused name is on screen
   const k = await (async () => {
-    const ctx = await b.newContext({viewport: {width: 1440, height: 900}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+    const ctx = await b.newContext({viewport: {width: 1440, height: 900}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; window.NP_SD_MOTION = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
     await q.evaluate(() => document.querySelector('#main .sdh-tick').scrollIntoView({block: 'center'})); await q.waitForTimeout(1500); await q.focus('#main .sdh-go a:last-child'); await q.keyboard.press('Tab'); await q.waitForTimeout(200);
     const r = await q.evaluate(() => { const a = document.activeElement, x = a.getBoundingClientRect(); return {inTick: !!a.closest('.sdh-trk ul:not([aria-hidden])'), tf: (t => t ? getComputedStyle(t).transform : 'no track')(document.querySelector('#main .sdh-trk')), on: x.left >= 0 && x.right <= innerWidth}; }); await ctx.close(); return r; })();
   ok(k.inTick && k.tf === 'none' && k.on, `Stampede motion 4: Tab from the start buttons lands on the ticker's first name, the ticker stops at its start and the name is on screen (${JSON.stringify(k)})`); }
