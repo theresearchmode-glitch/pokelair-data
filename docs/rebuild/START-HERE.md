@@ -83,6 +83,15 @@ without Sim's explicit yes.
   push, then `git worktree remove -f -f <path>`. Helpers sometimes duplicate each other's commits; land only the unique ones.
 - The site itself changes **one thing at a time** in your main thread, tested, with pictures.
 
+### Heavy jobs go to Sim's PC (standing rule; Sim, Nov 11, repeated Nov 18)
+- Sim has a local Claude Code chat on her **Windows PC with an RTX 3080 graphics card**: faster than the cloud machine, and it doesn't
+  restart. Whenever a task would go faster there (big test runs, polish checks across many widths, screenshot batches, image work on
+  the GPU, anything heavy in a browser, long model or scoreboard runs), **say so up front** and give her a **ready-to-paste prompt**:
+  what to pull (branch and commit), what to run, where to save results (commit them to the working branch), and the line
+  "fix only setup, never the code or tests". Briefs live in `docs/rebuild/gpu-jobs.md` or `docs/rebuild/test-runs/`.
+- Sim decided on Nov 18 to keep the main work in the cloud chat (it can work while she's away and through the night) and hand the heavy
+  jobs to her PC this way. Check the PC's results yourself before relying on them.
+
 ### The Plans page: the ONE document for the rebuild (Sim, Nov 18)
 - https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ, source `docs/foundation-plan.html` (last published: version 73). Step 1 is
   "Finish the redesign + switch" (opens with "Every page, where it stands"), then Step 2 Reg M-D, Step 3 Strength Score, Step 4
