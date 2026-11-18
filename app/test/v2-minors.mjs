@@ -292,6 +292,15 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
     await q.waitForTimeout(1200); y1 = await q.evaluate(() => { const s = document.querySelector('#tm-sg'); return s ? Math.round(s.getBoundingClientRect().top) : null; }); }
   ok(y0 != null && y1 != null && Math.abs(y1 - y0) <= 4, `SUGG-09 (Nov 18): after Apply, Suggestions stays put when the parts above change height later (top ${y0} -> ${y1})`);
   await q.close(); }
+// X-05 helper's find (Nov 18): Build's sticky Recent Winners / Cores bar covered one row of the 'Build around' name list on a phone
+{ const q = await b.newPage({viewport: {width: 390, height: 844}}); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  await q.goto('file://' + PAGE + '#build'); await q.waitForTimeout(2000); const f = await q.$('[data-bdfind]'); let r = 'no box';
+  if (f) { await f.click(); await f.type('gar'); await q.waitForTimeout(600);
+    r = await q.evaluate(() => { const h = document.querySelector('.bd-hits'); if (!h || !h.children.length) return 'no list';
+      const rows = [...h.querySelectorAll('button,a,li')].filter(e => e.getClientRects().length && e.getBoundingClientRect().bottom < innerHeight);
+      const hid = rows.filter(e => { const b = e.getBoundingClientRect(), t = document.elementFromPoint(b.left + b.width / 2, b.top + b.height / 2); return !t || !h.contains(t); });
+      return `${hid.length} of ${rows.length} rows covered`; }); }
+  ok(/^0 of [1-9]/.test(r), `Build: the 'Build around' name list sits above the sticky tab bar at 390 (${r})`); await q.close(); }
 { const sp = []; for (const [w, r] of [[390, 'build'], [390, 'speed'], [1280, 'calc'], [1280, 'battle'], [390, 'team']]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1800);
     sp.push(await p.evaluate(() => { const im = [...document.querySelectorAll('#main img[src*=".webp"]')].filter(i => i.getClientRects().length); const sm = im.filter(i => i.getAttribute('src').includes('-s/') || i.dataset.full); /* GitHub (Nov 17): no sprite files beside the test page, so a small file can already have fallen back to the big one (V2.artFix sets data-full) */
       const big = sm.filter(i => { const m = i.closest('.np-mon'), iw = m ? parseFloat(((m.getAttribute('style') || '').match(/--iw:([\d.]+)px/) || [])[1]) : NaN; return m && !(iw <= 80); }); return [sm.length, big.length, im.length]; })); }

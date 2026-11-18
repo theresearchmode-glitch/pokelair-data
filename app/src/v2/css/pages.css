@@ -680,7 +680,8 @@
 .bd-pick img{width:32px;height:32px;object-fit:contain}.bd-pick b{flex:1;font:600 var(--t15)/1 var(--b)}
 .bd-x{width:44px;height:44px;border:0;background:none;color:var(--ink-3);font:400 var(--t24)/1 var(--b);cursor:pointer}
 .bd-find{min-height:44px}
-.bd-hits{position:absolute;z-index:5;left:0;right:0;top:100%;background:var(--surface);box-shadow:var(--shadow-lift)}.bd-hits:empty{display:none}
+/* Nov 18: above the sticky Recent Winners / Cores bar (.bd-jump, z 5, later in the page), which covered one row of the list */
+.bd-hits{position:absolute;z-index:6;left:0;right:0;top:100%;background:var(--surface);box-shadow:var(--shadow-lift)}.bd-hits:empty{display:none}
 .bd-go .np-btn2{white-space:nowrap}
 .bd-how h2{font-size:var(--t28);margin:var(--s2) 0 var(--s3)}
 @media (max-width:1179.98px){.bd-head{display:block}.bd-side{max-width:none;text-align:left;margin-top:var(--s2)}.bd-side p{display:inline}.bd-side .np-link{margin:0 0 0 var(--s2)}
