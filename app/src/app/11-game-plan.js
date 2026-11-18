@@ -110,9 +110,15 @@ function gamePlan(team) {
       note: modes >= 2 ? '' : primary >= .6 ? 'If your setter is Taunted or knocked out, nothing else controls speed.' : 'No second speed option either.'});
     if (modes < 2) pen += 10;
     // 3. Trick Room needs slow hitters to pay off
-    if (c.tr >= .4) { const slow = team.filter(m => isSlow(m.p) && !R.tr.some(x => x.m === m && x.r >= .5));
-      rows.push({k: 'trfit', label: 'Trick Room attackers', st: slow.length >= 2 ? 'ok' : slow.length ? 'part' : 'miss', who: slow.map(m => m.d).join(', '), note: slow.length >= 2 ? '' : 'Trick Room pays off with 2+ slow, hard-hitting Pokémon.'});
-      pen += slow.length >= 2 ? 0 : slow.length ? 8 : 18; }
+    // Nov 18 (rule-holes sweep: 124 real teams, 5 event winners, read "Trick Room with no slow attacker"): when Trick Room isn't
+    // the team's main mode, too few slow attackers is a note, not a gap. That is a Trick Room user that also runs Imprison (it is
+    // there to block the opponent's room), or a team whose Tailwind or weather speed already controls speed (Trick Room is the
+    // reverse mode). structCredit already exempted Tailwind teams (35-win-model.js), so the rules now agree.
+    if (c.tr >= .4) { const slow = team.filter(m => isSlow(m.p) && !R.tr.some(x => x.m === m && x.r >= .5)), trU = R.tr.filter(x => x.r >= .5);
+      const trAnti = trU.length > 0 && trU.every(x => relMove(x.m, ['Imprison'])[0] >= .5), trSecond = c.tw >= .6 || wSpeed >= .6, side = (trAnti || trSecond) && slow.length < 2;
+      rows.push({k: 'trfit', label: 'Trick Room attackers', st: side ? 'opt' : slow.length >= 2 ? 'ok' : slow.length ? 'part' : 'miss', who: slow.map(m => m.d).join(', '),
+        note: slow.length >= 2 ? '' : side ? (trAnti ? 'Your Trick Room user runs Imprison, so it can also block the opponent\u2019s Trick Room.' : `Trick Room is your second speed mode (${c.tw >= .6 ? 'Tailwind' : 'weather speed'} is the main one).`) + ' Slow, hard-hitting Pokémon would help it pay off.' : 'Trick Room pays off with 2+ slow, hard-hitting Pokémon.'});
+      pen += slow.length >= 2 || side ? 0 : slow.length ? 8 : 18; }
   }
   // weather: one setter that the team uses is weather control; two kinds fight each other
   // Two weathers: a real archetype (Pelipper + Mega Charizard Y, 23 of 377 tournament teams) but it wins less (48.8% vs 54.5%).

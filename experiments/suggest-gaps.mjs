@@ -35,7 +35,8 @@ for (const [label, team, pool] of [['Mega Swampert, 5 Pokémon, my box', swamper
   ok(/needs rain/.test(r.gapNote) && /Box \+ catch/.test(r.gapNote), `box with no rain setter: the plans say so and point to Box + catch / Whole roster ("${r.gapNote}")`); clean('box with no rain setter', r); }
 { const r = await run(['Excadrill', 'Rotom-Wash', 'Incineroar', 'Whimsicott', 'Kingambit', 'Sylveon'], 'box');
   ok(r.plans.slice(0, 2).some(x => x.sets.includes('sand') && x.fix.includes('weather')), `Sand Rush Excadrill without sand: a sand setter is in the first two plans (${r.plans.map(x => x.names).join(' | ')})`); clean('Sand Rush without sand', r); }
-{ const r = await run(['Farigiraf', 'Indeedee-F', 'Sneasler', 'Garchomp', 'Dragonite', 'Whimsicott'], 'box');
+/* Nov 18: Gholdengo in place of Whimsicott: with Whimsicott's Tailwind, Trick Room is the second mode and too few slow attackers is a note (rule-holes sweep, hole 3) */
+{ const r = await run(['Farigiraf', 'Indeedee-F', 'Sneasler', 'Garchomp', 'Dragonite', 'Gholdengo'], 'box');
   ok(r.plans.slice(0, 2).some(x => x.fix.includes('trfit')), `Trick Room with no slow attackers: a slow attacker is in the first two plans (${r.plans.map(x => x.names).join(' | ')})`); clean('Trick Room without slow attackers', r); }
 const sample = await pg.evaluate(() => window.__ev('DEFAULT_TEAM.slots.map(s=>s.n)'));
 for (const [label, team] of [['sun team, Incineroar the only lead support', ['Torkoal', 'Venusaur', 'Incineroar', 'Garchomp', 'Kingambit', 'Whimsicott']], ['Venusaur + Mega Charizard Y, Whimsicott the only Tailwind', ['Venusaur-Mega', 'Charizard-Mega-Y', 'Incineroar', 'Garchomp', 'Kingambit', 'Whimsicott']], ['sample team', sample]])
@@ -68,5 +69,15 @@ for (const [label, team] of [['sun team, Incineroar the only lead support', ['To
   const sp=gamePlan(T).rows.find(r=>r.k==='speed')||{},one=gamePlan(T.filter(m=>m.p.n!=='Pelipper'&&m.p.n!=='Archaludon')).rows.find(r=>r.k==='speed')||{};return {st:sp.st,who:sp.who,one:one.st}})()`));
   ok(r.st === 'ok', `sun + rain team: Chlorophyll Venusaur still counts as speed control (${r.st}: ${r.who})`);
   ok(r.one === 'ok', `the same sun core alone: speed control as before (${r.one})`); }
+// Trick Room on a fast team (Nov 18 rule-holes sweep, hole 3): Imprison + Trick Room, or Trick Room next to Tailwind, is not the flaw
+// "Trick Room with no slow attacker"; Trick Room as the only mode with no slow attacker still is
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const base=[mk('Charizard-Mega-Y','Drought',['Heat Wave','Air Slash','Protect','Overheat']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Rock Slide','Protect']),mk('Glimmora','Toxic Debris',['Power Gem','Sludge Bomb','Spiky Shield','Mortal Spin'])];
+  const ind=mv=>mk('Indeedee','Psychic Surge',mv),whim=mk('Whimsicott','Prankster',['Tailwind','Moonblast','Encore','Protect']),gh=mk('Gholdengo','Good as Gold',['Make It Rain','Shadow Ball','Nasty Plot','Protect']),sn=mk('Sneasler','Unburden',['Close Combat','Dire Claw','Fake Out','Protect']);
+  const fl=t=>teamFlaws(t).includes('Trick Room with no slow attacker');
+  return {imp:fl([...base,ind(['Trick Room','Imprison','Follow Me','Psychic']),gh,sn]),tw:fl([...base,ind(['Trick Room','Follow Me','Psychic','Helping Hand']),whim,sn]),plain:fl([...base,ind(['Trick Room','Follow Me','Psychic','Helping Hand']),gh,sn])}})()`));
+  ok(!r.imp, 'Imprison + Trick Room Indeedee on a fast team: not "Trick Room with no slow attacker"');
+  ok(!r.tw, 'Trick Room next to Whimsicott\'s Tailwind on a fast team: not "Trick Room with no slow attacker"');
+  ok(r.plain, 'Trick Room as the only speed mode with no slow attacker: still "Trick Room with no slow attacker"'); }
 ok(!errs.length, 'no page errors ' + errs.join(' | '));
 await b.close(); fs.unlinkSync(page); console.log(fails.length ? `\n${fails.length} FAILED` : '\nALL PASSED'); process.exit(fails.length ? 1 : 0);
