@@ -9,6 +9,7 @@
 //              "0 players", shared pieces, the coupon's Copy Code as the Post Room's button, the Dispatch name's margins
 //   OL-i39  Report a Mistake on a Pokémon page sends its numbers (rating, tier, rank, tournament numbers, moves, items), as today's site did
 //   OL-i15  Build's Blueprint shows the catch tip, "X isn't in your box" and every plan chip (no cap of 3), in even rows
+//   Q13d  Build's Blueprint shows the Megas tip (both shares counted from the data) and the proven-team note (this exact six, 55%+ wins)
 //   Stampede polish 1/1b/2 (Nov 18): the hero/six seam, the three parts starting and ending together, the receipt's band names readable
 //   Stampede tiles 2-5 + tags (Nov 18 night): Battle's VS clear, Test Run filled, Damage Calc balanced, equal band bars, board tags inside
 //   HQ Q4a-Q13f (Nov 18): Sim's answers for Home (morning questions), one check each (ONLY=HQ runs these alone)
@@ -368,6 +369,23 @@ ok(!!has, 'Build made a team with its Copy and Save buttons');
 const lab = await p.evaluate(() => ({core: document.querySelectorAll('.bp-core').length, roles: [...document.querySelectorAll('.bp-role')].map(e => e.textContent.trim()).filter(t => t && t !== '\u00a0')}));
 { const tx = await p.evaluate(() => document.querySelector('#main').innerText); ok(!/Best core/.test(tx), `Sim (Nov 17): Build says "Best trio", not "Best core" (${(tx.match(/Best (core|trio)[^\n]{0,24}/) || ['none'])[0]})`); }
 ok(lab.core === 0 && lab.roles.length === 0, `Sim (Nov 17): Build's team cards carry no Core badge and no role heading (${JSON.stringify(lab)})`);
+/* Q13d (Sim, Nov 18, B): the Megas tip and the proven-team note are back on the Blueprint. The tip's numbers are read from the data:
+   the event-winner share is re-counted here from META.events, and a made-up results.megaN must change the tournament share
+   (so a number typed into the page would fail); the note follows the proven record (this exact six, 55%+ wins), not the option */
+{ const q13 = await p.evaluate(() => window.__ev(`(() => { const tip = () => (document.querySelector('#main .bd-mtip') || {}).textContent || '', R = META.results || RES, keep = R && R.megaN;
+    const win = (META.events.events || []).map(e => e.top && e.top[0]).filter(t => t && t.place === 1 && t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n)));
+    const wpct = pctFmt(100 * win.filter(t => t.mons.filter(m => byName.get(m.n).m).length === 2).length / win.length);
+    const t0 = tip(); R.megaN = [10, 20, 70, 0]; V2.redraw(); const t1 = tip(); R.megaN = [0, 0, 0, 0]; V2.redraw(); const t2 = tip(); if (keep) R.megaN = keep; else delete R.megaN; V2.redraw();
+    const t = abTeam('doubles'), pv = t.proven, note = () => !!document.querySelector('#main .bd-prov');
+    t.proven = {n: 5, wr: .6, g: 80, swapped: false}; V2.redraw(); const n1 = note(); t.proven.swapped = true; V2.redraw(); const n2 = note();
+    t.proven = {n: 5, wr: .52, g: 80, swapped: false}; V2.redraw(); const n3 = note(); t.proven = null; V2.redraw(); const n4 = note(); t.proven = pv; V2.redraw();
+    const nt = (document.querySelector('#main .bd-prov') || {}).textContent || null;
+    return {wpct, n: win.length, t0, t1, t2, n1, n2, n3, n4, now: pv ? {wr: pv.wr, swapped: pv.swapped, note: nt} : null}; })()`));
+  ok(q13.n >= 20 && q13.t0.includes(q13.wpct + ' of event winners') && q13.t0.endsWith('carry 2 Mega options. Only one can Mega Evolve per battle.')
+    && q13.t1 === `70% of tournament teams and ${q13.wpct} of event winners carry 2 Mega options. Only one can Mega Evolve per battle.` && !q13.t2.includes('tournament teams'),
+    `Q13d: the Megas tip counts its numbers from the data (winners ${q13.wpct} of ${q13.n}; a made-up 70% split shows 70%, an empty one drops the tournament part) (${JSON.stringify([q13.t0, q13.t1, q13.t2])})`);
+  ok(q13.n1 && !q13.n2 && !q13.n3 && !q13.n4 && (!q13.now || (q13.now.note === 'This exact team has won at real events. Treat these as optional tweaks, not problems.') === (!q13.now.swapped && q13.now.wr >= .55)),
+    `Q13d: the proven-team note shows for this exact six at 55%+ wins only (exact 60%: ${q13.n1}, 1 swap: ${q13.n2}, 52%: ${q13.n3}, new: ${q13.n4}; option shown: ${JSON.stringify(q13.now)})`); }
 const toastAfter = async fn => { await p.evaluate(() => document.querySelectorAll('.np-toast').forEach(t => t.remove())); await fn(); await p.waitForTimeout(500);
   return p.evaluate(() => [...document.querySelectorAll('.np-toast')].map(t => t.textContent).join(' | ')); };
 if (has) {

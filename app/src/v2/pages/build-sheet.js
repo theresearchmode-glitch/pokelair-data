@@ -23,7 +23,19 @@ V2.bpSpec = () => { const E = V2.esc, lk = ui.abLock && byName.get(ui.abLock);
   const meg = V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on team');
   const around = lk ? `<div class="bd-pick">${SPRITE_ID[lk.n] ? `<img src="${V2.art(SPRITE_ID[lk.n])}" alt="">` : ''}<b>${V2.nameHtml(V2.disp(lk.n))}</b><button type="button" class="bd-x" data-bdx aria-label="Stop building around ${E(V2.disp(lk.n))}">×</button></div>`
     : `<label class="np-field bd-find">${V2.ICON.search}<input type="search" data-bdfind value="${E(V2.bdUi.find || '')}" placeholder="Any Pokémon" aria-label="Build around a Pokémon (optional): type its name" autocomplete="off">${V2.CLR}</label><div class="bd-hits" data-bdhits></div>`;
-  return `<div class="bp-spec bd-opts"><div class="bd-opt bd-src"><span class="bd-lab">Build from</span>${src}</div><div class="bd-opt bd-meg"><span class="bd-lab">Megas on team</span>${meg}</div><div class="bd-opt bd-around"><span class="bd-lab">Build around <span>· optional</span></span>${around}</div></div>`; };
+  return `<div class="bp-spec bd-opts"><div class="bd-opt bd-src"><span class="bd-lab">Build from</span>${src}</div><div class="bd-opt bd-meg"><span class="bd-lab">Megas on team</span>${meg}</div><div class="bd-opt bd-around"><span class="bd-lab">Build around <span>· optional</span></span>${around}</div></div>${V2.bpMegaTip()}`; };
+/* Q13d (Sim, Nov 18, answer B): today's Megas tip, back under the Spec. Today's page typed "73% ... 81%" into a title tooltip (body.html);
+   here both numbers are counted from the live data, and the tip is left out when neither can be counted:
+   - tournament teams: results.megaN from the daily job (update.mjs: full sixes with 0 / 1 / 2 / 3+ Mega options; experiments/mega-share.mjs)
+   - event winners: each event's winner with a full known six, as ckWinRefresh lists them for "(N% bring 2)" (06-helpers.js), counted
+     here directly so Build doesn't start that ~120-team pass */
+V2.bpMegaShare = () => { const R = (typeof META === 'object' && META.results) || (typeof RES === 'object' && RES) || null, mg = R && Array.isArray(R.megaN) && R.megaN.length === 4 ? R.megaN.map(Number) : null;
+  const tot = mg ? mg.reduce((a, b) => a + b, 0) : 0, Ev = typeof META === 'object' && META.events && Array.isArray(META.events.events) ? META.events.events : [];
+  const win = Ev.map(ev => ev.top && ev.top[0]).filter(t => t && t.place === 1 && t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n)));
+  return {teams: tot >= 100 ? 100 * mg[2] / tot : null, nTeams: tot, wins: win.length >= 20 ? 100 * win.filter(t => t.mons.filter(m => byName.get(m.n).m).length === 2).length / win.length : null, nWins: win.length}; };
+V2.bpMegaTip = () => { let M = null; try { M = V2.bpMegaShare(); } catch (e) {} if (!M || (M.teams == null && M.wins == null)) return '';
+  const who = [M.teams != null ? `${pctFmt(M.teams)} of tournament teams` : '', M.wins != null ? `${pctFmt(M.wins)} of event winners` : ''].filter(Boolean).join(' and ');
+  return `<p class="bd-mtip">${who} carry 2 Mega options. Only one can Mega Evolve per battle.</p>`; };
 V2.bpRevs = M => { const E = V2.esc, L = 'ABCDEFGH';
   return `<div class="bd-others bp-revs" role="list">${M.res.teams.map((t, i) => { let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
     const rows = t._rd && t._rd.rows || [], ans = rows.filter(x => x.level >= 2).length, bas = CK ? CK.items.filter(x => !x.skip && !x.note) : [], on = i === M.k;
@@ -48,7 +60,7 @@ V2.buildSheet = M => { const E = V2.esc, t = M.t, busy = !!(ui.ab && ui.ab.busy)
     <div class="bd-six bp-six${t.mons.some(m => { const d = V2.disp(m.n); return (/^Mega /.test(d) ? d.slice(5) : d).length > 9; }) ? ' lg' : ''}">${t.mons.map((m, i) => V2.bpFig(m, i, coreNames, tags)).join('')}</div>
     <div class="bp-tb"><div class="bp-left"><p class="bp-k">Spec · tap a field to change it</p>${V2.bpSpec()}${M.n > 1 ? `<p class="bp-k">Revisions · tap one to see it</p>${V2.bpRevs(M)}` : ''}
         <div class="bd-opt bd-go"><button type="button" class="np-btn2" data-bdgo${busy ? ' aria-busy="true" disabled' : ''}><span>${lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team'} ↻</span></button></div></div>
-      <div class="bp-right"><p class="bp-k">Notes</p>${V2.bpNotes(M)}${acts}</div></div></section>`; };
+      <div class="bp-right"><p class="bp-k">Notes</p>${V2.bpNotes(M)}${t.proven && !t.proven.swapped && t.proven.wr >= .55 ? /* Q13d (Sim, Nov 18, B): today's proven-team note, same words and the same rule as today's My Team (08-render-all.js: this exact six, 55%+ wins at events); "these" are the gaps in the Notes above it */ '<p class="bd-catch bd-prov">This exact team has won at real events. Treat these as optional tweaks, not problems.</p>' : ''}${acts}</div></div></section>`; };
 // the page: today's head (eyebrow, headline, intro and How It Works), the sheet, then Recent Winners and Cores as today (not redesigned yet)
 // ---------- Blueprint lower half (designer's roughs, Nov 14): Recent Winners as "Reference sheets", Cores as "Parts list" ----------
 // Same sections, hooks and actions as today (build.js buildWinners / buildCores); only the frame, the header and the winner's six change.
