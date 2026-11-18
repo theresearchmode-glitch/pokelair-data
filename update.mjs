@@ -76,9 +76,12 @@ for (const t of todo) {
 }
 fs.writeFileSync('data/index.json', JSON.stringify(index));
 console.log(`list ${list.length} tournaments, fetched ${fetched}, cached ${Object.keys(index.tournaments).length}`);
+// one try per event, 30 s at most, and a rate limit ends the step for today (review Nov 17: the main job must never wait on it)
+const modeGet = async path => { if (calls++) await sleep(GAP_MS); const r = await politeFetch(API + path, {signal: AbortSignal.timeout(30e3)});
+  if (r.status === 429) throw Object.assign(new Error('rate limited'), {stop: true}); if (!r.ok) throw new Error(path + ' ' + r.status); return r.json(); };
 // 1b) round format per event (Sim, Nov 17: single games first): best-of-1 or best-of-3 per phase into data/tour-modes.json,
 // asked once per event, newest first, up to MAX_MODES (120) a run: the first run backfills about 108 events (12 min), later runs a few (structural only; tour-modes.mjs, experiments/tour-modes-test.mjs)
-{ const MODES = readJSON('data/tour-modes.json', {}), r = await updateModes(index, get, {modes: MODES, max: +(process.env.MAX_MODES || 120), log: m => console.log(m)});
+{ const MODES = readJSON('data/tour-modes.json', {}), r = await updateModes(index, modeGet, {modes: MODES, max: +(process.env.MAX_MODES || 120), budgetMs: 20 * 60e3, log: m => console.log(m)});
   if (r.added) fs.writeFileSync('data/tour-modes.json', JSON.stringify(r.modes));
   console.log(`round formats: ${r.added} new of ${r.tried} asked, ${Object.keys(r.modes).length} events known`); }
 

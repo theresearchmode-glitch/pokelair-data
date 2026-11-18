@@ -10,4 +10,9 @@ const calls = [], get = async p => { const id = p.split('/')[2]; calls.push(id);
 const r = await updateModes(index, get, {modes: {d: [['SWISS', 4, 'BO1']]}, max: 3, now});
 ok(calls.join(',') === 'b,e,a', `newest first, skips stored (d) and not-yet-started (c) events, at most 3 calls (${calls.join(',')})`);
 ok(r.added === 2 && r.modes.b && r.modes.a && !r.modes.e && JSON.stringify(r.modes.d) === '[["SWISS",4,"BO1"]]', 'a failed call is skipped and tried again next day; stored formats are kept');
+// review Nov 17: a rate limit stops the step for the day; the time budget stops it too (the daily job must never be cancelled by it)
+{ const c2 = [], g2 = async p => { const id = p.split('/')[2]; c2.push(id); if (id === 'b') throw Object.assign(new Error('rate limited'), {stop: true}); return {phases: [{phase: 1, type: 'SWISS', rounds: 5, mode: 'BO3'}]}; };
+  await updateModes(index, g2, {modes: {}, max: 5, now}); ok(c2.join(',') === 'b', `a rate-limited answer ends the step for today (asked: ${c2.join(',')})`); }
+{ let t = 0; const c3 = [], g3 = async p => { c3.push(p); t += 400; return {phases: [{phase: 1, type: 'SWISS', rounds: 5, mode: 'BO3'}]}; };
+  await updateModes(index, g3, {modes: {}, max: 5, now, budgetMs: 700, clock: () => t}); ok(c3.length === 2, `the step stops when its time budget is used (${c3.length} asked within 700 ms of a 400 ms-per-call clock)`); }
 console.log(`tour-modes: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
