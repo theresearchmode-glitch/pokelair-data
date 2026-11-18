@@ -20,6 +20,11 @@
 import {chromium} from 'playwright'; import path from 'node:path'; import fs from 'node:fs';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') + msg); if (!c) fails.push(msg); };
+/* The pictures (Nov 18): a build without --art reads them from art/ and art-s/ beside the page, but the build copies only the fonts there,
+   so in app/dist (CI and the usual setup) every sprite and crowd sheet was a broken image. The hero checks then measured broken-image
+   icons (Q13f: icons over the tagline at 320-390; Q7a: sheets not loaded, failed requests counted as files). Put the folders there. */
+if (!/window\.NP_ART=/.test(fs.readFileSync(PAGE, 'utf8'))) for (const d of ['art', 'art-s']) { const to = path.join(path.dirname(PAGE), d), from = path.resolve(import.meta.dirname, '../src/v2', d);
+  if (!fs.existsSync(to) && fs.existsSync(from)) { try { fs.rmSync(to, {force: true}); fs.symlinkSync(from, to, 'dir'); console.log(`  (linked ${d}/ beside the page to app/src/v2/${d})`); } catch (e) { console.log(`  (could not link ${d}/: ${e.message})`); } } }
 ok(!/Ready for every top threat/.test(fs.readFileSync(PAGE, 'utf8')), 'A1-M1: the page never says "Ready for every top threat"');
 { const h = fs.readFileSync(PAGE, 'utf8'); ok(/<div id="app"><a class="vh np-skip"[\s\S]*?class="np-head"/.test(h), 'B-I3: the header is in the page before the script runs (static first screen)'); if (h.includes('__NP_PREVIEW=1')) ok(/const D=JSON\.parse\("/.test(h), 'B-m5: the Preview\'s data is read with JSON.parse, not as a big object literal'); }
 const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 1280, height: 900}});
@@ -240,6 +245,8 @@ const HQ = async () => {
   { const cv = []; const cmp = await b.newPage();
     for (const w of [320, 360, 390, 412, 600, 820, 1100, 1280, 1440, 1920, 2560]) { const h = w < 700 ? 844 : w >= 1900 ? 1080 : 900;
       const {q, ctx} = await hq(w, h, {rm: 'reduce', keep: true}); await q.waitForFunction(() => [...document.querySelectorAll('#main .sdh-f img, #main .sdh-m img')].every(i => i.complete), null, {timeout: 15000}).catch(() => {}); await q.waitForTimeout(400);
+      /* the pictures must have loaded: a broken image draws an icon and a frame, which this test would count as covering */
+      const broken = await q.evaluate(() => [...document.querySelectorAll('#main .sdh-f img, #main .sdh-m img')].filter(i => !i.naturalWidth).length); if (broken) cv.push(`${w}: ${broken} hero pictures didn't load`);
       const r = await q.evaluate(() => { const x = document.querySelector('#main .sdh-h').getBoundingClientRect(); return {x: Math.max(0, x.left), y: Math.max(0, x.top - 20), width: Math.min(innerWidth, x.right) - Math.max(0, x.left), height: x.height + 60}; });
       const set = (f, t) => q.evaluate(([f, t]) => { for (const s of ['.sdh-herd', '.sdh-front', '.sdh-tags']) if (document.querySelector('#main ' + s)) document.querySelector('#main ' + s).style.visibility = f ? '' : 'hidden'; document.querySelector('#main .sdh-h').style.visibility = t ? '' : 'hidden'; }, [f, t]);
       const sh = async () => (await q.screenshot({clip: r})).toString('base64'); const C = await sh(); await set(false, true); const A = await sh(); await set(false, false); const B = await sh(); await ctx.close();
