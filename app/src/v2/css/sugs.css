@@ -357,3 +357,6 @@ p,li,small{text-wrap-style:pretty}
 /* Sim, Nov 18 (C): on phones Your Games is one line; the note on what logging unlocks is behind the "?" beside "None logged yet" */
 .tm-yg-0{align-items:center}.tm-yg-0 .sg2-tip{display:none}
 @media (max-width:699.98px){.tm-yg .tm-yg-why{display:none}.tm-yg .tm-yg-hd{flex-wrap:nowrap}.tm-yg-0 .sg2-tip{display:inline-grid}}
+
+/* qcheck triage (Nov 18): in the Your Games row the '?' shrank to 34px at 320 (a flex item); it keeps its 44px tap */
+.tm-yg-n .sg2-tip{flex:none}
