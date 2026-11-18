@@ -1,3 +1,5 @@
+> **Nov 18: superseded as the entry point by docs/rebuild/START-HERE.md** (one file with the rules, how we operate and where everything stands). This file is kept as history.
+
 # HANDOVER: the NastyPlot rebuild (updated Nov 12, 8:21 PM Eastern by the clock)
 
 Read first: docs/rebuild/RULES.md (section 3 = executive authority), then this top section, then my-team-fix-plan.md.
