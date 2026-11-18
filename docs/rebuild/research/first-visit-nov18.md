@@ -252,3 +252,49 @@ artifact host sends brotli or gzip: not checked.
 - Housekeeping: an older helper's scratch folders (`scratchpad/fv`, `scratchpad/fv18`, from 01:00-02:30 AM) were briefly
   written into before this helper moved to its own folder. `fv18/site/v2.html` was overwritten with today's build. Its tools
   folder was restored, and nothing in the repo was touched.
+
+## Built: changes 1 and 2 (Wed Nov 18, 1:11 AM by the clock)
+
+What was built (`app/build.mjs`, flag `--split`):
+- `node app/build.mjs --v2 ... --split` writes the main script to `dist/v2.js`. The page loads it with a plain
+  `<script src="v2.js?v=<hash>">` at the same spot. No preload tag.
+- With `--preview-data --split`, the data goes in `dist/preview.json`. A small script in `<head>` fetches it as the page starts
+  (no preload tag). Each data answer waits for the file. If it can't be read, every doc answers "not there", as an empty store would.
+- `?v=` is a content hash, so a new page never runs with an old cached file.
+- Without `--split` the page is one file, byte for byte as before (checked with `cmp`). All tests and CI use that.
+  Reason: the tests open the page from file://, where a fetch of preview.json is blocked.
+- The Preview script (`docs/rebuild/preview-kit/rebuild-preview.sh`) now builds with `--split`. It copies `v2.js` and `preview.json`
+  beside foundation.html and runs the privacy check on preview.json. The kit README's publish step lists the two files.
+  Artifact files: +2 (about 399-402 of 511).
+- `app/test/no-names.mjs` reads the preview.json beside a split page (before, it would have printed "no embedded data" and passed).
+- The live artifact build (at the switch) can add `--split` too (+1 file, v2.js). It has no Preview data.
+
+Measured (same method as above: Playwright, phone 412x823, 4x CPU, CDP 4G / slow 4G, 3 interleaved runs, local gzip server; load
+average 2.7-6.9 on 4 cores). Base = today's one-file Preview build, split = the same build with `--split`. Medians [min-max], ms:
+
+| Case | First paint | Main content | Longest task | Total blocking |
+|---|---|---|---|---|
+| My Team 4G | 824 → 564 | 2,906 [2,823-3,021] → 2,697 [2,680-2,773] | 508 → 349 | 1,265 → 1,078 |
+| My Team slow 4G | 2,772 → 1,508 | 8,322 [8,190-8,688] → 8,068 [8,023-8,082] | 603 → 335 | 1,229 → 1,031 |
+| Home 4G | 864 → 544 | 3,109 [3,009-3,182] → 3,051 [2,671-3,080] | 518 → 446 | 1,597 → 1,305 |
+| Home slow 4G | 2,796 → 1,512 | 8,348 [8,273-8,451] → 8,218 [8,053-8,365] | 516 → 470 | 1,274 → 1,180 |
+
+- In plain words: the header and loading panel show 0.3 s sooner on 4G and 1.3 s sooner on slow 4G. My Team's content comes about
+  0.2 s sooner on 4G. The longest freeze is shorter. Home's main content is within the noise (the Home 4G set ran at load 6-7).
+- Smaller than the prototype's −340 to −415 ms for 1+2 on My Team 4G. Same direction. Change 3 (lazy code) is still needed for 2.5 s.
+- Same results: page text (innerText) identical on Home, My Team, Meta, Battle at 1280 and 390, 0 page errors. A control with the data
+  file missing differed on every view, so the check could fail.
+- Not measured: the Claude host's own caching and compression of v2.js and preview.json; real phones.
+
+Checks (Wed Nov 18, 2:02 AM by the clock):
+- `node app/build.mjs --v2 --preview-data` with and without this change: `cmp` finds the files identical. The same for
+  `--art=v2art/ --preview-data --one-art-size`. So every test that reads the one-file page sees exactly what it saw before.
+- `PAGE=app/dist/v2.html node app/test/v2-minors.mjs`: 185 pass, 1 FAIL (SDP-3, the Pelipper over "The post is in." at 390).
+  The page is byte-identical to the one before the change, so SDP-3 fails there too. Not caused by this change; not looked into.
+- `node app/test/run.mjs`: ALL PASSED (339 ok). Today's site; the change does not touch its build.
+- B-build on frozen data (out/ at 0c992f69, `--art=../src/v2/art/`): one-file build 64 pass, 0 FAIL, 27 known bugs. `--split`
+  build: 64 pass, 0 FAIL, 27 known bugs, the same 91 test ids in the same states. The first split run failed everything: the
+  harness copies the page into app/test/behaviour/ and v2.js was not beside it. Fixed in the harness (it copies v2.js too).
+- `--public --one-art-size --split` builds (the switch's live build): v2.js is the same code as the one-file public build's script.
+- `node app/test/no-names.mjs` on the split Preview: 2,166 player fields checked, 0 not an ID or stand-in (the same count as the
+  one-file build).

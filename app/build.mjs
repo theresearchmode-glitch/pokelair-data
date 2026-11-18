@@ -1,5 +1,5 @@
 // Builds the PokéLair page from src/ (parts.json lists the order). Output: dist/page.html, published as the artifact.
-import fs from 'node:fs';
+import fs from 'node:fs'; import crypto from 'node:crypto';
 import {perfDoc} from './data-docs.mjs';
 const parts = JSON.parse(fs.readFileSync(new URL('./parts.json', import.meta.url)));
 import {fileURLToPath} from 'node:url';
@@ -58,6 +58,14 @@ if (process.argv.includes('--v2')) {
   // preview shows the same numbers as the live site. Never used for the live site, which reads its own daily data.
   // Nov 12 (Sim's iPhone: no Strength Score, '#7 of 228' instead of '#7 of 321'): inside the Claude app window.claude can't be
   // replaced, so the data is also handed over as window.__NP_CLAUDE, which the page reads first.
+  /* --split (Nov 18, first-visit speed; docs/rebuild/research/first-visit-nov18.md changes 1 and 2): the main script goes in dist/v2.js,
+     loaded by a plain <script src> at the same spot (no preload tag: measured, a preload made slow 4G first paint worse, 2.8 -> 4.8 s),
+     and with --preview-data the data goes in dist/preview.json. Measured: Chrome compiles an outside script off the main thread while it
+     arrives. For hosted builds (the Preview, the live artifact); the file names carry a content hash (?v=) so a new page never runs with
+     an old cached file. Without --split the page is one file, as the tests (file://) and CI read it. */
+  const SPLIT = process.argv.includes('--split'), hash = t => crypto.createHash('sha256').update(t).digest('hex').slice(0, 12);
+  let previewJson = null;
+  for (const f of ['dist/v2.js', 'dist/preview.json']) fs.rmSync(dir + f, {force: true}); /* no stale split files beside a one-file build */
   let prevTag = '';
   if (process.argv.includes('--preview-data')) { const o = f => { try { return JSON.parse(fs.readFileSync(dir + '../out/' + f, 'utf8')); } catch (e) { return null; } }, L = o('limitless.json') || {};
     const D = {'meta/results': L.results, 'meta/perf': perfDoc(L, o('perf.json')), /* Nov 15: all of out/perf.json as the morning refresh writes it (ratings-snapshot.mjs); with adj alone the page fell back to its built-in Nov 1 ratings */ 'meta/doubles_tour': o('meta_tour.json'), 'meta/teams': o('teams.json'), 'meta/calendar': o('calendar.json'), 'meta/weekly': o('weekly.json'), 'meta/model': o('model.json'), 'meta/doubles': o('meta_ladder.json'), 'meta/events': o('events.json'), 'meta/track': o('track.json'), 'meta/history': o('history.json'), 'meta/practice': o('practice.json'), 'meta/doubles_ingame': o('meta_ingame.json')};
@@ -67,7 +75,14 @@ if (process.argv.includes('--v2')) {
       for (const e of (D['meta/events'] || {}).events || []) for (const t of e.top || []) if (Array.isArray(t)) t[0] = anon(t[0]);
       for (const t of ((D['meta/teams'] || {}).teams || [])) if (t && 'player' in t) t.player = anon(t.player);
       for (const r of ((D['meta/weekly'] || {}).fresh || [])) if (Array.isArray(r)) r[5] = anon(r[5]); /* This Week's new-in-top-cut rows carry the player (never shown) */ }
-    prevTag = `<script>window.__NP_PREVIEW=1;(()=>{const D=JSON.parse(${JSON.stringify(JSON.stringify(D)).replace(/</g, '\\u003c')}) /* JSON.parse reads faster than an object literal (code review B-m5) */;const real=window.claude,w={use:async n=>{if(n==='db')return {doc:q=>({onSnapshot:cb=>{setTimeout(()=>cb({exists:!!D[q],data:()=>D[q]}),5);return()=>{}},get:async()=>({exists:false}),set:async()=>{},update:async()=>{}})};return real&&real.use?real.use(n):null}};window.__NP_CLAUDE=w;try{window.claude=w}catch(e){}})();</script>\n`; }
+    /* --split (first-visit speed, Nov 18; docs/rebuild/research/first-visit-nov18.md change 2): the data goes in preview.json beside the page,
+       fetched from <head> as the page starts (no preload tag), so the page's own bytes arrive and draw sooner. Each answer waits for
+       the file; if it can't be read (file://, or missing) every doc answers "not there", as a database with no data would. */
+    const PV = SPLIT ? `const DP=fetch(${JSON.stringify('preview.json?v=' + hash(JSON.stringify(D)))}).then(r=>r.json()).catch(e=>{console.warn('preview.json: '+e);return {}});`
+      : `const D=JSON.parse(${JSON.stringify(JSON.stringify(D)).replace(/</g, '\\u003c')}) /* JSON.parse reads faster than an object literal (code review B-m5) */;`;
+    const answer = SPLIT ? `DP.then(D=>setTimeout(()=>cb({exists:!!D[q],data:()=>D[q]}),5))` : `setTimeout(()=>cb({exists:!!D[q],data:()=>D[q]}),5)`;
+    if (SPLIT) previewJson = JSON.stringify(D);
+    prevTag = `<script>window.__NP_PREVIEW=1;(()=>{${PV}const real=window.claude,w={use:async n=>{if(n==='db')return {doc:q=>({onSnapshot:cb=>{${answer};return()=>{}},get:async()=>({exists:false}),set:async()=>{},update:async()=>{}})};return real&&real.use?real.use(n):null}};window.__NP_CLAUDE=w;try{window.claude=w}catch(e){}})();</script>\n`; }
   // fonts (Sim, Nov 11: privacy): hosted by NastyPlot itself, never Google's servers. fonts/ beside the page by default;
   // --fonts=<folder>/ when the files live elsewhere (as --art). The build fails if a Google Fonts link ever comes back.
   const fontsArg = (process.argv.find(x => x.startsWith('--fonts=')) || '').slice(8) || 'fonts/', fontCss = rd('src/v2/fonts/fonts.css').split('FONTS/').join(fontsArg);
@@ -83,8 +98,11 @@ if (process.argv.includes('--v2')) {
      installed the page ships as before. */
   let jsOut = js; if (!process.argv.includes('--keep-comments')) { let esb = null; try { esb = (await import('node:module')).createRequire(import.meta.url)('esbuild'); } catch (e) { console.log('v2: esbuild not installed, scripts ship unminified'); }
     if (esb) jsOut = esb.transformSync(js, {loader: 'js', minifyWhitespace: true, charset: 'utf8', legalComments: 'none'}).code; }
-  const page = head.replace('<meta charset="utf-8">', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + `\n<script>\n${jsOut}\n</script>\n</body></html>\n`;
+  const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}"></script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
+  const page = head.replace('<meta charset="utf-8">', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + mainTag + `</body></html>\n`;
   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
+  if (SPLIT) { fs.writeFileSync(dir + 'dist/v2.js', jsOut); if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson);
+    console.log(`v2 --split: dist/v2.js ${(jsOut.length / 1024).toFixed(0)} KB${previewJson ? `, dist/preview.json ${(previewJson.length / 1024).toFixed(0)} KB` : ''} (publish them beside the page)`); }
   /* Sim, Nov 16 (B-I3, option B): a static first screen. A phone used to show a blank page for about 2 s while the script ran (first paint
      2,016 -> 628 ms measured at 4x CPU with the header already in the HTML). The build opens the page it just made, copies the header and
      the phone bar the script draws (current-page marks removed: the right one is set by the first draw), and puts them in #app, so the
