@@ -119,6 +119,55 @@ jobs:
         if: ${{ !cancelled() }}
       - run: node experiments/golden.mjs
         if: ${{ !cancelled() }}
+  # Live-data audits (Sim, Nov 18: "make sure we have holes like this in our rules and logic covered well and dont need to wait till
+  # later to be uncovered"). The code tests run these audits on frozen Nov 9 data only, so holes that only today's teams show stayed
+  # hidden (Symbiosis since Nov 16, a Perish Trap Politoed on Nov 18). This job runs them on today's data as an ALERT: it never
+  # fails the workflow (so it never holds back the live site); it opens or refreshes one "Live-data audit" issue, closed when clean.
+  live-audits:
+    name: live-data audits (alert only)
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    continue-on-error: true
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0.10.11 github:smogon/pokemon-showdown#1242c1e2d9763ba5b85d33f13aecb89bae19ae3d && npx playwright install --with-deps chromium
+      - run: cd node_modules/pokemon-showdown && node build
+      - run: node app/build.mjs
+      - name: Audits on today's data
+        id: audits
+        run: |
+          set +e; R="$RUNNER_TEMP/audits.md"; : > "$R"; bad=0
+          for c in "experiments/suggest-audit.mjs 30 5" "experiments/fields-audit.mjs" "experiments/suggest-gaps.mjs"; do
+            out=$(node $c 2>&1); code=$?
+            if [ $code -ne 0 ]; then bad=1; { echo "### node $c (exit $code)"; echo '```'; echo "$out" | grep -v "^ *note:" | grep -E "FAIL|never reads|not listed" | head -20; echo '```'; } >> "$R"; fi
+          done
+          echo "bad=$bad" >> "$GITHUB_OUTPUT"
+      - name: Live-data audit issue
+        if: always()
+        uses: actions/github-script@v8
+        env:
+          REPORT: ${{ runner.temp }}/audits.md
+          BAD: ${{ steps.audits.outputs.bad }}
+        with:
+          script: |
+            const fs = require('fs'), title = 'Live-data audit';
+            let report = ''; try { report = fs.readFileSync(process.env.REPORT, 'utf8'); } catch (e) {}
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const open = (await github.rest.issues.listForRepo({...context.repo, state: 'open', per_page: 100})).data.find(i => i.title === title && !i.pull_request);
+            if (process.env.BAD === '1') {
+              const body = `Today's data shows rule or logic gaps the frozen-data tests can't see. The live site is NOT held back by this.\n\nRun: ${run}\n\n${report}`;
+              if (open) await github.rest.issues.update({...context.repo, issue_number: open.number, body});
+              else await github.rest.issues.create({...context.repo, title, body});
+            } else if (open) {
+              await github.rest.issues.createComment({...context.repo, issue_number: open.number, body: `Clean on ${run}`});
+              await github.rest.issues.update({...context.repo, issue_number: open.number, state: 'closed'});
+            }
   # Never-get-worse gate (Accuracy Lab, Nov 9, Sim approved): the last 2 walk-forward weeks before the sealed set, each scored
   # by a model trained only on earlier events, against the approved baseline (experiments/accuracy-baseline.json). Its own job,
   # so training the two models can't push the main test job past its time limit.
