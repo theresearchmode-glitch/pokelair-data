@@ -2,7 +2,8 @@
 // Uses the sample six cut to its first 3 Pokémon:
 //   Compare's score cell: "so far" + "3 of 6 picked"
 //   Tale of the Tape: the team's score line says "so far"; the Strength Score bar labels it "so far" and calls no team "ahead"
-//   Home: the score belt says "Strength Score so far"
+//   Home (The Stampede, Nov 18): the Strength Score report's band word says "so far" and shows no rank line (the old Home's
+//     score belt, .fn-belt, is gone; the report card in the six band, stampede-six.js .sds-rc, is where Home shows the score now)
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-partial.mjs   (a --v2 --preview-data build)
 import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -24,8 +25,12 @@ ok(/so far/.test(r.cell) && /3 of 6 picked/.test(r.cell), `Compare: a 3-Pokémon
 ok(!/so far/.test(r.cell6), 'Compare: a full six has no "so far"');
 ok(/so far/.test(r.half), 'Tale of the Tape: the partial team\'s score line says "so far"');
 ok(/so far/.test(r.tape) && !/ahead/.test(r.tape), 'Tale of the Tape: the Strength Score bar labels the partial team "so far" and calls no one ahead');
-await p.evaluate(() => window.__ev(`(() => { S.slots = S.slots.map((s, i) => i < 3 ? s : blank()); location.hash = '#home'; })()`)); await p.waitForTimeout(1500);
-const belt = await p.evaluate(() => { const e = document.querySelector('#app .fn-belt'); return e ? e.textContent.replace(/\s+/g, ' ') : ''; });
-ok(/Strength Score so far/.test(belt), `Home: the belt says "Strength Score so far" for a 3-Pokémon team (${belt.trim().slice(0, 60)})`);
+const rcText = () => p.evaluate(() => { const e = document.querySelector('#app .sds-rc'); return e ? {w: (e.querySelector('.sds-w') || {}).textContent || '', rk: (e.querySelector('.sds-rk') || {}).textContent || '', n: (e.querySelector('.sds-n') || {}).textContent || ''} : null; });
+await p.evaluate(() => { location.hash = '#home'; }); await p.waitForTimeout(1500);
+const rc6 = await rcText();
+await p.evaluate(() => window.__ev(`(() => { S.slots = S.slots.map((s, i) => i < 3 ? s : blank()); V2.redraw(); })()`)); await p.waitForTimeout(1500);
+const rc3 = await rcText();
+ok(rc6 && /\d/.test(rc6.n) && !/so far/.test(rc6.w) && /of tournament teams/.test(rc6.rk), `Home (control): the full six's Strength Score report has a number, no "so far" and its rank line (${JSON.stringify(rc6)})`);
+ok(rc3 && /\d/.test(rc3.n) && /so far/.test(rc3.w) && !rc3.rk, `Home: a 3-Pokémon team's Strength Score report says "so far" and shows no rank line (${JSON.stringify(rc3)})`);
 await b.close();
 console.log(`v2-partial: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
