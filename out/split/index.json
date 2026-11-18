@@ -1,7 +1,7 @@
 {
  "limit": 200000,
  "hard": 262144,
- "made": "2026-11-18T10:44:06.067Z",
+ "made": "2026-11-18T22:56:29.202Z",
  "split": {
   "results": {
    "bytes": 284291,
@@ -11,10 +11,10 @@
    ]
   },
   "model": {
-   "bytes": 247343,
+   "bytes": 247316,
    "parts": [
-    200039,
-    47423
+    200010,
+    47425
    ]
   },
   "events": {
@@ -30,7 +30,7 @@
   "doubles_tour": 81970,
   "teams": 21101,
   "history": 28317,
-  "model": 247343,
+  "model": 247316,
   "doubles": 92221,
   "doubles_ingame": 9475,
   "events": 244366,
