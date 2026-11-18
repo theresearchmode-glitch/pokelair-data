@@ -44,9 +44,11 @@
 .sdt-spe{display:block;margin-top:var(--s2);font-size:var(--t34);line-height:1;color:var(--sd-on-race)}
 .sdt-run .sdt-mn{color:var(--sd-on-race)}
 
-/* Type Chart: 18 flags in their type colours, 9 by 2 */
-.sdt-tc{grid-column:span 8}
-.sdt-types{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:var(--s4) var(--s2);margin-top:var(--s4)}
+/* Type Chart: the 18 flags in their type colours, 3 by 6, on a plate as wide as Ratings (Sim, Nov 18: A) */
+.sdt-tc{grid-column:span 4}
+.sdt-types{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);margin-top:var(--s4)}
+.sdt-tc{display:flex;flex-direction:column}.sdt-types{flex:1;align-content:space-between} /* the six rows of flags fill the plate's height (its row is as tall as Ratings) */
+.sdt-tc .sdt-flag>span{padding-block:var(--s2)}
 .sdt-types li{display:flex;flex-direction:column;align-items:center;min-width:0}
 .sdt-flag{display:block;width:100%}
 .sdt-flag>span{display:block;padding:var(--s1) var(--s2);background:var(--ty);color:var(--on-type);font:700 var(--t13)/1.3 var(--b);text-align:center;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
@@ -171,8 +173,9 @@
 .sdt-end.hw .sdt-big{align-items:flex-end}
 
 /* desktop order: Winning Teams, Battle, then Damage Calc (it follows Ratings in the page, as phones show them side by side) */
-@media (min-width:1100px){.sdt-dc{order:1}.sdt-sm{order:2}}
-@media (min-width:1100px) and (max-width:1379.98px){.sdt-speed{grid-template-columns:minmax(180px,220px) minmax(0,1fr)}.sdt-race{gap:0}.sdt-types{grid-template-columns:repeat(6,minmax(0,1fr))}.sdt-types .np-mon{--iw:56px}.sdt-run .np-mon{--iw:112px}}
+/* desktop (Sim, Nov 18: A): Speed Tiers; Type Chart | Ratings | Damage Calc; Winning Teams | Battle as halves; the small plates */
+@media (min-width:1100px){.sdt-speed{order:-4}.sdt-tc{order:-3}.sdt-ra{order:-2}.sdt-dc{order:-1;grid-column:span 4}.sdt-wt,.sdt-bt{grid-column:span 6}.sdt-sm{order:2}}
+@media (min-width:1100px) and (max-width:1379.98px){.sdt-speed{grid-template-columns:minmax(180px,220px) minmax(0,1fr)}.sdt-race{gap:0}.sdt-run .np-mon{--iw:112px}}
 
 /* tablets: Type Chart full width, Ratings beside Damage Calc, Winning Teams beside Battle; seven runners, the words above them */
 @media (max-width:1099.98px){
@@ -235,10 +238,6 @@
 @media (max-width:419.98px){.sdt-duel .sdt-mn{display:none}.sdt-duel~.sdt-cc{display:block}}
 /* the narrowest phones: Ratings, Damage Calc and the small plates one to a row (their titles don't fit a half) */
 @media (max-width:379.98px){.sdt-spe{font-size:var(--t20)}.sdt-ra,.sdt-dc,.sdt-sm{grid-column:1/-1}.sdt-sm .sdt-t{font-size:var(--t22)}.sdt-pod{max-width:280px;margin-inline:auto;width:100%}}
-/* 1100-1379: the Type Chart stands 6 by 3, so the podium beside it grows to fill its plate; Popular Sets stacks its item under the name */
-@media (min-width:1100px) and (max-width:1379.98px){.sdt-step .np-mon{--iw:150px}.sdt-step.s1 .np-mon{--iw:176px}.sdt-blk{min-height:calc(var(--s24) + var(--s12))}
-  .sdt-step.s1 .sdt-blk{min-height:calc(var(--s24) + var(--s24))}.sdt-step.s2 .sdt-blk,.sdt-step.s3 .sdt-blk{min-height:calc(var(--s24) + var(--s8))}
-  .sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}}
 @media (max-width:379.98px){.sdt-tc{padding-inline:calc(var(--s2) + var(--k))}.sdt-types{column-gap:2px}.sdt-flag>span{letter-spacing:-.02em}}
 /* More tools in even rows: one row on desktop, 3 by 2 on tablets, 2 by 3 on phones (no lone link) */
 @media (max-width:1099.98px){.sdt-more{display:block}.sdt-more ul{display:grid;grid-template-columns:repeat(3,max-content);gap:0 var(--s6)}}
@@ -248,7 +247,8 @@
    plates (Speed Tiers a full-width strip; Ratings | Damage Calc; Battle | Team Preview Practice; Winning Teams a full-width strip) and
    six picture chips (Type Chart, Winning Cores, Archetypes, Popular Sets, Events, How We Calculate), then More tools ---- */
 .sdt-chips{display:none}
-@media (max-width:699.98px){
+/* iPads too (Sim, Nov 18: A): twelve plates made Home on an iPad (8,180px at 820) longer than on a phone, so under 1100 Tools B */
+@media (max-width:1099.98px){
   .sd-tools.sd-band{padding-top:calc(var(--s10) + var(--sd-cut))}
   .sdt-h{margin-bottom:var(--s3)}
   .sdt-grid{gap:var(--s3)}
@@ -301,5 +301,10 @@
 }
 @media (max-width:379.98px){.sdt-ra,.sdt-dc{grid-column:span 6}.sdt-pod{max-width:none}.sdt-pp6 .np-mon{--iw:44px}.sdt-chp>b{font-size:var(--t13)}
   .sdt-chp{gap:var(--s1);padding-inline:var(--s3) var(--s2)}.sdt-cpic{flex-basis:32px}.sdt-cpic .np-mon,.sdt-cpic .np-mon .st{--iw:32px;width:32px}}
-@media (max-width:699.98px){.sdt-cpic>b:only-child{flex:none}.sdt-chp:has(.sdt-cpic>b){padding-left:var(--s3)}.sdt-chp:has(.sdt-cpic>b) .sdt-cpic{flex:0 0 auto;min-width:40px}}
+/* iPads (700-1099): the chips three across (two even rows), Ratings and Damage Calc pictures 96px tall (the half tiles are wide) */
+@media (min-width:700px) and (max-width:1099.98px){.sdt-chips ul{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .sdt-ra>:last-child,.sdt-dc>:last-child{flex-basis:96px;height:96px}.sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:60px}.sdt-duel .np-mon{--iw:76px}}
+@media (max-width:1099.98px){.sdt-cpic>b:only-child{flex:none}.sdt-chp:has(.sdt-cpic>b){padding-left:var(--s3)}.sdt-chp:has(.sdt-cpic>b) .sdt-cpic{flex:0 0 auto;min-width:40px}}
 
+/* 1100-1379: Popular Sets stacks its item under the name (the plate is narrow) */
+@media (min-width:1100px) and (max-width:1379.98px){.sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}}

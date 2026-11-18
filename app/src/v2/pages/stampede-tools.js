@@ -55,9 +55,10 @@ V2.sdTools = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n => 
   // Speed Tiers: the race, slowest to fastest; data-k is the rating rank, so narrower screens keep the top 7 or 4 (CSS)
   const race = `<div class="sdt-race">${X.race.map(x => `<button type="button" class="sdt-m sdt-run" data-k="${x.k}" data-v2mon="${E(x.n)}" aria-label="${E(V2.disp(x.n))}, base Speed ${x.spe}: open its info">${V2.mon(x.n, {bare: true})}<b class="u sdt-spe">${x.spe}</b><b class="sdt-mn">${nm(x.n)}</b></button>`).join('')}</div>`;
   const speed = V2.sdtPlate('Speed Tiers', 'sdt-speed', 'See who moves first: the highest rated, slowest to fastest by base Speed.', 'See who moves first.', race);
-  // Type Chart: 18 flags in their type colours, each with its highest-rated Pokémon (names hidden on phones, brief)
-  const tc = `<ul class="sdt-types">${X.types.map(({t, x}) => `<li style="--ty:var(--ty-${t})"><span class="sdt-flag"><span>${t}</span></span>${x ? V2.sdtMon(x.n, {iw: 80, say: 'highest rated ' + t + ' type'}) : '<span class="sdt-none" aria-hidden="true"></span>'}</li>`).join('')}</ul>`;
-  const types = V2.sdtPlate('Type Chart', 'sdt-tc', 'What your six resists, and what hits it. Under each flag: the highest rated of that type.', 'What your six resists.', tc);
+  // Type Chart: the 18 flags in their type colours, three across, on a plate as small as Ratings (Sim, Nov 18: A; the Pokémon under
+  // each flag made it the biggest plate on Home). Phones and iPads show it as a chip instead
+  const tc = `<ul class="sdt-types">${X.types.map(({t}) => `<li style="--ty:var(--ty-${t})"><span class="sdt-flag"><span>${t}</span></span></li>`).join('')}</ul>`;
+  const types = V2.sdtPlate('Type Chart', 'sdt-tc', 'What your six resists, and what hits it.', 'What your six resists.', tc);
   // Ratings: the podium (#2, #1, #3)
   const pod = R.length >= 3 ? `<div class="sdt-pod">${[[R[1], V2.sdtRank(R, 1)], [R[0], 1], [R[2], V2.sdtRank(R, 2)]].map(([x, k]) => `<button type="button" class="sdt-m sdt-step s${k}" data-v2mon="${E(x.n)}" aria-label="${E(V2.disp(x.n))}, rated ${x.r}, number ${k}: open its info">${V2.mon(x.n, {bare: true})}<span class="sdt-blk"><b class="u">${x.r}</b><span>${nm(x.n)}</span></span></button>`).join('')}</div>` : '';
   const ratings = V2.sdtPlate('Ratings', 'sdt-ra sdt-ink', `All ${num(X.all)} Pokémon, rated out of 100.`, `All ${num(X.all)}, out of 100.`, pod);
