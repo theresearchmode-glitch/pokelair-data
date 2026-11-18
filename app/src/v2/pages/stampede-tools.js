@@ -92,10 +92,18 @@ V2.sdTools = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n => 
   const evN = X.D.events, nx = X.next, nxt = nx ? `Next: ${E(nx.short)}${nx.place ? ', ' + E(nx.place) : ''}, ${E(nx.when)}.` : '';
   const tail = (name, cls, n, unit, long, short) => `<article class="sdt-p sdt-end ${cls}">${n ? `<p class="sdt-big"><b class="u">${num(n)}</b><small>${unit}</small></p>` : ''}<div class="sdt-tx"><h3 class="u sdt-t"><a class="sdt-go" href="#${V2.SDT_GO[name]}" data-sdtool="${E(name)}">${E(name)}</a></h3><p class="sdt-d"><span class="sdt-l">${long}</span><span class="sdt-s">${short}</span></p></div></article>`;
   const ends = `<div class="sdt-ends">${tail('Events', 'ev', evN, 'events', `Recent tournaments and who won them.${nxt ? ' ' + nxt : ''}`, nx ? `Next: ${E(nx.short)}, ${E(nx.when)}.` : 'Recent tournaments.')}${tail('How We Calculate', 'hw', X.D.teams, 'tournament teams', 'Every number on NastyPlot is built from them. See how each one is worked out.', 'Where every number comes from.')}</div>`;
+  // Shorter phone Home, Tools B (Sim, Nov 18; docs/rebuild/short-home-options.md): under 700 six big plates stay (Speed Tiers, Ratings,
+  // Damage Calc, Battle, Team Preview Practice, Winning Teams) and the other six become picture chips, two by three, each a link to its
+  // page with its name and a small live picture (CSS shows these only on phones; the plates they stand for are hidden there)
+  const art = n => n ? `<span class="sdt-cpic" aria-hidden="true">${V2.mon(n, {bare: true, iw: 40})}</span>` : '';
+  const flags = `<span class="sdt-cpic sdt-cty" aria-hidden="true">${['Fire', 'Water', 'Grass', 'Electric', 'Dragon', 'Fairy'].map(t => `<i style="--ty:var(--ty-${t})"></i>`).join('')}</span>`;
+  const chip = (name, pic) => `<li><a class="sdt-chp" href="#${V2.SDT_GO[name]}" data-sdtool="${E(name)}">${pic}<b>${E(name)}</b></a></li>`;
+  const bigN = n => n ? `<span class="sdt-cpic" aria-hidden="true"><b class="u">${num(n)}</b></span>` : '';
+  const chips = `<nav class="sdt-chips" aria-label="More of the twelve tools"><ul>${chip('Type Chart', flags)}${chip('Winning Cores', K ? art(K.ns[0]) : '')}${chip('Archetypes', A.length && A[0].mon ? art(A[0].mon.n) : '')}${chip('Popular Sets', S2 ? art(S2.x.n) : '')}${chip('Events', bigN(evN))}${chip('How We Calculate', bigN(X.D.teams))}</ul></nav>`;
   // More tools (lead, Nov 18): today's Home links 18 tools; the six without a plate stay one tap away as quiet text links
   const more = (V2.HOME_TOOLS || []).filter(([n]) => !V2.SDT_GO[n]), moreH = more.length ? `<nav class="sdt-more" aria-label="More tools"><h3 class="sdt-mh">More tools</h3><ul>${more.map(([n, d, to]) => `<li><a class="np-link" href="#${to}" data-sdtool="${E(n)}" title="${E(d)}">${E(n).replace(/ (\S+)$/, '\u00a0$1')}\u00a0<span aria-hidden="true">›</span></a></li>`).join('')}</ul></nav>` : '';
   return `<section class="sd-band sd-tools sdt" aria-labelledby="sdt-h"><h2 class="u sdt-h" id="sdt-h">Same herd. <span>Twelve tools.</span></h2>
-    <div class="sdt-grid">${speed}${types}${ratings}${calc}${wins}${battle}${cores}${arch}${prac}${sets}</div>${ends}${moreH}</section>`; };
+    <div class="sdt-grid">${speed}${types}${ratings}${calc}${wins}${battle}${cores}${arch}${prac}${sets}</div>${ends}${chips}${moreH}</section>`; };
 // names in tight spots (Type Chart, the six, Battle, the race): a name's longest word never spills out of its spot or breaks
 // mid-word; it steps to the approved narrower letters (88%, then 75%, as Home's most-used names do), then breaks with a hyphen
 V2.sdtFit = () => { document.querySelectorAll('.sdt .sdt-mn').forEach(b => { b.style.fontStretch = ''; b.style.hyphens = ''; if (!b.getClientRects().length) return;

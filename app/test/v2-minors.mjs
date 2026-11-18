@@ -267,6 +267,19 @@ const HQ = async () => {
       const even = r.rows.every(h => h.length === r.rows[0].length && Math.max(...h) - Math.min(...h) <= 2);
       if (r.names !== 'Winning Cores|Archetypes|Team Preview Practice|Popular Sets' || !even || r.sprites !== 6 || r.small < 44 || r.pick !== 'Pick 4' || !r.test || r.prMore) pr.push(`${w}: ${JSON.stringify(r)}`); }
     ok(!pr.length, `HQ Practice plate (Sim, Nov 18): Team Preview Practice takes Test Run's small plate at 700-2560 (team preview of six live Pokémon, 44px+, "Pick 4"), the small plates' rows stay even, Test Run is in More tools${pr.length ? ': ' + pr.join(' | ').slice(0, 700) : ''}`); }
+  // Shorter phone Home, Tools B with Practice (Sim, Nov 18): under 700 six big plates in order (Speed Tiers, Ratings, Damage Calc, Battle,
+  // Team Preview Practice, Winning Teams) and six picture chips (Type Chart, Winning Cores, Archetypes, Popular Sets, Events, How We
+  // Calculate), names whole inside, 44px+; all 18 of Home's tools reachable on screen; 700+ keeps its twelve plates and no chips
+  { const tb = []; for (const [w, phone] of [[320, 1], [360, 1], [390, 1], [430, 1], [699, 1], [700, 0], [1440, 0]]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => { const s = document.querySelector('#main .sdt'), vis = e => !!e.getClientRects().length;
+      const plates = [...s.querySelectorAll('.sdt-grid > .sdt-p')].filter(vis).sort((a, b) => (a.getBoundingClientRect().top - b.getBoundingClientRect().top) || (a.getBoundingClientRect().left - b.getBoundingClientRect().left)).map(e => e.querySelector('.sdt-go').textContent);
+      const chips = [...s.querySelectorAll('.sdt-chp')].filter(vis), bad = [];
+      for (const c of chips) { const B = c.getBoundingClientRect(), t = c.querySelector('b:last-child'), rg = document.createRange(); rg.selectNodeContents(t); for (const x of rg.getClientRects()) if (x.right > B.right - 4 || x.left < B.left) bad.push(t.textContent + ' out'); if (B.height < 44) bad.push(t.textContent + ' ' + Math.round(B.height) + 'px'); }
+      const reach = new Set([...s.querySelectorAll('a[href^="#"]')].filter(vis).map(a => a.getAttribute('href')));
+      return {plates: plates.join('|'), chips: chips.map(c => c.textContent.trim().replace(/^[\d,]+\s*/, '')).join('|'), bad, reach: (V2.HOME_TOOLS || []).filter(([, , to]) => !reach.has('#' + to)).map(x => x[0]), hs: document.documentElement.scrollWidth - innerWidth}; }});
+      const want = phone ? r.plates === 'Speed Tiers|Ratings|Damage Calc|Battle|Team Preview Practice|Winning Teams' && r.chips === 'Type Chart|Winning Cores|Archetypes|Popular Sets|Events|How We Calculate'
+        : r.plates.split('|').length >= 10 && !r.chips; if (!want || r.bad.length || r.reach.length || r.hs > 0) tb.push(`${w}: ${JSON.stringify(r)}`); }
+    const h = await hq(390, 844, {rm: 'reduce', ls: {'cc2.welcomed': '"1"'}, fn: () => document.documentElement.scrollHeight}); const scr = +(h / 844).toFixed(2); /* a returning visitor (the first-visit welcome adds its own height) */
+    ok(!tb.length && scr <= 7.2, `HQ Tools B (Sim, Nov 18): phone Home shows six big plates (Speed Tiers, Ratings, Damage Calc, Battle, Team Preview Practice, Winning Teams) and six picture chips, every tool on screen; 700+ unchanged; phone Home at 390 is ${scr} screens (7.2 at most)${tb.length ? ': ' + tb.join(' | ').slice(0, 700) : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----
