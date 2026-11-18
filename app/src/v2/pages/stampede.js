@@ -10,7 +10,7 @@ V2.sdData = () => { let R = null; try { R = ratings(); } catch (e) {} if (V2._sd
   // herd (hero builder, Nov 18, lead's decision): every Pokémon the Ratings page lists (lairRows, no results filter: 345), the ones with
   // tournament results first in rating order, then the rest (placeholder ratings) at the back; rank = the Ratings page's shared rank
   let herd = []; try { const all = lairRows().map(x => ({p: x.p, n: x.p.n, d: x.p.d, r: RS(x.r.total), types: x.p.t || [], spe: x.p.st ? x.p.st[5] : null, mega: !!x.p.m, tc: !!x.r.tc}));
-    herd = all.filter(x => x.tc).concat(all.filter(x => !x.tc)); herd.forEach(x => { try { x.rank = x.tc ? lairRank(x.p) : null; } catch (e) { x.rank = null; } }); } catch (e) {}
+    herd = all.filter(x => x.tc).concat(all.filter(x => !x.tc)); herd.forEach(x => { try { x.rank = x.tc ? (lairRank(x.p) || {}).rank || null : null; /* lairRank gives {rank, of}: the number only (the hero said 'rated number [object Object]', polish Nov 18) */ } catch (e) { x.rank = null; } }); } catch (e) {}
   let champ = null; try { champ = homeChamp(); } catch (e) {}
   const ev = META && META.events && Array.isArray(META.events.events) ? META.events.events.length : 0;
   const D = {rows, rated: rows.length, herd, ratedAll: herd.length, teams: (typeof RES === 'object' && RES && RES.teams) || 0, events: ev, champ};

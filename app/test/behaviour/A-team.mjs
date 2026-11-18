@@ -92,7 +92,7 @@ t('HOME-07', '"Import from Showdown" opens My Team with the Import box ready', a
 t('HOME-08', 'All 11 Tools: each card opens the page named on it', async () => {
   if (NEW) { /* new build (Home piece 4, decisions.md Nov 12, published Preview v76): "Everything NastyPlot does.", 12 tiles (today's 11
     + How We Calculate); each opens the page today's site files the tool under (32-views.js VIEW_PARENT/VIEW_ALIAS): Battle, Meta or Build */
-    const r = await homePage(); has(await r.ui.text(), /Everything NastyPlot does\./); /* Nov 15 night (say it once): the tools are a list of links, no '12 tools' line */
+    const r = await homePage(); has(await r.ui.text(), /Everything NastyPlot does\.|Same herd\. Twelve tools\./); /* Nov 15 night (say it once): the tools are a list of links, no '12 tools' line; the Stampede (Sim, Nov 18): the tools band 'Same herd. Twelve tools.', 12 plates + a More tools row = the same 18 */
     const want = {Battle: 'matchup', 'Winning Teams': 'top', 'Type Chart': 'types', Ratings: 'meta', 'Damage Calc': 'calc', Events: 'events', 'Test Run': 'gauntlet', 'Popular Sets': 'sets', 'Speed Tiers': 'speed', Archetypes: 'arch', 'Winning Cores': 'auto', 'How We Calculate': 'method'}; /* stress test (Nov 16): each link opens the page it names, not its hub */
     const tools = await r.ui.homeTools(); ok(tools.length === 18, `${tools.length} tool cards: ${tools.join(', ')}`); /* player review 2a (Nov 17): +6 */
     for (const [name, h] of [['Team Preview Practice', 'practice'], ['Compare Teams', 'compare'], ['This Week', 'weekly'], ['Track Record', 'track'], ['Usage', 'usage'], ['My Box', 'box']]) { ok(tools.includes(name), 'no tool card ' + name); await r.ui.go('Home', 300); await r.ui.tapTool(name); const hh = await r.pg.evaluate(() => location.hash); ok(hh.startsWith('#' + h), `${name} opened ${hh}`); }
@@ -107,8 +107,10 @@ t('HOME-08', 'All 11 Tools: each card opens the page named on it', async () => {
 t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy for Showdown copies', async () => {
   const r = await homePage(); await r.ui.grantClipboard(); const tx = await r.ui.text();
   // new build (Home piece 2, the mock-up's duel; Preview v74, Sim "love it"; decisions.md Nov 12): the same line with "·" between parts
-  ok((NEW ? /The Champion's (?:six|corner) · latest winner .+ Champion · \d+-\d+ · [A-Z][a-z]{2} \d+ · \d+ players/i : /The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/).test(tx), 'no champion line with record, date, players');
-  ok((NEW ? /All \d+ Events ›/ : /All \d+ events ›/).test(tx), 'no "All N events ›" link'); /* Sim, Nov 14: Title Case links */
+  // the Stampede (Sim, Nov 18): the champion's six sits on the tools band's Winning Teams plate, "This six won <event> on <date>: N players, W-L.",
+  // and the Events plate carries the count ("113 events", opening Events) where today's Home had "All N Events ›"
+  ok((NEW ? /The Champion's (?:six|corner) · latest winner .+ Champion · \d+-\d+ · [A-Z][a-z]{2} \d+ · \d+ players|This six won .+ on [A-Z][a-z]{2} \d+: [\d,]+ players, \d+-\d+(?:-\d+)?\./i : /The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/).test(tx), 'no champion line with record, date, players');
+  ok((NEW ? /All \d+ Events ›|\b[\d,]+ events Events\b/ : /All \d+ events ›/).test(tx), 'no "All N events ›" link'); /* Sim, Nov 14: Title Case links */
   await r.ui.tapText(NEW ? 'Load Team' : 'Load this team'); /* Sim, Nov 14 (Q3 A): one name, Load Team */ ok(await r.ui.sees(NEW ? 'Replace your current team?' : 'Tap again to replace your team'), 'first tap did not ask to tap again'); /* Sim Q10c (Nov 15): Replace / Cancel everywhere */
   ok((await r.ui.team()).join() === TEAM.join(), 'first tap already replaced the team');
   await r.ui.tapText(NEW ? 'Replace' : 'Tap again to replace your team', 1200); const now = await r.ui.team(); ok(now.join() !== TEAM.join() && now.length === 6, 'second tap did not load the champion six');
@@ -127,7 +129,13 @@ t('HOME-10', 'vs panel: your six, a lead/back/bench plan, Prep vs the Champion s
   ok(await r.ui.waitToast(/Opponent set/), 'no "Opponent set" toast'); const opp = await r.ui.peek('S.opp.filter(Boolean)'); ok(opp && opp.length === 6, 'opponent six not set');
   await sleep(1000); const ac = await r.acct(); ok(ac && ac.opp.filter(Boolean).length === 6 && Array.isArray(ac.recentOpp) && ac.recentOpp.some(x => x.join() === opp.join()), 'opponent / recent opponents not saved to the account: ' + JSON.stringify(ac && ac.recentOpp));
   await r.close();
-  const e = await aopen({team: []}); const et = await e.ui.text(); has(et, 'Your six goes here'); has(et, 'Add your six');
+  const e = await aopen({team: []}); const et = await e.ui.text(); has(et, 'Your six goes here');
+  if (NEW) { /* test change with Sim's yes (Nov 18, decisions.md 10:30 PM): the Stampede's empty team is the mock-up's view, three open rings
+    (each opens the Add box for its slot: HOME-10b) beside the three most used, and the receipt's Score My Team opens My Team (was: six
+    "+ Add a Pokémon" tiles and "Add your six") */
+    const open = await e.ui.homeOpenSlots(); ok(open.length === 3 && open.every(l => /^Add a Pokémon to slot \d$/.test(l)), 'empty Home team does not show three open rings: ' + open.join(' | '));
+    await e.ui.tapText('Score My Team'); ok(await e.ui.current() === 'report', '"Score My Team" did not open My Team'); await e.close(); return; }
+  has(et, 'Add your six');
   ok((et.match(/Add a Pokémon/g) || []).length >= 6, 'empty Home team has fewer than six "+ Add a Pokémon" tiles'); await e.ui.tapText('Add your six'); ok(await e.ui.current() === 'report', '"Add your six" did not open My Team'); await e.close(); });
 
 t('HOME-11', 'Sample-team note on Home and My Team; "Import a team" opens Import', async () => {

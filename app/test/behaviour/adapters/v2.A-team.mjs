@@ -112,12 +112,15 @@ export default (ui, pg, o) => {
     current: async () => { const c = await cur0(); return /^not-in-v2:#\(none/.test(c || '') && await pg.evaluate(() => !!window.V2 && V2.route() === 'home') ? 'home' : c; },
     text: async () => (await pg.evaluate(() => !location.hash && !!window.V2 && V2.route() === 'home')) ? pg.evaluate(() => { const m = document.querySelector('#main'); return m ? m.innerText.replace(/\s+/g, ' ').trim() : ''; }) : text0(),
     /** the big headline (the tagline) */
-    homeHeadline: () => txt('#main .hm-hero h1') || '',
+    homeHeadline: () => txt('#main .hm-hero h1, #main .sdh h1' /* The Stampede (Nov 18): the hero band's h1 */) || '',
     /** the start buttons under the tagline, as shown */
     homeStartButtons: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-go a, #main [data-sdgo]' /* The Stampede (Nov 18): the start buttons carry data-sdgo (hero: Score My Team / Build Me a Team; six band: Battle) */)].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
     /** the tool tiles' names (the tile's bold name, without its "›") */
-    homeTools: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-tlinks a, #main .hm-tool')].filter(e => e.getClientRects().length).map(e => { const b = e.querySelector('b'); return (b ? b.childNodes[0].textContent : e.childNodes[0].textContent).trim(); })), /* Nov 15 night: the tools are links */
-    tapTool: name => tapFound(n => [...document.querySelectorAll('#main .hm-tlinks a, #main .hm-tool')].find(e => e.getClientRects().length && ((e.querySelector('b') ? e.querySelector('b').childNodes[0].textContent : e.childNodes[0].textContent).trim() === n)) || null, name, 'tool ' + name, 700),
+    /* The Stampede (Nov 18): the tools band's twelve plates and its More tools row are links carrying data-sdtool="<name>" (18 in all) */
+    homeTools: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-tlinks a, #main .hm-tool, #main .sdt [data-sdtool]')].filter(e => e.getClientRects().length).map(e => { if (e.dataset.sdtool) return e.dataset.sdtool; const b = e.querySelector('b'); return (b ? b.childNodes[0].textContent : e.childNodes[0].textContent).trim(); })), /* Nov 15 night: the tools are links */
+    tapTool: name => tapFound(n => [...document.querySelectorAll('#main .hm-tlinks a, #main .hm-tool, #main .sdt [data-sdtool]')].find(e => e.getClientRects().length && (e.dataset.sdtool ? e.dataset.sdtool === n : (e.querySelector('b') ? e.querySelector('b').childNodes[0].textContent : e.childNodes[0].textContent).trim() === n)) || null, name, 'tool ' + name, 700),
+    /** The Stampede (Nov 18): the line-up's open rings, by their spoken names ("Add a Pokémon to slot N") */
+    homeOpenSlots: () => pg.evaluate(() => [...document.querySelectorAll('#main .sds-rings [data-v2addto]')].filter(e => e.getClientRects().length).map(e => e.getAttribute('aria-label'))),
     /** This week in the ratings, the rows on show: {name, text, label} (desktop: its own column; under 900 px: the switch's "This week") */
     ratingMoves: async () => { /* say it once (Nov 16): This Week's moves are the Meta strip's third view; tap it as a player would */ const t = await pg.$('#main [data-v2slide="homegems"] button[data-v="2"]'); if (t && await t.getAttribute('aria-pressed') !== 'true') { await t.click(); await pg.waitForTimeout(400); } return pg.evaluate(() => [...document.querySelectorAll('#main .hm-mv')].filter(e => e.getClientRects().length).map(e => ({name: e.dataset.v2mon, text: e.innerText.replace(/\s+/g, ' ').trim(), label: e.getAttribute('aria-label')}))) },
     welcomeCardText: () => txt('#main .hm-welcome'),

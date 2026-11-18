@@ -6,6 +6,7 @@
 //   SDP-1..6  Home's post band (The Stampede, band 4): the Post Room and Dispatch pieces with live POST data, the Pelipper clear of text, widths, empty states
 //   OL-i39  Report a Mistake on a Pokémon page sends its numbers (rating, tier, rank, tournament numbers, moves, items), as today's site did
 //   OL-i15  Build's Blueprint shows the catch tip, "X isn't in your box" and every plan chip (no cap of 3), in even rows
+//   Stampede polish 1/1b/2 (Nov 18): the hero/six seam, the three parts starting and ending together, the receipt's band names readable
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
 import {chromium} from 'playwright'; import path from 'node:path'; import fs from 'node:fs';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -92,10 +93,13 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   ok(w.find > 0 && w.find < 844 && w.spots === 1 && w.spot > w.find, `Player review 2d (Nov 17): on a 390-wide phone the Winning Teams search is on the first screen, above Your Team, with one Your Team shown (search at ${w.find}px, Your Team at ${w.spot}px, ${w.spots} shown)`);
   await p.setViewportSize(vp); }
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(1800);
-  const h = await p.evaluate(() => ({t: (document.querySelector('#main .fn-ringside .fn-rh') || {}).innerText || '', per: window.__ev('(META[S.format] || {}).period || ""'),
+  /* Player review 3a, moved for Sim's Nov 18 redesign (the Stampede): Home no longer shows the ladder's Most used (it lives on the Usage page,
+     feature map HOME-02/04 in docs/rebuild/stampede/AUDIT-mockups-nov18.md; its spotlight tag is checked below). The wording rule still holds
+     for the whole new Home: nothing on it says "right now" (the post band, built separately, is left out: its gift wording is its own check) */
+  const h = await p.evaluate(() => ({sd: !!document.querySelector('#main .sd'), t: [...document.querySelectorAll('#main .sd > .sd-band:not(.sd-post)')].map(e => e.innerText).join(' '), old: !!document.querySelector('#main .fn-ringside'), per: window.__ev('(META[S.format] || {}).period || ""'),
     a: typeof V2.homeNext === 'function' ? V2.homeNext(Date.UTC(2026, 10, 17)) : null, b: typeof V2.homeNext === 'function' ? V2.homeNext(Date.UTC(2026, 11, 2)) : null,
     hd: typeof V2.homeHead === 'function' ? [V2.homeHead(Date.UTC(2026, 10, 17)).h, V2.homeHead(Date.UTC(2026, 11, 5)).h] : []})); const t = h.t.replace(/\s+/g, ' ');
-  ok(!/right now/i.test(t) && /Most used (?:last month|on the ladder)\. [A-Z][a-z]+, Showdown ladder/.test(t) && (t.match(/Most used/g) || []).length === 1, `Player review 3a (Nov 17): Home doesn't call a past month's numbers "right now" (${t.slice(0, 120)})`);
+  ok(h.sd && !h.old && t.length > 200 && !/right now/i.test(t) && !/Most used (?:in|last month|on the ladder)/.test(t), `Player review 3a (Nov 17; moved Nov 18 to the Stampede Home): Home calls no numbers "right now" and shows no month's ladder figures (Stampede ${h.sd}, old Ringside ${h.old}, ${t.length} characters read${/right now/i.test(t) ? ': "' + t.match(/.{0,40}right now.{0,20}/i)[0] + '"' : ''})`);
   ok(h.per !== '2026-10' || (h.hd[0] === 'Most used last month.' && h.hd[1] === 'Most used on the ladder.'), `Player review 3a: "last month" only while it's true (Nov 17: ${h.hd[0]}; Dec 5: ${h.hd[1]})`);
   ok(h.per !== '2026-10' || (/^\. November's numbers arrive Dec 1\.$/.test(h.a || '') && h.b === ''), `Player review 3a: the data line says how old October's numbers are until Dec 1, then drops the note (Nov 17: "${h.a}", Dec 2: "${h.b}")`); }
 { await p.goto('file://' + PAGE + '#usage'); await p.waitForTimeout(1800); const g = await p.evaluate(() => (document.querySelector('#main .gs-tag') || {}).textContent || '');
@@ -147,9 +151,15 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   ok(tb === '90+ / 80–89 / 70–79 / Under 70 | 90+ / 70–89 / 53–69 / Under 53', `Player review 3h (Nov 17): Track Record's groups follow the data's cut-offs (tier lines when it says so, the old ones otherwise): ${tb}`); }
 { const ctx = await b.newContext({viewport: {width: 1280, height: 900}}); const q = await ctx.newPage();
   await q.addInitScript(() => { window.__PL_TEST = 1; if (!sessionStorage.getItem('h10')) { sessionStorage.setItem('h10', 1); localStorage.setItem('cc2.state', JSON.stringify({slots: [{n: ''}, {n: ''}, {n: ''}, {n: ''}, {n: ''}, {n: ''}], teams: []})); localStorage.setItem('cc2.welcomed', '"1"'); } });
-  await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500); const t = q.locator('[aria-label="Add a Pokémon to slot 3"]'); if (await t.count()) await t.first().click(); await q.waitForTimeout(800);
-  const h = await q.evaluate(() => window.__ev(`(() => { const s = document.querySelector('[role="dialog"]'); return (s ? s.getAttribute('aria-label') : 'no sheet') + ' / spot ' + (V2.ed ? V2.ed.i + 1 : '?') + (document.activeElement && document.activeElement.matches('[data-adq]') ? ' / name box focused' : ''); })()`));
-  ok(h === 'Add a Pokémon / spot 3 / name box focused', `Known-bug HOME-10b (Nov 17): Home's empty 'Add a Pokémon, slot 3' opens the Add box for spot 3 (${h})`); await ctx.close(); }
+  /* HOME-10b, updated with Sim's yes (Nov 18, decisions.md 10:30 PM): an empty team on Home is the mock-up's view, three open rings plus the three
+     most used, under "Your six goes here." (was: six add tiles). Each open ring still opens the Add box for its own slot, name box focused */
+  await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+  const v = await q.evaluate(() => ({eye: ((document.querySelector('#main .sds-k') || {}).textContent || '').trim(), open: [...document.querySelectorAll('#main .sds-rings [data-v2addto]')].map(e => e.getAttribute('aria-label')), named: document.querySelectorAll('#main .sds-rings .sds-slot.on').length}));
+  const got = []; for (const k of [1, 3, 5]) { const t = q.locator(`#main .sds-rings [aria-label="Add a Pokémon to slot ${k}"]`); if (!(await t.count())) { got.push(k + ': no ring'); continue; } await t.first().click(); await q.waitForTimeout(700);
+    got.push(k + ': ' + await q.evaluate(() => window.__ev(`(() => { const s = document.querySelector('[role="dialog"]'); return (s ? s.getAttribute('aria-label') : 'no sheet') + ' / spot ' + (V2.ed ? V2.ed.i + 1 : '?') + (document.activeElement && document.activeElement.matches('[data-adq]') ? ' / name box focused' : ''); })()`)));
+    await q.keyboard.press('Escape'); await q.waitForTimeout(400); }
+  ok(v.eye === 'Your six goes here.' && v.named === 3 && v.open.length === 3 && got.join(' | ') === '1: Add a Pokémon / spot 1 / name box focused | 3: Add a Pokémon / spot 3 / name box focused | 5: Add a Pokémon / spot 5 / name box focused',
+    `HOME-10b (Nov 17; Nov 18 with Sim's yes): an empty team shows "Your six goes here.", three open rings and the three most used; each open ring opens the Add box for its own slot (${v.eye}; ${v.named} named, ${v.open.length} open; ${got.join(' | ')})`); await ctx.close(); }
 { const ctx = await b.newContext({viewport: {width: 1280, height: 900}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
   await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.evaluate(() => window.__ev('clearSlot(5);render()')); await q.waitForTimeout(9000);
   const own = await q.evaluate(() => [...document.querySelectorAll('.tm-chg')].map(c => c.getAttribute('aria-label') + ' [' + ((c.querySelector('.tm-own') || {}).textContent || '') + ']').join(' | '));
@@ -177,13 +187,20 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   const rn = await p.evaluate(() => window.__ev(`(() => { const R = {id: 'M-C', since: '2026-09-01', now: {id: 'M-D', since: '2026-12-02', events: 3, need: {events: 20}}}, P = META.perf, o1 = META.reg, o2 = P && P.reg; META.reg = R; if (P) P.reg = R; try { return V2.dataNote().replace(/<[^>]+>/g, ''); } finally { META.reg = o1; if (P) P.reg = o2; } })()`));
   ok(/3 Reg M-D events so far, switches at 20\./.test(rn), `Known-bug SHELL-05 (Nov 17): the new-regulation note says how far along it is (${String(rn).slice(0, 200)})`); }
 { const lin = [];
-  for (const [route, sel] of [['meta', '.gs-mon'], ['speed', '.sp2-m'], ['home', '.hm-used'], ['home', '.hm-rk'], ['usage', '.us-fig']]) {
+  /* Home's ranks and most used moved for Sim's Nov 18 redesign (the Stampede): the hero's plates, tags and ticker (ratings) and the six's ring
+     names stand in for .hm-rk / .hm-used; on Home every such button is read, not only the first */
+  for (const [route, sel] of [['meta', '.gs-mon'], ['speed', '.sp2-m'], ['home', '.sdh-plate'], ['home', '.sdh-tag:not([hidden])'], ['home', '.sdh-tick li:not([hidden]) button'], ['home', '.sds-rings .sds-nm[data-v2mon]'], ['usage', '.us-fig']]) {
     await p.goto('file://' + PAGE + '#' + route); await p.waitForTimeout(2000);
     lin.push(await p.evaluate(sel => { const norm = x => x.toLowerCase().replace(/[^a-z0-9%.# ]+/g, ' ').replace(/\s+/g, ' ').trim(); const e = [...document.querySelectorAll('#main ' + sel)].find(x => x.getClientRects().length && x.getAttribute('aria-label')); if (!e) return sel + ' none';
       const vis = norm((e.querySelector('.us-tx') || e).innerText).split(' ').slice(0, 2).join(' ') /* a Usage figure's podium number is decoration; its label text is .us-tx */, al = norm(e.getAttribute('aria-label')); return al.startsWith(vis) ? '' : sel + ': "' + vis + '" vs "' + al.slice(0, 50) + '"'; }, sel)); }
   const bad = lin.filter(Boolean); ok(!bad.length, `pl-5d (Nov 17): spoken names start with the visible words (rating tiles, speed rows, Home most used and ranks, Usage figures)${bad.length ? ': ' + bad.join(' | ') : ''}`); }
 /* Sim, Nov 18 (C): from 360 the Hand is three across and the panel opens under the whole Hand (checked below); the Nov 17 B placement stays at 320 (two across) */
 { const ctx = await b.newContext({viewport: {width: 320, height: 844}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+    lin.push(await p.evaluate(([sel, all]) => { const norm = x => x.toLowerCase().replace(/[^a-z0-9%.# ]+/g, ' ').replace(/\s+/g, ' ').trim(); const es = [...document.querySelectorAll('#main ' + sel)].filter(x => x.getClientRects().length && x.getAttribute('aria-label')); if (!es.length) return sel + ' none';
+      return (all ? es : es.slice(0, 1)).map(e => { const vis = norm((e.querySelector('.us-tx') || e).innerText).split(' ').slice(0, 2).join(' ') /* a Usage figure's podium number is decoration; its label text is .us-tx */, raw = e.getAttribute('aria-label'), al = norm(raw);
+        return al.startsWith(vis) && !/\[object|undefined|NaN/.test(raw) ? '' : sel + ': "' + vis + '" vs "' + raw.slice(0, 60) + '"'; }).filter(Boolean).slice(0, 2).join(' | '); }, [sel, route === 'home'])); }
+  const bad = lin.filter(Boolean); ok(!bad.length, `pl-5d (Nov 17; Home re-pointed to the Stampede Nov 18): spoken names start with the visible words and hold no "[object Object]" (rating tiles, speed rows, Home's hero plates, tags, ticker and ring names, Usage figures)${bad.length ? ': ' + bad.join(' | ') : ''}`); }
+{ const ctx = await b.newContext({viewport: {width: 390, height: 844}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
   await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.evaluate(() => document.querySelectorAll('[data-tmsel]')[0].click()); await q.waitForTimeout(500);
   const pos = await q.evaluate(() => { const c = document.querySelector('[data-tmsel][aria-pressed="true"]').closest('.mh-slot').getBoundingClientRect(), r = document.querySelector('[data-v2rep]'), m = document.querySelector('[data-v2rm]'); return r && m ? Math.round(m.getBoundingClientRect().bottom - c.bottom) : -1; });
   await q.evaluate(() => { const r = document.querySelector('[data-v2rep]'); if (r) r.click(); }); await q.waitForTimeout(400); const head = await q.evaluate(() => (document.querySelector('.np-sheet h2') || {}).textContent || '');
@@ -209,11 +226,12 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
     const cnt = t => [...t.matchAll(/(?:of|vs)\s+the\s+(?:top\s+)?(\d+)/g)].map(m => +m[1]), hn = cnt(h)[0], ln = [...new Set(lines.flatMap(cnt))], note = ((document.querySelector('.sp2-sum-k') || {}).textContent || '').replace(/\s+/g, ' ');
     return {n: lines.length, hn, ln, note, ok: ln.every(x => x === hn || (note.includes('top ' + x) && note.includes('shows the ' + hn)))}; });
   ok(sv.n > 0 && sv.ok, `Audit v199 #7 (Nov 17): Speed Tiers says once what its shares count: headline top ${sv.hn}, lines of the top ${sv.ln.join('/')}, note "${sv.note}"`); }
+/* Audit v199 #6, moved for Sim's Nov 18 redesign (the Stampede): the slanted lead tiles are gone; Home's 'Lead' marks now sit under the line-up's
+   names (.sds-ld, the sample team's two leads). Same rule: each stays clear of its spot's edges (and so of the next name) at 360-1920; none found fails */
 { const ld = []; for (const w of [360, 420, 700, 900, 1024, 1180, 1280, 1366, 1440, 1920]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(1500);
-    ld.push(await p.evaluate(() => { const L = [...document.querySelectorAll('.ff.lead .ff-ld')].filter(e => e.getClientRects().length); if (!L.length) return 'none'; /* review Nov 17 #6: no Lead found fails (was 99, a pass) */
-      return Math.min(...L.map(e => { const t = e.closest('.ff').getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e); const r = rg.getBoundingClientRect(), f = y => (y - t.top) / t.height; /* the tile is slanted 10px: right edge leans in toward the bottom, left edge toward the top */
-        return Math.round(Math.min(t.right - 10 * f(r.bottom) - r.right, r.left - (t.left + 10 * (1 - f(r.top))))); })); })); }
-  await p.setViewportSize({width: 1280, height: 900}); ok(ld.every(x => typeof x === 'number' && x >= 4), `Audit v199 #6 (Nov 17): Home's 'Lead' stays clear of the tile's slanted edge at 360-1920 (closest ${ld.join(' / ')} px from the slant)`); }
+    ld.push(await p.evaluate(() => { const L = [...document.querySelectorAll('#main .sds-rings .sds-ld')].filter(e => e.getClientRects().length); if (L.length !== 2) return 'found ' + L.length;
+      return Math.min(...L.map(e => { const t = e.closest('.sds-cap').getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e); const r = rg.getBoundingClientRect(); return Math.round(Math.min(t.right - r.right, r.left - t.left)); })); })); }
+  await p.setViewportSize({width: 1280, height: 900}); ok(ld.every(x => typeof x === 'number' && x >= 4), `Audit v199 #6 (Nov 17; moved Nov 18 to the Stampede line-up): Home's two 'Lead' marks stay clear of their spot's edges at 360-1920 (closest ${ld.join(' / ')} px)`); }
 { const ta = []; const tctx = await b.newContext({hasTouch: true}), tq = await tctx.newPage();
   for (const [w, r, sel] of [[820, 'build', '.np-nav a'], [820, 'build', '.bd-side .np-link'], [820, 'battle', '.bt-lfour'], [1024, 'calc', '.dc2-top .np-link'], [320, 'types', '.tc-tm'], [320, 'events', '.ev-fc']]) { /* the phone header logo is an open layout item for Sim (overlaps the arrows), not checked here */
     await tq.setViewportSize({width: w, height: 900}); await tq.goto('file://' + PAGE + '#' + r); await tq.waitForTimeout(1500);
@@ -872,5 +890,33 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   const bad = await q.evaluate(() => /ready for the top|Sets both /.test((document.querySelector('.bp') || {}).innerText || ''));
   ok(!bad, 'OL-i15: the readiness line and the two-weather line stay off the Blueprint');
   await q.close(); }
+/* Home, The Stampede, polish of the joined bands (Nov 18): the seam under the hero and the receipt's band strip (sd-hero.css, sd-six.css) */
+{ const seam = [], start = [], strip = [];
+  for (const empty of [false, true]) { const ctx = await b.newContext({viewport: {width: 1440, height: 900}}); const q = await ctx.newPage();
+    await q.addInitScript(e => { window.__PL_TEST = 1; if (e && !sessionStorage.getItem('pz')) { sessionStorage.setItem('pz', 1); localStorage.setItem('cc2.state', JSON.stringify({slots: [{n: ''}, {n: ''}, {n: ''}, {n: ''}, {n: ''}, {n: ''}], teams: []})); localStorage.setItem('cc2.welcomed', '"1"'); } }, empty);
+    await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2200);
+    for (const w of [1100, 1280, 1440, 1920, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(400); await q.evaluate(() => window.V2.sdSixAfter && window.V2.sdSixAfter());
+      const m = await q.evaluate(() => { const tk = document.querySelector('#main .sdh-tick'), k = document.querySelector('#main .sds-k'); if (!tk || !k) return {err: 'no ticker or line-up'};
+        /* the ticker is tilted with the bands: its bottom edge, at x, from its rotated corners (bottom-left is the lowest point) */
+        const T = tk.getBoundingClientRect(), tan = Math.tan(Math.abs(parseFloat(getComputedStyle(tk).rotate) || 0) * Math.PI / 180), K = k.getBoundingClientRect(), gap = Math.round(K.top - (T.bottom - (K.left - T.left) * tan));
+        const P = [...document.querySelectorAll('#main .sds-part')].map(e => e.getBoundingClientRect()), side = P.length === 3 && Math.abs(P[0].top - P[2].top) < P[0].height && P[2].left > P[0].right;
+        const rings = [...document.querySelectorAll('#main .sds-rings .sds-ring')].map(e => { const r = e.getBoundingClientRect(); return r.top + r.height / 2; });
+        return {gap, side, topGap: side ? Math.round(P[0].top - Math.min(P[1].top, P[2].top)) : 0, ends: side ? Math.round(Math.max(...P.map(r => r.bottom)) - Math.min(...P.map(r => r.bottom))) : 0, ringSpread: Math.round(Math.max(...rings) - Math.min(...rings))}; });
+      const tag = (empty ? 'empty ' : '') + w;
+      seam.push(m.err ? tag + ' ' + m.err : m.gap >= 16 && m.gap <= 80 ? '' : `${tag}: line-up ${m.gap}px under the ticker`);
+      if (m.side) start.push(m.topGap <= 8 && m.ends <= 32 && m.ringSpread <= 2 ? '' : `${tag}: line-up starts ${m.topGap}px under the board, ends ${m.ends}px apart, rings ${m.ringSpread}px off one line`); }
+    for (const night of [false, true]) for (const w of night ? [390, 1440] : [320, 340, 360, 390, 412, 600, 700, 768, 820, 1024, 1100, 1180, 1280, 1366, 1440, 1500, 1920, 2560]) {
+      if (night) await q.evaluate(() => { document.documentElement.dataset.theme = 'night'; });
+      await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(300);
+      const r = await q.evaluate(() => { const ol = document.querySelector('#main .sds-bands'); if (!ol) return 'no strip'; const B = ol.getBoundingClientRect(), bad = [];
+        const L = [...ol.querySelectorAll('.sds-b span')].map(s => { const rg = document.createRange(); rg.selectNodeContents(s); return {t: s.textContent, f: parseFloat(getComputedStyle(s).fontSize), rs: [...rg.getClientRects()].filter(c => c.width)}; });
+        for (let i = 0; i < L.length; i++) { if (L[i].f < 13) bad.push(L[i].t + ' ' + L[i].f + 'px'); for (const a of L[i].rs) { if (a.left < B.left - .5 || a.right > B.right + .5) bad.push(L[i].t + ' out of the strip');
+          for (let j = i + 1; j < L.length; j++) for (const c of L[j].rs) if (Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top) > 1) { const g = c.left >= a.right ? c.left - a.right : a.left >= c.right ? a.left - c.right : -1; if (g < 8) bad.push(`${L[i].t} / ${L[j].t} ${Math.round(g)}px apart`); } } }
+        return bad.slice(0, 2).join(', '); });
+      strip.push(r ? `${empty ? 'empty ' : ''}${night ? 'night ' : ''}${w}: ${r}` : ''); }
+    await ctx.close(); }
+  ok(!seam.filter(Boolean).length, `Stampede polish 1 (Nov 18): at 1100-2560 (sample team and empty team) the line-up starts 16-80px under the pink ticker, no empty ink strip between them${seam.filter(Boolean).length ? ': ' + seam.filter(Boolean).join(' | ') : ''}`);
+  ok(start.length >= 6 && !start.filter(Boolean).length, `Stampede polish 1b: where the three parts stand side by side (1280-2560) the line-up starts with the board (no strip above its headline), all three end on one baseline and the six rings stay on one line${start.filter(Boolean).length ? ': ' + start.filter(Boolean).join(' | ') : ` (${start.length} views)`}`);
+  ok(!strip.filter(Boolean).length, `Stampede polish 2 (Nov 18): the receipt's five band names are 13px or more, inside the strip and at least 8px apart at 320-2560, day and night, team and no team${strip.filter(Boolean).length ? ': ' + strip.filter(Boolean).slice(0, 4).join(' | ') : ''}`); }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

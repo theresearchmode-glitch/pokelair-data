@@ -25,9 +25,11 @@
 .sds-slot:nth-child(odd){z-index:2} /* all six rings one size on one line (audit L4); 1, 3, 5 stand in front where sprites overlap */
 .sds-st{position:relative;width:100%;height:var(--sh)}
 .sds-ring{position:absolute;left:50%;bottom:var(--ry);width:var(--rw);height:calc(var(--rw)*.3);border:3px solid var(--sd-ring);border-radius:50%;box-shadow:0 0 14px var(--sd-ring-glow),inset 0 0 8px var(--sd-ring-glow);transform:translate(-50%,50%)}
-.sds-beam{position:absolute;left:50%;bottom:var(--ry);width:calc(var(--sw)*.9);height:calc(var(--sh) - var(--ry) + var(--s12));transform:translateX(-50%);clip-path:polygon(34% 0,66% 0,100% 100%,0 100%);background:linear-gradient(180deg,transparent,var(--sd-beam) 45%);pointer-events:none}
+.sds-beam{position:absolute;left:50%;bottom:var(--ry);width:calc(var(--sw)*.9);height:calc(100% - var(--ry) + var(--s12));transform:translateX(-50%);clip-path:polygon(34% 0,66% 0,100% 100%,0 100%);background:linear-gradient(180deg,transparent,var(--sd-beam) 45%);pointer-events:none}
 .sds-slot:nth-child(odd) .sds-beam{display:none} /* light on 2, 4 and 6 only, so a full six isn't lost in haze */
-.sds-mon{position:absolute;left:50%;bottom:var(--ry);width:var(--sw);transform:translateX(-50%);cursor:pointer}
+/* the sprite is a square var(--sw) wide; where the line-up stands beside a taller receipt and board (1280 and wider) its stage grows to their
+   height (seam polish, Nov 18) and the sprite grows with it, up to 1.4 times, the rest of the room lit by the beams (the mock-up's light) */
+.sds-mon{position:absolute;left:50%;bottom:var(--ry);width:auto;aspect-ratio:1;height:clamp(var(--sw),var(--sw) + 100% - var(--sh),var(--sw) * 1.4);transform:translateX(-50%);cursor:pointer}
 .sds-mon .np-mon,.sds-mon .np-mon .st{width:100%;--iw:100%}
 .sds-mon .pool{display:none}
 .sds-add{position:absolute;left:50%;bottom:0;width:max(var(--tap),var(--cw));height:max(var(--tap),calc(var(--ry) + var(--rw)*.3 + var(--s4)));transform:translateX(-50%);padding:0;border:0;background:none;color:var(--on-plate);cursor:pointer}
@@ -63,9 +65,12 @@ button.sds-nm::before{content:"";position:absolute;left:50%;top:50%;width:max(10
 .sds-w i{flex:0 0 auto;width:16px;height:16px;border-radius:var(--r-s);background:var(--bd)}
 .sds-w small{font:500 var(--t13)/1.5 var(--b);color:var(--sd-paper-ink2)}
 .sds-rk{margin:var(--s1) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--sd-paper-ink2)}
-.sds-bands{list-style:none;display:grid;grid-template-columns:repeat(5,minmax(min-content,1fr));gap:var(--s1);margin:var(--s5) 0 0;padding:0}
+/* the five bands: labels 12px apart so two names never run together ("Tournament ready" beside "Top tier", polish Nov 18); each bar reaches
+   8px into the gap, so the bars still read as one strip, 4px apart */
+.sds-bands{list-style:none;display:grid;grid-template-columns:repeat(5,minmax(min-content,1fr));gap:var(--s1) var(--s3);margin:var(--s5) 0 0;padding:0}
 .sds-b{min-width:0}
-.sds-b i{display:block;height:12px;background:var(--bd);transform:skewX(-14deg)}
+.sds-b i{display:block;height:12px;margin-right:calc(var(--s2) * -1);background:var(--bd);transform:skewX(-14deg)}
+.sds-b:last-child i{margin-right:0}
 .sds-b span{display:block;margin-top:var(--s1);font:500 var(--t13)/1.25 var(--b);color:var(--sd-paper-ink)}
 .sds-b.on i{transform:skewX(-14deg) scaleY(1.5);box-shadow:0 0 0 2px var(--sd-paper),0 0 0 4px var(--sd-paper-ink)}
 .sds-b.on span{font-weight:700}
@@ -103,6 +108,19 @@ button.sds-nm::before{content:"";position:absolute;left:50%;top:50%;width:max(10
 .sds-pt{margin:var(--s3) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--on-plate)}
 .sds-bt{margin-top:var(--s4)}
 
+/* ---- 1280 and wider, three parts side by side: they end on one baseline AND start together (seam polish, Nov 18): the line-up stretches
+   to the row's height (set by the receipt or the board), its eyebrow and headline at the top, its stage taking the extra room; the six
+   stage cells share one row (subgrid) so all six rings stay on one line whatever the names below them ---- */
+@media (min-width:1280px){
+  .sds-line{align-self:stretch;display:flex;flex-direction:column}
+  .sds-rings{flex:1 1 auto;grid-template-rows:minmax(var(--sh),1fr) auto}
+  .sds-slot{display:grid;grid-row:span 2;grid-template-rows:subgrid;justify-items:center;align-items:stretch}
+  .sds-st{height:auto}
+  .sds-rc{padding-left:var(--s4);padding-right:var(--s4)} /* 8px more room inside the receipt, so its five band names keep one row at 1440 */
+}
+/* the seam under the hero (900 and wider; both bands are ink there): the line-up starts a short step under the pink ticker, not a band's
+   full top padding under it (sd-hero.css trims the hero's bottom to match) */
+@media (min-width:900px){.sdh+.sds{padding-top:calc(var(--sd-cut) + var(--s8))}}
 /* ---- in between: the line-up on top, receipt and board side by side ---- */
 @media (max-width:1279.98px){ /* under 1280 the line-up needs the full width for six names */
   .sds-in{grid-template-columns:minmax(0,1fr) var(--s10) minmax(0,1fr);row-gap:var(--s10)}
@@ -139,9 +157,9 @@ button.sds-nm::before{content:"";position:absolute;left:50%;top:50%;width:max(10
 @container (max-width:339.98px){
   .sds-rc .sds-sc,.sds-rc .sds-w,.sds-rc .sds-rk{grid-column:1/-1;grid-row:auto}
 }
-@container (max-width:249.98px){
+@container (max-width:279.98px){ /* the five names in one row need 280px with 12px between them (polish Nov 18); narrower, they list as a key */
   .sds-bands{grid-template-columns:minmax(0,1fr);gap:var(--s1)}
   .sds-b{display:flex;align-items:center;gap:var(--s2)}
-  .sds-b i{flex:0 0 32px;height:12px}
+  .sds-b i{flex:0 0 32px;height:12px;margin-right:0}
   .sds-b span{margin-top:0}
 }

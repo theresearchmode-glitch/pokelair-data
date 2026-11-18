@@ -5,7 +5,10 @@
 .sdh{padding:0 0 calc(var(--sd-cut) + var(--s4));--sdh-top:76px;--sdh-cut:round(5vw,4px);--sdh-g:var(--s8);--sdh-cols:repeat(4,minmax(0,1fr))}
 @media (min-width:1280px){.sdh{--sdh-g:var(--s10)}}
 @media (max-width:899.98px){.sdh{--sdh-cols:repeat(2,minmax(0,1fr));--sdh-g:var(--s4)}}
-@media (max-width:699.98px){.sdh{--sdh-top:116px}} /* the phone header (60) and tab bar (56) */
+@media (max-width:699.98px){.sdh{--sdh-top:116px}}
+/* seam polish (Nov 18): 900 and wider the band edge runs parallel to the ticker (both tilt 5 in 100), so the hero only keeps half a cut and
+   a small step under the ticker; the six band (ink too) starts right there (sd-six.css). Phones keep the full cut: their edge is steeper */
+@media (min-width:900px){.sdh{padding-bottom:calc(round(var(--sd-cut) / 2, 4px) + var(--s2))}} /* the phone header (60) and tab bar (56) */
 .sdh-fold{display:flex;flex-direction:column;height:calc(100svh - var(--sdh-top));min-height:360px}
 /* the scene: blue, its bottom edge slanted like the band edges; size container so the herd scales with it */
 .sdh-scene{position:relative;flex:1 1 auto;min-height:0;background:var(--sd-hero);container-type:size;overflow:hidden;
