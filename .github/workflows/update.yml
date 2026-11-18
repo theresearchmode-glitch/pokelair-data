@@ -60,7 +60,10 @@ jobs:
       - run: node ladder.mjs || node skip.mjs "ladder stats skipped"
       # other sites' numbers: Showdowntier, Pikalytics (rating inputs, tier lists, cross-check)
       - run: node sources.mjs || node skip.mjs "outside sources skipped"
-      - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium && node opgg.mjs) || node skip.mjs "op.gg skipped"
+      # op.gg read PAUSED (Nov 18): op.gg's Terms of Use ban automated collection and copying without written permission
+      # (docs/rebuild/research/opgg-terms-check-nov18.md). The last good meta_ingame.json stays; the browser install stays
+      # because the ratings and win snapshots below use it. To resume: put "&& node opgg.mjs" back once op.gg agrees in writing.
+      - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium) || node skip.mjs "browser install skipped"
       # the ratings' daily inputs (all of out/perf.json) for the morning refresh; checked by health.mjs
       - run: node perf.mjs || node skip.mjs "perf skipped"
       # our numbers against the outside sources (out/crosscheck.json; summary and warnings in the Data health step)
