@@ -2071,7 +2071,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tm-six.mh .sx-gpl{font:900 var(--t17)/1.3 var(--u);font-style:italic}
 @media (max-width:1099.98px){.mt-edit{grid-template-columns:minmax(0,1fr)}.mt-eacts{justify-content:flex-start}}
 .mt-edit .sx-kv>div{display:grid;grid-template-columns:none;gap:2px;border:0;padding:0;margin:0}.mt-edit .sx-kv{border:0;padding:0}.mt-edit .sx-kv dd{white-space:nowrap}
-.tm-six.mh .sx-gpl,.mt-id .tm-sample-acts .np-link{min-height:var(--tap);display:inline-flex;align-items:center}
+.tm-six.mh .sx-gpl{min-height:var(--tap);display:inline-flex;align-items:center} /* audit v199 #22 (Nov 17): My Team's intro links keep their 44px tap area from the invisible layer (components.css), not a 44px line that stretched the paragraph */
 @media (max-width:699.98px){.mh .mc-id h3{font-size:var(--t15)}.mt-eacts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2) var(--s4)}.mt-eacts>*{justify-content:flex-start}}
 @media (max-width:359.98px){.mh .mc-id h3{font-stretch:88%}.mh .mc-id{left:var(--s1);right:var(--s1)}}
 @media (max-width:359.98px){.mh .mc-id h3{font-size:var(--t13)}}
