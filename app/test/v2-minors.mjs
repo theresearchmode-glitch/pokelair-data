@@ -95,6 +95,11 @@ const MQ = async () => {
     const r = await q.evaluate(sel => [...document.querySelectorAll(sel)].map(m => { const d = m.children[1]; return d ? [...d.children].map(c => c.tagName + ':' + c.textContent.trim()).join(' / ') : 'none'; }), sel);
     ok(r.length > 0 && r.every(x => /^DT:Sent \/ DD:([A-Z][a-z]{2} \d{1,2}(, \d{4})?|Date not confirmed) \/ DD:(Serial code|Event gift)$/.test(x)), `MQ-1b ${hash}: the label's middle column reads "Sent", the date, then how it is given (${r.join(' | ')})`);
     await q.close(); }
+  // MQ-1i (answer 1i): the new Post Room words as built, and "Live right now" (a small Unbounded stamp on its plate) on the font check's allowed list
+  { const un = fs.readFileSync(new URL('./v2-unbounded.mjs', import.meta.url), 'utf8'), q = await open('#gifts');
+    const t = await q.evaluate(() => { const pk = document.querySelector('#main .pr-stats .ev-pk'), cs = pk && getComputedStyle(pk); return {pk: pk && pk.textContent, font: cs && cs.fontFamily.split(',')[0] + ' ' + cs.fontSize,
+      words: ['Special delivery.', 'No postage due.', 'Waiting at the Counter', 'The Stamp Sheet', 'How to collect', 'to claim', 'gifts so far', 'Collect by'].filter(w => !document.querySelector('#main').textContent.includes(w))}; });
+    ok(/'\.pr-stats \.ev-pk'/.test(un) && t.pk === 'Live right now' && !t.words.length, `MQ-1i: the Post Room's words are as built and "Live right now" (${t.font}) is on v2-unbounded's allowed list (${JSON.stringify(t)})`); await q.close(); }
   // MQ-1f (answer 1f): Search finds both pages by name and by the words players type; the top bar keeps its five places
   for (const W of [390, 1440]) { const q = await open('#home', W); const hits = {};
     for (const w of ['gifts', 'mystery', 'codes', 'news', 'dispatch']) { await q.evaluate(() => V2.openSearch()); await q.waitForTimeout(300); await q.fill('[data-v2q]', w); await q.waitForTimeout(250);
