@@ -161,6 +161,7 @@ jobs:
       - run: node app/build.mjs --v2 && node experiments/v2-words.mjs
         if: ${{ !cancelled() }}
       - run: node experiments/replays-test.mjs
+      - run: node experiments/tour-modes-test.mjs
         if: ${{ !cancelled() }}
       # mechanics vs Smogon's Champions engine: every stat exact, damage 98.5%+ exact on all 16 rolls
       - run: node experiments/speed-check.mjs
