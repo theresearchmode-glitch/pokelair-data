@@ -753,6 +753,10 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       const bar = document.querySelector('.np-bar'), fold = bar && getComputedStyle(bar).position === 'fixed' ? bar.getBoundingClientRect().top : innerHeight;
       return {b1: g('#main .sdh-b1'), b2: g('#main .sdh-b2'), fold: Math.round(fold), first: (document.querySelector('#main .sdh-go a') || {}).textContent || '', hs: document.documentElement.scrollWidth - innerWidth}; }));
     await ctx.close(); return r; };
+  // 0. (Nov 18, phone check) the two hero buttons each keep their words on one line, side by side, from 360 to 899 (at 375 "Build Me a Team" broke onto 2 lines)
+  { const wr = []; for (const w of [360, 375, 389, 390, 412, 430, 520, 700, 899]) { const r = await hero(w, 800, {fn: () => [...document.querySelectorAll('#main .sdh-go a')].map(e => { const t = e.querySelector('span') || e, rg = document.createRange(); rg.selectNodeContents(t); return {n: e.textContent.trim(), lines: new Set([...rg.getClientRects()].map(x => Math.round(x.top))).size, top: Math.round(e.getBoundingClientRect().top)}; })});
+      for (const x of r) if (x.lines > 1) wr.push(`${w}: "${x.n}" on ${x.lines} lines`); if (r.length === 2 && r[0].top !== r[1].top) wr.push(`${w}: buttons not side by side`); }
+    ok(!wr.length, `Stampede hero 0: Score My Team and Build Me a Team each on one line, side by side, 360 to 899 wide (${wr.join(' | ') || 'all one line'})`); }
   // 1. the tagline is the page's one h1, the named Pokémon are buttons that open their page, the crowd is hidden from screen readers
   const a = await hero(1440, 900, {wait: true, fn: () => { const h1 = [...document.querySelectorAll('#main h1')].map(e => e.textContent.replace(/\s+/g, ' ').trim());
     const named = [...document.querySelectorAll('#main .sdh-plate, #main .sdh-tag:not([hidden]), #main .sdh-tick li:not([hidden]) button')].filter(e => e.getClientRects().length);
