@@ -286,3 +286,7 @@ Each item appears once, in the area where it is listed above.
 Top blockers, in order of risk: the code-test job running out of time (no logic check has run on today's head), the 28-conflict merge
 with main (op.gg pause, player-ID key, model v7 must survive), Promote freezing live data on any new-site flake, no news update path
 without a republish, and the 511-file cap at the publish.
+
+
+## Added Nov 18 afternoon (main thread)
+- News/Gifts daily doc built (8247618d): out/post.json -> meta/post -> V2.postTake. AT THE SWITCH: the 'NastyPlot data refresh' scheduled task must also download out/post.json and set meta/post (or its _2 parts if split-docs names it), and add 'post' to its split-name list. Until then the page shows the built-in POST.
