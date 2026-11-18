@@ -13,7 +13,10 @@ const routes = await p.evaluate(() => Object.keys(V2.pages).filter(r => !/^(shee
 const ALLOW = new Set(['.st .np-megatag', '.mc-id .u', '.u .mg', '.ffm', '.fn-unm .mg', '.wt-spot .gs-tag.u', '.ev-counts .ev-pk.u', '.tk-mid .tk-tag.u',
   '.tk-hero .tk-seal.u', '.ev-plate .ev-pk.u', '.ar-rk .u', '.ar-rk .ar-you', '.wk-ht .wk-tag.u', '.wk-tile .u', '.trk-st .trk-stamp.u.hit', '.trk-st .trk-stamp.u.miss',
   '.dc2-mv .nm.u', '.dc2-kt .stamp.u', '.tp-card .tp-start.u', '.gs-sinfo .gs-tag.u', '.gs-tx .gs-mg.u', '.tp-open .tp-start.u', '.u',
-  '.pr-stats .ev-pk' /* the Post Room's "Live right now" stamp on its plate (Sim, Nov 18, morning questions 1i: added to this list) */]);
+  '.pr-stats .ev-pk' /* the Post Room's "Live right now" stamp on its plate (Sim, Nov 18, morning questions 1i: added to this list) */,
+  /* Home's plan board (Nov 18): each lead's name is a short tag on its slanted colour plate, the same kind as exception (a) (a long name
+     already drops to Instrument Sans: .sds-tg.nar); and the Practice plate's "Pick 4" tag on its slanted plate under 700 */
+  '.sds-tk .sds-tg.u', '.sdt-pp .u.sdt-pick']);
 const hits = new Map();
 for (const theme of ['day', 'night']) for (const w of [390, 1440]) { await p.setViewportSize({width: w, height: 900});
   for (const r of routes) { await p.evaluate(([r, t]) => { document.documentElement.dataset.theme = t; location.hash = '#' + r; }, [r, theme === 'night' ? 'night' : 'day']); await p.waitForTimeout(500);
