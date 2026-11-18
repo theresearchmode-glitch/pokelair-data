@@ -334,12 +334,14 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.addStyleTag({content: 'html,body{overflow-anchor:none}'}); // as a browser without scroll anchoring
   await q.evaluate(() => window.__ev(`(() => { const T = ['Incineroar','Garchomp','Sneasler','Kingambit','Basculegion','Sinistcha']; S.slots.forEach((s, i) => { s.n = T[i]; }); persist(); V2.redraw(); })()`));
   await q.waitForSelector('#tm-sg [data-v2plan]', {timeout: 20000}).catch(() => {});
+  // Nov 18 (full test run): the planner works in steps now and redraws Suggestions after the first Apply shows, so wait until it settles
+  await q.waitForFunction(() => { const s = document.querySelector('#tm-sg'); return s && !s.querySelector('[aria-busy=true]') && !/Working out/.test(s.innerText) && s.querySelector('[data-v2plan]'); }, null, {timeout: 30000}).catch(() => {});
   // the place under the finger (Nov 18, SUGG-09 inside Suggestions): an Apply (the faded copy's while the planner works, then the next
   // suggestion's) where the tapped one was; with none left, Suggestions' top
   const at = () => q.evaluate(() => { const s = document.querySelector('#tm-sg'), A = s && [...s.querySelectorAll('[data-v2plan]')].find(e => e.getClientRects().length); return s ? Math.round((A || s).getBoundingClientRect().top) + (A ? ' Apply' : ' top') : null; });
   const y0 = await q.evaluate(() => { const s = document.querySelector('#tm-sg'), a = s && s.querySelector('[data-v2plan]'); if (!a) return null; scrollBy(0, a.getBoundingClientRect().top - innerHeight * 2 / 3); return Math.round(s.getBoundingClientRect().top); });
   const a = await q.$('#tm-sg [data-v2plan]'); let y1 = null, a0 = null;
-  if (y0 != null && a) { a0 = await at(); await a.click(); await q.waitForTimeout(700);
+  if (y0 != null && a) { a0 = await at(); await q.locator('#tm-sg [data-v2plan]').first().click(); /* a fresh lookup: a held handle can go stale on a redraw */ await q.waitForTimeout(700);
     await q.evaluate(() => { const d = document.createElement('div'); d.style.height = '120px'; d.id = 'zz-late'; const m = document.querySelector('#main'); m.insertBefore(d, m.firstChild); });
     await q.waitForTimeout(1200); y1 = await at(); }
   const want = y1 && / Apply$/.test(y1) ? parseInt(a0) : y0;

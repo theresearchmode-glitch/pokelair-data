@@ -93,8 +93,8 @@ button.sds-nm::before{content:"";position:absolute;left:50%;top:50%;width:max(10
 .sds-bl{grid-column:1/-1;margin:0;font-size:var(--t15)}
 .sds-bl.them{text-align:right;padding-right:var(--s6)}
 .sds-mid{grid-column:1/-1;height:0;margin:var(--s1) 0;border-top:2px dashed var(--sd-paper-rule)}
-.sds-tk{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:var(--s1);min-width:0;padding:0;border:0;background:none;color:inherit;cursor:pointer;--side:var(--sd-you)}
-.sds-tk.them{--side:var(--sd-them)}
+.sds-tk{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:var(--s1);min-width:0;padding:0;border:0;background:none;color:inherit;cursor:pointer;--side:var(--sd-board-you)}
+.sds-tk.them{--side:var(--sd-board-them)}
 .sds-tk.k1{margin-top:var(--s8)}
 .sds-dot2{display:grid;place-items:center;width:76px;height:76px;border:4px solid var(--side);border-radius:50%;background:var(--sd-board);overflow:hidden}
 .sds-dot2 .np-mon{--iw:64px}
