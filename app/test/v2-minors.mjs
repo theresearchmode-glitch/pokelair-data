@@ -201,10 +201,10 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
     return {n: lines.length, hn, ln, note, ok: ln.every(x => x === hn || (note.includes('top ' + x) && note.includes('shows the ' + hn)))}; });
   ok(sv.n > 0 && sv.ok, `Audit v199 #7 (Nov 17): Speed Tiers says once what its shares count: headline top ${sv.hn}, lines of the top ${sv.ln.join('/')}, note "${sv.note}"`); }
 { const ld = []; for (const w of [360, 420, 700, 900, 1024, 1180, 1280, 1366, 1440, 1920]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(1500);
-    ld.push(await p.evaluate(() => { const L = [...document.querySelectorAll('.ff.lead .ff-ld')].filter(e => e.getClientRects().length); if (!L.length) return 99;
+    ld.push(await p.evaluate(() => { const L = [...document.querySelectorAll('.ff.lead .ff-ld')].filter(e => e.getClientRects().length); if (!L.length) return 'none'; /* review Nov 17 #6: no Lead found fails (was 99, a pass) */
       return Math.min(...L.map(e => { const t = e.closest('.ff').getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e); const r = rg.getBoundingClientRect(), f = y => (y - t.top) / t.height; /* the tile is slanted 10px: right edge leans in toward the bottom, left edge toward the top */
         return Math.round(Math.min(t.right - 10 * f(r.bottom) - r.right, r.left - (t.left + 10 * (1 - f(r.top))))); })); })); }
-  await p.setViewportSize({width: 1280, height: 900}); ok(ld.every(x => x >= 4), `Audit v199 #6 (Nov 17): Home's 'Lead' stays clear of the tile's slanted edge at 360-1920 (closest ${ld.join(' / ')} px from the slant)`); }
+  await p.setViewportSize({width: 1280, height: 900}); ok(ld.every(x => typeof x === 'number' && x >= 4), `Audit v199 #6 (Nov 17): Home's 'Lead' stays clear of the tile's slanted edge at 360-1920 (closest ${ld.join(' / ')} px from the slant)`); }
 { const ta = []; const tctx = await b.newContext({hasTouch: true}), tq = await tctx.newPage();
   for (const [w, r, sel] of [[820, 'build', '.np-nav a'], [820, 'build', '.bd-side .np-link'], [820, 'battle', '.bt-lfour'], [1024, 'calc', '.dc2-top .np-link'], [320, 'types', '.tc-tm'], [320, 'events', '.ev-fc']]) { /* the phone header logo is an open layout item for Sim (overlaps the arrows), not checked here */
     await tq.setViewportSize({width: w, height: 900}); await tq.goto('file://' + PAGE + '#' + r); await tq.waitForTimeout(1500);
@@ -248,12 +248,24 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   await hctx.close(); const bad = hd.filter(([w, a, c, tb, tl, tf, ov, fit]) => Math.abs(a - c) > 1 || tb < 44 || tl < 44 || tf < 44 || ov < 0 || !fit);
   ok(!bad.length, `Sim (Nov 17): header back / logo / forward: the same gap on both sides of the logo and 44px taps for all three, nothing pushed off (${hd.map(x => x[0] + ': ' + x[1] + '|' + x[2] + ' taps ' + x[3] + '/' + x[4] + '/' + x[5]).join('; ')})`); }
 { await p.setViewportSize({width: 390, height: 900}); await p.goto('file://' + PAGE + '#compare'); await p.waitForTimeout(1500);
-  const cx = await p.evaluate(() => { const h = document.querySelector('.cx2-hint'); return h ? [h.textContent, document.querySelectorAll('.cx2 tr, .cx2-row').length] : ['(no hint: teams already picked)', -1]; });
-  ok(cx[1] !== 0 || !/row below/.test(cx[0]), `Audit v199 #21 (Nov 17): Compare's empty state doesn't point at rows that aren't there ("${cx[0].slice(0, 90)}")`); }
-{ const gs = []; for (const w of [390, 700, 1280]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#meta'); await p.waitForTimeout(1800);
-    gs.push(await p.evaluate(() => { const rows = {}; [...document.querySelectorAll('.gs-row .gs-mon')].filter(m => m.getClientRects().length).forEach(m => { const k = Math.round(m.getBoundingClientRect().top) + '|' + [...m.parentElement.parent ? [] : []]; (rows[k] = rows[k] || []).push(m.querySelector('.gs-sc').getBoundingClientRect().top); });
-      const d = Object.values(rows).map(v => Math.max(...v) - Math.min(...v)); return d.length ? Math.round(Math.max(...d)) : 99; })); }
-  await p.setViewportSize({width: 1280, height: 900}); ok(gs.every(x => x <= 1), `Audit v199 #13 (Nov 17): Meta Grandstand numbers line up across each shelf, even when a name takes two lines (worst ${gs.join(' / ')} px; was 16-17)`); }
+  await p.evaluate(() => window.__ev('ui.cx.A = null; ui.cx.B = null; V2.redraw()')); await p.waitForTimeout(300); /* review Nov 17 #6: always the empty state, so the check reads its words (it passed when no hint was shown) */
+  const cx = await p.evaluate(() => { const h = document.querySelector('.cx2-hint'); return h && h.getClientRects().length ? [h.textContent, document.querySelectorAll('.cx2 tr, .cx2-row').length] : ['(no hint shown)', -1]; });
+  ok(cx[1] === 0 && /^Pick two teams/.test(cx[0]) && !/rows? below/.test(cx[0]), `Audit v199 #21 (Nov 17): Compare's empty state doesn't point at rows that aren't there ("${cx[0].slice(0, 90)}")`); }
+{ const gs = [], gm = []; const gctx = await b.newContext(), gq = await gctx.newPage(); await gq.addInitScript(() => { window.__PL_TEST = 1; }); /* fresh storage: the sample six are on the team, so 'on your team' bars show */
+  for (const w of [390, 700, 1280]) { await gq.setViewportSize({width: w, height: 900}); await gq.goto('file://' + PAGE + '#meta'); await gq.waitForTimeout(1800);
+    /* review Nov 17 #6: grouped by shelf row (the .gs-row; on phones .gs-row is display:contents and the .gs-rows scroller is the row), not by tile top, so a tile pushed down is still compared with its row */
+    const [d, m] = await gq.evaluate(() => { const rows = new Map(); [...document.querySelectorAll('.gs-row .gs-mon')].filter(m => m.getClientRects().length).forEach(m => { const r = m.parentElement, k = getComputedStyle(r).display === 'contents' ? r.closest('.gs-rows') : r; if (!rows.has(k)) rows.set(k, []); rows.get(k).push(m.querySelector('.gs-sc').getBoundingClientRect().top); });
+      const d = [...rows.values()].filter(v => v.length > 1).map(v => Math.max(...v) - Math.min(...v));
+      const mine = [...document.querySelectorAll('.gs-mon .gs-mine')].filter(x => x.getClientRects().length).map(x => x.getBoundingClientRect().top - x.closest('.gs-mon').querySelector('.gs-sc').getBoundingClientRect().bottom);
+      return [d.length ? Math.round(Math.max(...d)) : 99, mine.length ? Math.round(Math.min(...mine)) + ' (' + mine.length + ')' : 'none']; }); gs.push(d); gm.push(m); }
+  await gctx.close(); ok(gs.every(x => x <= 1), `Audit v199 #13 (Nov 17): Meta Grandstand numbers line up across each shelf row, even when a name takes two lines (worst ${gs.join(' / ')} px; was 16-17)`);
+  ok(gm.every(x => x !== 'none' && parseInt(x) >= 0), `Review Nov 17 #5: the Grandstand 'on your team' bar sits under its number, never over it (space between, at 390 / 700 / 1280: ${gm.join(' / ')} px)`); }
+{ const ut = []; for (const w of [390, 1280]) for (const r of ['usage', 'sets']) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1800);
+    ut.push(await p.evaluate(([w, r]) => { const tx = [...document.querySelectorAll('#main .gs-row .gs-tx')].filter(t => t.getClientRects().length && !t.closest('.gs-rows'));
+      const gap = tx.map(t => t.getBoundingClientRect().bottom - Math.max(...[...t.children].filter(c => c.getClientRects().length).map(c => c.getBoundingClientRect().bottom)));
+      return [w, r, tx.length, tx.length ? Math.round(Math.max(...gap)) : 99]; }, [w, r])); }
+  await p.setViewportSize({width: 1280, height: 900}); /* the Ratings Grandstand's 'on your team' bar row (Audit v199 #13) belongs to the Ratings shelves only */
+  ok(ut.every(x => x[2] > 0 && x[3] <= 1), `Review Nov 17 #5: Usage and Sets teammate and bench tiles keep no empty row under their last line (${ut.map(x => x[0] + ' ' + x[1] + ': ' + x[2] + ' tiles, ' + x[3] + ' px').join('; ')}; was 8)`); }
 { await p.setViewportSize({width: 1280, height: 900}); await p.goto('file://' + PAGE + '#build'); await p.waitForTimeout(1500);
   const ph = await p.evaluate(() => (document.querySelector('[data-bdfind]') || {}).placeholder || '(none)');
   ok(!/^optional$/i.test(ph), `Audit v199 #22 (Nov 17): Build's 'Build around a Pokémon · optional' box doesn't say 'Optional' again (placeholder "${ph}")`); }
@@ -277,9 +289,9 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   await q.close(); }
 { const sp = []; for (const [w, r] of [[390, 'build'], [390, 'speed'], [1280, 'calc'], [1280, 'battle'], [390, 'team']]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1800);
     sp.push(await p.evaluate(() => { const im = [...document.querySelectorAll('#main img[src*=".webp"]')].filter(i => i.getClientRects().length); const sm = im.filter(i => i.getAttribute('src').includes('-s/') || i.dataset.full); /* GitHub (Nov 17): no sprite files beside the test page, so a small file can already have fallen back to the big one (V2.artFix sets data-full) */
-      const big = sm.filter(i => { const m = i.closest('.np-mon'), iw = m ? parseFloat(((m.getAttribute('style') || '').match(/--iw:([\d.]+)px/) || [])[1]) : NaN; return m && !(iw <= 80); }); return [sm.length, big.length]; })); }
-  await p.setViewportSize({width: 1280, height: 900}); const used = sp.reduce((a, x) => a + x[0], 0), wrong = sp.reduce((a, x) => a + x[1], 0), one = await p.evaluate(() => !!window.NP_ONE_ART);
-  if (one) ok(used === 0, `Sprites A on Claude hosting (Nov 17): a --one-art-size build asks for no small file, since an artifact holds at most 511 files (${used} small on 5 pages)`);
+      const big = sm.filter(i => { const m = i.closest('.np-mon'), iw = m ? parseFloat(((m.getAttribute('style') || '').match(/--iw:([\d.]+)px/) || [])[1]) : NaN; return m && !(iw <= 80); }); return [sm.length, big.length, im.length]; })); }
+  await p.setViewportSize({width: 1280, height: 900}); const used = sp.reduce((a, x) => a + x[0], 0), wrong = sp.reduce((a, x) => a + x[1], 0), one = await p.evaluate(() => !!window.NP_ONE_ART), all = sp.reduce((a, x) => a + x[2], 0);
+  if (one) ok(all > 0 && used === 0, `Sprites A on Claude hosting (Nov 17): a --one-art-size build asks for no small file, since an artifact holds at most 511 files (${used} small of ${all} sprites on 5 pages; review Nov 17 #6: no sprites at all fails)`);
   else ok(used > 0 && wrong === 0, `Sprites A (Nov 17): small spots use the 240px files (${used} on 5 pages) and no sprite set larger than 80px gets one (${wrong})`); }
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500); await p.evaluate(() => V2.openSearch()); await p.waitForTimeout(300);
   const fnd = []; for (const q of ['cores', 'build for me', 'battle a team', 'pokémon ratings']) { await p.fill('[data-v2q]', q); await p.waitForTimeout(300); fnd.push(q + ' > ' + await p.evaluate(() => { const b = document.querySelector('[data-v2hits] .np-hit b'); return b ? b.textContent : 'nothing'; })); }
