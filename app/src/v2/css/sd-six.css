@@ -70,8 +70,8 @@ button.sds-nm::before{content:"";position:absolute;left:50%;top:50%;width:max(10
 .sds-bands{list-style:none;display:grid;grid-template-columns:repeat(5,minmax(min-content,1fr));gap:var(--s1) var(--s3);margin:var(--s5) 0 0;padding:0}
 .sds-b{min-width:0}
 .sds-b i{display:block;height:12px;margin-right:calc(var(--s2) * -1);background:var(--bd);transform:skewX(-14deg)}
-.sds-b:last-child i{margin-right:0}
-.sds-b span{display:block;margin-top:var(--s1);font:500 var(--t13)/1.25 var(--b);color:var(--sd-paper-ink)}
+.sds-b:last-child i{margin-right:0} /* names sit 12px under the bars: the chosen band grows 1.5x with a 4px ring, which covered "Top" at 4px (polish Nov 18) */
+.sds-b span{display:block;margin-top:var(--s3);font:500 var(--t13)/1.25 var(--b);color:var(--sd-paper-ink)}
 .sds-b.on i{transform:skewX(-14deg) scaleY(1.5);box-shadow:0 0 0 2px var(--sd-paper),0 0 0 4px var(--sd-paper-ink)}
 .sds-b.on span{font-weight:700}
 .sds-rl{margin:var(--s5) 0 0;border-top:1px dashed var(--sd-paper-rule)}

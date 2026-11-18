@@ -574,6 +574,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   ok(m.raceOk && m.tyOk, `Stampede tools: Speed Tiers is the nine highest rated by base Speed, and each type flag stands its highest-rated Pokémon (race ${m.raceOk}, types ${m.tyOk})`);
   ok(m.tieOk && m.nums, `Stampede tools: tied ratings share a podium step; Events and How We Calculate show the Events page's count and RES.teams (${JSON.stringify(m.pod)}, ${JSON.stringify(m.big)})`);
   const lay = []; for (const [w, th] of [[320, 'day'], [390, 'night'], [820, 'day'], [1100, 'night'], [1440, 'day']]) { await q.evaluate(t => { try { localStorage.setItem('np2.theme', t); } catch (e) {} }, th); await q.setViewportSize({width: w, height: 900}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(1800);
+    await q.evaluate(() => document.fonts.ready.then(() => 1)); await q.waitForTimeout(200); /* measure in the real fonts: a fallback font is wider (a name 'spilling' under load, Nov 18) */
     lay.push(w + ': ' + await q.evaluate(() => { const s = document.querySelector('#main .sdt'); if (!s) return 'no band'; const out = []; if (document.documentElement.scrollWidth > innerWidth) out.push('sideways');
       for (const e of s.querySelectorAll('.sdt-mn,.sdt-t a,.sdt-d span,.sdt-blk b,.sdt-flag span,.sdt-item,.sdt-big b,.sdt-spe,.sdt-chip')) { if (!e.getClientRects().length) continue; if (parseFloat(getComputedStyle(e).fontSize) < 13) out.push('under 13px');
         const box = (e.closest('.sdt-m') ? e.parentElement : e.closest('.sdt-p')).getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e);
@@ -743,7 +744,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   ok(em.add === '0:Add a Pokémon to slot 1|2:Add a Pokémon to slot 3|4:Add a Pokémon to slot 5' && em.q === '?', `Stampede six: with no team, the open rings add to their own slots and the receipt shows "?" (${em.add}; ${em.q})`);
   // long names fit at 320 and 1100, never under 13px (Sim, Nov 18: Mega Crabominable, Squawkabilly (Yellow), Paldean Tauros (Combat))
   await set(['Crabominable-Mega', 'Squawkabilly-Yellow', 'Tauros-Paldea-Combat', 'Charizard-Mega-Y', 'Basculegion', 'Indeedee-F']);
-  for (const w of [320, 390, 1100, 1440]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(500); await q.evaluate(() => window.V2.sdSixAfter());
+  for (const w of [320, 390, 1100, 1440]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(500); await q.evaluate(() => document.fonts.ready.then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))))); await q.evaluate(() => window.V2.sdSixAfter()); /* fit after the fonts and the resize's own redraw (a name read as 'out' under load, Nov 18) */
     const f = await q.evaluate(() => { const bad = []; document.querySelectorAll('.sds .sds-nm, .sds .sds-sub, .sds .sds-tg').forEach(e => { if (!e.getClientRects().length) return; const box = e.closest('.sds-cap') || e.closest('.sds-board'), br = box.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e);
         if ([...rg.getClientRects()].some(r => r.width && (r.left < br.left - 1 || r.right > br.right + 1))) bad.push(e.textContent.trim() + ' out'); if (parseFloat(getComputedStyle(e).fontSize) < 13) bad.push(e.textContent.trim() + ' under 13px'); });
       return {bad, sw: document.documentElement.scrollWidth, vw: innerWidth}; });
@@ -912,11 +913,14 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
         const L = [...ol.querySelectorAll('.sds-b span')].map(s => { const rg = document.createRange(); rg.selectNodeContents(s); return {t: s.textContent, f: parseFloat(getComputedStyle(s).fontSize), rs: [...rg.getClientRects()].filter(c => c.width)}; });
         for (let i = 0; i < L.length; i++) { if (L[i].f < 13) bad.push(L[i].t + ' ' + L[i].f + 'px'); for (const a of L[i].rs) { if (a.left < B.left - .5 || a.right > B.right + .5) bad.push(L[i].t + ' out of the strip');
           for (let j = i + 1; j < L.length; j++) for (const c of L[j].rs) if (Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top) > 1) { const g = c.left >= a.right ? c.left - a.right : a.left >= c.right ? a.left - c.right : -1; if (g < 8) bad.push(`${L[i].t} / ${L[j].t} ${Math.round(g)}px apart`); } } }
+        /* the chosen band's bar grows 1.5x with a 4px ring (box-shadow): no name may sit under it */
+        const on = ol.querySelector('.sds-b.on i'); if (on) { const R = on.getBoundingClientRect(), x0 = R.left - 4, x1 = R.right + 4, y0 = R.top - 4, y1 = R.bottom + 4;
+          for (const l of L) for (const a of l.rs) if (a.left < x1 && a.right > x0 && a.top < y1 && a.bottom > y0) bad.push(l.t + ' under the chosen bar'); }
         return bad.slice(0, 2).join(', '); });
       strip.push(r ? `${empty ? 'empty ' : ''}${night ? 'night ' : ''}${w}: ${r}` : ''); }
     await ctx.close(); }
   ok(!seam.filter(Boolean).length, `Stampede polish 1 (Nov 18): at 1100-2560 (sample team and empty team) the line-up starts 16-80px under the pink ticker, no empty ink strip between them${seam.filter(Boolean).length ? ': ' + seam.filter(Boolean).join(' | ') : ''}`);
   ok(start.length >= 6 && !start.filter(Boolean).length, `Stampede polish 1b: where the three parts stand side by side (1280-2560) the line-up starts with the board (no strip above its headline), all three end on one baseline and the six rings stay on one line${start.filter(Boolean).length ? ': ' + start.filter(Boolean).join(' | ') : ` (${start.length} views)`}`);
-  ok(!strip.filter(Boolean).length, `Stampede polish 2 (Nov 18): the receipt's five band names are 13px or more, inside the strip and at least 8px apart at 320-2560, day and night, team and no team${strip.filter(Boolean).length ? ': ' + strip.filter(Boolean).slice(0, 4).join(' | ') : ''}`); }
+  ok(!strip.filter(Boolean).length, `Stampede polish 2 (Nov 18): the receipt's five band names are 13px or more, inside the strip, at least 8px apart and clear of the chosen bar's ring at 320-2560, day and night, team and no team${strip.filter(Boolean).length ? ': ' + strip.filter(Boolean).slice(0, 4).join(' | ') : ''}`); }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
