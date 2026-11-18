@@ -110,3 +110,19 @@ The footer's tagline, Privacy, Contact and Sources and Credits (a button in the 
 320 +88 · 390 +62 · 820 +64 · 1440 +9 px (phones: the tagline line and a second row of links). Every page's limit gets +90 / +70 / +70 / +10
 (rounded up to 10) in c13-check.mjs; nothing else may grow. Before the change Home 390 was 4,431 vs 4,400, Meta 820 3,987 vs 3,950,
 Battle 390 4,251 vs 4,200, Rotom-Wash 320 4,840 vs 4,800: each within its old limit + the footer. For Sim's review.
+
+## The Stampede Home, Gifts and News (written time: 2:06 PM (2:06:43)  date: Wed Nov 18, 2026)
+Built page `node app/build.mjs --v2 --art=../src/v2/art/` at 5f63de08, daily data from out/ plus meta/post (out/post.json), default
+state, day mode. `node experiments/c13-check.mjs app/dist/v2.html home,gifts,news`. Chromium / WebKit, footer included, data note not counted:
+
+| Page | 320 | 390 | 820 | 1440 |
+|---|---|---|---|---|
+| Home (The Stampede) | 6,664 / 6,443 | 6,240 / 6,168 | 7,819 / 7,743 | 5,117 |
+| Gifts | 4,108 / 4,014 | 3,748 / 3,737 | 3,194 / 3,167 | 2,006 |
+| News | 4,654 / 4,440 | 4,129 / 4,061 | 3,939 / 3,898 | 2,116 |
+
+Limits added to c13-check.mjs at 390 and 1440 only: the taller engine + about 100 px (daily news and Meta growth), rounded up to the next 50,
+footer included: Home 6,350 / 5,250; Gifts 3,850 / 2,150; News 4,250 / 2,250. They exist so a change that bloats these pages fails
+(checked: with 300 px added to each page, all 9 runs at 390/1440 report OVER; without, all 9 are ok). **Not agreed by Sim** (C1: limits
+are hers). The old Home limits (4,400 phone, 2,950 desktop) were for the Home the Stampede replaced. 320 and 820 keep the old limits and
+report OVER until Sim picks. Note: Home at 820 (iPad) is taller than at 390 (7,819 vs 6,240).

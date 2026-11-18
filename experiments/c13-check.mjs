@@ -17,7 +17,7 @@ import {fileURLToPath, pathToFileURL} from 'node:url'; import path from 'node:pa
 const ROOT = path.resolve(fileURLToPath(new URL('..', import.meta.url))), require = createRequire(import.meta.url);
 let pw; try { pw = require(path.join(ROOT, 'node_modules/playwright')); } catch (e) { pw = require('playwright'); }
 const rd = f => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'out', f), 'utf8')); } catch (e) { return null; } };
-const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/history': rd('history.json'), 'meta/weekly': rd('weekly.json'), 'meta/track': rd('track.json'), 'meta/practice': rd('practice.json'), 'meta/calendar': rd('calendar.json')} /* same 13 docs as the behaviour harness (outside sweep, Nov 12) */;
+const L = rd('limitless.json') || {}, D = {'meta/results': L.results, 'meta/perf': L.adj ? {adj: L.adj, updated: String(L.updated || '').slice(0, 10)} : null, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/events': rd('events.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/history': rd('history.json'), 'meta/weekly': rd('weekly.json'), 'meta/track': rd('track.json'), 'meta/practice': rd('practice.json'), 'meta/calendar': rd('calendar.json'), 'meta/post': rd('post.json')} /* same 13 docs as the behaviour harness (outside sweep, Nov 12), plus meta/post (Nov 18: Gifts and News read it, as live will after the switch) */;
 const [file = path.join(ROOT, 'app/dist/v2.html'), viewArg = 'team,team-empty,box,compare', state = 'default'] = process.argv.slice(2);
 // limits (docs/rebuild/page-heights.md, tool pages). 320 uses the 390 limit (Sim, Nov 12). Phone 3,700 (Sim, Nov 12; was 3,400); 320 3,900 (Sim chose options B+C+D, which reach 3,870).
 const WIDTHS = [[320, 3900, ''], [390, 3700, ''], [820, 3500, ''], [1440, 1800, '']];
@@ -37,6 +37,14 @@ const BUILD_L = {320: [4150, 'Blueprint (Sim, Nov 14, Build limits A)'], 390: [3
 const BATTLE = {320: [4650, 'Battle log + tools (Sim, Nov 12)'], 390: [4200, 'Play-by-Play (Sim, Nov 15, Q2: 4,100 to 4,200)'], 1440: [2150, 'Play-by-Play 2x2 + three columns (Sim, Nov 15: 1,950 to 2,150)']};
 // My Team 'The Hand' (Sim's pick Nov 14; limits Nov 15, Claude under Sim's authority, her standing 'recommended'): measured heights rounded up to the next 50, as for Build / Meta / Battle
 const TEAM_L = {320: [4600, 'The Hand (Nov 15)'], 390: [4150, 'The Hand (Nov 15)'], 1440: [2350, 'The Hand (Nov 15)']};
+// The Stampede Home, Gifts (#gifts) and News (#news) (switch-readiness Nov 18: no limits for the new pages). Measured Nov 18 at 390 and 1440 on
+// the daily data (out/, with meta/post), Chromium and WebKit, the taller of the two, + about 100 px for daily news and Meta growth, rounded up
+// to the next 50. These include the footer (no +footer below). Set so that a change that makes them taller fails; NOT agreed by Sim (C1:
+// limits are hers). 320 and 820 have no new limit yet: Home measured 6,664 at 320 and 7,819 at 820 (taller than the phone), Gifts 4,108 /
+// 3,194, News 4,654 / 3,939; those widths still use the old limits above and report OVER until Sim picks.
+const NEW_L = {home: {390: [6350, 'The Stampede: measured 6,240 + margin (Nov 18, not Sim-agreed)'], 1440: [5250, 'The Stampede: measured 5,117 + margin (Nov 18, not Sim-agreed)']},
+  gifts: {390: [3850, 'Gifts: measured 3,748 + margin (Nov 18, not Sim-agreed)'], 1440: [2150, 'Gifts: measured 2,006 + margin (Nov 18, not Sim-agreed)']},
+  news: {390: [4250, 'News: measured 4,129 + margin (Nov 18, not Sim-agreed)'], 1440: [2250, 'News: measured 2,116 + margin (Nov 18, not Sim-agreed)']}};
 const touch = w => w < 1100;
 const out = [], t0 = Date.now();
 // C13_ENGINES=chromium runs Chromium only (for a PC without WebKit, e.g. the outside check); default: both engines
@@ -53,7 +61,8 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, l
   if (view === 'team' && state === 'five' && {320: 1, 390: 1, 1440: 1}[w]) [limit, note] = [{320: 4500, 390: 4200, 1440: 2100}[w], '5 of 6, The Hand (Nov 15; was 4,250 / 4,100 / 1,950, Sim Nov 13)'];
   // Sim, Nov 15 (Q2 A): the footer got back its tagline, Privacy, Contact and Sources and Credits on every page. Its measured extra height
   // (phones: the tagline line and a second row of links) is added to every page's limit, rounded up to 10; no page may grow otherwise.
-  { const FOOT = {320: 90, 390: 70, 820: 70, 1440: 10}; if (FOOT[w]) { limit += FOOT[w]; note = (note ? note + '; ' : '') + '+' + FOOT[w] + ' footer (Nov 15)'; } }
+  const nl = NEW_L[view] && NEW_L[view][w]; if (nl) [limit, note] = nl;
+  { const FOOT = {320: 90, 390: 70, 820: 70, 1440: 10}; if (FOOT[w] && !nl) { limit += FOOT[w]; note = (note ? note + '; ' : '') + '+' + FOOT[w] + ' footer (Nov 15)'; } }
   if (eng === 'webkit' && w > 820) continue; // WebKit (iPhone/iPad Safari's engine) for phone and tablet widths
   const b = await pw[eng].launch(), ctx = await b.newContext({viewport: {width: w, height: w < 700 ? 844 : 900}, hasTouch: touch(w), isMobile: eng === 'chromium' ? false : w < 700});
   const p = await ctx.newPage(), errs = [];
@@ -76,6 +85,8 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, l
   // C13_PLANT=1 (testing the check itself): plant one fault of each kind; every count below must then go up
   if (process.env.C13_PLANT) await p.evaluate(() => document.querySelector('#main').insertAdjacentHTML('afterbegin', '<button style="opacity:0">Ghost</button><img src="art/nope.webp" alt="" width="40" height="40"><div style="width:3000px;height:4px"></div><button class="np-btn">Second main</button><button class="np-btn">Third main</button><button style="width:20px;height:20px">x</button><p>This exact sentence is planted twice on purpose.</p><p>This exact sentence is planted twice on purpose.</p>'));
   if (process.env.C13_PLANT) { await p.evaluate(() => console.error('planted console error')); await p.waitForTimeout(800); }
+  // C13_GROW=<px> (testing the height limits): make the page that much taller, as a change that bloats it would
+  if (+process.env.C13_GROW) await p.evaluate(px => document.querySelector('#main').insertAdjacentHTML('beforeend', `<div style="height:${px}px"></div>`), +process.env.C13_GROW);
   const r = await p.evaluate(({touchW}) => {
     // shown = the same answer in every engine (Sim, Nov 12: WebKit on Windows counted 5 controls in a closed fold as 0x0 taps):
     // the browser says visible where it can, the box has a size, and it isn't inside a closed fold (its summary excepted) or hidden
