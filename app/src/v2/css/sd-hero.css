@@ -59,7 +59,9 @@
 @media (max-width:599.98px){.sdh-plate .nm{font-size:var(--t16)}}
 @media (max-width:359.98px){.sdh-plate .nm{font-size:var(--t15)}.sdh-plate{padding:var(--s1) var(--s4)}}
 .sdh-say{font:400 var(--t17)/1.5 var(--b);color:var(--sd-on-band);max-width:62ch}
-.sdh-all{font-weight:600;color:var(--sd-link);white-space:nowrap}
+.sdh-all{position:relative;font-weight:600;color:var(--sd-link);white-space:nowrap}
+/* Q13e A (Sim, Nov 18): a "›" link reads as a button, so it gets a 44px tap area even inside a sentence (the words stay as they are) */
+.sdh-all::after{content:"";position:absolute;inset-inline:calc(var(--s1) * -1);top:50%;height:var(--tap);translate:0 -50%}
 @media (hover:hover){.sdh-all:hover{text-decoration:underline}}
 .sdh-go{display:flex;gap:var(--s4);rotate:var(--sd-tilt)}
 .sdh-b1,.sdh-b2{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 var(--s8);font:900 var(--t17)/1.1 var(--u);font-style:italic;text-align:center}

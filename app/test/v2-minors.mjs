@@ -175,6 +175,12 @@ const HQ = async () => {
         for (let i = 0; i < a.length; i += 4) if (d(a, bb, i) > 60) { m++; if (d(c, a, i) > 60) k++; } return {m, pct: +(100 * k / Math.max(1, m)).toFixed(2)}; }, [A, B, C]);
       if (x.m < 5000 || x.pct > 0.15) cv.push(`${w}: ${x.pct}% of ${x.m} tagline pixels covered`); }
     await cmp.close(); ok(!cv.length, `HQ Q13f (Sim: B): the hero sprites never cover the tagline's words, 320-2560 (0.15% of its pixels at most: a head's edge touching the line)${cv.length ? ': ' + cv.join(' | ') : ''}`); }
+  // Q13e A: every "›" link or button on Home answers a tap anywhere in a 44px band through its middle, links inside a sentence too
+  { const ch = []; for (const w of [390, 1440]) { const r = await hq(w, 900, {rm: 'reduce', fn: async () => { const out = []; for (const e of document.querySelectorAll('#main a, #main button')) { if (!/›\s*$/.test(e.textContent) || !e.getClientRects().length || e.closest('[aria-hidden="true"]')) continue;
+      e.scrollIntoView({block: 'center'}); await new Promise(r => setTimeout(r, 40)); const x = e.getBoundingClientRect(), cx = x.left + x.width / 2, cy = x.top + x.height / 2;
+      const hit = dy => { const t = document.elementFromPoint(cx, cy + dy); return !!t && (t === e || e.contains(t)); }; if (!(hit(-21) && hit(21))) out.push(`"${e.textContent.trim()}" ${Math.round(x.height)}px`); } return out; }});
+    for (const x of r) ch.push(w + ': ' + x); }
+    ok(!ch.length, `HQ Q13e (Sim: A): every "›" link on Home has a 44px tap area, inside a sentence too${ch.length ? ': ' + ch.join(' | ') : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----
