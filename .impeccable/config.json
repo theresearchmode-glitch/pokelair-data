@@ -1,0 +1,17 @@
+{
+  "detector": {
+    "ignoreRules": [],
+    "ignoreFiles": [],
+    "ignoreValues": [
+      {
+        "rule": "side-tab",
+        "value": "*",
+        "files": [
+          "app/src/v2/css/sd-dispatch.css"
+        ],
+        "createdAt": "2026-11-18T02:27:03.242Z",
+        "reason": "Sim's brief for the Champions Dispatch (docs/rebuild/dispatch/BRIEF.md) specifies 'A black bar with a red edge' for The Back Page and the mock-up's Next event bar; newspaper spot-colour rule, intentional"
+      }
+    ]
+  }
+}
