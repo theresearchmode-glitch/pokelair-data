@@ -65,13 +65,15 @@ button.sds-nm::before{content:"";position:absolute;left:50%;top:50%;width:max(10
 .sds-w i{flex:0 0 auto;width:16px;height:16px;border-radius:var(--r-s);background:var(--bd)}
 .sds-w small{font:500 var(--t13)/1.5 var(--b);color:var(--sd-paper-ink2)}
 .sds-rk{margin:var(--s1) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--sd-paper-ink2)}
-/* the five bands: labels 12px apart so two names never run together ("Tournament ready" beside "Top tier", polish Nov 18); each bar reaches
-   8px into the gap, so the bars still read as one strip, 4px apart */
-.sds-bands{list-style:none;display:grid;grid-template-columns:repeat(5,minmax(min-content,1fr));gap:var(--s1) var(--s3);margin:var(--s5) 0 0;padding:0}
+/* the five bands: five equal bars, 4px apart, so they read as one strip (polish Nov 18 night: "Tournament" no longer widens its column);
+   each name keeps 4px clear on its right, so two names are always 8px or more apart; where the columns get narrow the names take the
+   approved narrower letters (88%, then 75%: "Tournament" in bold is 77px, 67px, 57px at 13px) */
+.sds-bands{list-style:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s1);margin:var(--s5) 0 0;padding:0}
 .sds-b{min-width:0}
-.sds-b i{display:block;height:12px;margin-right:calc(var(--s2) * -1);background:var(--bd);transform:skewX(-14deg)}
-.sds-b:last-child i{margin-right:0} /* names sit 12px under the bars: the chosen band grows 1.5x with a 4px ring, which covered "Top" at 4px (polish Nov 18) */
-.sds-b span{display:block;margin-top:var(--s3);font:500 var(--t13)/1.25 var(--b);color:var(--sd-paper-ink)}
+.sds-b i{display:block;height:12px;background:var(--bd);transform:skewX(-14deg)}
+/* names sit 12px under the bars: the chosen band grows 1.5x with a 4px ring, which covered "Top" at 4px (polish Nov 18) */
+.sds-b span{display:block;margin-top:var(--s3);padding-right:var(--s1);font:500 var(--t13)/1.25 var(--b);color:var(--sd-paper-ink)}
+.sds-b:last-child span{padding-right:0}
 .sds-b.on i{transform:skewX(-14deg) scaleY(1.5);box-shadow:0 0 0 2px var(--sd-paper),0 0 0 4px var(--sd-paper-ink)}
 .sds-b.on span{font-weight:700}
 .sds-rl{margin:var(--s5) 0 0;border-top:1px dashed var(--sd-paper-rule)}
@@ -157,9 +159,11 @@ button.sds-nm::before{content:"";position:absolute;left:50%;top:50%;width:max(10
 @container (max-width:339.98px){
   .sds-rc .sds-sc,.sds-rc .sds-w,.sds-rc .sds-rk{grid-column:1/-1;grid-row:auto}
 }
-@container (max-width:279.98px){ /* the five names in one row need 280px with 12px between them (polish Nov 18); narrower, they list as a key */
-  .sds-bands{grid-template-columns:minmax(0,1fr);gap:var(--s1)}
+@container (max-width:423.98px){.sds-b span{font-stretch:88%}}
+@container (max-width:373.98px){.sds-b span{font-stretch:75%}}
+@container (max-width:323.98px){ /* five equal columns need 324px for "Tournament" (57px at 75%) plus its 4px; narrower, the names list as a key (Nov 18 night) */
+  .sds-bands{grid-template-columns:minmax(0,1fr);gap:var(--s2)} /* 8px rows: the chosen bar (1.5x tall, 4px ring) stays clear of the next */
   .sds-b{display:flex;align-items:center;gap:var(--s2)}
-  .sds-b i{flex:0 0 32px;height:12px;margin-right:0}
-  .sds-b span{margin-top:0}
+  .sds-b i{flex:0 0 32px;height:12px}
+  .sds-b span{margin-top:0;padding-right:0;font-stretch:100%}
 }

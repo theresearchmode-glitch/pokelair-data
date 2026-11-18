@@ -60,7 +60,7 @@
 .sdt-pod{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:var(--s2);margin-top:var(--s4)}
 .sdt-step .np-mon{--iw:136px}
 .sdt-step.s1 .np-mon{--iw:160px}
-.sdt-step .np-mon .st,.sdt-six .np-mon .st,.sdt-side .np-mon .st{max-width:none;margin-left:calc(50% - var(--iw) / 2)}
+.sdt-step .np-mon .st,.sdt-six .np-mon .st{max-width:none;margin-left:calc(50% - var(--iw) / 2)}
 .sdt-blk{display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;min-height:var(--s24);padding:var(--s2) var(--s1);background:var(--sd-pod);color:var(--sd-on-feat)}
 .sdt-step.s1 .sdt-blk{min-height:calc(var(--s24) + var(--s10));background:var(--sd-pod-top);color:var(--sd-on-race)}
 .sdt-step.s2 .sdt-blk,.sdt-step.s3 .sdt-blk{min-height:calc(var(--s24) - var(--s4))} /* ranks 1 share the top step (ties share a rank, as on Ratings) */
@@ -77,17 +77,33 @@
 .sdt-acts{display:flex;flex-wrap:wrap;gap:0 var(--s5);margin-top:var(--s1)}
 .sdt-acts .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;cursor:pointer}
 
-/* Battle: two facing two across a VS */
+/* Battle: two facing two across a VS. The VS has its own 64px column and no sprite enters it (polish Nov 18 night: Whimsicott's white
+   fluff hid the white VS). Each pair stays inside its half: the sprites are as big as the half allows (up to --cap), and where the two
+   overlap, the outer one stands raised behind the inner one, as a herd (a half is 50cqi less half the VS column and the gaps) */
 .sdt-bt{grid-column:span 4;display:flex;flex-direction:column}
-.sdt-vs{margin-top:auto;padding-top:var(--s4);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:var(--s1)}
-.sdt-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s1);align-items:end}
-.sdt-side .np-mon{--iw:96px}
-.sdt-vsw{position:relative;z-index:3;align-self:center;font-size:var(--t34);padding:0 var(--s1)}
+.sdt-vs{container-type:inline-size;margin-top:auto;padding-top:var(--s4);display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);align-items:end;gap:var(--s1)}
+.sdt-side{--cap:96px;--bw:min(var(--cap),calc((50cqi - 36px) * .8));display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;padding-top:calc(var(--bw) * .28)}
+.sdt-side .np-mon{--iw:var(--bw)}
+.sdt-side .np-mon .st{max-width:none;margin-left:min(calc(50% - var(--iw) / 2),calc(100% - var(--iw)))}
+.sdt-side .sdt-m:first-child .np-mon .st{margin-left:max(0px,calc(50% - var(--iw) / 2))}
+/* the outer two stand raised and behind (the side's top padding keeps room for them); their names stay on the line with the others.
+   The side is one layer above the plate's link; inside it the sprites stack (outer 1, inner 2) and every name sits on top (3), so the
+   inner sprite never covers its neighbour's name (1440: Pelipper's wing hid "Mega" of Mega Venusaur) */
+.sdt-side{position:relative;z-index:2}.sdt-side .sdt-m{z-index:auto}.sdt-side .np-mon .st{z-index:2}
+.sdt-side.you .sdt-m:first-child .st,.sdt-side.them .sdt-m:last-child .st{z-index:1;translate:0 calc(var(--iw) * -.28)}
+.sdt-side .sdt-mn{position:relative;z-index:3}
+/* under 1440 the names are hidden: each button is as wide as its sprite (at least the 44px tap size) and stands at its side's outer
+   edge, so a track narrower than 44px can't push a sprite past the side's edge */
+@media (max-width:1439.98px){.sdt-side .sdt-m{width:max(var(--tap),var(--bw))}.sdt-side .sdt-m:first-child{justify-self:start}.sdt-side .sdt-m:last-child{justify-self:end}
+  .sdt-side .sdt-m .np-mon .st,.sdt-side .sdt-m:first-child .np-mon .st{margin-left:calc(50% - var(--iw) / 2)}}
+.sdt-vsw{position:relative;z-index:3;align-self:center;font-size:var(--t34);text-align:center}
 .sdt-side.you .sdt-mn{color:var(--sd-you)}.sdt-side.them .sdt-mn{color:var(--sd-them)}
 
 /* Damage Calc: the site's calc as a health bar over the target */
-.sdt-dc{grid-column:span 3;display:flex;flex-direction:column}
-.sdt-hit{margin-top:auto;padding-top:var(--s4);display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s1)}
+/* the picture sits in the middle of any spare height (polish Nov 18 night: beside the taller Ratings plate, all of it gathered above the
+   picture, a 120px band at 820); 16px apart from the words at least */
+.sdt-dc{grid-column:span 3;display:flex;flex-direction:column;row-gap:var(--s4)}
+.sdt-hit{margin-block:auto;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s1)}
 .sdt-hp{display:flex;justify-self:end;width:60%;height:var(--s3);background:var(--sd-hp-lost);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 .sdt-hp i{display:block;height:100%}
 .sdt-hp .left{background:var(--hp-left)}
@@ -109,10 +125,26 @@
 .sdt-wxi{display:flex;flex-direction:column;align-items:center;gap:var(--s1)}
 .sdt-wxi .np-mon{--iw:96px}
 .sdt-chip{display:inline-block;padding:var(--s1) var(--s3);background:var(--ty);color:var(--on-type);font:700 var(--t13)/1.3 var(--b)}
-.sdt-tr{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,2fr);align-items:end;gap:var(--s2)}
-.sdt-tr .one .np-mon{--iw:120px}
-.sdt-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s1);align-items:end}
-.sdt-three .np-mon{--iw:80px}
+/* Test Run: one Pokémon facing three top-team Pokémon (polish Nov 18 night: they were squeezed to 20-40px over an empty middle).
+   The picture takes the plate's spare height (flex-grow) and is a size container, so the sprites grow with its width AND its height
+   (cqi, cqh) and fill the plate; its least height is a share of the plate's width (the plate is the width container).
+   A wide, low picture: the one beside the three, who stand as a pyramid. A narrow or tall one (8:5 or taller): the one above the
+   three, who stand in an overlapping row */
+.sdt-sm:has(.sdt-tr){container-type:inline-size}
+.sdt-sm .sdt-tr{flex:1 0 auto;min-height:34cqi;container-type:size;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;align-content:flex-end}
+.sdt-tr>*{--s3w:min(29cqi,64cqh,120px)}
+.sdt-tr .one{flex:0 0 42cqi;display:flex;justify-content:center}.sdt-tr .one .np-mon{--iw:min(42cqi,100cqh,150px)}
+.sdt-three{flex:0 0 58cqi;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:end}
+.sdt-three .np-mon{--iw:var(--s3w)}
+.sdt-three .sdt-art{grid-row:2;grid-column:span 2}.sdt-three .sdt-art:first-child{grid-row:1;grid-column:2/4;margin-bottom:calc(var(--s3w) * -.42)}
+@container (max-width:199.98px) or (max-aspect-ratio:8/5){
+  .sdt-tr>*{--s3w:min(42cqi,38cqh,104px)}
+  .sdt-tr .one{flex-basis:100cqi}.sdt-tr .one .np-mon{--iw:min(80cqi,calc(100cqh - var(--s3w) * .7),132px)}
+  .sdt-three{flex-basis:100cqi;display:flex;justify-content:center;margin-top:calc(var(--s3w) * -.3)}
+  .sdt-three .sdt-art{flex:0 0 auto}.sdt-three .sdt-art .np-mon .st{max-width:none}
+  .sdt-three .sdt-art+.sdt-art{margin-left:min(0px,calc((100cqi - var(--s3w) * 3) / 2))}
+  .sdt-three .sdt-art:first-child{margin-bottom:0}}
+@media (min-width:380px) and (max-width:699.98px){.sdt-sm .sdt-tr{min-height:60cqi}} /* two small plates to a row: the plate is narrow */
 .sdt-set .sdt-m{flex-direction:row;align-items:flex-end;justify-content:flex-start;gap:var(--s3);text-align:left}
 .sdt-set .np-mon{flex:0 0 auto;width:auto}
 .sdt-si{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s1);padding-bottom:var(--s2)}
@@ -138,8 +170,8 @@
 @media (max-width:1099.98px){
   .sdt-speed{grid-template-columns:minmax(0,1fr)}.sdt-speed .sdt-tx{order:2;padding-bottom:0}.sdt-race{margin-top:calc(var(--s16) * -1)}
   .sdt-run[data-k="8"],.sdt-run[data-k="9"]{display:none}.sdt-run .np-mon{--iw:104px}
-  .sdt-tc{grid-column:1/-1}.sdt-ra,.sdt-dc{grid-column:span 6}.sdt-wt{grid-column:span 7}.sdt-bt{grid-column:span 5}
-  .sdt-side .np-mon{--iw:96px}.sdt-side .sdt-mn{display:none}.sdt-duel .np-mon{--iw:144px}
+  .sdt-tc{grid-column:1/-1}.sdt-ra,.sdt-dc{grid-column:span 6}
+  .sdt-side .sdt-mn{display:none}.sdt-duel .np-mon{--iw:144px}
   .sdt-big b{font-size:var(--t34)}
   .sdt-ends{grid-template-columns:minmax(0,1fr);gap:var(--s4);margin-top:var(--s8)}
   .sdt-end,.sdt-end.hw{flex-direction:row;text-align:left;border-left:0;padding:0;align-items:flex-end}.sdt-end.hw .sdt-big{align-items:flex-start}
@@ -164,16 +196,18 @@
   .sdt-wt,.sdt-bt{grid-column:1/-1}
   .sdt-cap{display:block}
   .sdt-sm{grid-column:span 6;margin-top:var(--s10)}.sdt-sm .sdt-t{font-size:var(--t20)}.sdt-sm>:last-child{margin-top:calc(var(--s10) * -1)}
-  .sdt-core .np-mon,.sdt-set .np-mon,.sdt-tr .one .np-mon{--iw:72px}.sdt-wxi .np-mon{--iw:64px}.sdt-three .np-mon{--iw:48px}.sdt-plus{font-size:var(--t24)}
+  .sdt-core .np-mon,.sdt-set .np-mon{--iw:72px}.sdt-wxi .np-mon{--iw:64px}.sdt-plus{font-size:var(--t24)}
   .sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}
   .sdt-ends{grid-template-columns:minmax(0,1fr);gap:var(--s4);margin-top:var(--s8)}
   .sdt-end,.sdt-end.hw{flex-direction:row;text-align:left;border-left:0;padding:0;align-items:flex-end}.sdt-end.hw .sdt-big{align-items:flex-start}
   .sdt-big{width:42%}.sdt-big b{font-size:var(--t34)}.sdt-big small{font-size:var(--t13)}.sdt-end .sdt-t{font-size:var(--t20)}}
-/* the strips side by side where there is room for both halves */
-@media (min-width:520px) and (max-width:699.98px){
+/* the strips side by side where there is room for both halves; on tablets too (polish Nov 18 night: beside Winning Teams, Battle's
+   five-twelfths left its four sprites under 50px, too small to read) */
+@media (min-width:700px) and (max-width:1099.98px){.sdt-wt,.sdt-bt{grid-column:1/-1}}
+@media (min-width:520px) and (max-width:1099.98px){
   .sdt-wt,.sdt-bt{flex-direction:row;align-items:center;gap:var(--s4)}.sdt-wt>.sdt-tx,.sdt-bt>.sdt-tx{flex:0 0 38%}
   .sdt-wt .sdt-pic,.sdt-bt .sdt-vs{flex:1;margin:0;padding:0}.sdt-wt .sdt-acts,.sdt-wt .wt-sure{flex-basis:100%}}
-@media (max-width:519.98px){.sdt-side .np-mon{--iw:64px}.sdt-six .np-mon{--iw:56px}.sdt-blk b{font-size:var(--t20)}.sdt-tr .one .np-mon{--iw:88px}.sdt-three .np-mon{--iw:56px}}
+@media (max-width:519.98px){.sdt-side{--cap:64px}.sdt-six .np-mon{--iw:56px}.sdt-blk b{font-size:var(--t20)}}
 @media (max-width:419.98px){.sdt-sm .sdt-t{font-size:var(--t17)}}
 @media (max-width:379.98px){.sdt-spe{font-size:var(--t20)}.sdt-run .sdt-mn{font-size:var(--t13)}.sdt-big{width:46%}}
 

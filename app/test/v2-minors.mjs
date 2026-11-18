@@ -10,6 +10,7 @@
 //   OL-i39  Report a Mistake on a Pokémon page sends its numbers (rating, tier, rank, tournament numbers, moves, items), as today's site did
 //   OL-i15  Build's Blueprint shows the catch tip, "X isn't in your box" and every plan chip (no cap of 3), in even rows
 //   Stampede polish 1/1b/2 (Nov 18): the hero/six seam, the three parts starting and ending together, the receipt's band names readable
+//   Stampede tiles 2-5 + tags (Nov 18 night): Battle's VS clear, Test Run filled, Damage Calc balanced, equal band bars, board tags inside
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
 import {chromium} from 'playwright'; import path from 'node:path'; import fs from 'node:fs';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -604,6 +605,40 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       return out.length ? out.join(', ') : 'ok'; })); }
   ok(lay.every(x => / ok$/.test(x)), `Stampede tools: at 320 / 390 / 820 / 1100 / 1440 (day and night) no sideways scroll, no text under 13px or out of its spot, every row of plates full (${lay.join(' | ')})`);
   await q.evaluate(() => { try { localStorage.removeItem('np2.theme'); } catch (e) {} }); await q.close(); }
+/* Stampede tile fixes (polish sweep Nov 18 night, defects 2-5; docs/rebuild/audits/polish-sweep-nov18-night.md). Each failed on the build before. */
+{ const q = await b.newPage({viewport: {width: 1440, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+  const bt = [], tr = [], dc = [], bars = [], tags = [];
+  for (const w of [320, 390, 520, 700, 820, 880, 1024, 1100, 1180, 1280, 1366, 1440, 1500, 1920, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(350); await q.evaluate(() => document.fonts.ready.then(() => 1));
+    const m = await q.evaluate(() => { const R = e => e.getBoundingClientRect(), o = {bt: '', tr: '', dc: '', bars: ''};
+      /* 2. Battle: every sprite inside its own side (you / them), none in the VS's box, none under 56px */
+      const vs = document.querySelector('#main .sdt-vsw'); if (!vs) o.bt = 'no VS'; else { const V = R(vs);
+        for (const s of document.querySelectorAll('#main .sdt-side')) { const S = R(s); for (const st of s.querySelectorAll('.np-mon .st')) { const r = R(st);
+          if (r.left < S.left - 1 || r.right > S.right + 1) o.bt = `sprite ${Math.round(r.left)}-${Math.round(r.right)} out of its side ${Math.round(S.left)}-${Math.round(S.right)}`;
+          else if (r.right > V.left + 1 && r.left < V.right - 1) o.bt = 'sprite over the VS'; else if (r.width < 56) o.bt = `sprite ${Math.round(r.width)}px`; } }
+        /* and every name shown under a sprite is on top: the middle of each of its lines hits the name itself, not a neighbour's sprite */
+        vs.scrollIntoView({block: 'center'}); for (const mn of document.querySelectorAll('#main .sdt-side .sdt-mn')) { if (!mn.getClientRects().length) continue; const rg = document.createRange(); rg.selectNodeContents(mn);
+          for (const l of rg.getClientRects()) { if (!l.width) continue; const hit = document.elementFromPoint(l.left + l.width / 2, l.top + l.height / 2); if (!hit || !mn.contains(hit)) o.bt = `name "${mn.textContent}" covered`; } } }
+      /* 3. Test Run: no empty middle (the space the sprites leave between the plate's top and its words, 32px at most), no sprite under 44px */
+      const t = document.querySelector('#main .sdt-tr'); if (!t) o.tr = 'no picture'; else { const P = R(t.closest('.sdt-p')), X = R(t.closest('.sdt-p').querySelector('.sdt-tx')), S = [...t.querySelectorAll('.np-mon .st')].map(R);
+        const empty = Math.round(X.top - Math.max(...S.map(r => r.bottom)) - 12 + Math.max(0, Math.min(...S.map(r => r.top)) - P.top)), small = Math.round(Math.min(...S.map(r => r.width)));
+        if (empty > 32 || small < 44) o.tr = `empty ${empty}px, smallest sprite ${small}px`; }
+      /* 4. Damage Calc: the spare height is shared above and below the picture (within 8px), or there is none to speak of (24px at most) */
+      const h = document.querySelector('#main .sdt-hit'); if (!h) o.dc = 'no picture'; else { const p = h.closest('.sdt-p'), P = R(p), H = R(h), X = R(p.querySelector('.sdt-tx')), pb = parseFloat(getComputedStyle(p).paddingBottom);
+        const up = Math.round(H.top - X.bottom - (parseFloat(getComputedStyle(p).rowGap) || 0)), down = Math.round(P.bottom - pb - H.bottom); if (Math.abs(up - down) > 8 && Math.max(up, down) > 24) o.dc = `${up}px above, ${down}px below`; }
+      /* 5. the receipt's five band bars: one width (untransformed, within 1px) */
+      const B = [...document.querySelectorAll('#main .sds-b i')].map(e => e.offsetWidth); if (B.length !== 5) o.bars = B.length + ' bars'; else if (Math.max(...B) - Math.min(...B) > 1) o.bars = B.join('/');
+      /* the plan board's name tags: the whole slanted tag 4px or more inside the board, clear of its folded top-right corner (24px), 13px or more */
+      o.tags = ''; const tg = [...document.querySelectorAll('#main .sds-tg')].filter(e => e.getClientRects().length); if (!tg.length) o.tags = 'no tags';
+      for (const t of tg) { const Bd = R(t.closest('.sds-board')), r = R(t), fold = Math.max(0, 24 - (r.top - Bd.top)), f = parseFloat(getComputedStyle(t).fontSize);
+        if (f < 13 || r.left < Bd.left + 3.5 || r.right > Bd.right - 3.5 - fold) { o.tags = `${t.textContent} ${Math.round(r.left - Bd.left)}px / ${Math.round(Bd.right - fold - r.right)}px from the edge, ${f}px`; break; } }
+      return o; });
+    for (const [k, a] of [['bt', bt], ['tr', tr], ['dc', dc], ['bars', bars], ['tags', tags]]) if (m[k]) a.push(w + ': ' + m[k]); }
+  ok(!bt.length, `Stampede tiles 2 (Nov 18 night): Battle, at 320-2560 every sprite stays inside its side, clear of the VS, and is 56px or more; no name under a sprite${bt.length ? ': ' + bt.slice(0, 4).join(' | ') : ''}`);
+  ok(!tr.length, `Stampede tiles 3: Test Run, at 320-2560 the sprites fill the plate (32px or less left empty between its top and its words) and none is under 44px${tr.length ? ': ' + tr.slice(0, 4).join(' | ') : ''}`);
+  ok(!dc.length, `Stampede tiles 4: Damage Calc, at 320-2560 the picture sits in the middle of the spare height (no empty band only above it)${dc.length ? ': ' + dc.slice(0, 4).join(' | ') : ''}`);
+  ok(!bars.length, `Stampede tiles 5: the receipt's five band bars are one width at 320-2560${bars.length ? ': ' + bars.slice(0, 4).join(' | ') : ''}`);
+  ok(!tags.length, `Stampede tags (qcheck triage Nov 18, defect 2): every plan-board name tag ("Mega Charizard Y") fits whole inside the board, clear of its folded corner, at 13px or more, 320-2560${tags.length ? ': ' + tags.slice(0, 4).join(' | ') : ''}`);
+  await q.close(); }
 { /* The Champions Dispatch (#news; Sim, Nov 18, docs/rebuild/dispatch/BRIEF.md). Each check fails on the skeleton page (one h1, no paper). */
   const q = await b.newPage({viewport: {width: 1440, height: 1000}});
   /* a page without the Dispatch (the skeleton) answers with {err}, so each check prints FAIL instead of stopping the run */

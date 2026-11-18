@@ -98,9 +98,16 @@ V2.sdsArrows = () => { document.querySelectorAll('.sds-board').forEach(b => { co
     const h = 10, w = 6, bx = x2 - ux * h, by = y2 - uy * h; d += `<path class="ln" d="M${x1.toFixed(1)} ${y1.toFixed(1)}L${bx.toFixed(1)} ${by.toFixed(1)}"/><path class="hd" d="M${x2.toFixed(1)} ${y2.toFixed(1)}L${(bx - uy * w).toFixed(1)} ${(by + ux * w).toFixed(1)}L${(bx + uy * w).toFixed(1)} ${(by - ux * w).toFixed(1)}Z"/>`; } });
   svg.setAttribute('viewBox', `0 0 ${R.width.toFixed(1)} ${R.height.toFixed(1)}`); svg.innerHTML = d; }); };
 V2.sdsFit = () => { const steps = [['--t13', ''], ['--t13', '88%'], ['--t13', '75%']]; /* never under 13px (the type scale); narrower letters, then a hyphen */
-  document.querySelectorAll('.sds-rings .sds-nm, .sds-rings .sds-sub, .sds-tg').forEach(b => { b.style.fontSize = ''; b.style.fontStretch = ''; b.style.hyphens = ''; b.classList.remove('nar');
-    const tg = b.classList.contains('sds-tg'), box = tg ? b.closest('.sds-board') : b.closest('.sds-cap'), over = () => { const br = box.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(b); const pad = tg ? 8 : 0; return [...rg.getClientRects()].some(r => r.width && (r.left < br.left + pad - 0.5 || r.right > br.right - pad + 0.5)); }; /* a board tag keeps 8px clear of the board edge */
-    if (!box || !over()) return; if (tg) { b.classList.add('nar'); if (!over()) return; } /* a board tag: the body font is narrower than Unbounded */ for (const [fs, st] of steps) { b.style.fontSize = `var(${fs})`; b.style.fontStretch = st; if (!over()) return; } b.style.hyphens = 'auto'; }); };
+  /* a board tag: its whole slanted shape (not only its words) keeps 4px clear of the board's edges, and of the folded top-right corner
+     (24px, cut at 45 degrees), which clipped "Mega Charizard Y" (polish Nov 18 night); last, a tag may wrap to two lines */
+  const tagOver = (b, B) => { const r = b.getBoundingClientRect(), fold = Math.max(0, 24 - (r.top - B.top)); return r.left < B.left + 4 - 0.5 || r.right > B.right - 4 - fold + 0.5; };
+  document.querySelectorAll('.sds-rings .sds-nm, .sds-rings .sds-sub, .sds-tg').forEach(b => { b.style.fontSize = ''; b.style.fontStretch = ''; b.style.hyphens = ''; b.style.whiteSpace = ''; b.classList.remove('nar');
+    const tg = b.classList.contains('sds-tg'), box = tg ? b.closest('.sds-board') : b.closest('.sds-cap'), over = () => { const br = box.getBoundingClientRect(); if (tg) return tagOver(b, br); const rg = document.createRange(); rg.selectNodeContents(b); return [...rg.getClientRects()].some(r => r.width && (r.left < br.left - 0.5 || r.right > br.right + 0.5)); };
+    if (!box || !over()) return; if (tg) { b.classList.add('nar'); if (!over()) return; } /* a board tag: the body font is narrower than Unbounded */ for (const [fs, st] of steps) { b.style.fontSize = `var(${fs})`; b.style.fontStretch = st; if (!over()) return; }
+    if (tg) { b.style.fontStretch = ''; b.style.whiteSpace = 'normal'; if (!over()) return; b.style.fontStretch = '75%'; if (!over()) return; } b.style.hyphens = 'auto'; }); };
 V2.sdSixAfter = () => { V2.sdsFit(); V2.sdsArrows(); };
 addEventListener('resize', () => { if (V2.route && V2.route() === 'home' && document.querySelector('.sds')) requestAnimationFrame(V2.sdSixAfter); });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (V2.route && V2.route() === 'home' && document.querySelector('.sds')) V2.sdSixAfter(); });
+/* fit again once a web font arrives: the ready promise above can settle before Unbounded starts loading, and the names were then fitted
+   in the narrower fallback font (the board's "Mega Charizard Y" ran past the edge, qcheck triage Nov 18) */
+if (document.fonts && document.fonts.addEventListener) document.fonts.addEventListener('loadingdone', () => { if (V2.route && V2.route() === 'home' && document.querySelector('.sds')) requestAnimationFrame(V2.sdSixAfter); });
