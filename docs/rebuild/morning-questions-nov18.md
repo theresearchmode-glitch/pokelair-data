@@ -31,6 +31,8 @@ postroom-real-phone-dark.png (real data: 5 live gifts, 31 stamps).
 The kraft parcel holds a white label, which holds a black Copy Code button: three shades nested (audit C4).
 Our rule allows page + one card colour. The audit says it is an object, not a card, and needs Sim's explicit yes.
 - A: allow it as a named exception (it is a drawn parcel). Pictures: postroom-real-desktop-light.png, postroom-real-phone-light.png.
+  Labelled close-ups of the counter (Nov 18, option name on the picture): q-1ab-label-today-1440-light.png, q-1ab-label-today-1440-dark.png,
+  q-1ab-label-today-390-light.png, q-1ab-label-today-390-dark.png.
 - B: flatten it (label straight on the page, no parcel colour). Picture: none made (not found in the files).
 
 Recommended: A. Why: it is a picture of a parcel, not a card inside a card; flattening loses the look.
@@ -38,8 +40,12 @@ Recommended: A. Why: it is a picture of a parcel, not a card inside a card; flat
 ### 1b. The label's middle column: "Serial code" or "Sent"
 Today the heading is how the gift is given ("Serial code") with "Sent Sep 9" under it.
 The brief and the qcheck triage both say this reads oddly.
-- A: keep as built ("Serial code" over the date). Pictures: postroom-real-desktop-light.png, postroom-fixture-desktop-light.png.
-- B: heading "Sent" over the date; the way it is given moves to the line under it. Picture: none made (not found in the files).
+- A: keep as built ("Serial code" over the date). Pictures (middle column marked with pink dashes): q-1ab-label-today-1440-light.png,
+  q-1ab-label-today-1440-dark.png, q-1ab-label-today-390-light.png, q-1ab-label-today-390-dark.png.
+  Older overviews: postroom-real-desktop-light.png, postroom-fixture-desktop-light.png.
+- B: heading "Sent" over the date; the way it is given moves to the line under it. Pictures (mock-up: the built page edited in the
+  browser, not the source): q-1b-label-sent-1440-light.png, q-1b-label-sent-1440-dark.png, q-1b-label-sent-390-light.png,
+  q-1b-label-sent-390-dark.png.
 
 Recommended: B. Why: a date under "Serial code" looks like it is the code.
 
@@ -74,6 +80,11 @@ Today they are reached only from Home's post band ("All N Gifts", "All N Stories
 Sim's rule (Nov 11): never a sixth menu place.
 - A: add both to Search; keep the Home post band as the main way in. Picture of today's way in: stampede-post-1440-light.png,
   stampede-post-390-light.png. Picture of the Search entry: none made.
+  Today's menu and Search (labelled; checked: Search for "gifts" says "No matches"): q-1f-menu-today-1440-light.png,
+  q-1f-menu-today-1440-dark.png, q-1f-menu-today-390-light.png, q-1f-menu-today-390-dark.png, q-1f-search-today-1440-light.png,
+  q-1f-search-today-1440-dark.png, q-1f-search-today-390-light.png, q-1f-search-today-390-dark.png,
+  q-1f-search-gifts-today-1440-light.png, q-1f-search-gifts-today-1440-dark.png, q-1f-search-gifts-today-390-light.png,
+  q-1f-search-gifts-today-390-dark.png.
 - B: put both inside an existing tab (for example under Events). Picture: none made.
 - C: a new menu place. Picture: none made. Breaks the "never a sixth place" rule.
 
@@ -315,8 +326,15 @@ From research/first-visit-nov18.md:
 - B (4a, middle): as A, but the nearest 30-40 keep their full 384px file.
 - C (4c): keep the files, but load the crowd later or skip it on slow connections (Chrome/Android only; iPhones would still load it).
 - D: no change.
-Pictures: the before/after sharpness pictures the research asks for (390@3, 820@2, 1920) were NOT found in the files.
-Today's crowd: stampede-hero-390-day.png, stampede-hero-1440-day.png, stampede-hero-1920-day.png, stampede-hero-1920-night.png.
+Sharpness pictures (Nov 18), cropped to the crowd, light. 390 at 3x, 820 at 2x, 1920 at 2x. "Today" uses the Preview's one-size
+384px files. A and B are SIMULATED in the browser: each crowd picture redrawn at 128px tall (canvas, webp quality 0.8); B keeps the
+35 highest-rated crowd members at 384px. Not the real sheets, so treat them as close, not exact.
+- D (today): q-7a-herd-today-390-light.png, q-7a-herd-today-820-light.png, q-7a-herd-today-1920-light.png.
+- A: q-7a-herd-A-128-390-light.png, q-7a-herd-A-128-820-light.png, q-7a-herd-A-128-1920-light.png.
+- B: q-7a-herd-B-near35-390-light.png, q-7a-herd-B-near35-820-light.png, q-7a-herd-B-near35-1920-light.png.
+- C: no picture (same look as today; only the loading changes).
+By eye at full size: the difference is small, because the crowd sits under the haze; zoom in to compare.
+Older overviews: stampede-hero-390-day.png, stampede-hero-1440-day.png, stampede-hero-1920-day.png, stampede-hero-1920-night.png.
 
 Recommended: B, after the sharpness pictures are made. Why: it saves most of the download while the biggest, nearest Pokémon stay
 sharp on iPad (my recommendation; the research recommended A and named B as a middle option).
@@ -392,7 +410,13 @@ From the behaviour review fixes (decisions.md, 4:07 AM entry). They show only if
   shown are the built-in copy and may be out of date. Reload to try again."
 - If v2.js fails (app/build.mjs line 102): heading "This page didn't load." and the line "Part of the site didn't arrive. Reload to try again."
 - A: approve the words. B: Sim rewords.
-Pictures: none found in the files.
+Pictures (Nov 18; the split Preview build served over http, the file blocked in the browser):
+- preview.json blocked, data note: q-11-datanote-home-1440-light.png, q-11-datanote-home-1440-dark.png, q-11-datanote-home-390-light.png,
+  q-11-datanote-home-390-dark.png, q-11-datanote-team-1440-light.png, q-11-datanote-team-1440-dark.png, q-11-datanote-team-390-light.png,
+  q-11-datanote-team-390-dark.png. (Home on the phone is one screen: the hero is sized to the screen, so a page-tall window would stretch it.)
+- v2.js blocked, page error: q-11-pagefail-1440-light.png, q-11-pagefail-1440-dark.png, q-11-pagefail-390-light.png,
+  q-11-pagefail-390-dark.png.
+- B: no picture (Sim's own words).
 
 Recommended: A. Why: each says what went wrong and the one thing to do, in plain words.
 
@@ -458,7 +482,9 @@ Recommended: A. Why: "›" links read as buttons, and players tap them on phones
 
 ### 13f. Hero tagline partly covered by sprites at 1440 (for her eye)
 The polish sweep saw the hero sprites cover part of "your win rate." at 1440: likely intended depth, but it costs some readability.
-- A: keep. B: keep the sprites clear of the tagline. Pictures: stampede-polish-after-1440-day.png, stampede-polish-after-1440-night.png.
+- A: keep. Pictures (today, cropped to the tagline, labelled): q-13f-tagline-today-1440-light.png, q-13f-tagline-today-1440-dark.png.
+  Older: stampede-polish-after-1440-day.png, stampede-polish-after-1440-night.png.
+- B: keep the sprites clear of the tagline. Picture: none made.
 
 Recommended: B (my recommendation). Why: the tagline is the first words a new visitor reads.
 
@@ -470,13 +496,24 @@ Recommended: B (my recommendation). Why: the tagline is the first words a new vi
 ---
 
 ## Not found in the files
-- Pictures for: a "Sent" label (1b), flattened parcel (1a), menu or Search entries for Gifts/News (1f), Dispatch options 2a-2e B/C,
-  the Auto theme options (10), the two error lines (11), the desktop scroll after Apply (13c), Blueprint extras (13d B),
-  long names wrapping (13b B), and the herd sharpness before/after (7a).
+- Pictures for: flattened parcel (1a B), the Gifts/News entries themselves in Search or a tab (1f A-C; today's menu and Search are
+  pictured), Dispatch options 2a-2e B/C, the Auto theme options (10), the desktop scroll after Apply (13c), Blueprint extras (13d B),
+  long names wrapping (13b B), tagline kept clear (13f B).
 - Whether the new pages are on the Preview (Plans says no; commit 1a32fe66 says Preview v202 pictures).
 - Whether the planner cache fix applies cleanly to main (12).
 
 ---
+
+## Older pictures with no option label printed on them (checked by eye, Nov 18; RULES 00b wants "Q · OPTION" on each)
+Looked at the top and bottom of all 139 older pictures listed below.
+- Labelled with the option, but without the question number (Q5): the ten allsugs-options-*.png.
+- A caption, but no question or option: myteam-C-built-360-long.png, myteam-C-built-390-long.png ("AFTER · 360/390 · six long names");
+  stampede-hero-1440-day/night, stampede-hero-1920-day/night, stampede-hero-390-day ("Mock-up (picture)" / "Built ..." captions);
+  stampede-motion-surge-strip-desktop1440.png, stampede-motion-surge-strip-phone390.png (time marks only); the 11 webkit-*.png
+  ("Chromium" / "WebKit", "Before" / "After" captions).
+- No label at all: every other picture in the list (build-tips-*, dispatch-*, home-lost-*, morning-v202-*, postroom-*,
+  stampede-home-joined, stampede-polish-after-*, stampede-post-*, stampede-six-*, stampede-tilefix-*, stampede-tools-*).
+- The new q-*.png pictures (Nov 18) all carry "Q · OPTION" on a band at the top.
 
 ## Every picture path used (all under docs/rebuild/pics/nov18/; each checked with ls)
 
@@ -624,5 +661,49 @@ Recommended: B (my recommendation). Why: the tagline is the first words a new vi
 - webkit-fix-stamp-home-1440-dark.png
 - webkit-fix-stamp-home-1440-light.png
 - webkit-gifts-copycode-wrap-1440.png
+- q-11-datanote-home-1440-dark.png
+- q-11-datanote-home-1440-light.png
+- q-11-datanote-home-390-dark.png
+- q-11-datanote-home-390-light.png
+- q-11-datanote-team-1440-dark.png
+- q-11-datanote-team-1440-light.png
+- q-11-datanote-team-390-dark.png
+- q-11-datanote-team-390-light.png
+- q-11-pagefail-1440-dark.png
+- q-11-pagefail-1440-light.png
+- q-11-pagefail-390-dark.png
+- q-11-pagefail-390-light.png
+- q-13f-tagline-today-1440-dark.png
+- q-13f-tagline-today-1440-light.png
+- q-1ab-label-today-1440-dark.png
+- q-1ab-label-today-1440-light.png
+- q-1ab-label-today-390-dark.png
+- q-1ab-label-today-390-light.png
+- q-1b-label-sent-1440-dark.png
+- q-1b-label-sent-1440-light.png
+- q-1b-label-sent-390-dark.png
+- q-1b-label-sent-390-light.png
+- q-1f-menu-today-1440-dark.png
+- q-1f-menu-today-1440-light.png
+- q-1f-menu-today-390-dark.png
+- q-1f-menu-today-390-light.png
+- q-1f-search-gifts-today-1440-dark.png
+- q-1f-search-gifts-today-1440-light.png
+- q-1f-search-gifts-today-390-dark.png
+- q-1f-search-gifts-today-390-light.png
+- q-1f-search-today-1440-dark.png
+- q-1f-search-today-1440-light.png
+- q-1f-search-today-390-dark.png
+- q-1f-search-today-390-light.png
+- q-7a-herd-A-128-1920-light.png
+- q-7a-herd-A-128-390-light.png
+- q-7a-herd-A-128-820-light.png
+- q-7a-herd-B-near35-1920-light.png
+- q-7a-herd-B-near35-390-light.png
+- q-7a-herd-B-near35-820-light.png
+- q-7a-herd-today-1920-light.png
+- q-7a-herd-today-390-light.png
+- q-7a-herd-today-820-light.png
 
 Checked: `ls` in docs/rebuild/pics/nov18/ found all 144 files (143 pictures and videos, plus stampede-motion-perf.txt).
+Added Nov 18: the 43 q-*.png pictures above (made by a helper; each named with its question and option on the picture).
