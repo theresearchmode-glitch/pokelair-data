@@ -64,10 +64,10 @@ t('HOME-04', 'Data line names the month, the source and "Data as of <date>"', as
   has(tx, /Most used in (January|February|March|April|May|June|July|August|September|October|November|December), (Showdown ladder|Ranked ladder|Online tournaments|Official events)[^.]*\. Data as of [A-Z][a-z]{2} \d{1,2}/, 'Home data line'); });
 
 t('HOME-05', 'This week in the ratings: chips with arrow + number open the matching info sheet', async () => {
-  const r = await homePage(); const tx = await r.ui.text(); has(tx, NEW ? /This Week/ /* say it once (Nov 16): the Meta strip's This Week view */ : /This [Ww]eek in the [Rr]atings/); /* Title Case on the new site (Sim's Nov 12 rule) */
+  const r = await homePage(); if (!NEW) has(await r.ui.text(), /This [Ww]eek in the [Rr]atings/); /* new site (Sim Q4b B, Nov 18): "Ratings on the Move" on This Week, checked below through ratingMoves */
   // new build (decisions.md Nov 12, Sim "add a few more"): up to 7 rows on desktop, each "<name> ▲ up N points" (shown scale)
-  const chips = await r.ui.ratingMoves(); ok(chips.length >= 1 && chips.length <= (NEW ? 7 : 6), `${chips.length} rating-move chips`);
-  for (const c of chips) ok((NEW ? /[▲▼] (up|down) \d+ points$/ : /[▲▼] \d+$/).test(c.text), `chip "${c.text}" has no arrow and number`);
+  const chips = await r.ui.ratingMoves(); if (NEW) has(await r.ui.text(), 'Ratings on the Move', 'This Week'); ok(chips.length >= 1 && chips.length <= (NEW ? 12 : 6), `${chips.length} rating-move chips`); /* new: every mover, up to 12 (V2.homeWeek(12)) */
+  for (const c of chips) ok((NEW ? /[▲▼] \d+ (up|down) Rating \d+$/ : /[▲▼] \d+$/).test(c.text), `chip "${c.text}" has no arrow and number`);
   const c = chips[0], rating = +(c.label.match(/rating (\d+)/) || [])[1]; ok(rating, 'chip label names no rating: ' + c.label);
   await r.ui.tapPokemon(c.text.replace(/ [▲▼].*/, '')); const s = await r.ui.infoSheet(); ok(s && s.includes(c.text.replace(/ [▲▼].*/, '')), 'chip did not open its info sheet');
   await r.close(); });

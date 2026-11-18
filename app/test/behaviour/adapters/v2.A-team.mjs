@@ -122,7 +122,8 @@ export default (ui, pg, o) => {
     /** The Stampede (Nov 18): the line-up's open rings, by their spoken names ("Add a Pokémon to slot N") */
     homeOpenSlots: () => pg.evaluate(() => [...document.querySelectorAll('#main .sds-rings [data-v2addto]')].filter(e => e.getClientRects().length).map(e => e.getAttribute('aria-label'))),
     /** This week in the ratings, the rows on show: {name, text, label} (desktop: its own column; under 900 px: the switch's "This week") */
-    ratingMoves: async () => { /* say it once (Nov 16): This Week's moves are the Meta strip's third view; tap it as a player would */ const t = await pg.$('#main [data-v2slide="homegems"] button[data-v="2"]'); if (t && await t.getAttribute('aria-pressed') !== 'true') { await t.click(); await pg.waitForTimeout(400); } return pg.evaluate(() => [...document.querySelectorAll('#main .hm-mv')].filter(e => e.getClientRects().length).map(e => ({name: e.dataset.v2mon, text: e.innerText.replace(/\s+/g, ' ').trim(), label: e.getAttribute('aria-label')}))) },
+    ratingMoves: async () => { /* Sim Q4b B (Nov 18): the week's rating moves live on This Week ("Ratings on the Move"), reached as a player does: its address */ if (!(await pg.$('#main .wk-rm'))) { await pg.evaluate(() => { location.hash = '#weekly'; }); await pg.waitForTimeout(1500); }
+      return pg.evaluate(() => [...document.querySelectorAll('#main .wk-rc')].filter(e => e.getClientRects().length).map(e => ({name: e.dataset.v2mon, text: e.innerText.replace(/\s+/g, ' ').trim(), label: e.getAttribute('aria-label')}))) },
     welcomeCardText: () => txt('#main .hm-welcome, #main .sds-wl'), /* Sim Q4c (Nov 18): the Stampede's welcome is in the six band */
     closeWhatsNew: () => click('[data-hmnewx]'),
     /** The Meta, right now: the rows of the list on show (names) */

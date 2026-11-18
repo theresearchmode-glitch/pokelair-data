@@ -219,6 +219,15 @@ const HQ = async () => {
     const lad = await line('ladder'), tour = await line('tour'), want = await q.evaluate(() => JSON.parse(window.__ev(`(() => { const d = META.doubles, m = /^(\\d{4})-(\\d{2})/.exec(d && d.period || ''); return JSON.stringify({now: V2.usNext ? V2.usNext(d) : 'no V2.usNext', early: m && V2.usNext ? V2.usNext(d, Date.UTC(+m[1], +m[2] - 1, 20)) : ''}); })()`)));
     await r.ctx.close();
     ok(/^. [A-Z][a-z]+'s numbers arrive [A-Z][a-z]{2} \d{1,2}\.$/.test(want.early) && lad.endsWith(want.now) && /[A-Z][a-z]{2} \d{4}/.test(lad) && !/numbers arrive/.test(tour), `HQ Q4a (Sim: A): the Usage page's Showdown ladder line names its month and when the next arrives (HOME-04 moved from Home) ("${lad}"; tournaments: "${tour}"; ${JSON.stringify(want)})`); }
+  // Q4b B: HOME-05's rating moves live on This Week as "Ratings on the Move", under "Pokémon on the Move": every mover (V2.homeWeek(12)), each
+  // a button to its page whose words read name, arrow + points, up/down, rating; tiles keep their words inside at 320-1440
+  { const rm = []; for (const w of [320, 390, 820, 1440]) { const r = await hq(w, 900, {hash: '#weekly', rm: 'reduce', fn: () => JSON.parse(window.__ev(`(() => { const s = document.querySelector('#main .wk-move + .wk-rm'), want = V2.homeWeek(12);
+      if (!s) return JSON.stringify({none: 1}); const T = [...s.querySelectorAll('.wk-rc')], bad = [];
+      for (const b of T) { const B = b.getBoundingClientRect(); for (const e of b.querySelectorAll('span,b,small')) { if (!e.getClientRects().length) continue; const x = e.getBoundingClientRect(); if (x.right > B.right + 1 || x.left < B.left - 1 || x.bottom > B.bottom + 1) bad.push('out ' + e.textContent.trim().slice(0, 16)); if (parseFloat(getComputedStyle(e).fontSize) < 13) bad.push('small'); }
+        if (B.height < 44) bad.push('tap ' + B.height); if (!/^.+ [▲▼] \\d+ (up|down) Rating \\d+$/.test(b.innerText.replace(/\\s+/g, ' ').trim())) bad.push('words ' + b.innerText.replace(/\\s+/g, ' ')); }
+      return JSON.stringify({n: T.length, want: want.length, same: T.map(b => b.dataset.v2mon).join() === want.map(x => x.n).join(), bad: bad.slice(0, 3), hs: document.documentElement.scrollWidth - innerWidth}); })()`))});
+      if (r.none || !r.n || r.n !== r.want || !r.same || r.bad.length || r.hs > 0) rm.push(`${w}: ${JSON.stringify(r)}`); }
+    ok(!rm.length, `HQ Q4b (Sim: B): This Week shows "Ratings on the Move" under "Pokémon on the Move": every rating mover as a button (name, arrow + points, up/down, rating), nothing spills 320-1440${rm.length ? ': ' + rm.join(' | ') : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----
