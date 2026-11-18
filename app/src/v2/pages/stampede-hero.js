@@ -71,7 +71,7 @@ V2.sdhLay = (n, w, h, row, cx, hb) => {
     M.forEach((m, j) => { out[2 + j] = {x: m[0] * w, y: b + m[1] * (h - b), s: Math.min(m[2] * h, m[2] * 1.5 * w), z: 'm'}; }); }
   // the mid-sized stand in front of the crowd and just below the tagline: a head may touch the second line, never climb into it
   // (hb = the tagline's bottom); sizes never grow down the list
-  if (hb) { let last = Infinity; for (let j = 2; j < 12; j++) { const p = out[j]; if (!p) continue; p.s = Math.max(0, Math.min(p.s, (p.y - hb) / .88, last)); last = p.s; } }
+  if (hb) { let last = Infinity; for (let j = 2; j < 12; j++) { const p = out[j]; if (!p) continue; p.s = Math.max(0, Math.min(p.s, p.y - (p.x - w / 2) * V2.SDH_SLOPE - hb, last)); last = p.s; } } /* Q13f B (Sim, Nov 18): the head stops at the tagline, never over its words; the feet's tilt (below) counted */
   // the crowd: rows from near to far; the size and the feet line shrink toward the horizon. The spacing factor f is searched so the rows
   // between the near and the far line hold everyone (no empty sky, no Pokémon left out)
   const first = row ? 12 : 10, N = n - first; if (N <= 0) return out;
@@ -102,9 +102,9 @@ V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) r
   const cx = [...S.querySelectorAll('.sdh-plates li')].filter(l => l.getClientRects().length).map(l => { const b = l.getBoundingClientRect(); return {o: +getComputedStyle(l).gridColumnStart || 0, x: b.left + b.width / 2 - sr.left}; }).sort((a, b) => a.o - b.o).map(c => c.x);
   const hb = S.querySelector('.sdh-h').getBoundingClientRect().bottom - sr.top, P = V2.sdhLay(n, w, h, row, cx.length >= (row ? 4 : 2) ? cx : [w * .125, w * .375, w * .625, w * .875], hb);
   for (const el of S.querySelectorAll('.sdh-m')) { const i = +el.dataset.sdhi; V2.sdhPut(el, P[i]); }
-  // the front row may touch the tagline's last line, never climb into it
+  // the front row stops under the tagline's last line (Q13f B, Sim Nov 18: sprites never cover its words at any width)
   const fr = S.querySelector('.sdh-front'), fs = parseFloat(getComputedStyle(S.querySelector('.sdh-h')).fontSize) || 0;
-  if (fr) { fr.style.removeProperty('--fcap'); fr.style.setProperty('--fcap', Math.max(80, Math.round(fr.getBoundingClientRect().bottom - sr.top - hb + fs * (row ? .12 : 0))) + 'px'); }
+  if (fr) { fr.style.removeProperty('--fcap'); fr.style.setProperty('--fcap', Math.max(80, Math.round(fr.getBoundingClientRect().bottom - sr.top - hb - V2.SDH_SLOPE * w * (row ? .375 : .25))) + 'px'); } /* Q13f B: clear of the words, the tilt's rise at the outer columns counted */
   const named = new Set(row ? [0, 1, 2, 3] : [0, 1]);
   for (const t of S.querySelectorAll('.sdh-tag')) { const i = +t.dataset.sdhi, p = P[i], on = p && p.s >= 64 && (row ? t.classList.contains('tr') : t.classList.contains('tp')); if (on) named.add(i);
     t.hidden = !on; if (!on) continue; // the tag sits on its own Pokémon: above the head in the row layout, over the feet in the pair layout

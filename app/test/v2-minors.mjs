@@ -161,6 +161,20 @@ const HQ = async () => {
       return {surge: S.classList.contains('sdh-surge'), trk: !!S.querySelector('.sdh-trk'), pz: !!S.querySelector('.sdh-tpz'), run: S.getAnimations({subtree: true}).filter(a => a.animationName === 'sdh-mq' || a.playState === 'running').length}; }}); /* the marquee rests (paused) while off screen */
     const on = rm === 'no-preference'; if (on ? !(r.surge && r.trk && r.pz && r.run > 0) : (r.trk || r.pz || r.run)) mo.push(`${w} ${rm}: ${JSON.stringify(r)}`); }
     ok(!mo.length, `HQ Q6 (Sim: A): the hero's motion is on with no flag (surge on arrival, moving ticker + pause button at 1440 and 390); with reduced motion nothing moves and no marquee is built${mo.length ? ': ' + mo.join(' | ') : ''}`); }
+  // Q13f B: the hero sprites (and tags) in front of the tagline never cover its words, 320-2560. Pixel test: A = no front layers, B = A
+  // without the tagline (A != B is the tagline's ink), C = the page; covered = ink pixels where C != A. Up to 0.15% allowed: the anti-aliased
+  // edge where a head touches the last line (before the change: 3.05-3.47% at 1280-2560, 0.63% at 412)
+  { const cv = []; const cmp = await b.newPage();
+    for (const w of [320, 360, 390, 412, 600, 820, 1100, 1280, 1440, 1920, 2560]) { const h = w < 700 ? 844 : w >= 1900 ? 1080 : 900;
+      const {q, ctx} = await hq(w, h, {rm: 'reduce', keep: true}); await q.waitForFunction(() => [...document.querySelectorAll('#main .sdh-f img, #main .sdh-m img')].every(i => i.complete), null, {timeout: 15000}).catch(() => {}); await q.waitForTimeout(400);
+      const r = await q.evaluate(() => { const x = document.querySelector('#main .sdh-h').getBoundingClientRect(); return {x: Math.max(0, x.left), y: Math.max(0, x.top - 20), width: Math.min(innerWidth, x.right) - Math.max(0, x.left), height: x.height + 60}; });
+      const set = (f, t) => q.evaluate(([f, t]) => { for (const s of ['.sdh-herd', '.sdh-front', '.sdh-tags']) document.querySelector('#main ' + s).style.visibility = f ? '' : 'hidden'; document.querySelector('#main .sdh-h').style.visibility = t ? '' : 'hidden'; }, [f, t]);
+      const sh = async () => (await q.screenshot({clip: r})).toString('base64'); const C = await sh(); await set(false, true); const A = await sh(); await set(false, false); const B = await sh(); await ctx.close();
+      const x = await cmp.evaluate(async ([A, B, C]) => { const ld = s => new Promise(r => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.width; c.height = i.height; const g = c.getContext('2d'); g.drawImage(i, 0, 0); r(g.getImageData(0, 0, i.width, i.height).data); }; i.src = 'data:image/png;base64,' + s; });
+        const [a, bb, c] = await Promise.all([ld(A), ld(B), ld(C)]), d = (p, q, i) => Math.abs(p[i] - q[i]) + Math.abs(p[i + 1] - q[i + 1]) + Math.abs(p[i + 2] - q[i + 2]); let m = 0, k = 0;
+        for (let i = 0; i < a.length; i += 4) if (d(a, bb, i) > 60) { m++; if (d(c, a, i) > 60) k++; } return {m, pct: +(100 * k / Math.max(1, m)).toFixed(2)}; }, [A, B, C]);
+      if (x.m < 5000 || x.pct > 0.15) cv.push(`${w}: ${x.pct}% of ${x.m} tagline pixels covered`); }
+    await cmp.close(); ok(!cv.length, `HQ Q13f (Sim: B): the hero sprites never cover the tagline's words, 320-2560 (0.15% of its pixels at most: a head's edge touching the line)${cv.length ? ': ' + cv.join(' | ') : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----
