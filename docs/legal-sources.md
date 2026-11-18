@@ -41,6 +41,22 @@ Keep this file and that list in step.
 | **project-red-data** (GitHub) | No license, so no permission to reuse. Dropped. |
 | **Pokémon Zone** | Answers automated requests with 403 (Oct 31); that refusal is respected and it is not read. |
 
+## Gifts and news (app/src/data/post.js; Sim, Nov 18, morning questions 9a-9e)
+
+The Post Room (#gifts), The Champions Dispatch (#news) and Home's post band read only `app/src/data/post.js`.
+`experiments/post-data-test.mjs` checks every rule below that a script can check.
+
+### Codes: the 2-outlet rule (9b)
+- A shared Mystery Gift code goes into post.js only when it is on an official channel (pokemon.com, pokemon-home.com,
+  pokemonchampions.jp), **or** printed by **2 or more reputable outlets on different sites**, each linked in the gift's `src`.
+  Codes are never in the official news feed, so in practice the outlet rule applies.
+- Outlets that count: Nintendo Life, Nintendo Everything, LevelUp, Critical Hits, Vice, Insider Gaming.
+  Analytics Insight is the weakest: it may add a detail (an end time) but never counts as one of the two.
+- Not sources at all: op.gg and Serebii (their terms forbid copying), Champdex (copies Serebii), Bulbapedia (ShareAlike),
+  guide farms. An outlet is read by a person, for the code and its dates only; nothing else is copied.
+- A code with only one outlet stays out (the gift may still be listed, with `note: "Code not verified"`).
+- The page says when the list was last checked ("Gift list checked ...") and that a code can stop early.
+
 ## Player names (privacy)
 
 Player names and teams come from public tournament results (adult Masters division only). A player can ask to have their

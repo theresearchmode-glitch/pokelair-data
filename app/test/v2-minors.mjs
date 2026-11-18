@@ -100,6 +100,11 @@ const MQ = async () => {
     const row = ls.split('\n').find(l => /^\| \*\*Official in-game news feed\*\* \(champions-news\.pokemon-home\.com\)/.test(l)) || '';
     ok(!!row && /http\.mjs/.test(row) && /no article text/.test(row) && /one User-Agent for every source/.test(ls) && /NastyPlot-data\/1\.0/.test(hm) && /`User-Agent: NastyPlot-data\/1\.0/.test(ls),
       `MQ-9a: legal-sources.md has the official news feed's row (read through http.mjs, headlines and links only) and names NastyPlot-data/1.0 as the one User-Agent (row ${row ? 'found' : 'missing'})`); }
+  // MQ-9b (answer 9b): the 2-outlet rule for codes is written in the data notes and enforced by post-data-test's outlet list
+  { const ls = fs.readFileSync(process.env.MQ_LEGAL || new URL('../../docs/legal-sources.md', import.meta.url), 'utf8'), pt = fs.readFileSync(new URL('../../experiments/post-data-test.mjs', import.meta.url), 'utf8');
+    const sec = (ls.split('### Codes: the 2-outlet rule (9b)')[1] || '').split('\n## ')[0];
+    ok(/2 or more reputable outlets on different sites/.test(sec) && /Analytics Insight[^\n]*never counts/.test(sec) && /const OUTLETS = \[/.test(pt) && /outlets that count/.test(pt),
+      `MQ-9b: legal-sources.md writes the 2-outlet rule for codes (which outlets count; Analytics Insight never does) and post-data-test enforces that list (section ${sec ? sec.length + ' chars' : 'missing'})`); }
   // MQ-2c (answer 2c): the Back Page's column names are the word list's: "Top Ratings" and "Next Events" (were The Standings / Fixtures), full paper and Home's small one
   { const q = await open('#news'); const r = await q.evaluate(() => { const h = [...document.querySelectorAll('#main .dp-bc h3')].map(x => x.textContent.trim()), all = document.body.innerText;
       return {h: h.join(' | '), labels: [...document.querySelectorAll('#main .dp-bc[aria-label]')].map(x => x.getAttribute('aria-label')).join(' | '), old: /The Standings|Fixtures/.test(all)}; });

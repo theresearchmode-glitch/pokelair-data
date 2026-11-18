@@ -1,8 +1,8 @@
 // Mystery Gifts and news data check (Nov 18): app/src/data/post.js (POST), the data behind The Post Room (#gifts), The Champions
 // Dispatch (#news) and Home's post band. Checks:
 //   gifts: id unique, kind/how/name set, a Pokémon's `mon` is a name in the site's data, at least one https `src`, no op.gg or
-//          Serebii source (their terms forbid copying), every code has 1 official source or 2+ independent outlets (different
-//          sites), start and end present and parse, start before end, every `approx` field is explained in `note`.
+//          Serebii source (their terms forbid copying), every code has 1 official source or 2+ outlets on the list that counts
+//          (different sites; docs/legal-sources.md), start and end present and parse, start before end, every `approx` field is explained in `note`.
 //   news:  id unique, date parses, type and title set, url is https.
 //   only Mystery Gifts (Sim, Nov 18): every gift's `how` is 'Serial Code' or 'Event Gift'.
 //   series: dates parse, start before end, `mon` is null or a name in the site's data (the round's prize; not a gift), no `gift` link.
@@ -16,6 +16,8 @@ const load = f => { const c = {}; vm.runInNewContext(fs.readFileSync(f, 'utf8') 
 const siteData = fs.readFileSync(new URL('app/src/data/data.js', root), 'utf8');
 const OFFICIAL = /(^|\.)(pokemon-home\.com|pokemon\.com|pokemon\.co\.jp|pokemonchampions\.jp)$/;
 const BANNED = /(^|\.)(op\.gg|serebii\.net)$/;
+// the outlets that count toward the 2-outlet rule for codes (docs/legal-sources.md, "Codes: the 2-outlet rule"; Sim, Nov 18, 9b)
+const OUTLETS = ['nintendolife.com', 'nintendoeverything.com', 'levelup.com', 'criticalhits.com.br', 'vice.com', 'insider-gaming.com'];
 const KINDS = ['pokemon', 'item'], HOWS = ['Event Gift', 'Serial Code']; // only Mystery Gifts (Sim, Nov 18: "just mystery gifts")
 const host = u => { try { const x = new URL(u); return x.protocol === 'https:' ? x.hostname.replace(/^www\./, '') : null; } catch (e) { return null; } };
 const parses = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}/.test(s) && !Number.isNaN(Date.parse(s));
@@ -41,9 +43,9 @@ function check(P) {
     say(hosts.every(Boolean), `${at}: a src is not an https URL`);
     say(!hosts.some(h => h && BANNED.test(h)), `${at}: src from op.gg or Serebii (terms forbid copying)`);
     if ('code' in g) {
-      const outlets = new Set(hosts.filter(h => h && !OFFICIAL.test(h)));
+      const outlets = new Set(hosts.filter(h => h && OUTLETS.includes(h)));
       say(typeof g.code === 'string' && /^[A-Z0-9]{4,20}$/.test(g.code), `${at}: code "${g.code}" is not 4-20 capital letters/digits`);
-      say(hosts.some(h => h && OFFICIAL.test(h)) || outlets.size >= 2, `${at}: code has neither an official source nor 2+ outlets (${outlets.size})`);
+      say(hosts.some(h => h && OFFICIAL.test(h)) || outlets.size >= 2, `${at}: code has neither an official source nor 2+ outlets that count (${outlets.size})`);
     }
     say(parses(g.start), `${at}: start "${g.start}" does not parse`);
     say(parses(g.end), `${at}: end "${g.end}" does not parse`);
@@ -88,6 +90,8 @@ const broken = {
   'a gift with no src': c => { delete c.gifts[0].src; },
   'a gift from op.gg': c => c.gifts[0].src.push('https://op.gg/pokemon-champions/gift'),
   'a code with one outlet': c => { const g = one(c.gifts); g.src = [g.src.find(u => !OFFICIAL.test(host(u)))]; },
+  'a code whose second outlet is Analytics Insight': c => { const g = one(c.gifts); g.src = ['https://www.nintendolife.com/a', 'https://www.analyticsinsight.net/b']; },
+  'a code from two sites not on the outlet list': c => { const g = one(c.gifts); g.src = ['https://example.com/a', 'https://example.org/b']; },
   'a code with two links on the same outlet': c => { const g = one(c.gifts); g.src = ['https://www.nintendolife.com/a', 'https://nintendolife.com/b']; },
   'a date that does not parse': c => { c.gifts[1].end = 'Nov 22'; },
   'a missing start': c => { delete c.gifts[2].start; },

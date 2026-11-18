@@ -29,7 +29,8 @@
 //   approx   which of 'start' / 'end' are not exact times from the source; `note` says what they are (usually: the source gives
 //            the day only, so the start is 00:00 UTC and the end 23:59:59 UTC of that day, or the start is the day of the first
 //            report). Optional.
-//   code     only when it appears on an official channel, or on 2+ reputable independent outlets, each URL in `src`.
+//   code     only when it appears on an official channel, or on 2+ reputable independent outlets, each URL in `src` (the 2-outlet
+//            rule and the outlets that count: docs/legal-sources.md, "Codes: the 2-outlet rule"; Analytics Insight never counts).
 //   nature, ability, moves   only when a source in `src` prints them. Optional.
 //   src      [urls]: the official news page first, then outlets.
 //   note     plain words: conditions, conflicts between sources, what is not verified.
