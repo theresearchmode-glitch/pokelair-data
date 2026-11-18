@@ -1,0 +1,7 @@
+/* Home, The Stampede (Sim, Nov 18): shared band rules. Brief: docs/rebuild/stampede/BRIEF.md. Bands overlap at their slanted edges. */
+.sd{display:block;overflow-x:clip}
+.sd-band{position:relative;padding:var(--s16) var(--gut)}
+.sd-hero{background:var(--band-top);color:var(--sd-on-band)}
+.sd-six{background:var(--plate);color:var(--on-plate)}
+.sd-tools{background:var(--surface-2,var(--surface))}
+.sd-post{background:var(--bad-text);color:var(--sd-on-band)}

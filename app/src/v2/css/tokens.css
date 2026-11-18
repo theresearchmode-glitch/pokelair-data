@@ -8,6 +8,7 @@
   --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--them:#B4238F;--them-text:#9A1A7B;--pick-text:#C41E35;
   --plate:#17161A;--on-plate:#FBFAF7;--plate-link:#62BEF7; /* a link on the dark plate (toast Undo): 8.77:1; --plot was 3.81:1 (Nov 16 audit) */
  --main:#17161A;--on-main:#FBFAF7;
+ --sd-on-band:#FFFFFF; /* Home, The Stampede (Nov 18): text on the blue hero and red post bands, white in both modes */
   --good:var(--plot);--good-text:var(--plot-text);--on-mark:#FFFFFF;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;--bad:#D93A3A;--bad-text:#B3261E;
   /* the six rating tiers (LTIERS colours; Grandstand, Nov 14): dark text on every tier colour passes 4.5:1; lit and shade faces of the 3D blocks */
   --tier-s:#ffb400;--tier-a:#ff6a3d;--tier-b:#b45cff;--tier-c:#2f9bff;--tier-d:#22b58a;--tier-f:#8a90a6;--tier-ink:#14110f;--tier-lit:#ffffff;--tier-shade:#14110f;
@@ -63,6 +64,7 @@
   --plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--them:#E57FD3;--them-text:#EC9BDF;--pick-text:#F58DA1;
   --plate:#343348;--on-plate:#F1EDE7;--plate-link:#62BEF7; /* 5.97:1 on the night plate */
  --main:#3FA2E2;--on-main:#08131E;
+ --sd-on-band:#FFFFFF;
   --good:var(--plot);--good-text:var(--plot-text);--on-mark:#12121B;--mid:#F0C768;--mid-text:#F0C768;--low:#B8AA9C;--low-text:#B8AA9C;--bad:#FF7A70;--bad-text:#FF8A80;
   /* night: brighter stat colours with dark text (5.20:1+ on the plates, 4.75:1+ on the night panel) */
   --x4:#B71C1C;--pk-main:var(--plot);--on-pk-main:var(--on-mark);--on-x4:#FFFFFF;--st-hp:#2E9E5B;--st-atk:#E0601F;--st-def:#D9A21A;--st-spa:#5B8DF0;--st-spd:#A27BEA;--st-spe:#E5578A;--on-st:#12121B;--on-st-def:#12121B;

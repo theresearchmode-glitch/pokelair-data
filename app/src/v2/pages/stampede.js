@@ -1,0 +1,20 @@
+// ---------- Home: "The Stampede" (Sim, Nov 18: replaces today's Home, incl. Tonight's main event) ----------
+// Brief, adaptations and contract: docs/rebuild/stampede/BRIEF.md. Mock-ups: docs/rebuild/stampede/mockups/ (pictures, not specs:
+// our rules win where they differ). Four slanted full-width bands: hero (blue), your six (ink), tools (beige), post (red).
+// Each band is its own file (stampede-hero / -six / -tools / -post.js, css/sd-*.css) so they can be built side by side; this file
+// holds the shared data (live: every number and name comes from the site's own data) and puts the page together.
+V2.STAMPEDE = true;
+V2._sd = {R: null, D: null};
+V2.sdData = () => { let R = null; try { R = ratings(); } catch (e) {} if (V2._sd.D && V2._sd.R === R) return V2._sd.D;
+  let rows = []; try { rows = lairRows().filter(x => x.r && x.r.tc).map(x => ({p: x.p, n: x.p.n, d: x.p.d, r: RS(x.r.total), types: x.p.t || [], spe: x.p.st ? x.p.st[5] : null, mega: !!x.p.m})); } catch (e) {}
+  let champ = null; try { champ = homeChamp(); } catch (e) {}
+  const ev = META && META.events && Array.isArray(META.events.events) ? META.events.events.length : 0;
+  const D = {rows, rated: rows.length, teams: (typeof RES === 'object' && RES && RES.teams) || 0, events: ev, champ};
+  V2._sd = {R, D}; return D; };
+// a band that isn't built yet says so (Preview only); each band file replaces its own function
+V2.sdHero = V2.sdHero || (() => `<section class="sd-band sd-hero" aria-label="Sharply raise your win rate"><h1 class="u">Sharply raise <span>your win rate.</span></h1></section>`);
+V2.sdSix = V2.sdSix || (() => `<section class="sd-band sd-six"><h2 class="u">Call six out of the herd.</h2></section>`);
+V2.sdTools = V2.sdTools || (() => `<section class="sd-band sd-tools"><h2 class="u">Same herd. Twelve tools.</h2></section>`);
+V2.sdPost = V2.sdPost || (() => `<section class="sd-band sd-post"><h2 class="u">The post is in.</h2></section>`);
+V2.sdPage = () => `<div class="sd">${V2.sdHero()}${V2.sdSix()}${V2.sdTools()}${V2.sdPost()}</div>`;
+V2.sdAfter = () => { for (const f of [V2.sdHeroAfter, V2.sdSixAfter, V2.sdToolsAfter, V2.sdPostAfter]) if (typeof f === 'function') try { f(); } catch (e) {} };

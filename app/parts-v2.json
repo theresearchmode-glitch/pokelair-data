@@ -33,7 +33,8 @@
     [
       "sugs",
       "src/v2/css/sugs.css"
-    ]
+    ],
+    ["sd-shared", "src/v2/css/sd-shared.css"], ["sd-hero", "src/v2/css/sd-hero.css"], ["sd-six", "src/v2/css/sd-six.css"], ["sd-tools", "src/v2/css/sd-tools.css"], ["sd-post", "src/v2/css/sd-post.css"], ["sd-postroom", "src/v2/css/sd-postroom.css"], ["sd-dispatch", "src/v2/css/sd-dispatch.css"]
   ],
   "body": "src/v2/body.html",
   "data": [
@@ -41,6 +42,7 @@
     
     "src/data/logo-sly.js",
     "src/data/items-list.js",
+    "src/data/post.js",
     "src/data/move-acc.js",
     "src/data/move-meta.js",
     "src/engine/types.js"
@@ -58,7 +60,7 @@
     "src/v2/pages/box.js",
     "src/v2/pages/record.js",
     "src/v2/pages/compare.js", "src/v2/pages/compare-faceoff.js",
-    "src/v2/pages/home.js",
+    "src/v2/pages/home.js", "src/v2/pages/stampede.js", "src/v2/pages/stampede-hero.js", "src/v2/pages/stampede-six.js", "src/v2/pages/stampede-tools.js", "src/v2/pages/stampede-post.js", "src/v2/pages/post-data.js", "src/v2/pages/postroom.js", "src/v2/pages/dispatch.js",
     "src/v2/pages/build.js",
     "src/v2/pages/build-sheet.js", "src/v2/pages/winning.js", "src/v2/pages/events.js", "src/v2/pages/archetypes.js", "src/v2/pages/thisweek.js", "src/v2/pages/track.js", "src/v2/pages/share-slab.js", "src/v2/pages/share-tape.js", "src/v2/pages/method.js", "src/v2/pages/about.js", "src/v2/pages/feedback.js", "src/v2/pages/owner.js", "src/v2/pages/pokemon.js",
     "src/v2/pages/battle.js", "src/v2/pages/battle-pbp.js",
