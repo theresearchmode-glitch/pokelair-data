@@ -40,5 +40,15 @@ for (const [label, team, pool] of [['Mega Swampert, 5 Pokémon, my box', swamper
 const sample = await pg.evaluate(() => window.__ev('DEFAULT_TEAM.slots.map(s=>s.n)'));
 for (const [label, team] of [['sun team, Incineroar the only lead support', ['Torkoal', 'Venusaur', 'Incineroar', 'Garchomp', 'Kingambit', 'Whimsicott']], ['Venusaur + Mega Charizard Y, Whimsicott the only Tailwind', ['Venusaur-Mega', 'Charizard-Mega-Y', 'Incineroar', 'Garchomp', 'Kingambit', 'Whimsicott']], ['sample team', sample]])
   for (const pool of ['box', 'all']) clean(`${label} (${pool})`, await run(team, pool));
+// never a second terrain (Nov 18: on live data a plan swapped Sneasler for Rillaboom next to Indeedee's Psychic Surge). The gate is
+// checked on that exact plan (does not depend on the day's data), then every plan and More idea for that team.
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{S.slots=['Corviknight','Indeedee','Salamence-Mega','Sneasler','Tyranitar-Mega','Basculegion'].map(n=>({n,a:null,lock:false}));
+  S.box=DEFAULT_BOX.slice();ui.pool='all';ui.swOut=null;fixSlots();planCache={key:null,plans:[]};const ms=members(),nm=pl=>pl.ch.map(x=>(x.out?x.out.d+'→':'+')+x.c.p.d).join(' & ');
+  const mk=n=>{const p=byName.get(n),mm=memberFrom(p,metaAbility(p)||undefined);return {p,mem:{...mm,i:-1,p,d:p.d}}},sn=ms.find(m=>m.p.n==='Sneasler'),cv=ms.find(m=>m.p.n==='Corviknight'),A=mk('Rillaboom'),B=mk('Kingambit');
+  const team=ms.map(x=>x===sn?{...A.mem,i:x.i}:x===cv?{...B.mem,i:x.i}:x),pl={ch:[{out:sn,slot:sn.i,c:A},{out:cv,slot:cv.i,c:B}],team,gp:gamePlan(team)};
+  const t2=t=>new Set(t.map(m=>TERRAIN_OF[m.ability]).filter(Boolean)).size>1,plans=planFixes(ms,suggestPool(),true);
+  return {gate:wxLoneBad(gamePlan(ms),pl),bad:[...plans,...(plans.more||[])].filter(pl=>t2(pl.team)).map(nm)}})()`));
+  ok(r.gate, 'Psychic Surge team: a plan bringing in Rillaboom (Grassy Surge) is blocked as a second terrain');
+  ok(!r.bad.length, `Psychic Surge team: no plan or More idea adds a second terrain${r.bad.length ? ' (' + r.bad.join(' | ') + ')' : ''}`); }
 ok(!errs.length, 'no page errors ' + errs.join(' | '));
 await b.close(); fs.unlinkSync(page); console.log(fails.length ? `\n${fails.length} FAILED` : '\nALL PASSED'); process.exit(fails.length ? 1 : 0);

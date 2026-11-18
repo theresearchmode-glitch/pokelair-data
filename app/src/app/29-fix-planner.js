@@ -117,7 +117,12 @@ const wxHurtIn=(gp0,pl)=>{const r=gp0&&gp0.rows.find(r=>r.k==='weather');if(!r||
 const psyHit=pl=>{if(!pl.team||!pl.ch.some(x=>TERRAIN_OF[x.c.mem.ability]==='psy')||pl.team.some(m=>!pl.ch.some(x=>x.c.p===m.p)&&TERRAIN_OF[m.ability]==='psy'))return 0;return psyBlocked(pl.team).length};
 // a Trick Room setter brought into a team with no slow attackers for it (and a team that had no Trick Room before)
 const trNew=(gp0,pl)=>{const r=pl.gp&&pl.gp.rows.find(r=>r.k==='trfit');return r&&!gp0.rows.some(r=>r.k==='trfit')?r.st:null};
-const wxLoneBad=(gp0,pl)=>psyHit(pl)>=2||trNew(gp0,pl)==='miss'||wxHurtIn(gp0,pl)||(wxLone(pl.gp)&&(!wxLone(gp0)||pl.ch.some(x=>WEATHER_OF[x.c.mem.ability])))||(pl.team&&pl.ch&&wxSetsOf(pl.team).length>1&&wxSetsOf(pl.team).length>wxSetsOf(pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p))).length&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]));
+// and never brings in a second terrain: an incoming setter whose terrain differs from one already on the team (Nov 18 audit, live
+// data: Rillaboom's Grassy Surge offered next to Indeedee's Psychic Surge; the terrain row stopped blocking plans on Nov 9, GUARD_KEYS)
+const tkN=t=>new Set(t.map(m=>TERRAIN_OF[m.ability]).filter(Boolean)).size;
+const terrain2=pl=>{if(!pl.team||!pl.ch||!pl.ch.some(x=>TERRAIN_OF[x.c.mem.ability]))return false;const n=tkN(pl.team);if(n<2)return false;
+  const before=pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p)).concat(pl.ch.filter(x=>x.out).map(x=>x.out));return n>tkN(before)};
+const wxLoneBad=(gp0,pl)=>terrain2(pl)||psyHit(pl)>=2||trNew(gp0,pl)==='miss'||wxHurtIn(gp0,pl)||(wxLone(pl.gp)&&(!wxLone(gp0)||pl.ch.some(x=>WEATHER_OF[x.c.mem.ability])))||(pl.team&&pl.ch&&wxSetsOf(pl.team).length>1&&wxSetsOf(pl.team).length>wxSetsOf(pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p))).length&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]));
 /* Nov 9 (Phase 3 gates): terrain and lead-support roles were tested on later real games on Nov 8 and add nothing beyond the grade
    (commit f05576d), so they no longer block a suggestion; speed control, Trick Room attackers and weather stay guarded (no loss at all). */
 const GUARD_KEYS=['speed','trfit','weather'];
