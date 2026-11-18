@@ -67,6 +67,14 @@ The Post Room (#gifts), The Champions Dispatch (#news) and Home's post band read
 - **Codes: manual.** A person adds each code by the 2-outlet rule above.
 - Status (Nov 18): the script and its test exist; it is **not yet a step of the daily job** (`.github/workflows/update.yml`).
 
+### Past codes and the redemption site (9d, 9e)
+- **Past codes are dropped** (9d): once a gift has ended, its code is taken out of post.js (stamps never show it). post-data-test
+  fails on a gift that had ended at the list's check time and still has a code.
+- **In-game steps only** (9e): the site explains how to collect a gift in the game (Submenu > Mystery Gift > enter the code >
+  Mailbox) and never links the official code redemption site (it needs a Nintendo / Google / Apple login) or the rewards site.
+  No page and no `src` may point at serial-web-front.app.pokemonchampions.jp, its API, rewards.pokemon.com or a login page;
+  post-data-test fails if one does, and the code redemption API is never called.
+
 ## Player names (privacy)
 
 Player names and teams come from public tournament results (adult Masters division only). A player can ask to have their

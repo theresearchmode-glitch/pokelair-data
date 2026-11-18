@@ -4,6 +4,7 @@
 //          Serebii source (their terms forbid copying), every code has 1 official source or 2+ outlets on the list that counts
 //          (different sites; docs/legal-sources.md), start and end present and parse, start before end, every `approx` field is explained in `note`.
 //          a code only on a gift that had not ended when the list was checked (9d: past codes are dropped).
+//          no src on a login or code redemption site (9e: in-game steps only).
 //   news:  id unique, date parses, type and title set, url is https.
 //   only Mystery Gifts (Sim, Nov 18): every gift's `how` is 'Serial Code' or 'Event Gift'.
 //   series: dates parse, start before end, `mon` is null or a name in the site's data (the round's prize; not a gift), no `gift` link.
@@ -17,6 +18,8 @@ const load = f => { const c = {}; vm.runInNewContext(fs.readFileSync(f, 'utf8') 
 const siteData = fs.readFileSync(new URL('app/src/data/data.js', root), 'utf8');
 const OFFICIAL = /(^|\.)(pokemon-home\.com|pokemon\.com|pokemon\.co\.jp|pokemonchampions\.jp)$/;
 const BANNED = /(^|\.)(op\.gg|serebii\.net)$/;
+// login and code redemption sites: never linked (Sim, Nov 18, 9e: in-game steps only; no login pages on a site kids use)
+const LOGIN = /(^|\.)(app\.pokemonchampions\.jp|rewards\.pokemon\.com|club\.pokemon\.com|accounts\.nintendo\.com|join\.pokemon\.com)$/;
 // the outlets that count toward the 2-outlet rule for codes (docs/legal-sources.md, "Codes: the 2-outlet rule"; Sim, Nov 18, 9b)
 const OUTLETS = ['nintendolife.com', 'nintendoeverything.com', 'levelup.com', 'criticalhits.com.br', 'vice.com', 'insider-gaming.com'];
 const KINDS = ['pokemon', 'item'], HOWS = ['Event Gift', 'Serial Code']; // only Mystery Gifts (Sim, Nov 18: "just mystery gifts")
@@ -43,6 +46,7 @@ function check(P) {
     say(src.length > 0, `${at}: no src`);
     say(hosts.every(Boolean), `${at}: a src is not an https URL`);
     say(!hosts.some(h => h && BANNED.test(h)), `${at}: src from op.gg or Serebii (terms forbid copying)`);
+    say(!hosts.some(h => h && LOGIN.test(h)), `${at}: src links a login or code redemption site (9e: in-game steps only)`);
     if ('code' in g) say(!(parses(g.end) && parses(P.checked) && Date.parse(g.end) < Date.parse(P.checked)), `${at}: keeps the code of a gift that had ended when the list was checked (Sim, Nov 18, 9d: past codes are dropped)`);
     if ('code' in g) {
       const outlets = new Set(hosts.filter(h => h && OUTLETS.includes(h)));
@@ -66,6 +70,7 @@ function check(P) {
     say(typeof n.type === 'string' && n.type, `${at}: no type`);
     say(typeof n.title === 'string' && n.title.trim() && !/[<>]/.test(n.title), `${at}: title empty or has markup`);
     say(!!host(n.url), `${at}: url "${n.url}" is not https`);
+    say(!(host(n.url) && LOGIN.test(host(n.url))), `${at}: url links a login or code redemption site (9e)`);
     say(!('summary' in n) && !('img' in n), `${at}: summary/img present but no licence found for them`);
   }
   for (const s of P.series || []) {
@@ -102,6 +107,8 @@ const broken = {
   'a Battle Pass gift': c => { c.gifts[0].how = 'Battle Pass'; },
   'a Competition Prize gift': c => { c.gifts[1].how = 'Competition Prize'; },
   'a past gift that keeps its code': c => { const g = c.gifts.find(x => Date.parse(x.end) < Date.parse(c.checked) && x.how === 'Serial Code'); g.code = 'OLDC0DE1'; g.src = ['https://www.nintendolife.com/a', 'https://nintendoeverything.com/b']; },
+  'a gift linking the code redemption site': c => c.gifts[0].src.push('https://serial-web-front.app.pokemonchampions.jp/?lng=10'),
+  'news linking the rewards site': c => { c.news[0].url = 'https://rewards.pokemon.com/'; },
   'an empty news entry': c => c.news.push({}),
   'an http news link': c => { c.news[0].url = c.news[0].url.replace('https:', 'http:'); },
   'news with no date': c => { delete c.news[0].date; },

@@ -114,6 +114,15 @@ const MQ = async () => {
   { const q = await open('#gifts'); const r = await q.evaluate(() => window.__ev(`(() => { const t = Date.parse(POST.checked), past = POST.gifts.filter(g => Date.parse(g.end) < t);
       const kept = past.filter(g => g.code).map(g => g.code), html = document.documentElement.outerHTML; return {past: past.length, kept: kept.join(','), inPage: kept.filter(c => html.includes(c)).length}; })()`));
     ok(r.past > 0 && !r.kept && !r.inPage, `MQ-9d: no past gift keeps its code in post.js (${JSON.stringify(r)})`); await q.close(); }
+  // MQ-9e (answer 9e): in-game steps only. #gifts gives the steps in the game and no page of the family links a login or code redemption
+  // site. (Nothing to change on the built pages: this guards it. It can fail: MQ-9e control adds such a link and must be caught.)
+  { const q = await open('#gifts'); const LOGIN = /(^|\.)(app\.pokemonchampions\.jp|rewards\.pokemon\.com|club\.pokemon\.com|accounts\.nintendo\.com|join\.pokemon\.com)$/i;
+    const scan = () => q.evaluate(() => window.__ev(`(() => { const d = document.createElement('div'); d.innerHTML = V2.pages.gifts.draw() + V2.pages.news.draw() + V2.sdPost();
+      return {steps: [...d.querySelectorAll('.pr-howto li')].map(li => li.textContent).join(' | '), hosts: [...d.querySelectorAll('a[href]')].map(a => { try { return new URL(a.getAttribute('href'), 'https://x.invalid/').hostname; } catch (e) { return ''; } }).filter(Boolean)}; })()`));
+    const r = await scan(), bad = r.hosts.filter(h => LOGIN.test(h));
+    ok(/Submenu and choose Mystery Gift/.test(r.steps) && /Mailbox/.test(r.steps) && !bad.length, `MQ-9e: #gifts gives the in-game steps and #gifts, #news and Home's band link no login or code redemption site (${r.hosts.length} links; ${bad.join(',') || 'none bad'})`);
+    await q.evaluate(() => window.__ev(`POST.gifts.find(g => g.code).src.unshift('https://serial-web-front.app.pokemonchampions.jp/?lng=10')`));
+    const c = await scan(); ok(c.hosts.some(h => LOGIN.test(h)), 'MQ-9e control: a redemption-site link put into the data is found by the same scan'); await q.close(); }
   // MQ-2c (answer 2c): the Back Page's column names are the word list's: "Top Ratings" and "Next Events" (were The Standings / Fixtures), full paper and Home's small one
   { const q = await open('#news'); const r = await q.evaluate(() => { const h = [...document.querySelectorAll('#main .dp-bc h3')].map(x => x.textContent.trim()), all = document.body.innerText;
       return {h: h.join(' | '), labels: [...document.querySelectorAll('#main .dp-bc[aria-label]')].map(x => x.getAttribute('aria-label')).join(' | '), old: /The Standings|Fixtures/.test(all)}; });
