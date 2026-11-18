@@ -1143,6 +1143,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2{padding:0 var(--gut) var(--s16)} /* the same side gutters as Battle */
 @media (max-width:599.98px){.sp2 .sp2-wx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.sp2 .sp2-wx .np-chip:first-child{grid-column:auto}} /* audit v199 #12: six weather chips in 3 even rows of 2 (were 1 + 3 + 2) */
 @media (min-width:600px) and (max-width:899.98px){.sp2-ctl .chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.sp2-ctl .np-chip{justify-content:center}} /* no lone Trick Room on its own line (3 + 2) */
+/* review Nov 17 #3: at 600-899 the six weather chips wrapped 5 + 1 (one row of 6 needs 746-759px or more, by label); now 2 even rows
+   of 3 under the 3 columns above. A column is never narrower than its label (Your Weather (None) needs 189px; a column is 179 at 600) */
+@media (min-width:600px) and (max-width:899.98px){.sp2 .sp2-wx{display:grid;grid-template-columns:repeat(3,minmax(max-content,1fr));width:100%}.sp2-wx .np-chip{justify-content:center}}
 /* Speed Tiers, Sim's Speed Q4 A (Nov 14): the split slim track, yours left of the Speed line, the field right */
 .sp2-vs-h{display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr);gap:var(--s2);margin-top:var(--s6);padding-bottom:var(--s2);border-bottom:1px solid var(--rule);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3);text-align:center}
 .sp2-vs-h .u{font:800 var(--t15)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--ink)}.sp2-vs-h .u:first-child{text-align:right;color:var(--plot-text)}.sp2-vs-h .u:last-child{text-align:left}

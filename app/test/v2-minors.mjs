@@ -226,12 +226,12 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
       const T = t.closest('.ra-sub').getBoundingClientRect(); return [Math.round(T.top + scrollY), Math.round(T.top - h.getBoundingClientRect().bottom)]; })]); }
   await p.setViewportSize({width: 1280, height: 900}); const ys = tt.map(x => x[1][0]);
   ok(Math.max(...ys) <= 450 && tt.every(x => x[1][1] >= 0 && x[1][1] <= 24), `Sim (Nov 17, Q2 recommended): on phones the Pokémon / Tournaments tabs come right after the headline and intro line on every Meta page (${tt.map(x => x[0] + ' ' + x[1][0] + ' (+' + x[1][1] + ')').join(', ')} px)`); }
-{ const ch = []; for (const w of [320, 390, 599, 700, 1280]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#speed'); await p.waitForTimeout(1500);
+{ const ch = []; for (const w of [320, 390, 599, 600, 640, 700, 759, 760, 820, 899, 1280]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#speed'); await p.waitForTimeout(1500);
     ch.push(await p.evaluate(w => { const cs = [...document.querySelectorAll('.sp2 .np-chip')].filter(c => c.getClientRects().length), sizes = [...new Set(cs.map(c => getComputedStyle(c).fontSize))];
-      const wx = [...document.querySelectorAll('.sp2-wx .np-chip')], rows = {}; wx.forEach(c => { const t = Math.round(c.getBoundingClientRect().top); rows[t] = (rows[t] || 0) + 1; }); const r = Object.values(rows);
-      return [w, sizes.join('/'), r.join('+')]; }, w)); }
-  await p.setViewportSize({width: 1280, height: 900});
-  ok(ch.every(x => !x[1].includes('/')) && ch.filter(x => x[0] < 600).every(x => new Set(x[2].split('+')).size === 1), `Audit v199 #12 (Nov 17): Speed Tiers chips are one size, and on phones the weather chips fill even rows (${ch.map(x => x[0] + ': ' + x[1] + ', rows ' + x[2]).join('; ')})`); }
+      const wx = [...document.querySelectorAll('.sp2-wx .np-chip')].filter(c => c.getClientRects().length), rows = {}; wx.forEach(c => { const t = Math.round(c.getBoundingClientRect().top); rows[t] = (rows[t] || 0) + 1; }); const r = Object.values(rows);
+      return [w, sizes.join('/'), r.join('+'), cs.length, wx.length]; }, w)); }
+  await p.setViewportSize({width: 1280, height: 900}); /* review Nov 17 #3/#6: chips must be found (6 weather chips), and the weather rows are even at every width under 900, not only on phones (640-759 had 5 + 1) */
+  ok(ch.every(x => x[3] > 0 && x[4] === 6 && x[1] && !x[1].includes('/')) && ch.filter(x => x[0] < 900).every(x => new Set(x[2].split('+')).size === 1), `Audit v199 #12 (Nov 17): Speed Tiers chips are one size, and under 900 the six weather chips fill even rows (${ch.map(x => x[0] + ': ' + x[1] + ', rows ' + x[2] + (x[4] === 6 ? '' : ', ' + x[4] + ' weather chips')).join('; ')})`); }
 { const wl = []; await p.setViewportSize({width: 1280, height: 900}); for (const r of ['battle', 'team', 'weekly', 'method']) { await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1500);
     wl.push(...await p.evaluate(r => { const t = document.querySelector('#main').textContent; return [[/Build for Me\b/, 'Build for Me'], [/Count abilities/, 'Count abilities'], [/items, moves and abilities/, 'abilities (lower case)'], [/in the checklist/, 'the checklist']].filter(([re]) => re.test(t)).map(x => r + ': ' + x[1]); }, r)); }
   ok(!wl.length, `Audit v199 #16 (Nov 17): word-list names on Battle, My Team, This Week and How We Calculate (Build Me a Team, Abilities, Team Checks) (slips: ${wl.join(', ') || 'none'})`); }
