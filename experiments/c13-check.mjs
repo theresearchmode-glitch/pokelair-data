@@ -108,7 +108,14 @@ for (const eng of ENGINES) for (const view of viewArg.split(',')) for (let [w, l
     // a control smaller than 44 still passes when its tap area reaches 44x44: tap 21px out from its centre each way (an invisible
     // ::before area counts, as it does for a finger); scrolled to the middle of the screen first so no fixed bar covers it
     const reaches = e => { e.scrollIntoView({block: 'center', inline: 'center'}); const q = e.getBoundingClientRect(), cx = q.left + q.width / 2, cy = q.top + q.height / 2;
-      return [[cx - 21, cy], [cx + 21, cy], [cx, cy - 21], [cx, cy + 21]].every(([x, y]) => { const h = document.elementFromPoint(x, y); return h && (h === e || e.contains(h)); }); };
+      if ([[cx - 21, cy], [cx + 21, cy], [cx, cy - 21], [cx, cy + 21]].every(([x, y]) => { const h = document.elementFromPoint(x, y); return h && (h === e || e.contains(h)); })) return true;
+      // a stretched link (an absolute ::after over its whole card, as the Home tool plates): the card is the tap area, so it passes
+      // when the card is 44x44 or more and a finger at the card's centre and at 4 points 12px in from its corners lands on the link
+      const af = getComputedStyle(e, '::after'), box = af.position === 'absolute' && af.content !== 'none' && e.offsetParent ? e.offsetParent.getBoundingClientRect() : null;
+      if (!box || box.width < 43.5 || box.height < 43.5) return false;
+      const hits = [[box.left + box.width / 2, box.top + box.height / 2], [box.left + 12, box.top + 12], [box.right - 12, box.top + 12], [box.left + 12, box.bottom - 12], [box.right - 12, box.bottom - 12]]
+        .filter(([x, y]) => { const h = document.elementFromPoint(x, y); return h && (h === e || e.contains(h)); }).length;
+      return hits >= 3; };
     const small = touchW ? all.filter(e => vis(e) && !inSentence(e) && !e.closest('.vh')).map(e => [e, e.getBoundingClientRect()]).filter(([e, q]) => (q.width < 43.5 || q.height < 43.5) && !reaches(e))
       .map(([e, q]) => `${(e.getAttribute('aria-label') || e.textContent || e.tagName).trim().replace(/\s+/g, ' ').slice(0, 30)} ${Math.round(q.width)}x${Math.round(q.height)}`) : [];
     // focusable but hidden: can take focus (not disabled, no tabindex -1, not inert) while the browser says it isn't visible
