@@ -110,6 +110,9 @@ a.dp-box:hover,button.dp-box:hover{box-shadow:inset 0 0 0 1px currentColor}
 .dp-cpm{margin-top:var(--s3);font:400 var(--t13)/1.5 var(--b);color:var(--dp-ink2)}
 .dp-cpm b{color:var(--dp-pick)}
 .dp-cpm .dp-lk{min-height:0;display:inline}
+/* Q13e (Sim, Nov 18, answer A): a "›" link reads as a button, so the coupon's "All Mystery Gifts ›" gets the invisible 44px tap layer
+   the other action links have (components.css C8), though it sits in a sentence; the line looks the same. Plain source links stay as they are */
+.dp-cpm .dp-lk{position:relative}.dp-cpm .dp-lk::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
 .dp-cpn0 .dp-cph{margin-bottom:var(--s1)}
 
 /* ---------- The Back Page ---------- */
