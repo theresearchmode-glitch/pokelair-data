@@ -37,7 +37,10 @@ V2.planStart = ms => { const key = V2.planKey(); if (V2.plan.key === key || (V2.
   // speed (Nov 17, pre-launch 2d): the planner waits while the page is being scrolled (its slices caused the 200-330 ms stalls)
   const step = () => { if (V2.plan.job !== job) return; if (performance.now() - (V2.lastScroll || -1e9) < 250) { setTimeout(step, 150); return; } const t = performance.now(); let r;
     try { for (;;) { r = job.g.next(); if (r.done) break; if (performance.now() - t > 30) { setTimeout(step, 0); return; } } } catch (e) { console.error(e); r = {value: []}; }
-    V2.plan = {key, plans: r.value || [], job: null}; if (V2.route() === 'team') V2.redraw(); };
+    V2.plan = {key, plans: r.value || [], job: null};
+    // speed (Nov 18, pre-launch 2d): the redraw that shows them is its own step, and it too waits while the page is being scrolled
+    const show = () => { if (V2.plan.key !== key) return; if (performance.now() - (V2.lastScroll || -1e9) < 250) { setTimeout(show, 150); return; } if (V2.route() === 'team') V2.redraw(); };
+    setTimeout(show, 0); };
   if (window.requestIdleCallback) requestIdleCallback(step, {timeout: 1500}); else setTimeout(step, 0); };
 if (!V2._scrollWatch) { V2._scrollWatch = 1; addEventListener('scroll', () => { V2.lastScroll = performance.now(); }, {passive: true}); }
 // which suggestions show (shared with today's page: planListOf, CH.sideGrades) and what each does to the Strength Score

@@ -50,7 +50,10 @@ V2.sgCard = ({pl, k, g0, attr, side, hidden, why, main}) => { const g1 = g0 != n
    Suggestions or Team Checks (the two places that quote it) come within a screen of view, or after 8 s with no tap or scroll; until then
    they say "most recent event winners", as before. On wide screens the sections are in view, so it starts at once, as before */
 V2.ckWinSoon = () => { if (V2._ckGo) { safe('checklist claims', ckWinRefresh); return; } if (V2._ckWait) return; V2._ckWait = 1;
-  const go = () => { if (V2._ckGo) return; V2._ckGo = 1; V2._ckWait = 0; try { V2._ckObs && V2._ckObs.disconnect(); } catch (e) {} clearTimeout(V2._ckT); removeEventListener('scroll', poke); safe('checklist claims', ckWinRefresh); };
+  /* speed (Nov 18, pre-launch 2d): scrolling Suggestions into view used to redraw the page at once, mid-scroll (the start-up stall,
+     200-550 ms at 4x CPU); the refresh now waits until the scrolling pauses (as the planner does), and runs at once otherwise */
+  const run = () => { if (performance.now() - (V2.lastScroll || -1e9) < 250) { setTimeout(run, 150); return; } safe('checklist claims', ckWinRefresh); };
+  const go = () => { if (V2._ckGo) return; V2._ckGo = 1; V2._ckWait = 0; try { V2._ckObs && V2._ckObs.disconnect(); } catch (e) {} clearTimeout(V2._ckT); removeEventListener('scroll', poke); run(); };
   const poke = () => { clearTimeout(V2._ckT); V2._ckT = setTimeout(go, 8000); };
   setTimeout(() => { const els = [...document.querySelectorAll('.tm-sgs,.tm-cks')]; if (!els.length || typeof IntersectionObserver !== 'function') { go(); return; }
     V2._ckObs = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) go(); }, {rootMargin: '100% 0px'}); els.forEach(e => V2._ckObs.observe(e)); }, 0);

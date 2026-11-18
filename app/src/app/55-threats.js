@@ -334,16 +334,26 @@ const THR = (() => {
     const sides = []; for (const x of list) { try { const s = side({n: x.n, top: true}); sides.push({...s, w: x.w, src: x.src, setSrc: s.spec && s.spec.sets ? `top-cut sets (${s.spec.sets})` : 'all tournament teams'}); } catch (e) {} }
     thCache = {key, list: sides}; return sides; }
   // report for spec arrays (tests, real sheets) or ready-made sides
-  function reportSides(team, ths) { const modes = teamModes(team), rows = ths.map(t => vsThreat(team, t, modes)), W = ths.reduce((a, t) => a + t.w, 0) || 1;
+  /* speed (Nov 18, pre-launch 2d): one report is worked out by one generator that pauses after each threat. reportSides runs it
+     straight through (same rows, same order); the background planner steps it (teamReportG), so a phone never spends a whole
+     report (150-300 ms at 4x CPU, the scroll hitch on My Team) in one step. */
+  function* reportSidesG(team, ths) { const modes = teamModes(team), rows = []; for (const t of ths) { rows.push(vsThreat(team, t, modes)); yield; }
+    const W = ths.reduce((a, t) => a + t.w, 0) || 1;
     return {score: Math.round(100 * rows.reduce((a, r) => a + r.t.w * PTS[r.level], 0) / W), modes, rows, team, W}; }
+  function reportSides(team, ths) { const g = reportSidesG(team, ths); let r; do r = g.next(); while (!r.done); return r.value; }
   function report(teamSpecs, threatSpecs) { const team = teamSpecs.map(side), ths = threatSpecs ? threatSpecs.map(x => ({...side(x), w: x.w})) : threatList();
     return reportSides(team, ths); }
   // your team, cached by its sets
   const repCache = new Map();
-  function teamReport(ms) { if (!ms || !ms.length) return null; const ths = threatList(); if (!ths.length) return null;
+  function repStart(ms) { if (!ms || !ms.length) return null; const ths = threatList(); if (!ths.length) return null;
     let team; try { team = ms.filter(m => m && m.p).map(fromMember); } catch (e) { return null; }
     const key = thCache.key + '|' + team.map(s => [s.n, s.item, s.ability, s.nat, Object.values(s.sp).join('/'), s.moves.map(m => m.name).join('+')].join(':')).join(';');
-    let r = repCache.get(key); if (r) return r; r = reportSides(team, ths); if (repCache.size > 600) repCache.clear(); repCache.set(key, r); return r; }
+    return {ths, team, key}; }
+  const repKeep = (key, r) => { if (repCache.size > 600) repCache.clear(); repCache.set(key, r); return r; };
+  function teamReport(ms) { const s = repStart(ms); if (!s) return null; const r = repCache.get(s.key); return r || repKeep(s.key, reportSides(s.team, s.ths)); }
+  // the same report in steps (background planner); a report made meanwhile for the same team (a redraw) is the one kept
+  function* teamReportG(ms) { const s = repStart(ms); if (!s) return null; let r = repCache.get(s.key); if (r) return r;
+    r = yield* reportSidesG(s.team, s.ths); return repCache.get(s.key) || repKeep(s.key, r); }
   function brief(rep) { return {score: rep.score, modes: rep.modes, rows: rep.rows.map(r => ({t: r.t.n, w: +r.t.w.toFixed(3), label: r.label, level: r.level, field: r.field, mode: r.mode ? r.mode.map(x => x.k) : null, solid: r.solid.map(x => x.why), soft: r.soft.map(x => x.why), warn: r.warn.map(x => x.why),
     losers: r.losers.map(x => `${x.m.d} (${x.du.d.mv} ${pc(x.du.d.min)}-${pc(x.du.d.pct)}%, ${x.du.nT === 1 ? 'OHKO' : '2HKO'}, speed ${x.du.st} vs ${x.du.sm})`), overloaded: r.overloaded}))}; }
   function pair(aSpec, dSpec, field) { const a = side(aSpec), d = side(dSpec), out = [];
@@ -364,7 +374,7 @@ const THR = (() => {
   function evidence(r) { if (r.solid.length) return r.solid[0].why; if (r.soft.length) return r.soft[0].why;
     if (r.mode) return `Nothing on the team answers its ${r.mode[0].name}`;
     const l = r.losers[0]; return l ? `It beats ${r.losers.slice(0, 3).map(x => x.m.d).join(', ')} 1-on-1 (${l.du.d.mv} ${pc(l.du.d.min)}-${pc(l.du.d.pct)}% of HP on ${l.m.d}, ${l.du.nT === 1 ? "an OHKO" : "a 2HKO"})` : 'No one on the team beats it 1-on-1'; }
-  return {side, fromMember, report, reportSides, teamReport, threatList, brief, pair, one, teamVs, vsThreat, teamModes, speedOf, fieldFor, duel, evidence, PTS,
+  return {side, fromMember, report, reportSides, teamReport, teamReportG, threatList, brief, pair, one, teamVs, vsThreat, teamModes, speedOf, fieldFor, duel, evidence, PTS,
     noCache: off => { cacheOpt.off = !!off; duelCache.clear(); repCache.clear(); }};
 })();
 if (window.__PL_TEST || window.__THR_EXPOSE) window.THR = THR;

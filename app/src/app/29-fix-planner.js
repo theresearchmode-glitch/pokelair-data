@@ -200,7 +200,7 @@ function* planFixesG(ms,pool,useA,opts){
   // Item problems come first; then a plan must raise readiness by 2+, the highest leads, and an extra change has to earn 2 more.
   // The planner's own score only shortlists (the 70 most promising) and breaks ties; the type rules relax to "at most one more
   // weakness, no new stack".
-  const tsBase=useTSPick()&&full?tsOf(ms):null;let tsOn=false;const gBase=useTSPick()&&full?gradeTeam(ms):null,gOK=pl=>gBase==null||planGrade(pl)==null||pl._g>=gBase||(ipOf(pl)<ip0&&pl._g>=gBase-3);/* a suggestion never lowers the grade (Sim, Nov 7: a red 'Win rate 59.9% → 59.1%' card); only fixing an illegal item may cost a little */
+  const tsBase=useTSPick()&&full?(yield* tsOfG(ms)):null;let tsOn=false;const gBase=useTSPick()&&full?gradeTeam(ms):null,gOK=pl=>gBase==null||planGrade(pl)==null||pl._g>=gBase||(ipOf(pl)<ip0&&pl._g>=gBase-3);/* a suggestion never lowers the grade (Sim, Nov 7: a red 'Win rate 59.9% → 59.1%' card); only fixing an illegal item may cost a little */
   if(useTSPick()){const sh0=typeShape(base.a).maxStack;
     /* Phase 3 (Nov 8): the type-chart rules "at most one more weakness" and "at most one more unresisted type" blocked the best swap
        on 9 of 30 real teams and predict nothing beyond the grade (experiments/type-check.mjs, 6,270 later games: +0.1, −0.1 and 0.0 pts,
@@ -210,6 +210,9 @@ function* planFixesG(ms,pool,useA,opts){
     /* Phase 3 (Nov 8): ideas from grade gains. The shortlist above ranks by the planner's own score, so the grade never saw some of
        the best swaps (on 30 real teams the best single swap beat the planner's best idea by 3+ points for 15, and 6 got no idea at
        all). The 20 candidates the grade's fast strength rates highest join the shortlist; every rule below still applies. */
+    /* speed (Nov 18, pre-launch 2d): the fast strengths are worked out first in a loop that pauses (abY keeps them), so the line below
+       finds them ready; same values, same order */
+    if(full&&typeof abY==='function')for(const pl of short0){if(pl.team.length===6&&!short.includes(pl))abY(pl.team);if(due()){yield;rs()}}
     if(full&&typeof abY==='function'){const gy=short0.filter(pl=>pl.team.length===6&&!short.includes(pl)).map(pl=>[abY(pl.team),pl]).filter(x=>x[0]!=null).sort((a,b)=>b[0]-a[0]).slice(0,20);for(const [,pl] of gy)short.push(pl)}
     // plans that fix an item problem are always checked, and qualify without the usual readiness gain (they may not lower it by more than 3)
     if(ip0>0)for(const pl of short0.filter(pl=>ipOf(pl)<ip0).slice(0,12))if(!short.includes(pl))short.push(pl);
@@ -218,7 +221,9 @@ function* planFixesG(ms,pool,useA,opts){
     // (Nov 7, Sim) plans are judged by the grade, the big number on My team, not readiness alone: a plan must raise the grade by
     // 2+, or fix a real problem (an item problem, a game-plan gap) for at most 3 grade points, and may never cost more than 3
     // readiness points. Extra changes cost 2 grade points each in the ranking, as they did for readiness.
-    for(const pl of short){if(pl._ts===undefined){pl._ts=tsOf(pl.team);yield}if(gBase!=null&&pl._g===undefined){planGrade(pl);yield}}
+    for(const pl of short){if(pl._ts===undefined){pl._ts=yield* tsOfG(pl.team);yield}/* speed (Nov 18, 2d): a pause after each threat */if(gBase!=null&&pl._g===undefined){planGrade(pl);yield}}
+    // speed (Nov 18, 2d): how sure each swap is, worked out here with pauses for exactly the plans qual() below asks about (same numbers)
+    if(tsBase!=null&&gBase!=null)for(const pl of short){if(pl._ts!=null&&pl._g!=null&&pl._sure===undefined){pl._sure=swapSure(ms,pl.team);if(due()){yield;rs()}}}
     if(short.some(pl=>pl._ts!=null)){tsOn=true;
       const fixOf=pl=>ipOf(pl)<ip0||pl.gap.fix.length,gKey=pl=>pl._g!=null?pl._g-(pl.ch.length-1)*2:-1e9;
       const qual=pl=>{if(pl._ts==null)return false;if(tsBase==null)return true;

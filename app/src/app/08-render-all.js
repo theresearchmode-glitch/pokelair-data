@@ -48,7 +48,7 @@ function planJobStart(key,ms,pool,useA,a){if(planJob&&planJob.key===key)return;
 // Readiness reports (cached by THR.teamReport) for the six-Pokémon teams the plan cards, Quick add and the My team suggestions
 // look up: worked out here one at a time, so the redraw that shows the plans finds them ready. Only warms the cache; the
 // numbers are the same either way.
-function* planWarmG(ms,plans,a){const seen=new Set(),warm=function*(team){if(!team||team.length!==6||seen.has(team))return;seen.add(team);prepOf(team);yield};
+function* planWarmG(ms,plans,a){const seen=new Set(),warm=function*(team){if(!team||team.length!==6||seen.has(team))return;seen.add(team);yield* prepOfG(team)/* speed (Nov 18, 2d): a pause after each threat */;yield};
   for(const pl of [...plans,...(plans.more||[])])yield* warm(pl.team);
   // Quick add: the same keys and shortlists renderProblems / quickPicks use
   const keys=[];const gp=plans.gp?plans.gp:gamePlan(ms);

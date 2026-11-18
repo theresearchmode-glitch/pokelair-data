@@ -164,7 +164,11 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   const st = await p.evaluate(() => window.__ev(`(() => { const mf = memberFrom, pn = performance.now; let n = 0, fake = pn.call(performance); memberFrom = function () { n++; return mf.apply(this, arguments); };
     performance.now = () => (fake += 10); /* a slow phone: every clock reading 10 ms later */
     try { const g = planFixesG(members(), suggestPool(), true); g.next(); return n; } finally { memberFrom = mf; performance.now = pn; } })()`));
-  ok(st > 0 && st <= 5, `Speed fix 3 (Nov 17, pre-launch 2d): on a slow clock the planner's first step stops after a few candidates (pauses by time, not by count; ${st} built)`); }
+  ok(st > 0 && st <= 5, `Speed fix 3 (Nov 17, pre-launch 2d): on a slow clock the planner's first step stops after a few candidates (pauses by time, not by count; ${st} built)`);
+  const rg = await p.evaluate(() => window.__ev(`(() => { if (typeof THR.teamReportG !== 'function') return {none: 1}; const ms = assignItems(members()), sig = r => JSON.stringify([r.score, r.rows.map(x => [x.t.n, x.level, x.solid.map(y => y.why), x.soft.map(y => y.why)])]);
+    THR.noCache(false); const g = THR.teamReportG(ms); let r, n = 0; do { r = g.next(); n++; } while (!r.done); const a = sig(r.value); THR.noCache(false); const b = sig(THR.teamReport(ms));
+    return {n, threats: THR.threatList().length, same: a === b}; })()`));
+  ok(rg.same && rg.n === rg.threats + 1, `Speed fix 3c (Nov 18, pre-launch 2d): the planner works a team's matchup report out one threat per step (${rg.n} steps for ${rg.threats} threats), with the same report as in one go (${rg.same})`); }
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500);
   const rn = await p.evaluate(() => window.__ev(`(() => { const R = {id: 'M-C', since: '2026-09-01', now: {id: 'M-D', since: '2026-12-02', events: 3, need: {events: 20}}}, P = META.perf, o1 = META.reg, o2 = P && P.reg; META.reg = R; if (P) P.reg = R; try { return V2.dataNote().replace(/<[^>]+>/g, ''); } finally { META.reg = o1; if (P) P.reg = o2; } })()`));
   ok(/3 Reg M-D events so far, switches at 20\./.test(rn), `Known-bug SHELL-05 (Nov 17): the new-regulation note says how far along it is (${String(rn).slice(0, 200)})`); }

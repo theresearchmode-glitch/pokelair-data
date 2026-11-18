@@ -119,6 +119,10 @@ function tsOf(team){if(!team||team.length!==6)return null;try{const ms=typeof as
   if(typeof itemClash==='function'&&itemClash(ms).length)return 0;const r=THR.teamReport(ms);return r?r.score:null}catch(e){return null}}
 // the full report for any six (or fewer), with the items each member would really hold
 function prepOf(team){if(!team||!team.length)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;return THR.teamReport(ms)}catch(e){return null}}
+// speed (Nov 18, pre-launch 2d): tsOf and prepOf for the background planner (yield* them): a pause after each threat, same numbers, same cache
+function* tsOfG(team){if(!team||team.length!==6)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;
+  if(typeof itemClash==='function'&&itemClash(ms).length)return 0;const r=yield* THR.teamReportG(ms);return r?r.score:null}catch(e){return null}}
+function* prepOfG(team){if(!team||!team.length)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;return yield* THR.teamReportG(ms)}catch(e){return null}}
 // Which plans get a full readiness check: the planner's own best n (the readiness check is the slow part)
 function tsShortlist(pls,n){return pls.slice(0,n)}
 // Fix plans, Best additions and Build for me choose by readiness (off-meta searches keep their own picks)
