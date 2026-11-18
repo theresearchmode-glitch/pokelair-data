@@ -42,9 +42,11 @@ const TEAM_L = {320: [4600, 'The Hand (Nov 15)'], 390: [4150, 'The Hand (Nov 15)
 // to the next 50. These include the footer (no +footer below). Set so that a change that makes them taller fails; NOT agreed by Sim (C1:
 // limits are hers). 320 and 820 have no new limit yet: Home measured 6,664 at 320 and 7,819 at 820 (taller than the phone), Gifts 4,108 /
 // 3,194, News 4,654 / 3,939; those widths still use the old limits above and report OVER until Sim picks.
-const NEW_L = {home: {390: [6350, 'The Stampede: measured 6,240 + margin (Nov 18, not Sim-agreed)'], 1440: [5250, 'The Stampede: measured 5,117 + margin (Nov 18, not Sim-agreed)']},
-  gifts: {390: [3850, 'Gifts: measured 3,748 + margin (Nov 18, not Sim-agreed)'], 1440: [2150, 'Gifts: measured 2,006 + margin (Nov 18, not Sim-agreed)']},
-  news: {390: [4250, 'News: measured 4,129 + margin (Nov 18, not Sim-agreed)'], 1440: [2250, 'News: measured 2,116 + margin (Nov 18, not Sim-agreed)']}};
+// Nov 18 evening (Sim: 'recommended and yes'): 320 and 820 get limits the same way (taller engine + about 100, to the next 50), measured
+// after the Home tools change (iPad: six big plates + Type Chart strip + three plates).
+const NEW_L = {home: {320: [6900, 'The Stampede: measured 6,754 + margin (Nov 18, Sim: recommended)'], 390: [6350, 'The Stampede: measured 6,240 + margin (Nov 18, not Sim-agreed)'], 820: [6950, 'The Stampede: measured 6,823 + margin (Nov 18, Sim: recommended)'], 1440: [5250, 'The Stampede: measured 5,117 + margin (Nov 18, not Sim-agreed)']},
+  gifts: {320: [4250, 'Gifts: measured 4,108 + margin (Nov 18, Sim: recommended)'], 390: [3850, 'Gifts: measured 3,748 + margin (Nov 18, not Sim-agreed)'], 820: [3300, 'Gifts: measured 3,194 + margin (Nov 18, Sim: recommended)'], 1440: [2150, 'Gifts: measured 2,006 + margin (Nov 18, not Sim-agreed)']},
+  news: {320: [4800, 'News: measured 4,654 + margin (Nov 18, Sim: recommended)'], 390: [4250, 'News: measured 4,129 + margin (Nov 18, not Sim-agreed)'], 820: [4050, 'News: measured 3,939 + margin (Nov 18, Sim: recommended)'], 1440: [2250, 'News: measured 2,116 + margin (Nov 18, not Sim-agreed)']}};
 const touch = w => w < 1100;
 const out = [], t0 = Date.now();
 // C13_ENGINES=chromium runs Chromium only (for a PC without WebKit, e.g. the outside check); default: both engines
