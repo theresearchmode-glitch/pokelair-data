@@ -47,10 +47,10 @@ const SENT = t => { t = (t || '').replace(/\s+/g, ' ').trim(); return t ? t[0] +
 const CARD = (li, mode) => { const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : '';
   const chs = [...li.querySelectorAll('.tm-chg')].map(c => { const sw = [...c.querySelectorAll('.tm-sw')], inn = T(c.querySelector('.tm-sw.in')).replace(/\s*(In your box|To catch)$/, '') /* Nov 17: the card says whether it's yours (COV-04) */, out = sw.length > 1 && !sw[0].classList.contains('in') ? T(sw[0]) : ''; return {inn, out}; });
   const mv = li.querySelector('.tm-mv'), b = mv && mv.querySelector('b'), sp = mv && mv.querySelector('span'), w = mv && mv.querySelector('em');
-  const score = b ? `${T(b)} (${T(sp)})${w ? ', ' + T(w) : ''}` : '', lane = T(li.querySelector('.sg2-ln')), btn = T(li.querySelector('[data-v2plan],[data-v2plana]')), why = T(li.querySelector('.sg2-why'));
+  const score = b ? `${T(b)} (${T(sp)})${w ? ', ' + T(w) : ''}` : '', lane = T(li.querySelector('.sg2-ln')), btn = T(li.querySelector('[data-v2plan],[data-v2plana]')), why = T(li.querySelector('.sg2-why')), facts = T(li.querySelector('.sga2-facts')), own = [...li.querySelectorAll('.tm-own')].map(T).join(' ') /* Nov 18 (Q5 C): All Suggestions cards show types, tier, role, gem, Ability @ Item */;
   const eb = T(li.querySelector('.np-eyebrow'));
-  if (mode === 'big') return [`${eb}, ${chs.length} change${chs.length === 1 ? '' : 's'}`, score, lane, chs.map(c => c.out ? `${c.out} → ${c.inn}` : `+ ${c.inn}`).join(' '), btn, why].filter(Boolean).join(' ');
-  return [eb, chs.map(c => c.out ? `→ ${c.inn} for ${c.out}` : `+ ${c.inn} added`).join(' '), score, lane, btn, why].filter(Boolean).join(' '); };
+  if (mode === 'big') return [`${eb}, ${chs.length} change${chs.length === 1 ? '' : 's'}`, score, lane, chs.map(c => c.out ? `${c.out} → ${c.inn}` : `+ ${c.inn}`).join(' '), facts, btn, why, own].filter(Boolean).join(' ');
+  return [eb, chs.map(c => c.out ? `→ ${c.inn} for ${c.out}` : `+ ${c.inn} added`).join(' '), score, lane, facts, btn, why, own].filter(Boolean).join(' '); };
 // a part's visible text with its suggestion cards read through CARD (top-level children in order; hidden cards left out). My Team's
 // "Adjust suggestions" block (.sg2-adj) sits at the end of the Suggestions section; it is today's Plan settings (with its "Never suggested:"
 // list), not a suggestion, so it is left out here and read as the Plan settings part instead (today's #chSugOut holds no never-suggest list)
@@ -362,12 +362,16 @@ export default (ui, pg) => {
 
     // ---------------- All Suggestions (the sheet) ----------------
     /** wait until the All Suggestions sheet shows its cards (or its no-suggestions note) */
-    waitSwaps: () => until(() => pg.evaluate(() => { const s = document.querySelector('.np-sheet .sga2'); return !!s && (s.querySelectorAll('.tm-sug > li').length > 0 || /No suggestions/.test(s.innerText)); }), 20000, 'All Suggestions cards'),
+    waitSwaps: () => until(() => pg.evaluate(() => { const s = document.querySelector('.np-sheet .sga2'); return !!s && !s.querySelector('.sg2-wait') && (s.querySelectorAll('.tm-sug > li').length > 0 || /No suggestions/.test(s.innerText)); }), 30000, 'All Suggestions cards'), /* Nov 18 (Q5 C): the sheet re-plans in place (Suggest from inside); while it works its faded copy holds the old cards */
     /** the cards on All Suggestions: [{text (read as My Team's cards), button (as shown)}] */
-    swapCards: () => pg.evaluate(([CARDs]) => { const CARD = eval('(' + CARDs + ')'); return [...document.querySelectorAll('.np-sheet .sga2 .tm-sug > li')].filter(e => e.getClientRects().length).map(li => ({text: CARD(li, 'my'), button: ((li.querySelector('[data-v2plana]') || {}).innerText || '').trim()})); }, [CARD.toString()]),
+    swapCards: () => pg.evaluate(([CARDs]) => { const CARD = eval('(' + CARDs + ')'); return [...document.querySelectorAll('.np-sheet .sga2 .tm-sug:not(.sga2-big) > li')].filter(e => e.getClientRects().length && !e.closest('[inert]')).map(li => ({text: CARD(li, 'my'), button: ((li.querySelector('[data-v2plana]') || {}).innerText || '').trim()})); }, [CARD.toString()]),
     applySwap: (n = 0) => click(`.np-sheet .sga2 [data-v2plana="${n}"]`, 900),
     /** today's Bigger plans = the All Suggestions sheet's list (see the notes at the top) */
     biggerPlans: async () => { if (!(await sheetOpen('.sga2'))) await openAll(600); await waitPlans(); await H.waitSwaps(); return readAll('big'); },
+    /** Nov 18 (Q5 C): the "Bigger Plans" section alone (its heading to the end of the sheet): the two-or-more-change plans */
+    biggerPlansSection: async () => { if (!(await sheetOpen('.sga2'))) await openAll(600); await waitPlans(); await H.waitSwaps();
+      return pg.evaluate(([CARDs]) => { const CARD = eval('(' + CARDs + ')'), s = document.querySelector('.np-sheet .sga2'); if (!s) return ''; const h = [...s.querySelectorAll('.sga2-h3')].find(e => e.textContent === 'Bigger Plans'); if (!h) return '';
+        const out = []; for (let e = h; e; e = e.nextElementSibling) out.push(e.matches('ol.tm-sug') ? [...e.children].map(li => CARD(li, 'big')).join(' ') : e.innerText.replace(/\s+/g, ' ').trim()); return out.filter(Boolean).join(' '); }, [CARD.toString()]); },
     biggerPlansNow: async () => { if (!(await sheetOpen('.sga2'))) await openAll(0); return readAll('big'); },
     biggerPlanCount: () => pg.evaluate(() => [...document.querySelectorAll('.np-sheet .sga2 [data-v2plana]')].filter(e => e.getClientRects().length).length),
     applyPlan: (n = 0) => click(`.np-sheet .sga2 [data-v2plana="${n}"]`, 900),

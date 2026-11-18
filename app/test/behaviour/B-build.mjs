@@ -402,7 +402,8 @@ t('BUILD-07', 'Plan settings: Pick from, Swap my Mega, Count abilities, Refresh,
 t('COV-01', 'All suggestions head; reached from "See all suggestions ›"; ← My Team goes back', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions();
   await ui.tap(/^See all suggestions/); expect(await ui.current() === 'coverage', 'All suggestions did not open'); const tx = await ui.text();
-  has(tx, 'Every swap and plan for your team', 'kicker'); has(tx, 'All Suggestions', 'title'); has(tx, 'Pokémon that ready your team for more of the top threats without breaking it, best first.', 'hint');
+  if (NEW) { /* new (Sim, Nov 18, Q5 C: the All Suggestions sheet's middle way, README-allsugs-options.md) */ has(tx, /\d+ suggestions?/, 'kicker'); has(tx, 'All Suggestions', 'title'); has(tx, 'Every change the planner found for your team, best first, each with how it moves the Strength Score.', 'hint'); }
+  else { has(tx, 'Every swap and plan for your team', 'kicker'); has(tx, 'All Suggestions', 'title'); has(tx, 'Pokémon that ready your team for more of the top threats without breaking it, best first.', 'hint'); }
   await ui.tap(/^← My Team/); expect(await ui.current() === 'report', 'back link did not open My team'); await close(); });
 
 t('COV-02', 'Opening after a team change shows at once with a working line, then the cards', async () => {
@@ -415,15 +416,21 @@ t('COV-02', 'Opening after a team change shows at once with a working line, then
 t('COV-03', 'Suggest from My box / Whole roster changes the list and is remembered (separate from My team\'s)', async () => {
   const {ui, ls, close} = await open({team: TEAM, box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps();
   const a = (await ui.swapCards()).map(c => c.text.slice(0, 30)).join('|'); await ui.tap(/^Whole roster/, ui.area('All suggestions page')); await ui.waitSwaps();
-  const b = (await ui.swapCards()).map(c => c.text.slice(0, 30)).join('|'); expect(a !== b, 'list did not change'); has((await ui.swapCards()).map(c => c.text).join(' '), /To catch/, 'Whole roster picks');
-  expect(await ls('cc2.recsrc') === 'all', 'not saved'); await ui.reloadAsSamePlayer(); await ui.go('All Suggestions'); expect(await ui.pressed(/^Whole roster/, ui.area('All suggestions page')), 'Whole roster not kept after reload');
-  await ui.go('My Team'); expect(await ui.pressed(/^Box \+ catch/), 'My team Suggest from changed too (should be separate)'); await close(); });
+  const b = (await ui.swapCards()).map(c => c.text.slice(0, 30)).join('|'); expect(a !== b, 'list did not change');
+  if (NEW) expect((await ui.swapCards()).some(c => !/In your box/.test(c.text)), 'Whole roster picks: every card is from the box'); /* new (Q5 C): on Whole Roster a pick outside the box has no label (today's plan card: TO CATCH only when not Whole roster) */
+  else has((await ui.swapCards()).map(c => c.text).join(' '), /To catch/, 'Whole roster picks');
+  expect(await ls(NEW ? 'cc2.pool' : 'cc2.recsrc') === 'all', 'not saved'); await ui.reloadAsSamePlayer(); await ui.go('All Suggestions'); expect(await ui.pressed(/^Whole roster/, ui.area('All suggestions page')), 'Whole roster not kept after reload');
+  await ui.go('My Team'); if (NEW) expect(await ui.pressed(/^Whole roster/, ui.area('My team page')), 'My Team Suggest from is not the same setting'); /* new (Sim, Nov 18, Q5 C: the All Suggestions sheet's middle way, README-allsugs-options.md) */ /* one Suggest from, shared with My Team (the old site kept a second, separate one) */
+  else expect(await ui.pressed(/^Box \+ catch/), 'My team Suggest from changed too (should be separate)'); await close(); });
 
 t('COV-04', 'Swap/add cards: "Pokémon to Add" on a short team, "One Pokémon In, One Out" on a full one, with their details', async () => {
   { const {ui, close} = await open({team: TEAM.slice(0, 4), box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps(); has(await ui.text(), 'Pokémon to Add', 'heading');
-    const c = await ui.swapCards(); expect(c.length && c.every(x => x.button === (NEW ? 'Add to My Team' : 'Add to team')), 'add cards: ' + JSON.stringify(c.map(x => x.button))); await close(); }
+    const c = await ui.swapCards(); expect(c.length && c.every(x => x.button === (NEW ? 'Apply' : 'Add to team')), 'add cards: ' + JSON.stringify(c.map(x => x.button))); await close(); } /* new (Sim, Nov 18, Q5 C: the All Suggestions sheet's middle way, README-allsugs-options.md) */
   { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps(); has(await ui.text(), 'One Pokémon In, One Out', 'heading');
     const c = await ui.swapCards(); expect(c.length > 0, 'no swap cards'); const x = c[0];
+    if (NEW) { /* new (Sim, Nov 18, Q5 C: the All Suggestions sheet's middle way, README-allsugs-options.md) */ /* the card: Apply, in your box / to catch, tier, Ability @ Item, the score move; the change chips and threat lines are in Why? (they were said twice) */
+      expect(x.button === 'Apply', 'button: ' + x.button); has(x.text, /In your box|To catch/, 'card'); has(x.text, /[SABCD] tier \d+/, 'card'); has(x.text, /\S @ \S/, 'set line');
+      has(x.text, /[+−-]\d+ \(\d+ → \d+\)/, 'grade chip'); const w = await ui.unfold(/^Why\? \d+ reasons?/i, ui.area('All suggestions page')); has(w, /Weak spots: .+ → /, 'change chip in Why?'); await close(); return; }
     expect(/^Swap out /.test(x.button), 'button: ' + x.button); has(x.text, /[\d,]+ teams/, 'card'); has(x.text, /In your box|To catch/, 'card'); has(x.text, /[SABCD] tier \d+/, 'card');
     has(x.text, /[+−-]\d+ \(\d+ → \d+\)/, 'grade chip'); has(x.text, /Weak \d+ → \d+/, 'change chip'); has(x.text, /(Covers|Loses) .+: .+ → /, 'threat lines'); has(x.text, /replaces \w+/, 'why line'); await close(); } });
 
@@ -435,6 +442,9 @@ t('COV-05', 'Swap/Add applies in place with a toast and Undo', async () => {
 
 t('COV-06', 'Only 3 cards first; "N More Swaps · Showing 3 of N" unfolds the rest; More suggestions loads more', async () => {
   const {ui, close} = await open({team: TEAM.slice(0, 4), box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps(); await ui.tap(/^Whole roster/, ui.area('All suggestions page')); await ui.waitSwaps();
+  if (NEW) { /* new (Sim, Nov 18, Q5 C: the All Suggestions sheet's middle way, README-allsugs-options.md) */ /* 6 first; "Show 6 More · Showing 6 of N" opens six more (C folded today's 'More suggestions' extras into the one list) */
+    expect((await ui.swapCards()).length === 6, 'not 6 cards first: ' + (await ui.swapCards()).length); const m = (await ui.text()).match(/Show (\d+) More Showing 6 of (\d+)/i); expect(m, 'no "Show N More · Showing 6 of N" strip');
+    await ui.tap(/^Show \d+ More/i, ui.area('All suggestions page'), 600); expect((await ui.swapCards()).length === Math.min(12, +m[2]), 'Show More did not open ' + m[1] + ' more: ' + (await ui.swapCards()).length); await close(); return; }
   expect((await ui.swapCards()).length === 3, 'not 3 cards first: ' + (await ui.swapCards()).length); const m = (await ui.text()).match(/(\d+) More Swaps? Showing 3 of (\d+)/i); expect(m, 'no "N more swaps · Showing 3 of N" strip');
   await ui.tap(/More Swaps? Showing 3 of/i, ui.area('All suggestions page'), 600); expect((await ui.swapCards()).length === +m[2], 'strip did not unfold all ' + m[2]);
   has(await ui.text(), /More suggestions \d+ more options, including rarely used picks and side-grades/, 'More suggestions button');
@@ -459,6 +469,10 @@ t('COV-09', 'Game-plan gap note shows on All suggestions when nothing in the poo
 
 t('COV-11', 'Bigger plans fold: settings, multi-change suggestions only, hint', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps(); has(await ui.text(), /Bigger Plans Two or more changes at once/, 'fold heading');
+  if (NEW) { /* new (Sim, Nov 18, Q5 C: the All Suggestions sheet's middle way, README-allsugs-options.md) */ /* an open section (no fold); its setting is the sheet's one Suggest from; multi-change plans only, or the no-plan note */
+    has(await ui.text(), /Suggest from My Box Box \+ Catch Whole Roster/i, 'Suggest from in the sheet'); const sec = await ui.biggerPlansSection();
+    const ks = [...sec.matchAll(/Suggestion \d+, (\d+) changes?/g)].map(m => +m[1]); expect(ks.length || /No plan with two or more changes raises the Strength Score/.test(sec), 'no plans and no note: ' + sec.slice(0, 200));
+    expect(ks.every(k => k >= 2), 'a one-change plan in Bigger Plans: ' + ks); await close(); return; }
   const bp = await ui.biggerPlans(); has(bp, 'Plan Settings', 'settings inside'); has(bp, 'Item problems first, then the plans that ready the team for the most top threats. Your Mega and locked Pokémon stay put.', 'hint');
   const ks = [...bp.matchAll(/Suggestion \d+, (\d+) changes?/g)].map(m => +m[1]); expect(ks.length || /Every one-change suggestion is a swap above/.test(bp), 'no plans and no dedupe note');
   expect(ks.every(k => k >= 2), 'a one-change plan shown again in Bigger plans: ' + ks); await close(); });
@@ -492,7 +506,11 @@ t('SUGG-03', 'My team suggestion card: out → in, score chip, lane line, Apply,
   has(s, /(Fix|Small edge|Option) \S/, 'lane line'); const w = await ui.unfold(/^Why\? \d+ reasons/i, ui.area('My team suggestions')); has(w, /Weak spots: \d+ → \d+|weak spot/i, 'Why reasons'); await close(); });
 
 t('SUGG-04', 'Bigger plans card: Suggestion N · K changes, score, lane, rows with set line, more reasons, Apply suggestion N', async () => {
-  const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps(); const bp = await ui.biggerPlans();
+  const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps();
+  if (NEW) { /* new (Sim, Nov 18, Q5 C: the All Suggestions sheet's middle way, README-allsugs-options.md) */ /* the first card in Bigger Plans; its Apply says Apply (as every card) and its reasons are behind Why? (no "teams" count) */
+    const sec = await ui.biggerPlansSection(); has(sec, /Suggestion \d+, [2-9] changes [+−-]\d+ \(\d+ → \d+\)/, 'card head'); has(sec, /(Fix|Small edge|Option) \S/, 'lane'); has(sec, /\S+ → \S+/, 'change row');
+    has(sec, /\S @ \S/, 'set line'); has(sec, /Apply/, 'Apply button'); const more = await ui.unfold(/^Why\? \d+ reasons?/i, '.np-sheet .sga2-big'); expect(more.length > 60, 'Why? empty'); await close(); return; }
+  const bp = await ui.biggerPlans();
   has(bp, /Suggestion 1, \d changes [+−-]\d+ \(\d+ → \d+\)/, 'card head'); has(bp, /(Fix|Small edge|Option) \S/, 'lane'); has(bp, /\S+ → \S+ [\d,]+ teams/, 'change row');
   has(bp, /@ .+?, [\d.]+% usage/, 'set line'); has(bp, /Apply suggestion 1/, 'Apply button');
   const more = await ui.unfold(/^\d+ more reasons/i, ui.area('Bigger plans')); expect(more.length > 60, 'more reasons fold empty'); await close(); });
@@ -556,7 +574,10 @@ t('SUGG-09', 'Apply: writes the plan, keeps the place under your finger, toast w
 t('SUGG-10', 'Undo bar: shows on My team and Bigger plans, steps back with "Undone: …", disappears after another change', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.applyMySuggestion(0);
   await ui.until(async () => /^Applied .+ for .+ Undo/.test(await ui.undoBarText()), 15000, 'Undo bar on My team');
-  await ui.go('All Suggestions'); await ui.waitSwaps(); await ui.biggerPlans(); await ui.until(async () => /^Applied .+ for /.test(await ui.undoBarText()), 15000, 'Undo bar in Bigger plans');
+  if (NEW) { /* new (Sim, Nov 18, Q5 C: the All Suggestions sheet's middle way, README-allsugs-options.md) */ /* sub-question A: Apply in the sheet closes it; its Undo bar is on My Team (the sheet has none) */
+    await ui.undoAppliedStep(); await ui.waitForToast(/^Undone: .+ for /); await ui.go('All Suggestions'); await ui.waitSwaps(); await ui.applySwap(0);
+    expect(await ui.current() === 'report', 'Apply did not close the sheet onto My Team'); await ui.until(async () => /^Applied .+ Undo/.test(await ui.undoBarText()), 15000, 'Undo bar on My Team after an Apply in the sheet'); }
+  else { await ui.go('All Suggestions'); await ui.waitSwaps(); await ui.biggerPlans(); await ui.until(async () => /^Applied .+ for /.test(await ui.undoBarText()), 15000, 'Undo bar in Bigger plans'); }
   await sleep(500); await ui.undoAppliedStep(); await ui.waitForToast(/^Undone: .+ for /); expect(same(await ui.team(), TEAM), 'Undo bar did not restore the six');
   await ui.go('My Team'); await ui.waitMySuggestions(); await ui.applyMySuggestion(0); await ui.until(async () => !!(await ui.undoBarText()), 15000, 'bar');
   await sleep(600); await ui.removeFromMyTeam(5); await sleep(1200); expect(!(await ui.undoBarText()), 'Undo bar stayed after another change'); await close(); });
@@ -568,7 +589,11 @@ t('SUGG-11', 'Show N more suggestions opens the next ones, then See all suggesti
   await ui.tap(/^See all suggestions/, ui.area('My team suggestions'), 700); expect(await ui.current() === 'coverage', 'All suggestions did not open'); await close(); });
 
 t('SUGG-12', 'Bigger plans › More suggestions adds 3 per tap', async () => {
-  const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps(); const bp = await ui.biggerPlans();
+  const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps();
+  if (NEW) { /* new (Sim, Nov 18, Q5 C: the All Suggestions sheet's middle way, README-allsugs-options.md) */ /* "Show 6 More" adds up to six swaps per tap (today's More suggestions added 3) */
+    const m = (await ui.text()).match(/Show (\d+) More Showing (\d+) of (\d+)/i); expect(m, 'no Show More strip'); const n0 = (await ui.swapCards()).length;
+    await ui.tap(/^Show \d+ More/i, ui.area('All suggestions page'), 600); expect((await ui.swapCards()).length === n0 + +m[1], 'Show More did not add ' + m[1]); await close(); return; }
+  const bp = await ui.biggerPlans();
   has(bp, /More suggestions \d+ more suggestions?, including different options and rarely used picks/, 'More suggestions'); const n0 = await ui.biggerPlanCount();
   await ui.tap(/^More suggestions/, ui.area('Bigger plans'), 900); await ui.until(async () => await ui.biggerPlanCount() >= n0 + 3, 15000, '3 more plans'); await close(); });
 
@@ -580,7 +605,8 @@ t('SUGG-13', 'While suggestions are worked out after an edit, the old ones fade 
 t('SUGG-14', 'No-plan messages: nothing for an empty team; Bigger plans says no change raises the score', async () => {
   { const {ui, close} = await open({team: [], box: BOX}); await ui.go('My Team'); expect(!(await ui.mySuggestions()), 'suggestions shown for an empty team'); await close(); }
   { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.applyMySuggestion(0);
-    await ui.go('All Suggestions'); await ui.waitSwaps(); has(await ui.biggerPlans(), /No change from this pool raises the team's Strength Score \(it's at [\d.]+\)\. Keep this team, or try "Whole roster" or unlock a Pokémon\./, 'no-plan note'); await close(); } });
+    await ui.go('All Suggestions'); await ui.waitSwaps(); if (NEW) { /* new (Sim, Nov 18, Q5 C: the All Suggestions sheet's middle way, README-allsugs-options.md) */ const sec = await ui.biggerPlansSection(); expect(/Suggestion \d+, [2-9] changes/.test(sec) || /No plan with two or more changes raises the Strength Score \(it.s at \d+\)\./.test(sec), 'no plans and no no-plan note: ' + sec.slice(0, 200)); await close(); return; }
+    has(await ui.biggerPlans(), /No change from this pool raises the team's Strength Score \(it's at [\d.]+\)\. Keep this team, or try "Whole roster" or unlock a Pokémon\./, 'no-plan note'); await close(); } });
 
 t('SUGG-14b', 'No-plan wording is exact: the score as shown elsewhere, and no "no change" verdict while still working', async () => {
   { const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.applyMySuggestion(0);
