@@ -71,9 +71,9 @@ V2.pages.tournaments = {place: 'meta', after() { V2.wtFit(); }, draw() { const E
   /* Nov 15 (audit #6): the header counts the top-cut list, the search looks through every event team sheet; each line now says which; re-audit nov15b #9: the group numbers are teams (32 + 58 = 90), so 'from official events', and the button says 'teams' */
   const facts = G.length ? `<p class="wt-facts"><b>${homeNum(V2.wtList().length)}</b> top-cut teams${G.map(([g, n]) => ` · <b>${n}</b> from ${/^last/i.test(g) ? 'the ' : ''}${E(g.toLowerCase())}`).join('')}</p>` : '';
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Winning Teams</span></p><h1 class="u"><span>The teams that</span> <span class="pl">won it.</span></h1>
-    <p class="ra-lede">Top-cut teams from real tournaments. Load one, practice against it, or compare it with yours.</p>${facts}</section>`;
+    <p class="ra-lede">Top-cut teams from real tournaments. Load one, practice against it, or compare it with yours.</p>${tabs}${facts}</section>`;
   const src = d ? `<p class="fine wt-src">${E(ttSourceText(d.source))}${d.updated && V2.otherDay(new Date(d.updated).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) ? ', updated ' + E(new Date(d.updated).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) : ''}</p>` : '';
-  const top = `<div class="gs-top wt-top">${head}${tabs}<div class="ra-spotw wt-spot-w">${V2.wtYours()}</div></div>`;
+  const top = `<div class="gs-top wt-top">${head}<div class="ra-spotw wt-spot-w">${V2.wtYours()}</div>${tabs}</div>`;
   /* player review 2d (Nov 17): on phones and tablets the search comes first; Your Team moves under it (shown once per width) */
   const spotN = `<div class="ra-spotw wt-spot-n">${V2.wtYours()}</div>`;
   if (!G.length) return `<div class="ra gsp wt">${top}<div class="gs-body"><p class="tm-sub">Top teams appear here after the next data refresh.</p></div></div>`;

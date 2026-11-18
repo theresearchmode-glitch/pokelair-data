@@ -36,7 +36,7 @@ V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = m
   const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
     <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Ratings</a><a href="#usage">Usage</a><a href="#sets" class="on" aria-current="page">Popular Sets</a></nav></div>`;
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Sets</span></p><h1 class="u"><span>How it's built</span> <span class="pl">right now.</span></h1>
-    <p class="ra-lede">The moves, items, Abilities and natures real players run, and who they pair it with.</p><p class="ra-links"><a class="np-link" href="#meta">Ratings ›</a><a class="np-link" href="#usage">Usage ›</a></p></section>`;
+    <p class="ra-lede">The moves, items, Abilities and natures real players run, and who they pair it with.</p>${tabs}<p class="ra-links"><a class="np-link" href="#meta">Ratings ›</a><a class="np-link" href="#usage">Usage ›</a></p></section>`;
   const q = U.q.trim().toLowerCase(), hits = q ? ROSTER.filter(x => x.d.toLowerCase().includes(q)).slice(0, 8) : [];
   const S2 = p ? V2.stSet(p) : null;
   const ctl = `<div class="gs-ctl"><div class="ra-find st-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-stq value="${E(U.q)}" placeholder="Look up a Pokémon" aria-label="Look up a Pokémon" autocomplete="off">${V2.CLR}</label>
@@ -52,7 +52,7 @@ V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = m
     : `<p class="tm-sub">Not among the top Pokémon in this list. "Best data" covers every Pokémon.</p>`;
   const tm = (t && t.tm || []).slice(0, 6).filter(([n]) => byName.get(n)), rows = innerWidth < 700 && tm.length > 3 ? [tm.slice(0, 3), tm.slice(3)] : [tm];
   const mates = tm.length ? `<section class="us-mates"><p class="np-eyebrow"><span>Teammates</span></p><h3 class="u">Usually alongside</h3>${rows.map(r => `<div class="gs-row us-bench" style="--c:${innerWidth < 700 ? 3 : r.length}">${r.map(([n, v]) => V2.stFig(byName.get(n), v != null ? `${Math.round(+v)}% of its teams` : '', false)).join('')}</div>`).join('')}</section>` : '';
-  return `<div class="ra gsp us st"><div class="gs-top">${head}${tabs}<div class="ra-spotw">${V2.stSpot(p, !!mine)}</div></div><div class="gs-body">${ctl}${yours}
+  return `<div class="ra gsp us st"><div class="gs-top">${head}<div class="ra-spotw">${V2.stSpot(p, !!mine)}</div>${tabs}</div><div class="gs-body">${ctl}${yours}
     <section class="us-how st-how"${` style="--ty-a:var(--ty-${p.t[0]});--ty-b:var(--ty-${p.t[1] || p.t[0]})"`}><div class="us-hh"><h2 class="u">How ${E(p.d)} is built</h2></div>${your}${build}${mates}${S2.note ? `<p class="fine st-note">${S2.note}</p>` : ''}</section></div></div>`; }};
 
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-stq]'); if (!i) return; V2.stUi.q = i.value; const at = i.selectionStart; V2.redraw();

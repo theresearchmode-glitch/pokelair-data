@@ -45,7 +45,7 @@ V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
     <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Ratings</a><a href="#usage" class="on" aria-current="page">Usage</a><a href="#sets">Popular Sets</a></nav></div>`;
   const rows = d ? (d.top || []).map(t => V2.usRow(t, kind)) : [];
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Usage</span></p><h1 class="u"><span>Who gets picked</span> <span class="pl">right now.</span></h1>
-    <p class="ra-lede">The most used Pokémon, from the ranked ladder, online tournaments or the Showdown ladder.</p><p class="ra-links"><a class="np-link" href="#meta">Ratings ›</a><a class="np-link" href="#sets">Popular Sets ›</a></p></section>`;
+    <p class="ra-lede">The most used Pokémon, from the ranked ladder, online tournaments or the Showdown ladder.</p>${tabs}<p class="ra-links"><a class="np-link" href="#meta">Ratings ›</a><a class="np-link" href="#sets">Popular Sets ›</a></p></section>`;
   const srcs = `<div class="gs-ctl"><div class="ra-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-usq value="${E(U.q)}" placeholder="Find a Pokémon in the ranks" aria-label="Find a Pokémon in the ranks" autocomplete="off">${V2.CLR}</label></div>
     <div class="ra-filt us-srcs" role="group" aria-label="Source">${V2.usSrcs.map(([k, l]) => `<button type="button" class="ra-chip" data-ussrc="${k}" aria-pressed="${ui.metaSrc === k}"${META[SRC[k]] ? '' : ' disabled title="No data from this source yet"'}><span>${l.replace(' ', '<span class="us-sp"> </span>')}</span></button>`).join('')}</div>
     ${d ? `<p class="fine us-src">${E(V2.usLine(d))}</p>` : ''}</div>`;
@@ -61,7 +61,7 @@ V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
       ${pick ? V2.usHow(pick, d) : ''}
       ${rest.length ? `${U.all ? `<div class="us-list">${rest.map(R => V2.usFig(R, 'row')).join('')}</div>` : ''}<button type="button" class="np-link us-rest" data-usrest aria-expanded="${U.all}">${U.all ? 'Show the top 10' : `Ranks 11–${rows[rows.length - 1].t.r} ›`}</button>` : ''}
       ${d.more && d.more.length ? `<p class="fine">Also ranked ${d.more[0].r}–${d.more[d.more.length - 1].r}: ${d.more.slice(0, 40).map(m => { const p = byName.get(m.n); return E(p ? p.d : m.n); }).join(', ')}${d.more.length > 40 ? ` and ${d.more.length - 40} more` : ''}</p>` : ''}${d.note ? `<p class="fine">${E(d.note)}</p>` : ''}`; }
-  return `<div class="ra gsp us"><div class="gs-top">${head}${tabs}<div class="ra-spotw">${V2.usSpot(rows[0], d)}</div></div><div class="gs-body">${srcs}${body}</div></div>`; }};
+  return `<div class="ra gsp us"><div class="gs-top">${head}<div class="ra-spotw">${V2.usSpot(rows[0], d)}</div>${tabs}</div><div class="gs-body">${srcs}${body}</div></div>`; }};
 
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-usq]'); if (!i) return; V2.usUi.q = i.value; const at = i.selectionStart; V2.redraw();
   const n = document.querySelector('[data-usq]'); if (n) { n.focus(); try { n.setSelectionRange(at, at); } catch (x) {} } });

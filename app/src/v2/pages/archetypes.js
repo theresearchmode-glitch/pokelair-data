@@ -44,11 +44,11 @@ V2.arPlate = (D, mine) => { const E = V2.esc, L = mine.map(k => D.rows.find(r =>
 V2.pages.archetypes = {place: 'meta', draw() { const D = V2.arData(), U = V2.arUi;
   const tabs = `${V2.tourTabs('archetypes')}`;
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Archetypes</span></p><h1 class="u"><span>What you'll face,</span> <span class="pl">style by style.</span></h1>
-    <p class="ra-lede">The team styles you'll face most, how they win, and how to play into them.</p>${D && D.n ? `<p class="wt-facts">From the latest <b>${D.n}</b> top tournament teams</p>` : ''}</section>`;
+    <p class="ra-lede">The team styles you'll face most, how they win, and how to play into them.</p>${tabs}${D && D.n ? `<p class="wt-facts">From the latest <b>${D.n}</b> top tournament teams</p>` : ''}</section>`;
   if (!D || !D.n) return `<div class="ra gsp ar"><div class="gs-top wt-top ev-top">${head}${tabs}</div><div class="gs-body"><p class="tm-sub">Usage numbers appear once top teams load.</p></div></div>`;
   const mine = V2.arMine(), x = U.open && D.rows.find(r => r.k === U.open);
   const body = x ? V2.arGuide(x, D, mine) : `<header class="ev-wh"><h2 class="u">The Weather Map</h2><p>The bigger the region, the more of the ${D.n} top teams play that style. Tap a region for its guide.</p></header>${V2.arMap(D, mine)}`;
-  return `<div class="ra gsp ar"><div class="gs-top wt-top ev-top">${head}${tabs}<div class="ra-spotw">${V2.arPlate(D, mine)}</div></div><div class="gs-body">${body}</div></div>`; }};
+  return `<div class="ra gsp ar"><div class="gs-top wt-top ev-top">${head}<div class="ra-spotw">${V2.arPlate(D, mine)}</div>${tabs}</div><div class="gs-body">${body}</div></div>`; }};
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-argo],[data-arback]'); if (!b) return;
   V2.arUi.open = b.dataset.argo || null; if (location.hash !== '#archetypes') location.hash = '#archetypes'; else V2.redraw();
   const t = document.querySelector(V2.arUi.open ? '.ar-guide' : '.ar-map'); if (t) t.scrollIntoView({block: 'start'}); });

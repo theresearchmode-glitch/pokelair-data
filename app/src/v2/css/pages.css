@@ -1876,10 +1876,12 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* ---------- Meta > Ratings: The Grandstand (Sim's pick, Nov 14; brief docs/rebuild/mocks/meta-grandstand/BRIEF.md) ---------- */
 .gsp{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s6)}
 .gs-top{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s8);align-items:center}
-/* Sim (Nov 17, Q2): the Pokémon / Tournaments tabs sit inside the top block right after the headline, so on phones they come before the
-   spotlight card; on wide screens they span under headline and spotlight as before (24px under them, the page's own gap) */
-@media (min-width:1100px){.gs-top>.ra-sub{grid-column:1/-1;grid-row:2;margin-top:calc(var(--s6) - var(--s8))}}
-@media (max-width:1099.98px){.gs-top{row-gap:var(--s3)}.gs-top>.ra-h{display:contents}.gs-top>.ra-sub{order:1;margin-block:var(--s1)}.gs-top>.ra-h>.ra-lede~*{order:2}.gs-top>.ra-spotw{order:3;margin-top:var(--s1)}} /* phones and tablets: the tabs right after the intro line (Sim's mock); the headline keeps its 12px line spacing */
+/* Sim (Nov 17, Q2): on phones and tablets the Pokémon / Tournaments tabs come right after the intro line, before the spotlight card; on wide
+   screens they span under headline and spotlight as before (24px under them, the page's own gap). The page writes the tab bar twice, once
+   inside the headline after the intro line (shown under 1100) and once after the spotlight (shown at 1100+); display:none hides the other
+   copy from sight, keyboard and screen readers, so focus and reading order always follow what is seen (review Nov 17 evening #2, #4) */
+@media (min-width:1100px){.gs-top>.ra-sub{grid-column:1/-1;grid-row:2;margin-top:calc(var(--s6) - var(--s8))}.gs-top>.ra-h>.ra-sub{display:none}}
+@media (max-width:1099.98px){.gsp .gs-top>.ra-sub{display:none}.gs-top>.ra-h>.ra-sub{margin-block:var(--s2)}.gs-top>.ra-h>.ra-sub:last-child{margin-bottom:var(--s1)}.gs-top>.ra-h:has(>.ra-sub)~.ra-spotw{margin-top:var(--s1)}} /* the tabs get 8px above and below on top of the headline's own 12px gap (20 under the intro line), and the eyebrow, headline and intro keep that 12px; the spotlight sits 20px under the last line (24 when the tabs are last). About, How We Calculate and Feedback (no tabs) keep their own spacing */
 .gs-top .ra-links{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s6);margin:var(--s2) 0 0}
 .gs-spot{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,6fr);align-items:center;gap:var(--s4)}
 .gs-plate{position:relative;display:grid;place-items:center;min-height:280px}
