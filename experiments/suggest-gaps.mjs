@@ -91,5 +91,23 @@ for (const [label, team] of [['sun team, Incineroar the only lead support', ['To
   ok(!r.sup, 'support Milotic (Haze) on a sun team: not "its weather weakens its own attacker"');
   ok(r.att, 'attacking Milotic (Muddy Water, Scald, Ice Beam) on a sun team: still "its weather weakens its own attacker"');
   ok(r.volc, 'Rage Powder Volcarona on a rain team: still "its weather weakens its own attacker"'); }
+// a weather override is a use (Nov 18 rule-holes sweep, hole 4): a support setter with a support job of its own (Yawn Hippowdon next
+// to Mega Gengar, Will-O-Wisp Ninetales) is not "a weather nothing uses"; one with plain attacks still is, and a plan may still never
+// bring one in for a team that has nothing to use its weather (Nov 7 rule)
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const gen=[mk('Gengar-Mega','Shadow Tag',['Shadow Ball','Sludge Bomb','Protect','Perish Song']),mk('Incineroar','Intimidate',['Fake Out','Flare Blitz','Parting Shot','Knock Off']),mk('Whimsicott','Prankster',['Tailwind','Moonblast','Encore','Protect']),
+    mk('Sylveon','Pixilate',['Hyper Voice','Moonblast','Protect','Quick Attack']),mk('Dragonite','Inner Focus',['Extreme Speed','Dragon Claw','Protect','Fire Punch'])];
+  const tal=[mk('Indeedee-F','Psychic Surge',['Follow Me','Psychic','Helping Hand','Protect']),mk('Gardevoir-Mega','Trace',['Hyper Voice','Psychic','Protect','Moonblast']),mk('Kingambit','Defiant',['Kowtow Cleave','Sucker Punch','Iron Head','Protect']),
+    mk('Dragonite','Inner Focus',['Extreme Speed','Dragon Claw','Protect','Iron Head']),mk('Sylveon','Pixilate',['Hyper Voice','Moonblast','Protect','Quick Attack'])];
+  const lone=t=>!!(gamePlan(t).rows.find(r=>r.k==='weather')||{}).lone,fl=t=>teamFlaws(t).includes('weather nobody uses');
+  const hipY=mk('Hippowdon','Sand Stream',['High Horsepower','Stone Edge','Protect','Yawn']),hipA=mk('Hippowdon','Sand Stream',['High Horsepower','Stone Edge','Rock Slide','Protect']);
+  const nt=mk('Ninetales','Drought',['Fire Blast','Heat Wave','Protect','Will-O-Wisp']);
+  const base=[...gen,mk('Farigiraf','Armor Tail',['Psychic Noise','Hyper Voice','Helping Hand','Protect'])],out=base[5],tm=[...gen,{...hipY,i:out.i}];
+  const pl={ch:[{out,slot:out.i,c:{p:hipY.p,mem:hipY}}],team:tm,gp:gamePlan(tm)};
+  return {yawn:lone([...gen,hipY])||fl([...gen,hipY]),att:lone([...gen,hipA]),wisp:lone([...tal,nt])||fl([...tal,nt]),gate:wxLoneBad(gamePlan(base),pl)}})()`));
+  ok(!r.yawn, 'Yawn Hippowdon next to Mega Gengar (a weather override): not "a weather nothing uses"');
+  ok(!r.wisp, 'Will-O-Wisp Ninetales on a team with nothing using sun (a weather override): not "a weather nothing uses"');
+  ok(r.att, 'Hippowdon with plain attacks and nothing using sand: still "a weather nothing uses"');
+  ok(r.gate, 'a plan bringing a Yawn Hippowdon into a team with nothing using sand: still blocked'); }
 ok(!errs.length, 'no page errors ' + errs.join(' | '));
 await b.close(); fs.unlinkSync(page); console.log(fails.length ? `\n${fails.length} FAILED` : '\nALL PASSED'); process.exit(fails.length ? 1 : 0);

@@ -93,6 +93,7 @@ function gapEffect(team0,gp0,team,gp){const fix=[],why=[],st=k=>(gp.rows.find(r=
 // control (swapping out the only Tailwind setter). Returns the keys that got worse.
 // the team sets a weather only a support setter is there for, with nothing else using it (Nov 7)
 const wxLone=gp=>!!(gp&&gp.rows.some(r=>r.k==='weather'&&r.lone));
+const wxOvr=gp=>!!(gp&&gp.rows.some(r=>r.k==='weather'&&r.override));
 // a plan may never leave a support setter's weather with nobody to use it, or bring one in that nobody uses
 // and never adds a second weather to a team that already sets one (sun next to Pelipper's rain: each cancels the other)
 // Team setup flaws (Nov 7 audit), shared by the suggestions and Build for me. A pairing real players have run on 100+ tournament
@@ -130,7 +131,7 @@ const trNew=(gp0,pl)=>{const r=pl.gp&&pl.gp.rows.find(r=>r.k==='trfit');return r
 const tkN=t=>new Set(t.map(m=>TERRAIN_OF[m.ability]).filter(Boolean)).size;
 const terrain2=pl=>{if(!pl.team||!pl.ch||!pl.ch.some(x=>TERRAIN_OF[x.c.mem.ability]))return false;const n=tkN(pl.team);if(n<2)return false;
   const before=pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p)).concat(pl.ch.filter(x=>x.out).map(x=>x.out));return n>tkN(before)};
-const wxLoneBad=(gp0,pl)=>terrain2(pl)||psyHit(pl)>=2||trNew(gp0,pl)==='miss'||wxHurtIn(gp0,pl)||(wxLone(pl.gp)&&(!wxLone(gp0)||pl.ch.some(x=>WEATHER_OF[x.c.mem.ability])))||(pl.team&&pl.ch&&wxSetsOf(pl.team).length>1&&wxSetsOf(pl.team).length>wxSetsOf(pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p))).length&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]));
+const wxLoneBad=(gp0,pl)=>terrain2(pl)||psyHit(pl)>=2||trNew(gp0,pl)==='miss'||wxHurtIn(gp0,pl)||(wxLone(pl.gp)&&(!wxLone(gp0)||pl.ch.some(x=>WEATHER_OF[x.c.mem.ability])))||(wxOvr(pl.gp)&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]))||(pl.team&&pl.ch&&wxSetsOf(pl.team).length>1&&wxSetsOf(pl.team).length>wxSetsOf(pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p))).length&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]));
 /* Nov 9 (Phase 3 gates): terrain and lead-support roles were tested on later real games on Nov 8 and add nothing beyond the grade
    (commit f05576d), so they no longer block a suggestion; speed control, Trick Room attackers and weather stay guarded (no loss at all). */
 const GUARD_KEYS=['speed','trfit','weather'];

@@ -29,6 +29,9 @@ const wxAnd = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and
 const wxSetsOf = team => [...new Set(team.filter(m => m && WEATHER_OF[m.ability]).map(m => WEATHER_OF[m.ability]))];
 // weather setters that are there for their partners, not their own attacks (see the weather row in gamePlan)
 const WX_PARTNER = new Set(['Pelipper', 'Politoed', 'Ninetales', 'Hippowdon']);
+// support moves that give such a setter a job of its own, so its weather can be an override (rule-holes sweep, Nov 18). Perish Song
+// is left out: Sim chose Weather Ball as the rule for Perish Trap Politoed (Nov 18), and a Politoed without it stays flagged
+const WX_OVERRIDE_MV = new Set(['Yawn', 'Encore', 'Will-O-Wisp', 'Tailwind', 'Wide Guard', 'Helping Hand']);
 const wxNeedsOf = team => [...new Set(team.map(m => m && WEATHER_NEED[m.ability]).filter(Boolean))];
 function wxConflict(team) { const s = wxSetsOf(team); return s.length > 1 || (s.length === 1 && wxNeedsOf(team).some(w => w !== s[0])); }
 function wxUnmet(team) { const s = wxSetsOf(team); return wxNeedsOf(team).filter(w => !s.includes(w)); }
@@ -134,11 +137,19 @@ function gamePlan(team) {
     // Weather Ball is the exception (Sim, Nov 18): it only works in weather, so a support setter that runs it (Politoed on Perish
     // Trap teams, Weather Ball 74% of sets) uses its own weather. Its other Water moves or Hurricane still don't count (Nov 7 rule).
     const wbSelf = setters.filter(x => roleMoves(x.m).has('Weather Ball')).map(x => x.m);
-    const lone = !others0.length && !sandChip && setters.every(x => WX_PARTNER.has(x.m.p.n) && !wbSelf.includes(x.m)), ab = lone ? [] : [...new Set([...ab0, ...wbSelf])];
+    // a weather override (Nov 18 rule-holes sweep: Yawn Hippowdon next to Mega Gengar, Will-O-Wisp Ninetales, 7 real top-8 teams flagged):
+    // a support setter with a support job of its own is there to replace the opponent's weather, not for partners, so its weather
+    // is not "nothing uses". No bonus either (0, between a used weather's -8 and no weather's +5). One with plain attacks is still lone;
+    // the plans still never bring one in for a team with nothing to use its weather (wxLoneBad reads `override`).
+    const ovrSelf = setters.filter(x => WX_PARTNER.has(x.m.p.n) && [...roleMoves(x.m)].some(n => WX_OVERRIDE_MV.has(n))).map(x => x.m);
+    const loneAll = !others0.length && !sandChip && setters.every(x => WX_PARTNER.has(x.m.p.n) && !wbSelf.includes(x.m));
+    const override = loneAll && ovrSelf.length > 0, lone = loneAll && !override, ab = loneAll ? [] : [...new Set([...ab0, ...wbSelf])];
     const hurt = team.filter(m => !WEATHER_OF[m.ability] && (m.types || m.p.t).includes(kinds[0] === 'rain' ? 'Fire' : kinds[0] === 'sun' ? 'Water' : '_'));
-    rows.push({k: 'weather', label: 'Weather', st: ab.length ? 'ok' : 'part', lone, who: (() => { const sn = setters.map(x => x.m.d), others = ab.filter(m => !setters.some(x => x.m === m)), self = ab.some(m => setters.some(x => x.m === m)), w = ARCH[kinds[0]].name.toLowerCase();
+    if (override) { rows.push({k: 'weather', label: 'Weather', st: 'ok', lone: false, override: true, who: `${wxAnd(ovrSelf.map(m => m.d))} ${ovrSelf.length > 1 ? 'set' : 'sets'} ${w0} to replace the opponent's weather`,
+      note: `Nothing else on the team uses the ${w0}; it is there to replace the opponent's weather.`}); }
+    else { rows.push({k: 'weather', label: 'Weather', st: ab.length ? 'ok' : 'part', lone, who: (() => { const sn = setters.map(x => x.m.d), others = ab.filter(m => !setters.some(x => x.m === m)), self = ab.some(m => setters.some(x => x.m === m)), w = ARCH[kinds[0]].name.toLowerCase();
       return `${sn.join(', ')} ${self && !others.length ? 'sets and uses ' + w : 'sets ' + w}${others.length ? ' for ' + others.slice(0, 3).map(m => m.d).join(', ') : ''}`; })(), note: ab.length ? '' : `Nothing else on the team uses the ${w0}${hurt.length ? `, and it weakens ${wxAnd(hurt.map(m => m.d))}'s ${kinds[0] === 'rain' ? 'Fire' : 'Water'} moves` : ''}.`});
-    pen += ab.length ? -8 : 10;
+    pen += ab.length ? -8 : 10; }
     // a Pokémon whose ability needs a different weather (Swift Swim Mega Swampert on a Mega Charizard Y sun team): the team's
     // own weather switches it off (audit, Oct 30)
     { const off = team.filter(m => WEATHER_NEED[m.ability] && WEATHER_NEED[m.ability] !== kinds[0]); if (off.length) { const r = rows[rows.length - 1];
