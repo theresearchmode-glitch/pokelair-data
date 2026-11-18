@@ -421,6 +421,8 @@ export default (ui, pg) => {
     await pg.evaluate(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); }); await pg.waitForTimeout(300);
     if (!(await pg.evaluate(() => !!window.V2 && V2.route() === 'team'))) await prevGo('My Team', 400);
     if (await ev('members().length')) { await waitPlans(); await until(async () => !(await pg.evaluate(() => { const s = document.querySelector('#main #tm-sg'); return !s || /Working out/.test(s.innerText); })), 15000, 'My Team suggestions'); }
+    /* Sim, Nov 18 (C): on phones Adjust Suggestions is a fold; open it the way a player does, by tapping its line */
+    await pg.evaluate(() => { const m = document.querySelector('#main details[data-v2adj]:not([open]) > summary'); if (m) m.click(); }); await pg.waitForTimeout(200);
     await until(() => vis(AREAS['Plan settings']), 4000, 'Adjust suggestions on My Team');
     await pg.evaluate(s => { const e = document.querySelector(s); if (e) e.scrollIntoView({block: 'center'}); }, AREAS['Plan settings']); await pg.waitForTimeout(200); }
   /** the Never Suggest sheet, opened the way a player does: "Never Suggest ›" (empty list) or "Change ›" on the Never suggested line */

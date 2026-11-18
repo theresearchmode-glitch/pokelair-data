@@ -52,7 +52,7 @@ export default {
         [match instanceof RegExp ? [match.source, match.flags] : match, match instanceof RegExp, within]);
       if (!ok) throw new Error(`nothing visible to tap matching ${match}`); await pg.waitForTimeout(wait); },
     /** is something with this text visible on the page? */
-    sees: m => pg.evaluate(([m, isRe]) => { const re = isRe ? new RegExp(m[0], m[1]) : null; const T = document.body.innerText; return re ? re.test(T) : T.toLowerCase().includes(m.toLowerCase()); },
+    sees: m => pg.evaluate(([m, isRe]) => { const re = isRe ? new RegExp(m[0], m[1]) : null; const T = document.body.innerText, T1 = T.replace(/\s+/g, ' '); /* a link drawn on two lines (Sim, Nov 18: the phone links row) reads as its words */ return re ? re.test(T) || re.test(T1) : T.toLowerCase().includes(m.toLowerCase()) || T1.toLowerCase().includes(m.toLowerCase()); },
       [m instanceof RegExp ? [m.source, m.flags] : m, m instanceof RegExp]),
     /** the player's current team / box as names (the shared logic's state, as today's adapter reads it) */
     team: () => pg.evaluate(() => window.__ev ? window.__ev('S.slots.map(s=>s.n).filter(Boolean)') : null),

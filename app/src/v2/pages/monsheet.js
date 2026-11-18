@@ -112,6 +112,14 @@ V2.fitWords = () => { const ow = e => e.clientWidth > 1 && e.scrollWidth > e.cli
   const hx = Math.min(...hn.map(b => parseFloat(getComputedStyle(b).fontSize))); if (hn.length && isFinite(hx)) hn.forEach(b => { if (parseFloat(getComputedStyle(b).fontSize) > hx) b.style.fontSize = hx + 'px'; });
   document.querySelectorAll('.pk-slots').forEach(u => { u.classList.remove('pk-slots1'); const bs = [...u.querySelectorAll('b')]; if (bs.map(fit).every(Boolean)) return;
     u.classList.add('pk-slots1'); /* a move can't fit two across even at 15 px (320 wide): one per row, then fit again */ bs.forEach(b => { if (!fit(b)) b.classList.add('np-brk'); }); });
+  /* Sim, Nov 18 (C): the Hand's Card names on narrow Cards (three across on phones). The size stays (never under 13px); a name too wide for
+     its Card, or one taking more than two lines over the sprite, is first set a little tighter and lighter, then condensed sideways: it is
+     laid out wider and drawn narrower (scaleX), so the words wrap as on a wider Card and the shape stays centred on the Card */
+  document.querySelectorAll('.mh .mc-id h3').forEach(h => { const st = h.style; st.letterSpacing = st.fontWeight = st.width = st.transform = st.marginInline = ''; h.classList.remove('np-brk');
+    const W = h.parentElement.clientWidth; if (W < 2) return; const lh = parseFloat(getComputedStyle(h).lineHeight) || 16, good = () => (st.width ? !ow(h) : h.offsetWidth <= W + 1) && h.offsetHeight <= 2 * lh + 2; /* a centred grid item grows past its Card rather than overflow itself */
+    for (const [w, l] of [['', '-.02em'], ['800', '-.02em'], ['700', '-.03em']]) { if (good()) return; st.fontWeight = w; st.letterSpacing = l; }
+    for (const k of [.94, .88, .82, .76, .7]) { if (good()) return; st.width = W / k + 'px'; st.marginInline = (W - W / k) / 2 + 'px'; st.transform = `scaleX(${k})`; }
+    if (ow(h)) h.classList.add('np-brk'); });
   const groups = new Map(); document.querySelectorAll('.mh-mv').forEach(u => { u.classList.remove('mh-mv1', 'mh-mv2'); u.querySelectorAll('li').forEach(li => li.classList.remove('np-brk')); const g = u.closest('.mh') || u.parentElement; groups.set(g, [...(groups.get(g) || []), u]); });
   groups.forEach(us => { if (!us.some(u => [...u.children].some(ow))) { /* nuclear stress test (Nov 16): a two-word move wrapping ("Stomping Tantrum") made the Hand's move grids uneven; every chip in the Hand then takes the two-line height */
       const lis = us.flatMap(u => [...u.children]).filter(li => li.offsetHeight > 0), hs = lis.map(li => li.offsetHeight), lo = Math.min(...hs);

@@ -150,7 +150,7 @@ V2.openSavedTeams = () => { V2.svUi.ren = V2.svUi.del = V2.svUi.cmp = null; V2.s
 V2.svRefresh = focus => { const el = document.querySelector('.svt2'); if (!el) return; el.outerHTML = V2.savedHtml(); const f = focus && document.querySelector(focus); (f || document.querySelector('.np-sheet')).focus(); if (f && f.select) f.select(); };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2saved]')) { V2.openSavedTeams(); return; }
   const b = e.target.closest('[data-svact]'); if (!b) return; const U = V2.svUi, id = b.dataset.id, a = b.dataset.svact;
-  if (a === 'open') { const t = openSaved(id); if (!t) return; V2.closeSheet(true); V2.ui.sel = 0; if (location.hash !== '#team') location.hash = '#team'; render(); scrollTo(0, 0); toast(`Opened "${t.name}"`, true); }
+  if (a === 'open') { const t = openSaved(id); if (!t) return; V2.closeSheet(true); V2.ui.sel = 0; V2.ui.picked = false; if (location.hash !== '#team') location.hash = '#team'; render(); scrollTo(0, 0); toast(`Opened "${t.name}"`, true); }
   else if (a === 'copy') { const t = S.teams.find(x => x.id === id); if (t) V2.copy(slotsPaste(t.slots)).then(ok => toast(ok ? 'Team copied for Showdown' : 'Copy failed. Try again.')); }
   else if (a === 'ren') { U.ren = id; U.del = null; V2.svRefresh('[data-svname]'); }
   // Compare two saved teams (as today): the first tap picks, the second opens Compare; or the pick against My Team
@@ -330,7 +330,7 @@ V2.checkShared = () => { let raw = ''; try { raw = location.hash || ''; } catch 
     <div class="row shd2-acts"><button type="button" class="np-btn" data-shdload>Load Team</button><button type="button" class="np-link" data-v2close>Not Now</button></div></div>`, {label: 'Shared team', small: true, focus: '[data-shdload]'});
   const b = document.querySelector('[data-shdload]'); if (b) b.addEventListener('click', () => V2.openShared(x)); };
 // today's applyShared without its page switch: load (Undo kept), back to My Team, the same toast
-V2.openShared = x => { loadShared(x); V2.closeSheet(true); V2.ui.sel = 0; if (!/^#team/.test(location.hash)) location.hash = '#team'; render(); toast(`Loaded ${x.n ? '“' + x.n + '”' : 'a shared team'} (${x.slots.length} Pokémon)`, true); };
+V2.openShared = x => { loadShared(x); V2.closeSheet(true); V2.ui.sel = 0; V2.ui.picked = false; if (!/^#team/.test(location.hash)) location.hash = '#team'; render(); toast(`Loaded ${x.n ? '“' + x.n + '”' : 'a shared team'} (${x.slots.length} Pokémon)`, true); };
 
 // ---------- Import and Clear Team (R4, Nov 11): today's importPaste and clearTeam, same messages ----------
 V2.openImport = (o = {}) => { let done = false;
@@ -346,8 +346,8 @@ V2.openImport = (o = {}) => { let done = false;
   go.addEventListener('click', () => { const r = importPaste((document.querySelector('[data-impin]') || {}).value);
     if (r.shared) { done = true; V2.openShared(r.shared); return; }
     if (r.error) { const n = document.querySelector('[data-impnote]'); if (n) n.textContent = r.error; return; }
-    done = true; V2.closeSheet(true); V2.ui.sel = 0; render(); toast(r.msg, true); }); };
-V2.clearTeam = () => { clearTeam(); V2.ui.sel = 0; render(); toast('Team cleared', true); };
+    done = true; V2.closeSheet(true); V2.ui.sel = 0; V2.ui.picked = false; render(); toast(r.msg, true); }); };
+V2.clearTeam = () => { clearTeam(); V2.ui.sel = 0; V2.ui.picked = false; render(); toast('Team cleared', true); };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2import]')) V2.openImport(); else if (e.target.closest('[data-v2clear]')) V2.clearTeam(); });
 window.addEventListener('hashchange', () => { if (/team=/.test(location.hash)) V2.checkShared(); });
 setTimeout(V2.checkShared, 0);
@@ -457,7 +457,9 @@ V2.pages.team = {place: 'team', draw() {
 after() { V2.mtBeltFit();
   /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */
   // a redraw now keeps unchanged elements (A5), so bind each element once (a second listener would fire twice)
-  document.querySelectorAll('[data-tmsel]').forEach(b => { if (b._v2b) return; b._v2b = 1; b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.redraw(); }); });
+  document.querySelectorAll('[data-tmsel]').forEach(b => { if (b._v2b) return; b._v2b = 1; b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.ui.picked = true; V2.redraw();
+    /* Sim, Nov 18 (C): with the Hand three across the panel opens under the whole Hand; if that is below the screen, bring its top into view */
+    if (V2.mtHand3()) requestAnimationFrame(() => { const e = document.querySelector('#main .mt-edit'); if (e && e.getBoundingClientRect().top > innerHeight - 160) e.scrollIntoView({block: 'nearest', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); }); }); });
   document.querySelectorAll('[data-tmjump]').forEach(a => !a._v2b && (a._v2b = 1) && a.addEventListener('click', e => { e.preventDefault(); V2._jumpPick = a.dataset.tmjump; requestAnimationFrame(V2.jumpSync); /* side-by-side sections: the one you tapped is marked, even when no scroll is needed (A7) */ const t = document.getElementById(a.dataset.tmjump); if (t) { t.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); const h = t.querySelector('h2'); if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } } })); /* focus moves to the section heading, so Tab and screen readers carry on from there (audit TEAM-07) */
   V2.jumpSync(); // A7 proposal: the jump bar marks the section you are reading
   if (V2.muAfter) V2.muAfter(); // Matchups hook (pages/matchups.js): keeps an open threat sheet in step with the page

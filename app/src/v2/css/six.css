@@ -101,3 +101,18 @@ svg.sx-lk{display:inline-block;width:13px;height:13px;margin-right:var(--s1);ver
 /* My Team: The Hand (Nov 14): the editing strip shows Nature and Stat points as compact label-over-value pairs, no rules */
 .mt-edit .sx-kv{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s8);margin:0;border:0}.mt-edit .sx-kv>div{display:grid;grid-template-columns:none;gap:2px;padding:0;border:0}.mt-edit .sx-kv dd{white-space:nowrap}
 .mh-hand .sx-grp:nth-child(3)::before{content:none}
+/* Sim, Nov 18 (C, phone length): phones 360-699 show the Hand three across, Lead | Back | Bench, each group's two Cards stacked.
+   The three headers share one row and each row of Cards starts level (subgrid, as from 1100). Under 700 the editing panel stays shut
+   until a Card is tapped (six.js V2.mtShut); the hint line sits where the panel opens, under the whole Hand. */
+.mt-hint{margin:var(--s3) 0 0;font:600 var(--t13)/1.5 var(--b);color:var(--plot-text);text-align:center}
+.mh .mc-id h3 .mg.none{display:none} /* the blank stand-in for "Mega" pushed short names a space off centre */
+@media (min-width:360px) and (max-width:699.98px){
+  .tm-hero.mt .mh-hand:not(.mh-build){grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:auto auto auto;gap:var(--s4) var(--s3)}
+  .mh-hand:not(.mh-build) .mh-grp{display:grid;grid-row:span 3;grid-template-rows:subgrid;align-content:start;min-width:0}
+  .mh-hand:not(.mh-build) .mh-pair{display:contents}
+  .mh-hand:not(.mh-build) .mh-gh{flex-direction:column;align-items:flex-start;align-self:end;gap:0;margin:0}
+  .mh-hand:not(.mh-build) .mh-gh span{white-space:nowrap}
+  .tm-hero.mt .mh-build .mh-six{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s3)}
+  .mh .ms-card,.mh-build .mh-add{height:128px}.mh .mc-mon .np-mon,.mh .mc-mon .np-mon .st{--iw:88px}.mh .mc-id{left:var(--s1);right:var(--s1);bottom:var(--s3)}
+  .mh-ty{flex-direction:column;align-items:flex-start;gap:var(--s1)}.mh-it b{font-size:var(--t13)}
+  .tm-six.mh>.mt-edit{margin-top:var(--s4)}}

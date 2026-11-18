@@ -338,3 +338,22 @@ p,li,small{text-wrap-style:pretty}
    rule; desktop has 18 with more room), so the arrows' 44px tap areas no longer overlap the logo; the logo's own tap area is 44 wide (invisible). */
 @media (max-width:759.98px){.np-head .np-goback{margin-right:-2px}.np-head .np-gofwd{margin-left:-2px}.np-head .logo{position:relative}.np-head .logo::before{content:"";position:absolute;inset:0 -12px}.np-head :is(.np-goback,.np-gofwd){position:relative;z-index:1}}
 @media (max-width:359.98px){.np-head .np-goback{margin-right:2px}.np-head .np-gofwd{margin-left:2px}}
+/* Sim, Nov 18 (C, phone length): Stand-Outs four across on phones from 360 (as 405-699 already were), "Mega" on its own line and the
+   names sitting on their last line, so the verdicts line up across a row. 5 or 6 Cards keep three across (even rows, player review 3d). */
+@media (min-width:360px) and (max-width:699.98px){
+  .tm-mus .mu-cards li,.tm-mus .mu-cards[data-n="4"] li,.tm-mus .mu-cards[data-n="8"] li{flex-basis:25%}.tm-mus .mu-cards[data-n="5"] li,.tm-mus .mu-cards[data-n="6"] li{flex-basis:33.333%}
+  .tm-mus .mu-cards .mu-out .mu-row.mu-nk{padding:0}.tm-mus .mu-cards .nm,.tm-mus .mu-cards .tm-v{font-stretch:88%}
+  .tm-mus .mu-cards .nm{display:flex;flex-direction:column;justify-content:flex-end;align-items:center;min-height:2.5em}.tm-mus .mu-cards .nm .mg{display:block}}
+/* the second-line part of a Suggestions link is plain text everywhere but phones 360-699 (inside the flex link, a block of its own lost its leading space: "See AllSuggestions") */
+.sg2-all .sg2-l2{display:contents}
+/* Sim, Nov 18 (C): the three Suggestions links in one row on phones from 360 (each two short lines: first words, then the last word) */
+@media (min-width:360px) and (max-width:699.98px){
+  .tm-sgs .sg2-links{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:var(--s3);align-items:start}
+  .tm-sgs .sg2-links .sg2-all{display:flex;flex-direction:column;justify-content:center;align-items:flex-start;white-space:normal;text-align:left;line-height:1.25}.tm-sgs .sg2-links .sg2-l2{display:block}}
+/* Sim, Nov 18 (Q2 option 1): from 700 the links sit in one row whenever the column fits them (they stacked under a 520px column, 1100-1280) */
+@media (min-width:700px){@container (min-width:460px){.tm-sgs .sg2-links{flex-direction:row;flex-wrap:wrap;align-items:center;gap:0 var(--s6)}}}
+/* Sim, Nov 18 (C): Adjust Suggestions folded on phones (sugs.js V2.sgAdj); the settings inside sit right under its line */
+.sg2-adjf .sg2-adj{margin:0;padding:0 0 var(--s4);border:0}
+/* Sim, Nov 18 (C): on phones Your Games is one line; the note on what logging unlocks is behind the "?" beside "None logged yet" */
+.tm-yg-0{align-items:center}.tm-yg-0 .sg2-tip{display:none}
+@media (max-width:699.98px){.tm-yg .tm-yg-why{display:none}.tm-yg .tm-yg-hd{flex-wrap:nowrap}.tm-yg-0 .sg2-tip{display:inline-grid}}

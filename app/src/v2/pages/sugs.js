@@ -4,7 +4,12 @@
 
 // ---------- the settings: today's sliders, same choices, same saved settings, same messages ----------
 /* advisor (Nov 15): Suggestions answer first; the settings follow, still visible, under a small label (Nov 16) */
-V2.sgAdj = () => `<div class="sg2-adj"><p class="sg2-adjk">Adjust suggestions</p>${V2.sgCtl()}</div>`;
+V2.sgAdj = () => { if (innerWidth >= 700) return `<div class="sg2-adj"><p class="sg2-adjk">Adjust suggestions</p>${V2.sgCtl()}</div>`;
+  // Sim, Nov 18 (C, phone length): on phones Adjust Suggestions is a fold; its closed line says the current settings
+  const mg = megaGoal(), ex = (S.excl || []).length, sum = [{box: 'My Box', boxfill: 'Box + Catch', all: 'Whole Roster'}[ui.pool] || '', `${mg} Mega${+mg === 1 ? '' : 's'}`,
+    `Swap Mega: ${$('swapMega').checked ? 'Yes' : 'No'}`, `Abilities: ${$('useAbil').checked ? 'Yes' : 'No'}`, ex ? `${ex} never suggested` : ''].filter(Boolean).join(' · ');
+  return `<details class="sg2-fold sg2-adjf" data-v2adj${V2.adjOpen ? ' open' : ''}><summary><span class="t">Adjust Suggestions</span><span class="s">${V2.esc(sum)}</span></summary><div class="sg2-adj">${V2.sgCtl()}</div></details>`; };
+document.addEventListener('toggle', e => { const d = e.target; if (d && d.matches && d.matches('[data-v2adj]')) V2.adjOpen = d.open; }, true); /* open stays open through redraws (a new setting redraws the page) */
 V2.sgCtl = () => `<div class="sg2-ctl" role="group" aria-label="Suggestion settings">
   <div class="sg2-c sg2-pool"><span class="sg2-k">Suggest from</span>${V2.slide('sgpool', [['box', 'My Box'], ['boxfill', 'Box + Catch'], ['all', 'Whole Roster']], ui.pool, 'Suggest from')}</div>
   <div class="sg2-c"><span class="sg2-k">Megas on team</span>${V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on the team')}</div>
@@ -70,7 +75,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
     const open = ui.sugMore === ms.map(m => m.p.n).join(','), hid = top.length - 1;
     // above the cards, as today: a Protect fix (a set change, not a swap), then a game-plan gap no swap in this pool can close
     const pre = V2.itemFixCard(ms) + V2.setTipsCard() + V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${V2.esc(P.gapNote)}</p>` : '') /* a note is advice, as in Team Checks: it can't read as contradicting "Nothing to fix" (Sim, Nov 12) */;
-    const all = `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgall>See All Suggestions ›</button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button>'}<button type="button" class="np-link sg2-all" data-v2replan>Refresh Suggestions</button></span>`;
+    const all = `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgall>See All<span class="sg2-l2"> Suggestions ›</span></button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never<span class="sg2-l2"> Suggest ›</span></button>'}<button type="button" class="np-link sg2-all" data-v2replan>Refresh<span class="sg2-l2"> Suggestions</span></button></span>`;
     // A3 proposal (Sim's fix plan, Nov 12: "your recommendation"): a best swap that doesn't raise the score (±0 or lower) gets no
     // card and no Apply: the quiet line stays and the swaps wait behind See all suggestions (same rule as Matchups' Best fix)
     const up = top.length && g0 != null ? Math.round(planGrade(top[0].pl)) - Math.round(g0) : null;
@@ -80,9 +85,9 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
         : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool below, or see Matchups for what to watch.</p>')
       : `${gap}<p class="tm-sub">${P.nothing ? 'Optional swaps:' : side ? 'Nothing raises this team’s Strength Score right now. These swaps keep every check and about the same score, with a different look:' : 'What to change, best first.'}</p>
       <ol class="tm-sug">${top.map((x, k) => V2.sgCard({pl: x.pl, k, g0, attr: 'data-v2plan', side, hidden: k > 0 && !open, main: !k})).join('')}</ol>
-      ${hid > 0 && !open ? `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgmore aria-expanded="false">Show ${hid} More Suggestion${hid === 1 ? '' : 's'} ›</button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button>'}</span>` : all}`;
+      ${hid > 0 && !open ? `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgmore aria-expanded="false">Show ${hid} More<span class="sg2-l2"> Suggestion${hid === 1 ? '' : 's'} ›</span></button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never<span class="sg2-l2"> Suggest ›</span></button>'}</span>` : all}`;
     V2._sgLast = body; }
-  if (!S2.pending && !(S.excl || []).length && !/data-v2excl/.test(body)) body += '<p class="sg2-links"><button type="button" class="np-link sg2-all" data-v2excl>Never Suggest ›</button></p>'; /* always reachable */
+  if (!S2.pending && !(S.excl || []).length && !/data-v2excl/.test(body)) body += '<p class="sg2-links"><button type="button" class="np-link sg2-all" data-v2excl>Never<span class="sg2-l2"> Suggest ›</span></button></p>'; /* always reachable */
   return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${body}${V2.sgAdj()}</section>`; };
 // the Protect fix: only 0-2 of the six run Protect while their usual sets do; Add Protect puts it in those sets (today's
 // LANE.protFix / protApply and its [data-protfix] handler, 36-lanes.js; the words from LANE.protWords)

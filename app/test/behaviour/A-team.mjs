@@ -228,10 +228,12 @@ t('TEAM-07', 'Phone jump bar: Suggestions | Matchups | How it plays | Sets; "Set
 
 t('TEAM-08', 'Your Six: six tiles lead/back/bench; tapping a tile shows its set, tapping again hides it', async () => {
   if (NEW) { /* new build (decided Nov 11, approved mock-up): no "Your Six" heading; the picked Pokémon's set always shows (the first
-    lead's before any tap, on phones too), so there is no "Tap a Pokémon…" hint and tapping the picked tile again keeps its set */
+    lead's before any tap; on phones since Sim's Nov 18 choice C, none until a Card is tapped), so there is no "Tap a Pokémon…" hint and tapping the picked tile again keeps its set */
     const r = await myTeam({team: TEAM, width: 390}); const tiles = await r.ui.sixTiles(); ok(tiles.length === 6, `${tiles.length} tiles`); ok(!(await r.ui.sees(/Your Six/)), 'a "Your Six" heading shows (removed by design)');
     const plan = await r.ui.gamePlanLine(); const m = plan.match(/lead (.+?) \+ (.+?), back (.+?) \+ (.+?), bench (.+?) \+ (.+?)\./); ok(m, 'no plan line'); ok(tiles.join('|') === m.slice(1).join('|'), `tiles ${tiles.join(',')} not in lead/back/bench order ${m.slice(1).join(',')}`);
-    ok(!(await r.ui.sees('Tap a Pokémon to see its set')), 'old "Tap a Pokémon to see its set" hint shows'); ok(new RegExp('(Set|Editing) ' + tiles[0] + ' ').test(await r.ui.setCard()) && await r.ui.tilePressed(tiles[0]), `phone does not show the first lead's (${tiles[0]}) set before any tap`);
+    ok(!(await r.ui.sees('Tap a Pokémon to see its set')), 'old "Tap a Pokémon to see its set" hint shows'); /* Sim, Nov 18 (My Team C, phone length): on phones the editing panel stays shut until a Card is tapped, with a "Tap a Card to edit, replace or
+       remove it" line; desktop still opens the first lead's (checked below) */
+    ok(!/(Set|Editing) /.test(await r.ui.setCard()) && !(await r.ui.tilePressed(tiles[0])) && await r.ui.sees('Tap a Card to edit, replace or remove it'), `phone opens a set before any tap, or has no "Tap a Card…" line (${(await r.ui.setCard()).slice(0, 60)})`);
     await r.ui.tapTile('Garchomp'); let c = await r.ui.setCard(); ok(/(Set|Editing) Garchomp /.test(c) && !new RegExp('(Set|Editing) ' + tiles[0] + ' ').test(c), 'no set card for Garchomp: ' + c.slice(0, 80)); ok(await r.ui.tilePressed('Garchomp') && !(await r.ui.tilePressed(tiles[0])), 'Garchomp\'s tile not the marked one');
     await r.ui.tapTile('Garchomp'); c = await r.ui.setCard(); ok(/(Set|Editing) Garchomp /.test(c) && await r.ui.tilePressed('Garchomp'), 'second tap hid Garchomp\'s set (the picked set always shows)'); await r.close();
     const d = await myTeam({team: TEAM}), d0 = (await d.ui.sixTiles())[0]; ok(d0 && new RegExp('(Set|Editing) ' + d0 + ' ').test(await d.ui.setCard()), 'desktop did not open the first lead\'s set'); await d.close(); return; }

@@ -19,7 +19,7 @@ V2.handHtml = (D, sel, strip) => { const {ms, L} = D, E = V2.esc, role = m => ms
   // Sim, Nov 15 (night, 2nd): while the team is being built (one to five) nothing is labelled Lead / Back / Bench: the six spots in the
   // player's own order, empty ones as 'Add' Cards (the same name box, data-v2addto); the roles are worked out once all six are in
   if (ms.length < 6) { const at = i => ms.find(m => m.i === i), add = i => `<div class="sx-slot mh-slot mh-empty"><button type="button" class="sx-add mh-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="mh-addart" aria-hidden="true">+</span><b class="u">Add</b><small>Spot ${i + 1}</small></button></div>`;
-    return `<div class="mh-hand mh-build"><div class="sx-grp mh-grp" role="group" aria-label="Your six"><p class="mh-gh"><b class="u">Your Six</b><span>${ms.length} of 6 in. Lead, Back and Bench are worked out once all six are in.</span></p><div class="mh-pair mh-six">${(() => { const cols = innerWidth < 700 ? 2 : 3, si = strip && sel ? sel.i : -1, end = si < 0 ? -1 : Math.min(5, Math.floor(si / cols) * cols + cols - 1); return [0, 1, 2, 3, 4, 5].map(i => (at(i) ? card(at(i)) : add(i)) + (i === end ? strip : '')).join(''); })()}</div></div></div>`; }
+    return `<div class="mh-hand mh-build"><div class="sx-grp mh-grp" role="group" aria-label="Your six"><p class="mh-gh"><b class="u">Your Six</b><span>${ms.length} of 6 in. Lead, Back and Bench are worked out once all six are in.</span></p><div class="mh-pair mh-six">${(() => { const cols = innerWidth < 360 ? 2 : 3 /* Sim, Nov 18 (C): three across from 360 */, si = strip && sel ? sel.i : -1, end = si < 0 ? -1 : Math.min(5, Math.floor(si / cols) * cols + cols - 1); return [0, 1, 2, 3, 4, 5].map(i => (at(i) ? card(at(i)) : add(i)) + (i === end ? strip : '')).join(''); })()}</div></div></div>`; }
   const G = [['Lead', 'start the battle', L.lead], ['Back', 'come in next', L.back], ['Bench', 'stay out this game', L.bench]];
   return `<div class="mh-hand">${G.map(([name, note, g]) => `<div class="sx-grp mh-grp${name === 'Lead' ? ' lead' : ''}" role="group" aria-label="${name}"><p class="mh-gh" role="heading" aria-level="2"><b class="u">${name}</b><span>${note}</span></p><div class="mh-pair">${g.map(card).join('')}</div></div>${strip && g.includes(sel) ? strip : ''}`).join('')}</div>`; };
 // The Hand, piece 3 (brief section 3): the editing strip replaces the Set section. Only what the Card does not show: its place in the plan,
@@ -51,11 +51,18 @@ V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
       + `<button type="button" class="sx-a${lk ? ' on' : ''}" data-v2lock="${sel.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(sel.d)}: suggestions never swap out a locked Pokémon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg>${lk ? 'Unlock' : 'Lock'}</button>`
       + (lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : '')
       + `</div></div>`; })() : ''; // Edit Set lives only in the Set section (Sim, Nov 12: "your recommendation"; rule C3, nothing twice)
-  return `<div class="tm-six sx${V2.isHand(D) ? ' mh' : ''}">${V2.isHand(D) ? (V2.mtInline() ? V2.handHtml(D, sel, V2.editStripHtml(D, sel)) : V2.handHtml(D, sel) + V2.editStripHtml(D, sel)) : `<div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${act}`}${plan}</div>`; };
+  // Sim, Nov 18 (C): on phones the editing panel stays shut until a Card is tapped; a line says the Cards can be tapped
+  const es = V2.mtShut() ? null : sel, hint = V2.isHand(D) && !es ? '<p class="mt-hint">Tap a Card to edit, replace or remove it</p>' : '';
+  const inl = ms.length < 6 ? V2.mtInline() : V2.mtInline() && !V2.mtHand3(); /* the Hand three across (360-699): the panel opens under the whole Hand */
+  return `<div class="tm-six sx${V2.isHand(D) ? ' mh' : ''}">${V2.isHand(D) ? (inl ? V2.handHtml(D, es, V2.editStripHtml(D, es)) : V2.handHtml(D, es) + V2.editStripHtml(D, es)) + hint : `<div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${act}`}${plan}</div>`; };
 // Sim (Nov 17, B): under 1100px the Cards stack, so the editing panel opens right under the tapped Card's pair (full team) or row
 // (team being built) instead of under all six; from 1100px the six sit in one row and the panel stays right under it
 V2.mtInline = () => innerWidth < 1100;
-(() => { const band = () => innerWidth >= 1100 ? 2 : innerWidth >= 700 ? 1 : 0; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (V2.route && V2.route() === 'team') V2.redraw(); }, 120); }); })();
+// Sim, Nov 18 (C, phone length): phones 360-699 show the Hand three across (Lead | Back | Bench), so the panel opens under the whole Hand;
+// under 700 the panel stays shut until a Card is tapped (V2.ui.picked; a new team, Remove or Clear shut it again)
+V2.mtHand3 = () => innerWidth >= 360 && innerWidth < 700;
+V2.mtShut = () => innerWidth < 700 && !V2.ui.picked;
+(() => { const band = () => innerWidth >= 1100 ? 3 : innerWidth >= 700 ? 2 : innerWidth >= 360 ? 1 : 0; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (V2.route && V2.route() === 'team') V2.redraw(); }, 120); }); })();
 // Replace: the Add box on a filled spot; picking swaps it in one step (Undo brings the old one back)
 V2.openReplace = i => { const m = memberOf(S.slots[i], i); if (!m) return V2.openAdd(i); V2.ed.i = i; V2.ed.rep = i; V2.sheet(V2.addHtml(i, m.d), {label: 'Replace ' + m.d, focus: '[data-adq]'}); };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2rep]'); if (b) V2.openReplace(+b.dataset.v2rep); });
@@ -79,7 +86,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // Remove and Lock in the action strip (TEAM-09): today's toggleLock and clearSlot (31-set-edits.js); Remove keeps Undo, as today
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2lock],[data-v2rm]'); if (!t) return;
   if (t.dataset.v2lock != null) { toggleLock(+t.dataset.v2lock); render(); const b = document.querySelector(`[data-v2lock="${t.dataset.v2lock}"]`); if (b) b.focus({preventScroll: true}); return; }
-  const i = +t.dataset.v2rm, was = clearSlot(i); render(); if (was) toast(`Removed ${was.d}`, true);
+  const i = +t.dataset.v2rm, was = clearSlot(i); V2.ui.picked = false; /* Sim, Nov 18 (C): on phones the panel shuts with the Card it was editing */ render(); if (was) toast(`Removed ${was.d}`, true);
   // Sim, Nov 17: after Remove the new Add spot was 685px above the screen (390 wide); bring it into view and give it the focus
   requestAnimationFrame(() => { const a = document.querySelector(`[data-v2addto="${i}"]`); if (!a) return; 
     a.scrollIntoView({block: 'center'}); a.focus({preventScroll: true}); }); }); /* instant: a smooth scroll was cut short by the redraw's late layout (stopped at 9px, under the header) */

@@ -2,11 +2,13 @@
 // Today's shared steps (26-log-data.js): myGames, myInsights, logGame, unlogGame. Shown once the team has all six (as today).
 // The Showdown replay link arrives with the Battle page (it fills the leads and their six from a replay there).
 V2.ql = {leads: [], opp: [], last: null, q: ''};
+// Sim, Nov 18 (C, phone length): on phones the note on what logging unlocks sits behind a "?" beside "None logged yet" (same words)
+try { if (typeof TIPS === 'object' && !TIPS.yglog) TIPS.yglog = ['What logging unlocks', 'After 5 logged games, Build Me a Team weighs your own results and this record shows what beats you.']; } catch (e) {}
 V2.ygSec = ms => { if (!ms || ms.length !== 6) return ''; const G = myGames(ms), ins = myInsights(G), E = V2.esc, L = V2.ql.last;
   const last = L && (S.log || []).some(x => x.t === L.t) ? `<p class="tm-yg-last" role="status">${L.r === 'W' ? 'Win' : 'Loss'} logged. <button type="button" class="np-link" data-ygundo="${L.t}">Undo</button></p>` : '';
   const more = G && !ins ? `<p class="tm-sub">Log ${MYREC_MIN - G.n} more game${MYREC_MIN - G.n === 1 ? '' : 's'} with this six to see who you lose to most and how your leads do.</p>` : '';
   return `<section class="tm-sec tm-yg" id="tm-yg"><h2 class="u">Your Games</h2>
-    <div class="tm-yg-hd">${G ? `<p class="tm-yg-n"><b>${G.w}–${G.l}</b><span>${G.n} game${G.n === 1 ? '' : 's'} logged</span></p>` : '<p class="tm-yg-n tm-yg-0"><span>None logged yet</span></p><p class="tm-sub tm-yg-why">After 5 logged games, Build Me a Team weighs your own results and this record shows what beats you.</p>' /* player review 2b (Nov 17): say what logging unlocks (personalAdj, MYREC_MIN = 5) */}
+    <div class="tm-yg-hd">${G ? `<p class="tm-yg-n"><b>${G.w}–${G.l}</b><span>${G.n} game${G.n === 1 ? '' : 's'} logged</span></p>` : '<p class="tm-yg-n tm-yg-0"><span>None logged yet</span>' + V2.tip('yglog') + '</p><p class="tm-sub tm-yg-why">After 5 logged games, Build Me a Team weighs your own results and this record shows what beats you.</p>' /* player review 2b (Nov 17): say what logging unlocks (personalAdj, MYREC_MIN = 5) */}
     <button type="button" class="np-btn2" data-yglog><span>Log a Game</span></button></div>${last}
     ${ins ? `<ul class="tm-yg-ins">${ins.map(s => `<li>${E(s)}</li>`).join('')}</ul>` : more}</section>`; };
 
