@@ -124,7 +124,14 @@ V2.fitWords = () => { const ow = e => e.clientWidth > 1 && e.scrollWidth > e.cli
   groups.forEach(us => { if (!us.some(u => [...u.children].some(ow))) { /* nuclear stress test (Nov 16): a two-word move wrapping ("Stomping Tantrum") made the Hand's move grids uneven; every chip in the Hand then takes the two-line height */
       const lis = us.flatMap(u => [...u.children]).filter(li => li.offsetHeight > 0), hs = lis.map(li => li.offsetHeight), lo = Math.min(...hs);
       if (lis.length && hs.some(h => h > lo + 4)) us.forEach(u => u.classList.add('mh-mv2')); return; } /* one Card needs it, so the whole Hand goes one per row (even Cards, Sim's eye for symmetry) */
-    us.forEach(u => u.classList.add('mh-mv1')); us.forEach(u => u.querySelectorAll('li').forEach(li => { if (ow(li)) li.classList.add('np-brk'); })); }); };
+    us.forEach(u => u.classList.add('mh-mv1')); us.forEach(u => u.querySelectorAll('li').forEach(li => { if (ow(li)) li.classList.add('np-brk'); })); });
+  /* review Nov 18 (C7): the fit is remembered, and the Hand's move lists are drawn with it (six.js, V2.mvFitOf), as the belt's mt-wide is
+     (team.js): the draw no longer puts a list two across for this to set one per row again (at 1100-1439 every redraw moved My Team 24px) */
+  if (V2._mvFit.size > 40) V2._mvFit.clear(); groups.forEach(us => { const lis = us.flatMap(u => [...u.children]);
+    V2._mvFit.set(V2.mvKey(lis.map(li => li.textContent)), {c: ['mh-mv1', 'mh-mv2'].find(c => us[0].classList.contains(c)) || '', b: [...new Set(lis.filter(li => li.classList.contains('np-brk')).map(li => li.textContent))]}); }); };
+// the last fit of a Hand's move lists, by page, window width and the moves in it: {c: 'mh-mv1' | 'mh-mv2' | '', b: moves that may break}
+V2._mvFit = new Map(); V2.mvKey = names => V2.route() + '|' + innerWidth + '|' + [...new Set(names)].sort().join('/');
+V2.mvFitOf = ms => V2._mvFit.get(V2.mvKey(ms.flatMap(m => m.moves.filter(Boolean).map(v => v.name)))) || {c: '', b: []};
 addEventListener('resize', () => requestAnimationFrame(() => V2.fitWords()));
 try { document.fonts.ready.then(() => V2.fitWords()); document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(() => V2.fitWords())); } catch (e) {} /* again when a font arrives: measured with a stand-in font the fit is wrong */
 V2.msShow = (k, focus) => { V2.msTab = k; try { localStorage.setItem('np2.montab', k); } catch (e) {}

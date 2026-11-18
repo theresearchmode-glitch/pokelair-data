@@ -115,7 +115,7 @@ V2.noneCard = () => { const N = LANE.NONE;
 // "on screen" means clear of the sticky header and jump bar above and the phone bar below (Nov 12: under the header it counted as seen)
 V2.appliedSay = (t) => { const b = document.querySelector('.sg2-undo'), r = b && b.getBoundingClientRect(), rs = s => [...document.querySelectorAll(s)].map(e => e.getBoundingClientRect()).filter(q => q.height);
   const top = Math.max(0, ...rs('.np-head,.tm-jump').filter(q => q.top < innerHeight / 2).map(q => q.bottom)), bot = Math.min(innerHeight, ...rs('.np-bar,.np-dock').filter(q => q.top > innerHeight / 2).map(q => q.top));
-  if (r && r.height && r.top >= top && r.bottom <= bot) return; toast(t, true); };
+  if (r && r.height && r.top >= top && r.bottom <= bot) return true; toast(t, true); return false; }; /* true: the bar is the message (Apply's focus goes to its Undo) */
 V2.undoBar = () => { const t = undoTop(); return t ? `<div class="sg2-undo" role="status"><span>Applied <b>${V2.esc(t.label)}</b></span><button type="button" class="np-btn2" data-undobar><span>Undo</span></button></div>` : ''; };
 
 // Show more: the next suggestions open in place (already worked out) and the link becomes See all suggestions (as today)
@@ -152,14 +152,23 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   // the new list came. What is held is the place under the finger: an Apply (the faded copy's, then the next suggestion's) where the
   // tapped one was; with no Apply left (nothing to fix), the section's top where it was. Held until the list has settled: at least
   // 5 s, while the planner works, and 1 s after (20 s at most). Done in script, so it works without scroll anchoring (Safari).
-  if (id) { const t0 = performance.now(), ev = ['wheel', 'touchstart', 'pointerdown', 'keydown']; let on = true, t1 = t0; const off = () => { on = false; ev.forEach(n => removeEventListener(n, off, true)); };
-    ev.forEach(n => addEventListener(n, off, {capture: true, passive: true}));
-    const hold = () => { const el = document.getElementById(id); if (!el) return; const seen = e => e.getClientRects().length, A = [el.querySelector(`[data-v2plan="${k}"]`), ...el.querySelectorAll('[data-v2plan]')].find(e => e && seen(e));
-      const d = A ? A.getBoundingClientRect().top - a0 : el.getBoundingClientRect().top - y0; if (Math.abs(d) > 1) scrollBy(0, d); if (el.querySelector('.sg2-wait')) t1 = performance.now(); };
-    const keep = () => { if (!on) return; hold(); const t = performance.now(); if ((t - t0 < 5000 || t - t1 < 1000) && t - t0 < 20000) requestAnimationFrame(keep); else off(); };
+  // Review Nov 18 (C1, C2): any scroll the hold didn't make itself (a screen reader, find-in-page, a script) also lets go, and so does
+  // leaving My Team or Suggestions being gone (V2.holdGuard, shell.js); before, Back then Forward within 5 s dragged the page down again
+  const at = el => { const seen = e => e.getClientRects().length; return [el.querySelector(`[data-v2plan="${k}"]`), ...el.querySelectorAll('[data-v2plan]')].find(e => e && seen(e)); };
+  let G = null; if (id) { const t0 = performance.now(); let t1 = t0; G = V2.holdGuard(() => { const el = document.getElementById(id); return el && (at(el) || el); });
+    const hold = () => { const el = document.getElementById(id); if (!el) return G.stop(); const A = at(el);
+      const d = A ? A.getBoundingClientRect().top - a0 : el.getBoundingClientRect().top - y0; if (Math.abs(d) > 1) scrollBy(0, d); G.mark(); if (el.querySelector('.sg2-wait')) t1 = performance.now(); };
+    const keep = () => { if (!G.on()) return; hold(); const t = performance.now(); if ((t - t0 < 5000 || t - t1 < 1000) && t - t0 < 20000) requestAnimationFrame(keep); else G.stop(); };
     hold(); requestAnimationFrame(keep); }
   // one message per Apply (A6): decided where the player will see the bar, after the place is held
-  V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`); });
+  const bar = V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`);
+  // Review Nov 18 (C3): the tapped Apply is gone with the redraw, so the focus fell to <body> (a keyboard or screen-reader player lost
+  // their place). It goes to the Undo in the 'Applied … Undo' bar when that bar is the message (A6: one message; the bar says what was
+  // applied), else to the Apply now in the tapped one's place if it can take focus (the faded copy is inert), else to the bar's Undo
+  // all the same (it stays after the list settles; the toast's own Undo goes when the toast does); without scrolling, so the hold keeps the place
+  if (id && (!document.activeElement || document.activeElement === document.body)) { const el = document.getElementById(id), u = el && el.querySelector('.sg2-undo [data-undobar]'), A = el && at(el);
+    const f = (bar && u) || (A && !A.closest('[inert]') ? A : null) || u || document.getElementById('toastUndo');
+    if (f) f.focus({preventScroll: true}); /* if the page then scrolls to show the focus (Tab focus under the header), that scroll wins and the hold lets go */ } });
 
 // ---------- Problems and Team Checks (in the Team Checks section): a fold, closed until opened, remembered per device ----------
 // Today's rows (problemRows), Quick add picks (quickList / quickInfo), the team checks (proChecks, ckState, CK_TXT) and the verdict

@@ -78,7 +78,7 @@ if (process.argv.includes('--v2')) {
     /* --split (first-visit speed, Nov 18; docs/rebuild/research/first-visit-nov18.md change 2): the data goes in preview.json beside the page,
        fetched from <head> as the page starts (no preload tag), so the page's own bytes arrive and draw sooner. Each answer waits for
        the file; if it can't be read (file://, or missing) every doc answers "not there", as a database with no data would. */
-    const PV = SPLIT ? `const DP=fetch(${JSON.stringify('preview.json?v=' + hash(JSON.stringify(D)))}).then(r=>r.json()).catch(e=>{console.warn('preview.json: '+e);return {}});`
+    const PV = SPLIT ? `const DP=fetch(${JSON.stringify('preview.json?v=' + hash(JSON.stringify(D)))}).then(r=>{if(!r.ok)throw new Error('HTTP '+r.status);return r.json()}).catch(e=>{console.warn('preview.json: '+e);window.__NP_PVFAIL=String(e&&e.message||e);return {}});` /* review Nov 18 (C5): a 404 or other error answer is a failure, not data; V2.dataNote says so on every page */
       : `const D=JSON.parse(${JSON.stringify(JSON.stringify(D)).replace(/</g, '\\u003c')}) /* JSON.parse reads faster than an object literal (code review B-m5) */;`;
     const answer = SPLIT ? `DP.then(D=>setTimeout(()=>cb({exists:!!D[q],data:()=>D[q]}),5))` : `setTimeout(()=>cb({exists:!!D[q],data:()=>D[q]}),5)`;
     if (SPLIT) previewJson = JSON.stringify(D);
@@ -98,7 +98,9 @@ if (process.argv.includes('--v2')) {
      installed the page ships as before. */
   let jsOut = js; if (!process.argv.includes('--keep-comments')) { let esb = null; try { esb = (await import('node:module')).createRequire(import.meta.url)('esbuild'); } catch (e) { console.log('v2: esbuild not installed, scripts ship unminified'); }
     if (esb) jsOut = esb.transformSync(js, {loader: 'js', minifyWhitespace: true, charset: 'utf8', legalComments: 'none'}).code; }
-  const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}"></script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
+  /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words) */
+  const v2Fail = `window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}`;
+  const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}" onerror="${v2Fail.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"></script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
   const page = head.replace('<meta charset="utf-8">', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + mainTag + `</body></html>\n`;
   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
   if (SPLIT) { fs.writeFileSync(dir + 'dist/v2.js', jsOut); if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson);

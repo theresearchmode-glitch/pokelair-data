@@ -54,8 +54,20 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // code review C8: one Undo for actions outside the team's own Undo (a deleted game, cleared Their Six): the toast's button runs restore
 V2.undoToast = (msg, restore) => { V2._undoFn = restore; return V2.toast(V2.esc(msg) + ' <button type="button" data-v2undo>Undo</button>', 6000); };
 document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2undo]'))) return; const f = V2._undoFn; V2._undoFn = null; document.querySelectorAll('.np-toast,.np-sheet-undo').forEach(x => x.remove()); if (f) { try { f(); } catch (x) { console.error(x); } V2.toast('Undone'); } });
+/* review Nov 18 (C1, C2): a place hold (Apply's in sugs.js, Remove's V2.rmHold in six.js) lets go on the player's wheel, touch, pointer
+   or key, and also on any scroll it didn't make itself: a screen reader moving its cursor, find-in-page, a link to a spot, a script.
+   It knows its own scrolls (mark() after each scrollBy, and each frame). A scroll that comes with a layout change (the held element
+   moved in the page, or the page got shorter or longer: scroll anchoring, a clamp) is the layout's, so the hold keeps it. Leaving the
+   page (hashchange, popstate) ends it too. tgt() is the element the hold keeps in place; the hold asks on() each frame. */
+V2.holdGuard = tgt => { const ev = ['wheel', 'touchstart', 'pointerdown', 'keydown'], at = () => { const e = tgt(); return e ? Math.round(e.getBoundingClientRect().top + scrollY) + '|' + document.documentElement.scrollHeight : ''; };
+  let y = scrollY, sig = at(), done = false; const stop = () => { if (done) return; done = true; ev.forEach(n => removeEventListener(n, stop, true)); removeEventListener('scroll', seen); removeEventListener('hashchange', stop); removeEventListener('popstate', stop); };
+  const seen = () => { if (done) return; const s = at(); if (Math.abs(scrollY - y) > 1 && s === sig && !(performance.now() - (V2._smoothAt || -1e9) < 1500)) return stop(); y = scrollY; sig = s; }; /* a site smooth scroll from the last 1.5 s is the site's: the hold corrects it */
+  ev.forEach(n => addEventListener(n, stop, {capture: true, passive: true})); addEventListener('scroll', seen, {passive: true}); addEventListener('hashchange', stop); addEventListener('popstate', stop);
+  return {mark: () => { y = scrollY; sig = at(); }, stop, on: () => !done}; };
 // smooth scrolling only when the device doesn't ask for reduced motion (code review C7: eight scrolls ignored it)
-V2.smooth = () => { try { return matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'; } catch (e) { return 'auto'; } };
+/* review Nov 18 (C1): when a smooth scroll starts is kept (V2._smoothAt): one the site started can still be gliding when a hold begins
+   (a Card tap's, then Remove at once: it landed after the hold's first frame), and a hold must not take it for the player's */
+V2.smooth = () => { try { if (matchMedia('(prefers-reduced-motion: reduce)').matches) return 'auto'; } catch (e) { return 'auto'; } V2._smoothAt = performance.now(); return 'smooth'; };
 V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach(x => x.remove());
   const t = document.createElement('div'); t.className = 'np-toast'; t.setAttribute('role', 'status'); t.innerHTML = html; document.body.append(t);
   const tops = [...document.querySelectorAll('.np-dock,.np-bar')].map(e => e.getBoundingClientRect()).filter(r => r.height && r.top < innerHeight).map(r => r.top);
@@ -215,6 +227,9 @@ V2.theme = () => document.documentElement.dataset.theme === 'night' ? 'night' : 
 // ---------- data note (parity, Nov 15): today's #healthBar and #regBar (43-data-health.js), one calm line on Home and the Meta
 // pages: a source past its usual age is named with its day, and a new or changed regulation is said plainly. Empty when all is current.
 V2.dataNote = () => { const E = V2.esc, out = [];
+  /* review Nov 18 (C5): a --split Preview whose preview.json couldn't be read (missing, 404, offline) says so, on every page (V2.shell),
+     rather than showing the built-in numbers as if they were today's */
+  if (window.__NP_PVFAIL) out.push(`<b>This Preview couldn't read today's data</b> (preview.json: ${E(window.__NP_PVFAIL)}). The numbers shown are the built-in copy and may be out of date. Reload to try again.`);
   try { const r = typeof regInfo === 'function' && regInfo();
     if (r && r.now) out.push(`<b>New regulation: Reg ${E(r.now.id)} started ${E(regDay(r.now.since))}.</b> Numbers are from Reg ${E(r.id)} until there's enough Reg ${E(r.now.id)} data; the two are never mixed. ${r.now.events ? `${r.now.events.toLocaleString('en-US')} Reg ${E(r.now.id)} event${r.now.events === 1 ? '' : 's'} so far${r.now.need ? `, switches at ${r.now.need}` : ''}.` : `Seen on the Showdown ladder; no Reg ${E(r.now.id)} tournaments yet.`}`); /* known-bug SHELL-05 (Nov 17): how far along it is, as today's page says */
     else if (r && r.id !== PAGE_REG) out.push(`<b>Numbers are from Reg ${E(r.id)}.</b> Anything new in Reg ${E(r.id)} may be missing until NastyPlot is updated for it.`); } catch (e) {}
@@ -345,7 +360,7 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
   <a class="np-theme np-boxlink" href="${r === 'box' ? V2.esc(V2.boxFrom || '#team') : '#box'}" aria-label="${r === 'box' ? 'My Box is open. Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}" title="${r === 'box' ? 'Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
   <button type="button" class="np-theme" data-v2theme aria-label="${V2.theme() === 'night' ? 'Night mode is on. Switch to day mode' : 'Day mode is on. Switch to night mode'}" title="${V2.theme() === 'night' ? 'Night mode' : 'Day mode'}">${V2.theme() === 'night' ? V2.ICON.moon : V2.ICON.sun}</button></div></header>
-<main class="np-main" id="main">${!V2.dataReady() ? V2.loadingHtml() : `${(place === 'home' || place === 'meta') && r !== 'pokemon' ? V2.dataNote() : ''}${P ? V2.safeDraw(P) : ''}`}</main>
+<main class="np-main" id="main">${!V2.dataReady() ? V2.loadingHtml() : `${((place === 'home' || place === 'meta') && r !== 'pokemon') || window.__NP_PVFAIL ? V2.dataNote() : ''}${P ? V2.safeDraw(P) : ''}`}</main>
 <footer class="np-foot">${V2.logo(true)}<div class="np-ftxt">${place === 'home' ? '' : '<p class="np-ftag u">Sharply raise <span>your win rate.</span></p>'}<span>NastyPlot is an unofficial, fan&#8209;made tool, not affiliated with Nintendo, The Pok&eacute;mon Company or Game Freak; Pok&eacute;mon names are trademarks of their owners.${V2.dataReady() && V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span></div><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#about=priv">Privacy</a><a href="#about=contact">Contact</a>${V2.FB && V2.FB.ok ? '<a href="#feedback">Send Feedback</a>' : ''}${V2.OWN ? `<a href="#owner">Owner</a>` : ``}<button type="button" class="np-fsrcb" data-fsrc aria-expanded="false" aria-controls="np-fsrc">Sources and Credits</button></nav><p class="np-fsrc" id="np-fsrc" hidden>${(() => { try { return DATA_SOURCES.map(x => V2.esc(x.name)).join(' · '); } catch (e) { return ''; } })()}. Each used by its own rules; details in <a class="np-link" href="#about=data">About</a>.</p></footer>
 <nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
 /* audit Nov 16 (WCAG 2.4.2): each page has its own browser title, its name as the menu and search show it ("Meta · NastyPlot"); Home keeps "NastyPlot";

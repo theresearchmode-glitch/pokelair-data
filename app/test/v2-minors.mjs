@@ -11,6 +11,8 @@
 //   OL-i15  Build's Blueprint shows the catch tip, "X isn't in your box" and every plan chip (no cap of 3), in even rows
 //   Stampede polish 1/1b/2 (Nov 18): the hero/six seam, the three parts starting and ending together, the receipt's band names readable
 //   Stampede tiles 2-5 + tags (Nov 18 night): Battle's VS clear, Test Run filled, Damage Calc balanced, equal band bars, board tags inside
+//   BR-C1..C7 (Nov 18): behaviour review: the Apply and Remove holds end on any scroll they didn't make and on leaving My Team,
+//              redraws at 1100-1439 don't move My Team, keyboard Apply keeps the focus (ONLY=BR runs these alone)
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
 import {chromium} from 'playwright'; import path from 'node:path'; import fs from 'node:fs';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -19,6 +21,50 @@ ok(!/Ready for every top threat/.test(fs.readFileSync(PAGE, 'utf8')), 'A1-M1: th
 { const h = fs.readFileSync(PAGE, 'utf8'); ok(/<div id="app"><a class="vh np-skip"[\s\S]*?class="np-head"/.test(h), 'B-I3: the header is in the page before the script runs (static first screen)'); if (h.includes('__NP_PREVIEW=1')) ok(/const D=JSON\.parse\("/.test(h), 'B-m5: the Preview\'s data is read with JSON.parse, not as a big object literal'); }
 const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 1280, height: 900}});
 await p.addInitScript(() => { window.__PL_TEST = 1; });
+// ---- BR begin: behaviour review (Nov 18, docs/rebuild/audits/review-behaviour-nov18.md C1, C2, C3, C7). Each check failed on the build before its fix.
+//   ONLY=BR runs these alone. The --split loaders (C5, C6) are checked over http by app/test/v2-split.mjs.
+const BR = async () => {
+  const tOpen = async (W, from) => { const c = await b.newContext({viewport: {width: W, height: W < 700 ? 844 : 900}, hasTouch: false}), q = await c.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+    await q.goto('file://' + PAGE + (from || '#team')); await q.waitForTimeout(2000); if (from) { await q.evaluate(() => { location.hash = '#team'; }); await q.waitForTimeout(1500); }
+    /* a team with something to fix (the sample team has nothing, so no Apply): the review's test team, through Import */
+    await q.locator('[data-v2more]').first().click(); await q.waitForTimeout(400); await q.locator('.np-sheet [data-v2import]').first().click(); await q.waitForTimeout(400);
+    await q.fill('[data-impin]', ['Incineroar', 'Garchomp', 'Sneasler', 'Kingambit', 'Basculegion', 'Sinistcha'].join('\n\n')); await q.locator('[data-impgo]').click(); await q.waitForTimeout(800);
+    await q.waitForFunction(() => !document.querySelector('.sg2-wait'), null, {timeout: 90000}).catch(() => {}); await q.waitForTimeout(1200); return {q, c}; };
+  const apply = async q => { const a = q.locator('#main [data-v2plan]').first(); await a.scrollIntoViewIfNeeded(); await q.evaluate(() => scrollBy(0, -120)); await q.waitForTimeout(300);
+    const y = await q.evaluate(() => scrollY); await a.click(); return y; };
+  const away = q => q.evaluate(() => { scrollTo(0, scrollY > document.documentElement.scrollHeight / 2 ? Math.max(0, scrollY - 1500) : scrollY + 1500); return scrollY; }); /* far, but clear of the page's end (it may get shorter) */
+  // C1 (finding 2): a scroll the hold didn't make (a script here; a screen reader or find-in-page does the same) ends Apply's hold
+  { const {q, c} = await tOpen(390); const y0 = await apply(q); await q.waitForTimeout(400); const y1 = await away(q); await q.waitForTimeout(1200); const y2 = await q.evaluate(() => scrollY);
+    ok(Math.abs(y1 - y0) > 300 && Math.abs(y2 - y1) <= 2, `BR-C1a: after Apply, a script scroll (as a screen reader or find-in-page makes) ends the hold: the page stays where it was sent (Apply at ${y0}, sent to ${y1}, ${y2} 1.2 s later)`);
+    await c.close(); }
+  // control: with nothing else scrolling, Apply's hold still keeps an Apply under the finger (the guard doesn't end it on the redraw's own moves)
+  { const {q, c} = await tOpen(390); await q.evaluate(() => { const a = document.querySelector('#main [data-v2plan]'), s = a.closest('section'); window.__brA = [s.id, a.getBoundingClientRect().top - s.getBoundingClientRect().top]; }); await apply(q);
+    /* what the hold keeps: an Apply where the tapped one was, or with none left (nothing to fix), the section where it was */
+    const tops = []; for (let i = 0; i < 6; i++) { await q.waitForTimeout(500); tops.push(await q.evaluate(() => { const s = document.getElementById(window.__brA[0]); if (!s) return null; const v = [...s.querySelectorAll('[data-v2plan]')].find(e => e.getClientRects().length); return Math.round(v ? v.getBoundingClientRect().top : s.getBoundingClientRect().top + window.__brA[1]); })); }
+    ok(tops.every(t => t != null) && Math.max(...tops) - Math.min(...tops) <= 2, `BR-C1 control: with no other scroll, Apply's hold keeps the tapped place for the 3 s after (tops ${tops.join(', ')})`); await c.close(); }
+  // C1 (finding 2), Remove: the same for V2.rmHold
+  { const {q, c} = await tOpen(390); await q.locator('#main [data-tmsel="2"]').first().click(); await q.waitForTimeout(1600) /* past the Card tap's own smooth scroll (V2._smoothAt) */; const rm = q.locator('#main .mt-edit [data-v2rm]').first(); await rm.scrollIntoViewIfNeeded(); await q.waitForTimeout(300);
+    await rm.click(); await q.waitForTimeout(400); const y0 = await q.evaluate(() => scrollY), y1 = await away(q); await q.waitForTimeout(1200); const y2 = await q.evaluate(() => scrollY);
+    ok(Math.abs(y1 - y0) > 300 && Math.abs(y2 - y1) <= 2, `BR-C1b: after Remove, a script scroll ends the hold: the page stays where it was sent (${y0} -> ${y1}, ${y2} 1.2 s later)`); await c.close(); }
+  // C2 (finding 3): Apply's hold ends when the player leaves My Team (Back, then Forward within its 5 s: no drag down to the old Apply)
+  /* (Back then Forward restores the old scroll place by itself, so the check leaves and comes back through links: My Team opens at its top) */
+  { const {q, c} = await tOpen(390); const y0 = await apply(q); await q.waitForTimeout(300); await q.evaluate(() => { location.hash = '#meta'; }); await q.waitForTimeout(500); await q.evaluate(() => { location.hash = '#team'; }); await q.waitForTimeout(300);
+    const ya = await q.evaluate(() => scrollY); await q.waitForTimeout(1500); const yb = await q.evaluate(() => scrollY);
+    ok(y0 > 500 && ya < 100 && yb < 100, `BR-C2: Apply, leave for Meta, back to My Team within 5 s: My Team opens at its top and stays there (Apply was at ${y0}; ${ya}, then ${yb} 1.5 s later)`); await c.close(); }
+  // and when the section itself is gone: the hold doesn't come back with it
+  { const {q, c} = await tOpen(390); const y1 = await apply(q); await q.waitForTimeout(300);
+    const yc = await q.evaluate(async () => { const s = document.querySelector('#main [data-v2plan]').closest('section'), par = s.parentNode, nx = s.nextSibling; s.remove(); await new Promise(r => setTimeout(r, 300)); scrollTo(0, 0); par.insertBefore(s, nx); await new Promise(r => setTimeout(r, 1200)); return scrollY; });
+    ok(y1 > 500 && yc < 100, `BR-C2b: once Suggestions is gone, the hold has ended: put back, it doesn't pull the page to it (Apply was at ${y1}; ${yc} after)`); await c.close(); }
+  // C7 (finding 4): at 1100-1439 a redraw doesn't move My Team (the Hand's move lists are drawn with their last fit)
+  for (const W of [1100, 1280, 1439]) { const {q, c} = await tOpen(W); const ys = await q.evaluate(async () => { scrollTo(0, 1500); const out = [scrollY]; for (let i = 0; i < 4; i++) { V2.redraw(); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); await new Promise(r => setTimeout(r, 150)); out.push(scrollY); } return out; });
+    ok(ys[0] === 1500 && ys.every(y => Math.abs(y - ys[0]) <= 1), `BR-C7: at ${W} four redraws leave My Team where it was (scrollY ${ys.join(', ')})`); await c.close(); }
+  // C3 (finding 5): keyboard Apply leaves the focus on the Undo or the Apply now in its place, not on <body>, and doesn't scroll to it
+  for (const W of [390, 1280]) { const {q, c} = await tOpen(W); const a = q.locator('#main [data-v2plan]').first(); await a.scrollIntoViewIfNeeded(); await q.evaluate(() => scrollBy(0, -120)); await q.waitForTimeout(300); await a.focus();
+    await q.keyboard.press('Enter'); await q.waitForTimeout(300); const f = () => q.evaluate(() => { const e = document.activeElement; return !e || e === document.body ? 'body' : e.matches('[data-undobar]') ? 'Undo' : e.matches('[data-v2plan]') ? 'Apply' : e.tagName + '.' + e.className; });
+    const f1 = await f(); await q.waitForFunction(() => !document.querySelector('.sg2-wait'), null, {timeout: 90000}).catch(() => {}); await q.waitForTimeout(1500); const f2 = await f(), toast = await q.evaluate(() => document.querySelectorAll('.np-toast').length);
+    ok(/^(Undo|Apply)$/.test(f1) && /^(Undo|Apply)$/.test(f2) && toast <= 1, `BR-C3: at ${W} keyboard Apply puts the focus on the Undo or the Apply now in its place (not <body>), it stays after the list settles, and one message at most (A6) (${f1}, then ${f2}; toasts ${toast})`); await c.close(); } };
+if (process.env.ONLY === 'BR') { await BR(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// ---- BR end (run with the rest just before the browser closes) ----
 await p.goto('file://' + PAGE + '#build'); await p.waitForTimeout(2500);
 await p.getByRole('button', {name: 'Build Me a Team'}).first().click();
 await p.waitForSelector('[data-bdcopy]', {timeout: 30000}).catch(() => {});
@@ -1087,5 +1133,6 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     ok(!cut.length, `NPR-12 (polish sweep defect 1): the News coupon's Copy Code is the Post Room's button (class, padding, font) and its text is never clipped, 640 to 2560, day and night (${cut.join(' || ').slice(0, 400) || 'same button, not clipped'})`); }
 }
 // ---- NPR end ----
+await BR(); /* behaviour review (Nov 18), above */
 await b.close();
 console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

@@ -26,3 +26,6 @@ The mock-up pages are built from `docs/rebuild/mocks/*.tpl.html`.
    "$S/redesign/fonts/<name>.woff2"` (Nov 12: the fonts are hosted by NastyPlot itself; the page has no Google Fonts link).
 4. Artifact list, scope files: must show 394 files (Nov 18: plus v2.js and preview.json, and the later additions in the header above): 346 `v2art/*.webp` and 7 `fonts/*.woff2`. Tell Sim the version number and
    the file count. (The first publish with the fonts adds them; later publishes keep them unless they change.)
+   The list must also show `v2.js` and `preview.json` (review Nov 18, C5/C6), each the same size as the copy in `$S/redesign/`: without
+   v2.js the page shows "This page didn't load."; without preview.json it shows "This Preview couldn't read today's data" and the
+   built-in numbers. A link goes to Sim only when all of these are in the list.
