@@ -25,6 +25,8 @@ function slotItem(s,p){if(p.m)return null;const c=s.it&&s.it[S.format];return c&
 // Only when Trick Room is the main speed mode: with Tailwind on the team it's a backup and the Scarf still works (Oct 28)
 function scarfTrClash(ms){const tr=ms.filter(m=>(m.moves||[]).some(x=>x&&x.name==='Trick Room'));if(!tr.length)return null;
   if(ms.some(m=>(m.moves||[]).some(x=>x&&x.name==='Tailwind')))return null;
+  /* Nov 18: the same exemptions as the item check (54-items.js trMain): weather speed, or an Imprison Trick Room user */
+  if(typeof trMain==='function'&&!trMain(ms))return null;
   const sc=ms.filter(m=>m.item==='Choice Scarf');return sc.length?{tr,sc}:null}
 function clashText(c){const n=a=>a.map(m=>esc(m.d)).join(', ');const self=c.sc.length===1&&c.tr.length===1&&c.sc[0]===c.tr[0];
   return self?`${n(c.sc)} holds Choice Scarf and sets Trick Room. Once Trick Room is up, the Scarf makes it move later, and it stays locked into Trick Room until it switches. Give it a different item.`
