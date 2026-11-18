@@ -154,10 +154,10 @@ t('HOME-12', 'Welcome card on first visit; "Got it" hides it for good', async ()
 
 t('HOME-13', 'What\'s New fold after an update; × dismisses it for good; never for first-time visitors', async () => {
   // the kit re-seeds stored keys on every reload, so seed this one by hand once
-  const r = await aopen({fresh: true}); await r.pg.evaluate(() => { localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.seenNew', '"2020-01-01"'); sessionStorage.clear(); }); await r.ui.reload(); ok(await r.ui.sees(/What's New\s+\d+ updates/), 'no What\'s New fold after an update');
+  const r = await aopen({fresh: true}); await r.pg.evaluate(() => { localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.seenNew', '"2020-01-01"'); sessionStorage.clear(); }); await r.ui.reload(); if (NEW) await r.ui.go('Home', 1500); /* the kit opens on My Team; What's New lives on Home's post band (Sim Q4d) */ ok(await r.ui.sees(/What's New\s+\d+ updates/), 'no What\'s New fold after an update');
   await r.ui.openFold("What's New"); ok(((await r.ui.foldContent("What's New")) || '').length > 80, 'fold lists no updates');
-  await r.ui.closeWhatsNew(); ok(!(await r.ui.sees("What's New")), 'fold still shown after ×'); await r.ui.reload(); ok(!(await r.ui.sees("What's New")), 'fold came back after reload'); await r.close();
-  const f = await aopen({fresh: true}); ok(!(await f.ui.sees("What's New")), 'first-time visitor sees What\'s New'); await f.close(); });
+  await r.ui.closeWhatsNew(); ok(!(await r.ui.sees("What's New")), 'fold still shown after ×'); await r.ui.reload(); if (NEW) await r.ui.go('Home', 1500); ok(!(await r.ui.sees("What's New")), 'fold came back after reload'); await r.close();
+  const f = await aopen({fresh: true}); if (NEW) await f.ui.go('Home', 1500); ok(!(await f.ui.sees("What's New")), 'first-time visitor sees What\'s New'); await f.close(); });
 
 t('HOME-14', 'Top of the Meta: 10 rated rows, Hidden gems switch changes the list, rows open info sheets', async () => {
   // new build (decisions.md Nov 12, Sim chose the headline "The Meta, right now."; piece 3 rows from the mock-up, Preview v75): headline

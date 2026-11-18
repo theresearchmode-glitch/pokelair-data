@@ -202,6 +202,17 @@ const HQ = async () => {
       if (r.none || r.after !== 'sds-note' || r.h !== 'New here?' || r.steps !== 'Get a team|Read your Strength Score|Plan each match' || r.copy !== '#tournaments' || !r.got || !r.taps || r.bad.length || r.hs > 0 || gone !== true) wl.push(`${w}: ${JSON.stringify({...r, gone})}`); }
     const back = await hq(1440, 900, {ls: {'cc2.welcomed': '"1"'}, fn: () => !!document.querySelector('#main .sds-wl')}); if (back) wl.push('a returning visitor sees it');
     ok(!wl.length, `HQ Q4c (Sim: A, "New here?"): the first-visit welcome sits in the six band under the sample note (three steps, Copy a Top Team, Got It hides it for good), never for a returning visitor, nothing spills 320-1440${wl.length ? ': ' + wl.join(' | ').slice(0, 600) : ''}`); }
+  // Q4d A: What's New (HOME-13) is a paper slip in the post band, after an update only (never a first visit), its items in the word list
+  // (no "scouting report", "meta threats", "win odds"); open on wide screens, a fold on phones; × hides it for good; nothing spills
+  { const nw = [], upd = {'cc2.welcomed': '"1"', 'cc2.seenNew': '"2020-01-01"'};
+    for (const w of [320, 390, 820, 1440]) { const {q, ctx} = await hq(w, 900, {rm: 'reduce', ls: upd, keep: true});
+      const r = await q.evaluate(() => { const c = document.querySelector('#main .sdp .sdp-top + .sdp-nw'); if (!c) return {none: 1}; c.scrollIntoView(); const R = c.getBoundingClientRect(), bad = [], d = c.querySelector('details');
+        for (const e of c.querySelectorAll('*')) { if (!e.getClientRects().length) continue; const x = e.getBoundingClientRect(); if (x.right > R.right + 1 || x.left < R.left - 1) bad.push('out ' + e.textContent.trim().slice(0, 16)); if (e.children.length === 0 && parseFloat(getComputedStyle(e).fontSize) < 13) bad.push('small'); }
+        const tx = c.textContent; return {n: c.querySelectorAll('li').length, open: d.open, old: /scouting report|meta threats|win odds|ready for/i.test(tx), x: c.querySelector('[data-hmnewx]').getBoundingClientRect().height, bad, hs: document.documentElement.scrollWidth - innerWidth}; });
+      let gone = null; if (!r.none) { await q.click('#main .sdp-nw [data-hmnewx]'); await q.waitForTimeout(300); gone = await q.evaluate(() => { sessionStorage.removeItem('np.wnew'); V2.redraw(); return !document.querySelector('#main .sdp-nw') && JSON.parse(localStorage.getItem('cc2.seenNew') || '""') === V2.SD_NEW.id; }); }
+      await ctx.close(); if (r.none || r.n !== 6 || r.open !== (w >= 700) || r.old || r.x < 44 || r.bad.length || r.hs > 0 || !gone) nw.push(`${w}: ${JSON.stringify({...r, gone})}`); }
+    const first = await hq(1440, 900, {fresh: true, fn: () => !!document.querySelector('#main .sdp-nw')}); if (first) nw.push('a first-time visitor sees it');
+    ok(!nw.length, `HQ Q4d (Sim: A, reworded): What's New is a paper slip in the post band after an update (6 items, word list, open on wide screens, a fold on phones), × hides it for good, never on a first visit${nw.length ? ': ' + nw.join(' | ').slice(0, 600) : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----

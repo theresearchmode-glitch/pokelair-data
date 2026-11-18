@@ -71,3 +71,16 @@
      the heading drops 24px and the bird rises 16px more over the edge (still clear of the tools band's words), so nothing covers it (v2-minors SDP-3) */
 /* stamps in a narrow column: the names and kinds as the Post Room sets them on phones (whole words stay inside the stamp) */
 @container (max-width:559.98px){.sdp-stamps .pr-nm{margin-top:var(--s2);font:700 var(--t13)/1.5 var(--b)}.sdp-stamps .pr-how{letter-spacing:0;text-transform:none}.sdp-stamps .pr-my{font:700 var(--t13)/1.5 var(--b)}.sdp-stamps .pr-st{padding:var(--s3) var(--s3) var(--s4)}}
+/* What's New (Sim Q4d A): a paper slip in the Post Room's paper colours, tilted like the code slip; after an update only */
+.sdp-nw{position:relative;z-index:2;margin:0 0 var(--s10);padding:var(--s4) var(--s12) var(--s4) var(--s5);border-radius:var(--r-s);background:var(--pr-paper);color:var(--pr-ink);rotate:-.6deg;
+  box-shadow:0 1px 2px var(--pr-shadow),0 12px 24px -12px var(--sd-post-shadow)}
+.sdp-nf summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s4);min-height:var(--tap);cursor:pointer;list-style:none}
+.sdp-nf summary::-webkit-details-marker{display:none}
+.sdp-nt{font-size:var(--t26);line-height:1.2}.sdp-ns{font:600 var(--t15)/1.5 var(--b);color:var(--pr-ink2)}
+.sdp-nf ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:var(--s3) var(--s8);margin:var(--s3) 0 0;padding:0;list-style:none;font:500 var(--t15)/1.5 var(--b)}
+@media (min-width:1100px){.sdp-nf ul{grid-template-columns:repeat(3,minmax(0,1fr))}}
+.sdp-nf li b{display:block;font-weight:700}.sdp-nf li span{color:var(--pr-ink2)}
+.sdp-nx{position:absolute;top:var(--s2);right:var(--s2);display:grid;place-items:center;width:var(--tap);height:var(--tap);border:0;border-radius:var(--r-s);background:none;color:var(--pr-ink);font:400 var(--t28)/1 var(--b);cursor:pointer}
+.sdp-nx:focus-visible,.sdp-nf summary:focus-visible{outline:3px solid var(--pr-ink);outline-offset:2px}
+@media (max-width:699.98px){.sdp-nt{font-size:var(--t22)}}
+

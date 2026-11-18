@@ -15,6 +15,25 @@ V2.sdpData = () => { const P = V2.postNow(), live = P.live.map(V2.prG), past = P
   return {P, live, past, first, next, second: live.find(g => g !== first) || null, gifts: live.length + past.length, news: P.news.length}; };
 V2.sdpSlip = g => { const E = V2.esc, d = V2.prDaysLeft(g), left = d == null || d < 0 ? '' : d === 0 ? 'last day' : `${d} ${d === 1 ? 'day' : 'days'} left`;
   return `<div class="sdp-slip"><p class="sdp-sw"><span><b>${E(g.name)}${left ? ',' : ''}</b>${left ? ` <i>${left}</i>` : ''}</span></p><div class="sdp-sc">${V2.prCode(g.code)}</div><button type="button" class="np-btn pr-copy" data-prcopy="${E(g.code)}"><span>Copy Code</span></button></div>`; };
+// What's New (HOME-13; Sim Q4d A, Nov 18): a paper slip in the post band, after an update only, never for a first visit; × hides it for
+// good. Today's rules and keys (home.js V2.homeNew: cc2.seenNew + this visit's np.wnew, the [data-hmnewx] handler). The items are
+// WHATS_NEW's, reworded to the word list (Sim: "after rewording"; "scouting report", "meta threats" and "win odds" are gone); same id,
+// so a player who dismissed it doesn't get it again. Open on wide screens, a closed fold on phones.
+V2.SD_NEW = {id: typeof WHATS_NEW === 'object' ? WHATS_NEW.id : '', items: [
+  ['Matchups', 'My Team shows how your six does against each of the top threats: Beats it, Handles it, Shaky or No answer.'],
+  ['Move accuracy', 'A move that can miss is never counted as a sure answer. Weather, No Guard, Compound Eyes and Wide Lens are included.'],
+  ['Ratings', 'Pokémon ratings now weigh top cut finishes, strong players and recent events most.'],
+  ['Team Checks', 'Item Clause clashes, items that do nothing, and Trick Room teams without enough slow attackers are now caught.'],
+  ['Game mechanics', 'Damage, turn order and field effects were checked against the battle simulator and thousands of real battles, and every mismatch was fixed.'],
+  ['Feedback', 'Tell us what\'s off with Send Feedback at the bottom of any page.']]};
+V2.sdpNew = () => { const W = V2.SD_NEW; if (!W.id) return ''; let seen = '', welcomed = ''; try { seen = LS.get('cc2.seenNew', ''); welcomed = LS.get('cc2.welcomed', ''); } catch (e) {}
+  if (!welcomed) { try { LS.set('cc2.seenNew', W.id); } catch (e) {} return ''; }
+  let sess = ''; try { sess = sessionStorage.getItem('np.wnew') || ''; } catch (e) {}
+  if (seen === W.id && sess !== W.id) return '';
+  try { LS.set('cc2.seenNew', W.id); sessionStorage.setItem('np.wnew', W.id); } catch (e) {}
+  const E = V2.esc, wide = innerWidth >= 700;
+  return `<section class="sdp-nw hm-newsec" aria-labelledby="sdpNwH"><details class="sdp-nf"${wide ? ' open' : ''}><summary><span class="u sdp-nt" id="sdpNwH">What's New</span><span class="sdp-ns">${W.items.length} updates${wide ? ' to NastyPlot' : ': ' + W.items.slice(0, 2).map(([a]) => E(a)).join(', ') + '…'}</span></summary>
+    <ul>${W.items.map(([a, b]) => `<li><b>${E(a)}</b> <span>${E(b)}</span></li>`).join('')}</ul></details><button type="button" class="sdp-nx" data-hmnewx aria-label="Dismiss What's New"><span aria-hidden="true">×</span></button></section>`; };
 V2.sdPost = () => { const E = V2.esc, D = V2.sdpData(), n = (k, w) => `All ${homeNum(k)} ${w}${k === 1 ? '' : 's'}`, solo = !D.news;
   const bird = `<div class="sdp-bird" aria-hidden="true"><i class="sdp-ln l1"></i><i class="sdp-ln l2"></i><i class="sdp-ln l3"></i>${V2.mon('Pelipper', {bare: true, iw: 320, big: true})}</div>`;
   const stamps = D.past.length ? `<ul class="sdp-stamps${D.first ? '' : ' sdp-free'}" aria-label="Past gifts">${D.past.slice(0, 4).map(V2.prStamp).join('')}</ul>` : '';
@@ -26,5 +45,5 @@ V2.sdPost = () => { const E = V2.esc, D = V2.sdpData(), n = (k, w) => `All ${hom
   const news = solo ? '' : `<section class="sdp-col sdp-news" aria-labelledby="sdpNH"><header class="sdp-ch"><h3 class="u" id="sdpNH">Champions News</h3><a class="sdp-all" href="#news">${n(D.news, 'Story').replace(/ys$/, 'ies')} ›</a></header>
     <div class="sdp-tilt">${V2.dpFront(D.P, {compact: true})}</div></section>`;
   return `<section class="sd-band sd-post sdp" aria-labelledby="sdpH"><div class="sdp-top"><h2 class="u sdp-h" id="sdpH">The post <span>is in.</span></h2>${bird}
-    <p class="sdp-lede">Gift codes before they run out, and the news from Pokémon Champions, carried in by one of the herd.</p></div>
+    <p class="sdp-lede">Gift codes before they run out, and the news from Pokémon Champions, carried in by one of the herd.</p></div>${V2.sdpNew()}
     <div class="sdp-cols${solo ? ' sdp-solo' : ''}">${gifts}${news}</div></section>`; };
