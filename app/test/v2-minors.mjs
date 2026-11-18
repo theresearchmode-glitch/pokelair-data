@@ -152,7 +152,7 @@ if (process.env.ONLY === 'MQ') { await MQ(); await b.close(); console.log(`v2-mi
 // ---- HQ begin: Home answers (Sim, Nov 18 morning questions, docs/rebuild/morning-questions-nov18.md: "recommend for all is good").
 //   One check per answer applied; each failed on the build before its change. ONLY=HQ runs these alone.
 const HQ = async () => {
-  const hq = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: o.rm || 'no-preference'}); const q = await ctx.newPage();
+  const hq = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700 && !o.desk, hasTouch: w < 700 && !o.desk, /* desk: a desktop window (classic scrollbar) */ reducedMotion: o.rm || 'no-preference'}); const q = await ctx.newPage();
     await q.addInitScript(o => { window.__PL_TEST = 1; try { if (sessionStorage.getItem('hq')) return; sessionStorage.setItem('hq', '1'); /* once: a reload keeps what the page saved */ if (o.fresh) localStorage.clear(); for (const [k, v] of Object.entries(o.ls || {})) localStorage.setItem(k, v); } catch (x) {} }, {fresh: !!o.fresh, ls: o.ls || {}});
     await q.goto('file://' + PAGE + (o.hash || '#home')); await q.waitForTimeout(o.wait || 2500); if (o.night) { await q.evaluate(() => V2.setTheme('night')); await q.waitForTimeout(300); }
     const r = o.fn ? await q.evaluate(o.fn) : null; if (o.keep) return {q, ctx, r}; await ctx.close(); return r; };
@@ -242,6 +242,12 @@ const HQ = async () => {
       r.files = seen.size; await ctx.close();
       if (r.crowd !== r.herd - 12 || r.img !== 35 || r.near0 !== 12 || r.nearN !== 46 || r.far !== 47 || r.sheet !== r.crowd - 35 || r.sheets < 1 || r.sheets > 4 || !r.loaded || r.bad || r.files > 80) sh.push(`${w}: ${JSON.stringify(r)}`); }
     ok(!sh.length, `HQ Q7a (Sim: B): the hero crowd draws the 35 nearest from their own files and the rest from at most 4 sprite sheets (every Pokémon drawn, 80 picture files at most on Home)${sh.length ? ': ' + sh.join(' | ') : ''}`); }
+  // Polish (Sim: "clean and refined"): the two hero buttons keep their words on one line in a narrow DESKTOP window too (Windows app,
+  // classic scrollbar: the page is 15-17px narrower than the window, so a width rule keyed to the window missed; "Build Me a Team" broke at 390)
+  { const pb = []; for (const w of [360, 375, 390, 404, 412, 430, 520]) { const r = await hq(w, 800, {rm: 'reduce', desk: true, fn: () => [...document.querySelectorAll('#main .sdh-go a')].map(e => { const t = e.querySelector('span') || e, rg = document.createRange(); rg.selectNodeContents(t);
+      return {n: e.textContent.trim(), lines: new Set([...rg.getClientRects()].map(x => Math.round(x.top))).size, top: Math.round(e.getBoundingClientRect().top), fs: parseFloat(getComputedStyle(e).fontSize)}; }).concat([{sb: innerWidth - document.documentElement.clientWidth}])});
+      const sb = r.pop().sb; for (const x of r) { if (x.lines > 1) pb.push(`${w} (scrollbar ${sb}px): "${x.n}" on ${x.lines} lines`); if (x.fs < 13) pb.push(`${w}: ${x.fs}px`); } }
+    ok(!pb.length, `HQ polish 1: the hero's Score My Team / Build Me a Team keep one line each in a desktop window with a classic scrollbar, 360-520${pb.length ? ': ' + pb.join(' | ') : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----

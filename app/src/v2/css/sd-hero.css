@@ -69,6 +69,7 @@
 @media (max-width:699.98px){.sdh-say{font-size:var(--t16)}.sdh-go{column-gap:var(--s3)}.sdh-b1,.sdh-b2{padding:0 var(--s2);font-size:var(--t15);letter-spacing:-.03em}}
 /* Nov 18: at 360-389 wide "Build Me a Team" broke onto 2 lines at 15px (iPhone 8, SE 2nd/3rd gen, 12/13 mini are 375); 13px keeps both on one line, side by side, so they stay above the phone bar */
 @media (min-width:360px) and (max-width:389.98px){.sdh-b1,.sdh-b2{font-size:var(--t13)}}
+.sdh-go.sm .sdh-b1,.sdh-go.sm .sdh-b2{font-size:var(--t13)} /* stampede-hero.js: when a label would wrap in this window */
 @media (max-width:699.98px) and (max-height:740px){.sdh-say{font-size:var(--t15)}.sdh-ledge{row-gap:var(--s3);padding-bottom:var(--s4)}}
 @media (max-width:359.98px){.sdh-go{grid-template-columns:minmax(0,1fr)}}
 /* the ticker: the next ratings, a still red strip tilted with the bands (whole names only; stampede-hero.js hides one that would be cut) */

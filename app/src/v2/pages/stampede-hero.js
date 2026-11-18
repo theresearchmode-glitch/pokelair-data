@@ -113,6 +113,9 @@ V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) r
   const fr = S.querySelector('.sdh-front'), fs = parseFloat(getComputedStyle(S.querySelector('.sdh-h')).fontSize) || 0;
   if (fr) { fr.style.removeProperty('--fcap'); fr.style.setProperty('--fcap', Math.max(80, Math.round(fr.getBoundingClientRect().bottom - sr.top - hb - V2.SDH_SLOPE * w * (row ? .375 : .25))) + 'px'); } /* Q13f B: clear of the words, the tilt's rise at the outer columns counted */
   const named = new Set(row ? [0, 1, 2, 3] : [0, 1]);
+  // the two start buttons: if either one's words would break onto a second line (a narrow window; a desktop window measures differently
+  // from a phone at the same width), both step down to 13px together, so they stay side by side and level (polish, Nov 18)
+  const go = S.querySelector('.sdh-go'); if (go) { go.classList.remove('sm'); if ([...go.querySelectorAll('a')].some(a => { const t = a.querySelector('span') || a, rg = document.createRange(); rg.selectNodeContents(t); return new Set([...rg.getClientRects()].map(x => Math.round(x.top))).size > 1; })) go.classList.add('sm'); }
   // plates: if one plate's number has to drop under its name, all four do, so the row stays even
   const pl = S.querySelector('.sdh-plates'); if (pl) { pl.classList.remove('stk'); if ([...pl.querySelectorAll('.sdh-plate')].some(b => b.getClientRects().length && b.lastElementChild.offsetTop > b.firstElementChild.offsetTop + 4)) pl.classList.add('stk'); }
   const C = V2.sdhUi.crowd; if (C) for (const im of C.children) V2.sdhPut(im, P[+im.dataset.sdhi]);
