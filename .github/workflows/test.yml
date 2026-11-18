@@ -38,7 +38,8 @@ jobs:
       - run: node app/build.mjs --v2 --art=../src/v2/art/
       - run: PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs ${{ matrix.group }}
   # Safari's engine (code review C-I8, Nov 17: Sim tests on iPhone and iPad; the suites ran in Chromium only). The My Team group
-  # on WebKit. Reported, not blocking yet: SUG-05 failed 1 of 8 runs on WebKit (a timing slip, not reproduced in Chrome).
+  # on WebKit. Reported, not blocking yet. SUG-05 (Nov 18): failed 4 of 5 here; the test read the 4 s toast after a settle
+  # that ran past it in WebKit; it now reads the Undo while the toast is up (5 of 5 in both engines).
   behaviour-webkit:
     name: new site behaviour in Safari's engine (A-team)
     # ubuntu-24.04, not -latest: Playwright 1.49.1's WebKit needs libicu74, libvpx9, libxml2, libx264-164, which the newer
