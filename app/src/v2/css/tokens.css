@@ -22,6 +22,13 @@
  --sd-feat:#17161A;--sd-on-feat:#FBFAF7;--sd-feat-ink2:#CFCBD4;--sd-feat-rim:transparent;
  --sd-race:#0078BF;--sd-on-race:#FFFFFF;--sd-streak:rgba(255,255,255,.34);--sd-pod:#3A3940;--sd-pod-top:#0078BF;
  --sd-you:#62BEF7;--sd-them:#F08AD8;--sd-hp-lost:#E4DED3;--sd-hp-roll:#D93A3A;--sd-hp-roll2:#F2A7A7;--sd-flag-rim:transparent;
+  /* News, The Champions Dispatch (Nov 18): one sheet of cream paper printed in ink with spot blue and red. The paper keeps dark ink in
+     both modes (night is "Lamplight": a warmer cream under a lamp, never black). Measured on --dp-paper: ink 17.7:1, ink-2 9.8:1,
+     ink-3 7.3:1, blue 5.8:1, red 5.8:1; the code's digits on the black bar 8.8:1 */
+  --dp-paper:#FFFDF7;--dp-glow:#FFFDF7;--dp-ink:#17161A;--dp-ink2:#45423F;--dp-ink3:#5A554D;--dp-rule:rgba(23,22,26,.16);--dp-fold:rgba(23,22,26,.05);
+  --dp-plot:#0068AD;--dp-plot-rule:#0078BF;--dp-pick:#C41E35;--dp-pick-rule:#E8364F;--dp-bar:#17161A;--dp-on-bar:#FFFFFF;--dp-code-num:#62BEF7;
+  --dp-dot:rgba(23,22,26,.13);--dp-frame:#F3F0E6;--dp-cur:rgba(0,120,191,.10);--dp-shadow:0 1px 2px rgba(30,20,50,.10),0 24px 48px -24px rgba(30,20,50,.32);
+  --d-paper:clamp(24px,6.2cqi,120px);--d-papertwo:clamp(24px,10cqi,72px);--d-lead:clamp(34px,5.6cqi,68px);--d-mini:clamp(24px,9cqi,48px);--d-brief:clamp(24px,6.4cqi,34px); /* display sizes: the newspaper's name and the lead headline, scaled to the paper's width (cqi: the paper is a size container); mini and brief: the small paper on Home */
   --good:var(--plot);--good-text:var(--plot-text);--on-mark:#FFFFFF;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;--bad:#D93A3A;--bad-text:#B3261E;
   /* the six rating tiers (LTIERS colours; Grandstand, Nov 14): dark text on every tier colour passes 4.5:1; lit and shade faces of the 3D blocks */
   --tier-s:#ffb400;--tier-a:#ff6a3d;--tier-b:#b45cff;--tier-c:#2f9bff;--tier-d:#22b58a;--tier-f:#8a90a6;--tier-ink:#14110f;--tier-lit:#ffffff;--tier-shade:#14110f;
@@ -87,6 +94,11 @@
  --sd-feat:#0A0A10;--sd-on-feat:#F1EDE7;--sd-feat-ink2:#C4BFCB;--sd-feat-rim:rgba(228,224,236,.2);
  --sd-race:#0078BF;--sd-on-race:#FFFFFF;--sd-streak:rgba(255,255,255,.3);--sd-pod:#2E2D38;--sd-pod-top:#0078BF;
  --sd-you:#62BEF7;--sd-them:#F08AD8;--sd-hp-lost:#25243B;--sd-hp-roll:#FF7A70;--sd-hp-roll2:#7A3A3A;--sd-flag-rim:rgba(241,237,231,.85);
+  /* Lamplight (Nov 18): the paper stays cream, warmer and lit from above; ink stays dark. Measured on --dp-paper: ink 13.6:1, ink-2 7.5:1,
+     ink-3 5.6:1, blue 5.5:1, red 5.8:1 (the day blue and red were 4.4:1 here, so both are a step deeper) */
+  --dp-paper:#E9DFC7;--dp-glow:#F4ECD8;--dp-ink:#17161A;--dp-ink2:#45423F;--dp-ink3:#57524A;--dp-rule:rgba(23,22,26,.2);--dp-fold:rgba(23,22,26,.07);
+  --dp-plot:#005996;--dp-plot-rule:#0068AD;--dp-pick:#A3172B;--dp-pick-rule:#C41E35;--dp-bar:#17161A;--dp-on-bar:#FFFFFF;--dp-code-num:#62BEF7;
+  --dp-dot:rgba(23,22,26,.16);--dp-frame:#DED3B9;--dp-cur:rgba(0,89,150,.13);--dp-shadow:0 0 0 1px rgba(0,0,0,.4),0 -12px 60px -20px rgba(244,236,216,.22),0 40px 80px -24px rgba(0,0,0,.85);
   --good:var(--plot);--good-text:var(--plot-text);--on-mark:#12121B;--mid:#F0C768;--mid-text:#F0C768;--low:#B8AA9C;--low-text:#B8AA9C;--bad:#FF7A70;--bad-text:#FF8A80;
   /* night: brighter stat colours with dark text (5.20:1+ on the plates, 4.75:1+ on the night panel) */
   --x4:#B71C1C;--pk-main:var(--plot);--on-pk-main:var(--on-mark);--on-x4:#FFFFFF;--st-hp:#2E9E5B;--st-atk:#E0601F;--st-def:#D9A21A;--st-spa:#5B8DF0;--st-spd:#A27BEA;--st-spe:#E5578A;--on-st:#12121B;--on-st-def:#12121B;

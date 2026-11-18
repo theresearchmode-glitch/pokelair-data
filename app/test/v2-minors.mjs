@@ -2,6 +2,7 @@
 //   A1-M1  Matchups never says "Ready for every top threat" (word list: answers, not readiness)
 //   A1-M2  Build's "Copy for Showdown" uses the shared copy with its fallback (it failed where the clipboard API is blocked)
 //   A1-M3  Build's Save says "for this visit" when the browser can't keep it (it always said "Saved")
+//   DP-1..12  The Champions Dispatch (#news): source links, what goes on the front, the same numbers as the site, the coupon, contrast, widths, the small piece
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
 import {chromium} from 'playwright'; import path from 'node:path'; import fs from 'node:fs';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -559,5 +560,63 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       return out.length ? out.join(', ') : 'ok'; })); }
   ok(lay.every(x => / ok$/.test(x)), `Stampede tools: at 320 / 390 / 820 / 1100 / 1440 (day and night) no sideways scroll, no text under 13px or out of its spot, every row of plates full (${lay.join(' | ')})`);
   await q.evaluate(() => { try { localStorage.removeItem('np2.theme'); } catch (e) {} }); await q.close(); }
+{ /* The Champions Dispatch (#news; Sim, Nov 18, docs/rebuild/dispatch/BRIEF.md). Each check fails on the skeleton page (one h1, no paper). */
+  const q = await b.newPage({viewport: {width: 1440, height: 1000}});
+  /* a page without the Dispatch (the skeleton) answers with {err}, so each check prints FAIL instead of stopping the run */
+  const qe = (f, x) => q.evaluate(f, x).catch(e => ({err: String(e.message).split('\n')[0].slice(0, 80)})), qc = s => q.click(s, {timeout: 3000}).catch(() => {}); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#news'); await q.waitForTimeout(2500);
+  const d1 = await qe(() => { const a = [...document.querySelectorAll('.dp-paper .dp-hl')]; return {n: a.length, bad: a.filter(x => !x.href || x.target !== '_blank' || !/noopener/.test(x.rel)).length}; });
+  ok(d1.n >= 5 && d1.bad === 0, `DP-1: every front-page headline links to its source in a new tab with rel=noopener (${JSON.stringify(d1)})`);
+  const d2 = await qe(() => window.__ev(`(() => { const D = V2.dpParts(V2.postNow()), shown = [...document.querySelectorAll('.dp-paper .dp-hl')].map(a => a.textContent.replace(/\\s*\\(opens[^)]*\\)\\s*$/, '').replace(/\\u2060/g, '').trim());
+    const maint = shown.filter(t => /^Maintenance( Completion)? Notice$/i.test(t)).length, others = D.all.filter(x => !V2.dpMaint(x)).length;
+    const earl = (document.querySelector('[data-dpmore]') || {}).textContent || '', n = +((earl.match(/(\\d[\\d,]*) more stor/) || [])[1] || '-1').replace(/,/g, '');
+    return {maint, others, shown: shown.length, all: D.all.length, earlier: n}; })()`));
+  ok(d2.others > 0 && d2.maint === 0 && d2.earlier === d2.all - d2.shown, `DP-2: no maintenance notice on the front while other stories exist; Earlier Editions counts every story not on the front (${JSON.stringify(d2)})`);
+  const d3 = await qe(() => window.__ev(`(() => { const rows = lairRows().filter(x => x.r && x.r.tc).slice(0, 5).map(x => (lairRank(x.p) || {}).rank + ' ' + x.p.d + ' ' + monRating(x.p).n);
+    const seen = [...document.querySelectorAll('.dp-tb .dp-row')].map(r => r.querySelector('.dp-rk1').textContent + ' ' + r.querySelector('.dp-rn').textContent.replace(/\\u00a0/g, ' ') + ' ' + r.querySelector('.dp-rv').textContent);
+    const c = homeChamp(), ev = (document.querySelector('.dp-evt') || {}).textContent || '', six = [...document.querySelectorAll('.dp-six [data-v2mon]')].map(x => x.dataset.v2mon).join(',');
+    const S = POST.series || [], G = POST.gifts || [], lead = V2.dpParts(V2.postNow()).lead, yr = ((S.find(r => lead && r.src === lead.url) || {}).month || 'none').slice(0, 4);
+    const cells = [...document.querySelectorAll('.dp-rd')].map(li => { const m = li.querySelector('[data-v2mon]'); return m ? m.dataset.v2mon : ''; }).join(',');
+    return {rows: rows.join('|'), seen: seen.join('|'), ev: ev === V2.evTitle(c.ev.name), six: six === c.t.mons.map(m => m.n).join(','), series: cells, want: S.filter(r => r.month.startsWith(yr)).map(r => r.mon || (G.find(g => g.id === r.gift) || {}).mon || '').join(',')}; })()`));
+  ok(!!d3.seen && d3.seen.split('|').length === 5 && d3.rows === d3.seen, `DP-3: The Standings are the Ratings page's top five, shared ranks and shown ratings (${d3.seen})`);
+  ok(d3.ev && d3.six, `DP-4: Latest Result is homeChamp(): the same event name and the winner's six (${JSON.stringify({ev: d3.ev, six: d3.six})})`);
+  ok(d3.series && d3.series === d3.want, `DP-5: the series row shows each round's gift from POST.series, in order (${d3.series} vs ${d3.want})`);
+  const nx = await qe(() => (((document.querySelector('.dp-fix [data-dpcal]') || {}).textContent || '').match(/All (\d+) Next Events/) || [])[1] || 'none');
+  await qc('.dp-fix [data-dpcal]'); await q.waitForTimeout(1500);
+  const ev = await qe(() => ({hash: location.hash, n: [...document.querySelectorAll('.ev-plate .ev-cal li')].length}));
+  ok(ev.hash === '#events' && String(ev.n) === nx, `DP-6: 'All ${nx} Next Events' opens Events with the same ${ev.n} upcoming events listed (${JSON.stringify(ev)})`);
+  /* a gift live for five more days (a test POST through the test hook; never in post.js): the coupon, its blue digits and Copy Code with the clipboard blocked */
+  await q.goto('file://' + PAGE + '#news'); await q.waitForTimeout(2000);
+  const cp = await qe(() => { navigator.clipboard.writeText = () => Promise.reject(new Error('blocked')); document.execCommand = () => true;
+    return window.__ev(`(() => { const keep = POST; window.__dpKeep = keep; POST = {checked: null, gifts: [{name: 'Test Gift', code: 'AB1CD0', how: 'Serial Code', start: new Date(Date.now() - 864e5).toISOString(), end: new Date(Date.now() + 5 * 864e5).toISOString()}],
+      news: [{title: 'Test lead', date: new Date(Date.now() - 864e5).toISOString(), type: 'Tournament', url: 'https://example.org/t', end: new Date(Date.now() - 36e5).toISOString()}]}; V2.redraw();
+      const c = document.querySelector('.dp-cpn'); return {nums: [...c.querySelectorAll('.dp-cn')].map(x => x.textContent).join(''), code: c.querySelector('.dp-code').textContent, left: /5 days left/.test(c.textContent), stamp: !!document.querySelector('.dp-stamp'), post: (document.querySelector('.dp-pk') || {}).textContent || ''}; })()`); });
+  await qe(() => document.querySelectorAll('.np-toast').forEach(t => t.remove())); await qc('[data-dpcopy]'); await q.waitForTimeout(500);
+  const toast = await qe(() => [...document.querySelectorAll('.np-toast')].map(t => t.textContent).join(''));
+  ok(cp.nums === '10' && cp.code === 'AB1CD0' && cp.left && /1 gift waiting/.test(cp.post), `DP-7: the coupon shows the live gift's code as text, digits blue, days left, and In the Post counts it (${JSON.stringify(cp)})`);
+  ok(cp.stamp, 'DP-8: an ended lead story carries the Ended stamp');
+  ok(/copied/i.test(toast), `DP-9: Copy Code copies through the fallback when the clipboard API is blocked (toast: ${toast})`);
+  await qe(() => window.__ev('POST = window.__dpKeep; V2.redraw()'));
+  /* Lamplight and day: the paper stays cream and every text on it reads at 4.5:1 or better (WCAG AA), on its own background */
+  for (const th of ['day', 'night']) { await qe(t => { localStorage.setItem('np2.theme', t); }, th); await q.reload(); await q.waitForTimeout(2200);
+    const k = await qe(() => { const rgb = s => (s.match(/[\d.]+/g) || []).map(Number), L = c => { const v = c.slice(0, 3).map(x => x / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * v[0] + .7152 * v[1] + .0722 * v[2]; };
+      const paper = rgb(getComputedStyle(document.querySelector('.dp-paper')).backgroundColor.replace(/.*,\s*(rgb[^)]*\))\s*$/, '$1')), bgOf = e => { for (let a = e; a; a = a.parentElement) { const s = getComputedStyle(a); const c = rgb(s.backgroundColor); if (a.classList.contains('dp-paper')) return rgb(s.backgroundColor.match(/rgb\([^)]*\)\s*$/) ? s.backgroundColor.match(/rgb\([^)]*\)\s*$/)[0] : s.backgroundColor); if (c.length >= 3 && (c.length === 3 || c[3] > .5)) return c; } return [255, 255, 255]; };
+      let worst = 99, at = ''; for (const e of document.querySelectorAll('.dp-paper *')) { if (![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue; if (e.closest('.vh,[aria-hidden="true"]') || !e.getClientRects().length) continue;
+        const f = rgb(getComputedStyle(e).color), g = bgOf(e), a = L(f), z = L(g), r = (Math.max(a, z) + .05) / (Math.min(a, z) + .05); if (r < worst) { worst = Math.round(r * 100) / 100; at = e.className + ' "' + e.textContent.trim().slice(0, 20) + '"'; } }
+      return {paperL: Math.round(L(paper) * 100) / 100, worst, at}; });
+    ok(k.paperL > .6 && k.worst >= 4.5, `DP-10 (${th}): the paper stays light (luminance ${k.paperL}) and its least-contrast text is ${k.worst}:1 (${k.at})`); }
+  await qe(() => localStorage.setItem('np2.theme', 'day'));
+  /* every width: no sideways scroll, the name inside the paper, nothing sticking out of the paper */
+  const out = []; for (const w of [320, 412, 768, 1100, 1366, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(400);
+    const m = await qe(() => { const p = document.querySelector('.dp-paper').getBoundingClientRect(), h = document.querySelector('.dp-name'); let spill = 0, what = '';
+      for (const e of document.querySelectorAll('.dp-paper *')) { const r = e.getBoundingClientRect(); if (!r.width || e.closest('.vh')) continue; const o = Math.max(p.left - r.left, r.right - p.right); if (o > spill + .5) { spill = Math.round(o); what = e.className; } }
+      return {hs: document.documentElement.scrollWidth - innerWidth, name: h.scrollWidth - h.clientWidth, spill, what}; });
+    if (m.err || m.hs > 0 || m.name > 0 || m.spill > 0) out.push(w + ':' + JSON.stringify(m)); }
+  ok(!out.length, `DP-11: 320 to 2560 wide: no sideways scroll, the name fits, nothing spills out of the paper (${out.join(' ') || 'all clean'})`);
+  /* the piece for Home's post band */
+  const sm = await qe(() => window.__ev(`(() => { const d = document.createElement('div'); d.style.width = '340px'; d.innerHTML = V2.dpFront(V2.postNow(), {compact: true}); document.querySelector('#main').append(d);
+    const p = d.querySelector('.dp-small'), r = p ? p.getBoundingClientRect() : null, o = p ? Math.max(...[...p.querySelectorAll('*')].map(e => e.getBoundingClientRect().right)) - r.right : 99;
+    const res = {small: !!p, lead: !!(p && p.querySelector('.dp-lh .dp-hl[href]')), bar: !!(p && p.querySelector('.dp-nbar')), more: p ? [...p.querySelectorAll('.dp-more li')].filter(li => li.getClientRects().length).length : 0, over: Math.round(o)}; d.remove(); return res; })()`));
+  ok(sm.small && sm.lead && sm.bar && sm.more === 2 && sm.over <= 0, `DP-12: V2.dpFront(post, {compact: true}) draws the small paper (lead link, two more stories in a 340 slot, Next event bar, nothing out of it) (${JSON.stringify(sm)})`);
+  await q.close(); }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
