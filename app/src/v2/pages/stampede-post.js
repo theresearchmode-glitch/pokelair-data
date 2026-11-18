@@ -19,13 +19,13 @@ V2.sdpSlip = g => { const E = V2.esc, d = V2.prDaysLeft(g), left = d == null || 
 // good. Today's rules and keys (home.js V2.homeNew: cc2.seenNew + this visit's np.wnew, the [data-hmnewx] handler). The items are
 // WHATS_NEW's, reworded to the word list (Sim: "after rewording"; "scouting report", "meta threats" and "win odds" are gone); same id,
 // so a player who dismissed it doesn't get it again. Open on wide screens, a closed fold on phones.
-V2.SD_NEW = {id: typeof WHATS_NEW === 'object' ? WHATS_NEW.id : '', items: [
-  ['Matchups', 'My Team shows how your six does against each of the top threats: Beats it, Handles it, Shaky or No answer.'],
-  ['Move accuracy', 'A move that can miss is never counted as a sure answer. Weather, No Guard, Compound Eyes and Wide Lens are included.'],
-  ['Ratings', 'Pokémon ratings now weigh top cut finishes, strong players and recent events most.'],
-  ['Team Checks', 'Item Clause clashes, items that do nothing, and Trick Room teams without enough slow attackers are now caught.'],
-  ['Game mechanics', 'Damage, turn order and field effects were checked against the battle simulator and thousands of real battles, and every mismatch was fixed.'],
-  ['Feedback', 'Tell us what\'s off with Send Feedback at the bottom of any page.']]};
+// What's New for the new site (Sim approved the words, Nov 18): its own id, so every returning player sees it once after the switch
+V2.SD_NEW = {id: '2026-11-redesign', items: [
+  ['A new look', 'NastyPlot has a new design, easier to read on every screen.'],
+  ['Mystery Gifts', 'Every live Mystery Gift code in one place, with the last day to claim it.'],
+  ['Champions News', 'The official Pokémon Champions news as a front page, each headline linking to the full story.'],
+  ['All Suggestions', 'Every kind of change for your team in one list, best first.'],
+  ['Day, Night or Auto', 'The theme button can now follow your device.']]};
 V2.sdpNew = () => { const W = V2.SD_NEW; if (!W.id) return ''; let seen = '', welcomed = ''; try { seen = LS.get('cc2.seenNew', ''); welcomed = LS.get('cc2.welcomed', ''); } catch (e) {}
   if (!welcomed) { try { LS.set('cc2.seenNew', W.id); } catch (e) {} return ''; }
   let sess = ''; try { sess = sessionStorage.getItem('np.wnew') || ''; } catch (e) {}

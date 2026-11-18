@@ -170,7 +170,8 @@ V2.homeNew = () => { let seen = '', welcomed = ''; try { seen = LS.get('cc2.seen
     <ul class="hm-newl">${WHATS_NEW.items.map(([t, d]) => `<li><b>${E(t)}</b> <span>${E(d)}</span></li>`).join('')}</ul></details><button type="button" class="hm-newx" data-hmnewx aria-label="Dismiss What's New">×</button></section>`; };
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-hmwelcome],[data-hmnewx]'); if (!t) return;
   if (t.hasAttribute('data-hmwelcome')) { try { LS.set('cc2.welcomed', '1'); } catch (x) {} if (t.tagName === 'BUTTON') { e.preventDefault(); V2.redraw(); } return; }
-  e.preventDefault(); try { LS.set('cc2.seenNew', WHATS_NEW.id); sessionStorage.removeItem('np.wnew'); } catch (x) {} const s = t.closest('.hm-newsec'); if (s) s.remove(); });
+  e.preventDefault(); const nw = t.closest('.sdp-nw'); /* the Stampede's What's New has its own id (Nov 18) */
+  try { LS.set('cc2.seenNew', nw && V2.SD_NEW ? V2.SD_NEW.id : WHATS_NEW.id); sessionStorage.removeItem('np.wnew'); } catch (x) {} const s = t.closest('.hm-newsec,.sdp-nw'); if (s) s.remove(); });
 // Sim, Nov 13 ("make sure there's no overhang in the most used 3"): a name that doesn't fit its button (one long word such as
 // "Squawkabilly (Yellow)" or "Mega Crabominable" can't wrap) steps down the type scale until it does; names that fit keep their size.
 // Measured before: the 12 longest names in our data stuck out by up to 48 px at 320-360 (scratchpad look/ovB.cjs).
