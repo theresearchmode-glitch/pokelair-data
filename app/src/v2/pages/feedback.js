@@ -22,9 +22,9 @@ V2.fbSend = async () => { const F = V2.FB, ta = document.getElementById('fbText2
   if (window.__NP_PREVIEW) { msg.textContent = "This is the preview: it can't save messages. Send Feedback works on the real site."; return; }
   if (!F.ok) { msg.textContent = "Can't send from here: your access level can't save data."; return; }
   F.busy = true; btn.disabled = true; msg.textContent = 'Sending…'; const k = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6), sc = fbScrub(t.slice(0, 1000));
-  const entry = {t: sc.t, k: F.kind, v: F.from || 'home', w: innerWidth < 760 ? 'phone' : 'desktop', d: new Date().toISOString().slice(0, 10)}; if (F.ctx) entry.c = fbScrub(F.ctx.slice(0, 300)).t; /* Report a Mistake: what was on screen (Nov 15, CALC-08) */
+  const entry = {t: sc.t, k: F.kind, v: F.from || 'home', w: innerWidth < 760 ? 'phone' : 'desktop', d: new Date().toISOString().slice(0, 10)}; if (F.ctx) entry.c = fbScrub((F.ctx.slice(0, 300) + (F.ctxNums ? '\n' + F.ctxNums : '')).slice(0, 1200)).t; /* Report a Mistake: what was on screen (Nov 15, CALC-08), plus a Pokémon's numbers (Nov 18, OL-i39) */
   try { const s = await F.ref.get(); if (s.exists) await F.ref.update({m: {[k]: entry}}); else await F.ref.set({m: {[k]: entry}});
-    ta.value = ''; F.draft = ''; F.ctx = ''; const cx = document.querySelector('.inf-ctx'); if (cx) cx.remove(); msg.textContent = 'Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : ''); V2.toast('Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : '')); }
+    ta.value = ''; F.draft = ''; F.ctx = ''; F.ctxNums = ''; const cx = document.querySelector('.inf-ctx'); if (cx) cx.remove(); msg.textContent = 'Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : ''); V2.toast('Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : '')); }
   catch (e) { msg.textContent = "Couldn't send. Try again in a moment."; }
   finally { F.busy = false; btn.disabled = false; } };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-fbk2],[data-fbsend2]'); if (!b) return;
@@ -34,7 +34,19 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // "Report a Mistake" (Damage Calc, a Pokémon page): opens Send Feedback as "Wrong info" with what was on screen attached (today's fbMistake),
 // shown on the page with "Don't send it"; nothing personal is in it (a calc result or a Pokémon's name)
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-fbmistake],[data-fbctxoff]'); if (!b) return;
-  if (b.dataset.fbctxoff != null) { V2.FB.ctx = ''; const c = b.closest('.inf-ctx'); if (c) c.remove(); return; }
+  if (b.dataset.fbctxoff != null) { V2.FB.ctx = ''; V2.FB.ctxNums = ''; const c = b.closest('.inf-ctx'); if (c) c.remove(); return; }
   let ctx = ''; try { if (b.dataset.fbmistake === 'calc') { const r = document.querySelector('.dc2-res'), w = document.querySelector('.dc2'); const nm = w ? [...w.querySelectorAll('h2.u')].map(h => h.textContent.trim()).filter(Boolean).slice(0, 2) : []; ctx = ((nm.length === 2 ? nm[0] + ' into ' + nm[1] + ': ' : '') + (r ? r.innerText : '')).replace(/\s+/g, ' ').trim(); } /* who hit whom, then the result */
     else ctx = ((document.querySelector('#main .pk-is h1') || {}).textContent || '').trim(); } catch (x) {}
-  V2.FB.kind = 'mistake'; V2.FB.ctx = ctx.slice(0, 300); });
+  let nums = ''; if (b.dataset.fbmistake === 'pokemon') try { const p = V2.monFromHash(); if (p) nums = V2.fbMonNums(p); } catch (x) {}
+  V2.FB.kind = 'mistake'; V2.FB.ctx = ctx.slice(0, 300); V2.FB.ctxNums = nums; });
+/* Nov 18 (OL-i39): the Pokémon's numbers, sent with its Report a Mistake but not shown (the page shows only the name), as today's
+   report sent them (53-feedback.js fbMisContext): rating and range, tier, rank, tournament share / wins / games, the moves, items and
+   Ability shown, and the data date. Only site data: nothing about the viewer. */
+V2.fbMonNums = p => { const r = rating(p), src = r.src || {}, st = setFor(p) || {}, pf = activePerf(), L = [], rk = rankTxt(p);
+  L.push(`${p.d} · rated ${RS(r.total)} (${rRange(r)}, ${lTier(r.total).k} tier${rk ? ', ' + rk : ''})`);
+  if (src.tour) L.push(`Tournaments: ${src.tour[0]}% of teams, ${src.tour[1]}% won, ${(+src.tour[2]).toLocaleString('en-US')} games`);
+  if (st.mv && st.mv.length) L.push('Moves shown: ' + st.mv.slice(0, 5).map(([n, v]) => n + (v == null ? '' : ' ' + (+v).toFixed(1) + '%')).join(', '));
+  if (st.it && st.it.length) L.push('Items shown: ' + st.it.slice(0, 3).map(([n, v]) => n + (v == null ? '' : ' ' + (+v).toFixed(1) + '%')).join(', '));
+  if (st.ab && st.ab.length) L.push('Ability shown: ' + st.ab[0][0]);
+  if (pf && pf.updated) L.push('Data from ' + String(pf.updated).slice(0, 10));
+  return L.join('\n'); };

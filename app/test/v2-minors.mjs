@@ -4,6 +4,8 @@
 //   A1-M3  Build's Save says "for this visit" when the browser can't keep it (it always said "Saved")
 //   DP-1..12  The Champions Dispatch (#news): source links, what goes on the front, the same numbers as the site, the coupon, contrast, widths, the small piece
 //   SDP-1..6  Home's post band (The Stampede, band 4): the Post Room and Dispatch pieces with live POST data, the Pelipper clear of text, widths, empty states
+//   OL-i39  Report a Mistake on a Pokémon page sends its numbers (rating, tier, rank, tournament numbers, moves, items), as today's site did
+//   OL-i15  Build's Blueprint shows the catch tip, "X isn't in your box" and every plan chip (no cap of 3), in even rows
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
 import {chromium} from 'playwright'; import path from 'node:path'; import fs from 'node:fs';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -824,5 +826,51 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       const ok4 = li.length === 8 ? R.length === 2 && R.every(r => r.length === 4 && new Set(r).size === 1) : false;
       return `${W}: ${ok4 ? 'four across, level' : 'rows ' + R.map(r => r.length).join('+')}; adjust ${adj && !adj.open && /Mega/.test(adj.querySelector('summary').textContent) ? 'folded' : 'open'}; note ${why && !why.getClientRects().length && tip && tip.getClientRects().length ? 'behind ?' : 'shown'}`; }, W)); await c.close(); }
     ok(out.every(x => /four across, level; adjust folded; note behind \?$/.test(x)), `Sim, Nov 18 (C): on phones Stand-Outs go four across with the verdicts level, Adjust Suggestions is folded with its settings on the closed line, Your Games' note is behind a "?" (${out.join(' | ')})`); } }
+// OL-i39 (Nov 18): Report a Mistake on a Pokémon page sends that Pokémon's numbers, as today's site did (53-feedback.js fbMisContext);
+// the page still shows only its name, and the entry carries nothing personal (the same six fields as every feedback entry)
+{ const q = await (await b.newContext({viewport: {width: 1280, height: 900}})).newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  await q.goto('file://' + PAGE + '#pokemon=incineroar'); await q.waitForTimeout(2500);
+  await q.evaluate(() => window.__ev(`(() => { V2.FB.ok = true; window.__fbSaved = null; V2.FB.ref = {get: async () => ({exists: false}), set: async d => { window.__fbSaved = d; }, update: async d => { window.__fbSaved = d; }}; V2.redraw(); return 1; })()`));
+  await q.waitForTimeout(400); await q.evaluate(() => document.querySelector('[data-fbmistake="pokemon"]').click()) /* part 6 can be folded */; await q.waitForTimeout(1200);
+  const seen = await q.evaluate(() => ((document.querySelector('.inf-ctx') || {}).innerText || '').replace(/\s+/g, ' ').trim());
+  await q.evaluate(() => { window.__NP_PREVIEW = 0; }); await q.fill('#fbText2', 'The rating looks off'); await q.click('[data-fbsend2]'); await q.waitForTimeout(600);
+  const e = await q.evaluate(() => { const m = window.__fbSaved && window.__fbSaved.m; return m ? Object.values(m)[0] : null; });
+  const c = (e && e.c) || '';
+  ok(/^Incineroar\n/.test(c) && /rated \d+ \(likely [\d–]+, [SABCD] tier, #\d+ of \d+/.test(c) && /Tournaments: [\d.]+% of teams, [\d.]+% won, [\d,]+ games/.test(c) && /Moves shown: .*Fake Out \d/.test(c) && /Items shown: /.test(c),
+    `OL-i39: Report a Mistake on a Pokémon page sends its rating, tier, rank, tournament numbers, moves and items (${JSON.stringify(c.slice(0, 160))})`);
+  ok(seen === "Sent with what was on screen: Incineroar Don't send it", `OL-i39: the page still shows only the name (${seen})`);
+  ok(!!e && Object.keys(e).sort().join() === 'c,d,k,t,v,w' && e.k === 'mistake' && !/@/.test(c), `OL-i39: the entry keeps the same fields, nothing personal (${e ? Object.keys(e).sort().join() : 'nothing saved'})`);
+  await q.close(); }
+// OL-i15 (Nov 18): the Blueprint shows the engine's catch tip and "X isn't in your box" lines (22-auto-build.js), and every plan chip
+// (no cap of 3), in rows that never leave one chip alone; it never shows the readiness line (word list) or the two-weather line (not asked)
+{ const q = await (await b.newContext({viewport: {width: 1440, height: 900}})).newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  await q.goto('file://' + PAGE + '#build'); await q.waitForTimeout(2500);
+  const run = async src => { await q.evaluate(s => window.__ev(`(() => { ui.abSrc = '${s}'; ui.ab = null; V2.redraw(); return 1; })()`), src); await q.waitForTimeout(300);
+    await q.getByRole('button', {name: 'Build Me a Team'}).first().click(); await q.waitForFunction(() => window.__ev('!!(ui.ab && !ui.ab.busy && ui.ab.doubles && ui.ab.doubles.teams)'), null, {timeout: 60000}); await q.waitForTimeout(800); };
+  const show = i => q.evaluate(i => window.__ev(`(() => { ui.abIdx = ui.abIdx || {}; ui.abIdx.doubles = ${i}; V2.redraw(); return 1; })()`), i);
+  const pick = re => q.evaluate(re => window.__ev(`ui.ab.doubles.teams.findIndex(t => (t.why || []).some(w => ${re}.test(w)))`), re);
+  const sheetTx = () => q.evaluate(() => (document.querySelector('.bp .bp-right') || {}).innerText || '');
+  // the engine's catch search and plan chips can differ between runs on a busy machine (time-sliced search), so when this build has
+  // none, the test gives option 1 the engine's own sentence and all four chips (22-auto-build.js line 121; 11-game-plan.js labels)
+  await run('box'); let ic = await pick('/^(Best single catch|To reach 90\\+)/'), made = '';
+  if (ic < 0) { ic = 0; made = ', test-made'; await q.evaluate(() => window.__ev(`ui.ab.doubles.teams[0].why.push('Best single catch: Farigiraf for Empoleon, which takes this team from 73 to 77'); 1`)); }
+  if (await q.evaluate(() => window.__ev(`ui.ab.doubles.teams.findIndex(t => (t.gp || []).length >= 4)`)) < 0) { made += ', test-made chips'; await q.evaluate(() => window.__ev(`ui.ab.doubles.teams[0].gp = ['Speed control', 'Weather', 'Terrain', 'Lead support']; 1`)); }
+  { await show(ic); await q.waitForTimeout(400); const w = await q.evaluate(i => window.__ev(`ui.ab.doubles.teams[${i}].why.find(w => /^(Best single catch|To reach 90\\+)/.test(w))`), ic), tx = await sheetTx();
+    ok(tx.includes(w), `OL-i15: the Blueprint shows the catch tip (${w.slice(0, 70)}${made})`); }
+  const i4 = await q.evaluate(() => window.__ev(`ui.ab.doubles.teams.findIndex(t => (t.gp || []).length >= 4)`));
+  if (i4 < 0) ok(false, 'OL-i15: no option with 4 plan chips to check (unknown, not a pass)');
+  else { await show(i4); for (const w of [320, 390, 768, 1100, 1440, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(400);
+    const r = await q.evaluate(i => { const want = window.__ev(`ui.ab.doubles.teams[${i}].gp.join('|')`), cs = [...document.querySelectorAll('.bp .bp-chips .np-chip')], rows = {};
+      cs.forEach(c => { const y = Math.round(c.getBoundingClientRect().top); rows[y] = (rows[y] || 0) + 1; }); const box = document.querySelector('.bp .bp-chips'), bb = box && box.getBoundingClientRect(), out = cs.some(c => c.getBoundingClientRect().right > (bb ? bb.right : 0) + 1);
+      return {got: cs.map(c => c.textContent).join('|'), want, rows: Object.values(rows), out, sw: document.documentElement.scrollWidth, vw: innerWidth}; }, i4);
+    ok(r.got === r.want && !r.rows.includes(1) && new Set(r.rows).size === 1 && !r.out && r.sw <= r.vw, `OL-i15: at ${w} all ${r.want.split('|').length} plan chips show, in even rows (${r.got}; rows ${r.rows.join('+')}; ${r.sw}/${r.vw})`); }
+    await q.setViewportSize({width: 1440, height: 900}); }
+  await run('all'); const ib = await pick(`/isn't in your box: /`);
+  if (ib < 0) ok(false, 'OL-i15: a Whole Roster build gave no "isn\'t in your box" line to check (unknown, not a pass)');
+  else { await show(ib); await q.waitForTimeout(400); const ws = await q.evaluate(i => window.__ev(`JSON.stringify(ui.ab.doubles.teams[${i}].why.filter(w => /isn't in your box: /.test(w)))`), ib).then(JSON.parse), tx = await sheetTx();
+    ok(ws.every(w => tx.includes(w)), `OL-i15: the Blueprint shows every "isn't in your box" line (${ws.length}: ${ws[0].slice(0, 50)})`); }
+  const bad = await q.evaluate(() => /ready for the top|Sets both /.test((document.querySelector('.bp') || {}).innerText || ''));
+  ok(!bad, 'OL-i15: the readiness line and the two-weather line stay off the Blueprint');
+  await q.close(); }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
