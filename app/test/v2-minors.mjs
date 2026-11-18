@@ -31,8 +31,9 @@ if (!['all', 'main1', 'main2', 'groups'].includes(PART)) { console.log('v2-minor
    icons (Q13f: icons over the tagline at 320-390; Q7a: sheets not loaded, failed requests counted as files). Put the folders there. */
 if (!/window\.NP_ART=/.test(fs.readFileSync(PAGE, 'utf8'))) for (const d of ['art', 'art-s']) { const to = path.join(path.dirname(PAGE), d), from = path.resolve(import.meta.dirname, '../src/v2', d);
   if (!fs.existsSync(to) && fs.existsSync(from)) { try { fs.rmSync(to, {force: true}); fs.symlinkSync(from, to, 'dir'); console.log(`  (linked ${d}/ beside the page to app/src/v2/${d})`); } catch (e) { console.log(`  (could not link ${d}/: ${e.message})`); } } }
+if (part('main1')) { // the three file reads (A1-M1, B-I3, B-m5) run in main1 only, so each check runs once across the parts
 ok(!/Ready for every top threat/.test(fs.readFileSync(PAGE, 'utf8')), 'A1-M1: the page never says "Ready for every top threat"');
-{ const h = fs.readFileSync(PAGE, 'utf8'); ok(/<div id="app"><a class="vh np-skip"[\s\S]*?class="np-head"/.test(h), 'B-I3: the header is in the page before the script runs (static first screen)'); if (h.includes('__NP_PREVIEW=1')) ok(/const D=JSON\.parse\("/.test(h), 'B-m5: the Preview\'s data is read with JSON.parse, not as a big object literal'); }
+{ const h = fs.readFileSync(PAGE, 'utf8'); ok(/<div id="app"><a class="vh np-skip"[\s\S]*?class="np-head"/.test(h), 'B-I3: the header is in the page before the script runs (static first screen)'); if (h.includes('__NP_PREVIEW=1')) ok(/const D=JSON\.parse\("/.test(h), 'B-m5: the Preview\'s data is read with JSON.parse, not as a big object literal'); } }
 const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 1280, height: 900}});
 await p.addInitScript(() => { window.__PL_TEST = 1; });
 // ---- BR begin: behaviour review (Nov 18, docs/rebuild/audits/review-behaviour-nov18.md C1, C2, C3, C7). Each check failed on the build before its fix.
