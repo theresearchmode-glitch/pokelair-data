@@ -170,68 +170,61 @@ without Sim's explicit yes.
   test.yml runs -> if it passes, promote.yml moves `live` -> the 6:52 AM refresh copies `live` into the page.
 - So a push to main reaches players only after Promote AND the next refresh. To do it sooner, the refresh task can be run once
   (mcp__claude-code-remote__fire_trigger) after Promote succeeds; ask Sim first.
-- On Nov 18 the live page held Nov 17 data (meta/model stamped 2026-11-17, with six records, matchups and leads).
+- Evening of Nov 18 (checked by reading the live page's meta/model): players have today's data and the full refit model (updated
+  2026-11-18T21:57:34Z: no-Mega fix, six records, matchups, leads). `live` = main = c77471d5. The live page's CODE is still Nov 12's.
 
 ---
 
-## 4. Where the rebuild stands (end of Nov 18; check decisions.md for anything newer)
+## 4. Where the rebuild stands (Nov 18, 6:42 PM; check decisions.md for anything newer)
 
-### Pages (all built on claude/design6, on the Preview; details per page on the Plans page)
+### Pages (all built on claude/design6; Preview version 205 shows them; details per page on the Plans page, version 75)
 Home "The Stampede", Mystery Gifts "The Post Room", News "The Champions Dispatch", My Team (+ Team Sheet, Saved Teams, Share),
 All Suggestions (option C), Pokémon page (Base Stats "A on theme"), Build, Battle (+ Team Preview Practice, Test Run), Speed
 Tiers / Damage Calc / Type Chart / Compare / My Box, Meta (Ratings, Usage, Popular Sets, Winning Teams, Events, Archetypes), This
 Week, Track Record, How We Calculate / About / Legal / Feedback, header / menu / phone bar / search / footer. Day / Night / Auto theme.
 
-### Landed on claude/design6 on Nov 18 (newest last)
+### Landed on claude/design6 on Nov 18
 Home answers (motion on, hero tags gone, welcome + What's New back, Tools B on phones with the Team Preview Practice plate, crowd
-sprite sheets, Post X), All Suggestions C, Auto theme, Build Megas tip + proven-team note, News balance notice leads and series row
-fix, News/Gifts daily doc (out/post.json -> meta/post), Base Stats "A on theme", What's New for the new site (id 2026-11-redesign),
-About's op.gg line, 5 switch tests (C13 heights, core % on touch, X-01c, v2-sync), the C13 check's stretched-link fix, the merge
-plan, and the **Home tools redesign**: desktop Type Chart as a small flags-only plate with Damage Calc beside Ratings (Sim: "this is
-good"); iPad (700-1099) the six big plates + a Type Chart strip + Winning Cores | Archetypes | Popular Sets plates + the number
-rows (Sim chose this over the plain chips; Home at 820 is 7,141px, was 8,180). Its Home checks pass (`ONLY=HQ`: all passed).
+sprite sheets, Post X), All Suggestions C, Auto theme, Build Megas tip + proven-team note, News balance notice leads + series row fix,
+News/Gifts daily doc (out/post.json -> meta/post), Base Stats "A on theme", What's New for the new site (id 2026-11-redesign),
+About's op.gg line, 5 switch tests (C13 heights, core % on touch, X-01c, v2-sync), the **Home tools redesign** (desktop: small
+flags-only Type Chart beside Ratings and Damage Calc, Sim: "this is good"; iPad 700-1099: six big plates + Type Chart strip + Cores |
+Archetypes | Sets plates + number rows, Home at 820 is 7,141px, was 8,180), the **branch tests** (v2-minors split into 3 parallel CI
+parts, 266 checks as one run; the code-tests job about 10 minutes), C13 limits for Home/Gifts/News at 320 and 820, the
+optional-swaps height state (My Team 4.75 / sheet 5.75 screens), Home's small phone numbers named as Unbounded exceptions.
 
-### On main on Nov 18 (each with Sim's yes)
-Planner cache fix, no-Mega penalty (teamHalf 0) + model refit, 3 data fixes (themed events, one spelling per item, re-key),
-no second terrain, live-data audits alert job, Symbiosis listed as not modelled, and **cbde1e63** (model.json with six records,
-matchups and leads put back; my 7964fe83 had dropped them; it never reached players). GitHub run 1359 for cbde1e63 was in progress.
+### On main on Nov 18 (each with Sim's yes; all live data-wise, code waits for the switch)
+Planner cache fix; no-Mega penalty (teamHalf 0) + refit; 3 data fixes (themed events, one spelling per item, re-key); no second
+terrain; live-data audits alert job; Symbiosis listed; cbde1e63 (six records, matchups, leads put back); **b15afeac, the rule-holes
+batch** (Weather Ball, Choice Scarf + Trick Room, double weather, Trick Room second mode, weather weakens attacker by role, weather
+override, one speed-control meaning, Psychic Terrain a note, terrain-swap warning on the card); c77471d5 (split parts re-made).
+GitHub run 1363 on c77471d5: success (24 of 24 checks locally before the push, including suggest-audit on today's data).
 
 ---
 
-## 5. Open items (what was running and what waits on Sim)
+## 5. Open items
 
-### Running when this was written (check each one's state first)
-1. **GitHub test run 1359** on main (cbde1e63). If it passed, Promote moved `live`. Asked Sim whether to run the refresh task
-   tonight (A, recommended) or let 6:52 AM do it (B). Not answered yet.
-2. **Merge helper**: merges origin/main into a copy of claude/design6 per `docs/rebuild/merge-plan-nov18.md`, using the merged model
-   (`docs/rebuild/research/merge-model-nov18.md`; refit file was in the old scratchpad, so refit again if it's gone: merged code,
-   main's data, the daily job's model steps). Not pushed. Land it after the branch-tests helper.
-3. **Branch-tests helper** (worktree `.claude/worktrees/agent-a4d97c04f16c34fde`, branch worktree-agent-a4d97c04f16c34fde): splits
-   v2-minors into 3 parallel CI parts (the branch's CI job hit its 35-minute limit) and turns the branch's checks green. Its 7 commits
-   (c830351a ... cdf38301) were not landed yet. If the helper is gone, its worktree and commits remain: check, finish, land.
-4. A full `v2-minors` run on the Home tools build had started; re-run it on the final build before the next Preview.
+### Not finished: first thing for you
+1. **The merge of main into claude/design6.** A helper merged on an older branch tip; main and the branch have both moved since,
+   so it was stopped and not landed. Redo it on the current tips: docs/rebuild/merge-plan-nov18.md (plan + exactly how the first
+   attempt resolved each clash, at its end) and docs/rebuild/research/merge-model-nov18.md (the merged model ties both sides on real
+   wins). After merging: run the six model steps on the merged code with main's data (section 6), every test.yml step, then push to
+   claude/design6 (not main).
+2. **Check the branch's next GitHub run** (test.yml on claude/design6): it is the first run of the 3-part v2-minors split and of the
+   optional-swaps limits on CI's frozen data (not checked locally on that data). Fix what is red.
+3. Re-run the full `v2-minors` on the final build before the next Preview.
 
-### Waiting on Sim (ask again, with pictures, until answered)
-1. **Live refresh tonight or tomorrow** (above).
-2. **The rule-holes batch for main** (worktree `.claude/worktrees/agent-af00bc4bb36a11fde`, detached HEAD 69045ba9, 9 commits on
-   a5701f5e): Weather Ball counts as using the weather; Choice Scarf + Trick Room; double-weather speed; Trick Room as a second
-   mode is a note; "weather weakens its own attacker" by role; weather override (support setters); one speed-control meaning
-   (team-basics.mjs); Psychic Terrain priority is a note (Sim's choice); the terrain-swap warning line on the suggestion card (Sim's
-   choice). Every test.yml step passed; Strength Score unchanged on all 10,645 real sheets; Suggestion 1 changes on 23 of the 150
-   most-run teams; real-results check: within chance (unknown). Pictures of the warning line:
-   `docs/rebuild/pics/nov18/terrain-warn-*.png` (in light mode it reads like a plain bold label; dark mode shows it in gold: say so).
-   Open sub-questions: should Perish Song also count as a weather override (kept Sim's Weather Ball rule); weather-override penalty
-   0 is an estimate.
-3. **Height limits** for Home, Gifts and News at 320 and 820 (C13 has none yet), and the over-limit pages listed in the switch
-   helper's report (decisions.md, Nov 18 afternoon). Sim's call.
-4. **Sealed rule 1d** (Strength Score bands in order) was not measured by the one sealed look; whether a second tool may look is Sim's call.
-   NEVER run `--sealed` again.
+### Waiting on Sim
+Nothing as of 6:42 PM: she answered every open question with "recommended and yes" (decisions.md, Nov 18 evening). Decided then:
+sealed rule 1d is measured at the next sealed look (Step 3), NEVER run `--sealed` before that; Perish Song is not a weather override;
+the weather-override penalty stays 0 until Step 3 measures it; the small overs on My Team 1440, Meta 820/1440, Battle 320/390/1440 and
+Usage 1440 are re-measured after the merge (fonts loading properly) and each real over is fixed, limits are not raised just to pass.
 
 ### Then (Step 1 to the switch; full list: docs/rebuild/switch-readiness-nov18.md, 26 open + 8 for Sim)
-Land the merge (refit the model with the Protect family + teamHalf 0, already checked equal on real wins) -> final polish and the
-full test sweep -> Preview -> switch prep: drop the 345 sp/*.webp to stay under the 511-file cap (`--one-art-size`), keep the live
-page's capability declaration, the refresh task must also write meta/post, Promote must not freeze on a new-site flake, a new-page
-test on today's data, written rollback steps -> **Sim's one explicit yes** -> publish the new site to the live artifact.
+Land the merge -> final polish and the full test sweep -> Preview -> switch prep: drop the 345 sp/*.webp to stay under the 511-file
+cap (`--one-art-size`), keep the live page's capability declaration, the refresh task must also write meta/post, Promote must not
+freeze on a new-site flake, a new-page test on today's data, written rollback steps -> **Sim's one explicit yes** -> publish the new
+site to the live artifact (this is also when main's code fixes reach players).
 Small open items: Apply's Undo toast lasts 4 s vs 6 s for other Undo toasts (source not found yet).
 
 ### Dec 2 balance patch (Sim approved the plan; DON'T FORGET)
@@ -291,6 +284,8 @@ Then delete the old chat's three (delete_trigger), **after** yours exist, and te
 - Nov 18: some of Sim's morning answers sat unstarted for hours. Start every answer at once (helpers if needed) and say what's running.
 - Nov 18: an 86-minute gap in Plans page updates (limit is 1 hour). Keep the reminder scheduled.
 - Nov 18: a helper said "About still says op.gg is read daily"; it had already been fixed. Check a helper's claim before repeating it.
+- Nov 18: pushed model.json without re-making its page parts (out/split/, split-docs.mjs): the refresh gave players the old model.
+  After any model change, run all six steps and check the live page's meta/model afterwards.
 
 ---
 
