@@ -109,5 +109,33 @@ for (const [label, team] of [['sun team, Incineroar the only lead support', ['To
   ok(!r.wisp, 'Will-O-Wisp Ninetales on a team with nothing using sun (a weather override): not "a weather nothing uses"');
   ok(r.att, 'Hippowdon with plain attacks and nothing using sand: still "a weather nothing uses"');
   ok(r.gate, 'a plan bringing a Yawn Hippowdon into a team with nothing using sand: still blocked'); }
+// speed control means one thing (Nov 18 rule-holes sweep, hole 10). (1) The model's team basic "no speed control" counts the same
+// tools as the game plan: Tailwind, Trick Room, every speed-drop move (Thunder Wave too), weather speed with its setter, plus a
+// Choice Scarf; and the page (35-win-model.js) and the trainer (team-basics.mjs, used by model.mjs) agree on every real sheet.
+// (2) Imprison is an answer to the opponent's speed control only when its user also runs Trick Room or Tailwind.
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv,it)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;if(it)m.heldItem=it;return m};
+  const ns=t=>teamBasicsOf(t.map(m=>m.p.n),t).noSpeed;
+  const core=[mk('Incineroar','Intimidate',['Fake Out','Flare Blitz','Parting Shot','Knock Off']),mk('Kingambit','Defiant',['Kowtow Cleave','Sucker Punch','Iron Head','Protect']),mk('Sylveon','Pixilate',['Hyper Voice','Moonblast','Protect','Quick Attack']),mk('Dragonite','Inner Focus',['Extreme Speed','Dragon Claw','Protect','Iron Head'])];
+  const rain=[...core,mk('Pelipper','Drizzle',['Hurricane','Weather Ball','Wide Guard','Protect']),mk('Swampert-Mega','Swift Swim',['Waterfall','Earthquake','Protect','Rock Slide'])];
+  const twave=[...core,mk('Gholdengo','Good as Gold',['Make It Rain','Shadow Ball','Thunder Wave','Protect']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide'])];
+  const none=[...core,mk('Gholdengo','Good as Gold',['Make It Rain','Shadow Ball','Nasty Plot','Protect']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide'])];
+  const anti=t=>(gamePlan(t).rows.find(r=>r.k==='anti')||{}).st;
+  const imp=[...core,mk('Indeedee-F','Psychic Surge',['Follow Me','Imprison','Psychic','Protect']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide'])];
+  const impTR=[...core,mk('Indeedee-F','Psychic Surge',['Follow Me','Imprison','Trick Room','Protect']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide'])];
+  return {rain:ns(rain),twave:ns(twave),none:ns(none),imp:anti(imp),impTR:anti(impTR),drop:[...ROLE.drop].sort()}})()`));
+  ok(r.rain === 0, `Swift Swim Mega Swampert with Pelipper's rain: the model's team basic counts speed control (noSpeed ${r.rain})`);
+  ok(r.twave === 0, `Thunder Wave: the model's team basic counts speed control (noSpeed ${r.twave})`);
+  ok(r.none === 1, `no Tailwind, Trick Room, speed drop, weather speed or Scarf: still "no speed control" (noSpeed ${r.none})`);
+  ok(r.imp !== 'ok', `Imprison with no Trick Room or Tailwind of its own: not an answer to their speed control (${r.imp})`);
+  ok(r.impTR === 'ok', `Imprison + Trick Room Indeedee: still an answer to their speed control (${r.impTR})`);
+  let TB = null; try { TB = await import('../team-basics.mjs'); } catch (e) {}
+  ok(!!TB, 'team-basics.mjs (the trainer\'s team basics) exists');
+  if (TB) { ok(JSON.stringify([...TB.SPEED_DROP].sort()) === JSON.stringify(r.drop), 'the trainer and the game plan use the same speed-drop moves');
+    const M = rd('matches.json'), decks = M.decks.map(d => d.map(f => M.feats[f])).filter(nm => nm.filter(n => n.includes(':')).length >= 16 && new Set(nm.map(n => n.split(/[@:#]/)[0])).size === 6);
+    const pageNS = await pg.evaluate(D => window.__ev(`(${JSON.stringify(D)}).map(nm=>{const sp=[...new Set(nm.map(n=>n.split(/[@:#]/)[0]))];if(sp.some(n=>!byName.get(n)))return null;
+      const ms=sp.map(n=>{const p=byName.get(n),ab=(nm.find(f=>f.startsWith(n+'#'))||'#').split('#')[1],it=(nm.find(f=>f.startsWith(n+'@'))||'@').split('@')[1],x=nm.filter(f=>f.startsWith(n+':')).map(f=>({name:f.slice(n.length+1)}));
+        return {...memberFrom(p,ab||undefined),p,d:p.d,ability:ab||undefined,heldItem:it||undefined,custom:true,moves:x,_mv:x}});return teamBasicsOf(sp,ms).noSpeed})`), decks);
+    const cmp = decks.map((nm, i) => [pageNS[i], TB.deckBasics(nm).noSpeed]).filter(x => x[0] != null), diff = cmp.filter(x => x[0] !== x[1]).length;
+    ok(cmp.length > 1000 && !diff, `page and trainer agree on "no speed control" for every real sheet (${cmp.length} sheets, ${diff} differ, ${cmp.filter(x => x[1]).length} without)`); } }
 ok(!errs.length, 'no page errors ' + errs.join(' | '));
 await b.close(); fs.unlinkSync(page); console.log(fails.length ? `\n${fails.length} FAILED` : '\nALL PASSED'); process.exit(fails.length ? 1 : 0);

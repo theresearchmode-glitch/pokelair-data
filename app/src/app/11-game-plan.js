@@ -18,6 +18,11 @@ const ROLE = {
   haz: ['Stealth Rock', 'Spikes', 'Toxic Spikes', 'Sticky Web'], hazrm: ['Rapid Spin', 'Defog', 'Mortal Spin', 'Court Change', 'Tidy Up'],
   pivot: ['U-turn', 'Parting Shot', 'Volt Switch', 'Flip Turn', 'Teleport', 'Chilly Reception', 'Shed Tail'],
 };
+// an answer to the opponent's speed control: Taunt or Encore, or Imprison only when its user also runs Trick Room or Tailwind
+// (Imprison blocks only moves its user knows; Nov 18 rule-holes sweep, hole 10: any Imprison counted). Every role reader uses it.
+function antiRel(m) { const a = relMove(m, ['Taunt', 'Encore']), im = relMove(m, ['Imprison']); const imR = im[0] && relMove(m, ['Trick Room', 'Tailwind'])[0] >= .5 ? im[0] : 0;
+  return imR > a[0] ? [imR, 'Imprison'] : a; }
+const roleRel = (m, k) => k === 'anti' ? antiRel(m) : relMove(m, ROLE[k]);
 const SELF_SPEED_AB = new Set(['Unburden', 'Speed Boost']);
 const W_TYPE = {sun: 'Fire', rain: 'Water', sand: 'Rock', snow: 'Ice'};
 // abilities that only work in one weather (speed and power), and simple weather checks shared by the auto-build and the plans:
@@ -72,7 +77,7 @@ const anyOf = rs => 1 - rs.reduce((a, r) => a * (1 - r), 1);
 const gpPct = r => r >= .995 ? '' : ` ${Math.round(r * 100)}%`;
 // Returns {rows, penalty}. rows: [{k, label, st: ok|part|miss|opt, who, note}]. Lower penalty is better.
 function gamePlan(team) {
-  const has = k => team.map(m => { const [r, mv] = relMove(m, ROLE[k]); return {m, r, mv}; }).filter(x => x.r >= .15).sort((a, b) => b.r - a.r);
+  const has = k => team.map(m => { const [r, mv] = roleRel(m, k); return {m, r, mv}; }).filter(x => x.r >= .15).sort((a, b) => b.r - a.r);
   const cov = xs => anyOf(xs.map(x => x.r));
   const who = (xs, n = 3) => xs.slice(0, n).map(x => `${x.m.d}${x.mv ? ' · ' + x.mv : ''}${gpPct(x.r)}`).join(', ');
   const R = {}; for (const k in ROLE) R[k] = has(k);

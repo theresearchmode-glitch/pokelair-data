@@ -48,7 +48,10 @@ function teamBasicsOf(names,ms){if(names.length!==6)return null;const o={noMega:
   if(ms&&ms.length===6){const mv=ms.map(m=>((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(z=>z&&(z.name||z)).filter(Boolean)),has=n=>mv.some(L=>L.includes(n));
     o.protectLow=mv.filter(L=>L.includes('Protect')).length<=2?1:0;
     {const trU=mv.map((L,i)=>L.includes('Trick Room')?i:-1).filter(i=>i>=0);o.trNoSlow=trU.length&&names.filter((n,i)=>!trU.includes(i)&&((byName.get(n)||{}).sp??100)<=60).length<2?1:0}
-    o.noSpeed=has('Tailwind')||has('Trick Room')||has('Icy Wind')||has('Electroweb')||ms.some(m=>/Choice Scarf/.test(m.heldItem||m.item||''))?0:1;
+    // Nov 18 (rule-holes sweep, hole 10): the game plan's speed tools (Tailwind, Trick Room, every ROLE.drop move, weather speed
+    // with its setter) plus Choice Scarf; the trainer's copy is team-basics.mjs, and suggest-gaps.mjs checks they agree on real sheets
+    {const wx=new Set(ms.map(m=>WEATHER_OF[m.ability]).filter(Boolean));
+    o.noSpeed=has('Tailwind')||has('Trick Room')||ROLE.drop.some(has)||ms.some(m=>/Choice Scarf/.test(m.heldItem||m.item||''))||ms.some(m=>WEATHER_SPEED[m.ability]&&wx.has(WEATHER_NEED[m.ability]))?0:1}
     o.noFakeOut=has('Fake Out')?0:1}
   return o}
 function teamBasicsX(names,ms){const T=META.model&&META.model.team;if(!T||!Object.keys(T).length)return 0;const o=teamBasicsOf(names,ms);if(!o)return 0;let x=0;for(const k in T)if(o[k])x+=T[k];return x}

@@ -9,7 +9,7 @@
 // rarely used Pokémon with one fixed set could pile up credit across 5 set features (Mega Camerupt rated as the best
 // Pokémon in the game). Also ships the held-out calibration slope and the spread of real teams, so the page can score a
 // team against real tournament teams instead of a fixed range that any odd team could max out.
-import fs from 'node:fs'; import {pilotTest} from './pilot.mjs';
+import fs from 'node:fs'; import {pilotTest} from './pilot.mjs'; import {deckBasics} from './team-basics.mjs';
 const M = JSON.parse(fs.readFileSync(process.env.MATCHES || 'out/matches.json', 'utf8')); // MATCHES=file: experiments (e.g. out/matches_ab.json)
 const teams = M.teams.map(k => k.split('|')), G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1]);
 const monIx = new Map(), mons = [];
@@ -50,12 +50,8 @@ const TEAMF = process.env.TEAM_FEATS === '0' ? [] : ['noMega', 'protectLow', ...
 // +0.0005, 95% range +0.0002 to +0.0009, both halves); in those later games Farigiraf Trick Room teams with <2 slow teammates won 49.7%
 // while today's grade expected 47.0%, so the grade already rates them lower and real results don't support a bigger penalty.
 // Kept as an experiment only: TR_FEAT=1 turns it on. Speeds from the site's roster (app/src/data/data.js).
-const SPD = (() => { try { const t = fs.readFileSync('app/src/data/data.js', 'utf8').match(/const ROSTER=(\[.*?\]);/s); return new Map(JSON.parse(t[1]).map(r => [r.n, r.sp])); } catch (e) { return new Map(); } })();
-const deckTF = !TEAMF.length || !hasSets ? [] : M.decks.map(fs_ => { const nm = fs_.map(f => M.feats[f]), mv = nm.filter(n => n.includes(':'));
-  if (mv.length < 16) return null; const prot = mv.filter(n => /:Protect$/.test(n)).length;
-  const trU = new Set(mv.filter(n => /:Trick Room$/.test(n)).map(n => n.slice(0, n.indexOf(':')))), deckMons = new Set(mv.map(n => n.slice(0, n.indexOf(':'))));
-  const slow = [...deckMons].filter(n => !trU.has(n) && (SPD.get(n) ?? 100) <= 60).length;
-  return {trNoSlow: trU.size && slow < 2 ? 1 : 0, protectLow: prot <= 2 ? 1 : 0, noSpeed: nm.some(n => /:(Tailwind|Trick Room|Icy Wind|Electroweb)$/.test(n) || /@Choice Scarf$/.test(n)) ? 0 : 1, noFakeOut: mv.some(n => /:Fake Out$/.test(n)) ? 0 : 1}; });
+// the basics of each sheet: team-basics.mjs (shared with the page's check, experiments/suggest-gaps.mjs)
+const deckTF = !TEAMF.length || !hasSets ? [] : M.decks.map(fs_ => deckBasics(fs_.map(f => M.feats[f])));
 const tvCache = new Map(), teamVec = (t, d) => { if (!TEAMF.length) return []; const key = t * 100000 + (d ?? 99999); let v = tvCache.get(key); if (v) return v;
   v = TEAMF.map(k => k === 'noMega' ? (teams[t].some(n => /-Mega/.test(n)) ? 0 : 1) : (d != null && deckTF[d] ? deckTF[d][k] : 0)); tvCache.set(key, v); return v; };
 // time split: last 20% of events (by date) held out
