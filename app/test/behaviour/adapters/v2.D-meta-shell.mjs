@@ -202,9 +202,11 @@ export default (ui, pg) => {
     searchIsOpen: () => ev(() => __dvis(document.querySelector('[data-v2q]'))),
     searchHasFocus: () => ev(() => !!document.activeElement && document.activeElement.matches('[data-v2q]')),
     search: async text => { await pg.fill('[data-v2q]', ''); await pg.type('[data-v2q]', text, {delay: 15}); await wait(350); },
-    /** result rows: {name, sub (the row's words after its name), kind (its "Page" / "Saved team" label), kindShown, selected (focused, or the one Enter picks), text} */
+    /** result rows: {name, sub (the row's words after its name), kind (its "Page" / "Saved team" label), kindShown, selected (focused, or the one Enter picks), text}.
+     *  A Pokémon row shows its rating as "96 · S tier" and names it for screen readers as "Rated 96, S tier" (shell.js, aria-label); sub reads
+     *  that line by its own spoken words, which are today's row words ("Rated N, …"), so nothing is added that the row doesn't say */
     searchResults: () => ev(() => { const hs = [...document.querySelectorAll('[data-v2hits] .np-hit')].filter(__dvis), a = document.activeElement, inBox = a && a.matches('[data-v2q]');
-      return hs.map((h, i) => { const b = h.querySelector('b'), k = h.querySelector('.pg'), name = __dtx(b), all = __dtx(h); let sub = all; if (k) sub = sub.replace(__dtx(k), ''); sub = sub.replace(name, '').trim();
+      return hs.map((h, i) => { const b = h.querySelector('b'), k = h.querySelector('.pg'), name = __dtx(b), all = __dtx(h); let sub = all; if (k) sub = sub.replace(__dtx(k), ''); sub = sub.replace(name, '').trim(); const sm = h.querySelector('.nm small[aria-label^="Rated "]'); if (sm) sub = sub.replace(__dtx(sm), sm.getAttribute('aria-label')).trim();
         return {name, sub, kind: k ? __dtx(k) : '', kindShown: __dvis(k), selected: a === h || (inBox && i === 0), text: all}; }); }),
     searchMessage: () => ev(() => __dtx(document.querySelector('[data-v2hits]'))),
     tapSearchResult: async name => { await tapEl(n => [...document.querySelectorAll('[data-v2hits] .np-hit')].filter(__dvis).find(h => __dtx(h.querySelector('b')) === n) || null, name, 'search result ' + name, 700); },
@@ -256,13 +258,22 @@ export default (ui, pg) => {
     // ---------- Ratings extras ----------
     /** today's "Details" = the new site's "List with win rates" view; its label is the switch's other choice (what you tap to go back) */
     detailsLabel: () => ev(() => { const b = [...document.querySelectorAll('[data-raview]')].filter(__dvis).find(b => b.getAttribute('aria-pressed') !== 'true'); return b ? __dtx(b) : null; }),
+    /** today's sliding pickers (a pill slides to the choice) are chip groups on the new site (Usage source: .ra-chip, one pressed at a time).
+     *  "The highlight moved to the choice" = the chosen chip is pressed and drawn highlighted: its colours differ from every other chip's,
+     *  and the others all look alike (so exactly one chip is lit, and it is the chosen one) */
+    sliderMoved: name => ev(n => { const g = [...document.querySelectorAll('[data-ussrc], [data-v2setsrc]')].filter(__dvis), c = g.find(b => __dtx(b) === n); if (!c) return false;
+      const bs = g.filter(b => b.parentElement === c.parentElement), look = b => { const s = getComputedStyle(b); return [s.backgroundColor, s.color, s.borderColor].join('|'); }, rest = bs.filter(b => b !== c);
+      return c.getAttribute('aria-pressed') === 'true' && rest.length > 0 && rest.every(b => look(b) !== look(c)) && new Set(rest.map(look)).size === 1; }, name),
     chipTop: name => ev(n => { const b = [...document.querySelectorAll('[data-raty], [data-raflag]')].filter(__dvis).find(b => __dtx(b).replace(/\s+\d+$/, '') === n); return b ? Math.round(b.getBoundingClientRect().top) : null; }, name),
     ratingOnRatings: async name => { const t = (await D.topList()).find(r => r.name === name || r.id === name); if (t) return t.rating;
       await D.ratingsSearch(name); const b = (await D.boardTiles()).find(r => r.name === name || r.id === name); await D.ratingsSearch(''); return b ? b.rating : null; },
     /** sprite, colour field and Mega mark for each Pokémon on Ratings (the stand's figures and the list's rows) */
     pokemonArt: () => ev(() => [...document.querySelectorAll('#main .gs [data-v2mon], #main .ra-list [data-v2mon]')].filter(__dvis).map(e => { const m = e.querySelector('.np-mon'), s = (e.getAttribute('style') || '') + ' ' + (m ? m.getAttribute('style') || '' : '');
       return {id: e.dataset.v2mon, sprite: !!e.querySelector('img[src*="art/"]'), field: /--b1:|--cp:/.test(s), mega: !!e.querySelector('.np-megatag') || /^mega$/i.test(((e.querySelector('.gs-mg, .mg:not(.none)') || {}).textContent || '').trim())}; })),
-    setsRating: () => ev(() => { const m = __dtx(document.querySelector('#main')).match(/[SABCDF] tier, rated (\d+)/); return m ? +m[1] : null; }),
+    /** the rating Popular Sets shows for the looked-up Pokémon: the spotlight's big number (pages/sets.js .gs-big: "96" beside "S tier" and
+     *  "Rated 96, #3 of 321"); today's "X tier, rated N" wording if a page still writes it */
+    setsRating: () => ev(() => { const b = [...document.querySelectorAll('#main .st .gs-big > b')].find(__dvis); if (b && /^\d+$/.test(__dtx(b))) return +__dtx(b);
+      const m = __dtx(document.querySelector('#main')).match(/[SABCDF] tier, rated (\d+)/); return m ? +m[1] : null; }),
     // ---------- Home: the welcome card and What's New ----------
     welcomeCard: () => ev(() => { const w = [...document.querySelectorAll('#main .hm-welcome')].find(__dvis); return w ? __dtx(w) : null; }),
     whatsNew: () => ev(() => { const w = [...document.querySelectorAll('#main .hm-newsec')].find(__dvis); return w ? __dtx(w) : null; }),
@@ -304,31 +315,49 @@ export default (ui, pg) => {
     sheetRating: () => ev(() => { const b = [...document.querySelectorAll('.np-sheet .ms2 .ms-rate b, #main .pk-rate > b')].find(__dvis); return b ? Number(__dtx(b)) : null; }),
     sheetFocusInside: () => ev(() => { const a = document.activeElement, s = a && a.closest && a.closest('.np-sheet'); if (s) return !!s.querySelector('.ms2');
       return !!(window.V2 && V2.route() === 'pokemon' && a && a.closest && a.closest('#main')); }),
-    closeSheet: async (how = 'x') => { const page = await ev(() => !!(window.V2 && V2.route() === 'pokemon' && !document.querySelector('.np-sheet .ms2')));
+    /* closeSheet() with no way named = "close it the usual way": on the Pokémon page that is Back (the page's own way out); a test that
+       names ✕ or the backdrop (SHEET-01) still gets the honest failure, since a page has neither */
+    closeSheet: async how => { const page = await ev(() => !!(window.V2 && V2.route() === 'pokemon' && !document.querySelector('.np-sheet .ms2'))); if (how == null) how = page ? 'back' : 'x';
       if (how === 'back') await pg.goBack().catch(() => {}); else if (how === 'escape') await pg.keyboard.press('Escape');
       else if (page) throw new Error('the Pokémon page has no ' + (how === 'x' ? '✕ close button' : 'backdrop') + ' (it is a page: Back leaves it)');
       else if (how === 'x') await pg.click('.np-sheet > button.x[data-v2close]'); else await D.tapBackdrop();
       await until(async () => !(await D.sheetIsOpen())); await wait(300); },
     sheetTabs: () => ev(() => [...document.querySelectorAll('.np-sheet .ms2 [data-mstab], #main .pk [role=tab]')].filter(__dvis).map(b => ({name: __dtx(b), on: b.getAttribute('aria-selected') === 'true'}))),
     tapSheetTab: async name => { const where = await ev(n => { const l = n.toLowerCase(), b = [...document.querySelectorAll('.np-sheet .ms2 [data-mstab]')].filter(__dvis).find(b => __dtx(b).toLowerCase().startsWith(l));
-        if (b) return 'sheet'; if (!(window.V2 && V2.route() === 'pokemon')) return null; const j = [...document.querySelectorAll('#main [data-pkjump]')].filter(__dvis).find(b => __dtx(b).toLowerCase().startsWith(l)); if (j) j.click(); return 'page'; }, name);
+        if (b) return 'sheet'; if (!(window.V2 && V2.route() === 'pokemon')) return null; const j = [...document.querySelectorAll('#main [data-pkjump]')].filter(__dvis).find(b => __dtx(b).toLowerCase().startsWith(l)); if (j) { j.click(); return 'page'; }
+        /* the old tabs' contents are parts of the page (pages/pokemon.js): Info = parts 3-5 (what beats it, speed, abilities), Meta = parts 1-2
+           (how to build it, who it teams with), Rating = part 6 (why it rates N). Folded parts open with their "Show ›", as a player taps them */
+        const P = {info: ['pk-s3', 'pk-s4', 'pk-s5'], meta: ['pk-s1', 'pk-s2'], rating: ['pk-s6']}[l.split(' ')[0]] || [];
+        for (const id of P) { const o = document.querySelector(`#main [data-pkopen="${id}"]`); if (o && o.getAttribute('aria-expanded') !== 'true') o.click(); }
+        const first = P.map(id => document.getElementById(id)).find(Boolean); if (first) first.scrollIntoView({block: 'start'}); return 'page'; }, name);
       if (where === 'sheet') await tapEl(n => [...document.querySelectorAll('.np-sheet .ms2 [data-mstab]')].filter(__dvis).find(b => __dtx(b).toLowerCase().startsWith(n.toLowerCase())) || null, name, 'sheet tab ' + name, 400);
       else if (!where) throw new Error('no sheet tab ' + name); else await wait(300); },
     sheetPanel: () => ev(() => { const p = [...document.querySelectorAll('.np-sheet .ms2 [data-mspan]')].filter(x => !x.hidden && __dvis(x)); if (p.length) return p.map(__dtx).join(' ');
       return window.V2 && V2.route() === 'pokemon' && document.querySelector('#main .pk') ? __dtx(document.querySelector('#main')) : null; }),
-    tapInSheet: async m => { const page = await ev(() => !!(window.V2 && V2.route() === 'pokemon' && !document.querySelector('.np-sheet .ms2'))); await ui.tap(m, page ? '#main' : '.np-sheet'); await wait(500); },
+    tapInSheet: async m => { const page = await ev(() => !!(window.V2 && V2.route() === 'pokemon' && !document.querySelector('.np-sheet .ms2')));
+      if (page) await ev(([src, fl]) => { const re = new RegExp(src, fl.includes('i') ? fl : fl + 'i') /* Title Case on the new site */, ok = b => re.test(__dtx(b)) || re.test((b.textContent || '').replace(/\s+/g, ' ').trim());
+        if ([...document.querySelectorAll('#main button, #main a')].filter(__dvis).some(ok)) return; /* already on screen */
+        const f = [...document.querySelectorAll('#main .pk-fold:not(.open)')].find(s => [...s.querySelectorAll('button, a')].some(ok)); const o = f && f.querySelector('[data-pkopen]'); if (o) o.click(); }, [m instanceof RegExp ? m.source : String(m), m instanceof RegExp ? m.flags : 'i']);
+      await ui.tap(m, page ? '#main' : '.np-sheet'); await wait(500); },
     doubleTapInSheet: async m => { const h = await pg.evaluateHandle(([s, f]) => { const re = new RegExp(s, f), root = document.querySelector('.np-sheet') || (window.V2 && V2.route() === 'pokemon' ? document.querySelector('#main') : null);
         return root ? [...root.querySelectorAll('button')].find(b => b.getClientRects().length && re.test(b.innerText.trim())) || null : null; }, [m.source, m.flags]);
       const el = h.asElement(); if (!el) throw new Error('no ' + m + ' in the sheet / Pokémon page'); const r = await el.boundingBox(); await pg.mouse.click(r.x + r.width / 2, r.y + r.height / 2); await wait(80); await pg.mouse.click(r.x + r.width / 2, r.y + r.height / 2); await wait(600); },
     sheetFits: () => ev(() => { const p = [...document.querySelectorAll('.np-sheet')].filter(__dvis).pop() || (window.V2 && V2.route() === 'pokemon' ? document.querySelector('#main .pk') : null); if (!p) return false; const r = p.getBoundingClientRect(), ox = getComputedStyle(p).overflowX;
-      const cut = [...p.querySelectorAll('*')].filter(e => __dvis(e) && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) && !e.closest('[aria-hidden="true"]')).filter(e => { const b = e.getBoundingClientRect(); return b.right > innerWidth + 1 || b.left < -1; });
-      return r.left >= -1 && r.right <= innerWidth + 1 && !cut.length && (p.scrollWidth <= p.clientWidth + 2 || ox === 'hidden' || ox === 'clip') && document.documentElement.scrollWidth <= innerWidth + 1; }),
+      /* text inside a row that scrolls sideways on its own (overflow-x auto/scroll and wider than it shows: the phone's swipe rows) is reached by a swipe, not cut */
+      const swipe = e => { for (let a = e.parentElement; a && a !== p.parentElement; a = a.parentElement) { const o = getComputedStyle(a).overflowX; if ((o === 'auto' || o === 'scroll') && a.scrollWidth > a.clientWidth + 1) { const b = a.getBoundingClientRect(); return b.left >= -1 && b.right <= innerWidth + 1; } } return false; };
+      const cut = [...p.querySelectorAll('*')].filter(e => __dvis(e) && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) && !e.closest('[aria-hidden="true"]')).filter(e => { const b = e.getBoundingClientRect(); return (b.right > innerWidth + 1 || b.left < -1) && !swipe(e); });
+      /* a sheet is its own scroll box, so it must not be wider inside than it shows; the Pokémon page is part of the page, which must not
+         side-scroll (the document check); its decorative giant name and glow are clipped by their card (overflow hidden, aria-hidden) */
+      return r.left >= -1 && r.right <= innerWidth + 1 && !cut.length && (p.scrollWidth <= p.clientWidth + 2 || ox === 'hidden' || ox === 'clip' || !p.matches('.np-sheet')) && document.documentElement.scrollWidth <= innerWidth + 1; }),
     /** "Brought with" partners (ids): the sheet's partner buttons, or the page's partner cards (links to #pokemon=<name>) */
     broughtWith: () => ev(() => { const s = [...document.querySelectorAll('.np-sheet .ms2 .ms-bwi[data-v2mon]')].filter(__dvis).map(e => e.dataset.v2mon); if (s.length) return s.slice(0, 6);
       const R = typeof ROSTER === 'object' ? ROSTER : []; return [...document.querySelectorAll('#main a.pk-pc[href^="#pokemon="]')].filter(__dvis).map(a => { let k = ''; try { k = decodeURIComponent(a.getAttribute('href').split('=')[1]).toLowerCase(); } catch (e) {} const q = R.find(q => q.n.toLowerCase() === k); return q ? q.n : null; }).filter(Boolean).slice(0, 6); }),
     outsideLinksNewTab: () => ev(() => { const root = document.querySelector('.np-sheet') || (window.V2 && V2.route() === 'pokemon' ? document.querySelector('#main') : null); const a = root ? [...root.querySelectorAll('a[href^="http"]')].filter(__dvis) : []; return a.length > 0 && a.every(x => x.target === '_blank'); }),
     // ---------- About: the rules caption under legality statements elsewhere ----------
     findRulesCaption: async () => { const W = /Based on our reading of the Reg M-[A-Z] rules/; await ui.go('My Team'); try { await ui.tap(/^Import/i); } catch (e) {} if (await ui.sees(W)) return 'My Team import';
+      /* the new site's My Team says whether the team is legal inside "Things to Know" ([data-v2fix], Sim A2), with the caption under it: open that fold as a player would */
+      await ev(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); const d = [...document.querySelectorAll('#main details[data-v2fix]')].find(__dvis); if (d && !d.open) d.querySelector(':scope > summary').click(); }); await wait(500);
+      if (await ui.sees(W)) return 'My Team, Things to Know';
       await ev(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); });
       for (const p of ['Type Chart', 'Speed Tiers', 'Damage Calc']) { await ui.go(p); if (await ui.sees(W)) return p; } return null; },
   };

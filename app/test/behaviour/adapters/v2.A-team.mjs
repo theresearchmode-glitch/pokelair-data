@@ -191,7 +191,12 @@ export default (ui, pg, o) => {
     topThreatRows: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-rows > li')].filter(e => e.getClientRects().length).map(e => { const nm = e.querySelector('.nm'), sm = nm && nm.querySelector('small'), v = e.querySelector('.tm-v'), k = e.querySelector('.k');
       const name = nm ? nm.innerText.replace(sm ? sm.innerText : '', '').trim() : ''; return [k ? k.innerText.trim() : '', name, v ? v.innerText.trim() : '', sm ? sm.innerText.trim() : ''].filter(Boolean).join(' ').replace(/\s+/g, ' '); })),
     // a threat row, a "next 20" tile or a grid row on the page opens the threat sheet (a V2.sheet holding .mu-sh)
-    tapThreat: name => click(`#main [data-muthr="${name}"]`, 800),
+    /* the section opens on the stand-outs (Sim, Nov 11), so a threat that isn't one of them is reached the way a player reaches it: the
+       "Top 10" view lists the top 10 and then the next 20 as tiles (all 30 tappable; phones show 5 rows until "Show 5 More ›") */
+    tapThreat: async name => { const S = `#main [data-muthr="${name}"]`, seen = () => pg.evaluate(s => [...document.querySelectorAll(s)].some(e => e.getClientRects().length), S);
+      if (!(await seen())) { await pg.evaluate(() => { const b = [...document.querySelectorAll('#main [data-v2slide="thr"] > button')].find(e => e.getClientRects().length && e.dataset.v === 'top'); if (b) b.click(); }); await pg.waitForTimeout(600);
+        if (!(await seen())) { await pg.evaluate(() => { const b = [...document.querySelectorAll('#main [data-mumore][aria-expanded="false"]')].find(e => e.getClientRects().length); if (b) b.click(); }); await pg.waitForTimeout(400); } }
+      return click(S, 800); },
     threatSheet: () => sheetText('.mu-sh'),
     tapThreatInSheet: name => click(`.mu-sh [data-muthr="${name}"]`, 600),
     threatPressedInSheet: () => pg.evaluate(() => { const e = document.querySelector('.mu-sh [data-muthr][aria-pressed="true"]'); return e ? e.dataset.muthr : null; }),

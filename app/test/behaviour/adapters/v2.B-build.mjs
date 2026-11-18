@@ -21,8 +21,11 @@
 //    same cards ({text, button}: the button is the one shown, "Apply"); nothing on them is added that the card doesn't show
 //  - My Team's suggestion cards are read into today's wording ("Suggestion 1 → In for Out → In for Out +3 (88 → 91) <lane> Apply …"),
 //    as v2.A-team's suggestionCards does; the band word follows the score only when the card shows it (today's CH.gradeMove rule)
-//  - Plan settings (Pick from, Let plans swap my Mega, Count abilities, Refresh plans, Never suggest), the "Fix your items first" card
-//    and the set check tips have no equivalent: their helpers throw "not in v2 yet"
+//  - today's Plan settings (a fold inside Bigger plans) = My Team's "Adjust suggestions" (Sim Q6, Nov 15-16: Suggest from, Megas on team,
+//    Swap my Mega?, Count Abilities?, always shown under the Suggestions) with "Refresh Suggestions" and the "Never Suggest" sheet (Sim Q3 A,
+//    Nov 15: Add a Pokémon / Allow Again). All Suggestions is a sheet over My Team, so reaching Plan settings closes it and shows those
+//    controls, as a player would. Choices are read as shown, in sentence case (the new site writes buttons in Title Case: "Whole Roster" is
+//    today's "Whole roster"); toasts and summary lines are never translated (they are the site's words)
 //  - "Problems and Team Checks" is the "Things to Know" fold here ([data-v2fix], A2); Quick add picks are its [data-v2qa] buttons
 //  - Edit Set opens from the Set section's "Edit Set" (data-v2edit) for the picked tile; Lock / Remove sit in the strip under the six
 //    for the picked tile (data-v2lock / data-v2rm), so those helpers pick the tile first, as a player does
@@ -32,9 +35,14 @@ const NOT = what => { throw new Error('not in v2 yet: ' + what); };
 const RE = m => m instanceof RegExp ? [m.source, m.flags] : null;
 // today's part names -> the new Build page's parts (other pages' parts are not in v2 yet)
 const AREAS = {'built team': '#main .bd-result', 'cores': '#main .bd-cores', 'info sheet': '.np-sheet .ms2, #main .pk' /* Nov 15: the Pokémon page */, 'Build page': '#main .bd2', 'My team page': '#main',
-  'My team suggestions': '#main #tm-sg', 'All suggestions page': '.np-sheet .sga2', 'Bigger plans': '.np-sheet .sga2', 'Popular sets page': '#main .st'};
+  'My team suggestions': '#main #tm-sg', 'All suggestions page': '.np-sheet .sga2', 'Bigger plans': '.np-sheet .sga2', 'Popular sets page': '#main .st',
+  'Plan settings': '#main .sg2-adj' /* My Team's Adjust suggestions (see the notes at the top) */};
 // today's parts with no equivalent here (a helper asked for one names it)
-const NO_AREA = {'Plan settings': 'Plan settings (Pick from, Let plans swap my Mega, Count abilities, Refresh plans, Never suggest)'};
+const NO_AREA = {};
+// today's Plan settings toggles -> the new site's sliders on My Team (data-v2slide keys, sugs.js)
+const SETTING = {'Let plans swap my Mega': 'sgswap', 'Count abilities': 'sgabil'};
+// the new site writes buttons in Title Case (Sim, Nov 9): a choice is read in sentence case, the way today's labels are written
+const SENT = t => { t = (t || '').replace(/\s+/g, ' ').trim(); return t ? t[0] + t.slice(1).toLowerCase() : t; };
 // one suggestion card (li) read into today's wording: 'my' = My Team's card, 'big' = today's Bigger plans card. Runs in the page.
 const CARD = (li, mode) => { const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : '';
   const chs = [...li.querySelectorAll('.tm-chg')].map(c => { const sw = [...c.querySelectorAll('.tm-sw')], inn = T(c.querySelector('.tm-sw.in')).replace(/\s*(In your box|To catch)$/, '') /* Nov 17: the card says whether it's yours (COV-04) */, out = sw.length > 1 && !sw[0].classList.contains('in') ? T(sw[0]) : ''; return {inn, out}; });
@@ -43,10 +51,12 @@ const CARD = (li, mode) => { const T = e => e ? e.innerText.replace(/\s+/g, ' ')
   const eb = T(li.querySelector('.np-eyebrow'));
   if (mode === 'big') return [`${eb}, ${chs.length} change${chs.length === 1 ? '' : 's'}`, score, lane, chs.map(c => c.out ? `${c.out} → ${c.inn}` : `+ ${c.inn}`).join(' '), btn, why].filter(Boolean).join(' ');
   return [eb, chs.map(c => c.out ? `→ ${c.inn} for ${c.out}` : `+ ${c.inn} added`).join(' '), score, lane, btn, why].filter(Boolean).join(' '); };
-// a part's visible text with its suggestion cards read through CARD (top-level children in order; hidden cards left out)
+// a part's visible text with its suggestion cards read through CARD (top-level children in order; hidden cards left out). My Team's
+// "Adjust suggestions" block (.sg2-adj) sits at the end of the Suggestions section; it is today's Plan settings (with its "Never suggested:"
+// list), not a suggestion, so it is left out here and read as the Plan settings part instead (today's #chSugOut holds no never-suggest list)
 const READ = ([sel, mode, CARDs]) => { const CARD = eval('(' + CARDs + ')'), root = [...document.querySelectorAll(sel)].find(e => e.getClientRects().length); if (!root) return '';
   const T = e => e.innerText.replace(/\s+/g, ' ').trim();
-  return [...root.children].filter(c => c.getClientRects().length).map(c => c.matches('ol.tm-sug') ? [...c.children].filter(li => li.getClientRects().length).map(li => CARD(li, mode)).join(' ') : T(c)).filter(Boolean).join(' '); };
+  return [...root.children].filter(c => c.getClientRects().length && !c.matches('.sg2-adj')).map(c => c.matches('ol.tm-sug') ? [...c.children].filter(li => li.getClientRects().length).map(li => CARD(li, mode)).join(' ') : T(c)).filter(Boolean).join(' '); };
 // today's name boxes on Build -> the new page's ([data-bdfind] = "Build around a Pokémon"); the cores filter box has no equivalent
 const BOXES = {'favourite pokémon': '[data-bdfind]', 'with a pokémon': '[data-bdcfind]', 'look up a pokémon': '[data-stq]' /* Popular Sets (pages/sets.js) */};
 const NO_BOX = {'exclude a pokémon': 'Never suggest box (All Suggestions › Plan settings)'};
@@ -137,6 +147,9 @@ export default (ui, pg) => {
         // today's "⋯" team menu = My Team's More sheet; today's "← My Team" on All Suggestions = the sheet's ✕ (it sits over My Team)
         if (/^\^?⋯\$?$/.test(src) && await vis('#main [data-v2more]')) return click('#main [data-v2more]', wait);
         if (/^\^?← My Team/i.test(src) && await vis('.np-sheet .sga2')) return click('.np-sheet > button.x[data-v2close]', wait);
+        /* today's "Refresh plans" (Plan settings) = My Team's "Refresh Suggestions" (Sim Q6; word list: Suggestions, not plans); it sits with
+           "See All Suggestions ›", which waits behind "Show N More Suggestions ›" while that is shown */
+        if (/^\^?Refresh plans\$?$/i.test(src)) { await toSettings(); if (!(await vis('#main [data-v2replan]')) && await vis('#main [data-v2sgmore]')) await click('#main [data-v2sgmore]', 400); return click('#main [data-v2replan]', wait); }
         // the new build writes buttons and links in Title Case (Sim, Nov 9; as v2.A-team's tapText): a miss is retried ignoring case
         if (match instanceof RegExp && !match.flags.includes('i')) { try { return await prevTap(new RegExp(match.source, match.flags + 'i'), within, wait); } catch (x) {} }
         /* a row button that is a name plus a description (My Team's More sheet: "Clear Team" / "Empties all six spots…"): its name is its first line */
@@ -172,7 +185,7 @@ export default (ui, pg) => {
         if (is('Sets and Roles')) NOT('the Sets and Roles fold on the built team (the six tiles show item, role and tier instead)');
         if (is('More Cores')) NOT('the More Cores fold (#4 onward): the new page lists 7 cores, then "Show N more"'); }
       if (is('Bigger Plans')) { if (!(await vis('.np-sheet .sga2'))) await openAll(600); return readAll('big'); }
-      if (is('Plan Settings')) NOT(NO_AREA['Plan settings']);
+      if (is('Plan Settings')) { await toSettings(); return txt(AREAS['Plan settings']); }
       if (is('Problems and Team Checks')) { await pg.evaluate(() => { const d = [...document.querySelectorAll('#main details[data-v2fix]')].find(e => e.getClientRects().length); if (d && !d.open) d.querySelector(':scope > summary').click(); }); await pg.waitForTimeout(500);
         const t = await txt('#main details[data-v2fix]'); if (!t) NOT('the Things to Know fold (today\'s Problems and Team Checks) on this page'); return t; }
       const r = await pg.evaluate(([m, re, w]) => { const rx = re ? new RegExp(re[0], re[1]) : null; const root = document.querySelector(w) || document.body;
@@ -378,13 +391,37 @@ export default (ui, pg) => {
     archGuides: () => pg.evaluate(() => [...document.querySelectorAll('#main .ar-reg[data-argo]')].filter(e => e.getClientRects().length).map(b => { const t = (b.getAttribute('aria-label') || '').trim(), m = t.match(/^(.+?), (\d+)% of top teams, (\d+ of \d+)\./);
       return m ? {name: m[1], share: +m[2], basis: m[3] + ' top teams'} : {name: t}; })),
 
-    // ---------------- Plan settings: no equivalent in the new build ----------------
-    pickFrom: () => NOT('Plan settings › Pick from (My Team\'s Suggest from slider is the only pool control)'),
-    setPickFrom: () => NOT('Plan settings › Pick from'), pickFromOptions: () => NOT('Plan settings › Pick from'),
-    toggleSetting: name => NOT('Plan settings › ' + name), settingOn: name => NOT('Plan settings › ' + name),
-    neverSuggest: () => NOT('Never suggest (Plan settings): no box to add a Pokémon'), neverSuggestList: () => NOT('Never suggest list (Plan settings)'),
-    allowAgain: () => NOT('Never suggest list (Plan settings)'),
+    // ---------------- Plan settings = My Team's Adjust suggestions, Refresh Suggestions and the Never Suggest sheet (see the notes at the top) ----------------
+    /** Pick from = Suggest from (the sgpool slider): the chosen choice, and every choice, as shown (sentence case) */
+    pickFrom: async () => { await toSettings(); return SENT(await txt('#main .sg2-adj [data-v2slide="sgpool"] > button[aria-pressed="true"]')) || null; },
+    pickFromOptions: async () => { await toSettings(); return (await pg.evaluate(() => [...document.querySelectorAll('#main .sg2-adj [data-v2slide="sgpool"] > button')].filter(e => e.getClientRects().length).map(e => e.innerText))).map(SENT); },
+    setPickFrom: async label => { await toSettings(); const ok = await pg.evaluate(l => { const b = [...document.querySelectorAll('#main .sg2-adj [data-v2slide="sgpool"] > button')].find(e => e.getClientRects().length && e.innerText.replace(/\s+/g, ' ').trim().toLowerCase().startsWith(l.toLowerCase())); if (b) b.click(); return !!b; }, label);
+      if (!ok) throw new Error('no Suggest from choice ' + label); await pg.waitForTimeout(700); },
+    /** Let plans swap my Mega = "Swap my Mega?" No / Yes; Count abilities = "Count Abilities?" No / Yes: a toggle taps the choice not pressed */
+    toggleSetting: async name => { const k = SETTING[name]; if (!k) NOT('Plan settings › ' + name); await toSettings();
+      const ok = await pg.evaluate(k => { const b = [...document.querySelectorAll(`#main .sg2-adj [data-v2slide="${k}"] > button`)].find(e => e.getClientRects().length && e.getAttribute('aria-pressed') !== 'true'); if (b) b.click(); return !!b; }, k);
+      if (!ok) throw new Error('no ' + name + ' switch'); await pg.waitForTimeout(700); },
+    settingOn: async name => { const k = SETTING[name]; if (!k) NOT('Plan settings › ' + name); await toSettings();
+      const v = await pg.evaluate(k => { const b = [...document.querySelectorAll(`#main .sg2-adj [data-v2slide="${k}"] > button[aria-pressed="true"]`)].find(e => e.getClientRects().length); return b ? b.dataset.v : null; }, k);
+      if (v == null) throw new Error('no ' + name + ' switch'); return v === '1'; },
+    /** Never suggest: the Never Suggest sheet's "Add a Pokémon" box; the first match is added (today's box adds the first match on Enter) */
+    neverSuggest: async typed => { await openExcl(); const el = pg.locator('.np-sheet [data-exq]').filter({visible: true}).first(); if (!(await el.count())) throw new Error('no "Add a Pokémon" box in Never Suggest');
+      await el.click(); await el.fill(''); await el.type(typed, {delay: 15}); await until(() => vis('.np-sheet [data-exhits] [data-exadd]'), 4000, 'a match in Never Suggest');
+      await click('.np-sheet [data-exhits] [data-exadd]', 600); },
+    /** the Pokémon on the never-suggest list as shown: the open Never Suggest sheet's list, else My Team's "Never suggested: …" line */
+    neverSuggestList: async () => (await sheetOpen('.ex2')) ? txt('.np-sheet .ex2-list') : (await toSettings(), txt('#main .sg2-excl')),
+    allowAgain: async name => { await openExcl(); await click(`.np-sheet .ex2 [data-exallow="${name}"]`, 600); },
   };
+  /** today's Plan settings = My Team's Adjust suggestions: close a sheet that sits over it, open My Team, wait for the suggestions, bring it on screen */
+  async function toSettings() { if (await vis(AREAS['Plan settings']) && !(await pg.evaluate(() => !!(window.V2 && V2._sheet)))) return;
+    await pg.evaluate(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); }); await pg.waitForTimeout(300);
+    if (!(await pg.evaluate(() => !!window.V2 && V2.route() === 'team'))) await prevGo('My Team', 400);
+    if (await ev('members().length')) { await waitPlans(); await until(async () => !(await pg.evaluate(() => { const s = document.querySelector('#main #tm-sg'); return !s || /Working out/.test(s.innerText); })), 15000, 'My Team suggestions'); }
+    await until(() => vis(AREAS['Plan settings']), 4000, 'Adjust suggestions on My Team');
+    await pg.evaluate(s => { const e = document.querySelector(s); if (e) e.scrollIntoView({block: 'center'}); }, AREAS['Plan settings']); await pg.waitForTimeout(200); }
+  /** the Never Suggest sheet, opened the way a player does: "Never Suggest ›" (empty list) or "Change ›" on the Never suggested line */
+  async function openExcl() { if (await sheetOpen('.ex2')) return; await toSettings(); await click('#main [data-v2excl]', 600);
+    await until(() => sheetOpen('.ex2'), 4000, 'the Never Suggest sheet'); }
   // Lock in the strip under the six for the picked tile (aria-label "Lock <name>: …"); pressed again it says "Unlock"
   const tapFoundLock = async name => { const ok = await pg.evaluate(n => { const b = [...document.querySelectorAll('#main [data-v2lock]')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || '').startsWith('Lock ' + n + ':')); if (b) b.click(); return !!b; }, name);
     if (!ok) throw new Error('no Lock for ' + name); await pg.waitForTimeout(600); };

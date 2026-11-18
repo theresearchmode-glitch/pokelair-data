@@ -476,7 +476,7 @@ t('MU-05b', 'Threat sheet ring shows the Strength Score number and band, not the
 t('MU-05c', 'Threat sheet "Best fix" never offers a change that doesn\'t raise the score', async () => {
   const r = await myTeam({fresh: true}); await r.ui.tapThreat('Archaludon'); const s = await r.ui.threatSheet();
   ok(!/Best fix:[^.]*±0/.test(s), 'Best fix offers ±0: ' + (s.match(/Best fix:.{0,60}/) || [''])[0]); await r.close(); },
-  {known: 'inventory #14: "Best fix: ±0 (93 → 93)" with "Apply this fix" on the sample team'});
+  {known: NEW ? '' /* the new site shows Best fix only when it raises the score (matchups.js); passes since the adapter reaches a threat that isn't a stand-out (Nov 17) */ : 'inventory #14: "Best fix: ±0 (93 → 93)" with "Apply this fix" on the sample team'});
 
 // ================= My Team · Part 3 and 4 =================
 t('PLAY-01', 'Game Plan fold: rows with Covered/Missing/Partly; Speed control covered by Whimsicott with Tailwind', async () => {
