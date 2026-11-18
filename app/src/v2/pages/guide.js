@@ -48,7 +48,7 @@ V2.pages.guide = {place: null, draw() {
   ${V2.slide('guide-meta', [['rating', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets']], 'rating', 'Show')} ${V2.slide('guide-box', [['all', 'Whole Roster'], ['box', 'My Box'], ['catch', 'Box + Catch']], 'all', 'Pokémon to use')}
 
   <h2 class="u">Search field</h2>
-  <label class="np-field" style="max-width:520px">${V2.ICON.search}<input type="search" id="sg-search" placeholder="Find a Pokémon, move or item" aria-label="Find a Pokémon, move or item"></label>
+  <label class="np-field" style="max-width:520px">${V2.ICON.search}<input type="search" id="sg-search" placeholder="Find a Pokémon, move or item" aria-label="Find a Pokémon, move or item">${V2.CLR}</label>
 
   <h2 class="u">Forms strip</h2>
   <div class="np-forms" style="max-width:560px"><div class="k"><span>Forms · tap one to open it</span><a class="np-link" href="#guide">Compare all 3 ›</a></div>

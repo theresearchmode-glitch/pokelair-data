@@ -289,9 +289,13 @@ export default (ui, pg) => {
     megasSliderPos: () => pg.evaluate(() => { const s = [...document.querySelectorAll('[data-v2slide="sgmega"]')].find(e => e.getClientRects().length); return s ? +s.style.getPropertyValue('--i') : null; }),
     sliderHasIcons: () => pg.evaluate(() => { const s = [...document.querySelectorAll('[data-v2slide="sgmega"]')].find(e => e.getClientRects().length); return s ? [...s.querySelectorAll(':scope > button')].filter(b => b.querySelector('svg')).length : 0; }),
     megasButtons: () => pg.evaluate(() => { const s = [...document.querySelectorAll('[data-v2slide="sgmega"]')].find(e => e.getClientRects().length); return s ? [...s.querySelectorAll(':scope > button[aria-pressed]')].map(b => ({name: b.innerText.trim(), pressed: b.getAttribute('aria-pressed')})) : []; }),
-    /** the Build around / cores boxes are type="search": no × of the site's own (only some browsers draw one inside), so none to check */
-    clearButtonShown: () => NOT('a × (Clear) button of the site\'s own in Pokémon boxes (the boxes are search boxes; only some browsers draw their own ×)'),
-    tapClear: () => NOT('a × (Clear) button of the site\'s own in Pokémon boxes'),
+    /** the site's own × in the box (Nov 18: V2.CLR, shell.js; the browser's own × is hidden): shown? */
+    clearButtonShown: label => { const s = boxSel(label); if (!s) NOT(`the box "${label}"`); return pg.evaluate(s => { const i = [...document.querySelectorAll(s)].find(e => e.getClientRects().length), f = i && i.closest('.np-field'), x = f && f.querySelector('[aria-label="Clear"]');
+      return !!x && x.getClientRects().length > 0 && getComputedStyle(x).visibility !== 'hidden'; }, s); },
+    /** a real mouse tap on the middle of that × (it never takes focus, so a focused box keeps it) */
+    tapClear: async label => { const s = boxSel(label); if (!s) NOT(`the box "${label}"`); const c = await pg.evaluate(s => { const i = [...document.querySelectorAll(s)].find(e => e.getClientRects().length), f = i && i.closest('.np-field'), x = f && f.querySelector('[aria-label="Clear"]');
+        if (!x || !x.getClientRects().length) return null; const R = x.getBoundingClientRect(); return [R.left + R.width / 2, R.top + R.height / 2]; }, s);
+      if (!c) NOT(`a × (Clear) shown in the box "${label}"`); await pg.mouse.click(c[0], c[1]); await pg.waitForTimeout(400); },
     /** the name list open under the Build around / cores box ('' if closed) */
     nameList: () => txt('#main [data-bdhits], #main [data-bdchits]'),
     focusBox: async label => { const s = boxSel(label); if (!s) NOT(`the box "${label}"`); if (s === BOXES['with a pokémon']) await tabTo('cores'); await pg.evaluate(s => { const i = [...document.querySelectorAll(s)].find(e => e.getClientRects().length); if (i) i.focus(); }, s); await pg.waitForTimeout(900); },

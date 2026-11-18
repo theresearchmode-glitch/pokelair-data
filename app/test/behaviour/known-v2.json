@@ -1,7 +1,6 @@
 {
  "B-build": {
   "X-01": "(b + c) old-site flow: All Suggestions is a sheet over My Team (decisions.md Nov 11), so Build \u2192 All Suggestions passes through My Team and Back closes the sheet onto My Team, not Build. The scroll half is an adapter gap: go() changes pages by setting the address with no tap, and the new site saves the scroll on a tap or page-hide (shell.js navSaveY); with real taps Back restores it (probe Nov 17: Build y=700 \u2192 My Team tab \u2192 Back = y 700). Sorted Nov 17.",
-  "X-05": "(a) real gap, small, low impact: the Build around and cores boxes are search boxes with no \u00d7 of the site's own; Chrome draws its own (Esc also empties the box), unsure whether iPhone Safari does. No Sim decision found. Sorted Nov 17.",
   "X-06": "(b) the new name box's own words: no match reads \"No Pok\u00e9mon called \u201czzqx\u201d.\" (build.js), not \"No matches. Try fewer letters.\"; Esc closes the list and also empties the box; Enter picks. Sorted Nov 17.",
   "X-08": "(b) pending Sim: the All Suggestions sheet design (parity-nov15.md item 3): the sheet is one list with no \"One Pok\u00e9mon In, One Out\" heading (sugs.js). Build's headings pass. Sorted Nov 17.",
   "AUTO-07": "(b) wording: the busy line reads \"Building from real winning teams\u2026\" (build.js); busy and disabled work. Sorted Nov 17.",

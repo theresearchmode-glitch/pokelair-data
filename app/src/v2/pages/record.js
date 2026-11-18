@@ -21,7 +21,7 @@ V2.ygHtml = () => { const ms = members(), q = V2.ql, E = V2.esc, so = (S.opp || 
     <div class="yg2-leads">${ms.map(m => { const on = lp.includes(m.p.n); return `<button type="button" class="yg2-l" data-yglead="${E(m.p.n)}" aria-pressed="${on}" aria-label="${E(m.d)}${on ? ', lead' : ''}">${V2.mon(m.p.n, {iw: 64, sel: on})}</button>`; }).join('')}</div>
     <h3 class="yg2-h">Their team <small>optional</small></h3>
     <div class="yg2-opp">${q.opp.map((n, i) => `<span class="yg2-o">${V2.mon(n, {iw: 48, bare: true})}<b>${E(V2.disp(n))}</b><button type="button" data-ygoppx="${i}" aria-label="Remove ${E(V2.disp(n))}">×</button></span>`).join('')}</div>
-    ${q.opp.length < 6 ? `<label class="np-field yg2-q">${V2.ICON.search}<input type="search" data-ygq value="${E(q.q)}" placeholder="Add their Pokémon" aria-label="Add one of their Pokémon" autocomplete="off"></label>
+    ${q.opp.length < 6 ? `<label class="np-field yg2-q">${V2.ICON.search}<input type="search" data-ygq value="${E(q.q)}" placeholder="Add their Pokémon" aria-label="Add one of their Pokémon" autocomplete="off">${V2.CLR}</label>
       <div class="hits yg2-hits">${hits.map(p => `<button type="button" class="np-hit" data-ygopp="${E(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><b>${V2.nameHtml(V2.disp(p.n))}</b></button>`).join('')}</div>` : ''}
     ${so.length && !q.opp.length ? `<button type="button" class="np-link yg2-bm" data-ygbm>Use their ${so.length} from Battle: ${E(so.slice(0, 3).map(n => byName.get(n).d).join(', '))}${so.length > 3 ? '…' : ''}</button>` : ''}
     <div class="yg2-res"><button type="button" class="np-btn" data-ygres="W">Win</button><button type="button" class="np-btn2" data-ygres="L"><span>Loss</span></button></div></div>`; };

@@ -39,6 +39,17 @@ V2.ICON = {fwd: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path
   // Day/Night as a sun and a moon (Sim, Nov 12: not the words; today's site shows the mode you're in: a sun by day, a moon at night)
   sun: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7 7 17M17 7l1.7-1.7"/></g></svg>',
   moon: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>'};
+// The site's own × in every search box (behaviour test X-05; today's site has had one since Oct 30, 61-concept-h-pages.js clrWrap).
+// Each box puts V2.CLR right after its input inside the .np-field. CSS shows it only while the box has text (:placeholder-shown) and
+// hides the browser's own × (Chrome draws one, iPhone Safari may not), so there is one × everywhere. One tap empties the box, keeps
+// focus in it (pointerdown/mousedown never take focus, so the phone keyboard stays up) and fires the box's 'input', so its list updates.
+// Not a Tab stop (as today's): the keyboard clears with select-all and Delete, and Tab goes from the box straight on.
+V2.CLR = '<button type="button" class="np-clr" data-v2clr tabindex="-1" aria-label="Clear"><svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></button>';
+for (const ev of ['pointerdown', 'mousedown']) document.addEventListener(ev, e => { if (e.target.closest && e.target.closest('[data-v2clr]')) e.preventDefault(); }, true);
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2clr]'); if (!b) return; e.preventDefault();
+  const f = b.closest('.np-field'), i = f && f.querySelector('input'); if (!i) return;
+  try { i.focus({preventScroll: true}); } catch (x) { i.focus(); } i.value = ''; i.dispatchEvent(new Event('input', {bubbles: true}));
+  if (i.isConnected && document.activeElement !== i) try { i.focus({preventScroll: true}); } catch (x) {} });
 // one toast at a time, always just above the team dock and the phone bar (whichever is higher on screen)
 // code review C8: one Undo for actions outside the team's own Undo (a deleted game, cleared Their Six): the toast's button runs restore
 V2.undoToast = (msg, restore) => { V2._undoFn = restore; return V2.toast(V2.esc(msg) + ' <button type="button" data-v2undo>Undo</button>', 6000); };
@@ -125,7 +136,7 @@ V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: [
   const mons = [...V2.byName.values()].map(p => { const d = norm(V2.disp(p.n)), n = norm(p.n); const at = Math.min(...[d.indexOf(nq), n.indexOf(nq)].filter(i => i >= 0).concat(99));
     return {p, at: at === 99 ? null : at}; }).filter(x => x.at !== null).sort((a, b) => a.at - b.at || (b.p.u || 0) - (a.p.u || 0) || V2.disp(a.p.n).length - V2.disp(b.p.n).length).slice(0, 8).map(x => x.p);
   return {places, mons}; };
-V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="Find a Pokémon, move, item, team style or page" aria-label="Find a Pokémon, move, item, Ability, team style, saved team or page" autocomplete="off"></label><p class="vh" data-v2hitsay role="status"></p><div class="hits" data-v2hits></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
+V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Search</h2><label class="np-field">${V2.ICON.search}<input type="search" data-v2q placeholder="Find a Pokémon, move, item, team style or page" aria-label="Find a Pokémon, move, item, Ability, team style, saved team or page" autocomplete="off">${V2.CLR}</label><p class="vh" data-v2hitsay role="status"></p><div class="hits" data-v2hits></div></div>`, {label: 'Search', small: true, focus: '[data-v2q]'});
   const inp = sh.querySelector('[data-v2q]'), out = sh.querySelector('[data-v2hits]');
   // saved teams by name too (today's search does): choosing one opens it, like Open in Saved Teams
   const teams = q => { q = q.trim().toLowerCase(); return q && typeof S === 'object' ? S.teams.filter(t => t.format !== 'singles' && String(t.name).toLowerCase().includes(q)).slice(0, 4) : []; };

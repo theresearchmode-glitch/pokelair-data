@@ -359,5 +359,25 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
 { const ctx = await b.newContext({viewport: {width: 390, height: 844}, javaScriptEnabled: false}); const q = await ctx.newPage(); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(600);
   const st = await q.evaluate(() => ({main: ((document.querySelector('#main') || {}).innerText || '').trim(), logo: !!document.querySelector('#main .np-ldlogo img, #main .np-ldlogo picture')}));
   ok(/Getting today.s numbers/.test(st.main) && st.logo, `Pre-launch 2b (Nov 17): before any code runs, the page shows the logo and "Getting today's numbers" (main: "${st.main.slice(0, 40)}", logo ${st.logo})`); await ctx.close(); }
+/* X-05 (Nov 18, behaviour test "the × in a Pokémon box empties it and keeps the keyboard up"): the site's own × (V2.CLR) in five search boxes,
+   by a phone tap at 390 and a mouse click at 1280. Fails on the build before it (no ×; only the browser's own, which iPhone Safari may not draw). */
+{ const xr = []; for (const touch of [true, false]) { const xc = await b.newContext({hasTouch: touch, viewport: touch ? {width: 390, height: 844} : {width: 1280, height: 900}}), xq = await xc.newPage(); await xq.addInitScript(() => { window.__PL_TEST = 1; });
+    for (const [r, prep, sel, list] of [['build', '', '[data-bdfind]', '[data-bdhits]'], ['build', 'cores', '[data-bdcfind]', '[data-bdchits]'], ['home', 'search', '[data-v2q]', '[data-v2hits]'], ['tournaments', '', '[data-wtq]', '.wt-find'], ['meta', '', '[data-raq]', '.ra-count']]) {
+      await xq.goto('file://' + PAGE + '#' + r); await xq.waitForTimeout(1800);
+      if (prep === 'cores') await xq.evaluate(() => document.querySelector('#main [data-bdjump="cores"]').click()); if (prep === 'search') await xq.evaluate(() => V2.openSearch()); await xq.waitForTimeout(500);
+      const st = () => xq.evaluate(([sel, list]) => { const i = [...document.querySelectorAll(sel)].find(e => e.getClientRects().length), f = i && i.closest('.np-field'), x = f && f.querySelector('[aria-label="Clear"]'), L = document.querySelector(list);
+        const vis = !!x && x.getClientRects().length > 0, R = vis && x.getBoundingClientRect(), cx = R && R.left + R.width / 2, cy = R && R.top + R.height / 2;
+        const hit = (a, c) => { const h = document.elementFromPoint(a, c); return !!h && (h === x || x.contains(h)); }, ext = (dx, dy) => { let d = 0; while (d < 60 && hit(cx + dx * (d + 1), cy + dy * (d + 1))) d++; return d; };
+        return {v: i ? i.value : null, foc: !!i && document.activeElement === i, x: vis, cx, cy, w: vis ? ext(-1, 0) + ext(1, 0) + 1 : 0, h: vis ? ext(0, -1) + ext(0, 1) + 1 : 0,
+          nat: i ? (() => { const walk = rs => [...rs].some(c => !c.selectorText ? !!c.cssRules && walk(c.cssRules) : c.style.display === 'none' &&c.selectorText.split(',').some(s => /::-webkit-search-cancel-button\s*$/.test(s) && i.matches(s.replace(/::-webkit-search-cancel-button\s*$/, '')))); /* Chrome's getComputedStyle can't read this pseudo, so: a rule that hides it on this box */
+            return [...document.styleSheets].some(s => { try { return walk(s.cssRules); } catch (e) { return false; } }) ? 'none' : 'shown'; })() : '', fh: f ? Math.round(f.getBoundingClientRect().height) : 0, list: L ? L.innerText.replace(/\s+/g, ' ').trim() : ''}; }, [sel, list]);
+      const el = xq.locator(sel).filter({visible: true}).first(); await el.scrollIntoViewIfNeeded(); await xq.evaluate(s => { const i = [...document.querySelectorAll(s)].find(e => e.getClientRects().length); scrollTo(0, i.getBoundingClientRect().top + scrollY - 160); }, sel);
+      const s0 = await st(); if (touch) await el.tap(); else await el.click(); await xq.keyboard.type('gar', {delay: 20}); await xq.waitForTimeout(700); const s1 = await st();
+      if (s1.x) { if (touch) await xq.touchscreen.tap(s1.cx, s1.cy); else await xq.mouse.click(s1.cx, s1.cy); } await xq.waitForTimeout(700); const s2 = await st();
+      const bad = [!s0.x || 'shown when empty', s1.x || 'no ×', s1.w >= 44 && s1.h >= 44 || `tap ${s1.w}x${s1.h}`, s1.nat === 'none' || 'browser × too (' + s1.nat + ')', s1.fh === s0.fh || `box ${s0.fh}->${s1.fh}px`, s1.list !== s0.list || 'list ignored typing',
+        s2.v === '' || 'not emptied', s2.foc || 'focus lost', !s2.x || '× left after clear', s2.list === s0.list || 'list not back'].filter(z => z !== true);
+      xr.push(`${touch ? 390 : 1280} ${prep || r}: ${bad.length ? bad.join(', ') : 'ok ' + s1.w + 'x' + s1.h}`); }
+    await xc.close(); }
+  ok(xr.every(x => / ok /.test(x)), `X-05 (Nov 18): the site's own × in search boxes (Build around, Cores, Search, Winning Teams, Meta; phone tap and mouse): hidden when empty, a 44px tap, the browser's own × hidden, the box no taller; one tap empties the box, keeps focus (keyboard up) and the list goes back (${xr.join('; ')})`); }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

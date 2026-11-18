@@ -82,6 +82,13 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-ic{width:20px;height:20px;flex:none}.np-field .np-ic{color:var(--ink-2)}
 .np-field:focus-within{outline:3px solid var(--plot);outline-offset:3px}
 :root[data-theme="night"] .np-field{border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
+/* the site's own × (X-05, V2.CLR in shell.js): the search glass's twin at the right end (20px, the same ink, the same 26px from the
+   edge), a 44px tap that reaches past the box's padding without making the box taller; only while the box has text. The browser's
+   own × is hidden, so there is one × on every browser. */
+.np-field input::-webkit-search-cancel-button,.np-field input::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+.np-clr{flex:none;display:grid;place-items:center;width:var(--tap);height:var(--tap);margin:calc(-1 * var(--s3)) calc(-1 * var(--s3)) calc(-1 * var(--s3)) 0;padding:0;border:0;background:none;color:var(--ink-2);cursor:pointer;-webkit-tap-highlight-color:transparent}
+@media (hover:hover){.np-clr:hover .np-ic{color:var(--ink)}}
+.np-field input:placeholder-shown~.np-clr{display:none}
 /* forms strip: a Pokémon and its Megas, one tab each; the open form stands on its tilted panel */
 .np-forms .k{display:flex;justify-content:space-between;align-items:center;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2);margin-bottom:var(--s2)}.np-forms .k .np-link{display:inline-flex;align-items:center;min-height:var(--tap);margin:calc(var(--s3) * -1) 0}
 .np-forms .r{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,160px);gap:var(--s2)}

@@ -39,7 +39,7 @@ V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = m
     <p class="ra-lede">The moves, items, Abilities and natures real players run, and who they pair it with.</p><p class="ra-links"><a class="np-link" href="#meta">Ratings ›</a><a class="np-link" href="#usage">Usage ›</a></p></section>`;
   const q = U.q.trim().toLowerCase(), hits = q ? ROSTER.filter(x => x.d.toLowerCase().includes(q)).slice(0, 8) : [];
   const S2 = p ? V2.stSet(p) : null;
-  const ctl = `<div class="gs-ctl"><div class="ra-find st-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-stq value="${E(U.q)}" placeholder="Look up a Pokémon" aria-label="Look up a Pokémon" autocomplete="off"></label>
+  const ctl = `<div class="gs-ctl"><div class="ra-find st-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-stq value="${E(U.q)}" placeholder="Look up a Pokémon" aria-label="Look up a Pokémon" autocomplete="off">${V2.CLR}</label>
       ${q ? `<div class="st-hits" role="listbox" aria-label="Matches">${hits.length ? hits.map(x => `<button type="button" class="ra-chip" data-v2setmon="${E(x.n)}">${E(x.d)}</button>`).join('') : '<p class="tm-sub">No Pokémon matches that.</p>'}</div>` : ''}</div>
     <div class="ra-filt us-srcs" role="group" aria-label="Doubles data source">${Object.keys(SET_SRC).map(k => `<button type="button" class="ra-chip" data-v2setsrc="${k}" aria-pressed="${S2 ? S2.src === k : k === 'ingame'}">${V2.setSrcName[k] || SET_SRC[k]}</button>`).join('')}</div>
     ${S2 ? `<p class="fine us-src">${S2.line}</p>` : ''}</div>`;

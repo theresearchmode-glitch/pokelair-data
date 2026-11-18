@@ -39,7 +39,7 @@ V2.pages.battle = {place: 'battle', draw() { const {mine, theirs, P} = V2.btPlan
 // ---------- their six: a sheet with six name boxes and the top tournament teams (today's entry ways) ----------
 V2.btOppSheet = () => { const E = V2.esc, opp = S.opp.slice(0, 6); while (opp.length < 6) opp.push('');
   const slot = (n, i) => byName.get(n) ? `<div class="bt-oslot on">${V2.mon(n, {iw: 48, bare: true})}<b>${V2.rowName(V2.disp(n))}</b><button type="button" class="bd-x" data-btox="${i}" aria-label="Remove ${E(V2.disp(n))}">×</button></div>`
-    : `<div class="bt-oslot"><label class="np-field bd-find">${V2.ICON.search}<input type="search" data-btfind="${i}" value="${E(V2.btUi.find[i] || '')}" placeholder="Pokémon ${i + 1}" aria-label="Their Pokémon ${i + 1}: type its name" autocomplete="off"></label><div class="bd-hits" data-bthits="${i}"></div></div>`;
+    : `<div class="bt-oslot"><label class="np-field bd-find">${V2.ICON.search}<input type="search" data-btfind="${i}" value="${E(V2.btUi.find[i] || '')}" placeholder="Pokémon ${i + 1}" aria-label="Their Pokémon ${i + 1}: type its name" autocomplete="off">${V2.CLR}</label><div class="bd-hits" data-bthits="${i}"></div></div>`;
   let teams = []; try { teams = gauntletTeams().slice(0, 10); } catch (e) {}
   const team = (t, i) => `<li><button type="button" class="bt-oteam" data-btteam="${i}"><span class="bt-osix" aria-hidden="true">${t.mons.slice(0, 6).map(n => V2.mon((n && n.n) || n, {iw: 36, bare: true})).join('')}</span><span><b>${E(t.who)}</b><small>${E(t.ev || '')}</small></span></button></li>`;
   const rec = V2.btRecent(), all = (META.teams && META.teams.teams) || [];

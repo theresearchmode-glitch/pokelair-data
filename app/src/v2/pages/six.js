@@ -90,7 +90,7 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
 // Picking adds it (today's addMon) and the sheet turns into that Pokémon's Edit Set. The sheet sits outside the page, so a redraw
 // while typing (the day's data arriving) never touches the text.
 V2.addHtml = (i, rep) => `<div class="ed2 sx-addsh"><div class="np-eyebrow">Spot ${i + 1}</div><h2 class="u">${rep ? 'Replace ' + V2.esc(rep) : 'Add a Pokémon'}</h2>
-  <label class="np-field">${V2.ICON.search}<input type="search" data-adq="${i}" placeholder="Name, e.g. garch or mega sal" aria-label="Pokémon for spot ${i + 1}" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sx-hits"></label>
+  <label class="np-field">${V2.ICON.search}<input type="search" data-adq="${i}" placeholder="Name, e.g. garch or mega sal" aria-label="Pokémon for spot ${i + 1}" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sx-hits">${V2.CLR}</label>
   <div class="hits sx-hits" id="sx-hits" role="listbox" aria-label="Matches" data-adhits></div>
   <p class="fine sx-addhint">${rep ? 'Pick the Pokémon to take its place. Undo brings ' + V2.esc(rep) + ' back.' : 'Type part of a name: a base name lists its forms and Mega too.'}</p></div>`;
 V2.openAdd = i => { V2.ed.i = i; V2.ed.rep = null; V2.sheet(V2.editHtml(), {label: 'Add a Pokémon', focus: '[data-adq]'}); };

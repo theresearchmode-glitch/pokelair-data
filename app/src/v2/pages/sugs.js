@@ -267,7 +267,7 @@ V2.exclLine = () => { const L = V2.exclNames(), E = V2.esc;
 V2.exclSheet = () => { const E = V2.esc, L = V2.exclNames();
   return `<div class="ex2"><div class="np-eyebrow">Suggestions</div><h2 class="u">Never Suggest</h2><p class="fine">These never appear in suggestions or Build Me a Team${L.length ? '' : '. Nothing here yet'}.</p>
     ${L.length ? `<ul class="ex2-list">${L.map(([n, d]) => `<li><b>${E(d)}</b><button type="button" class="np-btn2" data-exallow="${E(n)}"><span>Allow Again</span></button></li>`).join('')}</ul>` : ''}
-    <label class="np-field ex2-add">${V2.ICON.search}<input type="search" data-exq placeholder="Add a Pokémon" aria-label="Add a Pokémon never to suggest" autocomplete="off"></label><div class="hits" data-exhits aria-live="polite"></div></div>`; };
+    <label class="np-field ex2-add">${V2.ICON.search}<input type="search" data-exq placeholder="Add a Pokémon" aria-label="Add a Pokémon never to suggest" autocomplete="off">${V2.CLR}</label><div class="hits" data-exhits aria-live="polite"></div></div>`; };
 V2.exclOpen = (focus) => { V2.sheet(V2.exclSheet(), {label: 'Never suggest', small: true, focus: focus || '[data-exq]'}); };
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2excl],[data-exallow],[data-exadd]'); if (!t) return; const d = t.dataset;
   if (d.v2excl != null) { V2.exclOpen(); return; }
