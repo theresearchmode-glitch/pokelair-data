@@ -95,6 +95,10 @@ const MQ = async () => {
     const r = await q.evaluate(sel => [...document.querySelectorAll(sel)].map(m => { const d = m.children[1]; return d ? [...d.children].map(c => c.tagName + ':' + c.textContent.trim()).join(' / ') : 'none'; }), sel);
     ok(r.length > 0 && r.every(x => /^DT:Sent \/ DD:([A-Z][a-z]{2} \d{1,2}(, \d{4})?|Date not confirmed) \/ DD:(Serial code|Event gift)$/.test(x)), `MQ-1b ${hash}: the label's middle column reads "Sent", the date, then how it is given (${r.join(' | ')})`);
     await q.close(); }
+  // MQ-2c (answer 2c): the Back Page's column names are the word list's: "Top Ratings" and "Next Events" (were The Standings / Fixtures), full paper and Home's small one
+  { const q = await open('#news'); const r = await q.evaluate(() => { const h = [...document.querySelectorAll('#main .dp-bc h3')].map(x => x.textContent.trim()), all = document.body.innerText;
+      return {h: h.join(' | '), labels: [...document.querySelectorAll('#main .dp-bc[aria-label]')].map(x => x.getAttribute('aria-label')).join(' | '), old: /The Standings|Fixtures/.test(all)}; });
+    ok(/Top Ratings/.test(r.h) && /Next Events/.test(r.h) && /Top Ratings/.test(r.labels) && /Next Events/.test(r.labels) && !r.old, `MQ-2c: the Back Page says "Top Ratings" and "Next Events", never "The Standings" or "Fixtures" (${JSON.stringify(r)})`); await q.close(); }
   // MQ-1i (answer 1i): the new Post Room words as built, and "Live right now" (a small Unbounded stamp on its plate) on the font check's allowed list
   { const un = fs.readFileSync(new URL('./v2-unbounded.mjs', import.meta.url), 'utf8'), q = await open('#gifts');
     const t = await q.evaluate(() => { const pk = document.querySelector('#main .pr-stats .ev-pk'), cs = pk && getComputedStyle(pk); return {pk: pk && pk.textContent, font: cs && cs.fontFamily.split(',')[0] + ' ' + cs.fontSize,
@@ -753,7 +757,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     const S = POST.series || [], G = POST.gifts || [], lead = V2.dpParts(V2.postNow()).lead, yr = ((S.find(r => lead && r.src === lead.url) || {}).month || 'none').slice(0, 4);
     const cells = [...document.querySelectorAll('.dp-rd')].map(li => { const m = li.querySelector('[data-v2mon]'); return m ? m.dataset.v2mon : ''; }).join(',');
     return {rows: rows.join('|'), seen: seen.join('|'), ev: ev === V2.evTitle(c.ev.name), six: six === c.t.mons.map(m => m.n).join(','), series: cells, want: S.filter(r => r.month.startsWith(yr)).map(r => r.mon || (G.find(g => g.id === r.gift) || {}).mon || '').join(',')}; })()`));
-  ok(!!d3.seen && d3.seen.split('|').length === 5 && d3.rows === d3.seen, `DP-3: The Standings are the Ratings page's top five, shared ranks and shown ratings (${d3.seen})`);
+  ok(!!d3.seen && d3.seen.split('|').length === 5 && d3.rows === d3.seen, `DP-3: Top Ratings are the Ratings page's top five, shared ranks and shown ratings (${d3.seen})`);
   ok(d3.ev && d3.six, `DP-4: Latest Result is homeChamp(): the same event name and the winner's six (${JSON.stringify({ev: d3.ev, six: d3.six})})`);
   ok(d3.series && d3.series === d3.want, `DP-5: the series row shows each round's gift from POST.series, in order (${d3.series} vs ${d3.want})`);
   const nx = await qe(() => (((document.querySelector('.dp-fix [data-dpcal]') || {}).textContent || '').match(/All (\d+) Next Events/) || [])[1] || 'none');
@@ -1125,7 +1129,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       const hrefs = [...d.querySelectorAll('[href]')].map(a => a.getAttribute('href')), badH = hrefs.filter(h => !/^https:\\/\\//.test(h) && !/^#/.test(h));
       return {bad: badH.slice(0, 4), plain: [0, 1, 2, 3, 4, 5].every(i => d.textContent.includes('Bad ' + i)), good: hrefs.includes('https://example.org/g'), fix: !!n};
     } finally { POST = keep; if (kc) META.calendar.ev = kc; V2.dpUi.more = km; } })()`);
-  ok(n1.bad && !n1.bad.length && n1.plain && n1.good && n1.fix, `NPR-1: a javascript:, data:, vbscript:, http: or broken news, Fixtures or source URL never becomes a link on #news, #gifts or Home; its headline shows as plain text (${JSON.stringify(n1)})`);
+  ok(n1.bad && !n1.bad.length && n1.plain && n1.good && n1.fix, `NPR-1: a javascript:, data:, vbscript:, http: or broken news, Next Events or source URL never becomes a link on #news, #gifts or Home; its headline shows as plain text (${JSON.stringify(n1)})`);
   const n4 = await ev(q, `(() => { const keep = POST; try { POST = {checked: null, news: [], gifts: [{kind: 'item', name: 'VP', amount: 500, how: 'Event Gift', end: new Date(Date.now() + 20 * 864e5).toISOString()}]};
     return {live: V2.postNow().live.length, shown: /500 VP/.test(V2.pages.gifts.draw())}; } finally { POST = keep; } })()`);
   const wf = fs.readFileSync(path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../.github/workflows/test.yml'), 'utf8');

@@ -10,7 +10,7 @@ V2.postNow = (now = Date.now()) => { const P = (typeof POST === 'object' && POST
   const g = (P.gifts || []).filter(V2.postMG), live = g.filter(x => !(t(x.start) > now) && !(t(x.end) < now)).sort((a, b) => t(a.end) - t(b.end)),
     past = g.filter(x => t(x.end) < now).sort((a, b) => t(b.end) - t(a.end));
   return {live, past, news: (P.news || []).slice().sort((a, b) => t(b.date) - t(a.date)), checked: P.checked}; };
-// V2.safeUrl(u): the one link check for the family (Post Room sources, Dispatch headlines, Read links and Fixtures, Home's band): u when
+// V2.safeUrl(u): the one link check for the family (Post Room sources, Dispatch headlines, Read links and Next Events, Home's band): u when
 // it is an https:// URL, else ''. A javascript:, data:, http: or broken link never becomes a link; its words show as plain text.
 V2.safeUrl = u => { u = typeof u === 'string' ? u.trim() : ''; if (!/^https:\/\//i.test(u)) return ''; try { return new URL(u).protocol === 'https:' ? u : ''; } catch (e) { return ''; } };
 // V2.officialHost(u): true only for an official host or its subdomain (a URL parse, then the host equals it or ends with "." + it). The

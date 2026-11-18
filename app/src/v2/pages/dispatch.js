@@ -20,8 +20,8 @@
 //   of the series (its link is the round's source), the series row sits under it: one column per round of that year, its gift
 //   from gifts[] ("No gift listed" when it has none). The right column holds interviews when POST has any; the official feed has
 //   none, so it then holds "In Brief": the next newest real headlines.
-//   The Standings: lairRows / lairRank / monRating (the same numbers as Ratings and Home). Latest Result: homeChamp().
-//   Fixtures and Next event: META.calendar through CAL, with the same upcoming filter as the Events page (V2.evCal), so
+//   Top Ratings: lairRows / lairRank / monRating (the same numbers as Ratings and Home). Latest Result: homeChamp().
+//   Next Events and Next event: META.calendar through CAL, with the same upcoming filter as the Events page (V2.evCal), so
 //   "All N Next Events" is the Events page's "Show All N" under Next Events.
 //   Days left and dates on a gift are the Post Room's (V2.prDaysLeft, V2.prDate): a day-only (approx) date is its UTC day, an exact one local.
 //   The coupon's code is the Post Room's piece (V2.prCode: upright, digits blue, spelled for screen readers) with its Copy Code
@@ -112,18 +112,18 @@ V2.dpCoupon = D => { const E = V2.esc, g = D.coupon;
   return `<aside class="dp-cpn" aria-label="Clip and claim: ${E(g.name)}"><i class="dp-sc" aria-hidden="true">✂</i><p class="dp-k dp-rk">Clip and claim · Mystery Gift</p><h3 class="dp-cph u">${E(g.name)}</h3>
     ${V2.prCopyRow(g.code, ' dp-crow')}
     <p class="dp-cpm">${left != null && left >= 0 ? `<b>${E(V2.dpLeftTxt(left))}.</b> ` : ''}${E([how, when].filter(Boolean).join(', '))}${how || when ? '. ' : ''}Blue characters are numbers. <a class="dp-lk" href="#gifts">All Mystery Gifts ›</a></p></aside>`; };
-// ---------- The Back Page: Latest Result, The Standings, Fixtures ----------
+// ---------- The Back Page: Latest Result, Top Ratings, Next Events (Sim, Nov 18, 2c: the word list's names, were The Standings / Fixtures) ----------
 V2.dpLatest = () => { const E = V2.esc; let c = null; try { c = homeChamp(); } catch (e) {}
   if (!c) return `<section class="dp-bc dp-res"><h3 class="dp-ch u">Latest Result</h3><p class="dp-sum">Tournament results appear here after the next data refresh.</p></section>`;
   const ev = c.ev;
   return `<section class="dp-bc dp-res" aria-label="Latest result"><h3 class="dp-ch u">Latest Result</h3><button type="button" class="dp-evt u" data-evgo="${E(ev.id)}" aria-label="${E(V2.evTitle(ev.name))}: open the placings">${E(V2.evTitle(ev.name))}</button>
     <p class="dp-meta">${E(evDate(ev.date))} · ${ev.players > 0 ? homeNum(ev.players) + ' players · ' : ''}the winner's six</p><ul class="dp-six">${c.six.map(m => `<li>${V2.dpMonGift(m.p.n, 'dp-f6')}</li>`).join('')}</ul></section>`; };
 V2.dpStand = () => { const E = V2.esc; let rows = []; try { rows = lairRows().filter(x => x.r && x.r.tc).slice(0, 5); } catch (e) {}
-  return `<section class="dp-bc dp-std" aria-label="The Standings"><h3 class="dp-ch u">The Standings</h3>${rows.length ? `<ol class="dp-tb">${rows.map(x => { const R = monRating(x.p), k = lairRank(x.p);
+  return `<section class="dp-bc dp-std" aria-label="Top Ratings"><h3 class="dp-ch u">Top Ratings</h3>${rows.length ? `<ol class="dp-tb">${rows.map(x => { const R = monRating(x.p), k = lairRank(x.p);
     return `<li><button type="button" class="dp-row" data-v2mon="${E(x.p.n)}" aria-label="Rank ${k ? k.rank : ''}: ${E(x.p.d)}${R ? ', ' + R.tier + ' tier, rating ' + R.n : ''}. Open its page."><b class="dp-rk1 u" aria-hidden="true">${k ? k.rank : ''}</b><span class="dp-rn">${V2.keepForm(E(x.p.d))}</span><small aria-hidden="true">${R ? E(R.tier) + ' tier' : ''}</small><b class="dp-rv u" aria-hidden="true">${R ? R.n : ''}</b></button></li>`; }).join('')}</ol>` : '<p class="dp-sum">Ratings appear after the next data refresh.</p>'}
     <a class="dp-lk dp-all" href="#meta">All Ratings ›</a></section>`; };
 V2.dpFix = () => { const E = V2.esc, next = V2.dpNext(), shown = next.slice(0, 3);
-  return `<section class="dp-bc dp-fix" aria-label="Fixtures"><h3 class="dp-ch u">Fixtures</h3>${shown.length ? `<ul class="dp-fl">${shown.map(e => { const d = new Date(e.s + 'T12:00:00'), w = CAL.when(e)[1].replace(/ /g, '\u00a0'), pl = V2.dpPlace(e);
+  return `<section class="dp-bc dp-fix" aria-label="Next Events"><h3 class="dp-ch u">Next Events</h3>${shown.length ? `<ul class="dp-fl">${shown.map(e => { const d = new Date(e.s + 'T12:00:00'), w = CAL.when(e)[1].replace(/ /g, '\u00a0'), pl = V2.dpPlace(e);
     const inner = `<b class="dp-fd u" aria-hidden="true">${d.getDate()}</b><span class="dp-fn">${E(e.n)}</span><small>${E(CAL.range(e))}${pl ? ' · ' + E(pl) : ''}\u00a0· ${E(w)}</small>`;
     const u = V2.safeUrl(e.url);
     return `<li>${u ? `<a class="dp-fr" href="${E(u)}" target="_blank" rel="noopener" aria-label="${E(e.n)}, ${E(CAL.range(e))}${pl ? ', ' + E(pl) : ''}, ${E(w)}: details (opens a new tab)">${inner}</a>` : `<span class="dp-fr">${inner}</span>`}</li>`; }).join('')}</ul>` : '<p class="dp-sum">No upcoming events listed right now.</p>'}
