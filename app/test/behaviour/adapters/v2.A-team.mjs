@@ -85,8 +85,12 @@ export default (ui, pg, o) => {
 
     // ---------- Pokémon info sheet (.ms2 in a sheet) ----------
     tapPokemon: async (name, within = '') => { for (let k = 0; k < 2; k++) { await H.tapPokemonOnce(name, within); if (await waitFor(async () => (await H.infoSheet()) || (await H.pokemonPage()), 3000)) return; } }, /* the page since Nov 15 */
-    tapPokemonOnce: (name, within = '') => tapFound(([n, w]) => { const r = w ? document.querySelector(w) : document; return [...(r || document).querySelectorAll('[data-v2mon]')].filter(e => e.getClientRects().length && !e.closest('[hidden]') && !e.closest('.ms2'))
-        .find(e => (e.getAttribute('aria-label') || e.innerText || e.dataset.v2mon || '').replace(/\s+/g, ' ').toLowerCase().includes(n.toLowerCase()) || e.dataset.v2mon.toLowerCase() === n.toLowerCase()) || null; }, [name, within], 'Pokémon ' + name + ' (an element that opens its info sheet)', 800),
+    tapPokemonOnce: (name, within = '') => tapFound(([n, w]) => { const r = w ? document.querySelector(w) : document; const all = [...(r || document).querySelectorAll('[data-v2mon]')].filter(e => e.getClientRects().length && !e.closest('[hidden]') && !e.closest('.ms2'))
+        .filter(e => (e.getAttribute('aria-label') || e.innerText || e.dataset.v2mon || '').replace(/\s+/g, ' ').toLowerCase().includes(n.toLowerCase()) || e.dataset.v2mon.toLowerCase() === n.toLowerCase());
+      /* Nov 18: a named control first, brought to the middle of the screen. Home's herd sprites are decorative (aria-hidden,
+         stampede-hero.js) and move as the page scrolls: at 390 the tap landed on the fixed header; the ticker's button, scrolled only to the
+         screen's edge, sat under the phone bar and the tap opened Battle (PKMN-01 failed here in Chromium, on GitHub in WebKit). */
+      const el = all.find(e => !e.closest('[aria-hidden="true"]')) || all[0] || null; if (el) el.scrollIntoView({block: 'center', inline: 'nearest'}); return el; }, [name, within], 'Pokémon ' + name + ' (an element that opens its info sheet)', 800),
     infoSheet: async () => (await sheetText('.ms2')) || (await H.pokemonPage()), /* Nov 15: the Pokémon page took over from the sheet; tests asking for the sheet read the page */
     tapPokemonInSheet: name => tapFound(n => [...document.querySelectorAll('.ms2 [data-v2mon]')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || e.innerText || '').includes(n)) || null, name, 'sheet Pokémon ' + name, 900),
     closeInfoSheet: async () => { if (await H.pokemonPage()) { await pg.goBack(); await pg.waitForTimeout(900); return; } return closeSheet(); }, /* the Pokémon page: Back is its close */
