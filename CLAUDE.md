@@ -40,7 +40,7 @@ without checking first. (docs/rebuild/RULES.md section 0.)
 (docs/rebuild/RULES.md section 0b).
 
 ## Be proactive and efficient (Sim, Nov 17; a standing rule)
-Helper limit (Sim, Nov 18): at most 15 helpers/subagents running at once.
+Helper limit (Sim, Nov 18, latest): at most 7 helpers/subagents running at once (was 15 earlier that night).
 Make the website process run as smoothly and quickly as possible. Think ahead: what will the next steps need (data, research,
 measurements, decisions), and start it early instead of waiting until it blocks. Use helper agents in parallel for research,
 data pulls, measurements and look-only audits, without asking first (usage is not a problem for now; just tell Sim what is
