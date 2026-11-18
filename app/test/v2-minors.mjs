@@ -4,6 +4,9 @@
 //   A1-M3  Build's Save says "for this visit" when the browser can't keep it (it always said "Saved")
 //   DP-1..12  The Champions Dispatch (#news): source links, what goes on the front, the same numbers as the site, the coupon, contrast, widths, the small piece
 //   SDP-1..6  Home's post band (The Stampede, band 4): the Post Room and Dispatch pieces with live POST data, the Pelipper clear of text, widths, empty states
+//   NPR-1..13  Review of the three new pages (Nov 18): https-only links, one days-left and dates piece (Tokyo / Los Angeles / UTC),
+//              a gift with no start, no empty "0" lines, one story count, cached tools data, one gift reader, official hosts, no
+//              "0 players", shared pieces, the coupon's Copy Code as the Post Room's button, the Dispatch name's margins
 //   OL-i39  Report a Mistake on a Pokémon page sends its numbers (rating, tier, rank, tournament numbers, moves, items), as today's site did
 //   OL-i15  Build's Blueprint shows the catch tip, "X isn't in your box" and every plan chip (no cap of 3), in even rows
 //   Stampede polish 1/1b/2 (Nov 18): the hero/six seam, the three parts starting and ending together, the receipt's band names readable
@@ -939,5 +942,115 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   ok(!seam.filter(Boolean).length, `Stampede polish 1 (Nov 18): at 1100-2560 (sample team and empty team) the line-up starts 16-80px under the pink ticker, no empty ink strip between them${seam.filter(Boolean).length ? ': ' + seam.filter(Boolean).join(' | ') : ''}`);
   ok(start.length >= 6 && !start.filter(Boolean).length, `Stampede polish 1b: where the three parts stand side by side (1280-2560) the line-up starts with the board (no strip above its headline), all three end on one baseline and the six rings stay on one line${start.filter(Boolean).length ? ': ' + start.filter(Boolean).join(' | ') : ` (${start.length} views)`}`);
   ok(!strip.filter(Boolean).length, `Stampede polish 2 (Nov 18): the receipt's five band names are 13px or more, inside the strip, at least 8px apart and clear of the chosen bar's ring at 320-2560, day and night, team and no team${strip.filter(Boolean).length ? ': ' + strip.filter(Boolean).slice(0, 4).join(' | ') : ''}`); }
+// ---- NPR begin: review of the three new pages (Nov 18, docs/rebuild/audits/review-new-pages-nov18.md). Each check failed on the build before its fix. ----
+{ /* two test gifts (through the test hook; never in post.js): G1 a day-only (approx) serial code with a space in its code, G2 an exact-time one */
+  const G1 = {id: 't-tix', kind: 'item', item: 'Training Ticket', name: 'Training Ticket', amount: 2, how: 'Serial Code', start: '2026-11-11T00:00:00Z', end: '2026-11-22T23:59:00Z', approx: ['start', 'end'], code: 'LA1C TRA1N1NG27', src: ['https://www.nintendolife.com/t']};
+  const G2 = {id: 't-cp', kind: 'item', item: 'Quick Coupon', name: 'Quick Coupon', amount: 100, how: 'Serial Code', start: '2026-11-17T02:00:00Z', end: '2026-11-25T03:00:00Z', code: 'QC0PN9', src: ['https://www.pokemon.com/t']};
+  const open = async (tz, iso, hash = '#news', w = 1280) => { const ctx = await b.newContext({viewport: {width: w, height: 900}, timezoneId: tz}); const q = await ctx.newPage(); if (iso) await q.clock.setFixedTime(new Date(iso));
+    await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + hash); await q.waitForTimeout(2500); return {ctx, q}; };
+  const ev = (q, s) => q.evaluate(c => window.__ev(c), s).catch(e => ({err: String(e.message).split('\n')[0].slice(0, 90)}));
+  /* every days-left and date the three pages show for one live gift, read from the pieces themselves */
+  const read = (q, g) => ev(q, `(() => { const keep = POST, g = ${JSON.stringify(g)}; try { POST = {checked: null, gifts: [g], news: keep.news, series: keep.series};
+      const el = h => { const d = document.createElement('div'); d.innerHTML = h; return d; }, tx = (d, s) => ((d.querySelector(s) || {}).textContent || '').replace(/\\s+/g, ' ').trim();
+      const pr = el(V2.pages.gifts.draw()), dp = el(V2.dpFront(V2.postNow())), sl = el(V2.sdpSlip(V2.prG(g))), hm = el(V2.sdPost()), cpm = tx(dp, '.dp-cpm');
+      const by = [...pr.querySelectorAll('.pr-counter .pr-meta div')].find(x => /Collect by/.test(x.textContent));
+      return {rub: tx(pr, '.pr-counter .pr-rub'), hmRub: tx(hm, '.sdp-gifts .pr-rub'), cp: tx(dp, '.dp-cpm b'), mast: tx(dp, '.dp-pk span'), slip: tx(sl, '.sdp-sw i'),
+        by: by ? by.querySelector('dd').childNodes[0].textContent.trim() : '', range: (cpm.match(/[A-Z][a-z]{2} \\d+ – [A-Z][a-z]{2} \\d+/) || [''])[0], how: (cpm.match(/Serial [Cc]ode/) || [''])[0],
+        copy: (dp.querySelector('.dp-cpn [data-prcopy]') || {dataset: {}}).dataset.prcopy, nums: [...pr.querySelectorAll('.pr-nums p')].map(p => p.querySelector('b').textContent + '/' + p.querySelector('span').textContent)}; } finally { POST = keep; } })()`);
+  const days = s => /last day|ends today/i.test(s) ? 0 : /tomorrow/i.test(s) ? 1 : /-?\d+/.test(s) ? +s.match(/-?\d+/)[0] : null;
+  const TZ = {Tokyo: 'Asia/Tokyo', LA: 'America/Los_Angeles', UTC: 'UTC'};
+  /* [gift, clock, days left per zone, Collect by per zone, the Dispatch's date range per zone] */
+  const cases = [[G1, '2026-11-18T12:00:00Z', {Tokyo: 4, LA: 4, UTC: 4}, 'Nov 22', 'Nov 11 – Nov 22'], [G1, '2026-11-22T23:00:00Z', {Tokyo: 0, LA: 0, UTC: 0}, 'Nov 22', 'Nov 11 – Nov 22'],
+    [G2, '2026-11-18T12:00:00Z', {Tokyo: 7, LA: 6, UTC: 7}, {Tokyo: 'Nov 25', LA: 'Nov 24', UTC: 'Nov 25'}, {Tokyo: 'Nov 17 – Nov 25', LA: 'Nov 16 – Nov 24', UTC: 'Nov 17 – Nov 25'}],
+    [G2, '2026-11-25T02:30:00Z', {Tokyo: 0, LA: 0, UTC: 0}, {Tokyo: 'Nov 25', LA: 'Nov 24', UTC: 'Nov 25'}, {Tokyo: 'Nov 17 – Nov 25', LA: 'Nov 16 – Nov 24', UTC: 'Nov 17 – Nov 25'}]];
+  const dl = [], dt = [], neg = [], np8 = [], zero = [];
+  for (const [z, tz] of Object.entries(TZ)) for (const clock of ['2026-11-18T12:00:00Z', '2026-11-22T23:00:00Z', '2026-11-25T02:30:00Z']) { const {ctx, q} = await open(tz, clock);
+    for (const [g, c, want, by, range] of cases.filter(x => x[1] === clock)) { const r = await read(q, g), tag = `${z} ${clock.slice(5, 16)} ${g.id}`;
+      if (r.err) { dl.push(tag + ' ' + r.err); continue; }
+      const got = ['rub', 'hmRub', 'cp', 'mast', 'slip'].map(k => k + ':' + days(r[k])); if (got.some(x => x.split(':')[1] !== String(want[z]))) dl.push(`${tag} want ${want[z]}: ${got.join(' ')}`);
+      if (['rub', 'hmRub', 'cp', 'mast', 'slip'].some(k => days(r[k]) == null || days(r[k]) < 0)) neg.push(`${tag}: ${JSON.stringify([r.rub, r.hmRub, r.cp, r.mast, r.slip])}`);
+      const wb = typeof by === 'string' ? by : by[z], wr = typeof range === 'string' ? range : range[z]; if (r.by !== wb || r.range !== wr) dt.push(`${tag}: Collect by "${r.by}" (want ${wb}), Dispatch "${r.range}" (want ${wr})`);
+      if (g === G1) np8.push(r.how === 'Serial code' && r.copy === 'LA1CTRA1N1NG27' ? '' : `${tag}: "${r.how}" copies "${r.copy}"`);
+      if (want[z] === 0 && r.nums.some(x => /^0\//.test(x))) zero.push(`${tag}: ${r.nums.join(' | ')}`); }
+    await ctx.close(); }
+  ok(!dl.length, `NPR-2/3: days left agree on the Post Room's parcel, Home's parcel, the Dispatch coupon and masthead and Home's code slip, in Tokyo, Los Angeles and UTC, mid-gift and in its last hours (${dl.join(' || ').slice(0, 400) || 'all agree'})`);
+  ok(!neg.length, `NPR-3: a live gift is never shown as ended or "-1 days left" in any time zone; its last day reads "Last day" / "Ends today" (${neg.join(' || ').slice(0, 300) || 'none'})`);
+  ok(!dt.length, `NPR-2: day-only (approx) dates show the source's UTC day and exact times the viewer's local day, the same on the Post Room and the Dispatch (${dt.join(' || ').slice(0, 400) || 'all agree'})`);
+  ok(np8.length && !np8.filter(Boolean).length, `NPR-8: the Dispatch reads gifts with the Post Room's reader: "Serial code", and the code copies with its spaces taken out (${np8.filter(Boolean).join(' || ').slice(0, 200) || 'ok'})`);
+  ok(!zero.length, `NPR-5a: on a gift's last day the Post Room's numbers show no "0 / one ends today" pair (${zero.join(' || ').slice(0, 200) || 'none'})`);
+  /* the rest at the real clock, UTC */
+  const {ctx, q} = await open('UTC', null, '#home');
+  const n1 = await ev(q, `(() => { const keep = POST, kc = META.calendar && META.calendar.ev.slice(), km = V2.dpUi.more, t = Date.now(), iso = x => new Date(x).toISOString();
+    const bad = ['javascript:window.__x=1', ' JavaScript:window.__x=2', 'http://example.org/c', 'data:text/html,hi', 'https:/x', 'vbscript:x'];
+    try { POST = {checked: null, series: [], gifts: [{name: 'Bad Gift', how: 'Serial Code', code: 'AB12', start: iso(t - 864e5), end: iso(t + 5 * 864e5), src: bad.concat('https://www.pokemon.com/ok')}],
+        news: bad.map((u, i) => ({title: 'Bad ' + i, date: iso(t - i * 36e5), type: i === 1 ? 'Interview' : 'Tournament', url: u})).concat({title: 'Good one', date: iso(t - 9 * 36e5), type: 'Tournament', url: 'https://example.org/g'})};
+      const n = V2.dpNext()[0]; if (n) META.calendar.ev.splice(META.calendar.ev.indexOf(n), 0, {...n, url: 'javascript:window.__x=3'}); V2.dpUi.more = true;
+      const d = document.createElement('div'); d.innerHTML = V2.pages.news.draw() + V2.dpFront(V2.postNow(), {compact: true}) + V2.pages.gifts.draw() + V2.sdPost();
+      const hrefs = [...d.querySelectorAll('[href]')].map(a => a.getAttribute('href')), badH = hrefs.filter(h => !/^https:\\/\\//.test(h) && !/^#/.test(h));
+      return {bad: badH.slice(0, 4), plain: [0, 1, 2, 3, 4, 5].every(i => d.textContent.includes('Bad ' + i)), good: hrefs.includes('https://example.org/g'), fix: !!n};
+    } finally { POST = keep; if (kc) META.calendar.ev = kc; V2.dpUi.more = km; } })()`);
+  ok(n1.bad && !n1.bad.length && n1.plain && n1.good && n1.fix, `NPR-1: a javascript:, data:, vbscript:, http: or broken news, Fixtures or source URL never becomes a link on #news, #gifts or Home; its headline shows as plain text (${JSON.stringify(n1)})`);
+  const n4 = await ev(q, `(() => { const keep = POST; try { POST = {checked: null, news: [], gifts: [{kind: 'item', name: 'VP', amount: 500, how: 'Event Gift', end: new Date(Date.now() + 20 * 864e5).toISOString()}]};
+    return {live: V2.postNow().live.length, shown: /500 VP/.test(V2.pages.gifts.draw())}; } finally { POST = keep; } })()`);
+  const wf = fs.readFileSync(path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../.github/workflows/test.yml'), 'utf8');
+  ok(n4.live === 1 && n4.shown, `NPR-4: a gift with no start shows at the counter while its end hasn't passed (${JSON.stringify(n4)})`);
+  ok(/^\s*- run: node experiments\/post-data-test\.mjs/m.test(wf) && /'experiments\/post-data-test\.mjs'/.test(wf), 'NPR-4b: the post data test runs in CI (.github/workflows/test.yml, and its path starts a run)');
+  const n5 = await ev(q, `(() => { const keep = POST, t = Date.now(), iso = x => new Date(x).toISOString(), el = h => { const d = document.createElement('div'); d.innerHTML = h; return d; };
+    const nums = d => [...d.querySelectorAll('.pr-nums p')].map(p => p.querySelector('b').textContent + '/' + p.querySelector('span').textContent);
+    try { const now = new Date(t), mid = Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate()); POST = {checked: null, news: keep.news, gifts: [{name: 'Old Gift', how: 'Event Gift', start: iso(mid - 3 * 864e5), end: iso(Math.min(t - 6e4, mid + 1000))}]};
+      const a = nums(el(V2.pages.gifts.draw())); POST = {checked: null, news: [], gifts: [], series: []}; const b = nums(el(V2.pages.gifts.draw())), h = el(V2.sdPost());
+      return {endedToday: a, empty: b, home: [...h.querySelectorAll('a')].map(x => x.textContent.trim())}; } finally { POST = keep; } })()`);
+  ok(n5.home && !n5.endedToday.some(x => /^0\/.*end/.test(x)) && !n5.empty.some(x => /^0\/gifts so far/.test(x)) && !n5.home.some(x => /All 0 /.test(x)), `NPR-5b: empty states show no "0 / the last one ended today", no "0 gifts so far" and no "All 0 Gifts ›" on Home (${JSON.stringify(n5)})`);
+  const n7 = await ev(q, `(() => { const a = V2.sdtData(), b = V2.sdtData(); V2.redraw(); return {same: a === b, afterRedraw: V2.sdtData() === a}; })()`);
+  ok(n7.same && n7.afterRedraw, `NPR-7: the tools band's data is cached per ratings map, as V2.sdData (a redraw doesn't rebuild it) (${JSON.stringify(n7)})`);
+  const n9 = await ev(q, `JSON.stringify(V2.prG({name: 'x', how: 'Event Gift', src: ['https://notpokemon.com/a', 'https://champions-news.pokemon-home.com/x', 'https://www.pokemon.com/y', 'https://pokemon.com.evil.org/z', 'https://pokemonchampions.jp/n']}).src.map(s => s.name))`);
+  ok(n9 === JSON.stringify(['notpokemon.com', 'the official news', 'the official news', 'pokemon.com.evil.org', 'the official news']), `NPR-9: "the official news" only for the official hosts and their subdomains, never a lookalike (${n9})`);
+  const n10 = await ev(q, `(() => { const c = homeChamp(); if (!c) return 'no champion'; const k = c.ev.players; try { delete c.ev.players; return V2.dpLatest(); } finally { c.ev.players = k; } })()`);
+  ok(typeof n10 === 'string' && /winner's six/.test(n10) && !/\b0 players|undefined|NaN/.test(n10), `NPR-10: Latest Result with no player count shows no "0 players" (${String(typeof n10 === 'string' ? (n10.match(/dp-meta">[^<]*/) || [''])[0] : JSON.stringify(n10)).slice(0, 120)})`);
+  const n11 = await ev(q, `(() => { const n = V2.dpNext()[0], g = V2.prG({name: 'Gift', how: 'Serial Code', code: 'AB12', start: new Date(Date.now() - 864e5).toISOString(), end: new Date(Date.now() + 864e5).toISOString()});
+    const cp = V2.dpCoupon({coupon: g}); return {row: typeof V2.prCopyRow === 'function' && cp.includes(V2.prCopyRow(g.code, ' dp-crow')) && V2.prLabel(g).includes(V2.prCopyRow(g.code)), short: !n || (typeof V2.evShort === 'function' && V2.sdtData().next.short === V2.evShort(n) && V2.dpEvShort(n).startsWith(V2.evShort(n)))}; })()`);
+  ok(n11.row && n11.short, `NPR-11: one Copy Code row (V2.prCopyRow) on the Post Room label and the Dispatch coupon, and one next-event short name (V2.evShort) for the tools band and the Dispatch (${JSON.stringify(n11)})`);
+  await ctx.close();
+  /* NPR-6: the story count and the kinds beside it count the same stories (no maintenance), over the past 12 months, so January isn't empty; checked now and on Jan 5 */
+  const sc = []; for (const clock of [null, '2027-01-05T12:00:00Z']) { const {ctx: c6, q: q6} = await open('UTC', clock, '#news');
+    const r = await ev(q6, `(() => { const s = ((document.querySelector('.dp-date > span') || {}).textContent || ''), now = Date.now(), win = POST.news.map(V2.dpItem).filter(x => !V2.dpMaint(x) && V2.dpDay(x.date) && V2.dpDay(x.date) <= now && V2.dpDay(x.date) > now - 365 * 864e5);
+      const kinds = {}; for (const x of win) kinds[x.type] = (kinds[x.type] || 0) + 1; const parts = s.split(' · '), n = +((parts[0].match(/^([\\d,]+) stor/) || [])[1] || 'NaN').replace(/,/g, '');
+      const lead = (document.querySelector('.dp-lead .dp-sum') || {}).textContent || '', R = (POST.series || []).find(r => r.src === (V2.dpParts(V2.postNow()).lead || {}).url);
+      return {s, n, want: win.length, kinds: parts.slice(1).map(p => { const m = p.match(/^([\\d,]+) (.+)$/); return m && Object.entries(kinds).some(([t, k]) => k === +m[1].replace(/,/g, '') && V2.dpPlural(k, t) === p); }), lead, roundYear: R ? R.month.slice(0, 4) : null, year: String(new Date().getFullYear())}; })()`);
+    const tag = clock ? 'Jan 5' : 'today'; if (r.err || r.n !== r.want || !r.kinds.every(Boolean) || !/past 12 months/.test(r.s)) sc.push(`${tag}: ${JSON.stringify(r).slice(0, 220)}`);
+    if (r.roundYear && r.roundYear !== r.year && /this year/.test(r.lead)) sc.push(`${tag}: the lead says "this year" for a ${r.roundYear} round`);
+    await c6.close(); }
+  ok(!sc.length, `NPR-6: "N stories in the past 12 months" and its kinds count the same stories (maintenance notices in neither), and January still counts December's (${sc.join(' || ') || 'ok'})`);
+  /* the new "Today" figure fits beside the other numbers at every width */
+  { const {ctx: c5, q: q5} = await open('UTC', '2026-11-22T23:00:00Z', '#gifts', 320); await ev(q5, `(() => { window.__k5 = POST; POST = {checked: null, news: POST.news, gifts: [${JSON.stringify(G1)}]}; V2.redraw(); })()`); const fit = [];
+    for (const w of [320, 390, 768, 1100, 1440]) { await q5.setViewportSize({width: w, height: 900}); await q5.waitForTimeout(300);
+      const m = await ev(q5, `(() => { const S = document.querySelector('.pr-stats'); if (!S) return 'no stats'; const R = S.getBoundingClientRect(), bad = [...S.querySelectorAll('.pr-nums b, .pr-nums span')].filter(e => { const r = e.getBoundingClientRect(); return e.scrollWidth > e.clientWidth + 1 || r.left < R.left - .5 || r.right > R.right + .5; }).map(e => e.textContent);
+        return (document.documentElement.scrollWidth > innerWidth ? 'sideways scroll ' : '') + bad.join(','); })()`); if (m) fit.push(w + ': ' + JSON.stringify(m)); }
+    const t = await ev(q5, `[...document.querySelectorAll('.pr-nums p')].map(p => p.textContent).join(' | ')`); await c5.close();
+    ok(!fit.length && /Today/.test(t), `NPR-5c: the last-day figure ("Today") fits in the Post Room's numbers at 320 to 1440 (${fit.join(' ') || t})`); }
+  /* polish sweep (Nov 18 night, defect 1): the coupon's Copy Code is the Post Room's button (same class, padding and font), never cut to "Copy Cod" */
+  { const {ctx: c12, q: q12} = await open('UTC', null, '#news', 640); const cut = [];
+    for (const th of ['day', 'night']) { await q12.evaluate(t => { try { localStorage.setItem('np2.theme', t); } catch (e) {} }, th); await q12.reload(); await q12.waitForTimeout(2200);
+      await ev(q12, `(() => { window.__k12 = POST; const t = Date.now(); POST = {checked: null, news: POST.news, series: POST.series, gifts: [{name: 'Test Gift', how: 'Serial Code', code: 'AB1CD0', start: new Date(t - 864e5).toISOString(), end: new Date(t + 5 * 864e5).toISOString()}]}; V2.redraw();
+        const d = document.createElement('div'); d.className = 'npr12'; d.style.cssText = 'position:absolute;left:0;top:0;width:480px'; d.innerHTML = V2.prParcel(V2.postNow().live[0]); document.body.append(d); /* outside #main: a redraw keeps it */ })()`);
+      for (const w of [640, 1024, 1440, 2560]) { await q12.setViewportSize({width: w, height: 900}); await q12.waitForTimeout(300);
+        const m = await ev(q12, `(() => { const a = document.querySelector('.dp-cpn [data-prcopy]'), p = document.querySelector('.npr12 [data-prcopy]'); if (!a || !p) return 'no button';
+          const k = ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'paddingLeft', 'paddingRight', 'letterSpacing'], A = getComputedStyle(a), P = getComputedStyle(p), s = a.querySelector('span') || a;
+          const diff = k.filter(x => A[x] !== P[x]).map(x => x + ' ' + A[x] + ' vs ' + P[x]), R = a.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(s); const T = rg.getBoundingClientRect();
+          return [a.className === p.className ? '' : 'class ' + a.className, a.scrollWidth > a.clientWidth + 1 || s.scrollWidth > s.clientWidth + 1 || T.left < R.left - .5 || T.right > R.right + .5 ? 'text clipped (' + Math.round(T.width) + ' in ' + Math.round(R.width) + ')' : '', ...diff].filter(Boolean).join('; '); })()`);
+        if (m) cut.push(`${th} ${w}: ${typeof m === 'string' ? m : JSON.stringify(m)}`); }
+      await ev(q12, `POST = window.__k12; document.querySelector('.npr12') && document.querySelector('.npr12').remove(); V2.redraw()`); }
+    await q12.evaluate(() => { try { localStorage.removeItem('np2.theme'); } catch (e) {} }); await c12.close();
+    /* qcheck triage (Nov 18, defect 1): the masthead name has its room (12px above, 16px below) at 320-1280; Home's small paper keeps its 8px / 12px */
+    { const {ctx: c13, q: q13} = await open('UTC', null, '#news', 320); const nm = [];
+      for (const w of [320, 390, 820, 1280]) { await q13.setViewportSize({width: w, height: 900}); await q13.waitForTimeout(300);
+        const m = await ev(q13, `(() => { const n = document.querySelector('.dp-paper:not(.dp-small) .dp-name'); if (!n) return 'no name'; const c = getComputedStyle(n);
+          const d = document.createElement('div'); d.style.cssText = 'position:absolute;left:0;top:0;width:340px'; d.innerHTML = V2.dpFront(V2.postNow(), {compact: true}); document.body.append(d);
+          const s = getComputedStyle(d.querySelector('.dp-small .dp-name')), out = c.marginTop + '/' + c.marginBottom + ' small ' + s.marginTop + '/' + s.marginBottom; d.remove(); return out; })()`);
+        if (m !== '12px/16px small 8px/12px') nm.push(w + ': ' + (typeof m === 'string' ? m : JSON.stringify(m))); }
+      await c13.close(); ok(!nm.length, `NPR-13 (qcheck triage defect 1): the Dispatch's name keeps 12px above and 16px below at 320-1280 (the margin reset no longer wins); Home's small paper keeps 8px / 12px (${nm.join(' | ') || 'ok'})`); }
+    ok(!cut.length, `NPR-12 (polish sweep defect 1): the News coupon's Copy Code is the Post Room's button (class, padding, font) and its text is never clipped, 640 to 2560, day and night (${cut.join(' || ').slice(0, 400) || 'same button, not clipped'})`); }
+}
+// ---- NPR end ----
 await b.close();
-console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
+console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

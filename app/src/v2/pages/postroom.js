@@ -12,8 +12,10 @@
 //   V2.prStamp(gift)              a perforated postage stamp for a past gift: framed picture (Pokémon render or item line drawing),
 //                                 month and year, name, how it was given (pink event / blue serial code / gold Battle Pass) and the
 //                                 round "Ended" postmark. A Pokémon stamp is a button: its nature and moves if POST has them, else its page.
-//   V2.prDaysLeft(gift, now?)     whole days from the viewer's local today to the gift's last local day: 0 = ends today,
-//                                 -1 = ended, null = no end date. Red at 7 or fewer (V2.PR_SOON), blue above.
+//   V2.prDaysLeft(gift, now?)     whole days to the gift's last day (a day-only end: UTC day against UTC today; an exact end: the
+//                                 viewer's local days): 0 = ends today (never below 0 while live), -1 = ended, null = no end date.
+//                                 Red at 7 or fewer (V2.PR_SOON), blue above. The Dispatch and Home's band use it too.
+//   V2.prCopyRow(code, cls)       the code box with its Copy Code button (the label and the Dispatch coupon).
 //   V2.prRubber(gift)             the rubber stamp with the days left ("5 days left", "Last day"), red when soon, blue otherwise.
 //   V2.prArt(gift)                the stamp picture alone (Pokémon render, or the item's inline SVG line drawing).
 //
@@ -42,8 +44,9 @@ V2.prG = g => { if (!g) return null; const s = x => (x == null ? '' : String(x))
   // "100 Quick Coupons", "2 Training Tickets", "5,000 VP": the amount goes in front, unless the name already carries a number
   const name = many && !/\d/.test(base) ? `${n.toLocaleString('en-US')} ${base}${/(s|VP)$/.test(base) ? '' : 's'}` : base;
   const am = !isMon ? (Number.isFinite(n) && n > 0 ? n.toLocaleString('en-US') : ((base.match(/\d[\d,]*/) || [''])[0])) : '';
-  const host = u => { try { const h = new URL(u).hostname.replace(/^www\./, ''); return /pokemon-home\.com$|pokemon\.com$|pokemonchampions\.jp$/.test(h) ? 'the official news' : h; } catch (e) { return 'Source'; } };
-  const src = (Array.isArray(g.src || g.sources) ? (g.src || g.sources) : (g.src || g.source) ? [g.src || g.source] : []).map(x => typeof x === 'string' ? {name: host(x), url: x} : x).filter(x => x && /^https:\/\//.test(x.url || ''));
+  const host = u => { try { return V2.officialHost(u) ? 'the official news' : new URL(u).hostname.replace(/^www\./, ''); } catch (e) { return 'Source'; } };
+  const src = (Array.isArray(g.src || g.sources) ? (g.src || g.sources) : (g.src || g.source) ? [g.src || g.source] : []).map(x => typeof x === 'string' ? {name: host(x), url: x} : x)
+    .filter(x => x && V2.safeUrl(x.url)).map(x => ({...x, url: V2.safeUrl(x.url)})); /* https only (V2.safeUrl, post-data.js): the same check as the Dispatch */
   const ap = Array.isArray(g.approx) ? g.approx : [];
   const known = mon && V2.byName && V2.byName.get(mon) ? mon : null; /* audit (Nov 18): a Pokémon's name is the site's own (V2.disp: 'Indeedee (F)') */
   return {raw: g, id: s(g.id) || base + '|' + s(g.end), name: known ? V2.disp(known) : name, mon: mon && V2.byName && V2.byName.get(mon) ? mon : null, isMon, monName: mon, how, code, item, amount: am,
@@ -58,9 +61,15 @@ V2.prYr = (t, utc) => Number.isFinite(t) && new Date(t)[utc ? 'getUTCFullYear' :
 V2.prDate = (t, o, utc) => { if (!Number.isFinite(t)) return ''; o = o || {month: 'short', day: 'numeric', ...V2.prYr(t, utc)}; return new Date(t).toLocaleDateString('en-US', utc ? {...o, timeZone: 'UTC'} : o); };
 V2.prDayOf = x => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(x || '')); return m ? new Date(+m[1], m[2] - 1, +m[3]).getTime() : Date.parse(x); }; // a date with no time ('checked') is that calendar day, not UTC midnight
 V2.prDay = t => { const d = new Date(t); return Date.UTC(d.getFullYear(), d.getMonth(), d.getDate()); }; // the viewer's local calendar day, as a number
+// THE days-left and dates piece for the whole family (the Post Room, the Dispatch and Home's post band all use these; review, Nov 18):
+//   a day-only (approx) date is the source's day, so it is read and shown as its UTC day everywhere (V2.prDate(t, o, true));
+//   an exact time is shown in the viewer's own time zone (V2.prDate(t, o)).
+// V2.prDayN(t, utc): the calendar day of t as a number, the UTC day or the viewer's local day. Days left compare like with like (the
+// UTC day of a day-only end against the UTC day now; a local end against local today), so a gift that is still live is never
+// counted as ended in any time zone: 0 on its last day, never -1 ("Last day", "Ends today").
+V2.prDayN = (t, utc) => { const d = new Date(t); return utc ? Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) : V2.prDay(t); };
 V2.prDaysLeft = (gift, now = Date.now()) => { const g = gift && gift.raw ? gift : V2.prG(gift); if (!g || !Number.isFinite(g.end)) return null; if (g.end < now) return -1;
-  const d = new Date(g.end), last = g.dayEnd ? Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) : V2.prDay(g.end); /* a day-only end (approx) is the source's day */
-  return Math.round((last - V2.prDay(now)) / 864e5); };
+  return Math.max(0, Math.round((V2.prDayN(g.end, g.dayEnd) - V2.prDayN(now, g.dayEnd)) / 864e5)); };
 V2.prRubber = (gift, now) => { const d = V2.prDaysLeft(gift, now); if (d === -1) return '';
   const soon = d != null && d <= V2.PR_SOON, txt = d == null ? '<span>No end date</span>' : d === 0 ? '<span>Last day</span>' : `<b>${d}</b> <span>${d === 1 ? 'day' : 'days'} left</span>`;
   return `<p class="pr-rub u ${soon ? 'pr-soon' : 'pr-plenty'}">${txt}</p>`; };
@@ -68,14 +77,16 @@ V2.prRubber = (gift, now) => { const d = V2.prDaysLeft(gift, now); if (d === -1)
 V2.prCode = code => { const c = String(code || '').replace(/\s+/g, ''); if (!c) return '';
   const vis = [...c].map(ch => /\d/.test(ch) ? `<b class="pr-d">${ch}</b>` : V2.esc(ch)).join('');
   return `<span class="pr-code"><span class="pr-cv" aria-hidden="true">${vis}</span><span class="vh pr-spell">${V2.esc([...c].join(', '))}</span></span>`; };
+// the Copy Code row: the code box and its Copy Code button (data-prcopy, handled below); the Post Room label and the Dispatch coupon
+// (cls ' dp-crow') share it. Home's code slip keeps its own layout (stampede-post.js).
+V2.prCopyRow = (code, cls = '') => `<div class="pr-crow${cls}"><div class="pr-cbox"><p class="pr-k">Code</p>${V2.prCode(code)}</div><button type="button" class="np-btn pr-copy" data-prcopy="${V2.esc(String(code || '').replace(/\s+/g, ''))}"><span>Copy Code</span></button></div>`;
 // a barcode drawn from the code (decorative), so each label's bars differ
 V2.prBars = key => { let h = 2166136261; const s = String(key || 'gift'); let x = 0, out = '';
   for (let i = 0; x < 236; i++) { h = Math.imul(h ^ s.charCodeAt(i % s.length) ^ i, 16777619) >>> 0; const w = 1 + (h & 3), gap = 1 + ((h >> 3) & 1) + ((h >> 5) & 1); out += `<rect x="${x}" width="${w}" height="24"/>`; x += w + gap; }
   return `<svg class="pr-bars" viewBox="0 0 240 24" preserveAspectRatio="none" aria-hidden="true" focusable="false">${out}</svg>`; };
 V2.prLabel = (gift, o = {}) => { const g = gift && gift.raw ? gift : V2.prG(gift), E = V2.esc; if (!g) return '';
   const left = V2.prDaysLeft(g), end = !Number.isFinite(g.end) ? 'End date not confirmed' : g.dayEnd ? V2.prDate(g.end, undefined, true) : `${V2.prDate(g.end)}<small>until ${new Date(g.end).toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit'})}</small>`;
-  const code = g.code ? `<div class="pr-crow"><div class="pr-cbox"><p class="pr-k">Code</p>${V2.prCode(g.code)}</div><button type="button" class="np-btn pr-copy" data-prcopy="${E(g.code)}"><span>Copy Code</span></button></div>`
-    : `<p class="pr-none">${V2.PR_NOCODE[g.how]}</p>`;
+  const code = g.code ? V2.prCopyRow(g.code) : `<p class="pr-none">${V2.PR_NOCODE[g.how]}</p>`;
   const src = g.src.length && !o.compact ? `<p class="pr-src">Source: ${g.src.slice(0, 2).map(x => `<a href="${E(x.url)}" target="_blank" rel="noopener noreferrer">${E(x.name || 'Source')}</a>`).join(' and ')}</p>` : '';
   return `<div class="pr-label${o.compact ? ' pr-cpt' : ''}"><p class="pr-lt u">Mystery Gift</p><dl class="pr-meta"><div class="pr-what"><dt>Contents</dt><dd class="u">${E(g.name)}</dd>${g.extras.length && !o.compact ? `<dd class="pr-also">Also inside: ${g.extras.map(E).join(', ')}</dd>` : ''}</div>
     <div><dt>${V2.PR_HOW[g.how]}</dt><dd>${Number.isFinite(g.start) ? 'Sent ' + V2.prDate(g.start, {month: 'short', day: 'numeric'}, g.dayStart) : 'Sent date not confirmed'}</dd></div>
@@ -117,10 +128,11 @@ V2.prHow = () => `<aside class="pr-howto" aria-labelledby="prHowH"><h3 class="u"
   <p>A code can stop early or not work in every account. Real codes never ask for your password.</p></aside>`;
 V2.pages.gifts = {place: 'home', draw() { const E = V2.esc, U = V2.prUi, P = V2.postNow(), live = P.live.map(V2.prG), past = P.past.map(V2.prG), now = Date.now();
   const left = live.map(g => V2.prDaysLeft(g, now)).filter(d => d != null && d >= 0), soonest = left.length ? Math.min(...left) : null;
-  const since = !live.length && past.length && Number.isFinite(past[0].end) ? Math.round((V2.prDay(now) - V2.prDay(past[0].end)) / 864e5) : null;
+  const since = !live.length && past.length && Number.isFinite(past[0].end) ? Math.round((V2.prDayN(now, past[0].dayEnd) - V2.prDayN(past[0].end, past[0].dayEnd)) / 864e5) : null;
   const num = (n, l) => `<p><b class="u">${n}</b><span>${l}</span></p>`;
-  const nums = live.length ? num(live.length, 'to claim') + (soonest != null ? num(soonest, soonest === 0 ? 'one ends today' : soonest === 1 ? 'day until one ends' : 'days until one ends') : '') + num(live.length + past.length, 'gifts so far')
-    : num(0, 'to claim') + (since != null ? num(since, since === 0 ? 'the last one ended today' : since === 1 ? 'day since the last one ended' : 'days since the last one ended') : '') + num(past.length, 'gifts so far');
+  // a day count of 0 shows the word "Today", never a lone "0" beside "ends today" (review, Nov 18); no "0 gifts so far" when there are none
+  const nums = live.length ? num(live.length, 'to claim') + (soonest != null ? (soonest === 0 ? num('Today', 'one ends') : num(soonest, soonest === 1 ? 'day until one ends' : 'days until one ends')) : '') + num(live.length + past.length, 'gifts so far')
+    : num(0, 'to claim') + (since != null ? (since === 0 ? num('Today', 'the last one ended') : num(since, since === 1 ? 'day since the last one ended' : 'days since the last one ended')) : '') + (past.length ? num(past.length, 'gifts so far') : '');
   const stats = `<div class="pr-stats"><p class="ev-pk${live.length ? '' : ' pr-pk-off'}">${live.length ? 'Live right now' : 'Nothing live right now'}</p><div class="pr-nums">${nums}</div></div>`;
   const head = `<div class="pr-top"><section class="ra-h"><p class="np-eyebrow"><span><a class="np-back" href="#home">Home</a> · Mystery Gifts</span></p><h1 class="u"><span>Special delivery.</span> <span class="pl">No postage due.</span></h1>
     <p class="ra-lede">Every Mystery Gift in Pokémon Champions, parcel by parcel. The code is on the label, and so is the last day to collect it.</p></section>${stats}</div>`;

@@ -2,7 +2,7 @@ name: Test NastyPlot page
 on:
   push:
     # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
-    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', '.github/workflows/test.yml', 'package.json', 'package-lock.json']
+    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/post-data-test.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', '.github/workflows/test.yml', 'package.json', 'package-lock.json']
   workflow_dispatch:
   # Nov 9: commits made by GitHub's own jobs (the daily data, the weekly re-check, the monthly check) never trigger a push run
   # (GitHub rule for its built-in token), so fresh data was never tested and the live branch could not move. Start the tests
@@ -162,6 +162,9 @@ jobs:
         if: ${{ !cancelled() }}
       - run: node experiments/replays-test.mjs
       - run: node experiments/tour-modes-test.mjs
+        if: ${{ !cancelled() }}
+      # Mystery Gifts and news (app/src/data/post.js): every gift sourced, codes cited, dates parse, start before end, every link https
+      - run: node experiments/post-data-test.mjs
         if: ${{ !cancelled() }}
       # mechanics vs Smogon's Champions engine: every stat exact, damage 98.5%+ exact on all 16 rolls
       - run: node experiments/speed-check.mjs

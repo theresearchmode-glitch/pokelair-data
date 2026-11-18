@@ -15,7 +15,7 @@
 .dp-paper :is(ul,ol){list-style:none;padding:0}
 .dp-paper a{color:inherit;text-decoration:none}
 .dp-paper :is(a,button):focus-visible{outline:2px solid var(--dp-plot);outline-offset:2px}
-.dp-paper button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
+.dp-paper button:not(.np-btn){font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer;text-align:inherit}
 .dp-hl{text-decoration:none}
 .dp-hl:hover{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:.12em}
 .dp-pl{color:var(--dp-plot)}
@@ -30,7 +30,8 @@
 /* ---------- masthead ---------- */
 .dp-top{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s4);padding-bottom:var(--s2);border-bottom:2px solid var(--dp-ink);
   font:700 var(--t13)/1.5 var(--b);letter-spacing:.08em;text-transform:uppercase}
-.dp-name{margin:var(--s3) 0 var(--s4);font-size:var(--d-paper);line-height:1.02;text-align:center;letter-spacing:-.03em;text-wrap:balance}
+/* .dp-paper on the front, so the name keeps its room above and below over the margin reset (.dp-paper :is(h1,...){margin:0}) */
+.dp-paper .dp-name{margin:var(--s3) 0 var(--s4);font-size:var(--d-paper);line-height:1.02;text-align:center;letter-spacing:-.03em;text-wrap:balance}
 .dp-name{white-space:nowrap}
 .dp-name span{display:inline-block}
 .dp-boxes{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--s4);padding-bottom:var(--s4);border-bottom:1px solid var(--dp-rule)}

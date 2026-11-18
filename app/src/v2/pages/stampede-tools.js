@@ -21,7 +21,12 @@ V2.SDT_WXTY = {tw: 'Flying', sun: 'Fire', rain: 'Water', sand: 'Ground', snow: '
 // the twelve tools: name, page (the same hashes as today's Home list V2.HOME_TOOLS and the menu)
 V2.SDT_GO = {'Speed Tiers': 'speed', 'Type Chart': 'types', Ratings: 'meta', 'Winning Teams': 'tournaments', Battle: 'battle', 'Damage Calc': 'calc',
   'Winning Cores': 'build', Archetypes: 'archetypes', 'Test Run': 'gauntlet', 'Popular Sets': 'sets', Events: 'events', 'How We Calculate': 'method'};
-V2.sdtData = () => { const D = V2.sdData(), rows = D.rows || [], top = rows.slice(0, 9), out = {D, rows};
+// cached per ratings map, as V2.sdData (review, Nov 18): the same sdData object (it changes when ratings() does) and the same day (the
+// next event) give the same plates, so a redraw doesn't run coreRows, bestHitOn, setFor and arData again
+V2._sdt = V2._sdt || {};
+V2.sdtData = () => { const D = V2.sdData(), day = typeof CAL !== 'undefined' ? CAL.today() : '', ver = typeof metaVersion !== 'undefined' ? metaVersion : '', K = V2._sdt;
+  if (K.out && K.D === D && K.day === day && K.ver === ver && K.cal === META.calendar) return K.out;
+  const rows = D.rows || [], top = rows.slice(0, 9), out = {D, rows}; V2._sdt = {D, day, ver, cal: META.calendar, out};
   out.race = top.map((x, i) => ({...x, k: i + 1})).filter(x => x.spe != null).sort((a, b) => a.spe - b.spe || a.k - b.k);
   out.types = V2.SDT_TYPES.map(t => ({t, x: rows.find(y => y.types.includes(t)) || null})); // the true highest rated: a two-type Pokémon stands under both flags (lead, Nov 18)
   try { out.all = lairRows().length; } catch (e) { out.all = D.rated; }
@@ -30,8 +35,8 @@ V2.sdtData = () => { const D = V2.sdData(), rows = D.rows || [], top = rows.slic
   try { const x = rows.find(y => !y.mega), st = x && setFor(x.p, 'doubles', 'ingame'); out.set = x && st && st.it && st.it[0] ? {x, item: st.it[0][0]} : null; } catch (e) { out.set = null; }
   try { const a = rows[0] && rows[0].p, d = rows[1] && rows[1].p, h = a && d ? bestHitOn(a, popularMoves(a), d, null, null) : null;
     out.hit = h && h.r && h.r.hp && h.r.max > 0 ? {a, d, mv: h.mv.name, lo: Math.min(100, 100 * h.r.min / h.r.hp), hi: Math.min(100, 100 * h.r.max / h.r.hp)} : null; } catch (e) { out.hit = null; }
-  try { const C = META.calendar; if (C && typeof CAL !== 'undefined') { const t = CAL.today(), n = C.ev.filter(e => e.e >= t && e.t !== 'national')[0];
-    if (n) out.next = {short: (/\(([A-Z][A-Za-z]{1,7})\)\s*$/.exec(n.n) || [])[1] || n.n, place: n.t === 'online' ? '' : (n.city && n.city !== n.n ? n.city : ''), when: CAL.range(n)}; } } catch (e) {}
+  try { const n = V2.dpNext()[0]; /* the Events page's upcoming list and the shared short name (V2.evShort), as the Dispatch */
+    if (n) out.next = {short: V2.evShort(n), place: n.t === 'online' ? '' : (n.city && n.city !== n.n ? n.city : ''), when: CAL.range(n)}; } catch (e) {}
   return out; };
 // a named Pokémon: its own button over the plate's link (opens its info, as everywhere); o.iw <= 80 asks for the small sprite file
 // a shared rank, as the Ratings page counts it (ties on the shown rating share a rank: 1, 1, 3, 3)

@@ -13,7 +13,7 @@
 V2.sdpData = () => { const P = V2.postNow(), live = P.live.map(V2.prG), past = P.past.map(V2.prG);
   const first = live.find(g => g.code) || live[0] || null, next = live.find(g => g !== first && g.code) || null;
   return {P, live, past, first, next, second: live.find(g => g !== first) || null, gifts: live.length + past.length, news: P.news.length}; };
-V2.sdpSlip = g => { const E = V2.esc, d = V2.prDaysLeft(g), left = d == null ? '' : d === 0 ? 'last day' : `${d} ${d === 1 ? 'day' : 'days'} left`;
+V2.sdpSlip = g => { const E = V2.esc, d = V2.prDaysLeft(g), left = d == null || d < 0 ? '' : d === 0 ? 'last day' : `${d} ${d === 1 ? 'day' : 'days'} left`;
   return `<div class="sdp-slip"><p class="sdp-sw"><span><b>${E(g.name)}${left ? ',' : ''}</b>${left ? ` <i>${left}</i>` : ''}</span></p><div class="sdp-sc">${V2.prCode(g.code)}</div><button type="button" class="np-btn pr-copy" data-prcopy="${E(g.code)}"><span>Copy Code</span></button></div>`; };
 V2.sdPost = () => { const E = V2.esc, D = V2.sdpData(), n = (k, w) => `All ${homeNum(k)} ${w}${k === 1 ? '' : 's'}`, solo = !D.news;
   const bird = `<div class="sdp-bird" aria-hidden="true"><i class="sdp-ln l1"></i><i class="sdp-ln l2"></i><i class="sdp-ln l3"></i>${V2.mon('Pelipper', {bare: true, iw: 320, big: true})}</div>`;
@@ -21,7 +21,7 @@ V2.sdPost = () => { const E = V2.esc, D = V2.sdpData(), n = (k, w) => `All ${hom
   const parcel = D.first ? `<div class="sdp-stack">${V2.prParcel(D.first, {compact: true})}${stamps}</div>`
     : `<p class="sdp-none">Nothing at the counter right now. The next gift will wait here. <a href="#gifts">Every gift so far ›</a></p>${stamps}`;
   const other = solo ? (D.second ? V2.prParcel(D.second, {compact: true}) : D.first ? V2.prHow() : '') : D.next ? V2.sdpSlip(D.next) : '';
-  const gifts = `<section class="sdp-col sdp-gifts" aria-labelledby="sdpGH"><header class="sdp-ch"><h3 class="u" id="sdpGH">Mystery Gifts</h3><a class="sdp-all" href="#gifts">${n(D.gifts, 'Gift')} ›</a></header>
+  const gifts = `<section class="sdp-col sdp-gifts" aria-labelledby="sdpGH"><header class="sdp-ch"><h3 class="u" id="sdpGH">Mystery Gifts</h3>${D.gifts ? `<a class="sdp-all" href="#gifts">${n(D.gifts, 'Gift')} ›</a>` : ''}</header>
     <div class="sdp-gb${solo && other ? ' sdp-two' : ''}">${parcel}${other ? `<div class="sdp-other">${other}</div>` : ''}</div></section>`;
   const news = solo ? '' : `<section class="sdp-col sdp-news" aria-labelledby="sdpNH"><header class="sdp-ch"><h3 class="u" id="sdpNH">Champions News</h3><a class="sdp-all" href="#news">${n(D.news, 'Story').replace(/ys$/, 'ies')} ›</a></header>
     <div class="sdp-tilt">${V2.dpFront(D.P, {compact: true})}</div></section>`;

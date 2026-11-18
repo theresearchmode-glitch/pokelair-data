@@ -13,7 +13,8 @@
 // WHERE EVERY WORD AND NUMBER COMES FROM
 //   News and gifts: POST (src/data/post.js; its header gives the shape) through V2.postNow(); the series rounds from POST.series
 //   (post.series when V2.postNow() passes it on, else POST.series). Headline, date, type and source link; never article text.
-//   V2.dpItem reads a news item (title, date, type, url; t / headline / src / link are taken too). V2.dpGift reads a gift.
+//   V2.dpItem reads a news item (title, date, type, url; t / headline / src / link are taken too). Gifts are read with the
+//   Post Room's reader (V2.prG). Every link goes through V2.safeUrl (https only; post-data.js).
 //   What goes on the front (V2.dpParts): maintenance notices (type Maintenance, or titled "Maintenance (Completion) Notice") only
 //   when nothing else is there; they still count in Earlier Editions. The lead is the newest other story; when it announces a round
 //   of the series (its link is the round's source), the series row sits under it: one column per round of that year, its gift
@@ -22,35 +23,36 @@
 //   The Standings: lairRows / lairRank / monRating (the same numbers as Ratings and Home). Latest Result: homeChamp().
 //   Fixtures and Next event: META.calendar through CAL, with the same upcoming filter as the Events page (V2.evCal), so
 //   "All N Next Events" is the Events page's "Show All N" under Next Events.
-//   Days left on a gift count the viewer's local day (as The Post Room).
+//   Days left and dates on a gift are the Post Room's (V2.prDaysLeft, V2.prDate): a day-only (approx) date is its UTC day, an exact one local.
 //   The coupon's code is the Post Room's piece (V2.prCode: upright, digits blue, spelled for screen readers) with its Copy Code
 //   button (data-prcopy, handled in postroom.js): one family.
 V2.dpUi = V2.dpUi || {more: false};
 V2.dpPick = (x, ks) => { for (const k of ks) if (x && x[k] != null && x[k] !== '') return x[k]; return ''; };
-V2.dpSrc = x => { const v = V2.dpPick(x, ['url', 'src', 'link', 'source']); return Array.isArray(v) ? (v[0] && (v[0].url || v[0])) || '' : typeof v === 'object' ? v.url || '' : v; };
+/* https only (V2.safeUrl, post-data.js; the Post Room's check): a javascript:, data: or http: link is dropped and the words stay plain text */
+V2.dpSrc = x => { const v = V2.dpPick(x, ['url', 'src', 'link', 'source']); return V2.safeUrl(Array.isArray(v) ? (v[0] && (v[0].url || v[0])) || '' : typeof v === 'object' ? v.url || '' : v); };
 V2.dpItem = x => ({t: String(V2.dpPick(x, ['title', 't', 'headline'])), date: String(x.date || ''), type: String(x.type || 'News'), sub: String(V2.dpPick(x, ['sub', 'format'])),
   url: String(V2.dpSrc(x) || ''), end: x.end || '', gift: String(x.gift || '')});
 V2.dpMaint = x => /^maintenance$/i.test(x.type) || /^maintenance( completion)? notice$/i.test(x.t.trim());
-V2.dpGift = g => ({name: String(V2.dpPick(g, ['name', 'contents', 'title'])), code: String(g.code || ''), how: String(V2.dpPick(g, ['how', 'method'])), start: g.start || '', end: g.end || '', url: String(V2.dpSrc(g) || '')});
 // dates: a news date is a calendar day (read at local noon, so it never slips a day); a gift's start and end are UTC instants
 V2.dpDay = s => { s = String(s || ''); const d = new Date(/^\d{4}-\d\d-\d\d$/.test(s) ? s + 'T12:00:00' : s); return isNaN(d) ? null : d; };
 V2.dpShort = s => { const d = V2.dpDay(s); return d ? d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : ''; };
-V2.dpLocal = s => { const d = V2.dpDay(s); return d ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` : ''; };
-V2.dpLeft = end => { const d = V2.dpLocal(end); return d ? CAL.days(d, CAL.today()) : null; };
 V2.dpLeftTxt = n => n == null ? '' : n <= 0 ? 'Ends today' : n === 1 ? '1 day left' : `${n} days left`;
 V2.dpOrd = k => ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth'][k - 1] || `${k}th`;
 V2.dpPlural = (n, w) => { w = w.toLowerCase(); return `${homeNum(n)} ${n === 1 || /[^s]s$/.test(w) ? w : /ss$/.test(w) ? w + 'es' : /[^aeiou]y$/.test(w) ? w.slice(0, -1) + 'ies' : w + 's'}`; };
 // the upcoming events, as the Events page lists them (V2.evCal: from today, no national events)
 V2.dpNext = () => { const C = META.calendar; if (!C || !Array.isArray(C.ev) || typeof CAL === 'undefined') return []; const t = CAL.today(); return C.ev.filter(e => e.e >= t && e.t !== 'national'); };
 V2.dpPlace = e => e.t === 'online' ? '' : [e.city !== e.n ? e.city : '', CAL.country(e.cc)].filter(Boolean).join(', ');
-V2.dpEvShort = e => { const m = String(e.n).match(/\(([A-Z]{2,6})\)/); return m ? `${m[1]}${e.city && e.t !== 'online' ? ', ' + e.city : ''}` : e.n; };
+// V2.evShort(e): an event's short name, the one rule for the tools band (Events plate) and the Dispatch: the code in its closing
+// brackets ("... (NAIC)" -> "NAIC"), else its full name. V2.dpEvShort adds the city for an in-person event.
+V2.evShort = e => (/\(([A-Z][A-Za-z]{1,7})\)\s*$/.exec(String(e && e.n || '')) || [])[1] || String(e && e.n || '');
+V2.dpEvShort = e => { const s = V2.evShort(e); return s !== e.n ? `${s}${e.city && e.t !== 'online' ? ', ' + e.city : ''}` : e.n; };
 // a headline as a link to its source (new tab); without a link it is plain text (a story is never invented a link)
 /* 'Season M-8' never breaks after its hyphen (a word joiner, as the Events page's ticket names) */
 V2.dpA = (it, inner, cls = '') => (inner = inner.replace(/\b([A-Z])-(\w)/g, '$1-\u2060$2'), it.url) ? `<a class="dp-hl${cls ? ' ' + cls : ''}" href="${V2.esc(it.url)}" target="_blank" rel="noopener">${inner}<span class="vh"> (opens the full story at its source, in a new tab)</span></a>` : `<span class="dp-hl${cls ? ' ' + cls : ''}">${inner}</span>`;
 V2.dpKick = (it, withType = true) => `<p class="dp-k">${[withType ? it.type : '', it.sub, V2.dpShort(it.date)].filter(Boolean).map(V2.esc).join(' · ')}</p>`;
 // what goes where: the lead (newest story that isn't an interview), its series' rounds, the interviews column, two more stories, the rest
 V2.dpParts = post => { const P = Array.isArray(post) ? {news: post, live: [], past: []} : post || {}, now = Date.now(), dy = x => V2.dpDay(x.date);
-  const all = (P.news || []).map(V2.dpItem).filter(x => x.t), year = new Date().getFullYear(), G = new Map(((typeof POST === 'object' && POST && POST.gifts) || []).map(g => [g.id, g]));
+  const all = (P.news || []).map(V2.dpItem).filter(x => x.t), G = new Map(((typeof POST === 'object' && POST && POST.gifts) || []).map(g => [g.id, g]));
   const front = all.filter(x => !V2.dpMaint(x)), pool = front.length ? front : all, lead = pool.find(x => !/^interview/i.test(x.type)) || pool[0] || null;
   const S = (P.series || (typeof POST === 'object' && POST && POST.series) || []).map(r => { const g = r.gift ? G.get(r.gift) : null;
     return {month: r.month || '', t: r.name || '', start: r.start || '', end: r.end || '', url: V2.dpSrc(r), battle: r.battle || '', gift: r.mon || (g && (g.mon || g.name)) || ''}; });
@@ -59,22 +61,24 @@ V2.dpParts = post => { const P = Array.isArray(post) ? {news: post, live: [], pa
   const inter = rest0.filter(x => /^interview/i.test(x.type)).slice(0, 3), stories = rest0.filter(x => !inter.includes(x)).slice(0, 2);
   const brief = inter.length ? [] : rest0.filter(x => !stories.includes(x)).slice(0, 4);
   const shown = new Set([lead, ...inter, ...stories, ...brief]), rest = all.filter(x => !shown.has(x));
-  const thisYear = all.filter(x => dy(x) && dy(x).getFullYear() === year), byType = {};
-  for (const x of thisYear) if (!V2.dpMaint(x)) byType[x.type] = (byType[x.type] || 0) + 1;
-  const live = (P.live || []).map(V2.dpGift), coupon = live.find(g => g.code) || null, end = round ? round.end : lead && lead.end;
-  return {all, lead, round, rounds, inter, stories, brief, rest, thisYear, byType, live, coupon, checked: P.checked || null, end, ended: !!(end && Date.parse(end) < now)}; };
+  // the masthead's count and the kinds beside it count the same stories: the past 12 months (so January isn't empty), no maintenance
+  // notices in either (they are not stories on the front either)
+  const recent = all.filter(x => !V2.dpMaint(x) && dy(x) && dy(x) <= now && dy(x) > now - 365 * 864e5), byType = {};
+  for (const x of recent) byType[x.type] = (byType[x.type] || 0) + 1;
+  const live = (P.live || []).map(V2.prG).filter(Boolean), coupon = live.find(g => g.code) || null, end = round ? round.end : lead && lead.end;
+  return {all, lead, round, rounds, inter, stories, brief, rest, recent, byType, live, coupon, checked: P.checked || null, end, ended: !!(end && Date.parse(end) < now)}; };
 // ---------- the masthead: top line, name, In the post / date / Next event ----------
 V2.dpMast = (D, compact) => { const E = V2.esc, today = new Date(), next = V2.dpNext()[0];
   const top = `<p class="dp-top"><span>No. ${homeNum(D.all.length)} · Late Edition</span>${compact ? `<span>${E(today.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'}))}</span>` : `<span class="dp-topc">Pokémon Champions news, in one paper</span><span>Free · Unofficial</span>`}</p>`;
   const name = compact ? `<p class="dp-name u"><span>The Champions</span> <span class="dp-pl">Dispatch</span></p>` : `<h1 class="dp-name u"><span>The Champions</span> <span class="dp-pl">Dispatch</span></h1>`; /* the small paper sits on Home, which has its own h1 */
   if (compact) return `<header class="dp-mast">${top}${name}</header>`;
-  const n = D.live.length, left = n ? V2.dpLeft(D.live[0].end) : null, one = n > 1 ? 'One' : 'It';
+  const n = D.live.length, left = n ? V2.prDaysLeft(D.live[0]) : null, one = n > 1 ? 'One' : 'It';
   const ends = left == null ? '' : left <= 0 ? `${one} ends today` : left === 1 ? `${one} ends tomorrow` : `${one} ends in ${left} days`;
   const post = `<a class="dp-box dp-pk" href="#gifts" aria-label="In the post: ${n ? V2.dpPlural(n, 'gift') + ' waiting' + (ends ? '. ' + ends : '') : 'no gifts waiting right now'}. Open Mystery Gifts."><small>In the post</small><b class="u">${n ? V2.dpPlural(n, 'gift') + ' waiting' : 'No gifts waiting'}</b><span>${E(ends || 'Every Mystery Gift ›')}</span></a>`;
   const nx = next ? (() => { const w = CAL.when(next)[1].replace(/ /g, '\u00a0'); return `<button type="button" class="dp-box dp-bx" data-dpcal aria-label="Next event: ${E(next.n)}, ${E(CAL.range(next))}, ${E(w)}. Open the upcoming events."><small>Next event</small><b class="u">${E(V2.dpEvShort(next))}</b><span>${E(CAL.range(next))} · ${E(w)}</span></button>`; })()
     : `<span class="dp-box dp-bx"><small>Next event</small><b class="u">None listed</b><span>The calendar updates daily</span></span>`;
   const counts = Object.entries(D.byType).sort((a, b) => b[1] - a[1]).slice(0, 2).map(([t, k]) => V2.dpPlural(k, t)); /* the two biggest kinds (maintenance left out): all of them made a three-line date block */
-  const mid = `<p class="dp-date"><b class="u"><span class="dp-dl">${E(today.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'}))}</span><span class="dp-ds">${E(today.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'}))}</span></b><span>${D.thisYear.length ? [V2.dpPlural(D.thisYear.length, 'story') + ' this year', ...counts].map(E).join(' · ') : 'No stories listed yet this year'}</span></p>`;
+  const mid = `<p class="dp-date"><b class="u"><span class="dp-dl">${E(today.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'}))}</span><span class="dp-ds">${E(today.toLocaleDateString('en-US', {weekday: 'short', month: 'short', day: 'numeric', year: 'numeric'}))}</span></b><span>${D.recent.length ? [V2.dpPlural(D.recent.length, 'story') + ' in the past 12 months', ...counts].map(E).join(' · ') : 'No stories in the past 12 months'}</span></p>`;
   return `<header class="dp-mast">${top}${name}<div class="dp-boxes">${post}${mid}${nx}</div></header>`; };
 // ---------- the lead story and its series row ----------
 V2.dpMonGift = (g, cls, noName) => { const p = V2.byName.get(g), E = V2.esc; if (!p) return `<span class="dp-frame dp-ifr ${cls}" aria-hidden="true"></span><span class="dp-gn">${E(g)}</span>`;
@@ -88,7 +92,7 @@ V2.dpLead = (D, compact) => { const E = V2.esc, L = D.lead;
   if (!L) return `<section class="dp-lead dp-empty"><p class="dp-k">The news desk</p><h2 class="dp-lh u">No stories yet.</h2><p class="dp-sum">Headlines appear here once the news list is filled. Each one opens the full story at its source.</p></section>`;
   const R = D.round, k = R ? D.rounds.indexOf(R) + 1 : 0, when = R && R.start && R.end ? `${V2.dpShort(R.start)} – ${V2.dpShort(R.end)}` : D.end ? V2.dpShort(D.end) : '';
   const name = R ? R.t.replace(/^The /, '').replace(/\s+\S+\s+\d{4}$/, '') : '';
-  const sum = k ? `The ${V2.dpOrd(k)} round of ${name ? 'the ' + name : 'the series'} this year.${D.ended ? ' It has now ended.' : when ? ` Battles run ${when}.` : ''}` : D.ended ? 'This event has now ended.' : '';
+  const yr = R ? R.month.slice(0, 4) : '', sum = k ? `The ${V2.dpOrd(k)} round of ${name ? 'the ' + name : 'the series'} ${!yr || yr === String(new Date().getFullYear()) ? 'this year' : 'in ' + yr}.${D.ended ? ' It has now ended.' : when ? ` Battles run ${when}.` : ''}` : D.ended ? 'This event has now ended.' : '';
   const stamp = D.ended ? `<span class="dp-stamp u" aria-hidden="true">Ended</span>` : '';
   const L2 = R && R.battle && !L.sub ? Object.assign({}, L, {sub: R.battle + ' Battles'}) : L;
   return `<section class="dp-lead${L.t.length > 48 ? ' dp-long' : ''}" aria-label="Lead story">${V2.dpKick(L2)}${stamp}<h2 class="dp-lh u">${V2.dpA(L, E(L.t))}${D.ended ? '<span class="vh"> (ended)</span>' : ''}</h2>
@@ -103,16 +107,17 @@ V2.dpStory = it => { const E = V2.esc, p = it.gift && V2.byName.get(it.gift);
     ${p ? `<div class="dp-pic">${V2.dpMonGift(it.gift, 'dp-fp', true)}<p class="dp-cap">Gift listed with this story: ${E(V2.disp(it.gift))}.</p></div>` : it.gift ? `<p class="dp-cap">Gift listed with this story: ${E(it.gift)}.</p>` : ''}</article>`; };
 V2.dpCoupon = D => { const E = V2.esc, g = D.coupon;
   if (!g) return `<aside class="dp-cpn dp-cpn0" aria-label="Clip and claim"><i class="dp-sc" aria-hidden="true">✂</i><p class="dp-k dp-rk">Clip and claim · Mystery Gift</p><h3 class="dp-cph u">Nothing to clip today.</h3><p class="dp-cpm">The next gift code lands here. <a class="dp-lk" href="#gifts">All Mystery Gifts ›</a></p></aside>`;
-  const left = V2.dpLeft(g.end), when = [g.start ? V2.dpShort(g.start) : '', g.end ? V2.dpShort(g.end) : ''].filter(Boolean).join(' – ');
+  /* the Post Room's reader (V2.prG), days left (V2.prDaysLeft) and dates (V2.prDate: a day-only date as its UTC day, an exact one local) */
+  const md = {month: 'short', day: 'numeric'}, left = V2.prDaysLeft(g), when = [V2.prDate(g.start, md, g.dayStart), V2.prDate(g.end, md, g.dayEnd)].filter(Boolean).join(' – '), how = V2.PR_HOW[g.how] || '';
   return `<aside class="dp-cpn" aria-label="Clip and claim: ${E(g.name)}"><i class="dp-sc" aria-hidden="true">✂</i><p class="dp-k dp-rk">Clip and claim · Mystery Gift</p><h3 class="dp-cph u">${E(g.name)}</h3>
-    <div class="pr-crow dp-crow"><div class="pr-cbox"><p class="pr-k">Code</p>${V2.prCode(g.code)}</div><button type="button" class="np-btn pr-copy" data-prcopy="${E(g.code)}"><span>Copy Code</span></button></div>
-    <p class="dp-cpm">${left != null ? `<b>${E(V2.dpLeftTxt(left))}.</b> ` : ''}${E([g.how, when].filter(Boolean).join(', '))}${g.how || when ? '. ' : ''}Blue characters are numbers. <a class="dp-lk" href="#gifts">All Mystery Gifts ›</a></p></aside>`; };
+    ${V2.prCopyRow(g.code, ' dp-crow')}
+    <p class="dp-cpm">${left != null && left >= 0 ? `<b>${E(V2.dpLeftTxt(left))}.</b> ` : ''}${E([how, when].filter(Boolean).join(', '))}${how || when ? '. ' : ''}Blue characters are numbers. <a class="dp-lk" href="#gifts">All Mystery Gifts ›</a></p></aside>`; };
 // ---------- The Back Page: Latest Result, The Standings, Fixtures ----------
 V2.dpLatest = () => { const E = V2.esc; let c = null; try { c = homeChamp(); } catch (e) {}
   if (!c) return `<section class="dp-bc dp-res"><h3 class="dp-ch u">Latest Result</h3><p class="dp-sum">Tournament results appear here after the next data refresh.</p></section>`;
   const ev = c.ev;
   return `<section class="dp-bc dp-res" aria-label="Latest result"><h3 class="dp-ch u">Latest Result</h3><button type="button" class="dp-evt u" data-evgo="${E(ev.id)}" aria-label="${E(V2.evTitle(ev.name))}: open the placings">${E(V2.evTitle(ev.name))}</button>
-    <p class="dp-meta">${E(evDate(ev.date))} · ${homeNum(ev.players)} players · the winner's six</p><ul class="dp-six">${c.six.map(m => `<li>${V2.dpMonGift(m.p.n, 'dp-f6')}</li>`).join('')}</ul></section>`; };
+    <p class="dp-meta">${E(evDate(ev.date))} · ${ev.players > 0 ? homeNum(ev.players) + ' players · ' : ''}the winner's six</p><ul class="dp-six">${c.six.map(m => `<li>${V2.dpMonGift(m.p.n, 'dp-f6')}</li>`).join('')}</ul></section>`; };
 V2.dpStand = () => { const E = V2.esc; let rows = []; try { rows = lairRows().filter(x => x.r && x.r.tc).slice(0, 5); } catch (e) {}
   return `<section class="dp-bc dp-std" aria-label="The Standings"><h3 class="dp-ch u">The Standings</h3>${rows.length ? `<ol class="dp-tb">${rows.map(x => { const R = monRating(x.p), k = lairRank(x.p);
     return `<li><button type="button" class="dp-row" data-v2mon="${E(x.p.n)}" aria-label="Rank ${k ? k.rank : ''}: ${E(x.p.d)}${R ? ', ' + R.tier + ' tier, rating ' + R.n : ''}. Open its page."><b class="dp-rk1 u" aria-hidden="true">${k ? k.rank : ''}</b><span class="dp-rn">${V2.keepForm(E(x.p.d))}</span><small aria-hidden="true">${R ? E(R.tier) + ' tier' : ''}</small><b class="dp-rv u" aria-hidden="true">${R ? R.n : ''}</b></button></li>`; }).join('')}</ol>` : '<p class="dp-sum">Ratings appear after the next data refresh.</p>'}
@@ -120,7 +125,8 @@ V2.dpStand = () => { const E = V2.esc; let rows = []; try { rows = lairRows().fi
 V2.dpFix = () => { const E = V2.esc, next = V2.dpNext(), shown = next.slice(0, 3);
   return `<section class="dp-bc dp-fix" aria-label="Fixtures"><h3 class="dp-ch u">Fixtures</h3>${shown.length ? `<ul class="dp-fl">${shown.map(e => { const d = new Date(e.s + 'T12:00:00'), w = CAL.when(e)[1].replace(/ /g, '\u00a0'), pl = V2.dpPlace(e);
     const inner = `<b class="dp-fd u" aria-hidden="true">${d.getDate()}</b><span class="dp-fn">${E(e.n)}</span><small>${E(CAL.range(e))}${pl ? ' · ' + E(pl) : ''}\u00a0· ${E(w)}</small>`;
-    return `<li>${e.url ? `<a class="dp-fr" href="${E(e.url)}" target="_blank" rel="noopener" aria-label="${E(e.n)}, ${E(CAL.range(e))}${pl ? ', ' + E(pl) : ''}, ${E(w)}: details (opens a new tab)">${inner}</a>` : `<span class="dp-fr">${inner}</span>`}</li>`; }).join('')}</ul>` : '<p class="dp-sum">No upcoming events listed right now.</p>'}
+    const u = V2.safeUrl(e.url);
+    return `<li>${u ? `<a class="dp-fr" href="${E(u)}" target="_blank" rel="noopener" aria-label="${E(e.n)}, ${E(CAL.range(e))}${pl ? ', ' + E(pl) : ''}, ${E(w)}: details (opens a new tab)">${inner}</a>` : `<span class="dp-fr">${inner}</span>`}</li>`; }).join('')}</ul>` : '<p class="dp-sum">No upcoming events listed right now.</p>'}
     ${next.length ? `<button type="button" class="dp-lk dp-all" data-dpcal>All ${homeNum(next.length)} Next Events ›</button>` : ''}</section>`; };
 // ---------- Classifieds: four playful one-liners, each opening a tool (new words; Sim hasn't signed them off) ----------
 V2.dpAds = () => { const E = V2.esc; let top = ''; try { const r = lairRows().filter(x => x.r && x.r.tc)[0]; top = r ? r.p.d : ''; } catch (e) {}
