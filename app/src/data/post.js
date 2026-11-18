@@ -29,7 +29,8 @@
 //   approx   which of 'start' / 'end' are not exact times from the source; `note` says what they are (usually: the source gives
 //            the day only, so the start is 00:00 UTC and the end 23:59:59 UTC of that day, or the start is the day of the first
 //            report). Optional.
-//   code     only when it appears on an official channel, or on 2+ reputable independent outlets, each URL in `src` (the 2-outlet
+//   code     live gifts only: a code is dropped from the data once its gift has ended (Sim, Nov 18, 9d: stamps never show it,
+//            and an old code can't confuse anyone if it isn't stored). Only when it appears on an official channel, or on 2+ reputable independent outlets, each URL in `src` (the 2-outlet
 //            rule and the outlets that count: docs/legal-sources.md, "Codes: the 2-outlet rule"; Analytics Insight never counts).
 //   nature, ability, moves   only when a source in `src` prints them. Optional.
 //   src      [urls]: the official news page first, then outlets.
@@ -88,12 +89,12 @@ var POST = {checked: '2026-11-18T02:21:50Z',
       src: ['https://nintendoeverything.com/pokemon-champions-mystery-gift-codes-list/'],
       note: 'Code not verified (one outlet only). Dates: Nintendo Everything\'s list (days only).'},
     {id: 'g-naic-coupons', kind: 'item', item: 'Quick Coupon', name: 'Quick Coupons', amount: 22, how: 'Serial Code',
-      start: '2026-06-14T00:00:00Z', end: '2026-06-14T23:59:59Z', approx: ['start', 'end'], code: 'NA1CCHAMP',
+      start: '2026-06-14T00:00:00Z', end: '2026-06-14T23:59:59Z', approx: ['start', 'end'],
       src: ['https://nintendoeverything.com/pokemon-champions-mystery-gift-codes-list/',
         'https://www.nintendolife.com/guides/pokemon-champions-mystery-gift-codes-list'],
       note: 'Code printed by Nintendo Everything and Nintendo Life (which calls them "Quick Tokens"). One day, Jun 14 (day only).'},
     {id: 'g-charizard', kind: 'pokemon', mon: 'Charizard', name: 'Charizard', amount: 1, how: 'Serial Code',
-      start: '2026-06-06T00:00:00Z', end: '2026-06-14T23:59:59Z', approx: ['start', 'end'], code: 'L12ARD0NPJCS26',
+      start: '2026-06-06T00:00:00Z', end: '2026-06-14T23:59:59Z', approx: ['start', 'end'],
       ability: 'Blaze', moves: ['Flare Blitz', 'Dragon Claw', 'Thunder Punch', 'Dragon Dance'],
       src: ['https://nintendoeverything.com/pokemon-champions-mystery-gift-codes-list/',
         'https://www.vice.com/en/article/pokemon-champions-limited-time-pokemon-code-details/',
@@ -101,7 +102,7 @@ var POST = {checked: '2026-11-18T02:21:50Z',
       note: 'Title "Charizard the Festive". Code printed by Nintendo Everything, Vice and Nintendo Life. End Jun 14 per Nintendo Everything ' +
         'and Vice (days only); Nintendo Life says Jul 14 (outvoted). Ability and moves: Vice only.'},
     {id: 'g-gyarados', kind: 'pokemon', mon: 'Gyarados', name: 'Gyarados', amount: 1, how: 'Serial Code',
-      start: '2026-05-24T00:00:00Z', end: '2026-05-31T23:59:59Z', approx: ['start', 'end'], code: 'DRAG0NDANCEPTC26',
+      start: '2026-05-24T00:00:00Z', end: '2026-05-31T23:59:59Z', approx: ['start', 'end'],
       ability: 'Intimidate', moves: ['Waterfall', 'Earthquake', 'Ice Fang', 'Dragon Dance'],
       src: ['https://nintendoeverything.com/pokemon-champions-mystery-gift-codes-list/',
         'https://www.nintendolife.com/news/2026/05/new-limited-time-pokemon-champions-distribution-now-available',
@@ -109,7 +110,7 @@ var POST = {checked: '2026-11-18T02:21:50Z',
       note: 'Title "Gyarados the Festive"; shown at the Pokémon Trainers Cup (South Korea). Code printed by Nintendo Everything and Nintendo ' +
         'Life. May 24 to May 31 (days only). Ability and moves: Nintendo Life.'},
     {id: 'g-machamp', kind: 'pokemon', mon: 'Machamp', name: 'Machamp', amount: 1, how: 'Serial Code',
-      start: '2026-04-08T00:00:00Z', end: '2026-08-31T23:59:59Z', approx: ['start', 'end'], code: 'CHAMP10N',
+      start: '2026-04-08T00:00:00Z', end: '2026-08-31T23:59:59Z', approx: ['start', 'end'],
       ability: 'No Guard', moves: ['Dynamic Punch', 'Stone Edge', 'Ice Punch', 'Bullet Punch'],
       src: ['https://nintendoeverything.com/pokemon-champions-mystery-gift-codes-list/',
         'https://www.nintendolife.com/news/2026/04/psa-pokemon-champions-first-mystery-gift-distribution-now-live',
@@ -141,7 +142,7 @@ var POST = {checked: '2026-11-18T02:21:50Z',
       src: 'https://champions-news.pokemon-home.com/en/page/869.html'}
   ],
   held: [
-    {name: '5,000 VP (code W0R1DCHAMP10NS26)', reason: 'Code printed by Nintendo Everything and LevelUp (start Aug 21), but both give no end ' +
+    {name: '5,000 VP (Worlds shared code)', reason: 'Code printed by Nintendo Everything and LevelUp (start Aug 21), but both give no end ' +
       'date while other guides say Aug 31; with no end it would show as live forever, so it waits for a confirmed end.',
       src: ['https://nintendoeverything.com/pokemon-champions-mystery-gift-codes-list/',
         'https://www.levelup.com/noticias/pokemon-champions-tiene-regalos-misteriosos-y-aun-estas-a-tiempo-de-canjearlos/']},

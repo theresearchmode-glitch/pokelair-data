@@ -110,6 +110,10 @@ const MQ = async () => {
     try { res = (await import('node:child_process')).execFileSync('node', [new URL('../../experiments/post-news-test.mjs', import.meta.url).pathname], {encoding: 'utf8', stdio: 'pipe'}).trim().split('\n').pop(); } catch (e) { res = 'failed: ' + String(e.stdout || e.message).trim().split('\n').pop(); }
     ok(res === 'ALL PASS' && /### Who updates what \(9c\)/.test(ls) && /News: automatic/.test(ls) && /Gifts: suggested only/.test(ls) && /Codes: manual/.test(ls),
       `MQ-9c: the split (news automatic, gifts suggested, codes manual) is written down and post-news-test passes (${res})`); }
+  // MQ-9d (answer 9d): past codes are dropped from post.js; a gift that had ended when the list was checked holds no code, and none is in the page
+  { const q = await open('#gifts'); const r = await q.evaluate(() => window.__ev(`(() => { const t = Date.parse(POST.checked), past = POST.gifts.filter(g => Date.parse(g.end) < t);
+      const kept = past.filter(g => g.code).map(g => g.code), html = document.documentElement.outerHTML; return {past: past.length, kept: kept.join(','), inPage: kept.filter(c => html.includes(c)).length}; })()`));
+    ok(r.past > 0 && !r.kept && !r.inPage, `MQ-9d: no past gift keeps its code in post.js (${JSON.stringify(r)})`); await q.close(); }
   // MQ-2c (answer 2c): the Back Page's column names are the word list's: "Top Ratings" and "Next Events" (were The Standings / Fixtures), full paper and Home's small one
   { const q = await open('#news'); const r = await q.evaluate(() => { const h = [...document.querySelectorAll('#main .dp-bc h3')].map(x => x.textContent.trim()), all = document.body.innerText;
       return {h: h.join(' | '), labels: [...document.querySelectorAll('#main .dp-bc[aria-label]')].map(x => x.getAttribute('aria-label')).join(' | '), old: /The Standings|Fixtures/.test(all)}; });

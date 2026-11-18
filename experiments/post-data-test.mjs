@@ -3,6 +3,7 @@
 //   gifts: id unique, kind/how/name set, a Pokémon's `mon` is a name in the site's data, at least one https `src`, no op.gg or
 //          Serebii source (their terms forbid copying), every code has 1 official source or 2+ outlets on the list that counts
 //          (different sites; docs/legal-sources.md), start and end present and parse, start before end, every `approx` field is explained in `note`.
+//          a code only on a gift that had not ended when the list was checked (9d: past codes are dropped).
 //   news:  id unique, date parses, type and title set, url is https.
 //   only Mystery Gifts (Sim, Nov 18): every gift's `how` is 'Serial Code' or 'Event Gift'.
 //   series: dates parse, start before end, `mon` is null or a name in the site's data (the round's prize; not a gift), no `gift` link.
@@ -42,6 +43,7 @@ function check(P) {
     say(src.length > 0, `${at}: no src`);
     say(hosts.every(Boolean), `${at}: a src is not an https URL`);
     say(!hosts.some(h => h && BANNED.test(h)), `${at}: src from op.gg or Serebii (terms forbid copying)`);
+    if ('code' in g) say(!(parses(g.end) && parses(P.checked) && Date.parse(g.end) < Date.parse(P.checked)), `${at}: keeps the code of a gift that had ended when the list was checked (Sim, Nov 18, 9d: past codes are dropped)`);
     if ('code' in g) {
       const outlets = new Set(hosts.filter(h => h && OUTLETS.includes(h)));
       say(typeof g.code === 'string' && /^[A-Z0-9]{4,20}$/.test(g.code), `${at}: code "${g.code}" is not 4-20 capital letters/digits`);
@@ -99,6 +101,7 @@ const broken = {
   'a Pokémon not in the site data': c => { c.gifts.find(x => x.kind === 'pokemon').mon = 'Missingno'; },
   'a Battle Pass gift': c => { c.gifts[0].how = 'Battle Pass'; },
   'a Competition Prize gift': c => { c.gifts[1].how = 'Competition Prize'; },
+  'a past gift that keeps its code': c => { const g = c.gifts.find(x => Date.parse(x.end) < Date.parse(c.checked) && x.how === 'Serial Code'); g.code = 'OLDC0DE1'; g.src = ['https://www.nintendolife.com/a', 'https://nintendoeverything.com/b']; },
   'an empty news entry': c => c.news.push({}),
   'an http news link': c => { c.news[0].url = c.news[0].url.replace('https:', 'http:'); },
   'news with no date': c => { delete c.news[0].date; },
