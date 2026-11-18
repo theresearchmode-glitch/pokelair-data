@@ -115,6 +115,15 @@ const WX_SUPPORT_MV=new Set(['Haze','Clear Smog','Reflect','Light Screen','Auror
 const wxSupportRole=mv=>mv.some(n=>WX_SUPPORT_MV.has(n));
 // the type of a member's strongest attack (power × same-type bonus), from its moves
 function wxMainType(m,mv){const t=m.types||m.p.t;let best=null,bv=0;for(const n of mv){const x=mvByName.get(n);if(!x||!(x.cat>0)||!(x.bp>0))continue;const v=x.bp*(t.includes(x.type)?1.5:1);if(v>bv){bv=v;best=x.type}}return best}
+// Nov 18 (Sim; rule-holes sweep hole 9: 71 plans, 50 on good teams): a plan may swap out the terrain setter while a teammate's move
+// needs that terrain (Indeedee out, Mega Meowstic's Expanding Force kept). Terrain roles add nothing beyond the grade (Nov 9,
+// GUARD_KEYS), so the plan stays; its card says what is lost (LANE.line, 36-lanes.js).
+const T_NEED_MV={'Expanding Force':'psy','Grassy Glide':'grassy','Rising Voltage':'elec','Misty Explosion':'misty'};
+function terrainLoss(pl){if(!pl||!pl.team||!pl.ch)return [];const lost=[...new Set(pl.ch.map(x=>x.out&&TERRAIN_OF[x.out.ability]).filter(Boolean))];if(!lost.length)return [];
+  let have;try{have=teamField(pl.team).t}catch(e){have=new Set(pl.team.map(m=>TERRAIN_OF[m.ability]).filter(Boolean))}
+  const out=[];for(const t of lost){if(have.has(t))continue;for(const m of pl.team)for(const n of mvsOf(m))if(T_NEED_MV[n]===t)out.push({m,mv:n,t})}return out}
+const terrainLossLine=pl=>{const L=terrainLoss(pl);if(!L.length)return '';const t=ARCH[L[0].t].name;
+  return `<span class="warnline">Loses ${esc(t)}</span>: ${esc(wxAnd(L.map(x=>`${x.m.d}'s ${x.mv}`)))} ${L.length>1?'need':'needs'} it`}
 // a team's flaws in words (Build for me never makes a team with any; the suggestions never add one)
 function teamFlaws(team,gp){gp=gp||gamePlan(team.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves}));const row=k=>gp.rows.find(r=>r.k===k)||{},f=[];
   if(row('weather').lone)f.push('weather nobody uses');if(new Set(team.map(m=>TERRAIN_OF[m.ability]).filter(Boolean)).size>1)f.push('two terrains');

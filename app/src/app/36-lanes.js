@@ -35,7 +35,9 @@ const LANE = {
     out.length = 0; out.push(...keep); if (Array.isArray(out.more)) out.more.unshift(...moved.filter(pl => !out.more.includes(pl)));
     out.nothing = !keep.some(pl => pl._lane.k !== 'option') && !LANE.protFix(ms); return out; },
   // the line under a suggestion: what kind it is, and its honest size in real games
-  line(pl) { const L = pl && pl._lane; if (!L) return '';
+  // plus a warning when the plan swaps out a terrain setter a teammate's move needs (terrainLoss, 29-fix-planner.js; Sim, Nov 18)
+  line(pl) { const b = LANE.line0(pl); if (!b) return ''; let w = ''; try { w = terrainLossLine(pl); } catch (e) {} return w ? `${b} <span class="chtloss">${w}</span>` : b; },
+  line0(pl) { const L = pl && pl._lane; if (!L) return '';
     if (L.k === 'fix') { const f = L.fixes[0], w = {clause: 'two of your Pokémon hold the same item, so the team can’t be registered; this frees it',
         mega: `adds a Mega: teams with no Mega won about ${L.fixes[0].pts} fewer games in 100`, reach: `makes the team ready for the top threats: teams that are win about ${Math.round(LANE.PTS.reach)} more in 100`}[f.k];
       return `<span class="chlane ln-fix"><b>Fix</b> ${w}</span>`; }

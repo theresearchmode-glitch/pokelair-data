@@ -146,5 +146,18 @@ for (const [label, team] of [['sun team, Incineroar the only lead support', ['To
   return {blocked:psyBlocked(t).length,flaw:teamFlaws(t).some(f=>/Psychic Terrain/.test(f)),note:((gamePlan(t).rows.find(r=>r.k==='terrain')||{}).note||'')}})()`));
   ok(r.blocked >= 2 && !r.flaw, `Psychic Surge Indeedee over ${r.blocked} teammates' priority: not a team flaw`);
   ok(/Psychic Terrain also blocks your own Fake Out and priority/.test(r.note), `the terrain row still notes it ("${r.note}")`); }
+// a plan that swaps out the terrain setter while a teammate's move needs that terrain stays, and its card says so (Sim, Nov 18,
+// rule-holes sweep hole 9: Indeedee swapped out next to Mega Meowstic's Expanding Force, 71 plans, never said)
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const ind=mk('Indeedee-F','Psychic Surge',['Follow Me','Psychic','Helping Hand','Protect']),meo=mk('Meowstic-F-Mega','Competitive',['Expanding Force','Moonblast','Protect','Fake Tears']);
+  const rest=[mk('Kingambit','Defiant',['Kowtow Cleave','Sucker Punch','Iron Head','Protect']),mk('Charizard-Mega-Y','Drought',['Heat Wave','Solar Beam','Protect','Overheat']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide']),mk('Sylveon','Pixilate',['Hyper Voice','Moonblast','Protect','Quick Attack'])];
+  const base=[ind,meo,...rest].map((m,i)=>({...m,i}));const sw=(inc,keepMeo)=>{const team=base.map(m=>m===base[0]?{...inc,i:0}:m===base[1]&&!keepMeo?{...mk('Gholdengo','Good as Gold',['Make It Rain','Shadow Ball','Nasty Plot','Protect']),i:1}:m);
+    const pl={ch:[{out:base[0],slot:0,c:{p:inc.p,mem:inc}}].concat(keepMeo?[]:[{out:base[1],slot:1,c:{p:team[1].p,mem:team[1]}}]),team};pl._lane={k:'option'};return pl};
+  const inc=mk('Incineroar','Intimidate',['Fake Out','Flare Blitz','Parting Shot','Knock Off']),psy2=mk('Indeedee','Psychic Surge',['Follow Me','Psychic','Trick Room','Protect']);
+  const a=sw(inc,true),b=sw(psy2,true),c=sw(inc,false);
+  return {a:LANE.line(a),b:LANE.line(b),c:LANE.line(c)}})()`));
+  ok(/Psychic Terrain/.test(r.a) && /Expanding Force/.test(r.a), `Indeedee swapped out next to Mega Meowstic's Expanding Force: the card warns ("${r.a.replace(/<[^>]+>/g, '')}")`);
+  ok(!/Expanding Force/.test(r.b), 'a plan that brings in another Psychic Surge setter: no warning');
+  ok(!/Expanding Force/.test(r.c), 'a plan that also swaps out the Expanding Force user: no warning'); }
 ok(!errs.length, 'no page errors ' + errs.join(' | '));
 await b.close(); fs.unlinkSync(page); console.log(fails.length ? `\n${fails.length} FAILED` : '\nALL PASSED'); process.exit(fails.length ? 1 : 0);
