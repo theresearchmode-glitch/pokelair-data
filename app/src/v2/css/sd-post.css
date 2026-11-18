@@ -83,4 +83,12 @@
 .sdp-nx{position:absolute;top:var(--s2);right:var(--s2);display:grid;place-items:center;width:var(--tap);height:var(--tap);border:0;border-radius:var(--r-s);background:none;color:var(--pr-ink);font:400 var(--t28)/1 var(--b);cursor:pointer}
 .sdp-nx:focus-visible,.sdp-nf summary:focus-visible{outline:3px solid var(--pr-ink);outline-offset:2px}
 @media (max-width:699.98px){.sdp-nt{font-size:var(--t22)}}
-
+/* Shorter phone Home, Post X (Sim, Nov 18: "one parcel, one front page"; docs/rebuild/short-home-options.md): under 700 the band shows the
+   parcel for the soonest-ending gift and the Dispatch's masthead, lead story and Next event. The past-gift stamps, the second gift's
+   code slip, the label's Sent line and the paper's more stories leave phone Home only (all on Gifts / News, one tap away) */
+@media (max-width:699.98px){
+  .sdp .sdp-stamps,.sdp .sdp-other,.sdp .pr-sent,.sdp .dp-more{display:none}
+  .sdp-cols{gap:var(--s8)}
+  .sdp .pr-parcel.pr-cpt{padding-bottom:var(--s5)}
+  .sdp-top{margin-bottom:var(--s5)}
+}

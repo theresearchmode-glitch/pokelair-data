@@ -248,6 +248,12 @@ const HQ = async () => {
       return {n: e.textContent.trim(), lines: new Set([...rg.getClientRects()].map(x => Math.round(x.top))).size, top: Math.round(e.getBoundingClientRect().top), fs: parseFloat(getComputedStyle(e).fontSize)}; }).concat([{sb: innerWidth - document.documentElement.clientWidth}])});
       const sb = r.pop().sb; for (const x of r) { if (x.lines > 1) pb.push(`${w} (scrollbar ${sb}px): "${x.n}" on ${x.lines} lines`); if (x.fs < 13) pb.push(`${w}: ${x.fs}px`); } }
     ok(!pb.length, `HQ polish 1: the hero's Score My Team / Build Me a Team keep one line each in a desktop window with a classic scrollbar, 360-520${pb.length ? ': ' + pb.join(' | ') : ''}`); }
+  // Shorter phone Home, Post X (Sim, Nov 18): under 700 the post band shows one parcel (the soonest-ending gift) and the Dispatch with its
+  // masthead, lead story and Next event; no stamps, no second slip, no more stories. 700 and wider keep everything
+  { const px = []; for (const [w, phone] of [[360, 1], [390, 1], [430, 1], [699, 1], [700, 0], [1440, 0]]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => { const s = document.querySelector('#main .sdp'), vis = q => [...s.querySelectorAll(q)].filter(e => e.getClientRects().length).length;
+      return {parcel: vis('.pr-parcel'), stamps: vis('.sdp-stamps'), other: vis('.sdp-other'), more: vis('.dp-more'), name: vis('.dp-name, .dp-mast'), bar: vis('.dp-nbar'), all: [...s.querySelectorAll('.sdp-all')].filter(e => e.getClientRects().length).length, h: Math.round(s.getBoundingClientRect().height), hs: document.documentElement.scrollWidth - innerWidth}; }});
+      const okp = phone ? r.parcel === 1 && !r.stamps && !r.other && !r.more : r.parcel >= 1 && (r.stamps || r.other || r.more); if (!okp || r.all !== 2 || r.hs > 0) px.push(`${w}: ${JSON.stringify(r)}`); }
+    ok(!px.length, `HQ Post X (Sim, Nov 18): phone Home's post band is one parcel and the front page (no stamps, second slip or more stories) under 700; 700+ unchanged; both "All ›" links stay${px.length ? ': ' + px.join(' | ') : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----
