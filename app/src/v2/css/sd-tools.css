@@ -301,9 +301,18 @@
 }
 @media (max-width:379.98px){.sdt-ra,.sdt-dc{grid-column:span 6}.sdt-pod{max-width:none}.sdt-pp6 .np-mon{--iw:44px}.sdt-chp>b{font-size:var(--t13)}
   .sdt-chp{gap:var(--s1);padding-inline:var(--s3) var(--s2)}.sdt-cpic{flex-basis:32px}.sdt-cpic .np-mon,.sdt-cpic .np-mon .st{--iw:32px;width:32px}}
-/* iPads (700-1099): the chips three across (two even rows), Ratings and Damage Calc pictures 96px tall (the half tiles are wide) */
-@media (min-width:700px) and (max-width:1099.98px){.sdt-chips ul{grid-template-columns:repeat(3,minmax(0,1fr))}
+/* iPads (700-1099), Sim Nov 18 ('the iPad loadout is too plain', took the recommendation): the six big plates of the phone layout, then
+   no chips: the Type Chart as a strip (words left, the 18 flags 6 by 3), Winning Cores | Archetypes | Popular Sets as three picture
+   plates, and Events and How We Calculate as their two number rows. Ratings and Damage Calc pictures 96px tall (the half tiles are wide) */
+@media (min-width:700px) and (max-width:1099.98px){.sdt-chips{display:none}
+  .sdt-tc{display:flex;flex-direction:row;align-items:center;gap:var(--s6);grid-column:1/-1;order:10}
+  .sdt-tc>.sdt-tx{flex:0 0 30%}.sdt-tc .sdt-types{flex:1;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2);margin:0}
+  .sdt-grid>.sdt-sm:not(.sdt-pr){display:flex;grid-column:span 4;order:11;margin-top:var(--s10)}
+  .sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}
+  .sdt-ends{display:grid}
   .sdt-ra>:last-child,.sdt-dc>:last-child{flex-basis:96px;height:96px}.sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:60px}.sdt-duel .np-mon{--iw:76px}}
+/* 700-899: the Type Chart strip's words above its flags (beside them, the flag names were cut: "Norma", "Fightin") */
+@media (min-width:700px) and (max-width:899.98px){.sdt-tc{flex-direction:column;align-items:stretch;gap:var(--s3)}.sdt-tc>.sdt-tx{flex:none}}
 @media (max-width:1099.98px){.sdt-cpic>b:only-child{flex:none}.sdt-chp:has(.sdt-cpic>b){padding-left:var(--s3)}.sdt-chp:has(.sdt-cpic>b) .sdt-cpic{flex:0 0 auto;min-width:40px}}
 
 /* 1100-1379: Popular Sets stacks its item under the name (the plate is narrow) */
