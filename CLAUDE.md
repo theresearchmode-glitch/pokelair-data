@@ -169,6 +169,15 @@ tournament games, 0.1% of teams). Every new spot is shown to Sim first. Never be
 spot (empty My Team) until the rebuild replaces it. A real NastyPlot mascot is its own project for later, in a separate chat.
 Darkrai and Shady Paw files stay in docs/mascot/ as history.
 
+## Balance patch on Wed Dec 2, 2026 (Sim approved the plan, Nov 18; DON'T FORGET)
+Official: news.pokemon-home.com/en/page/877.html (posted Nov 18), applies at maintenance Dec 2, all regulations. New moves
+(Psych Up x22, Tailwind Emolga, Roost Hydreigon/Beedrill, Slack Off Emboar, Wonder Room Umbreon, Play Rough all Eeveelutions);
+Rock Slide 90->95% accuracy and flinch 30->20%; Screech/Metal Sound 85->100%; Steel Wing/Frost Breath 90->100%; Flash Fire's boost
+stays through Mega Evolution; Stalwart also ignores Substitute. On Dec 2, not before: update the pinned Showdown Champions data
+once it has the patch, regenerate move-acc.js / move-meta.js and the move lists (experiments/gen-move-meta.mjs), run legality-check
+and calc-check, check Flash Fire and Stalwart in the calc, and add a short site note for the first weeks that ratings and sets
+come from games before the patch. Plans page step "patch-dec2"; a scheduled reminder fires Dec 2.
+
 ## The grade is a Strength Score (Sim, Nov 9)
 The 0-100 grade must say how strong the team is altogether, derived from all the factors we have studied and measured (Pokémon and
 sets, the 4 basics, readiness for the top threats, learned matchups, the team's own record...). NOT "what percentage of other teams
