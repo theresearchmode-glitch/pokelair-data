@@ -20,6 +20,12 @@
 import {chromium} from 'playwright'; import path from 'node:path'; import fs from 'node:fs';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') + msg); if (!c) fails.push(msg); };
+/* Parts (Nov 18): the whole file took 18-21 min on GitHub, which pushed the code-tests job past its 35-min limit (runs 1331-1351
+   cancelled; golden, same-grade and the logic checks never ran). test.yml runs it as parallel jobs, one per PART; together they run every
+   check once. PART=all (the default) runs everything in one go, as before. Parts: main1 (Build ... the Dispatch), main2 (Home's bands, My
+   Team height, NPR, Base Stats), groups (BR, MQ, AS, HQ, WebKit pair). ONLY=BR|MQ|AS|HQ still runs one group alone. */
+const PART = process.env.PART || 'all', part = k => PART === 'all' || PART.split(',').includes(k);
+if (!['all', 'main1', 'main2', 'groups'].includes(PART)) { console.log('v2-minors: unknown PART ' + PART + ' (all, main1, main2, groups)'); process.exit(1); }
 /* The pictures (Nov 18): a build without --art reads them from art/ and art-s/ beside the page, but the build copies only the fonts there,
    so in app/dist (CI and the usual setup) every sprite and crowd sheet was a broken image. The hero checks then measured broken-image
    icons (Q13f: icons over the tagline at 320-390; Q7a: sheets not loaded, failed requests counted as files). Put the folders there. */
@@ -371,6 +377,7 @@ const HQ = async () => {
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----
+if (part('main1')) {
 await p.goto('file://' + PAGE + '#build'); await p.waitForTimeout(2500);
 await p.getByRole('button', {name: 'Build Me a Team'}).first().click();
 await p.waitForSelector('[data-bdcopy]', {timeout: 30000}).catch(() => {});
@@ -728,7 +735,16 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   const q = await b.newPage({viewport: {width: 390, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; });
   await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.addStyleTag({content: 'html,body{overflow-anchor:none}'}); // as Safari: no scroll anchoring
   await q.evaluate(T => window.__ev(`(() => { const T = ${JSON.stringify(T)}; S.slots.forEach((s, i) => { s.n = T[i]; }); persist(); V2.redraw(); })()`), T);
-  await q.waitForFunction(() => { const s = document.querySelector('#tm-sg'); return s && !s.querySelector('[aria-busy=true]') && !/Working out/.test(s.innerText) && s.querySelector('[data-v2plan]'); }, null, {timeout: 30000}).catch(() => {});
+  const settled = () => q.waitForFunction(() => { const s = document.querySelector('#tm-sg'); return s && !s.querySelector('[aria-busy=true]') && !/Working out/.test(s.innerText) && !s.querySelector('.sg2-stale'); }, null, {timeout: 30000}).catch(() => {});
+  await settled();
+  /* 'nothing to fix' (Nov 18 fix of the check): the six's last suggestion is FOUND, not assumed. Its one suggestion got a follow-up after the
+     planner changes (run 1351: 14 frames with a new Apply), so the "no Apply left: Suggestions stays" ending went unchecked and the check
+     failed. At normal speed: Apply; while a new Apply follows, keep that team and go on; when none follows, go back one step and measure there. */
+  if (nm === 'nothing to fix') { let last = null;
+    for (let i = 0; i < 6; i++) { const st = await q.evaluate(() => window.__ev('JSON.stringify(S.slots)')); const a1 = await q.$('#tm-sg [data-v2plan]'); if (!a1) break;
+      await a1.click(); await q.waitForTimeout(600); await settled(); await q.waitForTimeout(600); last = st;
+      if (!(await q.$('#tm-sg [data-v2plan]'))) { await q.evaluate(st => window.__ev(`(() => { S.slots = ${st}; persist(); V2.redraw(); })()`), last); await q.waitForTimeout(600); await settled(); break; } } }
+  await q.waitForFunction(() => { const s = document.querySelector('#tm-sg'); return s && s.querySelector('[data-v2plan]'); }, null, {timeout: 30000}).catch(() => {});
   const cdp = await q.context().newCDPSession(q); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 4});
   const s0 = await q.evaluate(() => { const s = document.querySelector('#tm-sg'), a = s && s.querySelector('[data-v2plan]'); if (!a) return null; scrollBy(0, a.getBoundingClientRect().top - 600); return Math.round(s.getBoundingClientRect().top); });
   const a = await q.$('#tm-sg [data-v2plan]'), seen = [], bad = []; let busy = 0, live = 0, msg = '';
@@ -1077,6 +1093,8 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     const res = {small: !!p, lead: !!(p && p.querySelector('.dp-lh .dp-hl[href]')), bar: !!(p && p.querySelector('.dp-nbar')), more: p ? [...p.querySelectorAll('.dp-more li')].filter(li => li.getClientRects().length).length : 0, over: Math.round(o)}; d.remove(); return res; })()`));
   ok(sm.small && sm.lead && sm.bar && sm.more === 2 && sm.over <= 0, `DP-12: V2.dpFront(post, {compact: true}) draws the small paper (lead link, two more stories in a 340 slot, Next event bar, nothing out of it) (${JSON.stringify(sm)})`);
   await q.close(); }
+} // main1 end
+if (part('main2')) {
 // ---------- Home, The Stampede: the hero band (Nov 18; app/src/v2/pages/stampede-hero.js, css/sd-hero.css, sd-shared.css) ----------
 { const hero = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: o.rm || "no-preference"}); const q = await ctx.newPage();
     await q.addInitScript(e => { window.__PL_TEST = 1; if (e) try { localStorage.clear(); } catch (x) {} }, !!o.empty); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
@@ -1470,9 +1488,12 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     ok(!cut.length, `NPR-12 (polish sweep defect 1): the News coupon's Copy Code is the Post Room's button (class, padding, font) and its text is never clipped, 640 to 2560, day and night (${cut.join(' || ').slice(0, 400) || 'same button, not clipped'})`); }
 }
 // ---- NPR end ----
+} // main2 end (Base Stats, below, is main2 too)
+if (part('groups')) {
 await BR(); /* behaviour review (Nov 18), above */
 await MQ(); /* Sim's Nov 18 answers, above */
 await AS(); /* All Suggestions sheet, option C, above */
+}
 // WebKit pair (Nov 18, docs/rebuild/test-runs/webkit-new-pages-nov18.md): two Safari defects, measured the same way in any engine. This file runs
 // them in Chromium; for Safari's engine the same function (between the wk-pair markers) runs with playwright.webkit, over http (WebKit blocks
 // the fonts on file://). WK-1 the stamp's perforated edge: on its pixels, nothing outside the holes' centre line (Safari drew a ring of loose
@@ -1537,7 +1558,7 @@ const wkPair = async (br, url, ok) => {
   ok(!bad.length && seen.meant > 10, `WK-2 (WebKit pair): Copy Code rows on #gifts 320-2560, Home and News: never overflow or break, 13px+, Copy Code beside the code wherever it fits there at 24px (${seen.meant} such rows), a row's parcels line up (${bad.join(' | ').slice(0, 500) || 'all good'})`);
   await q.close(); };
 // wk-pair end
-{ // Sim, Nov 18: Base Stats calm and compact, on theme (no big bubbly numbers): at most 260px tall on a phone, numbers 16px in the slanted
+if (part('main2')) { // Sim, Nov 18: Base Stats calm and compact, on theme (no big bubbly numbers): at most 260px tall on a phone, numbers 16px in the slanted
   // type with no shadow, a Mega's numbers line up in each column, nothing spills out, at 320-1440
   const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();
   for (const [m, w] of [['garchomp', 320], ['garchomp', 390], ['garchomp', 1440], ['charizard-mega-y', 390], ['charizard-mega-y', 1440]]) {
@@ -1547,7 +1568,6 @@ const wkPair = async (br, url, ok) => {
       return {h: Math.round(R.height), fs: c.fontSize, st: c.fontStyle, sh: c.textShadow, cols: edges.size, over}; });
     if (r.none || r.fs !== '16px' || r.st !== 'italic' || r.sh !== 'none' || r.cols > 2 || r.over || (w < 700 && m === 'garchomp' && r.h > 260)) bad.push(`${m} ${w}: ${JSON.stringify(r)}`); }
   await ctx.close(); ok(!bad.length, `Pokémon page Base Stats (Sim, Nov 18): compact (260px or less on a phone), 16px slanted numbers with no shadow, numbers lined up, nothing out (${bad.join(' | ') || 'all as planned'})`); }
-await HQ();
-await wkPair(b, 'file://' + PAGE, ok);
+if (part('groups')) { await HQ(); await wkPair(b, 'file://' + PAGE, ok); }
 await b.close();
-console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
+console.log(`v2-minors${PART === 'all' ? '' : ' (' + PART + ')'}:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
