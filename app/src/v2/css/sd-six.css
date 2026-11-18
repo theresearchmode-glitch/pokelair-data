@@ -26,6 +26,7 @@
 .sds-wl li::before{content:counter(sdw);grid-row:span 2;font:800 var(--t20)/1.2 var(--u);font-style:italic;font-synthesis:style;color:var(--plate-link)}
 .sds-wl li b{font:700 var(--t16)/1.5 var(--b);color:var(--on-plate)}
 .sds-wla{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s6);margin:var(--s5) 0 0}
+.sds-wla .sds-lk{min-width:var(--tap);justify-content:center} /* "Got It" is 39px wide in its words: the tap area is 44 by 44 (qcheck TAP, C8) */
 .sds-rings{list-style:none;margin:var(--s4) 0 0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));container-type:inline-size;
   --cw:16.66cqi;--sw:33cqi;--sh:38cqi;--rw:14cqi}
 .sds-rings[data-named="4"],.sds-rings[data-named="5"],.sds-rings[data-named="6"]{--sw:25cqi;--sh:33cqi} /* a full six stands closer, as a group photo */
