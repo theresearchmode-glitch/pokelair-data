@@ -9,7 +9,7 @@ const DATA_SOURCES = [
   {name: 'Liquipedia', url: 'https://liquipedia.net/pokemon', note: 'CC BY-SA', use: 'Official event results and placements', terms: 'Read through its official API at its speed limits; text under CC BY-SA 3.0 (see below)'},
   {name: 'Pokémon Showdown', url: 'https://pokemonshowdown.com', use: 'Game data (Pokémon, moves, items, abilities) and public battle replays', terms: 'Game data under the MIT License (notice below); replays from its public replay API'},
   {name: 'Smogon', url: 'https://www.smogon.com/stats/', use: 'Monthly Showdown ladder usage stats', terms: 'Public stats files, read when a new month is out'},
-  {name: 'op.gg', url: 'https://op.gg/pokemon-champions/tier', use: 'In-game ranked doubles usage order', terms: 'Read once a day and credited here, as op.gg asks'},
+  {name: 'op.gg', url: 'https://op.gg/pokemon-champions/tier', use: 'In-game ranked doubles usage order', terms: 'Credited here. Our daily read is paused since Nov 18 while we check its terms; the last list we read is still shown.'},
   {name: 'Pikalytics', url: 'https://www.pikalytics.com', use: 'Ladder usage, items and moves', terms: 'Read once a day from the pages its robots rules open to tools'},
   {name: 'Showdown Tier', url: 'https://showdowntier.com', use: 'Ladder tier list, usage and win rates', terms: 'Read once a day; its robots rules allow it'}];
 const SD_MIT = `The MIT License (MIT)
