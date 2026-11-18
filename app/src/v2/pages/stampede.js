@@ -7,9 +7,13 @@ V2.STAMPEDE = true;
 V2._sd = {R: null, D: null};
 V2.sdData = () => { let R = null; try { R = ratings(); } catch (e) {} if (V2._sd.D && V2._sd.R === R) return V2._sd.D;
   let rows = []; try { rows = lairRows().filter(x => x.r && x.r.tc).map(x => ({p: x.p, n: x.p.n, d: x.p.d, r: RS(x.r.total), types: x.p.t || [], spe: x.p.st ? x.p.st[5] : null, mega: !!x.p.m})); } catch (e) {}
+  // herd (hero builder, Nov 18, lead's decision): every Pokémon the Ratings page lists (lairRows, no results filter: 345), the ones with
+  // tournament results first in rating order, then the rest (placeholder ratings) at the back; rank = the Ratings page's shared rank
+  let herd = []; try { const all = lairRows().map(x => ({p: x.p, n: x.p.n, d: x.p.d, r: RS(x.r.total), types: x.p.t || [], spe: x.p.st ? x.p.st[5] : null, mega: !!x.p.m, tc: !!x.r.tc}));
+    herd = all.filter(x => x.tc).concat(all.filter(x => !x.tc)); herd.forEach(x => { try { x.rank = x.tc ? lairRank(x.p) : null; } catch (e) { x.rank = null; } }); } catch (e) {}
   let champ = null; try { champ = homeChamp(); } catch (e) {}
   const ev = META && META.events && Array.isArray(META.events.events) ? META.events.events.length : 0;
-  const D = {rows, rated: rows.length, teams: (typeof RES === 'object' && RES && RES.teams) || 0, events: ev, champ};
+  const D = {rows, rated: rows.length, herd, ratedAll: herd.length, teams: (typeof RES === 'object' && RES && RES.teams) || 0, events: ev, champ};
   V2._sd = {R, D}; return D; };
 // a band that isn't built yet says so (Preview only); each band file replaces its own function
 V2.sdHero = V2.sdHero || (() => `<section class="sd-band sd-hero" aria-label="Sharply raise your win rate"><h1 class="u">Sharply raise <span>your win rate.</span></h1></section>`);

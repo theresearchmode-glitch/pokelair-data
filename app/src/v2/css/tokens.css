@@ -29,6 +29,12 @@
   --dp-plot:#0068AD;--dp-plot-rule:#0078BF;--dp-pick:#C41E35;--dp-pick-rule:#E8364F;--dp-bar:#17161A;--dp-on-bar:#FFFFFF;--dp-code-num:#62BEF7;
   --dp-dot:rgba(23,22,26,.13);--dp-frame:#F3F0E6;--dp-cur:rgba(0,120,191,.10);--dp-shadow:0 1px 2px rgba(30,20,50,.10),0 24px 48px -24px rgba(30,20,50,.32);
   --d-paper:clamp(24px,6.2cqi,120px);--d-papertwo:clamp(24px,10cqi,72px);--d-lead:clamp(34px,5.6cqi,68px);--d-mini:clamp(24px,9cqi,48px);--d-brief:clamp(24px,6.4cqi,34px); /* display sizes: the newspaper's name and the lead headline, scaled to the paper's width (cqi: the paper is a size container); mini and brief: the small paper on Home */
+ /* The Stampede bands (hero builder, Nov 18; colours sampled from Sim's mock-ups, contrast measured by token maths):
+    hero blue (white text 4.73:1; the tagline's light-blue second line 3.17:1, display size, passes as large text), the ink of the ledge
+    and the six band, the beige tools band, the red of the ticker and the post band (white 4.88:1; ink numbers 3.68:1 at 24px+ bold) */
+ --sd-hero:#0078BF;--sd-ink:#17161B;--sd-tools-bg:#EFEAE0;--sd-flag:#D62C45;--sd-flag-num:#17161A;
+ --sd-line2:#9BDCFF;--sd-plate:#FFFFFF;--sd-plate-ink:#17161A;--sd-plate-num:#0068AD;--sd-tag:#17161A;--sd-tag-num:#9BDCFF;
+ --sd-speed:rgba(255,255,255,.22);--sd-haze:rgba(0,120,191,.46);--sd-link:#62BEF7;
   --good:var(--plot);--good-text:var(--plot-text);--on-mark:#FFFFFF;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;--bad:#D93A3A;--bad-text:#B3261E;
   /* the six rating tiers (LTIERS colours; Grandstand, Nov 14): dark text on every tier colour passes 4.5:1; lit and shade faces of the 3D blocks */
   --tier-s:#ffb400;--tier-a:#ff6a3d;--tier-b:#b45cff;--tier-c:#2f9bff;--tier-d:#22b58a;--tier-f:#8a90a6;--tier-ink:#14110f;--tier-lit:#ffffff;--tier-shade:#14110f;
@@ -49,7 +55,11 @@
   /* type: Unbounded (slanted) for headlines and big numbers at 15px and up; Instrument Sans for the rest */
   --u:"Unbounded","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif;
   /* display sizes: the score number and the tagline (design scale "+ display") */
-  --d64:64px;--d96:96px;--d120:120px;--d168:168px;--d-hero:clamp(34px,6vw,68px);--unit:.62em;
+  --d64:64px;--d96:96px;--d120:120px;--d168:168px;--d-hero:clamp(34px,6vw,68px);
+  /* The Stampede hero (Nov 18): the tagline (row layout by width and height so the buttons stay on the first screen; phone 3 lines),
+     the plate numbers (row and pair layouts) */
+  --d-sdhero:clamp(48px,min(9.6vw,16svh),240px);--d-sdphone:clamp(40px,min(13.6vw,8svh),120px);--d-sdnum:clamp(30px,3.2vw,84px);--d-sdpair:clamp(28px,8vw,80px);--d-sdshort:clamp(36px,min(13.6vw,7svh),120px);
+ --unit:.62em;
   /* shadow ink and rim light as rgb triplets, for rgba(var(--shade),a) */
   --shade:30,20,50;--rim:255,255,255;
   /* type colours for chips with white text: each measured 4.6:1 or better (Sim, Nov 11: darkened, hue kept) */
@@ -99,6 +109,11 @@
   --dp-paper:#E9DFC7;--dp-glow:#F4ECD8;--dp-ink:#17161A;--dp-ink2:#45423F;--dp-ink3:#57524A;--dp-rule:rgba(23,22,26,.2);--dp-fold:rgba(23,22,26,.07);
   --dp-plot:#005996;--dp-plot-rule:#0068AD;--dp-pick:#A3172B;--dp-pick-rule:#C41E35;--dp-bar:#17161A;--dp-on-bar:#FFFFFF;--dp-code-num:#62BEF7;
   --dp-dot:rgba(23,22,26,.16);--dp-frame:#DED3B9;--dp-cur:rgba(0,89,150,.13);--dp-shadow:0 0 0 1px rgba(0,0,0,.4),0 -12px 60px -20px rgba(244,236,216,.22),0 40px 80px -24px rgba(0,0,0,.85);
+ /* The Stampede, night: deeper hero blue (white 8.0:1, light blue 5.7:1), the mock-up's lifted ink, the dark tools band, the deep red
+    (white 6.37:1, pink numbers 4.0:1) */
+ --sd-hero:#0A4C83;--sd-ink:#232330;--sd-tools-bg:#181826;--sd-flag:#B91E39;--sd-flag-num:#F2C1C9;
+ --sd-line2:#9BDCFF;--sd-plate:#FFFFFF;--sd-plate-ink:#17161A;--sd-plate-num:#0068AD;--sd-tag:#17161A;--sd-tag-num:#9BDCFF;
+ --sd-speed:rgba(255,255,255,.14);--sd-haze:rgba(10,76,131,.52);--sd-link:#62BEF7;
   --good:var(--plot);--good-text:var(--plot-text);--on-mark:#12121B;--mid:#F0C768;--mid-text:#F0C768;--low:#B8AA9C;--low-text:#B8AA9C;--bad:#FF7A70;--bad-text:#FF8A80;
   /* night: brighter stat colours with dark text (5.20:1+ on the plates, 4.75:1+ on the night panel) */
   --x4:#B71C1C;--pk-main:var(--plot);--on-pk-main:var(--on-mark);--on-x4:#FFFFFF;--st-hp:#2E9E5B;--st-atk:#E0601F;--st-def:#D9A21A;--st-spa:#5B8DF0;--st-spd:#A27BEA;--st-spe:#E5578A;--on-st:#12121B;--on-st-def:#12121B;

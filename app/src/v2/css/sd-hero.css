@@ -1,1 +1,81 @@
-/* Home, The Stampede: the hero band (classes sdh-*; shared .sd-* in sd-shared.css) */
+/* Home, The Stampede: the hero band (classes sdh-*; shared .sd-* in sd-shared.css). Code: pages/stampede-hero.js.
+   The first screen is .sdh-fold (window height minus the header, and the tab bar on phones): the blue scene grows to fill it and the
+   ink ledge (plates, one line, the two buttons) always ends inside it, so the buttons show without scrolling. The ticker comes after.
+   Two layouts: row (900px and wider: four plates) and pair (narrower: two plates); stampede-hero.js uses the same 900px line. */
+.sdh{padding:0 0 calc(var(--sd-cut) + var(--s4));--sdh-top:76px;--sdh-cut:round(5vw,4px);--sdh-g:var(--s8);--sdh-cols:repeat(4,minmax(0,1fr))}
+@media (min-width:1280px){.sdh{--sdh-g:var(--s10)}}
+@media (max-width:899.98px){.sdh{--sdh-cols:repeat(2,minmax(0,1fr));--sdh-g:var(--s4)}}
+@media (max-width:699.98px){.sdh{--sdh-top:116px}} /* the phone header (60) and tab bar (56) */
+.sdh-fold{display:flex;flex-direction:column;height:calc(100svh - var(--sdh-top));min-height:360px}
+/* the scene: blue, its bottom edge slanted like the band edges; size container so the herd scales with it */
+.sdh-scene{position:relative;flex:1 1 auto;min-height:0;background:var(--sd-hero);container-type:size;overflow:hidden;
+  clip-path:polygon(0 0,100% 0,100% calc(100% - var(--sdh-cut)),0 100%)}
+.sdh-lines{position:absolute;inset:0;width:100%;height:100%;z-index:0;fill:none;stroke:var(--sd-speed);stroke-width:3;stroke-dasharray:28 36;stroke-linecap:round}
+.sdh-crowd{position:absolute;inset:0;z-index:1;pointer-events:none}
+.sdh-c{position:absolute;display:block;max-width:none;object-fit:contain;object-position:50% 100%}
+.sdh-haze{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,var(--sd-haze) 0,var(--sd-haze) 30%,transparent 68%)}
+/* the tagline stands inside the herd: the crowd behind it, the top-rated in front */
+.sdh-h{position:relative;z-index:3;padding:var(--s6) var(--gut) 0;font-size:var(--d-sdhero);line-height:.94;text-align:center;color:var(--sd-on-band);pointer-events:none}
+.sdh-h .l1,.sdh-h .l2{display:block}.sdh-h .l2{color:var(--sd-line2)}
+.sdh-m[hidden],.sdh-c[hidden],.sdh-tag[hidden],.sdh-tick li[hidden]{display:none}
+.sdh-herd{position:absolute;inset:0;z-index:2;pointer-events:none}
+.sdh-tags{position:absolute;inset:0;z-index:5;pointer-events:none}
+.sdh-m{position:absolute;pointer-events:auto;cursor:pointer}
+.sdh-m img{width:100%;height:100%;max-width:none;object-fit:contain;object-position:50% 100%}
+/* a mid-sized one's tag: small, dark, slanted, on its own Pokémon (only where it sits cleanly) */
+.sdh-tag{position:absolute;display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--tap);padding:0 var(--s5);white-space:nowrap;pointer-events:auto;
+  background:var(--sd-tag);color:var(--sd-on-band);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);translate:-50% -100%;rotate:var(--sd-tilt)}
+.sdh-tag span{font:600 var(--t15)/1.2 var(--b)}.sdh-tag b{font-size:var(--t22);color:var(--sd-tag-num)}
+/* the front row: the top four (row) or two (pair), feet behind the plates, tilted with the edge */
+.sdh-front{position:absolute;left:0;right:0;bottom:calc(var(--sdh-cut) / 2 - 2cqh);height:64cqh;z-index:4;display:grid;grid-template-columns:var(--sdh-cols);
+  column-gap:var(--sdh-g);padding:0 var(--gut);rotate:var(--sd-tilt);transform-origin:50% 100%;pointer-events:none;
+  --fs:min(calc((100cqw - 2 * var(--gut) - 3 * var(--sdh-g)) / 4 * 1.36),60cqh,var(--fcap,100cqh))}
+.sdh-f{position:relative;grid-row:1}
+.sdh-f>span{position:absolute;bottom:0;left:50%;width:calc(var(--fs) * var(--k,1));aspect-ratio:1;translate:-50% 0;pointer-events:auto;cursor:pointer}
+.sdh-f img{width:100%;height:100%;max-width:none;object-fit:contain;object-position:50% 100%}
+.sdh .f3{grid-column:1}.sdh .f1{grid-column:2}.sdh .f2{grid-column:3}.sdh .f4{grid-column:4}
+@media (max-width:899.98px){.sdh-front{--fs:min(66cqw,58cqh,var(--fcap,100cqh))}.sdh .f1{grid-column:1}.sdh .f2{grid-column:2}.sdh-f.f3,.sdh-f.f4,.sdh-plates .f3,.sdh-plates .f4{display:none}}
+/* the ledge: ink, under the slanted edge */
+.sdh-ledge{position:relative;z-index:5;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:var(--s10);padding:0 var(--gut) var(--s6)}
+.sdh-plates{grid-column:1/-1;display:grid;grid-template-columns:var(--sdh-cols);column-gap:var(--sdh-g);margin:calc(round(2.5vw,4px) * -1) 0 0;translate:0 -50%;rotate:var(--sd-tilt)}
+.sdh-plates li{display:flex;min-width:0}
+.sdh-plate{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;column-gap:var(--s3);width:100%;min-height:var(--tap);padding:var(--s2) var(--s5);
+  background:var(--sd-plate);color:var(--sd-plate-ink);clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%);text-align:left}
+.sdh-plate .nm{font-size:var(--t17);line-height:1.1;min-width:0}
+.sdh-plate .rt{font-size:var(--d-sdnum);line-height:1;color:var(--sd-plate-num);letter-spacing:-.03em}
+.sdh-plates.stk .sdh-plate{flex-direction:column;align-items:flex-start;justify-content:center}
+@media (max-width:1099.98px){.sdh-plate{padding:var(--s2) var(--s4)}.sdh-plate .nm{font-size:var(--t15)}}
+@media (min-width:1100px){.sdh-plate .nm{font-size:var(--t20)}}@media (min-width:1500px){.sdh-plate .nm{font-size:var(--t24)}}
+@media (min-width:1800px){.sdh-plate .nm{font-size:var(--t28)}}
+/* pair: each plate as wide as its words, inset the same distance from its own edge */
+@media (max-width:899.98px){.sdh-plates{display:flex;justify-content:space-between;gap:var(--s3)}.sdh-plates li{flex:0 1 auto}.sdh-plate{flex-wrap:nowrap}}
+@media (max-width:359.98px){.sdh-plate{flex-wrap:wrap}}
+@media (max-width:899.98px){.sdh-plates li.f2{justify-content:flex-end}.sdh-plate{width:auto;padding:var(--s1) var(--s5)}.sdh-plate .rt{font-size:var(--d-sdpair)}}
+@media (max-width:599.98px){.sdh-plate{padding:var(--s1) var(--s4)}}
+@media (min-width:600px) and (max-width:899.98px){.sdh-plate .nm{font-size:var(--t26)}}
+@media (max-width:599.98px){.sdh-plate .nm{font-size:var(--t16)}}
+@media (max-width:359.98px){.sdh-plate .nm{font-size:var(--t15)}.sdh-plate{padding:var(--s1) var(--s4)}}
+.sdh-say{font:400 var(--t17)/1.5 var(--b);color:var(--sd-on-band);max-width:62ch}
+.sdh-all{font-weight:600;color:var(--sd-link);white-space:nowrap}
+@media (hover:hover){.sdh-all:hover{text-decoration:underline}}
+.sdh-go{display:flex;gap:var(--s4);rotate:var(--sd-tilt)}
+.sdh-b1,.sdh-b2{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 var(--s8);font:900 var(--t17)/1.1 var(--u);font-style:italic;text-align:center}
+.sdh-b1{background:var(--sd-plate);color:var(--sd-plate-ink);clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+.sdh-b2{border:2px solid var(--sd-on-band);color:var(--sd-on-band);transform:skewX(-12deg)}.sdh-b2>span{transform:skewX(12deg)}
+:root[data-theme="night"] .sdh-b1,:root[data-theme="night"] .sdh-b2{font-weight:800}
+@media (max-width:899.98px){.sdh-ledge{grid-template-columns:minmax(0,1fr);row-gap:var(--s4)}.sdh-go{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));rotate:none}
+  .sdh-b1,.sdh-b2{padding:0 var(--s4)}}
+@media (max-width:699.98px){.sdh-say{font-size:var(--t16)}.sdh-go{column-gap:var(--s3)}.sdh-b1,.sdh-b2{padding:0 var(--s2);font-size:var(--t15);letter-spacing:-.03em}}
+@media (max-width:699.98px) and (max-height:740px){.sdh-say{font-size:var(--t15)}.sdh-ledge{row-gap:var(--s3);padding-bottom:var(--s4)}}
+@media (max-width:359.98px){.sdh-go{grid-template-columns:minmax(0,1fr)}}
+/* the ticker: the next ratings, a still red strip tilted with the bands (whole names only; stampede-hero.js hides one that would be cut) */
+.sdh-tick{position:relative;z-index:5;width:112%;margin:calc(var(--s4) + round(3vw,4px)) 0 0 -6%;padding:0 calc(round(6%,4px) + var(--gut));background:var(--sd-flag);rotate:var(--sd-tilt)}
+.sdh-tick ul{display:flex;flex-wrap:wrap;column-gap:var(--s10);height:64px;overflow:hidden}
+.sdh-tick button{display:flex;align-items:baseline;gap:var(--s3);height:64px;padding-top:var(--s4);white-space:nowrap;font-size:var(--t26)}
+.sdh-tick .nm{color:var(--sd-on-band)}.sdh-tick .rt{color:var(--sd-flag-num)}
+@media (max-width:899.98px){.sdh-tick ul{column-gap:var(--s8);height:56px}.sdh-tick button{height:56px;padding-top:var(--s3);font-size:var(--t24)}}
+/* phone and tablet portrait: the tagline in three lines, left, over the pair */
+@media (max-width:899.98px){.sdh-h{padding-top:var(--s5);font-size:var(--d-sdphone);text-align:left;line-height:.96}.sdh-h .l1,.sdh-h .l2{display:inline}}
+@media (max-width:899.98px) and (max-height:740px){.sdh-h{font-size:var(--d-sdshort)}}
+/* the narrowest phones: a long name ("Mega Charizard Y 94") fits at 20px; there the number is white too, so both pass 4.5:1 */
+@media (max-width:359.98px){.sdh-tick button{font-size:var(--t20)}.sdh-tick .rt{color:var(--sd-on-band)}}

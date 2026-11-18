@@ -618,5 +618,53 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     const res = {small: !!p, lead: !!(p && p.querySelector('.dp-lh .dp-hl[href]')), bar: !!(p && p.querySelector('.dp-nbar')), more: p ? [...p.querySelectorAll('.dp-more li')].filter(li => li.getClientRects().length).length : 0, over: Math.round(o)}; d.remove(); return res; })()`));
   ok(sm.small && sm.lead && sm.bar && sm.more === 2 && sm.over <= 0, `DP-12: V2.dpFront(post, {compact: true}) draws the small paper (lead link, two more stories in a 340 slot, Next event bar, nothing out of it) (${JSON.stringify(sm)})`);
   await q.close(); }
+// ---------- Home, The Stampede: the hero band (Nov 18; app/src/v2/pages/stampede-hero.js, css/sd-hero.css, sd-shared.css) ----------
+{ const hero = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700}); const q = await ctx.newPage();
+    await q.addInitScript(e => { window.__PL_TEST = 1; if (e) try { localStorage.clear(); } catch (x) {} }, !!o.empty); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+    if (o.empty) await q.evaluate(() => window.__ev(`(() => { S.slots = S.slots.map(() => blank()); render(); })()`)); if (o.night) await q.evaluate(() => V2.setTheme('night'));
+    if (o.wait) await q.waitForFunction(() => document.querySelectorAll('#main .sdh-c').length > 0, null, {timeout: 20000}).catch(() => {}); await q.waitForTimeout(400);
+    const r = await q.evaluate(o.fn || (() => { const g = s => { const e = document.querySelector(s); if (!e || !e.getClientRects().length) return null; const x = e.getBoundingClientRect(); return {t: Math.round(x.top), b: Math.round(x.bottom), l: Math.round(x.left), r: Math.round(x.right)}; };
+      const bar = document.querySelector('.np-bar'), fold = bar && getComputedStyle(bar).position === 'fixed' ? bar.getBoundingClientRect().top : innerHeight;
+      return {b1: g('#main .sdh-b1'), b2: g('#main .sdh-b2'), fold: Math.round(fold), first: (document.querySelector('#main .sdh-go a') || {}).textContent || '', hs: document.documentElement.scrollWidth - innerWidth}; }));
+    await ctx.close(); return r; };
+  // 1. the tagline is the page's one h1, the named Pokémon are buttons that open their page, the crowd is hidden from screen readers
+  const a = await hero(1440, 900, {wait: true, fn: () => { const h1 = [...document.querySelectorAll('#main h1')].map(e => e.textContent.replace(/\s+/g, ' ').trim());
+    const named = [...document.querySelectorAll('#main .sdh-plate, #main .sdh-tag:not([hidden]), #main .sdh-tick li:not([hidden]) button')].filter(e => e.getClientRects().length);
+    const bad = named.filter(e => e.tagName !== 'BUTTON' || !e.dataset.v2mon || !e.getAttribute('aria-label').startsWith(e.innerText.replace(/\s+/g, ' ').trim())).map(e => e.innerText);
+    const deco = [...document.querySelectorAll('#main .sdh-crowd, #main .sdh-f, #main .sdh-m, #main .sdh-lines')].filter(e => e.getAttribute('aria-hidden') !== 'true').length;
+    return {h1, named: named.length, bad, deco, plates: document.querySelectorAll('#main .sdh-plate').length}; }});
+  ok(a.h1.length === 1 && a.h1[0] === 'Sharply raise your win rate.' && a.plates === 4 && a.named >= 8 && !a.bad.length && !a.deco, `Stampede hero 1: one h1 "Sharply raise your win rate.", four plates, every named Pokémon a button whose spoken name starts with its words, the herd aria-hidden (${JSON.stringify(a)})`);
+  // 2. every Pokémon the Ratings page rates is in the herd, the line says that number, and sizes follow ratings (the ones with tournament
+  //    results: a lower rating never stands larger; the rest stand at the back, smaller than all of them)
+  for (const [w, h] of [[1440, 900], [390, 844]]) { const c = await hero(w, h, {wait: true, fn: () => window.__ev(`(() => { const D = V2.sdData(), H = D.herd || [], sz = e => e.getBoundingClientRect().width;
+    const shown = [...document.querySelectorAll('#main .sdh-f, #main .sdh-m, #main .sdh-c')].filter(e => e.getClientRects().length && getComputedStyle(e).display !== 'none' && !e.hidden);
+    const box = e => e.classList.contains('sdh-f') ? e.firstElementChild : e, byN = new Map(); for (const e of shown) { const n = e.dataset.v2mon || (H[+e.dataset.sdhi] || {}).n; if (n && !byN.has(n)) byN.set(n, sz(box(e))); }
+    const tc = H.filter(x => x.tc), bad = []; for (let i = 0; i < tc.length; i++) for (let j = i + 1; j < tc.length; j++) if (tc[j].r < tc[i].r && byN.get(tc[j].n) > byN.get(tc[i].n) + 1) { bad.push(tc[j].n + '>' + tc[i].n); if (bad.length > 3) break; }
+    const minTc = Math.min(...tc.map(x => byN.get(x.n) || 0)), back = H.filter(x => !x.tc).filter(x => byN.get(x.n) > minTc + 1).length;
+    return {herd: H.length, drawn: byN.size, missing: H.filter(x => !byN.has(x.n)).map(x => x.n).slice(0, 4), bad, back, said: (document.querySelector('#main .sdh-say') || {}).textContent || ''}; })()`)});
+    ok(c.herd >= 300 && c.drawn === c.herd && !c.missing.length && !c.bad.length && !c.back && c.said.includes('Every one of the ' + c.herd.toLocaleString('en-US') + ' Pokémon'), `Stampede hero 2 (${w}): all ${c.herd} rated Pokémon drawn, the line says ${c.herd}, no lower rating larger than a higher one (${JSON.stringify(c).slice(0, 300)})`); }
+  { const q = await b.newPage({viewport: {width: 1280, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#meta'); await q.waitForTimeout(2500);
+    const lg = await q.evaluate(() => ((document.querySelector('.ra-legend') || {}).textContent || '').match(/(\d[\d,]*) rated/)); const nh = await q.evaluate(() => window.__ev('(V2.sdData().herd || []).length')); await q.close();
+    ok(lg && +lg[1].replace(/,/g, '') === nh, `Stampede hero 2b: the herd holds as many Pokémon as the Ratings page rates (${lg && lg[1]} vs ${nh})`); }
+  // 3. the buttons: today's Home order (HOME-06) and on the first screen (above the phone tab bar) at the sizes Sim checks
+  const full = await hero(1440, 900), none = await hero(1440, 900, {empty: true});
+  ok(/Score My Team/.test(full.first) && /Build Me a Team/.test(none.first), `Stampede hero 3 (HOME-06): Score My Team first with a team (${full.first}), Build Me a Team first with none (${none.first})`);
+  const fold = []; for (const [w, h] of [[390, 844], [390, 664], [375, 667], [1280, 800], [1366, 768], [1440, 900], [1920, 1080]]) { const r = await hero(w, h); if (!r.b1 || !r.b2 || Math.max(r.b1.b, r.b2.b) > r.fold || r.b1.t < 0) fold.push(`${w}x${h}: ${JSON.stringify(r)}`); }
+  ok(!fold.length, `Stampede hero 3b: both start buttons are on the first screen at 390x844, 390x664, 375x667, 1280x800, 1366x768, 1440x900, 1920x1080${fold.length ? ': ' + fold.join(' | ') : ''}`);
+  // 4. the crowd comes after the first screen: the first draw holds about 12 pictures; the crowd arrives later
+  const d = await hero(1440, 900, {fn: () => ({html: (V2.sdHero().match(/<img/g) || []).length, crowdInHtml: /sdh-c\b/.test(V2.sdHero())})});
+  ok(d.html > 0 && d.html <= 16 && !d.crowdInHtml, `Stampede hero 4: the first draw asks for ${d.html} pictures, none from the crowd (it is added once the first screen's own pictures are in)`);
+  // 5. every width: no sideways scroll; the ticker shows whole names inside the window, and what it hides can't take focus
+  const wd = []; for (const w of [320, 340, 360, 390, 412, 600, 768, 820, 900, 1024, 1100, 1180, 1366, 1500, 1920, 2560]) { const r = await hero(w, 900, {fn: () => { const L = [...document.querySelectorAll('#main .sdh-tick li')];
+      const vis = L.filter(l => l.getClientRects().length && !l.hidden), cut = vis.filter(l => { const x = l.getBoundingClientRect(); return x.left < 0 || x.right > innerWidth; }).map(l => l.innerText);
+      return {hs: document.documentElement.scrollWidth - innerWidth, vis: vis.length, cut, hiddenFocusable: L.filter(l => l.hidden && l.getClientRects().length).length}; }});
+    if (r.hs > 0 || !r.vis || r.cut.length || r.hiddenFocusable) wd.push(w + ': ' + JSON.stringify(r)); }
+  ok(!wd.length, `Stampede hero 5: 320-2560 (odd widths too) no sideways scroll, the ticker shows whole names only${wd.length ? ': ' + wd.join(' | ') : ''}`);
+  // 6. contrast from the tokens (both themes): white on the hero blue and the red 4.5:1+, the tagline's second line and the ticker numbers 3:1+ (display / 24px+ bold)
+  for (const night of [false, true]) { const c = await hero(1440, 900, {night, fn: () => { const v = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+      const L = hx => { const m = hx.replace('#', ''), c = [0, 2, 4].map(i => parseInt(m.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4)); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
+      const cr = (a, b) => { const x = L(v(a)), y = L(v(b)); return +((Math.max(x, y) + .05) / (Math.min(x, y) + .05)).toFixed(2); };
+      return {hero: cr('--sd-on-band', '--sd-hero'), line2: cr('--sd-line2', '--sd-hero'), flag: cr('--sd-on-band', '--sd-flag'), num: cr('--sd-flag-num', '--sd-flag'), link: cr('--sd-link', '--sd-ink'), plate: cr('--sd-plate-num', '--sd-plate'), tick: (t => t ? parseFloat(getComputedStyle(t).fontSize) : 0)(document.querySelector('#main .sdh-tick button'))}; }});
+    ok(c.hero >= 4.5 && c.flag >= 4.5 && c.link >= 4.5 && c.plate >= 4.5 && c.line2 >= 3 && c.num >= 3 && c.tick >= 24, `Stampede hero 6 (${night ? 'night' : 'day'}): contrast white on blue ${c.hero}, on red ${c.flag}, link ${c.link}, plate number ${c.plate} (4.5+); second line ${c.line2}, ticker numbers ${c.num} at ${c.tick}px (3+ at 24px+)`); } }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
