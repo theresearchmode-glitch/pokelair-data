@@ -1364,3 +1364,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:13 AM: Sim: executive authority extended until 11:00 PM Eastern tonight (Wed Nov 18). Same scope: decide on my recommendation and log it; design and visual choices still go to her with pictures; nothing reaches main or the live site without her yes. Summary of decisions with pictures before 11 PM.
 - 8:16 AM: Sim: keep the Gifts stamps 3 across on phones with the 7th centred alone.
 - 8:32 AM: Live updated: GitHub test run 1341 on main (7964fe83) passed and Promote to live run 42 succeeded, so today's data, the suggestions (planner cache) fix and the no-Mega penalty fix are on the live site.
+- 9:04 AM: News page: a balance change that the official feed files under Maintenance now counts as news and is labelled Update (the Dec 2 balance patch notice now leads the front page instead of being hidden). post-news-test and a v2-minors DP check fail before, pass after.

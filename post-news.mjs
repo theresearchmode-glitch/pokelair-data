@@ -35,7 +35,8 @@ export function toNews(x) { if (!x || typeof x !== 'object') return null;
   const id = String(x.id == null ? '' : x.id).replace(/\D/g, ''), kind = Number(x.infoKind), title = clean(x.title), date = iso(x.stAt);
   let url = ''; try { const u = new URL(String(x.link || ''), BASE); url = u.protocol === 'https:' && u.hostname === new URL(BASE).hostname ? u.href : ''; } catch (e) { url = ''; }
   if (!id || !title || !date || !url || !TYPES[kind]) return null;
-  return {id: 'n' + id, date, type: TYPES[kind], kind, title, url}; }
+  // a balance change filed under Maintenance (kind 3) is labelled Update, so it reads as the news it is (Nov 18)
+  return {id: 'n' + id, date, type: kind === 3 && /balance/i.test(title) ? 'Update' : TYPES[kind], kind, title, url}; }
 
 // what changes: the new news entries (newest first) and the gift suggestions; problems = items that could not be read
 export function plan(feed, POST) { const list = items(feed); if (!list) return {error: 'the feed is not a list of items (its shape changed?)'};

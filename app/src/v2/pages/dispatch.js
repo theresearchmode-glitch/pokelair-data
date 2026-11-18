@@ -32,7 +32,8 @@ V2.dpPick = (x, ks) => { for (const k of ks) if (x && x[k] != null && x[k] !== '
 V2.dpSrc = x => { const v = V2.dpPick(x, ['url', 'src', 'link', 'source']); return V2.safeUrl(Array.isArray(v) ? (v[0] && (v[0].url || v[0])) || '' : typeof v === 'object' ? v.url || '' : v); };
 V2.dpItem = x => ({t: String(V2.dpPick(x, ['title', 't', 'headline'])), date: String(x.date || ''), type: String(x.type || 'News'), sub: String(V2.dpPick(x, ['sub', 'format'])),
   url: String(V2.dpSrc(x) || ''), end: x.end || '', gift: String(x.gift || '')});
-V2.dpMaint = x => /^maintenance$/i.test(x.type) || /^maintenance( completion)? notice$/i.test(x.t.trim());
+// a balance change is real news even when the feed files it under Maintenance (Nov 18: the Dec 2 Battle Balance Adjustments notice)
+V2.dpMaint = x => !/balance/i.test(x.t) && (/^maintenance$/i.test(x.type) || /^maintenance( completion)? notice$/i.test(x.t.trim()));
 // dates: a news date is a calendar day (read at local noon, so it never slips a day); a gift's start and end are UTC instants
 V2.dpDay = s => { s = String(s || ''); const d = new Date(/^\d{4}-\d\d-\d\d$/.test(s) ? s + 'T12:00:00' : s); return isNaN(d) ? null : d; };
 V2.dpShort = s => { const d = V2.dpDay(s); return d ? d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : ''; };

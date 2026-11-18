@@ -781,6 +781,8 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   const qe = (f, x) => q.evaluate(f, x).catch(e => ({err: String(e.message).split('\n')[0].slice(0, 80)})), qc = s => q.click(s, {timeout: 3000}).catch(() => {}); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#news'); await q.waitForTimeout(2500);
   const d1 = await qe(() => { const a = [...document.querySelectorAll('.dp-paper .dp-hl')]; return {n: a.length, bad: a.filter(x => !x.href || x.target !== '_blank' || !/noopener/.test(x.rel)).length}; });
   ok(d1.n >= 5 && d1.bad === 0, `DP-1: every front-page headline links to its source in a new tab with rel=noopener (${JSON.stringify(d1)})`);
+  const bal = await qe(() => window.__ev(`(() => [V2.dpMaint({t: 'Wednesday, December 2, 2026 Battle Balance Adjustments', type: 'Maintenance'}), V2.dpMaint({t: 'Maintenance Notice', type: 'Maintenance'}), V2.dpMaint({t: 'Server maintenance', type: 'Maintenance'})].join(','))()`));
+  ok(bal === 'false,true,true', `DP: a balance change filed under Maintenance is news (can lead the front page); plain maintenance notices stay off the front (${bal})`);
   const d2 = await qe(() => window.__ev(`(() => { const D = V2.dpParts(V2.postNow()), shown = [...document.querySelectorAll('.dp-paper .dp-hl')].map(a => a.textContent.replace(/\\s*\\(opens[^)]*\\)\\s*$/, '').replace(/\\u2060/g, '').trim());
     const maint = shown.filter(t => /^Maintenance( Completion)? Notice$/i.test(t)).length, others = D.all.filter(x => !V2.dpMaint(x)).length;
     const earl = (document.querySelector('[data-dpmore]') || {}).textContent || '', n = +((earl.match(/(\\d[\\d,]*) more stor/) || [])[1] || '-1').replace(/,/g, '');

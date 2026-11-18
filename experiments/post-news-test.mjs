@@ -9,7 +9,7 @@
 //     exit 1 (or the bad item skipped); the script never names the code redemption site
 // Usage: node experiments/post-news-test.mjs
 import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path'; import {execFileSync} from 'node:child_process';
-import {load} from '../post-news.mjs';
+import {load, toNews} from '../post-news.mjs';
 const root = new URL('../', import.meta.url).pathname, tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'post-news-'));
 let fails = 0; const ok = (c, m) => { console.log((c ? '  ok   ' : '  FAIL ') + m); if (!c) fails++; };
 const src0 = fs.readFileSync(path.join(root, 'app/src/data/post.js'), 'utf8'), P0 = load(src0);
@@ -44,6 +44,9 @@ for (const [name, feed] of [['not JSON', '<html>blocked</html>'], ['not a list',
     {id: 905, title: 'Unknown kind', infoKind: 99, stAt: 1.8e9, link: '/en/page/905.html'});
   const r = run(feed); ok(r.code === 0 && r.src === src0, `an off-site link, an http link or an unknown category is skipped, never added (exit ${r.code})`); }
 const code = fs.readFileSync(path.join(root, 'post-news.mjs'), 'utf8');
+{ const b = toNews({id: '877', title: 'Wednesday, December 2, 2026 Battle Balance Adjustments', infoKind: 3, stAt: 1794967200, link: 'page/877.html'}),
+    m = toNews({id: '900', title: 'Maintenance Notice', infoKind: 3, stAt: 1794967200, link: 'page/900.html'});
+  ok(b && b.type === 'Update' && m && m.type === 'Maintenance', `a balance change filed under Maintenance is labelled Update; a plain maintenance notice stays Maintenance (${b && b.type} / ${m && m.type})`); }
 ok(!/serial-web|redeem|redemption-api|rewards\.pokemon/i.test(code.replace(/^\/\/.*$/gm, '')), 'the script never calls the code redemption site or its API');
 ok(/from '\.\/http\.mjs'/.test(code) && /politeFetch\(FEED/.test(code), 'it reads the feed through http.mjs (the one NastyPlot-data User-Agent, paced)');
 fs.rmSync(tmp, {recursive: true, force: true});
