@@ -30,7 +30,7 @@ If Sim replies but skips a question, ask it again in the next message with its p
 Sim, Nov 18: "i want to be using 1 document not 2". The Plans page (https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ, source
 docs/foundation-plan.html) is the single place to follow the rebuild: Step 1 opens with "Every page, where it stands" (the old
 Rebuild Checklist, merged), then what is left, then Reg M-D, the Strength Score, the launch and Ideas. Keep it current (every 45 min
-to 1 hour at most). The old Rebuild Checklist page (E99Mux9sZxxBuvFXEsKW1V) only points to Plans now; its database is kept as history.
+to 1 hour at most). The old Rebuild Checklist page was deleted (Sim, Nov 18); its ticks and notes are kept in docs/rebuild/history/rebuild-checklist-export-nov18.json.
 
 ## Every recommendation comes with a short reason (Sim, Nov 12, 8:55 PM): docs/rebuild/RULES.md section 00c
 One quick line in plain words saying why, right next to each recommendation.
