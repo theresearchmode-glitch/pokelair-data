@@ -2,8 +2,9 @@
 // weather user (Swift Swim, Sand Rush, Sand Force…) without its setter, or a Choice Scarf next to the team's own Trick Room;
 // new teams come with speed control; a Swift Swim Pokémon is never suggested onto a sun team; Megas on team 0 with a Mega in
 // explains itself; Add to my team on a full team names exactly who it replaces; and a normal build takes under a second here.
-// Nov 7: and no built team has a setup flaw (teamFlaws: a weather only its setter uses, two terrains, Psychic Terrain over
-// its own priority, Trick Room with no slow attacker, an attacker its own weather weakens), unless it is the only team left.
+// Nov 7: and no built team has a setup flaw (teamFlaws: a weather only its setter uses, two terrains,
+// Trick Room with no slow attacker, an attacker its own weather weakens), unless it is the only team left. Psychic Terrain over its
+// own priority is a note since Nov 18 (Sim), not a flaw.
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const APP = new URL('../app/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = APP + '../out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };

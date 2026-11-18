@@ -118,7 +118,8 @@ function wxMainType(m,mv){const t=m.types||m.p.t;let best=null,bv=0;for(const n 
 // a team's flaws in words (Build for me never makes a team with any; the suggestions never add one)
 function teamFlaws(team,gp){gp=gp||gamePlan(team.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves}));const row=k=>gp.rows.find(r=>r.k===k)||{},f=[];
   if(row('weather').lone)f.push('weather nobody uses');if(new Set(team.map(m=>TERRAIN_OF[m.ability]).filter(Boolean)).size>1)f.push('two terrains');
-  if(psyBlocked(team).length>=2)f.push('Psychic Terrain blocks its own priority');if(row('trfit').st==='miss')f.push('Trick Room with no slow attacker');
+  /* Psychic Terrain over the team's own priority: a note on the terrain row, never a flaw (Sim, Nov 18; rule-holes sweep hole 7:
+     70 real teams, 43 good). Plans still never bring in a Psychic Surge setter over 2+ teammates' priority (psyHit). */if(row('trfit').st==='miss')f.push('Trick Room with no slow attacker');
   if(wxHurtT(team).length)f.push('its weather weakens its own attacker');return f}
 // and never brings an attacker the team's own working rain or sun weakens (Volcarona into rain)
 const wxHurtIn=(gp0,pl)=>{const r=gp0&&gp0.rows.find(r=>r.k==='weather');if(!r||r.st!=='ok'||!pl.team)return false;return wxHurtT(pl.team).some(m=>pl.ch.some(x=>x.c.p===m.p))};

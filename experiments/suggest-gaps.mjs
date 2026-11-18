@@ -137,5 +137,14 @@ for (const [label, team] of [['sun team, Incineroar the only lead support', ['To
         return {...memberFrom(p,ab||undefined),p,d:p.d,ability:ab||undefined,heldItem:it||undefined,custom:true,moves:x,_mv:x}});return teamBasicsOf(sp,ms).noSpeed})`), decks);
     const cmp = decks.map((nm, i) => [pageNS[i], TB.deckBasics(nm).noSpeed]).filter(x => x[0] != null), diff = cmp.filter(x => x[0] !== x[1]).length;
     ok(cmp.length > 1000 && !diff, `page and trainer agree on "no speed control" for every real sheet (${cmp.length} sheets, ${diff} differ, ${cmp.filter(x => x[1]).length} without)`); } }
+// Psychic Terrain over the team's own priority is a note, never a flaw (Sim, Nov 18, rule-holes sweep hole 7: 70 real teams, 43 good,
+// e.g. Indeedee next to Kingambit's Sucker Punch and Sneasler's Fake Out). The terrain row still says it; plans still never bring in a
+// Psychic Surge setter over 2+ teammates' priority (psyHit, suggest-audit.mjs)
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const t=[mk('Indeedee-F','Psychic Surge',['Follow Me','Psychic','Helping Hand','Protect']),mk('Kingambit','Defiant',['Kowtow Cleave','Sucker Punch','Iron Head','Protect']),mk('Sneasler','Unburden',['Fake Out','Dire Claw','Close Combat','Protect']),
+    mk('Charizard-Mega-Y','Drought',['Heat Wave','Solar Beam','Protect','Overheat']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide']),mk('Sylveon','Pixilate',['Hyper Voice','Moonblast','Protect','Quick Attack'])];
+  return {blocked:psyBlocked(t).length,flaw:teamFlaws(t).some(f=>/Psychic Terrain/.test(f)),note:((gamePlan(t).rows.find(r=>r.k==='terrain')||{}).note||'')}})()`));
+  ok(r.blocked >= 2 && !r.flaw, `Psychic Surge Indeedee over ${r.blocked} teammates' priority: not a team flaw`);
+  ok(/Psychic Terrain also blocks your own Fake Out and priority/.test(r.note), `the terrain row still notes it ("${r.note}")`); }
 ok(!errs.length, 'no page errors ' + errs.join(' | '));
 await b.close(); fs.unlinkSync(page); console.log(fails.length ? `\n${fails.length} FAILED` : '\nALL PASSED'); process.exit(fails.length ? 1 : 0);
