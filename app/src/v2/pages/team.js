@@ -401,9 +401,9 @@ V2.ui = V2.ui || {sel: 0, mu: 'top'};
 V2.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it']; // the four calc levels (word list)
 // Sim, Nov 15 night: on phones a long band word ('Tournament ready') can't fit beside the name (it was cut off, or squeezed the name to a
 // letter-wide column); then the score belt takes its own full-width row under the name, at full size. Safe to repeat (after every draw).
-V2.mtBeltFit = () => { const h = document.querySelector('.tm-hero.mt'); if (!h) return; h.classList.remove('mt-wide'); if (innerWidth >= 1100) return; /* phones and 700-1099 (the belt is narrow in both) */ const sp = h.querySelector('.mt-belt .w span'), belt = h.querySelector('.mt-belt .np-score'); if (!sp || !belt) return;
+V2.mtBeltFit = () => { const h = document.querySelector('.tm-hero.mt'); if (!h) return; h.classList.remove('mt-wide'); V2._mtWide = false; if (innerWidth >= 1100) return; /* phones and 700-1099 (the belt is narrow in both) */ const sp = h.querySelector('.mt-belt .w span'), belt = h.querySelector('.mt-belt .np-score'); if (!sp || !belt) return;
   const longest = Math.max(...sp.textContent.trim().split(/\s+/).map(wd => { const r = document.createElement('span'); r.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap'; const cs = getComputedStyle(sp); r.style.font = cs.font; r.style.fontStyle = cs.fontStyle; r.textContent = wd; document.body.append(r); const w = r.getBoundingClientRect().width; r.remove(); return w; }));
-  const cs = getComputedStyle(belt), room = belt.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); if (longest > room) h.classList.add('mt-wide'); };
+  const cs = getComputedStyle(belt), room = belt.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); if (longest > room) { h.classList.add('mt-wide'); V2._mtWide = true; } };
 { let t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { if (V2.mtBeltFit) V2.mtBeltFit(); }, 120); }); }
 V2.pages.team = {place: 'team', draw() {
   const D = V2.teamData();
@@ -452,7 +452,9 @@ V2.pages.team = {place: 'team', draw() {
   // "Problems and Team Checks" (what the team has or misses, and how often winners have it); the threats "?" sits on its check
   const hand = CH.hand(D.RD), ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(V2.wl(x.label))}${/^Ready for/.test(x.label) ? V2.tip('readiness') : ''}${(x.ok ? x.have : x.miss) ? `<small>${V2.esc(V2.undot(V2.wl(x.ok ? x.have : x.miss, hand)))}</small>` : ''}${x.pro && !x.note ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</span></li>`; // notes: their 'why' is said once, above them
   const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.${V2.tip('checklist')}</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
-  return `<section class="tm-hero mt">${mtHead}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}</section>${jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}">${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
+  // Nov 18: the hero is drawn with the belt's last fit (mt-wide), so a redraw no longer drops the belt's full-width row and puts it back
+  // in after(): that flip moved everything under the belt 30px and back, and scroll anchoring moved the page 30px on each redraw
+  return `<section class="tm-hero mt${V2._mtWide && innerWidth < 1100 ? ' mt-wide' : ''}">${mtHead}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}</section>${jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}">${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
 after() { V2.mtBeltFit();
   /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */

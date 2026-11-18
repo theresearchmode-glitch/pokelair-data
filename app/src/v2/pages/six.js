@@ -89,7 +89,16 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   const i = +t.dataset.v2rm, was = clearSlot(i); V2.ui.picked = false; /* Sim, Nov 18 (C): on phones the panel shuts with the Card it was editing */ render(); if (was) toast(`Removed ${was.d}`, true);
   // Sim, Nov 17: after Remove the new Add spot was 685px above the screen (390 wide); bring it into view and give it the focus
   requestAnimationFrame(() => { const a = document.querySelector(`[data-v2addto="${i}"]`); if (!a) return; 
-    a.scrollIntoView({block: 'center'}); a.focus({preventScroll: true}); }); }); /* instant: a smooth scroll was cut short by the redraw's late layout (stopped at 9px, under the header) */
+    a.scrollIntoView({block: 'center'}); a.focus({preventScroll: true}); V2.rmHold(i, a.getBoundingClientRect().top); }); }); /* instant: a smooth scroll was cut short by the redraw's late layout (stopped at 9px, under the header) */
+// Nov 18: the Add spot then stays where it landed. Under load the Card tap's smooth scroll (team.js) could still land after this one
+// (Add at -76, under the header). Held at least 3 s, while the suggestions are worked out and 1 s after (20 s at most), and let go
+// the moment the player scrolls, taps or presses a key (their own move always wins), as Apply's hold in sugs.js does.
+V2.rmHold = (i, top) => { const t0 = performance.now(), ev = ['wheel', 'touchstart', 'pointerdown', 'keydown']; let on = true, t1 = t0;
+  const off = () => { on = false; ev.forEach(n => removeEventListener(n, off, true)); }; ev.forEach(n => addEventListener(n, off, {capture: true, passive: true}));
+  const keep = () => { if (!on) return; const a = document.querySelector(`[data-v2addto="${i}"]`); if (!a) return off();
+    const d = a.getBoundingClientRect().top - top; if (Math.abs(d) > 1) scrollBy(0, d); if (document.querySelector('#main .sg2-wait')) t1 = performance.now();
+    const t = performance.now(); if ((t - t0 < 3000 || t - t1 < 1000) && t - t0 < 20000) requestAnimationFrame(keep); else off(); };
+  requestAnimationFrame(keep); };
 
 // ---------- adding into a spot (ADD-01, ADD-02): the name box opens in the Edit Set sheet, focused ----------
 // Live search with today's monChoices (base names, "mega sal", "hisuian arc"; Species Clause for this spot), each row with its

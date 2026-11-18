@@ -412,6 +412,21 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   await q.evaluate(() => { const r = document.querySelector('[data-v2rm]'); scrollTo(0, r.getBoundingClientRect().top + scrollY - 400); r.click(); }); await q.waitForTimeout(800);
   const ad = await q.evaluate(() => { const a = document.querySelector('[data-v2addto]'); if (!a) return 'no Add spot'; const r = a.getBoundingClientRect(); return Math.round(r.top) + ' to ' + Math.round(r.bottom) + (document.activeElement === a ? ', focused' : ''); });
   const m = ad.match(/^(-?\d+) to (-?\d+), focused$/); ok(!!m && +m[1] >= 72 && +m[2] <= 844 - 72, `Sim (Nov 17): after Remove, the empty spot's Add is on screen (clear of the header and tab bar) and focused (${ad})`); await q.close(); }
+/* Nov 18: at 4x CPU the page kept moving after Remove (the Add spot drifted 358 -> 298, once to -76 under the header): each later redraw
+   flipped the score belt's full-width row off and on (scroll anchoring moved the page 30px each time), and the Card tap's smooth scroll
+   could land after the Remove's own scroll. The Add spot must stay where it landed for 3 s, on screen and focused. */
+{ const q = await b.newPage({viewport: {width: 390, height: 844}}); await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500);
+  const cdp = await q.context().newCDPSession(q); await cdp.send('Emulation.setCPUThrottlingRate', {rate: 4});
+  await q.evaluate(() => document.querySelectorAll('[data-tmsel]')[4].click()); await q.waitForTimeout(400);
+  await q.evaluate(() => { window.__rmS = {first: null, dev: 0, lo: 1e9, hi: -1e9, n: 0}; const t0 = performance.now(); let tf = 0;
+    const tick = () => { const a = document.querySelector('[data-v2addto]'), S = window.__rmS; if (a && document.activeElement === a) { const r = a.getBoundingClientRect(); if (S.first === null) { S.first = Math.round(r.top); tf = performance.now(); }
+        S.dev = Math.max(S.dev, Math.abs(Math.round(r.top) - S.first)); S.lo = Math.min(S.lo, Math.round(r.top)); S.hi = Math.max(S.hi, Math.round(r.bottom)); S.n++; }
+      if (S.first === null ? performance.now() - t0 < 3000 : performance.now() - tf < 3000) requestAnimationFrame(tick); else S.done = 1; };
+    const r = document.querySelector('[data-v2rm]'); scrollTo(0, r.getBoundingClientRect().top + scrollY - 400); r.click(); requestAnimationFrame(tick); });
+  await q.waitForFunction(() => window.__rmS && window.__rmS.done, null, {timeout: 20000}).catch(() => {});
+  const s = await q.evaluate(() => ({...window.__rmS, focused: document.activeElement === document.querySelector('[data-v2addto]')}));
+  ok(s.first !== null && s.dev <= 8 && s.lo >= 72 && s.hi <= 844 - 72 && s.focused, `Nov 18 (4x CPU): after Remove, the Add spot stays within 8px of where it landed for 3 s, on screen and focused (landed at ${s.first}, moved up to ${s.dev}px, top ${s.lo} to bottom ${s.hi}, ${s.n} frames, focused ${s.focused})`);
+  await cdp.send('Emulation.setCPUThrottlingRate', {rate: 1}); await q.close(); }
 { const q = await b.newPage({viewport: {width: 390, height: 844}}); await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500);
   const yg = await q.evaluate(() => { const s = document.querySelector('#tm-yg'), n = s && s.querySelector('.tm-yg-0 span'), w = s && s.querySelector('.tm-yg-why'), t = s && s.querySelector('.tm-yg-0 [data-v2tip]'); if (!n || !w) return 'missing';
     const L = e => Math.round(e.getBoundingClientRect().height / parseFloat(getComputedStyle(e).lineHeight)); /* Sim, Nov 18 (C): on phones the note sits behind a "?" beside 'None logged yet' */
