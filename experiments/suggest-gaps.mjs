@@ -50,5 +50,14 @@ for (const [label, team] of [['sun team, Incineroar the only lead support', ['To
   return {gate:wxLoneBad(gamePlan(ms),pl),bad:[...plans,...(plans.more||[])].filter(pl=>t2(pl.team)).map(nm)}})()`));
   ok(r.gate, 'Psychic Surge team: a plan bringing in Rillaboom (Grassy Surge) is blocked as a second terrain');
   ok(!r.bad.length, `Psychic Surge team: no plan or More idea adds a second terrain${r.bad.length ? ' (' + r.bad.join(' | ') + ')' : ''}`); }
+// a support setter's own Weather Ball uses its weather (Sim, Nov 18: Weather Ball only works in weather); its own Water moves or
+// Hurricane still don't (Nov 7). Checked with the sets typed in (does not depend on the day's data), then with the usual sets.
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const T=['Gengar-Mega','Incineroar','Kingambit','Kommo-o','Politoed','Rillaboom'];
+  const mk=(n,mv)=>{const p=byName.get(n),m={...memberFrom(p,metaAbility(p)||undefined),p,d:p.d};if(mv){const x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x}else m._mv=memberMoves(m).moves;return m};
+  const lone=pt=>!!(gamePlan(T.map(n=>mk(n,n==='Politoed'?pt:null))).rows.find(r=>r.k==='weather')||{}).lone;
+  return {wb:lone(['Weather Ball','Muddy Water','Perish Song','Protect']),noWb:lone(['Muddy Water','Ice Beam','Perish Song','Protect']),meta:lone(null)}})()`));
+  ok(!r.wb, 'Perish Trap Politoed with Weather Ball: its rain is not called a weather nothing uses');
+  ok(r.noWb, 'the same Politoed with Muddy Water and Ice Beam but no Weather Ball: still a weather nothing uses');
+  ok(!r.meta, 'Perish Trap team (Mega Gengar, Incineroar, Kingambit, Kommo-o, Politoed, Rillaboom) with the usual sets: not flagged'); }
 ok(!errs.length, 'no page errors ' + errs.join(' | '));
 await b.close(); fs.unlinkSync(page); console.log(fails.length ? `\n${fails.length} FAILED` : '\nALL PASSED'); process.exit(fails.length ? 1 : 0);
