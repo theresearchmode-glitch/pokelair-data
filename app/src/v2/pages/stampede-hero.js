@@ -3,15 +3,15 @@
 // Every Pokémon the Ratings page rates (V2.sdData().herd, live data) is in the picture, sized by its rating: the ones with tournament
 // results in rating order, the rest at the back of the crowd. Two layouts, chosen by the window width (CSS and V2.sdhRow agree at 900px):
 //   row  (900+):  the top four huge in the front row with white plates (3rd, 1st, 2nd, 4th left to right), ranks 5-12 mid-sized in the
-//                 gaps (5 and 6 with a dark tag), the rest a crowd shrinking back to the horizon behind the tagline.
-//   pair (<900):  the top two huge with plates inset evenly from their edges, 3 and 4 above them with tags, then 5-10 mid-sized, the crowd.
+//                 gaps, the rest a crowd shrinking back to the horizon behind the tagline.
+//   pair (<900):  the top two huge with plates inset evenly from their edges, 3 and 4 above them, then 5-10 mid-sized, the crowd.
 // Speed: the tagline, buttons, the top four and the mid-sized ones are drawn at once (14 pictures); the crowd (330+ small pictures) is
 // added once the page has loaded and those 14 are in (V2.sdHeroAfter), highest rated asked for first, so it never competes with the
 // first screen. Measured Nov 18 (4x CPU, slow 4G): buttons and top four appear at the same time with or without the crowd; the crowd
 // adds 4.6 MB (7.5 MB with one sprite size, the Claude-hosted build) and finishes about 40 s later.
 // Motion (Sim approved Nov 18): the herd surges forward once on arrival and the ticker scrolls slowly (sd-motion.css, V2.sdhTick
-// below); nothing moves with prefers-reduced-motion. The crowd and the untagged Pokémon are decorative (aria-hidden); every named
-// Pokémon (plate, tag, ticker) is a button that opens its page (data-v2mon).
+// below); nothing moves with prefers-reduced-motion. The crowd and the mid-sized herd are decorative (aria-hidden); every named
+// Pokémon (plate, ticker) is a button that opens its page (data-v2mon).
 V2.sdhUi = {crowd: null, key: '', ro: null, el: null, raf: 0, armed: false};
 V2.SDH_SLOPE = 0.05; // the tilt (rises 5% to the right, as the mock-up's band edges): about 2.86 degrees
 V2.sdhRow = () => !window.matchMedia || matchMedia('(min-width:900px)').matches;
@@ -28,12 +28,11 @@ V2.sdHero = () => {
   const k = x => Math.max(0.6, Math.min(1, Math.pow(x.r / top, 2))).toFixed(3); // a lower rating stands a little smaller, never larger
   const front = R.slice(0, 4).map((x, i) => `<div class="sdh-f f${i + 1}" style="--k:${k(x)}" data-v2mon="${E(x.n)}" aria-hidden="true"><span><img src="${V2.sdhSrc(x, true)}" alt="" decoding="async"${i < 2 ? ' fetchpriority="high"' : ''}></span></div>`).join('');
   const plates = R.slice(0, 4).map((x, i) => `<li class="f${i + 1}"><button type="button" class="sdh-plate" data-v2mon="${E(x.n)}" aria-label="${E(V2.sdhSay(x))}"><span class="nm u">${V2.keepForm(E(V2.disp(x.n)))}</span><span class="rt u">${x.r}</span></button></li>`).join('');
-  // the herd's named-size part (ranks 3-12): drawn now; JS (V2.sdhLay) places them. Ranks 3-4 show here only in the pair layout,
-  // 5-6 carry a tag in the row layout, 3-4 in the pair layout
-  const tags = R.slice(2, 6).map((x, j) => { const i = j + 2; return `<button type="button" class="sdh-tag ${i < 4 ? 'tp' : 'tr'}" data-sdhi="${i}" data-v2mon="${E(x.n)}" aria-label="${E(V2.sdhSay(x))}"><span>${V2.keepForm(E(V2.disp(x.n)))}</span><b class="u">${x.r}</b></button>`; }).join('');
+  // the herd's named-size part (ranks 3-12): drawn now; JS (V2.sdhLay) places them. No dark name tags on them (Sim, Nov 18: "remove the
+  // incineroar and kingambit tags. its too much", then desktop's too): only the white plates name Pokémon in the hero; the ticker names the rest
   const herd = R.slice(2, 12).map((x, j) => { const i = j + 2;
     return `<div class="sdh-m${i < 4 ? ' p34' : ''}" data-sdhi="${i}" data-v2mon="${E(x.n)}" aria-hidden="true"><img src="${V2.sdhSrc(x, true)}" alt="" decoding="async"></div>`; }).join('');
-  // the ticker: the next ratings down the list, after the ones with a plate or a tag (V2.sdhLayout hides those, and any name that
+  // the ticker: the next ratings down the list, after the ones with a plate (V2.sdhLayout hides those, and any name that
   // would be cut at the edge)
   const tick = R.slice(2, 20).map((x, j) => `<li data-sdhi="${j + 2}"><button type="button" data-v2mon="${E(x.n)}" aria-label="${E(V2.sdhSay(x))}"><span class="nm u">${V2.keepForm(E(V2.disp(x.n)))}</span> <span class="rt u">${x.r}</span></button></li>`).join('');
   // today's Home order (HOME-06): Score My Team first with a team, Build Me a Team first with none
@@ -47,7 +46,7 @@ V2.sdHero = () => {
       <div class="sdh-crowd" aria-hidden="true"></div><i class="sdh-haze" aria-hidden="true"></i>
       <h1 class="u sdh-h" id="sdh-h"><span class="l1">Sharply raise</span> <span class="l2">your win rate.</span></h1>
       <div class="sdh-herd">${herd}</div>
-      <div class="sdh-front">${front}</div><div class="sdh-tags">${tags}</div>
+      <div class="sdh-front">${front}</div>
     </div>
     <div class="sdh-ledge"><ul class="sdh-plates" aria-label="The four highest rated">${plates}</ul>
       <p class="sdh-say">${E(say)} <a class="sdh-all" href="#meta">All Ratings ›</a></p>
@@ -65,7 +64,7 @@ V2.sdhLay = (n, w, h, row, cx, hb) => {
     const gap = i => (cx[i] + cx[i + 1]) / 2, M = [[gap(0), .80, .40], [gap(2), .79, .385], [gap(1), .76, .36], [cx[0] - g * .62, .78, .34], [cx[3] + g * .62, .77, .33],
       [(cx[0] + gap(0)) / 2 - g * .12, .70, .29], [(gap(2) + cx[3]) / 2 + g * .12, .70, .28], [(gap(1) + cx[2]) / 2 + g * .1, .69, .27]];
     out[2] = out[3] = null; M.forEach((m, j) => { out[4 + j] = {x: m[0], y: m[1] * h, s: m[2] * h, z: 'm'}; }); }
-  else { // pair: 3 and 4 above the big pair's shoulders with tags, 5-10 smaller between and behind
+  else { // pair: 3 and 4 above the big pair's shoulders, 5-10 smaller between and behind
     // (feet as a share of the room between the tagline and the scene's bottom, so a short phone squeezes them, never the tagline)
     const M = [[.15, .62, .34], [.85, .58, .335], [.50, .5, .30], [.07, .5, .27], [.93, .46, .265], [.35, .4, .24], [.65, .38, .235], [.5, .3, .21]], b = hb || h * .5;
     M.forEach((m, j) => { out[2 + j] = {x: m[0] * w, y: b + m[1] * (h - b), s: Math.min(m[2] * h, m[2] * 1.5 * w), z: 'm'}; }); }
@@ -106,9 +105,6 @@ V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) r
   const fr = S.querySelector('.sdh-front'), fs = parseFloat(getComputedStyle(S.querySelector('.sdh-h')).fontSize) || 0;
   if (fr) { fr.style.removeProperty('--fcap'); fr.style.setProperty('--fcap', Math.max(80, Math.round(fr.getBoundingClientRect().bottom - sr.top - hb - V2.SDH_SLOPE * w * (row ? .375 : .25))) + 'px'); } /* Q13f B: clear of the words, the tilt's rise at the outer columns counted */
   const named = new Set(row ? [0, 1, 2, 3] : [0, 1]);
-  for (const t of S.querySelectorAll('.sdh-tag')) { const i = +t.dataset.sdhi, p = P[i], on = p && p.s >= 64 && (row ? t.classList.contains('tr') : t.classList.contains('tp')); if (on) named.add(i);
-    t.hidden = !on; if (!on) continue; // the tag sits on its own Pokémon: above the head in the row layout, over the feet in the pair layout
-    t.style.cssText = `left:${Math.round(Math.min(Math.max(p.x, t.offsetWidth / 2 + 8), w - t.offsetWidth / 2 - 8))}px;top:${Math.round(Math.max(p.y - p.s * .9, hb + t.offsetHeight + 4))}px`; }
   // plates: if one plate's number has to drop under its name, all four do, so the row stays even
   const pl = S.querySelector('.sdh-plates'); if (pl) { pl.classList.remove('stk'); if ([...pl.querySelectorAll('.sdh-plate')].some(b => b.getClientRects().length && b.lastElementChild.offsetTop > b.firstElementChild.offsetTop + 4)) pl.classList.add('stk'); }
   const C = V2.sdhUi.crowd; if (C) for (const im of C.children) V2.sdhPut(im, P[+im.dataset.sdhi]);
@@ -158,7 +154,7 @@ V2.sdhTick = (S, prep) => { const U = V2.sdhUi, tk = S.querySelector('.sdh-tick'
     pz.addEventListener('click', () => hold(!U.hold)); tr.addEventListener('focusout', e => { if (!tr.contains(e.relatedTarget)) tk.scrollLeft = 0; });
     tk.append(pz); tk.classList.add('sdh-run'); hold(!!U.hold);
     if (window.IntersectionObserver) { if (U.io) U.io.disconnect(); U.io = new IntersectionObserver(es => es.forEach(e => tk.classList.toggle('sdh-off', !e.isIntersecting))); U.io.observe(tk); }
-    return; } // on one line now: nothing is cut, only the ones with a plate or a tag stay hidden
+    return; } // on one line now: nothing is cut, only the ones with a plate stay hidden
   if (prep) return;
   const key = [...ul.children].map(l => l.hidden ? 0 : 1).join(''); if (!tr.children[1] || tr.children[1].dataset.key !== key) {
     const cp = ul.cloneNode(true); cp.setAttribute('aria-hidden', 'true'); cp.removeAttribute('aria-label'); cp.dataset.key = key; cp.querySelectorAll('button').forEach(b => { b.tabIndex = -1; });

@@ -168,7 +168,7 @@ const HQ = async () => {
     for (const w of [320, 360, 390, 412, 600, 820, 1100, 1280, 1440, 1920, 2560]) { const h = w < 700 ? 844 : w >= 1900 ? 1080 : 900;
       const {q, ctx} = await hq(w, h, {rm: 'reduce', keep: true}); await q.waitForFunction(() => [...document.querySelectorAll('#main .sdh-f img, #main .sdh-m img')].every(i => i.complete), null, {timeout: 15000}).catch(() => {}); await q.waitForTimeout(400);
       const r = await q.evaluate(() => { const x = document.querySelector('#main .sdh-h').getBoundingClientRect(); return {x: Math.max(0, x.left), y: Math.max(0, x.top - 20), width: Math.min(innerWidth, x.right) - Math.max(0, x.left), height: x.height + 60}; });
-      const set = (f, t) => q.evaluate(([f, t]) => { for (const s of ['.sdh-herd', '.sdh-front', '.sdh-tags']) document.querySelector('#main ' + s).style.visibility = f ? '' : 'hidden'; document.querySelector('#main .sdh-h').style.visibility = t ? '' : 'hidden'; }, [f, t]);
+      const set = (f, t) => q.evaluate(([f, t]) => { for (const s of ['.sdh-herd', '.sdh-front', '.sdh-tags']) if (document.querySelector('#main ' + s)) document.querySelector('#main ' + s).style.visibility = f ? '' : 'hidden'; document.querySelector('#main .sdh-h').style.visibility = t ? '' : 'hidden'; }, [f, t]);
       const sh = async () => (await q.screenshot({clip: r})).toString('base64'); const C = await sh(); await set(false, true); const A = await sh(); await set(false, false); const B = await sh(); await ctx.close();
       const x = await cmp.evaluate(async ([A, B, C]) => { const ld = s => new Promise(r => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.width; c.height = i.height; const g = c.getContext('2d'); g.drawImage(i, 0, 0); r(g.getImageData(0, 0, i.width, i.height).data); }; i.src = 'data:image/png;base64,' + s; });
         const [a, bb, c] = await Promise.all([ld(A), ld(B), ld(C)]), d = (p, q, i) => Math.abs(p[i] - q[i]) + Math.abs(p[i + 1] - q[i + 1]) + Math.abs(p[i + 2] - q[i + 2]); let m = 0, k = 0;
@@ -181,6 +181,13 @@ const HQ = async () => {
       const hit = dy => { const t = document.elementFromPoint(cx, cy + dy); return !!t && (t === e || e.contains(t)); }; if (!(hit(-21) && hit(21))) out.push(`"${e.textContent.trim()}" ${Math.round(x.height)}px`); } return out; }});
     for (const x of r) ch.push(w + ': ' + x); }
     ok(!ch.length, `HQ Q13e (Sim: A): every "›" link on Home has a 44px tap area, inside a sentence too${ch.length ? ': ' + ch.join(' | ') : ''}`); }
+  // Sim (Nov 18, from her iPhone: "remove the incineroar and kingambit tags. its too much"; then desktop's too): no small dark name tag in
+  // the hero at any width; only the white plates name Pokémon there, and the next six by rating stay named buttons (plate or ticker)
+  { const tg = []; for (const w of [320, 390, 600, 699, 820, 1100, 1440, 1920, 2560]) { const r = await hq(w, w < 700 ? 844 : 900, {fn: () => window.__ev(`(() => {
+      const S = document.querySelector('#main .sdh'), dark = [...S.querySelectorAll('.sdh-tag, .sdh-tags > *')].filter(e => e.getClientRects().length && !e.hidden).map(e => e.innerText.replace(/\\s+/g, ' ').trim());
+      const R = V2.sdhRows().slice(0, 6), named = R.filter(x => [...S.querySelectorAll('.sdh-plate[data-v2mon], .sdh-tick ul:not([aria-hidden]) li:not([hidden]) button[data-v2mon]')].some(b => b.dataset.v2mon === x.n && b.getAttribute('aria-label'))).length;
+      return JSON.stringify({dark, named}); })()`)}).then(x => JSON.parse(x)); if (r.dark.length || r.named < 6) tg.push(`${w}: ${JSON.stringify(r)}`); }
+    ok(!tg.length, `HQ tags (Sim, Nov 18): no dark name tag in the hero at 320-2560; the six highest rated stay named buttons (white plates, then the ticker)${tg.length ? ': ' + tg.join(' | ') : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----
@@ -358,12 +365,12 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
 { const lin = [];
   /* Home's ranks and most used moved for Sim's Nov 18 redesign (the Stampede): the hero's plates, tags and ticker (ratings) and the six's ring
      names stand in for .hm-rk / .hm-used; on Home every such button is read, not only the first */
-  for (const [route, sel] of [['meta', '.gs-mon'], ['speed', '.sp2-m'], ['home', '.sdh-plate'], ['home', '.sdh-tag:not([hidden])'], ['home', '.sdh-tick li:not([hidden]) button'], ['home', '.sds-rings .sds-nm[data-v2mon]'], ['usage', '.us-fig']]) {
+  for (const [route, sel] of [['meta', '.gs-mon'], ['speed', '.sp2-m'], ['home', '.sdh-plate'], ['home', '.sdh-tick li:not([hidden]) button'], ['home', '.sds-rings .sds-nm[data-v2mon]'], ['usage', '.us-fig']]) {
     await p.goto('file://' + PAGE + '#' + route); await p.waitForTimeout(2000);
     lin.push(await p.evaluate(([sel, all]) => { const norm = x => x.toLowerCase().replace(/[^a-z0-9%.# ]+/g, ' ').replace(/\s+/g, ' ').trim(); const es = [...document.querySelectorAll('#main ' + sel)].filter(x => x.getClientRects().length && x.getAttribute('aria-label')); if (!es.length) return sel + ' none';
       return (all ? es : es.slice(0, 1)).map(e => { const vis = norm((e.querySelector('.us-tx') || e).innerText).split(' ').slice(0, 2).join(' ') /* a Usage figure's podium number is decoration; its label text is .us-tx */, raw = e.getAttribute('aria-label'), al = norm(raw);
         return al.startsWith(vis) && !/\[object|undefined|NaN/.test(raw) ? '' : sel + ': "' + vis + '" vs "' + raw.slice(0, 60) + '"'; }).filter(Boolean).slice(0, 2).join(' | '); }, [sel, route === 'home'])); }
-  const bad = lin.filter(Boolean); ok(!bad.length, `pl-5d (Nov 17; Home re-pointed to the Stampede Nov 18): spoken names start with the visible words and hold no "[object Object]" (rating tiles, speed rows, Home's hero plates, tags, ticker and ring names, Usage figures)${bad.length ? ': ' + bad.join(' | ') : ''}`); }
+  const bad = lin.filter(Boolean); ok(!bad.length, `pl-5d (Nov 17; Home re-pointed to the Stampede Nov 18): spoken names start with the visible words and hold no "[object Object]" (rating tiles, speed rows, Home's hero plates, ticker and ring names, Usage figures)${bad.length ? ': ' + bad.join(' | ') : ''}`); }
 /* Sim, Nov 18 (C): from 360 the Hand is three across and the panel opens under the whole Hand (checked below); the Nov 17 B placement stays at 320 (two across) */
 { const ctx = await b.newContext({viewport: {width: 320, height: 844}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
   await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.evaluate(() => document.querySelectorAll('[data-tmsel]')[0].click()); await q.waitForTimeout(500);
