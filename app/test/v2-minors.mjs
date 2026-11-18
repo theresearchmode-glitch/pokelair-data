@@ -213,6 +213,12 @@ const HQ = async () => {
       await ctx.close(); if (r.none || r.n !== 6 || r.open !== (w >= 700) || r.old || r.x < 44 || r.bad.length || r.hs > 0 || !gone) nw.push(`${w}: ${JSON.stringify({...r, gone})}`); }
     const first = await hq(1440, 900, {fresh: true, fn: () => !!document.querySelector('#main .sdp-nw')}); if (first) nw.push('a first-time visitor sees it');
     ok(!nw.length, `HQ Q4d (Sim: A, reworded): What's New is a paper slip in the post band after an update (6 items, word list, open on wide screens, a fold on phones), × hides it for good, never on a first visit${nw.length ? ': ' + nw.join(' | ').slice(0, 600) : ''}`); }
+  // Q4a A: HOME-04's data line lives on the Usage page: with the Showdown ladder chosen, its source line names the month and says when the
+  // next month's numbers arrive (". November's numbers arrive Dec 1."), only until that date; the other sources don't say it
+  { const r = await hq(1440, 900, {hash: '#usage', keep: true}); const q = r.q; const line = async k => { await q.click(`[data-ussrc="${k}"]`); await q.waitForTimeout(500); return q.evaluate(() => (document.querySelector('#main .us-src') || {}).textContent || ''); };
+    const lad = await line('ladder'), tour = await line('tour'), want = await q.evaluate(() => JSON.parse(window.__ev(`(() => { const d = META.doubles, m = /^(\\d{4})-(\\d{2})/.exec(d && d.period || ''); return JSON.stringify({now: V2.usNext ? V2.usNext(d) : 'no V2.usNext', early: m && V2.usNext ? V2.usNext(d, Date.UTC(+m[1], +m[2] - 1, 20)) : ''}); })()`)));
+    await r.ctx.close();
+    ok(/^. [A-Z][a-z]+'s numbers arrive [A-Z][a-z]{2} \d{1,2}\.$/.test(want.early) && lad.endsWith(want.now) && /[A-Z][a-z]{2} \d{4}/.test(lad) && !/numbers arrive/.test(tour), `HQ Q4a (Sim: A): the Usage page's Showdown ladder line names its month and when the next arrives (HOME-04 moved from Home) ("${lad}"; tournaments: "${tour}"; ${JSON.stringify(want)})`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----

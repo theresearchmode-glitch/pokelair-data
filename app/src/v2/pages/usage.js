@@ -6,6 +6,11 @@ V2.usUi = {q: '', pick: null, all: false};
 V2.usSrcs = [['ingame', 'Ranked ladder'], ['tour', 'Online tournaments'], ['ladder', 'Showdown ladder']]; // today's order (parity, Nov 15)
 V2.usLine = d => { const per = d.period && !String(d.source).includes(d.period) ? ' · ' + (/^\d{4}-\d{2}$/.test(d.period) ? new Date(d.period + '-15T12:00:00').toLocaleDateString('en-US', {month: 'short', year: 'numeric'}) : d.period) : '';
   return `${d.source || ''}${per}${d.battles ? ` · ${(+d.battles).toLocaleString('en-US')} battles` : ''}`; };
+// HOME-04 (Sim Q4a A, Nov 18: moved here from today's Home): the Showdown ladder's numbers are monthly (Smogon posts each month on the 1st
+// of the next), so its line says when the next month arrives: ". November's numbers arrive Dec 1." Shown only until that date (as V2.homeNext).
+V2.usNext = (d, now = Date.now()) => { const m = /^(\d{4})-(\d{2})/.exec(d && d.period || ''); if (!m) return '';
+  const nx = new Date(Date.UTC(+m[1], +m[2], 15)), due = new Date(Date.UTC(+m[1], +m[2] + 1, 1)); if (now >= due.getTime()) return '';
+  return `. ${nx.toLocaleString('en-US', {month: 'long', timeZone: 'UTC'})}'s numbers arrive ${due.toLocaleString('en-US', {month: 'short', day: 'numeric', timeZone: 'UTC'})}.`; };
 // one rank of the list, filled in as today: a ranked-ladder row with no sets borrows the tournament set (and says how many teams it is from)
 V2.usRow = (t0, kind) => { const p = byName.get(t0.n); let t = t0, sb = null;
   if (p && !(t0.mv && t0.mv.length)) { const st = setFor(p, 'doubles', 'tour'); t = {...t0, mv: st.mv, it: st.it, ab: st.ab, na: st.na, tm: st.tm}; sb = f => { const b = setBasis(p, st, f); return b ? b.html : ''; }; }
@@ -48,7 +53,7 @@ V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
     <p class="ra-lede">The most used Pokémon, from the ranked ladder, online tournaments or the Showdown ladder.</p>${tabs}<p class="ra-links"><a class="np-link" href="#meta">Ratings ›</a><a class="np-link" href="#sets">Popular Sets ›</a></p></section>`;
   const srcs = `<div class="gs-ctl"><div class="ra-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-usq value="${E(U.q)}" placeholder="Find a Pokémon in the ranks" aria-label="Find a Pokémon in the ranks" autocomplete="off">${V2.CLR}</label></div>
     <div class="ra-filt us-srcs" role="group" aria-label="Source">${V2.usSrcs.map(([k, l]) => `<button type="button" class="ra-chip" data-ussrc="${k}" aria-pressed="${ui.metaSrc === k}"${META[SRC[k]] ? '' : ' disabled title="No data from this source yet"'}><span>${l.replace(' ', '<span class="us-sp"> </span>')}</span></button>`).join('')}</div>
-    ${d ? `<p class="fine us-src">${E(V2.usLine(d))}</p>` : ''}</div>`;
+    ${d ? `<p class="fine us-src">${E(V2.usLine(d))}${ui.metaSrc === 'ladder' ? E(V2.usNext(d)) : ''}</p>` : ''}</div>`;
   if (!d) return `<div class="ra gsp us">${`<div class="gs-top">${head}${tabs}</div>`}<div class="gs-body">${srcs}<p class="tm-sub">No meta data loaded yet. Usage appears after the next data refresh.</p></div></div>`;
   const q = U.q.trim().toLowerCase(), byQ = R => V2.usName(R).toLowerCase().includes(q);
   let body;

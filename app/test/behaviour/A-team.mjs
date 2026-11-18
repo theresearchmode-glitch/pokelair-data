@@ -54,10 +54,13 @@ t('HOME-03', 'Runner-up strips (#2, #3) open their info sheets', async () => {
   await r.ui.closeInfoSheet(); await r.ui.tapText(`${m[3]} ${m[4]}%`); s = await r.ui.infoSheet(); ok(s && s.includes(m[3]), `info sheet for ${m[3]} did not open`); await r.close(); });
 
 t('HOME-04', 'Data line names the month, the source and "Data as of <date>"', async () => {
+  if (NEW) { /* Sim Q4a A (Nov 18): the Stampede Home shows no ladder numbers, so the line moved to the Usage page, with the Showdown ladder
+     chosen: its source line names the month and, until then, when the next month's numbers arrive; "Data as of <date>" stays in the footer only */
+    const r = await aopen({team: TEAM}); await r.ui.go('Usage', 1200); await r.pg.click('[data-ussrc="ladder"]'); await r.pg.waitForTimeout(600); const tx = await r.ui.text();
+    has(tx, /Showdown ladder[^\n]*· (Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec) \d{4}/, 'Usage data line (Showdown ladder)');
+    const nx = await r.pg.evaluate(() => window.__ev('V2.usNext(META.doubles)')); ok(!nx || tx.includes(nx.slice(2)), `the line doesn't say "${nx}"`);
+    ok(!/Data as of [A-Z][a-z]{2} \d{1,2}/i.test(tx), 'Usage repeats "Data as of <date>" in the page (it belongs in the footer only)'); await r.close(); return; }
   const {ui} = await view('home', {team: TEAM}); const tx = await ui.text();
-  if (NEW) { /* say it once (Nov 16, docs/rebuild/say-it-once.md): the line keeps month + source; "Data as of <date>" shows once, in the footer */
-    has(tx, /(?:Most used in |Most used (?:last month|on the ladder)\.? )(January|February|March|April|May|June|July|August|September|October|November|December), (Showdown ladder|Ranked ladder|Online tournaments|Official events)/, 'Home data line'); /* Nov 17 (3a): heading "Most used in October.", line "Showdown ladder 1630+" */
-    ok(!/Data as of [A-Z][a-z]{2} \d{1,2}/i.test(tx), 'Home repeats "Data as of <date>" in the page (it belongs in the footer only)'); return; }
   has(tx, /Most used in (January|February|March|April|May|June|July|August|September|October|November|December), (Showdown ladder|Ranked ladder|Online tournaments|Official events)[^.]*\. Data as of [A-Z][a-z]{2} \d{1,2}/, 'Home data line'); });
 
 t('HOME-05', 'This week in the ratings: chips with arrow + number open the matching info sheet', async () => {
