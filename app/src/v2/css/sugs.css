@@ -112,6 +112,21 @@
 /* All Suggestions sheet */
 .sga2{padding:var(--s8)}.sga2 h2{font-size:var(--t28);margin:var(--s2) 0}
 @media (max-width:699.98px){.sga2{padding:var(--s6) var(--s4)}}
+/* Sim, Nov 18 (Q5 C, the middle way): Suggest from, two headed sections, short card facts, Show 6 More, the end line */
+.sga2 .sga2-h3{font:900 var(--t22)/1.2 var(--u);font-style:italic;font-synthesis:style;margin:var(--s8) 0 0}
+.sga2 .sga2-h3+.tm-sub{margin-top:var(--s1)}
+.sga2-facts,.sga2-f{display:grid;gap:var(--s2)}
+.sga2-row{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
+.sga2-tag{display:inline-flex;align-items:center;min-height:28px;padding:0 var(--s3);font:700 var(--t13)/1 var(--b);color:var(--ink);background:var(--wash)}
+.sga2-tag.sga2-gem{background:var(--plot);color:var(--surface)}
+.sga2-who{font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.sga2-set{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.sga2-set b{color:var(--ink);font-weight:600}
+.sga2-strip{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3);width:100%;min-height:var(--tap);margin-top:var(--s6);padding:var(--s4) 0 0;border:0;border-top:1px solid var(--rule);background:none;text-align:left;cursor:pointer;color:var(--ink)}
+.sga2-strip b{font:900 var(--t20)/1.2 var(--u);font-style:italic;font-synthesis:style;color:var(--plot-text)}
+.sga2-strip b::after{content:" ›";font-style:normal}
+.sga2-strip span{font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.sga2-end{margin-top:var(--s6)}
+@media (min-width:900px){.sga2 .sga2-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s8);align-items:start}.sga2 .sga2-two>li{height:100%}}
 /* "?" explainers: a small slanted mark beside the term; the bubble is a solid surface over the page */
 /* A15 (Sim's fix plan): the "?" looks the same (a 24px slanted tile) but its tap area is 44x44: the button is 44 square and
    transparent, the tile is drawn by ::before, and negative margins keep the room it takes in the line exactly as before */

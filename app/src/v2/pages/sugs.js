@@ -41,12 +41,12 @@ V2.undotHtml = h => { h = String(h); const list = /;/.test(h.replace(/<[^>]*>/g,
 V2.sgOwn = P => { try { return inBox(P) ? 'In your box' : ui.pool !== 'all' ? 'To catch' : ''; } catch (e) { return ''; } };
 V2.sgSide = (m, cls) => { const P = m.p || m, own = cls === ' in' ? V2.sgOwn(P) : ''; return `<span class="tm-sw${cls}"><img src="${V2.art(SPRITE_ID[P.n])}" alt=""><span>${V2.nameHtml(m.d || V2.disp(P.n))}${own ? `<small class="tm-own">${own}</small>` : ''}</span></span>`; };
 V2.sgSwap = x => `<div class="tm-chg" aria-label="${x.out ? V2.esc(x.out.d) + ' out, ' : 'Add '}${V2.esc(x.c.p.d)}${x.out ? ' in' : ''}${V2.sgOwn(x.c.p) ? ', ' + V2.sgOwn(x.c.p).toLowerCase() : ''}">${x.out ? V2.sgSide(x.out, '') : '<span class="tm-sw"></span>'}<span class="tm-ar" aria-hidden="true">${x.out ? '→' : '+'}</span>${V2.sgSide(x.c.p, ' in')}</div>`;
-V2.sgCard = ({pl, k, g0, attr, side, hidden, why, main}) => { const g1 = g0 != null ? planGrade(pl) : null, ok = g0 != null && g1 != null, r0 = ok ? Math.round(g0) : null, r1 = ok ? Math.round(g1) : null, d = ok ? r1 - r0 : null;
+V2.sgCard = ({pl, k, g0, attr, side, hidden, why, main, facts}) => { const g1 = g0 != null ? planGrade(pl) : null, ok = g0 != null && g1 != null, r0 = ok ? Math.round(g0) : null, r1 = ok ? Math.round(g1) : null, d = ok ? r1 - r0 : null;
   const word = ok && CH.wordOf(g0) !== CH.wordOf(g1) ? CH.wordOf(g1) : '', ln = (() => { try { if (!pl._lane) LANE.of(pl, members(), g0); } catch (e) {} return LANE.lineParts(pl); })(); // plans from the planner's extra list have no lane yet: work it out, as today's 23-coverage.js does (Nov 10 fix; audit SUGG-06)
   // Why?: the plan's own reasons (else, for a side option, what keeps it level), the weak-spot change first (as today)
   const W = why || {lines: pl._why && pl._why.length ? pl._why : side ? ['Keeps every check and your speed control', 'About the same Strength Score as now, with a different look'] : [], wk: pl._wk};
   const wk = W.wk ? `<li>Weak spots: <b>${V2.esc(W.wk[0])}</b> → <b>${V2.esc(W.wk[1])}</b></li>` : '', L = W.lines.filter(Boolean), nr = L.length + (wk ? 1 : 0);
-  return `<li${hidden ? ' hidden' : ''}><span class="np-eyebrow">Suggestion ${k + 1}</span>${d != null ? `<div class="tm-mv"><b>${d > 0 ? '+' + d : d < 0 ? '−' + Math.abs(d) : '±0'}</b><span>${r0} → ${r1}</span>${word ? `<em class="sg2-band">${V2.esc(word)}</em>` : ''}</div>` : ''}<div class="tm-swaps">${pl.ch.map(V2.sgSwap).join('')}</div>
+  return `<li${hidden ? ' hidden' : ''}><span class="np-eyebrow">Suggestion ${k + 1}</span>${d != null ? `<div class="tm-mv"><b>${d > 0 ? '+' + d : d < 0 ? '−' + Math.abs(d) : '±0'}</b><span>${r0} → ${r1}</span>${word ? `<em class="sg2-band">${V2.esc(word)}</em>` : ''}</div>` : ''}<div class="tm-swaps">${pl.ch.map(V2.sgSwap).join('')}</div>${facts || ''}
     ${ln ? `<p class="sg2-ln ${ln.k}"><b>${ln.tag}</b> ${ln.text}</p>` : ''}${main ? `<button type="button" class="np-btn" ${attr}="${k}">Apply</button>` : `<button type="button" class="np-btn2" ${attr}="${k}"><span>Apply</span></button>`}
     ${nr ? `<details class="sg2-why"><summary><span class="q">Why?</span><span class="n">${nr} reason${nr === 1 ? '' : 's'}</span></summary><ul>${wk}${L.map(l => `<li>${V2.undotHtml(V2.wl(l))}</li>`).join('')}</ul></details>` : ''}</li>`; };
 
@@ -87,6 +87,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
       <ol class="tm-sug">${top.map((x, k) => V2.sgCard({pl: x.pl, k, g0, attr: 'data-v2plan', side, hidden: k > 0 && !open, main: !k})).join('')}</ol>
       ${hid > 0 && !open ? `<span class="sg2-links"><button type="button" class="np-link sg2-all" data-v2sgmore aria-expanded="false">Show ${hid} More<span class="sg2-l2"> Suggestion${hid === 1 ? '' : 's'} ›</span></button>${(S.excl || []).length ? '' : '<button type="button" class="np-link sg2-all" data-v2excl>Never<span class="sg2-l2"> Suggest ›</span></button>'}</span>` : all}`;
     V2._sgLast = body; }
+  V2.sgAllSync(); /* an open All Suggestions sheet follows the planner (Suggest from in the sheet re-plans) */
   if (!S2.pending && !(S.excl || []).length && !/data-v2excl/.test(body)) body += '<p class="sg2-links"><button type="button" class="np-link sg2-all" data-v2excl>Never<span class="sg2-l2"> Suggest ›</span></button></p>'; /* always reachable */
   return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${body}${V2.sgAdj()}</section>`; };
 // the Protect fix: only 0-2 of the six run Protect while their usual sets do; Add Protect puts it in those sets (today's
@@ -122,21 +123,60 @@ V2.undoBar = () => { const t = undoTop(); return t ? `<div class="sg2-undo" role
 document.addEventListener('click', e => { if (!e.target.closest || !e.target.closest('[data-v2sgmore]')) return; ui.sugMore = members().map(m => m.p.n).join(',');
   V2.redraw(); const b = document.querySelectorAll('#tm-sg .tm-sug > li')[1], f = b && b.querySelector('[data-v2plan]'); if (f) f.focus({preventScroll: true}); });
 
-// ---------- All Suggestions: a sheet with every suggestion the planner found (My Team's first, then the other ideas) ----------
-V2.sgAll = {list: [], n: 12};
-V2.allSugsHtml = () => { const ms = members(), P = V2.plan.plans || [], shown = ui.planList || [], X = V2.sgX(ms), U = V2.sgAll;
-  const rest = [...P, ...(P.more || [])].filter(pl => !shown.includes(pl)), list = U.list = [...shown, ...rest]; let g0 = null; try { g0 = P.gBase != null ? P.gBase : ms.length === 6 ? gradeTeam(ms) : null; } catch (e) {}
-  const side = !P.length, left = list.length - shown.length - U.n;
-  const cards = list.slice(0, shown.length + U.n).map((pl, k) => { let why = null;
+// ---------- All Suggestions: a sheet with every suggestion the planner found (Sim, Nov 18, Q5 C: the middle way) ----------
+// Head, then the one Suggest from (the same setting as My Team's, not a second copy), the notes, "One Pokémon In, One Out" (or
+// "Pokémon to Add" under six): 6 cards, then "Show 6 More" (Showing 6 of N); then "Bigger Plans" (two or more changes) as an open
+// section; the list ends with where to find more. Each card adds short facts (types, tier, role, Hidden gem, Ability @ Item); the
+// change chips stay in Why?, which already says them. Apply closes the sheet; its Undo waits on My Team (Q5 sub-question A).
+// Every plan, number and word comes from today's shared logic (planner, rating, monRole, isGem, assignItems); this only draws them.
+V2.sgAll = {list: [], n: 6};
+V2.SGA_POOL = {box: 'your box', boxfill: 'your box and the best Pokémon to catch', all: 'the whole roster'};
+// the card facts for each Pokémon coming in: type chips, "S tier 94", role, Hidden gem, then "Ability @ Item" (today's plan card's set
+// line: the Ability its set runs, the item after Item Clause is settled across the new six, assignItems)
+V2.sgaFacts = pl => { const E = V2.esc; let tA = pl.team; try { if (typeof assignItems === 'function') tA = assignItems(pl.team); } catch (e) {}
+  return `<div class="sga2-facts">${pl.ch.map(x => { const p = x.c.p, mem = x.c.mem || pl.team.find(m => m.p === p) || {}; let tier = '', role = '', gem = false, it = '';
+    try { const r = rating(p); tier = `${lTier(r.total).k} tier ${RS(r.total)}`; } catch (e) {}
+    try { role = monRole(mem) || ''; } catch (e) {}
+    try { gem = !!pl.gem || isGem(p); } catch (e) {}
+    try { const t = tA.find(m => m.p === p); it = (t && t.item) || ''; } catch (e) {}
+    const tags = `${tier ? `<span class="sga2-tag">${E(tier)}</span>` : ''}${role ? `<span class="sga2-tag">${E(role)}</span>` : ''}${gem ? '<span class="sga2-tag sga2-gem">Hidden gem</span>' : ''}`;
+    return `<div class="sga2-f">${pl.ch.length > 1 ? `<p class="sga2-who">${V2.nameHtml(p.d)}</p>` : ''}<div class="sga2-row">${(p.t || []).map(V2.typeChip).join('')}${tags}</div>${mem.ability || it ? `<p class="sga2-set">${mem.ability ? `<b>${E(mem.ability)}</b>` : ''}${it ? ` @ ${E(it)}` : ''}</p>` : ''}</div>`; }).join('')}</div>`; };
+V2.allSugsHtml = () => { const ms = members(), U = V2.sgAll, E = V2.esc, busy = !(V2.plan.plans && V2.plan.key === V2.planKey());
+  U.P = V2.plan.plans; U.busy = busy; U.pool = ui.pool;
+  const poolW = V2.SGA_POOL[ui.pool] || 'this pool';
+  const ctl = `<div class="sg2-ctl sga2-ctl" role="group" aria-label="Suggestion settings"><div class="sg2-c sg2-pool"><span class="sg2-k">Suggest from</span>${V2.slide('sgpool', [['box', 'My Box'], ['boxfill', 'Box + Catch'], ['all', 'Whole Roster']], ui.pool, 'Suggest from')}</div></div>`;
+  const head = n => `<div class="np-eyebrow">${n == null ? 'Suggestions' : `${n} suggestion${n === 1 ? '' : 's'}`}</div><h2 class="u">All Suggestions</h2>
+    <p class="tm-sub">Every change the planner found for your team, best first, each with how it moves the Strength Score.</p>${ctl}`;
+  // while the planner works (a new Suggest from, a team change) the list on screen stays, faded and not tappable, as on My Team
+  if (busy) return `<div class="sga2">${head(U.count)}<p class="tm-sub sg2-wait" role="status">Working out the best changes for your team…</p>${U.last ? `<div class="sg2-stale" inert aria-busy="true">${U.last}</div>` : ''}</div>`;
+  const P = V2.plan.plans || [], shown = ui.planList || [], X = V2.sgX(ms);
+  const rest = [...P, ...(P.more || [])].filter(pl => !shown.includes(pl)), all = [...shown, ...rest]; let g0 = null; try { g0 = P.gBase != null ? P.gBase : ms.length === 6 ? gradeTeam(ms) : null; } catch (e) {}
+  const side = !P.length, singles = all.filter(pl => pl.ch.length === 1), multi = all.filter(pl => pl.ch.length > 1);
+  const S1 = singles.slice(0, U.n), left = singles.length - S1.length; U.list = [...S1, ...multi]; U.count = all.length;
+  const card = (pl, k) => { let why = null;
     if (!(pl._why && pl._why.length)) { try { const r = planWhy(pl, k, X, false); why = {lines: r.lines, wk: r.wk}; } catch (e) {} }
-    return V2.sgCard({pl, k, g0, attr: 'data-v2plana', side: side && k < shown.length, why, main: !k}); }).join('');
-  return `<div class="sga2"><div class="np-eyebrow">${list.length} suggestion${list.length === 1 ? '' : 's'}</div><h2 class="u">All Suggestions</h2>
-    <p class="tm-sub">The ones on My Team first, then every other change the planner found in ${V2.esc({box: 'your box', boxfill: 'your box and the best Pokémon to catch', all: 'the whole roster'}[ui.pool])}, each with how it moves the Strength Score.</p>
-    ${list.length ? `<ol class="tm-sug">${cards}</ol>${left > 0 ? `<button type="button" class="np-link sg2-all" data-v2sgamore>Show ${Math.min(12, left)} More ›</button>` : ''}` : '<p class="tm-sub">No suggestions for this team from this pool.</p>'}</div>`; };
-V2.openAllSugs = () => { if (!members().length) return; V2.sgAll.n = 12; V2.sheet(V2.allSugsHtml(), {label: 'All Suggestions'}); };
+    return V2.sgCard({pl, k, g0, attr: 'data-v2plana', side: side && shown.includes(pl), why, main: !k, facts: V2.sgaFacts(pl)}); };
+  const notes = P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${E(P.gapNote)}</p>` : '';
+  const one = S1.length ? `<h3 class="u sga2-h3">${ms.length >= 6 ? 'One Pokémon In, One Out' : 'Pokémon to Add'}</h3><ol class="tm-sug sga2-two">${S1.map((pl, k) => card(pl, k)).join('')}</ol>
+    ${left > 0 ? `<button type="button" class="sga2-strip" data-v2sgamore><b class="u">Show ${Math.min(6, left)} More</b><span>Showing ${S1.length} of ${singles.length}</span></button>` : ''}` : '';
+  const big = `<h3 class="u sga2-h3">Bigger Plans</h3><p class="tm-sub">Two or more changes at once.</p>${multi.length ? `<ol class="tm-sug sga2-big">${multi.map((pl, j) => card(pl, S1.length + j)).join('')}</ol>`
+    : `<p class="tm-sub">No plan with two or more changes raises the Strength Score${g0 != null ? ` (it’s at ${Math.round(g0)})` : ''}.</p>`}`;
+  const end = left > 0 ? '' : `<p class="tm-sub sga2-end">That’s every change the planner found in ${E(poolW)}.${ui.pool !== 'all' ? ' For more, set Suggest from to Whole Roster above.' : ''}</p>`;
+  const body = all.length ? notes + one + big + end : `${notes}<p class="tm-sub">No suggestions for this team from this pool.${ui.pool !== 'all' ? ' Try Whole Roster above.' : ''}</p>`;
+  U.last = body; return `<div class="sga2">${head(all.length)}${body}</div>`; };
+V2.openAllSugs = () => { if (!members().length) return; Object.assign(V2.sgAll, {n: 6, last: '', count: null}); V2.sheet(V2.allSugsHtml(), {label: 'All Suggestions'}); };
+// redraw the open sheet in place, keeping its scroll and the focused control (a Suggest from choice, Show More)
+V2.sgAllRedraw = focusSel => { const el = document.querySelector('.np-sheet .sga2'); if (!el) return; const a = document.activeElement, sh = el.closest('.np-sheet'), y = sh.scrollTop;
+  let sel = focusSel; if (!sel && a && el.contains(a)) sel = a.matches('[data-v2slide] > button') ? `[data-v2slide="${a.parentElement.dataset.v2slide}"] > [data-v="${a.dataset.v}"]` : a.matches('[data-v2sgamore]') ? '[data-v2sgamore]' : null;
+  const had = !!(a && el.contains(a)); el.outerHTML = V2.allSugsHtml(); sh.scrollTop = y;
+  const f = sel && sh.querySelector('.sga2 ' + sel); if (f) f.focus({preventScroll: true}); else if (had) sh.focus({preventScroll: true}); };
+// My Team redraws when the planner finishes or a setting changes: the open sheet follows when its plans, pool or busy state changed
+V2.sgAllSync = () => { if (V2._sgaT) return; V2._sgaT = setTimeout(() => { V2._sgaT = 0; const U = V2.sgAll; if (!document.querySelector('.np-sheet .sga2')) return;
+  const busy = !(V2.plan.plans && V2.plan.key === V2.planKey()); if (busy === U.busy && V2.plan.plans === U.P && ui.pool === U.pool) return; V2.sgAllRedraw(); }, 0); };
 document.addEventListener('click', e => { if (!e.target.closest) return;
   if (e.target.closest('[data-v2sgall]')) { V2.openAllSugs(); return; }
-  if (e.target.closest('[data-v2sgamore]')) { V2.sgAll.n += 12; const el = document.querySelector('.sga2'); if (el) el.outerHTML = V2.allSugsHtml(); const s = document.querySelector('.np-sheet'); if (s) s.focus({preventScroll: true}); } });
+  // Show 6 More: the next six swaps open in place; the focus goes to the first new card's Apply
+  if (e.target.closest('[data-v2sgamore]')) { const k = Math.min(V2.sgAll.n, V2.sgAll.list.length); V2.sgAll.n += 6; V2.sgAllRedraw(`[data-v2plana="${k}"]`); } });
 
 // ---------- Apply (today's applyPlan: Undo kept, what it swapped out isn't offered straight back) ----------
 // a second tap within half a second is ignored, as on today's page (a double tap can't apply two suggestions)

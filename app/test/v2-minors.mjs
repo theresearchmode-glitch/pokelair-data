@@ -12,6 +12,7 @@
 //   Stampede polish 1/1b/2 (Nov 18): the hero/six seam, the three parts starting and ending together, the receipt's band names readable
 //   Stampede tiles 2-5 + tags (Nov 18 night): Battle's VS clear, Test Run filled, Damage Calc balanced, equal band bars, board tags inside
 //   HQ Q4a-Q13f (Nov 18): Sim's answers for Home (morning questions), one check each (ONLY=HQ runs these alone)
+//   AS-1..9 (Nov 18): the All Suggestions sheet, option C (Sim's Q5): Suggest from, sections, card facts, Show 6 More, notes, height (ONLY=AS)
 //   BR-C1..C7 (Nov 18): behaviour review: the Apply and Remove holds end on any scroll they didn't make and on leaving My Team,
 //              redraws at 1100-1439 don't move My Team, keyboard Apply keeps the focus (ONLY=BR runs these alone)
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
@@ -147,6 +148,77 @@ const MQ = async () => {
     await q.close(); }
 };
 if (process.env.ONLY === 'MQ') { await MQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// ---- AS begin: All Suggestions sheet, option C (Sim, Nov 18, Q5 C "recommend for all is good"; sub-question A: Apply closes the sheet,
+//   Undo waits on My Team). docs/rebuild/pics/nov18/README-allsugs-options.md. Each AS check failed on the build before (the sheet was one
+//   list: no Suggest from, no headings, no notes, 12 cards then "Show 12 More"); AS-8 and AS-9 are guards that passed before too.
+//   ONLY=AS runs these alone; the full run calls AS() just before the browser closes.
+const AS = async () => {
+  const BOXA = ['Absol', 'Archaludon', 'Azumarill', 'Basculegion', 'Garchomp', 'Incineroar', 'Kingambit', 'Sneasler', 'Whimsicott', 'Rillaboom', 'Charizard', 'Gengar', 'Dragonite', 'Tyranitar', 'Hydreigon', 'Amoonguss', 'Talonflame', 'Pelipper', 'Torkoal', 'Farigiraf'];
+  const T68 = ['Garchomp', 'Kingambit', 'Sneasler', 'Basculegion', 'Archaludon', 'Azumarill']; /* scores 68, 21 suggestions (the README's team) */
+  const st = (team, box, pool) => { const s = {slots: team.map(n => ({n, a: null, lock: false})), box, teams: [], loadedId: null, format: 'doubles', maxMega: 1, opp: [], excl: [], log: []}; while (s.slots.length < 6) s.slots.push({n: '', a: null, lock: false}); return {s, pool}; };
+  const openAS = async ({team = T68, box = BOXA, pool = null, W = 1440, dark = false} = {}) => { const c = await b.newContext({viewport: {width: W, height: W < 700 ? 844 : 900}, colorScheme: dark ? 'dark' : 'light'}), q = await c.newPage();
+    await q.addInitScript(([S]) => { window.__PL_TEST = 1; if (!sessionStorage.getItem('as1')) { sessionStorage.setItem('as1', 1); localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.state', JSON.stringify(S.s)); if (S.pool) localStorage.setItem('cc2.pool', JSON.stringify(S.pool)); } }, [st(team, box, pool)]);
+    await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2000);
+    await q.waitForFunction(() => window.V2 && V2.plan && V2.plan.plans && !document.querySelector('#main .sg2-wait'), null, {timeout: 90000}).catch(() => {}); await q.waitForTimeout(800);
+    await q.evaluate(() => window.__ev('V2.openAllSugs()')); await q.waitForTimeout(800); return {q, c}; };
+  const settle = q => q.waitForFunction(() => { const s = document.querySelector('.np-sheet .sga2'); return s && !s.querySelector('.sg2-wait'); }, null, {timeout: 90000}).catch(() => {});
+  const T = (q, sel) => q.evaluate(s => { const e = document.querySelector(s); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; }, sel);
+  // AS-1: the head and the one Suggest from inside the sheet, showing the same choice as My Team's
+  { const {q, c} = await openAS(); const r = await q.evaluate(() => window.__ev(`(() => { const s = document.querySelector('.np-sheet .sga2'), sl = s && s.querySelector('[data-v2slide="sgpool"]');
+      return {head: s ? s.querySelector('h2').textContent + ' / ' + s.querySelector('.tm-sub').textContent : '', ch: sl ? [...sl.querySelectorAll('button')].map(b => b.textContent.trim() + (b.getAttribute('aria-pressed') === 'true' ? '*' : '')).join('|') : 'none', pool: ui.pool}; })()`));
+    ok(/^All Suggestions \/ Every change the planner found for your team, best first/.test(r.head) && r.ch === ({box: 'My Box*|Box + Catch|Whole Roster', boxfill: 'My Box|Box + Catch*|Whole Roster', all: 'My Box|Box + Catch|Whole Roster*'})[r.pool],
+      `AS-1 (Q5 C): the sheet's head, then Suggest from with My Team's choice pressed (${r.head.slice(0, 70)}; ${r.ch}; pool ${r.pool})`);
+  // AS-2: tapping Whole Roster in the sheet changes the one shared setting; the sheet shows the working line, then the new list (To catch picks)
+    const before = await T(q, '.np-sheet .sga2 .sga2-two'); await q.click('.np-sheet .sga2 [data-v2slide="sgpool"] [data-v="all"]', {timeout: 3000}).catch(() => {}); await q.waitForTimeout(500);
+    const sawWait = await q.evaluate(() => !!document.querySelector('.np-sheet .sga2 .sg2-wait')); await settle(q); await q.waitForTimeout(600);
+    const r2 = await q.evaluate(() => window.__ev(`({pool: ui.pool, mine: ((document.querySelector('#main [data-v2slide="sgpool"] [aria-pressed="true"]') || {}).textContent || '').trim(), focus: !!(document.activeElement && document.activeElement.closest('.np-sheet [data-v2slide="sgpool"]'))})`));
+    const after = await T(q, '.np-sheet .sga2 .sga2-two');
+    ok(r2.pool === 'all' && /Whole Roster/.test(r2.mine) && sawWait && after && after !== before && r2.focus,
+      `AS-2 (Q5 C): Whole Roster in the sheet sets the shared Suggest from (My Team's reads it too), shows "Working out…", then a new list; focus stays on the choice (${JSON.stringify(r2)}, working ${sawWait}, list changed ${after !== before})`); await c.close(); }
+  // AS-3: "One Pokémon In, One Out": 6 cards, then "Show 6 More · Showing 6 of N"; a tap opens 6 more and the focus goes to the 7th card's Apply
+  { const {q, c} = await openAS(); const r = await q.evaluate(() => { const s = document.querySelector('.np-sheet .sga2'), h = [...s.querySelectorAll('.sga2-h3')].map(e => e.textContent), st = s.querySelector('[data-v2sgamore]');
+      return {h, n: s.querySelectorAll('.sga2-two > li').length, strip: st ? st.innerText.replace(/\s+/g, ' ').trim() : ''}; });
+    await q.click('.np-sheet [data-v2sgamore]', {timeout: 3000}).catch(() => {}); await q.waitForTimeout(500);
+    const r2 = await q.evaluate(() => ({n: document.querySelectorAll('.np-sheet .sga2-two > li').length, f: document.activeElement && document.activeElement.getAttribute('data-v2plana'), eb: document.activeElement && document.activeElement.closest('li') ? document.activeElement.closest('li').querySelector('.np-eyebrow').textContent : ''}));
+    const m = r.strip.match(/^Show (\d+) More Showing 6 of (\d+)$/);
+    ok(r.h[0] === 'One Pokémon In, One Out' && r.n === 6 && m && r2.n === Math.min(12, +m[2]) && r2.f === '6' && r2.eb === 'Suggestion 7',
+      `AS-3 (Q5 C): "One Pokémon In, One Out" with 6 cards, "${r.strip}"; Show More opens ${r2.n} (focus on ${r2.eb || 'nothing'})`); await c.close(); }
+  // AS-4: "Bigger Plans" is an open section (no fold) of two-or-more-change plans only, each Apply mapped to its own plan
+  { const {q, c} = await openAS(); const r = await q.evaluate(() => window.__ev(`(() => { const s = document.querySelector('.np-sheet .sga2'), h = [...s.querySelectorAll('.sga2-h3')].find(e => e.textContent === 'Bigger Plans');
+      const big = [...s.querySelectorAll('.sga2-big > li')], ks = big.map(li => li.querySelectorAll('.tm-chg').length), map = [...s.querySelectorAll('[data-v2plana]')].every(b => { const pl = V2.sgAll.list[+b.dataset.v2plana], li = b.closest('li'); return pl && pl.ch.length === li.querySelectorAll('.tm-chg').length; });
+      return {h: !!h, inFold: !!(h && h.closest('details')), sub: h ? h.nextElementSibling.textContent : '', ks, map, note: (s.querySelector('.sga2-big') ? '' : (h && h.nextElementSibling.nextElementSibling || {}).textContent) || ''}; })()`));
+    ok(r.h && !r.inFold && r.sub === 'Two or more changes at once.' && (r.ks.length ? r.ks.every(k => k >= 2) : /No plan with two or more changes raises the Strength Score \(it’s at \d+\)\./.test(r.note)) && r.map,
+      `AS-4 (Q5 C): "Bigger Plans" open, two or more changes per card (${r.ks.join(',') || r.note}), every Apply mapped to its plan (${r.map})`);
+  // AS-5: shorter card facts on every card: type chips, "X tier N", "Ability @ Item"; the change chips stay in Why? (not on the card)
+    const f = await q.evaluate(() => [...document.querySelectorAll('.np-sheet .sga2 .tm-sug > li')].map(li => { const fa = li.querySelector('.sga2-facts'); if (!fa) return 'no facts';
+      const t = fa.innerText.replace(/\s+/g, ' '); return (fa.querySelector('.np-type') ? '' : 'no type ') + (/\b[SABCD] tier \d+/.test(t) ? '' : 'no tier ') + (/\S @ \S/.test(t) ? '' : 'no set ') + (/(Weak spots|Unresisted|Offense) \d/.test(t) ? 'chips ' : ''); }).filter(Boolean));
+    const n = await q.evaluate(() => document.querySelectorAll('.np-sheet .sga2 .tm-sug > li').length);
+    ok(n > 0 && !f.length, `AS-5 (Q5 C): ${n} cards each show types, tier and Ability @ Item, no change chips outside Why? (${f.slice(0, 3).join(' | ') || 'all good'})`);
+  // AS-6: the list ends with where to find more, once everything is open
+    for (let i = 0; i < 5 && await q.$('.np-sheet [data-v2sgamore]'); i++) { await q.click('.np-sheet [data-v2sgamore]', {timeout: 3000}).catch(() => {}); await q.waitForTimeout(400); }
+    const end = await T(q, '.np-sheet .sga2-end');
+    ok(/^That’s every change the planner found in your box and the best Pokémon to catch\. For more, set Suggest from to Whole Roster above\.$/.test(end), `AS-6 (Q5 C): the end line (${end})`); await c.close(); }
+  // AS-7: the game-plan gap note shows in the sheet too (COV-09's team: nothing in this box closes the gap)
+  { const {q, c} = await openAS({team: ['Garchomp', 'Incineroar', 'Kingambit', 'Sneasler', 'Basculegion', 'Archaludon'], box: ['Garchomp', 'Incineroar', 'Kingambit', 'Sneasler', 'Basculegion', 'Archaludon', 'Azumarill'], pool: 'box'});
+    const r = await q.evaluate(() => window.__ev(`({gap: (V2.plan.plans || {}).gapNote || '', sheet: ((document.querySelector('.np-sheet .sga2 .sg2-gap') || {}).textContent || '')})`));
+    ok(r.gap && r.sheet.includes(r.gap), `AS-7 (Q5 C): the gap note in the sheet (${r.sheet.slice(0, 120) || 'none'}; planner: ${r.gap.slice(0, 60)})`); await c.close(); }
+  // AS-8 (guard, Q5 sub-question A): Apply in the sheet closes it; the Applied … Undo bar waits on My Team
+  { const {q, c} = await openAS({W: 390}); await q.click('.np-sheet .sga2 [data-v2plana="0"]', {timeout: 3000}).catch(() => {}); await q.waitForTimeout(1500);
+    const r = await q.evaluate(() => ({open: !!document.querySelector('.np-sheet'), bar: ((document.querySelector('#main .sg2-undo') || {}).innerText || '').replace(/\s+/g, ' ')}));
+    ok(!r.open && /^Applied .+ Undo$/.test(r.bar), `AS-8 (guard): Apply closes the sheet and My Team shows "${r.bar}"`); await c.close(); }
+  // AS-9: the sheet's height at 390 (screens of 844), as the mock-up's 4.27 (was 6.20); no text outside the sheet, nothing under 13px,
+  //   tap targets 44px, at 320, 390 and 1440, light and dark (guard part passed before)
+  { const bad = []; let scr = null;
+    for (const [W, dark] of [[320, 0], [390, 0], [390, 1], [1440, 0], [1440, 1]]) { const {q, c} = await openAS({W, dark: !!dark});
+      const m = await q.evaluate(() => { const s = document.querySelector('.np-sheet'), sr = s.getBoundingClientRect(), out = [];
+        for (const e of s.querySelectorAll('*')) { const r = e.getBoundingClientRect(); if (!r.width || e.closest('[inert]')) continue; if (r.right > sr.right + 1 || r.left < sr.left - 1) out.push('outside ' + (e.className || e.tagName));
+          const fs = parseFloat(getComputedStyle(e).fontSize); if (fs < 13 && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) out.push('small ' + e.className + ' ' + fs);
+          if (innerWidth < 700 && e.matches('button,a[href],summary') && (r.height < 43.5 || r.width < 43.5)) out.push('tap ' + (e.className || e.tagName) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height)); }
+        return {h: s.scrollHeight, out: [...new Set(out)].slice(0, 4)}; });
+      if (W === 390 && !dark) scr = +(m.h / 844).toFixed(2); m.out.forEach(x => bad.push(`${W}${dark ? ' dark' : ''}: ${x}`)); await c.close(); }
+    ok(scr != null && scr <= 5 && !bad.length, `AS-9 (Q5 C): the sheet is ${scr} phone screens at 390 (mock-up 4.27, before 6.20); ${bad.join(' | ') || 'nothing outside, under 13px or under 44px'}`); } };
+if (process.env.ONLY === 'AS') { await AS(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// ---- AS end
 // ---- MQ end ----
 // ---- BR end (run with the rest just before the browser closes) ----
 // ---- HQ begin: Home answers (Sim, Nov 18 morning questions, docs/rebuild/morning-questions-nov18.md: "recommend for all is good").
@@ -1372,6 +1444,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
 // ---- NPR end ----
 await BR(); /* behaviour review (Nov 18), above */
 await MQ(); /* Sim's Nov 18 answers, above */
+await AS(); /* All Suggestions sheet, option C, above */
 // WebKit pair (Nov 18, docs/rebuild/test-runs/webkit-new-pages-nov18.md): two Safari defects, measured the same way in any engine. This file runs
 // them in Chromium; for Safari's engine the same function (between the wk-pair markers) runs with playwright.webkit, over http (WebKit blocks
 // the fonts on file://). WK-1 the stamp's perforated edge: on its pixels, nothing outside the holes' centre line (Safari drew a ring of loose
