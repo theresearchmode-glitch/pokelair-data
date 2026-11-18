@@ -31,12 +31,41 @@ export const bad = {items: 0};
 export function validItem(it) { const s = String(it || '').trim(); if (!s) return '';
   if (/:\s*$/.test(s) || /Alignment|Ability|Held Item|Nature/i.test(s) || s.length > 30 || (ITEMS.size && !ITEMS.has(s))) { bad.items++; return ''; } return s; }
 
+// ---------- one spelling per item, Ability and move (Nov 18 data audit, docs/rebuild/research/data-integrity-nov17.md, finding 4)
+// Players type their sheets, so the same thing arrives as "Protect", "protect", "Protect " or "Lucarionite-Z" (2% of game sides),
+// which split one set into several features and set protectLow wrongly on 16 decks. Each text is matched case-, space- and
+// punctuation-free against the lists the site already has (data/regmc-items.txt; moves and Abilities from app/src/data/data.js)
+// and replaced by the list's spelling. Mega Stone typos whose holder makes the stone certain are mapped (STONE_TYPO, seen on
+// Limitless sheets Sep-Nov 2026); "No Item" and the like become '' (no item). Anything else is never guessed: it stays as
+// written (spaces trimmed) and is counted in CANON_UNKNOWN, which canonReport() prints. The raw files in data/ are untouched.
+const fold = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+const DATA_JS = (() => { try { return fs.readFileSync('app/src/data/data.js', 'utf8'); } catch (e) { return ''; } })();
+const grabJS = k => { try { const m = DATA_JS.match(new RegExp('const ' + k + '=([\\s\\S]*?);\\n')); return m ? JSON.parse(m[1]) : null; } catch (e) { return null; } };
+const LIST = {i: new Map([...ITEMS].map(x => [fold(x), x])), a: new Map(Object.keys(grabJS('ABIL') || {}).map(x => [fold(x), x])),
+  mv: new Map((grabJS('MOVES') || []).map(x => [fold(x[0]), x[0]]))};
+const STONE_TYPO = {staraptorite: 'Staraptite', dragonitite: 'Dragoninite', dragonitinite: 'Dragoninite', golisopodite: 'Golisopite', venosaurite: 'Venusaurite',
+  raichuitex: 'Raichunite X', raichuitey: 'Raichunite Y', glimmorite: 'Glimmoranite', scovillanite: 'Scovillainite', garchompitite: 'Garchompite', sableyite: 'Sablenite', floetitte: 'Floettite'};
+const NONE = {i: new Set(['m', 'f', 'noitem', 'nohelditem', 'none', 'nothing', 'withoutitem', 'noobject']), a: new Set(['noability', 'none']), mv: new Set()};
+export const CANON_UNKNOWN = {i: new Map(), a: new Map(), mv: new Map()};
+function canon(kind, s, count = true) { if (s == null) return ''; const t = String(s).replace(/\s+/g, ' ').trim(); if (!t) return '';
+  const k = fold(t); if (NONE[kind].has(k)) return ''; if (kind === 'i' && STONE_TYPO[k] && LIST.i.has(fold(STONE_TYPO[k]))) return STONE_TYPO[k];
+  const c = LIST[kind].get(k); if (c) return c; if (count && LIST[kind].size) CANON_UNKNOWN[kind].set(t, (CANON_UNKNOWN[kind].get(t) || 0) + 1); return t; }
+export const canonItem = (s, count) => canon('i', s, count), canonAbility = (s, count) => canon('a', s, count), canonMove = (s, count) => canon('mv', s, count);
+// one Pokémon of a data/t2 sheet ({n, i, a, mv, t, nt}) with its item, Ability and moves in the list spelling
+export const canonSet = m => ({...m, i: canonItem(m.i), a: canonAbility(m.a), mv: Array.isArray(m.mv) ? m.mv.map(x => canonMove(x)) : []});
+export function canonReport(step, log = console.log) { const part = (k, w) => { const m = CANON_UNKNOWN[k], n = [...m.values()].reduce((a, b) => a + b, 0);
+    return n ? `${n} ${w} (${m.size} spellings, e.g. ${[...m].sort((a, b) => b[1] - a[1]).slice(0, 5).map(([x, c]) => `"${x}"${c > 1 ? ' ×' + c : ''}`).join(', ')})` : ''; };
+  const s = [part('i', 'items'), part('a', 'Abilities'), part('mv', 'moves')].filter(Boolean);
+  if (s.length) log(`${step}: kept as written, not on the site's lists: ${s.join('; ')}`); return s.length; }
+
 // ---------- Limitless names -> NastyPlot names (Nov 7: one shared copy; update.mjs, weekly.mjs and events.mjs used to keep
 // three identical copies, so a fix in one could miss the others). key() reads the Mega from the held stone, lmap() the form.
 // A name that matches nothing is recorded in UNKNOWN instead of vanishing silently; reportUnknown() prints a ::warning:: so a
 // new regulation's Pokémon (or a Limitless spelling change) can't drop out of the numbers unnoticed.
 const names = ROSTER, REG = {Hisuian: 'Hisui', Alolan: 'Alola', Galarian: 'Galar', Paldean: 'Paldea'};
-export const lkey = m => { const it = m.item || ''; const z = it.match(/^(.*)ite( [XYZ])?$/); return z && it !== 'Eviolite' ? m.name + '|M' + (z[2] ? z[2].trim() : '') : m.name; };
+// the item is read in its list spelling first (canonItem above), so "raichunite y", "Lucarionite-Z" and "Staraptorite" pick the
+// Mega too (Nov 18 data audit: 14 sheets' stones were missed and the Pokémon counted as its base form)
+export const lkey = m => { const it = canonItem(m.item, false); const z = it.match(/^(.*)ite( [XYZ])?$/); return z && fold(it) !== 'eviolite' ? m.name + '|M' + (z[2] ? z[2].trim() : '') : m.name; };
 export const UNKNOWN = new Map(); let MEGA_MISS = false;
 function lmap0(k) { let [n, mega] = k.split('|'); if (/^Eternal Flower Floette$/.test(n) && mega == null) return 'Floette-Eternal'; n = n.replace(/^Eternal Flower /, '');
   { const r = n.match(/^(Wash|Heat|Frost|Fan|Mow) Rotom$/); if (r) n = 'Rotom-' + r[1]; }
