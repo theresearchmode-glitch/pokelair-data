@@ -68,12 +68,12 @@
 .pr-box0{width:120px;height:72px;margin-bottom:var(--s2);color:var(--pr-kraft)}
 /* the stamp sheet: six across from 1100, four from 700, three on phones (two under 380); blank spaces finish the last row */
 .pr-f{margin:0 0 var(--s6)}
-.pr-sheet{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s6) var(--s5);margin:0;padding:0}
-.pr-blank{display:none;border:2px dashed var(--pr-blank);border-radius:var(--r-s);min-height:120px}
-@media (min-width:1100px){.pr-blank.b6{display:block}}
-@media (min-width:700px) and (max-width:1099.98px){.pr-sheet{grid-template-columns:repeat(4,minmax(0,1fr))}.pr-blank.b4{display:block}}
-@media (min-width:380px) and (max-width:699.98px){.pr-sheet{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s3)}.pr-blank.b3{display:block}}
-@media (max-width:379.98px){.pr-sheet{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.pr-blank.b2{display:block}} /* the smallest phones: two across, so names keep whole words */
+.pr-sheet{--c:var(--pc8,6);--cg:var(--s5);display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s6) var(--cg);margin:0;padding:0}
+.pr-sheet>li{flex:0 0 calc((100% - (var(--c) - 1) * var(--cg)) / var(--c));min-width:0;max-width:220px}
+/* Sim, Nov 18: rows spread evenly (postroom.js picks --pcN per width); no blank spaces, a short last row sits centred */
+@media (min-width:700px) and (max-width:1099.98px){.pr-sheet{--c:var(--pc6,4)}}
+@media (min-width:380px) and (max-width:699.98px){.pr-sheet{--c:var(--pc3,3);--cg:var(--s3);row-gap:var(--s4)}}
+@media (max-width:379.98px){.pr-sheet{--c:var(--pc3,3);--cg:var(--s3);row-gap:var(--s4)}}
 .pr-sw{position:relative;display:grid;filter:drop-shadow(0 1px 1px var(--pr-shadow)) drop-shadow(0 4px 6px var(--pr-shadow-2))}
 .pr-sw:has(.pr-st:focus-visible){outline:3px solid var(--plot);outline-offset:2px}
 .pr-event{--pc:var(--pr-ev);--pc2:var(--pr-ev-2);--pci:var(--pr-ev-ink)}.pr-serial{--pc:var(--pr-se);--pc2:var(--pr-se-2);--pci:var(--pr-se-ink)}

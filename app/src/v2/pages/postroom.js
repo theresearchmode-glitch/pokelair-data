@@ -145,15 +145,16 @@ V2.pages.gifts = {place: 'home', draw() { const E = V2.esc, U = V2.prUi, P = V2.
     ${live.length ? `<div class="pr-parcels${live.length % 2 ? ' odd' : ''}" style="--prw-row:${Math.max(1, ...live.map(g => V2.prEm(g.code)))}">${live.map(g => V2.prParcel(g)).join('')}${V2.prHow()}</div>` : V2.prShelf()}</section>`;
   const n = {all: past.length, mon: past.filter(g => g.isMon).length, item: past.filter(g => !g.isMon).length};
   const list = U.f === 'mon' ? past.filter(g => g.isMon) : U.f === 'item' ? past.filter(g => !g.isMon) : past, cap = 12, shown = U.all ? list : list.slice(0, cap);
-  // blank stamp spaces finish the last row at every width (6, 4, 3 or 2 across): a blank shows only where its row needs it
-  const pad = c => (c - shown.length % c) % c, bl = Math.max(pad(6), pad(4), pad(3), pad(2));
-  const blanks = shown.length ? Array.from({length: bl}, (_, i) => `<li class="pr-blank${i < pad(6) ? ' b6' : ''}${i < pad(4) ? ' b4' : ''}${i < pad(3) ? ' b3' : ''}${i < pad(2) ? ' b2' : ''}" aria-hidden="true"></li>`).join('') : '';
+  // Sim, Nov 18: no empty spaces and no lone stamp row. For each width's most stamps per row (8 desktop, 6 tablet, 4 phone,
+  // 3 smallest phones) take the fewest rows, then spread the stamps evenly over them (7 stamps: one row of 7; 4 + 3 on a phone)
+  const per = M => { const k = shown.length || 1, r = Math.ceil(k / M); return Math.ceil(k / r); };
+  const cols = `--pc8:${per(8)};--pc6:${per(6)};--pc4:${per(4)};--pc3:${per(3)}`;
   const mons = past.filter(g => g.mon), sets = mons.filter(g => g.nature || g.moves.length).length; /* the line promises only what POST holds (audit W14) */
   const chips = `<div class="ev-f pr-f" role="group" aria-label="Which stamps">${[['all', 'All'], ['mon', 'Pokémon'], ['item', 'Items']].map(([k, t]) => `<button type="button" class="np-chip ev-fc" data-prf="${k}" aria-pressed="${U.f === k}">${t}<small>${n[k]}</small></button>`).join('')}</div>`;
   const more = list.length > cap ? `<button type="button" class="np-link pr-more" data-prmore aria-expanded="${U.all}">${U.all ? 'Show Fewer Stamps' : `Show All ${list.length} Stamps ›`}</button>` : '';
   const note = `<p class="fine pr-note">${P.checked ? `Gift list checked ${E(V2.prDate(V2.prDayOf(P.checked), {month: 'short', day: 'numeric'}))}. ` : ''}Dates are each campaign's listed end times, shown in your time zone. A code can stop working early.</p>`;
   const sheet = `<section class="pr-stamps" aria-labelledby="prStH"><header class="pr-sh"><h2 class="u" id="prStH">The Stamp Sheet</h2><p>Every gift so far gets a stamp, postmarked the day it ended. ${!mons.length ? '' : sets === mons.length ? 'Tap a Pokémon for the nature and moves it came with.' : sets ? 'Tap a Pokémon for its page, or for the nature and moves it came with where a source lists them.' : 'Tap a Pokémon to open its page.'}</p></header>
-    ${past.length ? chips : ''}${shown.length ? `<ul class="pr-sheet">${shown.map(V2.prStamp).join('')}${blanks}</ul>` : `<p class="pr-nost">${past.length ? 'No stamps of this kind yet.' : 'No stamps yet. Each gift gets one the day it ends.'}</p>`}${more}${note}</section>`;
+    ${past.length ? chips : ''}${shown.length ? `<ul class="pr-sheet" style="${cols}">${shown.map(V2.prStamp).join('')}</ul>` : `<p class="pr-nost">${past.length ? 'No stamps of this kind yet.' : 'No stamps yet. Each gift gets one the day it ends.'}</p>`}${more}${note}</section>`;
   return `<div class="ra pr">${head}${counter}${sheet}</div>`; }};
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-prcopy],[data-prf],[data-prmore],[data-prset]'); if (!b) return; const d = b.dataset;
   if (d.prcopy) { const c = d.prcopy; V2.copy(c).then(ok => V2.toast(ok ? `Copied ${V2.esc(c)}` : 'Could not copy here: your browser blocked it. Select the code on the label instead.')); /* the shared copy with its fallback, as Build's Copy for Showdown */ return; }
