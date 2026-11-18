@@ -262,6 +262,19 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
       const taps = [...el.querySelectorAll('.np-link')].map(a => { const R = a.getBoundingClientRect(), cx = R.left + R.width / 2, cy = R.top + R.height / 2, h = y => { const t = document.elementFromPoint(cx, y); return t && (t === a || a.contains(t)); }; let u = 0, d = 0; while (u < 40 && h(cy - u - 1)) u++; while (d < 40 && h(cy + d + 1)) d++; return u + d + 1; });
       return [w, gaps.length ? Math.max(...gaps) - Math.min(...gaps) : 0, Math.min(...taps)]; }, w)); }
   await ictx.close(); ok(ig.every(x => x[1] !== 'none' && x[1] <= 2 && x[2] >= 40), `Audit v199 #22 (Nov 17): My Team's intro lines are evenly spaced (the links' tap areas don't stretch a line) and its links stay easy to tap (${ig.map(x => x[0] + ': spread ' + x[1] + ', tap ' + x[2]).join('; ')})`); }
+// SUGG-09 again (Nov 18): Suggestions kept its place only for one frame after Apply; on a slow phone the parts above redraw later
+// and the page still jumped (the behaviour test failed under load). A late 120px change above Suggestions must not move it.
+{ const q = await b.newPage({viewport: {width: 390, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.addStyleTag({content: 'html,body{overflow-anchor:none}'}); // as a browser without scroll anchoring
+  await q.evaluate(() => window.__ev(`(() => { const T = ['Incineroar','Garchomp','Sneasler','Kingambit','Basculegion','Sinistcha']; S.slots.forEach((s, i) => { s.n = T[i]; }); persist(); V2.redraw(); })()`));
+  await q.waitForSelector('#tm-sg [data-v2plan]', {timeout: 20000}).catch(() => {});
+  const y0 = await q.evaluate(() => { const s = document.querySelector('#tm-sg'), a = s && s.querySelector('[data-v2plan]'); if (!a) return null; scrollBy(0, a.getBoundingClientRect().top - innerHeight * 2 / 3); return Math.round(s.getBoundingClientRect().top); });
+  const a = await q.$('#tm-sg [data-v2plan]'); let y1 = null;
+  if (y0 != null && a) { await a.click(); await q.waitForTimeout(700);
+    await q.evaluate(() => { const d = document.createElement('div'); d.style.height = '120px'; d.id = 'zz-late'; const m = document.querySelector('#main'); m.insertBefore(d, m.firstChild); });
+    await q.waitForTimeout(1200); y1 = await q.evaluate(() => { const s = document.querySelector('#tm-sg'); return s ? Math.round(s.getBoundingClientRect().top) : null; }); }
+  ok(y0 != null && y1 != null && Math.abs(y1 - y0) <= 4, `SUGG-09 (Nov 18): after Apply, Suggestions stays put when the parts above change height later (top ${y0} -> ${y1})`);
+  await q.close(); }
 { const sp = []; for (const [w, r] of [[390, 'build'], [390, 'speed'], [1280, 'calc'], [1280, 'battle'], [390, 'team']]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1800);
     sp.push(await p.evaluate(() => { const im = [...document.querySelectorAll('#main img[src*=".webp"]')].filter(i => i.getClientRects().length); const sm = im.filter(i => i.getAttribute('src').includes('-s/') || i.dataset.full); /* GitHub (Nov 17): no sprite files beside the test page, so a small file can already have fallen back to the big one (V2.artFix sets data-full) */
       const big = sm.filter(i => { const m = i.closest('.np-mon'), iw = m ? parseFloat(((m.getAttribute('style') || '').match(/--iw:([\d.]+)px/) || [])[1]) : NaN; return m && !(iw <= 80); }); return [sm.length, big.length]; })); }

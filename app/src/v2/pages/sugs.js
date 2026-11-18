@@ -137,7 +137,12 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   // known-bug SUGG-09 (Nov 17): the parts above Suggestions change height on the redraw, so Suggestions jumped about 120px; keep it where it was
   const sec = !fromAll && b.closest('section'), id = sec && sec.id, y0 = sec ? sec.getBoundingClientRect().top : null;
   if (fromAll) V2.closeSheet(true); applyPlan(pl); render(); V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`);
-  if (id) { const keep = () => { const el = document.getElementById(id); if (el) { const d = el.getBoundingClientRect().top - y0; if (Math.abs(d) > 1) scrollBy(0, d); } }; keep(); requestAnimationFrame(keep); } });
+  // Nov 18: on a slow phone the parts above redraw later than the next frame, so the place is held for up to 5 s, and let go the
+  // moment the player scrolls, taps or presses a key (their own move always wins)
+  if (id) { const t0 = performance.now(), ev = ['wheel', 'touchstart', 'pointerdown', 'keydown']; let on = true; const off = () => { on = false; ev.forEach(n => removeEventListener(n, off, true)); };
+    ev.forEach(n => addEventListener(n, off, {capture: true, passive: true}));
+    const keep = () => { if (!on) return; const el = document.getElementById(id); if (el) { const d = el.getBoundingClientRect().top - y0; if (Math.abs(d) > 1) scrollBy(0, d); }
+      if (performance.now() - t0 < 5000) requestAnimationFrame(keep); else off(); }; keep(); } });
 
 // ---------- Problems and Team Checks (in the Team Checks section): a fold, closed until opened, remembered per device ----------
 // Today's rows (problemRows), Quick add picks (quickList / quickInfo), the team checks (proChecks, ckState, CK_TXT) and the verdict
