@@ -46,6 +46,11 @@
   .np-bar a{display:grid;place-items:center;min-height:56px;font:600 var(--t13)/1 var(--b);color:var(--ink-2)}
   .np-bar a[aria-current="page"]{color:var(--ink)}
   .np-bar a[aria-current="page"]::before{content:"";width:22px;height:5px;margin-bottom:-12px;background:var(--plot);transform:skewX(var(--slant))}
+  /* audit v199 #20 (Sim chose B, Nov 17, approved mock-up audit-20-phone-bar.png): the mark no longer takes its own grid row (that
+     pushed the current page's word 10.8px below the other four); it floats just above the word, 22px wide as before, so all five
+     words sit on one line. Its bottom edge is 12px above the bar's middle (the word's top is 6.5px above it) */
+  .np-bar a{position:relative}
+  .np-bar a[aria-current="page"]::before{position:absolute;top:calc(50% - 17px);left:0;right:0;margin:0 auto}
   .np-foot{display:block;padding-bottom:calc(var(--s16) + 24px)}.np-foot>svg{display:block;margin-bottom:var(--s2)}.np-foot nav{margin:var(--s3) 0 0;flex-wrap:wrap;gap:var(--s4)}}
 @media (max-width:359.98px){.np-foot nav{flex-direction:column;gap:0}}
 /* Sim, Nov 11 (iPhone): no sideways scroll anywhere, whatever a page holds (clip keeps the sticky header working) */

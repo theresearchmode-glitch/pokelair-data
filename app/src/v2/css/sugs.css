@@ -197,6 +197,11 @@
 /* Type Chart picks under 380px (Nov 16, re-verify #8: "Fighting" cut by the slant at 320): narrower letters (as below 360) and a 5px slant */@media (max-width:379.98px){.tc-tp{font-stretch:75%;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}}
 /* Usage / Sets spotlight on narrow phones (Nov 16, re-verify #12: "37.7%51.8%", sprite over the rating line at 320): each fact keeps its width and wraps instead of overrunning; the sprite fits its column */@media (max-width:419.98px){.gs-facts{grid-template-columns:repeat(3,min-content);column-gap:var(--s3)}}@media (max-width:379.98px){.gs-plate .np-mon{--iw:96px}.gs-plate{min-height:150px}}
 @media (max-width:359.98px){.gs-facts{column-gap:var(--s2)}}
+/* audit v199 #14 A (Nov 18): with every label on one line from 360 up (pages.css), the three facts need room. Measured: they ran up
+   to 15px past the hero at 360 and 5px at 375 (Ratings), and "Base Speed" 1.6px past it at 420. So 360-389 use the narrow-phone
+   gap, 360-374 the narrow-phone number size (as under 360), and from 420 no column is narrower than its own words; 390-419 as drawn */
+@media (min-width:360px) and (max-width:389.98px){.gs-facts{column-gap:var(--s2)}}@media (min-width:360px) and (max-width:374.98px){.gs-facts b{font-size:var(--t15)}}
+@media (min-width:420px) and (max-width:699.98px){.gs-facts{grid-template-columns:repeat(3,minmax(min-content,1fr))}}
 /* Events tickets under 340 (Nov 16, re-verify #1: long one-word names crossed the perforation by up to 12px at 320): the date stub gives up 13px, no word breaks (Sim Q17) */@media (max-width:339.98px){.tk:not(.big){grid-template-columns:56px minmax(0,1fr) 72px}}
 /* Home corner rows (Nov 16, re-verify #13: at 320 the item dropped lower in short rows, "Lead" broke after a dangling dot): name and item sit together, centred; on narrow phones "Lead" takes its own line without the dot */.ff{grid-template-rows:auto auto;align-content:center}.ff .ff-sep{display:none}.ff .ff-ld{display:block} /* audit v199 #6 (Nov 17): at every width, not only under 420 ('Lead' was cut by the slanted edge at 900 and 1280, and the two lead tiles didn't line up) */
 .ev-counts{display:grid;gap:var(--s3);justify-items:start;margin-top:var(--s6)}

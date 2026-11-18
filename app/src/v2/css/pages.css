@@ -1963,6 +1963,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:700px) and (max-width:899.98px){.gs-ctl .ra-filt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:699.98px){.gs-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s2)}.gs-facts b{font-size:var(--t17)}}
 @media (max-width:699.98px){.gs-facts{align-items:end}}
+/* audit v199 #14 (Sim chose A, Nov 17, approved mock-up audit-14-hero-stats-390.png): the share reads "Of teams" and, from 360 up,
+   every label keeps one line, so the three labels and the three numbers each sit level; under 360 a label may wrap again */
+@media (min-width:360px) and (max-width:699.98px){.gs-facts span{white-space:nowrap}}
 @media (min-width:700px){.gs-spot{grid-template-columns:minmax(220px,4fr) minmax(0,7fr)}.gs-plate .np-mon{--iw:200px}}.gs-sinfo{position:relative}
 /* ---------- Meta > Usage: The Podium (Grandstand brief, section 4) ---------- */
 .us .us-src{flex:1 1 100%;margin:0;color:var(--ink-2)}

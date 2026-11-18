@@ -65,7 +65,7 @@ await p.evaluate(() => document.querySelector('#main #tm-set [data-v2edit]') && 
 const dd = await p.evaluate(() => { const s = document.querySelector('.np-sheet .ed-sel select'); if (!s) return 'no dropdown'; const c = getComputedStyle(s), a = getComputedStyle(s.parentElement, '::after');
   return {app: c.appearance || c.webkitAppearance, arrow: a.content !== 'none' && a.content !== 'normal' && parseFloat(a.width) > 0}; });
 ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our own arrow, not the device's box (${JSON.stringify(dd)})`);
-{ const lab = {}; for (const [r, re] of [['meta', /On tournament teams/], ['weekly', /% of this week's tournament teams/], ['team-empty', /% of ladder teams/]]) { await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1800); lab[r] = re.test(await p.evaluate(() => document.querySelector('#main').innerText)); }
+{ const lab = {}; for (const [r, re] of [['meta', /On (?:[\d.]+% of )?tournament teams/ /* Q2 A (Nov 17): the hero shows "Of teams"; its spoken label keeps the base */], ['weekly', /% of this week's tournament teams/], ['team-empty', /% of ladder teams/]]) { await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1800); lab[r] = re.test(await p.evaluate(() => document.querySelector('#main').innerText)); }
   ok(Object.values(lab).every(Boolean), `Player review 1a-c (Nov 17): each share names its base (tournament / this week's tournament / ladder teams) (${JSON.stringify(lab)})`); }
 { const mv = await p.evaluate(() => window.__ev(`(() => { let n = 0, bad = []; for (const p of ROSTER) { let h = ''; try { h = V2.pkBuild(p); } catch (e) { continue; } const d = document.createElement('div'); d.innerHTML = h;
     const us = [...d.querySelectorAll('.pk-usual li')].filter(li => li.querySelector('small')).map(li => li.querySelector('b').textContent.trim()); const L = [...d.querySelectorAll('.pk-list')].find(x => /Moves/.test(x.querySelector('h3') ? x.querySelector('h3').textContent : ''));
@@ -415,5 +415,25 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
         emp.top >= btn.bottom && emp.right <= log.left + 1, getComputedStyle(q('.bt-log')).borderLeftWidth, fit]; }, w)); await q.close(); }
   const bad = bw.filter(x => x[0] < 1100 ? x[1] !== 'stacked' || !x[2] : (([w, l, gap, even, dt, ev, under, rule, fit]) => l !== 2 || gap < 0 || even > 1 || dt > 2 || ev > 2 || !under || rule !== '1px' || !fit)(x));
   ok(!bad.length, `Audit v199 #5 Battle A (Sim, Nov 17): before their six is in, from 1100 up the headline is 2 lines, Their Six | Your Games are two even columns with a thin rule between (headings level), "Everything below..." under Enter, nothing past the edge; under 1100 stacked (${bw.map(x => x[0] + ': ' + x.slice(1).join('/')).join('; ')})`); }
+// Sim Q2 A (Nov 17, audit v199 #14): the Ratings / Usage / Popular Sets heroes' share label reads "Of teams" (spoken label keeps the
+// base); from 360 up every label keeps one line, so the labels sit level and no fact runs past the hero
+{ const ctx = await b.newContext({viewport: {width: 390, height: 844}, hasTouch: true, isMobile: true}); const q = await ctx.newPage(); const res = {};
+  for (const w of [360, 375, 390, 412, 420]) { await q.setViewportSize({width: w, height: 844}); for (const r of ['meta', 'usage', 'sets']) { await q.goto('file://' + PAGE + '#' + r); await q.waitForTimeout(1500);
+    res[r + '@' + w] = await q.evaluate(() => { const f = document.querySelector('#main .gs-facts'); if (!f) return 'no hero'; const hb = f.closest('.gs-spot').getBoundingClientRect(), rg = document.createRange();
+      const ps = [...f.querySelectorAll(':scope > p')].map(p => { const s = [...p.querySelectorAll('span')].find(x => !x.classList.contains('vh')), v = p.querySelector('b'); rg.selectNodeContents(s); const a = rg.getBoundingClientRect(); rg.selectNodeContents(v); const c = rg.getBoundingClientRect();
+        return {t: s.textContent.trim(), top: Math.round(s.getBoundingClientRect().top), lines: Math.round(s.getBoundingClientRect().height / parseFloat(getComputedStyle(s).lineHeight)), right: Math.max(a.right, c.right)}; });
+      const share = ps.find(x => /teams/i.test(x.t)), spoken = (f.querySelector('.vh') || {}).textContent || '';
+      return share && share.t === 'Of teams' && /of .*teams/.test(spoken) && ps.every(x => x.lines === 1 && x.top === ps[0].top && x.right <= hb.right + 0.5) ? 'ok' : ps.map(x => `${x.t}:${x.lines}L@${x.top}${x.right > hb.right + 0.5 ? ' past the hero' : ''}`).join('/') + (spoken ? '' : ' (no spoken label)'); }); } }
+  const bad = Object.entries(res).filter(([, v]) => v !== 'ok');
+  ok(!bad.length, `Sim Q2 A (Nov 17): the heroes' share reads "Of teams", every label on one line and level, inside the hero, 360-420 (${bad.length ? bad.slice(0, 4).map(([k, v]) => k + ' ' + v).join('; ') : '15 of 15 ok'})`);
+// Sim Q5 B (Nov 17, audit v199 #20): the phone bar's five words sit on one line (the current page's word was 10.8px lower); its
+// blue mark stays just above its word, and every tap target stays 44px or taller
+  const bar = {}; for (const w of [320, 340, 360, 390, 412, 600, 699]) { await q.setViewportSize({width: w, height: 844}); for (const r of ['battle', 'meta']) { await q.goto('file://' + PAGE + '#' + r); await q.waitForTimeout(900);
+    bar[r + '@' + w] = await q.evaluate(() => { const as = [...document.querySelectorAll('.np-bar a')]; if (!as.length || !as[0].getClientRects().length) return 'no bar'; const rg = document.createRange();
+      const m = as.map(a => { const t = [...a.childNodes].find(n => n.nodeType === 3 && n.textContent.trim()); rg.selectNodeContents(t || a); const tb = rg.getBoundingClientRect(), ab = a.getBoundingClientRect(); return {top: tb.top, bottom: tb.bottom, h: ab.height, cur: a.getAttribute('aria-current') === 'page', at: ab.top}; });
+      const c = m.find(x => x.cur), cs = c && getComputedStyle(as[m.indexOf(c)], '::before'), mb = c ? c.at + parseFloat(cs.top) + parseFloat(cs.height) : NaN, spread = Math.max(...m.map(x => x.top)) - Math.min(...m.map(x => x.top));
+      return spread < 0.5 && m.every(x => x.h >= 44) && c && mb <= c.top && c.top - mb <= 8 ? 'ok' : `words ${spread.toFixed(1)}px apart, mark gap ${c ? (c.top - mb).toFixed(1) : '-'}, tap ${Math.min(...m.map(x => x.h)).toFixed(0)}px`; }); } }
+  const bb = Object.entries(bar).filter(([, v]) => v !== 'ok');
+  ok(!bb.length, `Sim Q5 B (Nov 17): the phone bar's five words sit on one line with the mark just above the current one, 320-699 (${bb.length ? bb.slice(0, 3).map(([k, v]) => k + ' ' + v).join('; ') : '14 of 14 ok'})`); await ctx.close(); }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

@@ -26,6 +26,9 @@ V2.raRow = x => { const E = V2.esc, p = x.p, r = x.r, k = lairRank(p), N = V2.ra
     <span class="ra-bar" aria-hidden="true"><i style="width:${RS(r.total)}%"></i></span><span class="ra-sc u"${bandAt(r.total)}>${RS(r.total)}${unsure ? '<small title="Few games: an estimate">?</small>' : ''}</span>
     <span class="ra-ut">${N.u != null ? `${E(V2.raPct(N.u))}` : '–'}</span><span class="ra-wr">${N.w != null ? `<b>${E(winFmt(N.w))}</b><small>${E(V2.raGames(N.g))}</small>` : '<b>–</b><small>too few games</small>'}</span></button>`; };
 V2.raPct = v => (+v).toFixed(1) + '%';
+// audit v199 #14 (Sim chose A, Nov 17): the heroes' share fact reads "Of teams", so the three labels keep one line on phones;
+// the spoken label stays complete ("On 37.7% of tournament teams"); the page still names its base (Ratings kicker, Usage chips)
+V2.gsShare = (v, base) => { const E = V2.esc; return `<p><span class="vh">${v != null ? `On ${E(v)} of ${E(base)} teams` : `Share of ${E(base)} teams: no data yet`}</span><span aria-hidden="true">Of teams</span><b class="u" aria-hidden="true">${v != null ? E(v) : '–'}</b></p>`; };
 // The Grandstand (Sim's pick, Nov 14; brief docs/rebuild/mocks/meta-grandstand/BRIEF.md): every Pokémon stands on a bench in its tier,
 // bigger in higher tiers. Rows per width (brief section 2): desktop up to 12 across (two rows at most, F one), iPad 6 (three rows at most), phone 4 (5 when that
 // leaves no lone slot), two rows at most (Sim, Nov 14, Q1 B; D two, F one); a shorter last row is centred; more than fits = "See all N ›" (remembered).
@@ -51,7 +54,7 @@ V2.raSpot = n => { const E = V2.esc, U = V2.raUi, megas = !!U.f.mega && !V2.raFi
   return `<div class="gs-spot ra-spot" style="--ta:var(--ty-${p.t[0]});--tb:var(--ty-${p.t[1] || p.t[0]})"><div class="gs-plate">${V2.mon(p.n, {bare: true})}</div>
     <div class="gs-sinfo"><p class="gs-tag u">${E(tag)}</p><h2 class="u">${V2.nameHtml(p.d)}</h2><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
       <p class="gs-big"><b class="u">${RS(r.total)}</b><span><i class="u">${T.k} tier</i><small>${E2(T.d)}</small></span></p>
-      <div class="gs-facts"><p><span>On tournament teams</span><b class="u">${N.u != null ? E(V2.raPct(N.u)) : '–'}</b></p><p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div>
+      <div class="gs-facts">${V2.gsShare(N.u != null ? V2.raPct(N.u) : null, 'tournament')}<p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div>
       <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Pokémon Page</span></button><button type="button" class="np-btn2" data-hmaround="${E(p.n)}"><span>Build Around It</span></button></div>
       ${mine ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : ''}</div></div>`; };
 // the stand shows everyone, the Megas view and No Megas; search, types, hidden gems and the box keep the list until Sim has seen them (brief section 7)

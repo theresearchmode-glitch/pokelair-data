@@ -21,7 +21,7 @@ V2.stSpot = (p, mine) => { const E = V2.esc, x = lairRows().find(y => y.p.n === 
   return `<div class="gs-spot ra-spot" style="--ta:var(--ty-${p.t[0]});--tb:var(--ty-${p.t[1] || p.t[0]})"><div class="gs-plate">${V2.mon(p.n, {bare: true})}</div>
     <div class="gs-sinfo"><p class="gs-tag u">${mine ? 'On your team' : k ? `#${k.rank} rated` : 'Looked up'}</p><h2 class="u">${V2.nameHtml(p.d)}</h2><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
       ${T ? `<p class="gs-big"><b class="u">${RS(x.r.total)}</b><span><i class="u tier-tag" style="--tc:var(--tier-${T.k.toLowerCase()})">${T.k} tier</i><small class="st-pill">Rated ${RS(x.r.total)}${k ? `, #${k.rank} of ${k.of}` : ''}</small></span></p>` : ''}
-      <div class="gs-facts"><p><span>On tournament teams</span><b class="u">${N.u != null ? E(V2.raPct(N.u)) : '–'}</b></p><p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div>
+      <div class="gs-facts">${V2.gsShare(N.u != null ? V2.raPct(N.u) : null, 'tournament')}<p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div>
       <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Pokémon Page</span></button>${st === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${E(p.n)}" aria-label="Add ${E(p.d)} to My Team"><span>Add to My Team</span></button>` : `<button type="button" class="np-btn2" data-hmaround="${E(p.n)}"><span>Build Around It</span></button>`}</div></div></div>`; };
 
 // pr-4c (Nov 17): the 3 most used stat-point spreads with their share. Only the Showdown ladder (Smogon's 1630+ file, already in
