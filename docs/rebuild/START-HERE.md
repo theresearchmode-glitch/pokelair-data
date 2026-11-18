@@ -22,6 +22,14 @@ the newer file wins, and you tell Sim about the difference.
 4. Reply to Sim with: (a) our rules in your own words, (b) how executive authority works, (c) what is in progress and what is waiting
    on her (section 5). Sim asked for this read-back so she can check you understood before she gives you authority.
 5. Set up the scheduled reminders again (section 8). Reminders made by the old chat fire into the OLD chat, not yours.
+6. **Give yourself a name** (Sim's idea, Nov 18: every chat that works on NastyPlot is a member of her development team). Pick one,
+   tell Sim, add yourself to the team roster below, and sign your last message to her with it. Ask the chat after you to do the same.
+
+### The team (every Claude chat that has worked on NastyPlot)
+| Name | Chat | What it did |
+|---|---|---|
+| (unnamed) | earlier chats, up to Nov 17 | the data pipeline, the Strength Score, today's live site, the redesign mock-ups, the rebuild up to the Preview |
+| **Tempo** | the Nov 17-18 rebuild chat (session_01YGeTVQdFPaKNkn33jSEpxs) | the Stampede Home, Mystery Gifts and News pages, All Suggestions C, Base Stats on theme, the Day/Night/Auto theme, the sealed check, the rule-holes sweep, the live-data audits, the merge plan, and this handover. Named for the pace Sim kept: steady, every 45 minutes. |
 
 Never start work Sim hasn't asked for or that the rules don't cover. Never delete a project, file history, artifact or branch
 without Sim's explicit yes.
