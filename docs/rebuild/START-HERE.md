@@ -250,7 +250,7 @@ See Appendix A, "Balance patch on Wed Dec 2, 2026". Plans page step "patch-dec2"
 | Preview build + privacy | `S=<scratch> bash docs/rebuild/preview-kit/pubprep.sh` |
 | New-site checks | `PAGE=<page> node app/test/v2-minors.mjs` (`ONLY=HQ` / `AS` / `BR` for one block) |
 | Behaviour tests | `PAGE=<page> ADAPTER=v2 node app/test/behaviour/run.mjs <group>` |
-| Daily model steps | `node model.mjs && node six.mjs && node ctr.mjs && node model-guard.mjs && node leads.mjs` (all five, always; doing only the first dropped data on Nov 18) |
+| Daily model steps | `node model.mjs && node six.mjs && node ctr.mjs && node model-guard.mjs && node leads.mjs && node split-docs.mjs` (all six, always: only the first dropped data on Nov 18, and without split-docs the live page reads the old parts in out/split/) |
 | Main's checks | every `run:` line in `.github/workflows/test.yml` |
 | Walk-forward scoreboard | `node experiments/split-scoreboard.mjs ...` (never `--sealed`) |
 
