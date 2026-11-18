@@ -26,9 +26,11 @@ log use `bash docs/rebuild/log-decision.sh "..."`, which stamps the entry with t
 Each design question carries its picture(s) in the same message, right next to it; never "see the picture above".
 If Sim replies but skips a question, ask it again in the next message with its picture(s) again (Sim, Nov 12, 8:23 PM).
 
-## TOP PRIORITY: the Rebuild Checklist is always up to date (Sim, Nov 12, 11:20 PM): docs/rebuild/RULES.md section 00d
-https://claude.ai/artifact/E99Mux9sZxxBuvFXEsKW1V (guide: docs/rebuild/checklist.md). Update it in the same message as any step change;
-purple "unsure" whenever not certain; every missing feature is an open item; a page is Built only when all its features are found.
+## ONE document for the rebuild: the Plans page (Sim, Nov 18; replaces the Rebuild Checklist)
+Sim, Nov 18: "i want to be using 1 document not 2". The Plans page (https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ, source
+docs/foundation-plan.html) is the single place to follow the rebuild: Step 1 opens with "Every page, where it stands" (the old
+Rebuild Checklist, merged), then what is left, then Reg M-D, the Strength Score, the launch and Ideas. Keep it current (every 45 min
+to 1 hour at most). The old Rebuild Checklist page (E99Mux9sZxxBuvFXEsKW1V) only points to Plans now; its database is kept as history.
 
 ## Every recommendation comes with a short reason (Sim, Nov 12, 8:55 PM): docs/rebuild/RULES.md section 00c
 One quick line in plain words saying why, right next to each recommendation.
