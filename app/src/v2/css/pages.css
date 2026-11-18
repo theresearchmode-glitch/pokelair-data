@@ -3015,11 +3015,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:389.98px){.tk:not(.big) .tk-name{font-size:var(--t13);font-stretch:88%;overflow-wrap:break-word}} /* Sim Q17 (Nov 15): under 390 no word breaks: smaller name in the approved 88% letters (moving the winner down would shrink six sprites to ~26 px) */
 @media (max-width:359.98px){.tk:not(.big) .tk-hero{width:56px}.tk:not(.big) .tk-hero .np-mon{--iw:56px}.tk:not(.big) .tk-mid{padding-right:var(--s2)}} /* Q17 at 320-359: room for "TOURNAMENT" (it reached 17 px into the stub) */
 @media (max-width:339.98px){.tk:not(.big) .tk-mid{padding-left:var(--s2)}}
-/* Sim Q2/Q14 (Nov 15): before their six is in, wide screens (1366+; at 1280 the narrower headline made the page taller, measured) put Your Games in the empty right half beside the headline */
-@media (min-width:1366px){.bt2.bt-noopp{display:grid;grid-template-columns:minmax(0,1fr) minmax(360px,440px);column-gap:var(--s10);align-items:start}
-  .bt2.bt-noopp>*{grid-column:1/-1}.bt2.bt-noopp>.bt-head{grid-column:1;grid-row:2}.bt2.bt-noopp>.bt-body{grid-column:1;grid-row:3}
-  .bt2.bt-noopp>.bt-log{grid-column:2;grid-row:2/span 2;align-self:center}}
-@media (min-width:1366px){.bt2.bt-noopp>.bt-log{grid-template-columns:minmax(0,1fr);gap:var(--s4)}.bt2.bt-noopp>.bt-log .bt-lacts{justify-content:flex-start}} /* in the right column, Your Games stacks: words, then its buttons */
+/* Audit v199 #5 Battle, Option A (Sim, Nov 17, recommended; replaces the 1366+ rule of Sim Q2/Q14, Nov 15): before their six is in, from 1100 up
+   the headline runs full width (2 lines); under it Their Six | Your Games as two even columns with a thin rule between, and
+   "Everything below fills in..." under Enter Their Six. Tab order follows: Enter Their Six, then Your Games, then Your Six. */
+@media (min-width:1100px){.bt2.bt-noopp{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto auto auto 1fr;align-items:start} /* row 4 (1fr) takes any extra height of a long Your Games, so "Everything below..." stays right under Enter */
+  .bt2.bt-noopp>*{grid-column:1/-1}.bt2.bt-noopp>.bt-head{grid-row:2}
+  .bt2.bt-noopp>.bt-body{grid-column:1;grid-row:3;padding-right:var(--s10)}.bt2.bt-noopp>.bt-empty{grid-column:1;grid-row:4;padding-right:var(--s10)}
+  .bt2.bt-noopp>.bt-log{grid-column:2;grid-row:3/span 2;align-self:stretch;align-content:start;grid-template-columns:minmax(0,1fr);gap:var(--s4);margin-top:var(--s6);padding:0 0 0 var(--s10);border-left:1px solid var(--rule)}
+  .bt2.bt-noopp>.bt-log .bt-lacts{justify-content:flex-start}} /* in the right column, Your Games stacks: words, then its links */
 /* How We Calculate, the working inside a tile (Nov 15): today's text and classes, in the new site's plain type */
 .inf-work{padding:0 var(--s5) var(--s6);font:400 var(--t15)/1.5 var(--b);color:var(--ink)}.inf-work p{margin:0 0 var(--s3);padding:0}.inf-work b{font-weight:700}
 .inf-work ul,.inf-work ol{margin:0 0 var(--s3);padding-left:var(--s5)}.inf-work li{margin:0 0 var(--s2)}

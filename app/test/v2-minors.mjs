@@ -379,5 +379,15 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
       xr.push(`${touch ? 390 : 1280} ${prep || r}: ${bad.length ? bad.join(', ') : 'ok ' + s1.w + 'x' + s1.h}`); }
     await xc.close(); }
   ok(xr.every(x => / ok /.test(x)), `X-05 (Nov 18): the site's own × in search boxes (Build around, Cores, Search, Winning Teams, Meta; phone tap and mouse): hidden when empty, a 44px tap, the browser's own × hidden, the box no taller; one tap empties the box, keeps focus (keyboard up) and the list goes back (${xr.join('; ')})`); }
+// Audit v199 #5 (Sim, Nov 17, 7:52 PM, option A for both): fill the empty desktop halves from 1100 up; under 1100 the stacked layout stays
+{ const bw = []; for (const w of [1024, 1099, 1100, 1150, 1180, 1220, 1280, 1339, 1366, 1440, 1500, 1600, 1920, 2560]) { const q = await b.newPage({viewport: {width: w, height: 900}}); await q.goto('file://' + PAGE + '#battle'); await q.waitForTimeout(1800);
+    bw.push(await q.evaluate(w => { const q = s => document.querySelector(s), R = s => q(s).getBoundingClientRect(); if (!q('.bt2.bt-noopp') || !q('.bt-log') || !q('.bt-empty')) return [w, 'no empty Battle'];
+      const h1 = q('.bt-head h1'), lines = Math.round(h1.getBoundingClientRect().height / parseFloat(getComputedStyle(h1).lineHeight)), body = R('.bt-body'), log = R('.bt-log'), lgl = R('.bt-lgl'), emp = R('.bt-empty'), btn = R('.bt-theirs .bt-acts');
+      const fit = document.documentElement.scrollWidth <= innerWidth;
+      if (w < 1100) return [w, log.top >= body.bottom ? 'stacked' : 'beside', fit];
+      return [w, lines, Math.round(log.left - body.right), Math.round(Math.abs(body.width - log.width)), Math.round(Math.abs(R('.bt-theirs .bt-lab').top - R('.bt-lgl h2').top)), Math.round(Math.abs(body.width - parseFloat(getComputedStyle(q('.bt-body')).paddingRight) - lgl.width)),
+        emp.top >= btn.bottom && emp.right <= log.left + 1, getComputedStyle(q('.bt-log')).borderLeftWidth, fit]; }, w)); await q.close(); }
+  const bad = bw.filter(x => x[0] < 1100 ? x[1] !== 'stacked' || !x[2] : (([w, l, gap, even, dt, ev, under, rule, fit]) => l !== 2 || gap < 0 || even > 1 || dt > 2 || ev > 2 || !under || rule !== '1px' || !fit)(x));
+  ok(!bad.length, `Audit v199 #5 Battle A (Sim, Nov 17): before their six is in, from 1100 up the headline is 2 lines, Their Six | Your Games are two even columns with a thin rule between (headings level), "Everything below..." under Enter, nothing past the edge; under 1100 stacked (${bw.map(x => x[0] + ': ' + x.slice(1).join('/')).join('; ')})`); }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
