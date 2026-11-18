@@ -1,5 +1,7 @@
 # Morning questions for Sim, Wed Nov 18
 
+**ANSWERED (Sim, Nov 18 morning): "recommend for all is good".** Every "Recommended" below is her answer. Plus: make sure the Home page is clean and refined to be polished.
+
 Every open question waiting on Sim, from the files on branch claude/design6. Look-only: no site code changed.
 Each question has its pictures next to it (paths under docs/rebuild/pics/nov18/ unless the path says otherwise).
 Each recommendation has one short reason.
