@@ -68,7 +68,8 @@ export async function closeAll() { if (browser) await browser.close(); browser =
  *   team: array of names (default none), box: names, opp: names, saved: [{name, team:[names]}],
  *   account: true = signed in (data saved to the fake account, readable via acct()), false = this browser only,
  *   fresh: true = first-time visitor (no welcome dismissal, nothing saved),
- *   stored: extra raw localStorage entries {key: value}, hash: '#team=...' etc.
+ *   stored: extra raw localStorage entries {key: value}, hash: '#team=...' etc.,
+ *   acctDelay: ms the player's own account doc takes to answer its first read (a slow account on first load; Nov 18, X-01c).
  * Returns {pg, ctx, errs, ui, acct, ls, close}. `ui` is the adapter bound to this page. */
 // the page a test opened last (FAILSHOT=dir in run.mjs saves a picture + its text when a test fails; Nov 12, SAVED-06 PC-only)
 let LAST = null; export const lastPage = () => LAST;
@@ -103,7 +104,8 @@ export async function open(o = {}) {
     window.__acct = kept || (st && o.account !== false ? {[mine]: JSON.parse(JSON.stringify(st))} : {});
     const keep = () => { try { sessionStorage.setItem('__np_acct', JSON.stringify(window.__acct)); } catch (e) {} }; keep();
     const docOf = p => ({
-      get: async () => ({exists: p in window.__acct || !!D[p], data: () => p in window.__acct ? JSON.parse(JSON.stringify(window.__acct[p])) : D[p]}),
+      get: async () => { if (p === mine && o.acctDelay) await new Promise(r => setTimeout(r, o.acctDelay));
+        return {exists: p in window.__acct || !!D[p], data: () => p in window.__acct ? JSON.parse(JSON.stringify(window.__acct[p])) : D[p]}; },
       set: async v => { window.__acct[p] = JSON.parse(JSON.stringify(v)); keep(); },
       update: async v => { window.__acct[p] = Object.assign(window.__acct[p] || {}, JSON.parse(JSON.stringify(v))); keep(); },
       onSnapshot: cb => { setTimeout(() => cb({exists: p in window.__acct || !!D[p], metadata: {}, data: () => p in window.__acct ? window.__acct[p] : D[p]}), 5); return () => {}; }});
@@ -112,7 +114,7 @@ export async function open(o = {}) {
       if (n === 'db') return o.account === false ? null : db;
       if (n === 'user') return o.account === false ? null : {id: async () => 'u_test', isOwner: () => true, canEdit: () => true, can: () => true, me: async () => ({id: 'u_test'})};
       return null; }};
-  }, [DOCS, state, {fresh: !!o.fresh, mode: o.mode, account: o.account, stored: o.stored}]);
+  }, [DOCS, state, {fresh: !!o.fresh, mode: o.mode, account: o.account, stored: o.stored, acctDelay: o.acctDelay || 0}]);
   await pg.goto('file://' + page() + (o.hash || ''));
   await pg.waitForTimeout(o.wait ?? 1500);
   /* review C-I7 (Nov 17): then wait for the page itself, not only the clock: fonts loaded, the first draw done (new site) and the

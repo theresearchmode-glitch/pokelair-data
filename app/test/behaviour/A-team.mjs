@@ -1127,6 +1127,20 @@ t('X-01', 'Every change saves to this browser and to the account', async () => {
   const r = await myTeam(); await r.ui.removeFromTeam('Rillaboom'); await sleep(1300);
   ok(!(await r.acct()).slots.some(s => s.n === 'Rillaboom'), 'account still has Rillaboom'); const l = await r.ls('cc2.state'); ok(l && !l.slots.some(s => s.n === 'Rillaboom'), 'browser copy still has Rillaboom'); await r.close();
   const o = await aopen({account: false}); await o.ui.go('My Team', 2000); await o.ui.removeFromTeam('Kingambit'); await o.ui.reload(2500); ok(!(await o.ui.team()).includes('Kingambit'), 'browser-only change lost on reload'); await o.close(); });
+// saved-data.md 6.2 risk 9 (switch readiness Nov 18: experiments/sync-logic.mjs checks this on today's page only). The account's copy is read
+// before any save and replaces what this browser held: a stale browser copy (or the sample team) must never overwrite a player's account,
+// even when the account answers late and the player changes something before it does.
+t('X-01c', 'Account wins on first load: a stale browser copy never overwrites the account, even when the account answers late', async () => {
+  const slots = ns => ns.map(n => ({n, a: null, lock: false})), mine = {slots: slots(TEAM), box: ['Hydreigon'], teams: [], loadedId: null, format: 'doubles', maxMega: 1, opp: [], excl: [], log: []};
+  const r = await aopen({team: RAIN, box: BOX, stored: {'cc2.state': JSON.stringify(mine)}, acctDelay: 4000, wait: 300});
+  // the race is real only if the page is still on this browser's copy here (otherwise the account came first and nothing is tested)
+  ok((await r.ui.team()).join() === TEAM.join(), 'the account answered before the test could act; the late-account case was not tested: ' + await r.ui.team());
+  await r.ui.peek("S.box.push('Glimmora');render()"); /* the player changes something before the account answers */
+  ok(await eventually(async () => (await r.ui.team()).join() === RAIN.join(), 9000), 'the page kept this browser\'s team, not the account\'s: ' + await r.ui.team());
+  await sleep(1500); const a = await r.acct(), l = await r.ls('cc2.state');
+  ok(a && a.slots.map(s => s.n).join() === RAIN.join() && a.box.join() === BOX.join(), 'the account was overwritten: ' + JSON.stringify(a && {team: a.slots.map(s => s.n), box: a.box.length}));
+  ok(l && l.slots.map(s => s.n).join() === RAIN.join() && !l.box.includes('Hydreigon'), 'this browser still holds its old copy: ' + JSON.stringify(l && l.slots.map(s => s.n)));
+  noErrs(r); await r.close(); });
 t('X-01b', 'A change on another device arrives live ("Updated from your other device"), waiting while you type', async () => {}, {skip: 'needs two signed-in devices sharing a real account; the kit\'s fake account has no live updates from another device'});
 
 t('X-02', 'First visit: sample six "Sun Tailwind (sample)", saved and open, default box of 36', async () => {
