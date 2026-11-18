@@ -1134,5 +1134,70 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
 }
 // ---- NPR end ----
 await BR(); /* behaviour review (Nov 18), above */
+// WebKit pair (Nov 18, docs/rebuild/test-runs/webkit-new-pages-nov18.md): two Safari defects, measured the same way in any engine. This file runs
+// them in Chromium; for Safari's engine the same function (between the wk-pair markers) runs with playwright.webkit, over http (WebKit blocks
+// the fonts on file://). WK-1 the stamp's perforated edge: on its pixels, nothing outside the holes' centre line (Safari drew a ring of loose
+// dots there), the holes along every edge, the middle solid, the corners bitten. WK-2 the Copy Code row, 320-2560: the code never overflows or
+// breaks, 13px or more; Copy Code sits beside the code wherever the code fits beside it at 24px (Safari dropped it under at 1440, Chromium
+// by 1.3px from doing the same); the two parcels in a row decide alike, so their rows line up.
+// wk-pair start
+const wkPair = async (br, url, ok) => {
+  const FX = `(() => { const t = Date.now(), d = 864e5, iso = x => new Date(x).toISOString(); POST = {checked: null, news: POST.news, series: POST.series, gifts: [
+    {id: 'w1', name: 'Training Ticket', amount: 2, how: 'Serial Code', code: 'LA1CTRA1N1NG27', start: iso(t - d), end: iso(t + 9 * d)},
+    {id: 'w2', name: 'Mint Coupons', amount: 3, how: 'Serial Code', code: '10M1NTRNR', start: iso(t - d), end: iso(t + 9 * d)}].concat(Array.from({length: 6}, (_, i) =>
+    ({id: 'wp' + i, kind: 'item', item: 'VP', name: 'VP', amount: 500, how: 'Serial Code', start: iso(t - 90 * d), end: iso(t - (40 + i) * d)})))}; V2.prUi = {f: 'all', all: false}; V2.redraw(); })()`;
+  const q = await br.newPage({viewport: {width: 1440, height: 900}, deviceScaleFactor: 2}); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  const go = async (route, w) => { await q.setViewportSize({width: w, height: 900}); await q.goto(url + '#' + route); await q.waitForTimeout(2200); await q.evaluate(fx => window.__ev(fx), FX); await q.evaluate(() => document.fonts.ready); await q.waitForTimeout(400); };
+  /* WK-1: each stamp drawn black on white, upright, with its picture hidden, at 2x (as on an iPhone or iPad), then read pixel by pixel (distances from the stamp box's edge) */
+  const st = [];
+  for (const [route, w, sel] of [['gifts', 390, '#main .pr-sheet .pr-sw'], ['gifts', 1440, '#main .pr-sheet .pr-sw'], ['home', 1440, '.sdp-stamps .pr-sw']]) {
+    await go(route, w);
+    await q.addStyleTag({content: '.wkst .pr-sw{filter:none;background:#fff;rotate:none}.wkst .pr-st{background:#000;transition:none}.wkst .pr-st>*,.wkst .pr-pm{visibility:hidden}'}); await q.evaluate(() => document.documentElement.classList.add('wkst'));
+    const els = await q.$$(sel + ' .pr-st'); if (!els.length) { st.push(`${route} ${w}: no stamps`); continue; }
+    for (const el of els.slice(0, 2)) { await el.scrollIntoViewIfNeeded(); await q.waitForTimeout(150); const r = await el.boundingBox(); const x0 = Math.floor(r.x), y0 = Math.floor(r.y);
+      const png = await q.screenshot({clip: {x: x0, y: y0, width: Math.ceil(r.x + r.width) - x0, height: Math.ceil(r.y + r.height) - y0}});
+      const m = await q.evaluate(async ([b64, dx, dy, W, H]) => { const im = new Image(); im.src = 'data:image/png;base64,' + b64; await im.decode(); const c = document.createElement('canvas'); c.width = im.width; c.height = im.height;
+        const g = c.getContext('2d'); g.drawImage(im, 0, 0); const D = g.getImageData(0, 0, c.width, c.height).data;
+        const dark = (x, y) => { const i = (Math.floor((y + dy) * 2) * c.width + Math.floor((x + dx) * 2)) * 4; return D[i] + D[i + 1] + D[i + 2] < 384; };
+        const line = (horiz, at, from, to) => { const v = []; for (let s = from; s <= to; s += .5) v.push(horiz ? dark(s, at) : dark(at, s)); return v; };
+        /* the holes cut into one edge: the centres of the gaps in the paper, in px from the line's start (gaps touching either end left out) */
+        const holes = (v, from) => { const c = []; let s = -1; for (let i = 0; i < v.length; i++) { if (!v[i] && s < 0) s = i; if (v[i] && s >= 0) { if (s > 0) c.push(from + (s + i - 1) / 4); s = -1; } } return c; };
+        /* e: how far in the paper starts on each side (its outermost pixel); the holes sit on that line, 6px in. Then: holes all along it, evenly
+           12px apart (none missing, none extra), and solid paper 6px further in */
+        const edge = (hz, far, L, M) => { let e = 99; for (let s = 2; s < M - 2; s += .5) for (let t = 0; t < 14; t += .5) if (hz ? dark(s, far ? L - .5 - t : t) : dark(far ? L - .5 - t : t, s)) { e = Math.min(e, t); break; } return e; };
+        const out = [], E = [['top', true, false, H, W], ['bottom', true, true, H, W], ['left', false, false, W, H], ['right', false, true, W, H]], es = {};
+        for (const [nm, hz, far, D, L] of E) es[nm] = edge(hz, far, D, L);
+        for (const [nm, hz, far, D, L] of E) { const e = es[nm], at = d => far ? D - .5 - e - d : e + d, [p0, p1] = hz ? [es.left, es.right] : [es.top, es.bottom];
+          if (e < 5 || e > 13) out.push(`${nm}: paper starts ${e}px in (want 6: nothing in the outer band)`);
+          const a = p0 + 6, z = L - p1 - 6, c = holes(line(hz, at(1.5), a, z), a), gaps = c.slice(1).map((x, i) => x - c[i]);
+          if (c.length < (z - a) / 12 - 1 || gaps.some(g => g < 10 || g > 14) || !c.length || c[0] - a > 14 || z - c[c.length - 1] > 14) out.push(`${nm}: holes along the edge at ${c.map(Math.round).join(',') || 'none'}`);
+          if (line(hz, at(6), p0 + 12, L - p1 - 12).some(x => !x)) out.push(`${nm}: not solid 6px inside the edge`); }
+        if (Math.abs(es.left - es.right) > 2 || Math.abs(es.top - es.bottom) > 2) out.push('paper off centre ' + JSON.stringify(es));
+        if (line(true, H / 2, 16, W - 16).some(x => !x)) out.push('middle not solid');
+        for (const [x, y] of [[1.5, 1.5], [es.left + 1, es.top + 1], [W - 2 - es.right, es.top + 1], [es.left + 1, H - 2 - es.bottom], [W - 2 - es.right, H - 2 - es.bottom]]) if (dark(x, y)) out.push(`corner ${Math.round(x)},${Math.round(y)} not bitten`);
+        return out; }, [png.toString('base64'), r.x - x0, r.y - y0, r.width, r.height]);
+      if (m.length) st.push(`${route} ${w} ${Math.round(r.width)}x${Math.round(r.height)}: ${m.join(', ')}`); } }
+  ok(!st.length, `WK-1 (WebKit pair): the stamps' perforated edge, read off the pixels on #gifts 390 / 1440 and Home's post band 1440: no paper outside the holes' line, holes along each edge, solid middle, bitten corners (${st.join(' | ').slice(0, 400) || 'clean'})`);
+  /* WK-2: every Copy Code row on #gifts (320-2560) and Home and News (390-2560) */
+  const bad = [], seen = {beside: 0, meant: 0};
+  for (const [route, sel, ws] of [['gifts', '#main .pr-crow', [320, 390, 600, 820, 1024, 1100, 1180, 1280, 1300, 1360, 1400, 1440, 1600, 1920, 2560]], ['home', '.sdp .pr-crow', [390, 820, 1100, 1440, 2560]], ['news', '.dp-crow', [390, 820, 1100, 1300, 1440, 2560]]]) {
+    await go(route, 1440);
+    for (const w of ws) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(300);
+      const rs = await q.evaluate(sel => [...document.querySelectorAll(sel)].filter(c => c.getClientRects().length).map(c => {
+        const cb = c.querySelector('.pr-cbox'), cv = c.querySelector('.pr-cv'), bt = c.querySelector('.pr-copy'), R = c.getBoundingClientRect(), B = cb.getBoundingClientRect(), T = bt.getBoundingClientRect();
+        const rg = document.createRange(); rg.selectNodeContents(cv); const X = rg.getBoundingClientRect(), fs = parseFloat(getComputedStyle(cv).fontSize);
+        const k = cv.cloneNode(true); k.style.cssText = 'position:absolute;visibility:hidden;display:inline-block;white-space:nowrap;font-size:24px'; cb.append(k); const w24 = k.getBoundingClientRect().width; k.remove();
+        const beside = T.top < B.bottom - 2, meant = getComputedStyle(cb).flexBasis !== '100%' && R.width >= w24 + parseFloat(getComputedStyle(c).columnGap) + T.width, why = [];
+        if (cv.scrollWidth > cv.clientWidth + 1 || X.right > B.right + 1 || X.left < B.left - 1 || T.right > R.right + 1 || B.right > R.right + 1) why.push('overflows');
+        if (X.height > fs * 1.2 * 1.6) why.push('code on ' + Math.round(X.height / (fs * 1.2)) + ' lines'); if (fs < 13) why.push(fs + 'px');
+        if (meant && !beside) why.push(`Copy Code under the code though it fits beside (${Math.round(R.width)} >= ${Math.round(w24)}+gap+${Math.round(T.width)})`);
+        return {why: why.join(', '), beside, meant, top: Math.round((c.closest('.pr-parcel') || c.closest('.dp-cpn, .pr-label')).getBoundingClientRect().top), h: R.height, code: cv.textContent}; }), sel);
+      for (const r of rs) { if (r.why) bad.push(`${route} ${w} ${r.code}: ${r.why}`); seen.beside += r.beside; seen.meant += r.meant; }
+      const rows = {}; for (const r of rs) (rows[r.top] = rows[r.top] || []).push(r);
+      for (const row of Object.values(rows)) if (row.length > 1 && (new Set(row.map(r => r.beside)).size > 1 || Math.max(...row.map(r => r.h)) - Math.min(...row.map(r => r.h)) > 1)) bad.push(`${route} ${w}: the parcels' rows don't line up (${row.map(r => (r.beside ? 'beside ' : 'under ') + Math.round(r.h) + 'px').join(' vs ')})`); } }
+  ok(!bad.length && seen.meant > 10, `WK-2 (WebKit pair): Copy Code rows on #gifts 320-2560, Home and News: never overflow or break, 13px+, Copy Code beside the code wherever it fits there at 24px (${seen.meant} such rows), a row's parcels line up (${bad.join(' | ').slice(0, 500) || 'all good'})`);
+  await q.close(); };
+// wk-pair end
+await wkPair(b, 'file://' + PAGE, ok);
 await b.close();
 console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

@@ -79,7 +79,12 @@ V2.prCode = code => { const c = String(code || '').replace(/\s+/g, ''); if (!c) 
   return `<span class="pr-code"><span class="pr-cv" aria-hidden="true">${vis}</span><span class="vh pr-spell">${V2.esc([...c].join(', '))}</span></span>`; };
 // the Copy Code row: the code box and its Copy Code button (data-prcopy, handled below); the Post Room label and the Dispatch coupon
 // (cls ' dp-crow') share it. Home's code slip keeps its own layout (stampede-post.js).
-V2.prCopyRow = (code, cls = '') => `<div class="pr-crow${cls}"><div class="pr-cbox"><p class="pr-k">Code</p>${V2.prCode(code)}</div><button type="button" class="np-btn pr-copy" data-prcopy="${V2.esc(String(code || '').replace(/\s+/g, ''))}"><span>Copy Code</span></button></div>`;
+// The code's width in em (Unbounded 800, letter-spacing .04em; measured per character in Chromium, plus 2% because WebKit draws it about
+// 1.5% wider). The row uses it (--prw) to decide whether Copy Code fits beside the code, and to size the code to its cell (sd-postroom.css).
+V2.PR_EM = {0: .977, 1: .578, 2: .892, 3: .892, 4: .922, 5: .859, 6: .909, 7: .811, 8: .947, 9: .909, A: 1.019, B: .937, C: .984, D: .978, E: .845, F: .823, G: 1.012, H: .989, I: .404, J: .857, K: .924, L: .814, M: 1.297,
+  N: 1.025, O: 1.012, P: .867, Q: 1.013, R: .905, S: .899, T: .871, U: .926, V: .993, W: 1.417, X: .942, Y: .981, Z: .861};
+V2.prEm = code => +([...String(code || '').replace(/\s+/g, '').toUpperCase()].reduce((s, ch) => s + (V2.PR_EM[ch] || 1.1), 0) * 1.02).toFixed(2);
+V2.prCopyRow = (code, cls = '') => `<div class="pr-crow${cls}" style="--prw:${V2.prEm(code) || 1}"><div class="pr-cbox"><p class="pr-k">Code</p>${V2.prCode(code)}</div><button type="button" class="np-btn pr-copy" data-prcopy="${V2.esc(String(code || '').replace(/\s+/g, ''))}"><span>Copy Code</span></button></div>`;
 // a barcode drawn from the code (decorative), so each label's bars differ
 V2.prBars = key => { let h = 2166136261; const s = String(key || 'gift'); let x = 0, out = '';
   for (let i = 0; x < 236; i++) { h = Math.imul(h ^ s.charCodeAt(i % s.length) ^ i, 16777619) >>> 0; const w = 1 + (h & 3), gap = 1 + ((h >> 3) & 1) + ((h >> 5) & 1); out += `<rect x="${x}" width="${w}" height="24"/>`; x += w + gap; }
@@ -138,7 +143,7 @@ V2.pages.gifts = {place: 'home', draw() { const E = V2.esc, U = V2.prUi, P = V2.
     <p class="ra-lede">Every Mystery Gift in Pokémon Champions, parcel by parcel. The code is on the label, and so is the last day to collect it.</p></section>${stats}</div>`;
   const key = live.some(g => g.code && /\d/.test(g.code)) ? `<p class="pr-key"><span class="pr-cv" aria-hidden="true"><b class="pr-d">1</b> <b class="pr-d">0</b> <b class="pr-d">2</b></span> Blue characters are numbers. The rest are letters.</p>` : '';
   const counter = `<section class="pr-counter" aria-labelledby="prCtrH"><header class="pr-sh"><h2 class="u" id="prCtrH">Waiting at the Counter</h2>${key}</header>
-    ${live.length ? `<div class="pr-parcels${live.length % 2 ? ' odd' : ''}">${live.map(g => V2.prParcel(g)).join('')}${V2.prHow()}</div>` : V2.prShelf()}</section>`;
+    ${live.length ? `<div class="pr-parcels${live.length % 2 ? ' odd' : ''}" style="--prw-row:${Math.max(1, ...live.map(g => V2.prEm(g.code)))}">${live.map(g => V2.prParcel(g)).join('')}${V2.prHow()}</div>` : V2.prShelf()}</section>`;
   const n = {all: past.length, mon: past.filter(g => g.isMon).length, item: past.filter(g => !g.isMon).length};
   const list = U.f === 'mon' ? past.filter(g => g.isMon) : U.f === 'item' ? past.filter(g => !g.isMon) : past, cap = 12, shown = U.all ? list : list.slice(0, cap);
   // blank stamp spaces finish the last row at every width (6, 4, 3 or 2 across): a blank shows only where its row needs it
