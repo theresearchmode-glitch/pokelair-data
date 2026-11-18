@@ -65,7 +65,9 @@
 @media (max-width:1099.98px){.sd-band.sdp{--bw:clamp(150px,26vw,240px)}.sdp-top{grid-template-columns:minmax(0,1fr) var(--bw)}.sdp-lede{grid-column:1;rotate:none;max-width:48ch}.sdp-bird{grid-column:2;grid-row:1/span 2;align-self:start}
   .sdp-bird .np-mon{bottom:auto;top:calc((var(--s16) + var(--sd-cut) + var(--bw) * .3) * -1)}.sdp-ln{display:none}} /* under 1100 the bird hangs from the band top: 30% of it over the edge, clear of the heading */
 @media (max-width:699.98px){.sdp-lede{display:none}.sdp-top{grid-template-columns:minmax(0,1fr) calc(var(--bw) * .5);gap:var(--s4);margin-bottom:var(--s8)}.sd-band.sdp{--bw:clamp(132px,40vw,176px)}
-  .sdp-bird .np-mon{left:auto;right:calc(var(--s2) - var(--gut));translate:none}.sdp-ln{display:none}
-  .sdp-ch h3{font-size:var(--t24)}}
+  .sdp-bird .np-mon{left:auto;right:calc(var(--s2) - var(--gut));top:calc((var(--s16) + var(--s4) + var(--sd-cut) + var(--bw) * .3) * -1);translate:none}.sdp-ln{display:none}
+  .sdp-ch h3{font-size:var(--t24)}
+  .sdp-h{margin-top:var(--s6)}} /* phones: the tilt lifts the heading's right end under the Pelipper's feet (two lines at 360-390, one line at 500-530);
+     the heading drops 24px and the bird rises 16px more over the edge (still clear of the tools band's words), so nothing covers it (v2-minors SDP-3) */
 /* stamps in a narrow column: the names and kinds as the Post Room sets them on phones (whole words stay inside the stamp) */
 @container (max-width:559.98px){.sdp-stamps .pr-nm{margin-top:var(--s2);font:700 var(--t13)/1.5 var(--b)}.sdp-stamps .pr-how{letter-spacing:0;text-transform:none}.sdp-stamps .pr-my{font:700 var(--t13)/1.5 var(--b)}.sdp-stamps .pr-st{padding:var(--s3) var(--s3) var(--s4)}}
