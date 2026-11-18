@@ -278,7 +278,7 @@ const HQ = async () => {
       return {plates: plates.join('|'), chips: chips.map(c => c.textContent.trim().replace(/^[\d,]+\s*/, '')).join('|'), bad, reach: (V2.HOME_TOOLS || []).filter(([, , to]) => !reach.has('#' + to)).map(x => x[0]), hs: document.documentElement.scrollWidth - innerWidth}; }});
       const want = phone ? r.plates === 'Speed Tiers|Ratings|Damage Calc|Battle|Team Preview Practice|Winning Teams' && r.chips === 'Type Chart|Winning Cores|Archetypes|Popular Sets|Events|How We Calculate'
         : r.plates.split('|').length >= 10 && !r.chips; if (!want || r.bad.length || r.reach.length || r.hs > 0) tb.push(`${w}: ${JSON.stringify(r)}`); }
-    const h = await hq(390, 844, {rm: 'reduce', ls: {'cc2.welcomed': '"1"'}, fn: () => document.documentElement.scrollHeight}); const scr = +(h / 844).toFixed(2); /* a returning visitor (the first-visit welcome adds its own height) */
+    const h = await hq(390, 844, {rm: 'reduce', ls: {'cc2.welcomed': '"1"'}, fn: () => { const n = document.querySelector('#main .sdp-nw'); if (n) n.remove(); return document.documentElement.scrollHeight; }}); const scr = +(h / 844).toFixed(2); /* a returning visitor who has seen What's New (the first-visit welcome and the What's New slip add their own height) */
     ok(!tb.length && scr <= 7.2, `HQ Tools B (Sim, Nov 18): phone Home shows six big plates (Speed Tiers, Ratings, Damage Calc, Battle, Team Preview Practice, Winning Teams) and six picture chips, every tool on screen; 700+ unchanged; phone Home at 390 is ${scr} screens (7.2 at most)${tb.length ? ': ' + tb.join(' | ').slice(0, 700) : ''}`); }
   // Polish 2: the Practice plate's team preview is no taller than it needs to be, so its row neighbours keep no big empty band between
   // their picture and their words (110px at most, 700-2560; the Practice plate as first built left 154-172px at 820 and 1920)
@@ -876,7 +876,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       for (const e of s.querySelectorAll('.sdt-mn,.sdt-t a,.sdt-d span,.sdt-blk b,.sdt-flag span,.sdt-item,.sdt-big b,.sdt-spe,.sdt-chip')) { if (!e.getClientRects().length) continue; if (parseFloat(getComputedStyle(e).fontSize) < 13) out.push('under 13px');
         const box = (e.closest('.sdt-m') ? e.parentElement : e.closest('.sdt-p')).getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e);
         if ([...rg.getClientRects()].some(r => r.width && (r.left < box.left - 1 || r.right > box.right + 1))) out.push('spills: ' + e.textContent.slice(0, 16)); }
-      const g = s.querySelector('.sdt-grid'), gb = g.getBoundingClientRect(), rows = {}; for (const c of g.children) { const r = c.getBoundingClientRect(); (rows[Math.round(r.top / 4)] = rows[Math.round(r.top / 4)] || []).push(r); }
+      const g = s.querySelector('.sdt-grid'), gb = g.getBoundingClientRect(), rows = {}; for (const c of [...g.children].filter(c => c.getClientRects().length) /* phones hide six plates (Sim, Nov 18: Tools B) */) { const r = c.getBoundingClientRect(); (rows[Math.round(r.top / 4)] = rows[Math.round(r.top / 4)] || []).push(r); }
       for (const rs of Object.values(rows)) if (Math.min(...rs.map(r => r.left)) - gb.left > 2 || gb.right - Math.max(...rs.map(r => r.right)) > 2) out.push('row not full');
       return out.length ? out.join(', ') : 'ok'; })); }
   ok(lay.every(x => / ok$/.test(x)), `Stampede tools: at 320 / 390 / 820 / 1100 / 1440 (day and night) no sideways scroll, no text under 13px or out of its spot, every row of plates full (${lay.join(' | ')})`);
@@ -897,10 +897,10 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       /* 3. Test Run (Sim, Nov 18: Team Preview Practice took its plate, so the same rule is checked on Practice's picture): no empty middle
          (the space the sprites leave between the plate's top and its words, 32px at most), no sprite under 44px */
       const t = document.querySelector('#main .sdt-tr, #main .sdt-pp'); if (!t) o.tr = 'no picture'; else { const P = R(t.closest('.sdt-p')), X = R(t.closest('.sdt-p').querySelector('.sdt-tx')), S = [...t.querySelectorAll('.np-mon .st')].map(R);
-        const empty = Math.round(X.top - Math.max(...S.map(r => r.bottom)) - 12 + Math.max(0, Math.min(...S.map(r => r.top)) - P.top)), small = Math.round(Math.min(...S.map(r => r.width)));
+        const empty = Math.round(X.top - Math.max(...S.map(r => r.bottom), t.classList.contains('sdt-pp') ? R(t).bottom : 0 /* Practice's "Pick 4" is part of its picture */) - 12 + Math.max(0, Math.min(...S.map(r => r.top)) - P.top)), small = Math.round(Math.min(...S.map(r => r.width)));
         if (empty > 32 || small < 44) o.tr = `empty ${empty}px, smallest sprite ${small}px`; }
       /* 4. Damage Calc: the spare height is shared above and below the picture (within 8px), or there is none to speak of (24px at most) */
-      const h = document.querySelector('#main .sdt-hit'); if (!h) o.dc = 'no picture'; else { const p = h.closest('.sdt-p'), P = R(p), H = R(h), X = R(p.querySelector('.sdt-tx')), pb = parseFloat(getComputedStyle(p).paddingBottom);
+      const h = document.querySelector('#main .sdt-hit'); if (innerWidth < 700) {} /* phones (Sim, Nov 18: Tools B): a half tile with its picture on top, by design */ else if (!h) o.dc = 'no picture'; else { const p = h.closest('.sdt-p'), P = R(p), H = R(h), X = R(p.querySelector('.sdt-tx')), pb = parseFloat(getComputedStyle(p).paddingBottom);
         const up = Math.round(H.top - X.bottom - (parseFloat(getComputedStyle(p).rowGap) || 0)), down = Math.round(P.bottom - pb - H.bottom); if (Math.abs(up - down) > 8 && Math.max(up, down) > 24) o.dc = `${up}px above, ${down}px below`; }
       /* 5. the receipt's five band bars: one width (untransformed, within 1px) */
       const B = [...document.querySelectorAll('#main .sds-b i')].map(e => e.offsetWidth); if (B.length !== 5) o.bars = B.length + ' bars'; else if (Math.max(...B) - Math.min(...B) > 1) o.bars = B.join('/');
@@ -912,7 +912,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     for (const [k, a] of [['bt', bt], ['tr', tr], ['dc', dc], ['bars', bars], ['tags', tags]]) if (m[k]) a.push(w + ': ' + m[k]); }
   ok(!bt.length, `Stampede tiles 2 (Nov 18 night): Battle, at 320-2560 every sprite stays inside its side, clear of the VS, and is 56px or more; no name under a sprite${bt.length ? ': ' + bt.slice(0, 4).join(' | ') : ''}`);
   ok(!tr.length, `Stampede tiles 3: Test Run, at 320-2560 the sprites fill the plate (32px or less left empty between its top and its words) and none is under 44px${tr.length ? ': ' + tr.slice(0, 4).join(' | ') : ''}`);
-  ok(!dc.length, `Stampede tiles 4: Damage Calc, at 320-2560 the picture sits in the middle of the spare height (no empty band only above it)${dc.length ? ': ' + dc.slice(0, 4).join(' | ') : ''}`);
+  ok(!dc.length, `Stampede tiles 4: Damage Calc, at 700-2560 (phones: Tools B puts the picture on top) the picture sits in the middle of the spare height (no empty band only above it)${dc.length ? ': ' + dc.slice(0, 4).join(' | ') : ''}`);
   ok(!bars.length, `Stampede tiles 5: the receipt's five band bars are one width at 320-2560${bars.length ? ': ' + bars.slice(0, 4).join(' | ') : ''}`);
   ok(!tags.length, `Stampede tags (qcheck triage Nov 18, defect 2): every plan-board name tag ("Mega Charizard Y") fits whole inside the board, clear of its folded corner, at 13px or more, 320-2560${tags.length ? ': ' + tags.slice(0, 4).join(' | ') : ''}`);
   await q.close(); }
@@ -1116,8 +1116,8 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     lay.push(w + ':' + await qe(() => { const g = document.querySelector('.sdp-gifts'), n = document.querySelector('.sdp-news'); if (!g || !n) return 'missing'; const a = g.getBoundingClientRect(), z = n.getBoundingClientRect();
       const st = [...document.querySelectorAll('.sdp-stamps .pr-sw')].filter(e => e.getClientRects().length).length, gb = document.querySelector('.sdp-gb').getBoundingClientRect().bottom, pb = document.querySelector('.sdp-tilt').getBoundingClientRect().bottom;
       return (Math.abs(a.top - z.top) < 2 ? (Math.abs(gb - pb) <= 12 ? 'level' : 'uneven ' + Math.round(gb - pb)) : z.top >= a.bottom ? 'stacked' : 'overlap') + ',' + st; })); }
-  const want = {2560: 'level,4', 1920: 'level,4', 1440: 'level,4', 1366: 'level,4', 1100: 'stacked,4', 390: 'stacked,3', 360: 'stacked,3'};
-  ok(lay.every(x => x.split(':')[1] === want[x.split(':')[0]]), `SDP-4: gifts and news side by side ending level from 1360, stacked gifts first below; 4 stamps, 3 on phones (${lay.join(' | ')})`);
+  const want = {2560: 'level,4', 1920: 'level,4', 1440: 'level,4', 1366: 'level,4', 1100: 'stacked,4', 390: 'stacked,0', 360: 'stacked,0'}; /* phones: no stamps (Sim, Nov 18: Post X) */
+  ok(lay.every(x => x.split(':')[1] === want[x.split(':')[0]]), `SDP-4: gifts and news side by side ending level from 1360, stacked gifts first below; 4 stamps, none on phones (Post X) (${lay.join(' | ')})`);
   /* every width, day and night: no sideways scroll, no text under 13px or outside the band, the code slip's parts never overlap, white text 4.5:1 on the red, every link and button 44px tall */
   const wd = []; for (const th of ['day', 'night']) { await qe(t => localStorage.setItem('np2.theme', t), th); await q.reload(); await q.waitForTimeout(2200);
     for (const w of [320, 340, 412, 600, 768, 1024, 1180, 1366, 1440, 1500, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(450);
