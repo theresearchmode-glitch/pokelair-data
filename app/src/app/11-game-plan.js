@@ -80,7 +80,12 @@ function gamePlan(team) {
   const abusersOf = w => { const A = ARCH[w], set = s => roleMoves(s);
     return team.filter(m => (!setters.some(x => x.m === m && x.w === w) || A.abN.includes(m.p.n)) && (A.abAb.includes(m.ability) || A.abN.includes(m.p.n) || A.abMv.some(x => set(m).has(x)) || (m.types || m.p.t).includes(W_TYPE[w]))); };
   const needs = Object.keys(W_TYPE).filter(w => !kinds.includes(w) && team.some(m => ARCH[w].abAb.includes(m.ability) && WEATHER_SPEED[m.ability]));
-  const wSpeed = kinds.length === 1 ? anyOf(team.filter(m => WEATHER_SPEED[m.ability] && ({Water: 'rain', Fire: 'sun', Rock: 'sand', Ice: 'snow'})[WEATHER_SPEED[m.ability]] === kinds[0]).map(() => .95)) : 0;
+  // weather speed: a Swift Swim / Chlorophyll / Sand Rush / Slush Rush member whose weather the team sets. Nov 18 (rule-holes sweep):
+  // with two weathers (sun + rain, e.g. Mega Charizard Y + Venusaur next to Pelipper + Archaludon) it used to count as zero, so 27
+  // real teams read "no speed control" and suggestions deleted a setter to "add speed control". Each user still gets its speed in
+  // its own weather; the weathers overwrite each other, so it counts a little less (.8 instead of .95; my estimate, not measured).
+  const wSpeedUsers = team.filter(m => WEATHER_SPEED[m.ability] && kinds.includes(({Water: 'rain', Fire: 'sun', Rock: 'sand', Ice: 'snow'})[WEATHER_SPEED[m.ability]]));
+  const wSpeed = anyOf(wSpeedUsers.map(() => kinds.length === 1 ? .95 : .8));
   const c = {tw: cov(R.tw), tr: cov(R.tr), drop: cov(R.drop), prio: cov(R.prio), self: cov(R.self), fake: cov(R.fake), redir: cov(R.redir), anti: cov(R.anti), haz: cov(R.haz), hazrm: cov(R.hazrm), pivot: cov(R.pivot)};
   const fast = Math.min(1, (R.prio.reduce((a, x) => a + x.r, 0) + R.self.reduce((a, x) => a + x.r, 0)) / 2.5);
   const rows = []; let pen = 0;
@@ -95,7 +100,7 @@ function gamePlan(team) {
     const main = opts.filter(o => o[1] >= .3).sort((a, b) => b[1] - a[1]);
     // mode: what the row's status rests on, so a gain from priority moves is never described as "speed control"
     rows.push({k: 'speed', label: 'Speed control', st: st(primary, .6, .3), mode: main.length ? main[0][0] : '',
-      who: main.length ? main.slice(0, 2).map(o => o[2].length ? who(o[2], 2) : o[0] === 'weather speed' ? `${team.filter(m => WEATHER_SPEED[m.ability]).map(m => m.d).join(', ')} in ${ARCH[kinds[0]].name.toLowerCase()}` : o[0]).join('; ') : '',
+      who: main.length ? main.slice(0, 2).map(o => o[2].length ? who(o[2], 2) : o[0] === 'weather speed' ? wSpeedUsers.map(m => `${m.d} in ${ARCH[({Water: 'rain', Fire: 'sun', Rock: 'sand', Ice: 'snow'})[WEATHER_SPEED[m.ability]]].name.toLowerCase()}`).join(', ') : o[0]).join('; ') : '',
       note: primary >= .6 ? '' : c.tr >= .6 && trSlow < 2 ? `Trick Room, but ${trSlow ? 'only one slow Pokémon' : 'no slow Pokémon'} besides the setter to use it.` : (main.length ? 'Only priority moves: no reliable Tailwind or Trick Room.' : 'No Tailwind, Trick Room or weather speed.') + ` Speed control is on ${proLine('speed', '')}.`});
     pen += 55 * (1 - primary);
     // 2. a second option, so one Taunt or one KO on the setter doesn't decide the game

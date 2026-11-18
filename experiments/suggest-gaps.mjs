@@ -59,5 +59,14 @@ for (const [label, team] of [['sun team, Incineroar the only lead support', ['To
   ok(!r.wb, 'Perish Trap Politoed with Weather Ball: its rain is not called a weather nothing uses');
   ok(r.noWb, 'the same Politoed with Muddy Water and Ice Beam but no Weather Ball: still a weather nothing uses');
   ok(!r.meta, 'Perish Trap team (Mega Gengar, Incineroar, Kingambit, Kommo-o, Politoed, Rillaboom) with the usual sets: not flagged'); }
+// sun + rain (Nov 18 rule-holes sweep): Chlorophyll Venusaur is still the team's speed mode when Pelipper also sets rain, so the
+// team has speed control and no suggestion "adds speed control" by swapping out a weather setter
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const T=[mk('Charizard-Mega-Y','Drought',['Heat Wave','Solar Beam','Protect','Overheat']),mk('Venusaur','Chlorophyll',['Sleep Powder','Giga Drain','Earth Power','Protect']),
+    mk('Pelipper','Drizzle',['Hurricane','Weather Ball','Wide Guard','Protect']),mk('Archaludon','Stamina',['Electro Shot','Draco Meteor','Flash Cannon','Protect']),
+    mk('Garchomp-Mega-Z','Rough Skin',['Earthquake','Dragon Claw','Rock Slide','Protect']),mk('Grimmsnarl','Prankster',['Reflect','Light Screen','Spirit Break','Fake Out'])];
+  const sp=gamePlan(T).rows.find(r=>r.k==='speed')||{},one=gamePlan(T.filter(m=>m.p.n!=='Pelipper'&&m.p.n!=='Archaludon')).rows.find(r=>r.k==='speed')||{};return {st:sp.st,who:sp.who,one:one.st}})()`));
+  ok(r.st === 'ok', `sun + rain team: Chlorophyll Venusaur still counts as speed control (${r.st}: ${r.who})`);
+  ok(r.one === 'ok', `the same sun core alone: speed control as before (${r.one})`); }
 ok(!errs.length, 'no page errors ' + errs.join(' | '));
 await b.close(); fs.unlinkSync(page); console.log(fails.length ? `\n${fails.length} FAILED` : '\nALL PASSED'); process.exit(fails.length ? 1 : 0);
