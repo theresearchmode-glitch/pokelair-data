@@ -20,7 +20,14 @@ const tsB = t => { if (!tsMemoB) return tsOf(t); const k = t.map(m => m.p.n).sor
 let CAUT_K = .5; const abYMemo = new Map();
 // Phase 2 is a draft until Sim approves it: false keeps today's Build for Me (Nov 8)
 let AB_GRADE_V2 = false; // rolled back Nov 8 (Sim: My Box builds read worse; Phase 2 reopened)
-function abY(t) { if (!t || t.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = t.map(m => m.p.n), k = metaVersion + '#' + CAUT_K + '#' + names.slice().sort().join('|');
+/* behaviour review C4 (Nov 18): the memo was keyed by the six names only, but abY's value depends on each member's set, so the same
+   six with the same sets got different suggestions after other sets (Build for Me's popular ones) had been planned. The key now holds
+   everything abY reads per member: setOne (item or held item, a dead item, the Ability and whether it was chosen, the moves and whether
+   they were edited), teamBasicsOf (the moves it judges, _mv before moves; the item, for Choice Scarf) and CH.sixOf (moves when edited,
+   a held item unless it is a default). Plus the switches it reads (SET_UNKNOWN_AVG, CH.SD_K, DEFSET_ON via defSet). Checked by experiments/plan-cache-test.mjs. */
+const abYMv = L => (L || []).map(x => x && (x.name || x)).join(',');
+const abYKey = m => m.p.n + '@' + (m.heldItem || '') + '/' + (m.item || '') + (m.itemDefault ? '~' : '') + (m._deadItem ? 'x' : '') + '#' + (m.ability || '') + (m.abChosen ? '!' : '') + ':' + (m.custom ? '!' : '') + abYMv(m.moves) + '+' + abYMv(m._mv);
+function abY(t) { if (!t || t.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = t.map(m => m.p.n), k = metaVersion + '#' + CAUT_K + '#' + SET_UNKNOWN_AVG + '#' + (typeof CH === 'object' ? CH.SD_K : '') + '#' + (typeof DEFSET_ON !== 'undefined' ? DEFSET_ON : '') + '#' + t.map(abYKey).sort().join('|');
   if (abYMemo.has(k)) return abYMemo.get(k); let v = null;
   try { if (new Set(t.map(m => m.p.b)).size === 6) { const six = CH.sixOf(t), sd = abSd(t, six); v = teamX(names, t) + (six ? six.d : 0) - CAUT_K * sd; } /* judged on the sets the team would get: the most popular tournament sets (Sim, Nov 8) */ } catch (e) {}
   if (abYMemo.size > 20000) abYMemo.clear(); abYMemo.set(k, v); return v; }
