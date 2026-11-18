@@ -1534,6 +1534,16 @@ const wkPair = async (br, url, ok) => {
   ok(!bad.length && seen.meant > 10, `WK-2 (WebKit pair): Copy Code rows on #gifts 320-2560, Home and News: never overflow or break, 13px+, Copy Code beside the code wherever it fits there at 24px (${seen.meant} such rows), a row's parcels line up (${bad.join(' | ').slice(0, 500) || 'all good'})`);
   await q.close(); };
 // wk-pair end
+{ // Sim, Nov 18: Base Stats calm and compact, on theme (no big bubbly numbers): at most 260px tall on a phone, numbers 16px in the slanted
+  // type with no shadow, a Mega's numbers line up in each column, nothing spills out, at 320-1440
+  const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();
+  for (const [m, w] of [['garchomp', 320], ['garchomp', 390], ['garchomp', 1440], ['charizard-mega-y', 390], ['charizard-mega-y', 1440]]) {
+    await q.setViewportSize({width: w, height: 900}); await q.goto('file://' + PAGE + '#pokemon=' + m); await q.waitForTimeout(2200);
+    const r = await q.evaluate(() => { const s = document.querySelector('.pk-stats'); if (!s) return {none: 1}; const R = s.getBoundingClientRect(), bs = [...s.querySelectorAll('.pk-bsr dd>b')], c = getComputedStyle(bs[0]);
+      const edges = new Set(bs.map(b => Math.round(b.getBoundingClientRect().right))), over = [...s.querySelectorAll('*')].some(e => e.getBoundingClientRect().right > R.right + 1);
+      return {h: Math.round(R.height), fs: c.fontSize, st: c.fontStyle, sh: c.textShadow, cols: edges.size, over}; });
+    if (r.none || r.fs !== '16px' || r.st !== 'italic' || r.sh !== 'none' || r.cols > 2 || r.over || (w < 700 && m === 'garchomp' && r.h > 260)) bad.push(`${m} ${w}: ${JSON.stringify(r)}`); }
+  await ctx.close(); ok(!bad.length, `Pokémon page Base Stats (Sim, Nov 18): compact (260px or less on a phone), 16px slanted numbers with no shadow, numbers lined up, nothing out (${bad.join(' | ') || 'all as planned'})`); }
 await HQ();
 await wkPair(b, 'file://' + PAGE, ok);
 await b.close();

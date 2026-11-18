@@ -3285,6 +3285,20 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-bt i{position:absolute;inset:0 auto 0 0;width:var(--w);border-radius:2px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,var(--surface)),var(--c) 70%);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 60%,var(--ink)),0 0 6px color-mix(in srgb,var(--c) 20%,transparent)}
 .pk-bt i::after{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:color-mix(in srgb,var(--surface) 30%,transparent)}
 @media (max-width:379.98px){.pk-bsr{grid-template-columns:64px auto minmax(0,1fr)}.pk-bsd .pk-bsr{grid-template-columns:64px auto minmax(0,1fr) 32px}.pk-bsr dd>b{min-width:48px;font-size:var(--t22)}}
+/* Sim, Nov 18: Base Stats calmer and half the height, on theme ('large bubbly numbers ... off theme'; she picked 'A on theme',
+   pics/nov18/stats-opt3-A3-*): our slanted number type, small and flat (no shadow), flat skewed bars, a quieter total; on phones two
+   columns, each stat's label and number on one line with its bar under them */
+.pk-stats{gap:var(--s3);padding:var(--s5) var(--s6) var(--s6)}.pk-tot b{font-size:var(--t26)}
+.pk-bs{gap:var(--s2) var(--s8);margin-top:var(--s2)}
+.pk-bsr{min-height:32px;grid-template-columns:64px 44px minmax(0,1fr)}.pk-bsd .pk-bsr{grid-template-columns:64px 44px minmax(0,1fr) 36px}
+.pk-bsr dt{font:700 var(--t13)/1.2 var(--b);letter-spacing:.02em}
+.pk-bsr dd>b{min-width:0;font:800 var(--t16)/1 var(--u);font-style:italic;font-synthesis:style;font-variant-numeric:tabular-nums;text-shadow:none}
+.pk-bt{height:8px;margin:0;border-radius:0;transform:skewX(-20deg);box-shadow:none;background:color-mix(in srgb,var(--ink) 9%,transparent)}
+.pk-bt i{border-radius:0;background:var(--c);box-shadow:none}.pk-bt i::after{display:none}
+@media (max-width:899.98px){.pk-bs{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,auto);grid-auto-flow:column;gap:var(--s3) var(--s5)}
+  .pk-bsr{grid-template-columns:minmax(0,1fr) auto;row-gap:var(--s1);min-height:0}.pk-bsd .pk-bsr{grid-template-columns:minmax(0,1fr) auto 32px;column-gap:var(--s2)}
+  .pk-bsr .pk-bt{grid-column:1 / -1;grid-row:2}.pk-bsr dd>em{grid-column:3}}
+@media (max-width:699.98px){.pk-stats{padding:var(--s5) var(--s4) var(--s6)}}
 /* touch (Nov 16 helper sweep): 44 px tap area for the two small text links left, the line unmoved */.bt-sub .np-link,.nprow .np-link{position:relative}.bt-sub .np-link::after,.nprow .np-link::after{content:"";position:absolute;inset:-12px -4px}
 /* Nov 16: the link keeps its › on its line; the line wraps under the text when there is no room */.pk-sum .np-link{white-space:nowrap}@media (max-width:699.98px){.pk-build .pk-lsum{flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 var(--s4)}}
 /* one system (Nov 16): "show more" is the blue link everywhere, 44px tap, centred under its list */.ev-more,.us-rest,.wt-more,.wt-open{min-height:var(--tap);display:inline-flex;align-items:center;justify-content:center}
