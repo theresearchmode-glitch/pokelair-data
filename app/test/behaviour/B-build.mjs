@@ -292,8 +292,9 @@ t('CORES-05', 'Core rows: rank, names, tags, % wins; Details shows points vs avg
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); const c = await ui.coresText();
   if (NEW) { /* new: no Details toggle and no '#4 onward' fold: each row shows its teams, points together and vs avg at once, then 'Show N More'
      (approved Build mock-up docs/rebuild/mocks/build.tpl.html lines 228-230; the Parts list rough, build-blueprint/lower-cores-desktop.webp).
-     Today's '% of all teams' is not in either picture and is not checked here (reported). */
-    has(c, /1 .+ \+ .+ [\d.]+% wins/, 'row 1'); has(c, /[\d,]+ teams/, 'team count'); has(c, /points? together/, 'together'); has(c, /[+−-][\d.]+ vs avg/, 'vs avg'); has(c, /Show \d+ More/, 'Show more'); await close(); return; }
+     Today's '% of all teams' is not in either picture; Sim, Nov 16 (Q3): a core's share is on its count line as text, "671 teams (4.9%)",
+     so touch screens see it (it was only a hover title; switch-readiness Nov 18, Features 5). Checked on the text, which a title is not part of. */
+    has(c, /1 .+ \+ .+ [\d.]+% wins/, 'row 1'); has(c, /[\d,]+ teams \(<?[\d.]+%\)/, 'team count with its share of all teams, as text'); has(c, /points? together/, 'together'); has(c, /[+−-][\d.]+ vs avg/, 'vs avg'); has(c, /Show \d+ More/, 'Show more'); await close(); return; }
   has(c, /1 .+ \+ .+ [\d.]+% wins/, 'row 1'); has(c, /More Cores #4 to #\d+/, 'fold for #4 onward');
   await ui.tap(/^Details$/, ui.area('cores')); const d = await ui.coresText();
   has(d, /[+−-][\d.]+ points vs avg/, 'vs avg'); has(d, /[\d,]+ teams/, 'team count'); has(d, /points together/, 'together'); has(d, /% of all teams/, 'share'); has(d, /Hide details/, 'Hide details');
