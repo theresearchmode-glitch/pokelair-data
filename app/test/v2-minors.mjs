@@ -280,6 +280,11 @@ const HQ = async () => {
         : r.plates.split('|').length >= 10 && !r.chips; if (!want || r.bad.length || r.reach.length || r.hs > 0) tb.push(`${w}: ${JSON.stringify(r)}`); }
     const h = await hq(390, 844, {rm: 'reduce', ls: {'cc2.welcomed': '"1"'}, fn: () => document.documentElement.scrollHeight}); const scr = +(h / 844).toFixed(2); /* a returning visitor (the first-visit welcome adds its own height) */
     ok(!tb.length && scr <= 7.2, `HQ Tools B (Sim, Nov 18): phone Home shows six big plates (Speed Tiers, Ratings, Damage Calc, Battle, Team Preview Practice, Winning Teams) and six picture chips, every tool on screen; 700+ unchanged; phone Home at 390 is ${scr} screens (7.2 at most)${tb.length ? ': ' + tb.join(' | ').slice(0, 700) : ''}`); }
+  // Polish 2: the Practice plate's team preview is no taller than it needs to be, so its row neighbours keep no big empty band between
+  // their picture and their words (110px at most, 700-2560; the Practice plate as first built left 154-172px at 820 and 1920)
+  { const gp = []; for (const w of [700, 820, 1100, 1440, 1920, 2560]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => [...document.querySelectorAll('#main .sdt-grid > .sdt-sm')].map(p => [p.querySelector('.sdt-go').textContent, Math.round(p.querySelector('.sdt-tx').getBoundingClientRect().top - p.lastElementChild.getBoundingClientRect().bottom)])});
+      for (const [n, g] of r) if (g > 110) gp.push(`${w} ${n}: ${g}px`); }
+    ok(!gp.length, `HQ polish 2: no small tools plate has an empty band over 110px between its picture and its words, 700-2560${gp.length ? ': ' + gp.join(' | ') : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----
