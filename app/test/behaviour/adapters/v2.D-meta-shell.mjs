@@ -275,7 +275,7 @@ export default (ui, pg) => {
     setsRating: () => ev(() => { const b = [...document.querySelectorAll('#main .st .gs-big > b')].find(__dvis); if (b && /^\d+$/.test(__dtx(b))) return +__dtx(b);
       const m = __dtx(document.querySelector('#main')).match(/[SABCDF] tier, rated (\d+)/); return m ? +m[1] : null; }),
     // ---------- Home: the welcome card and What's New ----------
-    welcomeCard: () => ev(() => { const w = [...document.querySelectorAll('#main .hm-welcome')].find(__dvis); return w ? __dtx(w) : null; }),
+    welcomeCard: () => ev(() => { const w = [...document.querySelectorAll('#main .hm-welcome, #main .sds-wl')].find(__dvis); return w ? __dtx(w) : null; }),
     whatsNew: () => ev(() => { const w = [...document.querySelectorAll('#main .hm-newsec')].find(__dvis); return w ? __dtx(w) : null; }),
     dismissWhatsNew: async () => { await pg.click('[data-hmnewx]'); await wait(400); },
     // ---------- dialogs. Translation: Send Feedback is its own page here (#feedback, from the footer), so while it is shown it is the "dialog" ----------

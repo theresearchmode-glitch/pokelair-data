@@ -123,7 +123,7 @@ export default (ui, pg, o) => {
     homeOpenSlots: () => pg.evaluate(() => [...document.querySelectorAll('#main .sds-rings [data-v2addto]')].filter(e => e.getClientRects().length).map(e => e.getAttribute('aria-label'))),
     /** This week in the ratings, the rows on show: {name, text, label} (desktop: its own column; under 900 px: the switch's "This week") */
     ratingMoves: async () => { /* say it once (Nov 16): This Week's moves are the Meta strip's third view; tap it as a player would */ const t = await pg.$('#main [data-v2slide="homegems"] button[data-v="2"]'); if (t && await t.getAttribute('aria-pressed') !== 'true') { await t.click(); await pg.waitForTimeout(400); } return pg.evaluate(() => [...document.querySelectorAll('#main .hm-mv')].filter(e => e.getClientRects().length).map(e => ({name: e.dataset.v2mon, text: e.innerText.replace(/\s+/g, ' ').trim(), label: e.getAttribute('aria-label')}))) },
-    welcomeCardText: () => txt('#main .hm-welcome'),
+    welcomeCardText: () => txt('#main .hm-welcome, #main .sds-wl'), /* Sim Q4c (Nov 18): the Stampede's welcome is in the six band */
     closeWhatsNew: () => click('[data-hmnewx]'),
     /** The Meta, right now: the rows of the list on show (names) */
     homeTopRows: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-top .hm-rk')].filter(e => e.getClientRects().length).map(e => e.dataset.v2mon)),

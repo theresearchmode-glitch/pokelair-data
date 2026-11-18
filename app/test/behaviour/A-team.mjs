@@ -144,13 +144,13 @@ t('HOME-11', 'Sample-team note on Home and My Team; "Import a team" opens Import
   has(await r.ui.text(), NEW ? /Build Me a Team/ : /Build [Yy]our [Oo]wn/); await r.ui.tapText(NEW ? 'Import a Team' : 'Import a team', 1000); /* Sim, Nov 14 naming */ const p = await r.ui.editPanel(); /* new build: the import sheet is headed "Paste a Team" (as HOME-07 / IO-01's new-build branches) */ ok(p && (NEW ? p.title === 'Paste a Team' : /Import a team/.test(p.text)), 'Import panel did not open'); await r.close(); });
 
 t('HOME-12', 'Welcome card on first visit; "Got it" hides it for good', async () => {
-  const r = await aopen({fresh: true}); const w = await r.ui.welcomeCardText(); ok(w, 'no welcome card for a first-time visitor');
+  const r = await aopen({fresh: true}); if (NEW) await r.ui.go('Home', 1500); /* the kit opens on My Team; the welcome lives on Home */ const w = await r.ui.welcomeCardText(); ok(w, 'no welcome card for a first-time visitor');
   // new build (Sim approved the words and buttons, decisions.md Nov 12): "Read your Strength Score"; buttons Copy a Top Team + Got It,
   // no "Build me a team" in the card (the hero above has the start buttons)
-  if (NEW) { ok(/How (?:NastyPlot|fight night) works/.test(w), 'welcome card has no "How … works" heading'); /* Fight Night (Sim, Nov 14): "How fight night works." */ for (const s of ['Get a team', 'Read your Strength Score', 'Plan each match', 'Copy a Top Team', 'Got It']) has(w, s, 'welcome card'); ok(NEW || !/Build me a team/i.test(w), /* new: the hint sentence names the Build Me a Team button above by its one name; the card's own buttons are the list just checked */ (NEW ? 'welcome card repeats "Build Me a Team"' : 'welcome card repeats "Build me a team"')); }
+  if (NEW) { ok(/New here\?/.test(w), 'welcome card has no "New here?" heading'); /* Sim Q4c (Nov 18): "New here?" replaces Fight Night's "How fight night works." */ for (const s of ['Get a team', 'Read your Strength Score', 'Plan each match', 'Copy a Top Team', 'Got It']) has(w, s, 'welcome card'); ok(NEW || !/Build me a team/i.test(w), /* new: the hint sentence names the Build Me a Team button above by its one name; the card's own buttons are the list just checked */ (NEW ? 'welcome card repeats "Build Me a Team"' : 'welcome card repeats "Build me a team"')); }
   else for (const s of ['How NastyPlot works', 'Get a team', 'Read your scouting report', 'Plan each match', (NEW ? 'Build Me a Team' : 'Build me a team'), 'Copy a top team', 'Got it']) has(w, s, 'welcome card');
   await r.ui.tapText('Got it'); ok(!(await r.ui.welcomeCardText()), 'card still there after Got it'); await r.ui.reload(); ok(!(await r.ui.welcomeCardText()), 'card came back after reload'); await r.close();
-  const back = await homePage(); ok(!(await back.ui.welcomeCardText()), 'returning visitor sees the welcome card'); await back.close(); });
+  const back = await homePage(); if (NEW) await back.ui.go('Home', 1500); ok(!(await back.ui.welcomeCardText()), 'returning visitor sees the welcome card'); await back.close(); });
 
 t('HOME-13', 'What\'s New fold after an update; × dismisses it for good; never for first-time visitors', async () => {
   // the kit re-seeds stored keys on every reload, so seed this one by hand once

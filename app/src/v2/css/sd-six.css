@@ -18,6 +18,14 @@
 .sds-h{position:relative;z-index:3;margin:var(--s2) 0 0;font-size:var(--d-sdsix);line-height:1;color:var(--on-plate)}
 .sds-h span{display:block}
 .sds-note{position:relative;z-index:3;margin:var(--s3) 0 0;font:500 var(--t15)/1.5 var(--b);color:color-mix(in srgb,var(--on-plate) 74%,transparent)}
+/* the first-visit welcome (Sim Q4c A): a blue rule at its left, no box (ink band + words only) */
+.sds-wl{position:relative;z-index:3;margin:var(--s6) 0 var(--s2);padding:var(--s4) 0 var(--s4) var(--s5);border-left:4px solid var(--plot);color:var(--on-plate)}
+.sds-wlh{margin:0 0 var(--s3);font-size:var(--t20);line-height:1.2}
+.sds-wl ol{margin:0;padding:0;list-style:none;counter-reset:sdw;display:grid;gap:var(--s3);max-width:60ch}
+.sds-wl li{counter-increment:sdw;display:grid;grid-template-columns:var(--s8) minmax(0,1fr);column-gap:var(--s2);font:400 var(--t15)/1.5 var(--b);color:color-mix(in srgb,var(--on-plate) 80%,transparent)}
+.sds-wl li::before{content:counter(sdw);grid-row:span 2;font:800 var(--t20)/1.2 var(--u);font-style:italic;font-synthesis:style;color:var(--plate-link)}
+.sds-wl li b{font:700 var(--t16)/1.5 var(--b);color:var(--on-plate)}
+.sds-wla{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s6);margin:var(--s5) 0 0}
 .sds-rings{list-style:none;margin:var(--s4) 0 0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));container-type:inline-size;
   --cw:16.66cqi;--sw:33cqi;--sh:38cqi;--rw:14cqi}
 .sds-rings[data-named="4"],.sds-rings[data-named="5"],.sds-rings[data-named="6"]{--sw:25cqi;--sh:33cqi} /* a full six stands closer, as a group photo */

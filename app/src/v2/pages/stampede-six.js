@@ -53,11 +53,19 @@ V2.sdSix = () => { const E = V2.esc, ms = members(), has = ms.length > 0, C = ho
     slots = ord ? ord.map(one).join('') : Array.from({length: 6}, (_, i) => at(i) ? one(at(i)) : open(i)).join(''); }
   const eye = has ? `<p class="sds-k">Your six · ${E(title)}${wx ? ` · <span class="sds-wx">${E(wx)}</span>` : ''}</p>` : `<p class="sds-k">Your six goes here.</p>`;
   const note = sample ? `<p class="sds-note">A sample team, here to show how NastyPlot works.</p>` : '';
+  // the first-visit welcome (HOME-12; Sim Q4c A, Nov 18: here in the six band, under the sample-team note, headed "New here?"): until
+  // "Got It" or Copy a Top Team is tapped (cc2.welcomed, the same key and handler as today's Home: home.js [data-hmwelcome])
+  let welcomed = true; try { welcomed = !!LS.get('cc2.welcomed', ''); } catch (e) {}
+  const wl = welcomed ? '' : `<section class="sds-wl" aria-labelledby="sds-wlh"><h3 class="u sds-wlh" id="sds-wlh">New here?</h3><ol>
+      <li><b>Get a team</b><span>Let us build one from real winning teams, copy a top team, or type your own six.</span></li>
+      <li><b>Read your Strength Score</b><span>How strong your six is, its Matchups against the top threats, and exactly what to change.</span></li>
+      <li><b>Plan each match</b><span>Scout their six, see who moves first, run the damage, and get a turn 1 plan.</span></li></ol>
+    <p class="sds-wla"><a class="np-btn sds-btn" href="#tournaments" data-hmwelcome>Copy a Top Team</a><button type="button" class="np-link sds-lk" data-hmwelcome>Got It</button></p></section>`;
   const pair = g => g.map(m => E(m.d)).join(' + ');
   const say = !has ? `<p class="sds-say">Let us build one from real winning teams, copy a top team, or type your own six.</p>` : '';
   const gp = !has ? '' : P ? `<p class="sds-gp sds-plan"><strong class="u">Game Plan</strong> ${E(P.vs)}: lead <b>${pair(P.lead)}</b>${P.back.length ? `, back ${pair(P.back)}` : ''}${P.bench.length ? `, bench ${pair(P.bench)}` : ''}.</p>`
     : `<p class="sds-gp sds-plan"><strong class="u">Game Plan</strong> Add at least four Pokémon and NastyPlot plans your four and two leads.</p>`;
-  const line = `<div class="sds-part sds-line">${eye}<h2 class="u sds-h" id="sds-h">Call six <span>out of the herd.</span></h2>${note}
+  const line = `<div class="sds-part sds-line">${eye}<h2 class="u sds-h" id="sds-h">Call six <span>out of the herd.</span></h2>${note}${wl}
     <ol class="sds-rings" data-named="${named}" aria-label="${has ? 'Your six' : 'Your six: empty. The three most used in tournaments stand in three rings'}">${slots}</ol>
     ${!has && top3.length ? '<p class="sds-cap1">Share of tournament teams using each</p>' : ''}${say}
     <div class="sds-acts"><a class="np-btn sds-btn" href="#build">Build Me a Team</a><button type="button" class="np-link sds-lk" data-v2homeimport>Import a Team ›</button></div></div>`;

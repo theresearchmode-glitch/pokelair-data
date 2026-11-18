@@ -153,7 +153,7 @@ if (process.env.ONLY === 'MQ') { await MQ(); await b.close(); console.log(`v2-mi
 //   One check per answer applied; each failed on the build before its change. ONLY=HQ runs these alone.
 const HQ = async () => {
   const hq = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: o.rm || 'no-preference'}); const q = await ctx.newPage();
-    await q.addInitScript(o => { window.__PL_TEST = 1; try { if (o.fresh) localStorage.clear(); for (const [k, v] of Object.entries(o.ls || {})) localStorage.setItem(k, v); } catch (x) {} }, {fresh: !!o.fresh, ls: o.ls || {}});
+    await q.addInitScript(o => { window.__PL_TEST = 1; try { if (sessionStorage.getItem('hq')) return; sessionStorage.setItem('hq', '1'); /* once: a reload keeps what the page saved */ if (o.fresh) localStorage.clear(); for (const [k, v] of Object.entries(o.ls || {})) localStorage.setItem(k, v); } catch (x) {} }, {fresh: !!o.fresh, ls: o.ls || {}});
     await q.goto('file://' + PAGE + (o.hash || '#home')); await q.waitForTimeout(o.wait || 2500); if (o.night) { await q.evaluate(() => V2.setTheme('night')); await q.waitForTimeout(300); }
     const r = o.fn ? await q.evaluate(o.fn) : null; if (o.keep) return {q, ctx, r}; await ctx.close(); return r; };
   // Q6 A: the hero's motion is on by default (no flag): the surge on arrival, the moving ticker with its pause button; reduced motion: none of it
@@ -188,6 +188,20 @@ const HQ = async () => {
       const R = V2.sdhRows().slice(0, 6), named = R.filter(x => [...S.querySelectorAll('.sdh-plate[data-v2mon], .sdh-tick ul:not([aria-hidden]) li:not([hidden]) button[data-v2mon]')].some(b => b.dataset.v2mon === x.n && b.getAttribute('aria-label'))).length;
       return JSON.stringify({dark, named}); })()`)}).then(x => JSON.parse(x)); if (r.dark.length || r.named < 6) tg.push(`${w}: ${JSON.stringify(r)}`); }
     ok(!tg.length, `HQ tags (Sim, Nov 18): no dark name tag in the hero at 320-2560; the six highest rated stay named buttons (white plates, then the ticker)${tg.length ? ': ' + tg.join(' | ') : ''}`); }
+  // Q4c A: the first-visit welcome (HOME-12) is in the six band under the sample-team note, headed "New here?", with the three steps,
+  // Copy a Top Team (Winning Teams) and Got It; Got It hides it for good; a returning visitor never sees it; nothing spills, 320-1440
+  { const wl = []; for (const w of [320, 390, 820, 1440]) { const {q, ctx} = await hq(w, 900, {rm: 'reduce', fresh: true, keep: true});
+      const r = await q.evaluate(() => { const c = document.querySelector('#main .sds-line .sds-wl'); if (!c) return {none: 1}; const prev = c.previousElementSibling, R = c.getBoundingClientRect(), bad = [];
+        for (const e of c.querySelectorAll('*')) { if (!e.getClientRects().length) continue; const x = e.getBoundingClientRect(); if (x.right > R.right + 1 || x.left < R.left - 1) bad.push(e.textContent.trim().slice(0, 20)); if (parseFloat(getComputedStyle(e).fontSize) < 13) bad.push('small'); }
+        return {after: prev && prev.className, h: (c.querySelector('h3') || {}).textContent, steps: [...c.querySelectorAll('li b')].map(b => b.textContent).join('|'), copy: (c.querySelector('a[data-hmwelcome]') || {}).getAttribute && c.querySelector('a[data-hmwelcome]').getAttribute('href'),
+          got: !!c.querySelector('button[data-hmwelcome]'), taps: [...c.querySelectorAll('a,button')].every(e => e.getBoundingClientRect().height >= 44), bad, hs: document.documentElement.scrollWidth - innerWidth}; });
+      let gone = null; if (!r.none) { for (let k = 0; k < 3; k++) { const g = q.locator('#main .sds-wl button[data-hmwelcome]'); if (!(await g.count())) break; await g.click(); await q.waitForTimeout(500); } /* again if a late data redraw swallowed the tap (shared machine) */
+        /* "for good": the key is saved, and the page drawn again from it (not a reload: the kit's once-only clear can't tell a reload from a first visit) */
+        gone = await q.evaluate(() => { const k = localStorage.getItem('cc2.welcomed'); V2.redraw(); return !!k && !document.querySelector('#main .sds-wl') || 'key ' + k; }); }
+      await ctx.close();
+      if (r.none || r.after !== 'sds-note' || r.h !== 'New here?' || r.steps !== 'Get a team|Read your Strength Score|Plan each match' || r.copy !== '#tournaments' || !r.got || !r.taps || r.bad.length || r.hs > 0 || gone !== true) wl.push(`${w}: ${JSON.stringify({...r, gone})}`); }
+    const back = await hq(1440, 900, {ls: {'cc2.welcomed': '"1"'}, fn: () => !!document.querySelector('#main .sds-wl')}); if (back) wl.push('a returning visitor sees it');
+    ok(!wl.length, `HQ Q4c (Sim: A, "New here?"): the first-visit welcome sits in the six band under the sample note (three steps, Copy a Top Team, Got It hides it for good), never for a returning visitor, nothing spills 320-1440${wl.length ? ': ' + wl.join(' | ').slice(0, 600) : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----
