@@ -1,0 +1,84 @@
+From 777dea93a695d1009ad05d8fdbc651b0170da3ce Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 18 Nov 2026 09:57:43 +0000
+Subject: [PATCH 4/4] First visit: measured result of the 4 late files in
+ first-visit-nov18.md
+
+The freeze after the first screen is about 300 ms per file (medians 210-301, worst 360), down from about 800 ms in one piece.
+Total blocking is up about 1 s; main content about 0.4 s sooner on slow 4G.
+
+Claude-Session: https://claude.ai/code/session_01YGeTVQdFPaKNkn33jSEpxs
+---
+ docs/rebuild/research/first-visit-nov18.md | 59 ++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
+
+diff --git a/docs/rebuild/research/first-visit-nov18.md b/docs/rebuild/research/first-visit-nov18.md
+index 6fe3359b..37ddcb6b 100644
+--- a/docs/rebuild/research/first-visit-nov18.md
++++ b/docs/rebuild/research/first-visit-nov18.md
+@@ -360,3 +360,62 @@ Checks (all on the build rebased onto d7a476bc):
+   same end state as the one-file page, 0 sync loads, 0 errors". Late pages showed the loading panel while held. With the file
+   answering 404: cold `#calc` says "This page didn't load."; Home draws as normal; no errors.
+ - Not run: the behaviour harness (B-build) on the split build with `HTTP=1`.
++
++## Change 3 again: 4 late files, loaded one at a time (Wed Nov 18, 4:35 AM by the clock)
++
++Why: the one late file froze the phone for about 800 ms when it ran (above). The coordinator held the change back until that was cut.
++
++What changed:
++- `parts-v2.json` "late" is now 4 groups by page, one file each:
++  1. Battle, Test run, their replay and Test run data (`v2-late-1.js`, 57 KB);
++  2. Meta, Usage, Sets, Guide, set and weekly data (`v2-late-2.js`, 62 KB);
++  3. Calc, Types, Practice, Speed, their data (`v2-late-3.js`, 55 KB; needs file 1);
++  4. Events, This Week, Track, Compare, the share images (`v2-late-4.js`, 67 KB; needs files 1 and 2).
++- `app/split-late.mjs`: names shared between late files go through `V2.lateReg`. A file that uses another file's names or V2 names
++  lists it as a dependency. The build refuses loops and names defined in two places.
++- `app/src/v2/late.js`:
++  - when the page is idle after today's numbers, the files load one at a time, with a 400 ms gap; each runs in its own task;
++  - a late page opened early asks for its own file and the ones it needs at once (fetched together, run one per task);
++  - a held tap waits only for the files it needs;
++  - `fetchPriority = 'high'`. Without it, Home's crowd of sprites held files 2-4 back about 12 s on 4G (one run: file 1 at 3.8 s,
++    file 2 at 15.6 s). With it, all four ran between 3.3 and 6.1 s.
++- Artifact files: +4 (v2-late-1.js to v2-late-4.js), not +1. The Preview kit copies them and its README lists them.
++
++Measured (fv.cjs, phone 412x823, 4x CPU, CDP 4G / slow 4G, 3 interleaved runs, local gzip server, 12 s watched after load so every
++late file is counted; load average 1.2-3.9). Before = today's split build (changes 1+2), after = with the 4 late files. Medians
++[min-max], ms:
++
++| Case | Main content | Longest task after main content | Longest task overall | Total blocking |
++|---|---|---|---|---|
++| My Team 4G | 2,799 → 2,771 | 131 → 301 [264-324] | 380 → 338 | 1,346 → 2,140 |
++| My Team slow 4G | 8,371 → 7,988 | 92 → 320 [303-349] | 403 → 388 | 1,403 → 2,466 |
++| Home 4G | 3,140 → 3,258 [2,878-3,285] | 178 → 339 [285-343] | 615 → 611 | 1,627 → 2,690 |
++| Home slow 4G | 8,413 → 8,013 | 279 → 354 [278-360] | 528 → 507 | 1,624 → 2,390 |
++
++Each late file's run, all 12 split runs (the longest a tap can wait if it lands as that file starts): file 1 293 [255-345],
++file 2 210 [179-252], file 3 301 [263-360], file 4 238 [217-339].
++
++- In plain words: the freeze after the first screen went from about 800 ms to about 300 ms, in four short pieces instead of one.
++  Medians are 210-301 ms per file; the worst single run was 360 ms. That is "about 300", not under it.
++- The work itself did not shrink: total blocking is up about 0.8-1.1 s against the build without change 3, as four tasks after the
++  first screen. The one-file and before builds prepare this code while the script downloads, off the main thread.
++- Main content: about 0.4 s sooner on slow 4G (My Team and Home). On 4G within the noise (My Team −28 ms; Home +118 ms, its after
++  runs spread 2,878-3,285).
++- A tap time was not measured directly: the "tap waits" numbers are the length of the task the tap would wait behind.
++- Files 1 and 3 are the biggest freezes. battle.js alone (43 KB) is about 145 ms of file 1. Getting both under 300 would take a fifth
++  file, or splitting battle.js.
++
++Checks (on the build rebased onto aae071b3):
++- `cmp` of the one-file page built at aae071b3 and with this change, for `--v2`, `--v2 --preview-data`,
++  `--v2 --art=v2art/ --preview-data --one-art-size` and `--v2 --public --one-art-size`: "cmp: identical" all four.
++- blocked.cjs (no late file ever answers): "all 30 views: same text and HTML with the late file blocked; 0 early loads; 0 errors".
++- nav.cjs (each late file held back 5 s): "all 12 cases: same end state as the one-file page, 0 sync loads, 0 errors". New cases:
++  cold `#events` (files 1, 2 and 4), `#sets` (file 2), `#practice` (files 1 and 3). With the files answering 404, cold `#calc` and
++  `#events` say "This page didn't load."; Home draws as normal.
++  - Home's Prep for this team showed different text once: the 4 s "Opponent set" toast had gone when the page was read. Read 1.5 s after
++    the move to Battle, the text matched the one-file page (prep.cjs, same hash 0a26470a).
++- same-all.cjs (all 29 pages at 1280 and 390, over http, 10 s to settle): "all 58 views: same text; 0 page errors or console
++  errors/warnings; 0 early (synchronous) late loads in B".
++- `DIR=app/dist node app/test/v2-split.mjs` on a `--v2 --preview-data --split` build: "v2-split:all passed" (SPL-1 to SPL-4).
++- `PAGE=app/dist/v2.html node app/test/v2-minors.mjs` (one-file `--v2 --preview-data`): "v2-minors:all passed", 220 pass, 0 FAIL.
++- Not run: the behaviour harness (B-build) on the split build.
+-- 
+2.43.0
+
