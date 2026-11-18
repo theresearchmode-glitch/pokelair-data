@@ -254,6 +254,19 @@ const HQ = async () => {
       return {parcel: vis('.pr-parcel'), stamps: vis('.sdp-stamps'), other: vis('.sdp-other'), more: vis('.dp-more'), name: vis('.dp-name, .dp-mast'), bar: vis('.dp-nbar'), all: [...s.querySelectorAll('.sdp-all')].filter(e => e.getClientRects().length).length, h: Math.round(s.getBoundingClientRect().height), hs: document.documentElement.scrollWidth - innerWidth}; }});
       const okp = phone ? r.parcel === 1 && !r.stamps && !r.other && !r.more : r.parcel >= 1 && (r.stamps || r.other || r.more); if (!okp || r.all !== 2 || r.hs > 0) px.push(`${w}: ${JSON.stringify(r)}`); }
     ok(!px.length, `HQ Post X (Sim, Nov 18): phone Home's post band is one parcel and the front page (no stamps, second slip or more stories) under 700; 700+ unchanged; both "All ›" links stay${px.length ? ': ' + px.join(' | ') : ''}`); }
+  // Sim (Nov 18): Team Preview Practice takes Test Run's small plate (700-2560): its picture is a team preview of live Pokémon (six, two rows
+  // of three, 44px+) with "Pick 4"; the small plates' rows stay even (same top and height, full rows); Test Run is in More tools
+  { const pr = []; for (const w of [700, 820, 1100, 1440, 1920, 2560]) { const r = await hq(w, 900, {rm: 'reduce', fn: () => JSON.parse(window.__ev(`(() => { const s = document.querySelector('#main .sdt');
+      const sm = [...s.querySelectorAll('.sdt-grid > .sdt-sm')].filter(e => e.getClientRects().length), names = sm.map(e => e.querySelector('.sdt-go').textContent);
+      const rows = {}; for (const e of sm) { const b = e.getBoundingClientRect(); (rows[Math.round(b.top / 4)] = rows[Math.round(b.top / 4)] || []).push(Math.round(b.height)); }
+      const pp = s.querySelector('.sdt-pr .sdt-pp'), st = pp ? [...pp.querySelectorAll('.np-mon .st')].map(e => Math.round(e.getBoundingClientRect().width)) : [];
+      const want = (META.events ? homeChamp() : null), six = want ? want.six.map(x => x.p.n).join() : '';
+      return JSON.stringify({names: names.join('|'), rows: Object.values(rows), sprites: st.length, small: st.length ? Math.min(...st) : 0, pick: pp ? (pp.querySelector('.sdt-pick') || {}).textContent : '',
+        live: !six || !!pp && [...pp.querySelectorAll('.np-mon')].length === 6, test: [...s.querySelectorAll('.sdt-more a')].some(a => a.getAttribute('href') === '#gauntlet' && a.getClientRects().length),
+        prMore: [...s.querySelectorAll('.sdt-more a')].some(a => a.getAttribute('href') === '#practice')}); })()`))});
+      const even = r.rows.every(h => h.length === r.rows[0].length && Math.max(...h) - Math.min(...h) <= 2);
+      if (r.names !== 'Winning Cores|Archetypes|Team Preview Practice|Popular Sets' || !even || r.sprites !== 6 || r.small < 44 || r.pick !== 'Pick 4' || !r.test || r.prMore) pr.push(`${w}: ${JSON.stringify(r)}`); }
+    ok(!pr.length, `HQ Practice plate (Sim, Nov 18): Team Preview Practice takes Test Run's small plate at 700-2560 (team preview of six live Pokémon, 44px+, "Pick 4"), the small plates' rows stay even, Test Run is in More tools${pr.length ? ': ' + pr.join(' | ').slice(0, 700) : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----
@@ -863,8 +876,9 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
         /* and every name shown under a sprite is on top: the middle of each of its lines hits the name itself, not a neighbour's sprite */
         vs.scrollIntoView({block: 'center'}); for (const mn of document.querySelectorAll('#main .sdt-side .sdt-mn')) { if (!mn.getClientRects().length) continue; const rg = document.createRange(); rg.selectNodeContents(mn);
           for (const l of rg.getClientRects()) { if (!l.width) continue; const hit = document.elementFromPoint(l.left + l.width / 2, l.top + l.height / 2); if (!hit || !mn.contains(hit)) o.bt = `name "${mn.textContent}" covered`; } } }
-      /* 3. Test Run: no empty middle (the space the sprites leave between the plate's top and its words, 32px at most), no sprite under 44px */
-      const t = document.querySelector('#main .sdt-tr'); if (!t) o.tr = 'no picture'; else { const P = R(t.closest('.sdt-p')), X = R(t.closest('.sdt-p').querySelector('.sdt-tx')), S = [...t.querySelectorAll('.np-mon .st')].map(R);
+      /* 3. Test Run (Sim, Nov 18: Team Preview Practice took its plate, so the same rule is checked on Practice's picture): no empty middle
+         (the space the sprites leave between the plate's top and its words, 32px at most), no sprite under 44px */
+      const t = document.querySelector('#main .sdt-tr, #main .sdt-pp'); if (!t) o.tr = 'no picture'; else { const P = R(t.closest('.sdt-p')), X = R(t.closest('.sdt-p').querySelector('.sdt-tx')), S = [...t.querySelectorAll('.np-mon .st')].map(R);
         const empty = Math.round(X.top - Math.max(...S.map(r => r.bottom)) - 12 + Math.max(0, Math.min(...S.map(r => r.top)) - P.top)), small = Math.round(Math.min(...S.map(r => r.width)));
         if (empty > 32 || small < 44) o.tr = `empty ${empty}px, smallest sprite ${small}px`; }
       /* 4. Damage Calc: the spare height is shared above and below the picture (within 8px), or there is none to speak of (24px at most) */

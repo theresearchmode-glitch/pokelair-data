@@ -14,13 +14,15 @@
 //   Popular Sets  the top-rated Pokémon without a Mega stone and its most held item, Best data (setFor, as Popular Sets opens)
 //   Events        the count the Events page shows ("events", META.events) and the next event from its calendar
 //   How We Calc.  the count the How We Calculate page shows ("tournament teams", RES.teams)
-// Illustrations with no figure: Battle (your first two, or the top two rated, vs the latest winner's first two) and Test Run (the
-// 4th rated vs the top three). Words new to the site wait on Sim (brief: "Wording that is new").
+// Illustrations with no figure: Battle (your first two, or the top two rated, vs the latest winner's first two). Team Preview Practice
+// shows the latest winner's six as a team preview (live), with "Pick 4". Words new to the site wait on Sim (brief: "Wording that is new").
 V2.SDT_TYPES = ['Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'];
 V2.SDT_WXTY = {tw: 'Flying', sun: 'Fire', rain: 'Water', sand: 'Ground', snow: 'Ice', grassy: 'Grass', psy: 'Psychic', tr: 'Ghost', elec: 'Electric'}; // as the Archetypes page's scenes
 // the twelve tools: name, page (the same hashes as today's Home list V2.HOME_TOOLS and the menu)
 V2.SDT_GO = {'Speed Tiers': 'speed', 'Type Chart': 'types', Ratings: 'meta', 'Winning Teams': 'tournaments', Battle: 'battle', 'Damage Calc': 'calc',
-  'Winning Cores': 'build', Archetypes: 'archetypes', 'Test Run': 'gauntlet', 'Popular Sets': 'sets', Events: 'events', 'How We Calculate': 'method'};
+  'Winning Cores': 'build', Archetypes: 'archetypes', 'Team Preview Practice': 'practice', 'Popular Sets': 'sets', Events: 'events', 'How We Calculate': 'method'};
+// Sim, Nov 18: "team preview practice should get one of the big tabs. its such a fun and interesting concept." Practice takes Test Run's
+// plate; Test Run joins More tools (every tool stays one tap away)
 // cached per ratings map, as V2.sdData (review, Nov 18): the same sdData object (it changes when ratings() does) and the same day (the
 // next event) give the same plates, so a redraw doesn't run coreRows, bestHitOn, setFor and arData again
 V2._sdt = V2._sdt || {};
@@ -80,8 +82,10 @@ V2.sdTools = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n => 
   const cores = V2.sdtPlate('Winning Cores', 'sdt-sm', 'Pairs that keep winning together.', 'Pairs that win.', core);
   const A = X.arch, arch = V2.sdtPlate('Archetypes', 'sdt-sm', A.length >= 2 ? `${E(A[0].name)}, ${E(A[1].name)} and the other ways teams win.` : 'The ways teams win right now.', A.length >= 2 ? `${E(A[0].name)}, ${E(A[1].name)} and more.` : 'How teams win.',
     A.length ? `<div class="sdt-wx">${A.map(a => `<span class="sdt-wxi">${a.mon ? V2.sdtArt(a.mon.n) : ''}<span class="sdt-chip" style="--ty:var(--ty-${a.ty})">${E(a.name)}</span></span>`).join('')}</div>` : '');
-  const tr = R.length >= 4 ? `<div class="sdt-tr" aria-hidden="true">${V2.sdtArt(R[3].n, 'one')}<span class="sdt-three">${R.slice(0, 3).map(x => V2.sdtArt(x.n)).join('')}</span></div>` : '';
-  const test = V2.sdtPlate('Test Run', 'sdt-sm sdt-ink', 'Try your team against the top teams.', 'Spar with top teams.', tr);
+  // Team Preview Practice: a team preview, two rows of three (the latest winner's six, live; the top six rated without one), "Pick 4"
+  const pv = (C ? C.six.map(x => x.p.n) : R.slice(0, 6).map(x => x.n)).slice(0, 6);
+  const pp = pv.length === 6 ? `<div class="sdt-pp" aria-hidden="true"><span class="sdt-pp6">${pv.map(n => V2.sdtArt(n)).join('')}</span><span class="u sdt-pick">Pick 4</span></div>` : '';
+  const prac = V2.sdtPlate('Team Preview Practice', 'sdt-sm sdt-ink sdt-pr', 'Practice picking your four at team preview.', 'Practice picking your four.', pp);
   const S2 = X.set, set = S2 ? `<div class="sdt-set">${V2.sdtMon(S2.x.n, {name: false, say: 'most held item ' + S2.item, sub: `<span class="sdt-si"><b class="sdt-mn">${nm(S2.x.n)}</b><span class="sdt-item">${E(S2.item)}</span></span>`})}</div>` : '';
   const sets = V2.sdtPlate('Popular Sets', 'sdt-sm', 'The items and moves top players run.', 'Items and moves.', set);
   // Events and How We Calculate: two mirrored blocks with the big numbers at the outer edges
@@ -91,7 +95,7 @@ V2.sdTools = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n => 
   // More tools (lead, Nov 18): today's Home links 18 tools; the six without a plate stay one tap away as quiet text links
   const more = (V2.HOME_TOOLS || []).filter(([n]) => !V2.SDT_GO[n]), moreH = more.length ? `<nav class="sdt-more" aria-label="More tools"><h3 class="sdt-mh">More tools</h3><ul>${more.map(([n, d, to]) => `<li><a class="np-link" href="#${to}" data-sdtool="${E(n)}" title="${E(d)}">${E(n).replace(/ (\S+)$/, '\u00a0$1')}\u00a0<span aria-hidden="true">›</span></a></li>`).join('')}</ul></nav>` : '';
   return `<section class="sd-band sd-tools sdt" aria-labelledby="sdt-h"><h2 class="u sdt-h" id="sdt-h">Same herd. <span>Twelve tools.</span></h2>
-    <div class="sdt-grid">${speed}${types}${ratings}${calc}${wins}${battle}${cores}${arch}${test}${sets}</div>${ends}${moreH}</section>`; };
+    <div class="sdt-grid">${speed}${types}${ratings}${calc}${wins}${battle}${cores}${arch}${prac}${sets}</div>${ends}${moreH}</section>`; };
 // names in tight spots (Type Chart, the six, Battle, the race): a name's longest word never spills out of its spot or breaks
 // mid-word; it steps to the approved narrower letters (88%, then 75%, as Home's most-used names do), then breaks with a hyphen
 V2.sdtFit = () => { document.querySelectorAll('.sdt .sdt-mn').forEach(b => { b.style.fontStretch = ''; b.style.hyphens = ''; if (!b.getClientRects().length) return;
