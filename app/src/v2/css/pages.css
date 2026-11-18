@@ -2913,7 +2913,21 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* audit fixes (Nov 15), This Week: small-phone ticket names may break anywhere; Most Used 3 + 2 on small phones; 3x3 weather tiles below
    1280 (9 across cut the numbers at 1100); counts never touch their words; shorter tiles; folds show their open/close mark */
 @media (max-width:389.98px){.wk-tix .tk-name,.tk-name{overflow-wrap:anywhere}}
-@media (max-width:429.98px){.wk-top ul{display:flex;flex-wrap:wrap;justify-content:center;row-gap:var(--s4)}.wk-top li{flex:0 0 33.333%}}
+/* audit v199 #19, Sim Nov 17 (Option A): under 430 the five Most Used are a ranked list in the "Pokémon on the Move" row style (rank,
+   sprite, name, "of teams", the share on the right); the 3 + 2 tiles left a half row and their slanted plates crossed. 430 up keeps the
+   one strip of five tiles (it fits there); the rank and "of teams" show only in the list (name and "of teams" are one cell, as in the
+   On the Move rows) */
+.wk-rk,.wk-tm small{display:none}
+@media (max-width:429.98px){.wk-top ul{display:grid;grid-template-columns:minmax(0,1fr);gap:0}.wk-top li+li{border-top:1px solid var(--rule)}
+  .wk-tm{grid-template-columns:var(--s6) auto minmax(0,1fr) auto;grid-template-areas:"r m n p";align-items:stretch;justify-items:start;column-gap:var(--s3);min-height:var(--tap);padding:var(--s2) 0;text-align:left}
+  .wk-tm::before{display:none}.wk-tm .np-mon{--iw:56px;grid-area:m;align-self:center}
+  .wk-rk{display:flex;align-items:center;grid-area:r;font:900 var(--t22)/1 var(--u);font-style:italic;color:var(--ink-3)}
+  .wk-tm span{display:grid;align-content:center;grid-area:n;padding:0;font:600 var(--t16)/1.4 var(--b);overflow-wrap:break-word;max-width:100%}
+  .wk-tm small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+  .wk-tm b{display:flex;align-items:center;grid-area:p;justify-self:end;font-size:var(--t24)}} /* cells run the row's full height, text centred in them */
+/* under 360 the share is 22 and the sprite 48 with 8 px gaps, so the name column (110 px at 320) holds the longest one-word name
+   ("Crabominable", 107 px) without breaking it; 28 broke "Rillaboom" and "Kingambit" mid-word at 320 */
+@media (max-width:359.98px){.wk-tm{column-gap:var(--s2)}.wk-top .wk-tm .np-mon{--iw:48px}.wk-tm b{font-size:var(--t22)}}
 @media (max-width:1279.98px){.wk-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .wk-chg b{white-space:nowrap}.wk-cn>span{display:inline-flex;align-items:baseline;gap:var(--s1);white-space:nowrap}
 @media (max-width:389.98px){.wk-cn{grid-template-columns:6em repeat(2,minmax(0,1fr))}.wk-cn b{font-size:var(--t17)}}
@@ -3084,8 +3098,17 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-scale{position:relative;height:var(--s5);margin:0 var(--nr) 0 112px;font:600 var(--t13)/1 var(--b);color:var(--ink-3)}.pk-scale span{position:absolute;left:var(--v);transform:translateX(-50%)}.pk-scale span:first-child{transform:none}.pk-scale span:last-child{transform:translateX(-100%)}
 .pk-share{display:flex;height:var(--s6);margin-top:var(--s2);gap:2px}.pk-share i{display:flex;align-items:center;justify-content:center;min-width:0;background:var(--c);color:var(--on);font:800 var(--t13)/1 var(--b);font-style:normal;overflow:hidden;white-space:nowrap;transform:skewX(-10deg)}
 .pk-more{margin:0}
-@media (max-width:899.98px){.pk-top{grid-template-columns:minmax(0,1fr)}.pk-card{max-width:360px;width:100%;justify-self:center}.pk-is h1{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)} /* iPhone/iPad: the name shows once, on the Card (brief 1) */
+@media (max-width:899.98px){.pk-is h1{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)} /* iPhone/iPad: the name shows once, on the Card (brief 1) */
   .pk-acts .np-btn,.pk-acts .np-btn2{flex:1 1 160px}}
+@media (max-width:699.98px){.pk-top{grid-template-columns:minmax(0,1fr)}.pk-card{max-width:360px;width:100%;justify-self:center}}
+/* audit v199 #18, Sim Nov 17 (Option A): from 700 (iPad portrait) the Card sits left and the rating block right, as on desktop (it was a
+   360 px Card centred with ~150 px empty each side at 768); 5 : 6 columns, the Card centred on the block's height */
+@media (min-width:700px) and (max-width:899.98px){.pk-top{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:var(--s8);align-items:center}.pk-rate em{white-space:nowrap}}
+/* the rating column is 304-385 px here: at 700-849 the tier word and the three numbers go one step down the scale (34 -> 28), so the tier
+   never wraps and 0.1% 39% 152 keep a clear gap; at 700-799 (column 304-358 px) the rating itself is 96 (not 120) and its tier 24, the only
+   sizes where the widest one ("80 A tier") fits beside it (120 ran 58 px past the column at 700). Measured on all 65 ratings shown, 700-899 */
+@media (min-width:700px) and (max-width:849.98px){.pk-rate em,.pk-n b{font-size:var(--t28)}}
+@media (min-width:700px) and (max-width:799.98px){.pk-rate>b{font-size:var(--d96)}.pk-rate em{font-size:var(--t24)}}
 @media (max-width:699.98px){.pk-stats{padding:var(--s5) var(--s4) var(--s6)}.pk-lane{grid-template-columns:88px minmax(0,1fr);gap:var(--s3)}.pk-sl{padding:var(--s1) var(--s2);white-space:nowrap}.pk-lanes{background-position:100px 0;background-size:calc(100% - 100px - var(--nr)) 100%}.pk-scale{margin-left:100px}.pk-scale span:nth-child(even){display:none} /* phones: the plates fit 'Sp. Atk' on one line; the scale shows 0, 80, 160 */
   .pk-share span{display:none}.pk-rate>b{font-size:var(--d64)}.pk-n b{font-size:var(--t26)}}
 /* narrow phones (under 400): each stat on two lines, plate and number on top, the streak under them at the panel's full width (beside the
@@ -3176,6 +3199,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* Forms (Sim, Nov 15: A): a strip of forms under the top, and 'Forms side by side' as the last part */
 .pk-forms{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:var(--s3)}@media (max-width:1099.98px){.pk-forms{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:max-content;overflow-x:auto;padding:0 var(--s2) var(--s2);scroll-padding-inline:var(--s2);scroll-snap-type:x mandatory}.pk-forms a{scroll-snap-align:start}} /* one even row; under 1100 it scrolls sideways (no lone tiles) */.pk-forms a{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s4) var(--s1) var(--s1);background:var(--wash);color:var(--ink);text-decoration:none;transform:skewX(-10deg)}.pk-forms a>*{transform:skewX(10deg)}
 .pk-forms a[aria-current]{background:var(--pk-main);color:var(--on-pk-main)}.pk-forms a[aria-current] .mg{color:inherit} /* the blue "Mega" read 1.00:1 on the blue tile at night */.pk-forms span{display:grid}.pk-forms b{font:700 var(--t15)/1.3 var(--b)}.pk-forms small{font:500 var(--t13)/1.4 var(--b);opacity:.85}.pk-forms a[aria-current] small{opacity:1} /* pre-launch 5c (Nov 17): 85% opacity read 4.14:1 on the current form's blue tile; full, 5.5:1 */
+/* audit v199 #18 (Nov 17): the forms strip from 700 to 1099: even tiles in full rows (it was a sideways-scrolling strip of tiles at their own width, 2/3 of the row) */
+@media (min-width:700px) and (max-width:1099.98px){.pk-forms{grid-template-columns:repeat(var(--fc),minmax(0,1fr));grid-auto-flow:row;grid-auto-columns:auto;overflow-x:visible;padding:0;scroll-snap-type:none}}
 .pk-ftw{overflow-x:auto}@media (max-width:899.98px){.pk-ft th[scope=row]{position:sticky;left:0;z-index:1;background:var(--bg)}.pk-ftw{scroll-snap-type:x proximity}.pk-ft th[scope=col]{scroll-snap-align:end}} /* phones: the row names stay while the forms scroll */.pk-ft{width:100%;border-collapse:collapse;font:600 var(--t15)/1.4 var(--b)}.pk-ft th[scope=col]{padding:0 var(--s2) var(--s3);vertical-align:bottom}.pk-ft th[scope=col] b{display:block;font:900 var(--t17)/1.2 var(--u);font-style:italic}
 .pk-ft th[scope=row]{padding:var(--s2) var(--s3) var(--s2) 0;text-align:left;font:900 var(--t17)/1.3 var(--u);font-style:italic;color:var(--plot-text);white-space:nowrap}
 .pk-ft td{padding:var(--s2);text-align:center;border-top:1px solid var(--rule)}.pk-ft td.best{background:var(--plot);color:var(--on-mark);font-weight:800}

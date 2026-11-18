@@ -435,5 +435,41 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
       return spread < 0.5 && m.every(x => x.h >= 44) && c && mb <= c.top && c.top - mb <= 8 ? 'ok' : `words ${spread.toFixed(1)}px apart, mark gap ${c ? (c.top - mb).toFixed(1) : '-'}, tap ${Math.min(...m.map(x => x.h)).toFixed(0)}px`; }); } }
   const bb = Object.entries(bar).filter(([, v]) => v !== 'ok');
   ok(!bb.length, `Sim Q5 B (Nov 17): the phone bar's five words sit on one line with the mark just above the current one, 320-699 (${bb.length ? bb.slice(0, 3).map(([k, v]) => k + ' ' + v).join('; ') : '14 of 14 ok'})`); await ctx.close(); }
+{ /* audit v199 #18 (Sim, Nov 17: Option A): from 700 the Pokémon page's Card sits left of the rating block, forms as even tiles; at 700-819
+     the tier word stays on one line and the three numbers keep a clear gap (at 700 'F tier' wrapped and 0.1% 39% 152 nearly touched) */
+  const top = async (w, m) => { const q = await b.newPage({viewport: {width: w, height: 1000}}); await q.goto('file://' + PAGE + '#pokemon=' + m); await q.waitForTimeout(2200);
+    const r = await q.evaluate(() => { const R = s => { const e = document.querySelector(s); return e && e.getBoundingClientRect(); }, c = R('.pk-card'), s = R('.pk-is'), em = document.querySelector('.pk-rate em');
+      const tx = e => { const g = document.createRange(); g.selectNodeContents(e); const a = [...g.getClientRects()]; return {l: Math.min(...a.map(x => x.left)), r: Math.max(...a.map(x => x.right)), n: new Set(a.map(x => Math.round(x.top))).size}; };
+      const nb = [...document.querySelectorAll('.pk-n b')].map(tx), fs = document.querySelector('.pk-forms'), fw = [...document.querySelectorAll('.pk-forms a')].map(a => a.getBoundingClientRect());
+      return {side: !!(c && s && c.right <= s.left && c.top < s.bottom && s.top < c.bottom), tierLines: em ? tx(em).n : 0, gap: Math.round(Math.min(...nb.slice(1).map((x, i) => x.l - nb[i].r))),
+        forms: fw.length, formSpread: fw.length ? Math.round(Math.max(...fw.map(x => x.width)) - Math.min(...fw.map(x => x.width))) : 0, formRows: new Set(fw.map(x => Math.round(x.top))).size, formScroll: fs ? /auto|scroll/.test(getComputedStyle(fs).overflowX) && fs.scrollWidth > fs.clientWidth + 1 : false, /* a sideways scroller with tiles out of view */
+        formOut: fs && fw.length ? Math.round(Math.max(...fw.map(x => x.right)) - fs.getBoundingClientRect().right) : 0}; }); /* the slanted tiles' corners may stick out a few px */
+    await q.close(); return r; };
+  const t768 = await top(768, 'charizard'), t700 = await top(700, 'charizard-mega-y'), t700r = await top(700, 'rotom-wash'), t810 = await top(810, 'dragonite-mega'), t699 = await top(699, 'charizard');
+  ok(t768.side && t768.forms === 3 && t768.formSpread <= 2 && t768.formRows === 1 && !t768.formScroll && t768.formOut <= 8, `audit #18 (Nov 17): at 768 the Card sits left of the rating block and the 3 forms are even tiles in one row (${JSON.stringify(t768)})`);
+  ok(t700.side && t700.tierLines === 1 && t700.gap >= 12 && t700r.tierLines === 1 && t700r.gap >= 12 && t810.tierLines === 1 && t810.gap >= 12, `audit #18: at 700-819 the tier word is on one line and the three numbers are 12px+ apart (94 S tier ${t700.tierLines} line(s), gap ${t700.gap}; Wash Rotom ${t700r.tierLines}, ${t700r.gap}; 80 A tier at 810 ${t810.tierLines}, ${t810.gap})`);
+  ok(t700r.forms === 6 && t700r.formRows === 2 && t700r.formSpread <= 2 && !t700r.formScroll && t700r.formOut <= 8, `audit #18: six forms at 700 sit as 3 + 3 even tiles, nothing hidden off to the side (${JSON.stringify(t700r)})`);
+  ok(!t699.side, `audit #18: under 700 (phones) the Card stays above the rating block (${JSON.stringify(t699)})`);
+  /* the widest rating ('80 A tier') must fit its column at 700-899 (at 700 the 120 px number ran 58 px past it): every number and tier shown */
+  const fit = async w => { const q = await b.newPage({viewport: {width: w, height: 1000}}); await q.goto('file://' + PAGE + '#pokemon=dragonite-mega'); await q.waitForTimeout(2200);
+    const r = await q.evaluate(() => { const nb = document.querySelector('.pk-rate>b'), em = document.querySelector('.pk-rate em'), is = document.querySelector('.pk-is'); let worst = -99, wv = '';
+      for (const n of ['80', '88', '40', '11', '94']) for (const t of ['A', 'S', 'C', 'F']) { nb.textContent = n; em.textContent = t + ' tier'; const R = is.getBoundingClientRect();
+        const o = Math.max(...[...document.querySelectorAll('.pk-rate *')].map(e => e.getBoundingClientRect().right)) - R.right, wide = R.right - document.querySelector('.pk-top').getBoundingClientRect().right;
+        if (Math.max(o, wide) > worst) { worst = Math.round(Math.max(o, wide)); wv = n + ' ' + t; } } return {worst, wv}; }); await q.close(); return r; };
+  const f700 = await fit(700), f768 = await fit(768), f849 = await fit(849);
+  ok(f700.worst <= 0 && f768.worst <= 0 && f849.worst <= 0, `audit #18: the widest rating and tier stay inside the rating column (px past it: 700 ${f700.worst} for ${f700.wv}, 768 ${f768.worst}, 849 ${f849.worst})`); }
+{ /* audit v199 #19 (Sim, Nov 17: Option A): under 430 This Week's Most Used is a ranked 5-row list (rank, sprite, name, 'of teams', share right);
+     it was 3 + 2 tiles whose slanted plates crossed. No name breaks mid-word at 320. 430 up keeps the strip of five tiles */
+  const wk = async w => { const q = await b.newPage({viewport: {width: w, height: 900}}); await q.goto('file://' + PAGE + '#weekly'); await q.waitForTimeout(2000);
+    const r = await q.evaluate(() => { const L = [...document.querySelectorAll('.wk-top li')], R = e => e.getBoundingClientRect(), vis = e => !!e && getComputedStyle(e).display !== 'none';
+      const broken = []; for (const s of document.querySelectorAll('.wk-top .wk-tm span')) { const tn = s.firstChild; if (!tn || tn.nodeType !== 3) continue; let i = 0;
+        for (const wd of tn.data.split(' ')) { const g = document.createRange(); g.setStart(tn, i); g.setEnd(tn, i + wd.length); if (wd && new Set([...g.getClientRects()].map(x => Math.round(x.top))).size > 1) broken.push(wd); i += wd.length + 1; } }
+      const tops = new Set(L.map(e => Math.round(R(e).top))).size, lefts = new Set(L.map(e => Math.round(R(e).left))).size;
+      const pr = L.map(e => Math.round(R(e).right - R(e.querySelector('.wk-tm b')).right)), rk = L.map(e => vis(e.querySelector('.wk-rk')) ? e.querySelector('.wk-rk').textContent : '').join('');
+      return {n: L.length, rows: tops, cols: lefts, ranks: rk, ofTeams: L.filter(e => vis(e.querySelector('.wk-tm small'))).length, shareRight: Math.max(...pr), broken, hs: document.documentElement.scrollWidth - innerWidth}; }); await q.close(); return r; };
+  const w390 = await wk(390), w320 = await wk(320), w429 = await wk(429), w430 = await wk(430), w1280 = await wk(1280);
+  ok(w390.n === 5 && w390.rows === 5 && w390.cols === 1 && w390.ranks === '12345' && w390.ofTeams === 5 && w390.shareRight <= 4, `audit #19 (Nov 17): at 390 Most Used is a ranked list of 5 rows, 'of teams' under each name, the share on the right (${JSON.stringify(w390)})`);
+  ok(w320.rows === 5 && w320.cols === 1 && !w320.broken.length && w320.hs <= 0 && w429.rows === 5 && !w429.broken.length, `audit #19: at 320 and 429 the list holds: 5 rows, no name broken mid-word, no sideways scroll (320 ${JSON.stringify(w320)})`);
+  ok(w430.rows === 1 && w430.cols === 5 && !w430.ranks && !w430.ofTeams && w1280.rows === 1 && w1280.cols === 5 && !w1280.ranks, `audit #19: from 430 the five stay one strip of tiles, no ranks or 'of teams' (430 ${JSON.stringify(w430)}, 1280 rows ${w1280.rows})`); }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

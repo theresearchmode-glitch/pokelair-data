@@ -29,7 +29,7 @@
   /* type: Unbounded (slanted) for headlines and big numbers at 15px and up; Instrument Sans for the rest */
   --u:"Unbounded","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif;
   /* display sizes: the score number and the tagline (design scale "+ display") */
-  --d64:64px;--d120:120px;--d168:168px;--d-hero:clamp(34px,6vw,68px);--unit:.62em;
+  --d64:64px;--d96:96px;--d120:120px;--d168:168px;--d-hero:clamp(34px,6vw,68px);--unit:.62em;
   /* shadow ink and rim light as rgb triplets, for rgba(var(--shade),a) */
   --shade:30,20,50;--rim:255,255,255;
   /* type colours for chips with white text: each measured 4.6:1 or better (Sim, Nov 11: darkened, hue kept) */
