@@ -36,8 +36,8 @@ V2.sdHero = () => {
   // would be cut at the edge)
   const tick = R.slice(2, 20).map((x, j) => `<li data-sdhi="${j + 2}"><button type="button" data-v2mon="${E(x.n)}" aria-label="${E(V2.sdhSay(x))}"><span class="nm u">${V2.keepForm(E(V2.disp(x.n)))}</span> <span class="rt u">${x.r}</span></button></li>`).join('');
   // today's Home order (HOME-06): Score My Team first with a team, Build Me a Team first with none
-  const go = has ? `<a class="sdh-b1" href="#team">Score My Team</a><a class="sdh-b2" href="#build"><span>Build Me a Team</span></a>`
-    : `<a class="sdh-b1" href="#build">Build Me a Team</a><a class="sdh-b2" href="#team"><span>Score My Team</span></a>`;
+  const go = has ? `<a class="sdh-b1" data-sdgo href="#team">Score My Team</a><a class="sdh-b2" data-sdgo href="#build"><span>Build Me a Team</span></a>`
+    : `<a class="sdh-b1" data-sdgo href="#build">Build Me a Team</a><a class="sdh-b2" data-sdgo href="#team"><span>Score My Team</span></a>`;
   const say = R.length ? `Every one of the ${num(R.length)} Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating${D.teams ? `, worked out from ${num(D.teams)} real tournament teams` : ''}.`
     : 'Every Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating.';
   return `<section class="sd-band sd-hero sdh" aria-labelledby="sdh-h">
