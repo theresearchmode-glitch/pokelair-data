@@ -57,7 +57,8 @@ V2.dpParts = post => { const P = Array.isArray(post) ? {news: post, live: [], pa
   const front = all.filter(x => !V2.dpMaint(x)), pool = front.length ? front : all, lead = pool.find(x => !/^interview/i.test(x.type)) || pool[0] || null;
   const S = (P.series || (typeof POST === 'object' && POST && POST.series) || []).map(r => { const g = r.gift ? G.get(r.gift) : null;
     return {month: r.month || '', t: r.name || '', start: r.start || '', end: r.end || '', url: V2.dpSrc(r), battle: r.battle || '', gift: r.mon || (g && (g.mon || g.name)) || ''}; });
-  const round = lead && lead.url ? S.find(r => r.url === lead.url) || null : null, rounds = round ? S.filter(r => r.month.slice(0, 4) === round.month.slice(0, 4)) : [];
+  // the series row: the lead's round when the lead announces one, else the newest round in the news (Nov 18: a balance notice can lead)
+  const round = lead && lead.url ? S.find(r => r.url === lead.url) || null : null, sr = round || all.map(x => S.find(r => x.url && r.url === x.url)).find(Boolean) || null, rounds = sr ? S.filter(r => r.month.slice(0, 4) === sr.month.slice(0, 4)) : [];
   const roundNews = new Set(S.map(r => r.url).filter(Boolean)), rest0 = pool.filter(x => x !== lead && !roundNews.has(x.url));
   const inter = rest0.filter(x => /^interview/i.test(x.type)).slice(0, 3), stories = rest0.filter(x => !inter.includes(x)).slice(0, 2);
   const brief = inter.length ? [] : rest0.filter(x => !stories.includes(x)).slice(0, 4);
@@ -67,7 +68,7 @@ V2.dpParts = post => { const P = Array.isArray(post) ? {news: post, live: [], pa
   const recent = all.filter(x => !V2.dpMaint(x) && dy(x) && dy(x) <= now && dy(x) > now - 365 * 864e5), byType = {};
   for (const x of recent) byType[x.type] = (byType[x.type] || 0) + 1;
   const live = (P.live || []).map(V2.prG).filter(Boolean), coupon = live.find(g => g.code) || null, end = round ? round.end : lead && lead.end;
-  return {all, lead, round, rounds, inter, stories, brief, rest, recent, byType, live, coupon, checked: P.checked || null, end, ended: !!(end && Date.parse(end) < now)}; };
+  return {all, lead, round, sr, rounds, inter, stories, brief, rest, recent, byType, live, coupon, checked: P.checked || null, end, ended: !!(end && Date.parse(end) < now)}; };
 // ---------- the masthead: top line, name, In the post / date / Next event ----------
 V2.dpMast = (D, compact) => { const E = V2.esc, today = new Date(), next = V2.dpNext()[0];
   const top = `<p class="dp-top"><span>No. ${homeNum(D.all.length)} · Late Edition</span>${compact ? `<span>${E(today.toLocaleDateString('en-US', {weekday: 'long', month: 'long', day: 'numeric', year: 'numeric'}))}</span>` : `<span class="dp-topc">Pokémon Champions news, in one paper</span><span>Free · Unofficial</span>`}</p>`;
@@ -87,7 +88,7 @@ V2.dpMonGift = (g, cls, noName) => { const p = V2.byName.get(g), E = V2.esc; if 
 V2.dpSeries = D => { const E = V2.esc, R = D.rounds; if (R.length < 2) return '';
   const cols = R.length <= 7 ? R.length : Math.ceil(R.length / 2), ph = R.length % 3 === 0 ? 3 : R.length % 4 === 0 ? 4 : R.length % 2 === 0 ? 2 : R.length <= 4 ? R.length : 4;
   return `<section class="dp-ser" style="--dp-sc:${cols};--dp-sp:${ph}" aria-label="The series so far"><h3 class="dp-sh u">The series so far, and the gift each round gave out</h3><ol class="dp-sr">${R.map(r => {
-    const d = V2.dpDay(r.month.length === 7 ? r.month + '-15' : r.start), mo = d ? d.toLocaleDateString('en-US', {month: 'short'}) : '', cur = r === D.round;
+    const d = V2.dpDay(r.month.length === 7 ? r.month + '-15' : r.start), mo = d ? d.toLocaleDateString('en-US', {month: 'short'}) : '', cur = r === (D.sr || D.round);
     return `<li class="dp-rd${cur ? ' dp-cur' : ''}"${cur ? ' aria-current="true"' : ''}><b class="dp-mo u">${E(mo)}</b><span class="vh">${E(r.t)}: </span>${r.gift ? V2.dpMonGift(r.gift, 'dp-fs') : '<span class="dp-none">No gift listed</span>'}</li>`; }).join('')}</ol></section>`; };
 V2.dpLead = (D, compact) => { const E = V2.esc, L = D.lead;
   if (!L) return `<section class="dp-lead dp-empty"><p class="dp-k">The news desk</p><h2 class="dp-lh u">No stories yet.</h2><p class="dp-sum">Headlines appear here once the news list is filled. Each one opens the full story at its source.</p></section>`;
