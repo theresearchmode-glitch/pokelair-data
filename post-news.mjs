@@ -14,7 +14,13 @@
 //   node post-news.mjs --dry        print what would change, write nothing
 //   FEED_FILE=path node post-news.mjs   read a saved feed instead of the network (tests: experiments/post-news-test.mjs)
 //   POST_FILE=path                  the post.js to update (default app/src/data/post.js); SUGGEST_FILE=path (default out/post-suggest.json)
-// Not wired into .github/workflows/update.yml yet (the main thread does that).
+//   POST_OUT=path                   the daily document (default out/post.json)
+// The daily document (Nov 18, switch blocker 5 / D3): post.js is built into the page, so a new headline in it reached players only on a
+// republish. Every run also writes out/post.json, the same shape as POST (checked, gifts, series, held, news) from post.js as it stands
+// after the run; the morning refresh stores it as meta/post and the page reads it (03-persistence.js META_KEYS 'post' -> V2.postTake in
+// post-data.js), falling back to the built-in POST when it is missing or broken. When the feed can't be read, out/post.json is still
+// written from the unchanged post.js (yesterday's news, plus any gift a person added) and the script exits 1 as before. A document over
+// 200,000 bytes (split-docs.mjs's limit) is not written: yesterday's file stays. Wired in .github/workflows/update.yml (design branch).
 import fs from 'node:fs'; import vm from 'node:vm'; import path from 'node:path'; import {fileURLToPath} from 'node:url';
 import {politeFetch} from './http.mjs';
 
@@ -56,21 +62,31 @@ export function writeNews(src, add) { if (!add.length) return src;
   /* into an empty list the last new line must not end with a comma before "]" (fine in JS, but post.js keeps none) */
   return src.slice(0, i) + (/^\s*\]/.test(rest) ? lines.replace(/,\n$/, '\n') : lines) + rest; }
 export const load = src => { const c = {}; vm.runInNewContext(src + ';this.POST = POST;', c); return c.POST; };
+// the daily document meta/post: POST's own keys, news links https only (a non-https one is dropped; the page checks again with V2.safeUrl)
+export const DOC_LIMIT = 200000;
+export function postDoc(P) { const https = u => { try { return new URL(String(u)).protocol === 'https:'; } catch (e) { return false; } };
+  return {checked: P.checked || null, gifts: P.gifts || [], series: P.series || [], held: P.held || [], news: (P.news || []).filter(n => n && https(n.url))}; }
+function writeDoc(P, file) { const j = JSON.stringify(postDoc(P)), n = Buffer.byteLength(j);
+  if (n > DOC_LIMIT) { console.error(`post-news: out/post.json would be ${n} bytes (limit ${DOC_LIMIT}); yesterday's file kept`); return false; }
+  fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, j); console.log(`post-news: ${path.basename(file)} written (${n} bytes, ${postDoc(P).news.length} stories, ${(P.gifts || []).length} gifts)`); return true; }
 
 async function main() { const root = path.dirname(fileURLToPath(import.meta.url)), dry = process.argv.includes('--dry');
-  const postFile = process.env.POST_FILE || path.join(root, 'app/src/data/post.js'), sugFile = process.env.SUGGEST_FILE || path.join(root, 'out/post-suggest.json');
+  const postFile = process.env.POST_FILE || path.join(root, 'app/src/data/post.js'), sugFile = process.env.SUGGEST_FILE || path.join(root, 'out/post-suggest.json'),
+    docFile = process.env.POST_OUT || path.join(root, 'out/post.json');
+  /* the feed failed or changed shape: post.js is kept, and the daily document is still written from it (yesterday's list) */
+  const keep = why => { console.error(`post-news: ${why}; post.js kept as it is`); if (!dry) { try { writeDoc(load(fs.readFileSync(postFile, 'utf8')), docFile); } catch (e) { console.error(`post-news: out/post.json not written (${e.message})`); } } process.exit(1); };
   let feed; try { feed = process.env.FEED_FILE ? JSON.parse(fs.readFileSync(process.env.FEED_FILE, 'utf8'))
     : await politeFetch(FEED, {headers: {Accept: 'application/json'}}).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); }
-  catch (e) { console.error(`post-news: the feed could not be read (${e.message}); post.js kept as it is`); process.exit(1); }
+  catch (e) { keep(`the feed could not be read (${e.message})`); }
   const src = fs.readFileSync(postFile, 'utf8'), P = load(src), p = plan(feed, P);
-  if (p.error) { console.error(`post-news: ${p.error}; post.js kept as it is`); process.exit(1); }
+  if (p.error) keep(p.error);
   const out = writeNews(src, p.add), after = load(out); /* the written file must still load and hold every old story plus the new ones */
-  if (after.news.length !== P.news.length + p.add.length) { console.error('post-news: the written post.js did not read back; kept as it is'); process.exit(1); }
+  if (after.news.length !== P.news.length + p.add.length) keep('the written post.js did not read back');
   console.log(`post-news: ${p.add.length} new ${p.add.length === 1 ? 'story' : 'stories'}, ${p.suggest.length} gift ${p.suggest.length === 1 ? 'suggestion' : 'suggestions'} to check, ${p.problems.length} unreadable items`);
   for (const n of p.add) console.log(`  + ${n.date.slice(0, 10)} ${n.type}: ${n.title}`);
   for (const x of p.problems) console.log(`  ? ${x}`);
   if (dry) return;
-  if (p.add.length) fs.writeFileSync(postFile, out); /* POST.checked is left alone: it is when a person last checked the gift list (the Post Room's note) */
+  if (p.add.length) fs.writeFileSync(postFile, out); writeDoc(after, docFile); /* POST.checked is left alone: it is when a person last checked the gift list (the Post Room's note) */
   if (p.suggest.length) { fs.mkdirSync(path.dirname(sugFile), {recursive: true}); let old = []; try { old = JSON.parse(fs.readFileSync(sugFile, 'utf8')); } catch (e) {}
     const ids = new Set(old.map(x => x.id)); fs.writeFileSync(sugFile, JSON.stringify(old.concat(p.suggest.filter(x => !ids.has(x.id))), null, 1)); } }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main();

@@ -47,6 +47,13 @@ jobs:
       - run: node weekly.mjs || node skip.mjs "weekly digest skipped"
       # upcoming official VGC events from Victory Road's season calendar (out/calendar.json; keeps yesterday's file on failure)
       - run: node calendar.mjs || node skip.mjs "calendar skipped"
+      # The Champions Dispatch and Mystery Gifts (Nov 18, switch blocker 5): new headlines from the official in-game news feed go into
+      # app/src/data/post.js and out/post.json, the page's daily document meta/post, so News updates without a republish (headline, date,
+      # type and link only; gifts are only suggested, in out/post-suggest.json). A feed that fails or changed shape keeps yesterday's list.
+      - run: node post-news.mjs || node skip.mjs "news feed skipped (yesterday's list kept)"
+      # then the list is checked (every link https, dates parse, codes cited; out/post.json fits one document); if it fails, yesterday's
+      # post.js and out/post.json are put back, so a bad day never reaches the page and the rest of the day's data is still saved
+      - run: node experiments/post-data-test.mjs || { git checkout -- app/src/data/post.js; git checkout -- out/post.json 2>/dev/null || rm -f out/post.json; node skip.mjs "news check skipped (the list failed post-data-test; yesterday's list put back)"; }
       - run: node model.mjs || node skip.mjs "model skipped"
       # each six's own record with player skill and opponents taken out, added to out/model.json for grade v2 (Nov 7)
       - run: node six.mjs || node skip.mjs "six records skipped"

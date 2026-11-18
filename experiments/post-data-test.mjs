@@ -88,6 +88,13 @@ const P = load(file), found = check(P);
 console.log(`post.js: ${P.gifts.length} gifts, ${P.news.length} news, ${(P.series || []).length} series rounds`);
 for (const m of found) console.log('    ' + m);
 ok(found.length === 0, `the data passes every check (${found.length} problems)`);
+// the daily document (Nov 18, switch blocker 5): out/post.json, written by post-news.mjs and stored by the morning refresh as meta/post, passes the
+// same checks and fits one page document (split-docs.mjs's 200,000-byte limit). POST_JSON=path checks another copy; skipped when there is none.
+{ const jf = process.env.POST_JSON || new URL('out/post.json', root);
+  if (fs.existsSync(jf)) { const txt = fs.readFileSync(jf, 'utf8'); let J = null; try { J = JSON.parse(txt); } catch (e) {}
+    const f2 = J ? check(J) : ['not JSON']; for (const m of f2) console.log('    out/post.json: ' + m);
+    ok(f2.length === 0 && Buffer.byteLength(txt) <= 200000, `out/post.json (the daily document meta/post) passes every check and fits one document (${f2.length} problems, ${Buffer.byteLength(txt)} bytes)`); }
+  else console.log('  skip out/post.json: not there (the daily job writes it)'); }
 
 console.log('the checks can fail (each broken copy must be caught):');
 const base = load(new URL('app/src/data/post.js', root)); // broken copies are always made from the repo's post.js
