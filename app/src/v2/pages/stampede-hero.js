@@ -144,8 +144,9 @@ V2.sdHeroAfter = () => { const S = document.querySelector('#main .sdh'), U = V2.
 V2.SDH_PXS = 40; // the ticker's speed, px per second
 // prep (before the names are measured): build or take down the track and the button; otherwise: refresh the copy when the shown
 // names change, and the duration from the list's width
-// Motion is OFF until Sim's yes on the videos (docs/rebuild/pics/nov18/stampede-motion-*); window.NP_SD_MOTION = 1 turns it on for checks
-V2.sdMotion = () => !!window.NP_SD_MOTION;
+// Motion is ON (Sim, Nov 18, Q6 A: "recommend for all is good"). prefers-reduced-motion: reduce still stops all of it (sd-motion.css
+// rules sit inside no-preference; V2.sdhTick builds nothing). window.NP_SD_MOTION = 0 turns it off, for a check that needs the still page.
+V2.sdMotion = () => window.NP_SD_MOTION !== 0;
 V2.sdhTick = (S, prep) => { const U = V2.sdhUi, tk = S.querySelector('.sdh-tick'), ul = tk && tk.querySelector('ul'); if (!ul || !V2.sdMotion()) return;
   const mq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null, run = !!mq && !mq.matches;
   if (mq && !U.mq) { U.mq = 1; mq.addEventListener('change', () => V2.sdhLayout()); }

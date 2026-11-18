@@ -11,6 +11,7 @@
 //   OL-i15  Build's Blueprint shows the catch tip, "X isn't in your box" and every plan chip (no cap of 3), in even rows
 //   Stampede polish 1/1b/2 (Nov 18): the hero/six seam, the three parts starting and ending together, the receipt's band names readable
 //   Stampede tiles 2-5 + tags (Nov 18 night): Battle's VS clear, Test Run filled, Damage Calc balanced, equal band bars, board tags inside
+//   HQ Q4a-Q13f (Nov 18): Sim's answers for Home (morning questions), one check each (ONLY=HQ runs these alone)
 //   BR-C1..C7 (Nov 18): behaviour review: the Apply and Remove holds end on any scroll they didn't make and on leaving My Team,
 //              redraws at 1100-1439 don't move My Team, keyboard Apply keeps the focus (ONLY=BR runs these alone)
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
@@ -148,6 +149,21 @@ const MQ = async () => {
 if (process.env.ONLY === 'MQ') { await MQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- MQ end ----
 // ---- BR end (run with the rest just before the browser closes) ----
+// ---- HQ begin: Home answers (Sim, Nov 18 morning questions, docs/rebuild/morning-questions-nov18.md: "recommend for all is good").
+//   One check per answer applied; each failed on the build before its change. ONLY=HQ runs these alone.
+const HQ = async () => {
+  const hq = async (w, h, o = {}) => { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700, reducedMotion: o.rm || 'no-preference'}); const q = await ctx.newPage();
+    await q.addInitScript(o => { window.__PL_TEST = 1; try { if (o.fresh) localStorage.clear(); for (const [k, v] of Object.entries(o.ls || {})) localStorage.setItem(k, v); } catch (x) {} }, {fresh: !!o.fresh, ls: o.ls || {}});
+    await q.goto('file://' + PAGE + (o.hash || '#home')); await q.waitForTimeout(o.wait || 2500); if (o.night) { await q.evaluate(() => V2.setTheme('night')); await q.waitForTimeout(300); }
+    const r = o.fn ? await q.evaluate(o.fn) : null; if (o.keep) return {q, ctx, r}; await ctx.close(); return r; };
+  // Q6 A: the hero's motion is on by default (no flag): the surge on arrival, the moving ticker with its pause button; reduced motion: none of it
+  { const mo = []; for (const [w, h] of [[1440, 900], [390, 844]]) for (const rm of ['no-preference', 'reduce']) { const r = await hq(w, h, {rm, fn: () => { const S = document.querySelector('#main .sdh');
+      return {surge: S.classList.contains('sdh-surge'), trk: !!S.querySelector('.sdh-trk'), pz: !!S.querySelector('.sdh-tpz'), run: S.getAnimations({subtree: true}).filter(a => a.animationName === 'sdh-mq' || a.playState === 'running').length}; }}); /* the marquee rests (paused) while off screen */
+    const on = rm === 'no-preference'; if (on ? !(r.surge && r.trk && r.pz && r.run > 0) : (r.trk || r.pz || r.run)) mo.push(`${w} ${rm}: ${JSON.stringify(r)}`); }
+    ok(!mo.length, `HQ Q6 (Sim: A): the hero's motion is on with no flag (surge on arrival, moving ticker + pause button at 1440 and 390); with reduced motion nothing moves and no marquee is built${mo.length ? ': ' + mo.join(' | ') : ''}`); }
+};
+if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// ---- HQ end (run with the rest just before the browser closes) ----
 await p.goto('file://' + PAGE + '#build'); await p.waitForTimeout(2500);
 await p.getByRole('button', {name: 'Build Me a Team'}).first().click();
 await p.waitForSelector('[data-bdcopy]', {timeout: 30000}).catch(() => {});
@@ -1295,6 +1311,7 @@ const wkPair = async (br, url, ok) => {
   ok(!bad.length && seen.meant > 10, `WK-2 (WebKit pair): Copy Code rows on #gifts 320-2560, Home and News: never overflow or break, 13px+, Copy Code beside the code wherever it fits there at 24px (${seen.meant} such rows), a row's parcels line up (${bad.join(' | ').slice(0, 500) || 'all good'})`);
   await q.close(); };
 // wk-pair end
+await HQ();
 await wkPair(b, 'file://' + PAGE, ok);
 await b.close();
 console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
