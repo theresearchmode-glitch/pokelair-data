@@ -78,7 +78,19 @@ const day = s => new Date(s + 'T00:00:00Z').getTime() / 864e5;
 // high-number Pokémon (Annihilape, Kommo-o, Scrafty, Mega Venusaur, Hydreigon, Mega Charizard Y) fell from 68 to 28.
 // EVID_K / EVID_KP env vars override (0 = off).
 const EVID_K = +(process.env.EVID_K ?? 1000), EVID_KP = +(process.env.EVID_KP ?? 300);
-function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0} = opt || {};
+// v7 (Nov 18): steady team-wide basics. 'noMega' is learned from only about 200 no-Mega-vs-Mega games; with the 14-day recency of
+// the rest of the model a handful of new games moved it from -0.62 to -0.49 in a day (Nov 17 to 18), and the weakest six crossed 60.
+// TEAM_HALF = the recency half-life (days) used for the team-wide basics only (players, Pokémon, pairs and sets keep `half`):
+// unset = the same as the rest (the model before Nov 18), 0 = every game counts the same. Locked in model-settings.json (teamHalf).
+// TEAM_PRIOR = K (experiments): keep the recency fit for the basics but pull them toward their no-recency value with the weight of
+// K games (a minimum amount of evidence). Each env var overrides the locked setting.
+const SETTINGS = (() => { try { return JSON.parse(fs.readFileSync('model-settings.json', 'utf8')); } catch (e) { return {}; } })();
+const TEAM_HALF = process.env.TEAM_HALF != null && process.env.TEAM_HALF !== '' ? +process.env.TEAM_HALF : (SETTINGS.teamHalf != null ? +SETTINGS.teamHalf : null);
+const TEAM_PRIOR = +(process.env.TEAM_PRIOR || 0);
+function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0, teamHalf, teamPrior} = opt || {};
+  if (teamHalf == null) teamHalf = TEAM_HALF != null ? TEAM_HALF : half;
+  // TEAM_PRIOR: the long-run (no-recency) value of the basics first, then the recency fit is pulled toward it
+  if (TEAM_PRIOR > 0 && TEAMF.length && teamPrior == null && teamHalf > 0) teamPrior = {T0: Array.from(fit(games, {...opt, teamHalf: 0, teamPrior: false}).T), lam: TEAM_PRIOR * .1};
   // experiments (Deep Check, Nov 8): NO_PAIRS=1 fits without pair bonuses; PAIR_SHRINK=k pulls pair bonuses k× harder toward 0
   if (process.env.NO_PAIRS === '1') usePairs = false; lp *= +(process.env.PAIR_SHRINK || PAIR_SHRINK_LOCK);
   const b = new Float64Array(mons.length), q = new Float64Array(pairs.length), s = new Float64Array(nP), c = new Float64Array(setNames.length), T = new Float64Array(TEAMF.length);
@@ -86,20 +98,22 @@ function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = fals
   // weights are scaled to average 1, so the shrinkage means the same thing with or without recency
   let last = -Infinity; for (const g of games) last = Math.max(last, day(evDates[g[3]]));
   const W = games.map(g => half ? Math.pow(.5, (last - day(evDates[g[3]])) / half) : 1), Wn = games.length / (W.reduce((a, x) => a + x, 0) || 1);
+  // the team-wide basics' own game weights (v7): the same as W unless teamHalf differs from half
+  const WT = teamHalf === half ? W : games.map(g => teamHalf ? Math.pow(.5, (last - day(evDates[g[3]])) / teamHalf) : 1), WTn = games.length / (WT.reduce((a, x) => a + x, 0) || 1);
   // a deck's set features as [feature, value]: 1 − freq when the deck has it, −freq when the species is there without it
   const dv = new Map(), deckVec = (t, d) => { if (!useSets || d == null) return []; const key = t * 100000 + d; let v = dv.get(key); if (v) return v; v = []; const has = new Set(deckF[d]);
     for (const n of teams[t]) for (const j of (spFeats.get(n) || [])) v.push([j, (has.has(j) ? 1 : 0) - freq[j]]); dv.set(key, v); return v; };
   const x = (t, d) => { let v = 0; for (const j of tf[t].f) v += b[j]; if (usePairs) for (const j of tf[t].p) v += q[j]; for (const [j, w] of deckVec(t, d)) v += c[j] * w; const tv = teamVec(t, d); for (let k = 0; k < tv.length; k++) v += T[k] * tv[k]; return v; };
   for (let it = 1; it <= iters; it++) { const Gr = P.map(a => new Float64Array(a.length));
-    for (let gi = 0; gi < games.length; gi++) { const [A, B, r, , pa, pb, , dA, dB] = games[gi]; const eta = x(A, dA) - x(B, dB) + (useSkill ? s[pa] - s[pb] : 0), d = (1 / (1 + Math.exp(-eta)) - r) * W[gi] * Wn;
+    for (let gi = 0; gi < games.length; gi++) { const [A, B, r, , pa, pb, , dA, dB] = games[gi]; const eta = x(A, dA) - x(B, dB) + (useSkill ? s[pa] - s[pb] : 0), e0 = 1 / (1 + Math.exp(-eta)) - r, d = e0 * W[gi] * Wn, dT = e0 * WT[gi] * WTn;
       for (const j of tf[A].f) Gr[0][j] += d; for (const j of tf[B].f) Gr[0][j] -= d;
       if (usePairs) { for (const j of tf[A].p) Gr[1][j] += d; for (const j of tf[B].p) Gr[1][j] -= d; }
       if (useSkill) { Gr[2][pa] += d; Gr[2][pb] -= d; }
       for (const [j, w] of deckVec(A, dA)) Gr[3][j] += d * w; for (const [j, w] of deckVec(B, dB)) Gr[3][j] -= d * w;
-      if (TEAMF.length) { const ta = teamVec(A, dA), tb = teamVec(B, dB); for (let k = 0; k < ta.length; k++) Gr[4][k] += d * (ta[k] - tb[k]); } }
+      if (TEAMF.length) { const ta = teamVec(A, dA), tb = teamVec(B, dB); for (let k = 0; k < ta.length; k++) Gr[4][k] += dT * (ta[k] - tb[k]); } }
     const c1 = 1 - .9 ** it, c2 = 1 - .999 ** it;
     for (let k = 0; k < P.length; k++) { const a = P[k], g = Gr[k], m = Mm[k], v = V[k];
-      for (let j = 0; j < a.length; j++) { const gg = g[j] + 2 * L[k] * a[j]; m[j] = .9 * m[j] + .1 * gg; v[j] = .999 * v[j] + .001 * gg * gg; a[j] -= .03 * (m[j] / c1) / (Math.sqrt(v[j] / c2) + 1e-8); } } }
+      for (let j = 0; j < a.length; j++) { const gg = g[j] + 2 * L[k] * a[j] + (k === 4 && teamPrior ? 2 * teamPrior.lam * (a[j] - teamPrior.T0[j]) : 0); m[j] = .9 * m[j] + .1 * gg; v[j] = .999 * v[j] + .001 * gg * gg; a[j] -= .03 * (m[j] / c1) / (Math.sqrt(v[j] / c2) + 1e-8); } } }
   // how sure each number is (Nov 8, step 5 "show how sure the grade is"): the spread a ridge fit implies, 1/(Σ w·p(1−p) + 2λ)
   // over the games it appears in (the diagonal of the curvature; partners' overlap is ignored, so it is checked on later games)
   const hb = new Float64Array(b.length), hq = new Float64Array(q.length);
@@ -209,7 +223,7 @@ const dist = (() => { if (!F) return null; const last = GF.reduce((a, g) => evDa
   xs.sort((a, b) => a - b); return {since, n: xs.length, q: Array.from({length: 101}, (_, i) => +xs[Math.round(i / 100 * (xs.length - 1))].toFixed(4))}; })();
 const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: useSets ? LC.lc : null, eval: ev, games: G.length, events: M.events.length,
   note: 'x(team) = sum of mons + sum of pairs + sum over each member\'s set features of coef * (has − setFreq) ("Mon@Item", "Mon:Move"); P(A beats B) = 1/(1+exp(-calib*(x(A)-x(B)))). Player skill removed. meanX = average tournament team; dist = percentiles of x over real teams in the last 45 days.',
-  meanX: +meanX.toFixed(4), v: 3, half: HALF || null, center: !!useSets, calib: +calib.toFixed(3), dist, setRange, supK: SUP_K, tested: [...tested].sort(),
+  meanX: +meanX.toFixed(4), v: 3, half: HALF || null, teamHalf: TEAM_HALF != null ? TEAM_HALF : (HALF || null), ...(TEAM_PRIOR ? {teamPrior: TEAM_PRIOR} : {}), center: !!useSets, calib: +calib.toFixed(3), dist, setRange, supK: SUP_K, tested: [...tested].sort(),
   setFreq: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +freq[j].toFixed(3)])) : {},
   // team-wide basics (v6): added to x when the team lacks the basic
   team: F && TEAMF.length ? Object.fromEntries(TEAMF.map((k, i) => [k, +F.T[i].toFixed(4)])) : {},
