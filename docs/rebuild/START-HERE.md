@@ -22,8 +22,12 @@ the newer file wins, and you tell Sim about the difference.
 4. Reply to Sim with: (a) our rules in your own words, (b) how executive authority works, (c) what is in progress and what is waiting
    on her (section 5). Sim asked for this read-back so she can check you understood before she gives you authority.
 5. Set up the scheduled reminders again (section 8). Reminders made by the old chat fire into the OLD chat, not yours.
-6. **Give yourself a name** (Sim's idea, Nov 18: every chat that works on NastyPlot is a member of her development team). Pick one,
-   tell Sim, add yourself to the team roster below, and sign your last message to her with it. Ask the chat after you to do the same.
+6. **Your name comes later** (Sim's idea, Nov 18: every chat that works on NastyPlot is a member of her development team).
+   **Do not give yourself a name until you have existed for 72 hours** (Sim's rule). On your first turn, write down your start time
+   from now.sh in decisions.md ("Chat started ...") and schedule a one-time reminder for 72 hours later (create_trigger with
+   run_once_at, bound to your session). When it fires: pick a name, tell Sim, add yourself to the team roster below, and from then on
+   sign your last message to her with it. If you are handing over before 72 hours have passed, ask Sim what she'd like. Pass this
+   rule on to the chat after you, word for word.
 
 ### The team (every Claude chat that has worked on NastyPlot)
 | Name | Chat | What it did |
