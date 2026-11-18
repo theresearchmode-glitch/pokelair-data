@@ -221,6 +221,11 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
 { await p.setViewportSize({width: 1280, height: 900}); await p.goto('file://' + PAGE + '#track'); await p.waitForTimeout(1500);
   const tc = await p.evaluate(() => [...document.querySelectorAll('.trk-slip')].map(s => [s.querySelector('.trk-st span').textContent, s.getAttribute('aria-label')]));
   ok(tc.length > 0 && tc.every(([t, a]) => !/·|\bRated\b/.test(t) && /rated \d+/.test(a)), `Sim (Nov 17, Q1 recommended): Track Record cards have no dots and don't repeat 'Rated N' (the big number says it; screen readers still hear it) ("${(tc[0] || [''])[0]}")`); }
+{ await p.goto('file://' + PAGE + '#track'); await p.waitForTimeout(1200); /* review Nov 17 #8: a card's text is already escaped HTML; escaping it again in the label made '&' read "amp" */
+  const tl = await p.evaluate(() => { const n = [...document.querySelectorAll('.trk-slip')].map(s => s.dataset.v2mon)[0]; if (!n) return ['(no card on Track Record)', ''];
+    const t = document.createElement('template'); t.innerHTML = V2.trSlip({n, r: 80}, true, 'on 2 top-8 teams<br>won ' + V2.esc('Players\' Cup "A" & B <C>'), 0); const s = t.content.querySelector('.trk-slip');
+    return [s ? s.getAttribute('aria-label') : '(no card drawn)', s ? s.querySelector('.trk-st span').textContent : '']; });
+  ok(tl[0].includes(`top-8 teams, won Players' Cup "A" & B <C>.`) && tl[1].endsWith(`won Players' Cup "A" & B <C>`), `Review Nov 17 #8: Track Record card labels read event titles as written, with no "amp" or "#39" ('${tl[0]}')`); }
 { const tt = []; await p.setViewportSize({width: 390, height: 844}); for (const r of ['meta', 'usage', 'sets', 'tournaments', 'events', 'archetypes', 'weekly']) { await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1500);
     tt.push([r, await p.evaluate(() => { const t = document.querySelector('.ra-tabs'), h = document.querySelector('#main .ra-lede') || document.querySelector('#main h1'); if (!t || !h) return [9999, 999];
       const T = t.closest('.ra-sub').getBoundingClientRect(); return [Math.round(T.top + scrollY), Math.round(T.top - h.getBoundingClientRect().bottom)]; })]); }

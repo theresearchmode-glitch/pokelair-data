@@ -8,9 +8,11 @@
 V2.trBandC = b => { try { const k = lTier([80, 60, 40, 0][b]).k.toLowerCase(); return `var(--tier-${k})`; } catch (e) { return 'var(--ink-3)'; } };
 // Sim (Nov 17, 'recommended'): no dots on the cards: the big number already says 'Rated N', each fact on its own line
 V2.trSlip = (m, hit, text, i) => { const E = V2.esc, p = byName.get(m.n); if (!p) return '';
-  return `<li><button type="button" class="trk-slip ${hit ? 'hit' : 'miss'}" style="--i:${i}" data-v2mon="${E(m.n)}" aria-label="${E(p.d)}, rated ${RS(m.r)}, ${E(text.replace(/<br>/g, ', ').replace(/<[^>]+>/g, ''))}. ${hit ? 'Called it' : 'Missed'}.">
+  return `<li><button type="button" class="trk-slip ${hit ? 'hit' : 'miss'}" style="--i:${i}" data-v2mon="${E(m.n)}" aria-label="${E(p.d)}, rated ${RS(m.r)}, ${text.replace(/<br>/g, ', ').replace(/<[^>]+>/g, '').replace(/"/g, '&quot;')}. ${hit ? 'Called it' : 'Missed'}.">
     <span class="trk-sp" style="${V2.evTy(m.n)}" aria-hidden="true">${V2.mon(m.n, {bare: true})}</span><span class="trk-st" aria-hidden="true"><b class="u">${E(p.d).replace(/ (\S{1,2})$/, '\u00a0$1')}</b><span>${text}</span><i class="trk-stamp u ${hit ? 'hit' : 'miss'}" aria-hidden="true">${hit ? 'Called it' : 'Missed'}</i></span>
-    <span class="trk-sr" aria-hidden="true"><small>Rated</small><b class="u">${RS(m.r)}</b></span></button></li>`; }; /* Nov 15 (re-audit #6): the stamp sits in the text column under the words, so it can't cover the rating or the text */
+    <span class="trk-sr" aria-hidden="true"><small>Rated</small><b class="u">${RS(m.r)}</b></span></button></li>`; }; /* Nov 15 (re-audit #6): the stamp sits in the text column under the words, so it can't cover the rating or the text
+   review Nov 17 #8: 'text' is HTML and already escaped (its event titles go through E), so the label only drops tags and guards quotes:
+   escaping it again made a title with '&' read "amp" to screen readers */
 V2.trChart = T => { const W = new Map(); for (const e of T.ev) { const k = trWeek(e.date); if (!W.has(k)) W.set(k, []); W.get(k).push(e); }
   const wk = [...W.keys()].sort(); if (wk.length < TR_MIN.weeks) return null; const R = wk.map(k => trRates(W.get(k)));
   const mx = Math.max(.01, ...R.flat().filter(x => x != null)), w = innerWidth >= 700 ? 960 : 340, h = innerWidth >= 700 ? 280 : 240, /* wide screens get a wider drawing, so the chart isn't taller than it needs to be */ L = 48, Rr = 96, Tp = 12, B = 32, X = i => L + (wk.length === 1 ? 0 : i * (w - L - Rr) / (wk.length - 1)), Y = v => Tp + (1 - v / mx) * (h - Tp - B);
