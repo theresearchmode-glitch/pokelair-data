@@ -10,6 +10,8 @@ Keep this file and that list in step.
 - **Identifies itself.** Every request made through `http.mjs` sends
   `User-Agent: NastyPlot-data/1.0 (+https://github.com/theresearchmode-glitch/pokelair-data; simran.jsbagga@gmail.com)`.
   The op.gg step (a headless browser) appends the same string to its browser User-Agent.
+  This is the one User-Agent for every source (Sim, Nov 18, 9a): the one-off Nov 17 read of the official news feed sent
+  "NastyPlot/1.0 (fan site)"; from now on the feed is read only through `http.mjs`, with the string above.
 - **Paced.** `http.mjs` spaces requests to the same host at least 1 second apart (1.1 s, with slack); scripts with their own
   longer pauses keep them (Limitless 6.5 s, outside sources 1.5 s).
 - **Once a day.** `.github/workflows/update.yml` runs once a day; Smogon stats are only downloaded when a new month is out.
@@ -29,6 +31,7 @@ Keep this file and that list in step.
 | **op.gg** (op.gg/pokemon-champions) | In-game ranked doubles usage order (`opgg.mjs`) | Help center: "In general, OP.GG does not prohibit data crawling or web scraping. However, if there is any commercial use without citing the source or if excessive requests affect our service operation, access to the service may be restricted." | One page load a day (headless browser), no commercial use, source cited in footer + About page; browser UA carries the NastyPlot string. |
 | **Pikalytics** (pikalytics.com) | Ladder usage, items, moves (`sources.mjs`, `/ai/pokedex/...`) | robots.txt allows all crawlers, including the `/ai/` endpoints. | ≤41 requests a day, 1.5 s apart; NastyPlot UA; credited. |
 | **Showdown Tier** (showdowntier.com) | Ladder tier list, usage, win rates (`sources.mjs`) | No stated terms found. robots.txt (checked today): `User-agent: * / Allow: /` (crawl-delay commented out). | One page a day; NastyPlot UA; credited. |
+| **Official in-game news feed** (champions-news.pokemon-home.com) | Added Nov 18 (Sim, morning questions 9a). News headlines, dates, categories and links for The Champions Dispatch (#news) and Home's post band; the official pages behind event gifts and the series rounds (`app/src/data/post.js`; daily read: `post-news.mjs`) | Official: The Pokémon Company's own game news (the official Japanese site's script loads it). Undocumented JSON (`/en/json/list.json`), no published terms found; robots.txt returns 404 (checked Nov 17). | One request a day for the list, through `http.mjs` (the NastyPlot-data User-Agent below, paced); a page is opened only when a person checks a gift. Headline, date, category and link only: no article text, no banner images (no licence found for either). Every headline links to the full story at its source. Never the code redemption site or its API. |
 
 ## Removed sources
 
