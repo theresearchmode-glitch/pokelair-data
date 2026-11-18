@@ -228,6 +228,20 @@ const HQ = async () => {
       return JSON.stringify({n: T.length, want: want.length, same: T.map(b => b.dataset.v2mon).join() === want.map(x => x.n).join(), bad: bad.slice(0, 3), hs: document.documentElement.scrollWidth - innerWidth}); })()`))});
       if (r.none || !r.n || r.n !== r.want || !r.same || r.bad.length || r.hs > 0) rm.push(`${w}: ${JSON.stringify(r)}`); }
     ok(!rm.length, `HQ Q4b (Sim: B): This Week shows "Ratings on the Move" under "Pokémon on the Move": every rating mover as a button (name, arrow + points, up/down, rating), nothing spills 320-1440${rm.length ? ': ' + rm.join(' | ') : ''}`); }
+  // Q7a B: the hero crowd comes from 4 sprite sheets at 128px, except the 35 nearest (highest rated), which keep their own 384px file; every
+  // Pokémon is still drawn, and Home asks for far fewer picture files (before: 345-359 at 1440, after: about 60)
+  { const sh = []; for (const [w, h] of [[1440, 900], [390, 844]]) { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+      const seen = new Set(); q.on('request', r => { if (/\.webp/.test(r.url())) seen.add(r.url()); }); await q.goto('file://' + PAGE + '#home');
+      await q.waitForFunction(() => document.querySelectorAll('#main .sdh-c').length > 0, null, {timeout: 20000}).catch(() => {}); await q.waitForTimeout(1500);
+      const r = await q.evaluate(async () => { const C = [...document.querySelectorAll('#main .sdh-c')], cs = C.filter(e => e.classList.contains('sdh-cs')), im = C.filter(e => e.tagName === 'IMG');
+        const urls = [...new Set(cs.map(e => (/url\("?([^")]+)"?\)/.exec((e.firstElementChild || e).style.backgroundImage) || [])[1]).filter(Boolean))];
+        const loads = await Promise.all(urls.map(u => new Promise(r => { const i = new Image(); i.onload = () => r(i.naturalWidth > 0); i.onerror = () => r(false); i.src = u; })));
+        const near = im.map(e => +e.dataset.sdhi).sort((a, b) => a - b), far = Math.min(...cs.map(e => +e.dataset.sdhi));
+        const bad = cs.filter(e => !e.hidden && (!(e.firstElementChild || e).style.backgroundImage || !(parseFloat(e.style.width) > 0))).length;
+        return {crowd: C.length, herd: V2.sdhRows().length, sheet: cs.length, img: im.length, near0: near[0], nearN: near[near.length - 1], far, sheets: urls.length, loaded: loads.every(Boolean), bad}; });
+      r.files = seen.size; await ctx.close();
+      if (r.crowd !== r.herd - 12 || r.img !== 35 || r.near0 !== 12 || r.nearN !== 46 || r.far !== 47 || r.sheet !== r.crowd - 35 || r.sheets < 1 || r.sheets > 4 || !r.loaded || r.bad || r.files > 80) sh.push(`${w}: ${JSON.stringify(r)}`); }
+    ok(!sh.length, `HQ Q7a (Sim: B): the hero crowd draws the 35 nearest from their own files and the rest from at most 4 sprite sheets (every Pokémon drawn, 80 picture files at most on Home)${sh.length ? ': ' + sh.join(' | ') : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----

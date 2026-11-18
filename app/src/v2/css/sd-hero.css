@@ -16,6 +16,7 @@
 .sdh-lines{position:absolute;inset:0;width:100%;height:100%;z-index:0;fill:none;stroke:var(--sd-speed);stroke-width:3;stroke-dasharray:28 36;stroke-linecap:round}
 .sdh-crowd{position:absolute;inset:0;z-index:1;pointer-events:none}
 .sdh-c{position:absolute;display:block;max-width:none;object-fit:contain;object-position:50% 100%}
+.sdh-cs>b{position:absolute;bottom:0;background-repeat:no-repeat} /* a crowd member drawn from a sprite sheet (Q7a B); stampede-hero.js sets its part of the sheet */
 .sdh-haze{position:absolute;inset:0;z-index:1;pointer-events:none;background:linear-gradient(180deg,var(--sd-haze) 0,var(--sd-haze) 30%,transparent 68%)}
 /* the tagline stands inside the herd: the crowd behind it, the top-rated in front */
 .sdh-h{position:relative;z-index:3;padding:var(--s6) var(--gut) 0;font-size:var(--d-sdhero);line-height:.94;text-align:center;color:var(--sd-on-band);pointer-events:none}

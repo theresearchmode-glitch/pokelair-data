@@ -86,7 +86,15 @@ V2.sdhLay = (n, w, h, row, cx, hb) => {
   return out; };
 // put one herd picture in place (px; sizes are the square box the picture stands in, feet at its bottom centre)
 V2.sdhPut = (el, p) => { if (!p) { el.hidden = true; return; } el.hidden = false; const s = Math.round(p.s);
-  el.style.cssText = `left:${Math.round(p.x - s / 2)}px;top:${Math.round(p.y - s)}px;width:${s}px;height:${s}px`; };
+  el.style.cssText = `left:${Math.round(p.x - s / 2)}px;top:${Math.round(p.y - s)}px;width:${s}px;height:${s}px`;
+  const c = el.dataset.cs && V2.sdhSheet(el.dataset.cs); if (!c) return; // a sheet picture: the same square box as a file, its part of the sheet
+  const [k, x, y, w, h] = c.m, f = s / 128, bw = w * f, bh = h * f, b = el.firstElementChild; // drawn as object-fit: contain, feet at the bottom centre
+  b.style.cssText = `left:${((s - bw) / 2).toFixed(1)}px;width:${bw.toFixed(1)}px;height:${bh.toFixed(1)}px;background-image:url("${c.url}");background-size:${(c.w * f).toFixed(1)}px ${(c.h * f).toFixed(1)}px;background-position:${(-x * f).toFixed(1)}px ${(-y * f).toFixed(1)}px`; };
+// the crowd's sprite sheets (Sim Q7a B, Nov 18): the 35 nearest crowd members (highest rated) keep their own 384px file; the rest come from
+// 4 sheets at 128px (art/crowd-<n>.webp, ART_CROWD from experiments/v2-crowd-sheets.py): about 300 requests become 4
+V2.SDH_NEAR = 35;
+V2.sdhSheet = id => { const C = typeof ART_CROWD === 'object' && ART_CROWD, m = C && C.m && C.m[id]; if (!m) return null;
+  return {m, w: C.s[m[0]][0], h: C.s[m[0]][1], url: V2.ART_BASE.replace(/\/?$/, '/') + 'crowd-' + m[0] + '.webp'}; };
 // the speed lines: dashed streaks converging on the horizon
 V2.sdhLines = (svg, w, h, row) => { const vx = w / 2, vy = (row ? .1 : .07) * h; let d = '';
   for (let i = 0; i < 26; i++) { const t = (i + .5) / 26, ex = -1.4 * w + t * 3.8 * w, ey = h * 1.05, a = .42 + V2.sdhRnd(i + 50) * .2;
@@ -117,8 +125,10 @@ V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) r
 // the crowd: built once per set of data, added after the page has loaded; nearest (highest rated) pictures are asked for first
 V2.sdhCrowd = () => { const S = document.querySelector('#main .sdh'); if (!S) return; const box = S.querySelector('.sdh-crowd'), R = V2.sdhRows(), U = V2.sdhUi;
   const key = R.length + '|' + R.map(x => x.n).join(','); if (U.key !== key || !U.crowd) { const f = document.createDocumentFragment(), ims = [];
-    for (let i = 12; i < R.length; i++) { const im = new Image(); im.alt = ''; im.decoding = 'async'; im.setAttribute('fetchpriority', 'low'); im.dataset.sdhi = i; im.className = 'sdh-c'; ims.push(im); }
-    ims.forEach((im, j) => { im.src = V2.sdhSrc(R[j + 12], false); }); /* asked for in rating order */
+    for (let i = 12; i < R.length; i++) { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[R[i].n] : null, sh = i >= 12 + V2.SDH_NEAR && id != null && V2.sdhSheet(id);
+      if (sh) { const e = document.createElement('i'); e.className = 'sdh-c sdh-cs'; e.dataset.sdhi = i; e.dataset.cs = id; e.append(document.createElement('b')); ims.push(e); continue; } /* from a sheet */
+      const im = new Image(); im.alt = ''; im.decoding = 'async'; im.setAttribute('fetchpriority', 'low'); im.dataset.sdhi = i; im.className = 'sdh-c'; ims.push(im); }
+    ims.forEach((im, j) => { if (im.tagName === 'IMG') im.src = V2.sdhSrc(R[j + 12], false); }); /* the nearest asked for in rating order; the sheets load with the first sheet picture drawn */
     for (let j = ims.length - 1; j >= 0; j--) f.append(ims[j]); /* far (lowest rated) first in the page, so nearer ones stand in front */
     const c = document.createElement('div'); c.className = 'sdh-crowdset'; c.append(f); U.crowd = c; U.key = key; }
   if (U.crowd.parentNode !== box) box.replaceChildren(U.crowd); V2.sdhLayout(); };
