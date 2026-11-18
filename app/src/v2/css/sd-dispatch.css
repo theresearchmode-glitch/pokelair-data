@@ -103,12 +103,9 @@ a.dp-box:hover,button.dp-box:hover{box-shadow:inset 0 0 0 1px currentColor}
 .dp-cpn{position:relative;align-self:start;padding:var(--s5) var(--s5) var(--s4);border:2px dashed var(--dp-pick-rule);border-radius:var(--r-s)}
 .dp-sc{position:absolute;top:-12px;left:var(--s5);padding:0 var(--s1);background:var(--dp-paper);color:var(--dp-pick);font:400 var(--t17)/1.2 var(--b);font-style:normal}
 .dp-cph{margin:var(--s1) 0 var(--s3);font-size:var(--t26);line-height:1.15}
-.dp-bar2{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3);padding:var(--s2) var(--s2) var(--s2) var(--s4);border-radius:var(--r-s);background:var(--dp-bar);color:var(--dp-on-bar)}
-.dp-code{min-width:0;font-size:var(--t20);font-family:var(--u);font-style:italic;letter-spacing:0;line-height:1.2;white-space:nowrap;user-select:all}
-.dp-cn{color:var(--dp-code-num)}
-.dp-copy{flex:1 0 auto;min-height:var(--tap);padding:0 var(--s4);border-radius:var(--r-s);background:var(--dp-paper);color:var(--dp-ink);font-size:var(--t15);white-space:nowrap}
-.dp-paper .dp-copy{padding:0 var(--s4);background:var(--dp-paper);color:var(--dp-ink)}
-.dp-copy:hover{box-shadow:inset 0 0 0 2px var(--dp-plot-rule)}
+/* the code row: the Post Room's code (upright, blue digits) and its ink Copy Code button straight on the coupon (no bar: no box in a box) */
+.dp-cpn .np-btn.pr-copy{min-height:var(--tap);background:var(--dp-ink);color:var(--dp-paper);box-shadow:none}
+.dp-cpn .pr-k{color:var(--dp-ink2)}.dp-cpn .pr-d{color:var(--dp-plot)}
 .dp-cpm{margin-top:var(--s3);font:400 var(--t13)/1.5 var(--b);color:var(--dp-ink2)}
 .dp-cpm b{color:var(--dp-pick)}
 .dp-cpm .dp-lk{min-height:0;display:inline}
@@ -226,12 +223,9 @@ a.dp-fr:hover .dp-fn{text-decoration:underline}
   .dp-more{grid-template-columns:minmax(0,1fr)}
   .dp-more li:nth-child(n+3){display:none}
   .dp-cph{font-size:var(--t22)}
-  .dp-bar2{flex-wrap:wrap;padding:var(--s3)}
-  .dp-code{font-size:var(--t17)}
   .dp-bar small{display:none}
 }
 @container dp (max-width:279.98px){
-  .dp-code{font-size:var(--t15);white-space:normal;overflow-wrap:anywhere} /* a 14-character code at 320: it still never leaves the coupon */
   .dp-rd{padding-left:0;padding-right:0} /* four rounds a row at 320: "Tyranitar" keeps its cell */
   .dp-boxes{grid-template-columns:minmax(0,1fr)}
   .dp-al{grid-template-columns:minmax(0,1fr)}

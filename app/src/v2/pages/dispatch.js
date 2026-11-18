@@ -23,6 +23,8 @@
 //   Fixtures and Next event: META.calendar through CAL, with the same upcoming filter as the Events page (V2.evCal), so
 //   "All N Next Events" is the Events page's "Show All N" under Next Events.
 //   Days left on a gift count the viewer's local day (as The Post Room).
+//   The coupon's code is the Post Room's piece (V2.prCode: upright, digits blue, spelled for screen readers) with its Copy Code
+//   button (data-prcopy, handled in postroom.js): one family.
 V2.dpUi = V2.dpUi || {more: false};
 V2.dpPick = (x, ks) => { for (const k of ks) if (x && x[k] != null && x[k] !== '') return x[k]; return ''; };
 V2.dpSrc = x => { const v = V2.dpPick(x, ['url', 'src', 'link', 'source']); return Array.isArray(v) ? (v[0] && (v[0].url || v[0])) || '' : typeof v === 'object' ? v.url || '' : v; };
@@ -35,9 +37,6 @@ V2.dpDay = s => { s = String(s || ''); const d = new Date(/^\d{4}-\d\d-\d\d$/.te
 V2.dpShort = s => { const d = V2.dpDay(s); return d ? d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : ''; };
 V2.dpLocal = s => { const d = V2.dpDay(s); return d ? `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}` : ''; };
 V2.dpLeft = end => { const d = V2.dpLocal(end); return d ? CAL.days(d, CAL.today()) : null; };
-// TODO(Post Room merge): the coupon's code and days-left words switch to V2.prCode / V2.prLabel when The Post Room lands (one family).
-// Until then this small local piece: digits blue, letters ink, so a 1 and an I or a 0 and an O can be told apart; the code stays text.
-V2.dpCode = c => String(c).split('').map(ch => /\d/.test(ch) ? `<span class="dp-cn">${ch}</span>` : V2.esc(ch)).join('');
 V2.dpLeftTxt = n => n == null ? '' : n <= 0 ? 'Ends today' : n === 1 ? '1 day left' : `${n} days left`;
 V2.dpOrd = k => ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth'][k - 1] || `${k}th`;
 V2.dpPlural = (n, w) => { w = w.toLowerCase(); return `${homeNum(n)} ${n === 1 || /[^s]s$/.test(w) ? w : /ss$/.test(w) ? w + 'es' : /[^aeiou]y$/.test(w) ? w.slice(0, -1) + 'ies' : w + 's'}`; };
@@ -106,7 +105,7 @@ V2.dpCoupon = D => { const E = V2.esc, g = D.coupon;
   if (!g) return `<aside class="dp-cpn dp-cpn0" aria-label="Clip and claim"><i class="dp-sc" aria-hidden="true">✂</i><p class="dp-k dp-rk">Clip and claim · Mystery Gift</p><h3 class="dp-cph u">Nothing to clip today.</h3><p class="dp-cpm">The next gift code lands here. <a class="dp-lk" href="#gifts">All Mystery Gifts ›</a></p></aside>`;
   const left = V2.dpLeft(g.end), when = [g.start ? V2.dpShort(g.start) : '', g.end ? V2.dpShort(g.end) : ''].filter(Boolean).join(' – ');
   return `<aside class="dp-cpn" aria-label="Clip and claim: ${E(g.name)}"><i class="dp-sc" aria-hidden="true">✂</i><p class="dp-k dp-rk">Clip and claim · Mystery Gift</p><h3 class="dp-cph u">${E(g.name)}</h3>
-    <div class="dp-bar2"><code class="dp-code u" aria-label="Code: ${E(g.code.split('').join(' '))}">${V2.dpCode(g.code)}</code><button type="button" class="dp-copy u" data-dpcopy="${E(g.code)}">Copy Code</button></div>
+    <div class="pr-crow dp-crow"><div class="pr-cbox"><p class="pr-k">Code</p>${V2.prCode(g.code)}</div><button type="button" class="np-btn pr-copy" data-prcopy="${E(g.code)}"><span>Copy Code</span></button></div>
     <p class="dp-cpm">${left != null ? `<b>${E(V2.dpLeftTxt(left))}.</b> ` : ''}${E([g.how, when].filter(Boolean).join(', '))}${g.how || when ? '. ' : ''}Blue characters are numbers. <a class="dp-lk" href="#gifts">All Mystery Gifts ›</a></p></aside>`; };
 // ---------- The Back Page: Latest Result, The Standings, Fixtures ----------
 V2.dpLatest = () => { const E = V2.esc; let c = null; try { c = homeChamp(); } catch (e) {}
@@ -145,7 +144,6 @@ V2.pages.news = {place: 'home', draw() { const E = V2.esc, post = V2.postNow(), 
   const earlier = D.rest.length ? `<button type="button" class="dp-lk dp-earl" data-dpmore aria-expanded="${!!U.more}" aria-controls="dp-earlier">Earlier Editions · ${V2.dpPlural(D.rest.length, 'more story')} ${U.more ? '‹' : '›'}</button>` : '';
   const list = D.rest.length && U.more ? `<ul class="dp-erl" id="dp-earlier">${D.rest.map(it => `<li>${V2.dpKick(it)}<p class="dp-mh u">${V2.dpA(it, E(it.t))}</p></li>`).join('')}</ul>` : '';
   return `<div class="dp"><p class="np-eyebrow dp-crumb"><span>Home · Champions News</span></p>${V2.dpFront(post)}<div class="dp-under${earlier ? '' : ' dp-solo'}">${earlier}${note}</div>${list}</div>`; }};
-document.addEventListener('click', async e => { const b = e.target.closest && e.target.closest('[data-dpcopy],[data-dpmore],[data-dpcal]'); if (!b) return; const d = b.dataset;
-  if (d.dpcopy) { V2.toast((await V2.copy(d.dpcopy)) ? 'Code copied' : 'Copy failed. Try again.'); return; }
+document.addEventListener('click', async e => { const b = e.target.closest && e.target.closest('[data-dpmore],[data-dpcal]'); if (!b) return; const d = b.dataset;
   if (d.dpmore != null) { V2.dpUi.more = !V2.dpUi.more; V2.redraw(); return; }
   if (d.dpcal != null) { V2.evUi.open = null; V2.evUi.cal = true; location.hash = '#events'; V2.evScrollTo('.ev-plate'); } });

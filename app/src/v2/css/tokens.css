@@ -9,6 +9,8 @@
   --plate:#17161A;--on-plate:#FBFAF7;--plate-link:#62BEF7; /* a link on the dark plate (toast Undo): 8.77:1; --plot was 3.81:1 (Nov 16 audit) */
  --main:#17161A;--on-main:#FBFAF7;
  --sd-on-band:#FFFFFF; /* Home, The Stampede (Nov 18): text on the blue hero and red post bands, white in both modes */
+  /* The Stampede post band (Nov 18): the Pelipper's white speed lines on the red, the shadow under the code slip, the heading size */
+  --sd-post-line:rgba(255,255,255,.62);--sd-post-shadow:rgba(60,10,20,.42);--d-sdpost:clamp(40px,5.2vw,88px);
   /* Mystery Gifts, The Post Room (Nov 18): kraft parcels, tape, the paper of labels and stamps and its ink; code digits blue; the rubber
      stamp red when a gift ends within 7 days, blue otherwise; stamp fills by how a gift is given (pink event and early download, blue serial code, gold Battle
      Pass, green competition prize, violet livestream reward) with their ink; the grey postmark. Night is "Dim Paper": the page goes dark, paper stays paper (dimmed cream, deeper kraft) */
@@ -24,9 +26,9 @@
  --sd-you:#62BEF7;--sd-them:#F08AD8;--sd-hp-lost:#E4DED3;--sd-hp-roll:#D93A3A;--sd-hp-roll2:#F2A7A7;--sd-flag-rim:transparent;
   /* News, The Champions Dispatch (Nov 18): one sheet of cream paper printed in ink with spot blue and red. The paper keeps dark ink in
      both modes (night is "Lamplight": a warmer cream under a lamp, never black). Measured on --dp-paper: ink 17.7:1, ink-2 9.8:1,
-     ink-3 7.3:1, blue 5.8:1, red 5.8:1; the code's digits on the black bar 8.8:1 */
+     ink-3 7.3:1, blue 5.8:1, red 5.8:1 */
   --dp-paper:#FFFDF7;--dp-glow:#FFFDF7;--dp-ink:#17161A;--dp-ink2:#45423F;--dp-ink3:#5A554D;--dp-rule:rgba(23,22,26,.16);--dp-fold:rgba(23,22,26,.05);
-  --dp-plot:#0068AD;--dp-plot-rule:#0078BF;--dp-pick:#C41E35;--dp-pick-rule:#E8364F;--dp-bar:#17161A;--dp-on-bar:#FFFFFF;--dp-code-num:#62BEF7;
+  --dp-plot:#0068AD;--dp-plot-rule:#0078BF;--dp-pick:#C41E35;--dp-pick-rule:#E8364F;--dp-bar:#17161A;--dp-on-bar:#FFFFFF;
   --dp-dot:rgba(23,22,26,.13);--dp-frame:#F3F0E6;--dp-cur:rgba(0,120,191,.10);--dp-shadow:0 1px 2px rgba(30,20,50,.10),0 24px 48px -24px rgba(30,20,50,.32);
   --d-paper:clamp(24px,6.2cqi,120px);--d-papertwo:clamp(24px,10cqi,72px);--d-lead:clamp(34px,5.6cqi,68px);--d-mini:clamp(24px,9cqi,48px);--d-brief:clamp(24px,6.4cqi,34px); /* display sizes: the newspaper's name and the lead headline, scaled to the paper's width (cqi: the paper is a size container); mini and brief: the small paper on Home */
  /* The Stampede bands (hero builder, Nov 18; colours sampled from Sim's mock-ups, contrast measured by token maths):
@@ -104,6 +106,7 @@
   --plate:#343348;--on-plate:#F1EDE7;--plate-link:#62BEF7; /* 5.97:1 on the night plate */
  --main:#3FA2E2;--on-main:#08131E;
  --sd-on-band:#FFFFFF;
+  --sd-post-line:rgba(255,255,255,.4);--sd-post-shadow:rgba(0,0,0,.55); /* post band at night: softer lines on the deep red, a darker shadow */
   --pr-kraft:#6B4E2E;--pr-kraft-hi:#76583A;--pr-kraft-line:rgba(0,0,0,.12);--pr-tape:rgba(160,134,94,.7);--pr-paper:#E6DFCF;--pr-ink:#1E1B18;--pr-ink2:#4E4942;--pr-rule:rgba(30,27,24,.2);
   --pr-num:#0A5A92;--pr-soon:#A61F28;--pr-plenty:#0A5A92;--pr-rub-bg:rgba(230,223,207,.94);--pr-shadow:rgba(0,0,0,.45);--pr-shadow-2:rgba(0,0,0,.3);
   --pr-ev:#DDBAD3;--pr-ev-2:#D3A8C9;--pr-ev-ink:#74155E;--pr-se:#B7CEDF;--pr-se-2:#A5C1D6;--pr-se-ink:#0A4A78;--pr-pa:#DECB93;--pr-pa-2:#D3BD7B;--pr-pa-ink:#5C3C00;--pr-pz:#B3D1BD;--pr-pz-2:#A1C4AD;--pr-pz-ink:#15532C;--pr-ls:#C9C1DE;--pr-ls-2:#B9AFD3;--pr-ls-ink:#47298A;
@@ -116,7 +119,7 @@
   /* Lamplight (Nov 18): the paper stays cream, warmer and lit from above; ink stays dark. Measured on --dp-paper: ink 13.6:1, ink-2 7.5:1,
      ink-3 5.6:1, blue 5.5:1, red 5.8:1 (the day blue and red were 4.4:1 here, so both are a step deeper) */
   --dp-paper:#E9DFC7;--dp-glow:#F4ECD8;--dp-ink:#17161A;--dp-ink2:#45423F;--dp-ink3:#57524A;--dp-rule:rgba(23,22,26,.2);--dp-fold:rgba(23,22,26,.07);
-  --dp-plot:#005996;--dp-plot-rule:#0068AD;--dp-pick:#A3172B;--dp-pick-rule:#C41E35;--dp-bar:#17161A;--dp-on-bar:#FFFFFF;--dp-code-num:#62BEF7;
+  --dp-plot:#005996;--dp-plot-rule:#0068AD;--dp-pick:#A3172B;--dp-pick-rule:#C41E35;--dp-bar:#17161A;--dp-on-bar:#FFFFFF;
   --dp-dot:rgba(23,22,26,.16);--dp-frame:#DED3B9;--dp-cur:rgba(0,89,150,.13);--dp-shadow:0 0 0 1px rgba(0,0,0,.4),0 -12px 60px -20px rgba(244,236,216,.22),0 40px 80px -24px rgba(0,0,0,.85);
  /* The Stampede, night: deeper hero blue (white 8.0:1, light blue 5.7:1), the mock-up's lifted ink, the dark tools band, the deep red
     (white 6.37:1, pink numbers 4.0:1) */

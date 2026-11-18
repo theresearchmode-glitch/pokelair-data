@@ -3,6 +3,7 @@
 //   A1-M2  Build's "Copy for Showdown" uses the shared copy with its fallback (it failed where the clipboard API is blocked)
 //   A1-M3  Build's Save says "for this visit" when the browser can't keep it (it always said "Saved")
 //   DP-1..12  The Champions Dispatch (#news): source links, what goes on the front, the same numbers as the site, the coupon, contrast, widths, the small piece
+//   SDP-1..6  Home's post band (The Stampede, band 4): the Post Room and Dispatch pieces with live POST data, the Pelipper clear of text, widths, empty states
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
 import {chromium} from 'playwright'; import path from 'node:path'; import fs from 'node:fs';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -589,10 +590,11 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   const cp = await qe(() => { navigator.clipboard.writeText = () => Promise.reject(new Error('blocked')); document.execCommand = () => true;
     return window.__ev(`(() => { const keep = POST; window.__dpKeep = keep; POST = {checked: null, gifts: [{name: 'Test Gift', code: 'AB1CD0', how: 'Serial Code', start: new Date(Date.now() - 864e5).toISOString(), end: new Date(Date.now() + 5 * 864e5).toISOString()}],
       news: [{title: 'Test lead', date: new Date(Date.now() - 864e5).toISOString(), type: 'Tournament', url: 'https://example.org/t', end: new Date(Date.now() - 36e5).toISOString()}]}; V2.redraw();
-      const c = document.querySelector('.dp-cpn'); return {nums: [...c.querySelectorAll('.dp-cn')].map(x => x.textContent).join(''), code: c.querySelector('.dp-code').textContent, left: /5 days left/.test(c.textContent), stamp: !!document.querySelector('.dp-stamp'), post: (document.querySelector('.dp-pk') || {}).textContent || ''}; })()`); });
-  await qe(() => document.querySelectorAll('.np-toast').forEach(t => t.remove())); await qc('[data-dpcopy]'); await q.waitForTimeout(500);
+      const c = document.querySelector('.dp-cpn'); return {nums: [...c.querySelectorAll('.pr-cv .pr-d')].map(x => x.textContent).join(''), code: (c.querySelector('.pr-cv') || {}).textContent, said: (c.querySelector('.pr-spell') || {}).textContent, upright: getComputedStyle(c.querySelector('.pr-cv')).fontStyle, bar: !!c.querySelector('.dp-bar2'), btn: (b => b ? [getComputedStyle(b).backgroundColor, getComputedStyle(c).backgroundColor === 'rgba(0, 0, 0, 0)' ? getComputedStyle(c.closest('.dp-paper')).backgroundColor : getComputedStyle(c).backgroundColor] : null)(c.querySelector('[data-prcopy].np-btn')), left: /5 days left/.test(c.textContent), stamp: !!document.querySelector('.dp-stamp'), post: (document.querySelector('.dp-pk') || {}).textContent || ''}; })()`); });
+  await qe(() => document.querySelectorAll('.np-toast').forEach(t => t.remove())); await qc('.dp-cpn [data-prcopy]'); await q.waitForTimeout(500);
   const toast = await qe(() => [...document.querySelectorAll('.np-toast')].map(t => t.textContent).join(''));
   ok(cp.nums === '10' && cp.code === 'AB1CD0' && cp.left && /1 gift waiting/.test(cp.post), `DP-7: the coupon shows the live gift's code as text, digits blue, days left, and In the Post counts it (${JSON.stringify(cp)})`);
+  ok(cp.said === 'A, B, 1, C, D, 0' && cp.upright === 'normal' && !cp.bar && !!cp.btn && cp.btn[0] !== 'rgb(255, 255, 255)' && cp.btn[0] !== cp.btn[1], `DP-7b (Nov 18): the coupon uses the Post Room's code (upright, spelled for screen readers) and its ink Copy Code button straight on the coupon, not a white box in a black bar (${JSON.stringify({said: cp.said, upright: cp.upright, bar: cp.bar, btn: cp.btn})})`);
   ok(cp.stamp, 'DP-8: an ended lead story carries the Ended stamp');
   ok(/copied/i.test(toast), `DP-9: Copy Code copies through the fallback when the clipboard API is blocked (toast: ${toast})`);
   await qe(() => window.__ev('POST = window.__dpKeep; V2.redraw()'));
@@ -724,6 +726,65 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
         if ([...rg.getClientRects()].some(r => r.width && (r.left < br.left - 1 || r.right > br.right + 1))) bad.push(e.textContent.trim() + ' out'); if (parseFloat(getComputedStyle(e).fontSize) < 13) bad.push(e.textContent.trim() + ' under 13px'); });
       return {bad, sw: document.documentElement.scrollWidth, vw: innerWidth}; });
     ok(!f.bad.length && f.sw <= f.vw, `Stampede six: at ${w} every name and item stays in its spot at 13px or more, no sideways scroll (${f.bad.slice(0, 3).join('; ') || 'all in'}; ${f.sw}/${f.vw})`); }
+  await q.close(); }
+/* Home, The Stampede, band 4 "The post is in." (Nov 18; stampede-post.js, css/sd-post.css): the Post Room's and the Dispatch's own pieces
+   with live POST data, empty states, the Pelipper clear of every word, widths, sizes, taps, contrast. Each check fails on the placeholder band. */
+{ const q = await b.newPage({viewport: {width: 1440, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  const qe = (f, x) => q.evaluate(f, x).catch(e => ({err: String(e.message).split('\n')[0].slice(0, 80)}));
+  const ev = s => qe(x => window.__ev(x), s).then(x => { try { return typeof x === 'string' ? JSON.parse(x) : x; } catch (e) { return {err: String(x).slice(0, 80)}; } });
+  await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+  const d = await ev(`(() => { const s = document.querySelector('.sdp'); if (!s) return JSON.stringify({none: true}); const P = V2.postNow(), live = P.live.map(V2.prG), past = P.past.map(V2.prG);
+    const first = live.find(g => g.code) || live[0], next = live.find(g => g !== first && g.code), A = [...s.querySelectorAll('.sdp-all')].map(a => a.getAttribute('href') + ' ' + a.textContent.trim());
+    return JSON.stringify({h2: (s.querySelector('h2') || {}).textContent, parcel: (s.querySelector('.sdp-gifts .pr-parcel.pr-cpt .pr-what dd') || {}).textContent, want: first && first.name, rub: !!s.querySelector('.sdp-gifts .pr-parcel .pr-rub'),
+      stamps: [...s.querySelectorAll('.sdp-stamps .pr-sw .pr-nm')].map(e => e.textContent).join('|'), wantSt: past.slice(0, 4).map(g => g.name).join('|'),
+      slip: (s.querySelector('.sdp-slip .pr-cv') || {}).textContent, wantSlip: next && next.code, slipBtn: (s.querySelector('.sdp-slip [data-prcopy]') || {}).dataset?.prcopy,
+      links: A.join(' | '), wantLinks: '#gifts All ' + (live.length + past.length) + ' Gifts › | #news All ' + P.news.length + ' Stories ›', paper: !!s.querySelector('.sdp-news .dp-paper.dp-small'),
+      bird: !!s.querySelector('.sdp-bird[aria-hidden="true"] .np-mon img'), copies: document.querySelectorAll('.sdp .pr-label').length + '/' + document.querySelectorAll('.sdp .dp-paper').length}); })()`);
+  ok(d.h2 === 'The post is in.' && d.parcel && d.parcel === d.want && d.rub && d.paper && d.bird, `SDP-1: the post band: h2 "The post is in.", the Post Room's compact parcel for the first live gift with its days-left stamp, the Dispatch's small paper, a decorative Pelipper sprite (${JSON.stringify({h2: d.h2, parcel: d.parcel, want: d.want, rub: d.rub, paper: d.paper, bird: d.bird})})`);
+  ok(!!d.stamps && d.stamps === d.wantSt && d.slip === d.wantSlip && d.slipBtn === d.wantSlip && d.links === d.wantLinks && d.copies === '1/1', `SDP-2: live POST data: the four newest past-gift stamps, the next live code on its slip with Copy Code, "All N Gifts" (live + past) and "All N Stories"; one parcel label and one paper, no copies (${JSON.stringify(d).slice(0, 420)})`);
+  /* the Pelipper (its visible middle: the picture box less 15% each side) covers no word of the tools band or the post band's heading and line */
+  const fly = []; for (const w of [2560, 1920, 1440, 1366, 1100, 820, 390, 320]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(500);
+    const r = await qe(() => { const im = document.querySelector('.sdp-bird img'); if (!im) return 'no bird'; const a = im.getBoundingClientRect(), k = .15, B = {l: a.left + a.width * k, r: a.right - a.width * k, t: a.top + a.height * k, b: a.bottom - a.height * k}, hit = [];
+      for (const e of document.querySelectorAll('.sd-tools *, .sdp-top h2, .sdp-top p, .sdp-ch *')) { if (![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim()) || !e.getClientRects().length) continue; const rg = document.createRange(); rg.selectNodeContents(e);
+        for (const x of rg.getClientRects()) if (x.width && x.right > B.l && x.left < B.r && x.bottom > B.t && x.top < B.b) { hit.push(e.textContent.trim().slice(0, 16)); break; } }
+      const band = document.querySelector('.sdp').getBoundingClientRect(); return {hit, over: Math.round(band.top - B.t)}; });
+    if (typeof r === 'string' || r.err || r.hit.length || r.over < 16) fly.push(w + ':' + JSON.stringify(r)); }
+  ok(!fly.length, `SDP-3: the Pelipper flies in over the band's top edge (16px or more above it) and covers no text, 320 to 2560 (${fly.join(' ') || 'clear'})`);
+  /* the columns: side by side and ending level on desktop; gifts above news on phones; 4 stamps on desktop, 3 on phones */
+  const lay = []; for (const w of [2560, 1920, 1440, 1366, 1100, 390, 360]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(500);
+    lay.push(w + ':' + await qe(() => { const g = document.querySelector('.sdp-gifts'), n = document.querySelector('.sdp-news'); if (!g || !n) return 'missing'; const a = g.getBoundingClientRect(), z = n.getBoundingClientRect();
+      const st = [...document.querySelectorAll('.sdp-stamps .pr-sw')].filter(e => e.getClientRects().length).length, gb = document.querySelector('.sdp-gb').getBoundingClientRect().bottom, pb = document.querySelector('.sdp-tilt').getBoundingClientRect().bottom;
+      return (Math.abs(a.top - z.top) < 2 ? (Math.abs(gb - pb) <= 12 ? 'level' : 'uneven ' + Math.round(gb - pb)) : z.top >= a.bottom ? 'stacked' : 'overlap') + ',' + st; })); }
+  const want = {2560: 'level,4', 1920: 'level,4', 1440: 'level,4', 1366: 'level,4', 1100: 'stacked,4', 390: 'stacked,3', 360: 'stacked,3'};
+  ok(lay.every(x => x.split(':')[1] === want[x.split(':')[0]]), `SDP-4: gifts and news side by side ending level from 1360, stacked gifts first below; 4 stamps, 3 on phones (${lay.join(' | ')})`);
+  /* every width, day and night: no sideways scroll, no text under 13px or outside the band, the code slip's parts never overlap, white text 4.5:1 on the red, every link and button 44px tall */
+  const wd = []; for (const th of ['day', 'night']) { await qe(t => localStorage.setItem('np2.theme', t), th); await q.reload(); await q.waitForTimeout(2200);
+    for (const w of [320, 340, 412, 600, 768, 1024, 1180, 1366, 1440, 1500, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(450);
+      const r = await qe(() => { const s = document.querySelector('.sdp'); if (!s) return {err: 'no band'}; const out = [], br = s.getBoundingClientRect(), rgb = c => (c.match(/[\d.]+/g) || []).map(Number),
+        L = c => { const v = c.slice(0, 3).map(x => x / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * v[0] + .7152 * v[1] + .0722 * v[2]; }, cr = (a, b) => (Math.max(L(a), L(b)) + .05) / (Math.min(L(a), L(b)) + .05);
+        if (document.documentElement.scrollWidth > innerWidth) out.push('sideways');
+        for (const e of s.querySelectorAll('*')) { if (!e.getClientRects().length || e.closest('.vh,[aria-hidden="true"]') || ![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue;
+          if (parseFloat(getComputedStyle(e).fontSize) < 13) out.push('13px:' + e.className);
+          for (const n of e.childNodes) { if (n.nodeType !== 3 || !n.textContent.trim()) continue; const rg = document.createRange(); rg.selectNodeContents(n); if ([...rg.getClientRects()].some(x => x.width && (x.left < br.left - 1 || x.right > br.right + 1))) { out.push('out:' + e.className); break; } } }
+        { const sl = s.querySelector('.sdp-slip'); if (sl) { const box = e => { const out = [], w = document.createTreeWalker(e, NodeFilter.SHOW_TEXT); for (let n; (n = w.nextNode());) { if (!n.textContent.trim() || n.parentElement.closest('.vh')) continue; const rg = document.createRange(); rg.selectNodeContents(n); out.push(...[...rg.getClientRects()].filter(x => x.width)); } return out; }, parts = [...sl.children].map(box);
+          for (let i = 0; i < parts.length; i++) for (let j = i + 1; j < parts.length; j++) if (parts[i].some(a => parts[j].some(z => a.right > z.left + 1 && a.left < z.right - 1 && a.bottom > z.top + 1 && a.top < z.bottom - 1))) out.push('slip overlap ' + i + '/' + j); } }
+        const red = rgb(getComputedStyle(s, '::before').backgroundColor), low = [...s.querySelectorAll('.sdp-top h2, .sdp-lede, .sdp-ch h3, .sdp-all, .sdp-none')].filter(e => e.getClientRects().length).map(e => [e.className, Math.round(cr(rgb(getComputedStyle(e).color), red) * 100) / 100]).filter(x => x[1] < (/sdp-h/.test(x[0]) ? 3 : 4.5));
+        if (low.length) out.push('contrast:' + JSON.stringify(low));
+        for (const e of s.querySelectorAll('a[href], button')) { const r = e.getBoundingClientRect(); if (r.width && r.height < 43.5 && !e.closest('.dp-paper')) out.push('tap:' + (e.className || e.tagName) + ' ' + Math.round(r.height)); }
+        return out; });
+      if (r.err || r.length) wd.push(th + ' ' + w + ':' + JSON.stringify(r).slice(0, 200)); } }
+  await qe(() => localStorage.setItem('np2.theme', 'day')); await q.reload(); await q.waitForTimeout(2200);
+  ok(!wd.length, `SDP-5: 320 to 2560, day and night: no sideways scroll, nothing under 13px or out of the band, slip parts apart, white on red 4.5:1 (heading 3:1, display size), every link and button 44px tall (${wd.join(' | ') || 'all clean'})`);
+  /* empty states (a test POST through the test hook; never in post.js): no live gift, then no news */
+  await q.setViewportSize({width: 1440, height: 900});
+  const em = await ev(`(() => { const keep = POST, day = 864e5, t = Date.now(), iso = x => new Date(x).toISOString(), out = {};
+    try { POST = {checked: null, gifts: [{name: 'Old Gift', how: 'Event Gift', start: iso(t - 9 * day), end: iso(t - 2 * day)}], news: keep.news}; V2.redraw();
+      let s = document.querySelector('.sdp'); out.none = !!(s && s.querySelector('.sdp-none a[href="#gifts"]')) && !s.querySelector('.pr-parcel') && s.querySelectorAll('.sdp-stamps .pr-sw').length === 1;
+      POST = {checked: null, gifts: [{name: 'Gift A', code: 'AB12', how: 'Serial Code', start: iso(t - day), end: iso(t + 5 * day)}, {name: 'Gift B', how: 'Event Gift', start: iso(t - day), end: iso(t + 9 * day)}], news: []}; V2.redraw();
+      s = document.querySelector('.sdp'); const c = s && s.querySelector('.sdp-cols'), g = s && s.querySelector('.sdp-gifts'), two = s && [...s.querySelectorAll('.sdp-two > *')].map(e => e.getBoundingClientRect());
+      out.solo = !!c && !s.querySelector('.sdp-news') && c.classList.contains('sdp-solo') && Math.abs(g.getBoundingClientRect().width - c.getBoundingClientRect().width) < 2 && two.length === 2 && Math.abs(two[0].top - two[1].top) < 2 && two[1].left > two[0].right;
+    } finally { POST = keep; V2.redraw(); } return JSON.stringify(out); })()`);
+  ok(em.none === true && em.solo === true, `SDP-6: empty states: no live gift = one line with a link to #gifts and the stamps; no news = no news column, the gifts take the full width as two parcels side by side (${JSON.stringify(em)})`);
   await q.close(); }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
