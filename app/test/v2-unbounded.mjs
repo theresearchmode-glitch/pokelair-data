@@ -16,7 +16,10 @@ const ALLOW = new Set(['.st .np-megatag', '.mc-id .u', '.u .mg', '.ffm', '.fn-un
   '.pr-stats .ev-pk' /* the Post Room's "Live right now" stamp on its plate (Sim, Nov 18, morning questions 1i: added to this list) */,
   /* Home's plan board (Nov 18): each lead's name is a short tag on its slanted colour plate, the same kind as exception (a) (a long name
      already drops to Instrument Sans: .sds-tg.nar); and the Practice plate's "Pick 4" tag on its slanted plate under 700 */
-  '.sds-tk .sds-tg.u', '.sdt-pp .u.sdt-pick']);
+  '.sds-tk .sds-tg.u', '.sdt-pp .u.sdt-pick',
+  /* Nov 18 evening (Sim: recommended, keep as built): on phones Home's two start buttons drop to 13px to stay on one line, and the
+     Ratings podium's score and the Events / How We Calculate chip numbers are 13px badges inside small tiles */
+  '.sdh-go .sdh-b1', '.sdh-b2 span', '.sdt-blk .u', '.sdt-cpic .u']);
 const hits = new Map();
 for (const theme of ['day', 'night']) for (const w of [390, 1440]) { await p.setViewportSize({width: w, height: 900});
   for (const r of routes) { await p.evaluate(([r, t]) => { document.documentElement.dataset.theme = t; location.hash = '#' + r; }, [r, theme === 'night' ? 'night' : 'day']); await p.waitForTimeout(500);

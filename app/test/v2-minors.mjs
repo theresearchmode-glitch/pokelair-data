@@ -221,15 +221,16 @@ const AS = async () => {
     ok(!r.open && /^Applied .+ Undo$/.test(r.bar), `AS-8 (guard): Apply closes the sheet and My Team shows "${r.bar}"`); await c.close(); }
   // AS-9: the sheet's height at 390 (screens of 844), as the mock-up's 4.27 (was 6.20); no text outside the sheet, nothing under 13px,
   //   tap targets 44px, at 320, 390 and 1440, light and dark (guard part passed before)
-  { const bad = []; let scr = null;
+  { const bad = []; let scr = null, asOpt = false;
     for (const [W, dark] of [[320, 0], [390, 0], [390, 1], [1440, 0], [1440, 1]]) { const {q, c} = await openAS({W, dark: !!dark});
       const m = await q.evaluate(() => { const s = document.querySelector('.np-sheet'), sr = s.getBoundingClientRect(), out = [];
         for (const e of s.querySelectorAll('*')) { const r = e.getBoundingClientRect(); if (!r.width || e.closest('[inert]')) continue; if (r.right > sr.right + 1 || r.left < sr.left - 1) out.push('outside ' + (e.className || e.tagName));
           const fs = parseFloat(getComputedStyle(e).fontSize); if (fs < 13 && [...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) out.push('small ' + e.className + ' ' + fs);
           if (innerWidth < 700 && e.matches('button,a[href],summary') && (r.height < 43.5 || r.width < 43.5)) out.push('tap ' + (e.className || e.tagName) + ' ' + Math.round(r.width) + 'x' + Math.round(r.height)); }
         return {h: s.scrollHeight, out: [...new Set(out)].slice(0, 4)}; });
-      if (W === 390 && !dark) scr = +(m.h / 844).toFixed(2); m.out.forEach(x => bad.push(`${W}${dark ? ' dark' : ''}: ${x}`)); await c.close(); }
-    ok(scr != null && scr <= 5 && !bad.length, `AS-9 (Q5 C): the sheet is ${scr} phone screens at 390 (mock-up 4.27, before 6.20); ${bad.join(' | ') || 'nothing outside, under 13px or under 44px'}`); } };
+      if (W === 390 && !dark) { scr = +(m.h / 844).toFixed(2); asOpt = await q.evaluate(() => /Optional swaps:/.test(document.body.innerText)); } m.out.forEach(x => bad.push(`${W}${dark ? ' dark' : ''}: ${x}`)); await c.close(); }
+    /* with optional swaps the sheet lists them too: its own limit (Sim, Nov 18 evening: recommended; CI's frozen data measured 5.49) */
+    ok(scr != null && scr <= (asOpt ? 5.75 : 5) && !bad.length, `AS-9 (Q5 C): the sheet is ${scr} phone screens at 390${asOpt ? ' (with optional swaps, limit 5.75)' : ''} (mock-up 4.27, before 6.20); ${bad.join(' | ') || 'nothing outside, under 13px or under 44px'}`); } };
 if (process.env.ONLY === 'AS') { await AS(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- AS end
 // ---- MQ end ----
@@ -1274,8 +1275,11 @@ if (part('main2')) {
       await q.fill('[data-impin]', ['Tauros-Paldea-Combat', 'Squawkabilly-Yellow', 'Toxtricity-Low-Key', 'Crabominable-Mega', 'Lycanroc-Midnight', 'Typhlosion-Hisui'].join('\n\n')); await q.locator('[data-impgo]').click(); await settle(); }
     return {q, c}; };
   // 1. page length at 390 (the sample team, folds as they open): about 4 screens (5.6 before)
-  { const {q, c} = await mtOpen(390); const r = await q.evaluate(() => ({H: document.documentElement.scrollHeight, scr: +(document.documentElement.scrollHeight / 844).toFixed(2)}));
-    ok(r.scr <= 4.3, `Sim, Nov 18 (C): My Team at 390 is at most 4.3 screens long (${r.scr} screens, ${r.H}px)`);
+  // Nov 18 evening (Sim: recommended): a team that shows optional swaps ("Optional swaps:") is its own state with its own limit, as 5 of 6
+  // has (CI's frozen data gives the sample team one optional swap: +363px, 4.47 screens); measured + margin: 4.75
+  { const {q, c} = await mtOpen(390); const r = await q.evaluate(() => ({H: document.documentElement.scrollHeight, scr: +(document.documentElement.scrollHeight / 844).toFixed(2), opt: /Optional swaps:/.test(document.body.innerText)}));
+    const lim = r.opt ? 4.75 : 4.3;
+    ok(r.scr <= lim, `Sim, Nov 18 (C): My Team at 390 is at most ${lim} screens long${r.opt ? ' (with optional swaps)' : ''} (${r.scr} screens, ${r.H}px)`);
     // 2. the Hand three across; the editing panel shut until a Card is tapped, with the hint; tapped, it opens under the whole Hand with Replace, Edit Set, Remove and Lock
     const h = await q.evaluate(() => { const g = [...document.querySelectorAll('#main .mh-hand .mh-grp')].map(e => e.getBoundingClientRect()), hint = document.querySelector('#main .mt-hint');
       return {n: g.length, cols: new Set(g.map(r => Math.round(r.left))).size, level: new Set(g.map(r => Math.round(r.top))).size === 1, panel: !!document.querySelector('#main .mt-edit'), hint: hint ? hint.textContent : ''}; });

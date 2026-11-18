@@ -126,3 +126,8 @@ footer included: Home 6,350 / 5,250; Gifts 3,850 / 2,150; News 4,250 / 2,250. Th
 (checked: with 300 px added to each page, all 9 runs at 390/1440 report OVER; without, all 9 are ok). **Not agreed by Sim** (C1: limits
 are hers). The old Home limits (4,400 phone, 2,950 desktop) were for the Home the Stampede replaced. 320 and 820 keep the old limits and
 report OVER until Sim picks. Note: Home at 820 (iPad) is taller than at 390 (7,819 vs 6,240).
+
+## Nov 18 evening: My Team with optional swaps (Sim: recommended)
+A team whose Suggestions show "Optional swaps:" is its own state with its own limits, as 5 of 6 has: My Team at 390 at most 4.75
+screens (CI's frozen data measured 4.47: one optional swap adds 363px), and the All Suggestions sheet at 390 at most 5.75 screens
+(measured 5.49). Without optional swaps the limits stay 4.3 and 5. Checks: app/test/v2-minors.mjs (My Team C, AS-9).
