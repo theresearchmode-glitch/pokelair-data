@@ -5,6 +5,9 @@
 <!--NP-ICONS: the build puts src/v2/icons.html here (the "Sly Devil" browser-tab and home-screen icons, Nov 16; the old three are in git history)-->
 <!--NP-FONTS: the build puts src/v2/fonts/fonts.css here (fonts hosted by NastyPlot itself, Sim, Nov 11)-->
 <script>/* theme before first paint: the saved choice (or today's site's cc2.theme), else the device's. Code review B11: the device's
-   setting is read even when storage is blocked, and with no saved choice the page follows the device when it switches */(function(){var t=null,d=document.documentElement,m=null;try{t=localStorage.getItem('np2.theme');if(!t){var o=localStorage.getItem('cc2.theme');t=o==='"dark"'?'night':o==='"light"'?'day':null}}catch(e){}
-try{m=matchMedia('(prefers-color-scheme: dark)')}catch(e){}var dev=function(){return m&&m.matches?'night':'day'};d.dataset.theme=t==='night'||t==='day'?t:dev();d.dataset.look=d.dataset.theme==='night'?'dark':'light';
-if(!(t==='night'||t==='day')&&m&&m.addEventListener)m.addEventListener('change',function(){var s=null;try{s=localStorage.getItem('np2.theme')}catch(e){}if(s)return;d.dataset.theme=dev();d.dataset.look=d.dataset.theme==='night'?'dark':'light'})})()</script>
+   setting is read even when storage is blocked, and with no saved choice the page follows the device when it switches.
+   Q10 (Sim, Nov 18, answer A): the button also has Auto (nothing saved, follows the device). __npThMode holds the mode in memory
+   ('auto' | 'day' | 'night'), so the device watcher below is always on and follows the device only while the mode is Auto,
+   even after a tap back to Auto in the same visit or when storage is blocked */(function(){var t=null,d=document.documentElement,m=null;try{t=localStorage.getItem('np2.theme');if(!t){var o=localStorage.getItem('cc2.theme');t=o==='"dark"'?'night':o==='"light"'?'day':null}}catch(e){}
+try{m=matchMedia('(prefers-color-scheme: dark)')}catch(e){}var dev=function(){return m&&m.matches?'night':'day'};window.__npThMode=t==='night'||t==='day'?t:'auto';d.dataset.theme=window.__npThMode==='auto'?dev():t;d.dataset.look=d.dataset.theme==='night'?'dark':'light';
+if(m&&m.addEventListener)m.addEventListener('change',function(){if(window.__npThMode!=='auto')return;d.dataset.theme=dev();d.dataset.look=d.dataset.theme==='night'?'dark':'light'})})()</script>

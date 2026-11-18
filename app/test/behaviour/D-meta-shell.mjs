@@ -794,7 +794,24 @@ t('THEME-02v', 'Day/Night: with no choice saved the page follows the device; the
   await d.deviceDark(false); await sleep(500); expect(!(await d.looksDark()), 'did not follow the device back to day');
   await pg.click('[data-v2theme]'); await sleep(400); expect(await d.looksDark(), 'the button did not switch to night');
   await d.deviceDark(false); await sleep(500); expect(await d.looksDark(), 'the device overrode the saved choice');
-  expect(await ls('np2.theme') === 'night', 'choice not saved: ' + await ls('np2.theme')); }));
+  expect(await ls('np2.theme') === 'night', 'choice not saved: ' + await ls('np2.theme'));
+  /* Q10 (Sim, Nov 18, answer A): a third state, Auto, the way back to "follow my device". On this light device: Night > Day > Auto.
+     The label names the state it's in and the next one; Auto saves nothing (neither site's key) and follows the device live,
+     also after a reload that started on a saved choice (head.html used to watch the device only when nothing was saved at load) */
+  const lab = () => d.themeButton(), mode = () => pg.evaluate(() => (document.querySelector('header [data-v2theme]') || {}).dataset.mode);
+  expect(/^Night mode is on\. Switch to day mode$/.test(await lab()), 'night label: ' + await lab());
+  await pg.click('[data-v2theme]'); await sleep(400); expect(!(await d.looksDark()), 'second tap did not give day');
+  expect(await ls('np2.theme') === 'day', 'day not saved: ' + await ls('np2.theme')); expect(await mode() === 'day', 'icon state: ' + await mode());
+  expect(/^Day mode is on\. Switch to auto: follow your device$/.test(await lab()), 'day label: ' + await lab());
+  await pg.reload(); await sleep(1500); await d.deviceDark(true); expect(!(await d.looksDark()), 'after a reload the device overrode Day');
+  await d.deviceDark(false); await pg.evaluate(() => { try { localStorage.setItem('cc2.theme', '"dark"'); } catch (e) {} });
+  await pg.click('[data-v2theme]'); await sleep(400); expect(await mode() === 'auto', 'third tap is not Auto: ' + await mode());
+  expect(await ls('np2.theme') === null && await ls('cc2.theme') === null, 'Auto saved something: ' + await ls('np2.theme') + ' / ' + await ls('cc2.theme'));
+  expect(/^Auto mode is on, following your device \(day now\)\. Switch to night mode$/.test(await lab()), 'auto label: ' + await lab());
+  await d.deviceDark(true); await sleep(300); expect(await d.looksDark(), 'Auto did not follow the device to dark (same visit, loaded on a saved choice)');
+  expect(/^Auto mode is on, following your device \(night now\)\. Switch to day mode$/.test(await lab()), 'auto label at night: ' + await lab());
+  await pg.reload(); await sleep(1500); expect(await d.looksDark() && await mode() === 'auto', 'Auto lost on reload');
+  await d.deviceDark(false); await sleep(300); expect(!(await d.looksDark()), 'Auto did not follow the device back to light after a reload'); }));
 t('SHELL-12v', 'Text style: Title Case place names, "Mega X" naming in Search', run({team: TEAM}, async ({ui}) => {
   const pg = ui.pg; const names = await pg.evaluate(() => [...document.querySelectorAll('.np-nav a')].map(a => a.textContent.trim()));
   expect(names.every(n => n.split(' ').every(w => /^[A-Z]/.test(w))), 'not Title Case: ' + names.join(', '));

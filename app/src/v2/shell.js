@@ -11,7 +11,7 @@ V2.ART_SMALL = window.NP_ONE_ART ? V2.ART_BASE : V2.ART_BASE.replace(/\/?$/, '')
 V2.artFix = e => { const i = e.target; if (i && i.tagName === 'IMG' && i.src.includes('-s/') && !i.dataset.full) { i.dataset.full = 1; i.src = i.src.replace(/-s\/(\d+\.webp)/, '/$1'); } };
 addEventListener('error', V2.artFix, true); /* code review C8: a Pokémon with no picture asked for v2art/undefined.webp; now a blank 1px image */
 V2.esc = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m]);
-V2.LS = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }};
+V2.LS = {get: k => { try { return localStorage.getItem(k); } catch (e) { return null; } }, set: (k, v) => { try { localStorage.setItem(k, v); } catch (e) {} }, del: k => { try { localStorage.removeItem(k); } catch (e) {} }};
 // the five places, in the order players use them (Sim, Nov 11: Home is in the menu)
 // type colours live in app/src/v2/css/tokens.css (--ty-Dragon...); an unknown type falls back to --type-none
 V2.TYPES = ['Dragon','Ground','Fighting','Poison','Dark','Steel','Fire','Water','Grass','Fairy','Flying','Ghost','Psychic','Ice','Rock','Electric','Normal','Bug'];
@@ -38,6 +38,7 @@ V2.ICON = {fwd: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path
   box: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round" stroke-linecap="round"><rect x="2.5" y="3.5" width="19" height="13" rx="2"/><path d="M8.5 20.5h7M12 16.5v4"/><circle cx="12" cy="10" r="3.4"/><path d="M8.6 10h6.8"/></g></svg>',
   // Day/Night as a sun and a moon (Sim, Nov 12: not the words; today's site shows the mode you're in: a sun by day, a moon at night)
   sun: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><g fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round"><circle cx="12" cy="12" r="4.2"/><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7 7 17M17 7l1.7-1.7"/></g></svg>',
+  auto: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="8.4" fill="none" stroke="currentColor" stroke-width="2.2"/><path d="M12 3.6a8.4 8.4 0 0 1 0 16.8z" fill="currentColor"/></svg>',
   moon: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M20.2 14.6A8.4 8.4 0 0 1 9.4 3.8a8.4 8.4 0 1 0 10.8 10.8z" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linejoin="round"/></svg>'};
 // The site's own × in every search box (behaviour test X-05; today's site has had one since Oct 30, 61-concept-h-pages.js clrWrap).
 // Each box puts V2.CLR right after its input inside the .np-field. CSS shows it only while the box has text (:placeholder-shown) and
@@ -227,6 +228,15 @@ V2.goPlace = i => { const pl = V2.findPlaces[i]; if (!pl) return; const [k, , ac
   if (!act) { location.hash = '#' + k; return; } V2.closeSheet(true); if (location.hash !== '#' + k) location.hash = '#' + k; setTimeout(act, 60); };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2place]'); if (b) V2.goPlace(+b.dataset.v2place); });
 V2.theme = () => document.documentElement.dataset.theme === 'night' ? 'night' : 'day';
+/* Q10 (Sim, Nov 18, answer A): the Day/Night button has three states, Day, Night and Auto (Auto = nothing saved, the page follows the
+   device live, the same as a first visit). The mode lives in memory (head.html sets window.__npThMode before first paint).
+   Order: from Auto the first tap always changes the look (THEME-02v: a light device gives Night), the next tap pins the other look,
+   the third goes back to Auto. So on a dark device it runs Day > Night > Auto; on a light device Night > Day > Auto. Only the step
+   back into Auto can leave the look as it is, and the button's icon and label say "Auto" there */
+V2.devTheme = () => { try { return matchMedia('(prefers-color-scheme: dark)').matches ? 'night' : 'day'; } catch (e) { return 'day'; } };
+V2.themeMode = () => { const m = window.__npThMode; return m === 'day' || m === 'night' ? m : 'auto'; };
+V2.themeNext = () => { const m = V2.themeMode(), dv = V2.devTheme(); return m === 'auto' ? (V2.theme() === 'night' ? 'day' : 'night') : m !== dv ? dv : 'auto'; };
+V2.THEME_WORD = {day: 'Day mode', night: 'Night mode', auto: 'Auto: follows your device'};
 // ---------- data note (parity, Nov 15): today's #healthBar and #regBar (43-data-health.js), one calm line on Home and the Meta
 // pages: a source past its usual age is named with its day, and a new or changed regulation is said plainly. Empty when all is current.
 V2.dataNote = () => { const E = V2.esc, out = [];
@@ -248,11 +258,17 @@ document.addEventListener('focusin', e => { const t = e.target; try { if (!t.mat
   const r = t.getBoundingClientRect(), hd = document.querySelector('.np-head'), bar = document.querySelector('.np-bar'), top = (hd ? hd.getBoundingClientRect().bottom : 0) + 8,
     bot = (bar && getComputedStyle(bar).display !== 'none' ? bar.getBoundingClientRect().top : innerHeight) - 8;
   if (r.top < top) scrollBy(0, r.top - top); else if (r.bottom > bot && r.height < bot - top) scrollBy(0, r.bottom - bot); });
-V2.setTheme = t => { V2._thLast = t; /* the observer below then knows this change is already redrawn (code review B-m1: it redrew twice) */ document.documentElement.dataset.theme = t; document.documentElement.dataset.look = t === 'night' ? 'dark' : 'light'; /* the shared share-image code reads data-look (code review C8) */ V2.LS.set('np2.theme', t); V2.redraw(); }; // in place: focus stays on Day/Night (A5)
+V2.setTheme = m => { m = m === 'day' || m === 'night' ? m : 'auto'; const t = m === 'auto' ? V2.devTheme() : m; window.__npThMode = m;
+  V2._thLast = t; /* the observer below then knows this change is already redrawn (code review B-m1: it redrew twice) */ document.documentElement.dataset.theme = t; document.documentElement.dataset.look = t === 'night' ? 'dark' : 'light'; /* the shared share-image code reads data-look (code review C8) */
+  if (m === 'auto') { V2.LS.del('np2.theme'); V2.LS.del('cc2.theme'); /* Auto saves nothing; today's site's old choice must not come back on reload */ } else V2.LS.set('np2.theme', m);
+  V2.redraw(); }; // in place: focus stays on Day/Night (A5)
 /* Sim, Nov 16: the theme can change without the theme button (the phone or app switching to dark on its own: head.html listens for it);
    whatever changes it, the page redraws once, so theme-drawn parts (the button's label, Build's lighting) follow */
 try { V2._thLast = document.documentElement.dataset.theme; new MutationObserver(() => { const t = document.documentElement.dataset.theme; if (t === V2._thLast) return; V2._thLast = t;
   clearTimeout(V2._thT); V2._thT = setTimeout(() => { if (V2.redraw && V2.draw) V2.redraw(); }, 50); }).observe(document.documentElement, {attributes: true, attributeFilter: ['data-theme']}); } catch (e) {}
+/* Q10: with Day or Night pinned, the device switching doesn't change the look, but it changes what the button's next tap does
+   (themeNext), so its label is redrawn to stay true. In Auto the observer above already redraws */
+try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (V2.themeMode() !== 'auto' && V2.redraw && V2.draw) V2.redraw(); }); } catch (e) {}
 /* The logo "Sly Devil" (Sim, Nov 16; files from her designer in docs/brand/sly-devil, NP_LOGO from experiments/gen-logo-sly.mjs).
    ONE logo for day and night: its white sticker edge carries its own background, so the light/night pair and the night overrides are gone.
    Drawn as an image (no ids to clash between the header and footer copies, and its soft shadow is painted once, not on every scroll frame).
@@ -362,7 +378,7 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
 <header class="np-head">${V2.backBtn()}<a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a>${V2.fwdBtn()}<nav class="np-nav" aria-label="Main">${nav}</nav>
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
   <a class="np-theme np-boxlink" href="${r === 'box' ? V2.esc(V2.boxFrom || '#team') : '#box'}" aria-label="${r === 'box' ? 'My Box is open. Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}" title="${r === 'box' ? 'Back to ' + V2.esc(V2.pageName(V2.boxFrom)) : 'My Box'}"${r === 'box' ? ' aria-current="page"' : ''}>${V2.ICON.box}</a>
-  <button type="button" class="np-theme" data-v2theme aria-label="${V2.theme() === 'night' ? 'Night mode is on. Switch to day mode' : 'Day mode is on. Switch to night mode'}" title="${V2.theme() === 'night' ? 'Night mode' : 'Day mode'}">${V2.theme() === 'night' ? V2.ICON.moon : V2.ICON.sun}</button></div></header>
+  <button type="button" class="np-theme" data-v2theme data-mode="${V2.themeMode()}" aria-label="${V2.themeMode() === 'auto' ? `Auto mode is on, following your device (${V2.theme()} now)` : V2.THEME_WORD[V2.themeMode()] + ' is on'}. Switch to ${V2.themeNext() === 'auto' ? 'auto: follow your device' : V2.themeNext() + ' mode'}" title="${V2.THEME_WORD[V2.themeMode()]}">${V2.ICON[V2.themeMode() === 'auto' ? 'auto' : V2.themeMode() === 'night' ? 'moon' : 'sun']}</button></div></header>
 <main class="np-main" id="main">${!V2.dataReady() ? V2.loadingHtml() : `${((place === 'home' || place === 'meta') && r !== 'pokemon') || window.__NP_PVFAIL ? V2.dataNote() : ''}${P ? V2.safeDraw(P) : ''}`}</main>
 <footer class="np-foot">${V2.logo(true)}<div class="np-ftxt">${place === 'home' ? '' : '<p class="np-ftag u">Sharply raise <span>your win rate.</span></p>'}<span>NastyPlot is an unofficial, fan&#8209;made tool, not affiliated with Nintendo, The Pok&eacute;mon Company or Game Freak; Pok&eacute;mon names are trademarks of their owners.${V2.dataReady() && V2.asOf() ? ` <span class="np-asof">${V2.esc(V2.asOf())}.</span>` : ''}</span></div><nav aria-label="About"><a href="#method">How We Calculate</a><a href="#about">About</a><a href="#about=priv">Privacy</a><a href="#about=contact">Contact</a>${V2.FB && V2.FB.ok ? '<a href="#feedback">Send Feedback</a>' : ''}${V2.OWN ? `<a href="#owner">Owner</a>` : ``}<button type="button" class="np-fsrcb" data-fsrc aria-expanded="false" aria-controls="np-fsrc">Sources and Credits</button></nav><p class="np-fsrc" id="np-fsrc" hidden>${(() => { try { return DATA_SOURCES.map(x => V2.esc(x.name)).join(' · '); } catch (e) { return ''; } })()}. Each used by its own rules; details in <a class="np-link" href="#about=data">About</a>.</p></footer>
 <nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
@@ -385,7 +401,7 @@ V2.draw = () => { const app = document.getElementById('app'); if (!app) return; 
     for (const a of [...n.attributes]) if (a.name !== 'src' && a.name !== 'loading' && o.getAttribute(a.name) !== a.value) o.setAttribute(a.name, a.value);
     o.removeAttribute('loading'); n.replaceWith(o); }
   if (P && P.after) try { P.after(); } catch (e) { console.error(e); } if (V2.fitWords) try { V2.fitWords(); } catch (e) { console.error(e); } V2.setTitle(); };
-document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2theme]'); if (t) V2.setTheme(V2.theme() === 'night' ? 'day' : 'night'); });
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2theme]'); if (t) V2.setTheme(V2.themeNext()); });
 // My Box toggles (Sim, Nov 12): the box icon opens My Box; pressed again while in the box, it goes back to the screen you came from
 // (that screen's address, so a team or box link isn't replayed); straight into the box with no screen before it: My Team
 V2.boxFrom = null;
