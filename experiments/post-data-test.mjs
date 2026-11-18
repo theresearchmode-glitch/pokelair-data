@@ -4,7 +4,8 @@
 //          Serebii source (their terms forbid copying), every code has 1 official source or 2+ independent outlets (different
 //          sites), start and end present and parse, start before end, every `approx` field is explained in `note`.
 //   news:  id unique, date parses, type and title set, url is https.
-//   series: dates parse, start before end, `gift` is null or a gift id.
+//   only Mystery Gifts (Sim, Nov 18): every gift's `how` is 'Serial Code' or 'Event Gift'.
+//   series: dates parse, start before end, `mon` is null or a name in the site's data (the round's prize; not a gift), no `gift` link.
 // It then feeds itself broken copies (an empty gift, a code with one outlet, start after end, an http news link, ...) and
 // fails unless each one is caught: a check that can't fail proves nothing.
 // Usage: node experiments/post-data-test.mjs            (POST_FILE=path checks another copy of post.js)
@@ -15,7 +16,7 @@ const load = f => { const c = {}; vm.runInNewContext(fs.readFileSync(f, 'utf8') 
 const siteData = fs.readFileSync(new URL('app/src/data/data.js', root), 'utf8');
 const OFFICIAL = /(^|\.)(pokemon-home\.com|pokemon\.com|pokemon\.co\.jp|pokemonchampions\.jp)$/;
 const BANNED = /(^|\.)(op\.gg|serebii\.net)$/;
-const KINDS = ['pokemon', 'item'], HOWS = ['Event Gift', 'Serial Code', 'Battle Pass', 'Early Download', 'Competition Prize', 'Livestream Reward'];
+const KINDS = ['pokemon', 'item'], HOWS = ['Event Gift', 'Serial Code']; // only Mystery Gifts (Sim, Nov 18: "just mystery gifts")
 const host = u => { try { const x = new URL(u); return x.protocol === 'https:' ? x.hostname.replace(/^www\./, '') : null; } catch (e) { return null; } };
 const parses = s => typeof s === 'string' && /^\d{4}-\d{2}-\d{2}/.test(s) && !Number.isNaN(Date.parse(s));
 
@@ -31,7 +32,7 @@ function check(P) {
     if (!g || typeof g !== 'object') { bad.push(`${at}: not an entry`); continue; }
     say(typeof g.id === 'string' && /^g-/.test(g.id) && !ids.has(g.id), `${at}: id missing, not g-..., or repeated`); ids.add(g.id);
     say(KINDS.includes(g.kind), `${at}: kind "${g.kind}" not pokemon/item`);
-    say(HOWS.includes(g.how), `${at}: how "${g.how}" not a known way`);
+    say(HOWS.includes(g.how), `${at}: how "${g.how}" is not a Mystery Gift (Serial Code or Event Gift only)`);
     say(typeof g.name === 'string' && g.name.trim(), `${at}: no name`);
     say(Number.isInteger(g.amount) && g.amount > 0, `${at}: amount is not a whole number above 0`);
     if (g.kind === 'pokemon') say(typeof g.mon === 'string' && siteData.includes(JSON.stringify(g.mon)), `${at}: mon "${g.mon}" is not a name in the site's data`);
@@ -44,7 +45,6 @@ function check(P) {
       say(typeof g.code === 'string' && /^[A-Z0-9]{4,20}$/.test(g.code), `${at}: code "${g.code}" is not 4-20 capital letters/digits`);
       say(hosts.some(h => h && OFFICIAL.test(h)) || outlets.size >= 2, `${at}: code has neither an official source nor 2+ outlets (${outlets.size})`);
     }
-    if (g.how === 'Livestream Reward') say(!('code' in g), `${at}: a personal livestream code must never be listed`);
     say(parses(g.start), `${at}: start "${g.start}" does not parse`);
     say(parses(g.end), `${at}: end "${g.end}" does not parse`);
     if (parses(g.start) && parses(g.end)) say(Date.parse(g.start) < Date.parse(g.end), `${at}: start is not before end`);
@@ -67,7 +67,8 @@ function check(P) {
   for (const s of P.series || []) {
     const at = `series ${s.id}`;
     say(parses(s.entry) && parses(s.start) && parses(s.end) && Date.parse(s.start) < Date.parse(s.end), `${at}: dates missing, unparsable or start not before end`);
-    say(s.gift === null || ids.has(s.gift), `${at}: gift "${s.gift}" is not a gift id`);
+    say(!('gift' in s), `${at}: links a gift, but competition prizes are not Mystery Gifts (series rounds carry mon only)`);
+    say(s.mon === null || (typeof s.mon === 'string' && siteData.includes(JSON.stringify(s.mon))), `${at}: mon "${s.mon}" is not a name in the site's data`);
     say(!!host(s.src), `${at}: src not https`);
   }
   return bad;
@@ -92,11 +93,13 @@ const broken = {
   'a missing start': c => { delete c.gifts[2].start; },
   'start after end': c => { const g = c.gifts[3]; [g.start, g.end] = [g.end, g.start]; },
   'a Pokémon not in the site data': c => { c.gifts.find(x => x.kind === 'pokemon').mon = 'Missingno'; },
-  'a code on a livestream reward': c => { c.gifts.find(x => x.how === 'Livestream Reward').code = 'ABCD1234'; },
+  'a Battle Pass gift': c => { c.gifts[0].how = 'Battle Pass'; },
+  'a Competition Prize gift': c => { c.gifts[1].how = 'Competition Prize'; },
   'an empty news entry': c => c.news.push({}),
   'an http news link': c => { c.news[0].url = c.news[0].url.replace('https:', 'http:'); },
   'news with no date': c => { delete c.news[0].date; },
-  'a series round pointing at no gift': c => { c.series[0].gift = 'g-nothing'; },
+  'a series round linking a gift': c => { c.series[0].gift = c.gifts[0].id; },
+  'a series prize not in the site data': c => { c.series[0].mon = 'Missingno'; },
   'empty POST': c => { c.gifts = []; c.news = []; }
 };
 for (const [name, f] of Object.entries(broken)) {

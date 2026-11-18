@@ -76,7 +76,7 @@
 @media (max-width:379.98px){.pr-sheet{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.pr-blank.b2{display:block}} /* the smallest phones: two across, so names keep whole words */
 .pr-sw{position:relative;display:grid;filter:drop-shadow(0 1px 1px var(--pr-shadow)) drop-shadow(0 4px 6px var(--pr-shadow-2))}
 .pr-sw:has(.pr-st:focus-visible){outline:3px solid var(--plot);outline-offset:2px}
-.pr-event,.pr-early{--pc:var(--pr-ev);--pc2:var(--pr-ev-2);--pci:var(--pr-ev-ink)}.pr-prize{--pc:var(--pr-pz);--pc2:var(--pr-pz-2);--pci:var(--pr-pz-ink)}.pr-stream{--pc:var(--pr-ls);--pc2:var(--pr-ls-2);--pci:var(--pr-ls-ink)}.pr-serial{--pc:var(--pr-se);--pc2:var(--pr-se-2);--pci:var(--pr-se-ink)}.pr-pass{--pc:var(--pr-pa);--pc2:var(--pr-pa-2);--pci:var(--pr-pa-ink)}
+.pr-event{--pc:var(--pr-ev);--pc2:var(--pr-ev-2);--pci:var(--pr-ev-ink)}.pr-serial{--pc:var(--pr-se);--pc2:var(--pr-se-2);--pci:var(--pr-se-ink)}
 /* perforated edge: paper minus a row of 8px holes on each side ('space' spreads them evenly, a hole on each corner), then clip-path stops the
    paper on the holes' centre line, 6px in, so each corner hole bites a quarter out of its corner.
    Safari fix (Nov 18): the paper layer used to be a rectangle 12px smaller than the box. Safari (WebKit) applies 'subtract' only inside the

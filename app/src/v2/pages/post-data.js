@@ -2,8 +2,12 @@
 // POST (src/data/post.js). V2.postNow() -> {live: [...], past: [...], news: [...], checked}; a gift is live from its start until
 // its end (UTC), so it moves to the stamp sheet by the clock, with no data change needed. A gift with no start counts as already
 // started (review, Nov 18: it was shown nowhere), so it is live until its end passes.
+// Only Mystery Gifts (Sim, Nov 18: "just mystery gifts"; she chose Serial Code and Event Gift): a gift of another kind (Battle Pass,
+// Competition Prize, Livestream Reward, Early Download) is kept off every page even if it is in POST. V2.postMG(g): true for a Mystery Gift
+// (no 'how' counts as one: a gift with a code reads as a serial code, one without as an event gift, as V2.prG reads it).
+V2.postMG = g => !!g && !/pass|prize|competition|stream|twitch|early/i.test(String(g.how || g.via || g.method || g.type || ''));
 V2.postNow = (now = Date.now()) => { const P = (typeof POST === 'object' && POST) || {gifts: [], news: []}, t = x => x ? Date.parse(x) : NaN;
-  const g = (P.gifts || []).slice(), live = g.filter(x => !(t(x.start) > now) && !(t(x.end) < now)).sort((a, b) => t(a.end) - t(b.end)),
+  const g = (P.gifts || []).filter(V2.postMG), live = g.filter(x => !(t(x.start) > now) && !(t(x.end) < now)).sort((a, b) => t(a.end) - t(b.end)),
     past = g.filter(x => t(x.end) < now).sort((a, b) => t(b.end) - t(a.end));
   return {live, past, news: (P.news || []).slice().sort((a, b) => t(b.date) - t(a.date)), checked: P.checked}; };
 // V2.safeUrl(u): the one link check for the family (Post Room sources, Dispatch headlines, Read links and Fixtures, Home's band): u when

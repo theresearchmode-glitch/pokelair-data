@@ -10,7 +10,7 @@
 //   V2.prCode(code)               the code, digits in blue and letters in ink (so 1/I and 0/O differ), with screen-reader text that
 //                                 spells it ("L, A, 1, ..."); the visible code stays selectable text. '' for no code.
 //   V2.prStamp(gift)              a perforated postage stamp for a past gift: framed picture (Pokémon render or item line drawing),
-//                                 month and year, name, how it was given (pink event / blue serial code / gold Battle Pass) and the
+//                                 month and year, name, how it was given (pink event gift / blue serial code) and the
 //                                 round "Ended" postmark. A Pokémon stamp is a button: its nature and moves if POST has them, else its page.
 //   V2.prDaysLeft(gift, now?)     whole days to the gift's last day (a day-only end: UTC day against UTC today; an exact end: the
 //                                 viewer's local days): 0 = ends today (never below 0 while live), -1 = ended, null = no end date.
@@ -22,8 +22,8 @@
 // A gift in POST.gifts. The fields this page reads (also accepted, in brackets, for the data helper's spelling):
 //   name    what's inside, as the game names it ("2 Training Tickets") [contents, title]; a Pokémon gift may leave it out
 //   mon     a Pokémon gift: its name as the site writes it (V2.byName keys: "Indeedee-F", "Incineroar") [pokemon]
-//   how     'event' (Event gift), 'serial' (Serial code) or 'pass' (Battle Pass) [via, method, type]; a gift with a code and no
-//           'how' is a serial code
+//   how     'event' (Event gift) or 'serial' (Serial code) [via, method, type]; a gift with a code and no 'how' is a serial code.
+//           Only these two (Sim, Nov 18: just Mystery Gifts); V2.postNow() keeps any other kind off the page
 //   start, end   UTC times (ISO); no end = "End date not confirmed"
 //   code    the shared code, only from a cited source; null for gifts that need none
 //   item    'ticket' | 'coupon' | 'shirt' | 'vp' | 'gift' (its picture) [icon]; read from the name when missing
@@ -33,11 +33,11 @@
 //   id      a unique key (default: name and end)
 V2.PR_SOON = 7; // days: most event codes run 1-2 weeks (docs/rebuild/research/mystery-gift-sources-nov18.md), so 7 or fewer is "its last week"
 V2.prUi = {f: 'all', all: false};
-V2.PR_KIND = {'event gift': 'event', 'early download': 'early', 'serial code': 'serial', 'battle pass': 'pass', 'competition prize': 'prize', 'livestream reward': 'stream'};
+V2.PR_KIND = {'event gift': 'event', 'serial code': 'serial'};
 V2.PR_ITEM = {'quick coupon': 'coupon', 'training ticket': 'ticket', 'teammate ticket': 'ticket', 'vp': 'vp', 'clothing': 'shirt', 'trainer icon': 'icon'};
 V2.prG = g => { if (!g) return null; const s = x => (x == null ? '' : String(x)).trim();
   const isMon = g.kind === 'pokemon' || (!g.kind && !!(g.mon || g.pokemon)), mon = isMon ? s(g.mon || g.pokemon || g.name) : '', code = s(g.code).replace(/\s+/g, '') || null;
-  const hw = s(g.how || g.via || g.method || g.type).toLowerCase(), how = V2.PR_KIND[hw] || (/pass/.test(hw) ? 'pass' : /serial|code/.test(hw) ? 'serial' : /prize|competition/.test(hw) ? 'prize' : /stream|twitch/.test(hw) ? 'stream' : /early/.test(hw) ? 'early' : code ? 'serial' : 'event');
+  const hw = s(g.how || g.via || g.method || g.type).toLowerCase(), how = V2.PR_KIND[hw] || (/serial|code/.test(hw) || code ? 'serial' : 'event');
   const base = s(g.name || g.contents || g.title) || (mon ? V2.disp(mon) : 'Mystery Gift'), nm = (s(g.item || g.icon) + ' ' + base).toLowerCase();
   const item = isMon ? null : V2.PR_ITEM[s(g.item || g.icon).toLowerCase()] || (/coupon/.test(nm) ? 'coupon' : /ticket/.test(nm) ? 'ticket' : /\bvp\b|victory point/.test(nm) ? 'vp' : /shirt|cloth|cap\b|hat\b|apparel|outfit|jacket|hoodie/.test(nm) ? 'shirt' : /icon|title/.test(nm) ? 'icon' : 'gift');
   const n = +String(g.amount == null ? '' : g.amount).replace(/,/g, ''), many = !isMon && n > 1;
@@ -52,11 +52,9 @@ V2.prG = g => { if (!g) return null; const s = x => (x == null ? '' : String(x))
   return {raw: g, id: s(g.id) || base + '|' + s(g.end), name: known ? V2.disp(known) : name, mon: mon && V2.byName && V2.byName.get(mon) ? mon : null, isMon, monName: mon, how, code, item, amount: am,
     start: Date.parse(g.start), end: Date.parse(g.end), dayStart: ap.includes('start'), dayEnd: ap.includes('end'), extras: (g.extras || []).map(s).filter(Boolean),
     nature: s(g.nature), ability: s(g.ability), held: s(g.held && typeof g.held === 'string' ? g.held : ''), moves: (g.moves || []).map(s).filter(Boolean), src}; };
-V2.PR_HOW = {event: 'Event gift', early: 'Early download', serial: 'Serial code', pass: 'Battle Pass', prize: 'Competition prize', stream: 'Livestream reward'};
+V2.PR_HOW = {event: 'Event gift', serial: 'Serial code'};
 // a gift with no code says why on its label (the words follow post.js's meaning of each 'how')
-V2.PR_NOCODE = {event: 'No code: it waits in your in-game mailbox while the campaign runs.', early: 'No code: the early-download bonus arrives in your mailbox.',
-  pass: 'No code: earn it in the free Battle Pass this season.', prize: 'No code: finish 3 or more matches in the online competition.',
-  stream: 'No shared code: each viewer gets a personal code from the official stream.', serial: 'The code is not confirmed by a source yet.'};
+V2.PR_NOCODE = {event: 'No code: it waits in your in-game mailbox while the campaign runs.', serial: 'The code is not confirmed by a source yet.'};
 V2.prYr = (t, utc) => Number.isFinite(t) && new Date(t)[utc ? 'getUTCFullYear' : 'getFullYear']() !== new Date().getFullYear() ? {year: 'numeric'} : {}; // one date style (audit W15): "Nov 22", the year only when it isn't this year
 V2.prDate = (t, o, utc) => { if (!Number.isFinite(t)) return ''; o = o || {month: 'short', day: 'numeric', ...V2.prYr(t, utc)}; return new Date(t).toLocaleDateString('en-US', utc ? {...o, timeZone: 'UTC'} : o); };
 V2.prDayOf = x => { const m = /^(\d{4})-(\d{2})-(\d{2})$/.exec(String(x || '')); return m ? new Date(+m[1], m[2] - 1, +m[3]).getTime() : Date.parse(x); }; // a date with no time ('checked') is that calendar day, not UTC midnight

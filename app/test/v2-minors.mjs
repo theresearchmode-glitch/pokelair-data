@@ -64,6 +64,31 @@ const BR = async () => {
     const f1 = await f(); await q.waitForFunction(() => !document.querySelector('.sg2-wait'), null, {timeout: 90000}).catch(() => {}); await q.waitForTimeout(1500); const f2 = await f(), toast = await q.evaluate(() => document.querySelectorAll('.np-toast').length);
     ok(/^(Undo|Apply)$/.test(f1) && /^(Undo|Apply)$/.test(f2) && toast <= 1, `BR-C3: at ${W} keyboard Apply puts the focus on the Undo or the Apply now in its place (not <body>), it stays after the list settles, and one message at most (A6) (${f1}, then ${f2}; toasts ${toast})`); await c.close(); } };
 if (process.env.ONLY === 'BR') { await BR(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// ---- MQ begin: Sim's answers to the Nov 18 morning questions (docs/rebuild/morning-questions-nov18.md) and her Gifts-only rule.
+//   Each check failed on the build before its change. ONLY=MQ runs these alone; the full run calls MQ() just before the browser closes.
+const MQ = async () => {
+  const open = async (hash, W = 1440) => { const q = await b.newPage({viewport: {width: W, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + hash); await q.waitForTimeout(2000); return q; };
+  // MQ-G1 (Sim, Nov 18: "just mystery gifts"): #gifts shows only Serial Code and Event Gift entries, from the real post.js; the tabs' counts match the stamps
+  { const q = await open('#gifts'); await q.click('#main [data-prmore]', {timeout: 3000}).catch(() => {}); await q.waitForTimeout(400);
+    const r = await q.evaluate(() => window.__ev(`(() => { const kinds = [...document.querySelectorAll('#main .pr-sw')].map(li => (li.className.match(/pr-(\\w+)$/) || [])[1]);
+      const lab = [...document.querySelectorAll('#main .pr-parcel .pr-meta')].map(m => m.textContent);
+      const raw = (POST.gifts || []).map(g => g.how), shown = [...V2.postNow().live, ...V2.postNow().past].map(g => V2.prG(g).how);
+      const tabs = Object.fromEntries([...document.querySelectorAll('#main [data-prf]')].map(t => [t.dataset.prf, +t.querySelector('small').textContent]));
+      const P = V2.postNow().past.map(V2.prG);
+      return {kinds: [...new Set(kinds)].join(','), labels: lab.filter(t => /Battle Pass|Competition|Livestream|Early download/i.test(t)).length, raw: [...new Set(raw)].join(','), shown: [...new Set(shown)].join(','),
+        tabs, want: {all: P.length, mon: P.filter(g => g.isMon).length, item: P.filter(g => !g.isMon).length}, stamps: kinds.length}; })()`));
+    ok(/^(serial|event)(,(serial|event))?$/.test(r.kinds) && !r.labels && /^(Serial Code|Event Gift)(,(Serial Code|Event Gift))?$/.test(r.raw) && /^(serial|event)(,(serial|event))?$/.test(r.shown)
+      && r.tabs.all === r.want.all && r.tabs.mon === r.want.mon && r.tabs.item === r.want.item && r.stamps === r.want.all,
+      `MQ-G1: #gifts shows only Mystery Gifts (Serial Code and Event Gift), post.js holds no other kind, and the tabs count the stamps (${JSON.stringify(r)})`);
+    /* and a stray Battle Pass / Competition Prize / Livestream / Early Download entry never reaches the page, Home's band or the Dispatch coupon */
+    const s = await q.evaluate(() => window.__ev(`(() => { const keep = POST, t = Date.now(), iso = x => new Date(x).toISOString(); try { POST = {checked: null, news: keep.news, series: keep.series, gifts: ['Battle Pass', 'Competition Prize', 'Livestream Reward', 'Early Download', 'Serial Code']
+      .map((h, i) => ({id: 'x' + i, kind: 'item', name: 'Test ' + h, amount: 1, how: h, code: h === 'Serial Code' ? 'AB12' : undefined, start: iso(t - 864e5), end: iso(t + (i + 2) * 864e5)}))}; const P = V2.postNow();
+      return P.live.map(g => g.how).join(',') + ' | ' + (/Test (Battle|Competition|Livestream|Early)/.test(V2.pages.gifts.draw() + V2.sdPost() + V2.dpFront(P)) ? 'leaks' : 'clean'); } finally { POST = keep; } })()`));
+    ok(s === 'Serial Code | clean', `MQ-G1b: other kinds of gift are kept off #gifts, Home's post band and the Dispatch even if post.js had them (${s})`);
+    await q.close(); }
+};
+if (process.env.ONLY === 'MQ') { await MQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// ---- MQ end ----
 // ---- BR end (run with the rest just before the browser closes) ----
 await p.goto('file://' + PAGE + '#build'); await p.waitForTimeout(2500);
 await p.getByRole('button', {name: 'Build Me a Team'}).first().click();
@@ -592,7 +617,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
 // The Post Room (#gifts, Nov 18): a test fixture (made-up gifts, set inside the page; post.js is never touched); each check fails on the skeleton page
 { const FX = `{checked: '2026-11-17', news: [], gifts: [{id: 'a', name: 'Training Ticket', amount: 2, how: 'Serial Code', code: 'AB1CD0E', start: '2026-11-01T00:00:00Z', end: '2026-11-22T23:59:00Z'},
     {id: 'b', name: 'Quick Coupons', amount: 100, how: 'Event Gift', start: '2026-11-01T00:00:00Z', end: '2026-12-31T23:59:00Z'}].concat(Array.from({length: 14}, (_, i) => i % 2
-    ? {id: 'p' + i, kind: 'pokemon', mon: 'Incineroar', name: 'Incineroar', how: 'Battle Pass', start: '2026-08-01T00:00:00Z', end: '2026-09-0' + (i % 9 + 1) + 'T23:59:00Z'}
+    ? {id: 'p' + i, kind: 'pokemon', mon: 'Incineroar', name: 'Incineroar', how: 'Event Gift', start: '2026-08-01T00:00:00Z', end: '2026-09-0' + (i % 9 + 1) + 'T23:59:00Z'}
     : {id: 'p' + i, kind: 'item', item: 'VP', name: 'VP', amount: 5000, how: 'Serial Code', start: '2026-08-01T00:00:00Z', end: '2026-09-0' + (i % 9 + 1) + 'T23:59:00Z'}))}`;
   const NOW = Date.parse('2026-11-17T17:00:00Z'), redraw = `const n = Date.now; Date.now = () => ${NOW}; try { V2.redraw(); } finally { Date.now = n; }`;
   const q = await b.newPage({viewport: {width: 1280, height: 900}, timezoneId: 'America/New_York'}); await q.addInitScript(() => { window.__PL_TEST = 1; });
@@ -1138,6 +1163,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
 }
 // ---- NPR end ----
 await BR(); /* behaviour review (Nov 18), above */
+await MQ(); /* Sim's Nov 18 answers, above */
 // WebKit pair (Nov 18, docs/rebuild/test-runs/webkit-new-pages-nov18.md): two Safari defects, measured the same way in any engine. This file runs
 // them in Chromium; for Safari's engine the same function (between the wk-pair markers) runs with playwright.webkit, over http (WebKit blocks
 // the fonts on file://). WK-1 the stamp's perforated edge: on its pixels, nothing outside the holes' centre line (Safari drew a ring of loose
