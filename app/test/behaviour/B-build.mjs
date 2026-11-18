@@ -294,7 +294,11 @@ t('CORES-05', 'Core rows: rank, names, tags, % wins; Details shows points vs avg
      (approved Build mock-up docs/rebuild/mocks/build.tpl.html lines 228-230; the Parts list rough, build-blueprint/lower-cores-desktop.webp).
      Today's '% of all teams' is not in either picture; Sim, Nov 16 (Q3): a core's share is on its count line as text, "671 teams (4.9%)",
      so touch screens see it (it was only a hover title; switch-readiness Nov 18, Features 5). Checked on the text, which a title is not part of. */
-    has(c, /1 .+ \+ .+ [\d.]+% wins/, 'row 1'); has(c, /[\d,]+ teams \(<?[\d.]+%\)/, 'team count with its share of all teams, as text'); has(c, /points? together/, 'together'); has(c, /[+−-][\d.]+ vs avg/, 'vs avg'); has(c, /Show \d+ More/, 'Show more'); await close(); return; }
+    has(c, /1 .+ \+ .+ [\d.]+% wins/, 'row 1'); has(c, /[\d,]+ teams \(<?[\d.]+%\)/, 'team count with its share of all teams, as text'); has(c, /points? together/, 'together'); has(c, /[+−-][\d.]+ vs avg/, 'vs avg'); has(c, /Show \d+ More/, 'Show more'); await close();
+    /* the same share on touch screens (Nov 18, switch item 1): a phone (390, touch) and an iPad (820, touch), where a title can't show */
+    for (const o of [{width: 390}, {width: 820, touch: true}]) { const t = await open({team: TEAM, box: BOX, ...o}); await t.ui.go('Build');
+      has(await t.ui.coresText(), /[\d,]+ teams \(<?[\d.]+%\)/, `share of all teams as text on touch at ${o.width}`); await t.close(); }
+    return; }
   has(c, /1 .+ \+ .+ [\d.]+% wins/, 'row 1'); has(c, /More Cores #4 to #\d+/, 'fold for #4 onward');
   await ui.tap(/^Details$/, ui.area('cores')); const d = await ui.coresText();
   has(d, /[+−-][\d.]+ points vs avg/, 'vs avg'); has(d, /[\d,]+ teams/, 'team count'); has(d, /points together/, 'together'); has(d, /% of all teams/, 'share'); has(d, /Hide details/, 'Hide details');
