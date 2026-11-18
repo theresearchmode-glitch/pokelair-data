@@ -532,5 +532,32 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   const em = await q.evaluate(() => { const m = document.querySelector('#main'); return {shelf: ((m.querySelector('.pr-shelf') || {}).textContent || '').replace(/\s+/g, ' ').trim(), stamps: m.querySelectorAll('.pr-sw').length, plate: ((m.querySelector('.pr-stats .ev-pk') || {}).textContent || '')}; });
   ok(/Nothing at the counter right now\.\s*The next gift will wait here\./.test(em.shelf) && em.stamps === 1 && em.plate === 'Nothing live right now', `Post Room empty state: no live gift shows the empty shelf and its line, and the stamp sheet still shows (${JSON.stringify(em)})`);
   await q.close(); }
+// Stampede tools band (Nov 18; docs/rebuild/stampede/BRIEF.md section 3): live data, every tool reachable, every row full, nothing spills
+{ const q = await b.newPage({viewport: {width: 1440, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+  const d = await q.evaluate(() => window.__ev(`(() => { const s = document.querySelector('#main .sdt'); if (!s) return JSON.stringify({none: true});
+    const go = [...s.querySelectorAll('.sdt-go')].map(a => [a.dataset.sdtool, a.getAttribute('href')]), more = [...s.querySelectorAll('.sdt-more a')].map(a => [a.dataset.sdtool, a.getAttribute('href')]);
+    const want = V2.HOME_TOOLS.map(([n, , to]) => n + '>#' + to).sort().join('|'), got = go.concat(more).map(([n, h]) => n + '>' + h).sort().join('|');
+    const R = lairRows().filter(x => x.r.tc), top9 = R.slice(0, 9).map(x => ({n: x.p.n, s: x.p.st[5]})).sort((a, b) => a.s - b.s).map(x => x.n);
+    const race = [...s.querySelectorAll('.sdt-run')].map(e => e.dataset.v2mon);
+    const TY = [...s.querySelectorAll('.sdt-types li')].map(li => [li.querySelector('.sdt-flag').textContent.trim(), (li.querySelector('[data-v2mon]') || {}).dataset ? li.querySelector('[data-v2mon]').dataset.v2mon : '']);
+    const tyOk = TY.length === 18 && TY.every(([t, n]) => (R.find(x => (x.p.t || []).includes(t)) || {p: {}}).p.n === n);
+    const pod = [...s.querySelectorAll('.sdt-step')].map(e => [e.className.match(/s(\\d)/)[1], e.querySelector('.sdt-blk b').textContent]);
+    const tieOk = pod.length === 3 && pod.every(a => pod.every(b => (a[1] === b[1]) === (a[0] === b[0])));
+    const big = [...s.querySelectorAll('.sdt-big b')].map(e => e.textContent.replace(/,/g, ''));
+    return JSON.stringify({plates: go.length, toolsOk: want === got, raceOk: race.length === 9 && race.join() === top9.join(), tyOk, tieOk, pod, nums: big.join('/') === META.events.events.length + '/' + RES.teams, big}); })()`));
+  const m = JSON.parse(d);
+  ok(m.plates === 12 && m.toolsOk, `Stampede tools (Nov 18): twelve plates and a More tools row reach all ${''}18 of today's Home tools, same pages (${m.plates} plates, match ${m.toolsOk})`);
+  ok(m.raceOk && m.tyOk, `Stampede tools: Speed Tiers is the nine highest rated by base Speed, and each type flag stands its highest-rated Pokémon (race ${m.raceOk}, types ${m.tyOk})`);
+  ok(m.tieOk && m.nums, `Stampede tools: tied ratings share a podium step; Events and How We Calculate show the Events page's count and RES.teams (${JSON.stringify(m.pod)}, ${JSON.stringify(m.big)})`);
+  const lay = []; for (const [w, th] of [[320, 'day'], [390, 'night'], [820, 'day'], [1100, 'night'], [1440, 'day']]) { await q.evaluate(t => { try { localStorage.setItem('np2.theme', t); } catch (e) {} }, th); await q.setViewportSize({width: w, height: 900}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(1800);
+    lay.push(w + ': ' + await q.evaluate(() => { const s = document.querySelector('#main .sdt'); if (!s) return 'no band'; const out = []; if (document.documentElement.scrollWidth > innerWidth) out.push('sideways');
+      for (const e of s.querySelectorAll('.sdt-mn,.sdt-t a,.sdt-d span,.sdt-blk b,.sdt-flag span,.sdt-item,.sdt-big b,.sdt-spe,.sdt-chip')) { if (!e.getClientRects().length) continue; if (parseFloat(getComputedStyle(e).fontSize) < 13) out.push('under 13px');
+        const box = (e.closest('.sdt-m') ? e.parentElement : e.closest('.sdt-p')).getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(e);
+        if ([...rg.getClientRects()].some(r => r.width && (r.left < box.left - 1 || r.right > box.right + 1))) out.push('spills: ' + e.textContent.slice(0, 16)); }
+      const g = s.querySelector('.sdt-grid'), gb = g.getBoundingClientRect(), rows = {}; for (const c of g.children) { const r = c.getBoundingClientRect(); (rows[Math.round(r.top / 4)] = rows[Math.round(r.top / 4)] || []).push(r); }
+      for (const rs of Object.values(rows)) if (Math.min(...rs.map(r => r.left)) - gb.left > 2 || gb.right - Math.max(...rs.map(r => r.right)) > 2) out.push('row not full');
+      return out.length ? out.join(', ') : 'ok'; })); }
+  ok(lay.every(x => / ok$/.test(x)), `Stampede tools: at 320 / 390 / 820 / 1100 / 1440 (day and night) no sideways scroll, no text under 13px or out of its spot, every row of plates full (${lay.join(' | ')})`);
+  await q.evaluate(() => { try { localStorage.removeItem('np2.theme'); } catch (e) {} }); await q.close(); }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

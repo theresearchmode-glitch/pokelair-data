@@ -1,1 +1,203 @@
-/* Home, The Stampede: the tools band (classes sdt-*; shared .sd-* in sd-shared.css) */
+/* Home, The Stampede: the tools band (classes sdt-*; shared .sd-* in sd-shared.css). Brief section 3: "Same herd. Twelve tools."
+   Twelve slanted plates of different sizes on the beige band, every row full; colours from the --sd- tokens (tokens.css, day and night).
+   A plate's shape (and its offset shade) is drawn behind it, so pictures can break out of the top without being cut. No motion. */
+.sd-tools.sdt{background:var(--sd-beige);color:var(--ink)}
+.sdt-h{font-size:var(--d-hero);line-height:1;margin:0 0 var(--s8);color:var(--sd-card-ink)}
+:root[data-theme="night"] .sdt-h{color:var(--ink)}
+.sdt-h span{color:var(--plot-text)}
+.sdt-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--s6)}
+
+/* a plate: a "/"-slanted shape (--k is the slant) with its shade; the title's link covers the whole plate */
+.sdt-p{--k:16px;position:relative;isolation:isolate;min-width:0;padding:var(--s6) calc(var(--s6) + var(--k));color:var(--sd-card-ink);grid-column:span 3}
+.sdt-p::before,.sdt-p::after{content:"";position:absolute;inset:0;clip-path:polygon(var(--k) 0,100% 0,calc(100% - var(--k)) 100%,0 100%)}
+.sdt-p::before{z-index:-1;background:var(--sd-card)}
+.sdt-p::after{z-index:-2;background:var(--sd-card-shade);translate:var(--s2) var(--s2)}
+.sdt-ink{color:var(--sd-on-feat)}.sdt-ink::before{background:var(--sd-feat)}
+:root[data-theme="night"] .sdt-ink::after{background:var(--sd-feat-rim);inset:-1px;translate:none}
+.sdt-t{font-size:var(--t24);line-height:1.1;margin:0 0 var(--s1)}
+.sdt-go{color:inherit;text-decoration:none}
+.sdt-go::after{content:"";position:absolute;inset:0;z-index:1}
+.sdt-go:focus-visible{outline:none}.sdt-go:focus-visible::after{outline:3px solid var(--plot);outline-offset:var(--s1);border-radius:var(--r-s)}
+@media (hover:hover){.sdt-p:hover .sdt-go{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:var(--s1)}}
+.sdt-d{font:400 var(--t15)/1.5 var(--b);color:var(--sd-card-ink2);max-width:60ch}
+.sdt-ink .sdt-d{color:var(--sd-feat-ink2)}
+.sdt-s{display:none}
+
+/* a named Pokémon: its own button above the plate's link */
+.sdt-m{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:var(--tap);min-height:var(--tap);margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:center;cursor:pointer}
+.sdt-m .np-mon{width:100%}.sdt-m .np-mon .st{width:var(--iw);max-width:100%}
+.sdt-mn{display:block;margin-top:var(--s1);font:700 var(--t13)/1.25 var(--b)}
+.sdt-m:focus-visible{outline:3px solid var(--plot);outline-offset:2px;border-radius:var(--r-s)}
+.sdt-art{display:block}.sdt-art .np-mon .st{width:var(--iw);max-width:100%}
+
+/* Speed Tiers: the race on the blue band, runners breaking out of its top (over the heading's foot) */
+.sdt-speed{--k:24px;grid-column:1/-1;display:grid;grid-template-columns:minmax(200px,280px) minmax(0,1fr);align-items:end;gap:var(--s6);color:var(--sd-on-race);margin-top:var(--s12)}
+.sdt-speed::before{background:var(--sd-race)}
+.sdt-speed .sdt-d{color:var(--sd-on-race)}
+.sdt-speed .sdt-tx{padding-bottom:var(--s4)}
+.sdt-race{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:var(--s2);align-items:end;margin-top:calc(var(--s24) * -1);
+  background:linear-gradient(var(--sd-streak) 0 0) 3% 34%/48px 4px no-repeat,linear-gradient(var(--sd-streak) 0 0) 22% 52%/64px 4px no-repeat,linear-gradient(var(--sd-streak) 0 0) 47% 30%/40px 4px no-repeat,
+    linear-gradient(var(--sd-streak) 0 0) 63% 48%/56px 4px no-repeat,linear-gradient(var(--sd-streak) 0 0) 86% 36%/48px 4px no-repeat}
+.sdt-run .np-mon{--iw:132px}
+.sdt-run .np-mon .st{max-width:none;margin-left:calc(50% - var(--iw) / 2)} /* wider than its lane: runners overlap, as a herd */
+.sdt-run .sdt-mn{min-height:2.5em}
+.sdt-spe{display:block;margin-top:var(--s2);font-size:var(--t34);line-height:1;color:var(--sd-on-race)}
+.sdt-run .sdt-mn{color:var(--sd-on-race)}
+
+/* Type Chart: 18 flags in their type colours, 9 by 2 */
+.sdt-tc{grid-column:span 8}
+.sdt-types{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:var(--s4) var(--s2);margin-top:var(--s4)}
+.sdt-types li{display:flex;flex-direction:column;align-items:center;min-width:0}
+.sdt-flag{display:block;width:100%}
+.sdt-flag>span{display:block;padding:var(--s1) var(--s2);background:var(--ty);color:var(--on-type);font:700 var(--t13)/1.3 var(--b);text-align:center;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+:root[data-theme="night"] .sdt-flag{filter:drop-shadow(0 0 1px var(--sd-flag-rim)) drop-shadow(0 0 0.5px var(--sd-flag-rim))} /* audit C6: the dark flags (Dark, Dragon) on the night plate get a light rim */
+.sdt-types .sdt-m{margin-top:var(--s1);width:100%}
+.sdt-types .np-mon{--iw:64px}
+.sdt-none{display:block;height:var(--s16)}
+
+/* Ratings: the podium of the top three */
+.sdt-ra{grid-column:span 4;display:flex;flex-direction:column}
+.sdt-pod{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:var(--s2);margin-top:var(--s4)}
+.sdt-step .np-mon{--iw:136px}
+.sdt-step.s1 .np-mon{--iw:160px}
+.sdt-step .np-mon .st,.sdt-six .np-mon .st,.sdt-side .np-mon .st{max-width:none;margin-left:calc(50% - var(--iw) / 2)}
+.sdt-blk{display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;min-height:var(--s24);padding:var(--s2) var(--s1);background:var(--sd-pod);color:var(--sd-on-feat)}
+.sdt-step.s1 .sdt-blk{min-height:calc(var(--s24) + var(--s10));background:var(--sd-pod-top);color:var(--sd-on-race)}
+.sdt-step.s2 .sdt-blk,.sdt-step.s3 .sdt-blk{min-height:calc(var(--s24) - var(--s4))} /* ranks 1 share the top step (ties share a rank, as on Ratings) */
+.sdt-blk b{font-size:var(--t34)}
+.sdt-blk span{font:700 var(--t13)/1.25 var(--b)}
+
+/* Winning Teams: the latest winner's six in a row, Load Team / Copy for Showdown */
+.sdt-wt{grid-column:span 5;display:flex;flex-direction:column}
+.sdt-wt .sdt-pic{margin-top:auto;padding-top:var(--s4)}
+.sdt-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1);align-items:end}
+.sdt-six .np-mon{--iw:88px}
+.sdt-cap{display:none;margin-top:var(--s2);font:700 var(--t13)/1.3 var(--b);text-align:center}
+.sdt-acts,.sdt-wt .wt-sure{position:relative;z-index:2}
+.sdt-acts{display:flex;flex-wrap:wrap;gap:0 var(--s5);margin-top:var(--s1)}
+.sdt-acts .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;cursor:pointer}
+
+/* Battle: two facing two across a VS */
+.sdt-bt{grid-column:span 4;display:flex;flex-direction:column}
+.sdt-vs{margin-top:auto;padding-top:var(--s4);display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:var(--s1)}
+.sdt-side{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s1);align-items:end}
+.sdt-side .np-mon{--iw:96px}
+.sdt-vsw{position:relative;z-index:3;align-self:center;font-size:var(--t34);padding:0 var(--s1)}
+.sdt-side.you .sdt-mn{color:var(--sd-you)}.sdt-side.them .sdt-mn{color:var(--sd-them)}
+
+/* Damage Calc: the site's calc as a health bar over the target */
+.sdt-dc{grid-column:span 3;display:flex;flex-direction:column}
+.sdt-hit{margin-top:auto;padding-top:var(--s4);display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s1)}
+.sdt-hp{display:flex;justify-self:end;width:60%;height:var(--s3);background:var(--sd-hp-lost);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.sdt-hp i{display:block;height:100%}
+.sdt-hp .left{background:var(--hp-left)}
+.sdt-hp .roll{background:repeating-linear-gradient(-45deg,var(--sd-hp-roll) 0 4px,var(--sd-hp-roll2) 4px 8px)}
+.sdt-hpw{justify-self:end;font:400 var(--t13)/1.3 var(--b);color:var(--sd-card-ink2)}
+.sdt-hpw b{font-weight:700;color:var(--sd-card-ink)}
+.sdt-duel{display:grid;grid-template-columns:minmax(0,1fr) var(--s6) minmax(0,1fr);align-items:end}
+.sdt-duel .np-mon{--iw:104px}
+.sdt-strike{align-self:center;height:var(--s1);background:var(--sd-card-ink2);clip-path:polygon(0 0,100% 50%,0 100%)}
+
+/* the four small plates: the picture first, breaking out of the plate's top */
+.sdt-sm{display:flex;flex-direction:column;margin-top:var(--s12)}
+.sdt-sm>:last-child{order:-1;margin-top:calc(var(--s12) * -1);margin-bottom:var(--s3)}
+.sdt-sm .sdt-tx{margin-top:auto}
+.sdt-core{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:var(--s1)}
+.sdt-core .np-mon,.sdt-set .np-mon{--iw:104px}
+.sdt-plus{align-self:center;font-size:var(--t34)}
+.sdt-wx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3);align-items:end}
+.sdt-wxi{display:flex;flex-direction:column;align-items:center;gap:var(--s1)}
+.sdt-wxi .np-mon{--iw:96px}
+.sdt-chip{display:inline-block;padding:var(--s1) var(--s3);background:var(--ty);color:var(--on-type);font:700 var(--t13)/1.3 var(--b)}
+.sdt-tr{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,2fr);align-items:end;gap:var(--s2)}
+.sdt-tr .one .np-mon{--iw:120px}
+.sdt-three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s1);align-items:end}
+.sdt-three .np-mon{--iw:80px}
+.sdt-set .sdt-m{flex-direction:row;align-items:flex-end;justify-content:flex-start;gap:var(--s3);text-align:left}
+.sdt-set .np-mon{flex:0 0 auto;width:auto}
+.sdt-si{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s1);padding-bottom:var(--s2)}
+.sdt-item{display:inline-block;padding:var(--s1) var(--s2);border:2px solid currentColor;font:700 var(--t13)/1.3 var(--b);white-space:nowrap}
+
+/* Events and How We Calculate: mirrored blocks, the big numbers at the outer edges */
+.sdt-end{grid-column:auto}
+.sdt-ends{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:var(--s10)}
+.sdt-end{display:flex;align-items:center;gap:var(--s5);padding:var(--s2) var(--s6);color:var(--ink)}
+.sdt-end::before,.sdt-end::after{display:none}
+.sdt-end.hw{flex-direction:row-reverse;text-align:right;border-left:1px solid var(--rule)}
+.sdt-end .sdt-d{color:var(--ink-2)}
+.sdt-big{flex:0 0 auto;display:flex;flex-direction:column}
+.sdt-big b{font-size:var(--d64);line-height:1;color:var(--plot-text)}
+.sdt-big small{font:700 var(--t15)/1.3 var(--b);color:var(--ink)}
+.sdt-end.hw .sdt-big{align-items:flex-end}
+
+/* desktop order: Winning Teams, Battle, then Damage Calc (it follows Ratings in the page, as phones show them side by side) */
+@media (min-width:1100px){.sdt-dc{order:1}.sdt-sm{order:2}}
+@media (min-width:1100px) and (max-width:1379.98px){.sdt-speed{grid-template-columns:minmax(180px,220px) minmax(0,1fr)}.sdt-race{gap:0}.sdt-types{grid-template-columns:repeat(6,minmax(0,1fr))}.sdt-types .np-mon{--iw:56px}.sdt-run .np-mon{--iw:112px}}
+
+/* tablets: Type Chart full width, Ratings beside Damage Calc, Winning Teams beside Battle; seven runners, the words above them */
+@media (max-width:1099.98px){
+  .sdt-speed{grid-template-columns:minmax(0,1fr)}.sdt-speed .sdt-tx{order:2;padding-bottom:0}.sdt-race{margin-top:calc(var(--s16) * -1)}
+  .sdt-run[data-k="8"],.sdt-run[data-k="9"]{display:none}.sdt-run .np-mon{--iw:104px}
+  .sdt-tc{grid-column:1/-1}.sdt-ra,.sdt-dc{grid-column:span 6}.sdt-wt{grid-column:span 7}.sdt-bt{grid-column:span 5}
+  .sdt-side .np-mon{--iw:96px}.sdt-side .sdt-mn{display:none}.sdt-duel .np-mon{--iw:144px}
+  .sdt-big b{font-size:var(--t34)}
+  .sdt-ends{grid-template-columns:minmax(0,1fr);gap:var(--s4);margin-top:var(--s8)}
+  .sdt-end,.sdt-end.hw{flex-direction:row;text-align:left;border-left:0;padding:0;align-items:flex-end}.sdt-end.hw .sdt-big{align-items:flex-start}
+  .sdt-big{width:min(42%,280px)}}
+@media (max-width:1099.98px){.sdt-sm{grid-column:span 6}}
+
+/* phones (brief): four runners; the Type Chart 6 by 3 without names; Ratings beside Damage Calc; Winning Teams and Battle as
+   short full-width strips; the small plates 2 by 2; Events and How We Calculate as two matching rows; short descriptions */
+@media (max-width:699.98px){
+  .sdt-grid{gap:var(--s4)}.sdt-p{--k:12px;padding:var(--s4) calc(var(--s3) + var(--k))}
+  .sdt-t{font-size:var(--t22)}.sdt-d{font-size:var(--t15)}.sdt-l{display:none}.sdt-s{display:inline}
+  .sdt-h{margin-bottom:var(--s6)}
+  .sdt-speed{--k:16px;margin-top:var(--s10)}.sdt-speed .sdt-tx{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s3)}
+  .sdt-race{margin-top:calc(var(--s12) * -1);gap:var(--s1)}.sdt-run[data-k="5"],.sdt-run[data-k="6"],.sdt-run[data-k="7"]{display:none}
+  .sdt-run .np-mon{--iw:88px}.sdt-spe{font-size:var(--t28)}
+  .sdt-types{grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2) var(--s1)}.sdt-flag>span{padding:var(--s1) 0;font-stretch:75%;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+  .sdt-six .sdt-mn,.sdt-side .sdt-mn{display:none}.sdt-types .sdt-mn{display:none}.sdt-types .np-mon{--iw:48px}
+  .sdt-ra,.sdt-dc{grid-column:span 6}
+  .sdt-pod{gap:var(--s1)}.sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:72px}.sdt-blk{min-height:var(--s12)}.sdt-step.s1 .sdt-blk{min-height:var(--s16)}.sdt-step.s2 .sdt-blk,.sdt-step.s3 .sdt-blk{min-height:var(--s10)}
+  .sdt-blk b{font-size:var(--t24)}.sdt-blk span{display:none}
+  .sdt-hp{width:80%}.sdt-duel{grid-template-columns:minmax(0,1fr) var(--s2) minmax(0,1fr)}.sdt-duel .np-mon{--iw:72px}
+  .sdt-wt,.sdt-bt{grid-column:1/-1}
+  .sdt-cap{display:block}
+  .sdt-sm{grid-column:span 6;margin-top:var(--s10)}.sdt-sm .sdt-t{font-size:var(--t20)}.sdt-sm>:last-child{margin-top:calc(var(--s10) * -1)}
+  .sdt-core .np-mon,.sdt-set .np-mon,.sdt-tr .one .np-mon{--iw:72px}.sdt-wxi .np-mon{--iw:64px}.sdt-three .np-mon{--iw:48px}.sdt-plus{font-size:var(--t24)}
+  .sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}
+  .sdt-ends{grid-template-columns:minmax(0,1fr);gap:var(--s4);margin-top:var(--s8)}
+  .sdt-end,.sdt-end.hw{flex-direction:row;text-align:left;border-left:0;padding:0;align-items:flex-end}.sdt-end.hw .sdt-big{align-items:flex-start}
+  .sdt-big{width:42%}.sdt-big b{font-size:var(--t34)}.sdt-big small{font-size:var(--t13)}.sdt-end .sdt-t{font-size:var(--t20)}}
+/* the strips side by side where there is room for both halves */
+@media (min-width:520px) and (max-width:699.98px){
+  .sdt-wt,.sdt-bt{flex-direction:row;align-items:center;gap:var(--s4)}.sdt-wt>.sdt-tx,.sdt-bt>.sdt-tx{flex:0 0 38%}
+  .sdt-wt .sdt-pic,.sdt-bt .sdt-vs{flex:1;margin:0;padding:0}.sdt-wt .sdt-acts,.sdt-wt .wt-sure{flex-basis:100%}}
+@media (max-width:519.98px){.sdt-side .np-mon{--iw:64px}.sdt-six .np-mon{--iw:56px}.sdt-blk b{font-size:var(--t20)}.sdt-tr .one .np-mon{--iw:88px}.sdt-three .np-mon{--iw:56px}}
+@media (max-width:419.98px){.sdt-sm .sdt-t{font-size:var(--t17)}}
+@media (max-width:379.98px){.sdt-spe{font-size:var(--t20)}.sdt-run .sdt-mn{font-size:var(--t13)}.sdt-big{width:46%}}
+
+/* More tools (lead, Nov 18): the six tools without a plate, one quiet row of links */
+.sdt-more{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s5);margin-top:var(--s8);padding-top:var(--s4);border-top:1px solid var(--rule)}
+.sdt-mh{font:700 var(--t15)/1.3 var(--b);color:var(--ink)}
+.sdt-more ul{display:flex;flex-wrap:wrap;gap:0 var(--s5)}
+.sdt-more .np-link{display:inline-block;min-height:var(--tap);padding-top:var(--s3)}
+
+/* a names line for pictures too narrow to name each Pokémon (the buttons keep their spoken names) */
+.sdt-cc{display:none;margin-top:var(--s1);font:700 var(--t13)/1.3 var(--b);text-align:center}
+/* below 1380 the plates are too narrow for a name under each of the six and the Battle four: the six's caption and the description name them */
+@media (max-width:1379.98px){.sdt-six .sdt-mn{display:none}.sdt-spe{font-size:var(--t28)}}
+@media (max-width:1439.98px){.sdt-side .sdt-mn{display:none}}
+@media (min-width:700px) and (max-width:899.98px){.sdt-types{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (max-width:699.98px){.sdt-core .sdt-mn{display:none}.sdt-core~.sdt-cc{display:block}}
+@media (max-width:419.98px){.sdt-duel .sdt-mn{display:none}.sdt-duel~.sdt-cc{display:block}}
+/* the narrowest phones: Ratings, Damage Calc and the small plates one to a row (their titles don't fit a half) */
+@media (max-width:379.98px){.sdt-spe{font-size:var(--t20)}.sdt-ra,.sdt-dc,.sdt-sm{grid-column:1/-1}.sdt-sm .sdt-t{font-size:var(--t22)}.sdt-pod{max-width:280px;margin-inline:auto;width:100%}}
+/* 1100-1379: the Type Chart stands 6 by 3, so the podium beside it grows to fill its plate; Popular Sets stacks its item under the name */
+@media (min-width:1100px) and (max-width:1379.98px){.sdt-step .np-mon{--iw:150px}.sdt-step.s1 .np-mon{--iw:176px}.sdt-blk{min-height:calc(var(--s24) + var(--s12))}
+  .sdt-step.s1 .sdt-blk{min-height:calc(var(--s24) + var(--s24))}.sdt-step.s2 .sdt-blk,.sdt-step.s3 .sdt-blk{min-height:calc(var(--s24) + var(--s8))}
+  .sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}}
+@media (max-width:379.98px){.sdt-tc{padding-inline:calc(var(--s2) + var(--k))}.sdt-types{column-gap:2px}.sdt-flag>span{letter-spacing:-.02em}}
+/* More tools in even rows: one row on desktop, 3 by 2 on tablets, 2 by 3 on phones (no lone link) */
+@media (max-width:1099.98px){.sdt-more{display:block}.sdt-more ul{display:grid;grid-template-columns:repeat(3,max-content);gap:0 var(--s6)}}
+@media (max-width:519.98px){.sdt-more ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s4)}}
