@@ -105,7 +105,15 @@ function psyBlocked(team){const ps=team.filter(m=>TERRAIN_OF[m.ability]==='psy')
   return team.filter(m=>TERRAIN_OF[m.ability]!=='psy'&&mvsOf(m).some(n=>P.has(n))&&!ps.some(x=>provenPair(x,m)))}
 // attackers the team's own working rain or sun weakens (Fire in rain, Water in sun); Fake Out and Intimidate users are support
 function wxHurtT(team){const w=wxSetsOf(team);if(w.length!==1||!['rain','sun'].includes(w[0]))return [];const dn=w[0]==='rain'?'Fire':'Water',set=team.filter(m=>WEATHER_OF[m.ability]);
-  return team.filter(m=>{if(WEATHER_OF[m.ability])return false;const t=m.types||m.p.t;if(!t.includes(dn))return false;const mv=mvsOf(m);return !(m.ability==='Intimidate'||mv.includes('Fake Out'))&&!set.some(x=>provenPair(x,m))})}
+  return team.filter(m=>{if(WEATHER_OF[m.ability])return false;const t=m.types||m.p.t;if(!t.includes(dn))return false;const mv=mvsOf(m);return !(m.ability==='Intimidate'||mv.includes('Fake Out'))&&!wxSupportRole(mv)&&wxMainType(m,mv)===dn&&!set.some(x=>provenPair(x,m))})}
+// Nov 18 (rule-holes sweep: 36 real teams, 2 event winners, e.g. a support Milotic (Haze, Muddy Water, Ice Beam) on a sun team):
+// the weather weakens an attacker only when its strongest attack is of the weakened type and it has no support job on the team.
+// Support moves: speed control, screens, status, Haze, Helping Hand, Wide Guard and the like. Redirection is left out: a Rage
+// Powder Volcarona still attacks with Fire (the Nov 7 audit case, Volcarona into rain).
+const WX_SUPPORT_MV=new Set(['Haze','Clear Smog','Reflect','Light Screen','Aurora Veil','Helping Hand','Coaching','Wide Guard','Quick Guard','Tailwind','Trick Room','Icy Wind','Electroweb','Encore','Taunt','Will-O-Wisp','Thunder Wave','Glare','Nuzzle','Spore','Sleep Powder','Yawn','Perish Song','Pollen Puff','Heal Pulse','Life Dew','Parting Shot','Snarl','Imprison','Decorate','Instruct','After You']);
+const wxSupportRole=mv=>mv.some(n=>WX_SUPPORT_MV.has(n));
+// the type of a member's strongest attack (power × same-type bonus), from its moves
+function wxMainType(m,mv){const t=m.types||m.p.t;let best=null,bv=0;for(const n of mv){const x=mvByName.get(n);if(!x||!(x.cat>0)||!(x.bp>0))continue;const v=x.bp*(t.includes(x.type)?1.5:1);if(v>bv){bv=v;best=x.type}}return best}
 // a team's flaws in words (Build for me never makes a team with any; the suggestions never add one)
 function teamFlaws(team,gp){gp=gp||gamePlan(team.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves}));const row=k=>gp.rows.find(r=>r.k===k)||{},f=[];
   if(row('weather').lone)f.push('weather nobody uses');if(new Set(team.map(m=>TERRAIN_OF[m.ability]).filter(Boolean)).size>1)f.push('two terrains');

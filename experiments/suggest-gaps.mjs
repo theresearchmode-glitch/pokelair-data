@@ -79,5 +79,17 @@ for (const [label, team] of [['sun team, Incineroar the only lead support', ['To
   ok(!r.imp, 'Imprison + Trick Room Indeedee on a fast team: not "Trick Room with no slow attacker"');
   ok(!r.tw, 'Trick Room next to Whimsicott\'s Tailwind on a fast team: not "Trick Room with no slow attacker"');
   ok(r.plain, 'Trick Room as the only speed mode with no slow attacker: still "Trick Room with no slow attacker"'); }
+// a weather weakens an attacker only by its role (Nov 18 rule-holes sweep, hole 5): a support Milotic (Haze) on a sun team is not
+// "its weather weakens its own attacker"; an attacking Milotic still is, and so is a Rage Powder Volcarona in rain
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const sun=[mk('Charizard-Mega-Y','Drought',['Heat Wave','Solar Beam','Protect','Overheat']),mk('Rillaboom','Grassy Surge',['Fake Out','Grassy Glide','Wood Hammer','Protect']),mk('Aerodactyl','Unnerve',['Tailwind','Rock Slide','Wide Guard','Protect']),
+    mk('Drampa-Mega','Berserk',['Draco Meteor','Hyper Voice','Protect','Heat Wave']),mk('Farigiraf','Armor Tail',['Trick Room','Psychic Noise','Protect','Helping Hand'])];
+  const rain=[mk('Pelipper','Drizzle',['Hurricane','Weather Ball','Tailwind','Protect']),mk('Archaludon','Stamina',['Electro Shot','Draco Meteor','Flash Cannon','Protect']),mk('Kingambit','Defiant',['Kowtow Cleave','Sucker Punch','Iron Head','Protect']),
+    mk('Incineroar','Intimidate',['Fake Out','Flare Blitz','Parting Shot','Knock Off']),mk('Rillaboom','Grassy Surge',['Fake Out','Grassy Glide','Wood Hammer','Protect'])];
+  const fl=t=>teamFlaws(t).includes('its weather weakens its own attacker');
+  return {sup:fl([...sun,mk('Milotic','Competitive',['Haze','Muddy Water','Ice Beam','Protect'])]),att:fl([...sun,mk('Milotic','Competitive',['Muddy Water','Scald','Ice Beam','Protect'])]),volc:fl([...rain,mk('Volcarona','Flame Body',['Heat Wave','Bug Buzz','Rage Powder','Protect'])])}})()`));
+  ok(!r.sup, 'support Milotic (Haze) on a sun team: not "its weather weakens its own attacker"');
+  ok(r.att, 'attacking Milotic (Muddy Water, Scald, Ice Beam) on a sun team: still "its weather weakens its own attacker"');
+  ok(r.volc, 'Rage Powder Volcarona on a rain team: still "its weather weakens its own attacker"'); }
 ok(!errs.length, 'no page errors ' + errs.join(' | '));
 await b.close(); fs.unlinkSync(page); console.log(fails.length ? `\n${fails.length} FAILED` : '\nALL PASSED'); process.exit(fails.length ? 1 : 0);
