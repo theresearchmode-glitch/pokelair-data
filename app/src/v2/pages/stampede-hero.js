@@ -9,7 +9,8 @@
 // added once the page has loaded and those 14 are in (V2.sdHeroAfter), highest rated asked for first, so it never competes with the
 // first screen. Measured Nov 18 (4x CPU, slow 4G): buttons and top four appear at the same time with or without the crowd; the crowd
 // adds 4.6 MB (7.5 MB with one sprite size, the Claude-hosted build) and finishes about 40 s later.
-// Nothing moves (no motion until Sim approves a proposal). The crowd and the untagged Pokémon are decorative (aria-hidden); every named
+// Motion (Sim approved Nov 18): the herd surges forward once on arrival and the ticker scrolls slowly (sd-motion.css, V2.sdhTick
+// below); nothing moves with prefers-reduced-motion. The crowd and the untagged Pokémon are decorative (aria-hidden); every named
 // Pokémon (plate, tag, ticker) is a button that opens its page (data-v2mon).
 V2.sdhUi = {crowd: null, key: '', ro: null, el: null, raf: 0, armed: false};
 V2.SDH_SLOPE = 0.05; // the tilt (rises 5% to the right, as the mock-up's band edges): about 2.86 degrees
@@ -40,7 +41,7 @@ V2.sdHero = () => {
     : `<a class="sdh-b1" data-sdgo href="#build">Build Me a Team</a><a class="sdh-b2" data-sdgo href="#team"><span>Score My Team</span></a>`;
   const say = R.length ? `Every one of the ${num(R.length)} Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating${D.teams ? `, worked out from ${num(D.teams)} real tournament teams` : ''}.`
     : 'Every Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating.';
-  return `<section class="sd-band sd-hero sdh" aria-labelledby="sdh-h">
+  return `<section class="sd-band sd-hero sdh${V2.sdhUi.surged ? '' : ' sdh-surge'}" aria-labelledby="sdh-h">
     <div class="sdh-fold"><div class="sdh-scene">
       <svg class="sdh-lines" aria-hidden="true" focusable="false"></svg>
       <div class="sdh-crowd" aria-hidden="true"></div><i class="sdh-haze" aria-hidden="true"></i>
@@ -112,9 +113,11 @@ V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) r
   const pl = S.querySelector('.sdh-plates'); if (pl) { pl.classList.remove('stk'); if ([...pl.querySelectorAll('.sdh-plate')].some(b => b.getClientRects().length && b.lastElementChild.offsetTop > b.firstElementChild.offsetTop + 4)) pl.classList.add('stk'); }
   const C = V2.sdhUi.crowd; if (C) for (const im of C.children) V2.sdhPut(im, P[+im.dataset.sdhi]);
   V2.sdhLines(S.querySelector('.sdh-lines'), w, h, row);
+  V2.sdhTick(S, true); // motion: set the moving ticker up (or take it down) before its names are measured
   // the still ticker shows whole names only (audit L8): items that wrap to a second line are hidden (and so not focusable)
   const tk = S.querySelector('.sdh-tick ul'); if (tk) { const li = [...tk.children]; li.forEach(l => { l.hidden = named.has(+l.dataset.sdhi); }); const t0 = li.find(l => l.getClientRects().length);
-    if (t0) { const y0 = t0.offsetTop; let cut = false; li.forEach(l => { if (!l.hidden && (cut || l.offsetTop > y0 + 2)) { l.hidden = true; cut = true; } }); } } }; /* in order: after the first that doesn't fit, none */
+    if (t0) { const y0 = t0.offsetTop; let cut = false; li.forEach(l => { if (!l.hidden && (cut || l.offsetTop > y0 + 2)) { l.hidden = true; cut = true; } }); } }
+  V2.sdhTick(S); }; /* in order: after the first that doesn't fit, none */
 // the crowd: built once per set of data, added after the page has loaded; nearest (highest rated) pictures are asked for first
 V2.sdhCrowd = () => { const S = document.querySelector('#main .sdh'); if (!S) return; const box = S.querySelector('.sdh-crowd'), R = V2.sdhRows(), U = V2.sdhUi;
   const key = R.length + '|' + R.map(x => x.n).join(','); if (U.key !== key || !U.crowd) { const f = document.createDocumentFragment(), ims = [];
@@ -124,7 +127,7 @@ V2.sdhCrowd = () => { const S = document.querySelector('#main .sdh'); if (!S) re
     const c = document.createElement('div'); c.className = 'sdh-crowdset'; c.append(f); U.crowd = c; U.key = key; }
   if (U.crowd.parentNode !== box) box.replaceChildren(U.crowd); V2.sdhLayout(); };
 V2.sdHeroAfter = () => { const S = document.querySelector('#main .sdh'), U = V2.sdhUi; if (!S) return;
-  V2.sdhLayout();
+  U.surged = true; /* the surge (sd-motion.css) plays on the first draw only, never on a redraw */ V2.sdhLayout();
   const sc = S.querySelector('.sdh-scene'); if (U.el !== sc && window.ResizeObserver) { if (U.ro) U.ro.disconnect(); U.el = sc;
     U.ro = new ResizeObserver(() => { cancelAnimationFrame(U.raf); U.raf = requestAnimationFrame(V2.sdhLayout); }); U.ro.observe(sc); }
   if (U.crowd) { V2.sdhCrowd(); return; } // a redraw: the crowd is already loaded, put it straight back
@@ -134,3 +137,27 @@ V2.sdHeroAfter = () => { const S = document.querySelector('#main .sdh'), U = V2.
   const mine = [...S.querySelectorAll('.sdh-f img, .sdh-m img')].filter(i => !i.complete).map(i => new Promise(r => { i.addEventListener('load', r, {once: true}); i.addEventListener('error', r, {once: true}); }));
   const loaded = document.readyState === 'complete' ? Promise.resolve() : new Promise(r => addEventListener('load', r, {once: true}));
   Promise.race([Promise.all([loaded, ...mine]), new Promise(r => setTimeout(r, 8000))]).then(() => requestAnimationFrame(() => setTimeout(() => { U.armed = false; V2.sdhCrowd(); }, 0))); };
+// ---------- motion: the ticker (Sim approved Nov 18, "recommended for all"; all the CSS is in sd-motion.css) ----------
+// It scrolls slowly: the list plus an aria-hidden copy (its buttons out of the tab order) in one moving track, so it loops without a
+// seam. A pause button sits on it (WCAG 2.2.2); it also pauses under the mouse, goes back to its start while a keyboard user is in it
+// (so the focused name is on screen), and rests while off screen. With prefers-reduced-motion: reduce none of this is built.
+V2.SDH_PXS = 40; // the ticker's speed, px per second
+// prep (before the names are measured): build or take down the track and the button; otherwise: refresh the copy when the shown
+// names change, and the duration from the list's width
+V2.sdhTick = (S, prep) => { const U = V2.sdhUi, tk = S.querySelector('.sdh-tick'), ul = tk && tk.querySelector('ul'); if (!ul) return;
+  const mq = window.matchMedia ? matchMedia('(prefers-reduced-motion: reduce)') : null, run = !!mq && !mq.matches;
+  if (mq && !U.mq) { U.mq = 1; mq.addEventListener('change', () => V2.sdhLayout()); }
+  let tr = tk.querySelector('.sdh-trk');
+  if (!run) { if (tr) { tk.classList.remove('sdh-run', 'sdh-hold'); tr.replaceWith(ul); tk.querySelector('.sdh-tpz').remove(); } return; }
+  if (!tr) { if (!prep) return; tr = document.createElement('div'); tr.className = 'sdh-trk'; ul.replaceWith(tr); tr.append(ul);
+    const pz = document.createElement('button'); pz.type = 'button'; pz.className = 'sdh-tpz'; pz.setAttribute('aria-label', 'Pause the moving ratings'); pz.innerHTML = '<i aria-hidden="true"></i>';
+    const hold = on => { U.hold = on; tk.classList.toggle('sdh-hold', on); pz.setAttribute('aria-pressed', String(on)); };
+    pz.addEventListener('click', () => hold(!U.hold)); tr.addEventListener('focusout', e => { if (!tr.contains(e.relatedTarget)) tk.scrollLeft = 0; });
+    tk.append(pz); tk.classList.add('sdh-run'); hold(!!U.hold);
+    if (window.IntersectionObserver) { if (U.io) U.io.disconnect(); U.io = new IntersectionObserver(es => es.forEach(e => tk.classList.toggle('sdh-off', !e.isIntersecting))); U.io.observe(tk); }
+    return; } // on one line now: nothing is cut, only the ones with a plate or a tag stay hidden
+  if (prep) return;
+  const key = [...ul.children].map(l => l.hidden ? 0 : 1).join(''); if (!tr.children[1] || tr.children[1].dataset.key !== key) {
+    const cp = ul.cloneNode(true); cp.setAttribute('aria-hidden', 'true'); cp.removeAttribute('aria-label'); cp.dataset.key = key; cp.querySelectorAll('button').forEach(b => { b.tabIndex = -1; });
+    if (tr.children[1]) tr.children[1].replaceWith(cp); else tr.append(cp); }
+  const d = Math.max(20, Math.round(ul.offsetWidth / V2.SDH_PXS)) + 's'; if (tk.style.getPropertyValue('--sdh-tdur') !== d) tk.style.setProperty('--sdh-tdur', d); };

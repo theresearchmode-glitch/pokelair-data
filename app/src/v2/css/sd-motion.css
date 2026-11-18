@@ -1,0 +1,36 @@
+/* Home, The Stampede: motion (Sim approved Nov 18, "recommended for all"). ALL of the hero's motion lives here; the JS hook is
+   V2.sdhTick (and the sdh-surge class on the first draw) in pages/stampede-hero.js.
+   - The surge: on arrival the herd comes forward a little, once (first draw only, never on a redraw), ending by 860ms.
+     Grouped layers only: the four front-row cells (.sdh-f) and the mid-sized herd as one layer (.sdh-herd, with its tags in
+     .sdh-tags so each tag stays on its Pokémon). Transform only, ease-out. The crowd (330+ small pictures) never moves. No hero
+     sprite carries a filter, and nothing here sets will-change (CLAUDE.md: filtered sprites on their own layers made scrolling worse).
+   - The ticker: a slow, continuous marquee (40px a second; the copy is aria-hidden, its buttons out of the tab order). It pauses under
+     the mouse, with the pause button (WCAG 2.2.2: anything moving for more than 5 seconds needs one), and while off screen; a keyboard
+     user in it sees it stopped at its start, so the focused name is on screen.
+   - The buttons are never delayed or moved. With prefers-reduced-motion: reduce nothing here applies (every rule is inside
+     no-preference) and the ticker stays the still strip of sd-hero.css. */
+@media (prefers-reduced-motion:no-preference){
+  /* the surge */
+  .sdh-surge .sdh-f{animation:sdh-surge 720ms cubic-bezier(.16,1,.3,1) backwards;transform-origin:50% 100%}
+  .sdh-surge .sdh-f.f1{animation-delay:40ms}.sdh-surge .sdh-f.f2{animation-delay:70ms}
+  .sdh-surge .sdh-f.f3{animation-delay:110ms}.sdh-surge .sdh-f.f4{animation-delay:140ms}
+  .sdh-surge .sdh-herd,.sdh-surge .sdh-tags{animation:sdh-surge-m 700ms cubic-bezier(.16,1,.3,1) backwards;transform-origin:50% 80%}
+  @keyframes sdh-surge{from{transform:translate3d(0,-4%,0) scale(.88)}}
+  @keyframes sdh-surge-m{from{transform:translate3d(0,-3%,0) scale(.94)}}
+  /* the ticker: one track, the list then its copy, each with one gap after it, moves left by one list's width and starts again */
+  .sdh-tick.sdh-run{overflow:hidden;padding-right:0}
+  .sdh-run .sdh-trk{display:flex;width:max-content;animation:sdh-mq var(--sdh-tdur,90s) linear infinite}
+  .sdh-run .sdh-trk ul{flex:none;flex-wrap:nowrap;width:max-content;padding-right:var(--s10)}
+  @media (max-width:899.98px){.sdh-run .sdh-trk ul{padding-right:var(--s8)}}
+  @keyframes sdh-mq{to{transform:translate3d(-50%,0,0)}}
+  .sdh-run.sdh-hold .sdh-trk,.sdh-run.sdh-off .sdh-trk,.sdh-run .sdh-trk:hover,.sdh-run .sdh-trk:focus-within{animation-play-state:paused}
+  .sdh-run .sdh-trk:has(:focus-visible){animation:none}
+  /* the pause button: on the strip's right end, in line with the page's gutter; a red ring keeps the names from touching it */
+  .sdh-tpz{position:absolute;z-index:1;inset-block:0;right:calc(100% * 6 / 112 + var(--gut));display:grid;place-items:center;width:48px;height:48px;margin-block:auto;
+    border-radius:var(--r-m);background:var(--sd-tag);color:var(--sd-on-band);box-shadow:0 0 0 var(--s3) var(--sd-flag)}
+  .sdh-tpz::after{content:"";position:absolute;inset-block:calc(var(--s4) * -1);left:100%;width:100vw;background:var(--sd-flag)} /* nothing scrolls to its right */
+  .sdh-run .sdh-trk ul{overflow:visible}.sdh-run .sdh-trk button:focus-visible{outline-offset:-4px} /* the focus ring stays inside the strip */
+  .sdh-tpz i{display:block;box-sizing:border-box;width:14px;height:16px;border-inline:5px solid currentColor}
+  .sdh-tpz[aria-pressed="true"] i{width:14px;border:0;background:currentColor;clip-path:polygon(0 0,100% 50%,0 100%)}
+  @media (max-width:899.98px){.sdh-tpz{width:var(--tap);height:var(--tap)}}
+}
