@@ -1,0 +1,713 @@
+{
+ "source": "Rebuild Checklist artifact E99Mux9sZxxBuvFXEsKW1V, exported Nov 18 before deletion (Sim asked)",
+ "steps": {
+  "battle__built": {
+   "by": "Claude",
+   "note": "audit (code): Battle + shell 59 found, 26 partly, 6 missing, 7 unsure, 117 on pages not rebuilt (docs/rebuild/audit/C-battle-shell.md); calc picker + Practice entry wait for their pages; see i21-i24",
+   "s": "part",
+   "t": 1794546000000
+  },
+  "battle__checks": {
+   "by": "Claude",
+   "note": "0 over height, both engines (Nov 12)",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "battle__mock": {
+   "by": "Claude",
+   "note": "mock-up: battle.tpl.html",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "battle__preview": {
+   "by": "Claude",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "battle__tests": {
+   "by": "Claude",
+   "note": "Battle page tests: 21 pass, 3 wait for unbuilt pages",
+   "s": "part",
+   "t": 1794543515597
+  },
+  "box__built": {
+   "by": "Claude",
+   "note": "feature audit not done; heights inside limits (Nov 12)",
+   "s": "part",
+   "t": 1794543515597
+  },
+  "box__checks": {
+   "by": "Claude",
+   "note": "inside its limits (default, Nov 12); worst states not measured",
+   "s": "part",
+   "t": 1794543600000
+  },
+  "box__mock": {
+   "by": "Claude",
+   "note": "mock-up: mybox.tpl.html",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "box__preview": {
+   "by": "Claude",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "box__tests": {
+   "by": "Claude",
+   "note": "BOX tests 7 pass, 0 fail (new site, Nov 12)",
+   "s": "done",
+   "t": 1794547000000
+  },
+  "build__built": {
+   "by": "Claude",
+   "note": "audit: result card extras, Build Around It from sheet, Megas in name boxes, full-team exact sets, guards (AUTO/CORES); see i15-i16",
+   "s": "part",
+   "t": 1794544800000
+  },
+  "build__checks": {
+   "by": "Claude",
+   "note": "last measured earlier Nov 12; not remeasured since tonight's changes",
+   "s": "unsure",
+   "t": 1794543600000
+  },
+  "build__mock": {
+   "by": "Claude",
+   "note": "mock-up: build.tpl.html",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "build__preview": {
+   "by": "Claude",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "build__tests": {
+   "by": "Claude",
+   "note": "Build group on the new site: 13 pass, 75 fail (most are pages not rebuilt yet; to sort)",
+   "s": "part",
+   "t": 1794543515597
+  },
+  "compare__built": {
+   "by": "Claude",
+   "note": "audit: 'tap Compare in Winning teams' hint gone (CMP-03); heights inside limits",
+   "s": "part",
+   "t": 1794544800000
+  },
+  "compare__checks": {
+   "by": "Claude",
+   "note": "inside its limits (default, Nov 12); worst states not measured",
+   "s": "part",
+   "t": 1794543600000
+  },
+  "compare__mock": {
+   "by": "Claude",
+   "note": "designed by Claude under authority Nov 11; no mock-up approved by Sim: show her",
+   "s": "unsure",
+   "t": 1794546600000
+  },
+  "compare__preview": {
+   "by": "Claude",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "compare__tests": {
+   "by": "Claude",
+   "note": "CMP 3 pass, 1 fail, 1 known bug (new site, Nov 12)",
+   "s": "part",
+   "t": 1794547000000
+  },
+  "home__built": {
+   "by": "Claude",
+   "note": "audit (code): Home + Build 62 found, 30 partly, 4 missing, 1 unsure (docs/rebuild/audit/B-home-build.md); see i15-i18",
+   "s": "part",
+   "t": 1794544800000
+  },
+  "home__checks": {
+   "by": "Claude",
+   "note": "last measured inside its limits earlier Nov 12; not remeasured since tonight's changes",
+   "s": "unsure",
+   "t": 1794543600000
+  },
+  "home__mock": {
+   "by": "Claude",
+   "note": "mock-up: home.tpl.html (Sim kept the current Home hero)",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "home__preview": {
+   "by": "Claude",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "home__tests": {
+   "by": "Claude",
+   "note": "HOME 16 pass, 2 fail, 1 known bug (new site, Nov 12)",
+   "s": "part",
+   "t": 1794547000000
+  },
+  "info__built": {
+   "by": "Claude",
+   "note": "audit: Report a mistake, Rating tab tips/Profile/links, header marks, tab swipe, Full set / Speed Tiers links missing (PKMN-02..07); see i13",
+   "s": "part",
+   "t": 1794544800000
+  },
+  "info__checks": {
+   "by": "Claude",
+   "note": "not measured on its own tonight",
+   "s": "unsure",
+   "t": 1794543600000
+  },
+  "info__mock": {
+   "by": "Claude",
+   "note": "mock-ups: sheet.html, sheet-forms.html",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "info__preview": {
+   "by": "Claude",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "info__tests": {
+   "by": "Claude",
+   "note": "PKMN 4 pass, 3 fail (new site, Nov 12; matches the audit's info sheet gaps)",
+   "s": "part",
+   "t": 1794547000000
+  },
+  "ratings__mock": {
+   "by": "Claude",
+   "note": "mock-up: ratings.tpl.html",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "saved__built": {
+   "by": "Claude",
+   "note": "audit: hidden-singles note and empty-state buttons missing (SAVED-09/10); see i12",
+   "s": "part",
+   "t": 1794544800000
+  },
+  "saved__mock": {
+   "by": "Claude",
+   "note": "in myteam.tpl.html; Sim approved its pieces Nov 12 (decisions.md)",
+   "s": "done",
+   "t": 1794546600000
+  },
+  "saved__preview": {
+   "by": "Claude",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "saved__tests": {
+   "by": "Claude",
+   "note": "SAVED 11 pass, 0 fail, 1 known bug (new site, Nov 12)",
+   "s": "part",
+   "t": 1794547000000
+  },
+  "sheet__built": {
+   "by": "Claude",
+   "note": "audit: Team Sheet cards lack remove (−), + Add for empty spots, KO note (SETS-01); see i12",
+   "s": "part",
+   "t": 1794544800000
+  },
+  "sheet__mock": {
+   "by": "Claude",
+   "note": "in myteam.tpl.html; Sim approved the Team Sheet batch Nov 12 (Preview v68) and chose to drop the per-card −",
+   "s": "done",
+   "t": 1794546600000
+  },
+  "sheet__preview": {
+   "by": "Claude",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "sheet__tests": {
+   "by": "Claude",
+   "note": "SHEET 4/0 and SETS 2/0 pass (new site, Nov 12)",
+   "s": "done",
+   "t": 1794547000000
+  },
+  "sugs__built": {
+   "by": "Claude",
+   "note": "Plan settings missing: Never suggest, Count abilities, Refresh plans",
+   "s": "block",
+   "t": 1794543515597
+  },
+  "sugs__mock": {
+   "by": "Claude",
+   "note": "designed by Claude under authority Nov 11 (a sheet over My Team); no mock-up approved by Sim: show her",
+   "s": "unsure",
+   "t": 1794546600000
+  },
+  "sugs__preview": {
+   "by": "Claude",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "sugs__tests": {
+   "by": "Claude",
+   "note": "SUGG/COV tests aren't wired to the new site yet (i26): they check nothing",
+   "s": "block",
+   "t": 1794547000000
+  },
+  "team__built": {
+   "by": "Claude",
+   "note": "audit (code): My Team + sheets 85 found, 27 partly, 3 missing, 1 unsure (docs/rebuild/audit/A-team-myteam.md); open items i10-i14",
+   "s": "part",
+   "t": 1794544800000
+  },
+  "team__checks": {
+   "by": "Claude",
+   "note": "heights inside limits (default state, Nov 12); worst states not measured",
+   "s": "part",
+   "t": 1794543515597
+  },
+  "team__mock": {
+   "by": "Claude",
+   "note": "mock-up: myteam.tpl.html",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "team__preview": {
+   "by": "Claude",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "team__tests": {
+   "by": "Claude",
+   "note": "My Team tests on the new site: 127 pass, 11 fail (Nov 12)",
+   "s": "part",
+   "t": 1794543515597
+  },
+  "teamempty__built": {
+   "by": "Claude",
+   "note": "audit: no six '+ Add a Pokémon' spots, Add opens Search (TEAM-19); see i11",
+   "s": "part",
+   "t": 1794544800000
+  },
+  "teamempty__checks": {
+   "by": "Claude",
+   "note": "inside its limits (Nov 12)",
+   "s": "part",
+   "t": 1794543600000
+  },
+  "teamempty__mock": {
+   "by": "Claude",
+   "note": "mock-up: firstvisit.tpl.html",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "teamempty__preview": {
+   "by": "Claude",
+   "s": "done",
+   "t": 1794543515597
+  },
+  "teamempty__tests": {
+   "by": "Claude",
+   "note": "its tests sit inside TEAM (18/1); unsure which one is the empty state's",
+   "s": "unsure",
+   "t": 1794547000000
+  }
+ },
+ "items": {
+  "i01": {
+   "note": "Never suggest (exclude a Pokémon), Count abilities, Refresh plans exist on today's site but not on the new one.",
+   "order": 1,
+   "s": "block",
+   "t": 1794543515597,
+   "title": "All Suggestions: Plan settings missing"
+  },
+  "i02": {
+   "note": "Running now (3 look-only helpers): My Team and its sheets; Home and Build; Battle and the shared shell. Reports go to docs/rebuild/audit/. Every missing feature becomes its own open item.",
+   "order": 2,
+   "s": "part",
+   "t": 1794544000000,
+   "title": "Feature-by-feature audit of every built page"
+  },
+  "i03": {
+   "note": "Measured Nov 12-13 (both engines; table in page-heights.md). My Team default: inside every limit. OVER: 5 of 6 at 320 (4,169/3,900), 390 (4,040/3,750), 1440 (1,917/1,800); six longest names at 320 (3,944/3,900), 390 (3,842/3,700), 1440 (1,863/1,800). Grows in Matchups, Suggestions and Team Checks (more unanswered threats and failing checks). After Apply: unknown (today's data offers the sample team nothing to apply). Home and Battle inside their limits. BUILD AFTER BUILDING IS FAR OVER (390: 4,807/3,700; 1100: 3,428/1,800; measured 12:50 AM); I first wrote 'Build inside', which was the page before building (corrected 12:53 AM). NEXT: creative options with pictures for Sim (she asked for them when over).",
+   "order": 3,
+   "s": "part",
+   "t": 1794546379441,
+   "title": "Worst-state heights for built pages"
+  },
+  "i04": {
+   "note": "Nov 12, 11:46 PM: on the Preview (v88, 394 files checked, foundation.html 2,953,088 bytes = the built file). Test comparison closed first: every changed result explained (wording in tests, not the site), all rerun passing on the new build and today's page.",
+   "order": 4,
+   "s": "done",
+   "t": 1794545170868,
+   "title": "Title case + C1–C4 onto the Preview"
+  },
+  "i05": {
+   "note": "Done Nov 14: Damage Calc (v124) and Team Preview Practice (v129-130) are rebuilt, so Battle's tools bar opens real pages, not 'coming next'.",
+   "order": 5,
+   "s": "done",
+   "t": 1794543515597,
+   "title": "Battle: calc picker and Practice entry"
+  },
+  "i06": {
+   "note": "Nov 13, 12:06 AM (556ee7e): page-heights.md has a fresh built-pages table (replaces the Nov 12 1:05 AM one); My Team row no longer says over in the default state; Saved Teams, Compare and All Suggestions marked built (sheets, not measured as pages).",
+   "order": 6,
+   "s": "done",
+   "t": 1794546379441,
+   "title": "Correct the stale rows in page-heights.md"
+  },
+  "i07": {
+   "note": "DONE: Sim approved on Preview v123 (12:20 AM by the clock: 'looks great'). Speed Tiers rebuilt with Sim's picks Q1-Q5 A; every today feature kept; all checks pass (see decisions.md 12:03 and 12:16 AM).",
+   "order": 7,
+   "s": "done",
+   "t": 1794633419000,
+   "title": "Speed Tiers mock-up"
+  },
+  "i08": {
+   "note": "Checked in decisions.md: Team Sheet and Saved Teams are in the My Team mock-up and Sim approved them Nov 12 (done). Compare and All Suggestions were designed by Claude under authority Nov 11 with no Sim-approved mock-up: QUESTION for Sim with pictures. Also found: the Team Sheet's missing '−' and the missing stacked six-editor are Sim's own decisions, not gaps.",
+   "order": 8,
+   "s": "part",
+   "t": 1794546600000,
+   "title": "Which approved mock-ups cover the sheets"
+  },
+  "i09": {
+   "note": "DONE (before-runs, Nov 12): My Team group per area pass/fail: TEAM 18/1, EDIT 13/1, SUG 11/1, MU 7/0 (+1 known), SAVED 11/0 (+1 known), CMP 3/1 (+1 known), BOX 7/0, IO 4/0, SHARE 6/0, SHEET 4/0, ADD 2/0, LOG 5/1, PKMN 4/3, PLAY 2/0, SETS 2/0, HOME 16/2 (+1 known), X 12/1. Build: AUTO 4/12, CORES 7/6, SUGG 0/18, COV 0/11, BUILD 0/5 (mostly unwired: i26). Battle: BATTLE 16/0 (+3 waiting), LOG 5/2.",
+   "order": 9,
+   "s": "done",
+   "t": 1794546900000,
+   "title": "Map every test to its page"
+  },
+  "i10": {
+   "note": "Missing: Never suggest list (still filters but can't be seen), Count abilities, Refresh plans, 'Fix your items first' card, set check tips (X-13, BUILD-07, SUGG-16/17, COV-11). Needs a design: pictures for Sim.",
+   "order": 10,
+   "s": "block",
+   "t": 1794544800000,
+   "title": "Plan settings, item fixes and set tips (All Suggestions)"
+  },
+  "i11": {
+   "note": "DONE Nov 13, 12:31 AM (2df5a3a, on the Preview since v90): jump bar moves focus to the section heading (TEAM-07), checked both engines, proven against the old build. SETTLED BY SIM: no 'Team checks N/4' count on the tab (Sim's C1, names only; the section says 'All 4 basics pass' in words) (TEAM-16). AS DESIGNED: the empty team has no six '+ Add' spots (TEAM-19): the empty My Team mock-up in the Preview gallery (thumbs/foundation-team-empty) has none either; checked by looking at it. LEFT: Choice Scarf vs Trick Room warning (EDIT-07, a new line on screen: for Sim); Edit Set: Mega/box tags, assumed item line, + for empty spots, Full popular sets link (EDIT-02/03/09, look additions: for Sim).",
+   "order": 11,
+   "s": "part",
+   "t": 1794547887668,
+   "title": "My Team gaps"
+  },
+  "i12": {
+   "note": "DONE Nov 13, 12:36 AM (623e0d6, on the Preview since v90): a blocked team-link copy now shows the link below the buttons, as the toast says (SHARE-06, a real bug); checked both engines at 320/390/1440, picture taken for Sim. LEFT: Team Sheet remove/+Add/KO note (SETS-01); Copy for Showdown fallback when copying is blocked, on Home, cores and Battle (IO-03, BATTLE-06, SHELL-26: today shows a sheet with the text selected; needs a look: for Sim); Saved Teams notes and empty buttons (SAVED-09/10); Types: top-20 offense table (PLAY-02).",
+   "order": 12,
+   "s": "part",
+   "t": 1794548196856,
+   "title": "Team Sheet, Saved Teams, Share, Copy gaps"
+  },
+  "i13": {
+   "note": "DONE Nov 13, 12:33 AM (53331f2, on the Preview since v90): sideways swipe between tabs on phones (PKMN-04), today's rule; checked in Chromium; UNSURE on iPhone (WebKit can't simulate touches here): step 6 of the iPhone brief (docs/rebuild/test-runs/x07-keyboard-iphone.md). LEFT (look additions, for Sim): Report a mistake (PKMN-03); Rating tab ? tip, Profile, trap note, How ratings work / Track Record links (PKMN-07); header marks (PKMN-02); Full set / Speed Tiers links (PKMN-05); ? tips for rating, bars, spread, tiers (SUG-11).",
+   "order": 13,
+   "s": "part",
+   "t": 1794548004891,
+   "title": "Pokémon info sheet gaps"
+  },
+  "i14": {
+   "note": "DONE on the branch (tests to rerun): name boxes use today's search, Megas included (AUTO-05); double-tap guard like today's (X-03/X-04); How Scoring Works open state remembered (X-07); a page error no longer blanks the site, checked by forcing one (SHELL-34). LEFT: score count-up (TEAM-03, a look change: for Sim). QUESTION for Sim: anonymous usage counting (today's 51-usage.js) is a privacy/data choice for the public site, not added on my own.",
+   "order": 14,
+   "s": "part",
+   "t": 1794546300000,
+   "title": "Small behaviour gaps (no look change)"
+  },
+  "i15": {
+   "note": "Sets and roles fold, 'Few real games back this mix', catch tip, 'X isn't in your box', two-weather warning, plan chips beyond 3, proven-team note, N in your box line, Megas 73%/81% tip (AUTO-02/04/08, BUILD-06).",
+   "order": 15,
+   "s": "",
+   "t": 1794544800000,
+   "title": "Build result card extras"
+  },
+  "i16": {
+   "note": "DONE Nov 12, 11:55 PM (dc5f499, on the Preview since v89): Build Around It from the sheet / Home starts building (AUTO-06); checked at 390 and 1440, and proven to fail on the old build. Also: Build's phone jump bar tabs are 44px+ to tap (252994d). DONE Nov 13, 12:14 AM (6e2ff5a, on the Preview since v90): a full team played at a recent event loads with that player's moves and items (CORES-08), checked item by item against the event sheet. LEFT: Early read mark, % of all teams (CORES-05); cores empty note (CORES-12); recent winners' archetype chips (AUTO-15). ADDED Nov 13 (side-by-side with the approved Build mock-up): 'Teams with it ›' on each core row (CORES-09; its target, Winning Teams under Meta, isn't rebuilt yet); 'Open all 3 ›' beside Start from a Recent Winner.",
+   "order": 16,
+   "s": "part",
+   "t": 1794546891061,
+   "title": "Build actions"
+  },
+  "i17": {
+   "note": "Compact cards drop each Pokémon's facts (types, box/catch, role, tier, gem tag, Ability @ Item, chips); end-of-list text; closest-option cards and 'Try Whole Roster' advice (COV-04/06/07, SUGG-04/12).",
+   "order": 17,
+   "s": "",
+   "t": 1794544800000,
+   "title": "All Suggestions cards"
+  },
+  "i18": {
+   "note": "'Same six as yours' (HOME-09); welcome card Build button (HOME-12); Rankings link under This week (HOME-15); weather chip (HOME-16); tool tiles open the tool, not its parent page (HOME-08).",
+   "order": 18,
+   "s": "",
+   "t": 1794544800000,
+   "title": "Home gaps"
+  },
+  "i19": {
+   "note": "Nov 12, 11:48 PM: fixed (0305e6b); on the Preview since v89 (Nov 13, 12:14 AM, 394 files checked). How We Calculate, Popular Sets, About & Legal and Send Feedback open a 'coming next' page (same approved text as Battle's tools); #meta already showed its mock-up. Checked in a Preview build: each opens its own page, no tab lit for the footer pages, 0 errors. No Track Record link exists in the new site yet (searched the code).",
+   "order": 19,
+   "s": "done",
+   "t": 1794545306305,
+   "title": "Links to pages not rebuilt yet land on Home"
+  },
+  "i20": {
+   "note": "X-12 SETTLED (Nov 13, 2:32 AM): the site has only two ? tips ('checklist' in Team Checks, 'readiness' inside Things to Know); both checked at 12-13 widths 320-1440 in Chromium and WebKit, on the pages and with Things to Know open: 0 sit alone on a line. X-07 STILL UNSURE: can't be checked headless (no phone keyboard); the code keeps sheets above the keyboard but Build's name box is on the page; test brief for Sim's iPhone in docs/rebuild/test-runs/x07-keyboard-iphone.md (with the info sheet swipe as step 6).",
+   "order": 20,
+   "s": "unsure",
+   "t": 1794555176315,
+   "title": "Audit unsures to settle on the built page"
+  },
+  "i21": {
+   "note": "No '⋯' site menu (NAV-03): Auto theme unreachable, Compare / Saved Teams / All Suggestions only from inside My Team; no Auto theme following the device (THEME-02). Needs a design: pictures for Sim.",
+   "order": 21,
+   "s": "",
+   "t": 1794546000000,
+   "title": "Site menu and theme"
+  },
+  "i22": {
+   "note": "Footer lost tagline, full trademark disclaimer, Sources and credits, Privacy and Contact (SHELL-06); no feedback dialog / Report a mistake (SHELL-20); no data health note (SHELL-04); no regulation banner (SHELL-05); owner-only panels (SHELL-21).",
+   "order": 22,
+   "s": "",
+   "t": 1794546000000,
+   "title": "Footer, feedback and site notices"
+  },
+  "i23": {
+   "note": "DONE (on the Preview since v90): up/down keys in all five boxes, search finds My Box, Compare Teams, Saved Teams, Team Sheet, All Suggestions (135cd12, JUMP-05). STARTED 1:04 AM, PAUSED 1:05 AM by Sim (not tested, set aside in git stash, not committed): search also finds Speed Tiers now that it's rebuilt. LEFT: cores and the other tool pages in search (with their pages); empty search hint (JUMP-02); no tools by description, no ratings (JUMP-03); suggestions lack types, Box tag, share (BATTLE-02); site x in search boxes (SHELL-10).",
+   "order": 23,
+   "s": "part",
+   "t": 1794636300000,
+   "title": "Search and name-box gaps"
+  },
+  "i24": {
+   "note": "DONE Nov 13, 12:24 AM (2cbbe90, on the Preview since v90): the open Battle tab is remembered (X-03), checked across reloads and proven to fail on the old build. LEFT: Head: 'vs their archetype' and player name; 'Vs Challenger' with no event when coming from Home's prep (BATTLE-01); recent battles: who you played and '(leads)' (LOG-03); My Team's Your Games: replay link (LOG-06); copy-blocked manual dialog (BATTLE-06/SHELL-26); 'x/6' beside My Team (NAV-01). QUESTION for Sim (word list): 'Dangerous / Manageable' is copied from today's site (18-archetypes.js:128, matchups.js:70); it shows only when a threat has no measured level, and isn't one of the four approved words. My recommendation: show no word there (no measured level, so no level word). Not changed on my own. Nov 14, 1:35 PM by the clock: LOG-07 ('a logged win shows on Home as 1-0') fails because Home keeps 'Your Battles · 1-0' inside its closed 'more' fold (home.js line 124, the approved Home layout); checked by logging a win in the page: the record is there, folded. A test gap, not a missing feature.",
+   "order": 24,
+   "s": "unsure",
+   "t": 1794547462491,
+   "title": "Battle and log small gaps"
+  },
+  "i25": {
+   "note": "SETTLED Nov 13: SHEET-01..07 in that audit are the same features as PKMN-01..07 (D-meta-shell.mjs line 4 says so), already audited in A-team-myteam.md; their gaps are item i13. DONE: favicons, today's three unchanged (5b8c103, on the Preview since v92, 2:35 AM). STILL UNSURE: claude:viewport-fit-sides meta (today has it, the new site doesn't; I'm unsure what it changes in the Claude app, so not added: an iPhone check); NAV-02 iPhone Claude app bottom-bar lift: still needed? (iPhone test); ' · ' kept vs commas (SHELL-12/X-08) and site-wide More/Less (SHELL-11): style choices for Sim; page fade (SHELL-32).",
+   "order": 25,
+   "s": "unsure",
+   "t": 1794555294553,
+   "title": "Shell unsures"
+  },
+  "i26": {
+   "note": "Nov 13, 12:00 AM (a398e85): helper finished. B-build: 13 pass / 75 FAIL before, 23 pass / 65 FAIL after (2 known, 1 fixed?). Every failure in scope sorted: 2 real bugs (SUGG-06 cards with no Fix/Small edge line, item i28; SUGG-07 Undo, same bug as today's site), 5 approved wording, 3 explained by the All Suggestions sheet (Claude's choice, waiting for Sim's look), 7 differences nobody approved (item i27), the rest not in v2 yet (items i10, i17) or test limits (X-03 test edit, X-10 flaky).",
+   "order": 26,
+   "s": "done",
+   "t": 1794546049313,
+   "title": "Wire the Suggestions tests to the new site"
+  },
+  "i27": {
+   "note": "Found by the test helper: the All Suggestions sheet has no Suggest from controls, follows My Team's slider (COV-03/06, BUILD-04: its real check, a locked Pokémon is never swapped, can't run yet); with 1 Pokémon it offers 15 adds where today says 'Add at least two' (COV-08); How Scoring Works sits in Why This Score?, not at the bottom of My Team (COV-12); today's 'No change from this pool raises...' note missing, a ±0 card shows (SUGG-14); Megas slider has no icons (X-04); no-match text differs (X-06). Each: keep (ask Sim) or restore today's.",
+   "order": 27,
+   "s": "unsure",
+   "t": 1794546049313,
+   "title": "Suggestions differences nobody approved"
+  },
+  "i28": {
+   "note": "Nov 13, 12:11 AM (34d3585), on the Preview since v89: a real bug. Today's site works out a card's lane when it's missing (23-coverage.js, Nov 10 fix); the new site only read it. Now it works it out too. B-build full run: 23 -> 24 pass, SUGG-06 the only change; today's page still passes.",
+   "order": 28,
+   "s": "done",
+   "t": 1794546710365,
+   "title": "Suggestion cards with no Fix / Small edge line (SUGG-06)"
+  },
+  "i29": {
+   "note": "When their six has two Mega stones, both got 'likely their Mega this game'. Sim chose Words Q2 B (Nov 13 morning): 'one of their two Megas: only one can Mega Evolve' (shared 46-battle-data.js line 52, both sites), built 8741d9e, on the Preview since v93. Status corrected to done at 7:34 AM (it was left as unsure).",
+   "order": 29,
+   "s": "done",
+   "t": 1794573267000,
+   "title": "Battle: 'likely their Mega this game' on two Pokémon"
+  },
+  "i30": {
+   "note": "Checked 7:35 AM in the code: the empty left slot is by design (an add has nobody going out: sugs.js sgSwap). No score move because the shared planner sets its starting score only for a full six (29-fix-planner.js line 197 gBase needs 'full'; v2 sugs.js/team.js g0 likewise), and today's live site shares it, so it matches today. Open note for Sim: the page's big number gives a 5-of-6 team a score ('89 so far'); showing '89 so far -> X' on an add card would compare a 5-Pokemon score with a 6-Pokemon one; unsure that's fair, so no change.",
+   "order": 30,
+   "s": "unsure",
+   "t": 1794573333000,
+   "title": "5-of-6 team: add card has an empty left slot and no score"
+  },
+  "i31": {
+   "note": "FIXED Nov 14, 12:03 AM by the clock (35c32db, with the Speed Tiers rebuild): the shared threat list is cached per length. Today's Speed Tiers and Damage Calc hit table ask for the 30-list they always got, so the live output is unchanged (today's Speed Tiers 372/372 identical). Checked: run.mjs ALL PASSED, golden 10/10, same-grade ALL PASSED, threat PASS.",
+   "order": 31,
+   "s": "done",
+   "t": 1794632625000,
+   "title": "Threat list length depends on which page opened first"
+  },
+  "i32": {
+   "note": "In progress (fixes on the Preview: v90 1:38 AM, the rest v91 2:27 AM; full list in docs/rebuild/overnight-nov13.md). FIXED (Build after building, never checked before because the height and polish checks don't build a team): score band word ran past the screen at 320-430 (675d601); headline 5px past the column at 700 (675d601); names and role lines ran into the next tile at 320-390, Other Options names cut with '…', 'S tier 92' split (68f86af). All checked at 14 widths, both engines. FOR SIM (look choices): Build sprites are 120px on phones though the CSS meant 88 (one pokes past the edge at 320-340); Build is far over its height after building; Compare's team B badge is red (reads 'bad'); Build's 3/4 checks number is blue (reads 'good'); 'Battle A Team' vs our lowercase rule; Home tool names vs page names (Battle Mode / Battle A Team, Winning Cores / Cores); empty right areas at 1100 (Home beside ratings, My Team and Build beside the score); Turn One shows a fixed order on a speed tie; mirror-match sentence 'Mega Charizard Y's Ancient Power can KO Mega Charizard Y'; My Box 'Your Team' not grouped Lead/Back/Bench; phone 'More Ways to Prep' descriptions keep '20' and '18'. DONE since: polish check on every built page (0 page errors; flags judged one by one, none new to fix beyond those listed); 8 sheets at 4 widths, both engines: clean; Build's 3/4 blue only at 4/4 (d374d06); form letters kept with names in shared-logic text (5dd4e26). Battle 21 / Build 24 passes unchanged. Look Q1-Q3 pictures labelled (Build phone sprites, Compare colours, Battle phone tabs).",
+   "order": 32,
+   "s": "part",
+   "t": 1794551312639,
+   "title": "Second look through every built page (Sim, Nov 13, 12:47 AM)"
+  },
+  "i33": {
+   "note": "Built, checked and on the Preview (v93 5:43 AM; v94 5:50 AM fixes my tab-name gap on desktop; v95 6:24 AM adds two title-case headings): Words Q1 B, Words Q2 B, Look Q1 B, Q2 B, Q3 B, Q4 B, Height Q1 A. Tests: Battle 21 + today's 86/0; Build 25 (the '24' I wrote earlier was most likely the flaky X-10, i41: unsure). Waiting for the Speed Tiers page: Speed Q1 A (race track desktop), Speed Q2 A (slim track phones).",
+   "order": 33,
+   "s": "part",
+   "t": 1794573267000,
+   "title": "Sim's morning answers (Nov 13)"
+  },
+  "i34": {
+   "note": "Every approved mock-up in docs/rebuild/mocks/out compared with the built page (1440; first visit also 390): Home matches apart from Sim's later choices. Battle: my regression fixed (v94), i24, Battle Q1. Build: i15/i16. My Team (mock-up exists, my earlier 'none' was wrong): i36, asked as My Team Q2. My Box: i37, i38. Info sheet and forms sheet: forms strip, Compare all 3 and the Forms tab are there; layout one column with the picture on top (mock-up: identity column left; unsure Sim chose it); i39 Report a mistake missing. First visit / empty My Team: i40. Not compared: Compare and All Suggestions (no approved mock-up; already waiting on Sim), Ratings and Speed Tiers (not rebuilt).",
+   "order": 34,
+   "s": "done",
+   "t": 1794569789000,
+   "title": "Side-by-side: built pages vs their approved mock-ups (Sim, Nov 13)"
+  },
+  "i35": {
+   "note": "Sim chose all recommendations. BUILT: Build Q1 B (tabs on every size; 1440 2,121 -> 1,499), My Team Q1 B (Stand-Outs 4+4). Kept: My Team Q2 A. Nov 13 afternoon: every built page inside its limit (c13, 0 over); tight at 99%: Battle 320 4,607/4,650 and 390 4,083/4,100, My Team 320 3,875/3,900 and 390 3,743/3,750. Tried and dropped: Battle phone Lead|Back 4 across (names collide at 320). My Team 390 breakdown: hero 1,121, Matchups 815 (no slack without showing less), Set 449, Suggestions 442. Still long: My Team 5 of 6 at 1440; Home first visit. Next ideas need Sim (content choices).",
+   "order": 35,
+   "s": "part",
+   "t": 1794606652866,
+   "title": "Pages run long: creative layouts instead of raising limits (Sim, Nov 13)"
+  },
+  "i36": {
+   "note": "Sim chose My Team Q2 A: keep 2 columns (3 columns measured longer with 5 of 6 and left an empty strip under Set).",
+   "order": 36,
+   "s": "done",
+   "t": 1794580817202,
+   "title": "My Team: approved mock-up has 3 columns, built page has 2 (unsure whose choice)"
+  },
+  "i37": {
+   "note": "Sim chose My Box Q2 B: Build Around It is in the panel and its phone sheet (4c6a0ff, Preview v97). Checked at 1440/820/390/320: Build opens with the Pokemon locked and a team built, 0 errors; c13 box 0 over; use test 32/0.",
+   "order": 37,
+   "s": "done",
+   "t": 1794580817202,
+   "title": "My Box: mock-up's 'Build around it' is not in the built side panel"
+  },
+  "i38": {
+   "note": "Sim chose My Box Q1 A: keep the two-line headline from 1400 (keeps the in-game 6-across box).",
+   "order": 38,
+   "s": "done",
+   "t": 1794580817202,
+   "title": "My Box at 1440: headline 'My Box' breaks onto two lines"
+  },
+  "i39": {
+   "note": "Today's info sheet has it (61-concept-h-pages.js line 148; 53-feedback.js fbMisBtn -> fbMistake -> fbOpen: opens the site's feedback form pre-filled with this Pokemon's numbers; hidden for viewers who can't save) and the approved mock-up shows it under the buttons. The new site has no feedback form yet (Send Feedback is a coming-next page), so it comes back with the Send Feedback rebuild. Checked 7:34 AM.",
+   "order": 39,
+   "s": "",
+   "t": 1794573267000,
+   "title": "Info sheet: 'Report a mistake' missing on the new site"
+  },
+  "i40": {
+   "note": "Sim chose First visit Q1 B and Q2 A. Built (12bbea1, Preview v98): six empty spots beside the lead (each opens the add box for its spot), 'Or Start from a Winner' (today's six highest-rated, tap = build around it) beside the underdog; no sample button. Checks: c13 team-empty 0 over (1440 1,080, 390 2,445), tap<44 0, both engines; spot 4 + Enter adds Garchomp; winner tap builds around it, 0 errors; use test 32/0; My Team tests 127 (TEAM-19 updated to the approved design: passes on new, fails on old, today's page unchanged).",
+   "order": 40,
+   "s": "done",
+   "t": 1794581976682,
+   "title": "Empty My Team vs the approved first-visit mock-up: six empty spots and 'Or start from a winner' missing"
+  },
+  "i41": {
+   "note": "Run alone on the current page: 5 of 9 passed over all runs; patched page 6 of 9, so not caused by the Build Q1 B patch. 7:27 AM: in the failing run no click event reached the page; re-draw guess not supported (tile stays the same element 1.2 s). Nov 13 2:42 PM, measured on the same build: early tap 3 of 9 pass, with a 1.5 s wait before the tap 9 of 9. The test copy of the page had every sprite broken (picture path relative to app/dist); pointing it at the real folder (scratchpad harness-art.patch, NOT committed) made sprites load but X-10 still 4 of 9, so that was NOT the cause (my first explanation was wrong). A plain script tapping at once opens the sheet 3 of 3 and it survives the late redraw (~0.6 s after the team shows). Cause still unknown; the difference is somewhere in the test's own setup (team + box fixture, navigation). 3:27 PM (experiments/x10-debug.mjs, the test's exact steps with logging): in failing runs press AND release reach the tile (IMG in an enabled BUTTON, same node, still in the page, nothing prevented, no redraw between) but NO click fires; adding mousemove/pointermove listeners hides it (16/16). 3:28 PM: image-drag idea REJECTED (not draggable 1/10 vs as built 2/10). 4:48 PM: desktop mouse moved onto the tile first = 10/10 pass vs straight tap 3/10 (no hover style or mouse-over code moves the tile: browser-internal, mechanism unsure). PHONE (390, touch, straight tap): 8/10 then 11/12 pass: 2-3 lost taps; failing run: touch events reach the tile, no click, test scrolled 81 px 2 ms before the tap. POSSIBLY A REAL PHONE ISSUE (tap right after Build shows the team); not proven. Next: try by hand on Sim's iPhone. Scripts: experiments/x10-debug.mjs, x10-hover.mjs, x10-touch.mjs.",
+   "order": 41,
+   "s": "unsure",
+   "t": 1794606610338,
+   "title": "Build test X-10 (tap a built-team tile opens its info sheet) is flaky"
+  },
+  "i42": {
+   "note": "DONE Nov 13. Re-check of every built page: catch-ups fixed (i43, Preview v100); design choices all answered and built (i44). Afternoon extras: the polish check was fixed to use the real fonts (it had measured the new site with fallback fonts), which found and fixed: empty My Team winners line at 320, Home's long #1 name on phones/tablets (Home Q2/Q3), Home six tiles' Mega tag (A9 catch-up). All-page before/after pictures: only intended changes.",
+   "order": 42,
+   "s": "done",
+   "t": 1794606652866,
+   "title": "Re-check every built page against the rules and design changes made since it was built (Sim, Nov 13)"
+  },
+  "i43": {
+   "note": "All re-check catch-ups built, checked and on the Preview (v100): words and title case, sheet padding + X on top, slanted rank numbers, nothing under 13px on Home, Mega corner tag on Battle sixes and first-visit winners, Battle names no longer touch at 1180-1279, My Team's six lines up at 1180, Set facts share their first line on phones, Turn One 'Them' grey, Compare Mega in blue, Compare readiness wording, '+1 point'. Tests: My Team 127, Build 25, Battle 21 (no test changed; BOX-01/07 test text updated after my wording change), use 32/0, clicks 0 double. Questions that came out of it: i44.",
+   "order": 43,
+   "s": "done",
+   "t": 1794588299068,
+   "title": "Re-check catch-ups to fix (approved rules; one at a time with checks)"
+  },
+  "i44": {
+   "note": "DONE. All answered and built (Preview v101-v105): Battle Q2 B, Natures Q1 B, My Team Q3 B, Build Q2 C, Home Q1 B, My Team Q4 C, Battle Q3 B, Red Q1 C, More Q1 A (counts removed), Even Q1 B, Arrows Q1 B, Filled Q1 B, Box Q1 B; You Q1 A (no change). Closed with a reason: Favoured already blue; empty Compare dashed = empty-spot look; info sheet open form = approved D12-14 (doc fixed); 'How the Strength Score works' gone; Copy for Showdown 2 taps by the approved More menu. Final checks 3:19 PM: use 32/0, clicks 0 double, Battle 21 pass (as before), My Team 127/11/4 (as before).",
+   "order": 44,
+   "s": "done",
+   "t": 1794606652866,
+   "title": "Re-check: design choices for Sim (pictures when asked)"
+  },
+  "i45": {
+   "note": "Sim wants a ranked list of the Megas beside the regular Pokemon ranking, so people see what's going on in the meta. Written into docs/rebuild/meta-notes.md (the new Meta notes file, linked from rebuild-plan.md line 74) with her words, what exists today (a 'Megas' filter on today's Ratings page, no list of its own) and the questions for when it's designed (where it sits, rows, rank by rating or usage). For the Meta rebuild; not started.",
+   "order": 45,
+   "s": "",
+   "t": 1794585137458,
+   "title": "Meta rebuild: a ranking list of the top Megas (Sim, Nov 13)"
+  },
+  "i46": {
+   "note": "DONE (Nov 13). Home's #1 name ran into its neighbour when a long name (Rillaboom, bundled data) is #1. Phones: Home Q2 B (c1a4ffa); tablets 700-899: Home Q3 B (654e55c). Overlap 0 px at 17 widths 320-1024; polish home spill 0; Home tests unchanged. Preview v109.",
+   "order": 46,
+   "s": "done",
+   "t": 1794605224493,
+   "title": "Home 'most used' centre name can overhang on small phones when a long name is #1"
+  },
+  "i47": {
+   "note": "DONE (Sim's yes each, built + checked): My Box Q3/Q4, ring glow, Mega Q1/Q2, gallery, Build Q3/Q4 + review fixes (v113), Home Q2/Q3, Battle Q1 B/Q2 B (v114). Sim's 7:04 PM 'fix' list on Preview v115 (8:03 PM by the clock): Home sixes line up (items shown, Mega tag clear), My Team phone buttons 15 px + links 'Plan a Match ›'/'Popular Sets ›' + Stand-Outs line up + empty spots 'Add'/'Spot N' (Empty Q1 B), Build 'Your pick' level + 'Off-meta' unsplit, Home most-used names fit (12 longest x 14 widths, 0 overflow). Tests: My Team 127/11/4 same list, Build 25/63/2/1. Desktop page-shift on My Box fixed (v120, 10:08 PM).",
+   "order": 47,
+   "s": "done",
+   "t": 1794636300000,
+   "title": "Outside review of the built pages (Sim, Nov 13): My Box first, then the rest"
+  },
+  "i48": {
+   "note": "ON THE PREVIEW v121 (11:00 PM by the clock, Sim's go): The Card info sheet (Sim's Card brief) on phone, iPad upright, desktop, dark + light; tab sub-lines removed; phone forms row under the tabs (Sim chose B, 10:56 PM). Checked: words 345/345 kept; polish 0 spills; c13 0 over height; use 32 ok; clicks 125 controls, 0 double; section 6 cases measured. Sim: PC scrolling smooth. v122 (11:08 PM by the clock): phone sheet no longer slides sideways (was 8 px); desktop card capped at 392 x 656 on tall windows (was a long strip). Sim 11:25 PM: desktop 'looks VERY sharp'. 11:42 PM: tall-window empty left column stays (A); new things only after the rebuild. LEFT: Sim's iPhone / iPad look at v122.",
+   "order": 48,
+   "s": "part",
+   "t": 1794628980000,
+   "title": "Info page redesign: dynamic, Google-ready, phone first (Sim, Nov 13)"
+  },
+  "i49": {
+   "note": "Sim picked 'Their Side' (1:38 AM; brief + 6 pictures in docs/rebuild/calc/). ON THE PREVIEW v124 (Sim's go, morning Nov 14; 400 files checked). Sim's answers: Q1 A small phones as built (hand peeks), Q2 A 1366x768 full size, Q3 A no pinned No-effect bar, Q4 A Focus Sash wording as today's. Phone + desktop, dark + light; KO Board; today's full best-hits table kept as a fold; shared calc logic identical on today's site (1285 screens). Checks: guard clean, polish calc uneven 0 / errors 0, c13 0 over, calc+speed tests 14 pass + 2 known FAIL (CALC-01 How We Calculate, CALC-08 Send Feedback: pages not rebuilt), v2-use 32 ok, v2-clicks 125/0. UNSURE: scroll smoothness on Sim's Windows PC. iPad (Sim's picks Q1 B, Q2 A): upright 700-1023 table + KO Board side by side, on the Preview v125 (400 files); on its side keeps the desktop table (scroll a little). OPEN: Sim's review of v124/v125.",
+   "order": 49,
+   "s": "part",
+   "t": 1794663712000,
+   "title": "Damage Calc in the new design (Sim, Nov 14)"
+  },
+  "i50": {
+   "note": "FIXED (Sim confirmed on her iPhone, Nov 14 late morning: 'scrollbar looks fine now'). Cause: the site wrote the scroll place into the browser history at every 0.2 s scroll pause; now only on a tap or when the page is hidden (99ceca9, Preview v126/127). Back still returns to the same place (checked 1600 -> 1600).",
+   "order": 50,
+   "s": "done",
+   "t": 1794667700000,
+   "title": "Scroll bar flashes on long pages (Claude app on iPhone; Sim, Nov 14)"
+  },
+  "i51": {
+   "note": "On the Preview v127 (68fa313): Home and empty My Team, tap the Pokemon or its name; empty My Box, tap the Pokemon. Checked: 10/10 taps open the sheet (390 and 1440); spots look the same as before (pixel comparison, only the moving floor glow differs); 125 controls fire once. Waits for Sim's look.",
+   "order": 51,
+   "s": "done",
+   "t": 1794667700000,
+   "title": "Today's underdog opens its info sheet (Sim, Nov 14)"
+  },
+  "i52": {
+   "note": "DONE: Sim approved on Preview v128 ('type chart is clean. i love it'). Concept A Spotlight; every feature of today's kept, today's words; TYPES tests 5/5 (today 5/5), guard clean, polish errors 0, c13 0 over, nothing outside the page 320-1440.",
+   "order": 52,
+   "s": "done",
+   "t": 1794670840000,
+   "title": "Type Chart in the new design (Nov 14)"
+  },
+  "i53": {
+   "note": "Built in Sim's pick, Arena VS (round 2 R1), and on the Preview v130 at 12:42 PM by the clock (400 files checked). Checks: Practice tests 4/4 pass; guard clean; polish check: 0 findings on the page itself (5 in the shared header/footer, not new); nothing outside the page 320-1440; real flow start > pick 4+2 > reveal > next, desktop and phone, 0 errors. Preview fix: it had no practice data; now it does (no player names in it). Own look found the VS covering a picked plate's number: your plates now sit above the VS, the VS stays on top of their side. WAITS: Sim's OK on that VS layering.",
+   "order": 53,
+   "s": "done",
+   "t": 1794678171000,
+   "title": "Team Preview Practice in the new design (Nov 14)"
+  },
+  "i54": {
+   "note": "Built in Sim's pick A (Scoreboard + match cards), on the Preview v131 at 1:22 PM by the clock. Tests: Test Run 9/9 pass (+ Practice 4/4); guard clean; c13: 0 over height, 0 cut off, 0 small taps at 320/390/820/1440; polish: no Test Run findings except the shared '?' tip's deliberate margins (header/footer findings as before). Every feature of today's kept, incl. 'How it works', 3 cards then '17 more teams', the footnote tip. Word: 'start a Test Run' (Sim's word list) instead of 'run the gauntlet'.",
+   "order": 54,
+   "s": "done",
+   "t": 1794680561000,
+   "title": "Test Run in the new design (Nov 14)"
+  },
+  "i55": {
+   "note": "Sim picked Skyline (her message came between the clock's 1:03 PM and 1:22 PM readings). Built (result area only) and on the Preview v132 at 1:33 PM by the clock (400 files). Tests TYPES-01..05 pass; c13 0 over height, 0 cut off at 320/390/820/1440; tap findings unchanged from before (look-up box, team buttons at 320). Changes from the brief by our rules: 4-wide roof edges, no blur glow, street blocks on the 4px grid, shading from our tokens, a block of three under 340 px, a screen-reader text version. WAITS: Sim's review on her devices.",
+   "order": 55,
+   "s": "done",
+   "t": 1794681202000,
+   "title": "Type Chart: Sim's pick Skyline (Nov 14)"
+  },
+  "i56": {
+   "note": "Sim's go 2:33 PM (Question 4 A; authority until 10 PM). DONE: Pokémon > Rating from the approved mock-up, on the Preview v133 at 2:50 PM by the clock (400 files). Tests RATE 9/10 (RATE-01's 'How ratings work' needs How We Calculate, not rebuilt); today's site still RATE 10/10. c13: 0 over height, 0 cut off at 320/390/820/1440. Choices logged: top 12 rows (mock-up), Clear kept, team dock left off. LEFT: Usage, Sets, Tournaments (winning teams, events), This Week, Archetypes, Track Record, How We Calculate: mock-ups for Sim first where the approved mock-up doesn't cover them.",
+   "order": 56,
+   "s": "part",
+   "t": 1794685801000,
+   "title": "Meta section rebuild (next by plan)"
+  },
+  "i57": {
+   "note": "Design round. Queue: docs/rebuild/QUEUE.md. BUILT: Home, Meta Pokémon tab, My Team 'The Hand', Build 'The Blueprint', Winning Teams 'The Winning Hands', Team Sheet 'Tale of the Tape', Battle 'Play-by-Play', Compare 'The Face-Off', Test Run 'Three Piles', Events 'The Ticket Wall', Archetypes 'The Weather Map', This Week 'The Front Page', Track Record 'The Receipt', share card 'The Slab', and now the three info pages: How We Calculate, About & Legal, Send Feedback (real pages; words shared with today's site unchanged). Sim answered all 19 questions 'recommended' (7:00 AM Nov 15); all 19 are done or kept as asked. Preview v160 (Nov 15, 400 files) has all of it. NEW, in progress: the Pokémon page 'The Answer Page' (Sim's pick; one page per Pokémon at #pokemon=<name>, the sheet retires when it's complete): part 1 built (Is it good? + Base Stats, six stat colours, 0 findings on 4 Pokémon); parts 2-6 to come (How to build it, Who it teams with, What beats it, How fast it is, Abilities + Why it rates). Since v159: This Week share has Light/Dark again; My Team 5-of-6 fixes; My Team height limits set to The Hand; How We Calculate regained freshness, How to Read Our Numbers, remembered parts. Since v158: share window redone (Team Card and Team Poster in The Slab style, Team Sheet image in the Tale of the Tape look, all Light or Dark; Sim: recommended); 'Team Sheet' link beside Why This Score; Battle with an opponent at 1366+ is 2x2 Play-by-Play + three columns (1440: 2,331 to 2,102 px, limit now 2,150); usage counts + an owner-only page (errors, screens, day/night, load time, pages used together; Sim: all recommended). Today: Them / Team B in magenta; This Week as the 4th Tournaments view; one Replace / Cancel question everywhere; 'Share as Image'; Edit Set returns to the Team Sheet; ratings keep the newest refresh; Team Sheet three tables of two under 380; Battle's Your Games beside the headline at 1366+. Checks: full check clean on every page touched (320-1920, day and night); live site ALL PASSED; today's About draws byte-identical. Tests on the latest build: My Team 132/6, Meta 64/87, Battle 59/24 (each one more pass than the morning, nothing newly broken), Build 30/59. Open (purple): inside the test harness the Team Sheet does not show after Edit Set closes, though two browser replays show it does (cause not found); the share sheet has no Light/Dark choice of its own. 12:23 PM, Preview v164: Pokémon page part 6 (Abilities, Why it rates N) plus fixes from two helper audits: share window always shows and saves the picked image; Mega stats stay in the panel (all 83 Megas); no words split mid-word (moves step down the scale or go one per row); Lead/Back/Bench Cards level; poster tagline on the margin; Team Sheet image says points; 4x weak deep red; night main speed flag blue; 'No results yet'; three numbers always; section numbers without gaps; Battle at 390 back under 4,200; Save Image visible on laptop windows. Checks: layout 0 on 8 Pokémon and My Team (320-1920, day/night), contrast 0, tests My Team 132/6, Battle 59/24, Meta 73/78 (9 more passes, nothing newly broken), live ALL PASSED. Open (purple): '(0–100)' can break inside the brackets on How We Calculate. 1:04 PM, Preview v165: Pokémon page partners two across up to 899 with even name sizes, 'On your team' aligned, Battle damage lines in one wording. Sim extended authority to 8:00 AM Mon Nov 16 (goal: pristine, ready to be the live site) and approved Forms A and the 5-of-6 Team Card A; both are next. 1:23 PM, Preview v166: Forms on the Pokémon page (Sim: A): strip under the top + 'Forms side by side' as the last part; checks 0, contrast 0, Meta tests unchanged. 1:40 PM, Preview v167: Team Card and Poster for a team still being built (Sim: A): '5/6', 'Add a sixth for a Strength Score', open slots. Next: the switch (taps open the Pokémon page; the info sheet retires) once every sheet feature is confirmed on the page. 3:25 PM, Preview v168: THE SWITCH: every Pokémon tap opens its own page (#pokemon=); the info sheet retires; 'Pokémon Page' labels; the page has the sheet's links; fixed Popular Sets (opened Ratings) and Add to My Team staying on the page. Tests: no new failures in any group (My Team 135/3). Open (purple): the Pokémon page is long on phones (7,300-9,500 px; question for Sim with pictures); a parity sweep of today's features is under way (helpers on Meta and Build tests). 3:59 PM, Preview v169: parity sweep with today's site (docs/rebuild/parity-nov15.md): Search finds every page and shows ratings; welcome link, remembered fold, Ctrl+K, chip place, Report a Mistake fixed; feedback links only where saving works. Meta tests 73 -> 100 passing. Question for Sim: footer credits + Privacy + Contact (pictures). 5:33 PM, Preview v170 (Sim answered Q1-Q3 recommended): Pokémon page folds (longest 9,535 -> 4,840 at 320), Build keeps its page while building and the blue score frame is gone, footer restored (its height added to every page limit, for Sim's review), Never Suggest list, Fix your items first. Three whole-site audits running (every button and feature, parity with today's site, uniformity and polish). 6:36 PM, Preview v171: audit fixes. Events open at their results (were off screen on phones); #1 teammate reachable on phones; keyboard focus never hides under the header; typed stat points saved on close (or a toast says why not); duplicate moves refused; Opponent set names the team; every page named in Back/Forward; stale-data and new-regulation note back on Home and Meta (Preview says it uses a saved copy from Nov 10); saved Day/Night from today's site carries over; Usage sources in today's order; rules caption on the items card. Commits now work in Auto mode (settings file added, Sim's yes). 7:15 PM, Preview v172: code review A1-A6 done. Skip link; Pokémon a regulation drops really stay saved and come back with their set; a damaged saved field no longer resets everything; Garchomp @ Eviolite no longer imports as Mega Garchomp; Calc: Gyro/Electro Ball speed, Sturdy holds at 1 HP, sides refresh when the set changes, Body Press ignores Intimidate and Attack boosters; typed feedback survives a redraw. Found and fixed on the way: a lasting tabindex on the page made 6 Meta tests fail (Meta back to 100 passing). GitHub checks pass (fields-audit not run here: needs the Showdown sim). 7:53 PM, Preview v173: code review B and C. Escape, Your Games search, Matchups table for screen readers, Build cancel cleanup, Copied label, focus moves to the new page's heading, toasts reachable by keyboard, page behind a sheet inert, double-tap guard no longer blocks other taps, Speed track width, theme follows the device, outside links must be https; one Build draw (identical page), CSS 490 -> 422 KB (pixel-identical), reduced motion everywhere, replay-paste crashes fixed, link rows end in ›. Unsure/left for Sim: B8 cross-device sync (shared with the live site), dead old-site code waits for the switch, design choices from the uniformity audit (fold styles, hub navigation, title sizes). 8:47 PM, Preview v174: Undo for adding a Pokémon, deleting a logged game and clearing Their Six; Edit Set stays open on Remove and follows an Undo; regression sweep (helper agent, every sheet on 24 pages: no stuck page) fixes for keyboard focus; full layout sweep at 13 widths found and fixed Practice cards (347, 700-768), Winning Teams' champion names (700-1024: one size per hand, Sim to review vs bolder per-card sizes), This Week's rise/fall cards (700-859, up to 70px past the card). '(0–100)' no longer breaks. Sim chose Q1 A: cross-device sync after the switch. 10:04 PM, Preview v177: My Team while building = 'Your Six' (Sim: love it): your own order, Add cards, no Lead/Back/Bench until six; score never squeezes the name (phone and 700-1099). Sim gave full authority until 10 AM Mon to apply the outside reviews (design advisor's review saved with every point tracked: docs/rebuild/audits/design-review-nov15-advisor.md); no switch to live until all of tonight's fixes are done. 12:36 AM Mon Nov 16, Preview v179 (overnight, under Sim's authority; decisions.md): Base Stats B less bubbly (Sim: good to go); How to build it smaller; say it once (date once in the footer, Home's This Week inside the Meta strip, Meta kick line, Battle Win/Loss after four picked, tools bar tools only); one system (one fold marker, links end in ›, one chip, one segmented control 44px, one section-heading size, 'S tier' always its tier colour, Test Run box-in-box); Meta phone swipe rows (5.2 -> 4.0 screens); Home underdog large, Home 4.8 screens; My Team Saved as a status; Build jump tabs scroll; all measured taps 44px+. Tests: My Team 138/0, Battle 83/0, Build 58 (31 known), Meta 101 (50 known, none new); GitHub checks all pass. Open for Sim: summary-nov16.md. 2:08 AM, Preview v180: every older open audit item re-checked (helper) and the real ones fixed (narrow-phone overflows on Battle, This Week, Type Chart, Usage/Sets/Meta spotlight, Events tickets, Home corner, Damage Calc, Build blueprint; Events counts once; Team Sheet spread note once; My Box team order; Archetypes sprites; night chips); accessibility fixes (Base Stats labels, Needs-work text, sun tiles); Suggestions answer first, settings below. Tests: My Team 138/0, Battle 83/0, Build 31 known, Meta 50 known (none new). 4:16 AM, Preview v181: nuclear stress test done (words, keyboard/screen reader, speed, 500 renders of every page, every function with odd input; 0 overflow, 0 errors) and its fixes: even layouts (Stand-Outs 360, Usage 320, This Week tiles, underdog full width, calc chips, move grids, Usage lists, ticket labels, Home corner links, no lone ›); import names repeats and wrong Abilities; safer Undo; '1 game'; no double replay; 'Name (2)'; honest save when storage is blocked; Build says when the name matched nothing; All Events opens Events; tip stays open from the keyboard; days counted alike; '1 idea'; no heading skips; Search says the count. Tests: My Team 138/0, Battle 83/0, Build 31 known, Meta 50 known (none new); GitHub checks pass. Open (purple): calc vs My Team set for your own Pokémon; Undo inside an open sheet (Sim's Q4); ticket names at 320 (Q17). Next: final re-check pass, then the 9:40 summary. 8:55 AM Mon, Preview v184 (Sim: recommended; authority to 8 PM Mon): new logo 'Sly Devil' in the header (A: the imp alone under 414 wide, logo-small 414-999, full 44px from 1000) and footer (logo above the tagline from 1100, clear space under it); one logo day and night. Re-run impeccable audit of v183: 13/20 (docs/rebuild/audits/impeccable-audit-nov16-b.md) and its first fixes: keyboard focus now visible on every slanted control (was invisible: 0 pixels changed); calc row names for screen readers; a title per page; 'On this page' marks the current section; How We Calculate's six shared lists no longer run together and its top 10 shows real sprites (were 10 broken images); Suggestions controls fit at 520-599 (Count abilities 'Yes' was cut off); Undo after Clear Team works again. Data refresh fixed on main (a mistyped move had stopped the daily promote since Nov 14); live data is Nov 16. Checks: layout 0 on every page touched (320-1920, day/night), Meta tests no new failures, Undo tests all pass (4 Build known). Open (purple): Track chart line colours and night chip count (pictures for Sim), KO and Copy for Showdown names, text-spacing clips, speed fixes (My Team background job 13 s on a slow phone), audit P2s, final polish (#8); logo still to do: share images, icons, link preview, style guide, non-affiliation line. 10:2x AM, Preview v185 (Sim: 'yes go for it' / recommended): the new logo everywhere it can work in a Preview: share images (flat logo, own proportions), browser-tab and iPhone home-screen icons, footer line 'not affiliated with Nintendo, The Pokémon Company or Game Freak; Pokémon names are trademarks of their owners', style guide Logo section; checked in Safari's engine (iPhone/iPad sizes, day/night). Audit fixes: Track chart lines with an ink edge (tier colours kept), night chip count 5.05:1, KO and Copy for Showdown names, Build/My Box names wrap instead of '…', Winning Teams search arrow keys/Enter/Escape, Import from Home returns to Home when cancelled, Show/See All buttons say their section, Track chart numbers for screen readers, sprite glow off on mouse screens except feature sprites (Sim's rule; Calc 316 -> 4 filters at night). Speed (4x slow phone): My Team tap wait worst 115 -> 49 ms, Meta Find worst key 440 -> 30 ms, Meta first-load jump 0.110 -> 0.015. Tests: My Team 138/0, Battle 83/0, Build 58 (31 known), Meta 101 (50 known), none new; live site ALL PASSED. Open (purple): manifest + link preview need the public address (January); sprite file sizes, memory creep, data-note shift (logged); morning helper findings (Battle VS badge, Type Chart long names, words); final polish (#8). 12:37 PM, Preview v186 (400 files, 346 v2art; bug fixes, no new looks): in-between window widths (e.g. 699.5 px) now get a layout; menu 'My Team' no longer wraps at 700-1197 (a wrap rule was cancelling 'one line'; site-wide before/after check: 23 of 24 pages unchanged, Calc +4 invisible); Calc four moves 2 by 2 on phones; Battle VS badge no longer covers; Type Chart headline without a lone word; Home belt words fit; Pokémon page partner names fit at 320-389; Test Run 'Top of the pile' label shows in full and pile names fit; glow rule and night page tabs blue (Sim's yes). Tests on this build: My Team 138/0, Battle 83/0, Build 58 (31 known), Meta 101 (the same 50 known, IDs checked). Open (purple), waiting for Sim with pictures: Damage Calc played card at 1024-1399, move name runs into the damage number for 170 of 345 attackers at 1024 (older; tested fix clears all 345); Test Run 'Bring these four' leaves one sprite alone at 1130-1430 (older; option front row / back row). Sim's after-4 PM check sheet: docs/rebuild/test-runs/sim-nov16-after4.md. 1:00 PM, Preview v187: the FULL NastyPlot logo on phones (Sim: not the imp alone; 20px tall at 320, 28px from 390); Damage Calc played card fits for all 345 attackers at 1024-1399 (Sim: A); Test Run front row / back row (Sim: yes); My Team score header fixed (my morning belt fix had put the buttons over the score at 700-1280). 1:55 PM, Preview v188 (400 files, 346 v2art): fresh-eyes audit of v186 scored 14/20; all its certain defects fixed: This Week counts at 390, Search names under type pills, suggestion wording ('teams that are win' -> 'answers more of the top threats (Matchups)...'), Calc Terrain value at 1024-1099, 44px tap areas for every action link (nothing moves), How We Calculate Track banner on phones (question had 0px at 320), Archetypes ranks stay whole. Sim kept (recommended): centred lone tiles, footer link row, Winning Teams card names. Tests on this build: My Team 138/0, Battle 83/0, Build 58 (same 31 known IDs), Meta 101 (same 50 known IDs); live site ALL PASSED. Parked ideas list for Sim: docs/rebuild/parked-ideas-nov16.md. 5:00 PM, Preview v189 (400 files, 346 v2art): second fresh-eyes audit of v188 scored 11/20 (deeper: Damage Calc, logic, odd widths); fixed: Damage Calc hand names fit for all 345 attackers (2x2 hand on tablets, fit step; 5 near-touches at 1100-1240), 'No effect' gives the real reason (Psychic Terrain blocks priority, not 'immune to Water'), header Day/Night inside the window at 700-999, Battle bar 'Type Chart' at 700, Usage bench names apart at 320, toast Undo 8.77:1, calc cards keep the sprite 64px+ with long names, focus after Import lands on the page heading. Sim's picks: the imp alone on phones (full logo 414+); Home headline 2 lines (intro under it at 1100-1339); Test Run open card says 'From: The Problems'; Battle bigger Your Six sprites, 'Favoured' beside the headline from 1100; Practice six '?' slots. Tests on this build: My Team 138/0, Battle 83/0, Build 58 (same 31 IDs), Meta 101 (same 50 IDs); live ALL PASSED. Open (purple): Pokémon page Forms alone at 1920; calc 'None' tiles look different; selected chip vs main button (unsure items from the audit); style guide hidden at launch (launch checklist). Evening, Preview v190 (400 files, 346 v2art): selected chips, tabs and switches in day mode are a light blue tint with deep-blue text (5.5:1), not dark like the main button (rule C4; Sim: A); Damage Calc Weather 'None' matches Terrain 'None' (a class clash painted it blue); calc cards keep the sprite 64px+ with long names; focus lands on the page heading after an import. Checked: Forms at 1920 spans the full width (false alarm). Tests on this build: My Team 138/0, Battle 83/0 (X-09 re-run after a container restart), Build 58 (same 31 IDs), Meta 101 (same 50 IDs); live ALL PASSED. Waiting on Sim: after-4 device checks (docs/rebuild/test-runs/sim-nov16-after4.md); the switch to live. Nov 16, 10:16 PM, Preview v191 (397 files, 346 v2art; the 3 unlinked mock-ups removed, Sim 8B; tokens.css now the build's own): code review + design audit fixes. Folds stay open through a redraw; About/How We Calculate no longer jump; tab titles kept; partial teams say 'so far' on Compare, Tale of the Tape, Home; score number, word and colour agree (79.5 -> '80 · Tournament ready', no sticky band; Sim 10A); edited teams keep only the record their sets earned (Sim 9B; 611 of 709 real sheets keep it whole); caches follow nature and stat points; live mark and VS blue (1C); night 'Set as Opponent' a dark plate (2B); no sheet blur on mouse screens (4C); Build copy/save messages; Day/Night redraws once. Speed: scripts 19% smaller (gzip 820 -> 641 KB), My Team background work -90% on a mid-range phone (numbers from the daily job when stamps match; daily job step waits for Sim before main), Test Run opens in 8 ms on Battle pages, sprites decode off the main thread. Tests: new checks in CI (folds, partial, caches, redraws, minors, sixof, shown score, ckwin, public build, tokens doc, perf data, names), the new site's behaviour suites now run in CI (one job per group) with a list of expected failures and reasons; on this build My Team 138/0, Battle 83/0, Meta 107/0, Build 58/0 (known lists); live ALL PASSED. Protect-family test: no difference (model unchanged). Purple (unsure/waiting): static first screen (first paint 2.0 -> 0.6 s, picture sent), Protect family A/B, sprite size plan (file cap), main's names fix needs NP_PID_KEY. Tue Nov 17, 2:24 AM, Preview v192 (397 files, 346 v2art; overnight, under Sim's authority, decisions.md): suggestion fixes (Quick add scores a swap the same as Apply; Why? no longer lists type changes a two-Mega swap didn't make; 'just swapped out' clears after any set edit); Team Card / Poster long names spaced by the size they're drawn at. Tests: the four groups on this site code My Team 138/0, Build 58/0, Battle 83/0, Meta 112/0 (known lists); all GitHub checks pass; new in CI: My Team in Safari's engine (138/0, reporting only: SUG-05 slipped 1 of 8 runs) and the full quality check on every page (86 known findings; new ones fail); tests wait for the page to be ready. Measured and left as is: contain: paint cut into the glow (19,884-75,330 pixels changed per page, no scroll gain), memory after My Team +23 MB and flat (not the duel cache). Daily numbers step stays off main until the switch (main's page doesn't read it). Purple: Edit Set dropdowns draw a grey native box in Linux WebKit (pictures docs/rebuild/pics/nov17/; unsure about iPhone: Sim to glance); 86 quality-check findings recorded, 1 looked at (Calc number line box), the rest not yet one by one. 6:17 AM, Preview v193: Edit Set dropdowns draw our own arrow, the same on iPhone and desktop (Sim Q1). 6:36 AM, Preview v194 (397 files, 346 v2art; Sim's iPhone pictures): Matchups Top 10 verdicts back on the right (a Nov 15 rule had put them in the number column, so only 'E'/'U' showed, phones and desktop); Build Me a Team cards without Core badges or role headings (Priority, Sun, Tailwind, Fake Out). Main: player names fix live (key read; 222,584 names to IDs; guard clean). Tests: Edit Set 9/9 both engines, Matchups 8/8, Build 58/0, quality check clean on My Team and Build; new checks fail on the old builds. Purple: quality check only looks at each page's default view (missed Top 10): widening it next; 'Best core' line on Build waits on Sim (rename to 'Best pair or trio' recommended); the switch to live waits for Sim's explicit yes. 9:59 AM Tue, Preview v195 (397 files; two outside reviews, each tracked: docs/rebuild/audits/player-review-nov17.md and prelaunch-checks-nov17.md; Sim: 'recommended for all'): numbers say where they come from (Ratings/Sets/Box 'of tournament teams', Home 'of ladder teams', This Week 'this week's tournament teams'); Pokémon page Moves list holds every 'Usually' move (28 of 345 were missing), Speed says when it's with Choice Scarf; Home lists all 18 tools; Your Games says what logging unlocks; search finds moves, items, Abilities and team styles; Winning Teams search on the first phone screen; Home 'Most used last month.' with 'November's numbers arrive Dec 1'; tied ratings share a rank (97/97 both #1); 'Mirror match' label; Things to Know '7 weak spots, type chart, legal'; pairs '53% brought together'; first-visit box '(sample)'; Stand-Outs rows even (2+2+2+2 on phones); NO OLD NUMBERS BEFORE TODAY'S: the page waits for today's data and shows the logo + 'Getting today's numbers…' (before: 10,209 -> 13,826, Game Plan flipped, 92 -> 93); forms label contrast 5.5:1; text links 44px tap areas (pages pixel-identical); Import says 'did you mean Garchomp?', 'doesn't look like a team', Item Clause; team names show 36/40; unreadable saved data kept aside and the player told. Every change has a test that fails before; new checks in GitHub: data-swap, forms-contrast, tap-size. GitHub run 1295 all green (Safari-engine SUG-05 1 fail, reporting only; passes 3/3 here). Waiting on Sim (purple): 3h Track Record groups on the tier lines (her yes; data job on main, next); the next regulation plan; player review section 4 (new bits inside tools, vs the Nov 9 no-new-features rule); the switch to live. 10:08 AM, Preview v196 (397 files): loading screen animation (Sim's idea: the logo floats gently, a thin blue bar glides; still with reduced motion); Track Record groups on the tier lines (90+, 80-89, 70-79, under 70) built on this branch, live with the switch (main's live page labels its own groups, so main's data job was left alone). 11:01 AM, Preview v197 (397 files, checked): Speed Tiers 'You +1' switch; Megas' Ability reads 'Always X (a Mega's Ability is fixed)' on Sets and Usage; the loading panel is in the page from the first paint (slow 4G no longer shows an empty main; static screen 72 -> 99 KB). Tests: My Team 138/0, Meta 112/0, quality check 0 new. Helpers running (look-only/research): phone speed, Reg M-D readiness, data inventory + stat-point spreads, known-bug sorter, Nov 12 re-check. Purple: not yet measured on a throttled slow-4G phone profile. 12:23 PM, Preview v198 (397 files, checked): all five helpers reported (reports in docs/rebuild/research/). Popular Sets shows stat-point spreads (Showdown ladder 1630+; under Moves on wide screens); suggestion cards say 'In your box' / 'To catch'; after Remove the Add spot comes into view (Sim: too much scrolling; options A/B/C with pictures sent, waiting on Sim); Your Games note on its own row; Adjust Suggestions Yes/No no longer cut at 700-760; Search lists Pokémon before items; Home's empty Add tiles open the Add box; Mega note names 'Swap my Mega?'; each daily document arrives once (speed); M-D date guard on the branch (events after Dec 1 never count as M-C; main waits on Sim). Tests: My Team 138/0, Meta 112/0 (GitHub's build), v2-minors all passed (each fix fails before), qcheck Popular Sets and My Team 0 new. Purple: remove options A/B/C (Sim); M-C view after M-D (Sim; default no view); date guard to main (Sim); speed fixes 2-3 next. 1:45 PM, Preview v199 (397 files, checked): no 1-second freeze when today's numbers arrive (longest task on a slowed phone: My Team 818 -> 506 ms, Home 808 -> 451 ms); My Team scrolling smoother (planner pauses while you scroll and by time; worst stall 333 -> 83-167 ms); Add Protect can be undone; no jump after Apply; Compare's 3 notes read 'Has it' / 'No' with a note tag; the new-regulation note says how many events so far. Same suggestions (identical in 4 cases); suggestion audit, golden 10/10, same-grade pass. Tests on the newest build: My Team 139/0, Build 60/0 (31 known, was 33). Purple: sprite sizes A/B/C (Sim; default C); My Team phone length options (with the Remove choice). 3:50 PM, Preview v200 (397 files, checked): My Team Remove/Replace B (Sim: recommended): tapping a Pokémon puts Replace, Edit Set and Remove right under it; Replace swaps in one step with Undo; My Team buttons keep their words clear of the slanted edges at 700-820 (audit v199 #1). Sprites A (Sim: recommended) CANNOT go on Claude-hosted pages: an artifact holds at most 511 files per version and both sizes need 743 (the host refused). Decided (log): Preview and live keep one size (build flag); the public January site keeps both. Tests: v2-minors all passed on both builds (the new check fails before: 54 small files asked for; 0 after); My Team 139/0, Build 60/0, Meta 112/0, Battle 83/0 (with B in). Next: audit v199 findings one at a time; My Team phone length, desktop columns, All Suggestions layout (pictures for Sim). Since 3:50 PM (branch, not yet in a Preview; each with a check that fails before): #2 Track Record cards keep words left of the tear line at 320-1920 (was -46px at 1180); #3 Meta Tournaments tab bar the same on all four pages; #6 Home 'Lead' on its own line, clear of the slant; #7 Speed Tiers one line saying the shares count the top 30, the track shows 20; #11 real tap areas (measured where taps land: 4 audit items were already 44px; Type Chart buttons and Events 'All' chip fixed). Polish check old vs new: 0 new findings on Track, Tournament pages, Speed, Home. Behaviour groups running. Purple: Track card dots (which ones, Sim), Meta tab placement (mock, Sim), phone header logo overlaps the back/forward arrows (tap areas 18-28px; needs a layout change, pictures to come), #8 rated counts (Meta already explains; low priority). 6:45 PM, Preview v201 (397 files, checked): Sim's picks: Track cards without dots, Meta tabs right under the headline on every Meta page (phones; desktop pixel-identical), no 'likely 81-92' and no range band on the Pokémon page (B); audit fixes #2 #3 #6 #7 #9 #11 #12 #16. Tests: every change has a v2-minors check that fails before; v2-minors all passed on today's and frozen data; CI quality check 105 findings, 0 new; behaviour Battle 83/0, Meta 112/0, My Team and Build pass except SUG-05/SUGG-09 under heavy load (pass alone 2/2). GitHub runs 1303-1304 had 2 v2-minors failures (Sprites A check counted after a fallback; Track 320 at 3px in GitHub's fonts): both fixed. Data helpers (Step 3, look-only): 4 reports in docs/rebuild/research/; top finding: 88% of the games the score learns from are best-of-3, format unknown since Nov 9 (questions to Sim). Purple: phone header arrows (Sim's yes/no), GitHub run on the fixes still to confirm.",
+   "order": 57,
+   "s": "part",
+   "t": "1794812883983",
+   "title": "Design round: bold character on every page (Sim, Nov 14)"
+  }
+ }
+}
