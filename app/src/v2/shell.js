@@ -207,11 +207,14 @@ V2.findPlaces = [...V2.places, ['box', 'My Box'], ['compare', 'Compare Teams'], 
   /* Nov 15 (parity with today's search): every page can be found, by its name or a word of its line */
   ['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['tournaments', 'Winning Teams'], ['events', 'Events'], ['archetypes', 'Archetypes'], ['weekly', 'This Week'],
   ['speed', 'Speed Tiers'], ['calc', 'Damage Calc'], ['types', 'Type Chart'], ['practice', 'Team Preview Practice'], ['gauntlet', 'Test Run'],
-  ['track', 'Track Record'], ['method', 'How We Calculate'], ['about', 'About & Legal'], ['feedback', 'Send Feedback'],
+  ['track', 'Track Record'], ['method', 'How We Calculate'],
+  /* Sim, Nov 18 (morning questions 1f): the Post Room and the Dispatch are found by Search; the top bar keeps its five places and Home's post band stays the main way in */
+  ['gifts', 'Mystery Gifts'], ['news', 'Champions News'], ['about', 'About & Legal'], ['feedback', 'Send Feedback'],
   /* known-bug BROKEN-10 (Nov 17): Build's two tools by name, the core section reached straight from search */
   ['build', 'Build Me a Team'], ['build', 'Build Around a Core', () => { V2.bdUi.jtab = 'cores'; V2.bdUi.toCores = true; V2.redraw(); }]]; /* the same way Home's core cards open Build at the cores (CORES-13) */
 // today's site's menu names and plurals still find the new page (returning players), shown under the new name
-V2.placeAlias = {'Build Me a Team': ['build for me'], 'Build Around a Core': ['cores', 'winning cores'], Battle: ['battle a team'], Ratings: ['pokémon ratings', 'pokemon ratings', 'meta rankings']};
+V2.placeAlias = {'Build Me a Team': ['build for me'], 'Build Around a Core': ['cores', 'winning cores'], Battle: ['battle a team'], Ratings: ['pokémon ratings', 'pokemon ratings', 'meta rankings'],
+  'Mystery Gifts': ['gifts', 'codes', 'gift codes', 'serial codes', 'post room'], 'Champions News': ['news', 'dispatch', 'champions dispatch']};
 V2.findOk = () => V2.findPlaces.filter(([k]) => k !== 'feedback' || (V2.FB && V2.FB.ok)); /* Send Feedback only where it can send (function sweep, Nov 15: listed in the Preview) */
 // one line per page, shown when the search box is empty (today's search lists its tools) and searched too ("speed", "damage")
 V2.TOOLS = ['home', 'build', 'team', 'battle', 'meta', 'tournaments', 'sets', 'speed', 'calc', 'types', 'practice', 'gauntlet', 'compare', 'box']; // the empty search's list (14, Home first)
@@ -219,7 +222,7 @@ V2.placeLines = {home: 'Start here', build: 'Build a team around a Pokémon, or 
   meta: 'Every Pokémon rated, by tier', box: 'The Pokémon you have', compare: 'Two teams side by side', usage: 'The most used Pokémon', sets: 'What players run on each Pokémon',
   tournaments: 'Top teams from recent events', events: 'Recent and upcoming events', archetypes: 'The team styles winning right now', weekly: 'What changed this week',
   speed: 'Your six against the 20 most-used Pokémon', calc: 'Any attacker into any defender', types: '18 types, or look up a Pokémon', practice: 'Pick four and two leads against real ladder teams',
-  gauntlet: 'Your team into the latest top teams', track: 'How our ratings did at real events', method: 'How every number is worked out', about: 'Sources, privacy and the rules', feedback: 'Tell us what to fix or add'};
+  gauntlet: 'Your team into the latest top teams', track: 'How our ratings did at real events', gifts: 'Live Mystery Gift codes and every gift so far', news: 'Official Pokémon Champions news, in one paper', method: 'How every number is worked out', about: 'Sources, privacy and the rules', feedback: 'Tell us what to fix or add'};
 V2.goPlace = i => { const pl = V2.findPlaces[i]; if (!pl) return; const [k, , act] = pl;
   if (!act) { location.hash = '#' + k; return; } V2.closeSheet(true); if (location.hash !== '#' + k) location.hash = '#' + k; setTimeout(act, 60); };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2place]'); if (b) V2.goPlace(+b.dataset.v2place); });

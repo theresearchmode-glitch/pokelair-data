@@ -95,6 +95,18 @@ const MQ = async () => {
     const r = await q.evaluate(sel => [...document.querySelectorAll(sel)].map(m => { const d = m.children[1]; return d ? [...d.children].map(c => c.tagName + ':' + c.textContent.trim()).join(' / ') : 'none'; }), sel);
     ok(r.length > 0 && r.every(x => /^DT:Sent \/ DD:([A-Z][a-z]{2} \d{1,2}(, \d{4})?|Date not confirmed) \/ DD:(Serial code|Event gift)$/.test(x)), `MQ-1b ${hash}: the label's middle column reads "Sent", the date, then how it is given (${r.join(' | ')})`);
     await q.close(); }
+  // MQ-1f (answer 1f): Search finds both pages by name and by the words players type; the top bar keeps its five places
+  for (const W of [390, 1440]) { const q = await open('#home', W); const hits = {};
+    for (const w of ['gifts', 'mystery', 'codes', 'news', 'dispatch']) { await q.evaluate(() => V2.openSearch()); await q.waitForTimeout(300); await q.fill('[data-v2q]', w); await q.waitForTimeout(250);
+      hits[w] = await q.evaluate(() => [...document.querySelectorAll('.np-sheet .np-hit')].map(h => (h.getAttribute('href') || '') + ' ' + ((h.querySelector('b') || {}).textContent || '')).join(' | '));
+      await q.keyboard.press('Escape'); await q.waitForTimeout(250); }
+    await q.evaluate(() => V2.openSearch()); await q.waitForTimeout(300); await q.fill('[data-v2q]', 'mystery'); await q.waitForTimeout(250); await q.locator('.np-sheet a.np-hit[href="#gifts"]').first().click().catch(() => {}); await q.waitForTimeout(1200);
+    const went = await q.evaluate(() => [location.hash, document.title, !!document.querySelector('#main .pr-counter')]);
+    const bar = await q.evaluate(() => [V2.places.length, [...document.querySelectorAll('.np-head .np-nav a, .np-bar a')].filter(a => a.getClientRects().length).map(a => a.getAttribute('href')).join(',')]);
+    const g = /#gifts Mystery Gifts/, n = /#news Champions News/;
+    ok(g.test(hits.gifts) && g.test(hits.mystery) && g.test(hits.codes) && n.test(hits.news) && n.test(hits.dispatch) && went.join() === '#gifts,Mystery Gifts · NastyPlot,true'
+      && bar[0] === 5 && !/#gifts|#news/.test(bar[1]), `MQ-1f at ${W}: Search finds Mystery Gifts and Champions News (by name and by "codes", "dispatch") and opens them; the top bar keeps five places, neither page in it (${JSON.stringify({hits, went, bar})})`);
+    await q.close(); }
 };
 if (process.env.ONLY === 'MQ') { await MQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- MQ end ----
