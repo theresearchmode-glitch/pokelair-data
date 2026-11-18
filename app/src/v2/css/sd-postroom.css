@@ -1,1 +1,100 @@
-/* Mystery Gifts, The Post Room (classes pr-*) */
+/* Mystery Gifts, The Post Room (classes pr-*; Nov 18). Brief: docs/rebuild/postroom/BRIEF.md. Colours: --pr-* in tokens.css.
+   Paper stays paper in night ("Dim Paper"): labels and stamps are dimmed cream with dark ink in both themes. */
+.pr{gap:var(--s12);overflow-x:clip}
+/* top: headline left, the live plate and three numbers right (under it below 1100) */
+.pr-top{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--s6) var(--s8);align-items:center;padding-top:var(--s4)}
+.pr-stats{display:grid;gap:var(--s4);justify-items:start}
+.pr-stats .ev-pk{margin:0}.pr-pk-off{background:var(--plate);color:var(--on-plate)}
+.pr-nums{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:var(--s4) var(--s10)}
+.pr-nums p{display:grid;align-content:start;gap:var(--s1);margin:0;max-width:16ch}.pr-nums b{font-size:var(--t34);line-height:1}.pr-nums span{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+@media (max-width:1099.98px){.pr-top{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:479.98px){.pr-nums{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s4)}}
+/* section heads */
+.pr-sh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s3) var(--s6);margin:0 0 var(--s6)}
+.pr-sh h2{margin:0;font-size:var(--t34);line-height:1.2}
+.pr-sh>p{margin:0;max-width:60ch;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pr-stamps .pr-sh{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end}
+@media (max-width:1099.98px){.pr-stamps .pr-sh{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:479.98px){.pr-sh h2{font-size:var(--t28)}}
+.pr-key{display:flex;align-items:baseline;gap:var(--s3);margin:0;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.pr-key .pr-cv{font:800 var(--t15)/1 var(--u);font-style:normal;white-space:nowrap}.pr-key .pr-d{color:var(--plot-text)}
+/* the counter: parcels two across from 1100, one below; How to collect fills the odd cell, or runs under an even row */
+.pr-parcels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s10) var(--s8);align-items:stretch}
+.pr-parcels:not(.odd) .pr-howto{grid-column:1/-1;grid-template-columns:auto minmax(0,1.4fr) minmax(0,1fr);align-items:start;column-gap:var(--s8)}
+@media (max-width:1099.98px){.pr-parcels{grid-template-columns:minmax(0,1fr)}.pr-parcels .pr-howto,.pr-parcels:not(.odd) .pr-howto{grid-template-columns:minmax(0,1fr)}}
+.pr-parcel{position:relative;container-type:inline-size;display:grid;align-content:center;padding:var(--s12) var(--s8) var(--s10);border-radius:var(--r-s);
+  background:repeating-linear-gradient(90deg,var(--pr-kraft-line) 0 2px,transparent 2px 8px),linear-gradient(180deg,var(--pr-kraft-hi),var(--pr-kraft));box-shadow:var(--shadow-lift)}
+@media (max-width:479.98px){.pr-parcel{padding:var(--s10) var(--s3) var(--s8)}.pr-parcel .pr-label{padding:var(--s4) var(--s4) var(--s3)}}
+.pr-tape{position:absolute;left:0;right:0;top:var(--s4);height:28px;background:var(--pr-tape)}
+.pr-label{position:relative;padding:var(--s5) var(--s6) var(--s4);background:var(--pr-paper);color:var(--pr-ink);transform:rotate(-1deg);box-shadow:0 1px 2px var(--pr-shadow),0 8px 16px -8px var(--pr-shadow)}
+.pr-label :focus-visible{outline-color:var(--pr-num)}
+.pr-lt{margin:0;padding-bottom:var(--s2);border-bottom:4px solid var(--pr-ink);font-size:var(--t20)}
+.pr-meta{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);gap:var(--s3) var(--s4);margin:var(--s3) 0 0;padding-bottom:var(--s3);border-bottom:1px solid var(--pr-rule)}
+.pr-meta>div{min-width:0}.pr-meta dd{margin:0;font:500 var(--t15)/1.5 var(--b)}.pr-meta dd small{display:block;font-size:var(--t13);color:var(--pr-ink2)}
+.pr-meta dt,.pr-k{margin:0;font:600 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--pr-ink2)}
+.pr-what dd{font:900 var(--t22)/1.2 var(--u);font-style:italic;overflow-wrap:anywhere}
+.pr-crow{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s3) var(--s4);margin-top:var(--s3)}
+.pr-cbox{min-width:0}
+.pr-code{display:block}.pr-cv{display:block;font:800 var(--t26)/1.2 var(--u);letter-spacing:.04em;overflow-wrap:anywhere}
+.pr-d{font-weight:inherit;color:var(--pr-num)}
+.pr-spell{user-select:none}
+.pr-label .np-btn.pr-copy{flex:none;background:var(--pr-ink);color:var(--pr-paper);box-shadow:none}
+.pr-none{margin:var(--s3) 0 0;font:500 var(--t15)/1.5 var(--b)}
+.pr-meta dd.pr-also{margin-top:var(--s1);font:400 var(--t13)/1.5 var(--b);color:var(--pr-ink2)}
+.pr-bars{display:block;width:100%;height:32px;margin-top:var(--s3);fill:var(--pr-ink)}
+.pr-src{margin:var(--s2) 0 0;font:400 var(--t13)/1.5 var(--b);color:var(--pr-ink2)}.pr-src a{color:var(--pr-num);text-decoration:underline}
+@container (max-width:519.98px){.pr-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.pr-what{grid-column:1/-1}.pr-crow>*{flex:1 1 100%}.pr-label .np-btn.pr-copy{width:100%}.pr-cv{font-size:var(--t22)}}
+@container (max-width:399.98px){.pr-cv{font-size:var(--t20);letter-spacing:0}}@container (max-width:299.98px){.pr-cv{font-size:var(--t17)}}
+/* the rubber stamp across the parcel's top right corner */
+.pr-rub{position:absolute;z-index:1;top:var(--s1);right:var(--s4);display:flex;align-items:baseline;gap:var(--s2);margin:0;padding:var(--s1) var(--s3);border:3px solid currentColor;border-radius:var(--r-m);
+  background:var(--pr-rub-bg);font-size:var(--t17);line-height:1.2;text-transform:uppercase;transform:rotate(6deg)}
+.pr-rub b{font-size:var(--t28);line-height:1}.pr-soon{color:var(--pr-soon)}.pr-plenty{color:var(--pr-plenty)}
+@container (max-width:519.98px){.pr-rub{right:var(--s2);font-size:var(--t15)}.pr-rub b{font-size:var(--t24)}}
+/* compact parcel (Home's post band, the Dispatch coupon) */
+.pr-parcel.pr-cpt{padding:var(--s10) var(--s5) var(--s6)}.pr-cpt .pr-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.pr-cpt .pr-what{grid-column:1/-1}.pr-cpt .pr-cv{font-size:var(--t22)}
+/* How to collect: the one card colour on the page */
+.pr-howto{display:grid;gap:var(--s3);align-content:center;padding:var(--s6) var(--s8);background:var(--wash);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,0 100%)}
+.pr-howto h3{margin:0;font-size:var(--t22)}
+.pr-howto ol{display:grid;gap:var(--s2);margin:0;padding:0 0 0 var(--s6);list-style:decimal;font:400 var(--t15)/1.5 var(--b)}
+.pr-howto p{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+/* the empty counter: an empty shelf, one line */
+.pr-shelf{display:grid;justify-items:center;gap:var(--s2);padding:var(--s10) var(--s6) var(--s8);border-bottom:8px solid var(--pr-kraft);text-align:center;color:var(--ink-2)}
+.pr-shelf p{margin:0;font:400 var(--t15)/1.5 var(--b)}.pr-shelf p.u{font:900 var(--t22)/1.3 var(--u);font-style:italic;color:var(--ink)}
+.pr-box0{width:120px;height:72px;margin-bottom:var(--s2);color:var(--pr-kraft)}
+/* the stamp sheet: six across from 1100, four from 700, three on phones (two under 380); blank spaces finish the last row */
+.pr-f{margin:0 0 var(--s6)}
+.pr-sheet{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s6) var(--s5);margin:0;padding:0}
+.pr-blank{display:none;border:2px dashed var(--pr-blank);border-radius:var(--r-s);min-height:120px}
+@media (min-width:1100px){.pr-blank.b6{display:block}}
+@media (min-width:700px) and (max-width:1099.98px){.pr-sheet{grid-template-columns:repeat(4,minmax(0,1fr))}.pr-blank.b4{display:block}}
+@media (min-width:380px) and (max-width:699.98px){.pr-sheet{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4) var(--s3)}.pr-blank.b3{display:block}}
+@media (max-width:379.98px){.pr-sheet{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.pr-blank.b2{display:block}} /* the smallest phones: two across, so names keep whole words */
+.pr-sw{position:relative;display:grid;filter:drop-shadow(0 1px 1px var(--pr-shadow)) drop-shadow(0 4px 6px var(--pr-shadow-2))}
+.pr-sw:has(.pr-st:focus-visible){outline:3px solid var(--plot);outline-offset:2px}
+.pr-event,.pr-early{--pc:var(--pr-ev);--pc2:var(--pr-ev-2);--pci:var(--pr-ev-ink)}.pr-prize{--pc:var(--pr-pz);--pc2:var(--pr-pz-2);--pci:var(--pr-pz-ink)}.pr-stream{--pc:var(--pr-ls);--pc2:var(--pr-ls-2);--pci:var(--pr-ls-ink)}.pr-serial{--pc:var(--pr-se);--pc2:var(--pr-se-2);--pci:var(--pr-se-ink)}.pr-pass{--pc:var(--pr-pa);--pc2:var(--pr-pa-2);--pci:var(--pr-pa-ink)}
+/* perforated edge: a paper rectangle inset to the holes' centre line, minus a row of 8px holes on each side ('space' spreads them evenly) */
+.pr-st{--hole:radial-gradient(circle 4px,var(--ink) 3.5px,transparent 4px);display:flex;flex-direction:column;align-items:center;width:100%;height:100%;padding:var(--s4) var(--s4) var(--s5);
+  background:var(--pr-paper);color:var(--pr-ink);text-align:center;
+  mask:linear-gradient(var(--ink) 0 0) center/calc(100% - 12px) calc(100% - 12px) no-repeat,var(--hole) 0 0/12px 12px space no-repeat,var(--hole) 0 100%/12px 12px space no-repeat,var(--hole) 0 0/12px 12px no-repeat space,var(--hole) 100% 0/12px 12px no-repeat space;
+  mask-composite:subtract,add,add,add}
+.pr-st:focus-visible{outline:none}
+.pr-pic{position:relative;display:grid;grid-template-columns:minmax(0,1fr);place-items:center;width:100%;min-width:0;min-height:0;aspect-ratio:1;overflow:hidden;padding:var(--s6) var(--s2) var(--s2);border:2px solid var(--pci);background:repeating-linear-gradient(135deg,var(--pc) 0 6px,var(--pc2) 6px 12px);color:var(--pci)}
+.pr-my{position:absolute;top:var(--s1);left:var(--s2);font-size:var(--t15);line-height:1.5;white-space:nowrap}
+.pr-mon{display:block;width:78%;min-width:0}.pr-mon .np-mon .st{width:100%}.pr-mon img,.pr-item svg{filter:var(--pr-art)}
+.pr-mon .np-mon .pool{display:none}
+.pr-item{display:grid;justify-items:center;gap:var(--s1);width:100%}.pr-item svg{width:62%;height:auto}.pr-amt{font-size:var(--t24);line-height:1}
+.pr-nm{margin-top:var(--s3);font:900 var(--t15)/1.3 var(--u);font-style:italic;overflow-wrap:break-word;hyphens:auto}
+.pr-how{margin-top:var(--s1);font:700 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--pci)}
+.pr-pm{position:absolute;z-index:1;top:calc(var(--s3) * -1);right:calc(var(--s3) * -1);display:grid;place-items:center;width:72px;height:72px;border:2px solid var(--pr-post);border-radius:50%;
+  background:var(--pr-post-bg);color:var(--pr-post);transform:rotate(-12deg);pointer-events:none}
+.pr-pm>span{position:relative;font:700 var(--t13)/1.1 var(--b);text-transform:uppercase;text-align:center}
+.pr-pm svg{position:absolute;left:80%;top:16px;width:40px;height:16px}
+@media (max-width:699.98px){.pr-st{padding:var(--s3) var(--s3) var(--s4)}.pr-pic{padding-top:var(--s6)}.pr-my{font:700 var(--t13)/1.5 var(--b);font-style:normal}.pr-nm{margin-top:var(--s2);font:700 var(--t13)/1.5 var(--b)}
+  .pr-how{letter-spacing:0;text-transform:none}.pr-amt{font-size:var(--t17)}.pr-pm{width:52px;height:52px;top:calc(var(--s2) * -1);right:calc(var(--s2) * -1)}.pr-pm>span{width:min-content;line-height:1.05}.pr-pm .pr-pmw{display:none}.pr-pm svg{display:none}}
+.pr-nost{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pr-stamps{display:grid;grid-template-columns:minmax(0,1fr)}.pr-more{justify-self:center;display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s5)}
+.pr-note{margin:var(--s5) 0 0}
+/* a Pokémon gift's set (sheet) */
+.pr-setsh{display:grid;gap:var(--s3);justify-items:start}.pr-setsh h2{font-size:var(--t28)}.pr-setsh .np-mon{--iw:160px;margin:0}
+.pr-setdl{display:grid;gap:var(--s2);margin:0}.pr-setdl>div{display:grid;grid-template-columns:7em minmax(0,1fr);gap:var(--s3)}.pr-setdl dt{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}.pr-setdl dd{margin:0;font:500 var(--t15)/1.5 var(--b)}
+.pr-setsh .pr-src{color:var(--ink-2)}.pr-setsh .pr-src a{color:var(--plot-text)}

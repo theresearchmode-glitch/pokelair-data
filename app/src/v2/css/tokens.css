@@ -9,6 +9,13 @@
   --plate:#17161A;--on-plate:#FBFAF7;--plate-link:#62BEF7; /* a link on the dark plate (toast Undo): 8.77:1; --plot was 3.81:1 (Nov 16 audit) */
  --main:#17161A;--on-main:#FBFAF7;
  --sd-on-band:#FFFFFF; /* Home, The Stampede (Nov 18): text on the blue hero and red post bands, white in both modes */
+  /* Mystery Gifts, The Post Room (Nov 18): kraft parcels, tape, the paper of labels and stamps and its ink; code digits blue; the rubber
+     stamp red when a gift ends within 7 days, blue otherwise; stamp fills by how a gift is given (pink event and early download, blue serial code, gold Battle
+     Pass, green competition prize, violet livestream reward) with their ink; the grey postmark. Night is "Dim Paper": the page goes dark, paper stays paper (dimmed cream, deeper kraft) */
+  --pr-kraft:#C99C60;--pr-kraft-hi:#D4AA70;--pr-kraft-line:rgba(110,70,20,.07);--pr-tape:rgba(242,229,200,.78);--pr-paper:#FFFFFF;--pr-ink:#17161A;--pr-ink2:#55515C;--pr-rule:rgba(23,22,26,.16);
+  --pr-num:#0068AD;--pr-soon:#C41E2B;--pr-plenty:#0068AD;--pr-rub-bg:rgba(255,255,255,.9);--pr-shadow:rgba(30,20,50,.18);--pr-shadow-2:rgba(30,20,50,.10);
+  --pr-ev:#F4CDEB;--pr-ev-2:#EDB9E1;--pr-ev-ink:#8E1A74;--pr-se:#C9E4F6;--pr-se-2:#B2D7F1;--pr-se-ink:#035C97;--pr-pa:#F7E3A4;--pr-pa-2:#F0D589;--pr-pa-ink:#744A00;--pr-pz:#C7EBD3;--pr-pz-2:#AEE0BF;--pr-pz-ink:#155C30;--pr-ls:#DDD3F7;--pr-ls-2:#CDBFF2;--pr-ls-ink:#5A3AA8; /* competition prize green, livestream reward violet (new for the real data; Sim to confirm) */
+  --pr-post:rgba(60,57,66,.92);--pr-post-bg:rgba(255,255,255,.62);--pr-blank:rgba(23,22,26,.2);--pr-art:none;
   --good:var(--plot);--good-text:var(--plot-text);--on-mark:#FFFFFF;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;--bad:#D93A3A;--bad-text:#B3261E;
   /* the six rating tiers (LTIERS colours; Grandstand, Nov 14): dark text on every tier colour passes 4.5:1; lit and shade faces of the 3D blocks */
   --tier-s:#ffb400;--tier-a:#ff6a3d;--tier-b:#b45cff;--tier-c:#2f9bff;--tier-d:#22b58a;--tier-f:#8a90a6;--tier-ink:#14110f;--tier-lit:#ffffff;--tier-shade:#14110f;
@@ -65,6 +72,10 @@
   --plate:#343348;--on-plate:#F1EDE7;--plate-link:#62BEF7; /* 5.97:1 on the night plate */
  --main:#3FA2E2;--on-main:#08131E;
  --sd-on-band:#FFFFFF;
+  --pr-kraft:#6B4E2E;--pr-kraft-hi:#76583A;--pr-kraft-line:rgba(0,0,0,.12);--pr-tape:rgba(160,134,94,.7);--pr-paper:#E6DFCF;--pr-ink:#1E1B18;--pr-ink2:#4E4942;--pr-rule:rgba(30,27,24,.2);
+  --pr-num:#0A5A92;--pr-soon:#A61F28;--pr-plenty:#0A5A92;--pr-rub-bg:rgba(230,223,207,.94);--pr-shadow:rgba(0,0,0,.45);--pr-shadow-2:rgba(0,0,0,.3);
+  --pr-ev:#DDBAD3;--pr-ev-2:#D3A8C9;--pr-ev-ink:#74155E;--pr-se:#B7CEDF;--pr-se-2:#A5C1D6;--pr-se-ink:#0A4A78;--pr-pa:#DECB93;--pr-pa-2:#D3BD7B;--pr-pa-ink:#5C3C00;--pr-pz:#B3D1BD;--pr-pz-2:#A1C4AD;--pr-pz-ink:#15532C;--pr-ls:#C9C1DE;--pr-ls-2:#B9AFD3;--pr-ls-ink:#47298A;
+  --pr-post:rgba(46,43,50,.92);--pr-post-bg:rgba(230,223,207,.62);--pr-blank:rgba(228,224,236,.24);--pr-art:saturate(.82) brightness(.94);
   --good:var(--plot);--good-text:var(--plot-text);--on-mark:#12121B;--mid:#F0C768;--mid-text:#F0C768;--low:#B8AA9C;--low-text:#B8AA9C;--bad:#FF7A70;--bad-text:#FF8A80;
   /* night: brighter stat colours with dark text (5.20:1+ on the plates, 4.75:1+ on the night panel) */
   --x4:#B71C1C;--pk-main:var(--plot);--on-pk-main:var(--on-mark);--on-x4:#FFFFFF;--st-hp:#2E9E5B;--st-atk:#E0601F;--st-def:#D9A21A;--st-spa:#5B8DF0;--st-spd:#A27BEA;--st-spe:#E5578A;--on-st:#12121B;--on-st-def:#12121B;

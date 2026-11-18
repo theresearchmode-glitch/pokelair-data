@@ -498,5 +498,39 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   ok(w390.n === 5 && w390.rows === 5 && w390.cols === 1 && w390.ranks === '12345' && w390.ofTeams === 5 && w390.shareRight <= 4, `audit #19 (Nov 17): at 390 Most Used is a ranked list of 5 rows, 'of teams' under each name, the share on the right (${JSON.stringify(w390)})`);
   ok(w320.rows === 5 && w320.cols === 1 && !w320.broken.length && w320.hs <= 0 && w429.rows === 5 && !w429.broken.length, `audit #19: at 320 and 429 the list holds: 5 rows, no name broken mid-word, no sideways scroll (320 ${JSON.stringify(w320)})`);
   ok(w430.rows === 1 && w430.cols === 5 && !w430.ranks && !w430.ofTeams && w1280.rows === 1 && w1280.cols === 5 && !w1280.ranks, `audit #19: from 430 the five stay one strip of tiles, no ranks or 'of teams' (430 ${JSON.stringify(w430)}, 1280 rows ${w1280.rows})`); }
+// The Post Room (#gifts, Nov 18): a test fixture (made-up gifts, set inside the page; post.js is never touched); each check fails on the skeleton page
+{ const FX = `{checked: '2026-11-17', news: [], gifts: [{id: 'a', name: 'Training Ticket', amount: 2, how: 'Serial Code', code: 'AB1CD0E', start: '2026-11-01T00:00:00Z', end: '2026-11-22T23:59:00Z'},
+    {id: 'b', name: 'Quick Coupons', amount: 100, how: 'Event Gift', start: '2026-11-01T00:00:00Z', end: '2026-12-31T23:59:00Z'}].concat(Array.from({length: 14}, (_, i) => i % 2
+    ? {id: 'p' + i, kind: 'pokemon', mon: 'Incineroar', name: 'Incineroar', how: 'Battle Pass', start: '2026-08-01T00:00:00Z', end: '2026-09-0' + (i % 9 + 1) + 'T23:59:00Z'}
+    : {id: 'p' + i, kind: 'item', item: 'VP', name: 'VP', amount: 5000, how: 'Serial Code', start: '2026-08-01T00:00:00Z', end: '2026-09-0' + (i % 9 + 1) + 'T23:59:00Z'}))}`;
+  const NOW = Date.parse('2026-11-17T17:00:00Z'), redraw = `const n = Date.now; Date.now = () => ${NOW}; try { V2.redraw(); } finally { Date.now = n; }`;
+  const q = await b.newPage({viewport: {width: 1280, height: 900}, timezoneId: 'America/New_York'}); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  await q.goto('file://' + PAGE + '#gifts'); await q.waitForTimeout(2500); await q.evaluate(() => { navigator.clipboard.writeText = () => Promise.reject(new Error('blocked')); document.execCommand = () => true; });
+  const draw = () => q.evaluate(([fx, r]) => window.__ev(`(() => { POST = ${fx}; V2.prUi = {f: 'all', all: false}; ${r} })()`), [FX, redraw]);
+  await draw(); await q.waitForTimeout(500);
+  const pr = await q.evaluate(() => { const m = document.querySelector('#main'), st = [...m.querySelectorAll('.pr-sw')];
+    return {parcels: m.querySelectorAll('.pr-parcel').length, stamps: st.length, more: ((m.querySelector('[data-prmore]') || {}).textContent || '').trim(), rub: [...m.querySelectorAll('.pr-rub')].map(r => (r.className.match(/pr-(soon|plenty)/) || ['', '?'])[1] + ':' + r.textContent.trim()).join(' | '),
+      code: (m.querySelector('.pr-parcel .pr-cv') || {}).innerHTML || '', spell: ((m.querySelector('.pr-spell') || {}).textContent || ''), nocode: ((m.querySelector('.pr-none') || {}).textContent || ''), codes: m.querySelectorAll('.pr-parcel .pr-cv').length,
+      monBtn: st.filter(x => x.querySelector('button.pr-st[data-v2mon],button.pr-st[data-prset]')).length, itemDiv: st.filter(x => x.querySelector('div.pr-st')).length, cols: new Set(st.map(x => Math.round(x.getBoundingClientRect().left))).size}; });
+  ok(pr.parcels === 2 && pr.stamps === 12 && /^Show All 14 Stamps/.test(pr.more), `Post Room: 2 live gifts make 2 parcels, 14 past gifts show 12 stamps and "Show All 14 Stamps" (${pr.parcels} parcels, ${pr.stamps} stamps, "${pr.more}")`);
+  ok(pr.cols === 6 && pr.monBtn === 6 && pr.itemDiv === 6, `Post Room: six stamps across at 1280; Pokémon stamps are buttons, item stamps are not (${pr.cols} across, ${pr.monBtn} buttons, ${pr.itemDiv} items)`);
+  ok(pr.rub === 'soon:5 days left | plenty:44 days left', `Post Room: days left count from the viewer's local day, red at 7 or fewer, blue above (Nov 17 in New York: ${pr.rub})`);
+  ok(pr.code === 'AB<b class="pr-d">1</b>CD<b class="pr-d">0</b>E' && pr.spell === 'A, B, 1, C, D, 0, E', `Post Room: in the code only digits are blue, and screen readers get it spelled (${pr.code} / ${pr.spell})`);
+  ok(pr.codes === 1 && /^No code: it waits in your in-game mailbox/.test(pr.nocode), `Post Room: a gift with no code shows no code area and says why (${pr.codes} code areas; "${pr.nocode}")`);
+  await q.evaluate(() => document.querySelectorAll('.np-toast').forEach(t => t.remove())); if (await q.$('[data-prcopy]')) await q.click('[data-prcopy]'); await q.waitForTimeout(500);
+  const t = await q.evaluate(() => [...document.querySelectorAll('.np-toast')].map(x => x.textContent).join(' | '));
+  ok(t === 'Copied AB1CD0E', `Post Room: Copy Code uses the shared copy with its fallback (clipboard blocked) and says "Copied <code>" (${t || 'no toast'})`);
+  await q.setViewportSize({width: 390, height: 844}); await q.waitForTimeout(400);
+  const vis = () => q.evaluate(() => { const v = [...document.querySelectorAll('#main .pr-sheet > li')].filter(x => x.getClientRects().length); return `${new Set(v.map(x => Math.round(x.getBoundingClientRect().left))).size} across, ${v.length} spaces, ${v.filter(x => x.classList.contains('pr-blank')).length} blank`; });
+  const ph = await vis(); ok(ph === '3 across, 12 spaces, 0 blank', `Post Room: three stamps across on a phone, every row full (${ph})`);
+  await q.evaluate(r => window.__ev(`(() => { V2.prUi.all = true; ${r} })()`), redraw); await q.waitForTimeout(400);
+  const ph2 = await vis(); ok(ph2 === '3 across, 15 spaces, 1 blank', `Post Room: with all 14 stamps on a phone, one blank space finishes the last row (${ph2})`);
+  await q.evaluate(() => { localStorage.setItem('np2.theme', 'night'); }); await q.reload(); await q.waitForTimeout(2500); await draw(); await q.waitForTimeout(400);
+  const dim = await q.evaluate(() => { const e = document.querySelector('#main .pr-label'); if (!e) return {theme: document.documentElement.dataset.theme, label: 'none'}; const c = getComputedStyle(e).backgroundColor.match(/\d+/g).map(Number), pg = getComputedStyle(document.body).backgroundColor.match(/\d+/g).map(Number), L = a => (a[0] * .3 + a[1] * .59 + a[2] * .11) / 255; return {label: L(c).toFixed(2), page: L(pg).toFixed(2), theme: document.documentElement.dataset.theme}; });
+  ok(dim.theme === 'night' && +dim.label > .75 && +dim.page < .2, `Post Room "Dim Paper": at night the page is dark and the label stays paper (lightness label ${dim.label}, page ${dim.page})`);
+  await q.evaluate(() => window.__ev(`(() => { POST = {checked: null, news: [], gifts: [{id: 'old', name: 'VP', amount: 10, how: 'Serial Code', start: '2026-01-01T00:00:00Z', end: '2026-02-01T00:00:00Z'}]}; V2.redraw(); })()`)); await q.waitForTimeout(400);
+  const em = await q.evaluate(() => { const m = document.querySelector('#main'); return {shelf: ((m.querySelector('.pr-shelf') || {}).textContent || '').replace(/\s+/g, ' ').trim(), stamps: m.querySelectorAll('.pr-sw').length, plate: ((m.querySelector('.pr-stats .ev-pk') || {}).textContent || '')}; });
+  ok(/Nothing at the counter right now\.\s*The next gift will wait here\./.test(em.shelf) && em.stamps === 1 && em.plate === 'Nothing live right now', `Post Room empty state: no live gift shows the empty shelf and its line, and the stamp sheet still shows (${JSON.stringify(em)})`);
+  await q.close(); }
 await b.close();
 console.log(`v2-minors: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
