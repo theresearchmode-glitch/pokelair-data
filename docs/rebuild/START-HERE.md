@@ -130,7 +130,7 @@ without Sim's explicit yes.
 5. If it passes, the "Promote to live" workflow moves the `live` branch. **That does NOT update the live page.** See section 3.
 
 ### Previews (the "NastyPlot Full Redesign" artifact)
-- https://claude.ai/artifact/8KBkk7PtbGjVzLzLKK5akf (pinned; last published version 204). Sim watches the new site grow here;
+- https://claude.ai/artifact/8KBkk7PtbGjVzLzLKK5akf (pinned; last published version 205). Sim watches the new site grow here;
   republish after each finished, Sim-approved step.
 - Build: `S=<your scratchpad> bash docs/rebuild/preview-kit/pubprep.sh` (builds with --split and runs the privacy check; it must
   print `privacy: ... OK`). Takes up to 15 minutes; run it in the background.
