@@ -244,6 +244,10 @@ These limits are a target for future work, not a gate (Sim, Nov 16, 6:53 AM: "a 
 - Items in a row share a baseline, and columns share a left edge.
 - Nothing under 13px. Tap targets at least 44px on phone.
 - At most one coloured surface per screen, and no boxes in boxes.
+  Named exception (Sim, Nov 18, morning questions 1a, "recommend for all is good"; pictures: pics/nov18/postroom-real-desktop-light.png,
+  q-1ab-label-today-1440-light.png): the Post Room's parcel (.pr-parcel: kraft paper > white shipping label > ink Copy Code button,
+  three shades nested) is a drawing of a parcel, not a card inside a card, so it stays. It covers the same pieces wherever they are
+  reused (Home's post band, the Dispatch coupon's code piece). Nothing else is allowed by it.
 - Every Pokémon is named, and every number has a label and a unit.
 - Test three states: a full team, 1 to 5 Pokémon, and no team.
 

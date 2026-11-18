@@ -86,6 +86,9 @@ const MQ = async () => {
       return P.live.map(g => g.how).join(',') + ' | ' + (/Test (Battle|Competition|Livestream|Early)/.test(V2.pages.gifts.draw() + V2.sdPost() + V2.dpFront(P)) ? 'leaks' : 'clean'); } finally { POST = keep; } })()`));
     ok(s === 'Serial Code | clean', `MQ-G1b: other kinds of gift are kept off #gifts, Home's post band and the Dispatch even if post.js had them (${s})`);
     await q.close(); }
+  // MQ-1a (answer 1a): the parcel (kraft > label > Copy Code) is a named exception to "no boxes in boxes", written where the exceptions live
+  { const ds = fs.readFileSync(new URL('../../docs/rebuild/design-system.md', import.meta.url), 'utf8');
+    ok(/Named exception \(Sim, Nov 18, morning questions 1a[^\n]*\n[^\n]*\.pr-parcel/.test(ds), 'MQ-1a: design-system.md names the Post Room parcel as the exception to "no boxes in boxes" (Sim, Nov 18, 1a)'); }
 };
 if (process.env.ONLY === 'MQ') { await MQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- MQ end ----
