@@ -187,10 +187,15 @@ function turnOneData(mine, theirs, r) {
   // KO'd first ... (if no Protect)' note. guardOf names what could stop it ('' when nothing can)
   const PROTECT = ['Protect', 'Detect', 'Spiky Shield', "King's Shield", 'Baneful Bunker', 'Silk Trap', 'Burning Bulwark', 'Obstruct'];
   const movesOf = y => (y.moves || []).filter(Boolean).map(x => x.name || x);
+  // (independent review, Nov 19) Quick Guard and Wide Guard (+3) can't go up when their user is gone before a +3 move: KO'd earlier
+  // by a move above +3, or at +3 by a faster Pokémon; or surely flinched by a Fake Out (+3) from a faster Pokémon. A user KO'd or
+  // flinched later in the order (a sure flinch at a lower bracket than +3 only beats its planned move) could still have used it first
+  const gone3 = y => { const d = down.get(y), f = flinched.get(y), first = (u, p) => p > 3 || (p === 3 && speF(u) > speF(y));
+    return !!((d && d.u && first(d.u, d.p)) || (f && f.sure && first(f.u, 3))); };
   const guardOf = (o, a, mv) => { const g = [], pm = movesOf(o).find(n => PROTECT.includes(n)); if (pm) g.push(pm);
     /* Quick Guard blocks a priority move (Nov 19 review) */
-    if (movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) > 0 && opp.some(y => movesOf(y).includes('Quick Guard'))) g.push('Quick Guard');
-    if (mv.spread) { if (opp.some(y => movesOf(y).includes('Wide Guard'))) g.push('Wide Guard'); }
+    if (movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) > 0 && opp.some(y => !gone3(y) && movesOf(y).includes('Quick Guard'))) g.push('Quick Guard');
+    if (mv.spread) { if (opp.some(y => !gone3(y) && movesOf(y).includes('Wide Guard'))) g.push('Wide Guard'); }
     else if (!['Stalwart', 'Propeller Tail'].includes(abilityOf(a)) && mv.name !== 'Snipe Shot') {
       const rp = !(a.types || a.p.t || []).includes('Grass') && abilityOf(a) !== 'Overcoat';
       const rd = opp.find(y => y !== o && !down.has(y) && !(flinched.get(y) || {}).sure && movesOf(y).some(n => n === 'Follow Me' || (n === 'Rage Powder' && rp)));
@@ -223,7 +228,7 @@ function turnOneData(mine, theirs, r) {
     for (const {o, h} of hits) { if (!h || !h.r || !h.r.hp || h.charge || h.r.max < h.r.hp || h.r.sash || down.has(o)) continue;
       const j = at(o), tb = beats[j], later = j > i && !done.has(o), tie = tieOf(tb, b), by = `your ${b.x.d}`;
       const g = sureKO(h) && b.flinch !== 'likely' && !b.koRisk ? guardOf(o, b.x, h.mv) : '';
-      if (sureKO(h) && b.flinch !== 'likely' && !b.koRisk && !g) { down.set(o, {by, mv: h.mv.name}); if (later && !tie) fainted.set(o, down.get(o));
+      if (sureKO(h) && b.flinch !== 'likely' && !b.koRisk && !g) { down.set(o, {by, mv: h.mv.name, u: b.x, p: b.prio}); if (later && !tie) fainted.set(o, down.get(o));
         else if (later) { tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by} (speed tie)`}); } }
       else if (g) { if (later) { tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by} (${tie ? 'speed tie, ' : ''}if no ${g})`}); } }
       else if (later) { const k1 = (h.r.rolls || [h.r.min, h.r.max]).filter(v => v >= h.r.hp).length / (h.r.rolls || [1, 1]).length;

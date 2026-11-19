@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf = new Map(); for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) { teams.push(t.mons.map(m => m.n)); if (!refOf.has(t.mons.map(m => m.n).join('/'))) refOf.set(t.mons.map(m => m.n).join('/'), {ev: e, t}); }
-  const st = {forcedMissing: [], moldUnaware: 0, tieTwice: [], tieKO: 0, faintTie: [], rattledN: 0, rattledWrong: [], qgN: 0, unawareN: 0, unawareWrong: [], n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: [], intoGone: [], dblParen: [], theirKO: 0, theirKOmiss: [], koSureN: 0, koSureBad: [], intimN: 0, intimWrong: [], guarded: 0, faintGuard: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  const st = {forcedMissing: [], wgGone: 0, moldUnaware: 0, tieTwice: [], tieKO: 0, faintTie: [], rattledN: 0, rattledWrong: [], qgN: 0, unawareN: 0, unawareWrong: [], n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: [], intoGone: [], dblParen: [], theirKO: 0, theirKOmiss: [], koSureN: 0, koSureBad: [], intimN: 0, intimWrong: [], guarded: 0, faintGuard: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
   const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
   const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp'], /* Extreme Speed into a side with Farigiraf's Armor Tail */
@@ -32,6 +32,9 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
     {me: 'Froslass-Mega/Toxapex/Garchomp/Sneasler/Kingambit/Incineroar', th: 'Froslass-Mega/Whimsicott/Staraptor-Mega/Glimmora/Armarouge/Kingambit'},
     /* their Mega Gyarados (Mold Breaker, −1 Attack from your Gyarados's Intimidate on entry) hits your Unaware Clefable: the stage counts */
     {me: 'Gyarados-Mega/Clefable/Garchomp/Sneasler/Kingambit/Incineroar', th: 'Incineroar/Gyarados-Mega/Staraptor-Mega/Glimmora/Armarouge/Kingambit', ab: {Clefable: 'Unaware'}},
+    /* their Wide Guard Garganacl is surely flinched by your faster Fake Out, so your Earthquake's KO on their Rampardos (given only
+       status moves here: no Protect, no damaging move, so the Fake Out goes to Garganacl) is sure */
+    {me: 'Incineroar/Garchomp/Sneasler/Rillaboom/Clefable/Whimsicott', th: 'Garganacl/Rampardos/Incineroar/Rillaboom/Clefable/Whimsicott', oppMoves: {Rampardos: ['Toxic', 'Encore', 'Taunt', 'Helping Hand']}},
     {me: 'Persian-Alola/Garchomp/Incineroar/Rillaboom/Kingambit/Clefable', th: 'Incineroar/Rillaboom/Whimsicott/Garchomp/Kingambit/Basculegion', ab: {'Persian-Alola': 'Rattled'}}];
   for (const f of FORCED) { const x = f.me.split('/'), y = f.th.split('/'); if (x.concat(y).every(n => byName.get(n))) pairs.push([x, y, f]); else st.forcedMissing.push(f.me + ' vs ' + f.th); }
   for (const [me, th, f] of pairs) { const tag = (f ? 'forced: ' : '') + me.join('/') + ' vs ' + th.join('/');
@@ -105,13 +108,18 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
            the target keeps its move ('Fainted' would overclaim) and later attacks may still aim at it */
         const mvs = y => (y.moves || []).filter(Boolean).map(x => x.name || x), mvN = am ? am[1] : bt.act.replace(/ \(hits both\)$/, ''), at = (bt.x.types || bt.x.p.t);
         const rdOK = n => n === 'Follow Me' || (n === 'Rage Powder' && !at.includes('Grass') && abilityOf(bt.x) !== 'Overcoat');
+        /* (independent review, Nov 19) a Quick Guard / Wide Guard user (+3) gone before a +3 move can't use it: KO'd earlier by a move
+           above +3 (or at +3, faster), or 'Flinches' from your Fake Out (+3) by a faster user; its own Speed from its beat (no Tailwind at +3) */
+        const raw = z => z.tw ? z.speed / 2 : z.speed, g3 = y => { const yb = T.beats.find(z => z.x === y), first = z => z && yb && (z.prio > 3 || (z.prio === 3 && raw(z) > raw(yb)));
+          return (down.has(y) && down.get(y) < i && first(T.beats[down.get(y)])) || (yb && yb.act === 'Flinches' && first(T.beats.find(z => z.me && z.act === 'Fake Out ' + y.d))); };
         const guard = mvs(t).some(n => ['Protect', 'Detect', 'Spiky Shield', "King's Shield", 'Baneful Bunker', 'Silk Trap', 'Burning Bulwark', 'Obstruct'].includes(n))
-          || (!am ? T.opp.some(y => mvs(y).includes('Wide Guard')) : !['Stalwart', 'Propeller Tail'].includes(abilityOf(bt.x)) && mvN !== 'Snipe Shot'
+          || (!am ? T.opp.some(y => !g3(y) && mvs(y).includes('Wide Guard')) : !['Stalwart', 'Propeller Tail'].includes(abilityOf(bt.x)) && mvN !== 'Snipe Shot'
             && T.opp.some(y => y !== t && !(down.has(y) && down.get(y) < i) && (T.beats.find(z => z.x === y) || {}).act !== 'Flinches' && mvs(y).some(rdOK)))
           /* Quick Guard stops a priority move (fifth review, Nov 19) */
-          || (T.opp.some(y => mvs(y).includes('Quick Guard')) && movePrio((bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN), abilityOf(bt.x), {terrain: T.terrain || '', grounded: true}) > 0);
+          || (T.opp.some(y => !g3(y) && mvs(y).includes('Quick Guard')) && movePrio((bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN), abilityOf(bt.x), {terrain: T.terrain || '', grounded: true}) > 0);
         if (T.opp.some(y => mvs(y).includes('Quick Guard')) && movePrio((bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN), abilityOf(bt.x), {terrain: T.terrain || '', grounded: true}) > 0) st.qgN++;
         const j = T.beats.findIndex(y => y.x === t);
+        if (!am && T.opp.some(y => g3(y) && mvs(y).includes('Wide Guard'))) st.wgGone++;
         if (guard) { st.guarded++; if (j > i && T.beats[j].act === 'Fainted') st.faintGuard.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' then ' + t.d + ' Fainted, though ' + mvs(t).concat(T.opp.filter(y => y !== t).flatMap(mvs)).filter(n => /Protect|Detect|Shield|Bunker|Silk Trap|Bulwark|Obstruct|Wide Guard|Follow Me|Rage Powder/.test(n)).join(', ')); return; }
         st.sureKO++; if (!down.has(t)) down.set(t, i);
         if (j > i && !(T.beats[j].prio === bt.prio && T.beats[j].speed === bt.speed) && T.beats[j].act !== 'Fainted') st.koActs.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') then ' + t.d + ' ' + T.beats[j].act); });
@@ -249,4 +257,5 @@ ok(st.rattledN > 0 && !st.rattledWrong.length, `a Rattled lead hit by Intimidate
 ok(st.tieKO > 0 && !st.faintTie.length, `no 'Fainted' foe when your attacker may be KO'd first by a foe in a speed tie (${st.tieKO} leads in such a tie, ${st.faintTie.length} wrong${st.faintTie.length ? ', e.g. ' + st.faintTie[0] : ''})`);
 ok(!st.tieTwice.length, `a why line says 'speed tie' at most once (${st.tieTwice.length}${st.tieTwice.length ? ', e.g. ' + st.tieTwice[0] : ''})`);
 ok(st.moldUnaware > 0, `the forced Mold Breaker into Unaware case reaches the stage check (${st.moldUnaware} such lines)`);
+ok(st.wgGone > 0, `the forced case reaches a spread KO whose Wide Guard user is flinched first (${st.wgGone} such KO lines)`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
