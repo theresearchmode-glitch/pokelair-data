@@ -18,3 +18,7 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    e. Visual: the fill card's left half is empty (layout).
 5. Sim's PC run (docs/rebuild/test-runs/pc-nov19.txt): Windows-only findings: News at 1280/1920 'CAMPAIGN · NOV 24' overlaps 'A New
    Mystery Gift' (not seen on Linux/GitHub); Home '/100' measured 36.1px; WebKit 26.6 TEAM-07, EDIT-01b. A follow-up PC check is proposed.
+6. News dates (found from Sim's PC run): an item timed 2026-11-25T03:00:00Z (noon in Japan) shows 'Nov 25' on a UTC machine and
+   'Nov 24' in Eastern time, because the page shows each reader's own local date. Keep the reader's local date (true for when it
+   happens where you are), or show the official page's date? Not yet checked: which date the official page itself prints.
+   The News 'overlap' flagged on Windows is box-based: on Linux the kicker and headline ink are about 20px apart (news-k-now.png).
