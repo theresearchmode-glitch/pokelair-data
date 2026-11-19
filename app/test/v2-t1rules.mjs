@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf = new Map(); for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) { teams.push(t.mons.map(m => m.n)); if (!refOf.has(t.mons.map(m => m.n).join('/'))) refOf.set(t.mons.map(m => m.n).join('/'), {ev: e, t}); }
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], yourFoTheirWord: [], planNoTarget: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], yourFoTheirWord: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
   const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
   const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp'], /* Extreme Speed into a side with Farigiraf's Armor Tail */
@@ -63,6 +63,19 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
     for (const bt of T.beats) if (/if your .+?'s Fake Out hits it first \\(their likely target\\)/.test(bt.why)) st.yourFoTheirWord.push(tag + ': ' + bt.x.d + ': ' + bt.why);
     /* third check (cosmetic): a flinched Fake Out user's plan names its target, as every Fake Out line does */
     for (const bt of T.beats) if (bt.act === 'Flinches' && bt.plan === 'Fake Out') st.planNoTarget.push(tag + ': ' + bt.x.d);
+    /* fourth check (Nov 19, KO gap): a sure KO (your 'KOs' line: no '% to hit', not 'charges first', the user not at risk of being
+       flinched or KO'd first (koRisk), no Focus Sash / Sturdy on the target) means the target never acts later in turn one, and no later
+       attack aims at it unless the line says so ('KO'd earlier this turn'). The target is read from the act ('into X'; a spread
+       move's 'KOs on X'). Exact speed ties are left out (either may move first) */
+    { const down = new Map(); T.beats.forEach((bt, i) => { if (!bt.me || bt.act === 'Flinches' || bt.flinch === 'likely' || bt.koRisk) return;
+        const k = bt.why.match(/^KOs(?: on (.+?))?(?: \\(([^)]*)\\))?(?:;|$)/); if (!k || (k[2] && /% to hit|charges first/.test(k[2]))) return;
+        const am = bt.act.match(/^(.+?) into (.+)$/), tn = am ? am[2] : k[1], t = T.opp.find(o => o.d === tn); if (!t) return;
+        /* Focus Sash as the calc sees a foe: its most common item (sideDefaults), or the item it carries */
+        if ([t.item, (t._orig || {}).item, (topItem(t.p) || [])[0]].includes('Focus Sash') || abilityOf(t) === 'Sturdy') return; st.sureKO++; if (!down.has(t)) down.set(t, i);
+        const j = T.beats.findIndex(y => y.x === t); if (j > i && !(T.beats[j].prio === bt.prio && T.beats[j].speed === bt.speed) && T.beats[j].act !== 'Fainted') st.koActs.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') then ' + t.d + ' ' + T.beats[j].act); });
+      T.beats.forEach((bt, j) => { const am = bt.act.match(/^(.+?) into (.+)$/) || bt.act.match(/^(Fake Out) (.+)$/); if (!am) return; const t = (bt.me ? T.opp : T.leads).find(o => o.d === am[2]);
+        if (t && down.has(t) && down.get(t) < j && !/KO'd earlier this turn/.test(bt.why)) st.intoDown.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ')'); });
+      for (const bt of T.beats) if (bt.act === 'Fainted') { st.fainted++; if (bt.me || !bt.plan) st.faintBad.push(tag + ': ' + bt.x.d); } }
     for (const bt of T.beats) if (bt.me && /^Fake Out (.+)$/.test(bt.act)) { const t = [...T.opp].find(o => o.d === bt.act.slice(9)); if (t && (t.types || t.p.t).includes('Ghost') && abilityOf(bt.x) !== 'Scrappy') st.foGhost.push(tag + ': ' + bt.act); } }
   S.slots = JSON.parse(slots0); fixSlots(); S.opp = JSON.parse(opp0); return st; })()`));
 await b.close();
@@ -87,4 +100,7 @@ ok(st.boards > 0 && !st.boardTwoMega.length, `Home's plan board draws one Mega p
 ok(!st.boardArrow.length, `every plan board arrow points at a drawn Pokémon (${st.boardArrow.length}${st.boardArrow.length ? ', e.g. ' + st.boardArrow[0] : ''})`);
 ok(!st.yourFoTheirWord.length, `a flinch note from your own Fake Out gives its real reason, not 'their likely target' (${st.yourFoTheirWord.length}${st.yourFoTheirWord.length ? ', e.g. ' + st.yourFoTheirWord[0] : ''})`);
 ok(!st.planNoTarget.length, `a flinched Fake Out user's plan names its target (${st.planNoTarget.length}${st.planNoTarget.length ? ', e.g. ' + st.planNoTarget[0] : ''})`);
+ok(st.sureKO > 0 && !st.koActs.length, `a Pokémon your sure KO hits before it moves doesn't act this turn (${st.sureKO} sure KOs, ${st.koActs.length} targets still acting${st.koActs.length ? ', e.g. ' + st.koActs[0] : ''})`);
+ok(!st.intoDown.length, `no later attack aims at a Pokémon already KO'd this turn, unless it says so (${st.intoDown.length}${st.intoDown.length ? ', e.g. ' + st.intoDown[0] : ''})`);
+ok(!st.faintBad.length, `a 'Fainted' beat is only theirs and keeps its planned move (${st.fainted} fainted, ${st.faintBad.length} wrong${st.faintBad.length ? ', e.g. ' + st.faintBad[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

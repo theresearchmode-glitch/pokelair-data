@@ -80,9 +80,13 @@ function turnOneData(mine, theirs, r) {
         const val = (ko ? 2 : 0) + pct * (h.charge ? .3 : 1) * (h.acc / 100) + (h.mv.spread ? .3 : 0) - (hitsAlly ? .4 : 0); if (!best || val > best.val) best = {o, h, pct, ko, val, hitsAlly}; }
       if (best && best.hitsAlly) { const r2 = hitOn(m, [best.h.mv], partner); if (r2 && r2.r.max >= r2.r.hp) { const bad = best.h.mv.name; pool = pool.filter(x => x && x.name !== bad); best = null; continue; } }
       break; }
-    if (best) { const nt = hitNote(best.h), ally = best.hitsAlly ? (() => { const r2 = hitOn(m, [best.h.mv], partner); return `; also hits your ${partner.d}${r2 ? ' for up to ' + dmgP(100 * r2.r.max / r2.r.hp) + '% of its HP' : ''}`; })() : '';
-      lines.push([m, `${best.h.mv.name} ${best.h.mv.spread ? '(hits both)' : 'into ' + best.o.d}`, `${best.ko ? 'KOs' : 'up to ' + dmgP(100 * best.pct) + '% of its HP, ' + koShort(best.h.r)}${best.h.mv.spread ? ' on ' + best.o.d : ''}${nt ? ' (' + nt + ')' : ''}${ally}`, pr(m, best.h.mv.name)]); }
+    // [4] is a Fake Out's target; [5] the attack itself (target, hit, partner hit), read by the KO pass after the turn order
+    if (best) lines.push([m, `${best.h.mv.name} ${best.h.mv.spread ? '(hits both)' : 'into ' + best.o.d}`, hitWhy(m, best.h, best.o, best.hitsAlly), pr(m, best.h.mv.name), null, {o: best.o, h: best.h, hitsAlly: best.hitsAlly}]);
     else lines.push([m, 'Protect or switch', 'no good attack into these leads', 4]); } };
+  // one wording for an attack's why (the plan line and a re-aimed one): 'KOs' when the lowest roll KOs, else up to N% and the KO odds
+  function hitWhy(m, h, o, hitsAlly) { const partner = L.find(x => x !== m), nt = hitNote(h), ko = h.r.min >= h.r.hp && !h.charge;
+    const ally = hitsAlly ? (() => { const r2 = hitOn(m, [h.mv], partner); return `; also hits your ${partner.d}${r2 ? ' for up to ' + dmgP(100 * r2.r.max / r2.r.hp) + '% of its HP' : ''}`; })() : '';
+    return `${ko ? 'KOs' : 'up to ' + dmgP(100 * h.r.max / h.r.hp) + '% of its HP, ' + koShort(h.r)}${h.mv.spread ? ' on ' + o.d : ''}${nt ? ' (' + nt + ')' : ''}${ally}`; }
   planLines();
   // their Fake Out targets again, now skipping your leads that move before each user, and letting a user your faster Fake Out
   // surely flinches choose last (it takes no target from its partner); re-plan if that changed them (at most 3 rounds)
@@ -122,7 +126,41 @@ function turnOneData(mine, theirs, r) {
   // (third check, Nov 19: your own Fake Out is 'not sure' when your user may be flinched first; 'their likely target' is their wording)
   const mayNote = (tb, f) => { tb.flinch = 'likely'; tb.why += `${tb.why ? '; ' : ''}${f.tie ? `if ${f.by}'s Fake Out wins the speed tie, it can't move this turn`
     : /^your /.test(f.by) ? `if ${f.by} isn't flinched first, its Fake Out stops this one moving this turn` : `if ${f.by}'s Fake Out hits it first (their likely target), it can't move this turn`}`; };
+  // KOs inside turn one (Nov 19: a Pokémon KO'd earlier in the turn still showed its own move). A sure KO is your attack whose
+  // lowest roll KOs, 100% to hit, not charging first, with no Focus Sash / Sturdy holding on, from a lead that isn't at risk of
+  // being flinched or KO'd first. Its target, if it hasn't moved yet (no speed tie), is 'Fainted' (its plan kept as plan, as a sure
+  // flinch is), and later attacks into it go to the other foe (as in the game, a move aimed at a fainted foe goes to the other
+  // one; here the best move of the same priority into it is planned), or say that no foe is left. A KO that only might happen
+  // (OHKO 6%, 90% to hit, a speed tie) is a 'may KO it first' note on its target. Their KO on your lead is a guess (their likely
+  // move, as their Fake Out is): a note on your lead's beat, and your lead's own KO is then no longer sure.
+  const down = new Map(), fainted = new Map(), at = x => beats.findIndex(y => y.x === x);
+  const sureKO = h => !!(h && h.r && h.r.hp && h.r.min >= h.r.hp && !h.charge && h.acc >= 100 && !h.r.sash);
+  const note = (tb, s) => { tb.why += `${tb.why ? '; ' : ''}${s}`; };
+  // the best move into the one foe left, in the same priority bracket (the turn order is already set), weighed as the plan weighs
+  // moves (bestHitOn: accuracy, charging, recharging); no move that also hits your partner; one foe left: no spread reduction
+  const reAim = (m, ln, o2) => { const pool = memberMoves(m).moves.filter(mv => mv && mv.bp && !mv.ally && pr(m, mv.name) === ln[3]).map(mv => mv.spread ? {...mv, spread: false} : mv);
+    const h = pool.length ? hitOn(m, pool, o2) : null; return h && h.r && h.r.hp && h.r.max ? h : null; };
+  const koPass = b => { const i = at(b.x);
+    if (!b.me) { const d = danger.find(x => x.o === b.x), h = d && d.worst && d.worst.h, t = d && d.worst && d.worst.on;
+      if (!h || theirFOT.has(b.x) || b.act !== `${h.mv.name} into ${t.d}` || !sureKO(h) || at(t) <= i || done.has(t)) return;
+      const tb = beats[at(t)]; tb.koRisk = 1; note(tb, `if their ${b.x.d} aims at it, its ${h.mv.name} KOs it ${tieOf(tb, b) ? 'first if it wins the speed tie' : 'before it moves'}`); return; }
+    const ln = lines.find(l => l[0] === b.x), A = ln && ln[5]; if (!A || b.act !== ln[1]) return;
+    let hits = A.h.mv.spread ? opp.map(o => ({o, h: o === A.o ? A.h : hitOn(b.x, [A.h.mv], o)})) : [{o: A.o, h: A.h}];
+    const gone = hits.filter(x => down.has(x.o)).map(x => x.o);
+    if (gone.length) { const left = opp.filter(o => !down.has(o)), was = gone.map(o => o.d).join(' and ') + (gone.length > 1 ? ' are' : ' is') + " KO'd earlier this turn";
+      const h2 = left.length === 1 ? reAim(b.x, ln, left[0]) : null;
+      if (!h2) { note(b, `${was}${left.length ? '' : ': no foe is left to hit'}`); return; }
+      const rest = b.why.startsWith(ln[2]) ? b.why.slice(ln[2].length) : (b.why ? '; ' + b.why : '');
+      b.act = `${h2.mv.name} into ${left[0].d}`; b.why = `${hitWhy(b.x, h2, left[0], false)}; ${was}${rest}`; hits = [{o: left[0], h: h2}]; }
+    for (const {o, h} of hits) { if (!h || !h.r || !h.r.hp || h.charge || h.r.max < h.r.hp || h.r.sash || down.has(o)) continue;
+      const j = at(o), tb = beats[j], later = j > i && !done.has(o), tie = tieOf(tb, b), by = `your ${b.x.d}`;
+      if (sureKO(h) && b.flinch !== 'likely' && !b.koRisk) { down.set(o, {by, mv: h.mv.name}); if (later && !tie) fainted.set(o, down.get(o));
+        else if (later) note(tb, `speed tie with ${by}: if it goes second, ${by}'s ${h.mv.name} KOs it before it moves`); }
+      else if (later) { const k1 = (h.r.rolls || [h.r.min, h.r.max]).filter(v => v >= h.r.hp).length / (h.r.rolls || [1, 1]).length;
+        const why = [k1 < 1 ? koShort(h.r) : '', h.acc < 100 ? h.acc + '% to hit' : '', tie ? 'speed tie' : '', b.flinch === 'likely' ? `if ${by} isn't flinched first` : '', b.koRisk ? `if ${by} isn't KO'd first` : ''].filter(Boolean).join(', ');
+        note(tb, `${by}'s ${h.mv.name} may KO it first${why ? ' (' + why + ')' : ''}`); } } };
   for (const b of beats) {
+    if (fainted.has(b.x)) { const f = fainted.get(b.x); b.plan = b.act; b.act = 'Fainted'; b.fainted = 'sure'; b.why = `KO'd before it moves by ${f.by}'s ${f.mv}`; done.add(b.x); continue; }
     if (flinched.has(b.x)) { const f = flinched.get(b.x);
       if (f.sure) { b.plan = b.act; b.act = 'Flinches'; b.flinch = 'sure'; b.why = `${f.by}'s Fake Out hits it first: it can't move this turn`; done.add(b.x); continue; }
       mayNote(b, f); }
@@ -137,9 +175,9 @@ function turnOneData(mine, theirs, r) {
         else if (tie) b.why += `${b.why ? '; ' : ''}speed tie with their ${t.d}: it flinches only if your Fake Out goes first`; }
       else if (t) { const why = fx === 'none' ? `Fake Out has no effect on ${t.d} here` : fx === 'hit' ? `${t.d} takes the hit but can't flinch` : `${t.d} has already moved: no flinch`;
         b.why = b.me ? `${b.why}${b.why ? '; ' : ''}${why}` : why; } }
-    done.add(b.x); }
+    koPass(b); done.add(b.x); }
   // a threat that can't act on turn one (your Fake Out stops it, or it uses its own Fake Out) is still a threat from turn two on
   const later = o => theirFOT.has(o) || (flinched.get(o) || {}).sure;
-  const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `${x.o.d}'s ${x.worst.h.mv.name} can KO ${x.worst.on.d}${later(x.o) ? ' from turn 2' : ''}`);
+  const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `${x.o.d}'s ${x.worst.h.mv.name} can KO ${x.worst.on.d}${fainted.has(x.o) ? ` if ${fainted.get(x.o).by} doesn't KO it first` : later(x.o) ? ' from turn 2' : ''}`);
   return {leads: L, opp, beats, warn, field: F0, terrain: F.terrain};
 }
