@@ -61,6 +61,12 @@ const BR = async () => {
   { const {q, c} = await tOpen(390); await q.locator('#main [data-tmsel="2"]').first().click(); await q.waitForTimeout(1600) /* past the Card tap's own smooth scroll (V2._smoothAt) */; const rm = q.locator('#main .mt-edit [data-v2rm]').first(); await rm.scrollIntoViewIfNeeded(); await q.waitForTimeout(300);
     await rm.click(); await q.waitForTimeout(400); const y0 = await q.evaluate(() => scrollY), y1 = await away(q); await q.waitForTimeout(1200); const y2 = await q.evaluate(() => scrollY);
     ok(Math.abs(y1 - y0) > 300 && Math.abs(y2 - y1) <= 2, `BR-C1b: after Remove, a script scroll ends the hold: the page stays where it was sent (${y0} -> ${y1}, ${y2} 1.2 s later)`); await c.close(); }
+  // Nov 19 (CI run 1365: BR-C1b "337 -> 1837, 337"): the same, with a layout change in the same frame as the scroll (as the suggestions'
+  //   redraw can land on a slower machine); the hold took the whole scroll for the layout's and pulled the page back. Failed before the fix.
+  { const {q, c} = await tOpen(390); await q.locator('#main [data-tmsel="2"]').first().click(); await q.waitForTimeout(1600); const rm = q.locator('#main .mt-edit [data-v2rm]').first(); await rm.scrollIntoViewIfNeeded(); await q.waitForTimeout(300);
+    await rm.click(); await q.waitForTimeout(400); const y0 = await q.evaluate(() => scrollY), y1 = await q.evaluate(() => { scrollTo(0, scrollY + 1500); const d = document.createElement('div'); d.style.height = '40px'; document.querySelector('#main').append(d); return scrollY; });
+    await q.waitForTimeout(1200); const y2 = await q.evaluate(() => scrollY);
+    ok(Math.abs(y1 - y0) > 300 && Math.abs(y2 - y1) <= 2, `BR-C1c: after Remove, a script scroll with a layout change in the same frame still ends the hold (${y0} -> ${y1}, ${y2} 1.2 s later)`); await c.close(); }
   // C2 (finding 3): Apply's hold ends when the player leaves My Team (Back, then Forward within its 5 s: no drag down to the old Apply)
   /* (Back then Forward restores the old scroll place by itself, so the check leaves and comes back through links: My Team opens at its top) */
   { const {q, c} = await tOpen(390); const y0 = await apply(q); await q.waitForTimeout(300); await q.evaluate(() => { location.hash = '#meta'; }); await q.waitForTimeout(500); await q.evaluate(() => { location.hash = '#team'; }); await q.waitForTimeout(300);

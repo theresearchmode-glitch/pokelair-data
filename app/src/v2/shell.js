@@ -60,9 +60,13 @@ document.addEventListener('click', e => { if (!(e.target.closest && e.target.clo
    It knows its own scrolls (mark() after each scrollBy, and each frame). A scroll that comes with a layout change (the held element
    moved in the page, or the page got shorter or longer: scroll anchoring, a clamp) is the layout's, so the hold keeps it. Leaving the
    page (hashchange, popstate) ends it too. tgt() is the element the hold keeps in place; the hold asks on() each frame. */
-V2.holdGuard = tgt => { const ev = ['wheel', 'touchstart', 'pointerdown', 'keydown'], at = () => { const e = tgt(); return e ? Math.round(e.getBoundingClientRect().top + scrollY) + '|' + document.documentElement.scrollHeight : ''; };
+/* Nov 19 (CI run 1365, BR-C1b): a layout change landing in the same frame as an outside scroll (the suggestions' redraw as a script
+   scrolls 1500px) made the whole scroll count as the layout's, and the hold pulled the page back. A layout's own scroll is never larger
+   than the layout change itself (the held element's move or the page's change in height), so a bigger scroll is not the layout's. */
+V2.holdGuard = tgt => { const ev = ['wheel', 'touchstart', 'pointerdown', 'keydown'], at = () => { const e = tgt(); return [e ? Math.round(e.getBoundingClientRect().top + scrollY) : null, document.documentElement.scrollHeight]; };
   let y = scrollY, sig = at(), done = false; const stop = () => { if (done) return; done = true; ev.forEach(n => removeEventListener(n, stop, true)); removeEventListener('scroll', seen); removeEventListener('hashchange', stop); removeEventListener('popstate', stop); };
-  const seen = () => { if (done) return; const s = at(); if (Math.abs(scrollY - y) > 1 && s === sig && !(performance.now() - (V2._smoothAt || -1e9) < 1500)) return stop(); y = scrollY; sig = s; }; /* a site smooth scroll from the last 1.5 s is the site's: the hold corrects it */
+  const lay = s => (s[0] == null) !== (sig[0] == null) ? Infinity : Math.max(Math.abs((s[0] || 0) - (sig[0] || 0)), Math.abs(s[1] - sig[1])); /* how far the layout moved since the hold's last look */
+  const seen = () => { if (done) return; const s = at(), d = Math.abs(scrollY - y); if (d > 1 && d > lay(s) + 2 && !(performance.now() - (V2._smoothAt || -1e9) < 1500)) return stop(); y = scrollY; sig = s; }; /* a site smooth scroll from the last 1.5 s is the site's: the hold corrects it */
   ev.forEach(n => addEventListener(n, stop, {capture: true, passive: true})); addEventListener('scroll', seen, {passive: true}); addEventListener('hashchange', stop); addEventListener('popstate', stop);
   return {mark: () => { y = scrollY; sig = at(); }, stop, on: () => !done}; };
 // smooth scrolling only when the device doesn't ask for reduced motion (code review C7: eight scrolls ignored it)
