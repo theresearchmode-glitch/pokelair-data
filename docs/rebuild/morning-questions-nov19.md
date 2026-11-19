@@ -38,3 +38,11 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
 12. Q20 · Matchups cards: real-games verdict vs 'Calc disagrees' (review #8): pictures docs/rebuild/pics/nov19/Q20-matchups-calc-note-*.png
    A RECOMMENDED: one verdict per card + one short grey line 'Calc: beats it' (keeps the info where it belongs, equal heights).
    B: verdict only on cards, one sentence under the grid. C: no change.
+13. Damage Calc / Usage (helper, built; wording for Sim):
+   a. KO Board: each half's caption now counts its own tiles; next to other groups it says 'KO' (the tiles' own stamp) so it fits
+      on one line at 1100-1280, and 'The KO Board' name drops when the left half holds all three groups. OK, or split the halves at
+      the group boundary (18/12), which changes the layout?
+   b. Usage: the hero's numbers come from Online tournaments even on the Ranked ladder chip (38.3% / 51.9% there vs 39.2% / 49.5% on
+      the tournaments chip: different date windows). The key line now says so. Should the hero use one source?
+   c. Home/empty My Team '% of ladder teams' is the Showdown ladder; say 'Showdown ladder teams' (Word list) instead of Nov 12's choice?
+   d. Look options for the source: a line under the hero stats, or the hero follows the chosen chip.
