@@ -299,6 +299,11 @@ jobs:
         if: ${{ !cancelled() }}
       - run: node experiments/golden.mjs
         if: ${{ !cancelled() }}
+      # the new site on today's data (switch readiness Tests 3, Nov 18): built as it goes live (--v2 --public --split), its data store
+      # answered with today's documents stored as the refresh stores them; every main route opened: no errors, no empty or no-data
+      # page, no NaN text, Strength Score 0-100, ratings filled, every picture loads. About 30 s.
+      - run: node app/test/v2-today.mjs
+        if: ${{ !cancelled() }}
   # Live-data audits (Sim, Nov 18: "make sure we have holes like this in our rules and logic covered well and dont need to wait till
   # later to be uncovered"). The code tests run these audits on frozen Nov 9 data only, so holes that only today's teams show stayed
   # hidden (Symbiosis since Nov 16, a Perish Trap Politoed on Nov 18). This job runs them on today's data as an ALERT: it never
