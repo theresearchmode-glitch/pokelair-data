@@ -176,6 +176,20 @@ function turnOneData(mine, theirs, r) {
   // moves (bestHitOn: accuracy, charging, recharging); no move that also hits your partner; one foe left: no spread reduction
   const reAim = (m, ln, o2) => { const pool = memberMoves(m).moves.filter(mv => mv && mv.bp && !mv.ally && pr(m, mv.name) === ln[3]).map(mv => mv.spread ? {...mv, spread: false} : mv);
     const h = pool.length ? hitOn(m, pool, o2) : null; return h && h.r && h.r.hp && h.r.max ? h : null; };
+  // (Nov 19 review: 80 of 104 'Fainted' targets carry Protect, 20 have a Follow Me / Rage Powder partner) a sure KO is only
+  // 'Fainted' when nothing of theirs can stop it: the target has no Protect-family move, no lead of theirs has Wide Guard (a spread
+  // move) or can redirect it (Follow Me; Rage Powder, which a Grass type or Overcoat ignores; not a spread move, not Stalwart,
+  // Propeller Tail or Snipe Shot; not a partner KO'd or surely flinched first). Otherwise the target keeps its move with a 'may be
+  // KO'd first ... (if no Protect)' note. guardOf names what could stop it ('' when nothing can)
+  const PROTECT = ['Protect', 'Detect', 'Spiky Shield', "King's Shield", 'Baneful Bunker', 'Silk Trap', 'Burning Bulwark', 'Obstruct'];
+  const movesOf = y => (y.moves || []).filter(Boolean).map(x => x.name || x);
+  const guardOf = (o, a, mv) => { const g = [], pm = movesOf(o).find(n => PROTECT.includes(n)); if (pm) g.push(pm);
+    if (mv.spread) { if (opp.some(y => movesOf(y).includes('Wide Guard'))) g.push('Wide Guard'); }
+    else if (!['Stalwart', 'Propeller Tail'].includes(abilityOf(a)) && mv.name !== 'Snipe Shot') {
+      const rp = !(a.types || a.p.t || []).includes('Grass') && abilityOf(a) !== 'Overcoat';
+      const rd = opp.find(y => y !== o && !down.has(y) && !(flinched.get(y) || {}).sure && movesOf(y).some(n => n === 'Follow Me' || (n === 'Rage Powder' && rp)));
+      if (rd) g.push(movesOf(rd).includes('Follow Me') ? 'Follow Me' : 'Rage Powder'); }
+    return g.join(' or '); };
   const koPass = b => { const i = at(b.x);
     if (!b.me) { const d = danger.find(x => x.o === b.x), h = d && d.worst && d.worst.h, t = d && d.worst && d.worst.on;
       if (!h || theirFOT.has(b.x) || b.act !== `${h.mv.name} into ${t.d}` || !h.r || !h.r.hp || h.charge || h.r.sash || h.r.max < h.r.hp || at(t) <= i || done.has(t)) return;
@@ -194,8 +208,10 @@ function turnOneData(mine, theirs, r) {
       b.act = `${h2.mv.name} into ${left[0].d}`; b._h = h2; b.why = hitWhy(b.x, h2, left[0], false); note(b, {r: 2, s: was}); hits = [{o: left[0], h: h2}]; }
     for (const {o, h} of hits) { if (!h || !h.r || !h.r.hp || h.charge || h.r.max < h.r.hp || h.r.sash || down.has(o)) continue;
       const j = at(o), tb = beats[j], later = j > i && !done.has(o), tie = tieOf(tb, b), by = `your ${b.x.d}`;
-      if (sureKO(h) && b.flinch !== 'likely' && !b.koRisk) { down.set(o, {by, mv: h.mv.name}); if (later && !tie) fainted.set(o, down.get(o));
+      const g = sureKO(h) && b.flinch !== 'likely' && !b.koRisk ? guardOf(o, b.x, h.mv) : '';
+      if (sureKO(h) && b.flinch !== 'likely' && !b.koRisk && !g) { down.set(o, {by, mv: h.mv.name}); if (later && !tie) fainted.set(o, down.get(o));
         else if (later) note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by} (speed tie)`}); }
+      else if (g) { if (later) note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by} (${tie ? 'speed tie, ' : ''}if no ${g})`}); }
       else if (later) { const k1 = (h.r.rolls || [h.r.min, h.r.max]).filter(v => v >= h.r.hp).length / (h.r.rolls || [1, 1]).length;
         /* the chance in a few words; 'may' also covers your lead being flinched or KO'd first (b.flinch, b.koRisk) */
         const why = [k1 < 1 ? koShort(h.r) : '', h.acc < 100 ? h.acc + '% to hit' : '', tie ? 'speed tie' : ''].filter(Boolean).join(', ');
