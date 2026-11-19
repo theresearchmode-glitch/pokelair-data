@@ -52,6 +52,10 @@ Everything below is on it, plus the 44px tap areas (#5) and the updated mock-ups
 - The cloud machine restarted at about 2:14 AM by the clock (read just after). The accuracy helper had committed 5 of its fixes;
   its unfinished KO-stamp change was kept, and a new helper is finishing it plus Intimidate and the 'Fainted' Protect check.
   Your earlier messages were shown to me again after the restart; nothing in them was new, so nothing was redone.
+- The fourth review's fixes are all in (helpers; each with a check that fails before and passes after on 1000 matchups): an
+  opponent with an open team sheet is calculated with its sheet item; no 'KOs' through Focus Sash or Sturdy; Intimidate counts in
+  every turn-one hit (387 of 4000 lines changed, 81 of them a different move); the KO stamp only for a sure KO; 'Fainted' only when
+  nothing of theirs can stop it (16 in 1000 matchups, was 101); the Watch line says your/their. Open question for you: W10.
 - Start-up on phones (Plans pl-2c, helper): the longest start-up task dropped from ~470 to ~250 ms on Home (4x CPU), same page after.
 - GitHub run 1375 (902e1b9f) failed 2 of my new tests on the frozen test data: a team leading Mega Delphox + Mega Floette still
   showed two Megas (Floette's base form is only listed as 'Floette-Eternal'), and one event name kept '$30' at its start. Both
