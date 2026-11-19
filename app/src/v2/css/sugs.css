@@ -307,6 +307,7 @@ input::placeholder,textarea::placeholder{color:var(--ink-3);opacity:1}
 /* Nov 16 audit (detector "straggler"): paragraphs avoid a lone last word too, as links already do; 137 -> 79 one-word last lines over 23 pages at
    390 and 1280, for about 7px of page height per page */
 p,li,small{text-wrap-style:pretty}
+.bt-verdict small.bt-vrisk{text-wrap-style:balance} /* Sim's Q14 A (Nov 19): its two lines balance (no lone "(see Watch)."); here because this layer sets small to pretty */
 /* Nov 16 audit (detector, day and night): white words on the type-coloured tickets, the Events plate and This Week's headline measured 3.6-4.2:1;
    a 15% dark layer under the ticket lines brings every type colour to 4.6:1+ (official tickets are gold with dark ink and stay as they are) */
 .tk:not(.off),.ev-oh,.wk-hl{background:repeating-linear-gradient(135deg,var(--tk-line) 0 1px,transparent 1px 7px),linear-gradient(var(--tk-scrim),var(--tk-scrim)),linear-gradient(115deg,var(--ta),var(--tb))}
