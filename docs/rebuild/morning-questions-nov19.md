@@ -81,3 +81,7 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    a. Battle poster at 320: 'The other four' row runs past its card (Gholdengo cut off) and names touch ('Grimmsnarl|Archaludon').
    b. The damage calc gives an opponent its most common item, not the item on its open team sheet (e.g. Armarouge calculated with
       Focus Sash while its sheet says Life Orb), and the plan can say 'KOs' through a Sash. Logic; I'd fix it as its own step.
+24. Turn One cards (built tonight, for your look): pictures docs/rebuild/pics/nov19/review1-turn-one-words-*.png. Notes are now one
+   main fact + one short note (longest 115 characters, was 229). Cards at 1440 are 104-148px (were 104-124 before tonight's rules,
+   up to 187 at worst tonight). Going shorter needs a wider text column on the card (the note column is about 200px at 390): a layout
+   change. Keep as is, or try a wider note column (pictures first)?

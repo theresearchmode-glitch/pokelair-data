@@ -29,7 +29,7 @@ for qid,title,rev,pref,opts,why in Q:
   cards.append(f'<section class="q" id="{qid.lower()}"><p class="eb">{qid} · {html.escape(rev)}</p><h2>{html.escape(title)}</h2><ol class="opts">{ol}</ol><p class="why"><b>Why A:</b> {html.escape(why)}</p><div class="shots">{im}</div><p class="ans">Your answer: reply in the chat with <b>{qid}</b> and a letter.</p></section>')
 # before/after review 1
 ba=''
-for b in ['review1-battle-turn-one-BEFORE.png','review1-battle-turn-one-AFTER.png']:
+for b in ['review1-battle-turn-one-BEFORE.png','review1-battle-turn-one-AFTER.png','review1-turn-one-words-BEFORE-390.png','review1-turn-one-words-AFTER-390.png','review1-home-board-BEFORE.png','review1-home-board-AFTER.png']:
   shutil.copy(SRC+b, OUT+'pics/'+b); ba+=f'<figure><img src="pics/{b}" alt="{b[:-4]}" loading="lazy"></figure>'
 toc=''.join(f'<a href="#{q[0].lower()}">{q[0]}</a>' for q in Q)
 
@@ -41,6 +41,7 @@ W=[
  ('W5','News dates',["An item timed noon in Japan shows 'Nov 25' on a UTC machine and 'Nov 24' for you in Eastern time: the page shows each reader's own date. Keep that, or show the official page's date?"]),
  ('W6','From your PC run',["Windows only: News at 1280/1920 flagged the kicker overlapping the headline (box-based; on Linux the ink is about 20px apart); Home '/100' measured 36.1px; Safari 26.6: TEAM-07 and EDIT-01b. A short follow-up PC check is proposed."]),
  ('W7','Gallery',["The updated mock-ups gallery leaves one lone card at iPad widths (2 columns, 27 cards). Fine for an internal page, or even it up?"]),
+ ('W9','Turn One cards (built tonight)',["Notes are now one main fact plus one short note, with your/their on every name (longest 115 characters, was 229). Before/after pictures: review1-turn-one-words-*.png in the repo. Going shorter needs a wider note column on the card (a layout change). Keep as is, or try a wider column (pictures first)?"]),
  ('W8','Still open from before',["Usage at 1440 options (overs Qc), Meta row-based limit (Qd), the switch runbook questions (a scratch artifact to rehearse the publish, old fonts, switch time, the CLAUDE.md sprite line, meta/post timing)."]),
 ]
 wcards=''.join(f'<section class="q" id="{w[0].lower()}"><p class="eb">{w[0]} · no pictures needed</p><h2>{html.escape(w[1])}</h2><ol class="opts">'+''.join(f'<li><b>{i+1}</b><span>{html.escape(x)}</span></li>' for i,x in enumerate(w[2]))+f'</ol><p class="ans">Reply in the chat with <b>{w[0]}</b> and your answer.</p></section>' for w in W)
