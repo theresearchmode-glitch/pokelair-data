@@ -88,8 +88,14 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   if (t.dataset.v2lock != null) { toggleLock(+t.dataset.v2lock); render(); const b = document.querySelector(`[data-v2lock="${t.dataset.v2lock}"]`); if (b) b.focus({preventScroll: true}); return; }
   const i = +t.dataset.v2rm, was = clearSlot(i); V2.ui.picked = false; /* Sim, Nov 18 (C): on phones the panel shuts with the Card it was editing */ render(); if (was) toast(`Removed ${was.d}`, true);
   // Sim, Nov 17: after Remove the new Add spot was 685px above the screen (390 wide); bring it into view and give it the focus
-  requestAnimationFrame(() => { const a = document.querySelector(`[data-v2addto="${i}"]`); if (!a) return; 
-    a.scrollIntoView({block: 'center'}); a.focus({preventScroll: true}); V2.rmHold(i, a.getBoundingClientRect().top); }); }); /* instant: a smooth scroll was cut short by the redraw's late layout (stopped at 9px, under the header) */
+  // Sim, Nov 18 (desktop): centring it made the page jump up 400-500px every time even when the Add spot was already on screen.
+  // Now it moves only when less than a tap's height (44px) of the Add spot is on screen, and then the least that brings it fully in
+  // (below the sticky header); test v2-rmjump.mjs
+  requestAnimationFrame(() => { const a = document.querySelector(`[data-v2addto="${i}"]`); if (!a) return;
+    const hd = (document.querySelector('.np-head') || {}).offsetHeight || 0, q = a.getBoundingClientRect();
+    /* visible enough to tap (44px of it on screen): leave the page still; else bring it fully in, the least distance */
+    if (q.bottom - hd < 44) scrollBy(0, q.top - hd - 16); else if (innerHeight - q.top < 44) scrollBy(0, q.bottom - innerHeight + 16);
+    a.focus({preventScroll: true}); V2.rmHold(i, a.getBoundingClientRect().top); }); }); /* instant: a smooth scroll was cut short by the redraw's late layout (stopped at 9px, under the header) */
 // Nov 18: the Add spot then stays where it landed. Under load the Card tap's smooth scroll (team.js) could still land after this one
 // (Add at -76, under the header). Held at least 3 s, while the suggestions are worked out and 1 s after (20 s at most), and let go
 // the moment the player scrolls, taps or presses a key (their own move always wins), as Apply's hold in sugs.js does.
