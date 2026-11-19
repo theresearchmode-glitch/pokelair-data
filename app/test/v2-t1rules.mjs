@@ -107,6 +107,11 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         if (!it) continue; st.sheetHits++; if (sideDefaults(foe.p, 'def', null).item !== it) st.sheetDiff++;
         const um = main.match(/^up to (\\S+)% of /), okHit = um ? um[1] === dmgP(100 * r.max / r.hp) : /^KOs/.test(main) ? r.min >= r.hp : true;
         if (!okHit) st.sheetWrong.push(tag + ': ' + (bt.me ? 'your ' : 'their ') + bt.x.d + ' ' + bt.act + ' (' + main + ') vs ' + dmgP(100 * r.min / r.hp) + '-' + dmgP(100 * r.max / r.hp) + '% with ' + it); } }
+    /* Nov 19: the Watch line names every Pokémon with 'your' or 'their' (mirrors have one name on both sides), on the right side */
+    { const sides = [['your', T.leads.map(x => x.d)], ['their', T.opp.map(x => x.d)]], all = [...sides[0][1], ...sides[1][1]];
+      for (const w of T.warn || []) for (const n of new Set(all)) for (let i = w.indexOf(n); i >= 0; i = w.indexOf(n, i + 1)) {
+        if (all.some(m => m !== n && m.includes(n) && w.indexOf(m, i - m.indexOf(n)) === i - m.indexOf(n))) continue; st.warnNames++;
+        const sd = ((w.slice(0, i).match(/\\b(your|their) $/i) || [])[1] || '').toLowerCase(); if (!sd || !sides.find(x => x[0] === sd)[1].includes(n)) st.warnSide.push(tag + ': ' + w); } }
     for (const bt of T.beats) if (bt.me && /^Fake Out (.+)$/.test(bt.act)) { const t = [...T.opp].find(o => o.d === bt.act.slice(9)); if (t && (t.types || t.p.t).includes('Ghost') && abilityOf(bt.x) !== 'Scrappy') st.foGhost.push(tag + ': ' + bt.act); } }
   S.slots = JSON.parse(slots0); fixSlots(); S.opp = JSON.parse(opp0); return st; })()`));
 await b.close();
@@ -140,4 +145,5 @@ ok(!st.faintBad.length, `a 'Fainted' beat is only theirs and keeps its planned m
 ok(st.koStamp > 0 && !st.koStampBad.length, `Battle's KO stamp shows only for a sure KO, not a chance ('OHKO 19%') (${st.koStamp} stamps, ${st.koStampBad.length} wrong${st.koStampBad.length ? ', e.g. ' + st.koStampBad[0] : ''})`);
 ok(st.sheetDiff > 0 && !st.sheetWrong.length, `their lead from a real open team sheet is calculated with its sheet item, both ways (${st.sheetHits} lines, ${st.sheetDiff} where it isn't the most common item, ${st.sheetWrong.length} wrong${st.sheetWrong.length ? ', e.g. ' + st.sheetWrong[0] : ''})`);
 ok(st.koLines > 0 && !st.sashKO.length, `no 'KOs' when Focus Sash or Sturdy holds (${st.koLines} KO lines, ${st.sashKO.length} wrong${st.sashKO.length ? ', e.g. ' + st.sashKO[0] : ''})`);
+ok(st.warnNames > 0 && !st.warnSide.length, `the Watch line says 'your' or 'their' on every name, on the right side (${st.warnNames} names, ${st.warnSide.length} wrong${st.warnSide.length ? ', e.g. ' + st.warnSide[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

@@ -208,6 +208,7 @@ function turnOneData(mine, theirs, r) {
     b.why = parts.filter(Boolean).join('. '); }
   // a threat that can't act on turn one (your Fake Out stops it, or it uses its own Fake Out) is still a threat from turn two on
   const later = o => theirFOT.has(o) || (flinched.get(o) || {}).sure;
-  const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `${x.o.d}'s ${x.worst.h.mv.name} can KO ${x.worst.on.d}${fainted.has(x.o) ? ` if ${fainted.get(x.o).by} doesn't KO it first` : later(x.o) ? ' from turn 2' : ''}`);
+  // every name says whose it is (Nov 19: mirrors have one name on both sides): 'their Pelipper's Weather Ball can KO your Rillaboom'
+  const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `their ${x.o.d}'s ${x.worst.h.mv.name} can KO your ${x.worst.on.d}${fainted.has(x.o) ? ` if ${fainted.get(x.o).by} doesn't KO it first` : later(x.o) ? ' from turn 2' : ''}`);
   return {leads: L, opp, beats, warn, field: F0, terrain: F.terrain};
 }
