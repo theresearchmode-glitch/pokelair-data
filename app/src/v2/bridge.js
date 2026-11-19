@@ -4,7 +4,7 @@
 // they redraw the rebuild's current page instead. Function declarations, so the shared logic finds them anywhere in the closure.
 function safe(name, fn) { try { fn(); } catch (err) { try { console.error('NastyPlot: ' + name, err); } catch (e) {} } }
 // like today's render(): every redraw after a change saves the team (persist), so Undo and Apply are kept on reload
-function render() { persist(); fixMetaSrc(); clearCaches(); if (window.V2 && V2.draw) V2.redraw();
+function render() { if (window.V2 && V2.ui && V2.ui.lastClear && S.slots.some(x => x && x.n)) V2.ui.lastClear = null; /* Q26 A: a Pokémon on the team (added, Undo or Restore) forgets the cleared team */ persist(); fixMetaSrc(); clearCaches(); if (window.V2 && V2.draw) V2.redraw();
   // code review B9b: an open Edit Set follows the team (an Undo used to leave it showing the old set); if its Pokémon is gone, it closes
   if (window.V2 && V2.ed && V2.edRefresh && document.querySelector('.ed2')) { const s = S.slots[V2.ed.i], nowEmpty = !(s && byName.get(s.n)), shownEmpty = !!document.querySelector('.ed2.sx-addsh');
     if (!(shownEmpty && nowEmpty)) try { V2.edRefresh(); } catch (e) {} } } /* an Undo, Remove or Add redraws it (an emptied slot shows 'Add a Pokémon'); an empty slot's name box being typed in is left alone */

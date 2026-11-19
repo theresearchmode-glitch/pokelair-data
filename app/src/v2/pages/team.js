@@ -287,7 +287,7 @@ V2.emptyHtml = (o = {}) => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nS
   const win = top.length ? `<div class="tm-e-win"><h2 class="u">Or Start from a Winner</h2><p>Today's six highest-rated Pokémon. Tap one to build a team around it.</p><div class="tm-e-wg">${top.map(p => { const R = monRating(p), u = homePct(p);
     return `<button type="button" class="tm-e-w" data-hmaround="${V2.esc(p.n)}" aria-label="Build around ${V2.esc(p.d)}">${V2.mon(p.n, {iw: 96, bare: true, tag: true})}<b>${V2.tileName(p.d)}</b><small>${R ? `<span>${R.tier}\u00a0tier\u00a0${R.n}</span>` : ''}${u ? `<span>${u}% of <span class="tm-e-src">Showdown ladder teams</span></span>` : ''}</small></button>`; }).join('')}</div></div>` : '';
   return `<section class="tm-empty tm-empty2"><div class="tm-e-lead"><div class="np-eyebrow">My Team · 0 of 6 · No team yet</div><h1 class="u">Six spots, all yours.</h1><p>Add a Pokémon to start, or let us build a whole team around a favourite.</p>
-    <div class="row"><a class="np-btn" href="#build">Build Me a Team</a><button type="button" class="np-btn2" data-v2search><span>Add a Pokémon</span></button><span class="tm-e-links"><button type="button" class="np-link" data-v2import>Import a Team ›</button>${nSaved ? `<button type="button" class="np-link tm-e-saved" data-v2saved>Saved Teams <small>${nSaved}</small> ›</button>` : ''}</span></div></div>
+    <div class="row"><a class="np-btn" href="#build">Build Me a Team</a><button type="button" class="np-btn2" data-v2search><span>Add a Pokémon</span></button><span class="tm-e-links"><button type="button" class="np-link" data-v2import>Import a Team ›</button>${nSaved ? `<button type="button" class="np-link tm-e-saved" data-v2saved>Saved Teams <small>${nSaved}</small> ›</button>` : ''}</span></div>${V2.restoreHtml()}</div>
     ${spots}${win}<div class="tm-ud"><div class="tm-ud-hd"><div class="np-eyebrow">Today's underdog</div><h2 class="u ud-nm" data-v2mon="${V2.esc(n)}">${d}. <span>Somebody's favourite.</span></h2></div><button type="button" class="tm-ud-st" data-v2mon="${V2.esc(n)}" tabindex="-1" aria-label="${d}: open its info">${V2.mon(n, {iw: 240, bare: true, ft: true})}</button><div class="tm-ud-bd">
     <p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
     <div class="row">${o.preview || V2.addState(n) === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${V2.esc(n)}"><span>Add ${d} to My Team</span></button>` : ''}<button type="button" class="np-link" data-v2mon="${V2.esc(n)}">Pokémon Page ›</button></div><p class="np-or"><a class="np-link" href="#build">Or Build Around Your Favourite Pokémon ›</a></p></div></div></section>`; };
@@ -358,10 +358,20 @@ V2.openImport = (o = {}) => { let done = false;
     done = true; V2.closeSheet(true); V2.ui.sel = 0; V2.ui.picked = false; render(); toast(r.msg, true); }); };
 /* Sim's design review (Nov 18, P1 #1): Clear Team empties all six, so its Undo stays 10 s (the toast also waits while hovered or
    focused) and the focus goes to that Undo, not the page heading; test app/test/v2-clear.mjs */
-V2.clearTeam = () => { clearTeam(); V2.ui.sel = 0; V2.ui.picked = false; V2.ui.holdRoles = null; render(); toast('Team cleared', true, 10000);
+/* Q26 A (Sim, Nov 19, design review #2): Clear Team also keeps the cleared six (Undo's own copy: slots with their sets, and the open
+   saved team) with its name, in this page's memory like the Undo (nothing is saved or sent); the empty My Team offers "Restore Last Team"
+   after the 10 s Undo is gone, until a Pokémon is added (bridge.js render forgets it); test app/test/v2-q26.mjs */
+V2.clearTeam = () => { const lo = S.teams.find(t => t.id === S.loadedId), had = S.slots.some(x => x && x.n); clearTeam();
+  V2.ui.lastClear = had && ui.undo ? {slots: JSON.parse(JSON.stringify(ui.undo.slots)), loadedId: ui.undo.loadedId, name: lo ? lo.name : '', at: Date.now()} : null; V2.ui.sel = 0; V2.ui.picked = false; V2.ui.holdRoles = null; render(); toast('Team cleared', true, 10000);
   setTimeout(() => { const u = document.querySelector('.np-toast #toastUndo'); if (u) u.focus({preventScroll: true}); }, 120); };
 document.addEventListener('input', e => { if (e.target && e.target.matches && e.target.matches('[data-impin][aria-invalid]')) V2.fieldOk(e.target); }); /* a changed paste is no longer the one that failed */
-document.addEventListener('click', e => { if (e.target.closest('[data-v2import]')) V2.openImport(); else if (e.target.closest('[data-v2clear]')) V2.clearTeam(); });
+V2.restoreLast = () => { const L = V2.ui.lastClear; if (!L || S.slots.some(x => x && x.n)) return; S.slots = JSON.parse(JSON.stringify(L.slots)); fixSlots();
+  S.loadedId = L.loadedId && S.teams.some(t => t.id === L.loadedId) ? L.loadedId : null; ui.undo = null; V2.ui.sel = 0; V2.ui.picked = false; render();
+  toast(L.name ? `Restored “${L.name}”` : 'Your last team is back'); };
+V2.restoreHtml = () => { const L = V2.ui && V2.ui.lastClear; if (!L) return ''; const n = L.slots.filter(x => x && x.n).length, m = Math.floor((Date.now() - L.at) / 60000);
+  const nm = L.name ? V2.esc(L.name) : `Your last ${n} Pokémon`, ago = m < 1 ? 'a moment ago' : m < 60 ? `${m} min ago` : 'earlier';
+  return `<div class="tm-e-rest"><button type="button" class="np-btn2" data-v2restore aria-label="Restore Last Team: ${nm}"><span>Restore Last Team</span></button><p class="tm-e-rest-t">${nm}, cleared ${ago}.</p></div>`; };
+document.addEventListener('click', e => { if (e.target.closest('[data-v2import]')) V2.openImport(); else if (e.target.closest('[data-v2clear]')) V2.clearTeam(); else if (e.target.closest('[data-v2restore]')) V2.restoreLast(); });
 window.addEventListener('hashchange', () => { if (/team=/.test(location.hash)) V2.checkShared(); });
 setTimeout(V2.checkShared, 0);
 

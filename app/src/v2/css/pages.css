@@ -293,6 +293,8 @@
 .imp2-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s4)}.imp2-acts .fine{flex:1 1 220px;margin:0}
 .imp2-reg{margin:var(--s4) 0 0}
 .tm-e-links{display:inline-flex;flex-wrap:wrap;gap:0 var(--s4)}.tm-e-links .np-link{min-height:var(--tap)}
+/* Q26 A (Sim, Nov 19): Restore Last Team under the empty My Team's actions, its team named under it (as in the approved picture) */
+.tm-e-rest{margin-top:var(--s6)}.tm-e-rest .np-btn2{max-width:100%}.tm-empty .tm-e-rest-t{margin:var(--s2) 0 0;font-size:var(--t15);line-height:1.5;overflow-wrap:anywhere}
 @media (max-width:479.98px){.imp2{padding:var(--s6) var(--s4)}}
 /* the narrowest phones: the action row's two columns are 140px, so its labels step down one size together (Copy for Showdown fits) */
 @media (max-width:359.98px){.tm-acts .np-btn2{font-size:var(--t13);padding:0 var(--s2)}}
