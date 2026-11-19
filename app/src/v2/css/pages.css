@@ -1261,6 +1261,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .dc2-kt .np-mon{position:relative}.dc2-kt .by{position:absolute;top:2px;left:2px;z-index:1}.dc2-kt .hp{position:relative;display:block;width:100%;height:4px;margin-top:2px;background:color-mix(in srgb,var(--ink) 12%,transparent)}.dc2-kt .hp i{position:absolute;top:0;bottom:0;left:0;background:var(--hp-left)}.dc2-kt .hp .r{background:var(--bad)}
 .dc2-kt.ko{background:var(--ko-tint)}.dc2-kt.ko>.np-mon{opacity:.55}.dc2-kt .stamp{position:absolute;top:var(--s1);right:calc(var(--s1)*-1);z-index:2;padding:0 var(--s2);background:var(--bad);color:var(--on-mark);font-size:var(--t13);line-height:1.3;transform:rotate(10deg)}
 .dc2-kt.on{outline:2px solid var(--plot);outline-offset:-2px}
+/* Q22 A (Sim, Nov 19): the KO Board's names. Mouse screens: the tile's name and damage in one small label on hover or keyboard focus
+   (calc.js V2.dcTipShow), the tiles stay clean. Touch screens (no hover): a short name under each tile, one line (a long one ends in an
+   ellipsis), so every row is even; phones go to four across (as tablets) so the names fit: six across left 37-48px for up to 62px names. */
+.dc2-kt .nm{display:none}.dc2-tip{display:none}
+@media (hover:hover) and (pointer:fine){.dc2-tip.show{position:fixed;z-index:60;display:block;max-width:min(360px,calc(100vw - var(--s4)));padding:var(--s1) var(--s2);border-radius:4px;background:var(--ink);color:var(--bg);font:600 var(--t13)/1.5 var(--b);pointer-events:none}}
+@media (hover:none){.dc2-kt .nm{display:block;max-width:100%;margin-top:2px;overflow:hidden;font:600 var(--t13)/1.3 var(--b);font-stretch:87.5%;white-space:nowrap;text-overflow:ellipsis;color:var(--ink)}}
+@media (hover:none) and (max-width:699.98px){.dc2-kb .dc2-kts{grid-template-columns:repeat(4,minmax(0,1fr))}}
+@media (hover:none) and (min-width:1024px){.dc2-kt .nm{font-stretch:75%}}
 /* details and the set folds */
 .dc2-det{display:grid;gap:var(--s6);margin-top:var(--s10)}.dc2-dl p{margin:var(--s2) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.dc2-dl p b{color:var(--ink)}
 .dc2-set span{display:block}.dc2-links{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);margin-top:var(--s4)}
