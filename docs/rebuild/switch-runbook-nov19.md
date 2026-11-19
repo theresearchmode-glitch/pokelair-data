@@ -64,6 +64,9 @@ the merged code runs the daily job once on main. The page copes without them (ch
 - health.mjs has no row for out/post.json (grep: 0 matches for "post"). Proposal: add
   `['post.json', 'News and Mystery Gifts', 3, d => d.checked, [1e3, 2e5], d => arr(d.news, 1) || 'no news']`.
   Unsure: whether post-news.mjs refreshes `checked` on a day with no new headline (not read).
+  **Checked Nov 19, 2 AM:** it does not: post-news.mjs:89 leaves `checked` alone ("when a person last checked the gift list"), and
+  out/post.json's `checked` is 2026-11-18T02:21:50Z. So this row as written would raise false 'stale' alerts. If added, use a shape-only
+  row (limit 9999 like the paused op.gg row) checking `arr(d.news, 1)`, or have post-news.mjs write its own run date. Not applied.
 - ckwin-snapshot.mjs builds and loads the OLD page (`node app/build.mjs`, hook `render();setView(view,false);`, ckwin-snapshot.mjs:13-14). It keeps
   working after the switch, but breaks (skips quietly) when the old page is deleted (R6). Note for R6, not a switch item.
 
