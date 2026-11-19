@@ -39,7 +39,7 @@ t('NAV-02', 'Phone bottom bar: five tabs, stays put while scrolling, each opens 
   const b = await d.bottomBar(); expect(b, 'no bottom bar on a phone');
   expect(JSON.stringify(b.names.map(n => n.replace(/\s*\d\/6$/, ''))) === JSON.stringify(['Home', 'Build', 'My Team', 'Battle', 'Meta']), 'bottom bar: ' + b.names);
   await ui.go('Ratings'); await d.scrollTo(1500); const b2 = await d.bottomBar(); expect(b2 && Math.abs(b2.top - b.top) < 3, 'bar moved while scrolling');
-  for (const [tab, pane] of [['Home', 'home'], ['Build', 'auto'], ['My Team', 'report'], ['Battle', 'matchup'], ['Meta', 'ratings']]) {
+  for (const [tab, pane] of [['Home', 'home'], ['Build', 'auto'], ['My Team', 'report'], ['Battle', NEW ? 'calc' : 'matchup'], ['Meta', 'ratings']]) { /* Sim, Nov 19 (B): the Battle tab opens the Damage Calculator, Battle's first tool */
     await d.tapMainTab(tab); expect(await ui.current() === pane, `${tab} opened ${await ui.current()}`); expect(await d.activeMainTab() === tab, `${tab} not lit`); } }));
 t('NAV-02b', 'Desktop has no bottom bar', run({team: TEAM}, async ({d}) => { expect(!(await d.bottomBar()), 'bottom bar shows on desktop'); }));
 
