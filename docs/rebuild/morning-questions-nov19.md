@@ -27,3 +27,5 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    B: adds '(322 of 345 rated have them)'. C: no change.
 8. Q16 · Edit Set Close X on phones (review #21): pictures docs/rebuild/pics/nov19/Q16-editset-close-*.png
    A RECOMMENDED: a solid strip at the top holds the X, content scrolls under it. B: no change (X overlaps a dropdown's corner).
+9. Q17 · 'Mega' on My Team cards on phones (review #11): pictures docs/rebuild/pics/nov19/Q17-mega-label-*.png
+   A RECOMMENDED: 'Mega' on the same dark slanted plate as the score (readable on any art). B: no change. Dark mode not yet pictured.
