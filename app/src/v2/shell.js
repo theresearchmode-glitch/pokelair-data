@@ -307,7 +307,13 @@ V2.asOf = () => { try { const t = typeof dataDateText === 'function' ? dataDateT
   /* no live data (SHELL-29, Nov 16): the built-in snapshot's own date, as the Ratings line used to show it, so the footer is never dateless */
   const pf = typeof activePerf === 'function' ? activePerf() : null, u = pf && pf.updated ? Date.parse(String(pf.updated).slice(0, 10) + 'T12:00:00Z') : NaN; if (isNaN(u)) return '';
   const days = calDays(u, Date.now()); return 'Data as of ' + new Date(u).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) + (days > 2 ? ' (' + days + ' days old)' : ''); } catch (e) { return ''; } };
-V2.route = () => { const h = (location.hash || '').slice(1).split('=')[0]; /* Nov 15: '#method=rating' opens How We Calculate at that part */ return V2.pages[h] ? h : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
+/* Sim's Q24 A (Nov 19): an address that matches no page (#nonsense) shows a not-found page in the 'No Pokémon here.' style (pokemon.js):
+   eyebrow, headline, one line and Go to Home; no top tab lit (place ''), title 'Page not found' (V2.setTitle). It was Home on the real site
+   and My Team in the Preview (coming.js). No address at all is still Home. Visitors to #owner get the same page (owner.js). Test: app/test/v2-q24.mjs */
+V2.nfHtml = () => `<div class="ra gsp" data-v2nf><section class="ra-h"><p class="np-eyebrow"><span>Page not found</span></p><h1 class="u">Nothing here.</h1><p class="ra-lede">This address doesn't match a page on NastyPlot. It may be an old or mistyped link.</p><p class="nf-go"><a class="np-btn" href="#home">Go to Home</a></p></section></div>`;
+V2.pages.notfound = {place: '', draw: () => V2.nfHtml()};
+/* own keys only: '#constructor' or '#toString' found the object's built-ins and broke the draw */
+V2.route = () => { const h = (location.hash || '').slice(1).split('=')[0]; /* Nov 15: '#method=rating' opens How We Calculate at that part */ return Object.prototype.hasOwnProperty.call(V2.pages, h) ? h : h ? 'notfound' : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
 // Word list (Sim, Nov 9; Nov 12: "fix them based on your recommendation"): the idea is Matchups and its levels are Beats it /
 // Handles it, never "ready". Shared logic (also today's site) still writes "Ready for ..."; the new site says it the word list's way.
 // The "81%" in "Ready for 81% of the top 30" is a weighted score, not a share of threats, so the plain count is shown instead.
@@ -418,7 +424,7 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
 <nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
 /* audit Nov 16 (WCAG 2.4.2): each page has its own browser title, its name as the menu and search show it ("Meta · NastyPlot"); Home keeps "NastyPlot";
    Pokémon pages set their own fuller title (pages/pokemon.js) */
-V2.setTitle = () => { try { const r = V2.route(); if (r === 'pokemon') return; const h = document.querySelector('#main h1');
+V2.setTitle = () => { try { const r = V2.route(); if (r === 'pokemon') return; const h = document.querySelector('#main h1'); if (document.querySelector('#main [data-v2nf]')) { if (document.title !== 'Page not found · NastyPlot') document.title = 'Page not found · NastyPlot'; return; } /* Q24: the not-found page, #owner for visitors included */
   const nm = ((V2.findPlaces || []).find(([k, n]) => k === (r === 'team-empty' ? 'team' : r) && typeof n === 'string') || [])[1]; /* design audit #14: the empty-team view is My Team too */
   const t = r === 'home' ? 'NastyPlot' : nm ? nm + ' · NastyPlot' : h ? h.textContent.replace(/\s+/g, ' ').trim().slice(0, 60) + ' · NastyPlot' : 'NastyPlot'; if (document.title !== t) document.title = t; } catch (e) {} };
 /* V2.drawN counts arrivals (a full draw), so a page can do arrival-only things, like scrolling to a linked part, once per arrival and

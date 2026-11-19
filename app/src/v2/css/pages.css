@@ -3192,6 +3192,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .pk-v{left:clamp(100px, calc(100% * var(--f)), calc(100% - var(--s24) - var(--s4)));top:calc(var(--s8)*-1)} /* on the line above at the tip, but never on the plate (low stats) or past the panel (a Mega's '159 +30') */.pk-lanes{background-position:0 0;background-size:100% 100%}.pk-scale{margin:0}}
 .pk-more .np-link,.pk-tap{position:relative}.pk-more .np-link::after,.pk-tap::after{content:"";position:absolute;inset:-12px -8px} /* 44 px tap area, the line unmoved */
 .pk-404{position:relative}.pk-404::after{content:"";position:absolute;inset:-12px -4px} /* 44 px tap area */
+.nf-go{margin:var(--s6) 0 0} /* Q24 (Nov 19): the not-found page's Go to Home, 24 px under its line (shell.js V2.nfHtml) */
 /* Pokémon page: jump links, each part's head, part 1 "How to build it" */
 .pk-jumps{display:flex;flex-wrap:wrap;gap:var(--s2)}.pk-jumps button{min-height:var(--tap);padding:0 var(--s4);background:var(--wash);color:var(--ink);font:700 var(--t15)/1 var(--b);transform:skewX(-10deg)}.pk-jumps button:hover{background:color-mix(in srgb,var(--plot) 14%,var(--wash))}
 .pk-sec{display:grid;gap:var(--s6);scroll-margin-top:var(--s16)}

@@ -249,6 +249,8 @@ jobs:
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q26.mjs
         if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q24.mjs
+        if: ${{ !cancelled() }}
       # W5 (Sim, Nov 19): News dates are the official pages' (UTC) dates, the same for every reader's time zone
       - run: PAGE=app/dist/v2.html node app/test/v2-w5.mjs
         if: ${{ !cancelled() }}
