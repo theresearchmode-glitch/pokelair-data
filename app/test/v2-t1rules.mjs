@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = []; for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) teams.push(t.mons.map(m => m.n));
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) { const me = teams[i], th = teams[(i * 7 + 3) % teams.length], tag = me.join('/') + ' vs ' + th.join('/');
     S.slots = me.map(n => ({n, a: null, lock: false})); fixSlots(); S.opp = [...th];
     let T, L0; try { const mine = members(), theirs = oppTeam(), r = planMatchup(mine, theirs, true); L0 = r.lead.map(i => mine[i]); T = turnOneData(mine, theirs, r); } catch (e) { st.err++; if (st.errs.length < 3) st.errs.push(tag + ': ' + String(e.stack || e).slice(0, 200)); continue; }
@@ -30,6 +30,12 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = []; for (c
     for (const bt of T.beats) { if (!bt.me && /^Fake Out has no effect/.test(bt.why)) st.theirDud.push(tag + ': ' + bt.x.d + ' ' + bt.act);
       if (bt.me && /^Fake Out /.test(bt.act) && /has already moved: no flinch/.test(bt.why)) st.myLate.push(tag + ': ' + bt.act);
       if (!bt.me && bt.flinch === 'sure') { const u = T.beats.find(y => y.me && y.act === 'Fake Out ' + bt.x.d); if (u && u.flinch === 'likely') st.sureBad.push(tag + ': ' + bt.x.d); } }
+    /* third review, Nov 19: once a side's Tailwind is up, its partner moves at double Speed for the rest of turn one (Gen 9
+       re-sorts the queue after each action; assumed for Champions): no slower Pokémon of the other side in the same bracket
+       moves between the Tailwind and that partner. raw = the partner's own Speed (a doubled one is marked tw) */
+    { const ti = T.beats.findIndex(y => y.act === 'Tailwind'); if (ti >= 0) { const side = T.beats[ti].me; st.tailwinds++;
+      for (let j = ti + 1; j < T.beats.length; j++) { const bj = T.beats[j]; if (bj.me !== side) continue; const raw = bj.tw ? bj.speed / 2 : bj.speed;
+        const k = T.beats.slice(ti + 1, j).find(y => y.me !== side && y.prio === bj.prio && y.speed < 2 * raw); if (k) st.twLate.push(tag + ': ' + bj.x.d + ' (' + 2 * raw + ') after ' + k.x.d + ' (' + k.speed + ')'); } } }
     for (const bt of T.beats) if (bt.me && /^Fake Out (.+)$/.test(bt.act)) { const t = [...T.opp].find(o => o.d === bt.act.slice(9)); if (t && (t.types || t.p.t).includes('Ghost') && abilityOf(bt.x) !== 'Scrappy') st.foGhost.push(tag + ': ' + bt.act); } }
   S.slots = JSON.parse(slots0); fixSlots(); S.opp = JSON.parse(opp0); return st; })()`));
 await b.close();
@@ -47,4 +53,5 @@ ok(!st.foGhost.length, `your Fake Out never aims at a Ghost type (no effect) (${
 ok(!st.theirDud.length, `their Fake Out is only planned when it can work on one of your leads (${st.theirDud.length}${st.theirDud.length ? ', e.g. ' + st.theirDud[0] : ''})`);
 ok(!st.myLate.length, `your Fake Out never aims at a Pokémon that has already moved (${st.myLate.length}${st.myLate.length ? ', e.g. ' + st.myLate[0] : ''})`);
 ok(!st.sureBad.length, `a sure flinch never comes from a Fake Out user that may itself be flinched first (${st.sureBad.length}${st.sureBad.length ? ', e.g. ' + st.sureBad[0] : ''})`);
+ok(st.tailwinds > 0 && !st.twLate.length, `after a Tailwind, its partner moves at double Speed this turn (${st.tailwinds} Tailwinds, ${st.twLate.length} partners late${st.twLate.length ? ', e.g. ' + st.twLate[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

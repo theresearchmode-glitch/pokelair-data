@@ -73,15 +73,25 @@ function turnOneData(mine, theirs, r) {
     else lines.push([m, 'Protect or switch', 'no good attack into these leads', 4]); }
   // turn order: priority bracket first (your planned move; theirs: Fake Out if they carry it), then Speed inside a bracket
   // (Stall always moves last inside its bracket)
-  const order = [...L, ...opp].map(x => { const me = L.includes(x), ln = me ? lines.find(l => l[0] === x) : null; return {x, s: speF(x), me, p: me ? (ln ? ln[3] || 0 : 0) : oPr(x), st: abilityOf(x) === 'Stall' ? 1 : 0}; })
-    .sort((a, b) => b.p - a.p || a.st - b.st || b.s - a.s);
+  // Tailwind re-orders the rest of the turn (review, Nov 19): from Gen 8 on (Showdown too), the queue is re-sorted by current Speed
+  // after every action, so once a side's Tailwind is up, its partner that hasn't moved yet moves at double Speed this same turn.
+  // Pokémon Champions follows Gen 9's rules; this re-sort is assumed there, not confirmed in Champions. (Trick Room: −7, so it only
+  // flips the order from next turn.) Ties are found as each mover is picked, at the Speed it moves with.
+  const cand = [...L, ...opp].map(x => { const me = L.includes(x), ln = me ? lines.find(l => l[0] === x) : null; return {x, s: speF(x), me, p: me ? (ln ? ln[3] || 0 : 0) : oPr(x), st: abilityOf(x) === 'Stall' ? 1 : 0, act: me && ln ? ln[1] : ''}; });
+  const twUp = {true: false, false: false}, order = [];
+  const cmp = (a, b) => b.p - a.p || a.st - b.st || b.es - a.es;
+  while (cand.length) { cand.forEach(c => { c.tw = twUp[c.me]; c.es = c.s * (c.tw ? 2 : 1); }); cand.sort(cmp); const c = cand.shift();
+    const n = cand.find(y => y.me !== c.me && y.p === c.p && y.st === c.st && y.es === c.es); if (n) c.tie = n.x;
+    order.push(c); if (c.act === 'Tailwind') twUp[c.me] = true; }
   const theirAct = o => { const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = oPr(o) === 3;
     return fo ? ['Fake Out', ''] : [`${d.worst.h.mv.name} into ${d.worst.on.d}`, `up to ${dmgP(100 * d.worst.pct)}% of its HP, ${koShort(d.worst.h.r)}`]; }; /* one wording for both lines (audit Nov 15) */
   // the beats, in move order: who moves, their Speed and bracket, the action and one short why (all plain text)
   const beats = order.map(o => { const ln = o.me ? lines.find(l => l[0] === o.x) : null, th = o.me ? null : theirAct(o.x);
-    return {x: o.x, me: o.me, speed: o.s, prio: o.p, act: ln ? ln[1] : th ? th[0] : oPr(o.x) === 3 ? 'Fake Out' : 'Unknown move', why: ln ? ln[2] : th ? th[1] : 'no damaging move found into your leads'}; });
+    const why = ln ? ln[2] : th ? th[1] : 'no damaging move found into your leads';
+    return {x: o.x, me: o.me, speed: o.es, prio: o.p, act: ln ? ln[1] : th ? th[0] : oPr(o.x) === 3 ? 'Fake Out' : 'Unknown move', ...(o.tw ? {tw: 1} : {}), _tie: o.tie,
+      why: o.tw ? `${why}${why ? '; ' : ''}moves at double Speed: ${o.me ? 'your' : 'their'} Tailwind is already up (Gen 9 turn order, assumed for Champions)` : why}; });
   // a speed tie between the two sides in one bracket: either may move first
-  beats.forEach((b, i) => { const n = beats[i + 1]; if (n && n.me !== b.me && n.prio === b.prio && n.speed === b.speed && !(/^Fake Out\b/.test(b.act) && /^Fake Out\b/.test(n.act))) b.why += `${b.why ? '; ' : ''}speed tie with ${n.x.d}: either can go first`; });
+  beats.forEach(b => { const n = b._tie ? beats.find(y => y.x === b._tie) : null; delete b._tie; if (n && !(/^Fake Out\b/.test(b.act) && /^Fake Out\b/.test(n.act))) b.why += `${b.why ? '; ' : ''}speed tie with ${n.x.d}: either can go first`; });
   // Fake Out's flinch (design review #1: flinched Pokémon still acted, two Fake Outs and Garchomp still attacked). Fake Out works on
   // turn one only; the target can't move this turn if it hasn't moved yet, unless Inner Focus, Shield Dust, Covert Cloak, a Ghost
   // type, or a priority blocker on its side (Armor Tail, Queenly Majesty, Dazzling; Psychic Terrain for grounded targets) stops it.
