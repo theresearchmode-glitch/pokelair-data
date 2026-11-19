@@ -35,3 +35,6 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    Measured: line 2 (#9BDCFF) on the band blue is 3.17:1 even with no crowd; the crowd behind makes it worse in spots.
    A RECOMMENDED: same colours, a band-blue glow behind the words (keeps the look; meets the 3:1 big-text rule).
    B: glow + paler line 2 (3.79:1). C: line 2 white (4.73:1, loses the two tones). D: no change.
+12. Q20 · Matchups cards: real-games verdict vs 'Calc disagrees' (review #8): pictures docs/rebuild/pics/nov19/Q20-matchups-calc-note-*.png
+   A RECOMMENDED: one verdict per card + one short grey line 'Calc: beats it' (keeps the info where it belongs, equal heights).
+   B: verdict only on cards, one sentence under the grid. C: no change.
