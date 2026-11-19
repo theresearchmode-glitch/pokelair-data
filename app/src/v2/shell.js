@@ -432,6 +432,8 @@ V2.navInit = () => { if (V2.nav.ready) return; V2.nav.ready = true; const st = h
 V2.navStep = was => { V2.navInit(); const st = history.state || {};
   if (st.v2d != null) { V2.nav.d = st.v2d; V2.nav.p = st.v2p || ''; V2.nav.hs[V2.nav.d] = location.hash || '#home'; if (V2.nav.d > V2.nav.max) V2.nav.max = V2.nav.d; return st.v2y || 0; }
   // a new step after going back drops the steps you could go forward to (as in any browser)
+  // the Back arrow's safety net (below) is a step back, not a new one
+  if (V2.nav.fb) { const fb = V2.nav.fb; V2.nav.fb = null; V2.nav.d = fb.d; V2.nav.p = fb.p; V2.nav.max = V2.nav.d; V2.nav.hs.length = V2.nav.d; V2.nav.hs[V2.nav.d] = location.hash || '#home'; V2.navMark({v2d: fb.d, v2p: fb.p, v2y: 0}); return 0; }
   V2.nav.d++; V2.nav.p = was || '#home'; V2.nav.max = V2.nav.d; V2.nav.hs.length = V2.nav.d; V2.nav.hs[V2.nav.d] = location.hash || '#home'; V2.navMark({v2d: V2.nav.d, v2p: V2.nav.p, v2y: 0}); return 0; };
 // remember where this step is scrolled: right before any tap that may change the page, and when the page is hidden or left.
 // Sim, Nov 14 (Claude app on iPhone, every long page): the scroll bar flashed after scrolling a moment. Writing to the history while
@@ -453,7 +455,11 @@ V2.fwdBtn = () => { V2.navInit(); const can = V2.nav.d < V2.nav.max, n = V2.esc(
 document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2fwd]'))) return; if (V2._sheet) { V2.closeSheet(); return; }
   if (V2.nav.d < V2.nav.max) try { history.forward(); } catch (x) {} });
 document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2back]'))) return; if (V2._sheet) { V2.closeSheet(); return; }
-  if (V2.nav.d > 0) try { history.back(); } catch (x) {} });
+  if (V2.nav.d <= 0) return; const h0 = location.hash, d0 = V2.nav.d, to = V2.nav.p || '#home'; try { history.back(); } catch (x) {}
+  // safety net (Sim, Nov 18, Claude desktop app: Home -> Sneasler -> Back stayed on Sneasler in the Preview): when the page's frame
+  // ignores the history step, nothing has moved after a moment, so go straight to the page you came from (test: app/test/v2-back.mjs)
+  clearTimeout(V2.nav.fbT); V2.nav.fbT = setTimeout(() => { if (location.hash !== h0 || V2.nav.d !== d0 || V2._sheet || to === h0) return;
+    const d = d0 - 1; V2.nav.fb = {d, p: d > 0 ? (V2.nav.hs[d - 1] || '#home') : ''}; location.hash = to; }, 700); });
 // Double taps (today's 34-events.js TAP_ACT, Oct 31; audit X-03/X-04, Nov 12): right after an action that changes the team, the box,
 // their six, the log or the page, a second tap within 450 ms is ignored, so a double tap can't apply twice, save twice, or land on
 // whatever the redraw put under the finger. One capture-phase listener, as today; the two per-button guards in sugs.js stay harmless.
