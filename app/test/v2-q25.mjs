@@ -8,7 +8,7 @@
 import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') + msg); if (!c) fails.push(msg); };
-const grid = [], size = [], tall = [], over = [], tap = [], wide = [], flow = [];
+const grid = [], size = [], tall = [], over = [], tap = [], wide = [], flow = [], words = [];
 let seen = 0, block390 = 0;
 const measure = () => { const q = s => [...document.querySelectorAll(s)];
   const me = q('.pp2-plate.me'), them = q('.pp2-plate.them'); if (me.length !== 6 || them.length !== 6) return null;
@@ -27,6 +27,11 @@ for (const th of ['light', 'dark']) for (const W of [320, 360, 390, 430, 699, 70
   for (let k = 0; k < 4; k++) {
     await p.evaluate(() => window.__ev("prStart('real'); V2.redraw()")); await p.waitForTimeout(300);
     const m = await p.evaluate(`(${measure})()`); if (!m) { grid.push(`${th} ${W} #${k}: practice did not show two sixes`); continue; } seen++;
+    /* Nov 19 (Claude's review of the helper's 320 picture: 'Charizar|d', 'Golisopo|d'): no name word breaks across two lines */
+    const split = await p.evaluate(() => { const bad = []; document.querySelectorAll('.pp2-plate .nm').forEach(b => { const tw = document.createTreeWalker(b, NodeFilter.SHOW_TEXT); let t;
+      while ((t = tw.nextNode())) { const re = /\S+/g; let m; while ((m = re.exec(t.data))) { const rg = document.createRange(); rg.setStart(t, m.index); rg.setEnd(t, m.index + m[0].length);
+        if (new Set([...rg.getClientRects()].filter(x => x.width).map(x => Math.round(x.top))).size > 1) bad.push(m[0]); } } }); return bad; });
+    for (const w of split) words.push(`${th} ${W} #${k}: '${w}' breaks mid-word`);
     const at = `${th} ${W} #${k}`, med = a => a.slice().sort((x, y) => x - y)[a.length >> 1];
     if (m.side) over.push(`${at}: the page scrolls sideways`);
     if (phone) {
@@ -61,6 +66,7 @@ ok(seen >= 50 && !grid.length, `phones 320-699: your six sit 3 columns x 2 rows 
 ok(seen >= 50 && !size.length, `phones: each of your cards is as wide as theirs, same sprite and frame, within 2px (${size.length} off${size.length ? ', e.g. ' + size[0] : ''})`);
 ok(block390 > 0 && !tall.length, `at 390 your six take at most 400px (tallest ${Math.round(block390)}px${tall.length ? '; ' + tall[0] : ''})`);
 ok(!over.length, `phones: no name runs out of a card (yours or theirs); nothing scrolls sideways, 320-1440 (${over.length}${over.length ? ', e.g. ' + over[0] : ''})`);
+ok(!words.length, `phones and desktop: every name keeps each word whole on one line (${words.length}${words.length ? ', e.g. ' + words[0] : ''})`);
 ok(!tap.length, `phones: every card of your six is a 44px+ tap target and not faded below 0.8 (${tap.length}${tap.length ? ', e.g. ' + tap[0] : ''})`);
 ok(!wide.length, `700 and 1440: your six unchanged, one column of plates as wide as theirs with sprite, name and types (${wide.length}${wide.length ? ', e.g. ' + wide[0] : ''})`);
 ok(!flow.length, `picking four and two leads by tap/click still works, and the reveal keeps one plate per row on phones (${flow.length}${flow.length ? ', e.g. ' + flow[0] : ''})`);
