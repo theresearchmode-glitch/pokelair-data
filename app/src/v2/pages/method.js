@@ -8,7 +8,7 @@ if (typeof CH === 'object' && !CH.gcol) CH.gcol = L => `var(--band-${({A: 'top',
 const tierChip = T => `<b class="u">${T.k}</b>`;
 V2.MTH = [['Your team', [['grade', 'Strength Score', 'How strong the team is altogether, out of 100'], ['ready', 'Matchups', 'Real damage calcs against the 30 Pokémon that make top cut most'], ['checks', 'Team Checks', 'What most winning tournament teams have: 4 basics and 3 notes']]],
   ['Pokémon', [['rating', 'Pokémon Ratings (0–100)', 'Proven results: top cuts, strong players, wins'], ['data', 'Usage, Sets and Sources', 'Where every number comes from']]],
-  ['Tools', [['calc', 'Damage Calc', "Level 50 doubles, the game's own rounding"], ['speed', 'Speed Tiers', 'Who moves first, with real spreads'], ['build', 'Build Me a Team and Suggestions', 'Ranked by the same Strength Score as My Team']]],
+  ['Tools', [['calc', 'Damage Calculator', "Level 50 doubles, the game's own rounding"], ['speed', 'Speed Tiers', 'Who moves first, with real spreads'], ['build', 'Build Me a Team and Suggestions', 'Ranked by the same Strength Score as My Team']]],
   ['The data', [['filter', 'What Gets Left Out', 'Themed cups, odd events and thin data'], ['fresh', 'Updates and Cross-checks', 'Every morning, each number with its date']]]];
 /* word list (Nov 16 stress test): the team's number is the Strength Score, never 'the grade'; Matchups is about answers, not 'readiness'.
    The shared text (63-method-data.js, also today's live site) is left as it is; the new site swaps the exact phrases */

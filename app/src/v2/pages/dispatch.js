@@ -133,7 +133,7 @@ V2.dpFix = () => { const E = V2.esc, next = V2.dpNext(), shown = next.slice(0, 3
 // ---------- Classifieds: four playful one-liners, each opening a tool (new words; Sim hasn't signed them off) ----------
 V2.dpAds = () => { const E = V2.esc; let top = ''; try { const r = lairRows().filter(x => x.r && x.r.tc)[0]; top = r ? r.p.d : ''; } catch (e) {}
   const ads = [['Wanted', "A turn 1 plan for tonight's match.", 'Apply at Battle', 'battle'], ['For Hire', 'Team builder, works from real winning teams.', 'Ask for Build', 'build'],
-    ['Lost', `One win streak.${top ? ` Last seen before a ${top}.` : ''}`, 'Check My Team', 'team'], ['Notice', 'Damage numbers checked while you wait.', 'See Damage Calc', 'calc']];
+    ['Lost', `One win streak.${top ? ` Last seen before a ${top}.` : ''}`, 'Check My Team', 'team'], ['Notice', 'Damage numbers checked while you wait.', 'See Damage Calculator', 'calc']];
   return `<section class="dp-ads" aria-label="Classifieds"><h2 class="dp-adh u">Classifieds</h2><ul class="dp-al">${ads.map(([k, t, a, h]) => `<li><a class="dp-ad" href="#${h}"><small class="dp-adk">${E(k)}</small><span>${V2.keepForm(E(t))} <b>${E(a)} ›</b></span></a></li>`).join('')}</ul></section>`; };
 // ---------- the piece ----------
 V2.dpFront = (post, o = {}) => { const E = V2.esc; if (post === undefined) post = V2.postNow(); const D = V2.dpParts(post);

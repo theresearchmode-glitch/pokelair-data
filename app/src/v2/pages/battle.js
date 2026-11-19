@@ -241,10 +241,12 @@ document.addEventListener('change', e => { const t = e.target; if (!t || !t.matc
 // "Coming next" page (rule C10: marked, not faked).
 V2.BT_TOOLS = () => { let n = 0; try { n = gauntletTeams().length; } catch (e) {}
   /* names in title case, no counts in the bar (Sim, Nov 12) */
-  return [['practice', 'Team Preview Practice', '', 'Pick four and two leads against real ladder teams'], ['gauntlet', 'Test Run', '', `Your team into the latest ${n || ''} top teams`.replace('  ', ' ')],
-    ['speed', 'Speed Tiers', '', 'Your six against the 20 most-used Pokémon'], ['calc', 'Damage Calc', '', 'Any attacker into any defender'], ['types', 'Type Chart', '', '18 types, or look up a Pokémon']]; };
+  /* Sim, Nov 19: Damage Calculator first, then Battle, Team Preview Practice, Test Run, Speed Tiers, Type Chart ('calc' is now named
+     Damage Calculator; battleToolsBar puts Battle second) */
+  return [['calc', 'Damage Calculator', '', 'Any attacker into any defender'], ['practice', 'Team Preview Practice', '', 'Pick four and two leads against real ladder teams'], ['gauntlet', 'Test Run', '', `Your team into the latest ${n || ''} top teams`.replace('  ', ' ')],
+    ['speed', 'Speed Tiers', '', 'Your six against the 20 most-used Pokémon'], ['types', 'Type Chart', '', '18 types, or look up a Pokémon']]; };
 V2.battleToolsBar = (cur = 'battle') => { const L = Array.isArray(S.log) ? S.log.length : 0, on = k => k === cur ? ' aria-current="page" class="on"' : '';
-  return `<nav class="bt-tools" aria-label="Battle tools"><a href="#battle"${on('battle')}>Battle</a>${V2.BT_TOOLS().map(([h, t, s]) => `<a href="#${h}"${on(h)}>${t}${s ? `<small>${s}</small>` : ''}</a>`).join('')}</nav>`; }; /* advisor (Nov 15, E): the tools bar holds tools only; Your Games lives on the Battle page itself (the bar's first item) */
+  return `<nav class="bt-tools" aria-label="Battle tools">${[V2.BT_TOOLS()[0], ['battle', 'Battle', ''], ...V2.BT_TOOLS().slice(1)].map(([h, t, s]) => `<a href="#${h}"${on(h)}>${t}${s ? `<small>${s}</small>` : ''}</a>`).join('')}</nav>`; }; /* advisor (Nov 15, E): the tools bar holds tools only; Your Games lives on the Battle page itself (the bar's first item) */
 V2.battleMoreTools = () => `<section class="bt-more"><h2 class="u">More Ways to Prep</h2><ul>${V2.BT_TOOLS().map(([h, t, s, d]) => `<li><a href="#${h}"><span>${t}<small>${V2.esc(d)}</small></span><i aria-hidden="true">›</i></a></li>`).join('')}</ul></section>`;
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-btlogjump]'); if (!a) return; e.preventDefault(); const l = document.querySelector('.bt-log'); if (l) l.scrollIntoView({behavior: V2.smooth(), block: 'start'}); });
 // Battle Q3 B (Nov 13): a tile in Your Six on the empty Battle page opens that Pokémon's info sheet (as Build's six, Sim Nov 12)

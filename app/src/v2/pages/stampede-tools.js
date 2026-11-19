@@ -19,7 +19,7 @@
 V2.SDT_TYPES = ['Normal', 'Fire', 'Water', 'Electric', 'Grass', 'Ice', 'Fighting', 'Poison', 'Ground', 'Flying', 'Psychic', 'Bug', 'Rock', 'Ghost', 'Dragon', 'Dark', 'Steel', 'Fairy'];
 V2.SDT_WXTY = {tw: 'Flying', sun: 'Fire', rain: 'Water', sand: 'Ground', snow: 'Ice', grassy: 'Grass', psy: 'Psychic', tr: 'Ghost', elec: 'Electric'}; // as the Archetypes page's scenes
 // the twelve tools: name, page (the same hashes as today's Home list V2.HOME_TOOLS and the menu)
-V2.SDT_GO = {'Speed Tiers': 'speed', 'Type Chart': 'types', Ratings: 'meta', 'Winning Teams': 'tournaments', Battle: 'battle', 'Damage Calc': 'calc',
+V2.SDT_GO = {'Speed Tiers': 'speed', 'Type Chart': 'types', Ratings: 'meta', 'Winning Teams': 'tournaments', Battle: 'battle', 'Damage Calculator': 'calc',
   'Winning Cores': 'build', Archetypes: 'archetypes', 'Team Preview Practice': 'practice', 'Popular Sets': 'sets', Events: 'events', 'How We Calculate': 'method'};
 // Sim, Nov 18: "team preview practice should get one of the big tabs. its such a fun and interesting concept." Practice takes Test Run's
 // plate; Test Run joins More tools (every tool stays one tap away)
@@ -80,7 +80,7 @@ V2.sdTools = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n => 
   // Damage Calc: the site's own calc of the #1 rated's best hit on the #2 rated, as a health bar (HP left / could be lost / lost)
   const H = X.hit, hp = H ? `<div class="sdt-hit"><p class="sdt-hp" role="img" aria-label="${E(H.mv)} takes ${dmgP(H.lo)} to ${dmgP(H.hi)}% of ${E(V2.disp(H.d.n))}'s HP"><i class="left" style="width:${(100 - H.hi).toFixed(1)}%"></i><i class="roll" style="width:${(H.hi - H.lo).toFixed(1)}%"></i></p>
     <p class="sdt-hpw" aria-hidden="true"><b>${E(H.mv)}</b> ${dmgP(H.lo)}–${dmgP(H.hi)}%</p><div class="sdt-duel">${V2.sdtMon(H.a.n, {cls: 'atk'})}<i class="sdt-strike" aria-hidden="true"></i>${V2.sdtMon(H.d.n, {cls: 'def'})}</div><p class="sdt-cc" aria-hidden="true">${nm(H.a.n)} into ${nm(H.d.n)}</p></div>` : '';
-  const calc = V2.sdtPlate('Damage Calc', 'sdt-dc', 'Run the damage first.', 'Run the damage first.', hp);
+  const calc = V2.sdtPlate('Damage Calculator', 'sdt-dc', 'Run the damage first.', 'Run the damage first.', hp);
   // the four small plates, each picture breaking out of the top
   const K = X.core, core = K ? `<div class="sdt-pic"><div class="sdt-core">${V2.sdtMon(K.ns[0], {})}<b class="u sdt-plus" aria-hidden="true">+</b>${V2.sdtMon(K.ns[1], {})}</div><p class="sdt-cc" aria-hidden="true">${nm(K.ns[0])} + ${nm(K.ns[1])}</p></div>` : '';
   const cores = V2.sdtPlate('Winning Cores', 'sdt-sm', 'Pairs that keep winning together.', 'Pairs that win.', core);

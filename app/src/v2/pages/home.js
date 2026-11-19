@@ -105,7 +105,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 /* stress test (Nov 16): each link opens the page it names (they opened the hub: 'Damage Calc ›' landed on Battle) */
 V2.HOME_TOOLS = [['Battle', 'Their six in, your four, the leads and turn 1 out', 'battle'], ['Winning Teams', 'Search every winning team by Pokémon, item or move', 'tournaments'],
   ['Type Chart', 'What hits what, and your team against every type', 'types'], ['Ratings', 'Every legal Pokémon on one tier board', 'meta'],
-  ['Damage Calc', 'Real damage with stats, items and spread moves', 'calc'], ['Events', 'Every recent tournament, top cut and full sets', 'events'],
+  ['Damage Calculator', 'Real damage with stats, items and spread moves', 'calc'], ['Events', 'Every recent tournament, top cut and full sets', 'events'],
   ['Test Run', 'Run your team into the top 20 tournament teams', 'gauntlet'], ['Popular Sets', 'Moves, items and natures players run', 'sets'],
   ['Speed Tiers', 'Who moves first, with Tailwind and Trick Room', 'speed'], ['Archetypes', 'How to beat Trick Room, Tailwind, rain, sun and more', 'archetypes'],
   ['Winning Cores', 'Pairs and trios that win the most', 'build'],

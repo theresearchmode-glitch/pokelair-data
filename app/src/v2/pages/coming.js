@@ -7,7 +7,7 @@ if (window.__NP_PREVIEW) {
     battle: ['battle', 'Battle', 'Bring these four, lead the pair: the plan against an opponent\'s six, turn one in move order.'],
     meta: ['ratings', 'Meta', 'Who wins right now: ratings, usage, winning teams, events and archetypes.']};
   // Battle's tools (Nov 12, Q6): not rebuilt yet and no mock-up of their own; the page says so and points to today's site
-  const TOOLS = {practice: 'Team Preview Practice', gauntlet: 'Test Run', speed: 'Speed Tiers', calc: 'Damage Calc', types: 'Type Chart'};
+  const TOOLS = {practice: 'Team Preview Practice', gauntlet: 'Test Run', speed: 'Speed Tiers', calc: 'Damage Calculator', types: 'Type Chart'};
   for (const [k, name] of Object.entries(TOOLS)) if (!V2.pages[k]) V2.pages[k] = {place: 'battle', draw: () => `<section class="cm2"><div class="cm2-t"><div class="np-eyebrow"><span>Battle · ${name} · coming next</span></div><h1 class="u">${name}</h1>
       <p class="tm-sub">This page is being rebuilt in the new design. It works on today's NastyPlot site until the switch.</p><div class="row"><a class="np-btn" href="#battle">Back to Battle</a></div></div></section>`};
   // Pages linked from the footer and from inside pages, not rebuilt yet and with no mock-up of their own (Nov 12, audit i19, rule C10):

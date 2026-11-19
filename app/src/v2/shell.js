@@ -226,14 +226,14 @@ V2.findPlaces = [...V2.places, ['box', 'My Box'], ['compare', 'Compare Teams'], 
   ['team', 'Team Sheet', () => V2.openTeamSheet && V2.openTeamSheet()], ['team', 'All Suggestions', () => V2.openAllSugs && V2.openAllSugs()],
   /* Nov 15 (parity with today's search): every page can be found, by its name or a word of its line */
   ['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['tournaments', 'Winning Teams'], ['events', 'Events'], ['archetypes', 'Archetypes'], ['weekly', 'This Week'],
-  ['speed', 'Speed Tiers'], ['calc', 'Damage Calc'], ['types', 'Type Chart'], ['practice', 'Team Preview Practice'], ['gauntlet', 'Test Run'],
+  ['speed', 'Speed Tiers'], ['calc', 'Damage Calculator'], ['types', 'Type Chart'], ['practice', 'Team Preview Practice'], ['gauntlet', 'Test Run'],
   ['track', 'Track Record'], ['method', 'How We Calculate'],
   /* Sim, Nov 18 (morning questions 1f): the Post Room and the Dispatch are found by Search; the top bar keeps its five places and Home's post band stays the main way in */
   ['gifts', 'Mystery Gifts'], ['news', 'Champions News'], ['about', 'About & Legal'], ['feedback', 'Send Feedback'],
   /* known-bug BROKEN-10 (Nov 17): Build's two tools by name, the core section reached straight from search */
   ['build', 'Build Me a Team'], ['build', 'Build Around a Core', () => { V2.bdUi.jtab = 'cores'; V2.bdUi.toCores = true; V2.redraw(); }]]; /* the same way Home's core cards open Build at the cores (CORES-13) */
 // today's site's menu names and plurals still find the new page (returning players), shown under the new name
-V2.placeAlias = {'Build Me a Team': ['build for me'], 'Build Around a Core': ['cores', 'winning cores'], Battle: ['battle a team'], Ratings: ['pokémon ratings', 'pokemon ratings', 'meta rankings'],
+V2.placeAlias = {'Damage Calculator': ['damage calc', 'calc', 'calculator'], 'Build Me a Team': ['build for me'], 'Build Around a Core': ['cores', 'winning cores'], Battle: ['battle a team'], Ratings: ['pokémon ratings', 'pokemon ratings', 'meta rankings'],
   'Mystery Gifts': ['gifts', 'codes', 'gift codes', 'serial codes', 'post room'], 'Champions News': ['news', 'dispatch', 'champions dispatch']};
 V2.findOk = () => V2.findPlaces.filter(([k]) => k !== 'feedback' || (V2.FB && V2.FB.ok)); /* Send Feedback only where it can send (function sweep, Nov 15: listed in the Preview) */
 // one line per page, shown when the search box is empty (today's search lists its tools) and searched too ("speed", "damage")
