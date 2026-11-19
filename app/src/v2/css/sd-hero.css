@@ -72,6 +72,8 @@
 .sdh-go.sm .sdh-b1,.sdh-go.sm .sdh-b2{font-size:var(--t13)} /* stampede-hero.js: when a label would wrap in this window */
 @media (max-width:699.98px) and (max-height:740px){.sdh-say{font-size:var(--t15)}.sdh-ledge{row-gap:var(--s3);padding-bottom:var(--s4)}}
 @media (max-width:359.98px){.sdh-go{grid-template-columns:minmax(0,1fr)}}
+/* Sim, Nov 18 (Q2 B): at 360-389 the two buttons' labels fit by about 1px ('Build Me a Team' wrapped in Chromium 131), so 4px side padding there */
+@media (min-width:360px) and (max-width:389.98px){.sdh-b1,.sdh-b2{padding:0 var(--s1)}}
 /* the ticker: the next ratings, a still red strip tilted with the bands (whole names only; stampede-hero.js hides one that would be cut) */
 .sdh-tick{position:relative;z-index:5;width:112%;margin:calc(var(--s4) + round(3vw,4px)) 0 0 -6%;padding:0 calc(round(6%,4px) + var(--gut));background:var(--sd-flag);rotate:var(--sd-tilt)}
 .sdh-tick ul{display:flex;flex-wrap:wrap;column-gap:var(--s10);height:64px;overflow:hidden}
