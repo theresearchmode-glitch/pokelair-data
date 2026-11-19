@@ -129,7 +129,7 @@ document.addEventListener('click', e => { if (!e.target.closest || !e.target.clo
 // section; the list ends with where to find more. Each card adds short facts (types, tier, role, Hidden gem, Ability @ Item); the
 // change chips stay in Why?, which already says them. Apply closes the sheet; its Undo waits on My Team (Q5 sub-question A).
 // Every plan, number and word comes from today's shared logic (planner, rating, monRole, isGem, assignItems); this only draws them.
-V2.sgAll = {list: [], n: 6};
+V2.sgAll = {list: [], n: 6, nb: 1}; // nb: Bigger Plans shown before its own Show More (Sim, Nov 18, Q3 B: first plan, then 'Show N More')
 V2.SGA_POOL = {box: 'your box', boxfill: 'your box and the best Pokémon to catch', all: 'the whole roster'};
 // the card facts for each Pokémon coming in: type chips, "S tier 94", role, Hidden gem, then "Ability @ Item" (today's plan card's set
 // line: the Ability its set runs, the item after Item Clause is settled across the new six, assignItems)
@@ -152,22 +152,22 @@ V2.allSugsHtml = () => { const ms = members(), U = V2.sgAll, E = V2.esc, busy = 
   const P = V2.plan.plans || [], shown = ui.planList || [], X = V2.sgX(ms);
   const rest = [...P, ...(P.more || [])].filter(pl => !shown.includes(pl)), all = [...shown, ...rest]; let g0 = null; try { g0 = P.gBase != null ? P.gBase : ms.length === 6 ? gradeTeam(ms) : null; } catch (e) {}
   const side = !P.length, singles = all.filter(pl => pl.ch.length === 1), multi = all.filter(pl => pl.ch.length > 1);
-  const S1 = singles.slice(0, U.n), left = singles.length - S1.length; U.list = [...S1, ...multi]; U.count = all.length;
+  const S1 = singles.slice(0, U.n), left = singles.length - S1.length, M1 = multi.slice(0, U.nb), bleft = multi.length - M1.length; U.list = [...S1, ...M1]; U.s1 = S1.length; U.count = all.length;
   const card = (pl, k) => { let why = null;
     if (!(pl._why && pl._why.length)) { try { const r = planWhy(pl, k, X, false); why = {lines: r.lines, wk: r.wk}; } catch (e) {} }
     return V2.sgCard({pl, k, g0, attr: 'data-v2plana', side: side && shown.includes(pl), why, main: !k, facts: V2.sgaFacts(pl)}); };
   const notes = P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${E(P.gapNote)}</p>` : '';
   const one = S1.length ? `<h3 class="u sga2-h3">${ms.length >= 6 ? 'One Pokémon In, One Out' : 'Pokémon to Add'}</h3><ol class="tm-sug sga2-two">${S1.map((pl, k) => card(pl, k)).join('')}</ol>
     ${left > 0 ? `<button type="button" class="sga2-strip" data-v2sgamore><b class="u">Show ${Math.min(6, left)} More</b><span>Showing ${S1.length} of ${singles.length}</span></button>` : ''}` : '';
-  const big = `<h3 class="u sga2-h3">Bigger Plans</h3><p class="tm-sub">Two or more changes at once.</p>${multi.length ? `<ol class="tm-sug sga2-big">${multi.map((pl, j) => card(pl, S1.length + j)).join('')}</ol>`
+  const big = `<h3 class="u sga2-h3">Bigger Plans</h3><p class="tm-sub">Two or more changes at once.</p>${multi.length ? `<ol class="tm-sug sga2-big">${M1.map((pl, j) => card(pl, S1.length + j)).join('')}</ol>${bleft > 0 ? `<button type="button" class="sga2-strip" data-v2sgbmore><b class="u">Show ${Math.min(3, bleft)} More</b><span>Showing ${M1.length} of ${multi.length}</span></button>` : ''}`
     : `<p class="tm-sub">No plan with two or more changes raises the Strength Score${g0 != null ? ` (it’s at ${Math.round(g0)})` : ''}.</p>`}`;
-  const end = left > 0 ? '' : `<p class="tm-sub sga2-end">That’s every change the planner found in ${E(poolW)}.${ui.pool !== 'all' ? ' For more, set Suggest from to Whole Roster above.' : ''}</p>`;
+  const end = left > 0 || bleft > 0 ? '' : `<p class="tm-sub sga2-end">That’s every change the planner found in ${E(poolW)}.${ui.pool !== 'all' ? ' For more, set Suggest from to Whole Roster above.' : ''}</p>`;
   const body = all.length ? notes + one + big + end : `${notes}<p class="tm-sub">No suggestions for this team from this pool.${ui.pool !== 'all' ? ' Try Whole Roster above.' : ''}</p>`;
   U.last = body; return `<div class="sga2">${head(all.length)}${body}</div>`; };
-V2.openAllSugs = () => { if (!members().length) return; Object.assign(V2.sgAll, {n: 6, last: '', count: null}); V2.sheet(V2.allSugsHtml(), {label: 'All Suggestions'}); };
+V2.openAllSugs = () => { if (!members().length) return; Object.assign(V2.sgAll, {n: 6, nb: 1, last: '', count: null}); V2.sheet(V2.allSugsHtml(), {label: 'All Suggestions'}); };
 // redraw the open sheet in place, keeping its scroll and the focused control (a Suggest from choice, Show More)
 V2.sgAllRedraw = focusSel => { const el = document.querySelector('.np-sheet .sga2'); if (!el) return; const a = document.activeElement, sh = el.closest('.np-sheet'), y = sh.scrollTop;
-  let sel = focusSel; if (!sel && a && el.contains(a)) sel = a.matches('[data-v2slide] > button') ? `[data-v2slide="${a.parentElement.dataset.v2slide}"] > [data-v="${a.dataset.v}"]` : a.matches('[data-v2sgamore]') ? '[data-v2sgamore]' : null;
+  let sel = focusSel; if (!sel && a && el.contains(a)) sel = a.matches('[data-v2slide] > button') ? `[data-v2slide="${a.parentElement.dataset.v2slide}"] > [data-v="${a.dataset.v}"]` : a.matches('[data-v2sgamore]') ? '[data-v2sgamore]' : a.matches('[data-v2sgbmore]') ? '[data-v2sgbmore]' : null;
   const had = !!(a && el.contains(a)); el.outerHTML = V2.allSugsHtml(); sh.scrollTop = y;
   const f = sel && sh.querySelector('.sga2 ' + sel); if (f) f.focus({preventScroll: true}); else if (had) sh.focus({preventScroll: true}); };
 // My Team redraws when the planner finishes or a setting changes: the open sheet follows when its plans, pool or busy state changed
@@ -176,7 +176,9 @@ V2.sgAllSync = () => { if (V2._sgaT) return; V2._sgaT = setTimeout(() => { V2._s
 document.addEventListener('click', e => { if (!e.target.closest) return;
   if (e.target.closest('[data-v2sgall]')) { V2.openAllSugs(); return; }
   // Show 6 More: the next six swaps open in place; the focus goes to the first new card's Apply
-  if (e.target.closest('[data-v2sgamore]')) { const k = Math.min(V2.sgAll.n, V2.sgAll.list.length); V2.sgAll.n += 6; V2.sgAllRedraw(`[data-v2plana="${k}"]`); } });
+  if (e.target.closest('[data-v2sgamore]')) { const k = Math.min(V2.sgAll.n, V2.sgAll.list.length); V2.sgAll.n += 6; V2.sgAllRedraw(`[data-v2plana="${k}"]`); return; }
+  // Show N More under Bigger Plans (Q3 B): the next three plans open in place; the focus goes to the first new card's Apply
+  if (e.target.closest('[data-v2sgbmore]')) { const U = V2.sgAll, k = (U.s1 || 0) + U.nb; U.nb += 3; V2.sgAllRedraw(`[data-v2plana="${k}"]`); } });
 
 // ---------- Apply (today's applyPlan: Undo kept, what it swapped out isn't offered straight back) ----------
 // a second tap within half a second is ignored, as on today's page (a double tap can't apply two suggestions)

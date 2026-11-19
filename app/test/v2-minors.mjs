@@ -213,8 +213,18 @@ const AS = async () => {
       const t = fa.innerText.replace(/\s+/g, ' '); return (fa.querySelector('.np-type') ? '' : 'no type ') + (/\b[SABCD] tier \d+/.test(t) ? '' : 'no tier ') + (/\S @ \S/.test(t) ? '' : 'no set ') + (/(Weak spots|Unresisted|Offense) \d/.test(t) ? 'chips ' : ''); }).filter(Boolean));
     const n = await q.evaluate(() => document.querySelectorAll('.np-sheet .sga2 .tm-sug > li').length);
     ok(n > 0 && !f.length, `AS-5 (Q5 C): ${n} cards each show types, tier and Ability @ Item, no change chips outside Why? (${f.slice(0, 3).join(' | ') || 'all good'})`);
+  // AS-4b (Sim, Nov 18, Q3 B): with two or more Bigger Plans the section shows the first, then "Show N More" (Showing 1 of M);
+  // the strip opens the rest in place with the focus on the first new card's Apply; the end line waits until everything is open
+  { const {q, c} = await openAS(); const r = await q.evaluate(() => window.__ev(`(() => { const s = document.querySelector('.np-sheet .sga2'), n = s.querySelectorAll('.sga2-big > li').length,
+      st = s.querySelector('[data-v2sgbmore]'); return {n, strip: st ? st.innerText.replace(/\\s+/g, ' ').trim() : '', end: !!s.querySelector('.sga2-end'), multi: [...(V2.plan.plans || []), ...((V2.plan.plans || {}).more || [])].filter(pl => pl.ch.length > 1).length}; })()`));
+    if (r.multi >= 2) { await q.click('.np-sheet [data-v2sgbmore]'); await q.waitForTimeout(500);
+      const r2 = await q.evaluate(() => ({n: document.querySelectorAll('.np-sheet .sga2-big > li').length, f: document.activeElement && document.activeElement.closest('.sga2-big > li') === document.querySelectorAll('.np-sheet .sga2-big > li')[1]}));
+      ok(r.n === 1 && r.strip === `Show ${Math.min(3, r.multi - 1)} More Showing 1 of ${r.multi}` && !r.end && r2.n === Math.min(4, r.multi) && r2.f,
+        `AS-4b (Q3 B): Bigger Plans shows 1 of ${r.multi}, "${r.strip}", no end line yet (${r.end}); Show More opens ${r2.n}, focus on the second plan (${r2.f})`); }
+    else ok(r.n === r.multi && !r.strip, `AS-4b (Q3 B): ${r.multi} Bigger Plan(s), no strip needed (${r.n} shown)`);
+    await c.close(); }
   // AS-6: the list ends with where to find more, once everything is open
-    for (let i = 0; i < 5 && await q.$('.np-sheet [data-v2sgamore]'); i++) { await q.click('.np-sheet [data-v2sgamore]', {timeout: 3000}).catch(() => {}); await q.waitForTimeout(400); }
+    for (let i = 0; i < 8 && await q.$('.np-sheet [data-v2sgamore],.np-sheet [data-v2sgbmore]'); i++) { await q.click('.np-sheet [data-v2sgamore],.np-sheet [data-v2sgbmore]', {timeout: 3000}).catch(() => {}); await q.waitForTimeout(400); } /* both Show More strips (Q3 B) */
     const end = await T(q, '.np-sheet .sga2-end');
     ok(/^That’s every change the planner found in your box and the best Pokémon to catch\. For more, set Suggest from to Whole Roster above\.$/.test(end), `AS-6 (Q5 C): the end line (${end})`); await c.close(); }
   // AS-7: the game-plan gap note shows in the sheet too (COV-09's team: nothing in this box closes the gap)
