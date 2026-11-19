@@ -109,8 +109,11 @@ V2.fitWords = () => { const ow = e => e.clientWidth > 1 && e.scrollWidth > e.cli
   /* Team Preview Practice cards on phones (Q25 A, Nov 19): a name word never breaks mid-word ('Charizar|d' at 320); a word too wide for its
      card is set a little tighter, then condensed sideways (laid out wider, drawn narrower with scaleX, centred), as the Hand's names are */
   document.querySelectorAll('.pp2-plate .nm').forEach(b => { const st = b.style; st.overflowWrap = 'normal'; st.hyphens = 'manual'; st.letterSpacing = st.width = st.transform = st.marginInline = '';
-    const W = b.clientWidth; if (W < 2 || !ow(b)) return; st.letterSpacing = '-.03em';
-    for (const k of [.94, .88, .82, .76, .7]) { if (!ow(b)) return; st.width = W / k + 'px'; st.marginInline = (W - W / k) / 2 + 'px'; st.transform = `scaleX(${k})`; }
+    /* a word drawn on two lines (also at its hyphen: 'Kommo-|o', CI frozen data Nov 19) counts as not fitting */
+    const split = () => { const tw = document.createTreeWalker(b, NodeFilter.SHOW_TEXT); let t; while ((t = tw.nextNode())) { const re = /\S+/g; let m; while ((m = re.exec(t.data))) { const rg = document.createRange(); rg.setStart(t, m.index); rg.setEnd(t, m.index + m[0].length);
+      if (new Set([...rg.getClientRects()].filter(x => x.width).map(x => Math.round(x.top))).size > 1) return true; } } return false; }, bad = () => ow(b) || split();
+    const W = b.clientWidth; if (W < 2 || !bad()) return; st.letterSpacing = '-.03em';
+    for (const k of [.94, .88, .82, .76, .7]) { if (!bad()) return; st.width = W / k + 'px'; st.marginInline = (W - W / k) / 2 + 'px'; st.transform = `scaleX(${k})`; }
     if (ow(b)) st.overflowWrap = st.hyphens = ''; });
   /* Damage Calc hand (Nov 16 audit: 'Thunderbol', 'Flamethrowe', 'Horsepow' cut on 15-108 attackers at 1100-1600): a one-word move too wide for its
      card steps down the scale (17 -> 15 -> 13); the four names then share the smallest size so the hand reads even */
