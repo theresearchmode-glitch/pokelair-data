@@ -63,3 +63,14 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    B: no change. Also from the review, no visible change: code order = screen order (theirs first), which I can do with A.
 18. Q26 · 'Restore Last Team' after Clear Team (review #2): pictures docs/rebuild/pics/nov19/Q26-restore-last-team-*.png
    A RECOMMENDED: a 'Restore Last Team' button on the empty My Team (with the team's name), until you add a Pokémon. B: no change.
+19. Q23 · Home copy (review #17): pictures docs/rebuild/pics/nov19/Q23-home-copy-*.png
+   A RECOMMENDED: keep every playful headline, add one plain line under the unclear ones ('Call six out of the herd.' -> 'Build
+   your six, see its Strength Score, and plan each match.'; 'Same herd. Twelve tools.' -> 'Every tool uses the same 345 rated
+   Pokémon: speed, types, damage, top teams and more.'; phones also get the Post band's line, hidden there today).
+   B: plain headlines instead (loses the voice). C: no change.
+20. Q24 · Odd addresses (review #20): pictures docs/rebuild/pics/nov19/Q24-*.png
+   Unknown address: A RECOMMENDED: a not-found page in the 'No Pokémon here.' style ('Nothing here.' + Go to Home). B: Home with a
+   message strip. C: no change. Found: in the Preview an unknown address goes to My Team (a Preview-only file); the real site
+   goes to Home. #owner for visitors: A RECOMMENDED: the same not-found page. B: no change ('Only for the site's owner.').
+21. Gallery (review #16, internal page, built by a helper): at iPad widths (2 columns) its 27 cards leave one lone card. OK as an
+   internal page, or even it up?
