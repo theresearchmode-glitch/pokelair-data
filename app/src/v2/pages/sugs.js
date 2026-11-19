@@ -149,7 +149,8 @@ V2.allSugsHtml = () => { const ms = members(), U = V2.sgAll, E = V2.esc, busy = 
   const ctl = `<div class="sg2-ctl sga2-ctl" role="group" aria-label="Suggestion settings"><div class="sg2-c sg2-pool"><span class="sg2-k">Suggest from</span>${V2.slide('sgpool', [['box', 'My Box'], ['boxfill', 'Box + Catch'], ['all', 'Whole Roster']], ui.pool, 'Suggest from')}</div></div>`;
   // audit Nov 19 #2 (rule C3): when My Team says "Nothing to fix" (plans.nothing; its ±0 best swap waits here, Sim's A3), the sheet says the
   // same sentence (LANE.NONE, the approved words) before its list, so "1 suggestion" can't read as a fix My Team missed
-  const head = (n, none) => `<div class="np-eyebrow">${n == null ? 'Suggestions' : `${n} suggestion${n === 1 ? '' : 's'}`}</div><h2 class="u">All Suggestions</h2>
+  /* W1b (Sim, Nov 19): beside 'Nothing to fix' the count says what the cards are: optional swaps (his Nov 11 words), not suggestions */
+  const head = (n, none) => `<div class="np-eyebrow">${n == null ? 'Suggestions' : `${n} ${none ? 'optional swap' : 'suggestion'}${n === 1 ? '' : 's'}`}</div><h2 class="u">All Suggestions</h2>
     <p class="tm-sub">${none ? `<b>${LANE.NONE.head}</b> ${LANE.NONE.body} ` : ''}Every change the planner found for your team, best first, each with how it moves the Strength Score.</p>${ctl}`;
   // while the planner works (a new Suggest from, a team change) the list on screen stays, faded and not tappable, as on My Team
   if (busy) return `<div class="sga2">${head(U.count, U.none)}<p class="tm-sub sg2-wait" role="status">Working out the best changes for your team…</p>${U.last ? `<div class="sg2-stale" inert aria-busy="true">${U.last}</div>` : ''}</div>`;
@@ -251,7 +252,8 @@ V2.fixFold = D => { const ms = D.ms; if (!ms || !ms.length) return ''; const use
   // A2: the fold holds the things to know and the read that appears nowhere else; the checks are listed once, above
   // player review 3f (Nov 17): name what the fold holds: the weak spots (weaknesses, 4x, coverage gaps, missing Mega, fringe picks), the
   // type chart, the legal check ("7 weak spots, type chart, legal"; was "7 things, types, legal")
-  const sub = [pr.real.length ? `${pr.real.length} weak spot${pr.real.length === 1 ? '' : 's'}` : 'No weak spots', 'type chart', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
+  /* W1c (Sim, Nov 19): beside 'Nothing to fix' the weak spots are called minor, so the two lines can't read as a contradiction */
+  const sub = [pr.real.length ? `${pr.real.length} ${P && P.nothing ? 'minor ' : ''}weak spot${pr.real.length === 1 ? '' : 's'}` : 'No weak spots', 'type chart', V.illegal ? 'not legal yet' : 'legal'].filter(Boolean).join(', ');
   // A6 (Sim's fix plan): one live "Working out…" message at load, not two; Suggestions' own line is the one read out
   const isOpen = !!LS.get('cc2.chf.rfix', null), probs = P ? pr.html : `<p class="tm-sub">Working out the fixes for your team…</p>${V2.fx.last ? `<div class="sg2-stale" inert aria-busy="true">${V2.fx.last}</div>` : ''}`;
   if (P) V2.fx.last = pr.html;

@@ -258,14 +258,18 @@ const AS = async () => {
     await st(); return {q, c, st}; };
   const NONE = 'Nothing to fix. Your team has every basic and no swap clearly beats it in real games.';
   { const {q, c} = await fresh(390); const mt = await T(q, '#tm-sg'); await q.evaluate(() => window.__ev('V2.openAllSugs()')); await q.waitForTimeout(1000);
+    const fold = await q.evaluate(() => ((document.querySelector('#main .sg2-fold[data-v2fix] summary .s') || {}).textContent || '').trim());
     const r = await q.evaluate(() => ({n: document.querySelectorAll('.np-sheet .sga2 .tm-sug > li').length, eb: ((document.querySelector('.np-sheet .sga2 .np-eyebrow') || {}).textContent || ''), sh: (document.querySelector('.np-sheet .sga2') || {innerText: ''}).innerText.replace(/\s+/g, ' ')}));
-    ok(mt.includes(NONE) && r.n >= 1 && r.sh.includes(NONE), `AS-10 (audit Nov 19 #2): My Team says "Nothing to fix" (${mt.includes(NONE)}) and the sheet, listing ${r.n} card(s) under "${r.eb}", says it too (${r.sh.includes(NONE)})`); await c.close(); }
+    ok(mt.includes(NONE) && r.n >= 1 && r.sh.includes(NONE), `AS-10 (audit Nov 19 #2): My Team says "Nothing to fix" (${mt.includes(NONE)}) and the sheet, listing ${r.n} card(s) under "${r.eb}", says it too (${r.sh.includes(NONE)})`);
+    /* W1b and W1c (Sim, Nov 19): beside "Nothing to fix" the sheet counts optional swaps, and Things to Know calls its weak spots minor */
+    ok(new RegExp(`^${r.n} optional swaps?$`).test(r.eb.trim()), `W1b (Sim, Nov 19): beside "Nothing to fix" the sheet's count reads "${r.n} optional swap${r.n === 1 ? '' : 's'}" (it reads "${r.eb.trim()}")`);
+    ok(/^(No weak spots|\d+ minor weak spots?),/.test(fold), `W1c (Sim, Nov 19): beside "Nothing to fix", Things to Know says "N minor weak spots" (it says "${fold}")`); await c.close(); }
   { const {q, c, st} = await fresh(390);
     await q.evaluate(() => window.__ev(`(() => { const i = S.slots.findIndex(s => s && s.n === 'Garchomp'); S.slots[i] = {n: '', a: null, lock: false}; persist(); render(); })()`)); await q.waitForTimeout(500); await st();
     const lines = sel => q.evaluate(s => [...document.querySelectorAll(s + ' .tm-sug > li')].filter(li => [...li.querySelectorAll('.tm-chg')].some(x => /^Add /.test(x.getAttribute('aria-label') || '')))
       .map(li => ((li.querySelector('.sg2-ln') || {}).textContent || '(no line)').replace(/\s+/g, ' ').trim()), sel);
     const mtL = await lines('#tm-sg'); await q.evaluate(() => window.__ev('V2.openAllSugs()')); await q.waitForTimeout(1000); const shL = await lines('.np-sheet .sga2'); const all = [...mtL, ...shL];
-    const bad = all.filter(t => /tell it apart|no clear edge/.test(t));
+    const bad = all.filter(t => /tell it apart|no clear edge/.test(t) || !/^(Add fills your empty spot|Fix )/.test(t)); /* W1a (Sim, Nov 19): 'Add · fills your empty spot' (a Fix line stays) */
     ok(mtL.length >= 1 && shL.length >= 1 && !bad.length, `AS-11 (audit Nov 19 #3): with 5 of 6, ${mtL.length} My Team and ${shL.length} sheet card(s) fill the empty spot; none says it's a small change real games can't tell apart (${[...new Set(bad.length ? bad : all)].slice(0, 3).join(' | ')})`); await c.close(); } };
 if (process.env.ONLY === 'AS') { await AS(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- AS end

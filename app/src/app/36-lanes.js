@@ -44,8 +44,8 @@ const LANE = {
     if (L.k === 'swap') return {k: 'swap', tag: 'Small edge', text: `about ${L.real} more win${L.real === 1 ? "" : "s"} in 100 games in real play`};
     // audit Nov 19 #3: a plan that fills an empty spot (a team of 1-5) is not a sideways swap: the Option words below compare one six with
     // another ("can't tell it apart from what you have", "no clear edge either way"), which is untrue of adding a Pokémon. No line until
-    // Sim picks its words (a Fix line, e.g. "adds a Mega", stays: it is true of the six it makes)
-    if ((pl.ch || []).some(x => x && !x.out)) return null;
+    // Sim picks its words (a Fix line, e.g. "adds a Mega", stays: it is true of the six it makes). W1a (Sim, Nov 19): 'Add · fills your empty spot'
+    if ((pl.ch || []).some(x => x && !x.out)) return {k: 'add', tag: 'Add', text: 'fills your empty spot'};
     const note = pl.gap && ((pl.gap.fix && pl.gap.fix.length) || (pl.gap.why || []).some(w => /^Meets the /.test(w)));
     return note ? {k: 'opt', tag: 'Option', text: 'covers a team note; real games show no clear edge either way'}
       : {k: 'opt', tag: 'Option', text: 'a small change: real games can’t tell it apart from what you have'}; },
