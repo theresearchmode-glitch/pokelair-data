@@ -10,11 +10,11 @@ function cxResolve(src) { if (!src) return null; try {
   if (src === 'cur') { const ms = members(); return {name: ms.length ? teamTitleFor(ms) : 'My team', sub: 'My team · open now', slots: JSON.parse(JSON.stringify(S.slots))}; }
   const k = src.slice(2);
   if (src.startsWith('s:')) { const t = S.teams.find(x => x.id === k); return t ? {name: t.name, sub: 'Saved team', slots: t.slots} : null; }
-  if (src.startsWith('e:')) { const x = evTeam(k); return x ? {name: teamWho(x.t), sub: `${x.t.place ? placeTxt(x.t.place) + ' · ' : ''}${x.ev.name}`, slots: cxSheetSlots(x.t.mons)} : null; }
+  if (src.startsWith('e:')) { const x = evTeam(k); return x ? {name: teamWho(x.t), sub: `${x.t.place ? placeTxt(x.t.place) + ' · ' : ''}${x.ev.name}`, ev: x.ev.name, slots: cxSheetSlots(x.t.mons)} : null; }
   if (src.startsWith('t:')) { const t = META.teams && META.teams.teams[+k]; if (!t) return null; let slots = null;
     /* the event's full sheet when we have it (moves, items, abilities), like Load team */
     try { const key = t.mons.slice().sort().join('|'); for (const ev of (META.events && META.events.events) || []) for (const x of ev.top || []) if (!slots && x.player === t.player && x.mons.map(m => m.n).sort().join('|') === key) slots = cxSheetSlots(x.mons); } catch (e) {}
-    return {name: `${teamWho(t)}`, sub: [t.record, t.event].filter(Boolean).join(' · '), slots: slots || normSlots(t.mons.map(n => ({n, a: null, lock: false})))}; }
+    return {name: `${teamWho(t)}`, sub: [t.record, t.event].filter(Boolean).join(' · '), ev: t.event || '', slots: slots || normSlots(t.mons.map(n => ({n, a: null, lock: false})))}; }
   if (src.startsWith('p:')) { const p = ui.cx.paste[k]; return p ? {name: 'Pasted team', sub: 'From a Showdown paste', slots: p} : null; }
   } catch (e) {} return null; }
 const cxKey = slots => metaVersion + '|' + megaGoal() + '|' + JSON.stringify(slots);

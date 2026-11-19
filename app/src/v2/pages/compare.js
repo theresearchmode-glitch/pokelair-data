@@ -6,10 +6,11 @@ V2.cxBusy = false;
 V2.cxGo = (a, b) => { if (a === 'cur' && !members().length) { a = b; b = ''; } ui.cx.A = a || null; ui.cx.B = b || null; ui.cx.same = false; ui.cx.wmore = 0;
   if (location.hash !== '#compare') location.hash = '#compare'; else V2.redraw(); if (!ui.cx.A || !ui.cx.B) setTimeout(() => V2.cxPick(!ui.cx.A ? 'A' : 'B'), 60); };
 const cxBadge = s => `<span class="cx2-b ${s === 'A' ? 'a' : 'b'}" aria-hidden="true">${s}</span>`;
+// the event's name goes through the shared cleaner, as everywhere else (design review #22: raw names with prize text and emoji)
 V2.cxHead = (side, R) => { const E = V2.esc;
   if (!R) return `<button type="button" class="cx2-head empty ${side === 'A' ? 'a' : 'b'}" data-cxp="${side}">${cxBadge(side)}<span class="nm">Pick Team ${side}</span><span class="fine">My Team, saved, winning or pasted</span></button>`;
   const ms = teamRating(R.slots).ms;
-  return `<div class="cx2-head ${side === 'A' ? 'a' : 'b'}"><div class="cx2-hd">${cxBadge(side)}<div class="cx2-nm"><b>${E(R.name)}</b><span>${E(R.sub || '')}</span></div><button type="button" class="np-link" data-cxp="${side}" aria-label="Change team ${side}">Change</button></div>
+  return `<div class="cx2-head ${side === 'A' ? 'a' : 'b'}"><div class="cx2-hd">${cxBadge(side)}<div class="cx2-nm"><b>${E(R.name)}</b><span>${E(R.ev && R.sub ? R.sub.replace(R.ev, V2.evTitle(R.ev)) : R.sub || '')}</span></div><button type="button" class="np-link" data-cxp="${side}" aria-label="Change team ${side}">Change</button></div>
     <ul class="cx2-six">${ms.map(m => `<li>${V2.mon(m.p.n, {iw: 64})}</li>`).join('')}${Array.from({length: Math.max(0, 6 - ms.length)}, () => '<li class="cx2-e" aria-hidden="true"></li>').join('')}</ul></div>`; };
 // each row's cell in the new design (word list: Strength Score, Matchups with the four calc levels, Team checks)
 const CX2 = {
