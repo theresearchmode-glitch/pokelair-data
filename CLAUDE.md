@@ -18,6 +18,7 @@ wrong statement to Sim the moment it's found.
 ## Work never stops silently (Sim, Nov 19, 8:17 AM): docs/rebuild/RULES.md section 00w
 Long checks run only as TRACKED background tasks (never a shell `&`); a watchdog wake-up ~20 min ahead whenever work runs in the
 background; "running" is only said after checking the process and its log in the same step.
+Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to tell me when watchdog fires. just keep up the work").
 Helper slots (Sim, Nov 19, 8:19 AM): keep both slots busy while approved work remains; refill a slot in the same turn a helper
 finishes; every status message names both slots.
 
