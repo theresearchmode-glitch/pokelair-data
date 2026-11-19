@@ -61,3 +61,5 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
 17. Q25 · Team Preview Practice on phones (review #13): pictures docs/rebuild/pics/nov19/Q25-practice-phone-*.png
    A RECOMMENDED: your six as the same 3 x 2 cards as theirs (356px instead of 649px), so both sixes nearly fit one phone screen.
    B: no change. Also from the review, no visible change: code order = screen order (theirs first), which I can do with A.
+18. Q26 · 'Restore Last Team' after Clear Team (review #2): pictures docs/rebuild/pics/nov19/Q26-restore-last-team-*.png
+   A RECOMMENDED: a 'Restore Last Team' button on the empty My Team (with the team's name), until you add a Pokémon. B: no change.
