@@ -18,7 +18,7 @@ Everything the Build page does today must still work: Build from (My Box / Whole
 The eyebrow "Build · real winning teams · Reg M-C doubles" and the headline "Build me a team." with "a team." in PLOT blue, above the sheet. The intro sentence and "How It Works" from today's head are not drawn; keep them.
 
 2. THE SHEET
-- One sheet holds everything. Light mode: near-white paper, a fine blue grid with a heavier line every fifth square, and blue ink for lines and labels. Dark mode: the site's own dark background with a faint PLOT-blue grid and lighter blue linework. Sim asked specifically that dark mode not be a navy sheet; she found that dated.
+- One sheet holds everything. Light mode: near-white paper, a fine blue grid with a heavier line every fifth square, and blue ink for lines and labels. Dark mode: the site's own dark background with a faint PLOT-blue grid and lighter blue linework. Sim asked specifically that dark mode not be a navy sheet; he found that dated.
 - The sheet has cut corners at the top right and bottom left, like the Card, a thin blue frame, and a small registration cross in each corner.
 - A header line across the top with a rule under it: a slanted blue plate "Sheet 1 of 4" (the option number), then the option's kind and Mega count ("Proven team · 2 Mega options"), then "Reg M-C doubles · drawn from real winning teams" at the right.
 
@@ -66,7 +66,7 @@ Not drawn (each needs a picture for Sim before it is built):
 "Sheet 1 of 4", "drawn from real winning teams", "Team", "Team of six · 2 Megas", "Core", "Spec · tap a field to change it", "Revisions · tap one to see it", "Notes", and the letters A to D for the options.
 
 9. SIM'S STANDING RULES
-Preview before live; nothing goes live without her go. Real data only. Never remove functionality. Every name readable at phone size. Even layouts, no half-filled rows, no empty strips. Dark and light both polished. Headlines and big numbers in Unbounded slanted, everything else Instrument Sans; do not change the fonts. Never call the site an "app". No names or emails collected. No model names in commits.
+Preview before live; nothing goes live without his go. Real data only. Never remove functionality. Every name readable at phone size. Even layouts, no half-filled rows, no empty strips. Dark and light both polished. Headlines and big numbers in Unbounded slanted, everything else Instrument Sans; do not change the fonts. Never call the site an "app". No names or emails collected. No model names in commits.
 
 PICTURES (dark left, light right)
 build-blueprint-desktop.png

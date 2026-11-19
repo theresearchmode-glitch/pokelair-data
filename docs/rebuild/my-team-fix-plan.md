@@ -88,16 +88,16 @@ A8. The phone bottom bar and top bar let the page show through.
   is too thin. The bars need a real blur plus enough tint that text behind is never legible,
   and a solid fallback where blur is not supported.
 
-A9. Selected Pokémon (Sim has already said she does not like the current treatment).
-  [UPDATE Sim, Nov 12: she chose NONE of the three redesigns (A Stage, B Podium, C Light from above) and keeps the
+A9. Selected Pokémon (Sim has already said he does not like the current treatment).
+  [UPDATE Sim, Nov 12: he chose NONE of the three redesigns (A Stage, B Podium, C Light from above) and keeps the
   current look (floor ring in the Pokémon's own colour, no panel, as on Preview v52). Whether the three small faults below
-  are fixed is still her call; the 4px spill and the Mega line need before/after pictures first.]
+  are fixed is still his call; the 4px spill and the Mega line need before/after pictures first.]
   - "Mega" sits alone on its own blue line above "Charizard Y", only on the selected tile, so
     that tile's name block is a different shape from the other five.
   - The floor ring cuts across the art, and on phone the selected art is drawn 120px in a 111px
     tile and spills 4px outside it.
   Do not polish this version. Sim is choosing between redesigns from the design chat; wait for
-  her pick, then build that one.
+  his pick, then build that one.
 
 A10. Symmetry in the six, phone.
   There is a vertical divider between Back and Bench but none between Lead and Back. Either both
@@ -161,7 +161,7 @@ ORDER OF WORK
 3. A2, A3, A4 (content). Needs Sim's choice on A4 and on whether ±0 swaps stay visible.
 4. Re-measure. If still over the limit, bring Sim layout options for the phone hero.
 5. A7, A8, A10 to A15.
-6. A9: Sim keeps the current look (Nov 12); only the small faults, if she says so, with pictures first.
+6. A9: Sim keeps the current look (Nov 12); only the small faults, if he says so, with pictures first.
 7. Build the C13 check, run it on My Team, My Box and the empty state, report the results.
 8. Only then start the next page.
 

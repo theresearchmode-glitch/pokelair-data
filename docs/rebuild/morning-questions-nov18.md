@@ -1,6 +1,6 @@
 # Morning questions for Sim, Wed Nov 18
 
-**ANSWERED (Sim, Nov 18 morning): "recommend for all is good".** Every "Recommended" below is her answer. Plus: make sure the Home page is clean and refined to be polished.
+**ANSWERED (Sim, Nov 18 morning): "recommend for all is good".** Every "Recommended" below is his answer. Plus: make sure the Home page is clean and refined to be polished.
 
 Every open question waiting on Sim, from the files on branch claude/design6. Look-only: no site code changed.
 Each question has its pictures next to it (paths under docs/rebuild/pics/nov18/ unless the path says otherwise).
@@ -120,7 +120,7 @@ exception (decisions.md line 1180, "3B"), so it only needs adding to the check's
 - A: approve the words; add "Live right now" to the allowed list. Pictures: postroom-real-desktop-light.png, postroom-real-phone-light.png.
 - B: Sim rewords some (name which).
 
-Recommended: A. Why: they are short and plain, and the stamp follows her earlier exception.
+Recommended: A. Why: they are short and plain, and the stamp follows his earlier exception.
 
 ---
 
@@ -153,7 +153,7 @@ Sim's "recommended for all" covered the audit, but the build kept the newspaper 
 - A: keep "The Standings" / "Fixtures". Pictures: dispatch-real-1440-light.png, dispatch-real-390-light.png.
 - B: "Top Ratings" / "Next Events". Picture: none made.
 
-Recommended: B. Why: her word list says one name per idea, and the links under them already use these names.
+Recommended: B. Why: his word list says one name per idea, and the links under them already use these names.
 
 ### 2d. The edition number
 "No. 67 · Late Edition" counts every story in the data (dispatch.js: D.all.length). The masthead's other count is
@@ -228,10 +228,10 @@ stampede-tools-1440-light.png (names shown).
 
 Recommended: A. Why: the brief asked for both night colours and the podium as drawings, and every tool stays one tap away.
 
-Other tile fixes (no choice needed, for her eye): Test Run, Damage Calc and tags, stampede-tilefix-testrun-1440-day-before.png,
+Other tile fixes (no choice needed, for his eye): Test Run, Damage Calc and tags, stampede-tilefix-testrun-1440-day-before.png,
 stampede-tilefix-testrun-1440-day-after.png, stampede-tilefix-calc-820-day-before.png, stampede-tilefix-calc-820-day-after.png,
 stampede-tilefix-tags-1280-day-before.png, stampede-tilefix-tags-1280-day-after.png.
-For her eye too: the polish sweep said the Battle tile's small blue and pink names on near-black looked low in contrast at 1440
+For his eye too: the polish sweep said the Battle tile's small blue and pink names on near-black looked low in contrast at 1440
 (not measured; before the tile fix). Picture: stampede-tilefix-battle-1440-night-after.png.
 
 ---
@@ -313,8 +313,8 @@ Scrolling with the ticker running dropped a few more frames (DroppedFrame events
 - B: surge only (ticker stays a still strip). Pictures: the strips above.
 - C: keep motion off. Pictures: stampede-hero-390-day.png, stampede-hero-1440-day.png (the still hero).
 
-Recommended: A, then a scroll check on her iPhone. Why: it is what she approved in words, with reduced motion respected; the scroll
-cost is small but measured, so her phone is the real test.
+Recommended: A, then a scroll check on his iPhone. Why: it is what he approved in words, with reduced motion respected; the scroll
+cost is small but measured, so his phone is the real test.
 
 ---
 
@@ -397,7 +397,7 @@ Pictures (what the sources feed): postroom-real-desktop-light.png, dispatch-real
 
 From research/old-checklist-recheck-nov18.md (i21). With nothing saved the site follows the device, including live switches.
 After one tap on Day/Night there is no way back: the choice is saved as "night" or "day" for good. This was decided earlier
-under Claude's authority ("minor", parity-nov15.md line 28), not by Sim, so it is open for her. HANDOVER (Nov 13) also listed it.
+under Claude's authority ("minor", parity-nov15.md line 28), not by Sim, so it is open for him. HANDOVER (Nov 13) also listed it.
 - A: the Day/Night button cycles Day, Night, Auto (follows the device). Picture: none made (not found in the files).
 - B: no change. Picture: none made.
 
@@ -482,7 +482,7 @@ the source links on Gifts are 16-20px tall; two source links sit 19.5px apart on
 
 Recommended: A. Why: "›" links read as buttons, and players tap them on phones.
 
-### 13f. Hero tagline partly covered by sprites at 1440 (for her eye)
+### 13f. Hero tagline partly covered by sprites at 1440 (for his eye)
 The polish sweep saw the hero sprites cover part of "your win rate." at 1440: likely intended depth, but it costs some readability.
 - A: keep. Pictures (today, cropped to the tagline, labelled): q-13f-tagline-today-1440-light.png, q-13f-tagline-today-1440-dark.png.
   Older: stampede-polish-after-1440-day.png, stampede-polish-after-1440-night.png.
@@ -490,7 +490,7 @@ The polish sweep saw the hero sprites cover part of "your win rate." at 1440: li
 
 Recommended: B (my recommendation). Why: the tagline is the first words a new visitor reads.
 
-### Not questions, but for her eye on the iPhone
+### Not questions, but for his eye on the iPhone
 - Safari 26 wraps some paragraphs onto one more line than Chrome ("pretty" wrapping); nothing is clipped. Pictures:
   webkit-cur-home-tools-wrap-pretty-1180.png, webkit-cur-news-classifieds-wrap-pretty-390.png, webkit-cur-gifts-stamp-name-pretty-820.png.
 - The phone bar's blur didn't show in the test browser; probably the test rig, not the site (a guess). Picture: webkit-cur-bottom-bar-390.png.

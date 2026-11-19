@@ -3,12 +3,12 @@
 Saved by the separate design/PC chat at Sim's request so a new rebuild chat starts with nothing missing.
 Read docs/rebuild/RULES.md and HANDOVER.md first; this folder only adds to them.
 
-## 1. Selected Pokémon: three redesigns (Sim, Nov 12: NONE chosen; she keeps the current look)
+## 1. Selected Pokémon: three redesigns (Sim, Nov 12: NONE chosen; he keeps the current look)
 
 Sim does not like the tilted panel or the floor ring behind the selected Pokémon. Three standalone redesigns
-were drawn for her. Sim, Nov 12: she wants NONE of them ("i like what we have NOW"). Do not build any of them. The
-current ring look stays; its small faults (fix plan A9) are fixed only if she says so, with pictures first. [Old text:] Do not polish the current ring,
-until she picks.
+were drawn for him. Sim, Nov 12: he wants NONE of them ("i like what we have NOW"). Do not build any of them. The
+current ring look stays; its small faults (fix plan A9) are fixed only if he says so, with pictures first. [Old text:] Do not polish the current ring,
+until he picks.
 
 - `nastyplot-selected-stage.png`: A, Centre stage (the design chat's recommendation)
 - `nastyplot-selected-podium.png`: B, Podium (weakest of the three)
@@ -22,8 +22,8 @@ until she picks.
   the Claude artifact, slow on a phone on mobile data. The public site needs a plan to split the data out.
 - Art and name ownership for a public site still has no answer. Launch is January 2027.
 - The rebuild's "same as today" proofs carry today's known bugs across (17 marked known in the behaviour
-  tests). Sim has not decided whether the rebuild fixes them or ships them. Ask her.
-- An outside check after every page: Sim tests on her iPhone, and the design chat can run an independent
+  tests). Sim has not decided whether the rebuild fixes them or ships them. Ask him.
+- An outside check after every page: Sim tests on his iPhone, and the design chat can run an independent
   sweep of the published artifact. "Checked" in a report must name the check, the commit and the result line.
 
 ## 3. The sweep scripts

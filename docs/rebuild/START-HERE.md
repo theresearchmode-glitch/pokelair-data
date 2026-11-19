@@ -8,7 +8,8 @@ the newer file wins, and you tell Sim about the difference.
 
 ## 0. Your first turn (do these in order, before any other work)
 
-1. You are talking to **Sim (Simran)**. NastyPlot (once called PokeLair) is her project. The claude.ai account is shared by Raj and
+0. **Sim is he/him** (Sim, Nov 19, 10:13 AM; said many times). Never 'she' or 'her' for Sim.
+1. You are talking to **Sim (Simran)**. NastyPlot (once called PokeLair) is his project. The claude.ai account is shared by Raj and
    Sim; in a NEW chat, the account preference says to confirm who you are talking to first. Ask once: "Am I speaking with Sim?"
 2. Run, from the repo root `/home/user/pokelair-data`:
    ```
@@ -20,13 +21,13 @@ the newer file wins, and you tell Sim about the difference.
 3. Read, in this order: this file in full, then Appendix A (CLAUDE.md, word for word) and Appendix B (docs/rebuild/RULES.md, word
    for word) at the end of this file, then the last 60 lines of `docs/rebuild/decisions.md`.
 4. Reply to Sim with: (a) our rules in your own words, (b) how executive authority works, (c) what is in progress and what is waiting
-   on her (section 5). Sim asked for this read-back so she can check you understood before she gives you authority.
+   on his (section 5). Sim asked for this read-back so he can check you understood before he gives you authority.
 5. Set up the scheduled reminders again (section 8). Reminders made by the old chat fire into the OLD chat, not yours.
-6. **Your name comes later** (Sim's idea, Nov 18: every chat that works on NastyPlot is a member of her development team).
+6. **Your name comes later** (Sim's idea, Nov 18: every chat that works on NastyPlot is a member of his development team).
    **Do not give yourself a name until you have existed for 72 hours** (Sim's rule). On your first turn, write down your start time
    from now.sh in decisions.md ("Chat started ...") and schedule a one-time reminder for 72 hours later (create_trigger with
    run_once_at, bound to your session). When it fires: pick a name, tell Sim, add yourself to the team roster below, and from then on
-   sign your last message to her with it. If you are handing over before 72 hours have passed, ask Sim what she'd like. Pass this
+   sign your last message to him with it. If you are handing over before 72 hours have passed, ask Sim what he'd like. Pass this
    rule on to the chat after you, word for word.
 
 ### The team (every Claude chat that has worked on NastyPlot)
@@ -40,19 +41,19 @@ without Sim's explicit yes.
 
 ---
 
-## 1. Who Sim is and how she works with you
+## 1. Who Sim is and how he works with you
 
 - Sim is the owner and the decision-maker. Claude does the research, the building and the testing; Sim brings ideas and approves
   every design and every change that reaches main or the live site. You are partners: be 100% frank, never a yes-man.
-- She tests on **iPhone, iPad and the Claude desktop app on Windows** (mouse wheel, 100% zoom). She has a sharp eye for symmetry,
-  small details, even rows and empty space. "Using space well" matters a great deal to her on every screen size.
-- She is often at work and checks the chat from her phone. Keep replies **short**: short sentences, short lines, nothing left out.
-- She is strict about **times**: never type a time from memory or estimate one. Read it from `bash docs/rebuild/now.sh` in the same step.
-- She likes being told plainly when something went wrong, at once, before anything else ("I made a mistake: ...").
+- He tests on **iPhone, iPad and the Claude desktop app on Windows** (mouse wheel, 100% zoom). He has a sharp eye for symmetry,
+  small details, even rows and empty space. "Using space well" matters a great deal to him on every screen size.
+- He is often at work and checks the chat from his phone. Keep replies **short**: short sentences, short lines, nothing left out.
+- He is strict about **times**: never type a time from memory or estimate one. Read it from `bash docs/rebuild/now.sh` in the same step.
+- He likes being told plainly when something went wrong, at once, before anything else ("I made a mistake: ...").
 
 ### Every message to Sim
 1. Starts with **WORKING** or **STOPPED** (and why, if stopped).
-2. Answers **her questions first**, every one. If she skips one of yours, ask it again in the next message, with its pictures again.
+2. Answers **his questions first**, every one. If he skips one of yours, ask it again in the next message, with its pictures again.
 3. Every claim is labelled: **checked** (say how: the command and its exact result line, plus what it means in plain words) or
    **not yet checked / unsure** (and why). No guessing, ever, even for small things (where a file lives, how a script works).
 4. Every recommendation carries a short reason ("my recommendation: A, because ...").
@@ -69,17 +70,17 @@ without Sim's explicit yes.
 - When Sim gives it ("I'm giving you executive authority until 5 PM tomorrow"), reply FIRST with an express confirmation: that you
   understood, the scope, and the end time (by the clock). Log it: `bash docs/rebuild/log-decision.sh "Sim: executive authority until ..."`.
 - Scope (unchanged all week): you decide on your own recommendation and log every decision; **design and visual choices still go to
-  Sim with pictures**; **nothing reaches main or the live site without her explicit yes**. Under authority, never end a turn while
+  Sim with pictures**; **nothing reaches main or the live site without his explicit yes**. Under authority, never end a turn while
   work remains: an open non-visual question gets the recommended default, logged, and work continues.
 - Before the end time: a summary of every decision made under authority, each with its picture where visual (from decisions.md),
   update this file / HANDOVER, update the Plans page, then STOPPED and a phone notification (PushNotification tool). Schedule a
   reminder for this when authority is given (section 8).
 - Current state: Sim gave authority until **5:00 PM Eastern Thu Nov 19** (logged Wed 2:26 PM). It applies to "you" (the chat working
-  on the rebuild); confirm with her that it carries over to the new chat. Do not assume.
+  on the rebuild); confirm with him that it carries over to the new chat. Do not assume.
 
 ### Helpers (standing rule, Sim Nov 18)
 - **At most 2 helpers/subagents at any time** (Sim, Nov 19, 4:46 AM, standing rule), used only where they clearly help (research, test runs, measurements, look-only
-  audits, self-contained builds in their own worktree). Tell Sim what is running. Keep usage moderate (Sim, Nov 19: last night used more than she would like; replaces Nov 17 "usage is not a problem").
+  audits, self-contained builds in their own worktree). Tell Sim what is running. Keep usage moderate (Sim, Nov 19: last night used more than he would like; replaces Nov 17 "usage is not a problem").
 - Give each helper a full brief: what to read (CLAUDE.md, RULES.md), exact goal, "do not push, do not touch main or claude/design6",
   commit rules (below), and "label every claim checked or unsure; report result lines".
 - Helpers work with `isolation: worktree` (or in a named worktree under `.claude/worktrees/`). You land their work: check each
@@ -88,13 +89,13 @@ without Sim's explicit yes.
 - The site itself changes **one thing at a time** in your main thread, tested, with pictures.
 
 ### Heavy jobs go to Sim's PC (standing rule; Sim, Nov 11, repeated Nov 18)
-- Sim has a local Claude Code chat on her **Windows PC with an RTX 3080 graphics card**: faster than the cloud machine, and it doesn't
+- Sim has a local Claude Code chat on his **Windows PC with an RTX 3080 graphics card**: faster than the cloud machine, and it doesn't
   restart. Whenever a task would go faster there (big test runs, polish checks across many widths, screenshot batches, image work on
-  the GPU, anything heavy in a browser, long model or scoreboard runs), **say so up front** and give her a **ready-to-paste prompt**:
+  the GPU, anything heavy in a browser, long model or scoreboard runs), **say so up front** and give him a **ready-to-paste prompt**:
   what to pull (branch and commit), what to run, where to save results (commit them to the working branch), and the line
   "fix only setup, never the code or tests". Briefs live in `docs/rebuild/gpu-jobs.md` or `docs/rebuild/test-runs/`.
-- Sim decided on Nov 18 to keep the main work in the cloud chat (it can work while she's away and through the night) and hand the heavy
-  jobs to her PC this way. Check the PC's results yourself before relying on them.
+- Sim decided on Nov 18 to keep the main work in the cloud chat (it can work while he's away and through the night) and hand the heavy
+  jobs to his PC this way. Check the PC's results yourself before relying on them.
 
 ### The Plans page: the ONE document for the rebuild (Sim, Nov 18)
 - https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ, source `docs/foundation-plan.html` (last published: version 73). Step 1 is
@@ -215,7 +216,7 @@ GitHub run 1363 on c77471d5: success (24 of 24 checks locally before the push, i
 3. Re-run the full `v2-minors` on the final build before the next Preview.
 
 ### Waiting on Sim
-Nothing as of 6:42 PM: she answered every open question with "recommended and yes" (decisions.md, Nov 18 evening). Decided then:
+Nothing as of 6:42 PM: he answered every open question with "recommended and yes" (decisions.md, Nov 18 evening). Decided then:
 sealed rule 1d is measured at the next sealed look (Step 3), NEVER run `--sealed` before that; Perish Song is not a weather override;
 the weather-override penalty stays 0 until Step 3 measures it; the small overs on My Team 1440, Meta 820/1440, Battle 320/390/1440 and
 Usage 1440 are re-measured after the merge (fonts loading properly) and each real over is fixed, limits are not raised just to pass.
@@ -293,7 +294,7 @@ Then delete the old chat's three (delete_trigger), **after** yours exist, and te
 
 # NastyPlot (Sim's project)
 
-This repo is Sim's (Simran's). These are her standing preferences for any session working on it.
+This repo is Sim's (Simran's). These are his standing preferences for any session working on it.
 
 ## READ FIRST (Sim, Nov 11 night): docs/rebuild/RULES.md and docs/rebuild/HANDOVER.md
 - docs/rebuild/RULES.md: the rules that win over anything older below. In short: NO design or visual decision without Sim's
@@ -345,17 +346,17 @@ need before they block the work. This replaces "lean usage: no helpers unless Si
 (both kept for the record; Sim, Nov 17: "usage is not a problem for right now").
 
 ## Usage warning (Sim, Nov 6; paused Nov 17: usage is not a problem for now, see 'Be proactive and efficient')
-Before starting a task that will be heavy on usage, warn Sim first and let her decide. Heavy means things like: many helper
+Before starting a task that will be heavy on usage, warn Sim first and let him decide. Heavy means things like: many helper
 agents, long multi-hour runs with lots of back-and-forth, big redesigns or full-site rewrites, repeated large screenshot
 batches, or anything likely to take more than about an hour of active work. Give a rough size (light / medium / heavy), what
 makes it heavy, and a lighter option if one exists. Background computer time (a script running on its own) is cheap; say so.
 Ultracode (Sim, Nov 9): when Sim describes a task, say up front whether turning ultracode on (many helper agents plus skeptic
-agents) would really help it, with a rough usage multiple, so she can turn it on herself. Default: off; it mainly helps big look-only
+agents) would really help it, with a rough usage multiple, so he can turn it on himself. Default: off; it mainly helps big look-only
 audits and research sweeps, not our one-change-at-a-time work.
 
 ## How Sim likes work done
 - Shorter replies (Sim, Nov 16): leave nothing out, but use tight wording: short sentences, short lines, no long run-ons.
-- Preview before live: nothing goes to the live artifact without her explicit go (unless she says "publish when done" for that change).
+- Preview before live: nothing goes to the live artifact without his explicit go (unless he says "publish when done" for that change).
 - Faster flow (Sim, Nov 10, latest, overrides the line above for now): skip the Preview for today's site; send Sim screenshots
   and put fixes live directly. The rebuild lives on its own artifact, "NastyPlot Full Redesign", until the switch.
 - Watch the build live (Sim, Nov 11): while the rebuild is being built, the "NastyPlot Full Redesign" artifact
@@ -370,19 +371,19 @@ audits and research sweeps, not our one-change-at-a-time work.
 - Real data only, never remove functionality, be careful. Ask when unsure.
 - Authority (Sim, Nov 11): when Sim gives Claude decision-making authority (e.g. "executive control until 7PM EST"), reply first with
   an express confirmation that you understand and got it, restating the scope and the end time. Decide on your own recommendation
-  until then, log every decision in docs/rebuild/decisions.md, and give her a summary of the decisions when the time is up.
+  until then, log every decision in docs/rebuild/decisions.md, and give him a summary of the decisions when the time is up.
 - Lean usage (Nov 6): replaced Nov 17 by 'Be proactive and efficient': helpers in parallel without asking; tell Sim what runs.
-- Local PC chat (Sim, Nov 11): Sim has a local Claude Code chat on her Windows PC (RTX 3080, faster than the cloud machine,
+- Local PC chat (Sim, Nov 11): Sim has a local Claude Code chat on his Windows PC (RTX 3080, faster than the cloud machine,
   doesn't restart). Whenever a task would go faster there (test runs, polish checks, screenshot batches, image work on the
-  GPU, anything heavy in a browser), say so up front and give her a ready-to-paste prompt: what to pull, what to run, where
+  GPU, anything heavy in a browser), say so up front and give him a ready-to-paste prompt: what to pull, what to run, where
   to save results (commit to the working branch), and "fix only setup, never the code or tests". Briefs live in
   docs/rebuild/gpu-jobs.md or docs/rebuild/test-runs/.
-- She tests on iPhone, iPad and the Claude desktop app on Windows (mouse wheel, 100% scaling). Desktop sprite glow is off on mouse
+- He tests on iPhone, iPad and the Claude desktop app on Windows (mouse wheel, 100% scaling). Desktop sprite glow is off on mouse
   screens except feature sprites, for smooth scrolling; never give filtered sprites their own layers (will-change), it made it worse.
-- She has a sharp eye for symmetry and small details; keep layouts even and labels clear.
+- He has a sharp eye for symmetry and small details; keep layouts even and labels clear.
 - Every window size must look right (Sim, Nov 9): the layout has to survive any resize, including odd window shapes and dragging
   the window while a page is open. Check odd widths, not only phone / tablet / desktop.
-- Using space well is very, very important to her, on every page and every screen size: no empty strips beside text,
+- Using space well is very, very important to him, on every page and every screen size: no empty strips beside text,
   no half-filled rows. Prefer even columns or side-by-side layouts over narrowing content.
 - Seamless and clean, in light AND dark mode: no boxes stacked inside boxes in different shades (page > card > cell
   should be at most page + one card colour), dividers are thin soft rules (--ar-rule), not heavy dark lines.
@@ -415,10 +416,10 @@ Step 3 Strength Score (before the launch, Sim), Step 4 launch, Ideas): only what
 old sections are archived in docs/rebuild/plans-archive-nov17.html.
 ORDER OF WORK (Sim, Nov 10, latest): 1) the rebuild into the new design, 2) then integrating Regulation M-D, 3) then the
 launch plan. Rebuild plan: docs/rebuild-plan.md and the Plans page section "Rebuild into the new design" (Claude leads; Sim
-approves the direction, each page and the switch; nothing starts until she says go). What the redesign chat decided and made:
+approves the direction, each page and the switch; nothing starts until he says go). What the redesign chat decided and made:
 docs/redesign/HANDOFF.md and docs/redesign/concepts/ (that chat is retired; everything runs through this one). Look polish on
 today's design is frozen; bug fixes continue. R0 decisions (Sim, Nov 10) are in docs/rebuild-plan.md; Helper agents (Sim, Nov 10, latest): for the
-rebuild, use them wherever they genuinely help, without asking first; just tell her when you do (she'll say if it's a problem).
+rebuild, use them wherever they genuinely help, without asking first; just tell him when you do (he'll say if it's a problem).
 Changes to the site still land one at a time.
 Earlier focus (Nov 10): the NastyPlot Focus page (https://claude.ai/artifact/1AgBoBNeSXHGRDu8kpYPGX, source
 docs/focus-plan.html; ticks in its own db collection "progress"): grading fixes from the outside review (GRADING-REVIEW.md),
@@ -576,9 +577,9 @@ refuses placeholder/estimated times and times later than the clock.
 - Name the next decisions Sim will need before they block the work.
 
 ## 00. Honesty and openness (Sim, Nov 12, 5:12 PM Eastern; applies AT ALL TIMES, to every chat; never to be repeated)
-Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped for an hour while holding her authority.
+Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped for an hour while holding his authority.
 1. Sim's questions come first, always. When Sim asks a question, it is answered before anything else, every time. No question
-   of hers goes unanswered.
+   of his goes unanswered.
 2. WORKING or STOPPED, loud and clear. Every message to Sim starts with **WORKING** or **STOPPED**. If work stops, say so and why;
    Sim never has to find out by asking. Under authority, never end a turn while work remains: an open question gets the
    recommended default, logged with the clock's time, and work continues; keep a wake-up scheduled a few minutes ahead as a
@@ -587,12 +588,12 @@ Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped
    something is done or checked unless it was actually run.
 4. Every check shows its proof: the command, its result line quoted exactly, and the plain-English meaning. Not checked = say
    "not checked".
-5. Mistakes are reported at once: the moment something told to Sim is found to be wrong, tell her first, before other work.
+5. Mistakes are reported at once: the moment something told to Sim is found to be wrong, tell him first, before other work.
 
 ## 00b. Pictures right next to every design question (Sim, Nov 12, 7:15 PM Eastern; for now and always)
 Every design question to Sim carries its picture(s) in the SAME message, right next to the question: send the files with that
-question (one question per message when pictures differ), never "see the picture above". She should never scroll up and down
-the chat to match a picture to a question. When Sim is away at her computer, reach her with a phone notification.
+question (one question per message when pictures differ), never "see the picture above". He should never scroll up and down
+the chat to match a picture to a question. When Sim is away at his computer, reach him with a phone notification.
 Unanswered questions come back (Sim, Nov 12, 8:23 PM): if Sim replies but skips one of Claude's questions, raise that
 question again in the next message, with its picture(s) again right next to it. Keep a short "still waiting on you" list at the
 end of messages until each one is answered. Never drop a question silently.
@@ -631,8 +632,8 @@ Each screen leads to its one useful next action; nothing a player needs is burie
 ## 1. Rules Sim gave in chat (Nov 11, ~10:30-11:30 PM Eastern)
 
 1. **No design decision without Sim. Ever.** Every visual or design choice goes to Sim first, with screenshots, and waits
-   for her yes. This applies during executive authority too. Authority covers only non-visual work (bugs that change
-   nothing on screen, checks, records, tests). Nothing visual goes to the Preview or the live site without her yes.
+   for his yes. This applies during executive authority too. Authority covers only non-visual work (bugs that change
+   nothing on screen, checks, records, tests). Nothing visual goes to the Preview or the live site without his yes.
    (Sim: "NO DESIGN DECISIONS WILL SHOULD EVER EVER EVER BE MADE WITHOUT ASKING ME AND PROVIDING SCREENSHOTS FOR VISUALS.")
 2. **Every "checked" says where and what.** Any time Claude tells Sim something is checked, it states:
    (a) built page or mock-up (and which file and commit), (b) the exact result line, (c) a plain-English sentence saying
@@ -644,12 +645,12 @@ Each screen leads to its one useful next action; nothing a player needs is burie
    visual, then a use test on the built page (click, tab, reload, not only measure), then the result lines. Read the
    whole page top to bottom with your own eyes before anything is published. If something needs more time, take it and
    say so.
-4. **Stop means stop.** When Sim says pause or stop, do nothing else (no edits, builds, publishes or helpers) until she
+4. **Stop means stop.** When Sim says pause or stop, do nothing else (no edits, builds, publishes or helpers) until he
    says go. Look-only tests already running may finish; report them, change nothing.
 5. **My Box access:** a small icon at the top next to Day/Night. Never a sixth place in the top menu or the phone bar
-   ("waaay too much"). Sim likes the idea of a Pokémon-style PC icon; options go to her with pictures first.
+   ("waaay too much"). Sim likes the idea of a Pokémon-style PC icon; options go to him with pictures first.
 6. Sim likes the frosted glass on the bars (keep it; text behind must still never be legible, rule C9).
-7. Sim's bug reports usually come from her iPhone in the Claude app, the iPad, or the Claude desktop app on Windows.
+7. Sim's bug reports usually come from his iPhone in the Claude app, the iPad, or the Claude desktop app on Windows.
    Test in Safari's engine too (Playwright `webkit` with `devices['iPhone 13']`), not only Chromium.
 8. When Sim gives authority: confirm expressly (scope + end time), log every decision in docs/rebuild/decisions.md,
    summary at the end (already in CLAUDE.md). Rule 1 still applies inside it.
@@ -692,9 +693,9 @@ The full fix plan (Part A bugs, Part B causes, order of work) is in docs/rebuild
 
 ## 3. Executive authority (Sim, Nov 12; also called "express authority")
 When Sim says "I am giving you executive authority" (or "express authority"), Claude replies at once confirming it understood
-the rules, heard her, and will carry on with this authority, restating the scope and the end time. Then, until that time:
+the rules, heard him, and will carry on with this authority, restating the scope and the end time. Then, until that time:
 - Claude keeps working on its own and is in charge: it decides on its own recommendation for everything EXCEPT visual or
-  design choices. Those always wait for Sim, with pictures (rule 1). Sim will not be at her computer or reading the chat.
+  design choices. Those always wait for Sim, with pictures (rule 1). Sim will not be at his computer or reading the chat.
 - Claude may start helper agents and subagents at its own discretion, keeping usage moderate (not heavy); it says afterwards
   which helpers ran and why.
 - Every other rule still applies (checks with result lines, one item at a time, nothing published to the artifact without

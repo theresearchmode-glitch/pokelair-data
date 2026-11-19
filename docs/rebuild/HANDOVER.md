@@ -22,7 +22,7 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
 - On the branch since v200 (commits 15a8ae3f, d6f8209c; each fix has a v2-minors check that fails before): audit v199 #2 Track cards,
   #3 Meta tab bar, #6 Home Lead, #7 Speed Tiers note (kept the top-30 shares: today's feature), #11 real tap areas (Type Chart, Events All).
   Polish check old vs new: 0 new findings on each page touched. Behaviour groups running on a --art frozen-data build (app/dist/zz-art.html).
-- Waiting on Sim (pictures sent, re-asked at her return): Q1 Track card dots (which: grey / pink / none recommended / tear line);
+- Waiting on Sim (pictures sent, re-asked at his return): Q1 Track card dots (which: grey / pink / none recommended / tear line);
   Q2 Meta tabs under every headline (mock, recommended). Low priority, picture ready (pics/nov17/phone-header-arrows.png): phone header
   back/logo/forward tap boxes overlap (logo 18-28px); fix = spread the arrows about 24px (layout change).
 - Parked: #8 rated counts (Meta already explains 321). Next: #9 source chips, #12 Speed chips, #13-#22; then Preview v201.
@@ -81,7 +81,7 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
   with 86 known findings (line-box false alarms looked at: calc, types; guide is the style guide); CI jobs behaviour-webkit (reporting) and
   quality-v2 (blocking on new findings). Daily ckwin step held off main until the switch (main's page doesn't read it).
 - Local setup this machine needed: node_modules/pokemon-showdown linked from the scratchpad (psd/), for fields-audit.
-- Waiting on Sim: glance at Edit Set dropdowns on her iPhone (pics/nov17/edit-dropdown-*.png); NP_PID_KEY under Repository secrets ->
+- Waiting on Sim: glance at Edit Set dropdowns on his iPhone (pics/nov17/edit-dropdown-*.png); NP_PID_KEY under Repository secrets ->
   Actions, then the main names fix (#15) again; the switch to live; after-4 device checks (test-runs/sim-nov16-after4.md).
 - Next: C-I9 (file sizes) parked unless Sim wants it (a refactor, no visible gain); summary before 5 PM.
 - Morning (time: 6:59 AM (6:59:24)  date: Tue Nov 17, 2026): Preview v194; main names fix confirmed; Plans page 'After the redesign' (v32). Open: every-view
@@ -102,7 +102,7 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
 ## NOW (Nov 16, written time: 3:53 AM (3:53:41)  date: Mon Nov 16, 2026 by the clock; FULL authority until 10:00 AM; summary 9:40 AM; then STOPPED + HANDOVER + phone note + delete backstops trig_01P8wwfASshsPdbcFcM3qNMv, trig_012D8AdnvLFxfYqeBtDUoc7o)
 - Branch claude/design6, last commits ac15b13 (nuclear stress test fixes) and 9505d07 (log). GitHub checks all pass on ac15b13 (fields-audit can't run here).
 - Nuclear stress test done (started 2:09 AM): four helper reports in docs/rebuild/audits/stress-{words,a11y,perf,visual,func}-nov16.md, each item with a status.
-  Fixed: 2 high + 8 medium visual items, 4 of 5 confirmed function bugs (B1 is Sim's Nov 11 rule -> her Q4), 6 odd function items, words #4/6/7/8/9/17,
+  Fixed: 2 high + 8 medium visual items, 4 of 5 confirmed function bugs (B1 is Sim's Nov 11 rule -> his Q4), 6 odd function items, words #4/6/7/8/9/17,
   a11y #4-#8. Open for Sim (summary-nov16.md): B5 calc vs My Team set; ticket names at 320 (Q17); Build one-tap load; new Undo paths; 200% zoom hint.
 - Tests on t295 (all changes): A 138/0; B, C, D running into run295.txt. Baselines: B 31 known (old_r118-B-build.txt.ids); C 83/0; D 50 known (d244.ids,
   match with [A-Za-z0-9-] so the b-suffixed ids count).
@@ -196,7 +196,7 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
 
 ## NOW (Nov 14, written 5:31 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
 - Sim approved all four recommendations (5:19 PM): phone Grandstand 2 rows per tier; new height limits in c13 (META_L, USAGE_L; Home 320 4,800);
-  keep the brief's words and plain "Add to team". Tournaments go to her other designer (5:27 PM). Home 93 centred (slant nudge). Meta stand and
+  keep the brief's words and plain "Add to team". Tournaments go to his other designer (5:27 PM). Home 93 centred (slant nudge). Meta stand and
   podium sprites have no shadow filters on mouse screens (Sim: slow scroll in the Claude app on Windows; headless could not reproduce it).
 - Meta Usage BUILT (usage.js; Preview v137, 400 files): Usage tests 7 pass, 0 FAIL (+META-03b passes here); c13 ok at every width, no cut-offs.
 - NEXT: Meta Sets from the brief (section 5), then Build + My Team talk (R4b).
@@ -206,20 +206,20 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
   spotlight), V2.raFiltered2 (search/types/gems/box keep the list until Sim sees pictures), U.view stand|list ("List with win rates").
   Tier tokens --tier-s..f in tokens.css. Ratings tests 9 pass, 1 FAIL (RATE-01: method page not rebuilt; fails on the earlier commit too).
   c13: no cut-offs, no small taps; heights over the old list limits (1440 2,811/1,800; 820 3,930/3,500; 390 4,727/3,700; 320 4,924/3,900).
-  Q1 sent to Sim 5:10 PM with pictures: phone rows A (3 per tier, brief, 4,727) or B (2 per tier, 4,261). Default until she answers: A.
+  Q1 sent to Sim 5:10 PM with pictures: phone rows A (3 per tier, brief, 4,727) or B (2 per tier, 4,261). Default until he answers: A.
 - NEXT: Meta Usage ("The Podium", How <Pokemon> is played), then Sets, from the brief. Then Build + My Team talk (R4b).
 
 ## NOW (Nov 14, written 4:35 PM Eastern by the clock; Sim's authority until 8:00 AM Sun Nov 15; summary 7:40 AM)
 - Fight Night Home BUILT and live on the Preview (v134, 400 files; commit df71a00). Checks: polish (TARGET=v2 VIEWS=home) no spill or uneven rows;
   c13 390 4,380 / 820 3,459 / 1440 2,929 within limits, 320 4,749 vs an assumed 4,600 (Sim to set); Home tests 18 pass, 0 FAIL, 1 known (HOME-10b).
-  Decisions logged 4:34 PM in decisions.md (phone band, small-phone fits). Open for Sim: her look at the Home pictures; the 320 limit;
+  Decisions logged 4:34 PM in decisions.md (phone band, small-phone fits). Open for Sim: his look at the Home pictures; the 320 limit;
   820 "Most used right now." wraps to 4 lines in its narrow column (kept bold; stacking it would push 820 over 3,500).
 - NEXT: Meta tab from Sim's Grandstand brief (docs/rebuild/mocks/meta-grandstand/BRIEF.md + 12 webp). Our rules win; list every change for Sim;
   parts the brief says need a picture go to Sim first. Later: discuss Build + My Team upgrades (rebuild-plan.md R4b, checklist i57).
 - Measuring helpers (scratchpad, not in repo): gap2.cjs (section heights with the c13 data; NOD=1 = polish state), shot.cjs (full-page picture).
 
 ## NOW (Nov 14, written 9:54 AM Eastern by the clock; Sim's authority until 5:00 PM Sat Nov 14 (extended 8:40 AM); summary 4:40 PM)
-- Home design APPROVED by Sim: Fight Night refined (docs/rebuild/mocks/home3). Design round continues: discuss Build + My Team upgrades with Sim (rebuild-plan.md R4b); Meta is with her other designer; no building until the designs are settled.
+- Home design APPROVED by Sim: Fight Night refined (docs/rebuild/mocks/home3). Design round continues: discuss Build + My Team upgrades with Sim (rebuild-plan.md R4b); Meta is with his other designer; no building until the designs are settled.
 - 2:50 PM by the clock: Meta > Pokémon > Rating built (Sim's approved mock-up) and on the Preview v133 (400 files). RATE 9/10 (RATE-01 needs How We Calculate). Next: mock-ups for the Meta parts the approved mock-up does not cover (Usage, Tournaments, This Week, Archetypes) for Sim, then build.
 - 2:24 PM by the clock: full Battle tests on the new site: 55 pass, 28 FAIL, 4 skipped. All 28 explained: Meta pages not rebuilt (TRACK x6, NAV-06), adapter hooks not wired for menus/matchups/x-cases (NAV-01..03, MATCHUPS-01..06, X-01/03/04/05/06/09, LOG-06), How We Calculate + feedback not rebuilt (CALC-01/08), known open items (NAV-05 phones only, LOG-07 Home fold, X-08 the " · " style choice for Sim, i25). WAITING: Sim Question 4 (Meta A heavy / B light).
 - 1:33 PM by the clock: Type Chart SKYLINE built and on the Preview v132 (400 files); TYPES-01..05 pass. Changes from the brief listed in decisions.md. Next by plan: Battle Log mock-ups (last Battle page).
@@ -227,7 +227,7 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
 - 12:43 PM by the clock: Practice (Arena VS) on the Preview v130 (400 files). Preview build now gets out/practice.json (app/build.mjs). VS layered between the sides (your plates above it). WAITS on Sim: OK on VS layering; Type Chart round 3 pick (U1-U4, docs/rebuild/mocks/types/round3). Next by plan: Test Run, mock-ups first.
 - Sim's morning answers: all recommended (calc Q1-Q4 A), Preview go, iPad Q1 B / Q2 A. Preview now v127 (400 files checked).
 - On the Preview: Damage Calc 'Their Side' (v124), iPad upright table + KO Board side by side (v125), scroll-bar fix (v126/127,
-  i50, UNSURE until Sim tries it on her iPhone), tap today's underdog to open its sheet (v127, i51).
+  i50, UNSURE until Sim tries it on his iPhone), tap today's underdog to open its sheet (v127, i51).
 - Next by the rebuild plan (Battle group): Type Chart, then Practice, then Battle Log; each needs mock-ups for Sim first.
 - Reminders: summary trig_01PbzKFQ8nVFkJsCK3hJWvzt at 4:38 PM; backstops trig_01P8wwfASshsPdbcFcM3qNMv (:23) and
   trig_012D8AdnvLFxfYqeBtDUoc7o (:53) to delete at 5:00 PM.
@@ -256,7 +256,7 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
   docs/rebuild/mocks/calc/round3/: Q1 A Arena refined, recommended / B VS Screen / C The Fight). Waiting on Sim's pick; nothing built. i49.
 
 ## NOW (Nov 14, written 12:04 AM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
-- Info sheet (The Card) done on Preview v122; Sim: desktop 'VERY sharp'; tall-window left column stays (A). Left: her iPhone/iPad look.
+- Info sheet (The Card) done on Preview v122; Sim: desktop 'VERY sharp'; tall-window left column stays (A). Left: his iPhone/iPad look.
 - Speed Tiers BUILT (35c32db), NOT on the Preview: Sim's go (11:43 PM). Track 1024+, slim track under 1024 (Speed Q3 A, asked),
   weather row kept from today. Shared speedData (today's 372/372 identical); metaThreats cached per length (i31 done).
   Waiting on Sim: Speed Q3 (iPad upright slim track, recommended) and Preview go. Pictures: scratchpad look/L-spd, L-spp, Q-ipad-a/b.
@@ -265,19 +265,19 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
 - Sim paused the info page at 10:34 PM and resumed it ("pls continue") right after. Section 6 checks done 10:45 PM (bbfb754): names on one
   line, "Too few" fits, desktop card one size in both team states; 6 forms, one type, no data, widest/tallest, 320, 1366x768, Add state,
   keyboard, screen reader pass. UNSURE: scroll smoothness on a real mouse PC. Clicks 125/0 double.
-- Sim 10:56 PM: phone forms B (b7bd675) + go. PREVIEW v121 (400 files) = The Card. Next: Sim tries it; refine as she says.
+- Sim 10:56 PM: phone forms B (b7bd675) + go. PREVIEW v121 (400 files) = The Card. Next: Sim tries it; refine as he says.
 - Sim 11:03-11:04 PM: PC scrolling smooth; phone sheet slid sideways and desktop card was a long strip on a tall window -> fixed
-  (6bc6f2d). PREVIEW v122 (400 files). Open (her call): empty left column under the buttons on very tall windows.
+  (6bc6f2d). PREVIEW v122 (400 files). Open (his call): empty left column under the buttons on very tall windows.
 - Info sheet = NEW DIRECTION, Sim's Card brief (docs/rebuild/info-sheet/BRIEF-CARD.md; the Stadium/Side Stage is gone). Built on the
   branch, NOT on the Preview (v120 is still the old stage): phone, iPad upright, desktop, dark + light (b35657a, a1064d0, 4b7bec5).
   Tab sub-lines removed (Sim, 10:30 PM). Checks 10:31 PM: words 345/345 kept (look/sit3.cjs, order-free), polish 0 spills,
-  c13 0 over height, use 32 ok. Pictures beside her mock-ups sent (scratchpad look/L-phone, L-ipad, L-desk).
+  c13 0 over height, use 32 ok. Pictures beside his mock-ups sent (scratchpad look/L-phone, L-ipad, L-desk).
 - Open question to Sim: phone with forms, tabs 139 px below the first screen: A keep / B (recommended) forms under the tabs (Q-A/Q-B.png).
 - Not yet checked (brief 6): one type, no data, >3 forms, Add state, keyboard/screen reader, scroll smoothness.
 
 ## NOW (Nov 13, written 9:26 PM Eastern by the clock; Sim's authority until 8:00 AM Sat Nov 14; summary 7:40 AM)
 - Info sheet redesign is ON THE PREVIEW (v119 = v117's look, which Sim called 'much better'): desktop stage is a box (292-460 px, sheet
-  at most 860 px, centred). Sim's mock-up in-stage measurements (v118, 454dbc4) looked 'squished' to her and were taken out (7b0a6e0);
+  at most 860 px, centred). Sim's mock-up in-stage measurements (v118, 454dbc4) looked 'squished' to him and were taken out (7b0a6e0);
   the iPad-upright measurements (36bb963) were never published and are out too. Waiting on Sim: is v119 fine, or still squished (which
   device, what needs room)?
 - 'None yet' (Info Q3 B) is live on the Preview; chips stay stacked at 320 (Q4 A).
@@ -312,7 +312,7 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
 - Real-font polish, all built pages: spill 47 -> 0 for real problems (3 Home spills fixed by Q3); remaining findings judged
   (decisions.md 4:04 PM; Top tier night glow approved, line 124).
 - i41 X-10 now POSSIBLY A REAL PHONE ISSUE: touch tap right after Build shows the team lost 2-3 of 10-12 taps (events reach the
-  tile, no click). Desktop mouse hover-first 10/10. Next: Sim tries by hand on her iPhone; scripts experiments/x10-*.mjs.
+  tile, no click). Desktop mouse hover-first 10/10. Next: Sim tries by hand on his iPhone; scripts experiments/x10-*.mjs.
 
 ## NOW (Nov 13, written 3:43 PM Eastern by the clock; Sim's authority until 5:00 PM)
 - PREVIEW v106 (394 files checked). Since v104: Sim's 2:43 PM 'all recommended' built one at a time with checks: Even Q1 B
@@ -425,7 +425,7 @@ updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10
 
 ## NOW (Nov 12, written 6:28 PM Eastern by the clock; Sim's authority until 7:30 PM; summary reminder 7:10 PM)
 Rules first: RULES.md section 00 (WORKING/STOPPED, questions first, nothing claimed before it's real, proof for every check).
-- BUILD page (app/src/v2/pages/build.js) is BUILT in code, NOT on the Preview (pictures sent to Sim, waiting on her yes):
+- BUILD page (app/src/v2/pages/build.js) is BUILT in code, NOT on the Preview (pictures sent to Sim, waiting on his yes):
   head (title, How it works, My Box/Whole roster, Megas, build around a Pokémon, Go); the answer (Option k of n · kind, label,
   Strength Score + rank + breakdown line + Why this score?, Fresh take line, six with items/roles/tiers, four reasons, Use This
   Team / Save / Copy, to-catch note, today's no-result notes); lower half: Other options ("Show this one ›"), Start from a recent
@@ -531,7 +531,7 @@ Read first: docs/rebuild/RULES.md (Sim's rules; they win over older lines), then
 docs/rebuild/my-team-fix-plan.md (Sim's plan and order of work).
 
 ## 0. State at handover
-- **Sim said STOP (Nov 11, ~10:45 PM): do nothing until she says go.** The next chat starts by asking Sim what to do. Nothing has
+- **Sim said STOP (Nov 11, ~10:45 PM): do nothing until he says go.** The next chat starts by asking Sim what to do. Nothing has
   started on the fix plan.
 - Branch `claude/design6`. All work is committed and pushed; `git status` was clean when this was written.
   The commit that holds this file is the handover commit (see `git log`).
@@ -564,15 +564,15 @@ docs/rebuild/my-team-fix-plan.md (Sim's plan and order of work).
 Heights: only My Team has been measured on the built page (page-heights.md correction). Every other rebuild height in that file is a mock-up number.
 
 ## 2. Sim's decisions in this chat that were not yet in a file (Nov 11 evening, Eastern)
-- ~9:30 PM: all her iPhone bug reports come from the Claude app on iPhone (not desktop). Keep the frosted glass ("i liked the glass").
+- ~9:30 PM: all his iPhone bug reports come from the Claude app on iPhone (not desktop). Keep the frosted glass ("i liked the glass").
 - ~9:40 PM: stutter fixed and the Add a Pokémon sheet "love it. works well" (already logged).
 - ~9:46 PM: helpers allowed until 11 PM for the rebuild.
 - ~10:00 PM: My Box deserves to be seen, but **never a sixth menu place** (top or phone bar): "thats waaay too much".
   It goes up top next to Day/Night as **an icon**, not the words "My Box". (Built as a storage-box icon, v52.)
 - ~10:30 PM: Sim suggested a **Pokémon PC icon** instead ("creativity works wonders"). Claude proposed 3 options (retro PC with a
   tiny Poké Ball on screen [recommended], a monitor showing a 3x2 box grid, a Poké Ball alone). Not built; waiting for Sim.
-- ~10:40 PM: pause, then **stop: do nothing until she says go**.
-- ~10:50 PM: the fix plan (docs/rebuild/my-team-fix-plan.md) and Part C rules; **no design decision ever without her yes and
+- ~10:40 PM: pause, then **stop: do nothing until he says go**.
+- ~10:50 PM: the fix plan (docs/rebuild/my-team-fix-plan.md) and Part C rules; **no design decision ever without his yes and
   screenshots, even under authority**; every "checked" says built page or mock-up + result line + plain English; quality over
   speed. All in docs/rebuild/RULES.md.
 - ~10:55 PM: Shady Paw is cut and is not the mascot (CLAUDE.md updated). Host the two fonts ourselves (privacy). Ratings must have
@@ -583,7 +583,7 @@ Heights: only My Team has been measured on the built page (page-heights.md corre
 2. A3: should a ±0 suggestion stay visible (with a secondary button) or go behind "See all suggestions"?
 3. A9: which redesign of the selected Pokémon (from the design chat).
 4. PC icon: which of the 3 options (pictures needed first).
-5. Gallery card: new wording to replace "all inside the length limits" and "same numbers as today's site" (show her first).
+5. Gallery card: new wording to replace "all inside the length limits" and "same numbers as today's site" (show him first).
 6. The parked iPad layout (claude/park-ipad-balance): keep or drop? (pictures needed).
 7. Phone height: the big cuts (fold the three sliders into a summary line; fold the Favoured list; shorter Matchups intro) are
    design choices (helper report: test-runs/nov11-night/helper-height-report.md).

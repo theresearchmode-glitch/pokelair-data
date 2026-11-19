@@ -2,10 +2,10 @@ SHARE CARD — SIM'S PICKS: "THE SLAB", "PRINT" AND "AURORA", each in two shapes
 
 Sim chose these on Nov 14 after six rounds. Six pictures come with it: three designs, each tall (1080 x 1350, for Instagram, TikTok and phone feeds) and wide (1200 x 675, the shape of today's share card, for link previews). They are mock-ups drawn with the real sample team and today's real numbers. Your rules win over anything here: where this brief and RULES.md, design-system.md or decisions.md disagree, follow yours and tell Sim. Section 7 lists the conflicts I already know about. Please don't copy my mock CSS or class names; the real card is drawn on a canvas (ARB.card / ARB.poster), so build it your way. Preview before live: nothing goes live without Sim's go.
 
-Sim liked all three and has not picked one. Ask her whether she wants one design or all three offered as styles in the share sheet, beside today's shape choice.
+Sim liked all three and has not picked one. Ask his whether he wants one design or all three offered as styles in the share sheet, beside today's shape choice.
 
 WHY THIS MATTERS
-This is the picture people post and send to each other, so it represents NastyPlot. Sim's words: it must be eye-catching and have wow, but not kiddy. What she rejected on the way here, so please avoid: dark stages with spotlights and reflections (she hates this and asked never to see it again), flat blue-and-pink split backgrounds with dots and hard black text shadows ("kiddy"), neon grids and sunsets, and plain cream layouts with thin rules ("too classy, boring"). The three below are the middle ground she approved.
+This is the picture people post and send to each other, so it represents NastyPlot. Sim's words: it must be eye-catching and have wow, but not kiddy. What he rejected on the way here, so please avoid: dark stages with spotlights and reflections (he hates this and asked never to see it again), flat blue-and-pink split backgrounds with dots and hard black text shadows ("kiddy"), neon grids and sunsets, and plain cream layouts with thin rules ("too classy, boring"). The three below are the middle ground he approved.
 
 0. WHAT STAYS EXACTLY AS IT WORKS TODAY
 Everything the share sheet does today: the shape and kind choices, the display mode, Save, press-and-hold to save on a phone, the team link line, the saved-team poster, the file names, and the alt text. Every fact on today's card stays on the new ones: team name, the six with their items, a Mega mark, Strength Score and its word, "Beats or handles N of the top 30", the rank line, "Pokémon Champions · VGC doubles · Reg M-C", the logo, the tagline "Sharply raise your win rate." and "NastyPlot, unofficial fan tool". Same data and helpers. Nothing is removed.
@@ -61,7 +61,7 @@ Everything the share sheet does today: the shape and kind choices, the display m
 No new wording. The cards use today's lines. "Strength Score" appears as a small label under the score's word.
 
 9. SIM'S STANDING RULES
-Preview before live; nothing goes live without her go. Real data only. Never remove functionality. Every name readable at phone size. Dark and light both polished where both exist. Headlines and big numbers in Unbounded slanted, everything else Instrument Sans; do not change the fonts. Never call the site an "app". No names or emails collected. No model names in commits.
+Preview before live; nothing goes live without his go. Real data only. Never remove functionality. Every name readable at phone size. Dark and light both polished where both exist. Headlines and big numbers in Unbounded slanted, everything else Instrument Sans; do not change the fonts. Never call the site an "app". No names or emails collected. No model names in commits.
 
 PICTURES
 share-card-slab-tall.png (1080 x 1350) / share-card-slab-wide.png (1200 x 675)

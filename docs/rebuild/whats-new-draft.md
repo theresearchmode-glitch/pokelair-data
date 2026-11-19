@@ -17,6 +17,6 @@ How it shows (unchanged rules, today's 53-feedback.js): once, on the first visit
 | 6 | Back | The arrow at the top left takes you back to where you just were, one step at a time, right to the spot you were reading. |
 | 7 | Feedback | Tell us what's off with Send Feedback at the bottom of any page. |
 
-Added 6:39 PM (Nov 12): item 6 Back (Sim asked for the Back button at 5:42 PM; it shows only if she picks option A, the arrow). Folded line becomes "7 updates".
+Added 6:39 PM (Nov 12): item 6 Back (Sim asked for the Back button at 5:42 PM; it shows only if he picks option A, the arrow). Folded line becomes "7 updates".
 
 Open: the id becomes the switch date (e.g. '2026-11-xx-redesign'); the Feedback line names the new footer link ("Send Feedback").

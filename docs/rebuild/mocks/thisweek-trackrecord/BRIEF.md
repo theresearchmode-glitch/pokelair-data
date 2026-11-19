@@ -5,7 +5,7 @@ Sim chose these on Nov 14. Six pictures come with this (two pages x desktop 1440
 Both pages reuse pieces Sim already approved in the Events and Archetypes brief: the ticket stubs (for winners) and the weather scenes (for team styles). Please build those once and share them.
 
 WHAT SIM ASKED FOR
-Bold, fun and creative, not kiddy. For This Week she picked the newspaper-style page over a bar "scoreboard" and a "line" chart. For Track Record she picked the receipt ("this is awesome haha") and asked for it to be even more fun.
+Bold, fun and creative, not kiddy. For This Week he picked the newspaper-style page over a bar "scoreboard" and a "line" chart. For Track Record he picked the receipt ("this is awesome haha") and asked for it to be even more fun.
 
 PART A — THIS WEEK: THE FRONT PAGE
 
@@ -81,7 +81,7 @@ New wording (Sim has seen all of it and said the new wording is fine): the stamp
 - Both: widths between the three drawn, a 320-wide phone, iPad landscape, keyboard order and reduced motion.
 
 12. SIM'S STANDING RULES
-Preview before live; nothing goes live without her go. Real data only. Never remove functionality. Every name readable at phone size. Even layouts, no half-filled rows, no empty strips. Dark and light both polished. No boxes inside boxes. Headlines and big numbers in Unbounded slanted, everything else Instrument Sans; do not change the fonts. Never call the site an "app". No real player names beyond what the page already shows. No names or emails collected. No model names in commits.
+Preview before live; nothing goes live without his go. Real data only. Never remove functionality. Every name readable at phone size. Even layouts, no half-filled rows, no empty strips. Dark and light both polished. No boxes inside boxes. Headlines and big numbers in Unbounded slanted, everything else Instrument Sans; do not change the fonts. Never call the site an "app". No real player names beyond what the page already shows. No names or emails collected. No model names in commits.
 
 PICTURES (dark left, light right)
 this-week-desktop.png / this-week-ipad.png / this-week-iphone.png

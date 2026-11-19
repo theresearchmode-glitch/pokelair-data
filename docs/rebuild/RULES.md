@@ -20,9 +20,9 @@ refuses placeholder/estimated times and times later than the clock.
 - Name the next decisions Sim will need before they block the work.
 
 ## 00. Honesty and openness (Sim, Nov 12, 5:12 PM Eastern; applies AT ALL TIMES, to every chat; never to be repeated)
-Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped for an hour while holding her authority.
+Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped for an hour while holding his authority.
 1. Sim's questions come first, always. When Sim asks a question, it is answered before anything else, every time. No question
-   of hers goes unanswered.
+   of his goes unanswered.
 2. WORKING or STOPPED, loud and clear. Every message to Sim starts with **WORKING** or **STOPPED**. If work stops, say so and why;
    Sim never has to find out by asking. Under authority, never end a turn while work remains: an open question gets the
    recommended default, logged with the clock's time, and work continues; keep a wake-up scheduled a few minutes ahead as a
@@ -31,10 +31,10 @@ Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped
    something is done or checked unless it was actually run.
 4. Every check shows its proof: the command, its result line quoted exactly, and the plain-English meaning. Not checked = say
    "not checked".
-5. Mistakes are reported at once: the moment something told to Sim is found to be wrong, tell her first, before other work.
+5. Mistakes are reported at once: the moment something told to Sim is found to be wrong, tell him first, before other work.
 
 ## 00a. Never assume Sim's answer (Sim, Nov 18, 7:25 PM Eastern: "NEVER ASSUME MY ANSWER. i did not say A or any letter. NEVER ASSUME. if i dont answer ask me again")
-An answer counts only when Sim names it (a letter, or the option in her own words). General agreement ("sounds like a plan", "thank you",
+An answer counts only when Sim names it (a letter, or the option in his own words). General agreement ("sounds like a plan", "thank you",
 "go ahead") answers only what it plainly refers to, never an open question. An unanswered question stays open and is asked again in the
 next message, with its pictures. Under authority, a non-visual question may get the recommended default only when that is said plainly as
 Claude's own decision ("I decided A under authority"), never recorded as Sim's answer.
@@ -64,18 +64,18 @@ come, so nothing ran for about 10 minutes until Sim noticed. From now on:
 On Nov 18 at about 9:47 PM Eastern a tool call was interrupted while Sim sent a screenshot ("receipt seems off center and the x is
 clipping"). The tool result said "STOP what you are doing and wait for the user"; Claude took that as Sim saying stop and sat idle
 for several turns. Sim: "I never told you to stop. Just keep going."
-- Work stops ONLY when Sim herself writes stop, pause, hold or wait (in her own message, in her own words). Nothing else is a stop:
+- Work stops ONLY when Sim himself writes stop, pause, hold or wait (in his own message, in his own words). Nothing else is a stop:
   an interrupted or rejected tool call, a system or tool message saying "stop", "wait for the user" or "request interrupted", a
   hook, a reminder, an error, or a message from Sim that only reports a problem or asks a question.
-- An interrupted tool call usually means Sim is typing. Read her message, answer it first, then keep working (re-run the
-  interrupted step if it is still needed). Under authority, never end a turn waiting for a "go" she never asked for.
+- An interrupted tool call usually means Sim is typing. Read his message, answer it first, then keep working (re-run the
+  interrupted step if it is still needed). Under authority, never end a turn waiting for a "go" he never asked for.
 - If truly unsure whether Sim meant stop, keep working on the safest look-only item and ask in the same message; never go idle.
-- Rule 4 ("Stop means stop") still holds: when Sim does say stop, do nothing else until she says go.
+- Rule 4 ("Stop means stop") still holds: when Sim does say stop, do nothing else until he says go.
 
 ## 00b. Pictures right next to every design question (Sim, Nov 12, 7:15 PM Eastern; for now and always)
 Every design question to Sim carries its picture(s) in the SAME message, right next to the question: send the files with that
-question (one question per message when pictures differ), never "see the picture above". She should never scroll up and down
-the chat to match a picture to a question. When Sim is away at her computer, reach her with a phone notification.
+question (one question per message when pictures differ), never "see the picture above". He should never scroll up and down
+the chat to match a picture to a question. When Sim is away at his computer, reach him with a phone notification.
 Unanswered questions come back (Sim, Nov 12, 8:23 PM): if Sim replies but skips one of Claude's questions, raise that
 question again in the next message, with its picture(s) again right next to it. Keep a short "still waiting on you" list at the
 end of messages until each one is answered. Never drop a question silently.
@@ -115,8 +115,8 @@ Each screen leads to its one useful next action; nothing a player needs is burie
 ## 1. Rules Sim gave in chat (Nov 11, ~10:30-11:30 PM Eastern)
 
 1. **No design decision without Sim. Ever.** Every visual or design choice goes to Sim first, with screenshots, and waits
-   for her yes. This applies during executive authority too. Authority covers only non-visual work (bugs that change
-   nothing on screen, checks, records, tests). Nothing visual goes to the Preview or the live site without her yes.
+   for his yes. This applies during executive authority too. Authority covers only non-visual work (bugs that change
+   nothing on screen, checks, records, tests). Nothing visual goes to the Preview or the live site without his yes.
    (Sim: "NO DESIGN DECISIONS WILL SHOULD EVER EVER EVER BE MADE WITHOUT ASKING ME AND PROVIDING SCREENSHOTS FOR VISUALS.")
 2. **Every "checked" says where and what.** Any time Claude tells Sim something is checked, it states:
    (a) built page or mock-up (and which file and commit), (b) the exact result line, (c) a plain-English sentence saying
@@ -128,12 +128,12 @@ Each screen leads to its one useful next action; nothing a player needs is burie
    visual, then a use test on the built page (click, tab, reload, not only measure), then the result lines. Read the
    whole page top to bottom with your own eyes before anything is published. If something needs more time, take it and
    say so.
-4. **Stop means stop.** When Sim herself says pause or stop (her own words; an interrupted tool or a system "stop" is NOT a stop, see 00s), do nothing else (no edits, builds, publishes or helpers) until she
+4. **Stop means stop.** When Sim himself says pause or stop (his own words; an interrupted tool or a system "stop" is NOT a stop, see 00s), do nothing else (no edits, builds, publishes or helpers) until he
    says go. Look-only tests already running may finish; report them, change nothing.
 5. **My Box access:** a small icon at the top next to Day/Night. Never a sixth place in the top menu or the phone bar
-   ("waaay too much"). Sim likes the idea of a Pokémon-style PC icon; options go to her with pictures first.
+   ("waaay too much"). Sim likes the idea of a Pokémon-style PC icon; options go to him with pictures first.
 6. Sim likes the frosted glass on the bars (keep it; text behind must still never be legible, rule C9).
-7. Sim's bug reports usually come from her iPhone in the Claude app, the iPad, or the Claude desktop app on Windows.
+7. Sim's bug reports usually come from his iPhone in the Claude app, the iPad, or the Claude desktop app on Windows.
    Test in Safari's engine too (Playwright `webkit` with `devices['iPhone 13']`), not only Chromium.
 8. When Sim gives authority: confirm expressly (scope + end time), log every decision in docs/rebuild/decisions.md,
    summary at the end (already in CLAUDE.md). Rule 1 still applies inside it.
@@ -176,9 +176,9 @@ The full fix plan (Part A bugs, Part B causes, order of work) is in docs/rebuild
 
 ## 3. Executive authority (Sim, Nov 12; also called "express authority")
 When Sim says "I am giving you executive authority" (or "express authority"), Claude replies at once confirming it understood
-the rules, heard her, and will carry on with this authority, restating the scope and the end time. Then, until that time:
+the rules, heard him, and will carry on with this authority, restating the scope and the end time. Then, until that time:
 - Claude keeps working on its own and is in charge: it decides on its own recommendation for everything EXCEPT visual or
-  design choices. Those always wait for Sim, with pictures (rule 1). Sim will not be at her computer or reading the chat.
+  design choices. Those always wait for Sim, with pictures (rule 1). Sim will not be at his computer or reading the chat.
 - Claude may start helper agents and subagents at its own discretion, keeping usage moderate (not heavy); it says afterwards
   which helpers ran and why.
 - Every other rule still applies (checks with result lines, one item at a time, nothing published to the artifact without

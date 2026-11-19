@@ -1,6 +1,8 @@
 # NastyPlot (Sim's project)
 
-This repo is Sim's (Simran's). These are her standing preferences for any session working on it.
+This repo is Sim's (Simran's). These are his standing preferences for any session working on it.
+
+**Sim is he/him (Sim, Nov 19, 10:13 AM; said many times).** Never 'she' or 'her' for Sim, in chat, docs, commits or helper briefs.
 
 ## READ FIRST (Sim, Nov 11 night): docs/rebuild/RULES.md and docs/rebuild/HANDOVER.md
 - docs/rebuild/RULES.md: the rules that win over anything older below. In short: NO design or visual decision without Sim's
@@ -70,17 +72,17 @@ need before they block the work. This replaces "lean usage: no helpers unless Si
 (both kept for the record; Sim, Nov 17: "usage is not a problem for right now").
 
 ## Usage warning (Sim, Nov 6; paused Nov 17: usage is not a problem for now, see 'Be proactive and efficient')
-Before starting a task that will be heavy on usage, warn Sim first and let her decide. Heavy means things like: many helper
+Before starting a task that will be heavy on usage, warn Sim first and let him decide. Heavy means things like: many helper
 agents, long multi-hour runs with lots of back-and-forth, big redesigns or full-site rewrites, repeated large screenshot
 batches, or anything likely to take more than about an hour of active work. Give a rough size (light / medium / heavy), what
 makes it heavy, and a lighter option if one exists. Background computer time (a script running on its own) is cheap; say so.
 Ultracode (Sim, Nov 9): when Sim describes a task, say up front whether turning ultracode on (many helper agents plus skeptic
-agents) would really help it, with a rough usage multiple, so she can turn it on herself. Default: off; it mainly helps big look-only
+agents) would really help it, with a rough usage multiple, so he can turn it on himself. Default: off; it mainly helps big look-only
 audits and research sweeps, not our one-change-at-a-time work.
 
 ## How Sim likes work done
 - Shorter replies (Sim, Nov 16): leave nothing out, but use tight wording: short sentences, short lines, no long run-ons.
-- Preview before live: nothing goes to the live artifact without her explicit go (unless she says "publish when done" for that change).
+- Preview before live: nothing goes to the live artifact without his explicit go (unless he says "publish when done" for that change).
 - Faster flow (Sim, Nov 10, latest, overrides the line above for now): skip the Preview for today's site; send Sim screenshots
   and put fixes live directly. The rebuild lives on its own artifact, "NastyPlot Full Redesign", until the switch.
 - Watch the build live (Sim, Nov 11): while the rebuild is being built, the "NastyPlot Full Redesign" artifact
@@ -95,19 +97,19 @@ audits and research sweeps, not our one-change-at-a-time work.
 - Real data only, never remove functionality, be careful. Ask when unsure.
 - Authority (Sim, Nov 11): when Sim gives Claude decision-making authority (e.g. "executive control until 7PM EST"), reply first with
   an express confirmation that you understand and got it, restating the scope and the end time. Decide on your own recommendation
-  until then, log every decision in docs/rebuild/decisions.md, and give her a summary of the decisions when the time is up.
+  until then, log every decision in docs/rebuild/decisions.md, and give him a summary of the decisions when the time is up.
 - Lean usage (Nov 6): replaced Nov 17 by 'Be proactive and efficient': helpers in parallel without asking; tell Sim what runs.
-- Local PC chat (Sim, Nov 11): Sim has a local Claude Code chat on her Windows PC (RTX 3080, faster than the cloud machine,
+- Local PC chat (Sim, Nov 11): Sim has a local Claude Code chat on his Windows PC (RTX 3080, faster than the cloud machine,
   doesn't restart). Whenever a task would go faster there (test runs, polish checks, screenshot batches, image work on the
-  GPU, anything heavy in a browser), say so up front and give her a ready-to-paste prompt: what to pull, what to run, where
+  GPU, anything heavy in a browser), say so up front and give him a ready-to-paste prompt: what to pull, what to run, where
   to save results (commit to the working branch), and "fix only setup, never the code or tests". Briefs live in
   docs/rebuild/gpu-jobs.md or docs/rebuild/test-runs/.
-- She tests on iPhone, iPad and the Claude desktop app on Windows (mouse wheel, 100% scaling). Desktop sprite glow is off on mouse
+- He tests on iPhone, iPad and the Claude desktop app on Windows (mouse wheel, 100% scaling). Desktop sprite glow is off on mouse
   screens except feature sprites, for smooth scrolling; never give filtered sprites their own layers (will-change), it made it worse.
-- She has a sharp eye for symmetry and small details; keep layouts even and labels clear.
+- He has a sharp eye for symmetry and small details; keep layouts even and labels clear.
 - Every window size must look right (Sim, Nov 9): the layout has to survive any resize, including odd window shapes and dragging
   the window while a page is open. Check odd widths, not only phone / tablet / desktop.
-- Using space well is very, very important to her, on every page and every screen size: no empty strips beside text,
+- Using space well is very, very important to him, on every page and every screen size: no empty strips beside text,
   no half-filled rows. Prefer even columns or side-by-side layouts over narrowing content.
 - Seamless and clean, in light AND dark mode: no boxes stacked inside boxes in different shades (page > card > cell
   should be at most page + one card colour), dividers are thin soft rules (--ar-rule), not heavy dark lines.
@@ -140,10 +142,10 @@ Step 3 Strength Score (before the launch, Sim), Step 4 launch, Ideas): only what
 old sections are archived in docs/rebuild/plans-archive-nov17.html.
 ORDER OF WORK (Sim, Nov 10, latest): 1) the rebuild into the new design, 2) then integrating Regulation M-D, 3) then the
 launch plan. Rebuild plan: docs/rebuild-plan.md and the Plans page section "Rebuild into the new design" (Claude leads; Sim
-approves the direction, each page and the switch; nothing starts until she says go). What the redesign chat decided and made:
+approves the direction, each page and the switch; nothing starts until he says go). What the redesign chat decided and made:
 docs/redesign/HANDOFF.md and docs/redesign/concepts/ (that chat is retired; everything runs through this one). Look polish on
 today's design is frozen; bug fixes continue. R0 decisions (Sim, Nov 10) are in docs/rebuild-plan.md; Helper agents (Sim, Nov 10, latest): for the
-rebuild, use them wherever they genuinely help, without asking first; just tell her when you do (she'll say if it's a problem).
+rebuild, use them wherever they genuinely help, without asking first; just tell him when you do (he'll say if it's a problem).
 Changes to the site still land one at a time.
 Earlier focus (Nov 10): the NastyPlot Focus page (https://claude.ai/artifact/1AgBoBNeSXHGRDu8kpYPGX, source
 docs/focus-plan.html; ticks in its own db collection "progress"): grading fixes from the outside review (GRADING-REVIEW.md),

@@ -3,7 +3,7 @@ META > TOURNAMENTS: EVENTS AND ARCHETYPES — SIM'S PICKS: "THE TICKET WALL" AND
 Sim chose these on Nov 14. They finish the Tournaments tab: Winning Teams is "The Winning Hands" (already briefed). Twelve pictures come with this (four screens x desktop 1440, iPad 820, iPhone 390). Each picture shows dark on the left and light on the right. They are mock-ups drawn inside your built v2 page (branch claude/design6 at 423360bb) with today's real data: the events come from the events data, and the style counts, key Pokémon, tips and "what your team has" lines were read from the live page's Archetypes tab (44, 35, 31, 17, 15, 9, 7 and 6 of 90). Your rules win over anything here: where this brief and RULES.md, design-system.md or decisions.md disagree, follow yours and tell Sim. Sections 5 and 9 list the conflicts I already know about. Please don't copy my mock CSS or class names; build it your way. Preview before live: nothing goes live without Sim's go.
 
 WHAT SIM ASKED FOR
-"Be creative, there's so much room to play around. Look at what each style actually is, maybe incorporate that into the design and have fun." For Events she wanted "ticket stub but more creative and with more character". Earlier tries she passed on, so please avoid: plain rows of small pictures, a bar-chart "skyline", hands of Cards for styles, and flat coloured bands.
+"Be creative, there's so much room to play around. Look at what each style actually is, maybe incorporate that into the design and have fun." For Events he wanted "ticket stub but more creative and with more character". Earlier tries he passed on, so please avoid: plain rows of small pictures, a bar-chart "skyline", hands of Cards for styles, and flat coloured bands.
 
 0. WHAT STAYS EXACTLY AS IT WORKS TODAY
 Both tabs keep everything they do today. Events: the three counts, "What counts as an event?", Next Events, the All / Official / 100+ players filter, every event with its date, player count, name and winner's six, opening an event for its placings 1st to 16th, and Show More. Archetypes: all eight styles with their share and count, the description, Key Pokémon, How to beat it, What your team has, and the note that a team can count for more than one style. Same data, same helpers, same numbers, same order. Nothing is removed.
@@ -98,10 +98,10 @@ Sim asked for two lines to be removed, so do not add them: a count such as "2 of
 - Both: widths between the three drawn, a 320-wide phone, iPad landscape, keyboard order and reduced motion.
 
 12. SIM'S STANDING RULES
-Preview before live; nothing goes live without her go. Real data only. Never remove functionality. Every name readable at phone size. Even layouts, no half-filled rows, no empty strips. Dark and light both polished. No boxes inside boxes. Headlines and big numbers in Unbounded slanted, everything else Instrument Sans; do not change the fonts. Never call the site an "app". No real player names beyond what the page already shows. No names or emails collected. No model names in commits.
+Preview before live; nothing goes live without his go. Real data only. Never remove functionality. Every name readable at phone size. Even layouts, no half-filled rows, no empty strips. Dark and light both polished. No boxes inside boxes. Headlines and big numbers in Unbounded slanted, everything else Instrument Sans; do not change the fonts. Never call the site an "app". No real player names beyond what the page already shows. No names or emails collected. No model names in commits.
 
 STILL TO COME FROM SIM
-Meta's This Week and Track Record are next on her list and are not designed yet.
+Meta's This Week and Track Record are next on his list and are not designed yet.
 
 PICTURES (dark left, light right)
 events-ticket-wall-desktop.png / -ipad.png / -iphone.png

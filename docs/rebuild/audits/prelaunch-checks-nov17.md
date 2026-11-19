@@ -2,7 +2,7 @@
 
 Sim sent this review on Nov 17 (morning) with "recommended for all is good to go". Each item: re-check on the current
 branch, fix, a test that fails before, pictures for Sim. Status words: OPEN, FIXED, FOR SIM, LAUNCH PLAN (January work,
-parked by Sim's Nov 9 rule until she says), NO CHANGE (checked).
+parked by Sim's Nov 9 rule until he says), NO CHANGE (checked).
 
 ## Verified correct by the reviewer (keep; a selling point at launch)
 - Damage Calc: 30,838 hits identical to @smogon/calc in all 16 rolls (40 top Pokémon, weather, terrain, crits, Helping
