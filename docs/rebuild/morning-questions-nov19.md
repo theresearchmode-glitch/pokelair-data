@@ -92,7 +92,7 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    a. At 1366 wide and up, the two cards in a row are different heights and each is centred in its slot, so the shorter card sits
       lower than its neighbour (picture: 1440, card 2 sits lower than card 1). My recommendation: top-align both cards in a row
       (reason: the eye reads across a row from the top; a ragged top edge looks like a mistake).
-   b. A card with no target (Tailwind, Flinches, Protect) leaves an empty strip where the target sprite would be. My recommendation:
+   b. (now Q28, with pictures) A card with no target (Tailwind, Flinches, Protect) leaves an empty strip where the target sprite would be. My recommendation:
       let the text use that strip (reason: no empty strips beside text, your space rule).
    c. Phone cards at 320 are tall (about 10 lines with a note). Linked to item 24 (wider note column).
 26. Turn One wording (no picture needed, plain words):
