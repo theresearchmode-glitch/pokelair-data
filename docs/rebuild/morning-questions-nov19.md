@@ -25,3 +25,5 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
 7. Q15 · Pokémon count (review #18): pictures docs/rebuild/pics/nov19/Q15-pokemon-count-*.png
    A RECOMMENDED: '#1 of 322 with tournament results' (says why it's 322, not 345; short enough for the badge).
    B: adds '(322 of 345 rated have them)'. C: no change.
+8. Q16 · Edit Set Close X on phones (review #21): pictures docs/rebuild/pics/nov19/Q16-editset-close-*.png
+   A RECOMMENDED: a solid strip at the top holds the X, content scrolls under it. B: no change (X overlaps a dropdown's corner).
