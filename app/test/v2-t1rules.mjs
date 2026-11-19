@@ -139,4 +139,5 @@ ok(!st.intoDown.length, `no later attack aims at a Pokémon already KO'd this tu
 ok(!st.faintBad.length, `a 'Fainted' beat is only theirs and keeps its planned move (${st.fainted} fainted, ${st.faintBad.length} wrong${st.faintBad.length ? ', e.g. ' + st.faintBad[0] : ''})`);
 ok(st.koStamp > 0 && !st.koStampBad.length, `Battle's KO stamp shows only for a sure KO, not a chance ('OHKO 19%') (${st.koStamp} stamps, ${st.koStampBad.length} wrong${st.koStampBad.length ? ', e.g. ' + st.koStampBad[0] : ''})`);
 ok(st.sheetDiff > 0 && !st.sheetWrong.length, `their lead from a real open team sheet is calculated with its sheet item, both ways (${st.sheetHits} lines, ${st.sheetDiff} where it isn't the most common item, ${st.sheetWrong.length} wrong${st.sheetWrong.length ? ', e.g. ' + st.sheetWrong[0] : ''})`);
+ok(st.koLines > 0 && !st.sashKO.length, `no 'KOs' when Focus Sash or Sturdy holds (${st.koLines} KO lines, ${st.sashKO.length} wrong${st.sashKO.length ? ', e.g. ' + st.sashKO[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

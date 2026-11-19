@@ -75,13 +75,13 @@ function turnOneData(mine, theirs, r) {
     if (fd) { used.add('fake'); lines.push([m, `Fake Out ${fd.o.d}`, fd.worst ? `stops its ${fd.worst.h.mv.name} (up to ${dmgP(100 * fd.worst.pct)}% to your ${fd.worst.on.d})` /* 'its': the target, named above it on the card */ : fd === danger[0] ? 'their biggest threat' : 'it can be flinched', pr(m, 'Fake Out'), fd.o]); continue; }
     if (mv.has('Tailwind') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Tailwind', `${fast === 1 ? '1 of their leads outspeeds' : fast + ' of their leads outspeed'} your side`, pr(m, 'Tailwind')]); continue; }
     if (mv.has('Trick Room') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Trick Room', 'they are faster. The order flips from turn 2' /* its −7 shows beside its Speed */, pr(m, 'Trick Room')]); continue; }
-    // attack: prefer a KO, then the most damage; spread moves count both targets; a move that charges first or hits your own
+    // attack: prefer a KO (not one Focus Sash or Sturdy survives), then the most damage; spread moves count both targets; a move that charges first or hits your own
     // partner says so
     // never a move that can KO your own partner (design review #1: Earthquake was planned while it does up to 161% to your Sneasler):
     // such a move is dropped and the next best is planned; one that only dents the partner stays, with its note
     let best = null, pool = memberMoves(m).moves;
     for (let tries = 0; tries < 6; tries++) { best = null;
-      for (const o of opp) { const h = hitOn(m, pool, o); if (!h) continue; const pct = h.r.max / h.r.hp, ko = h.r.min >= h.r.hp && !h.charge;
+      for (const o of opp) { const h = hitOn(m, pool, o); if (!h) continue; const pct = h.r.max / h.r.hp, ko = h.r.min >= h.r.hp && !h.charge && !h.r.sash;
         const hitsAlly = h.mv.ally && allyHit(h.mv, partner);
         const val = (ko ? 2 : 0) + pct * (h.charge ? .3 : 1) * (h.acc / 100) + (h.mv.spread ? .3 : 0) - (hitsAlly ? .4 : 0); if (!best || val > best.val) best = {o, h, pct, ko, val, hitsAlly}; }
       if (best && best.hitsAlly) { const r2 = hitOn(m, [best.h.mv], partner); if (r2 && r2.r.max >= r2.r.hp) { const bad = best.h.mv.name; pool = pool.filter(x => x && x.name !== bad); best = null; continue; } }
@@ -91,8 +91,9 @@ function turnOneData(mine, theirs, r) {
     else lines.push([m, 'Protect or switch', 'no good attack into these leads', 4]); } };
   // one wording for an attack's why (the plan line and a re-aimed one): 'KOs' when the lowest roll KOs, else up to N% and the KO odds
   // (Nov 19 wording pass) a spread move names its foe ('KOs their X', 'up to N% of their X's HP'); the partner it also hits is a
-  // second short sentence
-  function hitWhy(m, h, o, hitsAlly) { const partner = L.find(x => x !== m), nt = hitNote(h), ko = h.r.min >= h.r.hp && !h.charge;
+  // second short sentence. Never 'KOs' when Focus Sash or Sturdy holds it at 1 HP (h.r.sash; damage() clears it for multi-hit moves,
+  // which break the Sash): 'up to N% of its HP, Sash holds' (koShort) instead
+  function hitWhy(m, h, o, hitsAlly) { const partner = L.find(x => x !== m), nt = hitNote(h), ko = h.r.min >= h.r.hp && !h.charge && !h.r.sash;
     const ally = hitsAlly ? (() => { const r2 = hitOn(m, [h.mv], partner); return `. Also hits your ${partner.d}${r2 ? ' (up to ' + dmgP(100 * r2.r.max / r2.r.hp) + '%)' : ''}`; })() : '';
     return `${ko ? 'KOs' + (h.mv.spread ? ' their ' + o.d : '') : 'up to ' + dmgP(100 * h.r.max / h.r.hp) + '% of ' + (h.mv.spread ? `their ${o.d}'s` : 'its') + ' HP, ' + koShort(h.r)}${nt ? ' (' + nt + ')' : ''}${ally}`; }
   planLines();
