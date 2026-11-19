@@ -1498,3 +1498,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:25 AM: Under authority: merged Sim's brand kit commit (dde6289f, pushed from his PC) into the push; push target now cf49ef7a (checked code + test-only fixes + brand kit; no code change).
 - 11:26 AM: Sim (11:2x AM): max 2 helpers, usage running fast. At that moment 2 were running (speed measure, Q31 Events). Asked Sim: refill slots only for approved builds, not look-only research?
 - 11:26 AM: Sim: yes. Helper slots are refilled only for approved builds, not for look-only research; at most 2 helpers (usage).
+- 11:29 AM: Under authority: push target now 27ebd7bd. Found and fixed a regression of my tab reorder: on phones the first-child rule gave Team Preview Practice's full-width place and line (Sim's Q7 A) to Damage Calculator; Practice is placed first by name again. NAV-01/NAV-04 tests follow Sim's B and the new name. C-battle rerunning on frozen data.
