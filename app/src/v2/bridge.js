@@ -16,7 +16,7 @@ function scheduleRender() { clearTimeout(V2._rq);
 // V2.dataReady (the wait for today's numbers, pre-launch check 1) lives in shell.js: V2 doesn't exist yet when this file runs
 
 // toasts from the shared logic (Undo, applied suggestions): the rebuild's toast; its Undo button uses today's Undo handler (#toastUndo, 06-helpers.js)
-function toast(t, undo, ms) { if (undo && ui.undo) try { ui.undoAfter = JSON.stringify(S.slots); } catch (e) {} /* the team as this Undo leaves it (code review A2-M7) */ const u = !!(undo && ui.undo); V2.toast(V2.esc(t) + (u ? ' <button type="button" id="toastUndo">Undo</button>' : ''), ms || (u ? V2.UNDO_MS : 4000)); /* an Undo stays 6 s, as every other Undo (V2.undoToast, bxToast); test: app/test/v2-toast.mjs */ }
+function toast(t, undo, ms) { if (undo && ui.undo) try { ui.undoAfter = JSON.stringify(S.slots); } catch (e) {} /* the team as this Undo leaves it (code review A2-M7) */ const u = !!(undo && ui.undo); V2.toast(V2.esc(t) + (u ? ' <button type="button" id="toastUndo">Undo</button>' : ''), ms || (u ? V2.UNDO_MS : 4000)); /* an Undo stays 10 s (V2.UNDO_MS), as every other Undo (V2.undoToast, bxToast); test: app/test/v2-toast.mjs */ }
 /* stress test (Nov 16, B3): a newer change (e.g. Apply, which shows its own Undo bar) replaced the Undo point but left the older
    "Removed X · Undo" toast up, whose Undo then reversed the newer change; when the Undo point changes, an older Undo toast goes */
 (() => { let u = ui.undo; Object.defineProperty(ui, 'undo', {configurable: true, enumerable: true, get: () => u,

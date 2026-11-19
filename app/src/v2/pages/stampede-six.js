@@ -23,7 +23,8 @@ V2.sdsPlan = (ms, C) => { const key = (C ? C.ev.id + '#' + C.ev.top.indexOf(C.t)
         let their = [], aim = [];
         if (theirs && r.B) { const LL = likelyLead(theirs, r.B); their = LL.map(o => o.p.n);
           try { const T = turnOneData(ms, theirs, {...r, lead: lead.map(m => ms.indexOf(m))}); /* the real turn 1 plan, as Battle's (40-turn-one-data.js) */
-            if (T && T.beats) aim = lead.map(m => { const L = T.beats.find(x => x.me && x.x === m); if (!L) return null; const t = String(L.act); const o = LL.find(x => new RegExp('(?:into |^Fake Out )' + x.d.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$').test(t));
+            if (T && T.beats) aim = lead.map(m => { const L = T.beats.find(x => x.me && (x.x === m || x.x._orig === m)); if (!L) return null; const t = String(L.act); /* a lead shown as its base form is a copy (one Mega per side, 40-turn-one-data.js) */
+              const oT = (T.opp || []).find(x => new RegExp('(?:into |^Fake Out )' + x.d.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$').test(t)), o0 = oT ? oT._orig || oT : null, o = o0 ? LL.find(x => x === o0) || LL.find(x => x.p.n === o0.p.n) : null;
               return {move: t.replace(/ into .*$/, '').replace(/^Fake Out .*$/, 'Fake Out').replace(/ \(hits both\)$/, ''), at: /\(hits both\)$/.test(t) ? their.slice() : o ? [o.p.n] : []}; }); } catch (e) { aim = []; } }
         v = {lead, back, bench, vs, their, aim}; } } } catch (e) { v = null; }
   V2.sdsCache = {key, v}; return v; };
