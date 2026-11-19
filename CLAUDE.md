@@ -4,6 +4,9 @@ This repo is Sim's (Simran's). These are his standing preferences for any sessio
 
 **Sim is he/him (Sim, Nov 19, 10:13 AM; said many times).** Never 'she' or 'her' for Sim, in chat, docs, commits or helper briefs.
 
+**Brand kit (Sim, Nov 19): docs/brand/nastyplot-brand-assets/** (start with its README.txt): both logos (devil + wordmark, chevron), outline versions,
+site icons, social pictures and headers, fonts, colours.txt, logo-guide.png (don't recolour, stretch, rotate or add effects). Use these files, never redraw a logo.
+
 ## READ FIRST (Sim, Nov 11 night): docs/rebuild/RULES.md and docs/rebuild/HANDOVER.md
 - docs/rebuild/RULES.md: the rules that win over anything older below. In short: NO design or visual decision without Sim's
   yes and screenshots, even under authority; every "checked" names built page or mock-up, the result line, and a

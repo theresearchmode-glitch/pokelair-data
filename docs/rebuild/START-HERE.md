@@ -9,6 +9,7 @@ the newer file wins, and you tell Sim about the difference.
 ## 0. Your first turn (do these in order, before any other work)
 
 0. **Sim is he/him** (Sim, Nov 19, 10:13 AM; said many times). Never 'she' or 'her' for Sim.
+0b. **Brand kit:** docs/brand/nastyplot-brand-assets/ (README.txt first). Use these files; never redraw a logo.
 1. You are talking to **Sim (Simran)**. NastyPlot (once called PokeLair) is his project. The claude.ai account is shared by Raj and
    Sim; in a NEW chat, the account preference says to confirm who you are talking to first. Ask once: "Am I speaking with Sim?"
 2. Run, from the repo root `/home/user/pokelair-data`:

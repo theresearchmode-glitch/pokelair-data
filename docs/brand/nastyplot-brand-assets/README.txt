@@ -142,5 +142,5 @@ colours.txt
 logo-guide.png
 preview-social.png
 
-The chevron mark (1-logo/chevron) was redrawn on Nov 19 in the current sticker style from the older two-chevron mark (pink over blue, "+2, sharply raised"); Sim to confirm it is the chevron logo she means.
+The chevron mark (1-logo/chevron) was redrawn on Nov 19 in the current sticker style from the older two-chevron mark (pink over blue, "+2, sharply raised"); Sim to confirm it is the chevron logo he means.
 Fonts are under the SIL Open Font License (5-fonts/OFL-*.txt).
