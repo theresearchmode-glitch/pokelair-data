@@ -23,6 +23,9 @@ Helper slots (Sim, Nov 19, 8:19 AM): keep both slots busy while approved work re
 finishes; every status message names both slots.
 
 ## Times are always read from the clock (Sim, Nov 12)
+Decisions are announced in chat WITH their clock time (Sim, Nov 19, 8:40 AM: "put in timestamps next to the decisions you are making and
+announce them in the chat ... VERY punctual ... never lie"): run now.sh in the same step, log with log-decision.sh, and write the
+exact logged time beside each decision in the message. Never type a time from memory; never round.
 Nov 13: run `bash docs/rebuild/now.sh` in the same step as writing any time; `git config core.hooksPath .githooks` at session
 start (commit guard). docs/rebuild/RULES.md section 00t.
 Sim is strict and punctual about times. Never type a time from memory or estimate it ("~3:25"). Every time written anywhere
