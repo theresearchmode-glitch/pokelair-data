@@ -16,9 +16,9 @@ V2.pages.feedback = {place: '', draw() { const F = V2.FB, K = typeof FB_KINDS ==
       <label class="np-field inf-box"><span class="vh">Your note</span><textarea id="fbText2" maxlength="1000" rows="6" placeholder="What happened, or what would help?">${V2.esc(F.draft || '')}</textarea></label>${F.ctx ? `<p class="fine inf-ctx">Sent with what was on screen: <b>${V2.esc(F.ctx)}</b> <button type="button" class="np-link" data-fbctxoff>Don't send it</button></p>` : ''}
       <div class="row"><button type="button" class="np-btn" data-fbsend2><span>Send</span></button><span class="fine" role="status" data-fbmsg2>Saved with the page you came from, phone or desktop, and the date.</span></div></section></div>`; }};
 // typed text survives a redraw (code review A6: the box was drawn empty, e.g. when saving access arrived after load)
-document.addEventListener('input', e => { if (e.target && e.target.id === 'fbText2') V2.FB.draft = e.target.value; });
+document.addEventListener('input', e => { if (e.target && e.target.id === 'fbText2') { V2.FB.draft = e.target.value; if (e.target.value.trim().length >= 3) V2.fieldOk(e.target); } }); /* the mark goes once it's long enough to send (#6) */
 V2.fbSend = async () => { const F = V2.FB, ta = document.getElementById('fbText2'), msg = document.querySelector('[data-fbmsg2]'), btn = document.querySelector('[data-fbsend2]'); if (!ta || F.busy) return;
-  const t = ta.value.trim(); if (t.length < 3) { msg.textContent = 'Write a few words first.'; return; }
+  const t = ta.value.trim(); if (t.length < 3) { msg.textContent = 'Write a few words first.'; V2.fieldErr(ta, msg); return; } /* review Nov 19 #6: the box is marked and gets the focus */
   if (window.__NP_PREVIEW) { msg.textContent = "This is the preview: it can't save messages. Send Feedback works on the real site."; return; }
   if (!F.ok) { msg.textContent = "Can't send from here: your access level can't save data."; return; }
   F.busy = true; btn.disabled = true; msg.textContent = 'Sending…'; const k = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6), sc = fbScrub(t.slice(0, 1000));

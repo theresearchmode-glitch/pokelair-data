@@ -230,7 +230,16 @@ document.addEventListener('change', e => { const t = e.target.closest && e.targe
 document.addEventListener('input', e => { const t = e.target.closest && e.target.closest('.ed2 [data-ed="pt"]'); if (!t) return;
   const v = [...document.querySelectorAll('.ed2 [data-ed="pt"]')].map(x => +x.value || 0), tot = v.reduce((a, b) => a + b, 0), el = document.querySelector('[data-ed-tot]');
   if (el) { el.textContent = `${tot} of ${SP_TOTAL}`; el.classList.toggle('over', tot > SP_TOTAL); }
-  V2.ed.draft = {i: V2.ed.i, v: [...document.querySelectorAll('.ed2 [data-ed="pt"]')].map(x => x.value === '' ? 0 : Number(x.value))}; });
+  V2.ed.draft = {i: V2.ed.i, v: [...document.querySelectorAll('.ed2 [data-ed="pt"]')].map(x => x.value === '' ? 0 : Number(x.value))};
+  if (document.querySelector('.ed2 [aria-invalid]')) V2.edMark(false); });
+/* review Nov 19 #6 (non-visual part): after Save Stat Points finds a problem, the boxes it's about are marked (aria-invalid, linked to the
+   line beside Save) and the first gets the focus: a box outside 0-32, or all six when the total is over, or Nature; marks follow the
+   numbers as they're fixed, and go once pointsProblem is happy */
+V2.edMark = focus => { const B = [...document.querySelectorAll('.ed2 [data-ed="pt"]')], nt = document.querySelector('.ed2 [data-ed="nat"]'), msg = document.querySelector('[data-ed-msg]');
+  const v = B.map(x => x.value === '' ? 0 : Number(x.value)), nat = (nt || {}).value, bad = pointsProblem(v, nat);
+  const off = v.length !== 6 ? B : B.filter((x, j) => !Number.isInteger(v[j]) || v[j] < 0 || v[j] > 32); /* pointsProblem's first rule, box by box */
+  const f = !bad ? [] : off.length ? off : v.reduce((a, b) => a + b, 0) > SP_TOTAL ? B : nt ? [nt] : [];
+  V2.fieldOk(B.concat(nt || [])); if (f.length) V2.fieldErr(f, msg, focus); };
 // typed stat points are never lost (function sweep, Nov 15): a redraw shows the draft, and closing Edit Set or switching Pokémon saves it,
 // or says plainly why it couldn't (the same rule as Save Stat Points)
 V2.edFlush = () => { const d = V2.ed.draft; V2.ed.draft = null; const s = d && S.slots[d.i], p = s && byName.get(s.n); if (!p) return;
@@ -245,7 +254,7 @@ document.addEventListener('click', e => { if (e.target.closest('[data-v2edit]'))
   else if (k === 'natreset') V2.edDo(() => resetNature(i), 'Using the nature most players run');
   else if (k === 'ptsreset') V2.edDo(() => { V2.ed.draft = null; return resetPoints(i); }, 'Using the most common stat points');
   else if (k === 'ptsave') { const v = [...document.querySelectorAll('.ed2 [data-ed="pt"]')].map(x => x.value === '' ? 0 : Number(x.value)), nat = (document.querySelector('.ed2 [data-ed="nat"]') || {}).value;
-    const bad = pointsProblem(v, nat); if (bad) { const msg = document.querySelector('[data-ed-msg]'); if (msg) msg.textContent = bad; return; } V2.ed.draft = null; V2.edDo(() => savePoints(i, nat, v), 'Stat points saved'); }
+    const bad = pointsProblem(v, nat); if (bad) { const msg = document.querySelector('[data-ed-msg]'); if (msg) msg.textContent = bad; V2.edMark(true); return; } V2.ed.draft = null; V2.edDo(() => savePoints(i, nat, v), 'Stat points saved'); }
   else if (k === 'lock') V2.edDo(() => toggleLock(i), on => on ? `${m.d} locked: Suggestions keep it` : `${m.d} unlocked`);
   else if (k === 'rm') { clearSlot(i); render(); V2.edRefresh('[data-adq]'); /* group six */ toast(`Removed ${m.d}`, true); } });
 
@@ -345,12 +354,13 @@ V2.openImport = (o = {}) => { let done = false;
   const go = document.querySelector('[data-impgo]'); if (!go) return;
   go.addEventListener('click', () => { const r = importPaste((document.querySelector('[data-impin]') || {}).value);
     if (r.shared) { done = true; V2.openShared(r.shared); return; }
-    if (r.error) { const n = document.querySelector('[data-impnote]'); if (n) n.textContent = r.error; return; }
+    if (r.error) { const n = document.querySelector('[data-impnote]'); if (n) n.textContent = r.error; V2.fieldErr(document.querySelector('[data-impin]'), n); return; } /* review Nov 19 #6: the box is marked and gets the focus */
     done = true; V2.closeSheet(true); V2.ui.sel = 0; V2.ui.picked = false; render(); toast(r.msg, true); }); };
 /* Sim's design review (Nov 18, P1 #1): Clear Team empties all six, so its Undo stays 10 s (the toast also waits while hovered or
    focused) and the focus goes to that Undo, not the page heading; test app/test/v2-clear.mjs */
 V2.clearTeam = () => { clearTeam(); V2.ui.sel = 0; V2.ui.picked = false; V2.ui.holdRoles = null; render(); toast('Team cleared', true, 10000);
   setTimeout(() => { const u = document.querySelector('.np-toast #toastUndo'); if (u) u.focus({preventScroll: true}); }, 120); };
+document.addEventListener('input', e => { if (e.target && e.target.matches && e.target.matches('[data-impin][aria-invalid]')) V2.fieldOk(e.target); }); /* a changed paste is no longer the one that failed */
 document.addEventListener('click', e => { if (e.target.closest('[data-v2import]')) V2.openImport(); else if (e.target.closest('[data-v2clear]')) V2.clearTeam(); });
 window.addEventListener('hashchange', () => { if (/team=/.test(location.hash)) V2.checkShared(); });
 setTimeout(V2.checkShared, 0);

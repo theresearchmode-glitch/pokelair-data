@@ -90,6 +90,16 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
       m.textContent = t.textContent.replace(/\s*Undo\s*$/, ''); bar.append(m, tw); V2._ubar = bar;
       const host = [...sh.children].find(c => !c.classList.contains('x') && c.tagName !== 'BUTTON') || sh; host.prepend(bar); } }
   const gone = () => { if (t.matches(':focus-within,:hover') || (V2._ubar && V2._ubar.isConnected && t.contains(t.querySelector('#toastUndo,[data-v2undo],[data-bxundo]')))) { V2._tt = setTimeout(gone, 1000); return; } t.remove(); }; clearTimeout(V2._tt); V2._tt = setTimeout(gone, ms); return t; };
+// Form errors reach the field (Sim's design review, Nov 19, #6; the non-visual part, nothing on screen changes): V2.fieldErr marks the
+// field(s) in error with aria-invalid="true" and links them (aria-describedby) to the line that already explains the error, and moves the
+// focus to the first one; V2.fieldOk takes both off again once it's fixed. No style reads aria-invalid. Test: app/test/v2-formerr.mjs
+V2.fieldErr = (fields, note, focus = true) => { fields = [].concat(fields).filter(Boolean); if (!fields.length) return;
+  if (note && !note.id) note.id = 'np-err-' + (V2._errN = (V2._errN || 0) + 1);
+  fields.forEach(f => { f.setAttribute('aria-invalid', 'true'); if (!note) return; f.dataset.errNote = note.id;
+    const ids = (f.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean); if (!ids.includes(note.id)) f.setAttribute('aria-describedby', ids.concat(note.id).join(' ')); });
+  if (focus) fields[0].focus({preventScroll: false}); };
+V2.fieldOk = fields => [].concat(fields).filter(Boolean).forEach(f => { f.removeAttribute('aria-invalid'); const id = f.dataset.errNote; if (!id) return; delete f.dataset.errNote;
+  const ids = (f.getAttribute('aria-describedby') || '').split(/\s+/).filter(x => x && x !== id); if (ids.length) f.setAttribute('aria-describedby', ids.join(' ')); else f.removeAttribute('aria-describedby'); });
 // Focus on slanted controls (audit P0, Nov 16): a control whose own shape (or a near parent's) is clipped gets .np-fin while focused, so its
 // ring is drawn inside the shape (base.css); checked on focus, so any slanted control, now or later, is covered without a list of classes
 document.addEventListener('focusin', e => { const t = e.target; if (!(t instanceof Element) || t.classList.contains('np-fin')) return;

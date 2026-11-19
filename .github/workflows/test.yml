@@ -231,6 +231,9 @@ jobs:
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-clear.mjs
         if: ${{ !cancelled() }}
+      # form errors reach the field (design review Nov 19 #6): aria-invalid, aria-describedby, focus on Import, Edit Set, Send Feedback
+      - run: PAGE=app/dist/v2.html node app/test/v2-formerr.mjs
+        if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-pksrc.mjs
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-trkfit.mjs
