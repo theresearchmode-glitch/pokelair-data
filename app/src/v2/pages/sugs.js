@@ -61,8 +61,9 @@ V2.ckWinSoon = () => { if (V2._ckGo) { safe('checklist claims', ckWinRefresh); r
   const run = () => { if (performance.now() - (V2.lastScroll || -1e9) < 250) { setTimeout(run, 150); return; } safe('checklist claims', ckWinRefresh); };
   const go = () => { if (V2._ckGo) return; V2._ckGo = 1; V2._ckWait = 0; try { V2._ckObs && V2._ckObs.disconnect(); } catch (e) {} clearTimeout(V2._ckT); removeEventListener('scroll', poke); run(); };
   const poke = () => { clearTimeout(V2._ckT); V2._ckT = setTimeout(go, 8000); };
-  setTimeout(() => { const els = [...document.querySelectorAll('.tm-sgs,.tm-cks')]; if (!els.length || typeof IntersectionObserver !== 'function') { go(); return; }
-    V2._ckObs = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) go(); }, {rootMargin: '100% 0px'}); els.forEach(e => V2._ckObs.observe(e)); }, 0);
+  /* pl-2c (Nov 19): looked for once the page is on screen; with the draw in two steps (V2.warmDraw) that is after the second step */
+  (V2.afterPre || (f => setTimeout(f, 0)))(() => { const els = [...document.querySelectorAll('.tm-sgs,.tm-cks')]; if (!els.length || typeof IntersectionObserver !== 'function') { go(); return; }
+    V2._ckObs = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) go(); }, {rootMargin: '100% 0px'}); els.forEach(e => V2._ckObs.observe(e)); });
   addEventListener('scroll', poke, {passive: true}); poke(); };
 V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.plan.plans || [];
   // the winner rates some reasons and the team checks quote ("75% of 113 recent event winners…"): today's measurement, started

@@ -359,8 +359,10 @@ V2.morphKids = (o, n) => { const oc = [...o.childNodes], nc = [...n.childNodes],
 // a form field ends up as a full redraw would leave it (value and ticks from the new page), so code that clears a box still works
 V2.morphField = (o, n) => { if (o.nodeName === 'SELECT') { V2.morphKids(o, n); o.value = [...n.options].find(x => x.hasAttribute('selected'))?.value ?? o.value; return; }
   if (o.type === 'checkbox' || o.type === 'radio') o.checked = n.hasAttribute('checked'); else if (o.value !== (n.getAttribute('value') ?? n.textContent ?? '')) o.value = n.getAttribute('value') ?? (o.nodeName === 'TEXTAREA' ? n.textContent : ''); };
-V2.redraw = () => { const app = document.getElementById('app'); if (!app || !app.firstChild) { V2.draw(); return; }
-  const y = scrollY, act = document.activeElement, key = V2.focusKey(act), r = V2.shell(), t = document.createElement('template'); t.innerHTML = r.html;
+/* `pre` (speed, pl-2c): the page's HTML already built by V2.shell() in an earlier step (V2.warmDraw), still current (V2.preOk); else built here */
+V2.redraw = pre => { const app = document.getElementById('app'); if (!app || !app.firstChild) { V2.draw(); return; }
+  const y = scrollY, act = document.activeElement, key = V2.focusKey(act), r = pre && pre.tag === V2.preOk && V2.preOk(pre) ? pre.r : V2.shell(), t = document.createElement('template'); t.innerHTML = r.html;
+  V2.rdN = (V2.rdN || 0) + 1; /* counted after the check above, so a pre-built HTML is never stale against this very redraw */
   V2.morphKids(app, t.content); if (scrollY !== y) scrollTo(0, y); /* only when the merge moved it (code review B-m2) */
   if (key && !act.isConnected) { const e = [...document.querySelectorAll('#app ' + key.sel)][Math.max(0, key.i)]; if (e) e.focus({preventScroll: true}); }
   /* stress test (Nov 16): a focused heading kept by the merge loses its temporary tabindex (copied from the fresh HTML) and the browser drops focus to <body>; put both back */
@@ -379,8 +381,20 @@ V2.safeDraw = P => { try { return P.draw(); } catch (e) { console.error(e); retu
 // speed fix 2 (Nov 17, pre-launch 2c): when today's numbers arrive, the ratings for every Pokémon and your team's report are worked out
 // as their own steps (both are kept and reused by the drawing), then the page is drawn: three shorter tasks instead of one ~1 s freeze.
 // The loading panel stays up until the draw, so nothing old or half-done shows.
-V2.warmDraw = () => { const steps = [() => ratings(), () => { const ms = members(); if (ms.length) prepOf(ms); }]; let i = 0;
-  const next = () => { if (i < steps.length) { try { steps[i++](); } catch (e) {} setTimeout(next, 0); } else V2.redraw(); }; setTimeout(next, 0); };
+/* pl-2c (Nov 19): the draw itself was still one task (Home ~0.5 s, My Team ~0.33 s at 4x CPU): working out the page's HTML, then putting it on the page.
+   Now two steps: V2.shell() builds the HTML, and the next step puts that same HTML in (V2.redraw(pre)). The HTML is only reused while
+   nothing it depends on has changed in between (V2.preOk: the address, the theme, the data version, the team, no other draw); otherwise
+   the redraw builds it afresh, exactly as before. The page as finally drawn is the same; test app/test/v2-longtask.mjs. */
+V2.preStamp = () => { let t = ''; try { t = JSON.stringify(S.slots) + '|' + (S.leads || []).join(); } catch (e) {}
+  return [location.hash, document.documentElement.dataset.theme, typeof metaVersion !== 'undefined' ? metaVersion : '', V2.rdN || 0, V2.drawN || 0, t].join('\n'); };
+V2.preOk = pre => pre.stamp === V2.preStamp();
+V2.warmDraw = () => { let pre = null; const P = V2.pages[V2.route()], warm = (P && P.warm) || []; /* a page's own cached parts, each its own step (Home: its tools plate) */
+  const steps = [() => ratings(), () => { const ms = members(); if (ms.length) prepOf(ms); }, ...warm,
+    () => { const stamp = V2.preStamp(); V2.prePend = true; pre = {tag: V2.preOk, stamp, r: V2.shell()}; }]; let i = 0;
+  /* V2.prePend: while built HTML waits for the next step, code the draw set up to look at the page "just after the draw" waits too
+     (V2.afterPre; sugs.js ckWinSoon): without it, the winners pass found no Suggestions on the page and started at once (+0.5 s of blocking) */
+  const next = () => { if (i < steps.length) { try { steps[i++](); } catch (e) { pre = null; } setTimeout(next, 0); } else try { V2.redraw(pre); } finally { V2.prePend = false; } }; setTimeout(next, 0); };
+V2.afterPre = fn => { const go = () => { if (V2.prePend) setTimeout(go, 0); else fn(); }; setTimeout(go, 0); };
 V2.dataReady = () => { if (V2._dataOk) return true; let ok = false;
   try { const c = window.__NP_CLAUDE || window.claude; ok = !c || !c.use || META_NODB || META_KEYS.every(k => META_SEEN.has(k)) || performance.now() > 8000; } catch (e) { ok = true; }
   return ok ? (V2._dataOk = true) : false; };

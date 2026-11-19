@@ -26,6 +26,9 @@ V2.SDT_GO = {'Speed Tiers': 'speed', 'Type Chart': 'types', Ratings: 'meta', 'Wi
 // cached per ratings map, as V2.sdData (review, Nov 18): the same sdData object (it changes when ratings() does) and the same day (the
 // next event) give the same plates, so a redraw doesn't run coreRows, bestHitOn, setFor and arData again
 V2._sdt = V2._sdt || {};
+/* pl-2c (Nov 19): when today's numbers arrive, these plates are worked out as their own step before Home is drawn (V2.warmDraw, shell.js);
+   the draw then reads them from this cache, so Home's draw is two shorter tasks, not one */
+V2.pages.home.warm = [() => { if (V2.STAMPEDE) V2.sdtData(); }];
 V2.sdtData = () => { const D = V2.sdData(), day = typeof CAL !== 'undefined' ? CAL.today() : '', ver = typeof metaVersion !== 'undefined' ? metaVersion : '', K = V2._sdt;
   if (K.out && K.D === D && K.day === day && K.ver === ver && K.cal === META.calendar) return K.out;
   const rows = D.rows || [], top = rows.slice(0, 9), out = {D, rows}; V2._sdt = {D, day, ver, cal: META.calendar, out};
