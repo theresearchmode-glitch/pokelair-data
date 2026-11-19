@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf = new Map(); for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) { teams.push(t.mons.map(m => m.n)); if (!refOf.has(t.mons.map(m => m.n).join('/'))) refOf.set(t.mons.map(m => m.n).join('/'), {ev: e, t}); }
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: [], intoGone: [], dblParen: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
   const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
   const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp'], /* Extreme Speed into a side with Farigiraf's Armor Tail */
@@ -83,13 +83,17 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         if ([t.item, (t._orig || {}).item, (topItem(t.p) || [])[0]].includes('Focus Sash') || abilityOf(t) === 'Sturdy') return; st.sureKO++; if (!down.has(t)) down.set(t, i);
         const j = T.beats.findIndex(y => y.x === t); if (j > i && !(T.beats[j].prio === bt.prio && T.beats[j].speed === bt.speed) && T.beats[j].act !== 'Fainted') st.koActs.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') then ' + t.d + ' ' + T.beats[j].act); });
       T.beats.forEach((bt, j) => { const am = bt.act.match(/^(.+?) into (.+)$/) || bt.act.match(/^(Fake Out) (.+)$/); if (!am) return; const t = (bt.me ? T.opp : T.leads).find(o => o.d === am[2]);
-        if (t && down.has(t) && down.get(t) < j && !/KO'd earlier this turn/.test(bt.why)) st.intoDown.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ')'); });
+        if (t && down.has(t) && down.get(t) < j) st.intoDown.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ')'); });
       for (const bt of T.beats) if (bt.act === 'Fainted') { st.fainted++; if (bt.me || !bt.plan) st.faintBad.push(tag + ': ' + bt.x.d); } }
     /* Nov 19 visual check: Battle's card shows a KO stamp only for a sure KO ('KOs', or 'OHKO' with no chance); a chance KO
        ('OHKO 19%') or a KO named only in a note gets none. Read from each card as Battle draws it (V2.pbpBeat) */
     if (typeof V2 === 'object' && V2.pbpBeat) T.beats.forEach((bt, i) => { if (!/ into /.test(bt.act)) return; const main = bt.main != null ? bt.main : String(bt.why).split('; ')[0];
       const stamp = /pbp-tgt ko/.test(V2.pbpBeat(bt, i, T, i + 1)), sure = /^KOs\\b/i.test(main) || /\\bOHKO\\b(?! \\d)/.test(main);
       if (stamp) st.koStamp++; if (stamp !== sure) st.koStampBad.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') stamp ' + stamp); });
+    /* Nov 19 review (small): no act aims 'into' a foe its own why calls KO'd earlier this turn (the card would draw a Pokémon that is
+       gone), and no why carries a double closing parenthesis ('(up to 287% to your Basculegion (F))') */
+    for (const bt of T.beats) { const am = bt.act.match(/ into (.+)$/), g = bt.why.match(/(.*) (?:is|are) KO'd earlier this turn/i);
+      if (am && g && g[1].includes(am[1])) st.intoGone.push(tag + ': ' + bt.act + ' (' + bt.why + ')'); if (bt.why.includes('))')) st.dblParen.push(tag + ': ' + bt.why); }
     /* Nov 19 (opponent items): their lead from a real open team sheet is calculated with its sheet item and Ability (spread: the
        usual one), both ways. Each single-target attack line into or from such a lead must show what a direct damage() call with
        that item gives ('up to N%' or 'KOs'). sheetDiff counts lines where the sheet item is not the Pokémon's most common one, so
@@ -140,10 +144,11 @@ ok(st.whyN > 0 && !st.whyLong.length, `every why line is at most 130 characters 
 ok(st.allyHits > 0, `the partner-hit note is still read (${st.allyHits} lines)`);
 ok(!st.planNoTarget.length, `a flinched Fake Out user's plan names its target (${st.planNoTarget.length}${st.planNoTarget.length ? ', e.g. ' + st.planNoTarget[0] : ''})`);
 ok(st.sureKO > 0 && !st.koActs.length, `a Pokémon your sure KO hits before it moves doesn't act this turn (${st.sureKO} sure KOs, ${st.koActs.length} targets still acting${st.koActs.length ? ', e.g. ' + st.koActs[0] : ''})`);
-ok(!st.intoDown.length, `no later attack aims at a Pokémon already KO'd this turn, unless it says so (${st.intoDown.length}${st.intoDown.length ? ', e.g. ' + st.intoDown[0] : ''})`);
+ok(!st.intoDown.length, `no later attack aims at a Pokémon already KO'd this turn (${st.intoDown.length}${st.intoDown.length ? ', e.g. ' + st.intoDown[0] : ''})`);
 ok(!st.faintBad.length, `a 'Fainted' beat is only theirs and keeps its planned move (${st.fainted} fainted, ${st.faintBad.length} wrong${st.faintBad.length ? ', e.g. ' + st.faintBad[0] : ''})`);
 ok(st.koStamp > 0 && !st.koStampBad.length, `Battle's KO stamp shows only for a sure KO, not a chance ('OHKO 19%') (${st.koStamp} stamps, ${st.koStampBad.length} wrong${st.koStampBad.length ? ', e.g. ' + st.koStampBad[0] : ''})`);
 ok(st.sheetDiff > 0 && !st.sheetWrong.length, `their lead from a real open team sheet is calculated with its sheet item, both ways (${st.sheetHits} lines, ${st.sheetDiff} where it isn't the most common item, ${st.sheetWrong.length} wrong${st.sheetWrong.length ? ', e.g. ' + st.sheetWrong[0] : ''})`);
 ok(st.koLines > 0 && !st.sashKO.length, `no 'KOs' when Focus Sash or Sturdy holds (${st.koLines} KO lines, ${st.sashKO.length} wrong${st.sashKO.length ? ', e.g. ' + st.sashKO[0] : ''})`);
 ok(st.warnNames > 0 && !st.warnSide.length, `the Watch line says 'your' or 'their' on every name, on the right side (${st.warnNames} names, ${st.warnSide.length} wrong${st.warnSide.length ? ', e.g. ' + st.warnSide[0] : ''})`);
+ok(!st.intoGone.length && !st.dblParen.length, `no act aims at a foe KO'd earlier this turn, no double parenthesis (${st.intoGone.length} aimed at a fainted foe, ${st.dblParen.length} '))'${st.intoGone.length ? ', e.g. ' + st.intoGone[0] : st.dblParen.length ? ', e.g. ' + st.dblParen[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

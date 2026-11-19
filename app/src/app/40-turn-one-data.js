@@ -72,7 +72,7 @@ function turnOneData(mine, theirs, r) {
   for (const m of L) { const mv = names(m), partner = L.find(x => x !== m);
     /* aim only where it flinches, and never at a faster Fake Out user that will already have moved (second review, Nov 19) */
     const fd = mv.has('Fake Out') && !used.has('fake') ? danger.find(d => foFx(m, d.o, opp) === 'ok' && !(theirFOT.has(d.o) && speF(d.o) > speF(m))) : null;
-    if (fd) { used.add('fake'); lines.push([m, `Fake Out ${fd.o.d}`, fd.worst ? `stops its ${fd.worst.h.mv.name} (up to ${dmgP(100 * fd.worst.pct)}% to your ${fd.worst.on.d})` /* 'its': the target, named above it on the card */ : fd === danger[0] ? 'their biggest threat' : 'it can be flinched', pr(m, 'Fake Out'), fd.o]); continue; }
+    if (fd) { used.add('fake'); lines.push([m, `Fake Out ${fd.o.d}`, fd.worst ? `stops its ${fd.worst.h.mv.name}, up to ${dmgP(100 * fd.worst.pct)}% to your ${fd.worst.on.d}` /* 'its': the target, named above it on the card */ : fd === danger[0] ? 'their biggest threat' : 'it can be flinched', pr(m, 'Fake Out'), fd.o]); continue; }
     if (mv.has('Tailwind') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Tailwind', `${fast === 1 ? '1 of their leads outspeeds' : fast + ' of their leads outspeed'} your side`, pr(m, 'Tailwind')]); continue; }
     if (mv.has('Trick Room') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Trick Room', 'they are faster. The order flips from turn 2' /* its −7 shows beside its Speed */, pr(m, 'Trick Room')]); continue; }
     // attack: prefer a KO (not one Focus Sash or Sturdy survives), then the most damage; spread moves count both targets; a move that charges first or hits your own
@@ -163,9 +163,10 @@ function turnOneData(mine, theirs, r) {
     const ln = lines.find(l => l[0] === b.x), A = ln && ln[5]; if (!A || b.act !== ln[1]) return;
     let hits = A.h.mv.spread ? opp.map(o => ({o, h: o === A.o ? A.h : hitOn(b.x, [A.h.mv], o)})) : [{o: A.o, h: A.h}];
     const gone = hits.filter(x => down.has(x.o)).map(x => x.o);
-    if (gone.length) { const left = opp.filter(o => !down.has(o)), was = 'their ' + gone.map(o => o.d).join(' and ') + (gone.length > 1 ? ' are' : ' is') + " KO'd earlier this turn";
+    if (gone.length) { const left = opp.filter(o => !down.has(o)), was = gone.map(o => 'their ' + o.d).join(' and ') + (gone.length > 1 ? ' are' : ' is') + " KO'd earlier this turn";
       const h2 = left.length === 1 ? reAim(b.x, ln, left[0]) : null;
-      if (!h2) { note(b, {r: 0, s: `${was}${left.length ? '' : ': no foe is left to hit'}`}); return; }
+      /* nothing to hit (Nov 19 review): the act names no fainted target (Battle's card would draw it) and the why says so */
+      if (!h2) { if (/ into /.test(b.act)) b.act = A.h.mv.name; b.why = `${was}: ${left.length ? 'no effect on ' + left.map(o => 'their ' + o.d).join(' or ') : 'no foe is left to hit'}`; return; }
       b.act = `${h2.mv.name} into ${left[0].d}`; b.why = hitWhy(b.x, h2, left[0], false); note(b, {r: 2, s: was}); hits = [{o: left[0], h: h2}]; }
     for (const {o, h} of hits) { if (!h || !h.r || !h.r.hp || h.charge || h.r.max < h.r.hp || h.r.sash || down.has(o)) continue;
       const j = at(o), tb = beats[j], later = j > i && !done.has(o), tie = tieOf(tb, b), by = `your ${b.x.d}`;
