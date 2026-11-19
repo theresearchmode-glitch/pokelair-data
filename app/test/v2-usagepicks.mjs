@@ -48,4 +48,16 @@ for (const W of [390, 1280]) { const {ctx, p} = await open('usage', W); const re
   ok(t.empty && /% of Showdown ladder teams/.test(t.txt) && !/% of ladder teams/.test(t.txt), `W2c: the empty My Team says "% of Showdown ladder teams" (${t.empty ? t.lab.slice(0, 140) : 'empty My Team not shown'})`);
   ok(/ of Showdown ladder teams/.test(t.ring) && !/ of ladder teams/.test(t.ring), `W2c: the old Home ringside (V2.homeRing, not drawn while The Stampede is Home) says "Showdown ladder teams" too`);
   await ctx.close(); }
+// ---- Podium/bench numbers (Sim, Nov 19): share, teams and place stack one per line at every width, none overflows its column ----
+for (const theme of ['day', 'night']) for (const W of [320, 390, 700, 1100, 1440, 1920]) {
+  const ctx = await b.newContext({viewport: {width: W, height: 900}}); const p = await ctx.newPage();
+  await p.addInitScript(t => { window.__PL_TEST = 1; try { localStorage.setItem('np2.theme', t); } catch (e) {} }, theme);
+  await p.goto('file://' + PAGE + '#usage', {timeout: 90000}); await p.waitForTimeout(2200);
+  const r = await p.evaluate(() => { const nums = [...document.querySelectorAll('#main .us-nums')]; const shared = [], over = [];
+    nums.forEach((n, i) => { const tops = [...n.children].map(c => Math.round(c.getBoundingClientRect().top)); if (new Set(tops).size !== tops.length) shared.push(i + ': ' + n.innerText.replace(/\s+/g, ' ')); });
+    // the numbers' own fit: .us-nums and each of its items stay inside their .us-tx column (the Pokémon name above is a separate check, not this one)
+    nums.forEach(n => { const t = n.closest('.us-tx'), R = t.getBoundingClientRect(); if (n.scrollWidth > t.clientWidth + 1 || [...n.children].some(c => { const r = c.getBoundingClientRect(); return r.left < R.left - 1 || r.right > R.right + 1; })) over.push(t.innerText.replace(/\s+/g, ' ').slice(0, 40)); });
+    return {n: nums.length, kids: nums.reduce((s, n) => s + n.children.length, 0), shared, over}; });
+  ok(r.n > 0 && r.kids >= r.n * 2 && !r.shared.length && !r.over.length, `podium ${theme} ${W}: each number in ${r.n} .us-nums on its own line (${r.shared.length} sharing a row${r.shared.length ? ': ' + r.shared.slice(0, 2).join(' | ') : ''}); ${r.over.length} .us-tx overflowing${r.over.length ? ': ' + r.over.slice(0, 2).join(' | ') : ''}`);
+  await ctx.close(); }
 await b.close(); console.log(`v2-usagepicks: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
