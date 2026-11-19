@@ -22,7 +22,13 @@ function turnOneData(mine, theirs, r) {
   const spe = m => { const s = likelySpeed(m.p, mineM(m)); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
   // a Cloud Nine / Air Lock lead switches the weather's effects off for every hit and speed (F0.wx)
   const F0 = typeof turnOneField === 'function' ? turnOneField([...L, ...opp], spe) : {}, F = {...F0, weather: F0.wx != null ? F0.wx : F0.weather};
-  const hitOn = (a, moves, d) => bestHitOn(a.p, moves, d.p, mineM(a), mineM(d), F);
+  // priority blockers (review, Nov 19): Armor Tail, Queenly Majesty and Dazzling on ANY Pokémon of the target's side make priority
+  // moves into that side fail (damage() only checks the target's own Ability), unless the user has Mold Breaker (Teravolt,
+  // Turboblaze); Psychic Terrain blocks them into a grounded target whatever the Abilities. Such a move is left out, so the next
+  // best is planned (for both sides' hits)
+  const PRIO_BLOCK = ['Armor Tail', 'Queenly Majesty', 'Dazzling'], MOLD = ['Mold Breaker', 'Teravolt', 'Turboblaze'];
+  const prioBlocked = (a, d) => { const side = L.includes(d) ? L : opp; return (!MOLD.includes(abilityOf(a)) && side.some(y => PRIO_BLOCK.includes(abilityOf(y)))) || (F.terrain === 'psychic' && grounded(d)); };
+  const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, mineM(a), mineM(d), F);
   // speed in that field: Chlorophyll / Swift Swim / Sand Rush / Slush Rush double in their weather
   const speF = x => spe(x) * (typeof speedMul === 'function' ? speedMul(abilityOf(x), F.weather) : 1);
   // their threat to each of my leads: the hardest single hit
@@ -33,7 +39,7 @@ function turnOneData(mine, theirs, r) {
   // Majesty, Dazzling) and against a grounded target in Psychic Terrain; it has no effect on a Ghost type unless the user has Scrappy;
   // Inner Focus, Shield Dust and Covert Cloak take the hit but don't flinch. Mold Breaker (Teravolt, Turboblaze) ignores the
   // Abilities. foFx: 'ok' (flinches), 'none' (fails / no effect), 'hit' (takes the hit, no flinch).
-  const PRIO_BLOCK = ['Armor Tail', 'Queenly Majesty', 'Dazzling'], MOLD = ['Mold Breaker', 'Teravolt', 'Turboblaze'], itemOf = x => x.item || (x._orig && x._orig.item) || '';
+  const itemOf = x => x.item || (x._orig && x._orig.item) || '';
   const foFx = (u, t, tSide) => { const mold = MOLD.includes(abilityOf(u));
     if ((!mold && tSide.some(y => PRIO_BLOCK.includes(abilityOf(y)))) || (F.terrain === 'psychic' && grounded(t))) return 'none';
     if ((t.types || t.p.t || []).includes('Ghost') && abilityOf(u) !== 'Scrappy') return 'none';

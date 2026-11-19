@@ -10,8 +10,12 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = []; for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) teams.push(t.mons.map(m => m.n));
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
-  for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) { const me = teams[i], th = teams[(i * 7 + 3) % teams.length], tag = me.join('/') + ' vs ' + th.join('/');
+  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
+  const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
+  const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp']]; /* Extreme Speed into a side with Farigiraf's Armor Tail */
+  for (const [a, c] of EXTRA) { const x = a.split('/'), y = c.split('/'); if (x.concat(y).every(n => byName.get(n))) pairs.push([x, y]); }
+  for (const [me, th] of pairs) { const tag = me.join('/') + ' vs ' + th.join('/');
     S.slots = me.map(n => ({n, a: null, lock: false})); fixSlots(); S.opp = [...th];
     let T, L0; try { const mine = members(), theirs = oppTeam(), r = planMatchup(mine, theirs, true); L0 = r.lead.map(i => mine[i]); T = turnOneData(mine, theirs, r); } catch (e) { st.err++; if (st.errs.length < 3) st.errs.push(tag + ': ' + String(e.stack || e).slice(0, 200)); continue; }
     if (!T) continue; st.n++;
@@ -36,6 +40,12 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = []; for (c
     { const ti = T.beats.findIndex(y => y.act === 'Tailwind'); if (ti >= 0) { const side = T.beats[ti].me; st.tailwinds++;
       for (let j = ti + 1; j < T.beats.length; j++) { const bj = T.beats[j]; if (bj.me !== side) continue; const raw = bj.tw ? bj.speed / 2 : bj.speed;
         const k = T.beats.slice(ti + 1, j).find(y => y.me !== side && y.prio === bj.prio && y.speed < 2 * raw); if (k) st.twLate.push(tag + ': ' + bj.x.d + ' (' + 2 * raw + ') after ' + k.x.d + ' (' + k.speed + ')'); } } }
+    /* third review: no priority attack is planned (either side) into a side with Armor Tail / Queenly Majesty / Dazzling (unless
+       the user has Mold Breaker, Teravolt or Turboblaze), nor into a grounded target in Psychic Terrain: it would fail */
+    for (const bt of T.beats) { const m = bt.act.match(/^(.+?) (?:into (.+)|\\(hits both\\))$/), mv = m && mvByName.get(m[1]); if (!mv || !mv.bp || m[1] === 'Fake Out') continue;
+      if (movePrio(mv, abilityOf(bt.x), {terrain: T.terrain, grounded: grounded(bt.x)}) <= 0) continue; st.prioAtk++;
+      const side = bt.me ? T.opp : T.leads, tg = m[2] ? side.filter(o => o.d === m[2]) : side;
+      if ((!['Mold Breaker', 'Teravolt', 'Turboblaze'].includes(abilityOf(bt.x)) && side.some(y => ['Armor Tail', 'Queenly Majesty', 'Dazzling'].includes(abilityOf(y)))) || (T.terrain === 'psychic' && tg.some(t => grounded(t)))) st.prioBlocked.push(tag + ': ' + bt.x.d + ' ' + bt.act); }
     for (const bt of T.beats) if (bt.me && /^Fake Out (.+)$/.test(bt.act)) { const t = [...T.opp].find(o => o.d === bt.act.slice(9)); if (t && (t.types || t.p.t).includes('Ghost') && abilityOf(bt.x) !== 'Scrappy') st.foGhost.push(tag + ': ' + bt.act); } }
   S.slots = JSON.parse(slots0); fixSlots(); S.opp = JSON.parse(opp0); return st; })()`));
 await b.close();
@@ -54,4 +64,5 @@ ok(!st.theirDud.length, `their Fake Out is only planned when it can work on one 
 ok(!st.myLate.length, `your Fake Out never aims at a Pokémon that has already moved (${st.myLate.length}${st.myLate.length ? ', e.g. ' + st.myLate[0] : ''})`);
 ok(!st.sureBad.length, `a sure flinch never comes from a Fake Out user that may itself be flinched first (${st.sureBad.length}${st.sureBad.length ? ', e.g. ' + st.sureBad[0] : ''})`);
 ok(st.tailwinds > 0 && !st.twLate.length, `after a Tailwind, its partner moves at double Speed this turn (${st.tailwinds} Tailwinds, ${st.twLate.length} partners late${st.twLate.length ? ', e.g. ' + st.twLate[0] : ''})`);
+ok(!st.prioBlocked.length, `no priority attack is planned into a priority blocker's side or Psychic Terrain (${st.prioAtk} priority attacks, ${st.prioBlocked.length} blocked${st.prioBlocked.length ? ', e.g. ' + st.prioBlocked[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
