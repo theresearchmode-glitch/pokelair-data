@@ -4,7 +4,7 @@
 // number and sentence comes from today's cxFacts / cxResolve / teamLineup / outspeedOf; every other row that differs stays listed below.
 V2.cxfHero = ms => { try { const L = teamLineup(ms); if (L && L.lead && L.lead[0]) return L.lead[0]; } catch (e) {} return ms[0]; };
 V2.cxfHalf = (side, R, I) => { const E = V2.esc, ms = teamRating(R.slots).ms, G = I.G, h = V2.cxfHero(ms), s = side.toLowerCase();
-  return `<div class="cxf-half ${s}"><div class="cxf-id"><span class="cxf-badge u" aria-hidden="true">${side}</span><div><h2 class="u"><span class="vh">Team ${side}: </span>${E(R.name)}</h2><p>${E(R.sub || '')} · <button type="button" class="np-link" data-cxp="${side}" aria-label="Change team ${side}">Change</button></p></div></div>
+  return `<div class="cxf-half ${s}"><div class="cxf-id"><span class="cxf-badge u" aria-hidden="true">${side}</span><div><h2 class="u"><span class="vh">Team ${side}: </span>${E(R.name)}</h2><p>${E(V2.cxSub(R))} · <button type="button" class="np-link" data-cxp="${side}" aria-label="Change team ${side}">Change</button></p></div></div>
     ${G ? `<div class="cxf-score"><i class="cxf-ghost u" aria-hidden="true">${Math.round(G.s)}</i><b class="u">${Math.round(G.s)}</b><span class="u">${E(CH.wordOf(G.s))}</span><small>${G.partial ? `Strength Score so far · ${(G.st && G.st.partialN) || ms.length}\u00a0of\u00a06\u00a0picked` : `Strength Score · ${E(CH.recLine(G, true))}`}</small></div>` : '<p class="fine">No Strength Score yet</p>'}
     ${h ? `<div class="cxf-hero" aria-hidden="true">${V2.mon(h.p.n, {bare: true})}</div>` : ''}
     <ul class="cxf-six">${ms.map(m => `<li>${V2.mon(m.p.n, {iw: 56, bare: true})}<b>${E(m.d)}</b></li>`).join('')}</ul></div>`; };
