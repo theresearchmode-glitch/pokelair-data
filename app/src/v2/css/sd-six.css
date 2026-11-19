@@ -50,7 +50,7 @@
 .sds-nm{position:relative;display:block;width:100%;min-height:var(--tap);margin:0;padding:0;border:0;background:none;color:var(--on-plate);font:700 var(--t15)/1.25 var(--b);text-align:center;cursor:pointer}
 button.sds-nm::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
 .sds-mg{display:block;font:600 var(--t13)/1.25 var(--b);color:var(--plate-link)}
-.sds-rings .sds-cap{margin-top:var(--s5)}.sds-rings .sds-mg{position:absolute;left:0;right:0;bottom:calc(50% + .625em)} /* Sim, Nov 19: every name on one line; 'Mega' sits just above its name instead of pushing it down */
+.sds-rings .sds-mg{position:absolute;left:0;right:0;bottom:calc(50% + .625em)} /* Sim, Nov 19: every name on one line; 'Mega' sits just above its name instead of pushing it down */
 .sds-sub{display:block;margin-top:2px;font:500 var(--t13)/1.35 var(--b);color:color-mix(in srgb,var(--on-plate) 74%,transparent)}
 .sds-u b{color:var(--plate-link);font-weight:700}
 .sds-of{display:inline}
