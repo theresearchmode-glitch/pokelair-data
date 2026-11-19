@@ -61,7 +61,8 @@ V2.mtInline = () => innerWidth < 1100;
 // Sim, Nov 18 (C, phone length): phones 360-699 show the Hand three across (Lead | Back | Bench), so the panel opens under the whole Hand;
 // under 700 the panel stays shut until a Card is tapped (V2.ui.picked; a new team, Remove or Clear shut it again)
 V2.mtHand3 = () => innerWidth >= 360 && innerWidth < 700;
-V2.mtShut = () => innerWidth < 700 && !V2.ui.picked;
+// Sim, Nov 18 (Q5 A): desktop (1100+) works like phones: the panel stays shut until a Card is tapped (tablets 700-1099 unchanged, not asked)
+V2.mtShut = () => (innerWidth < 700 || innerWidth >= 1100) && !V2.ui.picked;
 (() => { const band = () => innerWidth >= 1100 ? 3 : innerWidth >= 700 ? 2 : innerWidth >= 360 ? 1 : 0; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (V2.route && V2.route() === 'team') V2.redraw(); }, 120); }); })();
 // Replace: the Add box on a filled spot; picking swaps it in one step (Undo brings the old one back)
 V2.openReplace = i => { const m = memberOf(S.slots[i], i); if (!m) return V2.openAdd(i); V2.ed.i = i; V2.ed.rep = i; V2.sheet(V2.addHtml(i, m.d), {label: 'Replace ' + m.d, focus: '[data-adq]'}); };
