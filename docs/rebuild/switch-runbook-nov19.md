@@ -154,6 +154,8 @@ Live today (**checked**, Artifact list scope files, version 1794491686-b0d0): 35
   - (R2) mixed page (ids of the first 255 sorted art = 254 sprites) + next 103 v2art + null the 152 sp of R1's ids -> 462 files, 255 entries.
   - (R3) mixed page (all 345) + last 95 v2art (incl. 491, crowd-0..3) + null the 102 sp of R2's ids -> 455 files, 197 entries.
   - (R4) new page + v2.js + null the last 91 sp + 6 old fonts -> **359 files**, 98 entries.
+  Switch day: `python3 docs/rebuild/switch-plan.py <out>` writes R1..R4.json and ids_R2/ids_R3.txt and re-checks every step
+  (checked Nov 19, 3:38 PM: its R2-R4 lists are identical to the rehearsed ones). No hand-typed lists.
   A simulation checked that at every version each picture the page asks for exists ("missing 0" at R2, R3, R4). The scratch's final list:
   359 files = page, v2.js (1,937,535 bytes), 7 fonts, 350 v2art, 0 sp/. Every publish was accepted.
 - Local test of the mixed page with only 152 v2art + 193 sp present, all 21 old-site views clicked and scrolled: "loaded sp 44 v2art 32 failed 0
