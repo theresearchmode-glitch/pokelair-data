@@ -29,3 +29,5 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    A RECOMMENDED: a solid strip at the top holds the X, content scrolls under it. B: no change (X overlaps a dropdown's corner).
 9. Q17 · 'Mega' on My Team cards on phones (review #11): pictures docs/rebuild/pics/nov19/Q17-mega-label-*.png
    A RECOMMENDED: 'Mega' on the same dark slanted plate as the score (readable on any art). B: no change. Dark mode not yet pictured.
+10. Q18 · Log a Game's Win/Loss (review #7): pictures docs/rebuild/pics/nov19/Q18-log-a-game-*.png
+   A RECOMMENDED: two equal buttons 'Log a Win' / 'Log a Loss' (one tap still logs it). B: no change.
