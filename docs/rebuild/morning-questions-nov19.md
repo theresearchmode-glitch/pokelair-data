@@ -31,3 +31,7 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    A RECOMMENDED: 'Mega' on the same dark slanted plate as the score (readable on any art). B: no change. Dark mode not yet pictured.
 10. Q18 · Log a Game's Win/Loss (review #7): pictures docs/rebuild/pics/nov19/Q18-log-a-game-*.png
    A RECOMMENDED: two equal buttons 'Log a Win' / 'Log a Loss' (one tap still logs it). B: no change.
+11. Q19 · Home headline contrast (review #10): pictures docs/rebuild/pics/nov19/Q19-hero-contrast-*.png
+   Measured: line 2 (#9BDCFF) on the band blue is 3.17:1 even with no crowd; the crowd behind makes it worse in spots.
+   A RECOMMENDED: same colours, a band-blue glow behind the words (keeps the look; meets the 3:1 big-text rule).
+   B: glow + paler line 2 (3.79:1). C: line 2 white (4.73:1, loses the two tones). D: no change.
