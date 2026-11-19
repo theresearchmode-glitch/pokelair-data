@@ -1,0 +1,120 @@
+NastyPlot test run on Sim's PC, Nov 18-19 2026 (started 9:19 PM ET Nov 18)
+
+COMMIT TESTED
+cbbbcae94e1674ba628dd4d206dda7687d67ea04 (claude/design6; contains 53500843)
+Frozen test data: out/ of 0c992f6977bc1cecc4e03eb269969a82b99681cf
+
+MACHINE
+Windows 11 Home, build 26300 (16 threads)
+Google Chrome installed: 157.0.8103.79 (not used by the tests)
+Node 22.23.4, npm 10.9.9
+Chromium for the tests: Playwright 1.49.1, build 1148 (131.0.6778.33)
+WebKit for step 7: Playwright 1.63.0, WebKit 26.6 (build 2359)
+
+RESULT IN SHORT
+  Passed: v2-minors main1, v2-back, v2-toast, v2-rmjump, behaviour A-team, B-build, C-battle, D-meta-shell (Chromium)
+  Passed only with the Windows path shim (see HOW THIS RUN DIFFERS): v2-minors main2, MQ-9c
+  Failed: v2-minors groups (3 failures that are not the path quirk), qcheck-all (24 new findings), behaviour A-team in WebKit (2 failures)
+
+HOW THIS RUN DIFFERS FROM THE INSTRUCTIONS
+  1. claude/design6 is checked out in the pl-design6 worktree, so the commit was tested detached in the pl-mascot worktree.
+  2. Steps 6 and 7 were run with PAGE=app/dist/v2.html as in test.yml (without it the harness opens app/dist/page.html).
+  3. Test parts ran side by side: step 5 in 5 lanes, step 6 in 4 lanes. GitHub runs them as separate jobs.
+  4. Windows path quirk: app/test/v2-minors.mjs lines 131 and 1458 and experiments/post-news-test.mjs line 16 use URL.pathname, which on Windows gives /C:/Users/... (opened as C:\C:\Users\...).
+     First run: main2 crashed at line 1458 and MQ-9c failed. No test was edited. A second run loaded a shim from outside the repo (node --import) that corrects those paths in fs.readFileSync and execFileSync.
+     main2 and groups were re-run with the first shim; MQ-9c was then re-run alone (ONLY=MQ) with a corrected shim, because post-news-test also needed the \C:\ form handled.
+  5. Two tracked pictures show as modified after checkout on Windows (docs/rebuild/pics/nov16/calc-320-A.png and calc-320-B.png). Not touched, not committed.
+
+TIMINGS
+  Setup: npm ci 35s, pokemon-showdown build 3s, playwright install chromium 2s, frozen data 1s
+  5-build-preview                    7s  exit 0
+  5-v2-back                         23s  exit 0
+  5-v2-toast                        26s  exit 0
+  5-v2-rmjump                       41s  exit 0
+  5-minors-main2                   325s  exit 1
+  5-minors-groups                  429s  exit 1
+  5-minors-main1                   656s  exit 0
+  5-qcheck-all                    1551s  exit 1
+  6-build-art                        4s  exit 0
+  6-behaviour-C-battle             433s  exit 0
+  6-behaviour-D-meta-shell         468s  exit 0
+  6-behaviour-B-build              557s  exit 0
+  6-behaviour-A-team               842s  exit 0
+  7-install-playwright               3s  exit 0
+  7-install-webkit                   6s  exit 0
+  7-behaviour-webkit-A-team        981s  exit 1
+  TOTAL steps 5-7                 3394s
+  Second run (with path shim):
+  npm-ci                            24s  exit 0
+  showdown-build                     3s  exit 0
+  playwright-version                 2s  exit 0
+  build-preview                      4s  exit 0
+  minors-main2                     358s  exit 0
+  minors-groups                    425s  exit 1
+
+SUMMARY LINES (first run, exactly as printed)
+
+Step 5
+  PART=main1   v2-minors (main1):all passed  [141 pass]
+  PART=main2   no summary line: crashed after 63 pass with ENOENT 'C:\C:\Users\simra\code\pl-mascot\.github\workflows\test.yml' at app/test/v2-minors.mjs:1458
+  PART=groups  v2-minors (groups):4 failed  [48 pass]
+  qcheck-all   qcheck-all: 26 pages + 19 views x 5 widths x 2 themes, 189 findings, 24 new; 1547s
+  v2-back      v2-back: all passed
+  v2-toast     v2-toast: all passed
+  v2-rmjump    v2-rmjump: all passed
+
+Step 6 (Chromium)
+  A-team       behaviour: 139 pass, 0 FAIL, 4 known bugs, 0 fixed?, 2 skipped; 841s  (adapter v2)
+  B-build      behaviour: 77 pass, 0 FAIL, 14 known bugs, 0 fixed?, 0 skipped; 556s  (adapter v2)
+  C-battle     behaviour: 83 pass, 0 FAIL, 0 known bugs, 0 fixed?, 4 skipped; 432s  (adapter v2)
+  D-meta-shell behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 468s  (adapter v2)
+
+Step 7 (WebKit 26.6)
+  A-team       behaviour: 137 pass, 2 FAIL, 4 known bugs, 0 fixed?, 2 skipped; 981s  (webkit, adapter v2)
+
+SUMMARY LINES (second run, with the Windows path shim)
+  PART=main2   v2-minors (main2):all passed  [75 pass]
+  PART=groups  v2-minors (groups):4 failed  [48 pass; MQ-9c still failed here]
+  ONLY=MQ      v2-minors:all passed  [MQ-9c: pass (ALL PASS), with the corrected shim]
+  experiments/post-news-test.mjs: ALL PASS, exit 0 (with the corrected shim)
+
+FAIL LINES
+
+v2-minors PART=groups (first run; HQ Q13f, HQ Q7a and WK-1 failed the same way in the second run)
+  FAIL  MQ-9c: the split (news automatic, gifts suggested, codes manual) is written down and post-news-test passes (failed: Node.js v22.23.4)
+  FAIL  HQ Q13f (Sim: B): the hero sprites never cover the tagline's words, 320-2560 (0.15% of its pixels at most: a head's edge touching the line): 320: 14 hero pictures didn't load | 320: 0.39% of 14558 tagline pixels covered | 360: 14 hero pictures didn't load | 360: 0.23% of 18761 tagline pixels covered | 390: 14 hero pictures didn't load | 390: 0.24% of 21812 tagline pixels covered | 412: 14 hero pictures didn't load | 412: 0.22% of 24154 tagline pixels covered | 600: 14 hero pictures didn't load | 820: 14 hero pictures didn't load | 1100: 14 hero pictures didn't load | 1280: 14 hero pictures didn't load | 1280: 0.16% of 111663 tagline pixels covered | 1440: 14 hero pictures didn't load | 1440: 0.18% of 140780 tagline pixels covered | 1920: 14 hero pictures didn't load | 2560: 14 hero pictures didn't load | 2560: 0.21% of 218413 tagline pixels covered
+  FAIL  HQ Q7a (Sim: B): the hero crowd draws the 35 nearest from their own files and the rest from at most 4 sprite sheets (every Pokémon drawn, 80 picture files at most on Home): 1440: {"crowd":333,"herd":345,"sheet":298,"img":35,"near0":12,"nearN":46,"far":47,"sheets":4,"loaded":false,"bad":0,"files":90} | 390: {"crowd":333,"herd":345,"sheet":298,"img":35,"near0":12,"nearN":46,"far":47,"sheets":4,"loaded":false,"bad":0,"files":86}
+  FAIL  WK-1 (WebKit pair): the stamps' perforated edge, read off the pixels on #gifts 390 / 1440 and Home's post band 1440: no paper outside the holes' line, holes along each edge, solid middle, bitten corners (home 1440 128x187: top: holes along the edge at 19,32,45,58,71,84,96,109, bottom: holes along the edge at 19,32,45,58,71,84,96,109, left: paper starts 0px in (want 6: nothing in the outer band), left: holes along the edge at none, left: not solid 6px inside the edge, paper off centre {"top":6,"bottom":6,"left":0,"right":5.5})
+
+behaviour A-team in WebKit 26.6
+  FAIL  TEAM-07  Phone jump bar: Suggestions | Matchups | How it plays | Sets; "Sets" scrolls to All Six Sets and opens the sheet  -> Suggestions not scrolled to the top of the screen: {"top":806,"vh":900}
+  FAIL  EDIT-01b  Closing the edit panel puts focus back on "Edit set"  -> focus is on ""
+
+qcheck-all: the 24 new findings
+  NEW   gifts | day 320 | TAP 148x19 "nintendoeverything.c"
+  NEW   gifts | day 320 | TAP 72x17 "levelup.com"
+  NEW   gifts | day 320 | TAP 96x18 "the official news"
+  NEW   gifts | day 390 | TAP 148x19 "nintendoeverything.c"
+  NEW   gifts | day 390 | TAP 72x17 "levelup.com"
+  NEW   gifts | day 390 | TAP 96x18 "the official news"
+  NEW   gifts | day 820 | TAP 148x19 "nintendoeverything.c"
+  NEW   gifts | day 820 | TAP 72x17 "levelup.com"
+  NEW   gifts | day 820 | TAP 96x18 "the official news"
+  NEW   gifts | night 320 | TAP 148x19 "nintendoeverything.c"
+  NEW   gifts | night 320 | TAP 72x17 "levelup.com"
+  NEW   gifts | night 320 | TAP 96x18 "the official news"
+  NEW   gifts | night 390 | TAP 148x19 "nintendoeverything.c"
+  NEW   gifts | night 390 | TAP 72x17 "levelup.com"
+  NEW   gifts | night 390 | TAP 96x18 "the official news"
+  NEW   gifts | night 820 | TAP 148x19 "nintendoeverything.c"
+  NEW   gifts | night 820 | TAP 72x17 "levelup.com"
+  NEW   gifts | night 820 | TAP 96x18 "the official news"
+  NEW   home | day 1280 | SIZE 36.1px "/100"
+  NEW   home | night 1280 | SIZE 36.1px "/100"
+  NEW   news | day 1280 | OVERLAP "CAMPAIGN · NOV 24" x "A New Mystery Gift"
+  NEW   news | day 1920 | OVERLAP "CAMPAIGN · NOV 24" x "A New Mystery Gift"
+  NEW   news | night 1280 | OVERLAP "CAMPAIGN · NOV 24" x "A New Mystery Gift"
+  NEW   news | night 1920 | OVERLAP "CAMPAIGN · NOV 24" x "A New Mystery Gift"
+  (24 known findings no longer seen: remove them with KNOWN=write after a look)
+
+behaviour A-team, B-build, C-battle, D-meta-shell in Chromium: no FAIL lines.
