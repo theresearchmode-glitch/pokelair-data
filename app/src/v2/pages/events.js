@@ -15,7 +15,7 @@ V2.evDay = d => { try { return new Date(d + 'T12:00:00').getDate(); } catch (e) 
 // one ticket. big: the latest result across the wall. The five other Pokémon are pictures here; their names are in the label and the placings.
 V2.ticket = (ev, big) => { const E = V2.esc, w = ev.top[0], ns = w ? w.mons.map(m => m.n) : [], off = ev.src === 'official', lead = ns[0], rest = ns.slice(1);
   const say = `${V2.evTitle(ev.name)}, ${evDate(ev.date)}, ${homeNum(ev.players)} players${off ? ', official event' : ''}. Winner's team: ${ns.map(n => V2.disp(n)).join(', ')}.`;
-  const k = `<span class="tk-k">${off ? '<b>Official event</b> · ' : ''}Winner's team</span>`;
+  const k = `<span class="tk-k">${off ? '<b>Official\u00a0event</b> · ' : ''}Winner's\u00a0team</span>`; /* Sim Q34 B: under 360 an official label may wrap, only after the '·' */
   const stub = `<span class="tk-stub" aria-hidden="true"><small class="tk-mo">${E(V2.evMonth(ev.date))}</small><b class="u">${V2.evDay(ev.date)}</b><small>${homeNum(ev.players)} players</small><i class="tk-bar"></i></span>`;
   const hero = `<span class="tk-hero" aria-hidden="true">${lead ? V2.mon(lead, {bare: true}) : ''}<b class="tk-seal u">1st</b>${big && lead ? `<span class="tk-ln u">${E(V2.disp(lead))}</span>` : ''}</span>`;
   if (!big) return `<button type="button" class="tk${off ? ' off' : ''}" style="${V2.evTy(lead)}" data-evgo="${E(ev.id)}" aria-label="${E(say)} Open the placings.">${hero}
@@ -62,19 +62,22 @@ V2.evOpen = ev => { const E = V2.esc, off = ev.src === 'official';
     <h3 class="u ev-plh">The Placings, 1st to ${placeTxt(ev.top.length)}</h3><div class="wt-rows ev-rows">${ev.top.map((t, i) => V2.evRow(ev, t, i)).join('')}</div></section>`; };
 V2.pages.events = {place: 'meta', draw() { const E = V2.esc, D = META.events, U = V2.evUi;
   const tabs = `${V2.tourTabs('events')}`;
-  const ev = D ? D.events : [], on = ev.filter(e => e.src !== 'official').length;
+  const ev = D ? D.events : [], on = ev.filter(e => e.src !== 'official').length, opened = D && U.open && ev.find(e => e.id === U.open);
+  /* Sim Q33 B (Nov 19): on phones the wall leads: its header, filters and the latest winner's big ticket come right under the tabs, then the
+     counts and Next Events, then the rest of the wall. Real markup order, so reading and tab order match the screen. 700 and up unchanged */
+  const lead = D && !opened && innerWidth < 700;
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Events</span></p><h1 class="u"><span>Every result,</span> <span class="pl">event by event.</span></h1>
-    <p class="ra-lede">Recent tournaments and who won them, with every top-cut team sheet inside.</p>${tabs}${D ? V2.evCounts() : ''}</section>`;
-  const top = `<div class="gs-top wt-top ev-top">${head}<div class="ra-spotw">${V2.evPlate()}</div>${tabs}</div>`;
+    <p class="ra-lede">Recent tournaments and who won them, with every top-cut team sheet inside.</p>${tabs}${D && !lead ? V2.evCounts() : ''}</section>`;
+  const top = `<div class="gs-top wt-top ev-top">${head}${lead ? '' : `<div class="ra-spotw">${V2.evPlate()}</div>`}${tabs}</div>`;
   if (!D) return `<div class="ra gsp ev">${top}<div class="gs-body"><p class="tm-sub">Tournament results appear here after the next data refresh.</p></div></div>`;
-  const opened = U.open && ev.find(e => e.id === U.open);
   if (opened) return `<div class="ra gsp ev">${top}<div class="gs-body">${V2.evOpen(opened)}</div></div>`;
   let list = ev; if (U.filter === 'official') list = list.filter(e => e.src === 'official'); else if (U.filter === 'big') list = list.filter(e => e.players >= 100);
   const cap = (innerWidth < 700 ? 7 : 13) + U.more * 12 /* Sim Q31 (Nov 19): phones open on the big ticket plus 6 (was 12); Show More still adds 12 */, shown = list.slice(0, cap), small = shown.slice(1);
   const n = {all: ev.length, official: ev.filter(e => e.src === 'official').length, big: ev.filter(e => e.players >= 100).length};
   const seg = `<div class="ev-f" role="group" aria-label="Which events">${[['all', 'All'], ['official', 'Official'], ['big', '100+ players']].map(([k, t]) => `<button type="button" class="np-chip ev-fc" data-evf="${k}" aria-pressed="${U.filter === k}">${t}<small>${n[k]}</small></button>`).join('')}</div>`;
   /* the two-column wall keeps every row full: an odd last ticket runs the full width (filters can leave an odd count) */
-  const wall = shown.length ? `${V2.ticket(shown[0], true)}<div class="tk-wall${small.length % 2 ? ' odd' : ''}">${small.map(e => V2.ticket(e)).join('')}</div>` : '<p class="tm-sub">No events here yet.</p>';
+  const mid = lead ? `<div class="ev-mid">${V2.evCounts()}${V2.evPlate()}</div>` : ''; /* Q33 B: the counts and Next Events after the latest winner (phones) */
+  const wall = shown.length ? `${V2.ticket(shown[0], true)}${mid}<div class="tk-wall${small.length % 2 ? ' odd' : ''}">${small.map(e => V2.ticket(e)).join('')}</div>` : `<p class="tm-sub">No events here yet.</p>${mid}`;
   return `<div class="ra gsp ev">${top}<div class="gs-body"><section class="ev-wall"><header class="ev-wh"><h2 class="u">The Ticket Wall</h2><p>Newest first. Each ticket shows the winner's six, the winner's first Pokémon up front. Tap a ticket for the event's placings.</p></header>
     ${seg}${wall}${list.length > cap ? `<button type="button" class="np-link ev-more" data-evmore>Show More · ${list.length - cap} left ›</button>` : ''}</section></div></div>`; }};
 /* Sim Q31: the phone cap follows the window across 700 (the wall redraws once when the band changes) */

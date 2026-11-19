@@ -222,6 +222,7 @@
 /* Events tickets under 340 (Nov 16, re-verify #1: long one-word names crossed the perforation by up to 12px at 320): the date stub gives up 13px, no word breaks (Sim Q17) */@media (max-width:339.98px){.tk:not(.big){grid-template-columns:56px minmax(0,1fr) 72px}}
 /* Home corner rows (Nov 16, re-verify #13: at 320 the item dropped lower in short rows, "Lead" broke after a dangling dot): name and item sit together, centred; on narrow phones "Lead" takes its own line without the dot */.ff{grid-template-rows:auto auto;align-content:center}.ff .ff-sep{display:none}.ff .ff-ld{display:block} /* audit v199 #6 (Nov 17): at every width, not only under 420 ('Lead' was cut by the slanted edge at 900 and 1280, and the two lead tiles didn't line up) */
 .ev-counts{display:grid;gap:var(--s3);justify-items:start;margin-top:var(--s6)}
+.ev-mid>.ev-counts{margin-top:0} /* Sim Q33 B: on phones the counts open the block after the latest winner (pages.css .ev-mid sets the room) */
 /* Damage Calc under 380px (Nov 16, re-verify #9): the option pips crossed "WEATHER"/"TERRAIN" (decorative, hidden there); the Swap disc sits beside the sprites, clear of the names; the small move cards use smaller words so nothing runs past their edge */@media (max-width:379.98px){.dc2-fc .pips{display:none}.dc2-swap{align-self:start;margin-top:var(--s10)}.dc2-hand .dc2-mv .nm{font-size:var(--t13)}.dc2-hand .dc2-mv .rg{font-size:var(--t20)}.dc2-hand .dc2-mv{overflow-wrap:normal}.dc2-hand .dc2-mv small{font-size:var(--t13)}}
 @media (max-width:359.98px){.dc2-hand .dc2-mv{padding-inline:6px}.dc2-hand .dc2-mv .rg{font-size:var(--t17)}}
 @media (max-width:379.98px){.dc2-hand .dc2-mv .nm{margin-bottom:var(--s1)}} /* the 13px name clears the number below it */
@@ -261,7 +262,11 @@
 a,button,summary{text-wrap-style:pretty}.sx-info{white-space:nowrap}
 /* nuclear stress test (Nov 16): on 320-339 phones "Winner's team" needed 114px of 113, so 9 tickets wrapped it and 3 did not; one line in the
    approved 88% letters (92px), the same on every ticket. (Ticket names keep "M-C" together with a word joiner, events.js.) */
-@media (max-width:359.98px){.tk-k{white-space:nowrap;font-stretch:88%}}
+@media (max-width:359.98px){.tk-k{font-stretch:88%}.tk:not(.big){grid-template-columns:auto minmax(0,1fr) min-content}.tk:not(.big) .tk-stub{min-width:68px;padding-inline:var(--s2)}}
+/* Sim Q34 B (Nov 19): the one-line label pushed an official ticket's label and name into the date stub under 360 (Gdańsk 54px at 320);
+   the label may now wrap, and only after "Official event ·" (events.js joins each half with a no-break space). The stub takes its
+   narrowest width there ("758" over "players", as in the approved picture; 68px, 8px each side, was 76 and 4px over the ticket's
+   edge at 320), so the longest words ("Championships", "Throwdowns #4") fit beside it */
 /* nuclear stress test (Nov 16): when a move wraps in any Card, V2.fitWords marks the Hand mh-mv2 and every chip takes the two-line height */
 .mh-mv.mh-mv2 li{display:grid;align-content:center;min-height:calc(2lh + var(--s2))}
 /* nuclear stress test (Nov 16): Home corner links on narrow phones wrapped unevenly ("Copy for Showdown" centred on two lines beside
