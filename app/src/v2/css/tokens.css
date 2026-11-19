@@ -3,7 +3,7 @@
 :root{
   /* My Box rays over the box wallpaper and the picked Pokémon's panel (R4, Nov 11) */
   --ray:rgba(255,255,255,.34);--ray-art:rgba(255,255,255,.4);
-  --logo-pink:#E8364F;--logo-blue:#0078BF;--logo-ink:#17161A;--logo-white:#FFFFFF; /* the Sly Devil logo's colours (Nov 16): the same in day and night (the logo carries its own white sticker edge) */
+  --logo-pink:#E8364F;--logo-blue:#0078BF;--logo-ink:#17161A;--logo-white:#FFFFFF;--sd-shade:rgba(0,0,0,.3);--sd-edge:var(--logo-white); /* the Sly Devil logo's colours (Nov 16): the same in day and night (the logo carries its own white sticker edge) */
   --bg:#FBFAF7;--surface:#FFFFFF;--wash:#F4F0EA;--ink:#17161A;--ink-2:#48454F;--ink-3:#66636E;--rule:rgba(23,22,26,.11);
   --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--them:#B4238F;--them-text:#9A1A7B;--pick-text:#C41E35;
   --plate:#17161A;--on-plate:#FBFAF7;--plate-link:#62BEF7; /* a link on the dark plate (toast Undo): 8.77:1; --plot was 3.81:1 (Nov 16 audit) */

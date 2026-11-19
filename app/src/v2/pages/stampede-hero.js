@@ -44,7 +44,7 @@ V2.sdHero = () => {
     <div class="sdh-fold"><div class="sdh-scene">
       <svg class="sdh-lines" aria-hidden="true" focusable="false"></svg>
       <div class="sdh-crowd" aria-hidden="true"></div><i class="sdh-haze" aria-hidden="true"></i>
-      <h1 class="u sdh-h" id="sdh-h"><span class="l1">Sharply raise</span> <span class="l2">your win rate.</span></h1>
+      <h1 class="u sdh-h" id="sdh-h"><span class="l1">Sharply${V2.sdhChv('ph')} raise${V2.sdhChv('wd')}</span> <span class="l2">your win rate.</span></h1>
       <div class="sdh-herd">${herd}</div>
       <div class="sdh-front">${front}</div>
     </div>
@@ -100,7 +100,15 @@ V2.sdhLines = (svg, w, h, row) => { const vx = w / 2, vy = (row ? .1 : .07) * h;
   for (let i = 0; i < 26; i++) { const t = (i + .5) / 26, ex = -1.4 * w + t * 3.8 * w, ey = h * 1.05, a = .42 + V2.sdhRnd(i + 50) * .2;
     d += `M${(vx + (ex - vx) * a).toFixed(1)} ${(vy + (ey - vy) * a).toFixed(1)}L${ex.toFixed(1)} ${ey.toFixed(1)}`; }
   svg.setAttribute('viewBox', `0 0 ${Math.round(w)} ${Math.round(h)}`); svg.innerHTML = `<path d="${d}"/>`; };
-V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) return;
+/* Q30 (Sim, Nov 19, 11:08 AM): the logo's chevron (red over blue, the A of NASTY: 'raise') beside the tagline, a sticker that takes no
+   space, so the words never move. Two copies, one shown: after 'raise' when 'raise' shares the first line with 'Sharply' (desktop), else
+   after 'Sharply' (phones), decided from where the words fall, so odd window widths work too. Hidden from screen readers (decoration). */
+V2.sdhChv = k => `<span class="sdh-chv ${k}" aria-hidden="true"><svg viewBox="-6 -6 92 86" focusable="false"><g stroke="var(--logo-ink)" stroke-width="7" stroke-linejoin="round"><polygon points="0,62 40,22 80,62 63,79 40,56 17,79" fill="var(--logo-blue)"/><polygon points="0,40 40,0 80,40 63,57 40,34 17,57" fill="var(--logo-pink)"/></g></svg></span>`;
+V2.sdhChvPlace = () => { const h = document.querySelector('#main .sdh-h'); if (!h) return; const l1 = h.querySelector('.l1'), w = h.querySelector('.sdh-chv.wd'), p = h.querySelector('.sdh-chv.ph'); if (!l1 || !w || !p) return;
+  const box = n => { const rg = document.createRange(); rg.selectNodeContents(n); return [...rg.getClientRects()].filter(r => r.width).pop(); };
+  const t = [...l1.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim()), a = t[0] && box(t[0]), b = t[1] && box(t[1]); /* 'Sharply', 'raise' */
+  h.classList.toggle('chv-wd', !!(a && b && Math.abs(b.top - a.top) < a.height / 2)); };
+V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) return; try { V2.sdhChvPlace(); } catch (e) {}
   // the first screen: the window height less everything above the hero (header, a data note) and the phone tab bar
   const bar = document.querySelector('.np-bar'), bh = bar && getComputedStyle(bar).position === 'fixed' ? bar.offsetHeight : 0, t0 = Math.round(S.getBoundingClientRect().top + scrollY + bh);
   if (S.style.getPropertyValue('--sdh-top') !== t0 + 'px') S.style.setProperty('--sdh-top', t0 + 'px');
