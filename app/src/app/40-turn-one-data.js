@@ -9,8 +9,12 @@ function turnOneData(mine, theirs, r) {
   // Evolve in a battle, so when both leads of a side are Megas the second is shown and calculated as its base form (same set)
   // the base form: its own entry, or the one form listed under that name ('Floette' is only listed as 'Floette-Eternal')
   const baseP = p => { if (!p || !p.m || typeof byName !== 'object') return null; return byName.get(p.b) || [...byName.values()].find(q => q && !q.m && String(q.n).startsWith(p.b + '-')) || null; };
+  // the base form's Ability: a real open team sheet's, when it is one the base form can have (a Mega's sheet lists the pre-Mega
+  // Ability: Mega Charizard Y's 'Solar Power', Mega Mawile's 'Intimidate'), else the form's usual one (mechanics check, Nov 19)
+  const baseAb = (x, bp) => { const o = x && (x._orig || x), a = o && o.real && o.sheetAb, c = a && typeof canonAbility === 'function' ? canonAbility(a, bp) : a;
+    if (c && (bp.a || []).includes(c)) return c; try { return metaAbility(bp) || ''; } catch (e) { return ''; } };
   // the copy is the base form in full: its types and its own Ability (abilityOf falls back to the form's usual one), not a Mega (review, Nov 19)
-  const baseOf = x => { const bp = baseP(x && x.p); return bp ? {...x, p: bp, d: bp.d, types: bp.t, ability: (() => { try { return metaAbility(bp) || ''; } catch (e) { return ''; } })(), mega: 0, _orig: x._orig || x} : x; };
+  const baseOf = x => { const bp = baseP(x && x.p); return bp ? {...x, p: bp, d: bp.d, types: bp.t, ability: baseAb(x, bp), mega: 0, _orig: x._orig || x} : x; };
   // keep the first Mega; if the other can't be shown as its base form, keep that one as the Mega instead
   const oneMega = arr => { const mi = arr.map((x, i) => x && x.p && x.p.m ? i : -1).filter(i => i >= 0); if (mi.length < 2) return arr;
     const keep = baseP(arr[mi[1]].p) ? mi[0] : baseP(arr[mi[0]].p) ? mi[1] : -1; if (keep < 0) return arr;
@@ -39,11 +43,11 @@ function turnOneData(mine, theirs, r) {
   // NO_INTIM: Clear Body, Hyper Cutter, White Smoke, Full Metal Body, Inner Focus, Oblivious, Own Tempo, Scrappy; Mirror Armor sends
   // it back to the Intimidate user) or Flower Veil guards a Grass type; Defiant (−1 then +2), Guard Dog and Contrary end at +1
   // Attack, Competitive at −1 Attack and +2 Sp. Atk; White Herb undoes one drop. A Mega is still its base form when the leads come
-  // out, so its base form's usual Ability counts then (Mega Gyarados: Intimidate; Mega Metagross: Clear Body); a Mega whose own
+  // out, so its base form's Ability counts then (a real open team sheet's, else its usual one) (Mega Gyarados: Intimidate; Mega Metagross: Clear Body); a Mega whose own
   // Ability is Intimidate (Mega Manectric) uses it when it Mega Evolves, before any move. Rattled (Gen 8 on; Showdown's rattled:
   // onAfterBoost) gives +1 Speed for each Intimidate that lowered its Attack, so it counts in turn one's order (speF).
   const INTIM_NO = ['Clear Body', 'Hyper Cutter', 'White Smoke', 'Full Metal Body', 'Inner Focus', 'Oblivious', 'Own Tempo', 'Scrappy', 'Mirror Armor'], INTIM_UP = ['Defiant', 'Guard Dog', 'Contrary'];
-  const entryAb = x => { const bp = x && x.p && x.p.m ? baseP(x.p) : null; if (bp) { try { const a = metaAbility(bp); if (a) return a; } catch (e) {} } return abilityOf(x); };
+  const entryAb = x => { const bp = x && x.p && x.p.m ? baseP(x.p) : null; if (bp) { const a = baseAb(x, bp); if (a) return a; } return abilityOf(x); };
   const intimOf = y => entryAb(y) === 'Intimidate' || abilityOf(y) === 'Intimidate', sideOfX = x => L.includes(x) ? L : opp, foesOf = x => L.includes(x) ? opp : L;
   const stage = new Map([...L, ...opp].map(x => { const n = foesOf(x).filter(intimOf).length, ab = entryAb(x), it = sideDefaults(x.p, 'atk', calcM(x)).item; let atk = 0, spa = 0, spe = 0;
     if (n && !INTIM_NO.includes(ab) && !((x.types || x.p.t || []).includes('Grass') && sideOfX(x).some(y => entryAb(y) === 'Flower Veil'))) {
