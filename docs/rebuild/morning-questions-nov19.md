@@ -58,3 +58,6 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    The visible part (an error look for the message and the box, where it sits, when it clears) needs your pictures: Import a Team,
    Edit Set's stat points (and what happens when you close it with a bad box), Send Feedback. Note: all three already show a small
    grey line explaining the error; it's just easy to miss.
+17. Q25 · Team Preview Practice on phones (review #13): pictures docs/rebuild/pics/nov19/Q25-practice-phone-*.png
+   A RECOMMENDED: your six as the same 3 x 2 cards as theirs (356px instead of 649px), so both sixes nearly fit one phone screen.
+   B: no change. Also from the review, no visible change: code order = screen order (theirs first), which I can do with A.
