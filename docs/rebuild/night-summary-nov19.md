@@ -26,6 +26,11 @@ Batch ead51cf8 (GitHub run 1374: 12 of 14 jobs passed; the 2 failures were one o
   v2-oddaddr all passed on GitHub's frozen test data too.
 
 ## Issues and mistakes (honest list)
+- An independent review I ordered of tonight's code (11 PM) found real problems in my Battle turn-one change that every test had
+  passed: Home's plan board showed 'Flinches' as your lead's move for 151 of 300 teams (their Fake Out is only a guess); a Mega shown
+  as its base form kept the Mega's Ability (Charizard still set sun); Fake Out could be aimed at a Ghost type. Also: the event-name
+  cleaner ate part of one real name, and Compare's top-team source wasn't cleaned. All fixed in 2dcdd1ac, with new checks that fail
+  on the old version (151 / 33 of 33 / 1) and pass now. None of it reached the Preview: I held the Preview back until the fix.
 - GitHub run 1375 (902e1b9f) failed 2 of my new tests on the frozen test data: a team leading Mega Delphox + Mega Floette still
   showed two Megas (Floette's base form is only listed as 'Floette-Eternal'), and one event name kept '$30' at its start. Both
   real gaps the tests were written to catch; fixed in a59975a6 and checked on the frozen data (both 'all passed'). Lesson: run new
