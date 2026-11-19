@@ -39,4 +39,5 @@ Batch ead51cf8 (GitHub run 1374: 12 of 14 jobs passed; the 2 failures were one o
 Matches GitHub on Chromium. Windows-only findings are in the morning questions (item 5), plus a News date question (item 6).
 
 ## Questions waiting for you
-All in docs/rebuild/morning-questions-nov19.md, each with labelled pictures (RECOMMENDED on the image).
+One page with every picture question side by side: https://claude.ai/artifact/8hS4g7uHttJhiUQ8sXDmUv (Morning Questions).
+The wording questions without pictures are in docs/rebuild/morning-questions-nov19.md (items 3-6, 13, 16, 21).
