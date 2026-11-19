@@ -81,7 +81,24 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    a. Battle poster at 320: 'The other four' row runs past its card (Gholdengo cut off) and names touch ('Grimmsnarl|Archaludon').
    b. The damage calc gives an opponent its most common item, not the item on its open team sheet (e.g. Armarouge calculated with
       Focus Sash while its sheet says Life Orb), and the plan can say 'KOs' through a Sash. Logic; I'd fix it as its own step.
+      Update (night): fixed by a helper; an opponent with an open team sheet is now calculated with its sheet item, and no 'KOs'
+      through Focus Sash or Sturdy (checked: v2-t1rules, 1000 real matchups).
 24. Turn One cards (built tonight, for your look): pictures docs/rebuild/pics/nov19/review1-turn-one-words-*.png. Notes are now one
    main fact + one short note (longest 115 characters, was 229). Cards at 1440 are 104-148px (were 104-124 before tonight's rules,
    up to 187 at worst tonight). Going shorter needs a wider text column on the card (the note column is about 200px at 390): a layout
    change. Keep as is, or try a wider note column (pictures first)?
+25. Battle Turn One cards, layout (found by the 3:22 AM night check on cb1506aa; design, so yours). Pictures to follow on the
+   Morning Questions page with labels:
+   a. At 1366 wide and up, the two cards in a row are different heights and each is centred in its slot, so the shorter card sits
+      lower than its neighbour (picture: 1440, card 2 sits lower than card 1). My recommendation: top-align both cards in a row
+      (reason: the eye reads across a row from the top; a ragged top edge looks like a mistake).
+   b. A card with no target (Tailwind, Flinches, Protect) leaves an empty strip where the target sprite would be. My recommendation:
+      let the text use that strip (reason: no empty strips beside text, your space rule).
+   c. Phone cards at 320 are tall (about 10 lines with a note). Linked to item 24 (wider note column).
+26. Turn One wording (no picture needed, plain words):
+   a. 'OHKO 6%' is cryptic. Recommended: '6% chance to KO in one hit' (reason: says what the number means).
+   b. Fake Out's 'Stops its Hurricane, up to 150% to your Sneasler' doesn't say 150% of what. Recommended: 'up to 150% of your
+      Sneasler's HP' (reason: same words as every other damage line).
+   c. The Watch line repeats ('their Pelipper's Hurricane can KO your Sneasler from turn 2; their Mega Charizard Y's Weather Ball can
+      KO your Sneasler'). Recommended: 'your Sneasler can be KO'd by their Pelipper's Hurricane (from turn 2) or their Mega Charizard
+      Y's Weather Ball' (reason: one subject, shorter, easier to scan).

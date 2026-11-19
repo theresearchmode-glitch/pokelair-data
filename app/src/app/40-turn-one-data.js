@@ -52,8 +52,9 @@ function turnOneData(mine, theirs, r) {
     return [x, {atk: Math.max(-6, Math.min(6, atk)), spa: Math.min(6, spa)}]; }));
   const stOf = x => stage.get(x) || {atk: 0, spa: 0};
   // the stage a move hits with, in plain words for its line: 'at −1 Attack', 'at +2 Sp. Atk' (Body Press: Defense, untouched; Foul Play: the target's Attack)
-  const stageNote = (x, mv) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat) return ''; const s = stOf(x), v = mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
-  const hitNotes = (x, h) => [hitNote(h), stageNote(x, h && h.mv)].filter(Boolean).join(', ');
+  /* d: the target; Unaware (the target's) ignores the stage, as the calc does, so no note then (Nov 19 review) */
+  const stageNote = (x, mv, d) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat || (d && abilityOf(d) === 'Unaware')) return ''; const s = stOf(x), v = mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
+  const hitNotes = (x, h, d) => [hitNote(h), stageNote(x, h && h.mv, d)].filter(Boolean).join(', ');
   const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, calcM(a), calcM(d), {...F, aStage: stOf(a), dAtkStage: stOf(d).atk});
   // speed in that field: Chlorophyll / Swift Swim / Sand Rush / Slush Rush double in their weather
   const speF = x => spe(x) * (typeof speedMul === 'function' ? speedMul(abilityOf(x), F.weather) : 1);
@@ -113,7 +114,7 @@ function turnOneData(mine, theirs, r) {
   // (Nov 19 wording pass) a spread move names its foe ('KOs their X', 'up to N% of their X's HP'); the partner it also hits is a
   // second short sentence. Never 'KOs' when Focus Sash or Sturdy holds it at 1 HP (h.r.sash; damage() clears it for multi-hit moves,
   // which break the Sash): 'up to N% of its HP, Sash holds' (koShort) instead
-  function hitWhy(m, h, o, hitsAlly) { const partner = L.find(x => x !== m), nt = hitNotes(m, h), ko = h.r.min >= h.r.hp && !h.charge && !h.r.sash;
+  function hitWhy(m, h, o, hitsAlly) { const partner = L.find(x => x !== m), nt = hitNotes(m, h, o), ko = h.r.min >= h.r.hp && !h.charge && !h.r.sash;
     const ally = hitsAlly ? (() => { const r2 = hitOn(m, [h.mv], partner); return `. Also hits your ${partner.d}${r2 ? ' (up to ' + dmgP(100 * r2.r.max / r2.r.hp) + '%)' : ''}`; })() : '';
     return `${ko ? 'KOs' + (h.mv.spread ? ' their ' + o.d : '') : 'up to ' + dmgP(100 * h.r.max / h.r.hp) + '% of ' + (h.mv.spread ? `their ${o.d}'s` : 'its') + ' HP, ' + koShort(h.r)}${nt ? ' (' + nt + ')' : ''}${ally}`; }
   planLines();
@@ -135,7 +136,7 @@ function turnOneData(mine, theirs, r) {
     order.push(c); if (c.act === 'Tailwind') twUp[c.me] = true; }
   // their Fake Out line names its target from the start, so a flinched user's plan says whom it meant (third check, Nov 19)
   const theirAct = o => { const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = theirFOT.has(o);
-    return fo ? [`Fake Out ${theirFOT.get(o).d}`, ''] : [`${d.worst.h.mv.name} into ${d.worst.on.d}`, `up to ${dmgP(100 * d.worst.pct)}% of its HP, ${koShort(d.worst.h.r)}${hitNotes(o, d.worst.h) ? ' (' + hitNotes(o, d.worst.h) + ')' : ''}`]; }; /* hitNotes: '90% to hit', 'at −1 Attack' as yours says (Nov 19 review) */ /* one wording for both lines (audit Nov 15) */
+    return fo ? [`Fake Out ${theirFOT.get(o).d}`, ''] : [`${d.worst.h.mv.name} into ${d.worst.on.d}`, `up to ${dmgP(100 * d.worst.pct)}% of its HP, ${koShort(d.worst.h.r)}${hitNotes(o, d.worst.h, d.worst.on) ? ' (' + hitNotes(o, d.worst.h, d.worst.on) + ')' : ''}`]; }; /* hitNotes: '90% to hit', 'at −1 Attack' as yours says (Nov 19 review) */ /* one wording for both lines (audit Nov 15) */
   // the beats, in move order: who moves, their Speed and bracket, the action and one short why (all plain text)
   // Why lines (Nov 19 wording pass, after a visual check found 10-line notes): each beat's why is its main fact, and the notes that
   // gather on it (_n: rank r, lower first; k: kind) are folded at the end into at most one short note, plus at most one short tag.
@@ -184,6 +185,8 @@ function turnOneData(mine, theirs, r) {
   const PROTECT = ['Protect', 'Detect', 'Spiky Shield', "King's Shield", 'Baneful Bunker', 'Silk Trap', 'Burning Bulwark', 'Obstruct'];
   const movesOf = y => (y.moves || []).filter(Boolean).map(x => x.name || x);
   const guardOf = (o, a, mv) => { const g = [], pm = movesOf(o).find(n => PROTECT.includes(n)); if (pm) g.push(pm);
+    /* Quick Guard blocks a priority move (Nov 19 review) */
+    if (movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) > 0 && opp.some(y => movesOf(y).includes('Quick Guard'))) g.push('Quick Guard');
     if (mv.spread) { if (opp.some(y => movesOf(y).includes('Wide Guard'))) g.push('Wide Guard'); }
     else if (!['Stalwart', 'Propeller Tail'].includes(abilityOf(a)) && mv.name !== 'Snipe Shot') {
       const rp = !(a.types || a.p.t || []).includes('Grass') && abilityOf(a) !== 'Overcoat';
@@ -192,7 +195,7 @@ function turnOneData(mine, theirs, r) {
     return g.join(' or '); };
   const koPass = b => { const i = at(b.x);
     if (!b.me) { const d = danger.find(x => x.o === b.x), h = d && d.worst && d.worst.h, t = d && d.worst && d.worst.on;
-      if (!h || theirFOT.has(b.x) || b.act !== `${h.mv.name} into ${t.d}` || !h.r || !h.r.hp || h.charge || h.r.sash || h.r.max < h.r.hp || at(t) <= i || done.has(t)) return;
+      if (!h || theirFOT.has(b.x) || b.act !== `${h.mv.name} into ${t.d}` || !h.r || !h.r.hp || h.charge || h.r.sash || h.r.max < h.r.hp || ((at(t) <= i || done.has(t)) && !tieOf(beats[at(t)], b))) return; /* in a speed tie theirs may go first (Nov 19 review) */
       /* a KO that only might happen (some rolls, under 100% to hit) is a risk too (Nov 19 review): the note says the chance, as
          yours does, and your lead's own KO is then no longer sure */
       const tb = beats[at(t)], k1 = (h.r.rolls || [h.r.min, h.r.max]).filter(v => v >= h.r.hp).length / (h.r.rolls || [1, 1]).length;
@@ -210,12 +213,12 @@ function turnOneData(mine, theirs, r) {
       const j = at(o), tb = beats[j], later = j > i && !done.has(o), tie = tieOf(tb, b), by = `your ${b.x.d}`;
       const g = sureKO(h) && b.flinch !== 'likely' && !b.koRisk ? guardOf(o, b.x, h.mv) : '';
       if (sureKO(h) && b.flinch !== 'likely' && !b.koRisk && !g) { down.set(o, {by, mv: h.mv.name}); if (later && !tie) fainted.set(o, down.get(o));
-        else if (later) note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by} (speed tie)`}); }
-      else if (g) { if (later) note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by} (${tie ? 'speed tie, ' : ''}if no ${g})`}); }
+        else if (later) { tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by} (speed tie)`}); } }
+      else if (g) { if (later) { tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by} (${tie ? 'speed tie, ' : ''}if no ${g})`}); } }
       else if (later) { const k1 = (h.r.rolls || [h.r.min, h.r.max]).filter(v => v >= h.r.hp).length / (h.r.rolls || [1, 1]).length;
         /* the chance in a few words; 'may' also covers your lead being flinched or KO'd first (b.flinch, b.koRisk) */
         const why = [k1 < 1 ? koShort(h.r) : '', h.acc < 100 ? h.acc + '% to hit' : '', tie ? 'speed tie' : ''].filter(Boolean).join(', ');
-        note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by}${why ? ' (' + why + ')' : ''}`}); } } };
+        tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by}${why ? ' (' + why + ')' : ''}`}); } } };
   for (const b of beats) {
     if (fainted.has(b.x)) { const f = fainted.get(b.x); b.plan = b.act; b.act = 'Fainted'; b.fainted = 'sure'; b.why = `KO'd first by ${f.by}'s ${f.mv}`; b._n = []; done.add(b.x); continue; }
     if (flinched.has(b.x)) { const f = flinched.get(b.x);

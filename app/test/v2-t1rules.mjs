@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf = new Map(); for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) { teams.push(t.mons.map(m => m.n)); if (!refOf.has(t.mons.map(m => m.n).join('/'))) refOf.set(t.mons.map(m => m.n).join('/'), {ev: e, t}); }
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: [], intoGone: [], dblParen: [], theirKO: 0, theirKOmiss: [], koSureN: 0, koSureBad: [], intimN: 0, intimWrong: [], guarded: 0, faintGuard: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  const st = {forcedMissing: [], qgN: 0, unawareN: 0, unawareWrong: [], n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: [], intoGone: [], dblParen: [], theirKO: 0, theirKOmiss: [], koSureN: 0, koSureBad: [], intimN: 0, intimWrong: [], guarded: 0, faintGuard: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
   const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
   const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp'], /* Extreme Speed into a side with Farigiraf's Armor Tail */
@@ -19,9 +19,20 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
     ['Charizard-Mega-Y/Pelipper/Archaludon/Venusaur/Grimmsnarl/Garchomp-Mega-Z', 'Garchomp/Talonflame/Ninetales-Alola/Floette-Mega/Basculegion/Kingambit'],
     ['Venusaur/Charizard-Mega-Y/Pelipper/Archaludon/Grimmsnarl/Garchomp', 'Sneasler/Armarouge/Gardevoir-Mega/Indeedee-F/Kommo-o/Talonflame']];
   for (const [a, c] of EXTRA) { const x = a.split('/'), y = c.split('/'); if (x.concat(y).every(n => byName.get(n))) pairs.push([x, y]); }
-  for (const [me, th] of pairs) { const tag = me.join('/') + ' vs ' + th.join('/');
-    S.slots = me.map(n => ({n, a: null, lock: false})); fixSlots(); S.opp = [...th];
-    let T, L0; try { const mine = members(), theirs = oppTeam(), r = planMatchup(mine, theirs, true); L0 = r.lead.map(i => mine[i]); T = turnOneData(mine, theirs, r); } catch (e) { st.err++; if (st.errs.length < 3) st.errs.push(tag + ': ' + String(e.stack || e).slice(0, 200)); continue; }
+  /* forced cases (fifth review, Nov 19): rare in real teams, so built here: your leads and theirs fixed (the first two of each),
+     your Abilities and their moves set. Each makes one rule's check able to fail: an Unaware lead hit after Intimidate, a priority
+     KO into a side with Quick Guard */
+  const FORCED = [{me: 'Incineroar/Clefable/Garchomp/Rillaboom/Kingambit/Sneasler', th: 'Kingambit/Metagross-Mega/Garchomp/Incineroar/Rillaboom/Sneasler', ab: {Clefable: 'Unaware'}},
+    {me: 'Incineroar/Clefable/Garchomp/Rillaboom/Kingambit/Sneasler', th: 'Metagross-Mega/Kingambit/Garchomp/Incineroar/Rillaboom/Sneasler', ab: {Clefable: 'Unaware'}},
+    /* your Azumarill's Aqua Jet (priority) KOs their Talonflame, which carries Quick Guard, no Protect and no Flying move (so no
+       Gale Wings: your Aqua Jet goes first) */
+    {me: 'Azumarill/Garchomp/Incineroar/Whimsicott/Kingambit/Sneasler', th: 'Pelipper/Talonflame/Garchomp/Incineroar/Rillaboom/Kingambit', oppMoves: {Talonflame: ['Flare Blitz', 'Quick Guard', 'Will-O-Wisp', 'U-turn']}}];
+  for (const f of FORCED) { const x = f.me.split('/'), y = f.th.split('/'); if (x.concat(y).every(n => byName.get(n))) pairs.push([x, y, f]); else st.forcedMissing.push(f.me + ' vs ' + f.th); }
+  for (const [me, th, f] of pairs) { const tag = (f ? 'forced: ' : '') + me.join('/') + ' vs ' + th.join('/');
+    S.slots = me.map(n => ({n, a: f && f.ab && f.ab[n] || null, lock: false})); fixSlots(); S.opp = [...th];
+    let T, L0; try { const mine = members(), theirs = oppTeam(); let r = planMatchup(mine, theirs, true);
+      if (f) { r = {...r, lead: [0, 1], B: null}; for (const o of theirs) { const mv = f.oppMoves && f.oppMoves[o.p.n]; if (mv) o.moves = mv.map(n => mvByName.get(n) || {name: n}); } }
+      L0 = r.lead.map(i => mine[i]); T = turnOneData(mine, theirs, r); } catch (e) { st.err++; if (st.errs.length < 3) st.errs.push(tag + ': ' + String(e.stack || e).slice(0, 200)); continue; }
     if (!T) continue; st.n++;
     if (T.opp.filter(x => x.p.m).length > 1 || T.leads.filter(x => x.p.m).length > 1) st.twoMega.push(tag);
     for (const bt of T.beats) { const a = (bt.why.match(/also hits your .*?up to (\\d+)%/i) || [])[1]; if (a) st.allyHits++; if (a && +a >= 100) st.allyKO.push(tag + ': ' + bt.act);
@@ -89,7 +100,10 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         const rdOK = n => n === 'Follow Me' || (n === 'Rage Powder' && !at.includes('Grass') && abilityOf(bt.x) !== 'Overcoat');
         const guard = mvs(t).some(n => ['Protect', 'Detect', 'Spiky Shield', "King's Shield", 'Baneful Bunker', 'Silk Trap', 'Burning Bulwark', 'Obstruct'].includes(n))
           || (!am ? T.opp.some(y => mvs(y).includes('Wide Guard')) : !['Stalwart', 'Propeller Tail'].includes(abilityOf(bt.x)) && mvN !== 'Snipe Shot'
-            && T.opp.some(y => y !== t && !(down.has(y) && down.get(y) < i) && (T.beats.find(z => z.x === y) || {}).act !== 'Flinches' && mvs(y).some(rdOK)));
+            && T.opp.some(y => y !== t && !(down.has(y) && down.get(y) < i) && (T.beats.find(z => z.x === y) || {}).act !== 'Flinches' && mvs(y).some(rdOK)))
+          /* Quick Guard stops a priority move (fifth review, Nov 19) */
+          || (T.opp.some(y => mvs(y).includes('Quick Guard')) && movePrio((bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN), abilityOf(bt.x), {terrain: T.terrain || '', grounded: true}) > 0);
+        if (T.opp.some(y => mvs(y).includes('Quick Guard')) && movePrio((bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN), abilityOf(bt.x), {terrain: T.terrain || '', grounded: true}) > 0) st.qgN++;
         const j = T.beats.findIndex(y => y.x === t);
         if (guard) { st.guarded++; if (j > i && T.beats[j].act === 'Fainted') st.faintGuard.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' then ' + t.d + ' Fainted, though ' + mvs(t).concat(T.opp.filter(y => y !== t).flatMap(mvs)).filter(n => /Protect|Detect|Shield|Bunker|Silk Trap|Bulwark|Obstruct|Wide Guard|Follow Me|Rage Powder/.test(n)).join(', ')); return; }
         st.sureKO++; if (!down.has(t)) down.set(t, i);
@@ -127,6 +141,15 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         if (isInt(x) && !NOI.includes(ab) && !UPI.includes(ab)) atk -= foes.filter(y => entry(y) === 'Mirror Armor').length;
         return mv.cat === 1 ? Math.max(-6, Math.min(6, atk)) : Math.min(6, spa); };
       const atkOf = (x, mv) => ({...side(x, 'atk'), boost: stg(x, mv)}), defOf = (x, a, mv) => mv && mv.name === 'Foul Play' ? {...side(x, 'def'), atkBoost: stg(x, {cat: 1, name: ''})} /* Foul Play hits with the target's Attack and its stage */ : side(x, 'def');
+      /* every attack line that can KO a Pokémon on some roll (Sash and charging aside), told from the calc: 'X into Y' and a spread
+         move's '(hits both)' on each foe */
+      /* a speed tie between two leads, as their lines say it (the one thing here read from text: the tie itself, not who is at risk) */
+      const said = (a, z) => /speed tie/i.test(a.why) && a.why.includes(z.x.d), tied = (a, z) => said(a, z) || said(z, a);
+      const canKO = []; T.beats.forEach((bt, i) => { const am = bt.act.match(/^(.+?) into (.+)$/), both = /\\(hits both\\)$/.test(bt.act);
+        if ((!am && !both) || (am && am[1] === 'Fake Out')) return; const mvN = am ? am[1] : bt.act.replace(/ \\(hits both\\)$/, ''), mv = (bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN);
+        if (!mv) return; for (const t of (bt.me ? T.opp : T.leads).filter(o => am ? o.d === am[2] : true)) {
+          const r = damage({atk: atkOf(bt.x, mv), def: defOf(t, bt.x, mv), move: mv, spread: !!mv.spread && !(am && bt.me), weather: F.weather, terrain: F.terrain, auras: F.auras});
+          if (r && r.hp && r.max >= r.hp && !r.sash && !chargesFirst(mv, F.weather, side(bt.x, 'atk').item)) canKO.push({t, i}); } });
       for (const bt of T.beats) { const main = bt.main != null ? bt.main : bt.why, am = bt.act.match(/^(.+?) into (.+)$/), sp = !am && bt.me && main.match(/^KOs their (.+?)(?: \\(|\\. |$)/);
         if ((!am && !sp) || (am && am[1] === 'Fake Out') || /KO'd earlier this turn/.test(bt.why)) continue;
         const t = (bt.me ? T.opp : T.leads).find(o => o.d === (am ? am[2] : sp[1])), mvN = am ? am[1] : bt.act.replace(/ \\(hits both\\)$/, ''), mv = (bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN);
@@ -134,13 +157,18 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         const r = damage({atk: atkOf(bt.x, mv), def: defOf(t, bt.x, mv), move: mv, spread: !!mv.spread && !(am && bt.me) /* your 'into X' with a spread move: re-aimed at the one foe left, full damage (theirs always says 'into') */, weather: F.weather, terrain: F.terrain, auras: F.auras}); if (!r || !r.hp) continue;
         /* Nov 19 review: a hit at a stat stage from Intimidate (or Defiant / Competitive) shows that stage's calc ('up to N%' or 'KOs')
            and says so ('at −1 Attack') */
-        { const sv = stg(bt.x, mv); if (sv) { st.intimN++; const um = main.match(/^up to (\\S+)% of /i), okN = um ? um[1] === dmgP(100 * r.max / r.hp) : /^KOs/.test(main) ? r.min >= r.hp : false;
+        /* fifth review, Nov 19: the target's Unaware ignores the stage (the calc does), so the line never names one */
+        { const sv0 = stg(bt.x, mv); if (sv0 && side(t, 'def').ability === 'Unaware') { st.unawareN++; if (/\\bat [+\\u2212]\\d (Attack|Sp\\. Atk)/.test(bt.why)) st.unawareWrong.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ')'); } }
+        { const sv = side(t, 'def').ability === 'Unaware' ? 0 : stg(bt.x, mv); if (sv) { st.intimN++; const um = main.match(/^up to (\\S+)% of /i), okN = um ? um[1] === dmgP(100 * r.max / r.hp) : /^KOs/.test(main) ? r.min >= r.hp : false;
           if (!okN || (!bt.why.includes('at ' + (sv > 0 ? '+' : '\u2212') + Math.abs(sv) + ' ') && bt.why.length <= 115) /* past 115 the stage words may give way to the 130 limit */) st.intimWrong.push(tag + ': ' + (bt.me ? 'your ' : 'their ') + bt.x.d + ' ' + bt.act + ' (' + main + ') vs ' + dmgP(100 * r.min / r.hp) + '-' + dmgP(100 * r.max / r.hp) + '% at ' + sv); } }
         /* Nov 19 review: the KO stamp on Battle's card (V2.pbpBeat) shows exactly when the KO is sure, told from the calc, not the
            line's text: every roll KOs, Sash/Sturdy don't hold, 100% to hit, not charging, and the attacker isn't at risk of being
            flinched or KO'd first (flinch 'likely', koRisk) */
         if (am && typeof V2 === 'object' && V2.pbpBeat) { const A = atkOf(bt.x, mv), i = T.beats.indexOf(bt), acc = moveAcc(mv, A.ability, F.weather, side(t, 'def'), A.item);
-          const sure = r.min >= r.hp && !r.sash && acc >= 100 && !chargesFirst(mv, F.weather, A.item) && !bt.koRisk && bt.flinch !== 'likely', stamp = /pbp-tgt ko/.test(V2.pbpBeat(bt, i, T, i + 1));
+          /* at risk, told from the calc (not the code's koRisk flag; fifth review, Nov 19): an earlier attack line of the other side that
+             can KO this attacker on some roll (Sash and charging aside), or one in a speed tie with it */
+          const risk = canKO.some(c => c.t === bt.x && c.i < i) || canKO.some(c => c.t === bt.x && c.i > i && tied(bt, T.beats[c.i]));
+          const sure = r.min >= r.hp && !r.sash && acc >= 100 && !chargesFirst(mv, F.weather, A.item) && !risk && bt.flinch !== 'likely', stamp = /pbp-tgt ko/.test(V2.pbpBeat(bt, i, T, i + 1));
           if (sure) st.koSureN++; if (stamp !== sure) st.koSureBad.push(tag + ': ' + (bt.me ? 'your ' : 'their ') + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') stamp ' + stamp + ', ' + dmgP(100 * r.min / r.hp) + '-' + dmgP(100 * r.max / r.hp) + '%, ' + acc + '% to hit'); }
         /* Nov 19 review: their hit that can KO your lead before it moves (any roll, any accuracy; not Sash, not charging) puts that
            lead at risk (koRisk), so its own KO isn't sure; told from the calc and the turn order, not the line's text */
@@ -194,5 +222,8 @@ ok(!st.intoGone.length && !st.dblParen.length, `no act aims at a foe KO'd earlie
 ok(st.theirKO > 0 && !st.theirKOmiss.length, `their hit that can KO your lead before it moves marks that lead at risk, sure or chance (${st.theirKO} such hits, ${st.theirKOmiss.length} unmarked${st.theirKOmiss.length ? ', e.g. ' + st.theirKOmiss[0] : ''})`);
 ok(st.koSureN > 0 && !st.koSureBad.length, `Battle's KO stamp shows exactly for a sure KO, told from the calc (not under 100% to hit, not when the attacker may not move first) (${st.koSureN} sure KOs, ${st.koSureBad.length} wrong${st.koSureBad.length ? ', e.g. ' + st.koSureBad[0] : ''})`);
 ok(st.intimN > 0 && !st.intimWrong.length, `a hit made after Intimidate (or Defiant / Competitive) shows that stage's calc and says so ('at −1 Attack') (${st.intimN} such lines, ${st.intimWrong.length} wrong${st.intimWrong.length ? ', e.g. ' + st.intimWrong[0] : ''})`);
-ok(st.guarded > 0 && !st.faintGuard.length, `'Fainted' only when nothing of theirs can stop the KO (no Protect, Wide Guard, Follow Me or Rage Powder) (${st.guarded} KOs they could stop, ${st.faintGuard.length} still 'Fainted'${st.faintGuard.length ? ', e.g. ' + st.faintGuard[0] : ''}; ${st.fainted} 'Fainted' in all)`);
+ok(!st.forcedMissing.length, `the forced cases' Pokémon are all in today's data (${st.forcedMissing.length} missing${st.forcedMissing.length ? ': ' + st.forcedMissing[0] : ''})`);
+ok(st.unawareN > 0 && !st.unawareWrong.length, `a hit on an Unaware target never names a stat stage (the stage doesn't count) (${st.unawareN} such lines, ${st.unawareWrong.length} wrong${st.unawareWrong.length ? ', e.g. ' + st.unawareWrong[0] : ''})`);
+ok(st.qgN > 0, `the forced Quick Guard case reaches the check (${st.qgN} priority KOs into a side with Quick Guard)`);
+ok(st.guarded > 0 && !st.faintGuard.length, `'Fainted' only when nothing of theirs can stop the KO (no Protect, Wide Guard, Quick Guard, Follow Me or Rage Powder) (${st.guarded} KOs they could stop, ${st.faintGuard.length} still 'Fainted'${st.faintGuard.length ? ', e.g. ' + st.faintGuard[0] : ''}; ${st.fainted} 'Fainted' in all)`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
