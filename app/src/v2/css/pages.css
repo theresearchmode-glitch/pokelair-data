@@ -1927,7 +1927,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    numbers line up even when a name takes two lines; every item keeps the 8px row of the 'on your team' bar, so the bar never lifts its number.
    Review Nov 17 #5: the 8px bar row is for the Ratings shelves only (.gs-rows); Usage and Sets teammate and bench tiles have no bar,
    so they keep 'auto 1fr auto' (their '% of its teams' lines still line up) with no empty row under the last line */
-.gs-mon{grid-template-rows:auto 1fr}.gs-row .gs-tx{grid-template-rows:auto 1fr auto;align-items:start}.gs-rows .gs-tx{grid-template-rows:auto 1fr auto var(--s2)}
+/* Nov 19 (CI run 1365): Chromium 131's own button style is align-items:flex-start (newer Chromium: normal), so the name block didn't
+   stretch to its row there and a two-line name pushed its number 17px down; stretch is what newer browsers already do */
+.gs-mon{grid-template-rows:auto 1fr;align-items:stretch}.gs-row .gs-tx{grid-template-rows:auto 1fr auto;align-items:start}.gs-rows .gs-tx{grid-template-rows:auto 1fr auto var(--s2)}
 .gs-mg{min-height:16px;font:900 var(--t13)/1.2 var(--u);font-style:italic;color:var(--plot-text);text-transform:uppercase}
 .gs-tx b{max-width:100%;font:700 var(--t13)/1.25 var(--b);overflow-wrap:normal}
 .gs-sc{display:flex;align-items:baseline;gap:2px}.gs-sc .u{font:900 var(--t24)/1.1 var(--u);font-style:italic}.gs-sc small{font:700 var(--t13)/1 var(--b)}
