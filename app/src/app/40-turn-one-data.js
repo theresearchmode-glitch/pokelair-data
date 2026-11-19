@@ -261,7 +261,8 @@ function turnOneData(mine, theirs, r) {
     if (risk.length > 1) { const who = [...new Set(risk.filter(n => n.k === 'ko').map(n => nm(n.u)))];
       ns = ns.filter(n => !risk.includes(n)).concat({r: 1, s: risk.every(n => n.k === 'ko') ? `may be KO'd first by ${who.join(' or ')}` : 'may not move: ' + [...risk.filter(n => n.k === 'flinch').map(n => `${nm(n.u)}'s Fake Out`), ...who.map(w => `a KO from ${w}`)].join(' or ')}); }
     ns.sort((a, c) => a.r - c.r); const parts = [b.main]; if (ns[0]) parts.push(cap(ns[0].s) + (ns[0].sfx && b.main.length + ns[0].s.length + ns[0].sfx.length + 2 <= 100 ? ns[0].sfx : ''));
-    const tag = ns.slice(1).find(n => n.tag); if (tag && (tag.k === 'fotie' || (parts.join('. ') + '. ' + tag.tag).length <= 100)) parts.push(tag.tag); /* a Fake Out speed tie always shows: without it, 'Stops' would overclaim */
+    /* a tag the line already says ('… (speed tie)') is not repeated (independent review, Nov 19) */
+    const tag = ns.slice(1).find(n => n.tag); if (tag && !parts.join('. ').toLowerCase().includes(tag.tag.toLowerCase()) && (tag.k === 'fotie' || (parts.join('. ') + '. ' + tag.tag).length <= 100)) parts.push(tag.tag); /* a Fake Out speed tie always shows: without it, 'Stops' would overclaim */
     /* the house rule's 130 characters: a long line drops its stage words ('at −1 Attack'; the numbers keep the stage) first */
     if (parts.filter(Boolean).join('. ').length > 130) parts[0] = parts[0].replace(/ \(at [+−]\d (?:Attack|Sp\. Atk)\)|, at [+−]\d (?:Attack|Sp\. Atk)(?=\))/, '');
     b.why = parts.filter(Boolean).join('. '); }
