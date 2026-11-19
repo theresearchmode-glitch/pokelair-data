@@ -36,7 +36,10 @@ V2.dpItem = x => ({t: String(V2.dpPick(x, ['title', 't', 'headline'])), date: St
 V2.dpMaint = x => !/balance/i.test(x.t) && (/^maintenance$/i.test(x.type) || /^maintenance( completion)? notice$/i.test(x.t.trim()));
 // dates: a news date is a calendar day (read at local noon, so it never slips a day); a gift's start and end are UTC instants
 V2.dpDay = s => { s = String(s || ''); const d = new Date(/^\d{4}-\d\d-\d\d$/.test(s) ? s + 'T12:00:00' : s); return isNaN(d) ? null : d; };
-V2.dpShort = s => { const d = V2.dpDay(s); return d ? d.toLocaleDateString('en-US', {month: 'short', day: 'numeric'}) : ''; };
+/* W5 (Sim, Nov 19): a news item or season time is shown on its official page's date, which is the UTC date (checked Nov 19 on the official
+   pages from an Eastern-time browser: 877 at 02:00Z prints 11/18, 830 at 16:00Z prints 08/28, 816 at 22:00Z prints 08/30), so an exact time
+   is read in UTC; a plain calendar day stays as written */
+V2.dpShort = (s, own) => { const d = V2.dpDay(s); return d ? d.toLocaleDateString('en-US', {month: 'short', day: 'numeric', ...(!own && /T\d/.test(String(s)) ? {timeZone: 'UTC'} : {})}) : ''; };
 V2.dpLeftTxt = n => n == null ? '' : n <= 0 ? 'Ends today' : n === 1 ? '1 day left' : `${n} days left`;
 V2.dpOrd = k => ['first', 'second', 'third', 'fourth', 'fifth', 'sixth', 'seventh', 'eighth', 'ninth', 'tenth', 'eleventh', 'twelfth'][k - 1] || `${k}th`;
 V2.dpPlural = (n, w) => { w = w.toLowerCase(); return `${homeNum(n)} ${n === 1 || /[^s]s$/.test(w) ? w : /ss$/.test(w) ? w + 'es' : /[^aeiou]y$/.test(w) ? w.slice(0, -1) + 'ies' : w + 's'}`; };
@@ -148,7 +151,7 @@ V2.dpFront = (post, o = {}) => { const E = V2.esc; if (post === undefined) post 
     <section class="dp-back" aria-label="The Back Page"><h2 class="dp-bar u"><span>The Back Page</span><small>From around NastyPlot</small></h2><div class="dp-bk">${V2.dpLatest()}${V2.dpStand()}${V2.dpFix()}</div></section>
     ${V2.dpAds()}</article>`; };
 V2.pages.news = {place: 'home', draw() { const E = V2.esc, post = V2.postNow(), D = V2.dpParts(post), U = V2.dpUi;
-  const note = `<p class="dp-note">${D.checked ? `News list checked ${E(V2.dpShort(D.checked))}. ` : ''}Each headline opens the full story at its source.</p>`;
+  const note = `<p class="dp-note">${D.checked ? `News list checked ${E(V2.dpShort(D.checked, true))}. ` : ''}Each headline opens the full story at its source.</p>`;
   const earlier = D.rest.length ? `<button type="button" class="dp-lk dp-earl" data-dpmore aria-expanded="${!!U.more}" aria-controls="dp-earlier">Earlier Editions · ${V2.dpPlural(D.rest.length, 'more story')} ${U.more ? '‹' : '›'}</button>` : '';
   const list = D.rest.length && U.more ? `<ul class="dp-erl" id="dp-earlier">${D.rest.map(it => `<li>${V2.dpKick(it)}<p class="dp-mh u">${V2.dpA(it, E(it.t))}</p></li>`).join('')}</ul>` : '';
   return `<div class="dp"><p class="np-eyebrow dp-crumb"><span>Home · Champions News</span></p>${V2.dpFront(post)}<div class="dp-under${earlier ? '' : ' dp-solo'}">${earlier}${note}</div>${list}</div>`; }};
