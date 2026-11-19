@@ -48,6 +48,10 @@ come, so nothing ran for about 10 minutes until Sim noticed. From now on:
    ahead. On waking, check the process is alive (ps) and its log has grown; if not, restart it at once and tell Sim.
 3. Never tell Sim something is running without checking it in the same step (ps + the log's last line), and say so.
 4. Before ending a turn, name what is running and when the next report comes; if nothing is running and work remains, do it.
+5. Helper slots (Sim, Nov 19, 8:19 AM: "can you make sure you're on top of the helper situation"): both slots (limit 2) are kept in use
+   while approved work remains that won't clash with the main thread's edits. When a helper finishes, decide in the SAME turn what fills
+   its slot (next approved pick on its own branch, or a check / picture job) and start it. The watchdog wake-up also checks helpers.
+   Every status message names both slots: what each is doing, or that it is free and why.
 
 ## 00s. Only Sim's own words stop the work (Sim, Nov 18, 9:50 PM Eastern: "Make sure that mistake never ever happens again.")
 On Nov 18 at about 9:47 PM Eastern a tool call was interrupted while Sim sent a screenshot ("receipt seems off center and the x is
