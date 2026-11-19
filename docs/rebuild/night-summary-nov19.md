@@ -19,7 +19,11 @@ Batch ead51cf8 (GitHub run 1374: 12 of 14 jobs passed; the 2 failures were one o
 - Review #6 (part you can't see): form errors are marked for screen readers and get the focus (26 checks failed before, 48 pass now).
 - Helpers: EDIT-03's cause found (the test kit re-tapped a tap that had landed on a busy page; fixed in the kit, not the site);
   the All Suggestions sheet agrees with My Team's 'Nothing to fix'; KO Board captions count their own half; the 'Win logged'
-  Undo gets a 44px tap area; Usage says when its numbers come from Online tournaments.
+  Undo gets a 44px tap area; Usage says when its numbers come from Online tournaments; the Preview's mock-ups gallery lists the
+  25 real pages with fresh pictures (review #16).
+- Every other design-review item has labelled pictures waiting for you (Q13 to Q26).
+- Checked here on tonight's newest code: team behaviour 139 pass 0 fail; build 77/0; Battle 83/0; tap-size, v2-formerr, v2-trkfit,
+  v2-oddaddr all passed on GitHub's frozen test data too.
 
 ## Issues and mistakes (honest list)
 - GitHub run 1375 (902e1b9f) failed 2 of my new tests on the frozen test data: a team leading Mega Delphox + Mega Floette still
