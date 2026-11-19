@@ -406,7 +406,8 @@ setTimeout(() => { if (!V2._dataOk) { V2._dataOk = true; fixMetaSrc(); clearCach
 // announced once (role=status), so a slow phone shows that something is coming instead of old numbers or an empty page
 V2.loadingHtml = () => `<section class="np-loading" aria-busy="true"><div class="np-ldlogo" aria-hidden="true">${V2.logo(true)}</div><p class="np-ldtxt" role="status">Getting today’s numbers…</p><div class="np-ldbar" aria-hidden="true"></div></section>`;
 V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place || r;
-  const nav = V2.places.map(([k, n]) => `<a href="#${k}"${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
+  /* Sim, Nov 19 (B): the top bar's Battle opens Damage Calculator, the first of Battle's tabs; it stays lit on every Battle page */
+  const nav = V2.places.map(([k, n]) => `<a href="#${k === 'battle' ? 'calc' : k}"${k === place ? ' aria-current="page"' : ''}>${n}</a>`).join('');
   return {P, html: `<a class="vh np-skip" href="#main" data-v2skip>Skip to the page</a>
 <header class="np-head">${V2.backBtn()}<a class="logo" href="#home" aria-label="NastyPlot, Home">${V2.logo()}</a>${V2.fwdBtn()}<nav class="np-nav" aria-label="Main">${nav}</nav>
   <div class="tools"><button type="button" class="np-search" data-v2search aria-label="Search Pokémon, tools and teams">${V2.ICON.search}<span class="lbl">Search</span><kbd>/</kbd></button>
