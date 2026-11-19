@@ -209,6 +209,8 @@ jobs:
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-back.mjs
         if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-toast.mjs
+        if: ${{ !cancelled() }}
       # News and Mystery Gifts read the daily document meta/post (Nov 18): a headline only in it shows, none or a broken one falls back to post.js
       - run: PAGE=app/dist/v2.html node app/test/v2-post-doc.mjs
         if: ${{ !cancelled() }}
