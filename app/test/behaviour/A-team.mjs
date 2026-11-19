@@ -814,7 +814,7 @@ t('LOG-01', 'Your games card on a full six: "None logged yet." and "Log a game"'
 
 t('LOG-02', 'Log a game: two leads, their six from Battle mode, Win → "1–0"; saved to the account', async () => {
   const r = await myTeam({team: TEAM, opp: OPP}); await r.ui.openLogForm(); const f = await r.ui.myGamesCard();
-  for (const s of [/Your two leads/, /Their team/, /Use their 6 from Battle/, /Win/, /Loss/, /Paste its log/]) has(f, s, 'log form');
+  for (const s of [/Your two leads/, /Their team/, /Use their 6 from Battle/, (NEW ? /Log a Win/ : /Win/), (NEW ? /Log a Loss/ : /Loss/), /Paste its log/] /* Q18 A (Nov 19): the new build's buttons say what the tap does */) has(f, s, 'log form');
   await r.ui.pickLead('Garchomp'); await r.ui.pickLead('Incineroar'); await r.ui.useBattleOpponents(); await r.ui.logResult('W');
   ok(/1–0/.test(await r.ui.myGamesCard()), 'card does not show 1–0: ' + await r.ui.myGamesCard()); await sleep(1000);
   const a = await r.acct(); ok(a.log && a.log.length === 1 && a.log[0].r === 'W' && a.log[0].b.slice(0, 2).join() === 'Garchomp,Incineroar' && a.log[0].o.length === 6, 'log entry not saved: ' + JSON.stringify(a.log)); await r.close(); });

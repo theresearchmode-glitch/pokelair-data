@@ -12,7 +12,7 @@ V2.ygSec = ms => { if (!ms || ms.length !== 6) return ''; const G = myGames(ms),
     <button type="button" class="np-btn2" data-yglog><span>Log a Game</span></button></div>${last}
     ${ins ? `<ul class="tm-yg-ins">${ins.map(s => `<li>${E(s)}</li>`).join('')}</ul>` : more}</section>`; };
 
-// the log sheet: leads (pick two, optional), their team (up to six, optional), then Win or Loss
+// the log sheet: leads (pick two, optional), their team (up to six, optional), then Log a Win or Log a Loss (one tap logs)
 V2.ygHtml = () => { const ms = members(), q = V2.ql, E = V2.esc, so = (S.opp || []).filter(n => byName.has(n));
   const lp = q.leads.filter(n => ms.some(m => m.p.n === n));
   const hits = q.q.trim() ? V2.find(q.q).mons.filter(p => !q.opp.includes(p.n)).slice(0, 6) : [];
@@ -26,7 +26,7 @@ V2.ygHtml = () => { const ms = members(), q = V2.ql, E = V2.esc, so = (S.opp || 
     ${q.opp.length < 6 ? `<label class="np-field yg2-q">${V2.ICON.search}<input type="search" data-ygq value="${E(q.q)}" placeholder="Add their Pokémon" aria-label="Add one of their Pokémon" autocomplete="off">${V2.CLR}</label>
       <div class="hits yg2-hits">${hits.map(p => `<button type="button" class="np-hit" data-ygopp="${E(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><b>${V2.nameHtml(V2.disp(p.n))}</b></button>`).join('')}</div>` : ''}
     ${so.length && !q.opp.length ? `<button type="button" class="np-link yg2-bm" data-ygbm>Use their ${so.length} from Battle: ${E(so.slice(0, 3).map(n => byName.get(n).d).join(', '))}${so.length > 3 ? '…' : ''}</button>` : ''}
-    <div class="yg2-res"><button type="button" class="np-btn" data-ygres="W">Win</button><button type="button" class="np-btn2" data-ygres="L"><span>Loss</span></button></div></div>`; };
+    <div class="yg2-res"><button type="button" class="np-btn2" data-ygres="W"><span>Log a Win</span></button><button type="button" class="np-btn2" data-ygres="L"><span>Log a Loss</span></button></div></div>`; }; /* Sim, Nov 19 (Q18 A): two equal buttons that say what the tap does; a solid Win beside an outlined Loss read as Win already picked */
 V2.ygOpen = () => { V2.ql.leads = []; V2.ql.opp = []; V2.ql.q = ''; V2.sheet(V2.ygHtml(), {label: 'Log a game', small: true, focus: '[data-yglead]'}); };
 V2.ygRe = focusQ => { const box = document.querySelector('.yg2'); if (!box) return; box.outerHTML = V2.ygHtml();
   if (focusQ) { const i = document.querySelector('[data-ygq]'); if (i) { i.focus(); i.setSelectionRange(i.value.length, i.value.length); } } };
