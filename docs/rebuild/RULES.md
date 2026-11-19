@@ -33,6 +33,12 @@ Written after Claude told Sim "I'm fixing these now" at 4:02 PM and then stopped
    "not checked".
 5. Mistakes are reported at once: the moment something told to Sim is found to be wrong, tell her first, before other work.
 
+## 00a. Never assume Sim's answer (Sim, Nov 18, 7:25 PM Eastern: "NEVER ASSUME MY ANSWER. i did not say A or any letter. NEVER ASSUME. if i dont answer ask me again")
+An answer counts only when Sim names it (a letter, or the option in her own words). General agreement ("sounds like a plan", "thank you",
+"go ahead") answers only what it plainly refers to, never an open question. An unanswered question stays open and is asked again in the
+next message, with its pictures. Under authority, a non-visual question may get the recommended default only when that is said plainly as
+Claude's own decision ("I decided A under authority"), never recorded as Sim's answer.
+
 ## 00b. Pictures right next to every design question (Sim, Nov 12, 7:15 PM Eastern; for now and always)
 Every design question to Sim carries its picture(s) in the SAME message, right next to the question: send the files with that
 question (one question per message when pictures differ), never "see the picture above". She should never scroll up and down
