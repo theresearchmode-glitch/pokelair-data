@@ -22,3 +22,6 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    'Nov 24' in Eastern time, because the page shows each reader's own local date. Keep the reader's local date (true for when it
    happens where you are), or show the official page's date? Not yet checked: which date the official page itself prints.
    The News 'overlap' flagged on Windows is box-based: on Linux the kicker and headline ink are about 20px apart (news-k-now.png).
+7. Q15 · Pokémon count (review #18): pictures docs/rebuild/pics/nov19/Q15-pokemon-count-*.png
+   A RECOMMENDED: '#1 of 322 with tournament results' (says why it's 322, not 345; short enough for the badge).
+   B: adds '(322 of 345 rated have them)'. C: no change.
