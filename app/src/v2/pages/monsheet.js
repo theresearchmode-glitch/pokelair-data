@@ -116,7 +116,9 @@ V2.fitWords = () => { const ow = e => e.clientWidth > 1 && e.scrollWidth > e.cli
      its Card, or one taking more than two lines over the sprite, is first set a little tighter and lighter, then condensed sideways: it is
      laid out wider and drawn narrower (scaleX), so the words wrap as on a wider Card and the shape stays centred on the Card */
   document.querySelectorAll('.mh .mc-id h3').forEach(h => { const st = h.style; st.letterSpacing = st.fontWeight = st.width = st.transform = st.marginInline = ''; h.classList.remove('np-brk');
-    const W = h.parentElement.clientWidth; if (W < 2) return; const lh = parseFloat(getComputedStyle(h).lineHeight) || 16, good = () => (st.width ? !ow(h) : h.offsetWidth <= W + 1) && h.offsetHeight <= 2 * lh + 2; /* a centred grid item grows past its Card rather than overflow itself */
+    const W = h.parentElement.clientWidth; if (W < 2) return; const cs = getComputedStyle(h), lh = parseFloat(cs.lineHeight) || 16, mg = cs.display === 'grid' && h.querySelector('.mg:not(.none)');
+    const plate = mg ? mg.offsetHeight + (parseFloat(cs.rowGap) || 0) - lh : 0; /* Sim's Q17 A (phones): "Mega" on its own plate counts as one line, not as a taller name */
+    const good = () => (st.width ? !ow(h) : h.offsetWidth <= W + 1) && h.offsetHeight <= 2 * lh + 2 + plate; /* a centred grid item grows past its Card rather than overflow itself */
     for (const [w, l] of [['', '-.02em'], ['800', '-.02em'], ['700', '-.03em']]) { if (good()) return; st.fontWeight = w; st.letterSpacing = l; }
     for (const k of [.94, .88, .82, .76, .7]) { if (good()) return; st.width = W / k + 'px'; st.marginInline = (W - W / k) / 2 + 'px'; st.transform = `scaleX(${k})`; }
     if (ow(h)) h.classList.add('np-brk'); });
