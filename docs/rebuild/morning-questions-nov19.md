@@ -77,3 +77,7 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
 22. Meta and Usage heroes at 375-390 wide (found tonight; today's data): the third fact ('Base Speed 120' on Meta, 'Win rate 51.9%'
    on Usage) ends 1-3px past the hero's right edge (measured: 362 vs 359 at 375; 375 vs 374 at 390). The frozen test data fits.
    Recommended: 4px less gap between the three facts at 360-420 (keeps the sizes; one small check covers it). OK to do?
+23. Found by tonight's visual check, not caused tonight (pictures in the scratchpad, will be labelled if you want them done):
+   a. Battle poster at 320: 'The other four' row runs past its card (Gholdengo cut off) and names touch ('Grimmsnarl|Archaludon').
+   b. The damage calc gives an opponent its most common item, not the item on its open team sheet (e.g. Armarouge calculated with
+      Focus Sash while its sheet says Life Orb), and the plan can say 'KOs' through a Sash. Logic; I'd fix it as its own step.

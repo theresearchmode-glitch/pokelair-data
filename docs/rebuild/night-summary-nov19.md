@@ -41,7 +41,11 @@ Everything below is on it, plus the 44px tap areas (#5) and the updated mock-ups
   a helper (7 commits, each with a check that fails before and passes after; 1004 real matchups pass; code tests ALL PASSED; Battle
   behaviour 83/0; pushed as 0a52a44a). Tailwind's 'double Speed for the rest of the turn' follows Gen 9 rules: assumed for Champions,
   not confirmed in the game. Home's board change is visible (one Mega per side, like Battle): pictures review1-home-board-*.png.
-  Still open: a Pokémon KO'd earlier in turn one still shows its own move.
+  Then a helper made a Pokémon KO'd earlier in turn one show 'Fainted' (checks fail before, pass after on 1004 matchups).
+- A look-only visual check (12:45 AM) found: Compare with BOTH teams picked still showed the raw event name (my fix only covered
+  the one-team view; fixed, the test now checks the face-off page and fails without the fix); and Turn One notes grew long and hard
+  to read (cards up to 182px tall at 1440 vs 104-124 before; 10 lines at 320). A helper is shortening them now; before/after for you.
+- Start-up on phones (Plans pl-2c, helper): the longest start-up task dropped from ~470 to ~250 ms on Home (4x CPU), same page after.
 - GitHub run 1375 (902e1b9f) failed 2 of my new tests on the frozen test data: a team leading Mega Delphox + Mega Floette still
   showed two Megas (Floette's base form is only listed as 'Floette-Eternal'), and one event name kept '$30' at its start. Both
   real gaps the tests were written to catch; fixed in a59975a6 and checked on the frozen data (both 'all passed'). Lesson: run new
