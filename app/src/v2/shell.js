@@ -433,7 +433,8 @@ V2.navStep = was => { V2.navInit(); const st = history.state || {};
   if (st.v2d != null) { V2.nav.d = st.v2d; V2.nav.p = st.v2p || ''; V2.nav.hs[V2.nav.d] = location.hash || '#home'; if (V2.nav.d > V2.nav.max) V2.nav.max = V2.nav.d; return st.v2y || 0; }
   // a new step after going back drops the steps you could go forward to (as in any browser)
   // the Back arrow's safety net (below) is a step back, not a new one
-  if (V2.nav.fb) { const fb = V2.nav.fb; V2.nav.fb = null; V2.nav.d = fb.d; V2.nav.p = fb.p; V2.nav.max = V2.nav.d; V2.nav.hs.length = V2.nav.d; V2.nav.hs[V2.nav.d] = location.hash || '#home'; V2.navMark({v2d: fb.d, v2p: fb.p, v2y: 0}); return 0; }
+  // (a step back or forward keeps the steps you can go forward to, as the browser would)
+  if (V2.nav.fb) { const fb = V2.nav.fb; V2.nav.fb = null; V2.nav.d = fb.d; V2.nav.p = fb.p; V2.nav.hs[V2.nav.d] = location.hash || '#home'; if (V2.nav.d > V2.nav.max) V2.nav.max = V2.nav.d; V2.navMark({v2d: fb.d, v2p: fb.p, v2y: 0}); return 0; }
   V2.nav.d++; V2.nav.p = was || '#home'; V2.nav.max = V2.nav.d; V2.nav.hs.length = V2.nav.d; V2.nav.hs[V2.nav.d] = location.hash || '#home'; V2.navMark({v2d: V2.nav.d, v2p: V2.nav.p, v2y: 0}); return 0; };
 // remember where this step is scrolled: right before any tap that may change the page, and when the page is hidden or left.
 // Sim, Nov 14 (Claude app on iPhone, every long page): the scroll bar flashed after scrolling a moment. Writing to the history while
@@ -452,14 +453,21 @@ V2.backBtn = () => { V2.navInit(); const n = V2.esc(V2.navName(V2.nav.p));
 // Forward (Sim, Nov 12): the mirror of Back, right of the logo; one real history step forward, only when there is one
 V2.fwdBtn = () => { V2.navInit(); const can = V2.nav.d < V2.nav.max, n = V2.esc(V2.navName(V2.nav.hs[V2.nav.d + 1]));
   return `<button type="button" class="np-gofwd" data-v2fwd aria-label="Forward to ${n}" title="Forward to ${n}"${can ? '' : ' hidden'}>${V2.ICON.fwd}</button>`; };
-document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2fwd]'))) return; if (V2._sheet) { V2.closeSheet(); return; }
-  if (V2.nav.d < V2.nav.max) try { history.forward(); } catch (x) {} });
-document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2back]'))) return; if (V2._sheet) { V2.closeSheet(); return; }
-  if (V2.nav.d <= 0) return; const h0 = location.hash, d0 = V2.nav.d, to = V2.nav.p || '#home'; try { history.back(); } catch (x) {}
-  // safety net (Sim, Nov 18, Claude desktop app: Home -> Sneasler -> Back stayed on Sneasler in the Preview): when the page's frame
-  // ignores the history step, nothing has moved after a moment, so go straight to the page you came from (test: app/test/v2-back.mjs)
-  clearTimeout(V2.nav.fbT); V2.nav.fbT = setTimeout(() => { if (location.hash !== h0 || V2.nav.d !== d0 || V2._sheet || to === h0) return;
-    const d = d0 - 1; V2.nav.fb = {d, p: d > 0 ? (V2.nav.hs[d - 1] || '#home') : ''}; location.hash = to; }, 700); });
+// One step back or forward (dir -1 / +1), for both arrows. It takes a real history step, so it matches the browser's own buttons and
+// the phone swipe. Safety net (Sim, Nov 18, Claude desktop app, Preview): the page's frame can swallow history steps (Back did nothing,
+// Forward never showed). If the address hasn't moved after 350 ms, the page goes straight to that step itself, and from then on (this
+// tab) it does so at once, with no wait (Sim: 'a little laggy' at 700 ms). Tests: app/test/v2-back.mjs.
+V2.navNoHist = (() => { try { return sessionStorage.getItem('np.nohist') === '1'; } catch (e) { return false; } })();
+V2.navGo = dir => { const d0 = V2.nav.d, t = d0 + dir; if (t < 0 || t > V2.nav.max) return;
+  const h0 = location.hash, to = dir < 0 ? (V2.nav.p || V2.nav.hs[t] || '#home') : (V2.nav.hs[t] || ''); if (!to) return;
+  const direct = () => { if (location.hash !== h0 || V2.nav.d !== d0 || V2._sheet || to === h0) return;
+    V2.nav.fb = {d: t, p: t > 0 ? (V2.nav.hs[t - 1] || '#home') : ''}; location.hash = to; };
+  if (V2.navNoHist) { direct(); return; }
+  try { dir < 0 ? history.back() : history.forward(); } catch (x) {}
+  clearTimeout(V2.nav.fbT); V2.nav.fbT = setTimeout(() => { if (location.hash !== h0 || V2.nav.d !== d0) return;
+    V2.navNoHist = true; try { sessionStorage.setItem('np.nohist', '1'); } catch (e) {} direct(); }, 350); };
+document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2fwd]'))) return; if (V2._sheet) { V2.closeSheet(); return; } V2.navGo(1); });
+document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2back]'))) return; if (V2._sheet) { V2.closeSheet(); return; } V2.navGo(-1); });
 // Double taps (today's 34-events.js TAP_ACT, Oct 31; audit X-03/X-04, Nov 12): right after an action that changes the team, the box,
 // their six, the log or the page, a second tap within 450 ms is ignored, so a double tap can't apply twice, save twice, or land on
 // whatever the redraw put under the finger. One capture-phase listener, as today; the two per-button guards in sugs.js stay harmless.
