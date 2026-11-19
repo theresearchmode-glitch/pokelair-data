@@ -1502,3 +1502,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:36 AM: Speed measured (docs/rebuild/research/first-visit-nov19.md): My Team 4G 2.75 s (goal 2.5 s; Nov 18 2.97 s). Recommendation to Sim: the speed work follows the switch (Brotli on the public host -1.3 s on slow 4G; start-up work ~1 s CPU, medium risk). Helper slot not refilled (Sim's 11:26 rule).
 - 11:39 AM: Sim: the speed work (pl-2a) follows the switch (measured 2.75 s on 4G vs 2.5 s goal; Brotli on the public host, then start-up work).
 - 11:40 AM: Sim extended Claude's executive authority until tomorrow (Fri Nov 20); read as: until Sim's first message tomorrow (stated to Sim). Sim away until about 3-4 PM today. Same scope: non-visual on Claude's recommendation; visual needs Sim's yes with pictures; nothing to main/live, no switch, no deleting.
+- 11:41 AM: Sim clarified: executive authority until tomorrow (Fri Nov 20) at 9:00 AM Eastern; he can't reply much until about 4 PM today.
