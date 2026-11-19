@@ -21,6 +21,9 @@ jobs:
   # Each runs on the test fixture; a failure on known-v2.json (each with its reason) is reported as "known"; any other failure fails.
   behaviour-v2:
     name: new site behaviour (${{ matrix.group }})
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     strategy:
@@ -42,6 +45,9 @@ jobs:
   # that ran past it in WebKit; it now reads the Undo while the toast is up (5 of 5 in both engines).
   behaviour-webkit:
     name: new site behaviour in Safari's engine (A-team)
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
     # ubuntu-24.04, not -latest: Playwright 1.49.1's WebKit needs libicu74, libvpx9, libxml2, libx264-164, which the newer
     # image doesn't have (first CI run, Nov 17: 'Package libicu74 has no installation candidate')
     runs-on: ubuntu-24.04
@@ -65,6 +71,9 @@ jobs:
   # are in app/test/qcheck-known.json; any new one fails.
   quality-v2:
     name: new site full quality check (every page and view)
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
     timeout-minutes: 55   # every view added Nov 17: measured 1,693 s here
     steps:
@@ -174,6 +183,9 @@ jobs:
   # The new site's code checks (frozen data), split out of "code tests" on Nov 18 (see there). Same steps, same order.
   v2-checks:
     name: new site code checks (frozen data)
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -255,6 +267,9 @@ jobs:
   # v2-minors (the small fixes' checks, 18-21 min in one go) as three parallel parts; each runs its share once (PART in the file's header).
   v2-minors:
     name: new site small checks (v2-minors ${{ matrix.part }})
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
     timeout-minutes: 35
     strategy:
