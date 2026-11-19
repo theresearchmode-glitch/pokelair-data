@@ -63,6 +63,11 @@ Everything below is on it, plus the 44px tap areas (#5) and the updated mock-ups
   version of that check was too loose and flagged a correct card; tightened), plus two built matchups for the rare cases. Old code:
   66 / 2 / 1 wrong; new: 0, on today's and the frozen test data. Code tests ALL PASSED; Battle behaviour 83/0; Home 9/0; calc
   check 99.99%. The layout points from that check are Q27 (card pairs, pictures) and W11 (wording) on the Morning Questions page.
+- A sixth fresh review (of 98a59a5f) found one real, rare bug that fix made visible: with a speed tie, your lead's KO is decided
+  before the tied foe marks your lead at risk, so their Pokémon shows 'Fainted' while your card says 'May be KO'd first'
+  (22 of 17,564 matchups with mirror leads; 0 of 5,931 with the planner's own leads). The wrong 'Fainted' was there before; the
+  contradiction is new. Also: 'speed tie' said twice on some lines; Mold Breaker vs Unaware; Quick Guard counted when its user is
+  KO'd first. A helper is fixing them, each with a check that fails before and passes after.
 - Start-up on phones (Plans pl-2c, helper): the longest start-up task dropped from ~470 to ~250 ms on Home (4x CPU), same page after.
 - GitHub run 1375 (902e1b9f) failed 2 of my new tests on the frozen test data: a team leading Mega Delphox + Mega Floette still
   showed two Megas (Floette's base form is only listed as 'Floette-Eternal'), and one event name kept '$30' at its start. Both
