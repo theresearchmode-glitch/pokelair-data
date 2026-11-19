@@ -107,7 +107,7 @@ function turnOneData(mine, theirs, r) {
   const beats = order.map(o => { const ln = o.me ? lines.find(l => l[0] === o.x) : null, th = o.me ? null : theirAct(o.x);
     const why = ln ? ln[2] : th ? th[1] : 'no damaging move found into your leads';
     return {x: o.x, me: o.me, speed: o.es, prio: o.p, act: ln ? ln[1] : th ? th[0] : theirFOT.has(o.x) ? `Fake Out ${theirFOT.get(o.x).d}` : 'Unknown move', ...(o.tw ? {tw: 1} : {}), _tie: o.tie,
-      why: o.tw ? `${why}${why ? '; ' : ''}moves at double Speed: ${o.me ? 'your' : 'their'} Tailwind is already up (Gen 9 turn order, assumed for Champions)` : why}; });
+      why: o.tw ? `${why}${why ? '; ' : ''}moves at double Speed: ${o.me ? 'your' : 'their'} Tailwind is already up` /* Gen 9 turn order (the queue re-sorts after each move); assumed for Champions, not confirmed in the game */ : why}; });
   // a speed tie between the two sides in one bracket: either may move first
   beats.forEach(b => { const n = b._tie ? beats.find(y => y.x === b._tie) : null; delete b._tie; if (n && !(/^Fake Out\b/.test(b.act) && /^Fake Out\b/.test(n.act))) b.why += `${b.why ? '; ' : ''}speed tie with ${n.x.d}: either can go first`; });
   // Fake Out's flinch (design review #1: flinched Pokémon still acted, two Fake Outs and Garchomp still attacked). Fake Out works on
