@@ -18,6 +18,11 @@ const ROLE = {
   haz: ['Stealth Rock', 'Spikes', 'Toxic Spikes', 'Sticky Web'], hazrm: ['Rapid Spin', 'Defog', 'Mortal Spin', 'Court Change', 'Tidy Up'],
   pivot: ['U-turn', 'Parting Shot', 'Volt Switch', 'Flip Turn', 'Teleport', 'Chilly Reception', 'Shed Tail'],
 };
+// an answer to the opponent's speed control: Taunt or Encore, or Imprison only when its user also runs Trick Room or Tailwind
+// (Imprison blocks only moves its user knows; Nov 18 rule-holes sweep, hole 10: any Imprison counted). Every role reader uses it.
+function antiRel(m) { const a = relMove(m, ['Taunt', 'Encore']), im = relMove(m, ['Imprison']); const imR = im[0] && relMove(m, ['Trick Room', 'Tailwind'])[0] >= .5 ? im[0] : 0;
+  return imR > a[0] ? [imR, 'Imprison'] : a; }
+const roleRel = (m, k) => k === 'anti' ? antiRel(m) : relMove(m, ROLE[k]);
 const SELF_SPEED_AB = new Set(['Unburden', 'Speed Boost']);
 const W_TYPE = {sun: 'Fire', rain: 'Water', sand: 'Rock', snow: 'Ice'};
 // abilities that only work in one weather (speed and power), and simple weather checks shared by the auto-build and the plans:
@@ -29,6 +34,9 @@ const wxAnd = a => a.length < 2 ? a.join('') : a.slice(0, -1).join(', ') + ' and
 const wxSetsOf = team => [...new Set(team.filter(m => m && WEATHER_OF[m.ability]).map(m => WEATHER_OF[m.ability]))];
 // weather setters that are there for their partners, not their own attacks (see the weather row in gamePlan)
 const WX_PARTNER = new Set(['Pelipper', 'Politoed', 'Ninetales', 'Hippowdon']);
+// support moves that give such a setter a job of its own, so its weather can be an override (rule-holes sweep, Nov 18). Perish Song
+// is left out: Sim chose Weather Ball as the rule for Perish Trap Politoed (Nov 18), and a Politoed without it stays flagged
+const WX_OVERRIDE_MV = new Set(['Yawn', 'Encore', 'Will-O-Wisp', 'Tailwind', 'Wide Guard', 'Helping Hand']);
 const wxNeedsOf = team => [...new Set(team.map(m => m && WEATHER_NEED[m.ability]).filter(Boolean))];
 function wxConflict(team) { const s = wxSetsOf(team); return s.length > 1 || (s.length === 1 && wxNeedsOf(team).some(w => w !== s[0])); }
 function wxUnmet(team) { const s = wxSetsOf(team); return wxNeedsOf(team).filter(w => !s.includes(w)); }
@@ -69,7 +77,7 @@ const anyOf = rs => 1 - rs.reduce((a, r) => a * (1 - r), 1);
 const gpPct = r => r >= .995 ? '' : ` ${Math.round(r * 100)}%`;
 // Returns {rows, penalty}. rows: [{k, label, st: ok|part|miss|opt, who, note}]. Lower penalty is better.
 function gamePlan(team) {
-  const has = k => team.map(m => { const [r, mv] = relMove(m, ROLE[k]); return {m, r, mv}; }).filter(x => x.r >= .15).sort((a, b) => b.r - a.r);
+  const has = k => team.map(m => { const [r, mv] = roleRel(m, k); return {m, r, mv}; }).filter(x => x.r >= .15).sort((a, b) => b.r - a.r);
   const cov = xs => anyOf(xs.map(x => x.r));
   const who = (xs, n = 3) => xs.slice(0, n).map(x => `${x.m.d}${x.mv ? ' · ' + x.mv : ''}${gpPct(x.r)}`).join(', ');
   const R = {}; for (const k in ROLE) R[k] = has(k);
@@ -80,7 +88,12 @@ function gamePlan(team) {
   const abusersOf = w => { const A = ARCH[w], set = s => roleMoves(s);
     return team.filter(m => (!setters.some(x => x.m === m && x.w === w) || A.abN.includes(m.p.n)) && (A.abAb.includes(m.ability) || A.abN.includes(m.p.n) || A.abMv.some(x => set(m).has(x)) || (m.types || m.p.t).includes(W_TYPE[w]))); };
   const needs = Object.keys(W_TYPE).filter(w => !kinds.includes(w) && team.some(m => ARCH[w].abAb.includes(m.ability) && WEATHER_SPEED[m.ability]));
-  const wSpeed = kinds.length === 1 ? anyOf(team.filter(m => WEATHER_SPEED[m.ability] && ({Water: 'rain', Fire: 'sun', Rock: 'sand', Ice: 'snow'})[WEATHER_SPEED[m.ability]] === kinds[0]).map(() => .95)) : 0;
+  // weather speed: a Swift Swim / Chlorophyll / Sand Rush / Slush Rush member whose weather the team sets. Nov 18 (rule-holes sweep):
+  // with two weathers (sun + rain, e.g. Mega Charizard Y + Venusaur next to Pelipper + Archaludon) it used to count as zero, so 27
+  // real teams read "no speed control" and suggestions deleted a setter to "add speed control". Each user still gets its speed in
+  // its own weather; the weathers overwrite each other, so it counts a little less (.8 instead of .95; my estimate, not measured).
+  const wSpeedUsers = team.filter(m => WEATHER_SPEED[m.ability] && kinds.includes(({Water: 'rain', Fire: 'sun', Rock: 'sand', Ice: 'snow'})[WEATHER_SPEED[m.ability]]));
+  const wSpeed = anyOf(wSpeedUsers.map(() => kinds.length === 1 ? .95 : .8));
   const c = {tw: cov(R.tw), tr: cov(R.tr), drop: cov(R.drop), prio: cov(R.prio), self: cov(R.self), fake: cov(R.fake), redir: cov(R.redir), anti: cov(R.anti), haz: cov(R.haz), hazrm: cov(R.hazrm), pivot: cov(R.pivot)};
   const fast = Math.min(1, (R.prio.reduce((a, x) => a + x.r, 0) + R.self.reduce((a, x) => a + x.r, 0)) / 2.5);
   const rows = []; let pen = 0;
@@ -95,7 +108,7 @@ function gamePlan(team) {
     const main = opts.filter(o => o[1] >= .3).sort((a, b) => b[1] - a[1]);
     // mode: what the row's status rests on, so a gain from priority moves is never described as "speed control"
     rows.push({k: 'speed', label: 'Speed control', st: st(primary, .6, .3), mode: main.length ? main[0][0] : '',
-      who: main.length ? main.slice(0, 2).map(o => o[2].length ? who(o[2], 2) : o[0] === 'weather speed' ? `${team.filter(m => WEATHER_SPEED[m.ability]).map(m => m.d).join(', ')} in ${ARCH[kinds[0]].name.toLowerCase()}` : o[0]).join('; ') : '',
+      who: main.length ? main.slice(0, 2).map(o => o[2].length ? who(o[2], 2) : o[0] === 'weather speed' ? wSpeedUsers.map(m => `${m.d} in ${ARCH[({Water: 'rain', Fire: 'sun', Rock: 'sand', Ice: 'snow'})[WEATHER_SPEED[m.ability]]].name.toLowerCase()}`).join(', ') : o[0]).join('; ') : '',
       note: primary >= .6 ? '' : c.tr >= .6 && trSlow < 2 ? `Trick Room, but ${trSlow ? 'only one slow Pokémon' : 'no slow Pokémon'} besides the setter to use it.` : (main.length ? 'Only priority moves: no reliable Tailwind or Trick Room.' : 'No Tailwind, Trick Room or weather speed.') + ` Speed control is on ${proLine('speed', '')}.`});
     pen += 55 * (1 - primary);
     // 2. a second option, so one Taunt or one KO on the setter doesn't decide the game
@@ -105,9 +118,15 @@ function gamePlan(team) {
       note: modes >= 2 ? '' : primary >= .6 ? 'If your setter is Taunted or knocked out, nothing else controls speed.' : 'No second speed option either.'});
     if (modes < 2) pen += 10;
     // 3. Trick Room needs slow hitters to pay off
-    if (c.tr >= .4) { const slow = team.filter(m => isSlow(m.p) && !R.tr.some(x => x.m === m && x.r >= .5));
-      rows.push({k: 'trfit', label: 'Trick Room attackers', st: slow.length >= 2 ? 'ok' : slow.length ? 'part' : 'miss', who: slow.map(m => m.d).join(', '), note: slow.length >= 2 ? '' : 'Trick Room pays off with 2+ slow, hard-hitting Pokémon.'});
-      pen += slow.length >= 2 ? 0 : slow.length ? 8 : 18; }
+    // Nov 18 (rule-holes sweep: 124 real teams, 5 event winners, read "Trick Room with no slow attacker"): when Trick Room isn't
+    // the team's main mode, too few slow attackers is a note, not a gap. That is a Trick Room user that also runs Imprison (it is
+    // there to block the opponent's room), or a team whose Tailwind or weather speed already controls speed (Trick Room is the
+    // reverse mode). structCredit already exempted Tailwind teams (35-win-model.js), so the rules now agree.
+    if (c.tr >= .4) { const slow = team.filter(m => isSlow(m.p) && !R.tr.some(x => x.m === m && x.r >= .5)), trU = R.tr.filter(x => x.r >= .5);
+      const trAnti = trU.length > 0 && trU.every(x => relMove(x.m, ['Imprison'])[0] >= .5), trSecond = c.tw >= .6 || wSpeed >= .6, side = (trAnti || trSecond) && slow.length < 2;
+      rows.push({k: 'trfit', label: 'Trick Room attackers', st: side ? 'opt' : slow.length >= 2 ? 'ok' : slow.length ? 'part' : 'miss', who: slow.map(m => m.d).join(', '),
+        note: slow.length >= 2 ? '' : side ? (trAnti ? 'Your Trick Room user runs Imprison, so it can also block the opponent\u2019s Trick Room.' : `Trick Room is your second speed mode (${c.tw >= .6 ? 'Tailwind' : 'weather speed'} is the main one).`) + ' Slow, hard-hitting Pokémon would help it pay off.' : 'Trick Room pays off with 2+ slow, hard-hitting Pokémon.'});
+      pen += slow.length >= 2 || side ? 0 : slow.length ? 8 : 18; }
   }
   // weather: one setter that the team uses is weather control; two kinds fight each other
   // Two weathers: a real archetype (Pelipper + Mega Charizard Y, 23 of 377 tournament teams) but it wins less (48.8% vs 54.5%).
@@ -120,11 +139,22 @@ function gamePlan(team) {
     // sand chips every Pokémon that isn't Rock, Ground or Steel each turn: a support Hippowdon with another sand-immune partner
     // (Kingambit, Gholdengo…) is using it for that chip (Nov 8: a top-300 tournament team, Hippowdon + Kingambit, was flagged)
     const sandChip = kinds[0] === 'sand' && team.filter(m => (m.types || m.p.t).some(t => t === 'Rock' || t === 'Ground' || t === 'Steel')).length >= 2;
-    const lone = !others0.length && !sandChip && setters.every(x => WX_PARTNER.has(x.m.p.n)), ab = lone ? [] : ab0;
+    // Weather Ball is the exception (Sim, Nov 18): it only works in weather, so a support setter that runs it (Politoed on Perish
+    // Trap teams, Weather Ball 74% of sets) uses its own weather. Its other Water moves or Hurricane still don't count (Nov 7 rule).
+    const wbSelf = setters.filter(x => roleMoves(x.m).has('Weather Ball')).map(x => x.m);
+    // a weather override (Nov 18 rule-holes sweep: Yawn Hippowdon next to Mega Gengar, Will-O-Wisp Ninetales, 7 real top-8 teams flagged):
+    // a support setter with a support job of its own is there to replace the opponent's weather, not for partners, so its weather
+    // is not "nothing uses". No bonus either (0, between a used weather's -8 and no weather's +5). One with plain attacks is still lone;
+    // the plans still never bring one in for a team with nothing to use its weather (wxLoneBad reads `override`).
+    const ovrSelf = setters.filter(x => WX_PARTNER.has(x.m.p.n) && [...roleMoves(x.m)].some(n => WX_OVERRIDE_MV.has(n))).map(x => x.m);
+    const loneAll = !others0.length && !sandChip && setters.every(x => WX_PARTNER.has(x.m.p.n) && !wbSelf.includes(x.m));
+    const override = loneAll && ovrSelf.length > 0, lone = loneAll && !override, ab = loneAll ? [] : [...new Set([...ab0, ...wbSelf])];
     const hurt = team.filter(m => !WEATHER_OF[m.ability] && (m.types || m.p.t).includes(kinds[0] === 'rain' ? 'Fire' : kinds[0] === 'sun' ? 'Water' : '_'));
-    rows.push({k: 'weather', label: 'Weather', st: ab.length ? 'ok' : 'part', lone, who: (() => { const sn = setters.map(x => x.m.d), others = ab.filter(m => !setters.some(x => x.m === m)), self = ab.some(m => setters.some(x => x.m === m)), w = ARCH[kinds[0]].name.toLowerCase();
+    if (override) { rows.push({k: 'weather', label: 'Weather', st: 'ok', lone: false, override: true, who: `${wxAnd(ovrSelf.map(m => m.d))} ${ovrSelf.length > 1 ? 'set' : 'sets'} ${w0} to replace the opponent's weather`,
+      note: `Nothing else on the team uses the ${w0}; it is there to replace the opponent's weather.`}); }
+    else { rows.push({k: 'weather', label: 'Weather', st: ab.length ? 'ok' : 'part', lone, who: (() => { const sn = setters.map(x => x.m.d), others = ab.filter(m => !setters.some(x => x.m === m)), self = ab.some(m => setters.some(x => x.m === m)), w = ARCH[kinds[0]].name.toLowerCase();
       return `${sn.join(', ')} ${self && !others.length ? 'sets and uses ' + w : 'sets ' + w}${others.length ? ' for ' + others.slice(0, 3).map(m => m.d).join(', ') : ''}`; })(), note: ab.length ? '' : `Nothing else on the team uses the ${w0}${hurt.length ? `, and it weakens ${wxAnd(hurt.map(m => m.d))}'s ${kinds[0] === 'rain' ? 'Fire' : 'Water'} moves` : ''}.`});
-    pen += ab.length ? -8 : 10;
+    pen += ab.length ? -8 : 10; }
     // a Pokémon whose ability needs a different weather (Swift Swim Mega Swampert on a Mega Charizard Y sun team): the team's
     // own weather switches it off (audit, Oct 30)
     { const off = team.filter(m => WEATHER_NEED[m.ability] && WEATHER_NEED[m.ability] !== kinds[0]); if (off.length) { const r = rows[rows.length - 1];

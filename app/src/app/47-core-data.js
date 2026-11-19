@@ -37,8 +37,8 @@ function corePlan(ns) {
   const keep = cur.filter(s => !same(s)), room = Math.max(0, ns.length + keep.length - 6);
   // what each one does for the team: speed control (Tailwind, Trick Room) and lead support (Fake Out, Intimidate, redirection)
   // only it brings stays too, so a core never takes away the team's only Tailwind
-  const mem = new Map(members().map(m => [m.p.n, m])), job = (s, k) => { const m = mem.get(s.n); try { return m && relMove(m, ROLE[k])[0] >= .5; } catch (e) { return false; } };
-  const only = (s, k) => job(s, k) && !keep.some(o => o !== s && job(o, k)) && !ns.some(n => { const m = mem.get(n) || (byName.get(n) && abMember(byName.get(n))); try { return m && relMove(m, ROLE[k])[0] >= .5; } catch (e) { return false; } });
+  const mem = new Map(members().map(m => [m.p.n, m])), job = (s, k) => { const m = mem.get(s.n); try { return m && roleRel(m, k)[0] >= .5; } catch (e) { return false; } };
+  const only = (s, k) => job(s, k) && !keep.some(o => o !== s && job(o, k)) && !ns.some(n => { const m = mem.get(n) || (byName.get(n) && abMember(byName.get(n))); try { return m && roleRel(m, k)[0] >= .5; } catch (e) { return false; } });
   const val = s => { const p = byName.get(s.n); let r = 0; try { r = rating(p).total; } catch (e) {} const m = mem.get(s.n);
     return (s.lock ? 2000 : 0) + (p && p.m ? 1000 : 0) + (only(s, 'tw') || only(s, 'tr') ? 500 : 0) + ((only(s, 'fake') || only(s, 'redir') || (m && m.ability === 'Intimidate' && !keep.some(o => o !== s && (mem.get(o.n) || {}).ability === 'Intimidate'))) ? 200 : 0) + r; };
   const drop = new Set(keep.slice().sort((a, b) => val(a) - val(b)).slice(0, room));

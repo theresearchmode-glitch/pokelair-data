@@ -91,6 +91,17 @@ const pr = await ev(`(()=>{const ms=members();const p=itemProblems(ms);const ck=
   return {k:p.map(x=>x.k+':'+x.ms.map(m=>m.p.n).join(',')),row:(ck.items.find(x=>x.k==='items')||{}).ok,terr:(gp.rows.find(r=>r.k==='terrain')||{}).note||''}})()`);
 ok(pr.k.some(x => x.startsWith('dead:Sneasler')), 'dead Psychic Seed found (Raichu sets Electric Terrain)');
 ok(pr.k.some(x => x.startsWith('scarftr:Hydreigon')), 'Choice Scarf under own Trick Room found');
+// Nov 18 (rule-holes sweep): Trick Room as the second mode of a sun + Chlorophyll team (2027 Louisville Regional winner), or on an
+// Imprison Trick Room user, never makes a Scarf an item problem; Trick Room as the only speed mode still does
+{ const sx = await ev(`(()=>{const mk=(n,a,it,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d,i:0};if(it){m.item=it;m.heldItem=it}if(mv){const x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x}return m};
+  const tr=['Trick Room','Psychic Noise','Protect','Helping Hand'],ks=ms=>itemProblems(ms).map(x=>x.k);
+  const lou=[mk('Charizard-Mega-Y','Drought','Charizardite Y'),mk('Venusaur','Chlorophyll','Focus Sash'),mk('Incineroar','Intimidate','Sitrus Berry'),mk('Garchomp','Rough Skin','Choice Scarf'),mk('Farigiraf','Armor Tail','Safety Goggles',tr),mk('Sylveon','Pixilate','Throat Spray')];
+  const noSun=lou.map(m=>m.p.n==='Charizard-Mega-Y'?mk('Charizard-Mega-Y','Drought','Charizardite Y'):m).map(m=>m.p.n==='Venusaur'?mk('Venusaur','Overgrow','Focus Sash'):m);
+  const imp=lou.map(m=>m.p.n==='Farigiraf'?mk('Farigiraf','Armor Tail','Safety Goggles',['Trick Room','Imprison','Protect','Psychic Noise']):m).map(m=>m.p.n==='Venusaur'?mk('Venusaur','Overgrow','Focus Sash'):m);
+  return {lou:ks(lou),noSun:ks(noSun),imp:ks(imp)}})()`);
+  ok(!sx.lou.includes('scarftr'), `sun + Chlorophyll team with Trick Room as its second mode: Choice Scarf is not an item problem (${sx.lou.join(',') || 'none'})`);
+  ok(!sx.imp.includes('scarftr'), `Imprison Trick Room user: Choice Scarf is not an item problem (${sx.imp.join(',') || 'none'})`);
+  ok(sx.noSun.includes('scarftr'), `the same team without Chlorophyll (Trick Room its only speed mode): Choice Scarf still is (${sx.noSun.join(',') || 'none'})`); }
 ok(pr.row === false, 'checklist shows a failing Items row');
 ok(/Psychic Seed never activates/.test(pr.terr), 'game plan terrain row names the dead seed');
 await ev("setView('build');render()"); await pg.waitForTimeout(2500);

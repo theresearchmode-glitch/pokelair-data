@@ -22,7 +22,7 @@ function teamArchetype(ms) {
   parts.push(...tn);
   if (SPEED_NAME[speed]) parts.push(SPEED_NAME[speed]);
   const label = parts.length ? parts.slice(0, 3).join(' · ') : (c.fake >= .5 ? 'Balance (Fake Out pressure)' : 'Balance');
-  const by = k => ms.filter(m => relMove(m, ROLE[k])[0] >= .5);
+  const by = k => ms.filter(m => roleRel(m, k)[0] >= .5);
   const trappers = perish ? ms.filter(m => ['Shadow Tag', 'Arena Trap'].includes(m.ability) || relMove(m, ['Perish Song'])[0] >= .3) : [];
   return {label, speed, perish, trappers, slow, weather: weather.map(a => a.key), terrain: terrain.map(a => a.key), field, c,
     setters: {tw: by('tw'), tr: by('tr')}, anti: by('anti'), fake: by('fake'), redir: by('redir'), prio: by('prio'), drop: by('drop'),

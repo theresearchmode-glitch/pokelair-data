@@ -18,7 +18,21 @@ const evDay = d => { const t = new Date(d).getTime(); return isFinite(t) ? new D
 const lname = m => lmap(key({name: m.n, item: m.i}));
 // every name, item, ability, nature and move is stored once in dict and referenced by its index
 const dict = [], dix = new Map(), D = x => { x = String(x || ''); if (!dix.has(x)) { dix.set(x, dict.length); dict.push(x); } return dix.get(x); };
-const sheet = (n, m) => [D(n), D(m.i), D(m.a), D(m.nt), (m.mv || []).slice(0, 4).map(D)];
+// Nov 16: one Limitless sheet (Nov 14) had a mistyped move, "VoltSwitchFeint"; the page's checks refused it and that stopped every day's
+// data from reaching live. Each move is now checked against the site's own move list (app/src/data/data.js MOVES): a known move stays; a
+// glued or mistyped one is read as the real move it starts with when that move isn't already on the Pokémon; anything else is left out.
+// Every repair is printed in the job log.
+const MOVE_NAMES = (() => { try { const s = fs.readFileSync('app/src/data/data.js', 'utf8'), i = s.indexOf('const MOVES'), j = s.indexOf(']];', i);
+  return new Set(Function('return ' + s.slice(s.indexOf('[', i), j + 2))().map(m => m[0])); } catch (e) { return null; } })();
+const sq = x => String(x).toLowerCase().replace(/[^a-z0-9]/g, ''), SQ = MOVE_NAMES ? new Map([...MOVE_NAMES].map(n => [sq(n), n])) : null;
+const fixMoves = (mv, who) => { if (!MOVE_NAMES || !MOVE_NAMES.size) return mv; const out = [];
+  for (const x of mv) { if (MOVE_NAMES.has(x)) { out.push(x); continue; } const k = sq(x); let best = SQ.get(k) || null;
+    if (!best) for (const [q, n] of SQ) if (q.length >= 4 && k.startsWith(q) && (!best || q.length > sq(best).length)) best = n;
+    if (!best && k.length >= 6) { const c = [...SQ].filter(([q]) => q.startsWith(k)); if (c.length === 1) best = c[0][1]; } /* a dropped last letter: "Last Respect" */
+    if (best && !mv.includes(best) && !out.includes(best)) { out.push(best); console.log(`events: ${who}: move "${x}" read as "${best}"`); }
+    else console.log(`events: ${who}: move "${x}" left out (not a move${best ? ', and ' + best + ' is already there' : ''})`); }
+  return out; };
+const sheet = (n, m) => [D(n), D(m.i), D(m.a), D(m.nt), fixMoves((m.mv || []).slice(0, 4), n).map(D)];
 const out = [];
 // official events first (biggest and most watched)
 const OFF = readJSON('out/official.json', {events: []}), offSrc = /^RK9/.test(OFF.source || '') ? 'RK9 official events' : 'Victory Road official events';

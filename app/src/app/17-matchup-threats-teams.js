@@ -55,7 +55,7 @@ function planMatchup(mine, theirs, useA) {
   const dbl = S.format === 'doubles', bring = Math.min(dbl ? 4 : 3, mine.length);
   const h = headToHead(mine, theirs, useA);
   const roles = mine.map(m => { const r = teamRoles([m]); return {speed: r.speed.length > 0, fake: r.fake.length > 0 || r.redirect.length > 0 || m.ability === 'Intimidate',
-    tr: relMove(m, ROLE.tr)[0] >= .5, tw: relMove(m, ROLE.tw)[0] >= .5, anti: relMove(m, ROLE.anti)[0] >= .4, ghost: (m.types || m.p.t).includes('Ghost'), chop: relMove(m, ['Throat Chop', 'Taunt'])[0] >= .3, prio: relMove(m, ROLE.prio)[0] >= .5}; });
+    tr: relMove(m, ROLE.tr)[0] >= .5, tw: relMove(m, ROLE.tw)[0] >= .5, anti: antiRel(m)[0] >= .4, ghost: (m.types || m.p.t).includes('Ghost'), chop: relMove(m, ['Throat Chop', 'Taunt'])[0] >= .3, prio: relMove(m, ROLE.prio)[0] >= .5}; });
   // archetypes: what they plan, and which of your field setters each of your Pokémon depends on
   const A = dbl ? teamArchetype(mine) : null, B = dbl ? teamArchetype(theirs) : null;
   const fieldLinks = A ? A.field.filter(f => f.active).map(f => ({set: f.setters.map(m => mine.indexOf(m)).filter(i => i >= 0), use: f.abusers.map(m => mine.indexOf(m)).filter(i => i >= 0)})) : [];

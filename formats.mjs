@@ -3,7 +3,10 @@ import fs from 'node:fs';
 // and the team model (sweep, Oct 31: Spooky Cup had Incineroar at 0%, Monotype events are 72–100% single-type teams).
 // Nov 8 data audit: also Monoregion/Monocolor cups (a MonoRegion event put Volcarona + Vanilluxe teams in a top-4 list).
 // Every pipeline step skips them by name. The raw files stay in data/ so nothing is lost if a name is matched by mistake.
-export const OFF_FORMAT = /off[ -]?meta|spooky|mono ?(?:type|region|color|colour)|small pok[eé]mon|ultra beast|draft|\bbst\b|-\s?1\s?%|under \d+\s?%|little cup|\bnfe\b/i;
+// Nov 18 data audit (docs/rebuild/research/data-integrity-nov17.md, finding 3): also UU cups, old-generation cups ("Gen 3 Edition",
+// "Gen 2 Showdown"; Gen 1-8 only, so a "Gen 9"/"Gen 10" name never matches), Single Type cups, "POKÉMONAS" and "Só Evos" (themed
+// rounds of one series). Checked against every event name on Nov 18: these words match 8 events and no standard one.
+export const OFF_FORMAT = /off[ -]?meta|spooky|mono ?(?:type|region|color|colour)|small pok[eé]mon|ultra beast|draft|\bbst\b|-\s?1\s?%|under \d+\s?%|little cup|\bnfe\b|\buu\b|\bgen(?:eration)? ?[1-8]\b|single[ -]?type|pok[eé]monas|s[oó] evos/i;
 export const offFormat = name => OFF_FORMAT.test(String(name || ''));
 
 // The alarm for themed events whose names the filter above doesn't catch (Oct 31). Staples (Pokémon on 20%+ of all standard
@@ -11,6 +14,7 @@ export const offFormat = name => OFF_FORMAT.test(String(name || ''));
 // 3,000, so the event is almost certainly played under extra rules. It's left out automatically and named in the daily job's
 // log as a ::warning::. Tested on Oct 31 data: it flags Mudkip's Marsh Pit #7 (no Kingambit or Rillaboom on 43 teams) and
 // Rising Stars S4 (no Rillaboom on 27), and no normal event. readT(id) returns the event's data/t file; "Raichu|MY" counts as Raichu.
+// A second alarm for small events is at the end (Nov 18).
 export function oddEvents(ids, readT, log = console.log) {
   const base = k => String(k).split('|')[0], ev = [], tot = new Map(); let n = 0;
   for (const id of ids) { const T = readT(id); if (!T || !Array.isArray(T.e)) continue; const c = new Map(); let t = 0;
@@ -19,6 +23,14 @@ export function oddEvents(ids, readT, log = console.log) {
   const staples = [...tot].map(([x, k]) => [x, n ? k / n : 0]).filter(([, sh]) => sh >= .2), out = new Set();
   for (const e of ev) { if (e.t < 20) continue; const gone = staples.filter(([x, sh]) => sh * e.t >= 8 && !e.c.get(x)).map(([x]) => x);
     if (gone.length) { out.add(e.id); log(`::warning::left out event ${e.id}: no ${gone.join(', ')} on any of its ${e.t} teams, so it looks like a restricted format`); } }
+  // Second alarm (Nov 18 data audit, finding 3): the rule above needs 20+ teams and a staple missing outright, so small themed cups
+  // (UU, Gen 2/3, Halloween specials: 7-21 teams) slipped through. Here the 10 most-used Pokémon of all standard teams are
+  // counted on an event's teams; a normal event shows about as many as their field-wide usage predicts (ratio near 1), an
+  // event under half of that (with 8+ full teams) is left out. Measured Nov 18: a random 8 teams of one normal event fall under
+  // 0.5 about 0.4% of the time (0.05% at 15 teams); the flagged events sit at 0.00-0.47, the next event at 0.55.
+  const top10 = [...tot].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([x, k]) => [x, n ? k / n : 0]), sum10 = top10.reduce((a, [, sh]) => a + sh, 0);
+  for (const e of ev) { if (e.t < 8 || out.has(e.id) || !sum10) continue; const r = top10.reduce((a, [x]) => a + (e.c.get(x) || 0), 0) / (sum10 * e.t);
+    if (r < .5) { out.add(e.id); log(`::warning::left out event ${e.id}: the 10 most-used Pokémon appear on its ${e.t} teams ${Math.round(100 * r)}% as often as usual, so it looks like a restricted format`); } }
   return out;
 }
 

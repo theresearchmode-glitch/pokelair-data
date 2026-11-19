@@ -26,7 +26,14 @@ const setsTR = m => memMoveNames(m).includes('Trick Room');
 // Trick Room is the team's main speed mode: someone sets it and nobody runs Tailwind. On a Tailwind team a Trick Room setter is
 // a backup mode, and a Choice Scarf still works in the Tailwind games (user decision, Oct 28: 51 of the 94 real top-cut teams
 // with Trick Room and a Scarf also ran Tailwind), so only main-mode Trick Room makes a Scarf an item problem.
-const trMain = ms => (ms || []).some(m => m && setsTR(m)) && !(ms || []).some(m => m && memMoveNames(m).includes('Tailwind'));
+// Nov 18 (rule-holes sweep: "Items work" failed on 32 real top-8 sheets, 6 event winners): weather speed (Chlorophyll / Swift Swim
+// / Sand Rush / Slush Rush with its setter on the team) is a main speed mode too, so Trick Room there is the second mode; and a
+// Trick Room user that also runs Imprison is there to block the opponent's room. Neither makes a Scarf an item problem.
+const W_OF_SPEED = {Water: 'rain', Fire: 'sun', Rock: 'sand', Ice: 'snow'};
+const wxSpeedMode = ms => { const set = new Set((ms || []).filter(m => m && WEATHER_OF[m.ability]).map(m => WEATHER_OF[m.ability]));
+  return (ms || []).some(m => m && WEATHER_SPEED[m.ability] && set.has(W_OF_SPEED[WEATHER_SPEED[m.ability]])); };
+const trMain = ms => (ms || []).some(m => m && setsTR(m)) && !(ms || []).some(m => m && memMoveNames(m).includes('Tailwind')) && !wxSpeedMode(ms)
+  && !(ms || []).some(m => m && setsTR(m) && memMoveNames(m).includes('Imprison'));
 const fieldName = k => (typeof ARCH === 'object' && ARCH[k] && ARCH[k].name) || k;
 // The Mega Stones in the game (from the roster's Megas, so "Eviolite" never counts as one)
 let megaStoneSet = null;

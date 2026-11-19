@@ -9,7 +9,7 @@
    Selectors use :root:not(#_ch):not(#_tr) so they outrank the app's own theme blocks without !important. */
 
 @font-face{font-family:"TR Display";font-style:normal;font-weight:100 900;font-display:swap;size-adjust:80%;
-  src:url(https://fonts.gstatic.com/s/delagothicone/v19/hESp6XxvMDRA-2eD0lXpDa6QkBA2QkEI.woff2) format("woff2")}
+  src:url(fonts/dela-gothic-one-latin.woff2) format("woff2")}
 
 
 /* ---------- tokens: light ---------- */

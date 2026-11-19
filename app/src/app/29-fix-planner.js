@@ -84,6 +84,7 @@ function gapEffect(team0,gp0,team,gp){const fix=[],why=[],st=k=>(gp.rows.find(r=
 // control (swapping out the only Tailwind setter). Returns the keys that got worse.
 // the team sets a weather only a support setter is there for, with nothing else using it (Nov 7)
 const wxLone=gp=>!!(gp&&gp.rows.some(r=>r.k==='weather'&&r.lone));
+const wxOvr=gp=>!!(gp&&gp.rows.some(r=>r.k==='weather'&&r.override));
 // a plan may never leave a support setter's weather with nobody to use it, or bring one in that nobody uses
 // and never adds a second weather to a team that already sets one (sun next to Pelipper's rain: each cancels the other)
 // Team setup flaws (Nov 7 audit), shared by the suggestions and Build for me. A pairing real players have run on 100+ tournament
@@ -96,11 +97,29 @@ function psyBlocked(team){const ps=team.filter(m=>TERRAIN_OF[m.ability]==='psy')
   return team.filter(m=>TERRAIN_OF[m.ability]!=='psy'&&mvsOf(m).some(n=>P.has(n))&&!ps.some(x=>provenPair(x,m)))}
 // attackers the team's own working rain or sun weakens (Fire in rain, Water in sun); Fake Out and Intimidate users are support
 function wxHurtT(team){const w=wxSetsOf(team);if(w.length!==1||!['rain','sun'].includes(w[0]))return [];const dn=w[0]==='rain'?'Fire':'Water',set=team.filter(m=>WEATHER_OF[m.ability]);
-  return team.filter(m=>{if(WEATHER_OF[m.ability])return false;const t=m.types||m.p.t;if(!t.includes(dn))return false;const mv=mvsOf(m);return !(m.ability==='Intimidate'||mv.includes('Fake Out'))&&!set.some(x=>provenPair(x,m))})}
+  return team.filter(m=>{if(WEATHER_OF[m.ability])return false;const t=m.types||m.p.t;if(!t.includes(dn))return false;const mv=mvsOf(m);return !(m.ability==='Intimidate'||mv.includes('Fake Out'))&&!wxSupportRole(mv)&&wxMainType(m,mv)===dn&&!set.some(x=>provenPair(x,m))})}
+// Nov 18 (rule-holes sweep: 36 real teams, 2 event winners, e.g. a support Milotic (Haze, Muddy Water, Ice Beam) on a sun team):
+// the weather weakens an attacker only when its strongest attack is of the weakened type and it has no support job on the team.
+// Support moves: speed control, screens, status, Haze, Helping Hand, Wide Guard and the like. Redirection is left out: a Rage
+// Powder Volcarona still attacks with Fire (the Nov 7 audit case, Volcarona into rain).
+const WX_SUPPORT_MV=new Set(['Haze','Clear Smog','Reflect','Light Screen','Aurora Veil','Helping Hand','Coaching','Wide Guard','Quick Guard','Tailwind','Trick Room','Icy Wind','Electroweb','Encore','Taunt','Will-O-Wisp','Thunder Wave','Glare','Nuzzle','Spore','Sleep Powder','Yawn','Perish Song','Pollen Puff','Heal Pulse','Life Dew','Parting Shot','Snarl','Imprison','Decorate','Instruct','After You']);
+const wxSupportRole=mv=>mv.some(n=>WX_SUPPORT_MV.has(n));
+// the type of a member's strongest attack (power × same-type bonus), from its moves
+function wxMainType(m,mv){const t=m.types||m.p.t;let best=null,bv=0;for(const n of mv){const x=mvByName.get(n);if(!x||!(x.cat>0)||!(x.bp>0))continue;const v=x.bp*(t.includes(x.type)?1.5:1);if(v>bv){bv=v;best=x.type}}return best}
+// Nov 18 (Sim; rule-holes sweep hole 9: 71 plans, 50 on good teams): a plan may swap out the terrain setter while a teammate's move
+// needs that terrain (Indeedee out, Mega Meowstic's Expanding Force kept). Terrain roles add nothing beyond the grade (Nov 9,
+// GUARD_KEYS), so the plan stays; its card says what is lost (LANE.line, 36-lanes.js).
+const T_NEED_MV={'Expanding Force':'psy','Grassy Glide':'grassy','Rising Voltage':'elec','Misty Explosion':'misty'};
+function terrainLoss(pl){if(!pl||!pl.team||!pl.ch)return [];const lost=[...new Set(pl.ch.map(x=>x.out&&TERRAIN_OF[x.out.ability]).filter(Boolean))];if(!lost.length)return [];
+  let have;try{have=teamField(pl.team).t}catch(e){have=new Set(pl.team.map(m=>TERRAIN_OF[m.ability]).filter(Boolean))}
+  const out=[];for(const t of lost){if(have.has(t))continue;for(const m of pl.team)for(const n of mvsOf(m))if(T_NEED_MV[n]===t)out.push({m,mv:n,t})}return out}
+const terrainLossLine=pl=>{const L=terrainLoss(pl);if(!L.length)return '';const t=ARCH[L[0].t].name;
+  return `<span class="warnline">Loses ${esc(t)}</span>: ${esc(wxAnd(L.map(x=>`${x.m.d}'s ${x.mv}`)))} ${L.length>1?'need':'needs'} it`}
 // a team's flaws in words (Build for me never makes a team with any; the suggestions never add one)
 function teamFlaws(team,gp){gp=gp||gamePlan(team.map(m=>m._mv&&m._mv.length?m:{...m,_mv:memberMoves(m).moves}));const row=k=>gp.rows.find(r=>r.k===k)||{},f=[];
   if(row('weather').lone)f.push('weather nobody uses');if(new Set(team.map(m=>TERRAIN_OF[m.ability]).filter(Boolean)).size>1)f.push('two terrains');
-  if(psyBlocked(team).length>=2)f.push('Psychic Terrain blocks its own priority');if(row('trfit').st==='miss')f.push('Trick Room with no slow attacker');
+  /* Psychic Terrain over the team's own priority: a note on the terrain row, never a flaw (Sim, Nov 18; rule-holes sweep hole 7:
+     70 real teams, 43 good). Plans still never bring in a Psychic Surge setter over 2+ teammates' priority (psyHit). */if(row('trfit').st==='miss')f.push('Trick Room with no slow attacker');
   if(wxHurtT(team).length)f.push('its weather weakens its own attacker');return f}
 // and never brings an attacker the team's own working rain or sun weakens (Volcarona into rain)
 const wxHurtIn=(gp0,pl)=>{const r=gp0&&gp0.rows.find(r=>r.k==='weather');if(!r||r.st!=='ok'||!pl.team)return false;return wxHurtT(pl.team).some(m=>pl.ch.some(x=>x.c.p===m.p))};
@@ -108,7 +127,12 @@ const wxHurtIn=(gp0,pl)=>{const r=gp0&&gp0.rows.find(r=>r.k==='weather');if(!r||
 const psyHit=pl=>{if(!pl.team||!pl.ch.some(x=>TERRAIN_OF[x.c.mem.ability]==='psy')||pl.team.some(m=>!pl.ch.some(x=>x.c.p===m.p)&&TERRAIN_OF[m.ability]==='psy'))return 0;return psyBlocked(pl.team).length};
 // a Trick Room setter brought into a team with no slow attackers for it (and a team that had no Trick Room before)
 const trNew=(gp0,pl)=>{const r=pl.gp&&pl.gp.rows.find(r=>r.k==='trfit');return r&&!gp0.rows.some(r=>r.k==='trfit')?r.st:null};
-const wxLoneBad=(gp0,pl)=>psyHit(pl)>=2||trNew(gp0,pl)==='miss'||wxHurtIn(gp0,pl)||(wxLone(pl.gp)&&(!wxLone(gp0)||pl.ch.some(x=>WEATHER_OF[x.c.mem.ability])))||(pl.team&&pl.ch&&wxSetsOf(pl.team).length>1&&wxSetsOf(pl.team).length>wxSetsOf(pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p))).length&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]));
+// and never brings in a second terrain: an incoming setter whose terrain differs from one already on the team (Nov 18 audit, live
+// data: Rillaboom's Grassy Surge offered next to Indeedee's Psychic Surge; the terrain row stopped blocking plans on Nov 9, GUARD_KEYS)
+const tkN=t=>new Set(t.map(m=>TERRAIN_OF[m.ability]).filter(Boolean)).size;
+const terrain2=pl=>{if(!pl.team||!pl.ch||!pl.ch.some(x=>TERRAIN_OF[x.c.mem.ability]))return false;const n=tkN(pl.team);if(n<2)return false;
+  const before=pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p)).concat(pl.ch.filter(x=>x.out).map(x=>x.out));return n>tkN(before)};
+const wxLoneBad=(gp0,pl)=>terrain2(pl)||psyHit(pl)>=2||trNew(gp0,pl)==='miss'||wxHurtIn(gp0,pl)||(wxLone(pl.gp)&&(!wxLone(gp0)||pl.ch.some(x=>WEATHER_OF[x.c.mem.ability])))||(wxOvr(pl.gp)&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]))||(pl.team&&pl.ch&&wxSetsOf(pl.team).length>1&&wxSetsOf(pl.team).length>wxSetsOf(pl.team.filter(m=>!pl.ch.some(x=>x.c.p===m.p))).length&&pl.ch.some(x=>WEATHER_OF[x.c.mem.ability]));
 /* Nov 9 (Phase 3 gates): terrain and lead-support roles were tested on later real games on Nov 8 and add nothing beyond the grade
    (commit f05576d), so they no longer block a suggestion; speed control, Trick Room attackers and weather stay guarded (no loss at all). */
 const GUARD_KEYS=['speed','trfit','weather'];

@@ -36,7 +36,8 @@ const LANE = {
     out.nothing = !keep.some(pl => pl._lane.k !== 'option') && !LANE.protFix(ms); return out; },
   // the line under a suggestion: what kind it is, and its honest size in real games
   // the same line as data, {k: 'fix' | 'swap' | 'opt', tag, text}, for the rebuild's own markup (R4, Nov 11); null when the plan has no lane
-  lineParts(pl) { const L = pl && pl._lane; if (!L) return null;
+  lineParts(pl) { const x = LANE.lineParts0(pl); if (!x) return null; let w = ''; try { w = terrainLossLine(pl); } catch (e) {} if (w) x.warn = w; return x; },
+  lineParts0(pl) { const L = pl && pl._lane; if (!L) return null;
     if (L.k === 'fix') { const f = L.fixes[0], w = {clause: 'two of your Pokémon hold the same item, so the team can’t be registered; this frees it',
         mega: `adds a Mega: teams with no Mega won about ${L.fixes[0].pts} fewer games in 100`, reach: `answers more of the top threats (Matchups): teams that answer them win about ${Math.round(LANE.PTS.reach)} more games in 100`}[f.k];
       return {k: 'fix', tag: 'Fix', text: w}; }
@@ -44,7 +45,8 @@ const LANE = {
     const note = pl.gap && ((pl.gap.fix && pl.gap.fix.length) || (pl.gap.why || []).some(w => /^Meets the /.test(w)));
     return note ? {k: 'opt', tag: 'Option', text: 'covers a team note; real games show no clear edge either way'}
       : {k: 'opt', tag: 'Option', text: 'a small change: real games can’t tell it apart from what you have'}; },
-  line(pl) { const x = LANE.lineParts(pl); return x ? `<span class="chlane ln-${x.k}"><b>${x.tag}</b> ${x.text}</span>` : ''; },
+  // plus a warning when the plan swaps out a terrain setter a teammate's move needs (terrainLoss, 29-fix-planner.js; Sim, Nov 18)
+  line(pl) { const x = LANE.lineParts(pl); if (!x) return ''; const b = `<span class="chlane ln-${x.k}"><b>${x.tag}</b> ${x.text}</span>`; return x.warn ? `${b} <span class="chtloss">${x.warn}</span>` : b; },
   // too little Protect: a set fix, not a swap. Members whose popular set runs Protect but whose moves here don't.
   protFix(ms) { if (!ms || ms.length !== 6) return null; const n = LANE.protCount(ms); if (n > 2) return null;
     const who = ms.filter(m => !LANE.moves(m).slice(0, 4).some(x => LANE.PROT.has(x)) && (popularMoves(m.p) || []).slice(0, 4).some(x => LANE.PROT.has(x && (x.name || x))));

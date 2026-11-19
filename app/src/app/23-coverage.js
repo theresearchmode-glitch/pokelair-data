@@ -1,6 +1,6 @@
 // ---------- Coverage: best additions ----------
 // What a Pokémon does for the team, in one word.
-function monRole(m) { const r = k => relMove(m, ROLE[k])[0];
+function monRole(m) { const r = k => roleRel(m, k)[0];
   if (WEATHER_OF[m.ability]) return ARCH[WEATHER_OF[m.ability]].name; if (r('tw') >= .5) return 'Tailwind'; if (r('tr') >= .5) return 'Trick Room';
   if (r('fake') >= .5) return 'Fake Out'; if (r('redir') >= .5) return 'Redirect';
   if (r('prio') >= .5) return 'Priority'; if (r('boost') >= .5) return 'Setup'; return 'Attacker'; }

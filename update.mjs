@@ -12,7 +12,7 @@ import fs from 'node:fs';
 import {topcut} from './topcut.mjs';
 import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
 import {politeFetch} from './http.mjs';
-import {lkey, lmap, reportUnknown} from './names.mjs';
+import {lkey, lmap, reportUnknown, canonSet, canonReport} from './names.mjs';
 // the regulation every number is built from (out/reg.json from reg.mjs; Reg M-C until a newer one has enough data)
 const RG = activeReg();
 const API = 'https://play.limitlesstcg.com/api', FORMAT = RG.id, MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500);
@@ -153,8 +153,17 @@ fs.writeFileSync('out/limitless.json', JSON.stringify(out));
 console.log(`teams ${E.length}, games ${G}, pokemon ${mon.size}, pairs ${Object.keys(out.results.pairs).length}, cores ${out.results.cores.length}, proven ${out.results.proven.length}`);
 
 // ---------- v2 outputs ----------
-const V2 = KEEP.map(id => { const T = readJSON(`data/t2/${id}.json`, null); return T ? {id, ...T} : null; }).filter(Boolean)
+// Two readings of the same sheets (Sim, Nov 18, morning question 8: split the one-spelling fix).
+//  - V2T, as typed: the grade's input only (4) matches.json's set features, read by model.mjs and six.mjs). Folding them
+//    made the walk-forward grade slightly worse beyond chance on best-of-3 (docs/rebuild/research/data-fixes-effect-nov18.md).
+//  - V2, folded: what players see (1) sets page, 2) top finishes, 5) top-cut evidence). Every item, Ability and move in its
+//    list spelling ("protect", "Protect " -> "Protect"; names.mjs canonSet), so one set no longer shows as several rows.
+// The Mega Stone reading (lkey reads "raichunite y", "Lucarionite-Z") applies to both: nameOf below uses it either way.
+// Read from the raw sheets each day; the files in data/t2 stay as fetched.
+const V2T = KEEP.map(id => { const T = readJSON(`data/t2/${id}.json`, null); return T ? {id, ...T} : null; }).filter(Boolean)
   .sort((a, b) => new Date(a.d) - new Date(b.d));
+const V2 = V2T.map(T => ({...T, e: (T.e || []).map(p => ({...p, dk: (p.dk || []).map(canonSet)}))}));
+canonReport('update');
 const nameOf = m => lmap(key({name: m.n, item: m.i}));
 const pct = (c, n, k) => [...c].sort((a, b) => b[1] - a[1]).slice(0, k).map(([x, v]) => [x, Math.round(1000 * v / n) / 10]);
 const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() : Date.now();
@@ -195,7 +204,8 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
       for (const [, w, l, ks] of T.e) { const ms = [...new Set(ks.map(lmap).filter(Boolean))]; if (ms.length !== 6) continue; n++; for (const m of ms) c.set(m, (c.get(m) || 0) + 1); } }
     if (!n) continue; days.push({d: new Date(end).toISOString().slice(0, 10), tour: Object.fromEntries([...c].sort((a, b) => b[1] - a[1]).slice(0, 80).map(([m], i) => [m, i + 1]))}); }
   fs.writeFileSync('out/history.json', JSON.stringify({days})); console.log(`history: ${days.length} days`); }
-// 4) game-level results: every pairing with both teams known (for the team model and player skill)
+// 4) game-level results: every pairing with both teams known (for the team model and player skill). Sheets AS TYPED (V2T):
+// the grade's set features keep the players' own spellings (split of the one-spelling fix, Nov 18; see V2T above)
 { const teamIx = new Map(), teams = [], players = new Map(), plist = [], M = [], featIx = new Map(), feats = [], deckIx = new Map(), decks = [];
   // each player's exact sets as features ("Garchomp@Choice Scarf", "Garchomp#Rough Skin", "Garchomp:Earthquake") for the win model;
   // Abilities added Nov 8 (scoreboard: a small, steady gain at all three date cut-offs)
@@ -203,11 +213,11 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
   const dix = (ns, dk) => { const f = []; dk.forEach((m, i) => { if (m.i) f.push(fix(ns[i] + '@' + m.i)); if (m.a) f.push(fix(ns[i] + '#' + m.a.replace(/\b\w/g, c => c.toUpperCase()))); for (const x of new Set(m.mv)) f.push(fix(ns[i] + ':' + x)); }); const k = f.sort((a, b) => a - b).join(','); if (!deckIx.has(k)) { deckIx.set(k, decks.length); decks.push(f); } return deckIx.get(k); };
   const tix = ns => { const k = [...ns].sort().join('|'); if (!teamIx.has(k)) { teamIx.set(k, teams.length); teams.push(k); } return teamIx.get(k); };
   const pix = k => { if (!players.has(k)) { players.set(k, plist.length); plist.push(k); } return players.get(k); };
-  V2.forEach((T, ti) => { const P = readJSON(`data/p/${T.id}.json`, []); if (!P.length) return; const by = new Map();
+  V2T.forEach((T, ti) => { const P = readJSON(`data/p/${T.id}.json`, []); if (!P.length) return; const by = new Map();
     for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(nameOf); if (ns.some(n => !n) || new Set(ns).size !== 6) continue; /* data audit Nov 8: a sheet listed a Pokémon twice */ by.set(p.id, {t: tix(ns), pl: pix(p.id ? 'id:' + String(p.id).toLowerCase() : p.nm.toLowerCase().trim()) /* the Limitless account, not the display name (sweep, Oct 31: 517 accounts showed under 2+ names) */, d: dix(ns, p.dk)}); }
     const seenG = new Set(); /* data audit Nov 8: skip repeated pairings (same round, same two players) and self-pairings */
     for (const [r, a, b, win] of P) { const A = by.get(a), B = by.get(b); if (!A || !B || a === b || A.pl === B.pl) continue; const gk = r + ':' + [a, b].sort().join(':'); if (seenG.has(gk)) continue; seenG.add(gk); const res = win === a ? 1 : win === b ? 0 : .5; M.push([A.t, B.t, res, ti, A.pl, B.pl, r, A.d, B.d]); } });
-  fs.writeFileSync('out/matches.json', JSON.stringify({updated: new Date().toISOString(), events: V2.map(T => [T.id, T.d.slice(0, 10), T.p]), teams, players: plist.length, feats, decks, m: M}));
+  fs.writeFileSync('out/matches.json', JSON.stringify({updated: new Date().toISOString(), events: V2T.map(T => [T.id, T.d.slice(0, 10), T.p]), teams, players: plist.length, feats, decks, m: M}));
   console.log(`matches: ${M.length} games, ${teams.length} distinct teams, ${plist.length} players`); }
 // 5) top-cut evidence for the ratings (top-cut share, conversion, win rate, rating-weighted usage, bring/lead rates
 // from replays), into results.tc of out/limitless.json. Runs last so it reads today's matches.json.

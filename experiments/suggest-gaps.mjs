@@ -35,10 +35,129 @@ for (const [label, team, pool] of [['Mega Swampert, 5 Pokémon, my box', swamper
   ok(/needs rain/.test(r.gapNote) && /Box \+ catch/.test(r.gapNote), `box with no rain setter: the plans say so and point to Box + catch / Whole roster ("${r.gapNote}")`); clean('box with no rain setter', r); }
 { const r = await run(['Excadrill', 'Rotom-Wash', 'Incineroar', 'Whimsicott', 'Kingambit', 'Sylveon'], 'box');
   ok(r.plans.slice(0, 2).some(x => x.sets.includes('sand') && x.fix.includes('weather')), `Sand Rush Excadrill without sand: a sand setter is in the first two plans (${r.plans.map(x => x.names).join(' | ')})`); clean('Sand Rush without sand', r); }
-{ const r = await run(['Farigiraf', 'Indeedee-F', 'Sneasler', 'Garchomp', 'Dragonite', 'Whimsicott'], 'box');
+/* Nov 18: Gholdengo in place of Whimsicott: with Whimsicott's Tailwind, Trick Room is the second mode and too few slow attackers is a note (rule-holes sweep, hole 3) */
+{ const r = await run(['Farigiraf', 'Indeedee-F', 'Sneasler', 'Garchomp', 'Dragonite', 'Gholdengo'], 'box');
   ok(r.plans.slice(0, 2).some(x => x.fix.includes('trfit')), `Trick Room with no slow attackers: a slow attacker is in the first two plans (${r.plans.map(x => x.names).join(' | ')})`); clean('Trick Room without slow attackers', r); }
 const sample = await pg.evaluate(() => window.__ev('DEFAULT_TEAM.slots.map(s=>s.n)'));
 for (const [label, team] of [['sun team, Incineroar the only lead support', ['Torkoal', 'Venusaur', 'Incineroar', 'Garchomp', 'Kingambit', 'Whimsicott']], ['Venusaur + Mega Charizard Y, Whimsicott the only Tailwind', ['Venusaur-Mega', 'Charizard-Mega-Y', 'Incineroar', 'Garchomp', 'Kingambit', 'Whimsicott']], ['sample team', sample]])
   for (const pool of ['box', 'all']) clean(`${label} (${pool})`, await run(team, pool));
+// never a second terrain (Nov 18: on live data a plan swapped Sneasler for Rillaboom next to Indeedee's Psychic Surge). The gate is
+// checked on that exact plan (does not depend on the day's data), then every plan and More idea for that team.
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{S.slots=['Corviknight','Indeedee','Salamence-Mega','Sneasler','Tyranitar-Mega','Basculegion'].map(n=>({n,a:null,lock:false}));
+  S.box=DEFAULT_BOX.slice();ui.pool='all';ui.swOut=null;fixSlots();planCache={key:null,plans:[]};const ms=members(),nm=pl=>pl.ch.map(x=>(x.out?x.out.d+'→':'+')+x.c.p.d).join(' & ');
+  const mk=n=>{const p=byName.get(n),mm=memberFrom(p,metaAbility(p)||undefined);return {p,mem:{...mm,i:-1,p,d:p.d}}},sn=ms.find(m=>m.p.n==='Sneasler'),cv=ms.find(m=>m.p.n==='Corviknight'),A=mk('Rillaboom'),B=mk('Kingambit');
+  const team=ms.map(x=>x===sn?{...A.mem,i:x.i}:x===cv?{...B.mem,i:x.i}:x),pl={ch:[{out:sn,slot:sn.i,c:A},{out:cv,slot:cv.i,c:B}],team,gp:gamePlan(team)};
+  const t2=t=>new Set(t.map(m=>TERRAIN_OF[m.ability]).filter(Boolean)).size>1,plans=planFixes(ms,suggestPool(),true);
+  return {gate:wxLoneBad(gamePlan(ms),pl),bad:[...plans,...(plans.more||[])].filter(pl=>t2(pl.team)).map(nm)}})()`));
+  ok(r.gate, 'Psychic Surge team: a plan bringing in Rillaboom (Grassy Surge) is blocked as a second terrain');
+  ok(!r.bad.length, `Psychic Surge team: no plan or More idea adds a second terrain${r.bad.length ? ' (' + r.bad.join(' | ') + ')' : ''}`); }
+// a support setter's own Weather Ball uses its weather (Sim, Nov 18: Weather Ball only works in weather); its own Water moves or
+// Hurricane still don't (Nov 7). Checked with the sets typed in (does not depend on the day's data), then with the usual sets.
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const T=['Gengar-Mega','Incineroar','Kingambit','Kommo-o','Politoed','Rillaboom'];
+  const mk=(n,mv)=>{const p=byName.get(n),m={...memberFrom(p,metaAbility(p)||undefined),p,d:p.d};if(mv){const x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x}else m._mv=memberMoves(m).moves;return m};
+  const lone=pt=>!!(gamePlan(T.map(n=>mk(n,n==='Politoed'?pt:null))).rows.find(r=>r.k==='weather')||{}).lone;
+  return {wb:lone(['Weather Ball','Muddy Water','Perish Song','Protect']),noWb:lone(['Muddy Water','Ice Beam','Perish Song','Protect']),meta:lone(null)}})()`));
+  ok(!r.wb, 'Perish Trap Politoed with Weather Ball: its rain is not called a weather nothing uses');
+  ok(r.noWb, 'the same Politoed with Muddy Water and Ice Beam but no Weather Ball: still a weather nothing uses');
+  ok(!r.meta, 'Perish Trap team (Mega Gengar, Incineroar, Kingambit, Kommo-o, Politoed, Rillaboom) with the usual sets: not flagged'); }
+// sun + rain (Nov 18 rule-holes sweep): Chlorophyll Venusaur is still the team's speed mode when Pelipper also sets rain, so the
+// team has speed control and no suggestion "adds speed control" by swapping out a weather setter
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const T=[mk('Charizard-Mega-Y','Drought',['Heat Wave','Solar Beam','Protect','Overheat']),mk('Venusaur','Chlorophyll',['Sleep Powder','Giga Drain','Earth Power','Protect']),
+    mk('Pelipper','Drizzle',['Hurricane','Weather Ball','Wide Guard','Protect']),mk('Archaludon','Stamina',['Electro Shot','Draco Meteor','Flash Cannon','Protect']),
+    mk('Garchomp-Mega-Z','Rough Skin',['Earthquake','Dragon Claw','Rock Slide','Protect']),mk('Grimmsnarl','Prankster',['Reflect','Light Screen','Spirit Break','Fake Out'])];
+  const sp=gamePlan(T).rows.find(r=>r.k==='speed')||{},one=gamePlan(T.filter(m=>m.p.n!=='Pelipper'&&m.p.n!=='Archaludon')).rows.find(r=>r.k==='speed')||{};return {st:sp.st,who:sp.who,one:one.st}})()`));
+  ok(r.st === 'ok', `sun + rain team: Chlorophyll Venusaur still counts as speed control (${r.st}: ${r.who})`);
+  ok(r.one === 'ok', `the same sun core alone: speed control as before (${r.one})`); }
+// Trick Room on a fast team (Nov 18 rule-holes sweep, hole 3): Imprison + Trick Room, or Trick Room next to Tailwind, is not the flaw
+// "Trick Room with no slow attacker"; Trick Room as the only mode with no slow attacker still is
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const base=[mk('Charizard-Mega-Y','Drought',['Heat Wave','Air Slash','Protect','Overheat']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Rock Slide','Protect']),mk('Glimmora','Toxic Debris',['Power Gem','Sludge Bomb','Spiky Shield','Mortal Spin'])];
+  const ind=mv=>mk('Indeedee','Psychic Surge',mv),whim=mk('Whimsicott','Prankster',['Tailwind','Moonblast','Encore','Protect']),gh=mk('Gholdengo','Good as Gold',['Make It Rain','Shadow Ball','Nasty Plot','Protect']),sn=mk('Sneasler','Unburden',['Close Combat','Dire Claw','Fake Out','Protect']);
+  const fl=t=>teamFlaws(t).includes('Trick Room with no slow attacker');
+  return {imp:fl([...base,ind(['Trick Room','Imprison','Follow Me','Psychic']),gh,sn]),tw:fl([...base,ind(['Trick Room','Follow Me','Psychic','Helping Hand']),whim,sn]),plain:fl([...base,ind(['Trick Room','Follow Me','Psychic','Helping Hand']),gh,sn])}})()`));
+  ok(!r.imp, 'Imprison + Trick Room Indeedee on a fast team: not "Trick Room with no slow attacker"');
+  ok(!r.tw, 'Trick Room next to Whimsicott\'s Tailwind on a fast team: not "Trick Room with no slow attacker"');
+  ok(r.plain, 'Trick Room as the only speed mode with no slow attacker: still "Trick Room with no slow attacker"'); }
+// a weather weakens an attacker only by its role (Nov 18 rule-holes sweep, hole 5): a support Milotic (Haze) on a sun team is not
+// "its weather weakens its own attacker"; an attacking Milotic still is, and so is a Rage Powder Volcarona in rain
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const sun=[mk('Charizard-Mega-Y','Drought',['Heat Wave','Solar Beam','Protect','Overheat']),mk('Rillaboom','Grassy Surge',['Fake Out','Grassy Glide','Wood Hammer','Protect']),mk('Aerodactyl','Unnerve',['Tailwind','Rock Slide','Wide Guard','Protect']),
+    mk('Drampa-Mega','Berserk',['Draco Meteor','Hyper Voice','Protect','Heat Wave']),mk('Farigiraf','Armor Tail',['Trick Room','Psychic Noise','Protect','Helping Hand'])];
+  const rain=[mk('Pelipper','Drizzle',['Hurricane','Weather Ball','Tailwind','Protect']),mk('Archaludon','Stamina',['Electro Shot','Draco Meteor','Flash Cannon','Protect']),mk('Kingambit','Defiant',['Kowtow Cleave','Sucker Punch','Iron Head','Protect']),
+    mk('Incineroar','Intimidate',['Fake Out','Flare Blitz','Parting Shot','Knock Off']),mk('Rillaboom','Grassy Surge',['Fake Out','Grassy Glide','Wood Hammer','Protect'])];
+  const fl=t=>teamFlaws(t).includes('its weather weakens its own attacker');
+  return {sup:fl([...sun,mk('Milotic','Competitive',['Haze','Muddy Water','Ice Beam','Protect'])]),att:fl([...sun,mk('Milotic','Competitive',['Muddy Water','Scald','Ice Beam','Protect'])]),volc:fl([...rain,mk('Volcarona','Flame Body',['Heat Wave','Bug Buzz','Rage Powder','Protect'])])}})()`));
+  ok(!r.sup, 'support Milotic (Haze) on a sun team: not "its weather weakens its own attacker"');
+  ok(r.att, 'attacking Milotic (Muddy Water, Scald, Ice Beam) on a sun team: still "its weather weakens its own attacker"');
+  ok(r.volc, 'Rage Powder Volcarona on a rain team: still "its weather weakens its own attacker"'); }
+// a weather override is a use (Nov 18 rule-holes sweep, hole 4): a support setter with a support job of its own (Yawn Hippowdon next
+// to Mega Gengar, Will-O-Wisp Ninetales) is not "a weather nothing uses"; one with plain attacks still is, and a plan may still never
+// bring one in for a team that has nothing to use its weather (Nov 7 rule)
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const gen=[mk('Gengar-Mega','Shadow Tag',['Shadow Ball','Sludge Bomb','Protect','Perish Song']),mk('Incineroar','Intimidate',['Fake Out','Flare Blitz','Parting Shot','Knock Off']),mk('Whimsicott','Prankster',['Tailwind','Moonblast','Encore','Protect']),
+    mk('Sylveon','Pixilate',['Hyper Voice','Moonblast','Protect','Quick Attack']),mk('Dragonite','Inner Focus',['Extreme Speed','Dragon Claw','Protect','Fire Punch'])];
+  const tal=[mk('Indeedee-F','Psychic Surge',['Follow Me','Psychic','Helping Hand','Protect']),mk('Gardevoir-Mega','Trace',['Hyper Voice','Psychic','Protect','Moonblast']),mk('Kingambit','Defiant',['Kowtow Cleave','Sucker Punch','Iron Head','Protect']),
+    mk('Dragonite','Inner Focus',['Extreme Speed','Dragon Claw','Protect','Iron Head']),mk('Sylveon','Pixilate',['Hyper Voice','Moonblast','Protect','Quick Attack'])];
+  const lone=t=>!!(gamePlan(t).rows.find(r=>r.k==='weather')||{}).lone,fl=t=>teamFlaws(t).includes('weather nobody uses');
+  const hipY=mk('Hippowdon','Sand Stream',['High Horsepower','Stone Edge','Protect','Yawn']),hipA=mk('Hippowdon','Sand Stream',['High Horsepower','Stone Edge','Rock Slide','Protect']);
+  const nt=mk('Ninetales','Drought',['Fire Blast','Heat Wave','Protect','Will-O-Wisp']);
+  const base=[...gen,mk('Farigiraf','Armor Tail',['Psychic Noise','Hyper Voice','Helping Hand','Protect'])],out=base[5],tm=[...gen,{...hipY,i:out.i}];
+  const pl={ch:[{out,slot:out.i,c:{p:hipY.p,mem:hipY}}],team:tm,gp:gamePlan(tm)};
+  return {yawn:lone([...gen,hipY])||fl([...gen,hipY]),att:lone([...gen,hipA]),wisp:lone([...tal,nt])||fl([...tal,nt]),gate:wxLoneBad(gamePlan(base),pl)}})()`));
+  ok(!r.yawn, 'Yawn Hippowdon next to Mega Gengar (a weather override): not "a weather nothing uses"');
+  ok(!r.wisp, 'Will-O-Wisp Ninetales on a team with nothing using sun (a weather override): not "a weather nothing uses"');
+  ok(r.att, 'Hippowdon with plain attacks and nothing using sand: still "a weather nothing uses"');
+  ok(r.gate, 'a plan bringing a Yawn Hippowdon into a team with nothing using sand: still blocked'); }
+// speed control means one thing (Nov 18 rule-holes sweep, hole 10). (1) The model's team basic "no speed control" counts the same
+// tools as the game plan: Tailwind, Trick Room, every speed-drop move (Thunder Wave too), weather speed with its setter, plus a
+// Choice Scarf; and the page (35-win-model.js) and the trainer (team-basics.mjs, used by model.mjs) agree on every real sheet.
+// (2) Imprison is an answer to the opponent's speed control only when its user also runs Trick Room or Tailwind.
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv,it)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;if(it)m.heldItem=it;return m};
+  const ns=t=>teamBasicsOf(t.map(m=>m.p.n),t).noSpeed;
+  const core=[mk('Incineroar','Intimidate',['Fake Out','Flare Blitz','Parting Shot','Knock Off']),mk('Kingambit','Defiant',['Kowtow Cleave','Sucker Punch','Iron Head','Protect']),mk('Sylveon','Pixilate',['Hyper Voice','Moonblast','Protect','Quick Attack']),mk('Dragonite','Inner Focus',['Extreme Speed','Dragon Claw','Protect','Iron Head'])];
+  const rain=[...core,mk('Pelipper','Drizzle',['Hurricane','Weather Ball','Wide Guard','Protect']),mk('Swampert-Mega','Swift Swim',['Waterfall','Earthquake','Protect','Rock Slide'])];
+  const twave=[...core,mk('Gholdengo','Good as Gold',['Make It Rain','Shadow Ball','Thunder Wave','Protect']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide'])];
+  const none=[...core,mk('Gholdengo','Good as Gold',['Make It Rain','Shadow Ball','Nasty Plot','Protect']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide'])];
+  const anti=t=>(gamePlan(t).rows.find(r=>r.k==='anti')||{}).st;
+  const imp=[...core,mk('Indeedee-F','Psychic Surge',['Follow Me','Imprison','Psychic','Protect']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide'])];
+  const impTR=[...core,mk('Indeedee-F','Psychic Surge',['Follow Me','Imprison','Trick Room','Protect']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide'])];
+  return {rain:ns(rain),twave:ns(twave),none:ns(none),imp:anti(imp),impTR:anti(impTR),drop:[...ROLE.drop].sort()}})()`));
+  ok(r.rain === 0, `Swift Swim Mega Swampert with Pelipper's rain: the model's team basic counts speed control (noSpeed ${r.rain})`);
+  ok(r.twave === 0, `Thunder Wave: the model's team basic counts speed control (noSpeed ${r.twave})`);
+  ok(r.none === 1, `no Tailwind, Trick Room, speed drop, weather speed or Scarf: still "no speed control" (noSpeed ${r.none})`);
+  ok(r.imp !== 'ok', `Imprison with no Trick Room or Tailwind of its own: not an answer to their speed control (${r.imp})`);
+  ok(r.impTR === 'ok', `Imprison + Trick Room Indeedee: still an answer to their speed control (${r.impTR})`);
+  let TB = null; try { TB = await import('../team-basics.mjs'); } catch (e) {}
+  ok(!!TB, 'team-basics.mjs (the trainer\'s team basics) exists');
+  if (TB) { ok(JSON.stringify([...TB.SPEED_DROP].sort()) === JSON.stringify(r.drop), 'the trainer and the game plan use the same speed-drop moves');
+    const M = rd('matches.json'), decks = M.decks.map(d => d.map(f => M.feats[f])).filter(nm => nm.filter(n => n.includes(':')).length >= 16 && new Set(nm.map(n => n.split(/[@:#]/)[0])).size === 6);
+    const pageNS = await pg.evaluate(D => window.__ev(`(${JSON.stringify(D)}).map(nm=>{const sp=[...new Set(nm.map(n=>n.split(/[@:#]/)[0]))];if(sp.some(n=>!byName.get(n)))return null;
+      const ms=sp.map(n=>{const p=byName.get(n),ab=(nm.find(f=>f.startsWith(n+'#'))||'#').split('#')[1],it=(nm.find(f=>f.startsWith(n+'@'))||'@').split('@')[1],x=nm.filter(f=>f.startsWith(n+':')).map(f=>({name:f.slice(n.length+1)}));
+        return {...memberFrom(p,ab||undefined),p,d:p.d,ability:ab||undefined,heldItem:it||undefined,custom:true,moves:x,_mv:x}});return teamBasicsOf(sp,ms).noSpeed})`), decks);
+    const cmp = decks.map((nm, i) => [pageNS[i], TB.deckBasics(nm).noSpeed]).filter(x => x[0] != null), diff = cmp.filter(x => x[0] !== x[1]).length;
+    ok(cmp.length > 1000 && !diff, `page and trainer agree on "no speed control" for every real sheet (${cmp.length} sheets, ${diff} differ, ${cmp.filter(x => x[1]).length} without)`); } }
+// Psychic Terrain over the team's own priority is a note, never a flaw (Sim, Nov 18, rule-holes sweep hole 7: 70 real teams, 43 good,
+// e.g. Indeedee next to Kingambit's Sucker Punch and Sneasler's Fake Out). The terrain row still says it; plans still never bring in a
+// Psychic Surge setter over 2+ teammates' priority (psyHit, suggest-audit.mjs)
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const t=[mk('Indeedee-F','Psychic Surge',['Follow Me','Psychic','Helping Hand','Protect']),mk('Kingambit','Defiant',['Kowtow Cleave','Sucker Punch','Iron Head','Protect']),mk('Sneasler','Unburden',['Fake Out','Dire Claw','Close Combat','Protect']),
+    mk('Charizard-Mega-Y','Drought',['Heat Wave','Solar Beam','Protect','Overheat']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide']),mk('Sylveon','Pixilate',['Hyper Voice','Moonblast','Protect','Quick Attack'])];
+  return {blocked:psyBlocked(t).length,flaw:teamFlaws(t).some(f=>/Psychic Terrain/.test(f)),note:((gamePlan(t).rows.find(r=>r.k==='terrain')||{}).note||'')}})()`));
+  ok(r.blocked >= 2 && !r.flaw, `Psychic Surge Indeedee over ${r.blocked} teammates' priority: not a team flaw`);
+  ok(/Psychic Terrain also blocks your own Fake Out and priority/.test(r.note), `the terrain row still notes it ("${r.note}")`); }
+// a plan that swaps out the terrain setter while a teammate's move needs that terrain stays, and its card says so (Sim, Nov 18,
+// rule-holes sweep hole 9: Indeedee swapped out next to Mega Meowstic's Expanding Force, 71 plans, never said)
+{ const r = await pg.evaluate(() => window.__ev(`(()=>{const mk=(n,a,mv)=>{const p=byName.get(n),m={...memberFrom(p,a),p,d:p.d},x=mv.map(name=>({name}));m.custom=true;m.moves=x;m._mv=x;return m};
+  const ind=mk('Indeedee-F','Psychic Surge',['Follow Me','Psychic','Helping Hand','Protect']),meo=mk('Meowstic-F-Mega','Competitive',['Expanding Force','Moonblast','Protect','Fake Tears']);
+  const rest=[mk('Kingambit','Defiant',['Kowtow Cleave','Sucker Punch','Iron Head','Protect']),mk('Charizard-Mega-Y','Drought',['Heat Wave','Solar Beam','Protect','Overheat']),mk('Garchomp','Rough Skin',['Earthquake','Dragon Claw','Protect','Rock Slide']),mk('Sylveon','Pixilate',['Hyper Voice','Moonblast','Protect','Quick Attack'])];
+  const base=[ind,meo,...rest].map((m,i)=>({...m,i}));const sw=(inc,keepMeo)=>{const team=base.map(m=>m===base[0]?{...inc,i:0}:m===base[1]&&!keepMeo?{...mk('Gholdengo','Good as Gold',['Make It Rain','Shadow Ball','Nasty Plot','Protect']),i:1}:m);
+    const pl={ch:[{out:base[0],slot:0,c:{p:inc.p,mem:inc}}].concat(keepMeo?[]:[{out:base[1],slot:1,c:{p:team[1].p,mem:team[1]}}]),team};pl._lane={k:'option'};return pl};
+  const inc=mk('Incineroar','Intimidate',['Fake Out','Flare Blitz','Parting Shot','Knock Off']),psy2=mk('Indeedee','Psychic Surge',['Follow Me','Psychic','Trick Room','Protect']);
+  const a=sw(inc,true),b=sw(psy2,true),c=sw(inc,false);
+  return {a:LANE.line(a),b:LANE.line(b),c:LANE.line(c)}})()`));
+  ok(/Psychic Terrain/.test(r.a) && /Expanding Force/.test(r.a), `Indeedee swapped out next to Mega Meowstic's Expanding Force: the card warns ("${r.a.replace(/<[^>]+>/g, '')}")`);
+  ok(!/Expanding Force/.test(r.b), 'a plan that brings in another Psychic Surge setter: no warning');
+  ok(!/Expanding Force/.test(r.c), 'a plan that also swaps out the Expanding Force user: no warning'); }
 ok(!errs.length, 'no page errors ' + errs.join(' | '));
 await b.close(); fs.unlinkSync(page); console.log(fails.length ? `\n${fails.length} FAILED` : '\nALL PASSED'); process.exit(fails.length ? 1 : 0);
