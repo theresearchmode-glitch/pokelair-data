@@ -9,7 +9,7 @@ Batch ead51cf8 (GitHub run 1374: 12 of 14 jobs passed; the 2 failures were one o
 - Track Record shows the real figure, rounded: about 290× (Q11 'rounded'); TOTAL takes its own line on small phones (Q12 A).
 - 17 clear item misspellings fold into the real item (review #15). The Preview shows it after the next daily data run.
 
-## Preview v209 (published just before 12:11 AM by the clock, 443 files), batch 7c314d84 (GitHub run 1378: 13 of 14 passed, Safari job still running then)
+## Preview v209 (published just before 12:11 AM by the clock, 443 files), batch 7c314d84 (GitHub run 1378: all 14 jobs passed, including Safari's engine)
 Everything below is on it, plus the 44px tap areas (#5) and the updated mock-ups gallery (#16).
 
 ## Done and tested (now on the Preview v209)
