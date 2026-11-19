@@ -1474,3 +1474,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:43 AM: Ticked 17 Plans page steps that have really landed (7 morning picks, 10 design-review items), each note naming its commit and time. Why: Sim asked about progress; notes were added all morning but nothing was ticked.
 - 8:44 AM: Rule 00p (Sim): Plans page ticks always accurate: tick the moment an item lands, re-check ticks every Plans update. Ticked W6 (PC follow-up) now.
 - 8:44 AM: Correction: W6's tick note said 'ticked 8:47 AM', typed without reading the clock (it was 8:44 AM by now.sh). Fixed in the tick store (version 2). Lesson: read now.sh in the same step as every time written, including tick notes.
+- 8:44 AM: Usage: the '1,405 teams' line keeps 13px (it was the browser default for <small>, 10.8px, flagged by GitHub's quality check on 37fcabe8). Why: off the type scale and hard to read.
