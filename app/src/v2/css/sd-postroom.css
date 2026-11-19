@@ -48,6 +48,11 @@
 .pr-meta dd.pr-also,.pr-meta dd.pr-via{margin-top:var(--s1);font:400 var(--t13)/1.5 var(--b);color:var(--pr-ink2)}
 .pr-bars{display:block;width:100%;height:32px;margin-top:var(--s3);fill:var(--pr-ink)}
 .pr-src{margin:var(--s2) 0 0;font:400 var(--t13)/1.5 var(--b);color:var(--pr-ink2)}.pr-src a{color:var(--pr-num);text-decoration:underline}
+/* design review Nov 19 #5 + PC test run Nov 19: a 44px tap area for each source link, with no change to how it looks: vertical padding on
+   an inline link never moves a line and shows nothing (no background). Two links can sit on lines right above each other (narrow screens),
+   so the first grows upward and any later one downward: the areas never cover each other; the nearest other control (Copy Code) is about
+   47px away. 17-19px + 28 = 45-47px. Test: app/test/tap-size.mjs */
+.pr-src a{position:relative;padding-top:calc(var(--s6) + var(--s1))}.pr-src a~a{padding:0 0 calc(var(--s6) + var(--s1))}
 @container prp (max-width:519.98px){.pr-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.pr-what{grid-column:1/-1}.pr-crow>*{flex:1 1 100%}.pr-label .np-btn.pr-copy{width:100%}.pr-cv{--pr-cvs:var(--t22)}}
 @container prp (max-width:399.98px){.pr-cv{--pr-cvs:var(--t20);letter-spacing:0}}@container prp (max-width:299.98px){.pr-cv{--pr-cvs:var(--t17)}}
 /* the rubber stamp across the parcel's top right corner */

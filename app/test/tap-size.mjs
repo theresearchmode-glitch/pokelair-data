@@ -1,4 +1,4 @@
-// Pre-launch check 5a (Nov 17): standalone text links and small buttons are at least 24px tall (WCAG 2.5.8); the reviewer measured
+// Pre-launch check 5a (Nov 17; 44px tap areas added Nov 19, design review #5): standalone text links and small buttons are at least 24px tall (WCAG 2.5.8); the reviewer measured
 // 19-22px on these. Links inside a sentence are exempt (not listed). Exit 1 on failure.   PAGE=app/dist/v2.html node app/test/tap-size.mjs
 import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || process.argv[2] || 'app/dist/v2.html'), fails = [], ok = (c, m) => { console.log((c ? '  pass  ' : '  FAIL  ') + m); if (!c) fails.push(m); };
@@ -9,6 +9,27 @@ for (const w of [390, 1440]) { const p = await b.newPage({viewport: {width: w, h
     const hs = await p.evaluate(src => { const R = new RegExp(src); return [...document.querySelectorAll('#main a, #main button')].filter(e => e.offsetParent !== null && R.test(e.textContent.trim()) && !(e.parentElement.tagName === 'P' && e.parentElement.textContent.trim().length > e.textContent.trim().length + 20)) /* a link inside a sentence is exempt (WCAG 2.5.8) */.map(e => Math.round(e.getBoundingClientRect().height)); }, src);
     H[w + r] = await p.evaluate(() => document.documentElement.scrollHeight);
     ok(hs.length > 0 && hs.every(h => h >= 24), `${w} wide, ${r}: /${src}/ at least 24px tall (${hs.join(', ') || 'not found'})`); }
+  await p.close(); }
+/* design review Nov 19 #5 + PC test run Nov 19: the real tap area of these links is at least 44px tall, measured where a finger lands, not
+   from the drawn box: on every line the link sits on (a wrapped link has two), from the middle of that line straight up and down, 1px at a
+   time, while the page still answers with this link (elementFromPoint). Because the scan stops at the first point another control or
+   anything else answers, two tap areas that cover each other fail here too (the covered one comes up short), and each line's own middle must
+   answer with the link. Before the fix: Go to My Team in Battle and Archetypes 20px, Read the Story at 1440 32px, the Mystery Gift source
+   links 17-18px. It can't see: other screen widths or states than listed, links not named here, or whether anything looks different (the
+   no-visible-change check is a before/after pixel compare). */
+for (const w of [320, 390, 1440]) for (const [r, st, sel] of [['battle', 'empty', '.bt-empty .np-link'], ['archetypes', 'guide', '.ar-none .np-link'], ['news', '', '.dp-read'], ['gifts', '', '.pr-src a'],
+  ['team', '', '.tm-sample .np-link, .tm-links .np-link'], ['practice', 'empty', '.pp2-act .np-link'], ['team', 'cleared', '.np-toast button']]) {
+  const p = await b.newPage({viewport: {width: w, height: 900}}); await p.addInitScript(() => { window.__PL_TEST = 1; });
+  await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1500);
+  if (st === 'empty' || st === 'guide') { await p.evaluate(() => { window.__ev('clearTeam(); render()'); document.querySelectorAll('.np-toast').forEach(t => t.remove()); }); await p.waitForTimeout(500); }
+  if (st === 'guide') { await p.evaluate(() => window.__ev('V2.arUi.open = V2.arData().rows[0].k; V2.redraw()')); await p.waitForTimeout(500); }
+  if (st === 'cleared') { await p.evaluate(() => window.__ev('V2.clearTeam()')); await p.waitForTimeout(500); }
+  const got = await p.evaluate(sel => [...document.querySelectorAll(sel)].filter(e => e.getBoundingClientRect().height > 0).map(e => { if (!e.closest('.np-toast')) e.scrollIntoView({block: 'center'});
+    const own = (x, y) => { const t = document.elementFromPoint(x, y); return !!t && t.closest('a,button') === e; };
+    const lines = [...e.getClientRects()].filter(q => q.width > 2).map(q => { const x = q.left + q.width / 2, y = q.top + q.height / 2; if (!own(x, y)) return 0;
+      let up = 0, dn = 0; while (up < 80 && own(x, y - up - 1)) up++; while (dn < 80 && own(x, y + dn + 1)) dn++; return up + dn + 1; });
+    return `${e.textContent.trim().replace(/\s+/g, ' ').slice(0, 24)} ${lines.join('/')}`; }), sel);
+  ok(got.length > 0 && got.every(g => g.split(' ').pop().split('/').every(h => +h >= 44)), `${w} wide, ${r}${st ? ' (' + st + ')' : ''}: tap area at least 44px tall on every line of ${sel} (${got.join(', ') || 'not found'})`);
   await p.close(); }
 /* C8 tap areas (Nov 19: audit #10 and design review #3 measured the drawn boxes, 36-38 px wide or 19-26 px tall; a box says nothing about where a
    tap lands, and the 24px check above passes any 20px link). Each named control, in the state where it shows (touch context), is hit-tested

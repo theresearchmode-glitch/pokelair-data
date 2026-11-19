@@ -92,6 +92,9 @@ a.dp-box:hover,button.dp-box:hover{box-shadow:inset 0 0 0 1px currentColor}
 .dp-read{display:inline-flex;align-items:center;min-height:32px;font:600 var(--t13)/1.5 var(--b);color:var(--dp-plot)}
 .dp-paper .dp-read{color:var(--dp-plot)}
 .dp-read:hover{text-decoration:underline}
+/* design review Nov 19 #5: on wide screens Read the Story is 32px tall and sits right under its headline (the same link), so its tap area
+   grows 12px downward only, to 44px, with no change to how it looks; below 1000px it is already 44px (min-height) */
+.dp-read{position:relative}.dp-read::before{content:"";position:absolute;left:0;right:0;top:0;height:max(100%,var(--tap))}
 
 /* ---------- row 2: more stories and the clip-out coupon ---------- */
 .dp-r2{display:grid;grid-template-columns:var(--dp-cols);gap:var(--s8);padding:var(--s6) 0;border-bottom:1px solid var(--dp-rule)}
