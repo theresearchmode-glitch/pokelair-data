@@ -15,7 +15,7 @@ const open = async (W, th, phone) => { const c = await b.newContext({viewport: {
 const look = p => p.evaluate(() => { const q = s => document.querySelector('#main ' + s), px = (s, k) => q(s) ? Math.round(parseFloat(getComputedStyle(q(s))[k])) : null, vis = e => !!e && e.getClientRects().length > 0;
   const btn = q('[data-wktech]'), tiles = [...document.querySelectorAll('#main .wk-tile')];
   return {gap: px('.wk', 'rowGap'), hl: px('.wk-hl', 'marginTop'), tk: px('.wk-tix .tk', 'marginTop'), top: px('.wk-top', 'paddingTop'),
-    tiles: [...new Set(tiles.map(t => Math.round(t.getBoundingClientRect().height)))].join(','), tix: [...document.querySelectorAll('#main .wk-tix > *')].filter(vis).length,
+    tiles: [...new Set(tiles.map(t => Math.round(t.getBoundingClientRect().height)))].join(','), tmin: [...new Set(tiles.map(t => Math.round(parseFloat(getComputedStyle(t).minHeight))))].join(','), tlow: tiles.filter(t => t.getBoundingClientRect().height < 119.5).length, tix: [...document.querySelectorAll('#main .wk-tix > *')].filter(vis).length,
     rows: [...document.querySelectorAll('#main .wk-tech ul > li')].filter(vis).length, link: vis(q('.wk-evall')) ? q('.wk-evall').textContent : '', href: q('.wk-evall') ? q('.wk-evall').getAttribute('href') : '',
     btn: vis(btn) ? btn.textContent : '', tag: btn ? btn.tagName : '', exp: btn ? btn.getAttribute('aria-expanded') : '', ctl: btn && document.getElementById(btn.getAttribute('aria-controls')) ? 'ok' : 'missing',
     focus: document.activeElement === btn, linkH: vis(q('.wk-evall')) ? Math.round(q('.wk-evall').getBoundingClientRect().height) : 0, btnH: vis(btn) ? Math.round(btn.getBoundingClientRect().height) : 0}; });
@@ -36,10 +36,16 @@ const boxes = p => p.evaluate(() => { const W = innerWidth, bad = [], known = []
 for (const th of ['light', 'dark']) {
   for (const W of [320, 390, 699]) { const [p, errs, c] = await open(W, th, true), n = await want(p); let x = await look(p);
     ok(x.gap === 24 && x.hl === 24 && x.tk === 16 && x.top === 12, `${th} ${W}: gaps 24/24/16/12 (section ${x.gap}, Biggest rise ${x.hl}, ticket ${x.tk}, Most Used ${x.top})`);
-    ok(x.tiles === '120', `${th} ${W}: weather tiles 120px tall (${x.tiles})`);
+    ok(x.tmin === '120' && !x.tlow, `${th} ${W}: weather tiles min-height 120 (the 152 rule no longer undoes it; min ${x.tmin}, heights ${x.tiles}, ${x.tlow} under 120)`);
     ok(x.tix === 1 && x.link === 'All of this week’s winners on Events ›' && x.href === '#events' && x.linkH >= 44, `${th} ${W}: Winners shows 1 ticket of ${n.ws} + "${x.link}" (${x.href}, ${x.linkH}px tall)`);
     ok(n.tech > 2 && x.rows === 2 && x.btn === `Show all ${n.tech} ›` && x.tag === 'BUTTON' && x.exp === 'false' && x.ctl === 'ok' && x.btnH >= 44, `${th} ${W}: New Tech shows 2 rows + "${x.btn}" (${n.tech} in the data; ${x.tag}, aria-expanded ${x.exp}, controls ${x.ctl}, ${x.btnH}px)`);
-    if (W === 390) { const H = await p.evaluate(() => document.documentElement.scrollHeight); ok(H / 844 <= 5.0, `${th} 390: page length ${H}px = ${(H / 844).toFixed(2)} screens (at most 5.0; was 5.89)`); }
+    if (W === 390) { // Nov 19: relative to the same page with Q32's phone cuts undone in place (same data): the frozen CI data and today's data differ in length
+      const L = await p.evaluate(() => { const H = document.documentElement.scrollHeight, q = s => [...document.querySelectorAll('#main ' + s)], set = (s, k, v) => q(s).forEach(e => e.style.setProperty(k, v));
+        const d = getComputedStyle(q('.wk-tix > *')[0]).display; q('.wk-tix > *').forEach(e => e.style.setProperty('display', d)); q('.wk-tech ul').forEach(u => u.classList.add('on'));
+        set('.wk', 'row-gap', '40px'); set('.wk-hl', 'margin-top', '40px'); set('.wk-tix .tk', 'margin-top', '24px'); set('.wk-top', 'padding-block', '20px'); set('.wk-tile', 'min-height', '152px'); set('.wk-evall, .wk-tmore', 'display', 'none');
+        const H0 = document.documentElement.scrollHeight; return {H, H0}; });
+      await p.reload(); await p.waitForTimeout(4000);
+      ok((L.H0 - L.H) / 844 >= 0.8, `${th} 390: page ${(L.H / 844).toFixed(2)} screens, ${((L.H0 - L.H) / 844).toFixed(2)} shorter than without Q32's cuts (${(L.H0 / 844).toFixed(2)}; at least 0.8; today's data: 5.89 to 4.89)`); }
     let bx = await boxes(p); note(bx, `${th} ${W}`); ok(!bx.bad.length && !bx.side, `${th} ${W}: nothing out of its box, nothing sideways (${bx.bad.slice(0, 3).join('; ') || 'clean'}${bx.side ? ', scrolls sideways' : ''})`);
     if (!x.btn) ok(false, `${th} ${W}: no Show all button to open`); else { await p.focus('#main [data-wktech]'); await p.keyboard.press('Enter'); await p.waitForTimeout(300); x = await look(p);
     ok(x.rows === n.tech && x.exp === 'true' && x.btn === 'Show Fewer' && x.focus, `${th} ${W}: Show all opens all ${n.tech} rows (${x.rows}), aria-expanded ${x.exp}, "${x.btn}", focus stays on it ${x.focus}`);
