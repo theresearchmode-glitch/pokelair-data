@@ -267,7 +267,7 @@ That is acceptable because the live branch's code is never served to players; sa
 1. Promote after the merge: A, B (recommended) or C (section 5)?
 2. May the main thread make a private scratch artifact to rehearse the publish and the account saving before the switch (3d)?
 3. Remove the 6 old font files at the switch (recommended), or keep them so a rollback needs fewer files?
-4. If a short broken window can't be avoided (3d, nulls count toward 255): OK to switch in a quiet late-night hour?
+4. If a short broken window can't be avoided (3d, nulls count toward 255): OK to switch in a quiet late-night hour? **Moot (Sim, Nov 19, 3:24 PM): S1-A yes, the mixed-page order (3d) has no broken window; the switch can run at any hour.**
 5. CLAUDE.md says every live publish carries the 345 sp/*.webp; after the switch it should say the 350 v2art files. May it be reworded?
 6. Add meta/post to the refresh task now (it skips a missing file harmlessly) or only on switch day?
 
