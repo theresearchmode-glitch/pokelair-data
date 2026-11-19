@@ -262,6 +262,9 @@ After Claude's honest review, Sim agreed:
   underdog, see above; Shady Paw is cut.)
 - Multitask where it helps (Sim, Nov 9): look-only work (sweeps, measurements, background runs) can run alongside a change; always
   tell Sim when we are multitasking. Changes themselves stay one at a time:
+- Batches (Sim, Nov 19, 10:29 AM: "lovely that sounds like a plan to me" to merging one at a time with each change's own test, and
+  the full ~40-minute check once per batch of up to about 4 changes): changes still merge one at a time, each passing its own test
+  at once; the full check runs once per batch, before the push.
 - One thing at a time: at most ONE grade/model change and ONE site item in progress. Finish (tested, reviewed, live or
   dropped) before starting the next. Small batches. Don't skip ahead of an open step on the Plans page.
 - NO GUESSING (Sim, Nov 9): check before acting or claiming anything, including small things (where a file lives, how a
