@@ -31,6 +31,8 @@ log use `bash docs/rebuild/log-decision.sh "..."`, which stamps the entry with t
 ## Pictures next to every design question (Sim, Nov 12, 7:15 PM; for now and always): docs/rebuild/RULES.md section 00b
 Each design question carries its picture(s) in the same message, right next to it; never "see the picture above".
 If Sim replies but skips a question, ask it again in the next message with its picture(s) again (Sim, Nov 12, 8:23 PM).
+The RECOMMENDED picture's top label band is GREEN (#0B6B2E, white text), the others black (Sim, Nov 19, 8:39 AM); the labeller
+docs/rebuild/preview-kit/label-picture.cjs does it for any label containing RECOMMENDED.
 
 ## ONE document for the rebuild: the Plans page (Sim, Nov 18; replaces the Rebuild Checklist)
 Sim, Nov 18: "i want to be using 1 document not 2". The Plans page (https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ, source
