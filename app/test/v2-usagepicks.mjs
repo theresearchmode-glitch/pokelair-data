@@ -40,4 +40,12 @@ for (const W of [390, 1280]) { const {ctx, p} = await open('usage', W); const re
   ok(res.every(x => x[2]), `W2b ${W}: the hero's share and win rate are the chosen list's own, "–" plus a plain key line where it has none (${res.map(x => x[0] + ': ' + x[1] + (x[2] ? '' : ' WRONG')).join(' | ')})`);
   await ctx.close(); }
 
+// ---- W2c: "Showdown ladder teams" ----
+{ const {ctx, p} = await open('team');
+  await p.evaluate(() => window.__ev(`(() => { S.slots = []; try { if (typeof save === 'function') save(); } catch (e) {} V2.redraw(); })()`)); await p.waitForTimeout(1200);
+  const t = await p.evaluate(() => { const m = document.querySelector('#main'); return {txt: m ? m.innerText.replace(/\s+/g, ' ') : '', empty: !!document.querySelector('#main .tm-empty'),
+    ring: window.__ev('V2.homeRing ? V2.homeRing() : ""'), lab: [...document.querySelectorAll('#main .tm-e-w')].map(x => x.innerText.replace(/\s+/g, ' ')).join(' | ')}; });
+  ok(t.empty && /% of Showdown ladder teams/.test(t.txt) && !/% of ladder teams/.test(t.txt), `W2c: the empty My Team says "% of Showdown ladder teams" (${t.empty ? t.lab.slice(0, 140) : 'empty My Team not shown'})`);
+  ok(/ of Showdown ladder teams/.test(t.ring) && !/ of ladder teams/.test(t.ring), `W2c: the old Home ringside (V2.homeRing, not drawn while The Stampede is Home) says "Showdown ladder teams" too`);
+  await ctx.close(); }
 await b.close(); console.log(`v2-usagepicks: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

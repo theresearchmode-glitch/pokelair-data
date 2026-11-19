@@ -9,7 +9,7 @@ const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') +
 const b = await chromium.launch();
 for (const [route, read] of [
   ['home', () => { const m = document.querySelector('#main'); if (!m) return null; const t = m.innerText.replace(/\s+/g, ' ');
-    const a = (t.match(/from ([\d,]+) real tournament teams/) || [])[1], u = (t.match(/([\d.]+)% of ladder teams · #1/) || [])[1], g = (t.match(/Game Plan [^.]{0,160}/) || [])[0];
+    const a = (t.match(/from ([\d,]+) real tournament teams/) || [])[1], u = (t.match(/([\d.]+)% of Showdown ladder teams · #1/) || [])[1], g = (t.match(/Game Plan [^.]{0,160}/) || [])[0];
     return {a, u, g, load: !!m.querySelector('.np-loading')}; }],
   ['team', () => { const m = document.querySelector('#main'); if (!m) return null; const s = m.querySelector('.tm-hero'), t = s ? s.innerText.replace(/\s+/g, ' ') : '';
     return {sc: (t.match(/(\d{1,3}) (?:Top tier|Tournament ready|Solid|Needs work|Missing a basic)/) || [])[1], load: !!m.querySelector('.np-loading')}; }],
