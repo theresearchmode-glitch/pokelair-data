@@ -100,12 +100,13 @@ function turnOneData(mine, theirs, r) {
   while (cand.length) { cand.forEach(c => { c.tw = twUp[c.me]; c.es = c.s * (c.tw ? 2 : 1); }); cand.sort(cmp); const c = cand.shift();
     const n = cand.find(y => y.me !== c.me && y.p === c.p && y.st === c.st && y.es === c.es); if (n) c.tie = n.x;
     order.push(c); if (c.act === 'Tailwind') twUp[c.me] = true; }
+  // their Fake Out line names its target from the start, so a flinched user's plan says whom it meant (third check, Nov 19)
   const theirAct = o => { const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = theirFOT.has(o);
-    return fo ? ['Fake Out', ''] : [`${d.worst.h.mv.name} into ${d.worst.on.d}`, `up to ${dmgP(100 * d.worst.pct)}% of its HP, ${koShort(d.worst.h.r)}`]; }; /* one wording for both lines (audit Nov 15) */
+    return fo ? [`Fake Out ${theirFOT.get(o).d}`, ''] : [`${d.worst.h.mv.name} into ${d.worst.on.d}`, `up to ${dmgP(100 * d.worst.pct)}% of its HP, ${koShort(d.worst.h.r)}`]; }; /* one wording for both lines (audit Nov 15) */
   // the beats, in move order: who moves, their Speed and bracket, the action and one short why (all plain text)
   const beats = order.map(o => { const ln = o.me ? lines.find(l => l[0] === o.x) : null, th = o.me ? null : theirAct(o.x);
     const why = ln ? ln[2] : th ? th[1] : 'no damaging move found into your leads';
-    return {x: o.x, me: o.me, speed: o.es, prio: o.p, act: ln ? ln[1] : th ? th[0] : theirFOT.has(o.x) ? 'Fake Out' : 'Unknown move', ...(o.tw ? {tw: 1} : {}), _tie: o.tie,
+    return {x: o.x, me: o.me, speed: o.es, prio: o.p, act: ln ? ln[1] : th ? th[0] : theirFOT.has(o.x) ? `Fake Out ${theirFOT.get(o.x).d}` : 'Unknown move', ...(o.tw ? {tw: 1} : {}), _tie: o.tie,
       why: o.tw ? `${why}${why ? '; ' : ''}moves at double Speed: ${o.me ? 'your' : 'their'} Tailwind is already up (Gen 9 turn order, assumed for Champions)` : why}; });
   // a speed tie between the two sides in one bracket: either may move first
   beats.forEach(b => { const n = b._tie ? beats.find(y => y.x === b._tie) : null; delete b._tie; if (n && !(/^Fake Out\b/.test(b.act) && /^Fake Out\b/.test(n.act))) b.why += `${b.why ? '; ' : ''}speed tie with ${n.x.d}: either can go first`; });

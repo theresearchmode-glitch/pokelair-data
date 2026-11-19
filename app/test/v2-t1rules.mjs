@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf = new Map(); for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) { teams.push(t.mons.map(m => m.n)); if (!refOf.has(t.mons.map(m => m.n).join('/'))) refOf.set(t.mons.map(m => m.n).join('/'), {ev: e, t}); }
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], yourFoTheirWord: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], yourFoTheirWord: [], planNoTarget: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
   const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
   const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp'], /* Extreme Speed into a side with Farigiraf's Armor Tail */
@@ -61,6 +61,8 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         for (const a of P.aim || []) if (a) for (const n of a.at) if (!P.their.includes(n)) st.boardArrow.push(tag + ': ' + a.move + ' at ' + n); } } }
     /* third check: a 'may not move' note from YOUR Fake Out never calls it their likely target (that is their Fake Out's wording) */
     for (const bt of T.beats) if (/if your .+?'s Fake Out hits it first \\(their likely target\\)/.test(bt.why)) st.yourFoTheirWord.push(tag + ': ' + bt.x.d + ': ' + bt.why);
+    /* third check (cosmetic): a flinched Fake Out user's plan names its target, as every Fake Out line does */
+    for (const bt of T.beats) if (bt.act === 'Flinches' && bt.plan === 'Fake Out') st.planNoTarget.push(tag + ': ' + bt.x.d);
     for (const bt of T.beats) if (bt.me && /^Fake Out (.+)$/.test(bt.act)) { const t = [...T.opp].find(o => o.d === bt.act.slice(9)); if (t && (t.types || t.p.t).includes('Ghost') && abilityOf(bt.x) !== 'Scrappy') st.foGhost.push(tag + ': ' + bt.act); } }
   S.slots = JSON.parse(slots0); fixSlots(); S.opp = JSON.parse(opp0); return st; })()`));
 await b.close();
@@ -84,4 +86,5 @@ ok(st.theirPrio > 0 && !st.theirPrioWrong.length, `their attacks move in their o
 ok(st.boards > 0 && !st.boardTwoMega.length, `Home's plan board draws one Mega per side, as turn one plans (${st.boards} boards, ${st.boardTwoMega.length} with two${st.boardTwoMega.length ? ', e.g. ' + st.boardTwoMega[0] : ''})`);
 ok(!st.boardArrow.length, `every plan board arrow points at a drawn Pokémon (${st.boardArrow.length}${st.boardArrow.length ? ', e.g. ' + st.boardArrow[0] : ''})`);
 ok(!st.yourFoTheirWord.length, `a flinch note from your own Fake Out gives its real reason, not 'their likely target' (${st.yourFoTheirWord.length}${st.yourFoTheirWord.length ? ', e.g. ' + st.yourFoTheirWord[0] : ''})`);
+ok(!st.planNoTarget.length, `a flinched Fake Out user's plan names its target (${st.planNoTarget.length}${st.planNoTarget.length ? ', e.g. ' + st.planNoTarget[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
