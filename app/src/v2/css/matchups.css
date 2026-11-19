@@ -184,6 +184,10 @@ div.mu-gr[data-muthr]{cursor:pointer}div.mu-gr[data-muthr]:hover .nm{color:var(-
 .tm-mus .mu-cards .mu-card .mc-mon .np-mon,.tm-mus .mu-cards .mu-card .mc-mon .np-mon .st{--iw:112px}.tm-mus .mu-cards .mu-out .mu-row .mu-dis{width:100%;justify-self:stretch}
 .tm-mus .mu-cards .mu-card img{width:100%;height:auto}.tm-mus .mu-cards .mu-out .mu-row .mu-dis{width:auto;max-width:128px;justify-self:center}
 .tm-mus .mu-cards .mu-out .mu-row .mu-dis{max-width:100%;text-wrap-style:balance}
+/* Sim's Q20 A (Nov 19): on the cards the calc note is one short grey line: 'Mirror · Calc: beats it'; no box, no 'disagrees', so every
+   card keeps the same height. The list rows (outside the cards) keep 'Mirror match' on its own line and the boxed 'Beats it' */
+.mu-sep{display:none}.mu-cards .mu-sep{display:inline}.mu-cards .mu-calc{white-space:nowrap} /* 'Calc: beats it' never splits; the line breaks after 'Mirror ·' */.mu-cards .mu-long{display:none}.mu-cards .mu-dis .mu-mir{display:inline;font-weight:500;color:inherit}
+.tm-mus .mu-cards .mu-out .mu-row .mu-dis .mu-lv{display:inline;padding:0;background:none;clip-path:none;font:inherit;color:inherit;text-transform:lowercase}
 @media (max-width:699.98px){.tm-mus .mu-cards .mu-card .ms-card{height:100px}.tm-mus .mu-cards .mu-card .mc-mon .np-mon,.tm-mus .mu-cards .mu-card .mc-mon .np-mon .st{--iw:76px}.tm-mus .mu-cards .mu-card{max-width:86px}.tm-mus .mu-cards .mu-out .mu-row .tm-v{font-size:var(--t13);padding:0 var(--s1);gap:2px;clip-path:none;background:none;white-space:nowrap}.tm-mus .mu-cards .mu-out .mu-row .tm-v i{width:8px}}
 /* Nov 15 (full check, a 5-of-6 team on phones): a row with a "Calc disagrees" note had no place for the note, so the grid's auto-placement
    pushed the verdict onto the name. The verdict keeps its column on the first line; the note gets the line under the name and verdict. */

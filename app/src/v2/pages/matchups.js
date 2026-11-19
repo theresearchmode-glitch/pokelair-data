@@ -30,7 +30,9 @@ V2.muSec = D => { if (!D.rows.length) return ''; const RD = D.RD, ms = D.ms, vie
 // skips a Pokémon against itself), so it reads how your other five do against it: the row says "Mirror match" instead of hiding it.
 V2.isMirror = n => { try { return !!n && members().some(m => m.p && m.p.n === n); } catch (e) { return false; } };
 V2.calcNote = (R, lv, n) => { const dis = R && ((R.w === 'Unfavoured' && lv >= 2) || (R.w === 'Favoured' && lv <= 1)), mir = V2.isMirror(n); if (!dis && !mir) return '';
-  return `<small class="mu-dis">${mir ? '<span class="mu-mir">Mirror match</span>' : ''}${dis ? `Calc disagrees: <span class="mu-lv">${CH.LV[lv]}</span>` : ''}</small>`; }; /* Nov 15: 'Beats it' kept together (lone 'it' at 390); text unchanged */
+  /* Sim's Q20 A (Nov 19): on the cards it reads as one short grey line, 'Mirror · Calc: beats it' (CSS hides the long words there);
+     the list rows keep 'Mirror match' and 'Calc disagrees: Beats it' */
+  return `<small class="mu-dis">${mir ? '<span class="mu-mir">Mirror<span class="mu-long"> match</span></span>' : ''}${mir && dis ? '<span class="mu-sep" aria-hidden="true"> · </span>' : ''}${dis ? `<span class="mu-calc"><span class="mu-cd">Calc<span class="mu-long"> disagrees</span>: </span><span class="mu-lv">${CH.LV[lv]}</span></span>` : ''}</small>`; }; /* Nov 15: 'Beats it' kept together (lone 'it' at 390); text unchanged */
 // Stand-outs (Sim, Nov 11): only the threats real games call Unfavoured (worst first) or Favoured; the even ones are one line
 V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).filter(x => x.R && x.R.w !== 'Even match');
   const unf = rows.filter(x => x.R.w === 'Unfavoured'), fav = rows.filter(x => x.R.w === 'Favoured');
