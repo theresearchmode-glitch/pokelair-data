@@ -1,8 +1,14 @@
 // ---------- Meta > Pokémon > Usage (Nov 14): "Who gets picked right now." (Sim's Grandstand brief, section 4) ----------
 // The Podium (1, 2, 3 on blocks; 4 to 10 on benches), "How <Pokémon> is played" (bars), "Usually alongside", Add to team, Ranks 11–60.
-// Every feature of today's Usage (meta-features.md META-01..07) is here, from today's shared logic: metaDoc / SRC / ui.metaSrc (the source,
-// back to Ranked ladder on a reload), setFor + setBasis + basis (the bars and "Of N teams"), trendFor (badges), V2.addToTeam.
-V2.usUi = {q: '', pick: null, all: false};
+// Every feature of today's Usage (meta-features.md META-01..07) is here, from today's shared logic: SRC / META (the source), setFor +
+// setBasis + basis (the bars and "Of N teams"), trendFor (badges), V2.addToTeam.
+/* Q13 A (Sim, Nov 19): Usage opens on Online tournaments (updates daily), back to it on a reload; Ranked ladder is one tap away. Usage keeps
+   its own source (V2.usUi.src) so that opening it changes nothing elsewhere: the site-wide ui.metaSrc (sets, ratings, threats on every other
+   page) still starts on Ranked ladder. Tapping a chip still sets ui.metaSrc as well, as it did before. */
+V2.usUi = {q: '', pick: null, all: false, src: 'tour'};
+V2.usDoc = () => META[SRC[V2.usUi.src]];
+// shared helpers that read ui.metaSrc (trendFor's badges) see Usage's own source while they run, then it is put back
+V2.usAs = f => { const g = ui.metaSrc; ui.metaSrc = V2.usUi.src; try { return f(); } finally { ui.metaSrc = g; } };
 V2.usSrcs = [['ingame', 'Ranked ladder'], ['tour', 'Online tournaments'], ['ladder', 'Showdown ladder']]; // today's order (parity, Nov 15)
 V2.usLine = d => { const per = d.period && !String(d.source).includes(d.period) ? ' · ' + (/^\d{4}-\d{2}$/.test(d.period) ? new Date(d.period + '-15T12:00:00').toLocaleDateString('en-US', {month: 'short', year: 'numeric'}) : d.period) : '';
   return `${d.source || ''}${per}${d.battles ? ` · ${(+d.battles).toLocaleString('en-US')} battles` : ''}`; };
@@ -15,7 +21,7 @@ V2.usNext = (d, now = Date.now()) => { const m = /^(\d{4})-(\d{2})/.exec(d && d.
 V2.usRow = (t0, kind) => { const p = byName.get(t0.n); let t = t0, sb = null;
   if (p && !(t0.mv && t0.mv.length)) { const st = setFor(p, 'doubles', 'tour'); t = {...t0, mv: st.mv, it: st.it, ab: st.ab, na: st.na, tm: st.tm}; sb = f => { const b = setBasis(p, st, f); return b ? b.html : ''; }; }
   else if (t0.teams) { const h = basis(t0.teams, 'team', 'sets', {pre: 'of'}); sb = () => h; }
-  return {t, p, sb, u: t.teams ? (t.u != null ? +t.u : null) : kind === 'ladder' && t.u != null ? +t.u : null, tr: trendFor(t.n, t.r)}; };
+  return {t, p, sb, u: t.teams ? (t.u != null ? +t.u : null) : kind === 'ladder' && t.u != null ? +t.u : null, tr: V2.usAs(() => trendFor(t.n, t.r))}; };
 V2.usName = R => R.p ? R.p.d : R.t.n;
 V2.usNums = R => { const E = V2.esc; return `${R.u != null ? `<b class="u">${(+R.u).toFixed(1)}<small>%</small></b>` : ''}${R.t.teams ? `<small>${basis(R.t.teams, 'team', 'teams', {})}</small>` : ''}${R.tr ? `<i class="us-tr ${E(R.tr.cls)}">${E(R.tr.txt)}</i>` : ''}`; };
 V2.usLabel = R => `${V2.usName(R)}, rank ${R.t.r}${R.u != null ? `, ${(+R.u).toFixed(1)}% of teams` : ''}${R.t.teams ? `, ${(+R.t.teams).toLocaleString('en-US')} teams` : ''}${R.tr ? ', ' + R.tr.txt : ''}`;
@@ -34,12 +40,12 @@ V2.usHow = (R, d) => { const E = V2.esc, t = R.t, p = R.p, nm = V2.usName(R), sb
     ${t.w ? `<p class="us-w">Win rate · ${E(d.source || 'this list')}: <b class="u">${(+t.w).toFixed(1)}%</b>${t.teams ? ' ' + basis(t.teams, 'team', 'teams', {pre: 'from its'}) : ''}</p>` : ''}
     ${groups.length ? `<div class="us-groups">${groups.join('')}</div>` : '<p class="tm-sub">No set details for this one yet.</p>'}${cc}${mates}
     <div class="us-add">${add}<p class="fine">% = share of its sets${t0src(R)}.</p></div></section>`; };
-const t0src = R => R.p && !(META[SRC[ui.metaSrc]] && (META[SRC[ui.metaSrc]].top || []).find(x => x.n === R.t.n && x.mv && x.mv.length)) ? '. Sets come from tournament teams where this list gives none' : '';
+const t0src = R => R.p && !(V2.usDoc() && (V2.usDoc().top || []).find(x => x.n === R.t.n && x.mv && x.mv.length)) ? '. Sets come from tournament teams where this list gives none' : '';
 // the spotlight: the most used Pokémon of this list (tag "Most used"; was "right now", player review 3a Nov 17)
 V2.usSpot = (R, d) => { if (!R || !R.p) return ''; const E = V2.esc, p = R.p, x = lairRows().find(y => y.p.n === p.n), N = V2.raNums(p), st = V2.addState(p.n);
   return `<div class="gs-spot ra-spot" style="--ta:var(--ty-${p.t[0]});--tb:var(--ty-${p.t[1] || p.t[0]})"><div class="gs-plate">${V2.mon(p.n, {bare: true})}</div>
     <div class="gs-sinfo"><p class="gs-tag u">Most used</p><h2 class="u">${V2.nameHtml(p.d)}</h2><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
-      <div class="gs-facts"><p><span>Usage rank</span><b class="u">#${R.t.r}</b></p>${R.u != null ? V2.gsShare((+R.u).toFixed(1) + '%', ({ingame: 'ranked ladder', tour: 'online tournament', ladder: 'Showdown ladder'})[ui.metaSrc] || 'these') : V2.gsShare(N.u != null ? V2.raPct(N.u) : null, 'tournament')}<p><span>Win rate</span><b class="u">${R.t.w ? (+R.t.w).toFixed(1) + '%' : N.w != null ? E(winFmt(N.w)) : '–'}</b></p></div>
+      <div class="gs-facts"><p><span>Usage rank</span><b class="u">#${R.t.r}</b></p>${R.u != null ? V2.gsShare((+R.u).toFixed(1) + '%', ({ingame: 'ranked ladder', tour: 'online tournament', ladder: 'Showdown ladder'})[V2.usUi.src] || 'these') : V2.gsShare(N.u != null ? V2.raPct(N.u) : null, 'tournament')}<p><span>Win rate</span><b class="u">${R.t.w ? (+R.t.w).toFixed(1) + '%' : N.w != null ? E(winFmt(N.w)) : '–'}</b></p></div>
       <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Pokémon Page</span></button>${st === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${E(p.n)}"><span>Add to My Team</span></button>` : ''}</div>
       ${st === 'have' ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : ''}${x ? `<p class="fine">Rated ${RS(x.r.total)} · ${lTier(x.r.total).k} tier</p>` : ''}</div></div>`; };
 
@@ -52,16 +58,16 @@ V2.usKey = rows => { const R = rows[0], N = R && R.p ? V2.raNums(R.p) : {};
   const what = fbU && fbW ? 'share and win rate above are' : fbU ? 'share above is' : fbW ? 'win rate above is' : '';
   return 'The ten most used, in order.' + (has ? ' Tap one to see how it is played.' : what ? '' : ' This list ranks them; it gives no percentages.') + (what ? ` The ${what} from Online tournaments.` : ''); };
 V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
-  if (!META[SRC[ui.metaSrc]]) { const alt = ['ingame', 'tour', 'ladder'].find(k => META[SRC[k]]); if (alt) ui.metaSrc = alt; }
-  const d = metaDoc(), kind = d && (d.kind || 'ladder');
+  if (!V2.usDoc()) { const alt = ['tour', 'ingame', 'ladder'].find(k => META[SRC[k]]); if (alt) U.src = alt; }
+  const d = V2.usDoc(), kind = d && (d.kind || 'ladder');
   const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
     <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Ratings</a><a href="#usage" class="on" aria-current="page">Usage</a><a href="#sets">Popular Sets</a></nav></div>`;
   const rows = d ? (d.top || []).map(t => V2.usRow(t, kind)) : [];
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Usage</span></p><h1 class="u"><span>Who gets picked</span> <span class="pl">right now.</span></h1>
     <p class="ra-lede">The most used Pokémon, from the ranked ladder, online tournaments or the Showdown ladder.</p>${tabs}<p class="ra-links"><a class="np-link" href="#meta">Ratings ›</a><a class="np-link" href="#sets">Popular Sets ›</a></p></section>`;
   const srcs = `<div class="gs-ctl"><div class="ra-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-usq value="${E(U.q)}" placeholder="Find a Pokémon in the ranks" aria-label="Find a Pokémon in the ranks" autocomplete="off">${V2.CLR}</label></div>
-    <div class="ra-filt us-srcs" role="group" aria-label="Source">${V2.usSrcs.map(([k, l]) => `<button type="button" class="ra-chip" data-ussrc="${k}" aria-pressed="${ui.metaSrc === k}"${META[SRC[k]] ? '' : ' disabled title="No data from this source yet"'}><span>${l.replace(' ', '<span class="us-sp"> </span>')}</span></button>`).join('')}</div>
-    ${d ? `<p class="fine us-src">${E(V2.usLine(d))}${ui.metaSrc === 'ladder' ? E(V2.usNext(d)) : ''}</p>` : ''}</div>`;
+    <div class="ra-filt us-srcs" role="group" aria-label="Source">${V2.usSrcs.map(([k, l]) => `<button type="button" class="ra-chip" data-ussrc="${k}" aria-pressed="${U.src === k}"${META[SRC[k]] ? '' : ' disabled title="No data from this source yet"'}><span>${l.replace(' ', '<span class="us-sp"> </span>')}</span></button>`).join('')}</div>
+    ${d ? `<p class="fine us-src">${E(V2.usLine(d))}${U.src === 'ladder' ? E(V2.usNext(d)) : ''}</p>` : ''}</div>`;
   if (!d) return `<div class="ra gsp us">${`<div class="gs-top">${head}${tabs}</div>`}<div class="gs-body">${srcs}<p class="tm-sub">No meta data loaded yet. Usage appears after the next data refresh.</p></div></div>`;
   const q = U.q.trim().toLowerCase(), byQ = R => V2.usName(R).toLowerCase().includes(q);
   let body;
@@ -79,12 +85,12 @@ V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-usq]'); if (!i) return; V2.usUi.q = i.value; const at = i.selectionStart; V2.redraw();
   const n = document.querySelector('[data-usq]'); if (n) { n.focus(); try { n.setSelectionRange(at, at); } catch (x) {} } });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ussrc],[data-uspick],[data-usrest]'); if (!b) return; const U = V2.usUi, d = b.dataset;
-  if (d.ussrc) { ui.metaSrc = d.ussrc; U.pick = null; }
+  if (d.ussrc) { U.src = d.ussrc; ui.metaSrc = d.ussrc; U.pick = null; }
   else if (d.uspick) { U.pick = d.uspick; V2.redraw(); const h = document.querySelector('[data-ushow]'); if (h && !V2.usUi._hover) h.scrollIntoView({behavior: V2.smooth(), block: 'nearest'}); return; }
   else if (d.usrest != null) U.all = !U.all;
   V2.redraw(); });
 // mouse screens: pointing at a Pokémon on the podium swaps "How it is played" (the brief's "Point at or tap")
 document.addEventListener('pointerover', e => { if (e.pointerType !== 'mouse') return; const b = e.target.closest && e.target.closest('.us-podium [data-uspick]'); if (!b || V2.usUi.pick === b.dataset.uspick) return;
-  V2.usUi.pick = b.dataset.uspick; const R = (metaDoc() && metaDoc().top || []).find(t => t.n === b.dataset.uspick); const h = document.querySelector('[data-ushow]');
-  if (R && h) { h.outerHTML = V2.usHow(V2.usRow(R, metaDoc().kind || 'ladder'), metaDoc()); document.querySelectorAll('.us-podium [data-uspick]').forEach(x => x.setAttribute('aria-pressed', x.dataset.uspick === V2.usUi.pick)); } });
+  V2.usUi.pick = b.dataset.uspick; const D = V2.usDoc(), R = (D && D.top || []).find(t => t.n === b.dataset.uspick); const h = document.querySelector('[data-ushow]');
+  if (R && h) { h.outerHTML = V2.usHow(V2.usRow(R, D.kind || 'ladder'), D); document.querySelectorAll('.us-podium [data-uspick]').forEach(x => x.setAttribute('aria-pressed', x.dataset.uspick === V2.usUi.pick)); } });
 (() => { const band = () => innerWidth >= 1100 ? 2 : innerWidth >= 700 ? 1 : 0; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (document.querySelector('.us')) V2.redraw(); }, 150); }); })();

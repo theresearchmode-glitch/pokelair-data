@@ -239,6 +239,8 @@ jobs:
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-trkfit.mjs
         if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-usagepicks.mjs
+        if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-pbppair.mjs
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-t1rules.mjs

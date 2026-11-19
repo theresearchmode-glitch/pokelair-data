@@ -284,10 +284,12 @@ t('SHELL-12', 'Text style: Title Case page names, commas not dots in lists, "Meg
   for (const p of ['Ratings', 'Usage', 'Winning Teams', 'This Week']) { await ui.go(p); expect(!/\bM-(?!C\b|D\b|\d)[A-Z][a-z]+/.test(await ui.text()), `${p} uses "M-X" naming`); } }), NEW ? {skip: 'old-site design; the new site\'s approved version is SHELL-12v (Sim, Nov 16, batch 17)'} : {});
 
 t('SHELL-13', 'Sliding pickers: one choice at a time, the list follows (Usage source)', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Usage'); let s = await d.usageSources(); expect(s.map(x => x.name).join() === 'Ranked ladder,Online tournaments,Showdown ladder' && s[0].on, 'sources: ' + JSON.stringify(s));
-  const line = await d.usageSourceLine(); await d.chooseUsageSource('Online tournaments'); s = await d.usageSources();
-  expect(s.filter(x => x.on).map(x => x.name).join() === 'Online tournaments', 'selection: ' + JSON.stringify(s)); expect(await d.usageSourceLine() !== line, 'list did not change source');
-  expect(await d.sliderMoved('Online tournaments'), 'the slider highlight did not move to the choice'); }));
+  /* new site: Usage opens on Online tournaments (Sim Q13 A, Nov 19), so the switch is checked going to Ranked ladder */
+  const [S0, S1] = NEW ? [1, 'Ranked ladder'] : [0, 'Online tournaments'];
+  await ui.go('Usage'); let s = await d.usageSources(); expect(s.map(x => x.name).join() === 'Ranked ladder,Online tournaments,Showdown ladder' && s[S0].on, 'sources: ' + JSON.stringify(s));
+  const line = await d.usageSourceLine(); await d.chooseUsageSource(S1); s = await d.usageSources();
+  expect(s.filter(x => x.on).map(x => x.name).join() === S1, 'selection: ' + JSON.stringify(s)); expect(await d.usageSourceLine() !== line, 'list did not change source');
+  expect(await d.sliderMoved(S1), 'the slider highlight did not move to the choice'); }));
 
 t('SHELL-14', 'Folds remember open/closed across a reload', run({team: TEAM}, async ({ui, d, ls}) => {
   await ui.go('Ratings'); expect(await d.foldIsOpen('About the Ratings') === false, 'About the Ratings starts open');
@@ -539,12 +541,13 @@ t('SHEET-07', 'Sheet actions: Add to team, Build around it, Popular Sets (PKMN-0
 
 // =============================== META · Usage ===============================
 t('META-01', 'Usage source line names the source and size', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Usage'); expect(has(await d.usageSourceLine(), 'Ranked'), 'ranked line: ' + await d.usageSourceLine());
+  await ui.go('Usage'); if (NEW) await d.chooseUsageSource('Ranked ladder'); /* new site opens on Online tournaments (Sim Q13 A, Nov 19) */ expect(has(await d.usageSourceLine(), 'Ranked'), 'ranked line: ' + await d.usageSourceLine());
   await d.chooseUsageSource('Online tournaments'); expect(/Limitless.*[\d,]+ teams/.test(await d.usageSourceLine()), 'tournament line: ' + await d.usageSourceLine());
   await d.chooseUsageSource('Showdown ladder'); expect(/Showdown.*battles/i.test(await d.usageSourceLine()), 'Showdown line: ' + await d.usageSourceLine()); }));
-t('META-02', 'Usage source switch changes the list; starts on Ranked ladder again after a reload', run({team: TEAM}, async ({ui, d}) => {
+t('META-02', NEW ? 'Usage source switch changes the list; starts on Online tournaments again after a reload' : 'Usage source switch changes the list; starts on Ranked ladder again after a reload', run({team: TEAM}, async ({ui, d}) => {
+  /* new site: Usage opens on Online tournaments (Sim Q13 A, Nov 19) */ const S0 = NEW ? 1 : 0, SN = NEW ? 'Online tournaments' : 'Ranked ladder';
   await ui.go('Usage'); const a = (await d.usageRows()).map(r => r.name).join(); await d.chooseUsageSource('Showdown ladder'); const b = (await d.usageRows()).map(r => r.name).join();
-  expect(a !== b, 'list order did not change'); await ui.reload(); await ui.go('Usage'); expect((await d.usageSources())[0].on, 'source remembered (it should start on Ranked ladder)'); }));
+  expect(a !== b, 'list order did not change'); await ui.reload(); await ui.go('Usage'); expect((await d.usageSources())[S0].on, `source remembered (it should start on ${SN})`); }));
 t('META-03', 'Usage search filters every rank; says when nothing matches', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Usage'); await d.usageSearch('zzz'); expect(has(await ui.text(), 'No Pokémon in this list matches that'), 'no no-match line');
   await d.usageSearch('ra'); const r = await d.usageRows(); expect(r.length && r.every(x => /ra/i.test(x.name)), 'non-matching rows: ' + r.map(x => x.name)); expect(r.some(x => x.rank > 10), 'search only looked at the top 10');
