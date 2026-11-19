@@ -20,7 +20,8 @@ const s = await p.evaluate(() => ({ev: typeof window.__ev, h1: !!document.queryS
 ok(s.ev === 'undefined', 'the test flag opens no way in (window.__ev is ' + s.ev + ')');
 ok(s.h1, 'Home draws');
 for (const r of ['guide', 'sheet', 'team-empty']) { await p.goto('file://' + OUT + '#' + r); await p.waitForTimeout(800);
-  const t = await p.evaluate(() => document.title); ok(t === 'NastyPlot', `#${r} is not a page here: it falls back like an unknown address (tab title: ${t})`); }
+  /* Sim's Q24 A (Nov 19): an unknown address shows the not-found page ('Nothing here.'), no longer Home */
+  const t = await p.evaluate(() => document.title); ok(t === 'Page not found · NastyPlot', `#${r} is not a page here: it shows the not-found page like any unknown address (tab title: ${t})`); }
 ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0].slice(0, 120) : ''));
 await b.close();
 console.log(`v2-public: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
