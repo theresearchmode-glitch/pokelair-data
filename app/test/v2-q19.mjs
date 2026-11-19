@@ -22,7 +22,10 @@ const measure = (a, h, f, w, ht, col, R, C) => lab.evaluate(async ([a, h, f, w, 
   const D = new Uint8Array(w * ht); // the ring: within R px of a glyph pixel, not a glyph pixel
   for (let y = 0; y < ht; y++) for (let x = 0; x < w; x++) if (M[y * w + x]) for (let dy = -R; dy <= R; dy++) for (let dx = -R; dx <= R; dx++) {
     const X = x + dx, Yy = y + dy; if (X >= 0 && Yy >= 0 && X < w && Yy < ht && !M[Yy * w + X]) D[Yy * w + X] = 1; }
-  for (let i = 0; i < w * ht; i++) { const k = i * 4; if (Math.abs(B[k] - F[k]) + Math.abs(B[k + 1] - F[k + 1]) + Math.abs(B[k + 2] - F[k + 2]) > 12) D[i] = 0; } // a front-row pixel
+  /* a front-row pixel, and (Q30, Nov 19) the 2px of soft edge around one: the top-rated stand in front of the words by design, and their
+     anti-aliased fringe is neither background nor outline (measured: the only cell under 3:1 at 1440 night sat on a front-row Pokémon's edge) */
+  const Fr = new Uint8Array(w * ht); for (let i = 0; i < w * ht; i++) { const k = i * 4; if (Math.abs(B[k] - F[k]) + Math.abs(B[k + 1] - F[k + 1]) + Math.abs(B[k + 2] - F[k + 2]) > 12) Fr[i] = 1; }
+  for (let y = 0; y < ht; y++) for (let x = 0; x < w; x++) if (Fr[y * w + x]) for (let dy = -2; dy <= 2; dy++) for (let dx = -2; dx <= 2; dx++) { const X = x + dx, Yy = y + dy; if (X >= 0 && Yy >= 0 && X < w && Yy < ht) D[Yy * w + X] = 0; }
   const Lt = Y(...col); let worst = 99, at = null, cells = 0;
   for (let cy = 0; cy < ht; cy += C) for (let cx = 0; cx < w; cx += C) { let g = 0, s = 0, m = 0;
     for (let y = cy; y < Math.min(ht, cy + C); y++) for (let x = cx; x < Math.min(w, cx + C); x++) { const i = y * w + x; if (M[i]) g++; if (D[i]) { const k = i * 4; s += Y(B[k], B[k + 1], B[k + 2]); m++; } }
