@@ -515,10 +515,14 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const {ms,A,D,mvs,mv,spr
     ${renderHitTable(ms)}`;dcStickWatch()}
 // Your team's best hit on each top threat (each side's usual set).
 // field: {weather, terrain} in play (sun from Drought, etc.), so a lead's weather boost is counted
-function bestHitOn(atkP,atkMoves,defP,aMem,dMem,field){let best=null;const A={p:atkP,...sideDefaults(atkP,'atk',aMem)},D={p:defP,...sideDefaults(defP,'def',dMem)};const F=field||{};
+// field.aStage {atk,spa}: the attacker's stat stages (turn one: Intimidate, Defiant, Competitive), used by a physical move
+// (Attack; not Body Press, which hits with Defense) or a special one (Sp. Atk); field.dAtkStage: the target's Attack stage (Foul Play)
+function bestHitOn(atkP,atkMoves,defP,aMem,dMem,field){let best=null;const A0={p:atkP,...sideDefaults(atkP,'atk',aMem)},D={p:defP,...sideDefaults(defP,'def',dMem)};const F=field||{};
+  if(F.dAtkStage)D.atkBoost=F.dAtkStage;
   // best by what you can count on: a move's damage is weighed by its accuracy, a two-turn move that charges first or a move
   // that must recharge counts for less, so a coin-flip OHKO move or Hyper Beam doesn't outrank a reliable attack
-  for(const mv of atkMoves){if(!mv||!mv.bp)continue;const r=damage({atk:A,def:D,move:mv,spread:!!mv.spread,weather:F.weather||'',terrain:F.terrain||'',auras:F.auras});if(!r||!r.hp)continue;
+  for(const mv of atkMoves){if(!mv||!mv.bp)continue;const A=F.aStage?{...A0,boost:mv.name==='Body Press'?0:mv.cat===1?F.aStage.atk||0:F.aStage.spa||0}:A0;
+    const r=damage({atk:A,def:D,move:mv,spread:!!mv.spread,weather:F.weather||'',terrain:F.terrain||'',auras:F.auras});if(!r||!r.hp)continue;
     const ch=chargesFirst(mv,F.weather,A.item),acc=moveAcc(mv,A.ability,F.weather,D,A.item),val=r.max*acc/100*(ch?.5:1)*(mv.recharge?.7:1);
     if(!best||val>best.val)best={mv,r,val,charge:ch,acc,recharge:!!mv.recharge}}return best}
 // plain words for what a best hit depends on: "charges first", "70% to hit", "must recharge", "one-hit KO move"

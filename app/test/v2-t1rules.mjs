@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf = new Map(); for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) { teams.push(t.mons.map(m => m.n)); if (!refOf.has(t.mons.map(m => m.n).join('/'))) refOf.set(t.mons.map(m => m.n).join('/'), {ev: e, t}); }
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: [], intoGone: [], dblParen: [], theirKO: 0, theirKOmiss: [], koSureN: 0, koSureBad: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: [], intoGone: [], dblParen: [], theirKO: 0, theirKOmiss: [], koSureN: 0, koSureBad: [], intimN: 0, intimWrong: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
   const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
   const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp'], /* Extreme Speed into a side with Farigiraf's Armor Tail */
@@ -102,15 +102,32 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
       const sheetOf = x => { const o = x._orig || x, it = x.item || o.item; return o.real && it ? it : null; };
       const side = (x, role) => { const mine = T.leads.includes(x), d = sideDefaults(x.p, role, mine ? (x._orig || x) : null), it = mine ? null : sheetOf(x);
         if (it) { d.item = it; if (x.ability && x.p.a.includes(x.ability)) d.ability = x.ability; } return {p: x.p, ...d}; };
+      /* Nov 19 review: Intimidate works when the leads come out, before any move, on both sides: −1 Attack per opposing Intimidate
+         lead, blocked by Clear Body, Hyper Cutter, White Smoke, Full Metal Body, Inner Focus, Oblivious, Own Tempo, Scrappy, Mirror
+         Armor (it sends the drop back), Flower Veil on a Grass type; Defiant, Guard Dog, Contrary end at +1 per Intimidate; Competitive
+         −1 Attack, +2 Sp. Atk; White Herb undoes one drop. A Mega comes out as its base form (its usual Ability then); a Mega whose own
+         Ability is Intimidate uses it on Mega Evolving. Worked out here from the six leads' Abilities and items, not from the lines */
+      const NOI = ['Clear Body', 'Hyper Cutter', 'White Smoke', 'Full Metal Body', 'Inner Focus', 'Oblivious', 'Own Tempo', 'Scrappy', 'Mirror Armor'], UPI = ['Defiant', 'Guard Dog', 'Contrary'];
+      const entry = x => { if (x.p.m) { const bp = byName.get(x.p.b) || [...byName.values()].find(q => q && !q.m && String(q.n).startsWith(x.p.b + '-')); if (bp) { try { const a = metaAbility(bp); if (a) return a; } catch (e) {} } } return abilityOf(x); };
+      const isInt = y => entry(y) === 'Intimidate' || abilityOf(y) === 'Intimidate';
+      const stg = (x, mv) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat) return 0; const mine = T.leads.includes(x), foes = mine ? T.opp : T.leads, own = mine ? T.leads : T.opp, n = foes.filter(isInt).length, ab = entry(x);
+        let atk = 0, spa = 0; if (n && !NOI.includes(ab) && !((x.types || x.p.t).includes('Grass') && own.some(y => entry(y) === 'Flower Veil'))) { if (UPI.includes(ab)) atk = n; else { atk = -n; if (ab === 'Competitive') spa = 2 * n; if (side(x, 'atk').item === 'White Herb') atk++; } }
+        if (isInt(x) && !NOI.includes(ab) && !UPI.includes(ab)) atk -= foes.filter(y => entry(y) === 'Mirror Armor').length;
+        return mv.cat === 1 ? Math.max(-6, Math.min(6, atk)) : Math.min(6, spa); };
+      const atkOf = (x, mv) => ({...side(x, 'atk'), boost: stg(x, mv)}), defOf = (x, a, mv) => mv && mv.name === 'Foul Play' ? {...side(x, 'def'), atkBoost: stg(x, {cat: 1, name: ''})} /* Foul Play hits with the target's Attack and its stage */ : side(x, 'def');
       for (const bt of T.beats) { const main = bt.main != null ? bt.main : bt.why, am = bt.act.match(/^(.+?) into (.+)$/), sp = !am && bt.me && main.match(/^KOs their (.+?)(?: \\(|\\. |$)/);
         if ((!am && !sp) || (am && am[1] === 'Fake Out') || /KO'd earlier this turn/.test(bt.why)) continue;
         const t = (bt.me ? T.opp : T.leads).find(o => o.d === (am ? am[2] : sp[1])), mvN = am ? am[1] : bt.act.replace(/ \\(hits both\\)$/, ''), mv = (bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN);
         if (!t || !mv) continue; const foe = bt.me ? t : bt.x, it = sheetOf(foe);
-        const r = damage({atk: side(bt.x, 'atk'), def: side(t, 'def'), move: mv, spread: !!mv.spread, weather: F.weather, terrain: F.terrain, auras: F.auras}); if (!r || !r.hp) continue;
+        const r = damage({atk: atkOf(bt.x, mv), def: defOf(t, bt.x, mv), move: mv, spread: !!mv.spread && !(am && bt.me) /* your 'into X' with a spread move: re-aimed at the one foe left, full damage (theirs always says 'into') */, weather: F.weather, terrain: F.terrain, auras: F.auras}); if (!r || !r.hp) continue;
+        /* Nov 19 review: a hit at a stat stage from Intimidate (or Defiant / Competitive) shows that stage's calc ('up to N%' or 'KOs')
+           and says so ('at −1 Attack') */
+        { const sv = stg(bt.x, mv); if (sv) { st.intimN++; const um = main.match(/^up to (\\S+)% of /i), okN = um ? um[1] === dmgP(100 * r.max / r.hp) : /^KOs/.test(main) ? r.min >= r.hp : false;
+          if (!okN || (!bt.why.includes('at ' + (sv > 0 ? '+' : '\u2212') + Math.abs(sv) + ' ') && bt.why.length <= 115) /* past 115 the stage words may give way to the 130 limit */) st.intimWrong.push(tag + ': ' + (bt.me ? 'your ' : 'their ') + bt.x.d + ' ' + bt.act + ' (' + main + ') vs ' + dmgP(100 * r.min / r.hp) + '-' + dmgP(100 * r.max / r.hp) + '% at ' + sv); } }
         /* Nov 19 review: the KO stamp on Battle's card (V2.pbpBeat) shows exactly when the KO is sure, told from the calc, not the
            line's text: every roll KOs, Sash/Sturdy don't hold, 100% to hit, not charging, and the attacker isn't at risk of being
            flinched or KO'd first (flinch 'likely', koRisk) */
-        if (am && typeof V2 === 'object' && V2.pbpBeat) { const A = side(bt.x, 'atk'), i = T.beats.indexOf(bt), acc = moveAcc(mv, A.ability, F.weather, side(t, 'def'), A.item);
+        if (am && typeof V2 === 'object' && V2.pbpBeat) { const A = atkOf(bt.x, mv), i = T.beats.indexOf(bt), acc = moveAcc(mv, A.ability, F.weather, side(t, 'def'), A.item);
           const sure = r.min >= r.hp && !r.sash && acc >= 100 && !chargesFirst(mv, F.weather, A.item) && !bt.koRisk && bt.flinch !== 'likely', stamp = /pbp-tgt ko/.test(V2.pbpBeat(bt, i, T, i + 1));
           if (sure) st.koSureN++; if (stamp !== sure) st.koSureBad.push(tag + ': ' + (bt.me ? 'your ' : 'their ') + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') stamp ' + stamp + ', ' + dmgP(100 * r.min / r.hp) + '-' + dmgP(100 * r.max / r.hp) + '%, ' + acc + '% to hit'); }
         /* Nov 19 review: their hit that can KO your lead before it moves (any roll, any accuracy; not Sash, not charging) puts that
@@ -120,7 +137,7 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         if (!it && !/^KOs/.test(main)) continue; /* the checks below: sheet lines and 'KOs' lines only (the two above: every attack line) */
         if (/^KOs/.test(main)) { st.koLines++; if (r.sash) st.sashKO.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + main + '), ' + t.d + ' holds with ' + r.sashBy); }
         if (!it) continue; st.sheetHits++; if (sideDefaults(foe.p, 'def', null).item !== it) st.sheetDiff++;
-        const um = main.match(/^up to (\\S+)% of /), okHit = um ? um[1] === dmgP(100 * r.max / r.hp) : /^KOs/.test(main) ? r.min >= r.hp : true;
+        const um = main.match(/^up to (\\S+)% of /i) /* i: the main fact starts with a capital */, okHit = um ? um[1] === dmgP(100 * r.max / r.hp) : /^KOs/.test(main) ? r.min >= r.hp : true;
         if (!okHit) st.sheetWrong.push(tag + ': ' + (bt.me ? 'your ' : 'their ') + bt.x.d + ' ' + bt.act + ' (' + main + ') vs ' + dmgP(100 * r.min / r.hp) + '-' + dmgP(100 * r.max / r.hp) + '% with ' + it); } }
     /* Nov 19: the Watch line names every Pokémon with 'your' or 'their' (mirrors have one name on both sides), on the right side */
     { const sides = [['your', T.leads.map(x => x.d)], ['their', T.opp.map(x => x.d)]], all = [...sides[0][1], ...sides[1][1]];
@@ -164,4 +181,5 @@ ok(st.warnNames > 0 && !st.warnSide.length, `the Watch line says 'your' or 'thei
 ok(!st.intoGone.length && !st.dblParen.length, `no act aims at a foe KO'd earlier this turn, no double parenthesis (${st.intoGone.length} aimed at a fainted foe, ${st.dblParen.length} '))'${st.intoGone.length ? ', e.g. ' + st.intoGone[0] : st.dblParen.length ? ', e.g. ' + st.dblParen[0] : ''})`);
 ok(st.theirKO > 0 && !st.theirKOmiss.length, `their hit that can KO your lead before it moves marks that lead at risk, sure or chance (${st.theirKO} such hits, ${st.theirKOmiss.length} unmarked${st.theirKOmiss.length ? ', e.g. ' + st.theirKOmiss[0] : ''})`);
 ok(st.koSureN > 0 && !st.koSureBad.length, `Battle's KO stamp shows exactly for a sure KO, told from the calc (not under 100% to hit, not when the attacker may not move first) (${st.koSureN} sure KOs, ${st.koSureBad.length} wrong${st.koSureBad.length ? ', e.g. ' + st.koSureBad[0] : ''})`);
+ok(st.intimN > 0 && !st.intimWrong.length, `a hit made after Intimidate (or Defiant / Competitive) shows that stage's calc and says so ('at −1 Attack') (${st.intimN} such lines, ${st.intimWrong.length} wrong${st.intimWrong.length ? ', e.g. ' + st.intimWrong[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

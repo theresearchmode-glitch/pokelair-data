@@ -34,7 +34,27 @@ function turnOneData(mine, theirs, r) {
   // best is planned (for both sides' hits)
   const PRIO_BLOCK = ['Armor Tail', 'Queenly Majesty', 'Dazzling'], MOLD = ['Mold Breaker', 'Teravolt', 'Turboblaze'];
   const prioBlocked = (a, d) => { const side = L.includes(d) ? L : opp; return (!MOLD.includes(abilityOf(a)) && side.some(y => PRIO_BLOCK.includes(abilityOf(y)))) || (F.terrain === 'psychic' && grounded(d)); };
-  const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, calcM(a), calcM(d), F);
+  // Intimidate (Nov 19 review: Mega Tyranitar's Knock Off 'KOs' Indeedee at −1 Attack too): it works when the leads come out,
+  // before any move, both sides. Each opposing Intimidate lead lowers Attack by 1, unless the Ability blocks it (55-threats.js
+  // NO_INTIM: Clear Body, Hyper Cutter, White Smoke, Full Metal Body, Inner Focus, Oblivious, Own Tempo, Scrappy; Mirror Armor sends
+  // it back to the Intimidate user) or Flower Veil guards a Grass type; Defiant (−1 then +2), Guard Dog and Contrary end at +1
+  // Attack, Competitive at −1 Attack and +2 Sp. Atk; White Herb undoes one drop. A Mega is still its base form when the leads come
+  // out, so its base form's usual Ability counts then (Mega Gyarados: Intimidate; Mega Metagross: Clear Body); a Mega whose own
+  // Ability is Intimidate (Mega Manectric) uses it when it Mega Evolves, before any move. Rattled's +1 Speed is not counted.
+  const INTIM_NO = ['Clear Body', 'Hyper Cutter', 'White Smoke', 'Full Metal Body', 'Inner Focus', 'Oblivious', 'Own Tempo', 'Scrappy', 'Mirror Armor'], INTIM_UP = ['Defiant', 'Guard Dog', 'Contrary'];
+  const entryAb = x => { const bp = x && x.p && x.p.m ? baseP(x.p) : null; if (bp) { try { const a = metaAbility(bp); if (a) return a; } catch (e) {} } return abilityOf(x); };
+  const intimOf = y => entryAb(y) === 'Intimidate' || abilityOf(y) === 'Intimidate', sideOfX = x => L.includes(x) ? L : opp, foesOf = x => L.includes(x) ? opp : L;
+  const stage = new Map([...L, ...opp].map(x => { const n = foesOf(x).filter(intimOf).length, ab = entryAb(x), it = sideDefaults(x.p, 'atk', calcM(x)).item; let atk = 0, spa = 0;
+    if (n && !INTIM_NO.includes(ab) && !((x.types || x.p.t || []).includes('Grass') && sideOfX(x).some(y => entryAb(y) === 'Flower Veil'))) {
+      if (INTIM_UP.includes(ab)) atk = n; else { atk = -n; if (ab === 'Competitive') spa = 2 * n; if (it === 'White Herb') atk += 1; } }
+    /* Mirror Armor sends the drop back to the Intimidate user (unless that user's own Ability blocks it) */
+    if (intimOf(x) && !INTIM_NO.includes(ab) && !INTIM_UP.includes(ab)) atk -= foesOf(x).filter(y => entryAb(y) === 'Mirror Armor').length;
+    return [x, {atk: Math.max(-6, Math.min(6, atk)), spa: Math.min(6, spa)}]; }));
+  const stOf = x => stage.get(x) || {atk: 0, spa: 0};
+  // the stage a move hits with, in plain words for its line: 'at −1 Attack', 'at +2 Sp. Atk' (Body Press: Defense, untouched; Foul Play: the target's Attack)
+  const stageNote = (x, mv) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat) return ''; const s = stOf(x), v = mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
+  const hitNotes = (x, h) => [hitNote(h), stageNote(x, h && h.mv)].filter(Boolean).join(', ');
+  const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, calcM(a), calcM(d), {...F, aStage: stOf(a), dAtkStage: stOf(d).atk});
   // speed in that field: Chlorophyll / Swift Swim / Sand Rush / Slush Rush double in their weather
   const speF = x => spe(x) * (typeof speedMul === 'function' ? speedMul(abilityOf(x), F.weather) : 1);
   // their threat to each of my leads: the hardest single hit
@@ -93,7 +113,7 @@ function turnOneData(mine, theirs, r) {
   // (Nov 19 wording pass) a spread move names its foe ('KOs their X', 'up to N% of their X's HP'); the partner it also hits is a
   // second short sentence. Never 'KOs' when Focus Sash or Sturdy holds it at 1 HP (h.r.sash; damage() clears it for multi-hit moves,
   // which break the Sash): 'up to N% of its HP, Sash holds' (koShort) instead
-  function hitWhy(m, h, o, hitsAlly) { const partner = L.find(x => x !== m), nt = hitNote(h), ko = h.r.min >= h.r.hp && !h.charge && !h.r.sash;
+  function hitWhy(m, h, o, hitsAlly) { const partner = L.find(x => x !== m), nt = hitNotes(m, h), ko = h.r.min >= h.r.hp && !h.charge && !h.r.sash;
     const ally = hitsAlly ? (() => { const r2 = hitOn(m, [h.mv], partner); return `. Also hits your ${partner.d}${r2 ? ' (up to ' + dmgP(100 * r2.r.max / r2.r.hp) + '%)' : ''}`; })() : '';
     return `${ko ? 'KOs' + (h.mv.spread ? ' their ' + o.d : '') : 'up to ' + dmgP(100 * h.r.max / h.r.hp) + '% of ' + (h.mv.spread ? `their ${o.d}'s` : 'its') + ' HP, ' + koShort(h.r)}${nt ? ' (' + nt + ')' : ''}${ally}`; }
   planLines();
@@ -115,7 +135,7 @@ function turnOneData(mine, theirs, r) {
     order.push(c); if (c.act === 'Tailwind') twUp[c.me] = true; }
   // their Fake Out line names its target from the start, so a flinched user's plan says whom it meant (third check, Nov 19)
   const theirAct = o => { const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = theirFOT.has(o);
-    return fo ? [`Fake Out ${theirFOT.get(o).d}`, ''] : [`${d.worst.h.mv.name} into ${d.worst.on.d}`, `up to ${dmgP(100 * d.worst.pct)}% of its HP, ${koShort(d.worst.h.r)}${hitNote(d.worst.h) ? ' (' + hitNote(d.worst.h) + ')' : ''}`]; }; /* hitNote: '90% to hit' as yours says (Nov 19 review) */ /* one wording for both lines (audit Nov 15) */
+    return fo ? [`Fake Out ${theirFOT.get(o).d}`, ''] : [`${d.worst.h.mv.name} into ${d.worst.on.d}`, `up to ${dmgP(100 * d.worst.pct)}% of its HP, ${koShort(d.worst.h.r)}${hitNotes(o, d.worst.h) ? ' (' + hitNotes(o, d.worst.h) + ')' : ''}`]; }; /* hitNotes: '90% to hit', 'at −1 Attack' as yours says (Nov 19 review) */ /* one wording for both lines (audit Nov 15) */
   // the beats, in move order: who moves, their Speed and bracket, the action and one short why (all plain text)
   // Why lines (Nov 19 wording pass, after a visual check found 10-line notes): each beat's why is its main fact, and the notes that
   // gather on it (_n: rank r, lower first; k: kind) are folded at the end into at most one short note, plus at most one short tag.
@@ -213,6 +233,8 @@ function turnOneData(mine, theirs, r) {
       ns = ns.filter(n => !risk.includes(n)).concat({r: 1, s: risk.every(n => n.k === 'ko') ? `may be KO'd first by ${who.join(' or ')}` : 'may not move: ' + [...risk.filter(n => n.k === 'flinch').map(n => `${nm(n.u)}'s Fake Out`), ...who.map(w => `a KO from ${w}`)].join(' or ')}); }
     ns.sort((a, c) => a.r - c.r); const parts = [b.main]; if (ns[0]) parts.push(cap(ns[0].s) + (ns[0].sfx && b.main.length + ns[0].s.length + ns[0].sfx.length + 2 <= 100 ? ns[0].sfx : ''));
     const tag = ns.slice(1).find(n => n.tag); if (tag && (tag.k === 'fotie' || (parts.join('. ') + '. ' + tag.tag).length <= 100)) parts.push(tag.tag); /* a Fake Out speed tie always shows: without it, 'Stops' would overclaim */
+    /* the house rule's 130 characters: a long line drops its stage words ('at −1 Attack'; the numbers keep the stage) first */
+    if (parts.filter(Boolean).join('. ').length > 130) parts[0] = parts[0].replace(/ \(at [+−]\d (?:Attack|Sp\. Atk)\)|, at [+−]\d (?:Attack|Sp\. Atk)(?=\))/, '');
     b.why = parts.filter(Boolean).join('. '); }
   // a threat that can't act on turn one (your Fake Out stops it, or it uses its own Fake Out) is still a threat from turn two on
   const later = o => theirFOT.has(o) || (flinched.get(o) || {}).sure;
