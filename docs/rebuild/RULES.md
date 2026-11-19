@@ -108,6 +108,7 @@ without actually checking."
 - Challenge plans and limits (including Sim's) when the evidence points elsewhere; look deeper than the request.
 
 ## 0b. Design philosophy (Sim, Nov 12): usability and easy accessibility are key factors in every design decision.
+Short pages on phones (Sim, Nov 19, 10:07 AM): "make sure our pages are not running super long on mobile. i dont want people to be scrolling 10 times to just see the info!" Every page's length at 390x844 (screens = page height / 844) is measured for each page change; the main info comes in the first screens; long lists fold or page. Any change that makes a page longer on phones says by how much.
 Each screen leads to its one useful next action; nothing a player needs is buried; controls are reachable by touch and keyboard
 (44px targets, real tab stops); words are plain. Keep the WOW, but never at the cost of using the site.
 

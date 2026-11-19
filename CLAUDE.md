@@ -55,6 +55,8 @@ One quick line in plain words saying why, right next to each recommendation.
 without checking first. (docs/rebuild/RULES.md section 0.)
 
 ## Design philosophy (Sim, Nov 12): usability and easy accessibility are key factors in every design decision
+Short pages on phones (Sim, Nov 19, 10:07 AM): "make sure our pages are not running super long on mobile. i dont want people to be
+scrolling 10 times to just see the info!" Every page's length at 390 wide is measured and kept short (docs/rebuild/RULES.md 0b).
 (docs/rebuild/RULES.md section 0b).
 
 ## Be proactive and efficient (Sim, Nov 17; a standing rule)

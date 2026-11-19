@@ -7,13 +7,15 @@
 import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') + msg); if (!c) fails.push(msg); };
-// before Q21 (6ef440a5, --preview-data build): the search box's top and left at 700 and 1440, light and dark alike
-const BEFORE = {700: {top: 923, left: 43}, 1440: {top: 557, left: 91}};
+// before Q21 (6ef440a5, --preview-data build): the search box's gap under the featured #1 and its left edge at 700 and 1440, light and dark
+// alike. Nov 19: measured from the featured #1, not from the page top, so the content above it (today's data vs CI's frozen data) can't move it
+// (absolute tops were 923/557 on today's data, 1008/620 on the frozen data; the gaps are 24/93 on both)
+const BEFORE = {700: {gap: 24, left: 43}, 1440: {gap: 93, left: 91}};
 const open = async (W, H, th, touch) => { const c = await b.newContext({viewport: {width: W, height: H}, colorScheme: th, hasTouch: touch, isMobile: touch}), p = await c.newPage();
   await p.addInitScript(() => { window.__PL_TEST = 1; }); await p.goto('file://' + PAGE + '#meta', {timeout: 90000}); await p.waitForSelector('[data-raq]', {timeout: 30000}); await p.waitForTimeout(1500); return {c, p}; };
 const measure = p => p.evaluate(() => { const q = document.querySelector('[data-raq]'), box = q.closest('.ra-q') || q, sp = document.querySelector('[data-raspotw]'), Q = box.getBoundingClientRect();
   const S = sp && sp.getBoundingClientRect(), cw = document.documentElement.clientWidth, chips = [...document.querySelectorAll('.ra-filt .ra-chip')].filter(x => x.getClientRects().length);
-  const out = {top: Q.top + scrollY, left: Q.left, vh: innerHeight, theme: document.documentElement.dataset.theme || '', spotTop: S ? S.top + scrollY : null,
+  const out = {top: Q.top + scrollY, left: Q.left, vh: innerHeight, theme: document.documentElement.dataset.theme || '', spotTop: S ? S.top + scrollY : null, gap: S ? Q.top - S.bottom : null,
     domFirst: !!(sp && (q.compareDocumentPosition(sp) & Node.DOCUMENT_POSITION_FOLLOWING)), n: chips.length, out: [], short: [], rows: {},
     filtScroll: (() => { const f = document.querySelector('.ra-filt'); return f ? f.scrollWidth - f.clientWidth : 0; })(), side: document.documentElement.scrollWidth - innerWidth };
   for (const c of chips) { const r = c.getBoundingClientRect(); if (r.left < -0.5 || r.right > cw + 0.5) out.out.push(c.textContent.trim()); if (r.height < 44) out.short.push(c.textContent.trim());
@@ -42,13 +44,13 @@ for (const th of ['light', 'dark']) {
       ok(s.focus && s.v === 'Sneasler', `${tag}: typing in the search keeps the box focused with its text after the redraw`); }
     await c.close(); }
   for (const W of [700, 1440]) { const {c, p} = await open(W, 900, th, false), m = await measure(p), B = BEFORE[W], tag = `${W} ${th}`;
-    ok(Math.abs(m.top - B.top) <= 2 && Math.abs(m.left - B.left) <= 2, `${tag}: the search box sits where it did before Q21 (top ${Math.round(m.top)} vs ${B.top}, left ${Math.round(m.left)} vs ${B.left})`);
+    ok(m.gap != null && Math.abs(m.gap - B.gap) <= 2 && Math.abs(m.left - B.left) <= 2, `${tag}: the search box sits where it did before Q21 (${Math.round(m.gap)}px under the featured #1 vs ${B.gap}, left ${Math.round(m.left)} vs ${B.left})`);
     ok(m.side <= 0, `${tag}: nothing scrolls the page sideways (${m.side}px)`);
     await c.close(); } }
 // crossing the line by resizing moves the controls (the page redraws when the width crosses 700)
 { const {c, p} = await open(1000, 900, 'light', false); await p.setViewportSize({width: 390, height: 844}); await p.waitForTimeout(800); const m = await measure(p);
   ok(m.top < m.spotTop && m.domFirst, `resize 1000 → 390: the search moves above the featured #1 (${Math.round(m.top)} < ${Math.round(m.spotTop)})`);
   await p.setViewportSize({width: 1440, height: 900}); await p.waitForTimeout(800); const d = await measure(p);
-  ok(Math.abs(d.top - BEFORE[1440].top) <= 2, `resize 390 → 1440: the search goes back to its desktop place (top ${Math.round(d.top)} vs ${BEFORE[1440].top})`); await c.close(); }
+  ok(d.gap != null && Math.abs(d.gap - BEFORE[1440].gap) <= 2, `resize 390 → 1440: the search goes back to its desktop place (${Math.round(d.gap)}px under the featured #1 vs ${BEFORE[1440].gap})`); await c.close(); }
 await b.close();
 console.log(fails.length ? `\nv2-q21: ${fails.length} FAILED` : '\nv2-q21: ALL PASSED'); process.exit(fails.length ? 1 : 0);
