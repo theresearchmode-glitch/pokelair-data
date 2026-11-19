@@ -1,3 +1,6 @@
+// Q30 (Sim, Nov 19, 11:08 AM) replaced Q19's glow with the logo's sticker letters: each letter has a black outline, then a white sticker
+// edge. What touches the letters is the outline, so the ring measured is 1-2px outside the glyphs (the outline), not 1-4px (that
+// reached the white edge, 1.3:1, which is not what sits next to the letters). Below: the original Q19 description, ring changed to 1-2px.
 // Home hero (Sim's Q19 A, Nov 19): line 2 of the headline ("your win rate.", #9BDCFF) must reach at least 3:1 (the rule for big text) against
 // what is really behind it, crowd included, at 320-2560, light and dark. Read from pixels: one screenshot of the headline as shown, one with the
 // headline's text made transparent (its band-blue glow stays, since it is part of what sits behind the words). Line 2's glyph pixels are the
@@ -37,7 +40,7 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1280, 1440, 
   const hidden = (await p.screenshot({clip})).toString('base64');
   await p.addStyleTag({content: '.sdh-front{visibility:hidden!important}'}); await p.waitForTimeout(200);
   const front = (await p.screenshot({clip})).toString('base64');
-  const m = await measure(shown, hidden, front, info.w, info.h, info.col, 4, 16); res.push({th, W, ...m});
+  const m = await measure(shown, hidden, front, info.w, info.h, info.col, 2, 16); res.push({th, W, ...m});
   console.log(`  ${th} ${W}: line 2 ${info.col.join(',')}, ${m.n} glyph px, ${m.cells} cells, worst ${m.worst.toFixed(2)}:1 at ${m.at}`);
   await p.close(); }
 const bad = res.filter(r => !(r.cells >= 10 && r.worst >= 3)), lo = res.reduce((a, r) => r.worst < a.worst ? r : a);
