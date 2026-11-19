@@ -22,6 +22,10 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 19, 8:19 AM): keep both slots busy while approved work remains; refill a slot in the same turn a helper
 finishes; every status message names both slots.
 
+## Plans page ticks always accurate (Sim, Nov 19, 8:44 AM): docs/rebuild/RULES.md section 00p
+Tick each step the moment it lands (pushed + checks passed + screenshots; pages need Sim's OK), with commit and clock time in the note;
+every Plans update re-checks ticks against reality.
+
 ## Times are always read from the clock (Sim, Nov 12)
 Decisions are announced in chat WITH their clock time (Sim, Nov 19, 8:40 AM: "put in timestamps next to the decisions you are making and
 announce them in the chat ... VERY punctual ... never lie"): run now.sh in the same step, log with log-decision.sh, and write the

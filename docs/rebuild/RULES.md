@@ -53,6 +53,13 @@ come, so nothing ran for about 10 minutes until Sim noticed. From now on:
    its slot (next approved pick on its own branch, or a check / picture job) and start it. The watchdog wake-up also checks helpers.
    Every status message names both slots: what each is doing, or that it is free and why.
 
+## 00p. The Plans page's ticks are always accurate (Sim, Nov 19, 8:44 AM: "make sure the plans page's check marks are accurate as of now and that is how it is going forward. otherwise i dont know how we're doing")
+1. Tick a step IN THE SAME STEP it lands: pushed, its checks passed, screenshots sent (pages: Sim's OK on the latest Preview). The
+   tick's note names the commit and its clock time.
+2. Every Plans page update (45-60 min) also re-checks the ticks against reality: no landed item left unticked, nothing ticked that
+   isn't really done (untick and say why if a landed item turns out broken).
+3. Notes alone are not progress: if it isn't ticked, it isn't done.
+
 ## 00s. Only Sim's own words stop the work (Sim, Nov 18, 9:50 PM Eastern: "Make sure that mistake never ever happens again.")
 On Nov 18 at about 9:47 PM Eastern a tool call was interrupted while Sim sent a screenshot ("receipt seems off center and the x is
 clipping"). The tool result said "STOP what you are doing and wait for the user"; Claude took that as Sim saying stop and sat idle
