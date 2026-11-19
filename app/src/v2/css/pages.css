@@ -977,6 +977,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699.98px){.bt-more{display:block;margin-top:var(--s8)}.bt-more h2{font-size:var(--t24);margin:0 0 var(--s2)}.bt-more ul{list-style:none;margin:0;padding:0}
   .bt-more a{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:56px;padding:var(--s2) 0;border-bottom:1px solid var(--rule);color:var(--ink);text-decoration:none;font:700 var(--t15)/1.5 var(--b)}
   .bt-more small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bt-more i{font-style:normal;color:var(--ink-3)}}
+/* Sim, Nov 18 (Q7 A): on phones Team Preview Practice is a full-width row and the other four tools sit two by two, names only (even rows) */
+@media (max-width:699.98px){.bt-more ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s4)}.bt-more li:first-child{grid-column:1/-1}.bt-more li:not(:first-child) small{display:none}.bt-more li:not(:first-child) a{min-height:52px}}
 
 .mu-outmore{margin-top:var(--s1)}.mu-outmore .np-link{display:inline-flex;align-items:center;min-height:var(--tap)} /* My Team Q1 B: the line under the stand-outs */
 

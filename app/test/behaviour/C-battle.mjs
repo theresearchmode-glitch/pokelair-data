@@ -74,7 +74,8 @@ t('NAV-05', '"More ways to prep" cards on Battle open the four tools', async () 
   if (NEW) { /* approved (decisions.md:603, Q6 A): "More ways to prep" on phones, the tools bar on 700+; lines as the mock-up (docs/rebuild/mocks/battle.tpl.html:250) */
     const {ui, close} = await open({team: TEAM, opp: OPP, width: 390}); await ui.go('Battle');
     expect(await ui.sees(/more ways to prep/i), 'no "More ways to prep" on Battle (phone)');
-    for (const [txt, pane] of [['Any attacker into any defender', 'calc'], [/Your team into the latest/, 'gauntlet'], [/Your six against the \d+ most-used Pokémon/, 'speed'], ['18 types, or look up a Pokémon', 'types'], ['Pick four and two leads against real ladder teams', 'practice']]) {
+    /* Sim, Nov 18 (Q7 A): on phones Team Preview Practice keeps its line and the other four show their names only (two by two) */
+    for (const [txt, pane] of [['Damage Calc', 'calc'], ['Test Run', 'gauntlet'], ['Speed Tiers', 'speed'], ['Type Chart', 'types'], ['Pick four and two leads against real ladder teams', 'practice']]) {
       await ui.go('Battle'); await ui.tapIn(txt); expect(await ui.current() === pane, `"${txt}" opened ${await ui.current()}`); }
     await close(); return; }
   const {ui, close} = await open({team: TEAM, opp: OPP}); await ui.go('Battle');
@@ -255,9 +256,10 @@ t('BATTLE-11', 'From real games: approved verdict words, "so far" under six, gon
   await close(); });
 
 t('BATTLE-12', 'Watch out fold lists what shuts you down; open/closed remembered', async () => {
-  if (NEW) { /* approved mock-up: Watch out is always open beside The read (nothing to remember) */
+  if (NEW) { /* approved mock-up: Watch out is always open beside The read (nothing to remember); Sim, Nov 18 (Q7/Q8 A): it lists only what
+    The Read hasn't said, so its count reads 'N more of their six' */
     const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle');
-    expect(/Watch out.*\d of their six can shut something down/i.test(await ui.pageText()), 'Watch out title missing its count');
+    expect(/Watch out.*\d more of their six can shut something down/i.test(await ui.pageText()), 'Watch out title missing its count');
     hasAll(await ui.foldText('Watch out'), ['Farigiraf', 'Trick Room', 'Armor Tail'], 'Watch out'); await close(); return; }
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle');
   expect(/Watch out.*\d of their six can shut something down/i.test(await ui.pageText()), 'Watch out title missing its count');
