@@ -42,21 +42,20 @@ V2.usHow = (R, d) => { const E = V2.esc, t = R.t, p = R.p, nm = V2.usName(R), sb
     <div class="us-add">${add}<p class="fine">% = share of its sets${t0src(R)}.</p></div></section>`; };
 const t0src = R => R.p && !(V2.usDoc() && (V2.usDoc().top || []).find(x => x.n === R.t.n && x.mv && x.mv.length)) ? '. Sets come from tournament teams where this list gives none' : '';
 // the spotlight: the most used Pokémon of this list (tag "Most used"; was "right now", player review 3a Nov 17)
-V2.usSpot = (R, d) => { if (!R || !R.p) return ''; const E = V2.esc, p = R.p, x = lairRows().find(y => y.p.n === p.n), N = V2.raNums(p), st = V2.addState(p.n);
+/* W2b (Sim, Nov 19): the hero's share and win rate are the chosen list's own numbers. A list that gives none shows "–" (and says so to a
+   screen reader; the key line under The Podium says it in words), never another list's number (was V2.raNums, Online tournaments). */
+V2.usSpot = (R, d) => { if (!R || !R.p) return ''; const E = V2.esc, p = R.p, x = lairRows().find(y => y.p.n === p.n), st = V2.addState(p.n), sn = V2.usSrcs.find(y => y[0] === V2.usUi.src);
   return `<div class="gs-spot ra-spot" style="--ta:var(--ty-${p.t[0]});--tb:var(--ty-${p.t[1] || p.t[0]})"><div class="gs-plate">${V2.mon(p.n, {bare: true})}</div>
     <div class="gs-sinfo"><p class="gs-tag u">Most used</p><h2 class="u">${V2.nameHtml(p.d)}</h2><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
-      <div class="gs-facts"><p><span>Usage rank</span><b class="u">#${R.t.r}</b></p>${R.u != null ? V2.gsShare((+R.u).toFixed(1) + '%', ({ingame: 'ranked ladder', tour: 'online tournament', ladder: 'Showdown ladder'})[V2.usUi.src] || 'these') : V2.gsShare(N.u != null ? V2.raPct(N.u) : null, 'tournament')}<p><span>Win rate</span><b class="u">${R.t.w ? (+R.t.w).toFixed(1) + '%' : N.w != null ? E(winFmt(N.w)) : '–'}</b></p></div>
+      <div class="gs-facts"><p><span>Usage rank</span><b class="u">#${R.t.r}</b></p>${R.u != null ? V2.gsShare((+R.u).toFixed(1) + '%', ({ingame: 'ranked ladder', tour: 'online tournament', ladder: 'Showdown ladder'})[V2.usUi.src] || 'these') : `<p><span class="vh">${E(sn ? sn[1] : 'This list')} gives no share of teams</span><span aria-hidden="true">Of teams</span><b class="u" aria-hidden="true">–</b></p>`}${R.t.w ? `<p><span>Win rate</span><b class="u">${(+R.t.w).toFixed(1)}%</b></p>` : `<p><span class="vh">${E(sn ? sn[1] : 'This list')} gives no win rate</span><span aria-hidden="true">Win rate</span><b class="u" aria-hidden="true">–</b></p>`}</div>
       <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Pokémon Page</span></button>${st === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${E(p.n)}"><span>Add to My Team</span></button>` : ''}</div>
       ${st === 'have' ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : ''}${x ? `<p class="fine">Rated ${RS(x.r.total)} · ${lTier(x.r.total).k} tier</p>` : ''}</div></div>`; };
 
-/* the Podium's key line (audit Nov 19 #5, C3): with the Ranked ladder chosen it said "it gives no percentages" under a hero card showing
-   38.3% and 51.9%. Those come from usSpot's fallback (V2.raNums: the Ratings page's Online tournaments numbers, lairHead src.tour = Limitless);
-   the Showdown ladder has shares but no win rate, so its hero's win rate is the same fallback. Say which list each borrowed number is from. */
-/* Kept to the old line count where it can be (measured: 2 lines at 320, 1 from 820; the Showdown ladder's line is one longer at 320-389). */
-V2.usKey = rows => { const R = rows[0], N = R && R.p ? V2.raNums(R.p) : {};
-  const fbU = R && R.u == null && N.u != null, fbW = R && !R.t.w && N.w != null, has = rows.some(x => x.u != null);
-  const what = fbU && fbW ? 'share and win rate above are' : fbU ? 'share above is' : fbW ? 'win rate above is' : '';
-  return 'The ten most used, in order.' + (has ? ' Tap one to see how it is played.' : what ? '' : ' This list ranks them; it gives no percentages.') + (what ? ` The ${what} from Online tournaments.` : ''); };
+/* the Podium's key line (audit Nov 19 #5, C3; W2b, Sim Nov 19): the hero above shows only the chosen list's own numbers, so the key line
+   says plainly what the list doesn't give (Ranked ladder: no shares or win rates; Showdown ladder: no win rates) instead of naming a
+   borrowed source. Each new line is shorter than the line it replaces for that source. */
+V2.usKey = rows => { const R = rows[0], has = rows.some(x => x.u != null), noW = R && !R.t.w;
+  return 'The ten most used, in order.' + (has ? ' Tap one to see how it is played.' + (noW ? ' This list gives no win rates.' : '') : ' This list ranks them; it gives no shares' + (noW ? ' or win rates.' : '.')); };
 V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
   if (!V2.usDoc()) { const alt = ['tour', 'ingame', 'ladder'].find(k => META[SRC[k]]); if (alt) U.src = alt; }
   const d = V2.usDoc(), kind = d && (d.kind || 'ladder');

@@ -27,4 +27,17 @@ const pick = async (p, k) => { await p.locator(`#main [data-ussrc="${k}"]`).firs
   const o3 = await on(p); ok(o3 === 'tour', `Q13 A: after a reload Usage opens on Online tournaments again (chip on: "${o3}")`);
   ok(!errs.length, `Q13 A: no page errors (${errs.join(' | ') || 'none'})`); await ctx.close(); }
 
+// ---- W2b: the hero's numbers come from the chosen list ----
+for (const W of [390, 1280]) { const {ctx, p} = await open('usage', W); const res = [];
+  for (const k of ['ingame', 'tour', 'ladder']) { if (!await p.locator(`#main [data-ussrc="${k}"]:not([disabled])`).count()) { res.push([k, 'no data from this source', true]); continue; } await pick(p, k);
+    const r = await p.evaluate(k => { const d = JSON.parse(window.__ev(`JSON.stringify((META[SRC['${k}']].top || [])[0] || {})`)), f = [...document.querySelectorAll('#main .ra-spot .gs-facts p')].map(x => [(x.querySelector('span:not(.vh)') || {}).textContent || '', ((x.querySelector('b') || {}).textContent || '').replace(/\s+/g, '')]);
+      const share = (f.find(t => /^Of teams/.test(t[0])) || [])[1] || '', win = (f.find(t => /^Win rate/.test(t[0])) || [])[1] || '', key = (document.querySelector('#main .gs-key') || {}).textContent || '';
+      const spoken = [...document.querySelectorAll('#main .ra-spot .gs-facts .vh')].map(x => x.textContent).join(' | ');
+      return {u: d.u, w: d.w, share, win, key, spoken}; }, k);
+    const wantU = r.u != null ? (+r.u).toFixed(1) + '%' : '–', wantW = r.w ? (+r.w).toFixed(1) + '%' : '–';
+    const said = (r.u != null || /no shares/.test(r.key)) && (r.w || /no (?:shares or )?win rates/.test(r.key)) && !/from Online tournaments/.test(r.key);
+    res.push([k, `share ${r.share} (list ${wantU}), win rate ${r.win} (list ${wantW}); key "${r.key}"`, r.share === wantU && r.win === wantW && said]); }
+  ok(res.every(x => x[2]), `W2b ${W}: the hero's share and win rate are the chosen list's own, "–" plus a plain key line where it has none (${res.map(x => x[0] + ': ' + x[1] + (x[2] ? '' : ' WRONG')).join(' | ')})`);
+  await ctx.close(); }
+
 await b.close(); console.log(`v2-usagepicks: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
