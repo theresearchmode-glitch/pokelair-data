@@ -7,8 +7,13 @@ function turnOneData(mine, theirs, r) {
   if (r.lead.length < 2 || theirs.length < 2) return null;
   // one Mega per side (Sim's design review #1, Nov 18: both opposing leads were shown as Megas): only one Pokémon a side can Mega
   // Evolve in a battle, so when both leads of a side are Megas the second is shown and calculated as its base form (same set)
-  const baseOf = x => { const bp = x && x.p && x.p.m && typeof byName === 'object' ? byName.get(x.p.b) : null; return bp ? {...x, p: bp, d: bp.d, _orig: x._orig || x} : x; };
-  const oneMega = arr => { let seen = false; return arr.map(x => !x || !x.p || !x.p.m ? x : seen ? baseOf(x) : (seen = true, x)); };
+  // the base form: its own entry, or the one form listed under that name ('Floette' is only listed as 'Floette-Eternal')
+  const baseP = p => { if (!p || !p.m || typeof byName !== 'object') return null; return byName.get(p.b) || [...byName.values()].find(q => q && !q.m && String(q.n).startsWith(p.b + '-')) || null; };
+  const baseOf = x => { const bp = baseP(x && x.p); return bp ? {...x, p: bp, d: bp.d, _orig: x._orig || x} : x; };
+  // keep the first Mega; if the other can't be shown as its base form, keep that one as the Mega instead
+  const oneMega = arr => { const mi = arr.map((x, i) => x && x.p && x.p.m ? i : -1).filter(i => i >= 0); if (mi.length < 2) return arr;
+    const keep = baseP(arr[mi[1]].p) ? mi[0] : baseP(arr[mi[0]].p) ? mi[1] : -1; if (keep < 0) return arr;
+    return arr.map((x, i) => mi.includes(i) && i !== keep ? baseOf(x) : x); };
   const opp = oneMega(r.B ? likelyLead(theirs, r.B) : theirs.slice(0, 2));
   const L0 = r.lead.map(i => mine[i]), L = oneMega(L0), names = m => new Set(memberMoves(m).moves.map(x => x.name));
   // your leads use their real items and spreads; the weather/terrain the four leads set is in play for every hit
