@@ -66,8 +66,9 @@ V2.dcKB = () => { const ms = members(), dir = dc.dir === 'theirs' ? 'theirs' : '
 /* audit Nov 16 (WCAG 2.5.3): a KO tile's name starts with the KO it shows */
 V2.dcTile = (b, dir, onTable) => { const E = V2.esc, k = b.lo >= 1 ? 'ko' : b.hi >= 1 ? 'can' : 'sv', left = Math.max(0, 1 - b.hi), d = V2.disp(b.n), o = V2.disp(b.other);
   const lab = dir === 'mine' ? `${d}: your ${o}'s ${b.mv} does ${Math.round(100 * b.lo)}–${Math.round(100 * b.hi)}%` : `${d}'s ${b.mv} into your ${o}: ${Math.round(100 * b.lo)}–${Math.round(100 * b.hi)}%`;
-  return `<button type="button" class="dc2-kt ${k}${onTable ? ' on' : ''}" data-dckb="${E(b.n)}" data-dckbo="${E(b.other)}" data-dckbm="${E(b.mv)}" aria-label="${k === 'ko' ? 'KO: ' : ''}${E(lab)}${k === 'ko' ? ', down in one hit' : ''}. Put it on the table"${onTable ? ' aria-current="true"' : ''}>
-    <span class="by" aria-hidden="true">${V2.mon(b.other, {iw: 24, bare: true})}</span>${V2.mon(b.n, {iw: 44, bare: true})}<span class="hp" aria-hidden="true"><i style="width:${(100 * left).toFixed(0)}%"></i><i class="r" style="left:${(100 * left).toFixed(0)}%;width:${(100 * Math.max(0, Math.min(1, b.hi) - Math.min(1, b.lo))).toFixed(0)}%"></i></span>${k === 'ko' ? '<span class="stamp u" aria-hidden="true">KO</span>' : ''}</button>`; };
+  const say = `${k === 'ko' ? 'KO: ' : ''}${lab}${k === 'ko' ? ', down in one hit' : ''}`; /* Q22 A (Sim, Nov 19): the same words show on hover or keyboard focus (mouse screens) */
+  return `<button type="button" class="dc2-kt ${k}${onTable ? ' on' : ''}" data-dckb="${E(b.n)}" data-dckbo="${E(b.other)}" data-dckbm="${E(b.mv)}" data-dctip="${E(say)}" aria-label="${E(say)}. Put it on the table"${onTable ? ' aria-current="true"' : ''}>
+    <span class="by" aria-hidden="true">${V2.mon(b.other, {iw: 24, bare: true})}</span>${V2.mon(b.n, {iw: 44, bare: true})}<span class="hp" aria-hidden="true"><i style="width:${(100 * left).toFixed(0)}%"></i><i class="r" style="left:${(100 * left).toFixed(0)}%;width:${(100 * Math.max(0, Math.min(1, b.hi) - Math.min(1, b.lo))).toFixed(0)}%"></i></span><span class="nm" aria-hidden="true">${V2.tileName(d) /* Q22 A: the short name under the tile, touch screens only (no hover) */}</span>${k === 'ko' ? '<span class="stamp u" aria-hidden="true">KO</span>' : ''}</button>`; };
 V2.dcCounts = L => ({ko: L.filter(b => b.lo >= 1).length, can: L.filter(b => b.lo < 1 && b.hi >= 1).length, sv: L.filter(b => b.hi < 1).length});
 V2.dcDir = () => `<div class="np-slide dc2-dir" role="group" aria-label="The KO Board shows" style="--n:2;--i:${dc.dir === 'theirs' ? 1 : 0}"><span class="thumb" aria-hidden="true"></span><button type="button" data-dcdir="mine" aria-pressed="${dc.dir !== 'theirs'}"><span>Your hits on them</span></button><button type="button" data-dcdir="theirs" aria-pressed="${dc.dir === 'theirs'}"><span>Their hits on you</span></button></div>`;
 // phones (and below the desktop table): the board as its own section, in three groups under their counts
@@ -161,6 +162,22 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   else if (dc.dir === 'theirs') { dc.a = t.dataset.dckb; dc.d = t.dataset.dckbo; dc.mv = t.dataset.dckbm; dc.spread = null; dc.wSet = dc.tSet = false; }
   else { dc.d = t.dataset.dckb; dc.a = t.dataset.dckbo; dc.mv = t.dataset.dckbm; dc.spread = null; dc.wSet = dc.tSet = false; }
   V2.redraw(); const tb = document.querySelector('.dc2-res'); if (t.dataset.dckb && tb && tb.getBoundingClientRect().top < 0) tb.scrollIntoView({block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); });
+/* Q22 A (Sim, Nov 19): on mouse screens a KO tile's name and damage (its spoken label) show in a small label above it on hover or keyboard
+   focus; one label for the page, outside the tiles (their cut corners clip anything inside). Escape or leaving hides it; a scroll moves it
+   with its tile (focusing a tile off screen scrolls it into view). */
+V2.dcTipOk = () => matchMedia('(hover: hover) and (pointer: fine)').matches;
+V2.dcTipHide = () => { const el = document.querySelector('body > .dc2-tip'); if (el) el.classList.remove('show'); };
+V2.dcTipShow = t => { V2.dcTipT = t; let el = document.querySelector('body > .dc2-tip'); if (!el) { el = document.createElement('div'); el.className = 'dc2-tip'; el.setAttribute('aria-hidden', 'true'); document.body.append(el); }
+  el.style.left = el.style.top = '0px'; el.textContent = t.dataset.dctip; el.classList.add('show'); /* measured at the left edge: its width is not squeezed by the last spot */ const r = t.getBoundingClientRect(), cw = document.documentElement.clientWidth, w = el.offsetWidth, h = el.offsetHeight, m = 8;
+  let y = r.top - h - 6; if (y < m) y = r.bottom + 6;
+  el.style.left = Math.round(Math.max(m, Math.min(cw - m - w, r.left + r.width / 2 - w / 2))) + 'px'; el.style.top = Math.round(y) + 'px'; };
+const dcTipOf = e => e.target.closest && e.target.closest('.dc2 .dc2-kt[data-dctip]');
+document.addEventListener('mouseover', e => { const t = dcTipOf(e); if (t && V2.dcTipOk()) V2.dcTipShow(t); });
+document.addEventListener('mouseout', e => { const t = dcTipOf(e); if (t && !t.contains(e.relatedTarget) && !t.matches(':focus-visible')) V2.dcTipHide(); });
+document.addEventListener('focusin', e => { const t = dcTipOf(e); if (t && V2.dcTipOk()) V2.dcTipShow(t); else V2.dcTipHide(); });
+document.addEventListener('focusout', e => { if (dcTipOf(e)) V2.dcTipHide(); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') V2.dcTipHide(); });
+addEventListener('scroll', () => { const el = document.querySelector('body > .dc2-tip.show'); if (el) { if (V2.dcTipT && V2.dcTipT.isConnected) V2.dcTipShow(V2.dcTipT); else V2.dcTipHide(); } }, {passive: true}); addEventListener('hashchange', V2.dcTipHide);
 document.addEventListener('change', e => { const t = e.target; if (!t.closest || !t.closest('.dc2')) return;
   if (t.dataset.dcfield) { if (t.dataset.dcfield === 'w') { dc.weather = t.value; dc.wSet = true; } else { dc.terrain = t.value; dc.tSet = true; } }
   setTimeout(() => V2.redraw(), 0); });
