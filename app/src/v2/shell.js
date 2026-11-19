@@ -92,13 +92,16 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
   const gone = () => { if (t.matches(':focus-within,:hover') || (V2._ubar && V2._ubar.isConnected && t.contains(t.querySelector('#toastUndo,[data-v2undo],[data-bxundo]')))) { V2._tt = setTimeout(gone, 1000); return; } t.remove(); }; clearTimeout(V2._tt); V2._tt = setTimeout(gone, ms); return t; };
 // Form errors reach the field (Sim's design review, Nov 19, #6; the non-visual part, nothing on screen changes): V2.fieldErr marks the
 // field(s) in error with aria-invalid="true" and links them (aria-describedby) to the line that already explains the error, and moves the
-// focus to the first one; V2.fieldOk takes both off again once it's fixed. No style reads aria-invalid. Test: app/test/v2-formerr.mjs
+// focus to the first one; V2.fieldOk takes both off again once it's fixed. Sim's W3b A (Nov 19): a 2px red edge on the field and the line in red
+// with a '!' (.np-errmsg, components.css). Test: app/test/v2-formerr.mjs
 V2.fieldErr = (fields, note, focus = true) => { fields = [].concat(fields).filter(Boolean); if (!fields.length) return;
   if (note && !note.id) note.id = 'np-err-' + (V2._errN = (V2._errN || 0) + 1);
   fields.forEach(f => { f.setAttribute('aria-invalid', 'true'); if (!note) return; f.dataset.errNote = note.id;
     const ids = (f.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean); if (!ids.includes(note.id)) f.setAttribute('aria-describedby', ids.concat(note.id).join(' ')); });
+  if (note) note.classList.add('np-errmsg'); /* Sim's W3b A (Nov 19): the line shows as an error (components.css) */
   if (focus) fields[0].focus({preventScroll: false}); };
 V2.fieldOk = fields => [].concat(fields).filter(Boolean).forEach(f => { f.removeAttribute('aria-invalid'); const id = f.dataset.errNote; if (!id) return; delete f.dataset.errNote;
+  /* the line stops looking like an error once no field it explains is still in error */ const n = document.getElementById(id); if (n && !document.querySelector(`[data-err-note="${id}"]`)) n.classList.remove('np-errmsg');
   const ids = (f.getAttribute('aria-describedby') || '').split(/\s+/).filter(x => x && x !== id); if (ids.length) f.setAttribute('aria-describedby', ids.join(' ')); else f.removeAttribute('aria-describedby'); });
 // Focus on slanted controls (audit P0, Nov 16): a control whose own shape (or a near parent's) is clipped gets .np-fin while focused, so its
 // ring is drawn inside the shape (base.css); checked on focus, so any slanted control, now or later, is covered without a list of classes

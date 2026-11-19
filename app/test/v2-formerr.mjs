@@ -12,6 +12,13 @@ const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') +
 const st = (p, sel) => p.evaluate(s => { const f = document.querySelector(s); if (!f) return null;
   const ids = (f.getAttribute('aria-describedby') || '').split(/\s+/).filter(Boolean);
   return {inv: f.getAttribute('aria-invalid'), desc: ids.map(i => (document.getElementById(i) || {}).textContent || '').join(' ').trim(), focus: document.activeElement === f}; }, sel);
+// Sim's W3b A (Nov 19): what shows on screen: the field (or the slanted box around it) has a 2px edge in the error colour, the line that
+// explains it is in the error colour, bold, with a '!' before it; fixed, both are back to normal
+const look = (p, sel, noteSel) => p.evaluate(([sel, noteSel]) => { const f = document.querySelector(sel), n = document.querySelector(noteSel); if (!f || !n) return null;
+  const box = f.closest('.np-field') || f, bs = getComputedStyle(box), ns = getComputedStyle(n), mark = getComputedStyle(n, '::before').content;
+  const probe = document.createElement('i'); probe.style.color = 'var(--bad-text)'; document.body.append(probe); const bad = getComputedStyle(probe).color; probe.remove();
+  return {edge: parseFloat(bs.borderTopWidth) >= 2 && bs.borderTopColor === bad, text: ns.color === bad && +ns.fontWeight >= 700, mark: mark === '"!"'}; }, [sel, noteSel]);
+const lookOn = l => !!(l && l.edge && l.text && l.mark), lookOff = l => !!(l && !l.edge && !l.text && !l.mark);
 const toast = p => p.evaluate(() => [...document.querySelectorAll('.np-toast')].map(t => t.textContent).join(' | '));
 for (const W of [390, 1440]) {
   const p = await b.newPage({viewport: {width: W, height: 900}}); const errs = []; p.on('pageerror', e => errs.push(e.message));
@@ -26,8 +33,10 @@ for (const W of [390, 1440]) {
   ok(s && s.inv === 'true', `${W} Import: the box has aria-invalid="true" (${s && s.inv})`);
   ok(s && /doesn't look like a team/.test(s.desc), `${W} Import: aria-describedby names the explanation ("${s && s.desc.slice(0, 40)}")`);
   ok(s && s.focus, `${W} Import: the focus is on the box (${s && s.focus})`);
+  { const l = await look(p, '[data-impin]', '[data-impnote]'); ok(lookOn(l), `${W} Import: a red edge on the box and the line in red with '!' (${JSON.stringify(l)})`); }
   await p.focus('[data-impin]'); await p.keyboard.type(' x'); await p.waitForTimeout(200); s = await st(p, '[data-impin]');
   ok(s && s.inv == null && !s.desc, `${W} Import: typing again clears aria-invalid and the error link (${s && s.inv}, "${s && s.desc}")`);
+  { const l = await look(p, '[data-impin]', '[data-impnote]'); ok(lookOff(l), `${W} Import: typing again takes the red off (${JSON.stringify(l)})`); }
   await p.keyboard.press('Escape'); await p.waitForTimeout(700);
 
   // ---- Edit Set: a box at 99, then a total over the limit
@@ -40,6 +49,7 @@ for (const W of [390, 1440]) {
   ok(s0 && s0.inv == null, `${W} Edit Set 99: a box that is fine is not marked (${s0 && s0.inv})`);
   ok(s && /whole number, 0-32/.test(s.desc), `${W} Edit Set 99: aria-describedby names the explanation ("${s && s.desc}")`);
   ok(s && s.focus, `${W} Edit Set 99: the focus is on that box (${s && s.focus})`);
+  { const l = await look(p, box(1), '[data-ed-msg]'); ok(lookOn(l), `${W} Edit Set 99: a red edge on that box and the line in red with '!' (${JSON.stringify(l)})`); }
   await p.fill(box(1), orig[1]); await p.waitForTimeout(200); s = await st(p, box(1));
   ok(s && s.inv == null && !s.desc, `${W} Edit Set 99: putting a good number back clears it (${s && s.inv}, "${s && s.desc}")`);
   for (let j = 0; j < 6; j++) await p.fill(box(j), '32');
@@ -64,10 +74,12 @@ for (const W of [390, 1440]) {
     ok(s && s.inv === 'true', `${W} Feedback: the box has aria-invalid="true" (${s && s.inv})`);
     ok(s && /Write a few words first/.test(s.desc), `${W} Feedback: aria-describedby names the explanation ("${s && s.desc}")`);
     ok(s && s.focus, `${W} Feedback: the focus is on the box (${s && s.focus})`);
+    { const l = await look(p, '#fbText2', '[data-fbmsg2]'); ok(lookOn(l), `${W} Feedback: a red edge on the slanted box and the line in red with '!' (${JSON.stringify(l)})`); }
     await p.keyboard.type('ab'); await p.waitForTimeout(150); s = await st(p, '#fbText2');
     ok(s && s.inv === 'true', `${W} Feedback: still marked while under three letters (${s && s.inv})`);
     await p.keyboard.type('cd'); await p.waitForTimeout(150); s = await st(p, '#fbText2');
-    ok(s && s.inv == null && !s.desc, `${W} Feedback: a few words clear it (${s && s.inv}, "${s && s.desc}")`); }
+    ok(s && s.inv == null && !s.desc, `${W} Feedback: a few words clear it (${s && s.inv}, "${s && s.desc}")`);
+    { const l = await look(p, '#fbText2', '[data-fbmsg2]'); ok(lookOff(l), `${W} Feedback: a few words take the red off (${JSON.stringify(l)})`); } }
   ok(errs.length === 0, `${W}: no page errors (${errs.join('; ').slice(0, 120)})`); await p.close(); }
 await b.close();
 console.log(`v2-formerr: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
