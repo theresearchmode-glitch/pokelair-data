@@ -815,6 +815,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bt-verdict{text-align:right;padding-bottom:var(--s1)}.bt-verdict .k{font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
 .bt-verdict b{display:block;margin-top:var(--s2);font-size:var(--t34);line-height:1.05}.bt-verdict b.vf{color:var(--good-text)} /* Nov 15 (colour audit #9): the Even/Unfavoured colours here were dead (line ~852 sets both, same selectors, later) */
 .bt-verdict small{display:block;margin-top:var(--s2);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.bt-verdict small.bt-vrisk{width:0;min-width:100%} /* Sim's Q14 A (Nov 19): wraps to the verdict's own width, never widens the box */
 .bt-body{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:var(--s12);align-items:start;padding-top:var(--s6)}.bt-body:has(> .bt-sixes:only-child){grid-template-columns:minmax(0,1fr)}
 .bt-sixes{display:grid;gap:var(--s6)}
 .bt-lab{font-size:var(--t20);margin:0}
