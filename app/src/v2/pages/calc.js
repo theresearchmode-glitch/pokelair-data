@@ -95,11 +95,18 @@ V2.dcGridHtml = (C) => { if (!C.ms.length) return ''; const E = V2.esc, dir = dc
     <tbody>${G.thr.map((t, i) => `<tr><th scope="row">${V2.mon(t.n, {iw: 28, bare: true})}<span>${V2.rowName(V2.disp(t.n))}</span></th>${G.cells[i].map(cell).join('')}</tr>`).join('')}</tbody></table></div>
     <p class="fine">KOs in one hit: red · can KO: light red · two hits: amber · more: grey. * charges first, may miss, must recharge or is a one-hit KO move.</p></details>`; };
 
-// desktop: the board's two wings beside the defender, 15 tiles each, with your counts as captions
+// desktop: the board's two wings beside the defender, 15 tiles each. Each wing's caption counts the tiles in THAT wing (audit Nov 19 #4:
+// the captions counted the whole board, so "18 down in one hit" sat over 15 tiles and "8 can go down · 4 survive" over 15 with 3 KO).
+// A wing with only KO tiles says "down in one hit"; beside other groups the KO count is "KO", as its tiles' stamp, so it fits one line.
+V2.dcWingCap = W => { const c = V2.dcCounts(W), only = (c.ko > 0) + (c.can > 0) + (c.sv > 0) === 1;
+  return [c.ko ? `${c.ko} ${only ? 'down in one hit' : 'KO'}` : '', c.can ? `${c.can} can go down` : '', c.sv ? `${c.sv} survive` : ''].filter(Boolean).join(' · '); };
 V2.dcWings = (C) => { const dir = dc.dir === 'theirs' ? 'theirs' : 'mine'; if (!C.ms.length) return ['', ''];
-  const L = V2.dcKB(), c = V2.dcCounts(L), on = dir === 'mine' ? C.D.p.n : C.A.p.n, h = Math.ceil(L.length / 2);
-  return [`<div class="dc2-wing l"><p class="cap">The KO Board · ${c.ko} down in one hit</p><div class="dc2-kts">${L.slice(0, h).map(b => V2.dcTile(b, dir, b.n === on)).join('')}</div></div>`,
-    `<div class="dc2-wing r"><p class="cap">${c.can} can go down · ${c.sv} survive</p><div class="dc2-kts">${L.slice(h).map(b => V2.dcTile(b, dir, b.n === on)).join('')}</div></div>`]; };
+  const L = V2.dcKB(), on = dir === 'mine' ? C.D.p.n : C.A.p.n, h = Math.ceil(L.length / 2), WL = L.slice(0, h), WR = L.slice(h);
+  /* all three groups in the left wing (a team with few KOs): the board's name would push the caption to two lines at 1100-1280 and the scene 24px
+     taller (measured), so then the caption is only the counts */
+  const cl = V2.dcWingCap(WL), three = cl.split(' · ').length === 3;
+  return [`<div class="dc2-wing l"><p class="cap">${three ? cl : 'The KO Board' + (cl ? ' · ' + cl : '')}</p><div class="dc2-kts">${WL.map(b => V2.dcTile(b, dir, b.n === on)).join('')}</div></div>`,
+    `<div class="dc2-wing r"><p class="cap">${V2.dcWingCap(WR)}</p><div class="dc2-kts">${WR.map(b => V2.dcTile(b, dir, b.n === on)).join('')}</div></div>`]; };
 
 // under the scene: Details (notes, Not counted, Fewest points to always survive, the set readout, Report a mistake, How the calc
 // works) and the two set folds with today's boxes

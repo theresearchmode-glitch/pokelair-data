@@ -1132,6 +1132,22 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     const res = {small: !!p, lead: !!(p && p.querySelector('.dp-lh .dp-hl[href]')), bar: !!(p && p.querySelector('.dp-nbar')), more: p ? [...p.querySelectorAll('.dp-more li')].filter(li => li.getClientRects().length).length : 0, over: Math.round(o)}; d.remove(); return res; })()`));
   ok(sm.small && sm.lead && sm.bar && sm.more === 2 && sm.over <= 0, `DP-12: V2.dpFront(post, {compact: true}) draws the small paper (lead link, two more stories in a 340 slot, Next event bar, nothing out of it) (${JSON.stringify(sm)})`);
   await q.close(); }
+/* Audit Nov 19 #4 (C3): Damage Calc's KO Board wings at 1100 and 1280: each caption counts exactly the tiles under it (it counted the whole board:
+   "18 down in one hit" over 15 tiles, "8 can go down · 4 survive" over 15 with 3 KO), and stays on one line. Three teams (the sample, a review team,
+   a bulky team with few KOs), both directions ("Your hits on them" and "Their hits on you") */
+{ const bad = [], seen = []; const wk = q => q.evaluate(() => [...document.querySelectorAll('.dc2-wing')].filter(w => w.getClientRects().length).map(w => { const t = w.querySelector('.cap').textContent, n = k => w.querySelectorAll('.dc2-kt' + k).length;
+    const num = re => { const m = t.match(re); return m ? +m[1] : 0; }, said = {ko: num(/(\d+) (?:KO|down in one hit)/), can: num(/(\d+) can go down/), sv: num(/(\d+) survive/)}, has = {ko: n('.ko'), can: n('.can'), sv: n('.sv')};
+    return {t, all: n(''), said, has, lines: Math.round(w.querySelector('.cap').getBoundingClientRect().height / parseFloat(getComputedStyle(w.querySelector('.cap')).lineHeight))}; }));
+  for (const team of [null, ['Incineroar', 'Garchomp', 'Sneasler', 'Kingambit', 'Basculegion', 'Sinistcha'], ['Sinistcha', 'Clefable', 'Blissey', 'Hatterene', 'Amoonguss', 'Farigiraf']]) for (const W of [1100, 1280]) {
+    const c = await b.newContext({viewport: {width: W, height: 900}}), q = await c.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(1800);
+    if (team) { await q.locator('[data-v2more]').first().click(); await q.waitForTimeout(400); await q.locator('.np-sheet [data-v2import]').first().click(); await q.waitForTimeout(400);
+      await q.fill('[data-impin]', team.join('\n\n')); await q.locator('[data-impgo]').click(); await q.waitForTimeout(1200); }
+    await q.evaluate(() => { location.hash = '#calc'; }); await q.waitForTimeout(1800);
+    for (const dir of ['mine', 'theirs']) { if (dir === 'theirs') { await q.locator('[data-dcdir="theirs"]').first().click(); await q.waitForTimeout(1200); }
+      const ws = await wk(q), tag = `${team ? team[0] : 'sample'} ${W} ${dir}`; if (ws.length !== 2) { bad.push(`${tag}: ${ws.length} wings`); continue; }
+      for (const w of ws) { seen.push(w.t); if (['ko', 'can', 'sv'].some(k => w.said[k] !== w.has[k]) || w.said.ko + w.said.can + w.said.sv !== w.all || w.lines !== 1) bad.push(`${tag}: "${w.t}" over ${w.has.ko} KO / ${w.has.can} can / ${w.has.sv} survive (${w.lines} lines)`); } }
+    await c.close(); }
+  ok(seen.length === 24 && !bad.length, `Audit Nov 19 #4: the KO Board wings' captions count exactly the tiles under them, on one line (3 teams x 1100/1280 x both directions; ${bad.join(' | ') || 'e.g. "' + seen.slice(0, 2).join('" / "') + '"'})`); }
 } // main1 end
 if (part('main2')) {
 // ---------- Home, The Stampede: the hero band (Nov 18; app/src/v2/pages/stampede-hero.js, css/sd-hero.css, sd-shared.css) ----------
