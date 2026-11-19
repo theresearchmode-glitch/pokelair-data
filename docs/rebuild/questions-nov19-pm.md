@@ -18,3 +18,11 @@ S3 · If a short broken window can't be avoided (depends on S1's answer about th
 S4 · CLAUDE.md's "every live publish carries the 345 sp/*.webp" becomes "the 350 v2art files" after the switch. RECOMMENDED yes.
 S5 · Add meta/post to the data refresh task now (it skips a missing file harmlessly) or on switch day? RECOMMENDED on switch day. Why: no
      change to the live task before the switch; nothing reads it yet.
+
+Q34 · Events tickets under 360 wide (an old bug, found by the Q31 helper; not caused today): official tickets push "Official event · Winner's
+team" and the event name into the date stub (Gdańsk 54px at 320). RECOMMENDED B = the label may wrap to two lines under 360 (sugs.css:264
+keeps it on one line today). Why: nothing leaves its ticket; the ticket grows one line only on the smallest phones.
+Pictures: Q34-A-ticket-320-today.png, Q34-B-ticket-320-RECOMMENDED.png.
+
+Also for Sim's eye (decided under authority, revertible): Usage on phones, the share number is now 15px (was 13px by accident; the headline
+font's smallest size); the small '%' after it stays 13px as designed. Picture: scratchpad usage-320-after.png (sprites missing in that quick build).
