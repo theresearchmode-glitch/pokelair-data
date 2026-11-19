@@ -52,3 +52,9 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
 15. Q22 · KO Board names (review #3): pictures docs/rebuild/pics/nov19/Q22-ko-board-*.png
    A RECOMMENDED: name + damage on hover/keyboard focus on desktop; a short name under each tile on phones.
    B: short names under every tile everywhere (long names cut). C: no change.
+16. Form errors (review #6): the part nobody sees is built (helper): the field in error is marked for screen readers (aria-invalid,
+   linked to the existing message) and gets the focus (v2-formerr: 26 checks failed before, all 48 pass after). One thing you'd
+   notice: on a phone, focus going back to the box also brings the keyboard up. OK, or keep focus where it was on phones?
+   The visible part (an error look for the message and the box, where it sits, when it clears) needs your pictures: Import a Team,
+   Edit Set's stat points (and what happens when you close it with a bad box), Send Feedback. Note: all three already show a small
+   grey line explaining the error; it's just easy to miss.
