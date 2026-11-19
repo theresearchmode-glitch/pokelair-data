@@ -87,7 +87,7 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    main fact + one short note (longest 115 characters, was 229). Cards at 1440 are 104-148px (were 104-124 before tonight's rules,
    up to 187 at worst tonight). Going shorter needs a wider text column on the card (the note column is about 200px at 390): a layout
    change. Keep as is, or try a wider note column (pictures first)?
-25. Battle Turn One cards, layout (found by the 3:22 AM night check on cb1506aa; design, so yours). Q27 on the
+25. Battle Turn One cards, layout (found by the night visual check of cb1506aa, noted here at 3:22 AM; design, so yours). Q27 on the
    Morning Questions page (pictures docs/rebuild/pics/nov19/Q27-card-pairs-*.png); b and c are W11 there:
    a. At 1366 wide and up, the two cards in a row are different heights and each is centred in its slot, so the shorter card sits
       lower than its neighbour (picture: 1440, card 2 sits lower than card 1). My recommendation: top-align both cards in a row
