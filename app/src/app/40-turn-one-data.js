@@ -250,7 +250,7 @@ function turnOneData(mine, theirs, r) {
       if (!b.me && t) b.act = `Fake Out ${t.d}`;
       const fx = t ? foFx(b.x, t, side) : 'none', tb = t ? beats.find(y => y.x === t) : null, tie = tieOf(tb, b);
       if (t && fx === 'ok' && (!done.has(t) || tie)) {
-        const f = {u: b.x, sure: b.me && !tie && b.flinch !== 'likely' && ![...theirFOT].some(([o, u]) => u === b.x && speF(o) >= speF(b.x)), tie}; /* not sure when your Fake Out user may be flinched first (their Fake Out at it is faster or tied) */ if (done.has(t)) mayNote(tb, f); else flinched.set(t, f);
+        const f = {u: b.x, sure: b.me && !tie && b.flinch !== 'likely' && ![...theirFOT].some(([o, u]) => u === b.x && speF(o) >= speF(b.x)) && !opp.some(y => movesOf(y).includes('Quick Guard') && speF(y) >= speF(b.x)), tie}; /* nor when a Quick Guard of theirs may go first: it blocks Fake Out (+3) (review, Nov 19) */ /* not sure when your Fake Out user may be flinched first (their Fake Out at it is faster or tied) */ if (done.has(t)) mayNote(tb, f); else flinched.set(t, f);
         /* theirs is a guess (if they carry it, at their likely target); a risk to it (your faster Fake Out) stays as its note */
         if (!b.me) b.why = 'if they have it: a flinch. Protect blocks it'; /* its target is on the line above (act 'Fake Out X') */
         if (tie) note(b, {r: 1, k: 'fotie', t, s: `speed tie: works only if ${b.me ? 'yours' : 'theirs'} goes first`, tag: 'Speed tie'}); }
