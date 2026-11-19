@@ -8,9 +8,10 @@ import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 1280, height: 900}}); await p.addInitScript(() => { window.__PL_TEST = 1; });
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
+await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = []; for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) teams.push(t.mons.map(m => m.n));
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
-  for (let i = 0; i < Math.min(teams.length, 300); i++) { const me = teams[i], th = teams[(i * 7 + 3) % teams.length], tag = me.join('/') + ' vs ' + th.join('/');
+  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) { const me = teams[i], th = teams[(i * 7 + 3) % teams.length], tag = me.join('/') + ' vs ' + th.join('/');
     S.slots = me.map(n => ({n, a: null, lock: false})); fixSlots(); S.opp = [...th];
     let T, L0; try { const mine = members(), theirs = oppTeam(), r = planMatchup(mine, theirs, true); L0 = r.lead.map(i => mine[i]); T = turnOneData(mine, theirs, r); } catch (e) { st.err++; if (st.errs.length < 3) st.errs.push(tag + ': ' + String(e.stack || e).slice(0, 200)); continue; }
     if (!T) continue; st.n++;
@@ -24,6 +25,11 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = []; for (c
     for (const bt of T.beats) if (bt.me && bt.act === 'Flinches') st.myFlinchAct.push(tag);
     for (const m of L0) if (!T.beats.find(x => x.me && (x.x === m || x.x._orig === m))) st.noBeat.push(tag + ': ' + m.p.n);
     for (const x of [...T.leads, ...T.opp]) if (x._orig) { st.copies++; const ab = abilityOf(x); if (JSON.stringify(x.types || x.p.t) !== JSON.stringify(x.p.t) || (ab && x.p.a && !x.p.a.includes(ab)) || x.mega) st.copyWrong.push(tag + ': ' + x.p.n + ' ' + ab); }
+    /* second review, Nov 19: their Fake Out is planned only when it can work; yours never aims at a Pokémon that has already moved;
+       a 'Flinches' (sure) needs your Fake Out user not to be at risk of flinching first */
+    for (const bt of T.beats) { if (!bt.me && /^Fake Out has no effect/.test(bt.why)) st.theirDud.push(tag + ': ' + bt.x.d + ' ' + bt.act);
+      if (bt.me && /^Fake Out /.test(bt.act) && /has already moved: no flinch/.test(bt.why)) st.myLate.push(tag + ': ' + bt.act);
+      if (!bt.me && bt.flinch === 'sure') { const u = T.beats.find(y => y.me && y.act === 'Fake Out ' + bt.x.d); if (u && u.flinch === 'likely') st.sureBad.push(tag + ': ' + bt.x.d); } }
     for (const bt of T.beats) if (bt.me && /^Fake Out (.+)$/.test(bt.act)) { const t = [...T.opp].find(o => o.d === bt.act.slice(9)); if (t && (t.types || t.p.t).includes('Ghost') && abilityOf(bt.x) !== 'Scrappy') st.foGhost.push(tag + ': ' + bt.act); } }
   S.slots = JSON.parse(slots0); fixSlots(); S.opp = JSON.parse(opp0); return st; })()`));
 await b.close();
@@ -38,4 +44,7 @@ ok(!st.myFlinchAct.length, `your own leads keep their planned move (a flinch fro
 ok(!st.noBeat.length, `every lead has its turn-one move, found by the original member as Home's plan board does (${st.noBeat.length}${st.noBeat.length ? ', e.g. ' + st.noBeat[0] : ''})`);
 ok(st.copies > 0 && !st.copyWrong.length, `a Mega shown as its base form takes that form's types and Ability (${st.copies} copies, ${st.copyWrong.length} wrong${st.copyWrong.length ? ', e.g. ' + st.copyWrong[0] : ''})`);
 ok(!st.foGhost.length, `your Fake Out never aims at a Ghost type (no effect) (${st.foGhost.length}${st.foGhost.length ? ', e.g. ' + st.foGhost[0] : ''})`);
+ok(!st.theirDud.length, `their Fake Out is only planned when it can work on one of your leads (${st.theirDud.length}${st.theirDud.length ? ', e.g. ' + st.theirDud[0] : ''})`);
+ok(!st.myLate.length, `your Fake Out never aims at a Pokémon that has already moved (${st.myLate.length}${st.myLate.length ? ', e.g. ' + st.myLate[0] : ''})`);
+ok(!st.sureBad.length, `a sure flinch never comes from a Fake Out user that may itself be flinched first (${st.sureBad.length}${st.sureBad.length ? ', e.g. ' + st.sureBad[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

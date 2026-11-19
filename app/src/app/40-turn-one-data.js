@@ -10,7 +10,7 @@ function turnOneData(mine, theirs, r) {
   // the base form: its own entry, or the one form listed under that name ('Floette' is only listed as 'Floette-Eternal')
   const baseP = p => { if (!p || !p.m || typeof byName !== 'object') return null; return byName.get(p.b) || [...byName.values()].find(q => q && !q.m && String(q.n).startsWith(p.b + '-')) || null; };
   // the copy is the base form in full: its types and its own Ability (abilityOf falls back to the form's usual one), not a Mega (review, Nov 19)
-  const baseOf = x => { const bp = baseP(x && x.p); return bp ? {...x, p: bp, d: bp.d, types: bp.t, ability: '', mega: 0, _orig: x._orig || x} : x; };
+  const baseOf = x => { const bp = baseP(x && x.p); return bp ? {...x, p: bp, d: bp.d, types: bp.t, ability: (() => { try { return metaAbility(bp) || ''; } catch (e) { return ''; } })(), mega: 0, _orig: x._orig || x} : x; };
   // keep the first Mega; if the other can't be shown as its base form, keep that one as the Mega instead
   const oneMega = arr => { const mi = arr.map((x, i) => x && x.p && x.p.m ? i : -1).filter(i => i >= 0); if (mi.length < 2) return arr;
     const keep = baseP(arr[mi[1]].p) ? mi[0] : baseP(arr[mi[0]].p) ? mi[1] : -1; if (keep < 0) return arr;
@@ -39,13 +39,23 @@ function turnOneData(mine, theirs, r) {
     if ((t.types || t.p.t || []).includes('Ghost') && abilityOf(u) !== 'Scrappy') return 'none';
     if ((!mold && ['Inner Focus', 'Shield Dust'].includes(abilityOf(t))) || itemOf(t) === 'Covert Cloak') return 'hit';
     return 'ok'; };
+  // their Fake Out is only planned when it can flinch one of your leads (second review, Nov 19: with your Farigiraf's Armor Tail up
+  // they just attack, so their turn-one KO stays a turn-one KO)
+  // Their Fake Out targets are decided up front, fastest first: each aims at your lead that threatens them most among those it can
+  // flinch and no other Fake Out has taken; one with no such target attacks instead.
+  const threatOf = m => { let v = 0; for (const o of opp) { const h = hitOn(m, memberMoves(m).moves, o); if (h) v = Math.max(v, h.r.max / h.r.hp); } return v; };
+  const myByThreat = L.slice().sort((a, b) => threatOf(b) - threatOf(a)), theirFOT = new Map();
+  for (const o of opp.filter(o => (o.moves || []).some(x => x && x.name === 'Fake Out')).sort((a, b) => speF(b) - speF(a))) {
+    const t = myByThreat.find(t => ![...theirFOT.values()].includes(t) && foFx(o, t, L) === 'ok'); if (t) theirFOT.set(o, t); }
+  const oPr = o => theirFOT.has(o) ? 3 : 0;
   const lines = [], used = new Set(), mvOf = (m, n) => memberMoves(m).moves.find(x => x && x.name === n) || mvByName.get(n);
   // each action carries its priority bracket (Fake Out +3, Prankster Tailwind +1, Trick Room −7…) for the turn order below
   const pr = (m, n) => movePrio(mvOf(m, n), m.ability, {terrain: F.terrain, grounded: grounded(m)});
   for (const m of L) { const mv = names(m), partner = L.find(x => x !== m);
-    const fd = mv.has('Fake Out') && !used.has('fake') ? danger.find(d => foFx(m, d.o, opp) === 'ok') : null; /* aim only where it flinches */
+    /* aim only where it flinches, and never at a faster Fake Out user that will already have moved (second review, Nov 19) */
+    const fd = mv.has('Fake Out') && !used.has('fake') ? danger.find(d => foFx(m, d.o, opp) === 'ok' && !(oPr(d.o) === 3 && speF(d.o) > speF(m))) : null;
     if (fd) { used.add('fake'); lines.push([m, `Fake Out ${fd.o.d}`, fd.worst ? `its ${fd.worst.h.mv.name} does up to ${dmgP(100 * fd.worst.pct)}% of ${fd.worst.on.d}'s HP (${koShort(fd.worst.h.r)})` : fd === danger[0] ? 'their biggest threat' : 'it can be flinched', pr(m, 'Fake Out'), fd.o]); continue; }
-    if (mv.has('Tailwind') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Tailwind', `${fast} of their leads outspeed your side`, pr(m, 'Tailwind')]); continue; }
+    if (mv.has('Tailwind') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Tailwind', `${fast === 1 ? '1 of their leads outspeeds' : fast + ' of their leads outspeed'} your side`, pr(m, 'Tailwind')]); continue; }
     if (mv.has('Trick Room') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Trick Room', 'they are faster; Trick Room goes up last this turn (−7) and flips the order from next turn', pr(m, 'Trick Room')]); continue; }
     // attack: prefer a KO, then the most damage; spread moves count both targets; a move that charges first or hits your own
     // partner says so
@@ -63,7 +73,6 @@ function turnOneData(mine, theirs, r) {
     else lines.push([m, 'Protect or switch', 'no good attack into these leads', 4]); }
   // turn order: priority bracket first (your planned move; theirs: Fake Out if they carry it), then Speed inside a bracket
   // (Stall always moves last inside its bracket)
-  const oPr = o => (o.moves || []).some(x => x && x.name === 'Fake Out') ? 3 : 0;
   const order = [...L, ...opp].map(x => { const me = L.includes(x), ln = me ? lines.find(l => l[0] === x) : null; return {x, s: speF(x), me, p: me ? (ln ? ln[3] || 0 : 0) : oPr(x), st: abilityOf(x) === 'Stall' ? 1 : 0}; })
     .sort((a, b) => b.p - a.p || a.st - b.st || b.s - a.s);
   const theirAct = o => { const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = oPr(o) === 3;
@@ -72,14 +81,12 @@ function turnOneData(mine, theirs, r) {
   const beats = order.map(o => { const ln = o.me ? lines.find(l => l[0] === o.x) : null, th = o.me ? null : theirAct(o.x);
     return {x: o.x, me: o.me, speed: o.s, prio: o.p, act: ln ? ln[1] : th ? th[0] : oPr(o.x) === 3 ? 'Fake Out' : 'Unknown move', why: ln ? ln[2] : th ? th[1] : 'no damaging move found into your leads'}; });
   // a speed tie between the two sides in one bracket: either may move first
-  beats.forEach((b, i) => { const n = beats[i + 1]; if (n && n.me !== b.me && n.prio === b.prio && n.speed === b.speed) b.why += `${b.why ? '; ' : ''}speed tie with ${n.x.d}: either can go first`; });
+  beats.forEach((b, i) => { const n = beats[i + 1]; if (n && n.me !== b.me && n.prio === b.prio && n.speed === b.speed && !(/^Fake Out\b/.test(b.act) && /^Fake Out\b/.test(n.act))) b.why += `${b.why ? '; ' : ''}speed tie with ${n.x.d}: either can go first`; });
   // Fake Out's flinch (design review #1: flinched Pokémon still acted, two Fake Outs and Garchomp still attacked). Fake Out works on
   // turn one only; the target can't move this turn if it hasn't moved yet, unless Inner Focus, Shield Dust, Covert Cloak, a Ghost
   // type, or a priority blocker on its side (Armor Tail, Queenly Majesty, Dazzling; Psychic Terrain for grounded targets) stops it.
   // Your Fake Out aims at their biggest threat (above); theirs is assumed to aim at your lead that threatens them most (their likely
   // target, said as such), a second Fake Out at your other lead.
-  const threatOf = m => { let v = 0; for (const o of opp) { const h = hitOn(m, memberMoves(m).moves, o); if (h) v = Math.max(v, h.r.max / h.r.hp); } return v; };
-  const myByThreat = L.slice().sort((a, b) => threatOf(b) - threatOf(a)); let theirFO = 0;
   const flinched = new Map(), done = new Set();
   // Only a sure flinch (your Fake Out, moving first, no speed tie) replaces a move with 'Flinches'; a flinch that depends on their
   // choice or a speed tie keeps the planned move and says so, so the plan (and Home's plan board) still shows what to click.
@@ -89,16 +96,15 @@ function turnOneData(mine, theirs, r) {
     if (flinched.has(b.x)) { const f = flinched.get(b.x);
       if (f.sure) { b.plan = b.act; b.act = 'Flinches'; b.flinch = 'sure'; b.why = `${f.by}'s Fake Out hits it first: it can't move this turn`; done.add(b.x); continue; }
       mayNote(b, f); }
-    if (/^Fake Out\b/.test(b.act) && !(flinched.get(b.x) || {}).sure) {
+    if (/^Fake Out\b/.test(b.act)) {
       const side = b.me ? opp : L, ln = b.me ? lines.find(l => l[0] === b.x) : null;
-      const pool = b.me ? [] : myByThreat.filter(t => !flinched.has(t)), t = b.me ? (ln && ln[4]) || null : pool.find(t => foFx(b.x, t, side) === 'ok') || pool[0] || null;
-      if (!b.me) theirFO++;
+      const t = b.me ? (ln && ln[4]) || null : theirFOT.get(b.x) || null;
       if (!b.me && t) b.act = `Fake Out ${t.d}`;
       const fx = t ? foFx(b.x, t, side) : 'none', tb = t ? beats.find(y => y.x === t) : null, tie = tieOf(tb, b), by = (b.me ? 'your ' : '') + b.x.d;
       if (t && fx === 'ok' && (!done.has(t) || tie)) {
-        const f = {by, sure: b.me && !tie, tie}; if (done.has(t)) mayNote(tb, f); else flinched.set(t, f);
-        if (!b.me) b.why = `if they have it: ${t.d} flinches and can't move this turn (their likely target)${tie ? ', if it wins the speed tie' : ''}. Protect blocks it`;
-        else if (tie) b.why += `${b.why ? '; ' : ''}speed tie with ${t.d}: it flinches only if your Fake Out goes first`; }
+        const f = {by, sure: b.me && !tie && b.flinch !== 'likely' && ![...theirFOT].some(([o, u]) => u === b.x && speF(o) >= speF(b.x)), tie}; /* not sure when your Fake Out user may be flinched first (their Fake Out at it is faster or tied) */ if (done.has(t)) mayNote(tb, f); else flinched.set(t, f);
+        if (!b.me) b.why = `if they have it: ${t.d} flinches and can't move this turn (their likely target)${tie ? ', if their Fake Out wins the speed tie' : ''}. Protect blocks it${b.flinch === 'likely' && b.why ? '; ' + b.why : ''}`;
+        else if (tie) b.why += `${b.why ? '; ' : ''}speed tie with their ${t.d}: it flinches only if your Fake Out goes first`; }
       else if (t) { const why = fx === 'none' ? `Fake Out has no effect on ${t.d} here` : fx === 'hit' ? `${t.d} takes the hit but can't flinch` : `${t.d} has already moved: no flinch`;
         b.why = b.me ? `${b.why}${b.why ? '; ' : ''}${why}` : why; } }
     done.add(b.x); }
