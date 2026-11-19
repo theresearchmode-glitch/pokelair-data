@@ -74,3 +74,6 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
    goes to Home. #owner for visitors: A RECOMMENDED: the same not-found page. B: no change ('Only for the site's owner.').
 21. Gallery (review #16, internal page, built by a helper): at iPad widths (2 columns) its 27 cards leave one lone card. OK as an
    internal page, or even it up?
+22. Meta and Usage heroes at 375-390 wide (found tonight; today's data): the third fact ('Base Speed 120' on Meta, 'Win rate 51.9%'
+   on Usage) ends 1-3px past the hero's right edge (measured: 362 vs 359 at 375; 375 vs 374 at 390). The frozen test data fits.
+   Recommended: 4px less gap between the three facts at 360-420 (keeps the sizes; one small check covers it). OK to do?
