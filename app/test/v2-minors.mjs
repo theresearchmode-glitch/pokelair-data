@@ -246,7 +246,27 @@ const AS = async () => {
         return {h: s.scrollHeight, out: [...new Set(out)].slice(0, 4)}; });
       if (W === 390 && !dark) { scr = +(m.h / 844).toFixed(2); asOpt = await q.evaluate(() => /Optional swaps:/.test(document.body.innerText)); } m.out.forEach(x => bad.push(`${W}${dark ? ' dark' : ''}: ${x}`)); await c.close(); }
     /* with optional swaps the sheet lists them too: its own limit (Sim, Nov 18 evening: recommended; CI's frozen data measured 5.49) */
-    ok(scr != null && scr <= (asOpt ? 5.75 : 5) && !bad.length, `AS-9 (Q5 C): the sheet is ${scr} phone screens at 390${asOpt ? ' (with optional swaps, limit 5.75)' : ''} (mock-up 4.27, before 6.20); ${bad.join(' | ') || 'nothing outside, under 13px or under 44px'}`); } };
+    ok(scr != null && scr <= (asOpt ? 5.75 : 5) && !bad.length, `AS-9 (Q5 C): the sheet is ${scr} phone screens at 390${asOpt ? ' (with optional swaps, limit 5.75)' : ''} (mock-up 4.27, before 6.20); ${bad.join(' | ') || 'nothing outside, under 13px or under 44px'}`); }
+  // AS-10 / AS-11 (audit Nov 19, findings 2 and 3; rule C3, two statements that disagree). Both failed on the build before their fix.
+  //   AS-10: My Team says "Nothing to fix" (the ±0 best swap hidden behind See All, Sim's A3) while the sheet opened as "1 suggestion"
+  //   with no word that nothing needs fixing: the sheet now says My Team's own sentence above the same list.
+  //   AS-11: with 5 of 6, the suggestion that fills the empty spot said "a small change: real games can't tell it apart from what you
+  //   have" (the sideways-swap line, LANE.lineParts0): an add is not a swap, so no add says it.
+  const fresh = async W => { const c = await b.newContext({viewport: {width: W, height: 844}}), q = await c.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+    await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2000);
+    const st = () => q.waitForFunction(() => window.V2 && V2.plan && V2.plan.plans && V2.plan.key === V2.planKey() && !document.querySelector('#main .sg2-wait'), null, {timeout: 90000}).catch(() => {}).then(() => q.waitForTimeout(800));
+    await st(); return {q, c, st}; };
+  const NONE = 'Nothing to fix. Your team has every basic and no swap clearly beats it in real games.';
+  { const {q, c} = await fresh(390); const mt = await T(q, '#tm-sg'); await q.evaluate(() => window.__ev('V2.openAllSugs()')); await q.waitForTimeout(1000);
+    const r = await q.evaluate(() => ({n: document.querySelectorAll('.np-sheet .sga2 .tm-sug > li').length, eb: ((document.querySelector('.np-sheet .sga2 .np-eyebrow') || {}).textContent || ''), sh: (document.querySelector('.np-sheet .sga2') || {innerText: ''}).innerText.replace(/\s+/g, ' ')}));
+    ok(mt.includes(NONE) && r.n >= 1 && r.sh.includes(NONE), `AS-10 (audit Nov 19 #2): My Team says "Nothing to fix" (${mt.includes(NONE)}) and the sheet, listing ${r.n} card(s) under "${r.eb}", says it too (${r.sh.includes(NONE)})`); await c.close(); }
+  { const {q, c, st} = await fresh(390);
+    await q.evaluate(() => window.__ev(`(() => { const i = S.slots.findIndex(s => s && s.n === 'Garchomp'); S.slots[i] = {n: '', a: null, lock: false}; persist(); render(); })()`)); await q.waitForTimeout(500); await st();
+    const lines = sel => q.evaluate(s => [...document.querySelectorAll(s + ' .tm-sug > li')].filter(li => [...li.querySelectorAll('.tm-chg')].some(x => /^Add /.test(x.getAttribute('aria-label') || '')))
+      .map(li => ((li.querySelector('.sg2-ln') || {}).textContent || '(no line)').replace(/\s+/g, ' ').trim()), sel);
+    const mtL = await lines('#tm-sg'); await q.evaluate(() => window.__ev('V2.openAllSugs()')); await q.waitForTimeout(1000); const shL = await lines('.np-sheet .sga2'); const all = [...mtL, ...shL];
+    const bad = all.filter(t => /tell it apart|no clear edge/.test(t));
+    ok(mtL.length >= 1 && shL.length >= 1 && !bad.length, `AS-11 (audit Nov 19 #3): with 5 of 6, ${mtL.length} My Team and ${shL.length} sheet card(s) fill the empty spot; none says it's a small change real games can't tell apart (${[...new Set(bad.length ? bad : all)].slice(0, 3).join(' | ')})`); await c.close(); } };
 if (process.env.ONLY === 'AS') { await AS(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- AS end
 // ---- MQ end ----

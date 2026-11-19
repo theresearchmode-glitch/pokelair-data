@@ -146,10 +146,12 @@ V2.allSugsHtml = () => { const ms = members(), U = V2.sgAll, E = V2.esc, busy = 
   U.P = V2.plan.plans; U.busy = busy; U.pool = ui.pool;
   const poolW = V2.SGA_POOL[ui.pool] || 'this pool';
   const ctl = `<div class="sg2-ctl sga2-ctl" role="group" aria-label="Suggestion settings"><div class="sg2-c sg2-pool"><span class="sg2-k">Suggest from</span>${V2.slide('sgpool', [['box', 'My Box'], ['boxfill', 'Box + Catch'], ['all', 'Whole Roster']], ui.pool, 'Suggest from')}</div></div>`;
-  const head = n => `<div class="np-eyebrow">${n == null ? 'Suggestions' : `${n} suggestion${n === 1 ? '' : 's'}`}</div><h2 class="u">All Suggestions</h2>
-    <p class="tm-sub">Every change the planner found for your team, best first, each with how it moves the Strength Score.</p>${ctl}`;
+  // audit Nov 19 #2 (rule C3): when My Team says "Nothing to fix" (plans.nothing; its ±0 best swap waits here, Sim's A3), the sheet says the
+  // same sentence (LANE.NONE, the approved words) before its list, so "1 suggestion" can't read as a fix My Team missed
+  const head = (n, none) => `<div class="np-eyebrow">${n == null ? 'Suggestions' : `${n} suggestion${n === 1 ? '' : 's'}`}</div><h2 class="u">All Suggestions</h2>
+    <p class="tm-sub">${none ? `<b>${LANE.NONE.head}</b> ${LANE.NONE.body} ` : ''}Every change the planner found for your team, best first, each with how it moves the Strength Score.</p>${ctl}`;
   // while the planner works (a new Suggest from, a team change) the list on screen stays, faded and not tappable, as on My Team
-  if (busy) return `<div class="sga2">${head(U.count)}<p class="tm-sub sg2-wait" role="status">Working out the best changes for your team…</p>${U.last ? `<div class="sg2-stale" inert aria-busy="true">${U.last}</div>` : ''}</div>`;
+  if (busy) return `<div class="sga2">${head(U.count, U.none)}<p class="tm-sub sg2-wait" role="status">Working out the best changes for your team…</p>${U.last ? `<div class="sg2-stale" inert aria-busy="true">${U.last}</div>` : ''}</div>`;
   const P = V2.plan.plans || [], shown = ui.planList || [], X = V2.sgX(ms);
   const rest = [...P, ...(P.more || [])].filter(pl => !shown.includes(pl)), all = [...shown, ...rest]; let g0 = null; try { g0 = P.gBase != null ? P.gBase : ms.length === 6 ? gradeTeam(ms) : null; } catch (e) {}
   const side = !P.length, singles = all.filter(pl => pl.ch.length === 1), multi = all.filter(pl => pl.ch.length > 1);
@@ -164,8 +166,8 @@ V2.allSugsHtml = () => { const ms = members(), U = V2.sgAll, E = V2.esc, busy = 
     : `<p class="tm-sub">No plan with two or more changes raises the Strength Score${g0 != null ? ` (it’s at ${Math.round(g0)})` : ''}.</p>`}`;
   const end = left > 0 || bleft > 0 ? '' : `<p class="tm-sub sga2-end">That’s every change the planner found in ${E(poolW)}.${ui.pool !== 'all' ? ' For more, set Suggest from to Whole Roster above.' : ''}</p>`;
   const body = all.length ? notes + one + big + end : `${notes}<p class="tm-sub">No suggestions for this team from this pool.${ui.pool !== 'all' ? ' Try Whole Roster above.' : ''}</p>`;
-  U.last = body; return `<div class="sga2">${head(all.length)}${body}</div>`; };
-V2.openAllSugs = () => { if (!members().length) return; Object.assign(V2.sgAll, {n: 6, nb: 1, last: '', count: null}); V2.sheet(V2.allSugsHtml(), {label: 'All Suggestions'}); };
+  U.last = body; return `<div class="sga2">${head(all.length, U.none = !!(P.nothing && all.length))}${body}</div>`; };
+V2.openAllSugs = () => { if (!members().length) return; Object.assign(V2.sgAll, {n: 6, nb: 1, last: '', count: null, none: false}); V2.sheet(V2.allSugsHtml(), {label: 'All Suggestions'}); };
 // redraw the open sheet in place, keeping its scroll and the focused control (a Suggest from choice, Show More)
 V2.sgAllRedraw = focusSel => { const el = document.querySelector('.np-sheet .sga2'); if (!el) return; const a = document.activeElement, sh = el.closest('.np-sheet'), y = sh.scrollTop;
   let sel = focusSel; if (!sel && a && el.contains(a)) sel = a.matches('[data-v2slide] > button') ? `[data-v2slide="${a.parentElement.dataset.v2slide}"] > [data-v="${a.dataset.v}"]` : a.matches('[data-v2sgamore]') ? '[data-v2sgamore]' : a.matches('[data-v2sgbmore]') ? '[data-v2sgbmore]' : null;
