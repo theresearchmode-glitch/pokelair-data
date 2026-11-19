@@ -49,3 +49,6 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
 14. Q21 · Meta on phones (review #12 + #19): pictures docs/rebuild/pics/nov19/Q21-meta-phone-*.png
    Measured at 390x844: search starts at 842px; the filter row is 582px wide in a 390px screen (sideways scroll, no cue).
    A RECOMMENDED: search + filters above the featured #1 on phones, filters wrap into even rows. B: no change.
+15. Q22 · KO Board names (review #3): pictures docs/rebuild/pics/nov19/Q22-ko-board-*.png
+   A RECOMMENDED: name + damage on hover/keyboard focus on desktop; a short name under each tile on phones.
+   B: short names under every tile everywhere (long names cut). C: no change.
