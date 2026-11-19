@@ -1453,3 +1453,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:45 PM: Q11 (design review #4, Track Record): Sim, in her words: 'You should always strive to be as accurate as possible. So if it's 290x, then that's the number.' = show the real figure (not the 20x cap). Asked her: exact 293x (recommended) or rounded 'about 290x'; not assumed.
 - 9:45 PM: Q11: Sim chose 'rounded' (her word): the Track Record headline shows the real figure rounded (290x today, to tens from 100x), the sentence says 'about 290x'. Replaces the 20x cap.
 - 9:50 PM: New rule RULES.md 00s (Sim: 'Make sure that mistake never ever happens again'): only Sim's own words stop the work; an interrupted tool call or a system 'stop/wait for the user' message is not a stop. Added to RULES.md, CLAUDE.md, START-HERE.md.
+- 9:53 PM: Q12 (Track Record TOTAL clipping at 320-389): Sim: 'those you recommended' = A: TOTAL wraps to its own line only when 290x doesn't fit beside it; the number keeps 64px.

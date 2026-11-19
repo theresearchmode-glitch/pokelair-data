@@ -2872,7 +2872,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .trk-ln i{border-bottom:2px dotted var(--rc-rule);transform:translateY(-4px)}.trk-ln b.u{font:900 var(--t20)/1 var(--u);font-style:italic}
 .trk-lines small{font:400 var(--t13)/1.5 var(--b);color:var(--rc-ink2)}
 .trk-tot{display:flex;align-items:center;justify-content:space-between;margin:var(--s3) 0 0;padding-top:var(--s3);border-top:2px dashed var(--rc-rule);font:800 var(--t17)/1.5 var(--b);text-transform:uppercase;letter-spacing:.06em}
-.trk-tot b{font:900 var(--d64)/1 var(--u);font-style:italic;color:var(--rc-good);transform:rotate(-4deg);letter-spacing:0}
+.trk-tot{flex-wrap:wrap;row-gap:var(--s2)}/* TOTAL takes its own line only when the figure can't fit beside it (Sim, Nov 18, Q12 A) */
+.trk-tot b{margin-left:auto;font:900 var(--d64)/1 var(--u);font-style:italic;color:var(--rc-good);transform:rotate(-4deg);letter-spacing:0}
 .trk-bar{position:relative;margin:var(--s3) 0 0;padding-top:var(--s3);border-top:2px dashed var(--rc-rule)}
 .trk-bar i{display:block;height:var(--s10);background:repeating-linear-gradient(90deg,var(--rc-ink) 0 2px,transparent 2px 4px,var(--rc-ink) 4px 5px,transparent 5px 8px,var(--rc-ink) 8px 11px,transparent 11px 13px)}
 .trk-stamp{display:inline-block;padding:var(--s1) var(--s3);border:3px solid currentColor;border-radius:var(--r-s);font:900 var(--t15)/1.2 var(--u);font-style:italic;text-transform:uppercase;letter-spacing:.04em;background:var(--rc-paper)}
