@@ -15,9 +15,10 @@ V2.pbpPoster = (mine, theirs, P) => { const r = P.r, ll = P.likelyLead || [], re
 V2.pbpBeat = (b, i, T, row) => { const E = V2.esc, all = [...T.leads, ...T.opp], m = String(b.act).match(/^(.+?) into (.+)$/) || String(b.act).match(/^(Fake Out) (.+)$/);
   const tgt = m ? all.find(x => x.d === m[2]) : null, move = m ? m[1] : b.act, why = String(b.why || ''), dmg = tgt && !/^Fake Out/.test(b.act);
   // the stamp reads the move's own result (the text before the first note): a KO stamp only for a sure KO ('KOs', or 'OHKO' with no
-  // chance after it); 'OHKO 19%' is a chance, not a knockout, so it gets no stamp (Nov 19: Mega Floette's Moonblast showed KO at 19%)
+  // chance after it); 'OHKO 19%' is a chance, not a knockout, so it gets no stamp (Nov 19: Mega Floette's Moonblast showed KO at 19%).
+  // b.koSure (turnOneData, Nov 19 review) wins when set: no stamp under 100% to hit or when the attacker may not move first
   const main = b.main != null ? String(b.main) : why.split(/; /)[0]; /* b.main: turnOneData's main fact, before its notes */
-  const pct = dmg ? +(main.match(/up to (\d+)%/i) || [])[1] || (/^KOs/.test(main) ? 100 : 0) : 0, ko = dmg && (/\bOHKO\b(?! \d)/.test(main) || /^KOs/.test(main)), hk = dmg && !ko ? (main.match(/\b(\dHKO)\b/) || [])[1] : '';
+  const pct = dmg ? +(main.match(/up to (\d+)%/i) || [])[1] || (/^KOs/.test(main) ? 100 : 0) : 0, ko = dmg && (b.koSure != null ? !!b.koSure : /\bOHKO\b(?! \d)/.test(main) || /^KOs/.test(main)), hk = dmg && !ko ? (main.match(/\b(\dHKO)\b/) || [])[1] : '';
   const say = `Move ${i + 1}, ${b.me ? 'you' : 'them'}: ${b.x.d}, ${b.speed} Speed${b.prio ? `, ${b.prio > 0 ? '+' : '−'}${Math.abs(b.prio)} priority` : ''}, ${b.act}, ${why}${ko ? ', a knockout' : ''}.`;
   return `<li class="pbp-beat ${b.me ? 'you' : 'them'}" style="--r:${row || i + 1}" aria-label="${E(say)}"><i class="pbp-n u" aria-hidden="true">${i + 1}</i><div class="pbp-band" aria-hidden="true">${V2.mon(b.x.p.n, {iw: 72, bare: true})}
     <div class="pbp-tx"><p class="pbp-who">${b.me ? 'You' : 'Them'} · ${E(b.x.d)}</p><p class="pbp-mv u">${E(move)}</p>${tgt ? `<p class="pbp-into">into ${E(tgt.d)}</p>` : ''}<p class="pbp-why">${E(why)}</p>${dmg && pct ? `<i class="pbp-hp" style="--w:${Math.min(100, pct)}%"></i>` : ''}</div>

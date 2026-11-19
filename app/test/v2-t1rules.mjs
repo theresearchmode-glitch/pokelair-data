@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf = new Map(); for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) { teams.push(t.mons.map(m => m.n)); if (!refOf.has(t.mons.map(m => m.n).join('/'))) refOf.set(t.mons.map(m => m.n).join('/'), {ev: e, t}); }
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: [], intoGone: [], dblParen: [], theirKO: 0, theirKOmiss: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: [], intoGone: [], dblParen: [], theirKO: 0, theirKOmiss: [], koSureN: 0, koSureBad: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
   const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
   const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp'], /* Extreme Speed into a side with Farigiraf's Armor Tail */
@@ -89,7 +89,7 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
        ('OHKO 19%') or a KO named only in a note gets none. Read from each card as Battle draws it (V2.pbpBeat) */
     if (typeof V2 === 'object' && V2.pbpBeat) T.beats.forEach((bt, i) => { if (!/ into /.test(bt.act)) return; const main = bt.main != null ? bt.main : String(bt.why).split('; ')[0];
       const stamp = /pbp-tgt ko/.test(V2.pbpBeat(bt, i, T, i + 1)), sure = /^KOs\\b/i.test(main) || /\\bOHKO\\b(?! \\d)/.test(main);
-      if (stamp) st.koStamp++; if (stamp !== sure) st.koStampBad.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') stamp ' + stamp); });
+      if (stamp) st.koStamp++; if (stamp && !sure) st.koStampBad.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') stamp ' + stamp); });
     /* Nov 19 review (small): no act aims 'into' a foe its own why calls KO'd earlier this turn (the card would draw a Pokémon that is
        gone), and no why carries a double closing parenthesis ('(up to 287% to your Basculegion (F))') */
     for (const bt of T.beats) { const am = bt.act.match(/ into (.+)$/), g = bt.why.match(/(.*) (?:is|are) KO'd earlier this turn/i);
@@ -105,12 +105,19 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
       for (const bt of T.beats) { const main = bt.main != null ? bt.main : bt.why, am = bt.act.match(/^(.+?) into (.+)$/), sp = !am && bt.me && main.match(/^KOs their (.+?)(?: \\(|\\. |$)/);
         if ((!am && !sp) || (am && am[1] === 'Fake Out') || /KO'd earlier this turn/.test(bt.why)) continue;
         const t = (bt.me ? T.opp : T.leads).find(o => o.d === (am ? am[2] : sp[1])), mvN = am ? am[1] : bt.act.replace(/ \\(hits both\\)$/, ''), mv = (bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN);
-        if (!t || !mv) continue; const foe = bt.me ? t : bt.x, it = sheetOf(foe); if (!it && !/^KOs/.test(main)) continue;
+        if (!t || !mv) continue; const foe = bt.me ? t : bt.x, it = sheetOf(foe);
         const r = damage({atk: side(bt.x, 'atk'), def: side(t, 'def'), move: mv, spread: !!mv.spread, weather: F.weather, terrain: F.terrain, auras: F.auras}); if (!r || !r.hp) continue;
+        /* Nov 19 review: the KO stamp on Battle's card (V2.pbpBeat) shows exactly when the KO is sure, told from the calc, not the
+           line's text: every roll KOs, Sash/Sturdy don't hold, 100% to hit, not charging, and the attacker isn't at risk of being
+           flinched or KO'd first (flinch 'likely', koRisk) */
+        if (am && typeof V2 === 'object' && V2.pbpBeat) { const A = side(bt.x, 'atk'), i = T.beats.indexOf(bt), acc = moveAcc(mv, A.ability, F.weather, side(t, 'def'), A.item);
+          const sure = r.min >= r.hp && !r.sash && acc >= 100 && !chargesFirst(mv, F.weather, A.item) && !bt.koRisk && bt.flinch !== 'likely', stamp = /pbp-tgt ko/.test(V2.pbpBeat(bt, i, T, i + 1));
+          if (sure) st.koSureN++; if (stamp !== sure) st.koSureBad.push(tag + ': ' + (bt.me ? 'your ' : 'their ') + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') stamp ' + stamp + ', ' + dmgP(100 * r.min / r.hp) + '-' + dmgP(100 * r.max / r.hp) + '%, ' + acc + '% to hit'); }
         /* Nov 19 review: their hit that can KO your lead before it moves (any roll, any accuracy; not Sash, not charging) puts that
            lead at risk (koRisk), so its own KO isn't sure; told from the calc and the turn order, not the line's text */
         if (!bt.me && am && r.max >= r.hp && !r.sash && !chargesFirst(mv, F.weather, side(bt.x, 'atk').item)) { const j = T.beats.findIndex(y => y.x === t);
           if (j > T.beats.indexOf(bt)) { st.theirKO++; if (!T.beats[j].koRisk) st.theirKOmiss.push(tag + ': their ' + bt.x.d + ' ' + bt.act + ' (' + dmgP(100 * r.min / r.hp) + '-' + dmgP(100 * r.max / r.hp) + '%) before your ' + t.d + ' ' + T.beats[j].act); } }
+        if (!it && !/^KOs/.test(main)) continue; /* the checks below: sheet lines and 'KOs' lines only (the two above: every attack line) */
         if (/^KOs/.test(main)) { st.koLines++; if (r.sash) st.sashKO.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + main + '), ' + t.d + ' holds with ' + r.sashBy); }
         if (!it) continue; st.sheetHits++; if (sideDefaults(foe.p, 'def', null).item !== it) st.sheetDiff++;
         const um = main.match(/^up to (\\S+)% of /), okHit = um ? um[1] === dmgP(100 * r.max / r.hp) : /^KOs/.test(main) ? r.min >= r.hp : true;
@@ -156,4 +163,5 @@ ok(st.koLines > 0 && !st.sashKO.length, `no 'KOs' when Focus Sash or Sturdy hold
 ok(st.warnNames > 0 && !st.warnSide.length, `the Watch line says 'your' or 'their' on every name, on the right side (${st.warnNames} names, ${st.warnSide.length} wrong${st.warnSide.length ? ', e.g. ' + st.warnSide[0] : ''})`);
 ok(!st.intoGone.length && !st.dblParen.length, `no act aims at a foe KO'd earlier this turn, no double parenthesis (${st.intoGone.length} aimed at a fainted foe, ${st.dblParen.length} '))'${st.intoGone.length ? ', e.g. ' + st.intoGone[0] : st.dblParen.length ? ', e.g. ' + st.dblParen[0] : ''})`);
 ok(st.theirKO > 0 && !st.theirKOmiss.length, `their hit that can KO your lead before it moves marks that lead at risk, sure or chance (${st.theirKO} such hits, ${st.theirKOmiss.length} unmarked${st.theirKOmiss.length ? ', e.g. ' + st.theirKOmiss[0] : ''})`);
+ok(st.koSureN > 0 && !st.koSureBad.length, `Battle's KO stamp shows exactly for a sure KO, told from the calc (not under 100% to hit, not when the attacker may not move first) (${st.koSureN} sure KOs, ${st.koSureBad.length} wrong${st.koSureBad.length ? ', e.g. ' + st.koSureBad[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
