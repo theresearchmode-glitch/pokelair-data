@@ -347,7 +347,10 @@ V2.openImport = (o = {}) => { let done = false;
     if (r.shared) { done = true; V2.openShared(r.shared); return; }
     if (r.error) { const n = document.querySelector('[data-impnote]'); if (n) n.textContent = r.error; return; }
     done = true; V2.closeSheet(true); V2.ui.sel = 0; V2.ui.picked = false; render(); toast(r.msg, true); }); };
-V2.clearTeam = () => { clearTeam(); V2.ui.sel = 0; V2.ui.picked = false; render(); toast('Team cleared', true); };
+/* Sim's design review (Nov 18, P1 #1): Clear Team empties all six, so its Undo stays 10 s (the toast also waits while hovered or
+   focused) and the focus goes to that Undo, not the page heading; test app/test/v2-clear.mjs */
+V2.clearTeam = () => { clearTeam(); V2.ui.sel = 0; V2.ui.picked = false; render(); toast('Team cleared', true, 10000);
+  setTimeout(() => { const u = document.querySelector('.np-toast #toastUndo'); if (u) u.focus({preventScroll: true}); }, 120); };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2import]')) V2.openImport(); else if (e.target.closest('[data-v2clear]')) V2.clearTeam(); });
 window.addEventListener('hashchange', () => { if (/team=/.test(location.hash)) V2.checkShared(); });
 setTimeout(V2.checkShared, 0);
