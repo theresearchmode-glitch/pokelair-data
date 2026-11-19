@@ -117,7 +117,10 @@ V2.sdsFit = () => { const steps = [['--t13', ''], ['--t13', '88%'], ['--t13', '7
   document.querySelectorAll('.sds-rings .sds-nm, .sds-rings .sds-sub, .sds-tg').forEach(b => { b.style.fontSize = ''; b.style.fontStretch = ''; b.style.hyphens = ''; b.style.whiteSpace = ''; b.classList.remove('nar');
     const tg = b.classList.contains('sds-tg'), box = tg ? b.closest('.sds-board') : b.closest('.sds-cap'), over = () => { const br = box.getBoundingClientRect(); if (tg) return tagOver(b, br); const rg = document.createRange(); rg.selectNodeContents(b); return [...rg.getClientRects()].some(r => r.width && (r.left < br.left - 0.5 || r.right > br.right + 0.5)); };
     if (!box || !over()) return; if (tg) { b.classList.add('nar'); if (!over()) return; } /* a board tag: the body font is narrower than Unbounded */ for (const [fs, st] of steps) { b.style.fontSize = `var(${fs})`; b.style.fontStretch = st; if (!over()) return; }
-    if (tg) { b.style.fontStretch = ''; b.style.whiteSpace = 'normal'; if (!over()) return; b.style.fontStretch = '75%'; if (!over()) return; } b.style.hyphens = 'auto'; }); };
+    if (tg) { b.style.fontStretch = ''; b.style.whiteSpace = 'normal'; if (!over()) return; b.style.fontStretch = '75%'; if (!over()) return; } b.style.hyphens = 'auto'; });
+  /* Sim, Nov 19 ("the names are not all in a line. that bothers me"): the six names share one size: the narrowest any of them needed */
+  const nms = [...document.querySelectorAll('.sds-rings .sds-nm')], rank = b => b.style.fontStretch === '75%' ? 3 : b.style.fontStretch === '88%' ? 2 : b.style.fontSize ? 1 : 0, k = Math.max(0, ...nms.map(rank));
+  if (k) nms.forEach(b => { b.style.fontSize = 'var(--t13)'; b.style.fontStretch = k === 3 ? '75%' : k === 2 ? '88%' : ''; }); };
 V2.sdSixAfter = () => { V2.sdsFit(); V2.sdsArrows(); };
 addEventListener('resize', () => { if (V2.route && V2.route() === 'home' && document.querySelector('.sds')) requestAnimationFrame(V2.sdSixAfter); });
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if (V2.route && V2.route() === 'home' && document.querySelector('.sds')) V2.sdSixAfter(); });
