@@ -2000,6 +2000,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* share, teams and place stack one per line at every width (Sim, Nov 19; was phones only: side by side at 700+ it wrapped 2+1 and left '▼1 place' alone on a row) */
 .us-nums{display:flex;flex-direction:column;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px;font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}.us-nums b{font:900 var(--t17)/1 var(--u);font-style:italic;color:var(--ink)}.us-nums b small{font-size:var(--t13)}
 .us-nums small{font-size:inherit} /* '1,405 teams' in <small> was the browser's 'smaller' (10.8px, off the type scale; qcheck on GitHub, Nov 19): keeps the line's 13px */
+@media (max-width:399.98px){.us-bench .us-tx b,.us-bench .us-nums small{font-stretch:88%}} /* 320-399: bench names ('Basculegion' 76px) and 'N teams' (70px at 13px) fit their 68px column, as the empty My Team tiles do */
 .us-tr{font:700 var(--t13)/1 var(--b);font-style:normal;color:var(--plot-text)}.us-tr.down,.us-tr.dn{color:var(--bad-text)}
 .us-benches{display:grid;gap:var(--s4)}.us-bench{--gsw:96px}
 .us-bench::before{border-bottom-color:var(--plot)}
