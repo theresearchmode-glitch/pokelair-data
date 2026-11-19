@@ -40,24 +40,26 @@ function turnOneData(mine, theirs, r) {
   // it back to the Intimidate user) or Flower Veil guards a Grass type; Defiant (−1 then +2), Guard Dog and Contrary end at +1
   // Attack, Competitive at −1 Attack and +2 Sp. Atk; White Herb undoes one drop. A Mega is still its base form when the leads come
   // out, so its base form's usual Ability counts then (Mega Gyarados: Intimidate; Mega Metagross: Clear Body); a Mega whose own
-  // Ability is Intimidate (Mega Manectric) uses it when it Mega Evolves, before any move. Rattled's +1 Speed is not counted.
+  // Ability is Intimidate (Mega Manectric) uses it when it Mega Evolves, before any move. Rattled (Gen 8 on; Showdown's rattled:
+  // onAfterBoost) gives +1 Speed for each Intimidate that lowered its Attack, so it counts in turn one's order (speF).
   const INTIM_NO = ['Clear Body', 'Hyper Cutter', 'White Smoke', 'Full Metal Body', 'Inner Focus', 'Oblivious', 'Own Tempo', 'Scrappy', 'Mirror Armor'], INTIM_UP = ['Defiant', 'Guard Dog', 'Contrary'];
   const entryAb = x => { const bp = x && x.p && x.p.m ? baseP(x.p) : null; if (bp) { try { const a = metaAbility(bp); if (a) return a; } catch (e) {} } return abilityOf(x); };
   const intimOf = y => entryAb(y) === 'Intimidate' || abilityOf(y) === 'Intimidate', sideOfX = x => L.includes(x) ? L : opp, foesOf = x => L.includes(x) ? opp : L;
-  const stage = new Map([...L, ...opp].map(x => { const n = foesOf(x).filter(intimOf).length, ab = entryAb(x), it = sideDefaults(x.p, 'atk', calcM(x)).item; let atk = 0, spa = 0;
+  const stage = new Map([...L, ...opp].map(x => { const n = foesOf(x).filter(intimOf).length, ab = entryAb(x), it = sideDefaults(x.p, 'atk', calcM(x)).item; let atk = 0, spa = 0, spe = 0;
     if (n && !INTIM_NO.includes(ab) && !((x.types || x.p.t || []).includes('Grass') && sideOfX(x).some(y => entryAb(y) === 'Flower Veil'))) {
-      if (INTIM_UP.includes(ab)) atk = n; else { atk = -n; if (ab === 'Competitive') spa = 2 * n; if (it === 'White Herb') atk += 1; } }
+      if (INTIM_UP.includes(ab)) atk = n; else { atk = -n; if (ab === 'Competitive') spa = 2 * n; if (ab === 'Rattled') spe = n; if (it === 'White Herb') atk += 1; } }
     /* Mirror Armor sends the drop back to the Intimidate user (unless that user's own Ability blocks it) */
     if (intimOf(x) && !INTIM_NO.includes(ab) && !INTIM_UP.includes(ab)) atk -= foesOf(x).filter(y => entryAb(y) === 'Mirror Armor').length;
-    return [x, {atk: Math.max(-6, Math.min(6, atk)), spa: Math.min(6, spa)}]; }));
-  const stOf = x => stage.get(x) || {atk: 0, spa: 0};
+    return [x, {atk: Math.max(-6, Math.min(6, atk)), spa: Math.min(6, spa), spe: Math.min(6, spe)}]; }));
+  const stOf = x => stage.get(x) || {atk: 0, spa: 0, spe: 0};
   // the stage a move hits with, in plain words for its line: 'at −1 Attack', 'at +2 Sp. Atk' (Body Press: Defense, untouched; Foul Play: the target's Attack)
   /* d: the target; Unaware (the target's) ignores the stage, as the calc does, so no note then (Nov 19 review) */
   const stageNote = (x, mv, d) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat || (d && abilityOf(d) === 'Unaware')) return ''; const s = stOf(x), v = mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
   const hitNotes = (x, h, d) => [hitNote(h), stageNote(x, h && h.mv, d)].filter(Boolean).join(', ');
   const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, calcM(a), calcM(d), {...F, aStage: stOf(a), dAtkStage: stOf(d).atk});
   // speed in that field: Chlorophyll / Swift Swim / Sand Rush / Slush Rush double in their weather
-  const speF = x => spe(x) * (typeof speedMul === 'function' ? speedMul(abilityOf(x), F.weather) : 1);
+  // a Speed stage (Rattled after Intimidate) multiplies first, as the game applies stages before other modifiers: +1 is ×1.5, +2 ×2
+  const speF = x => { const k = stOf(x).spe || 0; return (k ? Math.floor(spe(x) * (2 + k) / 2) : spe(x)) * (typeof speedMul === 'function' ? speedMul(abilityOf(x), F.weather) : 1); };
   // their threat to each of my leads: the hardest single hit
   const danger = opp.map(o => { let worst = null; for (const m of L) { const h = hitOn(o, o.moves || [], m); if (h && (!worst || h.r.max / h.r.hp > worst.pct)) worst = {pct: h.r.max / h.r.hp, h, on: m}; } return {o, worst}; })
     .sort((a, b) => (b.worst ? b.worst.pct : 0) - (a.worst ? a.worst.pct : 0));
