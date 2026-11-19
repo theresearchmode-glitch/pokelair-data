@@ -53,7 +53,9 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   if (i.isConnected && document.activeElement !== i) try { i.focus({preventScroll: true}); } catch (x) {} });
 // one toast at a time, always just above the team dock and the phone bar (whichever is higher on screen)
 // code review C8: one Undo for actions outside the team's own Undo (a deleted game, cleared Their Six): the toast's button runs restore
-V2.undoToast = (msg, restore) => { V2._undoFn = restore; return V2.toast(V2.esc(msg) + ' <button type="button" data-v2undo>Undo</button>', 6000); };
+/* one Undo time everywhere: 10 s (Sim's design review #2, Nov 18: 'one Undo time of at least 10 s, paused on hover/focus'; the pause is in V2.toast) */
+V2.UNDO_MS = 10000;
+V2.undoToast = (msg, restore) => { V2._undoFn = restore; return V2.toast(V2.esc(msg) + ' <button type="button" data-v2undo>Undo</button>', V2.UNDO_MS); };
 document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2undo]'))) return; const f = V2._undoFn; V2._undoFn = null; document.querySelectorAll('.np-toast,.np-sheet-undo').forEach(x => x.remove()); if (f) { try { f(); } catch (x) { console.error(x); } V2.toast('Undone'); } });
 /* review Nov 18 (C1, C2): a place hold (Apply's in sugs.js, Remove's V2.rmHold in six.js) lets go on the player's wheel, touch, pointer
    or key, and also on any scroll it didn't make itself: a screen reader moving its cursor, find-in-page, a link to a spot, a script.

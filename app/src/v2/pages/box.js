@@ -84,7 +84,7 @@ const bxRe = () => V2.redraw();
 V2.bxNarrow = () => matchMedia('(max-width:899.98px)').matches;
 V2.bxPick = n => { V2.bx.sel = n; V2.bx.form = null; if (V2.bxNarrow()) { bxRe(); V2.sheet(V2.bxSum(n, {sheet: true}), {label: V2.disp(n), small: true}); return; } bxRe();
   const t = document.querySelector(`[data-bxsel="${CSS.escape(n)}"]`); if (t) t.focus({preventScroll: true}); };
-V2.bxToast = t => V2.toast(V2.esc(t) + ' <button type="button" data-bxundo>Undo</button>', 6000);
+V2.bxToast = t => V2.toast(V2.esc(t) + ' <button type="button" data-bxundo>Undo</button>', V2.UNDO_MS);
 V2.bxAddPick = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Add to My Box</h2><label class="np-field">${V2.ICON.search}<input type="search" data-bxq placeholder="Find a Pokémon you own" aria-label="Add a Pokémon to your box" autocomplete="off">${V2.CLR}</label><div class="hits" data-bxhits aria-live="polite"></div></div>`, {label: 'Add to My Box', small: true, focus: '[data-bxq]'});
   const inp = sh.querySelector('[data-bxq]'), out = sh.querySelector('[data-bxhits]');
   // E16 (Sim's check, Nov 12): a name that is already in the box says so, instead of "Nothing called ..."
