@@ -19,10 +19,11 @@ const pctOf = (txt, moves) => moves.reduce((a, m) => a + [...txt.matchAll(new Re
 t('NAV-01', 'Battle tab opens Battle and stays highlighted on its sub-pages', async () => {
   for (const width of [1280, 390]) { const {ui, errs, close} = await open({team: TEAM, width});
     await ui.tapMainTab('Battle');
-    expect(await ui.current() === 'matchup', `${width}: Battle tab didn't open Battle`);
-    expect(await ui.sees('Team preview'), `${width}: Battle page head "Team preview" missing`);
+    /* Sim, Nov 19 (B): the Battle tab opens the Damage Calculator, Battle's first tool; Battle itself is the next tab */
+    expect(await ui.current() === (NEW ? 'calc' : 'matchup'), `${width}: Battle tab didn't open ${NEW ? 'the Damage Calculator' : 'Battle'}`);
+    expect(await ui.sees(NEW ? 'Damage Calculator' : 'Team preview'), `${width}: page head "${NEW ? 'Damage Calculator' : 'Team preview'}" missing`);
     expect(await ui.mainTab() === 'Battle', `${width}: Battle tab not highlighted on Battle (got ${await ui.mainTab()})`);
-    for (const p of ['Speed Tiers', 'Damage Calc', 'Type Chart', 'Test Run', 'Practice']) { await ui.go(p);
+    for (const p of ['Battle', 'Speed Tiers', 'Damage Calc', 'Type Chart', 'Test Run', 'Practice']) { await ui.go(p);
       expect(await ui.mainTab() === 'Battle', `${width}: Battle tab not highlighted on ${p} (got ${await ui.mainTab()})`); }
     noErrors(errs); await close(); } });
 
@@ -66,7 +67,7 @@ t('NAV-03', '"← Battle" back link on the five Battle sub-pages; "← Pokémon 
 t('NAV-04', 'tool switch Speed tiers · Damage calc · Type chart (tap and keyboard)', async () => {
   const {ui, close} = await open({team: TEAM});
   await ui.go('Speed Tiers'); expect(/speed tiers/i.test(await ui.toolSwitchChosen() || ''), 'Speed tiers not chosen on its own page');
-  await ui.toolSwitch('Damage calc'); expect(await ui.current() === 'calc', 'switch did not open Damage calc');
+  await ui.toolSwitch(NEW ? 'Damage Calculator' : 'Damage calc'); expect(await ui.current() === 'calc', 'switch did not open Damage calc');
   expect(/damage calc/i.test(await ui.toolSwitchChosen() || ''), 'switch does not show Damage calc as chosen');
   await ui.toolSwitchKey('Type chart'); expect(await ui.current() === 'types', 'keyboard Enter on Type chart did not open it');
   await close(); });
