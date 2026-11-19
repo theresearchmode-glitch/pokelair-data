@@ -46,3 +46,6 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
       the tournaments chip: different date windows). The key line now says so. Should the hero use one source?
    c. Home/empty My Team '% of ladder teams' is the Showdown ladder; say 'Showdown ladder teams' (Word list) instead of Nov 12's choice?
    d. Look options for the source: a line under the hero stats, or the hero follows the chosen chip.
+14. Q21 · Meta on phones (review #12 + #19): pictures docs/rebuild/pics/nov19/Q21-meta-phone-*.png
+   Measured at 390x844: search starts at 842px; the filter row is 582px wide in a 390px screen (sideways scroll, no cue).
+   A RECOMMENDED: search + filters above the featured #1 on phones, filters wrap into even rows. B: no change.
