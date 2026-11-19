@@ -80,8 +80,8 @@ function turnOneData(mine, theirs, r) {
       else if (t && !b.me) b.why = done.has(t) ? `${t.d} has already moved: no flinch` : `${t.d} can't be flinched this turn`;
       else if (t && b.me && (done.has(t) || noFlinch(t) || blocked(t, side))) b.why += `; ${t.d} ${done.has(t) ? 'moves first, so it won\'t flinch' : 'can\'t be flinched'}`; }
     done.add(b.x); }
-  // turn one's warnings leave out an attacker your Fake Out stops; a Fake Out user's attack comes from turn two on
-  const foUser = o => oPr(o) === 3;
-  const warn = danger.filter(x => x.worst && x.worst.pct >= .8 && !(flinched.get(x.o) || {}).sure).map(x => `${x.o.d}'s ${x.worst.h.mv.name} can KO ${x.worst.on.d}${foUser(x.o) ? ' from turn 2' : ''}`);
+  // a threat that can't act on turn one (your Fake Out stops it, or it uses its own Fake Out) is still a threat from turn two on
+  const later = o => oPr(o) === 3 || (flinched.get(o) || {}).sure;
+  const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `${x.o.d}'s ${x.worst.h.mv.name} can KO ${x.worst.on.d}${later(x.o) ? ' from turn 2' : ''}`);
   return {leads: L, opp, beats, warn, field: F0, terrain: F.terrain};
 }

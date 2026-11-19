@@ -277,7 +277,8 @@ t('BATTLE-13', 'Turn one in move order with the planned moves, KO warning and fi
   expect((NEW ? /1 You · Rillaboom Fake Out into Pelipper .*?107 Speed \+3 priority/i : /1 You: Rillaboom 107 Speed, \+3 Fake Out Pelipper/i).test(tx), 'step 1 is not Rillaboom Fake Out on Pelipper'); /* new: the mock-up's step format */
   expect((NEW ? /2 You · Mega Charizard Y Weather Ball .*?\d+ Speed/i : /2 You: Mega Charizard Y \d+ Speed Weather Ball/i).test(tx), 'step 2 is not Mega Charizard Y Weather Ball');
   expect((NEW ? /3 Them · .+4 Them · /i : /3 Them: .+4 Them: /i).test(tx), 'steps 3-4 are not theirs');
-  expect(/Watch ?Pelipper's Weather Ball can KO Rillaboom\. Consider Protect\./i.test(tx), 'no KO warning');
+  expect(/Watch ?Pelipper's Weather Ball can KO Rillaboom from turn 2\. Consider Protect\./i.test(tx), 'no KO warning'); /* Nov 18 (design review #1): Rillaboom's Fake Out flinches Pelipper on turn one, so its threat is from turn 2 */
+  expect(/Pelipper Flinches/i.test(tx), 'Pelipper is not shown flinching from the Fake Out');
   expect((NEW ? /Field on turn 1: sun \+ Psychic Terrain \(Mega Charizard Y\)/i : /Field on turn 1 sun \+ Psychic Terrain \(Mega Charizard Y\)/i).test(tx), 'no field line');
   await ui.clearOpponents(); await ui.enterOpponents(['Kingambit']);
   expect(!/Turn one, in move order/i.test(await ui.pageText()), 'turn one shows with 1 of theirs');
