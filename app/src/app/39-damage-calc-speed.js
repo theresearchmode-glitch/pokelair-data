@@ -348,6 +348,8 @@ const koPc=k=>Math.min(99,Math.max(1,Math.round(100*k)));
 function koShort(r){if(!r||!r.hp)return '';if(r.max===0)return 'no effect';const rolls=r.rolls||[r.min,r.max],nx=r.next||r,k1=rolls.filter(v=>v>=r.hp).length/rolls.length;
   if(r.sash&&k1>0)return r.sashBy==='Sturdy'?'Sturdy holds':'Sash holds';if(k1>=1)return 'OHKO';if(k1>0)return `OHKO ${koPc(k1)}%`;if(r.min+nx.min>=r.hp)return '2HKO';
   if(r.max+nx.max>=r.hp){const k2=ko2Odds(r);return k2!=null?`2HKO ${koPc(k2)}%`:'2HKO?'}if(r.min+2*nx.min>=r.hp)return '3HKO';const n=1+Math.ceil((r.hp-r.max)/Math.max(1,nx.max));return `${n}HKO+`}
+/* the short form under another name, for pages that word it their own way (Turn One, Sim's W11) */
+const koShortCalc=r=>koShort(r);
 /* a damage percentage under the shared rounding rule, never showing 100 for a hit that can't reach 100% */
 const dmgP=v=>{const t=ptsTxt(v);return v<100&&+t>=100?'99':t};
 // the range as words for a damage result: "62–74% of HP"

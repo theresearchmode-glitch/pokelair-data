@@ -55,6 +55,8 @@ function turnOneData(mine, theirs, r) {
     /* Mirror Armor sends the drop back to the Intimidate user (unless that user's own Ability blocks it) */
     if (intimOf(x) && !INTIM_NO.includes(ab) && !INTIM_UP.includes(ab)) atk -= foesOf(x).filter(y => entryAb(y) === 'Mirror Armor').length;
     return [x, {atk: Math.max(-6, Math.min(6, atk)), spa: Math.min(6, spa), spe: Math.min(6, spe)}]; }));
+  /* Sim's W11 (Nov 19): a one-hit KO chance in plain words ('OHKO 6%' was cryptic); the Damage Calc keeps its short form */
+  const koShort = r => koShortCalc(r).replace(/^OHKO (\d+(?:\.\d+)?)%$/, '$1% chance to KO in one hit');
   const stOf = x => stage.get(x) || {atk: 0, spa: 0, spe: 0};
   // the stage a move hits with, in plain words for its line: 'at −1 Attack', 'at +2 Sp. Atk' (Body Press: Defense, untouched; Foul Play: the target's Attack)
   /* d: the target; Unaware (the target's) ignores the stage, as the calc does, so no note then (Nov 19 review); unless the attacker
@@ -100,7 +102,7 @@ function turnOneData(mine, theirs, r) {
   for (const m of L) { const mv = names(m), partner = L.find(x => x !== m);
     /* aim only where it flinches, and never at a faster Fake Out user that will already have moved (second review, Nov 19) */
     const fd = mv.has('Fake Out') && !used.has('fake') ? danger.find(d => foFx(m, d.o, opp) === 'ok' && !(theirFOT.has(d.o) && speF(d.o) > speF(m))) : null;
-    if (fd) { used.add('fake'); lines.push([m, `Fake Out ${fd.o.d}`, fd.worst ? `stops its ${fd.worst.h.mv.name}, up to ${dmgP(100 * fd.worst.pct)}% to your ${fd.worst.on.d}` /* 'its': the target, named above it on the card */ : fd === danger[0] ? 'their biggest threat' : 'it can be flinched', pr(m, 'Fake Out'), fd.o]); continue; }
+    if (fd) { used.add('fake'); lines.push([m, `Fake Out ${fd.o.d}`, fd.worst ? `stops its ${fd.worst.h.mv.name}, up to ${dmgP(100 * fd.worst.pct)}% of your ${fd.worst.on.d}'s HP` /* 'its': the target, named above it on the card */ : fd === danger[0] ? 'their biggest threat' : 'it can be flinched', pr(m, 'Fake Out'), fd.o]); continue; }
     if (mv.has('Tailwind') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Tailwind', `${fast === 1 ? '1 of their leads outspeeds' : fast + ' of their leads outspeed'} your side`, pr(m, 'Tailwind')]); continue; }
     if (mv.has('Trick Room') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Trick Room', 'they are faster. The order flips from turn 2' /* its −7 shows beside its Speed */, pr(m, 'Trick Room')]); continue; }
     // attack: prefer a KO (not one Focus Sash or Sturdy survives), then the most damage; spread moves count both targets; a move that charges first or hits your own
@@ -275,10 +277,15 @@ function turnOneData(mine, theirs, r) {
     const tag = ns.slice(1).find(n => n.tag); if (tag && !parts.join('. ').toLowerCase().includes(tag.tag.toLowerCase()) && (tag.k === 'fotie' || (parts.join('. ') + '. ' + tag.tag).length <= 100)) parts.push(tag.tag); /* a Fake Out speed tie always shows: without it, 'Stops' would overclaim */
     /* the house rule's 130 characters: a long line drops its stage words ('at −1 Attack'; the numbers keep the stage) first */
     if (parts.filter(Boolean).join('. ').length > 130) parts[0] = parts[0].replace(/ \(at [+−]\d (?:Attack|Sp\. Atk)\)|, at [+−]\d (?:Attack|Sp\. Atk)(?=\))/, '');
+    /* then the KO chance's long wording (Sim's W11) gives way to the short one (about 1 line in 4000) */
+    if (parts.filter(Boolean).join('. ').length > 130) parts[0] = parts[0].replace(/(\d+(?:\.\d+)?)% chance to KO in one hit/, 'OHKO $1%');
     b.why = parts.filter(Boolean).join('. '); }
   // a threat that can't act on turn one (your Fake Out stops it, or it uses its own Fake Out) is still a threat from turn two on
   const later = o => theirFOT.has(o) || (flinched.get(o) || {}).sure;
   // every name says whose it is (Nov 19: mirrors have one name on both sides): 'their Pelipper's Weather Ball can KO your Rillaboom'
-  const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `their ${x.o.d}'s ${x.worst.h.mv.name} can KO your ${x.worst.on.d}${fainted.has(x.o) ? ` if ${fainted.get(x.o).by} doesn't KO it first` : later(x.o) ? ' from turn 2' : ''}`);
+  /* Sim's W11 (Nov 19): one subject per lead of yours: 'your Sneasler can be KO'd by their Pelipper's Hurricane (from turn 2) or their
+     Mega Charizard Y's Weather Ball' */
+  const wl = danger.filter(x => x.worst && x.worst.pct >= .8), wOn = [...new Set(wl.map(x => x.worst.on))];
+  const warn = wOn.map(on => `your ${on.d} can be KO'd by ` + wl.filter(x => x.worst.on === on).map(x => `their ${x.o.d}'s ${x.worst.h.mv.name}${fainted.has(x.o) ? ` (if ${fainted.get(x.o).by} doesn't KO it first)` : later(x.o) ? ' (from turn 2)' : ''}`).join(' or '));
   return {leads: L, opp, beats, warn, field: F0, terrain: F.terrain};
 }
