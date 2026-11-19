@@ -9,7 +9,10 @@ Batch ead51cf8 (GitHub run 1374: 12 of 14 jobs passed; the 2 failures were one o
 - Track Record shows the real figure, rounded: about 290× (Q11 'rounded'); TOTAL takes its own line on small phones (Q12 A).
 - 17 clear item misspellings fold into the real item (review #15). The Preview shows it after the next daily data run.
 
-## Done, tested here, on GitHub now (run 1375 and the next push)
+## Preview v209 (published 12:12 AM, 443 files), batch 7c314d84 (GitHub run 1378: 13 of 14 passed, Safari job still running then)
+Everything below is on it, plus the 44px tap areas (#5) and the updated mock-ups gallery (#16).
+
+## Done and tested (now on the Preview v209)
 - Review #1, Battle turn one follows the game's rules: one Mega per side, no move that can KO your partner, Fake Out flinches
   in move order, follow-up attacks are 'from turn 2'. Checked: 300 real matchups, 0 errors; the new test fails on the old build
   (33 two-Mega sides, 1 partner KO, 236 'then' lines) and passes now; Battle behaviour 83 pass, 0 fail.
