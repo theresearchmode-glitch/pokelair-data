@@ -79,7 +79,7 @@ without Sim's explicit yes.
 
 ### Helpers (standing rule, Sim Nov 18)
 - **At most 2 helpers/subagents at any time** (Sim, Nov 19, 4:46 AM, standing rule), used only where they clearly help (research, test runs, measurements, look-only
-  audits, self-contained builds in their own worktree). Tell Sim what is running. Usage is not a problem (Sim, Nov 17).
+  audits, self-contained builds in their own worktree). Tell Sim what is running. Keep usage moderate (Sim, Nov 19: last night used more than she would like; replaces Nov 17 "usage is not a problem").
 - Give each helper a full brief: what to read (CLAUDE.md, RULES.md), exact goal, "do not push, do not touch main or claude/design6",
   commit rules (below), and "label every claim checked or unsure; report result lines".
 - Helpers work with `isolation: worktree` (or in a named worktree under `.claude/worktrees/`). You land their work: check each

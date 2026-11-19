@@ -45,7 +45,7 @@ without checking first. (docs/rebuild/RULES.md section 0.)
 Helper limit (Sim, Nov 19, 4:46 AM, STANDING RULE until Sim changes it): at most 2 helpers/subagents at once (last night used more usage than Sim wants). Use them only where they clearly help; fewer is fine. Earlier: 3 (Nov 18). Earlier the same day: 4, then 3, then 5/7/15 overnight.
 Make the website process run as smoothly and quickly as possible. Think ahead: what will the next steps need (data, research,
 measurements, decisions), and start it early instead of waiting until it blocks. Use helper agents in parallel for research,
-data pulls, measurements and look-only audits, without asking first (usage is not a problem for now; just tell Sim what is
+data pulls, measurements and look-only audits, without asking first (Nov 19: keep usage moderate, at most 2 helpers; just tell Sim what is
 running). Keep the site itself to one change at a time in the main thread, tested, as before. Start long-running data pulls and
 checks early and work on something else while they run; batch pushes so GitHub runs finish. Name the next decisions Sim will
 need before they block the work. This replaces "lean usage: no helpers unless Sim agrees" and the heavy-task warning below
