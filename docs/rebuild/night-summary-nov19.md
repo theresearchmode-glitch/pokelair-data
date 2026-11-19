@@ -12,6 +12,14 @@ Batch ead51cf8 (GitHub run 1374: 12 of 14 jobs passed; the 2 failures were one o
 ## Preview v209 (published just before 12:11 AM by the clock, 443 files), batch 7c314d84 (GitHub run 1378: all 14 jobs passed, including Safari's engine)
 Everything below is on it, plus the 44px tap areas (#5) and the updated mock-ups gallery (#16).
 
+## Preview v210 (published 4:23 AM by the clock, 443 files), build of 98a59a5f (GitHub: all 14 jobs passed, incl. Safari's engine)
+Everything on v209 plus tonight's Battle Turn One accuracy work: one Mega per side, Fake Out in move order, 'Fainted' only when
+nothing can stop the KO, the KO stamp only for a sure KO (and never beside 'May be KO'd first'), Intimidate in every turn-one hit,
+open team sheet items, no 'KOs' through Focus Sash or Sturdy, Quick Guard and Unaware handled, the shorter notes (W9).
+Next (v211, after GitHub passes it): six more turn-one rule fixes from a helper (merged 3e546c69, all local checks pass): the
+speed-tie 'Fainted' bug, Rattled's Speed, a Mega's base form taking its open-sheet Ability, 'speed tie' said once, Mold Breaker into
+Unaware, Quick/Wide Guard only when their user can act. A fresh review of those six is running.
+
 ## Done and tested (now on the Preview v209)
 - Review #1, Battle turn one follows the game's rules: one Mega per side, no move that can KO your partner, Fake Out flinches
   in move order, follow-up attacks are 'from turn 2'. Checked: 300 real matchups, 0 errors; the new test fails on the old build
