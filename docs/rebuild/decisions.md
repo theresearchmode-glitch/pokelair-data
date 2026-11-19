@@ -1454,3 +1454,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:45 PM: Q11: Sim chose 'rounded' (her word): the Track Record headline shows the real figure rounded (290x today, to tens from 100x), the sentence says 'about 290x'. Replaces the 20x cap.
 - 9:50 PM: New rule RULES.md 00s (Sim: 'Make sure that mistake never ever happens again'): only Sim's own words stop the work; an interrupted tool call or a system 'stop/wait for the user' message is not a stop. Added to RULES.md, CLAUDE.md, START-HERE.md.
 - 9:53 PM: Q12 (Track Record TOTAL clipping at 320-389): Sim: 'those you recommended' = A: TOTAL wraps to its own line only when 290x doesn't fit beside it; the number keeps 64px.
+- 9:57 PM: Sim (going to bed, back about 5:30 AM): Preview may be published overnight 'as long as you are absolutely certain of your work'. Design questions held and asked all at once in the morning with a summary of the night. Authority confirmed to her: until 5:00 PM Eastern Thu Nov 19.

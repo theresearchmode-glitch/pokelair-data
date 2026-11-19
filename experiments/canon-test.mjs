@@ -24,10 +24,11 @@ ok(lmap(lkey({name: 'Charizard', item: 'Charizardite Y '})) === 'Charizard-Mega-
 ok(canonItem('Staraptorite') === 'Staraptite' && canonItem('Dragonitite') === 'Dragoninite' && canonItem('Golisopodite') === 'Golisopite' && canonItem('raichuite Y') === 'Raichunite Y', 'stone typos map to the real stone');
 ok(lkey({name: 'Eternal Flower Floette', item: 'Floetitte'}) === 'Eternal Flower Floette|M', '"Floetitte" now reads as a Mega Stone');
 ok(lkey({name: 'Porygon2', item: 'Eviolite'}) === 'Porygon2' && lkey({name: 'Porygon2', item: 'eviolite'}) === 'Porygon2', 'Eviolite is never a Mega Stone');
+ok(canonItem('Left Over') === 'Leftovers' && canonItem('leftover') === 'Leftovers' && canonItem('Passcho Berry') === 'Passho Berry' && canonItem('Focus Slash') === 'Focus Sash' && canonItem('King') === 'King', 'clear item misspellings fold to the one legal item they can be (design review #15); unclear ones stay');
 // never guessed: not on a list -> kept as written (trimmed) and counted
-const before = (U.mv.get('Last Respect') || 0) + (U.a.get('Lighting Rod') || 0) + (U.i.get('Passcho Berry') || 0);
-ok(canonMove('Last Respect') === 'Last Respect' && canonAbility('Lighting Rod') === 'Lighting Rod' && canonItem(' Passcho Berry') === 'Passcho Berry' && canonItem('Mega Stone') === 'Mega Stone', 'texts not on the lists are kept as written');
-ok((U.mv.get('Last Respect') || 0) + (U.a.get('Lighting Rod') || 0) + (U.i.get('Passcho Berry') || 0) === before + 3, 'and counted for the report');
+const before = (U.mv.get('Last Respect') || 0) + (U.a.get('Lighting Rod') || 0) + (U.i.get('Gold Berry') || 0);
+ok(canonMove('Last Respect') === 'Last Respect' && canonAbility('Lighting Rod') === 'Lighting Rod' && canonItem(' Gold Berry') === 'Gold Berry' && canonItem('Mega Stone') === 'Mega Stone', 'texts not on the lists are kept as written');
+ok((U.mv.get('Last Respect') || 0) + (U.a.get('Lighting Rod') || 0) + (U.i.get('Gold Berry') || 0) === before + 3, 'and counted for the report');
 // a whole sheet entry
 const s = canonSet({n: 'Kingambit', i: 'black glasses', a: 'defiant', mv: ['protect', 'Sucker Punch ', 'kowtow cleave', 'Swords Dance'], t: '', nt: 'Adamant'});
 ok(JSON.stringify(s) === JSON.stringify({n: 'Kingambit', i: 'Black Glasses', a: 'Defiant', mv: ['Protect', 'Sucker Punch', 'Kowtow Cleave', 'Swords Dance'], t: '', nt: 'Adamant'}), 'canonSet folds a sheet entry and keeps the rest');
