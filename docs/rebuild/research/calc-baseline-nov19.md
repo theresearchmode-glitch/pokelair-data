@@ -1,4 +1,4 @@
-# Damage Calculator: baseline before the redesign (Nov 19, 3:57 PM)
+# Damage Calculator: baseline before the redesign (Nov 19, 3:55 PM)
 Sim, Nov 19, 3:55 PM: the calculator will be redesigned ("too messy, too much going on"); his prompt and mock-ups follow. The mock-ups give
 the direction; our rules give the colours, sizes, fonts, spacing and corners. This file records today's page so the redesign can be checked
 against it: nothing may be lost (CLAUDE.md: never remove functionality).
