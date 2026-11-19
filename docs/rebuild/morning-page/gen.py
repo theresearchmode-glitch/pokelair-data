@@ -32,5 +32,18 @@ ba=''
 for b in ['review1-battle-turn-one-BEFORE.png','review1-battle-turn-one-AFTER.png']:
   shutil.copy(SRC+b, OUT+'pics/'+b); ba+=f'<figure><img src="pics/{b}" alt="{b[:-4]}" loading="lazy"></figure>'
 toc=''.join(f'<a href="#{q[0].lower()}">{q[0]}</a>' for q in Q)
-page=open(OUT+'tpl.html').read().replace('%%TOC%%',toc).replace('%%CARDS%%',''.join(cards)).replace('%%BA%%',ba)
+
+W=[
+ ('W1','Suggestions wording (built by a helper)',["A plan that fills an empty spot (team of 5) has no line now; the old 'small change' line was untrue. Proposal: tag 'Add' with 'fills your empty spot'.","The All Suggestions sheet still says '1 suggestion' beside 'Nothing to fix'. Keep, or '1 optional swap' (your Nov 11 words)?","Last audit #15: 'Nothing to fix' beside 'N weak spots': 'Nothing to swap', or 'N minor weak spots'?","Visual, pictures to come: a quieter Apply on a ±0 card; the fill card's empty left half."]),
+ ('W2','KO Board and Usage wording (built by a helper)',["KO Board: each half's caption counts its own tiles; next to other groups it says 'KO' so it fits one line at 1100-1280, and 'The KO Board' drops when the left half holds all three groups. OK, or split the halves at the group boundary (changes the layout)?","Usage: the hero's numbers come from Online tournaments even on the Ranked ladder chip (38.3% / 51.9% vs 39.2% / 49.5% on the tournaments chip: different date windows). The key line now says so. Should the hero use one source?","Home / empty My Team '% of ladder teams' is the Showdown ladder: say 'Showdown ladder teams' (Word list) instead of the Nov 12 wording?"]),
+ ('W3','Form errors (part you can\'t see is built)',["On a phone, focus going back to the field in error also brings the keyboard up. OK, or keep focus where it was on phones?","The visible part (an error look for the message and the box, where it sits, when it clears) needs pictures: Import a Team, Edit Set's stat points, Send Feedback. All three already show a small grey line explaining the error; it's just easy to miss."]),
+ ('W4','Meta and Usage heroes at 375-390 wide',["On today's data the third fact ends 1-3px past the hero's right edge (362 vs 359 at 375). Recommended: 4px less gap between the three facts at 360-420. OK?"]),
+ ('W5','News dates',["An item timed noon in Japan shows 'Nov 25' on a UTC machine and 'Nov 24' for you in Eastern time: the page shows each reader's own date. Keep that, or show the official page's date?"]),
+ ('W6','From your PC run',["Windows only: News at 1280/1920 flagged the kicker overlapping the headline (box-based; on Linux the ink is about 20px apart); Home '/100' measured 36.1px; Safari 26.6: TEAM-07 and EDIT-01b. A short follow-up PC check is proposed."]),
+ ('W7','Gallery',["The updated mock-ups gallery leaves one lone card at iPad widths (2 columns, 27 cards). Fine for an internal page, or even it up?"]),
+ ('W8','Still open from before',["Usage at 1440 options (overs Qc), Meta row-based limit (Qd), the switch runbook questions (a scratch artifact to rehearse the publish, old fonts, switch time, the CLAUDE.md sprite line, meta/post timing)."]),
+]
+wcards=''.join(f'<section class="q" id="{w[0].lower()}"><p class="eb">{w[0]} · no pictures needed</p><h2>{html.escape(w[1])}</h2><ol class="opts">'+''.join(f'<li><b>{i+1}</b><span>{html.escape(x)}</span></li>' for i,x in enumerate(w[2]))+f'</ol><p class="ans">Reply in the chat with <b>{w[0]}</b> and your answer.</p></section>' for w in W)
+toc+= ''.join(f'<a href="#{w[0].lower()}">{w[0]}</a>' for w in W)
+page=open(OUT+'tpl.html').read().replace('%%TOC%%',toc).replace('%%CARDS%%',''.join(cards)+wcards).replace('%%BA%%',ba)
 open(OUT+'index.html','w').write(page); print(len(Q),'questions', len(os.listdir(OUT+'pics')),'pictures')
