@@ -45,6 +45,10 @@ Everything below is on it, plus the 44px tap areas (#5) and the updated mock-ups
 - A look-only visual check (12:45 AM) found: Compare with BOTH teams picked still showed the raw event name (my fix only covered
   the one-team view; fixed, the test now checks the face-off page and fails without the fix); and Turn One notes grew long and hard
   to read (cards up to 182px tall at 1440 vs 104-124 before; 10 lines at 320). A helper is shortening them now; before/after for you.
+- A fourth fresh review (2 AM) of the KO and wording work found more accuracy gaps: 'KOs' and a KO stamp on targets the calc says
+  survive with Focus Sash (131 of 1000 matchups' lines; older wording, but it breaks the new stamp rule), Intimidate not applied to
+  turn one's damage (2 of 104 'Fainted' wrong), no note for their chance KO on your lead, 'Fainted' stated though most targets carry
+  Protect. A helper is fixing them; I held the Preview at v209 (which has none of the Fainted cards) until then.
 - Start-up on phones (Plans pl-2c, helper): the longest start-up task dropped from ~470 to ~250 ms on Home (4x CPU), same page after.
 - GitHub run 1375 (902e1b9f) failed 2 of my new tests on the frozen test data: a team leading Mega Delphox + Mega Floette still
   showed two Megas (Floette's base form is only listed as 'Floette-Eternal'), and one event name kept '$30' at its start. Both
