@@ -1376,14 +1376,19 @@ if (part('main2')) {
     for (const night of [false, true]) for (const w of night ? [390, 1440] : [320, 340, 360, 390, 412, 600, 700, 768, 820, 1024, 1100, 1180, 1280, 1366, 1440, 1500, 1920, 2560]) {
       if (night) await q.evaluate(() => { document.documentElement.dataset.theme = 'night'; });
       await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(300);
-      const r = await q.evaluate(() => { const ol = document.querySelector('#main .sds-bands'); if (!ol) return 'no strip'; const B = ol.getBoundingClientRect(), bad = [];
+      /* Nov 19 (CI run 1365: "Missing a basic / Needs work 8px apart" at 1100 and 1920): the receipt is tilted 2 degrees (.sds-rcw), so
+         screen-aligned boxes of its text are wider than the text and two names 8.30px apart in the receipt read 7.73px. Measured in the
+         receipt's own frame: the tilt is taken off for the measurement and put back (a rotation moves nothing relative to anything else). */
+      const r = await q.evaluate(() => { const ol = document.querySelector('#main .sds-bands'); if (!ol) return 'no strip'; const flat = [];
+        for (let e = ol; e && e.id !== 'main'; e = e.parentElement) { const c = getComputedStyle(e); if (c.rotate !== 'none' || c.transform !== 'none') { flat.push([e, e.style.rotate, e.style.transform]); e.style.rotate = 'none'; e.style.transform = 'none'; } }
+        try { const B = ol.getBoundingClientRect(), bad = [];
         const L = [...ol.querySelectorAll('.sds-b span')].map(s => { const rg = document.createRange(); rg.selectNodeContents(s); return {t: s.textContent, f: parseFloat(getComputedStyle(s).fontSize), rs: [...rg.getClientRects()].filter(c => c.width)}; });
         for (let i = 0; i < L.length; i++) { if (L[i].f < 13) bad.push(L[i].t + ' ' + L[i].f + 'px'); for (const a of L[i].rs) { if (a.left < B.left - .5 || a.right > B.right + .5) bad.push(L[i].t + ' out of the strip');
           for (let j = i + 1; j < L.length; j++) for (const c of L[j].rs) if (Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top) > 1) { const g = c.left >= a.right ? c.left - a.right : a.left >= c.right ? a.left - c.right : -1; if (g < 8) bad.push(`${L[i].t} / ${L[j].t} ${Math.round(g)}px apart`); } } }
         /* the chosen band's bar grows 1.5x with a 4px ring (box-shadow): no name may sit under it */
         const on = ol.querySelector('.sds-b.on i'); if (on) { const R = on.getBoundingClientRect(), x0 = R.left - 4, x1 = R.right + 4, y0 = R.top - 4, y1 = R.bottom + 4;
           for (const l of L) for (const a of l.rs) if (a.left < x1 && a.right > x0 && a.top < y1 && a.bottom > y0) bad.push(l.t + ' under the chosen bar'); }
-        return bad.slice(0, 2).join(', '); });
+        return bad.slice(0, 2).join(', '); } finally { flat.forEach(([e, rt, tf]) => { e.style.rotate = rt; e.style.transform = tf; }); } });
       strip.push(r ? `${empty ? 'empty ' : ''}${night ? 'night ' : ''}${w}: ${r}` : ''); }
     await ctx.close(); }
   ok(!seam.filter(Boolean).length, `Stampede polish 1 (Nov 18): at 1100-2560 (sample team and empty team) the line-up starts 16-80px under the pink ticker, no empty ink strip between them${seam.filter(Boolean).length ? ': ' + seam.filter(Boolean).join(' | ') : ''}`);
