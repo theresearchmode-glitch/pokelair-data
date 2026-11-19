@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf = new Map(); for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) { teams.push(t.mons.map(m => m.n)); if (!refOf.has(t.mons.map(m => m.n).join('/'))) refOf.set(t.mons.map(m => m.n).join('/'), {ev: e, t}); }
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], yourFoTheirWord: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
   const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
   const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp'], /* Extreme Speed into a side with Farigiraf's Armor Tail */
@@ -24,7 +24,7 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
     let T, L0; try { const mine = members(), theirs = oppTeam(), r = planMatchup(mine, theirs, true); L0 = r.lead.map(i => mine[i]); T = turnOneData(mine, theirs, r); } catch (e) { st.err++; if (st.errs.length < 3) st.errs.push(tag + ': ' + String(e.stack || e).slice(0, 200)); continue; }
     if (!T) continue; st.n++;
     if (T.opp.filter(x => x.p.m).length > 1 || T.leads.filter(x => x.p.m).length > 1) st.twoMega.push(tag);
-    for (const bt of T.beats) { const a = (bt.why.match(/also hits your .*? up to (\\d+)%/) || [])[1]; if (a && +a >= 100) st.allyKO.push(tag + ': ' + bt.act);
+    for (const bt of T.beats) { const a = (bt.why.match(/also hits your .*?up to (\\d+)%/i) || [])[1]; if (a) st.allyHits++; if (a && +a >= 100) st.allyKO.push(tag + ': ' + bt.act);
       if (/^Fake Out/.test(bt.act) && /\\bthen\\b/.test(bt.why)) st.foThen.push(tag + ': ' + bt.why);
       if (bt.act === 'Flinches') { st.flinches++; if (!bt.flinch) st.flinchActs.push(tag); } }
     /* Nov 19 review: your own lead never shows 'Flinches' (their Fake Out is a guess), every lead has its beat (Home's plan board finds
@@ -60,7 +60,16 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         if (mg(P.their) > 1 || mg(meN) > 1) st.boardTwoMega.push(tag + ': ' + meN.join('+') + ' vs ' + P.their.join('+'));
         for (const a of P.aim || []) if (a) for (const n of a.at) if (!P.their.includes(n)) st.boardArrow.push(tag + ': ' + a.move + ' at ' + n); } } }
     /* third check: a 'may not move' note from YOUR Fake Out never calls it their likely target (that is their Fake Out's wording) */
-    for (const bt of T.beats) if (/if your .+?'s Fake Out hits it first \\(their likely target\\)/.test(bt.why)) st.yourFoTheirWord.push(tag + ': ' + bt.x.d + ': ' + bt.why);
+    /* wording pass (Nov 19; was: a note from your Fake Out never says 'their likely target'): every Pokémon named in a why line says
+       whose it is ('your' / 'their'; mirrors have one name on both sides), and the side is right; a note (after the main fact,
+       bt.main) never says 'it' or 'its' (lower case: a move such as Make It Rain is not a pronoun), so 'it' can't mean two Pokémon in one line; no why runs past 130 characters */
+    { const sides = [['your', T.leads.map(x => x.d)], ['their', T.opp.map(x => x.d)]], all = [...sides[0][1], ...sides[1][1]];
+      for (const bt of T.beats) { const w = bt.why; st.whyN++; st.whyMax = Math.max(st.whyMax, w.length); if (w.length > 130) st.whyLong.push(tag + ': ' + w);
+        for (const n of new Set(all)) for (let i = w.indexOf(n); i >= 0; i = w.indexOf(n, i + 1)) {
+          if (all.some(m => m !== n && m.includes(n) && w.indexOf(m, i - m.indexOf(n)) === i - m.indexOf(n))) continue; /* part of a longer name */
+          const sd = ((w.slice(0, i).match(/\\b(your|their) $/i) || [])[1] || '').toLowerCase(); st.names++;
+          if (!sd || !sides.find(x => x[0] === sd)[1].includes(n)) st.nameSide.push(tag + ': ' + bt.x.d + ': ' + w); }
+        if (bt.main != null && /\\b(it|its)\\b/.test(w.slice(bt.main.length))) st.noteIt.push(tag + ': ' + w); } }
     /* third check (cosmetic): a flinched Fake Out user's plan names its target, as every Fake Out line does */
     for (const bt of T.beats) if (bt.act === 'Flinches' && bt.plan === 'Fake Out') st.planNoTarget.push(tag + ': ' + bt.x.d);
     /* fourth check (Nov 19, KO gap): a sure KO (your 'KOs' line: no '% to hit', not 'charges first', the user not at risk of being
@@ -68,7 +77,7 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
        attack aims at it unless the line says so ('KO'd earlier this turn'). The target is read from the act ('into X'; a spread
        move's 'KOs on X'). Exact speed ties are left out (either may move first) */
     { const down = new Map(); T.beats.forEach((bt, i) => { if (!bt.me || bt.act === 'Flinches' || bt.flinch === 'likely' || bt.koRisk) return;
-        const k = bt.why.match(/^KOs(?: on (.+?))?(?: \\(([^)]*)\\))?(?:;|$)/); if (!k || (k[2] && /% to hit|charges first/.test(k[2]))) return;
+        const k = (bt.main != null ? bt.main : bt.why).match(/^KOs(?: their (.+?))?(?: \\(([^)]*)\\))?(?:\\. |$)/); if (!k || (k[2] && /% to hit|charges first/.test(k[2]))) return;
         const am = bt.act.match(/^(.+?) into (.+)$/), tn = am ? am[2] : k[1], t = T.opp.find(o => o.d === tn); if (!t) return;
         /* Focus Sash as the calc sees a foe: its most common item (sideDefaults), or the item it carries */
         if ([t.item, (t._orig || {}).item, (topItem(t.p) || [])[0]].includes('Focus Sash') || abilityOf(t) === 'Sturdy') return; st.sureKO++; if (!down.has(t)) down.set(t, i);
@@ -103,7 +112,10 @@ ok(!st.prioBlocked.length, `no priority attack is planned into a priority blocke
 ok(st.theirPrio > 0 && !st.theirPrioWrong.length, `their attacks move in their own priority bracket (${st.theirPrio} priority attacks, ${st.theirPrioWrong.length} wrong${st.theirPrioWrong.length ? ', e.g. ' + st.theirPrioWrong[0] : ''})`);
 ok(st.boards > 0 && !st.boardTwoMega.length, `Home's plan board draws one Mega per side, as turn one plans (${st.boards} boards, ${st.boardTwoMega.length} with two${st.boardTwoMega.length ? ', e.g. ' + st.boardTwoMega[0] : ''})`);
 ok(!st.boardArrow.length, `every plan board arrow points at a drawn Pokémon (${st.boardArrow.length}${st.boardArrow.length ? ', e.g. ' + st.boardArrow[0] : ''})`);
-ok(!st.yourFoTheirWord.length, `a flinch note from your own Fake Out gives its real reason, not 'their likely target' (${st.yourFoTheirWord.length}${st.yourFoTheirWord.length ? ', e.g. ' + st.yourFoTheirWord[0] : ''})`);
+ok(st.names > 0 && !st.nameSide.length, `every Pokémon named in a why line says 'your' or 'their', on the right side (${st.names} names, ${st.nameSide.length} wrong${st.nameSide.length ? ', e.g. ' + st.nameSide[0] : ''})`);
+ok(!st.noteIt.length, `a note never says 'it' or 'its' (only the main fact does, for its target) (${st.noteIt.length}${st.noteIt.length ? ', e.g. ' + st.noteIt[0] : ''})`);
+ok(st.whyN > 0 && !st.whyLong.length, `every why line is at most 130 characters (${st.whyN} lines, longest ${st.whyMax}, ${st.whyLong.length} over${st.whyLong.length ? ', e.g. ' + st.whyLong[0] : ''})`);
+ok(st.allyHits > 0, `the partner-hit note is still read (${st.allyHits} lines)`);
 ok(!st.planNoTarget.length, `a flinched Fake Out user's plan names its target (${st.planNoTarget.length}${st.planNoTarget.length ? ', e.g. ' + st.planNoTarget[0] : ''})`);
 ok(st.sureKO > 0 && !st.koActs.length, `a Pokémon your sure KO hits before it moves doesn't act this turn (${st.sureKO} sure KOs, ${st.koActs.length} targets still acting${st.koActs.length ? ', e.g. ' + st.koActs[0] : ''})`);
 ok(!st.intoDown.length, `no later attack aims at a Pokémon already KO'd this turn, unless it says so (${st.intoDown.length}${st.intoDown.length ? ', e.g. ' + st.intoDown[0] : ''})`);
