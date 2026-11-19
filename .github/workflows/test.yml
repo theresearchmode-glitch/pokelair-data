@@ -245,6 +245,8 @@ jobs:
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q21.mjs
         if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q25.mjs
+        if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q16.mjs
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q17.mjs
