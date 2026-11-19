@@ -51,14 +51,18 @@ function turnOneData(mine, theirs, r) {
   // flinch and no other Fake Out has taken; one with no such target attacks instead.
   const threatOf = m => { let v = 0; for (const o of opp) { const h = hitOn(m, memberMoves(m).moves, o); if (h) v = Math.max(v, h.r.max / h.r.hp); } return v; };
   const myByThreat = L.slice().sort((a, b) => threatOf(b) - threatOf(a)), theirFOT = new Map();
-  for (const o of opp.filter(o => (o.moves || []).some(x => x && x.name === 'Fake Out')).sort((a, b) => speF(b) - speF(a))) {
-    const t = myByThreat.find(t => ![...theirFOT.values()].includes(t) && foFx(o, t, L) === 'ok'); if (t) theirFOT.set(o, t); }
+  // (third check, Nov 19) once your plan is known, a lead that moves before their Fake Out user (Protect at +4, or a faster Fake Out
+  // of your own at +3) is skipped: it has already moved, so their Fake Out goes to your other lead (pickFOT below, after the plan)
+  const pickFOT = (skip, stopped) => { theirFOT.clear(); for (const o of opp.filter(o => (o.moves || []).some(x => x && x.name === 'Fake Out')).sort((a, b) => (stopped ? stopped(a) - stopped(b) : 0) || speF(b) - speF(a))) {
+    const t = myByThreat.find(t => ![...theirFOT.values()].includes(t) && foFx(o, t, L) === 'ok' && !skip(t, o)); if (t) theirFOT.set(o, t); } };
+  pickFOT(() => false);
   // their bracket: Fake Out +3 when they use it; otherwise their likely attack's own priority (Extreme Speed +2, Sucker Punch +1,
   // Grassy Glide +1 in Grassy Terrain, Gale Wings…), as yours is (review, Nov 19: it was 0 for every attack)
   const oPr = o => { if (theirFOT.has(o)) return 3; const d = danger.find(x => x.o === o); return d && d.worst ? movePrio(d.worst.h.mv, abilityOf(o), {terrain: F.terrain, grounded: grounded(o)}) : 0; };
-  const lines = [], used = new Set(), mvOf = (m, n) => memberMoves(m).moves.find(x => x && x.name === n) || mvByName.get(n);
+  let lines = [], used = new Set(); const mvOf = (m, n) => memberMoves(m).moves.find(x => x && x.name === n) || mvByName.get(n);
   // each action carries its priority bracket (Fake Out +3, Prankster Tailwind +1, Trick Room −7…) for the turn order below
   const pr = (m, n) => movePrio(mvOf(m, n), m.ability, {terrain: F.terrain, grounded: grounded(m)});
+  const planLines = () => { lines = []; used = new Set();
   for (const m of L) { const mv = names(m), partner = L.find(x => x !== m);
     /* aim only where it flinches, and never at a faster Fake Out user that will already have moved (second review, Nov 19) */
     const fd = mv.has('Fake Out') && !used.has('fake') ? danger.find(d => foFx(m, d.o, opp) === 'ok' && !(theirFOT.has(d.o) && speF(d.o) > speF(m))) : null;
@@ -78,7 +82,12 @@ function turnOneData(mine, theirs, r) {
       break; }
     if (best) { const nt = hitNote(best.h), ally = best.hitsAlly ? (() => { const r2 = hitOn(m, [best.h.mv], partner); return `; also hits your ${partner.d}${r2 ? ' for up to ' + dmgP(100 * r2.r.max / r2.r.hp) + '% of its HP' : ''}`; })() : '';
       lines.push([m, `${best.h.mv.name} ${best.h.mv.spread ? '(hits both)' : 'into ' + best.o.d}`, `${best.ko ? 'KOs' : 'up to ' + dmgP(100 * best.pct) + '% of its HP, ' + koShort(best.h.r)}${best.h.mv.spread ? ' on ' + best.o.d : ''}${nt ? ' (' + nt + ')' : ''}${ally}`, pr(m, best.h.mv.name)]); }
-    else lines.push([m, 'Protect or switch', 'no good attack into these leads', 4]); }
+    else lines.push([m, 'Protect or switch', 'no good attack into these leads', 4]); } };
+  planLines();
+  // their Fake Out targets again, now skipping your leads that move before each user, and letting a user your faster Fake Out
+  // surely flinches choose last (it takes no target from its partner); re-plan if that changed them (at most 3 rounds)
+  const myPr = t => { const ln = lines.find(l => l[0] === t); return ln ? ln[3] || 0 : 0; }, fotKey = () => [...theirFOT].map(([o, t]) => opp.indexOf(o) + ':' + L.indexOf(t)).join();
+  for (let k = 0; k < 3; k++) { const was = fotKey(); pickFOT((t, o) => myPr(t) > 3 || (myPr(t) === 3 && speF(t) > speF(o)), o => +lines.some(l => l[4] === o && speF(l[0]) > speF(o) && !opp.some(u => u !== o && (u.moves || []).some(x => x && x.name === 'Fake Out') && speF(u) >= speF(l[0])))); if (fotKey() === was) break; planLines(); }
   // turn order: priority bracket first (your planned move; theirs: Fake Out if they carry it), then Speed inside a bracket
   // (Stall always moves last inside its bracket)
   // Tailwind re-orders the rest of the turn (review, Nov 19): from Gen 8 on (Showdown too), the queue is re-sorted by current Speed

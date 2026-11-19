@@ -35,7 +35,7 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
     for (const x of [...T.leads, ...T.opp]) if (x._orig) { st.copies++; const ab = abilityOf(x); if (JSON.stringify(x.types || x.p.t) !== JSON.stringify(x.p.t) || (ab && x.p.a && !x.p.a.includes(ab)) || x.mega) st.copyWrong.push(tag + ': ' + x.p.n + ' ' + ab); }
     /* second review, Nov 19: their Fake Out is planned only when it can work; yours never aims at a Pokémon that has already moved;
        a 'Flinches' (sure) needs your Fake Out user not to be at risk of flinching first */
-    for (const bt of T.beats) { if (!bt.me && /^Fake Out has no effect/.test(bt.why)) st.theirDud.push(tag + ': ' + bt.x.d + ' ' + bt.act);
+    for (const bt of T.beats) { if (!bt.me && /^Fake Out /.test(bt.act) && /^Fake Out has no effect|has already moved: no flinch|takes the hit but can't flinch/.test(bt.why)) st.theirDud.push(tag + ': ' + bt.x.d + ' ' + bt.act);
       if (bt.me && /^Fake Out /.test(bt.act) && /has already moved: no flinch/.test(bt.why)) st.myLate.push(tag + ': ' + bt.act);
       if (!bt.me && bt.flinch === 'sure') { const u = T.beats.find(y => y.me && y.act === 'Fake Out ' + bt.x.d); if (u && u.flinch === 'likely') st.sureBad.push(tag + ': ' + bt.x.d); } }
     /* third review, Nov 19: once a side's Tailwind is up, its partner moves at double Speed for the rest of turn one (Gen 9
