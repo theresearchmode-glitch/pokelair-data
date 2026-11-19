@@ -118,7 +118,10 @@ V2.fitWords = () => { const ow = e => e.clientWidth > 1 && e.scrollWidth > e.cli
   document.querySelectorAll('.mh .mc-id h3').forEach(h => { const st = h.style; st.letterSpacing = st.fontWeight = st.width = st.transform = st.marginInline = ''; h.classList.remove('np-brk');
     const W = h.parentElement.clientWidth; if (W < 2) return; const cs = getComputedStyle(h), lh = parseFloat(cs.lineHeight) || 16, mg = cs.display === 'grid' && h.querySelector('.mg:not(.none)');
     const plate = mg ? mg.offsetHeight + (parseFloat(cs.rowGap) || 0) - lh : 0; /* Sim's Q17 A (phones): "Mega" on its own plate counts as one line, not as a taller name */
-    const good = () => (st.width ? !ow(h) : h.offsetWidth <= W + 1) && h.offsetHeight <= 2 * lh + 2 + plate; /* a centred grid item grows past its Card rather than overflow itself */
+    const P = h.parentElement.getBoundingClientRect(), drawn = () => { const rg = document.createRange(); rg.selectNodeContents(h); return [...rg.getClientRects()].every(r => !r.width || (r.left >= P.left - 1 && r.right <= P.right + 1)); };
+    /* Nov 19 (v2-minors main2): with Q17's grid the heading box is always Card-wide while a long word ('Crabominable') spills out of its
+       track, so the fit measures where the letters are drawn (after any scaleX), not the box */
+    const good = () => (mg ? drawn() : st.width ? !ow(h) : h.offsetWidth <= W + 1) && h.offsetHeight <= 2 * lh + 2 + plate;
     for (const [w, l] of [['', '-.02em'], ['800', '-.02em'], ['700', '-.03em']]) { if (good()) return; st.fontWeight = w; st.letterSpacing = l; }
     for (const k of [.94, .88, .82, .76, .7]) { if (good()) return; st.width = W / k + 'px'; st.marginInline = (W - W / k) / 2 + 'px'; st.transform = `scaleX(${k})`; }
     if (ow(h)) h.classList.add('np-brk'); });

@@ -1426,11 +1426,14 @@ if (part('main2')) {
         /* the ticker is tilted with the bands: its bottom edge, at x, from its rotated corners (bottom-left is the lowest point) */
         const T = tk.getBoundingClientRect(), tan = Math.tan(Math.abs(parseFloat(getComputedStyle(tk).rotate) || 0) * Math.PI / 180), K = k.getBoundingClientRect(), gap = Math.round(K.top - (T.bottom - (K.left - T.left) * tan));
         const P = [...document.querySelectorAll('#main .sds-part')].map(e => e.getBoundingClientRect()), side = P.length === 3 && Math.abs(P[0].top - P[2].top) < P[0].height && P[2].left > P[0].right;
-        const rings = [...document.querySelectorAll('#main .sds-rings .sds-ring')].map(e => { const r = e.getBoundingClientRect(); return r.top + r.height / 2; });
-        return {gap, side, topGap: side ? Math.round(P[0].top - Math.min(P[1].top, P[2].top)) : 0, ends: side ? Math.round(Math.max(...P.map(r => r.bottom)) - Math.min(...P.map(r => r.bottom))) : 0, ringSpread: Math.round(Math.max(...rings) - Math.min(...rings))}; });
+        /* Nov 19: Sim had the rings under the six removed ("the rings mess it up"); a hidden ring measures 0, so only drawn rings count, and the
+           six names (Sim: "the names are not all in a line") must share one baseline too */
+        const vis = s => [...document.querySelectorAll(s)].filter(e => e.getClientRects().length), spread = a => a.length ? Math.max(...a) - Math.min(...a) : 0;
+        const rings = vis('#main .sds-rings .sds-ring').map(e => { const r = e.getBoundingClientRect(); return r.top + r.height / 2; }), names = vis('#main .sds-rings .sds-nm').map(e => e.getBoundingClientRect().bottom);
+        return {gap, side, topGap: side ? Math.round(P[0].top - Math.min(P[1].top, P[2].top)) : 0, ends: side ? Math.round(Math.max(...P.map(r => r.bottom)) - Math.min(...P.map(r => r.bottom))) : 0, ringSpread: Math.round(Math.max(spread(rings), spread(names)))}; });
       const tag = (empty ? 'empty ' : '') + w;
       seam.push(m.err ? tag + ' ' + m.err : m.gap >= 16 && m.gap <= 80 ? '' : `${tag}: line-up ${m.gap}px under the ticker`);
-      if (m.side) start.push(m.topGap <= 8 && m.ends <= 32 && m.ringSpread <= 2 ? '' : `${tag}: line-up starts ${m.topGap}px under the board, ends ${m.ends}px apart, rings ${m.ringSpread}px off one line`); }
+      if (m.side) start.push(m.topGap <= 8 && m.ends <= 32 && m.ringSpread <= 2 ? '' : `${tag}: line-up starts ${m.topGap}px under the board, ends ${m.ends}px apart, rings/names ${m.ringSpread}px off one line`); }
     for (const night of [false, true]) for (const w of night ? [390, 1440] : [320, 340, 360, 390, 412, 600, 700, 768, 820, 1024, 1100, 1180, 1280, 1366, 1440, 1500, 1920, 2560]) {
       if (night) await q.evaluate(() => { document.documentElement.dataset.theme = 'night'; });
       await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(300);
@@ -1450,7 +1453,7 @@ if (part('main2')) {
       strip.push(r ? `${empty ? 'empty ' : ''}${night ? 'night ' : ''}${w}: ${r}` : ''); }
     await ctx.close(); }
   ok(!seam.filter(Boolean).length, `Stampede polish 1 (Nov 18): at 1100-2560 (sample team and empty team) the line-up starts 16-80px under the pink ticker, no empty ink strip between them${seam.filter(Boolean).length ? ': ' + seam.filter(Boolean).join(' | ') : ''}`);
-  ok(start.length >= 6 && !start.filter(Boolean).length, `Stampede polish 1b: where the three parts stand side by side (1280-2560) the line-up starts with the board (no strip above its headline), all three end on one baseline and the six rings stay on one line${start.filter(Boolean).length ? ': ' + start.filter(Boolean).join(' | ') : ` (${start.length} views)`}`);
+  ok(start.length >= 6 && !start.filter(Boolean).length, `Stampede polish 1b: where the three parts stand side by side (1280-2560) the line-up starts with the board (no strip above its headline), all three end on one baseline and the six rings and names stay on one line${start.filter(Boolean).length ? ': ' + start.filter(Boolean).join(' | ') : ` (${start.length} views)`}`);
   ok(!strip.filter(Boolean).length, `Stampede polish 2 (Nov 18): the receipt's five band names are 13px or more, inside the strip, at least 8px apart and clear of the chosen bar's ring at 320-2560, day and night, team and no team${strip.filter(Boolean).length ? ': ' + strip.filter(Boolean).slice(0, 4).join(' | ') : ''}`); }
 // ---- NPR begin: review of the three new pages (Nov 18, docs/rebuild/audits/review-new-pages-nov18.md). Each check failed on the build before its fix. ----
 { /* two test gifts (through the test hook; never in post.js): G1 a day-only (approx) serial code with a space in its code, G2 an exact-time one */
