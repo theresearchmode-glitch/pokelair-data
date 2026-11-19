@@ -42,7 +42,7 @@ without checking first. (docs/rebuild/RULES.md section 0.)
 (docs/rebuild/RULES.md section 0b).
 
 ## Be proactive and efficient (Sim, Nov 17; a standing rule)
-Helper limit (Sim, Nov 18, 12:23 PM, STANDING RULE): at all times up to 3 helpers/subagents at once, and USE them as much as needed so the work goes as effectively as possible (keep the 3 busy with useful work). Earlier the same day: 4, then 3, then 5/7/15 overnight.
+Helper limit (Sim, Nov 19, 4:46 AM, STANDING RULE until Sim changes it): at most 2 helpers/subagents at once (last night used more usage than Sim wants). Use them only where they clearly help; fewer is fine. Earlier: 3 (Nov 18). Earlier the same day: 4, then 3, then 5/7/15 overnight.
 Make the website process run as smoothly and quickly as possible. Think ahead: what will the next steps need (data, research,
 measurements, decisions), and start it early instead of waiting until it blocks. Use helper agents in parallel for research,
 data pulls, measurements and look-only audits, without asking first (usage is not a problem for now; just tell Sim what is

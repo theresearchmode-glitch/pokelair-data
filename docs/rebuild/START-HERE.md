@@ -78,7 +78,7 @@ without Sim's explicit yes.
   on the rebuild); confirm with her that it carries over to the new chat. Do not assume.
 
 ### Helpers (standing rule, Sim Nov 18)
-- **At most 3 helpers/subagents at any time**, and keep them busy with useful work (research, test runs, measurements, look-only
+- **At most 2 helpers/subagents at any time** (Sim, Nov 19, 4:46 AM, standing rule), used only where they clearly help (research, test runs, measurements, look-only
   audits, self-contained builds in their own worktree). Tell Sim what is running. Usage is not a problem (Sim, Nov 17).
 - Give each helper a full brief: what to read (CLAUDE.md, RULES.md), exact goal, "do not push, do not touch main or claude/design6",
   commit rules (below), and "label every claim checked or unsure; report result lines".
@@ -335,7 +335,7 @@ without checking first. (docs/rebuild/RULES.md section 0.)
 (docs/rebuild/RULES.md section 0b).
 
 ## Be proactive and efficient (Sim, Nov 17; a standing rule)
-Helper limit (Sim, Nov 18, 12:23 PM, STANDING RULE): at all times up to 3 helpers/subagents at once, and USE them as much as needed so the work goes as effectively as possible (keep the 3 busy with useful work). Earlier the same day: 4, then 3, then 5/7/15 overnight.
+Helper limit (Sim, Nov 19, 4:46 AM, STANDING RULE until Sim changes it): at most 2 helpers/subagents at once (last night used more usage than Sim wants). Use them only where they clearly help; fewer is fine. Earlier: 3 (Nov 18). Earlier the same day: 4, then 3, then 5/7/15 overnight.
 Make the website process run as smoothly and quickly as possible. Think ahead: what will the next steps need (data, research,
 measurements, decisions), and start it early instead of waiting until it blocks. Use helper agents in parallel for research,
 data pulls, measurements and look-only audits, without asking first (usage is not a problem for now; just tell Sim what is
