@@ -53,13 +53,15 @@ function turnOneData(mine, theirs, r) {
   const myByThreat = L.slice().sort((a, b) => threatOf(b) - threatOf(a)), theirFOT = new Map();
   for (const o of opp.filter(o => (o.moves || []).some(x => x && x.name === 'Fake Out')).sort((a, b) => speF(b) - speF(a))) {
     const t = myByThreat.find(t => ![...theirFOT.values()].includes(t) && foFx(o, t, L) === 'ok'); if (t) theirFOT.set(o, t); }
-  const oPr = o => theirFOT.has(o) ? 3 : 0;
+  // their bracket: Fake Out +3 when they use it; otherwise their likely attack's own priority (Extreme Speed +2, Sucker Punch +1,
+  // Grassy Glide +1 in Grassy Terrain, Gale Wings…), as yours is (review, Nov 19: it was 0 for every attack)
+  const oPr = o => { if (theirFOT.has(o)) return 3; const d = danger.find(x => x.o === o); return d && d.worst ? movePrio(d.worst.h.mv, abilityOf(o), {terrain: F.terrain, grounded: grounded(o)}) : 0; };
   const lines = [], used = new Set(), mvOf = (m, n) => memberMoves(m).moves.find(x => x && x.name === n) || mvByName.get(n);
   // each action carries its priority bracket (Fake Out +3, Prankster Tailwind +1, Trick Room −7…) for the turn order below
   const pr = (m, n) => movePrio(mvOf(m, n), m.ability, {terrain: F.terrain, grounded: grounded(m)});
   for (const m of L) { const mv = names(m), partner = L.find(x => x !== m);
     /* aim only where it flinches, and never at a faster Fake Out user that will already have moved (second review, Nov 19) */
-    const fd = mv.has('Fake Out') && !used.has('fake') ? danger.find(d => foFx(m, d.o, opp) === 'ok' && !(oPr(d.o) === 3 && speF(d.o) > speF(m))) : null;
+    const fd = mv.has('Fake Out') && !used.has('fake') ? danger.find(d => foFx(m, d.o, opp) === 'ok' && !(theirFOT.has(d.o) && speF(d.o) > speF(m))) : null;
     if (fd) { used.add('fake'); lines.push([m, `Fake Out ${fd.o.d}`, fd.worst ? `its ${fd.worst.h.mv.name} does up to ${dmgP(100 * fd.worst.pct)}% of ${fd.worst.on.d}'s HP (${koShort(fd.worst.h.r)})` : fd === danger[0] ? 'their biggest threat' : 'it can be flinched', pr(m, 'Fake Out'), fd.o]); continue; }
     if (mv.has('Tailwind') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Tailwind', `${fast === 1 ? '1 of their leads outspeeds' : fast + ' of their leads outspeed'} your side`, pr(m, 'Tailwind')]); continue; }
     if (mv.has('Trick Room') && fast && !used.has('speed')) { used.add('speed'); lines.push([m, 'Trick Room', 'they are faster; Trick Room goes up last this turn (−7) and flips the order from next turn', pr(m, 'Trick Room')]); continue; }
@@ -89,12 +91,12 @@ function turnOneData(mine, theirs, r) {
   while (cand.length) { cand.forEach(c => { c.tw = twUp[c.me]; c.es = c.s * (c.tw ? 2 : 1); }); cand.sort(cmp); const c = cand.shift();
     const n = cand.find(y => y.me !== c.me && y.p === c.p && y.st === c.st && y.es === c.es); if (n) c.tie = n.x;
     order.push(c); if (c.act === 'Tailwind') twUp[c.me] = true; }
-  const theirAct = o => { const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = oPr(o) === 3;
+  const theirAct = o => { const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = theirFOT.has(o);
     return fo ? ['Fake Out', ''] : [`${d.worst.h.mv.name} into ${d.worst.on.d}`, `up to ${dmgP(100 * d.worst.pct)}% of its HP, ${koShort(d.worst.h.r)}`]; }; /* one wording for both lines (audit Nov 15) */
   // the beats, in move order: who moves, their Speed and bracket, the action and one short why (all plain text)
   const beats = order.map(o => { const ln = o.me ? lines.find(l => l[0] === o.x) : null, th = o.me ? null : theirAct(o.x);
     const why = ln ? ln[2] : th ? th[1] : 'no damaging move found into your leads';
-    return {x: o.x, me: o.me, speed: o.es, prio: o.p, act: ln ? ln[1] : th ? th[0] : oPr(o.x) === 3 ? 'Fake Out' : 'Unknown move', ...(o.tw ? {tw: 1} : {}), _tie: o.tie,
+    return {x: o.x, me: o.me, speed: o.es, prio: o.p, act: ln ? ln[1] : th ? th[0] : theirFOT.has(o.x) ? 'Fake Out' : 'Unknown move', ...(o.tw ? {tw: 1} : {}), _tie: o.tie,
       why: o.tw ? `${why}${why ? '; ' : ''}moves at double Speed: ${o.me ? 'your' : 'their'} Tailwind is already up (Gen 9 turn order, assumed for Champions)` : why}; });
   // a speed tie between the two sides in one bracket: either may move first
   beats.forEach(b => { const n = b._tie ? beats.find(y => y.x === b._tie) : null; delete b._tie; if (n && !(/^Fake Out\b/.test(b.act) && /^Fake Out\b/.test(n.act))) b.why += `${b.why ? '; ' : ''}speed tie with ${n.x.d}: either can go first`; });
@@ -125,7 +127,7 @@ function turnOneData(mine, theirs, r) {
         b.why = b.me ? `${b.why}${b.why ? '; ' : ''}${why}` : why; } }
     done.add(b.x); }
   // a threat that can't act on turn one (your Fake Out stops it, or it uses its own Fake Out) is still a threat from turn two on
-  const later = o => oPr(o) === 3 || (flinched.get(o) || {}).sure;
+  const later = o => theirFOT.has(o) || (flinched.get(o) || {}).sure;
   const warn = danger.filter(x => x.worst && x.worst.pct >= .8).map(x => `${x.o.d}'s ${x.worst.h.mv.name} can KO ${x.worst.on.d}${later(x.o) ? ' from turn 2' : ''}`);
   return {leads: L, opp, beats, warn, field: F0, terrain: F.terrain};
 }
