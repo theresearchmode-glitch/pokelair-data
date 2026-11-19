@@ -45,10 +45,15 @@ const LIST = {i: new Map([...ITEMS].map(x => [fold(x), x])), a: new Map(Object.k
   mv: new Map((grabJS('MOVES') || []).map(x => [fold(x[0]), x[0]]))};
 const STONE_TYPO = {staraptorite: 'Staraptite', dragonitite: 'Dragoninite', dragonitinite: 'Dragoninite', golisopodite: 'Golisopite', venosaurite: 'Venusaurite',
   raichuitex: 'Raichunite X', raichuitey: 'Raichunite Y', glimmorite: 'Glimmoranite', scovillanite: 'Scovillainite', garchompitite: 'Garchompite', sableyite: 'Sablenite', floetitte: 'Floettite'};
+// Item misspellings seen on Limitless sheets (Nov 19 check of data/t2; design review #15, 'Leftovers' / 'Left Over') where only one
+// legal item fits; unclear ones ('King', 'Dragon claw', 'Fairy plume', 'Gold Berry', 'Miracle Berry') stay as written.
+const ITEM_TYPO = {leftover: 'Leftovers', passchoberry: 'Passho Berry', choppleberry: 'Chople Berry', focusslash: 'Focus Sash', citrusberry: 'Sitrus Berry',
+  sitrisberry: 'Sitrus Berry', charcol: 'Charcoal', charlcoal: 'Charcoal', choicescraf: 'Choice Scarf', ejectbuttom: 'Eject Button', grassyseeds: 'Grassy Seed',
+  kassibberry: 'Kasib Berry', rindo: 'Rindo Berry', floettenite: 'Floettite', dragonitete: 'Dragoninite', garchompnitez: 'Garchompite Z', clefabite: 'Clefablite'};
 const NONE = {i: new Set(['m', 'f', 'noitem', 'nohelditem', 'none', 'nothing', 'withoutitem', 'noobject']), a: new Set(['noability', 'none']), mv: new Set()};
 export const CANON_UNKNOWN = {i: new Map(), a: new Map(), mv: new Map()};
 function canon(kind, s, count = true) { if (s == null) return ''; const t = String(s).replace(/\s+/g, ' ').trim(); if (!t) return '';
-  const k = fold(t); if (NONE[kind].has(k)) return ''; if (kind === 'i' && STONE_TYPO[k] && LIST.i.has(fold(STONE_TYPO[k]))) return STONE_TYPO[k];
+  const k = fold(t); if (NONE[kind].has(k)) return ''; if (kind === 'i' && STONE_TYPO[k] && LIST.i.has(fold(STONE_TYPO[k]))) return STONE_TYPO[k]; if (kind === 'i' && ITEM_TYPO[k] && LIST.i.has(fold(ITEM_TYPO[k]))) return ITEM_TYPO[k];
   const c = LIST[kind].get(k); if (c) return c; if (count && LIST[kind].size) CANON_UNKNOWN[kind].set(t, (CANON_UNKNOWN[kind].get(t) || 0) + 1); return t; }
 export const canonItem = (s, count) => canon('i', s, count), canonAbility = (s, count) => canon('a', s, count), canonMove = (s, count) => canon('mv', s, count);
 // one Pokémon of a data/t2 sheet ({n, i, a, mv, t, nt}) with its item, Ability and moves in the list spelling
