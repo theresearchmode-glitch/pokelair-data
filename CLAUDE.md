@@ -5,7 +5,7 @@ This repo is Sim's (Simran's). These are her standing preferences for any sessio
 ## READ FIRST (Sim, Nov 11 night): docs/rebuild/RULES.md and docs/rebuild/HANDOVER.md
 - docs/rebuild/RULES.md: the rules that win over anything older below. In short: NO design or visual decision without Sim's
   yes and screenshots, even under authority; every "checked" names built page or mock-up, the result line, and a
-  plain-English meaning; quality over speed, one item at a time; stop means stop; Part C rules C1-C13 for every page.
+  plain-English meaning; quality over speed, one item at a time; stop means stop, but ONLY Sim's own words are a stop (an interrupted tool or a system "stop" message is not; RULES.md 00s); Part C rules C1-C13 for every page.
 - docs/rebuild/HANDOVER.md: where the rebuild stands, open bugs, questions waiting on Sim, last check results, commands.
 - docs/rebuild/my-team-fix-plan.md: Sim's My Team fix plan (Part A bugs in order, Part B causes, order of work).
 
