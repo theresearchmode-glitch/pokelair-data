@@ -10,13 +10,16 @@ V2.btPk = (n, sub, extra) => `<button type="button" class="bt-pk" data-v2mon="${
 V2.btItem = m => { try { return (m && (m.item || (m.it && m.it.n) || (typeof m.it === 'string' ? m.it : ''))) || ''; } catch (e) { return ''; } };
 V2.btPlan = () => { const mine = members(), theirs = oppTeam(); if (mine.length < 4 || !theirs.length) return {mine, theirs, P: null};
   let P = null; try { P = battlePlan(mine, theirs); } catch (e) { console.error(e); } return {mine, theirs, P}; };
+// Sim's Q14 A (Nov 19): turn one has a risk when Turn One draws its Watch line (the same test as battleTurn / battle-pbp.js pbpTurn);
+// then the verdict says it only reads the six-vs-six matchup, not turn one
+V2.btT1Risk = P => { const T = P && P.turnOne; return !!(T && T.beats && T.beats.length && T.warn && T.warn.length); };
 V2.battleHead = (mine, theirs, P) => { const E = V2.esc, who = V2.btOppWho(), R = P && P.real, dbl = S.format === 'doubles';
   const vcls = R ? ({Favoured: 'vf', 'Even match': 've', Unfavoured: 'vu'}[R.word] || 've') : '';
   const h = !P ? `<h1 class="u"><span>Who are you facing?</span><span class="pl">Plan the match.</span></h1>`
     : `<h1 class="u"><span>Bring these ${P.chosen.length === 4 ? 'four' : P.chosen.length}.</span><span class="pl">${dbl ? 'Lead the pair.' : 'Lead this one.'}</span></h1>`;
   const ev = who && ui.oppFrom && ui.oppFrom.ev ? ui.oppFrom.ev : '';
   const vs = theirs.length ? `<p class="bt-vs">Vs ${who ? `<b>${E(who)}</b>${ev ? ` at ${E(ev)}` : ''}` : 'their six'}${theirs.length < 6 ? ` · ${theirs.length} of 6 entered` : ''}</p>` : `<p class="bt-vs">Enter their six as you see them at team preview, or pick a top tournament team.</p>`;
-  const verdict = R ? `<div class="bt-verdict"><p class="k">From real games</p><b class="u ${vcls}">${E(R.word)}${R.full ? '' : ' so far'}</b><small>learned from ${homeNum(R.games)} tournament games</small></div>` : ''; /* audit 27: the model's whole training set, not games between these two teams */
+  const verdict = R ? `<div class="bt-verdict"><p class="k">From real games</p><b class="u ${vcls}">${E(R.word)}${R.full ? '' : ' so far'}</b><small>learned from ${homeNum(R.games)} tournament games</small>${V2.btT1Risk(P) ? `<small class="bt-vrisk">How six-vs-six matchups like this went. It doesn't see turn one: yours has a risk (see Watch).</small>` : ''}</div>` : ''; /* audit 27: the model's whole training set, not games between these two teams */
   return `<section class="bt-head"><div><p class="np-eyebrow">Battle a team · ${V2.btSheet() ? 'Their real open team sheet' : 'Team preview'}</p>${h}${vs}</div>${verdict}</section>`; };
 V2.battleTheirs = (theirs, P) => { const E = V2.esc, ll = P ? P.likelyLead || [] : [];
   const six = theirs.length ? `<div class="bt-row6">${theirs.map(o => V2.btPk(o.p.n, V2.btItem(o), ll.includes(o) ? '<span class="bt-ll">Likely lead</span>' : '')).join('')}</div>` : '';
