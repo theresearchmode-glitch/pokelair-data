@@ -43,6 +43,7 @@
 .sds-mon .pool{display:none}
 .sds-add{position:absolute;left:50%;bottom:0;width:max(var(--tap),var(--cw));height:max(var(--tap),calc(var(--ry) + var(--rw)*.3 + var(--s4)));transform:translateX(-50%);padding:0;border:0;background:none;color:var(--on-plate);cursor:pointer}
 .sds-add .sds-ring{border:2px dashed var(--sd-ring-open);box-shadow:none}
+.sds-slot.on .sds-ring{display:none} /* Sim, Nov 19: no ring under a chosen Pokémon, so the six read as one crowded herd; the dashed ring stays on an empty spot (where to add) */
 .sds-plus{position:absolute;left:50%;bottom:var(--ry);transform:translate(-50%,50%);font:900 var(--t17)/1 var(--u);font-style:normal}
 @media (hover:hover){.sds-add:hover .sds-ring{border-color:var(--sd-ring)}}
 .sds-cap{position:relative;z-index:3;width:100%;min-width:0;margin-top:var(--s3);padding:0 2px;text-align:center}
