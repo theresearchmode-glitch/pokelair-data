@@ -109,7 +109,9 @@ function turnOneData(mine, theirs, r) {
   // Only a sure flinch (your Fake Out, moving first, no speed tie) replaces a move with 'Flinches'; a flinch that depends on their
   // choice or a speed tie keeps the planned move and says so, so the plan (and Home's plan board) still shows what to click.
   const tieOf = (a, b) => a && b && a.prio === b.prio && a.speed === b.speed;
-  const mayNote = (tb, f) => { tb.flinch = 'likely'; tb.why += `${tb.why ? '; ' : ''}${f.tie ? `if ${f.by}'s Fake Out wins the speed tie` : `if ${f.by}'s Fake Out hits it first (their likely target)`}, it can't move this turn`; };
+  // (third check, Nov 19: your own Fake Out is 'not sure' when your user may be flinched first; 'their likely target' is their wording)
+  const mayNote = (tb, f) => { tb.flinch = 'likely'; tb.why += `${tb.why ? '; ' : ''}${f.tie ? `if ${f.by}'s Fake Out wins the speed tie, it can't move this turn`
+    : /^your /.test(f.by) ? `if ${f.by} isn't flinched first, its Fake Out stops this one moving this turn` : `if ${f.by}'s Fake Out hits it first (their likely target), it can't move this turn`}`; };
   for (const b of beats) {
     if (flinched.has(b.x)) { const f = flinched.get(b.x);
       if (f.sure) { b.plan = b.act; b.act = 'Flinches'; b.flinch = 'sure'; b.why = `${f.by}'s Fake Out hits it first: it can't move this turn`; done.add(b.x); continue; }
