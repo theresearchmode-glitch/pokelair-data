@@ -19,7 +19,10 @@ const ALLOW = new Set(['.st .np-megatag', '.mc-id .u', '.u .mg', '.ffm', '.fn-un
   '.sds-tk .sds-tg.u', '.sdt-pp .u.sdt-pick',
   /* Nov 18 evening (Sim: recommended, keep as built): on phones Home's two start buttons drop to 13px to stay on one line, and the
      Ratings podium's score and the Events / How We Calculate chip numbers are 13px badges inside small tiles */
-  '.sdh-go .sdh-b1', '.sdh-b2 span', '.sdt-blk .u', '.sdt-cpic .u']);
+  '.sdh-go .sdh-b1', '.sdh-b2 span', '.sdt-blk .u', '.sdt-cpic .u',
+  /* Nov 19: the small '%' after a big share number on Usage (as designed since the Usage rebuild; a sign, not words). The share number itself
+     is 15px on phones (it was caught at 13px by the name rule '.us-tx b' once Usage opened on Online tournaments, Q13 A) */
+  '.u .us-pct']);
 const hits = new Map();
 for (const theme of ['day', 'night']) for (const w of [390, 1440]) { await p.setViewportSize({width: w, height: 900});
   for (const r of routes) { await p.evaluate(([r, t]) => { document.documentElement.dataset.theme = t; location.hash = '#' + r; }, [r, theme === 'night' ? 'night' : 'day']); await p.waitForTimeout(500);

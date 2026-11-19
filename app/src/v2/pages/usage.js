@@ -23,7 +23,7 @@ V2.usRow = (t0, kind) => { const p = byName.get(t0.n); let t = t0, sb = null;
   else if (t0.teams) { const h = basis(t0.teams, 'team', 'sets', {pre: 'of'}); sb = () => h; }
   return {t, p, sb, u: t.teams ? (t.u != null ? +t.u : null) : kind === 'ladder' && t.u != null ? +t.u : null, tr: V2.usAs(() => trendFor(t.n, t.r))}; };
 V2.usName = R => R.p ? R.p.d : R.t.n;
-V2.usNums = R => { const E = V2.esc; return `${R.u != null ? `<b class="u">${(+R.u).toFixed(1)}<small>%</small></b>` : ''}${R.t.teams ? `<small>${basis(R.t.teams, 'team', 'teams', {})}</small>` : ''}${R.tr ? `<i class="us-tr ${E(R.tr.cls)}">${E(R.tr.txt)}</i>` : ''}`; };
+V2.usNums = R => { const E = V2.esc; return `${R.u != null ? `<b class="u">${(+R.u).toFixed(1)}<small class="us-pct">%</small></b>` : ''}${R.t.teams ? `<small>${basis(R.t.teams, 'team', 'teams', {})}</small>` : ''}${R.tr ? `<i class="us-tr ${E(R.tr.cls)}">${E(R.tr.txt)}</i>` : ''}`; };
 V2.usLabel = R => `${V2.usName(R)}, rank ${R.t.r}${R.u != null ? `, ${(+R.u).toFixed(1)}% of teams` : ''}${R.t.teams ? `, ${(+R.t.teams).toLocaleString('en-US')} teams` : ''}${R.tr ? ', ' + R.tr.txt : ''}`;
 V2.usFig = (R, cls, blk) => { const E = V2.esc, p = R.p; return `<button type="button" class="us-fig ${cls}" data-uspick="${E(R.t.n)}" aria-pressed="${V2.usUi.pick === R.t.n}" aria-label="#${R.t.r} ${E(V2.usLabel(R))}: show how it is played"${p ? ` style="--b1:var(--ty-${p.t[0]});--b2:var(--ty-${p.t[1] || p.t[0]})"` : ''}>
     <span class="us-art" aria-hidden="true"><i class="gs-base"></i>${p ? V2.mon(p.n, {bare: true}) : ''}</span>${blk || ''}<span class="us-tx"><span class="us-rk u">#${R.t.r}</span><b>${E(V2.usName(R))}</b><span class="us-nums">${V2.usNums(R)}</span></span></button>`; };
