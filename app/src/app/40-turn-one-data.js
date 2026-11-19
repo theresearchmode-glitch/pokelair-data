@@ -9,8 +9,12 @@ function turnOneData(mine, theirs, r) {
   // Evolve in a battle, so when both leads of a side are Megas the second is shown and calculated as its base form (same set)
   // the base form: its own entry, or the one form listed under that name ('Floette' is only listed as 'Floette-Eternal')
   const baseP = p => { if (!p || !p.m || typeof byName !== 'object') return null; return byName.get(p.b) || [...byName.values()].find(q => q && !q.m && String(q.n).startsWith(p.b + '-')) || null; };
+  // the base form's Ability: a real open team sheet's, when it is one the base form can have (a Mega's sheet lists the pre-Mega
+  // Ability: Mega Charizard Y's 'Solar Power', Mega Mawile's 'Intimidate'), else the form's usual one (mechanics check, Nov 19)
+  const baseAb = (x, bp) => { const o = x && (x._orig || x), a = o && o.real && o.sheetAb, c = a && typeof canonAbility === 'function' ? canonAbility(a, bp) : a;
+    if (c && (bp.a || []).includes(c)) return c; try { return metaAbility(bp) || ''; } catch (e) { return ''; } };
   // the copy is the base form in full: its types and its own Ability (abilityOf falls back to the form's usual one), not a Mega (review, Nov 19)
-  const baseOf = x => { const bp = baseP(x && x.p); return bp ? {...x, p: bp, d: bp.d, types: bp.t, ability: (() => { try { return metaAbility(bp) || ''; } catch (e) { return ''; } })(), mega: 0, _orig: x._orig || x} : x; };
+  const baseOf = x => { const bp = baseP(x && x.p); return bp ? {...x, p: bp, d: bp.d, types: bp.t, ability: baseAb(x, bp), mega: 0, _orig: x._orig || x} : x; };
   // keep the first Mega; if the other can't be shown as its base form, keep that one as the Mega instead
   const oneMega = arr => { const mi = arr.map((x, i) => x && x.p && x.p.m ? i : -1).filter(i => i >= 0); if (mi.length < 2) return arr;
     const keep = baseP(arr[mi[1]].p) ? mi[0] : baseP(arr[mi[0]].p) ? mi[1] : -1; if (keep < 0) return arr;
@@ -39,25 +43,28 @@ function turnOneData(mine, theirs, r) {
   // NO_INTIM: Clear Body, Hyper Cutter, White Smoke, Full Metal Body, Inner Focus, Oblivious, Own Tempo, Scrappy; Mirror Armor sends
   // it back to the Intimidate user) or Flower Veil guards a Grass type; Defiant (−1 then +2), Guard Dog and Contrary end at +1
   // Attack, Competitive at −1 Attack and +2 Sp. Atk; White Herb undoes one drop. A Mega is still its base form when the leads come
-  // out, so its base form's usual Ability counts then (Mega Gyarados: Intimidate; Mega Metagross: Clear Body); a Mega whose own
-  // Ability is Intimidate (Mega Manectric) uses it when it Mega Evolves, before any move. Rattled's +1 Speed is not counted.
+  // out, so its base form's Ability counts then (a real open team sheet's, else its usual one) (Mega Gyarados: Intimidate; Mega Metagross: Clear Body); a Mega whose own
+  // Ability is Intimidate (Mega Manectric) uses it when it Mega Evolves, before any move. Rattled (Gen 8 on; Showdown's rattled:
+  // onAfterBoost) gives +1 Speed for each Intimidate that lowered its Attack, so it counts in turn one's order (speF).
   const INTIM_NO = ['Clear Body', 'Hyper Cutter', 'White Smoke', 'Full Metal Body', 'Inner Focus', 'Oblivious', 'Own Tempo', 'Scrappy', 'Mirror Armor'], INTIM_UP = ['Defiant', 'Guard Dog', 'Contrary'];
-  const entryAb = x => { const bp = x && x.p && x.p.m ? baseP(x.p) : null; if (bp) { try { const a = metaAbility(bp); if (a) return a; } catch (e) {} } return abilityOf(x); };
+  const entryAb = x => { const bp = x && x.p && x.p.m ? baseP(x.p) : null; if (bp) { const a = baseAb(x, bp); if (a) return a; } return abilityOf(x); };
   const intimOf = y => entryAb(y) === 'Intimidate' || abilityOf(y) === 'Intimidate', sideOfX = x => L.includes(x) ? L : opp, foesOf = x => L.includes(x) ? opp : L;
-  const stage = new Map([...L, ...opp].map(x => { const n = foesOf(x).filter(intimOf).length, ab = entryAb(x), it = sideDefaults(x.p, 'atk', calcM(x)).item; let atk = 0, spa = 0;
+  const stage = new Map([...L, ...opp].map(x => { const n = foesOf(x).filter(intimOf).length, ab = entryAb(x), it = sideDefaults(x.p, 'atk', calcM(x)).item; let atk = 0, spa = 0, spe = 0;
     if (n && !INTIM_NO.includes(ab) && !((x.types || x.p.t || []).includes('Grass') && sideOfX(x).some(y => entryAb(y) === 'Flower Veil'))) {
-      if (INTIM_UP.includes(ab)) atk = n; else { atk = -n; if (ab === 'Competitive') spa = 2 * n; if (it === 'White Herb') atk += 1; } }
+      if (INTIM_UP.includes(ab)) atk = n; else { atk = -n; if (ab === 'Competitive') spa = 2 * n; if (ab === 'Rattled') spe = n; if (it === 'White Herb') atk += 1; } }
     /* Mirror Armor sends the drop back to the Intimidate user (unless that user's own Ability blocks it) */
     if (intimOf(x) && !INTIM_NO.includes(ab) && !INTIM_UP.includes(ab)) atk -= foesOf(x).filter(y => entryAb(y) === 'Mirror Armor').length;
-    return [x, {atk: Math.max(-6, Math.min(6, atk)), spa: Math.min(6, spa)}]; }));
-  const stOf = x => stage.get(x) || {atk: 0, spa: 0};
+    return [x, {atk: Math.max(-6, Math.min(6, atk)), spa: Math.min(6, spa), spe: Math.min(6, spe)}]; }));
+  const stOf = x => stage.get(x) || {atk: 0, spa: 0, spe: 0};
   // the stage a move hits with, in plain words for its line: 'at −1 Attack', 'at +2 Sp. Atk' (Body Press: Defense, untouched; Foul Play: the target's Attack)
-  /* d: the target; Unaware (the target's) ignores the stage, as the calc does, so no note then (Nov 19 review) */
-  const stageNote = (x, mv, d) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat || (d && abilityOf(d) === 'Unaware')) return ''; const s = stOf(x), v = mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
+  /* d: the target; Unaware (the target's) ignores the stage, as the calc does, so no note then (Nov 19 review); unless the attacker
+     has Mold Breaker, Teravolt or Turboblaze, which ignore Unaware (the calc clears the target's Ability then; independent review) */
+  const stageNote = (x, mv, d) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat || (d && abilityOf(d) === 'Unaware' && !MOLD.includes(abilityOf(x)))) return ''; const s = stOf(x), v = mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
   const hitNotes = (x, h, d) => [hitNote(h), stageNote(x, h && h.mv, d)].filter(Boolean).join(', ');
   const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, calcM(a), calcM(d), {...F, aStage: stOf(a), dAtkStage: stOf(d).atk});
   // speed in that field: Chlorophyll / Swift Swim / Sand Rush / Slush Rush double in their weather
-  const speF = x => spe(x) * (typeof speedMul === 'function' ? speedMul(abilityOf(x), F.weather) : 1);
+  // a Speed stage (Rattled after Intimidate) multiplies first, as the game applies stages before other modifiers: +1 is ×1.5, +2 ×2
+  const speF = x => { const k = stOf(x).spe || 0; return (k ? Math.floor(spe(x) * (2 + k) / 2) : spe(x)) * (typeof speedMul === 'function' ? speedMul(abilityOf(x), F.weather) : 1); };
   // their threat to each of my leads: the hardest single hit
   const danger = opp.map(o => { let worst = null; for (const m of L) { const h = hitOn(o, o.moves || [], m); if (h && (!worst || h.r.max / h.r.hp > worst.pct)) worst = {pct: h.r.max / h.r.hp, h, on: m}; } return {o, worst}; })
     .sort((a, b) => (b.worst ? b.worst.pct : 0) - (a.worst ? a.worst.pct : 0));
@@ -184,24 +191,37 @@ function turnOneData(mine, theirs, r) {
   // KO'd first ... (if no Protect)' note. guardOf names what could stop it ('' when nothing can)
   const PROTECT = ['Protect', 'Detect', 'Spiky Shield', "King's Shield", 'Baneful Bunker', 'Silk Trap', 'Burning Bulwark', 'Obstruct'];
   const movesOf = y => (y.moves || []).filter(Boolean).map(x => x.name || x);
+  // (independent review, Nov 19) Quick Guard and Wide Guard (+3) can't go up when their user is gone before a +3 move: KO'd earlier
+  // by a move above +3, or at +3 by a faster Pokémon; or surely flinched by a Fake Out (+3) from a faster Pokémon. A user KO'd or
+  // flinched later in the order (a sure flinch at a lower bracket than +3 only beats its planned move) could still have used it first
+  const gone3 = y => { const d = down.get(y), f = flinched.get(y), first = (u, p) => p > 3 || (p === 3 && speF(u) > speF(y));
+    return !!((d && d.u && first(d.u, d.p)) || (f && f.sure && first(f.u, 3))); };
   const guardOf = (o, a, mv) => { const g = [], pm = movesOf(o).find(n => PROTECT.includes(n)); if (pm) g.push(pm);
     /* Quick Guard blocks a priority move (Nov 19 review) */
-    if (movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) > 0 && opp.some(y => movesOf(y).includes('Quick Guard'))) g.push('Quick Guard');
-    if (mv.spread) { if (opp.some(y => movesOf(y).includes('Wide Guard'))) g.push('Wide Guard'); }
+    if (movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) > 0 && opp.some(y => !gone3(y) && movesOf(y).includes('Quick Guard'))) g.push('Quick Guard');
+    if (mv.spread) { if (opp.some(y => !gone3(y) && movesOf(y).includes('Wide Guard'))) g.push('Wide Guard'); }
     else if (!['Stalwart', 'Propeller Tail'].includes(abilityOf(a)) && mv.name !== 'Snipe Shot') {
       const rp = !(a.types || a.p.t || []).includes('Grass') && abilityOf(a) !== 'Overcoat';
       const rd = opp.find(y => y !== o && !down.has(y) && !(flinched.get(y) || {}).sure && movesOf(y).some(n => n === 'Follow Me' || (n === 'Rage Powder' && rp)));
       if (rd) g.push(movesOf(rd).includes('Follow Me') ? 'Follow Me' : 'Rage Powder'); }
     return g.join(' or '); };
+  // their likely attack that can KO its target on some roll (the hit, its target), or null; the same test their koPass uses
+  const theirKOHit = y => { const d = danger.find(x => x.o === y.x), h = d && d.worst && d.worst.h, t = d && d.worst && d.worst.on;
+    return h && !theirFOT.has(y.x) && y.act === `${h.mv.name} into ${t.d}` && h.r && h.r.hp && !h.charge && !h.r.sash && h.r.max >= h.r.hp ? {h, t} : null; };
+  // (independent review, Nov 19) a foe in a speed tie with your lead that can KO it may go first: your lead's KO is then not sure.
+  // Worked out when your lead moves (the tied foe comes later in the list), so its target is never 'Fainted' while your lead's own
+  // line says 'may be KO'd first ... (speed tie)'. A tied foe already KO'd or surely flinched can't
+  const tiedKORisk = b => beats.some(y => !y.me && tieOf(y, b) && !done.has(y.x) && !down.has(y.x) && !(flinched.get(y.x) || {}).sure && (theirKOHit(y) || {}).t === b.x);
   const koPass = b => { const i = at(b.x);
-    if (!b.me) { const d = danger.find(x => x.o === b.x), h = d && d.worst && d.worst.h, t = d && d.worst && d.worst.on;
-      if (!h || theirFOT.has(b.x) || b.act !== `${h.mv.name} into ${t.d}` || !h.r || !h.r.hp || h.charge || h.r.sash || h.r.max < h.r.hp || ((at(t) <= i || done.has(t)) && !tieOf(beats[at(t)], b))) return; /* in a speed tie theirs may go first (Nov 19 review) */
+    if (!b.me) { const k = theirKOHit(b), h = k && k.h, t = k && k.t;
+      if (!k || ((at(t) <= i || done.has(t)) && !tieOf(beats[at(t)], b))) return; /* in a speed tie theirs may go first (Nov 19 review) */
       /* a KO that only might happen (some rolls, under 100% to hit) is a risk too (Nov 19 review): the note says the chance, as
          yours does, and your lead's own KO is then no longer sure */
       const tb = beats[at(t)], k1 = (h.r.rolls || [h.r.min, h.r.max]).filter(v => v >= h.r.hp).length / (h.r.rolls || [1, 1]).length;
       const why = [k1 < 1 ? koShort(h.r) : '', h.acc < 100 ? h.acc + '% to hit' : '', tieOf(tb, b) ? 'speed tie' : ''].filter(Boolean).join(', ');
       tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by their ${b.x.d}${why ? ' (' + why + ')' : ''}`}); return; }
     const ln = lines.find(l => l[0] === b.x), A = ln && ln[5]; if (!A || b.act !== ln[1]) return;
+    if (tiedKORisk(b)) b.koRisk = 1; /* its note comes from the tied foe's own pass */
     let hits = A.h.mv.spread ? opp.map(o => ({o, h: o === A.o ? A.h : hitOn(b.x, [A.h.mv], o)})) : [{o: A.o, h: A.h}];
     const gone = hits.filter(x => down.has(x.o)).map(x => x.o);
     if (gone.length) { const left = opp.filter(o => !down.has(o)), was = gone.map(o => 'their ' + o.d).join(' and ') + (gone.length > 1 ? ' are' : ' is') + " KO'd earlier this turn";
@@ -212,7 +232,7 @@ function turnOneData(mine, theirs, r) {
     for (const {o, h} of hits) { if (!h || !h.r || !h.r.hp || h.charge || h.r.max < h.r.hp || h.r.sash || down.has(o)) continue;
       const j = at(o), tb = beats[j], later = j > i && !done.has(o), tie = tieOf(tb, b), by = `your ${b.x.d}`;
       const g = sureKO(h) && b.flinch !== 'likely' && !b.koRisk ? guardOf(o, b.x, h.mv) : '';
-      if (sureKO(h) && b.flinch !== 'likely' && !b.koRisk && !g) { down.set(o, {by, mv: h.mv.name}); if (later && !tie) fainted.set(o, down.get(o));
+      if (sureKO(h) && b.flinch !== 'likely' && !b.koRisk && !g) { down.set(o, {by, mv: h.mv.name, u: b.x, p: b.prio}); if (later && !tie) fainted.set(o, down.get(o));
         else if (later) { tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by} (speed tie)`}); } }
       else if (g) { if (later) { tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by ${by} (${tie ? 'speed tie, ' : ''}if no ${g})`}); } }
       else if (later) { const k1 = (h.r.rolls || [h.r.min, h.r.max]).filter(v => v >= h.r.hp).length / (h.r.rolls || [1, 1]).length;
@@ -251,7 +271,8 @@ function turnOneData(mine, theirs, r) {
     if (risk.length > 1) { const who = [...new Set(risk.filter(n => n.k === 'ko').map(n => nm(n.u)))];
       ns = ns.filter(n => !risk.includes(n)).concat({r: 1, s: risk.every(n => n.k === 'ko') ? `may be KO'd first by ${who.join(' or ')}` : 'may not move: ' + [...risk.filter(n => n.k === 'flinch').map(n => `${nm(n.u)}'s Fake Out`), ...who.map(w => `a KO from ${w}`)].join(' or ')}); }
     ns.sort((a, c) => a.r - c.r); const parts = [b.main]; if (ns[0]) parts.push(cap(ns[0].s) + (ns[0].sfx && b.main.length + ns[0].s.length + ns[0].sfx.length + 2 <= 100 ? ns[0].sfx : ''));
-    const tag = ns.slice(1).find(n => n.tag); if (tag && (tag.k === 'fotie' || (parts.join('. ') + '. ' + tag.tag).length <= 100)) parts.push(tag.tag); /* a Fake Out speed tie always shows: without it, 'Stops' would overclaim */
+    /* a tag the line already says ('… (speed tie)') is not repeated (independent review, Nov 19) */
+    const tag = ns.slice(1).find(n => n.tag); if (tag && !parts.join('. ').toLowerCase().includes(tag.tag.toLowerCase()) && (tag.k === 'fotie' || (parts.join('. ') + '. ' + tag.tag).length <= 100)) parts.push(tag.tag); /* a Fake Out speed tie always shows: without it, 'Stops' would overclaim */
     /* the house rule's 130 characters: a long line drops its stage words ('at −1 Attack'; the numbers keep the stage) first */
     if (parts.filter(Boolean).join('. ').length > 130) parts[0] = parts[0].replace(/ \(at [+−]\d (?:Attack|Sp\. Atk)\)|, at [+−]\d (?:Attack|Sp\. Atk)(?=\))/, '');
     b.why = parts.filter(Boolean).join('. '); }

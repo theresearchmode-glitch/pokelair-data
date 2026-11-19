@@ -20,7 +20,9 @@ function realSheetFor(names, who) { const want = (names || []).filter(Boolean); 
 function withSheet(list, sheet) { if (!sheet) return list;
   for (const m of list) { const s = sheet.t.mons.find(x => x.n === m.p.n); if (!s) continue;
     const mv = (s.mv || []).map(x => mvByName.get(typeof canonMove === 'function' ? canonMove(x, m.p) : x)).filter(Boolean);
-    if (mv.length) m.moves = mv; if (s.i) m.item = s.i; if (s.a && (m.p.a || []).includes(s.a)) m.ability = s.a; m.real = true; }
+    if (mv.length) m.moves = mv; if (s.i) m.item = s.i; if (s.a && (m.p.a || []).includes(s.a)) m.ability = s.a; m.real = true;
+    /* the sheet's Ability as written: for a Mega it is the base form's (turn one's entry Ability and a base-form copy read it) */
+    if (s.a) m.sheetAb = s.a; }
   return list; }
 // the Battle page's opponent: their six as you set them, with their real sets when they match an open team sheet
 function oppWho() { const opp = S.opp.filter(Boolean); return ui.oppFrom && ui.oppFrom.key === opp.slice().sort().join('|') ? ui.oppFrom.who : null; }

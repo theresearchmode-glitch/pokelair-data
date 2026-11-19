@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf = new Map(); for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) { teams.push(t.mons.map(m => m.n)); if (!refOf.has(t.mons.map(m => m.n).join('/'))) refOf.set(t.mons.map(m => m.n).join('/'), {ev: e, t}); }
-  const st = {forcedMissing: [], qgN: 0, unawareN: 0, unawareWrong: [], n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: [], intoGone: [], dblParen: [], theirKO: 0, theirKOmiss: [], koSureN: 0, koSureBad: [], intimN: 0, intimWrong: [], guarded: 0, faintGuard: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  const st = {forcedMissing: [], copySheetN: 0, copySheetWrong: [], wgGone: 0, moldUnaware: 0, tieTwice: [], tieKO: 0, faintTie: [], rattledN: 0, rattledWrong: [], qgN: 0, unawareN: 0, unawareWrong: [], n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: [], intoGone: [], dblParen: [], theirKO: 0, theirKOmiss: [], koSureN: 0, koSureBad: [], intimN: 0, intimWrong: [], guarded: 0, faintGuard: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
   const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
   const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp'], /* Extreme Speed into a side with Farigiraf's Armor Tail */
@@ -26,7 +26,20 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
     {me: 'Incineroar/Clefable/Garchomp/Rillaboom/Kingambit/Sneasler', th: 'Metagross-Mega/Kingambit/Garchomp/Incineroar/Rillaboom/Sneasler', ab: {Clefable: 'Unaware'}},
     /* your Azumarill's Aqua Jet (priority) KOs their Talonflame, which carries Quick Guard, no Protect and no Flying move (so no
        Gale Wings: your Aqua Jet goes first) */
-    {me: 'Azumarill/Garchomp/Incineroar/Whimsicott/Kingambit/Sneasler', th: 'Pelipper/Talonflame/Garchomp/Incineroar/Rillaboom/Kingambit', oppMoves: {Talonflame: ['Flare Blitz', 'Quick Guard', 'Will-O-Wisp', 'U-turn']}}];
+    {me: 'Azumarill/Garchomp/Incineroar/Whimsicott/Kingambit/Sneasler', th: 'Pelipper/Talonflame/Garchomp/Incineroar/Rillaboom/Kingambit', oppMoves: {Talonflame: ['Flare Blitz', 'Quick Guard', 'Will-O-Wisp', 'U-turn']}},
+    /* your Rattled Alolan Persian against their Intimidate Incineroar: +1 Speed in turn one's order (Nov 19 mechanics check) */
+    /* a Mega Froslass mirror: your Blizzard KOs their Whimsicott, but their Mega Froslass is tied with yours and can KO it first */
+    {me: 'Froslass-Mega/Toxapex/Garchomp/Sneasler/Kingambit/Incineroar', th: 'Froslass-Mega/Whimsicott/Staraptor-Mega/Glimmora/Armarouge/Kingambit'},
+    /* their Mega Gyarados (Mold Breaker, −1 Attack from your Gyarados's Intimidate on entry) hits your Unaware Clefable: the stage counts */
+    {me: 'Gyarados-Mega/Clefable/Garchomp/Sneasler/Kingambit/Incineroar', th: 'Incineroar/Gyarados-Mega/Staraptor-Mega/Glimmora/Armarouge/Kingambit', ab: {Clefable: 'Unaware'}},
+    /* their Wide Guard Garganacl is surely flinched by your faster Fake Out, so your Earthquake's KO on their Rampardos (given only
+       status moves here: no Protect, no damaging move, so the Fake Out goes to Garganacl) is sure */
+    {me: 'Incineroar/Garchomp/Sneasler/Rillaboom/Clefable/Whimsicott', th: 'Garganacl/Rampardos/Incineroar/Rillaboom/Clefable/Whimsicott', oppMoves: {Rampardos: ['Toxic', 'Encore', 'Taunt', 'Helping Hand']}},
+    /* real open team sheets list a Mega's pre-Mega Ability: their second Mega (Charizard Y, shown as Charizard) takes the sheet's
+       Solar Power; their Mega Mawile's sheet Intimidate works on entry (its usual base Ability is Hyper Cutter) */
+    {me: 'Garchomp/Sneasler/Incineroar/Rillaboom/Kingambit/Clefable', th: 'Salamence-Mega/Charizard-Mega-Y/Archaludon/Houndstone/Excadrill/Hippowdon'},
+    {me: 'Garchomp/Sneasler/Incineroar/Rillaboom/Kingambit/Clefable', th: 'Mawile-Mega/Rillaboom/Sneasler/Incineroar/Farigiraf/Ninetales'},
+    {me: 'Persian-Alola/Garchomp/Incineroar/Rillaboom/Kingambit/Clefable', th: 'Incineroar/Rillaboom/Whimsicott/Garchomp/Kingambit/Basculegion', ab: {'Persian-Alola': 'Rattled'}}];
   for (const f of FORCED) { const x = f.me.split('/'), y = f.th.split('/'); if (x.concat(y).every(n => byName.get(n))) pairs.push([x, y, f]); else st.forcedMissing.push(f.me + ' vs ' + f.th); }
   for (const [me, th, f] of pairs) { const tag = (f ? 'forced: ' : '') + me.join('/') + ' vs ' + th.join('/');
     S.slots = me.map(n => ({n, a: f && f.ab && f.ab[n] || null, lock: false})); fixSlots(); S.opp = [...th];
@@ -37,7 +50,8 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
     if (T.opp.filter(x => x.p.m).length > 1 || T.leads.filter(x => x.p.m).length > 1) st.twoMega.push(tag);
     for (const bt of T.beats) { const a = (bt.why.match(/also hits your .*?up to (\\d+)%/i) || [])[1]; if (a) st.allyHits++; if (a && +a >= 100) st.allyKO.push(tag + ': ' + bt.act);
       if (/^Fake Out/.test(bt.act) && /\\bthen\\b/.test(bt.why)) st.foThen.push(tag + ': ' + bt.why);
-      if (bt.act === 'Flinches') { st.flinches++; if (!bt.flinch) st.flinchActs.push(tag); } }
+      if (bt.act === 'Flinches') { st.flinches++; if (!bt.flinch) st.flinchActs.push(tag); }
+      if ((bt.why.match(/speed tie/gi) || []).length > 1) st.tieTwice.push(tag + ': ' + bt.why); }
     /* Nov 19 review: your own lead never shows 'Flinches' (their Fake Out is a guess), every lead has its beat (Home's plan board finds
        it by the original member), a base-form copy has the base form's types and Ability, and your Fake Out never aims at a Ghost
        without Scrappy */
@@ -98,13 +112,18 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
            the target keeps its move ('Fainted' would overclaim) and later attacks may still aim at it */
         const mvs = y => (y.moves || []).filter(Boolean).map(x => x.name || x), mvN = am ? am[1] : bt.act.replace(/ \(hits both\)$/, ''), at = (bt.x.types || bt.x.p.t);
         const rdOK = n => n === 'Follow Me' || (n === 'Rage Powder' && !at.includes('Grass') && abilityOf(bt.x) !== 'Overcoat');
+        /* (independent review, Nov 19) a Quick Guard / Wide Guard user (+3) gone before a +3 move can't use it: KO'd earlier by a move
+           above +3 (or at +3, faster), or 'Flinches' from your Fake Out (+3) by a faster user; its own Speed from its beat (no Tailwind at +3) */
+        const raw = z => z.tw ? z.speed / 2 : z.speed, g3 = y => { const yb = T.beats.find(z => z.x === y), first = z => z && yb && (z.prio > 3 || (z.prio === 3 && raw(z) > raw(yb)));
+          return (down.has(y) && down.get(y) < i && first(T.beats[down.get(y)])) || (yb && yb.act === 'Flinches' && first(T.beats.find(z => z.me && z.act === 'Fake Out ' + y.d))); };
         const guard = mvs(t).some(n => ['Protect', 'Detect', 'Spiky Shield', "King's Shield", 'Baneful Bunker', 'Silk Trap', 'Burning Bulwark', 'Obstruct'].includes(n))
-          || (!am ? T.opp.some(y => mvs(y).includes('Wide Guard')) : !['Stalwart', 'Propeller Tail'].includes(abilityOf(bt.x)) && mvN !== 'Snipe Shot'
+          || (!am ? T.opp.some(y => !g3(y) && mvs(y).includes('Wide Guard')) : !['Stalwart', 'Propeller Tail'].includes(abilityOf(bt.x)) && mvN !== 'Snipe Shot'
             && T.opp.some(y => y !== t && !(down.has(y) && down.get(y) < i) && (T.beats.find(z => z.x === y) || {}).act !== 'Flinches' && mvs(y).some(rdOK)))
           /* Quick Guard stops a priority move (fifth review, Nov 19) */
-          || (T.opp.some(y => mvs(y).includes('Quick Guard')) && movePrio((bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN), abilityOf(bt.x), {terrain: T.terrain || '', grounded: true}) > 0);
+          || (T.opp.some(y => !g3(y) && mvs(y).includes('Quick Guard')) && movePrio((bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN), abilityOf(bt.x), {terrain: T.terrain || '', grounded: true}) > 0);
         if (T.opp.some(y => mvs(y).includes('Quick Guard')) && movePrio((bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN), abilityOf(bt.x), {terrain: T.terrain || '', grounded: true}) > 0) st.qgN++;
         const j = T.beats.findIndex(y => y.x === t);
+        if (!am && T.opp.some(y => g3(y) && mvs(y).includes('Wide Guard'))) st.wgGone++;
         if (guard) { st.guarded++; if (j > i && T.beats[j].act === 'Fainted') st.faintGuard.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' then ' + t.d + ' Fainted, though ' + mvs(t).concat(T.opp.filter(y => y !== t).flatMap(mvs)).filter(n => /Protect|Detect|Shield|Bunker|Silk Trap|Bulwark|Obstruct|Wide Guard|Follow Me|Rage Powder/.test(n)).join(', ')); return; }
         st.sureKO++; if (!down.has(t)) down.set(t, i);
         if (j > i && !(T.beats[j].prio === bt.prio && T.beats[j].speed === bt.speed) && T.beats[j].act !== 'Fainted') st.koActs.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') then ' + t.d + ' ' + T.beats[j].act); });
@@ -134,12 +153,23 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
          −1 Attack, +2 Sp. Atk; White Herb undoes one drop. A Mega comes out as its base form (its usual Ability then); a Mega whose own
          Ability is Intimidate uses it on Mega Evolving. Worked out here from the six leads' Abilities and items, not from the lines */
       const NOI = ['Clear Body', 'Hyper Cutter', 'White Smoke', 'Full Metal Body', 'Inner Focus', 'Oblivious', 'Own Tempo', 'Scrappy', 'Mirror Armor'], UPI = ['Defiant', 'Guard Dog', 'Contrary'];
-      const entry = x => { if (x.p.m) { const bp = byName.get(x.p.b) || [...byName.values()].find(q => q && !q.m && String(q.n).startsWith(x.p.b + '-')); if (bp) { try { const a = metaAbility(bp); if (a) return a; } catch (e) {} } } return abilityOf(x); };
+      /* a Mega's base-form Ability: their real open team sheet's (read here from the sheet itself, realSheetFor), when the base form can
+         have it, else its usual one (mechanics check, Nov 19: a Mega's sheet lists the pre-Mega Ability, e.g. Mega Mawile 'Intimidate') */
+      const sheetAbOf = (x, bp) => { if (!T.opp.includes(x)) return ''; const o = x._orig || x, sh = o.real && realSheetFor(th, null), m = sh && sh.t.mons.find(y => y.n === o.p.n), c = m && m.a ? canonAbility(m.a, bp) : '';
+        return c && bp.a.includes(c) ? c : ''; };
+      const entry = x => { if (x.p.m) { const bp = byName.get(x.p.b) || [...byName.values()].find(q => q && !q.m && String(q.n).startsWith(x.p.b + '-')); if (bp) { const sa = sheetAbOf(x, bp); if (sa) return sa; try { const a = metaAbility(bp); if (a) return a; } catch (e) {} } } return abilityOf(x); };
+      /* a base-form copy of their Mega takes the sheet's Ability when the base form can have it */
+      for (const x of T.opp) if (x._orig) { const sa = sheetAbOf(x, x.p); if (sa) { st.copySheetN++; if (abilityOf(x) !== sa) st.copySheetWrong.push(tag + ': ' + x.p.n + ' ' + abilityOf(x) + ', sheet ' + sa); } }
       const isInt = y => entry(y) === 'Intimidate' || abilityOf(y) === 'Intimidate';
       const stg = (x, mv) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat) return 0; const mine = T.leads.includes(x), foes = mine ? T.opp : T.leads, own = mine ? T.leads : T.opp, n = foes.filter(isInt).length, ab = entry(x);
         let atk = 0, spa = 0; if (n && !NOI.includes(ab) && !((x.types || x.p.t).includes('Grass') && own.some(y => entry(y) === 'Flower Veil'))) { if (UPI.includes(ab)) atk = n; else { atk = -n; if (ab === 'Competitive') spa = 2 * n; if (side(x, 'atk').item === 'White Herb') atk++; } }
         if (isInt(x) && !NOI.includes(ab) && !UPI.includes(ab)) atk -= foes.filter(y => entry(y) === 'Mirror Armor').length;
         return mv.cat === 1 ? Math.max(-6, Math.min(6, atk)) : Math.min(6, spa); };
+      /* Rattled (Gen 8 on; Showdown rattled: onAfterBoost): each Intimidate that lowers its Attack gives +1 Speed, so your Rattled lead
+         moves at ×1.5 (+1), ×2 (+2) in turn one's order: its beat's Speed is the stage on its likely Speed, then the weather's Ability */
+      for (const bt of T.beats) { const x = bt.x; if (!bt.me || entry(x) !== 'Rattled') continue; const n = T.opp.filter(isInt).length; if (!n) continue; st.rattledN++;
+        const s0 = likelySpeed(x.p, x._orig || x), v0 = s0.scarf ? Math.floor(s0.v * 1.5) : s0.v, want = Math.floor(v0 * (2 + Math.min(6, n)) / 2) * speedMul(abilityOf(x), F.weather), got = bt.tw ? bt.speed / 2 : bt.speed;
+        if (got !== want) st.rattledWrong.push(tag + ': ' + x.d + ' at ' + got + ', not ' + want); }
       const atkOf = (x, mv) => ({...side(x, 'atk'), boost: stg(x, mv)}), defOf = (x, a, mv) => mv && mv.name === 'Foul Play' ? {...side(x, 'def'), atkBoost: stg(x, {cat: 1, name: ''})} /* Foul Play hits with the target's Attack and its stage */ : side(x, 'def');
       /* every attack line that can KO a Pokémon on some roll (Sash and charging aside), told from the calc: 'X into Y' and a spread
          move's '(hits both)' on each foe */
@@ -150,6 +180,10 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         if (!mv) return; for (const t of (bt.me ? T.opp : T.leads).filter(o => am ? o.d === am[2] : true)) {
           const r = damage({atk: atkOf(bt.x, mv), def: defOf(t, bt.x, mv), move: mv, spread: !!mv.spread && !(am && bt.me), weather: F.weather, terrain: F.terrain, auras: F.auras});
           if (r && r.hp && r.max >= r.hp && !r.sash && !chargesFirst(mv, F.weather, side(bt.x, 'atk').item)) canKO.push({t, i}); } });
+      /* independent review, Nov 19: a 'Fainted' foe's attacker must not be at risk of a KO from a foe tied with it (same bracket, same
+         Speed: either may go first), told from the calc (canKO), not from the code's flag or the text */
+      for (const a of T.beats) { if (!a.me) continue; const tiedKO = canKO.some(c => c.t === a.x && !T.beats[c.i].me && T.beats[c.i].prio === a.prio && T.beats[c.i].speed === a.speed); if (!tiedKO) continue;
+        st.tieKO++; const ft = T.beats.find(y => !y.me && y.act === 'Fainted' && y.why.startsWith("KO'd first by your " + a.x.d + "'s ")); if (ft) st.faintTie.push(tag + ': their ' + ft.x.d + ' Fainted by your ' + a.x.d + ' (' + a.why + ')'); }
       for (const bt of T.beats) { const main = bt.main != null ? bt.main : bt.why, am = bt.act.match(/^(.+?) into (.+)$/), sp = !am && bt.me && main.match(/^KOs their (.+?)(?: \\(|\\. |$)/);
         if ((!am && !sp) || (am && am[1] === 'Fake Out') || /KO'd earlier this turn/.test(bt.why)) continue;
         const t = (bt.me ? T.opp : T.leads).find(o => o.d === (am ? am[2] : sp[1])), mvN = am ? am[1] : bt.act.replace(/ \\(hits both\\)$/, ''), mv = (bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN);
@@ -158,8 +192,11 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         /* Nov 19 review: a hit at a stat stage from Intimidate (or Defiant / Competitive) shows that stage's calc ('up to N%' or 'KOs')
            and says so ('at −1 Attack') */
         /* fifth review, Nov 19: the target's Unaware ignores the stage (the calc does), so the line never names one */
-        { const sv0 = stg(bt.x, mv); if (sv0 && side(t, 'def').ability === 'Unaware') { st.unawareN++; if (/\\bat [+\\u2212]\\d (Attack|Sp\\. Atk)/.test(bt.why)) st.unawareWrong.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ')'); } }
-        { const sv = side(t, 'def').ability === 'Unaware' ? 0 : stg(bt.x, mv); if (sv) { st.intimN++; const um = main.match(/^up to (\\S+)% of /i), okN = um ? um[1] === dmgP(100 * r.max / r.hp) : /^KOs/.test(main) ? r.min >= r.hp : false;
+        /* (independent review, Nov 19) Mold Breaker, Teravolt and Turboblaze ignore Unaware: the stage counts then, as in the calc */
+        const unaw = side(t, 'def').ability === 'Unaware' && !['Mold Breaker', 'Teravolt', 'Turboblaze'].includes(side(bt.x, 'atk').ability);
+        if (stg(bt.x, mv) && side(t, 'def').ability === 'Unaware' && !unaw) st.moldUnaware++;
+        { const sv0 = stg(bt.x, mv); if (sv0 && unaw) { st.unawareN++; if (/\\bat [+\\u2212]\\d (Attack|Sp\\. Atk)/.test(bt.why)) st.unawareWrong.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ')'); } }
+        { const sv = unaw ? 0 : stg(bt.x, mv); if (sv) { st.intimN++; const um = main.match(/^up to (\\S+)% of /i), okN = um ? um[1] === dmgP(100 * r.max / r.hp) : /^KOs/.test(main) ? r.min >= r.hp : false;
           if (!okN || (!bt.why.includes('at ' + (sv > 0 ? '+' : '\u2212') + Math.abs(sv) + ' ') && bt.why.length <= 115) /* past 115 the stage words may give way to the 130 limit */) st.intimWrong.push(tag + ': ' + (bt.me ? 'your ' : 'their ') + bt.x.d + ' ' + bt.act + ' (' + main + ') vs ' + dmgP(100 * r.min / r.hp) + '-' + dmgP(100 * r.max / r.hp) + '% at ' + sv); } }
         /* Nov 19 review: the KO stamp on Battle's card (V2.pbpBeat) shows exactly when the KO is sure, told from the calc, not the
            line's text: every roll KOs, Sash/Sturdy don't hold, 100% to hit, not charging, and the attacker isn't at risk of being
@@ -226,4 +263,10 @@ ok(!st.forcedMissing.length, `the forced cases' Pokémon are all in today's data
 ok(st.unawareN > 0 && !st.unawareWrong.length, `a hit on an Unaware target never names a stat stage (the stage doesn't count) (${st.unawareN} such lines, ${st.unawareWrong.length} wrong${st.unawareWrong.length ? ', e.g. ' + st.unawareWrong[0] : ''})`);
 ok(st.qgN > 0, `the forced Quick Guard case reaches the check (${st.qgN} priority KOs into a side with Quick Guard)`);
 ok(st.guarded > 0 && !st.faintGuard.length, `'Fainted' only when nothing of theirs can stop the KO (no Protect, Wide Guard, Quick Guard, Follow Me or Rage Powder) (${st.guarded} KOs they could stop, ${st.faintGuard.length} still 'Fainted'${st.faintGuard.length ? ', e.g. ' + st.faintGuard[0] : ''}; ${st.fainted} 'Fainted' in all)`);
+ok(st.rattledN > 0 && !st.rattledWrong.length, `a Rattled lead hit by Intimidate moves at +1 Speed per Intimidate in turn one's order (${st.rattledN} such leads, ${st.rattledWrong.length} wrong${st.rattledWrong.length ? ', e.g. ' + st.rattledWrong[0] : ''})`);
+ok(st.tieKO > 0 && !st.faintTie.length, `no 'Fainted' foe when your attacker may be KO'd first by a foe in a speed tie (${st.tieKO} leads in such a tie, ${st.faintTie.length} wrong${st.faintTie.length ? ', e.g. ' + st.faintTie[0] : ''})`);
+ok(!st.tieTwice.length, `a why line says 'speed tie' at most once (${st.tieTwice.length}${st.tieTwice.length ? ', e.g. ' + st.tieTwice[0] : ''})`);
+ok(st.moldUnaware > 0, `the forced Mold Breaker into Unaware case reaches the stage check (${st.moldUnaware} such lines)`);
+ok(st.wgGone > 0, `the forced case reaches a spread KO whose Wide Guard user is flinched first (${st.wgGone} such KO lines)`);
+ok(st.copySheetN > 0 && !st.copySheetWrong.length, `their Mega shown as its base form takes its open team sheet's Ability (${st.copySheetN} copies with one, ${st.copySheetWrong.length} wrong${st.copySheetWrong.length ? ', e.g. ' + st.copySheetWrong[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
