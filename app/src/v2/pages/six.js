@@ -18,6 +18,14 @@ V2.handHtml = (D, sel, strip) => { const {ms, L} = D, E = V2.esc, F = V2.mvFitOf
       <div class="mh-set"><div class="ms-ty mh-ty">${(m.p.t || []).map(V2.typeChip).join('')}</div><p class="mh-it"><span class="vh">Item </span><b>${V2.keepForm(E(it))}</b> <small><span class="vh">Ability </span>${E(m.ability || 'None')}</small></p><ul class="mh-mv${F.c ? ' ' + F.c : ''}">${mv}</ul></div></div>`; };
   // Sim, Nov 15 (night, 2nd): while the team is being built (one to five) nothing is labelled Lead / Back / Bench: the six spots in the
   // player's own order, empty ones as 'Add' Cards (the same name box, data-v2addto); the roles are worked out once all six are in
+  /* Sim, Nov 18 (Q9 C): on tablets (700-1099), Remove keeps Lead / Back / Bench where they were, with an Add Card in the removed Card's
+     place, until the player adds a sixth or leaves My Team (V2.ui.holdRoles, set by Remove below); no other Card moves. Changes the Nov 15
+     rule (roles only once all six are in) for this case only, as Sim chose. */
+  const HR = V2.ui.holdRoles, holdOK = HR && ms.length < 6 && innerWidth >= 700 && innerWidth < 1100 && ms.length > 0 && ms.every(m => HR.n[m.i] === m.p.n); /* the same Pokémon in the same slots: a cleared or newly loaded team never inherits held roles */
+  if (!holdOK && HR && ms.length >= 6) V2.ui.holdRoles = null;
+  if (holdOK) { const at = i => ms.find(m => m.i === i), add = i => `<div class="sx-slot mh-slot mh-empty"><button type="button" class="sx-add mh-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="mh-addart" aria-hidden="true">+</span><b class="u">Add</b><small>Spot ${i + 1}</small></button></div>`;
+    const G = [['Lead', 'start the battle', HR.lead], ['Back', 'come in next', HR.back], ['Bench', 'stay out this game', HR.bench]];
+    return `<div class="mh-hand">${G.map(([name, note, g]) => `<div class="sx-grp mh-grp${name === 'Lead' ? ' lead' : ''}" role="group" aria-label="${name}"><p class="mh-gh" role="heading" aria-level="2"><b class="u">${name}</b><span>${note}</span></p><div class="mh-pair">${g.map(i => at(i) ? card(at(i)) : add(i)).join('')}</div></div>${strip && sel && g.includes(sel.i) ? strip : ''}`).join('')}</div>`; }
   if (ms.length < 6) { const at = i => ms.find(m => m.i === i), add = i => `<div class="sx-slot mh-slot mh-empty"><button type="button" class="sx-add mh-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="mh-addart" aria-hidden="true">+</span><b class="u">Add</b><small>Spot ${i + 1}</small></button></div>`;
     return `<div class="mh-hand mh-build"><div class="sx-grp mh-grp" role="group" aria-label="Your six"><p class="mh-gh"><b class="u">Your Six</b><span>${ms.length} of 6 in. Lead, Back and Bench are worked out once all six are in.</span></p><div class="mh-pair mh-six">${(() => { const cols = innerWidth < 360 ? 2 : 3 /* Sim, Nov 18 (C): three across from 360 */, si = strip && sel ? sel.i : -1, end = si < 0 ? -1 : Math.min(5, Math.floor(si / cols) * cols + cols - 1); return [0, 1, 2, 3, 4, 5].map(i => (at(i) ? card(at(i)) : add(i)) + (i === end ? strip : '')).join(''); })()}</div></div></div>`; }
   const G = [['Lead', 'start the battle', L.lead], ['Back', 'come in next', L.back], ['Bench', 'stay out this game', L.bench]];
@@ -87,6 +95,8 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // Remove and Lock in the action strip (TEAM-09): today's toggleLock and clearSlot (31-set-edits.js); Remove keeps Undo, as today
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2lock],[data-v2rm]'); if (!t) return;
   if (t.dataset.v2lock != null) { toggleLock(+t.dataset.v2lock); render(); const b = document.querySelector(`[data-v2lock="${t.dataset.v2lock}"]`); if (b) b.focus({preventScroll: true}); return; }
+  if (innerWidth >= 700 && innerWidth < 1100) { try { const D = V2.teamData(); if (D && D.L && D.ms.length === 6) V2.ui.holdRoles = {lead: D.L.lead.map(m => m.i), back: D.L.back.map(m => m.i), bench: D.L.bench.map(m => m.i), n: Object.fromEntries(D.ms.map(m => [m.i, m.p.n]))}; } catch (e) {} } /* Q9 C */
+  const c0 = (() => { const c = document.querySelector('#main .mh-slot.on'); return c ? c.getBoundingClientRect().top : null; })(); /* Q9 C: where the removed Card sat */
   const i = +t.dataset.v2rm, was = clearSlot(i); V2.ui.picked = false; /* Sim, Nov 18 (C): on phones the panel shuts with the Card it was editing */ render(); if (was) toast(`Removed ${was.d}`, true);
   // Sim, Nov 17: after Remove the new Add spot was 685px above the screen (390 wide); bring it into view and give it the focus
   // Sim, Nov 18 (desktop): centring it made the page jump up 400-500px every time even when the Add spot was already on screen.
@@ -94,6 +104,8 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   // (below the sticky header); test v2-rmjump.mjs
   requestAnimationFrame(() => { const a = document.querySelector(`[data-v2addto="${i}"]`); if (!a) return;
     const hd = (document.querySelector('.np-head') || {}).offsetHeight || 0, q = a.getBoundingClientRect();
+    /* Q9 C (tablets, roles held): the Add Card takes the removed Card's place on screen, so nothing appears to move */
+    if (V2.ui.holdRoles && c0 != null && innerWidth >= 700 && innerWidth < 1100) { scrollBy(0, q.top - c0); a.focus({preventScroll: true}); V2.rmHold(i, a.getBoundingClientRect().top); return; }
     /* visible enough to tap (44px of it on screen): leave the page still; else bring it fully in, the least distance */
     if (q.bottom - hd < 44) scrollBy(0, q.top - hd - 16); else if (innerHeight - q.top < 44) scrollBy(0, q.bottom - innerHeight + 16);
     a.focus({preventScroll: true}); V2.rmHold(i, a.getBoundingClientRect().top); }); }); /* instant: a smooth scroll was cut short by the redraw's late layout (stopped at 9px, under the header) */
@@ -146,3 +158,6 @@ V2.openGamePlan = () => { const ms = members(); if (!ms.length) return; let gp =
   V2.sheet(`<div class="gp2"><div class="np-eyebrow"><span>My Team${lb ? ' · ' + V2.esc(lb) : ''}</span></div><h2 class="u">Game Plan</h2>
     <p class="tm-sub">Leads, backups and what to watch: which of your Pokémon covers each job.</p><ul class="gp2-rows">${rows}</ul></div>`, {label: 'Game Plan', fit: true}); };
 document.addEventListener('click', e => { if (e.target.closest('[data-v2gplan]')) V2.openGamePlan(); });
+
+/* Q9 C: the held roles end when the player leaves My Team */
+addEventListener('hashchange', () => { if (V2.route && V2.route() !== 'team' && V2.ui) V2.ui.holdRoles = null; });

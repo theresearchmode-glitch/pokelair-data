@@ -23,11 +23,22 @@ const run = async (W, offTop) => { const p = await b.newPage({viewport: {width: 
   await p.close(); return {y0: y1, ...r, errs: errs.length}; };
 for (const W of [1440, 1100]) { const r = await run(W, false);
   ok(Math.abs(r.y - r.y0) < 8 && r.focus && r.on && !r.errs, `${W}: Remove keeps the page still (moved ${r.y - r.y0}px), at least 44px of the Add spot is on screen (tappable), with the focus (${r.focus}, top ${r.top}), no errors (${r.errs})`); }
-// 820 (iPad): the six is two across with six Pokémon and three across with five plus the Add spot, so Remove re-flows every Card and
-// the Add spot can land off the screen; there the page moving to show it is right. The re-flow itself is a design question for Sim
-// (Nov 18), so 820 checks only that the Add spot ends up tappable with the focus, and prints how far the page moved.
-{ const r = await run(820, false);
-  ok(r.focus && r.on && !r.errs, `820 (the six re-flows on Remove): the Add spot ends up tappable with the focus (moved ${r.y - r.y0}px, top ${r.top})`); }
+// 820 (iPad; Sim, Nov 18, Q9 C): Remove keeps Lead / Back / Bench with an Add Card in the removed Card's place: the Cards above and
+// beside it stay where they were (within 2px) and the Add Card sits where the removed Card was.
+{ const p = await b.newPage({viewport: {width: 820, height: 1180}}); const errs = []; p.on('pageerror', e => errs.push(e.message));
+  await p.goto('file://' + PAGE + '#team'); await p.waitForTimeout(5000);
+  await p.evaluate(() => { const c = document.querySelectorAll('#main [data-tmsel]')[2]; c.scrollIntoView({block: 'center'}); c.click(); }); await p.waitForTimeout(1200);
+  await p.evaluate(() => { const r = document.querySelector('#main [data-v2rm]'); if (r.getBoundingClientRect().bottom > innerHeight) r.scrollIntoView({block: 'nearest'}); }); await p.waitForTimeout(600);
+  const pos = () => p.evaluate(() => Object.fromEntries([...document.querySelectorAll('#main .mh-slot')].map(s => { const b = s.querySelector('[data-tmsel] h3, .mh-add'); const k = s.querySelector('.mh-add') ? 'ADD' : (s.querySelector('[data-tmsel]').getAttribute('aria-label') || '').split(',')[0]; return [k, Math.round(s.getBoundingClientRect().top)]; })));
+  const before = await pos(), removed = await p.evaluate(() => (document.querySelector('#main .mh-slot.on [data-tmsel]').getAttribute('aria-label') || '').split(',')[0]);
+  await p.click('#main [data-v2rm]'); await p.waitForTimeout(2500);
+  const after = await pos(), groups = await p.evaluate(() => [...document.querySelectorAll('#main .mh-gh b')].map(b => b.textContent.trim()).join('|'));
+  /* Cards above and beside the removed one hold still; a later group may move up by the editing panel's height, because at tablet width
+     the panel moves on to the next Card (as in the Q9 C picture Sim chose) */
+  const moved = Object.keys(before).filter(k => k !== removed && k in after && before[k] <= before[removed] + 2 && Math.abs(after[k] - before[k]) > 2).map(k => `${k} ${before[k]}->${after[k]}`);
+  const addAt = after.ADD != null && Math.abs(after.ADD - before[removed]) <= 2;
+  ok(groups === 'Lead|Back|Bench' && !moved.length && addAt && !errs.length, `820 (Q9 C): after Remove the groups stay (${groups}), no Card above or beside it moves (${moved.join(', ') || 'none'}), the Add Card is where ${removed} was (${before[removed]} -> ${after.ADD})`);
+  await p.close(); }
 { const r = await run(390, true);
   ok(r.focus && r.on && !r.errs, `390, Add spot off the top: after Remove it is on screen below the header (top ${r.top}, moved ${r.y - r.y0}px), focus ${r.focus}`); }
 await b.close();
