@@ -1497,3 +1497,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:08 AM: Sim: Q30 build the headline as shown (logo sticker letters + the logo's red-over-blue chevron; phone: top right of 'Sharply'; desktop: right of 'raise', lowered so the band does not cut it). Q31 Events: recommended (1 big + 6 tickets on phones, then Show More; ticket gaps 24->12, wall gap 24->16). Open: is 'who won lately' the main info on Events?
 - 11:25 AM: Under authority: merged Sim's brand kit commit (dde6289f, pushed from his PC) into the push; push target now cf49ef7a (checked code + test-only fixes + brand kit; no code change).
 - 11:26 AM: Sim (11:2x AM): max 2 helpers, usage running fast. At that moment 2 were running (speed measure, Q31 Events). Asked Sim: refill slots only for approved builds, not look-only research?
+- 11:26 AM: Sim: yes. Helper slots are refilled only for approved builds, not for look-only research; at most 2 helpers (usage).

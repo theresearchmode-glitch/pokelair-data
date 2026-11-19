@@ -24,8 +24,8 @@ wrong statement to Sim the moment it's found.
 Long checks run only as TRACKED background tasks (never a shell `&`); a watchdog wake-up ~20 min ahead whenever work runs in the
 background; "running" is only said after checking the process and its log in the same step.
 Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to tell me when watchdog fires. just keep up the work").
-Helper slots (Sim, Nov 19, 8:19 AM): keep both slots busy while approved work remains; refill a slot in the same turn a helper
-finishes; every status message names both slots.
+Helper slots (Sim, Nov 19, 11:26 AM, replaces 8:19 AM 'keep both busy'; usage): at most 2 helpers; a free slot is refilled ONLY for an
+approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
 ## Plans page ticks always accurate (Sim, Nov 19, 8:44 AM): docs/rebuild/RULES.md section 00p
 Tick each step the moment it lands (pushed + checks passed + screenshots; pages need Sim's OK), with commit and clock time in the note;
