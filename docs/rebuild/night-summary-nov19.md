@@ -22,6 +22,10 @@ Batch ead51cf8 (GitHub run 1374: 12 of 14 jobs passed; the 2 failures were one o
   Undo gets a 44px tap area; Usage says when its numbers come from Online tournaments.
 
 ## Issues and mistakes (honest list)
+- GitHub run 1375 (902e1b9f) failed 2 of my new tests on the frozen test data: a team leading Mega Delphox + Mega Floette still
+  showed two Megas (Floette's base form is only listed as 'Floette-Eternal'), and one event name kept '$30' at its start. Both
+  real gaps the tests were written to catch; fixed in a59975a6 and checked on the frozen data (both 'all passed'). Lesson: run new
+  tests on the frozen data before pushing, not only today's data.
 - 9:47 PM: I treated an interrupted tool call as you saying stop and sat idle. Rule 00s now says only your words stop the work.
 - My first Track Record build clipped the '×' at 320-360 wide (you caught it). Fixed with Q12 A, and v2-trkfit now checks 18 widths.
 - The first Preview card text said 'every Undo 10 s' when that batch only had Clear Team's; corrected within a minute (v208).
