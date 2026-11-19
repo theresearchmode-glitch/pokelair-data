@@ -201,7 +201,8 @@
 /* Meta filters on phones (Nov 16; advisor: one control row): the six chips sit in ONE row that swipes sideways (as the tiers below), all
    still visible; was 3 rows, 253px. The Types picker still opens full width under the row. */
 /* audit v199 #9 (Nov 17): not the three source chips on Sets and Usage (.us-srcs): they fit, and their own 3-column rule fills the row */
-@media (max-width:699.98px){.gs-ctl .ra-filt:not(.us-srcs){display:flex;flex-wrap:nowrap;gap:var(--s2);overflow-x:auto;overscroll-behavior-x:contain;margin-inline:calc(var(--gut) * -1);padding-inline:var(--gut);scroll-padding-inline:var(--gut);scrollbar-width:none}.gs-ctl .ra-filt:not(.us-srcs)>*{flex:0 0 auto}}
+/* Q21 A (Sim, Nov 19): not Meta's phone controls (.ra-ctlt): there the chips wrap into even rows above the featured #1 (pages.css) */
+@media (max-width:699.98px){.gs-ctl:not(.ra-ctlt) .ra-filt:not(.us-srcs){display:flex;flex-wrap:nowrap;gap:var(--s2);overflow-x:auto;overscroll-behavior-x:contain;margin-inline:calc(var(--gut) * -1);padding-inline:var(--gut);scroll-padding-inline:var(--gut);scrollbar-width:none}.gs-ctl .ra-filt:not(.us-srcs)>*{flex:0 0 auto}}
 @media (max-width:699.98px){.gs-ctl .ra-filt>*{min-width:56px;justify-content:center}} /* "All" stays a 44px+ tap in the swipe row */
 /* Base Stats labels (Nov 16, a11y helper: Defense amber 2.98:1, HP/Atk/Spe ~4.4 in day mode): the stat name is its colour mixed toward
    ink for reading; the bar keeps the bright stat colour. Night keeps the bright colour (it reads well on the dark panel). */

@@ -94,7 +94,10 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
     <div class="ra-cells"><p><b class="u">${all.length}</b><span>Pokémon rated</span></p><p><b class="u">${src.length}</b><span>data source${src.length === 1 ? '' : 's'}</span></p><p><b class="u">${all.filter(x => x.r.total >= 80).length}</b><span>in S tier</span></p><p><b class="u">${gems}</b><span>hidden gems</span></p></div>
     <p class="ra-lbl">Doubles sources${d ? ' · data from ' + E(d) : ''}</p><ul class="ra-src">${src.map(v => `<li>${E(v)}</li>`).join('')}</ul>
     <p class="ra-how">A rating says how strong a Pokémon is in the current format, proven by results. Four ingredients, each shown on every Pokémon's sheet: how often it's on teams that reach top cut at tournaments (counts most; recent and bigger events weigh more), how often strong players pick it (usage weighted by each player's skill), whether it makes top cut more or less often than its usage predicts, and its win rate. The last two are pulled toward average until there are enough games. Ratings read like school grades: S 90+, A 80s, B 70s, C 60s, D 50s, F under 50, and the best Pokémon shows as ${RS(RATE_V3.top)}. Halving a Pokémon's presence costs about 10 points (about 5 inside S, where the top is squeezed). This mix was chosen on Oct 27 by testing ten candidate measures on later events and against five outside tier lists; only the ones that helped are in. Rarely used Pokémon that overperform get the ◆ hidden gem tag instead of jumping the tier list. Ratings are saved every day and checked later against the tournaments that came after.</p></details>`;
-  return `<div class="ra gsp"><div class="gs-top">${head}<div class="ra-spotw" data-raspotw>${V2.raSpot(U.spot)}</div>${tabs}</div><div class="gs-body"><div class="gs-ctl">${filt}</div>${body}${legend}${about}</div></div>`; }};
+  /* phones (Sim's Q21 A, Nov 19; review #12 + #19): search and filters come first, above the featured #1 (they sat ~850-950px down), in the
+     page and tab order too; the chips wrap into even rows (pages.css .ra-ctlt). 700+ keeps them under the hero; the page redraws when the width crosses 700 */
+  const ph = innerWidth < 700, ctl = `<div class="gs-ctl${ph ? ' ra-ctlt' : ''}">${filt}</div>`;
+  return `<div class="ra gsp"><div class="gs-top">${head}${ph ? ctl : ''}<div class="ra-spotw" data-raspotw>${V2.raSpot(U.spot)}</div>${tabs}</div><div class="gs-body">${ph ? '' : ctl}${body}${legend}${about}</div></div>`; }};
 
 // search, filters, see all, tiers
 /* speed audit Nov 16 (4x CPU: 360 ms per keystroke, every key redrew the whole page): the redraw waits 250 ms after the last key (normal typing speed), so a
@@ -117,8 +120,8 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // the spotlight follows the pointer on mouse screens only (touch taps open the sheet)
 document.addEventListener('pointerover', e => { if (e.pointerType !== 'mouse') return; const r = e.target.closest && e.target.closest('[data-raspot]'); if (!r) return; const n = r.dataset.raspot; if (V2.raUi.spot === n) return;
   V2.raUi.spot = n; const w = document.querySelector('[data-raspotw]'); if (w) w.innerHTML = V2.raSpot(n); });
-// the stand's rows follow the window width (desktop / iPad / phone counts): redraw when the width crosses one of them
-(() => { const band = () => innerWidth >= 1100 ? 2 : innerWidth >= 700 ? 1 : 0; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (document.querySelector('.gs')) V2.redraw(); }, 150); }); })();
+// the stand's rows follow the window width (desktop / iPad / phone counts), and on phones the search moves above the featured #1 (Q21): redraw when the width crosses one of them
+(() => { const band = () => innerWidth >= 1100 ? 2 : innerWidth >= 700 ? 1 : 0; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (document.querySelector('.gs, [data-raspotw]')) V2.redraw(); }, 150); }); })();
 
 // 'About the ratings' keeps open / closed across a reload, as How We Calculate's parts do (Nov 15, SHELL-14)
 document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('[data-raabout]')) return; try { localStorage.setItem('cc2.chf.raabout', d.open ? '1' : '0'); } catch (x) {} }, true);

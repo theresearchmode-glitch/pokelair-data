@@ -1983,6 +1983,12 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699.98px){.gs-ctl .ra-filt>*{white-space:nowrap}}
 @media (min-width:420px) and (max-width:559.98px){.gs-ctl .ra-filt{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (min-width:700px) and (max-width:899.98px){.gs-ctl .ra-filt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* Meta on phones (Sim's Q21 A, Nov 19; review #12 + #19): search and filters sit above the featured #1 and the chips wrap into even rows,
+   every chip on screen (they swiped sideways, options off-screen): two even columns below 560 (sized to the chips below 360, so
+   "Hidden Gems" fits at 320), three from 560; an odd chip left over (Clear, or no Hidden Gems) takes the whole last row: no lone chip */
+@media (max-width:559.98px){.gs-ctl.ra-ctlt .ra-filt>:last-child:nth-child(odd){grid-column:1/-1}}
+@media (max-width:359.98px){.gs-ctl.ra-ctlt .ra-filt{grid-template-columns:repeat(2,auto);justify-content:stretch}}
+@media (min-width:560px) and (max-width:699.98px){.gs-ctl.ra-ctlt .ra-filt>:last-child:nth-child(3n+1){grid-column:1/-1}}
 @media (max-width:699.98px){.gs-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s2)}.gs-facts b{font-size:var(--t17)}}
 @media (max-width:699.98px){.gs-facts{align-items:end}}
 /* audit v199 #14 (Sim chose A, Nov 17, approved mock-up audit-14-hero-stats-390.png): the share reads "Of teams" and, from 360 up,
