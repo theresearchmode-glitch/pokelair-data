@@ -3005,7 +3005,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:1279.98px){.wk-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}}
 .wk-chg b{white-space:nowrap}.wk-cn>span{display:inline-flex;align-items:baseline;gap:var(--s1);white-space:nowrap}
 @media (max-width:389.98px){.wk-cn{grid-template-columns:6em repeat(2,minmax(0,1fr))}.wk-cn b{font-size:var(--t17)}}
-.wk-tile{min-height:152px}
+@media (min-width:700px){.wk-tile{min-height:152px}} /* Q32: was for every width and undid the phones' 120 (line ~2897) */
+/* Q32 (Sim chose A, Nov 19): This Week on phones, 5.89 screens at 390 to about 4.9. Tighter gaps (sections 40 to 24, Biggest rise 40 to
+   24, tickets 24 to 16, Most Used 20 to 12; the eyebrow keeps its 8 px to the masthead), the first winner's ticket plus a link to Events,
+   and New Tech's top 2 rows plus "Show all N". Tablet and desktop: no link, no button, every ticket and row */
+.wk-evall,.wk-tmore{display:none}
+@media (max-width:699.98px){.wk{gap:var(--s6)}.wk>.np-eyebrow{margin-bottom:calc(var(--s4)*-1)}.wk-hl{margin-top:var(--s6)}.wk-tix .tk{margin-top:var(--s4)}.wk-top{padding:var(--s3) 0}
+  .wk-tix>:nth-child(n+2),.wk-tech ul:not(.on)>li:nth-child(n+3){display:none}
+  .wk-evall,.wk-tmore{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}}
 .wk-fold summary::after{content:"›";margin-left:var(--s2);font-weight:700;transition:rotate .2s}.wk-fold[open] summary::after{rotate:90deg}
 /* Track Record: the receipt's shadow comes from its column (the torn-edge mask cut a box-shadow away, so the white paper barely showed on
    the light page); the receipt runs level with the right column; Total clear of the verdict; the slips one height; stamps clear of words */
