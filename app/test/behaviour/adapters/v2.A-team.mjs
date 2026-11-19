@@ -23,13 +23,21 @@ export default (ui, pg, o) => {
   const vis = sel => pg.evaluate(s => { const e = [...document.querySelectorAll(s)].find(e => !e.hidden && e.getClientRects().length); return !!e; }, SEL[sel] || sel);
   const txt = sel => pg.evaluate(s => { const e = [...document.querySelectorAll(s)].find(e => !e.hidden && e.getClientRects().length); return e ? e.innerText.replace(/\s+/g, ' ').trim() : null; }, sel);
   // same tapping kit as today's adapter (real click first, then force, fresh lookup each try)
+  /* Nov 19 (EDIT-03 failing now and then on a loaded machine and in WebKit): Playwright's click gives up after its timeout while the
+     page is still busy handling the click, although the click HAS landed; this used to tap again (a Lock toggled twice, a Card tapped
+     twice). Now each try first marks the element, and a click that reached it counts as the tap: never tapped twice (tap-once.mjs). */
+  const markTap = el => el.evaluate(x => { window.__npTap = 0; if (!x.__npTapL) { x.__npTapL = 1; x.addEventListener('click', e => { if (e.isTrusted) window.__npTap = (window.__npTap || 0) + 1; }, true); } }).catch(() => {});
+  const tapLanded = async () => { await pg.waitForTimeout(150); return (await pg.evaluate(() => window.__npTap || 0).catch(() => 0)) > 0; };
   const tapFound = async (finder, arg, what, wait = 500) => { let landed = false;
     for (let k = 0; k < 5; k++) { const h = await pg.evaluateHandle(finder, arg); const el = h.asElement();
       if (!el) { if (landed) { await pg.waitForTimeout(wait); return; } if (k >= 2) throw new Error('nothing to tap: ' + what); await pg.waitForTimeout(400); continue; }
       const y0 = await pg.evaluate(() => scrollY); await el.scrollIntoViewIfNeeded({timeout: 1000}).catch(() => {});
       if (k < 3 && Math.abs((await pg.evaluate(() => scrollY)) - y0) > 2) { await pg.waitForTimeout(450); if (!(await el.evaluate(x => x.isConnected).catch(() => false))) continue; }
+      await markTap(el);
       try { await el.click({timeout: 900}); await pg.waitForTimeout(wait); return; } catch (e) {}
-      if (await el.evaluate(x => x.isConnected).catch(() => false)) { try { await el.click({force: true, timeout: 900}); await pg.waitForTimeout(wait); return; } catch (e) {} }
+      if (await tapLanded()) { await pg.waitForTimeout(wait); return; } /* the click landed; the page was only slow to answer */
+      if (await el.evaluate(x => x.isConnected).catch(() => false)) { try { await el.click({force: true, timeout: 900}); await pg.waitForTimeout(wait); return; } catch (e) {}
+        if (await tapLanded()) { await pg.waitForTimeout(wait); return; } }
       landed = true; await pg.waitForTimeout(300); }
     throw new Error('could not tap: ' + what); };
   const click = (sel, wait = 450) => tapFound(s => [...document.querySelectorAll(s)].find(e => e.getClientRects().length && !e.closest('[hidden]')) || null, sel, sel, wait);

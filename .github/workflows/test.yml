@@ -40,6 +40,9 @@ jobs:
       - run: npm ci && npx playwright install --with-deps chromium
       - run: node app/build.mjs --v2 --art=../src/v2/art/
       - run: PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs ${{ matrix.group }}
+      # the kit's taps tap once, also when the page is slow to answer (Nov 19, EDIT-03 on a loaded machine)
+      - if: matrix.group == 'A-team'
+        run: PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/tap-once.mjs
   # Safari's engine (code review C-I8, Nov 17: Sim tests on iPhone and iPad; the suites ran in Chromium only). The My Team group
   # on WebKit. Reported, not blocking yet. SUG-05 (Nov 18): failed 4 of 5 here; the test read the 4 s toast after a settle
   # that ran past it in WebKit; it now reads the Undo while the toast is up (5 of 5 in both engines).
@@ -66,6 +69,7 @@ jobs:
       - run: npm ci && npm install --no-save playwright@1.63.0 && npx playwright install --with-deps webkit chromium
       - run: node app/build.mjs --v2 --art=../src/v2/art/
       - run: BROWSER=webkit PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs A-team
+      - run: BROWSER=webkit PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/tap-once.mjs
   # The full quality check of RULES.md 00q on every page (code review C-I8, Nov 17: it only ran by hand): contained, no text on
   # text, sizes on the scale, tap targets, no code as text; 5 widths, day and night, on the frozen data. Findings already judged
   # are in app/test/qcheck-known.json; any new one fails.
