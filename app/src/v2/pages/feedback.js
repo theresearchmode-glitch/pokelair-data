@@ -35,7 +35,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // shown on the page with "Don't send it"; nothing personal is in it (a calc result or a Pokémon's name)
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-fbmistake],[data-fbctxoff]'); if (!b) return;
   if (b.dataset.fbctxoff != null) { V2.FB.ctx = ''; V2.FB.ctxNums = ''; const c = b.closest('.inf-ctx'); if (c) c.remove(); return; }
-  let ctx = ''; try { if (b.dataset.fbmistake === 'calc') { const r = document.querySelector('.dc2-res'), w = document.querySelector('.dc2'); const nm = w ? [...w.querySelectorAll('h2.u')].map(h => h.textContent.trim()).filter(Boolean).slice(0, 2) : []; ctx = ((nm.length === 2 ? nm[0] + ' into ' + nm[1] + ': ' : '') + (r ? r.innerText : '')).replace(/\s+/g, ' ').trim(); } /* who hit whom, then the result */
+  let ctx = ''; try { if (b.dataset.fbmistake === 'calc') { const r = document.querySelector('.arn-verdict'), w = document.querySelector('.dc2'); const nm = w ? ['a', 'd'].map(k => { const e = w.querySelector(`[data-arnname="${k}"]`); return e ? e.textContent.trim() : ''; }).filter(Boolean) : []; /* the Arena (Nov 19): attacker and defender from their name plates */ ctx = ((nm.length === 2 ? nm[0] + ' into ' + nm[1] + ': ' : '') + (r ? [...r.children].map(p => p.textContent).join(' ') : '')).replace(/\s+/g, ' ').trim(); } /* who hit whom, then the result */
     else ctx = ((document.querySelector('#main .pk-is h1') || {}).textContent || '').trim(); } catch (x) {}
   let nums = ''; if (b.dataset.fbmistake === 'pokemon') try { const p = V2.monFromHash(); if (p) nums = V2.fbMonNums(p); } catch (x) {}
   V2.FB.kind = 'mistake'; V2.FB.ctx = ctx.slice(0, 300); V2.FB.ctxNums = nums; });

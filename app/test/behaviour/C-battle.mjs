@@ -435,7 +435,7 @@ t('LOG-07', 'a logged win shows on Home as "1–0"', async () => {
 // ============================== CALC: Damage calc ==============================
 t('CALC-01', 'Damage calc head and "How the calc works →" link', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
-  hasAll(await ui.pageText(), NEW ? ['Damage Calculator · level 50 doubles', 'most used spread'] /* Nov 16: the word list's 'most used', as My Team says */ /* Sim's 'Their Side' brief 10: the title is one small line, no big heading */ : ['Common sets, auto-filled', 'Damage calc', 'Level 50 doubles damage. Each side starts with its most common set.'], 'calc head');
+  hasAll(await ui.pageText(), NEW ? ['Damage Calculator · level 50 doubles', 'most used set'] /* the Arena (Nov 19, Q35 wording): 'most used set' on each set card */ /* Nov 16: the word list's 'most used', as My Team says */ /* Sim's 'Their Side' brief 10: the title is one small line, no big heading */ : ['Common sets, auto-filled', 'Damage calc', 'Level 50 doubles damage. Each side starts with its most common set.'], 'calc head');
   await ui.tapIn((NEW ? 'How the Calc Works' : 'How the calc works')); expect(await ui.current() === 'method', 'link did not open How we calculate');
   expect(await ui.sees(/damage/i), 'How we calculate does not show the damage section'); await close(); });
 
@@ -446,7 +446,7 @@ t('CALC-02', 'attacker/defender defaults and pickers grouped Your team / Top of 
     if (NEW) expect(/\d+–\d+%/.test(await ui.calcResultOnly()) && / of \d+ HP/.test(await ui.calcResultOnly()), 'result: no range / HP line'); else hasAll(await ui.calcResultOnly(), ['% of HP'], 'result'); // brief 10: 'x–y of z HP' beside the range
     const r0 = await ui.calcResultOnly(); await ui.calcPick('defender', 'Incineroar'); s = await ui.calcSides();
     expect(s.d === 'Incineroar', 'defender not Incineroar'); expect(await ui.calcResultOnly() !== r0, 'result did not change for the new defender');
-    expect(/Assumed spread|Estimated spread|Most used spread/i.test(await ui.pageText()), 'no "assumed/estimated spread" tag'); await close(); }
+    expect(/Assumed spread|Estimated spread|Most used spread|Most used set|Estimated set/i.test(await ui.pageText()), 'no "assumed/estimated spread" tag'); /* the Arena (Nov 19, Q35 wording): 'most used set' / 'estimated set' on the set cards */ await close(); }
   const {ui, close} = await open({team: []}); await ui.go('Damage Calc');
   const s = await ui.calcSides(); expect(s.a === 'Garchomp' && s.d !== 'Garchomp', 'empty-team defaults are ' + JSON.stringify(s)); await close(); });
 
@@ -467,8 +467,8 @@ t('CALC-04', 'Set details: defender points kept legal (66 total); changing natur
   const nat = await ui.calcSetChoices('attacker', 'nature'); expect(nat.length === 21, '21 natures expected, got ' + nat.length);
   const items = await ui.calcSetChoices('attacker', 'item'); expect(items.some(i => /Charizardite Y/.test(i)), "a Mega's stone is not offered as its item");
   hasAll((await ui.calcSetChoices('defender', 'item')).join(','), ['None', 'Life Orb', 'Choice Scarf', 'Focus Sash', 'Sitrus Berry', 'Leftovers'], 'item list');
-  const before = await ui.pageText(); const tags0 = (before.match(/Assumed spread|Most used spread/gi) || []).length;
-  await ui.calcSet('attacker', 'nature', 'Timid'); const tags1 = ((await ui.pageText()).match(/Assumed spread|Most used spread/gi) || []).length;
+  const before = await ui.pageText(); const tags0 = (before.match(/Assumed spread|Most used spread|Most used set/gi) || []).length; /* the Arena (Nov 19): 'most used set' */
+  await ui.calcSet('attacker', 'nature', 'Timid'); const tags1 = ((await ui.pageText()).match(/Assumed spread|Most used spread|Most used set/gi) || []).length;
   expect(tags1 < tags0, 'attacker "assumed spread" tag did not go away after changing its nature');
   await close(); });
 
@@ -501,8 +501,9 @@ t('CALC-07', 'result: Sneasler Close Combat into Mega Charizard Y; Garchomp Eart
 
 t('CALC-08', '"Report a mistake" under the result opens feedback pre-filled with the calc', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
-  expect(await ui.sees('Report a mistake'), 'no "Report a mistake"');
-  await ui.tapIn('Report a mistake', 800); const d = (await ui.openDialog()) || (NEW ? await ui.text() : ''); /* Nov 15: the rebuild opens the Feedback page (not a sheet), with 'Sent with what was on screen: ...' */
+  const RM = 'Report a mistake'; /* the Arena (Nov 19): today's wording kept; the brief's 'Put this hit on the table' is a KO tile's action today, not this link (calc.js before the Arena, line 70); Sim asked */
+  expect(await ui.sees(RM), `no "${RM}"`);
+  await ui.tapIn(RM, 800); const d = (await ui.openDialog()) || (NEW ? await ui.text() : ''); /* Nov 15: the rebuild opens the Feedback page (not a sheet), with 'Sent with what was on screen: ...' */
   expect(d && /Mega Charizard Y/.test(d) && /Sneasler/.test(d), 'feedback sheet not pre-filled with the calc: ' + (d || '').slice(0, 200)); await close(); });
 
 t('CALC-09', 'best hits table: your hits on them / their hits on you', async () => {

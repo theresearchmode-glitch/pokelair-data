@@ -1,0 +1,164 @@
+/* ---------- Damage Calc "The Arena" (Sim's prompt Nov 19; mock-ups docs/redesign/arena/) ----------
+   The battle is the control panel: the sky is the weather switch, the ground the terrain switch, the defender's HP bar the answer.
+   Phone: the scene full width on top, the controls under it. Desktop (1024+): the scene on the left, the controls on the right, one screen.
+   The scene is a grid of named areas, so a plate, the verdict, the tag or the swap button can never sit on a Pokemon (each has its own area);
+   the scene's colours are the same picture in day and night (tokens --arn-*). */
+.arn{padding-bottom:var(--s8)}
+.arn .bt-tools{margin-bottom:var(--s4)}
+.arn-grid{display:grid;gap:var(--s3)}
+.arn-scene{--arn-hz:54%;--arn-padh:20px;--arn-padw:150px;position:relative;isolation:isolate;overflow:hidden;container-type:inline-size;display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(0,1fr) 56px;grid-template-rows:64px auto minmax(0,1fr) auto 64px 64px;
+  grid-template-areas:"wx wx wx" "dp ds ds" "as ds ds" "as ap ap" "vd vd sw" "tr tr tr";
+  height:440px;margin:0 calc(var(--gut) * -1);padding:0 var(--s2);color:var(--arn-on-plate)}
+/* the art: sky over ground, the hills on the horizon; marks for each weather and terrain */
+.arn-bg{position:absolute;inset:0;z-index:-1;overflow:hidden}
+.arn-sky{position:absolute;left:0;right:0;top:0;height:var(--arn-hz)}
+.arn-ground{position:absolute;left:0;right:0;bottom:0;top:var(--arn-hz)}
+.arn-ground svg{position:absolute;inset:0;width:100%;height:100%}
+.arn-ground path{fill:none;stroke-width:1;vector-effect:non-scaling-stroke}
+.arn-ground .g path{stroke:var(--arn-grid)}.arn-ground .z path{stroke:var(--arn-spark);stroke-width:2;stroke-linejoin:round;opacity:.7}
+.arn-ground .g,.arn-ground .z{display:none}
+.arn-hills{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:26%}
+.arn-hills .h1{fill:var(--arn-h1)}.arn-hills .h2{fill:var(--arn-h2)}
+.arn-sun{position:absolute;left:24%;bottom:2%;display:none;width:34cqi;aspect-ratio:1;border-radius:50%;translate:-50% 50%;background:radial-gradient(circle,var(--arn-disc) 0 22%,var(--arn-sun-glow) 34%,transparent 68%)}
+.arn-clouds{position:absolute;inset:0;display:none;background:radial-gradient(18cqi 5cqi at 18% 22%,var(--arn-cloud) 0 40%,transparent 72%),radial-gradient(14cqi 4cqi at 26% 18%,var(--arn-cloud) 0 40%,transparent 72%),radial-gradient(20cqi 5cqi at 78% 36%,var(--arn-cloud) 0 38%,transparent 72%),radial-gradient(12cqi 4cqi at 66% 12%,var(--arn-cloud) 0 36%,transparent 72%)}
+.arn-fx{position:absolute;inset:0;pointer-events:none}
+.arn-w-clear{--arn-h1:var(--arn-clear-h1);--arn-h2:var(--arn-clear-h2);--arn-row:var(--arn-row-clear)}.arn-w-clear .arn-sky{background:linear-gradient(180deg,var(--arn-clear-1),var(--arn-clear-2))}.arn-w-clear .arn-clouds{display:block}
+.arn-w-sun{--arn-h1:var(--arn-sun-h1);--arn-h2:var(--arn-sun-h2);--arn-row:var(--arn-row-sun);--arn-disc:var(--arn-sun-disc)}.arn-w-sun .arn-sky{background:linear-gradient(180deg,var(--arn-sun-1),var(--arn-sun-2) 55%,var(--arn-sun-3))}.arn-w-sun .arn-sun{display:block}
+.arn-w-rain{--arn-h1:var(--arn-rain-h1);--arn-h2:var(--arn-rain-h2);--arn-row:var(--arn-row-rain)}.arn-w-rain .arn-sky{background:linear-gradient(180deg,var(--arn-rain-1),var(--arn-rain-2))}
+.arn-w-rain .arn-fx{background:repeating-linear-gradient(104deg,transparent 0 20px,var(--arn-rain-line) 20px 22px,transparent 22px 36px)}
+.arn-w-sand{--arn-h1:var(--arn-sand-h1);--arn-h2:var(--arn-sand-h2);--arn-row:var(--arn-row-sand);--arn-disc:var(--arn-sand-disc);--arn-sun-glow:transparent}.arn-w-sand .arn-sky{background:linear-gradient(180deg,var(--arn-sand-1),var(--arn-sand-2))}.arn-w-sand .arn-sun{display:block;bottom:30%}
+.arn-w-sand .arn-sky::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(174deg,transparent 0 12px,var(--arn-dust) 12px 14px,transparent 14px 28px),repeating-linear-gradient(170deg,transparent 0 30px,var(--arn-dust) 30px 31px,transparent 31px 52px)}
+.arn-w-snow{--arn-h1:var(--arn-snow-h1);--arn-h2:var(--arn-snow-h2);--arn-row:var(--arn-row-snow)}.arn-w-snow .arn-sky{background:linear-gradient(180deg,var(--arn-snow-1),var(--arn-snow-2))}
+.arn-w-snow .arn-sky::after{content:"";position:absolute;inset:0;bottom:12%;background:radial-gradient(circle,var(--arn-flake) 0 2px,transparent 3px) 0 0/36px 40px,radial-gradient(circle,var(--arn-flake) 0 1.5px,transparent 2.5px) 18px 20px/52px 44px,radial-gradient(circle,var(--arn-flake) 0 1px,transparent 2px) 8px 30px/24px 28px}
+.arn-t-none .arn-ground{background:linear-gradient(180deg,var(--arn-none-1),var(--arn-none-2))}.arn-t-none .arn-ground .g{display:inline}
+.arn-t-grassy .arn-ground{background:repeating-linear-gradient(96deg,transparent 0 5px,var(--arn-blade) 5px 6px,transparent 6px 9px),repeating-linear-gradient(84deg,transparent 0 7px,var(--arn-blade) 7px 8px,transparent 8px 13px),linear-gradient(180deg,var(--arn-grassy-1),var(--arn-grassy-2))}
+.arn-t-electric .arn-ground{background:linear-gradient(180deg,var(--arn-electric-1),var(--arn-electric-2))}.arn-t-electric .arn-ground .z{display:inline}
+.arn-t-psychic .arn-ground{background:repeating-radial-gradient(ellipse 140% 110% at 50% 0,transparent 0 16px,var(--arn-ring) 16px 18px),linear-gradient(180deg,var(--arn-psychic-1),var(--arn-psychic-2))}
+.arn-t-misty .arn-ground{background:radial-gradient(40% 30% at 20% 30%,var(--arn-fog),transparent 70%),radial-gradient(36% 26% at 70% 60%,var(--arn-fog),transparent 70%),radial-gradient(30% 24% at 45% 88%,var(--arn-fog),transparent 70%),linear-gradient(180deg,var(--arn-misty-1),var(--arn-misty-2))}
+/* the two rows of five: weather across the top (its tint follows the sky), terrain across the bottom; chosen = white pill */
+.arn-pills{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-self:center;padding:var(--s1);border-radius:999px;background:var(--arn-row)}
+.arn-pills.arn-wxr{grid-area:wx}.arn-pills.arn-trr{grid-area:tr;--arn-row:var(--arn-row-tr)}
+.arn-pills button{display:flex;align-items:center;justify-content:center;gap:var(--s1);min-width:0;min-height:var(--tap);padding:0 2px;border:0;border-radius:999px;background:none;color:var(--arn-on-plate);font:700 var(--t15)/1.15 var(--b);cursor:pointer}
+.arn-pills button[aria-pressed="true"]{background:var(--arn-pill);color:var(--arn-on-pill)}
+.arn-pills .dot{flex:none;width:8px;height:8px;border-radius:50%}
+.dot.t-grassy{background:var(--arn-dot-grassy)}.dot.t-electric{background:var(--arn-dot-electric)}.dot.t-psychic{background:var(--arn-dot-psychic)}.dot.t-misty{background:var(--arn-dot-misty)}
+.arn-pills button:focus-visible,.arn-swap:focus-visible{outline:3px solid var(--arn-arw);outline-offset:2px}
+/* the name plates (a tap opens today's Pokemon picker, laid over the plate) */
+.arn-plate{position:relative;z-index:1;min-width:0;min-height:var(--tap);padding:var(--s2) var(--s3);border-radius:var(--r-l);background:var(--arn-plate);color:var(--arn-on-plate)}
+.arn-plate b{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--s2);font-size:var(--t16);line-height:1.2}
+.arn-plate .mg{flex-basis:100%;font:700 var(--t13)/1.2 var(--b);font-style:normal;color:var(--arn-arw)}
+.arn-plate .arw,.arn-mv.all .arw{flex:none;width:10px;height:8px;background:var(--arn-arw);clip-path:polygon(0 0,100% 0,50% 100%)}
+.arn-plate.arn-dp{grid-area:dp;align-self:start;justify-self:start;width:min(100%,232px);margin-top:var(--s1)}
+.arn-plate.arn-ap{grid-area:ap;align-self:center;justify-self:end;display:flex;align-items:center;max-width:100%;margin:var(--s1) 0}
+.arn-hpb{position:relative;display:block;height:8px;margin:var(--s2) 0 var(--s1);border-radius:var(--r-s);overflow:hidden;background:var(--arn-hp-dmg)}
+.arn-hpb i{position:absolute;top:0;bottom:0;left:0}.arn-hpb .l{background:var(--arn-hp-left)}.arn-hpb .r{background:repeating-linear-gradient(135deg,var(--arn-hp-left) 0 3px,var(--arn-hp-dmg) 3px 6px)}
+.arn-hpt{display:block;font:700 var(--t13)/1.2 var(--b);color:var(--arn-hp-txt)}
+.arn-pick{position:absolute;inset:0;z-index:2;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;font-size:var(--t16)}
+.arn-plate:has(.arn-pick:focus-visible),.arn-mv.all:has(.arn-pick:focus-visible),.arn-f:has(.arn-pick:focus-visible){outline:3px solid var(--plot);outline-offset:2px}
+/* the Pokemon, each standing on its pad (blue attacker, pink defender); the area is the picture's box, nothing else is placed in it */
+.arn-spr{position:relative;display:flex;align-items:flex-end;justify-content:center;min-width:0;min-height:0;contain:size;padding-bottom:calc(var(--arn-padh) / 2);pointer-events:none}
+.arn-spr.d{grid-area:ds}.arn-spr.a{grid-area:as}
+.arn-spr::before{content:"";position:absolute;left:50%;bottom:var(--s1);width:min(92%,var(--arn-padw));height:var(--arn-padh);translate:-50% 0;border:3px solid var(--arn-pad-a);border-radius:50%;background:radial-gradient(ellipse at 50% 40%,var(--arn-pad-hi),var(--arn-pad) 70%);box-shadow:0 0 16px var(--arn-glow-a)}
+.arn-spr.d::before{border-color:var(--arn-pad-d);box-shadow:0 0 16px var(--arn-glow-d)}
+.arn-spr img{position:relative;display:block;width:auto;height:100%;max-width:100%;object-fit:contain;object-position:50% 100%} /* the box is the picture (its own shape), so the overlap check measures the Pokemon, not its area */
+.arn-spr.d img{transform:scaleX(-1)} /* faces the attacker */
+/* the verdict (white slanted plate) and the swap button */
+.arn-verdict{grid-area:vd;align-self:center;min-width:0;margin-right:var(--s2);padding:var(--s1) var(--s5) var(--s1) var(--s3);background:var(--arn-verdict);color:var(--arn-verdict-ink);clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.arn-verdict p{margin:0}.arn-verdict .l1{font:500 var(--t13)/1.3 var(--b);color:var(--arn-verdict-ink2)}.arn-verdict .l1 b{color:var(--arn-verdict-ink)}
+.arn-verdict .l2{font-size:var(--t16);line-height:1.15;text-wrap:balance}.arn-verdict em{font-style:inherit;color:var(--arn-verdict-em)}
+.arn-verdict .l3{font:500 var(--t13)/1.3 var(--b)}
+.arn-swap{grid-area:sw;align-self:center;justify-self:end;display:grid;place-items:center;width:48px;height:48px;padding:0;border:0;border-radius:50%;background:var(--arn-pill);color:var(--arn-on-pill);box-shadow:0 4px 12px var(--arn-shadow);cursor:pointer}
+.arn-swap svg{width:24px;height:24px}.arn-swap path{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.arn-tag{display:none}
+/* ---------- under the scene ---------- */
+.arn-side{display:grid;gap:var(--s3);align-content:start;min-width:0}
+/* five on/off switches: phone three then two */
+.arn-sw{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2)}
+.arn-sw button{grid-column:span 2;display:flex;align-items:center;justify-content:center;gap:var(--s2);min-width:0;min-height:var(--tap);padding:0 var(--s2);border:0;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--arn-line);color:var(--ink);font:600 var(--t15)/1.15 var(--b);font-stretch:87.5%;cursor:pointer}
+.arn-sw button:nth-child(n+4){grid-column:span 3}
+.arn-sw i{flex:none;width:14px;height:14px;border:2px solid currentColor;border-radius:50%;opacity:.8}
+.arn-sw button[aria-pressed="true"]{background:var(--arn-fill);box-shadow:none;color:var(--arn-on-fill)}.arn-sw button[aria-pressed="true"] i{border-color:var(--arn-kb-ko);background:var(--arn-kb-ko);opacity:1}
+/* moves 2x2: three of its usual moves and All moves */
+.arn-mvs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}.arn-mvs.odd>:last-child{grid-column:1/-1}
+.arn-mv{position:relative;display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0;min-height:64px;padding:var(--s2) var(--s3) var(--s2) var(--s5);border:0;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 6px 0 0 var(--tc),inset 0 0 0 1px var(--arn-line);color:var(--ink);text-align:left;cursor:pointer}
+.arn-mv .r1,.arn-mv .r2{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;column-gap:var(--s2);width:100%;min-width:0} /* width: a flex column inside a button let the row grow to its words */
+.arn-mv .nm{padding-right:var(--s1);font-size:var(--t16);line-height:1.15;white-space:nowrap;max-width:100%} /* the slanted letters lean past their box; the 4px keeps the last one inside */
+.arn-mv .ty,.arn-mv .d1{display:none}.arn-mv .ty{font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.arn-mv .dm{padding-right:2px;font:600 var(--t15)/1.15 var(--b);color:var(--arn-hit);white-space:nowrap}.arn-mv .dm.u{font-family:var(--u);font-size:var(--t17);font-style:italic;font-weight:900}
+.arn-mv .ko{margin-left:auto;font:600 var(--t13)/1.2 var(--b);color:var(--ink-2);text-align:right;white-space:nowrap}
+.arn-mv.on{background:var(--arn-fill);box-shadow:inset 6px 0 0 var(--tc);color:var(--arn-on-fill)}.arn-mv.on .dm{color:var(--arn-hit-on)}.arn-mv.on .ko,.arn-mv.on .ty{color:inherit}
+.arn-mv.all{display:flex;align-items:center;justify-content:center;background:none;box-shadow:none;border:2px dashed var(--arn-dash);padding:var(--s2);font:600 var(--t15)/1.2 var(--b);color:var(--ink-2)}
+.arn-mv.all span{display:flex;align-items:center;gap:var(--s2)}.arn-mv.all .arw{width:8px;height:6px;background:currentColor}
+.arn-mv:focus-visible,.arn-sw button:focus-visible,.arn-kbbar:focus-visible,.arn-st button:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+/* the two set cards: Attacker (blue top edge), Defender (pink), headed "most used set" */
+.arn-sets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3);align-items:start}
+.arn-set{container-type:inline-size;display:grid;gap:6px;min-width:0;padding:var(--s3);border-top:4px solid var(--arn-edge-a);border-radius:var(--r-l);background:var(--surface)}.arn-set.d{border-top-color:var(--arn-edge-d)}
+.arn-set header{display:flex;align-items:center;gap:var(--s2);min-height:40px}.arn-set header img{flex:none;width:36px;height:36px;object-fit:contain}
+.arn-set header span{display:grid;min-width:0}.arn-set header b{font-size:var(--t17)}.arn-set header small{font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.arn-f{position:relative;display:flex;align-items:center;gap:var(--s2);min-width:0;min-height:var(--tap);padding:0 var(--s3);border-radius:var(--r-m);box-shadow:inset 0 0 0 1.5px var(--arn-line);font:600 var(--t15)/1.2 var(--b);color:var(--ink)}
+.arn-f>.arw{position:absolute;right:var(--s3);top:50%;width:8px;height:6px;translate:0 -50%;background:var(--ink-3);clip-path:polygon(0 0,100% 0,50% 100%);pointer-events:none}
+.arn-f:has(.arn-sel){padding:0}.arn-sel{appearance:none;-webkit-appearance:none;width:100%;min-width:0;min-height:var(--tap);margin:0;padding:0 var(--s6) 0 var(--s3);border:0;border-radius:var(--r-m);background:none;color:inherit;font:inherit;text-overflow:ellipsis;cursor:pointer}
+.arn-sel:disabled{opacity:1;padding-right:var(--s2);cursor:default}.arn-f:has(.arn-sel:disabled)>.arw{display:none}
+.arn-sel:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+.arn-f .lb{flex:1;min-width:0}.arn-f small{font:500 var(--t13)/1.2 var(--b);color:var(--ink-2)}.arn-ov .v{margin-right:var(--s5);font-size:var(--t15)}
+.arn-pts summary{padding-right:var(--s6);list-style:none;cursor:pointer}.arn-pts summary::-webkit-details-marker{display:none}.arn-pts summary:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+.arn-pts[open] summary>.arw{rotate:180deg}
+.arn-ptsbox{display:grid;gap:var(--s2);padding-top:var(--s2)}
+.arn-box{display:grid;gap:var(--s1);font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.arn-box select{width:100%;min-height:var(--tap);padding:0 var(--s3);border:0;border-radius:var(--r-m);box-shadow:inset 0 0 0 1.5px var(--arn-line);background:var(--surface);color:var(--ink);font:600 var(--t15)/1 var(--b)}
+.arn-ptsbox .fine{margin:0}
+.arn-st{padding-right:var(--s1)}.arn-st .ctl{display:flex;align-items:center;gap:var(--s1)}
+.arn-st button{display:grid;place-items:center;width:var(--tap);height:var(--tap);padding:0;border:0;border-radius:var(--r-m);background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink);font:700 var(--t20)/1 var(--b);cursor:pointer}
+.arn-st button:disabled{opacity:.35;cursor:default}
+.arn-st output{min-width:32px;text-align:center;font-size:var(--t17)}
+/* a card narrower than the stage row: its name on its own line over minus, value, plus */
+@container (max-width:247.98px){.arn-st{flex-wrap:wrap;row-gap:0;padding:var(--s1) var(--s1) var(--s1) var(--s3)}.arn-st .lb{flex-basis:100%;padding-top:var(--s1)}.arn-st .ctl{flex:1;justify-content:space-between}}
+/* the KO Board bar: one tap opens today's board under it */
+.arn-kb>summary{list-style:none}.arn-kb>summary::-webkit-details-marker{display:none}
+.arn-kbbar{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"t chev" "c chev" "bar chev";column-gap:var(--s4);row-gap:var(--s1);min-height:var(--tap);padding:var(--s3) var(--s4);border-radius:var(--r-l);background:var(--arn-fill);color:var(--arn-on-fill);cursor:pointer}
+.arn-kbbar .t{grid-area:t;font-size:var(--t17);text-wrap:balance}.arn-kbbar .c{grid-area:c;font:500 var(--t13)/1.5 var(--b)}
+.arn-kbbar .bar{grid-area:bar;display:flex;height:6px;margin-top:var(--s1);border-radius:var(--r-s);overflow:hidden}
+.arn-kbbar .bar .ko{background:var(--arn-kb-ko)}.arn-kbbar .bar .can{background:repeating-linear-gradient(135deg,var(--arn-kb-ko) 0 4px,var(--arn-kb-sv) 4px 8px)}.arn-kbbar .bar .sv{background:var(--arn-kb-sv)}
+.arn-kbbar .chev{grid-area:chev;align-self:center;font:700 var(--t24)/1 var(--b);font-style:normal}.arn-kb[open] .chev{rotate:90deg}
+.arn-kbin .dc2-kb{margin-top:var(--s2)}.arn-kbin .dc2-kbh h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* the links and the notes on this hit (today's Details) */
+.arn-links{display:flex;flex-wrap:wrap;align-items:center;column-gap:var(--s6)}
+.arn-links .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
+.arn-notes{flex:0 1 auto}.arn-notes[open]{flex-basis:100%}.arn-notes summary{display:flex;align-items:center;gap:var(--s2);min-height:var(--tap);list-style:none;cursor:pointer;font:600 var(--t15)/1.3 var(--b);color:var(--ink-2)}
+.arn-notes summary::-webkit-details-marker{display:none}.arn-notes .chev{font:700 var(--t20)/1 var(--b);font-style:normal}.arn-notes[open] .chev{rotate:90deg}
+.arn-notesin p{margin:0 0 var(--s2);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.arn-notesin p b{color:var(--ink)}.arn-notesin .dc2-set span{display:inline}
+/* narrow phones (under 380): the rows' words one step smaller so five fit across; the switches may wrap to two lines */
+@media (max-width:439.98px){.arn-sw button{gap:6px;padding:0 6px;font-size:var(--t13)}.arn-sw i{width:12px;height:12px}}
+/* narrow phones (under 380): the set cards' own padding and picture give way so every row and the stage steps stay inside the card */
+@media (max-width:379.98px){.arn-set{padding:var(--s2)}.arn-set header img{display:none}.arn-set header b{font-size:var(--t15)}.arn-st .ctl{gap:0}.arn-st output{min-width:24px}.arn-f{padding:0 var(--s2)}.arn-sel{padding-left:var(--s2)}.arn-f .lb{font-size:var(--t13)}}
+@media (max-width:379.98px){.arn-mv .dm.u{font-size:var(--t15)}}
+@media (max-width:359.98px){.arn-sw i{display:none}} /* 320-359: the pressed fill alone says on; the label keeps one line beside its neighbours */
+@media (max-width:379.98px){.arn-pills button{font-size:var(--t13)}.arn-pills .dot{width:6px;height:6px}.arn-sw button{font-size:var(--t13);gap:var(--s1);padding:0 var(--s1)}.arn-sw i{width:12px;height:12px}
+  .arn-plate b{font-size:var(--t15)}.arn-mv{padding-left:var(--s4)}.arn-mv .nm{font-size:var(--t15)}}
+/* tablets (700-1023): the phone's arrangement with more room; the scene keeps the page's gutters and round corners */
+@media (min-width:700px){.arn-scene{--arn-padh:28px;--arn-padw:220px;height:540px;margin:0;padding:0 var(--s3);border-radius:var(--r-xl);grid-template-columns:minmax(0,1.12fr) minmax(0,1fr) 64px;grid-template-rows:72px auto minmax(0,1fr) auto 72px 72px}
+  .arn-plate b{font-size:var(--t20)}.arn-plate.arn-dp{width:min(100%,280px)}.arn-verdict .l2{font-size:var(--t22)}.arn-verdict .l1{font-size:var(--t15)}
+  .arn-pills{justify-self:start;width:min(100%,560px)}.arn-sw button{padding:0 var(--s3);font-stretch:normal}} /* tablets and desktop keep the phone's 3 then 2 (as drawn): a wrapping row left one alone (4+1, 2+2+1) */
+/* desktop (1024+): the scene left, the controls right, the whole calculator on one 1440x900 screen. In the scene the KO words get the
+   plate upper left, the damage a separate black tilted tag in open sky (its own row, clear of both Pokemon), the swap beside the
+   attacker's plate */
+@media (min-width:1024px){
+  .arn-grid{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:var(--s8);align-items:start}
+  .arn-scene{--arn-hz:58%;--arn-padh:36px;--arn-padw:280px;height:clamp(560px,calc(100svh - 176px),720px);padding:0 var(--s4);
+    grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) 64px;grid-template-rows:80px auto auto minmax(0,1fr) auto 80px;
+    grid-template-areas:"wx wx wx" "vd dp dp" "tg tg tg" "as ds ds" "as ap sw" "tr tr tr"} /* the tag has its own row: it never reaches either Pokemon whatever the width or the Pokemon */
+  .arn-plate.arn-dp{justify-self:end;width:min(100%,264px);margin-top:0}.arn-plate b{font-size:var(--t22)}
+  .arn-verdict{align-self:start;margin:0;padding:var(--s3) var(--s8) var(--s3) var(--s5)}.arn-verdict .l1{display:none}.arn-verdict.notag .l1{display:block}.arn-verdict .l2{font-size:var(--t26);line-height:1.1}
+  .arn-tag{grid-area:tg;display:grid;justify-self:start;align-self:center;margin:var(--s6) 0 var(--s6) var(--s6);padding:var(--s2) var(--s5) var(--s3);background:var(--arn-tag);color:var(--arn-on-tag);rotate:var(--tilt);box-shadow:0 8px 24px var(--arn-shadow)}
+  .arn-tag small{font:700 var(--t17)/1.2 var(--b);color:var(--arn-tag-mv)}.arn-tag b{font-size:var(--d-arntag);line-height:1;white-space:nowrap}
+  .arn-swap{align-self:center}
+  .arn-side{gap:var(--s2)}
+  .arn-mv .d1,.arn-mv .ty{display:inline}.arn-mv .d2{display:none}.arn-mv .ko{margin-left:0}
+  .arn-spr.d img{max-height:var(--arn-dmax)}.arn-scene{--arn-dmax:min(100%,300px)}
+  .arn-mv{min-height:64px}.arn-set{padding:var(--s3) var(--s3) var(--s3)}.arn-set{gap:6px}
+  .arn-kbbar .t{font-size:var(--t20)}}
+@media (min-width:1024px) and (max-width:1279.98px){.arn-grid{gap:var(--s5)}.arn-sw button{gap:6px;padding:0 6px;font-stretch:87.5%}.arn-mv .nm{font-size:var(--t15)}.arn-plate b{font-size:var(--t20)}.arn-verdict .l2{font-size:var(--t22)}}
+/* desktop with a mouse (C8's 44x44 is for touch): the stage steps 36 wide, so the stage row keeps one line in a 220px card */
+@media (min-width:1024px) and (pointer:fine){.arn-st button{width:36px}.arn-st output{min-width:28px}
+  @container (min-width:220px){.arn-st{flex-wrap:nowrap;padding:0 var(--s1) 0 var(--s3)}.arn-st .lb{flex-basis:auto;padding-top:0}.arn-st .ctl{flex:none}}}

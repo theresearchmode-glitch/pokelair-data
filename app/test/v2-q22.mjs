@@ -8,7 +8,8 @@ import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') + msg); if (!c) fails.push(msg); };
 const open = async (W, touch) => { const c = await b.newContext({viewport: {width: W, height: 900}, hasTouch: touch, isMobile: touch}), p = await c.newPage();
-  await p.addInitScript(() => { window.__PL_TEST = 1; }); await p.goto('file://' + PAGE + '#calc', {timeout: 90000}); await p.waitForTimeout(2500); return {c, p}; };
+  await p.addInitScript(() => { window.__PL_TEST = 1; }); await p.goto('file://' + PAGE + '#calc', {timeout: 90000}); await p.waitForTimeout(2500);
+  /* the Arena (Nov 19): the board sits behind the KO Board bar, one tap away; open it first */ await p.locator('.arn-kb > summary').click(); await p.waitForTimeout(800); return {c, p}; };
 // the visible label (any element whose class names a tip, or a tooltip role) and where it sits
 const label = p => p.evaluate(() => { const el = [...document.querySelectorAll('.dc2-tip,[role="tooltip"]')].find(x => { const r = x.getBoundingClientRect(), s = getComputedStyle(x);
     return r.width > 0 && r.height > 0 && s.visibility !== 'hidden' && +s.opacity > 0; });

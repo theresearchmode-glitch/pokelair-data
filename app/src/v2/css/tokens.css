@@ -94,6 +94,29 @@
   /* Damage Calc 'Their Side' (Nov 14): the lit Sun field card, ink on lit field cards, the table surface and its grid, the move card face, the KO tint */
   --wx-sun:#E3A51C;--wx-sun-hi:#F2C44D;--tr-electric:#F4DC3C;--on-wx:#1C1708;--table:rgba(23,22,26,.035);--table-line:rgba(23,22,26,.06);--table-edge:rgba(23,22,26,.12);--mvc-face:#FFFFFF;--mvc-ink:#17161A;--mvc-sub:#5E5A66;--ko-tint:rgba(217,58,58,.10);--hp-left:#2DA84A;
   --card-face-1:#FFFFFF;--card-face-2:#ECEAF2;--card-ink:#17161A;--card-giant:rgba(23,22,26,.11);--card-line:rgba(23,22,26,.035);--card-sheen:rgba(255,255,255,.55);--card-edge-mid:#FFFFFF;--card-glow:.16;--card-shade:rgba(30,20,50,.18);
+  /* Damage Calc 'The Arena' (Nov 19; mock-ups docs/redesign/arena/). The scene (skies, hills, grounds, weather and terrain marks, the dark name
+     plates, the white pills and verdict, the pads, the tilted damage tag) is one picture in day and night alike: a scene, not page chrome.
+     Text: white on the plates and rows, ink on the white pills and verdict (17:1); the HP-left text on the plate 10.8:1 */
+  --arn-plate:rgba(18,17,24,.86);--arn-on-plate:#FFFFFF;--arn-pill:#FFFFFF;--arn-on-pill:#17161A;--arn-arw:#62BEF7;
+  --arn-hp-left:#2FB55A;--arn-hp-dmg:#E8364F;--arn-hp-txt:#8EE6A6;
+  --arn-pad:#2A2638;--arn-pad-hi:#4A4560;--arn-pad-a:#2E9BF0;--arn-pad-d:#E8364F;--arn-glow-a:rgba(46,155,240,.55);--arn-glow-d:rgba(232,54,79,.55);
+  --arn-verdict:#FFFFFF;--arn-verdict-ink:#17161A;--arn-verdict-ink2:#55515C;--arn-verdict-em:#C41E35;
+  --arn-tag:#121118;--arn-on-tag:#FFFFFF;--arn-tag-mv:#F2C44D;--arn-shadow:rgba(10,8,20,.35);
+  --arn-clear-1:#2F7FD6;--arn-clear-2:#9CCBF2;--arn-clear-h1:#4F79B0;--arn-clear-h2:#86A9D3;--arn-cloud:rgba(255,255,255,.82);--arn-row-clear:rgba(12,32,70,.72);
+  --arn-sun-1:#E9661A;--arn-sun-2:#F5962C;--arn-sun-3:#FFD08A;--arn-sun-disc:rgba(255,244,214,.96);--arn-sun-glow:rgba(255,214,140,.55);--arn-sun-h1:#D9772D;--arn-sun-h2:#EC9A4C;--arn-row-sun:rgba(70,32,10,.66);
+  --arn-rain-1:#1C2433;--arn-rain-2:#4A556B;--arn-rain-h1:#2B3343;--arn-rain-h2:#3A4558;--arn-rain-line:rgba(220,230,255,.3);--arn-row-rain:rgba(8,10,18,.66);
+  --arn-sand-1:#9A6A33;--arn-sand-2:#DDB880;--arn-sand-h1:#A47437;--arn-sand-h2:#C29556;--arn-dust:rgba(255,236,200,.3);--arn-sand-disc:rgba(255,238,200,.42);--arn-row-sand:rgba(60,34,10,.66);
+  --arn-snow-1:#7C98B7;--arn-snow-2:#DCE6EF;--arn-snow-h1:#F4F7FA;--arn-snow-h2:#CBD8E6;--arn-flake:rgba(255,255,255,.95);--arn-row-snow:rgba(26,44,72,.74);
+  --arn-none-1:#2E2C3E;--arn-none-2:#15141D;--arn-grid:rgba(214,218,255,.18);
+  --arn-grassy-1:#3F9C48;--arn-grassy-2:#1B5824;--arn-blade:rgba(220,255,200,.18);
+  --arn-electric-1:#6E5813;--arn-electric-2:#2C2208;--arn-spark:#F4DC3C;
+  --arn-psychic-1:#A2318F;--arn-psychic-2:#4A1446;--arn-ring:rgba(255,200,240,.2);
+  --arn-misty-1:#D9A0C8;--arn-misty-2:#9A6290;--arn-fog:rgba(255,242,250,.5);
+  --arn-row-tr:rgba(14,12,20,.66);--arn-dot-grassy:#3FCB5A;--arn-dot-electric:#F4C93C;--arn-dot-psychic:#E0509A;--arn-dot-misty:#F2A6C8;
+  /* under the scene (these follow the theme): the filled state (chosen move, switch on, the KO Board bar) is the page's ink; the chosen
+     move's damage in pink on it (day 6.9:1 on ink, night 5.0:1 on the light fill); field and pill outlines; the KO bar's parts */
+  --arn-fill:var(--ink);--arn-on-fill:var(--bg);--arn-hit:var(--plot-text);--arn-hit-on:#F58DA1;--arn-line:rgba(23,22,26,.2);--arn-dash:rgba(23,22,26,.36);
+  --arn-kb-ko:#E8364F;--arn-kb-sv:#2FB55A;--arn-edge-a:var(--logo-blue);--arn-edge-d:var(--logo-pink);--d-arntag:clamp(34px,6.4cqi,64px);
   color-scheme:light}
 :root[data-theme="night"]{
   --bp-paper:transparent;--bp-grid:#62bef712;--bp-grid5:#62bef724;--bp-ink:#62bef7;
@@ -136,6 +159,7 @@
   --lit-edge:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.35);
   --grain:.05;--score-ink:#D6D1CA;
   --plate-hi:#3E3D56;--plate-lo:#2C2B3D;--main-hi:#63C0F8;--main-lo:#3FA2E2;--band-glow:0 0 22px rgba(79,178,240,.4);--floor-line:rgba(214,218,255,.3);--page-wash:linear-gradient(180deg,#0C0C14 0,#12121C 280px,#191928 450px,#14141F 620px,#12121B 100%);--scrim:rgba(6,6,12,.45);--scrim-deep:rgba(8,8,14,.82);
+  --arn-hit-on:#C41E35;--arn-line:rgba(228,224,236,.2);--arn-dash:rgba(228,224,236,.36); /* the Arena under the scene, night */
   color-scheme:dark}
 @media (max-width:1179.98px){:root{--gut:48px}}
 @media (max-width:699.98px){:root{--gut:16px}}

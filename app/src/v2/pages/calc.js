@@ -1,58 +1,41 @@
+// ---------- Damage Calc, "The Arena" (Sim's prompt Nov 19, mock-ups docs/redesign/arena/) ----------
+// The battle is the control panel: the sky is the weather switch, the ground is the terrain switch, the defender's HP bar is the
+// answer. Every number is today's calc (39-damage-calc-speed.js: calcData, damage, koText, koShort, calcResultNotes, bulkToSurvive,
+// bestHitOn); the state is today's `dc`, and every picker keeps today's id so today's change handler updates it. What opens from a
+// name plate, All moves, a set row and the KO Board is today's picker / board until Sim approves designs for them.
+
+// THE NEW WORDS (Q35 / Q36, waiting on Sim): every new word of the Arena is in this one table, so a "no" is a one-line swap.
+// The long verdict and the short one are today's koText / koShort put in plain words; anything not listed (Focus Sash, Sturdy, Focus
+// Band) keeps today's words.
+V2.ARN_W = {
+  clear: 'Clear', none: 'None', allMoves: 'All moves', mostUsed: 'most used set', estimated: 'estimated set', yours: 'your set',
+  report: 'Report a Mistake', how: 'How the Calc Works', notes: 'Notes on this hit',
+  kbMine: 'KO Board: your six against the top 30', kbTheirs: 'KO Board: the top 30 against your six', kbEmpty: 'KO Board: add your six on My Team',
+  hpLeft: 'HP left', pts: 'pts', stage: 'stage', attacker: 'Attacker', defender: 'Defender', pick: 'Pick a damaging move',
+  N: ['', 'One', 'Two', 'Three', 'Four', 'Five', 'Six', 'Seven', 'Eight', 'Nine', 'Ten'],
+  // today's koText -> plain words; <em> is the chance, drawn in pink
+  long(t) { const W = V2.ARN_W, sfx = (t.match(/ \(Focus Band.*$/) || [''])[0], s = t.slice(0, t.length - sfx.length); let m, o = null;
+    if (s === 'Guaranteed OHKO') o = '<em>Knocks it out</em>';
+    else if ((m = /^(\d+)% chance to OHKO$/.exec(s))) o = `<em>${m[1]}% chance</em> to knock it out`;
+    else if (s === 'Guaranteed 2HKO') o = 'Two hits to knock it out';
+    else if ((m = /^(\d+)% chance to 2HKO$/.exec(s))) o = `<em>${m[1]}% chance</em> to knock it out in two hits`;
+    else if (s === 'Possible 2HKO') o = 'Two hits may knock it out';
+    else if (s === 'Guaranteed 3HKO') o = 'Three hits to knock it out';
+    else if ((m = /^(\d+)HKO or worse$/.exec(s))) o = `${W.N[+m[1]] || m[1]} hits or more`;
+    return o ? o + V2.esc(sfx) : V2.esc(t); },
+  // today's koShort -> the move buttons' short verdict
+  short(t) { let m; if (t === 'OHKO') return 'Knocks out'; if ((m = /^OHKO (\d+)%$/.exec(t))) return m[1] + '% KO'; if (t === '2HKO') return 'Two hits';
+    if ((m = /^2HKO (\d+)%$/.exec(t))) return `Two hits ${m[1]}%`; if (t === '2HKO?') return 'Two hits?'; if (t === '3HKO') return 'Three hits';
+    if ((m = /^(\d+)HKO\+$/.exec(t))) return m[1] + '+ hits'; if (t === 'no effect') return 'No effect'; return t; }
+};
+V2.DC_WX = [['', V2.ARN_W.clear], ['sun', 'Sun'], ['rain', 'Rain'], ['sand', 'Sand'], ['snow', 'Snow']];
+V2.DC_TR = [['', V2.ARN_W.none], ['grassy', 'Grassy'], ['electric', 'Electric'], ['psychic', 'Psychic'], ['misty', 'Misty']];
 // audit #13 (Nov 15): a Mega always holds its stone; the set line names it instead of 'No item' (today's stoneFor, 19-showdown-paste.js)
 V2.dcStone = p => { try { return p && /-Mega/.test(p.n) && typeof stoneFor === 'function' ? stoneFor(p) || '' : ''; } catch (e) { return ''; } };
-// ---------- Damage Calc, "Their Side" (Nov 14; Sim's pick, brief docs/rebuild/calc/BRIEF.md, pictures beside it) ----------
-// A card duel: both Pokemon are the info sheet's Card, the attacker's set moves are a hand of move cards, the move in play lies
-// on the table, weather and terrain are field cards, the five conditions are tokens. The KO Board is "their side": on desktop
-// it's laid out on the table around the defender; on phones it's its own section under the table. Every number is today's
-// calc (39-damage-calc-speed.js calcData, calcResultNotes, calcNoResultText, damage, koText, bestHitOn, bulkToSurvive);
-// the state is today's `dc`, and the pickers and set boxes keep today's ids so today's change handler updates it.
-V2.DC_PAT = {Fighting: 'burst', Fire: 'burst', Electric: 'burst', Dragon: 'burst', Poison: 'drops', Water: 'drops', Grass: 'drops', Bug: 'drops', Fairy: 'drops',
-  Normal: 'rings', Psychic: 'rings', Ghost: 'rings', Flying: 'rings', Ice: 'shards', Rock: 'shards', Steel: 'shards', Ground: 'shards', Dark: 'shards'};
-V2.DC_WX = [['', 'None'], ['sun', 'Sun'], ['rain', 'Rain'], ['sand', 'Sand'], ['snow', 'Snow']];
-V2.DC_TR = [['', 'None'], ['grassy', 'Grassy'], ['electric', 'Electric'], ['psychic', 'Psychic'], ['misty', 'Misty']];
-V2.DC_WXC = {sun: 'var(--wx-sun)', rain: 'var(--ty-Water)', sand: 'var(--ty-Ground)', snow: 'var(--ty-Ice)', grassy: 'var(--ty-Grass)', electric: 'var(--tr-electric)', psychic: 'var(--ty-Psychic)', misty: 'var(--ty-Fairy)'};
 V2.dcPct = r => `${dmgP(100 * r.min / r.hp)}–${dmgP(100 * r.max / r.hp)}%`;
-// one move's own result against the defender on the table (same sides and field as the move in play)
+// one move's own result against the defender (same sides and field as the move in play)
 V2.dcHit = (C, m) => { if (!m) return null; try { const ord = dcOrder(C.A, C.D, m, dc.weather, dc.terrain);
   return damage({...C.opt, move: m, spread: m.name === dc.mv ? C.spread : !!m.spread, atkLast: !!(ord && ord.last)}); } catch (e) { return null; } };
-V2.dcBar = (r, cls) => { if (!r || !r.hp) return ''; const lo = Math.min(100, 100 * r.min / r.hp), hi = Math.min(100, 100 * r.max / r.hp);
-  return `<span class="dc2-bar${cls ? ' ' + cls : ''}" aria-hidden="true"><i class="lo" style="width:${lo.toFixed(1)}%"></i><i class="hi" style="left:${lo.toFixed(1)}%;width:${(hi - lo).toFixed(1)}%"></i></span>`; };
-
-// a Pokemon on the table: the info sheet's Card with its role, a picker on its name, "nature, ability" and the spread tag
-V2.dcPoke = (X, role, id) => { const E = V2.esc, n = X.p.n, d = V2.disp(n);
-  const tag = X.src && X.src !== 'yours' ? `<span class="dc2-tag" title="${X.src === 'estimated' ? 'No spread data: points and nature are estimated' : 'Most common spread (or your nature on it); change it in the set below to match yours'}">${X.src === 'estimated' ? 'estimated' : 'most used'} spread</span>` : '';
-  const nameH = `<h2 class="u">${V2.nameHtml(d)}<i class="dc2-arw" aria-hidden="true"></i></h2>`;
-  const sub = `<p class="dc2-na">${E(X.nat)}, ${E(X.ability)}</p>${tag}`;
-  return `<div class="dc2-pc ${role.toLowerCase()}">${V2.msCard(X.p, n, nameH, sub)}<span class="dc2-role" aria-hidden="true">${role}</span><select class="dc2-pick" id="${id}" aria-label="${role}: ${E(d)}. Choose another Pokémon">${monOptions(n)}</select></div>`; };
-
-// a move card: a small Card in its type colour with its own range, KO text and HP bar (the one in play lies on the table)
-V2.dcMove = (C, m, play) => { const E = V2.esc, r = play ? C.r : V2.dcHit(C, m), t = (r && r.type) || m.type, pat = V2.DC_PAT[t] || 'rings';
-  const none = r && r.max === 0, cat = m.cat === 2 ? 'Special' : m.cat === 1 ? 'Physical' : 'Status';
-  const res = !r ? `<span class="ko">${E(m.cat ? 'Not calculated' : 'No damage')}</span>` : none ? `<span class="rg u">No effect</span><span class="ko">${E(r.fail ? r.fail + '.' : `${V2.disp(C.D.p.n)} is immune to ${r.type}.`)}</span>`
-    : `<span class="rg u">${V2.dcPct(r)}</span><span class="ko">${E(koText(r))}</span>`;
-  const body = `<span class="pw u" aria-hidden="true">${m.bp > 1 ? m.bp : ''}</span><span class="np-type" style="--tc:var(--ty-${t})">${E(t)}</span><b class="nm u">${E(m.name)}</b><small class="cat"><i class="${cat.toLowerCase()}" aria-hidden="true"></i>${cat}${m.bp > 1 ? ` · ${m.bp} power` : ''}</small><span class="out">${res}</span>${none ? '' : V2.dcBar(r)}`;
-  if (play) return `<div class="dc2-mv play pat-${pat}${none ? ' none' : ''}" style="--tc:var(--ty-${t})"><span class="sheen" aria-hidden="true"></span>${body}</div>`;
-  return `<button type="button" class="dc2-mv pat-${pat}${none ? ' none' : ''}" style="--tc:var(--ty-${t})" data-dcmv="${E(m.name)}" aria-label="Use ${E(m.name)}: ${r ? (none ? 'no effect' : V2.dcPct(r) + ', ' + koText(r)) : 'not calculated'}">${body}</button>`; };
-// "Other moves": a face-down card; its picker holds every damaging move it learns (today's move box, id dcMv)
-V2.dcOther = (C) => { const E = V2.esc, mv = C.mvs;
-  return `<div class="dc2-mv back"><span class="pw u" aria-hidden="true">+</span><b class="nm u">Other moves</b><small class="cat">Every damaging move it learns</small><select class="dc2-pick" id="dcMv" aria-label="Move: ${E(dc.mv || 'none')}. Choose any move">${mv.pop.length ? `<optgroup label="Its set">${mv.pop.map(m => `<option${m.name === dc.mv ? ' selected' : ''}>${E(m.name)}</option>`).join('')}</optgroup>` : ''}<optgroup label="Other moves">${mv.rest.map(m => `<option${m.name === dc.mv ? ' selected' : ''}>${E(m.name)}</option>`).join('')}</optgroup></select></div>`; };
-// weather / terrain field cards: label, value, five pips; a picker over the card
-V2.dcField = (kind) => { const E = V2.esc, L = kind === 'w' ? V2.DC_WX : V2.DC_TR, cur = kind === 'w' ? dc.weather || '' : dc.terrain || '', i = Math.max(0, L.findIndex(x => x[0] === cur)), lab = kind === 'w' ? 'Weather' : 'Terrain';
-  return `<div class="dc2-fc ${kind === 'w' ? 'wx' : 'ter'}${cur ? ' lit' : ''}" style="${cur ? `--fc:${V2.DC_WXC[cur]}` : ''}"><span class="lab">${lab}</span><b class="u">${E(L[i][1])}</b><span class="pips" aria-hidden="true">${L.map((x, j) => `<i${j === i ? ' class="on"' : ''}></i>`).join('')}</span>
-    <select class="dc2-pick" data-dcfield="${kind}" aria-label="${lab}: ${E(L[i][1])}. Choose">${L.map(([k, t]) => `<option value="${k}"${k === cur ? ' selected' : ''}>${t === 'None' ? `No ${lab.toLowerCase()}` : t}</option>`).join('')}</select></div>`; };
-// every token in two even lines, so no label sits on one line beside two-line neighbours (polish: uneven at 480)
-V2.dcTokens = (C) => `<div class="dc2-tok" role="group" aria-label="In play">${[['spread', 'Hits both', 'foes'], ['screen', 'Screen', 'up'], ['hh', 'Helping', 'Hand'], ['fg', 'Friend', 'Guard'], ['crit', 'Critical', 'hit']].map(([k, a, b]) => `<button type="button" data-dct="${k}" aria-pressed="${k === 'spread' ? !!C.spread : !!dc[k]}"><span>${a}</span> <span>${b}</span></button>`).join('')}</div>`;
-
-// the result: the range big, the move line, the KO text on a plate in the move's type colour, the damage bar, HP and effectiveness
-V2.dcResult = (C) => { const E = V2.esc, r = C.r, mv = C.mv, t = (r && r.type) || (mv && mv.type) || 'Normal';
-  const wx = {sun: 'Sun', rain: 'Rain', sand: 'Sand', snow: 'Snow'}[dc.weather], line = [mv ? mv.name : '', wx || '', C.spread ? 'Hits both foes' : ''].filter(Boolean).join(' · ');
-  if (!mv) return `<section class="dc2-res empty"><p class="tm-sub">Pick a damaging move.</p></section>`;
-  if (!r) return `<section class="dc2-res empty" style="--tc:var(--ty-${t})"><p class="dc2-line"><i aria-hidden="true"></i>${E(line)}</p><p class="tm-sub">${calcNoResultText(mv)}</p></section>`;
-  if (r.max === 0) return `<section class="dc2-res" style="--tc:var(--ty-${t})"><b class="dc2-num u">No effect</b><div class="dc2-side"><p class="dc2-line"><i aria-hidden="true"></i>${E(line)}</p><p class="dc2-hp">${r.fail ? E(r.fail) + '.' : `${E(V2.disp(C.D.p.n))} is immune to ${E(r.type)}.`}</p></div></section>`;
-  const eff = r.eff !== 1 ? `${E(r.type)} is ${r.eff >= 4 ? 'super effective twice over' : r.eff >= 2 ? 'super effective' : r.eff <= .25 ? 'resisted twice over' : 'resisted'}` : '';
-  return `<section class="dc2-res" style="--tc:var(--ty-${t})" aria-live="polite"><b class="dc2-num u">${dmgP(100 * r.min / r.hp)}–${dmgP(100 * r.max / r.hp)}<small>%</small></b>
-    <div class="dc2-side"><p class="dc2-line"><i aria-hidden="true"></i>${E(line)}</p><p class="dc2-ko"><b class="u">${E(koText(r))}</b><span class="dc2-hp">${r.min}–${r.max} of ${r.hp} HP${r.hits > 1 ? ` · ${r.hits} hits` : ''}</span></p>${V2.dcBar(r, 'big')}${eff ? `<p class="dc2-eff">${eff}</p>` : ''}</div></section>`; };
-
 // the KO Board: each top-30 Pokemon with your best hit on it (or, switched, its best hit on your six), surest KO first
 V2.dcKB = () => { const ms = members(), dir = dc.dir === 'theirs' ? 'theirs' : 'mine', key = [dir, S.format, metaVersion, ms.map(m => m.p.n + '/' + (m.item || '') + '/' + (m.ability || '') + '/' + (m.moves || []).map(x => x && x.name).join('+') + '/' + (m.spread ? JSON.stringify(m.spread) : '')).join(',')].join('|');
   if (V2._dcKB && V2._dcKB.key === key) return V2._dcKB.v;
@@ -96,72 +79,107 @@ V2.dcGridHtml = (C) => { if (!C.ms.length) return ''; const E = V2.esc, dir = dc
     <tbody>${G.thr.map((t, i) => `<tr><th scope="row">${V2.mon(t.n, {iw: 28, bare: true})}<span>${V2.rowName(V2.disp(t.n))}</span></th>${G.cells[i].map(cell).join('')}</tr>`).join('')}</tbody></table></div>
     <p class="fine">KOs in one hit: red · can KO: light red · two hits: amber · more: grey. * charges first, may miss, must recharge or is a one-hit KO move.</p></details>`; };
 
-// desktop: the board's two wings beside the defender, 15 tiles each. Each wing's caption counts the tiles in THAT wing (audit Nov 19 #4:
-// the captions counted the whole board, so "18 down in one hit" sat over 15 tiles and "8 can go down · 4 survive" over 15 with 3 KO).
-// A wing with only KO tiles says "down in one hit"; beside other groups the KO count is "KO", as its tiles' stamp, so it fits one line.
-V2.dcWingCap = W => { const c = V2.dcCounts(W), only = (c.ko > 0) + (c.can > 0) + (c.sv > 0) === 1;
-  return [c.ko ? `${c.ko} ${only ? 'down in one hit' : 'KO'}` : '', c.can ? `${c.can} can go down` : '', c.sv ? `${c.sv} survive` : ''].filter(Boolean).join(' · '); };
-V2.dcWings = (C) => { const dir = dc.dir === 'theirs' ? 'theirs' : 'mine'; if (!C.ms.length) return ['', ''];
-  const L = V2.dcKB(), on = dir === 'mine' ? C.D.p.n : C.A.p.n, h = Math.ceil(L.length / 2), WL = L.slice(0, h), WR = L.slice(h);
-  /* all three groups in the left wing (a team with few KOs): the board's name would push the caption to two lines at 1100-1280 and the scene 24px
-     taller (measured), so then the caption is only the counts */
-  const cl = V2.dcWingCap(WL), three = cl.split(' · ').length === 3;
-  return [`<div class="dc2-wing l"><p class="cap">${three ? cl : 'The KO Board' + (cl ? ' · ' + cl : '')}</p><div class="dc2-kts">${WL.map(b => V2.dcTile(b, dir, b.n === on)).join('')}</div></div>`,
-    `<div class="dc2-wing r"><p class="cap">${V2.dcWingCap(WR)}</p><div class="dc2-kts">${WR.map(b => V2.dcTile(b, dir, b.n === on)).join('')}</div></div>`]; };
 
-// under the scene: Details (notes, Not counted, Fewest points to always survive, the set readout, Report a mistake, How the calc
-// works) and the two set folds with today's boxes
-V2.dcDetails = (C) => { const E = V2.esc, {A, D, mv, r} = C; let notes = [], nc = [];
+// ---------- the Arena ----------
+// the scene's art: sky (sun, clouds, hills), ground (perspective grid, sparks); every colour is a token, set per weather / terrain in arena-calc.css
+V2.ARN_ART = `<div class="arn-bg" aria-hidden="true"><div class="arn-sky"><i class="arn-sun"></i><i class="arn-clouds"></i>
+  <svg class="arn-hills" viewBox="0 0 400 60" preserveAspectRatio="none"><path class="h2" d="M0 60V30C50 16 110 10 190 22C260 32 320 12 400 20V60Z"/><path class="h1" d="M0 60V44C70 30 150 38 220 46C290 54 350 34 400 38V60Z"/></svg></div>
+  <div class="arn-ground"><svg viewBox="0 0 400 100" preserveAspectRatio="none"><g class="g">${[-200, -120, -40, 40, 120, 200, 280, 360, 440, 520, 600].map(x => `<path d="M200 -30L${x} 100"/>`).join('')}${[5, 13, 24, 38, 56, 78].map(y => `<path d="M0 ${y}H400"/>`).join('')}</g>
+  <g class="z"><path d="M8 18L30 10L44 24L66 14L80 30L104 20"/><path d="M14 62L36 48L50 60L74 44L90 58"/><path d="M120 8L142 18L158 6L182 16L200 4"/><path d="M226 10L250 4L262 16L288 8L304 20"/><path d="M40 88L60 74L78 86L98 70L116 84"/><path d="M150 40L166 30L176 44L194 34"/></g></svg></div>
+  <div class="arn-fx"></div></div>`;
+V2.arnSide = (X, role) => { const W = V2.ARN_W; return X.src === 'yours' ? W.yours : X.src === 'estimated' ? W.estimated : W.mostUsed; };
+V2.arnImg = (n, cls) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img class="${cls || ''}" src="${V2.art(id, true)}" alt="" decoding="async">` : ''; };
+// the defender's plate: name (tap = today's Pokémon picker), the HP bar (green left, pink damage, stripes the roll's part), "x–y% HP left"
+V2.arnHp = r => { if (!r || !r.hp) return {bar: '<span class="arn-hpb" aria-hidden="true"><i class="l" style="width:100%"></i></span>', txt: ''};
+  const lo = Math.min(1, r.min / r.hp), hi = Math.min(1, r.max / r.hp), keep = 100 * (1 - hi), roll = 100 * (hi - lo);
+  const a = Math.max(0, 100 - +dmgP(100 * r.max / r.hp)), b = Math.max(0, 100 - +dmgP(100 * r.min / r.hp));
+  return {bar: `<span class="arn-hpb" aria-hidden="true"><i class="l" style="width:${keep.toFixed(1)}%"></i><i class="r" style="left:${keep.toFixed(1)}%;width:${roll.toFixed(1)}%"></i></span>`, txt: `${a === b ? a : a + '–' + b}% ${V2.ARN_W.hpLeft}`}; };
+V2.arnPlate = (X, role, id, r) => { const E = V2.esc, d = V2.disp(X.p.n), W = V2.ARN_W, hp = role === 'd' ? V2.arnHp(r) : null;
+  return `<div class="arn-plate ${role === 'd' ? 'arn-dp' : 'arn-ap'}"><b class="u" data-arnname="${role}">${d.startsWith('Mega ') ? `<span class="mg">Mega </span>${E(d.slice(5)).replace(/ ([XYZ])$/, '\u00a0$1')}` : E(d)}<i class="arw" aria-hidden="true"></i></b>${hp ? hp.bar + `<span class="arn-hpt">${hp.txt}</span>` : ''}
+    <select class="arn-pick" id="${id}" aria-label="${role === 'd' ? W.defender : W.attacker}: ${E(d)}${hp && hp.txt ? ', ' + E(hp.txt) : ''}. Choose another Pokémon">${monOptions(X.p.n)}</select></div>`; };
+// the verdict: phone two lines ("Heat Wave takes 88–104% of its HP" / the KO in plain words); desktop the KO words alone, with the
+// damage as the big tilted tag in open sky
+V2.arnVerdict = C => { const E = V2.esc, W = V2.ARN_W, r = C.r, mv = C.mv;
+  if (!mv) return {v: `<div class="arn-verdict notag"><p class="l2 u">${W.pick}</p></div>`, tag: ''};
+  if (!r) return {v: `<div class="arn-verdict notag"><p class="l1"><b>${E(mv.name)}</b></p><p class="l3">${calcNoResultText(mv)}</p></div>`, tag: ''};
+  if (r.max === 0) return {v: `<div class="arn-verdict notag"><p class="l1"><b>${E(mv.name)}</b> · No effect</p><p class="l2 u">${r.fail ? E(r.fail) + '.' : `${E(V2.disp(C.D.p.n))} is immune to ${E(r.type)}.`}</p></div>`, tag: ''};
+  return {v: `<div class="arn-verdict"><p class="l1">${E(mv.name)} takes <b>${V2.dcPct(r)}</b> of its HP</p><p class="l2 u">${W.long(koText(r))}</p></div>`,
+    tag: `<p class="arn-tag" aria-hidden="true"><small>${E(mv.name)}</small><b class="u">${V2.dcPct(r)}</b></p>`}; };
+// a move button: type-coloured edge, name, its own damage and short verdict (desktop adds type and power); the chosen one is filled
+V2.arnMove = (C, m) => { const E = V2.esc, W = V2.ARN_W, on = m.name === dc.mv, r = on ? C.r : V2.dcHit(C, m), t = (r && r.type) || m.type;
+  const dmg = !r ? (m.cat ? 'Not calculated' : 'No damage') : r.max === 0 ? 'No effect' : V2.dcPct(r), ko = r && r.max > 0 ? W.short(koShort(r)) : '';
+  const dmH = `<span class="dm${r && r.max > 0 ? ' u' : ''}" aria-hidden="true">${E(dmg)}</span>`; /* phone: under the name beside the verdict; desktop: beside the name (one shown) */
+  return `<button type="button" class="arn-mv${on ? ' on' : ''}" style="--tc:var(--ty-${t})" data-dcmv="${E(m.name)}" aria-pressed="${on}" aria-label="${E(m.name)}: ${E(dmg)}${ko ? ', ' + E(ko) : ''}">
+    <span class="r1"><span class="nm u">${E(m.name)}</span>${dmH.replace('dm', 'dm d1')}</span><span class="r2"><span class="ty">${E(t)}${m.bp > 1 ? ' · ' + m.bp : ''}</span>${dmH.replace('dm', 'dm d2')}${ko ? `<span class="ko">${E(ko)}</span>` : ''}</span></button>`; };
+// "All moves": today's move list (id dcMv: its set, then every damaging move it learns) under a dashed button
+V2.arnAll = C => { const E = V2.esc, mv = C.mvs;
+  return `<div class="arn-mv all"><span>${V2.ARN_W.allMoves}<i class="arw" aria-hidden="true"></i></span><select class="arn-pick" id="dcMv" aria-label="${V2.ARN_W.allMoves}: ${E(dc.mv || 'none')}. Choose any move">${mv.pop.length ? `<optgroup label="Its set">${mv.pop.map(m => `<option${m.name === dc.mv ? ' selected' : ''}>${E(m.name)}</option>`).join('')}</optgroup>` : ''}<optgroup label="Other moves">${mv.rest.map(m => `<option${m.name === dc.mv ? ' selected' : ''}>${E(m.name)}</option>`).join('')}</optgroup></select></div>`; };
+// a stage row: names its stat; minus / plus within today's range (-2 to +2)
+V2.arnStage = (who, lab, b) => `<div class="arn-f arn-st" role="group" aria-label="${lab}"><span class="lb">${lab}</span><span class="ctl"><button type="button" data-arnst="${who}" data-d="-1" aria-label="Lower ${lab}"${b <= -2 ? ' disabled' : ''}>−</button><output class="u" id="dc${who === 'a' ? 'A' : 'D'}Bo" aria-live="polite">${b > 0 ? '+' + b : b < 0 ? '−' + -b : '±0'}</output><button type="button" data-arnst="${who}" data-d="1" aria-label="Raise ${lab}"${b >= 2 ? ' disabled' : ''}>+</button></span></div>`;
+V2.arnSel = (h, lab) => `<label class="arn-f"><span class="vh">${lab}</span>${h}<i class="arw" aria-hidden="true"></i></label>`;
+// the two set cards: item, Ability, nature, points, stage (today's ids; the defender's points open HP, Def and Sp. Def)
+V2.arnSets = C => { const E = V2.esc, W = V2.ARN_W, {A, D, mvC, bp_} = C, sel = C.sel, PTS = C.PTS;
+  const spec = mvC && mvC.cat === 2, aStat = bp_ ? 'Def' : spec ? 'Sp. Atk' : 'Atk', defPhys = !mvC || mvC.cat !== 2 || ['Psyshock', 'Psystrike', 'Secret Sword'].includes(mvC.name), dStat = defPhys ? 'Def' : 'Sp. Def';
+  const aPts = `<label class="arn-f arn-ov"><span class="lb">${aStat}${bp_ ? ' (Body Press)' : ''} <small>points</small></span><b class="v">${C.aShown}</b><i class="arw" aria-hidden="true"></i>${sel('dcASp', PTS(C.aShown), String(C.aShown)).replace('<select class="field"', `<select class="arn-pick" aria-label="${aStat} points: ${C.aShown}"`)}</label>`;
+  const ft = A.ability === 'Supreme Overlord' || (C.mv && C.mv.name === 'Last Respects') ? V2.arnSel(sel('dcAFt', [0, 1, 2, 3].map(x => [String(x), `${x} allies fainted`]), String(Math.min(3, dc.fainted || 0))), `Allies fainted (${A.ability === 'Supreme Overlord' ? 'Supreme Overlord: +10% power each' : 'Last Respects: +50 power each'})`) : '';
+  const box = (lab, h) => `<label class="arn-box"><span>${lab}</span>${h}</label>`;
+  const dPts = `<details class="arn-pts" data-dcfold="p"${V2.dcOpen && V2.dcOpen.p ? ' open' : ''}><summary class="arn-f"><span class="lb">HP <b>${D.hpSp}</b> · ${defPhys ? 'Def' : 'SpD'} <b>${defPhys ? D.defSp : D.spdSp}</b> <small>${W.pts}</small></span><i class="arw" aria-hidden="true"></i></summary>
+    <div class="arn-ptsbox">${box('HP points', sel('dcDHp', PTS(D.hpSp), String(D.hpSp)))}${box('Def points', sel('dcDDf', PTS(D.defSp), String(D.defSp)))}${box('Sp. Def points', sel('dcDSd', PTS(D.spdSp), String(D.spdSp)))}<p class="fine">66 points at most in all; 32 in one stat.</p></div></details>`;
+  const card = (k, X, role, rows) => `<section class="arn-set ${k}" aria-label="${role}'s set"><header>${V2.arnImg(X.p.n, 'mini')}<span><b class="u">${role}</b><small>${E(V2.arnSide(X))}</small></span></header>${rows}</section>`;
+  const sl = (h, lab) => V2.arnSel(h.replace('<select class="field"', '<select class="arn-sel"'), lab);
+  return `<div class="arn-sets">${card('a', A, W.attacker, `${sl(C.itemSel('dcAIt', A), 'Item')}${sl(sel('dcAAb', A.p.a, A.ability), 'Ability')}${sl(sel('dcANat', NATURES, A.nat), 'Nature')}${aPts}${ft.replace('<select class="field"', '<select class="arn-sel"')}${V2.arnStage('a', aStat + ' ' + W.stage, A.boost)}`)}
+    ${card('d', D, W.defender, `${sl(C.itemSel('dcDIt', D), 'Item')}${sl(sel('dcDAb', D.p.a, D.ability), 'Ability')}${sl(sel('dcDNat', NATURES, D.nat), 'Nature')}${dPts}${V2.arnStage('d', dStat + ' ' + W.stage, D.boost)}`)}</div>`; };
+// the KO Board bar: one tap away; it opens today's board (both directions, the three groups, every hit's table)
+V2.arnKB = C => { const W = V2.ARN_W, open = V2.dcOpen && V2.dcOpen.k;
+  if (!C.ms.length) return `<details class="arn-kb" data-dcfold="k"${open ? ' open' : ''}><summary class="arn-kbbar"><span class="t u">${W.kbEmpty}</span><i class="chev" aria-hidden="true">›</i></summary><div class="arn-kbin">${V2.dcBoard(C)}</div></details>`;
+  const L = V2.dcKB(), c = V2.dcCounts(L), n = Math.max(1, L.length), dir = dc.dir === 'theirs';
+  return `<details class="arn-kb" data-dcfold="k"${open ? ' open' : ''}><summary class="arn-kbbar"><span class="t u">${dir ? W.kbTheirs : W.kbMine}</span><span class="c">${c.ko} down in one hit · ${c.can} can go down · ${c.sv} survive</span>
+    <span class="bar" aria-hidden="true"><i class="ko" style="width:${(100 * c.ko / n).toFixed(1)}%"></i><i class="can" style="width:${(100 * c.can / n).toFixed(1)}%"></i><i class="sv" style="width:${(100 * c.sv / n).toFixed(1)}%"></i></span><i class="chev" aria-hidden="true">›</i></summary><div class="arn-kbin">${V2.dcBoard(C)}</div></details>`; };
+// notes on this hit (today's Details: HP numbers, KO odds in today's words, effectiveness, notes, Not counted, fewest points to survive, the set readout)
+V2.arnNotes = C => { const E = V2.esc, {A, D, mv, r} = C; let notes = [], nc = [];
   if (mv && r && r.max > 0) { try { const x = calcResultNotes(A, D, mv, r, C.ord, C.ctx); notes = x.t; nc = x.nc; } catch (e) {} }
   let bulk = ''; if (r && r.max > 0) { try { const bs = bulkToSurvive(C.opt); if (bs) bulk = bs.none ? `${E(V2.disp(D.p.n))} can't survive this hit with any spread.` : `Fewest points to always survive: <b>${bs.hp} HP / ${bs.df} ${bs.stat}</b> (${bs.tot} total). ${r.max < r.hp ? 'This spread already survives.' : 'This spread does not.'}`; } catch (e) {} }
   const nt = [A.real || D.real ? 'spreads: most common on the Showdown ladder' : '', A.p.n === 'Aegislash' ? 'Aegislash attacks in Blade Forme (Atk/SpA 140)' : '', D.p.n === 'Aegislash' ? 'Aegislash takes hits in Shield Forme' : '', A.p.formNote || D.p.formNote ? 'Palafin in Hero Form' : '', dc.wSet || dc.tSet || !(dc.weather || dc.terrain) ? '' : 'field set by the Pokémon selected (change it above)'].filter(Boolean);
-  const set = mv ? `<p class="dc2-set"><span>${E(A.p.d || A.p.n)} ${C.aShown} ${C.mvC && C.mvC.cat === 2 ? 'Sp. Atk' : 'Atk'} points ${E(A.nat)}${A.item ? ' ' + E(A.item) : ''}, ${E(dc.mv)}${C.spread ? ' (spread)' : ''}</span><span>vs ${E(D.p.d || D.p.n)} ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${E(D.nat)}${D.item ? ' ' + E(D.item) : ''}</span></p>${nt.length ? `<p class="fine">${E(nt.map(x => x[0].toUpperCase() + x.slice(1)).join('. '))}.</p>` : ''}` : '';
-  const aSp = C.bp_ ? 'Defense points (Body Press)' : C.mvC && C.mvC.cat === 2 ? 'Sp. Atk points' : 'Attack points';
-  const st = (b) => `stat stage ${b > 0 ? '+' : ''}${b}`;
-  const aLine = `${C.aShown} ${C.bp_ ? 'Defense' : C.mvC && C.mvC.cat === 2 ? 'Sp. Atk' : 'Attack'} points · ${E(A.nat)} · ${E(A.item || V2.dcStone(A.p) || 'No item')} · ${E(A.ability)} · ${st(A.boost)}`;
-  const dLine = `${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} Sp. Def points · ${E(D.nat)} · ${E(D.item || V2.dcStone(D.p) || 'No item')} · ${E(D.ability)} · ${st(D.boost)}`;
-  const box = (lab, h) => `<label class="dc2-box"><span>${lab}</span>${h}</label>`, sel = C.sel, PTS = C.PTS;
-  const aBoxes = `${box(aSp, sel('dcASp', PTS(C.aShown), String(C.aShown)))}${box('Nature', sel('dcANat', NATURES, A.nat))}${box('Item', C.itemSel('dcAIt', A))}${box('Ability', sel('dcAAb', A.p.a, A.ability))}${box(C.bp_ ? 'Defense stage (Body Press)' : 'Stat stage (Intimidate = −1)', sel('dcABo', C.boosts, String(A.boost)))}${A.ability === 'Supreme Overlord' || (mv && mv.name === 'Last Respects') ? box(`Allies fainted (${A.ability === 'Supreme Overlord' ? 'Supreme Overlord: +10% power each' : 'Last Respects: +50 power each'})`, sel('dcAFt', [0, 1, 2, 3].map(x => [String(x), String(x)]), String(Math.min(3, dc.fainted || 0)))) : ''}`;
-  const dBoxes = `${box('HP points', sel('dcDHp', PTS(D.hpSp), String(D.hpSp)))}${box('Nature', sel('dcDNat', NATURES, D.nat))}${box('Def points', sel('dcDDf', PTS(D.defSp), String(D.defSp)))}${box('Sp. Def points', sel('dcDSd', PTS(D.spdSp), String(D.spdSp)))}${box('Item', C.itemSel('dcDIt', D))}${box('Ability', sel('dcDAb', D.p.a, D.ability))}${box('Stat stage', sel('dcDBo', C.boosts, String(D.boost)))}`;
-  const fold = (k, who, line, boxes) => `<details class="dc2-fold" data-dcfold="${k}"${V2.dcOpen && V2.dcOpen[k] ? ' open' : ''}><summary><span><b>${E(who)}'s set</b><small>${line}</small></span><i aria-hidden="true">›</i></summary><div class="dc2-boxes">${boxes}</div></details>`;
-  return `<section class="dc2-det"><div class="dc2-dl"><p class="np-eyebrow"><span>Details</span></p>
-      ${notes.length ? `<p>${notes.join(' · ')}</p>` : ''}${nc.length ? `<p>Not counted: ${nc.join('; ')}.</p>` : ''}${bulk ? `<p>${bulk}</p>` : ''}${set}
-      <p class="dc2-links">${V2.FB && V2.FB.ok ? '<a class="np-link" href="#feedback" data-fbmistake="calc">Report a Mistake ›</a>' : ''}<a class="np-link" href="#method">How the Calc Works ›</a></p></div>
-    <div class="dc2-dr">${fold('a', V2.disp(A.p.n), aLine, aBoxes)}${fold('d', V2.disp(D.p.n), dLine, dBoxes)}</div></section>`; };
+  const eff = r && r.max > 0 && r.eff !== 1 ? `${E(r.type)} is ${r.eff >= 4 ? 'super effective twice over' : r.eff >= 2 ? 'super effective' : r.eff <= .25 ? 'resisted twice over' : 'resisted'}` : '';
+  const hpL = r && r.max > 0 ? `<p><b>${V2.dcPct(r)}</b>: ${r.min}–${r.max} of ${r.hp} HP${r.hits > 1 ? ` · ${r.hits} hits` : ''} · ${E(koText(r))}${eff ? ' · ' + eff : ''}</p>` : '';
+  const wx = {sun: 'Sun', rain: 'Rain', sand: 'Sand', snow: 'Snow'}[dc.weather], tr = dc.terrain ? dc.terrain[0].toUpperCase() + dc.terrain.slice(1) + ' Terrain' : '';
+  const set = mv ? `<p class="dc2-set"><span>${E(A.p.d || A.p.n)} ${C.aShown} ${C.mvC && C.mvC.cat === 2 ? 'Sp. Atk' : 'Atk'} points ${E(A.nat)}${A.item ? ' ' + E(A.item) : ''}, ${E(dc.mv)}${C.spread ? ' (spread)' : ''}</span> <span>vs ${E(D.p.d || D.p.n)} ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${E(D.nat)}${D.item ? ' ' + E(D.item) : ''}</span></p>` : '';
+  return `<details class="arn-notes" data-dcfold="n"${V2.dcOpen && V2.dcOpen.n ? ' open' : ''}><summary><span>${V2.ARN_W.notes}</span><i class="chev" aria-hidden="true">›</i></summary><div class="arn-notesin">
+    <p>Level 50 ${S.format === 'doubles' ? 'doubles' : 'singles'} · ${[wx || 'no weather', tr || 'no terrain', C.spread ? 'hits both foes' : ''].filter(Boolean).join(' · ')}</p>${hpL}
+    ${notes.length ? `<p>${notes.join(' · ')}</p>` : ''}${nc.length ? `<p>Not counted: ${nc.join('; ')}.</p>` : ''}${bulk ? `<p>${bulk}</p>` : ''}${set}${nt.length ? `<p class="fine">${E(nt.map(x => x[0].toUpperCase() + x.slice(1)).join('. '))}.</p>` : ''}</div></details>`; };
 
-// each Pokemon fits the room its Card actually has: below the ATTACKER / DEFENDER label and at least 8 px above its name (a Mega's blue
-// "Mega" line counts as part of the name), whatever the card's size or the name's length (Sim's brief 1: clear space under the feet)
-V2.dcFit = () => { /* Nov 16 audit: a long name (Paldean Tauros (Combat)) took the sprite's room and the sprite shrank to a thumbnail under the label; both cards now grow by the same amount so the sprite keeps at least 64px and the two stay level */
-  const pcs = [...document.querySelectorAll('.dc2-pc')]; let extra = 0;
-  pcs.forEach(pc => { const card = pc.querySelector('.ms-card'); if (card) card.style.removeProperty('--ch'); });
-  pcs.forEach(pc => { const card = pc.querySelector('.ms-card'), lab = pc.querySelector('.dc2-role'), h2 = pc.querySelector('.mc-id h2'); if (!card || !lab || !h2) return;
-    const c = card.getBoundingClientRect(), room = (h2.getBoundingClientRect().top - c.top - 13) - (lab.getBoundingClientRect().bottom - c.top + 2); extra = Math.max(extra, Math.ceil(64 - room)); });
-  if (extra > 0) pcs.forEach(pc => { const card = pc.querySelector('.ms-card'); if (card) card.style.setProperty('--ch', (card.offsetHeight + extra) + 'px'); });
-  for (const pc of pcs) { const card = pc.querySelector('.ms-card'), mon = pc.querySelector('.mc-mon'), lab = pc.querySelector('.dc2-role'), h2 = pc.querySelector('.mc-id h2');
-    if (!card || !mon || !lab || !h2) continue; const nm = mon.querySelector('.np-mon'), st = mon.querySelector('.np-mon .st'); [nm, st].forEach(e => e && e.style.removeProperty('--iw')); mon.style.top = '';
-    const c = card.getBoundingClientRect(), top = lab.getBoundingClientRect().bottom - c.top + 2, bottom = h2.getBoundingClientRect().top - c.top - 13;
-    const room = Math.floor(Math.min(bottom - top, c.width - 16)), want = parseFloat(getComputedStyle(mon.querySelector('.np-mon') || mon).getPropertyValue('--iw')) || room;
-    const iw = Math.max(40, Math.min(want, room)); [nm, st].forEach(e => e && e.style.setProperty('--iw', iw + 'px')); mon.style.top = Math.round(top + (bottom - top - iw)) + 'px'; } };
-addEventListener('resize', () => { clearTimeout(V2._dcFitT); V2._dcFitT = setTimeout(() => document.querySelector('.dc2') && V2.dcFit(), 120); });
-V2.pages.calc = {place: 'battle', after() { V2.dcFit(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => document.querySelector('.dc2') && V2.dcFit()); }, draw() { let C; try { C = calcData(); } catch (e) { console.error(e); return `<div class="dc2"><h1 class="vh">Damage Calculator</h1>${V2.battleToolsBar('calc')}<p class="tm-sub">The calc couldn't load. Try again in a moment.</p></div>`; }
-  const set = C.mvs.pop.filter(m => m && m.bp > 0), hand = set.filter(m => m.name !== dc.mv).slice(0, 3), [wl, wr] = V2.dcWings(C);
-  const play = C.mv ? V2.dcMove(C, C.mv, true) : `<div class="dc2-mv play empty"><b class="nm u">Pick a damaging move</b></div>`;
-  return `<div class="dc2"><h1 class="vh">Damage Calculator</h1>${V2.battleToolsBar('calc')}<div class="dc2-top"><p class="np-eyebrow"><span><span class="dc2-bt">Battle · </span>Damage Calculator · level 50 ${S.format === 'doubles' ? 'doubles' : 'singles'}</span></p><a class="np-link" href="#method">How the Calc Works ›</a></div>
-    ${V2.dcResult(C)}
-    <section class="dc2-table" aria-label="The table"><div class="dc2-surface" aria-hidden="true"></div>
-      <!-- keyboard and screen-reader order: attacker, its moves, Swap, defender, the field; every piece is placed on the table by the CSS grid -->
-      ${V2.dcPoke(C.A, 'Attacker', 'dcA')}${play}<div class="dc2-hand" style="--hn:${hand.length + 1}" role="group" aria-label="${V2.esc(V2.disp(C.A.p.n))}'s moves">${hand.map(m => V2.dcMove(C, m)).join('')}${V2.dcOther(C)}</div>
-      <button type="button" class="dc2-swap" id="dcSwap" aria-label="Swap attacker and defender"><i aria-hidden="true">⇄</i><span>Swap</span></button>${V2.dcPoke(C.D, 'Defender', 'dcD')}
-      ${V2.dcField('w')}${V2.dcField('t')}${V2.dcTokens(C)}${wl}${wr}
-    </section>${V2.dcBoard(C)}${V2.dcDetails(C)}</div>`; }};
+V2.pages.calc = {place: 'battle', after() { /* the move names are fitted (V2.fitWords) once the logo font has loaded, as the old hand's were */ if (document.fonts && document.fonts.ready && !V2._arnFont) { V2._arnFont = 1; document.fonts.ready.then(() => { if (document.querySelector('.arn') && V2.fitWords) V2.fitWords(); }); } }, draw() { let C; try { C = calcData(); } catch (e) { console.error(e); return `<div class="dc2 arn"><h1 class="vh">Damage Calculator</h1>${V2.battleToolsBar('calc')}<p class="tm-sub">The calc couldn't load. Try again in a moment.</p></div>`; }
+  const E = V2.esc, W = V2.ARN_W, wx = dc.weather || '', tr = dc.terrain || '', V = V2.arnVerdict(C);
+  const set = C.mvs.pop.filter(m => m && m.bp > 0); let three = set.slice(0, 3); if (dc.mv && !three.some(m => m.name === dc.mv) && C.mv) three = [...three.slice(0, 2), C.mv];
+  const row = (k, L, cur, lab) => `<div class="arn-pills arn-${k}r" role="group" aria-label="${lab}">${L.map(([v, t]) => `<button type="button" ${k === 'wx' ? 'data-dcw' : 'data-dcterr'}="${v}" aria-pressed="${v === cur}"${v === '' ? ` aria-label="${t}: no ${lab.toLowerCase()}"` : ''}>${k === 'tr' && v ? `<i class="dot t-${v}" aria-hidden="true"></i>` : ''}${t}</button>`).join('')}</div>`;
+  const sw = [['spread', 'Hits both foes'], ['screen', 'Screen up'], ['hh', 'Helping Hand'], ['fg', 'Friend Guard'], ['crit', 'Critical hit']];
+  return `<div class="dc2 arn"><h1 class="vh">Damage Calculator · level 50 ${S.format === 'doubles' ? 'doubles' : 'singles'}</h1>${V2.battleToolsBar('calc')}
+  <div class="arn-grid">
+    <section class="arn-scene arn-w-${wx || 'clear'} arn-t-${tr || 'none'}" aria-label="The battle: ${E(V2.disp(C.A.p.n))} attacks ${E(V2.disp(C.D.p.n))}">${V2.ARN_ART}
+      ${row('wx', V2.DC_WX, wx, 'Weather')}
+      ${V2.arnPlate(C.D, 'd', 'dcD', C.r)}<div class="arn-spr d">${V2.arnImg(C.D.p.n)}</div>
+      <div class="arn-spr a">${V2.arnImg(C.A.p.n)}</div>${V2.arnPlate(C.A, 'a', 'dcA')}
+      ${V.v}${V.tag}<button type="button" class="arn-swap" id="dcSwap" aria-label="Swap attacker and defender"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h14m-4-4 4 4-4 4M20 16H6m4-4-4 4 4 4"/></svg></button>
+      ${row('tr', V2.DC_TR, tr, 'Terrain')}
+    </section>
+    <div class="arn-side">
+      <div class="arn-sw" role="group" aria-label="In play">${sw.map(([k, t]) => `<button type="button" data-dct="${k}" aria-pressed="${k === 'spread' ? !!C.spread : !!dc[k]}"><i aria-hidden="true"></i>${t}</button>`).join('')}</div>
+      <div class="arn-mvs${(three.length + 1) % 2 ? ' odd' : ''}" role="group" aria-label="${E(V2.disp(C.A.p.n))}'s moves">${three.map(m => V2.arnMove(C, m)).join('')}${V2.arnAll(C)}</div>
+      ${V2.arnSets(C)}
+      ${V2.arnKB(C)}
+      <div class="arn-links"><a class="np-link" href="#method">${W.how} ›</a>${V2.FB && V2.FB.ok ? `<a class="np-link" href="#feedback" data-fbmistake="calc" aria-label="Report a mistake in this hit">${W.report} ›</a>` : ''}${V2.arnNotes(C)}</div>
+    </div>
+  </div></div>`; }};
 
-// taps: a move card, a KO Board tile; the pickers' changes (today's ids go through today's handler first, then the page redraws)
-document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('.dc2 [data-dcmv],.dc2 [data-dckb]'); if (!t) {
+// taps: a move button, a KO Board tile, a stage step; the pickers' changes (today's ids go through today's handler first, then the page redraws)
+document.addEventListener('click', e => { const s = e.target.closest && e.target.closest('.dc2 [data-arnst]');
+  if (s) { const I = dc.inv[(s.dataset.arnst === 'a' ? 'atk:' + dc.a : 'def:' + dc.d)]; if (I) I.boost = Math.max(-2, Math.min(2, (+I.boost || 0) + +s.dataset.d)); V2.redraw(); return; }
+  const t = e.target.closest && e.target.closest('.dc2 [data-dcmv],.dc2 [data-dckb]'); if (!t) {
     const b = e.target.closest && e.target.closest('.dc2 [data-dcw],.dc2 [data-dct],.dc2 [data-dcdir],.dc2 [data-dcterr],.dc2 #dcSwap'); if (b) setTimeout(() => V2.redraw(), 0); return; }
-  if (t.dataset.dcmv) { dc.mv = t.dataset.dcmv; dc.spread = null; }
+  if (t.dataset.dcmv) { if (dc.mv === t.dataset.dcmv) return; dc.mv = t.dataset.dcmv; dc.spread = null; }
   else if (dc.dir === 'theirs') { dc.a = t.dataset.dckb; dc.d = t.dataset.dckbo; dc.mv = t.dataset.dckbm; dc.spread = null; dc.wSet = dc.tSet = false; }
   else { dc.d = t.dataset.dckb; dc.a = t.dataset.dckbo; dc.mv = t.dataset.dckbm; dc.spread = null; dc.wSet = dc.tSet = false; }
-  V2.redraw(); const tb = document.querySelector('.dc2-res'); if (t.dataset.dckb && tb && tb.getBoundingClientRect().top < 0) tb.scrollIntoView({block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); });
+  V2.redraw(); const sc = document.querySelector('.arn-scene'); if (t.dataset.dckb && sc && sc.getBoundingClientRect().top < 0) sc.scrollIntoView({block: 'start', behavior: V2.smooth()}); });
 /* Q22 A (Sim, Nov 19): on mouse screens a KO tile's name and damage (its spoken label) show in a small label above it on hover or keyboard
    focus; one label for the page, outside the tiles (their cut corners clip anything inside). Escape or leaving hides it; a scroll moves it
    with its tile (focusing a tile off screen scrolls it into view). */
@@ -178,7 +196,5 @@ document.addEventListener('focusin', e => { const t = dcTipOf(e); if (t && V2.dc
 document.addEventListener('focusout', e => { if (dcTipOf(e)) V2.dcTipHide(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') V2.dcTipHide(); });
 addEventListener('scroll', () => { const el = document.querySelector('body > .dc2-tip.show'); if (el) { if (V2.dcTipT && V2.dcTipT.isConnected) V2.dcTipShow(V2.dcTipT); else V2.dcTipHide(); } }, {passive: true}); addEventListener('hashchange', V2.dcTipHide);
-document.addEventListener('change', e => { const t = e.target; if (!t.closest || !t.closest('.dc2')) return;
-  if (t.dataset.dcfield) { if (t.dataset.dcfield === 'w') { dc.weather = t.value; dc.wSet = true; } else { dc.terrain = t.value; dc.tSet = true; } }
-  setTimeout(() => V2.redraw(), 0); });
+document.addEventListener('change', e => { const t = e.target; if (!t.closest || !t.closest('.dc2')) return; setTimeout(() => V2.redraw(), 0); });
 document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('.dc2 [data-dcfold]')) return; V2.dcOpen = V2.dcOpen || {}; V2.dcOpen[d.dataset.dcfold] = d.open; }, true);

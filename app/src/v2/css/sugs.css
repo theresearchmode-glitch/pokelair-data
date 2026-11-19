@@ -159,10 +159,6 @@
    (wash, 10px slant, black plate when on, the lit night edge); the calc's round pills broke the slanted-chip rule */
 .ra-chip{clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
 :root[data-theme="night"] .ra-chip[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
-.dc2-tok button{border:0;border-radius:0;background:color-mix(in srgb,var(--ink) 9%,transparent);color:var(--ink);padding:0 6px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
-.dc2-tok button[aria-pressed="true"]{background:var(--plate);color:var(--on-plate)}
-:root[data-theme="night"] .dc2-tok button[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
-@media (max-width:439.98px){.dc2-tok{grid-template-columns:minmax(0,1.2fr) repeat(4,minmax(0,1fr))}}@media (max-width:399.98px){.dc2-tok{gap:2px}.dc2-tok button{padding:0 4px;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}} /* narrow phones: "Hits both" keeps clear of the slant */
 /* ONE segmented control (Nov 16, one system item 4): Meta's link segments (Ratings / Usage / Sets; Winning Teams / Events / Archetypes)
    take the shell switch's look: flush track, 10px slant, 44px, the lit plate for the page you're on */
 .ra-seg{padding:0;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
@@ -223,9 +219,6 @@
 /* Home corner rows (Nov 16, re-verify #13: at 320 the item dropped lower in short rows, "Lead" broke after a dangling dot): name and item sit together, centred; on narrow phones "Lead" takes its own line without the dot */.ff{grid-template-rows:auto auto;align-content:center}.ff .ff-sep{display:none}.ff .ff-ld{display:block} /* audit v199 #6 (Nov 17): at every width, not only under 420 ('Lead' was cut by the slanted edge at 900 and 1280, and the two lead tiles didn't line up) */
 .ev-counts{display:grid;gap:var(--s3);justify-items:start;margin-top:var(--s6)}
 .ev-mid>.ev-counts{margin-top:0} /* Sim Q33 B: on phones the counts open the block after the latest winner (pages.css .ev-mid sets the room) */
-/* Damage Calc under 380px (Nov 16, re-verify #9): the option pips crossed "WEATHER"/"TERRAIN" (decorative, hidden there); the Swap disc sits beside the sprites, clear of the names; the small move cards use smaller words so nothing runs past their edge */@media (max-width:379.98px){.dc2-fc .pips{display:none}.dc2-swap{align-self:start;margin-top:var(--s10)}.dc2-hand .dc2-mv .nm{font-size:var(--t13)}.dc2-hand .dc2-mv .rg{font-size:var(--t20)}.dc2-hand .dc2-mv{overflow-wrap:normal}.dc2-hand .dc2-mv small{font-size:var(--t13)}}
-@media (max-width:359.98px){.dc2-hand .dc2-mv{padding-inline:6px}.dc2-hand .dc2-mv .rg{font-size:var(--t17)}}
-@media (max-width:379.98px){.dc2-hand .dc2-mv .nm{margin-bottom:var(--s1)}} /* the 13px name clears the number below it */
 /* Build blueprint at 320 (Nov 16, re-verify #11: the score breakdown ran 27px past the frame): the line wraps inside its column */@media (max-width:359.98px){.bp .bp-meas{grid-template-columns:minmax(0,1fr)}.bp .bp-meas .bd-brk{width:auto;min-width:0}}
 @media (max-width:359.98px){.bp .bp-stamp{font-size:var(--t17)}} /* the tilted band stamp stays inside the frame at 320 */
 @media (max-width:379.98px){.us-bench .gs-mon,.us-mates .gs-mon{padding-inline:0}} /* Usage tiles at 320 (re-verify #12): "Basculegion" fits its tile */
@@ -275,11 +268,6 @@ a,button,summary{text-wrap-style:pretty}.sx-info{white-space:nowrap}
 /* nuclear stress test (Nov 16): Usage "How X is played" at three columns put Natures under the long Moves list (that column ~3x the
    others, an empty block on the right); Moves spans two rows and Natures packs in beside it */
 @media (min-width:900px) and (max-width:1279.98px){.us-groups{grid-auto-flow:row dense}.us-groups>.us-bars:first-child{grid-row:span 2}} /* 443 -> 336px tall; at two columns it made things taller, so three only */
-/* nuclear stress test (Nov 16): on the calc table (1024 and up) "Hits both" pressed against its 64px tile's slanted edges; tiles sized to the
-   measured room (132px at 1024, 158 at 1280, 179 at 1440; the old pair ran 3px over at 1024) */
-@media (min-width:1024px) and (max-width:1279.98px){.dc2-tok{column-gap:var(--s1)}}
-@media (min-width:1280px){.dc2-tok{grid-template-columns:repeat(2,72px)}.dc2-tok button{width:72px}}
-@media (min-width:1440px){.dc2-tok{grid-template-columns:repeat(2,76px)}.dc2-tok button{width:76px}}
 @media (max-width:379.98px){.us-bench{--gsw:64px}.us-bench .us-fig{padding-inline:0}.us-bench .us-fig .np-mon{--iw:64px}}
 /* Sim Q2 (Nov 16, A): an Undo inside an open sheet sits at its top, in the Undo bar style, clear of the sheet's close button */
 .np-sheet-undo{flex-wrap:nowrap;margin:0 var(--s12) var(--s4) 0;padding:var(--s2) var(--s2) var(--s2) var(--s4)}.np-sheet-undo>span{flex:1 1 0;text-wrap-style:balance}.np-sheet-undo .np-btn2{flex:none}
@@ -319,8 +307,6 @@ p,li,small{text-wrap-style:pretty}
 /* Nov 16 audit (detector, day and night): white words on the type-coloured tickets, the Events plate and This Week's headline measured 3.6-4.2:1;
    a 15% dark layer under the ticket lines brings every type colour to 4.6:1+ (official tickets are gold with dark ink and stay as they are) */
 .tk:not(.off),.ev-oh,.wk-hl{background:repeating-linear-gradient(135deg,var(--tk-line) 0 1px,transparent 1px 7px),linear-gradient(var(--tk-scrim),var(--tk-scrim)),linear-gradient(115deg,var(--ta),var(--tb))}
-/* the Damage Calc's lit field cards (Grassy, Rain...) faded toward white under white words (3.7:1): the fade now goes slightly darker instead */
-.dc2-fc.lit:not([style*="wx-sun"]){background:linear-gradient(135deg,color-mix(in srgb,var(--fc) 85%,var(--tk-ink)),color-mix(in srgb,var(--fc) 80%,var(--tk-ink)))}
 /* Nov 16 audit (detector pixel contrast, day): the small blue "Mega" above names on Cards read 3.9-4.49:1 over the card art; the deeper blue */
 .mg{--plot-text:var(--plot-text-deep)}
 /* Sim Q4 (Nov 16, recommended): one style for text folds - title, its one-line summary, and the grey › on the right that turns when open.
