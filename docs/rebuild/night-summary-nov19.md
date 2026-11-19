@@ -37,8 +37,11 @@ Everything below is on it, plus the 44px tap areas (#5) and the updated mock-ups
 - A second fresh review of that fix found three more turn-one mistakes (each in 4-6% of real matchups): their Fake Out planned when
   it can't work (their real turn-one KO labelled 'from turn 2'), your Fake Out aimed at a Pokémon that already moved, and a 'sure'
   flinch from a Fake Out user that may itself be flinched. Fixed in 313804a2; 1000 real matchups pass. Older gaps it found (Tailwind
-  re-ordering the rest of turn one, priority blockers on attacks, their own priority moves, Home drawing two Megas) are with a helper
-  as the next step.
+  re-ordering the rest of turn one, priority blockers on attacks, their own priority moves, Home drawing two Megas) were then fixed by
+  a helper (7 commits, each with a check that fails before and passes after; 1004 real matchups pass; code tests ALL PASSED; Battle
+  behaviour 83/0; pushed as 0a52a44a). Tailwind's 'double Speed for the rest of the turn' follows Gen 9 rules: assumed for Champions,
+  not confirmed in the game. Home's board change is visible (one Mega per side, like Battle): pictures review1-home-board-*.png.
+  Still open: a Pokémon KO'd earlier in turn one still shows its own move.
 - GitHub run 1375 (902e1b9f) failed 2 of my new tests on the frozen test data: a team leading Mega Delphox + Mega Floette still
   showed two Megas (Floette's base form is only listed as 'Floette-Eternal'), and one event name kept '$30' at its start. Both
   real gaps the tests were written to catch; fixed in a59975a6 and checked on the frozen data (both 'all passed'). Lesson: run new
