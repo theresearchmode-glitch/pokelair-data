@@ -128,7 +128,7 @@ const MQ = async () => {
       `MQ-9b: legal-sources.md writes the 2-outlet rule for codes (which outlets count; Analytics Insight never does) and post-data-test enforces that list (section ${sec ? sec.length + ' chars' : 'missing'})`); }
   // MQ-9c (answer 9c): news automatic, gifts suggested, codes manual: post-news.mjs and its own test (experiments/post-news-test.mjs), and the split written down
   { const ls = fs.readFileSync(process.env.MQ_LEGAL || new URL('../../docs/legal-sources.md', import.meta.url), 'utf8'); let res = '';
-    try { res = (await import('node:child_process')).execFileSync('node', [new URL('../../experiments/post-news-test.mjs', import.meta.url).pathname], {encoding: 'utf8', stdio: 'pipe'}).trim().split('\n').pop(); } catch (e) { res = 'failed: ' + String(e.stdout || e.message).trim().split('\n').pop(); }
+    try { res = (await import('node:child_process')).execFileSync('node', [(await import('node:url')).fileURLToPath(new URL('../../experiments/post-news-test.mjs', import.meta.url))], {encoding: 'utf8', stdio: 'pipe'}).trim().split('\n').pop(); } catch (e) { res = 'failed: ' + String(e.stdout || e.message).trim().split('\n').pop(); }
     ok(res === 'ALL PASS' && /### Who updates what \(9c\)/.test(ls) && /News: automatic/.test(ls) && /Gifts: suggested only/.test(ls) && /Codes: manual/.test(ls),
       `MQ-9c: the split (news automatic, gifts suggested, codes manual) is written down and post-news-test passes (${res})`); }
   // MQ-9d (answer 9d): past codes are dropped from post.js; a gift that had ended when the list was checked holds no code, and none is in the page
@@ -1502,7 +1502,7 @@ if (part('main2')) {
   ok(n1.bad && !n1.bad.length && n1.plain && n1.good && n1.fix, `NPR-1: a javascript:, data:, vbscript:, http: or broken news, Next Events or source URL never becomes a link on #news, #gifts or Home; its headline shows as plain text (${JSON.stringify(n1)})`);
   const n4 = await ev(q, `(() => { const keep = POST; try { POST = {checked: null, news: [], gifts: [{kind: 'item', name: 'VP', amount: 500, how: 'Event Gift', end: new Date(Date.now() + 20 * 864e5).toISOString()}]};
     return {live: V2.postNow().live.length, shown: /500 VP/.test(V2.pages.gifts.draw())}; } finally { POST = keep; } })()`);
-  const wf = fs.readFileSync(path.resolve(path.dirname(new URL(import.meta.url).pathname), '../../.github/workflows/test.yml'), 'utf8');
+  const wf = fs.readFileSync(path.resolve(path.dirname((await import('node:url')).fileURLToPath(import.meta.url)), '../../.github/workflows/test.yml'), 'utf8');
   ok(n4.live === 1 && n4.shown, `NPR-4: a gift with no start shows at the counter while its end hasn't passed (${JSON.stringify(n4)})`);
   ok(/^\s*- run: node experiments\/post-data-test\.mjs/m.test(wf) && /'experiments\/post-data-test\.mjs'/.test(wf), 'NPR-4b: the post data test runs in CI (.github/workflows/test.yml, and its path starts a run)');
   const n5 = await ev(q, `(() => { const keep = POST, t = Date.now(), iso = x => new Date(x).toISOString(), el = h => { const d = document.createElement('div'); d.innerHTML = h; return d; };

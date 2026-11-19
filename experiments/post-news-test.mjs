@@ -13,7 +13,7 @@
 // Usage: node experiments/post-news-test.mjs
 import fs from 'node:fs'; import os from 'node:os'; import path from 'node:path'; import {execFileSync} from 'node:child_process';
 import {load, toNews, DOC_LIMIT} from '../post-news.mjs';
-const root = new URL('../', import.meta.url).pathname, tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'post-news-'));
+const root = (await import('node:url')).fileURLToPath(new URL('../', import.meta.url)), tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'post-news-'));
 let fails = 0; const ok = (c, m) => { console.log((c ? '  ok   ' : '  FAIL ') + m); if (!c) fails++; };
 const src0 = fs.readFileSync(path.join(root, 'app/src/data/post.js'), 'utf8'), P0 = load(src0);
 const feedOf = news => ({hash: 'x', list: news.map(n => ({id: Number(n.id.slice(1)), title: n.title, infoKind: n.kind, stAt: Date.parse(n.date) / 1000, endAt: Date.parse(n.date) / 1000 + 864e3, banner: '/en/img/x.png', link: new URL(n.url).pathname}))});
