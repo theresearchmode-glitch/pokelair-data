@@ -176,6 +176,11 @@
 .ed-foot{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5);margin-top:var(--s8);padding-top:var(--s5);border-top:1px solid var(--rule)}
 .ed-foot .fine{flex:1 1 200px}.ed-rm{min-height:var(--tap)}
 @media (max-width:479.98px){.ed2{padding:var(--s6) var(--s4)}.ed-mvs{grid-template-columns:minmax(0,1fr)}.ed-pts{grid-template-columns:repeat(3,minmax(0,1fr))}.ed-strip{grid-template-columns:repeat(6,minmax(0,1fr))}}
+/* Q16 A (Sim, Nov 19; review #21): on phones the Close X sat on top of the dropdowns as Edit Set scrolled. A solid strip on the panel's own
+   surface, as tall as the X, sticks to the top; the X (sticky, z 5) sits in it and the content scrolls under it. The strip is not a button,
+   so a tap on it does nothing. 700+ is unchanged: there the panel's 32px padding already keeps the X clear (v2-q16 measured 700-1920). */
+@media (max-width:699.98px){.np-sheet>.ed2{padding-top:0}.np-sheet>.ed2::before{content:'';display:block;position:sticky;top:0;z-index:4;height:var(--tap);margin:0 calc(var(--s8)*-1);background:var(--surface)}}
+@media (max-width:479.98px){.np-sheet>.ed2::before{margin:0 calc(var(--s4)*-1)}}
 /* empty My Team (Nov 11): the lead and today's underdog side by side; the underdog stands on its pool like the six */
 .tm-e-saved small{margin-left:var(--s1);color:var(--ink-3);font-size:var(--t13)}.tm-e-saved{min-height:var(--tap)}
 .tm-ud{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"hd hd" "st bd";gap:var(--s4) var(--s6);align-items:center}
