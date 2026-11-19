@@ -2017,7 +2017,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (prefers-reduced-motion:reduce){.us-fig .np-mon{transition:none}}
 @media (max-width:1099.98px){.us-podium{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699.98px){.us-fig.pod .np-mon{--iw:96px}.us-p1 .us-fig.pod .np-mon{--iw:120px}.us-p1 .us-blk{height:120px}.us-p2 .us-blk{height:88px}.us-p3 .us-blk{height:72px}.us-blk{font-size:var(--t34)}
-  .us-bench{--gsw:72px}.us-bench .us-fig .np-mon{--iw:72px}.us-mates .gs-row{--gsw:64px}.us-tx b{font-size:var(--t13)}.us-hh h2{font-size:var(--t24)}}
+  .us-bench{--gsw:72px}.us-bench .us-fig .np-mon{--iw:72px}.us-mates .gs-row{--gsw:64px}.us-tx b{font-size:var(--t13)}.us-hh h2{font-size:var(--t24)}
+  /* phones: share, teams and place stack one per line (as the bench reads), so #1's '39.2% 3,130 teams' never runs into #3's column at 320 (Usage now opens on this list, Q13) */
+  .us-nums{flex-direction:column;align-items:center;gap:2px}}
 .us-step .us-fig.pod{grid-row:auto}.us-fig.pod .us-tx{padding-top:var(--s3)}.us-steps{border-bottom:0}.us-fig.pod .us-blk{border-bottom:4px solid var(--plot)}
 .us-bar>i>i{background:linear-gradient(90deg,var(--ty-a,var(--plot)),var(--ty-b,var(--plot)))}
 /* Sim, Nov 14: Meta scrolled slowly on her Windows desktop (mouse wheel). Her standing rule: sprite glow off on mouse screens except feature
