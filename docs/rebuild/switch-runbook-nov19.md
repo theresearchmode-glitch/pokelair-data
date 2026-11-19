@@ -141,20 +141,30 @@ Live today (**checked**, Artifact list scope files, version 1794491686-b0d0): 35
   Keep them if Sim wants the rollback to be a single publish (see 4).
 - **Cap:** after the switch 359 files (+6 if the old fonts stay = 365), under 511. **Checked arithmetic.** Without removing sp/: 359 + 351 new = 710, over 511.
 
-### 3d. How to send it: the 255-files-per-publish limit (unsure, must be rehearsed)
-One publish sends at most 255 files; the version cap 511 applies to each resulting version. The switch needs 351 new files (v2.js + 350 art; fonts
-already there) and 345-351 nulls. **Unsure:** whether null entries count toward the 255. Players see every intermediate version, so:
-- If nulls do NOT count: **two publishes, no broken state.** (P1) old page unchanged, add 152 v2art files -> 511. (P2) new page + v2.js + the other
-  198 v2art + 345 sp nulls (+6 font nulls) -> 359 (or 365). Uploads per call: 152 and 199.
-- If nulls DO count: there is no order that avoids a short broken window (removing sp/ breaks the old page; the new page without all art shows
-  broken pictures). Four publishes, back to back, in a quiet hour (arithmetic checked: entries per call <= 255, files per version <= 511):
-  (P1) old page kept, add 152 v2art -> 511 files, 152 entries, nothing visible changes.
-  (P2) new page + v2.js + 126 v2art + 127 sp nulls -> 511 files, 254 entries. Players now see the new page with 72 pictures missing.
-  (P3) the last 72 v2art + 183 sp nulls -> 400 files, 255 entries. Broken window = P2 to P3 only.
-  (P4) the last 35 sp nulls + 6 old-font nulls -> 359 files, 41 entries.
-- **Rehearse first** on a new private scratch artifact (needs the main thread and Sim's go; I published nothing): publish today's old page with its
-  359 files, then run the planned sequence and read the result counts. The same scratch artifact, declared with the live declaration below,
-  also tests what the Preview never did: account saving, feedback, usage, the real `onSnapshot` on missing meta documents (1d), and the 8 s wait.
+### 3d. How to send it: the 255-files-per-publish limit (REHEARSED Nov 19, 3:03-3:16 PM; replaces the earlier plan)
+**Checked on a private scratch artifact** (https://claude.ai/artifact/GARZ7Ar2mNhA1fQgwTULEQ, Sim approved S1 at 2:49 PM; delete only with Sim's yes):
+- **Removals (null) DO count toward the 255.** A publish of 250 adds + 10 nulls was refused: "`files` lists 260 entries (removals included),
+  over the limit of 255 one publish may send. Nothing was published". So the old two-publish plan is impossible.
+- The page itself does not count: page + 255 entries was accepted (R2). The 511-per-version cap held as computed (511 accepted).
+- The old plan's fallback had a broken-picture window. **New order, no broken picture at any version:** a temporary "mixed" old page
+  (docs/rebuild/switch-mixed-page.py) loads `v2art/<id>.webp` for sprites already uploaded and `sp/<id>.webp` for the rest. v2art has all
+  345 sprite names (checked: 345 same names); the old page builds sprite paths in exactly 8 places (the script asserts 8). The mixed page goes
+  right after the skeleton's `<body>` (standards mode checked: "compatMode CSS1Compat").
+  - (R1) old page unchanged + first 152 v2art (sorted names) -> 511 files, 152 entries.
+  - (R2) mixed page (ids of the first 255 sorted art = 254 sprites) + next 103 v2art + null the 152 sp of R1's ids -> 462 files, 255 entries.
+  - (R3) mixed page (all 345) + last 95 v2art (incl. 491, crowd-0..3) + null the 102 sp of R2's ids -> 455 files, 197 entries.
+  - (R4) new page + v2.js + null the last 91 sp + 6 old fonts -> **359 files**, 98 entries.
+  A simulation checked that at every version each picture the page asks for exists ("missing 0" at R2, R3, R4). The scratch's final list:
+  359 files = page, v2.js (1,937,535 bytes), 7 fonts, 350 v2art, 0 sp/. Every publish was accepted.
+- Local test of the mixed page with only 152 v2art + 193 sp present, all 21 old-site views clicked and scrolled: "loaded sp 44 v2art 32 failed 0
+  broken imgs 0 errors 0". Could have failed: any sprite asked from the wrong folder fails to load.
+- Look during R2-R3 (a few minutes): old page, but sprites from the new art, a little larger (tighter crop; object-fit:contain, nothing
+  stretched). Picture: docs/rebuild/pics/nov19/S1-mixed-old-page.png (left today, right on v2art).
+- Not tested here: the old mixed page on the real db (the scratch had no capabilities in R2/R3); share images on the mixed page (canvas
+  drawImage may draw the tighter-cropped art at a slightly different scale). Both only for the few minutes of R2-R3.
+- Build used: `cd app && node build.mjs --v2 --public --split --one-art-size --art=v2art/` ("v2 guard: clean", "dist/v2.js 1890 KB",
+  "built dist/v2.html (578 KB ...)"). Needs PLAYWRIGHT_BROWSERS_PATH set to a folder with Chromium 1148, or it stops at the static first screen.
+- Account saving, feedback and the missing meta documents wait need a logged-in browser: Sim opens the scratch on his phone (see questions).
 
 ### 3e. Capabilities and the rest of the publish call
 **Checked** stored declaration on the live version (Artifact list): contract **0.2.90**; capabilities
