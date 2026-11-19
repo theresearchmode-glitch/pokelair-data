@@ -18,7 +18,10 @@ nothing can stop the KO, the KO stamp only for a sure KO (and never beside 'May 
 open team sheet items, no 'KOs' through Focus Sash or Sturdy, Quick Guard and Unaware handled, the shorter notes (W9).
 Next (v211, after GitHub passes it): six more turn-one rule fixes from a helper (merged 3e546c69, all local checks pass): the
 speed-tie 'Fainted' bug, Rattled's Speed, a Mega's base form taking its open-sheet Ability, 'speed tie' said once, Mold Breaker into
-Unaware, Quick/Wide Guard only when their user can act. A fresh review of those six is running.
+Unaware, Quick/Wide Guard only when their user can act. A seventh fresh review of those six found one more real case (their
+faster Quick Guard can block your Fake Out, so the flinch isn't sure; 1 of 10 real cases, a real Sneasler set): fixed in 541e29b5,
+check fails before and passes after. Two risks logged, not changed (no real case found): a spread move in the speed-tie check, and
+Prankster Quick/Wide Guard.
 
 ## Done and tested (now on the Preview v209)
 - Review #1, Battle turn one follows the game's rules: one Mega per side, no move that can KO your partner, Fake Out flinches
