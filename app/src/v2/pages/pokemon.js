@@ -9,7 +9,7 @@ V2.monSlug = n => encodeURIComponent(String(n).toLowerCase());
 V2.monFromHash = () => { let k = ''; try { k = decodeURIComponent((location.hash.split('=')[1] || '')).toLowerCase(); } catch (e) {} return k && typeof ROSTER === 'object' ? ROSTER.find(q => q.n.toLowerCase() === k) || null : null; };
 V2.STATS = [['HP', 'hp'], ['Attack', 'atk'], ['Defense', 'def'], ['Sp. Atk', 'spa'], ['Sp. Def', 'spd'], ['Speed', 'spe']];
 // the top: the Card; the rank tag; the name; the rating with its tier (Sim, Nov 17: no 'likely 81-92' range, it read as unsure); the 0-100 gauge; the three numbers; the actions
-V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), rank = rankTxt(p, 'cap');
+V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), rank = rankTxt(p, 'cap').replace(/ with results$/, ' with tournament results') /* Sim's Q15 A (Nov 19): says why it is 322, not 345 */;
   const lo = +RS(Math.max(1, r.total - (r.band || 0))), hi = +RS(Math.min(99, r.total + (r.band || 0))), sp = SHT.speeds(p) /* Sim, Nov 17 (later): the shaded band stays, the 'likely' words do not */, run = sp.find(x => x.main) || sp.find(x => x.k === 'max');
   const num = (b, l, s, few) => `<div class="pk-n${few ? ' few' : ''}"><b class="u">${b}</b><span>${l}${s ? `<small>${s}</small>` : ''}</span></div>`;
   const nums = (H.hU != null ? num(E(V2.shareTxt(H)), 'of teams', H.tot ? 'of ' + E(basisNum(H.tot, true)) : '') : num('None yet', 'of teams', 'no games yet', true))

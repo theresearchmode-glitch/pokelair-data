@@ -16,7 +16,7 @@ V2.msCard = (p, n, nameH, tyH, iw = 284) => { const id = typeof SPRITE_ID === 'o
     <div class="mc-mon">${V2.mon(n, {iw, sel: true, bare: true})}</div>
     <div class="mc-id">${nameH}${tyH}</div></div>`; };
 V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), st = (() => { try { return setFor(p) || {}; } catch (e) { return {}; } })();
-  const sp = SHT.speeds(p), run = sp.find(x => x.main) || sp.find(x => x.k === 'max'), rank = rankTxt(p, 'cap');
+  const sp = SHT.speeds(p), run = sp.find(x => x.main) || sp.find(x => x.k === 'max'), rank = rankTxt(p, 'cap').replace(/ with results$/, ' with tournament results') /* Sim's Q15 A (Nov 19): says why it is 322, not 345 */;
   // header
   const num = (b, l, s, w) => `<div class="ms-n${w ? ' few' : ''}"><b>${b}</b><span>${l}${s ? `<small>${s}</small>` : ''}</span></div>`;
   const nums = `<div class="ms-nums">${H.hU != null ? num(E(V2.shareTxt(H)), 'of teams', H.tot ? 'of ' + E(basisNum(H.tot, true)) : '') : num('None yet', 'of teams', 'no tournament games yet', true) /* Sim, Nov 13 (Info Q3 B): words, never a lone dash (as 'Too few') */}${H.hW != null ? (H.hG >= 30 ? num(E(pctFmt(H.hW)), 'win rate', Math.round(H.hG).toLocaleString('en-US') + '\u00a0games') : num('Too few', 'win rate', H.hG ? Math.round(H.hG) + ' games' : 'no tournament games yet', true)) : ''}${run ? num(run.v, 'Speed <span class="lv">at level 50</span>', '') : ''}</div>`;

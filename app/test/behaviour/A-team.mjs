@@ -1052,7 +1052,7 @@ t('PKMN-01', 'A Pokémon tapped on Home opens its page (#pokemon=); keyboard foc
 
 t('PKMN-02', 'Top: name, types, "#N of M with results", rating with its tier, three numbers', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
-  for (const x of [/Kingambit Dark Steel #\d+ of \d+ with results/, /\b\d+ [SABCDF] tier Rating/, /[\d.]+% of teams of [\d.]+k/, /[\d.]+% win rate [\d,]+ games/, /\d+ Speed at level 50/]) has(s, x, 'top'); await r.close(); });
+  for (const x of [/Kingambit Dark Steel #\d+ of \d+ with (?:tournament )?results/, /\b\d+ [SABCDF] tier Rating/, /[\d.]+% of teams of [\d.]+k/, /[\d.]+% win rate [\d,]+ games/, /\d+ Speed at level 50/]) has(s, x, 'top'); await r.close(); });
 
 t('PKMN-03', 'Add to My Team fills the first empty slot ("On your team" after); Popular Sets; Build Around It; a full team says so', async () => {
   const r = await aopen({team: TEAM.slice(0, 5)}); await r.ui.tapPokemon('Kingambit'); has(await r.ui.pokemonPage(), 'Add to My Team'); await r.ui.tapText(/^Add to My Team$/, 1000);
@@ -1091,7 +1091,7 @@ t('PKMN-01', 'Info sheet opens from Home; ✕ and Escape close it, focus returns
 t('PKMN-02', 'Hero: rating numeral, "<letter> tier, #N of M with results", name, types, three numbers', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.infoSheet();
   // new site: the Card (Sim, Nov 13) puts the name and types first, then the buttons, then the rating; each piece is checked on its own
-  ok(NEW ? /^✕ .*Kingambit Dark Steel .*\b(\d+) [SABCD] tier Rating · #\d+ of \d+ with results/.test(s) : /^✕ (\d+) \? [SABCD] tier, #\d+ of \d+ with results Kingambit Dark Steel/.test(s), 'hero reads: ' + s.slice(0, 160));
+  ok(NEW ? /^✕ .*Kingambit Dark Steel .*\b(\d+) [SABCD] tier Rating · #\d+ of \d+ with (?:tournament )?results/.test(s) : /^✕ (\d+) \? [SABCD] tier, #\d+ of \d+ with (?:tournament )?results Kingambit Dark Steel/.test(s), 'hero reads: ' + s.slice(0, 160));
   for (const x of [/[\d.]+% of teams of [\d.]+k/, /[\d.]+% win rate [\d,]+ games/, /\d+ Speed at level 50/]) has(s, x, 'hero'); await r.close(); });
 
 t('PKMN-03', 'Add to team fills the first empty slot ("On your team" after); Build around it; Popular Sets', async () => {

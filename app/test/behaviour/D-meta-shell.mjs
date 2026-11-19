@@ -138,7 +138,7 @@ t('JUMP-02b', 'Phone: the "Tool" label is hidden', run({team: TEAM, ...PHONE}, a
 
 t('JUMP-03', 'Typing finds Pokémon (with rating and types), saved teams, and says when nothing matches', run({team: TEAM, saved: [{name: 'Sun Tailwind', team: TEAM}]}, async ({d}) => {
   await d.openSearch('keys'); await d.search('garch'); let r = await d.searchResults();
-  expect(r[0] && r[0].name === 'Garchomp', 'first result ' + (r[0] && r[0].name)); expect(/Rated \d+, #\d+ of \d+ with results, Dragon\/Ground/.test(r[0].sub), 'Garchomp row: ' + r[0].sub);
+  expect(r[0] && r[0].name === 'Garchomp', 'first result ' + (r[0] && r[0].name)); expect(/Rated \d+, #\d+ of \d+ with (?:tournament )?results, Dragon\/Ground/.test(r[0].sub), 'Garchomp row: ' + r[0].sub);
   expect(r.length <= 14, 'more than 14 results');
   await d.search('sun tail'); r = await d.searchResults(); const team = r.find(x => x.name === 'Sun Tailwind'); expect(team && has(team.text, 'Garchomp'), 'saved team not found with its six: ' + JSON.stringify(r));
   await d.search('incinéroar'); r = await d.searchResults(); expect(r[0] && r[0].name === 'Incineroar', 'search is not accent-insensitive: ' + (r[0] && r[0].name));
@@ -498,7 +498,7 @@ t('SHEET-01', 'Sheet opens from any Pokémon, closes with ✕ / backdrop / Escap
 
 t('SHEET-02', 'Sheet header: rating with tier and rank, types, % of teams, win rate and games (PKMN-02)', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); await d.openPokemon('Incineroar'); const s = await d.sheetText();
-  expect(/[SABCDF] tier, #\d+ of \d+ with results/.test(s), 'no tier/rank'); expect(has(s, 'Fire') && has(s, 'Dark'), 'no type chips');
+  expect(/[SABCDF] tier, #\d+ of \d+ with (?:tournament )?results/.test(s), 'no tier/rank'); expect(has(s, 'Fire') && has(s, 'Dark'), 'no type chips');
   expect(/\d+(\.\d)?% of teams/.test(s) && /\d+(\.\d)?% win rate/.test(s) && /[\d,]+ games/.test(s), 'numbers missing: ' + s.slice(0, 200)); }));
 t('SHEET-02b', 'Phone sheet fits the screen', run({team: TEAM, ...PHONE}, async ({ui, d}) => {
   await ui.go('Ratings'); await d.openPokemon('Incineroar'); expect(await d.sheetFits(), 'sheet wider than the phone'); }));
