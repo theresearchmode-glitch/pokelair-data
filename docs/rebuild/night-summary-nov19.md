@@ -56,6 +56,13 @@ Everything below is on it, plus the 44px tap areas (#5) and the updated mock-ups
   opponent with an open team sheet is calculated with its sheet item; no 'KOs' through Focus Sash or Sturdy; Intimidate counts in
   every turn-one hit (387 of 4000 lines changed, 81 of them a different move); the KO stamp only for a sure KO; 'Fainted' only when
   nothing of theirs can stop it (16 in 1000 matchups, was 101); the Watch line says your/their. Open question for you: W10.
+- A fifth fresh review (of cb1506aa) and a visual check found one real contradiction: an opponent's card could show a KO stamp
+  while the same card said 'May be KO'd first by your Garchomp' (66 of 1000 matchups). Fixed in 98a59a5f, plus: a speed-tied foe
+  that can KO your lead now counts as a risk to it, Quick Guard counts as a block for priority KOs, and no Intimidate stage note on an
+  Unaware target. Checked: the test now works the risk out from the damage calc instead of reading the code's own flag (my first
+  version of that check was too loose and flagged a correct card; tightened), plus two built matchups for the rare cases. Old code:
+  66 / 2 / 1 wrong; new: 0, on today's and the frozen test data. Code tests ALL PASSED; Battle behaviour 83/0; Home 9/0; calc
+  check 99.99%. The layout points from that check are Q27 (card pairs, pictures) and W11 (wording) on the Morning Questions page.
 - Start-up on phones (Plans pl-2c, helper): the longest start-up task dropped from ~470 to ~250 ms on Home (4x CPU), same page after.
 - GitHub run 1375 (902e1b9f) failed 2 of my new tests on the frozen test data: a team leading Mega Delphox + Mega Floette still
   showed two Megas (Floette's base form is only listed as 'Floette-Eternal'), and one event name kept '$30' at its start. Both
