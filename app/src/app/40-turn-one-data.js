@@ -195,15 +195,23 @@ function turnOneData(mine, theirs, r) {
       const rd = opp.find(y => y !== o && !down.has(y) && !(flinched.get(y) || {}).sure && movesOf(y).some(n => n === 'Follow Me' || (n === 'Rage Powder' && rp)));
       if (rd) g.push(movesOf(rd).includes('Follow Me') ? 'Follow Me' : 'Rage Powder'); }
     return g.join(' or '); };
+  // their likely attack that can KO its target on some roll (the hit, its target), or null; the same test their koPass uses
+  const theirKOHit = y => { const d = danger.find(x => x.o === y.x), h = d && d.worst && d.worst.h, t = d && d.worst && d.worst.on;
+    return h && !theirFOT.has(y.x) && y.act === `${h.mv.name} into ${t.d}` && h.r && h.r.hp && !h.charge && !h.r.sash && h.r.max >= h.r.hp ? {h, t} : null; };
+  // (independent review, Nov 19) a foe in a speed tie with your lead that can KO it may go first: your lead's KO is then not sure.
+  // Worked out when your lead moves (the tied foe comes later in the list), so its target is never 'Fainted' while your lead's own
+  // line says 'may be KO'd first ... (speed tie)'. A tied foe already KO'd or surely flinched can't
+  const tiedKORisk = b => beats.some(y => !y.me && tieOf(y, b) && !done.has(y.x) && !down.has(y.x) && !(flinched.get(y.x) || {}).sure && (theirKOHit(y) || {}).t === b.x);
   const koPass = b => { const i = at(b.x);
-    if (!b.me) { const d = danger.find(x => x.o === b.x), h = d && d.worst && d.worst.h, t = d && d.worst && d.worst.on;
-      if (!h || theirFOT.has(b.x) || b.act !== `${h.mv.name} into ${t.d}` || !h.r || !h.r.hp || h.charge || h.r.sash || h.r.max < h.r.hp || ((at(t) <= i || done.has(t)) && !tieOf(beats[at(t)], b))) return; /* in a speed tie theirs may go first (Nov 19 review) */
+    if (!b.me) { const k = theirKOHit(b), h = k && k.h, t = k && k.t;
+      if (!k || ((at(t) <= i || done.has(t)) && !tieOf(beats[at(t)], b))) return; /* in a speed tie theirs may go first (Nov 19 review) */
       /* a KO that only might happen (some rolls, under 100% to hit) is a risk too (Nov 19 review): the note says the chance, as
          yours does, and your lead's own KO is then no longer sure */
       const tb = beats[at(t)], k1 = (h.r.rolls || [h.r.min, h.r.max]).filter(v => v >= h.r.hp).length / (h.r.rolls || [1, 1]).length;
       const why = [k1 < 1 ? koShort(h.r) : '', h.acc < 100 ? h.acc + '% to hit' : '', tieOf(tb, b) ? 'speed tie' : ''].filter(Boolean).join(', ');
       tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by their ${b.x.d}${why ? ' (' + why + ')' : ''}`}); return; }
     const ln = lines.find(l => l[0] === b.x), A = ln && ln[5]; if (!A || b.act !== ln[1]) return;
+    if (tiedKORisk(b)) b.koRisk = 1; /* its note comes from the tied foe's own pass */
     let hits = A.h.mv.spread ? opp.map(o => ({o, h: o === A.o ? A.h : hitOn(b.x, [A.h.mv], o)})) : [{o: A.o, h: A.h}];
     const gone = hits.filter(x => down.has(x.o)).map(x => x.o);
     if (gone.length) { const left = opp.filter(o => !down.has(o)), was = gone.map(o => 'their ' + o.d).join(' and ') + (gone.length > 1 ? ' are' : ' is') + " KO'd earlier this turn";
