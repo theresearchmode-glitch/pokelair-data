@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
 const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf = new Map(); for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) { teams.push(t.mons.map(m => m.n)); if (!refOf.has(t.mons.map(m => m.n).join('/'))) refOf.set(t.mons.map(m => m.n).join('/'), {ev: e, t}); }
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: [], planNoTarget: [], sureKO: 0, koActs: [], intoDown: [], fainted: 0, faintBad: [], koStamp: 0, koStampBad: [], allyHits: 0, names: 0, nameSide: [], noteIt: [], whyN: 0, whyMax: 0, whyLong: [], sheetHits: 0, sheetDiff: 0, sheetWrong: [], koLines: 0, sashKO: [], warnNames: 0, warnSide: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
   const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
   const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp'], /* Extreme Speed into a side with Farigiraf's Armor Tail */
@@ -90,6 +90,23 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
     if (typeof V2 === 'object' && V2.pbpBeat) T.beats.forEach((bt, i) => { if (!/ into /.test(bt.act)) return; const main = bt.main != null ? bt.main : String(bt.why).split('; ')[0];
       const stamp = /pbp-tgt ko/.test(V2.pbpBeat(bt, i, T, i + 1)), sure = /^KOs\\b/i.test(main) || /\\bOHKO\\b(?! \\d)/.test(main);
       if (stamp) st.koStamp++; if (stamp !== sure) st.koStampBad.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') stamp ' + stamp); });
+    /* Nov 19 (opponent items): their lead from a real open team sheet is calculated with its sheet item and Ability (spread: the
+       usual one), both ways. Each single-target attack line into or from such a lead must show what a direct damage() call with
+       that item gives ('up to N%' or 'KOs'). sheetDiff counts lines where the sheet item is not the Pokémon's most common one, so
+       the check could fail. And no 'KOs' when that call says Focus Sash or Sturdy holds (r.sash; 'Sash holds' instead) */
+    { const F0 = T.field || {}, F = {weather: (F0.wx != null ? F0.wx : F0.weather) || '', terrain: T.terrain || '', auras: F0.auras};
+      const sheetOf = x => { const o = x._orig || x, it = x.item || o.item; return o.real && it ? it : null; };
+      const side = (x, role) => { const mine = T.leads.includes(x), d = sideDefaults(x.p, role, mine ? (x._orig || x) : null), it = mine ? null : sheetOf(x);
+        if (it) { d.item = it; if (x.ability && x.p.a.includes(x.ability)) d.ability = x.ability; } return {p: x.p, ...d}; };
+      for (const bt of T.beats) { const main = bt.main != null ? bt.main : bt.why, am = bt.act.match(/^(.+?) into (.+)$/), sp = !am && bt.me && main.match(/^KOs their (.+?)(?: \\(|\\. |$)/);
+        if ((!am && !sp) || (am && am[1] === 'Fake Out') || /KO'd earlier this turn/.test(bt.why)) continue;
+        const t = (bt.me ? T.opp : T.leads).find(o => o.d === (am ? am[2] : sp[1])), mvN = am ? am[1] : bt.act.replace(/ \\(hits both\\)$/, ''), mv = (bt.x.moves || []).find(x => x && x.name === mvN) || mvByName.get(mvN);
+        if (!t || !mv) continue; const foe = bt.me ? t : bt.x, it = sheetOf(foe); if (!it && !/^KOs/.test(main)) continue;
+        const r = damage({atk: side(bt.x, 'atk'), def: side(t, 'def'), move: mv, spread: !!mv.spread, weather: F.weather, terrain: F.terrain, auras: F.auras}); if (!r || !r.hp) continue;
+        if (/^KOs/.test(main)) { st.koLines++; if (r.sash) st.sashKO.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + main + '), ' + t.d + ' holds with ' + r.sashBy); }
+        if (!it) continue; st.sheetHits++; if (sideDefaults(foe.p, 'def', null).item !== it) st.sheetDiff++;
+        const um = main.match(/^up to (\\S+)% of /), okHit = um ? um[1] === dmgP(100 * r.max / r.hp) : /^KOs/.test(main) ? r.min >= r.hp : true;
+        if (!okHit) st.sheetWrong.push(tag + ': ' + (bt.me ? 'your ' : 'their ') + bt.x.d + ' ' + bt.act + ' (' + main + ') vs ' + dmgP(100 * r.min / r.hp) + '-' + dmgP(100 * r.max / r.hp) + '% with ' + it); } }
     for (const bt of T.beats) if (bt.me && /^Fake Out (.+)$/.test(bt.act)) { const t = [...T.opp].find(o => o.d === bt.act.slice(9)); if (t && (t.types || t.p.t).includes('Ghost') && abilityOf(bt.x) !== 'Scrappy') st.foGhost.push(tag + ': ' + bt.act); } }
   S.slots = JSON.parse(slots0); fixSlots(); S.opp = JSON.parse(opp0); return st; })()`));
 await b.close();
@@ -121,4 +138,5 @@ ok(st.sureKO > 0 && !st.koActs.length, `a Pokémon your sure KO hits before it m
 ok(!st.intoDown.length, `no later attack aims at a Pokémon already KO'd this turn, unless it says so (${st.intoDown.length}${st.intoDown.length ? ', e.g. ' + st.intoDown[0] : ''})`);
 ok(!st.faintBad.length, `a 'Fainted' beat is only theirs and keeps its planned move (${st.fainted} fainted, ${st.faintBad.length} wrong${st.faintBad.length ? ', e.g. ' + st.faintBad[0] : ''})`);
 ok(st.koStamp > 0 && !st.koStampBad.length, `Battle's KO stamp shows only for a sure KO, not a chance ('OHKO 19%') (${st.koStamp} stamps, ${st.koStampBad.length} wrong${st.koStampBad.length ? ', e.g. ' + st.koStampBad[0] : ''})`);
+ok(st.sheetDiff > 0 && !st.sheetWrong.length, `their lead from a real open team sheet is calculated with its sheet item, both ways (${st.sheetHits} lines, ${st.sheetDiff} where it isn't the most common item, ${st.sheetWrong.length} wrong${st.sheetWrong.length ? ', e.g. ' + st.sheetWrong[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

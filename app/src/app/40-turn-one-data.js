@@ -19,7 +19,13 @@ function turnOneData(mine, theirs, r) {
   const L0 = r.lead.map(i => mine[i]), L = oneMega(L0), names = m => new Set(memberMoves(m).moves.map(x => x.name));
   // your leads use their real items and spreads; the weather/terrain the four leads set is in play for every hit
   const mineM = m => { const o = m && m._orig || m; return L0.includes(o) ? o : L.includes(o) ? o : null; }; // _orig: the pre-Mega stand-in turnOneField passes
-  const spe = m => { const s = likelySpeed(m.p, mineM(m)); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
+  // their lead from a real open team sheet (withSheet: real, item, Ability) is calculated with its sheet item and Ability, both
+  // ways and for its Speed (Choice Scarf, Iron Ball); its spread is unknown, so the usual spread stays (sideDefaults). heldItem keeps
+  // a Mega Stone held by a base-form copy (sideDefaults drops a stone from item). Without a sheet: null, so the calc keeps today's
+  // most common item and Ability for that Pokémon.
+  const theirM = m => { const o = m && m._orig || m, it = (m && m.item) || (o && o.item) || ''; return o && o.real && it && !mineM(m) ? {ability: m.ability, item: it, heldItem: it} : null; };
+  const calcM = m => mineM(m) || theirM(m);
+  const spe = m => { const s = likelySpeed(m.p, calcM(m)); return s.scarf ? Math.floor(s.v * 1.5) : s.v; };
   // a Cloud Nine / Air Lock lead switches the weather's effects off for every hit and speed (F0.wx)
   const F0 = typeof turnOneField === 'function' ? turnOneField([...L, ...opp], spe) : {}, F = {...F0, weather: F0.wx != null ? F0.wx : F0.weather};
   // priority blockers (review, Nov 19): Armor Tail, Queenly Majesty and Dazzling on ANY Pokémon of the target's side make priority
@@ -28,7 +34,7 @@ function turnOneData(mine, theirs, r) {
   // best is planned (for both sides' hits)
   const PRIO_BLOCK = ['Armor Tail', 'Queenly Majesty', 'Dazzling'], MOLD = ['Mold Breaker', 'Teravolt', 'Turboblaze'];
   const prioBlocked = (a, d) => { const side = L.includes(d) ? L : opp; return (!MOLD.includes(abilityOf(a)) && side.some(y => PRIO_BLOCK.includes(abilityOf(y)))) || (F.terrain === 'psychic' && grounded(d)); };
-  const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, mineM(a), mineM(d), F);
+  const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, calcM(a), calcM(d), F);
   // speed in that field: Chlorophyll / Swift Swim / Sand Rush / Slush Rush double in their weather
   const speF = x => spe(x) * (typeof speedMul === 'function' ? speedMul(abilityOf(x), F.weather) : 1);
   // their threat to each of my leads: the hardest single hit
