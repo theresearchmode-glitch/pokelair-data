@@ -1,0 +1,23 @@
+// Battle Turn One at 1366+ (Sim's Q27 A, Nov 19): the four cards sit 2 x 2, and both cards in a row are the same height (before: each was
+// centred in its row, so the shorter one sat lower, e.g. 124 + 96px). Several real opponents, light and dark, 1366-2560; also checks no card
+// overflows its text and nothing scrolls sideways. Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-pbppair.mjs
+import {chromium} from 'playwright'; import path from 'node:path';
+const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
+const b = await chromium.launch(); const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') + msg); if (!c) fails.push(msg); };
+let rows = 0, uneven = [], over = [];
+for (const th of ['light', 'dark']) for (const W of [1366, 1440, 1920, 2560]) {
+  const p = await b.newPage({viewport: {width: W, height: 900}, colorScheme: th}); await p.addInitScript(() => { window.__PL_TEST = 1; });
+  await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(2500);
+  const n = await p.evaluate(() => window.__ev('(META.events && META.events.events || []).length'));
+  for (let i = 0; i < Math.min(n, 12); i++) {
+    await p.evaluate(i => window.__ev(`S.opp = META.events.events[${i}].top[0].mons.map(m => m.n); V2.redraw()`), i); await p.waitForTimeout(250);
+    const m = await p.evaluate(() => { const bs = [...document.querySelectorAll('.pbp-band')].map(x => x.getBoundingClientRect());
+      const ov = [...document.querySelectorAll('.pbp-band, .pbp-tx')].filter(x => x.scrollWidth > x.clientWidth + 1).length;
+      return {bs: bs.map(r => [Math.round(r.top), Math.round(r.height)]), ov, side: document.documentElement.scrollWidth > innerWidth}; });
+    if (m.bs.length < 2) continue;
+    for (let k = 0; k + 1 < m.bs.length; k += 2) { rows++; const [a, c] = [m.bs[k], m.bs[k + 1]]; if (Math.abs(a[0] - c[0]) > 1 || Math.abs(a[1] - c[1]) > 1) uneven.push(`${th} ${W} ev${i} row ${k / 2 + 1}: ${a[1]}px at ${a[0]} vs ${c[1]}px at ${c[0]}`); }
+    if (m.ov || m.side) over.push(`${th} ${W} ev${i}: ${m.ov} text overflow, sideways scroll ${m.side}`); }
+  await p.close(); }
+ok(rows > 0 && !uneven.length, `both Turn One cards in a row have the same top and height at 1366-2560 (${rows} rows, ${uneven.length} uneven${uneven.length ? ', e.g. ' + uneven[0] : ''})`);
+ok(!over.length, `no Turn One card text overflows and nothing scrolls sideways (${over.length}${over.length ? ', e.g. ' + over[0] : ''})`);
+await b.close(); console.log(`v2-pbppair: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

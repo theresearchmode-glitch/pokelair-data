@@ -3083,7 +3083,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    column left each row half empty), and The Read / From Real Games / Watch Out as three even columns. Measured at 1440: 2,331 to 2,102 px */
 @media (min-width:1366px){
   .pbp-steps{grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:auto;column-gap:var(--s4);row-gap:var(--s3)}.pbp-steps::before{display:none}
-  .pbp .pbp-beat{grid-row:auto;grid-column:auto;grid-template-columns:40px minmax(0,1fr);column-gap:var(--s2)}.pbp .pbp-n{grid-column:1}
+  .pbp .pbp-beat{grid-row:auto;grid-column:auto;grid-template-columns:40px minmax(0,1fr);column-gap:var(--s2);align-items:stretch}.pbp .pbp-n{grid-column:1}
+  /* Sim's Q27 A (Nov 19): both cards in a row the same height (the number tile sits at the top of its card) */
+  .pbp .pbp-steps{align-items:stretch}.pbp .pbp-beat .pbp-band{align-self:stretch}
   .pbp .pbp-beat.you .pbp-band,.pbp .pbp-beat.them .pbp-band{grid-column:2;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}
   .pbp .bt-plan{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s10)}.pbp .bt-pl{display:contents}}
 /* How We Calculate (Nov 15, plain until the designer's bold version): the small line under a label sits on its own line, never glued to it */
