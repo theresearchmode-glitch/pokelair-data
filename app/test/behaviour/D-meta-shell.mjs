@@ -23,7 +23,7 @@ const daysAgo = n => new Date(Date.now() - n * 864e5).toISOString();
 const has = (s, m) => m instanceof RegExp ? m.test(s) : String(s).toLowerCase().includes(String(m).toLowerCase());
 const META_PAGES = ['Ratings', 'Usage', 'Popular Sets', 'Winning Teams', 'Events', 'Archetypes'];
 const MENU = ['Home', 'Build for Me', 'Build Around a Core', 'My Team', 'All Suggestions', 'Saved Teams', 'Compare Teams', 'My Box', 'Battle a Team',
-  'Team Preview Practice', 'Test Run', 'Speed Tiers', 'Damage Calc', 'Type Chart', 'This Week', 'Pokémon Ratings', 'Usage', 'Popular Sets', 'Winning Teams',
+  'Team Preview Practice', 'Test Run', 'Speed Tiers', NEW ? 'Damage Calculator' : 'Damage Calc', 'Type Chart', 'This Week', 'Pokémon Ratings', 'Usage', 'Popular Sets', 'Winning Teams',
   'Events', 'Archetypes', 'Track Record', 'How We Calculate', 'About & Legal'];
 
 // =============================== NAV · navigation and routing ===============================
@@ -730,7 +730,7 @@ t('METHOD-02', 'How to read our numbers: rating bands and Strength Score bands w
   await ui.go('How We Calculate'); const tx = await ui.text(); expect(/S 90\+ A 80s B 70s C 60s D 50s F <50/.test(tx), 'rating bands');
   expect(/90\+ Top tier 80s Tournament ready 70s Solid 60s Needs work under 60 Missing a basic/.test(tx), 'Strength Score bands'); }));
 t('METHOD-03', 'Ten remembered sections; each opens with content', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('How We Calculate'); const titles = NEW ? ['Strength Score', 'Team Checks', 'Pokémon Ratings', 'Usage, Sets and Sources', 'Damage Calc', 'Speed Tiers', 'Build Me a Team', 'What Gets Left Out', 'Updates and Cross-checks'] /* Nov 15: the word list's 'Team Checks' (4 basics + 3 notes not counted, so not 'the 7') */ : ['Strength Score', 'The 7 Team Checks', 'Pokémon Ratings', 'Usage, Sets and Sources', 'Damage Calc', 'Speed Tiers', 'Build Me a Team', 'What Gets Left Out', 'Updates and Cross-Checks'];
+  await ui.go('How We Calculate'); const titles = NEW ? ['Strength Score', 'Team Checks', 'Pokémon Ratings', 'Usage, Sets and Sources', 'Damage Calculator', 'Speed Tiers', 'Build Me a Team', 'What Gets Left Out', 'Updates and Cross-checks'] /* Nov 15: the word list's 'Team Checks' (4 basics + 3 notes not counted, so not 'the 7') */ : ['Strength Score', 'The 7 Team Checks', 'Pokémon Ratings', 'Usage, Sets and Sources', 'Damage Calc', 'Speed Tiers', 'Build Me a Team', 'What Gets Left Out', 'Updates and Cross-Checks'];
   for (const x of titles) expect(await d.foldIsOpen(x) !== null, 'no section ' + x); expect((await d.methodSections()).length === 10, 'sections: ' + (await d.methodSections()).length);
   await d.toggleFold('Speed Tiers'); expect((await d.foldText('Speed Tiers')).length > 80, 'section empty'); await ui.reload(); await ui.go('How We Calculate'); expect(await d.foldIsOpen('Speed Tiers'), 'not remembered'); }));
 t('RULE-WORDS', 'Meta pages, menu and search use the approved words (Matchups, Strength Score, Test run…)', run({team: TEAM}, async ({ui, d}) => {

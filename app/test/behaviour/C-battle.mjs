@@ -30,9 +30,10 @@ t('NAV-02', 'menu group "Battle" lists the six Battle pages in order, each opens
   if (NEW) { /* approved: no ⋯ menu (parity-nov15.md:7, "never a sixth menu place"); the Battle pages are the Battle tools bar on 700+ (decisions.md:603, Q6 A,
      mock-up docs/rebuild/mocks/battle.tpl.html:199), names in title case (decisions.md:604), the first one named "Battle" (decisions.md:879) */
     const {ui, close} = await open({team: TEAM}); await ui.go('Battle');
-    const want = ['Battle', 'Team Preview Practice', 'Test Run', 'Speed Tiers', 'Damage Calc', 'Type Chart'], bar = await ui.toolsBar();
+    /* Sim, Nov 19 (9:3x AM): 'Damage Calc First, then Battle, Then Team Preview Practice, then test run, then speed tiers, then type chart', named Damage Calculator */
+    const want = ['Damage Calculator', 'Battle', 'Team Preview Practice', 'Test Run', 'Speed Tiers', 'Type Chart'], bar = await ui.toolsBar();
     expect(JSON.stringify(bar.slice(0, 6)) === JSON.stringify(want), 'Battle tools bar is ' + JSON.stringify(bar));
-    const pane = {'Battle': 'matchup', 'Team Preview Practice': 'practice', 'Test Run': 'gauntlet', 'Speed Tiers': 'speed', 'Damage Calc': 'calc', 'Type Chart': 'types'};
+    const pane = {'Battle': 'matchup', 'Team Preview Practice': 'practice', 'Test Run': 'gauntlet', 'Speed Tiers': 'speed', 'Damage Calculator': 'calc', 'Type Chart': 'types'};
     for (const n of want) { await ui.go('Battle'); await ui.toolSwitch(n); expect(await ui.current() === pane[n], `tools bar "${n}" opened ${await ui.current()}`); }
     await ui.go('Ratings', 900); await ui.tapIn('Track Record', 900); expect(await ui.current() === 'track', 'Ratings has no link that opens Track Record');
     await close(); return; }
@@ -433,7 +434,7 @@ t('LOG-07', 'a logged win shows on Home as "1–0"', async () => {
 // ============================== CALC: Damage calc ==============================
 t('CALC-01', 'Damage calc head and "How the calc works →" link', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
-  hasAll(await ui.pageText(), NEW ? ['Damage Calc · level 50 doubles', 'most used spread'] /* Nov 16: the word list's 'most used', as My Team says */ /* Sim's 'Their Side' brief 10: the title is one small line, no big heading */ : ['Common sets, auto-filled', 'Damage calc', 'Level 50 doubles damage. Each side starts with its most common set.'], 'calc head');
+  hasAll(await ui.pageText(), NEW ? ['Damage Calculator · level 50 doubles', 'most used spread'] /* Nov 16: the word list's 'most used', as My Team says */ /* Sim's 'Their Side' brief 10: the title is one small line, no big heading */ : ['Common sets, auto-filled', 'Damage calc', 'Level 50 doubles damage. Each side starts with its most common set.'], 'calc head');
   await ui.tapIn((NEW ? 'How the Calc Works' : 'How the calc works')); expect(await ui.current() === 'method', 'link did not open How we calculate');
   expect(await ui.sees(/damage/i), 'How we calculate does not show the damage section'); await close(); });
 
