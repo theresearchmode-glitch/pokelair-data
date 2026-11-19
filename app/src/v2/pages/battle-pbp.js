@@ -14,7 +14,10 @@ V2.pbpPoster = (mine, theirs, P) => { const r = P.r, ll = P.likelyLead || [], re
 // one move of turn one: today's act and why lines, with the move, its target and the damage drawn from them (no new numbers)
 V2.pbpBeat = (b, i, T, row) => { const E = V2.esc, all = [...T.leads, ...T.opp], m = String(b.act).match(/^(.+?) into (.+)$/) || String(b.act).match(/^(Fake Out) (.+)$/);
   const tgt = m ? all.find(x => x.d === m[2]) : null, move = m ? m[1] : b.act, why = String(b.why || ''), dmg = tgt && !/^Fake Out/.test(b.act);
-  const pct = dmg ? +(why.match(/up to (\d+)%/) || [])[1] || (/^KOs/.test(why) ? 100 : 0) : 0, ko = dmg && (/\bOHKO\b/.test(why) || /^KOs/.test(why)), hk = dmg && !ko ? (why.match(/\b(\dHKO)\b/) || [])[1] : '';
+  // the stamp reads the move's own result (the text before the first note): a KO stamp only for a sure KO ('KOs', or 'OHKO' with no
+  // chance after it); 'OHKO 19%' is a chance, not a knockout, so it gets no stamp (Nov 19: Mega Floette's Moonblast showed KO at 19%)
+  const main = why.split(/; /)[0];
+  const pct = dmg ? +(main.match(/up to (\d+)%/) || [])[1] || (/^KOs/.test(main) ? 100 : 0) : 0, ko = dmg && (/\bOHKO\b(?! \d)/.test(main) || /^KOs/.test(main)), hk = dmg && !ko ? (main.match(/\b(\dHKO)\b/) || [])[1] : '';
   const say = `Move ${i + 1}, ${b.me ? 'you' : 'them'}: ${b.x.d}, ${b.speed} Speed${b.prio ? `, ${b.prio > 0 ? '+' : '−'}${Math.abs(b.prio)} priority` : ''}, ${b.act}, ${why}${ko ? ', a knockout' : ''}.`;
   return `<li class="pbp-beat ${b.me ? 'you' : 'them'}" style="--r:${row || i + 1}" aria-label="${E(say)}"><i class="pbp-n u" aria-hidden="true">${i + 1}</i><div class="pbp-band" aria-hidden="true">${V2.mon(b.x.p.n, {iw: 72, bare: true})}
     <div class="pbp-tx"><p class="pbp-who">${b.me ? 'You' : 'Them'} · ${E(b.x.d)}</p><p class="pbp-mv u">${E(move)}</p>${tgt ? `<p class="pbp-into">into ${E(tgt.d)}</p>` : ''}<p class="pbp-why">${E(why)}</p>${dmg && pct ? `<i class="pbp-hp" style="--w:${Math.min(100, pct)}%"></i>` : ''}</div>
