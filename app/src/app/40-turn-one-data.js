@@ -53,8 +53,9 @@ function turnOneData(mine, theirs, r) {
     return [x, {atk: Math.max(-6, Math.min(6, atk)), spa: Math.min(6, spa), spe: Math.min(6, spe)}]; }));
   const stOf = x => stage.get(x) || {atk: 0, spa: 0, spe: 0};
   // the stage a move hits with, in plain words for its line: 'at −1 Attack', 'at +2 Sp. Atk' (Body Press: Defense, untouched; Foul Play: the target's Attack)
-  /* d: the target; Unaware (the target's) ignores the stage, as the calc does, so no note then (Nov 19 review) */
-  const stageNote = (x, mv, d) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat || (d && abilityOf(d) === 'Unaware')) return ''; const s = stOf(x), v = mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
+  /* d: the target; Unaware (the target's) ignores the stage, as the calc does, so no note then (Nov 19 review); unless the attacker
+     has Mold Breaker, Teravolt or Turboblaze, which ignore Unaware (the calc clears the target's Ability then; independent review) */
+  const stageNote = (x, mv, d) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat || (d && abilityOf(d) === 'Unaware' && !MOLD.includes(abilityOf(x)))) return ''; const s = stOf(x), v = mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
   const hitNotes = (x, h, d) => [hitNote(h), stageNote(x, h && h.mv, d)].filter(Boolean).join(', ');
   const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, calcM(a), calcM(d), {...F, aStage: stOf(a), dAtkStage: stOf(d).atk});
   // speed in that field: Chlorophyll / Swift Swim / Sand Rush / Slush Rush double in their weather
