@@ -15,6 +15,10 @@ so and why; under authority never end a turn while work remains (default + log +
 claim something is being done or is done unless it truly is. Every check: command, exact result line, plain meaning. Report a
 wrong statement to Sim the moment it's found.
 
+## Work never stops silently (Sim, Nov 19, 8:17 AM): docs/rebuild/RULES.md section 00w
+Long checks run only as TRACKED background tasks (never a shell `&`); a watchdog wake-up ~20 min ahead whenever work runs in the
+background; "running" is only said after checking the process and its log in the same step.
+
 ## Times are always read from the clock (Sim, Nov 12)
 Nov 13: run `bash docs/rebuild/now.sh` in the same step as writing any time; `git config core.hooksPath .githooks` at session
 start (commit guard). docs/rebuild/RULES.md section 00t.

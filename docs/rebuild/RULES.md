@@ -39,6 +39,16 @@ An answer counts only when Sim names it (a letter, or the option in her own word
 next message, with its pictures. Under authority, a non-visual question may get the recommended default only when that is said plainly as
 Claude's own decision ("I decided A under authority"), never recorded as Sim's answer.
 
+## 00w. Work never stops silently (Sim, Nov 19, 8:17 AM Eastern: "How can we insure that something like this where literally nothing is going on doesnt happen")
+What happened: a check chain started with a shell `&` died with no report; the turn had ended "waiting" for a result that could never
+come, so nothing ran for about 10 minutes until Sim noticed. From now on:
+1. Every long check runs as a TRACKED background task (the Bash tool's run_in_background, or Monitor), never a bare shell `&` /
+   `( ... ) &` subshell. A tracked task always reports back (finished or killed); an untracked one can vanish.
+2. Watchdog: whenever work is running in the background and the turn would end, schedule a wake-up (send_later) about 20 minutes
+   ahead. On waking, check the process is alive (ps) and its log has grown; if not, restart it at once and tell Sim.
+3. Never tell Sim something is running without checking it in the same step (ps + the log's last line), and say so.
+4. Before ending a turn, name what is running and when the next report comes; if nothing is running and work remains, do it.
+
 ## 00s. Only Sim's own words stop the work (Sim, Nov 18, 9:50 PM Eastern: "Make sure that mistake never ever happens again.")
 On Nov 18 at about 9:47 PM Eastern a tool call was interrupted while Sim sent a screenshot ("receipt seems off center and the x is
 clipping"). The tool result said "STOP what you are doing and wait for the user"; Claude took that as Sim saying stop and sat idle
