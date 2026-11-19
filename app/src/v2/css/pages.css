@@ -2718,6 +2718,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .tk.big .tk-stub{grid-area:s;min-width:112px;border-radius:0 var(--r-s) 0 0}.tk.big .tk-stub b{font-size:var(--d64)}
   .tk.big .tk-mid{grid-area:m;padding:var(--s4) var(--s4) var(--s5);border-top:2px dashed var(--tk-tear)}
   .tk.big .tk-name{font-size:var(--t22)}
+  /* Sim Q31 (Nov 19): a shorter wall on phones: 12px above each small ticket (was 24), 16px between the wall's parts (was 24) */
+  .tk-wall>.tk{margin-top:var(--s3)}.tk.big{margin-top:var(--s8)}.ev-wall{gap:var(--s4)}
 
 }
 @media (max-width:389.98px){.tk-hero{width:72px}.tk-hero .np-mon{--iw:68px}.tk-five{gap:0}.tk-five .np-mon{--iw:36px}}
