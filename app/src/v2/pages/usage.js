@@ -43,6 +43,14 @@ V2.usSpot = (R, d) => { if (!R || !R.p) return ''; const E = V2.esc, p = R.p, x 
       <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Pokémon Page</span></button>${st === 'ok' ? `<button type="button" class="np-btn2" data-v2add="${E(p.n)}"><span>Add to My Team</span></button>` : ''}</div>
       ${st === 'have' ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : ''}${x ? `<p class="fine">Rated ${RS(x.r.total)} · ${lTier(x.r.total).k} tier</p>` : ''}</div></div>`; };
 
+/* the Podium's key line (audit Nov 19 #5, C3): with the Ranked ladder chosen it said "it gives no percentages" under a hero card showing
+   38.3% and 51.9%. Those come from usSpot's fallback (V2.raNums: the Ratings page's Online tournaments numbers, lairHead src.tour = Limitless);
+   the Showdown ladder has shares but no win rate, so its hero's win rate is the same fallback. Say which list each borrowed number is from. */
+/* Kept to the old line count where it can be (measured: 2 lines at 320, 1 from 820; the Showdown ladder's line is one longer at 320-389). */
+V2.usKey = rows => { const R = rows[0], N = R && R.p ? V2.raNums(R.p) : {};
+  const fbU = R && R.u == null && N.u != null, fbW = R && !R.t.w && N.w != null, has = rows.some(x => x.u != null);
+  const what = fbU && fbW ? 'share and win rate above are' : fbU ? 'share above is' : fbW ? 'win rate above is' : '';
+  return 'The ten most used, in order.' + (has ? ' Tap one to see how it is played.' : what ? '' : ' This list ranks them; it gives no percentages.') + (what ? ` The ${what} from Online tournaments.` : ''); };
 V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
   if (!META[SRC[ui.metaSrc]]) { const alt = ['ingame', 'tour', 'ladder'].find(k => META[SRC[k]]); if (alt) ui.metaSrc = alt; }
   const d = metaDoc(), kind = d && (d.kind || 'ladder');
@@ -61,7 +69,7 @@ V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
   else { const pick = rows.find(R => R.t.n === U.pick) || rows[0], top = rows.slice(0, 3), ben = rows.slice(3, 10), rest = rows.slice(10);
     const pod = [top[1], top[0], top[2]].map((R, i) => R ? `<div class="us-step us-p${[2, 1, 3][i]}">${V2.usFig(R, 'pod', `<span class="us-blk u" aria-hidden="true">${[2, 1, 3][i]}</span>`)}</div>` : '').join('');
     const halves = ben.length > 4 ? [ben.slice(0, 4), ben.slice(4)] : [ben];
-    body = `<div class="gs-title"><h2 class="u">The Podium</h2><p class="gs-key fine">${rows.some(R => R.u != null) ? 'The ten most used, in order. Tap one to see how it is played.' : 'The ten most used, in order. This list ranks them; it gives no percentages.'}</p></div>
+    body = `<div class="gs-title"><h2 class="u">The Podium</h2><p class="gs-key fine">${V2.usKey(rows)}</p></div>
       <div class="us-podium"><div class="us-steps">${pod}</div><div class="us-benches">${halves.map(h => `<div class="gs-row us-bench" style="--c:4">${h.map(R => V2.usFig(R, 'bench')).join('')}</div>`).join('')}</div></div>
       ${pick ? V2.usHow(pick, d) : ''}
       ${rest.length ? `${U.all ? `<div class="us-list">${rest.map(R => V2.usFig(R, 'row')).join('')}</div>` : ''}<button type="button" class="np-link us-rest" data-usrest aria-expanded="${U.all}">${U.all ? 'Show the top 10' : `Ranks 11–${rows[rows.length - 1].t.r} ›`}</button>` : ''}

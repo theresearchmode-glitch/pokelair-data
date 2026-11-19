@@ -1147,6 +1147,17 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       const ws = await wk(q), tag = `${team ? team[0] : 'sample'} ${W} ${dir}`; if (ws.length !== 2) { bad.push(`${tag}: ${ws.length} wings`); continue; }
       for (const w of ws) { seen.push(w.t); if (['ko', 'can', 'sv'].some(k => w.said[k] !== w.has[k]) || w.said.ko + w.said.can + w.said.sv !== w.all || w.lines !== 1) bad.push(`${tag}: "${w.t}" over ${w.has.ko} KO / ${w.has.can} can / ${w.has.sv} survive (${w.lines} lines)`); } }
     await c.close(); }
+  /* Audit Nov 19 #5 (C3, word list): Usage's hero card vs the Podium's key line, for each source chip. When the chosen list has no shares
+     (no % on the Podium) but the hero shows one, or the list has no win rate for its #1 (data: metaDoc().top[0].w) but the hero shows one,
+     the key line names where they come from (Online tournaments) and never says the page "gives no percentages" */
+  { const us = [], ctx = await b.newContext({viewport: {width: 820, height: 900}}), q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#usage'); await q.waitForTimeout(2000);
+    for (const s of ['ingame', 'tour', 'ladder']) { if (!await q.locator(`[data-ussrc="${s}"]:not([disabled])`).count()) { us.push([s, 'chip off', false]); continue; } await q.locator(`[data-ussrc="${s}"]`).first().click(); await q.waitForTimeout(800);
+      const r = await q.evaluate(() => { const f = [...document.querySelectorAll('.ra-spot .gs-facts p')].map(p => p.innerText.replace(/\s+/g, ' ')), share = f.some(t => /Of teams\s*[\d.]+%/.test(t)), win = f.some(t => /Win rate\s*[\d.]+%/.test(t));
+        const podPct = [...document.querySelectorAll('.us-fig.pod .us-nums, .us-fig.bench .us-nums')].some(e => /%/.test(e.textContent)), listW = !!(window.__ev ? window.__ev('(metaDoc().top[0] || {}).w') : null), key = document.querySelector('.gs-key').textContent;
+        return {share, win, podPct, listW, key}; });
+      const needU = r.share && !r.podPct, needW = r.win && !r.listW, named = /from Online tournaments/.test(r.key);
+      us.push([s, r.key, (needU || needW ? named : true) && !(r.share && /gives no percentages/.test(r.key)) && (!needU || /share/.test(r.key)) && (!needW || /win rate/.test(r.key))]); }
+    await ctx.close(); ok(us.length === 3 && us.every(x => x[2]), `Audit Nov 19 #5: Usage's key line names the source of any hero number the chosen list doesn't give, and never says "no percentages" beside one (${us.map(x => x[0] + ': "' + x[1] + '"' + (x[2] ? '' : ' WRONG')).join(' | ')})`); }
   ok(seen.length === 24 && !bad.length, `Audit Nov 19 #4: the KO Board wings' captions count exactly the tiles under them, on one line (3 teams x 1100/1280 x both directions; ${bad.join(' | ') || 'e.g. "' + seen.slice(0, 2).join('" / "') + '"'})`); }
 } // main1 end
 if (part('main2')) {
