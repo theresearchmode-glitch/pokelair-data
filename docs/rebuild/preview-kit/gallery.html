@@ -43,32 +43,51 @@ h1 span{color:var(--plot)}
 
 </head><body>
 <div class="wrap">
-  <div class="eyebrow">Rebuild · built live, step by step · updated Nov 13</div>
+  <div class="eyebrow">Rebuild · built live, step by step · updated Nov 18</div>
   <h1>NastyPlot <span>Full Redesign.</span></h1>
-  <p class="lede">The new site, coming together one step at a time: this page is updated after every finished step. Cards marked “Built from the code” are the real new site, so their buttons work; the rest are the approved mock-ups each page is built from. Open any page in Day or Night and resize the window: every page is checked from 320 to 2560 wide.</p>
-  <div class="facts"><span><b>7</b>real pages built</span><span><b>Next</b>Meta and the tools</span><span><b>2</b>modes, day and night</span><span><b>0</b>pages over their length limits</span></div>
+  <p class="lede">The new site, coming together one step at a time: this page is updated after every finished step. Every card is the real new site, built from the code, so its buttons work. Open any page and switch Day or Night inside it.</p>
+  <div class="facts"><span><b>25</b>real pages built</span><span><b>Next</b>final polish, then the switch</span><span><b>2</b>modes, day and night</span><span><b>0</b>mock-ups left</span></div>
 
   <div class="grid" id="grid"></div>
 
-  <p class="note">Mock-ups of pages already rebuilt (My Team, My Box, the info sheet, first visit, Home, Build, Battle) are gone from this list: the real pages replace them. Use "‹ All pages" at the bottom left of a mock-up to come back here.</p>
+  <p class="note">Every mock-up is gone from this list: the real pages replace them all, Meta's Ratings included. Not listed: the info sheet (it opens over any page from a Pokémon's name) and the owner-only counts page.</p>
 </div>
 
 <script>
 const P=[
- ['foundation#team','My Team: the real build','The first real page: today\'s logic in the new design. Strength Score, your six with the lead pair, Set, Matchups from real games, Suggestions you can Apply (and Undo), Team Checks, the Team Sheet, Save Team, Saved Teams, Edit Set, Share (Team Card, Poster or Sheet, light or dark), Import, Clear Team, opening a shared team link, and Your Games (log a game with your leads and their team; your record and what it says).','Built from today\'s code · numbers being checked against today\'s site',1],
- ['foundation#box','My Box: the real build','Your box like the game\'s: boxes of 30 on a wallpaper mixed from the types inside, flip with the arrows, dots, a swipe or the arrow keys. Pick one to see its rating and numbers, open its sheet, add or swap it into your team, or remove it (Undo). Arrange by A–Z, Type, Newest, Oldest or Rating; Add a Pokémon; box links; Reset.','Built from the code · checked 320 to 2560 wide',1],
- ['foundation#sheet','Info sheet: the real build','Garchomp\'s sheet over My Team: rating and rank, share of teams, win rate, Speed, the forms strip, then Info, Meta, Rating and Forms (every form side by side). Tap any Pokémon in search, a form or a partner to open its own.','Built from the code · all 345 sheets checked at 320 wide',1],
- ['foundation#team-empty','My Team: empty, with today\'s underdog','A first visit or an empty team: build, add or open a saved team, beside today\'s underdog. Flapple first, then one a day from the lowest-rated Pokémon with real games. Add Flapple, or open its sheet.','Built from the code · checked 320 to 2560 wide',1],
- ['foundation','New foundation: style guide','The real new build, not a mock-up: tokens, buttons, chips, tabs, the score and Pokémon on their floors. Switch day or night inside it.','Built from the code · checked 320 to 2000 wide',1],
- ['foundation#home','Home: the real build','Score your team, build or plan, the most used Pokémon, the latest winner beside your six, Top of the Meta and today\'s underdog.','Built from the code · checked 320 to 2560 wide',1],
- ['foundation#build','Build: the real build','Build me a team from your box or the whole roster: the best team first with its Strength Score, then other options, recent winners and cores.','Built from the code · checked 320 to 2560 wide',1],
- ['foundation#battle','Battle: the real build','Bring these four, lead the pair: the plan against their six, turn one in move order, the read, real-game pairings and the Battle Log.','Built from the code · checked 320 to 2560 wide',1],
- ['ratings','Ratings','Who wins right now: today\'s order and ranks, the featured Pokémon beside the list, your team docked below. Comes with the Meta rebuild.','Mock-up · Phone 2,949 · iPad 2,308 · Desktop 1,790 px']];
+ ['foundation#home','Home: The Stampede','Sharply raise your win rate: every rated Pokémon in one herd, sized by its rating; your six with its plan; the tools; and the post, with Mystery Gifts and news.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#gifts','Mystery Gifts: The Post Room','Every Mystery Gift: live ones wait at the counter with the code on the label; past ones become stamps, postmarked the day they ended.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#news','Champions News: The Dispatch','Official Pokémon Champions news as one newspaper front page: the lead story, In Brief, the next event and the gifts waiting.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#build','Build','Build me a team from your box or the whole roster: the best team first with its Strength Score, then other options, recent winners and cores.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#team','My Team','Your six with its Strength Score, the lead pair and each set, Matchups from real games, Suggestions you can Apply (and Undo), Team checks, the Team Sheet, Saved Teams, Share and Your Games.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#team-empty','My Team: empty, with today\'s underdog','A first visit or an empty team: build, add or start from a winner, beside today\'s underdog, one a day from the lowest-rated Pokémon with real games.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#box','My Box','Your box like the game\'s: boxes of 30 on a wallpaper mixed from the types inside. Pick one to see its rating, add or swap it into your team, or remove it (Undo). Arrange by A–Z, Type, Newest, Oldest or Rating.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#compare','Compare Teams','Two teams side by side (My Team, a saved team, an event winner or a pasted team): the Strength Score, speed, and what only each team handles.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#battle','Battle','Who are you facing? Enter their six or pick a top team: bring these four, lead the pair, turn one move by move, and Your Games.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#practice','Team Preview Practice','Pick four and two leads against a real ladder team, then see what strong players chose against it.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#gauntlet','Test Run','Your six against the top 20 tournament teams, dealt into three piles: The Problems, The Coin Flips and The Good Matchups.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#speed','Speed Tiers','Who moves first: your six on a track against the 20 most-used Pokémon, with Tailwind, Trick Room, weather and paralysis.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#calc','Damage Calc','Any attacker into any defender as a card duel: the damage range, the chance to KO, the KO Board, weather and terrain.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#types','Type Chart','What hits a Pokémon (or one or two types) hard, and what its own types hit, with its Ability\'s notes.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#meta','Meta: Ratings','Who wins right now: every Pokémon rated 0–100 from real tournament results, by tier, with the featured Pokémon, search and filters.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#pokemon=Garchomp','Pokémon page','One full page per Pokémon at its own address: rating and tier, share of teams, win rate, Speed, forms, popular sets and partners. Shown: Garchomp.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#usage','Usage','Who gets picked right now: the podium of the most used, how each is played, who it\'s usually alongside, and ranks 11 to 60, by source.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#sets','Popular Sets','How each Pokémon is built right now: moves, item, Ability and nature from Online tournaments or the Showdown ladder, beside your own set.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#tournaments','Winning Teams','The teams that won recent events, as winning hands: load one, practice against it, or compare it with yours.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#events','Events','Every result, event by event: the next events, then a ticket for each finished one with the winner\'s six.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#archetypes','Archetypes','The eight team styles of the latest top teams, biggest first: what each is, its key Pokémon, and how to beat it.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#weekly','This Week','What changed this week against the week before: teams and events, Pokémon on the move (rising and falling), and Share this week.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#track','Track Record','How right our ratings have been: the calls checked against later events, with the biggest hits and misses.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#method','How We Calculate','Every number and where it comes from: ratings, the Strength Score and the rest, in ten parts; tap one for the working.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#about','About & Legal','Who makes NastyPlot, the fine print, where the data comes from, and everything the site saves.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation#feedback','Send Feedback','One question, five kinds of note, a box and Send. Anonymous: no name or email asked.','Built from the code · picture from the Preview build, Nov 18',1],
+ ['foundation','New foundation: style guide','The real new build\'s building blocks: tokens, buttons, chips, tabs, the score and Pokémon on their floors. Switch day or night inside it.','Built from the code · picture from the Preview build, Nov 18',1]];
 const L=f=>f.includes('#')?f.replace('#','.html#'):f+'.html#guide';
+const T=f=>f.replace('#','-').replace(/=.*/,''); /* thumb name: foundation#pokemon=Garchomp -> foundation-pokemon */
 const esc=s=>s.replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
 document.getElementById('grid').innerHTML=P.map(([f,t,d,h,live])=>`<article class="card">
-  <a class="shot l" href="${live?L(f):f+'.html#light'}" aria-label="Open ${esc(t)} in day mode"><img src="thumbs/${f.split('#')[0]}${f.includes('#')?'-'+f.split('#')[1]:''}-light.jpg" alt="${esc(t)} in day mode" loading="lazy"></a>
-  <a class="shot d" href="${live?L(f):f+'.html#dusk'}" aria-label="Open ${esc(t)} in night mode"><img src="thumbs/${f.split('#')[0]}${f.includes('#')?'-'+f.split('#')[1]:''}-dusk.jpg" alt="${esc(t)} in night mode" loading="lazy"></a>
+  <a class="shot l" href="${live?L(f):f+'.html#light'}" aria-label="Open ${esc(t)} in day mode"><img src="thumbs/${T(f)}-light.jpg" alt="${esc(t)} in day mode" loading="lazy"></a>
+  <a class="shot d" href="${live?L(f):f+'.html#dusk'}" aria-label="Open ${esc(t)} in night mode"><img src="thumbs/${T(f)}-dusk.jpg" alt="${esc(t)} in night mode" loading="lazy"></a>
   <h2>${esc(t)}</h2><p>${esc(d)}</p><div class="h">${esc(h)}</div>
   <div class="row">${live?`<a class="main" href="${L(f)}"><span>Open</span></a>`:`<a class="main" href="${f}.html#light"><span>Day</span></a><a href="${f}.html#dusk"><span>Night</span></a>`}</div></article>`).join('');
 </script>

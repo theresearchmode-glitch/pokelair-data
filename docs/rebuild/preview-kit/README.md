@@ -4,16 +4,17 @@ Artifact: https://claude.ai/artifact/8KBkk7PtbGjVzLzLKK5akf (last published: ver
 
 ## Files here
 - `index.html`: the artifact's page. It forwards straight to `foundation.html#team` (Sim, Nov 11).
-- `gallery.html`: the old mock-up card gallery, published as `gallery.html`.
-  **It contains two claims that are wrong for the built page** (Sim's sweep, Nov 11): "all inside the length limits" and
-  "same numbers as today's site". Do not republish it as is. New wording needs Sim's OK first (visual change).
+- `gallery.html`: the "All mock-ups" page, published as `gallery.html`. Since Nov 18 (design review #16) it lists the 25 real pages
+  plus My Team empty and the style guide (27 cards, no mock-ups left). Its card pictures are `thumbs/<name>-light.jpg` and
+  `-dusk.jpg` here (1280x800 shots of a `--v2 --preview-data` build, saved 640x400 JPEG). pubprep.sh copies both into
+  `$S/pub/redesign/`; publish them with the page (`"gallery.html"` and each `"thumbs/<file>.jpg"` in `files`).
 - `rebuild-preview.sh`: builds `foundation.html` (the real new site, built with `--preview-data`).
 - `scripts/`: the Playwright checks used on Nov 11 night (iPhone WebKit sweeps ios*.js, iPad layout ipad.js, header fit
   boxlink.js, jump-link and suggestion-row repro bug2.js). Paths inside are the old chat's scratch folder; change them to yours.
 
 ## Files NOT here (they stay on the artifact)
-The artifact also holds the mock-up pages (home, build, battle, ratings, mybox, myteam, firstvisit, sheet, sheet-forms .html),
-`thumbs/`, `art/`, `tokens.css` and the 346 sprites in `v2art/` (the same files as `app/src/v2/art/`, minus meta.json).
+The artifact also holds the mock-up pages (home, build, battle, ratings, mybox, myteam, firstvisit, sheet, sheet-forms .html; no longer linked from gallery.html),
+the mock-ups' old thumbs, `art/`, `tokens.css` and the 346 sprites in `v2art/` (the same files as `app/src/v2/art/`, minus meta.json).
 A publish only replaces the files you pass; files left out are kept. To fetch one, use the Artifact tool's read action with its path.
 The mock-up pages are built from `docs/rebuild/mocks/*.tpl.html`.
 
