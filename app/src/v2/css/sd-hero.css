@@ -21,6 +21,12 @@
 /* the tagline stands inside the herd: the crowd behind it, the top-rated in front */
 .sdh-h{position:relative;z-index:3;padding:var(--s6) var(--gut) 0;font-size:var(--d-sdhero);line-height:.94;text-align:center;color:var(--sd-on-band);pointer-events:none}
 .sdh-h .l1,.sdh-h .l2{display:block}.sdh-h .l2{color:var(--sd-line2)}
+/* Q19 A (Sim, Nov 19): same colours, a band-blue glow behind the words (a glow, not a box): a close halo, 5px wide, soft-edged, then a wide
+   soft glow, so the crowd never shows right beside a letter and line 2 (#9BDCFF) keeps its 3.17:1 on the band blue everywhere (3:1 rule for
+   big text). A softer glow alone left the crowd showing at the letter edges (2.4-2.8:1 light); measured from pixels by test/v2-q19.mjs */
+.sdh-h{--g:var(--sd-hero);text-shadow:2px 0 2px var(--g),-2px 0 2px var(--g),0 2px 2px var(--g),0 -2px 2px var(--g),2px 2px 2px var(--g),-2px 2px 2px var(--g),
+  2px -2px 2px var(--g),-2px -2px 2px var(--g),5px 0 2px var(--g),-5px 0 2px var(--g),0 5px 2px var(--g),0 -5px 2px var(--g),4px 4px 2px var(--g),
+  -4px 4px 2px var(--g),4px -4px 2px var(--g),-4px -4px 2px var(--g),0 0 12px var(--g),0 0 24px var(--g)}
 .sdh-m[hidden],.sdh-c[hidden],.sdh-tick li[hidden]{display:none}
 .sdh-herd{position:absolute;inset:0;z-index:2;pointer-events:none}
 .sdh-m{position:absolute;pointer-events:auto;cursor:pointer}
