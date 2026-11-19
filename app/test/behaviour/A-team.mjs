@@ -247,7 +247,9 @@ t('TEAM-08', 'Your Six: six tiles lead/back/bench; tapping a tile shows its set,
     ok(!/(Set|Editing) /.test(await r.ui.setCard()) && !(await r.ui.tilePressed(tiles[0])) && await r.ui.sees('Tap a Card to edit, replace or remove it'), `phone opens a set before any tap, or has no "Tap a Card…" line (${(await r.ui.setCard()).slice(0, 60)})`);
     await r.ui.tapTile('Garchomp'); let c = await r.ui.setCard(); ok(/(Set|Editing) Garchomp /.test(c) && !new RegExp('(Set|Editing) ' + tiles[0] + ' ').test(c), 'no set card for Garchomp: ' + c.slice(0, 80)); ok(await r.ui.tilePressed('Garchomp') && !(await r.ui.tilePressed(tiles[0])), 'Garchomp\'s tile not the marked one');
     await r.ui.tapTile('Garchomp'); c = await r.ui.setCard(); ok(/(Set|Editing) Garchomp /.test(c) && await r.ui.tilePressed('Garchomp'), 'second tap hid Garchomp\'s set (the picked set always shows)'); await r.close();
-    const d = await myTeam({team: TEAM}), d0 = (await d.ui.sixTiles())[0]; ok(d0 && new RegExp('(Set|Editing) ' + d0 + ' ').test(await d.ui.setCard()), 'desktop did not open the first lead\'s set'); await d.close(); return; }
+    /* Sim, Nov 18 (Q5 A): desktop works like phones: no set before a tap, the 'Tap a Card…' line, a tap opens that Card's set */
+    const d = await myTeam({team: TEAM}), d0 = (await d.ui.sixTiles())[0]; ok(!/(Set|Editing) /.test(await d.ui.setCard()) && await d.ui.sees('Tap a Card to edit, replace or remove it'), 'desktop opened a set before any tap');
+    await d.ui.tapTile(d0); ok(new RegExp('(Set|Editing) ' + d0 + ' ').test(await d.ui.setCard()), 'desktop: tapping the first lead did not open its set'); await d.close(); return; }
   const r = await myTeam({team: TEAM, width: 390}); const tiles = await r.ui.sixTiles(); ok(tiles.length === 6, `${tiles.length} tiles`); has(await r.ui.text(), 'Your Six');
   const plan = await r.ui.gamePlanLine(); const m = plan.match(/lead (.+?) \+ (.+?), back (.+?) \+ (.+?), bench (.+?) \+ (.+?)\./); ok(m, 'no plan line'); ok(tiles.join('|') === m.slice(1).join('|'), `tiles ${tiles.join(',')} not in lead/back/bench order ${m.slice(1).join(',')}`);
   ok(await r.ui.sees('Tap a Pokémon to see its set'), 'phone shows no "Tap a Pokémon to see its set" hint'); ok(!(await r.ui.setCard()), 'phone opened a set card before any tap');
@@ -1174,7 +1176,7 @@ t('X-05', 'Apply keeps your place: the page does not jump to the top', async () 
   const y1 = await r.ui.pageScrollY(); ok(Math.abs(y1 - y0) < 400, `page jumped from ${y0} to ${y1}`); await r.close(); });
 
 t('X-06', 'Back closes what\'s open on top first and stays on the page', async () => {
-  const r = await myTeam(); await r.ui.tapText(NEW ? 'Pokémon Page ›' : 'Info sheet ›', 900); ok(await r.ui.infoSheet(), NEW ? 'Pokémon page did not open' : 'sheet did not open'); await r.ui.goBack();
+  const r = await myTeam(); if (NEW) await r.ui.showSet((await r.ui.sixTiles())[0]); /* Q5 A (Nov 18): the panel opens on a Card tap on desktop too */ await r.ui.tapText(NEW ? 'Pokémon Page ›' : 'Info sheet ›', 900); ok(await r.ui.infoSheet(), NEW ? 'Pokémon page did not open' : 'sheet did not open'); await r.ui.goBack();
   ok(!(await r.ui.infoSheet()), NEW ? 'Back did not leave the Pokémon page' : 'Back did not close the sheet'); ok(await r.ui.current() === 'report', NEW ? 'Back did not return to My Team' : 'Back left My Team');
   await r.ui.openEditPanel('Garchomp'); await r.ui.goBack(); ok(!(await r.ui.editPanel()), 'Back did not close the edit panel'); ok(await r.ui.current() === 'report', 'left My Team');
   await r.ui.go('Saved Teams', 700); await r.ui.goBack(); ok(await r.ui.current() === 'report', 'Back did not return to the previous page'); await r.close(); });

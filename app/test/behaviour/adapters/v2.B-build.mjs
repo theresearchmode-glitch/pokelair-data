@@ -170,7 +170,7 @@ export default (ui, pg) => {
     toastOffersUndo: () => vis('.np-sheet-undo button, .np-toast #toastUndo'),
     undoToast: () => click('.np-sheet-undo button, .np-toast #toastUndo', 600),
     /** is the visible pressable control with this text pressed? (the new sliders' buttons carry aria-pressed) null if not found */
-    pressed: async (m, within = 'body') => (within === AREAS.cores && await tabTo('cores'), pg.evaluate(([m, re, w]) => { const r = re ? new RegExp(re[0], re[1].includes('i') ? re[1] : re[1] + 'i') /* Title Case labels here */ : null, t = e => (e.innerText || '').replace(/\s+/g, ' ').trim();
+    pressed: async (m, within = 'body') => (within === AREAS.cores && await tabTo('cores'), pg.evaluate(([m, re, w]) => { { const f = document.querySelector('#main details[data-v2adj]:not([open]) > summary'); if (f) f.click(); } /* Q5 A: settings sit in a fold on desktop too */ const r = re ? new RegExp(re[0], re[1].includes('i') ? re[1] : re[1] + 'i') /* Title Case labels here */ : null, t = e => (e.innerText || '').replace(/\s+/g, ' ').trim();
       const root = document.querySelector(w) || document.body;
       const e = [...root.querySelectorAll('[aria-pressed]')].find(e => e.getClientRects().length && !e.closest('[hidden]') && (r ? r.test(t(e)) : t(e).toLowerCase().includes(m.toLowerCase())));
       if (e) return e.getAttribute('aria-pressed') === 'true';
@@ -288,7 +288,7 @@ export default (ui, pg) => {
     /** the Megas-on-team slider (sgmega, on My Team and Build): its thumb position, its icons, its buttons as a screen reader hears them */
     megasSliderPos: () => pg.evaluate(() => { const s = [...document.querySelectorAll('[data-v2slide="sgmega"]')].find(e => e.getClientRects().length); return s ? +s.style.getPropertyValue('--i') : null; }),
     sliderHasIcons: () => pg.evaluate(() => { const s = [...document.querySelectorAll('[data-v2slide="sgmega"]')].find(e => e.getClientRects().length); return s ? [...s.querySelectorAll(':scope > button')].filter(b => b.querySelector('svg')).length : 0; }),
-    megasButtons: () => pg.evaluate(() => { const s = [...document.querySelectorAll('[data-v2slide="sgmega"]')].find(e => e.getClientRects().length); return s ? [...s.querySelectorAll(':scope > button[aria-pressed]')].map(b => ({name: b.innerText.trim(), pressed: b.getAttribute('aria-pressed')})) : []; }),
+    megasButtons: () => pg.evaluate(() => { { const f = document.querySelector('#main details[data-v2adj]:not([open]) > summary'); if (f) f.click(); } /* Q5 A */ const s = [...document.querySelectorAll('[data-v2slide="sgmega"]')].find(e => e.getClientRects().length); return s ? [...s.querySelectorAll(':scope > button[aria-pressed]')].map(b => ({name: b.innerText.trim(), pressed: b.getAttribute('aria-pressed')})) : []; }),
     /** the site's own × in the box (Nov 18: V2.CLR, shell.js; the browser's own × is hidden): shown? */
     clearButtonShown: label => { const s = boxSel(label); if (!s) NOT(`the box "${label}"`); return pg.evaluate(s => { const i = [...document.querySelectorAll(s)].find(e => e.getClientRects().length), f = i && i.closest('.np-field'), x = f && f.querySelector('[aria-label="Clear"]');
       return !!x && x.getClientRects().length > 0 && getComputedStyle(x).visibility !== 'hidden'; }, s); },
@@ -349,7 +349,7 @@ export default (ui, pg) => {
     suggestionsBusy: () => pg.evaluate(() => { const s = document.querySelector('#main #tm-sg'); return !!s && (!!s.querySelector('[aria-busy=true]') || /Working out/.test(s.innerText)); }),
     mySuggestionCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-sg [data-v2plan]')].filter(e => e.getClientRects().length).length),
     applyMySuggestion: (n = 0) => click(`#main #tm-sg [data-v2plan="${n}"]`, 900),
-    setSuggestFrom: async label => { const ok = await pg.evaluate(l => { const b = [...document.querySelectorAll('#main [data-v2slide="sgpool"] > button')].find(e => e.getClientRects().length && e.innerText.trim().toLowerCase() === l.toLowerCase()); if (b) b.click(); return !!b; }, label);
+    setSuggestFrom: async label => { await pg.evaluate(() => { const f = document.querySelector('#main details[data-v2adj]:not([open]) > summary'); if (f) f.click(); }); /* Q5 A (Nov 18): the fold on desktop too */ const ok = await pg.evaluate(l => { const b = [...document.querySelectorAll('#main [data-v2slide="sgpool"] > button')].find(e => e.getClientRects().length && e.innerText.trim().toLowerCase() === l.toLowerCase()); if (b) b.click(); return !!b; }, label);
       if (!ok) throw new Error('no Suggest from choice ' + label); await pg.waitForTimeout(700); },
     showMySuggestions: async () => { await pg.evaluate(() => { const o = document.querySelector('#main #tm-sg'); window.scrollBy(0, o.getBoundingClientRect().top - innerHeight / 3); }); await pg.waitForTimeout(400); },
     mySuggestionsTop: () => pg.evaluate(() => Math.round(document.querySelector('#main #tm-sg').getBoundingClientRect().top)),
