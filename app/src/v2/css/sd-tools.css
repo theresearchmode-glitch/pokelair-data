@@ -2,9 +2,12 @@
    Twelve slanted plates of different sizes on the beige band, every row full; colours from the --sd- tokens (tokens.css, day and night).
    A plate's shape (and its offset shade) is drawn behind it, so pictures can break out of the top without being cut. No motion. */
 .sd-tools.sdt{background:var(--sd-beige);color:var(--ink)}
-.sdt-h{font-size:var(--d-hero);line-height:1;margin:0 0 var(--s8);color:var(--sd-card-ink)}
+.sdt-h{font-size:var(--d-hero);line-height:1;margin:0 0 var(--s3);color:var(--sd-card-ink)}
 :root[data-theme="night"] .sdt-h{color:var(--ink)}
 .sdt-h span{color:var(--plot-text)}
+/* one plain line under the playful heading (Sim's Q23 A, Nov 19): the gap the heading had above the plates now sits under this line */
+.sdt-desc{max-width:72ch;margin:0 0 var(--s8);font:500 var(--t17)/1.5 var(--b);color:var(--sd-card-ink)}
+:root[data-theme="night"] .sdt-desc{color:var(--ink)}
 .sdt-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--s6)}
 
 /* a plate: a "/"-slanted shape (--k is the slant) with its shade; the title's link covers the whole plate */
@@ -194,7 +197,7 @@
 @media (max-width:699.98px){
   .sdt-grid{gap:var(--s4)}.sdt-p{--k:12px;padding:var(--s4) calc(var(--s3) + var(--k))}
   .sdt-t{font-size:var(--t22)}.sdt-d{font-size:var(--t15)}.sdt-l{display:none}.sdt-s{display:inline}
-  .sdt-h{margin-bottom:var(--s6)}
+  .sdt-h{margin-bottom:var(--s6)}.sdt-desc{font-size:var(--t15)}
   .sdt-speed{--k:16px;margin-top:var(--s10)}.sdt-speed .sdt-tx{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s3)}
   .sdt-race{margin-top:calc(var(--s12) * -1);gap:var(--s1)}.sdt-run[data-k="5"],.sdt-run[data-k="6"],.sdt-run[data-k="7"]{display:none}
   .sdt-run .np-mon{--iw:88px}.sdt-spe{font-size:var(--t28)}
@@ -250,7 +253,7 @@
 /* iPads too (Sim, Nov 18: A): twelve plates made Home on an iPad (8,180px at 820) longer than on a phone, so under 1100 Tools B */
 @media (max-width:1099.98px){
   .sd-tools.sd-band{padding-top:calc(var(--s10) + var(--sd-cut))}
-  .sdt-h{margin-bottom:var(--s3)}
+  .sdt-h{margin-bottom:var(--s2)}.sdt-desc{margin-bottom:var(--s3)}
   .sdt-grid{gap:var(--s3)}
   .sdt-p{padding:var(--s3) calc(var(--s3) + var(--k))}
   .sdt-t{font-size:var(--t17);line-height:1.2}

@@ -45,5 +45,5 @@ V2.sdPost = () => { const E = V2.esc, D = V2.sdpData(), n = (k, w) => `All ${hom
   const news = solo ? '' : `<section class="sdp-col sdp-news" aria-labelledby="sdpNH"><header class="sdp-ch"><h3 class="u" id="sdpNH">Champions News</h3><a class="sdp-all" href="#news">${n(D.news, 'Story').replace(/ys$/, 'ies')} ›</a></header>
     <div class="sdp-tilt">${V2.dpFront(D.P, {compact: true})}</div></section>`;
   return `<section class="sd-band sd-post sdp" aria-labelledby="sdpH"><div class="sdp-top"><h2 class="u sdp-h" id="sdpH">The post <span>is in.</span></h2>${bird}
-    <p class="sdp-lede">Gift codes before they run out, and the news from Pokémon Champions, carried in by one of the herd.</p></div>${V2.sdpNew()}
+    <p class="sdp-lede"><span class="sdp-ll">Gift codes before they run out, and the news from Pokémon Champions, carried in by one of the herd.</span><span class="sdp-ls">Gift codes and Pokémon Champions news.</span></p></div>${V2.sdpNew()}
     <div class="sdp-cols${solo ? ' sdp-solo' : ''}">${gifts}${news}</div></section>`; };

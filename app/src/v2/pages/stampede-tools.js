@@ -106,7 +106,9 @@ V2.sdTools = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n => 
   const chips = `<nav class="sdt-chips" aria-label="More of the twelve tools"><ul>${chip('Type Chart', flags)}${chip('Winning Cores', K ? art(K.ns[0]) : '')}${chip('Archetypes', A.length && A[0].mon ? art(A[0].mon.n) : '')}${chip('Popular Sets', S2 ? art(S2.x.n) : '')}${chip('Events', bigN(evN))}${chip('How We Calculate', bigN(X.D.teams))}</ul></nav>`;
   // More tools (lead, Nov 18): today's Home links 18 tools; the six without a plate stay one tap away as quiet text links
   const more = (V2.HOME_TOOLS || []).filter(([n]) => !V2.SDT_GO[n]), moreH = more.length ? `<nav class="sdt-more" aria-label="More tools"><h3 class="sdt-mh">More tools</h3><ul>${more.map(([n, d, to]) => `<li><a class="np-link" href="#${to}" data-sdtool="${E(n)}" title="${E(d)}">${E(n).replace(/ (\S+)$/, '\u00a0$1')}\u00a0<span aria-hidden="true">›</span></a></li>`).join('')}</ul></nav>` : '';
+  // one plain line under the playful heading (Sim's Q23 A, Nov 19); its count is the Ratings plate's own (X.all: today's lairRows)
   return `<section class="sd-band sd-tools sdt" aria-labelledby="sdt-h"><h2 class="u sdt-h" id="sdt-h">Same herd. <span>Twelve tools.</span></h2>
+    <p class="sdt-desc">Every tool uses the same ${X.all ? num(X.all) + ' ' : ''}rated Pokémon: speed, types, damage, top teams and more.</p>
     <div class="sdt-grid">${speed}${types}${ratings}${calc}${wins}${battle}${cores}${arch}${prac}${sets}</div>${ends}${chips}${moreH}</section>`; };
 // names in tight spots (Type Chart, the six, Battle, the race): a name's longest word never spills out of its spot or breaks
 // mid-word; it steps to the approved narrower letters (88%, then 75%, as Home's most-used names do), then breaks with a hyphen

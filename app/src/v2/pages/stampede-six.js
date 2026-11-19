@@ -70,7 +70,7 @@ V2.sdSix = () => { const E = V2.esc, ms = members(), has = ms.length > 0, C = ho
   const say = !has ? `<p class="sds-say">Let us build one from real winning teams, copy a top team, or type your own six.</p>` : '';
   const gp = !has ? '' : P ? `<p class="sds-gp sds-plan"><strong class="u">Game Plan</strong> ${E(P.vs)}: lead <b>${pair(P.lead)}</b>${P.back.length ? `, back ${pair(P.back)}` : ''}${P.bench.length ? `, bench ${pair(P.bench)}` : ''}.</p>`
     : `<p class="sds-gp sds-plan"><strong class="u">Game Plan</strong> Add at least four Pokémon and NastyPlot plans your four and two leads.</p>`;
-  const line = `<div class="sds-part sds-line">${eye}<h2 class="u sds-h" id="sds-h">Call six <span>out of the herd.</span></h2>${note}${wl}
+  const line = `<div class="sds-part sds-line">${eye}<h2 class="u sds-h" id="sds-h">Call six <span>out of the herd.</span></h2><p class="sds-desc">Build your six, see its Strength Score, and plan each match.</p>${note}${wl}
     <ol class="sds-rings" data-named="${named}" aria-label="${has ? 'Your six' : 'Your six: empty. The three most used in tournaments stand in three rings'}">${slots}</ol>
     ${!has && top3.length ? '<p class="sds-cap1">Share of tournament teams using each</p>' : ''}${say}
     <div class="sds-acts"><a class="np-btn sds-btn" href="#build">Build Me a Team</a><button type="button" class="np-link sds-lk" data-v2homeimport>Import a Team ›</button></div></div>`;

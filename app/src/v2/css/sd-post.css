@@ -18,7 +18,7 @@
 .sdp-h span{color:var(--sd-flag-num);white-space:nowrap}
 @media (min-width:1100px){.sdp-h{white-space:nowrap}}
 .sdp-lede{position:relative;z-index:2;margin:0;padding-bottom:var(--s2);font:500 var(--t17)/1.5 var(--b);color:var(--sd-on-band);rotate:var(--sd-tilt)}
-
+.sdp-ls{display:none} /* the short line, for phones (Sim's Q23 A, Nov 19) */
 /* two columns, ending together on desktop; one under 1280 (gifts first) */
 .sdp-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s12) var(--s16);align-items:stretch}
 .sdp-cols.sdp-solo{grid-template-columns:minmax(0,1fr)}
@@ -60,11 +60,11 @@
 .sdp-tilt .dp-nbar{margin-top:auto}.sdp-tilt .dp-more{flex:1;margin-bottom:var(--s4)} /* when the gifts column is taller, the stories share the extra height (evenly spaced rules), not one hole */
 
 /* widths: one column under 1360 (gifts first); under 1100 the line beside the heading goes under it and the bird keeps the top right;
-   on phones the line goes (brief: "on desktop, one line beside it") */
+   on phones a short line stays under it (Sim's Q23 A, Nov 19; it was hidden there: brief "on desktop, one line beside it") */
 @media (max-width:1359.98px){.sdp-cols{grid-template-columns:minmax(0,1fr)}.sdp-tilt .dp-paper{rotate:.8deg}} /* two columns only where the small paper keeps its two story columns (a column of 550+), so both end level without a hole */
 @media (max-width:1099.98px){.sd-band.sdp{--bw:clamp(150px,26vw,240px)}.sdp-top{grid-template-columns:minmax(0,1fr) var(--bw)}.sdp-lede{grid-column:1;rotate:none;max-width:48ch}.sdp-bird{grid-column:2;grid-row:1/span 2;align-self:start}
   .sdp-bird .np-mon{bottom:auto;top:calc((var(--s16) + var(--sd-cut) + var(--bw) * .3) * -1)}.sdp-ln{display:none}} /* under 1100 the bird hangs from the band top: 30% of it over the edge, clear of the heading */
-@media (max-width:699.98px){.sdp-lede{display:none}.sdp-top{grid-template-columns:minmax(0,1fr) calc(var(--bw) * .5);gap:var(--s4);margin-bottom:var(--s8)}.sd-band.sdp{--bw:clamp(132px,40vw,176px)}
+@media (max-width:699.98px){.sdp-ll{display:none}.sdp-ls{display:inline}.sdp-top{grid-template-columns:minmax(0,1fr) calc(var(--bw) * .5);gap:var(--s4);margin-bottom:var(--s8)}.sd-band.sdp{--bw:clamp(132px,40vw,176px)}
   .sdp-bird .np-mon{left:auto;right:calc(var(--s2) - var(--gut));top:calc((var(--s16) + var(--s4) + var(--sd-cut) + var(--bw) * .3) * -1);translate:none}.sdp-ln{display:none}
   .sdp-ch h3{font-size:var(--t24)}
   .sdp-h{margin-top:var(--s6)}} /* phones: the tilt lifts the heading's right end under the Pelipper's feet (two lines at 360-390, one line at 500-530);

@@ -17,6 +17,9 @@
 .sds-wx{color:var(--plate-link)}
 .sds-h{position:relative;z-index:3;margin:var(--s2) 0 0;font-size:var(--d-sdsix);line-height:1;color:var(--on-plate)}
 .sds-h span{display:block}
+/* one plain line under the playful heading, saying what the band does (Sim's Q23 A, Nov 19): 17px, 15px on phones */
+.sds-desc{position:relative;z-index:3;margin:var(--s3) 0 0;font:500 var(--t17)/1.5 var(--b);color:var(--on-plate)}
+@media (max-width:699.98px){.sds-desc{font-size:var(--t15)}}
 .sds-note{position:relative;z-index:3;margin:var(--s3) 0 0;font:500 var(--t15)/1.5 var(--b);color:color-mix(in srgb,var(--on-plate) 74%,transparent)}
 /* the first-visit welcome (Sim Q4c A): a blue rule at its left, no box (ink band + words only) */
 .sds-wl{position:relative;z-index:3;margin:var(--s6) 0 var(--s2);padding:var(--s4) 0 var(--s4) var(--s5);border-left:4px solid var(--plot);color:var(--on-plate)}
