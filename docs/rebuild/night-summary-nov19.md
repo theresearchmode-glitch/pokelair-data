@@ -49,6 +49,9 @@ Everything below is on it, plus the 44px tap areas (#5) and the updated mock-ups
   survive with Focus Sash (131 of 1000 matchups' lines; older wording, but it breaks the new stamp rule), Intimidate not applied to
   turn one's damage (2 of 104 'Fainted' wrong), no note for their chance KO on your lead, 'Fainted' stated though most targets carry
   Protect. A helper is fixing them; I held the Preview at v209 (which has none of the Fainted cards) until then.
+- The cloud machine restarted at about 2:14 AM by the clock (read just after). The accuracy helper had committed 5 of its fixes;
+  its unfinished KO-stamp change was kept, and a new helper is finishing it plus Intimidate and the 'Fainted' Protect check.
+  Your earlier messages were shown to me again after the restart; nothing in them was new, so nothing was redone.
 - Start-up on phones (Plans pl-2c, helper): the longest start-up task dropped from ~470 to ~250 ms on Home (4x CPU), same page after.
 - GitHub run 1375 (902e1b9f) failed 2 of my new tests on the frozen test data: a team leading Mega Delphox + Mega Floette still
   showed two Megas (Floette's base form is only listed as 'Floette-Eternal'), and one event name kept '$30' at its start. Both
