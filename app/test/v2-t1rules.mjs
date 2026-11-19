@@ -9,8 +9,8 @@ const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 1280, height: 900}}); await p.addInitScript(() => { window.__PL_TEST = 1; });
 await p.goto('file://' + PAGE + '#battle', {timeout: 90000}); await p.waitForTimeout(3500);
 await p.evaluate(n => { globalThis.N_T1 = n; }, +process.env.N || 300); /* N=1000 for a wider sweep */
-const st = await p.evaluate(() => window.__ev(`(() => { const teams = []; for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) teams.push(t.mons.map(m => m.n));
-  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
+const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf = new Map(); for (const e of META.events.events) for (const t of e.top || []) if (t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n))) { teams.push(t.mons.map(m => m.n)); if (!refOf.has(t.mons.map(m => m.n).join('/'))) refOf.set(t.mons.map(m => m.n).join('/'), {ev: e, t}); }
+  const st = {n: 0, err: 0, errs: [], twoMega: [], allyKO: [], flinchActs: [], foThen: [], flinches: 0, myFlinchAct: [], noBeat: [], copyWrong: [], foGhost: [], copies: 0, theirDud: [], myLate: [], sureBad: [], tailwinds: 0, twLate: [], prioAtk: 0, prioBlocked: [], theirPrio: 0, theirPrioWrong: [], boards: 0, boardTwoMega: [], boardArrow: []}; const slots0 = JSON.stringify(S.slots), opp0 = JSON.stringify(S.opp);
   /* the sweep's pairs, plus real matchups a review found (rare cases a 300-matchup sweep may not reach), always run */
   const pairs = []; for (let i = 0; i < Math.min(teams.length, +(globalThis.N_T1 || 300)); i++) pairs.push([teams[i], teams[(i * 7 + 3) % teams.length]]);
   const EXTRA = [['Blaziken-Mega/Rillaboom/Kingambit/Lucario-Mega-Z/Dragonite/Basculegion', 'Floette-Mega/Whimsicott/Incineroar/Farigiraf/Aegislash/Garchomp'], /* Extreme Speed into a side with Farigiraf's Armor Tail */
@@ -53,6 +53,12 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = []; for (c
     /* third review: their attack moves in its own priority bracket (Extreme Speed +2, Sucker Punch +1...), not always 0 */
     for (const bt of T.beats) { const m = !bt.me && bt.act.match(/^(.+?) into /), mv = m && mvByName.get(m[1]); if (!mv || m[1] === 'Fake Out') continue;
       const want = movePrio(mv, abilityOf(bt.x), {terrain: T.terrain, grounded: grounded(bt.x)}); if (want) st.theirPrio++; if (bt.prio !== want) st.theirPrioWrong.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' at ' + bt.prio + ', should be ' + want); }
+    /* third review: Home's plan board draws what turn one plans with (one Mega per side, as Battle), and every arrow points at a
+       drawn Pokémon. Their six as the board's 'latest winner' (V2.sdsPlan, stampede-six.js), with that team's real open sheet */
+    { const ref = refOf.get(th.join('/')); if (ref && typeof V2 === 'object' && V2.sdsPlan) { const P = V2.sdsPlan(members(), {ev: ref.ev, t: ref.t, six: ref.t.mons.map(m => ({p: byName.get(m.n)}))});
+      if (P && P.their && P.their.length >= 2) { st.boards++; const meN = P.leadN || P.lead.map(m => m.p.n), mg = a => a.filter(n => (byName.get(n) || {}).m).length;
+        if (mg(P.their) > 1 || mg(meN) > 1) st.boardTwoMega.push(tag + ': ' + meN.join('+') + ' vs ' + P.their.join('+'));
+        for (const a of P.aim || []) if (a) for (const n of a.at) if (!P.their.includes(n)) st.boardArrow.push(tag + ': ' + a.move + ' at ' + n); } } }
     for (const bt of T.beats) if (bt.me && /^Fake Out (.+)$/.test(bt.act)) { const t = [...T.opp].find(o => o.d === bt.act.slice(9)); if (t && (t.types || t.p.t).includes('Ghost') && abilityOf(bt.x) !== 'Scrappy') st.foGhost.push(tag + ': ' + bt.act); } }
   S.slots = JSON.parse(slots0); fixSlots(); S.opp = JSON.parse(opp0); return st; })()`));
 await b.close();
@@ -73,4 +79,6 @@ ok(!st.sureBad.length, `a sure flinch never comes from a Fake Out user that may 
 ok(st.tailwinds > 0 && !st.twLate.length, `after a Tailwind, its partner moves at double Speed this turn (${st.tailwinds} Tailwinds, ${st.twLate.length} partners late${st.twLate.length ? ', e.g. ' + st.twLate[0] : ''})`);
 ok(!st.prioBlocked.length, `no priority attack is planned into a priority blocker's side or Psychic Terrain (${st.prioAtk} priority attacks, ${st.prioBlocked.length} blocked${st.prioBlocked.length ? ', e.g. ' + st.prioBlocked[0] : ''})`);
 ok(st.theirPrio > 0 && !st.theirPrioWrong.length, `their attacks move in their own priority bracket (${st.theirPrio} priority attacks, ${st.theirPrioWrong.length} wrong${st.theirPrioWrong.length ? ', e.g. ' + st.theirPrioWrong[0] : ''})`);
+ok(st.boards > 0 && !st.boardTwoMega.length, `Home's plan board draws one Mega per side, as turn one plans (${st.boards} boards, ${st.boardTwoMega.length} with two${st.boardTwoMega.length ? ', e.g. ' + st.boardTwoMega[0] : ''})`);
+ok(!st.boardArrow.length, `every plan board arrow points at a drawn Pokémon (${st.boardArrow.length}${st.boardArrow.length ? ', e.g. ' + st.boardArrow[0] : ''})`);
 console.log(`v2-t1rules: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

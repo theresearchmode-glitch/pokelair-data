@@ -20,13 +20,17 @@ V2.sdsPlan = (ms, C) => { const key = (C ? C.ev.id + '#' + C.ev.top.indexOf(C.t)
       if (r && r.lead && r.lead.length >= 2) { let lead = r.lead.map(i => ms[i]).filter(Boolean), back = (r.back || []).map(i => ms[i]).filter(Boolean);
         const UL = userLeads(ms); if (UL) { back = lead.concat(back).filter(m => !UL.includes(m)).slice(0, 2); lead = UL; vs += ', your leads'; } /* your own lead pick wins (today's Home) */
         back = back.filter(m => !lead.includes(m)).slice(0, 2); const bench = ms.filter(m => !lead.includes(m) && !back.includes(m));
-        let their = [], aim = [];
+        let their = [], aim = [], leadN = null;
         if (theirs && r.B) { const LL = likelyLead(theirs, r.B); their = LL.map(o => o.p.n);
           try { const T = turnOneData(ms, theirs, {...r, lead: lead.map(m => ms.indexOf(m))}); /* the real turn 1 plan, as Battle's (40-turn-one-data.js) */
+            /* the board draws the Pokémon turn one plans with, as Battle does: one Mega per side, a second Mega lead as its base form
+               (review, Nov 19: both Megas were drawn) */
+            if (T && T.opp && T.opp.length === their.length) their = T.opp.map(o => o.p.n);
+            if (T && T.leads && T.leads.length === lead.length) leadN = T.leads.map(x => x.p.n);
             if (T && T.beats) aim = lead.map(m => { const L = T.beats.find(x => x.me && (x.x === m || x.x._orig === m)); if (!L) return null; const t = String(L.act); /* a lead shown as its base form is a copy (one Mega per side, 40-turn-one-data.js) */
-              const oT = (T.opp || []).find(x => new RegExp('(?:into |^Fake Out )' + x.d.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$').test(t)), o0 = oT ? oT._orig || oT : null, o = o0 ? LL.find(x => x === o0) || LL.find(x => x.p.n === o0.p.n) : null;
-              return {move: t.replace(/ into .*$/, '').replace(/^Fake Out .*$/, 'Fake Out').replace(/ \(hits both\)$/, ''), at: /\(hits both\)$/.test(t) ? their.slice() : o ? [o.p.n] : []}; }); } catch (e) { aim = []; } }
-        v = {lead, back, bench, vs, their, aim}; } } } catch (e) { v = null; }
+              const oT = (T.opp || []).find(x => new RegExp('(?:into |^Fake Out )' + x.d.replace(/[.*+?^${}()|[\]\\]/g, '\\$&') + '$').test(t)), o0 = oT ? oT._orig || oT : null, o = o0 ? LL.find(x => x === o0) || LL.find(x => x.p.n === o0.p.n) : null, oi = o ? LL.indexOf(o) : -1;
+              return {move: t.replace(/ into .*$/, '').replace(/^Fake Out .*$/, 'Fake Out').replace(/ \(hits both\)$/, ''), at: /\(hits both\)$/.test(t) ? their.slice() : oi >= 0 ? [their[oi]] : []}; }); } catch (e) { aim = []; } }
+        v = {lead, back, bench, vs, their, aim, leadN}; } } } catch (e) { v = null; }
   V2.sdsCache = {key, v}; return v; };
 // the three most-used Pokémon by tournament share (V2.raNums, the Ratings and Usage pages' numbers), highest first, written as Ratings writes it
 V2.sdsTop3 = () => { let rows = []; try { rows = lairRows().map(x => ({p: x.p, u: V2.raNums(x.p).u})).filter(x => x.u != null && lairHead(x.p).tOK); } catch (e) {} /* V2.raNums: the Ratings page's own numbers */
@@ -84,14 +88,14 @@ V2.sdSix = () => { const E = V2.esc, ms = members(), has = ms.length > 0, C = ho
     <p class="sds-rl2"><b>In the report:</b> Matchups, Suggestions, Team Checks</p>
     <a class="np-btn sds-rb" href="#team"${G ? '' : ` aria-label="Score My Team${has ? '' : ': add your six on My Team first'}"`}>${G ? 'Open My Team' : 'Score My Team'}</a></div></div>`;
   // ---- 3. the plan board ----
-  let mine = P ? P.lead : null, aim = P ? P.aim : [], their = P ? P.their : [], who = 'Your leads', alt = '';
+  let mine = P ? P.lead : null, mineN = P ? P.leadN : null, aim = P ? P.aim : [], their = P ? P.their : [], who = 'Your leads', alt = '';
   if (!has && C) { const sm = V2.sdsSample(), SP = sm.length >= 4 ? V2.sdsPlan(sm, C) : null; /* no team: a sample team's leads, said so */
-    if (SP) { mine = SP.lead; aim = SP.aim; their = SP.their; who = 'Sample leads'; alt = `Lower half: the leads of NastyPlot's sample team, ${E(DEFAULT_TEAM.name.replace(/\s*\(sample\)\s*$/i, ''))}.`; } }
+    if (SP) { mine = SP.lead; mineN = SP.leadN; aim = SP.aim; their = SP.their; who = 'Sample leads'; alt = `Lower half: the leads of NastyPlot's sample team, ${E(DEFAULT_TEAM.name.replace(/\s*\(sample\)\s*$/i, ''))}.`; } }
   const tok = (n, side, k) => { const a = side === 'you' && aim[k] ? aim[k] : null;
     return `<button type="button" class="sds-tk ${side} k${k}" data-v2mon="${E(n)}" data-sdsk="${side}${k}"${a && a.at.length ? ` data-sdsat="${E(a.at.map(x => 'them' + their.indexOf(x)).join(' '))}"` : ''} aria-label="${E(V2.disp(n))}, ${side === 'you' ? (who === 'Your leads' ? 'your lead' : 'sample lead') + (a ? ', turn 1: ' + E(a.move) + (a.at.length ? ' into ' + E(a.at.map(V2.disp).join(' and ')) : '') : '') : 'their likely lead'}: open its page">
       <span class="sds-dot2">${V2.mon(n, {bare: true})}</span><span class="sds-tg u">${V2.esc(V2.disp(n))}</span>${a ? `<small class="sds-mv">${E(a.move)}</small>` : ''}</button>`; };
   const board = C && mine && mine.length >= 2 && their.length >= 2
-    ? `<div class="sds-board"><svg class="sds-arw" aria-hidden="true"></svg><p class="sds-bl u them">Their likely leads</p>${their.map((n, k) => tok(n, 'them', k)).join('')}<i class="sds-mid" aria-hidden="true"></i>${mine.map((m, k) => tok(m.p.n, 'you', k)).join('')}<p class="sds-bl u you">${E(who)}</p></div>`
+    ? `<div class="sds-board"><svg class="sds-arw" aria-hidden="true"></svg><p class="sds-bl u them">Their likely leads</p>${their.map((n, k) => tok(n, 'them', k)).join('')}<i class="sds-mid" aria-hidden="true"></i>${mine.map((m, k) => tok((mineN && mineN[k]) || m.p.n, 'you', k)).join('')}<p class="sds-bl u you">${E(who)}</p></div>`
     : '';
   const champ = C ? `<p class="sds-who">Their side: the latest winner's six, ${E(V2.evTitle(C.ev.name))}, ${E(evDate(C.ev.date))}. Battle sets it as your opponent.${alt ? ' ' + alt : ''}</p>` : '';
   const bt = C ? `<button type="button" class="np-btn sds-bt" data-hmprep="${E(C.ev.id + '#' + C.ev.top.indexOf(C.t))}" data-sdgo aria-label="Battle: Set as Opponent, the latest winner's six">Battle</button>` : `<a class="np-btn sds-bt" href="#battle" data-sdgo>Battle</a>`;
