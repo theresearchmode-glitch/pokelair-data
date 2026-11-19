@@ -158,8 +158,12 @@ function turnOneData(mine, theirs, r) {
     const h = pool.length ? hitOn(m, pool, o2) : null; return h && h.r && h.r.hp && h.r.max ? h : null; };
   const koPass = b => { const i = at(b.x);
     if (!b.me) { const d = danger.find(x => x.o === b.x), h = d && d.worst && d.worst.h, t = d && d.worst && d.worst.on;
-      if (!h || theirFOT.has(b.x) || b.act !== `${h.mv.name} into ${t.d}` || !sureKO(h) || at(t) <= i || done.has(t)) return;
-      const tb = beats[at(t)]; tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by their ${b.x.d}${tieOf(tb, b) ? ' (speed tie)' : ''}`}); return; }
+      if (!h || theirFOT.has(b.x) || b.act !== `${h.mv.name} into ${t.d}` || !h.r || !h.r.hp || h.charge || h.r.sash || h.r.max < h.r.hp || at(t) <= i || done.has(t)) return;
+      /* a KO that only might happen (some rolls, under 100% to hit) is a risk too (Nov 19 review): the note says the chance, as
+         yours does, and your lead's own KO is then no longer sure */
+      const tb = beats[at(t)], k1 = (h.r.rolls || [h.r.min, h.r.max]).filter(v => v >= h.r.hp).length / (h.r.rolls || [1, 1]).length;
+      const why = [k1 < 1 ? koShort(h.r) : '', h.acc < 100 ? h.acc + '% to hit' : '', tieOf(tb, b) ? 'speed tie' : ''].filter(Boolean).join(', ');
+      tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by their ${b.x.d}${why ? ' (' + why + ')' : ''}`}); return; }
     const ln = lines.find(l => l[0] === b.x), A = ln && ln[5]; if (!A || b.act !== ln[1]) return;
     let hits = A.h.mv.spread ? opp.map(o => ({o, h: o === A.o ? A.h : hitOn(b.x, [A.h.mv], o)})) : [{o: A.o, h: A.h}];
     const gone = hits.filter(x => down.has(x.o)).map(x => x.o);
