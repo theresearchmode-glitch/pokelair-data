@@ -301,6 +301,11 @@
 }
 @media (max-width:379.98px){.sdt-ra,.sdt-dc{grid-column:span 6}.sdt-pod{max-width:none}.sdt-pp6 .np-mon{--iw:44px}.sdt-chp>b{font-size:var(--t13)}
   .sdt-chp{gap:var(--s1);padding-inline:var(--s3) var(--s2)}.sdt-cpic{flex-basis:32px}.sdt-cpic .np-mon,.sdt-cpic .np-mon .st{--iw:32px;width:32px}}
+/* Q29 A (Sim, Nov 19): under 360 the longer 'Damage Calculator' doesn't fit a half tile; Ratings and Damage Calculator one per row,
+   and Team Preview Practice puts its title above its six (as Battle does), so every title and the Ratings numbers show whole */
+@media (max-width:359.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-dc{grid-column:1/-1}}
+/* Practice's 22px title (under 380) didn't fit beside its six at 360-379 either ('Preview' under the sprites): title above, the same A look */
+@media (max-width:379.98px){.sdt-grid>.sdt-pr{flex-direction:column;align-items:stretch}.sdt-grid>.sdt-pr>.sdt-pp{order:2;align-self:center}}
 /* iPads (700-1099), Sim Nov 18 ('the iPad loadout is too plain', took the recommendation): the six big plates of the phone layout, then
    no chips: the Type Chart as a strip (words left, the 18 flags 6 by 3), Winning Cores | Archetypes | Popular Sets as three picture
    plates, and Events and How We Calculate as their two number rows. Ratings and Damage Calc pictures 96px tall (the half tiles are wide) */
