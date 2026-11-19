@@ -4,5 +4,8 @@ Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all 
 1. Q13 · Usage source (design review #14): pictures docs/rebuild/pics/nov19/Q13-usage-source-*.png
    A RECOMMENDED: open on Online tournaments (updates daily); Ranked ladder stays one tap away with 'Last updated Nov 17 · updates paused'.
    B: keep opening on Ranked ladder, add the paused label. C: no change.
-2. #9 Battle 'Favoured' vs a risky turn one: options and pictures to come (after the turn-one rules fix lands).
+2. Q14 · Battle 'Favoured' vs a risky turn one (review #9): pictures docs/rebuild/pics/nov19/Q14-battle-favoured-*.png
+   A RECOMMENDED: one plain line under the verdict, only when turn one has a risk: 'How six-vs-six matchups like this went. It
+   doesn't see turn one: yours has a risk (see Watch).' B: a short 'Risky start' tag. C: no change.
+   Also to show (not a question): review #1 before/after, docs/rebuild/pics/nov19/review1-battle-turn-one-*.png.
 3. Earlier, still open: Usage at 1440 options (overs Qc), Meta row-based limit (Qd), switch runbook questions.

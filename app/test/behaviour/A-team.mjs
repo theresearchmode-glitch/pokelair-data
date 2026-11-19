@@ -1072,7 +1072,7 @@ t('PKMN-05', 'Build, stats, abilities, type matchups, speed: usual set, base sta
 
 t('PKMN-06', 'How to build it and partners: typical set, moves and items with %, a partner opens its own page', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
-  for (const x of [/Typical set ABILITY \w+ \d+%/i, /in-game ranked battles/, /Items \S.* \d+%/, /Who it teams with/]) has(s, x, 'page');
+  for (const x of [/Typical set ABILITY \w+ \d+%/i, /of [\d,]+ teams/ /* Sim, Nov 18, Q10 A: How to build it uses tournament sets and names its base ('of N teams'), whatever source Usage last used */, /Items \S.* \d+%/, /Who it teams with/]) has(s, x, 'page');
   /* the first proper-case name after 'Brought with' (the big faint capitals before it read joined in WebKit, Nov 17, C-I8) */ const partner = (s.match(/Who it teams with Brought with .*?\b([A-Z][a-z][\w-]*)/) || [])[1] || 'Sneasler'; await r.ui.tapInPage(partner);
   ok(new RegExp(partner, 'i').test(await r.ui.pageHash()), 'partner page did not open: ' + await r.ui.pageHash()); await r.close(); });
 
