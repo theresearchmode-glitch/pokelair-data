@@ -42,7 +42,10 @@
   --tier-s:#ffb400;--tier-a:#ff6a3d;--tier-b:#b45cff;--tier-c:#2f9bff;--tier-d:#22b58a;--tier-f:#8a90a6;--tier-ink:#14110f;--tier-lit:#ffffff;--tier-shade:#14110f;
   /* the Usage podium (Grandstand brief: new colours, dark text passes on all three) */
   /* Build: The Blueprint (Nov 14): drafting-sheet paper, its grid (a heavier line every fifth square) and blue ink */
-  --bp-paper:#fbfcfe;--bp-grid:#0078bf17;--bp-grid5:#0078bf2e;--bp-ink:#0a68a8;
+  --bp-paper:#fbfcfe;--bp-grid:#0078bf0d;--bp-grid5:#0078bf1a;--bp-ink:#0a68a8; /* Q82 A light touch (Sim, Nov 20): the grid fainter (was 17 / 2e) */
+  /* Q83 item 9 (Sim, Nov 20): the score sticker is filled with its band's colour; its words in these inks (light: white 4.7:1+, dark ink on the amber)
+     and a white rim so the Top tier blue still stands off the blue score plate */
+  --on-band-top:#FFFFFF;--on-band-ready:#FFFFFF;--on-band-solid:#FFFFFF;--on-band-work:#17161A;--on-band-miss:#FFFFFF;--bp-rim:#FFFFFF;
   --podium-1:#f2b705;--podium-2:#b9c0cc;--podium-3:#d08a4e;
   /* the six base-stat colours (Pokémon page, Nov 15; brief: HP green, Attack orange, Defense yellow, Sp. Atk blue, Sp. Def purple, Speed pink).
      Measured: text on each plate 4.94:1+ (white; Defense dark ink, as yellow with white was 2.2:1), each streak 3.24:1+ on the page */
@@ -119,7 +122,8 @@
   --arn-kb-ko:#E8364F;--arn-kb-sv:#2FB55A;--arn-edge-a:var(--logo-blue);--arn-edge-d:var(--logo-pink);--d-arntag:clamp(34px,6.4cqi,64px);
   color-scheme:light}
 :root[data-theme="night"]{
-  --bp-paper:transparent;--bp-grid:#62bef712;--bp-grid5:#62bef724;--bp-ink:#62bef7;
+  --bp-paper:transparent;--bp-grid:#62bef70a;--bp-grid5:#62bef714;--bp-ink:#62bef7; /* Q82 A: fainter (was 12 / 24) */
+  --on-band-top:#12121B;--on-band-ready:#12121B;--on-band-solid:#12121B;--on-band-work:#12121B;--on-band-miss:#12121B; /* Q83: the night bands are light; dark ink on each */
   --sd-paper:#DDD5C5;--sd-board-you:#0068AD;--sd-board-them:#B4238F;--sd-board:#D6CEBF;--sd-grid:rgba(23,22,26,.08);--sd-grid5:rgba(23,22,26,.14);--sd-beam:rgba(255,255,255,.05);--sd-lines:rgba(255,255,255,.025);--sd-paper-shadow:rgba(0,0,0,.6); /* band 2 at night: dim paper (the mock-up's), the rest as by day */
   --wx-sun:#D99A1B;--wx-sun-hi:#F0C25A;--tr-electric:#E9D23A;--on-wx:#1C1708;--table:rgba(255,255,255,.025);--table-line:rgba(255,255,255,.045);--table-edge:rgba(255,255,255,.10);--mvc-face:#15141E;--mvc-ink:#F4F2EE;--mvc-sub:#B0AAB8;--ko-tint:rgba(255,122,112,.14);--hp-left:#3FC060;
   --card-face-1:#1A1924;--card-face-2:#0C0C13;--card-ink:#F4F2EE;--card-giant:rgba(255,255,255,.10);--card-line:rgba(255,255,255,.03);--card-sheen:rgba(255,255,255,.07);--card-glow:.30;--card-shade:transparent;
