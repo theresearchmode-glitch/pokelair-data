@@ -179,6 +179,17 @@ without Sim's explicit yes.
 
 ---
 
+## 4b. Where the rebuild stands (Fri Nov 20, 3:27 PM by the clock; newest first; details in decisions.md and the Plans page)
+- Authority until 10:00 AM Sat Nov 21 (Sim, Fri 3:06 PM). Helpers up to 3 (never more without asking). BIG RULE: never idle.
+- On GitHub (claude/design6): 6088ece4 (14/14) and 2aceec91 (scan fixes, Q69-Q78, What's New; run 44804692099).
+- Merged on t1rules, full check running: the Build page (Q83: light-touch Blueprint, Sheet 0, Load Team under the six, Revisions
+  sprites, Rebuild stamp, band stickers, solid Parts numbers) + Q84 (12 scan fixes). Preview v219 shows the Build page.
+- Being built by a helper (branch phonelen): Q87 shorter phone pages (8 pages, phones only) + Q86 white Mega on Speed Tiers.
+- Switch prep done today: What's New in the code, underdog on real data, daily job dry run, runbook counts (359), PC prompt
+  draft (docs/rebuild/test-runs/pc-full-nov20-prompt.md, send ~5:30 PM). Estimate (my guess): ~92%.
+- Left before the switch: push the merged batches, d4-check (one quiet green commit + sealed set once), Sim's PC full check,
+  Sim's explicit yes, then the 4-step publish (switch-runbook-nov19.md).
+
 ## 4a. Where the rebuild stands (Thu Nov 19, 9:31 PM by the clock; newest first, then section 4 below)
 - PUSHED and GitHub 14/14 green: 8e18eb97 (morning: Q23-Q31, W1/W5/W7), 507a8efa (Q32 This Week, Q33/Q34 Events; ticked).
 - CHECKED, push pending: the Arena batch = commit 62933e89 (the Damage Calc "Arena" redesign from Sim's mock-ups, Q38 slanted chips,
