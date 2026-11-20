@@ -13,6 +13,10 @@ Source: docs/rebuild/decisions.md from the 6:27 AM line on. Every time below is 
 - Batching: batch 3 (6088ece4) pushed 10:28 AM, GitHub 14/14; batch 4 (2aceec91) pushed 2:42 PM; batch 5 (Build) check started 2:48 PM.
 - Switch prep checked: live fonts (8:20 AM), underdog on real data (12:47 PM), runbook counts (12:47 PM), daily data job (12:50 PM),
   PC prompt drafted.
+- 6:18 PM / 6:30 PM: Q88 three wild Build mock-ups (A Villain's Lab, B The Heist, C Arcade Cabinet), pictures only; Sim liked them and asked
+  for 3 more, all different (Q89 D Comic Book, E Mission Control, F Booster Pack; started 6:50 PM).
+- 6:56 PM: GitHub's only failure on 8c51ab30 was a real bug ('Meowscarada' split mid-word at 320 on 5 Practice teams); fixed and the
+  test made to always check those 5 teams (old build FAIL with 10 splits, fixed build pass); pushed 71192f76.
 
 ## Sim's own choices today (visual, with pictures)
 - Q66-Q68, Q69-Q76 (audit fixes), Q77 (What's New text), Q78 (Adjust in place), S26 (Battle opens Battle), scan fixes (go with
