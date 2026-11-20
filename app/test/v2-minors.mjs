@@ -1414,7 +1414,7 @@ if (part('main2')) {
     await q.getByRole('button', {name: 'Build Me a Team'}).first().click(); await q.waitForFunction(() => window.__ev('!!(ui.ab && !ui.ab.busy && ui.ab.doubles && ui.ab.doubles.teams)'), null, {timeout: 60000}); await q.waitForTimeout(800); };
   const show = i => q.evaluate(i => window.__ev(`(() => { ui.abIdx = ui.abIdx || {}; ui.abIdx.doubles = ${i}; V2.redraw(); return 1; })()`), i);
   const pick = re => q.evaluate(re => window.__ev(`ui.ab.doubles.teams.findIndex(t => (t.why || []).some(w => ${re}.test(w)))`), re);
-  const sheetTx = () => q.evaluate(() => (document.querySelector('.bp .bp-right') || {}).innerText || '');
+  const sheetTx = () => q.evaluate(() => (document.querySelector('.bd-ans.bp') || {}).innerText || ''); /* Q83 item 2 (Nov 20): the tips sit with Load Team under the six now, not in the right column */
   // the engine's catch search and plan chips can differ between runs on a busy machine (time-sliced search), so when this build has
   // none, the test gives option 1 the engine's own sentence and all four chips (22-auto-build.js line 121; 11-game-plan.js labels)
   await run('box'); let ic = await pick('/^(Best single catch|To reach 90\\+)/'), made = '';
