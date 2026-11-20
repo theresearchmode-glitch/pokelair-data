@@ -170,3 +170,6 @@
 .arn-pills button[aria-pressed="true"]{background:none}
 .arn-pills button[aria-pressed="true"]::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--arn-pill);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
 .arn-sw button{border-radius:0;box-shadow:none;background:var(--wash);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+/* Q40 B (Sim, Nov 19, 7:59 PM): on iPads and narrow desktops (700-1099) the weather and terrain rows run the scene's full width, as on
+   phones (they stopped at 560 of 738px at 834, an empty strip beside them); 1100 and up keep the narrower rows of the mock-up */
+@media (min-width:700px) and (max-width:1099.98px){.arn-pills{justify-self:stretch;width:auto}}
