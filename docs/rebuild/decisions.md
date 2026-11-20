@@ -1526,3 +1526,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:09 PM: Sim chose Q50 A (keep Q47's four small choices as built: set heading wording, most used/selected tags, no search on set sheets, Allies fainted as a sheet).
 - 10:17 PM: Sim chose Q51 Keep: Arena verdict on small phones stays as is (A only helped at 375 and shrank the headline).
 - 10:21 PM: Sim chose Q52 A: KO Board bar title at 15 on 1024-1439 wide screens (one line from 1180 up). Goes in the batch after the one now in its full check.
+- 10:28 PM: Pushed the Arena batch (Arena, Q38, Q39, Q40) 62933e89 to claude/design6 after a clean full check (part 1 0 failed; quality 0 new; behaviour A 139/0, B 77/0, C 83/0, D 117/0; data checks; GATE PASSED).
