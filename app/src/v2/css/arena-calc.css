@@ -194,3 +194,39 @@
 /* Sim Q52 B (Nov 19, 10:25 PM) + Q53 A (10:30 PM): the KO Board bar's title at 17 on 1024-1449 (20 from 1450), so it sits on one line from
    1280 up; at 1440 the light theme's heavier title (900) needed 1px more than 20 allows */
 @media (min-width:1024px) and (max-width:1449.98px){.arn-kbbar .t{font-size:var(--t17)}}
+/* Sim Q57 A (Nov 19): under 1024 the opened KO Board shows one group at a time, chosen by three count tabs in the bar's colours (a 6px base:
+   red, striped, green; the chosen tab takes the bar's fill). Counts on one line, labels start on one line under them (top-aligned), so
+   the three read evenly even when a label wraps on a narrow phone. Tiles unchanged (4 across on touch phones, names under them). */
+.kob-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s1);margin-top:var(--s4)}
+.kob-t{--gb:linear-gradient(var(--arn-kb-ko),var(--arn-kb-ko));display:grid;grid-template-rows:auto 1fr;align-content:start;justify-items:start;min-width:0;min-height:var(--s16);margin:0;padding:var(--s2) var(--s2) var(--s4) var(--s3);border:0;border-radius:0;background:var(--gb) bottom/100% 6px no-repeat,var(--wash);color:var(--ink);text-align:left;cursor:pointer;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}
+.kob-t.can{--gb:repeating-linear-gradient(135deg,var(--arn-kb-ko) 0 4px,var(--arn-kb-sv) 4px 8px)}.kob-t.sv{--gb:linear-gradient(var(--arn-kb-sv),var(--arn-kb-sv))}
+.kob-t b{font-size:var(--t28);line-height:1.15}
+.kob-t span{font:600 var(--t13)/1.3 var(--b);color:var(--ink-2);text-wrap:balance}
+.kob-t[aria-selected="true"]{background:var(--gb) bottom/100% 6px no-repeat,var(--arn-fill);color:var(--arn-on-fill)}.kob-t[aria-selected="true"] span{color:var(--arn-on-fill)}
+.kob-t:focus-visible{outline:3px solid var(--plot);outline-offset:-3px}
+.kob-p .dc2-kts{margin-top:var(--s2)}.kob-p[hidden]{display:none}
+.kob-none{margin:var(--s3) 0 0}
+/* Sim Q58 C (Nov 19): from 1024 the opened board leaves the right column and spans the page under the Arena: the three groups side by
+   side, each a big slanted count over a 6px rule in the bar's colour, then one row per threat (attacker, threat, its name, the move,
+   the damage in numbers, the HP it has left). A row does what a tile does: it puts that hit on the table. */
+.arn-kbfull{margin-top:var(--s6)}.arn-kbfull .dc2-kb{margin-top:0}.arn-kbfull[hidden]{display:none}
+.kob-c .dc2-kbh{justify-content:flex-start}.kob-c .dc2-kbh h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.kob-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s8);align-items:start;margin-top:var(--s4)}
+.kob-col h3{--gb:linear-gradient(var(--arn-kb-ko),var(--arn-kb-ko));display:flex;align-items:baseline;gap:var(--s2);margin:0;padding-bottom:var(--s4);background:var(--gb) bottom/100% 6px no-repeat;font:600 var(--t15)/1.3 var(--b);color:var(--ink-2)}
+.kob-col[data-g="can"] h3{--gb:repeating-linear-gradient(135deg,var(--arn-kb-ko) 0 4px,var(--arn-kb-sv) 4px 8px)}.kob-col[data-g="sv"] h3{--gb:linear-gradient(var(--arn-kb-sv),var(--arn-kb-sv))}
+.kob-col h3 b{font-size:var(--t34);line-height:1;color:var(--ink)}
+.kob-rows{display:grid}
+.kob-r{display:grid;grid-template-columns:24px 40px minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:var(--s2);min-height:var(--s12);margin:0;padding:var(--s1) 0;border:0;border-bottom:1px solid var(--rule);border-radius:0;background:none;color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.kob-r .by{grid-row:1/3;grid-column:1;display:grid;place-items:center}.kob-r .th{grid-row:1/3;grid-column:2;display:grid;place-items:center}
+.kob-r .nm{grid-column:3;grid-row:1;min-width:0;font:600 var(--t15)/1.3 var(--b)}
+.kob-r .mv{grid-column:3;grid-row:2;min-width:0;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.kob-r .pc{grid-column:4;grid-row:1;justify-self:end;padding-right:2px;font-size:var(--t20);line-height:1.2;white-space:nowrap}
+.kob-r.ko .pc{color:var(--bad-text)}
+.kob-r .hp{grid-column:4;grid-row:2;justify-self:end;position:relative;display:block;width:64px;height:4px;background:color-mix(in srgb,var(--ink) 12%,transparent)}
+.kob-r .hp i{position:absolute;top:0;bottom:0;left:0;background:var(--hp-left)}.kob-r .hp .r{background:var(--bad)}
+.kob-r:hover{background:var(--wash)}.kob-r.on{outline:2px solid var(--plot);outline-offset:-2px}
+.kob-r:focus-visible{outline:3px solid var(--plot);outline-offset:-3px}
+/* 1024-1279: three columns of about 290px; the damage one step smaller and the columns closer, so the full name keeps about 90px (the longest
+   top-30 name, Basculegion, needs 86); a name that still cannot fit breaks rather than spills (never an ellipsis on the name) */
+.kob-r .nm{overflow-wrap:anywhere}
+@media (min-width:1024px) and (max-width:1279.98px){.kob-cols{column-gap:var(--s4)}.kob-r .pc{font-size:var(--t17)}.kob-r{column-gap:var(--s2)}}

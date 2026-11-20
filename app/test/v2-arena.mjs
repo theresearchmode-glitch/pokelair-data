@@ -101,10 +101,13 @@ for (const W of WIDTHS) for (const th of THEMES) {
   { const bar = await p.evaluate(() => { const s = document.querySelector('.arn-kb > summary'); return s ? s.textContent.replace(/\s+/g, ' ').trim() : ''; });
     ok(/KO Board/.test(bar) && /\d+ down in one hit · \d+ can go down · \d+ survive/.test(bar), `${tag} KO Board bar: "${bar.slice(0, 90)}"`);
     if (!(await p.evaluate(() => document.querySelector('.arn-kb').open))) await click(p, '.arn-kb > summary', 600);
-    const t1 = await p.evaluate(() => [...document.querySelectorAll('.arn-kb .dc2-kt')].filter(e => e.getClientRects().length).length); ok(t1 >= 20 && await pressed(p, '.arn-kb [data-dcdir="mine"]') === 'true', `${tag} the board opens with your hits (${t1} tiles)`);
-    await click(p, '.arn-kb [data-dcdir="theirs"]', 900); const t2 = await p.evaluate(() => ({n: [...document.querySelectorAll('.arn-kb .dc2-kt')].filter(e => e.getClientRects().length).length, open: document.querySelector('.arn-kb').open, h: /Each top threat's best hit on your team/.test(document.querySelector('.arn-kb').textContent)}));
-    ok(t2.open && t2.n >= 20 && t2.h && await pressed(p, '.arn-kb [data-dcdir="theirs"]') === 'true', `${tag} "Their hits on you": ${t2.n} tiles, their every-hit table, board stays open`);
-    await click(p, '.arn-kb [data-dcdir="mine"]', 900); await click(p, '.arn-kb > summary', 400); }
+    /* Q57 A / Q58 C (Sim, Nov 19): under 1024 the groups are tabs (one group's tiles on show, the others one tap away); from 1024 the board
+       spans the page under the Arena (.arn-kbfull) as rows. So the hits are counted over the whole board, on show or behind a tab */
+    const KB = ':is(.arn-kb,.arn-kbfull)', hits = () => p.evaluate(() => { const L = [...document.querySelectorAll('.arn-kb .dc2-kt, .arn-kbfull .kob-r')]; return {all: L.length, shown: L.filter(e => e.getClientRects().length).length}; });
+    const t1 = await hits(); ok(t1.all === 30 && t1.shown >= 1 && await pressed(p, `${KB} [data-dcdir="mine"]`) === 'true', `${tag} the board opens with your hits (${t1.all} hits, ${t1.shown} on show)`);
+    await click(p, `${KB} [data-dcdir="theirs"]`, 900); const t2 = {...await hits(), ...await p.evaluate(() => ({open: document.querySelector('.arn-kb').open, h: /Each top threat's best hit on your team/.test([...document.querySelectorAll('.arn-kb, .arn-kbfull')].map(e => e.textContent).join(' '))}))};
+    ok(t2.open && t2.all === 30 && t2.shown >= 1 && t2.h && await pressed(p, `${KB} [data-dcdir="theirs"]`) === 'true', `${tag} "Their hits on you": ${t2.all} hits (${t2.shown} on show), their every-hit table, board stays open`);
+    await click(p, `${KB} [data-dcdir="mine"]`, 900); await click(p, '.arn-kb > summary', 400); }
   // links
   { const L = await p.evaluate(() => ({how: !!document.querySelector('.arn-links a[href="#method"]') && /How the Calc Works/.test(document.querySelector('.arn-links a[href="#method"]').textContent), notes: !!document.querySelector('.arn-links .arn-notes > summary'),
       rep: !!document.querySelector('.arn-links [data-fbmistake="calc"]'), fb: !!(window.V2 && V2.FB && V2.FB.ok), survive: /Fewest points to always survive/.test(document.querySelector('.arn-notes').textContent)}));
