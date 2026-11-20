@@ -476,7 +476,9 @@ V2.pages.team = {place: 'team', draw() {
   // 4. Team checks: the 4 basics count, the 3 notes don't (Sim, Nov 9)
   // A2 proposal (Sim's fix plan, Nov 12): the checks are listed ONCE, with the detail that used to sit in a second list inside
   // "Problems and Team Checks" (what the team has or misses, and how often winners have it); the threats "?" sits on its check
-  const hand = CH.hand(D.RD), ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(V2.wl(x.label))}${/^Ready for/.test(x.label) ? V2.tip('readiness') : ''}${(x.ok ? x.have : x.miss) ? `<small>${V2.esc(V2.undot(V2.wl(x.ok ? x.have : x.miss, hand)))}</small>` : ''}${x.pro && /\d/.test(x.pro) && !x.note ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</span></li>`; // notes: their 'why' is said once, above them
+  /* scan S19 A (Sim, Nov 20): the threats check's line names its source ("Damage calc: …") and points to Matchups for the real games, so
+     its count and Matchups' Favoured / Unfavoured words stop reading like two answers to one question */
+  const hand = CH.hand(D.RD), ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(V2.wl(x.label))}${/^Ready for/.test(x.label) ? V2.tip('readiness') : ''}${(x.ok ? x.have : x.miss) ? `<small>${V2.ckCalc(x, V2.esc(V2.undot(V2.wl(x.ok ? x.have : x.miss, hand))))}</small>` : ''}${x.pro && /\d/.test(x.pro) && !x.note ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</span></li>`; // notes: their 'why' is said once, above them
   const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.${V2.tip('checklist')}</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
   // the tabs: Suggestions carries how many there are (the numbered cards), Team Checks how many of the 4 basics fail, so a tab with
   // something to act on says so without being opened
@@ -511,6 +513,8 @@ V2.jumpSync = () => { const nav = document.querySelector('.tm-jump'); if (!nav |
   for (const a of as) { const s = document.getElementById(a.dataset.tmjump); if (!s) continue; const t = s.getBoundingClientRect().top; if (t <= line && (t > best + 1 || (Math.abs(t - best) <= 1 && a.dataset.tmjump === V2._jumpPick))) { best = Math.max(best, t); cur = a; } }
   if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) cur = as[as.length - 1];
   for (const a of as) { const on = a === cur; if ((a.getAttribute('aria-current') === 'location') !== on) { if (on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); } } }; /* audit Nov 16: aria-current (links can't be "selected") */
+V2.ckCalc = (x, h) => /^Ready for/.test(x.label) && /^Beats or handles/.test(h) ? `Damage calc: b${h.slice(1)} <button type="button" class="np-link tm-ckmu" data-tmgomu>Real games: see Matchups ›</button>` : h;
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-tmgomu]')) V2.tmGo('tm-mu'); });
 // ---------- My Team's tabs on phones (Sim's yes, Nov 20: option B) ----------
 V2.tmUi = V2.tmUi || {tab: null, auto: null}; /* tab: the tab the player chose, kept through redraws; auto: the first tab picked for this team (S18) */
 /* scan S18 (Nov 20, Sim: 'go with your recommendations'): with no tab chosen, a full team whose Strength Score reads Needs work or Missing a
