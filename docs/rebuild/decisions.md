@@ -1525,3 +1525,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:05 PM: Merged the Q47 helper's build (9c1b278c) into t1rules (5a8aea0b): All moves opens 'Choose a move' with real damage; each set row opens a short sheet. Its own small choices (headings, 'most used'/'selected' tags, Allies fainted as a sheet, no search on set sheets) go to Sim with pictures.
 - 10:09 PM: Sim chose Q50 A (keep Q47's four small choices as built: set heading wording, most used/selected tags, no search on set sheets, Allies fainted as a sheet).
 - 10:17 PM: Sim chose Q51 Keep: Arena verdict on small phones stays as is (A only helped at 375 and shrank the headline).
+- 10:21 PM: Sim chose Q52 A: KO Board bar title at 15 on 1024-1439 wide screens (one line from 1180 up). Goes in the batch after the one now in its full check.
