@@ -6,7 +6,12 @@ V2.dotWrap = h => h.replace(/ · /g, ' ·\u00a0'); // a '·' joins the word afte
 // value shared with My Team's slider), Build around is ui.abLock (as 52-sleepers.js / Home's Build Around It). The engine (runAutoBuild,
 // 22-auto-build.js) is shared; the answer card and the lower sections are pieces 2 and 3.
 V2.bdUi = V2.bdUi || {find: ''};
-V2.buildHead = () => { const E = V2.esc, nBox = (S.box || []).length, lk = ui.abLock && byName.get(ui.abLock);
+/* scan S17 (Nov 20, Sim: go with the recommendations): a new visitor's box is the 36-Pokémon sample, so Build starts from Whole Roster
+   until the player edits their box or picks a pool themselves (cc2.absrc saved); then their choice and box are used, as before */
+V2.bdBoxUntouched = () => { try { const d = new Set(DEFAULT_BOX.map(b => b === 'Rotom' ? 'Rotom-Wash' : b).filter(b => byName.has(b) && !byName.get(b).m)), bx = S.box || [];
+  return bx.length === d.size && bx.every(b => d.has(b)); } catch (e) { return false; } };
+V2.bdSrcDefault = () => { if (ui.abSrc !== 'all' && LS.get('cc2.absrc', null) == null && V2.bdBoxUntouched()) ui.abSrc = 'all'; };
+V2.buildHead = () => { V2.bdSrcDefault(); const E = V2.esc, nBox = (S.box || []).length, lk = ui.abLock && byName.get(ui.abLock);
   const head = `<div class="bd-head"><div><p class="np-eyebrow"><span>Build ·<span class="bd-rw"> real winning teams ·</span> ${E(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} doubles</span></p><h1 class="u">Build me <span class="pl">a team.</span></h1></div>
     <div class="bd-side"><p>Winning tournament teams you can field from your box or the whole roster.</p><button type="button" class="np-link" data-bdhow>How It Works ›</button></div></div>`;
   const src = V2.slide('bdsrc', [['box', 'My Box'], ['all', 'Whole Roster']], ui.abSrc === 'all' ? 'all' : 'box', 'Build from');
