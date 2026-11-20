@@ -5,7 +5,7 @@
 // A2 (Q70): News and Home headline links (.dp-hl) on touch screens 1000+ wide get an invisible 44px tap area. At 1024, 1099, 1180
 //   and 1366 with touch (pointer: coarse): every visible headline's hit height at its centre is 44px+ (walked with elementFromPoint),
 //   every point on its own visible text hits it (no neighbour steals it), and nothing moves: the page height and every headline's
-//   place are the same with the headlines put back in place as they were before (inline links, no tap layer).
+//   place are the same with the headlines put back in place as they were before (no tap layer).
 // B (Q71): My Team at 700-1099: Suggestions full width under Matchups, then Team Checks | Your Games side by side; Adjust Suggestions
 //   is a fold (closed) as on phones and desktop, and still opens (its settings show; the layout stays the same when open). At 768 and
 //   1024: Suggestions as wide as Matchups, Team Checks and Your Games share a top and sit left | right below Suggestions, the empty
@@ -21,6 +21,7 @@ const open = async (route, W, th, touch, H = 900) => { const c = await b.newCont
   const errs = []; p.on('pageerror', e => errs.push(e.message));
   await p.addInitScript(t => { window.__PL_TEST = 1; try { localStorage.setItem('np.theme', t); } catch (e) {} }, th === 'dark' ? 'night' : 'day');
   await p.goto('file://' + PAGE + '#' + route, {timeout: 90000}); await p.waitForTimeout(3000);
+  await p.evaluate(() => document.fonts.ready.then(() => true)); await p.waitForTimeout(300); /* the headline and link boxes are measured with the real fonts */
   if (route === 'team') { await p.waitForFunction(() => !document.querySelector('.sg2-wait'), null, {timeout: 90000}).catch(() => {}); await p.waitForTimeout(800); }
   return [p, errs, c]; };
 const side = p => p.evaluate(() => document.documentElement.scrollWidth > innerWidth);
@@ -57,8 +58,8 @@ for (const route of ['news', 'home']) for (const W of [1024, 1099, 1180, 1366]) 
   const P = await places(p), R = await heads(p), low = R.filter(x => x.h < 44), stolen = R.filter(x => x.bad);
   ok(R.length > 0 && !low.length, `${tag}: all ${R.length} headlines 44px+ to tap (lowest ${R.length ? Math.min(...R.map(x => x.h)) : '-'}px${low.length ? `; ${low.length} under 44, first "${low[0].t}" ${low[0].h}px` : ''})`);
   ok(!stolen.length, `${tag}: every point on a headline's own text hits that headline${stolen.length ? ` (${stolen.length} not; first "${stolen[0].t}" ${stolen[0].bad}/${stolen[0].n})` : ''}`);
-  /* nothing moves: the same page with the headlines put back as before Q70 (inline, no tap layer; test-only style) has the same height and places */
-  await p.evaluate(() => { const s = document.createElement('style'); s.className = 'q69-off'; s.textContent = '.dp-hl{display:inline;position:static}.dp-hl::before{content:none}'; document.head.appendChild(s); }); await p.waitForTimeout(300);
+  /* nothing moves: the same page with the headlines put back as before Q70 (no tap layer; test-only style) has the same height and places */
+  await p.evaluate(() => { const s = document.createElement('style'); s.className = 'q69-off'; s.textContent = '.dp-hl::before{content:none}'; document.head.appendChild(s); }); await p.waitForTimeout(300);
   const M = await places(p);
   ok(M.H === P.H && M.y.join() === P.y.join(), `${tag}: nothing moves: page ${P.H}px with the tap layers, ${M.H}px without; ${P.y.length} headlines in the same places (${M.y.join() === P.y.join()})`);
   ok(!(await side(p)), `${tag}: nothing sideways`); ok(!errs.length, `${tag}: no page errors${errs.length ? ': ' + errs[0] : ''}`); await c.close(); }
