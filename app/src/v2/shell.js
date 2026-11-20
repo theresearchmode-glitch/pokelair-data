@@ -179,18 +179,22 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
     try { st = GUIDE_ORDER.filter(k => ARCH[k] && ARCH[k].name.toLowerCase().includes(q)).slice(0, 2); } catch (e) {}
     return {t, st}; };
   const KW = {move: 'Move', item: 'Item', ability: 'Ability'};
+  const monHit = p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
+  /* scan S34 A (Sim, Nov 20): a miss offers today's six highest-rated Pokémon as normal search rows (the same six as empty My Team's
+     'Start from a Winner'), so a typo leads somewhere instead of a dead end */
+  const missTop = () => { let top = []; try { top = lairRows().slice(0, 6).map(x => x.p); } catch (e) {} return top.length ? `<p class="miss-k">Or meet today's top six</p>${top.map(monHit).join('')}` : ''; };
   const draw = () => { const r = V2.find(inp.value), tm = teams(inp.value), T = terms(inp.value);
     out.innerHTML = !inp.value.trim() ? '<p class="fine">Type a Pokémon\'s name, a saved team, or a page like Battle.</p>' + V2.TOOLS.map(k => { const pl = V2.findPlaces.find(x => x[0] === k && !x[2]); return pl ? `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${pl[1]}</b><small>${V2.esc(V2.placeLines[k] || '')}</small></span></a>` : ''; }).join('') /* the tools, as today's empty search lists them (Nov 15) */
-      : !r.places.length && !r.mons.length && !tm.length && !T.t.length && !T.st.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>`
+      : !r.places.length && !r.mons.length && !tm.length && !T.t.length && !T.st.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>${missTop()}`
       : r.places.map(([k, n, act]) => act ? `<button type="button" class="np-hit" data-v2place="${V2.findPlaces.findIndex(x => x[1] === n)}"><span class="pg">Page</span><b>${n}</b></button>` : `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${n}</b>${V2.placeLines[k] ? `<small>${V2.esc(V2.placeLines[k])}</small>` : ''}</span></a>`).join('')
-        + r.mons.map(p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`).join('')
+        + r.mons.map(monHit).join('')
         + tm.map(t => `<button type="button" class="np-hit" data-svact="open" data-id="${V2.esc(t.id)}"><span class="pg">Saved team</span><b>${V2.esc(t.name)}</b></button>`).join('')
         + T.st.map(k => `<a class="np-hit" href="#archetypes" data-v2close data-v2style="${V2.esc(k)}"><span class="pg">Team style</span><span class="nm"><b>${V2.esc(ARCH[k].name)}</b><small>How it plays and how to beat it</small></span></a>`).join('')
         + T.t.map(x => `<a class="np-hit" href="#tournaments" data-v2close data-v2term="${V2.esc(x.k)}" data-v2termv="${V2.esc(x.v)}"><span class="pg">${KW[x.k] || 'Term'}</span><span class="nm"><b>${V2.esc(x.label)}</b><small>On ${x.c.toLocaleString('en-US')} winning team sheet${x.c === 1 ? '' : 's'}</small></span></a>`).join(''); };
   /* a11y stress (Nov 16): the list itself re-announced every hit on each keystroke; now a short status says how many (or that nothing matched) */
-  const say = sh.querySelector('[data-v2hitsay]'), draw2 = () => { draw(); if (!say) return; const q = inp.value.trim(), n = out.querySelectorAll('.np-hit').length; say.textContent = !q ? '' : n ? `${n} result${n === 1 ? '' : 's'}` : 'No matches'; };
+  const say = sh.querySelector('[data-v2hitsay]'), draw2 = () => { draw(); if (!say) return; const q = inp.value.trim(), n = out.querySelector('.miss-k') ? 0 : out.querySelectorAll('.np-hit').length; /* S34: the top six after a miss aren't matches */ say.textContent = !q ? '' : n ? `${n} result${n === 1 ? '' : 's'}` : 'No matches'; };
   inp.addEventListener('input', draw2);
-  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = out.querySelector('.np-hit'); if (h) { e.preventDefault(); h.click(); } } });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = !out.querySelector('.miss-k') && out.querySelector('.np-hit'); if (h) { e.preventDefault(); h.click(); } } });
   draw(); };
 /* a move, item or Ability from the search filters Winning Teams by it; a team style opens its Archetype guide (player review 2c) */
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2term],[data-v2style]'); if (!a) return;
