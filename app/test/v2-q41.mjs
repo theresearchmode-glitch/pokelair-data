@@ -3,7 +3,7 @@
 // and then reads "Show Fewer"; Top Ratings on the Back Page shows its top 3 rows, Next Events its first 2 (their "All Ratings ›" and
 // "All N Next Events ›" links stay). At 390 x 844 the page is at least 0.3 screens shorter than the same page with the cuts undone in
 // place (same data; the frozen CI data and today's differ in length). Tablet and desktop (700, 1440) unchanged: every headline, 5 ratings,
-// 3 events, no button. Light and dark: nothing out of its box, nothing scrolls sideways, no page errors. Exit 1 on any failure.
+// 3 events, no button. Light and dark: nothing out of its box, nothing scrolls sideways, no page errors. Q48 A (Nov 19, 9:19 PM): every .dp-lk link on the paper has the same colour, weight and size. Exit 1 on any failure.
 //   PAGE=app/dist/v2.html node app/test/v2-q41.mjs   (a --v2 --preview-data build)
 import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -51,11 +51,15 @@ for (const th of ['light', 'dark']) {
       ok(x.brief === n.brief && x.exp === 'true' && x.btn === 'Show Fewer', `${th} ${W}: still open after a redraw (${x.brief}, aria-expanded ${x.exp}, "${x.btn}")`);
       await p.click('#main [data-dpbrief]'); await p.waitForTimeout(300); x = await look(p);
       ok(x.brief === 2 && x.exp === 'false' && x.btn === `${hid} more in brief ›` && x.focus, `${th} ${W}: Show Fewer back to 2 (${x.brief}, "${x.btn}", focus ${x.focus})`); }
+    { const lk = await p.evaluate(() => [...document.querySelectorAll('#main .dp-paper .dp-lk')].filter(e => e.getClientRects().length).map(e => getComputedStyle(e).color + ' ' + getComputedStyle(e).fontWeight + ' ' + getComputedStyle(e).fontSize));
+      ok(lk.length >= 2 && new Set(lk).size === 1, `${th} ${W}: every link on the paper looks the same (Q48: ${[...new Set(lk)].join(' | ')})`); }
     ok(!errs.length, `${th} ${W}: no page errors (${errs.length}${errs.length ? ': ' + errs[0] : ''})`); await c.close(); }
   for (const W of [700, 1440]) { const [p, errs, c] = await open(W, th, false), n = await want(p), x = await look(p);
     ok(x.brief === n.brief && x.rate === n.rate && x.next === Math.min(n.next, 3) && !x.btn && x.ra && x.fa,
       `${th} ${W}: unchanged, all ${n.brief} headlines (${x.brief}), ${n.rate} ratings (${x.rate}), ${Math.min(n.next, 3)} events (${x.next}), no button ("${x.btn}"), both links`);
     const bx = await boxes(p); ok(!bx.bad.length && !bx.side, `${th} ${W}: nothing out of its box (${bx.bad.slice(0, 3).join('; ') || 'clean'})`);
+    { const lk = await p.evaluate(() => [...document.querySelectorAll('#main .dp-paper .dp-lk')].filter(e => e.getClientRects().length).map(e => getComputedStyle(e).color + ' ' + getComputedStyle(e).fontWeight + ' ' + getComputedStyle(e).fontSize));
+      ok(lk.length >= 2 && new Set(lk).size === 1, `${th} ${W}: every link on the paper looks the same (Q48: ${[...new Set(lk)].join(' | ')})`); }
     ok(!errs.length, `${th} ${W}: no page errors (${errs.length})`); await c.close(); }
 }
 await b.close(); console.log(`v2-q41: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
