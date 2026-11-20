@@ -26,6 +26,9 @@ for (const th of ['light', 'dark']) for (const W of [320, 360, 390, 430, 699, 70
   await p.goto('file://' + PAGE + '#practice', {timeout: 90000}); await p.waitForTimeout(2000);
   for (let k = 0; k < 4; k++) {
     await p.evaluate(() => window.__ev("prStart('real'); V2.redraw()")); await p.waitForTimeout(300);
+    /* Nov 19 (night): on a loaded machine the logo font can land late; names are fitted again on 'loadingdone' (monsheet.js), so measure
+       once the fonts are ready and two frames have passed (a split name failed here twice under load and never alone) */
+    await p.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))));
     const m = await p.evaluate(`(${measure})()`); if (!m) { grid.push(`${th} ${W} #${k}: practice did not show two sixes`); continue; } seen++;
     /* Nov 19 (Claude's review of the helper's 320 picture: 'Charizar|d', 'Golisopo|d'): no name word breaks across two lines */
     const split = await p.evaluate(() => { const bad = []; document.querySelectorAll('.pp2-plate .nm').forEach(b => { const tw = document.createTreeWalker(b, NodeFilter.SHOW_TEXT); let t;
