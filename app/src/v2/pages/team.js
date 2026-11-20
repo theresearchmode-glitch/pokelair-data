@@ -280,9 +280,10 @@ V2.emptyHtml = (o = {}) => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nS
   // First visit Q1 B (Sim, Nov 13, the approved first-visit mock-up): the six empty spots (Lead / Back / Bench, the six's own
   // empty tiles: each opens the name box for its spot) beside the lead, and "Or Start from a Winner" (today's six highest-rated,
   // tap one to build around it: Home's handler) beside the underdog
-  // Sim, Nov 13 (Empty My Team Q1 B): "Add" with "Spot N" under it, as in six.js
-  const add = i => `<div class="sx-slot sx-empty"><button type="button" class="sx-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="sx-addart" aria-hidden="true"><i>+</i></span><b>Add</b><small>Spot ${i + 1}</small></button></div>`;
-  const spots = `<div class="tm-six sx tm-e-six"><div class="sx-grps">${['Lead', 'Back', 'Bench'].map((g, j) => `<div class="sx-grp" role="group" aria-label="${g}"><p class="sx-gl u" aria-hidden="true">${g}</p><div class="sx-tiles">${add(j * 2)}${add(j * 2 + 1)}</div></div>`).join('')}</div></div>`;
+  // Sim, Nov 13 (Empty My Team Q1 B): "Add" with a sub-line under it; scan S4 A (Sim, Nov 20): the sub-line names the spot by its group
+  // ("Lead 1", "Lead 2", "Back 1" …), since on phones the groups are columns and "Spot 1 · Spot 3 · Spot 5" read across the top row
+  const add = (i, g, k) => `<div class="sx-slot sx-empty"><button type="button" class="sx-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="sx-addart" aria-hidden="true"><i>+</i></span><b>Add</b><small>${g} ${k}</small></button></div>`;
+  const spots = `<div class="tm-six sx tm-e-six"><div class="sx-grps">${['Lead', 'Back', 'Bench'].map((g, j) => `<div class="sx-grp" role="group" aria-label="${g}"><p class="sx-gl u" aria-hidden="true">${g}</p><div class="sx-tiles">${add(j * 2, g, 1)}${add(j * 2 + 1, g, 2)}</div></div>`).join('')}</div></div>`;
   let top = []; try { top = lairRows().slice(0, 6).map(x => x.p); } catch (e) {}
   const win = top.length ? `<div class="tm-e-win"><h2 class="u">Or Start from a Winner</h2><p>Today's six highest-rated Pokémon. Tap one to build a team around it.</p><div class="tm-e-wg">${top.map(p => { const R = monRating(p), u = homePct(p);
     return `<button type="button" class="tm-e-w" data-hmaround="${V2.esc(p.n)}" aria-label="Build around ${V2.esc(p.d)}">${V2.mon(p.n, {iw: 96, bare: true, tag: true})}<b>${V2.tileName(p.d)}</b><small>${R ? `<span>${R.tier}\u00a0tier\u00a0${R.n}</span>` : ''}${u ? `<span>${u}% of <span class="tm-e-src">Showdown ladder teams</span></span>` : ''}</small></button>`; }).join('')}</div></div>` : '';
