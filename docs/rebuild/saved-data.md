@@ -273,3 +273,18 @@ Safe to drop or change (caches/dev switches): `np.ckwin`, `np.gl`, `np.mock`, `c
 - Shared reads: **15** `meta/*` documents, each with an optional `_2` part; owner-only reads of 2 collections.
 - Per-viewer writes outside `data/users`: **2** (`usage/<uid>`, `feedback/<uid>`).
 - Links: **2** formats (`#team=`/`?team=`, `#box=`); history state only, no page routes in the URL.
+
+---
+
+## Nov 19 check against the new page (read by code, 8:33 PM)
+- The new build (app/dist/v2.html, commit 9ce641c0) includes the same shared files 01-state.js, 03-persistence.js and 45-team-links.js
+  (app/parts-v2.json), so `cc2.state` and `data/users/<id>/state` are read and written by the same code; the live address
+  5VBfLTR5sM4JU5NswJYyGk is in the page (team links).
+- Browser keys: old live page (read from its HTML) uses absrc boxSort chf lmode lstab pool recsrc seenNew seg setMon setSrc sprv state theme
+  tview view welcomed; the new page uses absrc boxSort chf pool recsrc seenNew setMon setSrc state theme v welcomed. Not read any more:
+  lmode, lstab, seg, sprv, tview, view (view preferences, section 1, not saved data).
+- Theme: the new page maps the old `cc2.theme` "dark"/"light" to night/day before first paint (app/src/v2/head.html:11).
+- Writes on the real permissions: Sim's phone visit to the private scratch artifact (Nov 19, ~3:22 PM) wrote `usage/<id>` under the live
+  rules and contract 0.2.90 (read back with ArtifactData).
+- NOT proven yet: an account with saved data on the live page opening the new page and seeing the same teams. Needs a logged-in account
+  with live data: do it right after the switch publish (runbook), before announcing.
