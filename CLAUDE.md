@@ -29,6 +29,11 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
+## Never idle while there is work (Sim, Nov 20, BIG RULE)
+Sim, Nov 20: "if we have things to do, lets make sure we're always doing it. thats a big rule". Never just watch helpers or checks:
+while they run, the main thread always does the next useful piece of work itself (reviews, prep, Plans page, Preview, summaries,
+small fixes). Keep a short list of next tasks so there is never a gap. (Also in docs/sim-workflow.txt.)
+
 ## Plans page ticks always accurate (Sim, Nov 19, 8:44 AM): docs/rebuild/RULES.md section 00p
 Tick each step the moment it lands (pushed + checks passed + screenshots; pages need Sim's OK), with commit and clock time in the note;
 every Plans update re-checks ticks against reality.
