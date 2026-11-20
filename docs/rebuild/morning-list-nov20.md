@@ -3,7 +3,7 @@ Small things found tonight that need Sim's eye; none blocks the switch. Each wil
 
 1. DONE (Sim chose Keep, Q51, Nov 19 night). Arena verdict on the smallest phones: at 320 the verdict plate wraps to 4 lines, at 340-375 to 3, at 390+ 2 (measured on 6c5b736b).
    The swap button beside it takes the width. Options to show: smaller second line under 390, or the swap button moved above the plate.
-2. DONE for the title (Sim chose Q52 B + Q53 A, Nov 19 night: 17 on 1024-1449); the 1024x768 short scroll is still open. Arena on 1024-1279 wide desktops: "KO Board" title on 2 lines; at 1024x768 the calculator needs a short scroll (only 1440x900 must fit).
+2. DONE for the title (Sim chose Q52 B + Q53 A, Nov 19 night: 17 on 1024-1449); the short scroll measured Nov 20: the Arena fits at 1440x900 (33px spare); at 1024x768 / 1366x768 / 1280x800 / 1280x720 the KO Board bar and the bottom of the set cards sit 97-177px below the fold (scene, moves and verdict all on screen). Recommended: keep (Sim's size target is 1440x900; fitting smaller laptops needs a denser controls column, a redesign). Asked as Q65. Arena on 1024-1279 wide desktops: "KO Board" title on 2 lines; at 1024x768 the calculator needs a short scroll (only 1440x900 must fit).
 3. DONE (Sim chose Keep, Q54, Nov 19 night). Arena "Notes on this hit" fold holds today's details (HP numbers, effectiveness, "level 50 doubles"); the plain "level 50 doubles" line is
    not on screen any more (only inside Notes and the hidden heading). Sim to confirm.
 4. Arena's full KO Board still opens today's board in place (no new design yet); propose a design with pictures.
