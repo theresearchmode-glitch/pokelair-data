@@ -1528,3 +1528,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:21 PM: Sim chose Q52 A: KO Board bar title at 15 on 1024-1439 wide screens (one line from 1180 up). Goes in the batch after the one now in its full check.
 - 10:24 PM: Correction: Q52 was put to Sim with a wrong size. The KO Board title is 20 (not 17) on screens 1024 and wider; A drops it 20 -> 15. Measured at 1024-1920 x 768 and 900: 20 is one line from 1440; 17 one line from 1280; 15 from 1180. Q52 asked again; the built change is parked on branch q52.
 - 10:25 PM: Sim chose Q52 B (asked again with the right sizes): KO Board title 17 on 1024-1439 (one line from 1280 up; 20 stays from 1440).
+- 10:28 PM: Pushed the Arena batch (Arena, Q38, Q39, Q40) 62933e89 to claude/design6 after a clean full check (part 1 0 failed; quality 0 new; behaviour A 139/0, B 77/0, C 83/0, D 117/0; data checks; GATE PASSED).

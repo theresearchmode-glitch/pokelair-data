@@ -191,3 +191,5 @@
 .arn-tags{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:var(--s1)}
 .arn-tags small{padding:2px var(--s2);border-radius:var(--r-s);font:600 var(--t13)/1.3 var(--b);white-space:nowrap}
 .arn-mu{box-shadow:inset 0 0 0 1px var(--arn-line);color:var(--ink-2)}.arn-cur{background:var(--ink);color:var(--bg)}
+/* Sim Q52 B (Nov 19, 10:26 PM): the KO Board bar's title at 17 on 1024-1439 (20 from 1440), so it sits on one line from 1280 up */
+@media (min-width:1024px) and (max-width:1439.98px){.arn-kbbar .t{font-size:var(--t17)}}
