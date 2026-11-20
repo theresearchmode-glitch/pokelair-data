@@ -458,7 +458,7 @@ t('RATE-05', 'Top of the ratings: #1 first, rows in rating order, 20 on desktop;
   expect(has(await d.hotText(), 'S') && /90\+(: | · Top of the format · )\d+ Pokémon, ranked among \d+ with results/.test(await ui.text()), 'no S tier header');
   await d.openPokemon(l[3].id); expect(await d.sheetIsOpen() && await d.sheetName() === l[3].name, 'row opened ' + await d.sheetName()); }));
 t('RATE-05b', 'Phone: the top list is shorter (16 rows)', run({team: TEAM, ...PHONE}, async ({ui, d}) => {
-  await ui.go('Ratings'); const l = await d.topList(); expect((l.length >= 16 && l.length <= 18) || l.length >= 40, 'phone rows: ' + l.length); /* 40+: the new site's Grandstand on a phone (every tier, up to 3 rows of 4 each) */ expect(await ui.noSideScroll(), 'side scroll on phone'); }));
+  await ui.go('Ratings'); const l = await d.topList(); expect((l.length >= 16 && l.length <= 18) || l.length >= 24, 'phone rows: ' + l.length); /* 24+: the new site's Grandstand on a phone (S to C shown, up to 2 rows of 4-5 each; since Sim's Nov 20 option C the D and F tiers fold behind "Show D and F tiers", app/test/v2-q60.mjs; was 40+ with every tier shown) */ expect(await ui.noSideScroll(), 'side scroll on phone'); }));
 
 t('RATE-06', 'Details on the top list shows win % and games', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); await d.tapDetails(); expect(/\d+(\.\d)?% wins/.test(await d.hotText()) && /games/.test(await d.hotText()), 'no win % / games'); }));
