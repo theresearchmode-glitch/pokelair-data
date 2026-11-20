@@ -5,7 +5,7 @@
 /* Q13 A (Sim, Nov 19): Usage opens on Online tournaments (updates daily), back to it on a reload; Ranked ladder is one tap away. Usage keeps
    its own source (V2.usUi.src) so that opening it changes nothing elsewhere: the site-wide ui.metaSrc (sets, ratings, threats on every other
    page) still starts on Ranked ladder. Tapping a chip still sets ui.metaSrc as well, as it did before. */
-V2.usUi = {q: '', pick: null, all: false, src: 'tour'};
+V2.usUi = {q: '', pick: null, all: false, src: 'tour', open: {}};
 V2.usDoc = () => META[SRC[V2.usUi.src]];
 // shared helpers that read ui.metaSrc (trendFor's badges) see Usage's own source while they run, then it is put back
 V2.usAs = f => { const g = ui.metaSrc; ui.metaSrc = V2.usUi.src; try { return f(); } finally { ui.metaSrc = g; } };
@@ -27,13 +27,24 @@ V2.usNums = R => { const E = V2.esc; return `${R.u != null ? `<b class="u">${(+R
 V2.usLabel = R => `${V2.usName(R)}, rank ${R.t.r}${R.u != null ? `, ${(+R.u).toFixed(1)}% of teams` : ''}${R.t.teams ? `, ${(+R.t.teams).toLocaleString('en-US')} teams` : ''}${R.tr ? ', ' + R.tr.txt : ''}`;
 V2.usFig = (R, cls, blk) => { const E = V2.esc, p = R.p; return `<button type="button" class="us-fig ${cls}" data-uspick="${E(R.t.n)}" aria-pressed="${V2.usUi.pick === R.t.n}" aria-label="#${R.t.r} ${E(V2.usLabel(R))}: show how it is played"${p ? ` style="--b1:var(--ty-${p.t[0]});--b2:var(--ty-${p.t[1] || p.t[0]})"` : ''}>
     <span class="us-art" aria-hidden="true"><i class="gs-base"></i>${p ? V2.mon(p.n, {bare: true}) : ''}</span>${blk || ''}<span class="us-tx"><span class="us-rk u">#${R.t.r}</span><b>${E(V2.usName(R))}</b><span class="us-nums">${V2.usNums(R)}</span></span></button>`; };
-V2.usBars = (title, arr, n, bas, tc) => arr && arr.length ? `<div class="us-bars"><p class="us-bh">${title}${bas ? ` <small>${bas}</small>` : ''}</p>${arr.slice(0, n).map(([nm, v]) => { const q = byName.get(nm);
-  return `<p class="us-bar"><span>${V2.esc(q ? q.d : nm)}</span>${v != null ? `<b class="u">${(+v) < 1 ? (+v).toFixed(1) : Math.round(+v)}%</b><i aria-hidden="true"><i style="width:${Math.max(1, Math.min(100, +v))}%"></i></i>` : ''}</p>`; }).join('')}</div>` : '';
+/* Q42 A (Sim chose it, Nov 19, 8:25 PM): a shorter Usage page on phones (under 700 wide; 700+ unchanged). "How <Pokémon> is played" shows
+   Moves' top 5 and Items' top 3, each with "N more ›" (N = the rest of the list the page holds), Abilities and Natures side by side,
+   Usually alongside one row of 3 plus "N more ›", and the "Also ranked 61–100" line behind its own button. CSS-only cuts (class us-x on
+   what phones fold away), so tablet and desktop keep every bar, teammate and the line and never see a button. Each button is a real
+   button (aria-expanded, aria-controls) that toggles its list's class with no redraw, so focus stays on it (the Q32 pattern,
+   V2.wkTechBtn); its state (V2.usUi.open) is kept across redraws, other picks and the mouse hover swap. */
+V2.usMoreIn = (k, n, open) => open ? 'Show Fewer' : k === 'al' ? `Also ranked ${n} ›` : `${n} more<span class="vh"> ${({mv: 'moves', it: 'items', tm: 'teammates'})[k]}</span> ›`;
+V2.usMoreB = (k, n) => { const o = !!V2.usUi.open[k]; return `<button type="button" class="np-link us-more" data-usmore="${k}" data-n="${n}" aria-expanded="${o}" aria-controls="us-l-${k}">${V2.usMoreIn(k, n, o)}</button>`; };
+V2.usCut = {mv: 5, it: 3}; // phones: Moves top 5, Items top 3
+V2.usBars = (title, arr, n, bas, tc, k) => { if (!(arr && arr.length)) return ''; const L = arr.slice(0, n), c = k && V2.usCut[k], x = c && L.length > c ? L.length - c : 0;
+  return `<div class="us-bars${tc ? ' ' + tc : ''}${x && V2.usUi.open[k] ? ' on' : ''}"${x ? ` id="us-l-${k}"` : ''}><p class="us-bh">${title}${bas ? ` <small>${bas}</small>` : ''}</p>${L.map(([nm, v], i) => { const q = byName.get(nm);
+  return `<p class="us-bar${x && i >= c ? ' us-x' : ''}"><span>${V2.esc(q ? q.d : nm)}</span>${v != null ? `<b class="u">${(+v) < 1 ? (+v).toFixed(1) : Math.round(+v)}%</b><i aria-hidden="true"><i style="width:${Math.max(1, Math.min(100, +v))}%"></i></i>` : ''}</p>`; }).join('')}${x ? V2.usMoreB(k, x) : ''}</div>`; };
 V2.usHow = (R, d) => { const E = V2.esc, t = R.t, p = R.p, nm = V2.usName(R), sb = R.sb, st = p ? V2.addState(p.n) : 'none';
-  const groups = [V2.usBars('Moves', t.mv, 8, sb && sb('mv')), V2.usBars('Items', t.it, 5, sb && sb('it')), (p && p.m && p.a && p.a[0] ? `<div class="us-bars"><p class="us-bh">Abilities</p><p class="st-stone">Always <b>${V2.esc(p.a[0])}</b> (a Mega's Ability is fixed).</p></div>` /* 4c (Nov 17): tournament sheets list the base form's Ability for Megas */ : V2.usBars('Abilities', t.ab, 3, sb && sb('ab'))), V2.usBars('Natures', t.na, 3, sb && sb('na'))].filter(Boolean);
-  const tm = (t.tm || []).slice(0, 6).filter(([n]) => byName.get(n));
-  const mates = tm.length ? `<div class="us-mates"><p class="np-eyebrow"><span>Teammates</span></p><h3 class="u">Usually alongside</h3>${(innerWidth < 700 && tm.length > 3 ? [tm.slice(0, 3), tm.slice(3)] : [tm]).map(row => `<div class="gs-row us-bench" style="--c:${innerWidth < 700 ? 3 : row.length}">${row.map(([n, v]) => { const q = byName.get(n);
-      return `<button type="button" class="gs-mon" data-v2mon="${E(n)}" style="--b1:var(--ty-${q.t[0]});--b2:var(--ty-${q.t[1] || q.t[0]})" aria-label="${E(q.d)}${v != null ? `, on ${Math.round(+v)}% of its teams` : ''}: open its page"><span class="gs-fig" aria-hidden="true"><i class="gs-base"></i>${V2.mon(q.n, {bare: true})}</span><span class="gs-tx" aria-hidden="true">${q.m ? '<span class="gs-mg u">Mega</span>' : '<span class="gs-mg">&nbsp;</span>'}<b>${E(q.m ? q.d.slice(5) : q.d)}</b>${v != null ? `<small>${Math.round(+v)}% of its teams</small>` : ''}</span></button>`; }).join('')}</div>`).join('')}</div>` : '';
+  const mega = p && p.m && p.a && p.a[0], half = (mega || (t.ab && t.ab.length)) && t.na && t.na.length ? 'us-half' : ''; // Q42: Abilities and Natures share a row on phones only when both are there
+  const groups = [V2.usBars('Moves', t.mv, 8, sb && sb('mv'), '', 'mv'), V2.usBars('Items', t.it, 5, sb && sb('it'), '', 'it'), (mega ? `<div class="us-bars${half ? ' ' + half : ''}"><p class="us-bh">Abilities</p><p class="st-stone">Always <b>${V2.esc(p.a[0])}</b> (a Mega's Ability is fixed).</p></div>` /* 4c (Nov 17): tournament sheets list the base form's Ability for Megas */ : V2.usBars('Abilities', t.ab, 3, sb && sb('ab'), half)), V2.usBars('Natures', t.na, 3, sb && sb('na'), half)].filter(Boolean);
+  const tm = (t.tm || []).slice(0, 6).filter(([n]) => byName.get(n)), tmX = innerWidth < 700 && tm.length > 3 ? tm.length - 3 : 0;
+  const mates = tm.length ? `<div class="us-mates${tmX && V2.usUi.open.tm ? ' on' : ''}"${tmX ? ' id="us-l-tm"' : ''}><p class="np-eyebrow"><span>Teammates</span></p><h3 class="u">Usually alongside</h3>${(tmX ? [tm.slice(0, 3), tm.slice(3)] : [tm]).map((row, ri) => `<div class="gs-row us-bench${ri ? ' us-x' : ''}" style="--c:${innerWidth < 700 ? 3 : row.length}">${row.map(([n, v]) => { const q = byName.get(n);
+      return `<button type="button" class="gs-mon" data-v2mon="${E(n)}" style="--b1:var(--ty-${q.t[0]});--b2:var(--ty-${q.t[1] || q.t[0]})" aria-label="${E(q.d)}${v != null ? `, on ${Math.round(+v)}% of its teams` : ''}: open its page"><span class="gs-fig" aria-hidden="true"><i class="gs-base"></i>${V2.mon(q.n, {bare: true})}</span><span class="gs-tx" aria-hidden="true">${q.m ? '<span class="gs-mg u">Mega</span>' : '<span class="gs-mg">&nbsp;</span>'}<b>${E(q.m ? q.d.slice(5) : q.d)}</b>${v != null ? `<small>${Math.round(+v)}% of its teams</small>` : ''}</span></button>`; }).join('')}</div>`).join('')}${tmX ? V2.usMoreB('tm', tmX) : ''}</div>` : '';
   const cc = t.cc && t.cc.length ? `<p class="fine us-cc"><b>Checks and counters:</b> ${t.cc.slice(0, 5).map(([n, v]) => { const q = byName.get(n); return E(q ? q.d : n) + ` <small>${(+v).toFixed(0)}</small>`; }).join(', ')}</p>` : '';
   const add = st === 'ok' ? `<button type="button" class="np-btn" data-v2add="${E(p.n)}" aria-label="Add ${E(nm)} to My Team"><span>Add to My Team</span></button>` : st === 'have' ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : '';
   return `<section class="us-how" data-ushow="${E(t.n)}"${p ? ` style="--ty-a:var(--ty-${p.t[0]});--ty-b:var(--ty-${p.t[1] || p.t[0]})"` : ''}><div class="us-hh"><h2 class="u">How ${E(nm)} is played</h2><p class="fine">Point at or tap any Pokémon above to see it here instead.</p></div>
@@ -78,7 +89,7 @@ V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
       <div class="us-podium"><div class="us-steps">${pod}</div><div class="us-benches">${halves.map(h => `<div class="gs-row us-bench" style="--c:4">${h.map(R => V2.usFig(R, 'bench')).join('')}</div>`).join('')}</div></div>
       ${pick ? V2.usHow(pick, d) : ''}
       ${rest.length ? `${U.all ? `<div class="us-list">${rest.map(R => V2.usFig(R, 'row')).join('')}</div>` : ''}<button type="button" class="np-link us-rest" data-usrest aria-expanded="${U.all}">${U.all ? 'Show the top 10' : `Ranks 11–${rows[rows.length - 1].t.r} ›`}</button>` : ''}
-      ${d.more && d.more.length ? `<p class="fine">Also ranked ${d.more[0].r}–${d.more[d.more.length - 1].r}: ${d.more.slice(0, 40).map(m => { const p = byName.get(m.n); return E(p ? p.d : m.n); }).join(', ')}${d.more.length > 40 ? ` and ${d.more.length - 40} more` : ''}</p>` : ''}${d.note ? `<p class="fine">${E(d.note)}</p>` : ''}`; }
+      ${d.more && d.more.length ? `${V2.usMoreB('al', `${d.more[0].r}–${d.more[d.more.length - 1].r}`)}<p class="fine us-also${U.open.al ? ' on' : ''}" id="us-l-al">Also ranked ${d.more[0].r}–${d.more[d.more.length - 1].r}: ${d.more.slice(0, 40).map(m => { const p = byName.get(m.n); return E(p ? p.d : m.n); }).join(', ')}${d.more.length > 40 ? ` and ${d.more.length - 40} more` : ''}</p>` : ''}${d.note ? `<p class="fine">${E(d.note)}</p>` : ''}`; }
   return `<div class="ra gsp us"><div class="gs-top">${head}<div class="ra-spotw">${V2.usSpot(rows[0], d)}</div>${tabs}</div><div class="gs-body">${srcs}${body}</div></div>`; }};
 
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-usq]'); if (!i) return; V2.usUi.q = i.value; const at = i.selectionStart; V2.redraw();
@@ -88,6 +99,9 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.uspick) { U.pick = d.uspick; V2.redraw(); const h = document.querySelector('[data-ushow]'); if (h && !V2.usUi._hover) h.scrollIntoView({behavior: V2.smooth(), block: 'nearest'}); return; }
   else if (d.usrest != null) U.all = !U.all;
   V2.redraw(); });
+// Q42: a phone's "N more ›" / "Also ranked 61–100 ›" opens its list in place (class 'on', no redraw: focus stays on the button)
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-usmore]'); if (!b) return; const k = b.dataset.usmore, l = document.getElementById(b.getAttribute('aria-controls')); if (!l) return;
+  const o = V2.usUi.open[k] = !V2.usUi.open[k]; l.classList.toggle('on', o); b.setAttribute('aria-expanded', o); b.innerHTML = V2.usMoreIn(k, b.dataset.n, o); });
 // mouse screens: pointing at a Pokémon on the podium swaps "How it is played" (the brief's "Point at or tap")
 document.addEventListener('pointerover', e => { if (e.pointerType !== 'mouse') return; const b = e.target.closest && e.target.closest('.us-podium [data-uspick]'); if (!b || V2.usUi.pick === b.dataset.uspick) return;
   V2.usUi.pick = b.dataset.uspick; const D = V2.usDoc(), R = (D && D.top || []).find(t => t.n === b.dataset.uspick); const h = document.querySelector('[data-ushow]');
