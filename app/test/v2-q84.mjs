@@ -104,7 +104,7 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) { const tag = `
       const v = me[0] && me[0].querySelector('.v'), nm = me[0] && me[0].querySelector('.nm'), mg = tr.querySelector('.sp2-m.me .mg');
       return {band: bef.backgroundColor, hero, skew: bef.transform !== 'none', imgs: [Math.min(...imgs), Math.max(...imgs)], n: f.length, ov, v: v && getComputedStyle(v).color, nm: nm && getComputedStyle(nm).color, mg: mg && getComputedStyle(mg).color, fv: f[0] && getComputedStyle(f[0].querySelector('.v')).fontSize}; });
     const cv = Sp && Sp.v ? ratio(Sp.v, Sp.hero) : 0, cn = Sp && Sp.nm ? ratio(Sp.nm, Sp.hero) : 0;
-    ok(Sp && Sp.band === Sp.hero && Sp.skew && Sp.imgs[0] >= 58 && Sp.imgs[1] <= 62 && Sp.ov === 0 && Sp.fv === '20px' && cv >= 4.5 && cn >= 4.5,
+    ok(Sp && Sp.band === Sp.hero && Sp.skew && Sp.imgs[0] >= 58 && Sp.imgs[1] <= 62 && Sp.ov === 0 && Sp.fv === '20px' && cv >= 4.5 && cn >= 4.5 && (!Sp.mg || ratio(Sp.mg, Sp.hero) >= 4.5) /* Q86 A (Sim, Nov 20): the Mega word too */,
       `S29 ${w} ${th}: your six on the blue band (number ${cv.toFixed(2)}:1, name ${cn.toFixed(2)}:1${Sp && Sp.mg ? `, Mega ${ratio(Sp.mg, Sp.hero).toFixed(2)}:1` : ''}), top ${Sp ? Sp.n : '?'} at ${Sp ? Sp.imgs.join('-') : '?'} px, ${Sp ? Sp.ov : '?'} overlaps`);
     await p.focus('.sp2-m.me >> nth=1'); await p.keyboard.press('Shift+Tab'); const fo = await p.evaluate(() => { const e = document.activeElement; return e && e.matches('.sp2-m.me:focus-visible') ? getComputedStyle(e).outlineColor : null; });
     ok(fo === 'rgb(255, 255, 255)', `S29 ${w} ${th}: keyboard focus on your six shows a white ring on the band (${fo})`);
