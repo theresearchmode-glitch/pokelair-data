@@ -1553,3 +1553,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:17 AM: Sim (message read 6:17 AM): 'Recommended for all is good to go': Q61 A (KO Board stays as built), Q62 A (Meta on phones goes), Q63 A (My Team tabs go), Q64 A (no Suggestions count when the team shows 'Nothing to fix').
 - 6:24 AM: Q64 A built on q59 (432c6c3a): no Suggestions count beside 'Nothing to fix'. v2-q59 before the change '6 failed' (the sample team is a 'Nothing to fix' team), after 'all passed'. Merges into the Q59+Q60 batch after its part 2 ends; then v2-q59, minors and A-team rerun on the final code before the push.
 - 6:26 AM: Sim chose Q65 Keep: the Damage Calc stays as is on short laptop screens (target 1440x900 fits).
+- 6:26 AM: Started a look-only helper: fresh outside design audit score of the whole site (Plans step np-polish; same rubric as the Nov 17 15/20), on today's site plus Q59/Q60/Q64.
