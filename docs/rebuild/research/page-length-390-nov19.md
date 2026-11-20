@@ -5,3 +5,9 @@ home 7.5 · guide 6.1 · weekly 5.9 · events 5.7 · news 4.9 · usage 4.6 · gi
 team 4.1 · meta 4.0 · tournaments 3.9 · sets 3.6 · speed 3.5 · calc 3.5 · types 3.3 · about 3.3 · team-empty 3.1 · box 2.8 ·
 archetypes 2.8 · battle 2.1 · practice 1.9 · build 1.7 · feedback 1.7 · compare 1.3. (pokemon and owner 1.1: opened with no Pokémon / not owner, not a real reading.)
 Note: v2-minors HQ measures Home at 7.04 at 390 (different setup: desktop pointer); both say about 7.
+
+## Re-measured Nov 19, run between 8:04 and 8:06 PM by the clock (commit 329b3365: Q32 This Week, Q31/Q33 Events, the Arena calc), same script and setup
+home 7.7 · guide 6.1 · weekly 4.9 · news 4.9 · usage 4.6 · gifts 4.4 · method 4.3 · gauntlet 4.3 · track 4.3 · events 4.2 · team 4.1 ·
+sheet 4.1 · meta 4.0 · tournaments 3.9 · sets 3.6 · speed 3.5 · types 3.3 · about 3.3 · team-empty 3.1 · box 2.8 · archetypes 2.8 ·
+battle 2.1 · calc 2.0 · practice 1.9 · build 1.7 · feedback 1.7 · compare 1.3.
+Changes since the morning: weekly 5.9 -> 4.9 (Q32), events 5.7 -> 4.2 (Q31/Q33), calc 3.5 -> 2.0 (the Arena). Next: News, Usage, Gifts.
