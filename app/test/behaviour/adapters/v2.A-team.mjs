@@ -55,7 +55,7 @@ export default (ui, pg, o) => {
     waitFor, vis, has,
     // ---------- generic ----------
     settle: async (quietMs = 600, maxMs = 12000) => { await pg.evaluate(() => { if (window.__npMut) return; window.__npMut = Date.now(); new MutationObserver(() => { window.__npMut = Date.now(); }).observe(document.body, {childList: true, subtree: true, characterData: true}); });
-      const t0 = Date.now(); while (Date.now() - t0 < maxMs) { const q = await pg.evaluate(() => ({age: Date.now() - window.__npMut, busy: /Working out/.test(document.body.innerText)})); if (q.age > quietMs && !q.busy) return true; await pg.waitForTimeout(200); } return false; },
+      const t0 = Date.now(); while (Date.now() - t0 < maxMs) { const q = await pg.evaluate(() => ({age: Date.now() - window.__npMut, busy: /Working out|Plotting your best changes/.test(document.body.innerText)})); if (q.age > quietMs && !q.busy) return true; await pg.waitForTimeout(200); } return false; },
     /** open a saved team from My Team (today: the Switch team fold; here: Saved Teams sheet → Open) */
     switchTeam: async name => { if (await pg.evaluate(() => !!document.querySelector('.np-sheet .sw2'))) return tapFound(n => [...document.querySelectorAll('.sw2 .sw2-t')].find(e => e.querySelector('b') && e.querySelector('b').innerText.trim() === n) || null, name, 'switch to ' + name, 1800);
       await H.openSavedSheet(); await tapFound(n => [...document.querySelectorAll('.svt2 [data-svact="open"]')].find(e => e.getAttribute('aria-label') === 'Open ' + n) || null, name, 'switch to ' + name, 1800); },

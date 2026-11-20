@@ -108,7 +108,7 @@ export default (ui, pg) => {
    *  handler it calls (V2.openAllSugs). An empty team has no All Suggestions (the sheet opens only from a team) */
   const openAll = async (wait = 600) => { if (await sheetOpen('.sga2')) return 'coverage';
     await prevGo('My Team', 400); if (!(await ev('members().length'))) return 'report';
-    await waitPlans(); await until(async () => !(await pg.evaluate(() => { const s = document.querySelector('#main #tm-sg'); return !s || /Working out/.test(s.innerText); })), 15000, 'My Team suggestions');
+    await waitPlans(); await until(async () => !(await pg.evaluate(() => { const s = document.querySelector('#main #tm-sg'); return !s || /Working out|Plotting your best changes/.test(s.innerText); })), 15000, 'My Team suggestions');
     if (await vis('#main [data-v2sgall]')) await click('#main [data-v2sgall]', wait); else { await pg.evaluate(() => V2.openAllSugs()); await pg.waitForTimeout(wait); }
     return 'coverage'; };
   /** the picked tile's index among the shown six for a slot (data-tmsel counts the six in slot order; members() = the same list) */
@@ -344,9 +344,9 @@ export default (ui, pg) => {
     waitPlans,
     /** My Team's Suggestions part, its cards read into today's wording (see the notes at the top) */
     mySuggestions: readMine,
-    waitMySuggestions: async () => { await waitPlans(); return until(async () => { const busy = await pg.evaluate(() => { const s = document.querySelector('#main #tm-sg'); return !s || /Working out/.test(s.innerText) || !!s.querySelector('[aria-busy=true]'); });
+    waitMySuggestions: async () => { await waitPlans(); return until(async () => { const busy = await pg.evaluate(() => { const s = document.querySelector('#main #tm-sg'); return !s || /Working out|Plotting your best changes/.test(s.innerText) || !!s.querySelector('[aria-busy=true]'); });
       return busy ? '' : readMine(); }, 25000, 'suggestions'); },
-    suggestionsBusy: () => pg.evaluate(() => { const s = document.querySelector('#main #tm-sg'); return !!s && (!!s.querySelector('[aria-busy=true]') || /Working out/.test(s.innerText)); }),
+    suggestionsBusy: () => pg.evaluate(() => { const s = document.querySelector('#main #tm-sg'); return !!s && (!!s.querySelector('[aria-busy=true]') || /Working out|Plotting your best changes/.test(s.innerText)); }),
     mySuggestionCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-sg [data-v2plan]')].filter(e => e.getClientRects().length).length),
     applyMySuggestion: (n = 0) => click(`#main #tm-sg [data-v2plan="${n}"]`, 900),
     setSuggestFrom: async label => { await pg.evaluate(() => { const f = document.querySelector('#main details[data-v2adj]:not([open]) > summary'); if (f) f.click(); }); /* Q5 A (Nov 18): the fold on desktop too */ const ok = await pg.evaluate(l => { const b = [...document.querySelectorAll('#main [data-v2slide="sgpool"] > button')].find(e => e.getClientRects().length && e.innerText.trim().toLowerCase() === l.toLowerCase()); if (b) b.click(); return !!b; }, label);
@@ -424,7 +424,7 @@ export default (ui, pg) => {
   async function toSettings() { if (await vis(AREAS['Plan settings']) && !(await pg.evaluate(() => !!(window.V2 && V2._sheet)))) return;
     await pg.evaluate(() => { if (window.V2 && V2._sheet) V2.closeSheet(true); }); await pg.waitForTimeout(300);
     if (!(await pg.evaluate(() => !!window.V2 && V2.route() === 'team'))) await prevGo('My Team', 400);
-    if (await ev('members().length')) { await waitPlans(); await until(async () => !(await pg.evaluate(() => { const s = document.querySelector('#main #tm-sg'); return !s || /Working out/.test(s.innerText); })), 15000, 'My Team suggestions'); }
+    if (await ev('members().length')) { await waitPlans(); await until(async () => !(await pg.evaluate(() => { const s = document.querySelector('#main #tm-sg'); return !s || /Working out|Plotting your best changes/.test(s.innerText); })), 15000, 'My Team suggestions'); }
     /* Sim, Nov 18 (C): on phones Adjust Suggestions is a fold; open it the way a player does, by tapping its line */
     await pg.evaluate(() => { const m = document.querySelector('#main details[data-v2adj]:not([open]) > summary'); if (m) m.click(); }); await pg.waitForTimeout(200);
     await until(() => vis(AREAS['Plan settings']), 4000, 'Adjust suggestions on My Team');

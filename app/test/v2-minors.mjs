@@ -773,7 +773,7 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   await q.evaluate(() => { const t = document.querySelector('.tm-tabs [data-tmjump="tm-sg"]'); if (t) t.click(); }); await q.waitForTimeout(600);
   await q.waitForSelector('#tm-sg [data-v2plan]', {timeout: 20000}).catch(() => {});
   // Nov 18 (full test run): the planner works in steps now and redraws Suggestions after the first Apply shows, so wait until it settles
-  await q.waitForFunction(() => { const s = document.querySelector('#tm-sg'); return s && !s.querySelector('[aria-busy=true]') && !/Working out/.test(s.innerText) && s.querySelector('[data-v2plan]'); }, null, {timeout: 30000}).catch(() => {});
+  await q.waitForFunction(() => { const s = document.querySelector('#tm-sg'); return s && !s.querySelector('[aria-busy=true]') && !/Working out|Plotting your best changes/.test(s.innerText) && s.querySelector('[data-v2plan]'); }, null, {timeout: 30000}).catch(() => {});
   // the place under the finger (Nov 18, SUGG-09 inside Suggestions): an Apply (the faded copy's while the planner works, then the next
   // suggestion's) where the tapped one was; with none left, Suggestions' top
   const at = () => q.evaluate(() => { const s = document.querySelector('#tm-sg'), A = s && [...s.querySelectorAll('[data-v2plan]')].find(e => e.getClientRects().length); return s ? Math.round((A || s).getBoundingClientRect().top) + (A ? ' Apply' : ' top') : null; });
@@ -793,7 +793,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   const q = await b.newPage({viewport: {width: 390, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; });
   await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.addStyleTag({content: 'html,body{overflow-anchor:none}'}); // as Safari: no scroll anchoring
   await q.evaluate(T => window.__ev(`(() => { const T = ${JSON.stringify(T)}; S.slots.forEach((s, i) => { s.n = T[i]; }); persist(); V2.redraw(); })()`), T);
-  const settled = () => q.waitForFunction(() => { const s = document.querySelector('#tm-sg'); return s && !s.querySelector('[aria-busy=true]') && !/Working out/.test(s.innerText) && !s.querySelector('.sg2-stale'); }, null, {timeout: 30000}).catch(() => {});
+  const settled = () => q.waitForFunction(() => { const s = document.querySelector('#tm-sg'); return s && !s.querySelector('[aria-busy=true]') && !/Working out|Plotting your best changes/.test(s.innerText) && !s.querySelector('.sg2-stale'); }, null, {timeout: 30000}).catch(() => {});
   await q.evaluate(() => { const t = document.querySelector('.tm-tabs [data-tmjump="tm-sg"]'); if (t) t.click(); }); await q.waitForTimeout(600); /* q59: the Suggestions tab, as a player opens it */
   await settled();
   /* 'nothing to fix' (Nov 18 fix of the check): the six's last suggestion is FOUND, not assumed. Its one suggestion got a follow-up after the
@@ -811,7 +811,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     while (Date.now() - t0 < 30000) { // measured in a frame, after the page's own frame work, as the player sees it
       const r = await q.evaluate(() => new Promise(res => requestAnimationFrame(() => { const s = document.querySelector('#tm-sg'), A = s && [...s.querySelectorAll('[data-v2plan]')].find(e => e.getClientRects().length);
         const u = s && s.querySelector('.sg2-undo'), U = u && u.getBoundingClientRect(), t = document.querySelector('.np-toast');
-        res({ap: A ? Math.round(A.getBoundingClientRect().top) : null, stale: !!(A && A.closest('.sg2-stale')), sec: s ? Math.round(s.getBoundingClientRect().top) : null, busy: !!(s && (s.querySelector('[aria-busy=true]') || /Working out/.test(s.innerText))),
+        res({ap: A ? Math.round(A.getBoundingClientRect().top) : null, stale: !!(A && A.closest('.sg2-stale')), sec: s ? Math.round(s.getBoundingClientRect().top) : null, busy: !!(s && (s.querySelector('[aria-busy=true]') || /Working out|Plotting your best changes/.test(s.innerText))),
           bar: !!(U && U.top >= 0 && U.bottom <= innerHeight), toast: !!(t && t.getClientRects().length && /^Applied/.test(t.innerText))}); })));
       if (!msg) msg = r.bar && r.toast ? 'two' : r.bar ? 'bar' : r.toast ? 'toast' : ''; if (r.busy) busy++; else if (r.ap != null && !r.stale) live++;
       const at = r.ap != null ? ['Apply' + (r.stale ? ' (faded)' : ''), r.ap, y0] : ['Suggestions', r.sec, s0]; seen.push(at[0][0] + at[1]); if (Math.abs(at[1] - at[2]) > 4) bad.push(`${at[0]} ${at[2]} -> ${at[1]} at ${Date.now() - t0} ms`);
