@@ -225,3 +225,4 @@ Non-visual: S1, S8 (data), S10, S11, S13, S17, S19-S21, S24, S25, S27.
 - S26 is NOT a finding: Sim chose it (decisions.md, '9:53 AM: Sim chose B: the top bar's 'Battle' opens Damage Calculator (the first tab)'). Checked by grep.
 - S1 checked in code: app/src/app/06-helpers.js proLine() returns the fallback 'most recent event winners' when the measured rate is missing, so it shows as a lone line.
 - S24 checked in code: 06-helpers.js line 123 still writes 'Ready for ... of the top 30 threats'.
+- S20 checked: not a mistake. Test Run = top 20 tournament teams (38-gauntlet-data.js slice(0,20)); Speed Tiers track = 20 most-used threats not on your team, with a key line naming all top 30. No change; a 'top 20 teams' headline is an optional copy tweak for Sim.
