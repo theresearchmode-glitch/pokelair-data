@@ -1,5 +1,5 @@
 // Scan S16 (Nov 20): after "Build Me a Team", where the Blueprint is one column (under 1100 wide), Load Team sits right under the built six
-// (it was ~3 screens down, below Spec, Revisions and Notes). Wide (1100+): still at the foot of Notes. One Load Team on the page (C4) at every
+// (it was ~3 screens down, below Spec, Revisions and Notes). Q83 item 2 (Nov 20): wide (1100+) too, no longer at the foot of Notes. One Load Team on the page (C4) at every
 // width; a resize across 1100 moves it; tapping it still loads the team. 390, 820, 1440. Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-s16.mjs
 import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -11,10 +11,10 @@ for (const W of [390, 820, 1440]) { const c = await b.newContext({viewport: {wid
   await p.click('[data-bdgo]'); await p.waitForFunction(() => window.__ev('!!(ui.ab && !ui.ab.busy)') && document.querySelector('.bp-six'), null, {timeout: 120000}).catch(() => {}); await p.waitForTimeout(800);
   const x = await where(p);
   ok(x.n === 1, `${W}: one Load Team on the page (${x.n})`);
-  if (W < 1100) ok(x.gap != null && x.gap >= 0 && x.gap <= 64 && !x.inNotes, `${W}: Load Team right under the six (${x.gap} px below it; in Notes: ${x.inNotes})`);
-  else ok(x.inNotes, `${W}: Load Team still at the foot of Notes (wide layout unchanged)`);
+  /* Q83 item 2 (Sim, Nov 20): under the six at every width now (was: 1100+ at the foot of Notes) */
+  ok(x.gap != null && x.gap >= 0 && x.gap <= 64 && !x.inNotes, `${W}: Load Team right under the six (${x.gap} px below it; in Notes: ${x.inNotes})`);
   ok(!x.sideways, `${W}: no sideways scroll`);
-  if (W === 390) { await p.setViewportSize({width: 1440, height: 900}); await p.waitForTimeout(900); let y = await where(p); ok(y.n === 1 && y.inNotes, `390 → 1440 resize: Load Team moves back to Notes (${y.n}, ${y.inNotes})`);
+  if (W === 390) { await p.setViewportSize({width: 1440, height: 900}); await p.waitForTimeout(900); let y = await where(p); ok(y.n === 1 && !y.inNotes && y.gap <= 64, `390 → 1440 resize: Load Team stays under the six (${y.n}, ${y.gap} px; Q83 item 2)`);
     await p.setViewportSize({width: 390, height: 900}); await p.waitForTimeout(900); y = await where(p); ok(y.n === 1 && !y.inNotes && y.gap <= 64, `1440 → 390 resize: Load Team under the six again (${y.gap} px)`);
     const names = await p.evaluate(() => window.__ev('abTeam("doubles").mons.map(m=>m.n).join("|")'));
     await p.click('[data-bduse]'); await p.waitForTimeout(1200); const after = await p.evaluate(() => ({h: location.hash, s: window.__ev('S.slots.map(s=>s.n).join("|")')}));

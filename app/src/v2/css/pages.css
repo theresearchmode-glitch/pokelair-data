@@ -1993,12 +1993,12 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bp{position:relative;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s5);margin:var(--s4) var(--gut) 0;padding:var(--s6) var(--s8) var(--s8);color:var(--ink);
   background-color:var(--bp-paper);background-image:linear-gradient(var(--bp-grid5) 1px,transparent 1px),linear-gradient(90deg,var(--bp-grid5) 1px,transparent 1px),linear-gradient(var(--bp-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bp-grid) 1px,transparent 1px);
   background-size:var(--s24) var(--s24),var(--s24) var(--s24),20px 20px,20px 20px;background-position:-1px -1px;
-  border:1px solid var(--bp-ink);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px))}
+  border:1px solid var(--rule);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px))} /* Q82 A light touch: the blue hairline frame is a soft rule */
 .bp-x{position:absolute;width:var(--s4);height:var(--s4)}.bp-x::before,.bp-x::after{content:'';position:absolute;background:var(--bp-ink)}.bp-x::before{left:50%;top:0;bottom:0;width:1px}.bp-x::after{top:50%;left:0;right:0;height:1px}
 .bp-x.xtl{left:var(--s2);top:var(--s2)}.bp-x.xtr{right:var(--s8);top:var(--s2)}.bp-x.xbl{left:var(--s8);bottom:var(--s2)}.bp-x.xbr{right:var(--s2);bottom:var(--s2)}
 .bp-line{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s5);margin:0;padding-bottom:var(--s3);border-bottom:1px solid var(--bp-ink);font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--bp-ink)}
 .bp-plate{padding:var(--s1) var(--s4);background:var(--plot);color:var(--on-mark);font:900 var(--t15)/1.3 var(--u);font-style:italic;letter-spacing:0;text-transform:none;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
-.bp-src{margin-left:auto}
+.bp-src{flex:1 1 auto;text-align:right} /* Q83: right-aligned by filling the row, not an auto margin (the polish check reads it as off-grid space) */
 .bp-k{margin:0;font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--bp-ink)}
 .bp-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s4) var(--s8);align-items:center}
 .bp-team{display:grid;gap:var(--s2);min-width:0}.bp-team h2{margin:0;font:900 var(--d64)/1 var(--u);font-style:italic;overflow-wrap:normal}
@@ -2007,20 +2007,25 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bp-team{container:bpteam/inline-size}.bp-chips.n4{display:grid;grid-template-columns:repeat(2,max-content);justify-content:start}
 @container bpteam (min-width:520px){.bp-chips.n4{grid-template-columns:repeat(4,max-content)}}
 .bp-meas{display:grid;gap:var(--s2);justify-items:start}
+/* Q82 A light touch (Sim, Nov 20): the score sits on one bold slanted blue plate, a giant white number and a solid tilted band sticker */
+.bp .bp-meas{--k:16px;position:relative;isolation:isolate;padding:var(--s4) calc(var(--s4) + var(--k));color:var(--sd-on-band)}
+.bp .bp-meas::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--sd-hero);clip-path:polygon(var(--k) 0,100% 0,calc(100% - var(--k)) 100%,0 100%)}
 .tm-hero .bp-score,.bp .bp-score{display:flex;align-items:center;gap:var(--s5);margin:0;padding:0;position:relative} /* Sim, Nov 15: no thin blue frame around the score (the stamp looked like it fell out of it) */
 
-.bp .bp-score>b{font:900 var(--d120)/1 var(--u);font-style:italic;color:var(--ink)}
+.bp .bp-score>b{font:900 var(--d120)/1 var(--u);font-style:italic;color:var(--sd-on-band)}
 .bp .bp-score .w{display:grid;gap:var(--s2);justify-items:start}
-.bp-stamp{display:inline-block;padding:var(--s1) var(--s3);border:3px double var(--band);color:var(--band);font:900 var(--t28)/1.1 var(--u);font-style:italic;rotate:-4deg}
-.bp .bp-score small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
-.bp .bd-brk{margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.bp-stk{display:inline-block;padding:var(--s1);background:var(--bp-rim);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);rotate:-4deg} /* Q83 item 9: the sticker in its band's own colour, on a white rim */
+.bp-stamp{display:inline-block;padding:var(--s1) var(--s5);background:var(--band);color:var(--band-on);font:900 var(--t28)/1.1 var(--u);font-style:italic;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.bp .bp-score small{font:500 var(--t13)/1.4 var(--b);color:var(--sd-on-band)}
+.bp .bd-brk{margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--sd-on-band)}
+.bp .bp-meas .np-link{color:var(--sd-on-band);text-decoration:underline;text-underline-offset:var(--s1)}
 .bp-dim{position:relative;display:flex;justify-content:center;margin:var(--s2) 0 0;font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--bp-ink)}
 .bp-dim::before{content:'';position:absolute;left:0;right:0;top:50%;height:1px;background:var(--bp-ink);border-left:1px solid var(--bp-ink);border-right:1px solid var(--bp-ink)}
 .bp-dim span{position:relative;padding:0 var(--s3);background:var(--bg)}
 :root:not([data-theme="night"]) .bp-dim span{background:var(--bp-paper)}
 .bp-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s4)}
 .bp-fig{position:relative;display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;align-content:start;gap:2px;min-width:0;padding:var(--s2) 0;background:none;border:0;color:inherit;font:inherit;text-align:center;cursor:pointer}
-.bp-no{position:absolute;left:var(--s1);top:0;z-index:1;font:900 var(--t28)/1 var(--u);font-style:italic;color:transparent;-webkit-text-stroke:1px var(--bp-ink)}
+.bp-no{position:absolute;left:var(--s1);top:0;z-index:1;font:900 var(--t28)/1 var(--u);font-style:italic;color:var(--plot-text)} /* Q82 A: solid slanted (were outlined) */
 .bp-core{position:absolute;right:var(--s1);top:var(--s1);z-index:1;padding:0 var(--s2);background:var(--plot);color:var(--on-mark);font:700 var(--t13)/1.5 var(--b);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
 .bp-art{position:relative;display:grid;place-items:end center;width:100%;height:150px}
 .bp-ring{position:absolute;left:50%;top:50%;width:132px;height:132px;translate:-50% -50%;border:1px dashed var(--bp-ink);border-radius:50%;opacity:.55}
@@ -2028,13 +2033,13 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bp-fig .np-mon{--iw:min(140px,100cqw);position:relative}
 .bp-fig:hover .np-mon,.bp-fig:focus-visible .np-mon{translate:0 calc(var(--s1)*-1)}
 .bp-base{display:block;width:84%;height:8px;margin:var(--s1) 0 var(--s2);background:linear-gradient(90deg,var(--b1) 50%,var(--b2) 50%);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
-.bp-role{font:900 var(--t15)/1.2 var(--u);font-style:italic;color:var(--bp-ink)}
+.bp-batag{position:absolute;right:var(--s1);top:var(--s1);z-index:1;padding:2px var(--s3);background:var(--plot);color:var(--on-mark);font:700 var(--t13)/1.3 var(--b);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%);rotate:-4deg} /* Q83 item 5 */
 .bp-mg{min-height:16px;font:900 var(--t13)/1.2 var(--u);font-style:italic;color:var(--plot-text)}
 .bp-fig b{max-width:100%;font:900 var(--t17)/1.2 var(--u);font-style:italic;overflow-wrap:normal}
 .bp-six>*{container-type:inline-size}@container (max-width:140.98px){.bp-fig b{font-size:var(--t15)}}@container (max-width:140.98px){.bp-six.lg .bp-fig b{font-size:var(--t13)}}
 .bp-fig small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}.bp-fig small.r{color:var(--ink-3)}
-.bp-tb{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border:1px solid var(--bp-ink)}
-.bp-left,.bp-right{display:grid;gap:var(--s3);align-content:start;padding:var(--s4) var(--s5);min-width:0}.bp-right{border-left:1px solid var(--bp-ink)}
+.bp-tb{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);border:1px solid var(--rule)}
+.bp-left,.bp-right{display:grid;gap:var(--s3);align-content:start;padding:var(--s4) var(--s5);min-width:0}.bp-right{border-left:1px solid var(--rule)}
 .bp .bp-spec{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3) var(--s4);margin:0;padding:0;background:none;border:0}
 .bp .bp-spec .bd-opt{display:grid;gap:var(--s1);min-width:0;padding-bottom:var(--s2);border-bottom:1px dashed var(--bp-ink)}
 .bp .bp-spec .bd-lab{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
@@ -2050,9 +2055,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bp-notes .n{font:900 var(--t28)/1 var(--u);font-style:italic}.bp-notes .unit{font:600 var(--t13)/1 var(--b);font-style:normal;color:var(--ink-2)}
 .bp-nt{display:grid}.bp-nt b{font:700 var(--t15)/1.35 var(--b)}.bp-nt small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
 .bp .bd-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);margin:var(--s2) 0 0;padding:0;border:0}
-.bp-near{display:grid;gap:var(--s2);min-width:0} /* scan S16: the actions right under the six, one-column sheet */
+.bp-near{display:grid;gap:var(--s2);min-width:0} /* scan S16 + Q83 item 2: the actions right under the six, at every width */
 /* iPad: three across, the score under the team name, the title block stacked */
-@media (max-width:1099.98px){.bp-top{grid-template-columns:minmax(0,1fr)}.bp-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s6)}.bp-tb{grid-template-columns:minmax(0,1fr)}.bp-right{border-left:0;border-top:1px solid var(--bp-ink)}.bp-src{margin-left:0}}
+@media (max-width:1099.98px){.bp-top{grid-template-columns:minmax(0,1fr)}.bp-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s6)}.bp-tb{grid-template-columns:minmax(0,1fr)}.bp-right{border-left:0;border-top:1px solid var(--rule)}.bp-src{text-align:left}}
 /* iPhone: two across */
 @media (max-width:699.98px){.bp{margin:var(--s2) var(--s2) 0;padding:var(--s4) var(--s4) var(--s6)}.bp-six{grid-template-columns:repeat(2,minmax(0,1fr))}.bp-team h2{font-size:var(--t34)}
   .bp .bp-score>b{font-size:var(--d64)}.bp-stamp{font-size:var(--t20);white-space:nowrap}.bp .bp-spec{grid-template-columns:minmax(0,1fr)}.bp-revs{grid-template-columns:minmax(0,1fr)}
@@ -2075,16 +2080,16 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bp2 .bd-lower>.bp{margin-top:var(--s4)}
 .bp-lower .bp-line h2{margin:0;font:inherit;letter-spacing:inherit;text-transform:inherit;color:inherit}
 .bp-champ{display:flex;align-items:center;gap:var(--s3);margin:var(--s2) 0 var(--s4);font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--bp-ink)}
-.bp-champ::before,.bp-champ::after{content:'';flex:1;height:1px;background:var(--bp-ink);opacity:.6}
+.bp-champ::before,.bp-champ::after{content:'';flex:1;height:1px;background:var(--rule)} /* Q83 item 7: softer */
 .bp-wsix{margin:0;padding:0;list-style:none}.bp-wfig{cursor:default}
 .bp-mvs{display:grid;gap:0;margin-top:var(--s2)}.bp-mvs small{color:var(--ink)}
-.bp-ref .bd-win{margin:0;border-top:1px solid var(--bp-ink)}.bp-ref .bd-win[open]{padding:0 var(--s4) var(--s2);border:1px solid var(--bp-ink)}.bp-ref .bd-win[open]+.bd-win{border-top:0}
-.bp-wplace{display:grid;place-items:center;min-width:56px;padding:var(--s1) var(--s3);border:2px solid var(--bp-ink);font:900 var(--t20)/1.2 var(--u);font-style:italic;color:var(--plot-text)}
+.bp-ref .bd-win{margin:0;border-top:1px solid var(--rule)}.bp-ref .bd-win[open]{padding:0 var(--s4) var(--s2);border:1px solid var(--rule)} /* Q83 item 7: softer rules */.bp-ref .bd-win[open]+.bd-win{border-top:0}
+.bp-wplace{display:grid;place-items:center;min-width:56px;padding:var(--s1) var(--s4);background:var(--plot);color:var(--on-mark);font:900 var(--t20)/1.2 var(--u);font-style:italic;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);rotate:-4deg} /* Q83 item 7: solid slanted (was an outlined box) */
 .bp-ref .bd-wk{white-space:normal;overflow:visible}.bp-ref .bd-wev{margin:0;font:900 var(--t20)/1.25 var(--u);font-style:italic;white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:normal}
 .bp-ref .bd-win[open] .bd-wev{font-size:var(--t26)}.bp-ref .bd-win[open] .bp-wplace{min-width:72px;font-size:var(--t26)}
 .bp-ref .bd-win[open] .bd-wsix{display:none}
 .bp-ref .bd-wacts{margin:var(--s5) 0 var(--s3)}
-.bp-ref .bd-wsix>*{width:44px}
+.bp-ref .bd-wsix{gap:var(--s1)}.bp-ref .bd-wsix>*{width:64px} /* Q83 item 7: bigger (was 44) */
 .bp-parts .bd-csw{margin-top:var(--s2)}.bp-parts .bd-hint{margin:0;color:var(--ink-2)}
 .bp-parts .bd-clist{display:block;margin:0;padding:0;list-style:none}
 .bp-parts .bd-core{grid-template-columns:48px auto minmax(0,1fr) auto auto;column-gap:var(--s4);padding:var(--s3) 0;border-bottom:1px solid var(--bp-grid5)}
@@ -2094,6 +2099,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bp-parts .bd-cm b{font:900 var(--t20)/1.25 var(--u);font-style:italic}
 .bp-parts .bd-cw b{font:900 var(--t28)/1 var(--u);font-style:italic}
 .bp-parts .bd-cmore{justify-self:center}
+/* Q83 item 7, phones: the winner's six at 44 px (sugs.css puts the row together) */
+@media (max-width:699.98px){.bp-ref .bd-wsix{gap:0}.bp-ref .bd-wsix>*{width:44px}}
+@media (max-width:379.98px){.bp-ref .bd-wsix>*{width:40px}}@media (max-width:339.98px){.bp-ref .bd-wsix>*{width:36px}}
 @media (max-width:699.98px){.bp2 .bd-jump{margin:var(--s8) var(--s2) 0;gap:var(--s2)}.bp2 .bd-jump button{flex:1 1 0;justify-content:center;padding:0 var(--s3);font-size:var(--t15)}.bp-tnote{flex-basis:100%;margin:0;text-align:left}
   .bp-ref .bd-win[open]{padding:0 var(--s2) var(--s2)}.bp-ref .bd-win[open] .bd-wev{font-size:var(--t20)}.bp-ref .bd-wev{font-size:var(--t17)}.bp-wplace{min-width:48px;font-size:var(--t17)}.bp-ref .bd-win[open] .bp-wplace{min-width:56px;font-size:var(--t20)}
   .bp-parts .bd-core{grid-template-columns:auto minmax(0,1fr) auto}.bp-parts .bd-cm b{font-size:var(--t17)}.bp-parts .bd-cw{flex-wrap:wrap;column-gap:var(--s2);row-gap:0}.bp-parts .bd-cw b{font-size:var(--t20)}.bp-parts .bd-cp img{width:40px;height:40px}}
@@ -2102,6 +2110,45 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* Sim, Nov 14 (Build height A): phones tighten the sheet: smaller figures, shorter Revisions line, compact winner rows */
 .bp-sh{display:none}
 @media (max-width:699.98px){.bp-fig .np-mon{--iw:min(88px,100cqw)}.bp-art{height:96px}.bp-ring{width:88px;height:88px}.bp-lf{display:none}.bp-sh{display:inline}}
+/* ---------- Q83 (Sim, Nov 20): Build refinements on the light-touch sheet ---------- */
+/* item 3: each Revision shows its six as small sprites */
+.bp-rsix{display:grid;grid-template-columns:repeat(6,36px);gap:2px;margin:2px 0}.bp-revs{container:bprevs/inline-size}
+/* a narrow Revisions column (phones, 1100-1399's stacked Spec is wide enough): the six runs under the name and the score, never 4 + 2 */
+@container bprevs (max-width:479.98px){.bp-rev{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"l n s" "l x x" "l m m";row-gap:2px}.bp-rev .bp-rn{display:contents}
+  .bp-rev .bp-rl{grid-area:l}.bp-rev .bp-rn>b{grid-area:n}.bp-rev .bp-rsix{grid-area:x;gap:0}.bp-rev .bp-rn>small{grid-area:m}.bp-rev .bp-rs{grid-area:s}}
+@container bprevs (max-width:281.98px){.bp-rev .bp-rsix{grid-template-columns:repeat(3,36px)}}
+/* item 6: Rebuild is a solid slanted stamp (was a small outline "Build Me a Team ↻"); skewed, not clipped, so the focus ring shows */
+.bp-rebuild{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);padding:0 var(--s6);background:var(--plot);color:var(--on-mark);border:0;font:900 var(--t17)/1.2 var(--u);font-style:italic;cursor:pointer;transform:rotate(-2deg) skewX(-12deg)}
+.bp-rebuild>span{transform:skewX(12deg)}.bp-rebuild:disabled{opacity:.6;cursor:default}
+@media (hover:hover){.bp-rebuild:not(:disabled):hover{background:var(--plot-text-deep)}}
+.bp .bd-go{justify-self:start}
+/* item 1: Sheet 0, the empty sheet before a build: six numbered rings with a "?", the Spec in its place, Build Me a Team as the main button */
+.bp0 .bp-fig0{cursor:default}.bp0 .bp-art{place-items:center;height:120px}.bp0 .bp-ring{width:104px;height:104px;opacity:.8}
+.bp-q{position:relative;font:900 var(--t34)/1 var(--u);font-style:italic;color:var(--plot-text)}
+.bp0 .bp-fig0.bp-ba .np-mon{--iw:96px}
+.bp0 .bp-go0{align-content:start;grid-template-columns:minmax(0,1fr)}.bp0 .bp-go0>*{grid-column:1/-1} /* the old form row placed .bd-go in a later column */
+@media (max-width:1099.98px){.bp0 .bp-src{display:none}} /* the head's eyebrow already names the format; keeps the sheet line one row */.bp0 .bp-go0 .np-btn{min-width:240px}
+.bp-gonote{margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.bd-result>.bd-none+.bp0{margin-top:var(--s3)}
+/* Build around sits near Sheet 0's foot, so its name list hangs below the sheet: Sheet 0 draws its paper, frame and cut corners on a layer
+   behind (::before) instead of clipping itself, and sits above the sections after it (v2-minors X-05: the list was clipped) */
+.bp.bp0{z-index:2;isolation:isolate;clip-path:none;background:none;border-color:transparent}
+.bp.bp0::before{content:"";position:absolute;inset:0;z-index:-1;border:1px solid var(--rule);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px));
+  background-color:var(--bp-paper);background-image:linear-gradient(var(--bp-grid5) 1px,transparent 1px),linear-gradient(90deg,var(--bp-grid5) 1px,transparent 1px),linear-gradient(var(--bp-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bp-grid) 1px,transparent 1px);
+  background-size:var(--s24) var(--s24),var(--s24) var(--s24),20px 20px,20px 20px;background-position:-1px -1px}
+/* phones keep Sheet 0 short (Sim, Nov 19: no long phone pages): the six rings in one row, no source line or dimension line (the head says
+   both), Megas and Build around side by side as the old form row had them, the button straight under the Spec */
+@media (max-width:699.98px){.bp.bp0{gap:var(--s3);padding-bottom:var(--s4)}.bp0 .bp-src,.bp0 .bp-dim,.bp0 .bd-mtip,.bp0 .bp-go0>.bp-k,.bp0 .bp-gonote{display:none}
+  .bp0 .bp-line{padding-bottom:var(--s2)}
+  .bp0 .bp-six0{grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1)}.bp0 .bp-fig0{gap:0;padding:0}
+  .bp0 .bp-fig0 .bp-no{position:static;font-size:var(--t15)}.bp0 .bp-art{height:48px}.bp0 .bp-ring{width:44px;height:44px}.bp0 .bp-ring::before,.bp0 .bp-ring::after{content:none}
+  .bp-q{font-size:var(--t20)}.bp0 .bp-fig0.bp-ba .np-mon{--iw:44px}.bp0 .bp-batag{display:none}
+  .bp0 .bp-tb{border:0}.bp0 .bp-left{padding:0;gap:var(--s2)}.bp0 .bp-right{padding:var(--s3) 0 0;border-top:0}
+  .bp.bp0 .bp-spec{grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:var(--s2) var(--s3)}.bp.bp0 .bp-spec .bd-opt{padding-bottom:0;border-bottom:0}
+  .bp.bp0 .bp-spec .bd-meg,.bp.bp0 .bp-spec .bd-around{grid-column:auto}
+  .bp0 .bp-go0 .np-btn{width:100%}}
+@media (max-width:379.98px){.bp.bp0 .bp-spec{grid-template-columns:minmax(0,1fr)}.bp.bp0 .bp-spec .bd-meg,.bp.bp0 .bp-spec .bd-around{grid-column:1/-1}} /* 320-379: Megas and Build around stacked, so neither is cut */
+@media (min-width:700px) and (max-width:1099.98px){.bp0 .bp-six0{grid-template-columns:repeat(6,minmax(0,1fr))}.bp0 .bp-ring{width:88px;height:88px}.bp0 .bp-art{height:104px}} /* iPad: the six empty rings stay one row */
 
 /* ---------- Meta > Tournaments > Winning Teams: "The Winning Hands" (Sim's pick, Nov 14) ---------- */
 .wt-facts{margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.wt-facts b{color:var(--ink)}
@@ -2438,7 +2485,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tp-four{flex-wrap:wrap}@media (min-width:1100px) and (max-width:1439.98px){.tp-four{display:grid;grid-template-columns:repeat(2,max-content);align-items:end;gap:var(--s1) var(--s2)}} /* front pair over back pair, no lone sprite (Sim, Nov 16) */.tp-four .big .np-mon,.tp-four .big .np-mon .st{--iw:64px}.tp-four .np-mon,.tp-four .np-mon .st{--iw:48px}
 @media (min-width:1100px) and (max-width:1279.98px){.tp-pile.g .tp-name,.tp-pile.p .tp-name{font-size:var(--t13)}}
 /* audit fix (Nov 14): 1100-1279 the name no longer runs under the score, and Spec gets the full width (it was cut off) */
-@media (min-width:1100px) and (max-width:1279.98px){.bp-top{grid-template-columns:minmax(0,1fr)}.bp-tb{grid-template-columns:minmax(0,1fr)}.bp-right{border-left:0;border-top:1px solid var(--bp-ink)}}
+@media (min-width:1100px) and (max-width:1279.98px){.bp-top{grid-template-columns:minmax(0,1fr)}.bp-tb{grid-template-columns:minmax(0,1fr)}.bp-right{border-left:0;border-top:1px solid var(--rule)}}
 @media (max-width:1279.98px){.bp .bp-left{grid-template-columns:minmax(0,1fr)}.bp .bp-left>*{grid-column:1/-1;min-width:0}.bp .bp-spec .np-slide{width:100%;min-width:0}}
 @media (min-width:1280px) and (max-width:1399.98px){.bp-top{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699.98px){.bp-left,.bp-right{padding:var(--s4) var(--s3)}.bp .bd-go .np-btn{max-width:100%;white-space:normal;text-align:center}}

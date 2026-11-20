@@ -265,7 +265,7 @@ t('AUTO-16', 'Build page order: Build me a team, How it works, Build around a co
 // =====================================================================================================
 t('CORES-01', 'Cores head, intro line with team count and ranking, and the ? explanation', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); const c = await ui.coresText();
-  has(c, 'Pick a pair or trio that wins, then fill the rest'); has(c, 'Build Around a Core');
+  has(c, NEW ? /Pick a pair or trio that wins, then fill the rest|pick one that wins, then fill the rest/i : 'Pick a pair or trio that wins, then fill the rest'); has(c, 'Build Around a Core'); /* Q83 (Sim, Nov 20): before a build the cores are the Blueprint's Parts list too, whose line reads 'pick one that wins, then fill the rest' */
   has(c, /From [\d,]+ tournament teams\. Average team wins [\d.]+% of games\. Ranked by win rate, pulled toward the average\./, 'intro');
   await ui.tap('?', ui.area('cores')); has(await ui.openTipText(), /A core is a group of Pokémon/, 'cores ? explanation'); await close(); });
 

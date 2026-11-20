@@ -147,7 +147,8 @@
 .bp-ref .bd-win>summary::after{content:"Open ›";grid-column:4;grid-row:1;font:700 var(--t15)/1 var(--b);rotate:none;transition:none}
 .bp-ref .bd-win[open]>summary::after{content:"Close ×";rotate:none}
 @media (max-width:699.98px){.bp-ref .bd-win>summary{grid-template-columns:auto minmax(0,1fr) auto;align-items:center;row-gap:var(--s2)}.bp-ref .bd-win>summary .bp-wplace{grid-column:1;grid-row:1}.bp-ref .bd-win>summary .bd-wtop{grid-column:2/4;grid-row:1}
-  .bp-ref .bd-win>summary .bd-wsix{grid-column:1/3;grid-row:2}.bp-ref .bd-win>summary::after{grid-column:3;grid-row:2}}
+  .bp-ref .bd-win>summary .bd-wsix{grid-column:1/3;grid-row:2}.bp-ref .bd-win>summary::after{grid-column:3;grid-row:2}
+  .bp-ref .bd-win>summary{padding:var(--s3) var(--s2)}.bp-ref .bd-win>summary::after{content:"›"}.bp-ref .bd-win[open]>summary::after{content:"×"}} /* Q83 item 7: phones keep the six at 44 px on one row: the marker is the site's › (× when open) */
 /* ONE fold marker (Nov 16, one system; the advisor's root cause B): every text fold ends in the same grey › on the right, turning down
    when open. Loaded last so it settles every page's own marker. How We Calculate's tiles stay tiles; Build's reference sheets keep "Open ›". */
 .sg2-fold>summary::after,.ed-weak>summary::after,.wk-fold summary::after,.tm-ckok>summary::after,.mu-grp>summary::after,.mu-thr>summary::after,.tr-how summary::after,.tr-prep summary::after,.cx2-same summary::after,.cx2-why>summary::after{content:"›";flex:none;width:auto;height:auto;margin:0 0 0 auto;border:0;transform:none;translate:none;rotate:0deg;justify-self:end;font:700 var(--t20)/1 var(--b);color:var(--ink-3);transition:rotate .2s}
