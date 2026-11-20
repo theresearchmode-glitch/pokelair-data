@@ -63,10 +63,11 @@ V2.kobUi = V2.kobUi || {g: 'ko'};
 V2.kobWide = () => { try { return matchMedia('(min-width:1024px)').matches; } catch (e) { return false; } };
 V2.kobOf = b => b.lo >= 1 ? 'ko' : b.hi >= 1 ? 'can' : 'sv';
 V2.kobNone = {ko: 'None in this group: no hit here is a sure knockout.', can: 'None in this group: no hit here only might knock out.', sv: 'None in this group: every hit here can knock out.'};
-// one rung of the ladder: the attacker's small picture, the threat's picture, its name, the move line, the damage and the HP it has left
+// one rung of the ladder: the attacker's small picture, the threat's picture, its name, the move (its name only, Q68 A), the damage and the HP it has left
 // (its spoken label is the tile's, word for word)
 V2.kobRow = (b, dir, onTable) => { const E = V2.esc, k = V2.kobOf(b), left = Math.max(0, 1 - b.hi), d = V2.disp(b.n), o = V2.disp(b.other), pc = `${Math.round(100 * b.lo)}–${Math.round(100 * b.hi)}%`;
-  const mv = dir === 'mine' ? `your ${o}'s ${b.mv}` : `${b.mv} into your ${o}`;
+  /* Q68 A (Sim, Nov 20): the row's second line shows only the move ("Weather Ball"); the small picture already says whose. The spoken label keeps the full sentence */
+  const mv = b.mv;
   const lab = dir === 'mine' ? `${d}: your ${o}'s ${b.mv} does ${pc}` : `${d}'s ${b.mv} into your ${o}: ${pc}`, say = `${k === 'ko' ? 'KO: ' : ''}${lab}${k === 'ko' ? ', down in one hit' : ''}`;
   return `<button type="button" class="kob-r ${k}${onTable ? ' on' : ''}" data-dckb="${E(b.n)}" data-dckbo="${E(b.other)}" data-dckbm="${E(b.mv)}" aria-label="${E(say)}. Put it on the table"${onTable ? ' aria-current="true"' : ''}>
     <span class="by" aria-hidden="true">${V2.mon(b.other, {iw: 24, bare: true})}</span><span class="th" aria-hidden="true">${V2.mon(b.n, {iw: 40, bare: true})}</span><span class="nm" aria-hidden="true">${E(d).replace(/ ([XYZ])$/, ' $1') /* "Raichu Y" never leaves its Y alone on a line */}</span><span class="mv" aria-hidden="true">${E(mv)}</span><b class="pc u" aria-hidden="true">${pc}</b><span class="hp" aria-hidden="true"><i style="width:${(100 * left).toFixed(0)}%"></i><i class="r" style="left:${(100 * left).toFixed(0)}%;width:${(100 * Math.max(0, Math.min(1, b.hi) - Math.min(1, b.lo))).toFixed(0)}%"></i></span></button>`; };
