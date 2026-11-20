@@ -56,7 +56,8 @@ V2.sdSix = () => { const E = V2.esc, ms = members(), has = ms.length > 0, C = ho
   else { const at = i => ms.find(m => m.i === i), item = m => m.heldItem || m.item || '';
     const one = m => { const ld = full && P.lead.includes(m), it = item(m); named++; return filled(m.p.n, {label: [it, ld ? 'lead' : ''].filter(Boolean).join(', '), html: `<small class="sds-sub">${it ? V2.keepForm(E(it)) : ''}${ld ? '<em class="sds-ld">Lead</em>' : ''}</small>`}, ld ? ' lead' : ''); };
     slots = ord ? ord.map(one).join('') : Array.from({length: 6}, (_, i) => at(i) ? one(at(i)) : open(i)).join(''); }
-  const eye = has ? `<p class="sds-k">Your six · ${E(title)}${wx ? ` · <span class="sds-wx">${E(wx)}</span>` : ''}</p>` : `<p class="sds-k">Your six goes here.</p>`;
+  /* scan S21 A (Sim, Nov 20): while the sample team is shown, nothing calls it "yours": "A sample six · …", "Its Strength Score", "Sample leads" */
+  const eye = has ? `<p class="sds-k">${sample ? `A sample six · ${E(title.replace(/\s*\(sample\)\s*$/i, ''))}` : `Your six · ${E(title)}`}${wx ? ` · <span class="sds-wx">${E(wx)}</span>` : ''}</p>` : `<p class="sds-k">Your six goes here.</p>`;
   const note = sample ? `<p class="sds-note">A sample team, here to show how NastyPlot works.</p>` : '';
   // the first-visit welcome (HOME-12; Sim Q4c A, Nov 18: here in the six band, under the sample-team note, headed "New here?"): until
   // "Got It" or Copy a Top Team is tapped (cc2.welcomed, the same key and handler as today's Home: home.js [data-hmwelcome])
@@ -83,12 +84,12 @@ V2.sdSix = () => { const E = V2.esc, ms = members(), has = ms.length > 0, C = ho
       <p class="sds-w"><i aria-hidden="true" style="--bd:var(--band-${band})"></i><span class="u">${E(CH.wordOf(G.s))}</span>${G.partial ? ' <small>so far</small>' : ''}</p>${rk ? `<p class="sds-rk">${E(rk)}</p>` : ''}`
     : `<p class="sds-sc"><b class="u sds-n sds-q" aria-label="No score yet">?</b><span class="u sds-of100" aria-hidden="true">/100</span></p>${has ? '' : '<p class="sds-rk">No score yet: add your six to get one.</p>'}`;
   const rc = `<div class="sds-part sds-rcw"><div class="sds-rc"><p class="sds-rh"><span>Strength Score report</span>${sample ? '<span class="sds-smp">Sample team</span>' : '<span>Your six</span>'}</p>
-    <h3 class="u sds-rt">${G ? 'Your Strength Score' : "What's your Strength Score?"}</h3>${num}${strip}
+    <h3 class="u sds-rt">${G ? (sample ? 'Its Strength Score' : 'Your Strength Score') : "What's your Strength Score?"}</h3>${num}${strip}
     <dl class="sds-rl"><div><dt class="u">Matchups</dt><dd>against the top threats</dd></div><div><dt class="u">Suggestions</dt><dd>what to change</dd></div><div><dt class="u">Team Checks</dt><dd>the basics covered</dd></div></dl>
     <p class="sds-rl2"><b>In the report:</b> Matchups, Suggestions, Team Checks</p>
     <a class="np-btn sds-rb" href="#team"${G ? '' : ` aria-label="Score My Team${has ? '' : ': add your six on My Team first'}"`}>${G ? 'Open My Team' : 'Score My Team'}</a></div></div>`;
   // ---- 3. the plan board ----
-  let mine = P ? P.lead : null, mineN = P ? P.leadN : null, aim = P ? P.aim : [], their = P ? P.their : [], who = 'Your leads', alt = '';
+  let mine = P ? P.lead : null, mineN = P ? P.leadN : null, aim = P ? P.aim : [], their = P ? P.their : [], who = sample ? 'Sample leads' : 'Your leads', alt = '';
   if (!has && C) { const sm = V2.sdsSample(), SP = sm.length >= 4 ? V2.sdsPlan(sm, C) : null; /* no team: a sample team's leads, said so */
     if (SP) { mine = SP.lead; mineN = SP.leadN; aim = SP.aim; their = SP.their; who = 'Sample leads'; alt = `Lower half: the leads of NastyPlot's sample team, ${E(DEFAULT_TEAM.name.replace(/\s*\(sample\)\s*$/i, ''))}.`; } }
   const tok = (n, side, k) => { const a = side === 'you' && aim[k] ? aim[k] : null;
