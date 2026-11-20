@@ -108,6 +108,10 @@
 .pr-nost{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .pr-stamps{display:grid;grid-template-columns:minmax(0,1fr)}.pr-more{justify-self:center;display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s5)}
 .pr-note{margin:var(--s5) 0 0}
+/* Q43 A (Sim chose it, Nov 19): phones show the first 6 stamps (two full rows of 3) and "Show All N Stamps ›" opens the rest in place;
+   700+ unchanged (12, then its button past 12; pr-mph is the phones-only button) */
+@media (max-width:699.98px){.pr-sheet:not(.on)>li:nth-child(n+7){display:none}.pr-more{margin-top:var(--s2)}} /* 8px over its 44px tap, as Q32's buttons */
+@media (min-width:700px){.pr-mph{display:none}}
 /* a Pokémon gift's set (sheet) */
 .pr-setsh{display:grid;gap:var(--s3);justify-items:start}.pr-setsh h2{font-size:var(--t28)}.pr-setsh .np-mon{--iw:160px;margin:0}
 .pr-setdl{display:grid;gap:var(--s2);margin:0}.pr-setdl>div{display:grid;grid-template-columns:7em minmax(0,1fr);gap:var(--s3)}.pr-setdl dt{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}.pr-setdl dd{margin:0;font:500 var(--t15)/1.5 var(--b)}
