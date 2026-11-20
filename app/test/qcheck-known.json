@@ -190,7 +190,9 @@
   "news | night 1920 | OVERLAP \"CAMPAIGN · NOV 25\" x \"A New Mystery Gift\"",
   "news | day 1280 | OVERLAP \"CAMPAIGN · NOV 25\" x \"A New Mystery Gift\"",
   "news | day 1920 | OVERLAP \"CAMPAIGN · NOV 25\" x \"A New Mystery Gift\"",
-  "news | day 820 | SIZE 37.0px \"A New Mystery Gift\""
+  "news | day 820 | SIZE 37.0px \"A New Mystery Gift\"",
+  "home | day 1920 | OVERLAP \"Its Strength Score\" x \"94\"",
+  "home | night 1920 | OVERLAP \"Its Strength Score\" x \"94\""
  ],
  "why": {
   "home OVERLAP (Nov 18, 30 findings)": "false alarms, checked on pictures at 320/390/820/1280/1920: the boxes are the line boxes of slanted Unbounded at display sizes (line height 0.9-1.1), which reach into the next line; the letters stay apart. Pairs: the hero tags' name over its rating (Rillaboom x 97 ...), the tagline's two lines (Sharply raise x your win rate.), the Dispatch masthead's two lines, the tools' big numbers over their labels (13,631 x tournament teams, 115 x events), the receipt's title over the score (Your Strength Score x 94).",
