@@ -1,7 +1,7 @@
 # Small items for Sim's review (written Nov 19, 9:30 PM by the clock)
 Small things found tonight that need Sim's eye; none blocks the switch. Each will get pictures and a recommendation when we do it.
 
-1. Arena verdict on the smallest phones: at 320 the verdict plate wraps to 4 lines, at 340-375 to 3, at 390+ 2 (measured on 6c5b736b).
+1. DONE (Sim chose Keep, Q51, Nov 19 night). Arena verdict on the smallest phones: at 320 the verdict plate wraps to 4 lines, at 340-375 to 3, at 390+ 2 (measured on 6c5b736b).
    The swap button beside it takes the width. Options to show: smaller second line under 390, or the swap button moved above the plate.
 2. Arena on 1024-1279 wide desktops: "KO Board" title on 2 lines; at 1024x768 the calculator needs a short scroll (only 1440x900 must fit).
 3. Arena "Notes on this hit" fold holds today's details (HP numbers, effectiveness, "level 50 doubles"); the plain "level 50 doubles" line is

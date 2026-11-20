@@ -1524,3 +1524,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:29 PM: Sim chose Q49 A ('recommended is good to go'): the Arena's battle scene stays the same picture in light and dark; the switches, moves and cards around it follow the theme (as built).
 - 10:05 PM: Merged the Q47 helper's build (9c1b278c) into t1rules (5a8aea0b): All moves opens 'Choose a move' with real damage; each set row opens a short sheet. Its own small choices (headings, 'most used'/'selected' tags, Allies fainted as a sheet, no search on set sheets) go to Sim with pictures.
 - 10:09 PM: Sim chose Q50 A (keep Q47's four small choices as built: set heading wording, most used/selected tags, no search on set sheets, Allies fainted as a sheet).
+- 10:17 PM: Sim chose Q51 Keep: Arena verdict on small phones stays as is (A only helped at 375 and shrank the headline).
