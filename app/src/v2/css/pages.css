@@ -3253,3 +3253,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:389.98px){.pk-pc .mc-nm{font-size:var(--t13);overflow-wrap:normal}} /* morning helper (confirmed): partner names broke mid-word at 320 (Incineroa/r) and Kingambit ran 2px over at 360; 13px fits them whole */
 @media (max-width:359.98px){.pk-pc .mc-nm{letter-spacing:-.03em}} /* 320-359: Whimsicott fits whole */
 @media (max-width:359.98px){.pk-pc .mc-id{left:var(--s2);right:var(--s2)}} /* 320-359: the name area 110px instead of 94, so Whimsicott and Basculegion fit whole (clear of the cut corner) */
+/* Sim Q45 A (Nov 19, 8:33 PM): Test Run on phones shows the Coin Flips pile's first 5 cards and a button for the rest; 700 and up: every card */
+.tp-morebtn{display:none}
+@media (max-width:699.98px){.tp-cards:not(.on)>.tp-more{display:none}.tp-morebtn{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}}
