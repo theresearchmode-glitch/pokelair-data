@@ -29,7 +29,7 @@ V2.usLabel = R => `${V2.usName(R)}, rank ${R.t.r}${R.u != null ? `, ${(+R.u).toF
    phones (under 600) show as the MEGA tag line of "Usually alongside" (.gs-mg) and wider screens as the plain word on the name line; the
    other bench names get an empty tag line on phones (us-nomg), so every bench row's numbers sit level whatever the names. */
 V2.usNameB = (R, cls) => { const E = V2.esc, n = V2.usName(R); if (cls !== 'bench') return `<b>${E(n)}</b>`;
-  return R.p && R.p.m && /^Mega /.test(n) ? `<b><span class="gs-mg u us-mg">Mega </span>${E(n.slice(5)).replace(/ ([XYZ])$/, '\u00a0$1')}</b>` : `<b class="us-nomg">${E(n)}</b>`; };
+  return R.p && R.p.m && /^Mega /.test(n) ? `<b><span class="gs-mg u us-mg">Mega </span>${E(n.slice(5))}</b>` : `<b class="us-nomg">${E(n)}</b>`; };
 V2.usFig = (R, cls, blk) => { const E = V2.esc, p = R.p; return `<button type="button" class="us-fig ${cls}" data-uspick="${E(R.t.n)}" aria-pressed="${V2.usUi.pick === R.t.n}" aria-label="#${R.t.r} ${E(V2.usLabel(R))}: show how it is played"${p ? ` style="--b1:var(--ty-${p.t[0]});--b2:var(--ty-${p.t[1] || p.t[0]})"` : ''}>
     <span class="us-art" aria-hidden="true"><i class="gs-base"></i>${p ? V2.mon(p.n, {bare: true}) : ''}</span>${blk || ''}<span class="us-tx"><span class="us-rk u">#${R.t.r}</span>${V2.usNameB(R, cls)}<span class="us-nums">${V2.usNums(R)}</span></span></button>`; };
 /* Q42 A (Sim chose it, Nov 19, 8:25 PM): a shorter Usage page on phones (under 700 wide; 700+ unchanged). "How <Pokémon> is played" shows
