@@ -1191,7 +1191,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2-track.mine::before{content:"";position:absolute;left:calc(var(--s4)*-1);right:calc(var(--s4)*-1);top:0;height:var(--ay);background:var(--sd-hero);border-radius:var(--r-s);transform:skewX(-4deg)}
 .sp2-track.mine::after{content:"Your six";position:absolute;left:0;top:var(--s3);font:800 var(--t22)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--sd-on-band)}
 /* scan S29 A (Sim, Nov 20): your six on Home's solid blue band (white numbers and names), the top 20's numbers at 20 px */
-.sp2-m.me .v,.sp2-m.me .nm{color:var(--sd-on-band)}.sp2-m.me .nm .mg,.sp2-m.me .nm b{color:var(--sd-line2)}
+.sp2-m.me .v,.sp2-m.me .nm{color:var(--sd-on-band)}.sp2-m.me .nm .mg,.sp2-m.me .nm b{color:var(--sd-on-band)} /* Q86 A (Sim, Nov 20): the Mega word white on the band, keeping its bold 800 (the light blue --sd-line2 was 3.17:1 there) */
 .sp2-m:not(.me) .v{font-size:var(--t20)}.sp2-m.me:focus-visible{outline-color:var(--sd-on-band)} /* the focus ring shows on the blue band */
 .sp2-vs.solo li{grid-template-columns:56px minmax(0,1fr)}.sp2-vs.solo::before{left:28px} /* no team yet: the field alone */
 .sp2-vs .chip2{max-width:100%}.sp2-vs .chip2>span{min-width:0}.sp2-vs .chip2 .np-mon{flex:none} /* 320: long names (Mega Charizard Y) wrap inside their side instead of running past the screen */
