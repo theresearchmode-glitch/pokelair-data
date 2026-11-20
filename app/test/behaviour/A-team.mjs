@@ -215,7 +215,7 @@ t('TEAM-04', '"Why this score?" opens the breakdown; its parts add up to the sco
   has(w, /How sure/); has(w, /How the (grade|Strength Score) works/); await r.ui.tapText(/How the (grade|Strength Score) works/, 900); ok(await r.ui.current() === 'method', 'link did not open How we calculate'); await r.close(); });
 
 t('TEAM-05', 'Switch team fold lists saved teams; tapping one opens it with an Undo toast', async () => {
-  const r = await myTeam({team: TEAM, saved: SAVED}); has(await r.ui.text(), NEW ? /Saved Teams \d+ saved/ : /Switch [Tt]eam \d+ saved/); /* Sim, Nov 14 naming */
+  const r = await myTeam({team: TEAM, saved: SAVED}); has(await r.ui.text(), NEW ? /Saved Teams \d+/ : /Switch [Tt]eam \d+ saved/); /* Sim, Nov 14 naming; scan S2 (Nov 20): one Saved Teams button, its sheet is the switch */
   await r.ui.openFold('Switch team'); const f = await r.ui.foldContent('Switch team'); has(f, 'Rain test', 'switch fold');
   await r.ui.switchTeam('Rain test'); ok(await r.ui.teamHeading() === 'Rain test', 'heading did not change'); ok((await r.ui.team()).join() === RAIN.join(), 'team did not switch');
   ok(await r.ui.waitToast(/Opened .Rain test/), 'no "Opened "Rain test"" toast'); ok(await r.ui.has('#toastUndo'), 'toast has no Undo'); await r.ui.tapToastUndo(); ok((await r.ui.team()).join() === TEAM.join(), 'Undo did not return'); await r.close(); });
