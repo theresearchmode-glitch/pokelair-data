@@ -83,18 +83,23 @@ V2.bpPage = M => { const win = V2.buildWinners(true), cor = V2.buildCores(true),
    Now the last Blueprint stays, faded and inert, with "Building…" pinned over it; the new one replaces it in place. */
 /* Q83 item 1 (Sim, Nov 20): before the first build the page is Sheet 0 of the same drawing world: six empty numbered rings, the Spec in the
    Spec place and Build Me a Team as the one main button. Pressing it fills this sheet in place (Sheet 1 of N). While the first build runs,
-   Sheet 0 stays, faded, under "Building…"; a build with no team keeps Sheet 0 with today's note. The picked "Build around" Pokémon already
+   Sheet 0 stays, faded, under "Building…"; a build with no team keeps Sheet 0, today's note above it. The picked "Build around" Pokémon already
    stands in ring 01. No .bd-ans / .bd-six / data-v2mon here: there is no team yet (the behaviour kit reads those as a built team). */
 V2.bpSheet0 = () => { const E = V2.esc, busy = !!(ui.ab && ui.ab.busy), lk = ui.abLock && byName.get(ui.abLock), none = !busy && ui.ab ? V2.buildAnswer0() : '';
   const ring = i => `<span class="bp-fig bp-fig0${i === 0 && lk ? ' bp-ba' : ''}"><span class="bp-no u">${String(i + 1).padStart(2, '0')}</span>${i === 0 && lk ? '<span class="bp-batag">Built around</span>' : ''}<span class="bp-art"><i class="bp-ring"></i>${i === 0 && lk ? V2.mon(lk.n, {bare: true}) : '<b class="bp-q u">?</b>'}</span></span>`;
-  return `<section class="bp bp0"><i class="bp-x xtl" aria-hidden="true"></i><i class="bp-x xtr" aria-hidden="true"></i><i class="bp-x xbl" aria-hidden="true"></i><i class="bp-x xbr" aria-hidden="true"></i>
-    <p class="bp-line"><span class="bp-plate u">Sheet 0</span><span class="bp-kind">Waiting for a plan</span><span class="bp-src">${E(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} doubles · drawn from real winning teams</span></p>${none}
+  return `${none}<section class="bp bp0"><i class="bp-x xtl" aria-hidden="true"></i><i class="bp-x xtr" aria-hidden="true"></i><i class="bp-x xbl" aria-hidden="true"></i><i class="bp-x xbr" aria-hidden="true"></i>
+    <p class="bp-line"><span class="bp-plate u">Sheet 0</span><span class="bp-kind">Waiting for a plan</span><span class="bp-src">${E(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} doubles · drawn from real winning teams</span></p>
     <p class="bp-dim"><span>Team of six</span></p>
     <div class="bp-six bp-six0" role="img" aria-label="Six empty places${lk ? `, the first is ${E(V2.disp(lk.n))}` : ''}: Build Me a Team fills them">${[0, 1, 2, 3, 4, 5].map(ring).join('')}</div>
     <div class="bp-tb"><div class="bp-left"><p class="bp-k">Spec · set it, then build</p>${V2.bpSpec()}</div>
-      <div class="bp-right bp-go0"><p class="bp-k">Build</p><div class="bd-opt bd-go"><button type="button" class="np-btn" data-bdgo${busy ? ' aria-busy="true" disabled' : ''}><span>${lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team'}</span></button></div><p class="bp-gonote">Fills this sheet with six from real winning teams, with its Strength Score.</p></div></div></section>`; };
+      <div class="bp-right bp-go0"><p class="bp-k">Build</p><div class="bd-opt bd-go"><button type="button" class="np-btn" data-bdgo${busy ? ' aria-busy="true" disabled' : ''}><span>${lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team'}</span></button></div><p class="bp-gonote">Fills this sheet with six from real winning teams.</p></div></div></section>`; };
 V2.bpPage0 = () => { const win = V2.buildWinners(true), cor = V2.buildCores(true), tab = V2.bdTab(false, !!win), busy = !!(ui.ab && ui.ab.busy), head = V2.buildHead().split('<div class="bd-opts">')[0];
   return `<div class="bd2 bp2${busy ? ' bd-rebuild' : ''}">${head}<div class="bd-result" aria-live="polite"${busy ? ' aria-busy="true"' : ''}>${busy ? '<p class="bd-busy" role="status">Building from real winning teams…</p>' : ''}${V2.bpSheet0()}</div>${V2.buildJump(false, !!win, tab)}<div class="bd-lower bp-lower" data-bdtab="${tab}"><div class="bd-lcol">${win}</div>${cor}</div></div>`; };
 (() => { V2.pages.build.draw = () => { const M = V2.bpModel(); if (M) { V2.bpLastM = M; return V2.bpPage(M); }
   if (ui.ab && ui.ab.busy && V2.bpLastM) { try { return V2.bpPage(V2.bpLastM).replace('<div class="bd2 bp2">', '<div class="bd2 bp2 bd-rebuild">').replace('<div class="bd-result" aria-live="polite">', '<div class="bd-result" aria-live="polite" aria-busy="true"><p class="bd-busy" role="status">Building from real winning teams…</p>'); } catch (e) {} }
   return V2.bpPage0(); }; })();
+
+/* Q83 (behaviour X-07): on phones Sheet 0 puts Build around lower than the old form row did; focusing it lifts it into the upper screen
+   so its list of names has room under it (the keyboard takes the lower half) */
+document.addEventListener('focusin', e => { const i = e.target; if (!i.matches || !i.matches('[data-bdfind]') || innerWidth >= 700) return;
+  const r = i.getBoundingClientRect(); if (r.top > innerHeight * .4) scrollTo({top: Math.max(0, scrollY + r.top - 96), behavior: 'auto'}); });
