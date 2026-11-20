@@ -1824,7 +1824,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699.98px){.gs-facts{align-items:end}}
 /* audit v199 #14 (Sim chose A, Nov 17, approved mock-up audit-14-hero-stats-390.png): the share reads "Of teams" and, from 360 up,
    every label keeps one line, so the three labels and the three numbers each sit level; under 360 a label may wrap again */
-@media (min-width:360px) and (max-width:699.98px){.gs-facts span{white-space:nowrap}}
+@media (min-width:360px) and (max-width:599.98px){.gs-facts span{white-space:nowrap}}
 @media (min-width:700px){.gs-spot{grid-template-columns:minmax(220px,4fr) minmax(0,7fr)}.gs-plate .np-mon{--iw:200px}}.gs-sinfo{position:relative}
 /* ---------- Meta > Usage: The Podium (Grandstand brief, section 4) ---------- */
 .us .us-src{flex:1 1 100%;margin:0;color:var(--ink-2)}
@@ -1878,6 +1878,13 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* Sim, Nov 14: the slanted 93 looked off-centre (its ink sat ~0.1em right of the panel centre: the slant leans the tops right) */
 .fn-belt>b{translate:-.1em 0}
 .us-how,.us-podium,.us-mates{grid-template-columns:minmax(0,1fr)}@media (min-width:1100px){.us-podium{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+/* Q42 A (Sim chose it, Nov 19): Usage on phones, 4.59 screens at 390 to about 3.8. Moves top 5, Items top 3, one row of 3 teammates, each
+   with "N more ›"; Abilities and Natures side by side (two even columns, Moves and Items full width); "Also ranked 61–100" behind its
+   button. Tablet and desktop: every bar, teammate and the line, no button (usage.js puts us-x on what phones fold away) */
+.us-more{display:none}
+@media (max-width:699.98px){.us-how .us-bars:not(.on)>.us-x,.us-mates:not(.on)>.us-x,.us-also:not(.on){display:none}
+  .us-more{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);justify-self:center}
+  .us-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.us-groups>:not(.us-half){grid-column:1/-1}}
 @media (max-width:559.98px){.gs-ctl .us-srcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.gs-ctl .us-srcs>*{white-space:normal;line-height:1.2;padding:var(--s1) var(--s2);text-align:center}}
 @media (max-width:559.98px){.us-sp{display:block;height:0;overflow:hidden}}@media (max-width:359.98px){.gs-ctl .us-srcs>*{font-size:var(--t13)}}
 /* ---------- Meta > Sets (Grandstand brief, section 5) ---------- */
@@ -3253,3 +3260,12 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:389.98px){.pk-pc .mc-nm{font-size:var(--t13);overflow-wrap:normal}} /* morning helper (confirmed): partner names broke mid-word at 320 (Incineroa/r) and Kingambit ran 2px over at 360; 13px fits them whole */
 @media (max-width:359.98px){.pk-pc .mc-nm{letter-spacing:-.03em}} /* 320-359: Whimsicott fits whole */
 @media (max-width:359.98px){.pk-pc .mc-id{left:var(--s2);right:var(--s2)}} /* 320-359: the name area 110px instead of 94, so Whimsicott and Basculegion fit whole (clear of the cut corner) */
+/* Sim Q45 A (Nov 19, 8:33 PM): Test Run on phones shows the Coin Flips pile's first 5 cards and a button for the rest; 700 and up: every card */
+.tp-morebtn{display:none}
+@media (max-width:699.98px){.tp-cards:not(.on)>.tp-more{display:none}.tp-morebtn{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}}
+/* Sim Q44 A (Nov 19, 8:33 PM): How We Calculate on phones 360-599 (one column of tiles there): each part's big number sits beside its words (the ten tiles were
+   number, then words, stacked); the outline number keeps its size and the titles keep the full width. Under 360 and 600 up unchanged */
+@media (min-width:360px) and (max-width:599.98px){
+  .inf-tiles>.inf-tile>summary{grid-template-columns:72px minmax(0,1fr);column-gap:var(--s3);align-items:start;padding-block:var(--s4)}
+  .inf-tiles>.inf-tile>summary>.inf-no{grid-row:1/span 3;align-self:center}
+}
