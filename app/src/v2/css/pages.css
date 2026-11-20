@@ -2538,6 +2538,15 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .ev-mid{display:grid;gap:var(--s6);margin-block:var(--s2)}
 
 }
+/* Sim Q39 A (Nov 19, 7:18 PM): from 700 to 759 the big ticket keeps its phone layout (Pokémon and stub on top, the words below), so a long
+   one-word event name can't run into the date stub (ValkrixVGC Champions League #09 was 54px in at 700; 10px clear this way) */
+@media (min-width:700px) and (max-width:759.98px){
+  .tk.big{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"h s" "m m"}
+  .tk.big .tk-hero{grid-area:h;width:auto;justify-self:start;margin-left:var(--s4)}.tk.big .tk-hero .np-mon{--iw:144px}
+  .tk.big .tk-stub{grid-area:s;min-width:112px;border-radius:0 var(--r-s) 0 0}.tk.big .tk-stub b{font-size:var(--d64)}
+  .tk.big .tk-mid{grid-area:m;padding:var(--s4) var(--s4) var(--s5);border-top:2px dashed var(--tk-tear)}
+  .tk.big .tk-name{font-size:var(--t22)}
+}
 @media (max-width:389.98px){.tk-hero{width:72px}.tk-hero .np-mon{--iw:68px}.tk-five{gap:0}.tk-five .np-mon{--iw:36px}}
 
 /* an event opened */

@@ -27,15 +27,15 @@ const blocks = p => p.evaluate(() => { scrollTo(0, 0); const q = s => document.q
   return {dom, top, pos, tab: [ix(fil), ix(go), ix(sum), ix(plateA), ix(small)], bigTop: q('.tk.big') ? Math.round(q('.tk.big').getBoundingClientRect().top) : null,
     big: q('.tk.big') ? q('.tk.big').getBoundingClientRect().height : 0}; });
 // labels and names: the words themselves (Ranges), never inside the date stub, never out of the ticket
-// Known before Q33 (checked Nov 19 on 6b742243 with the frozen CI data): at 700-1099 a one-word-long event name (ValkrixVGC Champions
-// League #0) runs into its stub. Printed as a note, not counted; its own fix is next on the Plans page (np-tk700).
+// Nov 19 (Sim Q39 A): at 700-759 a long one-word event name (ValkrixVGC Champions League #09, frozen CI data) ran 54px into the big
+// ticket's stub (there before Q33); fixed by keeping the phone layout to 759. Counted again; 700, 730 and 759 are checked below.
 const boxes = p => p.evaluate(() => { const W = innerWidth, bad = [], known = []; let n = 0, wrapped = 0;
   const hit = (a, z) => a.right > z.left + 1 && a.left < z.right - 1 && a.bottom > z.top + 1 && a.top < z.bottom - 1;
   for (const t of document.querySelectorAll('#main .ev-wall .tk')) { n++; const r = t.getBoundingClientRect(), s = t.querySelector('.tk-stub'), z = s.getBoundingClientRect();
     if (r.left < -1 || r.right > W + 1) bad.push('ticket off screen ' + Math.round(r.left) + '-' + Math.round(r.right));
     for (const el of t.querySelectorAll('.tk-k, .tk-name')) { const g = document.createRange(); g.selectNodeContents(el); const rs = [...g.getClientRects()].filter(q => q.width > 0);
       if (el.classList.contains('tk-k') && new Set(rs.map(q => Math.round(q.top))).size > 1) wrapped++;
-      for (const q of rs) { if (hit(q, z)) { (W >= 700 && W < 1100 && el.classList.contains('tk-name') ? known : bad).push(`${el.className.split(' ')[0]} into the stub by ${Math.round(q.right - z.left)}px: ${el.textContent.slice(0, 30)}`); break; }
+      for (const q of rs) { if (hit(q, z)) { bad.push(`${el.className.split(' ')[0]} into the stub by ${Math.round(q.right - z.left)}px: ${el.textContent.slice(0, 30)}`); break; }
         if (q.right > r.right + 1 || q.left < r.left - 1) { bad.push(`${el.className.split(' ')[0]} out of its ticket: ${el.textContent.slice(0, 30)}`); break; } } }
     for (const q of t.querySelectorAll('.tk-stub small, .tk-stub b')) { const a = q.getBoundingClientRect(); if (a.right > r.right + 1 || a.left < z.left - 1) bad.push('stub text out of the stub: ' + q.textContent.slice(0, 20)); } }
   for (const s of ['.ev-counts', '.ev-plate', '.ev-f']) { const e = document.querySelector('#main ' + s); if (e && e.getClientRects().length) { const a = e.getBoundingClientRect(); if (a.left < -1 || a.right > W + 1) bad.push(s + ' off screen'); } }
@@ -80,7 +80,7 @@ for (const th of ['light', 'dark']) {
     ok(bx.n === 19 && !bx.bad.length && !bx.side, `${th} ${W}: All after Show More: ${bx.n} tickets, no label or name in the stub (${bx.bad.slice(0, 3).join('; ') || 'clean'})`);
     ok(!errs.length, `${th} ${W}: no page errors (${errs.length})`); await c.close(); }
   // tablet and desktop: unchanged, the counts and Next Events above the wall
-  for (const W of [700, 1440]) { const [p, errs, c] = await open(W, th, false); const x = await blocks(p);
+  for (const W of [700, 730, 759, 760, 1440]) { const [p, errs, c] = await open(W, th, false); const x = await blocks(p);
     const want = W >= 1100 ? ['head', 'counts', 'next events', 'wall title', 'filters', 'big ticket', 'first small ticket', 'show more'] : ['head', 'tabs', 'counts', 'next events', 'wall title', 'filters', 'big ticket', 'first small ticket', 'show more'];
     ok(x.dom.join('>') === want.join('>'), `${th} ${W}: unchanged order ${x.dom.join(' > ')}`);
     ok(x.top.counts < x.top['big ticket'] && x.top['next events'] < x.top['big ticket'], `${th} ${W}: counts (${x.top.counts}) and Next Events (${x.top['next events']}) above the big ticket (${x.top['big ticket']})`);
