@@ -90,4 +90,10 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 
     await p.click('[data-bduse]'); await p.waitForTimeout(1000); const sl = await p.evaluate(() => window.__ev('S.slots.map(s=>s.n).join("|")'));
     ok(sl === f.eng, `${k}: Load Team loads the engine's six in the engine's order (display-only reorder)`); }
   ok(!errs.length, `${k}: no page errors (${errs.length}${errs.length ? ': ' + errs[0] : ''})`); await c.close(); }
+{ /* Sim, Nov 20 (after Q83): the Cores Parts list numbers are solid like the sheet's 01-06 */
+  for (const th of ['light', 'dark']) { const c = await b.newContext({viewport: {width: 1440, height: 900}, colorScheme: th}); const p = await c.newPage(); await p.addInitScript(() => { window.__PL_TEST = 1; });
+    await p.goto('file://' + PAGE + '#build', {timeout: 90000}); await p.waitForTimeout(2500);
+    await p.evaluate(() => { const t = [...document.querySelectorAll('button,a,[role=tab]')].find(e => e.textContent.trim() === 'Cores'); if (t) t.click(); }); await p.waitForTimeout(1200);
+    const n = await p.evaluate(() => [...document.querySelectorAll('.bp-parts .bd-cn')].filter(e => e.getClientRects().length).map(e => { const cs = getComputedStyle(e); return {col: cs.color, stroke: cs.webkitTextStrokeWidth}; }));
+    ok(n.length > 0 && n.every(x => x.col !== 'rgba(0, 0, 0, 0)' && parseFloat(x.stroke || '0') === 0), `${th} 1440: Parts list numbers solid, not outlined (${n.length} numbers)`); await c.close(); } }
 await b.close(); console.log(fails.length ? `v2-q83: ${fails.length} FAILED` : 'v2-q83: all passed'); process.exit(fails.length ? 1 : 0);

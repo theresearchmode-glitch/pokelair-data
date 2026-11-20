@@ -2094,7 +2094,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bp-parts .bd-clist{display:block;margin:0;padding:0;list-style:none}
 .bp-parts .bd-core{grid-template-columns:48px auto minmax(0,1fr) auto auto;column-gap:var(--s4);padding:var(--s3) 0;border-bottom:1px solid var(--bp-grid5)}
 .bp-parts .bd-core:last-child{border-bottom:0}
-.bp-parts .bd-cn{font:900 var(--t22)/1 var(--u);font-style:italic;color:transparent;-webkit-text-stroke:1px var(--bp-ink)}
+.bp-parts .bd-cn{font:900 var(--t22)/1 var(--u);font-style:italic;color:var(--plot-text)} /* Sim, Nov 20 (after Q83): solid like the sheet's 01-06 (were outlined) */
 .bp-parts .bd-cp img{width:48px;height:48px}
 .bp-parts .bd-cm b{font:900 var(--t20)/1.25 var(--u);font-style:italic}
 .bp-parts .bd-cw b{font:900 var(--t28)/1 var(--u);font-style:italic}
