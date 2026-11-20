@@ -219,13 +219,15 @@
 .kob-r{display:grid;grid-template-columns:24px 40px minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:var(--s2);min-height:var(--s12);margin:0;padding:var(--s1) 0;border:0;border-bottom:1px solid var(--rule);border-radius:0;background:none;color:var(--ink);text-align:left;cursor:pointer;font:inherit}
 .kob-r .by{grid-row:1/3;grid-column:1;display:grid;place-items:center}.kob-r .th{grid-row:1/3;grid-column:2;display:grid;place-items:center}
 .kob-r .nm{grid-column:3;grid-row:1;min-width:0;font:600 var(--t15)/1.3 var(--b)}
-.kob-r .mv{grid-column:3;grid-row:2;min-width:0;max-width:100%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.kob-r .mv{grid-column:3/5;grid-row:2;min-width:0;max-width:100%;margin-right:calc(var(--s16) + var(--s2));overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}
 .kob-r .pc{grid-column:4;grid-row:1;justify-self:end;padding-right:2px;font-size:var(--t20);line-height:1.2;white-space:nowrap}
 .kob-r.ko .pc{color:var(--bad-text)}
-.kob-r .hp{grid-column:4;grid-row:2;justify-self:end;position:relative;display:block;width:64px;height:4px;background:color-mix(in srgb,var(--ink) 12%,transparent)}
+.kob-r .hp{grid-column:4;grid-row:2;justify-self:end;position:relative;display:block;width:var(--s16);height:4px;background:color-mix(in srgb,var(--ink) 12%,transparent)}
 .kob-r .hp i{position:absolute;top:0;bottom:0;left:0;background:var(--hp-left)}.kob-r .hp .r{background:var(--bad)}
 .kob-r:hover{background:var(--wash)}.kob-r.on{outline:2px solid var(--plot);outline-offset:-2px}
 .kob-r:focus-visible{outline:3px solid var(--plot);outline-offset:-3px}
+/* Q68 A (Nov 20): the move line holds only the move's name and runs on under the damage figure, stopping a gap short of the
+   HP bar (both var(--s16) wide), so a long move ("Expanding Force" at 1024) is not cut */
 /* 1024-1279: three columns of about 290px; the damage one step smaller and the columns closer, so the full name keeps about 90px (the longest
    top-30 name, Basculegion, needs 86); a name that still cannot fit breaks rather than spills (never an ellipsis on the name) */
 .kob-r .nm{overflow-wrap:anywhere}
