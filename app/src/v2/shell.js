@@ -320,6 +320,9 @@ V2.route = () => { const h = (location.hash || '').slice(1).split('=')[0]; /* No
 V2.wl = (t, hand) => String(t == null ? '' : t)
   .replace(/\bReady for the top threats\b/g, 'Handles the top threats') /* the check's name as My Team shows it (audit #8, Nov 15) */
   .replace(/Ready for \d+% of the top (\d+) threats(?:,| ·) handles (\d+) of \d+/g, 'Beats or handles $2 of the top $1 threats')
+  .replace(/Ready for only (\d+)% of the top (\d+) threats/g, (m, p, n) => hand ? `Beats or handles only ${hand.x} of the top ${hand.n}` : `Matchups ${p}% against the top ${n} threats`) /* scan S24 (Nov 20): the miss line said "Ready for only" */
+  .replace(/; not ready for /g, '; no answer to ') /* scan S24: the Matchups level's own words */
+  .replace(/\band only 0 resist\b/g, 'and none resist') /* scan S1 (Nov 20) */
   .replace(/Ready for \d+% of the top (\d+) threats/g, (m, n) => hand ? `Beats or handles ${hand.x} of the top ${hand.n}` : m)
   .replace(/([Rr])eady for (\d+)\/(\d+) top threats/g, (m, r, x, n) => `${r === 'R' ? 'B' : 'b'}eats or handles ${x} of ${n} top threats`)
   .replace(/Ready for (\d+)\/(\d+) → (\d+)\/(\d+) top threats/g, 'Beats or handles $1 → $3 of $2 top threats')

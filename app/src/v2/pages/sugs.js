@@ -242,7 +242,7 @@ V2.fixFold = D => { const ms = D.ms; if (!ms || !ms.length) return ''; const use
   let pr; try { pr = V2.fixRows(D, useA, a, tRows, P); } catch (e) { console.error(e); pr = {real: [], html: ''}; }
   const PG = proGrades(ms, useA), CK = D.CK || proChecks(ms, useA), V = verdictData(ms, a, PG, CK);
   // the team checks card
-  const ckLi = (x, nt) => { const k = ckState(x); return `<li class="${k}"><b class="mk" aria-label="${CK_MARK[k][1]}">${CK_MARK[k][0]}</b><div><b>${V2.wl(x.label)}</b><span>${V2.esc(V2.undot(V2.wl(x.ok ? x.have : x.miss, CH.hand(V.RD))))}</span>${x.pro && !nt ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</div></li>`; };
+  const ckLi = (x, nt) => { const k = ckState(x); return `<li class="${k}"><b class="mk" aria-label="${CK_MARK[k][1]}">${CK_MARK[k][0]}</b><div><b>${V2.wl(x.label)}</b><span>${V2.esc(V2.undot(V2.wl(x.ok ? x.have : x.miss, CH.hand(V.RD))))}</span>${x.pro && /\d/.test(x.pro) && !nt ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</div></li>`; };
   const ckCard = CK ? `<div class="sg2-ckc"><p class="sg2-ckh"><span class="sg2-k">Team checks${!CK.full ? ' so far' : ''}</span><b class="u">${CK.pass} of ${CK.n} checks</b></p><p class="fine">${CK_TXT.intro}</p>
     <ul class="sg2-ckl">${CK.items.filter(x => !x.note).map(x => ckLi(x)).join('')}</ul>${CK.items.some(x => x.note) ? `<p class="sg2-ckn"><b>${CK_TXT.notes}</b><span>${CK_TXT.notesWhy}</span></p><ul class="sg2-ckl nt">${CK.items.filter(x => x.note).map(x => ckLi(x, 1)).join('')}</ul>` : ''}</div>` : '';
   // the verdict: legal and items, threats, checks, real results, your games, type balance
