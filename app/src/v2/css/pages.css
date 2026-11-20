@@ -2130,6 +2130,12 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:1099.98px){.bp0 .bp-src{display:none}} /* the head's eyebrow already names the format; keeps the sheet line one row */.bp0 .bp-go0 .np-btn{min-width:240px}
 .bp-gonote{margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .bd-result>.bd-none+.bp0{margin-top:var(--s3)}
+/* Build around sits near Sheet 0's foot, so its name list hangs below the sheet: Sheet 0 draws its paper, frame and cut corners on a layer
+   behind (::before) instead of clipping itself, and sits above the sections after it (v2-minors X-05: the list was clipped) */
+.bp.bp0{z-index:2;isolation:isolate;clip-path:none;background:none;border-color:transparent}
+.bp.bp0::before{content:"";position:absolute;inset:0;z-index:-1;border:1px solid var(--rule);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px));
+  background-color:var(--bp-paper);background-image:linear-gradient(var(--bp-grid5) 1px,transparent 1px),linear-gradient(90deg,var(--bp-grid5) 1px,transparent 1px),linear-gradient(var(--bp-grid) 1px,transparent 1px),linear-gradient(90deg,var(--bp-grid) 1px,transparent 1px);
+  background-size:var(--s24) var(--s24),var(--s24) var(--s24),20px 20px,20px 20px;background-position:-1px -1px}
 /* phones keep Sheet 0 short (Sim, Nov 19: no long phone pages): the six rings in one row, no source line or dimension line (the head says
    both), Megas and Build around side by side as the old form row had them, the button straight under the Spec */
 @media (max-width:699.98px){.bp.bp0{gap:var(--s3);padding-bottom:var(--s4)}.bp0 .bp-src,.bp0 .bp-dim,.bp0 .bd-mtip,.bp0 .bp-go0>.bp-k,.bp0 .bp-gonote{display:none}

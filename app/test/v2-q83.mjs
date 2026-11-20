@@ -19,7 +19,7 @@ const sheet0 = p => p.evaluate(() => { const s = document.querySelector('.bp0'),
   return {has: vis(s), plate: s ? (s.querySelector('.bp-plate') || {}).textContent : '', q: s ? [...s.querySelectorAll('.bp-six0 .bp-q')].filter(vis).map(e => e.textContent.trim()) : [], no,
     src: !!(s && vis(s.querySelector('[data-v2slide="bdsrc"]'))), meg: !!(s && vis(s.querySelector('[data-v2slide="sgmega"]'))), find: !!(s && vis(s.querySelector('[data-bdfind]'))),
     go: go.length, goIn: !!(go[0] && s && s.contains(go[0])), goMain: !!(go[0] && go[0].classList.contains('np-btn')), oldOpts: [...document.querySelectorAll('.bd-opts:not(.bp-spec)')].filter(vis).length,
-    grid: cs ? [cs.getPropertyValue('--bp-grid').trim().toLowerCase(), cs.getPropertyValue('--bp-grid5').trim().toLowerCase()] : [], border: cs ? cs.borderTopColor : '',
+    grid: cs ? [cs.getPropertyValue('--bp-grid').trim().toLowerCase(), cs.getPropertyValue('--bp-grid5').trim().toLowerCase()] : [], border: s ? getComputedStyle(s, '::before').borderTopColor : '' /* Sheet 0 draws its frame on ::before (its name list hangs out of it) */,
     rule: (() => { const d = document.createElement('i'); d.style.color = 'var(--rule)'; document.body.append(d); const c = getComputedStyle(d).color; d.remove(); return c; })(),
     H: document.documentElement.scrollHeight, side: document.documentElement.scrollWidth > innerWidth}; });
 const result = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects().length), a = document.querySelector('.bd-ans.bp'), six = a && a.querySelector('.bp-six'), use = [...document.querySelectorAll('[data-bduse]')].filter(vis), u = use[0];
