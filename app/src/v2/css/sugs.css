@@ -58,8 +58,8 @@
 .sg2-fb{display:grid;gap:var(--s8);padding-bottom:var(--s4)}
 /* desktop: an open fold is too long for the narrow column (it would leave the wide one empty): Team Checks moves to its own
    full-width row under Suggestions, and the fold's three parts sit side by side */
-@media (min-width:1180px){.tm-work:has(.sg2-fold[open]){grid-template-areas:"set mu" "sg sg" "ck ck"}.tm-work:has(.tm-yg):has(.sg2-fold[open]){grid-template-areas:"set mu" "yg sg" "ck ck"}}
-@media (min-width:700px) and (max-width:1179.98px){.tm-work:has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "ck ck"}.tm-work:has(.tm-yg):has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "mu yg" "ck ck"}}
+/* Q78 A (Sim, Nov 20, 9:54 AM): opening Adjust Suggestions no longer re-lays My Team at 1100+ (it put Matchups in a half column, cards overlapped); the fold opens in place. app/test/v2-q78.mjs */
+@media (min-width:700px) and (max-width:1099.98px){.tm-work:has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "ck ck"}.tm-work:has(.tm-yg):has(.sg2-fold[open]){grid-template-areas:"set set" "mu sg" "mu yg" "ck ck"}}
 .tm-cks{container-type:inline-size}
 @container (min-width:900px){.sg2-fb{grid-template-columns:minmax(0,1.4fr) minmax(0,1fr) minmax(0,1fr);align-items:start;column-gap:var(--s10)}}
 /* problem rows: severity tag, what's wrong; a row with fixes folds open to its Quick add picks */
