@@ -3269,3 +3269,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .inf-tiles>.inf-tile>summary{grid-template-columns:72px minmax(0,1fr);column-gap:var(--s3);align-items:start;padding-block:var(--s4)}
   .inf-tiles>.inf-tile>summary>.inf-no{grid-row:1/span 3;align-self:center}
 }
+/* My Team on phones (Sim's yes, Nov 20, option B): the bar under the six is tabs, one section shown at a time. The grid's named rows
+   would keep a gap for each hidden section, so the tabbed work area places its sections in order instead */
+.tm-tabs>button{flex:none}.tm-tcnt{color:var(--plot-text);font-weight:700}
+@media (max-width:699.98px){.tm-work.tm-tabbed,.tm-work.tm-tabbed:has(.tm-yg){grid-template-areas:none;grid-template-rows:none}.tm-tabbed .tm-sec{grid-area:auto}.tm-tabbed .tm-off{display:none}}
