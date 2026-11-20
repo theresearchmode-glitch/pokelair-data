@@ -4,8 +4,8 @@
 
 // ---------- the settings: today's sliders, same choices, same saved settings, same messages ----------
 /* advisor (Nov 15): Suggestions answer first; the settings follow, still visible, under a small label (Nov 16) */
-/* Sim, Nov 18 (Q5 A): desktop (1100+) folds it as phones do; tablets 700-1099 keep it open (not asked) */
-V2.sgAdj = () => { if (innerWidth >= 700 && innerWidth < 1100) return `<div class="sg2-adj"><p class="sg2-adjk">Adjust suggestions</p>${V2.sgCtl()}</div>`;
+/* Sim, Nov 18 (Q5 A): desktop (1100+) folds it as phones do; Sim Q71 (Nov 20, 8:17 AM): tablets 700-1099 fold it too (was open) */
+V2.sgAdj = () => {
   // Sim, Nov 18 (C, phone length): on phones Adjust Suggestions is a fold; its closed line says the current settings
   const mg = megaGoal(), ex = (S.excl || []).length, sum = [{box: 'My Box', boxfill: 'Box + Catch', all: 'Whole Roster'}[ui.pool] || '', `${mg} Mega${+mg === 1 ? '' : 's'}`,
     `Swap Mega: ${$('swapMega').checked ? 'Yes' : 'No'}`, `Abilities: ${$('useAbil').checked ? 'Yes' : 'No'}`, ex ? `${ex} never suggested` : ''].filter(Boolean).join(' · ');

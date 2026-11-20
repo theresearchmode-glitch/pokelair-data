@@ -246,3 +246,10 @@ a.dp-fr:hover .dp-fn{text-decoration:underline}
 @media (max-width:699.98px){.dp-bl:not(.on)>li:nth-child(n+3),.dp-tb>li:nth-child(n+4),.dp-fl>li:nth-child(n+3){display:none}
   .dp-bmore{display:inline-flex;margin-top:var(--s2)}}
 @media (max-width:999.98px){.dp-hl{display:block;min-height:var(--tap)}.dp-read{min-height:var(--tap)}}
+/* Sim Q70 (Nov 20, 8:17 AM, audit A2 recommended): on touch screens 1000+ wide the headline links (News, Home's news card) were 20-30px
+   to tap; each gets an invisible 44px tap area. Nothing moves on screen: the link stays inline (as a block its lines re-broke) and its
+   layer is placed on the heading around it (each headline is the only thing in its heading), so a wrapped headline is covered whole too
+   (an inline link's own box only spans its first line's start to its last line's end: one In Brief headline at 1099 stayed 23px).
+   Under 1000 the rule above already makes them 44px boxes; a mouse is untouched. app/test/v2-q69.mjs */
+@media (pointer:coarse) and (min-width:1000px){.dp-lh,.dp-ih,.dp-sth,.dp-mh{position:relative}
+  .dp-hl::before{content:"";position:absolute;left:0;right:0;top:50%;height:max(100%,var(--tap));transform:translateY(-50%)}}

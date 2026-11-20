@@ -3279,3 +3279,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    would keep a gap for each hidden section, so the tabbed work area places its sections in order instead */
 .tm-tabs>button{flex:none}.tm-tcnt{color:var(--plot-text);font-weight:700}
 @media (max-width:699.98px){.tm-work.tm-tabbed,.tm-work.tm-tabbed:has(.tm-yg){grid-template-areas:none;grid-template-rows:none}.tm-tabbed .tm-sec{grid-area:auto}.tm-tabbed .tm-off{display:none}}
+/* ---------- Sim Q69 (Nov 20, 8:17 AM, audit A1 recommended); app/test/v2-q69.mjs (Q71's My Team tablet layout is at the end of sugs.css) ---------- */
+/* Q69: at 700-819 the sample note's two links stack 20px apart and Import a Team's 44px tap area covered Build Me a Team; 24px between
+   the rows gives each its own 44px. Other widths unchanged. */
+@media (min-width:700px) and (max-width:819.98px){.tm-sample .tm-sample-acts{row-gap:var(--s6)}}
