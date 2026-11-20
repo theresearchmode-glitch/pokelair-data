@@ -8,6 +8,6 @@ Small things found tonight that need Sim's eye; none blocks the switch. Each wil
    not on screen any more (only inside Notes and the hidden heading). Sim to confirm.
 4. Arena's full KO Board still opens today's board in place (no new design yet); propose a design with pictures.
 5. DONE (Sim chose Keep, Q55, Nov 19 night). Gifts Stamp Sheet: after "Show All 7 Stamps" on phones the 7th stamp sits alone (3+3+1). A Nov 18 rule allows it; ask if Sim wants it.
-6. Gifts at 700 with 9 stamps (test data only): "Incineroar" runs past its stamp; old, not from Q43.
+6. DONE (Sim chose A, Q56, Nov 19 night; built 3602bfc0). Gifts at 700 with 9 stamps (test data only): "Incineroar" runs past its stamp; old, not from Q43.
 7. Track Record: kept as is (best saving found ~0.2 screens; the Calls cards would need a redesign to go further).
 8. My Team at 4.1 screens and Meta at 4.0 on phones: the next longest; not looked at yet.
