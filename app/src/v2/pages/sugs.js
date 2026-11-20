@@ -65,6 +65,9 @@ V2.ckWinSoon = () => { if (V2._ckGo) { safe('checklist claims', ckWinRefresh); r
   (V2.afterPre || (f => setTimeout(f, 0)))(() => { const els = [...document.querySelectorAll('.tm-sgs,.tm-cks,.tm-tabs')]; /* q59: on phones the two are tabs, hidden until picked, so the tab bar above them (where they would start) counts too */ if (!els.length || typeof IntersectionObserver !== 'function') { go(); return; }
     V2._ckObs = new IntersectionObserver(es => { if (es.some(x => x.isIntersecting)) go(); }, {rootMargin: '100% 0px'}); els.forEach(e => V2._ckObs.observe(e)); });
   addEventListener('scroll', poke, {passive: true}); poke(); };
+/* scan S35 A (Sim, Nov 20): while the planner works, a moving slanted PLOT-blue bar, "Plotting your best changes…" and (with no list to fade)
+   two ghost rows that hold the space, so the section looks alive and jumps less; reduced motion: the bar stands still */
+V2.sgWait = last => `<p class="sg2-wait" role="status">Plotting your best changes…</p>${last ? `<div class="sg2-stale" inert aria-busy="true">${last}</div>` : `<div class="sg-ghosts" aria-hidden="true">${'<div class="sg-ghost"><i></i><i></i><i></i></div>'.repeat(2)}</div>`}`;
 V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.plan.plans || [];
   // the winner rates some reasons and the team checks quote ("75% of 113 recent event winners…"): today's measurement, started
   // as today's render() starts it (once per data version; it redraws the page when it has the numbers)
@@ -72,7 +75,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
   let body;
   if (S2.pending) { const last = V2._sgLast;
     // while the next suggestions are worked out the ones on screen stay, faded and not tappable (as today), so nothing jumps
-    body = `<p class="tm-sub sg2-wait" role="status">Working out the best changes for your team…</p>${last ? `<div class="sg2-stale" inert aria-busy="true">${last}</div>` : ''}`; }
+    body = V2.sgWait(last); }
   else { V2.sgReasons(ms); const side = !P.length && Array.isArray(P.more) && P.more.length > 0, top = S2.top, g0 = top.length ? top[0].g0 : null;
     const open = ui.sugMore === ms.map(m => m.p.n).join(','), hid = top.length - 1;
     // above the cards, as today: a Protect fix (a set change, not a swap), then a game-plan gap no swap in this pool can close
@@ -153,7 +156,7 @@ V2.allSugsHtml = () => { const ms = members(), U = V2.sgAll, E = V2.esc, busy = 
   const head = (n, none) => `<div class="np-eyebrow">${n == null ? 'Suggestions' : `${n} ${none ? 'optional swap' : 'suggestion'}${n === 1 ? '' : 's'}`}</div><h2 class="u">All Suggestions</h2>
     <p class="tm-sub">${none ? `<b>${LANE.NONE.head}</b> ${LANE.NONE.body} ` : ''}Every change the planner found for your team, best first, each with how it moves the Strength Score.</p>${ctl}`;
   // while the planner works (a new Suggest from, a team change) the list on screen stays, faded and not tappable, as on My Team
-  if (busy) return `<div class="sga2">${head(U.count, U.none)}<p class="tm-sub sg2-wait" role="status">Working out the best changes for your team…</p>${U.last ? `<div class="sg2-stale" inert aria-busy="true">${U.last}</div>` : ''}</div>`;
+  if (busy) return `<div class="sga2">${head(U.count, U.none)}${V2.sgWait(U.last)}</div>`;
   const P = V2.plan.plans || [], shown = ui.planList || [], X = V2.sgX(ms);
   const rest = [...P, ...(P.more || [])].filter(pl => !shown.includes(pl)), all = [...shown, ...rest]; let g0 = null; try { g0 = P.gBase != null ? P.gBase : ms.length === 6 ? gradeTeam(ms) : null; } catch (e) {}
   const side = !P.length, singles = all.filter(pl => pl.ch.length === 1), multi = all.filter(pl => pl.ch.length > 1);
