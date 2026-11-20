@@ -34,7 +34,8 @@ const CX2_LABEL = {ready: 'Matchups (damage calc, top 30)'};
 // re-audit Nov 15: a row is 'the same on both' only when both cells read the same; today's flag compares one number (Matchups' score,
 // a check's yes/no) while the cells show more (Beats/Handles counts, the Tailwind setter), so rows that differ were listed as the same
 V2.cxRows = (IA, IB) => cxFacts(IA, IB).map(r => { if (r.diff) return r; let d = false; try { const c = v => CX2[r.k.startsWith('ck:') ? 'ck' : r.k](v); d = c(r.a) !== c(r.b); } catch (e) {} return d ? {...r, diff: true} : r; });
-V2.pages.compare = {place: 'team', draw() { const RA = cxResolve(ui.cx.A), RB = cxResolve(ui.cx.B); if (!RA) ui.cx.A = null; if (!RB) ui.cx.B = null;
+V2.pages.compare = {place: 'team', draw() { /* scan S13 (Nov 20): the first visit starts with My Team as Team A when it has Pokémon; once per visit, so clearing it stays cleared */
+  if (!ui.cx.seeded) { ui.cx.seeded = true; try { if (!ui.cx.A && !ui.cx.B && members().length) ui.cx.A = 'cur'; } catch (e) {} } const RA = cxResolve(ui.cx.A), RB = cxResolve(ui.cx.B); if (!RA) ui.cx.A = null; if (!RB) ui.cx.B = null;
   const head = `<div class="cx2-top"><div class="np-eyebrow"><span><a class="np-back" href="#team">← My Team</a> · Compare · two teams side by side</span></div><h1 class="u">Compare Teams</h1></div>
     <div class="cx2-heads">${V2.cxHead('A', RA)}${RA && RB ? '<button type="button" class="np-link cx2-swap" data-cxswap2>Swap A and B</button>' : '<span class="cx2-swap"></span>'}${V2.cxHead('B', RB)}</div>`;
   if (!RA || !RB) return `<section class="cx2">${head}<p class="tm-sub cx2-hint">Pick two teams: your team, a saved one, an event winner or a pasted Showdown team. Once both are picked, every row is worked out the same way as on My Team.</p></section>`;
