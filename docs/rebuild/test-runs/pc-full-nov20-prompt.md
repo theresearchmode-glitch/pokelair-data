@@ -17,7 +17,7 @@ only shows on Windows / a real GPU / Chrome on Windows.
    before each job exactly as that job's steps do (with or without `--preview-data`, `--art=../src/v2/art/`). Say which build command
    you used for each job.
 3. Run every job in test.yml, one job at a time, every `run:` step in order (the same as GitHub; `if: !cancelled()` means keep going
-   after a failure). Keep each full output. Jobs (checked against test.yml): test, v2-checks, v2-minors (main1, main2, groups),
+   after a failure). Keep each full output. Jobs (checked against test.yml): test, v2-checks, v2-checks-2 (if present: split from v2-checks on Nov 20), v2-minors (main1, main2, groups),
    quality-v2, behaviour-v2 (A-team, B-build, C-battle, D-meta-shell), behaviour-webkit (Safari's engine, as test.yml sets it up),
    data-checks, accuracy-gate, and live-audits (alert only: report, don't treat as a failure).
 4. For each FAIL: run it once more on its own. Say steady or flaky. If it doesn't fail on GitHub's run for the same commit (Sim's
