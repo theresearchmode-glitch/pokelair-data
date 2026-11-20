@@ -830,6 +830,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (hover:hover){.bt-pk:hover b{color:var(--plot-text)}}
 .bt-ll{display:inline-flex;align-items:center;gap:var(--s1);margin-top:var(--s1);font:700 var(--t13)/1 var(--b);color:var(--plot-text)}.bt-ll::before{content:"";width:12px;height:6px;background:var(--plot);transform:skewX(var(--slant))}
 .bt-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);margin-top:var(--s4)}
+/* scan S30 A (Sim, Nov 20): Their Six's six '?' slots, 900+ only; the 4px left margin squares the first slot's slanted edge with the text */
+.bt-q6{display:none}
+@media (min-width:900px){
+  .bt-q6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s3);margin:var(--s2) 0 var(--s5) var(--s1)}
+  .bt-q6 button{display:grid;place-items:center;aspect-ratio:4/5;min-width:0;padding:0;border:2px dashed color-mix(in srgb,var(--them) 55%,transparent);border-radius:var(--r-s);background:color-mix(in srgb,var(--them) 7%,transparent);color:inherit;transform:skewX(-8deg);cursor:pointer;transition:background .15s}
+  .bt-q6 button:hover{background:color-mix(in srgb,var(--them) 16%,transparent);border-style:solid}
+  .bt-q6 i{font:900 var(--t34)/1 var(--u);font-style:italic;font-synthesis:style;color:var(--them-text);transform:skewX(8deg)}
+}
 .bt-grps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s1) var(--s4);margin-top:var(--s2)}
 .bt-gl{display:flex;align-items:center;gap:var(--s2);height:20px;margin-bottom:var(--s2);font:900 var(--t15)/1 var(--u);font-style:italic}
 .bt-gl i{width:14px;height:7px;transform:skewX(var(--slant));background:var(--ink-3)}.bt-grp.lead .bt-gl i{background:var(--plot)}.bt-grp.home .bt-gl{color:var(--ink-2)}

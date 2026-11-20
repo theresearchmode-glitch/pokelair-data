@@ -23,7 +23,10 @@ V2.battleHead = (mine, theirs, P) => { const E = V2.esc, who = V2.btOppWho(), R 
   return `<section class="bt-head"><div><p class="np-eyebrow">Battle a team · ${V2.btSheet() ? 'Their real open team sheet' : 'Team preview'}</p>${h}${vs}</div>${verdict}</section>`; };
 V2.battleTheirs = (theirs, P) => { const E = V2.esc, ll = P ? P.likelyLead || [] : [];
   const six = theirs.length ? `<div class="bt-row6">${theirs.map(o => V2.btPk(o.p.n, V2.btItem(o), ll.includes(o) ? '<span class="bt-ll">Likely lead</span>' : '')).join('')}</div>` : '';
-  return `<div class="bt-side bt-theirs"><div class="bt-labrow"><h2 class="bt-lab u">Their Six</h2>${theirs.length ? '<button type="button" class="np-link" data-btclear>Clear</button>' : ''}</div>${six}
+  /* scan S30 A (Sim, Nov 20): with nothing entered, six slanted '?' slots in their colour (900+ wide; phones keep the button alone), each
+     opening the same Their Six sheet, so the empty side shows what to fill and mirrors Your Six below, like the game's team preview */
+  const q6 = theirs.length ? '' : `<div class="bt-q6">${Array.from({length: 6}, (_, i) => `<button type="button" data-btopp6 aria-label="Enter their Pokémon ${i + 1} of 6"><i aria-hidden="true">?</i></button>`).join('')}</div>`;
+  return `<div class="bt-side bt-theirs"><div class="bt-labrow"><h2 class="bt-lab u">Their Six</h2>${theirs.length ? '<button type="button" class="np-link" data-btclear>Clear</button>' : ''}</div>${six}${q6}
     <div class="row bt-acts${V2.btSheet() ? ' two' : ''}"><button type="button" class="np-btn${theirs.length ? '2' : ''}" data-btopp><span>${theirs.length ? 'Change Their Six' : 'Enter Their Six'}</span></button>${V2.btSheet() ? '<button type="button" class="np-btn2" data-btcopy><span>Copy for Showdown</span></button>' : ''}</div>
 </div>`; };
 V2.battleMine = (mine, P) => { if (!P) return ''; const r = P.r, g = (cls, lab, idx) => idx.length ? `<div class="bt-grp ${cls}"><p class="bt-gl"><i aria-hidden="true"></i>${lab}</p><div class="bt-pair">${idx.map(i => V2.btPk(mine[i].p.n, V2.btItem(mine[i]))).join('')}</div></div>` : '';
@@ -69,8 +72,8 @@ document.addEventListener('click', async e => { const b = e.target.closest && e.
   if (d.btrecent != null) { const x = V2.btRecent()[+d.btrecent]; if (!x) return; V2.btSetOpp(x, null); V2.closeSheet(); V2.redraw(); toast('Recent opponent loaded'); return; }
   if (d.btteamall != null) { const t = META.teams && META.teams.teams[+d.btteamall]; if (!t) return; const ns = t.mons.slice(0, 6).filter(n => byName.get(n));
     V2.btSetOpp(ns, {who: t.player, label: teamWho(t), key: V2.btKey(ns), ev: evShort(t.event)}); V2.closeSheet(); V2.redraw(); toast(`Opponent set: ${teamWho(t)}`); } });
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-btopp],[data-btclear],[data-btox],[data-btpick],[data-btteam]'); if (!b) return; const d = b.dataset;
-  if (d.btopp != null) { V2.sheet(V2.btOppSheet(), {label: 'Their Six'}); return; }
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-btopp],[data-btopp6],[data-btclear],[data-btox],[data-btpick],[data-btteam]'); if (!b) return; const d = b.dataset;
+  if (d.btopp != null || d.btopp6 != null) { /* data-btopp6: S30's six slots (their own name, so [data-btopp] still finds the one button) */ V2.sheet(V2.btOppSheet(), {label: 'Their Six'}); return; }
   if (d.btclear != null) { const was = S.opp.slice(), from = V2.btUi && ui.oppFrom; V2.btSetOpp([], null); V2.redraw(); V2.undoToast('Cleared their six', () => { V2.btSetOpp(was, from || null); V2.btOppRefresh(); }); return; }
   if (d.btox != null) { const o = S.opp.slice(); o[+d.btox] = ''; V2.btSetOpp(o, null); V2.btOppRefresh(); const f = document.querySelector(`.bt-osheet [data-btfind="${+d.btox}"]`); if (f) f.focus(); return; }
   if (d.btpick) { const [i, n] = d.btpick.split('|'), o = S.opp.slice(0, 6); while (o.length < 6) o.push(''); const p = byName.get(n); if (!p) return;
