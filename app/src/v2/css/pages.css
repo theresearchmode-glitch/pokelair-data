@@ -416,6 +416,13 @@
 .cx2-head{min-width:0;padding:var(--s5);border-radius:10px;background:var(--wash)}
 .cx2-head.empty{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2);width:100%;min-height:180px;justify-content:center;border:1.5px dashed color-mix(in srgb,var(--ink) 30%,transparent);background:none;color:var(--ink);cursor:pointer;text-align:left}
 .cx2-head.empty .nm{font:900 var(--t24)/1.1 var(--u);font-style:italic}.cx2-head.empty:hover{background:var(--wash)}
+/* scan S31 A (Sim, Nov 20): an empty Team B holds the 3 newest event winners, one tap compares; phones show the newest only */
+.cx2-qp{display:flex;flex-direction:column;gap:var(--s2);min-width:0;padding:var(--s5) var(--s6) var(--s4);border:2px dashed var(--rule);border-radius:var(--r-l);background:transparent}
+.cx2-qp .top{display:flex;align-items:center;gap:var(--s3)}.cx2-qp .top .nm{font:800 var(--t24)/1.2 var(--u);font-style:italic;font-synthesis:style}
+.cx2-qp .k{margin:var(--s2) 0 0;font:700 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.cx2-qp .cx2-opt{padding-inline:0}.cx2-qp .cx2-opt .s img{width:40px;height:40px}
+.cx2-qp .more{align-self:flex-start;margin-top:var(--s1)}
+@media (max-width:699.98px){.cx2-qp .cx2-opt~.cx2-opt{display:none}.cx2-qp{padding:var(--s4)}.cx2-qp .top .nm{font-size:var(--t22)}}
 .cx2-hd{display:flex;align-items:center;gap:var(--s3)}.cx2-nm{flex:1;min-width:0}.cx2-nm b{display:block;font:600 var(--t17)/1.3 var(--b);overflow-wrap:anywhere}.cx2-nm span{display:block;font-size:var(--t13);color:var(--ink-2)}
 .cx2-hd .np-link{min-height:var(--tap)}
 .cx2-b{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;font:900 var(--t20)/1 var(--u);font-style:italic;color:var(--on-plate);transform:skewX(-12deg)}

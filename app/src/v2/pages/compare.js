@@ -9,7 +9,14 @@ const cxBadge = s => `<span class="cx2-b ${s === 'A' ? 'a' : 'b'}" aria-hidden="
 // the event's name goes through the shared cleaner, as everywhere else (design review #22: raw names with prize text and emoji)
 // a top team's event carries ' · N players' after the name: only the name is cleaned (review Nov 19); a function replacer, so '$' in a name is literal
 V2.cxSub = R => { if (!R.ev || !R.sub) return R.sub || ''; const [nm, ...rest] = String(R.ev).split(' · '); const clean = [V2.evTitle(nm), ...rest].join(' · '); return R.sub.replace(R.ev, () => clean); };
+/* scan S31 A (Sim, Nov 20): an empty Team B offers the 3 newest event winners (the picker's own rows), one tap compares; a link opens the
+   whole picker (saved teams, more winners, a pasted team). Phones show the newest only (CSS), so the page grows one row, not three */
+V2.cxQuick = side => { let pool = []; try { pool = tsPool().filter(x => x.t.place === 1); } catch (e) {} const E = V2.esc, other = ui.cx[side === 'A' ? 'B' : 'A'];
+  const opts = pool.filter(x => other !== 'e:' + x.key).slice(0, 3).map(x => V2.cxOpt(side, other, 'e:' + x.key, String(teamPlanLabel(x.t.mons.map(m => m.n)) || '') || 'Event winner', `Won ${V2.evTitle(x.ev.name)} · ${evDate(x.ev.date)}`, x.t.mons.map(m => m.n)));
+  if (!opts.length) return '';
+  return `<div class="cx2-qp ${side === 'A' ? 'a' : 'b'}"><div class="top">${cxBadge(side)}<span class="nm">Pick Team ${side}</span></div><p class="k">Take on a latest winner</p>${opts.join('')}<button type="button" class="np-link more" data-cxp="${side}">Saved, more winners or paste a team ›</button></div>`; };
 V2.cxHead = (side, R) => { const E = V2.esc;
+  if (!R && side === 'B') { const q = V2.cxQuick(side); if (q) return q; }
   if (!R) return `<button type="button" class="cx2-head empty ${side === 'A' ? 'a' : 'b'}" data-cxp="${side}">${cxBadge(side)}<span class="nm">Pick Team ${side}</span><span class="fine">My Team, saved, winning or pasted</span></button>`;
   const ms = teamRating(R.slots).ms;
   return `<div class="cx2-head ${side === 'A' ? 'a' : 'b'}"><div class="cx2-hd">${cxBadge(side)}<div class="cx2-nm"><b>${E(R.name)}</b><span>${E(V2.cxSub(R))}</span></div><button type="button" class="np-link" data-cxp="${side}" aria-label="Change team ${side}">Change</button></div>
@@ -61,8 +68,10 @@ V2.cxWork = () => { if (V2.cxBusy) return; V2.cxBusy = true; const step = () => 
 
 // Sim Q10d (Nov 15): titled 'Change Team X' when that side already has a team (the button you tapped says Change), 'Pick Team X' when empty
 // the picker, as a sheet: My Team, saved teams, event winners (newest first), or a pasted Showdown team
+// one picker row (also Team B's quick winners, scan S31)
+V2.cxOpt = (side, other, src, title, sub, names) => { const E = V2.esc; return `<button type="button" class="cx2-opt" data-cxset2="${side}|${E(src)}"${other === src ? ' aria-disabled="true"' : ''}><span class="t"><b>${E(title)}</b>${other === src ? `<span>Already team ${side === 'A' ? 'B' : 'A'}</span>` : sub ? `<span>${E(sub)}</span>` : ''}</span><span class="s">${names.map(n => `<img src="${V2.art(SPRITE_ID[n])}" alt="" loading="lazy" decoding="async">`).join('')}</span></button>`; };
 V2.cxPickHtml = side => { const other = ui.cx[side === 'A' ? 'B' : 'A'], E = V2.esc;
-  const opt = (src, title, sub, names) => `<button type="button" class="cx2-opt" data-cxset2="${side}|${E(src)}"${other === src ? ' aria-disabled="true"' : ''}><span class="t"><b>${E(title)}</b>${other === src ? `<span>Already team ${side === 'A' ? 'B' : 'A'}</span>` : sub ? `<span>${E(sub)}</span>` : ''}</span><span class="s">${names.map(n => `<img src="${V2.art(SPRITE_ID[n])}" alt="" loading="lazy" decoding="async">`).join('')}</span></button>`;
+  const opt = (src, title, sub, names) => V2.cxOpt(side, other, src, title, sub, names);
   const mine = members(), parts = [];
   if (mine.length) parts.push(`<h3 class="cx2-ph">My Team</h3>${opt('cur', teamTitleFor(mine), 'Open now', mine.map(m => m.p.n))}`);
   const sv = S.teams.filter(t => t.format !== 'singles');
