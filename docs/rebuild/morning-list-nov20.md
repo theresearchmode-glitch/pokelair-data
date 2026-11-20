@@ -10,4 +10,8 @@ Small things found tonight that need Sim's eye; none blocks the switch. Each wil
 5. DONE (Sim chose Keep, Q55, Nov 19 night). Gifts Stamp Sheet: after "Show All 7 Stamps" on phones the 7th stamp sits alone (3+3+1). A Nov 18 rule allows it; ask if Sim wants it.
 6. DONE (Sim chose A, Q56, Nov 19 night; built 3602bfc0). Gifts at 700 with 9 stamps (test data only): "Incineroar" runs past its stamp; old, not from Q43.
 7. Track Record: kept as is (best saving found ~0.2 screens; the Calls cards would need a redesign to go further).
-8. My Team at 4.1 screens and Meta at 4.0 on phones: the next longest; not looked at yet.
+8. My Team at 4.1 screens and Meta at 4.0 on phones. Options measured by a helper (docs/rebuild/research/team-meta-length-nov20.md, pictures docs/rebuild/pics/nov20/LEN-*):
+   My Team: A fold 4 Favoured stand-outs (3.88), B tabs on phones one section at a time (3.27; weaker team 4.80 -> 2.96; recommended, risk: Suggestions only seen on tap), C both (3.08).
+   Meta: A tier words inside the colour band (3.74), B fold D and F tiers (3.55), C both (3.35; recommended; folding F works a little against the underdog idea).
+   To ask Sim at 6 AM (Q59 My Team, Q60 Meta).
+4b. KO Board: Sim chose Q57 A (phone tabs) + Q58 C (desktop ladder), 11 PM; built on a helper; first tab 'down in one hit' is Claude's default: show Sim.
