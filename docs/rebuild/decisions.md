@@ -1532,3 +1532,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:30 PM: Sim chose Q53 A ('recomm', read as recommended): KO Board title 17 up to 1449 (1440 light fits on one line); 20 from 1450.
 - 10:34 PM: Sim (10:33 PM): 'use your helpers for whatever you want. go for it' - helpers may now do look-only work too (still at most 2). Starting two: My Team + Meta phone length options (morning item 8), and KO Board full design options (item 4).
 - 10:36 PM: Sim chose Q54 Keep: 'Level 50 doubles' stays only in Notes and the hidden heading (as in his Arena mock-up).
+- 10:38 PM: Sim chose Q55 Keep: Gifts stamps stay 3+3+1 after Show All on phones (4+3 made stamps 81px and unreadable).
