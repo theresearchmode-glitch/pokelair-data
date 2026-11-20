@@ -3279,3 +3279,16 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    would keep a gap for each hidden section, so the tabbed work area places its sections in order instead */
 .tm-tabs>button{flex:none}.tm-tcnt{color:var(--plot-text);font-weight:700}
 @media (max-width:699.98px){.tm-work.tm-tabbed,.tm-work.tm-tabbed:has(.tm-yg){grid-template-areas:none;grid-template-rows:none}.tm-tabbed .tm-sec{grid-area:auto}.tm-tabbed .tm-off{display:none}}
+
+/* ---- Q73 D1 (Sim chose the recommended option, Nov 20, 8:17 AM; audit-nov20-options.md D1): Usage podium benches. Under 600 a Mega's
+   "Mega" is the MEGA tag line (.gs-mg, as "Usually alongside") above the rest of its name, and the other bench names keep an empty
+   tag line of the same height, so the numbers in each bench row sit level. 600 and wider: the plain word on the name line, as before. ---- */
+.us-fig .us-tx .us-mg{display:inline;min-height:0;font:inherit;letter-spacing:inherit;color:inherit;text-transform:none}
+@media (max-width:599.98px){.us-fig .us-tx .us-mg{display:block;min-height:16px;font:900 var(--t13)/1.2 var(--u);font-style:italic;letter-spacing:-.02em;color:var(--plot-text);text-transform:uppercase}
+  .us-bench .us-nomg::before{content:"";display:block;min-height:16px}}
+
+/* ---- Q74 D2 (Sim chose the recommended option, Nov 20, 8:17 AM; audit-nov20-options.md D2): Events and Gifts filter chips. Under 700
+   the three chips keep their own widths and grow to fill the row (no empty end); at every width the chip's words are centred in the
+   44px chip (the baseline row sat at the top: 1px above, 25px below at 390-1440). ---- */
+.ev-fc{flex-wrap:wrap;align-content:center}
+@media (max-width:699.98px){.ev-f{display:flex;flex-wrap:nowrap}.ev-fc{flex:1 1 auto;justify-content:center}}

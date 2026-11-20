@@ -714,7 +714,7 @@ t('TRACK-02', 'top-8 teams by rating band with a verdict line', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Track Record'); const tx = await ui.pageText();
   /* new: Sim's brief 'The Receipt' (decisions.md:881, mocks/thisweek-trackrecord/track-record-desktop.webp): title case, each band's share printed beside its name */
   expect((NEW ? /Top-8 teams,? by the rating we gave/i : /Top-8 teams, by the rating we gave/i).test(tx), 'no band card');
-  expect((tx.match(NEW ? /Rated (90\+|\d+–\d+|Under \d+) (\d+(\.\d+)?% )?\d+ of \d+ Pokémon made a top 8/g : /Rated (90\+|\d+–\d+|Under \d+) \d+ of \d+ Pokémon made a top 8/g) || []).length === 4, 'not four rating bands');
+  expect((tx.match(NEW ? /Rated (90\+|\d+–\d+|Under \d+) (\d+(\.\d+)?% )?\d+ of \d+ made at least one top 8/g /* Q75 (Sim, Nov 20): not 'Pokémon made a top 8' beside the % */ : /Rated (90\+|\d+–\d+|Under \d+) \d+ of \d+ Pokémon made a top 8/g) || []).length === 4, 'not four rating bands');
   expect(/Pokémon we rated 90\+ were on top-8 teams .+ as often as Pokémon we rated under/i.test(tx), 'no verdict line (34 events)'); await close(); });
 
 t('TRACK-03', 'biggest hits / misses; tap a Pokémon for its sheet', async () => {

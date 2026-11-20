@@ -702,7 +702,7 @@ t('TRACK-02', 'How the check works: three steps and the fair-test line', run({te
   await ui.go('Track Record'); const tx = await ui.text(); for (const x of ['Ratings saved each morning', 'An event is played', 'Its top 8 compared', 'A fair test']) expect(has(tx, x), 'missing ' + x); }));
 t('TRACK-03', 'Top-8 teams by the rating we gave: four bands and a verdict', run({team: TEAM}, async ({ui}) => {
   await ui.go('Track Record'); const tx = await ui.text(); for (const b of (/Rated 80–89/.test(tx) ? ['Rated 90+', 'Rated 80–89', 'Rated 70–79', 'Rated Under 70'] : ['Rated 90+', 'Rated 70–89', 'Rated 53–69', 'Rated Under 53'])) /* 3h: the data's own cut-offs */ expect(has(tx, b), 'band missing ' + b);
-  expect(/\d+ of \d+ Pokémon made a top 8/.test(tx), 'no band counts'); expect(/Pokémon we rated 90\+ were on top-8 teams/.test(tx) || /Early: only \d+ events/.test(tx), 'no verdict or early note'); }));
+  expect((NEW ? /\d+ of \d+ made at least one top 8/ : /\d+ of \d+ Pokémon made a top 8/).test(tx), 'no band counts'); /* Q75 (Sim, Nov 20): the rebuild says 'N of N made at least one top 8' */ expect(/Pokémon we rated 90\+ were on top-8 teams/.test(tx) || /Early: only \d+ events/.test(tx), 'no verdict or early note'); }));
 t('TRACK-04', 'Biggest hits and misses open their sheet', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Track Record'); const tx = await ui.text(); expect(has(tx, 'Biggest Hits') && has(tx, 'Biggest Misses'), 'no hits/misses'); expect((NEW ? /on \d+ top-8 teams? in \d+ events?/ /* Sim, Nov 17 (Q1): no 'Rated N ·' on the cards, the big number says it */ : /Rated \d+, on \d+ top-8 teams/).test(tx), 'hit rows');
   await d.openPokemon(await d.firstPokemon()); expect(await d.sheetIsOpen(), 'no sheet'); }));
