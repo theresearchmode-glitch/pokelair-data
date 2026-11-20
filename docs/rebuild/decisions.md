@@ -1530,3 +1530,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:25 PM: Sim chose Q52 B (asked again with the right sizes): KO Board title 17 on 1024-1439 (one line from 1280 up; 20 stays from 1440).
 - 10:28 PM: Pushed the Arena batch (Arena, Q38, Q39, Q40) 62933e89 to claude/design6 after a clean full check (part 1 0 failed; quality 0 new; behaviour A 139/0, B 77/0, C 83/0, D 117/0; data checks; GATE PASSED).
 - 10:30 PM: Sim chose Q53 A ('recomm', read as recommended): KO Board title 17 up to 1449 (1440 light fits on one line); 20 from 1450.
+- 10:34 PM: Sim (10:33 PM): 'use your helpers for whatever you want. go for it' - helpers may now do look-only work too (still at most 2). Starting two: My Team + Meta phone length options (morning item 8), and KO Board full design options (item 4).
