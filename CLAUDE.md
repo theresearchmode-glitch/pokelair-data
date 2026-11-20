@@ -67,7 +67,7 @@ scrolling 10 times to just see the info!" Every page's length at 390 wide is mea
 (docs/rebuild/RULES.md section 0b).
 
 ## Be proactive and efficient (Sim, Nov 17; a standing rule)
-Helper limit (Sim, Nov 20, 8:22 AM, LATEST: at most 3 helpers/subagents at once. Earlier, Nov 19, 4:46 AM: at most 2 (last night used more usage than Sim wants). Use them only where they clearly help; fewer is fine. Earlier: 3 (Nov 18). Earlier the same day: 4, then 3, then 5/7/15 overnight.
+Helper limit (Sim, Nov 20, 8:22 AM, LATEST: at most 3 helpers/subagents at once. Going above 3: ALWAYS ask Sim first, never on my own (Sim, Nov 20: "I need to always assess usage"). Earlier, Nov 19, 4:46 AM: at most 2 (last night used more usage than Sim wants). Use them only where they clearly help; fewer is fine. Earlier: 3 (Nov 18). Earlier the same day: 4, then 3, then 5/7/15 overnight.
 Make the website process run as smoothly and quickly as possible. Think ahead: what will the next steps need (data, research,
 measurements, decisions), and start it early instead of waiting until it blocks. Use helper agents in parallel for research,
 data pulls, measurements and look-only audits, without asking first (Nov 20: at most 3 helpers; just tell Sim what is
