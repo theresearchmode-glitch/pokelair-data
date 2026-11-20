@@ -116,3 +116,6 @@
 .pr-setsh{display:grid;gap:var(--s3);justify-items:start}.pr-setsh h2{font-size:var(--t28)}.pr-setsh .np-mon{--iw:160px;margin:0}
 .pr-setdl{display:grid;gap:var(--s2);margin:0}.pr-setdl>div{display:grid;grid-template-columns:7em minmax(0,1fr);gap:var(--s3)}.pr-setdl dt{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}.pr-setdl dd{margin:0;font:500 var(--t15)/1.5 var(--b)}
 .pr-setsh .pr-src{color:var(--ink-2)}.pr-setsh .pr-src a{color:var(--plot-text)}
+/* Sim Q56 A (Nov 19, 10:42 PM): at 700-819 a sheet of 9+ stamps sits 5 across and a long name ("Incineroar") ran past its stamp; one size
+   smaller there with a little less side padding (still the slanted logo font) */
+@media (min-width:700px) and (max-width:819.98px){.pr-st{padding-inline:var(--s3)}.pr-nm{font-size:var(--t13)}}

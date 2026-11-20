@@ -51,13 +51,12 @@ for (const th of ['light', 'dark']) {
     if (W === 390) { const L = await p.evaluate(() => { const H = document.documentElement.scrollHeight; document.querySelectorAll('#main .pr-sheet').forEach(e => e.classList.add('on')); document.querySelectorAll('#main .pr-mph').forEach(e => e.style.setProperty('display', 'none')); return {H, H0: document.documentElement.scrollHeight}; });
       ok((L.H0 - L.H) / 844 >= 0.1, `${th} 390 (fixture 9): ${((L.H0 - L.H) / 844).toFixed(2)} screens shorter than without the cut (at least 0.1)`); }
     ok(!errs.length, `${th} ${W}: no page errors (${errs.length}${errs.length ? ': ' + errs[0] : ''})`); await c.close(); }
-  for (const W of [700, 1440]) { const [p, errs, c] = await open(W, th, false); for (const tag of ['', ' (fixture 9)']) { if (tag) { await p.evaluate(fx => window.__ev(fx), FIX); await p.waitForTimeout(400); }
+  for (const W of [700, 760, 819, 820, 1440]) { const [p, errs, c] = await open(W, th, false); for (const tag of ['', ' (fixture 9)']) { if (tag) { await p.evaluate(fx => window.__ev(fx), FIX); await p.waitForTimeout(400); }
       const n = await want(p), x = await look(p);
       ok(x.n === Math.min(n.all, 12) && !x.btn, `${th} ${W}${tag}: unchanged, all ${n.all} stamps (${x.n}, rows ${x.rows}), no button`);
       const bx = await boxes(p);
-      // known before Q43, not part of it: the fixture's 9 stamps sit 5 across at 700, and "Incineroar" runs past its narrow stamp there
-      if (tag && W === 700 && bx.bad.length && !bx.side && bx.bad.every(s => s === 'out of its stamp: Incineroar')) console.log(`  note  ${th} ${W}${tag}: known before Q43, not counted: ${bx.bad.length} x "Incineroar" past its stamp at 5 across`);
-      else ok(!bx.bad.length && !bx.side, `${th} ${W}${tag}: nothing out of its box (${bx.bad.slice(0, 3).join('; ') || 'clean'})`); }
+      // Sim Q56 A (Nov 19, 10:42 PM): with 5 stamps across at 700-819 the names are 13 with less side padding, so "Incineroar" stays inside
+      ok(!bx.bad.length && !bx.side, `${th} ${W}${tag}: nothing out of its box (${bx.bad.slice(0, 3).join('; ') || 'clean'})`); }
     ok(!errs.length, `${th} ${W}: no page errors (${errs.length})`); await c.close(); }
 }
 await b.close(); console.log(`v2-q43: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
