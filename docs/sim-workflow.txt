@@ -53,6 +53,7 @@ Written Nov 19, 2026 from Sim's own rules (NastyPlot CLAUDE.md and docs/rebuild/
 
 8. KEEP WORKING, NEVER SILENTLY STOP
 - Always have something in progress; there is always a next item.
+- Never stall waiting for Sim's answer (Sim, Nov 19, 8:25 PM): ask, then move straight on to the next item; come back when he answers.
 - Only Sim's own words stop the work (stop, pause, hold, wait). An interrupted tool usually means he is typing:
   read his message, answer it first, then keep working.
 - Long jobs run as tracked background tasks with a wake-up scheduled, so nothing dies unnoticed.
