@@ -19,9 +19,9 @@ const pctOf = (txt, moves) => moves.reduce((a, m) => a + [...txt.matchAll(new Re
 t('NAV-01', 'Battle tab opens Battle and stays highlighted on its sub-pages', async () => {
   for (const width of [1280, 390]) { const {ui, errs, close} = await open({team: TEAM, width});
     await ui.tapMainTab('Battle');
-    /* Sim, Nov 19 (B): the Battle tab opens the Damage Calculator, Battle's first tool; Battle itself is the next tab */
-    expect(await ui.current() === (NEW ? 'calc' : 'matchup'), `${width}: Battle tab didn't open ${NEW ? 'the Damage Calculator' : 'Battle'}`);
-    expect(await ui.sees(NEW ? 'Damage Calculator' : 'Team preview'), `${width}: page head "${NEW ? 'Damage Calculator' : 'Team preview'}" missing`);
+    /* Sim, Nov 20 (scan S26): the Battle tab opens Battle itself again (replaces Nov 19 B, which opened the Damage Calculator) */
+    expect(await ui.current() === 'matchup', `${width}: Battle tab didn't open Battle`);
+    expect(await ui.sees(NEW ? 'Who are you facing' : 'Team preview'), `${width}: page head "${NEW ? 'Who are you facing' : 'Team preview'}" missing`);
     expect(await ui.mainTab() === 'Battle', `${width}: Battle tab not highlighted on Battle (got ${await ui.mainTab()})`);
     for (const p of ['Battle', 'Speed Tiers', 'Damage Calc', 'Type Chart', 'Test Run', 'Practice']) { await ui.go(p);
       expect(await ui.mainTab() === 'Battle', `${width}: Battle tab not highlighted on ${p} (got ${await ui.mainTab()})`); }
