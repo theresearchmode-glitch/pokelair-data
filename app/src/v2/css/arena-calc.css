@@ -173,3 +173,7 @@
 /* Q40 B (Sim, Nov 19, 7:59 PM): on iPads and narrow desktops (700-1099) the weather and terrain rows run the scene's full width, as on
    phones (they stopped at 560 of 738px at 834, an empty strip beside them); 1100 and up keep the narrower rows of the mock-up */
 @media (min-width:700px) and (max-width:1099.98px){.arn-pills{justify-self:stretch;width:auto}}
+/* Sim Q46 A (Nov 19, 8:33 PM): the name plate is a button that opens the "Choose the ..." sheet; today's picker stays hidden behind it */
+.arn-pickbtn{position:absolute;inset:0;z-index:3;width:100%;height:100%;margin:0;padding:0;border:0;background:none;cursor:pointer}
+.arn-pick.arn-pickhid{z-index:1;pointer-events:none}
+.arn-plate:has(.arn-pickbtn:focus-visible){outline:3px solid var(--plot);outline-offset:2px}

@@ -96,7 +96,24 @@ V2.arnHp = r => { if (!r || !r.hp) return {bar: '<span class="arn-hpb" aria-hidd
   return {bar: `<span class="arn-hpb" aria-hidden="true"><i class="l" style="width:${keep.toFixed(1)}%"></i><i class="r" style="left:${keep.toFixed(1)}%;width:${roll.toFixed(1)}%"></i></span>`, txt: `${a === b ? a : a + '–' + b}% ${V2.ARN_W.hpLeft}`}; };
 V2.arnPlate = (X, role, id, r) => { const E = V2.esc, d = V2.disp(X.p.n), W = V2.ARN_W, hp = role === 'd' ? V2.arnHp(r) : null;
   return `<div class="arn-plate ${role === 'd' ? 'arn-dp' : 'arn-ap'}"><b class="u" data-arnname="${role}">${d.startsWith('Mega ') ? `<span class="mg">Mega </span>${E(d.slice(5)).replace(/ ([XYZ])$/, '\u00a0$1')}` : E(d)}<i class="arw" aria-hidden="true"></i></b>${hp ? hp.bar + `<span class="arn-hpt">${hp.txt}</span>` : ''}
-    <select class="arn-pick" id="${id}" aria-label="${role === 'd' ? W.defender : W.attacker}: ${E(d)}${hp && hp.txt ? ', ' + E(hp.txt) : ''}. Choose another Pokémon">${monOptions(X.p.n)}</select></div>`; };
+    <button type="button" class="arn-pickbtn" data-arnpick="${id}" aria-haspopup="dialog" aria-label="${role === 'd' ? W.defender : W.attacker}: ${E(d)}${hp && hp.txt ? ', ' + E(hp.txt) : ''}. Choose another Pokémon"></button>
+    <select class="arn-pick arn-pickhid" id="${id}" tabindex="-1" aria-hidden="true">${monOptions(X.p.n)}</select></div>`; };
+/* Sim Q46 A (Nov 19, 8:33 PM): a name plate opens the site's search sheet for Pokémon only ("Choose the attacker" / "Choose the defender");
+   before typing it lists the 12 most-used Pokémon; picking one sets today's picker (#dcA / #dcD, kept hidden and out of the tab order) and
+   fires its usual change, so every calc rule (moves reset, sets, field) runs exactly as before */
+V2.arnHit = p => `<button type="button" class="np-hit" data-arnpickmon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
+V2.arnPick = id => { const sel = document.getElementById(id); if (!sel) return; const ok = new Set([...sel.options].map(o => o.value)), title = id === 'dcD' ? 'Choose the defender' : 'Choose the attacker';
+  const sh = V2.sheet(`<div class="np-find"><h2 class="u">${title}</h2><label class="np-field">${V2.ICON.search}<input type="search" data-arnq placeholder="Find a Pokémon" aria-label="Find a Pokémon" autocomplete="off">${V2.CLR}</label><p class="vh" data-arnsay role="status"></p><div class="hits" data-arnhits></div></div>`, {label: title, small: true, focus: '[data-arnq]'});
+  const inp = sh.querySelector('[data-arnq]'), out = sh.querySelector('[data-arnhits]'), say = sh.querySelector('[data-arnsay]');
+  const top = () => [...V2.byName.values()].filter(p => ok.has(p.n)).sort((a, b) => (b.u || 0) - (a.u || 0)).slice(0, 12);
+  const draw = () => { const q = inp.value.trim(), L = q ? V2.find(q).mons.filter(p => ok.has(p.n)) : top();
+    out.innerHTML = (q ? '' : '<p class="fine">Most used right now. Type to find any other.</p>') + (L.length ? L.map(V2.arnHit).join('') : `<p class="fine">Nothing called “${V2.esc(q)}”. Try part of the name.</p>`);
+    if (say) say.textContent = q ? (L.length ? `${L.length} result${L.length === 1 ? '' : 's'}` : 'No matches') : ''; };
+  inp.addEventListener('input', draw);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = out.querySelector('.np-hit'); if (h) { e.preventDefault(); h.click(); } } });
+  out.addEventListener('click', e => { const h = e.target.closest('[data-arnpickmon]'); if (!h) return; V2.closeSheet(); sel.value = h.dataset.arnpickmon; sel.dispatchEvent(new Event('change', {bubbles: true})); });
+  draw(); };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-arnpick]'); if (b) V2.arnPick(b.dataset.arnpick); });
 // the verdict: phone two lines ("Heat Wave takes 88–104% of its HP" / the KO in plain words); desktop the KO words alone, with the
 // damage as the big tilted tag in open sky
 V2.arnVerdict = C => { const E = V2.esc, W = V2.ARN_W, r = C.r, mv = C.mv;
