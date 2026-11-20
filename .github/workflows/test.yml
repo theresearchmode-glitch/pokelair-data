@@ -282,6 +282,35 @@ jobs:
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q59.mjs
         if: ${{ !cancelled() }}
+
+  v2-checks-2:
+    name: new site code checks, part 2 (frozen data)
+    # Nov 20 (Claude, under authority): split from v2-checks, which ran past 60 minutes; same setup and build, second half of the tests
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120  # Nov 20: run 44804692099 ran past 53 minutes at step 48 of 84 (the day added many tests); Nov 19: run 44667948297 was cut off at 35 minutes after every test up to v2-split passed (more Q tests keep coming)
+    steps:
+      - name: Wait for the rest of a multi-commit change
+        run: sleep 120
+      - uses: actions/checkout@v5
+      - name: Use the frozen test data
+        env:
+          TEST_DATA: 0c992f6977bc1cecc4e03eb269969a82b99681cf
+        run: |
+          git fetch --depth=1 origin $TEST_DATA
+          git checkout $TEST_DATA -- out/
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm ci && npx playwright install --with-deps chromium
+      # the rebuild's guard rails (R3): no !important, no id selectors, type/spacing on the scale, colours only in tokens.css
+      - run: node app/test/v2-guard.mjs
+        if: ${{ !cancelled() }}
+      # privacy (code review C-C2, Nov 17): no real player name in the committed test data or the built Preview page
+      - run: node app/test/no-names.mjs && node app/build.mjs --v2 --preview-data && node app/test/no-names.mjs app/dist/v2.html
+        if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q60.mjs
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-swapname.mjs
