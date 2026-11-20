@@ -1,0 +1,6 @@
+@media (max-width:699.98px){
+/* one panel at a time; the grid's empty named rows (set, and the hidden panels) would each keep a 40px gap, so the tabbed work area drops the named rows */
+.tm-work.tm-tabbed,.tm-work.tm-tabbed:has(.tm-yg){grid-template-areas:none;grid-template-rows:none}.tm-tabbed .tm-sec{grid-area:auto}
+.tm-tabbed .tm-off{display:none}
+.tm-jump .tm-tcnt{color:var(--plot-text);font-weight:700}
+}
