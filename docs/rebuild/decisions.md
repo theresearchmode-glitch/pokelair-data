@@ -1526,3 +1526,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:09 PM: Sim chose Q50 A (keep Q47's four small choices as built: set heading wording, most used/selected tags, no search on set sheets, Allies fainted as a sheet).
 - 10:17 PM: Sim chose Q51 Keep: Arena verdict on small phones stays as is (A only helped at 375 and shrank the headline).
 - 10:21 PM: Sim chose Q52 A: KO Board bar title at 15 on 1024-1439 wide screens (one line from 1180 up). Goes in the batch after the one now in its full check.
+- 10:24 PM: Correction: Q52 was put to Sim with a wrong size. The KO Board title is 20 (not 17) on screens 1024 and wider; A drops it 20 -> 15. Measured at 1024-1920 x 768 and 900: 20 is one line from 1440; 17 one line from 1280; 15 from 1180. Q52 asked again; the built change is parked on branch q52.
