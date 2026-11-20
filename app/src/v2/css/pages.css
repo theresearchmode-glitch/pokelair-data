@@ -2112,7 +2112,11 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699.98px){.bp-fig .np-mon{--iw:min(88px,100cqw)}.bp-art{height:96px}.bp-ring{width:88px;height:88px}.bp-lf{display:none}.bp-sh{display:inline}}
 /* ---------- Q83 (Sim, Nov 20): Build refinements on the light-touch sheet ---------- */
 /* item 3: each Revision shows its six as small sprites */
-.bp-rsix{display:flex;flex-wrap:wrap;gap:2px;margin:2px 0}.bp-rsix>*{width:36px}
+.bp-rsix{display:grid;grid-template-columns:repeat(6,36px);gap:2px;margin:2px 0}.bp-revs{container:bprevs/inline-size}
+/* a narrow Revisions column (phones, 1100-1399's stacked Spec is wide enough): the six runs under the name and the score, never 4 + 2 */
+@container bprevs (max-width:479.98px){.bp-rev{grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"l n s" "l x x" "l m m";row-gap:2px}.bp-rev .bp-rn{display:contents}
+  .bp-rev .bp-rl{grid-area:l}.bp-rev .bp-rn>b{grid-area:n}.bp-rev .bp-rsix{grid-area:x;gap:0}.bp-rev .bp-rn>small{grid-area:m}.bp-rev .bp-rs{grid-area:s}}
+@container bprevs (max-width:281.98px){.bp-rev .bp-rsix{grid-template-columns:repeat(3,36px)}}
 /* item 6: Rebuild is a solid slanted stamp (was a small outline "Build Me a Team ↻"); skewed, not clipped, so the focus ring shows */
 .bp-rebuild{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);padding:0 var(--s6);background:var(--plot);color:var(--on-mark);border:0;font:900 var(--t17)/1.2 var(--u);font-style:italic;cursor:pointer;transform:rotate(-2deg) skewX(-12deg)}
 .bp-rebuild>span{transform:skewX(12deg)}.bp-rebuild:disabled{opacity:.6;cursor:default}
@@ -2136,6 +2140,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .bp.bp0 .bp-spec{grid-template-columns:minmax(0,2fr) minmax(0,3fr);gap:var(--s2) var(--s3)}.bp.bp0 .bp-spec .bd-opt{padding-bottom:0;border-bottom:0}
   .bp.bp0 .bp-spec .bd-meg,.bp.bp0 .bp-spec .bd-around{grid-column:auto}
   .bp0 .bp-go0 .np-btn{width:100%}}
+@media (max-width:379.98px){.bp.bp0 .bp-spec{grid-template-columns:minmax(0,1fr)}.bp.bp0 .bp-spec .bd-meg,.bp.bp0 .bp-spec .bd-around{grid-column:1/-1}} /* 320-379: Megas and Build around stacked, so neither is cut */
+@media (min-width:700px) and (max-width:1099.98px){.bp0 .bp-six0{grid-template-columns:repeat(6,minmax(0,1fr))}.bp0 .bp-ring{width:88px;height:88px}.bp0 .bp-art{height:104px}} /* iPad: the six empty rings stay one row */
 
 /* ---------- Meta > Tournaments > Winning Teams: "The Winning Hands" (Sim's pick, Nov 14) ---------- */
 .wt-facts{margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.wt-facts b{color:var(--ink)}
