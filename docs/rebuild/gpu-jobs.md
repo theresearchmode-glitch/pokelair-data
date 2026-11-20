@@ -1,6 +1,6 @@
 # Jobs for the local chat on Sim's PC (RTX 3080)
 
-Sim, Nov 10: a local Claude Code chat on her Windows PC can use the RTX 3080 for image work. This file is that chat's brief.
+Sim, Nov 10: a local Claude Code chat on his Windows PC can use the RTX 3080 for image work. This file is that chat's brief.
 Rules for that chat: CLAUDE.md applies. Work on branch `claude/design6` (pull first). Never edit `app/`, never publish an
 artifact, never touch the live site. Commit only into the folders named below, push, and say what you did. No model
 identifiers in commits.
