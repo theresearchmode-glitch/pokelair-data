@@ -1563,3 +1563,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:28 AM: Pushed My Team tabs (Q59/Q63) + Meta shorter on phones (Q60/Q62) as d73c8dc7: same code as the checked b2 (4ca1257b) plus the SUG-04 test fix. b2 full check: part 1 68 ok + data-swap fixed/passing; part 2 quality 0 new, A 138/1 (SUG-04, test read too early; fixed, passes), B 77/0, C 83/0, D 117/0, data passed, GATE PASSED. Next batch: Q64, F1, Q68.
 - 7:29 AM: Preview v217 published (My Team tabs on phones, Meta shorter on phones); file list checked: 443 files; privacy OK.
 - 7:32 AM: Q68 built by helper (3becdc32; v2-q68 12 failed -> all passed; labels identical 60/60; arena, q22, kob, C-battle 83/0 pass; one extra layout change: the move line may run under the damage figure so 'Expanding Force' fits at 1024 - to show Sim). Merged into t1rules with Q64 + F1 (6088ece4); its full check started.
+- 7:54 AM: Sim: Q68's move line running under the damage number at 1024 is better as is (no ellipsis).
