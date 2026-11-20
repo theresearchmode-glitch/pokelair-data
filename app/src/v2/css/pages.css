@@ -1824,7 +1824,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699.98px){.gs-facts{align-items:end}}
 /* audit v199 #14 (Sim chose A, Nov 17, approved mock-up audit-14-hero-stats-390.png): the share reads "Of teams" and, from 360 up,
    every label keeps one line, so the three labels and the three numbers each sit level; under 360 a label may wrap again */
-@media (min-width:360px) and (max-width:699.98px){.gs-facts span{white-space:nowrap}}
+@media (min-width:360px) and (max-width:599.98px){.gs-facts span{white-space:nowrap}}
 @media (min-width:700px){.gs-spot{grid-template-columns:minmax(220px,4fr) minmax(0,7fr)}.gs-plate .np-mon{--iw:200px}}.gs-sinfo{position:relative}
 /* ---------- Meta > Usage: The Podium (Grandstand brief, section 4) ---------- */
 .us .us-src{flex:1 1 100%;margin:0;color:var(--ink-2)}
@@ -3256,3 +3256,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* Sim Q45 A (Nov 19, 8:33 PM): Test Run on phones shows the Coin Flips pile's first 5 cards and a button for the rest; 700 and up: every card */
 .tp-morebtn{display:none}
 @media (max-width:699.98px){.tp-cards:not(.on)>.tp-more{display:none}.tp-morebtn{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}}
+/* Sim Q44 A (Nov 19, 8:33 PM): How We Calculate on phones 360-599 (one column of tiles there): each part's big number sits beside its words (the ten tiles were
+   number, then words, stacked); the outline number keeps its size and the titles keep the full width. Under 360 and 600 up unchanged */
+@media (min-width:360px) and (max-width:599.98px){
+  .inf-tiles>.inf-tile>summary{grid-template-columns:72px minmax(0,1fr);column-gap:var(--s3);align-items:start;padding-block:var(--s4)}
+  .inf-tiles>.inf-tile>summary>.inf-no{grid-row:1/span 3;align-self:center}
+}
