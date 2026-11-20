@@ -26,7 +26,7 @@ const look = p => p.evaluate(SEC => { const vis = e => !!e && e.getClientRects()
     return {k: t.dataset.tmjump, tag: t.tagName, txt: t.textContent.replace(/\s+/g, ' ').trim(), cnt: (t.querySelector('.tm-tcnt') || {}).textContent?.trim() || '', sel: t.getAttribute('aria-selected'), ti: t.tabIndex,
       ctl: !!pn && pn.getAttribute('role') === 'tabpanel' && pn.getAttribute('aria-labelledby') === t.id, h: Math.round(r.height), l: r.left, r: r.right}; }),
     shown: SEC.filter(k => vis(document.getElementById(k))), yg: vis(document.getElementById('tm-yg')), focus: document.activeElement && document.activeElement.dataset ? document.activeElement.dataset.tmjump || '' : '',
-    nSug: document.querySelectorAll('#tm-sg .tm-sug > li').length, ckFail, H: document.documentElement.scrollHeight, side: document.documentElement.scrollWidth > innerWidth, W: innerWidth}; }, SEC);
+    nSug: document.querySelectorAll('#tm-sg .tm-sug > li').length, nothing: !!(window.V2 && V2.plan && V2.plan.plans && V2.plan.plans.nothing), ckFail, H: document.documentElement.scrollHeight, side: document.documentElement.scrollWidth > innerWidth, W: innerWidth}; }, SEC);
 const one = (x, k) => x.shown.length === 1 && x.shown[0] === k && x.tabs.filter(t => t.sel === 'true').map(t => t.k).join() === k && x.tabs.every(t => t.ti === (t.k === k ? 0 : -1));
 const phone = async (W, th, weak) => { const [p, errs, c] = await open(W, th, weak), tag = `${th} ${W}${weak ? ' weaker team' : ''}`; let x = await look(p);
   ok(x.role === 'tablist' && x.tabs.map(t => t.k).join() === SEC.join() && x.tabs.every(t => t.tag === 'BUTTON' && t.ctl), `${tag}: tablist with 3 tab buttons, each aria-controls its tabpanel (${x.role}; ${x.tabs.map(t => t.txt).join(' | ')})`);
@@ -34,7 +34,11 @@ const phone = async (W, th, weak) => { const [p, errs, c] = await open(W, th, we
   ok(one(x, 'tm-mu') && x.yg, `${tag}: Matchups first, the only section shown (${x.shown.join()}), Your Games under it (${x.yg})`);
   ok(x.tabs.every(t => t.h >= 44 && t.l >= 0 && t.r <= x.W + 0.5), `${tag}: tabs 44px+ tall and inside the screen (${x.tabs.map(t => `${t.h}px ${Math.round(t.l)}-${Math.round(t.r)}`).join(', ')})`);
   const sg = x.tabs[1], ck = x.tabs[2];
-  ok(sg.cnt === (x.nSug ? String(x.nSug) : ''), `${tag}: Suggestions tab count "${sg.cnt}" = the ${x.nSug} suggestion cards`);
+  ok(sg.cnt === (x.nSug && !x.nothing ? String(x.nSug) : ''), `${tag}: Suggestions tab count "${sg.cnt}" = the ${x.nSug} suggestion cards${x.nothing ? ', none shown beside Nothing to fix (Q64)' : ''}`);
+  if (W === 390 && !weak) { /* Sim Q64 A: with 'Nothing to fix' the tab shows no count (forced here; the redraw keeps the plans) */
+    const q = await p.evaluate(() => { const P = V2.plan && V2.plan.plans; if (!P) return null; const was = P.nothing; P.nothing = true; V2.redraw(); const t = document.querySelector('#tmtab-tm-sg .tm-tcnt');
+      const r = {cnt: t ? t.textContent.trim() : '', kept: !!(V2.plan.plans && V2.plan.plans.nothing)}; V2.plan.plans.nothing = was; V2.redraw(); return r; });
+    ok(q && q.kept && q.cnt === '', `${tag}: beside 'Nothing to fix' the Suggestions tab shows no count (count "${q && q.cnt}", flag kept through the redraw: ${q && q.kept})`); }
   ok(ck.cnt === (x.ckFail ? String(x.ckFail) : ''), `${tag}: Team Checks tab count "${ck.cnt}" = the ${x.ckFail} failing basics`);
   if (W === 390) { const L = await p.evaluate(() => { const w = document.querySelector('.tm-work'), H = document.documentElement.scrollHeight; w.classList.remove('tm-tabbed'); const H0 = document.documentElement.scrollHeight; w.classList.add('tm-tabbed'); return {H, H0}; });
     ok((L.H0 - L.H) / 844 >= 0.6, `${tag}: page ${(L.H / 844).toFixed(2)} screens, ${((L.H0 - L.H) / 844).toFixed(2)} shorter than with every section shown (${(L.H0 / 844).toFixed(2)}; at least 0.6)`); }

@@ -60,18 +60,19 @@
 .tm-mv{display:flex;align-items:baseline;flex-wrap:wrap;gap:var(--s1) var(--s3)}
 .tm-mv b{font:900 var(--t34)/1 var(--u);font-style:italic;color:var(--plot-text)}
 .tm-mv span{font:600 var(--t15)/1.5 var(--b);color:var(--ink-2)}
-.tm-chg{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:var(--s2)}
+/* outside audit Nov 20 F1: a swap name breaks only between words ('Sneasle / r' at 1440): each side is at least its longest word */
+.tm-chg{display:grid;grid-template-columns:minmax(min-content,1fr) auto minmax(min-content,1fr);align-items:center;gap:var(--s2)}
 .tm-sw{display:flex;align-items:center;gap:var(--s2);min-width:0;font:600 var(--t15)/1.2 var(--b)}.tm-sw img{width:44px;height:44px;flex:none;object-fit:contain}
 .tm-sw .mg{margin-right:var(--s1)}.tm-sw .mg.none{display:none}
 .tm-own{display:block;margin-top:var(--s1);font:500 var(--t13)/1.2 var(--b);color:var(--ink-2)} /* COV-04 (Nov 17): In your box / To catch under the incoming name */
-.tm-sw>span{min-width:0;overflow-wrap:anywhere}
+.tm-sw>span{min-width:0;overflow-wrap:break-word}
 @media (max-width:899.98px){.tm-sw .mg{display:block;margin:0}}
 .tm-ar{font:700 var(--t20)/1 var(--b);color:var(--ink-3)}
 .tm-sug .np-btn{align-self:flex-start;margin-top:auto}
 /* wide: one row per suggestion: the change | the swaps | Apply */
 /* squeezed-row proposal (Sim's screenshot, ~1180px): three columns only when the window is 900+ AND the card itself is 560px+ (from 1180 the page splits in two and the card is ~470) */
 .tm-sgs{container-type:inline-size}
-@media (min-width:900px){@container (min-width:560px){.tm-sug li{display:grid;grid-template-columns:minmax(150px,auto) minmax(0,1fr) auto;grid-template-areas:"k sw ap" "mv sw ap";align-items:center;column-gap:var(--s8)}
+@media (min-width:900px){@container (min-width:560px){.tm-sug li{display:grid;grid-template-columns:minmax(120px,auto) minmax(min-content,1fr) auto;grid-template-areas:"k sw ap" "mv sw ap";align-items:center;column-gap:var(--s8)}
   .tm-sug li>.np-eyebrow{grid-area:k;align-self:end}.tm-sug .tm-mv{grid-area:mv;align-self:start;flex-direction:column;gap:var(--s1)}.tm-sug .tm-swaps{display:grid;gap:var(--s2);grid-area:sw;display:grid;gap:var(--s2)}.tm-sug li>.np-btn{grid-area:ap;align-self:center;margin:0}}}
 @media (max-width:379.98px){.tm-sw img{width:36px;height:36px}.tm-sw{font-size:var(--t13)}}
 @media (max-width:459.98px){.tm-hero .np-score,.bd-score{flex-wrap:wrap;row-gap:0}.tm-hero .np-score .w,.bd-score .w{padding-bottom:0}} /* Build's score too (Nov 13 second look: 'Tournament ready' ran past the edge at 320-430) */

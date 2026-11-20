@@ -482,7 +482,8 @@ V2.pages.team = {place: 'team', draw() {
   const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.${V2.tip('checklist')}</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
   // the tabs: Suggestions carries how many there are (the numbered cards), Team Checks how many of the 4 basics fail, so a tab with
   // something to act on says so without being opened
-  const nSg = D.sug && !D.sug.pending ? (sgSec.match(/<span class="np-eyebrow">Suggestion \d+<\/span>/g) || []).length : 0, nCk = D.basics.filter(x => !x.ok).length;
+  /* Sim Q64 A (Nov 20, 6:17 AM): no count on the Suggestions tab when the section says 'Nothing to fix' (its cards are optional swaps) */
+  const nSg = D.sug && !D.sug.pending && !(V2.plan && V2.plan.plans && V2.plan.plans.nothing) ? (sgSec.match(/<span class="np-eyebrow">Suggestion \d+<\/span>/g) || []).length : 0, nCk = D.basics.filter(x => !x.ok).length;
   const tabTxt = {'tm-set': ['Set'], 'tm-mu': ['Matchups'], 'tm-sg': ['Suggestions', nSg, nSg === 1 ? 'suggestion' : 'suggestions'], 'tm-ck': ['Team Checks', nCk, nCk === 1 ? 'basic missing' : 'basics missing']};
   const tabBar = `<div class="np-tabs tm-jump tm-tabs" role="tablist" aria-label="Team sections">${tabIds.map(k => { const [t, n, w] = tabTxt[k], on = k === curTab;
     return `<button type="button" role="tab" id="tmtab-${k}" aria-controls="${k}" aria-selected="${on}" tabindex="${on ? 0 : -1}" data-tmjump="${k}">${t}${n ? `<span class="tm-tcnt" aria-hidden="true"> ${n}</span><span class="vh">, ${n} ${w}</span>` : ''}</button>`; }).join('')}</div>`;
