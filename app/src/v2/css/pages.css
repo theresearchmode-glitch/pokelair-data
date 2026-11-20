@@ -2573,6 +2573,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .tk.big .tk-mid{grid-area:m;padding:var(--s4) var(--s4) var(--s5);border-top:2px dashed var(--tk-tear)}
   .tk.big .tk-name{font-size:var(--t22)}
 }
+/* scan S6 A (Sim, Nov 20): from 800 to 1099 two tickets per row, each small ticket in its phone layout (the one that fits 358 px), which halves
+   the scroll on iPad landscape and odd widths (no gap in the five: at 800 the 4 px gaps pushed the last sprite 2 px into the stub); 700-799 (iPad portrait) keeps one per row, since names ran into the date stub there */
+@media (min-width:800px) and (max-width:1099.98px){
+  .tk-wall{grid-template-columns:repeat(2,minmax(0,1fr))}.tk-wall.odd>.tk:last-child{grid-column:1/-1}
+  .tk-wall>.tk .tk-hero{width:72px}.tk-wall>.tk .tk-hero .np-mon{--iw:72px}.tk-wall>.tk .tk-seal{width:var(--s8);height:var(--s8)}
+  .tk-wall>.tk .tk-stub{min-width:76px;padding:var(--s2) var(--s3) var(--s2) var(--s2)}.tk-wall>.tk .tk-stub b{font-size:var(--t28)}.tk-wall>.tk .tk-bar{width:48px}
+  .tk-wall>.tk{grid-template-areas:"h m s" "f f s"}.tk-wall>.tk .tk-mid{padding-right:var(--s2)}.tk-wall>.tk .tk-five{gap:0;padding-left:var(--s3);justify-content:space-between}.tk-wall>.tk .tk-five .np-mon{--iw:40px}.tk-wall>.tk .tk-name{font-size:var(--t15)}
+}
 @media (max-width:389.98px){.tk-hero{width:72px}.tk-hero .np-mon{--iw:68px}.tk-five{gap:0}.tk-five .np-mon{--iw:36px}}
 
 /* an event opened */
