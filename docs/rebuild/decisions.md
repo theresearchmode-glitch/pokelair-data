@@ -1635,3 +1635,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:21 PM: Sim: 'recommended is good to go': Q86 A (white bold 'Mega' on the Speed Tiers blue band, for contrast) and Q87 A (build all 8 shorter phone pages from docs/rebuild/research/phone-length-nov20.md; desktop unchanged). One helper builds both on branch phonelen.
 - 3:25 PM: Batch 5 (Build + Q84, abd14ddb) data part: data-checks ALL PASSED, golden 10/10, accuracy GATE PASSED, 0 failed.
 - 3:26 PM: Sim confirmed Q87 is phones only (under 700 wide; 600 for Method) and that a narrow desktop window getting the phone layout is fine.
+- 3:36 PM: GitHub run 44804692099 (2aceec91): 13/14 green; the new-site code-checks job was at step 48 of 84 after 53 minutes, so it will hit its 60-minute limit and be cancelled (a time limit, not a test failure). Raised that job's limit to 120 minutes on t1rules (goes up with the next push, which reruns everything). Longer-term idea: split the job in two so it finishes faster.
