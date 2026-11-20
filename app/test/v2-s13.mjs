@@ -8,7 +8,7 @@ for (const W of [390, 1440]) for (const empty of [false, true]) { const c = awai
   await p.goto('file://' + PAGE + '#team', {timeout: 90000}); await p.waitForTimeout(2500);
   if (empty) { await p.evaluate(() => window.__ev('(()=>{S.slots=[];fixSlots();S.loadedId=null;render()})()')); await p.waitForTimeout(400); }
   await p.evaluate(() => { location.hash = '#compare'; }); await p.waitForTimeout(1800);
-  const x = await p.evaluate(() => ({A: window.__ev('ui.cx.A'), B: window.__ev('ui.cx.B'), heads: [...document.querySelectorAll('.cx2-head')].map(h => h.classList.contains('empty') ? 'empty' : 'filled')}));
+  const x = await p.evaluate(() => ({A: window.__ev('ui.cx.A'), B: window.__ev('ui.cx.B'), heads: [...document.querySelectorAll('.cx2-head, .cx2-qp')].map(h => h.classList.contains('empty') || h.classList.contains('cx2-qp') ? 'empty' : 'filled') /* Q84 S31: an empty Team B is the quick-winners box (.cx2-qp) */}));
   const tag = `${W}${empty ? ' empty My Team' : ''}`;
   if (!empty) ok(x.A === 'cur' && !x.B && x.heads[0] === 'filled' && x.heads[1] === 'empty', `${tag}: Team A is My Team, Team B to pick (${x.A}/${x.B}; ${x.heads.join(', ')})`);
   else ok(!x.A && !x.B, `${tag}: both sides empty (${x.A}/${x.B})`);

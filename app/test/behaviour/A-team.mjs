@@ -126,7 +126,8 @@ t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy fo
 t('HOME-10', 'vs panel: your six, a lead/back/bench plan, Prep vs the Champion sets Battle', async () => {
   const r = await aopen({fresh: true}); const tx = await r.ui.text();
   // new build (decisions.md Nov 12): the weather word sits in the eyebrow "Your six · <team name> · Sun team"
-  has(tx, 'Sun Tailwind (sample)'); has(tx, NEW ? /Your (?:six · |corner )Sun Tailwind \(sample\)(?: ·)? Sun team/i : /Your team: 6\/6 Sun team/);
+  /* Q84 S21 (Sim, Nov 20): the new build names the sample as one: "A sample six · Sun Tailwind · Sun team" */
+  has(tx, NEW ? 'A sample six' : 'Sun Tailwind (sample)'); has(tx, NEW ? /A sample six · Sun Tailwind(?: ·)? Sun team/i : /Your team: 6\/6 Sun team/);
   ok(/Game [Pp]lan vs the Champion's six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\./.test(await r.ui.homePlanLine() || ''), 'no lead/back/bench plan line: ' + await r.ui.homePlanLine());
   has(tx, 'Open my team'); await r.ui.tapText(NEW ? 'Set as Opponent' : 'Prep vs the Champion', 1200); /* new: Sim, Nov 14 naming */ ok(await r.ui.current() === 'matchup', 'Battle did not open');
   ok(await r.ui.waitToast(/Opponent set/), 'no "Opponent set" toast'); const opp = await r.ui.peek('S.opp.filter(Boolean)'); ok(opp && opp.length === 6, 'opponent six not set');

@@ -32,10 +32,11 @@ V2.spTrack = D => { const rows = D.rows, tr = spdUi.tr, Wd = V2.spW(), pad = 48;
   const x = v => Math.round(pad + (Wd - 2 * pad) * (tr ? v - mn : mx - v) / span);
   const lanes = (list, wid) => { const last = []; return list.map(r => { const X = x(r.v); let k = 0; while (last[k] != null && Math.abs(X - last[k]) < wid) k++; last[k] = X; return {...r, X, k}; }); };
   const M = lanes(rows.filter(r => r.me), 120), T = lanes(rows.filter(r => !r.me), 84), mk = M.length ? Math.max(...M.map(r => r.k)) + 1 : 0, tk = Math.max(...T.map(r => r.k)) + 1;
-  const AY = mk * 152 + 16, H = AY + 16 + tk * 104;
+  /* scan S29 A (Sim, Nov 20): the top 20 at 60 px (was 36) in 132 px lanes with 84 px name boxes (0 overlaps at 1024 / 1440 / 1920) */
+  const AY = mk * 152 + 16, H = AY + 24 + tk * 132;
   const mon = (r, iw, top, w) => `<button type="button" class="sp2-m${r.me ? ' me' : ''}" data-v2mon="${V2.esc(r.p.n)}" style="left:${r.X}px;top:${top}px;--mw:${w}px" aria-label="${r.v} ${V2.esc(V2.disp(r.p.n))}: Speed${r.me ? ', yours' : ''}${V2.spTie(rows, r) ? ', a tie' : ''}, open its info"><span class="v u">${r.v}</span>${V2.mon(r.p.n, {iw, bare: true})}<span class="nm">${V2.spName(r)}</span></button>`;
   return `<div class="sp2-track${M.length ? ' mine' : ''}" style="--h:${H}px;--ay:${AY}px"><i class="sp2-axis" aria-hidden="true"></i>
-    ${M.map(r => mon(r, 64, AY - 152 * (r.k + 1) + 8, 120)).join('')}${T.map(r => mon(r, 36, AY + 16 + 104 * r.k, 80)).join('')}</div>
+    ${M.map(r => mon(r, 64, AY - 152 * (r.k + 1) + 8, 120)).join('')}${T.map(r => mon(r, 60, AY + 24 + 132 * r.k, 84)).join('')}</div>
     <p class="sp2-k"><span>← Moves first</span><span>${D.mine.length ? `Your six above the line · the top ${D.thr.length} below` : `The top ${D.thr.length}`}</span><span>Moves last →</span></p>`; };
 
 // phones and tablets (under 1024; Speed Q3 A): the slim track, split (Sim, Nov 14, Speed Q4 A, after "hard to tell which 6 are

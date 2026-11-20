@@ -416,6 +416,13 @@
 .cx2-head{min-width:0;padding:var(--s5);border-radius:10px;background:var(--wash)}
 .cx2-head.empty{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2);width:100%;min-height:180px;justify-content:center;border:1.5px dashed color-mix(in srgb,var(--ink) 30%,transparent);background:none;color:var(--ink);cursor:pointer;text-align:left}
 .cx2-head.empty .nm{font:900 var(--t24)/1.1 var(--u);font-style:italic}.cx2-head.empty:hover{background:var(--wash)}
+/* scan S31 A (Sim, Nov 20): an empty Team B holds the 3 newest event winners, one tap compares; phones show the newest only */
+.cx2-qp{display:flex;flex-direction:column;gap:var(--s2);min-width:0;padding:var(--s5) var(--s6) var(--s4);border:2px dashed var(--rule);border-radius:var(--r-l);background:transparent}
+.cx2-qp .top{display:flex;align-items:center;gap:var(--s3)}.cx2-qp .top .nm{font:800 var(--t24)/1.2 var(--u);font-style:italic;font-synthesis:style}
+.cx2-qp .k{margin:var(--s2) 0 0;font:700 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-3)}
+.cx2-qp .cx2-opt{padding-inline:0}.cx2-qp .cx2-opt .s img{width:40px;height:40px}
+.cx2-qp .more{align-self:flex-start;display:inline-flex;align-items:center;min-height:var(--tap)} /* a 44px tap (polish check) */
+@media (max-width:699.98px){.cx2-qp .cx2-opt~.cx2-opt{display:none}.cx2-qp{padding:var(--s4)}.cx2-qp .top .nm{font-size:var(--t22)}}
 .cx2-hd{display:flex;align-items:center;gap:var(--s3)}.cx2-nm{flex:1;min-width:0}.cx2-nm b{display:block;font:600 var(--t17)/1.3 var(--b);overflow-wrap:anywhere}.cx2-nm span{display:block;font-size:var(--t13);color:var(--ink-2)}
 .cx2-hd .np-link{min-height:var(--tap)}
 .cx2-b{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;font:900 var(--t20)/1 var(--u);font-style:italic;color:var(--on-plate);transform:skewX(-12deg)}
@@ -830,6 +837,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (hover:hover){.bt-pk:hover b{color:var(--plot-text)}}
 .bt-ll{display:inline-flex;align-items:center;gap:var(--s1);margin-top:var(--s1);font:700 var(--t13)/1 var(--b);color:var(--plot-text)}.bt-ll::before{content:"";width:12px;height:6px;background:var(--plot);transform:skewX(var(--slant))}
 .bt-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);margin-top:var(--s4)}
+/* scan S30 A (Sim, Nov 20): Their Six's six '?' slots, 900+ only; the 4px left margin squares the first slot's slanted edge with the text */
+.bt-q6{display:none}
+@media (min-width:900px){
+  .bt-q6{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s3);margin:var(--s2) 0 var(--s5) var(--s1)}
+  .bt-q6 button{display:grid;place-items:center;aspect-ratio:4/5;min-width:0;padding:0;border:2px dashed color-mix(in srgb,var(--them) 55%,transparent);border-radius:var(--r-s);background:color-mix(in srgb,var(--them) 7%,transparent);color:inherit;transform:skewX(-8deg);cursor:pointer;transition:background .15s}
+  .bt-q6 button:hover{background:color-mix(in srgb,var(--them) 16%,transparent);border-style:solid}
+  .bt-q6 i{font:900 var(--t34)/1 var(--u);font-style:italic;font-synthesis:style;color:var(--them-text);transform:skewX(8deg)}
+}
 .bt-grps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s1) var(--s4);margin-top:var(--s2)}
 .bt-gl{display:flex;align-items:center;gap:var(--s2);height:20px;margin-bottom:var(--s2);font:900 var(--t15)/1 var(--u);font-style:italic}
 .bt-gl i{width:14px;height:7px;transform:skewX(var(--slant));background:var(--ink-3)}.bt-grp.lead .bt-gl i{background:var(--plot)}.bt-grp.home .bt-gl{color:var(--ink-2)}
@@ -1173,8 +1188,11 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2-vs .mine,.sp2-vs .them{display:flex;flex-wrap:wrap;gap:0 var(--s2)}.sp2-vs .mine{justify-content:flex-end}
 .sp2-vs .chip2{display:flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:0;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}.sp2-vs .chip2.me{font-size:var(--t15);font-weight:700;color:var(--ink);text-align:right}
 /* Sim's Speed Q5 A (Nov 14): on desktop your six sit on a soft blue field above the line, labelled, the top 20 on the page below */
-.sp2-track.mine::before{content:"";position:absolute;left:calc(var(--s4)*-1);right:calc(var(--s4)*-1);top:0;height:var(--ay);background:color-mix(in srgb,var(--plot) 8%,transparent)}
-.sp2-track.mine::after{content:"Your six";position:absolute;left:0;top:var(--s3);font:800 var(--t17)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--plot-text)}
+.sp2-track.mine::before{content:"";position:absolute;left:calc(var(--s4)*-1);right:calc(var(--s4)*-1);top:0;height:var(--ay);background:var(--sd-hero);border-radius:var(--r-s);transform:skewX(-4deg)}
+.sp2-track.mine::after{content:"Your six";position:absolute;left:0;top:var(--s3);font:800 var(--t22)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--sd-on-band)}
+/* scan S29 A (Sim, Nov 20): your six on Home's solid blue band (white numbers and names), the top 20's numbers at 20 px */
+.sp2-m.me .v,.sp2-m.me .nm{color:var(--sd-on-band)}.sp2-m.me .nm .mg,.sp2-m.me .nm b{color:var(--sd-line2)}
+.sp2-m:not(.me) .v{font-size:var(--t20)}.sp2-m.me:focus-visible{outline-color:var(--sd-on-band)} /* the focus ring shows on the blue band */
 .sp2-vs.solo li{grid-template-columns:56px minmax(0,1fr)}.sp2-vs.solo::before{left:28px} /* no team yet: the field alone */
 .sp2-vs .chip2{max-width:100%}.sp2-vs .chip2>span{min-width:0}.sp2-vs .chip2 .np-mon{flex:none} /* 320: long names (Mega Charizard Y) wrap inside their side instead of running past the screen */
 @media (max-width:399.98px){.sp2-vs li,.sp2-vs-h{grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);gap:var(--s1)}.sp2-vs .chip2.me{font-size:var(--t13)}.sp2-vs .chip2.me .np-mon,.sp2-vs .chip2.me .np-mon .st{--iw:32px}} /* 320-399: one-word names (Whimsicott) fit beside their sprite */
@@ -2605,6 +2623,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .tk.big .tk-mid{grid-area:m;padding:var(--s4) var(--s4) var(--s5);border-top:2px dashed var(--tk-tear)}
   .tk.big .tk-name{font-size:var(--t22)}
 }
+/* scan S6 A (Sim, Nov 20): from 800 to 1099 two tickets per row, each small ticket in its phone layout (the one that fits 358 px), which halves
+   the scroll on iPad landscape and odd widths (no gap in the five: at 800 the 4 px gaps pushed the last sprite 2 px into the stub); 700-799 (iPad portrait) keeps one per row, since names ran into the date stub there */
+@media (min-width:800px) and (max-width:1099.98px){
+  .tk-wall{grid-template-columns:repeat(2,minmax(0,1fr))}.tk-wall.odd>.tk:last-child{grid-column:1/-1}
+  .tk-wall>.tk .tk-hero{width:72px}.tk-wall>.tk .tk-hero .np-mon{--iw:72px}.tk-wall>.tk .tk-seal{width:var(--s8);height:var(--s8)}
+  .tk-wall>.tk .tk-stub{min-width:76px;padding:var(--s2) var(--s3) var(--s2) var(--s2)}.tk-wall>.tk .tk-stub b{font-size:var(--t28)}.tk-wall>.tk .tk-bar{width:48px}
+  .tk-wall>.tk{grid-template-areas:"h m s" "f f s"}.tk-wall>.tk .tk-mid{padding-right:var(--s2)}.tk-wall>.tk .tk-five{gap:0;padding-left:var(--s3);justify-content:space-between}.tk-wall>.tk .tk-five .np-mon{--iw:40px}.tk-wall>.tk .tk-name{font-size:var(--t15)}
+}
 @media (max-width:389.98px){.tk-hero{width:72px}.tk-hero .np-mon{--iw:68px}.tk-five{gap:0}.tk-five .np-mon{--iw:36px}}
 
 /* an event opened */
@@ -3083,7 +3109,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .pk-lane dd{padding-right:0;min-height:var(--s6)}.pk-lane b{font-size:var(--t22)}.pk-lane{position:relative}
   .pk-v{left:clamp(100px, calc(100% * var(--f)), calc(100% - var(--s24) - var(--s4)));top:calc(var(--s8)*-1)} /* on the line above at the tip, but never on the plate (low stats) or past the panel (a Mega's '159 +30') */.pk-lanes{background-position:0 0;background-size:100% 100%}.pk-scale{margin:0}}
 .pk-more .np-link,.pk-tap{position:relative}.pk-more .np-link::after,.pk-tap::after{content:"";position:absolute;inset:-12px -8px} /* 44 px tap area, the line unmoved */
-.pk-404{position:relative}.pk-404::after{content:"";position:absolute;inset:-12px -4px} /* 44 px tap area */
+.pk-404{display:flex;width:max-content;margin-top:var(--s4)} /* scan S3 A (Sim, Nov 20): the outline button on its own line (np-btn2 is 44 px tall) */
 .nf-go{margin:var(--s6) 0 0} /* Q24 (Nov 19): the not-found page's Go to Home, 24 px under its line (shell.js V2.nfHtml) */
 /* Pokémon page: jump links, each part's head, part 1 "How to build it" */
 .pk-jumps{display:flex;flex-wrap:wrap;gap:var(--s2)}.pk-jumps button{min-height:var(--tap);padding:0 var(--s4);background:var(--wash);color:var(--ink);font:700 var(--t15)/1 var(--b);transform:skewX(-10deg)}.pk-jumps button:hover{background:color-mix(in srgb,var(--plot) 14%,var(--wash))}
