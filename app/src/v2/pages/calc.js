@@ -2,7 +2,7 @@
 // The battle is the control panel: the sky is the weather switch, the ground is the terrain switch, the defender's HP bar is the
 // answer. Every number is today's calc (39-damage-calc-speed.js: calcData, damage, koText, koShort, calcResultNotes, bulkToSurvive,
 // bestHitOn); the state is today's `dc`, and every picker keeps today's id so today's change handler updates it. What opens from a
-// name plate, All moves or a set row is a sheet (Q46 / Q47 A); the KO Board is today's board until Sim approves a design for it.
+// name plate, All moves or a set row is a sheet (Q46 / Q47 A); the opened KO Board is Q57 A (tabs, under 1024) and Q58 C (the ladder, 1024+).
 
 // THE NEW WORDS (Q35 / Q36, waiting on Sim): every new word of the Arena is in this one table, so a "no" is a one-line swap.
 // The long verdict and the short one are today's koText / koShort put in plain words; anything not listed (Focus Sash, Sturdy, Focus
@@ -54,13 +54,41 @@ V2.dcTile = (b, dir, onTable) => { const E = V2.esc, k = b.lo >= 1 ? 'ko' : b.hi
     <span class="by" aria-hidden="true">${V2.mon(b.other, {iw: 24, bare: true})}</span>${V2.mon(b.n, {iw: 44, bare: true})}<span class="hp" aria-hidden="true"><i style="width:${(100 * left).toFixed(0)}%"></i><i class="r" style="left:${(100 * left).toFixed(0)}%;width:${(100 * Math.max(0, Math.min(1, b.hi) - Math.min(1, b.lo))).toFixed(0)}%"></i></span><span class="nm" aria-hidden="true">${V2.tileName(d) /* Q22 A: the short name under the tile, touch screens only (no hover) */}</span>${k === 'ko' ? '<span class="stamp u" aria-hidden="true">KO</span>' : ''}</button>`; };
 V2.dcCounts = L => ({ko: L.filter(b => b.lo >= 1).length, can: L.filter(b => b.lo < 1 && b.hi >= 1).length, sv: L.filter(b => b.hi < 1).length});
 V2.dcDir = () => `<div class="np-slide dc2-dir" role="group" aria-label="The KO Board shows" style="--n:2;--i:${dc.dir === 'theirs' ? 1 : 0}"><span class="thumb" aria-hidden="true"></span><button type="button" data-dcdir="mine" aria-pressed="${dc.dir !== 'theirs'}"><span>Your hits on them</span></button><button type="button" data-dcdir="theirs" aria-pressed="${dc.dir === 'theirs'}"><span>Their hits on you</span></button></div>`;
-// phones (and below the desktop table): the board as its own section, in three groups under their counts
-V2.dcBoard = (C) => { const E = V2.esc, dir = dc.dir === 'theirs' ? 'theirs' : 'mine', ms = C.ms;
+// the opened KO Board (Sim, Nov 19: Q57 A under 1024, Q58 C from 1024). Under 1024: three count tabs in the bar's colours over one group's
+// tiles (V2.kobUi.g remembers the chosen group while the board stays open; first = "down in one hit"). From 1024: the board leaves the
+// right column and spans the page under the Arena, the three groups side by side as columns of rows ("the ladder"). Both keep both
+// directions, the intro line, the every-hit table fold and tap to put a hit on the table (data-dckb, the same handler as the tiles).
+V2.KOB_G = [['ko', 'down in one hit'], ['can', 'can go down'], ['sv', 'survive']];
+V2.kobUi = V2.kobUi || {g: 'ko'};
+V2.kobWide = () => { try { return matchMedia('(min-width:1024px)').matches; } catch (e) { return false; } };
+V2.kobOf = b => b.lo >= 1 ? 'ko' : b.hi >= 1 ? 'can' : 'sv';
+V2.kobNone = {ko: 'None in this group: no hit here is a sure knockout.', can: 'None in this group: no hit here only might knock out.', sv: 'None in this group: every hit here can knock out.'};
+// one rung of the ladder: the attacker's small picture, the threat's picture, its name, the move line, the damage and the HP it has left
+// (its spoken label is the tile's, word for word)
+V2.kobRow = (b, dir, onTable) => { const E = V2.esc, k = V2.kobOf(b), left = Math.max(0, 1 - b.hi), d = V2.disp(b.n), o = V2.disp(b.other), pc = `${Math.round(100 * b.lo)}–${Math.round(100 * b.hi)}%`;
+  const mv = dir === 'mine' ? `your ${o}'s ${b.mv}` : `${b.mv} into your ${o}`;
+  const lab = dir === 'mine' ? `${d}: your ${o}'s ${b.mv} does ${pc}` : `${d}'s ${b.mv} into your ${o}: ${pc}`, say = `${k === 'ko' ? 'KO: ' : ''}${lab}${k === 'ko' ? ', down in one hit' : ''}`;
+  return `<button type="button" class="kob-r ${k}${onTable ? ' on' : ''}" data-dckb="${E(b.n)}" data-dckbo="${E(b.other)}" data-dckbm="${E(b.mv)}" aria-label="${E(say)}. Put it on the table"${onTable ? ' aria-current="true"' : ''}>
+    <span class="by" aria-hidden="true">${V2.mon(b.other, {iw: 24, bare: true})}</span><span class="th" aria-hidden="true">${V2.mon(b.n, {iw: 40, bare: true})}</span><span class="nm" aria-hidden="true">${E(d).replace(/ ([XYZ])$/, ' $1') /* "Raichu Y" never leaves its Y alone on a line */}</span><span class="mv" aria-hidden="true">${E(mv)}</span><b class="pc u" aria-hidden="true">${pc}</b><span class="hp" aria-hidden="true"><i style="width:${(100 * left).toFixed(0)}%"></i><i class="r" style="left:${(100 * left).toFixed(0)}%;width:${(100 * Math.max(0, Math.min(1, b.hi) - Math.min(1, b.lo))).toFixed(0)}%"></i></span></button>`; };
+V2.dcBoard = (C, wide) => { const dir = dc.dir === 'theirs' ? 'theirs' : 'mine', ms = C.ms;
   if (!ms.length) return `<section class="dc2-kb"><h2 class="u">The KO Board</h2><p class="tm-sub">Add Pokémon on My Team to see what your six do to the top 30.</p><a class="np-btn" href="#team">Go to My Team</a></section>`;
-  const L = V2.dcKB(), c = V2.dcCounts(L), on = dir === 'mine' ? C.D.p.n : C.A.p.n;
-  const grp = (k, t) => { const g = L.filter(b => (b.lo >= 1 ? 'ko' : b.hi >= 1 ? 'can' : 'sv') === k); return g.length ? `<div class="dc2-kg"><h3><b class="u">${g.length}</b> ${t}</h3><div class="dc2-kts">${g.map(b => V2.dcTile(b, dir, b.n === on)).join('')}</div></div>` : ''; };
-  return `<section class="dc2-kb"><div class="dc2-kbh"><h2 class="u">The KO Board</h2>${V2.dcDir()}</div><p class="fine">${dir === 'mine' ? 'Your best hit on each of the top 30 (its usual set), surest KO first. The bar is the HP it has left. Tap one to put it on the table.' : 'Each of the top 30\'s best hit on your six (its usual set), surest KO first. The small picture is the one of yours it hits hardest; the bar is the HP yours has left. Tap one to put it on the table.'}</p>
-    ${grp('ko', 'down in one hit')}${grp('can', 'can go down')}${grp('sv', 'survive')}${V2.dcGridHtml(C)}</section>`; };
+  const L = V2.dcKB(), on = dir === 'mine' ? C.D.p.n : C.A.p.n, G = V2.KOB_G.map(([k, t]) => ({k, t, L: L.filter(b => V2.kobOf(b) === k)}));
+  const head = `<div class="dc2-kbh"><h2 class="u">The KO Board</h2>${V2.dcDir()}</div><p class="fine">${dir === 'mine' ? 'Your best hit on each of the top 30 (its usual set), surest KO first. The bar is the HP it has left. Tap one to put it on the table.' : 'Each of the top 30\'s best hit on your six (its usual set), surest KO first. The small picture is the one of yours it hits hardest; the bar is the HP yours has left. Tap one to put it on the table.'}</p>`;
+  if (wide) return `<section class="dc2-kb kob-c">${head}<div class="kob-cols">${G.map(g => `<section class="kob-col" data-g="${g.k}" aria-label="${g.L.length} ${g.t}"><h3><b class="u">${g.L.length}</b> ${g.t}</h3>${g.L.length ? `<div class="kob-rows">${g.L.map(b => V2.kobRow(b, dir, b.n === on)).join('')}</div>` : `<p class="fine kob-none">${V2.kobNone[g.k]}</p>`}</section>`).join('')}</div>${V2.dcGridHtml(C)}</section>`;
+  const cur = G.some(g => g.k === V2.kobUi.g) ? V2.kobUi.g : 'ko';
+  const tabs = `<div class="kob-tabs" role="tablist" aria-label="Show the group">${G.map(g => `<button type="button" role="tab" class="kob-t ${g.k}" id="kobt-${g.k}" data-kobg="${g.k}" aria-selected="${g.k === cur}" aria-controls="kobp-${g.k}" tabindex="${g.k === cur ? 0 : -1}"><b class="u">${g.L.length}</b><span>${g.t}</span></button>`).join('')}</div>`;
+  const pans = G.map(g => `<div class="dc2-kg kob-p" role="tabpanel" id="kobp-${g.k}" data-g="${g.k}" aria-labelledby="kobt-${g.k}"${g.k === cur ? '' : ' hidden'}>${g.L.length ? `<div class="dc2-kts">${g.L.map(b => V2.dcTile(b, dir, b.n === on)).join('')}</div>` : `<p class="fine kob-none">${V2.kobNone[g.k]}</p>`}</div>`).join('');
+  return `<section class="dc2-kb kob-a">${head}${tabs}${pans}${V2.dcGridHtml(C)}</section>`; };
+// a tab: shows its group in place (no redraw, so nothing jumps); arrows, Home and End move between the tabs and choose (WAI-ARIA tabs)
+V2.kobPick = (t, focus) => { const tl = t.closest('.kob-tabs'), kb = t.closest('.dc2-kb'); if (!tl || !kb) return; V2.kobUi.g = t.dataset.kobg;
+  for (const x of tl.querySelectorAll('[role=tab]')) { const s = x === t; x.setAttribute('aria-selected', String(s)); x.tabIndex = s ? 0 : -1; }
+  for (const p of kb.querySelectorAll('.kob-p')) p.hidden = p.dataset.g !== t.dataset.kobg; if (focus) t.focus(); };
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('.dc2 .kob-t'); if (t) V2.kobPick(t); });
+document.addEventListener('keydown', e => { const t = e.target.closest && e.target.closest('.dc2 .kob-t'); if (!t) return; const L = [...t.closest('.kob-tabs').querySelectorAll('[role=tab]')], i = L.indexOf(t);
+  const j = e.key === 'ArrowRight' || e.key === 'ArrowDown' ? (i + 1) % L.length : e.key === 'ArrowLeft' || e.key === 'ArrowUp' ? (i + L.length - 1) % L.length : e.key === 'Home' ? 0 : e.key === 'End' ? L.length - 1 : -1;
+  if (j < 0) return; e.preventDefault(); V2.kobPick(L[j], true); });
+// crossing 1024 (a window dragged wider or narrower) redraws the calc so the opened board takes that width's form
+try { matchMedia('(min-width:1024px)').addEventListener('change', () => { if (document.querySelector('.dc2.arn') && V2.redraw) V2.redraw(); }); } catch (e) {}
 // every hit (today's best-hits table, kept: brief 0): your six across, the top 30 down, each cell the best hit with its usual set;
 // switched with the board's "Their hits on you". Folded under the board; the KO Board shows only each one's single best.
 V2.dcGrid = () => { const ms = members(), dir = dc.dir === 'theirs' ? 'theirs' : 'mine', key = 'grid|' + (V2._dcKB ? V2._dcKB.key : '') + dir;
@@ -194,9 +222,11 @@ V2.arnSets = C => { const E = V2.esc, W = V2.ARN_W, {A, D, mvC, bp_} = C, sel = 
 // the KO Board bar: one tap away; it opens today's board (both directions, the three groups, every hit's table)
 V2.arnKB = C => { const W = V2.ARN_W, open = V2.dcOpen && V2.dcOpen.k;
   if (!C.ms.length) return `<details class="arn-kb" data-dcfold="k"${open ? ' open' : ''}><summary class="arn-kbbar"><span class="t u">${W.kbEmpty}</span><i class="chev" aria-hidden="true">›</i></summary><div class="arn-kbin">${V2.dcBoard(C)}</div></details>`;
-  const L = V2.dcKB(), c = V2.dcCounts(L), n = Math.max(1, L.length), dir = dc.dir === 'theirs';
-  return `<details class="arn-kb" data-dcfold="k"${open ? ' open' : ''}><summary class="arn-kbbar"><span class="t u">${dir ? W.kbTheirs : W.kbMine}</span><span class="c">${c.ko} down in one hit · ${c.can} can go down · ${c.sv} survive</span>
-    <span class="bar" aria-hidden="true"><i class="ko" style="width:${(100 * c.ko / n).toFixed(1)}%"></i><i class="can" style="width:${(100 * c.can / n).toFixed(1)}%"></i><i class="sv" style="width:${(100 * c.sv / n).toFixed(1)}%"></i></span><i class="chev" aria-hidden="true">›</i></summary><div class="arn-kbin">${V2.dcBoard(C)}</div></details>`; };
+  const L = V2.dcKB(), c = V2.dcCounts(L), n = Math.max(1, L.length), dir = dc.dir === 'theirs', wide = V2.kobWide();
+  return `<details class="arn-kb" data-dcfold="k"${open ? ' open' : ''}><summary class="arn-kbbar"${wide ? ' aria-controls="arn-kbfull"' : ''}><span class="t u">${dir ? W.kbTheirs : W.kbMine}</span><span class="c">${c.ko} down in one hit · ${c.can} can go down · ${c.sv} survive</span>
+    <span class="bar" aria-hidden="true"><i class="ko" style="width:${(100 * c.ko / n).toFixed(1)}%"></i><i class="can" style="width:${(100 * c.can / n).toFixed(1)}%"></i><i class="sv" style="width:${(100 * c.sv / n).toFixed(1)}%"></i></span><i class="chev" aria-hidden="true">›</i></summary>${wide ? '' : `<div class="arn-kbin">${V2.dcBoard(C)}</div>`}</details>`; };
+// Q58 C: from 1024 the opened board spans the page under the Arena; shown while the bar above is open (the toggle handler below)
+V2.arnKBFull = C => C.ms.length && V2.kobWide() ? `<div class="arn-kbfull" id="arn-kbfull"${V2.dcOpen && V2.dcOpen.k ? '' : ' hidden'}>${V2.dcBoard(C, true)}</div>` : '';
 // notes on this hit (today's Details: HP numbers, KO odds in today's words, effectiveness, notes, Not counted, fewest points to survive, the set readout)
 V2.arnNotes = C => { const E = V2.esc, {A, D, mv, r} = C; let notes = [], nc = [];
   if (mv && r && r.max > 0) { try { const x = calcResultNotes(A, D, mv, r, C.ord, C.ctx); notes = x.t; nc = x.nc; } catch (e) {} }
@@ -231,7 +261,7 @@ V2.pages.calc = {place: 'battle', after() { /* the move names are fitted (V2.fit
       ${V2.arnKB(C)}
       <div class="arn-links"><a class="np-link" href="#method">${W.how} ›</a>${V2.FB && V2.FB.ok ? `<a class="np-link" href="#feedback" data-fbmistake="calc" aria-label="Report a mistake in this hit">${W.report} ›</a>` : ''}${V2.arnNotes(C)}</div>
     </div>
-  </div></div>`; }};
+  </div>${V2.arnKBFull(C)}</div>`; }};
 
 // taps: a move button, a KO Board tile, a stage step; the pickers' changes (today's ids go through today's handler first, then the page redraws)
 document.addEventListener('click', e => { const s = e.target.closest && e.target.closest('.dc2 [data-arnst]');
@@ -259,4 +289,5 @@ document.addEventListener('focusout', e => { if (dcTipOf(e)) V2.dcTipHide(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') V2.dcTipHide(); });
 addEventListener('scroll', () => { const el = document.querySelector('body > .dc2-tip.show'); if (el) { if (V2.dcTipT && V2.dcTipT.isConnected) V2.dcTipShow(V2.dcTipT); else V2.dcTipHide(); } }, {passive: true}); addEventListener('hashchange', V2.dcTipHide);
 document.addEventListener('change', e => { const t = e.target; if (!t.closest || !t.closest('.dc2')) return; setTimeout(() => V2.redraw(), 0); });
-document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('.dc2 [data-dcfold]')) return; V2.dcOpen = V2.dcOpen || {}; V2.dcOpen[d.dataset.dcfold] = d.open; }, true);
+document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('.dc2 [data-dcfold]')) return; V2.dcOpen = V2.dcOpen || {}; V2.dcOpen[d.dataset.dcfold] = d.open;
+  if (d.dataset.dcfold === 'k') { const f = document.querySelector('.dc2 .arn-kbfull'); if (f) f.hidden = !d.open; if (!d.open) V2.kobUi.g = 'ko'; } }, true);
