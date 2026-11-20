@@ -68,6 +68,8 @@ without Sim's explicit yes.
 ## 2. How we operate (the habits that are not obvious from the code)
 
 ### Executive authority
+- **Current (checked Nov 20):** Sim extended authority until **10:00 AM Eastern, Sat Nov 21** (logged Fri 3:06 PM). Summary draft:
+  docs/rebuild/authority-summary-nov20.md; reminders: summary Sat 9:20 AM, wrap-up Sat 9:45 AM.
 - When Sim gives it ("I'm giving you executive authority until 5 PM tomorrow"), reply FIRST with an express confirmation: that you
   understood, the scope, and the end time (by the clock). Log it: `bash docs/rebuild/log-decision.sh "Sim: executive authority until ..."`.
 - Scope (unchanged all week): you decide on your own recommendation and log every decision; **design and visual choices still go to

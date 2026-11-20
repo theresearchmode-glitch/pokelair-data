@@ -1,4 +1,4 @@
-# Decision summary, authority Fri Nov 20 (6:27 AM to 10:00 PM) — DRAFT, written early (finished at the end)
+# Decision summary, authority Fri Nov 20 (6:27 AM Fri to 10:00 AM Sat Nov 21; extended by Sim Fri 3:06 PM) — DRAFT, written early (finished at the end)
 
 Source: docs/rebuild/decisions.md from the 6:27 AM line on. Every time below is the logged clock time.
 
