@@ -1633,3 +1633,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:15 PM: Merged Build + Q84 (ad437692) own tests: v2-q84, v2-q83, v2-s13, v2-s16, v2-wnew all passed. Batch 5 (Build) full check part 1 still running on bd88ac01; Q84 will be checked as batch 6 (or folded in if part 1 restarts).
 - 3:15 PM: Batch 5 widened to Build + Q84 (abd14ddb): stopped the Build-only part 1 at 44 ok / 0 failed and restarted part 1 on the merged head, with data + accuracy in parallel. Costs about 35 minutes now but saves a whole second full check (about 2 hours).
 - 3:21 PM: Sim: 'recommended is good to go': Q86 A (white bold 'Mega' on the Speed Tiers blue band, for contrast) and Q87 A (build all 8 shorter phone pages from docs/rebuild/research/phone-length-nov20.md; desktop unchanged). One helper builds both on branch phonelen.
+- 3:25 PM: Batch 5 (Build + Q84, abd14ddb) data part: data-checks ALL PASSED, golden 10/10, accuracy GATE PASSED, 0 failed.
