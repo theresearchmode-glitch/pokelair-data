@@ -26,7 +26,7 @@ wrong statement to Sim the moment it's found.
 Long checks run only as TRACKED background tasks (never a shell `&`); a watchdog wake-up ~20 min ahead whenever work runs in the
 background; "running" is only said after checking the process and its log in the same step.
 Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to tell me when watchdog fires. just keep up the work").
-Helper slots (Sim, Nov 19, 11:26 AM, replaces 8:19 AM 'keep both busy'; usage): at most 2 helpers; a free slot is refilled ONLY for an
+Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
 ## Plans page ticks always accurate (Sim, Nov 19, 8:44 AM): docs/rebuild/RULES.md section 00p
@@ -67,10 +67,10 @@ scrolling 10 times to just see the info!" Every page's length at 390 wide is mea
 (docs/rebuild/RULES.md section 0b).
 
 ## Be proactive and efficient (Sim, Nov 17; a standing rule)
-Helper limit (Sim, Nov 19, 4:46 AM, STANDING RULE until Sim changes it): at most 2 helpers/subagents at once (last night used more usage than Sim wants). Use them only where they clearly help; fewer is fine. Earlier: 3 (Nov 18). Earlier the same day: 4, then 3, then 5/7/15 overnight.
+Helper limit (Sim, Nov 20, 8:22 AM, LATEST: at most 3 helpers/subagents at once. Earlier, Nov 19, 4:46 AM: at most 2 (last night used more usage than Sim wants). Use them only where they clearly help; fewer is fine. Earlier: 3 (Nov 18). Earlier the same day: 4, then 3, then 5/7/15 overnight.
 Make the website process run as smoothly and quickly as possible. Think ahead: what will the next steps need (data, research,
 measurements, decisions), and start it early instead of waiting until it blocks. Use helper agents in parallel for research,
-data pulls, measurements and look-only audits, without asking first (Nov 19: keep usage moderate, at most 2 helpers; just tell Sim what is
+data pulls, measurements and look-only audits, without asking first (Nov 20: at most 3 helpers; just tell Sim what is
 running). Keep the site itself to one change at a time in the main thread, tested, as before. Start long-running data pulls and
 checks early and work on something else while they run; batch pushes so GitHub runs finish. Name the next decisions Sim will
 need before they block the work. This replaces "lean usage: no helpers unless Sim agrees" and the heavy-task warning below

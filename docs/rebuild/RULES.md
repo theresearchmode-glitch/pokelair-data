@@ -200,4 +200,4 @@ Every page, built or still to be built, passes before it reaches Sim or the Prev
    parts use (Test Run's root '.tr' also styled Damage Calc's Terrain tile '.tr', the Blueprint's corner '.tr' and Track Record's new
    '.tr-*'). Before adding a class, grep the source for it; short shared words (tr, tl, ev, ar, wk, on, a, b) are only ever used scoped.
 
-00w.6 Helper slots (Sim, Nov 19, 11:26 AM; replaces 00w.5's 'keep both busy'): at most 2 helpers; refill a slot only for an approved build, never for look-only research (usage).
+00w.6 Helper slots (Sim, Nov 20, 8:22 AM: now at most 3, look-only scans allowed. Earlier: Nov 19, 11:26 AM; replaces 00w.5's 'keep both busy'): at most 2 helpers; refill a slot only for an approved build, never for look-only research (usage).
