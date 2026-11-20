@@ -1573,3 +1573,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:20 AM: Slip: the gp5-livefonts tick note first said 8:22 AM, typed before reading the clock; corrected to the logged 8:20 AM. From now on every tick takes its time from the log-decision line in the same step.
 - 8:23 AM: Sim raised the helper limit to 3 (his message just before 8:23 AM). Third slot: a look-only scan of the whole new site for polish, missing good-to-have features, usability friction, off-concept spots, not-NastyPlot-enough and boring spots. CLAUDE.md and RULES.md 00w.6 updated.
 - 8:26 AM: Sim's rule: more than 3 helpers only after asking him (he assesses usage). Written into CLAUDE.md and RULES.md 00w.6.
+- 8:35 AM: GitHub run 44736084053 (d73c8dc7, My Team tabs + Meta + SUG-04 fix): 14 of 14 jobs green, checked with gh api jobs list. np-short tick waits for the last batch (6088ece4) to land.
