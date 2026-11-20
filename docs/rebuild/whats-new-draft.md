@@ -37,3 +37,16 @@ events.js, team.js + six.js, box.js, shell.js (Back and Forward), feedback.js. F
 | 7 | Back and Feedback | The arrows at the top take you back and forward to the exact spot; tell us what's off with Send Feedback at the bottom. |
 
 Unsure / for Sim: whether 'Events' (the Ticket Wall) earns its own line instead of 7; the id stays the switch date ('2026-11-xx-redesign').
+
+## Final draft, Nov 20 (for Sim's yes; updated for the Arena and the KO Board)
+| # | Title | Line |
+|---|---|---|
+| 1 | A new look | Every page is rebuilt: bigger Pokémon, clearer pages, and day and night modes (the button at the top). |
+| 2 | Strength Score | Your team's number out of 100 says how strong the six is altogether, with its Matchups against the top threats right under it. |
+| 3 | A new Home | The whole herd: every rated Pokémon in one charge, sized by its rating, with your six and the tools below. |
+| 4 | Damage Calculator | A new calculator built like a battle: pick both Pokémon, see the hit, and check your six against the top 30 on the KO Board. |
+| 5 | Battle | Scout their six and get a turn 1 plan that follows the game's rules. |
+| 6 | News and Mystery Gifts | The latest Pokémon Champions news and the Mystery Gift codes in one place, each with a link to its source. |
+| 7 | Back and Feedback | The arrows at the top take you back and forward to the exact spot; tell us what's off with Send Feedback at the bottom. |
+Folded line: "What's New · 7 updates: A new look, Strength Score, …". Team Sheet and My Box are not new to players who used the old site,
+so they drop out of the list (they still exist). id: the switch date ('2026-11-xx-redesign').
