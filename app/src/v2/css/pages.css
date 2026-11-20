@@ -3277,3 +3277,14 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    would keep a gap for each hidden section, so the tabbed work area places its sections in order instead */
 .tm-tabs>button{flex:none}.tm-tcnt{color:var(--plot-text);font-weight:700}
 @media (max-width:699.98px){.tm-work.tm-tabbed,.tm-work.tm-tabbed:has(.tm-yg){grid-template-areas:none;grid-template-rows:none}.tm-tabbed .tm-sec{grid-area:auto}.tm-tabbed .tm-off{display:none}}
+/* scan S33 (Nov 20): today's underdog on the not-found screens (shell.js V2.lostDog): beside the words on wide screens, a short row under them on
+   phones (sprite left, line right) so the page stays one screen */
+.nf-pg{align-items:center}
+.nf-dog{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s2) var(--s4);align-items:center;min-width:0}
+.nf-dogst{display:grid;place-items:center;min-width:var(--tap);min-height:var(--tap);padding:0;border:0;background:none;color:inherit;cursor:pointer}
+.nf-dog .np-mon{--iw:120px}
+.nf-dogtx{display:grid;gap:var(--s2);min-width:0}.nf-dogtx .np-eyebrow{margin:0}
+.nf-dogl{margin:0;font:900 var(--t20)/1.2 var(--u);font-style:italic;color:var(--ink);overflow-wrap:normal}
+@media (min-width:900px){.nf-pg{grid-template-columns:minmax(0,1fr) minmax(240px,320px);column-gap:var(--s10);align-items:start}
+  .nf-dog{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}.nf-dog .np-mon{--iw:220px}.nf-dogtx{justify-items:center}.nf-dogl{font-size:var(--t24)}}
+@media (max-width:399.98px){.nf-dog{column-gap:var(--s3)}.nf-dog .np-mon{--iw:88px}.nf-dogl{font-size:var(--t17)}}
