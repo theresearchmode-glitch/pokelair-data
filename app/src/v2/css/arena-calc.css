@@ -162,3 +162,11 @@
 /* desktop with a mouse (C8's 44x44 is for touch): the stage steps 36 wide, so the stage row keeps one line in a 220px card */
 @media (min-width:1024px) and (pointer:fine){.arn-st button{width:36px}.arn-st output{min-width:28px}
   @container (min-width:220px){.arn-st{flex-wrap:nowrap;padding:0 var(--s1) 0 var(--s3)}.arn-st .lb{flex-basis:auto;padding-top:0}.arn-st .ctl{flex:none}}}
+/* Q38 B (Sim, Nov 19, 7:09 PM): our slanted shapes, not rounded pills (design-system: "No rounded pills anywhere"). The rows take the
+   segmented control's slant (.np-slide); the chosen option is a slanted plate drawn BEHIND its words (::before), so no word is clipped;
+   the five switches are slanted chips with a flat fill (chip rule: one style, clip-path parallelogram, no outline) */
+.arn-pills{border-radius:0;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.arn-pills button{position:relative;isolation:isolate;border-radius:0}
+.arn-pills button[aria-pressed="true"]{background:none}
+.arn-pills button[aria-pressed="true"]::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--arn-pill);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.arn-sw button{border-radius:0;box-shadow:none;background:var(--wash);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
