@@ -177,3 +177,17 @@
 .arn-pickbtn{position:absolute;inset:0;z-index:3;width:100%;height:100%;margin:0;padding:0;border:0;background:none;cursor:pointer}
 .arn-pick.arn-pickhid{z-index:1;pointer-events:none}
 .arn-plate:has(.arn-pickbtn:focus-visible){outline:3px solid var(--plot);outline-offset:2px}
+/* Sim Q47 A (Nov 19, 8:33 PM): All moves and each set row are buttons that open sheets in the search sheet's style; today's selects stay behind them */
+.arn-mv.all:has(.arn-pickbtn:focus-visible),.arn-f:has(.arn-pickbtn:focus-visible){outline:3px solid var(--plot);outline-offset:2px}
+.arn-f .arn-pickbtn,.arn-mv.all .arn-pickbtn{border-radius:inherit}.arn-f:has(.arn-pickbtn) .arn-sel{pointer-events:none}
+.arn-grp{margin-top:var(--s4);padding:var(--s2) 0;border-bottom:1px solid var(--rule);font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}.arn-grp:first-child{margin-top:0}
+.np-hit.arn-mvhit,.np-hit.arn-opt{grid-template-columns:minmax(0,1fr) auto}
+.np-hit.arn-mvhit{padding-left:var(--s5);box-shadow:inset 6px 0 0 var(--tc)}
+.arn-mvhit .nm b{padding-right:var(--s1);font-size:var(--t16);line-height:1.15}
+.arn-mvd{display:grid;justify-items:end;gap:2px;text-align:right}
+.arn-mvd b{font:600 var(--t15)/1.15 var(--b);color:var(--arn-hit);white-space:nowrap}.arn-mvd b.u{padding-right:2px;font-family:var(--u);font-size:var(--t17);font-style:italic;font-weight:900}
+.arn-mvd small{font:600 var(--t13)/1.2 var(--b);color:var(--ink-2);white-space:nowrap}
+.np-hit.arn-mvhit[aria-current="true"],.np-hit.arn-opt[aria-current="true"]{background:var(--wash)}
+.arn-tags{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:var(--s1)}
+.arn-tags small{padding:2px var(--s2);border-radius:var(--r-s);font:600 var(--t13)/1.3 var(--b);white-space:nowrap}
+.arn-mu{box-shadow:inset 0 0 0 1px var(--arn-line);color:var(--ink-2)}.arn-cur{background:var(--ink);color:var(--bg)}

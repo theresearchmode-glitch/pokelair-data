@@ -2,7 +2,7 @@
 // The battle is the control panel: the sky is the weather switch, the ground is the terrain switch, the defender's HP bar is the
 // answer. Every number is today's calc (39-damage-calc-speed.js: calcData, damage, koText, koShort, calcResultNotes, bulkToSurvive,
 // bestHitOn); the state is today's `dc`, and every picker keeps today's id so today's change handler updates it. What opens from a
-// name plate, All moves, a set row and the KO Board is today's picker / board until Sim approves designs for them.
+// name plate, All moves or a set row is a sheet (Q46 / Q47 A); the KO Board is today's board until Sim approves a design for it.
 
 // THE NEW WORDS (Q35 / Q36, waiting on Sim): every new word of the Arena is in this one table, so a "no" is a one-line swap.
 // The long verdict and the short one are today's koText / koShort put in plain words; anything not listed (Focus Sash, Sturdy, Focus
@@ -128,24 +128,69 @@ V2.arnMove = (C, m) => { const E = V2.esc, W = V2.ARN_W, on = m.name === dc.mv, 
   const dmH = `<span class="dm${r && r.max > 0 ? ' u' : ''}" aria-hidden="true">${E(dmg)}</span>`; /* phone: under the name beside the verdict; desktop: beside the name (one shown) */
   return `<button type="button" class="arn-mv${on ? ' on' : ''}" style="--tc:var(--ty-${t})" data-dcmv="${E(m.name)}" aria-pressed="${on}" aria-label="${E(m.name)}: ${E(dmg)}${ko ? ', ' + E(ko) : ''}">
     <span class="r1"><span class="nm u">${E(m.name)}</span>${dmH.replace('dm', 'dm d1')}</span><span class="r2"><span class="ty">${E(t)}${m.bp > 1 ? ' · ' + m.bp : ''}</span>${dmH.replace('dm', 'dm d2')}${ko ? `<span class="ko">${E(ko)}</span>` : ''}</span></button>`; };
-// "All moves": today's move list (id dcMv: its set, then every damaging move it learns) under a dashed button
+// "All moves": today's move list (id dcMv: its set, then every damaging move it learns), kept hidden behind the dashed button
 V2.arnAll = C => { const E = V2.esc, mv = C.mvs;
-  return `<div class="arn-mv all"><span>${V2.ARN_W.allMoves}<i class="arw" aria-hidden="true"></i></span><select class="arn-pick" id="dcMv" aria-label="${V2.ARN_W.allMoves}: ${E(dc.mv || 'none')}. Choose any move">${mv.pop.length ? `<optgroup label="Its set">${mv.pop.map(m => `<option${m.name === dc.mv ? ' selected' : ''}>${E(m.name)}</option>`).join('')}</optgroup>` : ''}<optgroup label="Other moves">${mv.rest.map(m => `<option${m.name === dc.mv ? ' selected' : ''}>${E(m.name)}</option>`).join('')}</optgroup></select></div>`; };
+  return `<div class="arn-mv all"><span>${V2.ARN_W.allMoves}<i class="arw" aria-hidden="true"></i></span><button type="button" class="arn-pickbtn" data-arnmv aria-haspopup="dialog" aria-label="${V2.ARN_W.allMoves}: ${E(dc.mv || 'none')}. Choose any move"></button><select class="arn-pick arn-pickhid" id="dcMv" tabindex="-1" aria-hidden="true">${mv.pop.length ? `<optgroup label="Its set">${mv.pop.map(m => `<option${m.name === dc.mv ? ' selected' : ''}>${E(m.name)}</option>`).join('')}</optgroup>` : ''}<optgroup label="Other moves">${mv.rest.map(m => `<option${m.name === dc.mv ? ' selected' : ''}>${E(m.name)}</option>`).join('')}</optgroup></select></div>`; };
+/* Sim Q47 A (Nov 19, 8:33 PM): All moves and the set rows open sheets in the search sheet's style instead of the phone's plain list. Each
+   reads today's hidden select (its options, its value) and a pick sets that select and fires its usual change, so every calc rule runs as
+   before (V2.arnSelPick); the opener is focused first, so focus comes back to it on close (a tap on a phone doesn't focus a button). */
+V2.arnSelPick = (sel, v) => { V2.closeSheet(); if (sel.value === v) return; sel.value = v; sel.dispatchEvent(new Event('change', {bubbles: true})); };
+// "Choose a move": a search box, its set ("Its usual set"), then every other damaging move it learns; each row has the type edge, the
+// type and power, and the calc's own damage on the current defender with the current field (V2.dcHit, the move buttons' numbers).
+// The rows are worked out once when the sheet opens (all of them; timed in the Q47 report); filtering reuses them.
+V2.arnMvRow = (C, m) => { const E = V2.esc, W = V2.ARN_W, on = m.name === dc.mv, r = on ? C.r : V2.dcHit(C, m), t = (r && r.type) || m.type, tc = V2.TYPES.includes(t) ? t : 'Normal';
+  const dmg = !r ? '' : r.max === 0 ? 'No effect' : V2.dcPct(r), ko = r && r.max > 0 ? W.short(koShort(r)) : '', info = `${t}${m.bp > 1 ? ' · ' + m.bp + ' power' : ''}${on ? ' · selected' : ''}`;
+  return `<button type="button" class="np-hit arn-mvhit" style="--tc:var(--ty-${tc})" data-arnpickmv="${E(m.name)}"${on ? ' aria-current="true"' : ''} aria-label="${E(m.name)}: ${E(info)}${dmg ? ', ' + E(dmg) : ''}${ko ? ', ' + E(ko) : ''}"><span class="nm"><b class="u">${E(m.name)}</b><small>${E(info)}</small></span><span class="arn-mvd" aria-hidden="true">${dmg ? `<b class="${r.max > 0 ? 'u' : ''}">${E(dmg)}</b>` : ''}${ko ? `<small>${E(ko)}</small>` : ''}</span></button>`; };
+V2.arnMvPick = () => { const sel = document.getElementById('dcMv'); if (!sel) return; let C; try { C = calcData(); } catch (e) { return; }
+  const mine = (() => { try { return members().some(m => m.p.n === dc.a); } catch (e) { return false; } })(), t0 = performance.now();
+  const L = [...sel.querySelectorAll('optgroup')].map(g => ({h: g.label === 'Its set' ? (mine ? 'Its set on your team' : 'Its usual set') : 'Every other move',
+    rows: [...g.querySelectorAll('option')].map(o => { const m = mvByName.get(o.value); return {n: o.value, h: m ? V2.arnMvRow(C, m) : `<button type="button" class="np-hit arn-mvhit" style="--tc:var(--ty-Normal)" data-arnpickmv="${V2.esc(o.value)}"><span class="nm"><b class="u">${V2.esc(o.text)}</b></span></button>`}; })}));
+  V2.arnMvMs = performance.now() - t0; /* how long the rows took (read by v2-q47) */
+  const sh = V2.sheet(`<div class="np-find"><h2 class="u">Choose a move</h2><label class="np-field">${V2.ICON.search}<input type="search" data-arnmq placeholder="Find a move" aria-label="Find a move" autocomplete="off">${V2.CLR}</label><p class="fine">Damage on ${V2.esc(V2.disp(C.D.p.n))} as the field stands now.</p><p class="vh" data-arnsay role="status"></p><div class="hits" data-arnhits></div></div>`, {label: 'Choose a move', small: true, focus: '[data-arnmq]'});
+  const inp = sh.querySelector('[data-arnmq]'), out = sh.querySelector('[data-arnhits]'), say = sh.querySelector('[data-arnsay]');
+  const draw = () => { const q = inp.value.trim().toLowerCase(), G = L.map(g => ({h: g.h, rows: q ? g.rows.filter(r => r.n.toLowerCase().includes(q)) : g.rows})).filter(g => g.rows.length), n = G.reduce((a, g) => a + g.rows.length, 0);
+    out.innerHTML = n ? G.map(g => `<h3 class="arn-grp">${g.h}</h3>${g.rows.map(r => r.h).join('')}`).join('') : `<p class="fine">No move called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>`;
+    if (say) say.textContent = q ? (n ? `${n} move${n === 1 ? '' : 's'}` : 'No matches') : ''; };
+  inp.addEventListener('input', draw);
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = out.querySelector('[data-arnpickmv]'); if (h) { e.preventDefault(); h.click(); } } });
+  out.addEventListener('click', e => { const h = e.target.closest('[data-arnpickmv]'); if (h) V2.arnSelPick(sel, h.dataset.arnpickmv); });
+  draw(); };
+// a set row's sheet ("Attacker's item"): today's options, the current one marked selected, the most-used one marked "most used" (the usage
+// the card's "most used set" comes from, sideDefaults: the top tournament item, metaAbility, the most common spread's nature and points)
+V2.arnMostUsed = id => { const p = byName.get(id[2] === 'A' ? dc.a : dc.d), k = id.slice(3); if (!p) return null;
+  try { if (k === 'It') { const it = topItem(p); return it && !STONE_RE.test(it[0]) ? it[0] : null; }
+    if (k === 'Ab') return metaAbility(p) || null;
+    if (k === 'Nat') { const cs = commonSpread(p); return (cs && cs.nat) || topNature(p) || null; }
+    if (k === 'Sp') { const cs = commonSpread(p), m = mvByName.get(dc.mv); return cs ? String(m && m.name === 'Body Press' ? cs.def : m && m.cat === 2 ? cs.spa : cs.atk) : null; }
+  } catch (e) {} return null; };
+V2.arnSetPick = (id, title) => { const sel = document.getElementById(id); if (!sel || sel.disabled) return; const E = V2.esc, mu = V2.arnMostUsed(id);
+  const rows = [...sel.options].map(o => { const cur = o.value === sel.value, m = mu != null && o.value === mu;
+    return `<button type="button" class="np-hit arn-opt" data-arnopt="${E(o.value)}"${cur ? ' aria-current="true"' : ''} aria-label="${E(o.text)}${m ? ', most used' : ''}${cur ? ', selected' : ''}"><span class="nm"><b>${E(o.text)}</b></span><span class="arn-tags" aria-hidden="true">${m ? '<small class="arn-mu">most used</small>' : ''}${cur ? '<small class="arn-cur">selected</small>' : ''}</span></button>`; }).join('');
+  const sh = V2.sheet(`<div class="np-find"><h2 class="u">${E(title)}</h2><div class="hits" data-arnopts>${rows}</div></div>`, {label: title, small: true, focus: '[data-arnopts] [aria-current="true"]'});
+  sh.querySelector('[data-arnopts]').addEventListener('click', e => { const h = e.target.closest('[data-arnopt]'); if (h) V2.arnSelPick(sel, h.dataset.arnopt); }); };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.dc2 [data-arnmv],.dc2 [data-arnset]'); if (!b) return; b.focus({preventScroll: true});
+  if (b.hasAttribute('data-arnmv')) V2.arnMvPick(); else V2.arnSetPick(b.dataset.arnset, b.dataset.arntitle); });
 // a stage row: names its stat; minus / plus within today's range (-2 to +2)
 V2.arnStage = (who, lab, b) => `<div class="arn-f arn-st" role="group" aria-label="${lab}"><span class="lb">${lab}</span><span class="ctl"><button type="button" data-arnst="${who}" data-d="-1" aria-label="Lower ${lab}"${b <= -2 ? ' disabled' : ''}>−</button><output class="u" id="dc${who === 'a' ? 'A' : 'D'}Bo" aria-live="polite">${b > 0 ? '+' + b : b < 0 ? '−' + -b : '±0'}</output><button type="button" data-arnst="${who}" data-d="1" aria-label="Raise ${lab}"${b >= 2 ? ' disabled' : ''}>+</button></span></div>`;
 V2.arnSel = (h, lab) => `<label class="arn-f"><span class="vh">${lab}</span>${h}<i class="arw" aria-hidden="true"></i></label>`;
+// Sim Q47 A: a set row is a button over today's select (still drawn, so the row reads as before; out of touch, Tab and screen readers)
+// that opens the row's sheet; a disabled select (a Mega's stone) stays as it is
+V2.arnSetBtn = (id, title, cur) => `<button type="button" class="arn-pickbtn" data-arnset="${id}" data-arntitle="${V2.esc(title)}" aria-haspopup="dialog" aria-label="${V2.esc(title)}: ${cur}. Choose another"></button>`;
+V2.arnRow = (h, lab, title) => { h = h.replace('<select class="field"', '<select class="arn-sel"'); if (/<select[^>]* disabled/.test(h)) return V2.arnSel(h, lab);
+  const id = (/id="([^"]+)"/.exec(h) || [])[1], cur = (/<option[^>]* selected[^>]*>([^<]*)</.exec(h) || /<option[^>]*>([^<]*)</.exec(h) || [])[1] || '';
+  return `<div class="arn-f"><span class="vh">${lab}</span>${h.replace('<select class="arn-sel"', '<select class="arn-sel" tabindex="-1" aria-hidden="true"')}${V2.arnSetBtn(id, title, cur)}<i class="arw" aria-hidden="true"></i></div>`; };
 // the two set cards: item, Ability, nature, points, stage (today's ids; the defender's points open HP, Def and Sp. Def)
 V2.arnSets = C => { const E = V2.esc, W = V2.ARN_W, {A, D, mvC, bp_} = C, sel = C.sel, PTS = C.PTS;
   const spec = mvC && mvC.cat === 2, aStat = bp_ ? 'Def' : spec ? 'Sp. Atk' : 'Atk', defPhys = !mvC || mvC.cat !== 2 || ['Psyshock', 'Psystrike', 'Secret Sword'].includes(mvC.name), dStat = defPhys ? 'Def' : 'Sp. Def';
-  const aPts = `<label class="arn-f arn-ov"><span class="lb">${aStat}${bp_ ? ' (Body Press)' : ''} <small>points</small></span><b class="v">${C.aShown}</b><i class="arw" aria-hidden="true"></i>${sel('dcASp', PTS(C.aShown), String(C.aShown)).replace('<select class="field"', `<select class="arn-pick" aria-label="${aStat} points: ${C.aShown}"`)}</label>`;
-  const ft = A.ability === 'Supreme Overlord' || (C.mv && C.mv.name === 'Last Respects') ? V2.arnSel(sel('dcAFt', [0, 1, 2, 3].map(x => [String(x), `${x} allies fainted`]), String(Math.min(3, dc.fainted || 0))), `Allies fainted (${A.ability === 'Supreme Overlord' ? 'Supreme Overlord: +10% power each' : 'Last Respects: +50 power each'})`) : '';
+  const aPts = `<div class="arn-f arn-ov"><span class="lb">${aStat}${bp_ ? ' (Body Press)' : ''} <small>points</small></span><b class="v">${C.aShown}</b><i class="arw" aria-hidden="true"></i>${sel('dcASp', PTS(C.aShown), String(C.aShown)).replace('<select class="field"', '<select class="arn-pick arn-pickhid" tabindex="-1" aria-hidden="true"')}${V2.arnSetBtn('dcASp', `${W.attacker}'s ${aStat}${bp_ ? ' (Body Press)' : ''} points`, C.aShown)}</div>`;
+  const ft = A.ability === 'Supreme Overlord' || (C.mv && C.mv.name === 'Last Respects') ? V2.arnRow(sel('dcAFt', [0, 1, 2, 3].map(x => [String(x), `${x} allies fainted`]), String(Math.min(3, dc.fainted || 0))), `Allies fainted (${A.ability === 'Supreme Overlord' ? 'Supreme Overlord: +10% power each' : 'Last Respects: +50 power each'})`, 'Allies fainted') : '';
   const box = (lab, h) => `<label class="arn-box"><span>${lab}</span>${h}</label>`;
   const dPts = `<details class="arn-pts" data-dcfold="p"${V2.dcOpen && V2.dcOpen.p ? ' open' : ''}><summary class="arn-f"><span class="lb">HP <b>${D.hpSp}</b> · ${defPhys ? 'Def' : 'SpD'} <b>${defPhys ? D.defSp : D.spdSp}</b> <small>${W.pts}</small></span><i class="arw" aria-hidden="true"></i></summary>
     <div class="arn-ptsbox">${box('HP points', sel('dcDHp', PTS(D.hpSp), String(D.hpSp)))}${box('Def points', sel('dcDDf', PTS(D.defSp), String(D.defSp)))}${box('Sp. Def points', sel('dcDSd', PTS(D.spdSp), String(D.spdSp)))}<p class="fine">66 points at most in all; 32 in one stat.</p></div></details>`;
   const card = (k, X, role, rows) => `<section class="arn-set ${k}" aria-label="${role}'s set"><header>${V2.arnImg(X.p.n, 'mini')}<span><b class="u">${role}</b><small>${E(V2.arnSide(X))}</small></span></header>${rows}</section>`;
-  const sl = (h, lab) => V2.arnSel(h.replace('<select class="field"', '<select class="arn-sel"'), lab);
-  return `<div class="arn-sets">${card('a', A, W.attacker, `${sl(C.itemSel('dcAIt', A), 'Item')}${sl(sel('dcAAb', A.p.a, A.ability), 'Ability')}${sl(sel('dcANat', NATURES, A.nat), 'Nature')}${aPts}${ft.replace('<select class="field"', '<select class="arn-sel"')}${V2.arnStage('a', aStat + ' ' + W.stage, A.boost)}`)}
-    ${card('d', D, W.defender, `${sl(C.itemSel('dcDIt', D), 'Item')}${sl(sel('dcDAb', D.p.a, D.ability), 'Ability')}${sl(sel('dcDNat', NATURES, D.nat), 'Nature')}${dPts}${V2.arnStage('d', dStat + ' ' + W.stage, D.boost)}`)}</div>`; };
+  const rw = (h, lab, role) => V2.arnRow(h, lab, `${role}'s ${lab === 'Ability' ? lab : lab.toLowerCase()}`);
+  return `<div class="arn-sets">${card('a', A, W.attacker, `${rw(C.itemSel('dcAIt', A), 'Item', W.attacker)}${rw(sel('dcAAb', A.p.a, A.ability), 'Ability', W.attacker)}${rw(sel('dcANat', NATURES, A.nat), 'Nature', W.attacker)}${aPts}${ft}${V2.arnStage('a', aStat + ' ' + W.stage, A.boost)}`)}
+    ${card('d', D, W.defender, `${rw(C.itemSel('dcDIt', D), 'Item', W.defender)}${rw(sel('dcDAb', D.p.a, D.ability), 'Ability', W.defender)}${rw(sel('dcDNat', NATURES, D.nat), 'Nature', W.defender)}${dPts}${V2.arnStage('d', dStat + ' ' + W.stage, D.boost)}`)}</div>`; };
 // the KO Board bar: one tap away; it opens today's board (both directions, the three groups, every hit's table)
 V2.arnKB = C => { const W = V2.ARN_W, open = V2.dcOpen && V2.dcOpen.k;
   if (!C.ms.length) return `<details class="arn-kb" data-dcfold="k"${open ? ' open' : ''}><summary class="arn-kbbar"><span class="t u">${W.kbEmpty}</span><i class="chev" aria-hidden="true">›</i></summary><div class="arn-kbin">${V2.dcBoard(C)}</div></details>`;
