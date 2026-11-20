@@ -239,4 +239,10 @@ a.dp-fr:hover .dp-fn{text-decoration:underline}
 }
 @media (max-width:1099.98px){.dp-paper{padding:var(--s8)}}
 @media (max-width:699.98px){.dp-paper{padding:var(--s6) var(--s4)}.dp-small{padding:var(--s4)}}
+/* Q41 (Sim chose A, Nov 19): News on phones, 4.87 screens at 390 to about 4.4. In Brief shows 2 headlines + "N more in brief ›" (opens the
+   rest in place), Top Ratings 3 rows, Next Events 2; the All Ratings and All N Next Events links reach the rest. 700 and up: every row, no button */
+.dp-bmore{display:none}
+.dp-paper button.dp-bmore{font:600 var(--t13)/1.5 var(--b);color:var(--dp-plot)} /* the paper's link look (All Ratings ›, Read the Story ›); line 18's button reset would make it plain ink */
+@media (max-width:699.98px){.dp-bl:not(.on)>li:nth-child(n+3),.dp-tb>li:nth-child(n+4),.dp-fl>li:nth-child(n+3){display:none}
+  .dp-bmore{display:inline-flex;margin-top:var(--s2)}}
 @media (max-width:999.98px){.dp-hl{display:block;min-height:var(--tap)}.dp-read{min-height:var(--tap)}}

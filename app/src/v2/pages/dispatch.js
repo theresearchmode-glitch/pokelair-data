@@ -27,6 +27,12 @@
 //   The coupon's code is the Post Room's piece (V2.prCode: upright, digits blue, spelled for screen readers) with its Copy Code
 //   button (data-prcopy, handled in postroom.js): one family.
 V2.dpUi = V2.dpUi || {more: false};
+// Q41 (Sim chose A, Nov 19): a shorter News page on phones (under 700 wide). In Brief shows its first 2 headlines and "N more in brief ›"
+// (N = the hidden ones, from the data) opens the rest in place; Top Ratings shows its top 3 rows and Next Events its first 2 (their
+// All Ratings / All N Next Events links stay). All CSS-only cuts (sd-dispatch.css), so 700 and up keep every row and never see the button.
+// The button changes the list's class without a redraw (focus stays on it); its state is kept for redraws (as V2.wkTechBtn, Q32).
+V2.dpUi.brief = !!V2.dpUi.brief;
+V2.dpBriefBtn = (n, open) => `<button type="button" class="np-link dp-lk dp-bmore" data-dpbrief aria-expanded="${open}" aria-controls="dp-briefl">${open ? 'Show Fewer' : `${homeNum(n)} more in brief ›`}</button>`;
 V2.dpPick = (x, ks) => { for (const k of ks) if (x && x[k] != null && x[k] !== '') return x[k]; return ''; };
 /* https only (V2.safeUrl, post-data.js; the Post Room's check): a javascript:, data: or http: link is dropped and the words stay plain text */
 V2.dpSrc = x => { const v = V2.dpPick(x, ['url', 'src', 'link', 'source']); return V2.safeUrl(Array.isArray(v) ? (v[0] && (v[0].url || v[0])) || '' : typeof v === 'object' ? v.url || '' : v); };
@@ -104,7 +110,8 @@ V2.dpLead = (D, compact) => { const E = V2.esc, L = D.lead;
     ${!compact && sum ? `<p class="dp-sum">${E(sum)}</p>` : ''}${stamp && !compact ? stamp.replace('dp-stamp', 'dp-stamp dp-stamp2') : ''}${compact ? '' : V2.dpSeries(D)}</section>`; };
 // ---------- interviews, more stories, the coupon ----------
 V2.dpBrief = D => { const E = V2.esc; if (!D.brief.length) return '';
-  return `<section class="dp-int" aria-label="In brief"><h2 class="dp-ch u">In Brief</h2><ul class="dp-il">${D.brief.map(it => `<li>${V2.dpKick(it)}<h3 class="dp-ih u">${V2.dpA(it, E(it.t))}</h3></li>`).join('')}</ul></section>`; };
+  const open = !!V2.dpUi.brief, more = D.brief.length > 2;
+  return `<section class="dp-int" aria-label="In brief"><h2 class="dp-ch u">In Brief</h2><ul class="dp-il dp-bl${open ? ' on' : ''}" id="dp-briefl">${D.brief.map(it => `<li>${V2.dpKick(it)}<h3 class="dp-ih u">${V2.dpA(it, E(it.t))}</h3></li>`).join('')}</ul>${more ? V2.dpBriefBtn(D.brief.length - 2, open) : ''}</section>`; };
 V2.dpInter = D => { const E = V2.esc; if (!D.inter.length) return '';
   return `<section class="dp-int" aria-label="Interviews"><h2 class="dp-ch u">Interviews</h2><ul class="dp-il">${D.inter.map(it => `<li>${V2.dpKick(it, false)}<h3 class="dp-ih u">${V2.dpA(it, E(it.t))}</h3>${it.url ? `<a class="dp-read" href="${E(it.url)}" target="_blank" rel="noopener" tabindex="-1" aria-hidden="true">Read the Interview ›</a>` : ''}</li>`).join('')}</ul></section>`; };
 V2.dpStory = it => { const E = V2.esc, p = it.gift && V2.byName.get(it.gift);
@@ -155,6 +162,8 @@ V2.pages.news = {place: 'home', draw() { const E = V2.esc, post = V2.postNow(), 
   const earlier = D.rest.length ? `<button type="button" class="dp-lk dp-earl" data-dpmore aria-expanded="${!!U.more}" aria-controls="dp-earlier">Earlier Editions · ${V2.dpPlural(D.rest.length, 'more story')} ${U.more ? '‹' : '›'}</button>` : '';
   const list = D.rest.length && U.more ? `<ul class="dp-erl" id="dp-earlier">${D.rest.map(it => `<li>${V2.dpKick(it)}<p class="dp-mh u">${V2.dpA(it, E(it.t))}</p></li>`).join('')}</ul>` : '';
   return `<div class="dp"><p class="np-eyebrow dp-crumb"><span>Home · Champions News</span></p>${V2.dpFront(post)}<div class="dp-under${earlier ? '' : ' dp-solo'}">${earlier}${note}</div>${list}</div>`; }};
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-dpbrief]'); if (!b) return; const l = document.getElementById(b.getAttribute('aria-controls')); if (!l) return;
+  const open = V2.dpUi.brief = !V2.dpUi.brief; l.classList.toggle('on', open); b.setAttribute('aria-expanded', open); b.textContent = open ? 'Show Fewer' : `${homeNum(l.children.length - 2)} more in brief ›`; });
 document.addEventListener('click', async e => { const b = e.target.closest && e.target.closest('[data-dpmore],[data-dpcal]'); if (!b) return; const d = b.dataset;
   if (d.dpmore != null) { V2.dpUi.more = !V2.dpUi.more; V2.redraw(); return; }
   if (d.dpcal != null) { V2.evUi.open = null; V2.evUi.cal = true; location.hash = '#events'; V2.evScrollTo('.ev-plate'); } });
