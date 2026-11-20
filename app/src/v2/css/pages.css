@@ -2053,6 +2053,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bp-notes .n{font:900 var(--t28)/1 var(--u);font-style:italic}.bp-notes .unit{font:600 var(--t13)/1 var(--b);font-style:normal;color:var(--ink-2)}
 .bp-nt{display:grid}.bp-nt b{font:700 var(--t15)/1.35 var(--b)}.bp-nt small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}
 .bp .bd-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);margin:var(--s2) 0 0;padding:0;border:0}
+.bp-near{display:grid;gap:var(--s2);min-width:0} /* scan S16: the actions right under the six, one-column sheet */
 /* iPad: three across, the score under the team name, the title block stacked */
 @media (max-width:1099.98px){.bp-top{grid-template-columns:minmax(0,1fr)}.bp-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s6)}.bp-tb{grid-template-columns:minmax(0,1fr)}.bp-right{border-left:0;border-top:1px solid var(--bp-ink)}.bp-src{margin-left:0}}
 /* iPhone: two across */
