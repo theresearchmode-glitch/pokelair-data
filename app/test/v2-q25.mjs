@@ -9,7 +9,7 @@ import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') + msg); if (!c) fails.push(msg); };
 const grid = [], size = [], tall = [], over = [], tap = [], wide = [], flow = [], words = [];
-let seen = 0, block390 = 0;
+let seen = 0, block390 = 0, forced = 0, forcedMeow = 0;
 const measure = () => { const q = s => [...document.querySelectorAll(s)];
   const me = q('.pp2-plate.me'), them = q('.pp2-plate.them'); if (me.length !== 6 || them.length !== 6) return null;
   /* each card's own height (not stretched to its row): measured with align-self:start, then put back */
@@ -24,12 +24,17 @@ for (const th of ['light', 'dark']) for (const W of [320, 360, 390, 430, 699, 70
   const phone = W < 700, ctx = await b.newContext({viewport: {width: W, height: 900}, colorScheme: th, hasTouch: phone, isMobile: false}), p = await ctx.newPage();
   await p.addInitScript(t => { window.__PL_TEST = 1; try { localStorage.setItem('np2.theme', t); } catch (e) {} }, th === 'dark' ? 'night' : 'day');
   await p.goto('file://' + PAGE + '#practice', {timeout: 90000}); await p.waitForTimeout(2000);
-  for (let k = 0; k < 4; k++) {
-    await p.evaluate(() => window.__ev("prStart('real'); V2.redraw()")); await p.waitForTimeout(300);
+  /* Nov 20: besides 4 random rounds, the rounds with the longest name (Meowscarada; it split at 320 on GitHub and in 5 rounds here)
+     are always checked, so the test no longer depends on luck */
+  const fixed = await p.evaluate(() => window.__ev("(()=>{const P=META.practice;return P.rounds.map((r,i)=>[i,r.mine.concat((P.opp[r.o]||{}).six||[])]).filter(x=>x[1].some(n=>/Meowscarada/.test(n))).map(x=>x[0]).slice(0,5)})()"));
+  for (let k = 0; k < 4 + fixed.length; k++) {
+    if (k < 4) await p.evaluate(() => window.__ev("prStart('real'); V2.redraw()"));
+    else await p.evaluate(i => window.__ev(`(()=>{prStart('real'); const r=META.practice.rounds[${i}]; pr.ri=${i}; pr.oi=r.o; pr.six=r.mine.slice(); V2.redraw();})()`), fixed[k - 4]);
+    await p.waitForTimeout(300);
     /* Nov 19 (night): on a loaded machine the logo font can land late; names are fitted again on 'loadingdone' (monsheet.js), so measure
        once the fonts are ready and two frames have passed (a split name failed here twice under load and never alone) */
     await p.evaluate(() => (document.fonts ? document.fonts.ready : Promise.resolve()).then(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))));
-    const m = await p.evaluate(`(${measure})()`); if (!m) { grid.push(`${th} ${W} #${k}: practice did not show two sixes`); continue; } seen++;
+    const m = await p.evaluate(`(${measure})()`); if (!m) { grid.push(`${th} ${W} #${k}: practice did not show two sixes`); continue; } seen++; if (k >= 4) { forced++; if (await p.evaluate(() => [...document.querySelectorAll('.pp2-plate .nm')].some(e => /Meowscarada/.test(e.textContent)))) forcedMeow++; }
     /* Nov 19 (Claude's review of the helper's 320 picture: 'Charizar|d', 'Golisopo|d'): no name word breaks across two lines */
     const split = await p.evaluate(() => { const bad = []; document.querySelectorAll('.pp2-plate .nm').forEach(b => { const tw = document.createTreeWalker(b, NodeFilter.SHOW_TEXT); let t;
       while ((t = tw.nextNode())) { const re = /\S+/g; let m; while ((m = re.exec(t.data))) { const rg = document.createRange(); rg.setStart(t, m.index); rg.setEnd(t, m.index + m[0].length);
@@ -70,6 +75,7 @@ for (const th of ['light', 'dark']) for (const W of [320, 360, 390, 430, 699, 70
     const v = await p.evaluate(() => { const me = [...document.querySelectorAll('.pp2.rev .pp2-plate.me')]; return {n: me.length, cols: new Set(me.map(e => Math.round(e.getBoundingClientRect().left))).size}; });
     if (v.n !== 6 || (phone && v.cols !== 1)) flow.push(`${th} ${W}: the reveal shows ${v.n} plates in ${v.cols} columns`); }
   await ctx.close(); }
+ok(forced >= 70 && forcedMeow === forced, `the 5 practice rounds with the longest name (Meowscarada) are checked at every width and theme (${forced} views, ${forcedMeow} show it)`);
 ok(seen >= 50 && !grid.length, `phones 320-699: your six sit 3 columns x 2 rows while picking (${seen} views, ${grid.length} not${grid.length ? ', e.g. ' + grid[0] : ''})`);
 ok(seen >= 50 && !size.length, `phones: each of your cards is as wide as theirs, same sprite and frame, within 2px (${size.length} off${size.length ? ', e.g. ' + size[0] : ''})`);
 ok(block390 > 0 && !tall.length, `at 390 your six take at most 400px (tallest ${Math.round(block390)}px${tall.length ? '; ' + tall[0] : ''})`);
