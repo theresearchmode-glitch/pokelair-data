@@ -1,0 +1,6 @@
+@media (max-width:699.98px){.mu-out.mu-fold{display:none}.mu-favbtn{flex:0 0 100%;display:flex;justify-content:flex-start;min-height:var(--tap)}}
+@media (min-width:700px){.mu-favbtn{display:none}}
+@container (max-width:440.98px){
+ .mu-pick .np-slide{grid-template-columns:repeat(4,minmax(0,1fr))}
+ .mu-pick .np-slide button{flex-direction:column;min-height:56px;white-space:normal;padding:var(--s2) var(--s1)}
+}
