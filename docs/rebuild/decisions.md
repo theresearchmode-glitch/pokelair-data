@@ -1570,3 +1570,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:19 AM: Sim chose Q77 A: the What's New list as drafted Nov 20 (7 items: new look, Strength Score, new Home, Damage Calculator, Battle, News and Mystery Gifts, Back and Feedback). It goes into the code on switch day with the switch date as its id.
 - 8:19 AM: Slip: my previous message to Sim was headed 'WORKING (8:21 AM)' without reading the clock; the clock read 8:19 AM a minute later. Reported to Sim.
 - 8:20 AM: gp5-livefonts checked and ticked: the live page (artifact 5VBf…, version 1794491686) has 0 links to fonts.googleapis/gstatic and loads its fonts from fonts/*.woff2 beside the page (fonts/unbounded-latin.woff2 read back, 50,904 bytes); main's head.html also has 0 Google Fonts links.
+- 8:20 AM: Slip: the gp5-livefonts tick note first said 8:22 AM, typed before reading the clock; corrected to the logged 8:20 AM. From now on every tick takes its time from the log-decision line in the same step.
