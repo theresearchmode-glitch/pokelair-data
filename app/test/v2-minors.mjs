@@ -26,6 +26,11 @@ const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') +
    Team height, NPR, Base Stats), groups (BR, MQ, AS, HQ, WebKit pair). ONLY=BR|MQ|AS|HQ still runs one group alone. */
 const PART = process.env.PART || 'all', part = k => PART === 'all' || PART.split(',').includes(k);
 if (!['all', 'main1', 'main2', 'groups'].includes(PART)) { console.log('v2-minors: unknown PART ' + PART + ' (all, main1, main2, groups)'); process.exit(1); }
+/* q59 (Sim's yes, Nov 20): under 700 My Team's Matchups / Suggestions / Team Checks are tabs, one shown at a time. A check of something
+   inside Suggestions opens its tab first, as a player would; where there are no tabs (700+) this does nothing */
+/* (the tap brings Suggestions under the bar with a smooth scroll; wait past V2._smoothAt's 1.5 s, as the Card-tap checks do, so a hold
+   check's outside scroll isn't taken for the site's own) */
+const sgTab = async q => { const t = await q.evaluate(() => { const t = document.querySelector('.tm-tabs [data-tmjump="tm-sg"]'); if (t && t.getAttribute('aria-selected') !== 'true') { t.click(); return 1; } return 0; }); await q.waitForTimeout(t ? 1600 : 0); };
 /* The pictures (Nov 18): a build without --art reads them from art/ and art-s/ beside the page, but the build copies only the fonts there,
    so in app/dist (CI and the usual setup) every sprite and crowd sheet was a broken image. The hero checks then measured broken-image
    icons (Q13f: icons over the tagline at 320-390; Q7a: sheets not loaded, failed requests counted as files). Put the folders there. */
@@ -44,10 +49,13 @@ const BR = async () => {
     /* a team with something to fix (the sample team has nothing, so no Apply): the review's test team, through Import */
     await q.locator('[data-v2more]').first().click(); await q.waitForTimeout(400); await q.locator('.np-sheet [data-v2import]').first().click(); await q.waitForTimeout(400);
     await q.fill('[data-impin]', ['Incineroar', 'Garchomp', 'Sneasler', 'Kingambit', 'Basculegion', 'Sinistcha'].join('\n\n')); await q.locator('[data-impgo]').click(); await q.waitForTimeout(800);
-    await q.waitForFunction(() => !document.querySelector('.sg2-wait'), null, {timeout: 90000}).catch(() => {}); await q.waitForTimeout(1200); return {q, c}; };
+    await q.waitForFunction(() => !document.querySelector('.sg2-wait'), null, {timeout: 90000}).catch(() => {}); await q.waitForTimeout(1200); await sgTab(q); return {q, c}; };
   const apply = async q => { const a = q.locator('#main [data-v2plan]').first(); await a.scrollIntoViewIfNeeded(); await q.evaluate(() => scrollBy(0, -120)); await q.waitForTimeout(300);
     const y = await q.evaluate(() => scrollY); await a.click(); return y; };
-  const away = q => q.evaluate(() => { scrollTo(0, scrollY > document.documentElement.scrollHeight / 2 ? Math.max(0, scrollY - 1500) : scrollY + 1500); return scrollY; }); /* far, but clear of the page's end (it may get shorter) */
+  /* far, but clear of the page's end (it may get shorter). q59: My Team on phones is about 3 screens now (tabs), so 1500px could reach
+     the end or the top, where the page's own shortening clamps the scroll; up to 1500px toward the side with more room, 300px clear of it */
+  const away = q => q.evaluate(() => { const max = document.documentElement.scrollHeight - innerHeight, dn = max - scrollY, up = scrollY;
+    scrollTo(0, dn >= up ? scrollY + Math.min(1500, dn - 300) : scrollY - Math.min(1500, up - 300)); return scrollY; });
   // C1 (finding 2): a scroll the hold didn't make (a script here; a screen reader or find-in-page does the same) ends Apply's hold
   { const {q, c} = await tOpen(390); const y0 = await apply(q); await q.waitForTimeout(400); const y1 = await away(q); await q.waitForTimeout(1200); const y2 = await q.evaluate(() => scrollY);
     ok(Math.abs(y1 - y0) > 300 && Math.abs(y2 - y1) <= 2, `BR-C1a: after Apply, a script scroll (as a screen reader or find-in-page makes) ends the hold: the page stays where it was sent (Apply at ${y0}, sent to ${y1}, ${y2} 1.2 s later)`);
@@ -64,7 +72,7 @@ const BR = async () => {
   // Nov 19 (CI run 1365: BR-C1b "337 -> 1837, 337"): the same, with a layout change in the same frame as the scroll (as the suggestions'
   //   redraw can land on a slower machine); the hold took the whole scroll for the layout's and pulled the page back. Failed before the fix.
   { const {q, c} = await tOpen(390); await q.locator('#main [data-tmsel="2"]').first().click(); await q.waitForTimeout(1600); const rm = q.locator('#main .mt-edit [data-v2rm]').first(); await rm.scrollIntoViewIfNeeded(); await q.waitForTimeout(300);
-    await rm.click(); await q.waitForTimeout(400); const y0 = await q.evaluate(() => scrollY), y1 = await q.evaluate(() => { scrollTo(0, scrollY + 1500); const d = document.createElement('div'); d.style.height = '40px'; document.querySelector('#main').append(d); return scrollY; });
+    await rm.click(); await q.waitForTimeout(400); const y0 = await q.evaluate(() => scrollY), y1 = await q.evaluate(() => { scrollTo(0, scrollY + Math.min(1500, document.documentElement.scrollHeight - innerHeight - scrollY - 300)); /* q59: clear of the shorter page's end, as away() */ const d =document.createElement('div'); d.style.height = '40px'; document.querySelector('#main').append(d); return scrollY; });
     await q.waitForTimeout(1200); const y2 = await q.evaluate(() => scrollY);
     ok(Math.abs(y1 - y0) > 300 && Math.abs(y2 - y1) <= 2, `BR-C1c: after Remove, a script scroll with a layout change in the same frame still ends the hold (${y0} -> ${y1}, ${y2} 1.2 s later)`); await c.close(); }
   // C2 (finding 3): Apply's hold ends when the player leaves My Team (Back, then Forward within its 5 s: no drag down to the old Apply)
@@ -179,7 +187,7 @@ const AS = async () => {
     await q.addInitScript(([S]) => { window.__PL_TEST = 1; if (!sessionStorage.getItem('as1')) { sessionStorage.setItem('as1', 1); localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.state', JSON.stringify(S.s)); if (S.pool) localStorage.setItem('cc2.pool', JSON.stringify(S.pool)); } }, [st(team, box, pool)]);
     await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2000);
     await q.waitForFunction(() => window.V2 && V2.plan && V2.plan.plans && !document.querySelector('#main .sg2-wait'), null, {timeout: 90000}).catch(() => {}); await q.waitForTimeout(800);
-    await q.evaluate(() => window.__ev('V2.openAllSugs()')); await q.waitForTimeout(800); return {q, c}; };
+    await sgTab(q); /* q59: on phones the sheet is opened from the Suggestions tab */ await q.evaluate(() => window.__ev('V2.openAllSugs()')); await q.waitForTimeout(800); return {q, c}; };
   const settle = q => q.waitForFunction(() => { const s = document.querySelector('.np-sheet .sga2'); return s && !s.querySelector('.sg2-wait'); }, null, {timeout: 90000}).catch(() => {});
   const T = (q, sel) => q.evaluate(s => { const e = document.querySelector(s); return e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; }, sel);
   // AS-1: the head and the one Suggest from inside the sheet, showing the same choice as My Team's
@@ -255,7 +263,7 @@ const AS = async () => {
   const fresh = async W => { const c = await b.newContext({viewport: {width: W, height: 844}}), q = await c.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
     await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2000);
     const st = () => q.waitForFunction(() => window.V2 && V2.plan && V2.plan.plans && V2.plan.key === V2.planKey() && !document.querySelector('#main .sg2-wait'), null, {timeout: 90000}).catch(() => {}).then(() => q.waitForTimeout(800));
-    await st(); return {q, c, st}; };
+    await st(); await sgTab(q); return {q, c, st}; };
   const NONE = 'Nothing to fix. Your team has every basic and no swap clearly beats it in real games.';
   { const {q, c} = await fresh(390); const mt = await T(q, '#tm-sg'); await q.evaluate(() => window.__ev('V2.openAllSugs()')); await q.waitForTimeout(1000);
     const fold = await q.evaluate(() => ((document.querySelector('#main .sg2-fold[data-v2fix] summary .s') || {}).textContent || '').trim());
@@ -761,6 +769,8 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
 { const q = await b.newPage({viewport: {width: 390, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; });
   await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.addStyleTag({content: 'html,body{overflow-anchor:none}'}); // as a browser without scroll anchoring
   await q.evaluate(() => window.__ev(`(() => { const T = ['Incineroar','Garchomp','Sneasler','Kingambit','Basculegion','Sinistcha']; S.slots.forEach((s, i) => { s.n = T[i]; }); persist(); V2.redraw(); })()`));
+  /* q59 (Sim's yes, Nov 20): on phones My Team's sections are tabs; open Suggestions as a player would (no tabs at 700+: nothing to do) */
+  await q.evaluate(() => { const t = document.querySelector('.tm-tabs [data-tmjump="tm-sg"]'); if (t) t.click(); }); await q.waitForTimeout(600);
   await q.waitForSelector('#tm-sg [data-v2plan]', {timeout: 20000}).catch(() => {});
   // Nov 18 (full test run): the planner works in steps now and redraws Suggestions after the first Apply shows, so wait until it settles
   await q.waitForFunction(() => { const s = document.querySelector('#tm-sg'); return s && !s.querySelector('[aria-busy=true]') && !/Working out/.test(s.innerText) && s.querySelector('[data-v2plan]'); }, null, {timeout: 30000}).catch(() => {});
@@ -784,6 +794,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2500); await q.addStyleTag({content: 'html,body{overflow-anchor:none}'}); // as Safari: no scroll anchoring
   await q.evaluate(T => window.__ev(`(() => { const T = ${JSON.stringify(T)}; S.slots.forEach((s, i) => { s.n = T[i]; }); persist(); V2.redraw(); })()`), T);
   const settled = () => q.waitForFunction(() => { const s = document.querySelector('#tm-sg'); return s && !s.querySelector('[aria-busy=true]') && !/Working out/.test(s.innerText) && !s.querySelector('.sg2-stale'); }, null, {timeout: 30000}).catch(() => {});
+  await q.evaluate(() => { const t = document.querySelector('.tm-tabs [data-tmjump="tm-sg"]'); if (t) t.click(); }); await q.waitForTimeout(600); /* q59: the Suggestions tab, as a player opens it */
   await settled();
   /* 'nothing to fix' (Nov 18 fix of the check): the six's last suggestion is FOUND, not assumed. Its one suggestion got a follow-up after the
      planner changes (run 1351: 14 frames with a new Apply), so the "no Apply left: Suggestions stays" ending went unchecked and the check
@@ -1363,7 +1374,7 @@ if (part('main2')) {
     ok(h.n === 3 && h.cols === 3 && h.level && !h.panel && /Tap a Card/.test(h.hint) && t && t.below && t.btn && t.seen, `Sim, Nov 18 (C): at 390 the Hand is three across (Lead | Back | Bench), the editing panel is shut with "Tap a Card…" until a Card is tapped, then opens under the whole Hand, on screen, with Replace, Edit Set, Remove and Lock (${JSON.stringify({...h, open: t})})`);
     await c.close(); }
   // 3. the three Suggestions links in one row: phones 360-699 and desktop 1100-1280 (they already were from 1440)
-  { const rows = []; for (const W of [360, 390, 600, 1100, 1180, 1280]) { const {q, c} = await mtOpen(W); rows.push(W + ':' + await q.evaluate(() => { const a = [...document.querySelectorAll('#main .tm-sgs .sg2-links .sg2-all')].filter(x => x.getClientRects().length);
+  { const rows = []; for (const W of [360, 390, 600, 1100, 1180, 1280]) { const {q, c} = await mtOpen(W); await sgTab(q); rows.push(W + ':' + await q.evaluate(() => { const a = [...document.querySelectorAll('#main .tm-sgs .sg2-links .sg2-all')].filter(x => x.getClientRects().length);
       const T = a.map(x => Math.round(x.getBoundingClientRect().top)), H = a.map(x => Math.round(x.getBoundingClientRect().height)); return a.length === 3 && new Set(T).size === 1 && new Set(H).size === 1 && a.every(x => x.scrollWidth <= x.clientWidth + 1) ? (() => { /* every two words drawn side by side keep a space between them (a block part inside the flex link dropped it: 'See AllSuggestions') */ const tight = []; a.forEach(x => { const R = []; const tw = document.createTreeWalker(x, NodeFilter.SHOW_TEXT); let n; while ((n = tw.nextNode())) { const re = /\S+/g; let m; while ((m = re.exec(n.textContent))) { const rg = document.createRange(); rg.setStart(n, m.index); rg.setEnd(n, m.index + m[0].length); const r = rg.getBoundingClientRect(); R.push([m[0], r.left, r.right, Math.round(r.top)]); } }
         for (let k = 1; k < R.length; k++) if (R[k][3] === R[k - 1][3] && R[k][1] - R[k - 1][2] < 2) tight.push(R[k - 1][0] + R[k][0]); }); return tight.length ? 'words run together: ' + tight.join(', ') : 'row'; })() : T.join('/'); })); await c.close(); }
     ok(rows.every(x => /:row$/.test(x)), `Sim, Nov 18 (C and Q2 option 1): the three Suggestions links sit in one even row at 360-699 and 1100-1280, their words spaced (${rows.join(', ')})`); }

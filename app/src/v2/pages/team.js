@@ -463,6 +463,11 @@ V2.pages.team = {place: 'team', draw() {
   // the three counts (brief s1) are left out: Sim, Nov 12, 'no Matchups summary in the header' (TEAM-15); question to Sim with pictures
   const mtNums = nm ? `<div class="mt-nums"><p class="lf"><b class="u">${D.mu.fav}</b><span>Favoured</span></p><p class="le"><b class="u">${D.mu.even}</b><span>Even match</span></p><p class="lu"><b class="u">${D.mu.unf}</b><span>Unfavoured</span></p></div>` : '';
   const mtHead = `${mtBand}<div class="tm-lock mt-head">${mtId}${mtBelt}<div class="mt-right">${acts.replace(/ tm-svl/g, '')}</div></div>`;
+  // Sim's yes (Nov 20, option B of docs/rebuild/research/team-meta-length-nov20.md): on phones (under 700) the bar under the six is real
+  // tabs, one section at a time (Your Games stays under it), so the page is about as long as one section; 700 and up as before
+  const tabbed = V2.tmTabbed(), tabIds = [...(V2.isHand(D) ? [] : ['tm-set']), 'tm-mu', 'tm-sg', 'tm-ck'];
+  if (tabbed) V2.tmHashTab();
+  const curTab = tabIds.includes(V2.tmUi.tab) ? V2.tmUi.tab : 'tm-mu';
   const jump = `<nav class="np-tabs tm-jump" aria-label="On this page">${V2.isHand(D) ? '' : '<a href="#team" data-tmjump="tm-set" aria-current="location">Set</a>'}<a href="#team" data-tmjump="tm-mu"${V2.isHand(D) ? ' aria-current="location"' : ''}>Matchups</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks</a>${legalMark}<button type="button" class="tm-tsbtn" data-v2sheetopen aria-label="Team Sheet">Team Sheet <span aria-hidden="true">↗</span></button></nav>`;
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set (group six: six.js)
   const setSec = V2.isHand(D) ? '' : V2.setSecHtml(D, sel); // The Hand: the editing strip under the Hand replaces the Set section (brief s3)
@@ -475,9 +480,16 @@ V2.pages.team = {place: 'team', draw() {
   // "Problems and Team Checks" (what the team has or misses, and how often winners have it); the threats "?" sits on its check
   const hand = CH.hand(D.RD), ck = x => `<li class="${x.ok ? 'ok' : ''}"><b aria-hidden="true">${x.ok ? '✓' : '–'}</b><span>${V2.esc(V2.wl(x.label))}${/^Ready for/.test(x.label) ? V2.tip('readiness') : ''}${(x.ok ? x.have : x.miss) ? `<small>${V2.esc(V2.undot(V2.wl(x.ok ? x.have : x.miss, hand)))}</small>` : ''}${x.pro && !x.note ? `<small>${V2.undotHtml(x.pro)}</small>` : ''}</span></li>`; // notes: their 'why' is said once, above them
   const ckSec = `<section class="tm-sec tm-cks" id="tm-ck"><h2 class="u">Team Checks</h2><p class="tm-sub">The 4 basics count toward the score; the notes are advice.${V2.tip('checklist')}</p>${V2.ckBody(D, ck)}${V2.fixFold(D) /* Problems and Team Checks: pages/sugs.js (R4 sugs hook) */}</section>`;
+  // the tabs: Suggestions carries how many there are (the numbered cards), Team Checks how many of the 4 basics fail, so a tab with
+  // something to act on says so without being opened
+  const nSg = D.sug && !D.sug.pending ? (sgSec.match(/<span class="np-eyebrow">Suggestion \d+<\/span>/g) || []).length : 0, nCk = D.basics.filter(x => !x.ok).length;
+  const tabTxt = {'tm-set': ['Set'], 'tm-mu': ['Matchups'], 'tm-sg': ['Suggestions', nSg, nSg === 1 ? 'suggestion' : 'suggestions'], 'tm-ck': ['Team Checks', nCk, nCk === 1 ? 'basic missing' : 'basics missing']};
+  const tabBar = `<div class="np-tabs tm-jump tm-tabs" role="tablist" aria-label="Team sections">${tabIds.map(k => { const [t, n, w] = tabTxt[k], on = k === curTab;
+    return `<button type="button" role="tab" id="tmtab-${k}" aria-controls="${k}" aria-selected="${on}" tabindex="${on ? 0 : -1}" data-tmjump="${k}">${t}${n ? `<span class="tm-tcnt" aria-hidden="true"> ${n}</span><span class="vh">, ${n} ${w}</span>` : ''}</button>`; }).join('')}</div>`;
+  const tabPanels = h => tabbed ? h.replace(/<section class="tm-sec ([^"]*)" id="(tm-(?:set|mu|sg|ck))"/g, (m, c, k) => `<section class="tm-sec ${c}${k === curTab ? '' : ' tm-off'}" id="${k}" role="tabpanel" aria-labelledby="tmtab-${k}"`) : h;
   // Nov 18: the hero is drawn with the belt's last fit (mt-wide), so a redraw no longer drops the belt's full-width row and puts it back
   // in after(): that flip moved everything under the belt 30px and back, and scroll anchoring moved the page 30px on each redraw
-  return `<section class="tm-hero mt${V2._mtWide && innerWidth < 1100 ? ' mt-wide' : ''}">${mtHead}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}</section>${jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}">${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
+  return `<section class="tm-hero mt${V2._mtWide && innerWidth < 1100 ? ' mt-wide' : ''}">${mtHead}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}</section>${tabbed ? tabBar : jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}${tabbed ? ' tm-tabbed' : ''}">${tabPanels(`${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}`)}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
 after() { V2.mtBeltFit();
   /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */
@@ -485,14 +497,14 @@ after() { V2.mtBeltFit();
   document.querySelectorAll('[data-tmsel]').forEach(b => { if (b._v2b) return; b._v2b = 1; b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.ui.picked = true; V2.redraw();
     /* Sim, Nov 18 (C): with the Hand three across the panel opens under the whole Hand; if that is below the screen, bring its top into view */
     if (V2.mtHand3()) requestAnimationFrame(() => { const e = document.querySelector('#main .mt-edit'); if (e && e.getBoundingClientRect().top > innerHeight - 160) e.scrollIntoView({block: 'nearest', behavior: V2.smooth()}); }); }); });
-  document.querySelectorAll('[data-tmjump]').forEach(a => !a._v2b && (a._v2b = 1) && a.addEventListener('click', e => { e.preventDefault(); V2._jumpPick = a.dataset.tmjump; requestAnimationFrame(V2.jumpSync); /* side-by-side sections: the one you tapped is marked, even when no scroll is needed (A7) */ const t = document.getElementById(a.dataset.tmjump); if (t) { t.scrollIntoView({behavior: V2.smooth()}); const h = t.querySelector('h2'); if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } } })); /* focus moves to the section heading, so Tab and screen readers carry on from there (audit TEAM-07) */
+  document.querySelectorAll('a[data-tmjump]').forEach(a => !a._v2b && (a._v2b = 1) && a.addEventListener('click', e => { e.preventDefault(); V2._jumpPick = a.dataset.tmjump; requestAnimationFrame(V2.jumpSync); /* side-by-side sections: the one you tapped is marked, even when no scroll is needed (A7) */ const t = document.getElementById(a.dataset.tmjump); if (t) { t.scrollIntoView({behavior: V2.smooth()}); const h = t.querySelector('h2'); if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } } })); /* focus moves to the section heading, so Tab and screen readers carry on from there (audit TEAM-07) */
   V2.jumpSync(); // A7 proposal: the jump bar marks the section you are reading
   if (V2.muAfter) V2.muAfter(); // Matchups hook (pages/matchups.js): keeps an open threat sheet in step with the page
 }};
 // A7 proposal (Sim's fix plan: "a marker that is always wrong is worse than none"): the jump bar's underline follows the scroll.
 // The marked section is the last one whose top has passed just under the bar (ties, as in the desktop columns, go to the one
 // earlier in the bar, unless you tapped the other one); at the very end of the page the last one is marked.
-V2.jumpSync = () => { const nav = document.querySelector('.tm-jump'); if (!nav) return; const as = [...nav.querySelectorAll('[data-tmjump]')]; if (!as.length) return;
+V2.jumpSync = () => { const nav = document.querySelector('.tm-jump'); if (!nav || nav.getAttribute('role') === 'tablist') return; /* phones: the tabs mark the chosen one (aria-selected), not the scroll */ const as = [...nav.querySelectorAll('[data-tmjump]')]; if (!as.length) return;
   // (Sim approved A7, Claude's recommendation for wide screens): from 700px the sections sit side by side, so "where you are" has
   // no single answer; there no section is marked (no underline) rather than a wrong one
   if (matchMedia('(min-width:700px)').matches) { for (const a of as) a.removeAttribute('aria-current'); return; }
@@ -500,6 +512,25 @@ V2.jumpSync = () => { const nav = document.querySelector('.tm-jump'); if (!nav) 
   for (const a of as) { const s = document.getElementById(a.dataset.tmjump); if (!s) continue; const t = s.getBoundingClientRect().top; if (t <= line && (t > best + 1 || (Math.abs(t - best) <= 1 && a.dataset.tmjump === V2._jumpPick))) { best = Math.max(best, t); cur = a; } }
   if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) cur = as[as.length - 1];
   for (const a of as) { const on = a === cur; if ((a.getAttribute('aria-current') === 'location') !== on) { if (on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); } } }; /* audit Nov 16: aria-current (links can't be "selected") */
+// ---------- My Team's tabs on phones (Sim's yes, Nov 20: option B) ----------
+V2.tmUi = V2.tmUi || {tab: 'tm-mu'}; /* the chosen tab, kept through redraws; Matchups first (the approved picture) */
+V2.tmTabbed = () => matchMedia('(max-width:699.98px)').matches;
+// '#team=mu' / '#team=sg' / '#team=ck' (for a link from elsewhere) opens My Team at that tab, once per arrival of that address
+V2.tmHashTab = () => { const m = /^#team=(set|mu|sg|ck)$/.exec(location.hash); if (!m) { V2._tmHash = ''; return; } if (V2._tmHash === location.hash) return; V2._tmHash = location.hash; V2.tmUi.tab = 'tm-' + m[1]; };
+// show one section: the tab is marked and the others hidden at once (the next redraw draws the same from V2.tmUi). As the jump bar did
+// (TEAM-07), the page brings the section's heading just under the bar, so the tapped section starts at the top of the screen
+V2.tmShow = k => { V2.tmUi.tab = k; const nav = document.querySelector('.tm-tabs'); if (!nav) return;
+  for (const t of nav.querySelectorAll('[role="tab"]')) { const on = t.dataset.tmjump === k; t.setAttribute('aria-selected', on); t.tabIndex = on ? 0 : -1; const s = document.getElementById(t.dataset.tmjump); if (s) s.classList.toggle('tm-off', !on); }
+  const s = document.getElementById(k); if (s && Math.abs(s.getBoundingClientRect().top - parseFloat(getComputedStyle(s).scrollMarginTop)) > 4) s.scrollIntoView({block: 'start', behavior: V2.smooth()}); };
+// a link elsewhere that leads to a section (Matchups' "All 30" and the threat sheet's button): on phones it opens that tab first
+V2.tmGo = k => { V2.tmUi.tab = k; if (document.querySelector('.tm-tabs')) V2.tmShow(k); const s = document.getElementById(k); if (s) s.scrollIntoView({block: 'start'}); };
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('.tm-tabs [role="tab"]'); if (t) V2.tmShow(t.dataset.tmjump); });
+document.addEventListener('keydown', e => { const t = e.target.closest && e.target.closest('.tm-tabs [role="tab"]'); if (!t) return; const as = [...t.parentElement.querySelectorAll('[role="tab"]')], i = as.indexOf(t);
+  const j = e.key === 'ArrowRight' ? (i + 1) % as.length : e.key === 'ArrowLeft' ? (i - 1 + as.length) % as.length : e.key === 'Home' ? 0 : e.key === 'End' ? as.length - 1 : -1; if (j < 0) return;
+  e.preventDefault(); as[j].focus(); V2.tmShow(as[j].dataset.tmjump); });
+// crossing 700 redraws, so phones get the tabs and wider windows the sections side by side, with no reload
+matchMedia('(max-width:699.98px)').addEventListener('change', () => { if (V2.route() === 'team' && V2.redraw) V2.redraw(); });
+addEventListener('hashchange', () => { if (V2.route() === 'team' && /^#team=/.test(location.hash) && V2.redraw) V2.redraw(); });
 let jumpRaf = 0; addEventListener('scroll', () => { if (jumpRaf) return; jumpRaf = requestAnimationFrame(() => { jumpRaf = 0; if (V2.route() === 'team') V2.jumpSync(); }); }, {passive: true});
 addEventListener('resize', () => { if (V2.route() === 'team') V2.jumpSync(); });
 // a look at the empty My Team without emptying anyone's team (the redesign preview links here; it changes nothing)

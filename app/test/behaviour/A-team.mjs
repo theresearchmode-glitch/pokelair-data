@@ -228,7 +228,7 @@ t('TEAM-07', 'Phone jump bar: Suggestions | Matchups | How it plays | Sets; "Set
   if (NEW) { /* new build (decided Nov 11, r4-team-gaps.md): one jump bar Set | Matchups | Suggestions | Team Checks at every width;
     a link scrolls its section to just under the bar and marks itself (A7, approved Nov 12: on phones the mark follows the scroll) */
     const r = await myTeam({team: TEAM, width: 390}); const j = await r.ui.jumpBar(); ok(/^(Set\|)?Matchups\|Suggestions\|Team Checks$/.test(j.join('|')) /* The Hand (Sim, Nov 14): no Set tab; the editing strip sits under the Hand */, 'jump bar: ' + j.join('|'));
-    ok(await r.ui.chosen('Set') === true || (j[0] === 'Matchups' && await r.ui.chosen('Matchups') === true), 'the first tab not marked at the top of the page'); /* The Hand (Sim, Nov 14): no Set tab, Matchups comes first */ const b = await r.ui.jumpTarget('Suggestions'); ok(b && b.top > b.vh, 'Suggestions already on screen before the jump: ' + JSON.stringify(b));
+    ok(await r.ui.chosen('Set') === true || (j[0] === 'Matchups' && await r.ui.chosen('Matchups') === true), 'the first tab not marked at the top of the page'); /* The Hand (Sim, Nov 14): no Set tab, Matchups comes first */ const b = await r.ui.jumpTarget('Suggestions'); ok(b && (!b.shown || b.top > b.vh), 'Suggestions already on screen before the jump: ' + JSON.stringify(b)); /* q59 (Sim's yes, Nov 20): on phones the bar is tabs, so before the tap Suggestions is either hidden (tabs) or below the screen */
     await r.ui.jumpTo('Suggestions'); await sleep(900); const a = await r.ui.jumpTarget('Suggestions'); ok(a && a.top >= 0 && a.top < a.vh / 2, 'Suggestions not scrolled to the top of the screen: ' + JSON.stringify(a));
     ok(await r.ui.chosen('Suggestions') === true && await r.ui.chosen('Set') !== true, '"Suggestions" not the marked link after the jump'); /* The Hand: there may be no Set tab */ ok(await r.ui.noSideScroll(), 'sideways scroll at 390'); await r.close();
     const d = await myTeam({team: TEAM, width: 1280}); ok(/^(Set\|)?Matchups\|Suggestions\|Team Checks$/.test((await d.ui.jumpBar()).join('|')), 'desktop jump bar: ' + (await d.ui.jumpBar()).join('|')); await d.close(); return; }
@@ -398,7 +398,7 @@ t('SUG-03b', 'Swap my Mega? choice is kept after reload (like Megas on team)', a
   ok(await l.ui.chosen('Yes') === true, '"Yes" reset to "No" after reload'); await l.close(); }, {known: NEW ? '' : 'inventory #22: "Swap my Mega?" is a hidden checkbox and resets on reload while "Megas on team" is saved'});
 
 t('SUG-04', 'Suggestion cards: Apply, "Why?" reasons, "Show N more" then "See all suggestions ›"', async () => {
-  const r = await myTeam({team: TEAM, width: 390}); let c = await r.ui.suggestionCards(); ok(c.length === 1, `${c.length} cards shown at first`);
+  const r = await myTeam({team: TEAM, width: 390}); if (NEW) await r.ui.jumpTo('Suggestions'); /* q59 (Sim's yes, Nov 20): on phones Suggestions is a tab; a player taps it */ let c = await r.ui.suggestionCards(); ok(c.length === 1, `${c.length} cards shown at first`);
   ok(/\S+ for \S+/.test(c[0]) && /[+±−-]\d+ \(\d+ → \d+\)/.test(c[0]) && /Apply/.test(c[0]), 'first card lacks "X for Y", score change or Apply: ' + c[0]);
   await r.ui.openFold('Why?'); const w = await r.ui.foldContent('Why?'); ok(w && w.length > 60, 'Why? fold lists no reasons');
   const more = (await r.ui.text()).match(NEW ? /Show (\d) More Suggestions?/ : /Show (\d) more suggestions?/); ok(more, 'no "Show N more suggestions"'); await r.ui.tapText(more[0], 1200);
@@ -431,7 +431,7 @@ t('SUG-07', 'Protect fix: with Protect on only one Pokémon, "Add Protect" puts 
   for (const n of named) { const card = await r.ui.showSet(n) || ''; ok(/Protect/.test(card), `${n}'s set has no Protect`); } await r.close(); });
 
 t('SUG-08', '"Nothing to fix" card with Battle and Sets on a complete team', async () => {
-  const r = await myTeam({fresh: true, width: 390}); const tx = await r.ui.text(); has(tx, 'Nothing to fix. Your team has every basic and no swap clearly beats it in real games.'); has(tx, /Your edge now comes from how you play it/);
+  const r = await myTeam({fresh: true, width: 390}); if (NEW) await r.ui.jumpTo('Suggestions'); /* q59: Suggestions is a tab on phones */ const tx = await r.ui.text(); has(tx, 'Nothing to fix. Your team has every basic and no swap clearly beats it in real games.'); has(tx, /Your edge now comes from how you play it/);
   await r.ui.setWidth(1280); await r.ui.tapText(NEW ? /^Battle ›/ : /^Battle$/, 900); /* Sim, Nov 14 naming: the tool is "Battle" everywhere */ /* new: the links say where they go (review fix, Nov 13) */ ok(await r.ui.current() === 'matchup', 'Battle button did not open Battle'); await r.ui.go('My Team', 1500); await r.ui.tapText(NEW ? /^Popular Sets/ : /^Sets$/, 900); ok(await r.ui.current() === 'sets', 'Sets button did not open Popular sets'); await r.close(); });
 
 t('SUG-09', 'When nothing raises the score: a no-gain message instead of plain Apply cards', async () => {
