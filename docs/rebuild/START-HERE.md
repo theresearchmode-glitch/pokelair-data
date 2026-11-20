@@ -76,7 +76,7 @@ without Sim's explicit yes.
 - Before the end time: a summary of every decision made under authority, each with its picture where visual (from decisions.md),
   update this file / HANDOVER, update the Plans page, then STOPPED and a phone notification (PushNotification tool). Schedule a
   reminder for this when authority is given (section 8).
-- Current state: Sim gave authority until **5:00 PM Eastern Thu Nov 19** (logged Wed 2:26 PM). It applies to "you" (the chat working
+- Current state (updated Thu Nov 19, 9:31 PM): Sim extended authority to **9:00 AM Eastern Fri Nov 20** (logged Thu 11:41 AM). Before that: 5 PM Thu (logged Wed 2:26 PM). It applies to "you" (the chat working
   on the rebuild); confirm with him that it carries over to the new chat. Do not assume.
 
 ### Helpers (standing rule, Sim Nov 18)
@@ -176,6 +176,19 @@ without Sim's explicit yes.
   2026-11-18T21:57:34Z: no-Mega fix, six records, matchups, leads). `live` = main = c77471d5. The live page's CODE is still Nov 12's.
 
 ---
+
+## 4a. Where the rebuild stands (Thu Nov 19, 9:31 PM by the clock; newest first, then section 4 below)
+- PUSHED and GitHub 14/14 green: 8e18eb97 (morning: Q23-Q31, W1/W5/W7), 507a8efa (Q32 This Week, Q33/Q34 Events; ticked).
+- CHECKED, push pending: the Arena batch = commit 62933e89 (the Damage Calc "Arena" redesign from Sim's mock-ups, Q38 slanted chips,
+  Q39 Events 700-759, Q40 iPad rows). Its full check: part 1 0 failed (78 steps); part 2 (quality + behaviour + data) was running.
+  Push that exact commit (`git push origin 62933e89:claude/design6`), not the branch head.
+- MERGED locally, not checked as a batch yet: 6c5b736b = short pages on phones Q41 News, Q42 Usage, Q43 Gifts, Q44 How We Calculate,
+  Q45 Test Run, Q48 News link colour, Q46 Arena picker sheet. Each has its own test (fails before, passes after, also on frozen data).
+- Helper building Q47 (Arena "All moves" + set sheets) from branch q46 (b77d2ddf).
+- Switch: rehearsed on a private scratch artifact (GARZ7Ar2mNhA1fQgwTULEQ; delete only with Sim's yes). Removals count toward the
+  255-per-publish limit; the 4-step no-broken-picture order is in switch-runbook-nov19.md 3d; docs/rebuild/switch-plan.py builds and
+  checks the lists. Saved-data contract checked by code (saved-data.md, Nov 19 section).
+- Small items for Sim: docs/rebuild/morning-list-nov20.md. Decisions: docs/rebuild/decisions.md (Thu Nov 19).
 
 ## 4. Where the rebuild stands (Nov 18, 6:42 PM; check decisions.md for anything newer)
 
