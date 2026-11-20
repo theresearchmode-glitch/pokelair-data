@@ -395,10 +395,7 @@ V2.whyNone = G => { const E = V2.esc, ms = members(), bases = ms.map(m => (byNam
     : typeof modelOK === 'function' && !modelOK() ? `Today's data is still loading. Try again in a moment.`
     : `The Strength Score couldn't be worked out for this team.`;
   return `<div class="why2"><div class="np-eyebrow">Strength Score</div><h2 class="u">Not Worked Out Yet</h2><p class="tm-sub">${why}</p>${G && G.v === 1 ? `<p class="fine">The ${E(String(G.s))} shown for now is the simpler check-based score: how its Pokémon do in real tournament games, minus points for any missing basic.</p>` : ''}</div>`; };
-// other saved teams in one tap (today's "Switch team"): opening one is Saved Teams' Open, with Undo
-V2.switchHtml = () => { const ts = S.teams.filter(t => t && t.id !== S.loadedId && t.format !== 'singles' && Array.isArray(t.slots) && t.slots.some(x => x && x.n)).slice(0, 8);
-  return `<div class="sw2"><div class="np-eyebrow">My Team</div><h2 class="u">Saved Teams</h2><ul>${ts.map(t => `<li><button type="button" class="sw2-t" data-svact="open" data-id="${V2.esc(t.id)}"><span class="sw2-m">${t.slots.filter(x => x && byName.get(x.n)).slice(0, 6).map(x => `<img src="${V2.art(SPRITE_ID[x.n])}" alt="" loading="lazy" decoding="async">`).join('')}</span><b>${V2.esc(t.name || 'Saved team')}</b></button></li>`).join('')}</ul></div>`; };
-document.addEventListener('click', e => { if (e.target.closest('[data-v2why]')) V2.sheet(V2.whyHtml(), {label: 'Why This Score?', small: true}); else if (e.target.closest('[data-v2switch]')) V2.sheet(V2.switchHtml(), {label: 'Switch team', small: true, focus: '.sw2-t'}); });
+document.addEventListener('click', e => { if (e.target.closest('[data-v2why]')) V2.sheet(V2.whyHtml(), {label: 'Why This Score?', small: true}); });
 
 // Team Checks (Sim, Nov 11): checks that pass fold into one line; only the ones that fail show in full (a note says it's a note)
 V2.ckBody = (D, ck) => { const fb = D.basics.filter(x => !x.ok), fn = D.notes.filter(x => !x.ok), pb = D.basics.filter(x => x.ok), pn = D.notes.filter(x => x.ok);
@@ -436,14 +433,15 @@ V2.pages.team = {place: 'team', draw() {
   const rank = G && !G.partial && G.rk != null ? CH.rankShort(G.rk) + ' of tournament teams' : G && G.partial ? `${ms.length} of 6 picked` : '';
   // today's hero: the win line, and a note when few real games back this mix ("How sure" itself is in Why this score?)
   const su = G && G.st && G.st.su, low = su && su.w === 'Low', win = G && G.v === 2 && !G.partial && G.e != null ? `Teams scoring like this win about ${Math.round(G.e)}% against today’s tournament teams` : '';
-  const others = S.teams.filter(t => t && t.id !== S.loadedId && t.format !== 'singles' && Array.isArray(t.slots) && t.slots.some(x => x && x.n)).length;
+  /* scan S2 (Nov 20, Sim: 'go with your recommendations'): the 'Saved Teams · N saved ›' link (a quick switch sheet) is gone; it sat right above
+     the 'Saved Teams N' button. The button stays: it is in the action row on every team, and its sheet opens a team the same way (Open, with Undo). */
   const L = legalOf(ms), title = D.saved || (ms.length ? teamTitleFor(ms) : '');
   // today's header line "My team: 6 of 6, Sun team": the count and the weather or terrain the six sets (shared wxKeyOf / wxName)
   let wx = ''; try { const k = ms.length ? wxKeyOf(ms) : null; if (k) wx = wxName(k); } catch (e) {}
   // Legal mark (mock-up: in the jump bar); narrower windows show it in the hero's links row instead, where it has room
   const legalMark = ms.length ? `<span class="tm-legal${L.illegal ? ' bad' : ''}" title="Based on our reading of the ${V2.esc(REG_NAME)} rules. Check the official rules before an event."><i aria-hidden="true"></i>${L.illegal ? 'Not legal yet' : 'Legal for ' + V2.esc(REG_NAME)}</span>` : '';
   const lockup = `<div class="tm-lock"><div class="np-eyebrow tm-eb"><span>My Team · ${ms.length} of 6${wx ? ` · ${V2.esc(wx)}` : ''}</span></div>${title ? `<h1 class="tm-name">${V2.esc(title).replace(/(Mega \S+) ([XYZ])\b/g, '$1\u00a0$2')}</h1>` : ''}${/\(sample\)\s*$/i.test(title || '') ? '<p class="fine tm-sample">This is a sample team, here to show how NastyPlot works. <span class="tm-sample-acts"><a class="np-link" href="#build">Build Me a Team ›</a><button type="button" class="np-link" data-v2import>Import a Team ›</button></span></p>' : ''}${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>`
-    : `<div class="np-score" style="--band:var(--band-${({A: "top", B: "ready", C: "solid", D: "work", F: "miss"})[G.band] || "solid"})"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div>`}</div><div class="tm-info">${s == null ? '' : `${win ? `<p class="tm-line">${win}</p>` : ''}<p class="tm-rank">${V2.esc(rank)}</p>${low ? '<p class="fine tm-low">Few real games back this mix yet, so it\'s a best guess</p>' : ''}<div class="tm-links"><button type="button" class="np-link" data-v2why aria-haspopup="dialog">Why This Score? ›</button>${others ? `<button type="button" class="np-link" data-v2switch aria-haspopup="dialog">Saved Teams <small>${others} saved</small> ›</button>` : ''}${legalMark.replace('class="tm-legal', 'class="tm-legal tm-legal-h')}</div>`}${goneNote(S.slots) ? `<p class="fine tm-gone" role="status">${goneNote(S.slots)}</p>` : ''}</div>`;
+    : `<div class="np-score" style="--band:var(--band-${({A: "top", B: "ready", C: "solid", D: "work", F: "miss"})[G.band] || "solid"})"><b>${s}</b><div class="w"><span>${V2.esc(word)}</span><small>Strength Score</small></div></div>`}</div><div class="tm-info">${s == null ? '' : `${win ? `<p class="tm-line">${win}</p>` : ''}<p class="tm-rank">${V2.esc(rank)}</p>${low ? '<p class="fine tm-low">Few real games back this mix yet, so it\'s a best guess</p>' : ''}<div class="tm-links"><button type="button" class="np-link" data-v2why aria-haspopup="dialog">Why This Score? ›</button>${legalMark.replace('class="tm-legal', 'class="tm-legal tm-legal-h')}</div>`}${goneNote(S.slots) ? `<p class="fine tm-gone" role="status">${goneNote(S.slots)}</p>` : ''}</div>`;
   // Sim, Nov 11: the one main action plus two others; the rest in one More menu (Clear Team last, apart, with Undo)
   // A11 proposal (Sim's fix plan): the main button only when there is something to save. A saved team that hasn't changed shows a
   // quiet "Saved ✓" (same sheet behind it, so a copy can still be saved under a new name)
@@ -458,7 +456,7 @@ V2.pages.team = {place: 'team', draw() {
   const mtSample = /\(sample\)\s*$/i.test(title || '') ? '<p class="fine tm-sample">This is a sample team, here to show how NastyPlot works. <span class="tm-sample-acts"><a class="np-link" href="#build">Build Me a Team ›</a><button type="button" class="np-link" data-v2import>Import a Team ›</button></span></p>' : '';
   const mtId = `<div class="mt-id"><p class="vh">My Team · ${ms.length} of 6${wx ? ` · ${V2.esc(wx)}` : ''}${ms.length ? ` · ${L.illegal ? 'Not legal yet' : 'Legal for ' + V2.esc(REG_NAME)}` : ''}</p><p class="fn-k">Your corner</p>${title ? `<h1 class="tm-name u">${V2.esc(title).replace(/(Mega \S+) ([XYZ])\b/g, '$1 $2')}</h1>` : ''}${mtSample}
     ${s == null ? `<p class="tm-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>` : `${win ? `<p class="tm-line">${win}. <b class="tm-rank">${V2.esc(rank)}</b></p>` : `<p class="tm-rank">${V2.esc(rank)}</p>`}${low ? '<p class="fine tm-low">Few real games back this mix yet, so it\'s a best guess</p>' : ''}
-    <div class="tm-links"><button type="button" class="np-link" data-v2why aria-haspopup="dialog">Why This Score? ›</button><button type="button" class="np-link" data-v2sheetopen aria-haspopup="dialog">Team Sheet <span aria-hidden="true">↗</span></button>${others ? `<button type="button" class="np-link" data-v2switch aria-haspopup="dialog">Saved Teams <small>${others} saved</small> ›</button>` : ''}${legalMark.replace('class="tm-legal', 'class="tm-legal tm-legal-h')}</div>`}${goneNote(S.slots) ? `<p class="fine tm-gone" role="status">${goneNote(S.slots)}</p>` : ''}</div>`;
+    <div class="tm-links"><button type="button" class="np-link" data-v2why aria-haspopup="dialog">Why This Score? ›</button><button type="button" class="np-link" data-v2sheetopen aria-haspopup="dialog">Team Sheet <span aria-hidden="true">↗</span></button>${legalMark.replace('class="tm-legal', 'class="tm-legal tm-legal-h')}</div>`}${goneNote(S.slots) ? `<p class="fine tm-gone" role="status">${goneNote(S.slots)}</p>` : ''}</div>`;
   const mtBelt = s == null ? '' : `<div class="mt-belt"><div class="np-score fn-belt" style="--band:var(--band-${bandWord});--bd:var(--band-${bandWord})"><b class="u">${s}</b><div class="w"><span class="u">${V2.esc(G ? CH.wordOf(G.s) : word)}</span><small>Strength Score${G && G.partial ? ' so far' : ''}</small></div></div></div>`; /* Sim, Nov 15 night: 'so far' in the small line, not in the big word (it widened the belt and squeezed the name) */
   // the three counts (brief s1) are left out: Sim, Nov 12, 'no Matchups summary in the header' (TEAM-15); question to Sim with pictures
   const mtNums = nm ? `<div class="mt-nums"><p class="lf"><b class="u">${D.mu.fav}</b><span>Favoured</span></p><p class="le"><b class="u">${D.mu.even}</b><span>Even match</span></p><p class="lu"><b class="u">${D.mu.unf}</b><span>Unfavoured</span></p></div>` : '';
@@ -467,7 +465,7 @@ V2.pages.team = {place: 'team', draw() {
   // tabs, one section at a time (Your Games stays under it), so the page is about as long as one section; 700 and up as before
   const tabbed = V2.tmTabbed(), tabIds = [...(V2.isHand(D) ? [] : ['tm-set']), 'tm-mu', 'tm-sg', 'tm-ck'];
   if (tabbed) V2.tmHashTab();
-  const curTab = tabIds.includes(V2.tmUi.tab) ? V2.tmUi.tab : 'tm-mu';
+  const curTab = tabIds.includes(V2.tmUi.tab) ? V2.tmUi.tab : V2.tmAutoTab(G); /* a tab the player chose (or '#team=sg') wins; else S18's first tab */
   const jump = `<nav class="np-tabs tm-jump" aria-label="On this page">${V2.isHand(D) ? '' : '<a href="#team" data-tmjump="tm-set" aria-current="location">Set</a>'}<a href="#team" data-tmjump="tm-mu"${V2.isHand(D) ? ' aria-current="location"' : ''}>Matchups</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks</a>${legalMark}<button type="button" class="tm-tsbtn" data-v2sheetopen aria-label="Team Sheet">Team Sheet <span aria-hidden="true">↗</span></button></nav>`;
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set (group six: six.js)
   const setSec = V2.isHand(D) ? '' : V2.setSecHtml(D, sel); // The Hand: the editing strip under the Hand replaces the Set section (brief s3)
@@ -514,7 +512,16 @@ V2.jumpSync = () => { const nav = document.querySelector('.tm-jump'); if (!nav |
   if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) cur = as[as.length - 1];
   for (const a of as) { const on = a === cur; if ((a.getAttribute('aria-current') === 'location') !== on) { if (on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); } } }; /* audit Nov 16: aria-current (links can't be "selected") */
 // ---------- My Team's tabs on phones (Sim's yes, Nov 20: option B) ----------
-V2.tmUi = V2.tmUi || {tab: 'tm-mu'}; /* the chosen tab, kept through redraws; Matchups first (the approved picture) */
+V2.tmUi = V2.tmUi || {tab: null, auto: null}; /* tab: the tab the player chose, kept through redraws; auto: the first tab picked for this team (S18) */
+/* scan S18 (Nov 20, Sim: 'go with your recommendations'): with no tab chosen, a full team whose Strength Score reads Needs work or Missing a
+   basic (under 70, as the belt rounds it) opens on Suggestions, since the fix is what a weaker team needs; any other team on Matchups (the
+   approved picture). The pick is kept for that team while it is edited (shares 4+ of its six: a suggestion applied, a Pokémon swapped), so the
+   tab never jumps under the player when the score crosses 70; a new six (an import, a loaded or built team) or a new visit picks again. */
+V2.tmAutoTab = G => { const ns = S.slots.map(x => x && x.n).filter(Boolean), A = V2.tmUi.auto;
+  if (A && ns.filter(n => A.ns.includes(n)).length >= 4) { A.ns = ns; return A.tab; }
+  if (!G || G.partial || G.s == null || ns.length < 6) { V2.tmUi.auto = null; return 'tm-mu'; }
+  V2.tmUi.auto = {ns, tab: Math.round(G.s) < 70 ? 'tm-sg' : 'tm-mu'}; return V2.tmUi.auto.tab; };
+addEventListener('hashchange', () => { if (!/^#team(=|$)/.test(location.hash)) V2.tmUi.auto = null; }); /* leaving My Team: the next visit picks again */
 V2.tmTabbed = () => matchMedia('(max-width:699.98px)').matches;
 // '#team=mu' / '#team=sg' / '#team=ck' (for a link from elsewhere) opens My Team at that tab, once per arrival of that address
 V2.tmHashTab = () => { const m = /^#team=(set|mu|sg|ck)$/.exec(location.hash); if (!m) { V2._tmHash = ''; return; } if (V2._tmHash === location.hash) return; V2._tmHash = location.hash; V2.tmUi.tab = 'tm-' + m[1]; };

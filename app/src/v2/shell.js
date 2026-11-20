@@ -310,7 +310,11 @@ V2.asOf = () => { try { const t = typeof dataDateText === 'function' ? dataDateT
 /* Sim's Q24 A (Nov 19): an address that matches no page (#nonsense) shows a not-found page in the 'No Pokémon here.' style (pokemon.js):
    eyebrow, headline, one line and Go to Home; no top tab lit (place ''), title 'Page not found' (V2.setTitle). It was Home on the real site
    and My Team in the Preview (coming.js). No address at all is still Home. Visitors to #owner get the same page (owner.js). Test: app/test/v2-q24.mjs */
-V2.nfHtml = () => `<div class="ra gsp" data-v2nf><section class="ra-h"><p class="np-eyebrow"><span>Page not found</span></p><h1 class="u">Nothing here.</h1><p class="ra-lede">This address doesn't match a page on NastyPlot. It may be an old or mistyped link.</p><p class="nf-go"><a class="np-btn" href="#home">Go to Home</a></p></section></div>`;
+/* scan S33 (Nov 20, Sim: 'go with your recommendations'): both not-found screens carry today's underdog (V2.underdog, team.js: the same
+   rotating featured Pokémon as the empty My Team, Home and the empty Box) with one playful line. No grades or team data on these screens. */
+V2.lostDog = () => { const n = V2.underdog ? V2.underdog() : 'Flapple', d = V2.esc(V2.disp(n));
+  return `<aside class="nf-dog" aria-label="Today's underdog"><button type="button" class="nf-dogst" data-v2mon="${V2.esc(n)}" aria-label="${d}: open its info">${V2.mon(n, {bare: true, ft: true})}</button><div class="nf-dogtx"><p class="np-eyebrow"><span>Today's underdog</span></p><p class="nf-dogl u">Lost? ${d}'s been here all along.</p></div></aside>`; };
+V2.nfHtml = () => `<div class="ra gsp nf-pg" data-v2nf><section class="ra-h"><p class="np-eyebrow"><span>Page not found</span></p><h1 class="u">Nothing here.</h1><p class="ra-lede">This address doesn't match a page on NastyPlot. It may be an old or mistyped link.</p><p class="nf-go"><a class="np-btn" href="#home">Go to Home</a></p></section>${V2.lostDog()}</div>`;
 V2.pages.notfound = {place: '', draw: () => V2.nfHtml()};
 /* own keys only: '#constructor' or '#toString' found the object's built-ins and broke the draw */
 V2.route = () => { const h = (location.hash || '').slice(1).split('=')[0]; /* Nov 15: '#method=rating' opens How We Calculate at that part */ return Object.prototype.hasOwnProperty.call(V2.pages, h) ? h : h ? 'notfound' : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
