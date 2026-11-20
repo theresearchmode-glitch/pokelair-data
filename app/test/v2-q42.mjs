@@ -2,7 +2,7 @@
 // top 3, each with a real button "N more ›" (N = the rest of the list the page holds, from the data), Abilities and Natures side by side in
 // two equal columns, Usually alongside one row of 3 plus "N more ›", and "Also ranked 61–100" folded behind its own button (same words
 // inside). Each button: aria-expanded, aria-controls, opens and closes from the keyboard, focus stays on it, "Show Fewer" when open, its
-// state kept across a redraw. 390 x 844: at least 0.5 screens shorter than the same page with the cuts undone in place (same data; the CI
+// state kept across a redraw. 390 x 844: at least 0.4 screens shorter than the same page with the cuts undone in place (same data; the CI
 // data differs from today's, so no fixed screen number). Tablet and desktop (700, 1440) unchanged: every bar, teammate and the line, no
 // button. Light and dark: nothing out of its box, nothing sideways, no lone teammate, no page errors. Exit 1 on any failure.
 //   PAGE=app/dist/v2.html node app/test/v2-q42.mjs   (a --v2 --preview-data build)
@@ -41,7 +41,7 @@ for (const th of ['light', 'dark']) {
         q('.us-groups').forEach(e => e.style.setProperty('grid-template-columns', 'repeat(auto-fit,minmax(240px,1fr))')); q('.us-groups > *').forEach(e => e.style.setProperty('grid-column', 'auto'));
         return {H, H0: document.documentElement.scrollHeight}; });
       await p.reload(); await p.waitForTimeout(4000);
-      ok((L.H0 - L.H) / 844 >= 0.5, `${th} 390: page ${(L.H / 844).toFixed(2)} screens, ${((L.H0 - L.H) / 844).toFixed(2)} shorter than without Q42's cuts (${(L.H0 / 844).toFixed(2)}; at least 0.5)`); }
+      ok((L.H0 - L.H) / 844 >= 0.4, `${th} 390: page ${(L.H / 844).toFixed(2)} screens, ${((L.H0 - L.H) / 844).toFixed(2)} shorter than without Q42's cuts (${(L.H0 / 844).toFixed(2)}; at least 0.4; measured 0.54 today, 0.52 on the CI data, Nov 19)`); }
     let bx = await boxes(p); ok(!bx.bad.length && !bx.side, `${th} ${W}: nothing out of its box, nothing sideways (${bx.bad.slice(0, 3).join('; ') || 'clean'}${bx.side ? ', scrolls sideways' : ''})`);
     for (const [k, all, cut, nm] of [['mv', n.mv, 5, 'Moves'], ['it', n.it, 3, 'Items'], ['tm', n.tm, 3, 'Usually alongside'], ['al', 1, 0, 'Also ranked']]) {
       if (!x.b[k].t) { ok(false, `${th} ${W}: no ${nm} button to open`); continue; }

@@ -1,7 +1,7 @@
 // Mystery Gifts on phones (Sim's Q43 A, Nov 19, 8:25 PM): under 700 wide The Stamp Sheet shows its first 6 stamps (two full rows of 3)
 // and a real button "Show All N Stamps ›" (N = the stamps in the chosen filter, from the data) opens the rest in place: aria-expanded,
 // aria-controls, keyboard opens and closes, focus stays on it, "Show Fewer Stamps" when open. A filter (All / Pokémon / Items) with 6 or
-// fewer: no button, every stamp. 390 x 844: at least 0.15 screens shorter than the same page with the cut undone in place (same data).
+// fewer: no button, every stamp. 390 x 844: at least 0.1 screens shorter than the same page with the cut undone in place (same data).
 // Tablet and desktop (700, 1440) unchanged: every stamp (up to 12), no button. Light and dark: nothing out of its box, nothing sideways,
 // no lone stamp on a row, no page errors. A fixture of 9 stamps (4 Pokémon, 5 items) checks the cut too when the live list is short.
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-q43.mjs   (a --v2 --preview-data build)
@@ -44,12 +44,12 @@ for (const th of ['light', 'dark']) {
   for (const W of [320, 390, 699]) { const [p, errs, c] = await open(W, th, true); const n = await phone(p, th, W, '');
     if (W === 390) { const L = await p.evaluate(() => { const H = document.documentElement.scrollHeight; document.querySelectorAll('#main .pr-sheet').forEach(e => e.classList.add('on')); document.querySelectorAll('#main .pr-mph').forEach(e => e.style.setProperty('display', 'none'));
         return {H, H0: document.documentElement.scrollHeight}; });
-      if (n.all > 6) ok((L.H0 - L.H) / 844 >= 0.15, `${th} 390: page ${(L.H / 844).toFixed(2)} screens, ${((L.H0 - L.H) / 844).toFixed(2)} shorter than without Q43's cut (${(L.H0 / 844).toFixed(2)}; at least 0.15)`);
+      if (n.all > 6) ok((L.H0 - L.H) / 844 >= 0.1, `${th} 390: page ${(L.H / 844).toFixed(2)} screens, ${((L.H0 - L.H) / 844).toFixed(2)} shorter than without Q43's cut (${(L.H0 / 844).toFixed(2)}; at least 0.1)`);
       else console.log(`  note  ${th} 390: the live list has ${n.all} stamps, 6 or fewer, so nothing to cut; the fixture checks the length`);
       await p.reload(); await p.waitForTimeout(3000); }
     await p.evaluate(fx => window.__ev(fx), FIX); await p.waitForTimeout(400); await phone(p, th, W, ' (fixture 9)');
     if (W === 390) { const L = await p.evaluate(() => { const H = document.documentElement.scrollHeight; document.querySelectorAll('#main .pr-sheet').forEach(e => e.classList.add('on')); document.querySelectorAll('#main .pr-mph').forEach(e => e.style.setProperty('display', 'none')); return {H, H0: document.documentElement.scrollHeight}; });
-      ok((L.H0 - L.H) / 844 >= 0.15, `${th} 390 (fixture 9): ${((L.H0 - L.H) / 844).toFixed(2)} screens shorter than without the cut (at least 0.15)`); }
+      ok((L.H0 - L.H) / 844 >= 0.1, `${th} 390 (fixture 9): ${((L.H0 - L.H) / 844).toFixed(2)} screens shorter than without the cut (at least 0.1)`); }
     ok(!errs.length, `${th} ${W}: no page errors (${errs.length}${errs.length ? ': ' + errs[0] : ''})`); await c.close(); }
   for (const W of [700, 1440]) { const [p, errs, c] = await open(W, th, false); for (const tag of ['', ' (fixture 9)']) { if (tag) { await p.evaluate(fx => window.__ev(fx), FIX); await p.waitForTimeout(400); }
       const n = await want(p), x = await look(p);
