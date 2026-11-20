@@ -1,6 +1,7 @@
 // My Team on phones (Sim's yes, Nov 20: option B of docs/rebuild/research/team-meta-length-nov20.md): under 700 wide the bar under the
 // six is real tabs (role=tablist, role=tab buttons with aria-selected, roving tabindex, aria-controls to role=tabpanel sections; arrow
-// keys, Home and End) and ONE of Matchups / Suggestions / Team Checks shows at a time, Matchups first; Your Games stays under it, always
+// keys, Home and End) and ONE of Matchups / Suggestions / Team Checks shows at a time, Matchups first (scan S18, Nov 20: Suggestions first
+// when the Strength Score reads under 70 and no tab was chosen); Your Games stays under it, always
 // shown. The Suggestions tab carries the number of suggestion cards and Team Checks the number of failing basics (counted here from the
 // sections themselves). The chosen tab is kept through a redraw and a resize; Matchups' "All 30 Matchups" (threat sheet) and a
 // '#team=sg' address open their tab. At 390 the page is at least 0.6 screens shorter than the same page with every section shown,
@@ -31,7 +32,11 @@ const one = (x, k) => x.shown.length === 1 && x.shown[0] === k && x.tabs.filter(
 const phone = async (W, th, weak) => { const [p, errs, c] = await open(W, th, weak), tag = `${th} ${W}${weak ? ' weaker team' : ''}`; let x = await look(p);
   ok(x.role === 'tablist' && x.tabs.map(t => t.k).join() === SEC.join() && x.tabs.every(t => t.tag === 'BUTTON' && t.ctl), `${tag}: tablist with 3 tab buttons, each aria-controls its tabpanel (${x.role}; ${x.tabs.map(t => t.txt).join(' | ')})`);
   if (x.role !== 'tablist') { ok(!errs.length, `${tag}: no page errors (${errs.length})`); await c.close(); return; }
-  ok(one(x, 'tm-mu') && x.yg, `${tag}: Matchups first, the only section shown (${x.shown.join()}), Your Games under it (${x.yg})`);
+  /* scan S18 (Nov 20): a team whose Strength Score reads under 70 (Needs work / Missing a basic) opens on Suggestions; others on Matchups.
+     The weaker team here scores under 70 (checked, so this line can fail), the sample team 70+ */
+  const sc = await p.evaluate(() => Number((document.querySelector('.fn-belt b') || {}).textContent)), first = sc < 70 ? 'tm-sg' : 'tm-mu';
+  ok(weak ? sc < 70 : sc >= 70, `${tag}: this team's Strength Score is ${weak ? 'under' : 'at least'} 70 (${sc})`);
+  ok(one(x, first) && x.yg, `${tag}: ${first === 'tm-sg' ? 'Suggestions' : 'Matchups'} first (score ${sc}), the only section shown (${x.shown.join()}), Your Games under it (${x.yg})`);
   ok(x.tabs.every(t => t.h >= 44 && t.l >= 0 && t.r <= x.W + 0.5), `${tag}: tabs 44px+ tall and inside the screen (${x.tabs.map(t => `${t.h}px ${Math.round(t.l)}-${Math.round(t.r)}`).join(', ')})`);
   const sg = x.tabs[1], ck = x.tabs[2];
   ok(sg.cnt === (x.nSug && !x.nothing ? String(x.nSug) : ''), `${tag}: Suggestions tab count "${sg.cnt}" = the ${x.nSug} suggestion cards${x.nothing ? ', none shown beside Nothing to fix (Q64)' : ''}`);
@@ -65,6 +70,26 @@ const phone = async (W, th, weak) => { const [p, errs, c] = await open(W, th, we
     await p.setViewportSize({width: 390, height: 844}); await p.waitForTimeout(800); x = await look(p); ok(x.role === 'tablist' && one(x, 'tm-ck'), `${tag}: back to 390: tabs again, Team Checks kept (${x.shown.join()})`); }
   ok(!x.side, `${tag}: nothing scrolls sideways`); ok(!errs.length, `${tag}: no page errors (${errs.length}${errs.length ? ': ' + errs[0] : ''})`); await c.close(); };
 for (const th of ['light', 'dark']) for (const W of [320, 390]) for (const weak of [false, true]) await phone(W, th, weak);
+// scan S18 (Nov 20): the first tab follows the score only when no tab was chosen, is kept while the team is edited, and is picked again
+// for a new six; on arrival a weaker saved team opens on Suggestions from the first paint (no switch after it)
+{ const SG = `(()=>{const names=['Snorlax','Drampa','Politoed','Vivillon','Corviknight','Hippowdon'];S.slots=names.map(n=>{const b=blank();b.n=n;return b;});fixSlots();S.loadedId=null;persist();render();})()`;
+  const sel = p => p.evaluate(() => { const t = document.querySelector('.tm-tabs [aria-selected="true"]'); return t ? t.dataset.tmjump : ''; });
+  let [p, errs, c] = await open(390, 'light', true);
+  ok(await sel(p) === 'tm-sg', `S18 390: a weaker team loaded on the page (an import) opens on Suggestions (${await sel(p)})`);
+  await p.evaluate(() => window.__ev(`(()=>{const i=S.slots.findIndex(x=>x&&x.n==='Vivillon');const b=blank();b.n='Incineroar';S.slots[i]=b;fixSlots();render();})()`)); await p.waitForTimeout(1500);
+  ok(await sel(p) === 'tm-sg', `S18 390: one Pokémon swapped (as a suggestion does): the tab stays on Suggestions (${await sel(p)})`);
+  await p.evaluate(() => window.__ev(`(()=>{const names=['Charizard-Mega-Y','Garchomp','Whimsicott','Sneasler','Basculegion','Kingambit'];S.slots=names.map(n=>{const b=blank();b.n=n;return b;});fixSlots();S.loadedId=null;render();})()`)); await p.waitForTimeout(2500);
+  const sc2 = await p.evaluate(() => Number((document.querySelector('.fn-belt b') || {}).textContent));
+  ok(sc2 >= 70 && await sel(p) === 'tm-mu', `S18 390: a new six scoring ${sc2} (70+) is picked again: Matchups (${await sel(p)})`);
+  await p.tap('.tm-tabs [data-tmjump="tm-ck"]'); await p.waitForTimeout(250); await p.evaluate(s => window.__ev(s), SG); await p.waitForTimeout(1500);
+  ok(await sel(p) === 'tm-ck', `S18 390: a tab the player chose wins over the score (${await sel(p)})`);
+  await c.close();
+  [p, errs, c] = await open(390, 'light', true); await p.evaluate(() => window.__ev('persist()'));
+  const seen = []; p.on('framenavigated', () => {}); await p.reload(); for (let i = 0; i < 20; i++) { const k = await sel(p); if (k && seen[seen.length - 1] !== k) seen.push(k); await p.waitForTimeout(150); }
+  ok(seen.join() === 'tm-sg', `S18 390: arriving with a weaker saved team, Suggestions from the first paint (tabs seen: ${seen.join(' → ')})`);
+  await p.evaluate(() => { location.hash = '#team=mu'; }); await p.waitForTimeout(800);
+  ok(await sel(p) === 'tm-mu', `S18 390: '#team=mu' wins over the score (${await sel(p)})`);
+  ok(!errs.length, `S18 390: no page errors (${errs.length}${errs.length ? ': ' + errs[0] : ''})`); await c.close(); }
 for (const W of [360, 375, 430, 699]) await phone(W, 'light', true);
 for (const th of ['light', 'dark']) for (const W of [700, 1024, 1440]) { const [p, errs, c] = await open(W, th, false), x = await look(p);
   ok(x.role !== 'tablist' && !x.tabs.length && x.shown.length === 3 && !x.side && !errs.length, `${th} ${W}: as before: no tablist, all 3 sections shown (${x.shown.join()}), nothing sideways, no page errors (${errs.length})`); await c.close(); }

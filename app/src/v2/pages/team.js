@@ -465,7 +465,7 @@ V2.pages.team = {place: 'team', draw() {
   // tabs, one section at a time (Your Games stays under it), so the page is about as long as one section; 700 and up as before
   const tabbed = V2.tmTabbed(), tabIds = [...(V2.isHand(D) ? [] : ['tm-set']), 'tm-mu', 'tm-sg', 'tm-ck'];
   if (tabbed) V2.tmHashTab();
-  const curTab = tabIds.includes(V2.tmUi.tab) ? V2.tmUi.tab : 'tm-mu';
+  const curTab = tabIds.includes(V2.tmUi.tab) ? V2.tmUi.tab : V2.tmAutoTab(G); /* a tab the player chose (or '#team=sg') wins; else S18's first tab */
   const jump = `<nav class="np-tabs tm-jump" aria-label="On this page">${V2.isHand(D) ? '' : '<a href="#team" data-tmjump="tm-set" aria-current="location">Set</a>'}<a href="#team" data-tmjump="tm-mu"${V2.isHand(D) ? ' aria-current="location"' : ''}>Matchups</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks</a>${legalMark}<button type="button" class="tm-tsbtn" data-v2sheetopen aria-label="Team Sheet">Team Sheet <span aria-hidden="true">↗</span></button></nav>`;
   // 1. Set: the selected Pokémon on its tilted panel, with its whole set (group six: six.js)
   const setSec = V2.isHand(D) ? '' : V2.setSecHtml(D, sel); // The Hand: the editing strip under the Hand replaces the Set section (brief s3)
@@ -512,7 +512,16 @@ V2.jumpSync = () => { const nav = document.querySelector('.tm-jump'); if (!nav |
   if (innerHeight + scrollY >= document.documentElement.scrollHeight - 2) cur = as[as.length - 1];
   for (const a of as) { const on = a === cur; if ((a.getAttribute('aria-current') === 'location') !== on) { if (on) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current'); } } }; /* audit Nov 16: aria-current (links can't be "selected") */
 // ---------- My Team's tabs on phones (Sim's yes, Nov 20: option B) ----------
-V2.tmUi = V2.tmUi || {tab: 'tm-mu'}; /* the chosen tab, kept through redraws; Matchups first (the approved picture) */
+V2.tmUi = V2.tmUi || {tab: null, auto: null}; /* tab: the tab the player chose, kept through redraws; auto: the first tab picked for this team (S18) */
+/* scan S18 (Nov 20, Sim: 'go with your recommendations'): with no tab chosen, a full team whose Strength Score reads Needs work or Missing a
+   basic (under 70, as the belt rounds it) opens on Suggestions, since the fix is what a weaker team needs; any other team on Matchups (the
+   approved picture). The pick is kept for that team while it is edited (shares 4+ of its six: a suggestion applied, a Pokémon swapped), so the
+   tab never jumps under the player when the score crosses 70; a new six (an import, a loaded or built team) or a new visit picks again. */
+V2.tmAutoTab = G => { const ns = S.slots.map(x => x && x.n).filter(Boolean), A = V2.tmUi.auto;
+  if (A && ns.filter(n => A.ns.includes(n)).length >= 4) { A.ns = ns; return A.tab; }
+  if (!G || G.partial || G.s == null || ns.length < 6) { V2.tmUi.auto = null; return 'tm-mu'; }
+  V2.tmUi.auto = {ns, tab: Math.round(G.s) < 70 ? 'tm-sg' : 'tm-mu'}; return V2.tmUi.auto.tab; };
+addEventListener('hashchange', () => { if (!/^#team(=|$)/.test(location.hash)) V2.tmUi.auto = null; }); /* leaving My Team: the next visit picks again */
 V2.tmTabbed = () => matchMedia('(max-width:699.98px)').matches;
 // '#team=mu' / '#team=sg' / '#team=ck' (for a link from elsewhere) opens My Team at that tab, once per arrival of that address
 V2.tmHashTab = () => { const m = /^#team=(set|mu|sg|ck)$/.exec(location.hash); if (!m) { V2._tmHash = ''; return; } if (V2._tmHash === location.hash) return; V2._tmHash = location.hash; V2.tmUi.tab = 'tm-' + m[1]; };
