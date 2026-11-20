@@ -44,7 +44,10 @@ const TEAM_L = {320: [4600, 'The Hand (Nov 15)'], 390: [4150, 'The Hand (Nov 15)
 // 3,194, News 4,654 / 3,939; those widths still use the old limits above and report OVER until Sim picks.
 // Nov 18 evening (Sim: 'recommended and yes'): 320 and 820 get limits the same way (taller engine + about 100, to the next 50), measured
 // after the Home tools change (iPad: six big plates + Type Chart strip + three plates).
-const NEW_L = {home: {320: [6900, 'The Stampede: measured 6,754 + margin (Nov 18, Sim: recommended)'], 390: [6350, 'The Stampede: measured 6,240 + margin (Nov 18, not Sim-agreed)'], 820: [6950, 'The Stampede: measured 6,823 + margin (Nov 18, Sim: recommended)'], 1440: [5250, 'The Stampede: measured 5,117 + margin (Nov 18, not Sim-agreed)']},
+// Q76 F (Sim chose the recommended option, Nov 20, 8:17 AM): Home's phone limits here are first-visit limits (this check opens a fresh page, so the
+// 'New here?' card shows, +417px); set to the audit's measured + margin, 6,500 at 390 and 7,150 at 320 (audit-nov20-options.md F). The
+// returning visitor's 7.3-screen test stays the real guard and is unchanged.
+const NEW_L = {home: {320: [7150, 'The Stampede, first visit (welcome card shown): Sim Q76 F, Nov 20 (was 6,900)'], 390: [6500, 'The Stampede, first visit (welcome card shown): Sim Q76 F, Nov 20 (was 6,350, not Sim-agreed)'], 820: [6950, 'The Stampede: measured 6,823 + margin (Nov 18, Sim: recommended)'], 1440: [5250, 'The Stampede: measured 5,117 + margin (Nov 18, not Sim-agreed)']},
   gifts: {320: [4250, 'Gifts: measured 4,108 + margin (Nov 18, Sim: recommended)'], 390: [3850, 'Gifts: measured 3,748 + margin (Nov 18, not Sim-agreed)'], 820: [3300, 'Gifts: measured 3,194 + margin (Nov 18, Sim: recommended)'], 1440: [2150, 'Gifts: measured 2,006 + margin (Nov 18, not Sim-agreed)']},
   news: {320: [4800, 'News: measured 4,654 + margin (Nov 18, Sim: recommended)'], 390: [4250, 'News: measured 4,129 + margin (Nov 18, not Sim-agreed)'], 820: [4050, 'News: measured 3,939 + margin (Nov 18, Sim: recommended)'], 1440: [2250, 'News: measured 2,116 + margin (Nov 18, not Sim-agreed)']}};
 const touch = w => w < 1100;
