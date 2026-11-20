@@ -42,7 +42,7 @@ V2.pages.track = {place: 'meta', draw() { const E = V2.esc, T = META.track;
     receipt = `<section class="trk-rc" aria-label="Top-8 teams, by the rating we gave"><i class="trk-tape" aria-hidden="true"></i><p class="trk-rn u" aria-hidden="true">NastyPlot</p><p class="trk-rk" aria-hidden="true">* * * Track Record * * *</p>
       <h2 class="trk-rt">Top-8 Teams by the Rating We Gave</h2><p class="trk-rs">How often each Pokémon was on a top-8 team, on average · ${n} event${n === 1 ? '' : 's'}, ${CH.n(T.ev.reduce((a, e) => a + e.teams, 0))} top-8 teams</p>
       ${early ? `<p class="trk-early"><b>Early:</b> only ${n} event${n === 1 ? '' : 's'} so far${V2.wkTip('trearly', 'What early means here', `Only ${n} event${n === 1 ? '' : 's'}. Too few to judge yet, so these numbers will move. A verdict appears after ${TR_MIN.verdict} events.`)}</p>` : ''}
-      <ul class="trk-lines">${r.map((v, b) => { const m = T.mb[b]; return `<li><span class="trk-ln"><b>Rated ${TR_BANDS[b]}</b><i aria-hidden="true"></i><b class="u">${v == null ? '–' : trPct(v)}</b></span><small>${m[1]} of ${m[0]} Pokémon made a top 8</small></li>`; }).join('')}</ul>
+      <ul class="trk-lines">${r.map((v, b) => { const m = T.mb[b]; return `<li><span class="trk-ln"><b>Rated ${TR_BANDS[b]}</b><i aria-hidden="true"></i><b class="u">${v == null ? '–' : trPct(v)}</b></span><small>${m[1]} of ${m[0]} made at least one top 8</small></li>`; }).join('')}</ul>
       ${big ? `<p class="trk-tot"><span>Total</span><b class="u">${x}</b></p><p class="trk-say">${says}</p>` : ''}
       <p class="trk-bar" aria-hidden="true"><i></i><b class="trk-stamp u fair">Fair test</b></p><p class="trk-last">The ratings never saw these events</p></section>`; }
   // the calls: today's hits and misses, same picks and lines

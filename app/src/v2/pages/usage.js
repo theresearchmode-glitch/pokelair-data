@@ -25,15 +25,22 @@ V2.usRow = (t0, kind) => { const p = byName.get(t0.n); let t = t0, sb = null;
 V2.usName = R => R.p ? R.p.d : R.t.n;
 V2.usNums = R => { const E = V2.esc; return `${R.u != null ? `<b class="u">${(+R.u).toFixed(1)}<small class="us-pct">%</small></b>` : ''}${R.t.teams ? `<small>${basis(R.t.teams, 'team', 'teams', {})}</small>` : ''}${R.tr ? `<i class="us-tr ${E(R.tr.cls)}">${E(R.tr.txt)}</i>` : ''}`; };
 V2.usLabel = R => `${V2.usName(R)}, rank ${R.t.r}${R.u != null ? `, ${(+R.u).toFixed(1)}% of teams` : ''}${R.t.teams ? `, ${(+R.t.teams).toLocaleString('en-US')} teams` : ''}${R.tr ? ', ' + R.tr.txt : ''}`;
+/* Q73 D1 (Sim chose the recommended option, Nov 20, 8:17 AM): on the podium benches a Mega's name carries "Mega" in its own span, which
+   phones (under 600) show as the MEGA tag line of "Usually alongside" (.gs-mg) and wider screens as the plain word on the name line; the
+   other bench names get an empty tag line on phones (us-nomg), so every bench row's numbers sit level whatever the names. */
+V2.usNameB = (R, cls) => { const E = V2.esc, n = V2.usName(R); if (cls !== 'bench') return `<b>${E(n)}</b>`;
+  return R.p && R.p.m && /^Mega /.test(n) ? `<b><span class="gs-mg u us-mg">Mega </span>${E(n.slice(5))}</b>` : `<b class="us-nomg">${E(n)}</b>`; };
 V2.usFig = (R, cls, blk) => { const E = V2.esc, p = R.p; return `<button type="button" class="us-fig ${cls}" data-uspick="${E(R.t.n)}" aria-pressed="${V2.usUi.pick === R.t.n}" aria-label="#${R.t.r} ${E(V2.usLabel(R))}: show how it is played"${p ? ` style="--b1:var(--ty-${p.t[0]});--b2:var(--ty-${p.t[1] || p.t[0]})"` : ''}>
-    <span class="us-art" aria-hidden="true"><i class="gs-base"></i>${p ? V2.mon(p.n, {bare: true}) : ''}</span>${blk || ''}<span class="us-tx"><span class="us-rk u">#${R.t.r}</span><b>${E(V2.usName(R))}</b><span class="us-nums">${V2.usNums(R)}</span></span></button>`; };
+    <span class="us-art" aria-hidden="true"><i class="gs-base"></i>${p ? V2.mon(p.n, {bare: true}) : ''}</span>${blk || ''}<span class="us-tx"><span class="us-rk u">#${R.t.r}</span>${V2.usNameB(R, cls)}<span class="us-nums">${V2.usNums(R)}</span></span></button>`; };
 /* Q42 A (Sim chose it, Nov 19, 8:25 PM): a shorter Usage page on phones (under 700 wide; 700+ unchanged). "How <Pokémon> is played" shows
    Moves' top 5 and Items' top 3, each with "N more ›" (N = the rest of the list the page holds), Abilities and Natures side by side,
    Usually alongside one row of 3 plus "N more ›", and the "Also ranked 61–100" line behind its own button. CSS-only cuts (class us-x on
    what phones fold away), so tablet and desktop keep every bar, teammate and the line and never see a button. Each button is a real
    button (aria-expanded, aria-controls) that toggles its list's class with no redraw, so focus stays on it (the Q32 pattern,
    V2.wkTechBtn); its state (V2.usUi.open) is kept across redraws, other picks and the mouse hover swap. */
-V2.usMoreIn = (k, n, open) => open ? 'Show Fewer' : k === 'al' ? `Also ranked ${n} ›` : `${n} more<span class="vh"> ${({mv: 'moves', it: 'items', tm: 'teammates'})[k]}</span> ›`;
+/* E1 (Nov 20 audit): the button is a flex box, so a plain space before the hidden word was trimmed and "3 more›" lost its space; a
+   no-break space after "more" keeps 3px before the ›, as "Ratings ›" (the spoken text stays "3 more moves ›") */
+V2.usMoreIn = (k, n, open) => open ? 'Show Fewer' : k === 'al' ? `Also ranked ${n} ›` : `${n} more\u00a0<span class="vh">${({mv: 'moves', it: 'items', tm: 'teammates'})[k]} </span>›`;
 V2.usMoreB = (k, n) => { const o = !!V2.usUi.open[k]; return `<button type="button" class="np-link us-more" data-usmore="${k}" data-n="${n}" aria-expanded="${o}" aria-controls="us-l-${k}">${V2.usMoreIn(k, n, o)}</button>`; };
 V2.usCut = {mv: 5, it: 3}; // phones: Moves top 5, Items top 3
 V2.usBars = (title, arr, n, bas, tc, k) => { if (!(arr && arr.length)) return ''; const L = arr.slice(0, n), c = k && V2.usCut[k], x = c && L.length > c ? L.length - c : 0;

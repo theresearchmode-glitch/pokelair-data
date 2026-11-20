@@ -325,3 +325,11 @@
 
 /* 1100-1379: Popular Sets stacks its item under the name (the plate is narrow) */
 @media (min-width:1100px) and (max-width:1379.98px){.sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}}
+
+/* ---- Q72 C (Sim chose the recommended option, Nov 20, 8:17 AM; docs/rebuild/research/audit-nov20-options.md section C): Home on
+   iPads and small laptops. 700-1099: the Events row loses its card padding and both big numbers get one 280px column, so the Events
+   and How We Calculate titles share one left edge; the six More tools links in one row spread across the full width. 700-1279: the
+   headline breaks after "herd." ("Twelve tools." whole on line 2, as phones), not "Same herd. Twelve / tools." ---- */
+@media (min-width:700px) and (max-width:1099.98px){.sdt-end.ev{padding-left:0}.sdt-big{width:280px}
+  .sdt-more ul{display:flex;justify-content:space-between;gap:0 var(--s4)}}
+@media (min-width:700px) and (max-width:1279.98px){.sdt-h span{display:block}}

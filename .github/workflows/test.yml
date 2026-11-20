@@ -300,6 +300,8 @@ jobs:
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q78.mjs
         if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q72.mjs
+        if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q16.mjs
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q17.mjs
