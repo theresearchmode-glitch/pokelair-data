@@ -398,7 +398,7 @@ t('SUG-03b', 'Swap my Mega? choice is kept after reload (like Megas on team)', a
   ok(await l.ui.chosen('Yes') === true, '"Yes" reset to "No" after reload'); await l.close(); }, {known: NEW ? '' : 'inventory #22: "Swap my Mega?" is a hidden checkbox and resets on reload while "Megas on team" is saved'});
 
 t('SUG-04', 'Suggestion cards: Apply, "Why?" reasons, "Show N more" then "See all suggestions ›"', async () => {
-  const r = await myTeam({team: TEAM, width: 390}); if (NEW) await r.ui.jumpTo('Suggestions'); /* q59 (Sim's yes, Nov 20): on phones Suggestions is a tab; a player taps it */ let c = await r.ui.suggestionCards(); ok(c.length === 1, `${c.length} cards shown at first`);
+  const r = await myTeam({team: TEAM, width: 390}); if (NEW) await r.ui.scrollToSuggestions(); /* q59 (Sim's yes, Nov 20): on phones Suggestions is a tab; a player taps it and the cards are read once 'Working out...' is gone (jumpTo read them too early: 0 cards, Nov 20) */ let c = await r.ui.suggestionCards(); ok(c.length === 1, `${c.length} cards shown at first`);
   ok(/\S+ for \S+/.test(c[0]) && /[+±−-]\d+ \(\d+ → \d+\)/.test(c[0]) && /Apply/.test(c[0]), 'first card lacks "X for Y", score change or Apply: ' + c[0]);
   await r.ui.openFold('Why?'); const w = await r.ui.foldContent('Why?'); ok(w && w.length > 60, 'Why? fold lists no reasons');
   const more = (await r.ui.text()).match(NEW ? /Show (\d) More Suggestions?/ : /Show (\d) more suggestions?/); ok(more, 'no "Show N more suggestions"'); await r.ui.tapText(more[0], 1200);
