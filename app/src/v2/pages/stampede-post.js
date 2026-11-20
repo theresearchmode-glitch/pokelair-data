@@ -20,12 +20,14 @@ V2.sdpSlip = g => { const E = V2.esc, d = V2.prDaysLeft(g), left = d == null || 
 // WHATS_NEW's, reworded to the word list (Sim: "after rewording"; "scouting report", "meta threats" and "win odds" are gone); same id,
 // so a player who dismissed it doesn't get it again. Open on wide screens, a closed fold on phones.
 // What's New for the new site (Sim approved the words, Nov 18): its own id, so every returning player sees it once after the switch
-V2.SD_NEW = {id: '2026-11-redesign', items: [
-  ['A new look', 'NastyPlot has a new design, easier to read on every screen.'],
-  ['Mystery Gifts', 'Every live Mystery Gift code in one place, with the last day to claim it.'],
-  ['Champions News', 'The official Pokémon Champions news as a front page, each headline linking to the full story.'],
-  ['All Suggestions', 'Every kind of change for your team in one list, best first.'],
-  ['Day, Night or Auto', 'The theme button can now follow your device.']]};
+V2.SD_NEW = {id: '2026-11-redesign', items: [ /* Sim Q77 (Nov 20): the final 7-item text, docs/rebuild/whats-new-draft.md */
+  ['A new look', 'Every page is rebuilt: bigger Pokémon, clearer pages, and day and night modes (the button at the top).'],
+  ['Strength Score', "Your team's number out of 100 says how strong the six is altogether, with its Matchups against the top threats right under it."],
+  ['A new Home', 'The whole herd: every rated Pokémon in one charge, sized by its rating, with your six and the tools below.'],
+  ['Damage Calculator', 'A new calculator built like a battle: pick both Pokémon, see the hit, and check your six against the top 30 on the KO Board.'],
+  ['Battle', "Scout their six and get a turn 1 plan that follows the game's rules."],
+  ['News and Mystery Gifts', 'The latest Pokémon Champions news and the Mystery Gift codes in one place, each with a link to its source.'],
+  ['Back and Feedback', "The arrows at the top take you back and forward to the exact spot; tell us what's off with Send Feedback at the bottom."]]};
 V2.sdpNew = () => { const W = V2.SD_NEW; if (!W.id) return ''; let seen = '', welcomed = ''; try { seen = LS.get('cc2.seenNew', ''); welcomed = LS.get('cc2.welcomed', ''); } catch (e) {}
   if (!welcomed) { try { LS.set('cc2.seenNew', W.id); } catch (e) {} return ''; }
   let sess = ''; try { sess = sessionStorage.getItem('np.wnew') || ''; } catch (e) {}

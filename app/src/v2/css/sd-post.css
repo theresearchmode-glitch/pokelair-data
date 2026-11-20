@@ -79,6 +79,9 @@
 .sdp-nt{font-size:var(--t26);line-height:1.2}.sdp-ns{font:600 var(--t15)/1.5 var(--b);color:var(--pr-ink2)}
 .sdp-nf ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:var(--s3) var(--s8);margin:var(--s3) 0 0;padding:0;list-style:none;font:500 var(--t15)/1.5 var(--b)}
 @media (min-width:1100px){.sdp-nf ul{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* Q77 (Nov 20): 7 items in a grid left one alone on the last row; balanced columns instead (3 / 2 / 2 at 1100+, 4 / 3 from 700) */
+@media (min-width:700px){.sdp-nf ul{display:block;columns:2;column-gap:var(--s8)}.sdp-nf ul>li{break-inside:avoid;margin-bottom:var(--s3)}}
+@media (min-width:1100px){.sdp-nf ul{columns:3}}
 .sdp-nf li b{display:block;font-weight:700}.sdp-nf li span{color:var(--pr-ink2)}
 .sdp-nx{position:absolute;top:var(--s2);right:var(--s2);display:grid;place-items:center;width:var(--tap);height:var(--tap);border:0;border-radius:var(--r-s);background:none;color:var(--pr-ink);font:400 var(--t28)/1 var(--b);cursor:pointer}
 .sdp-nx:focus-visible,.sdp-nf summary:focus-visible{outline:3px solid var(--pr-ink);outline-offset:2px}

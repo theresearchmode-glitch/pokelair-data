@@ -75,3 +75,5 @@ Written Nov 19, 2026 from Sim's own rules (NastyPlot CLAUDE.md and docs/rebuild/
 - Privacy: no names or emails collected; kids use these tools.
 
 - Nov 19, 10:33 PM (Sim): "use your helpers for whatever you want. go for it" - helpers may do look-only work too (at most 2 at once still).
+
+- Never just watch helpers (Sim, Nov 20, logged in decisions.md): while helpers or checks run, the main thread always does the next useful piece of work itself.
