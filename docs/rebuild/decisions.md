@@ -1534,3 +1534,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:36 PM: Sim chose Q54 Keep: 'Level 50 doubles' stays only in Notes and the hidden heading (as in his Arena mock-up).
 - 10:38 PM: Sim chose Q55 Keep: Gifts stamps stay 3+3+1 after Show All on phones (4+3 made stamps 81px and unreadable).
 - 10:42 PM: Sim chose Q56 A: Gifts stamp names at 13 with less side padding on 700-819 wide (no name past its stamp with 9+ stamps).
+- 11:01 PM: Sim chose Q57 A (phone: KO Board group tabs) and Q58 C (desktop: the ladder, full width under the Arena). Sim asleep until 6 AM. Building both on one helper; first tab = 'down in one hit' (the bar's own order; to show Sim at 6 AM).
