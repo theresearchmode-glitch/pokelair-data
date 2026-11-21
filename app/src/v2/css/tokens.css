@@ -132,9 +132,22 @@
   /* My Team's frame (Sim, Nov 21): black frame, pink drop shadow, light panels; the chosen row yellow. Contrast (measured below in the build notes) */
   --mtf-frame:#17161A;--mtf-drop:#E8364F;--mtf-panel:#F4F1EC;--mtf-ink:#17161A;--mtf-ink2:#5E5A66;--mtf-chosen:#FFE14D;--mtf-on-frame:#FFFFFF;--mtf-bar-sub:#C9C5D0;--mtf-rate:#0068AD;
   --mtf-cell:#FFFFFF;--mtf-link:#0068AD;--mtf-wash:#ECE8DF;--mtf-rule:rgba(23,22,26,.13);--mtf-ink3:#5E5A66;--mtf-card-warn:#FFB866;--mtf-ink2b:#48454F;--mtf-card-sub:#D9D5E0;--mtf-card-tile:rgba(255,255,255,.1);--mtf-card-link:#9BDCFF;--mtf-card-new:rgba(255,225,77,.22);--mtf-shadow-floor:rgba(23,22,26,.14);--mtf-stop:#C41E35;--mtf-add:rgba(23,22,26,.4);
+  /* the Damage Calc board, 'Plot the hit' (Sim, Nov 21): graph paper, marker, photos, sticky notes; the same board in day and night until Sim picks a dark design.
+     Contrast on the paper #FCFAF3 (measured, Nov 21): ink 17.2:1, ink-2 6.4:1, off switch words 5.2:1, blue marker 5.6:1, red marker words 5.6:1; weather/terrain icons 3.9-6.4:1 (icons need 3:1); the big damage in type colours 4.4:1+ (large text needs 3:1) */
+  --pc-paper:#FCFAF3;--pc-grid:rgba(0,120,191,.22);--pc-grid2:rgba(0,120,191,.1);--pc-ink:#17161A;--pc-ink2:#5E5A66;--pc-off:#6B6873;--pc-mark:#E8364F;--pc-mark-text:#C41E35;--pc-mark-edge:#FFFFFF;
+  --pc-line:#0068AD;--pc-photo:#FFFFFF;--pc-photo-rim:rgba(23,22,26,.1);--pc-drop:rgba(0,0,0,.5);--pc-tint-a:#CFE6F7;--pc-tint-d:#F9D0D7;--pc-note-a:#D9EDFB;--pc-note-d:#FBD3DA;
+  --pc-note-top:rgba(0,0,0,.1);--pc-dots:rgba(23,22,26,.35);--pc-note-label:rgba(23,22,26,.7);--pc-key:rgba(255,255,255,.6);--pc-dash:rgba(23,22,26,.5);--pc-on-swipe:#FFFFFF;--pc-swipe-sub:rgba(255,255,255,.92);
+  --pc-k-none:#5E5A66;--pc-k-sun:#B56E00;--pc-k-rain:#2A73C9;--pc-k-sand:#A8742A;--pc-k-snow:#2F7DA4;--pc-k-grassy:#28843C;--pc-k-electric:#946F00;--pc-k-psychic:#C2479A;--pc-k-misty:#B4508C;
+  --pc-on-paper:#17161A;--pc-on-paper2:#5E5A66;--d-pcbig:clamp(48px,17cqi,112px);--d-pctitle:clamp(24px,3vw,44px);
   --arn-shade-t:rgba(0,0,0,.3);--arn-shade-b:rgba(0,0,0,.45);--arn-contact-1:rgba(0,0,0,.6);--arn-contact-2:rgba(0,0,0,.3);--arn-contact-3:rgba(40,36,60,.6);--d-arntag:clamp(34px,6.4cqi,64px);
   color-scheme:light}
 :root[data-theme="night"]{
+  /* the Damage Calc board at night (Sim, Q105 B, Nov 21): night blueprint paper; photos, sticky notes and move colours stay the same.
+     Contrast on #1B2433 (measured, Nov 21): words 14.0:1, ink-2 8.6:1, off switch words 6.4:1, blue marker 8.6:1, red marker 5.8:1 */
+  --pc-paper:#1B2433;--pc-grid:rgba(98,190,247,.22);--pc-grid2:rgba(98,190,247,.09);--pc-ink:#EEF3F8;--pc-ink2:#B5C2D1;--pc-off:#9AA8B8;--pc-line:#7CC8FF;--pc-mark-text:#FF6F86;--pc-dash:rgba(238,243,248,.5);--pc-mark-edge:#1B2433;
+  /* the big damage number at night takes the night type colours (--tyn-*); three are too dark on this paper (Dragon 2.6:1, Ghost 2.5:1,
+     Poison 3.1:1), so the board lifts them: 5.9, 5.7, 5.5:1 */
+  --pcn-Dragon:#8A97FF;--pcn-Ghost:#A88BF2;--pcn-Poison:#C17BF0;
   --bp-paper:transparent;--bp-grid:#62bef70a;--bp-grid5:#62bef714;--bp-ink:#62bef7; /* Q82 A: fainter (was 12 / 24) */
   --on-band-top:#12121B;--on-band-ready:#12121B;--on-band-solid:#12121B;--on-band-work:#12121B;--on-band-miss:#12121B; /* Q83: the night bands are light; dark ink on each */
   --sd-paper:#DDD5C5;--sd-board-you:#0068AD;--sd-board-them:#B4238F;--sd-board:#D6CEBF;--sd-grid:rgba(23,22,26,.08);--sd-grid5:rgba(23,22,26,.14);--sd-beam:rgba(255,255,255,.05);--sd-lines:rgba(255,255,255,.025);--sd-paper-shadow:rgba(0,0,0,.6); /* band 2 at night: dim paper (the mock-up's), the rest as by day */

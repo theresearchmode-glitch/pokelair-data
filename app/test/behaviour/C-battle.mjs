@@ -433,6 +433,26 @@ t('LOG-07', 'a logged win shows on Home as "1–0"', async () => {
   expect(/1[–-]0/.test(await ui.pageText()), (NEW ? 'My Team' : 'Home') + ' does not show the 1–0 record'); await close(); });
 
 // ============================== CALC: Damage calc ==============================
+/* Nov 21: Plot the hit (Sim approved): the new calc shows real HP, not percentages. The answer the player reads must be the engine's own hit
+   (calcData().r) and its verdict must follow from the engine's 16 damage rolls, worked out here, not by the page's own wording function:
+   the damage is 'min–max' HP, the line says '<defender> has <HP> HP', k of 16 rolls at or over the HP = 'Faints a time(s) in b' (the fraction
+   k/16 reduced), all 16 = 'Always faints', none = a several-hit verdict ('Faints in 2 hits' when even the lowest two rolls knock it out);
+   'hangs on with x–y HP' uses the rolls that don't. Returns the answer for the caller's own checks. */
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+async function plotAnswerMatchesEngine(ui, where) {
+  const a = await ui.calcAnswer(); expect(a && a.eng, `${where}: no answer or no engine hit`); const {min, max, hp, rolls} = a.eng;
+  expect(rolls.length === 16, `${where}: engine has ${rolls.length} rolls, not 16`);
+  expect(a.dmg === (min === max ? String(min) : `${min}–${max}`), `${where}: damage shows "${a.dmg}", engine ${min}–${max}`);
+  expect(new RegExp(` has ${hp} HP\\.$`).test(a.l2), `${where}: HP line "${a.l2}", engine ${hp} HP`);
+  const k = rolls.filter(v => v >= hp).length, rest = rolls.filter(v => v < hp);
+  if (k === 16) expect(a.verdict === 'Always faints', `${where}: all 16 rolls knock out but the verdict is "${a.verdict}"`);
+  else if (k > 0) { const g = gcd(k, 16), x = k / g, y = 16 / g, lo = hp - Math.max(...rest), hi = hp - Math.min(...rest);
+    expect(a.verdict === `Faints ${x} time${x > 1 ? 's' : ''} in ${y}`, `${where}: ${k} of 16 rolls knock out but the verdict is "${a.verdict}"`);
+    expect(new RegExp(`^hangs on with ${lo === hi ? lo : lo + '–' + hi} HP the other `).test(a.sm || ''), `${where}: hangs-on line "${a.sm}", rolls give ${lo}–${hi} HP`); }
+  else { expect(/^(Faints in [23] hits|May faint in 2 hits|Takes \d+\+ hits)/.test(a.verdict), `${where}: no roll knocks out but the verdict is "${a.verdict}"`);
+    if (2 * min >= hp) expect(a.verdict === 'Faints in 2 hits', `${where}: two lowest rolls (${2 * min}) beat ${hp} HP but the verdict is "${a.verdict}"`);
+    expect(a.sm === `hangs on with ${hp - max}–${hp - min} HP after one`, `${where}: hangs-on line "${a.sm}", engine ${hp - max}–${hp - min}`); }
+  return a; }
 t('CALC-01', 'Damage calc head and "How the calc works →" link', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
   hasAll(await ui.pageText(), NEW ? ['Damage Calculator · level 50 doubles', 'most used set'] /* the Arena (Nov 19, Q35 wording): 'most used set' on each set card */ /* Nov 16: the word list's 'most used', as My Team says */ /* Sim's 'Their Side' brief 10: the title is one small line, no big heading */ : ['Common sets, auto-filled', 'Damage calc', 'Level 50 doubles damage. Each side starts with its most common set.'], 'calc head');
@@ -443,9 +463,10 @@ t('CALC-02', 'attacker/defender defaults and pickers grouped Your team / Top of 
   { const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
     let s = await ui.calcSides(); expect(s.a === 'Mega Charizard Y' && s.d === 'Sneasler', 'defaults are ' + JSON.stringify(s));
     const gr = await ui.calcPokemonGroups(); expect(/^Your team:6/.test(gr[0]) && /^Top of the meta:/.test(gr[1]) && /^Everyone:/.test(gr[2]) && +gr[2].split(':')[1] > 250, 'picker groups: ' + gr.join(','));
-    if (NEW) expect(/\d+–\d+%/.test(await ui.calcResultOnly()) && / of \d+ HP/.test(await ui.calcResultOnly()), 'result: no range / HP line'); else hasAll(await ui.calcResultOnly(), ['% of HP'], 'result'); // brief 10: 'x–y of z HP' beside the range
+    if (NEW) await plotAnswerMatchesEngine(ui, 'defaults'); /* Nov 21: Plot the hit (Sim approved): the damage in HP and the defender's HP, checked against the engine (was a 'x–y%' range check) */ else hasAll(await ui.calcResultOnly(), ['% of HP'], 'result'); // brief 10: 'x–y of z HP' beside the range
     const r0 = await ui.calcResultOnly(); await ui.calcPick('defender', 'Incineroar'); s = await ui.calcSides();
     expect(s.d === 'Incineroar', 'defender not Incineroar'); expect(await ui.calcResultOnly() !== r0, 'result did not change for the new defender');
+    if (NEW) expect(/ Incineroar has \d+ HP\.$/.test((await plotAnswerMatchesEngine(ui, 'into Incineroar')).l2), 'answer does not name Incineroar'); /* Nov 21: Plot the hit (Sim approved): the new defender's hit, against the engine */
     expect(/Assumed spread|Estimated spread|Most used spread|Most used set|Estimated set/i.test(await ui.pageText()), 'no "assumed/estimated spread" tag'); /* the Arena (Nov 19, Q35 wording): 'most used set' / 'estimated set' on the set cards */ await close(); }
   const {ui, close} = await open({team: []}); await ui.go('Damage Calc');
   const s = await ui.calcSides(); expect(s.a === 'Garchomp' && s.d !== 'Garchomp', 'empty-team defaults are ' + JSON.stringify(s)); await close(); });
@@ -453,9 +474,11 @@ t('CALC-02', 'attacker/defender defaults and pickers grouped Your team / Top of 
 t('CALC-03', 'move strips and "Other moves" change the result', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
   let st = await ui.calcMoveStrips(); expect(st.length >= 3 && st.find(x => x.on).move === 'Heat Wave', 'default move is not Heat Wave: ' + JSON.stringify(st));
-  const r0 = await ui.calcResultOnly(); await ui.calcMove('Solar Beam');
+  const r0 = await ui.calcResultOnly(); const sbShown = NEW ? st.find(x => x.move === 'Solar Beam').dmg : ''; await ui.calcMove('Solar Beam');
   st = await ui.calcMoveStrips(); expect(st.find(x => x.on).move === 'Solar Beam', 'Solar Beam strip not pressed');
   const r1 = await ui.calcResultOnly(); expect(r1 !== r0, 'result did not change for Solar Beam');
+  if (NEW) { const a = await plotAnswerMatchesEngine(ui, 'Solar Beam'); /* Nov 21: Plot the hit (Sim approved): the tap changes the hit to Solar Beam's, the engine's numbers, and the same HP the swipe showed before the tap */
+    expect(/Solar Beam does$/.test(a.l1) && a.dmg === sbShown, `answer after the Solar Beam tap: "${a.l1} ${a.dmg}", the swipe showed ${sbShown}`); }
   await ui.calcOtherMove('Air Slash'); expect((await ui.calcSides()).move === 'Air Slash' && await ui.calcResultOnly() !== r1, 'Other moves pick did not update the result');
   await close(); });
 
@@ -481,9 +504,10 @@ t('CALC-05', 'Swap trades attacker and defender; move resets to the new attacker
 t('CALC-06', 'field: weather follows the attacker\'s setter until you pick; Rain halves Fire', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
   expect(await ui.isPressed('Sun') === true, 'Mega Charizard Y attacking: Sun not pressed by itself');
-  const pct = r => +(((NEW ? /(\d+)–(\d+)%/ : /(\d+)–(\d+)% of HP/).exec(r) || [0, 0, 0])[2]);
-  const sun = pct(await ui.calcResultOnly()); await ui.tapIn(/^Rain$/, 500); const rain = pct(await ui.calcResultOnly());
-  expect(await ui.isPressed('Rain') === true, 'Rain not pressed'); expect(rain > 0 && rain < sun * 0.4, `Fire damage in rain ${rain}% vs sun ${sun}% (should be about a third: ×1.5 → ×0.5)`);
+  const pct = async () => NEW ? +(((await ui.calcAnswer()) || {}).dmg || '0').split('–').pop() /* Nov 21: Plot the hit (Sim approved): the top of the damage in HP (same defender, so the ratio holds); was the top % */ : +((/(\d+)–(\d+)% of HP/.exec(await ui.calcResultOnly()) || [0, 0, 0])[2]);
+  const sun = await pct(); await ui.tapIn(/^Rain$/, 500); const rain = await pct();
+  if (NEW) await plotAnswerMatchesEngine(ui, 'Heat Wave in Rain'); /* Nov 21: Plot the hit (Sim approved) */
+  expect(await ui.isPressed('Rain') === true, 'Rain not pressed'); expect(rain > 0 && rain < sun * 0.4, `Fire damage in rain ${rain} vs sun ${sun} (${NEW ? 'HP' : '%'}; should be about a third: ×1.5 → ×0.5)`);
   await ui.calcPick('attacker', 'Garchomp'); expect(await ui.isPressed('Sun') === true && await ui.isPressed('Rain') === false, 'weather did not follow the new attacker (no setter: your team\'s sun)');
   for (const b of ['Hits both foes', 'Screen up', 'Helping Hand', 'Friend Guard', 'Critical hit']) expect(await ui.isPressed(b) !== null, `no "${b}" toggle`);
   const r0 = await ui.calcResultOnly(); await ui.tapIn('Critical hit', 500); expect(await ui.calcResultOnly() !== r0, 'Critical hit did not change the result');
@@ -493,10 +517,14 @@ t('CALC-07', 'result: Sneasler Close Combat into Mega Charizard Y; Garchomp Eart
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
   await ui.calcPick('attacker', 'Sneasler'); await ui.calcPick('defender', 'Mega Charizard Y'); await ui.calcMove('Close Combat');
   const r = await ui.calcResultOnly();
-  expect((NEW ? /45–52%/ : /45–52% of HP/).test(r) && /20% chance to 2HKO/.test(r) && /Fighting is resisted/.test(r), 'result: ' + r.slice(0, 200)); // new calc: '% of HP' is shown as 'x–y of z HP' (brief 10)
-  expect(/of 155 HP/.test(r) && /Fewest points to always survive/.test(r), 'HP numbers or survive line missing');
+  if (NEW) { const a = await plotAnswerMatchesEngine(ui, 'Close Combat into Mega Charizard Y'); /* Nov 21: Plot the hit (Sim approved): real HP, not % (45–52% of 155 HP = 69–81 HP); the engine's '20% chance to 2HKO' in the new words */
+    expect(a.dmg === '69–81' && a.l2 === 'damage. Mega Charizard Y has 155 HP.' && a.verdict === 'Faints in 2 hits, 20% of the time', 'answer: ' + JSON.stringify(a).slice(0, 240));
+    expect(/Fighting is resisted/.test(r) && /Fewest points to always survive/.test(r), 'Notes on this hit: no "Fighting is resisted" or survive line: ' + r.slice(0, 200)); }
+  else { expect(/45–52% of HP/.test(r) && /20% chance to 2HKO/.test(r) && /Fighting is resisted/.test(r), 'result: ' + r.slice(0, 200));
+    expect(/of 155 HP/.test(r) && /Fewest points to always survive/.test(r), 'HP numbers or survive line missing'); }
   await ui.calcPick('attacker', 'Garchomp'); await ui.calcPick('defender', 'Corviknight'); await ui.calcOtherMove('Earthquake').catch(() => ui.calcMove('Earthquake'));
-  expect((NEW ? /No effect.*Corviknight is immune to Ground/ : /No effect\. Corviknight is immune to Ground/).test(await ui.calcResultOnly()), 'no "No effect" for Earthquake into Corviknight');
+  if (NEW) { const a = await ui.calcAnswer(); expect(a && a.verdict === 'No effect' && a.dmg === '0' && a.l2 === 'Corviknight is immune to Ground.' && a.eng && a.eng.max === 0, 'no "No effect" for Earthquake into Corviknight: ' + JSON.stringify(a)); } /* Nov 21: Plot the hit (Sim approved): the answer says 0, the reason, then the circled 'No effect' (that order, so read part by part) */
+  else expect(/No effect\. Corviknight is immune to Ground/.test(await ui.calcResultOnly()), 'no "No effect" for Earthquake into Corviknight');
   await close(); });
 
 t('CALC-08', '"Report a mistake" under the result opens feedback pre-filled with the calc', async () => {

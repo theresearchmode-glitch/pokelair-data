@@ -1,11 +1,12 @@
-// Damage Calc "The Arena" (Sim's prompt Nov 19; mock-ups docs/redesign/arena/). At 320, 390, 699, 700, 1024 and 1440, light and dark:
-// every one of today's calc controls is on the page and works (weather and terrain rows change the sky / ground and the numbers; the five
-// switches; the three move buttons; All moves; swap; both name plates open the Pokemon picker; the set rows change the result; the stage
-// minus / plus; the KO Board bar opens the board with your hits and their hits; How the Calc Works, Notes on this hit, and "Report a
-// Mistake" whenever feedback is available); the numbers on screen are the calc engine's for the default case; nothing (plates,
-// verdict, tag, swap, the two rows) overlaps either Pokemon's picture box, also with a long name and a Mega; every control is at least
-// 44px tall (and 44 wide under 1024, touch); nothing scrolls sideways; the calculator is at most 1.6 screens long at 390x844 and fits
-// one 1440x900 screen; no page errors. Exit 1 on any failure.
+// Damage Calc page check. Nov 21: Plot the hit (Sim approved; calc-options/the-plot/BRIEF.md) replaces "The Arena" (Sim's prompt Nov 19); the
+// file keeps its name because CI runs it. At 320, 390, 699, 700, 1024 and 1440, light and dark: every one of today's calc controls is on
+// the page and works (sky and ground change the numbers and carry the red "chosen" circle; the five "this turn" switches; the three move
+// swipes; All moves; swap; both photos open the Pokemon picker; the set rows change the result; the stage minus / plus; the KO Board bar
+// opens the board with your hits and their hits; How the Calc Works, Notes on this hit, and "Report a Mistake" whenever feedback is
+// available); the numbers on screen are the calc engine's, in real HP (damage min–max, the defender's HP, the verdict worked out here from
+// the engine's 16 rolls, not by the page's own wording); nothing (title, swap, answer, moves) overlaps either photo's picture, also with a
+// long name and a Mega; every control is at least 44px tall (and 44 wide under 1024, touch); nothing scrolls sideways; the board's
+// length is measured (info, and at most the approved mock's 2.05 screens at 390x844); no page errors. Exit 1 on any failure.
 //   PAGE=app/dist/v2.html node app/test/v2-arena.mjs   (a --v2 --preview-data build; WIDTHS=390,1440 THEMES=dark for a quick run)
 import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -13,20 +14,39 @@ const WIDTHS = (process.env.WIDTHS || '320,390,699,700,1024,1440').split(',').ma
 const b = await chromium.launch(); const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') + msg); if (!c) fails.push(msg); };
 const wait = (p, ms = 350) => p.waitForTimeout(ms);
 const ev = (p, code) => p.evaluate(c => window.__ev(c), code);
-const engine = p => ev(p, `(() => { const C = calcData(), r = C.r; return r ? {min: r.min, max: r.max, hp: r.hp, ko: koText(r), pct: V2.dcPct(r), mv: C.mv.name, a: dc.a, d: dc.d, w: dc.weather, t: dc.terrain} : {mv: C.mv && C.mv.name}; })()`);
+/* Nov 21: Plot the hit (Sim approved): the engine's hit with its 16 rolls; e.pct is kept as the hit's fingerprint ('min–max of hp') for the
+   "did it change" checks, now in HP */
+const engine = p => ev(p, `(() => { const C = calcData(), r = C.r; return r ? {min: r.min, max: r.max, hp: r.hp, rolls: (r.rolls || []).slice(), pct: r.min + '–' + r.max + ' of ' + r.hp, mv: C.mv.name, a: dc.a, d: dc.d, w: dc.weather, t: dc.terrain} : {mv: C.mv && C.mv.name}; })()`);
+/* Nov 21: Plot the hit (Sim approved): the answer as shown (.pc-ans; was the Arena's verdict plate, tag and HP-left plate) */
 const shown = p => p.evaluate(() => { const T = s => { const e = document.querySelector(s); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; };
-  return {verdict: T('.arn-verdict'), tag: T('.arn-tag'), hp: T('.arn-hpt'), sky: (document.querySelector('.arn-scene') || {}).className || ''}; });
+  return {dmg: T('.pc-ans .pc-big'), l2: T('.pc-ans .pc-l2'), verdict: T('.pc-ans .pc-vd'), sm: T('.pc-ans .pc-sm')}; });
+/* Nov 21: Plot the hit (Sim approved): the answer on screen is the engine's hit: damage 'min–max' HP, '<defender> has <HP> HP', and the
+   verdict from the 16 rolls (k at or over the HP: 'Faints a time(s) in b' with k/16 reduced; all 16 'Always faints'; none: a hits verdict,
+   'Faints in 2 hits' when the two lowest rolls already knock it out). Returns '' when it matches, else what differs. */
+const gcd = (a, b) => b ? gcd(b, a % b) : a;
+const mismatch = (s, e) => { if (!e || e.min == null) return 'no engine hit'; const out = [];
+  if (s.dmg !== (e.min === e.max ? String(e.min) : `${e.min}–${e.max}`)) out.push(`damage "${s.dmg}" vs engine ${e.min}–${e.max}`);
+  if (e.max === 0) { if (s.verdict !== 'No effect') out.push(`verdict "${s.verdict}" for no damage`); return out.join('; '); }
+  if (!new RegExp(` has ${e.hp} HP\\.$`).test(s.l2)) out.push(`HP line "${s.l2}" vs engine ${e.hp} HP`);
+  if (e.rolls.length !== 16) out.push(`${e.rolls.length} rolls, not 16`);
+  const k = e.rolls.filter(v => v >= e.hp).length, g = gcd(k, 16);
+  const want = k === 16 ? 'Always faints' : k ? `Faints ${k / g} time${k / g > 1 ? 's' : ''} in ${16 / g}` : null;
+  if (want ? s.verdict !== want : !/^(Faints in [23] hits|May faint in 2 hits|Takes \d+\+ hits)/.test(s.verdict) || (2 * e.min >= e.hp && s.verdict !== 'Faints in 2 hits')) out.push(`verdict "${s.verdict}" vs ${k} of 16 rolls knocking out`);
+  return out.join('; '); };
 const pressed = (p, sel) => p.evaluate(s => { const e = document.querySelector(s); return e ? e.getAttribute('aria-pressed') : null; }, sel);
 const click = async (p, sel, ms) => { const h = await p.$(sel); if (!h) return false; await h.click(); await wait(p, ms); return true; };
-// pictures vs everything placed on the scene: no overlap (1px tolerance); a tilted tag is checked by its whole bounding box
+// pictures vs everything placed on the board: no overlap (1px tolerance); tilted things are checked by their whole bounding box.
+// Nov 21: Plot the hit (Sim approved): the pictures are the photos' .pc-pic (was the Arena's .arn-spr); the things are the title row (swap),
+// the answer's lines, the moves, the sky and the other photo's picture (the marker rings are drawn round things on purpose, not checked)
 const overlaps = p => p.evaluate(() => { const R = e => e.getBoundingClientRect(), vis = e => e && e.getClientRects().length && getComputedStyle(e).display !== 'none';
-  const pics = [...document.querySelectorAll('.arn-spr img')].filter(vis).map(e => ({n: e.closest('.arn-spr').classList.contains('d') ? 'defender' : 'attacker', r: R(e)}));
-  const things = ['.arn-plate.arn-dp', '.arn-plate.arn-ap', '.arn-verdict', '.arn-tag', '.arn-swap', '.arn-pills.arn-wxr', '.arn-pills.arn-trr'].map(s => [s, document.querySelector(s)]).filter(([, e]) => vis(e));
-  const out = []; for (const pic of pics) for (const [s, e] of things) { const a = pic.r, c = R(e), w = Math.min(a.right, c.right) - Math.max(a.left, c.left), h = Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top);
+  const pics = [...document.querySelectorAll('.pc-ph .pc-pic')].filter(vis).map(e => ({n: e.closest('.pc-ph').classList.contains('d') ? 'defender' : 'attacker', r: R(e)}));
+  const things = ['.pc-title', '.pc-swap', '.pc-ans .pc-l1', '.pc-ans .pc-big', '.pc-ans .pc-l2', '.pc-ans .pc-vd > span', '.pc-ans .pc-sm', '.pc-mvb', '.pc-sky', '.pc-ph.a .pc-pic', '.pc-ph.d .pc-pic'].map(s => [s, document.querySelector(s)]).filter(([, e]) => vis(e));
+  const out = []; for (const pic of pics) for (const [s, e] of things) { if (e.closest('.pc-ph') && e.closest('.pc-ph').classList.contains(pic.n === 'defender' ? 'd' : 'a')) continue; const a = pic.r, c = R(e), w = Math.min(a.right, c.right) - Math.max(a.left, c.left), h = Math.min(a.bottom, c.bottom) - Math.max(a.top, c.top);
     if (w > 1 && h > 1) out.push(`${s} on the ${pic.n} (${Math.round(w)}x${Math.round(h)})`); }
   if (pics.length !== 2) out.push(`${pics.length} Pokemon pictures`); return out; });
-const sizes = (p, touch) => p.evaluate(touch => { const out = []; for (const e of document.querySelectorAll('.arn :is(button,select,summary,a[href])')) { if (!e.getClientRects().length) continue;
+const sizes = (p, touch) => p.evaluate(touch => { const out = []; for (const e of document.querySelectorAll('.dc2.pc :is(button,select,summary,a[href])')) /* Nov 21: Plot the hit (Sim approved): the page is .dc2.pc (was .arn) */ { if (!e.getClientRects().length) continue;
     const r = e.getBoundingClientRect(), s = getComputedStyle(e); if (s.visibility === 'hidden' || (r.width === 0 && r.height === 0)) continue;
+    if (e.matches('select[aria-hidden="true"][tabindex="-1"]') && s.pointerEvents === 'none') continue; if (e.matches('select:disabled')) continue; /* a Mega's fixed stone (disabled: shown, not a control) */ /* Nov 21: Plot the hit (Sim approved): today's hidden select only shows the row's value (on the note, a 28px line under its label); it can't be tapped or reached; the row's own button over the whole row (data-arnset / data-arnpick) is the control, and it is measured here */
     if (e.closest('.arn-kbin')) continue; if (e.closest('.bt-tools')) continue; /* the Battle tools bar is shared navigation, checked with the Battle pages */ /* today's board inside the KO Board (tiles, table): its own checks (v2-q22, v2-minors) */
     if (Math.round(r.height) < 44 || (touch && Math.round(r.width) < 44)) out.push(`${(e.getAttribute('aria-label') || e.textContent || e.id).trim().slice(0, 30)} ${Math.round(r.width)}x${Math.round(r.height)}`); }
   return out; }, touch);
@@ -37,48 +57,57 @@ for (const W of WIDTHS) for (const th of THEMES) {
   const c = await b.newContext({viewport: {width: W, height: H}, colorScheme: th, ...(touch ? {hasTouch: true, isMobile: W < 700} : {})}); const p = await c.newPage();
   const errs = []; p.on('pageerror', e => errs.push(e.message)); await p.addInitScript(t => { window.__PL_TEST = 1; try { localStorage.setItem('np.theme', t); } catch (e) {} }, th === 'dark' ? 'night' : 'day');
   await p.goto('file://' + PAGE + '#calc', {timeout: 90000}); await wait(p, 3500); await p.evaluate(t => { document.documentElement.dataset.theme = t; }, th === 'dark' ? 'night' : 'day'); await wait(p, 300);
-  if (!(await p.$('.dc2.arn .arn-scene'))) { ok(false, `${tag} the Arena is on the page (.arn-scene)`); await c.close(); continue; }
-  // the default case: the numbers on screen are the engine's
-  const E0 = await engine(p), S0 = await shown(p), lo = 100 - +E0.pct.split('–')[1].replace('%', ''), hi = 100 - +E0.pct.split('–')[0];
-  ok(S0.verdict.includes(E0.pct) || (W >= 1024 && S0.tag.includes(E0.pct)), `${tag} default ${E0.mv} into ${E0.d}: the damage on screen is the engine's ${E0.pct} (verdict "${S0.verdict.slice(0, 60)}", tag "${S0.tag}")`);
-  ok(S0.hp === `${Math.max(0, lo)}–${Math.max(0, hi)}% HP left` || S0.hp === `${Math.max(0, lo)}% HP left`, `${tag} defender plate "${S0.hp}" = 100 minus the engine's range`);
-  ok(S0.verdict.includes(V2words(E0.ko)), `${tag} the KO words are the engine's "${E0.ko}" in plain words`);
-  if (W === 1440 && th === THEMES[0]) console.log(`  info  mock-up sanity (default ${E0.a} ${E0.mv} into ${E0.d}, weather ${E0.w || 'clear'}): ${E0.pct}, ${E0.ko}`);
+  if (!(await p.$('.dc2.pc .pc-board'))) { ok(false, `${tag} Plot the hit is on the page (.pc-board)`); await c.close(); continue; } /* Nov 21: Plot the hit (Sim approved; was .arn-scene) */
+  // the default case: the numbers on screen are the engine's (Nov 21: Plot the hit, Sim approved: real HP and the verdict from the 16 rolls; was % and % HP left)
+  const E0 = await engine(p), S0 = await shown(p), m0 = mismatch(S0, E0);
+  ok(!m0, `${tag} default ${E0.mv} into ${E0.d}: the answer on screen is the engine's (${S0.dmg} of ${E0.hp} HP, "${S0.verdict}")${m0 ? ': ' + m0 : ''}`);
+  if (W === 1440 && th === THEMES[0]) console.log(`  info  mock-up sanity (default ${E0.a} ${E0.mv} into ${E0.d}, weather ${E0.w || 'clear'}): ${E0.pct} HP, "${S0.verdict}", "${S0.sm}"`);
   // layout
   let o = await overlaps(p); ok(!o.length, `${tag} nothing on either Pokemon (default)${o.length ? ': ' + o.join('; ') : ''}`);
   let sz = await sizes(p, touch); ok(!sz.length, `${tag} every control at least 44px tall${touch ? ' and wide' : ''}${sz.length ? ': ' + sz.slice(0, 6).join('; ') : ''}`);
   let sw = await sideways(p); ok(sw <= 0, `${tag} no sideways scroll (${sw}px over)`);
-  if (W === 390) { const h = await p.evaluate(() => document.querySelector('.arn-grid').getBoundingClientRect().height); ok(h <= 1.6 * 844, `${tag} calculator ${Math.round(h)}px = ${(h / 844).toFixed(2)} screens (at most 1.6)`); }
-  if (W === 1440) { const bt = await p.evaluate(() => document.querySelector('.arn-grid').getBoundingClientRect().bottom + scrollY); ok(bt <= 900, `${tag} calculator ends at ${Math.round(bt)}px, inside one 1440x900 screen`); }
-  // weather: each pill changes the sky; Rain changes the numbers (the engine's)
-  for (const [v, k] of [['', 'clear'], ['rain', 'rain'], ['sand', 'sand'], ['snow', 'snow'], ['sun', 'sun']]) { await click(p, `.arn-pills.arn-wxr [data-dcw="${v}"]`);
-    const s = await shown(p), e = await engine(p); ok(s.sky.includes('arn-w-' + k) && await pressed(p, `.arn-pills.arn-wxr [data-dcw="${v}"]`) === 'true' && e.w === v && (s.verdict.includes(e.pct) || s.tag.includes(e.pct)), `${tag} weather ${k}: sky arn-w-${k}, pill pressed, numbers ${e.pct} from the engine`);
+  /* Nov 21: Plot the hit (Sim approved): the board is longer than the Arena by design (the brief measured the mock at 2.05 phone screens and
+     1.11 desktop screens); the phone limit is the mock's, the desktop length is reported (Sim, Nov 20: phone length is done) */
+  if (W === 390) { const h = await p.evaluate(() => document.querySelector('.pc-board').getBoundingClientRect().height); ok(h <= 2.05 * 844, `${tag} board ${Math.round(h)}px = ${(h / 844).toFixed(2)} screens (at most the approved mock's 2.05)`); }
+  if (W === 1440) { const bt = await p.evaluate(() => document.querySelector('.pc-board').getBoundingClientRect().bottom + scrollY); console.log(`  info  ${tag} board ends at ${Math.round(bt)}px = ${(bt / 900).toFixed(2)} screens of 1440x900`); }
+  // weather: each one in the sky row is chosen and circled (the only red circle in the row); Rain changes the numbers (the engine's)
+  // Nov 21: Plot the hit (Sim approved): the sky row .pc-sky (was the Arena's pills and sky class); the circle stands for the sky picture
+  const ring = (p, row) => p.evaluate(r => [...document.querySelectorAll(`${r} button`)].filter(b => b.querySelector('.pc-ring')).map(b => b.dataset.dcw ?? b.dataset.dcterr ?? b.dataset.dct), row);
+  for (const [v, k] of [['', 'clear'], ['rain', 'rain'], ['sand', 'sand'], ['snow', 'snow'], ['sun', 'sun']]) { await click(p, `.pc-sky [data-dcw="${v}"]`);
+    const s = await shown(p), e = await engine(p), rg = await ring(p, '.pc-sky'), mm = mismatch(s, e); ok(rg.length === 1 && rg[0] === v && await pressed(p, `.pc-sky [data-dcw="${v}"]`) === 'true' && e.w === v && !mm, `${tag} weather ${k}: circled (${rg.join(',')}), pressed, the engine's ${e.pct} on screen${mm ? ': ' + mm : ''}`);
     if (k === 'rain') ok(e.pct !== E0.pct, `${tag} Rain changes the damage (${E0.pct} -> ${e.pct})`);
     o = await overlaps(p); if (o.length) ok(false, `${tag} weather ${k}: nothing on either Pokemon: ${o.join('; ')}`); }
-  for (const [v, k] of [['grassy', 'grassy'], ['electric', 'electric'], ['psychic', 'psychic'], ['misty', 'misty'], ['', 'none']]) { await click(p, `.arn-pills.arn-trr [data-dcterr="${v}"]`);
-    const s = await shown(p), e = await engine(p); ok(s.sky.includes('arn-t-' + k) && e.t === v && await pressed(p, `.arn-pills.arn-trr [data-dcterr="${v}"]`) === 'true', `${tag} terrain ${k}: ground arn-t-${k}, pill pressed`); }
+  for (const [v, k] of [['grassy', 'grassy'], ['electric', 'electric'], ['psychic', 'psychic'], ['misty', 'misty'], ['', 'none']]) { await click(p, `.pc-gnd [data-dcterr="${v}"]`); /* Nov 21: Plot the hit (Sim approved): the ground row .pc-gnd */
+    const s = await shown(p), e = await engine(p), rg = await ring(p, '.pc-gnd'), mm = mismatch(s, e); ok(rg.length === 1 && rg[0] === v && e.t === v && await pressed(p, `.pc-gnd [data-dcterr="${v}"]`) === 'true' && !mm, `${tag} terrain ${k}: circled (${rg.join(',')}), pressed, the engine's ${e.pct} on screen${mm ? ': ' + mm : ''}`); }
   // the five switches
-  for (const k of ['spread', 'screen', 'hh', 'fg', 'crit']) { const before = await engine(p), was = await pressed(p, `.arn-sw [data-dct="${k}"]`); await click(p, `.arn-sw [data-dct="${k}"]`);
-    const now = await pressed(p, `.arn-sw [data-dct="${k}"]`), e = await engine(p), s = await shown(p);
-    ok(now !== was && e.pct !== before.pct && (s.verdict.includes(e.pct) || s.tag.includes(e.pct)), `${tag} switch ${k}: ${was} -> ${now}, damage ${before.pct} -> ${e.pct} on screen`);
-    await click(p, `.arn-sw [data-dct="${k}"]`); }
+  for (const k of ['spread', 'screen', 'hh', 'fg', 'crit']) { const before = await engine(p), was = await pressed(p, `.pc-sws [data-dct="${k}"]`); await click(p, `.pc-sws [data-dct="${k}"]`); /* Nov 21: Plot the hit (Sim approved): this turn .pc-sws; on = circled */
+    const now = await pressed(p, `.pc-sws [data-dct="${k}"]`), e = await engine(p), s = await shown(p), circled = (await ring(p, '.pc-sws')).includes(k), mm = mismatch(s, e);
+    ok(now !== was && circled === (now === 'true') && e.pct !== before.pct && !mm, `${tag} switch ${k}: ${was} -> ${now} (circled ${circled}), damage ${before.pct} -> ${e.pct} on screen${mm ? ': ' + mm : ''}`);
+    await click(p, `.pc-sws [data-dct="${k}"]`); }
   // moves: each of the three buttons; All moves (today's list) laid over its button
-  const mvs = await p.evaluate(() => [...document.querySelectorAll('.arn-mvs [data-dcmv]')].map(e => e.dataset.dcmv)); ok(mvs.length === 3, `${tag} three move buttons (${mvs.join(', ')})`);
-  for (const m of [...mvs].reverse()) { await click(p, `.arn-mvs [data-dcmv="${m}"]`); const e = await engine(p), s = await shown(p); ok(e.mv === m && await pressed(p, `.arn-mvs [data-dcmv="${m}"]`) === 'true' && (!e.pct || s.verdict.includes(e.pct) || s.tag.includes(e.pct)), `${tag} move ${m}: chosen, ${e.pct || 'no number'} on screen`); }
-  const all = await p.evaluate(() => { const s = document.querySelector('.arn-mv.all #dcMv'), bx = document.querySelector('.arn-mv.all'); if (!s) return null; const a = s.getBoundingClientRect(), c = bx.getBoundingClientRect();
-    return {n: s.options.length, cover: Math.abs(a.width - c.width) < 6 && Math.abs(a.height - c.height) < 6, other: [...s.options].map(o => o.text).find(t => ![...document.querySelectorAll('.arn-mvs [data-dcmv]')].some(b => b.dataset.dcmv === t))}; });
+  // Nov 21: Plot the hit (Sim approved): the three move swipes (.pc-mvs; was .arn-mvs); each tap chooses it, circles it, and the answer is the
+  // engine's hit and the same HP the swipe showed before the tap; All moves (.pc-all) opens today's move list from its whole button
+  const mvs = await p.evaluate(() => [...document.querySelectorAll('.pc-mvs [data-dcmv]')].map(e => [e.dataset.dcmv, (e.querySelector('em') || {}).textContent])); ok(mvs.length === 3, `${tag} three move swipes (${mvs.map(x => x[0]).join(', ')})`);
+  for (const [m, was] of [...mvs].reverse()) { const sw = await p.evaluate(m => (document.querySelector(`.pc-mvs [data-dcmv="${m}"] em`) || {}).textContent, m); await click(p, `.pc-mvs [data-dcmv="${m}"]`); const e = await engine(p), s = await shown(p), mm = e.min == null ? '' : mismatch(s, e), circ = await p.evaluate(m => !!document.querySelector(`.pc-mvs [data-dcmv="${m}"] .pc-ring`), m);
+    ok(e.mv === m && await pressed(p, `.pc-mvs [data-dcmv="${m}"]`) === 'true' && circ && !mm && (e.min == null || e.max === 0 || s.dmg === sw), `${tag} move ${m}: chosen and circled, ${e.pct || 'no number'} on screen, the swipe showed ${sw}${mm ? ': ' + mm : ''}`); }
+  const all = await p.evaluate(() => { const s = document.querySelector('.pc-all #dcMv'), bx = document.querySelector('.pc-all'), bt = bx && bx.querySelector('[data-arnmv]'); if (!s || !bt) return null; const a = bt.getBoundingClientRect(), c = bx.getBoundingClientRect(), cs = getComputedStyle(bx), bw = k => parseFloat(cs['border' + k + 'Width']) || 0;
+    /* Nov 21: Plot the hit (Sim approved): All moves has a 3px dashed outline; its button must fill everything inside it (2px tolerance; was 6px around the Arena's 2px border) */
+    return {n: s.options.length, cover: Math.abs(a.width - (c.width - bw('Left') - bw('Right'))) < 2 && Math.abs(a.height - (c.height - bw('Top') - bw('Bottom'))) < 2, other: [...s.options].map(o => o.text).find(t => ![...document.querySelectorAll('.pc-mvs [data-dcmv]')].some(b => b.dataset.dcmv === t))}; });
   ok(all && all.n > 3 && all.cover, `${tag} All moves opens today's move list (${all && all.n} moves) from the whole button`);
   if (all && all.other) { await p.selectOption('#dcMv', {label: all.other}); await wait(p); const e = await engine(p); ok(e.mv === all.other, `${tag} All moves: picking ${all.other} puts it in play`); }
-  await click(p, `.arn-mvs [data-dcmv="${mvs[0]}"]`);
-  // name plates: today's Pokemon pickers over the whole plate; a new defender changes the numbers
-  const pl = await p.evaluate(() => ['dcA', 'dcD'].map(id => { const s = document.getElementById(id), pl = s && s.closest('.arn-plate'); if (!pl) return null; const a = s.getBoundingClientRect(), c = pl.getBoundingClientRect(); return s.options.length > 250 && Math.abs(a.width - c.width) < 2 && Math.abs(a.height - c.height) < 2; }));
-  ok(pl[0] && pl[1], `${tag} both name plates open the Pokemon picker (attacker ${pl[0]}, defender ${pl[1]})`);
-  { const d0 = await engine(p); await p.selectOption('#dcD', 'Incineroar'); await wait(p, 500); const e = await engine(p), nm = await p.evaluate(() => document.querySelector('[data-arnname="d"]').textContent);
-    ok(e.d === 'Incineroar' && /Incineroar/.test(nm) && e.pct !== d0.pct, `${tag} defender plate: Incineroar in, plate and numbers follow (${d0.pct} -> ${e.pct})`);
+  await click(p, `.pc-mvs [data-dcmv="${mvs[0][0]}"]`);
+  // photos: each photo is the picker button over the whole photo (Q46 A), with today's Pokemon list behind it; a new defender changes the numbers
+  // Nov 21: Plot the hit (Sim approved): the photos .pc-ph (were the Arena's name plates); tapping opens "Choose the attacker / defender"
+  const pl = await p.evaluate(() => ['dcA', 'dcD'].map(id => { const s = document.getElementById(id), ph = s && s.closest('.pc-ph'), bt = ph && ph.querySelector(`[data-arnpick="${id}"]`); if (!bt) return null; const a = bt.getBoundingClientRect(), c = ph.getBoundingClientRect(); return s.options.length > 250 && Math.abs(a.width - c.width) < 2 && Math.abs(a.height - c.height) < 2; }));
+  ok(pl[0] && pl[1], `${tag} both photos are the Pokemon picker's button (attacker ${pl[0]}, defender ${pl[1]})`);
+  for (const [id, who] of [['dcA', 'attacker'], ['dcD', 'defender']]) { await p.evaluate(id => document.querySelector(`[data-arnpick="${id}"]`).click(), id); await wait(p, 500); /* a DOM click: Playwright's click can hang waiting on the sheet's history entry (seen at 320 dark); v2-q46 taps the photos for real */ const d = await p.evaluate(() => { const s = [...document.querySelectorAll('[role=dialog]')].find(e => !e.hidden && e.getClientRects().length); return s ? ((s.getAttribute('aria-label') || '') + ' ' + s.innerText).replace(/\s+/g, ' ').slice(0, 80) : ''; });
+    ok(new RegExp('Choose the ' + who, 'i').test(d), `${tag} the ${who}'s photo opens "Choose the ${who}" ("${d.slice(0, 40)}")`); await p.keyboard.press('Escape'); await wait(p, 400); }
+  { const d0 = await engine(p); await p.selectOption('#dcD', 'Incineroar'); await wait(p, 500); const e = await engine(p), nm = await p.evaluate(() => document.querySelector('[data-arnname="d"]').textContent), mm = mismatch(await shown(p), e);
+    ok(e.d === 'Incineroar' && /Incineroar/.test(nm) && e.pct !== d0.pct && !mm, `${tag} defender photo: Incineroar in, photo and numbers follow (${d0.pct} -> ${e.pct})${mm ? ': ' + mm : ''}`); /* Nov 21: Plot the hit (Sim approved) */
     await p.selectOption('#dcD', d0.d); await wait(p, 500); }
   // swap
   { const e0 = await engine(p); await click(p, '#dcSwap', 500); const e1 = await engine(p), nm = await p.evaluate(() => [document.querySelector('[data-arnname="a"]').textContent, document.querySelector('[data-arnname="d"]').textContent]);
-    ok(e1.a === e0.d && e1.d === e0.a && nm[1].replace(/\s+/g, ' ').includes(V2disp(e0.a)), `${tag} swap: ${e0.a} / ${e0.d} -> ${e1.a} / ${e1.d}, plates follow`);
+    ok(e1.a === e0.d && e1.d === e0.a && nm[1].replace(/\s+/g, ' ').includes(V2disp(e0.a)) && nm[0].replace(/\s+/g, ' ').includes(V2disp(e0.d)), `${tag} swap: ${e0.a} / ${e0.d} -> ${e1.a} / ${e1.d}, photos follow`); /* Nov 21: Plot the hit (Sim approved): both photos' names checked (was the defender plate only) */
     await click(p, '#dcSwap', 500); }
   // the set cards (today's ids)
   { const set = async (id, val) => { await p.evaluate(id => document.querySelectorAll('details').forEach(d => { if (d.contains(document.getElementById(id))) d.open = true; }), id); await wait(p, 150); await p.selectOption('#' + id, val); await wait(p); };
@@ -118,9 +147,5 @@ for (const W of WIDTHS) for (const th of THEMES) {
   ok(!errs.length, `${tag} no page errors${errs.length ? ': ' + errs.slice(0, 2).join(' | ') : ''}`);
   await c.close(); }
 await b.close();
-console.log(fails.length ? `\n${fails.length} failure(s)` : '\nall Arena checks pass'); process.exit(fails.length ? 1 : 0);
-// today's koText in the Arena's plain words (the same table as calc.js V2.ARN_W.long, enough to recognise it)
-function V2words(t) { let m; t = t.replace(/ \(Focus Band.*$/, ''); if (t === 'Guaranteed OHKO') return 'Knocks it out'; if ((m = /^(\d+)% chance to OHKO$/.exec(t))) return `${m[1]}% chance to knock it out`;
-  if (t === 'Guaranteed 2HKO') return 'Two hits to knock it out'; if ((m = /^(\d+)% chance to 2HKO$/.exec(t))) return `${m[1]}% chance to knock it out in two hits`; if (t === 'Guaranteed 3HKO') return 'Three hits to knock it out';
-  if ((m = /^(\d+)HKO or worse$/.exec(t))) return ' hits or more'; return t; }
+console.log(fails.length ? `\n${fails.length} failure(s)` : '\nall Damage Calc (Plot the hit) checks pass'); process.exit(fails.length ? 1 : 0);
 function V2disp(n) { return n.replace(/^(.*)-Mega(?:-(\w+))?$/, (x, b, y) => 'Mega ' + b + (y ? ' ' + y : '')).replace(/^Mega /, ''); }
