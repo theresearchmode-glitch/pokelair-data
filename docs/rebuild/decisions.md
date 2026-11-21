@@ -1840,3 +1840,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:02 PM: hB done (048e8b40, not merged yet): Calc 320 'swap them' wraps beside its arrow; Home 360-440 (and 600-700) the hero pair stacks name over number where it didn't fit (a look change at those widths: asked Sim); v2-overlap 0 findings; arena, q19, unbounded, HQ minors pass; CI step added.
 - 2:03 PM: Helper hC started (2 of 2 with hT): Damage Calc on the kit, proposal (copy cc).
 - 2:04 PM: Sim: yes to the Home stacked hero pair at 360-440. Merged into t1rules: bug fixes + CI overlap step (048e8b40), Ratings tier bar + phone swipe fade (34a2573d), Build winners as cards + compact phones (81843754). B-build tests on the Build change: result pending.
+- 2:05 PM: Preview v224 published (Ratings tier bar + swipe fade, Build winner cards, Home/Calc fixes); 443 files checked. The preview script's first build step fails again (2 Node errors, short page); built the preview step by hand. To fix the script later.
