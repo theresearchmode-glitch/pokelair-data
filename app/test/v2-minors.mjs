@@ -1444,7 +1444,9 @@ if (part('main2')) {
       const want = window.__ev(`ui.ab.doubles.teams[${i}].gp.join('|')`), cs = [...document.querySelectorAll('.bd-ans .pl-tags .pl-gp')], all = [...document.querySelectorAll('.bd-ans .pl-tags .pl-tag')], rows = {};
       all.forEach(c => { const y = Math.round(c.getBoundingClientRect().top); rows[y] = (rows[y] || 0) + 1; }); const box = document.querySelector('.bd-ans .pl-tags'), bb = box && box.getBoundingClientRect(), out = all.some(c => c.getBoundingClientRect().right > (bb ? bb.right : 0) + 1);
       return {got: cs.map(c => c.textContent).join('|'), want, rows: Object.values(rows), out, sw: document.documentElement.scrollWidth, vw: innerWidth}; }, i4);
-    ok(r.got === r.want && !r.rows.includes(1) && new Set(r.rows).size === 1 && !r.out && r.sw <= r.vw, `OL-i15: at ${w} all ${r.want.split('|').length} plan chips show, in even rows (${r.got}; rows ${r.rows.join('+')}; ${r.sw}/${r.vw})`); }
+    /* Nov 21 (The Plot, Q98 approved): the plan chips are tags on the answer's free-wrapping tag line now, beside 'Plan A of 4', 'Proven team' and
+       the Mega and catch tags, so rows of equal count can't be promised; the rule kept is Sim's 'no lone tile': no row holds a single tag */
+    ok(r.got === r.want && !r.rows.includes(1) && !r.out && r.sw <= r.vw, `OL-i15: at ${w} all ${r.want.split('|').length} plan chips show, no tag alone on a row (${r.got}; rows ${r.rows.join('+')}; ${r.sw}/${r.vw})`); }
     await q.setViewportSize({width: 1440, height: 900}); }
   await run('all'); const ib = await pick(`/isn't in your box: /`);
   if (ib < 0) ok(false, 'OL-i15: a Whole Roster build gave no "isn\'t in your box" line to check (unknown, not a pass)');
