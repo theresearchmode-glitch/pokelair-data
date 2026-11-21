@@ -51,3 +51,15 @@ on Nov 20 no more folds, so nothing was hidden.
 | 2:52 AM | Winner event names at 700-879: small-label font (Instrument Sans bold 15px), break only at spaces or hyphens | 'Champion/s-MC' broke mid-word in a 91px column | authority/build-event-name-700-860.png |
 
 Questions waiting on Sim: page frame width at 1200+; the winner top row.
+
+## This morning, with Sim (7:05 to 8:37 AM; Sim chose each step)
+| Time | What happened | Picture |
+|---|---|---|
+| 7:10 AM | Your six's names: no squeezing; the form on a small line above the name; phones 3 + 3 (Sim: "looks fine") | names/A-phone-390.png |
+| 7:22 AM | No yellow: the chosen Pokémon black with a Nasty pink edge, pink accents | names/C-new-1440.png |
+| 7:29 AM | Sim chose B "Night plot" for the My Team frame | frame-dir/B-night-1440.png |
+| 7:47 AM | Sim approved the calmer Night plot ("make this the one"): rows = picture, name, score, item; pink only for the chosen row and Apply; 1440 frame 952 -> 791px | frame-dir/F-1440.png |
+| 7:59 AM | Calc units mismatch (HP on top, % in the KO Board): option A (% first, HP under) recommended; waiting on Sim | calc-units/ |
+| 8:05-8:35 AM | Design review: about 12 separate looks. Brainstormed one theme: the crew planning the job; v2 mock-ups approved as the direction; every page to be mocked up on Sim's PC | cohesion/v2-*.png |
+
+Waiting on Sim: calc units (A or B); My Team Night frame vs paper (both to be mocked up). The My Team Night build (copy nm2, dc66b93c) is on hold until the cohesion direction settles.
