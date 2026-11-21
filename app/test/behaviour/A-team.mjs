@@ -244,17 +244,20 @@ t('TEAM-08', 'Your Six: six tiles lead/back/bench; tapping a tile shows its set,
     /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): the six sit in the team's own slot order under the one line
        "Who leads depends on who you face. Plan it in Battle ›"; still no "Your Six" heading on a full team (approved mock-up, Nov 11)
        (was: tiles in the plan line's lead/back/bench order) */
+    const opened = (c, n) => c.startsWith('‹ ' + n + ' ') || new RegExp('(Set|Editing) ' + n + ' ').test(c); /* Nov 21 frame: the set opens with '‹ {name} {k} of 6 ›' */
     const r = await myTeam({team: TEAM, width: 390}); const tiles = await r.ui.sixTiles(); ok(tiles.length === 6, `${tiles.length} tiles`); ok(!(await r.ui.sees(/Your Six/)), 'a "Your Six" heading shows (removed by design)');
     const st = await r.ui.sixText(); ok((/^Your six\b/.test(st) ? /\bWho leads depends on who you face\. Plan it in Battle ›$/ : /^Who leads depends on who you face\. Plan it in Battle ›/).test(st), 'the six do not open with the Battle line: ' + st.slice(0, 100)); /* Nov 21: My Team frame (Sim approved): the line sits under the six and the Game Plan bar (.mtf-lead), so it closes the six's text */
     const SLOT = ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']; ok(tiles.join('|') === SLOT.join('|'), `tiles ${tiles.join(',')} not in the team's slot order ${SLOT.join(',')}`);
     ok(!(await r.ui.sees('Tap a Pokémon to see its set')), 'old "Tap a Pokémon to see its set" hint shows'); /* Sim, Nov 18 (My Team C, phone length): on phones the editing panel stays shut until a Card is tapped, with a "Tap a Card to edit, replace or
        remove it" line; desktop still opens the first lead's (checked below) */
-    ok(!/(Set|Editing) /.test(await r.ui.setCard()) && !(await r.ui.tilePressed(tiles[0])) && await r.ui.sees('Tap a Card to edit, replace or remove it'), `phone opens a set before any tap, or has no "Tap a Card…" line (${(await r.ui.setCard()).slice(0, 60)})`);
-    await r.ui.tapTile('Garchomp'); let c = await r.ui.setCard(); ok(/(Set|Editing) Garchomp /.test(c) && !new RegExp('(Set|Editing) ' + tiles[0] + ' ').test(c), 'no set card for Garchomp: ' + c.slice(0, 80)); ok(await r.ui.tilePressed('Garchomp') && !(await r.ui.tilePressed(tiles[0])), 'Garchomp\'s tile not the marked one');
-    await r.ui.tapTile('Garchomp'); c = await r.ui.setCard(); ok(/(Set|Editing) Garchomp /.test(c) && await r.ui.tilePressed('Garchomp'), 'second tap hid Garchomp\'s set (the picked set always shows)'); await r.close();
+    /* Nov 21 (main thread, design authority; flagged to Sim): the My Team frame (Sim's approved Nov 21 mock-up) always shows its three parts,
+       so the first Pokémon's set is open before any tap, its tile marked, and the bar says "tap one to see it" (replaces Nov 18 C / Q5 A) */
+    ok(opened(await r.ui.setCard(), tiles[0]) && await r.ui.tilePressed(tiles[0]) && await r.ui.sees('tap one to see it'), `phone: the first Pokémon's set is not open and marked before any tap, or no "tap one to see it" (${(await r.ui.setCard()).slice(0, 60)})`);
+    await r.ui.tapTile('Garchomp'); let c = await r.ui.setCard(); ok(opened(c, 'Garchomp') && !opened(c, tiles[0]), 'no set card for Garchomp: ' + c.slice(0, 80)); ok(await r.ui.tilePressed('Garchomp') && !(await r.ui.tilePressed(tiles[0])), 'Garchomp\'s tile not the marked one');
+    await r.ui.tapTile('Garchomp'); c = await r.ui.setCard(); ok(opened(c, 'Garchomp') && await r.ui.tilePressed('Garchomp'), 'second tap hid Garchomp\'s set (the picked set always shows)'); await r.close();
     /* Sim, Nov 18 (Q5 A): desktop works like phones: no set before a tap, the 'Tap a Card…' line, a tap opens that Card's set */
-    const d = await myTeam({team: TEAM}), d0 = (await d.ui.sixTiles())[0]; ok(!/(Set|Editing) /.test(await d.ui.setCard()) && await d.ui.sees('Tap a Card to edit, replace or remove it'), 'desktop opened a set before any tap');
-    await d.ui.tapTile(d0); ok(new RegExp('(Set|Editing) ' + d0 + ' ').test(await d.ui.setCard()), 'desktop: tapping the first Card did not open its set'); await d.close(); return; }
+    const d = await myTeam({team: TEAM}), d0 = (await d.ui.sixTiles())[0]; ok(opened(await d.ui.setCard(), d0), 'desktop: the first Pokémon\'s set is not open before any tap (Nov 21 frame)');
+    await d.ui.tapTile(d0); ok(opened(await d.ui.setCard(), d0), 'desktop: tapping the first Card did not open its set'); await d.close(); return; }
   const r = await myTeam({team: TEAM, width: 390}); const tiles = await r.ui.sixTiles(); ok(tiles.length === 6, `${tiles.length} tiles`); has(await r.ui.text(), 'Your Six');
   const plan = await r.ui.gamePlanLine(); const m = plan.match(/lead (.+?) \+ (.+?), back (.+?) \+ (.+?), bench (.+?) \+ (.+?)\./); ok(m, 'no plan line'); ok(tiles.join('|') === m.slice(1).join('|'), `tiles ${tiles.join(',')} not in lead/back/bench order ${m.slice(1).join(',')}`);
   ok(await r.ui.sees('Tap a Pokémon to see its set'), 'phone shows no "Tap a Pokémon to see its set" hint'); ok(!(await r.ui.setCard()), 'phone opened a set card before any tap');
