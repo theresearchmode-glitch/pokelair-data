@@ -530,8 +530,8 @@ document.addEventListener('click', e => { if (!(e.target.closest && e.target.clo
 // Double taps (today's 34-events.js TAP_ACT, Oct 31; audit X-03/X-04, Nov 12): right after an action that changes the team, the box,
 // their six, the log or the page, a second tap within 450 ms is ignored, so a double tap can't apply twice, save twice, or land on
 // whatever the redraw put under the finger. One capture-phase listener, as today; the two per-button guards in sugs.js stay harmless.
-V2.TAP_ACT = /* today's set mapped to the new buttons (plan, absave, abuse, chrm, rec, qa, evload, abaround, clearTeam) + the audit's Use/Save/core/Load + the log's Win/Loss */
-  '[data-v2plan],[data-v2plana],[data-v2qa],[data-v2rm],[data-v2fix],[data-mufix],[data-v2clear],[data-bduse],[data-bdsave],[data-bdcore],[data-hmload],[data-hmaround],[data-bdgo],[data-btlres]';
+V2.TAP_ACT = /* Nov 21: + data-v2add (the Pokémon page's USE THIS SET. stays under the finger after it adds) */ /* today's set mapped to the new buttons (plan, absave, abuse, chrm, rec, qa, evload, abaround, clearTeam) + the audit's Use/Save/core/Load + the log's Win/Loss */
+  '[data-v2add],[data-v2plan],[data-v2plana],[data-v2qa],[data-v2rm],[data-v2fix],[data-mufix],[data-v2clear],[data-bduse],[data-bdsave],[data-bdcore],[data-hmload],[data-hmaround],[data-bdgo],[data-btlres]';
 V2._tapAt = 0; V2._tapXY = [0, 0];
 // code review B9d: only a second tap near the same spot counts as the double tap (it blocked every click on the site for 450 ms, ✕ and
 // Undo included); a keyboard Enter (no position) on the same control within 450 ms is still ignored
