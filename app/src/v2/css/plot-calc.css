@@ -95,10 +95,10 @@
 .pc-ph,.dc2.pc .pc-kits .arn-set{--pc-ink:var(--pc-on-paper);--pc-ink2:var(--pc-on-paper2)}.dc2.pc .pc-kits .arn-set .arn-f,.dc2.pc .pc-kits .arn-set .arn-sel,.dc2.pc .pc-kits .arn-set output{color:var(--pc-on-paper)}.dc2.pc .pc-kits .arn-set small{color:var(--pc-on-paper2)}
 :root[data-theme="night"] .pc-ans .pc-big{color:var(--tcn,var(--tc,var(--pc-ink)))}
 /* polish (Nov 21, authority): the five switches never leave one alone on a row (polish-check: 4+1 at 560/720/1360, 2+2+1 at 320):
-   five across when the panel is 640+ wide, otherwise 3 + 2; under 334 the labels drop to 13px, under 300 with tighter spacing, so all five stay on one line each (320 included) */
+   five across when the panel is 592+ wide, otherwise 3 + 2; under 334 the labels drop to 13px, under 300 with tighter spacing, so all five stay on one line each (320 included) */
 .pc-turn{container-type:inline-size}
 .pc-sws{display:grid;grid-template-columns:repeat(3,max-content);justify-content:start}.dc2.pc .pc-sws button{grid-column:auto;clip-path:none}
-@container (min-width:640px){.pc-sws{grid-template-columns:repeat(5,max-content)}}
+@container (min-width:592px){.pc-sws{grid-template-columns:repeat(5,max-content)}}
 @container (max-width:333.98px){.dc2.pc .pc-sws button{font-size:var(--t13);padding:0 var(--s2)}}
 @container (max-width:299.98px){.pc-sws{column-gap:var(--s1)}.dc2.pc .pc-sws button{padding:0 var(--s1);white-space:nowrap}.pc-sws .pc-ring{inset:-4px -6px;width:calc(100% + 12px);height:calc(100% + 8px)}}
 /* polish (Nov 21, authority): on tablets the photos are narrow (about 130px at 720): a long name ("Mega Charizard Y") wraps under the
