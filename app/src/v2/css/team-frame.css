@@ -80,3 +80,24 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
   .mt-work .mu-cards .tm-v{justify-self:start}}
 @media (max-width:699.98px){.mt-work .mu-cards .nm,.mt-work .mu-cards .mu-dis{justify-self:start;text-align:left}
   .mt-work .mu-pick > *{display:flex;flex-wrap:nowrap;grid-template-columns:none}.mt-work .mu-pick button{flex:1 1 0;min-width:0;padding:0 var(--s1);font-size:var(--t13)}.mt-work .mu-pick button svg,.mt-work .mu-pick button i{display:none}}
+/* Suggestions in the frame (the mock): a yellow bar for the title, the suggestion as a dark card with the gain big in yellow, the swap
+   as two tiles (the new one outlined in yellow), Apply yellow; the links wrap as one line of links */
+.mtf-sg > .tm-sgs{padding:0 var(--s4) var(--s3)}
+.mtf-sg > .tm-sgs > h2{margin:0 calc(var(--s4) * -1) var(--s3);padding:var(--s3) var(--s4);background:var(--mtf-chosen);color:var(--mtf-ink);font-size:var(--t20);line-height:1.1}
+.mtf-sg .tm-sug{margin:var(--s2) 0;padding:0;list-style:none}
+.mtf-sg .tm-sug > li{display:grid;gap:var(--s2);padding:var(--s3) var(--s4) var(--s4);border:0;background:var(--mtf-frame);color:var(--mtf-on-frame)}
+.mtf-sg .tm-sug > li > .np-eyebrow{display:none}
+.mtf-sg .tm-sug .tm-mv{display:flex;align-items:baseline;gap:var(--s2);margin:0}.mtf-sg .tm-sug .tm-mv b{font:900 var(--t34)/1 var(--u);font-style:italic;color:var(--mtf-chosen)}.mtf-sg .tm-sug .tm-mv span{font:700 var(--t13)/1 var(--b);color:var(--mtf-on-frame)}
+.mtf-sg .tm-chg{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:6px}
+.mtf-sg .tm-chg .tm-sw{display:grid;justify-items:center;gap:2px;padding:var(--s2) var(--s1);background:var(--mtf-card-tile);text-align:center;color:var(--mtf-on-frame)}
+.mtf-sg .tm-chg .tm-sw.in{background:var(--mtf-card-new);box-shadow:inset 0 0 0 3px var(--mtf-chosen)}.mtf-sg .tm-chg .tm-sw img{width:56px;height:56px}
+.mtf-sg .tm-chg .tm-ar{font-size:var(--t24);color:var(--mtf-on-frame)}
+.mtf-sg .tm-sug .sg2-ln{margin:0;font:500 var(--t13)/1.4 var(--b);color:var(--mtf-card-sub)}.mtf-sg .tm-sug .sg2-ln b{color:var(--mtf-on-frame)}
+.mtf-sg .tm-sug .np-btn{justify-self:start;background:var(--mtf-chosen);color:var(--mtf-ink)}
+.mtf-sg .tm-sug .sg2-why summary,.mtf-sg .tm-sug .sg2-why .q{color:var(--mtf-card-link)}.mtf-sg .tm-sug .sg2-why .n{color:var(--mtf-card-sub)}.mtf-sg .tm-sug .sg2-why ul{color:var(--mtf-card-sub)}
+.mtf-sg .sg2-links,.mtf-sg .sg2-nact{display:flex;flex-wrap:wrap;gap:0 var(--s4)}.mtf-sg .sg2-links .np-link{min-height:var(--tap)}
+@media (min-width:1000px){.mtf-sg .tm-chg .tm-sw img{width:80px;height:80px}}
+.mtf-sg .tm-chg .tm-sw *{color:var(--mtf-on-frame)}.mtf-sg .tm-chg .tm-sw .mg{color:var(--mtf-card-link)}.mtf-sg .tm-chg .tm-sw small{color:var(--mtf-card-sub)}
+.mtf-sg .tm-sug .sg2-ln b{color:var(--mtf-ink)}.mtf-sg .sg2-l2{display:inline}
+/* the mock: the three links wrap as one line of links (was stacked under 520) */
+.mtf-sg .tm-sgs .sg2-links{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;column-gap:var(--s4);row-gap:0;grid-auto-flow:unset}
