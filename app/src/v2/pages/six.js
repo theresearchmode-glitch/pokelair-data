@@ -100,7 +100,12 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   if (t.dataset.v2lock != null) { toggleLock(+t.dataset.v2lock); render(); const b = document.querySelector(`[data-v2lock="${t.dataset.v2lock}"]`); if (b) b.focus({preventScroll: true}); return; }
   if (innerWidth >= 700 && innerWidth < 1100) { try { const D = V2.teamData(); if (D && D.L && D.ms.length === 6) V2.ui.holdRoles = {lead: D.L.lead.map(m => m.i), back: D.L.back.map(m => m.i), bench: D.L.bench.map(m => m.i), n: Object.fromEntries(D.ms.map(m => [m.i, m.p.n]))}; } catch (e) {} } /* Q9 C */
   const c0 = (() => { const c = document.querySelector('#main .mh-slot.on'); return c ? c.getBoundingClientRect().top : null; })(); /* Q9 C: where the removed Card sat */
-  const i = +t.dataset.v2rm, was = clearSlot(i); V2.ui.picked = false; /* Sim, Nov 18 (C): on phones the panel shuts with the Card it was editing */ render(); if (was) toast(`Removed ${was.d}`, true);
+  const i = +t.dataset.v2rm, was = clearSlot(i); V2.ui.picked = false; /* Sim, Nov 18 (C): on phones the panel shuts with the Card it was editing */
+  /* Sim, Nov 21 (Q101 A): on tablets (700-1099) the panel stays under the same row and edits the nearest Card left in that row, so nothing
+     below moves (it used to follow the next Card into the row below: rows jumped 197 px at 820). V2.ui.sel is a place in the members list. */
+  if (innerWidth >= 700 && innerWidth < 1100) { try { const ms = V2.teamData().ms || [], row = Math.floor(i / 3), same = ms.map((m, k) => [m, k]).filter(([m]) => Math.floor(m.i / 3) === row);
+    if (same.length) V2.ui.sel = same.sort((a, b) => Math.abs(a[0].i - i) - Math.abs(b[0].i - i) || a[0].i - b[0].i)[0][1]; } catch (e) {} }
+  render(); if (was) toast(`Removed ${was.d}`, true);
   // Sim, Nov 17: after Remove the new Add spot was 685px above the screen (390 wide); bring it into view and give it the focus
   // Sim, Nov 18 (desktop): centring it made the page jump up 400-500px every time even when the Add spot was already on screen.
   // Now it moves only when less than a tap's height (44px) of the Add spot is on screen, and then the least that brings it fully in
