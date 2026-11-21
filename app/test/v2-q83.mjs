@@ -31,7 +31,7 @@ const result = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects
   const tok = v => { const d = document.createElement('i'); d.style.color = v; (a || document.body).append(d); const c = getComputedStyle(d).color; d.remove(); return c; };
   const go = [...document.querySelectorAll('[data-bdgo]')].filter(vis), g = go[0], gc = g && getComputedStyle(g);
   /* Nov 20 (The Plot piece 4): the other options are Got a Plan B? columns, each with its six on the red line and a Switch (data-bdshow) */
-  const revs = a ? [...a.querySelectorAll('.pl-plan:not(.pl-pwait)')].map(r => [...r.querySelectorAll('.pl-psix img')].filter(vis).map(i => Math.round(i.getBoundingClientRect().height))) : [], sws = a ? a.querySelectorAll('.pl-plans [data-bdshow]').length : 0;
+  const revs = a ? [...a.querySelectorAll('.pl-plan:not(.pl-pwait)')].map(r => [...r.querySelectorAll('.pl-psix img')].filter(vis).map(i => Math.round(i.naturalWidth ? i.getBoundingClientRect().height : i.parentElement.getBoundingClientRect().height - 4)) /* the code-check jobs build without art/ beside the page: an unloaded sprite is measured by its slot (sprite at most slot - 4px) */) : [], sws = a ? a.querySelectorAll('.pl-plans [data-bdshow]').length : 0;
   /* (was the Blueprint's solid numbers 01-06; the plates carry no numbers: each of the six is a solid plate in its type colour, words on it) */
   const no = a ? [...a.querySelectorAll('.pl-plates .pl-plate')].filter(vis).map(e => getComputedStyle(e)) : [];
   const sl = a && a.querySelector('.pl-seal'), sb = sl && sl.querySelector('b'), sw = sl && sl.querySelector('.w span'), slc = sl && getComputedStyle(sl);
