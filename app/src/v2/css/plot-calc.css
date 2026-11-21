@@ -130,3 +130,133 @@
 /* Sim, Nov 21 (iPhone): in All moves on phones the "x–y of N HP" part sits under the big %, so the move name keeps the row's width (it ran into the % and broke a word per line) */
 @media (max-width:699.98px){.arn-mvd b .of{display:block;margin-top:2px;text-align:right}.arn-mvd b .of .sep{display:none}}
 @media (max-width:359.98px){.arn-mvhit .nm b{font-size:var(--t15)}.np-hit.arn-mvhit{column-gap:var(--s2)}}
+
+/* ---------- the reskin on the shared kit (Nov 21; HYBRID.md, the Calc "keep as drawn, small fixes"): kit header and sentence, the plan
+   line's four steps; the graph paper is step 1's hero only (photos + the answer); the rest is the shared kit on the page's paper.
+   Everything here is scoped to .pck (the kit version of the page), so the rules above stay as they were. ---------- */
+.dc2.pc.pck{--pc-gap:var(--s5)}
+.pck .k-sent{margin-top:var(--s6)}
+.pck .pc-hint{display:flex;flex-wrap:wrap;align-items:center;column-gap:var(--s3)}
+.dc2.pc.pck .pc-swap{min-height:var(--tap);color:var(--k-plot-text);font:700 var(--t15)/1.2 var(--b)}
+.dc2.pc.pck .pc-swap svg{width:32px;height:20px}
+.pck .k-plan{padding-bottom:var(--s8)}
+/* step 1: the graph paper (the Calc's own hero): the two photos and the answer */
+.dc2.pc.pck .pc-board{grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"pa pd" "ans ans";gap:var(--s4) var(--s3);margin:0;padding:var(--s5) var(--s4) var(--s4);box-shadow:0 10px 24px -14px var(--k-card-shadow)}
+.dc2.pc.pck .pc-ans .pc-vd{margin:var(--s6) 0 var(--s4)}
+.pck .k-step .k-sec{margin-bottom:var(--s4)}
+/* step 2: the move swipes as drawn (2 across on phones, 4 across from 700) */
+/* step 3: the sky, the ground, this turn: rows of boxed blue words (the kit's taps; the filled one is on); then the two kits */
+.pck .pc-conds{display:grid;gap:var(--s4)}
+.pck .pc-conds .pc-blk{grid-area:auto}
+.pck .pc-conds h3{margin:0 0 var(--s2);font:800 var(--t17)/1.2 var(--u);font-style:italic;color:var(--k-ink)}
+.pck .pc-conds .pc-ring{display:none}
+.dc2.pc.pck .pc-five,.dc2.pc.pck .pc-sws{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s3)}
+.dc2.pc.pck .pc-five button,.dc2.pc.pck .pc-sws button{position:relative;display:flex;flex-direction:row;align-items:center;justify-content:center;gap:var(--s2);min-width:0;min-height:var(--tap);padding:0 var(--s4);border:3px solid var(--k-plot);border-radius:0;background:transparent;box-shadow:none;color:var(--k-plot-text);font:800 var(--t15)/1.15 var(--u);font-style:italic;transform:skewX(-8deg);cursor:pointer}
+.dc2.pc.pck .pc-five button>*,.dc2.pc.pck .pc-sws button>*{transform:skewX(8deg)}
+.dc2.pc.pck .pc-five button[aria-pressed="true"],.dc2.pc.pck .pc-sws button[aria-pressed="true"]{background:var(--k-plot);color:var(--k-on-plot)}
+.dc2.pc.pck .pc-five .arn-ic{width:18px;height:18px;color:currentColor}
+/* the two kits: one panel each (page + one card), the same height side by side; label small over its value; the ▼ rides on the value's last word */
+.dc2.pc.pck .pc-kits{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s3);align-items:stretch;margin-top:var(--s6)}
+.dc2.pc.pck .pc-kits .arn-set{grid-area:auto;align-content:start;padding:var(--s4) var(--s4) var(--s3);background:var(--k-card);rotate:none;box-shadow:0 8px 16px var(--k-card-shadow);--pc-ink:var(--k-ink);--pc-ink2:var(--k-ink2);--pc-on-paper:var(--k-ink);--pc-on-paper2:var(--k-ink2);--pc-note-label:var(--k-ink2)}
+.dc2.pc.pck .pc-kits .arn-set::before{content:none}
+.dc2.pc.pck .pc-kits .arn-set header{margin:0 0 var(--s2)}
+.dc2.pc.pck .pc-kits .arn-set header b{font-size:var(--t17);line-height:1.2}
+.dc2.pc.pck .pc-kits .arn-f{border-bottom:1px solid var(--k-rule)}
+.dc2.pc.pck .pc-kits .arn-f:has(.arn-val){display:grid;align-content:center;min-height:56px;padding:var(--s1) 0}
+.dc2.pc.pck .pc-kits .arn-f > .vh{padding:0}
+.dc2.pc.pck .pc-kits .arn-f:has(.arn-val) .arn-sel{position:absolute;inset:0;width:100%;height:100%;opacity:0}
+.dc2.pc.pck .pc-kits .arn-f:has(.arn-val) > .arw{display:none}
+.pck .arn-val{display:block;font:700 var(--t15)/1.3 var(--b);color:var(--k-ink)}
+.pck .arn-val .nw{white-space:nowrap}
+.pck .arn-val .arw{display:inline-block;width:10px;height:8px;margin-left:6px;background:currentColor;opacity:.7;clip-path:polygon(0 0,100% 0,50% 100%)}
+.pck .arn-f:has(.arn-sel:disabled) .arn-val .arw{display:none}
+.dc2.pc.pck .pc-kits .arn-ov,.dc2.pc.pck .pc-kits .arn-pts>summary{padding:0}
+.dc2.pc.pck .pc-kits .arn-ov{display:flex;flex-wrap:wrap;align-items:center;align-content:center;min-height:56px}.dc2.pc.pck .pc-kits .arn-ov .lb{flex:0 0 100%}
+.dc2.pc.pck .pc-kits .arn-ov .lb{grid-column:1/-1;font:700 var(--t13)/1.2 var(--b);color:var(--k-ink2)}.dc2.pc.pck .pc-kits .arn-ov .lb small{font:inherit;color:inherit}
+.dc2.pc.pck .pc-kits .arn-ov .v{margin:0;font:700 var(--t15)/1.3 var(--b);color:var(--k-ink)}
+.dc2.pc.pck .pc-kits .arn-ov>.arw{flex:none;position:static;translate:none;align-self:center;margin-left:6px;width:10px;height:8px;background:currentColor;opacity:.7}
+.dc2.pc.pck .pc-kits .arn-pts>summary{display:flex;align-items:center;min-height:56px}.dc2.pc.pck .pc-kits .arn-pts>summary .lb{flex:0 1 auto;min-width:0}.dc2.pc.pck .pc-kits .arn-pts>summary>.arw{display:none}
+/* the points' ▼ is written after "pts" with a no-break space, so in a narrow panel the line wraps at a space and the ▼ stays with its word */
+.dc2.pc.pck .pc-kits .arn-pts>summary .lb small::after{content:"\00a0\25BE";opacity:.7}.dc2.pc.pck .pc-kits .arn-pts>summary .lb{font:700 var(--t15)/1.3 var(--b);color:var(--k-ink)}.dc2.pc.pck .pc-kits .arn-pts>summary .lb small{font:700 var(--t13)/1.2 var(--b);color:var(--k-ink2)}
+.dc2.pc.pck .pc-kits .arn-st{border-bottom:0;padding-top:var(--s2)}
+.dc2.pc.pck .pc-kits .arn-st .lb{font:800 var(--t15)/1.2 var(--u);font-style:italic}
+.dc2.pc.pck .pc-kits .arn-st button{border:3px solid var(--k-plot);border-radius:0;background:transparent;color:var(--k-plot-text)}
+/* step 4: the KO Board: the three counts, its top rows (6 on desktop, 3 on phones), the page's one pink move opens the board */
+.pck .pc-kob .k-facts{margin:0 0 var(--s4)}
+.pck .pc-kempty{margin:0;font-size:var(--t16);line-height:1.5;color:var(--k-ink2)}
+.pck .pc-krs{display:grid;grid-template-columns:minmax(0,1fr);column-gap:var(--s8);margin:0;padding:0;list-style:none;border-top:1px solid var(--k-rule)}
+.pck .pc-krs li{border-bottom:1px solid var(--k-rule)}
+.pck .pc-kr{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:var(--s3);width:100%;min-height:56px;margin:0;padding:var(--s2) 0;border:0;background:none;color:var(--k-ink);font:inherit;text-align:left;cursor:pointer}
+.pck .pc-kr .mon,.pck .pc-kr img{max-width:40px;max-height:40px}
+.pck .pc-krn{display:grid;min-width:0}
+.pck .pc-krn b{font:700 var(--t16)/1.3 var(--b)}
+.pck .pc-krn small{font:500 var(--t13)/1.3 var(--b);color:var(--k-ink2)}
+.pck .pc-krv{font-size:var(--t20);line-height:1;white-space:nowrap}
+.pck .pc-kr:hover .pc-krn b{text-decoration:underline}
+.pck .pc-kr:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
+.pck .pc-kgo{margin-top:var(--s2)}
+.pck .pc-kgo>summary{list-style:none}.pck .pc-kgo>summary::-webkit-details-marker{display:none}
+.dc2.pc.pck .pc-kgo .arn-kbbar{display:inline-block;grid-template-columns:none;border-radius:0;background:var(--k-go);color:var(--k-on-go);padding:var(--s3) var(--s6)}
+.pck .pc-kgo .arn-kbbar .t,.pck .pc-kgo .arn-kbbar .t2{font-size:inherit}
+.pck .pc-kgo .t2,.pck .pc-kgo[open] .t{display:none}.pck .pc-kgo[open] .t2{display:inline}
+.pck .pc-kgo .arn-kbbar:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
+.pck .pc-kgo .arn-kbin{margin-top:var(--s6)}
+.dc2.pc.pck .pc-links{display:flex;flex-wrap:wrap;gap:0 var(--s6);margin-top:var(--s4)}
+.dc2.pc.pck .pc-links .np-link{font:700 var(--t15)/1.3 var(--b);color:var(--k-plot-text);text-decoration:none}
+.dc2.pc.pck .pc-links .arn-notes[open]{flex-basis:100%}
+.dc2.pc.pck .pc-links .arn-notes>summary{color:var(--k-plot-text);font-weight:700}
+.pck .pc-kgo .arn-kbbar .t,.pck .pc-kgo .arn-kbbar .t2{white-space:nowrap;text-wrap:nowrap}
+.pck .arn-kbfull{margin-top:0}
+/* 700+: the photos beside the answer; the conditions' labels on the left; the kits' rows two across; the KO rows two columns */
+@media (min-width:700px){
+  .dc2.pc.pck .pc-board{grid-template-columns:minmax(0,1fr) minmax(0,1.5fr) minmax(0,1fr);grid-template-areas:"pa ans pd";gap:var(--s6);padding:var(--s6)}
+  .pck .pc-conds{gap:var(--s3)}
+  .pck .pc-conds .pc-blk{display:grid;grid-template-columns:136px minmax(0,1fr);align-items:center}
+  .pck .pc-conds h3{margin:0}
+  .dc2.pc.pck .pc-kits .arn-set{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--s5)}
+  .dc2.pc.pck .pc-kits .arn-set>header,.dc2.pc.pck .pc-kits .arn-set>.arn-st,.dc2.pc.pck .pc-kits .arn-set>.arn-pts[open]{grid-column:1/-1}
+  .pck .pc-krs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pck .pc-krv{font-size:var(--t24)}}
+@media (min-width:1320px){.dc2.pc.pck .pc-board{grid-template-columns:260px minmax(0,1fr) 260px;padding:var(--s8) var(--s8) var(--s6)}
+  .dc2.pc.pck .pc-kits{display:grid}.pck .pc-krv{font-size:var(--t28)}}
+/* phones: the sky and the ground five across (icon over word, Instrument Sans: Unbounded never under 15px); this turn 3 + 2 filling the row;
+   only the top 3 KO rows (the pink move opens all 30) */
+@media (max-width:699.98px){
+  .dc2.pc.pck .pc-board{padding:var(--s4) var(--s3) var(--s3)}
+  .dc2.pc.pck .pc-five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s1)}
+  .dc2.pc.pck .pc-five button{flex-direction:column;gap:2px;min-height:52px;padding:var(--s1) 0;border-width:2px;font:700 var(--t13)/1.1 var(--b);transform:none}
+  .dc2.pc.pck .pc-five button>*{transform:none}
+  .dc2.pc.pck .pc-sws{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2)}
+  .dc2.pc.pck .pc-sws button{grid-column:span 2;min-height:48px;padding:0 var(--s1);font:700 var(--t15)/1.15 var(--b);text-align:center;text-wrap:balance}
+  .dc2.pc.pck .pc-sws button:nth-child(n+4){grid-column:span 3}
+  .dc2.pc.pck .pc-kits{gap:var(--s2);margin-top:var(--s5)}
+  .dc2.pc.pck .pc-kits .arn-set{padding:var(--s3) var(--s3) var(--s2)}
+  .pck .pc-krs li:nth-child(n+4){display:none}
+  /* phone length (THEME 4: no longer than today's page): tighter header and step spacing on the 4px grid; the photos a little shorter than
+     square; each KO row on one line (the name and the damage; whose move is in its spoken label and one tap away on the board) */
+  .pck .k-kicker{margin-top:var(--s4)}.pck .k-lead{margin-top:var(--s2)}.pck .k-sent{margin-top:var(--s4);gap:var(--s2)}
+  .pck .k-step .k-sec{margin:var(--s8) 0 var(--s3)}.pck .k-step:first-child .k-sec{margin-top:var(--s6)}
+  .dc2.pc.pck .pc-pic{aspect-ratio:5/4}.dc2.pc.pck .pc-arrow{height:28px}.dc2.pc.pck .pc-ans .pc-vd{margin:var(--s5) 0 var(--s3)}
+  .pck .pc-conds{gap:var(--s3)}.pck .pc-conds h3{margin-bottom:var(--s1)}
+  .dc2.pc.pck .pc-kits .arn-f:has(.arn-val){min-height:48px}
+  .dc2.pc.pck .pc-kits .arn-set header b{font-size:var(--t15)}
+  .pck .pc-krn small{display:none}.pck .pc-kr{min-height:52px;padding:var(--s1) 0}
+  .dc2.pc.pck .pc-links{margin-top:var(--s2)}
+  .pck .k-step:nth-child(3) .k-note{display:none} /* the sky / the ground / this turn labels say it */
+  .pck .k-step .k-sec{margin-top:var(--s6)}.pck .k-sent{font-size:var(--t20)}.pck .k-w{min-height:var(--tap);padding:0 var(--s3)}
+  .dc2.pc.pck .pc-pic{aspect-ratio:4/3} /* 16:9 tried (Sim's shorter-photos ask, Nov 21): it cropped the Pokémon and the ring covered the name, so 4:3 stays */
+  .dc2.pc.pck .pc-kits .arn-st .lb{font:700 var(--t13)/1.2 var(--b);font-style:normal}
+  .pck .pc-krv{font-size:var(--t17)}.pck .pc-krn b{font-size:var(--t15)}.pck .pc-kr{min-height:48px}
+  .dc2.pc.pck .pc-kgo .arn-kbbar{display:block}}
+@media (max-width:359.98px){.dc2.pc.pck .pc-five button{font-stretch:75%}.dc2.pc.pck .pc-kits .arn-set{padding:var(--s2)}}
+/* under 380 the step is narrower than today's full-width board: a long name ('Charizard Y') wraps under its photo instead of widening it, and the
+   two tilted photos get a little more room (they touched at 320) */
+@media (max-width:379.98px){.dc2.pc.pck .pc-board{column-gap:var(--s5);padding-inline:var(--s2)}.pck .pc-ph{min-width:0}.pck .pc-ph.a{--r:-2deg}.pck .pc-ph.d{--r:2deg}
+  .dc2.pc.pck .pc-ph b{flex-wrap:wrap;white-space:normal;overflow-wrap:normal;row-gap:0}}
+/* under 360 the graph paper sits inside the plan line, narrower than today's full-width board: the big damage drops to 34 so '136–160%' stays in it (v2-overlap CLIP at 320) */
+@media (max-width:359.98px){.dc2.pc.pck .pc-ans .pc-big.pc-pctf{font-size:var(--t34)}.dc2.pc.pck .pc-ans .pc-big .pc-pc{font-size:var(--t20)}}
+/* Sim, Nov 21 (4:49 PM, recommended): the hint and swap sit in the lead line (one row less) */
+.pck .k-lead .pc-hint{display:inline-flex;margin:0 0 0 var(--s2);vertical-align:baseline}
+/* C-battle X-04 (Nov 21): the answer keeps its height when the numbers change on phones: two lines for the verdict, a row for the "hangs on" line */
+.pc-sm0{display:none}
+@media (max-width:699.98px){.dc2.pc.pck .pc-ans .pc-vd{display:grid;align-content:center;min-height:calc(2.2em + var(--s1))}.dc2.pc.pck .pc-sm0{display:block}.dc2.pc.pck .pc-ans .pc-sm{min-height:2.6em}} /* two lines: the hangs-on line can wrap at 390 (X-04 with the test team) */

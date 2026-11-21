@@ -48,7 +48,7 @@ V2.pcAnswer = C => { const E = V2.esc, r = C.r, mv = C.mv, d = V2.disp(C.D.p.n),
   if (r.max === 0) return `<div class="pc-ans"${ty} aria-live="polite">${arrow}<p class="pc-l1"><span class="pc-ty">${E(t)}</span> ${E(mv.name)} does</p><p class="pc-big u">0</p>
     <p class="pc-l2">${r.fail ? E(r.fail) + '.' : `${E(d)} is immune to ${E(r.type)}.`}</p><p class="pc-vd u"><span>No effect${V2.pcRing()}</span></p></div>`;
   return `<div class="pc-ans"${ty} aria-live="polite">${arrow}<p class="pc-l1"><span class="pc-ty">${E(t)}</span> ${E(mv.name)} does</p><p class="pc-big u${V2.PC_PCT_FIRST ? ' pc-pctf' : ''}">${V2.PC_PCT_FIRST ? V2.pcPctH(r) : V2.pcDmg(r)}</p>
-    <p class="pc-l2">${V2.PC_PCT_FIRST ? `of ${E(d)}'s HP: <b>${V2.pcDmg(r)} damage · ${r.hp} HP</b>.` /* Sim, Nov 21, 4:49 PM: 'x–y damage · N HP' (was 'x–y of N HP') */ : `damage (${V2.pcPct(r)}). ${E(d)} has <b>${r.hp} HP</b>.`}</p><p class="pc-vd u"><span>${E(V.big)}${V2.pcRing()}</span></p>${V.sm ? `<p class="pc-sm u">${E(V.sm).replace(/(\d+(?:–\d+)?(?: HP|%))/, '<span class="pc-nw">$1</span>')}</p>` : ''}</div>`; };
+    <p class="pc-l2">${V2.PC_PCT_FIRST ? `of ${E(d)}'s HP: <b>${V2.pcDmg(r)} damage · ${r.hp} HP</b>.` /* Sim, Nov 21, 4:49 PM: 'x–y damage · N HP' (was 'x–y of N HP') */ : `damage (${V2.pcPct(r)}). ${E(d)} has <b>${r.hp} HP</b>.`}</p><p class="pc-vd u"><span>${E(V.big)}${V2.pcRing()}</span></p>${V.sm ? `<p class="pc-sm u">${E(V.sm).replace(/(\d+(?:–\d+)?(?: HP|%))/, '<span class="pc-nw">$1</span>')}</p>` : '<p class="pc-sm u pc-sm0" aria-hidden="true"></p>'}</div>`; }; /* an empty line keeps its row in the reskin on phones (C-battle X-04: the buttons below stay under the finger) */
 // a move: a highlighter swipe in its type's colour; its damage in HP and the short verdict; the chosen one circled
 V2.pcMove = (C, m, i) => { const E = V2.esc, on = m.name === dc.mv, r = on ? C.r : V2.dcHit(C, m), t = (r && r.type) || m.type, V = r && r.max > 0 ? V2.pcVerdict(r) : null;
   const dmg = !r ? (m.cat ? 'Not calculated' : 'No damage') : r.max === 0 ? 'No effect' : (V2.PC_PCT_FIRST ? V2.pcPct(r) : V2.pcDmg(r)), tilt = [-1.5, 1, -1, 1.5][i % 4];
@@ -56,21 +56,49 @@ V2.pcMove = (C, m, i) => { const E = V2.esc, on = m.name === dc.mv, r = on ? C.r
     <i class="pc-sw" aria-hidden="true"></i><b class="u">${E(m.name)}</b><em class="u">${r && r.max > 0 && V2.PC_PCT_FIRST ? V2.pcPctH(r) : E(dmg)}</em><small>${E(t)}${V ? ' · ' + E(V.chip) : ''}</small>${on ? V2.pcRing() : ''}</button>`; };
 // sky / ground: icons and words written on the board in each one's colour; the chosen one circled
 V2.pcFive = (k, L, cur, lab) => `<div class="pc-five" role="group" aria-label="${lab}">${L.map(([v, t]) => `<button type="button" ${k === 'wx' ? 'data-dcw' : 'data-dcterr'}="${v}" style="--k:var(--pc-k-${v || 'none'})" aria-pressed="${v === cur}"${v === '' ? ` aria-label="${t}: no ${lab.toLowerCase()}"` : ''}>${V2.arnIc(v)}<span>${t}</span>${v === cur ? V2.pcRing() : ''}</button>`).join('')}</div>`;
+/* ---------- the reskin on the shared kit (Sim, Nov 21: hybrid rules approved 12:15 PM; the Calc's call "keep as drawn, small fixes") ----------
+   The kit header (kicker, "Plot the hit.", one lead line), the plot sentence ("[attacker ▾] hits [defender ▾] with [move ▾]", each word opens
+   today's picker sheet), then the plan line: 1 The hit (the graph paper stays: it is the Calc's own hero), 2 The move, 3 The conditions and
+   the kits, 4 The KO Board (its counts, its top rows, the page's one pink move opens the board). Every hook today's tests and handlers use
+   stays where it was (data-dcmv, data-dcw, data-dcterr, data-dct, #dcSwap, data-arnpick on the photos, data-arnmv on All moves, the set rows,
+   data-arnst, .arn-kb > summary.arn-kbbar with its .t and .c). The sentence's words use their own hooks (data-pcpick, data-pcmv) so each
+   of today's hooks stays on one element. */
+V2.PC_K = {kicker: 'BATTLE · PLOT THE HIT', h1: 'Plot <em>the hit.</em>', hint: 'Blue words are buttons.',
+  s1: 'The hit', s2: 'The move', s2n: 'tap one to try it', s3: 'The conditions and the kits', s3n: 'the sky, the ground, this turn; each side’s set', s4: 'The KO Board',
+  go: 'OPEN THE KO BOARD.', close: 'CLOSE THE KO BOARD.', mine: 'your six against the top 30', theirs: 'the top 30 against your six', empty: 'Add your six on My Team to see what they do to the top 30.'};
+// one row of the KO Board's top: the threat's picture, its name, whose move, the damage; a tap puts that hit on the table (data-dckb, the tiles' handler)
+V2.pcKoRow = (b, dir) => { const E = V2.esc, d = V2.disp(b.n), o = V2.disp(b.other), pc = `${Math.round(100 * b.lo)}–${Math.round(100 * b.hi)}%`, k = V2.kobOf(b);
+  const sub = dir === 'mine' ? `your ${o}’s ${b.mv}` : `its ${b.mv} into your ${o}`, say = dir === 'mine' ? `${d}: your ${o}'s ${b.mv} does ${pc}` : `${d}'s ${b.mv} into your ${o}: ${pc}`;
+  return `<li><button type="button" class="pc-kr ${k}" data-dckb="${E(b.n)}" data-dckbo="${E(b.other)}" data-dckbm="${E(b.mv)}" aria-label="${E(say)}. Put it on the table">${V2.mon(b.n, {iw: 40, bare: true})}<span class="pc-krn"><b>${E(d).replace(/ ([XYZ])$/, ' $1')}</b><small>${E(sub)}</small></span><b class="pc-krv u">${pc}</b></button></li>`; };
+V2.pcKoStep = C => { const K = V2.PC_K, W = V2.ARN_W, open = V2.dcOpen && V2.dcOpen.k, dir = dc.dir === 'theirs' ? 'theirs' : 'mine', wide = V2.kobWide();
+  if (!C.ms.length) return {note: K.mine, body: `<p class="pc-kempty">${K.empty}</p>${V2.kLink('Go to My Team', {href: '#team'})}
+    <details class="arn-kb pc-kgo" data-dcfold="k"${open ? ' open' : ''}><summary class="arn-kbbar k-go u" data-kmax="2"><span class="t">${K.go}</span><span class="t2" aria-hidden="true">${K.close}</span><span class="c vh">${W.kbEmpty}</span></summary><div class="arn-kbin">${V2.dcBoard(C)}</div></details>`};
+  const L = V2.dcKB(), c = V2.dcCounts(L), mine = dir === 'mine';
+  const facts = V2.kFacts([[c.ko, 'down in one hit', mine], [c.can, 'can go down'], [c.sv, 'survive']]);
+  return {note: mine ? K.mine : K.theirs, body: `${facts}<ul class="pc-krs">${L.slice(0, 6).map(b => V2.pcKoRow(b, dir)).join('')}</ul>
+    <details class="arn-kb pc-kgo" data-dcfold="k"${open ? ' open' : ''}><summary class="arn-kbbar k-go u" data-kmax="2"${wide ? ' aria-controls="arn-kbfull"' : ''}><span class="t">${K.go}</span><span class="t2" aria-hidden="true">${K.close}</span><span class="c vh">${mine ? W.kbMine : W.kbTheirs}: ${c.ko} down in one hit · ${c.can} can go down · ${c.sv} survive</span></summary>${wide ? '' : `<div class="arn-kbin">${V2.dcBoard(C)}</div>`}</details>`}; };
+// the sentence's words open today's sheets (the photo's and All moves' own buttons keep data-arnpick / data-arnmv)
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.dc2 [data-pcpick],.dc2 [data-pcmv]'); if (!b) return; b.focus({preventScroll: true});
+  if (b.hasAttribute('data-pcmv')) V2.arnMvPick(); else V2.arnPick(b.dataset.pcpick); });
 V2.pages.calc.draw = function () { let C; try { C = calcData(); } catch (e) { console.error(e); return `<div class="dc2 arn pc"><h1 class="vh">Damage Calculator</h1>${V2.battleToolsBar('calc')}<p class="tm-sub">The calc couldn't load. Try again in a moment.</p></div>`; }
-  const E = V2.esc, W = V2.PC_W, AW = V2.ARN_W, wx = dc.weather || '', tr = dc.terrain || '';
+  const E = V2.esc, W = V2.PC_W, AW = V2.ARN_W, K = V2.PC_K, wx = dc.weather || '', tr = dc.terrain || '';
   const set = C.mvs.pop.filter(m => m && m.bp > 0); let three = set.slice(0, 3); if (dc.mv && !three.some(m => m.name === dc.mv) && C.mv) three = [...three.slice(0, 2), C.mv];
   const sw = [['spread', 'Hits both foes'], ['screen', 'Screen up'], ['hh', 'Helping Hand'], ['fg', 'Friend Guard'], ['crit', 'Critical hit']];
   const swOn = k => k === 'spread' ? !!C.spread : !!dc[k];
-  return `<div class="dc2 arn pc"><h1 class="vh">Damage Calculator · level 50 ${S.format === 'doubles' ? 'doubles' : 'singles'}</h1>${V2.battleToolsBar('calc')}
-  <section class="pc-board" aria-label="${E(V2.disp(C.A.p.n))} attacks ${E(V2.disp(C.D.p.n))}">
-    <div class="pc-top"><p class="pc-title u" aria-hidden="true">${W.title}</p><button type="button" class="pc-swap u" id="dcSwap" aria-label="Swap attacker and defender"><svg viewBox="0 0 60 34" aria-hidden="true"><path d="M4 10H52M42 3L54 10L42 17M56 24H8M18 17L6 24L18 31"/></svg>${W.swap}</button></div>
-    ${V2.pcPhoto(C.A, 'a', 'dcA')}${V2.pcPhoto(C.D, 'd', 'dcD')}
-    ${V2.pcAnswer(C)}
-    <div class="pc-blk pc-mvb"><h2 class="u">${W.move}</h2><div class="pc-mvs" role="group" aria-label="${E(V2.disp(C.A.p.n))}'s moves">${three.map((m, i) => V2.pcMove(C, m, i)).join('')}${V2.arnAll(C).replace('class="arn-mv all"', 'class="arn-mv all pc-all"')}</div></div>
-    <div class="pc-blk pc-sky"><h2 class="u">${W.sky}</h2>${V2.pcFive('wx', V2.DC_WX, wx, 'Weather')}</div>
-    <div class="pc-blk pc-gnd"><h2 class="u">${W.ground}</h2>${V2.pcFive('tr', V2.DC_TR, tr, 'Terrain')}</div>
-    <div class="pc-blk pc-turn"><h2 class="u">${W.turn}</h2><div class="pc-sws arn-sw" role="group" aria-label="In play">${sw.map(([k, t]) => `<button type="button" data-dct="${k}" aria-pressed="${swOn(k)}"><span>${t}</span>${swOn(k) ? V2.pcRing() : ''}</button>`).join('')}</div></div>
-    ${V2.arnSets(C).replace('<div class="arn-sets">', '<div class="arn-sets pc-kits">').replace(`<b class="u">${AW.attacker}</b>`, `<b class="u">${E(V2.disp(C.A.p.n))}'s set</b>`).replace(`<b class="u">${AW.defender}</b>`, `<b class="u">${E(V2.disp(C.D.p.n))}'s set</b>`) /* Sim, Nov 21: the Pokémon's names, not 'the muscle's kit' / 'the target's kit' */}
-    <div class="pc-kob">${V2.arnKB(C)}</div>
-    <div class="pc-links arn-links"><a class="np-link" href="#method">${AW.how} ›</a>${V2.FB && V2.FB.ok ? `<a class="np-link" href="#feedback" data-fbmistake="calc" aria-label="Report a mistake in this hit">${AW.report} ›</a>` : ''}${V2.arnNotes(C)}</div>
-  </section>${V2.arnKBFull(C)}</div>`; };
+  const dA = V2.disp(C.A.p.n), dD = V2.disp(C.D.p.n), fmt = S.format === 'doubles' ? 'doubles' : 'singles', t = C.mv ? ((C.r && C.r.type) || C.mv.type) : '';
+  const sent = V2.kSent([{w: dA, menu: true, attrs: {'data-pcpick': 'dcA', 'aria-label': `The attacker, ${dA}: choose another Pokémon`}}, 'hits',
+    {w: dD, menu: true, attrs: {'data-pcpick': 'dcD', 'aria-label': `The defender, ${dD}: choose another Pokémon`}}, 'with',
+    {w: dc.mv || 'a move', menu: true, attrs: {'data-pcmv': '', 'aria-label': `The move, ${dc.mv || 'none'}: choose any move`}}], {label: 'The hit', hint: false});
+  const KO = V2.pcKoStep(C);
+  return `<div class="dc2 arn pc pck">${V2.battleToolsBar('calc')}
+  ${V2.kHead({kicker: K.kicker, h1Html: K.h1, leadHtml: `Damage Calculator · level 50 ${fmt}. <span class="k-hint pc-hint">${K.hint} <button type="button" class="pc-swap" id="dcSwap" aria-label="Swap attacker and defender"><svg viewBox="0 0 60 34" aria-hidden="true"><path d="M4 10H52M42 3L54 10L42 17M56 24H8M18 17L6 24L18 31"/></svg>${W.swap}</button></span>`})}
+  ${sent}
+  ${V2.kPlan(`${V2.kStep(1, K.s1, C.mv ? `${C.mv.name} · ${t}` : '', `<section class="pc-board" aria-label="${E(dA)} attacks ${E(dD)}">${V2.pcPhoto(C.A, 'a', 'dcA')}${V2.pcPhoto(C.D, 'd', 'dcD')}${V2.pcAnswer(C)}</section>`)}
+  ${V2.kStep(2, K.s2, K.s2n, `<div class="pc-blk pc-mvb"><div class="pc-mvs" role="group" aria-label="${E(dA)}'s moves">${three.map((m, i) => V2.pcMove(C, m, i)).join('')}${V2.arnAll(C).replace('class="arn-mv all"', 'class="arn-mv all pc-all"')}</div></div>`)}
+  ${V2.kStep(3, K.s3, K.s3n, `<div class="pc-conds"><div class="pc-blk pc-sky"><h3>${W.sky}</h3>${V2.pcFive('wx', V2.DC_WX, wx, 'Weather')}</div>
+    <div class="pc-blk pc-gnd"><h3>${W.ground}</h3>${V2.pcFive('tr', V2.DC_TR, tr, 'Terrain')}</div>
+    <div class="pc-blk pc-turn"><h3>${W.turn}</h3><div class="pc-sws arn-sw" role="group" aria-label="In play">${sw.map(([k, t]) => `<button type="button" data-dct="${k}" aria-pressed="${swOn(k)}"><span>${t}</span>${swOn(k) ? V2.pcRing() : ''}</button>`).join('')}</div></div></div>
+    ${V2.arnSets(C).replace('<div class="arn-sets">', '<div class="arn-sets pc-kits">').replace(`<b class="u">${AW.attacker}</b>`, `<b class="u">${E(dA)}'s\u00a0set</b>`).replace(`<b class="u">${AW.defender}</b>`, `<b class="u">${E(dD)}'s\u00a0set</b>`)}`)}
+  ${V2.kStep(4, K.s4, KO.note, `<div class="pc-kob">${KO.body}</div>
+    <div class="pc-links arn-links"><a class="np-link k-link" href="#method">${AW.how}&nbsp;›</a>${V2.FB && V2.FB.ok ? `<a class="np-link k-link" href="#feedback" data-fbmistake="calc" aria-label="Report a mistake in this hit">${AW.report}&nbsp;›</a>` : ''}${V2.arnNotes(C)}</div>`)}`)}
+  ${V2.arnKBFull(C)}</div>`; };
