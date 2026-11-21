@@ -16,7 +16,7 @@ Build (kit):
 5. Every feature and hook from the inventory; phone no longer than today (3,796 px at 390).
 Tests: D-meta-shell (pokemon checks), v2-overlap, kit-page, v2-minors POKE groups (grep pk-).
 
-## UPDATE Nov 21, 2:58 PM: Sim's decisions on HH's mock-up (these win over the build list above)
+## UPDATE Nov 21, 2:55 PM: Sim's decisions on HH's mock-up (these win over the build list above)
 Mock-up: docs/rebuild/mocks/pokemon-file/index.html (Incineroar, real data); pictures docs/rebuild/pics/nov21/pokemon-file/
 (E-plotcard-*, F-*) and docs/rebuild/pics/nov21/moves/. Sim: "I love it" (E + the damage-bar flare + move tickets).
 - Header: kicker "CASE FILE #0727 · POKÉMON" (the real National Pokédex number, 4 digits; Sim loves it), in INK, not pink.
