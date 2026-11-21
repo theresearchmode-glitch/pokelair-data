@@ -10,8 +10,8 @@ picks, plus Claude's own judgement; heavy usage fine; switch to live waits for S
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
 ## NOW (Sat Nov 21, written 2:05 AM Eastern by the clock; DESIGN authority until 10:00 AM, EXECUTIVE (non-visual) until 10:00 PM; up to 4 helpers until 10 AM, then 3)
-- I'm Helping Hand ("HH", Sim named/approved Nov 21). Sim asleep since about 1:23 AM.
-- Three new designs, each in its own scratch copy (detached; commits not on t1rules yet):
+- I'm Helping Hand ("HH"; I picked it, Sim approved, Nov 21). Sim asleep since about 1:23 AM.
+- Two new designs in their own scratch copies (detached; not on t1rules yet). Build's Plot is already on t1rules.
   - My Team frame: scratchpad/mtf, latest 1d6eb12c (team-frame.js, team-frame.css, team.js, tokens.css). Polish check spill 0.
   - New Damage Calc "Plot the hit": scratchpad/pc, latest 71d487a3 (calc-plot.js, plot-calc.css).
   - Trial merge of both onto t1rules: scratchpad/mtry (merge commits only; conflicts in tokens.css and parts-v2.json = keep both).
