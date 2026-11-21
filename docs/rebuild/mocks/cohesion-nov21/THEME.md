@@ -57,7 +57,7 @@ Build = drawing up the plan. Kids play Pokémon: playful, never mean, never real
 - Home is special (it keeps its own WOW); give it the shared top bar, card and colours, and keep its hero.
 - Sim is he/him. COPPA: no player names or emails beyond what the site already shows publicly.
 
-## 4. Phone length (Sim, Nov 21, 8:54 AM: the first mock-ups run long on phones)
+## 4. Phone length (Sim, Nov 21, message just before 9:03 AM: the first mock-ups run long on phones)
 Aim: each page at 390 wide no longer than today's page (measure both; write the two heights in NOTES.md). Shorten WITHOUT show/hide
 folds or tabs (Sim, Nov 20). Use these, in this order:
 1. Phone roster cards are compact: 3 across, art bursting out a little less (about 40px), score + name only (the fact line moves to the tap).
