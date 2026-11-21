@@ -20,6 +20,8 @@ Shared kit: all new parts were added to kit2.css (marked "ADDED Nov 21"), never 
 | 09 | calc | 2594px (3.07 screens) | 2187px (2.59 screens) | LONGER by 407px |
 | 10 | speed | 2580px (3.06 screens) | 2952px (3.50 screens) | shorter or same |
 | 11 | types | 2089px (2.48 screens) | 2798px (3.32 screens) | shorter or same |
+| 12 | practice | 1615px (1.91 screens) | 1638px (1.94 screens) | shorter or same |
+| 13 | gauntlet | 2623px (3.11 screens) | 2626px (3.11 screens) | shorter or same |
 | 15 | usage | 3163px (3.75 screens) | 3554px (4.21 screens) | shorter or same |
 | 16 | sets | 2965px (3.51 screens) | 3148px (3.73 screens) | shorter or same |
 | 17 | archetypes | 1516px (1.80 screens) | 2443px (2.89 screens) | shorter or same |
@@ -27,6 +29,8 @@ Shared kit: all new parts were added to kit2.css (marked "ADDED Nov 21"), never 
 | 20 | weekly | 3539px (4.19 screens) | 4694px (5.56 screens) | shorter or same |
 | 21 | news | 3241px (3.84 screens) | 3870px (4.59 screens) | shorter or same |
 | 22 | gifts | 2616px (3.10 screens) | 3668px (4.35 screens) | shorter or same |
+| 24 | method | 2205px (2.61 screens) | 3424px (4.06 screens) | shorter or same |
+| 25 | about | 2587px (3.07 screens) | 2738px (3.24 screens) | shorter or same |
 | 27 | pokemon | 3535px (4.19 screens) | 3828px (4.54 screens) | shorter or same |
 
 ## 01 home · keeps its own hero (`pages/home.html`)
@@ -258,11 +262,39 @@ Phone length (section 4): see the heights table at the top of NOTES.md.
 Rules not met and why: none.
 Check (390 / 1440): every rule passes.
 
-## 12 practice · THE DRILL
-Not made yet.
+## 12 practice · THE DRILL (`pages/practice.html`, Team Preview Practice)
+Data source: today's built page `#practice`, claude/design6 built Nov 21 with the repo's data files (Showdown ladder Oct 22 – Nov 9).
 
-## 13 gauntlet · THE DRY RUN
-Not made yet.
+Today's features -> where in the mock-up:
+- Battle sub-tabs; "Pick your four.", the lead -> link row, headline, lead.
+- Use My Team (Sun Tailwind (sample) against real teams) / Practice With a Real Team (a strong player's six; compare your pick with theirs) -> the plot sentence and its hint.
+- Their six (six "?"), Start; team preview · Showdown replays · 20,000 games -> step 1, the flash card; "START." is the page's pink move. Your six shown beside it.
+- Doubles is played in pairs: Sneasler + Kingambit 53% (3,518 games), Rillaboom + Incineroar 67% (2,805), Incineroar + Garchomp 62% (2,310), Kingambit + Basculegion 62% (1,840), the % note -> step 2.
+- The Showdown source and "strong players" note -> step 2's hint.
+
+Changes from the PAGES.md idea and why: your six are shown next to the flash card (today they appear only after Start) so the drill reads at a glance. Same data.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
+
+## 13 gauntlet · THE DRY RUN (`pages/gauntlet.html`, Test Run)
+Data source: today's built page `#gauntlet` (the 20 latest top teams dealt into three piles), claude/design6 built Nov 21 with the repo's data files.
+
+Today's features -> where in the mock-up:
+- Battle sub-tabs; "Your six vs the top 20.", the lead; How it works (same calcs as your Matchups, both ways; today's fold) -> link row, headline, lead with a How it works link (no fold).
+- Three Piles: The Problems 6 (they're better prepared), The Coin Flips 13 (about even), The Good Matchups 1 (you're better prepared); "work through the pink pile first; tap a card to flip it" -> the counts under the lead and step 2.
+- Top of the pile (Challenger · 6th place, 2027 Puebla Regional · 333 players; they're better prepared; you answer 3 of 6, they answer all 6; Bring these four; Set as Opponent, Copy for Showdown, Matchup prep ›, the prep note and its "?") -> step 1; "SET AS OPPONENT." is the page's pink move.
+- All 20 cards (place, event, players; the six for the cards whose pictures today's page shows) -> step 2, one row each with "Flip ›", grouped by pile under the verdict tags.
+
+Changes from the PAGES.md idea and why:
+- The piles are lists, not stacks of cards: 20 cards as kit cards would run far past today's phone length.
+- Today's "Bring these four" sentence says "up front … in back"; kept as today's words. Sim said "we dont do lead back bench anymore" (My Team): flag for the real reskin.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why:
+- The Coin Flips (13) in two columns leave one row alone at the bottom of the left column on desktop. It's a list read top to bottom, not a tile grid; 13 can't split evenly.
+Check (390 / 1440): every rule passes.
 
 ## 14 meta · THE LINE-UP
 Not made yet.
@@ -403,11 +435,36 @@ Check (390 / 1440): every rule passes.
 ## 23 track · THE RECEIPTS
 Not made yet.
 
-## 24 method · SHOW OUR WORK
-Not made yet.
+## 24 method · SHOW OUR WORK (`pages/method.html`, How We Calculate)
+Data source: today's built page `#method` (updated Nov 9: 13,631 tournament teams, 38,513 games in the team model), claude/design6 built Nov 21 with the repo's data files.
 
-## 25 about · THE CREW BEHIND IT
-Not made yet.
+Today's features -> where in the mock-up:
+- "Every number, and where it comes from.", the lead, Reg M-C doubles · updated Nov 9, the two counts -> headline, lead, counts.
+- How to read our numbers: Pokémon rating tiers (S 90+ … F <50), Strength Score bands (90+ Top tier … under 60 Missing a basic), the bars / rank / range / % notes -> step 1, the plotter's notebook (the themed hero), in the site's tier and band colours.
+- Ten Parts, tap one for the working (01–10 with group, title and line) -> step 2, one row each with "The working ›".
+- Track Record (how right have our ratings been? tracking since Oct 29 · 31 events) -> step 3; "SEE THE RECEIPTS." is the page's pink move.
+
+Changes from the PAGES.md idea and why:
+- Today the ten parts open as folds. THEME.md 4 says no show/hide folds, so each part is a row that opens its working (a page or a section further down, to be decided in the build). Question for Sim: should each part's working sit right on this page (long) or open on its own?
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
+
+## 25 about · THE CREW BEHIND IT (`pages/about.html`)
+Data source: today's built page `#about`, claude/design6 built Nov 21 with the repo's data files.
+
+Today's features -> where in the mock-up:
+- "About & Legal", "Made by fans, for doubles players.", the lead -> kicker, headline, lead.
+- The promise (Free, No ads, Fan-made, Unofficial) -> the promise chips (the hero).
+- Everything We Save: the never-asks line; Your teams, Usage counts, Feedback, One anonymous ID, On this device only, Fonts (each with its tag and full text); "Nothing else: no cookies…; email us (Removal & Contact)" -> step 1, six panels with the full text on every width.
+- The Fine Print: What NastyPlot Is, Disclaimer & Trademarks, Where the Data Comes From, No Guarantee, Player Names, Removal & Contact, Not for Money (today: seven folds) -> step 2, a row each that opens it (no folds).
+
+Changes from the PAGES.md idea and why: the privacy text is shown in full on phones too (13px there): it's what parents read, so it isn't cut.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
 
 ## 26 feedback · TIP US OFF
 Not made yet.

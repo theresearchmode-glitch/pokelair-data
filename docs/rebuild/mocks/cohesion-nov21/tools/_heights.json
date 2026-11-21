@@ -74,5 +74,21 @@
  "gifts": {
   "mock": 2616,
   "today": 3668
+ },
+ "gauntlet": {
+  "mock": 2623,
+  "today": 2626
+ },
+ "practice": {
+  "mock": 1615,
+  "today": 1638
+ },
+ "method": {
+  "mock": 2205,
+  "today": 3424
+ },
+ "about": {
+  "mock": 2587,
+  "today": 2738
  }
 }

@@ -1,0 +1,13 @@
+import { card, w, sentence, step, head, links, page, img } from './lib.mjs';
+// Real data: today's built Team Preview Practice (#practice); claude/design6 built Nov 21 with the repo's data files (Showdown ladder Oct 22 – Nov 9).
+const SIX = [['Charizard-Mega-Y', 'Mega Charizard Y'], ['Whimsicott'], ['Basculegion'], ['Kingambit'], ['Garchomp'], ['Sneasler']];
+const PAIRS = [['Sneasler', 'Kingambit', 53, '3,518'], ['Rillaboom', 'Incineroar', 67, '2,805'], ['Incineroar', 'Garchomp', 62, '2,310'], ['Kingambit', 'Basculegion', 62, '1,840']];
+const body = links(['Damage Calculator ›', 'Battle ›', '~Team Preview Practice', 'Test Run ›', 'Speed Tiers ›', 'Type Chart ›']) +
+  head({ kicker: 'BATTLE · THE DRILL', h1: 'Pick <em>your four.</em>', lead: 'Pick four and two leads against a real ladder team, then see what strong players chose against it.' }) +
+  sentence(`Practise with ${w('my team', 1)} or ${w('a real team')}`, 'Blue words are buttons. My team: Sun Tailwind (sample) against real teams. A real team: a strong player’s six from the same game; compare your pick with theirs.') +
+  step(1, 'The flash card', 'team preview · Showdown replays · 20,000 games', '', `<div class=cols style="align-items:center"><div><p class=status style="margin:0">Their six</p><div class="roster r3 cardq">${[1, 2, 3, 4, 5, 6].map(() => '<div class=slot><b class=u style="font-size:48px;color:var(--rule)">?</b></div>').join('')}</div></div>
+   <div><p class=status style="margin:0">Your six · pick four, then two leads</p><div class=six style="margin:8px 0 0;flex-wrap:wrap">${SIX.map(([n]) => img(n, 64)).join('')}</div><a class=go href=#>START.</a></div></div>`) +
+  step(2, 'Doubles is played in pairs', 'how often each pair is brought together when both are on the team', '', `<div class=rows>${PAIRS.map(([a, b, p, g]) => `<div class=row><div class=pair>${img(a)}${img(b)}</div><div><b>${a} + ${b}</b><small>${g} games</small></div><div class=val><b class=u>${p}%</b><small>brought together</small></div></div>`).join('')}</div>
+   <p class=hint>From the Showdown ladder (Oct 22 – Nov 9). “Strong players” are ladder players rated 1,300+ on these replays (the replay rating; the 1630+ on usage numbers is Smogon’s separate stats cut-off). A similar team is the same six, or five of the six the same.</p>`);
+page('practice', 'Battle', body, `.cardq .slot{min-height:120px;transform:rotate(-2deg);background:var(--card)}.cardq .slot:nth-child(even){transform:rotate(2deg)}.cardq{padding-top:12px;gap:12px}
+@media (max-width:699.98px){.cardq{grid-template-columns:repeat(6,minmax(0,1fr));gap:4px}.roster.cardq .slot{min-height:44px;padding:0}.cardq .slot b{font-size:24px!important}}`);
