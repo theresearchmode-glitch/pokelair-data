@@ -1,0 +1,4 @@
+{
+ "note": "Findings of app/test/v2-overlap.mjs judged DELIBERATE (each with its reason, as {key, why}); any other finding fails. Keys are 'page@width/theme | TYPE | path | \"text\"'. KNOWN=print lists today's keys. Nov 21: empty: every false alarm seen on today's build was fixed in the check itself (sprite see-through edges, ticker strips, svg overlays, fixed and sticky bars, tight headline leading), and the 2 findings left are real bugs to fix, not to accept.",
+ "items": []
+}
