@@ -127,3 +127,6 @@
 .pc-ans .pc-big .pc-pc{font-size:var(--d-pcpct)}.pc-mv em .pc-pc{font-size:var(--t15)}
 .pc-ans .pc-big.pc-pctf{font-size:var(--d-pcbigp)}.pc-mv em{font-size:var(--t20)} /* % first: the numbers are a character longer */
 @media (max-width:379.98px),(min-width:700px) and (max-width:999.98px){.pc-mv em{font-size:var(--t17)}}
+/* Sim, Nov 21 (iPhone): in All moves on phones the "x–y of N HP" part sits under the big %, so the move name keeps the row's width (it ran into the % and broke a word per line) */
+@media (max-width:699.98px){.arn-mvd b .of{display:block;margin-top:2px;text-align:right}.arn-mvd b .of .sep{display:none}}
+@media (max-width:359.98px){.arn-mvhit .nm b{font-size:var(--t15)}.np-hit.arn-mvhit{column-gap:var(--s2)}}
