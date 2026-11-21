@@ -241,7 +241,7 @@
   .dc2.pc.pck .pc-links{margin-top:var(--s2)}
   .pck .k-step:nth-child(3) .k-note{display:none} /* the sky / the ground / this turn labels say it */
   .pck .k-step .k-sec{margin-top:var(--s6)}.pck .k-sent{font-size:var(--t20)}.pck .k-w{min-height:var(--tap);padding:0 var(--s3)}
-  .dc2.pc.pck .pc-pic{aspect-ratio:4/3}
+  .dc2.pc.pck .pc-pic{aspect-ratio:4/3} /* 16:9 tried (Sim's shorter-photos ask, Nov 21): it cropped the Pokémon and the ring covered the name, so 4:3 stays */
   .dc2.pc.pck .pc-kits .arn-st .lb{font:700 var(--t13)/1.2 var(--b);font-style:normal}
   .pck .pc-krv{font-size:var(--t17)}.pck .pc-krn b{font-size:var(--t15)}.pck .pc-kr{min-height:48px}
   .dc2.pc.pck .pc-kgo .arn-kbbar{display:block}}
@@ -252,3 +252,5 @@
   .dc2.pc.pck .pc-ph b{flex-wrap:wrap;white-space:normal;overflow-wrap:normal;row-gap:0}}
 /* under 360 the graph paper sits inside the plan line, narrower than today's full-width board: the big damage drops to 34 so '136–160%' stays in it (v2-overlap CLIP at 320) */
 @media (max-width:359.98px){.dc2.pc.pck .pc-ans .pc-big.pc-pctf{font-size:var(--t34)}.dc2.pc.pck .pc-ans .pc-big .pc-pc{font-size:var(--t20)}}
+/* Sim, Nov 21 (4:49 PM, recommended): the hint and swap sit in the lead line (one row less) */
+.pck .k-lead .pc-hint{display:inline-flex;margin:0 0 0 var(--s2);vertical-align:baseline}

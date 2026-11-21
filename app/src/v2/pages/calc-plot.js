@@ -91,8 +91,8 @@ V2.pages.calc.draw = function () { let C; try { C = calcData(); } catch (e) { co
     {w: dc.mv || 'a move', menu: true, attrs: {'data-pcmv': '', 'aria-label': `The move, ${dc.mv || 'none'}: choose any move`}}], {label: 'The hit', hint: false});
   const KO = V2.pcKoStep(C);
   return `<div class="dc2 arn pc pck">${V2.battleToolsBar('calc')}
-  ${V2.kHead({kicker: K.kicker, h1Html: K.h1, lead: `Damage Calculator · level 50 ${fmt}.`})}
-  ${sent}<p class="k-hint pc-hint">${K.hint} <button type="button" class="pc-swap" id="dcSwap" aria-label="Swap attacker and defender"><svg viewBox="0 0 60 34" aria-hidden="true"><path d="M4 10H52M42 3L54 10L42 17M56 24H8M18 17L6 24L18 31"/></svg>${W.swap}</button></p>
+  ${V2.kHead({kicker: K.kicker, h1Html: K.h1, leadHtml: `Damage Calculator · level 50 ${fmt}. <span class="k-hint pc-hint">${K.hint} <button type="button" class="pc-swap" id="dcSwap" aria-label="Swap attacker and defender"><svg viewBox="0 0 60 34" aria-hidden="true"><path d="M4 10H52M42 3L54 10L42 17M56 24H8M18 17L6 24L18 31"/></svg>${W.swap}</button></span>`})}
+  ${sent}
   ${V2.kPlan(`${V2.kStep(1, K.s1, C.mv ? `${C.mv.name} · ${t}` : '', `<section class="pc-board" aria-label="${E(dA)} attacks ${E(dD)}">${V2.pcPhoto(C.A, 'a', 'dcA')}${V2.pcPhoto(C.D, 'd', 'dcD')}${V2.pcAnswer(C)}</section>`)}
   ${V2.kStep(2, K.s2, K.s2n, `<div class="pc-blk pc-mvb"><div class="pc-mvs" role="group" aria-label="${E(dA)}'s moves">${three.map((m, i) => V2.pcMove(C, m, i)).join('')}${V2.arnAll(C).replace('class="arn-mv all"', 'class="arn-mv all pc-all"')}</div></div>`)}
   ${V2.kStep(3, K.s3, K.s3n, `<div class="pc-conds"><div class="pc-blk pc-sky"><h3>${W.sky}</h3>${V2.pcFive('wx', V2.DC_WX, wx, 'Weather')}</div>
