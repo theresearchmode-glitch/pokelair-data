@@ -62,6 +62,7 @@
   /* display sizes: the score number and the tagline (design scale "+ display") */
   --d64:64px;--d96:96px;--d120:120px;--d168:168px;--d-hero:clamp(34px,6vw,68px);
   --plot-seal:#C41E35;--on-plot-seal:#FFFFFF; /* The Plot (Nov 20): the seal, "N to catch", Hatch another: the logo red deepened so white words read (6:1), the same in day and night */
+  --pl-band:#17161A;--on-pl-band:#FBFAF7;--pl-band-2:#C4BFCB;--pl-band-rule:rgba(251,250,247,.22);--pl-band-edge:rgba(251,250,247,.5);--pl-band-plate:#FFFFFF;--on-pl-band-plate:#17161A; /* The Plot piece 5 (Nov 20; spec section 1): the ink band under steps 5-6 and the end: band, its text, quiet text (10.9:1), soft row rule, column rule, the white record plate; night below */
   --pt-Dragon:#5B479F;--pt-Ground:#8E5C2F;--pt-Fighting:#955732;--pt-Poison:#8940BF;--pt-Dark:#5C4A3E;--pt-Steel:#3D6E80;--pt-Fire:#9C6421;--pt-Water:#1F6672;--pt-Grass:#3F7F38;--pt-Fairy:#A2477F;--pt-Flying:#4E6184;--pt-Ghost:#6848B7;--pt-Psychic:#B43C69;--pt-Ice:#2B7182;--pt-Rock:#706843;--pt-Electric:#7A6629;--pt-Normal:#666864;--pt-Bug:#616F25;--on-pt:#FFFFFF; /* The Plot (Nov 20): the six's plate colours, one calm family per type, white words 5.5:1+ (Fire 5.0); Water and Flying kept clear of PLOT blue, Fire of the logo red; the same in day and night */
   --d-plot:clamp(24px,4.7vw,68px); /* The Plot (Build, Nov 20): the plot sentence, fitted to the page width (one display size, like --d-hero) */
   /* The Stampede hero (Nov 18): the tagline (row layout by width and height so the buttons stay on the first screen; phone 3 lines),
@@ -140,6 +141,7 @@
   --bg:#12121B;--surface:#1D1C29;--wash:#201F2D;--ink:#E4E0DA;--ink-2:#C4BFCB;--ink-3:#B0AAB8;--rule:rgba(228,224,236,.10);
   --plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--them:#E57FD3;--them-text:#EC9BDF;--pick-text:#F58DA1;
   --plate:#343348;--on-plate:#F1EDE7;--plate-link:#62BEF7; /* 5.97:1 on the night plate */
+  --pl-band:#1D1C29;--pl-band-plate:#E9E5DE; /* The Plot piece 5, night (spec section 1): the band a step lighter than the page, the plate warm grey; its text stays #FBFAF7 (15.6:1), quiet #C4BFCB (9.9:1) */
  --main:#3FA2E2;--on-main:#08131E;
  --sd-on-band:#FFFFFF;
   --sd-post-line:rgba(255,255,255,.4);--sd-post-shadow:rgba(0,0,0,.55); /* post band at night: softer lines on the deep red, a darker shadow */

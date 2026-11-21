@@ -65,7 +65,7 @@ t('X-07', 'Phone: focusing Build around lifts the box into the upper screen so i
 
 t('X-08', 'Headings and slider labels are in Title Case', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
-  has(await ui.text(), /Build Me a Team/, 'Build heading'); has(NEW ? await ui.coresText() : await ui.text(), /Build Around a Core/, 'cores heading'); /* new: the cores sit in their own tab (Build Q1 B, decisions.md Nov 13 8:47 AM); coresText opens it */
+  has(await ui.text(), /Build Me a Team/, 'Build heading'); has(NEW ? await ui.coresText() : await ui.text(), NEW ? /Partners in crime/ : /Build Around a Core/, 'cores heading'); /* new: the cores sit in their own tab (Build Q1 B, decisions.md Nov 13 8:47 AM); coresText opens it. Nov 20 (The Plot piece 5): the cores' heading is "Partners in crime", the approved design's words (Q98, plot-spec.md section 9), written as Sim approved it */
   await ui.go('All Suggestions'); await ui.waitSwaps(); has(await ui.text(), /One Pokémon In, One Out/, 'swap heading'); await close(); });
 
 t('X-09', 'Page opens and button taps are counted anonymously (counts only, no team data)', async () => {
@@ -81,7 +81,7 @@ t('X-10', 'Tapping a built-team tile opens that Pokémon\'s info sheet', async (
 
 t('X-11', 'Pages draw from the daily data (cores, archetype counts, sets numbers)', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
-  has(await ui.coresText(), /From [\d,]+ tournament teams\. Average team wins [\d.]+% of games\./, 'cores intro');
+  has(await ui.coresText(), /[Ff]rom [\d,]+ tournament teams\. Average team wins [\d.]+% of games\./, 'cores intro'); /* Nov 20 (The Plot piece 5): the line starts with the count, "533 pairs from 13,631 tournament teams." (Q98) */
   await ui.go('Archetypes'); has(await ui.text(), NEW ? /From the latest \d+ top tournament teams/ : /From the latest \d+ top tournament teams\./, 'archetype share line'); /* new: the Weather Map mock-up's facts line has no full stop (docs/rebuild/mocks/tournaments-tickets-weather/archetypes-weather-map-desktop.webp) */
   await ui.go('Popular Sets'); has(await ui.text(), /\d+(\.\d)?%/, 'sets numbers'); not(await ui.text(), 'No data loaded yet', 'sets'); await close(); });
 
@@ -252,10 +252,12 @@ t('AUTO-16', 'Build page order: Build me a team, How it works, Build around a co
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build');
   if (NEW) { /* new: head ('Build me a team.' + How It Works), options, then the lower half as tabs in page order, Recent Winners before Cores
      (Sim, decisions.md Nov 12 6:51 PM item 7 'tabs in page order'; Build Q1 B 'tabs on every size', Nov 13 8:47 AM) */
-    const tx = await ui.text(), p = [tx.search(/Build me a team/i), tx.indexOf('How It Works'), tx.indexOf('Recent Winners'), tx.indexOf('Cores', tx.indexOf('Recent Winners'))];
+    /* Nov 20 (The Plot piece 5, Q98; Sim: no buried tabs): no tab bar; the two sections show in page order under their approved headings,
+       "Plots that worked" (the winners) before "Partners in crime" (the cores), before and after a build */
+    const tx = await ui.text(), p = [tx.search(/Build me a team/i), tx.indexOf('How It Works'), tx.indexOf('Plots that worked'), tx.indexOf('Partners in crime', tx.indexOf('Plots that worked'))];
     expect(p.every(i => i >= 0) && p.every((v, i) => !i || v > p[i - 1]), 'order wrong: ' + p);
-    has(await ui.unfold(/^Start from a Recent Winner/i), 'Start from a Recent Winner', 'Recent Winners tab'); has(await ui.coresText(), 'Build Around a Core', 'Cores tab');
-    await ui.buildMeATeam(); has(await ui.coresText(), 'Build Around a Core', 'cores after a build'); await close(); return; }
+    has(await ui.unfold(/^Start from a Recent Winner/i), 'Plots that worked', 'Recent Winners section'); has(await ui.coresText(), 'Partners in crime', 'Cores section');
+    await ui.buildMeATeam(); has(await ui.coresText(), 'Partners in crime', 'cores after a build'); await close(); return; }
   const at = tx => ['Build Me a Team', 'How It Works', 'Build Around a Core', 'Start from a Recent Winner'].map(s => tx.indexOf(s));
   const p = at(await ui.text()); expect(p.every(i => i >= 0) && p.every((v, i) => !i || v > p[i - 1]), 'order wrong: ' + p);
   await ui.buildMeATeam(); has(await ui.text(), 'Build Around a Core', 'cores after a build'); await close(); });
@@ -265,8 +267,8 @@ t('AUTO-16', 'Build page order: Build me a team, How it works, Build around a co
 // =====================================================================================================
 t('CORES-01', 'Cores head, intro line with team count and ranking, and the ? explanation', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); const c = await ui.coresText();
-  has(c, NEW ? /Pick a pair or trio that wins, then fill the rest|pick one that wins, then fill the rest/i : 'Pick a pair or trio that wins, then fill the rest'); has(c, 'Build Around a Core'); /* Q83 (Sim, Nov 20): before a build the cores are the Blueprint's Parts list too, whose line reads 'pick one that wins, then fill the rest' */
-  has(c, /From [\d,]+ tournament teams\. Average team wins [\d.]+% of games\. Ranked by win rate, pulled toward the average\./, 'intro');
+  has(c, NEW ? /Pick a pair or trio that wins, then fill the rest|pick one that wins, then fill the rest/i : 'Pick a pair or trio that wins, then fill the rest'); has(c, NEW ? 'Partners in crime' : 'Build Around a Core'); /* Nov 20 (The Plot piece 5): the approved heading (Q98) */ /* Q83 (Sim, Nov 20): before a build the cores are the Blueprint's Parts list too, whose line reads 'pick one that wins, then fill the rest' */
+  has(c, /[Ff]rom [\d,]+ tournament teams\. Average team wins [\d.]+% of games\. Ranked by win rate, pulled toward the average\./, 'intro'); /* Nov 20 (piece 5): "533 pairs from …" (Q98) */
   await ui.tap('?', ui.area('cores')); has(await ui.openTipText(), /A core is a group of Pokémon/, 'cores ? explanation'); await close(); });
 
 t('CORES-02', 'Kind switch: Pairs, Trios, Full teams (not saved)', async () => {

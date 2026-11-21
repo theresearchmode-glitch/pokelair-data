@@ -7,6 +7,7 @@
 // Notes on translation (what the player sees, read from the new markup):
 //  - "How It Works" is a sheet here (data-bdhow), not a fold: unfold() opens the sheet and returns its text
 //  - "Start from a Recent Winner" is an always-open section (.bd-wins) with one fold per winner: unfold() returns the section's text
+//    (Nov 20, The Plot piece 5: it is "Plots that worked", one column per winner with its actions shown; the only fold is "Full sets ›")
 //  - "Try another" is "Show this one ›" on the next option under Other options (data-bdshow): tryAnother() taps the next one, wrapping
 //  - the built six's ids come from the shared engine's shown option (abTeam('doubles'), the same object the page draws from)
 //  - the score reads "83 Tournament ready Strength Score" on screen; buildResult() puts "Strength Score 83 Tournament ready" first, as
@@ -133,7 +134,9 @@ export default (ui, pg) => {
       if (v === 'cores') { await prevGo('Home', 400); const ok = await pg.evaluate(() => { const b = [...document.querySelectorAll('#main a.hm-all[data-hmcores], #main a[data-hmcores]')]; const e = b.find(x => x.getClientRects().length) || b[0]; if (!e) return false;
           const d = e.closest('details'); if (d && !d.open) d.querySelector(':scope > summary').click(); e.click(); return true; });
         if (!ok) { /* say it once (Nov 16, docs/rebuild/say-it-once.md): Home's More on Home fold (with its cores link) is gone; the way in is Build's own Cores tab */
-          await ui.go('Build', 500); const t = await pg.$('#main [data-bdjump="cores"]'); if (!t) NOT('a way to Build\'s cores (no Cores tab on Build)'); await t.click(); }
+          await ui.go('Build', 500); const t = await pg.$('#main [data-bdjump="cores"]');
+          /* Nov 20: The Plot piece 5: no tabs; the cores always show on Build, so the way in is to scroll to them, as a player does */
+          if (t) await t.click(); else if (!(await pg.evaluate(() => { const c = document.querySelector('#main .bd-cores'); if (!c || !c.getClientRects().length) return false; c.scrollIntoView({block: 'start'}); return true; }))) NOT('a way to Build\'s cores (no cores on Build)'); }
         await pg.waitForTimeout(wait); return 'auto'; }
       if (v === 'coverage') return openAll(wait);
       if (v !== 'auto') return prevGo(name, wait);
@@ -181,6 +184,11 @@ export default (ui, pg) => {
     unfold: async (m, within = 'body') => { const s = m instanceof RegExp ? m.source.replace(/^\^/, '') : String(m), is = k => new RegExp('^' + k.replace(/ /g, ' '), 'i').test(s.replace(/\\/g, ''));
       if (await onBuild()) {
         if (is('How It Works')) { if (!(await vis('.np-sheet .bd-how'))) await click('#main [data-bdhow]', 600); return txt('.np-sheet .bd-how'); }
+        /* Nov 20: The Plot piece 5: a winner is a column (Plots that worked) whose only fold is "Full sets ›" (data-plwsets); today's "open
+           the winner" (a fold whose title starts "1st") opens the first shown winner's full sets and reads that winner's whole column */
+        if (/^1st/i.test(s) && await vis('#main .bd-wins [data-plwsets]')) { await pg.evaluate(() => { const d = [...document.querySelectorAll('#main .bd-wins [data-plwsets]')].find(e => e.getClientRects().length); if (d && !d.open) d.querySelector(':scope > summary').click(); }); await pg.waitForTimeout(400);
+          return pg.evaluate(() => { const d = [...document.querySelectorAll('#main .bd-wins [data-plwsets]')].find(e => e.getClientRects().length && e.open), w = d && d.closest('[data-bdwin]'); if (!w) return '';
+            const st = document.createElement('style'); st.textContent = '*,*::before,*::after{text-transform:none!important}'; document.head.append(st); try { return w.innerText.replace(/\s+/g, ' ').trim(); } finally { st.remove(); } }); }
         if (is('Start from a Recent Winner')) { await tabTo('wins'); if (!(await vis('#main .bd-wins'))) NOT('Start from a recent winner (no winners shown)'); return txt('#main .bd-wins'); }
         if (is('Sets and Roles')) NOT('the Sets and Roles fold on the built team (the six tiles show item, role and tier instead)');
         if (is('More Cores')) NOT('the More Cores fold (#4 onward): the new page lists 7 cores, then "Show N more"'); }

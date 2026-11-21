@@ -234,3 +234,117 @@
    then Save | Copy for Showdown with Copy given two parts of three */
 @media (max-width:1199.98px){.pl2 .bd-ans.bp .bd-acts{grid-template-columns:minmax(0,1fr) minmax(0,2fr)}.pl2 .bd-ans.bp .bd-acts [data-bduse]{grid-column:1/-1}.pl2 .bd-ans.bp .bd-acts > button{font-size:var(--t20)}}
 @media (max-width:699.98px){.pl2 .bd-ans.bp .bd-acts > button{font-size:var(--t17)}}
+/* ---------- Piece 5: 5 Plots that worked, 6 Partners in crime, the end (spec section 9; picture Q98-4b / 9b) ----------
+   One ink band, the full window width, under the answer (and under the waiting steps before a build); the plot line runs on through it
+   (solid after a build and ends at the filled end node; dashed before, ending at step 6). No tabs: both sections always show. */
+.pl0{padding-bottom:var(--s10)}.pl0 .pl-waits::before{bottom:calc(-1 * var(--s10))}
+.pl2 .bd-result .bd-ans.bp{padding-bottom:var(--s10)}
+.pl2 .pl-low.bd-lower{display:block;margin:0 var(--gut);padding:0 0 var(--s10) var(--s16);border:0;background:var(--pl-band);color:var(--on-pl-band);box-shadow:0 0 0 100vmax var(--pl-band);clip-path:inset(0 -100vmax)}
+.pl-low .bd-wins,.pl-low .bd-cores{display:block}
+.pl-low > .pl-step{position:relative;padding-top:28px}
+.pl-low > .pl-step::before{content:"";position:absolute;left:calc(var(--s3) - var(--s16));top:0;bottom:0;border-left:2px solid var(--pick)}
+.pl-low0 > .pl-step::before{border-left-style:dashed}
+.pl-low > .pl-step:last-child::before{bottom:auto;height:calc(28px + 15px)}
+.pl-low > .pl-step > .pl-node{top:calc(28px + 2px);background:var(--pl-band);color:var(--on-pl-band)}
+.pl-low > .pl-end{padding-top:var(--s10)}
+.pl-low > .pl-end > .pl-node{top:calc(var(--s10) + 9px);background:var(--pick);border-color:var(--pick)}
+.pl-low > .pl-end:last-child::before{height:calc(var(--s10) + 22px)}
+.pl-hd{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3)}
+.pl-low .pl-h2{color:var(--on-pl-band)}.pl-low .pl-hd .pl-sub{margin:0;color:var(--pl-band-2)}
+.pl-low .np-link{font:600 var(--t13)/1.4 var(--b);color:var(--on-pl-band);text-decoration:underline;text-underline-offset:3px}
+.pl-low .np-link:focus-visible,.pl-out2:focus-visible,.pl-wsets > summary:focus-visible{outline:3px solid var(--on-pl-band);outline-offset:3px}
+/* the outlined plate (LOAD TEAM, ADD): ink band text colour, slanted like the plot's plates */
+.pl-out2{display:inline-flex;align-items:center;justify-content:center;flex:none;min-height:var(--tap);margin:0;padding:0 var(--s4);border:2px solid var(--on-pl-band);border-radius:0;background:transparent;color:var(--on-pl-band);font-size:var(--t15);line-height:1;text-transform:uppercase;white-space:nowrap;transform:skewX(-8deg);cursor:pointer}
+.pl-out2 > span{display:inline-block;transform:skewX(8deg)}
+@media (hover:hover){.pl-out2:hover{background:var(--on-pl-band);color:var(--pl-band)}}
+/* 5 Plots that worked: three columns, each a winner */
+.pl-wins{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s6) var(--s12);margin-top:var(--s5)}
+.pl-win{min-width:0;padding-top:var(--s3);border-top:2px solid var(--pl-band-edge)}
+.pl-wr{display:flex;align-items:center;gap:var(--s3)}
+.pl-rec{flex:none;padding:var(--s1) var(--s3);background:var(--pl-band-plate);color:var(--on-pl-band-plate);font-size:var(--t24);line-height:1.1;transform:skewX(-8deg)}
+.pl-wm{min-width:0;font:600 var(--t13)/1.4 var(--b);color:var(--on-pl-band)}.pl-wm > span{white-space:nowrap} /* "1st of 139 players ·" and the date wrap as two pieces, never mid-phrase */
+.pl-wr .pl-out2{margin-left:auto;padding:0 var(--s3)} /* 15 px: Unbounded never under 15 (v2-unbounded) */
+.pl-wt{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;column-gap:var(--s3);margin-top:var(--s1)}
+.pl-wev{margin:0;font-size:var(--t15);line-height:1.3;color:var(--on-pl-band);overflow-wrap:anywhere}
+.pl-wsets{min-width:0}.pl-wsets[open]{grid-column:1/-1}
+.pl-wsets > summary{display:flex;align-items:center;justify-content:flex-end;min-height:var(--tap);list-style:none;font:600 var(--t13)/1.4 var(--b);color:var(--on-pl-band);text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.pl-wsets > summary::-webkit-details-marker{display:none}
+.pl-wsets .bd-wwho{margin:0;color:var(--pl-band-2)}
+.pl-wsets .bd-sets{grid-template-columns:repeat(auto-fill,minmax(200px,1fr));margin:var(--s2) 0 var(--s2)}
+.pl-wsets .bd-set b,.pl-wsets .bd-set .bd-mv{color:var(--on-pl-band)}.pl-wsets .bd-at,.pl-wsets .bd-set small{color:var(--pl-band-2)}
+.pl-wsix{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:2px;margin-top:var(--s1)}
+.pl-wsix span{display:grid;place-items:end center;height:56px;min-width:0}.pl-wsix img{max-width:100%;max-height:56px;object-fit:contain}
+.pl-wa{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s6);margin-top:var(--s1)}
+.pl-wa .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
+.pl-win .wt-sure{justify-content:flex-start;margin:var(--s2) 0;color:var(--on-pl-band)}
+.pl-win .wt-sure .np-btn{min-height:var(--tap);padding:0 var(--s5);background:var(--plot-seal);box-shadow:none;color:var(--on-plot-seal)} /* Replace is the action (red); the page's main colour is the band's own ink by day */
+.pl-low .np-btn2{border-color:var(--on-pl-band);color:var(--on-pl-band)}
+/* 6 Partners in crime: one control row, the hint, then rows in two columns (one from 1199 down) */
+.pl-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4);margin-top:var(--s4)}
+.pl-low .np-slide{display:inline-grid;width:auto;background:transparent;border-radius:var(--r-s);box-shadow:inset 0 0 0 2px var(--on-pl-band);clip-path:none}
+.pl-low .np-slide .thumb{background:var(--on-pl-band);border-radius:var(--r-s);box-shadow:none;clip-path:none}
+.pl-low .np-slide button{flex-direction:row;min-height:var(--tap);padding:0 var(--s4);font:700 var(--t15)/1 var(--b);color:var(--on-pl-band);white-space:nowrap}
+.pl-low .np-slide button[aria-pressed="true"]{color:var(--pl-band)}
+.pl-low .np-slide .np-ic{display:none} /* the picture's segments are words only */
+.pl-low .mg{color:inherit} /* Mega in the core names: the band's text colour (the page's blue is 3:1 on the band) */
+.pl-low .np-slide button:focus-visible{outline:3px solid var(--on-pl-band);outline-offset:2px}
+.pl-ctl .bd-cfind{flex:0 1 240px;min-width:200px;max-width:none}.pl-ctl .bd-cpick{flex:0 1 auto}
+.pl-low .np-field{min-height:var(--tap);padding:0 var(--s3);border:2px solid var(--pl-band-2);border-radius:var(--r-s);transform:none;color:var(--pl-band-2)}
+.pl-low .np-field > *{transform:none}.pl-low .np-field .np-ic{color:var(--pl-band-2)}
+.pl-low .np-field input{min-height:40px;color:var(--on-pl-band)} /* 40 + the 2 px edges = 44, as the segments (was 44 + edges = 48) */.pl-low .np-field input::placeholder{color:var(--pl-band-2);opacity:1}
+.pl-low .np-field:focus-within{outline:3px solid var(--on-pl-band);outline-offset:3px}
+.pl-low .bd-pick{min-height:var(--tap);border-color:var(--on-pl-band);color:var(--on-pl-band)}.pl-low .bd-x{color:var(--on-pl-band)}
+.pl-chint{flex:1 1 320px;min-width:0;margin:0;font:400 var(--t13)/1.5 var(--b);color:var(--pl-band-2)}
+.pl-cores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s12);margin:var(--s2) 0 0;padding:0;list-style:none}
+.pl-core{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:0 var(--s4);min-width:0;min-height:76px;padding:var(--s2) 0;border-top:1px solid var(--pl-band-rule)}
+.pl-csp{display:flex;align-items:flex-end;gap:var(--s1);min-width:104px}
+.pl-csp img{width:50px;height:50px;object-fit:contain;object-position:bottom}
+.pl-c3 .pl-csp img{width:40px;height:44px}.pl-c3 .pl-csp img+img{margin-left:calc(-1 * var(--s1))}
+.pl-c4 .pl-csp{gap:0}.pl-c4 .pl-csp img{width:32px;height:40px}.pl-c4 .pl-csp img+img{margin-left:calc(-1 * var(--s1))}
+.pl-cwho{min-width:0}.pl-cwho b{display:block;font:700 var(--t15)/1.3 var(--b);color:var(--on-pl-band)}
+.pl-cwho small{display:block;font:500 var(--t13)/1.4 var(--b);color:var(--pl-band-2)}
+.pl-cacts{display:flex;flex-wrap:wrap;gap:0 var(--s4)}
+.pl-cwv{text-align:right}.pl-cwv b{display:block;font-size:var(--t22);line-height:1.1;color:var(--on-pl-band)}
+.pl-cwv small{display:block;font:500 var(--t13)/1.4 var(--b);color:var(--pl-band-2);white-space:nowrap}
+.pl-cadd{min-width:64px}
+.pl-low .bd-cnone{color:var(--pl-band-2)}
+.pl-cmore{margin-top:var(--s3)}
+/* the end: a filled red node, the line, HATCH ANOTHER (data-plgo presses the control row's data-bdgo) */
+.pl-endn{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4);min-height:var(--tap)}
+.pl-low .pl-endn .pl-h2{font-size:var(--t24)}
+.pl-goend{padding:0 var(--s4);background:var(--plot-seal);color:var(--on-plot-seal);font:900 var(--t20)/1.05 var(--u);font-style:italic;letter-spacing:-.02em}
+.pl-goend:focus-visible{outline:3px solid var(--on-pl-band);outline-offset:3px}
+.pl-endq{font:400 var(--t15)/1.5 var(--b);color:var(--pl-band-2)}
+@media (max-width:1199.98px){.pl-wins{gap:var(--s5) var(--s6)}.pl-wr{flex-wrap:wrap}.pl-cores{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:699.98px){
+  .pl0{padding-bottom:var(--s6)}.pl0 .pl-waits::before{bottom:calc(-1 * var(--s6))}.pl2 .bd-result .bd-ans.bp{padding-bottom:var(--s6)}
+  .pl2 .pl-low.bd-lower{padding-left:var(--s10);padding-bottom:var(--s6)}
+  .pl-low > .pl-step{padding-top:var(--s6)}
+  .pl-low > .pl-step::before{left:calc(var(--s2) + 2px - var(--s10))}
+  .pl-low > .pl-step > .pl-node{top:calc(var(--s6) + 1px)}
+  .pl-low > .pl-step:last-child::before{height:calc(var(--s6) + 12px)}
+  .pl-low > .pl-end{padding-top:var(--s8)}.pl-low .pl-endn .pl-h2{flex-basis:100%} /* phones: the words on their line, the node beside them */
+  .pl-low > .pl-end > .pl-node{top:calc(var(--s8) - 2px)}.pl-low > .pl-end:last-child::before{height:calc(var(--s8) + 9px)}
+  .pl-wins{grid-template-columns:minmax(0,1fr);gap:var(--s5);margin-top:var(--s3)}
+  .pl-wr{flex-wrap:nowrap;gap:var(--s2)}.pl-rec{font-size:var(--t20)}.pl-out2{padding:0 var(--s3)}
+  .pl-wsix span{height:38px}.pl-wsix img{max-height:38px}
+  .pl-w1{display:none} /* phones: "68 players · Nov 7" (the mock-up's phone line; the section says they are winners) */
+  .pl-wa{justify-content:space-between;gap:0 var(--s2);letter-spacing:-.01em}
+  .pl-wsets .bd-sets{grid-template-columns:minmax(0,1fr)}
+  .pl-ctl{gap:var(--s2)}.pl-low .np-slide button{padding:0 var(--s2);font-size:var(--t13)}
+  .pl-ctl .bd-cfind{flex:1 1 120px;min-width:0}.pl-low .np-field{gap:var(--s1);padding:0 var(--s2)}.pl-low .np-field input{font-size:var(--t13)}.pl-low .np-field .np-ic{width:16px;height:16px}.pl-chint{flex-basis:100%}
+  .pl-core{grid-template-columns:84px minmax(0,1fr) auto;align-items:start;gap:0 var(--s2);min-height:0;padding:var(--s2) 0}
+  .pl-csp{grid-column:1;grid-row:1;min-width:0}.pl-csp img{width:40px;height:40px}.pl-c3 .pl-csp img{width:28px;height:36px}.pl-c4 .pl-csp{flex-wrap:wrap}.pl-c4 .pl-csp img{width:28px;height:28px}.pl-c4 .pl-csp img+img{margin-left:0}
+  .pl-cwho{grid-column:2;grid-row:1/3}.pl-cwho b{font-size:var(--t13)}
+  .pl-cwv{grid-column:3;grid-row:1/3}.pl-cwv b{font-size:var(--t17)}.pl-cdot{display:none}.pl-cvs{display:block} /* phones: "wins" over "+3.9 vs avg", so the names keep the width */
+  .pl-cadd{grid-column:1;grid-row:2;justify-self:start;margin-top:var(--s1);min-width:56px}
+  .pl-low .pl-endn .pl-h2{font-size:var(--t17)}.pl-goend{font-size:var(--t17)}
+}
+.pl-cacts .np-link{white-space:nowrap}
+@media (max-width:379.98px){
+  /* under 380 the record, the players line and LOAD TEAM don't share one row: LOAD TEAM takes the next line; a core's win % goes under
+     its names so the names keep the width */
+  .pl-wr{flex-wrap:wrap;row-gap:var(--s2)}
+  .pl-core{grid-template-columns:84px minmax(0,1fr)}.pl-cwho{grid-row:1}
+  .pl-cwv{grid-column:2;grid-row:2;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s2);margin-top:var(--s1);text-align:left}.pl-cvs{display:inline}
+}

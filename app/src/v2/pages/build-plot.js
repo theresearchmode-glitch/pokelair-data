@@ -27,10 +27,11 @@ V2.plotWait = () => { const n = V2.underdog ? V2.underdog() : 'Flapple', d = V2.
   const st = (k, h) => `<div class="pl-step pl-wait"><span class="pl-node" aria-hidden="true">${k}</span><h2 class="u pl-h">${h}</h2><span class="pl-w8">waiting for your plot</span></div>`;
   return `<div class="pl-waits"><div class="pl-wl">${st(2, 'The accomplices')}<div class="pl-places" aria-hidden="true"><i></i><i></i><i></i></div>${st(3, 'Why it works')}${st(4, 'Got a Plan B?')}</div>
     <aside class="pl-dog" aria-label="Today's underdog"><p><b>${d} is waiting to see what you hatch.</b> Today's underdog. Somebody's favourite.</p><button type="button" class="pl-dogst" data-v2mon="${V2.esc(n)}" aria-label="${d}: open its info">${V2.mon(n, {bare: true})}</button></aside></div>`; };
-V2.plotPage0 = () => { V2.bdSrcDefault(); /* a new visitor's untouched sample box starts on Whole Roster (S17), as buildHead did */ const win = V2.buildWinners(true), cor = V2.buildCores(true), tab = V2.bdTab(false, !!win), busy = !!(ui.ab && ui.ab.busy), none = !busy && ui.ab ? V2.buildAnswer0() : '';
+/* Nov 20, piece 5: the lower half is V2.plotLower (Plots that worked + Partners in crime, no V2.buildJump tabs); before a build its line is dashed and there is no end */
+V2.plotPage0 = () => { V2.bdSrcDefault(); /* a new visitor's untouched sample box starts on Whole Roster (S17), as buildHead did */ const busy = !!(ui.ab && ui.ab.busy), none = !busy && ui.ab ? V2.buildAnswer0() : '';
   return `<div class="bd2 pl2${busy ? ' bd-rebuild' : ''}"><h1 class="vh">Build</h1><div class="bd-result" aria-live="polite"${busy ? ' aria-busy="true"' : ''}>${busy ? '<p class="bd-busy" role="status">Building from real winning teams…</p>' : ''}${none}
     <section class="pl pl0"><div class="pl-step pl-s1"><span class="pl-node" aria-hidden="true">1</span><div class="pl-top"><div><p class="np-eyebrow"><span>Build ·<span class="bd-rw"> real winning teams ·</span> ${V2.esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} doubles</span></p><p class="pl-intro">Winning tournament teams you can field from your box or the whole roster.</p></div><p class="pl-hint">Blue words are buttons. Tap one to change your plot.</p></div>${V2.plotSent()}${V2.plotHelp()}</div>${V2.plotWait()}</section></div>
-    ${V2.buildJump(false, !!win, tab)}<div class="bd-lower bp-lower" data-bdtab="${tab}"><div class="bd-lcol">${win}</div>${cor}</div></div>`; };
+    ${V2.plotLower(false)}</div>`; };
 (() => { const draw = V2.pages.build.draw; V2.pages.build.draw = () => { const M = V2.bpModel(); if (M || (ui.ab && ui.ab.busy && V2.bpLastM)) return draw(); return V2.plotPage0(); }; })();
 /* The sentence fills the page width (Q95 fit rule): each line is laid out on one row at the base size; if the widest is wider than the
    page, the size steps down so it fits (never below 20 px); only then may a line wrap (very narrow phones). Runs after each draw, on
@@ -74,8 +75,7 @@ V2.plotAnswer = M => { const E = V2.esc, t = M.t, chips = t.gp || [], rk = M.G &
   if (a > 0 && b > a) h = h.slice(0, a) + V2.plotAnswer(M) + h.slice(b);
   /* the Spec and Rebuild are the control row now */
   return h.replace(/<p class="bp-k">Spec · tap a field to change it<\/p>[\s\S]*?(?=<p class="bp-k">Revisions|<div class="bd-opt bd-go">)/, '').replace(/<div class="bd-opt bd-go"><button type="button" class="bp-rebuild[\s\S]*?<\/button><\/div>/, ''); }; })();
-V2.bpPage = M => { const win = V2.buildWinners(true), cor = V2.buildCores(true), tab = V2.bdTab(false, !!win);
-  return `<div class="bd2 bp2 pl2"><h1 class="vh">Build</h1><section class="pl pl1"><div class="pl-step pl-s1"><span class="pl-node" aria-hidden="true">1</span>${V2.plotSent(true)}</div></section><div class="bd-result" aria-live="polite">${V2.buildSheet(M)}</div>${V2.buildJump(false, !!win, tab)}<div class="bd-lower bp-lower" data-bdtab="${tab}"><div class="bd-lcol">${win}</div>${cor}</div></div>`; };
+V2.bpPage = M => `<div class="bd2 bp2 pl2"><h1 class="vh">Build</h1><section class="pl pl1"><div class="pl-step pl-s1"><span class="pl-node" aria-hidden="true">1</span>${V2.plotSent(true)}</div></section><div class="bd-result" aria-live="polite">${V2.buildSheet(M)}</div>${V2.plotLower(true)}</div>`;
 
 // ---------- Piece 3 (spec section 8): the six on type-coloured plates ----------
 // Each plate shows exactly what Copy for Showdown exports (slotsPaste, the same call as data-bdcopy), so the page and the copy never
@@ -133,3 +133,49 @@ V2.plotPlans = M => { const E = V2.esc, L = 'ABCDEFGH'; if (M.n < 2 && !M.res.fr
     <div class="bd-others pl-plans" role="list">${M.res.teams.map(col).filter((x, i) => i !== M.k).join('')}${M.res.freshPending ? '<div class="pl-plan pl-pwait" role="listitem"><p class="pl-pk">Finding a fresh take…</p><p class="pl-pm">A different six, worked out next</p></div>' : ''}</div></div>`; };
 (() => { const sheet = V2.buildSheet; V2.buildSheet = M => { const h = sheet(M), a = h.indexOf('<div class="bp-tb">'), b = h.lastIndexOf('</section>');
   if (a < 0 || b < a) return h; return h.slice(0, a) + V2.plotWhy(M) + V2.plotPlans(M) + h.slice(b); }; })();
+
+// ---------- Piece 5 (spec section 9, Q98): 5 Plots that worked, 6 Partners in crime, then the end, on an ink band ----------
+// The same three winners and the same cores as V2.buildWinners / V2.buildCores (build.js), drawn as the approved picture
+// (docs/rebuild/pics/nov20/Q98/Q98-4b-1440-after.png). No phone tabs (Sim, Nov 20: no buried folds or tabs): both sections show and the
+// page scrolls. Hooks kept: one element per winner carries data-bdwin (its key, for evTeam); data-hmload (with V2.hmSure's Replace / Cancel),
+// data-hmcopy, data-hmprep, data-bdcx; the cores' data-bdcore, data-bdcteams, data-bdcprep, data-bdccopy, data-bdcmore, data-bdcwhy, the
+// "With a Pokémon…" box (V2.buildCoreFind: data-bdcfind / data-bdcpick / data-bdcmx) and the v2slide keys bdckind / bdcsort; the classes
+// .bd-lower, .bd-wins, .bd-cores. A winner's full sets are the only fold ("Full sets ›", data-plwsets). The end's HATCH ANOTHER is
+// data-plgo (tests count the visible [data-bdgo]: there is one, in the control row); it presses that one.
+V2.plotWinPicks = () => { const EV = META.events; if (!EV || !EV.events) return []; /* the same three as V2.buildWinners: newest 1st-place teams from official events or 64+ players */
+  return EV.events.filter(e => e.src === 'official' || e.players >= 64).filter(e => e.top[0] && e.top[0].place === 1).slice(0, 3); };
+V2.plotWin = ev => { const E = V2.esc, t = ev.top[0], key = ev.id + '#0', sure = V2.hmUi && V2.hmUi.sure === key, open = V2.bdUi.win === key;
+  const sets = t.mons.map(m => { const p = byName.get(m.n); return `<li class="bd-set">${V2.mon(m.n, {iw: 48, bare: true})}<div><b>${V2.rowName(p ? p.d : m.n)}</b>${m.i ? ` <span class="bd-at">@ ${V2.keepForm(E(m.i))}</span>` : ''}
+    <small>${E(m.a || '')}${m.nt ? ' · ' + E(m.nt) : ''}</small><small class="bd-mv">${(m.mv || []).map(E).join(' · ')}</small></div></li>`; }).join('');
+  const six = t.mons.map(m => `<span>${SPRITE_ID[m.n] ? `<img src="${V2.art(SPRITE_ID[m.n])}" alt="" loading="lazy" decoding="async">` : ''}</span>`).join('');
+  return `<div class="pl-win" role="listitem" data-bdwin="${E(key)}">
+    <div class="pl-wr"><span class="pl-rec u">${E(t.record || '1st')}</span><span class="pl-wm"><span>${t.record ? '<span class="pl-w1">1st<span class="vh"> place</span>' + (ev.players ? ' of ' : ' ·') + '</span>' : ''}${ev.players ? `${E(String(ev.players))} players ·` : ''}</span> <span>${E(evDate(ev.date))}</span></span>${sure ? '' : `<button type="button" class="pl-out2 u" data-hmload="${E(key)}"><span>Load Team</span></button>`}</div>
+    ${sure ? V2.hmSure(key) : ''}<div class="pl-wt"><h3 class="pl-wev u">${E(V2.evTitle(ev.name))}</h3><details class="pl-wsets" data-plwsets="${E(key)}"${open ? ' open' : ''}><summary><span>Full sets ›</span></summary><p class="bd-wwho">${E(teamWho(t))}'s six, full sets</p><ul class="bd-sets">${sets}</ul></details></div>
+    <div class="pl-wsix" role="img" aria-label="${E(t.mons.map(m => V2.disp(m.n)).join(', '))}">${six}</div>
+    <div class="pl-wa"><button type="button" class="np-link" data-hmcopy="${E(key)}">Copy for Showdown</button><button type="button" class="np-link" data-hmprep="${E(key)}">Set as Opponent ›</button><button type="button" class="np-link" data-bdcx="${E(key)}">Compare ›</button></div></div>`; };
+document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('[data-plwsets]')) return; if (d.open) V2.bdUi.win = d.dataset.plwsets; else if (V2.bdUi.win === d.dataset.plwsets) V2.bdUi.win = null; }, true);
+/* the cores list: 8 then 16 more from 1180 wide (two columns from 1200), 7 then 15 in one column, 4 then 15 on phones (spec section 9:
+   "8 rows desktop, 4 phone"); crossing 700 while resizing redraws, as V2.CORES_WIDE does at 1180 */
+V2.CORES_PHONE = window.matchMedia ? matchMedia('(max-width:699.98px)') : null;
+if (V2.CORES_PHONE) { const f = () => { if (V2.route && V2.route() === 'build') V2.redraw(); }; if (V2.CORES_PHONE.addEventListener) V2.CORES_PHONE.addEventListener('change', f); else if (V2.CORES_PHONE.addListener) V2.CORES_PHONE.addListener(f); }
+V2.plotCores = n => { const E = V2.esc, rows = coreRows(), wide = !!(V2.CORES_WIDE && V2.CORES_WIDE.matches), ph = !wide && !!(V2.CORES_PHONE && V2.CORES_PHONE.matches);
+  const first = wide ? 8 : ph ? 4 : 7, step = wide ? 16 : 15, shown = rows.slice(0, first + step * (coreUi.more || 0)), base = RES && +RES.base ? +RES.base : .5;
+  const kindW = {pairs: 'pairs', trios: 'trios', teams: 'full teams'}[coreUi.kind] || 'pairs';
+  const row = (r, i) => { const tags = coreTags(r.ns).filter(x => x !== 'Mega'), pts = r.tog == null ? null : Math.round(r.tog * 1000) / 10, use = coreUi.sort === 'use', w = use ? r.wr : r.score, dv = use ? r.d : r.score - base;
+    return `<li class="pl-core pl-c${Math.min(r.ns.length, 4)}"><i class="vh">${i + 1}</i><span class="pl-csp" aria-hidden="true">${r.ns.map(n => SPRITE_ID[n] ? `<img src="${V2.art(SPRITE_ID[n])}" alt="" loading="lazy" decoding="async">` : '').join('')}</span>
+      <span class="pl-cwho"><b>${r.ns.map(n => V2.rowName(V2.disp(n))).join(' + ')}</b><small>${tags.length ? `${E(tags.slice(0, 2).join(', '))} · ` : ''}${homeNum(r.n)} teams${r.use != null ? ` (${E(pctTxt(r.use))})` : ''}${pts != null ? ` · ${pts > 0 ? '+' : ''}${pts} point${Math.abs(pts) === 1 ? '' : 's'} together` : ''}</small>${r.ns.length > 3
+        ? `<span class="pl-cacts"><button type="button" class="np-link" data-bdcprep="${E(r.ns.join('|'))}">Set as Opponent ›</button><button type="button" class="np-link" data-bdccopy="${E(r.ns.join('|'))}">Copy for Showdown</button></span>`
+        : `<span class="pl-cacts"><button type="button" class="np-link" data-bdcteams="${E(r.ns.join('|'))}">Teams with It ›</button></span>`}</span>
+      <span class="pl-cwv" title="${E(pctTxt(r.use))} of all tournament teams"><b class="u"${use ? '' : ` title="Win rate, pulled toward average until there are enough games (raw: ${E(winFmt(100 * r.wr))})"`}>${E(winFmt(100 * w))}</b><small>wins<span class="pl-cdot"> ·</span> <span class="pl-cvs">${dv >= 0 ? '+' : '−'}${E(ptsTxt(Math.abs(100 * dv)))} vs avg</span></small></span>
+      <button type="button" class="pl-out2 pl-cadd u" data-bdcore="${E(r.ns.join('|'))}" aria-label="${r.ns.length > 3 ? 'Load' : 'Add'} ${E(r.ns.map(x => V2.disp(x)).join(' and '))} ${r.ns.length > 3 ? 'as your team' : 'to your team'}"><span>${r.ns.length > 3 ? 'Load Team' : 'Add'}</span></button></li>`; };
+  return `<div class="pl-step pl-s6 bd-cores"><span class="pl-node" aria-hidden="true">${n}</span><div class="pl-hd"><h2 class="u pl-h2">Partners in crime</h2><p class="pl-sub">Pick a pair or trio that wins, then fill the rest.</p></div>
+    <div class="pl-ctl">${V2.slide('bdckind', [['pairs', 'Pairs'], ['trios', 'Trios'], ['teams', 'Full Teams']], coreUi.kind, 'Kind of core')}${V2.slide('bdcsort', [['win', 'Top Rated'], ['use', 'Most Used']], coreUi.sort, 'Sort cores')}${V2.buildCoreFind()}
+      <p class="pl-chint bd-hint">${homeNum(rows.length)} ${kindW} from ${homeNum(RES && RES.teams)} tournament teams. Average team wins ${E(winFmt(base * 100))} of games. ${coreUi.sort === 'use' ? 'Ranked by how many teams used it.' : 'Ranked by win rate, pulled toward the average.'} <button type="button" class="np-link" data-bdcwhy>How Cores Are Ranked ›</button></p></div>
+    ${shown.length ? `<ol class="pl-cores bd-clist">${shown.map(row).join('')}</ol>` : '<p class="bd-cnone">No cores match. Try another Pokémon.</p>'}${rows.length > shown.length ? `<button type="button" class="np-link pl-cmore bd-cmore" data-bdcmore>Show ${Math.min(step, rows.length - shown.length)} More ${kindW.replace(/\b[a-z]/g, c => c.toUpperCase())} ›</button>` : ''}</div>`; };
+V2.plotLower = end => { const E = V2.esc, picks = V2.plotWinPicks(), lk = ui.abLock && byName.get(ui.abLock), busy = !!(ui.ab && ui.ab.busy);
+  const win = picks.length ? `<div class="pl-step pl-s5 bd-wins"><span class="pl-node" aria-hidden="true">5</span><div class="pl-hd"><h2 class="u pl-h2">Plots that worked</h2><p class="pl-sub">Real winners at recent tournaments. Borrow one.</p></div><div class="pl-wins" role="list">${picks.map(V2.plotWin).join('')}</div></div>` : '';
+  const fin = end ? `<div class="pl-step pl-end"><span class="pl-node" aria-hidden="true"></span><div class="pl-endn"><h2 class="u pl-h2">The end. Or is it?</h2><button type="button" class="pl-go pl-goend u" data-plgo${busy ? ' aria-busy="true" disabled' : ''}><span>Hatch another</span></button><span class="pl-endq">${lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team'}</span></div></div>` : '';
+  return `<section class="pl pl-low bd-lower${end ? ' pl-low1' : ' pl-low0'}" aria-label="More ways to start">${win}${V2.plotCores(picks.length ? 6 : 5)}${fin}</section>`; };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-plgo]'); if (!b) return; const go = document.querySelector('.pl1 [data-bdgo]'); if (!go || go.disabled) return; go.click();
+  /* back up to the plot at once (a smooth scroll was cut short by the redraws a build makes: measured -2,056 px, Nov 20) */
+  requestAnimationFrame(() => scrollTo({top: 0, behavior: 'instant'})); });

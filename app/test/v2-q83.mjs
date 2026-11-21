@@ -6,7 +6,7 @@
 //  3 Revisions rows show each option's six as small sprites
 //  5 Build around: the pick is figure 01 with a "Built around" tag (display only; Load Team keeps the engine's six)
 //  6 Rebuild: a solid slanted stamp (data-bdgo), not the outline button
-//  7 Reference sheets: solid slanted "1st" tags, bigger sprites (64 desktop, 44 phone), soft rules
+//  7 Plots that worked + Partners in crime (Nov 20, The Plot piece 5; were the Reference sheets and Parts list): see refs() and cores()
 //  9 the score sticker is filled with its band's colour for every band, its words readable (4.5:1+), on a white rim
 // plus no sideways scroll and no page errors.   PAGE=app/dist/v2.html node app/test/v2-q83.mjs   Exit 1 on any failure.
 import {chromium} from 'playwright'; import path from 'node:path';
@@ -41,9 +41,24 @@ const result = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects
     nos: no.length, noSolid: no.every(c => c.color !== 'rgba(0, 0, 0, 0)' && parseFloat(c.webkitTextStrokeWidth || '0') === 0 && !/rgba\(.*, 0\)$|transparent/.test(c.backgroundColor)),
     sws, go: go.length, goCls: g ? g.className : '', goTxt: g ? g.innerText.trim() : '', goBg: gc ? gc.backgroundColor : '', goTf: gc ? gc.transform : '', goIn: !!(g && a && a.contains(g)), revs,
     side: document.documentElement.scrollWidth > innerWidth, H: document.documentElement.scrollHeight}; });
-const refs = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects().length), w = document.querySelector('.bp-ref'); if (!w || !vis(w)) return null; const t = w.querySelector('.bp-wplace'), c = t && getComputedStyle(t), win = w.querySelector('.bd-win');
-  return {bg: c ? c.backgroundColor : '', bw: c ? parseFloat(c.borderTopWidth) : -1, clip: c ? c.clipPath : '', sp: [...w.querySelectorAll('.bd-win>summary .bd-wsix>*')].filter(vis).slice(0, 6).map(e => Math.round(e.getBoundingClientRect().width)),
-    rule: (() => { if (!win) return ''; win.open = true; const x = getComputedStyle(win).borderLeftColor; win.open = false; return x; })() /* an open sheet's frame (closed rows have no rule; sugs.css drops the top line) */, ruleTok: (() => { const d = document.createElement('i'); d.style.color = 'var(--rule)'; w.append(d); const x = getComputedStyle(d).color; d.remove(); return x; })()}; });
+/* Nov 20 (The Plot piece 5, Q98): the Blueprint's Reference sheets (folds with "1st" tags) are retired; Recent Winners are "Plots that worked",
+   three columns on an ink band. Same strength, on the new design: the three winners shown, each record on a solid slanted plate, the six
+   at the approved height (56 desktop, 38 phones), every action visible with the fold closed (Load Team, Copy, Set as Opponent, Compare),
+   the column rule the band's soft token, and the band's own colour behind them */
+const refs = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects().length), w = document.querySelector('.pl-low .bd-wins'); if (!w || !vis(w)) return null;
+  const tok = v => { const d = document.createElement('i'); d.style.color = v; w.append(d); const x = getComputedStyle(d).color; d.remove(); return x; };
+  const cols = [...w.querySelectorAll('[data-bdwin]')].filter(vis);
+  return {n: cols.length, plates: cols.map(c => { const r = c.querySelector('.pl-rec'), cs = r && getComputedStyle(r); return cs ? {bg: cs.backgroundColor, tf: cs.transform} : null; }),
+    sp: cols.map(c => [...c.querySelectorAll('.pl-wsix > span')].filter(vis).map(e => Math.round(e.getBoundingClientRect().height))),
+    acts: cols.map(c => ['data-hmload', 'data-hmcopy', 'data-hmprep', 'data-bdcx'].filter(a => vis(c.querySelector(`[${a}]`))).length), shut: cols.every(c => { const d = c.querySelector('[data-plwsets]'); return d && !d.open; }),
+    rule: cols[0] ? getComputedStyle(cols[0]).borderTopColor : '', ruleTok: tok('var(--pl-band-edge)'), band: getComputedStyle(w.closest('.pl-low')).backgroundColor, bandTok: tok('var(--pl-band)')}; });
+/* the Cores' Parts list (solid numbers) is retired too: Partners in crime, on the same band. Its promises: controls 44 px tall, win % in
+   the logo's font (Unbounded, slanted), the outlined ADD plate, rows in two columns from 1200 and one below */
+const cores = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects().length), c = document.querySelector('.pl-low .bd-cores'); if (!c || !vis(c)) return null;
+  const rows = [...c.querySelectorAll('.pl-core')].filter(vis), x0 = new Set(rows.map(r => Math.round(r.getBoundingClientRect().left)));
+  const ctl = [...c.querySelectorAll('.pl-ctl [data-v2slide] > button, .pl-ctl .np-field')].filter(vis).map(e => Math.round(e.getBoundingClientRect().height));
+  return {rows: rows.length, cols: x0.size, ctl, win: rows.map(r => { const cs = getComputedStyle(r.querySelector('.pl-cwv b')); return /Unbounded/.test(cs.fontFamily) && cs.fontStyle === 'italic'; }).every(Boolean),
+    add: rows.map(r => { const cs = getComputedStyle(r.querySelector('[data-bdcore]')); return parseFloat(cs.borderTopWidth) === 2 && cs.backgroundColor === 'rgba(0, 0, 0, 0)' && r.querySelector('[data-bdcore]').getBoundingClientRect().height >= 44; }).every(Boolean)}; });
 const lum = c => { const m = c.match(/[\d.]+/g).map(Number), f = v => { v /= 255; return v <= .03928 ? v / 12.92 : ((v + .055) / 1.055) ** 2.4; }; return .2126 * f(m[0]) + .7152 * f(m[1]) + .0722 * f(m[2]); };
 const ratio = (x, y) => { const a = lum(x), c = lum(y); return (Math.max(a, c) + .05) / (Math.min(a, c) + .05); };
 const GRID = {light: ['#0078bf0d', '#0078bf1a'], dark: ['#62bef70a', '#62bef714']};
@@ -61,9 +76,14 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 
   /* Nov 20: the limit follows the design Sim approved (Q95 measured the plot page at 2,220 px at 390; the Blueprint's was 1,700) */
   if (W === 390) ok(z.H <= 2220, `390 ${th}: page before a build kept short: ${z.H} px (approved design 2,220)`);
   ok(!z.side, `${k}: no sideways scroll before a build`);
-  const rf = await refs(p); if (rf) { ok(rf.bg !== 'rgba(0, 0, 0, 0)' && rf.bw === 0 && /polygon/.test(rf.clip), `${k}: Recent Winners "1st" tags solid and slanted (${rf.bg}, border ${rf.bw})`);
-    const want = W >= 700 ? 64 : W >= 380 ? 44 : W >= 340 ? 40 : 36; ok(rf.sp.length === 6 && rf.sp.every(x => x === want), `${k}: Recent Winners sprites ${want} px (${rf.sp.join(',')})`);
-    ok(rf.rule === rf.ruleTok, `${k}: an open Recent Winner's frame is the soft rule (${rf.rule})`); } else ok(false, `${k}: Recent Winners reference sheet shown`);
+  const rf = await refs(p); if (rf) { const want = W >= 700 ? 56 : 38;
+    ok(rf.n === 3 && rf.plates.every(x => x && x.bg !== 'rgba(0, 0, 0, 0)' && x.tf !== 'none'), `${k}: Plots that worked: three winners, each record on a solid slanted plate (${rf.n}; ${rf.plates.map(x => x && x.bg).join(', ')})`);
+    ok(rf.sp.every(x => x.length === 6 && x.every(h => h === want)), `${k}: Plots that worked: each winner's six ${want} px tall (${rf.sp.map(x => x.join(',')).join(' | ')})`);
+    ok(rf.shut && rf.acts.every(x => x === 4), `${k}: Plots that worked: Load Team, Copy, Set as Opponent and Compare shown with the full sets folded (${rf.acts.join(',')})`);
+    ok(rf.rule === rf.ruleTok && rf.band === rf.bandTok, `${k}: Plots that worked on the ink band, soft column rules (${rf.band}; ${rf.rule})`); } else ok(false, `${k}: Plots that worked shown`);
+  const cr = await cores(p); if (cr) { const two = W >= 1200;
+    ok(cr.ctl.length >= 6 && cr.ctl.every(h => h === 44), `${k}: Partners in crime: Pairs / Trios / Full Teams, Top Rated / Most Used and the Pokémon box all 44 px tall (${cr.ctl.join(',')})`);
+    ok(cr.rows >= 4 && cr.win && cr.add && cr.cols === (two ? 2 : 1), `${k}: Partners in crime: ${cr.rows} rows in ${cr.cols} column(s) (want ${two ? 2 : 1}), win % in Unbounded slanted ${cr.win}, outlined ADD ${cr.add}`); } else ok(false, `${k}: Partners in crime shown`);
   // build
   await p.click('[data-bdgo]'); await built(p); await p.waitForTimeout(600); const r = await result(p);
   ok(!(await p.$('.pl0')), `${k}: pressing Hatch it builds the team (the plot sentence page gives way to the result)`);
@@ -93,10 +113,19 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 
     await p.click('[data-bduse]'); await p.waitForTimeout(1000); const sl = await p.evaluate(() => window.__ev('S.slots.map(s=>s.n).join("|")'));
     ok(sl === f.eng, `${k}: Load Team loads the engine's six in the engine's order (display-only reorder)`); }
   ok(!errs.length, `${k}: no page errors (${errs.length}${errs.length ? ': ' + errs[0] : ''})`); await c.close(); }
-{ /* Sim, Nov 20 (after Q83): the Cores Parts list numbers are solid like the sheet's 01-06 */
-  for (const th of ['light', 'dark']) { const c = await b.newContext({viewport: {width: 1440, height: 900}, colorScheme: th}); const p = await c.newPage(); await p.addInitScript(() => { window.__PL_TEST = 1; });
-    await p.goto('file://' + PAGE + '#build', {timeout: 90000}); await p.waitForTimeout(2500);
-    await p.evaluate(() => { const t = [...document.querySelectorAll('button,a,[role=tab]')].find(e => e.textContent.trim() === 'Cores'); if (t) t.click(); }); await p.waitForTimeout(1200);
-    const n = await p.evaluate(() => [...document.querySelectorAll('.bp-parts .bd-cn')].filter(e => e.getClientRects().length).map(e => { const cs = getComputedStyle(e); return {col: cs.color, stroke: cs.webkitTextStrokeWidth}; }));
-    ok(n.length > 0 && n.every(x => x.col !== 'rgba(0, 0, 0, 0)' && parseFloat(x.stroke || '0') === 0), `${th} 1440: Parts list numbers solid, not outlined (${n.length} numbers)`); await c.close(); } }
+{ /* Nov 20 (The Plot piece 5): after a build, the page ends with the filled end node and HATCH ANOTHER (data-plgo), which presses the control
+     row's one HATCH ANOTHER (data-bdgo): a new build, and the page goes back up to the plot. Light and dark, 1440 and 390 */
+  for (const th of ['light', 'dark']) for (const W of [1440, 390]) { const c = await b.newContext({viewport: {width: W, height: 900}, colorScheme: th, ...(W < 700 ? {isMobile: true, hasTouch: true} : {})}); const p = await c.newPage(); await p.addInitScript(() => { window.__PL_TEST = 1; });
+    await p.goto('file://' + PAGE + '#build', {timeout: 90000}); await p.waitForTimeout(2500); const k = `${W} ${th}`;
+    ok(!(await p.$('.pl-low [data-plgo]')) && !(await p.$('.pl-low .pl-end')), `${k}: before a build there is no end (the story starts at step 1)`);
+    await p.click('[data-bdgo]'); await built(p); await p.waitForTimeout(600);
+    const e = await p.evaluate(() => { const g = document.querySelector('.pl-low [data-plgo]'), n = document.querySelector('.pl-low .pl-end .pl-node'), h = document.querySelector('.pl-low .pl-end h2');
+      return {go: !!g, h: g ? Math.round(g.getBoundingClientRect().height) : 0, node: n ? getComputedStyle(n).backgroundColor : '', pick: (() => { const d = document.createElement('i'); d.style.color = 'var(--pick)'; document.body.append(d); const x = getComputedStyle(d).color; d.remove(); return x; })(), words: h ? h.textContent : '', last: !!(document.querySelector('.pl-low') && document.querySelector('.pl-low').lastElementChild.classList.contains('pl-end'))}; });
+    ok(e.go && e.h >= 44 && e.node === e.pick && e.words === 'The end. Or is it?' && e.last, `${k}: the end: filled red node, "The end. Or is it?", HATCH ANOTHER ${e.h} px (${e.node})`);
+    await p.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight)); await p.waitForTimeout(300);
+    await p.evaluate(() => { window.__go = 0; document.addEventListener('click', ev => { if (ev.target.closest && ev.target.closest('.pl1 [data-bdgo]')) window.__go++; }, true); });
+    await p.click('.pl-low [data-plgo]'); await p.waitForTimeout(1200); await built(p); await p.waitForTimeout(600);
+    const a = await p.evaluate(() => ({go: window.__go, top: Math.round((document.querySelector('.pl1') || document.body).getBoundingClientRect().top), vis: [...document.querySelectorAll('[data-bdgo]')].filter(e => e.getClientRects().length).length}));
+    ok(a.go === 1 && a.top > -40 && a.top < 200 && a.vis === 1, `${k}: the end's HATCH ANOTHER presses the control row's (${a.go} press), the page back at the plot (top ${a.top} px), still one data-bdgo (${a.vis})`);
+    await c.close(); } }
 await b.close(); console.log(fails.length ? `v2-q83: ${fails.length} FAILED` : 'v2-q83: all passed'); process.exit(fails.length ? 1 : 0);
