@@ -14,7 +14,7 @@ for f in "$T"/a*.output; do
   age=$(( (now - $(stat -c %Y "$f")) / 60 ))
   last=$(tail -n 1 "$f" | jq -r 'if .type=="assistant" then (.message.stop_reason // "") else "busy" end' 2>/dev/null)
   # a helper inside one long tool call (e.g. waiting on a test) writes nothing until it returns: allow 3 h for that, 45 min otherwise
-  lim=45; [ "$last" = "tool_use" ] && lim=180
+  lim=180 # not finished (no final reply): a long tool call, a backgrounded wait or a queued message can leave the file quiet for a while
   [ "$age" -le "$lim" ] || continue
   if [ "$last" != "end_turn" ]; then
     active=$((active+1))
