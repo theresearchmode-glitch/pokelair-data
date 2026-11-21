@@ -1865,3 +1865,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:23 PM: Correction: v2-q46's 4 failures were not old. My calc '% first' change (3be28375) changed the answer wording; v2-q46 (run by GitHub) still expected 'Incineroar has N HP'. Test now reads the new wording; v2-q46: all passed.
 - 3:28 PM: Correction: Build page after the reskin measures 3,262px at 390 (q83's method, phone emulation), not 3,129 as I told Sim; approved Q103 A was 3,133 with a 3,200 cap. v2-q83 fails on it and on the old six-size check. Prototyping a fix.
 - 3:34 PM: hK done (kit phone compaction, 8c7afc85 in copy kc): saves 82-246px; Calc still +651, My Team +237 at 390 vs today. Pictures + options to Sim.
+- 3:35 PM: Slot refilled with hQ: fix the 36 new qcheck-all findings (calc move-card overlaps, off-scale % sign, Home 97, calc photo name) in its own copy; bug fixes, no redesign.
