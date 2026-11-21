@@ -1,0 +1,183 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>The file on Incineroar · NastyPlot (mock-up)</title>
+<style>
+@font-face{font-family:U;src:url(../../../../app/src/v2/fonts/unbounded-latin.woff2) format('woff2');font-weight:200 900}
+@font-face{font-family:I;src:url(../../../../app/src/v2/fonts/instrument-sans-latin.woff2) format('woff2');font-weight:400 700}
+:root{--paper:#FBFAF7;--ink:#17161A;--ink2:#5E5A66;--rule:rgba(23,22,26,.13);--plot:#0078BF;--nasty:#E8364F;--go:#DA2C48;--card:#fff;--wash:#F1EDE6;--night:#14131C;
+ --fire:#EE8130;--dark:#705746;--grass:#7AC74C;--water:#6390F0;--fight:#C22E28;--fairy:#D685AD;--steel:#B7B7CE;--ghost:#735797;--dragon:#6F35FC;--elec:#F7D02C;--ice:#96D9D6;--bug:#A6B91A;--psy:#F95587;--normal:#A8A77A;--flying:#A98FF3;--poison:#A33EA1;--ground:#E2BF65;--rock:#B6A136}
+*{box-sizing:border-box}html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 I,system-ui,sans-serif;overflow-x:hidden}
+.u{font-family:U;font-style:italic;font-synthesis:style;font-weight:800;letter-spacing:-.01em}
+a{color:var(--plot);text-decoration:none}
+.top{display:flex;align-items:center;gap:32px;max-width:1240px;margin:0 auto;padding:16px 24px}.top img{height:28px}.top nav{display:flex;gap:28px;font-weight:600;font-size:15px}.top nav b{box-shadow:inset 0 -3px 0 var(--plot);padding-bottom:6px}
+.trail{max-width:1240px;margin:0 auto;padding:0 24px 0 76px;font:600 13px I;color:var(--ink2)}.trail a{font-weight:700}
+main{overflow-x:clip;position:relative;max-width:1240px;margin:0 auto;padding:0 24px 96px 76px}
+main:before{content:"";position:absolute;left:38px;top:340px;bottom:60px;border-left:3px dashed var(--nasty)}
+.kicker{display:inline-block;margin:20px 0 8px;padding:4px 12px;background:var(--ink);color:#fff;font:800 15px/1.3 U;font-style:italic;transform:skewX(-10deg)}
+h1{margin:0;font-size:clamp(44px,6.6vw,92px);line-height:.95}h1 em{color:var(--plot);font-style:inherit}
+.lead{margin:12px 0 0;max-width:720px;font-size:17px;color:var(--ink2)}
+/* ===== first screen: the card + the verdict + the set ===== */
+.first{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:40px;align-items:start;margin-top:120px}
+.card{position:relative;isolation:isolate;display:grid;align-content:end;min-height:340px;padding:232px 20px 20px}
+.card:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(165deg,color-mix(in srgb,var(--fire) 55%,#fff) 0%,color-mix(in srgb,var(--dark) 30%,#fff) 58%,#fff 58.2%);clip-path:polygon(0 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%);filter:drop-shadow(0 14px 22px rgba(23,22,26,.18))}
+.card img{position:absolute;left:50%;top:-118px;width:124%;height:360px;object-fit:contain;object-position:50% 100%;transform:translateX(-50%);filter:drop-shadow(0 10px 8px rgba(0,0,0,.25))}
+.nmrow{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:12px}
+.nmrow small{display:block;font:700 15px I;color:var(--ink2)}.nmrow b.n{display:block;font-size:34px;line-height:1}
+.sc{text-align:right;line-height:1}.sc b{display:block;font-size:72px;color:var(--plot)}.sc i{font:800 15px U;font-style:italic;color:var(--ink)}
+.types{display:flex;gap:6px;margin-top:10px}.ty{padding:2px 10px;color:#fff;background:color-mix(in srgb,var(--tc) 68%,#000);font:700 13px/1.5 I;transform:skewX(-10deg)}
+.verdict{display:grid;gap:16px}
+.vline{font-size:clamp(26px,2.6vw,34px);line-height:1.1;margin:0}.vline em{color:var(--plot);font-style:inherit}
+.facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 20px;margin:0;padding:0;list-style:none}
+.facts b{display:block;font-size:30px;line-height:1}.facts span{font:600 13px/1.3 I;color:var(--ink2)}
+.trend{display:inline-flex;align-items:center;gap:10px;font:600 15px I}.tag{display:inline-block;white-space:nowrap;padding:2px 10px;font:800 15px/1.4 U;font-style:italic;transform:skewX(-8deg);color:#fff}
+.tag.bad{background:var(--go)}.tag.good{background:var(--plot)}.tag.neu{background:none;color:var(--ink);box-shadow:inset 0 0 0 2px var(--ink)}
+.scrib{display:inline-block;font:800 17px/1.2 U;font-style:italic;color:var(--nasty);transform:rotate(-3deg)}
+/* the set */
+.set{position:relative;padding:20px 22px 22px;background:var(--card);box-shadow:0 1px 0 var(--rule),0 18px 36px -24px rgba(23,22,26,.45)}
+.set h2{margin:0 0 4px;font-size:22px}.set .sub{margin:0 0 14px;font:600 13px I;color:var(--ink2)}
+.kv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px 18px;margin:0 0 14px}.kv dt{font:600 13px I;color:var(--ink2)}.kv dd{margin:0;font:700 16px/1.25 I}.kv dd small{display:block;font:500 13px I;color:var(--ink2)}
+.mvs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0 0 16px;padding:0;list-style:none}
+.mvs li{display:flex;justify-content:space-between;align-items:center;min-height:44px;padding:0 14px;color:#fff;font:800 15px I;background:color-mix(in srgb,var(--tc) 70%,#000);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}.mvs li small{font:700 13px I;opacity:.9}
+.acts{display:flex;flex-wrap:wrap;align-items:center;gap:14px 22px}
+.go{display:inline-block;padding:12px 26px;background:var(--go);color:#fff;font:900 clamp(22px,2.4vw,30px)/1 U;font-style:italic;white-space:nowrap;transform:skewX(-8deg);box-shadow:6px 6px 0 var(--ink)}
+.ink{display:inline-grid;place-items:center;min-height:44px;padding:0 18px;background:var(--ink);color:#fff;font:800 15px U;font-style:italic;transform:skewX(-8deg)}
+.lnk{font:700 15px I}
+.basics{display:flex;flex-wrap:wrap;gap:6px 14px;margin:14px 0 0;font:600 13px I;color:var(--ink2)}.basics span:before{content:"✓ ";color:var(--plot);font-weight:800}
+/* steps */
+.step{position:relative;margin-top:88px}.step .no{position:absolute;left:-52px;top:2px;display:grid;place-items:center;width:32px;height:32px;border:3px solid var(--nasty);border-radius:50%;background:var(--paper);color:var(--nasty);font:800 15px/1 U;font-style:italic}
+.sec{display:flex;flex-wrap:wrap;align-items:baseline;gap:4px 12px;margin:0 0 22px}.sec h2{margin:0;font-size:clamp(28px,3.4vw,42px);line-height:1}.sec span{font:600 15px I;color:var(--ink2)}.sec a{margin-left:auto;font:700 15px I}
+/* step 1: crews */
+.duo{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:40px}
+.lbl{margin:0 0 10px;font:800 15px U;font-style:italic}
+.partners{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:56px 14px;padding-top:44px;margin:0;list-style:none}
+.pc{position:relative;isolation:isolate;display:grid;align-content:end;min-height:150px;padding:78px 12px 12px}
+.pc:before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(168deg,color-mix(in srgb,var(--c) 55%,#fff),color-mix(in srgb,var(--c) 20%,#fff) 58%,#fff 58.2%);clip-path:polygon(0 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%);filter:drop-shadow(0 8px 14px rgba(23,22,26,.15))}
+.pc img{position:absolute;left:50%;top:-42px;width:112%;height:128px;object-fit:contain;object-position:50% 100%;transform:translateX(-50%)}
+.pc .nmrow{grid-template-columns:1fr;gap:0}.pc .sc{text-align:left}.pc .nmrow b.n{font-size:17px}.pc .sc b{font-size:24px}.pc small{font:600 13px I;color:var(--ink2)}
+.wins{display:grid;gap:12px;margin:0;padding:0;list-style:none}
+.win{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:4px 14px;align-items:center;padding:12px 14px;background:var(--card);box-shadow:0 1px 0 var(--rule)}
+.rec{grid-row:span 2;display:grid;place-items:center;min-width:64px;height:52px;background:var(--ink);color:#fff;font:900 20px U;font-style:italic;transform:skewX(-8deg)}
+.win h3{margin:0;font:800 16px/1.2 U;font-style:italic}.win .meta{font:600 13px I;color:var(--ink2)}
+.six{grid-column:2/3;display:flex;gap:2px;margin-top:2px}.six img{width:40px;height:40px;object-fit:contain}.six img.me{background:color-mix(in srgb,var(--nasty) 14%,transparent);border-radius:50%}
+.win .its{grid-column:3;grid-row:1/3;text-align:right;font:600 13px/1.4 I;color:var(--ink2)}.win .its b{color:var(--ink)}.win .its span{display:block}
+/* step 2: fights */
+.fights{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+.ko{margin:0;padding:0;list-style:none}.ko li{display:grid;grid-template-columns:44px minmax(0,1fr) auto;gap:2px 12px;align-items:center;padding:8px 0;border-bottom:1px solid var(--rule)}
+.ko img{width:44px;height:44px;object-fit:contain;grid-row:span 2}.ko b.nm{font:700 15px I}.ko small{font:500 13px I;color:var(--ink2)}
+.ko .pc2{grid-row:span 2;text-align:right}.ko .pc2 b{display:block;font-size:22px;line-height:1}.ko .pc2 .tag{margin-top:4px;font-size:13px}
+.bar{grid-column:2;height:6px;background:var(--wash);position:relative;overflow:hidden}.bar i{position:absolute;left:0;top:0;bottom:0;background:var(--tc)}
+.typeline{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:16px 0 0;font:600 13px I;color:var(--ink2)}
+/* step 3: numbers */
+.nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:32px}
+.stats{margin:0;padding:0;list-style:none}.stats li{display:grid;grid-template-columns:62px minmax(0,1fr) 36px;gap:10px;align-items:center;height:30px;font:600 13px I}
+.stats .b{height:8px;background:var(--wash)}.stats .b i{display:block;height:100%;background:var(--sc)}.stats b{text-align:right;font:800 17px U;font-style:italic}
+.speed p{margin:0 0 6px}.speed .big{font-size:52px;line-height:1}.speed .row{display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--rule);font:600 15px I}.speed .row span{color:var(--ink2);font-weight:500}
+.why{margin:0;padding:0;list-style:none}.why li{display:grid;grid-template-columns:minmax(0,1fr) 40px;gap:2px 10px;padding:6px 0}.why li span{font:600 13px I}.why li b{grid-row:span 2;font:800 22px U;font-style:italic;text-align:right;color:var(--plot)}.why .b{height:6px;background:var(--wash)}.why .b i{display:block;height:100%;background:var(--plot)}
+.honest{margin-top:12px;padding:10px 12px;background:var(--wash);font:500 13px/1.45 I}.honest b{font-weight:700}
+.abil{margin-top:18px;font:500 15px/1.45 I}.abil b{font-weight:700}
+.foot{margin-top:56px;font:500 13px I;color:var(--ink2)}
+@media (max-width:999.98px){.first{grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:28px}.facts{grid-template-columns:repeat(2,minmax(0,1fr))}.kv{grid-template-columns:repeat(2,minmax(0,1fr))}.duo,.fights{grid-template-columns:1fr}.nums{grid-template-columns:1fr 1fr}.nums .why{grid-column:1/-1}}
+@media (max-width:699.98px){.top nav{display:none}.trail{padding-left:52px}main{padding:0 16px 72px 52px}main:before{left:25px;top:300px}
+ h1{font-size:44px}.lead{font-size:16px}.first{grid-template-columns:1fr;gap:20px;margin-top:96px}
+ .card{min-height:250px;padding:160px 16px 16px}.card img{top:-90px;height:260px;width:112%}.nmrow b.n{font-size:28px}.sc b{font-size:52px}
+ .vline{font-size:24px}.facts b{font-size:24px}.set{padding:16px}.kv{gap:8px 14px}.mvs li{padding:0 10px;font-size:13px}.go{width:100%;text-align:center;font-size:22px;padding:12px 10px}
+ .step{margin-top:64px}.step .no{left:-42px;width:28px;height:28px;font-size:13px}.sec h2{font-size:28px}
+ .partners{grid-template-columns:repeat(4,minmax(0,1fr));gap:40px 6px;padding-top:28px}.pc{min-height:0;padding:56px 6px 8px}.pc img{top:-30px;height:88px}.pc .nmrow{grid-template-columns:1fr}.pc .nmrow b.n{font-size:13px;font-family:I;font-style:normal;font-weight:700}.pc .sc{text-align:left}.pc .sc b{font-size:17px}
+ .win{grid-template-columns:auto minmax(0,1fr)}.win .its{grid-column:1/-1;grid-row:auto;text-align:left}.six{grid-column:1/-1}.six img{width:36px;height:36px}
+ .nums{grid-template-columns:1fr;gap:24px}
+ /* phone: shorter (Sim's rule: no longer than today at 390) */
+ main{padding:0 16px 64px 40px}main:before{left:17px}.trail{padding-left:40px}.step .no{left:-36px;width:26px;height:26px;font-size:13px}
+ .step{margin-top:44px}.sec{margin-bottom:10px}.sec h2{font-size:26px}.sec span{font-size:13px}
+ .lead{font-size:15px;margin-top:8px}.verdict{gap:12px}.set h2{font-size:20px}.set .sub{margin-bottom:10px}.kv{margin-bottom:10px}.mvs{margin-bottom:12px}
+ .win{padding:10px;gap:2px 10px}.rec{grid-row:span 1;min-width:52px;height:40px;font-size:17px}.win h3{font-size:15px}
+ .win .meta{grid-column:1/-1}.win .its{font-size:13px}.win .its span{display:inline}.win .its span:before{content:" · "}.six img{width:32px;height:32px}
+ .fights{grid-template-columns:1fr 1fr;gap:12px}.ko li{grid-template-columns:32px minmax(0,1fr);gap:0 6px;padding:4px 0}.ko img{width:32px;height:32px;grid-row:1/4}
+ .ko b.nm{font-size:13px;line-height:1.3}.ko .pc2{grid-row:auto;text-align:left;display:flex;flex-wrap:wrap;align-items:center;gap:2px 6px}.ko li{grid-template-columns:32px minmax(0,1fr) auto}.ko b.nm{grid-column:2/4}.ko .pc2{display:contents}.ko .pc2 b{grid-column:2/4}.ko small{grid-column:2;grid-row:3}.ko .pc2 .tag{grid-column:3;grid-row:3;align-self:center}.ko .pc2 b{font-size:15px;white-space:nowrap}.ko .pc2 .tag{margin:0;padding:0 6px}.ko small{font-size:13px;line-height:1.3}.typeline{gap:4px;margin-top:10px}.sec a{margin-left:0}
+ .why{display:grid;grid-template-columns:1fr 1fr;gap:4px 16px}.stats li{height:26px}.speed .row{padding:4px 0}.speed .big{font-size:44px}.abil{margin-top:10px}.foot{margin-top:40px}
+ .facts{gap:8px 16px}.facts span{line-height:1.25}.trend{font-size:13px;gap:8px}
+ .acts{gap:10px 16px}.go{flex:1 1 100%}.ink{min-height:44px;padding:0 14px}
+ .nums{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px 16px}.nums .why{grid-column:auto}.nums>div:last-child{grid-column:1/-1}
+ .stats li{grid-template-columns:48px minmax(0,1fr) 28px;gap:6px;height:22px}.stats b{font-size:15px}
+ .speed .row{display:grid;font-size:13px;padding:3px 0;line-height:1.3}.speed .row span{font-size:13px}.speed .big{font-size:34px}.speed p{margin:0 0 2px;font-size:13px}
+ .abil{font-size:13px}}
+</style></head><body>
+<header class=top><img src="../cohesion-nov21/logo.svg" alt=NastyPlot><nav><span>Home</span><span>Build</span><span>My Team</span><span>Battle</span><b>Meta</b></nav></header>
+<p class=trail><a href=#>Meta</a> › <a href=#>Ratings</a> › Incineroar</p>
+<main>
+<div class=kicker>POKÉMON · THE FILE</div>
+<h1 class=u>The file on <em>Incineroar.</em></h1>
+<p class=lead>Pokémon Champions · VGC doubles, Reg M-C. Rated from 13,631 real tournament teams.</p>
+
+<section class=first aria-label="Incineroar at a glance">
+ <div>
+  <div class=card><img src="../../../../app/src/v2/art/727.webp" alt=""><div class=nmrow><div><small>#4 of 321 rated</small><b class="n u">Incineroar</b></div><div class=sc><b class=u>95</b><i>S tier</i></div></div>
+   <div class=types><span class=ty style="--tc:var(--fire)">Fire</span><span class=ty style="--tc:var(--dark)">Dark</span></div></div>
+  <p class=trend style="margin:20px 0 0"><span class="tag bad">▼ Falling</span>503 teams this week, 579 last week</p>
+  <p class=basics><span>Legal in Reg M-C</span><span>Level 50</span><span>Points 0–32</span><span>No Mega</span></p>
+ </div>
+ <div class=verdict>
+  <p class="vline u">Top of the format. <em>On more than 1 in 3</em> tournament teams.</p>
+  <ul class=facts><li><b class="u" style="color:var(--plot)">35%</b><span>of tournament teams</span></li><li><b class=u>51.2%</b><span>win rate · 27,028 games</span></li><li><b class=u>65%</b><span>brought from preview</span></li><li><b class=u>36%</b><span>leads the game</span></li></ul>
+  <div class=set>
+   <h2 class=u>How to build it</h2><p class=sub>The set players run most · of 2,733 teams</p>
+   <dl class=kv><div><dt>Item</dt><dd>Sitrus Berry <small>65% · or Chople Berry</small></dd></div><div><dt>Ability</dt><dd>Intimidate <small>100%</small></dd></div><div><dt>Nature</dt><dd>Sassy <small>or Impish</small></dd></div><div><dt>Stat points</dt><dd>31 HP · 20 SpD · 15 Def</dd></div></dl>
+   <ul class=mvs><li style="--tc:var(--normal)">Fake Out <small>99%</small></li><li style="--tc:var(--dark)">Parting Shot <small>96%</small></li><li style="--tc:var(--fire)">Flare Blitz <small>95%</small></li><li style="--tc:var(--dark)">Darkest Lariat <small>41%</small></li></ul>
+   <div class=acts><a class="go u" href=#>USE THIS SET.</a><a class="ink" href=#>Build around it</a><a class=lnk href=#>Copy for Showdown</a><a class=lnk href=#>Every move and item ›</a></div>
+  </div>
+ </div>
+</section>
+
+<section class=step><span class=no>1</span><div class=sec><h2 class=u>The crews it rolls with</h2><span>who it's brought with, and teams that won with it</span><a href=#>Every winning team ›</a></div>
+ <div class=duo>
+  <div><p class="lbl">Brought with it most</p><ul class=partners>
+   <li class=pc style="--c:var(--grass)"><img src="../../../../app/src/v2/art/812.webp" alt=""><div class=nmrow><div><b class="n u">Rillaboom</b><small>3,160 games</small></div><div class=sc><b class=u>59%</b></div></div></li>
+   <li class=pc style="--c:var(--dragon)"><img src="../../../../app/src/v2/art/445.webp" alt=""><div class=nmrow><div><b class="n u">Garchomp</b><small>2,310 games</small></div><div class=sc><b class=u>62%</b></div></div></li>
+   <li class=pc style="--c:var(--fight)"><img src="../../../../app/src/v2/art/903.webp" alt=""><div class=nmrow><div><b class="n u">Sneasler</b><small>1,648 games</small></div><div class=sc><b class=u>57%</b></div></div></li>
+   <li class=pc style="--c:var(--elec)"><img src="../../../../app/src/v2/art/26.webp" alt=""><div class=nmrow><div><b class="n u">Raichu</b><small>1,381 games</small></div><div class=sc><b class=u>51%</b></div></div></li>
+  </ul></div>
+  <div><p class="lbl">Teams that won with it</p><ul class=wins>
+   <li class=win><span class=rec>10-2</span><h3>Sitrus-Series · Champions-MC #81</h3><span class=its>its set: <b>Sitrus Berry · Impish</b><span>Flare Blitz · Throat Chop</span><span>Fake Out · Parting Shot</span></span><span class=meta>1st of 170 players · Nov 4</span>
+    <span class=six><img src="../../../../app/src/v2/art/324.webp" alt=""><img src="../../../../app/src/v2/art/3.webp" alt=""><img src="../../../../app/src/v2/art/10305.webp" alt=""><img src="../../../../app/src/v2/art/10051.webp" alt=""><img class=me src="../../../../app/src/v2/art/727.webp" alt=""><img src="../../../../app/src/v2/art/445.webp" alt=""></span></li>
+   <li class=win><span class=rec>9-2</span><h3>ValkrixVGC Champions League #09</h3><span class=its>its set: <b>White Herb · Brave</b><span>Flare Blitz · Darkest Lariat</span><span>Fake Out · Parting Shot</span></span><span class=meta>1st of 57 players · Nov 8</span>
+    <span class=six><img src="../../../../app/src/v2/art/10087.webp" alt=""><img src="../../../../app/src/v2/art/700.webp" alt=""><img src="../../../../app/src/v2/art/812.webp" alt=""><img src="../../../../app/src/v2/art/981.webp" alt=""><img class=me src="../../../../app/src/v2/art/727.webp" alt=""><img src="../../../../app/src/v2/art/10305.webp" alt=""></span></li>
+   <li class=win><span class=rec>9-1</span><h3>Intimidators Challenge · Road to LAIC</h3><span class=its>its set: <b>Sitrus Berry · Impish</b><span>Fake Out · Flare Blitz</span><span>Darkest Lariat · Parting Shot</span></span><span class=meta>1st of 47 players · Nov 7</span>
+    <span class=six><img src="../../../../app/src/v2/art/10293.webp" alt=""><img class=me src="../../../../app/src/v2/art/727.webp" alt=""><img src="../../../../app/src/v2/art/1013.webp" alt=""><img src="../../../../app/src/v2/art/784.webp" alt=""><img src="../../../../app/src/v2/art/983.webp" alt=""><img src="../../../../app/src/v2/art/10304.webp" alt=""></span></li>
+  </ul></div>
+ </div>
+</section>
+
+<section class=step><span class=no>2</span><div class=sec><h2 class=u>Who it beats. Who beats it.</h2><span>real damage against the top 30, each with its usual set</span><a href=#>Open the KO Board ›</a></div>
+ <div class=fights>
+  <div><p class=lbl>It takes down</p><ul class=ko>
+   <li style="--tc:var(--fire)"><img src="../../../../app/src/v2/art/10285.webp" alt=""><b class=nm>Mega Froslass</b><span class=pc2><b class=u>139–165%</b><span class="tag good">KO</span></span><small>Flare Blitz</small></li>
+   <li style="--tc:var(--fire)"><img src="../../../../app/src/v2/art/547.webp" alt=""><b class=nm>Whimsicott</b><span class=pc2><b class=u>127–150%</b><span class="tag good">KO</span></span><small>Flare Blitz</small></li>
+   <li style="--tc:var(--fire)"><img src="../../../../app/src/v2/art/3.webp" alt=""><b class=nm>Venusaur</b><span class=pc2><b class=u>115–135%</b><span class="tag good">KO</span></span><small>Flare Blitz</small></li>
+   <li style="--tc:var(--fire)"><img src="../../../../app/src/v2/art/10316.webp" alt=""><b class=nm>Mega Golisopod</b><span class=pc2><b class=u>105–125%</b><span class="tag good">KO</span></span><small>Flare Blitz</small></li>
+   <li style="--tc:var(--fire)"><img src="../../../../app/src/v2/art/1000.webp" alt=""><b class=nm>Gholdengo</b><span class=pc2><b class=u>96–115%</b><span class="tag neu">Likely</span></span><small>Flare Blitz</small></li>
+  </ul></div>
+  <div><p class=lbl>It goes down to</p><ul class=ko>
+   <li><img src="../../../../app/src/v2/art/902.webp" alt=""><b class=nm>Basculegion</b><span class=pc2><b class=u>119–141%</b><span class="tag bad">KO</span></span><small>Wave Crash</small></li>
+   <li><img src="../../../../app/src/v2/art/903.webp" alt=""><b class=nm>Sneasler</b><span class=pc2><b class=u>108–128%</b><span class="tag bad">KO</span></span><small>Close Combat</small></li>
+   <li><img src="../../../../app/src/v2/art/279.webp" alt=""><b class=nm>Pelipper</b><span class=pc2><b class=u>96–113%</b><span class="tag bad">Likely</span></span><small>Weather Ball in rain</small></li>
+   <li><img src="../../../../app/src/v2/art/10308.webp" alt=""><b class=nm>Mega Staraptor</b><span class=pc2><b class=u>88–104%</b><span class="tag neu">Maybe</span></span><small>Close Combat</small></li>
+   <li><img src="../../../../app/src/v2/art/186.webp" alt=""><b class=nm>Politoed</b><span class=pc2><b class=u>84–100%</b><span class="tag neu">Maybe</span></span><small>Weather Ball in rain</small></li>
+  </ul></div>
+ </div>
+ <p class=typeline>Weak to <span class=ty style="--tc:var(--water)">Water</span><span class=ty style="--tc:var(--fight)">Fighting</span><span class=ty style="--tc:var(--ground)">Ground</span><span class=ty style="--tc:var(--rock)">Rock</span> · walls <b>Sinistcha</b> (8–10%) and <b>Indeedee</b> (immune to Psychic)</p>
+</section>
+
+<section class=step><span class=no>3</span><div class=sec><h2 class=u>The numbers</h2><span>stats, speed, and why it rates 95</span><a href=#>How ratings work ›</a></div>
+ <div class=nums>
+  <div><p class=lbl>Base stats · total 530</p><ul class=stats>
+   <li style="--sc:#2E9E5B">HP<span class=b><i style="width:47%"></i></span><b>95</b></li><li style="--sc:var(--fire)">Attack<span class=b><i style="width:58%"></i></span><b>115</b></li><li style="--sc:#C9A227">Defense<span class=b><i style="width:45%"></i></span><b>90</b></li>
+   <li style="--sc:var(--plot)">Sp. Atk<span class=b><i style="width:40%"></i></span><b>80</b></li><li style="--sc:#7E57C2">Sp. Def<span class=b><i style="width:45%"></i></span><b>90</b></li><li style="--sc:var(--nasty)">Speed<span class=b><i style="width:30%"></i></span><b>60</b></li></ul>
+   <p class=abil><b>Intimidate</b> (100% of sets): lowers both foes' Attack when it comes in. <b>Blaze</b> 0.3%.</p></div>
+  <div class=speed><p class=lbl>How fast it is · level 50</p><p><b class="big u">72</b> what players run</p>
+   <div class=row>Outspeeds<span>10% of the top 30</span></div><div class=row>Max Speed (123)<span>43% of the top 30</span></div><div class=row>In Tailwind<span>all of the top 30</span></div><div class=row>Under Trick Room<span>before 90% of them</span></div><a class=lnk href=#>Speed Tiers ›</a></div>
+  <div><p class=lbl>Why it rates 95</p><ul class=why>
+   <li><span>Top-cut presence</span><b>99</b><span class=b><i style="width:99%"></i></span></li><li><span>Picked by strong players</span><b>99</b><span class=b><i style="width:99%"></i></span></li><li><span>Top cut beyond its use</span><b>77</b><span class=b><i style="width:77%"></i></span></li><li><span>Win rate</span><b>86</b><span class=b><i style="width:86%"></i></span></li></ul>
+   <p class=honest><b>The honest part:</b> the same 839 players won 47.2% of games with it and 48% without. It's everywhere because it's safe, not because it wins on its own.</p></div>
+ </div>
+</section>
+<p class=foot>Every number from NastyPlot's own data (saved copy, Nov 9). Level 50, as in Pokémon Champions.</p>
+</main></body></html>
