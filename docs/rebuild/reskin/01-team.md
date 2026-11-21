@@ -9,7 +9,7 @@ Layout (top to bottom):
    block (big number + band + one line), ONE row of header links (Why This Score?, Team Sheet, Share as Image, Saved Teams, More).
 2. Plot sentence: "New crew? [build me a team] or [import a team]".
 3. Step 1 "The crew": the Night frame (brand Night, pink drop shadow) holding the six as kit roster cards (art bursting out,
-   score on a paper chip, form line, tier), the chosen one marked; under it the chosen one's detail (‹ 1 of 6 ›, types, Item /
+   score in the name row, never on the art (Sim, Nov 21), form line, tier), the chosen one marked; under it the chosen one's detail (‹ 1 of 6 ›, types, Item /
    Ability / Nature / Stat points, four move slabs, Edit Set / Replace / Remove / Lock / Pokémon Page). Phones: 3+3 cards.
    Drop the corner digits 2-6 (noise, review hV).
 4. Step 2 "The upgrade and the plan": Suggestions (gain, slim swap rows, Apply = the page's ONE pink move? no: the page's one

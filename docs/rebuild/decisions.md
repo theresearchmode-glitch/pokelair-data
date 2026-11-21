@@ -1814,3 +1814,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:21 PM: Sim (message just before 12:21 PM): 2 helpers at a time ('do it'); DESIGN authority extended to 10:00 PM today (Sat Nov 21); executive stays until 9:00 AM Sun Nov 22 unless Sim meant otherwise (asked). Confirmed to Sim.
 - 12:22 PM: Helper hO started (2 of 2): the phone overlap/edge check v2-overlap.mjs (hybrid rule 9) in copy scratchpad/ovl, with a known list and a report of real bugs. hK2 (kit) still running. Main thread: prepares the My Team war-room page plan from the approved Night plot (nm2) + mock B.
 - 12:23 PM: Sim confirmed: executive authority until 9:00 AM Sun Nov 22.
+- 12:27 PM: Sim: 'the numbers are on top of the pokemon sprites it looks terrible' -> the roster card's score moves off the art into the name row (name left, score right, tier under it); nothing drawn over the Pokémon; the kit test fails if the score touches the picture. Told helper hK2.
