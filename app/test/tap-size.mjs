@@ -18,7 +18,7 @@ for (const w of [390, 1440]) { const p = await b.newPage({viewport: {width: w, h
    links 17-18px. It can't see: other screen widths or states than listed, links not named here, or whether anything looks different (the
    no-visible-change check is a before/after pixel compare). */
 for (const w of [320, 390, 1440]) for (const [r, st, sel] of [['battle', 'empty', '.bt-empty .np-link'], ['archetypes', 'guide', '.ar-none .np-link'], ['news', '', '.dp-read'], ['gifts', '', '.pr-src a'],
-  ['team', '', '.tm-sample .np-link, .tm-links .np-link'], ['practice', 'empty', '.pp2-act .np-link'], ['team', 'cleared', '.np-toast button']]) {
+  ['team', '', '.tm-sample .np-link, .tm-links .np-link, .mtf-bb .mtf-btn, .mtf-acts .np-link'] /* Nov 21: My Team frame (Sim approved): the header's two buttons and its action links */, ['practice', 'empty', '.pp2-act .np-link'], ['team', 'cleared', '.np-toast button']]) {
   const p = await b.newPage({viewport: {width: w, height: 900}}); await p.addInitScript(() => { window.__PL_TEST = 1; });
   await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1500);
   if (st === 'empty' || st === 'guide') { await p.evaluate(() => { window.__ev('clearTeam(); render()'); document.querySelectorAll('.np-toast').forEach(t => t.remove()); }); await p.waitForTimeout(500); }

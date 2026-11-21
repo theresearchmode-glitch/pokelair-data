@@ -386,8 +386,12 @@ t('BUILD-06', 'Problems and team checks: summary line, a Speed control row with 
   const f = await ui.unfold(/^Problems and Team Checks/i); has(f, NEW ? /\d+ (?:things?|weak spots?), .*legal/i : /\d+ to look at, \d\/4 checks, legal/i, 'summary line'); /* new: Team Checks shown once; this fold is 'Things to Know' (Sim approved A2, decisions.md Nov 12 6:45-8:00 AM), so its line has no checks count */
   has(f, /Speed control .*?\d+ fixes/, 'Speed control row'); has(f, /Ready \+\d+%|Good fit/, 'pick readiness');
   const before = await ui.team(); const r = await ui.quickAddFromProblem('Speed control'); expect(r && r.btn, 'no Quick add pick: ' + JSON.stringify(r));
-  const tt = await ui.waitForToast(/^Added|→/); expect(await ui.toastOffersUndo(), 'no Undo'); expect((await ui.team()).length === 6 && !same(await ui.team(), before), 'pick not added: ' + tt);
-  await ui.undoToast(); expect(same(await ui.team(), before), 'Undo did not restore'); await close(); });
+  /* Nov 21: My Team frame (Sim approved): Suggestions sit on the first screen, so A6 (one message per Apply, sugs.js appliedSay) makes the
+     on-screen "Applied … Undo" bar the message instead of the toast; either one must say what changed and its Undo must restore the team */
+  const tt = await ui.waitForToast(/^Added|→/, NEW ? 1500 : 6000).catch(() => ''), bar = tt ? '' : await ui.undoBarText();
+  expect(tt || /^Applied .+ Undo$/.test(bar), 'no "Added …" / "X → Y" toast and no "Applied … Undo" bar: ' + bar); if (tt) expect(await ui.toastOffersUndo(), 'no Undo');
+  expect((await ui.team()).length === 6 && !same(await ui.team(), before), 'pick not added: ' + (tt || bar));
+  if (tt) await ui.undoToast(); else await ui.undoAppliedStep(); expect(same(await ui.team(), before), 'Undo did not restore'); await close(); });
 
 t('BUILD-07', 'Plan settings: Pick from, Swap my Mega, Count abilities, Refresh, Never suggest (with toasts, saved)', async () => {
   const {ui, acct, ls, close} = await open({team: TEAM, box: BOX}); await ui.go('All Suggestions'); await ui.waitSwaps(); await ui.unfold(/^Bigger Plans/i);
@@ -648,7 +652,9 @@ t('SUGG-17', 'Set check tips: a rare item gets "X: Y instead of Z" with Use Y', 
 t('SUGG-19', 'Threat sheet Best fix: shows the fix and Apply this fix applies it', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.openThreat('Archaludon');
   const sh = await ui.threatSheetText(); has(sh, /Best fix/, 'sheet'); has(sh, /[+−-]\d+ \(\d+ → \d+\)/, 'score move'); has(sh, /Apply this fix/i, 'sheet'); /* the button reads 'Apply This Fix' since the title-case catch-up (Nov 13) */ await ui.applyBestFix();
-  expect(!same(await ui.team(), TEAM), 'team unchanged'); await ui.waitForToast(/^Applied: /); await close(); });
+  expect(!same(await ui.team(), TEAM), 'team unchanged');
+  /* Nov 21: My Team frame (Sim approved): A6 (matchups.js data-mufix -> V2.appliedSay): with Suggestions on screen the "Applied … Undo" bar is the message, not the toast */
+  const tt = await ui.waitForToast(/^Applied: /, NEW ? 1500 : 6000).catch(() => ''), bar = tt ? '' : await ui.undoBarText(); expect(tt || /^Applied .+ Undo$/.test(bar), 'no "Applied:" toast and no "Applied … Undo" bar: ' + bar); await close(); });
 
 t('SUGG-19b', 'Threat sheet Best fix: the sheet closes after Apply this fix', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('My Team'); await ui.waitMySuggestions(); await ui.openThreat('Archaludon'); await ui.applyBestFix();

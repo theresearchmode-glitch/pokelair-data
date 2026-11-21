@@ -86,6 +86,9 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 .mtf-sg > .tm-sgs > h2{margin:0 calc(var(--s4) * -1) var(--s3);padding:var(--s3) var(--s4);background:var(--mtf-chosen);color:var(--mtf-ink);font-size:var(--t20);line-height:1.1}
 .mtf-sg .tm-sug{margin:var(--s2) 0;padding:0;list-style:none}
 .mtf-sg .tm-sug > li{display:grid;gap:var(--s2);padding:var(--s3) var(--s4) var(--s4);border:0;background:var(--mtf-frame);color:var(--mtf-on-frame)}
+.mtf-sg .tm-sug > li[hidden]{display:none} /* Nov 21: the frame layer outranks sugs.css li[hidden]: the cards behind "Show N More" stay hidden */
+.mtf-sg > .tm-sec{scroll-margin-top:calc(76px + var(--s4))} /* a jump to Suggestions clears the top bar */
+@media (max-width:699.98px){.mtf-sg > .tm-sec{scroll-margin-top:calc(60px + var(--s4))}}
 .mtf-sg .tm-sug > li > .np-eyebrow{display:none}
 .mtf-sg .tm-sug .tm-mv{display:flex;align-items:baseline;gap:var(--s2);margin:0}.mtf-sg .tm-sug .tm-mv b{font:900 var(--t34)/1 var(--u);font-style:italic;color:var(--mtf-chosen)}.mtf-sg .tm-sug .tm-mv span{font:700 var(--t13)/1 var(--b);color:var(--mtf-on-frame)}
 .mtf-sg .tm-chg{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:6px}

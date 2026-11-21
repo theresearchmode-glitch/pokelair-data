@@ -245,7 +245,7 @@ t('TEAM-08', 'Your Six: six tiles lead/back/bench; tapping a tile shows its set,
        "Who leads depends on who you face. Plan it in Battle ›"; still no "Your Six" heading on a full team (approved mock-up, Nov 11)
        (was: tiles in the plan line's lead/back/bench order) */
     const r = await myTeam({team: TEAM, width: 390}); const tiles = await r.ui.sixTiles(); ok(tiles.length === 6, `${tiles.length} tiles`); ok(!(await r.ui.sees(/Your Six/)), 'a "Your Six" heading shows (removed by design)');
-    const st = await r.ui.sixText(); ok(/^Who leads depends on who you face\. Plan it in Battle ›/.test(st), 'the six do not open with the Battle line: ' + st.slice(0, 100));
+    const st = await r.ui.sixText(); ok((/^Your six\b/.test(st) ? /\bWho leads depends on who you face\. Plan it in Battle ›$/ : /^Who leads depends on who you face\. Plan it in Battle ›/).test(st), 'the six do not open with the Battle line: ' + st.slice(0, 100)); /* Nov 21: My Team frame (Sim approved): the line sits under the six and the Game Plan bar (.mtf-lead), so it closes the six's text */
     const SLOT = ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']; ok(tiles.join('|') === SLOT.join('|'), `tiles ${tiles.join(',')} not in the team's slot order ${SLOT.join(',')}`);
     ok(!(await r.ui.sees('Tap a Pokémon to see its set')), 'old "Tap a Pokémon to see its set" hint shows'); /* Sim, Nov 18 (My Team C, phone length): on phones the editing panel stays shut until a Card is tapped, with a "Tap a Card to edit, replace or
        remove it" line; desktop still opens the first lead's (checked below) */
@@ -275,7 +275,7 @@ t('TEAM-10', 'Set card: plan role, rating, item, ability, nature, stat points, 4
   // button words in any casing (the new build writes buttons in Title Case, Sim Nov 9); the move strips are counted by the adapter
   /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): the new build's set card has no role line and no lead buttons */
   if (NEW) ok(!/Leads with|In the back with|On the bench|Set as Lead|Use NastyPlot.s Pick/i.test(c), 'the set card still shows a lead role or lead button: ' + c.slice(0, 160));
-  for (const s of [/Garchomp/, /Dragon/, /Ground/, ...(NEW ? [] : [/(Leads with|In the back with|On the bench)/]), /\d+ [SABCD] tier rating/, /Item \S/, /Ability \S/, (NEW ? /Nature \w+ (most used|yours)/ : /Nature \w+ (most run|yours)/), /Stat points \d+ \w+, \d+ \w+/, /Edit set/i, NEW ? /Pokémon Page ›/ /* Nov 15: the page replaces the sheet */ : /Info sheet ›/i]) has(c, s, 'set card');
+  for (const s of [/Garchomp/, /Dragon/, /Ground/, ...(NEW ? [] : [/(Leads with|In the back with|On the bench)/]), (NEW ? /\d+ [SABCD] tier\b/ /* Nov 21: My Team frame (Sim approved): the stage shows the rating big with its "S tier" tag (spoken "Rated 94, S tier"), no word "rating" */ : /\d+ [SABCD] tier rating/), /Item \S/, /Ability \S/, (NEW ? /Nature \w+ (most used|yours)/ : /Nature \w+ (most run|yours)/), /Stat points \d+ \w+, \d+ \w+/, /Edit set/i, NEW ? /Pokémon Page ›/ /* Nov 15: the page replaces the sheet */ : /Info sheet ›/i]) has(c, s, 'set card');
   const moves = await r.ui.setMoveCount(); ok(moves >= 4, `${moves} move strips`);
   await r.ui.tapText('Edit set', 900); let p = await r.ui.editPanel(); ok(p && /Edit Garchomp/.test(p.title + ' ' + p.text), 'Edit set did not open "Edit Garchomp"'); await r.ui.closeEditPanel();
   await r.ui.tapText(NEW ? 'Pokémon Page ›' : 'Info sheet ›', 900); const s = await r.ui.infoSheet(); ok(s && s.includes('Garchomp'), 'Info sheet did not open'); await r.close(); });
@@ -430,7 +430,10 @@ t('SUG-05', 'Apply swaps the Pokémon in with an Undo toast; the one swapped out
   /* Nov 18 (WebKit): the toast and its Undo are read while the toast is up, before the settle. The toast lives 4 s; in WebKit the
      settle after Apply ended 4.1-5 s after the tap (Chromium about 3 s), so the old check after it found the toast already gone
      (1 pass in 5). Measured: the page's main thread stayed free (longest frame gap 0.27 s), so a player has the full 4 s. */
-  ok(await r.ui.waitToast(/^Applied: /), 'no "Applied:" toast'); ok(await r.ui.has('#toastUndo'), 'toast has no Undo'); await r.ui.settle();
+  /* Nov 21: My Team frame (Sim approved): Suggestions now sit on the first screen, so A6 (one message per Apply, sugs.js appliedSay) makes the
+     on-screen "Applied … Undo" bar the message instead of the toast. Either one must name the swap and carry an Undo */
+  const esc = x => x.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), said = await r.ui.waitToast(/^Applied: /, NEW ? 1500 : 6000), bar = said ? null : await r.ui.undoBar();
+  ok(said || (bar && new RegExp('^Applied ' + esc(inn) + ' for ' + esc(out) + ' Undo$').test(bar)), 'no "Applied:" toast and no "Applied ' + inn + ' for ' + out + ' Undo" bar: ' + bar); ok(!said || await r.ui.has('#toastUndo'), 'toast has no Undo'); await r.ui.settle();
   const tiles = (await r.ui.sixTiles()).join('|'); ok(tiles.includes(inn) && !tiles.includes(out), `tiles after Apply: ${tiles} (expected ${inn} in, ${out} out)`);
   for (const x of await r.ui.suggestionCards()) ok(!x.replace(/^\W*/, '').startsWith(out + ' for '), 'swapped-out Pokémon offered straight back: ' + x); await r.close(); });
 
@@ -521,7 +524,7 @@ t('PLAY-01', 'Game Plan fold: rows with Covered/Missing/Partly; Speed control co
     sheet: eyebrow "My Team · <archetype>", one row per gamePlan() row (label, Covered / Partly / Missing / Optional, who, note).
     Nothing is remembered: after a reload no sheet is open and there is no Game Plan fold */
     const r = await myTeam(); ok(/^Game [Pp]lan ›/.test(await r.ui.gamePlanLine() || ''), 'plan line does not start with "Game Plan ›": ' + await r.ui.gamePlanLine()); /* Nov 20: the line names no leads (Sim: Battle decides who leads) */
-    await r.ui.tapText(/^Game [Pp]lan( ›)?$/, 900); const g = await r.ui.gamePlanSheet(); ok(g && g.title === 'Game Plan', '"Game plan" did not open the Game Plan sheet: ' + JSON.stringify(g));
+    await r.ui.tapText(/^Game [Pp]lan( ›)?($| How to play)/, 900); /* Nov 21: My Team frame (Sim approved): the Game Plan bar is one button, "Game Plan › How to play this six…" */ const g = await r.ui.gamePlanSheet(); ok(g && g.title === 'Game Plan', '"Game plan" did not open the Game Plan sheet: ' + JSON.stringify(g));
     const W = s => String(s || '').replace(/\s+/g, ' ').trim();
     const want = await r.ui.peek("[(teamArchetype(members()) || {}).label || '', gamePlan(members()).rows.map(r => [r.label, ({ok: 'Covered', part: 'Partly', miss: 'Missing', opt: 'Optional'})[r.st] || 'Optional', r.who || '', r.note || ''])]");
     ok(want && want[1].length >= 7, 'no gamePlan() rows to compare: ' + JSON.stringify(want)); ok(g.eyebrow === 'My Team' + (want[0] ? ' · ' + want[0] : ''), 'eyebrow "' + g.eyebrow + '", want the archetype "' + want[0] + '"');
@@ -619,7 +622,7 @@ t('EDIT-03', 'Slot header: Lock → "Locked" (tile shows locked), types, Mega/ra
     ok(await r.ui.panelLockText() === 'Lock', 'lock reads ' + await r.ui.panelLockText()); let t0 = await r.ui.tileLock('Mega Charizard Y'); ok(t0 && !t0.locked && !t0.padlock, 'tile already locked: ' + JSON.stringify(t0));
     await r.ui.panelLock(); ok(await r.ui.panelLockText() === 'Locked', 'lock did not read "Locked": ' + await r.ui.panelLockText()); has((await r.ui.editPanel()).text, /Locked Suggestions never swap out a locked Pokémon\./, 'Edit Set foot');
     await r.ui.closeEditPanel(); t0 = await r.ui.tileLock('Mega Charizard Y');
-    ok(t0 && t0.locked && t0.padlock && t0.padlockLabel === 'Locked' && /^Mega Charizard Y, \w+(, [^,]+)*, locked$/.test(t0.label) /* The Hand (Sim, Nov 14, brief s7): the Card's label also says its rating and item */, 'tile not shown locked: ' + JSON.stringify(t0));
+    ok(t0 && t0.locked && t0.padlock && t0.padlockLabel === 'Locked' && /^Mega Charizard Y, (\w+|spot \d)(, [^,]+)*, locked$/.test(t0.label) /* Nov 21: My Team frame (Sim approved): the row says its spot ("spot 1", as the Hand did for a team being built) where it said a role */ /* The Hand (Sim, Nov 14, brief s7): the Card's label also says its rating and item */, 'tile not shown locked: ' + JSON.stringify(t0));
     const g = await r.ui.tileLock('Garchomp'); ok(g && !g.locked && !g.padlock, 'Garchomp\'s tile shows locked too: ' + JSON.stringify(g)); await r.close(); return; }
   const r = await myTeam(); await r.ui.openEditPanel('Mega Charizard Y'); const p = await r.ui.editPanel();
   for (const s of [/Fire Flying/, /Mega/, /S tier \d+/, /[\d.]+% of tournament teams/]) has(p.text, s, 'slot header'); ok(/^Lock$/.test(await r.ui.panelLockText()), 'lock reads ' + await r.ui.panelLockText());
@@ -1205,7 +1208,7 @@ t('X-07', 'Folds and views stay as left after reload (Game Plan, Types view, inf
   if (NEW) { /* new build (Sim, Nov 12): Game Plan is a sheet from the plan line (nothing remembered: no sheet after a reload); Types sits
     in the Things to Know fold (fold kept open, cc2.chf.rfix) and keeps its Offense / Defense view (np2.seg.types); the pool is kept */
     const r = await myTeam(); await r.ui.openFold('Things to Know', true, 600); await r.ui.choose('Defense', 800); await r.ui.choose('Whole roster', 900);
-    await r.ui.tapText(/^Game [Pp]lan( ›)?$/, 900); ok(await r.ui.gamePlanSheet(), 'Game Plan sheet did not open');
+    await r.ui.tapText(/^Game [Pp]lan( ›)?($| How to play)/, 900); /* Nov 21: My Team frame (Sim approved): the Game Plan bar is one button */ ok(await r.ui.gamePlanSheet(), 'Game Plan sheet did not open');
     await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(!(await r.ui.gamePlanSheet()), 'Game Plan sheet came back after a reload');
     ok(await r.ui.foldOpen('Things to Know') === true, 'Things to Know closed'); ok(await r.ui.chosen('Defense') === true && /^Types Offense Defense What hits you\./.test(await r.ui.typesPart() || ''), 'Types view not kept');
     ok(await r.ui.chosen('Whole roster') === true, 'pool not kept'); await r.close(); return; }
