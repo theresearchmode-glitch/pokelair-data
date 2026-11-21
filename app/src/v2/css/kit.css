@@ -169,3 +169,8 @@ button.k-move{cursor:pointer}
   .k-mn{grid-column:1/-1;grid-row:2;padding:4px 8px 0}
   .k-mn b{font-size:var(--t15)}
 }
+/* type symbols (Sim approved, Nov 21): white on the type colour, always beside the type word */
+.k-tyi{width:16px;height:16px;flex:none;fill:currentColor}
+.k-mt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+@container (max-width:299.98px){.k-mt{flex-direction:row;justify-content:flex-start;gap:6px}}
+@container (max-width:159.98px){.k-mt{gap:4px;padding:2px 4px}.k-tyi{width:12px;height:12px}.k-mp{padding:0 4px}}
