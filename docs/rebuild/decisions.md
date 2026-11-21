@@ -1813,3 +1813,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:19 PM: Sim (12:15 PM): 'your recommendation are good to go for all ... lets do it. its worth it' -> hybrid rules approved (HYBRID.md 1-9), page calls approved, My Team = B (the war room / Night frame). Reskin starts: kit (hK2, running), then pages in priority order.
 - 12:21 PM: Sim (message just before 12:21 PM): 2 helpers at a time ('do it'); DESIGN authority extended to 10:00 PM today (Sat Nov 21); executive stays until 9:00 AM Sun Nov 22 unless Sim meant otherwise (asked). Confirmed to Sim.
 - 12:22 PM: Helper hO started (2 of 2): the phone overlap/edge check v2-overlap.mjs (hybrid rule 9) in copy scratchpad/ovl, with a known list and a report of real bugs. hK2 (kit) still running. Main thread: prepares the My Team war-room page plan from the approved Night plot (nm2) + mock B.
+- 12:23 PM: Sim confirmed: executive authority until 9:00 AM Sun Nov 22.
