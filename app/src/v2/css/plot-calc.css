@@ -94,3 +94,14 @@
 /* photos and sticky notes are paper in every theme: their words stay ink (Q105 B) */
 .pc-ph,.dc2.pc .pc-kits .arn-set{--pc-ink:var(--pc-on-paper);--pc-ink2:var(--pc-on-paper2)}.dc2.pc .pc-kits .arn-set .arn-f,.dc2.pc .pc-kits .arn-set .arn-sel,.dc2.pc .pc-kits .arn-set output{color:var(--pc-on-paper)}.dc2.pc .pc-kits .arn-set small{color:var(--pc-on-paper2)}
 :root[data-theme="night"] .pc-ans .pc-big{color:var(--tcn,var(--tc,var(--pc-ink)))}
+/* polish (Nov 21, authority): the five switches never leave one alone on a row (polish-check: 4+1 at 560/720/1360, 2+2+1 at 320):
+   five across when the panel is 640+ wide, otherwise 3 + 2; under 350 three equal columns, a long label on two lines */
+.pc-turn{container-type:inline-size}
+.pc-sws{display:grid;grid-template-columns:repeat(3,max-content);justify-content:start}.dc2.pc .pc-sws button{grid-column:auto;clip-path:none}
+@container (min-width:640px){.pc-sws{grid-template-columns:repeat(5,max-content)}}
+@container (max-width:349.98px){.pc-sws{grid-template-columns:repeat(3,minmax(0,1fr))}.dc2.pc .pc-sws button{display:grid;align-content:center;justify-items:start;padding:0 var(--s2);white-space:normal;text-align:left;line-height:1.2}.pc-sws .pc-ring{inset:-6px -8px;width:calc(100% + 16px);height:calc(100% + 12px)}}
+/* polish (Nov 21, authority): on tablets the photos are narrow (about 130px at 720): a long name ("Mega Charizard Y") wraps under the
+   photo instead of being cut (polish-check: +8px spill at 720) */
+@media (min-width:700px) and (max-width:1319.98px){.pc-ph b{flex-wrap:wrap;white-space:normal;overflow-wrap:normal;row-gap:0}}
+/* 700-899 the photos are about 100-130px wide: the name stays 15px and its ▼ moves to the photo's top-right corner, so it never wraps alone */
+@media (min-width:700px) and (max-width:899.98px){.pc-ph b{font-size:var(--t15)}.pc-ph b .arw{position:absolute;top:var(--s3);right:var(--s3);width:12px;height:10px;opacity:.85}}
