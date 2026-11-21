@@ -7,13 +7,15 @@ sid="${1:-}"
 if [ -z "$sid" ]; then T=$(ls -td /tmp/claude-*/-home-user-pokelair-data/*/tasks 2>/dev/null | head -1)
 else T=$(ls -d /tmp/claude-*/*/"$sid"/tasks 2>/dev/null | head -1); fi
 now=$(date +%s); active=0; names=""
-# A helper counts as active when its transcript changed in the last 45 min and its last entry is not a finished reply (end_turn).
+# A helper counts as active when its transcript changed in the last 45 min (3 h if it is inside a tool call) and its last entry is not a finished reply (end_turn).
 for f in "$T"/a*.output; do
   [ -f "$f" ] || continue
   grep -qx "$(basename "$f" .output)" /home/user/pokelair-data/docs/rebuild/.helpers-ended 2>/dev/null && continue
   age=$(( (now - $(stat -c %Y "$f")) / 60 ))
-  [ "$age" -le 45 ] || continue
   last=$(tail -n 1 "$f" | jq -r 'if .type=="assistant" then (.message.stop_reason // "") else "busy" end' 2>/dev/null)
+  # a helper inside one long tool call (e.g. waiting on a test) writes nothing until it returns: allow 3 h for that, 45 min otherwise
+  lim=45; [ "$last" = "tool_use" ] && lim=180
+  [ "$age" -le "$lim" ] || continue
   if [ "$last" != "end_turn" ]; then
     active=$((active+1))
     d=$(head -c 20000 "$f" | grep -o '"description":"[^"]*"' | head -1 | cut -d'"' -f4)
