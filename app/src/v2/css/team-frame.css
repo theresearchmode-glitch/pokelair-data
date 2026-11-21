@@ -73,3 +73,10 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 @media (min-width:1000px){.mtf-head{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"id sc" "ac ac";padding-top:var(--s5)}
   .mtf-head .tm-name{font-size:var(--d64)}.mtf-head .mtf-btn{font-size:var(--t15)}.mtf-score{max-width:440px}.mtf-score .n{font-size:var(--d120)}.mtf-score .band{font-size:var(--t34)}}
 @media (max-width:999.98px){.mtf-nav h2{font-size:var(--t15);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:0}.mtf-nav span{white-space:nowrap}}
+/* phones: the stand-out threats as short rows two across (the mock), so Matchups stays short */
+@media (max-width:699.98px){.mt-work .mu-cards{justify-content:stretch;gap:6px}.mt-work .mu-cards li{flex:0 0 calc(50% - 3px)}
+  .mt-work .mu-cards .mu-row,.tm-mus .mt-work .mu-cards .mu-out .mu-row.mu-nk{grid-template-columns:44px minmax(0,1fr);grid-template-areas:none;justify-items:start;align-items:center;column-gap:var(--s2);row-gap:0;min-height:56px;padding:6px var(--s2);background:var(--surface);text-align:left}
+  .mt-work .mu-card{grid-row:1/4;width:44px}.mt-work .mu-card .ms-card{height:44px}.mt-work .mu-card .mc-mon .np-mon,.mt-work .mu-card .mc-mon .np-mon .st{--iw:44px}.mt-work .mu-card .mc-giant{display:none}
+  .mt-work .mu-cards .tm-v{justify-self:start}}
+@media (max-width:699.98px){.mt-work .mu-cards .nm,.mt-work .mu-cards .mu-dis{justify-self:start;text-align:left}
+  .mt-work .mu-pick > *{display:flex;flex-wrap:nowrap;grid-template-columns:none}.mt-work .mu-pick button{flex:1 1 0;min-width:0;padding:0 var(--s1);font-size:var(--t13)}.mt-work .mu-pick button svg,.mt-work .mu-pick button i{display:none}}
