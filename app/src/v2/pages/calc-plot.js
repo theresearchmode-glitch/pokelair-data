@@ -6,8 +6,8 @@
 // and handlers use is kept: data-dcmv, data-dcw, data-dcterr, data-dct, #dcSwap, data-arnpick (the photo opens "Choose the attacker /
 // defender", Q46 A), data-arnmv (All moves), the set rows, data-arnst (stage), the KO Board. The title is "Plot the hit": "The plot" is
 // the Build page (Sim, Nov 21: "fix the clashes as you see fit").
-V2.PC_W = {title: 'Plot the hit', swap: 'swap them', muscle: 'the muscle', target: 'the target', move: 'the move', sky: 'the sky', ground: 'the ground', turn: 'this turn',
-  kitA: "the muscle's kit", kitD: "the target's kit", N: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']};
+V2.PC_W = {title: 'Plot the hit', swap: 'swap them', move: 'the move', sky: 'the sky', ground: 'the ground', turn: 'this turn',
+  N: ['zero', 'one', 'two', 'three', 'four', 'five', 'six', 'seven', 'eight', 'nine', 'ten']};
 // the marker circle: one hand-drawn loop, stretched to whatever it circles (red = chosen)
 V2.pcRing = (cls = '') => `<svg class="pc-ring${cls ? ' ' + cls : ''}" viewBox="0 0 100 60" preserveAspectRatio="none" aria-hidden="true"><path d="M52 5C20 2 4 16 5 31C6 48 32 57 56 55C80 53 97 43 95 27C93 11 70 2 38 7"/></svg>`;
 const pcGcd = (a, b) => b ? pcGcd(b, a % b) : a;
@@ -33,9 +33,9 @@ V2.pcPctOf = (v, hp) => Math.round(100 * v / hp); /* rounded like the KO Board (
 V2.pcPct = r => r.min === r.max ? `${V2.pcPctOf(r.min, r.hp)}%` : `${V2.pcPctOf(r.min, r.hp)}–${V2.pcPctOf(r.max, r.hp)}%`;
 V2.pcPctH = r => V2.pcPct(r).replace(/%$/, '<span class="pc-pc">%</span>'); /* the % sign smaller, so the number keeps its width */
 V2.pcLeft = (lo, hi, hp) => V2.PC_PCT_FIRST ? `${lo === hi ? V2.pcPctOf(lo, hp) : V2.pcPctOf(lo, hp) + '–' + V2.pcPctOf(hi, hp)}%` : `${lo === hi ? lo : lo + '–' + hi} HP`;
-// a photo: the Pokémon on its tint (blue attacker, pink defender, the target circled), its role and name; the photo is the picker button
+// a photo: the Pokémon on its tint (blue attacker, pink defender, the defender circled), its form line ('Mega') and name (Sim, Nov 21: names, not 'the muscle' / 'the target'); the photo is the picker button
 V2.pcPhoto = (X, role, id) => { const E = V2.esc, W = V2.PC_W, d = V2.disp(X.p.n), mega = d.startsWith('Mega ');
-  return `<div class="pc-ph ${role}"><span class="pc-pic">${V2.arnImg(X.p.n)}</span><small>${role === 'a' ? W.muscle : W.target}${mega ? ' · Mega' : ''}</small>
+  return `<div class="pc-ph ${role}"><span class="pc-pic">${V2.arnImg(X.p.n)}</span><small>${mega ? 'Mega' : '&nbsp;'}</small>
     <b class="u" data-arnname="${role}">${E(mega ? d.slice(5) : d).replace(/ ([XYZ])$/, ' $1')}<i class="arw" aria-hidden="true"></i></b>${role === 'd' ? V2.pcRing('pc-ring-ph') : ''}
     <button type="button" class="arn-pickbtn" data-arnpick="${id}" aria-haspopup="dialog" aria-label="${role === 'd' ? V2.ARN_W.defender : V2.ARN_W.attacker}: ${E(d)}. Choose another Pokémon"></button>
     <select class="arn-pick arn-pickhid" id="${id}" tabindex="-1" aria-hidden="true">${monOptions(X.p.n)}</select></div>`; };
@@ -98,7 +98,7 @@ V2.pages.calc.draw = function () { let C; try { C = calcData(); } catch (e) { co
   ${V2.kStep(3, K.s3, K.s3n, `<div class="pc-conds"><div class="pc-blk pc-sky"><h3>${W.sky}</h3>${V2.pcFive('wx', V2.DC_WX, wx, 'Weather')}</div>
     <div class="pc-blk pc-gnd"><h3>${W.ground}</h3>${V2.pcFive('tr', V2.DC_TR, tr, 'Terrain')}</div>
     <div class="pc-blk pc-turn"><h3>${W.turn}</h3><div class="pc-sws arn-sw" role="group" aria-label="In play">${sw.map(([k, t]) => `<button type="button" data-dct="${k}" aria-pressed="${swOn(k)}"><span>${t}</span>${swOn(k) ? V2.pcRing() : ''}</button>`).join('')}</div></div></div>
-    ${V2.arnSets(C).replace('<div class="arn-sets">', '<div class="arn-sets pc-kits">').replace(`<b class="u">${AW.attacker}</b>`, `<b class="u">${W.kitA.replace(/ kit$/, '\u00a0kit')}</b>`).replace(`<b class="u">${AW.defender}</b>`, `<b class="u">${W.kitD.replace(/ kit$/, '\u00a0kit')}</b>`)}`)}
+    ${V2.arnSets(C).replace('<div class="arn-sets">', '<div class="arn-sets pc-kits">').replace(`<b class="u">${AW.attacker}</b>`, `<b class="u">${E(dA)}'s\u00a0set</b>`).replace(`<b class="u">${AW.defender}</b>`, `<b class="u">${E(dD)}'s\u00a0set</b>`)}`)}
   ${V2.kStep(4, K.s4, KO.note, `<div class="pc-kob">${KO.body}</div>
     <div class="pc-links arn-links"><a class="np-link k-link" href="#method">${AW.how}&nbsp;›</a>${V2.FB && V2.FB.ok ? `<a class="np-link k-link" href="#feedback" data-fbmistake="calc" aria-label="Report a mistake in this hit">${AW.report}&nbsp;›</a>` : ''}${V2.arnNotes(C)}</div>`)}`)}
   ${V2.arnKBFull(C)}</div>`; };
