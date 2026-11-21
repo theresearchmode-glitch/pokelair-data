@@ -29,6 +29,15 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
+## ALWAYS WORKING, ALWAYS 3 HELPERS (Sim, Nov 20, 10:26 PM: "MAKE SURE THIS IS NOTED AND FOLLOWED AT ALL TIMES")
+Sim, Nov 20: "theres too many times im finding you're not working and theres barely any helpers running. that is NOT the gameplan
+and how we operate. I am tired of having to keep reminding you." So, at all times while there is approved work:
+- ALL 3 helper slots are filled with approved build work (pieces of the current build, its tests, its fixes). A slot that frees up is
+  refilled in the same turn. Never "waiting for a run" with an empty slot.
+- The main thread never waits on a test: it starts the next piece in its own separate copy (never two jobs in one copy).
+- Every status message names the 3 helpers and what the main thread is doing. If fewer than 3 run, say why in the same message.
+- Before ending any turn: check helpers running = 3 and the main thread has its next task started; set a wake-up.
+
 ## Never idle while there is work (Sim, Nov 20, BIG RULE)
 Sim, Nov 20: "if we have things to do, lets make sure we're always doing it. thats a big rule". Never just watch helpers or checks:
 while they run, the main thread always does the next useful piece of work itself (reviews, prep, Plans page, Preview, summaries,
