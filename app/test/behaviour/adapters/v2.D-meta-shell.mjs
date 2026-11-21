@@ -51,7 +51,7 @@ export default (ui, pg) => {
         if (!e) throw new Error('no row ' + n); e.click(); }, id); await until(() => D.sheetIsOpen()); await wait(400); },
     /* Nov 15: a Pokémon tap opens its page (#pokemon=<name>); the page counts as the opened sheet, its name as the sheet's name */
     sheetIsOpen: () => ev(() => __dvis(document.querySelector('.np-sheet .ms2')) || (V2.route() === 'pokemon' && !!document.querySelector('#main .pk'))),
-    sheetName: () => ev(() => __dtx(document.querySelector('.np-sheet .ms2 h2')) || (V2.route() === 'pokemon' ? __dtx(document.querySelector('#main .pk-is h1')) : '')),
+    sheetName: () => ev(() => __dtx(document.querySelector('.np-sheet .ms2 h2')) || (V2.route() === 'pokemon' ? __dtx(document.querySelector('#main #pk-name .pk-nm')).replace(/\.$/, '') : '')), /* reskin (Nov 21): the h1 reads "The file on <name>." */
     // folds: "Every Pokémon, by Tier" is the See all switch; the rest are real folds (details) on the page
     foldIsOpen: m => /every pokémon, by tier/i.test(m) ? ev(() => !!document.querySelector('.ra-board')) : ev(m => { const d = [...document.querySelectorAll('#main details')].filter(__dvis).find(d => __dtx(d.querySelector('summary')).toLowerCase().includes(m.toLowerCase())); return d ? d.open : null; }, m),
     toggleFold: async m => { if (/every pokémon, by tier/i.test(m)) { const on = await ev(() => !!document.querySelector('.ra-board')); await pg.click(on ? '[data-raview="stand"]' : '[data-raview="list"]'); await wait(500); return; }
@@ -335,12 +335,16 @@ export default (ui, pg) => {
     sheetPanel: () => ev(() => { const p = [...document.querySelectorAll('.np-sheet .ms2 [data-mspan]')].filter(x => !x.hidden && __dvis(x)); if (p.length) return p.map(__dtx).join(' ');
       return window.V2 && V2.route() === 'pokemon' && document.querySelector('#main .pk') ? __dtx(document.querySelector('#main')) : null; }),
     tapInSheet: async m => { const page = await ev(() => !!(window.V2 && V2.route() === 'pokemon' && !document.querySelector('.np-sheet .ms2')));
+      /* reskin (Nov 21, Sim approved the "file" mock-up): on the Pokémon page "Add to My Team" is the page's pink USE THIS SET. (the same
+         data-v2add tap, the same toast and "On your team ✓" line), so the old words tap that button */
+      if (page && /Add to (My )?team/i.test(m instanceof RegExp ? m.source : String(m))) { const did = await ev(() => { const b = [...document.querySelectorAll('#main [data-v2add]')].find(__dvis); if (b) b.click(); return !!b; }); if (did) { await wait(500); return; } }
       if (page) await ev(([src, fl]) => { const re = new RegExp(src, fl.includes('i') ? fl : fl + 'i') /* Title Case on the new site */, ok = b => re.test(__dtx(b)) || re.test((b.textContent || '').replace(/\s+/g, ' ').trim());
         if ([...document.querySelectorAll('#main button, #main a')].filter(__dvis).some(ok)) return; /* already on screen */
         const f = [...document.querySelectorAll('#main .pk-fold:not(.open)')].find(s => [...s.querySelectorAll('button, a')].some(ok)); const o = f && f.querySelector('[data-pkopen]'); if (o) o.click(); }, [m instanceof RegExp ? m.source : String(m), m instanceof RegExp ? m.flags : 'i']);
       await ui.tap(m, page ? '#main' : '.np-sheet'); await wait(500); },
     doubleTapInSheet: async m => { const h = await pg.evaluateHandle(([s, f]) => { const re = new RegExp(s, f), root = document.querySelector('.np-sheet') || (window.V2 && V2.route() === 'pokemon' ? document.querySelector('#main') : null);
-        return root ? [...root.querySelectorAll('button')].find(b => b.getClientRects().length && re.test(b.innerText.trim())) || null : null; }, [m.source, m.flags]);
+        const page = !document.querySelector('.np-sheet') && window.V2 && V2.route() === 'pokemon', add = page && /Add to (My )?team/i.test(s) ? root.querySelector('[data-v2add]') : null; /* reskin (Nov 21): the page's USE THIS SET. is its Add to My Team */
+        return add && add.getClientRects().length ? add : root ? [...root.querySelectorAll('button')].find(b => b.getClientRects().length && re.test(b.innerText.trim())) || null : null; }, [m.source, m.flags]);
       const el = h.asElement(); if (!el) throw new Error('no ' + m + ' in the sheet / Pokémon page'); const r = await el.boundingBox(); await pg.mouse.click(r.x + r.width / 2, r.y + r.height / 2); await wait(80); await pg.mouse.click(r.x + r.width / 2, r.y + r.height / 2); await wait(600); },
     sheetFits: () => ev(() => { const p = [...document.querySelectorAll('.np-sheet')].filter(__dvis).pop() || (window.V2 && V2.route() === 'pokemon' ? document.querySelector('#main .pk') : null); if (!p) return false; const r = p.getBoundingClientRect(), ox = getComputedStyle(p).overflowX;
       /* text inside a row that scrolls sideways on its own (overflow-x auto/scroll and wider than it shows: the phone's swipe rows) is reached by a swipe, not cut */
