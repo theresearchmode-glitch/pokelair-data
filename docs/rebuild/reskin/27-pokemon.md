@@ -37,3 +37,7 @@ Mock-up: docs/rebuild/mocks/pokemon-file/index.html (Incineroar, real data); pic
 - NO red scribbles, NO stamps, NO pink kicker (Sim: "the red was too much"); NO gradient cover band (Sim: done badly).
 - Rules: no generic AI design (CLAUDE.md); type symbols only with a label (none in the repo yet; helper to check source/licence).
 - Phone at 390 no longer than today; the mock measured 3,792 px with everything above.
+- Data for the card's weekly bars (checked Nov 21): meta/events is in the page (cleanEvents / evDate in app/src/app/49-event-data.js,
+  05-data-clean.js): each event has a date and its top teams; group by Monday, share = top teams with the Pokémon / top teams that week,
+  keep weeks with 100+ top teams (fewer: too few to trust), last 5 such weeks. Incineroar check: 38.5, 35.6, 33.5, 33.7, 21.9 %.
+  No events data (a plain build) or under 2 good weeks: the card shows the flat tint with no bars, and the line under it says nothing about weeks.
