@@ -17,6 +17,8 @@ receipts and text boxes of the Build page, the plot bars, the Damage Calc's clea
 gradient hero bands, diagonal two-tone splits, stat-card grids, decorative scribbles, generic badges). Character comes from one
 creative idea that fits the data, never from adding more things. Before sending Sim any design, ask: "could this be any other
 site?" If yes, it is not ready.
+Type symbols (Sim, Nov 21, about 2:40 PM): the site has never used the Pokémon type symbols; they can add flare and creativity, but NEVER
+without a label ("some people dont know the types just by the symbol"). The repo has none yet; source and licence to be checked first.
 
 ## READ FIRST (Sim, Nov 11 night): docs/rebuild/RULES.md and docs/rebuild/HANDOVER.md
 - docs/rebuild/RULES.md: the rules that win over anything older below. In short: NO design or visual decision without Sim's

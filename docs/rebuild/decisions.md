@@ -1849,3 +1849,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:26 PM: Sim: the red notes add clutter, not character; phone looked cramped. Wants character through creativity, not more stuff. Dropping notes/stamp/pink kicker; trying a type-coloured magazine-cover hero that replaces card + headline; no plan gutter on phones.
 - 2:28 PM: Sim: no plain gradient backgrounds; the card display was better (sharper, more creative, not space for its own sake). Back to the card hero, made sharper: flat hard-edged type-colour planes, same for partner cards; keep CASE FILE #0727 kicker (ink).
 - 2:30 PM: Sim: no generic AI design is a MAJOR rule. Saved at the top of CLAUDE.md and in docs/sim-workflow.txt.
+- 2:33 PM: Sim: use Pokémon type symbols for flare, never without a label. Sim asked for a helper to check where they'd fit on the site; 2 helper slots are full (hT, hC), so asking Sim before a 3rd.
