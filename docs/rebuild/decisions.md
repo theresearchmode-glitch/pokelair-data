@@ -1818,3 +1818,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:27 PM: Sim: design authority CANCELLED (now). Only executive (non-visual) authority, until 9:00 AM Sun Nov 22. Every design/visual decision goes to Sim with pictures again; the kit and pages are built as proposals and shown to Sim before anything is used. Confirmed to Sim.
 - 12:30 PM: Sim: 'those are fine' -> the calc % sizing and the kit brief are approved; keep moving.
 - 12:31 PM: Work check 12:31 counted 1 of 2: hK2 (kit) is still working (waiting on its own test run in the background), so both slots are in use; no refill needed.
+- 12:32 PM: hK2 done: shared kit 9eb23acb (copy kit, not pushed): kit.css + kit.js (V2.kHead/kSent/kStep/kCard/kGo/kTag + kPlan/kRoster/kHero/kFacts/kMine/kLink/kScrib/kName/kFit), --k-* tokens; kit-page test 14 views passed (320-2560, day/night); guard clean; run.mjs ALL PASSED. Score in the name row, never on the art (Sim). Sent to Sim for his yes with the judgment calls.
