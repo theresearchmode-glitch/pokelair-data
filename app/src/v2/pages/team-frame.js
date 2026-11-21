@@ -11,7 +11,7 @@ V2.mtfTy = t => V2.TYPES.includes(t) ? t : 'Normal';
 V2.mtfSplit = d => { const q = []; let mg = false; if (d.startsWith('Mega ')) { mg = true; q.push('Mega'); d = d.slice(5); }
   const rg = d.match(/^(Alolan|Galarian|Hisuian|Paldean) (.*)$/); if (rg) { q.push(rg[1]); d = rg[2]; }
   const pm = d.match(/^(.*) \((.*)\)$/); if (pm) { d = pm[1]; q.push({F: 'Female', M: 'Male'}[pm[2]] || pm[2]); }
-  return `<span class="ns"><span class="q${mg ? ' mega' : ''}">${q.length ? V2.esc(q.join(' · ')) : '&nbsp;'}</span>${V2.esc(d).replace(/ ([XYZ])$/, '\u00a0$1')}</span>`; };
+  return `<span class="ns"><span class="q${mg ? ' mega' : ''}">${q.length ? q.map(V2.esc).join('<i class="dot"> · </i>') : '&nbsp;'}</span>${V2.esc(d).replace(/ ([XYZ])$/, '\u00a0$1')}</span>`; };
 // one row of Your six: number, picture, name, item · Ability, rating and tier, the four moves 2×2; its left edge in its first type's colour
 V2.mtfRow = (D, m, sel) => { const E = V2.esc, k = D.ms.indexOf(m), on = m === sel, R = monRating(m.p), it = m.heldItem || m.item || 'No item', lk = !!(S.slots[m.i] && S.slots[m.i].lock), d = V2.disp(m.p.n);
   const mv = m.moves.filter(Boolean).map(v => `<i style="--tc:var(--ty-${V2.mtfTy(v.type)})">${E(v.name)}</i>`).join('');
