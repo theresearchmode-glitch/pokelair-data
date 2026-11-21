@@ -35,3 +35,32 @@ the Q95 final design pictures (docs/rebuild/pics/nov20/Q95/). Mock-up source: sc
 - Today's phone tabs (Others / Winners / Cores) go away (Sim, Nov 20: no buried folds); phone length must stay under the rule.
 - The fitted sentence sizes are off the type scale (e.g. 68.8 px); the rule allows display sizes --d64/96/120/168: snap to those or
   allow fitted sizes for this one sentence?
+
+## Waiting list for when Sim says go on code (written during the PC-run hold, Nov 20 ~9 PM)
+
+### Fix 1: My Team sample-note links on Windows at 820 (Sim's PC run, v2-q69 A1 + tap-size C8; GitHub passed both on 8c51ab30)
+- Cause (read in the code, not yet tested on Windows): the Q69 fix gives the two stacked links "Build Me a Team ›" / "Import a Team ›"
+  a 24 px row gap only at 700-819.98 px (pages.css line ~3356: `@media (min-width:700px) and (max-width:819.98px){.tm-sample
+  .tm-sample-acts{row-gap:var(--s6)}}`). On Windows the text measures slightly wider, so at 820 the links still stack, but the gap
+  rule no longer applies: 20 px links 19 px apart, each 44 px tap area lands on the other.
+- Fix: give the row gap at every width (`.tm-sample .tm-sample-acts{row-gap:var(--s6)}`, no media query). A row gap only shows when
+  the links actually wrap, so nothing changes where they sit on one line.
+- Test: add 840 and 900 to v2-q69's A1 widths, and force a wrap (narrow the note) at 820/1024 so the test covers the Windows case
+  on Linux too. Sim's PC re-runs v2-q69 and tap-size to confirm.
+
+### Fix 2 (cosmetic, Windows only, seen Nov 19 and Nov 20): Home "/100" at 36.1 px; WK-1 stamp edge 1 px strip on Home 1440
+- Look at the PC screenshots first; decide with Sim whether either is worth changing (GitHub passes both).
+
+### The Plot pieces 2-6 (build order; each: own test + pictures for Sim's OK; full check per batch)
+2. The answer (Q97 A / Q98): the "The plot:" eyebrow, the title by name length (plot-spec.md), the six standing on the red line with
+   to-catch dots and data-v2mon taps, the upright score seal (Strength Score, number, band word), tags line, rank + breakdown +
+   Why This Score ›, HATCH ANOTHER in the control row. Replaces bp head/score in V2.buildSheet; keeps .bd-ans / .bd-six hooks.
+3. The six type-coloured plates (V2.bpFig → plate: tier chip, MEGA label, name, In your box / Not in your box yet, item, Ability,
+   4 moves from the member's set) + Load Team / Save / Copy (data-bduse / data-bdsave / data-bdcopy unchanged).
+4. Why it works (V2.bpNotes → four sentence lines + proven note) and Got a Plan B? (V2.bpRevs → three columns, six on a small red
+   line, Switch to Plan X = data-bdshow).
+5. Plots that worked (V2.buildWinners without the fold: Full sets ›, LOAD TEAM, Copy, Set as Opponent ›, Compare ›) and Partners in
+   crime (V2.buildCores rows), no phone tabs (V2.buildJump goes); behaviour adapter reads may need the new hooks mapped.
+6. "The end. Or is it?" + HATCH ANOTHER at the bottom, dark mode, 320-2560 widths, polish-check for Build, qcheck-all "0 new".
+Tests to update along the way: v2-q83 (sheet result checks), v2-pbppair, v2-t1rules, v2-unbounded (allow list), behaviour B-build
+adapter (answer/six/tags/options selectors). New: v2-plot.mjs (feature table taps, 44 px targets, the answer at every width).
