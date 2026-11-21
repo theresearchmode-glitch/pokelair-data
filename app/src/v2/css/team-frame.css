@@ -101,3 +101,13 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 .mtf-sg .tm-sug .sg2-ln b{color:var(--mtf-ink)}.mtf-sg .sg2-l2{display:inline}
 /* the mock: the three links wrap as one line of links (was stacked under 520) */
 .mtf-sg .tm-sgs .sg2-links{display:flex;flex-direction:row;flex-wrap:wrap;align-items:center;column-gap:var(--s4);row-gap:0;grid-auto-flow:unset}
+/* phones: tighter, so My Team stays near three screens (brief) */
+@media (max-width:699.98px){
+  .mtf-sg > .tm-sgs{padding:0 var(--s3) var(--s2)}.mtf-sg > .tm-sgs > h2{margin:0 calc(var(--s3) * -1) var(--s2);padding:var(--s2) var(--s3)}
+  .mtf-sg .sg2-none,.mtf-sg .tm-sub{font-size:var(--t15);line-height:1.45;margin:0 0 var(--s1)}
+  .mtf-sg .tm-sug > li{gap:6px;padding:var(--s3)}.mtf-sg .tm-sug .tm-chg .tm-sw{padding:6px var(--s1)}.mtf-sg .tm-sug .tm-chg .tm-sw img{width:56px;height:56px}
+  .mtf-sg .tm-sug .tm-mv b{font-size:var(--t28)}.mtf-sg .tm-sug .np-btn{min-height:var(--tap)}
+  .mtf-ia{gap:6px}.mtf-ia div{padding:6px var(--s2)}.mtf-ia dd{font-size:var(--t15)}
+  .mtf-inf{gap:6px}.mtf-more .np-link{min-height:var(--tap)}
+  .mtf-head .tm-name{font-size:var(--t26)}.mtf-head .tm-sample{font-size:var(--t13)}.mtf-score .n{font-size:var(--d64)}.mtf-score .band{font-size:var(--t20)}
+  .mtf-acts{column-gap:var(--s3)}.mtf-acts .np-link{font-size:var(--t15)}}
