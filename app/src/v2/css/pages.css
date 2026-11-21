@@ -3353,7 +3353,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* ---------- Sim Q69 (Nov 20, 8:17 AM, audit A1 recommended); app/test/v2-q69.mjs (Q71's My Team tablet layout is at the end of sugs.css) ---------- */
 /* Q69: at 700-819 the sample note's two links stack 20px apart and Import a Team's 44px tap area covered Build Me a Team; 24px between
    the rows gives each its own 44px. Other widths unchanged. */
-@media (min-width:700px) and (max-width:819.98px){.tm-sample .tm-sample-acts{row-gap:var(--s6)}}
+.tm-sample .tm-sample-acts{row-gap:var(--s6)} /* Q69 A1, every width (Nov 20, Sim's PC run: on Windows the two links still stack at 820+, where the 700-819 rule stopped; a row gap only shows when they wrap) */
 
 /* ---- Q73 D1 (Sim chose the recommended option, Nov 20, 8:17 AM; audit-nov20-options.md D1): Usage podium benches. Under 600 a Mega's
    "Mega" is the MEGA tag line (.gs-mg, as "Usually alongside") above the rest of its name, and the other bench names keep an empty

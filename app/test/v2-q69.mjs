@@ -36,6 +36,12 @@ for (const [W, th] of [[700, 'light'], [768, 'light'], [768, 'dark'], [819, 'lig
   const [p, errs, c] = await open('team', W, th, true), tag = `A1 ${W} ${th}`, R = await taps(p);
   ok(R && R.length === 2, `${tag}: the sample note shows Build Me a Team and Import a Team (${R ? R.map(x => x.t).join(' | ') : 'none'})`);
   if (R) for (const x of R) ok(x.bad === 0, `${tag}: ${x.bad}/${x.n} points inside "${x.t}" hit something else (stacked: ${R[0].top !== R[1].top}, pitch ${R[1].top - R[0].top}px)`);
+  /* Nov 20 (Sim's PC run on Windows, v2-q69 + tap-size at 820: the text measured a little wider, so the two links stacked where Linux
+     keeps them on one line, and the stacked spacing only applied at 700-819): force the stack (narrow the row) at 820 and 1024 so this
+     machine checks the Windows case too */
+  if (W >= 820) { await p.evaluate(() => { const r = document.querySelector('#main .tm-sample-acts'); if (r) r.style.maxWidth = '150px'; }); await p.waitForTimeout(150); const F = await taps(p);
+    ok(F && F.length === 2 && F[0].top !== F[1].top, `${tag} forced stack: the two links stack (${F ? F.map(x => x.top).join(' / ') : 'none'})`);
+    if (F) for (const x of F) ok(x.bad === 0, `${tag} forced stack: ${x.bad}/${x.n} points inside "${x.t}" hit something else (pitch ${F[1].top - F[0].top}px)`); }
   ok(!(await side(p)), `${tag}: nothing sideways`); ok(!errs.length, `${tag}: no page errors${errs.length ? ': ' + errs[0] : ''}`); await c.close(); }
 
 // ---------- A2: headline links on touch screens 1000+ ----------
