@@ -53,4 +53,9 @@ V2.mtfFit = () => { /* every width (Nov 21): a long name is never cut ('…') or
 { const want = u => { const m = /#team=(set|mu|sg|ck)$/.exec(u || ''); return m ? m[1] : ''; };  /* the router turns '#team=sg' into '#team' before the page draws, so the wish is read from the URL as it arrived */
   V2._mtfWant = want(location.hash); addEventListener('hashchange', e => { const w = want(e.newURL); if (w) V2._mtfWant = w; }); }
 V2.mtfHashJump = () => { const k = V2._mtfWant; if (!k || !document.querySelector('#main .mtf')) return; V2._mtfWant = '';
-  requestAnimationFrame(() => { const e = document.getElementById('tm-' + k); if (!e) return; e.scrollIntoView({block: 'start'}); const h = e.querySelector('h2, h3'); if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } }); };
+  requestAnimationFrame(() => { const e = document.getElementById('tm-' + k); if (!e) return; e.scrollIntoView({block: 'start'}); const h = e.querySelector('h2, h3'); if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); }
+    /* Suggestions finish about a second later and grow (+360px at 390), which pushed Matchups and Team Checks down (h16): for 4 s,
+       while the player hasn't scrolled, the section is brought back under the bars whenever the page grows */
+    let moved = false; const stop = () => { moved = true; }; ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(t => addEventListener(t, stop, {once: true, passive: true}));
+    const ro = new ResizeObserver(() => { const x = document.getElementById('tm-' + k); if (!moved && x) x.scrollIntoView({block: 'start'}); }); const m = document.getElementById('main'); if (m) ro.observe(m);
+    setTimeout(() => { ro.disconnect(); ['wheel', 'touchstart', 'keydown', 'pointerdown'].forEach(t => removeEventListener(t, stop)); }, 4000); }); };
