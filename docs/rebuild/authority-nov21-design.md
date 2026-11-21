@@ -35,5 +35,6 @@ on Nov 20 no more folds, so nothing was hidden.
 | Time | Decision | Why | Picture |
 |---|---|---|---|
 | 12:48 AM | Test OL-i15 now checks "no tag alone on a row" | free-wrapping tags can't make equal rows | none (page unchanged) |
+| 2:52 AM | Winner event names at 700-879: small-label font (Instrument Sans bold 15px), break only at spaces or hyphens | 'Champion/s-MC' broke mid-word in a 91px column | authority/build-event-name-700-860.png |
 
 Questions waiting on Sim: page frame width at 1200+; the winner top row.
