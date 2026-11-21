@@ -131,7 +131,7 @@
   --arn-track:#0A0910;--arn-tick:rgba(10,9,16,.75);--arn-hp-hi:#7DF2AE;--arn-hp-dmg-hi:#FF5C74;--arn-hpl:#FFFFFF;--arn-on-hpl:#17161A;--arn-hp-sub:#C9C5D0;
   /* My Team's frame (Sim, Nov 21): black frame, pink drop shadow, light panels; the chosen row yellow. Contrast (measured below in the build notes) */
   --mtf-frame:#17161A;--mtf-drop:#E8364F;--mtf-panel:#F4F1EC;--mtf-ink:#17161A;--mtf-ink2:#5E5A66;--mtf-chosen:#FFE14D;--mtf-on-frame:#FFFFFF;--mtf-bar-sub:#C9C5D0;--mtf-rate:#0068AD;
-  --mtf-cell:#FFFFFF;--mtf-card-sub:#D9D5E0;--mtf-card-tile:rgba(255,255,255,.1);--mtf-card-link:#9BDCFF;--mtf-card-new:rgba(255,225,77,.22);--mtf-shadow-floor:rgba(23,22,26,.14);--mtf-stop:#C41E35;--mtf-add:rgba(23,22,26,.4);
+  --mtf-cell:#FFFFFF;--mtf-link:#0068AD;--mtf-wash:#ECE8DF;--mtf-ink3:#5E5A66;--mtf-card-warn:#FFB866;--mtf-ink2b:#48454F;--mtf-card-sub:#D9D5E0;--mtf-card-tile:rgba(255,255,255,.1);--mtf-card-link:#9BDCFF;--mtf-card-new:rgba(255,225,77,.22);--mtf-shadow-floor:rgba(23,22,26,.14);--mtf-stop:#C41E35;--mtf-add:rgba(23,22,26,.4);
   --arn-shade-t:rgba(0,0,0,.3);--arn-shade-b:rgba(0,0,0,.45);--arn-contact-1:rgba(0,0,0,.6);--arn-contact-2:rgba(0,0,0,.3);--arn-contact-3:rgba(40,36,60,.6);--d-arntag:clamp(34px,6.4cqi,64px);
   color-scheme:light}
 :root[data-theme="night"]{

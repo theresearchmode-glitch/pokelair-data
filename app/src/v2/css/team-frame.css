@@ -121,3 +121,14 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 .mtf-sg .tm-chg .tm-sw:empty,.mtf-sg .tm-chg .tm-sw:not(:has(img)){display:none}.mtf-sg .tm-chg:not(:has(.tm-sw:not(.in) img)){grid-template-columns:auto minmax(0,1fr)}
 .mtf-sg .sg2-l2{margin-left:var(--s1)}
 @media (max-width:999.98px){.mtf-add .mtf-addr{display:none}}
+
+/* the frame's light panels are paper in both themes (Sim to choose a dark design: Q106); their words, links and Mega tags stay the day colours */
+.mtf-row:not(.mtf-add),.mtf-sum,.mtf-sg{--ink:var(--mtf-ink);--ink-2:var(--mtf-ink2b);--plot-text:var(--mtf-link);--plot-text-deep:var(--mtf-link);--surface:var(--mtf-cell);--wash:var(--mtf-wash);--ink-3:var(--mtf-ink3)}
+.mtf-row.on .mg{color:var(--mtf-ink)} /* 'Mega' on the yellow chosen row: ink (17:1; the blue measures 4.5:1, right at the line) */
+.mtf-head .mtf-btn.ghost{color:var(--ink);box-shadow:inset 0 -3px 0 var(--ink),inset 0 3px 0 var(--ink)}
+.mtf-head .mtf-btn:not(.ghost){background:var(--ink);color:var(--bg)}a.mtf-btn:not(.ghost){color:var(--bg)}
+/* inside the dark suggestion card the words are light (its Why? list, tags and names used the panel's ink: dark on dark) */
+.mtf-sg .tm-sug > li{--ink:var(--mtf-on-frame);--ink-2:var(--mtf-card-sub);--ink-3:var(--mtf-card-sub);--mid-text:var(--mtf-card-warn);--plot-text:var(--mtf-card-link);--plot-text-deep:var(--mtf-card-link)}
+.mtf-sg .tm-sug .sg2-ln b{--ink:var(--mtf-ink)}
+/* the header's 'Saved ✓' follows the page theme (its blue read 3.2:1 at night) */
+.mtf-saved{color:var(--plot-text)}
