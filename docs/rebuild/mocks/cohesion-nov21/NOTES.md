@@ -98,8 +98,26 @@ Not made yet.
 ## 07 compare · HEAD TO HEAD
 Not made yet.
 
-## 08 battle · THE GAME PLAN
-Not made yet.
+## 08 battle · THE GAME PLAN (`pages/battle.html`)
+Data source: today's built page `#battle` before their six is entered (the sample team), claude/design6 built Nov 21 with the repo's data files.
+
+Today's features -> where in the mock-up:
+- Battle sub-tabs (Damage Calculator, Battle, Team Preview Practice, Test Run, Speed Tiers, Type Chart) -> link row at the top (phone also gets the four tools as panels in step 5, as today's phone page lists them).
+- "Battle a team · Team preview", "Who are you facing? Plan the match.", the lead -> kicker, headline, lead.
+- The "?" help on team preview -> "What is team preview? ›" in the hint.
+- Their Six (six "?" slots), Enter Their Six, the "Everything below fills in…" line -> step 1 face-off: their six as empty slots, "ENTER THEIR SIX." is the page's pink move.
+- Your Six (the six names), Change on My Team › -> step 1, roster cards.
+- Your Games: no games logged, 0 of 4 picked (tap to change), Pick Your Four First ›, Log from a Showdown Replay › -> step 4.
+- Picking a top tournament team (today in the lead) -> the plot sentence "They brought [their six] or [a top tournament team]".
+
+Changes from the PAGES.md idea and why:
+- No turn-1 arrows: today's page has no data for them until their six is entered. Steps 2 and 3 ("Bring four, lead two", "Turn one") show "waiting for their six", the same way Build shows its waiting steps.
+
+Rules not met and why:
+- Phone length 3.33 screens (today 2.09). Your six as kit cards (2 rows of 3) plus their six slots cost most of it.
+- On phone, the "›" after "Damage Calculator" wraps onto its own line in its panel.
+
+Check (390 / 1440): every rule passes. Length 3.33 / 2.58 screens (today 2.09 / 1.40).
 
 ## 09 calc · PLOT THE HIT (`pages/calc.html`)
 Data source: today's built page `#calc` (Mega Charizard Y's Heat Wave into Sneasler in Sun), claude/design6 built Nov 21, the repo's data files (the page's own banner dates the saved copy Nov 9). The % numbers are worked out from today's HP numbers (138–163 of Sneasler's 157 HP = 88–104%; Solar Beam 52–62 = 33–39%; Weather Ball 198–234 = 126–149%). KO Board % are today's own.
@@ -178,8 +196,28 @@ Not made yet.
 ## 26 feedback · TIP US OFF
 Not made yet.
 
-## 27 pokemon · THE FILE
-Not made yet.
+## 27 pokemon · THE FILE (`pages/pokemon.html`, Incineroar)
+Data source: today's built page `#pokemon=incineroar`, claude/design6 built Nov 21 with the repo's data files (the page's own banner dates the saved copy Nov 9).
+
+Today's features -> where in the mock-up:
+- Meta › Ratings › breadcrumb -> link row at the top.
+- Name, Fire/Dark, #4 of 321 with tournament results, "Pokémon Champions · VGC doubles" -> headline, type chips, lead.
+- 95 S tier, the rating bar (0–100), 35% of teams (of 13.6k), 51% win rate (27,028 games), 72 Speed at level 50 -> the hero card and its facts.
+- Build Around It, Popular Sets, "Your team is full…" -> "BUILD AROUND IT." (the pink move), Popular Sets ›, the note.
+- Base Stats (HP 95, Attack 115, Defense 90, Sp. Atk 80, Sp. Def 90, Speed 60, total 530) -> step 1, one bar row each, in the site's stat colours.
+- Jump chips (Is it good? / How to build it / Who it teams with / What beats it / How fast it is / Why it rates 95) -> the plot sentence "Jump to …".
+- How to build it: Usually (Fake Out 99%, Flare Blitz 95%, Parting Shot 96%, Throat Chop 32% of sets), Typical set (Intimidate 100%, Sitrus Berry or Chople Berry, Sassy or Impish, 31 HP, 20 SpD, 15 Def), Popular Sets moves and items with % (of 2,733 teams), All Moves and Items › -> step 2.
+- Who it teams with: Rillaboom 59% · 3,160 games, Garchomp 62% · 2,310, Sneasler 57% · 1,648, Raichu 51% · 1,381, the "% = brought together…" note, Build Around It › -> step 3 roster.
+- What beats it (2× weak: Water, Fighting, Ground, Rock), How fast it is (72 Speed · outspeeds 10% of the top 30), Abilities (Intimidate (100%) or Blaze), Why it rates 95 (Top-cut presence 99 · Picked by strong players 99 · Top cut beyond its use 77 · Win rate 86), each with Show › -> step 4, four panels.
+
+Changes from the PAGES.md idea and why:
+- Headline "The file on Incineroar." (new wording for Sim). Its "sets, partners, matchups" are steps 2–4 as PAGES.md suggests.
+- "Raichu" (a partner) uses the plain Raichu picture because today's page names it "Raichu"; check whether it means Mega Raichu Y.
+
+Kit additions: one-line bar rows; fact numbers 32 -> 34px (32 is off the type scale).
+
+Rules not met and why: none.
+Check (390 / 1440): every rule passes. Length 4.87 / 3.29 screens (today 4.54 / 3.05).
 
 ## 28 notfound · WRONG TURN
 Not made yet.

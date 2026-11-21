@@ -46,7 +46,7 @@ h1 em{color:var(--plot);font-style:inherit}
 .hero{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:40px;align-items:end;margin-top:150px}
 .hero .rc{min-height:300px;padding:200px 20px 20px}.hero .rc img{top:-110px;height:360px;width:130%}
 .hero .rcw .sc{font-size:72px;top:-20px}.hero .rc .nm b{font-size:34px}
-.facts{display:flex;flex-wrap:wrap;gap:12px 32px;margin-top:16px}.facts b{display:block;font-size:32px;line-height:1}.facts span{font:600 13px/1.3 I;color:var(--ink2)}
+.facts{display:flex;flex-wrap:wrap;gap:12px 32px;margin-top:16px}.facts b{display:block;font-size:34px;line-height:1}.facts span{font:600 13px/1.3 I;color:var(--ink2)}
 /* tier stamp beside a roster row */
 .tier{display:flex;align-items:center;gap:12px;margin:40px 0 0}.tier b{display:grid;place-items:center;width:56px;height:56px;background:var(--ink);color:var(--paper);font-size:34px;transform:skewX(-8deg)}
 .tier span{font:600 15px/1.3 I;color:var(--ink2)}.tier span strong{display:block;font:800 20px/1.2 U;font-style:italic;color:var(--ink)}
@@ -160,3 +160,6 @@ textarea.field{min-height:140px;resize:vertical}
 /* (batch 1, Home) four across (tool tiles, small panels); two across on tablets */
 .grid4{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:20px}
 @media (max-width:999.98px){.grid4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* (Pokémon page) a bar row: label, bar, number on ONE line at every width (stats, move and item use) */
+.row.barrow{grid-template-columns:minmax(0,120px) minmax(0,1fr) 72px;min-height:48px}.row.barrow .val{display:block;text-align:right}
+@media (max-width:699.98px){.row.barrow{grid-template-columns:minmax(0,104px) minmax(0,1fr) 56px;row-gap:0}.row.barrow .val{grid-column:auto}.row.barrow b{font-size:15px}}
