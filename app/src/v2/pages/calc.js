@@ -245,8 +245,8 @@ V2.arnImg = (n, cls) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n
 // the defender's plate: name (tap = today's Pokémon picker), the HP bar (green left, pink damage, stripes the roll's part), "x–y% HP left"
 V2.arnHp = r => { if (!r || !r.hp) return {bar: '<span class="arn-hprow" aria-hidden="true"><span class="arn-hpl">HP</span><span class="arn-hpb"><i class="l" style="width:100%"></i></span></span>', txt: ''};
   const lo = Math.min(1, r.min / r.hp), hi = Math.min(1, r.max / r.hp), keep = 100 * (1 - hi), roll = 100 * (hi - lo);
-  const a = Math.max(0, 100 - +dmgP(100 * r.max / r.hp)), b = Math.max(0, 100 - +dmgP(100 * r.min / r.hp));
-  return {bar: `<span class="arn-hprow" aria-hidden="true"><span class="arn-hpl">HP</span><span class="arn-hpb"><i class="l" style="width:${keep.toFixed(1)}%"></i><i class="r" style="left:${keep.toFixed(1)}%;width:${roll.toFixed(1)}%"></i><i class="x" style="left:${(keep + roll).toFixed(1)}%"></i></span></span>`, txt: `<span class="arn-hpv u">${a === b ? a : a + "–" + b}%</span> ${V2.ARN_W.hpLeft}`}; };
+  const a = Math.max(0, 100 - +dmgP(100 * r.max / r.hp)), b = Math.max(0, 100 - +dmgP(100 * r.min / r.hp)); const kl = Math.max(0, r.hp - r.max), kh = Math.max(0, r.hp - r.min);
+  return {bar: `<span class="arn-hprow" aria-hidden="true"><span class="arn-hpl">HP</span><span class="arn-hpb"><i class="l" style="width:${keep.toFixed(1)}%"></i><i class="r" style="left:${keep.toFixed(1)}%;width:${roll.toFixed(1)}%"></i><i class="x" style="left:${(keep + roll).toFixed(1)}%"></i></span></span>`, txt: `<span class="arn-hpv u">${kl === kh ? kl : kl + '–' + kh}</span> <span class="arn-hpof">/ ${r.hp} ${V2.ARN_W.hpLeft}</span> <span class="arn-pct">${a === b ? a : a + '–' + b}%</span>`}; }; /* Sim, Nov 21 (Q100 A): real HP numbers, the percent small beside them */
 V2.arnPlate = (X, role, id, r) => { const E = V2.esc, d = V2.disp(X.p.n), W = V2.ARN_W, hp = role === 'd' ? V2.arnHp(r) : null;
   return `<div class="arn-plate ${role === 'd' ? 'arn-dp' : 'arn-ap'}"><b class="u" data-arnname="${role}">${d.startsWith('Mega ') ? `<span class="mg">Mega </span>${E(d.slice(5)).replace(/ ([XYZ])$/, '\u00a0$1')}` : E(d)}<i class="arw" aria-hidden="true"></i></b>${hp ? hp.bar + `<span class="arn-hpt">${hp.txt}</span>` : ''}
     <button type="button" class="arn-pickbtn" data-arnpick="${id}" aria-haspopup="dialog" aria-label="${role === 'd' ? W.defender : W.attacker}: ${E(d)}${hp && hp.txt ? ', ' + E(hp.txt) : ''}. Choose another Pokémon"></button>
@@ -273,8 +273,8 @@ V2.arnVerdict = C => { const E = V2.esc, W = V2.ARN_W, r = C.r, mv = C.mv, chip 
   if (!mv) return {v: `<div class="arn-verdict notag"><p class="l2 u">${W.pick}</p></div>`, tag: ''};
   if (!r) return {v: `<div class="arn-verdict notag"><p class="l1"><b>${E(mv.name)}</b></p><p class="l3">${calcNoResultText(mv)}</p></div>`, tag: ''};
   if (r.max === 0) return {v: `<div class="arn-verdict notag"><p class="l1"><b>${E(mv.name)}</b> · No effect</p><p class="l2 u">${r.fail ? E(r.fail) + '.' : `${E(V2.disp(C.D.p.n))} is immune to ${E(r.type)}.`}</p></div>`, tag: ''};
-  return {v: `<div class="arn-verdict"><p class="l1">${chip()} takes <b>${V2.dcPct(r)}</b> of its HP</p><p class="l2 u">${W.long(koText(r))}</p></div>`,
-    tag: `<p class="arn-tag" aria-hidden="true">${chip('small')}<b class="u">${V2.dcPct(r)}</b></p>`}; };
+  return {v: `<div class="arn-verdict"><p class="l1">${chip()}<span class="arn-tk">takes <b>${r.min === r.max ? r.min : r.min + '–' + r.max} HP</b></span> <span class="arn-pct">${V2.dcPct(r)}</span></p><p class="l2 u">${W.long(koText(r))}</p></div>`,
+    tag: `<p class="arn-tag" aria-hidden="true">${chip('small')}<b class="u">${r.min === r.max ? r.min : r.min + '–' + r.max}<span class="arn-hpu">HP</span></b><span class="arn-pct">${V2.dcPct(r)} of its HP</span></p>`}; };
 // a move button: type-coloured edge, name, its own damage and short verdict (desktop adds type and power); the chosen one is filled
 V2.arnMove = (C, m) => { const E = V2.esc, W = V2.ARN_W, on = m.name === dc.mv, r = on ? C.r : V2.dcHit(C, m), t = (r && r.type) || m.type;
   const dmg = !r ? (m.cat ? 'Not calculated' : 'No damage') : r.max === 0 ? 'No effect' : V2.dcPct(r), ko = r && r.max > 0 ? W.short(koShort(r)) : '';

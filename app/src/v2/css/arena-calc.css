@@ -265,4 +265,12 @@
 /* 320-379 (today's bug: the verdict overlapped the attacker plate and the terrain row in Sun at 320): a taller verdict row, smaller verdict words, "HP left" may wrap */
 @media (max-width:379.98px){.arn-scene{grid-template-rows:64px auto minmax(0,1fr) auto minmax(64px,auto) 64px}.arn-scene .arn-verdict{margin-block:var(--s1)}
   .arn-scene .arn-hpt{white-space:normal}.arn-scene .arn-hpv{white-space:nowrap}.arn-scene .arn-verdict .l2{font-size:var(--t15)}.arn-scene .arn-plate{padding:var(--s2) var(--s4) var(--s2) var(--s3)}.arn-scene .arn-plate b.u{font-size:var(--t15)}.arn-scene .arn-dp b.u{flex-wrap:nowrap;white-space:nowrap}
-  .arn-scene .arn-plate.arn-dp{width:max-content;max-width:calc(100% + var(--s6))}} /* 320-379: the defender plate may reach 24px into the sprite column so its name and arrow stay on one line */
+  .arn-scene .arn-plate.arn-dp{width:calc(100% + var(--s6));max-width:none}} /* 320-379: the defender plate may reach 24px into the sprite column so its name and arrow stay on one line */
+/* Sim, Nov 21 (Q100 A): real HP numbers lead, the percent small beside them (what the game shows for a foe's HP) */
+.arn-scene .arn-hpv{margin-right:0}
+.arn-scene .arn-pct{font:600 var(--t13)/1.2 var(--b);font-style:normal;color:var(--arn-hp-sub);white-space:nowrap}
+.arn-scene .arn-verdict .arn-pct{color:var(--arn-verdict-ink2)}
+.arn-scene .arn-tag .arn-hpu{margin-left:var(--s1);font-size:var(--t22)}
+.arn-scene .arn-tag .arn-pct{margin-top:2px;font-size:var(--t15)}
+@media (max-width:699.98px){.arn-scene .arn-hpt{white-space:normal}.arn-scene .arn-hpv{white-space:nowrap}}
+.arn-scene .arn-tk,.arn-scene .arn-hpof{white-space:nowrap} /* "takes 45–54 HP" and "/ 157 HP left" each stay whole when a line wraps */
