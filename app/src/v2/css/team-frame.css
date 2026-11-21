@@ -168,8 +168,12 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
   .mtf-do{grid-template-columns:1fr 1fr}.mtf-do .mtf-btn{white-space:nowrap}.mtf-do [data-v2edit]{grid-column:1 / -1}}
 /* polish (Nov 21, authority): See All / Never Suggest / Refresh share one even row of three in the frame (the .tm-sgs rule above), so
    Refresh never sits alone on a row (it did at 1440, where the Suggestions column is 368px) */
-.mtf-sg .tm-sgs .sg2-links .sg2-all{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;white-space:normal;line-height:1.25}
-.mtf-sg .tm-sgs .sg2-links .sg2-l2{display:block;margin:0;white-space:nowrap}
+.mtf-sg{container-type:inline-size}
+.mtf-sg .tm-sgs .sg2-links{grid-template-columns:repeat(3,max-content);column-gap:var(--s6)}.mtf-sg .tm-sgs .sg2-links .sg2-all{display:block;white-space:nowrap}.mtf-sg .tm-sgs .sg2-links .sg2-l2{display:inline;margin:0}
+@container (max-width:519.98px){.mtf-sg .tm-sgs .sg2-links{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s3)}
+  .mtf-sg .tm-sgs .sg2-links .sg2-all{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;white-space:normal;line-height:1.25}.mtf-sg .tm-sgs .sg2-links .sg2-l2{display:block;margin:0;white-space:nowrap}}
 @media (max-width:479.98px){.mtf-sg .tm-sgs .sg2-links .sg2-all{font-size:var(--t15)}}
 /* under 360 the three columns are too narrow for "Suggestions ›": the links stack as a list, each on one line (as the old page did) */
 @media (max-width:359.98px){.mtf-sg .tm-sgs .sg2-links{grid-template-columns:1fr}.mtf-sg .tm-sgs .sg2-links .sg2-all{display:block}.mtf-sg .tm-sgs .sg2-links .sg2-l2{display:inline;margin:0}}
+/* Nov 21 (authority): desktop names in Your six are narrowed to fit (V2.mtfFit) instead of cut with "…" */
+@media (min-width:1000px){.mtf-row .nm{overflow:hidden}.mtf-row .nm b{overflow:visible;text-overflow:clip;transform-origin:0 50%}}

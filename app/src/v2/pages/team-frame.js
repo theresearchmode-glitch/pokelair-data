@@ -37,8 +37,8 @@ V2.mtfFrame = (D, sel, sg) => { const {ms} = D, at = i => ms.find(m => m.i === i
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-mtfstep]'); if (!b) return; const D = V2.teamData(); if (!D || !D.ms.length) return;
   const n = D.ms.length, k = Math.min(V2.ui.sel, n - 1); V2.ui.sel = (k + +b.dataset.mtfstep + n) % n; V2.ui.picked = true; V2.redraw();
   requestAnimationFrame(() => { const x = document.querySelector(`#main [data-mtfstep="${b.dataset.mtfstep}"]`); if (x) x.focus({preventScroll: true}); }); });
-// phones: each name in the row of six stays on ONE line (the brief's flaw: names broke mid-word, "Whimsi-cott"); it is narrowed to fit
+// each name in Your six stays on ONE line (the brief's flaw: names broke mid-word, "Whimsi-cott"); it is narrowed to fit
 // (scaleX, down to 0.7, as Build's chips) and only then cut with "…"; "Mega" sits on its own small line above the name
-V2.mtfFit = () => { if (innerWidth >= 1000) { document.querySelectorAll('#main .mtf-row .nm b').forEach(b => { b.style.transform = ''; }); return; }
-  document.querySelectorAll('#main .mtf-row:not(.mtf-add) .nm b').forEach(b => { b.style.transform = ''; const w = b.parentElement.clientWidth - 2, n = b.scrollWidth; if (n > w && w > 0) b.style.transform = `scaleX(${Math.max(0.7, w / n).toFixed(3)})`; }); };
+V2.mtfFit = () => { /* every width (Nov 21): on desktop a long name ('Mega Charizard Y' at 1000-1100) was cut with '…' */
+  document.querySelectorAll('#main .mtf-row:not(.mtf-add) .nm b').forEach(b => { b.style.transform = ''; const c = b.parentElement.clientWidth, n = b.scrollWidth; if (n > c && c > 0) b.style.transform = `scaleX(${Math.max(0.7, (c - 2) / n).toFixed(3)})`; }); };
 { let t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => V2.mtfFit && V2.mtfFit(), 120); }); }
