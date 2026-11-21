@@ -1880,3 +1880,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:59 PM: hQ done: all 36 qcheck findings false alarms (known list 97798263, qcheck-all 0 new). Compact kit merged (846825f8, kit-page 14/14). Calc reskin trimmed (5a92dd2e): hint in lead; 16:9 photos reverted (cropped + ring over name); 2,832 vs today 2,171 at 390 (Sim accepted the rest). Slot refilled: hH Home reskin proposal.
 - 5:00 PM: Tried the war room verdict tag beside the picture on phones: -10px only and the tag got cut; reverted. War room needs a Matchups redesign to reach today's length: options with pictures for Sim next.
 - 5:02 PM: War room trimmed to 4,003px at 390 (today 3,831, +172): compact kit, panel flush, New crew on sample only, Matchups intro into the step note. More needs a redesign: asking Sim.
+- 5:03 PM: GitHub run on b7127008: 14/15 jobs pass, only qcheck-all (fixed by hQ's known list 97798263). C-battle with the new HP line: 83 pass, 0 FAIL. Pushing the batch.
