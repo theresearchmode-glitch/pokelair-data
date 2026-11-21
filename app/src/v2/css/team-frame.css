@@ -120,3 +120,4 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 /* an "add" suggestion (a team of one to five) has no Pokémon going out: no empty tile; the link words keep their space in the flex links */
 .mtf-sg .tm-chg .tm-sw:empty,.mtf-sg .tm-chg .tm-sw:not(:has(img)){display:none}.mtf-sg .tm-chg:not(:has(.tm-sw:not(.in) img)){grid-template-columns:auto minmax(0,1fr)}
 .mtf-sg .sg2-l2{margin-left:var(--s1)}
+@media (max-width:999.98px){.mtf-add .mtf-addr{display:none}}
