@@ -11,7 +11,7 @@ now=$(date +%s); active=0; names=""
 for f in "$T"/a*.output; do
   [ -f "$f" ] || continue
   grep -qx "$(basename "$f" .output)" /home/user/pokelair-data/docs/rebuild/.helpers-ended 2>/dev/null && continue
-  age=$(( (now - $(stat -c %Y "$f")) / 60 ))
+  age=$(( (now - $(stat -L -c %Y "$f")) / 60 ))  # -L: the .output files are links; their own time is when the helper started
   last=$(tail -n 1 "$f" | jq -r 'if .type=="assistant" then (.message.stop_reason // "") else "busy" end' 2>/dev/null)
   # a helper inside one long tool call (e.g. waiting on a test) writes nothing until it returns: allow 3 h for that, 45 min otherwise
   lim=180 # not finished (no final reply): a long tool call, a backgrounded wait or a queued message can leave the file quiet for a while
@@ -27,7 +27,7 @@ lc=$(( (now - $(git -C /home/user/pokelair-data log -1 --format=%ct)) / 60 ))
 ld=$(( (now - $(stat -c %Y /home/user/pokelair-data/docs/rebuild/decisions.md 2>/dev/null || echo $now)) / 60 ))
 lp=$(( (now - $(stat -c %Y /home/user/pokelair-data/docs/foundation-plan.html 2>/dev/null || echo $now)) / 60 ))
 echo "Work check $(TZ=America/New_York date '+%a %b %-d, %-I:%M:%S %p')"
-echo "Helpers active: $active of 3$names" | sed 's/\\n/\n/g'
+echo "Helpers active: $active of ${NEED:-3}$names" | sed 's/\\n/\n/g'
 echo "Test processes running (main thread or helpers): $tests"
 echo "Minutes since last commit: $lc   since decision log: $ld   since Plans source edit: $lp"
 [ "$active" -lt "${NEED:-3}" ] && echo "PROBLEM: fewer than ${NEED:-3} helpers on approved work. Refill now (CLAUDE.md 'ALWAYS WORKING, ALWAYS 3 HELPERS')."
