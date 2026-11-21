@@ -9,6 +9,14 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Sat Nov 21, written 8:53 AM Eastern by the clock; DESIGN authority until 2:00 PM today, EXECUTIVE (non-visual) until 9:00 AM Sun Nov 22 (Sim, 8:49 AM); ONE helper at a time (Sim, 6:45 AM))
+- Pushed claude/design6 (latest after b0c583d9): last night's work, final checks green (gA/gB/gC on 830adde1).
+- Reskin direction (Sim approved 8:35 AM): "the crew planning the job", docs/rebuild/mocks/cohesion-nov21/THEME.md + PAGES.md; Sim's PC is making mock-ups of all 29 pages on branch claude/cohesion-mocks. Review each batch it pushes.
+- My Team Night plot (copy scratchpad/nm2, dc66b93c, Sim approved 7:47 AM) ON HOLD until the reskin settles (Night frame vs paper: both mocked up).
+- Calc units: Sim 8:39 AM 'recommendeds are good' = % of HP first everywhere, HP beside it (reverses Q100). Built in scratchpad/cu (308ffb8a + tests); q47/arena/C-battle running.
+- Helper hR: rerun of the 10 v2-minors fails alone (likely load) on 8803db45.
+- Summaries: 10 AM design (draft authority-nov21-design.md), 2 PM design (reminder trig_01Q2HTZeEpCqxXTZXykbaSTi), 9 AM Sun executive (trig_012mDsCv7n3as4Tqn6bcTu9k moved to 8:20 AM Sun).
+
 ## NOW (Sat Nov 21, written 2:05 AM Eastern by the clock; DESIGN authority until 10:00 AM, EXECUTIVE (non-visual) until 10:00 PM; up to 4 helpers until 10 AM, then 3)
 - I'm Helping Hand ("HH"; I picked it, Sim approved, Nov 21). Sim asleep since about 1:23 AM.
 - Two new designs in their own scratch copies (detached; not on t1rules yet). Build's Plot is already on t1rules.
