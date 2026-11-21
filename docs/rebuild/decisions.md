@@ -1856,3 +1856,22 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:38 PM: Sim: move design A (move ticket) approved site-wide, 'make it a lil bit better'. Adding a type-colour underline; phones stack the ticket (type tab with %, name, what it does) to keep 2 columns. Pokémon page first, then the kit.
 - 2:40 PM: Move ticket A built into the Pokémon mock (type-colour underline; phones stack it). Phone page 3,792px at 390 (today 3,796); no cut text or overlaps at 13 widths.
 - 2:45 PM: Move ticket added to the kit (V2.kMove/kMoves): kit-page all 14 views passed, guard clean. Pages switch to it one at a time (Calc after helper hC finishes).
+- 3:15 PM: hT finished My Team war room (e983e080) + HH added move tickets (fe59f683, copy tm, not merged). Phone 390 measured the same way: today 3,831, war room 4,164 (+333). Asking Sim before merging. Free slot refilled with hS (type symbols look-only, Sim's ask).
+- 3:16 PM: hS done (type symbols: report 3e58e7f1). Free slot refilled with hP: build the real Pokémon page per Sim's approved mock (brief 27-pokemon.md), own copy, pictures before merge.
+- 3:16 PM: Checked hT's kit bug: kit-page with long names at normal size passes all 14 views, so the overflow was the war room's own CSS (patched there by hT). Test kept stronger.
+- 3:17 PM: hC finished Damage Calc reskin proposal (24c84cf2, copy cc): all checks pass, phone 390 2,865 vs today 2,176 (+689). Same cause as My Team (+333): kit header/sentence/steps on phones. Slot refilled with hK: phone-compact kit parts, measured on both proposals, pictures for Sim.
+- 3:18 PM: Sim: 'recommended for all is good to go': (1) My Team war room YES incl. hT's 12 choices, trimmed to no longer than today on phones before merging; (2) Damage Calc on the kit YES incl. hC's 9 choices, same length condition; (3) type symbols: the MIT set (partywhale) with a picture mock-up first.
+- 3:20 PM: Type symbols mock-up (MIT partywhale shapes in our type colours, always with the word): chips, move ticket, Type Chart buttons; day + night; pictures to Sim.
+- 3:23 PM: Correction: v2-q46's 4 failures were not old. My calc '% first' change (3be28375) changed the answer wording; v2-q46 (run by GitHub) still expected 'Incineroar has N HP'. Test now reads the new wording; v2-q46: all passed.
+- 3:28 PM: Correction: Build page after the reskin measures 3,262px at 390 (q83's method, phone emulation), not 3,129 as I told Sim; approved Q103 A was 3,133 with a 3,200 cap. v2-q83 fails on it and on the old six-size check. Prototyping a fix.
+- 3:34 PM: hK done (kit phone compaction, 8c7afc85 in copy kc): saves 82-246px; Calc still +651, My Team +237 at 390 vs today. Pictures + options to Sim.
+- 3:35 PM: Slot refilled with hQ: fix the 36 new qcheck-all findings (calc move-card overlaps, off-scale % sign, Home 97, calc photo name) in its own copy; bug fixes, no redesign.
+- 3:35 PM: Sim: 'recommended is good for all': Build page option A (keep the winner cards, trim under the 3,200 cap at 390), type symbols look yes (MIT set, always with the word).
+- 3:39 PM: Build option A done: 3,194px at 390 (q83 method); q83 six-size check updated to the approved design; q83 282 pass/0 FAIL until a browser crash under load (rerun pending).
+- 3:40 PM: Hourly check: 2 helpers (hP Pokémon page, hQ look-check fixes); main thread: v2-minors (3 parts) + v2-q83 rerun on e3ae6e99 in copy mvt (tracked background); holding pushes ~40 min so GitHub's run finishes.
+- 3:45 PM: Disk allowance ran out (~3:45 PM): caused the browser crashes/timeouts. Tagged unmerged work keep/*, removed unused copies (14 GB free). Type symbols in the kit move ticket (kit-page 14/14, guard clean). v2-minors 1d test fixed for tickets.
+- 3:46 PM: Sim: on the Damage Calc, use the Pokémon's names instead of 'the muscle' / 'the target'.
+- 3:56 PM: Calc names done (Sim's ask): photos show the name (+ 'Mega' line), sets read '<name>'s set'; arena/q47/q46 pass. Same change goes into the Calc reskin when it merges.
+- 4:11 PM: Prepared the Calc reskin with Sim's names change (tag keep/calc-kit-names): arena + q47 pass; q46 fix arrives at merge. Waiting on Sim's phone-length answer before merging.
+- 4:14 PM: v2-minors (3 parts) + v2-q83 all passed on 91c1ff92. Plans page updated.
+- 4:23 PM: GitHub run on e3ae6e99 done: only qcheck-all (hQ fixing) and v2-minors main1 (fixed in held commits) failed; code checks incl. q46/q83 passed. Pushed the held batch (b7127008).
