@@ -28,7 +28,7 @@ Polish check (VIEWS=team, 320-2560, light and dark), measured 2:00 AM: spill 0, 
 line height 1, boxes 3). Left: 7 'lone' readings that are deliberate layouts (the ‹ name / 1 of 6 › bar, score and header grids,
 Suggestions full width at 1000-1279, the old footer) and 2 'boxes' (the mock's move bars and yellow bar). Contrast: 0 low, day and night.
 
-Open for Sim: on phones under 480 the header's links move up 17-37px after Remove, because the score's band words change (Top tier to Tournament ready, 2 lines). Fixing it means a fixed-height score block.
+Fixed 5:14 AM: on phones under 480 the header's links moved up 17-37px after Remove (the score's band words change length); the score block now keeps its height until the team size changes (0px at 320/390).
 
 Trade-off to flag: My Team on a phone is about 4 screens (3,810px at 390), not the brief's 3. Every part is a feature, and Sim said
 on Nov 20 no more folds, so nothing was hidden.
