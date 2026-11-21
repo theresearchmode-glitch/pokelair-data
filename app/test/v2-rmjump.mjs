@@ -31,13 +31,16 @@ for (const W of [1440, 1100]) { const r = await run(W, false);
   await p.evaluate(() => { const c = document.querySelectorAll('#main [data-tmsel]')[2]; c.scrollIntoView({block: 'center'}); c.click(); }); await p.waitForTimeout(1200);
   await p.evaluate(() => { const r = document.querySelector('#main [data-v2rm]'); if (r.getBoundingClientRect().bottom > innerHeight) r.scrollIntoView({block: 'nearest'}); }); await p.waitForTimeout(600);
   /* each slot's top and left (a Card moving sideways counts too: Nov 20) */
-  const pos = () => p.evaluate(() => Object.fromEntries([...document.querySelectorAll('#main .mh-slot')].map(s => { const k = s.querySelector('.mh-add') ? 'ADD' : (s.querySelector('[data-tmsel]').getAttribute('aria-label') || '').split(',')[0], r = s.getBoundingClientRect(); return [k, [Math.round(r.top), Math.round(r.left)]]; })));
-  const order = () => p.evaluate(() => [...document.querySelectorAll('#main .mh-slot')].map(s => { const a = s.querySelector('[data-v2addto]'); return a ? 'ADD' + a.dataset.v2addto : (s.querySelector('[data-tmsel]').getAttribute('aria-label') || '').split(',')[0]; }).join('|'));
-  const before = await pos(), ord0 = await order(), removed = await p.evaluate(() => (document.querySelector('#main .mh-slot.on [data-tmsel]').getAttribute('aria-label') || '').split(',')[0]);
-  const slotOf = await p.evaluate(() => +document.querySelector('#main .mh-slot.on [data-tmsel]').dataset.tmsel); /* data-tmsel = the team slot (0-5) */
+  /* Nov 21: My Team frame (Sim approved): the six are the frame's rows (.mtf-rows > .mtf-row, drawn in slot order 0-5; an empty spot is
+     .mtf-add with data-v2addto), so a slot is its row; the old Hand (.mh-slot) is no longer drawn for a team of 1-6 */
+  const SLOTS = '#main .mtf-rows > .mtf-row';
+  const pos = () => p.evaluate(S => Object.fromEntries([...document.querySelectorAll(S)].map(s => { const k = s.matches('[data-v2addto]') ? 'ADD' : (s.getAttribute('aria-label') || '').split(',')[0], r = s.getBoundingClientRect(); return [k, [Math.round(r.top), Math.round(r.left)]]; })), SLOTS);
+  const order = () => p.evaluate(S => [...document.querySelectorAll(S)].map(s => s.matches('[data-v2addto]') ? 'ADD' + s.dataset.v2addto : (s.getAttribute('aria-label') || '').split(',')[0]).join('|'), SLOTS);
+  const before = await pos(), ord0 = await order(), removed = await p.evaluate(S => (document.querySelector(S + '.on[data-tmsel]').getAttribute('aria-label') || '').split(',')[0], SLOTS);
+  const slotOf = await p.evaluate(S => [...document.querySelectorAll(S)].indexOf(document.querySelector(S + '.on[data-tmsel]')), SLOTS); /* the row's place among the six = its team slot (0-5) */
   await p.click('#main [data-v2rm]'); await p.waitForTimeout(2500);
-  const after = await pos(), ord1 = await order(), groups = await p.evaluate(() => [...document.querySelectorAll('#main .mh-gh b')].map(b => b.textContent.trim()).join('|'));
-  const roleWords = await p.evaluate(() => { const h = document.querySelector('#main .mh-hand'); return h ? (h.innerText.match(/\b(Lead|Back|Bench)\b/g) || []).join(',') : 'no Hand'; });
+  const after = await pos(), ord1 = await order(), groups = await p.evaluate(() => [...document.querySelectorAll('#main .mtf-party > .mtf-bar b')].map(b => b.textContent.trim()).join('|')); /* Nov 21: the frame's one bar, "Your six" (Sim's approved mock) */
+  const roleWords = await p.evaluate(() => { const h = document.querySelector('#main .mtf-party'); return h ? (h.innerText.match(/\b(Lead|Back|Bench)\b/g) || []).join(',') : 'no six'; });
   /* Nov 20: every other Card holds still (top and left within 1px): first the Cards above and beside the removed one (the old Q9 C
      strength, now 1px), then, as its own line, the Cards in the rows below it */
   const near = (a, c) => Math.abs(a[0] - c[0]) <= 1 && Math.abs(a[1] - c[1]) <= 1;
@@ -46,7 +49,7 @@ for (const W of [1440, 1100]) { const r = await run(W, false);
   const addAt = !!after.ADD && near(after.ADD, before[removed]);
   /* slot order: the Add card sits in the removed Card's own slot, everything else in the same order as before */
   const sameOrder = slotOf >= 0 && ord1 === ord0.split('|').map(k => k === removed ? 'ADD' + slotOf : k).join('|');
-  ok(groups === 'Your Six' && !roleWords && !movedUp.length && addAt && sameOrder && !errs.length, `820 (Nov 20): after Remove one group "${groups}" (Lead / Back / Bench words: ${roleWords || 'none'}), no Card above or beside it moves (${movedUp.join(', ') || 'none'}), the Add Card takes ${removed}'s place (${before[removed]} -> ${after.ADD}) in slot ${slotOf + 1} (order ${ord1})`);
+  ok(groups === 'Your six' && !roleWords && !movedUp.length && addAt && sameOrder && !errs.length, `820 (Nov 20): after Remove one group "${groups}" (Lead / Back / Bench words: ${roleWords || 'none'}), no Card above or beside it moves (${movedUp.join(', ') || 'none'}), the Add Card takes ${removed}'s place (${before[removed]} -> ${after.ADD}) in slot ${slotOf + 1} (order ${ord1})`);
   ok(!movedDown.length, `820 (Nov 20): no Card in the rows below the removed one moves either (${movedDown.join(', ') || 'none'})`);
   await p.close(); }
 { const r = await run(390, true);

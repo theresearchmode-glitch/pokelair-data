@@ -98,7 +98,7 @@ const visit = async h => { await p.goto('about:blank'); p.errs.length = 0; p.htt
     const t = (sel, el = document) => [...el.querySelectorAll(sel)].map(x => x.textContent.replace(/\s+/g, ' ').trim());
     const rows = [...document.querySelectorAll('#app .gs-rows .gs-mon')].map(x => ({n: x.dataset.v2mon || '', sc: t('.gs-sc > .u', x).join(''), tier: (/(\S+) tier/.exec(x.getAttribute('aria-label') || '') || [])[1] || ''}));
     return {main: !!m, len: m ? m.innerText.trim().length : 0, failed: !!(m && /This page didn’t load\./.test(m.textContent)), nodata: m ? (m.innerText.match(NODATA) || [''])[0] : '', imgs: imgs.length, broken, odd, title: document.title,
-      scores: t('#app .np-score b'), rows, spot: {n: t('#app .ra-spot h2').join(''), sc: t('#app .ra-spot .gs-big b').join(''), tier: t('#app .ra-spot .gs-big i').join('')},
+      scores: t('#app .np-score b, #app .mtf-score .n') /* Nov 21: My Team frame (Sim approved): the header's big number */, rows, spot: {n: t('#app .ra-spot h2').join(''), sc: t('#app .ra-spot .gs-big b').join(''), tier: t('#app .ra-spot .gs-big i').join('')},
       pk: {h1: t('#app #pk-name').join(''), sc: t('#app .pk-rate b').join(''), tier: t('#app .pk-rate .tier-tag').join('')}}; }, NODATA_SRC);
   const tag = '#' + decodeURIComponent(h), num = x => /^\d{1,3}$/.test(x) && +x <= 100;
   ok(!p.errs.length, `P1 ${tag} no page or console errors${p.errs.length ? ': ' + [...new Set(p.errs)].slice(0, 3).join(' | ') : ''}`);

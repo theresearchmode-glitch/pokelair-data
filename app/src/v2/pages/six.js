@@ -105,6 +105,12 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
      below moves (it used to follow the next Card into the row below: rows jumped 197 px at 820). V2.ui.sel is a place in the members list. */
   if (innerWidth >= 700 && innerWidth < 1100) { try { const ms = V2.teamData().ms || [], row = Math.floor(i / 3), same = ms.map((m, k) => [m, k]).filter(([m]) => Math.floor(m.i / 3) === row);
     if (same.length) V2.ui.sel = same.sort((a, b) => Math.abs(a[0].i - i) - Math.abs(b[0].i - i) || a[0].i - b[0].i)[0][1]; } catch (e) {} }
+  /* Nov 21 (v2-rmjump 820): the line under the score went from the 2-line "Teams scoring like this win about 61%..." to "5 of 6 picked", so
+     the header shrank and every Card moved up 15px. The line keeps its height while the team stays this size (team.js, mtfHead). Not on phones (under 480): there the label above
+     wraps to 2 lines as well and the Nov 17 rule brings the Add spot into view anyway */
+  { const w = innerWidth >= 480 && document.querySelector('#main .mtf-score .win'); V2.ui.winHold = w ? {h: w.offsetHeight, n: S.slots.filter(x => x && x.n).length} : null; }
+  /* phones under 480 (Nov 21): the band words change too ('Top tier' -> 'Tournament ready', 2 lines), so the whole score block keeps its height */
+  { const sc = innerWidth < 480 && document.querySelector('#main .mtf-score'); V2.ui.scoreHold = sc ? {h: sc.offsetHeight, n: S.slots.filter(x => x && x.n).length} : null; }
   render(); if (was) toast(`Removed ${was.d}`, true);
   // Sim, Nov 17: after Remove the new Add spot was 685px above the screen (390 wide); bring it into view and give it the focus
   // Sim, Nov 18 (desktop): centring it made the page jump up 400-500px every time even when the Add spot was already on screen.
