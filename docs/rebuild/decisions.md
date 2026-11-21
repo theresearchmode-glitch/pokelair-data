@@ -1902,3 +1902,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:42 PM: Polished A built in pk (keep/pokemon-build): paper sections, slanted two-tone type bar opens each step with the number on it, plain data cards with type-colour top rule (no tints, no brown), more air per step. Phone 390: 5,145px (original 5,029, tinted pass 5,193). Pictures to Sim before merge.
 - 6:43 PM: Calc reskin merged into main (16c8989c; conflict = two added CSS blocks, kept both). Post-merge C-battle, overlap calc, v2-arena, v2-q46 running in ck.
 - 6:43 PM: Hourly work check: no problems (2/2 helpers hY, hB; 7 test processes; Plans edited 10 min ago). Main thread: post-merge Calc checks in ck; war-room run in wr; Pokémon polished A waiting on Sim.
+- 6:44 PM: Sim: polished A has not enough pop of colour, 'lil better'. Trying: thicker slanted type bar, step number filled in type colour, data cards with a solid type-colour label strip (solid colours only, no tints). Pictures before merge.
