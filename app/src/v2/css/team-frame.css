@@ -169,7 +169,7 @@
   .tmk-head .k-kicker{margin:var(--s2) 0}
   .tmk-jump .tmk-bw{display:none} /* phones: "Jump to:" and the three links share one line */
   .tmk-jump a{font-size:var(--t15)}
-  .tmk-work .mtf{margin:0 0 0 -20px;padding:0 var(--s2) var(--s3);box-shadow:0 0 0 1px var(--wr-rule),8px 8px 0 var(--mtf-drop)}
+  .tmk-work .mtf{margin:0;padding:0 var(--s2) var(--s3);box-shadow:0 0 0 1px var(--wr-rule),8px 8px 0 var(--mtf-drop)}
   .tmk-work .mtf .k-roster{padding-top:var(--s10);row-gap:var(--s10)}
   /* the kit's phone roster sets every name to 17px after its fit levels, so levels 2-5 never shrank a long name (kit.css; flagged):
      here the levels apply again on phones (Squawkabilly, Crabominable at 320) */
@@ -218,5 +218,5 @@
 @media (max-width:359.98px){
   .tmk-head .mtf-acts{gap:0 var(--s4)}
   .tmk-head .k-sent{font-size:var(--t17)}
-  .tmk-work .mtf{margin-left:-12px}
+  .tmk-work .mtf{margin-left:0}
 }
