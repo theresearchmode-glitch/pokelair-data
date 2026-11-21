@@ -3377,4 +3377,4 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .nf-dogl{margin:0;font:900 var(--t20)/1.2 var(--u);font-style:italic;color:var(--ink);overflow-wrap:normal}
 @media (min-width:900px){.nf-pg{grid-template-columns:minmax(0,1fr) minmax(240px,320px);column-gap:var(--s10);align-items:start}
   .nf-dog{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}.nf-dog .np-mon{--iw:220px}.nf-dogtx{justify-items:center}.nf-dogl{font-size:var(--t24)}}
-@media (max-width:399.98px){.nf-dog{column-gap:var(--s3)}.nf-dog .np-mon{--iw:88px}.nf-dogl{font-size:var(--t17)}}
+@media (max-width:399.98px){.nf-dog{column-gap:var(--s3)}.nf-dog .np-mon{--iw:88px}.nf-dog .np-mon.ft{padding-inline:var(--s1)}.nf-dogl{font-size:var(--t17)}} /* Nov 20: 'Corviknight's' ran out of the box at 320 with a scrollbar (GitHub, the day it became the underdog): the feature sprite's side padding is trimmed on phones so the line has room */

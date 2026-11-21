@@ -21,12 +21,13 @@ for (const [hash, name] of [['#nonsense', 'not found'], ['#pokemon=notamon', 'No
   ok(x.mains <= 1, `${tag}: at most one main button (${x.mains})`);
   ok(x.bot <= H, `${tag}: the underdog on the first screen (${x.top}-${x.bot} of ${H})`);
   ok(!x.side && x.out === 0 && x.tap >= 44, `${tag}: nothing sideways, no text out of its box (${x.out}), sprite tap ${Math.round(x.tap)}px`);
-  if (W === 320 && x.dog) { /* the longest name in the 12-day rotation, at the narrowest width */
-    const y = await p.evaluate(() => { const ns = [...new Set(Array.from({length: 14}, (_, i) => window.__ev(`V2.underdog(new Date(Date.now() + ${i} * 864e5))`)))], L = ns.sort((a, b) => V2.disp(b).length - V2.disp(a).length)[0];
-      const keep = V2.underdog; V2.underdog = () => L; V2.redraw(); const dog = document.querySelector('#main .nf-dog'), q = dog.getBoundingClientRect();
-      const out = [...dog.querySelectorAll('p,span,b')].filter(e => { const a = e.getBoundingClientRect(); return a.width && (a.left < q.left - 1 || a.right > q.right + 1); }).length; V2.underdog = keep; V2.redraw();
-      return {L, n: ns.length, out, side: document.documentElement.scrollWidth > innerWidth}; });
-    ok(y.out === 0 && !y.side, `${tag}: the longest name of the rotation (${y.L}, of ${y.n}) stays inside its box (${y.out})`); }
+  if (W === 320 && x.dog) { /* Nov 20: EVERY name in the rotation at the narrowest width (was only the longest, 'Ninetales-Alola', which wraps at its hyphen; 'Corviknight's' cannot wrap and ran out on GitHub) */
+    const y = await p.evaluate(() => { const ns = [...new Set(Array.from({length: 14}, (_, i) => window.__ev(`V2.underdog(new Date(Date.now() + ${i} * 864e5))`)))], keep = V2.underdog, bad = [];
+      for (const L of ns) { V2.underdog = () => L; V2.redraw(); const dog = document.querySelector('#main .nf-dog'), q = dog.getBoundingClientRect();
+        const out = [...dog.querySelectorAll('p,span,b')].filter(e => { const a = e.getBoundingClientRect(); return a.width && (a.left < q.left - 1 || a.right > q.right + 1); }).length;
+        if (out || document.documentElement.scrollWidth > innerWidth) bad.push(L); }
+      V2.underdog = keep; V2.redraw(); return {n: ns.length, bad}; });
+    ok(y.n >= 2 && !y.bad.length, `${tag}: every name of the rotation (${y.n}) stays inside its box (${y.bad.length} out${y.bad.length ? ': ' + y.bad.join(', ') : ''})`); }
   if (W === 390 && th === 'light' && x.dog) { await p.click('#main .nf-dog [data-v2mon]'); await p.waitForTimeout(900); const h = await p.evaluate(() => location.hash); ok(h === '#pokemon=' + x.want.toLowerCase(), `${tag}: tapping it opens its Pokémon page (${h})`); }
   ok(!errs.length, `${tag}: no page errors (${errs.length}${errs.length ? ': ' + errs[0] : ''})`); await c.close(); }
 await b.close(); console.log(fails.length ? `v2-s33: ${fails.length} FAILED` : 'v2-s33: all passed'); process.exit(fails.length ? 1 : 0);
