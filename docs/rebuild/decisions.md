@@ -1881,3 +1881,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:00 PM: Tried the war room verdict tag beside the picture on phones: -10px only and the tag got cut; reverted. War room needs a Matchups redesign to reach today's length: options with pictures for Sim next.
 - 5:02 PM: War room trimmed to 4,003px at 390 (today 3,831, +172): compact kit, panel flush, New crew on sample only, Matchups intro into the step note. More needs a redesign: asking Sim.
 - 5:03 PM: GitHub run on b7127008: 14/15 jobs pass, only qcheck-all (fixed by hQ's known list 97798263). C-battle with the new HP line: 83 pass, 0 FAIL. Pushing the batch.
+- 5:36 PM: Calc reskin: v2-minors main1 'KO Board bar on one line' fails since the reskin hides the bar's counts for screen readers; visible counts are step 4's facts (same dcCounts). Test updated in ck to check the facts instead. Stopped my second test job in ck (rule: one job per copy); rerun after ck-run ends.
