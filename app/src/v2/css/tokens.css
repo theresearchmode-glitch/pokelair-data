@@ -144,7 +144,7 @@
   /* The shared kit (site-wide reskin, Sim approved approach A, Nov 21; docs/rebuild/mocks/cohesion-nov21/THEME.md + HYBRID.md; kit.css).
      Reused where the meaning is the same: paper = the page (--bg), ink, quiet ink (--ink-3, 5.6:1), rule, Plot blue (--plot for lines and
      fills under white words 4.7:1; --plot-text for blue words on paper 5.6:1). Nasty pink: --k-nasty for lines and rings (4.0:1 on paper,
-     graphics need 3:1); --k-go is the pink a step deeper so white words read (4.7:1) and stays the same saturated pink at night (HYBRID 8).
+     graphics need 3:1);--k-mask:#000; --k-go is the pink a step deeper so white words read (4.7:1) and stays the same saturated pink at night (HYBRID 8).
      The "yours" marker and the kicker are ink chips (inverted at night). Headline, sentence, section and go sizes are display sizes. */
   --k-paper:var(--bg);--k-card:var(--surface);--k-ink:var(--ink);--k-ink2:var(--ink-3);--k-rule:var(--rule);
   --k-plot:var(--plot);--k-plot-text:var(--plot-text);--k-on-plot:#FFFFFF;--k-nasty:#E8364F;--k-nasty-text:var(--pick-text);--k-go:#DA2C48;--k-on-go:#FFFFFF;--k-go-shadow:#17161A;

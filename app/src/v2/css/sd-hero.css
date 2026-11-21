@@ -52,8 +52,7 @@
 @media (min-width:1100px){.sdh-plate .nm{font-size:var(--t20)}}@media (min-width:1500px){.sdh-plate .nm{font-size:var(--t24)}}
 @media (min-width:1800px){.sdh-plate .nm{font-size:var(--t28)}}
 /* pair: each plate as wide as its words, inset the same distance from its own edge */
-@media (max-width:899.98px){.sdh-plates{display:flex;justify-content:space-between;gap:var(--s3)}.sdh-plates li{flex:0 1 auto}.sdh-plate{flex-wrap:nowrap}}
-@media (max-width:359.98px){.sdh-plate{flex-wrap:wrap}}
+@media (max-width:899.98px){.sdh-plates{display:flex;justify-content:space-between;gap:var(--s3)}.sdh-plates li{flex:0 1 auto}}
 @media (max-width:899.98px){.sdh-plates li.f2{justify-content:flex-end}.sdh-plate{width:auto;padding:var(--s1) var(--s5)}.sdh-plate .rt{font-size:var(--d-sdpair)}}
 @media (max-width:599.98px){.sdh-plate{padding:var(--s1) var(--s4)}}
 @media (min-width:600px) and (max-width:899.98px){.sdh-plate .nm{font-size:var(--t26)}}

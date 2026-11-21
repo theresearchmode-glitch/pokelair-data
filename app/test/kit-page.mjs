@@ -24,7 +24,9 @@ const kitPage = () => { const go = {'data-kit': 'go'};
     + V2.kStep(2, 'The heavy hitters', '345 rated · best first', V2.kRoster(row1.map(([n, s, f], i) => V2.kCard(n, {score: s, tier: s >= 90 ? 'S tier' : 'B tier', fact: f, sel: i === 1, mine: i === 4, attrs: {'data-kit': n}}))), {link: {label: 'List with win rates', attrs: {href: '#usage'}}})
     + V2.kStep(3, 'The receipts', 'what we called, what we missed', `<p class="k-tags">${V2.kTag('good', 'CALLED IT')} ${V2.kTag('bad', 'MISSED')} ${V2.kTag('live', 'LIVE NOW')} ${V2.kTag('neutral', 'Even match')} ${V2.kMine()}</p>`
       + V2.kRoster(row2.map(([n, s]) => V2.kCard(n, {score: s, size: 'small', mine: n === 'Indeedee-F'})))
-      + V2.kRoster(['Rillaboom', 'Sneasler', 'Squawkabilly-Yellow'].map(n => V2.kCard(n, {score: 80, size: 'small'}))))) + `</div>`; };
+      + V2.kRoster(['Rillaboom', 'Sneasler', 'Squawkabilly-Yellow'].map(n => V2.kCard(n, {score: 80, size: 'small'}))))
+    + V2.kStep(4, 'The moves', 'the set players run', V2.kMoves([['Fake Out', '99%'], ['Parting Shot', '96%'], ['Flare Blitz', '95%'], ['Darkest Lariat', '41%'], 'Shadow Ball', 'Weather Ball'])
+      + `<div class="k-movebox" style="max-width:240px;margin-top:16px">${V2.kMove('Close Combat', {pct: '88%', attrs: {'data-kit': 'move'}})}</div>`)) + `</div>`; };
 for (const w of WIDTHS) for (const mode of MODES) {
   const ctx = await b.newContext({viewport: {width: w, height: 900}, deviceScaleFactor: 1, isMobile: w < 700, hasTouch: w < 700}), p = await ctx.newPage(), errs = [];
   p.on('pageerror', e => errs.push(e.message));
@@ -71,7 +73,7 @@ for (const w of WIDTHS) for (const mode of MODES) {
     for (const ro of demo.querySelectorAll('.k-roster')) { const li = [...ro.children]; if (li.length !== 6) continue; const rows = new Map(); for (const x of li) { const k = Math.round(x.getBoundingClientRect().top); rows.set(k, (rows.get(k) || 0) + 1); }
       const c = [...rows.values()]; if (new Set(c).size > 1) add('uneven row of six', c.join(' + ')); }
     // words: never broken over two lines; no line ends with a lone letter (names, headlines, the sentence)
-    for (const el of demo.querySelectorAll('.k-name,.k-form,.k-h1,.k-h2,.k-lead,.k-note,.k-fact,.k-sent>span,.k-go,.k-tag')) { const words = []; const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let t;
+    for (const el of demo.querySelectorAll('.k-name,.k-form,.k-h1,.k-h2,.k-lead,.k-note,.k-fact,.k-sent>span,.k-go,.k-tag,.k-mn b,.k-mt')) { const words = []; const tw = document.createTreeWalker(el, NodeFilter.SHOW_TEXT); let t;
       while ((t = tw.nextNode())) { const re = /[^\s ]+/g; let m; while ((m = re.exec(t.data))) { const rg = document.createRange(); rg.setStart(t, m.index); rg.setEnd(t, m.index + m[0].length); const rs = [...rg.getClientRects()].filter(x => x.width > 0.5);
         if (new Set(rs.map(x => Math.round(x.top / 4))).size > 1) add('word broken over two lines', nameOf(el) + ' "' + m[0] + '"'); if (rs.length) words.push({w: m[0], top: Math.round(rs[0].top / 4), ln: rs[0].bottom}); } }
       const lines = new Map(); for (const x of words) lines.set(x.top, x.w); /* the last word seen on each line */

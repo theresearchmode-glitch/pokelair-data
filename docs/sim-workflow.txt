@@ -80,3 +80,6 @@ Written Nov 19, 2026 from Sim's own rules (NastyPlot CLAUDE.md and docs/rebuild/
 
 
 ALWAYS WORKING, ALWAYS 3 HELPERS (Sim, Nov 20, 10:26 PM; stated many times): all 3 helper slots filled with approved build work at all times, refilled the moment one frees; the main thread never waits on a run; each status names the 3 helpers; never end a turn with an empty slot or with nothing started.
+
+
+NO GENERIC AI DESIGN (Sim, Nov 21, about 2:31 PM): "i dont want generic ai design thats a MAJOR MAJOR MAJOR MAJOR MAJOR RULE." Every design built from NastyPlot's own identity; ask "could this be any other site?" before sending. Full text in CLAUDE.md.

@@ -12,7 +12,7 @@
 .pc-ring path{fill:none;stroke:var(--pc-mark);stroke-width:3.6;stroke-linecap:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 1px var(--pc-mark-edge)) drop-shadow(0 0 1px var(--pc-mark-edge))}
 .pc-top{grid-area:top;display:flex;align-items:center;justify-content:space-between;gap:var(--s3)}
 .pc-title{margin:0;font-size:var(--d-pctitle);line-height:1;white-space:nowrap;rotate:-2deg}
-.pc-swap{display:flex;align-items:center;gap:var(--s2);white-space:nowrap;min-height:var(--tap);padding:0;border:0;background:none;color:var(--pc-ink);font-size:var(--t15);cursor:pointer} /* 15, not 13: Unbounded only at 15px and up (type rule, v2-unbounded) */
+.pc-swap{display:flex;align-items:center;gap:var(--s2);min-height:var(--tap);line-height:1.2;text-align:left;padding:0;border:0;background:none;color:var(--pc-ink);font-size:var(--t15);cursor:pointer} /* 15, not 13: Unbounded only at 15px and up (type rule, v2-unbounded) */
 .pc-swap svg{width:44px;height:26px}.pc-swap path{fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
 /* the photos: white frame, tilted; blue tint attacker ("the muscle"), pink tint defender ("the target", circled). The photo is the picker. */
 .pc-ph{position:relative;grid-area:pa;display:grid;justify-items:start;padding:var(--s2) var(--s2) var(--s3);background:var(--pc-photo);color:var(--pc-ink);rotate:var(--r);box-shadow:0 0 0 1px var(--pc-photo-rim),0 18px 24px -14px var(--pc-drop)}
