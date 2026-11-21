@@ -184,3 +184,6 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
    the small "S tier" tags and the row numbers use Instrument Sans bold; the buttons stay Unbounded at 15px on phones too */
 .mtf-row .no,.mtf-stage .rate span,.mtf-row .rt span{font-family:var(--b);font-style:normal;font-weight:700}
 .mtf-head .mtf-btn,.mtf-do .mtf-btn{font-size:var(--t15)}
+/* phones (Nov 21, authority): the status line keeps Sim's approved short form "6 of 6 · Grassy Terrain · Legal ✓" on one line
+   (the frame's long form wrapped to 2 lines at 360-390, q84 S5); desktop keeps "My team · … team · Legal for Reg M-C ✓" */
+@media (max-width:479.98px){.mtf-k .mtf-lg{display:none}}
