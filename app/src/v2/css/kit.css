@@ -55,11 +55,11 @@ button.k-card{cursor:pointer;width:100%}
 /* the chosen card: a blue frame (blue = what you tapped) */
 .k-card.k-sel .k-plate::after{content:"";position:absolute;inset:-6px;z-index:-2;border:3px solid var(--k-plot);clip-path:polygon(0 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%)}
 /* the name drops a size before it wraps (kit.js V2.kFit sets data-kf): Unbounded 20 > 17 > 15, then Instrument Sans 15 > 15 narrow > 13 narrower (may wrap at a space) */
-.k-name[data-kf="1"]{font-size:var(--t17)}
-.k-name[data-kf="2"]{font-size:var(--t15)}
-.k-name[data-kf="3"],.k-name[data-kf="4"],.k-name[data-kf="5"]{font-family:var(--b);font-weight:700;letter-spacing:0;font-size:var(--t15)}
-.k-name[data-kf="4"]{font-stretch:80%}
-.k-name[data-kf="5"]{font-size:var(--t13);font-stretch:75%;letter-spacing:-.02em;padding-right:0;white-space:normal}
+.k-card .k-name[data-kf="1"]{font-size:var(--t17)}
+.k-card .k-name[data-kf="2"]{font-size:var(--t15)}
+.k-card .k-name[data-kf="3"],.k-card .k-name[data-kf="4"],.k-card .k-name[data-kf="5"]{font-family:var(--b);font-weight:700;letter-spacing:0;font-size:var(--t15)}
+.k-card .k-name[data-kf="4"]{font-stretch:80%}
+.k-card .k-name[data-kf="5"]{font-size:var(--t13);font-stretch:75%;letter-spacing:-.02em;padding-right:0;white-space:normal}
 .k-form[data-kf="1"]{font-stretch:75%}
 .k-form[data-kf="2"]{font-stretch:75%;white-space:normal}
 /* hero: the one star Pokémon */

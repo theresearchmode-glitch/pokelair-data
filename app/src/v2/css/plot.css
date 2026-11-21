@@ -415,3 +415,6 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
 .pl-wins .pl-big{grid-column:1 / -1}.pl-wins{grid-template-columns:repeat(2,minmax(0,1fr))}
 .pl-wsixk .k-roster{padding-top:var(--s10)}
 @media (max-width:699.98px){.pl-wins{grid-template-columns:minmax(0,1fr)}}
+/* phones: the winner's six cards sit tighter (lower plates, art a little smaller), and the three links stay on one line */
+@media (max-width:699.98px){.pl-wsixk .k-roster{gap:var(--s10) var(--s2);padding-top:var(--s8)}.pl-wins{gap:var(--s3)}.pl-win{padding-top:var(--s2)}
+  @container plwin (min-width:300px){.pl-wa{display:flex;flex-wrap:nowrap;justify-content:flex-start;gap:0 var(--s3)}.pl-wa .np-link{font-size:var(--t13);white-space:nowrap}}}
