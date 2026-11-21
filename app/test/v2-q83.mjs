@@ -73,8 +73,9 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 
   ok(z.oldOpts === 0, `${k}: the old form row is gone (${z.oldOpts})`);
   ok(z.minT >= 44, `${k}: every plate and chip at least 44 px tall (${z.minT})`);
   ok(z.out === 0, `${k}: nothing in the sentence runs past the page edge (${z.out})`);
-  /* Nov 20: the limit follows the design Sim approved (Q95 measured the plot page at 2,220 px at 390; the Blueprint's was 1,700) */
-  if (W === 390) ok(z.H <= 2220, `390 ${th}: page before a build kept short: ${z.H} px (approved design 2,220)`);
+  /* Nov 21 (Sim, Q103 A): phones show all of Plots that worked + Partners in crime, no tabs (natural scrolling over folds, Sim Nov 20);
+     built and measured at 390: 3,133 px light, 3,054 dark. The limit keeps it from growing further (was 2,220 for pieces 1-4, Q95) */
+  if (W === 390) ok(z.H <= 3200, `390 ${th}: page before a build kept short: ${z.H} px (approved Q103 A, 3,200 at most)`);
   ok(!z.side, `${k}: no sideways scroll before a build`);
   const rf = await refs(p); if (rf) { const want = W >= 700 ? 56 : 38;
     ok(rf.n === 3 && rf.plates.every(x => x && x.bg !== 'rgba(0, 0, 0, 0)' && x.tf !== 'none'), `${k}: Plots that worked: three winners, each record on a solid slanted plate (${rf.n}; ${rf.plates.map(x => x && x.bg).join(', ')})`);
