@@ -196,3 +196,104 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 @media (max-width:359.98px){.mtf-inf > .mtf-ty{grid-column:1 / -1}.mtf-inf > .mtf-more{grid-column:1 / -1;grid-row:auto}
   .mtf-stage{height:116px}.mtf-stage .big{width:112px;height:112px}.mtf-mv li{min-height:36px}
   .mtf-nav h2{padding-top:var(--s1)}.mtf-nav span{padding-bottom:var(--s1)}}
+
+/* Nov 21 (Sim, 7:05 AM: the squeezed names 'look really rough'; 7:13 AM: fine): under 1000 the six's names are never squeezed. The form
+   sits on a small line above (Mega / Yellow / Paldean · Combat / Female) and the name is one clean line; phones show 3 + 3 */
+.mtf-row .nm .ns{display:block}.mtf-row .nm .ns .q{display:block;font:600 var(--t13)/1.2 var(--b);font-style:normal;color:var(--mtf-ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mtf-row .nm .ns .q.mega{color:var(--plot-text);font-weight:800}
+@media (max-width:999.98px){
+  .mtf-row .nm b{white-space:normal;text-align:center;font:700 var(--t15)/1.15 var(--b);font-style:normal;transform:none}
+  .mtf-row .nm .ns .q{display:block;font:600 var(--t13)/1.2 var(--b);color:var(--mtf-ink2);white-space:nowrap}.mtf-row .nm .ns .q.mega{color:var(--plot-text);font-weight:800}}
+@media (max-width:699.98px){.mtf-rows{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:2px}.mtf-row{min-height:0;padding:var(--s1) 2px var(--s2)}
+  .mtf-row .nm{width:100%;overflow:visible}.mtf-row .pic{width:56px;height:56px}.mtf-row .rt b{font-size:var(--t17)}}
+/* each tile picks its own size from its width (no squeezing): narrow tiles 13px names, the form line may wrap at its space */
+@media (max-width:999.98px){.mtf-row .nm{container-type:inline-size}}
+.mtf-row .nm .ns .q{white-space:normal}@media (min-width:1000px){.mtf-row .nm .ns .q{white-space:nowrap}}
+@container (max-width:99.98px){.mtf-row .nm b{font-size:var(--t13)}}
+/* a narrow tile stacks a two-part form ('Paldean' over 'Combat') instead of leaving a lone '·' at a line end */
+.mtf-row .nm .ns .q .dot{font-style:normal}@container (max-width:119.98px){.mtf-row .nm .ns .q .dot{display:block;height:0;overflow:hidden}}
+@container (max-width:83.98px){.mtf-row .nm b{letter-spacing:-.04em}} /* 320-339: 'Crabominable' in a 79px tile */
+@media (max-width:339.98px){.mtf-row{padding-inline:0}}
+/* Nov 21 (Sim, 7:13 AM: 'not a fan of how the yellow just sticks out ... more nasty plot and less generic'): no yellow. The chosen
+   Pokémon is a black tile with a Nasty pink edge (the frame's own black and pink drop); pink marks the Suggestions bar, the gain, the
+   new Pokémon and Apply */
+.mtf-row.on{background:var(--mtf-frame);box-shadow:inset 0 0 0 3px var(--mtf-drop)}
+.mtf-row.on .no,.mtf-row.on .nm b,.mtf-row.on .nm small,.mtf-row.on .rt,.mtf-row.on .rt b,.mtf-row.on .mg,.mtf-row.on .nm .ns .q.mega{color:var(--mtf-on-frame)}
+.mtf-row.on .nm .ns .q{color:var(--mtf-bar-sub)}
+.mtf-sg > .tm-sgs > h2{color:var(--mtf-on-frame)}
+
+/* ================= Night plot (Sim chose B, Nov 21, 7:29 AM: 'so much better ... so much more modern') =================
+   The frame is brand Night; each part is one surface (no box in a box); the Pokémon glow in their own colour on the stage;
+   Nasty pink is the one accent (the chosen Pokémon, the gain, the new Pokémon, Apply). The panels' tokens are remapped here, so every
+   rule above that reads --mtf-ink / --mtf-panel / --mtf-cell paints the night version. Space (Sim, 7:31 AM): moves stay on every row as
+   a quiet two-line list, Item / Ability / Nature share one row, each swap is one slim row. */
+.mtf{--mtf-frame:var(--mtf-night);background:var(--mtf-night);box-shadow:0 0 0 1px var(--mtf-n-rule),0 24px 60px -20px var(--mtf-n-glow);padding:var(--s3);gap:var(--s3)}
+@media (min-width:1000px){.mtf{padding:var(--s4);gap:var(--s4);box-shadow:0 0 0 1px var(--mtf-n-rule),0 32px 80px -24px var(--mtf-n-glow)}}
+.mtf-row:not(.mtf-add),.mtf-sum,.mtf-sg{--mtf-panel:var(--mtf-n-surf);--mtf-ink:var(--mtf-on-frame);--mtf-ink2:var(--mtf-n-sub);--mtf-ink2b:var(--mtf-n-sub);--mtf-ink3:var(--mtf-n-sub);
+  --mtf-link:var(--mtf-n-link);--mtf-cell:var(--mtf-n-surf2);--mtf-wash:var(--mtf-n-surf2);--mtf-rule:var(--mtf-n-rule);--mtf-rate:var(--mtf-on-frame);--mtf-stop:var(--mtf-hot);
+  --mtf-card-tile:var(--mtf-n-surf2);--mtf-card-new:color-mix(in srgb,var(--mtf-drop) 18%,var(--mtf-n-surf));--mtf-card-sub:var(--mtf-n-sub);--mtf-card-link:var(--mtf-n-link);--plate:var(--mtf-n-surf2);--on-plate:var(--mtf-on-frame)}
+.mtf{--mtf-add:var(--mtf-n-add)}
+/* Your six */
+.mtf-rows{gap:var(--s1)}
+.mtf-row{background:var(--mtf-n-surf);box-shadow:inset 3px 0 0 var(--c)}
+.mtf-row .nm .ns .q.mega,.mtf-row .mg{color:var(--mtf-n-link)}
+.mtf-row .m4{gap:2px var(--s3)}.mtf-row .m4 i{padding:0 0 0 var(--s2);background:none;color:var(--mtf-n-sub);font-weight:600;box-shadow:inset 3px 0 0 var(--tc)}
+.mtf-row.on{background:linear-gradient(90deg,color-mix(in srgb,var(--mtf-drop) 34%,var(--mtf-n-surf)),color-mix(in srgb,var(--mtf-drop) 8%,var(--mtf-n-surf)));box-shadow:inset 4px 0 0 var(--mtf-drop)}
+.mtf-row.on .m4 i{color:var(--mtf-on-frame)}
+@media (min-width:1000px){.mtf-row .nm b{font-family:var(--u);font-style:italic;font-weight:800;font-size:var(--t17)}.mtf-row .rt b{font-size:var(--t26)}}
+@media (max-width:999.98px){.mtf-row{box-shadow:inset 0 3px 0 var(--c)}.mtf-row.on{background:linear-gradient(180deg,color-mix(in srgb,var(--mtf-drop) 34%,var(--mtf-n-surf)),color-mix(in srgb,var(--mtf-drop) 8%,var(--mtf-n-surf)));box-shadow:inset 0 3px 0 var(--mtf-drop),inset 0 0 0 2px var(--mtf-drop)}}
+/* the chosen one */
+.mtf-nav{background:none}
+.mtf-stage{background:radial-gradient(55% 65% at 55% 55%,color-mix(in srgb,var(--c) 70%,transparent),transparent 75%),var(--mtf-night)}
+.mtf-stage::after{background:var(--mtf-n-rule)}
+.mtf-stage .rate span{background:var(--mtf-drop);color:var(--mtf-on-frame)}
+.mtf-ia{grid-template-columns:repeat(auto-fit,minmax(80px,1fr))}.mtf-ia div{background:none;padding:0 0 var(--s2);border-bottom:1px solid var(--mtf-n-rule)}
+.mtf-btn{background:var(--mtf-on-frame);color:var(--mtf-night)}a.mtf-btn{color:var(--mtf-night)}
+.mtf-btn.ghost,.mtf-btn.red{background:none}
+/* Suggestions: no bar, no card in the panel; a pink rule under the title, swaps as slim rows */
+.mtf-sg > .tm-sgs > h2{margin:0 0 var(--s3);padding:var(--s3) 0 var(--s2);background:none;color:var(--mtf-on-frame);border-bottom:3px solid var(--mtf-drop)}
+.mtf-sg .tm-sug > li{background:none;padding:var(--s3) 0;border-top:1px solid var(--mtf-n-rule)}
+.mtf-sg .tm-sug .tm-mv b{color:var(--mtf-hot)}
+.mtf-sg .tm-chg{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
+.mtf-sg .tm-chg .tm-sw{display:flex;align-items:center;justify-items:start;gap:var(--s2);padding:var(--s1) var(--s2);text-align:left}
+.mtf-sg .tm-chg .tm-sw img,.mtf-sg .tm-sug .tm-chg .tm-sw img{width:48px;height:48px;flex:none}
+.mtf-sg .tm-chg .tm-sw > span{display:grid;min-width:0}
+.mtf-sg .tm-chg .tm-sw.in{box-shadow:inset 0 0 0 2px var(--mtf-drop)}
+.mtf-sg .tm-chg .tm-ar{font-size:var(--t20);color:var(--mtf-hot)}
+.mtf-sg .tm-sug .np-btn{background:var(--mtf-drop);color:var(--mtf-on-frame)}
+.mtf-sg .tm-sug .sg2-ln b{background:var(--mtf-n-surf2);color:var(--mtf-on-frame)}
+.mtf-plan{background:var(--mtf-night)}
+@media (max-width:699.98px){.mtf-ia div:nth-child(n+3){padding:0 0 var(--s2)}.mtf-ia div:nth-child(n+3) dd{font-size:var(--t15);line-height:1.3}
+  .mtf-sg .tm-chg .tm-sw{min-width:0;padding:var(--s1)}.mtf-sg .tm-chg .tm-sw img,.mtf-sg .tm-sug .tm-chg .tm-sw img{width:40px;height:40px}
+  .mtf-sg .tm-chg .tm-sw > span{font-size:var(--t13);line-height:1.25}.mtf-sg .tm-chg .tm-sw small{font-size:var(--t13)}}
+/* item · Ability never cut with '…' (Sim's no-cutting rule): it may wrap at a space ('Rocky Helmet · Psychic Surge' in the 1000-1279 column) */
+.mtf-row .nm small{white-space:normal;overflow:visible;text-overflow:clip}
+/* polish (Sim, Nov 21, 7:38 AM: 'it just needs a lot more polish'): the three column heads sit on Night, one height and one type, each
+   over the same thin rule; the chosen one's info is the one panel; its moves speak the rows' language (a tinted slab, type-coloured edge) */
+.mtf-bar{padding:0 var(--s2);box-shadow:inset 0 -1px 0 var(--mtf-n-rule)}
+.mtf-sum,.mtf-sg{background:none}
+.mtf-sg > .tm-sgs{padding:0}
+.mtf-sg > .tm-sgs > h2{display:flex;align-items:center;min-height:var(--s12);margin:0 0 var(--s4);padding:0 var(--s2);border:0;box-shadow:inset 0 -1px 0 var(--mtf-n-rule)}
+.mtf-sg > .tm-sgs > :not(h2){margin-inline:var(--s2)}
+@media (min-width:1000px){.mtf-bar,.mtf-sg > .tm-sgs > h2{min-height:56px}.mtf-bar b,.mtf-bar h2,.mtf-sg > .tm-sgs > h2{font-size:var(--t20)}}
+.mtf-inf{background:var(--mtf-n-surf)}
+.mtf-mv li{background:color-mix(in srgb,var(--tc) 34%,var(--mtf-n-surf2));color:var(--mtf-on-frame);box-shadow:inset 4px 0 0 var(--tc)}
+/* polish 2: the type tags sit on the stage's top right (they belong to the Pokémon), so the info starts with Item / Ability / Nature;
+   on phones Lock and Pokémon Page get the first info row to themselves instead of squeezing the tags into a column */
+.mtf-stage > .mtf-ty{position:absolute;top:var(--s3);right:var(--s3);z-index:2;display:flex;gap:var(--s1);margin:0}
+@media (max-width:699.98px){.mtf-inf > .mtf-more{grid-column:1 / -1;grid-row:1;justify-content:flex-start;gap:0 var(--s5)}.mtf-more .np-link{font-size:var(--t15)}}
+/* polish 4: Edit Set / Replace / Remove one button family: slanted slabs; Edit Set the white primary, Replace and Remove quiet slabs
+   (were a white block beside two top-and-bottom line buttons) */
+.mtf-btn.ghost,.mtf-btn.red{background:var(--mtf-n-surf2);box-shadow:none}.mtf-btn.ghost{color:var(--mtf-on-frame)}.mtf-btn.red{color:var(--mtf-hot)}
+/* calmer (Sim, Nov 21, 7:45 AM: 'a lot going on'; 7:47 AM: 'much better ... make this the one'): each row is picture, name, score and
+   item; the four moves live in the chosen one's panel (and the Team Sheet); pink only marks the chosen row and Apply; on desktop the
+   rows share the column's height with bigger pictures, so the six end with the other two columns */
+.mtf-row .m4{display:none}
+.mtf-row .rt span{color:var(--mtf-n-sub)}
+.mtf-stage .rate span{background:var(--mtf-n-surf2)}
+.mtf-sg .tm-sug .tm-mv b{color:var(--mtf-on-frame)}
+.mtf-sg .tm-chg .tm-ar{color:var(--mtf-n-sub)}
+.mtf-sg .tm-chg .tm-sw{background:none}.mtf-sg .tm-chg .tm-sw.in{background:var(--mtf-n-surf2);box-shadow:inset 0 0 0 1px var(--mtf-n-rule)}
+@media (min-width:1000px){.mtf-party{grid-template-rows:auto minmax(0,1fr);align-content:stretch}.mtf-rows{grid-auto-rows:1fr}
+  .mtf-row{grid-template-columns:20px 72px minmax(0,1fr) auto}.mtf-row .pic{width:72px;height:72px}.mtf-row .rt b{font-size:var(--t22)}.mtf-row.on::after{display:none}}
+/* Item / Ability / Nature read as one even row: values on one baseline, the 'most used' note on its own small line */
+.mtf-ia{align-items:start}.mtf-ia div{align-content:start}.mtf-ia dd small{display:block}
