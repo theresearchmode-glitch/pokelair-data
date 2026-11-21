@@ -30,6 +30,9 @@ Suggestions full width at 1000-1279, the old footer) and 2 'boxes' (the mock's m
 
 Fixed 5:14 AM: on phones under 480 the header's links moved up 17-37px after Remove (the score's band words change length); the score block now keeps its height until the team size changes (0px at 320/390).
 
+Corrected after the checks (6:00 AM): two of my calls broke your Nov 18 C rules, so I put your rules back: the Suggestions links are one row from 360 (a list only under 360), and long names are at most two lines (narrowed down to 50%). One exception for you: 'Paldean Tauros (Combat)' in the 47px tile at 360 still needs three lines even at 50%.
+Also fixed (older bug, found by the look check): Build's '.pl' CSS pushed every page's blue headline word 40-64px right on phones.
+
 Trade-off to flag: My Team on a phone is about 4 screens (3,810px at 390), not the brief's 3. Every part is a feature, and Sim said
 on Nov 20 no more folds, so nothing was hidden.
 
