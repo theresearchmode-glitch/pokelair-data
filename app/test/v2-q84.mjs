@@ -8,7 +8,8 @@
 //  S35 Suggestions loading: a moving slanted bar, "Plotting your best changes…", two ghost rows; reduced motion: the bar stands still.
 //  S21 Home, new visitor (sample team): "A sample six · ...", "Its Strength Score", "Sample leads"; a real team still says "Your ...".
 //  S5  My Team band: "6 of 6 · Grassy Terrain · Legal ✓" on one line at 390 and 360.
-//  S4  Empty My Team: the six "Add" tiles read Lead 1, Lead 2, Back 1, Back 2, Bench 1, Bench 2.
+//  S4  Empty My Team: the six "Add" tiles read Spot 1 ... Spot 6 in slot order, one even row at 1440, 3 x 2 on phones, no Lead / Back /
+//      Bench words (Nov 20, Sim: no Lead / Back / Bench on My Team; leads are Battle's call. Was: Lead 1, Lead 2, Back 1 ... Bench 2).
 //  S7  The "Tap a Card ..." hint is --ink-3 at weight 500 (not link blue).
 //  S3  "No Pokémon here.": the way out is the slanted outline button (np-btn2) on its own line, one line tall.
 // Every page: light and dark, no sideways scroll (320 and 2560 too), no page errors. Each check fails on the build before (t1rules 38174f07).
@@ -119,8 +120,15 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) { const tag = `
   if (W < 700) await p.setViewportSize({width: W, height: 844});
   // ---- S4 empty My Team ----
   await p.evaluate(() => window.__ev('(()=>{S.slots=[];fixSlots();S.loadedId=null;V2.redraw()})()')); await p.waitForTimeout(1200);
-  const E4 = await p.evaluate(() => [...document.querySelectorAll('.tm-e-six .sx-add')].map(a => (a.querySelector('b') || {}).textContent + '/' + (a.querySelector('small') || {}).textContent));
-  ok(E4.join() === 'Add/Lead 1,Add/Lead 2,Add/Back 1,Add/Back 2,Add/Bench 1,Add/Bench 2', `S4 ${tag}: empty tiles read ${E4.join(', ')}`);
+  /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): Spot 1-6 in slot order, laid out as one even row on desktop */
+  const E4 = await p.evaluate(() => [...document.querySelectorAll('.tm-e-six .sx-add')].map(a => (a.querySelector('b') || {}).textContent + '/' + (a.querySelector('small') || {}).textContent + '@' + a.dataset.v2addto));
+  ok(E4.join() === 'Add/Spot 1@0,Add/Spot 2@1,Add/Spot 3@2,Add/Spot 4@3,Add/Spot 5@4,Add/Spot 6@5', `S4 ${tag}: empty tiles read Spot 1-6 in slot order (${E4.join(', ')})`);
+  const G4 = await p.evaluate(() => { const six = document.querySelector('.tm-e-six'), R = [...document.querySelectorAll('.tm-e-six .sx-add')].map(a => a.getBoundingClientRect());
+    const tops = [...new Set(R.map(r => Math.round(r.top)))].sort((a, c) => a - c), rows = tops.map(t => R.map((r, i) => [r, i]).filter(([r]) => Math.abs(Math.round(r.top) - t) <= 1));
+    const ws = R.map(r => Math.round(r.width)), lr = rows.every(rw => rw.every(([r], k) => !k || r.left > rw[k - 1][0].right - 1)) /* left to right in slot order */;
+    return {rows: rows.map(rw => rw.map(([, i]) => i + 1).join('')), w: [Math.min(...ws), Math.max(...ws)], lr, words: six ? (six.innerText.match(/\b(Lead|Back|Bench)\b/g) || []).join(',') : 'no spots'}; });
+  const want4 = W < 700 ? '123|456' : '123456';
+  ok(G4.rows.join('|') === want4 && G4.w[1] - G4.w[0] <= 1 && G4.lr && !G4.words, `S4 ${tag}: the spots sit ${W < 700 ? 'three across, two rows' : 'in one even row'} in slot order (rows ${G4.rows.join(' | ')}, widths ${G4.w.join('-')} px, Lead / Back / Bench words: ${G4.words || 'none'})`);
   await side(p, `team empty ${tag}`);
   // ---- S6 Events (resize the desktop page through the tablet widths) ----
   if (W >= 1024) { await go(p, 'events', 2000); const below = [];

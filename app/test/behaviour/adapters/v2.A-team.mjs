@@ -184,6 +184,9 @@ export default (ui, pg, o) => {
       if (!(await pg.evaluate(f, name))) await H.tapTile(name); await tapFound(f, name, 'remove ' + name, 800); },
     /** the game plan line under the six (its sentence only, not the "Use NastyPlot's pick" button beside it) */
     gamePlanLine: () => txt('#main .sx-plan .sx-pl'),
+    /** Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): everything drawn in My Team's six (the Hand, its heading
+        line, the editing strip, any plan line), as one line of visible text, to check no Lead / Back / Bench word is left there */
+    sixText: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-six')].filter(e => e.getClientRects().length).map(e => e.innerText).join(' ').replace(/\s+/g, ' ').trim()),
     /** the team actions are all on show (no ⋯ menu), so there is nothing to open */
     /** My Team's More menu (a sheet; Sim, Nov 11): opened when it isn't already */
     openMoreActions: async () => { if (await pg.evaluate(() => !!document.querySelector('.np-sheet .tm-moremenu'))) return; if (await has('#main [data-v2more]')) await click('#main [data-v2more]', 500); },

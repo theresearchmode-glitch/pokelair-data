@@ -241,8 +241,12 @@ t('TEAM-07', 'Phone jump bar: Suggestions | Matchups | How it plays | Sets; "Set
 t('TEAM-08', 'Your Six: six tiles lead/back/bench; tapping a tile shows its set, tapping again hides it', async () => {
   if (NEW) { /* new build (decided Nov 11, approved mock-up): no "Your Six" heading; the picked Pokémon's set always shows (the first
     lead's before any tap; on phones since Sim's Nov 18 choice C, none until a Card is tapped), so there is no "Tap a Pokémon…" hint and tapping the picked tile again keeps its set */
+    /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): the six sit in the team's own slot order under the one line
+       "Who leads depends on who you face. Plan it in Battle ›"; still no "Your Six" heading on a full team (approved mock-up, Nov 11)
+       (was: tiles in the plan line's lead/back/bench order) */
     const r = await myTeam({team: TEAM, width: 390}); const tiles = await r.ui.sixTiles(); ok(tiles.length === 6, `${tiles.length} tiles`); ok(!(await r.ui.sees(/Your Six/)), 'a "Your Six" heading shows (removed by design)');
-    const plan = await r.ui.gamePlanLine(); const m = plan.match(/lead (.+?) \+ (.+?), back (.+?) \+ (.+?), bench (.+?) \+ (.+?)\./); ok(m, 'no plan line'); ok(tiles.join('|') === m.slice(1).join('|'), `tiles ${tiles.join(',')} not in lead/back/bench order ${m.slice(1).join(',')}`);
+    const st = await r.ui.sixText(); ok(/^Who leads depends on who you face\. Plan it in Battle ›/.test(st), 'the six do not open with the Battle line: ' + st.slice(0, 100));
+    const SLOT = ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']; ok(tiles.join('|') === SLOT.join('|'), `tiles ${tiles.join(',')} not in the team's slot order ${SLOT.join(',')}`);
     ok(!(await r.ui.sees('Tap a Pokémon to see its set')), 'old "Tap a Pokémon to see its set" hint shows'); /* Sim, Nov 18 (My Team C, phone length): on phones the editing panel stays shut until a Card is tapped, with a "Tap a Card to edit, replace or
        remove it" line; desktop still opens the first lead's (checked below) */
     ok(!/(Set|Editing) /.test(await r.ui.setCard()) && !(await r.ui.tilePressed(tiles[0])) && await r.ui.sees('Tap a Card to edit, replace or remove it'), `phone opens a set before any tap, or has no "Tap a Card…" line (${(await r.ui.setCard()).slice(0, 60)})`);
@@ -250,7 +254,7 @@ t('TEAM-08', 'Your Six: six tiles lead/back/bench; tapping a tile shows its set,
     await r.ui.tapTile('Garchomp'); c = await r.ui.setCard(); ok(/(Set|Editing) Garchomp /.test(c) && await r.ui.tilePressed('Garchomp'), 'second tap hid Garchomp\'s set (the picked set always shows)'); await r.close();
     /* Sim, Nov 18 (Q5 A): desktop works like phones: no set before a tap, the 'Tap a Card…' line, a tap opens that Card's set */
     const d = await myTeam({team: TEAM}), d0 = (await d.ui.sixTiles())[0]; ok(!/(Set|Editing) /.test(await d.ui.setCard()) && await d.ui.sees('Tap a Card to edit, replace or remove it'), 'desktop opened a set before any tap');
-    await d.ui.tapTile(d0); ok(new RegExp('(Set|Editing) ' + d0 + ' ').test(await d.ui.setCard()), 'desktop: tapping the first lead did not open its set'); await d.close(); return; }
+    await d.ui.tapTile(d0); ok(new RegExp('(Set|Editing) ' + d0 + ' ').test(await d.ui.setCard()), 'desktop: tapping the first Card did not open its set'); await d.close(); return; }
   const r = await myTeam({team: TEAM, width: 390}); const tiles = await r.ui.sixTiles(); ok(tiles.length === 6, `${tiles.length} tiles`); has(await r.ui.text(), 'Your Six');
   const plan = await r.ui.gamePlanLine(); const m = plan.match(/lead (.+?) \+ (.+?), back (.+?) \+ (.+?), bench (.+?) \+ (.+?)\./); ok(m, 'no plan line'); ok(tiles.join('|') === m.slice(1).join('|'), `tiles ${tiles.join(',')} not in lead/back/bench order ${m.slice(1).join(',')}`);
   ok(await r.ui.sees('Tap a Pokémon to see its set'), 'phone shows no "Tap a Pokémon to see its set" hint'); ok(!(await r.ui.setCard()), 'phone opened a set card before any tap');
@@ -269,12 +273,19 @@ t('TEAM-09', 'Lock and Remove on a tile: lock label flips; × removes with Undo'
 t('TEAM-10', 'Set card: plan role, rating, item, ability, nature, stat points, 4 moves; Edit set and Info sheet', async () => {
   const r = await myTeam(); await r.ui.tapTile('Garchomp'); const c = await r.ui.setCard();
   // button words in any casing (the new build writes buttons in Title Case, Sim Nov 9); the move strips are counted by the adapter
-  for (const s of [/Garchomp/, /Dragon/, /Ground/, /(Leads with|In the back with|On the bench)/, /\d+ [SABCD] tier rating/, /Item \S/, /Ability \S/, (NEW ? /Nature \w+ (most used|yours)/ : /Nature \w+ (most run|yours)/), /Stat points \d+ \w+, \d+ \w+/, /Edit set/i, NEW ? /Pokémon Page ›/ /* Nov 15: the page replaces the sheet */ : /Info sheet ›/i]) has(c, s, 'set card');
+  /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): the new build's set card has no role line and no lead buttons */
+  if (NEW) ok(!/Leads with|In the back with|On the bench|Set as Lead|Use NastyPlot.s Pick/i.test(c), 'the set card still shows a lead role or lead button: ' + c.slice(0, 160));
+  for (const s of [/Garchomp/, /Dragon/, /Ground/, ...(NEW ? [] : [/(Leads with|In the back with|On the bench)/]), /\d+ [SABCD] tier rating/, /Item \S/, /Ability \S/, (NEW ? /Nature \w+ (most used|yours)/ : /Nature \w+ (most run|yours)/), /Stat points \d+ \w+, \d+ \w+/, /Edit set/i, NEW ? /Pokémon Page ›/ /* Nov 15: the page replaces the sheet */ : /Info sheet ›/i]) has(c, s, 'set card');
   const moves = await r.ui.setMoveCount(); ok(moves >= 4, `${moves} move strips`);
   await r.ui.tapText('Edit set', 900); let p = await r.ui.editPanel(); ok(p && /Edit Garchomp/.test(p.title + ' ' + p.text), 'Edit set did not open "Edit Garchomp"'); await r.ui.closeEditPanel();
   await r.ui.tapText(NEW ? 'Pokémon Page ›' : 'Info sheet ›', 900); const s = await r.ui.infoSheet(); ok(s && s.includes('Garchomp'), 'Info sheet did not open'); await r.close(); });
 
 t('TEAM-11', 'Set as lead: plan says "your pick" (saved to the account); "Use NastyPlot\'s pick" goes back; Home follows', async () => {
+  if (NEW) { /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): no Card offers "Set as Lead" or "Use NastyPlot's
+    Pick"; the six's heading says "Who leads depends on who you face. Plan it in Battle ›", and that link opens Battle (where leads are planned) */
+    const r = await myTeam(); for (const n of await r.ui.sixTiles()) { const c = await r.ui.showSet(n); ok(!/Set as Lead|Use NastyPlot.s Pick/i.test(c), `${n}'s Card still offers a lead button: ` + c.slice(0, 120)); }
+    const st = await r.ui.sixText(); has(st, 'Who leads depends on who you face. Plan it in Battle ›', 'My Team\'s six'); ok(!/Set as Lead|Use NastyPlot.s Pick/i.test(st), 'My Team still has a lead button: ' + st.slice(0, 160));
+    await r.ui.tapText('Plan it in Battle ›', 1200); ok(await r.ui.current() === 'matchup', '"Plan it in Battle ›" did not open Battle: ' + await r.ui.current()); noErrs(r); await r.close(); return; }
   const r = await myTeam(); await r.ui.tapTile('Sneasler'); has(await r.ui.setCard(), /Set as [Ll]ead/); await r.ui.tapText(NEW ? 'Set as Lead' : 'Set as lead', 1200);
   ok(await r.ui.waitToast(/Sneasler now leads/), 'no "Sneasler now leads" toast'); let pl = await r.ui.gamePlanLine(); ok(/your pick/.test(pl) && /lead (Sneasler \+|.+ \+ Sneasler)/.test(pl), 'plan line: ' + pl);
   await sleep(1000); const a = await r.acct(); ok(a && Array.isArray(a.leads) && a.leads.includes('Sneasler'), 'lead pick not saved to the account: ' + JSON.stringify(a && a.leads));
@@ -283,6 +294,12 @@ t('TEAM-11', 'Set as lead: plan says "your pick" (saved to the account); "Use Na
   pl = await r.ui.gamePlanLine(); ok(!/your pick/.test(pl), 'still "your pick": ' + pl); await r.close(); });
 
 t('TEAM-12', 'Game plan line names two leads, two back, two bench', async () => {
+  if (NEW) { /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): no Game Plan line with leads on My Team and no Lead /
+    Back / Bench word anywhere in the six, for a full team and for a team being built (was: the line names lead, back and bench) */
+    const {ui} = await view('team', {team: TEAM}, 'My Team'); ok(!(await ui.gamePlanLine()), 'a full team shows a Game Plan line: ' + await ui.gamePlanLine());
+    const w6 = (await ui.sixText()).match(/\b(Lead|Back|Bench|lead [A-Z]|back [A-Z]|bench [A-Z])\b/g); ok(!w6, 'a full team\'s six says ' + (w6 || []).join(', ') + ': ' + (await ui.sixText()).slice(0, 160));
+    const r = await myTeam({team: ['Garchomp', 'Incineroar']}); ok(!(await r.ui.gamePlanLine()), 'a team being built shows a Game Plan line: ' + await r.ui.gamePlanLine());
+    const w2 = (await r.ui.sixText()).match(/\b(Lead|Back|Bench)\b/g); ok(!w2, 'a team being built says ' + (w2 || []).join(', ') + ': ' + (await r.ui.sixText()).slice(0, 160)); await r.close(); return; }
   const {ui} = await view('team', {team: TEAM}, 'My Team'); ok(/^Game [Pp]lan(?: ›)? vs the meta's top six: lead .+ \+ .+, back .+ \+ .+, bench .+ \+ .+\.$/.test(await ui.gamePlanLine() || ''), 'plan line: ' + await ui.gamePlanLine());
   const r = await myTeam({team: ['Garchomp', 'Incineroar']}); if (NEW) ok(!(await r.ui.gamePlanLine()), 'a team being built shows a Game Plan line: ' + await r.ui.gamePlanLine()); /* Sim, Nov 15 night: no Lead/Back/Bench or plan until all six are in */ else ok(/in team order/.test(await r.ui.gamePlanLine() || ''), 'under 4: no "in team order" line'); await r.close(); });
 
@@ -546,10 +563,11 @@ t('SETS-01', 'Open Team Sheet fold: one card per Pokémon; tapping opens its edi
   if (NEW) { /* new build (Sim, Nov 12): today's "Open Team Sheet" fold is the Team Sheet sheet: one card per Pokémon (item, Ability,
     stats), the two leads marked "↑ Lead vs the meta's top six" (the plan line's lead pair, no other card), a card opens Edit Set. Sim
     dropped the per-card "−": the six's "− Remove" (with Undo) covers removing */
-    const r = await myTeam(); const pl = (await r.ui.gamePlanLine() || '').match(/^Game [Pp]lan(?: ›)? (vs the meta's top six): lead (.+?) \+ (.+?), back /); ok(pl, 'plan line: ' + await r.ui.gamePlanLine());
-    await r.ui.go('Team Sheet', 900); const leads = [pl[2], pl[3]], names = ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler'];
+    /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): no card carries a Lead mark any more (was: the plan line's two
+       leads marked "↑ Lead vs the meta's top six", no other card); each card reads name, then Item straight away */
+    const r = await myTeam(); await r.ui.go('Team Sheet', 900); const names = ['Mega Charizard Y', 'Garchomp', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler'];
     for (const n of names) { const c = await r.ui.teamSheetCard(n) || ''; ok(/ Item .+ Ability /.test(c) && /HP \d+ \d+/.test(c), `${n}'s card misses item / Ability / stats: ` + c.slice(0, 120));
-      if (leads.includes(n)) ok(c.startsWith(`${n} ↑ Lead ${pl[1]} Item `), `lead ${n}'s card has no "↑ Lead ${pl[1]}": ` + c.slice(0, 80)); else ok(!/↑ Lead/.test(c), `${n} is not a lead but its card says "↑ Lead": ` + c.slice(0, 80)); }
+      ok(c.startsWith(`${n} Item `) && !/\bLead\b/.test(c), `${n}'s Team Sheet card still has a Lead mark (or no name + Item start): ` + c.slice(0, 80)); }
     ok(await r.ui.teamSheetRemoves() === 0, 'a Team Sheet card still has a remove control'); await r.ui.tapLabel('Whimsicott: edit its set', 1000); const p = await r.ui.editPanel(); ok(p && p.title === 'Edit Whimsicott', 'card did not open "Edit Whimsicott" (' + (p && p.title) + ')'); await r.ui.closeEditPanel();
     /* Sim Q15 (Nov 15): Edit Set opened from the Team Sheet returns to the Team Sheet when closed (checked by hand in the browser,
        docs/rebuild/decisions.md); close whatever sheet is open, then remove on My Team */
