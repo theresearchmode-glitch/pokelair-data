@@ -150,3 +150,22 @@ button.k-card{cursor:pointer;width:100%}
 @media (max-width:359.98px){.k-facts b{font-size:var(--t17)}
   .k-plan{padding-left:44px}.k-plan::before{left:calc(22px - 1.5px)}.k-n{left:-36px}
   .k-roster{column-gap:6px}}
+
+/* ===== the move ticket (Sim chose A, Nov 21): type word on its type colour, name, what it does, usage % ===== */
+.k-moves{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin:0;padding:0;list-style:none}
+.k-moves>li,.k-movebox{container-type:inline-size;min-width:0}
+.k-move{display:grid;grid-template-columns:80px minmax(0,1fr) auto;align-items:center;gap:12px;width:100%;min-height:52px;margin:0;padding:0 12px 0 0;border:0;background:var(--k-card);color:var(--k-ink);font:inherit;text-align:left;box-shadow:inset 0 0 0 1px var(--k-rule),inset 0 -3px 0 var(--mc,var(--type-none));clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+button.k-move{cursor:pointer}
+.k-mt{align-self:stretch;display:grid;place-items:center;padding:0 8px 0 0;background:var(--mc,var(--type-none));color:var(--on-type);font-size:var(--t13);font-weight:800;line-height:1;letter-spacing:.04em;text-transform:uppercase;clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.k-mn{display:grid;min-width:0;line-height:1.25}
+.k-mn b{font-size:var(--t16);font-weight:700}
+.k-mn small{font-size:var(--t13);font-weight:500;color:var(--k-ink2)}
+.k-mp{font-size:var(--t17);color:var(--k-ink)}
+/* narrow (a phone's two columns, the calc's side panel): the type word and % become a tab on top, then the name, then what it does */
+@container (max-width:299.98px){
+  .k-move{grid-template-columns:minmax(0,1fr) auto;align-content:start;gap:0 8px;min-height:0;padding:0 0 8px;clip-path:polygon(0 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+  .k-mt{grid-column:1/-1;grid-row:1;place-items:center start;min-height:28px;padding:4px 8px;clip-path:none;letter-spacing:0}
+  .k-mp{grid-row:1;grid-column:2;z-index:1;align-self:stretch;display:grid;align-items:center;padding:0 8px;background:var(--mc,var(--type-none));color:var(--on-type);font-size:var(--t15)}
+  .k-mn{grid-column:1/-1;grid-row:2;padding:4px 8px 0}
+  .k-mn b{font-size:var(--t15)}
+}

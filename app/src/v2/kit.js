@@ -46,6 +46,20 @@ V2.kScrib = text => `<span class="k-scrib u">${V2.esc(text)}</span>`;
 V2.kGo = (label, attrs = {}) => attrs && attrs.href ? `<a class="k-go u" data-kmax="2"${V2.kAttrs(attrs)}>${V2.esc(label)}</a>` : `<button type="button" class="k-go u" data-kmax="2"${V2.kAttrs(attrs)}>${V2.esc(label)}</button>`;
 // the one verdict tag (THEME 2.6): good = blue, bad = pink, live = pink, neutral = outlined
 V2.kTag = (kind, text) => `<span class="k-tag u k-${['good', 'bad', 'live', 'neutral'].includes(kind) ? kind : 'neutral'}">${V2.esc(text)}</span>`;
+// the move ticket (Sim chose A, Nov 21, 2:38 PM: "a cohesive thing we can apply everywhere with pokemon moves so ppl know yeah thats a move name").
+// One look for every move on the site: the type word on its type colour (never colour alone), the name, what it does (Physical / Special /
+// Status and its power, from the move data), and the usage % when the page has one. A narrow ticket stacks (kit.css container query).
+// o: {pct, attrs}; with attrs it is a <button>.
+V2.kMoveFacts = name => { const m = typeof mvByName === 'object' && mvByName.get(name); if (!m) return {type: '', what: ''};
+  const cat = ['Status', 'Physical', 'Special'][m.cat] || '';
+  const what = !m.cat ? 'Status' : m.vbp || m.fixed || m.ohko ? cat + ' · power\u00a0varies' : cat + ' · ' + m.bp + '\u00a0power'; /* number and 'power' stay together */
+  return {type: V2.TYPES.includes(m.type) ? m.type : '', what}; };
+V2.kMove = (name, o = {}) => { const f = V2.kMoveFacts(name), tag = o.attrs ? 'button' : 'span';
+  return `<${tag}${tag === 'button' ? ' type="button"' : ''} class="k-move"${f.type ? ` style="--mc:var(--ty-${f.type})"` : ''}${V2.kAttrs(o.attrs)}>`
+    + `<span class="k-mt">${V2.esc(f.type || 'Move')}</span><span class="k-mn"><b>${V2.esc(name)}</b>${f.what ? `<small>${V2.esc(f.what)}</small>` : ''}</span>`
+    + `${o.pct != null && o.pct !== '' ? `<b class="k-mp u">${V2.esc(o.pct)}</b>` : ''}</${tag}>`; };
+// a set's moves: always two across (no half rows); each ticket stacks when its column is narrow; items are names or [name, pct]
+V2.kMoves = list => `<ul class="k-moves">${(list || []).map(x => { const [n, pct] = Array.isArray(x) ? x : [x]; return `<li>${V2.kMove(n, {pct})}</li>`; }).join('')}</ul>`;
 V2.kMine = (text = 'Yours') => `<span class="k-mine">${V2.esc(text)}</span>`;
 // names drop a size before they wrap (HYBRID 7): each [data-kmax] steps down its levels (kit.css) until its line fits its box; every
 // name in one roster then takes the smallest size any of them needed, so a row reads even. Runs when kit parts arrive, on resize and once the fonts load.
