@@ -1852,3 +1852,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:33 PM: Sim: use Pokémon type symbols for flare, never without a label. Sim asked for a helper to check where they'd fit on the site; 2 helper slots are full (hT, hC), so asking Sim before a 3rd.
 - 2:34 PM: Sim: loves E, but the page is a little boring; wants flare without being overbearing for daily use. Adding data-drawn flare: a slanted damage bar per matchup in the move's type colour with a KO tick at 100%.
 - 2:34 PM: Sim: type-symbol helper waits for a free slot (no 3rd helper). Starts when hT or hC finishes.
+- 2:36 PM: Plans page: noted the Pokémon page mock-up, merged reskins, helpers, new rules. Sim: flat move boxes are bland everywhere; designing one site-wide move look (pictures to Sim).
