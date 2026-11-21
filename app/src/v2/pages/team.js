@@ -506,7 +506,7 @@ V2.pages.team = {place: 'team', draw() {
   // in after(): that flip moved everything under the belt 30px and back, and scroll anchoring moved the page 30px on each redraw
   return `<section class="tm-hero mt${V2._mtWide && innerWidth < 1100 ? ' mt-wide' : ''}${V2.mtfFrame && V2.isHand(D) ? ' mtf-hero' : ''}">${V2.mtfFrame && V2.isHand(D) ? mtfHead : mtHead}${V2.mtfFrame && V2.isHand(D) ? V2.mtfFrame(D, sel, sgSec) /* Sim, Nov 21: the frame (Your six, the one you tapped, Suggestions): team-frame.js */ : V2.sixHtml(D, sel)}</section>${tabbed ? tabBar : jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}${tabbed ? ' tm-tabbed' : ''}">${tabPanels(`${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${V2.mtfFrame && V2.isHand(D) ? '' : sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}`)}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
-after() { V2.mtBeltFit(); if (V2.mtfFit) { V2.mtfFit(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => V2.mtfFit()); }
+after() { V2.mtBeltFit(); if (V2.mtfHashJump) V2.mtfHashJump(); if (V2.mtfFit) { V2.mtfFit(); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => V2.mtfFit()); }
   /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */
   // a redraw now keeps unchanged elements (A5), so bind each element once (a second listener would fire twice)
   document.querySelectorAll('[data-tmsel]').forEach(b => { if (b._v2b) return; b._v2b = 1; b.addEventListener('click', () => { V2.ui.sel = +b.dataset.tmsel; V2.ui.picked = true; V2.redraw();
