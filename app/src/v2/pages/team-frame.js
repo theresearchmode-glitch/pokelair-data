@@ -31,7 +31,8 @@ V2.mtfFrame = (D, sel, sg) => { const {ms} = D, at = i => ms.find(m => m.i === i
   const rows = [0, 1, 2, 3, 4, 5].map(i => at(i) ? V2.mtfRow(D, at(i), sel) : V2.mtfAdd(i)).join(''); /* the six in the team's own slot order (Sim, Nov 20: no plan order) */
   return `<div class="mtf"><div class="mtf-party" role="group" aria-label="${V2.MTF_W.six}"><p class="mtf-bar"><b class="u">${V2.MTF_W.six}</b><span>${V2.MTF_W.tap}</span></p><div class="mtf-rows">${rows}</div></div>
     ${V2.mtfDetail(D, sel)}<div class="mtf-sg">${sg || ''}</div></div>
-    ${ms.length >= 6 ? `<button type="button" class="mtf-plan" data-v2gplan aria-label="Game Plan: ${V2.MTF_W.plan}"><b class="u">Game Plan ›</b><span>${V2.MTF_W.plan}</span></button>` : ''}`; };
+    ${ms.length >= 6 ? `<button type="button" class="mtf-plan" data-v2gplan aria-label="Game Plan: ${V2.MTF_W.plan}"><b class="u">Game Plan ›</b><span>${V2.MTF_W.plan}</span></button>` : ''}
+    ${ms.length ? `<p class="mtf-lead">Who leads depends on who you face. <a class="np-link" href="#battle">Plan it in Battle ›</a></p>` : ''}`; }; /* the lead advice lives in Battle (Sim, Nov 20: 'that should be done in the lead calc'); the line Sim saw on Nov 20 stays, under the Game Plan */
 // ‹ › in the detail bar: the previous / next Pokémon
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-mtfstep]'); if (!b) return; const D = V2.teamData(); if (!D || !D.ms.length) return;
   const n = D.ms.length, k = Math.min(V2.ui.sel, n - 1); V2.ui.sel = (k + +b.dataset.mtfstep + n) % n; V2.ui.picked = true; V2.redraw();

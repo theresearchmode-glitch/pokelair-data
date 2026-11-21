@@ -132,3 +132,7 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 .mtf-sg .tm-sug .sg2-ln b{--ink:var(--mtf-ink)}
 /* the header's 'Saved ✓' follows the page theme (its blue read 3.2:1 at night) */
 .mtf-saved{color:var(--plot-text)}
+
+.mtf-lead{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s2);margin:calc(var(--s4) * -1) 0 var(--s6);font:500 var(--t15)/1.4 var(--b);color:var(--ink-2)}.mtf-lead .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
+.mtf-more .np-link{min-width:var(--tap);justify-content:center} /* 'Lock' was 41px wide */
+@media (max-width:699.98px){.mtf-lead{margin:calc(var(--s2) * -1) 0 var(--s3);font-size:var(--t13)}}
