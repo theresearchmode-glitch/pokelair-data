@@ -3378,3 +3378,9 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:900px){.nf-pg{grid-template-columns:minmax(0,1fr) minmax(240px,320px);column-gap:var(--s10);align-items:start}
   .nf-dog{grid-template-columns:minmax(0,1fr);justify-items:center;text-align:center}.nf-dog .np-mon{--iw:220px}.nf-dogtx{justify-items:center}.nf-dogl{font-size:var(--t24)}}
 @media (max-width:399.98px){.nf-dog{column-gap:var(--s3)}.nf-dog .np-mon{--iw:88px}.nf-dog .np-mon.ft{padding-inline:var(--s1)}.nf-dogl{font-size:var(--t17)}} /* Nov 20: 'Corviknight's' ran out of the box at 320 with a scrollbar (GitHub, the day it became the underdog): the feature sprite's side padding is trimmed on phones so the line has room */
+
+/* Ratings' tier bar (Sim, Nov 21): the kit's sentence, a little smaller than a page's main sentence; tier sections clear the top bar when jumped to */
+.ra-tbar{margin:var(--s4) 0}.ra-tbar .k-sent{font-size:var(--t20)}.ra .gs-step,.ra .ra-tg{scroll-margin-top:calc(76px + var(--s4))}
+@media (max-width:699.98px){.ra-tbar .k-sent{font-size:var(--t17);gap:var(--s2)}.ra .gs-step,.ra .ra-tg{scroll-margin-top:calc(60px + var(--s4))}}
+/* phones: the tier bar is six even boxes in two rows of three ("Jump to" is spoken, not shown) */
+@media (max-width:699.98px){.ra-tbar .k-sent{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}.ra-tbar .k-sent > span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.ra-tbar .k-w{min-height:var(--tap);padding:0 var(--s2)}}

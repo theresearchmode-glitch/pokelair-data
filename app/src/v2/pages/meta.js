@@ -89,9 +89,13 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
   TIPS.gskey = TIPS.gskey || ['How to read the Grandstand', 'The big number is each Pokémon\'s rating, 0–100. "Mega" marks a Mega. ▲ or ▼ means it moved up or down this week. ◆ marks a hidden gem: rarely used, but wins more than its use predicts. A short blue bar under a name means it is on your team.'];
   const key = V2.tip('gskey');
   let body;
-  if (!listy) body = `<div class="gs-title"><h2 class="u">The <span class="nw">${f.mega ? 'Megas' : 'Grandstand'}${key}</span></h2>${viewSw}</div>${rows.length ? V2.gsStand(rows, !!f.mega) : '<p class="tm-sub ra-none">No Pokémon match. Try clearing a filter.</p>'}`;
+  /* the tier bar (Sim, Nov 21: "see what's S tier, A tier, B tier and so on easily and look through everything"): every tier with its count,
+     one tap jumps to it (opening it, and on phones the folded D and F tiers too); the kit's sentence with boxed words */
+  const tierN = T => (filtered ? rows : all).filter(x => lTier(x.r.total).k === T.k).length;
+  const tierBar = V2.kSent ? `<nav class="ra-tbar" aria-label="Jump to a tier">${V2.kSent(['Jump to', ...LTIERS.filter(T => tierN(T)).map(T => ({w: `${T.k} · ${tierN(T)}`, attrs: {'data-rajump': T.k, 'aria-label': `${T.k} tier, ${tierN(T)} Pokémon: jump to it`}}))], {hint: false})}</nav>` : '';
+  if (!listy) body = tierBar + `<div class="gs-title"><h2 class="u">The <span class="nw">${f.mega ? 'Megas' : 'Grandstand'}${key}</span></h2>${viewSw}</div>${rows.length ? V2.gsStand(rows, !!f.mega) : '<p class="tm-sub ra-none">No Pokémon match. Try clearing a filter.</p>'}`;
   else if (filtered) body = (viewSw ? `<div class="gs-title"><h2 class="u">Every match</h2>${viewSw}</div>` : '') + (rows.length ? `<div class="ra-list">${colh}${grouped(rows)}</div>` : `<p class="tm-sub ra-none">${f.box && !(S.box || []).length ? 'Your box is empty. Add the Pokémon you own on My box.' : 'No Pokémon match. Try clearing a filter.'}</p>`);
-  else body = `<div class="gs-title"><h2 class="u">Every Pokémon, by tier</h2>${viewSw}</div><div class="ra-list ra-board">${colh}${LTIERS.map(T => { const inT = all.filter(x => lTier(x.r.total).k === T.k); if (!inT.length) return '';
+  else body = tierBar + `<div class="gs-title"><h2 class="u">Every Pokémon, by tier</h2>${viewSw}</div><div class="ra-list ra-board">${colh}${LTIERS.map(T => { const inT = all.filter(x => lTier(x.r.total).k === T.k); if (!inT.length) return '';
       const cap = 12, open = U.open[T.k] || inT.length <= cap + 1, shown = open ? inT : inT.slice(0, cap);
       return `<section class="ra-tg" id="ra-t-${T.k}">${V2.raTierHead(T, all)}${shown.map(V2.raRow).join('')}${inT.length > cap + 1 ? `<button type="button" class="ra-more" data-ratier="${T.k}" aria-expanded="${!!U.open[T.k]}">${U.open[T.k] ? 'Show Fewer' : `+${inT.length - cap} more ›`}</button>` : ''}</section>`; }).join('')}</div>`;
   const legend = `<p class="fine ra-legend">${!listy ? `${rows.length} rated` : filtered ? `${rows.length} of ${all.length} shown` : `All ${all.length} shown`}, ranked among ${(lairRank(all[0] && all[0].p) || {}).of || 0} with tournament results · ◆ hidden gem: rarely used, wins more than its use predicts${listy ? ' · ? few games, an estimate' : ''}</p>`;
@@ -120,7 +124,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   else if (d.raty) { const t = d.raty; U.ty = U.ty.includes(t) ? U.ty.filter(x => x !== t) : U.ty.length >= 2 ? [U.ty[1], t] : [...U.ty, t]; }
   else if (d.raall != null) { U.all = !U.all; V2.raSave(); if (!U.all) { V2.redraw(); const l = document.querySelector('.ra-list'); if (l) l.scrollIntoView({block: 'start'}); return; } }
   else if (d.ratier) { U.open = {...U.open, [d.ratier]: !U.open[d.ratier]}; V2.raSave(); }
-  else if (d.rajump) { U.all = true; U.open = {...U.open, [d.rajump]: true}; V2.raSave(); V2.redraw(); const t = document.getElementById('ra-t-' + d.rajump); if (t) t.scrollIntoView({behavior: V2.smooth(), block: 'start'}); return; }
+  else if (d.rajump) { U.all = true; U.open = {...U.open, [d.rajump]: true}; if (d.rajump === 'D' || d.rajump === 'F') U.low = true; V2.raSave(); V2.redraw(); const t = document.getElementById('ra-t-' + d.rajump); if (t) { t.scrollIntoView({behavior: V2.smooth(), block: 'start'}); const h = t.querySelector('.ra-tier, .gs-blk'); if (h) { h.tabIndex = -1; h.focus({preventScroll: true}); } } return; }
   /* keep your place (Nov 15, SHELL-31): the tapped chip stays under the finger; the list above it may change height on a redraw */
   const key = Object.keys(d).filter(k => /^ra/.test(k)).map(k => `[data-${k.replace(/[A-Z]/g, c => '-' + c.toLowerCase())}="${d[k]}"]`).join(''), y0 = b.getBoundingClientRect().top;
   V2.redraw(); try { const nb = key && document.querySelector(key); if (nb) { const dy = nb.getBoundingClientRect().top - y0; if (Math.abs(dy) > 1) scrollBy(0, dy); } } catch (x) {} });
