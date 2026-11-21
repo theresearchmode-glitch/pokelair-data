@@ -190,3 +190,5 @@ textarea.field{min-height:140px;resize:vertical}
 @media (max-width:699.98px){.rows.tiles.full{grid-template-columns:minmax(0,1fr)}.rows.tiles.full .row{grid-template-columns:36px minmax(0,1fr) auto}.row .val b{white-space:nowrap}}  /* a tiles list whose value is wide goes one per line on phones */
 @media (max-width:699.98px){.panel .types{flex-wrap:wrap}}
 .types{flex-wrap:wrap}  /* type chips wrap rather than spill */
+@media (max-width:699.98px){.pair2.st{grid-template-columns:minmax(0,1fr)}}  /* a pair whose halves are lists: stacked on phones */
+.pair2{align-items:start}.pair2>.rows{align-content:start}

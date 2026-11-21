@@ -50,5 +50,21 @@
  "sheet": {
   "mock": 3028,
   "today": 3373
+ },
+ "box": {
+  "mock": 2249,
+  "today": 2402
+ },
+ "compare": {
+  "mock": 1213,
+  "today": 1328
+ },
+ "weekly": {
+  "mock": 3539,
+  "today": 4694
+ },
+ "archetypes": {
+  "mock": 1516,
+  "today": 2443
  }
 }

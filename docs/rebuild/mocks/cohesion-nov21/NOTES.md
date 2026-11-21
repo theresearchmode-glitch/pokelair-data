@@ -14,13 +14,17 @@ Shared kit: all new parts were added to kit2.css (marked "ADDED Nov 21"), never 
 | 03 | team | 3623px (4.29 screens) | 3734px (4.42 screens) | shorter or same |
 | 03 | team-b | 3664px (4.34 screens) | 3734px (4.42 screens) | shorter or same |
 | 05 | sheet | 3028px (3.59 screens) | 3373px (4.00 screens) | shorter or same |
+| 06 | box | 2249px (2.66 screens) | 2402px (2.85 screens) | shorter or same |
+| 07 | compare | 1213px (1.44 screens) | 1328px (1.57 screens) | shorter or same |
 | 08 | battle | 1763px (2.09 screens) | 1768px (2.09 screens) | shorter or same |
 | 09 | calc | 2594px (3.07 screens) | 2187px (2.59 screens) | LONGER by 407px |
 | 10 | speed | 2580px (3.06 screens) | 2952px (3.50 screens) | shorter or same |
 | 11 | types | 2089px (2.48 screens) | 2798px (3.32 screens) | shorter or same |
 | 15 | usage | 3163px (3.75 screens) | 3554px (4.21 screens) | shorter or same |
 | 16 | sets | 2965px (3.51 screens) | 3148px (3.73 screens) | shorter or same |
+| 17 | archetypes | 1516px (1.80 screens) | 2443px (2.89 screens) | shorter or same |
 | 18 | tournaments | 2652px (3.14 screens) | 3386px (4.01 screens) | shorter or same |
+| 20 | weekly | 3539px (4.19 screens) | 4694px (5.56 screens) | shorter or same |
 | 27 | pokemon | 3535px (4.19 screens) | 3828px (4.54 screens) | shorter or same |
 
 ## 01 home · keeps its own hero (`pages/home.html`)
@@ -126,11 +130,42 @@ Phone length (section 4): see the heights table at the top of NOTES.md.
 Rules not met and why: none.
 Check (390 / 1440): every rule passes.
 
-## 06 box · YOUR STASH
-Not made yet.
+## 06 box · YOUR STASH (`pages/box.html`)
+Data source: today's built page `#box` (sample box: 36 Pokémon, 2 boxes; Absol open), claude/design6 built Nov 21 with the repo's data files.
 
-## 07 compare · HEAD TO HEAD
-Not made yet.
+Today's features -> where in the mock-up:
+- ← My Team; "My Box · 36 Pokémon (sample) · 2 boxes" and the sample-box note -> link, headline, lead.
+- Add a Pokémon + -> the page's pink move "ADD A POKÉMON +".
+- Arrange by A–Z / Type / Newest / Oldest / Rating -> the plot sentence.
+- ◀ Box 1 ▶, "30 of 36 · A to S", the 30 Pokémon, "On your team" mark -> step 1: the pager and a wall of 30 (blue underline = on your team; pink ring = the one open).
+- The open Pokémon (Absol, Dark, Rated 26 · F tier; forms Absol 26 / Mega Absol 33 / Mega Absol Z 51; <0.1% of teams; win rate too few, 22 games; base Speed 75; Swap Into My Team, Pokémon Page, Build Around It, Remove from Box) -> step 2 hero.
+- Your Team (the six), Open My Team, Copy Box Link, Open a Box Link, Reset Box, the "saved in this browser only" note -> step 3.
+
+Changes from the PAGES.md idea and why:
+- Today's Your Team strip labels the six Lead / Back / Bench. Sim said on Nov 21 "we dont do lead back bench anymore", so the mock-up shows the six without those labels. Question for Sim: confirm the labels go here too.
+- On phones the wall shows pictures only (names on tap): 30 names would not fit 5 across.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
+
+## 07 compare · HEAD TO HEAD (`pages/compare.html`)
+Data source: today's built page `#compare` (A = your team, B not picked; three latest winners offered), claude/design6 built Nov 21 with the repo's data files. The winners' sixes come from the same build's Events data.
+
+Today's features -> where in the mock-up:
+- ← My Team, "Compare Teams · two teams side by side" -> link, headline, lead.
+- A: Sun Tailwind (sample), my team, open now, Change, its six -> step 1, left (phones: one row of six pictures).
+- B: Pick Team B -> step 1, right: six empty slots.
+- Take on a latest winner (Grassy Terrain · Hard Trick Room / Psychic Terrain · Trick Room / Grassy Terrain · Tailwind, each "Won … · Nov 8") -> step 2, one panel each (phones: dense rows) with "pick team B".
+- Saved, more winners or paste a team › -> step 2's link.
+- "Pick two teams… every row is worked out the same way as on My Team" -> lead and the hint.
+
+Changes from the PAGES.md idea and why:
+- The winners' panels show their six as small pictures; today's page shows only the style and event line. The pictures come from the same build's data (Events), so nothing is invented.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
 
 ## 08 battle · THE GAME PLAN (`pages/battle.html`)
 Data source: today's built page `#battle` before their six is entered (the sample team), claude/design6 built Nov 21 with the repo's data files.
@@ -271,8 +306,21 @@ Rules not met and why:
 - Desktop: the hero card has the kit's tall gap above it (the approved hero spacing, so the art can burst out). Left as the kit has it.
 Check (390 / 1440): every rule passes.
 
-## 17 archetypes · THE PLAYBOOKS
-Not made yet.
+## 17 archetypes · THE PLAYBOOKS (`pages/archetypes.html`)
+Data source: today's built page `#archetypes` (latest 90 top tournament teams), claude/design6 built Nov 21 with the repo's data files (the page's own banner dates the saved copy Nov 9).
+
+Today's features -> where in the mock-up:
+- Sub-tabs, "What you'll face, style by style.", the lead -> link row, headline, lead.
+- Your team's style: Tailwind + Sun (52%, 47 of 90; 41%, 37 of 90) -> step 1; "OPEN YOUR PLAYBOOK." is the page's pink move.
+- The Weather Map: eight styles (No. 1–8) with % and counts, "your style" on Tailwind and Sun, "the bigger the region…", tap a region for its guide, the "more than 90" note -> step 2: one playbook per style, bigger for the most played, each with "Open the guide ›".
+
+Changes from the PAGES.md idea and why:
+- PAGES.md suggests each playbook's key Pokémon as a mini roster. Today's Archetypes page shows no Pokémon per style, so none are shown (real data only); the guide behind each book is where they would go. Question for Sim: add key Pokémon to each playbook from the style guides?
+- Each book's colour is the type its style is named for (Tailwind Flying, Sun Fire, Grassy Grass, Rain Water, Trick Room and Psychic Terrain Psychic/Ghost, Sand Rock, Snow Ice), so colours keep their meaning.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
 
 ## 18 tournaments · THE WINNING CREWS (`pages/tournaments.html`)
 Data source: today's built page `#tournaments`, claude/design6 built Nov 21 with the repo's data files (the page's own banner dates the saved copy Nov 9).
@@ -296,8 +344,25 @@ Check (390 / 1440): every rule passes.
 ## 19 events · THE JOBS
 Not made yet.
 
-## 20 weekly · THE BRIEFING
-Not made yet.
+## 20 weekly · THE BRIEFING (`pages/weekly.html`)
+Data source: today's built page `#weekly` (tournament teams Nov 3–9 against Oct 27–Nov 2), claude/design6 built Nov 21 with the repo's data files (the page's own banner dates the saved copy Nov 9).
+
+Today's features -> where in the mock-up:
+- Sub-tabs, "This Week", the two weeks' team and event counts (1,810 / 51; 1,769 / 57) -> link row, headline, lead.
+- Share as Image -> the page's pink move.
+- Pokémon on the Move: biggest rise Whimsicott (13% → 19%, ▲6), Kingambit, Mega Staraptor, Mega Salamence; biggest fall Incineroar (33% → 28%, ▼5), Mega Garchomp Z, Pelipper, Archaludon -> step 1: a roster card each for the biggest rise and fall, list rows for the rest.
+- Ratings on the Move (Whimsicott ▲5 88, Mega Froslass ▲3 78, Mega Salamence ▲2 87, Mega Garchomp Z ▼2 87; tap one for its page) and Most Used This Week (Sneasler 39% … Mega Charizard Y 25%) -> step 2, side by side.
+- New Tech (Dragon Dance, Rocky Helmet, Solar Beam, Gunk Shot with their % and team counts) and New in Top Cut (Arcanine, Leafeon, Paldean Tauros (Blaze), Lucario with place and event) -> step 3.
+- Winners This Week (three 1st places with event, date, players) and The Weather (nine styles with %, three with their change) -> step 4.
+- The "?" help on New Tech, The Weather and New in Top Cut, and How We Decide What Changed (today's one fold) -> step notes and the step 4 link (no fold).
+
+Changes from the PAGES.md idea and why:
+- Only the biggest rise and fall are roster cards; the rest are rows, so the page stays short.
+- Winners are rows (today: tickets). Their sixes are not on today's This Week page, so none are shown.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
 
 ## 21 news · WORD ON THE STREET
 Not made yet.
