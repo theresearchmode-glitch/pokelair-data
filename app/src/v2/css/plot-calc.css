@@ -254,3 +254,6 @@
 @media (max-width:359.98px){.dc2.pc.pck .pc-ans .pc-big.pc-pctf{font-size:var(--t34)}.dc2.pc.pck .pc-ans .pc-big .pc-pc{font-size:var(--t20)}}
 /* Sim, Nov 21 (4:49 PM, recommended): the hint and swap sit in the lead line (one row less) */
 .pck .k-lead .pc-hint{display:inline-flex;margin:0 0 0 var(--s2);vertical-align:baseline}
+/* C-battle X-04 (Nov 21): the answer keeps its height when the numbers change on phones: two lines for the verdict, a row for the "hangs on" line */
+.pc-sm0{display:none}
+@media (max-width:699.98px){.dc2.pc.pck .pc-ans .pc-vd{display:grid;align-content:center;min-height:calc(2.2em + var(--s1))}.dc2.pc.pck .pc-sm0{display:block;min-height:1.3em}}
