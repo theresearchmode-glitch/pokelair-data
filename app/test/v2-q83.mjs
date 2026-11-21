@@ -13,7 +13,10 @@ import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const fails = [], ok = (c, m) => { console.log((c ? '  pass  ' : '  FAIL  ') + m); if (!c) fails.push(m); };
 const BANDS = {A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'};
-const built = p => p.waitForFunction(() => window.__ev('!!(ui.ab && !ui.ab.busy && !(ui.ab.doubles && ui.ab.doubles.freshPending))') && document.querySelector('.bd-ans.bp .bp-six'), null, {timeout: 120000}).catch(() => {});
+const built = p => p.waitForFunction(() => window.__ev('!!(ui.ab && !ui.ab.busy && !(ui.ab.doubles && ui.ab.doubles.freshPending))') && document.querySelector('.bd-ans.bp .pl-plates'), null, {timeout: 120000}).catch(() => {});
+/* Nov 20: The Plot (Sim locked): the built six are step 2's type-coloured plates (.pl-plates .pl-plate); '.bp-six' / '.bp-fig' / '.bp-no' were
+   the retired Blueprint's six (the only '.bp-six' left is a Recent Winners six, outside the answer), so the wait, the Load Team gap, the
+   "numbers solid" check and the Built around check read the plates instead, with the same strength */
 /* Nov 20 (Sim locked The Plot, 7:51 PM): the page before a build is the plot sentence (build-plot.js), not the Blueprint's Sheet 0.
    Same promises, checked on the new page: the Spec's three controls in it, one main action, short on phones, nothing sideways. */
 const sheet0 = p => p.evaluate(() => { const s = document.querySelector('.pl0'), vis = e => !!(e && e.getClientRects().length), go = [...document.querySelectorAll('[data-bdgo]')].filter(vis);
@@ -23,18 +26,19 @@ const sheet0 = p => p.evaluate(() => { const s = document.querySelector('.pl0'),
     go: go.length, goIn: !!(go[0] && s && s.contains(go[0])), oldOpts: [...document.querySelectorAll('.bd-opts')].filter(vis).length, minT: tgt.length ? Math.min(...tgt) : 0,
     out: s ? [...s.querySelectorAll('*')].filter(e => { const r = e.getBoundingClientRect(); return r.width && r.right > document.documentElement.clientWidth + 1; }).length : -1,
     H: document.documentElement.scrollHeight, side: document.documentElement.scrollWidth > innerWidth}; });
-const result = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects().length), a = document.querySelector('.bd-ans.bp'), six = a && a.querySelector('.bp-six'), use = [...document.querySelectorAll('[data-bduse]')].filter(vis), u = use[0];
+const result = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects().length), a = document.querySelector('.bd-ans.bp'), six = a && a.querySelector('.pl-plates'), use = [...document.querySelectorAll('[data-bduse]')].filter(vis), u = use[0];
   const meas = a && a.querySelector('.bp-meas'), plate = meas ? getComputedStyle(meas, '::before').backgroundColor : '', num = a && a.querySelector('.bp-score>b'), stk = a && a.querySelector('.bp-stk'), st = a && a.querySelector('.bp-stamp');
   const tok = v => { const d = document.createElement('i'); d.style.color = v; (a || document.body).append(d); const c = getComputedStyle(d).color; d.remove(); return c; };
   const go = [...document.querySelectorAll('[data-bdgo]')].filter(vis), g = go[0], gc = g && getComputedStyle(g);
   /* Nov 20 (The Plot piece 4): the other options are Got a Plan B? columns, each with its six on the red line and a Switch (data-bdshow) */
   const revs = a ? [...a.querySelectorAll('.pl-plan:not(.pl-pwait)')].map(r => [...r.querySelectorAll('.pl-psix img')].filter(vis).map(i => Math.round(i.getBoundingClientRect().height))) : [], sws = a ? a.querySelectorAll('.pl-plans [data-bdshow]').length : 0;
-  const no = a ? [...a.querySelectorAll('.bp-six .bp-no')].map(e => getComputedStyle(e)) : [];
+  /* (was the Blueprint's solid numbers 01-06; the plates carry no numbers: each of the six is a solid plate in its type colour, words on it) */
+  const no = a ? [...a.querySelectorAll('.pl-plates .pl-plate')].filter(vis).map(e => getComputedStyle(e)) : [];
   const sl = a && a.querySelector('.pl-seal'), sb = sl && sl.querySelector('b'), sw = sl && sl.querySelector('.w span'), slc = sl && getComputedStyle(sl);
   return {seal: !!sl, slBg: slc ? slc.backgroundColor : '', slNum: sb ? getComputedStyle(sb).color : '', slWord: sw ? getComputedStyle(sw).color : '', onMark: tok('var(--on-plot-seal)'), slW: sl ? Math.round(sl.getBoundingClientRect().width) : 0, slH: sl ? Math.round(sl.getBoundingClientRect().height) : 0, use: use.length, gap: six && u ? Math.round(u.getBoundingClientRect().top - six.getBoundingClientRect().bottom) : null, inNear: !!(u && u.closest('.bp-near')), inRight: !!(u && u.closest('.bp-right')),
     plate, hero: tok('var(--sd-hero)'), num: num ? getComputedStyle(num).color : '', white: tok('var(--sd-on-band)'),
     stkBg: stk ? getComputedStyle(stk).backgroundColor : '', rim: tok('var(--bp-rim)'), stBg: st ? getComputedStyle(st).backgroundColor : '', stFg: st ? getComputedStyle(st).color : '', band: tok('var(--band)'), stRot: stk ? getComputedStyle(stk).rotate : '',
-    nos: no.length, noSolid: no.every(c => c.color !== 'rgba(0, 0, 0, 0)' && parseFloat(c.webkitTextStrokeWidth || '0') === 0),
+    nos: no.length, noSolid: no.every(c => c.color !== 'rgba(0, 0, 0, 0)' && parseFloat(c.webkitTextStrokeWidth || '0') === 0 && !/rgba\(.*, 0\)$|transparent/.test(c.backgroundColor)),
     sws, go: go.length, goCls: g ? g.className : '', goTxt: g ? g.innerText.trim() : '', goBg: gc ? gc.backgroundColor : '', goTf: gc ? gc.transform : '', goIn: !!(g && a && a.contains(g)), revs,
     side: document.documentElement.scrollWidth > innerWidth, H: document.documentElement.scrollHeight}; });
 const refs = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects().length), w = document.querySelector('.bp-ref'); if (!w || !vis(w)) return null; const t = w.querySelector('.bp-wplace'), c = t && getComputedStyle(t), win = w.querySelector('.bd-win');
@@ -66,7 +70,7 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 
   ok(r.use === 1 && r.inNear && !r.inRight && r.gap != null && r.gap >= 0 && r.gap <= 64, `${k}: one Load Team, right under the six (${r.use}, ${r.gap} px, near ${r.inNear}, in Notes ${r.inRight})`);
   /* Nov 20 (The Plot, Q97 A): the score is an upright seal, not the Blueprint's blue plate and tilted sticker */
   ok(r.seal && r.slNum === r.onMark && ratio(r.slWord, r.slBg) >= 4.5 && ratio(r.slNum, r.slBg) >= 4.5, `${k}: the score in the red seal, number and band word readable (${r.slBg}; word ${r.seal ? ratio(r.slWord, r.slBg).toFixed(2) : '-'}:1)`);
-  ok(r.nos === 6 && r.noSolid, `${k}: the six's numbers solid (${r.nos})`);
+  ok(r.nos === 6 && r.noSolid, `${k}: the six's plates solid, in their type colours (${r.nos})`);
   ok(r.go === 1 && /\bpl-go\b/.test(r.goCls) && /^Hatch another/i.test(r.goTxt) && r.goBg !== 'rgba(0, 0, 0, 0)', `${k}: one HATCH ANOTHER (rebuild) in the plot's control row, a solid red plate (${r.goCls}, "${r.goTxt}", ${r.goBg})`);
   ok(r.revs.length >= 2 && r.sws === r.revs.length && r.revs.every(x => x.length === 6 && x.every(h => h >= 20 && h <= 56)), `${k}: every Plan B/C/D shows its six (sprites 20-56 px tall) and a Switch (${r.revs.map(x => x.length + '@' + x[0]).join(' ')}; ${r.sws} switches)`);
   ok(!r.side, `${k}: no sideways scroll after a build`);
@@ -83,8 +87,8 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 
     const z0 = await p.evaluate(() => { const k = document.querySelector('.pl0 .pl-pick'); return {pick: k ? k.textContent.replace(/\s+/g, ' ').trim() : '', img: !!(k && k.querySelector('img')), x: !!(k && k.querySelector('[data-bdx]')), go: (document.querySelector('.pl0 [data-bdgo]') || {}).textContent || ''}; });
     ok(/Garchomp/.test(z0.pick) && z0.img && z0.x && /Build Around Garchomp/.test(z0.go), `${k}: the plot with a pick: Garchomp fills the "around" plate with its sprite and a clear ×, "Build Around Garchomp" (${JSON.stringify(z0)})`);
     await p.click('[data-bdgo]'); await built(p); await p.waitForTimeout(600);
-    const f = await p.evaluate(() => { const f = document.querySelector('.bd-ans .bp-six .bp-fig'), tag = f && f.querySelector('.bp-batag'); return {first: f ? f.dataset.v2mon : '', tag: tag ? tag.textContent.trim() : '', tags: document.querySelectorAll('.bd-ans .bp-batag').length, label: f ? f.getAttribute('aria-label') : '', eng: window.__ev('abTeam("doubles").mons.map(m=>m.n).join("|")'), go: (document.querySelector('.pl1 [data-bdgo] .vh') || {}).textContent || ''}; }); /* Nov 20: the rebuild is HATCH ANOTHER in the control row; its spoken name says the pick */
-    ok(f.first === 'Garchomp' && f.tag === 'Built around' && f.tags === 1 && /built around/.test(f.label), `${k}: built around Garchomp: figure 01 with the "Built around" tag (${f.first}, "${f.tag}", ${f.tags})`);
+    const f = await p.evaluate(() => { const f = document.querySelector('.bd-ans .pl-plates .pl-plate'), tag = f && f.querySelector('.pl-batag'); return {first: f ? f.dataset.v2mon : '', tag: tag ? tag.textContent.trim() : '', tags: document.querySelectorAll('.bd-ans .pl-batag').length, label: f ? f.getAttribute('aria-label') : '', eng: window.__ev('abTeam("doubles").mons.map(m=>m.n).join("|")'), go: (document.querySelector('.pl1 [data-bdgo] .vh') || {}).textContent || ''}; }); /* Nov 20: the rebuild is HATCH ANOTHER in the control row; its spoken name says the pick */
+    ok(f.first === 'Garchomp' && f.tag === 'Built around' && f.tags === 1 && /built around/.test(f.label), `${k}: built around Garchomp: the first plate with the "Built around" tag (${f.first}, "${f.tag}", ${f.tags})`);
     ok(/^Rebuild Around Garchomp/.test(f.go.trim()), `${k}: Rebuild names the pick ("${f.go.trim()}")`);
     await p.click('[data-bduse]'); await p.waitForTimeout(1000); const sl = await p.evaluate(() => window.__ev('S.slots.map(s=>s.n).join("|")'));
     ok(sl === f.eng, `${k}: Load Team loads the engine's six in the engine's order (display-only reorder)`); }

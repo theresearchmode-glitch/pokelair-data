@@ -14,7 +14,7 @@ V2.plotSent = (row) => { const E = V2.esc, lk = ui.abLock && byName.get(ui.abLoc
   const src = V2.plotGrp('bdsrc', [['box', 'My Box'], ['all', 'Whole Roster']], ui.abSrc === 'all' ? 'all' : 'box', 'Build from');
   const meg = V2.plotGrp('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on team');
   const around = lk ? `<span class="pl-pl pl-pick" aria-pressed="true">${SPRITE_ID[lk.n] ? `<img src="${V2.art(SPRITE_ID[lk.n])}" alt="">` : ''}<span>${E(V2.disp(lk.n))}</span><button type="button" class="pl-x" data-bdx aria-label="Stop building around ${E(V2.disp(lk.n))}"><span aria-hidden="true">×</span></button></span>`
-    : `<label class="pl-pl pl-find">${V2.ICON.search}<input type="search" data-bdfind value="${E(V2.bdUi.find || '')}" placeholder="Any Pokémon" aria-label="Build around a Pokémon (optional): type its name" autocomplete="off"></label>`;
+    : `<label class="pl-pl pl-find">${V2.ICON.search}<input type="search" data-bdfind value="${E(V2.bdUi.find || '')}" placeholder="Any Pokémon" aria-label="Build around a Pokémon (optional): type its name" autocomplete="off">${V2.CLR}</label>`;
   return `<div class="pl-sw"><div class="pl-sent u${row ? ' pl-row' : ''}" role="group" aria-label="Your plot"><span class="pl-ln"><span class="pl-w">My plot: build from</span></span> <span class="pl-ln">${src}</span> <span class="pl-ln"><span class="pl-w">with</span> ${meg} <span class="pl-w">Megas.</span></span> <span class="pl-ln"><span class="pl-w pl-opt">Optional: build around</span> <span class="pl-ar">${around}</span></span> <span class="pl-ln"><button type="button" class="pl-go" data-bdgo${busy ? ' aria-busy="true" disabled' : ''}><span>${row ? 'Hatch another' : 'Hatch it.'}</span><span class="vh"> ${row ? (lk ? `Rebuild Around ${E(V2.disp(lk.n))}` : 'Rebuild') : lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team'}</span></button></span></div><div class="bd-hits pl-hits" data-bdhits>${V2.bdUi.find && !lk ? V2.buildHits(V2.bdUi.find) : ''}</div></div>`; };
 V2.plotHelp = () => { const E = V2.esc, lk = ui.abLock && byName.get(ui.abLock), picks = V2.plotPicks().filter(n => byName.get(n));
   let tip = ''; try { const M = V2.bpMegaShare(); tip = M && M.wins != null ? `${Math.round(M.wins)}% of event winners carry 2 Mega options. ` : ''; } catch (e) {}
@@ -47,6 +47,11 @@ V2.plotRowFit = () => document.querySelectorAll('.pl-row').forEach(s => { if (in
 addEventListener('resize', () => requestAnimationFrame(() => { if (document.querySelector('.pl-sent')) { V2.plotFit(); V2.plotRowFit(); } }));
 try { document.fonts.ready.then(() => { V2.plotFit(); V2.plotRowFit(); }); document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(() => { V2.plotFit(); V2.plotRowFit(); })); } catch (e) {}
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('.pl-sent [data-bdfind]'); if (i) V2.plotInput(i.closest('.pl-sent')); });
+/* the site's own × in the plot's search plate (X-05, as every search box has: V2.CLR, shown only while the box has text, the browser's own
+   hidden in plot.css). shell.js clears boxes inside an .np-field; the plate is a .pl-find, so it is cleared here the same way: focus kept
+   (pointerdown never takes it, shell.js), the box emptied, its 'input' fired so the name list goes back */
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('.pl-find [data-v2clr]'); if (!b) return; e.preventDefault();
+  const i = b.closest('.pl-find').querySelector('input'); if (!i) return; try { i.focus({preventScroll: true}); } catch (x) { i.focus(); } i.value = ''; i.dispatchEvent(new Event('input', {bubbles: true})); });
 
 // ---------- Piece 2 (Q97 A / Q98, Sim locked 8:17 PM): after a build ----------
 // Step 1 becomes the plot as a control row (the same sentence and controls, small; HATCH ANOTHER = data-bdgo), and the answer is the
@@ -58,7 +63,7 @@ V2.plotAnswer = M => { const E = V2.esc, t = M.t, chips = t.gp || [], rk = M.G &
   const ey = `${M.n > 1 ? `Option ${M.k + 1} of ${M.n} · ` : ''}${M.kind}${t.megas > 1 ? ` · ${t.megas} Mega options` : ''}`;
   const six = V2.bpOrder(t.mons).map(m => { const d = V2.disp(m.n); return `<button type="button" class="pl-mon${m.box ? '' : ' pl-catch'}" data-v2mon="${E(m.n)}" aria-label="${E(d)}${m.box ? '' : ', to catch'}: open its info">${SPRITE_ID[m.n] ? `<img src="${V2.art(SPRITE_ID[m.n])}" alt="" decoding="async">` : `<b>${E(d)}</b>`}</button>`; }).join('');
   const tags = [M.n > 1 ? `Plan ${'ABCDEFGH'[M.k]} of ${M.n}` : '', M.kind, t.megas ? `${t.megas} Mega${t.megas === 1 ? '' : 's'}` : ''].filter(Boolean).map(x => `<span class="pl-tag">${E(x)}</span>`).join('')
-    + (M.nCatch ? `<span class="pl-tag pl-tagr">${M.nCatch === 6 ? 'All six to catch' : `${M.nCatch} to catch`}</span>` : '') + chips.map(c => `<span class="pl-tag">${E(c)}</span>`).join('');
+    + (M.nCatch ? `<span class="pl-tag pl-tagr">${M.nCatch === 6 ? 'All six to catch' : `${M.nCatch} to catch`}</span>` : '') + chips.map(c => `<span class="pl-tag pl-gp">${E(c)}</span>`).join('');
   const lockup = t.mons.filter(m => !m.box).map(m => V2.disp(m.n));
   return `<div class="bd-lock pl-ans"><p class="np-eyebrow vh">${E(ey)}</p><p class="pl-eb u">The plot:</p>
     <div class="pl-arow"><div class="pl-tl"><h2 class="u pl-title pl-t${V2.plotTitleK(t.label)}">${E(t.label).replace(/ · /g, ' · ')}</h2><div class="pl-six" role="group" aria-label="The six">${six}</div></div>

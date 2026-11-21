@@ -22,7 +22,10 @@ const ALLOW = new Set(['.st .np-megatag', '.mc-id .u', '.u .mg', '.ffm', '.fn-un
   '.sdh-go .sdh-b1', '.sdh-b2 span', '.sdt-blk .u', '.sdt-cpic .u',
   /* Nov 19: the small '%' after a big share number on Usage (as designed since the Usage rebuild; a sign, not words). The share number itself
      is 15px on phones (it was caught at 13px by the name rule '.us-tx b' once Usage opened on Online tournaments, Q13 A) */
-  '.u .us-pct']);
+  '.u .us-pct',
+  /* Nov 20: The Plot (Sim locked). Q99 A (approved picture docs/rebuild/pics/nov20/Q99/Q99-A-390.png): "Optional: build around" is the
+     sentence's quieter fourth line, drawn in the sentence's slanted Unbounded at 0.55 of the fitted size, never under 13px (13px on a 390 phone) */
+  '.pl-ln .pl-w.pl-opt']);
 const hits = new Map();
 for (const theme of ['day', 'night']) for (const w of [390, 1440]) { await p.setViewportSize({width: w, height: 900});
   for (const r of routes) { await p.evaluate(([r, t]) => { document.documentElement.dataset.theme = t; location.hash = '#' + r; }, [r, theme === 'night' ? 'night' : 'day']); await p.waitForTimeout(500);

@@ -444,18 +444,26 @@ ok(lab.core === 0 && lab.roles.length === 0, `Sim (Nov 17): Build's team cards c
 /* Q13d (Sim, Nov 18, B): the Megas tip and the proven-team note are back on the Blueprint. The tip's numbers are read from the data:
    the event-winner share is re-counted here from META.events, and a made-up results.megaN must change the tournament share
    (so a number typed into the page would fail); the note follows the proven record (this exact six, 55%+ wins), not the option */
-{ const q13 = await p.evaluate(() => window.__ev(`(() => { const tip = () => (document.querySelector('#main .bd-mtip') || {}).textContent || '', R = META.results || RES, keep = R && R.megaN;
-    const win = (META.events.events || []).map(e => e.top && e.top[0]).filter(t => t && t.place === 1 && t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n)));
-    const wpct = pctFmt(100 * win.filter(t => t.mons.filter(m => byName.get(m.n).m).length === 2).length / win.length);
-    const t0 = tip(); R.megaN = [10, 20, 70, 0]; V2.redraw(); const t1 = tip(); R.megaN = [0, 0, 0, 0]; V2.redraw(); const t2 = tip(); if (keep) R.megaN = keep; else delete R.megaN; V2.redraw();
+/* Nov 20: The Plot (Sim locked; approved picture docs/rebuild/pics/nov20/Q99/Q99-A-390.png): the Megas tip moved from the Blueprint's
+   Spec to the "Megas on team" helper column under the plot sentence (before a build), and it gives the event-winner share only. The same
+   strength: the share is re-counted here from META.events, a made-up winners list (14 of 20 with 2 Megas) must show 70%, and fewer than
+   20 winners must drop the number (so a number typed into the page would fail). The proven-team note check below is unchanged. */
+{ const q13 = await p.evaluate(() => window.__ev(`(() => { const tip = () => { const d = document.createElement('div'); d.innerHTML = V2.plotHelp();
+      const c = [...d.querySelectorAll('.pl-hc')].find(x => /^Megas on team/.test((x.querySelector('b') || {}).textContent || '')); return c ? c.querySelector('p').textContent : ''; };
+    const EV = META.events, keep = EV.events, two = t => t.mons.filter(m => byName.get(m.n).m).length === 2;
+    const win = (keep || []).map(e => e.top && e.top[0]).filter(t => t && t.place === 1 && t.mons && t.mons.length === 6 && t.mons.every(m => byName.get(m.n)));
+    const wpct = pctFmt(100 * win.filter(two).length / win.length), A = win.find(two), B = win.find(t => !two(t));
+    const t0 = tip(); let t1 = 'no team with and without 2 Megas to make a split from';
+    if (A && B) { EV.events = [...Array(20)].map((_, i) => ({top: [i < 14 ? A : B]})); t1 = tip(); }
+    EV.events = (keep || []).slice(0, 0); const t2 = tip(); EV.events = keep;
     const t = abTeam('doubles'), pv = t.proven, note = () => !!document.querySelector('#main .bd-prov');
     t.proven = {n: 5, wr: .6, g: 80, swapped: false}; V2.redraw(); const n1 = note(); t.proven.swapped = true; V2.redraw(); const n2 = note();
     t.proven = {n: 5, wr: .52, g: 80, swapped: false}; V2.redraw(); const n3 = note(); t.proven = null; V2.redraw(); const n4 = note(); t.proven = pv; V2.redraw();
     const nt = (document.querySelector('#main .bd-prov') || {}).textContent || null;
     return {wpct, n: win.length, t0, t1, t2, n1, n2, n3, n4, now: pv ? {wr: pv.wr, swapped: pv.swapped, note: nt} : null}; })()`));
-  ok(q13.n >= 20 && q13.t0.includes(q13.wpct + ' of event winners') && q13.t0.endsWith('carry 2 Mega options. Only one can Mega Evolve per battle.')
-    && q13.t1 === `70% of tournament teams and ${q13.wpct} of event winners carry 2 Mega options. Only one can Mega Evolve per battle.` && !q13.t2.includes('tournament teams'),
-    `Q13d: the Megas tip counts its numbers from the data (winners ${q13.wpct} of ${q13.n}; a made-up 70% split shows 70%, an empty one drops the tournament part) (${JSON.stringify([q13.t0, q13.t1, q13.t2])})`);
+  ok(q13.n >= 20 && q13.t0 === `${q13.wpct} of event winners carry 2 Mega options. Only one can Mega Evolve per battle.`
+    && q13.t1 === '70% of event winners carry 2 Mega options. Only one can Mega Evolve per battle.' && q13.t2 === 'Only one can Mega Evolve per battle.',
+    `Q13d: the Megas tip counts its numbers from the data (winners ${q13.wpct} of ${q13.n}; a made-up 14-of-20 list shows 70%, under 20 winners drops the number) (${JSON.stringify([q13.t0, q13.t1, q13.t2])})`);
   ok(q13.n1 && !q13.n2 && !q13.n3 && !q13.n4 && (!q13.now || (q13.now.note === 'This exact team has won at real events. Treat these as optional tweaks, not problems.') === (!q13.now.swapped && q13.now.wr >= .55)),
     `Q13d: the proven-team note shows for this exact six at 55%+ wins only (exact 60%: ${q13.n1}, 1 swap: ${q13.n2}, 52%: ${q13.n3}, new: ${q13.n4}; option shown: ${JSON.stringify(q13.now)})`); }
 const toastAfter = async fn => { await p.evaluate(() => document.querySelectorAll('.np-toast').forEach(t => t.remove())); await fn(); await p.waitForTimeout(500);
@@ -907,7 +915,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     for (const [r, prep, sel, list] of [['build', '', '[data-bdfind]', '[data-bdhits]'], ['build', 'cores', '[data-bdcfind]', '[data-bdchits]'], ['home', 'search', '[data-v2q]', '[data-v2hits]'], ['tournaments', '', '[data-wtq]', '.wt-find'], ['meta', '', '[data-raq]', '.ra-count']]) {
       await xq.goto('file://' + PAGE + '#' + r); await xq.waitForTimeout(1800);
       if (prep === 'cores') await xq.evaluate(() => document.querySelector('#main [data-bdjump="cores"]').click()); if (prep === 'search') await xq.evaluate(() => V2.openSearch()); await xq.waitForTimeout(500);
-      const st = () => xq.evaluate(([sel, list]) => { const i = [...document.querySelectorAll(sel)].find(e => e.getClientRects().length), f = i && i.closest('.np-field'), x = f && f.querySelector('[aria-label="Clear"]'), L = document.querySelector(list);
+      const st = () => xq.evaluate(([sel, list]) => { const i = [...document.querySelectorAll(sel)].find(e => e.getClientRects().length), f = i && i.closest('.np-field, .pl-find') /* Nov 20: The Plot (Sim locked): Build's box is the sentence's search plate (.pl-find) */, x = f && f.querySelector('[aria-label="Clear"]'), L = document.querySelector(list);
         const vis = !!x && x.getClientRects().length > 0, R = vis && x.getBoundingClientRect(), cx = R && R.left + R.width / 2, cy = R && R.top + R.height / 2;
         const hit = (a, c) => { const h = document.elementFromPoint(a, c); return !!h && (h === x || x.contains(h)); }, ext = (dx, dy) => { let d = 0; while (d < 60 && hit(cx + dx * (d + 1), cy + dy * (d + 1))) d++; return d; };
         return {v: i ? i.value : null, foc: !!i && document.activeElement === i, x: vis, cx, cy, w: vis ? ext(-1, 0) + ext(1, 0) + 1 : 0, h: vis ? ext(0, -1) + ext(0, 1) + 1 : 0,
@@ -1430,8 +1438,11 @@ if (part('main2')) {
   const i4 = await q.evaluate(() => window.__ev(`ui.ab.doubles.teams.findIndex(t => (t.gp || []).length >= 4)`));
   if (i4 < 0) ok(false, 'OL-i15: no option with 4 plan chips to check (unknown, not a pass)');
   else { await show(i4); for (const w of [320, 390, 768, 1100, 1440, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(400);
-    const r = await q.evaluate(i => { const want = window.__ev(`ui.ab.doubles.teams[${i}].gp.join('|')`), cs = [...document.querySelectorAll('.bp .bp-chips .np-chip')], rows = {};
-      cs.forEach(c => { const y = Math.round(c.getBoundingClientRect().top); rows[y] = (rows[y] || 0) + 1; }); const box = document.querySelector('.bp .bp-chips'), bb = box && box.getBoundingClientRect(), out = cs.some(c => c.getBoundingClientRect().right > (bb ? bb.right : 0) + 1);
+    const r = await q.evaluate(i => { /* Nov 20: The Plot (Sim locked, spec 7 'Meta line 1'): the plan chips are tags on the answer's tag line (.pl-tags .pl-gp, after the plan,
+         kind, Megas and to-catch tags) instead of the Blueprint's chip grid; the same checks on them: every chip, in order, none past the
+         line's edge, no sideways scroll, and the tag line's rows even (no tag alone on a row) */
+      const want = window.__ev(`ui.ab.doubles.teams[${i}].gp.join('|')`), cs = [...document.querySelectorAll('.bd-ans .pl-tags .pl-gp')], all = [...document.querySelectorAll('.bd-ans .pl-tags .pl-tag')], rows = {};
+      all.forEach(c => { const y = Math.round(c.getBoundingClientRect().top); rows[y] = (rows[y] || 0) + 1; }); const box = document.querySelector('.bd-ans .pl-tags'), bb = box && box.getBoundingClientRect(), out = all.some(c => c.getBoundingClientRect().right > (bb ? bb.right : 0) + 1);
       return {got: cs.map(c => c.textContent).join('|'), want, rows: Object.values(rows), out, sw: document.documentElement.scrollWidth, vw: innerWidth}; }, i4);
     ok(r.got === r.want && !r.rows.includes(1) && new Set(r.rows).size === 1 && !r.out && r.sw <= r.vw, `OL-i15: at ${w} all ${r.want.split('|').length} plan chips show, in even rows (${r.got}; rows ${r.rows.join('+')}; ${r.sw}/${r.vw})`); }
     await q.setViewportSize({width: 1440, height: 900}); }

@@ -16,6 +16,7 @@
 .pl-or{margin:0 .06em}
 .pl-pl{display:inline-flex;align-items:center;gap:.18em;min-height:var(--tap);margin:0;padding:.04em .3em .06em;border:.05em solid var(--plot-text);border-radius:0;background:transparent;color:var(--plot-text);font:inherit;font-size:1em;line-height:1.05;text-transform:uppercase;white-space:nowrap;transform:skewX(-8deg);cursor:pointer}
 .pl-pl > *{transform:skewX(8deg)}
+.pl-grp[data-v2slide="sgmega"] .pl-pl{min-width:var(--tap);justify-content:center} /* spec 4: every tappable thing at least 44 wide (the Megas plates were 36 wide at 320-390, qcheck TAP) */
 .pl-pl[aria-pressed="true"]{background:var(--plot);border-color:var(--plot);color:var(--on-mark)}
 .pl-grp[data-v2slide="bdsrc"] .pl-pl[aria-pressed="true"] > span::before{content:"";display:inline-block;width:.34em;height:.18em;margin:0 .26em .2em 0;border-left:.08em solid currentColor;border-bottom:.08em solid currentColor;transform:rotate(-45deg)}
 .pl-pl:focus-visible,.pl-go:focus-visible,.pl-chip:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
@@ -23,11 +24,17 @@
 .pl-find input{width:9.4em;min-width:0;margin:0;padding:0;border:0;background:transparent;color:var(--plot-text);font:inherit;font-size:1em;text-transform:uppercase;outline:none}
 .pl-find input::placeholder{color:var(--plot-text);opacity:1}
 .pl-find:focus-within{border-color:var(--ink)}
+/* the site's own × (V2.CLR, X-05): only while the box has text, the plate no taller (its 44px tap overlaps the plate's padding), the
+   browser's own × hidden; the plate may shrink (the input scrolls) so the × never pushes the line past the page */
+.pl-find input::-webkit-search-cancel-button,.pl-find input::-webkit-search-decoration{-webkit-appearance:none;appearance:none;display:none}
+.pl-find input:placeholder-shown~.np-clr{display:none}
+.pl-find .np-clr{margin:calc(-1 * var(--s3)) 0;color:inherit}.pl-find .np-clr .np-ic,.pl-row .pl-find .np-clr svg{display:block;width:20px;height:20px}
+.pl-ar,.pl-find{min-width:0;max-width:100%}
 .pl-pick img{width:1.1em;height:1.1em;object-fit:contain;transform:skewX(8deg)}
 .pl-x{display:grid;place-items:center;min-width:var(--tap);min-height:var(--tap);margin:0;padding:0;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}.pl-x span{display:block;transform:scale(.6)}
 .pl-dot{color:var(--ink)}
-.pl-sent{--d-plotq:calc(var(--d-plot) * .55)}.pl-opt{font-size:var(--d-plotq);color:var(--ink-2)} /* Q99 A (Sim, Nov 20): the plot is complete without a pick; "Optional: build around" is the quieter fourth line */
-.pl-go{display:inline-flex;align-items:center;min-height:var(--tap);margin:0;padding:.04em .32em .06em;border:0;background:var(--pick);color:var(--on-mark);font:inherit;font-size:1em;line-height:1.05;text-transform:uppercase;white-space:nowrap;transform:skewX(-8deg);cursor:pointer}
+.pl-sent{--d-plotq:max(var(--t13),calc(var(--d-plot) * .55))}.pl-opt{font-size:var(--d-plotq);color:var(--ink-2)} /* Q99 A (Sim, Nov 20): the plot is complete without a pick; "Optional: build around" is the quieter fourth line (never under 13px, the type scale's smallest: 11px at 390 before) */
+.pl-go{display:inline-flex;align-items:center;min-height:var(--tap);margin:0;padding:.06em .32em;border:0;background:var(--pick);color:var(--on-mark);font:inherit;font-size:1em;line-height:1.05;text-transform:uppercase;white-space:nowrap;transform:skewX(-8deg);cursor:pointer}
 .pl-go > span:first-child{transform:skewX(8deg)}
 .pl-go[disabled]{opacity:.6;cursor:progress}
 .pl-hits{max-width:520px}
@@ -35,9 +42,10 @@
 .pl-hc{padding-top:var(--s3);border-top:2px solid var(--plot)}.pl-hr{border-top-color:var(--pick)}
 .pl-hc b{display:block;font:700 var(--t16)/1.5 var(--b);color:var(--ink)}.pl-hc b span{font-weight:400;color:var(--ink-3)}
 .pl-hc p{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
-.pl-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin-top:var(--s2)}
+.pl-chips{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,max(8.5em,calc(50% - var(--s1)))),1fr));gap:var(--s2);margin-top:var(--s2)}
 .pl-chip{display:inline-flex;align-items:center;gap:var(--s2);min-width:0;min-height:var(--tap);margin:0;padding:0 var(--s2);border:2px solid var(--plot-text);border-radius:0;background:transparent;color:var(--plot-text);font:700 var(--t15)/1.2 var(--b);cursor:pointer}
 .pl-chip img{width:28px;height:28px;object-fit:contain;flex:none}.pl-chip span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+/* (polish, Nov 20: two across (never three) only where a name fits beside its sprite, else one across; at 320 and 1120-1280 two across cut "Kingambit" to "Kinga…") */
 .pl-chip[aria-pressed="true"]{background:var(--plot);border-color:var(--plot);color:var(--on-mark)}
 .pl-waits{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s6);align-items:center;margin-top:var(--s10)}
 .pl-waits::before{content:"";position:absolute;left:calc(var(--s3) - var(--s16));top:0;bottom:0;border-left:2px dashed var(--pick)}
@@ -50,7 +58,7 @@
 .pl-dog{display:flex;align-items:center;gap:var(--s3);max-width:400px}
 .pl-dog p{margin:0;text-align:right;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pl-dog b{display:block;font-weight:700;color:var(--ink)}
 .pl-dogst{flex:none;margin:0;padding:0;border:0;background:none;cursor:pointer}.pl-dog .np-mon{--iw:120px}
-@media (max-width:1099.98px){.pl-help{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:1199.98px){.pl-help{grid-template-columns:repeat(2,minmax(0,1fr))}} /* spec 5 and 10: helper columns 2 x 2 from 1199 down (was 1099) */
 @media (max-width:699.98px){
   .pl{padding-left:var(--s10)}.pl-node{left:calc(-1 * var(--s10));width:22px;height:22px}
   .pl-s1::before,.pl-waits::before{left:calc(var(--s2) + 2px - var(--s10))}
@@ -205,6 +213,9 @@
 .pl-pon{margin:var(--s3) 0 0;font:700 var(--t15)/1.5 var(--b);color:var(--ink-3)}
 .pl-plan.on{opacity:.6}
 @media (max-width:1199.98px){.pl-plans{gap:var(--s5) var(--s6)}}
+/* (q83, Nov 20) 700-1199: three Plan columns leave each sprite a 27-33 px slot, and a wide sprite (240x127 file) fitted to it stood 14-18 px
+   tall. Each may reach 8 px into its neighbours' slots (the files' clear margins overlap, spec 7/9: neighbours overlap), so none is under 20 px */
+@media (min-width:700px) and (max-width:1199.98px){.pl-psix img{max-width:calc(100% + var(--s4));margin:0 calc(-1 * var(--s2))}}
 @media (max-width:699.98px){.pl-why{grid-template-columns:minmax(0,1fr);gap:var(--s4)}.pl-ws{font-size:var(--t17)}.pl-plans{grid-template-columns:minmax(0,1fr);gap:var(--s5)}.pl-psix span{height:44px}.pl-psix img{max-height:40px}}
 /* ---------- the action row under the six (spec section 8): LOAD TEAM (red), SAVE (ink), COPY FOR SHOWDOWN (ink outline), one row ---------- */
 .pl2 .bd-ans.bp .bp-near{margin-top:var(--s5)}

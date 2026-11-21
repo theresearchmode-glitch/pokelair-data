@@ -30,7 +30,9 @@ for(const th of TH)for(const w of W){const touch=w<1100;const ctx=await b.newCon
   // code showing as page text (Nov 15: a /* comment */ inside a template string reached the screen)
   {const t=(document.querySelector(root)||document.body).innerText;const m=t.match(/\/\*|\*\/|\$\{|undefined|NaN|\[object/);if(m)o.push('CODE '+JSON.stringify(t.slice(Math.max(0,m.index-30),m.index+40)))}
   // 3 sizes
-  for(const x of T){const fs=parseFloat(getComputedStyle(x.e).fontSize);if(fs<40&&!SC.some(s=>Math.abs(s-fs)<0.6))o.push('SIZE '+fs.toFixed(1)+'px '+JSON.stringify(x.e.innerText.slice(0,18)))}
+  /* Nov 20: The Plot (Sim locked): Build's plot sentence is fitted to the page width (--d-plot, an approved display size like --d-hero) and its
+     quieter 'Optional: build around' line is 0.55 of it, never under 13px; the after-build control row (.pl-row) stays on the scale */
+  for(const x of T){const fs=parseFloat(getComputedStyle(x.e).fontSize);if(fs>=13&&x.e.closest('.pl-sent:not(.pl-row)'))continue;if(fs<40&&!SC.some(s=>Math.abs(s-fs)<0.6))o.push('SIZE '+fs.toFixed(1)+'px '+JSON.stringify(x.e.innerText.slice(0,18)))}
   // 4 tap targets
   if(touch)for(const e of R.querySelectorAll('button,a[href],summary,[role=button]')){if(!vis(e)||hidden(e))continue;let q=e.getBoundingClientRect();/* an invisible hit-area layer (::after or ::before, absolute) counts as part of the target: either negative insets
    (top:-12px...) or its own size (e.g. width/height max(100%,44px) centred; components.css C8, and 96b9c89c moved My Team's intro
