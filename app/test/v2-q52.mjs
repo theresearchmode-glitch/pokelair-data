@@ -10,7 +10,9 @@ for (const th of ['light', 'dark']) for (const W of [1024, 1180, 1280, 1319, 132
   const m = await p.evaluate(() => { const t = document.querySelector('.arn-kbbar .t'); if (!t) return null; const r = t.getClientRects(), cs = getComputedStyle(t), lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2;
     return {fs: parseFloat(cs.fontSize), lines: Math.round(t.getBoundingClientRect().height / lh), cut: t.scrollWidth > t.clientWidth + 1, sx: document.documentElement.scrollWidth > innerWidth}; });
   if (!m) { ok(false, `${tag}: the KO Board bar is on the page`); await c.close(); continue; }
-  if (W < 1450) ok(m.fs === 17, `${tag}: title at 17 (${m.fs})`); else ok(m.fs === 20, `${tag}: title stays at 20 (${m.fs})`);
+  /* Nov 21 (main thread, under Sim's design authority): Plot the hit puts the KO Board in the 260px side column at 1320+, so its title stays 17
+     there too (the Arena's 20 from 1450 wrapped it to three lines; the mock has two): 17 at every width */
+  ok(m.fs === 17, `${tag}: title at 17 (${m.fs})`);
   /* Nov 21: Plot the hit (Sim approved): from 1320 the KO Board sits in the board's 260px bottom-left column, where the approved mock
      (calc-options/the-plot/the-plot-4-desktop-light.png) writes its title on two lines; Q52's one line holds where the bar is wider (1280-1319) */
   if (W >= 1280 && W < 1320) ok(m.lines === 1, `${tag}: title on one line (${m.lines})`);

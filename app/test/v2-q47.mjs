@@ -12,8 +12,9 @@ const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const fails = [], ok = (c, m) => { console.log((c ? '  pass  ' : '  FAIL  ') + m); if (!c) fails.push(m); };
 const wait = (p, ms = 500) => p.waitForTimeout(ms);
 /* Nov 21: Plot the hit (Sim approved): the answer is .pc-ans and shows the damage in real HP (.pc-big, 'min–max' from the engine's min and max:
-   e.hp); the sheet's rows still show today's % (V2.dcPct: e.pct), so a row is checked against the engine's % and the answer against its HP */
-const engine = p => p.evaluate(() => window.__ev(`(() => { const C = calcData(), r = C.r; return {mv: dc.mv, pct: r && r.max > 0 ? V2.dcPct(r) : (r ? 'none' : ''), hp: r && r.max > 0 ? (r.min === r.max ? String(r.min) : r.min + '–' + r.max) : '', min: r && r.min, max: r && r.max}; })()`));
+   e.hp); Nov 21 (Sim, Nov 20: real HP numbers, not %): the sheet's rows show 'min–max of N HP' too (e.row, built here from the engine's
+   min, max and the defender's HP, not from the page's own helpers), so a row is checked against the engine and the answer against the same hit */
+const engine = p => p.evaluate(() => window.__ev(`(() => { const C = calcData(), r = C.r, d = r && r.max > 0 ? (r.min === r.max ? String(r.min) : r.min + '–' + r.max) : ''; return {mv: dc.mv, row: d ? d + ' of ' + r.hp + ' HP' : (r ? 'none' : ''), hp: d, min: r && r.min, max: r && r.max}; })()`));
 const verdict = p => p.evaluate(() => { const e = document.querySelector('.pc-ans'); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; });
 const big = p => p.evaluate(() => { const e = document.querySelector('.pc-ans .pc-big'); return e ? e.textContent.trim() : ''; });
 
@@ -37,14 +38,14 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) {
   const setN = o0.o.filter(x => x.g === 'Its set').length;
   ok(sh && (setN ? /^Its (usual set|set on your team)$/.test(sh.heads[0]) && sh.heads[1] === 'Every other move' : sh.heads[0] === 'Every other move'), `${tag}: its set first (${setN} moves), then every other move (headings: ${sh && sh.heads.join(' | ')})`);
   ok(sh && sh.mv.every(r => /^var\(--ty-[A-Z][a-z]+\)$/.test(r.edge)), `${tag}: every row has its type colour edge`);
-  const withN = sh ? sh.mv.filter(r => /%$/.test(r.dm)) : []; ok(withN.length >= 3, `${tag}: ${withN.length} rows show a damage range`);
+  const withN = sh ? sh.mv.filter(r => /^\d+(–\d+)? of \d+ HP$/.test(r.dm)) : []; ok(withN.length >= 3 && sh.mv.every(r => !/%/.test(r.dm)), `${tag}: ${withN.length} rows show the damage in HP ('${withN[0] && withN[0].dm}'), none in %`);
   await p.keyboard.press('Escape'); await wait(p); ok(!(await sheet(p)) && (await opts(p, 'dcMv')).v === o0.v, `${tag}: Escape closes it with no change (${o0.v})`);
   // 3 rows: the damage on the row equals what the Arena shows once that move is picked (a tap)
   const pickN = [withN.find(r => r.n !== o0.v), withN.filter(r => r.n !== o0.v)[Math.floor(withN.length / 2)], withN.filter(r => r.n !== o0.v).slice(-1)[0]].filter(Boolean);
   for (const r of pickN) { const v0 = await verdict(p); await p.locator('[data-arnmv]').click(); await wait(p, 800);
     await p.locator(`[role=dialog] [data-arnpickmv="${r.n.replace(/"/g, '\\"')}"]`).click(); await wait(p, 900);
     const e = await engine(p), v1 = await verdict(p), b1 = await big(p), mv = (await opts(p, 'dcMv')).v, gone = !(await sheet(p)), foc = await focusOn(p, '[data-arnmv]');
-    ok(gone && mv === r.n && e.mv === r.n && e.pct === r.dm && b1 === e.hp && v1 !== v0, `${tag}: a tap on ${r.n} (row ${r.dm}) puts it in play: #dcMv ${mv}, the engine ${e.pct} = ${e.hp} HP, the answer shows ${b1} HP ("${v1.slice(0, 48)}")`); /* Nov 21: Plot the hit (Sim approved): the row's % is the engine's and the answer's HP is the same hit's */
+    ok(gone && mv === r.n && e.mv === r.n && e.row === r.dm && b1 === e.hp && v1 !== v0, `${tag}: a tap on ${r.n} (row ${r.dm}) puts it in play: #dcMv ${mv}, the engine ${e.row}, the answer shows ${b1} HP ("${v1.slice(0, 48)}")`); /* Nov 21: Plot the hit (Sim approved): the row's HP is the engine's and the answer's HP is the same hit's */
     ok(foc, `${tag}: focus back on All moves after the pick (${foc})`); }
   // typing filters; Enter picks the first row
   await p.locator('[data-arnmv]').click(); await wait(p, 800); const cur = (await opts(p, 'dcMv')).v, all = (await opts(p, 'dcMv')).o.map(x => x.t);
@@ -59,7 +60,7 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) {
   { const it = await opts(p, 'dcAIt'); if (it && it.dis) ok(!(await p.locator('[data-arnset="dcAIt"]').count()), `${tag}: the Mega's item row stays fixed (${it.o[0] && it.o[0].t}): no sheet`);
     await p.selectOption('#dcA', 'Garchomp'); await wait(p, 1200); ok((await p.evaluate(() => document.getElementById('dcA').value)) === 'Garchomp', `${tag}: attacker Garchomp for the set rows`); }
   // put a strong move back so the set rows move the damage
-  { await p.locator('[data-arnmv]').click(); await wait(p, 800); const s2 = await sheet(p); const pick = s2.mv.find(r => /%$/.test(r.dm)); await p.locator(`[role=dialog] [data-arnpickmv="${pick.n}"]`).click(); await wait(p, 900); }
+  { await p.locator('[data-arnmv]').click(); await wait(p, 800); const s2 = await sheet(p); const pick = s2.mv.find(r => / HP$/.test(r.dm)); await p.locator(`[role=dialog] [data-arnpickmv="${pick.n}"]`).click(); await wait(p, 900); }
   // the set rows
   const rows = [['dcAIt', /^Attacker's item$/, 1], ['dcAAb', /^Attacker's Ability$/, 0], ['dcANat', /^Attacker's nature$/, 1], ['dcASp', /^Attacker's .*points$/, 1], ['dcDIt', /^Defender's item$/, 0], ['dcDAb', /^Defender's Ability$/, 0], ['dcDNat', /^Defender's nature$/, 1]];
   const mus = [];
@@ -77,7 +78,7 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) {
     const spec = await p.evaluate(() => window.__ev(`(() => { const m = mvByName.get(dc.mv); return !!(m && m.cat === 2); })()`));
     const want = id === 'dcANat' ? (s0.v === 'Adamant' ? 'Modest' : 'Adamant') : id === 'dcDNat' ? (spec ? (s0.v === 'Gentle' ? 'Calm' : 'Gentle') : (s0.v === 'Lonely' ? 'Bold' : 'Lonely')) : id === 'dcASp' ? (s0.v === '0' ? '32' : '0') : id === 'dcAIt' ? (s0.v === 'Life Orb' ? '' : 'Life Orb') : s0.o.find(o => o.v !== s0.v).v;
     const e0 = await engine(p); await p.locator(`[role=dialog] [data-arnopt="${want}"]`).click(); await wait(p, 900); const s1 = await opts(p, id), e1 = await engine(p);
-    ok(!(await sheet(p)) && s1.v === want && (!moves || e1.min !== e0.min || e1.max !== e0.max), `${tag}: ${id}: a tap on "${want || 'None'}" sets it (${s0.v || 'None'} -> ${s1.v || 'None'})${moves ? `, damage ${e0.pct} -> ${e1.pct}` : ''}`);
+    ok(!(await sheet(p)) && s1.v === want && (!moves || e1.min !== e0.min || e1.max !== e0.max), `${tag}: ${id}: a tap on "${want || 'None'}" sets it (${s0.v || 'None'} -> ${s1.v || 'None'})${moves ? `, damage ${e0.row} -> ${e1.row}` : ''}`);
     ok(await focusOn(p, `[data-arnset="${id}"]`), `${tag}: ${id}: focus back on its row`);
     await btn.click(); await wait(p, 600); await p.keyboard.press('Escape'); await wait(p); ok(!(await sheet(p)) && (await opts(p, id)).v === want, `${tag}: ${id}: Escape closes its sheet with no change`); }
   console.log(`  info  ${tag}: most used marks: ${mus.join('; ')}`);

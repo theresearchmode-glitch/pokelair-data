@@ -36,12 +36,12 @@ V2.pcPhoto = (X, role, id) => { const E = V2.esc, W = V2.PC_W, d = V2.disp(X.p.n
 V2.pcAnswer = C => { const E = V2.esc, r = C.r, mv = C.mv, d = V2.disp(C.D.p.n), arrow = `<svg class="pc-arrow" viewBox="0 0 400 70" preserveAspectRatio="none" aria-hidden="true"><path d="M4 52C90 8 250 2 388 34"/><path d="M362 12L390 35L354 50"/></svg>`;
   if (!mv) return `<div class="pc-ans" aria-live="polite">${arrow}<p class="pc-vd u"><span>${V2.ARN_W.pick}</span></p></div>`;
   const t = (r && r.type) || mv.type, ty = V2.TYPES.includes(t) ? ` style="--tc:var(--ty-${t});--tcn:var(--pcn-${t},var(--tyn-${t}))"` : ''; /* --tcn: the big number at night (Q105 B) */
-  if (!r) return `<div class="pc-ans" aria-live="polite">${arrow}<p class="pc-l1"><span class="pc-ty"${ty}>${E(t)}</span>${E(mv.name)}</p><p class="pc-l2">${calcNoResultText(mv)}</p></div>`;
+  if (!r) return `<div class="pc-ans" aria-live="polite">${arrow}<p class="pc-l1"><span class="pc-ty"${ty}>${E(t)}</span> ${E(mv.name)}</p><p class="pc-l2">${calcNoResultText(mv)}</p></div>`;
   const V = V2.pcVerdict(r);
-  if (r.max === 0) return `<div class="pc-ans"${ty} aria-live="polite">${arrow}<p class="pc-l1"><span class="pc-ty">${E(t)}</span>${E(mv.name)} does</p><p class="pc-big u">0</p>
+  if (r.max === 0) return `<div class="pc-ans"${ty} aria-live="polite">${arrow}<p class="pc-l1"><span class="pc-ty">${E(t)}</span> ${E(mv.name)} does</p><p class="pc-big u">0</p>
     <p class="pc-l2">${r.fail ? E(r.fail) + '.' : `${E(d)} is immune to ${E(r.type)}.`}</p><p class="pc-vd u"><span>No effect${V2.pcRing()}</span></p></div>`;
-  return `<div class="pc-ans"${ty} aria-live="polite">${arrow}<p class="pc-l1"><span class="pc-ty">${E(t)}</span>${E(mv.name)} does</p><p class="pc-big u">${V2.pcDmg(r)}</p>
-    <p class="pc-l2">damage. ${E(d)} has <b>${r.hp} HP</b>.</p><p class="pc-vd u"><span>${E(V.big)}${V2.pcRing()}</span></p>${V.sm ? `<p class="pc-sm u">${E(V.sm)}</p>` : ''}</div>`; };
+  return `<div class="pc-ans"${ty} aria-live="polite">${arrow}<p class="pc-l1"><span class="pc-ty">${E(t)}</span> ${E(mv.name)} does</p><p class="pc-big u">${V2.pcDmg(r)}</p>
+    <p class="pc-l2">damage. ${E(d)} has <b>${r.hp} HP</b>.</p><p class="pc-vd u"><span>${E(V.big)}${V2.pcRing()}</span></p>${V.sm ? `<p class="pc-sm u">${E(V.sm).replace(/(\d+(?:–\d+)? HP)/, '<span class="pc-nw">$1</span>')}</p>` : ''}</div>`; };
 // a move: a highlighter swipe in its type's colour; its damage in HP and the short verdict; the chosen one circled
 V2.pcMove = (C, m, i) => { const E = V2.esc, on = m.name === dc.mv, r = on ? C.r : V2.dcHit(C, m), t = (r && r.type) || m.type, V = r && r.max > 0 ? V2.pcVerdict(r) : null;
   const dmg = !r ? (m.cat ? 'Not calculated' : 'No damage') : r.max === 0 ? 'No effect' : V2.pcDmg(r), tilt = [-1.5, 1, -1, 1.5][i % 4];
