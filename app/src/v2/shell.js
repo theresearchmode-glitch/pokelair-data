@@ -138,7 +138,15 @@ addEventListener('popstate', () => { if (V2.hist.skip) { V2.hist.skip--; return;
   if (V2._sheet) { V2.hist.pop = true; try { V2.closeSheet(); } finally { V2.hist.pop = false; } return; }
   // a sheet's leftover step: skip it the way you're travelling (arriving from deeper = going back; same depth = going forward)
   try { if (history.state && history.state.v2sh) { V2.hist.skip++; if ((history.state.v2d || 0) >= (V2.nav ? V2.nav.d : 0)) history.forward(); else history.back(); } } catch (e) {} });
-V2.sheet = (html, o = {}) => { const prev = V2._sheet, back = prev ? prev.back : document.activeElement; V2.closeSheet(true, true); V2.histOpen();
+// Safari, iPhone/iPad and WebKit on Windows never focus a button on a mouse click or tap (WebKit: form controls are not mouse-
+// focusable except on its Linux ports), so when a tap opens a sheet document.activeElement is still <body> and focus came back to
+// nothing on close (EDIT-01b in WebKit on Windows, Nov 19-20). Remember the control a click landed on; a sheet opened within a moment
+// of it returns focus there. Chrome focuses the clicked button anyway, so there it is the same element as before.
+V2._tap = null;
+document.addEventListener('click', e => { const c = e.target && e.target.closest && e.target.closest('a[href],button,summary,input,select,textarea,[tabindex],[role="button"]'); V2._tap = c ? {el: c, t: Date.now()} : null; }, true);
+document.addEventListener('keydown', e => { if (e.key !== 'Enter' && e.key !== ' ') V2._tap = null; }, true);
+V2.opener = () => { const a = document.activeElement, t = V2._tap; return t && t.el.isConnected && Date.now() - t.t < 1500 && !(a && a !== document.body && a.contains(t.el)) ? t.el : a; };
+V2.sheet = (html, o = {}) => { const prev = V2._sheet, back = prev ? prev.back : V2.opener(); V2._tap = null; V2.closeSheet(true, true); V2.histOpen();
   const wrap = document.createElement('div'); wrap.className = 'np-sheetwrap';
   wrap.innerHTML = `<div class="np-scrim" data-v2close></div><div class="np-sheet${o.small ? ' sm' : ''}${o.fit ? ' fit' : ''}" role="dialog" aria-modal="true" aria-label="${V2.esc(o.label || 'Details')}" tabindex="-1"><button class="x" type="button" data-v2close aria-label="Close">✕</button>${html}</div>`;
   document.body.append(wrap); document.documentElement.classList.add('np-locked'); { const app = document.getElementById('app'); if (app) app.inert = true; } /* B9e: the page behind an open sheet is inert */
