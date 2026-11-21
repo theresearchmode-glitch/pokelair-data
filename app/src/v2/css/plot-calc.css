@@ -75,9 +75,9 @@
 .pc-links .np-link{display:inline-flex;align-items:center;min-height:var(--tap);font:800 var(--t15)/1 var(--b);color:var(--pc-line);text-decoration:underline 2px;text-underline-offset:6px}
 /* tablets and small laptops (700-1319): four even columns; the photos beside the answer, sky beside ground, the two notes side by side */
 @media (min-width:700px) and (max-width:1319.98px){
-  .pc-board{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"top top top top" "pa ans ans pd" "mv mv mv mv" "sky sky gnd gnd" "turn turn turn turn" "kits kits kits kits" "ko ko lk lk";gap:var(--s6) var(--s5);margin:0;padding:var(--s6) var(--s6) var(--s10);align-items:start}
+  .pc-board{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"top top top top" "pa ans ans pd" "mv mv mv mv" "sky sky gnd gnd" "turn turn turn turn" "kits kits kits kits" "ko ko ko ko" "lk lk lk lk"; /* the KO Board full width: at 700 its tiles fell to 40px wide beside the links */gap:var(--s6) var(--s5);margin:0;padding:var(--s6) var(--s6) var(--s10);align-items:start}
   .pc-ans{align-self:center}.pc-arrow{width:calc(100% + 48px);height:64px;margin:0 -24px -4px}.pc-mvs{grid-template-columns:repeat(4,minmax(0,1fr))}.pc-ph b{font-size:var(--t17)}
-  .pc-kob{align-self:center}.pc-links{display:grid;align-self:center}}
+  .pc-links{display:flex}}
 /* desktop (1320+; under that the sky and ground buttons fall under 44px wide): 260 / 1fr / 1fr / 260 (the mock's 280 / 1fr / 1fr / 280, inside the page frame) */
 @media (min-width:1320px){
   .pc-board{grid-template-columns:260px minmax(0,1fr) minmax(0,1fr) 260px;grid-template-areas:"top top top top" "pa ans ans pd" "ka mv mv kd" "ka sky gnd kd" "ko turn turn lk";gap:var(--s8) var(--s6);margin:0;padding:var(--s6) var(--s6) var(--s12);align-items:start}
