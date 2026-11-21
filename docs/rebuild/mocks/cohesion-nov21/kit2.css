@@ -1,5 +1,5 @@
-@font-face{font-family:U;src:url(../redesign/fonts/unbounded-latin.woff2) format('woff2');font-weight:200 900}
-@font-face{font-family:I;src:url(../redesign/fonts/instrument-sans-latin.woff2) format('woff2');font-weight:400 700}
+@font-face{font-family:U;src:url(../../../../app/src/v2/fonts/unbounded-latin.woff2) format('woff2');font-weight:200 900}
+@font-face{font-family:I;src:url(../../../../app/src/v2/fonts/instrument-sans-latin.woff2) format('woff2');font-weight:400 700}
 :root{--paper:#F7F5F0;--ink:#17161A;--ink2:#5E5A66;--rule:rgba(23,22,26,.14);--plot:#0078BF;--nasty:#E8364F;--card:#FFFFFF;--wash:#EFEBE3;--night:#14131C}
 *{box-sizing:border-box}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 I,system-ui,sans-serif;overflow-x:hidden}
