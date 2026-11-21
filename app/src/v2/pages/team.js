@@ -63,7 +63,7 @@ V2.openTeamSheet = () => { const ms = members(), r = (typeof regInfo === 'functi
   const back = '<a class="np-back" href="#team" data-v2close>← My Team</a>';
   if (!ms.length) { V2.sheet(`<div class="ts2"><div class="np-eyebrow"><span>${back} · ${reg}</span></div><h2 class="u">Team Sheet</h2>
     <p class="tm-sub">No team yet. Add Pokémon on My Team and their full sets show here.</p><div class="ts2-acts"><button type="button" class="np-btn" data-v2close data-v2search><span>Add a Pokémon</span></button></div></div>`, {label: 'Team Sheet', small: true}); return; }
-  let LU = null; try { LU = ms.length >= 4 ? teamLineup(ms) : null; } catch (e) {} // today's "↑ Lead" mark on the lead pair (Nov 12)
+  let LU = null; /* Sim, Nov 20: no Lead mark on My Team (leads are Battle's call) */
   // Nov 14, Sim's pick "Tale of the Tape" (docs/rebuild/mocks/team-sheet-tape): the six across the top, every fact read across in rows,
   // the team's best in each stat on a blue plate (ties all marked). A real table: the Pokémon are the column headers, the facts the row headers.
   const E = V2.esc, D = ms.map(m => sheetData(m)), N = D[0] ? D[0].stats.length : 0;
@@ -71,7 +71,7 @@ V2.openTeamSheet = () => { const ms = members(), r = (typeof regInfo === 'functi
   const vs = LU ? (/^vs /.test(PLAN_VS[LU.by]) ? PLAN_VS[LU.by] : '(' + PLAN_VS[LU.by] + ')') : '';
   const head = (m, i) => { const P = m.p, d = V2.disp(P.n), mega = /^Mega /.test(d), lead = LU && LU.lead.includes(m), t1 = P.t[0], t2 = P.t[1] || P.t[0];
     return `<th scope="col" class="tt-mon"><button type="button" class="tt-pick" data-ts2edit="${m.i}" aria-label="${E(m.d)}: edit its set"><span class="tt-ban" aria-hidden="true" style="--b1:var(--ty-${t1});--b2:var(--ty-${t2})"><i class="tt-no u">${String(m.i + 1).padStart(2, '0')}</i><i class="tt-giant u">${E((mega ? d.slice(5) : d).toUpperCase())}</i>${V2.mon(P.n, {iw: 120, bare: true})}</span>
-      <span class="tt-mg u">${mega ? 'Mega' : '&nbsp;'}</span><b class="tt-nm u">${E(mega ? d.slice(5) : d)}</b>${lead ? `<span class="tt-lead u">Lead<span class="vh"> ${E(vs)}</span></span>` : LU ? '<span class="tt-lead no" aria-hidden="true">&nbsp;</span>' : ''}</button></th>`; };
+      <span class="tt-mg u">${mega ? 'Mega' : '&nbsp;'}</span><b class="tt-nm u">${E(mega ? d.slice(5) : d)}</b></button></th>`; };
   /* say it once (Nov 16, re-verify #17): when every column's spread note is the same ('Most common spread'), the key says it once */
   const srcs = [...new Set(D.filter(d => d && d.nat).map(d => String(d.src || '').replace(/<[^>]*>/g, '')))], srcOnce = srcs.length === 1 && srcs[0] ? srcs[0] : '';
   const nat = (m, i) => { const d = D[i]; return d.nat ? `<b>${E(d.nat)}</b>${d.up && d.dn && d.up !== d.dn ? `<small class="tt-nb"><span class="up">+${d.up}</span> <span class="dn">−${d.dn}</span></small>` : ''}${srcOnce ? '' : `<small class="tt-src">${E(String(d.src || '').replace(/<[^>]*>/g, ''))}</small>`}` : '<b>Nature unknown</b>'; };
@@ -283,7 +283,8 @@ V2.emptyHtml = (o = {}) => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nS
   // Sim, Nov 13 (Empty My Team Q1 B): "Add" with a sub-line under it; scan S4 A (Sim, Nov 20): the sub-line names the spot by its group
   // ("Lead 1", "Lead 2", "Back 1" …), since on phones the groups are columns and "Spot 1 · Spot 3 · Spot 5" read across the top row
   const add = (i, g, k) => `<div class="sx-slot sx-empty"><button type="button" class="sx-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="sx-addart" aria-hidden="true"><i>+</i></span><b>Add</b><small>${g} ${k}</small></button></div>`;
-  const spots = `<div class="tm-six sx tm-e-six"><div class="sx-grps">${['Lead', 'Back', 'Bench'].map((g, j) => `<div class="sx-grp" role="group" aria-label="${g}"><p class="sx-gl u" aria-hidden="true">${g}</p><div class="sx-tiles">${add(j * 2, g, 1)}${add(j * 2 + 1, g, 2)}</div></div>`).join('')}</div></div>`;
+  /* Sim, Nov 20: no Lead / Back / Bench before the six are known (leads are Battle's call): Spot 1-6 */
+  const spots = `<div class="tm-six sx tm-e-six"><div class="sx-grps">${[0, 1, 2].map(j => `<div class="sx-grp" role="group" aria-label="Spots ${j * 2 + 1} and ${j * 2 + 2}"><div class="sx-tiles">${add(j * 2, 'Spot', j * 2 + 1)}${add(j * 2 + 1, 'Spot', j * 2 + 2)}</div></div>`).join('')}</div></div>`;
   let top = []; try { top = lairRows().slice(0, 6).map(x => x.p); } catch (e) {}
   const win = top.length ? `<div class="tm-e-win"><h2 class="u">Or Start from a Winner</h2><p>Today's six highest-rated Pokémon. Tap one to build a team around it.</p><div class="tm-e-wg">${top.map(p => { const R = monRating(p), u = homePct(p);
     return `<button type="button" class="tm-e-w" data-hmaround="${V2.esc(p.n)}" aria-label="Build around ${V2.esc(p.d)}">${V2.mon(p.n, {iw: 96, bare: true, tag: true})}<b>${V2.tileName(p.d)}</b><small>${R ? `<span>${R.tier}\u00a0tier\u00a0${R.n}</span>` : ''}${u ? `<span>${u}% of <span class="tm-e-src">Showdown ladder teams</span></span>` : ''}</small></button>`; }).join('')}</div></div>` : '';

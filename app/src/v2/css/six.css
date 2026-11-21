@@ -116,3 +116,7 @@ svg.sx-lk{display:inline-block;width:13px;height:13px;margin-right:var(--s1);ver
   .mh .ms-card,.mh-build .mh-add{height:128px}.mh .mc-mon .np-mon,.mh .mc-mon .np-mon .st{--iw:88px}.mh .mc-id{left:var(--s1);right:var(--s1);bottom:var(--s3)}
   .mh-ty{flex-direction:column;align-items:flex-start;gap:var(--s1)}.mh-it b{font-size:var(--t13)}
   .tm-six.mh>.mt-edit{margin-top:var(--s4)}}
+/* Sim, Nov 20: the empty My Team's six spots are Spot 1-6 (no Lead / Back / Bench), so they sit as one even row: no pair groups, no divider */
+.tm-e-six .sx-grps{grid-template-columns:repeat(6,minmax(0,1fr));column-gap:var(--s3)}.tm-e-six .sx-grp{display:contents}.tm-e-six .sx-tiles{display:contents}
+.tm-e-six .sx-grp::before,.tm-e-six .sx-grp::after{content:none}
+@media (max-width:699.98px){.tm-e-six .sx-grps{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-rows:none;row-gap:var(--s3)}}
