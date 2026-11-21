@@ -1842,3 +1842,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:04 PM: Sim: yes to the Home stacked hero pair at 360-440. Merged into t1rules: bug fixes + CI overlap step (048e8b40), Ratings tier bar + phone swipe fade (34a2573d), Build winners as cards + compact phones (81843754). B-build tests on the Build change: result pending.
 - 2:05 PM: Preview v224 published (Ratings tier bar + swipe fade, Build winner cards, Home/Calc fixes); 443 files checked. The preview script's first build step fails again (2 Node errors, short page); built the preview step by hand. To fix the script later.
 - 2:05 PM: Correction: the preview script did not break; my call set S= before PLAYWRIGHT_BROWSERS_PATH=$S/..., so the browser path pointed into the wrong folder. Next time: set PLAYWRIGHT_BROWSERS_PATH first.
+- 2:06 PM: Build reskin checks (bd 81843754, merged): B-build 77 pass / 0 FAIL / 14 known (baseline), kit-page all 14 views passed.
