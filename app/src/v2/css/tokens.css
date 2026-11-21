@@ -129,6 +129,13 @@
   --arn-rowbg:rgba(12,11,18,.74);--arn-rim:rgba(255,255,255,.12);--arn-ic-shadow:rgba(0,0,0,.45);--arn-ic-edge:#17161A;
   --arn-plate-hi:rgba(30,28,42,.95);--arn-plate-lo:rgba(14,13,22,.95);--arn-plate-rim:rgba(255,255,255,.14);
   --arn-track:#0A0910;--arn-tick:rgba(10,9,16,.75);--arn-hp-hi:#7DF2AE;--arn-hp-dmg-hi:#FF5C74;--arn-hpl:#FFFFFF;--arn-on-hpl:#17161A;--arn-hp-sub:#C9C5D0;
+  /* the Damage Calc board, 'Plot the hit' (Sim, Nov 21): graph paper, marker, photos, sticky notes; the same board in day and night until Sim picks a dark design.
+     Contrast on the paper #FCFAF3 (measured, Nov 21): ink 17.2:1, ink-2 6.4:1, off switch words 5.2:1, blue marker 5.6:1, red marker words 5.6:1; weather/terrain icons 3.9-6.4:1 (icons need 3:1); the big damage in type colours 4.4:1+ (large text needs 3:1) */
+  --pc-paper:#FCFAF3;--pc-grid:rgba(0,120,191,.22);--pc-grid2:rgba(0,120,191,.1);--pc-ink:#17161A;--pc-ink2:#5E5A66;--pc-off:#6B6873;--pc-mark:#E8364F;--pc-mark-text:#C41E35;--pc-mark-edge:#FFFFFF;
+  --pc-line:#0068AD;--pc-photo:#FFFFFF;--pc-photo-rim:rgba(23,22,26,.1);--pc-drop:rgba(0,0,0,.5);--pc-tint-a:#CFE6F7;--pc-tint-d:#F9D0D7;--pc-note-a:#D9EDFB;--pc-note-d:#FBD3DA;
+  --pc-note-top:rgba(0,0,0,.1);--pc-dots:rgba(23,22,26,.35);--pc-note-label:rgba(23,22,26,.7);--pc-key:rgba(255,255,255,.6);--pc-dash:rgba(23,22,26,.5);--pc-on-swipe:#FFFFFF;--pc-swipe-sub:rgba(255,255,255,.92);
+  --pc-k-none:#5E5A66;--pc-k-sun:#B56E00;--pc-k-rain:#2A73C9;--pc-k-sand:#A8742A;--pc-k-snow:#2F7DA4;--pc-k-grassy:#28843C;--pc-k-electric:#946F00;--pc-k-psychic:#C2479A;--pc-k-misty:#B4508C;
+  --d-pcbig:clamp(48px,17cqi,112px);--d-pctitle:clamp(24px,3vw,44px);
   --arn-shade-t:rgba(0,0,0,.3);--arn-shade-b:rgba(0,0,0,.45);--arn-contact-1:rgba(0,0,0,.6);--arn-contact-2:rgba(0,0,0,.3);--arn-contact-3:rgba(40,36,60,.6);--d-arntag:clamp(34px,6.4cqi,64px);
   color-scheme:light}
 :root[data-theme="night"]{

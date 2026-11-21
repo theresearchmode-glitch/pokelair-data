@@ -1,0 +1,92 @@
+/* ---------- the Damage Calc board, "Plot the hit" (Sim, Nov 21; from the designer's plot4 mock-up; sizes on the type scale, spacing on
+   the 4px grid, colours as tokens). Three things only: photos, marker, sticky notes. ---------- */
+.dc2.pc{--pc-gap:var(--s5)}
+.pc-board{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"top top" "pa pd" "ans ans" "mv mv" "sky sky" "gnd gnd" "turn turn" "kits kits" "ko ko" "lk lk";
+  gap:var(--s5) var(--s3);margin:0 calc(var(--gut) * -1);padding:var(--s4) var(--gut) var(--s8);color:var(--pc-ink);overflow:hidden;
+  background:linear-gradient(var(--pc-grid) 1.5px,transparent 1.5px) 0 0/120px 120px,linear-gradient(90deg,var(--pc-grid) 1.5px,transparent 1.5px) 0 0/120px 120px,
+    linear-gradient(var(--pc-grid2) 1px,transparent 1px) 0 0/24px 24px,linear-gradient(90deg,var(--pc-grid2) 1px,transparent 1px) 0 0/24px 24px,var(--pc-paper)}
+.pc-board h2{margin:0 0 var(--s2);font-size:var(--t16);line-height:1.2}
+.pc-board .arw{display:inline-block;flex:none;width:10px;height:8px;background:currentColor;opacity:.7;clip-path:polygon(0 0,100% 0,50% 100%)}
+/* the marker circle: red = chosen; a white edge so it still shows on a red (Fire) swipe (brief, known flaw 1) */
+.pc-ring{position:absolute;inset:-8px -12px;width:calc(100% + 24px);height:calc(100% + 16px);pointer-events:none;overflow:visible}
+.pc-ring path{fill:none;stroke:var(--pc-mark);stroke-width:3.6;stroke-linecap:round;vector-effect:non-scaling-stroke;filter:drop-shadow(0 0 1px var(--pc-mark-edge)) drop-shadow(0 0 1px var(--pc-mark-edge))}
+.pc-top{grid-area:top;display:flex;align-items:center;justify-content:space-between;gap:var(--s3)}
+.pc-title{margin:0;font-size:var(--d-pctitle);line-height:1;white-space:nowrap;rotate:-2deg}
+.pc-swap{display:flex;align-items:center;gap:var(--s2);white-space:nowrap;min-height:var(--tap);padding:0;border:0;background:none;color:var(--pc-ink);font-size:var(--t13);cursor:pointer}
+.pc-swap svg{width:44px;height:26px}.pc-swap path{fill:none;stroke:currentColor;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+/* the photos: white frame, tilted; blue tint attacker ("the muscle"), pink tint defender ("the target", circled). The photo is the picker. */
+.pc-ph{position:relative;grid-area:pa;display:grid;justify-items:start;padding:var(--s2) var(--s2) var(--s3);background:var(--pc-photo);color:var(--pc-ink);rotate:var(--r);box-shadow:0 0 0 1px var(--pc-photo-rim),0 18px 24px -14px var(--pc-drop)}
+.pc-ph.a{--r:-3deg;--t:var(--pc-tint-a)}.pc-ph.d{grid-area:pd;--r:3deg;--t:var(--pc-tint-d)}
+.pc-pic{position:relative;display:block;width:100%;aspect-ratio:1;overflow:hidden;background:var(--t)}.pc-pic img{position:absolute;inset:4%;width:92%;height:92%;object-fit:contain}.pc-ph.d .pc-pic img{transform:scaleX(-1)}
+.pc-ph small{margin-top:6px;font:700 var(--t13)/1.2 var(--b);color:var(--pc-ink2)}
+.pc-ph b{display:flex;align-items:center;gap:6px;max-width:100%;font-size:var(--t16);line-height:1.2;white-space:nowrap}
+.pc-ph .pc-ring-ph{inset:-4px -6px auto;width:calc(100% + 12px);height:auto;aspect-ratio:1}
+.pc-ph .arn-pickbtn{position:absolute;inset:0;z-index:2;width:100%;height:100%;margin:0;padding:0;border:0;background:none;cursor:pointer}
+.pc-ph:has(.arn-pickbtn:focus-visible){outline:3px solid var(--plot);outline-offset:4px}
+/* the answer: the marker arrow, the damage under it in the move's type colour, the circled verdict */
+.pc-ans{grid-area:ans;container-type:inline-size;display:grid;justify-items:center;gap:2px;text-align:center}
+.pc-ans p{margin:0}
+.pc-arrow{width:74%;height:44px;overflow:visible;margin-bottom:2px}.pc-arrow path{fill:none;stroke:var(--pc-ink);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;vector-effect:non-scaling-stroke}
+.pc-l1{display:flex;align-items:center;gap:var(--s2);font:700 var(--t16)/1.3 var(--b)}
+.pc-ty{padding:0 var(--s2);background:var(--tc,var(--type-none));color:var(--on-type);font:700 var(--t13)/1.7 var(--b);clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+.pc-ans .pc-big{font-size:var(--d-pcbig);margin:var(--s1) 0;line-height:1;white-space:nowrap;color:var(--tc,var(--pc-ink))}
+.pc-l2{font:600 var(--t16)/1.3 var(--b)}.pc-l2 b{font-weight:900}
+.pc-ans .pc-vd{margin:var(--s8) 0 var(--s6);font-size:var(--t24);line-height:1.1;color:var(--pc-mark-text)}.pc-vd span{position:relative;display:inline-block;padding:2px var(--s1)}
+.pc-vd .pc-ring{inset:-12px -32px;width:calc(100% + 64px);height:calc(100% + 24px)}
+.pc-sm{font-size:var(--t13);line-height:1.3;color:var(--pc-line);rotate:-1.5deg}
+/* the moves: highlighter swipes in the type's colour (white words); All moves a dashed outline; the chosen one circled */
+.pc-mvb{grid-area:mv}.pc-sky{grid-area:sky}.pc-gnd{grid-area:gnd}.pc-turn{grid-area:turn}
+.pc-mvs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s3)}
+.pc-mv{position:relative;isolation:isolate;display:grid;align-content:center;gap:1px;min-height:84px;padding:var(--s2) var(--s4) var(--s3);border:0;background:none;color:var(--pc-on-swipe);text-align:left;rotate:var(--r);cursor:pointer}
+.pc-sw{position:absolute;inset:0;z-index:-1;background:var(--tc);clip-path:polygon(2% 8%,12% 2%,30% 6%,52% 0,74% 5%,96% 1%,100% 14%,98% 40%,100% 66%,97% 92%,80% 100%,58% 95%,36% 100%,14% 94%,1% 98%,3% 70%,0 42%)}
+.pc-mv b{display:block;font-size:var(--t15);line-height:1.15;text-wrap:balance} /* long names (Stomping Tantrum, Weather Ball) wrap to two lines, never cut */.pc-mv em{font-size:var(--t22);line-height:1.1;white-space:nowrap}
+.pc-mv small{font:700 var(--t13)/1.3 var(--b);color:var(--pc-swipe-sub)}
+.pc-mv .pc-ring{inset:-8px -6px;width:calc(100% + 12px);height:calc(100% + 16px)}
+.pc-mv:focus-visible,.pc-five button:focus-visible,.pc-sws button:focus-visible,.pc-swap:focus-visible{outline:3px solid var(--plot);outline-offset:4px}
+.dc2.pc .pc-all{position:relative;display:grid;align-content:center;min-height:84px;padding:var(--s2) var(--s4);border:3px dashed var(--pc-dash);border-radius:0;background:none;box-shadow:none;color:var(--pc-ink);rotate:1deg;font:900 var(--t15)/1.2 var(--u);font-style:italic}
+.dc2.pc .pc-all span{display:flex;align-items:center;gap:var(--s2)}
+/* sky, ground: icons and words written on the board in their own colour; the circle is the choice */
+.pc-five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+.pc-five button{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:0;min-height:60px;padding:0;border:0;background:none;color:var(--pc-ink);font:800 var(--t13)/1.1 var(--b);cursor:pointer}
+.pc-five .arn-ic{width:22px;height:22px;flex:none;color:var(--k);fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.pc-five .pc-ring{inset:1px 0;width:100%;height:calc(100% - 2px)}
+/* this turn: the switches written on the board; on = ink and circled, off = grey (5.2:1) */
+.pc-sws{display:flex;flex-wrap:wrap;gap:6px var(--s2)}
+.dc2.pc .pc-sws button{position:relative;display:flex;align-items:center;min-height:var(--tap);padding:0 var(--s3);border:0;border-radius:0;background:none;box-shadow:none;color:var(--pc-off);font:800 var(--t15)/1.1 var(--b);cursor:pointer}
+.dc2.pc .pc-sws button[aria-pressed="true"]{color:var(--pc-ink);background:none}.dc2.pc .pc-sws button i{display:none}
+.pc-sws .pc-ring{inset:2px -2px;width:calc(100% + 4px);height:calc(100% - 4px)}
+/* the sticky notes: only the two sets (blue the muscle's, pink the target's) */
+.dc2.pc .pc-kits{grid-area:kits;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s3);align-items:start}
+.dc2.pc .pc-kits .arn-set{position:relative;display:grid;align-content:start;padding:var(--s3) var(--s3) var(--s2);border:0;border-radius:0;background:var(--p);color:var(--pc-ink);rotate:var(--r);box-shadow:0 22px 22px -18px var(--pc-drop)}
+.dc2.pc .pc-kits .arn-set.a{--p:var(--pc-note-a);--r:1.2deg}.dc2.pc .pc-kits .arn-set.d{--p:var(--pc-note-d);--r:-1.2deg}
+.dc2.pc .pc-kits .arn-set::before{content:"";position:absolute;left:0;right:0;top:0;height:16px;background:linear-gradient(180deg,var(--pc-note-top),transparent)}
+.dc2.pc .pc-kits .arn-set header{display:block;margin:0 0 2px}.dc2.pc .pc-kits .arn-set header img,.dc2.pc .pc-kits .arn-set header small{display:none}
+.dc2.pc .pc-kits .arn-set header b{font-size:var(--t13)}
+.dc2.pc .pc-kits .arn-f{min-height:48px;padding:0;border-radius:0;background:none;box-shadow:none;border-bottom:2px dotted var(--pc-dots);color:var(--pc-ink)}
+.dc2.pc .pc-kits .arn-f .lb,.dc2.pc .pc-kits .arn-box span{color:var(--pc-note-label)}
+/* each row's label (Item, Ability, Nature) shown small above its value, as on the note (spoken the same as before) */
+.dc2.pc .pc-kits .arn-f:has(> .vh){display:grid;align-content:center;padding-top:var(--s1)}
+.dc2.pc .pc-kits .arn-f > .vh{position:static;width:auto;height:auto;overflow:visible;clip:auto;padding:0 var(--s3);font:700 var(--t13)/1.2 var(--b);color:var(--pc-note-label)}
+.dc2.pc .pc-kits .arn-f > .vh ~ .arn-sel{min-height:28px}
+.dc2.pc .pc-kits .arn-st{border-bottom:0}.dc2.pc .pc-kits .arn-st button{width:var(--tap)}.dc2.pc .pc-kits .arn-st button{background:var(--pc-key);color:var(--pc-ink)}
+/* the KO Board: the site's own dark slanted bar; the links: plain underlined */
+.pc-kob{grid-area:ko;min-width:0}
+.pc-links{grid-area:lk;display:flex;flex-wrap:wrap;gap:0 var(--s6)}
+.pc-links .np-link{display:inline-flex;align-items:center;min-height:var(--tap);font:800 var(--t15)/1 var(--b);color:var(--pc-line);text-decoration:underline 2px;text-underline-offset:6px}
+/* tablets and small laptops (700-1319): four even columns; the photos beside the answer, sky beside ground, the two notes side by side */
+@media (min-width:700px) and (max-width:1319.98px){
+  .pc-board{grid-template-columns:repeat(4,minmax(0,1fr));grid-template-areas:"top top top top" "pa ans ans pd" "mv mv mv mv" "sky sky gnd gnd" "turn turn turn turn" "kits kits kits kits" "ko ko lk lk";gap:var(--s6) var(--s5);margin:0;padding:var(--s6) var(--s6) var(--s10);align-items:start}
+  .pc-ans{align-self:center}.pc-arrow{width:calc(100% + 48px);height:64px;margin:0 -24px -4px}.pc-mvs{grid-template-columns:repeat(4,minmax(0,1fr))}.pc-ph b{font-size:var(--t17)}
+  .pc-kob{align-self:center}.pc-links{display:grid;align-self:center}}
+/* desktop (1320+; under that the sky and ground buttons fall under 44px wide): 260 / 1fr / 1fr / 260 (the mock's 280 / 1fr / 1fr / 280, inside the page frame) */
+@media (min-width:1320px){
+  .pc-board{grid-template-columns:260px minmax(0,1fr) minmax(0,1fr) 260px;grid-template-areas:"top top top top" "pa ans ans pd" "ka mv mv kd" "ka sky gnd kd" "ko turn turn lk";gap:var(--s8) var(--s6);margin:0;padding:var(--s6) var(--s6) var(--s12);align-items:start}
+  .dc2.pc .pc-kits{display:contents}.dc2.pc .pc-kits .arn-set.a{grid-area:ka}.dc2.pc .pc-kits .arn-set.d{grid-area:kd}
+  .pc-swap{font-size:var(--t15)}.pc-ph{padding:var(--s3) var(--s3) var(--s4)}.pc-ph b{font-size:var(--t22)}
+  .pc-ans{align-self:center}.pc-arrow{width:calc(100% + 88px);height:84px;margin:0 -44px -6px}
+  .pc-l1,.pc-l2{font-size:var(--t20)}.pc-ans .pc-vd{margin:var(--s12) 0 var(--s6);font-size:var(--t34)}.pc-sm{font-size:var(--t16)}
+  .pc-board h2{font-size:var(--t17)}.pc-mvs{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s4)}.pc-mv,.dc2.pc .pc-all{min-height:104px;padding:var(--s3) var(--s3) var(--s3) var(--s4)}
+  .pc-mv em{font-size:var(--t20)}.dc2.pc .pc-kits .arn-set{padding:var(--s4) var(--s4) var(--s2)}.dc2.pc .pc-kits .arn-set header b{font-size:var(--t15)}.pc-five button{min-height:64px}
+  .pc-kob{align-self:center}.pc-links{display:grid;align-self:center}}
+@media (max-width:699.98px){.dc2.pc .pc-sws button{padding:0 var(--s2)}}
+@media (max-width:379.98px){.pc-board{gap:var(--s4) var(--s2)}.pc-mv{padding:var(--s2) var(--s3)}.pc-mv em{font-size:var(--t20)}.pc-five button{font-size:var(--t13)}.pc-ph b{font-size:var(--t15)}}
