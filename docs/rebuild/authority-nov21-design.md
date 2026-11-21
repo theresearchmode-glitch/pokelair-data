@@ -15,6 +15,12 @@ every feature kept; nothing live, no switch, no deletes. Times are from log-deci
 | 1:34 AM | Phone names whole on one line; "1 of 6" under a long name; Edit Set its own row | mid-word breaks, a spilling bar, a wrapped button | authority/myteam-party-*.png, myteam-set-*.png |
 | 1:37 AM | 1000-1279: two columns, Suggestions full width; no white boxes; even link grid | moves and buttons were squeezed | authority/myteam-1040-frame-lead.png |
 | 1:59 AM | Names narrowed to fit at every width (no '…'), only when they overflow; links one line each in a wide column | desktop cut 'Mega Charizar…'; every name was squeezed 1-2% by a 2px slip | authority/myteam-1040-frame-lead.png |
+| 3:51 AM | FLAG: the frame opens the first Pokémon's set before any tap (your Nov 18 C said nothing until a tap) | the approved mock is three parts always shown; an empty middle breaks it | authority/myteam-1040-frame-lead.png |
+| 3:58 AM | Long names on phones wrap at spaces; a single long word may narrow to 55%; never cut or split | 'Paldean Tauros (Combat)' was 57px past its 47px tile | authority/myteam-longnames-360.png |
+| 4:02 AM | Phone status line in your earlier short form '6 of 6 · Grassy Terrain · Legal ✓' | the long form wrapped to 2 lines at 360-390 | (q84 all passed) |
+| 4:04 AM | 320: Remove within 650px of the tapped Pokémon (types side by side, Lock after the buttons, lower stage, 36px move bars) | was 739px (your Nov 17 rule: 650) | authority/myteam-320-set-tight.png |
+| 4:06 AM | Suggestions links 13px on phones; a one-line list at 375 and narrower | 'Suggestions ›' ran into the next link | authority/myteam-sglinks-390-13px.png |
+| 3:53 AM | Your type rule: 'S tier' tags and row numbers in Instrument Sans; buttons 15px | 8 kinds of Unbounded under 15px | (v2-unbounded clean) |
 | 1:44 AM | Suggestions links: one even row of three (two lines each); a list under 360 | Refresh sat alone at 1440; 320 too narrow | authority/myteam-sglinks-320/390/1440.png |
 
 Polish check (VIEWS=team, 320-2560, light and dark), measured 2:00 AM: spill 0, uneven 0, line height 0 (was spill 7, uneven 1, lone 8,
