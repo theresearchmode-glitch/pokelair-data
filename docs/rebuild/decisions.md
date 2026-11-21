@@ -1707,3 +1707,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:32 PM: Sim: 'yup thats good for me' = OK to put the new Damage Calc Arena (art + polish + Q100 A numbers) on the Preview once the speed check and every test.yml job pass.
 - 11:36 PM: Hourly work check 11:36 PM: 3 of 3 helpers working (ListAgents), main thread on the My Team tests; Plans page republished (v141) with the Arena note. No problems.
 - 11:50 PM: Removing My Team's Game Plan line had also removed the only way to open the Game Plan sheet (which of the six covers each job). Restored it as 'Game Plan ›  Which of your six covers each job.' with no lead/back/bench words (rule: never remove functionality). PLAY-01 and TEAM-12 pass. Asking Sim about Home's Game Plan line, which still says lead/back/bench.
+- 12:00 AM: Sim: 'Recommendations are good to go' = Q102 A: Home's turn-1 plan line stays as it is (its leads are against a named opponent).
