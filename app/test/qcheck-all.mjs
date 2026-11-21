@@ -12,7 +12,7 @@ let routes = process.env.ROUTES ? process.env.ROUTES.split(',') : null;
 if (!routes) { const b = await chromium.launch(), p = await b.newPage(); await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500);
   routes = await p.evaluate(() => Object.keys(V2.pages).filter(r => !/^(sheet|team-empty|coming|gallery|guide)$/.test(r))); await b.close(); }
 const found = [], t0 = Date.now();
-/* Nov 17 (Sim found the Top 10 bug on her iPhone): the default view of a page isn't enough. Every switchable view (each choice in a
+/* Nov 17 (Sim found the Top 10 bug on his iPhone): the default view of a page isn't enough. Every switchable view (each choice in a
    sliding picker or tab list on the page: Matchups Top 10 / Grid / All 30, Box sort, Speed List...) is checked too. VIEWS=0 skips them. */
 const SEL = "#main .np-slide, #main [role=tablist]";
 const views = {}; if (process.env.VIEWS !== '0') { const b = await chromium.launch(), p = await b.newPage({viewport: {width: 1280, height: 900}});

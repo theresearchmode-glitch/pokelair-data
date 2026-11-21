@@ -12,7 +12,7 @@ let writing=null,pending=false,lastJson='';
 // that same part (then this device's newer change wins when it saves).
 let saved={},docExists=false;
 // this page's own saves come back from the account as updates too, sometimes late and out of order; each save is stamped with
-// this page's id so they are recognised and left alone (Sim, Nov 7: an old echo of her own save redrew the editor while she
+// this page's id so they are recognised and left alone (Sim, Nov 7: an old echo of his own save redrew the editor while he
 // typed in Add a Pokémon, clearing the box again and again)
 const DEV=Math.random().toString(36).slice(2,10)+Date.now().toString(36);let pendingRemote=[];
 // every value of each part this page has loaded or saved: an older one coming back is this page's own past save, not news

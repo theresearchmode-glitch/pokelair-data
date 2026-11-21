@@ -92,7 +92,7 @@ html,body{overflow-x:clip}
 .np-dnote{display:flex;align-items:flex-start;gap:var(--s3);margin:var(--s6) var(--gut) var(--s4);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .np-dnote b{color:var(--ink);font-weight:700}.np-dnote span{min-width:0}
 .np-dnote i{flex:none;width:12px;height:6px;margin-top:var(--s2);background:var(--band-work);transform:skewX(-24deg)}
-/* The logo "Sly Devil" (Sim, Nov 16, her designer's sizes): the full logo 44px tall in the header, logo-small 32px on phones, logo-small
+/* The logo "Sly Devil" (Sim, Nov 16, his designer's sizes): the full logo 44px tall in the header, logo-small 32px on phones, logo-small
    32px in the footer. One logo in day and night (no theme rules). Drawn as an image: never stretched (width follows height) */
 .np-lg{display:block;flex:none}.np-lg img,img.np-lg{display:block;height:44px;width:auto}
 .np-foot img.np-lg{height:32px}

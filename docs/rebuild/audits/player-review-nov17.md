@@ -2,7 +2,7 @@
 
 Sim: "go about it as you see best fit. I'm not going to have access to the chat." Rules kept: Preview only, one change at a
 time, re-check each finding on the current branch first, a test that fails before each fix, pictures for Sim, nothing live.
-Status per point: OPEN / FIXED (commit) / CHECKED-NOT-REAL / FOR SIM (needs her decision or conflicts with a rule).
+Status per point: OPEN / FIXED (commit) / CHECKED-NOT-REAL / FOR SIM (needs his decision or conflicts with a rule).
 
 Reviewer's summary: 24 pages at 390, 320, 1440, day and night; data copy dated Nov 10; no new tools wanted: polish, fill gaps
 inside existing tools, make features findable. Keep: no errors, no sideways scroll, night mode, ~20 s to a full Battle plan,
@@ -69,4 +69,4 @@ KO Board, Test Run's piles, Track Record.
 - (Corrected Nov 17: Sim's Nov 9 rule was about the redesign process and working systems, not a ban on new features; I had applied it too broadly.) Section 4 adds pieces inside existing tools; the reviewer
   calls them gaps, not new tools. Sim, Nov 17: "go about it as you see best fit" (worked on after 1-3, Preview only).
 - RULES.md: no design or visual decision without Sim's yes and pictures. Everything here goes to the Preview with pictures
-  and waits for her before live.
+  and waits for him before live.

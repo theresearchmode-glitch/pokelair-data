@@ -147,7 +147,7 @@ Not 1760+ as the main view: too thin for a third of the Pokémon.
 | D3 | Round format (best-of-1 vs best-of-3) for every Limitless event | Single games first; Strength Score tests on bo1 | Limitless `/tournaments/{id}/details` → phases[].mode (checked: live call returns `SWISS 6 BO1, SINGLE_BRACKET 1 BO3`); 1 call per new event | small | yes (daily job) |
 | D4 | Keep replays beyond the newest 20,000 | Sealed walk-forward tests; M-D 14-day window | monthly archive files of games that drop off (compressed), or a bigger cap | small–medium; repo size grows ~10–20 MB/month (not yet measured) | yes (daily job, repo size) |
 | D5 | Replay fetch cap (600 a run) may drop games | Single-game sample size | several days sit at exactly 600 (measured per upload day); raise cap or run every 4 hours (fits plan 0.9) | small | yes (daily job) |
-| D6 | M-D every-4-hours runs | Reg M-D plan 0.9 | cron change in update.yml for 14 days | small | yes (plan approved; the flip itself needs her go) |
+| D6 | M-D every-4-hours runs | Reg M-D plan 0.9 | cron change in update.yml for 14 days | small | yes (plan approved; the flip itself needs his go) |
 | D7 | M-D names in outside sources | Reg M-D G1 | Pikalytics, Showdowntier, official.mjs read the regulation profile | small | yes (G1 approved) |
 | D8 | Smogon 1760+ and bo3 sets (moves, items, natures), not only usage | Popular Sets "strong players" view; crosscheck | same chaos files we already download | small | yes (daily job + page) |
 | D9 | Which 4 were brought, game scores in bo3 rounds | Strength Score (bring-four), single games | no public source found (data-sources.md, Nov 8); Showdown bo3 replays give brought 4 per game | none new | no |

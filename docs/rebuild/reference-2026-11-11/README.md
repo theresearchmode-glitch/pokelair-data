@@ -6,7 +6,7 @@ For the session doing the rebuild. Sim reviewed these directions in a separate d
 
 - The pictures show intent. The rules and values below are what to build from.
 - Values are starting points taken from the mock-ups. None has been checked on a real phone, on iPad, for scrolling speed or for contrast. Measure before adopting, as the design system already requires.
-- Where this set disagrees with `docs/rebuild/design-system.md`, Sim chose the version here, in conversation. Each such point is listed under "Changes to existing rules". Confirm with her if anything is unclear.
+- Where this set disagrees with `docs/rebuild/design-system.md`, Sim chose the version here, in conversation. Each such point is listed under "Changes to existing rules". Confirm with him if anything is unclear.
 - The exact CSS used is in `source/`. Those scripts apply overrides to a copy of `docs/rebuild/mocks/out/myteam.html` at commit `082cc7b`, or build new pages from `docs/rebuild/mocks/tokens.css`. They run on Sim's PC only (they borrow Playwright from another checkout) and are here to be read, not run.
 
 ## Status of each piece

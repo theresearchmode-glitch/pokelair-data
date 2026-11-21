@@ -87,7 +87,7 @@ swipe row per tier; 320/390 are 1,141 / 1,068 under).
   today's tallest at that width (1440 187 px, 820 187 px). The caps bound the worst case: 1440 at most 11 rows (about 3,460 px page, today 8),
   820 at most 15 rows (about 4,550, today 12). Why: the Grandstand's height is set by how many real Pokémon are in each tier that day; a pixel
   limit on it fails on random days, while this rule still catches anything else that grows and keeps Sim's Nov 14 choice exactly. This is not
-  "raising the limit to pass": the rest of the page gets a tighter limit than today. Needs Sim's yes (limits are hers, C1); not built in c13-check.
+  "raising the limit to pass": the rest of the page gets a tighter limit than today. Needs Sim's yes (limits are his, C1); not built in c13-check.
   Pictures (page as it stays): overs2-qd-optA-RECOMMENDED-meta-1440.png, overs2-qd-optA-RECOMMENDED-meta-820.png
 - **B: back rows stand further back.** A tier's second and third rows show smaller Pokémon (S 68, A 60, B/C 56, D 52 px instead of 96-72) and a
   20 px score; every Pokémon still shown. 1440 `after 2854` (6 under, thin), 820 `after 3808` (212 under). Still moves with the data (each crossing
