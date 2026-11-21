@@ -10,7 +10,7 @@ const b = await chromium.launch(); const p = await b.newPage({viewport: {width: 
 await p.addInitScript(() => { window.__PL_TEST = 1; });
 await p.goto('file://' + PAGE + '#team'); await p.waitForTimeout(2500);
 const routes = await p.evaluate(() => Object.keys(V2.pages).filter(r => !/^(sheet|team-empty|coming|gallery)$/.test(r)));
-const ALLOW = new Set(['.st .np-megatag', '.mc-id .u', '.u .mg', '.ffm', '.fn-unm .mg', '.wt-spot .gs-tag.u', '.ev-counts .ev-pk.u', '.tk-mid .tk-tag.u',
+const ALLOW = new Set(['.arn-hprow .arn-hpl' /* Nov 21: the Arena's slanted HP tag, a tag (Sim OK'd the Arena polish) */, '.st .np-megatag', '.mc-id .u', '.u .mg', '.ffm', '.fn-unm .mg', '.wt-spot .gs-tag.u', '.ev-counts .ev-pk.u', '.tk-mid .tk-tag.u',
   '.tk-hero .tk-seal.u', '.ev-plate .ev-pk.u', '.ar-rk .u', '.ar-rk .ar-you', '.wk-ht .wk-tag.u', '.wk-tile .u', '.trk-st .trk-stamp.u.hit', '.trk-st .trk-stamp.u.miss',
   '.arn-mv .nm.u' /* the calc's move names (the Arena's move buttons since Nov 19; were the old hand's cards) */, '.dc2-kt .stamp.u', '.tp-card .tp-start.u', '.gs-sinfo .gs-tag.u', '.gs-tx .gs-mg.u', '.bp-fig .bp-mg.u' /* Sim Q83/Q85 (Nov 20): the Build sheet's 'Mega' tag over a figure's name, the same tag as the others */, '.gs-mg.u.us-mg' /* Sim Q73 D1 (Nov 20): the Usage podium's MEGA tag line under 600, the same tag as Usually alongside (.gs-tx .gs-mg.u) */, '.tp-open .tp-start.u', '.u',
   '.pr-stats .ev-pk' /* the Post Room's "Live right now" stamp on its plate (Sim, Nov 18, morning questions 1i: added to this list) */,
