@@ -39,12 +39,14 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   requestAnimationFrame(() => { const x = document.querySelector(`#main [data-mtfstep="${b.dataset.mtfstep}"]`); if (x) x.focus({preventScroll: true}); }); });
 // each name in Your six stays on ONE line (the brief's flaw: names broke mid-word, "Whimsi-cott"); it is narrowed to fit
 // (scaleX, down to 0.7, as Build's chips) and only then cut with "…"; "Mega" sits on its own small line above the name
-V2.mtfFit = () => { /* every width (Nov 21): on desktop a long name ('Mega Charizard Y' at 1000-1100) was cut with '…' */
-  /* too long even at 70% ('Paldean Tauros (Combat)' at 320-390): it wraps at spaces onto two lines (never inside a word), then the
-     longest line is narrowed if still needed (h9 found names 45-57px past the tile) */
-  document.querySelectorAll('#main .mtf-row:not(.mtf-add) .nm b').forEach(b => { b.style.transform = ''; b.style.whiteSpace = ''; const c = b.parentElement.clientWidth; if (!(c > 0)) return;
-    let n = b.scrollWidth; if (n <= c) return; if (n * 0.7 > c - 2) { b.style.whiteSpace = 'normal'; n = b.scrollWidth; if (n <= c) return; }
-    b.style.transform = `scaleX(${Math.max(b.style.whiteSpace ? 0.55 : 0.7, (c - 2) / n).toFixed(3)})`; }); }; /* a single long word ('Crabominable' in a 47px tile at 360) may go to 55% so it is never cut or broken */
+V2.mtfFit = () => { /* every width (Nov 21): a long name is never cut ('…') or split inside a word, and never over two lines
+  (Sim, Nov 18 C). One line, narrowed down to 70%; if that is not enough it wraps at spaces in a wider box (at most two lines) that is
+  then narrowed to the tile (down to 55%), so 'Paldean Tauros (Combat)' in a 55px tile reads 'Paldean Tauros / (Combat)' */
+  document.querySelectorAll('#main .mtf-row:not(.mtf-add) .nm b').forEach(b => { b.style.transform = ''; b.style.whiteSpace = ''; b.style.width = ''; const c = b.parentElement.clientWidth; if (!(c > 0)) return;
+    const n = b.scrollWidth; if (n <= c) return; if (n * 0.7 <= c - 2) { b.style.transform = `scaleX(${((c - 2) / n).toFixed(3)})`; return; }
+    const mg = b.querySelector('.mg'), mh = mg ? mg.offsetHeight : 0, lh = parseFloat(getComputedStyle(b).lineHeight) || 15; b.style.whiteSpace = 'normal';
+    let k = 0.95; for (; k > 0.49; k -= 0.05) { b.style.width = `${Math.floor((c - 2) / k)}px`; if (b.scrollWidth <= Math.floor((c - 2) / k) && b.offsetHeight - mh <= lh * 2 + 1) break; }
+    k = Math.max(0.5, k); b.style.width = `${Math.floor((c - 2) / k)}px`; b.style.transform = `scaleX(${k.toFixed(3)})`; }); };
 { let t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => V2.mtfFit && V2.mtfFit(), 120); }); }
 // '#team=set|mu|sg|ck' (old phone-tab links; h12 found them dead in the frame): in the frame there are no tabs, so the page scrolls once
 // to that section (its scroll-margin keeps the heading under the sticky bars) and focuses its heading
