@@ -1883,3 +1883,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:03 PM: GitHub run on b7127008: 14/15 jobs pass, only qcheck-all (fixed by hQ's known list 97798263). C-battle with the new HP line: 83 pass, 0 FAIL. Pushing the batch.
 - 5:36 PM: Calc reskin: v2-minors main1 'KO Board bar on one line' fails since the reskin hides the bar's counts for screen readers; visible counts are step 4's facts (same dcCounts). Test updated in ck to check the facts instead. Stopped my second test job in ck (rule: one job per copy); rerun after ck-run ends.
 - 5:37 PM: Sim asked when the Preview is next updated: overdue (last v224); building it now (pubprep) with today's approved changes; publishing when the build and privacy check pass.
+- 5:38 PM: Preview v225 published (443 files; foundation/v2.js/preview.json same size as the build; 7 fonts; privacy OK): move tickets + type symbols, Calc names + HP line, Build A, compact kit.
