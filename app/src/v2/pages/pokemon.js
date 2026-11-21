@@ -183,9 +183,9 @@ V2.pages.pokemon = {place: 'meta', after() { V2.pkFocusName(); }, draw() { const
   const H = lairHead(p), dex = V2.pkDex(p);
   const lead = `Pokémon Champions · VGC doubles, ${(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C').replace(/ /g, '\u00a0').replace(/-/g, '\u2011')}. ${H.tot ? `Rated from ${basisNum(H.tot, true)} real tournament teams.` : 'No tournament teams yet: rated from its stats, typing and tools.'}${H.thinR ? ' Early read: few games so far.' : ''}`;
   const ty = V2.byName && V2.byName.get(p.n) && V2.byName.get(p.n).t || p.t || [], c1 = V2.TYPES.includes(ty[0]) ? ty[0] : 'Normal', c2 = V2.TYPES.includes(ty[1]) ? ty[1] : c1;
-  let top = V2.pkTop(p); const fm = top.match(/<ul class="k-facts">[\s\S]*?<\/ul>/); if (fm) top = top.replace(fm[0], ''); /* Sim, Nov 21 (6:3x PM): the facts fill the header's empty right as bold type-coloured tiles */
+  let top = V2.pkTop(p); top = top.replace('<ul class="k-facts">', '<ul class="k-facts pk-hfx">'); /* Sim, Nov 21 (6:46 PM): the facts as bold type-coloured tiles, under the "On about one tournament team in 3" line */
   return `<div class="ra pk pkf" style="--pk-c1:var(--ty-${c1});--pk-c2:var(--ty-${c2})"><nav class="pk-trail" aria-label="You are here"><a href="#meta">Meta</a><span aria-hidden="true">›</span><a href="#meta">Ratings</a><span aria-hidden="true">›</span><span aria-current="page">${E(V2.disp(p.n))}</span></nav>
-    <div class="pk-hd">${V2.kHead({kicker: `CASE FILE${dex ? ' #' + dex : ''} · POKÉMON`, h1Html: `The file on <em class="pk-nm">${V2.nameHtml(V2.disp(p.n))}.</em>`, lead}).replace('<h1 class="k-h1 u">', '<h1 class="k-h1 u" id="pk-name">')}${fm ? fm[0].replace('class="k-facts"', 'class="k-facts pk-hfx"') : ''}</div>
+    <div class="pk-hd">${V2.kHead({kicker: `CASE FILE${dex ? ' #' + dex : ''} · POKÉMON`, h1Html: `The file on <em class="pk-nm">${V2.nameHtml(V2.disp(p.n))}.</em>`, lead}).replace('<h1 class="k-h1 u">', '<h1 class="k-h1 u" id="pk-name">')}</div>
     ${top}${V2.pkForms(p).strip}${V2.kPlan(V2.pkRap(p) + V2.pkPartners(p) + V2.pkHits(p))}</div>`; }};
 // (code review A1-I1, Nov 17: a hashchange listener here reset every other page's title to 'NastyPlot' after V2.setTitle had set it; V2.setTitle handles every route, so it is gone)
 

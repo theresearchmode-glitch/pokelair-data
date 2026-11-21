@@ -3365,7 +3365,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
    four facts as bold tiles in the Pokemon's own type colours; each step sits on a full-width band tinted with a type colour; the data
    slips are filled tiles. Colours are the type tokens (--ty-*), mixed with the kit paper so day and night both work. */
 .pk-hd{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s4) var(--s8);align-items:end}
-.pk-hd .k-facts.pk-hfx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin:0;padding:0;list-style:none}
+.pkf .k-facts.pk-hfx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin:var(--s5) 0 var(--s6);padding:0;list-style:none}
 .pk-hfx li{display:grid;align-content:end;min-height:88px;padding:var(--s3) var(--s4);background:var(--pk-c1);color:var(--on-type);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
 .pk-hfx li:nth-child(2),.pk-hfx li:nth-child(3){background:var(--pk-c2)}
 .pk-hfx li b{font-size:var(--t34);line-height:1;color:var(--on-type)}.pk-hfx li span{font:600 var(--t13)/1.3 var(--b);color:var(--on-type)}
@@ -3379,5 +3379,6 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .pk-slips li{padding:0 var(--s3) var(--s4);border-top:0;background:var(--k-card)}
 .pk-slips li>span{margin:0 calc(var(--s3) * -1) var(--s2);padding:var(--s2) var(--s3);background:var(--pk-c1);color:var(--on-type)}
 .pk-slips li:nth-child(even)>span{background:var(--pk-c2)}
-@media (min-width:1024px){.pk-hd{grid-template-columns:minmax(0,1fr) minmax(0,520px)}.pk-hfx li{min-height:96px}.pkf .pk-slips{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (min-width:1100px){.pkf .k-facts.pk-hfx{grid-template-columns:repeat(4,minmax(0,1fr))}.pk-hfx li:nth-child(3){background:var(--pk-c1)}.pk-hfx li:nth-child(4){background:var(--pk-c2)}.pk-hfx li{min-height:88px}.pk-hfx li b{font-size:var(--t26)}}
+@media (min-width:1024px){.pkf .pk-slips{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media (max-width:699.98px){.pk-hfx li{min-height:72px;padding:var(--s2) var(--s3)}.pk-hfx li b{font-size:var(--t26)}}
