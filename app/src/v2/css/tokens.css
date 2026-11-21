@@ -122,7 +122,13 @@
   /* under the scene (these follow the theme): the filled state (chosen move, switch on, the KO Board bar) is the page's ink; the chosen
      move's damage in pink on it (day 6.9:1 on ink, night 5.0:1 on the light fill); field and pill outlines; the KO bar's parts */
   --arn-fill:var(--ink);--arn-on-fill:var(--bg);--arn-hit:var(--plot-text);--arn-hit-on:#F58DA1;--arn-line:rgba(23,22,26,.2);--arn-dash:rgba(23,22,26,.36);
-  --arn-kb-ko:#E8364F;--arn-kb-sv:#2FB55A;--arn-edge-a:var(--logo-blue);--arn-edge-d:var(--logo-pink);--d-arntag:clamp(34px,6.4cqi,64px);
+  --arn-kb-ko:#E8364F;--arn-kb-sv:#2FB55A;--arn-edge-a:var(--logo-blue);--arn-edge-d:var(--logo-pink);
+  /* the Arena polish (Sim, Nov 21): each weather/terrain's own colour (icons, the chosen foot), the rows' dark band, plates, the HP track, calm bands, the contact shadow */
+  --arn-k-none:#FFFFFF;--arn-k-sun:#FFB23F;--arn-k-rain:#7FB4FF;--arn-k-sand:#E2B66E;--arn-k-snow:#BFE6FF;--arn-k-grassy:#5FD068;--arn-k-electric:#FFD21F;--arn-k-psychic:#FF5FBF;--arn-k-misty:#FFA9DA;
+  --arn-rowbg:rgba(12,11,18,.74);--arn-rim:rgba(255,255,255,.12);--arn-ic-shadow:rgba(0,0,0,.45);--arn-ic-edge:#17161A;
+  --arn-plate-hi:rgba(30,28,42,.95);--arn-plate-lo:rgba(14,13,22,.95);--arn-plate-rim:rgba(255,255,255,.14);
+  --arn-track:#0A0910;--arn-tick:rgba(10,9,16,.75);--arn-hp-hi:#7DF2AE;--arn-hp-dmg-hi:#FF5C74;--arn-hpl:#FFFFFF;--arn-on-hpl:#17161A;--arn-hp-sub:#C9C5D0;
+  --arn-shade-t:rgba(0,0,0,.3);--arn-shade-b:rgba(0,0,0,.45);--arn-contact-1:rgba(0,0,0,.6);--arn-contact-2:rgba(0,0,0,.3);--arn-contact-3:rgba(40,36,60,.6);--d-arntag:clamp(34px,6.4cqi,64px);
   color-scheme:light}
 :root[data-theme="night"]{
   --bp-paper:transparent;--bp-grid:#62bef70a;--bp-grid5:#62bef714;--bp-ink:#62bef7; /* Q82 A: fainter (was 12 / 24) */

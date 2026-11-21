@@ -235,15 +235,18 @@ function ground(w, t) { const S = SKY[w], G = GR[t], rnd = R(29), q = 'gr'; let 
 const ids = s => s.replace(/ id="([^"]+)"/g, ' id="arn$1"').replace(/url\(#([^)]+)\)/g, 'url(#arn$1)');
   const cache = {};
   return (w, t) => { w = SKY[w] ? w : 'clear'; t = GR[t] ? t : 'none'; const k = w + '|' + t;
-    return cache[k] || (cache[k] = ids(`<div class="arn-bg" aria-hidden="true"><div class="arn-sw">${sky(w, t)}</div><div class="arn-gw">${ground(w, t)}</div></div>`)); };
+    return cache[k] || (cache[k] = ids(`<div class="arn-bg" aria-hidden="true"><div class="arn-skw">${sky(w, t)}</div><div class="arn-gdw">${ground(w, t)}</div><i class="arn-shade"></i></div>`)); };
 })();
+// the rows' icons (Nov 21 mock-up): one per option, in that weather's / terrain's colour (--arn-k-*)
+V2.ARN_IC = {"": "<circle cx=\"12\" cy=\"12\" r=\"7\"/><path d=\"M7 17L17 7\"/>", "sun": "<circle cx=\"12\" cy=\"12\" r=\"4.2\" fill=\"currentColor\"/><path d=\"M12 2.5v3M12 18.5v3M2.5 12h3M18.5 12h3M5.3 5.3l2.1 2.1M16.6 16.6l2.1 2.1M5.3 18.7l2.1-2.1M16.6 7.4l2.1-2.1\"/>", "rain": "<path d=\"M7 14.5a4 4 0 0 1 .6-7.9A5.5 5.5 0 0 1 18 8a3.3 3.3 0 0 1-.6 6.5Z\" fill=\"currentColor\" stroke=\"none\"/><path d=\"M8.5 17.5l-1 3M12.5 17.5l-1 3M16.5 17.5l-1 3\"/>", "sand": "<path d=\"M3 8.5h11a2.5 2.5 0 1 0-2.5-2.5M3 12.5h15a2.5 2.5 0 1 1-2.5 2.5M3 16.5h8\"/>", "snow": "<path d=\"M12 3v18M4.2 7.5l15.6 9M4.2 16.5l15.6-9M9.5 4.5L12 7l2.5-2.5M9.5 19.5L12 17l2.5 2.5\"/>", "grassy": "<path d=\"M5 19c0-8 5-13 14-14-1 9-6 14-14 14Z\" fill=\"currentColor\" stroke=\"none\"/>", "electric": "<path d=\"M13.5 2.5L5 13.5h6l-1.5 8 9-11.5h-6Z\" fill=\"currentColor\" stroke=\"none\"/>", "psychic": "<path d=\"M12 12.2a1.2 1.2 0 1 1 1.6-1.2 2.8 2.8 0 1 1-3.6 3.2 4.6 4.6 0 1 1 6.8-5.4 6.6 6.6 0 1 1-10.4 2\"/>", "misty": "<path d=\"M12 3.5c3.2 4 5.5 7 5.5 9.8a5.5 5.5 0 0 1-11 0c0-2.8 2.3-5.8 5.5-9.8Z\" fill=\"currentColor\" stroke=\"none\"/>"};
+V2.arnIc = v => `<svg class="arn-ic" viewBox="0 0 24 24" aria-hidden="true">${V2.ARN_IC[v] || V2.ARN_IC['']}</svg>`;
 V2.arnSide = (X, role) => { const W = V2.ARN_W; return X.src === 'yours' ? W.yours : X.src === 'estimated' ? W.estimated : W.mostUsed; };
 V2.arnImg = (n, cls) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img class="${cls || ''}" src="${V2.art(id, true)}" alt="" decoding="async">` : ''; };
 // the defender's plate: name (tap = today's Pokémon picker), the HP bar (green left, pink damage, stripes the roll's part), "x–y% HP left"
-V2.arnHp = r => { if (!r || !r.hp) return {bar: '<span class="arn-hpb" aria-hidden="true"><i class="l" style="width:100%"></i></span>', txt: ''};
+V2.arnHp = r => { if (!r || !r.hp) return {bar: '<span class="arn-hprow" aria-hidden="true"><span class="arn-hpl">HP</span><span class="arn-hpb"><i class="l" style="width:100%"></i></span></span>', txt: ''};
   const lo = Math.min(1, r.min / r.hp), hi = Math.min(1, r.max / r.hp), keep = 100 * (1 - hi), roll = 100 * (hi - lo);
   const a = Math.max(0, 100 - +dmgP(100 * r.max / r.hp)), b = Math.max(0, 100 - +dmgP(100 * r.min / r.hp));
-  return {bar: `<span class="arn-hpb" aria-hidden="true"><i class="l" style="width:${keep.toFixed(1)}%"></i><i class="r" style="left:${keep.toFixed(1)}%;width:${roll.toFixed(1)}%"></i></span>`, txt: `${a === b ? a : a + '–' + b}% ${V2.ARN_W.hpLeft}`}; };
+  return {bar: `<span class="arn-hprow" aria-hidden="true"><span class="arn-hpl">HP</span><span class="arn-hpb"><i class="l" style="width:${keep.toFixed(1)}%"></i><i class="r" style="left:${keep.toFixed(1)}%;width:${roll.toFixed(1)}%"></i><i class="x" style="left:${(keep + roll).toFixed(1)}%"></i></span></span>`, txt: `<span class="arn-hpv u">${a === b ? a : a + "–" + b}%</span> ${V2.ARN_W.hpLeft}`}; };
 V2.arnPlate = (X, role, id, r) => { const E = V2.esc, d = V2.disp(X.p.n), W = V2.ARN_W, hp = role === 'd' ? V2.arnHp(r) : null;
   return `<div class="arn-plate ${role === 'd' ? 'arn-dp' : 'arn-ap'}"><b class="u" data-arnname="${role}">${d.startsWith('Mega ') ? `<span class="mg">Mega </span>${E(d.slice(5)).replace(/ ([XYZ])$/, '\u00a0$1')}` : E(d)}<i class="arw" aria-hidden="true"></i></b>${hp ? hp.bar + `<span class="arn-hpt">${hp.txt}</span>` : ''}
     <button type="button" class="arn-pickbtn" data-arnpick="${id}" aria-haspopup="dialog" aria-label="${role === 'd' ? W.defender : W.attacker}: ${E(d)}${hp && hp.txt ? ', ' + E(hp.txt) : ''}. Choose another Pokémon"></button>
@@ -266,12 +269,12 @@ V2.arnPick = id => { const sel = document.getElementById(id); if (!sel) return; 
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-arnpick]'); if (b) V2.arnPick(b.dataset.arnpick); });
 // the verdict: phone two lines ("Heat Wave takes 88–104% of its HP" / the KO in plain words); desktop the KO words alone, with the
 // damage as the big tilted tag in open sky
-V2.arnVerdict = C => { const E = V2.esc, W = V2.ARN_W, r = C.r, mv = C.mv;
+V2.arnVerdict = C => { const E = V2.esc, W = V2.ARN_W, r = C.r, mv = C.mv, chip = (tag = 'span') => `<${tag} class="arn-mvc"${r && V2.TYPES.includes(r.type) ? ` style="--tc:var(--ty-${r.type})"` : ''}>${E(mv.name)}</${tag}>`;
   if (!mv) return {v: `<div class="arn-verdict notag"><p class="l2 u">${W.pick}</p></div>`, tag: ''};
   if (!r) return {v: `<div class="arn-verdict notag"><p class="l1"><b>${E(mv.name)}</b></p><p class="l3">${calcNoResultText(mv)}</p></div>`, tag: ''};
   if (r.max === 0) return {v: `<div class="arn-verdict notag"><p class="l1"><b>${E(mv.name)}</b> · No effect</p><p class="l2 u">${r.fail ? E(r.fail) + '.' : `${E(V2.disp(C.D.p.n))} is immune to ${E(r.type)}.`}</p></div>`, tag: ''};
-  return {v: `<div class="arn-verdict"><p class="l1">${E(mv.name)} takes <b>${V2.dcPct(r)}</b> of its HP</p><p class="l2 u">${W.long(koText(r))}</p></div>`,
-    tag: `<p class="arn-tag" aria-hidden="true"><small>${E(mv.name)}</small><b class="u">${V2.dcPct(r)}</b></p>`}; };
+  return {v: `<div class="arn-verdict"><p class="l1">${chip()} takes <b>${V2.dcPct(r)}</b> of its HP</p><p class="l2 u">${W.long(koText(r))}</p></div>`,
+    tag: `<p class="arn-tag" aria-hidden="true">${chip('small')}<b class="u">${V2.dcPct(r)}</b></p>`}; };
 // a move button: type-coloured edge, name, its own damage and short verdict (desktop adds type and power); the chosen one is filled
 V2.arnMove = (C, m) => { const E = V2.esc, W = V2.ARN_W, on = m.name === dc.mv, r = on ? C.r : V2.dcHit(C, m), t = (r && r.type) || m.type;
   const dmg = !r ? (m.cat ? 'Not calculated' : 'No damage') : r.max === 0 ? 'No effect' : V2.dcPct(r), ko = r && r.max > 0 ? W.short(koShort(r)) : '';
@@ -365,7 +368,7 @@ V2.arnNotes = C => { const E = V2.esc, {A, D, mv, r} = C; let notes = [], nc = [
 V2.pages.calc = {place: 'battle', after() { /* the move names are fitted (V2.fitWords) once the logo font has loaded, as the old hand's were */ if (document.fonts && document.fonts.ready && !V2._arnFont) { V2._arnFont = 1; document.fonts.ready.then(() => { if (document.querySelector('.arn') && V2.fitWords) V2.fitWords(); }); } }, draw() { let C; try { C = calcData(); } catch (e) { console.error(e); return `<div class="dc2 arn"><h1 class="vh">Damage Calculator</h1>${V2.battleToolsBar('calc')}<p class="tm-sub">The calc couldn't load. Try again in a moment.</p></div>`; }
   const E = V2.esc, W = V2.ARN_W, wx = dc.weather || '', tr = dc.terrain || '', V = V2.arnVerdict(C);
   const set = C.mvs.pop.filter(m => m && m.bp > 0); let three = set.slice(0, 3); if (dc.mv && !three.some(m => m.name === dc.mv) && C.mv) three = [...three.slice(0, 2), C.mv];
-  const row = (k, L, cur, lab) => `<div class="arn-pills arn-${k}r" role="group" aria-label="${lab}">${L.map(([v, t]) => `<button type="button" ${k === 'wx' ? 'data-dcw' : 'data-dcterr'}="${v}" aria-pressed="${v === cur}"${v === '' ? ` aria-label="${t}: no ${lab.toLowerCase()}"` : ''}>${k === 'tr' && v ? `<i class="dot t-${v}" aria-hidden="true"></i>` : ''}${t}</button>`).join('')}</div>`;
+  const row = (k, L, cur, lab) => `<div class="arn-pills arn-${k}r" role="group" aria-label="${lab}">${L.map(([v, t]) => `<button type="button" ${k === 'wx' ? 'data-dcw' : 'data-dcterr'}="${v}" style="--k:var(--arn-k-${v || 'none'})" aria-pressed="${v === cur}"${v === '' ? ` aria-label="${t}: no ${lab.toLowerCase()}"` : ''}>${V2.arnIc(v)}<span>${t}</span></button>`).join('')}</div>`;
   const sw = [['spread', 'Hits both foes'], ['screen', 'Screen up'], ['hh', 'Helping Hand'], ['fg', 'Friend Guard'], ['crit', 'Critical hit']];
   return `<div class="dc2 arn"><h1 class="vh">Damage Calculator · level 50 ${S.format === 'doubles' ? 'doubles' : 'singles'}</h1>${V2.battleToolsBar('calc')}
   <div class="arn-grid">
