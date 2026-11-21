@@ -1,0 +1,29 @@
+browser: 158.0.8127.36
+home-1920-light.png: 5.4 screens, theme attr day, 0 broken pictures, 0 page errors
+my-team-1920-light.png: 2.1 screens, theme attr day, 0 broken pictures, 0 page errors
+1920 day build: clicked Build Me a Team
+build-1920-light.png: 3.0 screens, theme attr day, 0 broken pictures, 0 page errors
+battle-1920-light.png: 1.3 screens, theme attr day, 0 broken pictures, 0 page errors
+damage-calc-1920-light.png: 1.1 screens, theme attr day, 0 broken pictures, 0 page errors
+meta-1920-light.png: 3.0 screens, theme attr day, 0 broken pictures, 0 page errors
+home-1920-dark.png: 5.4 screens, theme attr night, 0 broken pictures, 0 page errors
+my-team-1920-dark.png: 2.1 screens, theme attr night, 0 broken pictures, 0 page errors
+1920 night build: clicked Build Me a Team
+build-1920-dark.png: 3.0 screens, theme attr night, 0 broken pictures, 0 page errors
+battle-1920-dark.png: 1.3 screens, theme attr night, 0 broken pictures, 0 page errors
+damage-calc-1920-dark.png: 1.1 screens, theme attr night, 0 broken pictures, 0 page errors
+meta-1920-dark.png: 3.0 screens, theme attr night, 0 broken pictures, 0 page errors
+home-1280-light.png: 5.9 screens, theme attr day, 0 broken pictures, 0 page errors
+my-team-1280-light.png: 2.3 screens, theme attr day, 0 broken pictures, 0 page errors
+1280 day build: clicked Build Me a Team
+build-1280-light.png: 3.3 screens, theme attr day, 0 broken pictures, 0 page errors
+battle-1280-light.png: 1.3 screens, theme attr day, 0 broken pictures, 0 page errors
+damage-calc-1280-light.png: 1.1 screens, theme attr day, 0 broken pictures, 0 page errors
+meta-1280-light.png: 3.2 screens, theme attr day, 0 broken pictures, 0 page errors
+home-1280-dark.png: 5.9 screens, theme attr night, 0 broken pictures, 0 page errors
+my-team-1280-dark.png: 2.3 screens, theme attr night, 0 broken pictures, 0 page errors
+1280 night build: clicked Build Me a Team
+build-1280-dark.png: 3.3 screens, theme attr night, 0 broken pictures, 0 page errors
+battle-1280-dark.png: 1.3 screens, theme attr night, 0 broken pictures, 0 page errors
+damage-calc-1280-dark.png: 1.1 screens, theme attr night, 0 broken pictures, 0 page errors
+meta-1280-dark.png: 3.2 screens, theme attr night, 0 broken pictures, 0 page errors
