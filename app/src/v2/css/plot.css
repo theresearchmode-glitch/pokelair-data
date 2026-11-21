@@ -398,3 +398,7 @@
 /* X-05 (v2-minors main1, found after piece 5): the cores box is 44 tall now (was 48), so its × (44) lost a pixel row to rounding at 1280
    (tap 44x43). The × is 48 tall, centred on the box (its 4 px past each edge are taps on the ×); the box stays 44 */
 .pl-low .np-field .np-clr{height:calc(var(--tap) + var(--s1));margin-top:calc(-1 * var(--s1));margin-bottom:calc(-1 * var(--s1))}
+/* polish (Nov 21, authority): at 700-879 the winner's event column is 91-151px; the name broke inside a word ("Champion/s-MC").
+   There it uses the small-label font (Instrument Sans bold 15px, Sim's type rule: small labels in Instrument Sans), which is narrow enough
+   for every word, and wraps only between words or at a hyphen (break-word keeps the column at the longest word) */
+@media (min-width:700px) and (max-width:879.98px){.pl-wev{font:700 var(--t15)/1.3 var(--b);font-style:normal;overflow-wrap:break-word}}
