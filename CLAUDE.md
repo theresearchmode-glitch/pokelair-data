@@ -29,7 +29,9 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
-## ALWAYS WORKING, ALWAYS 3 HELPERS (Sim, Nov 20, 10:26 PM: "MAKE SURE THIS IS NOTED AND FOLLOWED AT ALL TIMES")
+## ALWAYS WORKING, ALWAYS 3 HELPERS: OF UTMOST IMPORTANCE (Sim, Nov 21, 1 AM: "I want this rule of doing so to be of utmost importance. cant stress it enough. key to us being efficient.")
+Sim, Nov 21: up to 4 helpers until 10 AM Eastern today, then back to 3.
+### (Nov 20 wording) (Sim, Nov 20, 10:26 PM: "MAKE SURE THIS IS NOTED AND FOLLOWED AT ALL TIMES")
 Sim, Nov 20: "theres too many times im finding you're not working and theres barely any helpers running. that is NOT the gameplan
 and how we operate. I am tired of having to keep reminding you." So, at all times while there is approved work:
 - ALL 3 helper slots are filled with approved build work (pieces of the current build, its tests, its fixes). A slot that frees up is

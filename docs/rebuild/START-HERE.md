@@ -36,6 +36,7 @@ the newer file wins, and you tell Sim about the difference.
 |---|---|---|
 | (unnamed) | earlier chats, up to Nov 17 | the data pipeline, the Strength Score, today's live site, the redesign mock-ups, the rebuild up to the Preview |
 | **Tempo** | the Nov 17-18 rebuild chat (session_01YGeTVQdFPaKNkn33jSEpxs) | the Stampede Home, Mystery Gifts and News pages, All Suggestions C, Base Stats on theme, the Day/Night/Auto theme, the sealed check, the rule-holes sweep, the live-data audits, the merge plan, and this handover. Named for the pace Sim kept: steady, every 45 minutes. |
+| **Helping Hand** | the Nov 18-21 chat (session_01YGeTVTPLowhKWrgD2jqHEG; named early at Sim's request, Nov 21, 1 AM) | the rebuild to the Preview v221: The Plot (Build), My Team without roles and the new frame, the Damage Calc Arena and 'Plot the hit', the work checks (stop hook, hourly check), nastyplot.org's Cloudflare setup |
 
 Never start work Sim hasn't asked for or that the rules don't cover. Never delete a project, file history, artifact or branch
 without Sim's explicit yes.
