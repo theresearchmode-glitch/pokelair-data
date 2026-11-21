@@ -69,7 +69,7 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 .mtf-score .n{grid-area:n;font-size:var(--d64);line-height:.9;color:var(--mtf-rate)}.mtf-score .band{grid-area:band;font-size:var(--t20);line-height:1.1;color:var(--mtf-rate)}
 .mtf-score .win{grid-area:win;font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}.mtf-score .win b{color:var(--ink)}
 .mtf-acts{grid-area:ac;display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s4);margin:0}.mtf-acts .np-link{min-height:var(--tap)}
-.mtf-saved{color:var(--mtf-rate);font-size:var(--t15)}
+.mtf-saved{color:var(--mtf-rate);font-size:var(--t15)}.mtf-acts .mtf-saved{min-height:var(--s12)} /* as tall as the Save / Update Team button it swaps with, so the row keeps its height (v2-rmjump, Nov 21) */
 @media (min-width:1000px){.mtf-head{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"id sc" "ac ac";padding-top:var(--s5)}
   .mtf-head .tm-name{font-size:var(--d64)}.mtf-head .mtf-btn{font-size:var(--t15)}.mtf-score{max-width:440px}.mtf-score .n{font-size:var(--d120)}.mtf-score .band{font-size:var(--t34)}}
 @media (max-width:999.98px){.mtf-nav h2{font-size:var(--t15);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:0}.mtf-nav span{white-space:nowrap}}
