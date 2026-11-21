@@ -27,14 +27,15 @@ const result = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects
   const meas = a && a.querySelector('.bp-meas'), plate = meas ? getComputedStyle(meas, '::before').backgroundColor : '', num = a && a.querySelector('.bp-score>b'), stk = a && a.querySelector('.bp-stk'), st = a && a.querySelector('.bp-stamp');
   const tok = v => { const d = document.createElement('i'); d.style.color = v; (a || document.body).append(d); const c = getComputedStyle(d).color; d.remove(); return c; };
   const go = [...document.querySelectorAll('[data-bdgo]')].filter(vis), g = go[0], gc = g && getComputedStyle(g);
-  const revs = a ? [...a.querySelectorAll('.bp-rev:not(.bp-revwait)')].map(r => [...r.querySelectorAll('.bp-rsix .np-mon img')].filter(vis).map(i => Math.round(i.getBoundingClientRect().width))) : [];
+  /* Nov 20 (The Plot piece 4): the other options are Got a Plan B? columns, each with its six on the red line and a Switch (data-bdshow) */
+  const revs = a ? [...a.querySelectorAll('.pl-plan:not(.pl-pwait)')].map(r => [...r.querySelectorAll('.pl-psix img')].filter(vis).map(i => Math.round(i.getBoundingClientRect().height))) : [], sws = a ? a.querySelectorAll('.pl-plans [data-bdshow]').length : 0;
   const no = a ? [...a.querySelectorAll('.bp-six .bp-no')].map(e => getComputedStyle(e)) : [];
   const sl = a && a.querySelector('.pl-seal'), sb = sl && sl.querySelector('b'), sw = sl && sl.querySelector('.w span'), slc = sl && getComputedStyle(sl);
   return {seal: !!sl, slBg: slc ? slc.backgroundColor : '', slNum: sb ? getComputedStyle(sb).color : '', slWord: sw ? getComputedStyle(sw).color : '', onMark: tok('var(--on-plot-seal)'), slW: sl ? Math.round(sl.getBoundingClientRect().width) : 0, slH: sl ? Math.round(sl.getBoundingClientRect().height) : 0, use: use.length, gap: six && u ? Math.round(u.getBoundingClientRect().top - six.getBoundingClientRect().bottom) : null, inNear: !!(u && u.closest('.bp-near')), inRight: !!(u && u.closest('.bp-right')),
     plate, hero: tok('var(--sd-hero)'), num: num ? getComputedStyle(num).color : '', white: tok('var(--sd-on-band)'),
     stkBg: stk ? getComputedStyle(stk).backgroundColor : '', rim: tok('var(--bp-rim)'), stBg: st ? getComputedStyle(st).backgroundColor : '', stFg: st ? getComputedStyle(st).color : '', band: tok('var(--band)'), stRot: stk ? getComputedStyle(stk).rotate : '',
     nos: no.length, noSolid: no.every(c => c.color !== 'rgba(0, 0, 0, 0)' && parseFloat(c.webkitTextStrokeWidth || '0') === 0),
-    go: go.length, goCls: g ? g.className : '', goTxt: g ? g.innerText.trim() : '', goBg: gc ? gc.backgroundColor : '', goTf: gc ? gc.transform : '', goIn: !!(g && a && a.contains(g)), revs,
+    sws, go: go.length, goCls: g ? g.className : '', goTxt: g ? g.innerText.trim() : '', goBg: gc ? gc.backgroundColor : '', goTf: gc ? gc.transform : '', goIn: !!(g && a && a.contains(g)), revs,
     side: document.documentElement.scrollWidth > innerWidth, H: document.documentElement.scrollHeight}; });
 const refs = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects().length), w = document.querySelector('.bp-ref'); if (!w || !vis(w)) return null; const t = w.querySelector('.bp-wplace'), c = t && getComputedStyle(t), win = w.querySelector('.bd-win');
   return {bg: c ? c.backgroundColor : '', bw: c ? parseFloat(c.borderTopWidth) : -1, clip: c ? c.clipPath : '', sp: [...w.querySelectorAll('.bd-win>summary .bd-wsix>*')].filter(vis).slice(0, 6).map(e => Math.round(e.getBoundingClientRect().width)),
@@ -67,7 +68,7 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 
   ok(r.seal && r.slNum === r.onMark && ratio(r.slWord, r.slBg) >= 4.5 && ratio(r.slNum, r.slBg) >= 4.5, `${k}: the score in the red seal, number and band word readable (${r.slBg}; word ${r.seal ? ratio(r.slWord, r.slBg).toFixed(2) : '-'}:1)`);
   ok(r.nos === 6 && r.noSolid, `${k}: the six's numbers solid (${r.nos})`);
   ok(r.go === 1 && /\bpl-go\b/.test(r.goCls) && /^Hatch another/i.test(r.goTxt) && r.goBg !== 'rgba(0, 0, 0, 0)', `${k}: one HATCH ANOTHER (rebuild) in the plot's control row, a solid red plate (${r.goCls}, "${r.goTxt}", ${r.goBg})`);
-  ok(r.revs.length >= 2 && r.revs.every(x => x.length === 6 && x.every(w => w >= 32 && w <= 40)), `${k}: every Revision shows its six as 32-40 px sprites (${r.revs.map(x => x.length + '@' + x[0]).join(' ')})`);
+  ok(r.revs.length >= 2 && r.sws === r.revs.length && r.revs.every(x => x.length === 6 && x.every(h => h >= 20 && h <= 56)), `${k}: every Plan B/C/D shows its six (sprites 20-56 px tall) and a Switch (${r.revs.map(x => x.length + '@' + x[0]).join(' ')}; ${r.sws} switches)`);
   ok(!r.side, `${k}: no sideways scroll after a build`);
   // 9 every band on the plate (forced scores), 1440 and 390
   if (W === 1440 || W === 390) for (const [L, key] of Object.entries(BANDS)) {

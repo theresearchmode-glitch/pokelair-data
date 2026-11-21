@@ -101,3 +101,30 @@ V2.plotChipFit = () => document.querySelectorAll('.pl-plate .pl-t').forEach(t =>
 (() => { const after = V2.pages.build.after; V2.pages.build.after = () => { try { if (after) after(); } finally { V2.plotChipFit(); } }; })();
 addEventListener('resize', () => requestAnimationFrame(() => { if (document.querySelector('.pl-plate')) V2.plotChipFit(); }));
 try { document.fonts.ready.then(() => V2.plotChipFit()); } catch (e) {}
+
+// ---------- Piece 4 (spec section 9): 3 Why it works, 4 Got a Plan B? ----------
+// The Blueprint's title block (Spec, Revisions, Rebuild | Notes) gives way to two steps on the plot line. Same numbers and words as the
+// Notes (V2.bpNotes) and the same options and hook as the Revisions (data-bdshow, .bd-others for the kit), in sentences with white plates.
+V2.plotWhy = M => { const E = V2.esc, pv = M.t.proven, nb = M.basics.filter(x => x.ok).length;
+  const line = (lead, plate, tail, small, extra = '') => `<li class="pl-wl"><p class="u pl-ws">${lead} <span class="pl-wp">${plate}</span> ${tail}${extra}</p><small>${small}</small></li>`;
+  const trio = M.core ? M.core[1].split(' + ').map(s => s.trim()) : [];
+  const trioArt = trio.map(d => { const p = ROSTER.find(x => V2.disp(x.n) === d || x.d === d); return p && SPRITE_ID[p.n] ? `<img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async">` : ''; }).join('');
+  return `<div class="pl-step pl-s3"><span class="pl-node" aria-hidden="true">3</span><h2 class="u pl-h2">Why it works</h2><p class="pl-sub">The evidence, for the record.</p>
+    <ul class="pl-why">${line('It answers', `${M.ans} of ${M.rows.length}`, 'top threats.', `Matchups with an answer. Top ${M.rows.length} threats: ${M.sh} Shaky, ${M.no} No answer.`)}
+    ${line('It passes', `${nb} of ${M.basics.length}`, 'team checks.', `Team checks: the ${M.basics.length} basics. ${M.notes.length ? 'Notes met: ' + M.notes.map(E).join(', ') + '.' : 'No notes met.'}`)}
+    ${pv ? line(pv.swapped ? 'Its six (1 swap) wins' : 'This exact six wins', `${(pv.wr * 100).toFixed(1)}%`, 'at events.', `${homeNum(pv.n)} players${pv.g ? `, ${homeNum(pv.g)} games at events` : ''}${pv.swapped && pv.ours && pv.theirs ? `, with ${E(V2.disp(pv.ours))} in place of ${E(V2.disp(pv.theirs))}` : ''}.`)
+      : line('This exact six is', 'New', 'at events.', 'Built from cores that win; no player has run this exact six yet.')}
+    ${M.core ? line('Its best trio wins', `${E(M.core[3])}%`, '', `${E(M.core[1])}, ${E(M.core[2])} teams.`, trioArt ? ` <span class="pl-trio" aria-hidden="true">${trioArt}</span>` : '') : ''}</ul>
+    ${pv && !pv.swapped && pv.wr >= .55 ? '<p class="bd-catch bd-prov pl-prov">This exact team has won at real events. Treat these as optional tweaks, not problems.</p>' : ''}</div>`; };
+V2.plotPlans = M => { const E = V2.esc, L = 'ABCDEFGH'; if (M.n < 2 && !M.res.freshPending) return '';
+  const col = (t, i) => { let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}
+    const rows = t._rd && t._rd.rows || [], ans = rows.filter(x => x.level >= 2).length, bas = CK ? CK.items.filter(x => !x.skip && !x.note) : [], on = i === M.k, s = G ? Math.round(G.s) : '–';
+    const kind = t.proven ? (t.proven.swapped ? 'Proven team, 1 swap' : 'Proven team') : t.fresh ? 'Fresh take' : 'Built team';
+    return `<div class="pl-plan${on ? ' on' : ''}" role="listitem"><p class="pl-pk">Plan ${L[i] || i + 1} · ${E(kind)}${on ? ' · shown above' : ''}</p><p class="pl-ps"><b class="u">${s}</b> <span class="u">${G ? E(CH.wordOf(G.s)) : ''}</span></p>
+      <p class="pl-pn u">${V2.dotWrap(E(t.label))}</p><p class="pl-pm">${ans}/${rows.length} matchups · ${bas.filter(x => x.ok).length}/${bas.length} team checks</p>
+      <div class="pl-psix" aria-hidden="true">${V2.bpOrder(t.mons).map(m => `<span class="${m.box ? '' : 'pl-catch'}">${SPRITE_ID[m.n] ? `<img src="${V2.art(SPRITE_ID[m.n])}" alt="" loading="lazy" decoding="async">` : ''}</span>`).join('')}</div>
+      ${on ? '<p class="pl-pon">Shown above</p>' : `<button type="button" class="pl-sw2 u" data-bdshow="${i}" aria-label="Option ${i + 1}, ${E(t.label)}, Strength Score ${s}: show this one">Switch to Plan ${L[i] || i + 1}</button>`}</div>`; };
+  return `<div class="pl-step pl-s4"><span class="pl-node" aria-hidden="true">4</span><h2 class="u pl-h2">Got a Plan B?</h2><p class="pl-sub">${M.n - 1} more from this build. One tap to switch.</p>
+    <div class="bd-others pl-plans" role="list">${M.res.teams.map(col).filter((x, i) => i !== M.k).join('')}${M.res.freshPending ? '<div class="pl-plan pl-pwait" role="listitem"><p class="pl-pk">Finding a fresh take…</p><p class="pl-pm">A different six, worked out next</p></div>' : ''}</div></div>`; };
+(() => { const sheet = V2.buildSheet; V2.buildSheet = M => { const h = sheet(M), a = h.indexOf('<div class="bp-tb">'), b = h.lastIndexOf('</section>');
+  if (a < 0 || b < a) return h; return h.slice(0, a) + V2.plotWhy(M) + V2.plotPlans(M) + h.slice(b); }; })();
