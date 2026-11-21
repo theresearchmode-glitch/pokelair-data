@@ -1,5 +1,7 @@
 # The hybrid: Sim's PC mock-ups (26 pages) + Helping Hand's three (Ratings, Track Record, Events) (Nov 21, 12:15 PM)
 
+APPROVED by Sim, Nov 21, 12:15 PM ("good to go for all ... lets do it"): the hybrid rules, the page calls, and My Team B (the war room).
+
 Page-by-page review: helper hV looked at every picture (1440, 390, 1040, night); raw notes REVIEW-hV-notes.txt. Bugs below were
 checked by eye on the pictures (e.g. Test Run at 390: "Bring these four" text under the sprites, SET AS OPPONENT clipped).
 
