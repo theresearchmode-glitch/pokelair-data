@@ -72,7 +72,7 @@ for (const [W, th] of RUNS) {
       ok(after.open && after.sel === pick && after.on === (t0 && t0.n), `${dt}: the board stays open on the same tab (${after.sel}) with the tapped tile outlined (${after.on})`);
       ok(!(await p.$('.arn-kbfull')), `${dt}: no full-width board under 1024`);
     } else {
-      const F = await p.evaluate(() => { const f = document.querySelector('.arn-kbfull'), g = document.querySelector('.arn-grid'); if (!f || !f.getClientRects().length) return null;
+      const F = await p.evaluate(() => { const f = document.querySelector('.arn-kbfull'), g = document.querySelector('.pc-board'); /* Nov 21: Plot the hit (Sim approved): the board .pc-board (was the Arena's .arn-grid) */ if (!f || !f.getClientRects().length) return null;
         const cols = [...f.querySelectorAll('.kob-col')], fr = f.getBoundingClientRect(), gr = g.getBoundingClientRect();
         return {w: fr.width, gw: gr.width, below: fr.top >= gr.bottom - 1, tiles: [...document.querySelectorAll('.dc2-kt')].filter(e => e.getClientRects().length).length,
           dir: !!f.querySelector('.dc2-dir'), intro: !!f.querySelector('.dc2-kb > .fine'), fold: !!f.querySelector('.dc2-all'),

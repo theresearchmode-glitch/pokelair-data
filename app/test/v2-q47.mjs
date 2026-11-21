@@ -11,8 +11,12 @@ import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const fails = [], ok = (c, m) => { console.log((c ? '  pass  ' : '  FAIL  ') + m); if (!c) fails.push(m); };
 const wait = (p, ms = 500) => p.waitForTimeout(ms);
-const engine = p => p.evaluate(() => window.__ev(`(() => { const C = calcData(), r = C.r; return {mv: dc.mv, pct: r && r.max > 0 ? V2.dcPct(r) : (r ? 'none' : ''), min: r && r.min, max: r && r.max}; })()`));
-const verdict = p => p.evaluate(() => { const e = document.querySelector('.arn-verdict'); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; });
+/* Nov 21: Plot the hit (Sim approved): the answer is .pc-ans and shows the damage in real HP (.pc-big, 'min–max' from the engine's min and max:
+   e.hp); the sheet's rows still show today's % (V2.dcPct: e.pct), so a row is checked against the engine's % and the answer against its HP */
+const engine = p => p.evaluate(() => window.__ev(`(() => { const C = calcData(), r = C.r; return {mv: dc.mv, pct: r && r.max > 0 ? V2.dcPct(r) : (r ? 'none' : ''), hp: r && r.max > 0 ? (r.min === r.max ? String(r.min) : r.min + '–' + r.max) : '', min: r && r.min, max: r && r.max}; })()`));
+const verdict = p => p.evaluate(() => { const e = document.querySelector('.pc-ans'); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; });
+const big = p => p.evaluate(() => { const e = document.querySelector('.pc-ans .pc-big'); return e ? e.textContent.trim() : ''; });
+
 const sheet = p => p.evaluate(() => { const s = document.querySelector('[role=dialog]'); if (!s) return null; const a = document.activeElement;
   return {label: s.getAttribute('aria-label'), search: !!(a && a.matches('input[type=search]') && s.contains(a)), heads: [...s.querySelectorAll('.arn-grp')].map(h => h.textContent.trim()),
     mv: [...s.querySelectorAll('[data-arnpickmv]')].map(r => ({n: r.dataset.arnpickmv, dm: ((r.querySelector('.arn-mvd b') || {}).textContent || '').trim(), edge: r.style.getPropertyValue('--tc')})),
@@ -39,8 +43,8 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) {
   const pickN = [withN.find(r => r.n !== o0.v), withN.filter(r => r.n !== o0.v)[Math.floor(withN.length / 2)], withN.filter(r => r.n !== o0.v).slice(-1)[0]].filter(Boolean);
   for (const r of pickN) { const v0 = await verdict(p); await p.locator('[data-arnmv]').click(); await wait(p, 800);
     await p.locator(`[role=dialog] [data-arnpickmv="${r.n.replace(/"/g, '\\"')}"]`).click(); await wait(p, 900);
-    const e = await engine(p), v1 = await verdict(p), mv = (await opts(p, 'dcMv')).v, gone = !(await sheet(p)), foc = await focusOn(p, '[data-arnmv]');
-    ok(gone && mv === r.n && e.mv === r.n && e.pct === r.dm && v1.includes(r.dm) && v1 !== v0, `${tag}: a tap on ${r.n} (row ${r.dm}) puts it in play: #dcMv ${mv}, the Arena shows ${e.pct}, verdict "${v1.slice(0, 48)}"`);
+    const e = await engine(p), v1 = await verdict(p), b1 = await big(p), mv = (await opts(p, 'dcMv')).v, gone = !(await sheet(p)), foc = await focusOn(p, '[data-arnmv]');
+    ok(gone && mv === r.n && e.mv === r.n && e.pct === r.dm && b1 === e.hp && v1 !== v0, `${tag}: a tap on ${r.n} (row ${r.dm}) puts it in play: #dcMv ${mv}, the engine ${e.pct} = ${e.hp} HP, the answer shows ${b1} HP ("${v1.slice(0, 48)}")`); /* Nov 21: Plot the hit (Sim approved): the row's % is the engine's and the answer's HP is the same hit's */
     ok(foc, `${tag}: focus back on All moves after the pick (${foc})`); }
   // typing filters; Enter picks the first row
   await p.locator('[data-arnmv]').click(); await wait(p, 800); const cur = (await opts(p, 'dcMv')).v, all = (await opts(p, 'dcMv')).o.map(x => x.t);
