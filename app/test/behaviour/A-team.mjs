@@ -296,7 +296,8 @@ t('TEAM-11', 'Set as lead: plan says "your pick" (saved to the account); "Use Na
 t('TEAM-12', 'Game plan line names two leads, two back, two bench', async () => {
   if (NEW) { /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): no Game Plan line with leads on My Team and no Lead /
     Back / Bench word anywhere in the six, for a full team and for a team being built (was: the line names lead, back and bench) */
-    const {ui} = await view('team', {team: TEAM}, 'My Team'); ok(!(await ui.gamePlanLine()), 'a full team shows a Game Plan line: ' + await ui.gamePlanLine());
+    const {ui} = await view('team', {team: TEAM}, 'My Team'); const gl = await ui.gamePlanLine() || ''; /* Nov 20: the Game Plan sheet stays reachable (no feature removed), its line names no leads */
+    ok(/^Game Plan ›/.test(gl) && !/\b(lead|back|bench)\b/i.test(gl.replace(/^Game Plan ›/, '')), 'a full team\'s Game Plan line: "' + gl + '" (want "Game Plan ›" with no lead / back / bench)');
     const w6 = (await ui.sixText()).match(/\b(Lead|Back|Bench|lead [A-Z]|back [A-Z]|bench [A-Z])\b/g); ok(!w6, 'a full team\'s six says ' + (w6 || []).join(', ') + ': ' + (await ui.sixText()).slice(0, 160));
     const r = await myTeam({team: ['Garchomp', 'Incineroar']}); ok(!(await r.ui.gamePlanLine()), 'a team being built shows a Game Plan line: ' + await r.ui.gamePlanLine());
     const w2 = (await r.ui.sixText()).match(/\b(Lead|Back|Bench)\b/g); ok(!w2, 'a team being built says ' + (w2 || []).join(', ') + ': ' + (await r.ui.sixText()).slice(0, 160)); await r.close(); return; }
@@ -519,7 +520,7 @@ t('PLAY-01', 'Game Plan fold: rows with Covered/Missing/Partly; Speed control co
   if (NEW) { /* new build (Sim, Nov 12): no Game Plan fold; the six's plan line starts with a "Game plan" link that opens a "Game Plan"
     sheet: eyebrow "My Team · <archetype>", one row per gamePlan() row (label, Covered / Partly / Missing / Optional, who, note).
     Nothing is remembered: after a reload no sheet is open and there is no Game Plan fold */
-    const r = await myTeam(); ok(/^Game [Pp]lan(?: ›)? vs the meta's top six: lead /.test(await r.ui.gamePlanLine() || ''), 'plan line does not start with "Game Plan": ' + await r.ui.gamePlanLine());
+    const r = await myTeam(); ok(/^Game [Pp]lan ›/.test(await r.ui.gamePlanLine() || ''), 'plan line does not start with "Game Plan ›": ' + await r.ui.gamePlanLine()); /* Nov 20: the line names no leads (Sim: Battle decides who leads) */
     await r.ui.tapText(/^Game [Pp]lan( ›)?$/, 900); const g = await r.ui.gamePlanSheet(); ok(g && g.title === 'Game Plan', '"Game plan" did not open the Game Plan sheet: ' + JSON.stringify(g));
     const W = s => String(s || '').replace(/\s+/g, ' ').trim();
     const want = await r.ui.peek("[(teamArchetype(members()) || {}).label || '', gamePlan(members()).rows.map(r => [r.label, ({ok: 'Covered', part: 'Partly', miss: 'Missing', opt: 'Optional'})[r.st] || 'Optional', r.who || '', r.note || ''])]");

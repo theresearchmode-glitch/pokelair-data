@@ -52,7 +52,8 @@ V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
   const add = i => `<div class="sx-slot sx-empty"><button type="button" class="sx-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="sx-addart" aria-hidden="true"><i>+</i></span><b>Add</b><small>Spot ${i + 1}</small></button></div>`;
   const cells = ord.map(tile).concat(open.map(add)), grp = (name, j) => cells.slice(j * 2, j * 2 + 2).length ? `<div class="sx-grp" role="group" aria-label="${name}"><p class="sx-gl u" aria-hidden="true">${name}</p><div class="sx-tiles">${cells.slice(j * 2, j * 2 + 2).join('')}</div></div>` : '';
   const pair = g => g.map(m => escName(m.d)).join(' + '), vs = PLAN_VS[L.by];
-  const plan = ms.length === 6 && L.lead.length >= 2 ? /* the Game Plan line waits for all six (Sim, Nov 15 night) */ `<p class="sx-plan"><span class="sx-pl"><button type="button" class="np-link sx-gpl" data-v2gplan aria-label="Game plan: open the full Game Plan">Game Plan ›</button>${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${pair(L.lead)}</b>${L.back.length ? `, back ${pair(L.back)}` : ''}${L.bench.length ? `, bench ${pair(L.bench)}` : ''}.</span>${L.by === 'you' ? `<button type="button" class="np-link sx-reset" data-v2lead="">Use NastyPlot's Pick</button>` : ''}</p>` : '';
+  /* Sim, Nov 20: no lead / back / bench words on My Team (Battle decides who leads); the Game Plan sheet (which of the six covers each job) stays one tap away */
+  const plan = ms.length === 6 ? `<p class="sx-plan"><span class="sx-pl"><button type="button" class="np-link sx-gpl" data-v2gplan aria-label="Game plan: which of your six covers each job">Game Plan ›</button> Which of your six covers each job.</span></p>` : '';
   // the action strip (Sim, Nov 11: pictures stay clean; today's "−" to remove): one slim row under the six for the picked Pokémon
   const act = sel && ms.includes(sel) ? (() => { const lk = !!(S.slots[sel.i] && S.slots[sel.i].lock), lead = L.lead.length && !L.lead.includes(sel);
     const rt = L.lead.length && ms.length === 6 ? roleText(sel, L, x => escName(x.d)) : ''; // its place in the plan, said once here (Sim's review, Nov 11, item 5)
@@ -64,7 +65,7 @@ V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
   // Sim, Nov 18 (C): on phones the editing panel stays shut until a Card is tapped; a line says the Cards can be tapped
   const es = V2.mtShut() ? null : sel, hint = V2.isHand(D) && !es ? '<p class="mt-hint">Tap a Card to edit, replace or remove it</p>' : '';
   const inl = ms.length < 6 ? V2.mtInline() : V2.mtInline() && !V2.mtHand3(); /* the Hand three across (360-699): the panel opens under the whole Hand */
-  return `<div class="tm-six sx${V2.isHand(D) ? ' mh' : ''}">${V2.isHand(D) ? (inl ? V2.handHtml(D, es, V2.editStripHtml(D, es)) : V2.handHtml(D, es) + V2.editStripHtml(D, es)) + hint : `<div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${act}${plan}`}</div>`; }; /* Sim, Nov 20: no Game Plan line (lead X + Y, back, bench) on the Hand: Battle decides who leads */
+  return `<div class="tm-six sx${V2.isHand(D) ? ' mh' : ''}">${V2.isHand(D) ? (inl ? V2.handHtml(D, es, V2.editStripHtml(D, es)) : V2.handHtml(D, es) + V2.editStripHtml(D, es)) + hint : `<div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${act}`}${plan}</div>`; };
 // Sim (Nov 17, B): under 1100px the Cards stack, so the editing panel opens right under the tapped Card's pair (full team) or row
 // (team being built) instead of under all six; from 1100px the six sit in one row and the panel stays right under it
 V2.mtInline = () => innerWidth < 1100;
