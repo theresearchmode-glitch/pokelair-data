@@ -1868,3 +1868,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:35 PM: Slot refilled with hQ: fix the 36 new qcheck-all findings (calc move-card overlaps, off-scale % sign, Home 97, calc photo name) in its own copy; bug fixes, no redesign.
 - 3:35 PM: Sim: 'recommended is good for all': Build page option A (keep the winner cards, trim under the 3,200 cap at 390), type symbols look yes (MIT set, always with the word).
 - 3:39 PM: Build option A done: 3,194px at 390 (q83 method); q83 six-size check updated to the approved design; q83 282 pass/0 FAIL until a browser crash under load (rerun pending).
+- 3:40 PM: Hourly check: 2 helpers (hP Pokémon page, hQ look-check fixes); main thread: v2-minors (3 parts) + v2-q83 rerun on e3ae6e99 in copy mvt (tracked background); holding pushes ~40 min so GitHub's run finishes.
+- 3:45 PM: Disk allowance ran out (~3:45 PM): caused the browser crashes/timeouts. Tagged unmerged work keep/*, removed unused copies (14 GB free). Type symbols in the kit move ticket (kit-page 14/14, guard clean). v2-minors 1d test fixed for tickets.
