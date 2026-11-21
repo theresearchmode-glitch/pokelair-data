@@ -21,11 +21,14 @@ every feature kept; nothing live, no switch, no deletes. Times are from log-deci
 | 4:04 AM | 320: Remove within 650px of the tapped Pokémon (types side by side, Lock after the buttons, lower stage, 36px move bars) | was 739px (your Nov 17 rule: 650) | authority/myteam-320-set-tight.png |
 | 4:06 AM | Suggestions links 13px on phones; a one-line list at 375 and narrower | 'Suggestions ›' ran into the next link | authority/myteam-sglinks-390-13px.png |
 | 3:53 AM | Your type rule: 'S tier' tags and row numbers in Instrument Sans; buttons 15px | 8 kinds of Unbounded under 15px | (v2-unbounded clean) |
+| 5:12 AM | Header links start at the left of their columns (were centred) | 'Update Team' pushed 'Share as Image' 30-38px sideways after Remove | authority/myteam-links-left-820.png |
 | 1:44 AM | Suggestions links: one even row of three (two lines each); a list under 360 | Refresh sat alone at 1440; 320 too narrow | authority/myteam-sglinks-320/390/1440.png |
 
 Polish check (VIEWS=team, 320-2560, light and dark), measured 2:00 AM: spill 0, uneven 0, line height 0 (was spill 7, uneven 1, lone 8,
 line height 1, boxes 3). Left: 7 'lone' readings that are deliberate layouts (the ‹ name / 1 of 6 › bar, score and header grids,
 Suggestions full width at 1000-1279, the old footer) and 2 'boxes' (the mock's move bars and yellow bar). Contrast: 0 low, day and night.
+
+Open for Sim: on phones under 480 the header's links move up 17-37px after Remove, because the score's band words change (Top tier to Tournament ready, 2 lines). Fixing it means a fixed-height score block.
 
 Trade-off to flag: My Team on a phone is about 4 screens (3,810px at 390), not the brief's 3. Every part is a feature, and Sim said
 on Nov 20 no more folds, so nothing was hidden.
