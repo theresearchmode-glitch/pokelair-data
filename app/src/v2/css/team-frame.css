@@ -148,6 +148,7 @@
   .tmk-work .mu-out .mu-row .mu-dis{font-size:var(--t13);line-height:1.3}
   .tmk-work .mu-out .mu-row .nm:only-of-type{grid-row:auto}
   .tmk-work .tm-v.k-tag{padding:0 var(--s2);font-size:var(--t15)}
+  .tmk-work .tm-mus .tm-sub{display:none} /* phones: the step note says it (top 30, verdicts from real games); Sim: no longer than today */
 }
 /* ===== phones ===== */
 @media (max-width:699.98px){

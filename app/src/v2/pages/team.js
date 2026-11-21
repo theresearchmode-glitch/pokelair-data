@@ -515,7 +515,7 @@ V2.pages.team = {place: 'team', draw() {
   // in after(): that flip moved everything under the belt 30px and back, and scroll anchoring moved the page 30px on each redraw
   if (V2.mtfFrame && V2.isHand(D)) { /* Reskin page 1 (mock-up B): the kit header, then the plan line with four steps */
     const steps = [['The crew', 'your six · tap one to see it', V2.mtfFrame(D, sel)], ['The upgrade and the plan', 'Suggestions · Game Plan', sgSec + V2.mtfPlan(D, legalMark)],
-      muSec ? ['Who we’re up against', `Matchups · the top ${D.rows.length} threats`, muSec] : null, ['Checks and record', `Team Checks${ms.length === 6 ? ' · Your Games' : ''}`, ckSec + (V2.ygSec ? V2.ygSec(ms) : '')]].filter(Boolean);
+      muSec ? ['Who we’re up against', `Matchups · the top ${D.rows.length} threats · verdicts from real games`, muSec] : null, ['Checks and record', `Team Checks${ms.length === 6 ? ' · Your Games' : ''}`, ckSec + (V2.ygSec ? V2.ygSec(ms) : '')]].filter(Boolean);
     return `<section class="tm-hero mt mtf-hero tmk">${mtfHead}</section><div class="tm-work mt-work tmk-work">${V2.kPlan(steps.map(([t, n, h], i) => V2.kStep(i + 1, t, n, h)).join(''))}</div>`; }
   return `<section class="tm-hero mt${V2._mtWide && innerWidth < 1100 ? ' mt-wide' : ''}">${mtHead}${V2.sixHtml(D, sel)}</section>${tabbed ? tabBar : jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}${tabbed ? ' tm-tabbed' : ''}">${tabPanels(`${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}`)}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
