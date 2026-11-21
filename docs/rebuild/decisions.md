@@ -1904,3 +1904,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:43 PM: Hourly work check: no problems (2/2 helpers hY, hB; 7 test processes; Plans edited 10 min ago). Main thread: post-merge Calc checks in ck; war-room run in wr; Pokémon polished A waiting on Sim.
 - 6:44 PM: Sim: polished A has not enough pop of colour, 'lil better'. Trying: thicker slanted type bar, step number filled in type colour, data cards with a solid type-colour label strip (solid colours only, no tints). Pictures before merge.
 - 6:46 PM: Sim: yes to the stronger colour version, except the four header fact tiles: move them under the 'On about one tournament team in 3' sentence.
+- 6:48 PM: Pokémon page: fact tiles moved under the sentence (9ad1e5d5), pictures to Sim; merged main into pk (fd53fc48) and started the full Pokémon check chain (kit, overlap, D-meta-shell, pksrc, q24/25/84, s33, minors) as a tracked task; merge to main after it passes.
