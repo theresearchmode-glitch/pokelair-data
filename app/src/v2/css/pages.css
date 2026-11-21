@@ -3358,3 +3358,6 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .pk-hn{grid-column:2/4;font-size:var(--t13)}.pk-hp{grid-column:2/4;grid-row:2;text-align:left;font-size:var(--t15)}
   .pk-hp{grid-column:2/4}.pk-hv{grid-row:3;grid-column:2/4}.pk-ht{grid-row:4;align-self:center}.pk-dmg{grid-row:4;grid-column:2;margin-top:0}
 }
+/* narrow phones (320-359): the set's four move tickets one per row (two across cut the type word, "NORMA"), and the hit list's damage
+   in Instrument Sans so "139–165%" stays inside its half */
+@media (max-width:359.98px){.pk-usual .k-moves{grid-template-columns:minmax(0,1fr)}.pk-hp{font-family:var(--b);font-style:normal;font-weight:800;letter-spacing:0}}
