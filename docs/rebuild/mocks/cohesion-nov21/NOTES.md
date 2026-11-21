@@ -25,6 +25,8 @@ Shared kit: all new parts were added to kit2.css (marked "ADDED Nov 21"), never 
 | 17 | archetypes | 1516px (1.80 screens) | 2443px (2.89 screens) | shorter or same |
 | 18 | tournaments | 2652px (3.14 screens) | 3386px (4.01 screens) | shorter or same |
 | 20 | weekly | 3539px (4.19 screens) | 4694px (5.56 screens) | shorter or same |
+| 21 | news | 3241px (3.84 screens) | 3870px (4.59 screens) | shorter or same |
+| 22 | gifts | 2616px (3.10 screens) | 3668px (4.35 screens) | shorter or same |
 | 27 | pokemon | 3535px (4.19 screens) | 3828px (4.54 screens) | shorter or same |
 
 ## 01 home · keeps its own hero (`pages/home.html`)
@@ -364,11 +366,39 @@ Phone length (section 4): see the heights table at the top of NOTES.md.
 Rules not met and why: none.
 Check (390 / 1440): every rule passes.
 
-## 21 news · WORD ON THE STREET
-Not made yet.
+## 21 news · WORD ON THE STREET (`pages/news.html`)
+Data source: today's built page `#news` (No. 69, Saturday, November 21, 2026; news list checked Nov 17), claude/design6 built Nov 21 with the repo's data files.
 
-## 22 gifts · THE LOOT
-Not made yet.
+Today's features -> where in the mock-up:
+- Masthead (No. 69 · late edition, the date, free · unofficial), "The Champions Dispatch", 50 stories · 12 tournaments · 8 battle passes -> headline, lead and the newspaper hero's masthead.
+- In the post: 3 gifts waiting, one ends tomorrow; Next event: LAIC, São Paulo, Nov 20–22, live now -> the two boxes beside the front page.
+- Lead story: A New Mystery Gift Campaign (Nov 25, opens at its source), the Monthly Challenge Series May–November with each round's gift (Gallade, Tyranitar, Mawile, Alolan Raichu, Indeedee (F), Sirfetch'd, Pawmot) -> the front page.
+- In Brief (six stories with kind and date, each opens at its source; Read the Story) -> step 1.
+- Clip and Claim: 2 Training Tickets, code LA1CTRA1N1NG27, Copy Code, 1 day left, serial code Nov 11 – Nov 22, All Mystery Gifts -> step 2; "COPY CODE." is the page's pink move.
+- The Back Page: latest result (ValkrixVGC Champions League #09, the winner's six), top ratings (Sneasler, Rillaboom, Kingambit, Incineroar, Mega Charizard Y), next events (LAIC, Malaysia Premier Ball League, Stuttgart Regional), All Ratings, All 30 Next Events, the four classifieds with their links -> step 3.
+- Earlier Editions · 62 more stories › -> step 1's link.
+
+Changes from the PAGES.md idea and why: none (the newspaper is kept as the hero, in the kit).
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
+
+## 22 gifts · THE LOOT (`pages/gifts.html`)
+Data source: today's built page `#gifts` (gift list checked Nov 17), claude/design6 built Nov 21 with the repo's data files.
+
+Today's features -> where in the mock-up:
+- "Special delivery. No postage due.", the lead -> headline and lead.
+- Live right now: 3 to claim, 1 day until one ends, 10 gifts so far -> the counts under the lead.
+- Waiting at the Counter: three parcels (2 Training Tickets, code LA1CTRA1N1NG27, sent Nov 11, collect by Nov 22, 1 day left; 100 Quick Coupons, 10M1NTRNR, Sep 9 to Dec 31, 40 days left; Vivillon Trainer Icon, event gift, no code, Oct 29 to Jan 31, 2027 until 9:59 AM, 71 days left, also inside Training Ticket ×6 and 666 VP), each Copy Code and its source; "blue characters are numbers" -> step 1: one parcel each with the code on the label (numbers in blue), the days-left stamp; the first COPY CODE is the page's pink move.
+- How to collect (three steps, the "real codes never ask for your password" note) -> step 2.
+- The Stamp Sheet: All 7 / Pokémon 4 / Items 3, the seven ended gifts with month, kind and end date, tap a Pokémon for its page, the checked/time-zone note -> step 3 (phones: one row each).
+
+Changes from the PAGES.md idea and why: none (parcels kept; codes stay readable, numbers in blue).
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
 
 ## 23 track · THE RECEIPTS
 Not made yet.

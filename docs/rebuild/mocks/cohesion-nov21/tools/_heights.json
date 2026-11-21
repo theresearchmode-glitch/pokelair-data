@@ -66,5 +66,13 @@
  "archetypes": {
   "mock": 1516,
   "today": 2443
+ },
+ "news": {
+  "mock": 3241,
+  "today": 3870
+ },
+ "gifts": {
+  "mock": 2616,
+  "today": 3668
  }
 }
