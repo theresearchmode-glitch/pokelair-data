@@ -5,7 +5,7 @@ const DIR = 'C:/Users/simra/code/pl-cohesion/docs/rebuild/mocks/cohesion-nov21/p
 const out = JSON.parse(fs.existsSync(new URL('./notes/_heights.json', import.meta.url)) ? fs.readFileSync(new URL('./notes/_heights.json', import.meta.url), 'utf8') : '{}');
 const b = await chromium.launch(); const p = await b.newPage({ viewport: { width: 390, height: 844 }, isMobile: true });
 for (const id of process.argv.slice(2)) {
-  await p.goto('file:///' + DIR + '/' + id + '.html'); await p.waitForTimeout(300);
+  await p.goto('file:///' + DIR + '/' + ({ meta: '../ratings2', track: '../track2', events: '../events2' }[id] || id) + '.html'); await p.waitForTimeout(300);
   const mock = await p.evaluate(() => document.documentElement.scrollHeight);
   const inv = JSON.parse(fs.readFileSync(new URL(`./inv/${id.replace(/-b$/, '')}.json`, import.meta.url), 'utf8'));
   out[id] = { mock, today: inv.m.h };

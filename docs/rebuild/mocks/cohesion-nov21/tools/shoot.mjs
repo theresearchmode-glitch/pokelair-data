@@ -17,7 +17,7 @@ const CHECK = scale => {
     const r = e.getBoundingClientRect(); const box = e.closest(".rc,.row,.panel,.mv,.w,.go,.chk"); if (box && r.right > box.getBoundingClientRect().right + 4) cut.push(`spills "${t}"`); if (r.right > innerWidth + 1) cut.push(`off-screen "${t}"`); }
   const taps = [...document.querySelectorAll('main a,main button,main .w,main input,main select,main textarea,main .mv.tap')].filter(vis).filter(e => e.getBoundingClientRect().height < 43.5).map(e => `${Math.round(e.getBoundingClientRect().height)}px "${e.textContent.trim().slice(0, 24)}"`);
   const lone = []; for (const g of document.querySelectorAll('main *')) { const s = getComputedStyle(g); if (s.display !== "grid" || g.classList.contains("row") || g.classList.contains("chk") || g.classList.contains("stamp") || g.closest(".row")) continue; const cols = s.gridTemplateColumns.split(' ').length; const kids = [...g.children].filter(vis).filter(k => getComputedStyle(k).gridColumnEnd !== "-1"); if (cols > 1 && kids.length > cols && kids.length % cols === 1) lone.push(`${g.className || g.tagName} ${kids.length} in ${cols} cols`); }
-  return { off: [...new Set(off)], smallU: [...new Set(smallU)], cut: [...new Set(cut)], taps: [...new Set(taps)], hscroll: document.documentElement.scrollWidth > innerWidth + 1, lone, h: document.documentElement.scrollHeight };
+  return { zoom: innerWidth > document.documentElement.clientWidth + 1, off: [...new Set(off)], smallU: [...new Set(smallU)], cut: [...new Set(cut)], taps: [...new Set(taps)], hscroll: document.documentElement.scrollWidth > innerWidth + 1, lone, h: document.documentElement.scrollHeight };
 };
 const b = await chromium.launch(); const report = {};
 for (const file of process.argv.slice(2)) {
@@ -25,7 +25,7 @@ for (const file of process.argv.slice(2)) {
   const shots = [[1440, 1, ''], [390, 2, '']]; if (BIG5.includes(id)) shots.push([1040, 1, ''], [1440, 1, 'night'], [390, 2, 'night'], [1040, 1, 'night']);
   for (const [wd, dsf, th] of shots) {
     const p = await b.newPage({ viewport: { width: wd, height: wd === 390 ? 844 : 900 }, deviceScaleFactor: dsf, isMobile: wd === 390 });
-        await p.goto('file:///' + DIR + '/' + file + '.html'); if (th) await p.evaluate(() => document.documentElement.setAttribute('data-theme', 'night')); await p.waitForTimeout(500);
+        await p.goto('file:///' + DIR + '/' + ({ meta: '../ratings2', track: '../track2', events: '../events2' }[file] || file) + '.html'); if (th) await p.evaluate(() => document.documentElement.setAttribute('data-theme', 'night')); await p.waitForTimeout(500);
     if (!th && (wd === 390 || wd === 1440)) (report[file] ||= {})[wd] = await p.evaluate(CHECK, SCALE);
     report[file] ||= {}; report[file].broken = (report[file].broken || 0) + await p.evaluate(() => [...document.images].filter(i => !i.naturalWidth).length);
     await p.screenshot({ path: `${PICS}/${nn}-${id}${suf}-${wd}${th ? '-night' : ''}.png`, fullPage: true }); await p.close();
@@ -33,4 +33,4 @@ for (const file of process.argv.slice(2)) {
 }
 await b.close();
 fs.writeFileSync(new URL('./checks.json', import.meta.url), JSON.stringify(Object.assign(JSON.parse(fs.existsSync(new URL('./checks.json', import.meta.url)) ? fs.readFileSync(new URL('./checks.json', import.meta.url), 'utf8') : '{}'), report), null, 1));
-for (const [f, r] of Object.entries(report)) { console.log(`== ${f} broken-img:${r.broken}`); for (const wd of [390, 1440]) { const c = r[wd]; console.log(` ${wd}: len ${(c.h / (wd === 390 ? 844 : 900)).toFixed(2)} | off-scale ${c.off.length} ${c.off.slice(0, 4).join('; ')} | Unb<15 ${c.smallU.length} ${c.smallU.slice(0, 3).join('; ')} | cut ${c.cut.length} ${c.cut.slice(0, 3).join('; ')} | taps<44 ${c.taps.length} ${c.taps.slice(0, 4).join('; ')} | hscroll ${c.hscroll} | lone ${c.lone.join('; ')}`); } }
+for (const [f, r] of Object.entries(report)) { console.log(`== ${f} broken-img:${r.broken}`); for (const wd of [390, 1440]) { const c = r[wd]; console.log(` ${wd}: len ${(c.h / (wd === 390 ? 844 : 900)).toFixed(2)} | off-scale ${c.off.length} ${c.off.slice(0, 4).join('; ')} | Unb<15 ${c.smallU.length} ${c.smallU.slice(0, 3).join('; ')} | cut ${c.cut.length} ${c.cut.slice(0, 3).join('; ')} | taps<44 ${c.taps.length} ${c.taps.slice(0, 4).join('; ')} | hscroll ${c.hscroll || c.zoom} | lone ${c.lone.join('; ')}`); } }

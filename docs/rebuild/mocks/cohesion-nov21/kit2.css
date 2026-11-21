@@ -192,3 +192,7 @@ textarea.field{min-height:140px;resize:vertical}
 .types{flex-wrap:wrap}  /* type chips wrap rather than spill */
 @media (max-width:699.98px){.pair2.st{grid-template-columns:minmax(0,1fr)}}  /* a pair whose halves are lists: stacked on phones */
 .pair2{align-items:start}.pair2>.rows{align-content:start}
+/* phones: the big move and blue buttons wrap instead of widening the page (a too-wide button made phones zoom out; found Nov 21) */
+@media (max-width:699.98px){.go,.btnw{white-space:normal;max-width:100%;text-align:center}.hero .go,.pair2 .go{font-size:20px;padding:10px 16px}.hero>*,.pair2>*,.cols>*,.grid3>*,.grid4>*{min-width:0}}
+@media (max-width:699.98px){.moves{margin-right:8px}.go{max-width:calc(100% - 10px)}}  /* room for the slant and the shadow */
+@media (max-width:699.98px){html,body{overflow-x:clip}.wrap{overflow-x:clip}}  /* slants and art bursts never widen the phone page */

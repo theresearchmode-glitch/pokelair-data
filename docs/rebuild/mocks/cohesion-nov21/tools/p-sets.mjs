@@ -16,4 +16,4 @@ const body = SUB + head({ kicker: 'META · THE LOADOUTS', h1: 'How it’s built<
    <p class=status>Stat points</p><div class="rows one">${[['Modest: 2 HP / 32 SpA / 32 Spe', '6%'], ['Timid: 2 HP / 32 SpA / 32 Spe', '6%'], ['Timid: 22 HP / 19 Def / 2 SpA / 23 Spe', '4%']].map(([k, v]) => `<div class=row><span></span><b>${k}</b><div class=val><b class=u style="font-size:22px">${v}</b></div></div>`).join('')}</div>
    <p class=hint>Stat points from the Showdown ladder 1630+: tournament team lists don’t include them.</p></div></div>`) +
   step(3, 'Its usual crew', 'usually alongside', '', `<div class=roster>${['Kingambit', 'Garchomp', 'Farigiraf', 'Sneasler', 'Archaludon', 'Rillaboom'].map(n => card(n)).join('')}</div><p class=hint>Its stone and Ability are fixed.</p>`);
-page('sets', 'Meta', body, `.loadout{margin-top:20px;padding:16px 20px;background:var(--card);border-left:6px solid var(--nasty)}`);
+page('sets', 'Meta', body, `@media (max-width:699.98px){.loadout .moves{grid-template-columns:1fr}.loadout{padding:12px}}.loadout{margin-top:20px;padding:16px 20px;background:var(--card);border-left:6px solid var(--nasty)}`);

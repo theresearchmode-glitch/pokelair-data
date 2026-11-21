@@ -11,31 +11,34 @@ Shared kit: all new parts were added to kit2.css (marked "ADDED Nov 21"), never 
 |---|---|---|---|---|
 | 01 | home | 5657px (6.70 screens) | 6527px (7.73 screens) | shorter or same |
 | 02 | build | 2474px (2.93 screens) | 3071px (3.64 screens) | shorter or same |
-| 03 | team | 3623px (4.29 screens) | 3734px (4.42 screens) | shorter or same |
-| 03 | team-b | 3664px (4.34 screens) | 3734px (4.42 screens) | shorter or same |
-| 04 | team-empty | 1829px (2.17 screens) | 2608px (3.09 screens) | shorter or same |
-| 05 | sheet | 3028px (3.59 screens) | 3373px (4.00 screens) | shorter or same |
-| 06 | box | 2249px (2.66 screens) | 2402px (2.85 screens) | shorter or same |
-| 07 | compare | 1213px (1.44 screens) | 1328px (1.57 screens) | shorter or same |
+| 03 | team | 3645px (4.32 screens) | 3734px (4.42 screens) | shorter or same |
+| 03 | team-b | 3686px (4.37 screens) | 3734px (4.42 screens) | shorter or same |
+| 04 | team-empty | 1851px (2.19 screens) | 2608px (3.09 screens) | shorter or same |
+| 05 | sheet | 3050px (3.61 screens) | 3373px (4.00 screens) | shorter or same |
+| 06 | box | 2271px (2.69 screens) | 2402px (2.85 screens) | shorter or same |
+| 07 | compare | 1216px (1.44 screens) | 1328px (1.57 screens) | shorter or same |
 | 08 | battle | 1763px (2.09 screens) | 1768px (2.09 screens) | shorter or same |
-| 09 | calc | 2594px (3.07 screens) | 2187px (2.59 screens) | LONGER by 407px |
+| 09 | calc | 2616px (3.10 screens) | 2187px (2.59 screens) | LONGER by 429px |
 | 10 | speed | 2580px (3.06 screens) | 2952px (3.50 screens) | shorter or same |
 | 11 | types | 2089px (2.48 screens) | 2798px (3.32 screens) | shorter or same |
 | 12 | practice | 1615px (1.91 screens) | 1638px (1.94 screens) | shorter or same |
 | 13 | gauntlet | 2623px (3.11 screens) | 2626px (3.11 screens) | shorter or same |
-| 15 | usage | 3163px (3.75 screens) | 3554px (4.21 screens) | shorter or same |
-| 16 | sets | 2965px (3.51 screens) | 3148px (3.73 screens) | shorter or same |
+| 14 | meta | 1840px (2.18 screens) | 2914px (3.45 screens) | shorter or same |
+| 15 | usage | 3217px (3.81 screens) | 3554px (4.21 screens) | shorter or same |
+| 16 | sets | 3099px (3.67 screens) | 3148px (3.73 screens) | shorter or same |
 | 17 | archetypes | 1516px (1.80 screens) | 2443px (2.89 screens) | shorter or same |
 | 18 | tournaments | 2652px (3.14 screens) | 3386px (4.01 screens) | shorter or same |
+| 19 | events | 2710px (3.21 screens) | 3665px (4.34 screens) | shorter or same |
 | 20 | weekly | 3539px (4.19 screens) | 4694px (5.56 screens) | shorter or same |
 | 21 | news | 3241px (3.84 screens) | 3870px (4.59 screens) | shorter or same |
-| 22 | gifts | 2616px (3.10 screens) | 3668px (4.35 screens) | shorter or same |
-| 24 | method | 2205px (2.61 screens) | 3424px (4.06 screens) | shorter or same |
+| 22 | gifts | 2618px (3.10 screens) | 3668px (4.35 screens) | shorter or same |
+| 23 | track | 2037px (2.41 screens) | 3362px (3.98 screens) | shorter or same |
+| 24 | method | 2227px (2.64 screens) | 3424px (4.06 screens) | shorter or same |
 | 25 | about | 2587px (3.07 screens) | 2738px (3.24 screens) | shorter or same |
 | 26 | feedback | 1124px (1.33 screens) | 1402px (1.66 screens) | shorter or same |
-| 27 | pokemon | 3535px (4.19 screens) | 3828px (4.54 screens) | shorter or same |
+| 27 | pokemon | 3569px (4.23 screens) | 3828px (4.54 screens) | shorter or same |
 | 28 | notfound | 844px (1.00 screens) | 943px (1.12 screens) | shorter or same |
-| 29 | owner | 881px (1.04 screens) | 943px (1.12 screens) | shorter or same |
+| 29 | owner | 844px (1.00 screens) | 943px (1.12 screens) | shorter or same |
 
 ## 01 home · keeps its own hero (`pages/home.html`)
 Data source: today's built page `#home`, claude/design6 built Nov 21 with the repo's data files (the page's own banner dates the saved copy Nov 9; 13,631 tournament teams).
