@@ -23,11 +23,13 @@ const shown = p => p.evaluate(() => { const T = s => { const e = document.queryS
 /* Nov 21: Plot the hit (Sim approved): the answer on screen is the engine's hit: damage 'min–max' HP, '<defender> has <HP> HP', and the
    verdict from the 16 rolls (k at or over the HP: 'Faints a time(s) in b' with k/16 reduced; all 16 'Always faints'; none: a hits verdict,
    'Faints in 2 hits' when the two lowest rolls already knock it out). Returns '' when it matches, else what differs. */
+const pq = (v, hp) => Math.round(100 * v / hp), pcs = (a, b, hp) => a === b ? pq(a, hp) + '%' : pq(a, hp) + '–' + pq(b, hp) + '%'; /* Nov 21, 8:39 AM (Sim): % of HP first, rounded like the KO Board; HP beside it (was HP first, Q100) */
 const gcd = (a, b) => b ? gcd(b, a % b) : a;
 const mismatch = (s, e) => { if (!e || e.min == null) return 'no engine hit'; const out = [];
-  if (s.dmg !== (e.min === e.max ? String(e.min) : `${e.min}–${e.max}`)) out.push(`damage "${s.dmg}" vs engine ${e.min}–${e.max}`);
+  if (e.max > 0 && s.dmg !== pcs(e.min, e.max, e.hp)) out.push(`damage "${s.dmg}" vs engine ${pcs(e.min, e.max, e.hp)}`);
+  if (e.max === 0 && s.dmg !== '0') out.push(`damage "${s.dmg}" for no damage`);
   if (e.max === 0) { if (s.verdict !== 'No effect') out.push(`verdict "${s.verdict}" for no damage`); return out.join('; '); }
-  if (!new RegExp(` has ${e.hp} HP\\.$`).test(s.l2)) out.push(`HP line "${s.l2}" vs engine ${e.hp} HP`);
+  if (!s.l2.endsWith(`: ${e.min === e.max ? e.min : e.min + '–' + e.max} of ${e.hp} HP.`)) out.push(`HP line "${s.l2}" vs engine ${e.min}–${e.max} of ${e.hp} HP`);
   if (e.rolls.length !== 16) out.push(`${e.rolls.length} rolls, not 16`);
   const k = e.rolls.filter(v => v >= e.hp).length, g = gcd(k, 16);
   const want = k === 16 ? 'Always faints' : k ? `Faints ${k / g} time${k / g > 1 ? 's' : ''} in ${16 / g}` : null;
@@ -60,7 +62,7 @@ for (const W of WIDTHS) for (const th of THEMES) {
   if (!(await p.$('.dc2.pc .pc-board'))) { ok(false, `${tag} Plot the hit is on the page (.pc-board)`); await c.close(); continue; } /* Nov 21: Plot the hit (Sim approved; was .arn-scene) */
   // the default case: the numbers on screen are the engine's (Nov 21: Plot the hit, Sim approved: real HP and the verdict from the 16 rolls; was % and % HP left)
   const E0 = await engine(p), S0 = await shown(p), m0 = mismatch(S0, E0);
-  ok(!m0, `${tag} default ${E0.mv} into ${E0.d}: the answer on screen is the engine's (${S0.dmg} of ${E0.hp} HP, "${S0.verdict}")${m0 ? ': ' + m0 : ''}`);
+  ok(!m0, `${tag} default ${E0.mv} into ${E0.d}: the answer on screen is the engine's (${S0.dmg} of ${E0.hp} HP's worth, "${S0.verdict}")${m0 ? ': ' + m0 : ''}`);
   if (W === 1440 && th === THEMES[0]) console.log(`  info  mock-up sanity (default ${E0.a} ${E0.mv} into ${E0.d}, weather ${E0.w || 'clear'}): ${E0.pct} HP, "${S0.verdict}", "${S0.sm}"`);
   // layout
   let o = await overlaps(p); ok(!o.length, `${tag} nothing on either Pokemon (default)${o.length ? ': ' + o.join('; ') : ''}`);

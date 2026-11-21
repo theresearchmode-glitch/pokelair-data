@@ -2,7 +2,7 @@
 // A nasty plot is a scheme: the calc is the board where you plot the hit. Three things only: PHOTOS (the two Pokémon), MARKER (the hit
 // is a hand-drawn arrow; a red circle = chosen; moves are highlighter swipes in their type colour; sky / ground / this turn are written
 // on the board) and STICKY NOTES (only the two sets). Every colour means something: blue attacker, pink defender, type colours for moves
-// and the damage, red marker = chosen, each weather / terrain its own. Real HP, not percentages (Sim, Nov 21). Every hook today's tests
+// and the damage, red marker = chosen, each weather / terrain its own. % of HP first, HP beside it (Sim, Nov 21, 8:39 AM; was real HP first, Q100). Every hook today's tests
 // and handlers use is kept: data-dcmv, data-dcw, data-dcterr, data-dct, #dcSwap, data-arnpick (the photo opens "Choose the attacker /
 // defender", Q46 A), data-arnmv (All moves), the set rows, data-arnst (stage), the KO Board. The title is "Plot the hit": "The plot" is
 // the Build page (Sim, Nov 21: "fix the clashes as you see fit").
@@ -18,14 +18,21 @@ V2.pcVerdict = r => { const W = V2.PC_W; if (!r) return null; if (r.max === 0) r
   const rolls = (r.rolls && r.rolls.length ? r.rolls : [r.min, r.max]), n = rolls.length, ko = rolls.filter(v => v >= r.hp), k = ko.length;
   if (k === n) return {big: 'Always faints', sm: '', chip: 'always faints'};
   if (k > 0) { const g = pcGcd(k, n), a = k / g, b = n / g, rest = rolls.filter(v => v < r.hp), lo = r.hp - Math.max(...rest), hi = r.hp - Math.min(...rest), o = b - a;
-    return {big: `Faints ${a} time${a > 1 ? 's' : ''} in ${b}`, sm: `hangs on with ${lo === hi ? lo : lo + '–' + hi} HP the other ${o <= 10 ? W.N[o] : o}`, chip: `faints ${a} in ${b}`}; }
+    return {big: `Faints ${a} time${a > 1 ? 's' : ''} in ${b}`, sm: `hangs on with ${V2.pcLeft(lo, hi, r.hp)} the other ${o <= 10 ? W.N[o] : o}`, chip: `faints ${a} in ${b}`}; }
   const nx = r.next || r, t = koText0(r); let m;
-  if (t === 'Guaranteed 2HKO') return {big: 'Faints in 2 hits', sm: `hangs on with ${r.hp - r.max}–${r.hp - r.min} HP after one`, chip: '2 hits'};
-  if ((m = /^(\d+)% chance to 2HKO$/.exec(t))) return {big: `Faints in 2 hits, ${m[1]}% of the time`, sm: `hangs on with ${r.hp - r.max}–${r.hp - r.min} HP after one`, chip: '2 hits?'};
-  if (t === 'Possible 2HKO') return {big: 'May faint in 2 hits', sm: `hangs on with ${r.hp - r.max}–${r.hp - r.min} HP after one`, chip: '2 hits?'};
-  if (t === 'Guaranteed 3HKO') return {big: 'Faints in 3 hits', sm: `hangs on with ${r.hp - r.max}–${r.hp - r.min} HP after one`, chip: '3 hits'};
-  const h = 1 + Math.ceil((r.hp - r.max) / Math.max(1, nx.max)); return {big: `Takes ${h}+ hits`, sm: `hangs on with ${r.hp - r.max}–${r.hp - r.min} HP after one`, chip: `${h}+ hits`}; };
+  if (t === 'Guaranteed 2HKO') return {big: 'Faints in 2 hits', sm: `hangs on with ${V2.pcLeft(r.hp - r.max, r.hp - r.min, r.hp)} after one`, chip: '2 hits'};
+  if ((m = /^(\d+)% chance to 2HKO$/.exec(t))) return {big: `Faints in 2 hits, ${m[1]}% of the time`, sm: `hangs on with ${V2.pcLeft(r.hp - r.max, r.hp - r.min, r.hp)} after one`, chip: '2 hits?'};
+  if (t === 'Possible 2HKO') return {big: 'May faint in 2 hits', sm: `hangs on with ${V2.pcLeft(r.hp - r.max, r.hp - r.min, r.hp)} after one`, chip: '2 hits?'};
+  if (t === 'Guaranteed 3HKO') return {big: 'Faints in 3 hits', sm: `hangs on with ${V2.pcLeft(r.hp - r.max, r.hp - r.min, r.hp)} after one`, chip: '3 hits'};
+  const h = 1 + Math.ceil((r.hp - r.max) / Math.max(1, nx.max)); return {big: `Takes ${h}+ hits`, sm: `hangs on with ${V2.pcLeft(r.hp - r.max, r.hp - r.min, r.hp)} after one`, chip: `${h}+ hits`}; };
 V2.pcDmg = r => r.min === r.max ? String(r.min) : `${r.min}–${r.max}`;
+/* Sim, Nov 21, 8:39 AM: one unit first everywhere, the other small beside it. A = % of HP first (matches the KO Board); this reverses
+   Q100 (Nov 20, 11:27 PM: HP first, % small), so it is one switch: false brings back HP first */
+V2.PC_PCT_FIRST = true;
+V2.pcPctOf = (v, hp) => Math.round(100 * v / hp); /* rounded like the KO Board (calc.js kobRow) */
+V2.pcPct = r => r.min === r.max ? `${V2.pcPctOf(r.min, r.hp)}%` : `${V2.pcPctOf(r.min, r.hp)}–${V2.pcPctOf(r.max, r.hp)}%`;
+V2.pcPctH = r => V2.pcPct(r).replace(/%$/, '<span class="pc-pc">%</span>'); /* the % sign smaller, so the number keeps its width */
+V2.pcLeft = (lo, hi, hp) => V2.PC_PCT_FIRST ? `${lo === hi ? V2.pcPctOf(lo, hp) : V2.pcPctOf(lo, hp) + '–' + V2.pcPctOf(hi, hp)}%` : `${lo === hi ? lo : lo + '–' + hi} HP`;
 // a photo: the Pokémon on its tint (blue attacker, pink defender, the target circled), its role and name; the photo is the picker button
 V2.pcPhoto = (X, role, id) => { const E = V2.esc, W = V2.PC_W, d = V2.disp(X.p.n), mega = d.startsWith('Mega ');
   return `<div class="pc-ph ${role}"><span class="pc-pic">${V2.arnImg(X.p.n)}</span><small>${role === 'a' ? W.muscle : W.target}${mega ? ' · Mega' : ''}</small>
@@ -40,13 +47,13 @@ V2.pcAnswer = C => { const E = V2.esc, r = C.r, mv = C.mv, d = V2.disp(C.D.p.n),
   const V = V2.pcVerdict(r);
   if (r.max === 0) return `<div class="pc-ans"${ty} aria-live="polite">${arrow}<p class="pc-l1"><span class="pc-ty">${E(t)}</span> ${E(mv.name)} does</p><p class="pc-big u">0</p>
     <p class="pc-l2">${r.fail ? E(r.fail) + '.' : `${E(d)} is immune to ${E(r.type)}.`}</p><p class="pc-vd u"><span>No effect${V2.pcRing()}</span></p></div>`;
-  return `<div class="pc-ans"${ty} aria-live="polite">${arrow}<p class="pc-l1"><span class="pc-ty">${E(t)}</span> ${E(mv.name)} does</p><p class="pc-big u">${V2.pcDmg(r)}</p>
-    <p class="pc-l2">damage. ${E(d)} has <b>${r.hp} HP</b>.</p><p class="pc-vd u"><span>${E(V.big)}${V2.pcRing()}</span></p>${V.sm ? `<p class="pc-sm u">${E(V.sm).replace(/(\d+(?:–\d+)? HP)/, '<span class="pc-nw">$1</span>')}</p>` : ''}</div>`; };
+  return `<div class="pc-ans"${ty} aria-live="polite">${arrow}<p class="pc-l1"><span class="pc-ty">${E(t)}</span> ${E(mv.name)} does</p><p class="pc-big u${V2.PC_PCT_FIRST ? ' pc-pctf' : ''}">${V2.PC_PCT_FIRST ? V2.pcPctH(r) : V2.pcDmg(r)}</p>
+    <p class="pc-l2">${V2.PC_PCT_FIRST ? `of ${E(d)}'s HP: <b>${V2.pcDmg(r)} of ${r.hp} HP</b>.` : `damage (${V2.pcPct(r)}). ${E(d)} has <b>${r.hp} HP</b>.`}</p><p class="pc-vd u"><span>${E(V.big)}${V2.pcRing()}</span></p>${V.sm ? `<p class="pc-sm u">${E(V.sm).replace(/(\d+(?:–\d+)?(?: HP|%))/, '<span class="pc-nw">$1</span>')}</p>` : ''}</div>`; };
 // a move: a highlighter swipe in its type's colour; its damage in HP and the short verdict; the chosen one circled
 V2.pcMove = (C, m, i) => { const E = V2.esc, on = m.name === dc.mv, r = on ? C.r : V2.dcHit(C, m), t = (r && r.type) || m.type, V = r && r.max > 0 ? V2.pcVerdict(r) : null;
-  const dmg = !r ? (m.cat ? 'Not calculated' : 'No damage') : r.max === 0 ? 'No effect' : V2.pcDmg(r), tilt = [-1.5, 1, -1, 1.5][i % 4];
-  return `<button type="button" class="pc-mv${on ? ' on' : ''}" style="--tc:var(--ty-${t});--r:${tilt}deg" data-dcmv="${E(m.name)}" aria-pressed="${on}" aria-label="${E(m.name)}: ${E(dmg)}${r && r.max > 0 ? ' damage' : ''}${V ? ', ' + E(V.chip) : ''}">
-    <i class="pc-sw" aria-hidden="true"></i><b class="u">${E(m.name)}</b><em class="u">${E(dmg)}</em><small>${E(t)}${V ? ' · ' + E(V.chip) : ''}</small>${on ? V2.pcRing() : ''}</button>`; };
+  const dmg = !r ? (m.cat ? 'Not calculated' : 'No damage') : r.max === 0 ? 'No effect' : (V2.PC_PCT_FIRST ? V2.pcPct(r) : V2.pcDmg(r)), tilt = [-1.5, 1, -1, 1.5][i % 4];
+  return `<button type="button" class="pc-mv${on ? ' on' : ''}" style="--tc:var(--ty-${t});--r:${tilt}deg" data-dcmv="${E(m.name)}" aria-pressed="${on}" aria-label="${E(m.name)}: ${E(dmg)}${r && r.max > 0 ? (V2.PC_PCT_FIRST ? ` of its HP (${V2.pcDmg(r)} HP)` : ' damage') : ''}${V ? ', ' + E(V.chip) : ''}">
+    <i class="pc-sw" aria-hidden="true"></i><b class="u">${E(m.name)}</b><em class="u">${r && r.max > 0 && V2.PC_PCT_FIRST ? V2.pcPctH(r) : E(dmg)}</em><small>${E(t)}${V ? ' · ' + E(V.chip) : ''}</small>${on ? V2.pcRing() : ''}</button>`; };
 // sky / ground: icons and words written on the board in each one's colour; the chosen one circled
 V2.pcFive = (k, L, cur, lab) => `<div class="pc-five" role="group" aria-label="${lab}">${L.map(([v, t]) => `<button type="button" ${k === 'wx' ? 'data-dcw' : 'data-dcterr'}="${v}" style="--k:var(--pc-k-${v || 'none'})" aria-pressed="${v === cur}"${v === '' ? ` aria-label="${t}: no ${lab.toLowerCase()}"` : ''}>${V2.arnIc(v)}<span>${t}</span>${v === cur ? V2.pcRing() : ''}</button>`).join('')}</div>`;
 V2.pages.calc.draw = function () { let C; try { C = calcData(); } catch (e) { console.error(e); return `<div class="dc2 arn pc"><h1 class="vh">Damage Calculator</h1>${V2.battleToolsBar('calc')}<p class="tm-sub">The calc couldn't load. Try again in a moment.</p></div>`; }

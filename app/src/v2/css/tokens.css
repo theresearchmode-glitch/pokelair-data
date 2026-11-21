@@ -138,7 +138,7 @@
   --pc-line:#0068AD;--pc-photo:#FFFFFF;--pc-photo-rim:rgba(23,22,26,.1);--pc-drop:rgba(0,0,0,.5);--pc-tint-a:#CFE6F7;--pc-tint-d:#F9D0D7;--pc-note-a:#D9EDFB;--pc-note-d:#FBD3DA;
   --pc-note-top:rgba(0,0,0,.1);--pc-dots:rgba(23,22,26,.35);--pc-note-label:rgba(23,22,26,.7);--pc-key:rgba(255,255,255,.6);--pc-dash:rgba(23,22,26,.5);--pc-on-swipe:#FFFFFF;--pc-swipe-sub:rgba(255,255,255,.92);
   --pc-k-none:#5E5A66;--pc-k-sun:#B56E00;--pc-k-rain:#2A73C9;--pc-k-sand:#A8742A;--pc-k-snow:#2F7DA4;--pc-k-grassy:#28843C;--pc-k-electric:#946F00;--pc-k-psychic:#C2479A;--pc-k-misty:#B4508C;
-  --pc-on-paper:#17161A;--pc-on-paper2:#5E5A66;--d-pcbig:clamp(48px,17cqi,112px);--d-pctitle:clamp(24px,3vw,44px);
+  --pc-on-paper:#17161A;--pc-on-paper2:#5E5A66;--d-pcbig:clamp(48px,17cqi,112px);--d-pcpct:clamp(26px,8.5cqi,56px);--d-pcbigp:clamp(40px,14cqi,100px);--d-pctitle:clamp(24px,3vw,44px);
   --arn-shade-t:rgba(0,0,0,.3);--arn-shade-b:rgba(0,0,0,.45);--arn-contact-1:rgba(0,0,0,.6);--arn-contact-2:rgba(0,0,0,.3);--arn-contact-3:rgba(40,36,60,.6);--d-arntag:clamp(34px,6.4cqi,64px);
   color-scheme:light}
 :root[data-theme="night"]{

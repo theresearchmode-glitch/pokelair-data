@@ -122,3 +122,8 @@
 /* All moves rows (Nov 21; Sim, Nov 20: HP numbers, not %): the damage big as before, ' of 157 HP' small beside it like a unit, so the row stays
    about as wide as the old '88–104%' and the move names keep their room */
 .arn-mvd b .of{font:600 var(--t13)/1 var(--b);font-style:normal;letter-spacing:0;color:var(--ink-2)}
+
+/* Nov 21 (Sim, 8:39 AM: % first): the % sign at a smaller size beside the big numbers, so 136–160% keeps the width the HP numbers had */
+.pc-ans .pc-big .pc-pc{font-size:var(--d-pcpct)}.pc-mv em .pc-pc{font-size:var(--t15)}
+.pc-ans .pc-big.pc-pctf{font-size:var(--d-pcbigp)}.pc-mv em{font-size:var(--t20)} /* % first: the numbers are a character longer */
+@media (max-width:379.98px),(min-width:700px) and (max-width:999.98px){.pc-mv em{font-size:var(--t17)}}
