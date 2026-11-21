@@ -1886,3 +1886,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:38 PM: Preview v225 published (443 files; foundation/v2.js/preview.json same size as the build; 7 fonts; privacy OK): move tickets + type symbols, Calc names + HP line, Build A, compact kit.
 - 5:44 PM: Sim (iPhone screenshot): Damage Calc All moves sheet: move names clip into the damage % ('Acrobatic55–66%') and wrap a word per line. Fixing.
 - 5:54 PM: Fixed Sim's All moves glitch (names into the %): 0 clipped at 320-1440; q47 + arena pass. hP finished the Pokémon page (copy pk): +1,200-1,500px on phones and a phone fold ('The full file') against Sim's no-folds rule: to Sim with pictures.
+- 5:55 PM: GitHub run on a298f09a: 14/15; qcheck-all 18 new, all from the Calc names change ('Mega' x 'Charizard Y' on the photo; set heading x 'most used set'); looked at 390/820: letters apart, false alarms. Recording via KNOWN=write in copy mvt (and dropping 26 gone).
