@@ -29,7 +29,8 @@ const result = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects
   const go = [...document.querySelectorAll('[data-bdgo]')].filter(vis), g = go[0], gc = g && getComputedStyle(g);
   const revs = a ? [...a.querySelectorAll('.bp-rev:not(.bp-revwait)')].map(r => [...r.querySelectorAll('.bp-rsix .np-mon img')].filter(vis).map(i => Math.round(i.getBoundingClientRect().width))) : [];
   const no = a ? [...a.querySelectorAll('.bp-six .bp-no')].map(e => getComputedStyle(e)) : [];
-  return {use: use.length, gap: six && u ? Math.round(u.getBoundingClientRect().top - six.getBoundingClientRect().bottom) : null, inNear: !!(u && u.closest('.bp-near')), inRight: !!(u && u.closest('.bp-right')),
+  const sl = a && a.querySelector('.pl-seal'), sb = sl && sl.querySelector('b'), sw = sl && sl.querySelector('.w span'), slc = sl && getComputedStyle(sl);
+  return {seal: !!sl, slBg: slc ? slc.backgroundColor : '', slNum: sb ? getComputedStyle(sb).color : '', slWord: sw ? getComputedStyle(sw).color : '', onMark: tok('var(--on-plot-seal)'), slW: sl ? Math.round(sl.getBoundingClientRect().width) : 0, slH: sl ? Math.round(sl.getBoundingClientRect().height) : 0, use: use.length, gap: six && u ? Math.round(u.getBoundingClientRect().top - six.getBoundingClientRect().bottom) : null, inNear: !!(u && u.closest('.bp-near')), inRight: !!(u && u.closest('.bp-right')),
     plate, hero: tok('var(--sd-hero)'), num: num ? getComputedStyle(num).color : '', white: tok('var(--sd-on-band)'),
     stkBg: stk ? getComputedStyle(stk).backgroundColor : '', rim: tok('var(--bp-rim)'), stBg: st ? getComputedStyle(st).backgroundColor : '', stFg: st ? getComputedStyle(st).color : '', band: tok('var(--band)'), stRot: stk ? getComputedStyle(stk).rotate : '',
     nos: no.length, noSolid: no.every(c => c.color !== 'rgba(0, 0, 0, 0)' && parseFloat(c.webkitTextStrokeWidth || '0') === 0),
@@ -62,19 +63,18 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 
   await p.click('[data-bdgo]'); await built(p); await p.waitForTimeout(600); const r = await result(p);
   ok(!(await p.$('.pl0')), `${k}: pressing Hatch it builds the team (the plot sentence page gives way to the result)`);
   ok(r.use === 1 && r.inNear && !r.inRight && r.gap != null && r.gap >= 0 && r.gap <= 64, `${k}: one Load Team, right under the six (${r.use}, ${r.gap} px, near ${r.inNear}, in Notes ${r.inRight})`);
-  ok(r.plate === r.hero && r.num === r.white, `${k}: the score on the blue plate, white number (${r.plate} / ${r.num})`);
+  /* Nov 20 (The Plot, Q97 A): the score is an upright seal, not the Blueprint's blue plate and tilted sticker */
+  ok(r.seal && r.slNum === r.onMark && ratio(r.slWord, r.slBg) >= 4.5 && ratio(r.slNum, r.slBg) >= 4.5, `${k}: the score in the red seal, number and band word readable (${r.slBg}; word ${r.seal ? ratio(r.slWord, r.slBg).toFixed(2) : '-'}:1)`);
   ok(r.nos === 6 && r.noSolid, `${k}: the six's numbers solid (${r.nos})`);
-  ok(r.stBg === r.band && r.stkBg === r.rim && r.stRot !== 'none', `${k}: score sticker filled with its band colour on a rim, tilted (${r.stBg} = ${r.band}; rim ${r.stkBg})`);
-  ok(ratio(r.stFg, r.stBg) >= 4.5, `${k}: sticker words readable (${ratio(r.stFg, r.stBg).toFixed(2)}:1)`);
-  ok(r.go === 1 && r.goIn && /\bbp-rebuild\b/.test(r.goCls) && !/np-btn/.test(r.goCls) && /^Rebuild/.test(r.goTxt) && r.goBg !== 'rgba(0, 0, 0, 0)' && r.goTf !== 'none', `${k}: Rebuild is a solid slanted stamp (${r.goCls}, "${r.goTxt}", ${r.goBg})`);
+  ok(r.go === 1 && /\bpl-go\b/.test(r.goCls) && /^Hatch another/i.test(r.goTxt) && r.goBg !== 'rgba(0, 0, 0, 0)', `${k}: one HATCH ANOTHER (rebuild) in the plot's control row, a solid red plate (${r.goCls}, "${r.goTxt}", ${r.goBg})`);
   ok(r.revs.length >= 2 && r.revs.every(x => x.length === 6 && x.every(w => w >= 32 && w <= 40)), `${k}: every Revision shows its six as 32-40 px sprites (${r.revs.map(x => x.length + '@' + x[0]).join(' ')})`);
   ok(!r.side, `${k}: no sideways scroll after a build`);
   // 9 every band on the plate (forced scores), 1440 and 390
   if (W === 1440 || W === 390) for (const [L, key] of Object.entries(BANDS)) {
     const s = {A: 93, B: 84, C: 74, D: 64, F: 48}[L];
     await p.evaluate(([L, s]) => window.__ev(`(()=>{ if (!window.__g0) window.__g0 = CH.gradeOf; const g = window.__g0; CH.gradeOf = (...a) => { const G = g(...a); return G && Object.assign({}, G, {s: ${s}, band: '${L}'}); }; V2.redraw(); })()`), [L, s]); await p.waitForTimeout(300);
-    const x = await p.evaluate(key => { const st = document.querySelector('.bd-ans .bp-stamp'), d = document.createElement('i'); d.style.color = `var(--band-${key})`; st.parentNode.append(d); const want = getComputedStyle(d).color; d.remove(); const c = getComputedStyle(st); return {bg: c.backgroundColor, fg: c.color, want, word: st.textContent.trim()}; }, key);
-    ok(x.bg === x.want && ratio(x.fg, x.bg) >= 4.5, `${k}: band ${key} sticker "${x.word}" in its own colour (${x.bg}), words ${ratio(x.fg, x.bg).toFixed(2)}:1`); }
+    const x = await p.evaluate(() => { const sl = document.querySelector('.bd-ans .pl-seal'), w = sl && sl.querySelector('.w span'), q = sl && sl.getBoundingClientRect(); return sl ? {bg: getComputedStyle(sl).backgroundColor, fg: getComputedStyle(w).color, word: w.textContent.trim(), num: sl.querySelector('b').textContent.trim(), w: Math.round(q.width), h: Math.round(q.height)} : null; });
+    ok(x && x.num === String(s) && ratio(x.fg, x.bg) >= 4.5 && x.w === r.slW && x.h === r.slH, `${k}: band ${key}: the seal shows ${s} "${x && x.word}", same size (${x && x.w}x${x && x.h} vs ${r.slW}x${r.slH}), words ${x ? ratio(x.fg, x.bg).toFixed(2) : '-'}:1`); }
   if (W === 1440 || W === 390) await p.evaluate(() => window.__ev('(()=>{ if (window.__g0) CH.gradeOf = window.__g0; V2.redraw(); })()'));
   // 5 build around (light only: one engine run per width)
   if (th === 'light' && (W === 390 || W === 1440)) {
@@ -82,7 +82,7 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 
     const z0 = await p.evaluate(() => { const k = document.querySelector('.pl0 .pl-pick'); return {pick: k ? k.textContent.replace(/\s+/g, ' ').trim() : '', img: !!(k && k.querySelector('img')), x: !!(k && k.querySelector('[data-bdx]')), go: (document.querySelector('.pl0 [data-bdgo]') || {}).textContent || ''}; });
     ok(/Garchomp/.test(z0.pick) && z0.img && z0.x && /Build Around Garchomp/.test(z0.go), `${k}: the plot with a pick: Garchomp fills the "around" plate with its sprite and a clear ×, "Build Around Garchomp" (${JSON.stringify(z0)})`);
     await p.click('[data-bdgo]'); await built(p); await p.waitForTimeout(600);
-    const f = await p.evaluate(() => { const f = document.querySelector('.bd-ans .bp-six .bp-fig'), tag = f && f.querySelector('.bp-batag'); return {first: f ? f.dataset.v2mon : '', tag: tag ? tag.textContent.trim() : '', tags: document.querySelectorAll('.bd-ans .bp-batag').length, label: f ? f.getAttribute('aria-label') : '', eng: window.__ev('abTeam("doubles").mons.map(m=>m.n).join("|")'), go: (document.querySelector('.bd-ans [data-bdgo]') || {}).innerText || ''}; });
+    const f = await p.evaluate(() => { const f = document.querySelector('.bd-ans .bp-six .bp-fig'), tag = f && f.querySelector('.bp-batag'); return {first: f ? f.dataset.v2mon : '', tag: tag ? tag.textContent.trim() : '', tags: document.querySelectorAll('.bd-ans .bp-batag').length, label: f ? f.getAttribute('aria-label') : '', eng: window.__ev('abTeam("doubles").mons.map(m=>m.n).join("|")'), go: (document.querySelector('.pl1 [data-bdgo] .vh') || {}).textContent || ''}; }); /* Nov 20: the rebuild is HATCH ANOTHER in the control row; its spoken name says the pick */
     ok(f.first === 'Garchomp' && f.tag === 'Built around' && f.tags === 1 && /built around/.test(f.label), `${k}: built around Garchomp: figure 01 with the "Built around" tag (${f.first}, "${f.tag}", ${f.tags})`);
     ok(/^Rebuild Around Garchomp/.test(f.go.trim()), `${k}: Rebuild names the pick ("${f.go.trim()}")`);
     await p.click('[data-bduse]'); await p.waitForTimeout(1000); const sl = await p.evaluate(() => window.__ev('S.slots.map(s=>s.n).join("|")'));

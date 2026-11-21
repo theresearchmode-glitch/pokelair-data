@@ -64,3 +64,86 @@
   .pl-dog{gap:var(--s2)}.pl-dog .np-mon{--iw:72px}
 }
 .pl-hc .np-link{padding:var(--s3) 0;margin:calc(-1 * var(--s3)) 0} /* a 44 px tap target without moving the line */
+/* ---------- Piece 2: after a build (Q97 A / Q98; spec docs/rebuild/plot-spec.md sections 6-7) ---------- */
+.pl1 .pl-s1::before{bottom:calc(-1 * var(--s8))}
+.pl-row{flex-direction:row;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s2);font-size:var(--t15)}
+.pl-row .pl-ln{flex-wrap:wrap;gap:var(--s2)}
+.pl-row .pl-pl{padding:0 var(--s3);border-width:2px}
+.pl-row .pl-grp[data-v2slide="sgmega"] .pl-pl{min-width:var(--tap);justify-content:center}
+.pl-row .pl-find input{font-size:var(--t15)}
+.pl-row .pl-go{margin-left:auto;padding:0 var(--s4);font-size:var(--t17)}
+.pl-row .pl-opt{font-size:var(--t15)}
+.bd-ans.bp .pl-ans{margin:var(--s4) 0 var(--s6)}
+.pl-eb{margin:0;font-size:var(--t20);color:var(--ink-2)}
+.pl-arow{display:grid;grid-template-columns:minmax(0,1fr) 196px;gap:var(--s6);align-items:end}
+.pl-tl{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s2) var(--s5);padding-bottom:var(--s1);border-bottom:2px solid var(--pick);min-width:0}
+.pl-title{margin:0;font-size:var(--d-hero);color:var(--ink);text-wrap:balance}
+.pl-tm{font-size:var(--t34)}
+.pl-six{display:flex;align-items:flex-end;flex-wrap:nowrap;min-width:0}
+.pl-mon{position:relative;display:grid;place-items:end center;width:88px;height:96px;margin:0 -2px;padding:0;border:0;background:none;cursor:pointer;transition:transform .15s}
+.pl-mon img{max-width:88px;max-height:92px;object-fit:contain;filter:drop-shadow(0 6px 4px var(--rule))}
+.pl-mon:hover,.pl-mon:focus-visible{transform:translateY(-4px)}.pl-mon:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
+.pl-catch::after{content:"";position:absolute;top:var(--s2);right:var(--s2);width:12px;height:12px;border:2px solid var(--bg);border-radius:50%;background:var(--pick)}
+.pl-seal{display:grid;justify-items:center;align-content:center;height:120px;border-radius:var(--r-l);background:var(--pick);color:var(--on-mark);box-shadow:inset 0 0 0 5px var(--pick),inset 0 0 0 7px var(--on-mark)}
+.pl-seal small{font:700 var(--t13)/1.2 var(--b);letter-spacing:.08em;text-transform:uppercase}
+.pl-seal b{font-size:var(--d64);line-height:1}
+.pl-seal .w span{font-size:var(--t17)}
+.pl-meta{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);margin-top:var(--s3)}
+.pl-tags{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.pl-tag{padding:var(--s1) var(--s2);border:2px solid var(--ink);border-radius:var(--r-s);font:700 var(--t13)/1.2 var(--b);color:var(--ink)}
+.pl-tagr{border-color:var(--pick);background:var(--pick);color:var(--on-mark)}
+.pl-cline{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-meta2{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s2);margin-top:var(--s2);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-meta2 b{color:var(--ink)}.pl-meta2 .bd-brk{margin:0}
+@media (max-width:1199.98px){.pl-arow{grid-template-columns:minmax(0,1fr) 196px}.pl-tl{display:block;border-bottom:0;padding:0}.pl-six{margin-top:var(--s3);padding-bottom:var(--s1);border-bottom:2px solid var(--pick)}}
+@media (max-width:699.98px){
+  .pl-arow{grid-template-columns:minmax(0,1fr) 122px;gap:var(--s3)}.pl-seal{height:92px;box-shadow:inset 0 0 0 4px var(--pick),inset 0 0 0 6px var(--on-mark)}.pl-seal b{font-size:var(--t34)}.pl-seal small{font-size:var(--t13);letter-spacing:0}.pl-seal .w span{font-size:var(--t13)}
+  .pl-title{font-size:var(--t22)}.pl-tm{font-size:var(--t17)}
+  .pl-mon{width:calc((100vw - var(--s16)) / 6);height:60px}.pl-mon img{max-width:100%;max-height:56px}
+  .pl-row .pl-go{margin-left:0;width:100%;justify-content:center}.pl-row .pl-w{display:none}
+}
+/* the Blueprint sheet's score rules (pages.css .bp .bp-score, .bp .bd-brk) must not reach the seal or the meta line */
+.bd-ans .pl-seal{display:grid;gap:0}.bd-ans .pl-seal b{font:900 var(--d64)/1 var(--u);font-style:italic;letter-spacing:-.03em;color:var(--on-plot-seal)}
+.bd-ans .pl-seal small,.bd-ans .pl-seal .w span{color:var(--on-plot-seal)}.bd-ans .pl-seal .w{display:block}
+.bd-ans.bp .pl-meta2 .bd-brk{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.bd-ans.bp .pl-meta2 .np-link{font-size:var(--t15);color:var(--plot-text)}
+@media (max-width:699.98px){.bd-ans .pl-seal b{font-size:var(--t34)}.bd-ans.bp .pl-meta2 .bd-brk{display:none}}
+.bd-ans .pl-seal{padding:var(--s3) var(--s2)}
+/* contrast (Nov 20, found by v2-q83's new seal check): white on the logo red #E8364F is about 4:1, under 4.5:1 for small words; the seal,
+   the "N to catch" tag and the small HATCH ANOTHER use the deeper seal colour (--plot-seal), the big HATCH IT keeps the logo colour */
+.pl-seal,.bd-ans .pl-seal{background:var(--plot-seal);box-shadow:inset 0 0 0 5px var(--plot-seal),inset 0 0 0 7px var(--on-plot-seal)}
+.pl-tagr{border-color:var(--plot-seal);background:var(--plot-seal);color:var(--on-plot-seal)}
+.pl-row .pl-go{background:var(--plot-seal);color:var(--on-plot-seal)}
+@media (max-width:699.98px){.pl-seal,.bd-ans .pl-seal{box-shadow:inset 0 0 0 4px var(--plot-seal),inset 0 0 0 6px var(--on-plot-seal)}}
+/* phone, after a build (spec section 6-7): plates share rows and never run off the page; "or" hidden; the six on their own full-width
+   line under the title + seal; Why This Score stays (breakdown text hidden) */
+@media (max-width:699.98px){
+  .pl-row{gap:var(--s2)}.pl-row .pl-ln{display:contents}.pl-row .pl-or{display:none}
+  .pl-row .pl-grp[data-v2slide="bdsrc"]{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);width:100%}
+  .pl-row .pl-grp[data-v2slide="bdsrc"] .pl-pl{justify-content:center;min-width:0}
+  .pl-row .pl-grp[data-v2slide="sgmega"]{flex:none}.pl-row .pl-ar{flex:1 1 0;min-width:0}.pl-row .pl-find{width:100%;min-width:0}.pl-row .pl-find input{width:100%;min-width:0}
+  .pl-arow{grid-template-columns:minmax(0,1fr) 122px;align-items:start}.pl-tl{display:contents}
+  .pl-arow .pl-title{grid-column:1;align-self:center;font-size:var(--t22);text-wrap:balance}.pl-arow .pl-seal{grid-column:2;grid-row:1}
+  .pl-six{grid-column:1/-1;margin-top:var(--s3);justify-content:space-between;padding-bottom:var(--s1);border-bottom:2px solid var(--pick)}
+  .pl-mon{width:auto;flex:1 1 0;min-width:var(--tap);height:64px;margin:0}.pl-mon img{max-width:100%;max-height:60px}
+  .bd-ans.bp .pl-meta2 .bd-brk{display:block}.bd-ans.bp .pl-meta2 .bd-brkt{display:none}
+  .pl-seal small{font-size:var(--t13);line-height:1.1}
+}
+@media (max-width:699.98px){
+  .pl-row .pl-pl{padding:0 var(--s2);font-size:var(--t13)}.pl-row .pl-pl > *{min-width:0;overflow:hidden;text-overflow:clip}
+  .pl-row .pl-find input{font-size:var(--t13)}
+  .pl-ans .pl-eb{font-size:var(--t17)}.pl-arow{margin-top:0;align-items:center}.pl-arow .pl-title{align-self:center}
+}
+@media (max-width:699.98px){
+  /* the check mark took 15 px of "Whole Roster" (Nov 20 measure: 143 needed in 128): smaller words, the mark drawn smaller */
+  .pl-row .pl-pl,.pl-row .pl-find input{letter-spacing:-.02em}.pl-row .pl-grp[data-v2slide="bdsrc"] .pl-pl[aria-pressed="true"] > span::before{width:.28em;margin-right:.16em}
+  .pl-row .pl-grp[data-v2slide="bdsrc"] .pl-pl > span{overflow:visible}.pl-row .pl-pl{gap:var(--s1)}
+  .pl-row .pl-find .np-ic,.pl-row .pl-find svg{display:none}
+  .pl-arow{grid-template-rows:auto auto}.pl-arow .pl-seal{align-self:start}.pl-arow .pl-title{align-self:start;margin-top:var(--s1)}
+}
+@media (max-width:699.98px){.pl-row .pl-grp[data-v2slide="bdsrc"] .pl-pl{padding:0 var(--s1)}.pl-row .pl-grp[data-v2slide="bdsrc"]{grid-template-columns:minmax(0,4fr) minmax(0,5fr)}}
+@media (max-width:699.98px){
+  /* the six sit directly under the title + seal (the grid row was sized by the desktop rules' 96 px items) */
+  .pl-arow{grid-template-rows:auto;row-gap:0}.pl-six{grid-row:2;align-self:start;margin-top:var(--s3)}
+  .pl-row .pl-find{padding:0 var(--s1)}.pl-row .pl-find input{letter-spacing:-.04em}
+}
+.pl-fresh{margin:var(--s2) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}

@@ -61,6 +61,7 @@
   --u:"Unbounded","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif;
   /* display sizes: the score number and the tagline (design scale "+ display") */
   --d64:64px;--d96:96px;--d120:120px;--d168:168px;--d-hero:clamp(34px,6vw,68px);
+  --plot-seal:#C41E35;--on-plot-seal:#FFFFFF; /* The Plot (Nov 20): the seal, "N to catch", Hatch another: the logo red deepened so white words read (6:1), the same in day and night */
   --d-plot:clamp(24px,4.7vw,68px); /* The Plot (Build, Nov 20): the plot sentence, fitted to the page width (one display size, like --d-hero) */
   /* The Stampede hero (Nov 18): the tagline (row layout by width and height so the buttons stay on the first screen; phone 3 lines),
      the plate numbers (row and pair layouts) */

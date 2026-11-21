@@ -154,7 +154,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 
 // ---------- Build: the score's breakdown line under the rank (mock R2 line 194; the same numbers as My Team's "Why this score?") ----------
 V2.buildBrk = G => { let W = null; try { W = CH.whyData(G); } catch (e) {} if (!W || W.partial) return ''; V2.bdG = G; const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
-  return `<p class="bd-brk">${W.base} from its Pokémon and sets · ${sg(W.mu)} matchups${W.hasSix ? ` · ${sg(W.own)} from this exact six's own record` : ''} <button type="button" class="np-link" data-bdwhy>Why This Score? ›</button></p>`; };
+  return `<p class="bd-brk"><span class="bd-brkt">${W.base} from its Pokémon and sets · ${sg(W.mu)} matchups${W.hasSix ? ` · ${sg(W.own)} from this exact six's own record` : ''} </span><button type="button" class="np-link" data-bdwhy>Why This Score? ›</button></p>`; };
 document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-bdwhy]') && V2.bdG) V2.sheet(V2.whyHtml(V2.bdG), {label: 'Why This Score?', small: true}); });
 
 // ---------- Build: the phone jump bar (mock R2, under 700 wide): Other options · Cores · Recent winners, sticky under the top bar ----------
