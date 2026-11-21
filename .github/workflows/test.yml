@@ -40,6 +40,9 @@ jobs:
       - run: npm ci && npx playwright install --with-deps chromium
       - run: node app/build.mjs --v2 --art=../src/v2/art/
       - run: PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs ${{ matrix.group }}
+      # phone overlap and edge check (hybrid rule 9, Nov 21): text on text / pictures, covered, clipped, mid-word breaks
+      - if: ${{ !cancelled() && matrix.group == 'A-team' }}
+        run: PAGE=app/dist/v2.html node app/test/v2-overlap.mjs
       # the kit's taps tap once, also when the page is slow to answer (Nov 19, EDIT-03 on a loaded machine)
       - if: ${{ !cancelled() && matrix.group == 'A-team' }}
         run: PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/tap-once.mjs
