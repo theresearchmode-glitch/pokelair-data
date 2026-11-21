@@ -284,3 +284,16 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 /* polish 4: Edit Set / Replace / Remove one button family: slanted slabs; Edit Set the white primary, Replace and Remove quiet slabs
    (were a white block beside two top-and-bottom line buttons) */
 .mtf-btn.ghost,.mtf-btn.red{background:var(--mtf-n-surf2);box-shadow:none}.mtf-btn.ghost{color:var(--mtf-on-frame)}.mtf-btn.red{color:var(--mtf-hot)}
+/* calmer (Sim, Nov 21, 7:45 AM: 'a lot going on'; 7:47 AM: 'much better ... make this the one'): each row is picture, name, score and
+   item; the four moves live in the chosen one's panel (and the Team Sheet); pink only marks the chosen row and Apply; on desktop the
+   rows share the column's height with bigger pictures, so the six end with the other two columns */
+.mtf-row .m4{display:none}
+.mtf-row .rt span{color:var(--mtf-n-sub)}
+.mtf-stage .rate span{background:var(--mtf-n-surf2)}
+.mtf-sg .tm-sug .tm-mv b{color:var(--mtf-on-frame)}
+.mtf-sg .tm-chg .tm-ar{color:var(--mtf-n-sub)}
+.mtf-sg .tm-chg .tm-sw{background:none}.mtf-sg .tm-chg .tm-sw.in{background:var(--mtf-n-surf2);box-shadow:inset 0 0 0 1px var(--mtf-n-rule)}
+@media (min-width:1000px){.mtf-party{grid-template-rows:auto minmax(0,1fr);align-content:stretch}.mtf-rows{grid-auto-rows:1fr}
+  .mtf-row{grid-template-columns:20px 72px minmax(0,1fr) auto}.mtf-row .pic{width:72px;height:72px}.mtf-row .rt b{font-size:var(--t22)}.mtf-row.on::after{display:none}}
+/* Item / Ability / Nature read as one even row: values on one baseline, the 'most used' note on its own small line */
+.mtf-ia{align-items:start}.mtf-ia div{align-content:start}.mtf-ia dd small{display:block}
