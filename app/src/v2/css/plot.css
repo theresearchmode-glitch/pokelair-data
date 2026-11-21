@@ -1,0 +1,65 @@
+/* ---------- Build: The Plot (Sim locked Nov 20; build-plot.js; pictures docs/rebuild/pics/nov20/Q93-Q98) ----------
+   Four colours, one job each: blue = what you can tap to change the plot; red = the action and the score (and the plot line);
+   white plates = answers; ink = text and structure. Piece a: the page before a build. */
+.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)}
+.pl-step{position:relative}
+.pl-node{position:absolute;z-index:1;left:calc(-1 * var(--s16));top:0;width:26px;height:26px;display:grid;place-items:center;border:2px solid var(--pick);border-radius:50%;background:var(--bg);color:var(--pick-text);font:700 var(--t13)/1 var(--b)}
+.pl-s1::before{content:"";position:absolute;left:calc(var(--s3) - var(--s16));top:var(--s6);bottom:calc(-1 * var(--s10));border-left:2px solid var(--pick)}
+.pl-top{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:flex-end;gap:var(--s2) var(--s6);margin-bottom:var(--s3)}.pl-top .np-eyebrow{margin:0}
+.pl-intro{margin:var(--s1) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-hint{margin:0;text-align:right;font:600 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-sw{position:relative}
+.pl-sent{display:flex;flex-direction:column;align-items:flex-start;gap:.14em;font-size:var(--d-plot);line-height:1.12;color:var(--ink)}
+.pl-ln{display:flex;flex-wrap:nowrap;align-items:center;gap:.14em .24em;max-width:100%}.pl-wrap .pl-ln,.pl-wrap .pl-grp{flex-wrap:wrap}
+.pl-w{white-space:nowrap}
+.pl-grp,.pl-ar{display:inline-flex;align-items:center;gap:.14em}
+.pl-or{margin:0 .06em}
+.pl-pl{display:inline-flex;align-items:center;gap:.18em;min-height:var(--tap);margin:0;padding:.04em .3em .06em;border:.05em solid var(--plot-text);border-radius:0;background:transparent;color:var(--plot-text);font:inherit;font-size:1em;line-height:1.05;text-transform:uppercase;white-space:nowrap;transform:skewX(-8deg);cursor:pointer}
+.pl-pl > *{transform:skewX(8deg)}
+.pl-pl[aria-pressed="true"]{background:var(--plot);border-color:var(--plot);color:var(--on-mark)}
+.pl-grp[data-v2slide="bdsrc"] .pl-pl[aria-pressed="true"] > span::before{content:"";display:inline-block;width:.34em;height:.18em;margin:0 .26em .2em 0;border-left:.08em solid currentColor;border-bottom:.08em solid currentColor;transform:rotate(-45deg)}
+.pl-pl:focus-visible,.pl-go:focus-visible,.pl-chip:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.pl-find{cursor:text}.pl-find .np-ic,.pl-find svg{width:.5em;height:.5em;flex:none}
+.pl-find input{width:9.4em;min-width:0;margin:0;padding:0;border:0;background:transparent;color:var(--plot-text);font:inherit;font-size:1em;text-transform:uppercase;outline:none}
+.pl-find input::placeholder{color:var(--plot-text);opacity:1}
+.pl-find:focus-within{border-color:var(--ink)}
+.pl-pick img{width:1.1em;height:1.1em;object-fit:contain;transform:skewX(8deg)}
+.pl-x{display:grid;place-items:center;min-width:var(--tap);min-height:var(--tap);margin:0;padding:0;border:0;background:transparent;color:inherit;font:inherit;cursor:pointer}.pl-x span{display:block;transform:scale(.6)}
+.pl-dot{color:var(--ink)}
+.pl-go{display:inline-flex;align-items:center;min-height:var(--tap);margin:0;padding:.04em .32em .06em;border:0;background:var(--pick);color:var(--on-mark);font:inherit;font-size:1em;line-height:1.05;text-transform:uppercase;white-space:nowrap;transform:skewX(-8deg);cursor:pointer}
+.pl-go > span:first-child{transform:skewX(8deg)}
+.pl-go[disabled]{opacity:.6;cursor:progress}
+.pl-hits{max-width:520px}
+.pl-help{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s6);margin-top:var(--s6)}
+.pl-hc{padding-top:var(--s3);border-top:2px solid var(--plot)}.pl-hr{border-top-color:var(--pick)}
+.pl-hc b{display:block;font:700 var(--t16)/1.5 var(--b);color:var(--ink)}.pl-hc b span{font-weight:400;color:var(--ink-3)}
+.pl-hc p{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pl-chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin-top:var(--s2)}
+.pl-chip{display:inline-flex;align-items:center;gap:var(--s2);min-width:0;min-height:var(--tap);margin:0;padding:0 var(--s2);border:2px solid var(--plot-text);border-radius:0;background:transparent;color:var(--plot-text);font:700 var(--t15)/1.2 var(--b);cursor:pointer}
+.pl-chip img{width:28px;height:28px;object-fit:contain;flex:none}.pl-chip span{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pl-chip[aria-pressed="true"]{background:var(--plot);border-color:var(--plot);color:var(--on-mark)}
+.pl-waits{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s6);align-items:center;margin-top:var(--s10)}
+.pl-waits::before{content:"";position:absolute;left:calc(var(--s3) - var(--s16));top:0;bottom:0;border-left:2px dashed var(--pick)}
+.pl-wait{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s3);margin:var(--s4) 0}
+.pl-wait .pl-node{border-style:dashed}
+.pl-h{margin:0;font-size:var(--t28);color:var(--ink-3)}
+.pl-w8{font:400 var(--t15)/1.5 var(--b);color:var(--ink-3)}
+.pl-places{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4);margin:0 0 var(--s4)}
+.pl-places i{height:104px;border:2px dashed var(--rule);transform:skewX(-8deg)}
+.pl-dog{display:flex;align-items:center;gap:var(--s3);max-width:400px}
+.pl-dog p{margin:0;text-align:right;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pl-dog b{display:block;font-weight:700;color:var(--ink)}
+.pl-dogst{flex:none;margin:0;padding:0;border:0;background:none;cursor:pointer}.pl-dog .np-mon{--iw:120px}
+@media (max-width:1099.98px){.pl-help{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:699.98px){
+  .pl{padding-left:var(--s10)}.pl-node{left:calc(-1 * var(--s10));width:22px;height:22px}
+  .pl-s1::before,.pl-waits::before{left:calc(var(--s2) + 2px - var(--s10))}
+  .pl-hint{text-align:left}
+  .pl-help{grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+  .pl-waits{grid-template-columns:minmax(0,1fr)}.pl-dog{max-width:none}.pl-dog p{text-align:left}.pl-dog .np-mon{--iw:88px}
+  .pl-places{display:none}.pl-h{font-size:var(--t20)}.pl-wait{margin:var(--s1) 0}.pl-waits{margin-top:var(--s4);gap:var(--s2)}.pl-top{margin-bottom:var(--s2)}
+  /* Nov 20: shorter on phones (Sim's phone-length rule): the sentence and the hint already say what Build from does, so its note goes;
+     Build Me a Team keeps only How It Works; the faint steps lose their empty places */
+  .pl-help{gap:var(--s2)}.pl-hc:first-child,.pl-ht,.pl-hr b{display:none}.pl-hr{padding-top:0;border-top:0}.pl-hc{padding-top:var(--s2)}
+  .pl-dog{gap:var(--s2)}.pl-dog .np-mon{--iw:72px}
+}
+.pl-hc .np-link{padding:var(--s3) 0} /* a 44 px tap target without moving the line (inline padding) */

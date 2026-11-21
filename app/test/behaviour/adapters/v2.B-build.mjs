@@ -250,7 +250,8 @@ export default (ui, pg) => {
     builtSaveButton: () => pg.evaluate(() => { const b = document.querySelector('#main .bd-result [data-bdsave]'); return b ? {disabled: b.disabled || b.getAttribute('aria-disabled') === 'true', title: b.title || b.getAttribute('aria-label') || ''} : null; }),
     buildAround: async typed => { await H.typeInto('favourite Pokémon', typed); await pg.keyboard.press('Enter'); await pg.waitForTimeout(500); },
     /** the Build-around chip text ('' if none): its words, then " | " and its ×'s label */
-    buildAroundChip: () => pg.evaluate(() => { const c = [...document.querySelectorAll('#main .bd-pick [data-bdx]')].find(e => e.getClientRects().length); return c ? c.parentElement.innerText.replace(/\s+/g, ' ').trim() + ' | ' + (c.getAttribute('aria-label') || '') : ''; }),
+    /* Nov 20: The Plot draws the pick as the filled 'around' plate (.pl-pick, its name set in capitals by CSS): read its words as written */
+    buildAroundChip: () => pg.evaluate(() => { const c = [...document.querySelectorAll('#main .bd-pick [data-bdx], #main .pl-pick [data-bdx]')].find(e => e.getClientRects().length); return c ? c.parentElement.textContent.replace(/×/g, '').replace(/\s+/g, ' ').trim() + ' | ' + (c.getAttribute('aria-label') || '') : ''; }),
     clearBuildAround: () => click('#main [data-bdx]', 500),
     /** "My Box N" on the Build-from slider, read as today's "N in your box" line */
     boxCountLine: async () => { const t = await txt('#main [data-v2slide="bdsrc"] > button[data-v="box"]'); const m = t.match(/(\d+)/); return m ? `${m[1]} in your box` : ''; },

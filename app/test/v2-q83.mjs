@@ -1,7 +1,7 @@
 // Q83 (Sim, Nov 20, 11:30 AM): the Build sheet's light touch (Q82 A) and its refinements. Checks, light and dark, 320 / 390 / 820 / 1100 / 1440 / 1920:
 //  0 light touch: fainter grid tokens, soft frame, solid slanted numbers 01-06, the score on a blue plate with a white number
-//  1 Sheet 0 before a build: six empty rings with "?", the Spec (Build from, Megas, Build around) and Build Me a Team as the one main button;
-//    phone page length (390) kept near today's; pressing it fills the sheet in place
+//  1 before a build (Nov 20: The Plot replaced Sheet 0): the plot sentence holds the Spec (Build from, Megas, Build around) and Hatch it
+//    (Build Me a Team) as the one main action; 44 px targets; phone page length (390) kept near today's; pressing it builds
 //  2 one Load Team, right under the six at every width
 //  3 Revisions rows show each option's six as small sprites
 //  5 Build around: the pick is figure 01 with a "Built around" tag (display only; Load Team keeps the engine's six)
@@ -14,13 +14,14 @@ const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const fails = [], ok = (c, m) => { console.log((c ? '  pass  ' : '  FAIL  ') + m); if (!c) fails.push(m); };
 const BANDS = {A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'};
 const built = p => p.waitForFunction(() => window.__ev('!!(ui.ab && !ui.ab.busy && !(ui.ab.doubles && ui.ab.doubles.freshPending))') && document.querySelector('.bd-ans.bp .bp-six'), null, {timeout: 120000}).catch(() => {});
-const sheet0 = p => p.evaluate(() => { const s = document.querySelector('.bp0'), vis = e => !!(e && e.getClientRects().length), go = [...document.querySelectorAll('[data-bdgo]')].filter(vis), cs = s && getComputedStyle(s);
-  const no = s ? [...s.querySelectorAll('.bp-no')].map(e => { const c = getComputedStyle(e); return {t: e.textContent.trim(), col: c.color, stroke: c.webkitTextStrokeWidth}; }) : [];
-  return {has: vis(s), plate: s ? (s.querySelector('.bp-plate') || {}).textContent : '', q: s ? [...s.querySelectorAll('.bp-six0 .bp-q')].filter(vis).map(e => e.textContent.trim()) : [], no,
-    src: !!(s && vis(s.querySelector('[data-v2slide="bdsrc"]'))), meg: !!(s && vis(s.querySelector('[data-v2slide="sgmega"]'))), find: !!(s && vis(s.querySelector('[data-bdfind]'))),
-    go: go.length, goIn: !!(go[0] && s && s.contains(go[0])), goMain: !!(go[0] && go[0].classList.contains('np-btn')), oldOpts: [...document.querySelectorAll('.bd-opts:not(.bp-spec)')].filter(vis).length,
-    grid: cs ? [cs.getPropertyValue('--bp-grid').trim().toLowerCase(), cs.getPropertyValue('--bp-grid5').trim().toLowerCase()] : [], border: s ? getComputedStyle(s, '::before').borderTopColor : '' /* Sheet 0 draws its frame on ::before (its name list hangs out of it) */,
-    rule: (() => { const d = document.createElement('i'); d.style.color = 'var(--rule)'; document.body.append(d); const c = getComputedStyle(d).color; d.remove(); return c; })(),
+/* Nov 20 (Sim locked The Plot, 7:51 PM): the page before a build is the plot sentence (build-plot.js), not the Blueprint's Sheet 0.
+   Same promises, checked on the new page: the Spec's three controls in it, one main action, short on phones, nothing sideways. */
+const sheet0 = p => p.evaluate(() => { const s = document.querySelector('.pl0'), vis = e => !!(e && e.getClientRects().length), go = [...document.querySelectorAll('[data-bdgo]')].filter(vis);
+  const tgt = s ? [...s.querySelectorAll('.pl-pl, .pl-go, .pl-chip')].filter(vis).map(e => Math.round(e.getBoundingClientRect().height)) : [];
+  return {has: vis(s), src: !!(s && vis(s.querySelector('[data-v2slide="bdsrc"]'))), meg: !!(s && vis(s.querySelector('[data-v2slide="sgmega"]'))), find: !!(s && vis(s.querySelector('[data-bdfind]'))),
+    srcN: s ? s.querySelectorAll('[data-v2slide="bdsrc"] button').length : 0, megN: s ? s.querySelectorAll('[data-v2slide="sgmega"] button').length : 0,
+    go: go.length, goIn: !!(go[0] && s && s.contains(go[0])), oldOpts: [...document.querySelectorAll('.bd-opts')].filter(vis).length, minT: tgt.length ? Math.min(...tgt) : 0,
+    out: s ? [...s.querySelectorAll('*')].filter(e => { const r = e.getBoundingClientRect(); return r.width && r.right > document.documentElement.clientWidth + 1; }).length : -1,
     H: document.documentElement.scrollHeight, side: document.documentElement.scrollWidth > innerWidth}; });
 const result = p => p.evaluate(() => { const vis = e => !!(e && e.getClientRects().length), a = document.querySelector('.bd-ans.bp'), six = a && a.querySelector('.bp-six'), use = [...document.querySelectorAll('[data-bduse]')].filter(vis), u = use[0];
   const meas = a && a.querySelector('.bp-meas'), plate = meas ? getComputedStyle(meas, '::before').backgroundColor : '', num = a && a.querySelector('.bp-score>b'), stk = a && a.querySelector('.bp-stk'), st = a && a.querySelector('.bp-stamp');
@@ -43,26 +44,23 @@ const GRID = {light: ['#0078bf0d', '#0078bf1a'], dark: ['#62bef70a', '#62bef714'
 for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 1920]) { const phone = W < 700;
   const c = await b.newContext({viewport: {width: W, height: 900}, colorScheme: th, ...(phone ? {isMobile: true, hasTouch: true} : {})}); const p = await c.newPage(); await p.addInitScript(() => { window.__PL_TEST = 1; });
   const errs = []; p.on('pageerror', e => errs.push(e.message)); await p.goto('file://' + PAGE + '#build', {timeout: 90000}); await p.waitForTimeout(2500); const k = `${W} ${th}`;
-  // 1 Sheet 0
+  // 1 the plot sentence (was Sheet 0)
   const z = await sheet0(p);
-  ok(z.has && /^Sheet 0$/.test((z.plate || '').trim()), `${k}: before a build the page shows Sheet 0 (${JSON.stringify(z.plate)})`);
-  ok(z.q.length === 6 && z.q.every(x => x === '?'), `${k}: Sheet 0 has six empty rings with "?" (${z.q.length})`);
-  ok(z.no.length === 6 && z.no.map(x => x.t).join() === '01,02,03,04,05,06', `${k}: Sheet 0 rings numbered 01-06`);
-  ok(z.src && z.meg && z.find, `${k}: Sheet 0 holds the Spec: Build from, Megas on team, Build around (${z.src}, ${z.meg}, ${z.find})`);
-  ok(z.go === 1 && z.goIn && z.goMain, `${k}: one Build Me a Team, in Sheet 0, the main button (${z.go}, ${z.goIn}, ${z.goMain})`);
+  ok(z.has, `${k}: before a build the page shows the plot sentence`);
+  ok(z.src && z.meg && z.find && z.srcN === 2 && z.megN === 3, `${k}: the sentence holds the Spec: Build from (2 plates), Megas (3), Build around (${z.src}, ${z.meg}, ${z.find}, ${z.srcN}, ${z.megN})`);
+  ok(z.go === 1 && z.goIn, `${k}: one Hatch it (Build Me a Team), in the sentence (${z.go}, ${z.goIn})`);
   ok(z.oldOpts === 0, `${k}: the old form row is gone (${z.oldOpts})`);
-  // 0 light touch
-  ok(z.grid[0] === GRID[th][0] && z.grid[1] === GRID[th][1], `${k}: grid paper fainter (${z.grid.join(' ')})`);
-  ok(z.border && z.border === z.rule, `${k}: the sheet's frame is the soft rule (${z.border} vs ${z.rule})`);
-  ok(z.no.length && z.no.every(x => x.col !== 'rgba(0, 0, 0, 0)' && parseFloat(x.stroke || '0') === 0), `${k}: numbers solid, not outlined`);
-  if (W === 390) ok(z.H <= 1700, `390 ${th}: page before a build kept short: ${z.H} px (today 1,397; limit 1,700)`);
+  ok(z.minT >= 44, `${k}: every plate and chip at least 44 px tall (${z.minT})`);
+  ok(z.out === 0, `${k}: nothing in the sentence runs past the page edge (${z.out})`);
+  /* Nov 20: the limit follows the design Sim approved (Q95 measured the plot page at 2,220 px at 390; the Blueprint's was 1,700) */
+  if (W === 390) ok(z.H <= 2220, `390 ${th}: page before a build kept short: ${z.H} px (approved design 2,220)`);
   ok(!z.side, `${k}: no sideways scroll before a build`);
   const rf = await refs(p); if (rf) { ok(rf.bg !== 'rgba(0, 0, 0, 0)' && rf.bw === 0 && /polygon/.test(rf.clip), `${k}: Recent Winners "1st" tags solid and slanted (${rf.bg}, border ${rf.bw})`);
     const want = W >= 700 ? 64 : W >= 380 ? 44 : W >= 340 ? 40 : 36; ok(rf.sp.length === 6 && rf.sp.every(x => x === want), `${k}: Recent Winners sprites ${want} px (${rf.sp.join(',')})`);
     ok(rf.rule === rf.ruleTok, `${k}: an open Recent Winner's frame is the soft rule (${rf.rule})`); } else ok(false, `${k}: Recent Winners reference sheet shown`);
   // build
   await p.click('[data-bdgo]'); await built(p); await p.waitForTimeout(600); const r = await result(p);
-  ok(!(await p.$('.bp0')), `${k}: pressing Build fills the sheet (Sheet 0 gone)`);
+  ok(!(await p.$('.pl0')), `${k}: pressing Hatch it builds the team (the plot sentence page gives way to the result)`);
   ok(r.use === 1 && r.inNear && !r.inRight && r.gap != null && r.gap >= 0 && r.gap <= 64, `${k}: one Load Team, right under the six (${r.use}, ${r.gap} px, near ${r.inNear}, in Notes ${r.inRight})`);
   ok(r.plate === r.hero && r.num === r.white, `${k}: the score on the blue plate, white number (${r.plate} / ${r.num})`);
   ok(r.nos === 6 && r.noSolid, `${k}: the six's numbers solid (${r.nos})`);
@@ -81,8 +79,8 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 
   // 5 build around (light only: one engine run per width)
   if (th === 'light' && (W === 390 || W === 1440)) {
     await p.evaluate(() => window.__ev(`(()=>{ ui.abLock = 'Garchomp'; ui.abSrc = 'all'; ui.ab = null; V2.redraw(); })()`)); await p.waitForTimeout(400);
-    const z0 = await p.evaluate(() => { const f = document.querySelector('.bp0 .bp-fig0'); return {ba: !!(f && f.classList.contains('bp-ba')), mon: !!(f && f.querySelector('.np-mon')), q: document.querySelectorAll('.bp0 .bp-q').length, go: (document.querySelector('.bp0 [data-bdgo]') || {}).innerText || ''}; });
-    ok(z0.ba && z0.mon && z0.q === 5 && /Build Around Garchomp/.test(z0.go), `${k}: Sheet 0 with a pick: Garchomp stands in ring 01, five "?" left, "Build Around Garchomp" (${JSON.stringify(z0)})`);
+    const z0 = await p.evaluate(() => { const k = document.querySelector('.pl0 .pl-pick'); return {pick: k ? k.textContent.replace(/\s+/g, ' ').trim() : '', img: !!(k && k.querySelector('img')), x: !!(k && k.querySelector('[data-bdx]')), go: (document.querySelector('.pl0 [data-bdgo]') || {}).textContent || ''}; });
+    ok(/Garchomp/.test(z0.pick) && z0.img && z0.x && /Build Around Garchomp/.test(z0.go), `${k}: the plot with a pick: Garchomp fills the "around" plate with its sprite and a clear ×, "Build Around Garchomp" (${JSON.stringify(z0)})`);
     await p.click('[data-bdgo]'); await built(p); await p.waitForTimeout(600);
     const f = await p.evaluate(() => { const f = document.querySelector('.bd-ans .bp-six .bp-fig'), tag = f && f.querySelector('.bp-batag'); return {first: f ? f.dataset.v2mon : '', tag: tag ? tag.textContent.trim() : '', tags: document.querySelectorAll('.bd-ans .bp-batag').length, label: f ? f.getAttribute('aria-label') : '', eng: window.__ev('abTeam("doubles").mons.map(m=>m.n).join("|")'), go: (document.querySelector('.bd-ans [data-bdgo]') || {}).innerText || ''}; });
     ok(f.first === 'Garchomp' && f.tag === 'Built around' && f.tags === 1 && /built around/.test(f.label), `${k}: built around Garchomp: figure 01 with the "Built around" tag (${f.first}, "${f.tag}", ${f.tags})`);
