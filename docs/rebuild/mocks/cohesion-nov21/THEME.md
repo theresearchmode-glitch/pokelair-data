@@ -56,3 +56,14 @@ Build = drawing up the plan. Kids play Pokémon: playful, never mean, never real
   say so in the page's notes and use the numbers from the Preview/live page you can see; never make some up.
 - Home is special (it keeps its own WOW); give it the shared top bar, card and colours, and keep its hero.
 - Sim is he/him. COPPA: no player names or emails beyond what the site already shows publicly.
+
+## 4. Phone length (Sim, Nov 21, 8:54 AM: the first mock-ups run long on phones)
+Aim: each page at 390 wide no longer than today's page (measure both; write the two heights in NOTES.md). Shorten WITHOUT show/hide
+folds or tabs (Sim, Nov 20). Use these, in this order:
+1. Phone roster cards are compact: 3 across, art bursting out a little less (about 40px), score + name only (the fact line moves to the tap).
+2. One hero per page on phones, and it is short (at most about 1 screen); the lead line is one or two lines.
+3. Merge steps that say the same thing; a page has at most 3-4 plan steps on phones.
+4. Lists become dense rows on phones (picture 40px, name, number on one line), not cards, when there are more than 6 items.
+5. Side-by-side pairs on phones where both halves are short (two tickets, two stats), instead of stacking.
+6. "Show N more ›" that ADDS rows below (natural scroll, nothing hides again) is fine for long lists; folds that hide and re-hide are not.
+7. Secondary text (method notes, explanations) is one line plus a link to the page that explains it.
