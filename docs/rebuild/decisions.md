@@ -1876,3 +1876,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:14 PM: v2-minors (3 parts) + v2-q83 all passed on 91c1ff92. Plans page updated.
 - 4:23 PM: GitHub run on e3ae6e99 done: only qcheck-all (hQ fixing) and v2-minors main1 (fixed in held commits) failed; code checks incl. q46/q83 passed. Pushed the held batch (b7127008).
 - 4:38 PM: Prepared war room for merge (tag keep/warroom-ready): compact kit + panel flush + New crew on sample only; 4,051px at 390 sample (today 3,831). Matchups is +201 vs today; trimming it more needs a design change (Sim's call).
+- 4:49 PM: Sim: 'recommended is good for all': (1) compact kit on phones YES; (2) My Team trimmed to today's phone length before merging; (3) Damage Calc: shorter photos + hint in the lead, then accept the rest (about +450 at 390); (4) Calc HP line reads '282–332 damage · 207 HP'.

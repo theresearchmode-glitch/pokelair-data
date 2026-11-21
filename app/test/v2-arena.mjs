@@ -29,7 +29,7 @@ const mismatch = (s, e) => { if (!e || e.min == null) return 'no engine hit'; co
   if (e.max > 0 && s.dmg !== pcs(e.min, e.max, e.hp)) out.push(`damage "${s.dmg}" vs engine ${pcs(e.min, e.max, e.hp)}`);
   if (e.max === 0 && s.dmg !== '0') out.push(`damage "${s.dmg}" for no damage`);
   if (e.max === 0) { if (s.verdict !== 'No effect') out.push(`verdict "${s.verdict}" for no damage`); return out.join('; '); }
-  if (!s.l2.endsWith(`: ${e.min === e.max ? e.min : e.min + '–' + e.max} of ${e.hp} HP.`)) out.push(`HP line "${s.l2}" vs engine ${e.min}–${e.max} of ${e.hp} HP`);
+  if (!s.l2.endsWith(`: ${e.min === e.max ? e.min : e.min + '–' + e.max} damage · ${e.hp} HP.`)) out.push(`HP line "${s.l2}" vs engine ${e.min}–${e.max} of ${e.hp} HP`);
   if (e.rolls.length !== 16) out.push(`${e.rolls.length} rolls, not 16`);
   const k = e.rolls.filter(v => v >= e.hp).length, g = gcd(k, 16);
   const want = k === 16 ? 'Always faints' : k ? `Faints ${k / g} time${k / g > 1 ? 's' : ''} in ${16 / g}` : null;
