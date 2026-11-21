@@ -1894,3 +1894,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:17 PM: War room merged with latest t1rules in copy wr (5ab6474d); full test set running there (kit, A-team, overlap, minors x3, q24/q25). Calc X-04 second fix (hangs-on line 2 lines) queued in ck after its current run.
 - 6:21 PM: hH finished Home on the kit (tag keep/home-kit): shorter on phones (390: 6,220 -> 5,468), behaviour tests same; but it flattens Home's bold bands into paper + an even card grid (hH also unsure). HH recommends keeping today's Home; asking Sim with pictures.
 - 6:21 PM: Slot refilled with hB: Battle reskin proposal (keep its own bold parts, shared pieces on the kit, phone <= today measured from the start).
+- 6:25 PM: Calc reskin: KO Board check passes (minors main1 all passed); X-04 passes after reserving two lines for the hangs-on line (a89ec139). Final C-battle + overlap + kit-page running in ck before merging.
