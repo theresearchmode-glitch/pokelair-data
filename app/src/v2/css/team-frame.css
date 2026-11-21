@@ -178,7 +178,9 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
   .mtf-sg .tm-sgs .sg2-links .sg2-all{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;white-space:normal;line-height:1.25}.mtf-sg .tm-sgs .sg2-links .sg2-l2{display:block;margin:0;white-space:nowrap}}
 @media (max-width:479.98px){.mtf-sg .tm-sgs .sg2-links .sg2-all{font-size:var(--t13)}} /* 15px overflowed the 92px columns at 390 */
 /* under 360 the three columns are too narrow for "Suggestions ›": the links stack as a list, each on one line (as the old page did) */
-@container (max-width:289.98px){.mtf-sg .tm-sgs .sg2-links{grid-template-columns:1fr}.mtf-sg .tm-sgs .sg2-links .sg2-all{display:block}.mtf-sg .tm-sgs .sg2-links .sg2-l2{display:inline;margin:0}} /* 360 and narrower: a list */
+@container (max-width:289.98px){.mtf-sg .tm-sgs .sg2-links{column-gap:var(--s1)}}
+/* Sim, Nov 18 C: one even row from 360; a list only under 360 */
+@container (max-width:259.98px){.mtf-sg .tm-sgs .sg2-links{grid-template-columns:1fr}.mtf-sg .tm-sgs .sg2-links .sg2-all{display:block}.mtf-sg .tm-sgs .sg2-links .sg2-l2{display:inline;margin:0}} /* 360 and narrower: a list */
 /* Nov 21 (authority): desktop names in Your six are narrowed to fit (V2.mtfFit) instead of cut with "…" */
 @media (min-width:1000px){.mtf-row .nm{overflow:hidden}.mtf-row .nm b{overflow:visible;text-overflow:clip;transform-origin:0 50%}}
 /* Sim's type rule (Nov 11): Unbounded only at 15px and up, smaller text in Instrument Sans (v2-unbounded found 8 kinds in the frame):
