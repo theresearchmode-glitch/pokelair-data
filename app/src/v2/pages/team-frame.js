@@ -40,5 +40,9 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 // each name in Your six stays on ONE line (the brief's flaw: names broke mid-word, "Whimsi-cott"); it is narrowed to fit
 // (scaleX, down to 0.7, as Build's chips) and only then cut with "…"; "Mega" sits on its own small line above the name
 V2.mtfFit = () => { /* every width (Nov 21): on desktop a long name ('Mega Charizard Y' at 1000-1100) was cut with '…' */
-  document.querySelectorAll('#main .mtf-row:not(.mtf-add) .nm b').forEach(b => { b.style.transform = ''; const c = b.parentElement.clientWidth, n = b.scrollWidth; if (n > c && c > 0) b.style.transform = `scaleX(${Math.max(0.7, (c - 2) / n).toFixed(3)})`; }); };
+  /* too long even at 70% ('Paldean Tauros (Combat)' at 320-390): it wraps at spaces onto two lines (never inside a word), then the
+     longest line is narrowed if still needed (h9 found names 45-57px past the tile) */
+  document.querySelectorAll('#main .mtf-row:not(.mtf-add) .nm b').forEach(b => { b.style.transform = ''; b.style.whiteSpace = ''; const c = b.parentElement.clientWidth; if (!(c > 0)) return;
+    let n = b.scrollWidth; if (n <= c) return; if (n * 0.7 > c - 2) { b.style.whiteSpace = 'normal'; n = b.scrollWidth; if (n <= c) return; }
+    b.style.transform = `scaleX(${Math.max(b.style.whiteSpace ? 0.55 : 0.7, (c - 2) / n).toFixed(3)})`; }); }; /* a single long word ('Crabominable' in a 47px tile at 360) may go to 55% so it is never cut or broken */
 { let t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => V2.mtfFit && V2.mtfFit(), 120); }); }
