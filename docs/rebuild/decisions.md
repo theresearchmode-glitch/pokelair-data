@@ -1838,3 +1838,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:00 PM: Sim: B looks bloated; keep the swipe rows on phones ('easy to use on cellphone'). Done: swipe rows stay; the last card fades at the edge so it reads as 'more this way' (A's fade, without the extra line, 0px longer).
 - 2:02 PM: Ratings phones: swipe kept with the edge fade (0px longer; page 3,109 at 390 incl. the tier bar 124px; inventory baseline 2,893 measured on another build: will re-measure on the same build before merge).
 - 2:02 PM: hB done (048e8b40, not merged yet): Calc 320 'swap them' wraps beside its arrow; Home 360-440 (and 600-700) the hero pair stacks name over number where it didn't fit (a look change at those widths: asked Sim); v2-overlap 0 findings; arena, q19, unbounded, HQ minors pass; CI step added.
+- 2:03 PM: Helper hC started (2 of 2 with hT): Damage Calc on the kit, proposal (copy cc).
