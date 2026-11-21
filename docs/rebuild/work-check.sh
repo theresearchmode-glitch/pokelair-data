@@ -30,6 +30,6 @@ echo "Work check $(TZ=America/New_York date '+%a %b %-d, %-I:%M:%S %p')"
 echo "Helpers active: $active of 3$names" | sed 's/\\n/\n/g'
 echo "Test processes running (main thread or helpers): $tests"
 echo "Minutes since last commit: $lc   since decision log: $ld   since Plans source edit: $lp"
-[ "$active" -lt 3 ] && echo "PROBLEM: fewer than 3 helpers on approved work. Refill now (CLAUDE.md 'ALWAYS WORKING, ALWAYS 3 HELPERS')."
+[ "$active" -lt "${NEED:-3}" ] && echo "PROBLEM: fewer than ${NEED:-3} helpers on approved work. Refill now (CLAUDE.md 'ALWAYS WORKING, ALWAYS 3 HELPERS')."
 [ "$lp" -gt 60 ] && echo "PROBLEM: Plans page source older than 60 min (rule: update every 45-60 min)."
 echo "HELPERS_ACTIVE=$active"
