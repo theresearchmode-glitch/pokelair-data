@@ -1850,3 +1850,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:28 PM: Sim: no plain gradient backgrounds; the card display was better (sharper, more creative, not space for its own sake). Back to the card hero, made sharper: flat hard-edged type-colour planes, same for partner cards; keep CASE FILE #0727 kicker (ink).
 - 2:30 PM: Sim: no generic AI design is a MAJOR rule. Saved at the top of CLAUDE.md and in docs/sim-workflow.txt.
 - 2:33 PM: Sim: use Pokémon type symbols for flare, never without a label. Sim asked for a helper to check where they'd fit on the site; 2 helper slots are full (hT, hC), so asking Sim before a 3rd.
+- 2:34 PM: Sim: loves E, but the page is a little boring; wants flare without being overbearing for daily use. Adding data-drawn flare: a slanted damage bar per matchup in the move's type colour with a KO tick at 100%.
+- 2:34 PM: Sim: type-symbol helper waits for a free slot (no 3rd helper). Starts when hT or hC finishes.
