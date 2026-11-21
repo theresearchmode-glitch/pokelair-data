@@ -3361,3 +3361,19 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* narrow phones (320-359): the set's four move tickets one per row (two across cut the type word, "NORMA"), and the hit list's damage
    in Instrument Sans so "139–165%" stays inside its half */
 @media (max-width:359.98px){.pk-usual .k-moves{grid-template-columns:minmax(0,1fr)}.pk-hp{font-family:var(--b);font-style:normal;font-weight:800;letter-spacing:0}}
+/* Sim, Nov 21 (6:3x PM): "a touch more pop of colour" and "no empty white space without a purpose": the header's right side holds the
+   four facts as bold tiles in the Pokemon's own type colours; each step sits on a full-width band tinted with a type colour; the data
+   slips are filled tiles. Colours are the type tokens (--ty-*), mixed with the kit paper so day and night both work. */
+.pk-hd{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s4) var(--s8);align-items:end}
+.pk-hd .k-facts.pk-hfx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin:0;padding:0;list-style:none}
+.pk-hfx li{display:grid;align-content:end;min-height:88px;padding:var(--s3) var(--s4);background:var(--pk-c1);color:var(--on-type);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.pk-hfx li:nth-child(2),.pk-hfx li:nth-child(3){background:var(--pk-c2)}
+.pk-hfx li b{font-size:var(--t34);line-height:1;color:var(--on-type)}.pk-hfx li span{font:600 var(--t13)/1.3 var(--b);color:var(--on-type)}
+.pkf .k-step{position:relative;isolation:isolate;padding-bottom:var(--s8)}
+.pkf .k-step::after{content:"";position:absolute;z-index:-1;inset:0 calc(var(--s6) * -1) 0 calc(var(--s16) * -1);background:color-mix(in srgb,var(--pk-c1) 9%,var(--k-paper))}
+.pkf .k-step:nth-of-type(2)::after{background:color-mix(in srgb,var(--pk-c2) 11%,var(--k-paper))}
+.pkf .k-sec{margin-top:var(--s10)}
+.pk-slips li{padding:var(--s3);border-top:4px solid var(--pk-c1);background:color-mix(in srgb,var(--pk-c1) 10%,var(--k-card))}
+.pk-slips li:nth-child(even){border-top-color:var(--pk-c2);background:color-mix(in srgb,var(--pk-c2) 12%,var(--k-card))}
+@media (min-width:1024px){.pk-hd{grid-template-columns:minmax(0,1fr) minmax(0,520px)}.pk-hfx li{min-height:96px}.pkf .pk-slips{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (max-width:699.98px){.pk-hfx li{min-height:72px;padding:var(--s2) var(--s3)}.pk-hfx li b{font-size:var(--t26)}}
