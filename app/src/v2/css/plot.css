@@ -1,7 +1,7 @@
 /* ---------- Build: The Plot (Sim locked Nov 20; build-plot.js; pictures docs/rebuild/pics/nov20/Q93-Q98) ----------
    Four colours, one job each: blue = what you can tap to change the plot; red = the action and the score (and the plot line);
    white plates = answers; ink = text and structure. Piece a: the page before a build. */
-.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)}
+section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* scoped to the Plot sections (Nov 21): a bare .pl also hit every headline's blue word (<span class="pl">), pushing it 40-64px right (v2-q31/q33) */
 .pl-step{position:relative}
 .pl-node{position:absolute;z-index:1;left:calc(-1 * var(--s16));top:0;width:26px;height:26px;display:grid;place-items:center;border:2px solid var(--pick);border-radius:50%;background:var(--bg);color:var(--pick-text);font:700 var(--t13)/1 var(--b)}
 .pl-s1::before{content:"";position:absolute;left:calc(var(--s3) - var(--s16));top:var(--s6);bottom:calc(-1 * var(--s10));border-left:2px solid var(--pick)}
@@ -60,7 +60,7 @@
 .pl-dogst{flex:none;margin:0;padding:0;border:0;background:none;cursor:pointer}.pl-dog .np-mon{--iw:120px}
 @media (max-width:1199.98px){.pl-help{grid-template-columns:repeat(2,minmax(0,1fr))}} /* spec 5 and 10: helper columns 2 x 2 from 1199 down (was 1099) */
 @media (max-width:699.98px){
-  .pl{padding-left:var(--s10)}.pl-node{left:calc(-1 * var(--s10));width:22px;height:22px}
+  section.pl{padding-left:var(--s10)}.pl-node{left:calc(-1 * var(--s10));width:22px;height:22px}
   .pl-s1::before,.pl-waits::before{left:calc(var(--s2) + 2px - var(--s10))}
   .pl-hint{text-align:left}
   .pl-help{grid-template-columns:minmax(0,1fr);gap:var(--s4)}
