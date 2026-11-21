@@ -307,6 +307,13 @@
 .pl-cwv{text-align:right}.pl-cwv b{display:block;font-size:var(--t22);line-height:1.1;color:var(--on-pl-band)}
 .pl-cwv small{display:block;font:500 var(--t13)/1.4 var(--b);color:var(--pl-band-2);white-space:nowrap}
 .pl-cadd{min-width:64px}
+/* full teams (6 sprites + LOAD TEAM): in a row under 720 px the names had 8-90 px (one word a line; measured at 700, 1280, 1440) and the win
+   line ran into them; there the six sit on top with the win % beside them, and the names take the width with LOAD TEAM to their right */
+.pl-c4{container:plcore / inline-size}
+@media (min-width:700px){@container plcore (max-width:719.98px){
+  .pl-c4 .pl-csp{grid-column:1/3;grid-row:1}.pl-c4 .pl-cwv{grid-column:3/5;grid-row:1;justify-self:end}
+  .pl-c4 .pl-cwho{grid-column:1/4;grid-row:2}.pl-c4 .pl-cadd{grid-column:4;grid-row:2}
+}}
 .pl-low .bd-cnone{color:var(--pl-band-2)}
 .pl-cmore{margin-top:var(--s3)}
 /* the end: a filled red node, the line, HATCH ANOTHER (data-plgo presses the control row's data-bdgo) */
@@ -338,6 +345,7 @@
   .pl-cwho{grid-column:2;grid-row:1/3}.pl-cwho b{font-size:var(--t13)}
   .pl-cwv{grid-column:3;grid-row:1/3}.pl-cwv b{font-size:var(--t17)}.pl-cdot{display:none}.pl-cvs{display:block} /* phones: "wins" over "+3.9 vs avg", so the names keep the width */
   .pl-cadd{grid-column:1;grid-row:2;justify-self:start;margin-top:var(--s1);min-width:56px}
+  .pl-c4 .pl-cadd{grid-column:1/-1;grid-row:3;margin-top:var(--s2)} /* full teams: LOAD TEAM (~150 px) is wider than the 84 px sprite column; it takes its own line under the row */
   .pl-low .pl-endn .pl-h2{font-size:var(--t17)}.pl-goend{font-size:var(--t17)}
 }
 .pl-cacts .np-link{white-space:nowrap}
@@ -398,3 +406,7 @@
 /* X-05 (v2-minors main1, found after piece 5): the cores box is 44 tall now (was 48), so its × (44) lost a pixel row to rounding at 1280
    (tap 44x43). The × is 48 tall, centred on the box (its 4 px past each edge are taps on the ×); the box stays 44 */
 .pl-low .np-field .np-clr{height:calc(var(--tap) + var(--s1));margin-top:calc(-1 * var(--s1));margin-bottom:calc(-1 * var(--s1))}
+/* polish (Nov 21, authority): at 700-879 the winner's event column is 91-151px; the name broke inside a word ("Champion/s-MC").
+   There it uses the small-label font (Instrument Sans bold 15px, Sim's type rule: small labels in Instrument Sans), which is narrow enough
+   for every word, and wraps only between words or at a hyphen (break-word keeps the column at the longest word) */
+@media (min-width:700px) and (max-width:879.98px){.pl-wev{font:700 var(--t15)/1.3 var(--b);font-style:normal;overflow-wrap:break-word}}
