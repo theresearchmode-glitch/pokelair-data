@@ -1845,3 +1845,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:06 PM: Build reskin checks (bd 81843754, merged): B-build 77 pass / 0 FAIL / 14 known (baseline), kit-page all 14 views passed.
 - 2:07 PM: Sim: the Pokémon page is a very big deal (most people will find the site by looking up a Pokémon). Showed the PC's mock with an honest critique; making HH's own flagship mock-up of it next (Incineroar, real data, the reference-three standard).
 - 2:09 PM: Sim: cover all 7 on the Pokémon page; make it amazing (most people's first impression). Making HH's mock-up (Incineroar, real data) with every one of the 7.
+- 2:21 PM: Sim: Pokémon page order = numbers, then crews, then who it beats / who beats it; wants more character. Making A (case-file voice + character) and B (reorder only) for his pick.
+- 2:26 PM: Sim: the red notes add clutter, not character; phone looked cramped. Wants character through creativity, not more stuff. Dropping notes/stamp/pink kicker; trying a type-coloured magazine-cover hero that replaces card + headline; no plan gutter on phones.
