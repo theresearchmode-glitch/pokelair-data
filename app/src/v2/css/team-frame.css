@@ -1,299 +1,224 @@
-/* ---------- My Team: the frame (Sim, Nov 21; from the designer's party4 mock-up; type scale, 4px grid, colours as tokens) ---------- */
-.mtf{display:grid;gap:6px;margin:var(--s4) var(--s2) var(--s6) 0;padding:6px;background:var(--mtf-frame);box-shadow:8px 8px 0 var(--mtf-drop)}
-.mtf-bar{display:flex;align-items:center;gap:var(--s2);min-height:var(--s12);margin:0;padding:0 var(--s4);color:var(--mtf-on-frame)}
-.mtf-bar b,.mtf-bar h2{margin:0;font-size:var(--t17);line-height:1}.mtf-bar span{font:600 var(--t13)/1.3 var(--b);color:var(--mtf-bar-sub)}
-/* Your six */
-.mtf-party{display:grid;gap:4px;align-content:start;min-width:0}.mtf-rows{display:grid;gap:4px}
-.mtf-row{position:relative;display:grid;grid-template-columns:20px 60px minmax(0,1fr) auto;align-items:center;gap:var(--s1) var(--s2);min-height:68px;margin:0;padding:var(--s2) var(--s3) var(--s2) var(--s3);border:0;border-radius:0;background:var(--mtf-panel);color:var(--mtf-ink);box-shadow:inset 6px 0 0 var(--c);text-align:left;font:inherit;cursor:pointer}
-.mtf-row .no{font-size:var(--t13);font-style:italic;text-align:right;color:var(--mtf-ink2)}.mtf-row .pic{width:60px;height:60px;margin:-4px -2px;object-fit:contain}
-.mtf-row .nm{display:grid;min-width:0}.mtf-row .nm b{display:block;font-size:var(--t15);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mtf-row .nm small{font:600 var(--t13)/1.3 var(--b);color:var(--mtf-ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mtf-row .rt{display:grid;justify-items:end;font-size:var(--t13);font-style:italic;line-height:1.1;color:var(--mtf-ink2)}.mtf-row .rt b{font-size:var(--t20);line-height:1;color:var(--mtf-rate)}
-.mtf-row .lkm{position:absolute;right:var(--s1);top:var(--s1);width:16px;height:16px;fill:none;stroke:var(--mtf-ink);stroke-width:2}
-.mtf-row .m4{grid-column:2/5;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px}
-.mtf-row .m4 i{padding:2px var(--s2);background:var(--tc);color:var(--on-type);font:700 var(--t13)/1.3 var(--b);font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.mtf-row.on{background:var(--mtf-chosen);box-shadow:inset 6px 0 0 var(--mtf-ink)}.mtf-row.on .no,.mtf-row.on .nm small,.mtf-row.on .rt,.mtf-row.on .rt b{color:var(--mtf-ink)}
-.mtf-row:focus-visible,.mtf-step:focus-visible,.mtf-btn:focus-visible,.mtf-plan:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
-.mtf-add{grid-template-columns:20px 60px minmax(0,1fr);background:none;box-shadow:inset 0 0 0 2px var(--mtf-add);color:var(--mtf-on-frame)}
-.mtf-add .plus{display:grid;place-items:center;font:900 var(--t28)/1 var(--u)}.mtf-add .nm small,.mtf-add .no{color:var(--mtf-bar-sub)}
-/* the one you tapped */
-.mtf-sum{display:grid;align-content:start;min-width:0;background:var(--mtf-panel);color:var(--mtf-ink)}
-.mtf-nav{padding:0 2px;background:var(--mtf-frame)}.mtf-nav h2{flex:none;margin-left:var(--s1)}.mtf-nav span{flex:1}
-.mtf-step{display:grid;place-items:center;width:var(--s12);height:var(--s12);padding:0;border:0;background:none;color:var(--mtf-on-frame);font:900 var(--t28)/1 var(--b);cursor:pointer}.mtf-step[disabled]{opacity:.4;cursor:default}
-.mtf-stage{position:relative;display:grid;place-items:center;height:250px;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--c) 34%,var(--mtf-cell)),color-mix(in srgb,var(--c2) 34%,var(--mtf-cell)))}
-.mtf-stage::after{content:"";position:absolute;left:10%;right:10%;bottom:var(--s4);height:24px;border-radius:50%;background:var(--mtf-shadow-floor)}
-.mtf-stage .big{position:relative;z-index:1;width:232px;height:232px;object-fit:contain}
-.mtf-stage .rate{position:absolute;left:var(--s4);top:var(--s3);z-index:2;display:grid;margin:0;line-height:1}.mtf-stage .rate b{font-size:var(--d64);line-height:.9;color:var(--mtf-ink)}
-.mtf-stage .rate span{justify-self:start;margin-top:6px;padding:2px var(--s2);background:var(--mtf-ink);color:var(--mtf-on-frame);font-size:var(--t13)}
-.mtf-inf{display:grid;gap:var(--s2);align-content:start;padding:var(--s4)}
-.mtf-ia{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin:0}.mtf-ia div{display:grid;padding:var(--s2) var(--s3);background:var(--mtf-cell)}
-.mtf-ia dt{font:600 var(--t13)/1.2 var(--b);color:var(--mtf-ink2)}.mtf-ia dd{margin:0;font:800 var(--t16)/1.3 var(--b)}.mtf-ia dd small{font:500 var(--t13)/1.2 var(--b);color:var(--mtf-ink2)}
-.mtf-mv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0;padding:0;list-style:none}
-.mtf-mv li{display:flex;align-items:center;min-height:var(--tap);padding:0 var(--s4);background:var(--tc);color:var(--on-type);font:800 var(--t15)/1.2 var(--b);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
-.mtf-do{display:flex;flex-wrap:wrap;gap:var(--s2)}
-.mtf-btn{display:inline-grid;place-items:center;min-height:var(--s12);padding:0 var(--s5);border:0;background:var(--mtf-ink);color:var(--mtf-on-frame);font-size:var(--t15);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);cursor:pointer}
-.mtf-btn.ghost{background:none;color:var(--mtf-ink);box-shadow:inset 0 -3px 0 var(--mtf-ink),inset 0 3px 0 var(--mtf-ink)}.mtf-btn.red{background:none;color:var(--mtf-stop);box-shadow:inset 0 -3px 0 var(--mtf-stop),inset 0 3px 0 var(--mtf-stop)}
-.mtf-more{display:flex;flex-wrap:wrap;gap:0 var(--s5);margin:0}
-/* Suggestions: today's section in the frame's third column */
-.mtf-sg{min-width:0;background:var(--mtf-panel);color:var(--mtf-ink)}.mtf-sg > .tm-sec{margin:0;padding:var(--s4)}
-/* the Game Plan bar under the frame */
-.mtf-plan{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3);width:calc(100% - var(--s2));margin:0 0 var(--s6);padding:var(--s4) var(--s6);border:0;background:var(--mtf-frame);color:var(--mtf-on-frame);text-align:left;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%);cursor:pointer}
-.mtf-plan b{font-size:var(--t20)}.mtf-plan span{font:500 var(--t15)/1.4 var(--b)}
-/* desktop (1000+): three columns 372 / 1fr / 400 */
-@media (min-width:1000px){.mtf{grid-template-columns:372px minmax(0,1fr) 400px;margin:var(--s5) var(--s3) var(--s8) 0;box-shadow:12px 12px 0 var(--mtf-drop)}
-  .mtf-row.on::after{content:"";position:absolute;right:-12px;top:50%;z-index:3;width:16px;height:32px;margin-top:-16px;background:var(--mtf-chosen);clip-path:polygon(0 0,100% 50%,0 100%)}
-  .mtf-stage{height:auto;min-height:320px}.mtf-stage .big{width:320px;height:320px}.mtf-stage .rate b{font-size:var(--d96)}.mtf-stage .rate span{font-size:var(--t15)}.mtf-inf{padding:var(--s5) var(--s6) var(--s6)}}
-/* phone and tablet (under 1000): the six are one row of six taps (picture, rating, name); the tapped one opens right under it */
+/* ---------- My Team: the war room (reskin page 1; Sim approved mock-up B, Nov 21, 12:15 PM; the kit, 12:48 PM) ----------
+   The kit header (kicker, the team name as the headline, the Strength Score, one row of links, the plot sentence), then the plan line
+   with four steps: 1 the crew (the Night frame holding the six as the kit's roster cards and the chosen one's detail), 2 the upgrade and
+   the plan (Suggestions, the page's one pink move), 3 who we're up against (Matchups), 4 checks and record. The kit's own parts are in
+   kit.css; this file places them and dresses today's sections (sugs.js, matchups.js, record.js) in the kit's look.
+   Replaces the frame's header and three-column frame (Nov 21 morning); its Night colours stay (--mtf-night, tokens.css). */
+
+/* ===== the header ===== */
+.tm-hero.tmk{display:block;padding:var(--s4) var(--gut) 0}
+.tmk-head{position:relative;max-width:1180px}
+.tmk-head .mtf-k{margin:var(--s4) 0 0;font-size:var(--t15);font-weight:600;line-height:1.4;color:var(--k-ink2)}
+.tmk-head .k-kicker{margin:var(--s3) 0 var(--s3)}
+.tmk-head .tm-name{margin:0;font-size:var(--d-khead);line-height:1.05;color:var(--k-ink)}
+.tmk-head .tm-name[data-long]{font-size:var(--d-tmlong)}
+.tmk-head .tm-name em{color:var(--k-plot-text);font-style:inherit}
+.tmk-head .mtf-smp{font-size:var(--t28);color:var(--k-ink2);white-space:nowrap}
+.tmk-head .tm-sample,.tmk-head .tm-gone{max-width:640px;margin:var(--s3) 0 0;font-size:var(--t17);line-height:1.5;color:var(--k-ink2)}
+.tmk-head .tm-wait{margin:var(--s4) 0 0;font-size:var(--t17);line-height:1.5;color:var(--k-ink2)}
+.tmk-head .mtf-score{display:flex;align-items:center;gap:var(--s2) var(--s5);margin:var(--s4) 0 0}
+.tmk-head .mtf-score .n{flex:none;margin:0 0 0 -6px;padding-right:var(--s2);font-size:var(--d-tmscore);line-height:.9;letter-spacing:-.02em;color:var(--band)}
+.tmk-head .mtf-sw{min-width:0;max-width:440px}
+.tmk-head .mtf-score .band{margin:0;font-size:var(--t34);line-height:1.1;color:var(--band)}
+.tmk-head .mtf-score .lab{margin:var(--s1) 0 0;font-size:var(--t15);font-weight:700;line-height:1.4;color:var(--k-ink)}
+.tmk-head .mtf-score .win,.tmk-head .mtf-score .tm-low{margin:var(--s1) 0 0;font-size:var(--t15);line-height:1.5;color:var(--k-ink2)}
+.tmk-head .mtf-score .win b{font-weight:700;color:var(--k-ink)}
+/* ONE row of header links (quiet blue, "›"); an unsaved team's Save Team is the one ink slab in it */
+.tmk-head .mtf-acts{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s6);margin:var(--s3) 0 0}
+.tmk-head .mtf-acts .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;font-size:var(--t15);font-weight:700;color:var(--k-plot-text)}
+.tmk-head .mtf-acts .mtf-saved{color:var(--k-ink2);font-weight:600}
+.tmk-head .mtf-btn{display:inline-grid;place-items:center;min-height:var(--tap);padding:0 var(--s5);border:0;border-radius:0;background:var(--k-chip);color:var(--k-on-chip);font-size:var(--t15);line-height:1;cursor:pointer;transform:skewX(-8deg)}
+.tmk-head .mtf-btn:focus-visible,.tmk-head .np-link:focus-visible,.tmk-head .k-w:focus-visible,.tmk-jump a:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
+/* the plot sentence and the jump links (one line: "Blue words are buttons. Jump to: Matchups Suggestions Team Checks") */
+.tmk-head .k-sent{margin:var(--s8) 0 0}
+.tmk-head a.k-w{text-decoration:none}
+.tm-jump.tmk-jump{position:static;display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s4);margin:var(--s1) 0 0;padding:0;background:none;border:0;box-shadow:none}
+.tmk-jump .k-hint{margin:0;font-size:var(--t13)}
+.tmk-jump a{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;font-size:var(--t15);font-weight:700;color:var(--k-plot-text);text-decoration:none}
+.tmk-jump a::after{display:none}
+
+/* ===== the plan line ===== */
+.tm-work.tmk-work{display:block;padding:0 var(--gut) var(--s8)}
+.tmk-work .k-plan{max-width:1180px;padding-bottom:var(--s8)}
+.tmk-work .k-plan::before{top:var(--s12);bottom:var(--s8)}
+.tmk-work .k-step:first-child .k-sec{margin-top:var(--s12)}
+.tmk-work .tm-sec{margin:0;padding:0;scroll-margin-top:calc(76px + var(--s4))}
+.tmk-work .tm-sec > h2{margin:var(--s6) 0 var(--s2);font-size:var(--t20);line-height:1.2;color:var(--k-ink)}
+.tmk-work .tm-sub{color:var(--k-ink2)}
+
+/* ===== step 1: the Night frame (the crew) ===== */
+.tmk-work .mtf{display:block;margin:0 var(--s4) 0 calc(var(--s4) * -1);padding:var(--s2) var(--s6) var(--s8);background:var(--mtf-night);box-shadow:0 0 0 1px var(--wr-rule),14px 14px 0 var(--mtf-drop);color:var(--wr-ink);
+  --k-card:var(--mtf-n-surf);--k-ink:var(--wr-ink);--k-ink2:var(--wr-ink2);--k-plot:var(--wr-plot);--k-plot-text:var(--wr-plot);--k-on-plot:var(--wr-on-plot);--k-card-shadow:var(--wr-shadow);--k-art-shadow:var(--wr-shadow)}
+.tmk-work .mtf-party{min-width:0}
+.tmk-work .mtf .k-roster{padding-top:var(--s16)}
+.tmk-work .mtf-row.k-card{min-height:0;box-shadow:none}
+.tmk-work .mtf-row .lkm{position:absolute;right:var(--s2);top:var(--s2);z-index:2;width:20px;height:20px;fill:none;stroke:var(--wr-ink);stroke-width:2}
+/* an empty spot: the card's shape as a dashed outline with + */
+.tmk-work .mtf-add .k-plate{min-height:200px;border:2px dashed var(--mtf-n-add);align-content:end}
+.tmk-work .mtf-add .k-plate::before{display:none}
+.tmk-work .mtf-add .plus{position:absolute;left:50%;top:var(--s8);transform:translateX(-50%);font-size:var(--d64);font-weight:300;line-height:1;color:var(--wr-ink2)}
+/* the chosen one's detail */
+.tmk-work .mtf-sum{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s4) var(--s12);margin:var(--s8) 0 0;padding:var(--s6) 0 0;background:none;border-top:3px solid var(--wr-plot);box-shadow:none}
+.tmk-work .mtf-sl,.tmk-work .mtf-inf{display:grid;align-content:start;gap:var(--s4);min-width:0;margin:0;padding:0;background:none}
+.tmk-work .mtf-nav{display:flex;align-items:center;gap:var(--s2);min-height:var(--tap);margin:0;padding:0;background:none}
+.tmk-work .mtf-nav h2{flex:0 1 auto;min-width:0;margin:0;font-size:var(--t24);line-height:1.15;color:var(--wr-ink);white-space:normal;overflow:visible;overflow-wrap:normal}
+.tmk-work .mtf-nav > span{flex:none;font-size:var(--t15);font-weight:600;color:var(--wr-ink2);white-space:nowrap}
+.tmk-work .mtf-nav .mtf-step:last-child{margin-left:auto}
+.tmk-work .mtf-step{flex:none;display:grid;place-items:center;width:var(--tap);height:var(--tap);padding:0;border:0;background:none;color:var(--wr-plot);font-size:var(--t34);font-weight:900;line-height:1;cursor:pointer}
+.tmk-work .mtf-step[disabled]{opacity:.4;cursor:default}
+.tmk-work .mtf-step:focus-visible,.tmk-work .mtf-do .np-link:focus-visible{outline:3px solid var(--wr-plot);outline-offset:2px}
+.tmk-work .mtf-tr{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4)}
+.tmk-work .mtf-ty{display:flex;gap:var(--s1);margin:0}
+.tmk-work .mtf-tr .rate{display:flex;align-items:baseline;gap:var(--s2);margin:0;color:var(--wr-plot)}
+.tmk-work .mtf-tr .rate b{font-size:var(--t34);line-height:1}
+.tmk-work .mtf-tr .rate span{font-size:var(--t15);color:var(--wr-ink2)}
+.tmk-work .mtf-ia{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);margin:0}
+.tmk-work .mtf-ia div{display:grid;align-content:start;padding:var(--s2) 0 0;background:none;border:0;border-top:1px solid var(--wr-rule)}
+.tmk-work .mtf-ia dt{font-size:var(--t13);font-weight:600;line-height:1.3;color:var(--wr-ink2)}
+.tmk-work .mtf-ia dd{margin:0;font-size:var(--t17);font-weight:700;line-height:1.3;color:var(--wr-ink)}
+.tmk-work .mtf-ia dd small{display:inline;font-size:var(--t13);font-weight:500;color:var(--wr-ink2)}
+.tmk-work .mtf-mv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2) var(--s2);margin:0;padding:0;list-style:none}
+.tmk-work .mtf-mv li{display:flex;align-items:center;min-height:var(--tap);padding:var(--s1) var(--s4);background:var(--tc);color:var(--on-type);font-family:var(--u);font-size:var(--t17);font-style:italic;font-weight:800;line-height:1.15;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);box-shadow:none}
+.tmk-work .mtf-do{display:flex;flex-wrap:wrap;gap:0 var(--s5);margin:0}
+.tmk-work .mtf-do .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;font-size:var(--t15);font-weight:700;color:var(--wr-plot)}
+.tmk-work .mtf-do .sx-a.on{color:var(--wr-ink)}
+/* the quiet links' "›" is drawn, so each button keeps its own name ("Edit Set", as the focus checks read it) */
+.tmk-work .mtf-do .np-link:not(.sx-info)::after{content:"\00a0›" / ""}
+
+/* ===== step 2: Suggestions, then the plan foot ===== */
+.tmk-work .tm-sgs{max-width:880px}
+.tmk-work .tm-sgs > h2{margin-top:0}
+.tmk-work .tm-sgs .np-btn{display:inline-grid;place-items:center;min-height:var(--tap);padding:0 var(--s6);border:0;border-radius:0;background:var(--k-chip);color:var(--k-on-chip);box-shadow:none;transform:skewX(-8deg)}
+.tmk-work .mtf-lead{display:grid;justify-items:start;gap:0;margin:var(--s8) 0 0;font-size:var(--t17);line-height:1.5;color:var(--k-ink2)}
+.tmk-work .mtf-lead p{margin:0}
+.tmk-work .mtf-lead .k-go{margin-top:var(--s4)}
+.tmk-work .mtf-links{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s6);margin:var(--s4) 0 0}
+.tmk-work .mtf-links .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;font-size:var(--t15);font-weight:700;color:var(--k-plot-text)}
+.tmk-work .mtf-links .tm-legal{margin:0;display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--tap);font-size:var(--t15);font-weight:600;color:var(--k-ink2)}
+
+/* each section's own heading (Suggestions, Matchups, Team Checks, Your Games): the step's title and note already say them, so they are read out but not shown twice */
+.tmk-work .tm-sec > h2{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.tmk-work .tm-sec{position:relative}
+/* ===== step 3: Matchups ===== */
+.tmk-work .tm-mus > h2{margin-top:0}
+.tmk-work .tm-legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s8);margin:var(--s4) 0 var(--s2)}
+.tmk-work .tm-legend span{display:grid;font-size:var(--t15);font-weight:600;color:var(--k-ink2)}
+.tmk-work .tm-legend b{font-family:var(--u);font-size:var(--t34);font-style:italic;font-weight:800;line-height:1.1;color:var(--k-ink)}
+.tmk-work .tm-legend .lf b{color:var(--k-plot-text)}
+.tmk-work .tm-legend .lu b{color:var(--k-nasty-text)}
+.tmk-work .mu-sent{margin:var(--s6) 0 var(--s4);font-size:var(--t26)} /* four words on one line on desktop (the kit's 34px put 'all 30' alone on a second line) */
+.tmk-work .mu-sg{display:contents}
+.tmk-work .mu-out{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s12);margin:0;padding:0;list-style:none}
+.tmk-work .mu-out > li{min-width:0;border-top:1px solid var(--k-rule)}
+.tmk-work .mu-out .mu-row{display:grid;grid-template-columns:56px minmax(0,1fr) auto;grid-template-areas:"pic nm v" "pic dis v";align-items:center;column-gap:var(--s4);width:100%;min-height:64px;padding:var(--s1) 0;border:0;background:none;box-shadow:none;text-align:left;color:var(--k-ink)}
+.tmk-work .mu-out .mu-row > img{grid-area:pic;width:56px;height:56px;object-fit:contain}
+.tmk-work .mu-out .mu-row .nm{grid-area:nm;align-self:end;font-size:var(--t17);font-weight:700;line-height:1.3}
+.tmk-work .mu-out .mu-row .mu-dis{grid-area:dis;align-self:start;font-size:var(--t13);color:var(--k-ink2)}
+.tmk-work .mu-out .mu-row .tm-v{grid-area:v}
+.tmk-work .mu-out .mu-row .nm:only-of-type{grid-row:1 / span 2;align-self:center}
+.tmk-work .tm-v.k-tag{padding:2px var(--s3);border:0;font-family:var(--u);font-size:var(--t15);font-style:italic;font-weight:800;line-height:1.4;white-space:nowrap;box-shadow:none}
+.tmk-work .tm-v.k-good{background:var(--k-plot);color:var(--k-on-plot)}
+.tmk-work .tm-v.k-bad{background:var(--k-go);color:var(--k-on-go)}
+.tmk-work .tm-v.k-neutral{padding:0 var(--s3);background:none;border:2px solid var(--k-neutral);color:var(--k-ink)}
+.tmk-work .mu-row .nm .mg{display:inline;margin-right:var(--s1)}
+.tmk-work .mu-out .mu-row .nm{display:block}
+.tmk-work .mtf-nav h2 .mg{display:inline;margin-right:var(--s2);color:var(--wr-plot)}
+.tmk-work .mtf-nav h2 .mg.none{display:none}
+.tmk-work .tm-v.k-tag i{display:none}
+.tmk-work .mu-outmore{margin:var(--s3) 0 0}
+
+/* ===== step 4: checks and record, as rows ===== */
+.tmk-work .tm-cks,.tmk-work .tm-yg{max-width:880px}
+.tmk-work .tm-yg-hd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4)}
+.tmk-work .tm-yg-n{flex:1 1 auto;min-width:0;margin:0}
+.tmk-work .tm-yg{margin-top:var(--s4);padding-top:var(--s3);border-top:1px solid var(--k-rule)}
+.tmk-work .tm-ckok,.tmk-work .sg2-fold{border-top:1px solid var(--k-rule)}
+/* the folds (Adjust Suggestions, Things to Know): one quiet row, title 17px */
+.tmk-work .sg2-fold{margin-top:var(--s4)}
+.tmk-work .sg2-fold > summary{padding:var(--s3) 0}
+.tmk-work .sg2-fold > summary .t{font-size:var(--t17)}
+
+/* ===== narrower desktops and tablets: the detail stacks ===== */
 @media (max-width:999.98px){
-  .mtf-rows{grid-template-columns:repeat(6,minmax(0,1fr));gap:2px}
-  .mtf-row{grid-template-columns:minmax(0,1fr);justify-items:center;align-content:start;gap:0;min-height:88px;padding:var(--s1) 0 6px;box-shadow:inset 0 4px 0 var(--c)}
-  .mtf-row .no,.mtf-row .nm small,.mtf-row .m4{display:none}.mtf-row .pic{width:44px;height:44px;margin:2px 0 0}
-  .mtf-row .rt{order:2;justify-items:center}.mtf-row .rt span{display:none}.mtf-row .rt b{font-size:var(--t15)}
-  .mtf-row .nm{order:3;justify-items:center;width:100%}.mtf-row .nm b{padding:0 1px;font:700 var(--t13)/1.1 var(--b);font-style:normal;text-align:center;white-space:normal;overflow-wrap:anywhere;hyphens:auto;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
-  .mtf-row.on{box-shadow:inset 0 4px 0 var(--mtf-ink)}
-  .mtf-add{grid-template-columns:minmax(0,1fr);justify-items:center}.mtf-add .plus{font-size:var(--t24)}.mtf-add .nm b{font-size:var(--t13)}
-  .mtf-stage{height:168px}.mtf-stage .big{width:164px;height:164px}.mtf-stage::after{bottom:var(--s2);height:16px}.mtf-stage .rate b{font-size:var(--t34)}.mtf-stage .rate span{margin-top:var(--s1)}
-  .mtf-inf{padding:var(--s3)}.mtf-mv li{padding:0 var(--s2);font-size:var(--t13)}.mtf-do{flex-wrap:nowrap}.mtf-do .mtf-btn{flex:1;min-width:0;padding:0 var(--s1);font-size:var(--t13)}}
-@media (min-width:700px) and (max-width:999.98px){.mtf-row .pic{width:60px;height:60px}.mtf-row .nm b{font-size:var(--t15)}.mtf-stage{height:220px}.mtf-stage .big{width:210px;height:210px}}
-/* the header above the frame (Sim, Nov 21) */
-.mtf-hero .fn-band{display:none}
-.mtf-head{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"id" "sc" "ac";gap:var(--s2) var(--s8);padding-top:var(--s3)}
-.mtf-id{grid-area:id;min-width:0}.mtf-k{margin:0;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
-.mtf-head .tm-name{margin:var(--s1) 0;font-size:var(--t28);line-height:1.05}.mtf-smp{font-size:var(--t20);color:var(--ink-2)}
-.mtf-head .tm-sample{margin:0 0 var(--s2)}
-.mtf-bb{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin:0;max-width:400px}
-.mtf-bb .mtf-btn{min-width:0;padding:0 var(--s2);text-decoration:none}
-a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
-.mtf-score{grid-area:sc;display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"n lab" "n band" "n win";column-gap:var(--s3);align-items:center;align-content:start}
-.mtf-score p{margin:0}.mtf-score .lab{grid-area:lab;font:600 var(--t13)/1.2 var(--b);color:var(--ink-2);align-self:end}
-.mtf-score .n{grid-area:n;font-size:var(--d64);line-height:.9;color:var(--mtf-rate)}.mtf-score .band{grid-area:band;font-size:var(--t20);line-height:1.1;color:var(--mtf-rate)}
-.mtf-score .win{grid-area:win;font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}.mtf-score .win b{color:var(--ink)}
-.mtf-acts{grid-area:ac;display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s4);margin:0}.mtf-acts .np-link{min-height:var(--tap)}
-.mtf-saved{color:var(--mtf-rate);font-size:var(--t15)}.mtf-acts .mtf-saved{min-height:var(--s12)} /* as tall as the Save / Update Team button it swaps with, so the row keeps its height (v2-rmjump, Nov 21) */
-@media (min-width:1000px){.mtf-head{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"id sc" "ac ac";padding-top:var(--s5)}
-  .mtf-head .tm-name{font-size:var(--d64)}.mtf-head .mtf-btn{font-size:var(--t15)}.mtf-score{max-width:440px}.mtf-score .n{font-size:var(--d120)}.mtf-score .band{font-size:var(--t34)}}
-@media (max-width:999.98px){.mtf-nav h2{font-size:var(--t15);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:0 1 auto;min-width:0}.mtf-nav span{white-space:nowrap}}
-/* phones: the stand-out threats as short rows two across (the mock), so Matchups stays short */
-@media (max-width:699.98px){.mt-work .mu-cards{justify-content:stretch;gap:6px}.mt-work .mu-cards li{flex:0 0 calc(50% - 3px)}
-  .mt-work .mu-cards .mu-row,.tm-mus .mt-work .mu-cards .mu-out .mu-row.mu-nk{grid-template-columns:44px minmax(0,1fr);grid-template-areas:none;justify-items:start;align-items:center;column-gap:var(--s2);row-gap:0;min-height:56px;padding:6px var(--s2);background:var(--surface);text-align:left}
-  .mt-work .mu-card{grid-row:1/4;width:44px}.mt-work .mu-card .ms-card{height:44px}.mt-work .mu-card .mc-mon .np-mon,.mt-work .mu-card .mc-mon .np-mon .st{--iw:44px}.mt-work .mu-card .mc-giant{display:none}
-  .mt-work .mu-cards .tm-v{justify-self:start}}
-@media (max-width:699.98px){.mt-work .mu-cards .nm,.mt-work .mu-cards .mu-dis{justify-self:start;text-align:left}
-  .mt-work .mu-pick > *{display:flex;flex-wrap:nowrap;grid-template-columns:none}.mt-work .mu-pick button{flex:1 1 0;min-width:0;padding:0 var(--s1);font-size:var(--t13)}.mt-work .mu-pick button svg,.mt-work .mu-pick button i{display:none}}
-/* Suggestions in the frame (the mock): a yellow bar for the title, the suggestion as a dark card with the gain big in yellow, the swap
-   as two tiles (the new one outlined in yellow), Apply yellow; the links wrap as one line of links */
-.mtf-sg > .tm-sgs{padding:0 var(--s4) var(--s3)}
-.mtf-sg > .tm-sgs > h2{margin:0 calc(var(--s4) * -1) var(--s3);padding:var(--s3) var(--s4);background:var(--mtf-chosen);color:var(--mtf-ink);font-size:var(--t20);line-height:1.1}
-.mtf-sg .tm-sug{margin:var(--s2) 0;padding:0;list-style:none}
-.mtf-sg .tm-sug > li{display:grid;gap:var(--s2);padding:var(--s3) var(--s4) var(--s4);border:0;background:var(--mtf-frame);color:var(--mtf-on-frame)}
-.mtf-sg .tm-sug > li[hidden]{display:none} /* Nov 21: the frame layer outranks sugs.css li[hidden]: the cards behind "Show N More" stay hidden */
-.mtf-sg > .tm-sec{scroll-margin-top:calc(76px + var(--s4))} /* a jump to Suggestions clears the top bar */
-@media (max-width:699.98px){.mtf-sg > .tm-sec{scroll-margin-top:calc(60px + var(--s4))}}
-.mtf-sg .tm-sug > li > .np-eyebrow{display:none}
-.mtf-sg .tm-sug .tm-mv{display:flex;align-items:baseline;gap:var(--s2);margin:0}.mtf-sg .tm-sug .tm-mv b{font:900 var(--t34)/1 var(--u);font-style:italic;color:var(--mtf-chosen)}.mtf-sg .tm-sug .tm-mv span{font:700 var(--t13)/1 var(--b);color:var(--mtf-on-frame)}
-.mtf-sg .tm-chg{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:6px}
-.mtf-sg .tm-chg .tm-sw{display:grid;justify-items:center;gap:2px;padding:var(--s2) var(--s1);background:var(--mtf-card-tile);text-align:center;color:var(--mtf-on-frame)}
-.mtf-sg .tm-chg .tm-sw.in{background:var(--mtf-card-new);box-shadow:inset 0 0 0 3px var(--mtf-chosen)}.mtf-sg .tm-chg .tm-sw img{width:56px;height:56px}
-.mtf-sg .tm-chg .tm-ar{font-size:var(--t24);color:var(--mtf-on-frame)}
-.mtf-sg .tm-sug .sg2-ln{margin:0;font:500 var(--t13)/1.4 var(--b);color:var(--mtf-card-sub)}.mtf-sg .tm-sug .sg2-ln b{color:var(--mtf-on-frame)}
-.mtf-sg .tm-sug .np-btn{justify-self:start;background:var(--mtf-chosen);color:var(--mtf-ink)}
-.mtf-sg .tm-sug .sg2-why summary,.mtf-sg .tm-sug .sg2-why .q{color:var(--mtf-card-link)}.mtf-sg .tm-sug .sg2-why .n{color:var(--mtf-card-sub)}.mtf-sg .tm-sug .sg2-why ul{color:var(--mtf-card-sub)}
-.mtf-sg .sg2-links,.mtf-sg .sg2-nact{display:flex;flex-wrap:wrap;gap:0 var(--s4)}.mtf-sg .sg2-links .np-link{min-height:var(--tap)}
-@media (min-width:1000px){.mtf-sg .tm-chg .tm-sw img{width:80px;height:80px}}
-.mtf-sg .tm-chg .tm-sw *{color:var(--mtf-on-frame)}.mtf-sg .tm-chg .tm-sw .mg{color:var(--mtf-card-link)}.mtf-sg .tm-chg .tm-sw small{color:var(--mtf-card-sub)}
-.mtf-sg .tm-sug .sg2-ln b{color:var(--mtf-ink)}.mtf-sg .sg2-l2{display:inline}
-/* the mock: the three links wrap as one line of links (was stacked under 520) */
-.mtf-sg .tm-sgs .sg2-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-auto-flow:row;gap:0 var(--s3);align-items:center;flex-direction:row}
-/* phones: tighter, so My Team stays near three screens (brief) */
+  .tmk-work .mtf-sum{grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+  /* stand-outs: two across, each a 40px picture beside its name with the verdict tag under it (HYBRID 4: dense rows on phones; tablets too: a name and tag side by side didn't fit the 820 columns) */
+  .tmk-work .mu-out{column-gap:var(--s3)}
+  .tmk-work .mu-out .mu-row{grid-template-columns:40px minmax(0,1fr);grid-template-areas:"pic nm" "v v" "dis dis";justify-items:start;align-items:center;row-gap:var(--s1);column-gap:var(--s2);min-height:0;padding:var(--s2) 0}
+  .tmk-work .mu-out .mu-row > img{width:40px;height:40px}
+  .tmk-work .mu-out .mu-row .nm{align-self:center;min-height:2.5em;font-size:var(--t15);line-height:1.25} /* two lines held, so the tags of a row sit level */
+  .tmk-work .mu-out .mu-row .mu-dis{font-size:var(--t13);line-height:1.3}
+  .tmk-work .mu-out .mu-row .nm:only-of-type{grid-row:auto}
+  .tmk-work .tm-v.k-tag{padding:0 var(--s2);font-size:var(--t15)}
+}
+/* ===== phones ===== */
 @media (max-width:699.98px){
-  .mtf-sg > .tm-sgs{padding:0 var(--s3) var(--s2)}.mtf-sg > .tm-sgs > h2{margin:0 calc(var(--s3) * -1) var(--s2);padding:var(--s2) var(--s3)}
-  .mtf-sg .sg2-none,.mtf-sg .tm-sub{font-size:var(--t15);line-height:1.45;margin:0 0 var(--s1)}
-  .mtf-sg .tm-sug > li{gap:6px;padding:var(--s3)}.mtf-sg .tm-sug .tm-chg .tm-sw{padding:6px var(--s1)}.mtf-sg .tm-sug .tm-chg .tm-sw img{width:56px;height:56px}
-  .mtf-sg .tm-sug .tm-mv b{font-size:var(--t28)}.mtf-sg .tm-sug .np-btn{min-height:var(--tap)}
-  .mtf-ia{gap:6px}.mtf-ia div{padding:6px var(--s2)}.mtf-ia dd{font-size:var(--t15)}
-  .mtf-inf{gap:6px}.mtf-more .np-link{min-height:var(--tap)}
-  .mtf-head .tm-name{font-size:var(--t26)}.mtf-head .tm-sample{font-size:var(--t13)}.mtf-score .n{font-size:var(--d64)}.mtf-score .band{font-size:var(--t20)}
-  .mtf-acts{column-gap:var(--s3)}.mtf-acts .np-link{font-size:var(--t15)}}
-/* phones, shorter (brief: near 3 screens): Nature and Stat points share one row as smaller cells; the Game Plan bar and the frame sit closer */
-@media (max-width:699.98px){
-  .mtf-ia{grid-template-columns:repeat(2,minmax(0,1fr))}.mtf-ia div:nth-child(n+3){padding:var(--s1) var(--s2)}.mtf-ia div:nth-child(n+3) dd{font-size:var(--t13);font-weight:700;line-height:1.3}.mtf-ia div:nth-child(n+3) dd small{display:none}
-  .mtf{margin-bottom:var(--s4)}.mtf-plan{margin-bottom:var(--s3);padding:var(--s3) var(--s4)}.mtf-plan b{font-size:var(--t17)}.mtf-plan span{font-size:var(--t13)}
-  .mtf-head{gap:var(--s1)}.mtf-acts{column-gap:var(--s3)}.mtf-acts .np-link{font-size:var(--t13)}
-  .mtf-stage{height:152px}.mtf-stage .big{width:148px;height:148px}}
-/* an "add" suggestion (a team of one to five) has no Pokémon going out: no empty tile; the link words keep their space in the flex links */
-.mtf-sg .tm-chg .tm-sw:empty,.mtf-sg .tm-chg .tm-sw:not(:has(img)){display:none}.mtf-sg .tm-chg:not(:has(.tm-sw:not(.in) img)){grid-template-columns:auto minmax(0,1fr)}
-
-@media (max-width:999.98px){.mtf-add .mtf-addr{display:none}}
-
-/* the frame's light panels are paper in both themes (Sim to choose a dark design: Q106); their words, links and Mega tags stay the day colours */
-.mtf-row:not(.mtf-add),.mtf-sum,.mtf-sg{--ink:var(--mtf-ink);--ink-2:var(--mtf-ink2b);--plot-text:var(--mtf-link);--plot-text-deep:var(--mtf-link);--surface:var(--mtf-cell);--wash:var(--mtf-wash);--ink-3:var(--mtf-ink3)}
-.mtf-row.on .mg{color:var(--mtf-ink)} /* 'Mega' on the yellow chosen row: ink (17:1; the blue measures 4.5:1, right at the line) */
-.mtf-head .mtf-btn.ghost{color:var(--ink);box-shadow:inset 0 -3px 0 var(--ink),inset 0 3px 0 var(--ink)}
-.mtf-head .mtf-btn:not(.ghost){background:var(--ink);color:var(--bg)}a.mtf-btn:not(.ghost){color:var(--bg)}
-/* inside the dark suggestion card the words are light (its Why? list, tags and names used the panel's ink: dark on dark) */
-.mtf-sg .tm-sug > li{--ink:var(--mtf-on-frame);--ink-2:var(--mtf-card-sub);--ink-3:var(--mtf-card-sub);--mid-text:var(--mtf-card-warn);--plot-text:var(--mtf-card-link);--plot-text-deep:var(--mtf-card-link)}
-.mtf-sg .tm-sug .sg2-ln b{--ink:var(--mtf-ink)}
-/* the header's 'Saved ✓' follows the page theme (its blue read 3.2:1 at night) */
-.mtf-saved{color:var(--plot-text)}
-
-.mtf-lead{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s2);margin:calc(var(--s4) * -1) 0 var(--s6);font:500 var(--t15)/1.4 var(--b);color:var(--ink-2)}.mtf-lead .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
-.mtf-more .np-link{min-width:var(--tap);justify-content:center} /* 'Lock' was 41px wide */
-@media (max-width:699.98px){.mtf-lead{margin:calc(var(--s2) * -1) 0 var(--s3);font-size:var(--t13)}}
-/* phones: Lock and Pokémon Page share the types' row (saves a 44px row) */
-@media (max-width:699.98px){.mtf-inf{grid-template-columns:minmax(0,1fr) auto;align-items:center}.mtf-inf > *{grid-column:1/-1}
-  .mtf-inf > .mtf-ty{grid-column:1;grid-row:1}.mtf-inf > .mtf-more{grid-column:2;grid-row:1;flex-wrap:nowrap;gap:0 var(--s2)}.mtf-more .np-link{font-size:var(--t13)}}
-/* 320-359: six across left 41px taps; three across in two rows keeps every tap 44px+ */
-@media (max-width:359.98px){.mtf-rows{grid-template-columns:repeat(3,minmax(0,1fr))}.mtf-row{min-height:80px}}
-.mtf-step{flex:none} /* ‹ › stay 48px when a long name fills the bar (they shrank to 29px at 1000-1200) */
-.mtf-nav h2{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mtf-nav span{white-space:nowrap}
-/* polish-check fixes (design authority, Nov 21) */
-.mtf-score .win,.mtf-lead{line-height:1.5} /* paragraphs 1.5 (design scale) */
-/* Sim's rule: no boxes inside boxes in different shades: Item / Ability / Nature / Stat points sit on the panel with a soft rule, not in white boxes */
-.mtf-ia div{padding:var(--s1) 0 var(--s2);background:none;border-bottom:1px solid var(--mtf-rule)}
-/* the header links: even rows (2 across under 480, 3 across to 999), never one alone */
-@media (max-width:999.98px){.mtf-acts{display:grid;grid-template-columns:repeat(3,max-content);justify-content:start}
-  .mtf-acts .np-link{text-align:start}} /* each link's words start at its column's edge, so the wider Update Team button (it swaps with Saved ✓ after Remove) widens only its own column and no link moves (h15, Nov 21) */
-@media (max-width:479.98px){.mtf-acts{grid-template-columns:repeat(2,max-content)}}
-/* Edit Set / Replace / Remove: one even row in the middle column */
-.mtf-do{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.mtf-do .mtf-btn{min-width:0;padding:0 var(--s2)}
-/* 1000-1279: the middle column was too narrow for its bar (spilled 44px at 1040): the six and the tapped one side by side, Suggestions full width under them */
-@media (min-width:1000px) and (max-width:1279.98px){.mtf{grid-template-columns:340px minmax(0,1fr)}.mtf-sg{grid-column:1/-1}}
-/* 320-359: stand-out threats one across (two across spilled 13px) */
-@media (max-width:359.98px){.mt-work .mu-cards li{flex-basis:100%}}
-@media (max-width:999.98px){.mtf-row .nm b{display:block;max-width:none;white-space:nowrap;overflow:visible;-webkit-line-clamp:unset;hyphens:none;overflow-wrap:normal;transform-origin:0 50%}
-  .mtf-row .nm b .mg{display:block;font-size:var(--t13);line-height:1.1}.mtf-row{min-height:104px}.mtf-row .nm{overflow:hidden}}
-/* polish (Nov 21, authority): when the detail panel is narrow (phones, the 1000-1319 column), "1 of 6" sits under the name so a long
-   name ("Mega Charizard Y") never spills or overlaps it, and Edit Set (the main action) takes the full row above Replace and Remove so
-   no button word is cut or wrapped */
-.mtf-sum{container-type:inline-size}
-@container (max-width:419.98px){.mtf-nav{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:var(--s1)}
-  .mtf-nav .mtf-step{grid-row:1 / span 2}.mtf-nav h2{grid-column:2;margin:0;padding-top:var(--s2);white-space:normal;overflow:visible;text-overflow:clip;line-height:1.1;overflow-wrap:normal}
-  .mtf-nav span{grid-column:2;padding-bottom:var(--s2)}.mtf-nav .mtf-step:last-child{grid-column:3;grid-row:1 / span 2}
-  .mtf-do{grid-template-columns:1fr 1fr}.mtf-do .mtf-btn{white-space:nowrap}.mtf-do [data-v2edit]{grid-column:1 / -1}}
-/* polish (Nov 21, authority): See All / Never Suggest / Refresh share one even row of three in the frame (the .tm-sgs rule above), so
-   Refresh never sits alone on a row (it did at 1440, where the Suggestions column is 368px) */
-.mtf-sg{container-type:inline-size}
-.mtf-sg .tm-sgs .sg2-links{grid-template-columns:repeat(3,max-content);column-gap:var(--s6)}.mtf-sg .tm-sgs .sg2-links .sg2-all{display:block;white-space:nowrap}.mtf-sg .tm-sgs .sg2-links .sg2-l2{display:inline;margin:0}
-@container (max-width:519.98px){.mtf-sg .tm-sgs .sg2-links{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s3)}
-  .mtf-sg .tm-sgs .sg2-links .sg2-all{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;text-align:left;white-space:normal;line-height:1.25}.mtf-sg .tm-sgs .sg2-links .sg2-l2{display:block;margin:0;white-space:nowrap}}
-@media (max-width:479.98px){.mtf-sg .tm-sgs .sg2-links .sg2-all{font-size:var(--t13)}} /* 15px overflowed the 92px columns at 390 */
-/* under 360 the three columns are too narrow for "Suggestions ›": the links stack as a list, each on one line (as the old page did) */
-@container (max-width:289.98px){.mtf-sg .tm-sgs .sg2-links{column-gap:var(--s1)}}
-/* Sim, Nov 18 C: one even row from 360; a list only under 360 */
-@container (max-width:259.98px){.mtf-sg .tm-sgs .sg2-links{grid-template-columns:1fr}.mtf-sg .tm-sgs .sg2-links .sg2-all{display:block}.mtf-sg .tm-sgs .sg2-links .sg2-l2{display:inline;margin:0}} /* 360 and narrower: a list */
-/* Nov 21 (authority): desktop names in Your six are narrowed to fit (V2.mtfFit) instead of cut with "…" */
-@media (min-width:1000px){.mtf-row .nm{overflow:hidden}.mtf-row .nm b{overflow:visible;text-overflow:clip;transform-origin:0 50%}}
-/* Sim's type rule (Nov 11): Unbounded only at 15px and up, smaller text in Instrument Sans (v2-unbounded found 8 kinds in the frame):
-   the small "S tier" tags and the row numbers use Instrument Sans bold; the buttons stay Unbounded at 15px on phones too */
-.mtf-row .no,.mtf-stage .rate span,.mtf-row .rt span{font-family:var(--b);font-style:normal;font-weight:700;letter-spacing:normal;word-spacing:2px}
-.mtf-head .mtf-btn,.mtf-do .mtf-btn{font-size:var(--t15)}
-/* phones (Nov 21, authority): the status line keeps Sim's approved short form "6 of 6 · Grassy Terrain · Legal ✓" on one line
-   (the frame's long form wrapped to 2 lines at 360-390, q84 S5); desktop keeps "My team · … team · Legal for Reg M-C ✓" */
-@media (max-width:479.98px){.mtf-k .mtf-lg{display:none}}
-/* 320-359 (Nov 21, authority): Remove sat 739px under the tapped Pokémon (Sim, Nov 17: within 650); nothing hidden: the types sit side
-   by side on their own row with Lock / Pokémon Page after the buttons (their desktop place), a lower stage, 36px move bars (labels,
-   not buttons) and a tighter name bar */
-@media (max-width:359.98px){.mtf-inf > .mtf-ty{grid-column:1 / -1}.mtf-inf > .mtf-more{grid-column:1 / -1;grid-row:auto}
-  .mtf-stage{height:116px}.mtf-stage .big{width:112px;height:112px}.mtf-mv li{min-height:36px}
-  .mtf-nav h2{padding-top:var(--s1)}.mtf-nav span{padding-bottom:var(--s1)}}
-
-/* Nov 21 (Sim, 7:05 AM: the squeezed names 'look really rough'; 7:13 AM: fine): under 1000 the six's names are never squeezed. The form
-   sits on a small line above (Mega / Yellow / Paldean · Combat / Female) and the name is one clean line; phones show 3 + 3 */
-.mtf-row .nm .ns{display:block}.mtf-row .nm .ns .q{display:block;font:600 var(--t13)/1.2 var(--b);font-style:normal;color:var(--mtf-ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mtf-row .nm .ns .q.mega{color:var(--plot-text);font-weight:800}
-@media (max-width:999.98px){
-  .mtf-row .nm b{white-space:normal;text-align:center;font:700 var(--t15)/1.15 var(--b);font-style:normal;transform:none}
-  .mtf-row .nm .ns .q{display:block;font:600 var(--t13)/1.2 var(--b);color:var(--mtf-ink2);white-space:nowrap}.mtf-row .nm .ns .q.mega{color:var(--plot-text);font-weight:800}}
-@media (max-width:699.98px){.mtf-rows{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:2px}.mtf-row{min-height:0;padding:var(--s1) 2px var(--s2)}
-  .mtf-row .nm{width:100%;overflow:visible}.mtf-row .pic{width:56px;height:56px}.mtf-row .rt b{font-size:var(--t17)}}
-/* each tile picks its own size from its width (no squeezing): narrow tiles 13px names, the form line may wrap at its space */
-@media (max-width:999.98px){.mtf-row .nm{container-type:inline-size}}
-.mtf-row .nm .ns .q{white-space:normal}@media (min-width:1000px){.mtf-row .nm .ns .q{white-space:nowrap}}
-@container (max-width:99.98px){.mtf-row .nm b{font-size:var(--t13)}}
-/* a narrow tile stacks a two-part form ('Paldean' over 'Combat') instead of leaving a lone '·' at a line end */
-.mtf-row .nm .ns .q .dot{font-style:normal}@container (max-width:119.98px){.mtf-row .nm .ns .q .dot{display:block;height:0;overflow:hidden}}
-@container (max-width:83.98px){.mtf-row .nm b{letter-spacing:-.04em}} /* 320-339: 'Crabominable' in a 79px tile */
-@media (max-width:339.98px){.mtf-row{padding-inline:0}}
-/* Nov 21 (Sim, 7:13 AM: 'not a fan of how the yellow just sticks out ... more nasty plot and less generic'): no yellow. The chosen
-   Pokémon is a black tile with a Nasty pink edge (the frame's own black and pink drop); pink marks the Suggestions bar, the gain, the
-   new Pokémon and Apply */
-.mtf-row.on{background:var(--mtf-frame);box-shadow:inset 0 0 0 3px var(--mtf-drop)}
-.mtf-row.on .no,.mtf-row.on .nm b,.mtf-row.on .nm small,.mtf-row.on .rt,.mtf-row.on .rt b,.mtf-row.on .mg,.mtf-row.on .nm .ns .q.mega{color:var(--mtf-on-frame)}
-.mtf-row.on .nm .ns .q{color:var(--mtf-bar-sub)}
-.mtf-sg > .tm-sgs > h2{color:var(--mtf-on-frame)}
-
-/* ================= Night plot (Sim chose B, Nov 21, 7:29 AM: 'so much better ... so much more modern') =================
-   The frame is brand Night; each part is one surface (no box in a box); the Pokémon glow in their own colour on the stage;
-   Nasty pink is the one accent (the chosen Pokémon, the gain, the new Pokémon, Apply). The panels' tokens are remapped here, so every
-   rule above that reads --mtf-ink / --mtf-panel / --mtf-cell paints the night version. Space (Sim, 7:31 AM): moves stay on every row as
-   a quiet two-line list, Item / Ability / Nature share one row, each swap is one slim row. */
-.mtf{--mtf-frame:var(--mtf-night);background:var(--mtf-night);box-shadow:0 0 0 1px var(--mtf-n-rule),0 24px 60px -20px var(--mtf-n-glow);padding:var(--s3);gap:var(--s3)}
-@media (min-width:1000px){.mtf{padding:var(--s4);gap:var(--s4);box-shadow:0 0 0 1px var(--mtf-n-rule),0 32px 80px -24px var(--mtf-n-glow)}}
-.mtf-row:not(.mtf-add),.mtf-sum,.mtf-sg{--mtf-panel:var(--mtf-n-surf);--mtf-ink:var(--mtf-on-frame);--mtf-ink2:var(--mtf-n-sub);--mtf-ink2b:var(--mtf-n-sub);--mtf-ink3:var(--mtf-n-sub);
-  --mtf-link:var(--mtf-n-link);--mtf-cell:var(--mtf-n-surf2);--mtf-wash:var(--mtf-n-surf2);--mtf-rule:var(--mtf-n-rule);--mtf-rate:var(--mtf-on-frame);--mtf-stop:var(--mtf-hot);
-  --mtf-card-tile:var(--mtf-n-surf2);--mtf-card-new:color-mix(in srgb,var(--mtf-drop) 18%,var(--mtf-n-surf));--mtf-card-sub:var(--mtf-n-sub);--mtf-card-link:var(--mtf-n-link);--plate:var(--mtf-n-surf2);--on-plate:var(--mtf-on-frame)}
-.mtf{--mtf-add:var(--mtf-n-add)}
-/* Your six */
-.mtf-rows{gap:var(--s1)}
-.mtf-row{background:var(--mtf-n-surf);box-shadow:inset 3px 0 0 var(--c)}
-.mtf-row .nm .ns .q.mega,.mtf-row .mg{color:var(--mtf-n-link)}
-.mtf-row .m4{gap:2px var(--s3)}.mtf-row .m4 i{padding:0 0 0 var(--s2);background:none;color:var(--mtf-n-sub);font-weight:600;box-shadow:inset 3px 0 0 var(--tc)}
-.mtf-row.on{background:linear-gradient(90deg,color-mix(in srgb,var(--mtf-drop) 34%,var(--mtf-n-surf)),color-mix(in srgb,var(--mtf-drop) 8%,var(--mtf-n-surf)));box-shadow:inset 4px 0 0 var(--mtf-drop)}
-.mtf-row.on .m4 i{color:var(--mtf-on-frame)}
-@media (min-width:1000px){.mtf-row .nm b{font-family:var(--u);font-style:italic;font-weight:800;font-size:var(--t17)}.mtf-row .rt b{font-size:var(--t26)}}
-@media (max-width:999.98px){.mtf-row{box-shadow:inset 0 3px 0 var(--c)}.mtf-row.on{background:linear-gradient(180deg,color-mix(in srgb,var(--mtf-drop) 34%,var(--mtf-n-surf)),color-mix(in srgb,var(--mtf-drop) 8%,var(--mtf-n-surf)));box-shadow:inset 0 3px 0 var(--mtf-drop),inset 0 0 0 2px var(--mtf-drop)}}
-/* the chosen one */
-.mtf-nav{background:none}
-.mtf-stage{background:radial-gradient(55% 65% at 55% 55%,color-mix(in srgb,var(--c) 70%,transparent),transparent 75%),var(--mtf-night)}
-.mtf-stage::after{background:var(--mtf-n-rule)}
-.mtf-stage .rate span{background:var(--mtf-drop);color:var(--mtf-on-frame)}
-.mtf-ia{grid-template-columns:repeat(auto-fit,minmax(80px,1fr))}.mtf-ia div{background:none;padding:0 0 var(--s2);border-bottom:1px solid var(--mtf-n-rule)}
-.mtf-btn{background:var(--mtf-on-frame);color:var(--mtf-night)}a.mtf-btn{color:var(--mtf-night)}
-.mtf-btn.ghost,.mtf-btn.red{background:none}
-/* Suggestions: no bar, no card in the panel; a pink rule under the title, swaps as slim rows */
-.mtf-sg > .tm-sgs > h2{margin:0 0 var(--s3);padding:var(--s3) 0 var(--s2);background:none;color:var(--mtf-on-frame);border-bottom:3px solid var(--mtf-drop)}
-.mtf-sg .tm-sug > li{background:none;padding:var(--s3) 0;border-top:1px solid var(--mtf-n-rule)}
-.mtf-sg .tm-sug .tm-mv b{color:var(--mtf-hot)}
-.mtf-sg .tm-chg{grid-template-columns:minmax(0,1fr) auto minmax(0,1fr)}
-.mtf-sg .tm-chg .tm-sw{display:flex;align-items:center;justify-items:start;gap:var(--s2);padding:var(--s1) var(--s2);text-align:left}
-.mtf-sg .tm-chg .tm-sw img,.mtf-sg .tm-sug .tm-chg .tm-sw img{width:48px;height:48px;flex:none}
-.mtf-sg .tm-chg .tm-sw > span{display:grid;min-width:0}
-.mtf-sg .tm-chg .tm-sw.in{box-shadow:inset 0 0 0 2px var(--mtf-drop)}
-.mtf-sg .tm-chg .tm-ar{font-size:var(--t20);color:var(--mtf-hot)}
-.mtf-sg .tm-sug .np-btn{background:var(--mtf-drop);color:var(--mtf-on-frame)}
-.mtf-sg .tm-sug .sg2-ln b{background:var(--mtf-n-surf2);color:var(--mtf-on-frame)}
-.mtf-plan{background:var(--mtf-night)}
-@media (max-width:699.98px){.mtf-ia div:nth-child(n+3){padding:0 0 var(--s2)}.mtf-ia div:nth-child(n+3) dd{font-size:var(--t15);line-height:1.3}
-  .mtf-sg .tm-chg .tm-sw{min-width:0;padding:var(--s1)}.mtf-sg .tm-chg .tm-sw img,.mtf-sg .tm-sug .tm-chg .tm-sw img{width:40px;height:40px}
-  .mtf-sg .tm-chg .tm-sw > span{font-size:var(--t13);line-height:1.25}.mtf-sg .tm-chg .tm-sw small{font-size:var(--t13)}}
-/* item · Ability never cut with '…' (Sim's no-cutting rule): it may wrap at a space ('Rocky Helmet · Psychic Surge' in the 1000-1279 column) */
-.mtf-row .nm small{white-space:normal;overflow:visible;text-overflow:clip}
-/* polish (Sim, Nov 21, 7:38 AM: 'it just needs a lot more polish'): the three column heads sit on Night, one height and one type, each
-   over the same thin rule; the chosen one's info is the one panel; its moves speak the rows' language (a tinted slab, type-coloured edge) */
-.mtf-bar{padding:0 var(--s2);box-shadow:inset 0 -1px 0 var(--mtf-n-rule)}
-.mtf-sum,.mtf-sg{background:none}
-.mtf-sg > .tm-sgs{padding:0}
-.mtf-sg > .tm-sgs > h2{display:flex;align-items:center;min-height:var(--s12);margin:0 0 var(--s4);padding:0 var(--s2);border:0;box-shadow:inset 0 -1px 0 var(--mtf-n-rule)}
-.mtf-sg > .tm-sgs > :not(h2){margin-inline:var(--s2)}
-@media (min-width:1000px){.mtf-bar,.mtf-sg > .tm-sgs > h2{min-height:56px}.mtf-bar b,.mtf-bar h2,.mtf-sg > .tm-sgs > h2{font-size:var(--t20)}}
-.mtf-inf{background:var(--mtf-n-surf)}
-.mtf-mv li{background:color-mix(in srgb,var(--tc) 34%,var(--mtf-n-surf2));color:var(--mtf-on-frame);box-shadow:inset 4px 0 0 var(--tc)}
-/* polish 2: the type tags sit on the stage's top right (they belong to the Pokémon), so the info starts with Item / Ability / Nature;
-   on phones Lock and Pokémon Page get the first info row to themselves instead of squeezing the tags into a column */
-.mtf-stage > .mtf-ty{position:absolute;top:var(--s3);right:var(--s3);z-index:2;display:flex;gap:var(--s1);margin:0}
-@media (max-width:699.98px){.mtf-inf > .mtf-more{grid-column:1 / -1;grid-row:1;justify-content:flex-start;gap:0 var(--s5)}.mtf-more .np-link{font-size:var(--t15)}}
-/* polish 4: Edit Set / Replace / Remove one button family: slanted slabs; Edit Set the white primary, Replace and Remove quiet slabs
-   (were a white block beside two top-and-bottom line buttons) */
-.mtf-btn.ghost,.mtf-btn.red{background:var(--mtf-n-surf2);box-shadow:none}.mtf-btn.ghost{color:var(--mtf-on-frame)}.mtf-btn.red{color:var(--mtf-hot)}
-/* calmer (Sim, Nov 21, 7:45 AM: 'a lot going on'; 7:47 AM: 'much better ... make this the one'): each row is picture, name, score and
-   item; the four moves live in the chosen one's panel (and the Team Sheet); pink only marks the chosen row and Apply; on desktop the
-   rows share the column's height with bigger pictures, so the six end with the other two columns */
-.mtf-row .m4{display:none}
-.mtf-row .rt span{color:var(--mtf-n-sub)}
-.mtf-stage .rate span{background:var(--mtf-n-surf2)}
-.mtf-sg .tm-sug .tm-mv b{color:var(--mtf-on-frame)}
-.mtf-sg .tm-chg .tm-ar{color:var(--mtf-n-sub)}
-.mtf-sg .tm-chg .tm-sw{background:none}.mtf-sg .tm-chg .tm-sw.in{background:var(--mtf-n-surf2);box-shadow:inset 0 0 0 1px var(--mtf-n-rule)}
-@media (min-width:1000px){.mtf-party{grid-template-rows:auto minmax(0,1fr);align-content:stretch}.mtf-rows{grid-auto-rows:1fr}
-  .mtf-row{grid-template-columns:20px 72px minmax(0,1fr) auto}.mtf-row .pic{width:72px;height:72px}.mtf-row .rt b{font-size:var(--t22)}.mtf-row.on::after{display:none}}
-/* Item / Ability / Nature read as one even row: values on one baseline, the 'most used' note on its own small line */
-.mtf-ia{align-items:start}.mtf-ia div{align-content:start}.mtf-ia dd small{display:block}
+  .tm-hero.tmk{padding-top:0}
+  /* the plan line is tighter on phones: titles a size down so most fit one line, less air above each step */
+  .tmk-work .k-sec{margin:var(--s4) 0 var(--s3);row-gap:2px}
+  .tmk-work .k-h2{font-size:var(--t24)}
+  .tmk-work .k-step:first-child .k-sec{margin-top:var(--s6)}
+  .tmk-head .mtf-k{margin-top:var(--s3);font-size:var(--t13)}
+  .tmk-head .mtf-smp{font-size:var(--t20)}
+  .tmk-head .tm-sample{margin-top:var(--s2);font-size:var(--t15)}
+  .tmk-head .mtf-score{gap:var(--s3);margin-top:var(--s2)}
+  .tmk-head .mtf-score .band{font-size:var(--t24)}
+  .tmk-head .mtf-score .lab,.tmk-head .mtf-score .win,.tmk-head .mtf-score .tm-low{font-size:var(--t13)}
+  .tmk-head .mtf-acts{display:grid;grid-template-columns:repeat(2,max-content);gap:0 var(--s6);margin-top:var(--s2)}
+  .tmk-head .k-sent{gap:var(--s2) var(--s2);margin-top:var(--s3);font-size:var(--t17)}
+  .tmk-head .k-sent .k-w{min-height:var(--tap);padding:0 var(--s3);border-width:2px}
+  .tm-jump.tmk-jump{column-gap:var(--s3);margin-top:var(--s1)}
+  .tmk-head .k-kicker{margin:var(--s2) 0}
+  .tmk-jump .tmk-bw{display:none} /* phones: "Jump to:" and the three links share one line */
+  .tmk-jump a{font-size:var(--t15)}
+  .tmk-work .mtf{margin:0 0 0 -20px;padding:0 var(--s2) var(--s3);box-shadow:0 0 0 1px var(--wr-rule),8px 8px 0 var(--mtf-drop)}
+  .tmk-work .mtf .k-roster{padding-top:var(--s10);row-gap:var(--s10)}
+  /* the kit's phone roster sets every name to 17px after its fit levels, so levels 2-5 never shrank a long name (kit.css; flagged):
+     here the levels apply again on phones (Squawkabilly, Crabominable at 320) */
+  .tmk-work .mtf .k-name[data-kf="2"]{font-size:var(--t15)}
+  .tmk-work .mtf .k-name[data-kf="3"],.tmk-work .mtf .k-name[data-kf="4"],.tmk-work .mtf .k-name[data-kf="5"]{font-family:var(--b);font-weight:700;letter-spacing:0;font-size:var(--t15)}
+  .tmk-work .mtf .k-name[data-kf="4"]{font-stretch:80%}
+  .tmk-work .mtf .k-name[data-kf="5"]{font-size:var(--t13);font-stretch:75%;letter-spacing:-.02em;padding-right:0;white-space:normal}
+  .tmk-work .mtf-add .k-plate{min-height:112px}
+  .tmk-work .mtf-add .plus{top:var(--s3);font-size:var(--t34)}
+  .tmk-work .mtf-sum{gap:var(--s3);margin-top:var(--s4);padding-top:var(--s2)}
+  .tmk-work .mtf-sl,.tmk-work .mtf-inf{gap:var(--s3)}
+  /* phones: the card above already shows the name and score, so the detail's name is read out but not shown again, and
+     ‹ 1 of 6 › shares its row with the types (mock B phone) */
+  .tmk-work .mtf-sl{grid-template-columns:auto minmax(0,1fr);align-items:center}
+  .tmk-work .mtf-sl > .mtf-ia{grid-column:1 / -1}
+  .tmk-work .mtf-nav h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .tmk-work .mtf-sum{position:relative}
+  .tmk-work .mtf-tr{justify-content:flex-end}
+  .tmk-work .mtf-tr .rate{display:none}
+  .tmk-work .mtf-ia{gap:var(--s1) var(--s4)}
+  .tmk-work .mtf-ia dd{font-size:var(--t15)}
+  .tmk-work .mtf-mv li{min-height:36px;padding:var(--s1) var(--s3);font-size:var(--t15)}
+  .tmk-work .mtf-links{gap:0 var(--s4)}
+  .tmk-work .tm-sgs .sg2-links .sg2-all{font-size:var(--t13)} /* 15px put "See All Suggestions ›" on three lines in its column */
+  .tmk-work .mtf-links .tm-legal{display:none} /* phones: the status line at the top already says Legal for Reg M-C ✓ */
+  /* a suggestion: its number beside the gain, Apply beside Why? */
+  .tmk-work .tm-sug > li:not([hidden]){display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"k mv" "sw sw" "ln ln" "ap wy";align-items:center;column-gap:var(--s4)}
+  .tmk-work .tm-sug > li > .np-eyebrow{grid-area:k}
+  .tmk-work .tm-sug > li > .tm-mv{grid-area:mv;margin:0}
+  .tmk-work .tm-sug > li > .tm-swaps{grid-area:sw}
+  .tmk-work .tm-sug > li > .sg2-ln{grid-area:ln}
+  .tmk-work .tm-sug > li > .np-btn,.tmk-work .tm-sug > li > .np-btn2{grid-area:ap;margin:0}
+  .tmk-work .tm-sug > li > .sg2-why{grid-area:wy;align-self:start}
+  .tmk-work .tm-sug > li > .sg2-why[open]{grid-column:1 / -1;grid-row:auto}
+  .tmk-work .mtf-do{gap:0 var(--s4)}
+  .tmk-work .tm-sec > h2{font-size:var(--t17)}
+  .tmk-work .mtf-lead{margin-top:var(--s4);font-size:var(--t15)}
+  .tmk-work .mtf-links{margin-top:var(--s2)}
+  .tmk-work .tm-legend{gap:var(--s2) var(--s6)}
+  .tmk-work .tm-legend b{font-size:var(--t28)}
+  .tmk-work .mu-sent{gap:var(--s2) var(--s2);margin:var(--s4) 0 var(--s3);font-size:var(--t15)}
+  .tmk-work .mu-sent .k-w{min-height:var(--tap);padding:0 var(--s2);border-width:2px}
+  .tmk-work .tm-mus .tm-sub{margin-top:0}
+}
+/* 380 and up: the six header links fit three to a row (two even rows, no lone link) */
+@media (min-width:380px) and (max-width:699.98px){.tmk-head .mtf-acts{grid-template-columns:repeat(3,max-content);column-gap:var(--s3)}}
+@media (max-width:359.98px){
+  .tmk-head .mtf-acts{gap:0 var(--s4)}
+  .tmk-head .k-sent{font-size:var(--t17)}
+  .tmk-work .mtf{margin-left:-12px}
+}
