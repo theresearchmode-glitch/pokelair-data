@@ -2,7 +2,7 @@
 // POST (src/data/post.js). V2.postNow() -> {live: [...], past: [...], news: [...], checked}; a gift is live from its start until
 // its end (UTC), so it moves to the stamp sheet by the clock, with no data change needed. A gift with no start counts as already
 // started (review, Nov 18: it was shown nowhere), so it is live until its end passes.
-// Only Mystery Gifts (Sim, Nov 18: "just mystery gifts"; she chose Serial Code and Event Gift): a gift of another kind (Battle Pass,
+// Only Mystery Gifts (Sim, Nov 18: "just mystery gifts"; he chose Serial Code and Event Gift): a gift of another kind (Battle Pass,
 // Competition Prize, Livestream Reward, Early Download) is kept off every page even if it is in POST. V2.postMG(g): true for a Mystery Gift
 // (no 'how' counts as one: a gift with a code reads as a serial code, one without as an event gift, as V2.prG reads it).
 V2.postMG = g => !!g && !/pass|prize|competition|stream|twitch|early/i.test(String(g.how || g.via || g.method || g.type || ''));

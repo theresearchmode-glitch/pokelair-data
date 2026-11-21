@@ -247,7 +247,7 @@
 /* nuclear stress test (Nov 16): the underdog's colour field faded to nothing at 75%, so on wide screens the panel read as ending at 70% width
    beside full-width sections; the field now runs the full width and eases to a faint tint */
 .fn-dog,.hm-ud.fn-dog{background:linear-gradient(110deg,rgba(var(--cp),.3),rgba(var(--cp),.1) 70%,rgba(var(--cp),.06))}
-/* Sim, Nov 16 morning (her iPhone, a team scoring 86): the score plate grew with "Tournament ready" and pushed "Set as Opponent" over it and off
+/* Sim, Nov 16 morning (his iPhone, a team scoring 86): the score plate grew with "Tournament ready" and pushed "Set as Opponent" over it and off
    the edge at 360-393, and squeezed it to 16px at 320-340 (the overnight checks only used the sample's "Top tier"); with a long band word
    (home.js marks it .long) the button takes its own row under the plate on phones; short words keep the plate and button side by side */
 @media (max-width:499.98px){.fn-mid:has(.fn-belt.long){grid-template-columns:minmax(0,1fr);justify-items:center;row-gap:var(--s3)}.fn-mid:has(.fn-belt.long) .fn-prep{width:auto;max-width:100%}}

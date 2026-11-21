@@ -129,7 +129,7 @@ Nothing under /home/user/pokelair-data was edited. Scripts and raw output are in
 | Home | 123-124 ms | 22-27 ms |
 | Pokémon page | 202-204 ms | 82-95 ms |
 
-- Frames stayed at 16.7 ms here because raster runs off the main thread. Whether Sim feels it on her GPU is unsure.
+- Frames stayed at 16.7 ms here because raster runs off the main thread. Whether Sim feels it on his GPU is unsure.
 - Fix: on `(hover:hover) and (pointer:fine)`, turn filters off by default and opt in only feature sprites (`.ft`, `.sel`, the spotlight). This is a visual change and needs Sim's yes and screenshots.
 - On phones every sprite has a drop-shadow plus a blurred pool at night (gauntlet 240 elements, calc 196). I couldn't judge this headless (touch-gesture traces record no paint), so check on the iPhone.
 

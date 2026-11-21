@@ -93,7 +93,7 @@ const BR = async () => {
     const f1 = await f(); await q.waitForFunction(() => !document.querySelector('.sg2-wait'), null, {timeout: 90000}).catch(() => {}); await q.waitForTimeout(1500); const f2 = await f(), toast = await q.evaluate(() => document.querySelectorAll('.np-toast').length);
     ok(/^(Undo|Apply)$/.test(f1) && /^(Undo|Apply)$/.test(f2) && toast <= 1, `BR-C3: at ${W} keyboard Apply puts the focus on the Undo or the Apply now in its place (not <body>), it stays after the list settles, and one message at most (A6) (${f1}, then ${f2}; toasts ${toast})`); await c.close(); } };
 if (process.env.ONLY === 'BR') { await BR(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
-// ---- MQ begin: Sim's answers to the Nov 18 morning questions (docs/rebuild/morning-questions-nov18.md) and her Gifts-only rule.
+// ---- MQ begin: Sim's answers to the Nov 18 morning questions (docs/rebuild/morning-questions-nov18.md) and his Gifts-only rule.
 //   Each check failed on the build before its change. ONLY=MQ runs these alone; the full run calls MQ() just before the browser closes.
 const MQ = async () => {
   const open = async (hash, W = 1440) => { const q = await b.newPage({viewport: {width: W, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + hash); await q.waitForTimeout(2000); return q; };
@@ -320,7 +320,7 @@ const HQ = async () => {
       const hit = dy => { const t = document.elementFromPoint(cx, cy + dy); return !!t && (t === e || e.contains(t)); }; if (!(hit(-21) && hit(21))) out.push(`"${e.textContent.trim()}" ${Math.round(x.height)}px`); } return out; }});
     for (const x of r) ch.push(w + ': ' + x); }
     ok(!ch.length, `HQ Q13e (Sim: A): every "›" link on Home has a 44px tap area, inside a sentence too${ch.length ? ': ' + ch.join(' | ') : ''}`); }
-  // Sim (Nov 18, from her iPhone: "remove the incineroar and kingambit tags. its too much"; then desktop's too): no small dark name tag in
+  // Sim (Nov 18, from his iPhone: "remove the incineroar and kingambit tags. its too much"; then desktop's too): no small dark name tag in
   // the hero at any width; only the white plates name Pokémon there, and the next six by rating stay named buttons (plate or ticker)
   { const tg = []; for (const w of [320, 390, 600, 699, 820, 1100, 1440, 1920, 2560]) { const r = await hq(w, w < 700 ? 844 : 900, {fn: () => window.__ev(`(() => {
       const S = document.querySelector('#main .sdh'), dark = [...S.querySelectorAll('.sdh-tag, .sdh-tags > *')].filter(e => e.getClientRects().length && !e.hidden).map(e => e.innerText.replace(/\\s+/g, ' ').trim());
@@ -1403,7 +1403,12 @@ if (part('main2')) {
         for (let k = 1; k < R.length; k++) if (R[k][3] === R[k - 1][3] && R[k][1] - R[k - 1][2] < 2) tight.push(R[k - 1][0] + R[k][0]); }); return tight.length ? 'words run together: ' + tight.join(', ') : 'row'; })() : T.join('/'); })); await c.close(); }
     ok(rows.every(x => /:row$/.test(x)), `Sim, Nov 18 (C and Q2 option 1): the three Suggestions links sit in one even row at 360-699 and 1100-1280, their words spaced (${rows.join(', ')})`); }
   // 4. long names on the three-across Cards: none past its Card or over two lines, never under 13px (320 keeps two across)
-  { const out = []; for (const W of [320, 360, 390]) { const {q, c} = await mtOpen(W, true); out.push(await q.evaluate(W => {
+  { /* Nov 21: wait for the name fit to settle after the viewport change (two frames + 300 ms, then the names' sizes the same on two reads
+       in a row, up to about 6 s) before measuring: it measured before the fit settled. What it checks is unchanged. */
+    const fitSettle = async q => { await q.evaluate(() => new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r)))); await q.waitForTimeout(300);
+      const snap = () => q.evaluate(() => [...document.querySelectorAll('#main .mtf-party .mtf-row .nm b, #main .mh .mc-id h3')].map(h => { const r = h.getBoundingClientRect(); return [getComputedStyle(h).fontSize, Math.round(r.left), Math.round(r.width), h.offsetHeight, h.scrollWidth].join(','); }).join('|'));
+      let prev = await snap(); for (let i = 0; i < 20; i++) { await q.waitForTimeout(300); const cur = await snap(); if (cur === prev) break; prev = cur; } };
+    const out = []; for (const W of [320, 360, 390]) { const {q, c} = await mtOpen(W, true); await fitSettle(q); out.push(await q.evaluate(W => {
       /* Nov 21: My Team frame (Sim approved): the names sit in the frame's rows (.mtf-row .nm b); 360+ one row of six, 320-359 three across */
       const F = [...document.querySelectorAll('#main .mtf-party .mtf-row')]; if (F.length) { const L = new Set(F.map(e => Math.round(e.getBoundingClientRect().left))).size;
         const bad = F.map(r => r.querySelector('.nm b')).filter(Boolean).map(h => { const cr = h.closest('.mtf-row').getBoundingClientRect(), x = h.getBoundingClientRect(), lh = parseFloat(getComputedStyle(h).lineHeight) || parseFloat(getComputedStyle(h).fontSize) * 1.2, fs = parseFloat(getComputedStyle(h).fontSize);

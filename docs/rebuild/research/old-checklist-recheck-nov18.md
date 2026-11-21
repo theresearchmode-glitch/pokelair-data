@@ -97,7 +97,7 @@ Checked by code (sugs.js lines 34-48, 120-131) and on the page (Load Team from B
   report does carry its result. No decision found dropping the numbers (unsure if deliberate).
 
 ## i41: Flaky Build test X-10: DONE
-- Sim tried it on her iPhone (decisions.md line 712, Nov 13 5:14 PM): the info sheet opened every time; closed as a test-speed
+- Sim tried it on his iPhone (decisions.md line 712, Nov 13 5:14 PM): the info sheet opened every time; closed as a test-speed
   problem. The v2 adapter waits 0.3 s before the tap (adapters/v2.B-build.mjs line 307; decisions.md line 708).
 - Today on the frozen art build: `X-10` run alone 10 times: 10 of 10 pass
   ("behaviour: 1 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped" each time). The tile is now a Blueprint figure (`.bd-six

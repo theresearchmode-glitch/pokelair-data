@@ -7,7 +7,7 @@ V2.pages.guide = {place: null, draw() {
   <h1 class="u">Every piece, one rule each.</h1>
   <p class="lede">The building blocks of the new NastyPlot, drawn from the design system. Switch day and night at the top right and resize the window: each piece must look right at its smallest and largest size. Team shown: the sample team (Sun, Tailwind).</p>
 
-  ${(() => { try { if (typeof NP_LOGO !== 'object') return ''; const u = k => 'data:image/svg+xml,' + encodeURIComponent(NP_LOGO[k]); /* the logo (Sim, Nov 16): her designer's "Sly Devil"; the rules from its guide */
+  ${(() => { try { if (typeof NP_LOGO !== 'object') return ''; const u = k => 'data:image/svg+xml,' + encodeURIComponent(NP_LOGO[k]); /* the logo (Sim, Nov 16): his designer's "Sly Devil"; the rules from its guide */
     return `<h2 class="u">Logo</h2>
   <div class="sg-logo"><figure><img src="${u('full')}" alt="NastyPlot logo" height="44"><figcaption>Full logo, 44px · desktop header (1000px and wider), screens</figcaption></figure>
   <figure><img src="${u('small')}" alt="NastyPlot logo, small" height="32"><figcaption>Small logo, 28–32px · phones and tablets (414–999px), footer</figcaption></figure>

@@ -80,7 +80,7 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
   const tops = [...document.querySelectorAll('.np-dock,.np-bar')].map(e => e.getBoundingClientRect()).filter(r => r.height && r.top < innerHeight).map(r => r.top);
   if (tops.length) t.style.setProperty('--tb', (innerHeight - Math.min(...tops) + 12) + 'px'); // a custom property, so an open sheet can still move it (components.css)
   // code review B9b: a toast stays while it has keyboard focus or the pointer (its Undo was gone after 4 s even mid-reach)
-  /* Sim Q2 (Nov 16, recommended A): while a sheet is open the toast sits under its backdrop (her Nov 11 rule), so an Undo moves into a bar at
+  /* Sim Q2 (Nov 16, recommended A): while a sheet is open the toast sits under its backdrop (his Nov 11 rule), so an Undo moves into a bar at
      the top of the sheet (the Undo bar style Suggestions uses); the words stay in the toast; the bar goes with the next change or the sheet */
   { const sh = document.querySelector('.np-sheet'), ub = t.querySelector('#toastUndo,[data-v2undo],[data-bxundo]'); document.querySelectorAll('.np-sheet-undo').forEach(x => x.remove());
     if (sh && ub) { const bar = document.createElement('div'), m = document.createElement('span'); bar.className = 'sg2-undo np-sheet-undo'; bar.setAttribute('role', 'status');
@@ -300,7 +300,7 @@ try { V2._thLast = document.documentElement.dataset.theme; new MutationObserver(
 /* Q10: with Day or Night pinned, the device switching doesn't change the look, but it changes what the button's next tap does
    (themeNext), so its label is redrawn to stay true. In Auto the observer above already redraws */
 try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => { if (V2.themeMode() !== 'auto' && V2.redraw && V2.draw) V2.redraw(); }); } catch (e) {}
-/* The logo "Sly Devil" (Sim, Nov 16; files from her designer in docs/brand/sly-devil, NP_LOGO from experiments/gen-logo-sly.mjs).
+/* The logo "Sly Devil" (Sim, Nov 16; files from his designer in docs/brand/sly-devil, NP_LOGO from experiments/gen-logo-sly.mjs).
    ONE logo for day and night: its white sticker edge carries its own background, so the light/night pair and the night overrides are gone.
    Drawn as an image (no ids to clash between the header and footer copies, and its soft shadow is painted once, not on every scroll frame).
    Header: the full logo at 44px on wide screens, logo-small (no block shadow, simpler face) on phones; footer: logo-small.

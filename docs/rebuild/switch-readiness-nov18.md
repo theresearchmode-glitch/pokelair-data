@@ -4,7 +4,7 @@ Look-only check. No site code, data or workflow was changed. Written Wed Nov 18,
 Read at: claude/design6 9eda3209, main 22ff4577, live 22ff4577 (git fetch the same day).
 Every claim says how it was checked, or says "unsure".
 
-Status words: **done**, **open** (Claude can do it), **blocked on Sim** (needs her answer, her device or her yes).
+Status words: **done**, **open** (Claude can do it), **blocked on Sim** (needs his answer, his device or his yes).
 Sizes: **S** under an hour, **M** a few hours, **L** a day or more, or risky.
 
 ## The short answer
@@ -23,7 +23,7 @@ The pages are built and on the Preview. What stands between today and the switch
    daily refresh only writes the 15 meta documents, so new headlines reach players only when the page is republished.
 6. **The switch publish must remove the old sprite files.** The live artifact holds 359 files. The new build adds 352. Together
    that is 711, over the 511-file cap per version, so the publish has to drop the 345 old sp/*.webp files (the new page doesn't use them).
-7. **Sim's own look** at the new Home (The Stampede), Mystery Gifts, News and the Nov 18 changes, on her devices, and her explicit yes.
+7. **Sim's own look** at the new Home (The Stampede), Mystery Gifts, News and the Nov 18 changes, on his devices, and his explicit yes.
 
 ## 1. Pages
 
@@ -39,19 +39,19 @@ ticks at all). **Open, S:** tick them and trim the stale notes.
 
 | Page | Built | On the Preview | Sim's look | What is truly open |
 |---|---|---|---|---|
-| Home: The Stampede | done (stampede*.js) | done (v204) | **blocked on Sim**: new since her Nov 17 device review | **open, M:** run 1351's quality check has 42 new findings, all on Home; v2-minors "receipt band names 8px apart" (1100, 1920) and "Build Me a Team on 2 lines at 360 with a classic scrollbar" fail; v2-unbounded flagged 13px Unbounded "Rillaboom" tags (run 1340). No height limit in the C13 check (see section 6). |
+| Home: The Stampede | done (stampede*.js) | done (v204) | **blocked on Sim**: new since his Nov 17 device review | **open, M:** run 1351's quality check has 42 new findings, all on Home; v2-minors "receipt band names 8px apart" (1100, 1920) and "Build Me a Team on 2 lines at 360 with a classic scrollbar" fail; v2-unbounded flagged 13px Unbounded "Rillaboom" tags (run 1340). No height limit in the C13 check (see section 6). |
 | Mystery Gifts: The Post Room | done (postroom.js, post-data.js) | done (since v202) | **blocked on Sim**: new | Data is hand-kept in post.js; codes are manual by design (docs/legal-sources.md 2-outlet rule). |
 | News: The Champions Dispatch | done (dispatch.js) | done (since v202) | **blocked on Sim**: new | Daily update path missing at the switch (Data item D3). |
-| My Team (+ Team Sheet, Saved Teams, Share) | done | done | done for the pre-Nov 18 version; C layout needs her look | **open, S-M:** v2-minors "My Team at 390 is at most 4.3 screens" fails (4.47 screens, 3,769px; runs 1343 and 1351). |
-| All Suggestions | done (option C) | done (v204) | needs her look | **open, S-M:** v2-minors AS-9 fails: the sheet is 5.46 phone screens at 390 (mock-up 4.27; run 1351). |
-| Pokémon page | done | done | Base Stats A needs her look | none known |
-| Build | done | done | extras need her look | Two-weather warning left out on purpose (Sim's Q13d B). |
+| My Team (+ Team Sheet, Saved Teams, Share) | done | done | done for the pre-Nov 18 version; C layout needs his look | **open, S-M:** v2-minors "My Team at 390 is at most 4.3 screens" fails (4.47 screens, 3,769px; runs 1343 and 1351). |
+| All Suggestions | done (option C) | done (v204) | needs his look | **open, S-M:** v2-minors AS-9 fails: the sheet is 5.46 phone screens at 390 (mock-up 4.27; run 1351). |
+| Pokémon page | done | done | Base Stats A needs his look | none known |
+| Build | done | done | extras need his look | Two-weather warning left out on purpose (Sim's Q13d B). |
 | Battle (+ Practice, Test Run) | done | done | done (Nov 17) | Tap-to-pick grid is planned for right after Step 1's checks (pr-4a), not a switch item. |
 | Speed Tiers, Damage Calc, Type Chart, Compare, My Box | done | done | done (Nov 17) | none known |
 | Meta (Ratings, Usage, Sets, Winning Teams, Events, Archetypes) | done | done | done (Nov 17) | none known |
 | This Week, Track Record | done | done | done (Nov 17) | Track Record shows the new tier groups only once main's data job has the 3h change (Data D2). |
 | How We Calculate, About, Legal + Privacy, Feedback, empty/loading | done | done | done (Nov 17) | **open, S:** About still says op.gg is "Read once a day and credited here, as op.gg asks" (app/src/app/56-about-data.js:12). The read is paused on main since Nov 18 (cfa6451e). |
-| Header, menu, phone bar, search, footer | done (Auto theme added) | done | Auto needs her look | none known |
+| Header, menu, phone bar, search, footer | done (Auto theme added) | done | Auto needs his look | none known |
 
 Preview check (Artifact list, scope files, Preview artifact 8KBkk7PtbGjVzLzLKK5akf): 403 files, including foundation.html, v2.js,
 preview.json, 7 fonts and 350 v2art files (346 sprites + 4 crowd sheets). Checked.
@@ -247,7 +247,7 @@ and the code for each claim below.
   docs/rebuild/page-heights.md was last changed Nov 15. RULES C1/C13 ask for both.
 - **Fresh outside audit score (open, M).** Plans np-polish: audit v199 items #10 (text behind the phone bar), #17 (Track old groups;
   fixed by D2), #22 rest, then a new score. The last score is 15/20 (Nov 17), before The Stampede, Gifts and News.
-- **iOS 18 jump after Apply (blocked on Sim, S).** Plans ar-s-ios18: needs her iPhone.
+- **iOS 18 jump after Apply (blocked on Sim, S).** Plans ar-s-ios18: needs his iPhone.
 - **Full check on Sim's PC (blocked on Sim, M).** Plans gp5-full (docs/rebuild/gpu-jobs.md).
 - **Older "those are good" items and Megas ranking tick (blocked on Sim, S).** Plans ar-w-good, ar-w-i45.
 - **Helpers and work in flight.** Rule-hole fixes and the Weather Ball rule are being built now (decisions.md, Nov 18). Each new commit

@@ -35,12 +35,12 @@ const USAGE_L = {1440: [2100, 'Podium (Sim, Nov 14, Q2 A)']};
 const POKEMON_L = {320: [4800, 'Pokémon page, folded parts (Sim, Nov 15 Q1 A; measured + 50)'], 390: [4550, 'Pokémon page, folded parts (Sim, Nov 15 Q1 A; measured + 50)'], 820: [4550, 'Pokémon page, folded parts (Sim, Nov 15 Q1 A; measured + 50)'], 1440: [3250, 'Pokémon page, folded parts (Sim, Nov 15 Q1 A; measured + 50)']};
 const BUILD_L = {320: [4150, 'Blueprint (Sim, Nov 14, Build limits A)'], 390: [3850, 'Blueprint (Sim, Nov 14, Build limits A)'], 1440: [2100, 'Blueprint (Sim, Nov 14, Build limits A)']};
 const BATTLE = {320: [4650, 'Battle log + tools (Sim, Nov 12)'], 390: [4200, 'Play-by-Play (Sim, Nov 15, Q2: 4,100 to 4,200)'], 1440: [2150, 'Play-by-Play 2x2 + three columns (Sim, Nov 15: 1,950 to 2,150)']};
-// My Team 'The Hand' (Sim's pick Nov 14; limits Nov 15, Claude under Sim's authority, her standing 'recommended'): measured heights rounded up to the next 50, as for Build / Meta / Battle
+// My Team 'The Hand' (Sim's pick Nov 14; limits Nov 15, Claude under Sim's authority, his standing 'recommended'): measured heights rounded up to the next 50, as for Build / Meta / Battle
 const TEAM_L = {320: [4600, 'The Hand (Nov 15)'], 390: [4150, 'The Hand (Nov 15)'], 1440: [2350, 'The Hand (Nov 15)']};
 // The Stampede Home, Gifts (#gifts) and News (#news) (switch-readiness Nov 18: no limits for the new pages). Measured Nov 18 at 390 and 1440 on
 // the daily data (out/, with meta/post), Chromium and WebKit, the taller of the two, + about 100 px for daily news and Meta growth, rounded up
 // to the next 50. These include the footer (no +footer below). Set so that a change that makes them taller fails; NOT agreed by Sim (C1:
-// limits are hers). 320 and 820 have no new limit yet: Home measured 6,664 at 320 and 7,819 at 820 (taller than the phone), Gifts 4,108 /
+// limits are his). 320 and 820 have no new limit yet: Home measured 6,664 at 320 and 7,819 at 820 (taller than the phone), Gifts 4,108 /
 // 3,194, News 4,654 / 3,939; those widths still use the old limits above and report OVER until Sim picks.
 // Nov 18 evening (Sim: 'recommended and yes'): 320 and 820 get limits the same way (taller engine + about 100, to the next 50), measured
 // after the Home tools change (iPad: six big plates + Type Chart strip + three plates).

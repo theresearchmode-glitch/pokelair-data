@@ -237,7 +237,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 document.addEventListener('change', e => { const t = e.target; if (!t || !t.matches || !t.matches('[data-btrepfile]') || !t.files || !t.files[0]) return;
   const fr = new FileReader(); fr.onload = () => { const s = String(fr.result || ''); const m = s.match(/<script type="text\/plain" class="battle-log-data">([\s\S]*?)<\/script>/); V2.btAddReplay(m ? m[1] : s); }; fr.readAsText(t.files[0]); t.value = ''; });
 
-// ---------- piece 4b (BUILT ON THE BRANCH FOR SIM'S Q6, not on the Preview until she says yes): the Battle tools ----------
+// ---------- piece 4b (BUILT ON THE BRANCH FOR SIM'S Q6, not on the Preview until he says yes): the Battle tools ----------
 // Mock-up: a tools bar under the header on 700+ (Battle a team · Team preview practice · Test run · Speed tiers · Damage calc · Type chart,
 // Battle log on the right) and, on phones, "More ways to prep" above the Battle log. Counts are today's: Test run = gauntletTeams(),
 // Speed tiers = your six against the 20 most-used (39-damage-calc-speed.js slice(0,20)). Pages not rebuilt yet open the Preview's

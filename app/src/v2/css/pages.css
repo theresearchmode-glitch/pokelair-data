@@ -1891,7 +1891,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 }
 .us-step .us-fig.pod{grid-row:auto}.us-fig.pod .us-tx{padding-top:var(--s3)}.us-steps{border-bottom:0}.us-fig.pod .us-blk{border-bottom:4px solid var(--plot)}
 .us-bar>i>i{background:linear-gradient(90deg,var(--ty-a,var(--plot)),var(--ty-b,var(--plot)))}
-/* Sim, Nov 14: Meta scrolled slowly on her Windows desktop (mouse wheel). Her standing rule: sprite glow off on mouse screens except feature
+/* Sim, Nov 14: Meta scrolled slowly on his Windows desktop (mouse wheel). His standing rule: sprite glow off on mouse screens except feature
    sprites. The stand and the podium draw ~80 sprites, each with drop-shadow filters (two at night) and a blurred pool; the spotlight keeps its. */
 @media (hover:hover) and (pointer:fine){
   .gs .np-mon img,.us-podium .np-mon img,.us-mates .np-mon img,.us-list .np-mon img,:root[data-theme="night"] .gs .np-mon img,:root[data-theme="night"] .us-podium .np-mon img,:root[data-theme="night"] .us-mates .np-mon img,:root[data-theme="night"] .us-list .np-mon img{filter:none}
@@ -1997,7 +1997,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .tm-hero.mt .mt-head{grid-template-columns:minmax(0,1fr) minmax(0,48%);align-items:start}.tm-hero.mt .mt-belt .w span{text-wrap-style:balance;text-align:center} /* the belt never takes more than about half: a long band word wraps evenly (Sim, Nov 15 night) */.tm-hero.mt .mt-right{grid-column:1/-1}
   .tm-hero.mt .mt-belt .np-score b{font-size:var(--d64)}.mt-id .tm-name{font-size:var(--t24)}.mt-id{gap:var(--s1)}.mt-id .tm-links{margin-top:0}.tm-hero.mt{gap:var(--s4)}
   .mt-band{font-size:var(--t13);letter-spacing:.02em;column-gap:var(--s2)}.mt-band span{white-space:nowrap}
-  .mt-edit{padding:var(--s2) var(--s3);gap:var(--s2)}.tm-six.mh .sx-plan{padding:var(--s3)}} /* Nov 16 (Sim's Q5, under her authority): 12px so the Game Plan link's 44px tap area fits inside the slanted panel */
+  .mt-edit{padding:var(--s2) var(--s3);gap:var(--s2)}.tm-six.mh .sx-plan{padding:var(--s3)}} /* Nov 16 (Sim's Q5, under his authority): 12px so the Game Plan link's 44px tap area fits inside the slanted panel */
 @media (max-width:399.98px){.mt-band span:nth-child(2){white-space:normal}}
 @media (max-width:699.98px){.tm-hero.mt .mt-id{display:contents}.tm-hero.mt .mt-id>*{grid-column:1/-1}.tm-hero.mt .mt-id>.fn-k,.tm-hero.mt .mt-id>.tm-name{grid-column:1}
   .tm-hero.mt .mt-id>.fn-k{grid-row:1;align-self:end}.tm-hero.mt .mt-id>.tm-name{grid-row:2;align-self:start}.tm-hero.mt .mt-belt{grid-column:2;grid-row:1/3}
@@ -3260,7 +3260,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-bt i{position:absolute;inset:0 auto 0 0;width:var(--w);border-radius:2px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,var(--surface)),var(--c) 70%);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 60%,var(--ink)),0 0 6px color-mix(in srgb,var(--c) 20%,transparent)}
 .pk-bt i::after{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:color-mix(in srgb,var(--surface) 30%,transparent)}
 @media (max-width:379.98px){.pk-bsr{grid-template-columns:64px auto minmax(0,1fr)}.pk-bsd .pk-bsr{grid-template-columns:64px auto minmax(0,1fr) 32px}.pk-bsr dd>b{min-width:48px;font-size:var(--t22)}}
-/* Sim, Nov 18: Base Stats calmer and half the height, on theme ('large bubbly numbers ... off theme'; she picked 'A on theme',
+/* Sim, Nov 18: Base Stats calmer and half the height, on theme ('large bubbly numbers ... off theme'; he picked 'A on theme',
    pics/nov18/stats-opt3-A3-*): our slanted number type, small and flat (no shadow), flat skewed bars, a quieter total; on phones two
    columns, each stat's label and number on one line with its bar under them */
 .pk-stats{gap:var(--s3);padding:var(--s5) var(--s6) var(--s6)}.pk-tot b{font-size:var(--t26)}

@@ -60,7 +60,7 @@ the removed Card was fully on screen (1180 picture: B 0px, today -82px).
 
 ## Recommendation
 C. Why: it is the only option where nothing on screen moves and the Add spot is exactly where the player was looking; A hides it.
-If Sim wants to keep her Nov 15 rule unchanged, B is the fallback (Add spot in place, Cards still re-flow).
+If Sim wants to keep his Nov 15 rule unchanged, B is the fallback (Add spot in place, Cards still re-flow).
 
 ## Not checked / unsure
 - Safari / iPad: not run (WebKit has different scroll anchoring); numbers are Chromium only.

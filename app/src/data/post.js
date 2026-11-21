@@ -19,7 +19,7 @@
 //   amount   how many (1 for a Pokémon).
 //   extras   other things that came in the same parcel, as the source lists them ('Quick Coupon ×100'). Optional.
 //   how      how it was given. Only Mystery Gifts are kept (Sim, Nov 18: "the gift page shouldn't have pokemon and stuff from
-//            battle pass. just mystery gifts"; she chose these two kinds):
+//            battle pass. just mystery gifts"; he chose these two kinds):
 //            'Event Gift'        claimed from the in-game mailbox during a campaign, no code.
 //            'Serial Code'       a code (or password) shared with everyone, typed in Mystery Gift.
 //            Not kept (removed Nov 18; V2.postNow() also keeps any of them off every page): Battle Pass Pokémon, Competition

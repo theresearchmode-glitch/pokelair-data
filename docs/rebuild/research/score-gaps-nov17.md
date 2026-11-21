@@ -14,7 +14,7 @@ Labels: **checked** (file:line or URL) · **measured** (number, how) · **unsure
 4. Top 5 data steps: (1) label every round's format and build a single-game scoreboard; (2) keep every Showdown game instead of the
    newest 20,000; (3) learn from Showdown's open-team-sheet single games too; (4) bring rates; (5) readiness weighted by the field
    ranked players face, plus Reg M-D stat points. Only step 5's new outside source needs Sim's OK on terms; every daily-job
-   change needs her go.
+   change needs his go.
 5. Expected gains are small, about 0.0005-0.002 log-loss per step (my guess, sized from past wins such as matchups −0.0014).
    Player skill matters about twice as much as the team (measured), so no data step will make one game easy to call.
 

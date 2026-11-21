@@ -80,7 +80,7 @@ Battle 390 limit raised to 4,200 (Sim, Nov 15, Q2: 'recommended'; measured 4,179
 
 ## Notes
 
-- **My Team, today:** I measured 3,445px on desktop. Sim's figure was about 4,270px. I don't know which setup gave hers (a different width, or a section left open, perhaps), so both are noted here.
+- **My Team, today:** I measured 3,445px on desktop. Sim's figure was about 4,270px. I don't know which setup gave his (a different width, or a section left open, perhaps), so both are noted here.
 - **My Team, rebuild (Nov 11):** the page is over its limit at all three sizes. On desktop the Team Sheet adds 612px at the bottom. On phone the stacked Set, Matchups and Suggestions take 2,558px and the Team Sheet another 1,378px. On iPad the six overflow the screen edge, because the mock-up has no iPad layout yet. Under 9.2 this goes to Sim with options before any change.
 
 - **Home, rebuild (Nov 11): REVERSED by Sim ("38px is barely anything, find a way").** The tool descriptions are back on phone. The space came from smaller Pokémon art on phone (hero, the two sixes, the underdog), never from text or spacing. The first version of this note, kept for the record: The phone page first measured 4,238px, over the 4,200 limit. Instead of shrinking anything, the "Everything NastyPlot does" tiles show only the tool names on phone, without their one-line descriptions. Each tool is still one tap away, and the descriptions still show on iPad and desktop. Sim can reverse this.
@@ -124,7 +124,7 @@ state, day mode. `node experiments/c13-check.mjs app/dist/v2.html home,gifts,new
 Limits added to c13-check.mjs at 390 and 1440 only: the taller engine + about 100 px (daily news and Meta growth), rounded up to the next 50,
 footer included: Home 6,350 / 5,250; Gifts 3,850 / 2,150; News 4,250 / 2,250. They exist so a change that bloats these pages fails
 (checked: with 300 px added to each page, all 9 runs at 390/1440 report OVER; without, all 9 are ok). **Not agreed by Sim** (C1: limits
-are hers). The old Home limits (4,400 phone, 2,950 desktop) were for the Home the Stampede replaced. 320 and 820 keep the old limits and
+are his). The old Home limits (4,400 phone, 2,950 desktop) were for the Home the Stampede replaced. 320 and 820 keep the old limits and
 report OVER until Sim picks. Note: Home at 820 (iPad) is taller than at 390 (7,819 vs 6,240).
 
 ## Nov 18 evening: My Team with optional swaps (Sim: recommended)
