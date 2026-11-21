@@ -7,11 +7,16 @@
 V2.MTF_W = {six: 'Your six', tap: 'tap one to see it', of: (k, n) => `${k} of ${n}`, add: 'Add a Pokémon', plan: "How to play this six against the meta's top six."};
 V2.mtfImg = (n, cls = '') => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img class="${cls}" src="${V2.art(id)}" alt="" loading="lazy" decoding="async">` : ''; };
 V2.mtfTy = t => V2.TYPES.includes(t) ? t : 'Normal';
+// every width (Sim, Nov 21, 7:05 AM: squeezed names 'really rough'): the form on a small line above, the name one clean line, never squeezed
+V2.mtfSplit = d => { const q = []; let mg = false; if (d.startsWith('Mega ')) { mg = true; q.push('Mega'); d = d.slice(5); }
+  const rg = d.match(/^(Alolan|Galarian|Hisuian|Paldean) (.*)$/); if (rg) { q.push(rg[1]); d = rg[2]; }
+  const pm = d.match(/^(.*) \((.*)\)$/); if (pm) { d = pm[1]; q.push({F: 'Female', M: 'Male'}[pm[2]] || pm[2]); }
+  return `<span class="ns"><span class="q${mg ? ' mega' : ''}">${q.length ? V2.esc(q.join(' · ')) : '&nbsp;'}</span>${V2.esc(d).replace(/ ([XYZ])$/, '\u00a0$1')}</span>`; };
 // one row of Your six: number, picture, name, item · Ability, rating and tier, the four moves 2×2; its left edge in its first type's colour
 V2.mtfRow = (D, m, sel) => { const E = V2.esc, k = D.ms.indexOf(m), on = m === sel, R = monRating(m.p), it = m.heldItem || m.item || 'No item', lk = !!(S.slots[m.i] && S.slots[m.i].lock), d = V2.disp(m.p.n);
   const mv = m.moves.filter(Boolean).map(v => `<i style="--tc:var(--ty-${V2.mtfTy(v.type)})">${E(v.name)}</i>`).join('');
   return `<button type="button" class="mtf-row tm-pick${on ? ' on' : ''}${lk ? ' locked' : ''}" style="--c:var(--ty-${V2.mtfTy((m.p.t || [])[0])})" data-tmsel="${k}" aria-pressed="${on}" aria-label="${E(d)}, spot ${m.i + 1}${R ? `, rated ${R.n}${R.tier ? ' ' + E(R.tier) + ' tier' : ''}` : ''}, ${E(it)}${lk ? ', locked' : ''}">
-    <i class="no u" aria-hidden="true">${m.i + 1}</i>${V2.mtfImg(m.p.n, 'pic')}<span class="nm"><b class="u">${V2.nameHtml(d)}</b><small>${V2.keepForm(E(it))} · ${E(m.ability || 'None')}</small></span>
+    <i class="no u" aria-hidden="true">${m.i + 1}</i>${V2.mtfImg(m.p.n, 'pic')}<span class="nm"><b class="u">${V2.mtfSplit(d)}</b><small>${V2.keepForm(E(it))} · ${E(m.ability || 'None')}</small></span>
     ${R ? `<em class="rt u" aria-hidden="true"><b>${R.n}</b>${R.tier ? `<span>${E(R.tier)} tier</span>` : ''}</em>` : ''}${lk ? '<svg class="lkm" viewBox="0 0 24 24" role="img" aria-label="Locked"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M9 11V8a3 3 0 0 1 6 0v3"/></svg>' : ''}<span class="m4" aria-hidden="true">${mv}</span></button>`; };
 // an empty spot (a team of one to five): a dashed row that opens today's Pokémon picker for that spot (design question for Sim, brief s1)
 V2.mtfAdd = i => `<button type="button" class="mtf-row mtf-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><i class="no u" aria-hidden="true">${i + 1}</i><span class="plus" aria-hidden="true">+</span><span class="nm"><b class="u">Add<span class="mtf-addr"> a Pokémon</span></b><small>Spot ${i + 1}</small></span></button>`;
@@ -42,7 +47,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 V2.mtfFit = () => { /* every width (Nov 21): a long name is never cut ('…') or split inside a word, and never over two lines
   (Sim, Nov 18 C). One line, narrowed down to 70%; if that is not enough it wraps at spaces in a wider box (at most two lines) that is
   then narrowed to the tile (down to 55%), so 'Paldean Tauros (Combat)' in a 55px tile reads 'Paldean Tauros / (Combat)' */
-  document.querySelectorAll('#main .mtf-row:not(.mtf-add) .nm b').forEach(b => { b.style.transform = ''; b.style.whiteSpace = ''; b.style.width = ''; const c = b.parentElement.clientWidth; if (!(c > 0)) return;
+  document.querySelectorAll('#main .mtf-row:not(.mtf-add) .nm b').forEach(b => { b.style.transform = ''; b.style.whiteSpace = ''; b.style.width = ''; const c = b.parentElement.clientWidth; if (!(c > 0) || b.querySelector('.ns')) return; /* the split name never needs narrowing */
     const n = b.scrollWidth; if (n <= c) return; if (n * 0.7 <= c - 2) { b.style.transform = `scaleX(${((c - 2) / n).toFixed(3)})`; return; }
     const mg = b.querySelector('.mg'), mh = mg ? mg.offsetHeight : 0, lh = parseFloat(getComputedStyle(b).lineHeight) || 15; b.style.whiteSpace = 'normal';
     let k = 0.95; for (; k > 0.49; k -= 0.05) { b.style.width = `${Math.floor((c - 2) / k)}px`; if (b.scrollWidth <= Math.floor((c - 2) / k) && b.offsetHeight - mh <= lh * 2 + 1) break; }

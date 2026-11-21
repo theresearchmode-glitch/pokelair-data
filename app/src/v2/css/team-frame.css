@@ -196,3 +196,25 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 @media (max-width:359.98px){.mtf-inf > .mtf-ty{grid-column:1 / -1}.mtf-inf > .mtf-more{grid-column:1 / -1;grid-row:auto}
   .mtf-stage{height:116px}.mtf-stage .big{width:112px;height:112px}.mtf-mv li{min-height:36px}
   .mtf-nav h2{padding-top:var(--s1)}.mtf-nav span{padding-bottom:var(--s1)}}
+
+/* Nov 21 (Sim, 7:05 AM: the squeezed names 'look really rough'; 7:13 AM: fine): under 1000 the six's names are never squeezed. The form
+   sits on a small line above (Mega / Yellow / Paldean · Combat / Female) and the name is one clean line; phones show 3 + 3 */
+.mtf-row .nm .ns{display:block}.mtf-row .nm .ns .q{display:block;font:600 var(--t13)/1.2 var(--b);font-style:normal;color:var(--mtf-ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mtf-row .nm .ns .q.mega{color:var(--plot-text);font-weight:800}
+@media (max-width:999.98px){
+  .mtf-row .nm b{white-space:normal;text-align:center;font:700 var(--t15)/1.15 var(--b);font-style:normal;transform:none}
+  .mtf-row .nm .ns .q{display:block;font:600 var(--t13)/1.2 var(--b);color:var(--mtf-ink2);white-space:nowrap}.mtf-row .nm .ns .q.mega{color:var(--plot-text);font-weight:800}}
+@media (max-width:699.98px){.mtf-rows{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:2px}.mtf-row{min-height:0;padding:var(--s1) 2px var(--s2)}
+  .mtf-row .nm{width:100%;overflow:visible}.mtf-row .pic{width:56px;height:56px}.mtf-row .rt b{font-size:var(--t17)}}
+/* each tile picks its own size from its width (no squeezing): narrow tiles 13px names, the form line may wrap at its space */
+@media (max-width:999.98px){.mtf-row .nm{container-type:inline-size}}
+.mtf-row .nm .ns .q{white-space:normal}@media (min-width:1000px){.mtf-row .nm .ns .q{white-space:nowrap}}
+@container (max-width:99.98px){.mtf-row .nm b{font-size:var(--t13)}}
+@container (max-width:83.98px){.mtf-row .nm b{letter-spacing:-.04em}} /* 320-339: 'Crabominable' in a 79px tile */
+@media (max-width:339.98px){.mtf-row{padding-inline:0}}
+/* Nov 21 (Sim, 7:13 AM: 'not a fan of how the yellow just sticks out ... more nasty plot and less generic'): no yellow. The chosen
+   Pokémon is a black tile with a Nasty pink edge (the frame's own black and pink drop); pink marks the Suggestions bar, the gain, the
+   new Pokémon and Apply */
+.mtf-row.on{background:var(--mtf-frame);box-shadow:inset 0 0 0 3px var(--mtf-drop)}
+.mtf-row.on .no,.mtf-row.on .nm b,.mtf-row.on .nm small,.mtf-row.on .rt,.mtf-row.on .rt b,.mtf-row.on .mg,.mtf-row.on .nm .ns .q.mega{color:var(--mtf-on-frame)}
+.mtf-row.on .nm .ns .q{color:var(--mtf-bar-sub)}
+.mtf-sg > .tm-sgs > h2{color:var(--mtf-on-frame)}
