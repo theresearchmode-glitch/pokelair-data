@@ -180,3 +180,7 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 @media (max-width:359.98px){.mtf-sg .tm-sgs .sg2-links{grid-template-columns:1fr}.mtf-sg .tm-sgs .sg2-links .sg2-all{display:block}.mtf-sg .tm-sgs .sg2-links .sg2-l2{display:inline;margin:0}}
 /* Nov 21 (authority): desktop names in Your six are narrowed to fit (V2.mtfFit) instead of cut with "…" */
 @media (min-width:1000px){.mtf-row .nm{overflow:hidden}.mtf-row .nm b{overflow:visible;text-overflow:clip;transform-origin:0 50%}}
+/* Sim's type rule (Nov 11): Unbounded only at 15px and up, smaller text in Instrument Sans (v2-unbounded found 8 kinds in the frame):
+   the small "S tier" tags and the row numbers use Instrument Sans bold; the buttons stay Unbounded at 15px on phones too */
+.mtf-row .no,.mtf-stage .rate span,.mtf-row .rt span{font-family:var(--b);font-style:normal;font-weight:700}
+.mtf-head .mtf-btn,.mtf-do .mtf-btn{font-size:var(--t15)}
