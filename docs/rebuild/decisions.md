@@ -1895,3 +1895,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:21 PM: hH finished Home on the kit (tag keep/home-kit): shorter on phones (390: 6,220 -> 5,468), behaviour tests same; but it flattens Home's bold bands into paper + an even card grid (hH also unsure). HH recommends keeping today's Home; asking Sim with pictures.
 - 6:21 PM: Slot refilled with hB: Battle reskin proposal (keep its own bold parts, shared pieces on the kit, phone <= today measured from the start).
 - 6:25 PM: Calc reskin: KO Board check passes (minors main1 all passed); X-04 passes after reserving two lines for the hangs-on line (a89ec139). Final C-battle + overlap + kit-page running in ck before merging.
+- 6:29 PM: Sim (Pokémon page desktop pic): needs more pop of colour and better use of space; hates purposeless white. Prototyping: facts in the header's empty right, type-tinted section bands, data-says as filled tiles, tighter gaps; pictures before merge.
+- 6:32 PM: Pokémon page colour/space pass (pk, keep/pokemon-build): header fact tiles in type colours, type-tinted step bands, data slips as tiles 5 across; nothing cut at 320-1440; phone 5,193 (was 5,029). Pictures to Sim.
