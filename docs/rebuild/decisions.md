@@ -1874,3 +1874,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:56 PM: Calc names done (Sim's ask): photos show the name (+ 'Mega' line), sets read '<name>'s set'; arena/q47/q46 pass. Same change goes into the Calc reskin when it merges.
 - 4:11 PM: Prepared the Calc reskin with Sim's names change (tag keep/calc-kit-names): arena + q47 pass; q46 fix arrives at merge. Waiting on Sim's phone-length answer before merging.
 - 4:14 PM: v2-minors (3 parts) + v2-q83 all passed on 91c1ff92. Plans page updated.
+- 4:23 PM: GitHub run on e3ae6e99 done: only qcheck-all (hQ fixing) and v2-minors main1 (fixed in held commits) failed; code checks incl. q46/q83 passed. Pushed the held batch (b7127008).
