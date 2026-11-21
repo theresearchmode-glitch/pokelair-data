@@ -1906,3 +1906,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:46 PM: Sim: yes to the stronger colour version, except the four header fact tiles: move them under the 'On about one tournament team in 3' sentence.
 - 6:48 PM: Pokémon page: fact tiles moved under the sentence (9ad1e5d5), pictures to Sim; merged main into pk (fd53fc48) and started the full Pokémon check chain (kit, overlap, D-meta-shell, pksrc, q24/25/84, s33, minors) as a tracked task; merge to main after it passes.
 - 6:55 PM: Checked Politoed's 'Maybe' tag: no bug. The mock-up used made-up numbers (84–100%, Maybe); the real page computes 120–143% with Weather Ball in rain, every roll a KO, so it shows KO (pkHits: KO lo>=1, Likely mid>=1, Maybe hi>=1).
+- 6:59 PM: Calc reskin post-merge checks all pass in ck (16c8989c): C-battle 83 pass 0 fail; overlap calc 0 findings; v2-arena all pass; v2-q46 all passed. Calc reskin is done on main.
