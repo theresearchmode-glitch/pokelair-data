@@ -1,0 +1,42 @@
+{
+ "home": {
+  "mock": 5657,
+  "today": 6527
+ },
+ "build": {
+  "mock": 2474,
+  "today": 3071
+ },
+ "team": {
+  "mock": 3623,
+  "today": 3734
+ },
+ "team-b": {
+  "mock": 3664,
+  "today": 3734
+ },
+ "calc": {
+  "mock": 2594,
+  "today": 2187
+ },
+ "pokemon": {
+  "mock": 3535,
+  "today": 3828
+ },
+ "battle": {
+  "mock": 1763,
+  "today": 1768
+ },
+ "tournaments": {
+  "mock": 2652,
+  "today": 3386
+ },
+ "sets": {
+  "mock": 2965,
+  "today": 3148
+ },
+ "usage": {
+  "mock": 3163,
+  "today": 3554
+ }
+}

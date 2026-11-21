@@ -5,6 +5,9 @@ const rows = fs.readFileSync(DIR + '/PAGES.md', 'utf8').split('\n').filter(l => 
 const notesDir = new URL('./notes/', import.meta.url);
 const pics = fs.readdirSync(PICS);
 let md = `# Cohesion mock-ups: notes per page (Nov 21, 2026)\n\nEvery page in PAGES.md, in its order. Each page: today's features and where they went, the data source, changes from the PAGES.md idea, and any house rule not met.\nPictures: docs/rebuild/pics/nov21/cohesion/all/<nn>-<id>-<width>[-night].png. Gallery: index.html. Checks: a Playwright script measured each page at 390 and 1440 wide (sizes off the type scale, Unbounded under 15px, cut or spilling text, taps under 44px, sideways scroll, lone tiles, length in screens).\n\nShared kit: all new parts were added to kit2.css (marked "ADDED Nov 21"), never copied per page. Generator scripts that wrote the pages: tools/.\n\n`;
+const H = fs.existsSync(new URL('_heights.json', notesDir)) ? JSON.parse(fs.readFileSync(new URL('_heights.json', notesDir), 'utf8')) : {};
+md += '## Phone height at 390 wide (THEME.md section 4: no longer than today; no show/hide folds or tabs)\n\n| # | page | mock-up | today | |\n|---|---|---|---|---|\n' +
+  rows.flatMap(r => [r.id, r.id + '-b']).filter(k => H[k]).map(k => { const v = H[k], r = rows.find(x => x.id === k.replace(/-b$/, '')); return `| ${r.nn} | ${k} | ${v.mock}px (${(v.mock / 844).toFixed(2)} screens) | ${v.today}px (${(v.today / 844).toFixed(2)} screens) | ${v.mock <= v.today ? 'shorter or same' : 'LONGER by ' + (v.mock - v.today) + 'px'} |`; }).join('\n') + '\n\n';
 const done = [];
 for (const r of rows) { const f = new URL(r.id + '.md', notesDir);
   if (fs.existsSync(f)) { md += fs.readFileSync(f, 'utf8').trim() + '\n\n'; done.push(r.id); }

@@ -5,6 +5,21 @@ Pictures: docs/rebuild/pics/nov21/cohesion/all/<nn>-<id>-<width>[-night].png. Ga
 
 Shared kit: all new parts were added to kit2.css (marked "ADDED Nov 21"), never copied per page. Generator scripts that wrote the pages: tools/.
 
+## Phone height at 390 wide (THEME.md section 4: no longer than today; no show/hide folds or tabs)
+
+| # | page | mock-up | today | |
+|---|---|---|---|---|
+| 01 | home | 5657px (6.70 screens) | 6527px (7.73 screens) | shorter or same |
+| 02 | build | 2474px (2.93 screens) | 3071px (3.64 screens) | shorter or same |
+| 03 | team | 3623px (4.29 screens) | 3734px (4.42 screens) | shorter or same |
+| 03 | team-b | 3664px (4.34 screens) | 3734px (4.42 screens) | shorter or same |
+| 08 | battle | 1763px (2.09 screens) | 1768px (2.09 screens) | shorter or same |
+| 09 | calc | 2594px (3.07 screens) | 2187px (2.59 screens) | LONGER by 407px |
+| 15 | usage | 3163px (3.75 screens) | 3554px (4.21 screens) | shorter or same |
+| 16 | sets | 2965px (3.51 screens) | 3148px (3.73 screens) | shorter or same |
+| 18 | tournaments | 2652px (3.14 screens) | 3386px (4.01 screens) | shorter or same |
+| 27 | pokemon | 3535px (4.19 screens) | 3828px (4.54 screens) | shorter or same |
+
 ## 01 home · keeps its own hero (`pages/home.html`)
 Data source: today's built page `#home`, claude/design6 built Nov 21 with the repo's data files (the page's own banner dates the saved copy Nov 9; 13,631 tournament teams).
 
@@ -24,6 +39,7 @@ Changes from the PAGES.md idea and why:
 
 Kit additions: four-across grid.
 
+Phone length (section 4): see the heights table at the top of NOTES.md.
 Rules not met and why:
 - The check flags the moving strip's names as off-screen: they're clipped on purpose, as today (it scrolls).
 
@@ -49,8 +65,9 @@ Changes from the PAGES.md idea and why:
 
 Kit additions: outlined blue button (ADD, LOAD TEAM), 3-across grid, empty slot, pair pictures in a row, a big record, panel first line, show-on-one-size helpers, two-line list rows on phones.
 
+Phone length (section 4): see the heights table at the top of NOTES.md.
 Rules not met and why:
-- Phone length 4.60 screens (today 3.64). The bigger headline and the three-across notes cost the most.
+- (fixed for section 4) Phone now 2.93 screens. On phones: the three notes are one line, steps 2-4 merged, the winning teams are dense rows with LOAD, 4 pairs + Show 15 More (adds rows).
 
 Check (390 / 1440): every rule passes (0 off-scale, 0 Unbounded under 15px, 0 cut, 0 small taps, no sideways scroll, 0 lone tiles). Length 4.60 / 3.22 screens (today 3.64 / 2.48).
 
@@ -80,8 +97,9 @@ Changes from the PAGES.md idea and why:
 
 Kit changes made for this page (shared): night tokens; kicker and verdict tag 13 -> 15px and lead 18 -> 17px (house rules: Unbounded never under 15px, type scale); score block, chosen card, detail strip, kv pairs, type chips, move plates, pager, swap, list rows (+ two-across "tiles" on phone), check list, form field, panel, counts; tighter phone rhythm; on phones a 3-across card sets its name in slanted Instrument Sans 15px (slanted Unbounded can't fit "Basculegion" in a ~100px card).
 
+Phone length (section 4): see the heights table at the top of NOTES.md.
 Rules not met and why:
-- Phone length: 5.47 screens (today 4.42). Every feature is kept, and the bigger header and cards cost about one screen. Shorter would mean dropping the detail strip or the threat list on phone. Question for Sim.
+- (fixed for section 4) Phone now 4.29 screens, under today. On phones the secondary lines (the win line, the suggestion note, the check explanations) are one line or move to the tap; Suggestions and the Game Plan merged into one step; Team Checks and Your Games merged.
 - Night pictures made for A only (B is already dark in its frame).
 
 Check (390 / 1440): off-scale 0, Unbounded under 15px 0, cut or spilling text 0, taps under 44px 0, sideways scroll no, lone tiles 0. Length 5.47 / 3.89 screens (today 4.42 / 2.90).
@@ -113,8 +131,9 @@ Today's features -> where in the mock-up:
 Changes from the PAGES.md idea and why:
 - No turn-1 arrows: today's page has no data for them until their six is entered. Steps 2 and 3 ("Bring four, lead two", "Turn one") show "waiting for their six", the same way Build shows its waiting steps.
 
+Phone length (section 4): see the heights table at the top of NOTES.md.
 Rules not met and why:
-- Phone length 3.33 screens (today 2.09). Your six as kit cards (2 rows of 3) plus their six slots cost most of it.
+- (fixed for section 4) Phone now 2.09 screens (same as today): your six is one row of six pictures on phones, their six is one row of slots, steps 2-3 merged, the tool panels become a link row, the repeated lead line is dropped on all widths (the plot sentence says it).
 - On phone, the "›" after "Damage Calculator" wraps onto its own line in its panel.
 
 Check (390 / 1440): every rule passes. Length 3.33 / 2.58 screens (today 2.09 / 1.40).
@@ -139,8 +158,9 @@ Changes from the PAGES.md idea and why:
 
 Kit additions: stepper (− value +), labelled choice rows, the "on" ring for move plates.
 
+Phone length (section 4): see the heights table at the top of NOTES.md.
 Rules not met and why:
-- Phone length 4.07 screens (today 2.59). Today folds the kits and the KO Board; this shows them in natural scrolling (Sim, Nov 20: prefer natural scrolling over folds). Question for Sim: fold the kits on phone to get back near 3?
+- Phone 3.07 screens, still LONGER than today (2.59). On phones the conditions are one sentence of blue words, the kits sit side by side, the KO list shows 4 + Show 14 More (adds rows), the hero is shorter. The rest is the two kits, which today sits in folds; THEME.md 4 says no folds. Question for Sim: keep both kits showing (longer) or show only the values you changed?
 - On phone the pink ring around Sneasler touches the words "the target".
 
 Check (390 / 1440): every rule passes. Length 4.07 / 2.84 screens (today 2.59 / 1.60).
@@ -160,17 +180,68 @@ Not made yet.
 ## 14 meta · THE LINE-UP
 Not made yet.
 
-## 15 usage · WHO'S ON THE JOB
-Not made yet.
+## 15 usage · WHO'S ON THE JOB (`pages/usage.html`)
+Data source: today's built page `#usage` (online tournaments), claude/design6 built Nov 21 with the repo's data files (the page's own banner dates the saved copy Nov 9).
 
-## 16 sets · THE LOADOUTS
-Not made yet.
+Today's features -> where in the mock-up:
+- Sub-tabs (Pokémon, Tournaments, Ratings, Usage, Popular Sets), Ratings ›, Popular Sets › -> link row and the hero's links.
+- "Who gets picked right now.", lead -> headline, lead.
+- Ranked ladder / Online tournaments / Showdown ladder, Find a Pokémon, the Limitless source line -> the plot sentence and its hint.
+- Most used: Rillaboom #1, Grass, 38.1% of teams, 48.0% win rate, Pokémon Page, Rated 97 · S tier -> step 1 hero; "SEE HOW IT'S PLAYED." jumps to step 3.
+- The Podium: the ten most used with %, teams and ▲▼ change -> step 2, a ranked list with bars.
+- How Rillaboom is played (moves, items, abilities, natures with %, of 3,172 teams; win rate line), teammates (Incineroar 52% … Mega Floette 20%), "% = share of its sets" -> step 3. Phone shows 5 moves, 3 items, 3 teammates with "N more ›" links, as today's phone page does.
+- Ranks 11–60 ›, Also ranked 61–100 (the list) -> step 2's link, step 4.
+
+Changes from the PAGES.md idea and why:
+- "A ranked roster with bars" became list rows with bars (ten roster cards would double the phone length).
+- The top Pokémon appears twice (hero and #1 in the list), so the list is a full ten with no lone row.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
+
+## 16 sets · THE LOADOUTS (`pages/sets.html`, Mega Charizard Y from your team)
+Data source: today's built page `#sets`, claude/design6 built Nov 21 with the repo's data files (the page's own banner dates the saved copy Nov 9).
+
+Today's features -> where in the mock-up:
+- Sub-tabs (Pokémon, Tournaments, Ratings, Usage, Popular Sets), Ratings ›, Usage › -> link row and the hint.
+- "How it's built right now.", lead -> headline, lead.
+- Look up a Pokémon; Best data / Online tournaments / Showdown ladder; "Showdown ladder, 1630+ rating (this Mega)" -> the plot sentence and its hint.
+- Your Team row (tap one) -> the row of six small pictures.
+- On your team: Mega Charizard Y, Fire/Flying, 94 S tier, #5 of 321, 16.9% of teams, 53.7% win rate, base Speed 100, Pokémon Page, Build Around It -> step 1 hero; "BUILD AROUND IT." is the pink move.
+- Your set (Drought @ Charizardite Y · Heat Wave, Protect, Solar Beam, Weather Ball), Item always, Ability always (a Mega's is fixed) -> the loadout strip in step 1.
+- Moves with % (Heat Wave 99 … Overheat 2), Nature (Timid, Modest, the no-numbers note), Stat points (three spreads with %), the 1630+ note -> step 2.
+- Teammates (Kingambit, Garchomp, Farigiraf, Sneasler, Archaludon, Rillaboom), the source line (Showdown 1630+, 307,430 battles) -> step 3 and step 2's note.
+
+Changes from the PAGES.md idea and why:
+- One loadout (the chosen Pokémon's), not a wall of set cards: today's page shows one Pokémon at a time.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why:
+- Desktop: the hero card has the kit's tall gap above it (the approved hero spacing, so the art can burst out). Left as the kit has it.
+Check (390 / 1440): every rule passes.
 
 ## 17 archetypes · THE PLAYBOOKS
 Not made yet.
 
-## 18 tournaments · THE WINNING CREWS
-Not made yet.
+## 18 tournaments · THE WINNING CREWS (`pages/tournaments.html`)
+Data source: today's built page `#tournaments`, claude/design6 built Nov 21 with the repo's data files (the page's own banner dates the saved copy Nov 9).
+
+Today's features -> where in the mock-up:
+- Sub-tabs (Pokémon, Tournaments, Winning Teams, Events, Archetypes, This Week) -> link row at the top.
+- "The teams that won it.", lead, 90 top-cut teams · 32 official · 58 last 7 days -> headline and lead.
+- Search winning teams, Official events 32 / Last 7 days 58, the "Top 4 … top 8" rule -> the plot sentence and its hint.
+- Your Team card (4/4 checks, the four basics, Sun, Tailwind, your six, each opens its page) -> the panel under the sentence.
+- The Winning Hands: the champion (2027 Gdańsk Pokémon Regional Championships · 758 players · official event; Gholdengo, Excadrill, Mega Tyranitar, Mega Staraptor, Sinistcha, Milotic; 3/4 checks, missing weak spots spread out; Sand, TailRoom; Load Team, Copy for Showdown, Set as Opponent, Compare; tap a card for its page) -> step 1, roster of six; Load Team is the pink "USE THIS TEAM." (THEME.md wording).
+- 2nd and 3rd place (Challenger; their sixes, checks, styles, the same four actions) -> step 2, two panels, each with "use this team".
+- More Winning Teams · 32 in all › -> step 2's link.
+
+Changes from the PAGES.md idea and why:
+- Only the champion gets roster cards; 2nd and 3rd are panels with small pictures, so the page isn't three walls of six cards.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
 
 ## 19 events · THE JOBS
 Not made yet.
@@ -216,6 +287,7 @@ Changes from the PAGES.md idea and why:
 
 Kit additions: one-line bar rows; fact numbers 32 -> 34px (32 is off the type scale).
 
+Phone length (section 4): see the heights table at the top of NOTES.md.
 Rules not met and why: none.
 Check (390 / 1440): every rule passes. Length 4.87 / 3.29 screens (today 4.54 / 3.05).
 

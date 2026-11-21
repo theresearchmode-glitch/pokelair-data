@@ -163,3 +163,28 @@ textarea.field{min-height:140px;resize:vertical}
 /* (Pokémon page) a bar row: label, bar, number on ONE line at every width (stats, move and item use) */
 .row.barrow{grid-template-columns:minmax(0,120px) minmax(0,1fr) 72px;min-height:48px}.row.barrow .val{display:block;text-align:right}
 @media (max-width:699.98px){.row.barrow{grid-template-columns:minmax(0,104px) minmax(0,1fr) 56px;row-gap:0}.row.barrow .val{grid-column:auto}.row.barrow b{font-size:15px}}
+/* (Usage) a stacked bar row: label and number on top, the bar under them (for narrow columns) */
+.row.barrow.stack{grid-template-columns:minmax(0,1fr) 64px;row-gap:2px}.row.barrow.stack .bar{grid-column:1/-1;grid-row:2}
+/* ===== PHONE LENGTH (THEME.md section 4, Sim Nov 21): every page at 390 wide no longer than today's; no folds or tabs ===== */
+@media (max-width:699.98px){
+ /* 1. compact roster cards: 3 across, art bursts ~40px, score + name only (the fact line moves to the tap) */
+ .roster{padding-top:40px;row-gap:48px;gap:48px 8px}.rc{min-height:0;padding:64px 8px 8px}.rc img{top:-40px;height:100px;width:112%}.rc .nm i{display:none}.rc .nm small{font-size:13px}
+ .rcw .sc{font-size:24px;left:6px;top:-4px}.rcw>.tag{font-size:15px}
+ /* 2. one short hero (about a screen at most) */
+ .hero{grid-template-columns:minmax(0,150px) minmax(0,1fr);gap:12px;margin-top:72px;align-items:end}.hero .rc{min-height:0;padding:96px 10px 10px}.hero .rc img{top:-64px;height:156px;width:120%}
+ .hero .rcw .sc{font-size:40px;top:-12px}.hero .rc .nm b{font-size:17px}.hero .facts{gap:8px 16px;margin-top:8px}.hero .facts b{font-size:24px}.hero .go{margin-top:12px}
+ .lead{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:none}
+ /* 4. lists are dense rows: picture 40px, name, number on one line; the sub-line moves to the tap */
+ .row,.row:has(.val){grid-template-columns:40px minmax(0,1fr) auto;min-height:52px;gap:10px;padding:6px 0}.row img{width:40px;height:40px}.row small{display:none}
+ .row .val{grid-column:auto;display:flex;align-items:center;gap:8px;text-align:right}.row .val b{font-size:20px}.row .val .btnw{margin:0;padding:0 10px;font-size:15px}
+ .row .pair img{width:32px;height:32px}.row .pair img+img{margin-left:-8px}.rows.tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.rows.tiles .row{grid-template-columns:36px minmax(0,1fr);padding:6px 0}.rows.tiles .row img{width:36px;height:36px}
+ .row.barrow{grid-template-columns:minmax(0,96px) minmax(0,1fr) 52px;min-height:40px}.row.barrow.stack{grid-template-columns:minmax(0,1fr) 52px;min-height:0}
+ /* 5. short pairs sit side by side */
+ .pair2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+ /* 7. secondary text: one line + a link */
+ .hint{font-size:13px}.sec{margin:32px 0 10px}.sec span{font-size:13px}
+}
+.pair2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:24px}  /* (section 4.5) two short halves side by side at every width */
+@media (max-width:699.98px){.sentence{font-size:17px;gap:6px}.sentence .w{min-height:44px;padding:0 10px}.chk small{display:none}.chk{min-height:48px}.status{margin-top:16px}.links a,.links span{font-size:15px}.kv{gap:8px 16px;margin-top:10px}.kv div{padding-top:4px}.swap .why p{margin:4px 0 0}}  /* section 4.7: secondary lines to the tap on phones */
+@media (max-width:699.98px){.stepper b{min-width:36px;font-size:20px}.pair2 .choices{gap:4px}}
+@media (max-width:699.98px){.rows.tiles.full{grid-template-columns:minmax(0,1fr)}.rows.tiles.full .row{grid-template-columns:36px minmax(0,1fr) auto}.row .val b{white-space:nowrap}}  /* a tiles list whose value is wide goes one per line on phones */

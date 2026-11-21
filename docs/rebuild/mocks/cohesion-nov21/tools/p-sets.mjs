@@ -1,0 +1,19 @@
+import { card, types, w, sentence, step, head, links, moves, page, img, TD } from './lib.mjs';
+// Real data: today's built Popular Sets page (#sets, Mega Charizard Y from your team), claude/design6 built Nov 21 with the repo's data files (banner: saved copy Nov 9).
+const SUB = links(['~Pokémon', 'Tournaments ›', 'Ratings ›', 'Usage ›', '~Popular Sets']);
+const MV = [['Heat Wave', 99, 'Fire'], ['Protect', 99, 'Normal'], ['Weather Ball', 93, 'Normal'], ['Solar Beam', 51, 'Grass'], ['Ancient Power', 30, 'Rock'], ['Hurricane', 16, 'Flying'], ['Air Slash', 3, 'Flying'], ['Overheat', 2, 'Fire']];
+const bar = ([k, v, ty]) => `<div class="row barrow"><b>${k}</b><div class=bar style="--c:${TD[ty] || '#737571'}"><i style="width:${v}%"></i></div><div class=val><b class=u style="font-size:22px">${v}%</b></div></div>`;
+const body = SUB + head({ kicker: 'META · THE LOADOUTS', h1: 'How it’s built<br><em>right now.</em>', lead: 'The moves, items, Abilities and natures real players run, and who they pair it with.' }) +
+  sentence(`Show me ${w('Mega Charizard Y ⌕', 1)} from ${w('best data', 1)} ${w('online tournaments')} ${w('Showdown ladder')}`, 'Blue words are buttons. Best data here: Showdown ladder, 1630+ rating (this Mega). <a class=link href=#>Ratings ›</a> <a class=link href=#>Usage ›</a>') +
+  `<p class=status>Your Team: tap one to see its loadout</p><div class=six>${['Charizard-Mega-Y', 'Whimsicott', 'Basculegion', 'Kingambit', 'Garchomp', 'Sneasler'].map((n, i) => `<a href=# style="display:grid;place-items:center;width:52px;height:52px;${i ? '' : 'box-shadow:inset 0 -4px 0 var(--plot)'}">${img(n, 44)}</a>`).join('')}</div>` +
+  step(1, 'The loadout', 'on your team · how Mega Charizard Y is built', '', `<div class=hero>${card('Charizard-Mega-Y', { score: 94, shown: 'Mega Charizard Y', fact: 'S tier · #5 of 321' })}<div>${types('Charizard-Mega-Y')}
+   <div class=facts><div><b class=u style="color:var(--plot-text)">16.9%</b><span>of tournament teams</span></div><div><b class=u>53.7%</b><span>win rate</span></div><div><b class=u>100</b><span>base Speed</span></div></div>
+   <div class=loadout><p class=hint style="margin:0">Your Mega Charizard Y</p><div class=kv><div><span>Item</span><b>Charizardite Y <em>always</em></b></div><div><span>Ability</span><b>Drought <em>always (a Mega’s Ability is fixed)</em></b></div></div>
+   ${moves([['Heat Wave', 'Fire'], ['Protect', 'Normal'], ['Solar Beam', 'Grass'], ['Weather Ball', 'Normal']])}</div>
+   <a class=go href=#>BUILD AROUND IT.</a>${links(['Pokémon Page ›'])}</div></div>`) +
+  step(2, 'What players run', 'from Showdown 1630+ (Mega-specific) · 307,430 Showdown battles', '', `<div class=cols><div><p class=status style="margin:0">Moves</p>${MV.map(bar).join('')}</div>
+   <div><p class=status style="margin:0">Nature</p><p style="margin:4px 0 0"><b>Timid · Modest</b></p><p class=hint>No usage numbers in this source: Tournaments or Showdown show how often each nature and teammate is used.</p>
+   <p class=status>Stat points</p><div class="rows one">${[['Modest: 2 HP / 32 SpA / 32 Spe', '6%'], ['Timid: 2 HP / 32 SpA / 32 Spe', '6%'], ['Timid: 22 HP / 19 Def / 2 SpA / 23 Spe', '4%']].map(([k, v]) => `<div class=row><span></span><b>${k}</b><div class=val><b class=u style="font-size:22px">${v}</b></div></div>`).join('')}</div>
+   <p class=hint>Stat points from the Showdown ladder 1630+: tournament team lists don’t include them.</p></div></div>`) +
+  step(3, 'Its usual crew', 'usually alongside', '', `<div class=roster>${['Kingambit', 'Garchomp', 'Farigiraf', 'Sneasler', 'Archaludon', 'Rillaboom'].map(n => card(n)).join('')}</div><p class=hint>Its stone and Ability are fixed.</p>`);
+page('sets', 'Meta', body, `.loadout{margin-top:20px;padding:16px 20px;background:var(--card);border-left:6px solid var(--nasty)}`);
