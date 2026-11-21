@@ -13,6 +13,7 @@ Shared kit: all new parts were added to kit2.css (marked "ADDED Nov 21"), never 
 | 02 | build | 2474px (2.93 screens) | 3071px (3.64 screens) | shorter or same |
 | 03 | team | 3623px (4.29 screens) | 3734px (4.42 screens) | shorter or same |
 | 03 | team-b | 3664px (4.34 screens) | 3734px (4.42 screens) | shorter or same |
+| 04 | team-empty | 1829px (2.17 screens) | 2608px (3.09 screens) | shorter or same |
 | 05 | sheet | 3028px (3.59 screens) | 3373px (4.00 screens) | shorter or same |
 | 06 | box | 2249px (2.66 screens) | 2402px (2.85 screens) | shorter or same |
 | 07 | compare | 1213px (1.44 screens) | 1328px (1.57 screens) | shorter or same |
@@ -31,7 +32,10 @@ Shared kit: all new parts were added to kit2.css (marked "ADDED Nov 21"), never 
 | 22 | gifts | 2616px (3.10 screens) | 3668px (4.35 screens) | shorter or same |
 | 24 | method | 2205px (2.61 screens) | 3424px (4.06 screens) | shorter or same |
 | 25 | about | 2587px (3.07 screens) | 2738px (3.24 screens) | shorter or same |
+| 26 | feedback | 1124px (1.33 screens) | 1402px (1.66 screens) | shorter or same |
 | 27 | pokemon | 3535px (4.19 screens) | 3828px (4.54 screens) | shorter or same |
+| 28 | notfound | 844px (1.00 screens) | 943px (1.12 screens) | shorter or same |
+| 29 | owner | 881px (1.04 screens) | 943px (1.12 screens) | shorter or same |
 
 ## 01 home · keeps its own hero (`pages/home.html`)
 Data source: today's built page `#home`, claude/design6 built Nov 21 with the repo's data files (the page's own banner dates the saved copy Nov 9; 13,631 tournament teams).
@@ -117,8 +121,21 @@ Rules not met and why:
 
 Check (390 / 1440): off-scale 0, Unbounded under 15px 0, cut or spilling text 0, taps under 44px 0, sideways scroll no, lone tiles 0. Length 5.47 / 3.89 screens (today 4.42 / 2.90).
 
-## 04 team-empty · RECRUIT YOUR CREW
-Not made yet.
+## 04 team-empty · RECRUIT YOUR CREW (`pages/team-empty.html`)
+Data source: today's built page `#team-empty` (a Preview-only look at the empty My Team), claude/design6 built Nov 21 with the repo's data files.
+
+Today's features -> where in the mock-up:
+- "My Team · 0 of 6 · No team yet", "Six spots, all yours.", the lead -> status, headline, lead.
+- Build Me a Team, Add a Pokémon, Import a Team, Saved Teams 1 -> "BUILD ME A TEAM." (the pink move) and the link row.
+- Six empty spots (+ Add · Spot 1–6) -> step 1.
+- Or Start from a Winner: today's six highest-rated (Sneasler 97, Rillaboom 97, Kingambit 96, Incineroar 95, Mega Charizard Y 94, Mega Raichu Y 93, each S tier with its % of Showdown ladder teams); tap one to build around it -> step 2 roster.
+- Today's underdog: Corviknight, somebody's favourite, the "every Pokémon deserves its moment" line, Add Corviknight to My Team, Pokémon Page, Or Build Around Your Favourite Pokémon -> step 3 (celebrated, not mocked).
+
+Changes from the PAGES.md idea and why: none.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
 
 ## 05 sheet · THE DOSSIER (`pages/sheet.html`, the Team Sheet)
 Data source: today's Team Sheet for the sample team (My Team › Team Sheet ↗, `V2.openTeamSheet()`), claude/design6 built Nov 21 with the repo's data files.
@@ -466,8 +483,19 @@ Phone length (section 4): see the heights table at the top of NOTES.md.
 Rules not met and why: none.
 Check (390 / 1440): every rule passes.
 
-## 26 feedback · TIP US OFF
-Not made yet.
+## 26 feedback · TIP US OFF (`pages/feedback.html`)
+Data source: today's built page `#feedback`, claude/design6 built Nov 21.
+
+Today's features -> where in the mock-up:
+- "Send Feedback", "Tell us what's off.", the lead -> kicker, headline, lead.
+- What kind of note is it? (Something broke, Confusing, Idea, I like this, Wrong info), Your note, Send, "Saved with the page you came from, phone or desktop, and the date." -> step 1: the kinds as a plot sentence, the note field, "SEND IT." as the page's pink move, the hint.
+- Anonymous: never asks for name or email; emails, phone numbers and @handles removed; Show Email -> step 2.
+
+Changes from the PAGES.md idea and why: PAGES.md suggests "I found [wrong info] on [this page]". Today's form has no page picker (it saves the page you came from by itself), so the sentence picks the kind only; no new field was added.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
 
 ## 27 pokemon · THE FILE (`pages/pokemon.html`, Incineroar)
 Data source: today's built page `#pokemon=incineroar`, claude/design6 built Nov 21 with the repo's data files (the page's own banner dates the saved copy Nov 9).
@@ -493,9 +521,31 @@ Phone length (section 4): see the heights table at the top of NOTES.md.
 Rules not met and why: none.
 Check (390 / 1440): every rule passes. Length 4.87 / 3.29 screens (today 4.54 / 3.05).
 
-## 28 notfound · WRONG TURN
-Not made yet.
+## 28 notfound · WRONG TURN (`pages/notfound.html`)
+Data source: today's built not-found page (any unknown address, e.g. `#nowhere`), claude/design6 built Nov 21.
 
-## 29 owner · (internal)
-Not made yet.
+Today's features -> where in the mock-up:
+- "Page not found", "Nothing here.", the old-or-mistyped line -> kicker, headline, lead.
+- Go to Home -> "GO TO HOME." (the pink move).
+- Today's underdog: "Lost? Corviknight's been here all along.", Corviknight: open its info -> the hero card and its scribble.
+
+Changes from the PAGES.md idea and why: none.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
+
+## 29 owner · (internal) (`pages/owner.html`)
+Data source: the owner page's own code (app/src/v2/pages/owner.js). In this build `#owner` shows the not-found page to anyone who isn't the owner, and its counts and feedback come from private storage, so there is NO real data to show. Every number and message here is a clearly labelled PLACEHOLDER.
+
+Today's features -> where in the mock-up:
+- "Owner · only you see this", "What people use and say.", the anonymous-counts line -> kicker, headline, lead.
+- What People Use (page or button · people · times) -> step 1 (placeholder rows).
+- Feedback (newest first; "The preview can't read feedback…") -> step 2 (placeholder row).
+
+Changes from the PAGES.md idea and why: none (kept plain, in the kit).
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: real data can't be shown (private, owner-only).
+Check (390 / 1440): every rule passes.
 

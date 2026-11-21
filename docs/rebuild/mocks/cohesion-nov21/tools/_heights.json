@@ -90,5 +90,21 @@
  "about": {
   "mock": 2587,
   "today": 2738
+ },
+ "feedback": {
+  "mock": 1124,
+  "today": 1402
+ },
+ "team-empty": {
+  "mock": 1829,
+  "today": 2608
+ },
+ "notfound": {
+  "mock": 844,
+  "today": 943
+ },
+ "owner": {
+  "mock": 881,
+  "today": 943
  }
 }
