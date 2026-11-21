@@ -143,3 +143,26 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 @media (max-width:359.98px){.mtf-rows{grid-template-columns:repeat(3,minmax(0,1fr))}.mtf-row{min-height:80px}}
 .mtf-step{flex:none} /* ‹ › stay 48px when a long name fills the bar (they shrank to 29px at 1000-1200) */
 .mtf-nav h2{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mtf-nav span{white-space:nowrap}
+/* polish-check fixes (design authority, Nov 21) */
+.mtf-score .win,.mtf-lead{line-height:1.5} /* paragraphs 1.5 (design scale) */
+/* Sim's rule: no boxes inside boxes in different shades: Item / Ability / Nature / Stat points sit on the panel with a soft rule, not in white boxes */
+.mtf-ia div{padding:var(--s1) 0 var(--s2);background:none;border-bottom:1px solid var(--mtf-rule)}
+/* the header links: even rows (2 across under 480, 3 across to 999), never one alone */
+@media (max-width:999.98px){.mtf-acts{display:grid;grid-template-columns:repeat(3,max-content);justify-content:start}}
+@media (max-width:479.98px){.mtf-acts{grid-template-columns:repeat(2,max-content)}}
+/* Edit Set / Replace / Remove: one even row in the middle column */
+.mtf-do{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.mtf-do .mtf-btn{min-width:0;padding:0 var(--s2)}
+/* 1000-1279: the middle column was too narrow for its bar (spilled 44px at 1040): the six and the tapped one side by side, Suggestions full width under them */
+@media (min-width:1000px) and (max-width:1279.98px){.mtf{grid-template-columns:340px minmax(0,1fr)}.mtf-sg{grid-column:1/-1}}
+/* 320-359: stand-out threats one across (two across spilled 13px) */
+@media (max-width:359.98px){.mt-work .mu-cards li{flex-basis:100%}}
+@media (max-width:999.98px){.mtf-row .nm b{display:block;max-width:none;white-space:nowrap;overflow:visible;-webkit-line-clamp:unset;hyphens:none;overflow-wrap:normal;transform-origin:0 50%}
+  .mtf-row .nm b .mg{display:block;font-size:var(--t13);line-height:1.1}.mtf-row{min-height:104px}.mtf-row .nm{overflow:hidden}}
+/* polish (Nov 21, authority): when the detail panel is narrow (phones, the 1000-1319 column), "1 of 6" sits under the name so a long
+   name ("Mega Charizard Y") never spills or overlaps it, and Edit Set (the main action) takes the full row above Replace and Remove so
+   no button word is cut or wrapped */
+.mtf-sum{container-type:inline-size}
+@container (max-width:419.98px){.mtf-nav{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;column-gap:var(--s1)}
+  .mtf-nav .mtf-step{grid-row:1 / span 2}.mtf-nav h2{grid-column:2;margin:0;padding-top:var(--s2);white-space:normal;overflow:visible;text-overflow:clip;line-height:1.1;overflow-wrap:normal}
+  .mtf-nav span{grid-column:2;padding-bottom:var(--s2)}.mtf-nav .mtf-step:last-child{grid-column:3;grid-row:1 / span 2}
+  .mtf-do{grid-template-columns:1fr 1fr}.mtf-do .mtf-btn{white-space:nowrap}.mtf-do [data-v2edit]{grid-column:1 / -1}}
