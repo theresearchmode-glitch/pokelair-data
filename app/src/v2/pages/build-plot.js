@@ -41,7 +41,9 @@ V2.plotInput = s => { const i = s.querySelector('[data-bdfind]'); if (!i) return
   i.style.width = Math.ceil(c.measureText(t).width + parseFloat(cs.fontSize) * 0.9) + 'px'; };
 V2.plotFit = () => document.querySelectorAll('.pl-sent:not(.pl-row)').forEach(s => { s.style.removeProperty('--d-plot'); s.classList.remove('pl-wrap'); V2.plotInput(s);
   const W = s.clientWidth; if (W < 2) return; const fs = parseFloat(getComputedStyle(s).fontSize) || 24;
-  const wide = Math.max(...[...s.querySelectorAll('.pl-ln')].map(l => l.scrollWidth)); if (wide <= W + 1) return;
+  /* (piece 6) measured with the search plate at its full width: it may shrink (max-width 100%), so its line never reported the overflow and
+     at 480 "ANY POKÉMON" was cut to "ANY POKÉMO" instead of the sentence stepping down */
+  s.classList.add('pl-meas'); const wide = Math.max(...[...s.querySelectorAll('.pl-ln')].map(l => l.scrollWidth)); s.classList.remove('pl-meas'); if (wide <= W + 1) return;
   const px = Math.floor(fs * W / wide * 0.99); if (px >= 20) s.style.setProperty('--d-plot', px + 'px'); else { s.style.setProperty('--d-plot', '20px'); s.classList.add('pl-wrap'); } V2.plotInput(s); });
 (() => { const after = V2.pages.build.after; V2.pages.build.after = () => { try { if (after) after(); } finally { V2.plotFit(); V2.plotRowFit(); } }; })();
 V2.plotRowFit = () => document.querySelectorAll('.pl-row').forEach(s => { if (innerWidth < 700) { const i = s.querySelector('[data-bdfind]'); if (i) i.style.width = ''; } else V2.plotInput(s); });
@@ -97,12 +99,16 @@ V2.plotPlate = (m, set) => { const E = V2.esc, p = byName.get(m.n), R = monRatin
     <span class="pl-mvs">${set.mv.map(x => `<span class="pl-pc pl-mv"><span class="pl-t">${E(x)}</span></span>`).join('')}</span></button>`; };
 (() => { const sheet = V2.buildSheet; V2.buildSheet = M => { const h = sheet(M), a = h.indexOf('<div class="bd-six bp-six'), b = h.indexOf('<div class="bp-near">');
   if (a < 0 || b < a) return h; const sets = V2.plotSets(M.t);
-  return h.slice(0, a) + `<div class="pl-step pl-s2"><span class="pl-node" aria-hidden="true">2</span><h2 class="u pl-h2">The accomplices</h2><p class="pl-sub">Each with the set most players run. Tap one for its full info.</p><div class="bd-six pl-plates">${V2.bpOrder(M.t.mons).map(m => V2.plotPlate(m, sets[m.n] || {it: m.it || '', ab: '', mv: []})).join('')}</div></div>` + h.slice(b); }; })();
+  return h.slice(0, a) + `<div class="pl-step pl-s2"><span class="pl-node" aria-hidden="true">2</span><div class="pl-hd"><h2 class="u pl-h2">The accomplices</h2><p class="pl-sub">Each with the set most players run. Tap one for its full info.</p></div><div class="bd-six pl-plates">${V2.bpOrder(M.t.mons).map(m => V2.plotPlate(m, sets[m.n] || {it: m.it || '', ab: '', mv: []})).join('')}</div></div>` + h.slice(b); }; })();
 /* a move, item or Ability too long for a narrow plate (phones: "Stomping Tantrum" in a 96 px plate) is drawn narrower (scaleX, down to
    .72), never cut and never broken mid-word; runs after each draw, on resize and when the fonts load (as V2.fitWords does for names) */
+/* (piece 6) the room is the chip less BOTH its side paddings and, with its label showing, the label and the gap (it took one 8 px for
+   both: at 1200 "Adaptability" was cut 8 px short) */
 V2.plotChipFit = () => document.querySelectorAll('.pl-plate .pl-t').forEach(t => { t.style.transform = ''; t.style.display = 'inline-block';
-  const w = t.parentElement.clientWidth - (t.previousElementSibling && getComputedStyle(t.previousElementSibling).display !== 'none' ? t.previousElementSibling.offsetWidth + 8 : 0) - 8, n = t.scrollWidth;
-  if (w > 0 && n > w) t.style.transform = `scaleX(${Math.max(.72, w / n).toFixed(3)})`; });
+  const c = t.parentElement, cs = getComputedStyle(c), lb = t.previousElementSibling, lw = lb && getComputedStyle(lb).display !== 'none' ? lb.offsetWidth + (parseFloat(cs.columnGap) || 0) : 0;
+  const w = c.clientWidth - (parseFloat(cs.paddingLeft) || 0) - (parseFloat(cs.paddingRight) || 0) - lw, n = t.scrollWidth;
+  /* squeezed from where its words start: after the label (the chip's room ends at its right edge), or from the middle when centred */
+  if (w > 0 && n > w) { t.style.transform = `scaleX(${Math.max(.72, w / n).toFixed(3)})`; t.style.transformOrigin = cs.justifyContent === 'center' ? 'center' : 'left'; } else t.style.transformOrigin = ''; });
 (() => { const after = V2.pages.build.after; V2.pages.build.after = () => { try { if (after) after(); } finally { V2.plotChipFit(); } }; })();
 addEventListener('resize', () => requestAnimationFrame(() => { if (document.querySelector('.pl-plate')) V2.plotChipFit(); }));
 try { document.fonts.ready.then(() => V2.plotChipFit()); } catch (e) {}
@@ -114,7 +120,7 @@ V2.plotWhy = M => { const E = V2.esc, pv = M.t.proven, nb = M.basics.filter(x =>
   const line = (lead, plate, tail, small, extra = '') => `<li class="pl-wl"><p class="u pl-ws">${lead} <span class="pl-wp">${plate}</span> ${tail}${extra}</p><small>${small}</small></li>`;
   const trio = M.core ? M.core[1].split(' + ').map(s => s.trim()) : [];
   const trioArt = trio.map(d => { const p = ROSTER.find(x => V2.disp(x.n) === d || x.d === d); return p && SPRITE_ID[p.n] ? `<img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async">` : ''; }).join('');
-  return `<div class="pl-step pl-s3"><span class="pl-node" aria-hidden="true">3</span><h2 class="u pl-h2">Why it works</h2><p class="pl-sub">The evidence, for the record.</p>
+  return `<div class="pl-step pl-s3"><span class="pl-node" aria-hidden="true">3</span><div class="pl-hd"><h2 class="u pl-h2">Why it works</h2><p class="pl-sub">The evidence, for the record.</p></div>
     <ul class="pl-why">${line('It answers', `${M.ans} of ${M.rows.length}`, 'top threats.', `Matchups with an answer. Top ${M.rows.length} threats: ${M.sh} Shaky, ${M.no} No answer.`)}
     ${line('It passes', `${nb} of ${M.basics.length}`, 'team checks.', `Team checks: the ${M.basics.length} basics. ${M.notes.length ? 'Notes met: ' + M.notes.map(E).join(', ') + '.' : 'No notes met.'}`)}
     ${pv ? line(pv.swapped ? 'Its six (1 swap) wins' : 'This exact six wins', `${(pv.wr * 100).toFixed(1)}%`, 'at events.', `${homeNum(pv.n)} players${pv.g ? `, ${homeNum(pv.g)} games at events` : ''}${pv.swapped && pv.ours && pv.theirs ? `, with ${E(V2.disp(pv.ours))} in place of ${E(V2.disp(pv.theirs))}` : ''}.`)
@@ -129,7 +135,7 @@ V2.plotPlans = M => { const E = V2.esc, L = 'ABCDEFGH'; if (M.n < 2 && !M.res.fr
       <p class="pl-pn u">${V2.dotWrap(E(t.label))}</p><p class="pl-pm">${ans}/${rows.length} matchups · ${bas.filter(x => x.ok).length}/${bas.length} team checks</p>
       <div class="pl-psix" aria-hidden="true">${V2.bpOrder(t.mons).map(m => `<span class="${m.box ? '' : 'pl-catch'}">${SPRITE_ID[m.n] ? `<img src="${V2.art(SPRITE_ID[m.n])}" alt="" loading="lazy" decoding="async">` : ''}</span>`).join('')}</div>
       ${on ? '<p class="pl-pon">Shown above</p>' : `<button type="button" class="pl-sw2 u" data-bdshow="${i}" aria-label="Option ${i + 1}, ${E(t.label)}, Strength Score ${s}: show this one">Switch to Plan ${L[i] || i + 1}</button>`}</div>`; };
-  return `<div class="pl-step pl-s4"><span class="pl-node" aria-hidden="true">4</span><h2 class="u pl-h2">Got a Plan B?</h2><p class="pl-sub">${M.n - 1} more from this build. One tap to switch.</p>
+  return `<div class="pl-step pl-s4"><span class="pl-node" aria-hidden="true">4</span><div class="pl-hd"><h2 class="u pl-h2">Got a Plan B?</h2><p class="pl-sub">${M.n - 1} more from this build. One tap to switch.</p></div>
     <div class="bd-others pl-plans" role="list">${M.res.teams.map(col).filter((x, i) => i !== M.k).join('')}${M.res.freshPending ? '<div class="pl-plan pl-pwait" role="listitem"><p class="pl-pk">Finding a fresh take…</p><p class="pl-pm">A different six, worked out next</p></div>' : ''}</div></div>`; };
 (() => { const sheet = V2.buildSheet; V2.buildSheet = M => { const h = sheet(M), a = h.indexOf('<div class="bp-tb">'), b = h.lastIndexOf('</section>');
   if (a < 0 || b < a) return h; return h.slice(0, a) + V2.plotWhy(M) + V2.plotPlans(M) + h.slice(b); }; })();
@@ -148,8 +154,12 @@ V2.plotWin = ev => { const E = V2.esc, t = ev.top[0], key = ev.id + '#0', sure =
   const sets = t.mons.map(m => { const p = byName.get(m.n); return `<li class="bd-set">${V2.mon(m.n, {iw: 48, bare: true})}<div><b>${V2.rowName(p ? p.d : m.n)}</b>${m.i ? ` <span class="bd-at">@ ${V2.keepForm(E(m.i))}</span>` : ''}
     <small>${E(m.a || '')}${m.nt ? ' · ' + E(m.nt) : ''}</small><small class="bd-mv">${(m.mv || []).map(E).join(' · ')}</small></div></li>`; }).join('');
   const six = t.mons.map(m => `<span>${SPRITE_ID[m.n] ? `<img src="${V2.art(SPRITE_ID[m.n])}" alt="" loading="lazy" decoding="async">` : ''}</span>`).join('');
+  /* the line beside the record (piece 6): "1st of 68 players · Nov 7"; never a lone "1st ·" or a trailing "·": with no player count a
+     record reads "1st place · Nov 7" (phones: "Nov 7"), with no record the plate already says "1st", and a missing date drops its "·" */
+  const dt = ev.date ? evDate(ev.date) : '', who = t.record ? (ev.players ? `<span class="pl-w1">1st<span class="vh"> place</span> of </span>${E(String(ev.players))} players` : '<span class="pl-w1">1st place</span>') : ev.players ? `${E(String(ev.players))} players` : '';
+  const wm = who && dt ? `<span>${who} ·</span> <span>${E(dt)}</span>` : who ? `<span>${who}</span>` : dt ? `<span>${E(dt)}</span>` : '';
   return `<div class="pl-win" role="listitem" data-bdwin="${E(key)}">
-    <div class="pl-wr"><span class="pl-rec u">${E(t.record || '1st')}</span><span class="pl-wm"><span>${t.record ? '<span class="pl-w1">1st<span class="vh"> place</span>' + (ev.players ? ' of ' : ' ·') + '</span>' : ''}${ev.players ? `${E(String(ev.players))} players ·` : ''}</span> <span>${E(evDate(ev.date))}</span></span>${sure ? '' : `<button type="button" class="pl-out2 u" data-hmload="${E(key)}"><span>Load Team</span></button>`}</div>
+    <div class="pl-wr"><span class="pl-rec u">${E(t.record || '1st')}</span><span class="pl-wm">${wm}</span>${sure ? '' : `<button type="button" class="pl-out2 u" data-hmload="${E(key)}"><span>Load Team</span></button>`}</div>
     ${sure ? V2.hmSure(key) : ''}<div class="pl-wt"><h3 class="pl-wev u">${E(V2.evTitle(ev.name))}</h3><details class="pl-wsets" data-plwsets="${E(key)}"${open ? ' open' : ''}><summary><span>Full sets ›</span></summary><p class="bd-wwho">${E(teamWho(t))}'s six, full sets</p><ul class="bd-sets">${sets}</ul></details></div>
     <div class="pl-wsix" role="img" aria-label="${E(t.mons.map(m => V2.disp(m.n)).join(', '))}">${six}</div>
     <div class="pl-wa"><button type="button" class="np-link" data-hmcopy="${E(key)}">Copy for Showdown</button><button type="button" class="np-link" data-hmprep="${E(key)}">Set as Opponent ›</button><button type="button" class="np-link" data-bdcx="${E(key)}">Compare ›</button></div></div>`; };

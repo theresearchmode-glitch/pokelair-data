@@ -348,3 +348,53 @@
   .pl-core{grid-template-columns:84px minmax(0,1fr)}.pl-cwho{grid-row:1}
   .pl-cwv{grid-column:2;grid-row:2;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s2);margin-top:var(--s1);text-align:left}.pl-cvs{display:inline}
 }
+/* ---------- Piece 6: every width, dark mode (plot-spec.md sections 3, 4, 8, 9; Q98) ---------- */
+/* every step's heading has its line beside it, as in Q98 (steps 2-4 put it below); it wraps under only when there is no room */
+.pl-hd .pl-sub{margin:0}
+/* the plates of Plots that worked hug their words (spec 4: padding .06em x .32em; type -0.02em) */
+.pl-rec{padding:var(--s1) var(--s2);letter-spacing:-.02em}
+.pl-wr .pl-out2{padding:0 var(--s2);letter-spacing:-.02em}
+/* each winner column lays itself out by its own width (700 and up; phones keep their own rules): the record, "1st of 68 players · Nov 7"
+   and LOAD TEAM on one line when all three fit (400 px); else the record and LOAD TEAM share the top line and the players line sits under
+   them, whole; under 240 px the three stack, LOAD TEAM the column's width. The links: one line from 352 px; else Copy for Showdown on
+   its line and Set as Opponent + Compare together (16 px apart under 230 px); under 196 px one per line. Never a lone LOAD TEAM or Compare left hanging. */
+.pl-win{container:plwin / inline-size}
+@media (min-width:700px){
+  @container plwin (max-width:399.98px){
+    .pl-wr{display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"rec lt" "wm wm";align-items:center;gap:var(--s2) var(--s3)}
+    .pl-wr .pl-rec{grid-area:rec;justify-self:start}.pl-wr .pl-wm{grid-area:wm}.pl-wr .pl-out2{grid-area:lt;justify-self:end;margin-left:0}
+  }
+  @container plwin (max-width:239.98px){
+    .pl-wr{grid-template-columns:minmax(0,1fr);grid-template-areas:"rec" "wm" "lt"}.pl-wr .pl-out2{justify-self:stretch}
+  }
+  @container plwin (max-width:351.98px){.pl-wa{display:grid;grid-template-columns:auto auto;justify-content:start;column-gap:var(--s6)}.pl-wa .np-link:first-child{grid-column:1/-1;justify-self:start}}
+  @container plwin (max-width:229.98px){.pl-wa{column-gap:var(--s4)}}
+  @container plwin (max-width:195.98px){.pl-wa{grid-template-columns:auto}}
+}
+/* phones (their links are 2 px tighter, 315 px on one line): the same two lines under 317 px, only where they would wrap anyway (at 390
+   with a desktop scrollbar Compare was left alone on a row); a phone's 318 px column keeps one line, so no extra row. Under
+   380 LOAD TEAM, on its own line already, takes the column's width as it does when the columns stack at 700-879 */
+@media (max-width:699.98px){@container plwin (max-width:316.98px){.pl-wa{display:grid;grid-template-columns:auto auto;justify-content:start;column-gap:var(--s6)}.pl-wa .np-link:first-child{grid-column:1/-1;justify-self:start}}}
+@media (max-width:379.98px){.pl-wr .pl-out2{flex:1 1 100%}}
+/* phones: "With a Pokémon…" fits its box at 380-699 (it read "With a Pokémo…": 89 px for 111); the segments keep 44 px */
+@media (max-width:699.98px){.pl-low .np-slide button{padding:0 var(--s1);min-width:var(--tap)}.pl-low .np-field{padding:0 var(--s1)}}
+/* contrast: the Item chip's words are ink on its white in day AND night (night ink on white was 1.3:1); MEGA and "In your box" at
+   full white (4.1:1 and 4.3:1 at .85 / .9) */
+.pl-it{color:var(--on-pt-it)}
+.pl-mg,.pl-fact{opacity:1}
+/* the action row at 1200 and up (spec 8): each button its words plus an equal share of the rest (Copy for Showdown spilled its button
+   at 1200-1280 in the fixed 2 : 1 : 1.6 columns); the catch line under them takes no part in the sizing */
+@media (min-width:1200px){.pl2 .bd-ans.bp .bd-acts{grid-template-columns:repeat(3,auto)}.pl2 .bd-ans.bp .bd-acts > :not(button){contain:inline-size}}
+/* the control row on phones: My Box | Whole Roster each its words plus an equal share (at 320 "WHOLE ROSTER" ran 16 px out of its
+   plate); under 380 the search plate takes its own row (ANY POKÉMON had 77 px for 128) */
+@media (max-width:699.98px){.pl-row .pl-grp[data-v2slide="bdsrc"]{grid-template-columns:repeat(2,auto)}}
+@media (max-width:379.98px){.pl-row .pl-ar{flex:1 1 100%}}
+/* the before page's sentence is measured with the search plate at full width (build-plot.js V2.plotFit) */
+.pl-meas .pl-ar,.pl-meas .pl-find{max-width:none;flex-shrink:0}
+/* 700-879: "The end. Or is it?" on its line, HATCH ANOTHER and its words together under it (Build Me a Team was left alone on a row) */
+@media (min-width:700px) and (max-width:879.98px){.pl-low .pl-endn .pl-h2{flex-basis:100%}.pl-low > .pl-end > .pl-node{top:var(--s10)}.pl-low > .pl-end:last-child::before{height:calc(var(--s10) + 12px)}}
+/* Got a Plan B?: the Switch buttons sit on one line across the three columns (a name on two lines pushed one down) */
+.pl-psix{margin-bottom:var(--s3)}.pl-plan .pl-sw2,.pl-plan .pl-pon{margin-top:auto}
+/* X-05 (v2-minors main1, found after piece 5): the cores box is 44 tall now (was 48), so its × (44) lost a pixel row to rounding at 1280
+   (tap 44x43). The × is 48 tall, centred on the box (its 4 px past each edge are taps on the ×); the box stays 44 */
+.pl-low .np-field .np-clr{height:calc(var(--tap) + var(--s1));margin-top:calc(-1 * var(--s1));margin-bottom:calc(-1 * var(--s1))}
