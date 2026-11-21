@@ -444,7 +444,7 @@ async function plotAnswerMatchesEngine(ui, where) {
   const a = await ui.calcAnswer(); expect(a && a.eng, `${where}: no answer or no engine hit`); const {min, max, hp, rolls} = a.eng;
   expect(rolls.length === 16, `${where}: engine has ${rolls.length} rolls, not 16`);
   expect(a.dmg === pcs(min, max, hp), `${where}: damage shows "${a.dmg}", engine ${pcs(min, max, hp)} (${min}–${max} HP)`);
-  expect(a.l2.endsWith(`: ${min === max ? min : min + '–' + max} of ${hp} HP.`), `${where}: HP line "${a.l2}", engine ${min}–${max} of ${hp} HP`);
+  expect(a.l2.endsWith(`: ${min === max ? min : min + '–' + max} damage · ${hp} HP.`), `${where}: HP line "${a.l2}", engine ${min}–${max} of ${hp} HP`);
   const k = rolls.filter(v => v >= hp).length, rest = rolls.filter(v => v < hp);
   if (k === 16) expect(a.verdict === 'Always faints', `${where}: all 16 rolls knock out but the verdict is "${a.verdict}"`);
   else if (k > 0) { const g = gcd(k, 16), x = k / g, y = 16 / g, lo = hp - Math.max(...rest), hi = hp - Math.min(...rest);
@@ -519,7 +519,7 @@ t('CALC-07', 'result: Sneasler Close Combat into Mega Charizard Y; Garchomp Eart
   await ui.calcPick('attacker', 'Sneasler'); await ui.calcPick('defender', 'Mega Charizard Y'); await ui.calcMove('Close Combat');
   const r = await ui.calcResultOnly();
   if (NEW) { const a = await plotAnswerMatchesEngine(ui, 'Close Combat into Mega Charizard Y'); /* Nov 21: Plot the hit (Sim approved): real HP, not % (45–52% of 155 HP = 69–81 HP); the engine's '20% chance to 2HKO' in the new words */
-    expect(a.dmg === '45–52%' && a.l2 === "of Mega Charizard Y's HP: 69–81 of 155 HP." && a.verdict === 'Faints in 2 hits, 20% of the time', 'answer: ' + JSON.stringify(a).slice(0, 240));
+    expect(a.dmg === '45–52%' && a.l2 === "of Mega Charizard Y's HP: 69–81 damage · 155 HP." && a.verdict === 'Faints in 2 hits, 20% of the time', 'answer: ' + JSON.stringify(a).slice(0, 240));
     expect(/Fighting is resisted/.test(r) && /Fewest points to always survive/.test(r), 'Notes on this hit: no "Fighting is resisted" or survive line: ' + r.slice(0, 200)); }
   else { expect(/45–52% of HP/.test(r) && /20% chance to 2HKO/.test(r) && /Fighting is resisted/.test(r), 'result: ' + r.slice(0, 200));
     expect(/of 155 HP/.test(r) && /Fewest points to always survive/.test(r), 'HP numbers or survive line missing'); }

@@ -77,9 +77,9 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 820, 1100, 1440, 
      built and measured at 390: 3,133 px light, 3,054 dark. The limit keeps it from growing further (was 2,220 for pieces 1-4, Q95) */
   if (W === 390) ok(z.H <= 3200, `390 ${th}: page before a build kept short: ${z.H} px (approved Q103 A, 3,200 at most)`);
   ok(!z.side, `${k}: no sideways scroll before a build`);
-  const rf = await refs(p); if (rf) { const want = W >= 700 ? 56 : 38;
+  const rf = await refs(p); if (rf) { const want = W >= 700 ? 56 : 32; /* Nov 21 (Sim): the newest winner's six are kit cards (no sprite strip); the older winners' strips are 32 px on phones (Build phones compact, 'recommended is good') */
     ok(rf.n === 3 && rf.plates.every(x => x && x.bg !== 'rgba(0, 0, 0, 0)' && x.tf !== 'none'), `${k}: Plots that worked: three winners, each record on a solid slanted plate (${rf.n}; ${rf.plates.map(x => x && x.bg).join(', ')})`);
-    ok(rf.sp.every(x => x.length === 6 && x.every(h => h === want)), `${k}: Plots that worked: each winner's six ${want} px tall (${rf.sp.map(x => x.join(',')).join(' | ')})`);
+    { const strips = rf.sp.filter(x => x.length); ok(strips.length === rf.sp.length - 1 && strips.every(x => x.length === 6 && x.every(h => h === want)), `${k}: Plots that worked: the newest winner as cards, each older winner's six ${want} px tall (${rf.sp.map(x => x.join(',')).join(' | ')})`); }
     ok(rf.shut && rf.acts.every(x => x === 4), `${k}: Plots that worked: Load Team, Copy, Set as Opponent and Compare shown with the full sets folded (${rf.acts.join(',')})`);
     ok(rf.rule === rf.ruleTok && rf.band === rf.bandTok, `${k}: Plots that worked on the ink band, soft column rules (${rf.band}; ${rf.rule})`); } else ok(false, `${k}: Plots that worked shown`);
   const cr = await cores(p); if (cr) { const two = W >= 1200;

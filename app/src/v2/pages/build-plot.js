@@ -150,18 +150,20 @@ V2.plotPlans = M => { const E = V2.esc, L = 'ABCDEFGH'; if (M.n < 2 && !M.res.fr
 // data-plgo (tests count the visible [data-bdgo]: there is one, in the control row); it presses that one.
 V2.plotWinPicks = () => { const EV = META.events; if (!EV || !EV.events) return []; /* the same three as V2.buildWinners: newest 1st-place teams from official events or 64+ players */
   return EV.events.filter(e => e.src === 'official' || e.players >= 64).filter(e => e.top[0] && e.top[0].place === 1).slice(0, 3); };
-V2.plotWin = ev => { const E = V2.esc, t = ev.top[0], key = ev.id + '#0', sure = V2.hmUi && V2.hmUi.sure === key, open = V2.bdUi.win === key;
+V2.plotWin = (ev, big) => { const E = V2.esc, t = ev.top[0], key = ev.id + '#0', sure = V2.hmUi && V2.hmUi.sure === key, open = V2.bdUi.win === key;
   const sets = t.mons.map(m => { const p = byName.get(m.n); return `<li class="bd-set">${V2.mon(m.n, {iw: 48, bare: true})}<div><b>${V2.rowName(p ? p.d : m.n)}</b>${m.i ? ` <span class="bd-at">@ ${V2.keepForm(E(m.i))}</span>` : ''}
     <small>${E(m.a || '')}${m.nt ? ' · ' + E(m.nt) : ''}</small><small class="bd-mv">${(m.mv || []).map(E).join(' · ')}</small></div></li>`; }).join('');
   const six = t.mons.map(m => `<span>${SPRITE_ID[m.n] ? `<img src="${V2.art(SPRITE_ID[m.n])}" alt="" loading="lazy" decoding="async">` : ''}</span>`).join('');
+  /* reskin proposal (Nov 21): the newest winner's six as kit roster cards (THEME 2.4), the art bursting out; the other two keep the strip */
+  const sixK = big && V2.kRoster ? V2.kRoster(t.mons.map(m => V2.kCard(m.n, {size: 'small'}))) : '';
   /* the line beside the record (piece 6): "1st of 68 players · Nov 7"; never a lone "1st ·" or a trailing "·": with no player count a
      record reads "1st place · Nov 7" (phones: "Nov 7"), with no record the plate already says "1st", and a missing date drops its "·" */
   const dt = ev.date ? evDate(ev.date) : '', who = t.record ? (ev.players ? `<span class="pl-w1">1st<span class="vh"> place</span> of </span>${E(String(ev.players))} players` : '<span class="pl-w1">1st place</span>') : ev.players ? `${E(String(ev.players))} players` : '';
   const wm = who && dt ? `<span>${who} ·</span> <span>${E(dt)}</span>` : who ? `<span>${who}</span>` : dt ? `<span>${E(dt)}</span>` : '';
-  return `<div class="pl-win" role="listitem" data-bdwin="${E(key)}">
+  return `<div class="pl-win${sixK ? ' pl-big' : ''}" role="listitem" data-bdwin="${E(key)}">
     <div class="pl-wr"><span class="pl-rec u">${E(t.record || '1st')}</span><span class="pl-wm">${wm}</span>${sure ? '' : `<button type="button" class="pl-out2 u" data-hmload="${E(key)}"><span>Load Team</span></button>`}</div>
     ${sure ? V2.hmSure(key) : ''}<div class="pl-wt"><h3 class="pl-wev u">${E(V2.evTitle(ev.name))}</h3><details class="pl-wsets" data-plwsets="${E(key)}"${open ? ' open' : ''}><summary><span>Full sets ›</span></summary><p class="bd-wwho">${E(teamWho(t))}'s six, full sets</p><ul class="bd-sets">${sets}</ul></details></div>
-    <div class="pl-wsix" role="img" aria-label="${E(t.mons.map(m => V2.disp(m.n)).join(', '))}">${six}</div>
+    ${sixK ? `<div class="pl-wsixk" role="group" aria-label="${E(t.mons.map(m => V2.disp(m.n)).join(', '))}">${sixK}</div>` : `<div class="pl-wsix" role="img" aria-label="${E(t.mons.map(m => V2.disp(m.n)).join(', '))}">${six}</div>`}
     <div class="pl-wa"><button type="button" class="np-link" data-hmcopy="${E(key)}">Copy for Showdown</button><button type="button" class="np-link" data-hmprep="${E(key)}">Set as Opponent ›</button><button type="button" class="np-link" data-bdcx="${E(key)}">Compare ›</button></div></div>`; };
 document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('[data-plwsets]')) return; if (d.open) V2.bdUi.win = d.dataset.plwsets; else if (V2.bdUi.win === d.dataset.plwsets) V2.bdUi.win = null; }, true);
 /* the cores list: 8 then 16 more from 1180 wide (two columns from 1200), 7 then 15 in one column, 4 then 15 on phones (spec section 9:
@@ -183,7 +185,7 @@ V2.plotCores = n => { const E = V2.esc, rows = coreRows(), wide = !!(V2.CORES_WI
       <p class="pl-chint bd-hint">${homeNum(rows.length)} ${kindW} from ${homeNum(RES && RES.teams)} tournament teams. Average team wins ${E(winFmt(base * 100))} of games. ${coreUi.sort === 'use' ? 'Ranked by how many teams used it.' : 'Ranked by win rate, pulled toward the average.'} <button type="button" class="np-link" data-bdcwhy>How Cores Are Ranked ›</button></p></div>
     ${shown.length ? `<ol class="pl-cores bd-clist">${shown.map(row).join('')}</ol>` : '<p class="bd-cnone">No cores match. Try another Pokémon.</p>'}${rows.length > shown.length ? `<button type="button" class="np-link pl-cmore bd-cmore" data-bdcmore>Show ${Math.min(step, rows.length - shown.length)} More ${kindW.replace(/\b[a-z]/g, c => c.toUpperCase())} ›</button>` : ''}</div>`; };
 V2.plotLower = end => { const E = V2.esc, picks = V2.plotWinPicks(), lk = ui.abLock && byName.get(ui.abLock), busy = !!(ui.ab && ui.ab.busy);
-  const win = picks.length ? `<div class="pl-step pl-s5 bd-wins"><span class="pl-node" aria-hidden="true">5</span><div class="pl-hd"><h2 class="u pl-h2">Plots that worked</h2><p class="pl-sub">Real winners at recent tournaments. Borrow one.</p></div><div class="pl-wins" role="list">${picks.map(V2.plotWin).join('')}</div></div>` : '';
+  const win = picks.length ? `<div class="pl-step pl-s5 bd-wins"><span class="pl-node" aria-hidden="true">5</span><div class="pl-hd"><h2 class="u pl-h2">Plots that worked</h2><p class="pl-sub">Real winners at recent tournaments. Borrow one.</p></div><div class="pl-wins" role="list">${picks.map((ev, i) => V2.plotWin(ev, i === 0)).join('')}</div></div>` : '';
   const fin = end ? `<div class="pl-step pl-end"><span class="pl-node" aria-hidden="true"></span><div class="pl-endn"><h2 class="u pl-h2">The end. Or is it?</h2><button type="button" class="pl-go pl-goend u" data-plgo${busy ? ' aria-busy="true" disabled' : ''}><span>Hatch another</span></button><span class="pl-endq">${lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team'}</span></div></div>` : '';
   return `<section class="pl pl-low bd-lower${end ? ' pl-low1' : ' pl-low0'}" aria-label="More ways to start">${win}${V2.plotCores(picks.length ? 6 : 5)}${fin}</section>`; };
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-plgo]'); if (!b) return; const go = document.querySelector('.pl1 [data-bdgo]'); if (!go || go.disabled) return; go.click();
