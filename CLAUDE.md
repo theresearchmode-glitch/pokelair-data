@@ -31,7 +31,7 @@ approved build, never for look-only research (do small measurements myself); eve
 
 ## HELPERS: ONE AT A TIME (Sim, Nov 21, 6:49 AM, LATEST; overrides the helper counts below)
 Sim, Nov 21: "after 7 AM today, I would like to reduce the amount of helpers to just one helper at a time. I need to conserve usage."
-From 7:00 AM Nov 21: at most ONE helper/subagent running at a time. Main thread keeps working (still never idle). Going above 1: ask Sim
+From 7:00 AM Nov 21: at most ONE helper/subagent running at a time. Sim, 6:50 AM: "If you need more than one helper, just make sure you ask me in the chat and I'll let you know if that's something we can afford to do." Main thread keeps working (still never idle). Going above 1: ask Sim
 first. work-check.sh / stop-check.sh need 1. (The 3-helper rules below are kept for the record.)
 
 ## ALWAYS WORKING, ALWAYS 3 HELPERS: OF UTMOST IMPORTANCE (Sim, Nov 21, 1 AM: "I want this rule of doing so to be of utmost importance. cant stress it enough. key to us being efficient.")
