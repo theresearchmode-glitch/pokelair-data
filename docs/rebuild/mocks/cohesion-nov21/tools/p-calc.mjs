@@ -1,0 +1,33 @@
+import { card, w, sentence, step, head, links, page, art, TD } from './lib.mjs';
+// Real data: today's built Damage Calc (#calc): Mega Charizard Y's Heat Wave into Sneasler in Sun; claude/design6 built Nov 21, data Nov 20.
+// % = today's damage / Sneasler's 157 HP (option A in PAGES.md: % first, HP under it; Sim still to confirm).
+const KO = [['Golisopod-Mega', 'Mega Golisopod', 'Mega Charizard Y’s Weather Ball', '303–358%'], ['Whimsicott', 'Whimsicott', 'Mega Charizard Y’s Weather Ball', '302–356%'], ['Froslass-Mega', 'Mega Froslass', 'Mega Charizard Y’s Weather Ball', '224–265%'],
+  ['Gholdengo', 'Gholdengo', 'Mega Charizard Y’s Weather Ball', '216–254%'], ['Rillaboom', 'Rillaboom', 'Mega Charizard Y’s Weather Ball', '212–249%'], ['Venusaur', 'Venusaur', 'Mega Charizard Y’s Weather Ball', '210–248%']];
+const nav = links(['~Damage Calculator', 'Battle ›', 'Team Preview Practice ›', 'Test Run ›', 'Speed Tiers ›', 'Type Chart ›']);
+const kit = (who, rows, stage) => `<div class=panel><h3 class=u>the ${who}’s kit</h3><p class=hint style="margin:0">most used set</p><div class=kv>${rows.map(([k, v]) => `<div><span>${k}</span><b>${v} ▾</b></div>`).join('')}</div>
+  <div class=choices><span style="font-size:17px">${stage}</span><span class=stepper><a href=#>−</a><b class=u>±0</b><a href=#>+</a></span></div></div>`;
+const body = nav + head({ kicker: 'BATTLE · PLOT THE HIT', h1: 'Plot <em>the hit.</em>', lead: 'Any attacker into any defender. Damage Calculator, level 50 doubles.' }) +
+  sentence(`${w('Mega Charizard Y ▾')} hits ${w('Sneasler ▾')} with ${w('Heat Wave ▾', 1)}`, 'Blue words are buttons. Tap one to choose another Pokémon or move. <a class=link href=#>⇄ swap them</a>') +
+  step(1, 'The hit', 'Heat Wave · Fire', '', `<div class=paper-hit><div class=atk>${card('Charizard-Mega-Y', { shown: 'Mega Charizard Y', fact: 'the muscle' })}</div>
+   <div class=res><p class=hint style="margin:0">damage to Sneasler</p><b class="pct u">88–104%</b><p class=hp>138–163 HP of Sneasler’s 157</p><span class="ring u">Faints 1 time in 4</span><span class=note>hangs on with 1–19 HP the other three</span></div>
+   <div class=def>${card('Sneasler', { fact: 'the target' })}</div></div>`) +
+  step(2, 'The move', 'tap one to try it', '', `<div class=moves><span class="mv on" style="--c:${TD.Fire}"><span>Heat Wave</span><small>88–104% · faints 1 in 4</small></span><span class=mv style="--c:${TD.Grass}"><span>Solar Beam</span><small>33–39% · 3+ hits</small></span><span class=mv style="--c:${TD.Fire}"><span>Weather Ball</span><small>126–149% · always faints</small></span><span class=mv style="--c:#737571"><span>All moves ▾</span></span></div>`) +
+  step(3, 'The conditions', 'the sky, the ground, this turn', '', `<div class=choices><span>the sky</span>${['Clear', 'Sun', 'Rain', 'Sand', 'Snow'].map(x => w(x, x === 'Sun')).join('')}</div>
+   <div class=choices><span>the ground</span>${['None', 'Grassy', 'Electric', 'Psychic', 'Misty'].map(x => w(x, x === 'None')).join('')}</div>
+   <div class=choices><span>this turn</span>${['Hits both foes', 'Screen up', 'Helping Hand', 'Friend Guard', 'Critical hit'].map(x => w(x, x === 'Hits both foes')).join('')}</div>`) +
+  step(4, 'The kits', 'each side’s most used set; tap a value to change it', '', `<div class=cols>${kit('muscle', [['Item', 'Charizardite Y'], ['Ability', 'Drought'], ['Nature', 'Modest'], ['Sp. Atk points', '32']], 'Sp. Atk stage')}${kit('target', [['Item', 'White Herb'], ['Ability', 'Unburden'], ['Nature', 'Adamant'], ['Points', 'HP 2 · SpD 0']], 'Sp. Def stage')}</div>`) +
+  step(5, 'The KO Board', 'your six against the top 30', '', `<div class=counts><div class=good><b class=u>18</b><span>down in one hit</span></div><div><b class=u>8</b><span>can go down</span></div><div class=bad><b class=u>4</b><span>survive</span></div></div>
+   <div class="rows tiles" style="margin-top:16px">${KO.map(([n, sh, by, pc]) => `<div class=row><img src="${art(n)}" alt=""><div><b>${sh}</b><small>your ${by}</small></div><div class=val><b class=u>${pc}</b></div></div>`).join('')}</div>
+   <a class=go href=#>OPEN THE KO BOARD.</a>${links(['How the Calc Works ›', 'Notes on this hit ›'])}`);
+page('calc', 'Battle', body, `
+.paper-hit{position:relative;display:grid;grid-template-columns:minmax(0,260px) minmax(0,1fr) minmax(0,260px);gap:24px;align-items:end;padding:96px 24px 28px;margin-top:8px;
+ background:var(--card);background-image:linear-gradient(rgba(0,120,191,.10) 1px,transparent 1px),linear-gradient(90deg,rgba(0,120,191,.10) 1px,transparent 1px);background-size:24px 24px;box-shadow:0 10px 24px -14px rgba(23,22,26,.35)}
+.paper-hit .atk .rcw{transform:rotate(-3deg)}.paper-hit .def .rcw{transform:rotate(2deg)}
+.paper-hit .def .rc:after{content:"";position:absolute;inset:-10px -14px 40px;border:5px solid var(--nasty);border-radius:50%;pointer-events:none}
+.paper-hit .res{text-align:center;padding-bottom:12px}.paper-hit .pct{display:block;font-size:clamp(44px,5vw,72px);line-height:1;white-space:nowrap;color:var(--nasty-text)}.paper-hit .hp{margin:4px 0 14px;font-size:17px}
+.paper-hit .ring{display:inline-block;padding:6px 22px;border:5px solid var(--nasty);border-radius:50%;color:var(--nasty-text);font-size:28px;transform:rotate(-3deg)}.paper-hit .note{display:block;margin-top:12px;color:var(--plot-text)}
+.paper-hit .res:before{content:"";position:absolute;left:28%;right:28%;top:52px;height:3px;background:var(--ink)}
+.paper-hit .res:after{content:"";position:absolute;right:calc(28% - 4px);top:44px;border:10px solid transparent;border-left:16px solid var(--ink)}
+.moves.m4{grid-template-columns:repeat(4,minmax(0,1fr))}
+@media (max-width:999.98px){.moves.m4{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:699.98px){.paper-hit{grid-template-columns:1fr 1fr;padding:72px 12px 20px;gap:56px 12px}.paper-hit .res{grid-column:1/-1;grid-row:2}.paper-hit .res:before,.paper-hit .res:after{display:none}.paper-hit .ring{font-size:20px}.paper-hit .def .rc:after{inset:-10px}}`);
