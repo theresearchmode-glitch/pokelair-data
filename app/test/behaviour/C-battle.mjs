@@ -438,20 +438,21 @@ t('LOG-07', 'a logged win shows on Home as "1–0"', async () => {
    the damage is 'min–max' HP, the line says '<defender> has <HP> HP', k of 16 rolls at or over the HP = 'Faints a time(s) in b' (the fraction
    k/16 reduced), all 16 = 'Always faints', none = a several-hit verdict ('Faints in 2 hits' when even the lowest two rolls knock it out);
    'hangs on with x–y HP' uses the rolls that don't. Returns the answer for the caller's own checks. */
+const pq = (v, hp) => Math.round(100 * v / hp), pcs = (a, b, hp) => a === b ? pq(a, hp) + '%' : pq(a, hp) + '–' + pq(b, hp) + '%'; /* Nov 21, 8:39 AM (Sim): % of HP first, rounded like the KO Board; HP beside it (was HP first, Q100) */
 const gcd = (a, b) => b ? gcd(b, a % b) : a;
 async function plotAnswerMatchesEngine(ui, where) {
   const a = await ui.calcAnswer(); expect(a && a.eng, `${where}: no answer or no engine hit`); const {min, max, hp, rolls} = a.eng;
   expect(rolls.length === 16, `${where}: engine has ${rolls.length} rolls, not 16`);
-  expect(a.dmg === (min === max ? String(min) : `${min}–${max}`), `${where}: damage shows "${a.dmg}", engine ${min}–${max}`);
-  expect(new RegExp(` has ${hp} HP\\.$`).test(a.l2), `${where}: HP line "${a.l2}", engine ${hp} HP`);
+  expect(a.dmg === pcs(min, max, hp), `${where}: damage shows "${a.dmg}", engine ${pcs(min, max, hp)} (${min}–${max} HP)`);
+  expect(a.l2.endsWith(`: ${min === max ? min : min + '–' + max} of ${hp} HP.`), `${where}: HP line "${a.l2}", engine ${min}–${max} of ${hp} HP`);
   const k = rolls.filter(v => v >= hp).length, rest = rolls.filter(v => v < hp);
   if (k === 16) expect(a.verdict === 'Always faints', `${where}: all 16 rolls knock out but the verdict is "${a.verdict}"`);
   else if (k > 0) { const g = gcd(k, 16), x = k / g, y = 16 / g, lo = hp - Math.max(...rest), hi = hp - Math.min(...rest);
     expect(a.verdict === `Faints ${x} time${x > 1 ? 's' : ''} in ${y}`, `${where}: ${k} of 16 rolls knock out but the verdict is "${a.verdict}"`);
-    expect(new RegExp(`^hangs on with ${lo === hi ? lo : lo + '–' + hi} HP the other `).test(a.sm || ''), `${where}: hangs-on line "${a.sm}", rolls give ${lo}–${hi} HP`); }
+    expect((a.sm || '').startsWith(`hangs on with ${lo === hi ? pq(lo, hp) + '%' : pq(lo, hp) + '–' + pq(hi, hp) + '%'} the other `), `${where}: hangs-on line "${a.sm}", rolls give ${lo}–${hi} HP`); }
   else { expect(/^(Faints in [23] hits|May faint in 2 hits|Takes \d+\+ hits)/.test(a.verdict), `${where}: no roll knocks out but the verdict is "${a.verdict}"`);
     if (2 * min >= hp) expect(a.verdict === 'Faints in 2 hits', `${where}: two lowest rolls (${2 * min}) beat ${hp} HP but the verdict is "${a.verdict}"`);
-    expect(a.sm === `hangs on with ${hp - max}–${hp - min} HP after one`, `${where}: hangs-on line "${a.sm}", engine ${hp - max}–${hp - min}`); }
+    expect(a.sm === `hangs on with ${pq(hp - max, hp)}–${pq(hp - min, hp)}% after one`, `${where}: hangs-on line "${a.sm}", engine ${hp - max}–${hp - min} HP`); }
   return a; }
 t('CALC-01', 'Damage calc head and "How the calc works →" link', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
@@ -466,7 +467,7 @@ t('CALC-02', 'attacker/defender defaults and pickers grouped Your team / Top of 
     if (NEW) await plotAnswerMatchesEngine(ui, 'defaults'); /* Nov 21: Plot the hit (Sim approved): the damage in HP and the defender's HP, checked against the engine (was a 'x–y%' range check) */ else hasAll(await ui.calcResultOnly(), ['% of HP'], 'result'); // brief 10: 'x–y of z HP' beside the range
     const r0 = await ui.calcResultOnly(); await ui.calcPick('defender', 'Incineroar'); s = await ui.calcSides();
     expect(s.d === 'Incineroar', 'defender not Incineroar'); expect(await ui.calcResultOnly() !== r0, 'result did not change for the new defender');
-    if (NEW) expect(/ Incineroar has \d+ HP\.$/.test((await plotAnswerMatchesEngine(ui, 'into Incineroar')).l2), 'answer does not name Incineroar'); /* Nov 21: Plot the hit (Sim approved): the new defender's hit, against the engine */
+    if (NEW) expect(/^of Incineroar's HP: /.test((await plotAnswerMatchesEngine(ui, 'into Incineroar')).l2), 'answer does not name Incineroar'); /* Nov 21: Plot the hit (Sim approved): the new defender's hit, against the engine */
     expect(/Assumed spread|Estimated spread|Most used spread|Most used set|Estimated set/i.test(await ui.pageText()), 'no "assumed/estimated spread" tag'); /* the Arena (Nov 19, Q35 wording): 'most used set' / 'estimated set' on the set cards */ await close(); }
   const {ui, close} = await open({team: []}); await ui.go('Damage Calc');
   const s = await ui.calcSides(); expect(s.a === 'Garchomp' && s.d !== 'Garchomp', 'empty-team defaults are ' + JSON.stringify(s)); await close(); });
@@ -504,7 +505,7 @@ t('CALC-05', 'Swap trades attacker and defender; move resets to the new attacker
 t('CALC-06', 'field: weather follows the attacker\'s setter until you pick; Rain halves Fire', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('Damage Calc');
   expect(await ui.isPressed('Sun') === true, 'Mega Charizard Y attacking: Sun not pressed by itself');
-  const pct = async () => NEW ? +(((await ui.calcAnswer()) || {}).dmg || '0').split('–').pop() /* Nov 21: Plot the hit (Sim approved): the top of the damage in HP (same defender, so the ratio holds); was the top % */ : +((/(\d+)–(\d+)% of HP/.exec(await ui.calcResultOnly()) || [0, 0, 0])[2]);
+  const pct = async () => NEW ? +(((await ui.calcAnswer()) || {}).dmg || '0').replace('%', '').split('–').pop() /* Nov 21: Plot the hit (Sim approved): the top of the damage in HP (same defender, so the ratio holds); was the top % */ : +((/(\d+)–(\d+)% of HP/.exec(await ui.calcResultOnly()) || [0, 0, 0])[2]);
   const sun = await pct(); await ui.tapIn(/^Rain$/, 500); const rain = await pct();
   if (NEW) await plotAnswerMatchesEngine(ui, 'Heat Wave in Rain'); /* Nov 21: Plot the hit (Sim approved) */
   expect(await ui.isPressed('Rain') === true, 'Rain not pressed'); expect(rain > 0 && rain < sun * 0.4, `Fire damage in rain ${rain} vs sun ${sun} (${NEW ? 'HP' : '%'}; should be about a third: ×1.5 → ×0.5)`);
@@ -518,7 +519,7 @@ t('CALC-07', 'result: Sneasler Close Combat into Mega Charizard Y; Garchomp Eart
   await ui.calcPick('attacker', 'Sneasler'); await ui.calcPick('defender', 'Mega Charizard Y'); await ui.calcMove('Close Combat');
   const r = await ui.calcResultOnly();
   if (NEW) { const a = await plotAnswerMatchesEngine(ui, 'Close Combat into Mega Charizard Y'); /* Nov 21: Plot the hit (Sim approved): real HP, not % (45–52% of 155 HP = 69–81 HP); the engine's '20% chance to 2HKO' in the new words */
-    expect(a.dmg === '69–81' && a.l2 === 'damage. Mega Charizard Y has 155 HP.' && a.verdict === 'Faints in 2 hits, 20% of the time', 'answer: ' + JSON.stringify(a).slice(0, 240));
+    expect(a.dmg === '45–52%' && a.l2 === "of Mega Charizard Y's HP: 69–81 of 155 HP." && a.verdict === 'Faints in 2 hits, 20% of the time', 'answer: ' + JSON.stringify(a).slice(0, 240));
     expect(/Fighting is resisted/.test(r) && /Fewest points to always survive/.test(r), 'Notes on this hit: no "Fighting is resisted" or survive line: ' + r.slice(0, 200)); }
   else { expect(/45–52% of HP/.test(r) && /20% chance to 2HKO/.test(r) && /Fighting is resisted/.test(r), 'result: ' + r.slice(0, 200));
     expect(/of 155 HP/.test(r) && /Fewest points to always survive/.test(r), 'HP numbers or survive line missing'); }

@@ -11,10 +11,11 @@ import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const fails = [], ok = (c, m) => { console.log((c ? '  pass  ' : '  FAIL  ') + m); if (!c) fails.push(m); };
 const wait = (p, ms = 500) => p.waitForTimeout(ms);
-/* Nov 21: Plot the hit (Sim approved): the answer is .pc-ans and shows the damage in real HP (.pc-big, 'min–max' from the engine's min and max:
+/* Nov 21, 8:39 AM (Sim): % of HP first everywhere, HP beside it (was real HP first, Q100); the engine's % rounded like the KO Board.
+   Earlier: Plot the hit (Sim approved): the answer is .pc-ans and shows the damage in real HP (.pc-big, 'min–max' from the engine's min and max:
    e.hp); Nov 21 (Sim, Nov 20: real HP numbers, not %): the sheet's rows show 'min–max of N HP' too (e.row, built here from the engine's
    min, max and the defender's HP, not from the page's own helpers), so a row is checked against the engine and the answer against the same hit */
-const engine = p => p.evaluate(() => window.__ev(`(() => { const C = calcData(), r = C.r, d = r && r.max > 0 ? (r.min === r.max ? String(r.min) : r.min + '–' + r.max) : ''; return {mv: dc.mv, row: d ? d + ' of ' + r.hp + ' HP' : (r ? 'none' : ''), hp: d, min: r && r.min, max: r && r.max}; })()`));
+const engine = p => p.evaluate(() => window.__ev(`(() => { const C = calcData(), r = C.r, d = r && r.max > 0 ? (r.min === r.max ? String(r.min) : r.min + '–' + r.max) : '', q = v => Math.round(100 * v / r.hp), pc = d ? (r.min === r.max ? q(r.min) + '%' : q(r.min) + '–' + q(r.max) + '%') : ''; return {mv: dc.mv, row: d ? pc + ' · ' + d + ' of ' + r.hp + ' HP' : (r ? 'none' : ''), hp: pc, min: r && r.min, max: r && r.max}; })()`));
 const verdict = p => p.evaluate(() => { const e = document.querySelector('.pc-ans'); return e ? e.textContent.replace(/\s+/g, ' ').trim() : ''; });
 const big = p => p.evaluate(() => { const e = document.querySelector('.pc-ans .pc-big'); return e ? e.textContent.trim() : ''; });
 
@@ -38,14 +39,14 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) {
   const setN = o0.o.filter(x => x.g === 'Its set').length;
   ok(sh && (setN ? /^Its (usual set|set on your team)$/.test(sh.heads[0]) && sh.heads[1] === 'Every other move' : sh.heads[0] === 'Every other move'), `${tag}: its set first (${setN} moves), then every other move (headings: ${sh && sh.heads.join(' | ')})`);
   ok(sh && sh.mv.every(r => /^var\(--ty-[A-Z][a-z]+\)$/.test(r.edge)), `${tag}: every row has its type colour edge`);
-  const withN = sh ? sh.mv.filter(r => /^\d+(–\d+)? of \d+ HP$/.test(r.dm)) : []; ok(withN.length >= 3 && sh.mv.every(r => !/%/.test(r.dm)), `${tag}: ${withN.length} rows show the damage in HP ('${withN[0] && withN[0].dm}'), none in %`);
+  const withN = sh ? sh.mv.filter(r => /^\d+(–\d+)?% · \d+(–\d+)? of \d+ HP$/.test(r.dm)) : []; ok(withN.length >= 3, `${tag}: ${withN.length} rows show the damage as % of HP first, HP beside it ('${withN[0] && withN[0].dm}')`);
   await p.keyboard.press('Escape'); await wait(p); ok(!(await sheet(p)) && (await opts(p, 'dcMv')).v === o0.v, `${tag}: Escape closes it with no change (${o0.v})`);
   // 3 rows: the damage on the row equals what the Arena shows once that move is picked (a tap)
   const pickN = [withN.find(r => r.n !== o0.v), withN.filter(r => r.n !== o0.v)[Math.floor(withN.length / 2)], withN.filter(r => r.n !== o0.v).slice(-1)[0]].filter(Boolean);
   for (const r of pickN) { const v0 = await verdict(p); await p.locator('[data-arnmv]').click(); await wait(p, 800);
     await p.locator(`[role=dialog] [data-arnpickmv="${r.n.replace(/"/g, '\\"')}"]`).click(); await wait(p, 900);
     const e = await engine(p), v1 = await verdict(p), b1 = await big(p), mv = (await opts(p, 'dcMv')).v, gone = !(await sheet(p)), foc = await focusOn(p, '[data-arnmv]');
-    ok(gone && mv === r.n && e.mv === r.n && e.row === r.dm && b1 === e.hp && v1 !== v0, `${tag}: a tap on ${r.n} (row ${r.dm}) puts it in play: #dcMv ${mv}, the engine ${e.row}, the answer shows ${b1} HP ("${v1.slice(0, 48)}")`); /* Nov 21: Plot the hit (Sim approved): the row's HP is the engine's and the answer's HP is the same hit's */
+    ok(gone && mv === r.n && e.mv === r.n && e.row === r.dm && b1 === e.hp && v1 !== v0, `${tag}: a tap on ${r.n} (row ${r.dm}) puts it in play: #dcMv ${mv}, the engine ${e.row}, the answer shows ${b1} ("${v1.slice(0, 48)}")`); /* Nov 21: Plot the hit (Sim approved): the row's HP is the engine's and the answer's HP is the same hit's */
     ok(foc, `${tag}: focus back on All moves after the pick (${foc})`); }
   // typing filters; Enter picks the first row
   await p.locator('[data-arnmv]').click(); await wait(p, 800); const cur = (await opts(p, 'dcMv')).v, all = (await opts(p, 'dcMv')).o.map(x => x.t);
