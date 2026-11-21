@@ -410,3 +410,15 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
    There it uses the small-label font (Instrument Sans bold 15px, Sim's type rule: small labels in Instrument Sans), which is narrow enough
    for every word, and wraps only between words or at a hyphen (break-word keeps the column at the longest word) */
 @media (min-width:700px) and (max-width:879.98px){.pl-wev{font:700 var(--t15)/1.3 var(--b);font-style:normal;overflow-wrap:break-word}}
+
+/* reskin proposal (Nov 21): the newest winner runs full width with its six as kit roster cards; the next two sit side by side under it */
+.pl-wins .pl-big{grid-column:1 / -1}.pl-wins{grid-template-columns:repeat(2,minmax(0,1fr))}
+.pl-wsixk .k-roster{padding-top:var(--s10)}
+@media (max-width:699.98px){.pl-wins{grid-template-columns:minmax(0,1fr)}}
+/* phones: the winner's six cards sit tighter (lower plates, art a little smaller), and the three links stay on one line */
+@media (max-width:699.98px){.pl-wsixk .k-roster{gap:var(--s10) var(--s2);padding-top:var(--s8)}.pl-wins{gap:var(--s2)}.pl-win{padding-top:var(--s2)}
+  @container plwin (min-width:300px){.pl-wa{display:flex;flex-wrap:nowrap;justify-content:space-between;gap:0 var(--s1)}.pl-wa .np-link{font-size:var(--t13);white-space:nowrap;letter-spacing:-.02em}}}
+/* phones (Sim, Nov 21: "recommended is good"): the two older winners are compact rows: their links and "Full sets" keep 44 px taps
+   but take one text line of room (the tap reaches 12 px above and below), and the six sit a little smaller; the page stays no longer than today */
+@media (max-width:699.98px){.pl-win:not(.pl-big) .pl-wa .np-link,.pl-win:not(.pl-big) .pl-wsets > summary{margin-block:calc(var(--s3) * -1)}
+  .pl-win:not(.pl-big) .pl-wt{margin-block:var(--s1) 0}.pl-win:not(.pl-big) .pl-wsix span{height:32px}.pl-win:not(.pl-big) .pl-wsix img{max-height:32px}}
