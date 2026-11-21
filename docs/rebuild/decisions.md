@@ -1816,3 +1816,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:23 PM: Sim confirmed: executive authority until 9:00 AM Sun Nov 22.
 - 12:27 PM: Sim: 'the numbers are on top of the pokemon sprites it looks terrible' -> the roster card's score moves off the art into the name row (name left, score right, tier under it); nothing drawn over the Pokémon; the kit test fails if the score touches the picture. Told helper hK2.
 - 12:27 PM: Sim: design authority CANCELLED (now). Only executive (non-visual) authority, until 9:00 AM Sun Nov 22. Every design/visual decision goes to Sim with pictures again; the kit and pages are built as proposals and shown to Sim before anything is used. Confirmed to Sim.
+- 12:30 PM: Sim: 'those are fine' -> the calc % sizing and the kit brief are approved; keep moving.
