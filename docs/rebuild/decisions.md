@@ -1853,3 +1853,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:34 PM: Sim: loves E, but the page is a little boring; wants flare without being overbearing for daily use. Adding data-drawn flare: a slanted damage bar per matchup in the move's type colour with a KO tick at 100%.
 - 2:34 PM: Sim: type-symbol helper waits for a free slot (no 3rd helper). Starts when hT or hC finishes.
 - 2:36 PM: Plans page: noted the Pokémon page mock-up, merged reskins, helpers, new rules. Sim: flat move boxes are bland everywhere; designing one site-wide move look (pictures to Sim).
+- 2:38 PM: Sim: move design A (move ticket) approved site-wide, 'make it a lil bit better'. Adding a type-colour underline; phones stack the ticket (type tab with %, name, what it does) to keep 2 columns. Pokémon page first, then the kit.
+- 2:40 PM: Move ticket A built into the Pokémon mock (type-colour underline; phones stack it). Phone page 3,792px at 390 (today 3,796); no cut text or overlaps at 13 widths.
