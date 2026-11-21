@@ -29,6 +29,11 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
+## HELPERS: ONE AT A TIME (Sim, Nov 21, 6:49 AM, LATEST; overrides the helper counts below)
+Sim, Nov 21: "after 7 AM today, I would like to reduce the amount of helpers to just one helper at a time. I need to conserve usage."
+From 7:00 AM Nov 21: at most ONE helper/subagent running at a time. Main thread keeps working (still never idle). Going above 1: ask Sim
+first. work-check.sh / stop-check.sh need 1. (The 3-helper rules below are kept for the record.)
+
 ## ALWAYS WORKING, ALWAYS 3 HELPERS: OF UTMOST IMPORTANCE (Sim, Nov 21, 1 AM: "I want this rule of doing so to be of utmost importance. cant stress it enough. key to us being efficient.")
 Sim, Nov 21: up to 4 helpers until 10 AM Eastern today, then back to 3.
 ### (Nov 20 wording) (Sim, Nov 20, 10:26 PM: "MAKE SURE THIS IS NOTED AND FOLLOWED AT ALL TIMES")
