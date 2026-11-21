@@ -77,7 +77,7 @@ document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)r
   else if(b.id==='recMoreReset'){ui.recMore=0;renderRecs();const l=$('recList');if(l&&l.scrollIntoView)l.scrollIntoView({block:'start'})}
   else if(b.id==='planMoreBtn'){ui.planMore=(ui.planMore||0)+1;keepScroll(()=>render())}
   else if(b.id==='planMoreReset'){ui.planMore=0;render()}
-  else if(d.src){ui.metaSrc=d.src;render()}
+  else if(d.src){ui.metaSrc=ui.metaView=d.src;render()}
   else if(d.sort){ui.sort=d.sort;document.querySelectorAll('[data-sort]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.sort===ui.sort));renderSaved()}
   else if(b.id==='clearTeam'){keepUndo();S.slots=Array.from({length:6},blank);S.loadedId=null;render();toast('Team cleared',true)}
   else if(b.id==='boxReset'){if(!ui.boxResetAsk){ui.boxResetAsk=true;b.textContent='Tap again to reset';setTimeout(()=>{ui.boxResetAsk=false;const x=$('boxReset');if(x)x.textContent='Reset box'},3500);return}ui.boxResetAsk=false;b.textContent='Reset box';const was=S.box.slice();S.box=DEFAULT_BOX.slice();ui.boxUndo=was;render();toastBox('Box reset to the default list')}

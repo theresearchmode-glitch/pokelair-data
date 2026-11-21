@@ -113,7 +113,10 @@ function fixSlots(){S.slots=normSlots(S.slots);S.opp=(Array.isArray(S.opp)?S.opp
 fixSlots();fixTeams();fixLog();
 for(const k of ['doubles','doubles_ingame','doubles_tour','singles'])META[k]=cleanMeta(META[k]);
 META.teams=cleanTeams(META.teams);META.history=cleanHistory(META.history);
-let ui={recSrc:LS.get('cc2.recsrc','box')==='all'?'all':'box',abSrc:LS.get('cc2.absrc','box')==='all'?'all':'box',pool:['box','boxfill','all'].includes(LS.get('cc2.pool',''))?LS.get('cc2.pool',''):'boxfill',setMon:LS.get('cc2.setMon',null),setSrc:'ingame',metaSrc:'ingame',sort:'recent',confirmDel:null,renaming:null,saving:false};
+/* metaView (Nov 21): which list the Meta > Usage page shows; Online tournaments by default since the in-game (op.gg) list is
+   paused since Nov 17. metaSrc is still the source sets and ratings follow (unchanged: in-game first) until the visitor picks
+   one on the Meta page, which sets both, as before. Neither is saved between visits. */
+let ui={recSrc:LS.get('cc2.recsrc','box')==='all'?'all':'box',abSrc:LS.get('cc2.absrc','box')==='all'?'all':'box',pool:['box','boxfill','all'].includes(LS.get('cc2.pool',''))?LS.get('cc2.pool',''):'boxfill',setMon:LS.get('cc2.setMon',null),setSrc:'ingame',metaSrc:'ingame',metaView:'tour',sort:'recent',confirmDel:null,renaming:null,saving:false};
 
 // "Data as of …" in the header: the newest date any data document carries (pre-launch, Nov 2: "as of" reads as a date stamp).
 const DATA_AT={};
