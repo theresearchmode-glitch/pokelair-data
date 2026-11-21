@@ -12,30 +12,14 @@
   height:440px;margin:0 calc(var(--gut) * -1);padding:0 var(--s2);color:var(--arn-on-plate)}
 /* the art: sky over ground, the hills on the horizon; marks for each weather and terrain */
 .arn-bg{position:absolute;inset:0;z-index:-1;overflow:hidden}
-.arn-sky{position:absolute;left:0;right:0;top:0;height:var(--arn-hz)}
-.arn-ground{position:absolute;left:0;right:0;bottom:0;top:var(--arn-hz)}
-.arn-ground svg{position:absolute;inset:0;width:100%;height:100%}
-.arn-ground path{fill:none;stroke-width:1;vector-effect:non-scaling-stroke}
-.arn-ground .g path{stroke:var(--arn-grid)}.arn-ground .z path{stroke:var(--arn-spark);stroke-width:2;stroke-linejoin:round;opacity:.7}
-.arn-ground .g,.arn-ground .z{display:none}
-.arn-hills{position:absolute;left:0;right:0;bottom:-1px;width:100%;height:26%}
-.arn-hills .h1{fill:var(--arn-h1)}.arn-hills .h2{fill:var(--arn-h2)}
-.arn-sun{position:absolute;left:24%;bottom:2%;display:none;width:34cqi;aspect-ratio:1;border-radius:50%;translate:-50% 50%;background:radial-gradient(circle,var(--arn-disc) 0 22%,var(--arn-sun-glow) 34%,transparent 68%)}
-.arn-clouds{position:absolute;inset:0;display:none;background:radial-gradient(18cqi 5cqi at 18% 22%,var(--arn-cloud) 0 40%,transparent 72%),radial-gradient(14cqi 4cqi at 26% 18%,var(--arn-cloud) 0 40%,transparent 72%),radial-gradient(20cqi 5cqi at 78% 36%,var(--arn-cloud) 0 38%,transparent 72%),radial-gradient(12cqi 4cqi at 66% 12%,var(--arn-cloud) 0 36%,transparent 72%)}
-.arn-fx{position:absolute;inset:0;pointer-events:none}
-.arn-w-clear{--arn-h1:var(--arn-clear-h1);--arn-h2:var(--arn-clear-h2);--arn-row:var(--arn-row-clear)}.arn-w-clear .arn-sky{background:linear-gradient(180deg,var(--arn-clear-1),var(--arn-clear-2))}.arn-w-clear .arn-clouds{display:block}
-.arn-w-sun{--arn-h1:var(--arn-sun-h1);--arn-h2:var(--arn-sun-h2);--arn-row:var(--arn-row-sun);--arn-disc:var(--arn-sun-disc)}.arn-w-sun .arn-sky{background:linear-gradient(180deg,var(--arn-sun-1),var(--arn-sun-2) 55%,var(--arn-sun-3))}.arn-w-sun .arn-sun{display:block}
-.arn-w-rain{--arn-h1:var(--arn-rain-h1);--arn-h2:var(--arn-rain-h2);--arn-row:var(--arn-row-rain)}.arn-w-rain .arn-sky{background:linear-gradient(180deg,var(--arn-rain-1),var(--arn-rain-2))}
-.arn-w-rain .arn-fx{background:repeating-linear-gradient(104deg,transparent 0 20px,var(--arn-rain-line) 20px 22px,transparent 22px 36px)}
-.arn-w-sand{--arn-h1:var(--arn-sand-h1);--arn-h2:var(--arn-sand-h2);--arn-row:var(--arn-row-sand);--arn-disc:var(--arn-sand-disc);--arn-sun-glow:transparent}.arn-w-sand .arn-sky{background:linear-gradient(180deg,var(--arn-sand-1),var(--arn-sand-2))}.arn-w-sand .arn-sun{display:block;bottom:30%}
-.arn-w-sand .arn-sky::after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(174deg,transparent 0 12px,var(--arn-dust) 12px 14px,transparent 14px 28px),repeating-linear-gradient(170deg,transparent 0 30px,var(--arn-dust) 30px 31px,transparent 31px 52px)}
-.arn-w-snow{--arn-h1:var(--arn-snow-h1);--arn-h2:var(--arn-snow-h2);--arn-row:var(--arn-row-snow)}.arn-w-snow .arn-sky{background:linear-gradient(180deg,var(--arn-snow-1),var(--arn-snow-2))}
-.arn-w-snow .arn-sky::after{content:"";position:absolute;inset:0;bottom:12%;background:radial-gradient(circle,var(--arn-flake) 0 2px,transparent 3px) 0 0/36px 40px,radial-gradient(circle,var(--arn-flake) 0 1.5px,transparent 2.5px) 18px 20px/52px 44px,radial-gradient(circle,var(--arn-flake) 0 1px,transparent 2px) 8px 30px/24px 28px}
-.arn-t-none .arn-ground{background:linear-gradient(180deg,var(--arn-none-1),var(--arn-none-2))}.arn-t-none .arn-ground .g{display:inline}
-.arn-t-grassy .arn-ground{background:repeating-linear-gradient(96deg,transparent 0 5px,var(--arn-blade) 5px 6px,transparent 6px 9px),repeating-linear-gradient(84deg,transparent 0 7px,var(--arn-blade) 7px 8px,transparent 8px 13px),linear-gradient(180deg,var(--arn-grassy-1),var(--arn-grassy-2))}
-.arn-t-electric .arn-ground{background:linear-gradient(180deg,var(--arn-electric-1),var(--arn-electric-2))}.arn-t-electric .arn-ground .z{display:inline}
-.arn-t-psychic .arn-ground{background:repeating-radial-gradient(ellipse 140% 110% at 50% 0,transparent 0 16px,var(--arn-ring) 16px 18px),linear-gradient(180deg,var(--arn-psychic-1),var(--arn-psychic-2))}
-.arn-t-misty .arn-ground{background:radial-gradient(40% 30% at 20% 30%,var(--arn-fog),transparent 70%),radial-gradient(36% 26% at 70% 60%,var(--arn-fog),transparent 70%),radial-gradient(30% 24% at 45% 88%,var(--arn-fog),transparent 70%),linear-gradient(180deg,var(--arn-misty-1),var(--arn-misty-2))}
+/* the scene's art (Nov 21): a sky picture anchored to the horizon from above, a ground picture from below (V2.arnArt); its own wrappers, so no old .arn-ground rule reaches it */
+.arn-sw{position:absolute;left:0;right:0;top:0;height:var(--arn-hz)}.arn-gw{position:absolute;left:0;right:0;bottom:0;top:var(--arn-hz)}
+.arn-sw svg,.arn-gw svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.arn-w-clear{--arn-row:var(--arn-row-clear)}
+.arn-w-sun{--arn-row:var(--arn-row-sun)}
+.arn-w-rain{--arn-row:var(--arn-row-rain)}
+.arn-w-sand{--arn-row:var(--arn-row-sand)}
+.arn-w-snow{--arn-row:var(--arn-row-snow)}
 /* the two rows of five: weather across the top (its tint follows the sky), terrain across the bottom; chosen = white pill */
 .arn-pills{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-self:center;padding:var(--s1);border-radius:999px;background:var(--arn-row)}
 .arn-pills.arn-wxr{grid-area:wx}.arn-pills.arn-trr{grid-area:tr;--arn-row:var(--arn-row-tr)}
