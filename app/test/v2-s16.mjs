@@ -4,11 +4,11 @@
 import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const fails = [], ok = (c, m) => { console.log((c ? '  pass  ' : '  FAIL  ') + m); if (!c) fails.push(m); };
-const where = p => p.evaluate(() => { const six = document.querySelector('.bp-six'), use = [...document.querySelectorAll('[data-bduse]')].filter(e => e.getClientRects().length);
+const where = p => p.evaluate(() => { const six = document.querySelector('.pl-plates') || document.querySelector('.bp-six'), use = [...document.querySelectorAll('[data-bduse]')].filter(e => e.getClientRects().length);
   const u = use[0]; return {n: use.length, gap: six && u ? Math.round(u.getBoundingClientRect().top - six.getBoundingClientRect().bottom) : null, inNotes: !!(u && u.closest('.bp-right')), sideways: document.documentElement.scrollWidth > innerWidth}; });
 for (const W of [390, 820, 1440]) { const c = await b.newContext({viewport: {width: W, height: 900}}); const p = await c.newPage(); await p.addInitScript(() => { window.__PL_TEST = 1; });
   const errs = []; p.on('pageerror', e => errs.push(e.message)); await p.goto('file://' + PAGE + '#build', {timeout: 90000}); await p.waitForTimeout(2500);
-  await p.click('[data-bdgo]'); await p.waitForFunction(() => window.__ev('!!(ui.ab && !ui.ab.busy)') && document.querySelector('.bp-six'), null, {timeout: 120000}).catch(() => {}); await p.waitForTimeout(800);
+  await p.click('[data-bdgo]'); await p.waitForFunction(() => window.__ev('!!(ui.ab && !ui.ab.busy)') && document.querySelector('.pl-plates, .bp-six'), null, {timeout: 120000}).catch(() => {}); await p.waitForTimeout(800);
   const x = await where(p);
   ok(x.n === 1, `${W}: one Load Team on the page (${x.n})`);
   /* Q83 item 2 (Sim, Nov 20): under the six at every width now (was: 1100+ at the foot of Notes) */
