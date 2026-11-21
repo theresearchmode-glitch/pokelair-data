@@ -1847,3 +1847,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:09 PM: Sim: cover all 7 on the Pokémon page; make it amazing (most people's first impression). Making HH's mock-up (Incineroar, real data) with every one of the 7.
 - 2:21 PM: Sim: Pokémon page order = numbers, then crews, then who it beats / who beats it; wants more character. Making A (case-file voice + character) and B (reorder only) for his pick.
 - 2:26 PM: Sim: the red notes add clutter, not character; phone looked cramped. Wants character through creativity, not more stuff. Dropping notes/stamp/pink kicker; trying a type-coloured magazine-cover hero that replaces card + headline; no plan gutter on phones.
+- 2:28 PM: Sim: no plain gradient backgrounds; the card display was better (sharper, more creative, not space for its own sake). Back to the card hero, made sharper: flat hard-edged type-colour planes, same for partner cards; keep CASE FILE #0727 kicker (ink).
+- 2:30 PM: Sim: no generic AI design is a MAJOR rule. Saved at the top of CLAUDE.md and in docs/sim-workflow.txt.
