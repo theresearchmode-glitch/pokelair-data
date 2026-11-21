@@ -13,8 +13,11 @@ Shared kit: all new parts were added to kit2.css (marked "ADDED Nov 21"), never 
 | 02 | build | 2474px (2.93 screens) | 3071px (3.64 screens) | shorter or same |
 | 03 | team | 3623px (4.29 screens) | 3734px (4.42 screens) | shorter or same |
 | 03 | team-b | 3664px (4.34 screens) | 3734px (4.42 screens) | shorter or same |
+| 05 | sheet | 3028px (3.59 screens) | 3373px (4.00 screens) | shorter or same |
 | 08 | battle | 1763px (2.09 screens) | 1768px (2.09 screens) | shorter or same |
 | 09 | calc | 2594px (3.07 screens) | 2187px (2.59 screens) | LONGER by 407px |
+| 10 | speed | 2580px (3.06 screens) | 2952px (3.50 screens) | shorter or same |
+| 11 | types | 2089px (2.48 screens) | 2798px (3.32 screens) | shorter or same |
 | 15 | usage | 3163px (3.75 screens) | 3554px (4.21 screens) | shorter or same |
 | 16 | sets | 2965px (3.51 screens) | 3148px (3.73 screens) | shorter or same |
 | 18 | tournaments | 2652px (3.14 screens) | 3386px (4.01 screens) | shorter or same |
@@ -107,8 +110,21 @@ Check (390 / 1440): off-scale 0, Unbounded under 15px 0, cut or spilling text 0,
 ## 04 team-empty · RECRUIT YOUR CREW
 Not made yet.
 
-## 05 sheet · THE DOSSIER
-Not made yet.
+## 05 sheet · THE DOSSIER (`pages/sheet.html`, the Team Sheet)
+Data source: today's Team Sheet for the sample team (My Team › Team Sheet ↗, `V2.openTeamSheet()`), claude/design6 built Nov 21 with the repo's data files.
+Note: the address `#sheet` in today's Preview build opens a DEMO of the Pokémon info layer (Garchomp) over My Team, not the Team Sheet. This mock-up is the Team Sheet, as PAGES.md describes #5. The "today" phone height below is the `#sheet` demo page; the Team Sheet layer itself is shorter.
+
+Today's features -> where in the mock-up:
+- ← My Team, Copy for Showdown, Share as Image -> the link row; "COPY FOR SHOWDOWN." is the page's pink move.
+- "Sun Tailwind (sample) · Reg M-C doubles · level 50", "Spreads: each one's most common" -> headline and lead.
+- The legend (tap a column to edit its set; big number = the stat at level 50; team best in that stat; ▲ raised / ▼ lowered by nature; points = stat points 0–32) -> the hint above the cards.
+- Per Pokémon (01–06): name, item, Ability, nature with its +/− stats, four moves, the six stats at level 50 with points, ▲/▼, and team best -> one dossier card each (kit roster card, item/Ability/nature, move plates, a six-stat strip; team best is blue with a blue underline).
+
+Changes from the PAGES.md idea and why: none.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
 
 ## 06 box · YOUR STASH
 Not made yet.
@@ -165,11 +181,45 @@ Rules not met and why:
 
 Check (390 / 1440): every rule passes. Length 4.07 / 2.84 screens (today 2.59 / 1.60).
 
-## 10 speed · THE RACE
-Not made yet.
+## 10 speed · THE RACE (`pages/speed.html`)
+Data source: today's built page `#speed` (Track view, Your Weather: sun), claude/design6 built Nov 21 with the repo's data files.
 
-## 11 types · THE MATCHUPS
-Not made yet.
+Today's features -> where in the mock-up:
+- Battle sub-tabs -> link row at the top.
+- "Who moves first. Your six vs the top 20.", the lead (weather: sun, from your team) -> headline and lead.
+- Track / List; Your Tailwind, You +1, Their Tailwind, Them −1, They're Paralyzed, Trick Room; Your Weather (sun), No Weather, Sun, Rain, Sand, Snow -> the plot sentence.
+- The track: all 26 (your six and the top 20) with their Speed, fastest first, "← Moves first … Moves last →", the share note -> step 1 "The race": one lane each, your six in blue, the rest grey, a race-track grid behind.
+- Each of your six: outspeeds X% of the top 30 threats, and the "can't outspeed … / 3 more Speed points…" note -> step 2, list rows with bars.
+- The level 50 / 31 IVs / assumed spreads / weather Abilities note -> step 2's hint.
+
+Changes from the PAGES.md idea and why:
+- Lanes run fastest first, top to bottom (not a left-to-right track), so 26 Pokémon fit on a phone without sideways scrolling.
+- Headline split as "Who moves / first." with "Your six vs the top 20." in the lead, so no word sits alone on a line.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
+
+## 11 types · THE MATCHUPS (`pages/types.html`)
+Data source: today's built page `#types` (Mega Charizard Y, Ability Drought, from your team), claude/design6 built Nov 21 with the repo's data files.
+
+Today's features -> where in the mock-up:
+- Battle sub-tabs -> link row at the top.
+- "What hits Mega Charizard Y hard.", "Showing … (from your team)" -> headline and lead.
+- Your six (tap one), Look up a Pokémon -> the row of six pictures and the search link.
+- Or pick one or two types (Clear + the 18 types) -> a grid of type buttons (Fire and Flying on).
+- Taking hits as Fire / Flying: every type with its multiplier (4× Rock; 2× Water, Electric; ½ Fire, Fighting, Steel, Fairy; ¼ Grass, Bug; 0 Ground; the rest 1×), the summary lines, "Everything not listed…" -> step 1: a clean chart grid, hardest first, red edge = weak, blue edge = resists, plus the summary counts.
+- Today's 3D-block legend (tall red edge… flat plate) -> not needed: the chart colours say it directly.
+- Attacking with its own types (Fire: 2× Grass, Ice, Bug, Steel; ½ Fire, Water, Rock, Dragon. Flying: 2× Grass, Fighting, Bug; ½ Electric, Rock, Steel) -> step 2, two panels side by side.
+- Full type chart (every attacking type against every defending type) ›, the one fold today -> a link (no fold).
+
+Changes from the PAGES.md idea and why:
+- PAGES.md says "your team's weak spots marked"; today's page shows one Pokémon at a time, so the chart marks that Pokémon's weak spots. A whole-team view would be a new feature: question for Sim.
+- The 3D blocks are dropped, as PAGES.md says.
+
+Phone length (section 4): see the heights table at the top of NOTES.md.
+Rules not met and why: none.
+Check (390 / 1440): every rule passes.
 
 ## 12 practice · THE DRILL
 Not made yet.

@@ -188,3 +188,5 @@ textarea.field{min-height:140px;resize:vertical}
 @media (max-width:699.98px){.sentence{font-size:17px;gap:6px}.sentence .w{min-height:44px;padding:0 10px}.chk small{display:none}.chk{min-height:48px}.status{margin-top:16px}.links a,.links span{font-size:15px}.kv{gap:8px 16px;margin-top:10px}.kv div{padding-top:4px}.swap .why p{margin:4px 0 0}}  /* section 4.7: secondary lines to the tap on phones */
 @media (max-width:699.98px){.stepper b{min-width:36px;font-size:20px}.pair2 .choices{gap:4px}}
 @media (max-width:699.98px){.rows.tiles.full{grid-template-columns:minmax(0,1fr)}.rows.tiles.full .row{grid-template-columns:36px minmax(0,1fr) auto}.row .val b{white-space:nowrap}}  /* a tiles list whose value is wide goes one per line on phones */
+@media (max-width:699.98px){.panel .types{flex-wrap:wrap}}
+.types{flex-wrap:wrap}  /* type chips wrap rather than spill */

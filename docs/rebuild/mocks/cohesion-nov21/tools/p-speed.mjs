@@ -1,0 +1,24 @@
+import { w, sentence, step, head, links, page, art } from './lib.mjs';
+// Real data: today's built Speed Tiers (#speed), Track view, Your Weather (sun); claude/design6 built Nov 21 with the repo's data files.
+const MINE = [[231, 'Garchomp', 'Garchomp'], [184, 'Whimsicott', 'Whimsicott'], [172, 'Sneasler', 'Sneasler'], [152, 'Charizard-Mega-Y', 'Mega Charizard Y'], [143, 'Basculegion', 'Basculegion'], [70, 'Kingambit', 'Kingambit']];
+const THEM = [[264, 'Venusaur', 'Venusaur'], [203, 'Garchomp-Mega-Z', 'Mega Garchomp Z'], [190, 'Raichu-Mega-Y', 'Mega Raichu Y'], [189, 'Salamence-Mega', 'Mega Salamence'], [178, 'Staraptor-Mega', 'Mega Staraptor'], [167, 'Gardevoir-Mega', 'Mega Gardevoir'],
+  [157, 'Volcarona', 'Volcarona'], [154, 'Floette-Mega', 'Mega Floette'], [137, 'Kommo-o', 'Kommo-o'], [136, 'Gholdengo', 'Gholdengo'], [134, 'Politoed', 'Politoed'], [120, 'Archaludon', 'Archaludon'], [117, 'Pelipper', 'Pelipper'],
+  [107, 'Rillaboom', 'Rillaboom'], [105, 'Indeedee-F', 'Indeedee (F)'], [91, 'Sinistcha', 'Sinistcha'], [83, 'Sylveon', 'Sylveon'], [80, 'Farigiraf', 'Farigiraf'], [72, 'Incineroar', 'Incineroar'], [60, 'Golisopod-Mega', 'Mega Golisopod']];
+const ALL = [...MINE.map(x => [...x, 1]), ...THEM.map(x => [...x, 0])].sort((a, b) => b[0] - a[0]);
+const SHARE = [['Charizard-Mega-Y', 'Mega Charizard Y', 55, 'Can’t outspeed Mega Floette with this nature'], ['Whimsicott', 'Whimsicott', 75, 'Can’t outspeed Mega Salamence with this nature'], ['Basculegion', 'Basculegion', 53, 'Can’t outspeed Mega Floette with this nature'],
+  ['Kingambit', 'Kingambit', 5, '3 more Speed points (3 total) outspeeds Incineroar'], ['Garchomp', 'Garchomp', 95, 'Can’t outspeed Venusaur with this nature'], ['Sneasler', 'Sneasler', 68, 'Can’t outspeed Mega Staraptor with this nature']];
+const body = links(['Damage Calculator ›', 'Battle ›', 'Team Preview Practice ›', 'Test Run ›', '~Speed Tiers', 'Type Chart ›']) +
+  head({ kicker: 'BATTLE · THE RACE', h1: 'Who moves<br><em>first.</em>', lead: 'Your six vs the top 20. Fastest first, with each side’s usual spread and item; weather: sun, from your team.' }) +
+  sentence(`Show the ${w('track', 1)} ${w('list')} with ${w('your Tailwind')} ${w('you +1')} ${w('their Tailwind')} ${w('them −1')} ${w('they’re paralyzed')} ${w('Trick Room')} in ${w('your weather (sun)', 1)} ${w('no weather')} ${w('sun')} ${w('rain')} ${w('sand')} ${w('snow')}`, 'Blue words are buttons. Tap one to change the race.') +
+  step(1, 'The race', 'fastest first · your six in blue, the top 20 in grey', '', `<div class=race>${ALL.map(([s, n, sh, mine], i) => `<div class="lane${mine ? ' me' : ''}"><span class="pos u">${i + 1}</span><img src="${art(n)}" alt=""><b>${sh}</b><div class=track><i style="width:${Math.round(s / 264 * 100)}%"></i></div><span class="spd u">${s}</span></div>`).join('')}</div>
+   <p class=hint>← Moves first · moves last →. Each share counts all top 30 threats; the track shows the 20 most used that aren’t on your team.</p>`) +
+  step(2, 'How your six do', 'share of the top 30 threats each one outspeeds', '', `<div class=rows>${SHARE.map(([n, sh, pc, note]) => `<div class=row><img src="${art(n)}" alt=""><div><b>${sh}</b><div class=bar style="--c:var(--plot)"><i style="width:${pc}%"></i></div><small>${note}</small></div><div class=val><b class=u>${pc}%</b></div></div>`).join('')}</div>
+   <p class=hint>Level 50, 31 IVs. Yours use your items, and your spreads where you set them. Theirs are assumed, since their real spreads and items are hidden: the most common natures and items, fast Pokémon at 32 Speed points. Weather speed Abilities (Chlorophyll, Swift Swim, Sand Rush, Slush Rush) double Speed in their weather.</p>`);
+page('speed', 'Battle', body, `
+.race{display:grid;gap:4px;padding:16px;background:var(--card);box-shadow:0 10px 24px -14px rgba(23,22,26,.35);background-image:repeating-linear-gradient(90deg,transparent 0 calc(10% - 1px),var(--rule) calc(10% - 1px) 10%)}
+.lane{display:grid;grid-template-columns:32px 44px minmax(0,180px) minmax(0,1fr) 56px;align-items:center;gap:10px;min-height:44px}
+.lane img{width:44px;height:44px;object-fit:contain}.lane b{font:700 15px/1.2 I;white-space:nowrap;overflow:visible}.lane .pos{font-size:15px;color:var(--ink2);text-align:right}
+.lane .track{height:12px;background:var(--wash)}.lane .track i{display:block;height:100%;background:var(--ink2);opacity:.45}
+.lane.me{background:color-mix(in srgb,var(--plot) 10%,transparent)}.lane.me .track i{background:var(--plot);opacity:1}.lane.me b{color:var(--plot-text)}
+.lane .spd{font-size:22px;text-align:right}.lane.me .spd{color:var(--plot-text)}
+@media (max-width:699.98px){.race{padding:8px;gap:0}.lane{grid-template-columns:24px 32px minmax(0,1fr) 72px 40px;gap:6px;min-height:36px}.lane img{width:32px;height:32px}.lane b{font-size:13px;white-space:normal}.lane .spd{font-size:17px}.lane .pos{font:600 13px/1 I}}`);

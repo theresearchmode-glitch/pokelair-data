@@ -38,5 +38,17 @@
  "usage": {
   "mock": 3163,
   "today": 3554
+ },
+ "speed": {
+  "mock": 2580,
+  "today": 2952
+ },
+ "types": {
+  "mock": 2089,
+  "today": 2798
+ },
+ "sheet": {
+  "mock": 3028,
+  "today": 3373
  }
 }
