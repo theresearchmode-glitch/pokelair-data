@@ -12,7 +12,7 @@ if the kit changes.
 | 3 | team | My Team | THE CREW | Your six as a roster (one hero card for the chosen one). Make TWO versions: A on paper; B keeping today's approved Night frame (Sim approved it 7:47 AM Nov 21) as "the war room". Sim picks |
 | 4 | team-empty | My Team, empty | RECRUIT YOUR CREW | Empty roster slots + today's featured underdog (rotating, celebrated, never mocked) |
 | 5 | sheet | Team Sheet | THE DOSSIER | One card per Pokémon: item, Ability, four moves, nature, six stats at level 50 (every feature of today's sheet) |
-| 6 | box | My Box | YOUR STASH | The Pokémon you own as a roster wall, filters as the plot sentence |
+| 6 | box | My Box | (no change) | Sim, Nov 21: "I dont want to change My Box". Leave it as it is. |
 | 7 | compare | Compare | HEAD TO HEAD | Two rosters face to face |
 | 8 | battle | Battle (lead planner) | THE GAME PLAN | Your six vs their six, leads chosen, arrows of turn 1 |
 | 9 | calc | Damage Calc "Plot the hit" | PLOT THE HIT | Keep the graph paper (it's the Calc's own). Units: % first with HP under it (option A; Sim still to confirm) everywhere incl. the KO Board |

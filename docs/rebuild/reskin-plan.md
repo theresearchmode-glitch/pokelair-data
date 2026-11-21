@@ -19,7 +19,7 @@ page at a time keeps every feature and test working between steps.
 2. The roster card replaces V2.mon everywhere it is the "Pokémon tile" (one card, three sizes). Biggest single cohesion win.
 3. Page headers + plot sentences on every page (the filters stay the same controls, written as sentences).
 4. Pages in Sim's priority order (THEME/PAGES): team, build, calc, home, pokemon, battle, tournaments, sets, usage, speed, types,
-   sheet, box, compare, weekly, archetypes, news, gifts, gauntlet, practice, method, about, feedback, team-empty, notfound, owner.
+   sheet, compare, weekly, archetypes, news, gifts, gauntlet, practice, method, about, feedback, team-empty, notfound, owner.
    Each page = one change: built, its tests + polish-check + phone height vs today, pictures to Sim, then the next.
 5. Batches of about 4 pages get the full check (behaviour A-D, v2-minors, qcheck-all) before a push (Sim's batch rule, Nov 19).
 
@@ -35,3 +35,4 @@ page at a time keeps every feature and test working between steps.
 ## Size
 Large: about 26 pages. With one helper at a time, roughly one page per 1-2 hours of work after the kit. Sim decides pace and
 whether to raise the helper count for this.
+- My Box stays as it is (Sim, Nov 21: "I dont want to change My Box").

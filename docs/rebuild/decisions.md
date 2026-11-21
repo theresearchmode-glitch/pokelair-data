@@ -1805,3 +1805,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:43 AM: 10 AM design summary sent to Sim (8 pictures): overnight My Team/Calc/Build fixes, this morning's My Team, the reskin direction; design authority continues to 2 PM (Sim, 8:49 AM); helpers stay ONE at a time (Sim 6:45 AM, overrides the old 'back to 3 at 10 AM').
 - 10:37 AM: Hourly check 10:36: helper idle on purpose (all approved work waits on Sim: mock-up pick, op.gg A + push permission); main thread drafted the reskin build plan (docs/rebuild/reskin-plan.md: A shared kit then page by page, recommended) and updated the Plans page.
 - 11:36 AM: Hourly check 11:36: no reply from Sim since 9:03; everything approved is done or waits on him; helper idle on purpose (flag set), no new work started to save usage; Plans note added.
+- 11:57 AM: Sim: 'I dont want to change My Box' -> My Box (#box) is out of the reskin; noted in PAGES.md and reskin-plan.md.
