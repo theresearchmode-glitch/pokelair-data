@@ -1,0 +1,152 @@
+/* The shared kit (site-wide reskin; Sim approved approach A, Nov 21, 11:58 AM: "shared kit first, then page by page").
+   The look of docs/rebuild/mocks/cohesion-nov21/ (ratings2 / track2 / events2 + kit2.css) with the house rules (THEME.md) and the
+   hybrid rules (HYBRID.md items 1-9). Built by the helpers in app/src/v2/kit.js; checked by app/test/kit-page.mjs.
+   No page uses it yet: this layer only adds k- classes. Colours are kit tokens (tokens.css, --k-*). */
+
+/* ===== page header: kicker, headline, lead ===== */
+.k-head{position:relative}
+.k-kicker{display:inline-block;margin:28px 0 12px;padding:4px 12px;background:var(--k-chip);color:var(--k-on-chip);font-family:var(--u);font-size:var(--t15);font-weight:800;font-style:italic;line-height:1.3;letter-spacing:.04em;transform:skewX(-10deg)}
+.k-h1{margin:0;font-size:var(--d-khead);line-height:1;color:var(--k-ink);overflow-wrap:normal;hyphens:none}
+.k-h1 em{color:var(--k-plot-text);font-style:inherit}
+.k-lead{max-width:640px;margin:16px 0 0;font-size:var(--t17);line-height:1.5;color:var(--k-ink2)}
+
+/* ===== the plot sentence: tap the blue words (Build) ===== */
+.k-sent{display:flex;flex-wrap:wrap;align-items:center;gap:8px 12px;margin:28px 0 0;font-size:var(--d-ksent);line-height:1.15;color:var(--k-ink)}
+.k-w{display:inline-grid;place-items:center;min-height:48px;margin:0;padding:0 16px;border:3px solid var(--k-plot);border-radius:0;background:transparent;color:var(--k-plot-text);font:inherit;letter-spacing:inherit;cursor:pointer;transform:skewX(-8deg);white-space:nowrap}
+.k-w>span{display:inline-flex;align-items:center;gap:8px;transform:skewX(8deg)}
+.k-w[aria-pressed="true"]{background:var(--k-plot);color:var(--k-on-plot)}
+.k-w:hover{background:color-mix(in srgb,var(--k-plot) 12%,transparent)}
+.k-w[aria-pressed="true"]:hover{background:var(--k-plot)}
+.k-w:focus-visible,.k-go:focus-visible,.k-card:focus-visible,.k-link:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
+.k-w .k-chev{width:.7em;height:.7em;flex:none}
+.k-hint{margin:8px 0 0;font-size:var(--t13);font-weight:600;line-height:1.4;color:var(--k-ink2)}
+
+/* ===== the plan line: numbered steps in pink circles down a pink dashed line ===== */
+.k-plan{position:relative;padding:0 0 64px 72px}
+.k-plan::before{content:"";position:absolute;left:calc(36px - 1.5px);top:40px;bottom:40px;border-left:3px dashed var(--k-nasty)}
+.k-step{position:relative}
+.k-n{position:absolute;left:-52px;top:0;display:grid;place-items:center;width:32px;height:32px;border:3px solid var(--k-nasty);border-radius:50%;background:var(--k-paper);color:var(--k-nasty-text);font-family:var(--u);font-size:var(--t15);font-weight:800;font-style:italic;line-height:1}
+.k-sec{display:flex;align-items:baseline;flex-wrap:wrap;gap:6px 12px;margin:64px 0 20px}
+.k-h2{margin:0;font-size:var(--d-ksec);line-height:1.05;color:var(--k-ink);overflow-wrap:normal}
+.k-note{font-size:var(--t15);font-weight:600;line-height:1.3;color:var(--k-ink2)}
+.k-sec .k-link{margin-left:auto}
+.k-link{display:inline-flex;align-items:center;min-height:44px;font-size:var(--t15);font-weight:700;line-height:1.3;color:var(--k-plot-text);text-decoration:none}
+.k-link:hover{text-decoration:underline}
+
+/* ===== the roster card: the Pokémon bursts out of the TOP of its card ===== */
+.k-card{position:relative;display:block;min-width:0;margin:0;padding:0;border:0;background:none;color:var(--k-ink);font:inherit;text-align:left;filter:drop-shadow(0 8px 16px var(--k-card-shadow))}
+button.k-card{cursor:pointer;width:100%}
+.k-plate{position:relative;isolation:isolate;display:grid;align-content:end;min-height:200px;padding:96px 12px 12px}
+.k-plate::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(170deg,color-mix(in srgb,var(--kc) 52%,var(--k-card)) 0%,color-mix(in srgb,var(--kc) 20%,var(--k-card)) 60%,var(--k-card) 60.2%);clip-path:polygon(0 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%)}
+.k-art{position:absolute;z-index:0;left:50%;top:-56px;width:118%;max-width:none;height:152px;object-fit:contain;object-position:50% 100%;transform:translateX(-50%);filter:drop-shadow(0 8px 6px var(--k-art-shadow));pointer-events:none}
+.k-nm{position:relative;z-index:1;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:0 8px;min-width:0}
+.k-id{display:block;min-width:0}
+.k-sc{display:grid;justify-items:end;text-align:right}
+.k-form{display:block;min-height:1.2em;font-size:var(--t13);font-weight:700;line-height:1.2;color:var(--k-ink2);white-space:nowrap;overflow-wrap:normal}
+.k-name{display:block;padding-right:4px;font-size:var(--t20);line-height:1.1;white-space:nowrap;overflow-wrap:normal;hyphens:none}
+.k-fact{display:block;margin-top:2px;font-size:var(--t13);font-weight:600;font-style:normal;line-height:1.3;color:var(--k-ink2)}
+/* the score: big, slanted, top-left, on a paper chip so it reads over the art */
+/* the score (Sim, Nov 21, ~12:25 PM: never over the art): in the name row, on the right, big slanted Plot blue, its tier word small under it */
+.k-score{display:block;padding-right:4px;color:var(--k-plot-text);font-size:var(--t28);line-height:1;white-space:nowrap}
+.k-tier{display:block;margin-top:2px;font-size:var(--t13);font-weight:700;line-height:1.2;color:var(--k-ink2);white-space:nowrap}
+/* the separate "yours" marker (HYBRID 3): an ink chip, never blue or pink */
+.k-mine{display:inline-block;padding:2px 8px;background:var(--k-chip);color:var(--k-on-chip);font-size:var(--t13);font-weight:700;line-height:1.4;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;transform:skewX(-8deg)}
+.k-card>.k-mine{position:absolute;right:8px;bottom:-16px;z-index:2}
+/* the chosen card: a blue frame (blue = what you tapped) */
+.k-card.k-sel .k-plate::after{content:"";position:absolute;inset:-6px;z-index:-2;border:3px solid var(--k-plot);clip-path:polygon(0 0,100% 0,100% calc(100% - 18px),calc(100% - 18px) 100%,0 100%)}
+/* the name drops a size before it wraps (kit.js V2.kFit sets data-kf): Unbounded 20 > 17 > 15, then Instrument Sans 15 > 15 narrow > 13 narrower (may wrap at a space) */
+.k-name[data-kf="1"]{font-size:var(--t17)}
+.k-name[data-kf="2"]{font-size:var(--t15)}
+.k-name[data-kf="3"],.k-name[data-kf="4"],.k-name[data-kf="5"]{font-family:var(--b);font-weight:700;letter-spacing:0;font-size:var(--t15)}
+.k-name[data-kf="4"]{font-stretch:80%}
+.k-name[data-kf="5"]{font-size:var(--t13);font-stretch:75%;letter-spacing:-.02em;padding-right:0;white-space:normal}
+.k-form[data-kf="1"]{font-stretch:75%}
+.k-form[data-kf="2"]{font-stretch:75%;white-space:normal}
+/* hero: the one star Pokémon */
+.k-hero-c .k-plate{min-height:300px;padding:200px 20px 20px}
+.k-hero-c .k-art{top:-112px;width:130%;height:312px}
+.k-hero-c .k-score{font-size:var(--d-kscore)}
+.k-hero-c .k-tier{font-size:var(--t15)}
+.k-hero-c .k-name{font-size:var(--t34)}
+.k-hero-c .k-name[data-kf="1"]{font-size:var(--t28)}
+.k-hero-c .k-name[data-kf="2"]{font-size:var(--t24)}
+.k-hero-c .k-form{font-size:var(--t15)}
+.k-hero-c .k-fact{font-size:var(--t15)}
+/* small: a compact card (and every normal card on phones): art bursts out less, score + name */
+.k-small .k-plate{min-height:0;padding:72px 8px 8px}
+.k-small .k-art{top:-40px;height:112px}
+.k-small .k-nm{grid-template-columns:minmax(0,1fr)}
+.k-small .k-sc{grid-row:1;display:flex;align-items:baseline;justify-content:flex-start;gap:6px;text-align:left}
+.k-small .k-score{font-size:var(--t24)}
+.k-small .k-name{font-size:var(--t17)}
+.k-small .k-name[data-kf="1"]{font-size:var(--t15)}
+
+/* ===== the roster: six across on desktop, 3 x 2 on phones (never 5 + 1) ===== */
+.k-roster{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:64px 16px;margin:0;padding:56px 0 0;list-style:none}
+.k-roster[data-n="1"]{grid-template-columns:minmax(0,1fr)}
+.k-roster[data-n="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+.k-roster[data-n="3"]{grid-template-columns:repeat(3,minmax(0,1fr))}
+.k-roster[data-n="4"]{grid-template-columns:repeat(4,minmax(0,1fr))}
+.k-roster>li{min-width:0}
+
+/* ===== the hero layout: the star card beside its facts and the one move ===== */
+.k-hero{display:grid;grid-template-columns:minmax(0,420px) minmax(0,1fr);gap:40px;align-items:end;margin-top:148px}
+.k-hero-side{min-width:0}
+.k-facts{display:flex;flex-wrap:wrap;gap:12px 32px;margin:16px 0 0;padding:0;list-style:none}
+.k-facts b{display:block;font-size:var(--t34);line-height:1;color:var(--k-ink);white-space:nowrap}
+.k-facts b.k-key{color:var(--k-plot-text)}
+.k-facts span{font-size:var(--t13);font-weight:600;line-height:1.3;color:var(--k-ink2)}
+.k-scrib{display:inline-block;font-size:var(--t17);color:var(--k-nasty-text);transform:rotate(-3deg)}
+
+/* ===== the one big move (Build's HATCH IT.): pink, slanted, black offset shadow ===== */
+.k-go{display:inline-block;min-height:44px;margin:24px 0 0;padding:12px 28px;border:0;border-radius:0;background:var(--k-go);color:var(--k-on-go);font-size:var(--d-kgo);line-height:1;letter-spacing:0;text-align:center;text-decoration:none;white-space:nowrap;cursor:pointer;transform:skewX(-8deg);box-shadow:6px 6px 0 var(--k-go-shadow)}
+.k-go[data-kf="1"]{letter-spacing:-.03em}
+.k-go[data-kf="2"]{letter-spacing:-.03em;font-size:var(--t15)}
+.k-go:active{transform:skewX(-8deg) translate(2px,2px);box-shadow:4px 4px 0 var(--k-go-shadow)}
+
+/* ===== the verdict tag: blue good, pink bad, outlined neutral ===== */
+.k-tag{display:inline-block;padding:2px 12px;font-size:var(--t15);line-height:1.4;letter-spacing:.02em;white-space:nowrap;transform:skewX(-8deg)}
+.k-tag.k-good{background:var(--k-plot);color:var(--k-on-plot)}
+.k-tag.k-bad,.k-tag.k-live{background:var(--k-go);color:var(--k-on-go)}
+.k-tag.k-neutral{padding:0 12px;border:2px solid var(--k-neutral);color:var(--k-ink)}
+
+/* ===== narrow tablets: the hero stacks (the side column was too narrow beside a 420px card) ===== */
+@media (max-width:959.98px){
+  .k-hero{grid-template-columns:minmax(0,1fr)}
+  .k-hero-card{max-width:520px}
+  .k-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+}
+/* tablets: six cards of about 100px can't hold a long name, so the row goes 3 x 2 there too */
+@media (min-width:700px) and (max-width:959.98px){.k-roster:not([data-n="4"]):not([data-n="2"]):not([data-n="1"]){grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* ===== phones ===== */
+@media (max-width:699.98px){
+  .k-plan{padding:0 0 64px 52px}
+  .k-plan::before{left:calc(26px - 1.5px)}
+  .k-n{left:-40px;width:28px;height:28px}
+  .k-sec{margin:48px 0 16px}
+  .k-roster{grid-template-columns:repeat(3,minmax(0,1fr));gap:48px 8px;padding-top:40px}
+  .k-roster[data-n="4"],.k-roster[data-n="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .k-roster .k-plate{min-height:0;padding:72px 4px 8px 6px}
+  .k-roster .k-art{top:-40px;height:112px}
+  .k-roster .k-nm{grid-template-columns:minmax(0,1fr)}
+  .k-roster .k-sc{grid-row:1;display:flex;align-items:baseline;justify-content:flex-start;gap:6px;text-align:left}
+  .k-roster .k-score{font-size:var(--t24)}
+  .k-roster .k-tier{display:none}
+  .k-roster .k-name{font-size:var(--t17)}
+  .k-roster .k-name[data-kf="1"]{font-size:var(--t15)}
+  .k-roster .k-fact{display:none}
+  /* phone hero (HYBRID 6): the card on top, full width; the facts a 3-across row under it; the move full width on one line */
+  .k-hero{grid-template-columns:minmax(0,1fr);gap:16px;margin-top:108px}
+  .k-hero-c .k-plate{min-height:220px;padding:148px 16px 16px}
+  .k-hero-c .k-art{top:-80px;width:100%;height:228px}
+  .k-hero-c .k-name{font-size:var(--t28)}
+  .k-hero-c .k-name[data-kf="1"]{font-size:var(--t24)}
+  .k-hero-c .k-name[data-kf="2"]{font-size:var(--t20)}
+  .k-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  .k-facts b{font-size:var(--t20)}
+  .k-hero-card{max-width:none}
+  .k-go{display:block;width:calc(100% - 8px);padding:12px 12px}
+}
+@media (max-width:359.98px){.k-facts b{font-size:var(--t17)}
+  .k-plan{padding-left:44px}.k-plan::before{left:calc(22px - 1.5px)}.k-n{left:-36px}
+  .k-roster{column-gap:6px}}
