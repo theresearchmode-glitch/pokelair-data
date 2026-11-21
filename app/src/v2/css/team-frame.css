@@ -1,0 +1,57 @@
+/* ---------- My Team: the frame (Sim, Nov 21; from the designer's party4 mock-up; type scale, 4px grid, colours as tokens) ---------- */
+.mtf{display:grid;gap:6px;margin:var(--s4) var(--s2) var(--s6) 0;padding:6px;background:var(--mtf-frame);box-shadow:8px 8px 0 var(--mtf-drop)}
+.mtf-bar{display:flex;align-items:center;gap:var(--s2);min-height:var(--s12);margin:0;padding:0 var(--s4);color:var(--mtf-on-frame)}
+.mtf-bar b,.mtf-bar h2{margin:0;font-size:var(--t17);line-height:1}.mtf-bar span{font:600 var(--t13)/1.3 var(--b);color:var(--mtf-bar-sub)}
+/* Your six */
+.mtf-party{display:grid;gap:4px;align-content:start;min-width:0}.mtf-rows{display:grid;gap:4px}
+.mtf-row{position:relative;display:grid;grid-template-columns:20px 60px minmax(0,1fr) auto;align-items:center;gap:var(--s1) var(--s2);min-height:68px;margin:0;padding:var(--s2) var(--s3) var(--s2) var(--s3);border:0;border-radius:0;background:var(--mtf-panel);color:var(--mtf-ink);box-shadow:inset 6px 0 0 var(--c);text-align:left;font:inherit;cursor:pointer}
+.mtf-row .no{font-size:var(--t13);font-style:italic;text-align:right;color:var(--mtf-ink2)}.mtf-row .pic{width:60px;height:60px;margin:-4px -2px;object-fit:contain}
+.mtf-row .nm{display:grid;min-width:0}.mtf-row .nm b{display:block;font-size:var(--t15);line-height:1.15;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mtf-row .nm small{font:600 var(--t13)/1.3 var(--b);color:var(--mtf-ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mtf-row .rt{display:grid;justify-items:end;font-size:var(--t13);font-style:italic;line-height:1.1;color:var(--mtf-ink2)}.mtf-row .rt b{font-size:var(--t20);line-height:1;color:var(--mtf-rate)}
+.mtf-row .lkm{position:absolute;right:var(--s1);top:var(--s1);width:16px;height:16px;fill:none;stroke:var(--mtf-ink);stroke-width:2}
+.mtf-row .m4{grid-column:2/5;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:2px}
+.mtf-row .m4 i{padding:2px var(--s2);background:var(--tc);color:var(--on-type);font:700 var(--t13)/1.3 var(--b);font-style:normal;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.mtf-row.on{background:var(--mtf-chosen);box-shadow:inset 6px 0 0 var(--mtf-ink)}.mtf-row.on .no,.mtf-row.on .nm small,.mtf-row.on .rt,.mtf-row.on .rt b{color:var(--mtf-ink)}
+.mtf-row:focus-visible,.mtf-step:focus-visible,.mtf-btn:focus-visible,.mtf-plan:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+.mtf-add{grid-template-columns:20px 60px minmax(0,1fr);background:none;box-shadow:inset 0 0 0 2px var(--mtf-add);color:var(--mtf-on-frame)}
+.mtf-add .plus{display:grid;place-items:center;font:900 var(--t28)/1 var(--u)}.mtf-add .nm small,.mtf-add .no{color:var(--mtf-bar-sub)}
+/* the one you tapped */
+.mtf-sum{display:grid;align-content:start;min-width:0;background:var(--mtf-panel);color:var(--mtf-ink)}
+.mtf-nav{padding:0 2px;background:var(--mtf-frame)}.mtf-nav h2{flex:none;margin-left:var(--s1)}.mtf-nav span{flex:1}
+.mtf-step{display:grid;place-items:center;width:var(--s12);height:var(--s12);padding:0;border:0;background:none;color:var(--mtf-on-frame);font:900 var(--t28)/1 var(--b);cursor:pointer}.mtf-step[disabled]{opacity:.4;cursor:default}
+.mtf-stage{position:relative;display:grid;place-items:center;height:250px;overflow:hidden;background:linear-gradient(135deg,color-mix(in srgb,var(--c) 34%,var(--mtf-cell)),color-mix(in srgb,var(--c2) 34%,var(--mtf-cell)))}
+.mtf-stage::after{content:"";position:absolute;left:10%;right:10%;bottom:var(--s4);height:24px;border-radius:50%;background:var(--mtf-shadow-floor)}
+.mtf-stage .big{position:relative;z-index:1;width:232px;height:232px;object-fit:contain}
+.mtf-stage .rate{position:absolute;left:var(--s4);top:var(--s3);z-index:2;display:grid;margin:0;line-height:1}.mtf-stage .rate b{font-size:var(--d64);line-height:.9;color:var(--mtf-ink)}
+.mtf-stage .rate span{justify-self:start;margin-top:6px;padding:2px var(--s2);background:var(--mtf-ink);color:var(--mtf-on-frame);font-size:var(--t13)}
+.mtf-inf{display:grid;gap:var(--s2);align-content:start;padding:var(--s4)}
+.mtf-ia{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin:0}.mtf-ia div{display:grid;padding:var(--s2) var(--s3);background:var(--mtf-cell)}
+.mtf-ia dt{font:600 var(--t13)/1.2 var(--b);color:var(--mtf-ink2)}.mtf-ia dd{margin:0;font:800 var(--t16)/1.3 var(--b)}.mtf-ia dd small{font:500 var(--t13)/1.2 var(--b);color:var(--mtf-ink2)}
+.mtf-mv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;margin:0;padding:0;list-style:none}
+.mtf-mv li{display:flex;align-items:center;min-height:var(--tap);padding:0 var(--s4);background:var(--tc);color:var(--on-type);font:800 var(--t15)/1.2 var(--b);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.mtf-do{display:flex;flex-wrap:wrap;gap:var(--s2)}
+.mtf-btn{display:inline-grid;place-items:center;min-height:var(--s12);padding:0 var(--s5);border:0;background:var(--mtf-ink);color:var(--mtf-on-frame);font-size:var(--t15);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);cursor:pointer}
+.mtf-btn.ghost{background:none;color:var(--mtf-ink);box-shadow:inset 0 -3px 0 var(--mtf-ink),inset 0 3px 0 var(--mtf-ink)}.mtf-btn.red{background:none;color:var(--mtf-stop);box-shadow:inset 0 -3px 0 var(--mtf-stop),inset 0 3px 0 var(--mtf-stop)}
+.mtf-more{display:flex;flex-wrap:wrap;gap:0 var(--s5);margin:0}
+/* Suggestions: today's section in the frame's third column */
+.mtf-sg{min-width:0;background:var(--mtf-panel);color:var(--mtf-ink)}.mtf-sg > .tm-sec{margin:0;padding:var(--s4)}
+/* the Game Plan bar under the frame */
+.mtf-plan{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3);width:calc(100% - var(--s2));margin:0 0 var(--s6);padding:var(--s4) var(--s6);border:0;background:var(--mtf-frame);color:var(--mtf-on-frame);text-align:left;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%);cursor:pointer}
+.mtf-plan b{font-size:var(--t20)}.mtf-plan span{font:500 var(--t15)/1.4 var(--b)}
+/* desktop (1000+): three columns 372 / 1fr / 400 */
+@media (min-width:1000px){.mtf{grid-template-columns:372px minmax(0,1fr) 400px;margin:var(--s5) var(--s3) var(--s8) 0;box-shadow:12px 12px 0 var(--mtf-drop)}
+  .mtf-row.on::after{content:"";position:absolute;right:-12px;top:50%;z-index:3;width:16px;height:32px;margin-top:-16px;background:var(--mtf-chosen);clip-path:polygon(0 0,100% 50%,0 100%)}
+  .mtf-stage{height:auto;min-height:320px}.mtf-stage .big{width:320px;height:320px}.mtf-stage .rate b{font-size:var(--d96)}.mtf-stage .rate span{font-size:var(--t15)}.mtf-inf{padding:var(--s5) var(--s6) var(--s6)}}
+/* phone and tablet (under 1000): the six are one row of six taps (picture, rating, name); the tapped one opens right under it */
+@media (max-width:999.98px){
+  .mtf-rows{grid-template-columns:repeat(6,minmax(0,1fr));gap:2px}
+  .mtf-row{grid-template-columns:minmax(0,1fr);justify-items:center;align-content:start;gap:0;min-height:88px;padding:var(--s1) 0 6px;box-shadow:inset 0 4px 0 var(--c)}
+  .mtf-row .no,.mtf-row .nm small,.mtf-row .m4{display:none}.mtf-row .pic{width:44px;height:44px;margin:2px 0 0}
+  .mtf-row .rt{order:2;justify-items:center}.mtf-row .rt span{display:none}.mtf-row .rt b{font-size:var(--t15)}
+  .mtf-row .nm{order:3;justify-items:center;width:100%}.mtf-row .nm b{padding:0 1px;font:700 var(--t13)/1.1 var(--b);font-style:normal;text-align:center;white-space:normal;overflow-wrap:anywhere;hyphens:auto;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+  .mtf-row.on{box-shadow:inset 0 4px 0 var(--mtf-ink)}
+  .mtf-add{grid-template-columns:minmax(0,1fr);justify-items:center}.mtf-add .plus{font-size:var(--t24)}.mtf-add .nm b{font-size:var(--t13)}
+  .mtf-stage{height:168px}.mtf-stage .big{width:164px;height:164px}.mtf-stage::after{bottom:var(--s2);height:16px}.mtf-stage .rate b{font-size:var(--t34)}.mtf-stage .rate span{margin-top:var(--s1)}
+  .mtf-inf{padding:var(--s3)}.mtf-mv li{padding:0 var(--s2);font-size:var(--t13)}.mtf-do{flex-wrap:nowrap}.mtf-do .mtf-btn{flex:1;min-width:0;padding:0 var(--s1);font-size:var(--t13)}}
+@media (min-width:700px) and (max-width:999.98px){.mtf-row .pic{width:60px;height:60px}.mtf-row .nm b{font-size:var(--t15)}.mtf-stage{height:220px}.mtf-stage .big{width:210px;height:210px}}

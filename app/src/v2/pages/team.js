@@ -465,7 +465,7 @@ V2.pages.team = {place: 'team', draw() {
   const mtHead = `${mtBand}<div class="tm-lock mt-head">${mtId}${mtBelt}<div class="mt-right">${acts.replace(/ tm-svl/g, '')}</div></div>`;
   // Sim's yes (Nov 20, option B of docs/rebuild/research/team-meta-length-nov20.md): on phones (under 700) the bar under the six is real
   // tabs, one section at a time (Your Games stays under it), so the page is about as long as one section; 700 and up as before
-  const tabbed = V2.tmTabbed(), tabIds = [...(V2.isHand(D) ? [] : ['tm-set']), 'tm-mu', 'tm-sg', 'tm-ck'];
+  const tabbed = V2.tmTabbed() && !(V2.mtfFrame && V2.isHand(D)) /* Sim, Nov 21: the frame replaces the phone tabs (natural scrolling, about 3 screens) */, tabIds = [...(V2.isHand(D) ? [] : ['tm-set']), 'tm-mu', 'tm-sg', 'tm-ck'];
   if (tabbed) V2.tmHashTab();
   const curTab = tabIds.includes(V2.tmUi.tab) ? V2.tmUi.tab : V2.tmAutoTab(G); /* a tab the player chose (or '#team=sg') wins; else S18's first tab */
   const jump = `<nav class="np-tabs tm-jump" aria-label="On this page">${V2.isHand(D) ? '' : '<a href="#team" data-tmjump="tm-set" aria-current="location">Set</a>'}<a href="#team" data-tmjump="tm-mu"${V2.isHand(D) ? ' aria-current="location"' : ''}>Matchups</a><a href="#team" data-tmjump="tm-sg">Suggestions</a><a href="#team" data-tmjump="tm-ck">Team Checks</a>${legalMark}<button type="button" class="tm-tsbtn" data-v2sheetopen aria-label="Team Sheet">Team Sheet <span aria-hidden="true">↗</span></button></nav>`;
@@ -492,7 +492,7 @@ V2.pages.team = {place: 'team', draw() {
   const tabPanels = h => tabbed ? h.replace(/<section class="tm-sec ([^"]*)" id="(tm-(?:set|mu|sg|ck))"/g, (m, c, k) => `<section class="tm-sec ${c}${k === curTab ? '' : ' tm-off'}" id="${k}" role="tabpanel" aria-labelledby="tmtab-${k}"`) : h;
   // Nov 18: the hero is drawn with the belt's last fit (mt-wide), so a redraw no longer drops the belt's full-width row and puts it back
   // in after(): that flip moved everything under the belt 30px and back, and scroll anchoring moved the page 30px on each redraw
-  return `<section class="tm-hero mt${V2._mtWide && innerWidth < 1100 ? ' mt-wide' : ''}">${mtHead}${V2.sixHtml(D, sel) /* group six: tiles in plan order + game plan line (six.js) */}</section>${tabbed ? tabBar : jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}${tabbed ? ' tm-tabbed' : ''}">${tabPanels(`${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}`)}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
+  return `<section class="tm-hero mt${V2._mtWide && innerWidth < 1100 ? ' mt-wide' : ''}">${mtHead}${V2.mtfFrame && V2.isHand(D) ? V2.mtfFrame(D, sel, sgSec) /* Sim, Nov 21: the frame (Your six, the one you tapped, Suggestions): team-frame.js */ : V2.sixHtml(D, sel)}</section>${tabbed ? tabBar : jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}${tabbed ? ' tm-tabbed' : ''}">${tabPanels(`${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${V2.mtfFrame && V2.isHand(D) ? '' : sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}`)}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
 after() { V2.mtBeltFit();
   /* Apply on a suggestion: pages/sugs.js (R4 sugs hook) */
