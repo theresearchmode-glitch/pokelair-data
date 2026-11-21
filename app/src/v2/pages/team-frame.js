@@ -46,3 +46,9 @@ V2.mtfFit = () => { /* every width (Nov 21): on desktop a long name ('Mega Chari
     let n = b.scrollWidth; if (n <= c) return; if (n * 0.7 > c - 2) { b.style.whiteSpace = 'normal'; n = b.scrollWidth; if (n <= c) return; }
     b.style.transform = `scaleX(${Math.max(b.style.whiteSpace ? 0.55 : 0.7, (c - 2) / n).toFixed(3)})`; }); }; /* a single long word ('Crabominable' in a 47px tile at 360) may go to 55% so it is never cut or broken */
 { let t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => V2.mtfFit && V2.mtfFit(), 120); }); }
+// '#team=set|mu|sg|ck' (old phone-tab links; h12 found them dead in the frame): in the frame there are no tabs, so the page scrolls once
+// to that section (its scroll-margin keeps the heading under the sticky bars) and focuses its heading
+{ const want = u => { const m = /#team=(set|mu|sg|ck)$/.exec(u || ''); return m ? m[1] : ''; };  /* the router turns '#team=sg' into '#team' before the page draws, so the wish is read from the URL as it arrived */
+  V2._mtfWant = want(location.hash); addEventListener('hashchange', e => { const w = want(e.newURL); if (w) V2._mtfWant = w; }); }
+V2.mtfHashJump = () => { const k = V2._mtfWant; if (!k || !document.querySelector('#main .mtf')) return; V2._mtfWant = '';
+  requestAnimationFrame(() => { const e = document.getElementById('tm-' + k); if (!e) return; e.scrollIntoView({block: 'start'}); const h = e.querySelector('h2, h3'); if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } }); };

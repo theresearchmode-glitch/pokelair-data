@@ -151,7 +151,8 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 /* Sim's rule: no boxes inside boxes in different shades: Item / Ability / Nature / Stat points sit on the panel with a soft rule, not in white boxes */
 .mtf-ia div{padding:var(--s1) 0 var(--s2);background:none;border-bottom:1px solid var(--mtf-rule)}
 /* the header links: even rows (2 across under 480, 3 across to 999), never one alone */
-@media (max-width:999.98px){.mtf-acts{display:grid;grid-template-columns:repeat(3,max-content);justify-content:start}}
+@media (max-width:999.98px){.mtf-acts{display:grid;grid-template-columns:repeat(3,max-content);justify-content:start}
+  .mtf-acts .np-link{text-align:start}} /* each link's words start at its column's edge, so the wider Update Team button (it swaps with Saved ✓ after Remove) widens only its own column and no link moves (h15, Nov 21) */
 @media (max-width:479.98px){.mtf-acts{grid-template-columns:repeat(2,max-content)}}
 /* Edit Set / Replace / Remove: one even row in the middle column */
 .mtf-do{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.mtf-do .mtf-btn{min-width:0;padding:0 var(--s2)}

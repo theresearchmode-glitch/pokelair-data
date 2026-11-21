@@ -109,6 +109,8 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
      the header shrank and every Card moved up 15px. The line keeps its height while the team stays this size (team.js, mtfHead). Not on phones (under 480): there the label above
      wraps to 2 lines as well and the Nov 17 rule brings the Add spot into view anyway */
   { const w = innerWidth >= 480 && document.querySelector('#main .mtf-score .win'); V2.ui.winHold = w ? {h: w.offsetHeight, n: S.slots.filter(x => x && x.n).length} : null; }
+  /* phones under 480 (Nov 21): the band words change too ('Top tier' -> 'Tournament ready', 2 lines), so the whole score block keeps its height */
+  { const sc = innerWidth < 480 && document.querySelector('#main .mtf-score'); V2.ui.scoreHold = sc ? {h: sc.offsetHeight, n: S.slots.filter(x => x && x.n).length} : null; }
   render(); if (was) toast(`Removed ${was.d}`, true);
   // Sim, Nov 17: after Remove the new Add spot was 685px above the screen (390 wide); bring it into view and give it the focus
   // Sim, Nov 18 (desktop): centring it made the page jump up 400-500px every time even when the Add spot was already on screen.
