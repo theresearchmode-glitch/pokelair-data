@@ -92,8 +92,12 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) { const tag = `
     const M = await p.evaluate(() => { const s = document.getElementById('tm-mu'); return {tab: window.__ev('V2.tmUi.tab'), off: s ? s.classList.contains('tm-off') : true, top: s ? Math.round(s.getBoundingClientRect().top) : null}; });
     ok(M.tab === 'tm-mu' && !M.off && M.top != null && M.top < 400, `S19 ${tag}: the link opens Matchups (${JSON.stringify(M)})`); }
   else ok(false, `S19 ${tag}: the link opens Matchups (no link)`);
-  const Hn = await p.evaluate(() => { const h = document.querySelector('.mt-hint'); if (!h) return null; const s = document.createElement('i'); s.style.color = 'var(--ink-3)'; document.body.append(s); const ink3 = getComputedStyle(s).color; s.remove(); const cs = getComputedStyle(h); return {c: cs.color, w: cs.fontWeight, ink3}; });
-  if (W < 700) ok(Hn && Hn.c === Hn.ink3 && Hn.w === '500', `S7 ${tag}: the hint is --ink-3 at 500 (${JSON.stringify(Hn)})`);
+  /* Nov 21: My Team frame (Sim approved): the hint is the frame bar's "tap one to see it" (.mtf-party > .mtf-bar span) on the black bar,
+     in the mock's sub colour (--mtf-bar-sub) at 600, never link blue (--plot); the Hand's .mt-hint (--ink-3 at 500) is not drawn for a team */
+  const Hf = await p.evaluate(() => { const h = document.querySelector('#main .mtf-party > .mtf-bar span'); if (!h) return null; const tok = v => { const s = document.createElement('i'); s.style.color = `var(${v})`; document.body.append(s); const c = getComputedStyle(s).color; s.remove(); return c; }; const cs = getComputedStyle(h); return {t: h.textContent.trim(), c: cs.color, w: cs.fontWeight, sub: tok('--mtf-bar-sub'), plot: tok('--plot')}; });
+  const Hn = Hf ? null : await p.evaluate(() => { const h = document.querySelector('.mt-hint'); if (!h) return null; const s = document.createElement('i'); s.style.color = 'var(--ink-3)'; document.body.append(s); const ink3 = getComputedStyle(s).color; s.remove(); const cs = getComputedStyle(h); return {c: cs.color, w: cs.fontWeight, ink3}; });
+  if (Hf) ok(Hf.t === 'tap one to see it' && Hf.c === Hf.sub && Hf.c !== Hf.plot && Hf.w === '600', `S7 ${tag}: the frame's hint is --mtf-bar-sub at 600, not link blue (${JSON.stringify(Hf)})`);
+  else if (W < 700) ok(Hn && Hn.c === Hn.ink3 && Hn.w === '500', `S7 ${tag}: the hint is --ink-3 at 500 (${JSON.stringify(Hn)})`);
   else ok(!Hn || (Hn.c === Hn.ink3 && Hn.w === '500'), `S7 ${tag}: the hint, where shown, is --ink-3 at 500 (${JSON.stringify(Hn)})`);
   await side(p, `team ${tag}`);
   // ---- S29 Speed Tiers (desktop track, 1024+) ----
@@ -114,8 +118,10 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) { const tag = `
   // ---- S5 band with a Grassy Terrain team ----
   await setTeam(p, GRASSY); await go(p, 'team', 2500);
   for (const w of W < 700 ? [390, 360] : [W]) { if (w !== W) { await p.setViewportSize({width: w, height: 844}); await p.waitForTimeout(800); }
-    const Bd = await p.evaluate(() => { const e = document.querySelector('.mt-band .tm-eb'); if (!e) return null; const lh = parseFloat(getComputedStyle(e).lineHeight) || 20; return {t: e.textContent.trim(), h: Math.round(e.getBoundingClientRect().height), lh, shown: e.getClientRects().length > 0}; });
-    ok(Bd && Bd.t === '6 of 6 · Grassy Terrain · Legal ✓' && (!Bd.shown || Bd.h <= Bd.lh * 1.5), `S5 ${w} ${th}: band "${Bd && Bd.t}" (${Bd ? (Bd.shown ? Bd.h + 'px tall' : 'not shown') : '-'})`);
+    /* Nov 21: My Team frame (Sim approved): the band is the frame header's status line (.mtf-k), "My team · 6 of 6 · <weather> team · Legal for
+       <reg> ✓" (the approved mock's words); still one line at 390 and 360 */
+    const Bd = await p.evaluate(() => { const f = document.querySelector('#main .mtf-head .mtf-k'), e = f || document.querySelector('.mt-band .tm-eb'); if (!e) return null; const lh = parseFloat(getComputedStyle(e).lineHeight) || 20; return {frame: !!f, t: e.textContent.trim(), h: Math.round(e.getBoundingClientRect().height), lh, shown: e.getClientRects().length > 0}; });
+    ok(Bd && (Bd.frame ? /^My team · 6 of 6 · Grassy Terrain team · Legal for Reg \S+ ✓$/.test(Bd.t) : Bd.t === '6 of 6 · Grassy Terrain · Legal ✓') && (!Bd.shown || Bd.h <= Bd.lh * 1.5), `S5 ${w} ${th}: band "${Bd && Bd.t}" (${Bd ? (Bd.shown ? Bd.h + 'px tall' : 'not shown') : '-'})`);
     await side(p, `team grassy ${w} ${th}`); }
   if (W < 700) await p.setViewportSize({width: W, height: 844});
   // ---- S4 empty My Team ----

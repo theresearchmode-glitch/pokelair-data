@@ -34,7 +34,7 @@
       "sugs",
       "src/v2/css/sugs.css"
     ],
-    ["plot", "src/v2/css/plot.css"], ["sd-shared", "src/v2/css/sd-shared.css"], ["sd-hero", "src/v2/css/sd-hero.css"], ["sd-six", "src/v2/css/sd-six.css"], ["sd-tools", "src/v2/css/sd-tools.css"], ["sd-postroom", "src/v2/css/sd-postroom.css"], ["sd-dispatch", "src/v2/css/sd-dispatch.css"], ["sd-post", "src/v2/css/sd-post.css"], ["sd-motion", "src/v2/css/sd-motion.css"], ["arena-calc", "src/v2/css/arena-calc.css"]
+    ["plot", "src/v2/css/plot.css"], ["sd-shared", "src/v2/css/sd-shared.css"], ["sd-hero", "src/v2/css/sd-hero.css"], ["sd-six", "src/v2/css/sd-six.css"], ["sd-tools", "src/v2/css/sd-tools.css"], ["sd-postroom", "src/v2/css/sd-postroom.css"], ["sd-dispatch", "src/v2/css/sd-dispatch.css"], ["sd-post", "src/v2/css/sd-post.css"], ["sd-motion", "src/v2/css/sd-motion.css"], ["arena-calc", "src/v2/css/arena-calc.css"], ["team-frame", "src/v2/css/team-frame.css"]
   ],
   "body": "src/v2/body.html",
   "data": [
@@ -54,6 +54,7 @@
     "src/v2/pages/guide.js",
     "src/v2/pages/team.js",
     "src/v2/pages/six.js",
+    "src/v2/pages/team-frame.js",
     "src/v2/pages/matchups.js",
     "src/v2/pages/sugs.js",
     "src/v2/pages/monsheet.js",

@@ -27,11 +27,15 @@ const open = async (route, W, th, touch, H = 900) => { const c = await b.newCont
 const side = p => p.evaluate(() => document.documentElement.scrollWidth > innerWidth);
 
 // ---------- A1: the sample note's two links ----------
-const taps = p => p.evaluate(() => { const L = [...document.querySelectorAll('#main .tm-sample-acts .np-link')].filter(x => x.getClientRects().length);
+/* Nov 21: My Team frame (Sim approved): the two are full buttons in the header's .mtf-bb (a 2-column grid), no longer links in .tm-sample-acts */
+const taps = p => p.evaluate(() => { const L = [...document.querySelectorAll('#main .tm-sample-acts .np-link, #main .mtf-bb > .mtf-btn')].filter(x => x.getClientRects().length);
   if (L.length < 2) return null; L[0].scrollIntoView({block: 'center'});
-  return L.map(a => { const q = a.getBoundingClientRect(); let bad = 0, n = 0;
-    for (let x = q.left + 2; x < q.right - 1; x += 6) for (const y of [q.top + 2, q.top + q.height / 2, q.bottom - 2]) { n++; const k = document.elementFromPoint(x, y); if (!(k && (k === a || a.contains(k)))) bad++; }
-    return {t: a.textContent.trim(), bad, n, top: Math.round(q.top)}; }); });
+  /* Nov 21: My Team frame (Sim approved): the frame's buttons are slanted (clip-path slants the left and right 8px), so a point in a slanted edge
+     is outside the drawn button: it may miss it, but it must never land on another link or button (a tap on Build never opens Import) */
+  return L.map(a => { const q = a.getBoundingClientRect(), cut = getComputedStyle(a).clipPath !== 'none' ? 10 : 0; let bad = 0, n = 0;
+    for (let x = q.left + 2; x < q.right - 1; x += 6) for (const y of [q.top + 2, q.top + q.height / 2, q.bottom - 2]) { n++; const k = document.elementFromPoint(x, y); if (k && (k === a || a.contains(k))) continue;
+      const corner = cut && (x < q.left + cut || x > q.right - cut), other = k && k.closest('a,button'); if (!(corner && !other)) bad++; }
+    return {t: a.textContent.trim(), bad, n, top: Math.round(q.top), l: Math.round(q.left), r: Math.round(q.right)}; }); });
 for (const [W, th] of [[700, 'light'], [768, 'light'], [768, 'dark'], [819, 'light'], [820, 'light'], [1024, 'light']]) {
   const [p, errs, c] = await open('team', W, th, true), tag = `A1 ${W} ${th}`, R = await taps(p);
   ok(R && R.length === 2, `${tag}: the sample note shows Build Me a Team and Import a Team (${R ? R.map(x => x.t).join(' | ') : 'none'})`);
@@ -39,8 +43,10 @@ for (const [W, th] of [[700, 'light'], [768, 'light'], [768, 'dark'], [819, 'lig
   /* Nov 20 (Sim's PC run on Windows, v2-q69 + tap-size at 820: the text measured a little wider, so the two links stacked where Linux
      keeps them on one line, and the stacked spacing only applied at 700-819): force the stack (narrow the row) at 820 and 1024 so this
      machine checks the Windows case too */
-  if (W >= 820) { await p.evaluate(() => { const r = document.querySelector('#main .tm-sample-acts'); if (r) r.style.maxWidth = '150px'; }); await p.waitForTimeout(150); const F = await taps(p);
-    ok(F && F.length === 2 && F[0].top !== F[1].top, `${tag} forced stack: the two links stack (${F ? F.map(x => x.top).join(' / ') : 'none'})`);
+  if (W >= 820) { const grid = await p.evaluate(() => { const r = document.querySelector('#main .tm-sample-acts, #main .mtf-bb'); if (r) r.style.maxWidth = '150px'; return !!(r && r.matches('.mtf-bb')); }); await p.waitForTimeout(150); const F = await taps(p);
+    /* Nov 21: the frame's two buttons sit in a fixed 2-column grid, so squeezed they stay side by side; what matters is that they never overlap */
+    if (grid) ok(F && F.length === 2 && (F[0].r <= F[1].l || F[1].r <= F[0].l), `${tag} forced narrow: the two buttons stay apart (${F ? F.map(x => x.l + '-' + x.r).join(' | ') : 'none'})`);
+    else ok(F && F.length === 2 && F[0].top !== F[1].top, `${tag} forced stack: the two links stack (${F ? F.map(x => x.top).join(' / ') : 'none'})`);
     if (F) for (const x of F) ok(x.bad === 0, `${tag} forced stack: ${x.bad}/${x.n} points inside "${x.t}" hit something else (pitch ${F[1].top - F[0].top}px)`); }
   ok(!(await side(p)), `${tag}: nothing sideways`); ok(!errs.length, `${tag}: no page errors${errs.length ? ': ' + errs[0] : ''}`); await c.close(); }
 
@@ -74,10 +80,14 @@ for (const route of ['news', 'home']) for (const W of [1024, 1099, 1180, 1366]) 
 const lay = p => p.evaluate(() => { const r = id => { const e = document.getElementById(id); if (!e || !e.getClientRects().length) return null; const q = e.getBoundingClientRect(); return {l: q.left, r: q.right, t: q.top + scrollY, b: q.bottom + scrollY, w: q.width, h: q.height}; };
   const w = document.querySelector('#main .tm-work'), f = document.querySelector('#main details[data-v2adj]');
   return {areas: w ? getComputedStyle(w).gridTemplateAreas : '', mu: r('tm-mu'), sg: r('tm-sg'), ck: r('tm-ck'), yg: r('tm-yg'), fold: !!f, open: !!(f && f.open),
-    ctl: !!(f && f.open && f.querySelector('.sg2-ctl') && f.querySelector('.sg2-ctl').getClientRects().length), loose: !!document.querySelector('#main .tm-sgs > .sg2-adj')}; });
+    ctl: !!(f && f.open && f.querySelector('.sg2-ctl') && f.querySelector('.sg2-ctl').getClientRects().length), loose: !!document.querySelector('#main .tm-sgs > .sg2-adj'),
+    inFrame: !!document.querySelector('#main .mtf-sg #tm-sg'), frame: (f => f ? (q => ({l: q.left, r: q.right}))(f.getBoundingClientRect()) : null)(document.querySelector('#main .mtf'))}; }); /* Nov 21: My Team frame (Sim approved) */
 const shape = (x, tag) => { const {mu, sg, ck, yg} = x; if (!(mu && sg && ck && yg)) { ok(false, `${tag}: Matchups, Suggestions, Team Checks and Your Games all shown`); return; }
-  ok(Math.abs(sg.w - mu.w) <= 1 && Math.abs(sg.l - mu.l) <= 1 && sg.t > mu.t, `${tag}: Suggestions full width under Matchups (${Math.round(sg.w)} vs ${Math.round(mu.w)}px)`);
-  ok(Math.abs(ck.t - yg.t) <= 1 && ck.r <= yg.l && ck.t >= sg.b, `${tag}: Team Checks | Your Games side by side under Suggestions (tops ${Math.round(ck.t)} / ${Math.round(yg.t)}, ${Math.round(ck.l)}-${Math.round(ck.r)} | ${Math.round(yg.l)}-${Math.round(yg.r)})`);
+  /* Nov 21: My Team frame (Sim approved): Suggestions moved into the frame (third part, above the Game Plan bar), so Q71's "Suggestions full
+     width under Matchups" became: Suggestions inside the frame, above Matchups; Team Checks | Your Games side by side under Matchups */
+  if (x.inFrame) ok(sg.b <= mu.t && x.frame && sg.l >= x.frame.l - 1 && sg.r <= x.frame.r + 1, `${tag}: Suggestions in the frame, above Matchups (${Math.round(sg.l)}-${Math.round(sg.r)} in ${x.frame ? Math.round(x.frame.l) + '-' + Math.round(x.frame.r) : 'no frame'}, bottom ${Math.round(sg.b)} vs Matchups ${Math.round(mu.t)})`);
+  else ok(Math.abs(sg.w - mu.w) <= 1 && Math.abs(sg.l - mu.l) <= 1 && sg.t > mu.t, `${tag}: Suggestions full width under Matchups (${Math.round(sg.w)} vs ${Math.round(mu.w)}px)`);
+  ok(Math.abs(ck.t - yg.t) <= 1 && ck.r <= yg.l && ck.t >= (x.inFrame ? mu.b : sg.b), `${tag}: Team Checks | Your Games side by side under Suggestions (tops ${Math.round(ck.t)} / ${Math.round(yg.t)}, ${Math.round(ck.l)}-${Math.round(ck.r)} | ${Math.round(yg.l)}-${Math.round(yg.r)})`);
   const strip = Math.abs(ck.h - yg.h); ok(strip < 100, `${tag}: empty strip beside the shorter one ${Math.round(strip)}px (< 100)`); };
 for (const W of [768, 1024]) for (const th of ['light', 'dark']) {
   const tag = `B ${W} ${th}`, [p, errs, c] = await open('team', W, th, true); let x = await lay(p);

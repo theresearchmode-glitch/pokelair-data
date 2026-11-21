@@ -154,7 +154,9 @@ export default (ui, pg, o) => {
     teamHeading: () => pg.evaluate(() => { const m = document.querySelector('#main'); if (!m) return null; const h = [...m.querySelectorAll('h1')].find(e => e.getClientRects().length && !e.closest('.tm-empty'));
       if (h) return h.innerText.replace(/\s+/g, ' ').trim(); const e = m.querySelector('.tm-eb'); const t = e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; const k = t.indexOf(' · '); return k >= 0 ? t.slice(k + 3) : null; }),
     /** Strength Score block: {label, score, band} ("Solid so far" shows as label "Strength Score so far", band "Solid") */
-    scoreBlock: () => pg.evaluate(() => { const e = [...document.querySelectorAll('#main .tm-lock .np-score')].find(e => e.getClientRects().length); if (!e) return null;
+    scoreBlock: () => pg.evaluate(() => { const f = [...document.querySelectorAll('#main .mtf-head .mtf-score')].find(e => e.getClientRects().length); /* Nov 21: My Team frame (Sim approved) */ /* the frame's header: label "Strength Score" (+ " so far"), the number, the band word, each in its own line */
+      if (f) { const l = f.querySelector('.lab'), n = f.querySelector('.n'), w = f.querySelector('.band'); if (!l || !n || !w) return null; return {label: l.innerText.replace(/\s+/g, ' ').trim(), score: +n.innerText.trim(), band: w.innerText.replace(/\s+/g, ' ').trim()}; }
+      const e = [...document.querySelectorAll('#main .tm-lock .np-score')].find(e => e.getClientRects().length); if (!e) return null;
       const n = e.querySelector('b'), w = e.querySelector('.w span'), l = e.querySelector('.w small'); if (!n || !w) return null; const word = w.innerText.replace(/\s+/g, ' ').trim(), so = / so far$/.test(word);
       return {label: (l ? l.innerText.trim() : '') + (so ? ' so far' : ''), score: +n.innerText.trim(), band: word.replace(/ so far$/, '')}; }),
     /** "Why this score?" is a sheet here (today: a fold under the score): tap opens it; "expanded" = the sheet is open */
@@ -166,14 +168,14 @@ export default (ui, pg, o) => {
     /** Your Six tiles in the order shown (names) */
     sixTiles: () => pg.evaluate(() => [...document.querySelectorAll('#main [data-tmsel]')].filter(e => e.getClientRects().length).map(e => (e.getAttribute('aria-label') || '').split(', ')[0])),
     /** "+ Add a Pokémon" slot tiles among the six */
-    emptyTiles: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-six [data-v2addto]')].filter(e => e.getClientRects().length && /add a pok/i.test(e.getAttribute('aria-label') || '')).length),
+    emptyTiles: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-six [data-v2addto], #main .mtf-party [data-v2addto]')].filter(e => e.getClientRects().length && /add a pok/i.test(e.getAttribute('aria-label') || '')).length), /* Nov 21: My Team frame (Sim approved): the frame's six, its Game Plan bar and its header actions row */
     tapTile: name => tapFound(n => [...document.querySelectorAll('#main [data-tmsel]')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || '').split(', ')[0] === n) || null, name, 'tile ' + name, 700),
     tilePressed: name => pg.evaluate(n => { const e = [...document.querySelectorAll('#main [data-tmsel]')].find(e => (e.getAttribute('aria-label') || '').split(', ')[0] === n); return e ? e.getAttribute('aria-pressed') === 'true' : null; }, name),
     /** the selected Pokémon's set (the Set section) */
     /** the set card: the Set section plus the strip under the six, which carries its place in the plan (Sim's review, Nov 11, item 5) */
     setCard: () => pg.evaluate(() => [...document.querySelectorAll('#main .sx-act, #main #tm-set, #main .mh-slot.on .mh-rate, #main .mh-slot.on .mh-set')].map(e => (e.closest('.mh-slot, .mt-edit') ? e.textContent : e.innerText).replace(/\s+/g, ' ').trim()).join(' ')), /* the strip's 'Editing' is capitals by CSS only; the set's type chips sit in the Card on desktop */ /* The Hand (Sim, Nov 14): the editing strip plus the picked Card's plate and set */
     /** how many moves the set card shows */
-    setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-set .tm-moves > *, #main .mh-slot.on .mh-mv > li, #main #tm-set .mt-emv > li')].filter(e => e.getClientRects().length).length),
+    setMoveCount: () => pg.evaluate(() => [...document.querySelectorAll('#main #tm-set .tm-moves > *, #main .mh-slot.on .mh-mv > li, #main #tm-set .mt-emv > li, #main #tm-set .mtf-mv > li')].filter(e => e.getClientRects().length).length), /* Nov 21: My Team frame (Sim approved): the tapped one's moves as big bars (.mtf-mv) */
     showSet: async name => { if (!(await H.tilePressed(name))) await H.tapTile(name); return H.setCard(); },
     /** the padlock on a tile (as today: shown on the picked tile, so tap the tile first when it isn't showing) */
     lockOnTile: async name => { const f = n => [...document.querySelectorAll('#main [data-v2lock]')].find(e => (e.getAttribute('aria-label') || '').includes(n + ':') && e.getClientRects().length && getComputedStyle(e).opacity !== '0') || null;
@@ -183,10 +185,10 @@ export default (ui, pg, o) => {
     removeFromTeam: async name => { await H.settle(400, 5000); const f = n => [...document.querySelectorAll('#main [data-v2rm]')].find(e => (e.getAttribute('aria-label') || '') === 'Remove ' + n + ' from your team' && e.getClientRects().length && getComputedStyle(e).opacity !== '0') || null;
       if (!(await pg.evaluate(f, name))) await H.tapTile(name); await tapFound(f, name, 'remove ' + name, 800); },
     /** the game plan line under the six (its sentence only, not the "Use NastyPlot's pick" button beside it) */
-    gamePlanLine: () => txt('#main .sx-plan .sx-pl'),
+    gamePlanLine: () => txt('#main .sx-plan .sx-pl, #main .mtf-plan[data-v2gplan]'), /* Nov 21: My Team frame (Sim approved) */ /* the frame's Game Plan bar: "Game Plan › How to play this six…" */
     /** Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): everything drawn in My Team's six (the Hand, its heading
         line, the editing strip, any plan line), as one line of visible text, to check no Lead / Back / Bench word is left there */
-    sixText: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-six')].filter(e => e.getClientRects().length).map(e => e.innerText).join(' ').replace(/\s+/g, ' ').trim()),
+    sixText: () => pg.evaluate(() => [...document.querySelectorAll('#main .tm-six, #main .mtf-party, #main .mtf-plan, #main .mtf-lead')].filter(e => e.getClientRects().length).map(e => e.innerText).join(' ').replace(/\s+/g, ' ').trim()), /* Nov 21: My Team frame (Sim approved): the frame's six, its Game Plan bar and its header actions row */
     /** the team actions are all on show (no ⋯ menu), so there is nothing to open */
     /** My Team's More menu (a sheet; Sim, Nov 11): opened when it isn't already */
     openMoreActions: async () => { if (await pg.evaluate(() => !!document.querySelector('.np-sheet .tm-moremenu'))) return; if (await has('#main [data-v2more]')) await click('#main [data-v2more]', 500); },
@@ -197,7 +199,7 @@ export default (ui, pg, o) => {
     /** the team actions on offer, under today's names: the row plus the More menu's items (Sim, Nov 11), read without opening it */
     teamActions: () => pg.evaluate(() => { const m = document.querySelector('#main'); if (!m) return [];
       const MAP = [['data-v2save', 'Save Team', 'Save team'], ['data-v2share', 'Share', 'Share'], ['data-v2sheetopen', 'Team Sheet', 'Team Sheet'], ['data-v2copy', 'Copy for Showdown', 'Copy for Showdown'], ['data-v2import', 'Import', 'Import'], ['data-v2saved', 'Saved Teams', 'Saved Teams'], ['data-cxgo2', 'Compare', 'Compare with…'], ['data-v2clear', 'Clear Team', 'Clear team'], ['data-v2export', 'Export', 'Export']]; // Export row: Nov 12 (TEAM-13)
-      const out = []; for (const e of [...m.querySelectorAll('.tm-acts > :not([data-v2more]), .tm-empty button, .tm-empty a'), ...(document.querySelector('.np-sheet .tm-moremenu') ? document.querySelectorAll('.np-sheet .tm-moremenu .tm-mi') : (() => { const d = document.createElement('div'); d.innerHTML = m.querySelector('[data-v2more]') && window.V2 && V2.moreHtml ? V2.moreHtml() : ''; d.style.cssText = 'position:fixed;left:0;top:0;width:400px;opacity:0'; document.body.append(d); const l = [...d.querySelectorAll('.tm-mi')]; setTimeout(() => d.remove(), 0); return l; })())]) { if (!e.getClientRects().length) continue; const t = e.innerText.replace(/\s+/g, ' ').trim().replace(/ \d+$/, '');
+      const out = []; for (const e of [...m.querySelectorAll('.tm-acts > :not([data-v2more]), .mtf-acts > :not([data-v2more]), .tm-empty button, .tm-empty a'), ...(document.querySelector('.np-sheet .tm-moremenu') ? document.querySelectorAll('.np-sheet .tm-moremenu .tm-mi') : (() => { const d = document.createElement('div'); d.innerHTML = m.querySelector('[data-v2more]') && window.V2 && V2.moreHtml ? V2.moreHtml() : ''; d.style.cssText = 'position:fixed;left:0;top:0;width:400px;opacity:0'; document.body.append(d); const l = [...d.querySelectorAll('.tm-mi')]; setTimeout(() => d.remove(), 0); return l; })())]) { if (!e.getClientRects().length) continue; const t = e.innerText.replace(/\s+/g, ' ').trim().replace(/ \d+$/, ''); /* Nov 21: My Team frame (Sim approved): the frame's six, its Game Plan bar and its header actions row */
         // the action is named by what the button does (its data attribute), so a reworded label still counts as that action
         // the main save button says what it will do (A11, approved Nov 12): "Save Team", "Update Saved Team" (the open saved team
         // has changed) or a quiet "Saved ✓" (unchanged); reported under today's names, and "Saved ✓" as itself (Nov 12)
@@ -349,7 +351,7 @@ export default (ui, pg, o) => {
     moreMenuRows: () => pg.evaluate(() => [...document.querySelectorAll('.np-sheet .tm-moremenu .tm-mi')].filter(e => e.getClientRects().length).map(e => { const s = e.querySelector('small'), l = e.querySelector('span');
       return {label: l ? l.innerText.replace(/\s+/g, ' ').trim() : '', sub: s ? s.innerText.replace(/\s+/g, ' ').trim() : ''}; })),
     /** a My Team tile as the six draws it (EDIT-03): its accessible name, whether it is marked locked and shows the padlock */
-    tileLock: name => pg.evaluate(n => { const b = [...document.querySelectorAll('#main .sx-slot .tm-pick')].find(e => (e.getAttribute('aria-label') || '').split(', ')[0] === n); if (!b) return null; const s = b.closest('.sx-slot'), p = b.querySelector('.sx-lk');
+    tileLock: name => pg.evaluate(n => { const b = [...document.querySelectorAll('#main .sx-slot .tm-pick, #main .mtf-row[data-tmsel]')].find(e => (e.getAttribute('aria-label') || '').split(', ')[0] === n); if (!b) return null; const s = b.closest('.sx-slot') || b, p = b.querySelector('.sx-lk, .lkm'); /* Nov 21: My Team frame (Sim approved) */ /* the frame's row carries .locked and its padlock (.lkm) itself */
       return {label: b.getAttribute('aria-label'), locked: s.classList.contains('locked'), padlock: !!(p && p.getClientRects().length), padlockLabel: p ? p.getAttribute('aria-label') : null}; }, name),
     /** the link (an <a>) on My Team whose words are exactly `text`: where it leads (X-02's "Build your own"; #build has no page in this build yet) */
     linkHref: text => pg.evaluate(t => { const a = [...document.querySelectorAll('#main a')].find(e => e.getClientRects().length && e.innerText.replace(/\s+/g, ' ').trim().replace(/ ›$/, '') === t); return a ? a.getAttribute('href') : null; }, text), /* Nov 16: blue links end in › */
