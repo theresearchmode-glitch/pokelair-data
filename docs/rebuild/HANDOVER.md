@@ -9,6 +9,20 @@ The Nov 11 handover is kept below as history; where they disagree, this section 
 picks, plus Claude's own judgement; heavy usage fine; switch to live waits for Sim AND not before every audit/review fix from tonight is done (Sim, 10 PM); never delete a feature. Backstops A (:23) and B (:53)
 updated; 9:40 AM summary with pictures (docs/rebuild/summary-nov16.md); after 10 AM: STOPPED, HANDOVER, notification, delete both.
 
+## NOW (Sat Nov 21, written 2:05 AM Eastern by the clock; DESIGN authority until 10:00 AM, EXECUTIVE (non-visual) until 10:00 PM; up to 4 helpers until 10 AM, then 3)
+- I'm Helping Hand ("HH", Sim named/approved Nov 21). Sim asleep since about 1:23 AM.
+- Three new designs, each in its own scratch copy (detached; commits not on t1rules yet):
+  - My Team frame: scratchpad/mtf, latest 1d6eb12c (team-frame.js, team-frame.css, team.js, tokens.css). Polish check spill 0.
+  - New Damage Calc "Plot the hit": scratchpad/pc, latest 71d487a3 (calc-plot.js, plot-calc.css).
+  - Trial merge of both onto t1rules: scratchpad/mtry (merge commits only; conflicts in tokens.css and parts-v2.json = keep both).
+- Tests on the trial merge (2:00 AM): B-build 74/3 FAIL (BUILD-06, SUGG-11, SUGG-19: My Team frame; h9 fixing), C-battle 76/7 FAIL
+  (CALC-01..08: new calc selectors; h8 fixing), D-meta-shell crashed (Chromium compositor crashes, dmesg 'trap int3'), re-running.
+- Helpers: h5 a058869f (Arena speed + test.yml jobs), h8 a7145eda (calc tests, patch scratchpad/h8-calc-tests.patch), h9 a7050c71
+  (My Team tests + 3 B-build, patch h9-myteam-tests.patch), h10 accee0d0 (full Build check after piece 6, patch h10.patch).
+- Next: apply h8/h9 patches to mtry, all groups green, then merge mtf + pc into t1rules, push claude/design6, Preview (check file list).
+- Build polish fix (720 event name breaks mid-word) waits for h10's report; copy ready at scratchpad/bfix.
+- 10 AM: design summary to Sim from docs/rebuild/authority-nov21-design.md (pictures in docs/rebuild/pics/nov21/authority/).
+
 ## NOW (Nov 17, written time: 6:59 PM (6:59:32)  date: Tue Nov 17, 2026; EXECUTIVE AUTHORITY EXTENDED until 9:00 AM Wed Nov 18 (Sim, 6:58 PM); summary with pictures before 9 AM)
 - Preview v201 published (397 files). Since: header arrows symmetrical 20|20 with 44px taps; range band back, 'likely' words gone (Sim).
 - Data (Step 3): 4 helper reports in docs/rebuild/research/ (data-integrity, score-drift, cross-source, score-gaps). Sim's yes to all 3:
