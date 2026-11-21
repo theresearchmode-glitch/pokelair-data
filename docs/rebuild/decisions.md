@@ -1844,3 +1844,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:05 PM: Correction: the preview script did not break; my call set S= before PLAYWRIGHT_BROWSERS_PATH=$S/..., so the browser path pointed into the wrong folder. Next time: set PLAYWRIGHT_BROWSERS_PATH first.
 - 2:06 PM: Build reskin checks (bd 81843754, merged): B-build 77 pass / 0 FAIL / 14 known (baseline), kit-page all 14 views passed.
 - 2:07 PM: Sim: the Pokémon page is a very big deal (most people will find the site by looking up a Pokémon). Showed the PC's mock with an honest critique; making HH's own flagship mock-up of it next (Incineroar, real data, the reference-three standard).
+- 2:09 PM: Sim: cover all 7 on the Pokémon page; make it amazing (most people's first impression). Making HH's mock-up (Incineroar, real data) with every one of the 7.
