@@ -141,3 +141,5 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
   .mtf-inf > .mtf-ty{grid-column:1;grid-row:1}.mtf-inf > .mtf-more{grid-column:2;grid-row:1;flex-wrap:nowrap;gap:0 var(--s2)}.mtf-more .np-link{font-size:var(--t13)}}
 /* 320-359: six across left 41px taps; three across in two rows keeps every tap 44px+ */
 @media (max-width:359.98px){.mtf-rows{grid-template-columns:repeat(3,minmax(0,1fr))}.mtf-row{min-height:80px}}
+.mtf-step{flex:none} /* ‹ › stay 48px when a long name fills the bar (they shrank to 29px at 1000-1200) */
+.mtf-nav h2{flex:0 1 auto;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.mtf-nav span{white-space:nowrap}
