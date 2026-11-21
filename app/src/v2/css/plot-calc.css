@@ -90,3 +90,7 @@
   .pc-kob{align-self:center}.pc-links{display:grid;align-self:center}}
 @media (max-width:699.98px){.dc2.pc .pc-sws button{padding:0 var(--s2)}}
 @media (max-width:379.98px){.pc-board{gap:var(--s4) var(--s2)}.pc-mv{padding:var(--s2) var(--s3)}.pc-mv em{font-size:var(--t20)}.pc-five button{font-size:var(--t13)}.pc-ph b{font-size:var(--t15)}}
+
+/* photos and sticky notes are paper in every theme: their words stay ink (Q105 B) */
+.pc-ph,.dc2.pc .pc-kits .arn-set{--pc-ink:var(--pc-on-paper);--pc-ink2:var(--pc-on-paper2)}.dc2.pc .pc-kits .arn-set .arn-f,.dc2.pc .pc-kits .arn-set .arn-sel,.dc2.pc .pc-kits .arn-set output{color:var(--pc-on-paper)}.dc2.pc .pc-kits .arn-set small{color:var(--pc-on-paper2)}
+:root[data-theme="night"] .pc-ans .pc-big{color:var(--tcn,var(--tc,var(--pc-ink)))}
