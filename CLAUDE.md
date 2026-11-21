@@ -29,6 +29,10 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
+## HELPERS: TWO AT A TIME (Sim, Nov 21, just before 12:21 PM, LATEST: '2 helpers is a great idea. do it!' for the reskin; overrides the ONE-at-a-time rule below)
+At most TWO helpers/subagents at once, each in its own copy, on approved reskin work. Going above 2: ask Sim first. work-check.sh / stop-check.sh need 2.
+Design authority until 10:00 PM Sat Nov 21; executive until 9:00 AM Sun Nov 22 (Sim, Nov 21).
+
 ## HELPERS: ONE AT A TIME (Sim, Nov 21, 6:49 AM, LATEST; overrides the helper counts below)
 Sim, Nov 21: "after 7 AM today, I would like to reduce the amount of helpers to just one helper at a time. I need to conserve usage."
 From 7:00 AM Nov 21: at most ONE helper/subagent running at a time. Sim, 6:50 AM: "If you need more than one helper, just make sure you ask me in the chat and I'll let you know if that's something we can afford to do." Main thread keeps working (still never idle). Going above 1: ask Sim
