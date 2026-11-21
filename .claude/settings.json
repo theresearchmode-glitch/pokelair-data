@@ -5,5 +5,19 @@
       "Bash(git commit:*)",
       "Bash(git push:*)"
     ]
+  },
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "bash \"$CLAUDE_PROJECT_DIR\"/docs/rebuild/stop-check.sh",
+            "timeout": 30,
+            "statusMessage": "Work check: 3 helpers?"
+          }
+        ]
+      }
+    ]
   }
 }
