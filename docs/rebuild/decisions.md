@@ -1856,3 +1856,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:38 PM: Sim: move design A (move ticket) approved site-wide, 'make it a lil bit better'. Adding a type-colour underline; phones stack the ticket (type tab with %, name, what it does) to keep 2 columns. Pokémon page first, then the kit.
 - 2:40 PM: Move ticket A built into the Pokémon mock (type-colour underline; phones stack it). Phone page 3,792px at 390 (today 3,796); no cut text or overlaps at 13 widths.
 - 2:45 PM: Move ticket added to the kit (V2.kMove/kMoves): kit-page all 14 views passed, guard clean. Pages switch to it one at a time (Calc after helper hC finishes).
+- 3:15 PM: hT finished My Team war room (e983e080) + HH added move tickets (fe59f683, copy tm, not merged). Phone 390 measured the same way: today 3,831, war room 4,164 (+333). Asking Sim before merging. Free slot refilled with hS (type symbols look-only, Sim's ask).
