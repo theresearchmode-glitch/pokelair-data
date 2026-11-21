@@ -65,7 +65,7 @@ for (const f of fs.readdirSync(CSS).filter(f => f.endsWith('.css'))) {
 }
 
 // inline styles in the v2 scripts and head: only custom properties and var() values are allowed to carry colours
-for (const f of ['shell.js', 'head.html', 'body.html', ...fs.readdirSync(path.join(ROOT, 'pages')).map(p => 'pages/' + p)]) {
+for (const f of ['shell.js', 'kit.js', 'head.html', 'body.html', ...fs.readdirSync(path.join(ROOT, 'pages')).map(p => 'pages/' + p)]) {
   const file = path.join(ROOT, f); if (!fs.existsSync(file)) continue; const src = fs.readFileSync(file, 'utf8');
   for (const m of src.matchAll(/style="([^"]*)"/g)) checkDecls(file, src, m[1], m.index + 7, '', false);
 }

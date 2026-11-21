@@ -140,6 +140,16 @@
   --pc-k-none:#5E5A66;--pc-k-sun:#B56E00;--pc-k-rain:#2A73C9;--pc-k-sand:#A8742A;--pc-k-snow:#2F7DA4;--pc-k-grassy:#28843C;--pc-k-electric:#946F00;--pc-k-psychic:#C2479A;--pc-k-misty:#B4508C;
   --pc-on-paper:#17161A;--pc-on-paper2:#5E5A66;--d-pcbig:clamp(48px,17cqi,112px);--d-pcpct:clamp(26px,8.5cqi,56px);--d-pcbigp:clamp(40px,14cqi,100px);--d-pctitle:clamp(24px,3vw,44px);
   --arn-shade-t:rgba(0,0,0,.3);--arn-shade-b:rgba(0,0,0,.45);--arn-contact-1:rgba(0,0,0,.6);--arn-contact-2:rgba(0,0,0,.3);--arn-contact-3:rgba(40,36,60,.6);--d-arntag:clamp(34px,6.4cqi,64px);
+  /* The shared kit (site-wide reskin, Sim approved approach A, Nov 21; docs/rebuild/mocks/cohesion-nov21/THEME.md + HYBRID.md; kit.css).
+     Reused where the meaning is the same: paper = the page (--bg), ink, quiet ink (--ink-3, 5.6:1), rule, Plot blue (--plot for lines and
+     fills under white words 4.7:1; --plot-text for blue words on paper 5.6:1). Nasty pink: --k-nasty for lines and rings (4.0:1 on paper,
+     graphics need 3:1); --k-go is the pink a step deeper so white words read (4.7:1) and stays the same saturated pink at night (HYBRID 8).
+     The "yours" marker and the kicker are ink chips (inverted at night). Headline, sentence, section and go sizes are display sizes. */
+  --k-paper:var(--bg);--k-card:var(--surface);--k-ink:var(--ink);--k-ink2:var(--ink-3);--k-rule:var(--rule);
+  --k-plot:var(--plot);--k-plot-text:var(--plot-text);--k-on-plot:#FFFFFF;--k-nasty:#E8364F;--k-nasty-text:var(--pick-text);--k-go:#DA2C48;--k-on-go:#FFFFFF;--k-go-shadow:#17161A;
+  --k-chip:#17161A;--k-on-chip:#FFFFFF;--k-art-shadow:rgba(23,22,26,.25);--k-card-shadow:rgba(23,22,26,.16);--k-neutral:rgba(23,22,26,.5);
+  --d-khead:clamp(34px,min(10.4vw,4vw + 32px),84px);--d-ksent:clamp(22px,2.8vw,34px);--d-ksec:clamp(26px,3.4vw,40px);--d-kgo:clamp(17px,min(5.2vw,2.6vw + 12px),36px);
+  --d-kscore:clamp(48px,6vw,72px);
   color-scheme:light}
 :root[data-theme="night"]{
   /* the Damage Calc board at night (Sim, Q105 B, Nov 21): night blueprint paper; photos, sticky notes and move colours stay the same.
@@ -191,6 +201,9 @@
   --grain:.05;--score-ink:#D6D1CA;
   --plate-hi:#3E3D56;--plate-lo:#2C2B3D;--main-hi:#63C0F8;--main-lo:#3FA2E2;--band-glow:0 0 22px rgba(79,178,240,.4);--floor-line:rgba(214,218,255,.3);--page-wash:linear-gradient(180deg,#0C0C14 0,#12121C 280px,#191928 450px,#14141F 620px,#12121B 100%);--scrim:rgba(6,6,12,.45);--scrim-deep:rgba(8,8,14,.82);
   --arn-hit-on:#C41E35;--arn-line:rgba(228,224,236,.2);--arn-dash:rgba(228,224,236,.36); /* the Arena under the scene, night */
+  /* the kit at night: blue fills turn light with dark words (9.1:1), pink stays the saturated --k-go with white words (4.7:1), its offset
+     shadow and the ink chips turn light (13.7:1) so they still read on the dark page */
+  --k-on-plot:#12121B;--k-go-shadow:#E4E0DA;--k-chip:#E4E0DA;--k-on-chip:#12121B;--k-art-shadow:rgba(0,0,0,.5);--k-card-shadow:rgba(0,0,0,.45);--k-neutral:rgba(228,224,236,.55);
   color-scheme:dark}
 @media (max-width:1179.98px){:root{--gut:48px}}
 @media (max-width:699.98px){:root{--gut:16px}}

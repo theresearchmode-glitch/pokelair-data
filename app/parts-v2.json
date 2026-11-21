@@ -18,6 +18,7 @@
       "shell",
       "src/v2/css/shell.css"
     ],
+    ["kit", "src/v2/css/kit.css"],
     [
       "pages",
       "src/v2/css/pages.css"
@@ -51,6 +52,7 @@
     "src/v2/test-hook.js",
     "src/v2/bridge.js",
     "src/v2/shell.js",
+    "src/v2/kit.js",
     "src/v2/pages/guide.js",
     "src/v2/pages/team.js",
     "src/v2/pages/six.js",
