@@ -1857,3 +1857,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:40 PM: Move ticket A built into the Pokémon mock (type-colour underline; phones stack it). Phone page 3,792px at 390 (today 3,796); no cut text or overlaps at 13 widths.
 - 2:45 PM: Move ticket added to the kit (V2.kMove/kMoves): kit-page all 14 views passed, guard clean. Pages switch to it one at a time (Calc after helper hC finishes).
 - 3:15 PM: hT finished My Team war room (e983e080) + HH added move tickets (fe59f683, copy tm, not merged). Phone 390 measured the same way: today 3,831, war room 4,164 (+333). Asking Sim before merging. Free slot refilled with hS (type symbols look-only, Sim's ask).
+- 3:16 PM: hS done (type symbols: report 3e58e7f1). Free slot refilled with hP: build the real Pokémon page per Sim's approved mock (brief 27-pokemon.md), own copy, pictures before merge.
+- 3:16 PM: Checked hT's kit bug: kit-page with long names at normal size passes all 14 views, so the overflow was the war room's own CSS (patched there by hT). Test kept stronger.
