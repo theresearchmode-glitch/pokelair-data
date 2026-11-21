@@ -256,4 +256,4 @@
 .pck .k-lead .pc-hint{display:inline-flex;margin:0 0 0 var(--s2);vertical-align:baseline}
 /* C-battle X-04 (Nov 21): the answer keeps its height when the numbers change on phones: two lines for the verdict, a row for the "hangs on" line */
 .pc-sm0{display:none}
-@media (max-width:699.98px){.dc2.pc.pck .pc-ans .pc-vd{display:grid;align-content:center;min-height:calc(2.2em + var(--s1))}.dc2.pc.pck .pc-sm0{display:block;min-height:1.3em}}
+@media (max-width:699.98px){.dc2.pc.pck .pc-ans .pc-vd{display:grid;align-content:center;min-height:calc(2.2em + var(--s1))}.dc2.pc.pck .pc-sm0{display:block}.dc2.pc.pck .pc-ans .pc-sm{min-height:2.6em}} /* two lines: the hangs-on line can wrap at 390 (X-04 with the test team) */
