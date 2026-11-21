@@ -182,8 +182,14 @@ a.mtf-btn{color:var(--mtf-on-frame)}.mtf-head .mtf-btn{font-size:var(--t13)}
 @media (min-width:1000px){.mtf-row .nm{overflow:hidden}.mtf-row .nm b{overflow:visible;text-overflow:clip;transform-origin:0 50%}}
 /* Sim's type rule (Nov 11): Unbounded only at 15px and up, smaller text in Instrument Sans (v2-unbounded found 8 kinds in the frame):
    the small "S tier" tags and the row numbers use Instrument Sans bold; the buttons stay Unbounded at 15px on phones too */
-.mtf-row .no,.mtf-stage .rate span,.mtf-row .rt span{font-family:var(--b);font-style:normal;font-weight:700}
+.mtf-row .no,.mtf-stage .rate span,.mtf-row .rt span{font-family:var(--b);font-style:normal;font-weight:700;letter-spacing:normal;word-spacing:2px}
 .mtf-head .mtf-btn,.mtf-do .mtf-btn{font-size:var(--t15)}
 /* phones (Nov 21, authority): the status line keeps Sim's approved short form "6 of 6 · Grassy Terrain · Legal ✓" on one line
    (the frame's long form wrapped to 2 lines at 360-390, q84 S5); desktop keeps "My team · … team · Legal for Reg M-C ✓" */
 @media (max-width:479.98px){.mtf-k .mtf-lg{display:none}}
+/* 320-359 (Nov 21, authority): Remove sat 739px under the tapped Pokémon (Sim, Nov 17: within 650); nothing hidden: the types sit side
+   by side on their own row with Lock / Pokémon Page after the buttons (their desktop place), a lower stage, 36px move bars (labels,
+   not buttons) and a tighter name bar */
+@media (max-width:359.98px){.mtf-inf > .mtf-ty{grid-column:1 / -1}.mtf-inf > .mtf-more{grid-column:1 / -1;grid-row:auto}
+  .mtf-stage{height:116px}.mtf-stage .big{width:112px;height:112px}.mtf-mv li{min-height:36px}
+  .mtf-nav h2{padding-top:var(--s1)}.mtf-nav span{padding-bottom:var(--s1)}}
