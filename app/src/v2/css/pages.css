@@ -3369,11 +3369,14 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .pk-hfx li{display:grid;align-content:end;min-height:88px;padding:var(--s3) var(--s4);background:var(--pk-c1);color:var(--on-type);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
 .pk-hfx li:nth-child(2),.pk-hfx li:nth-child(3){background:var(--pk-c2)}
 .pk-hfx li b{font-size:var(--t34);line-height:1;color:var(--on-type)}.pk-hfx li span{font:600 var(--t13)/1.3 var(--b);color:var(--on-type)}
-.pkf .k-step{position:relative;isolation:isolate;padding-bottom:var(--s8)}
-.pkf .k-step::after{content:"";position:absolute;z-index:-1;inset:0 calc(var(--s6) * -1) 0 calc(var(--s16) * -1);background:color-mix(in srgb,var(--pk-c1) 9%,var(--k-paper))}
-.pkf .k-step:nth-of-type(2)::after{background:color-mix(in srgb,var(--pk-c2) 11%,var(--k-paper))}
-.pkf .k-sec{margin-top:var(--s10)}
-.pk-slips li{padding:var(--s3);border-top:4px solid var(--pk-c1);background:color-mix(in srgb,var(--pk-c1) 10%,var(--k-card))}
-.pk-slips li:nth-child(even){border-top-color:var(--pk-c2);background:color-mix(in srgb,var(--pk-c2) 12%,var(--k-card))}
+/* Sim, Nov 21 (6:37 PM): the tinted bands read brown; keep the paper and carry the type colours in a slanted two-tone bar that opens
+   each step (the brand's slanted boxy shape), with room to breathe above and below. Solid type colours only, never mixed into paper. */
+.pkf .k-step{position:relative;margin-top:var(--s12);padding-top:var(--s8);padding-bottom:var(--s4)}
+.pkf .k-step::before{content:"";position:absolute;top:0;left:calc(var(--s16) * -1);right:0;height:8px;background:linear-gradient(100deg,var(--pk-c1) 0 calc(62% - 1px),transparent calc(62% - 1px) calc(62% + 5px),var(--pk-c2) calc(62% + 5px) 100%);clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.pkf .k-step>.k-sec{margin-top:0}
+.pkf .k-step>.k-n{top:-12px}
+@media (max-width:699.98px){.pkf .k-step{margin-top:var(--s8);padding-top:var(--s6)}.pkf .k-step>.k-n{top:calc(var(--s6) + 2px)}.pkf .k-step::before{left:0;height:6px}}
+.pk-slips li{padding:var(--s3) var(--s3) var(--s4);border-top:4px solid var(--pk-c1);background:var(--k-card)}
+.pk-slips li:nth-child(even){border-top-color:var(--pk-c2)}
 @media (min-width:1024px){.pk-hd{grid-template-columns:minmax(0,1fr) minmax(0,520px)}.pk-hfx li{min-height:96px}.pkf .pk-slips{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media (max-width:699.98px){.pk-hfx li{min-height:72px;padding:var(--s2) var(--s3)}.pk-hfx li b{font-size:var(--t26)}}
