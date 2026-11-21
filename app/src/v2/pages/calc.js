@@ -295,7 +295,7 @@ V2.arnMvRow = (C, m) => { const E = V2.esc, W = V2.ARN_W, on = m.name === dc.mv,
   /* Nov 21: Plot the hit (Sim, Nov 20: real damage and HP numbers, not percentages): each row's damage in HP of the defender's HP and the
      swipe's short verdict, as on the board (V2.pcDmg, V2.pcVerdict) */
   const dmg = !r ? '' : r.max === 0 ? 'No effect' : V2.PC_PCT_FIRST ? `${V2.pcPct(r)} · ${V2.pcDmg(r)} of ${r.hp} HP` : `${V2.pcDmg(r)} of ${r.hp} HP`, ko = r && r.max > 0 ? V2.pcVerdict(r).chip : '', info = `${t}${m.bp > 1 ? ' · ' + m.bp + ' power' : ''}${on ? ' · selected' : ''}`;
-  return `<button type="button" class="np-hit arn-mvhit" style="--tc:var(--ty-${tc})" data-arnpickmv="${E(m.name)}"${on ? ' aria-current="true"' : ''} aria-label="${E(m.name)}: ${E(info)}${dmg ? ', ' + E(dmg) : ''}${ko ? ', ' + E(ko) : ''}"><span class="nm"><b class="u">${E(m.name)}</b><small>${E(info)}</small></span><span class="arn-mvd" aria-hidden="true">${dmg ? `<b class="${r.max > 0 ? 'u' : ''}">${r.max > 0 ? (V2.PC_PCT_FIRST ? `${E(V2.pcPct(r))}<span class="of"> · ${E(V2.pcDmg(r))} of ${r.hp} HP</span>` : `${E(V2.pcDmg(r))}<span class="of"> of ${r.hp} HP</span>`) : E(dmg)}</b>` : ''}${ko ? `<small>${E(ko)}</small>` : ''}</span></button>`; };
+  return `<button type="button" class="np-hit arn-mvhit" style="--tc:var(--ty-${tc})" data-arnpickmv="${E(m.name)}"${on ? ' aria-current="true"' : ''} aria-label="${E(m.name)}: ${E(info)}${dmg ? ', ' + E(dmg) : ''}${ko ? ', ' + E(ko) : ''}"><span class="nm"><b class="u">${E(m.name)}</b><small>${E(info)}</small></span><span class="arn-mvd" aria-hidden="true">${dmg ? `<b class="${r.max > 0 ? 'u' : ''}">${r.max > 0 ? (V2.PC_PCT_FIRST ? `${E(V2.pcPct(r))}<span class="of"><span class="sep"> · </span>${E(V2.pcDmg(r))} of ${r.hp} HP</span>` : `${E(V2.pcDmg(r))}<span class="of"> of ${r.hp} HP</span>`) : E(dmg)}</b>` : ''}${ko ? `<small>${E(ko)}</small>` : ''}</span></button>`; };
 V2.arnMvPick = () => { const sel = document.getElementById('dcMv'); if (!sel) return; let C; try { C = calcData(); } catch (e) { return; }
   const mine = (() => { try { return members().some(m => m.p.n === dc.a); } catch (e) { return false; } })(), t0 = performance.now();
   const L = [...sel.querySelectorAll('optgroup')].map(g => ({h: g.label === 'Its set' ? (mine ? 'Its set on your team' : 'Its usual set') : 'Every other move',
@@ -327,13 +327,18 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
   if (b.hasAttribute('data-arnmv')) V2.arnMvPick(); else V2.arnSetPick(b.dataset.arnset, b.dataset.arntitle); });
 // a stage row: names its stat; minus / plus within today's range (-2 to +2)
 V2.arnStage = (who, lab, b) => `<div class="arn-f arn-st" role="group" aria-label="${lab}"><span class="lb">${lab}</span><span class="ctl"><button type="button" data-arnst="${who}" data-d="-1" aria-label="Lower ${lab}"${b <= -2 ? ' disabled' : ''}>−</button><output class="u" id="dc${who === 'a' ? 'A' : 'D'}Bo" aria-live="polite">${b > 0 ? '+' + b : b < 0 ? '−' + -b : '±0'}</output><button type="button" data-arnst="${who}" data-d="1" aria-label="Raise ${lab}"${b >= 2 ? ' disabled' : ''}>+</button></span></div>`;
-V2.arnSel = (h, lab) => `<label class="arn-f"><span class="vh">${lab}</span>${h}<i class="arw" aria-hidden="true"></i></label>`;
+/* Nov 21 (kit reskin, review note "the item ▼ never alone on a line"): the row's value is also written as words (.v, hidden from screen
+   readers: the select and the row's button say it), the ▼ tied to its last word, so a long item ("Charizardite Y") wraps at a space and
+   the ▼ goes with "Y"; the select stays in place for its id and change handler */
+V2.arnVal = (h, arw = true) => { const m = /<option[^>]* selected[^>]*>([^<]*)</.exec(h) || /<option[^>]*>([^<]*)</.exec(h), t = m ? m[1] : '', i = t.lastIndexOf(' ');
+  return `<b class="v arn-val" aria-hidden="true">${i > 0 ? t.slice(0, i + 1) : ''}<span class="nw">${i > 0 ? t.slice(i + 1) : t}${arw ? '<i class="arw"></i>' : ''}</span></b>`; };
+V2.arnSel = (h, lab) => `<label class="arn-f"><span class="vh">${lab}</span>${h}${V2.arnVal(h)}<i class="arw" aria-hidden="true"></i></label>`;
 // Sim Q47 A: a set row is a button over today's select (still drawn, so the row reads as before; out of touch, Tab and screen readers)
 // that opens the row's sheet; a disabled select (a Mega's stone) stays as it is
 V2.arnSetBtn = (id, title, cur) => `<button type="button" class="arn-pickbtn" data-arnset="${id}" data-arntitle="${V2.esc(title)}" aria-haspopup="dialog" aria-label="${V2.esc(title)}: ${cur}. Choose another"></button>`;
 V2.arnRow = (h, lab, title) => { h = h.replace('<select class="field"', '<select class="arn-sel"'); if (/<select[^>]* disabled/.test(h)) return V2.arnSel(h, lab);
   const id = (/id="([^"]+)"/.exec(h) || [])[1], cur = (/<option[^>]* selected[^>]*>([^<]*)</.exec(h) || /<option[^>]*>([^<]*)</.exec(h) || [])[1] || '';
-  return `<div class="arn-f"><span class="vh">${lab}</span>${h.replace('<select class="arn-sel"', '<select class="arn-sel" tabindex="-1" aria-hidden="true"')}${V2.arnSetBtn(id, title, cur)}<i class="arw" aria-hidden="true"></i></div>`; };
+  return `<div class="arn-f"><span class="vh">${lab}</span>${h.replace('<select class="arn-sel"', '<select class="arn-sel" tabindex="-1" aria-hidden="true"')}${V2.arnSetBtn(id, title, cur)}${V2.arnVal(h)}<i class="arw" aria-hidden="true"></i></div>`; };
 // the two set cards: item, Ability, nature, points, stage (today's ids; the defender's points open HP, Def and Sp. Def)
 V2.arnSets = C => { const E = V2.esc, W = V2.ARN_W, {A, D, mvC, bp_} = C, sel = C.sel, PTS = C.PTS;
   const spec = mvC && mvC.cat === 2, aStat = bp_ ? 'Def' : spec ? 'Sp. Atk' : 'Atk', defPhys = !mvC || mvC.cat !== 2 || ['Psyshock', 'Psystrike', 'Secret Sword'].includes(mvC.name), dStat = defPhys ? 'Def' : 'Sp. Def';
@@ -399,7 +404,7 @@ document.addEventListener('click', e => { const s = e.target.closest && e.target
   if (t.dataset.dcmv) { if (dc.mv === t.dataset.dcmv) return; dc.mv = t.dataset.dcmv; dc.spread = null; }
   else if (dc.dir === 'theirs') { dc.a = t.dataset.dckb; dc.d = t.dataset.dckbo; dc.mv = t.dataset.dckbm; dc.spread = null; dc.wSet = dc.tSet = false; }
   else { dc.d = t.dataset.dckb; dc.a = t.dataset.dckbo; dc.mv = t.dataset.dckbm; dc.spread = null; dc.wSet = dc.tSet = false; }
-  V2.redraw(); const sc = document.querySelector('.arn-scene'); if (t.dataset.dckb && sc && sc.getBoundingClientRect().top < 0) sc.scrollIntoView({block: 'start', behavior: V2.smooth()}); });
+  V2.redraw(); const sc = document.querySelector('.arn-scene, .pc-board'); /* Nov 21 (kit reskin): a KO row tapped at the foot of the page scrolls up to the hit it put on the table */ if (t.dataset.dckb && sc && sc.getBoundingClientRect().top < 0) sc.scrollIntoView({block: 'start', behavior: V2.smooth()}); });
 /* Q22 A (Sim, Nov 19): on mouse screens a KO tile's name and damage (its spoken label) show in a small label above it on hover or keyboard
    focus; one label for the page, outside the tiles (their cut corners clip anything inside). Escape or leaving hides it; a scroll moves it
    with its tile (focusing a tile off screen scrolls it into view). */

@@ -120,10 +120,19 @@ button.k-card{cursor:pointer;width:100%}
 @media (min-width:700px) and (max-width:959.98px){.k-roster:not([data-n="4"]):not([data-n="2"]):not([data-n="1"]){grid-template-columns:repeat(3,minmax(0,1fr))}}
 /* ===== phones ===== */
 @media (max-width:699.98px){
-  .k-plan{padding:0 0 64px 52px}
-  .k-plan::before{left:calc(26px - 1.5px)}
-  .k-n{left:-40px;width:28px;height:28px}
-  .k-sec{margin:48px 0 16px}
+  /* phone length (Sim, Nov 19/20: phone pages no longer than today's): the header and the plan line pack tighter on phones only.
+     The plan's body runs the full width (the 52px left gutter made every step wrap more): the numbered pink circle sits inline
+     at the start of its step title, and the pink dashed line moves out into the page's side margin, so the plan still reads as one line */
+  .k-kicker{margin:16px 0 8px}
+  .k-lead{margin-top:8px}
+  .k-sent{gap:8px;margin-top:16px;font-size:var(--t20)}
+  .k-w{min-height:44px;padding:0 12px}
+  .k-hint{margin-top:4px}
+  .k-plan{padding:0 0 32px}
+  .k-plan::before{left:calc(-8px - 1.5px);top:12px} /* centred in the 16px page margin, from the first circle down */
+  .k-n{left:0;width:28px;height:28px}
+  .k-sec{margin:32px 0 12px;padding-left:40px}
+  .k-h2{text-wrap:balance}
   .k-roster{grid-template-columns:repeat(3,minmax(0,1fr));gap:48px 8px;padding-top:40px}
   .k-roster[data-n="4"],.k-roster[data-n="2"]{grid-template-columns:repeat(2,minmax(0,1fr))}
   .k-roster .k-plate{min-height:0;padding:72px 4px 8px 6px}
@@ -148,7 +157,7 @@ button.k-card{cursor:pointer;width:100%}
   .k-go{display:block;width:calc(100% - 8px);padding:12px 12px}
 }
 @media (max-width:359.98px){.k-facts b{font-size:var(--t17)}
-  .k-plan{padding-left:44px}.k-plan::before{left:calc(22px - 1.5px)}.k-n{left:-36px}
+  .k-h2{font-size:var(--t24)} /* a long step title keeps to two lines at 320 */
   .k-roster{column-gap:6px}}
 
 /* ===== the move ticket (Sim chose A, Nov 21): type word on its type colour, name, what it does, usage % ===== */
@@ -169,3 +178,8 @@ button.k-move{cursor:pointer}
   .k-mn{grid-column:1/-1;grid-row:2;padding:4px 8px 0}
   .k-mn b{font-size:var(--t15)}
 }
+/* type symbols (Sim approved, Nov 21): white on the type colour, always beside the type word */
+.k-tyi{width:16px;height:16px;flex:none;fill:currentColor}
+.k-mt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+@container (max-width:299.98px){.k-mt{flex-direction:row;justify-content:flex-start;gap:6px}}
+@container (max-width:159.98px){.k-mt{gap:4px;padding:2px 4px}.k-tyi{width:12px;height:12px}.k-mp{padding:0 4px}}

@@ -50,13 +50,19 @@ V2.kTag = (kind, text) => `<span class="k-tag u k-${['good', 'bad', 'live', 'neu
 // One look for every move on the site: the type word on its type colour (never colour alone), the name, what it does (Physical / Special /
 // Status and its power, from the move data), and the usage % when the page has one. A narrow ticket stacks (kit.css container query).
 // o: {pct, attrs}; with attrs it is a <button>.
+// type symbols: one hidden sprite of 18 <symbol>s, added to the page once, then each symbol is a small <svg><use>. Decorative
+// (aria-hidden): the type word beside it is what screen readers read and what every player sees (Sim's rule: never a symbol alone).
+V2.kTySprite = () => { if (typeof document === 'undefined' || !document.body || document.getElementById('k-tysprite') || typeof V2.TY_ICON !== 'object') return;
+  const d = document.createElement('div'); d.innerHTML = `<svg id="k-tysprite" width="0" height="0" aria-hidden="true" focusable="false" style="position:absolute"><metadata>${V2.esc(V2.TY_ICON_LICENSE || '')}</metadata>${Object.entries(V2.TY_ICON).map(([t, p]) => `<symbol id="kty-${t}" viewBox="0 0 256 256">${p}</symbol>`).join('')}</svg>`;
+  document.body.appendChild(d.firstChild); };
+V2.kTy = t => typeof V2.TY_ICON === 'object' && V2.TY_ICON[t] ? (V2.kTySprite(), `<svg class="k-tyi" aria-hidden="true" focusable="false"><use href="#kty-${t}"/></svg>`) : '';
 V2.kMoveFacts = name => { const m = typeof mvByName === 'object' && mvByName.get(name); if (!m) return {type: '', what: ''};
   const cat = ['Status', 'Physical', 'Special'][m.cat] || '';
   const what = !m.cat ? 'Status' : m.vbp || m.fixed || m.ohko ? cat + ' · power\u00a0varies' : cat + ' · ' + m.bp + '\u00a0power'; /* number and 'power' stay together */
   return {type: V2.TYPES.includes(m.type) ? m.type : '', what}; };
 V2.kMove = (name, o = {}) => { const f = V2.kMoveFacts(name), tag = o.attrs ? 'button' : 'span';
   return `<${tag}${tag === 'button' ? ' type="button"' : ''} class="k-move"${f.type ? ` style="--mc:var(--ty-${f.type})"` : ''}${V2.kAttrs(o.attrs)}>`
-    + `<span class="k-mt">${V2.esc(f.type || 'Move')}</span><span class="k-mn"><b>${V2.esc(name)}</b>${f.what ? `<small>${V2.esc(f.what)}</small>` : ''}</span>`
+    + `<span class="k-mt">${f.type ? V2.kTy(f.type) : ''}<span>${V2.esc(f.type || 'Move')}</span></span><span class="k-mn"><b>${V2.esc(name)}</b>${f.what ? `<small>${V2.esc(f.what)}</small>` : ''}</span>`
     + `${o.pct != null && o.pct !== '' ? `<b class="k-mp u">${V2.esc(o.pct)}</b>` : ''}</${tag}>`; };
 // a set's moves: always two across (no half rows); each ticket stacks when its column is narrow; items are names or [name, pct]
 V2.kMoves = list => `<ul class="k-moves">${(list || []).map(x => { const [n, pct] = Array.isArray(x) ? x : [x]; return `<li>${V2.kMove(n, {pct})}</li>`; }).join('')}</ul>`;

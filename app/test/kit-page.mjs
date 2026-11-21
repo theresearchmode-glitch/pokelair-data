@@ -24,7 +24,8 @@ const kitPage = () => { const go = {'data-kit': 'go'};
     + V2.kStep(2, 'The heavy hitters', '345 rated · best first', V2.kRoster(row1.map(([n, s, f], i) => V2.kCard(n, {score: s, tier: s >= 90 ? 'S tier' : 'B tier', fact: f, sel: i === 1, mine: i === 4, attrs: {'data-kit': n}}))), {link: {label: 'List with win rates', attrs: {href: '#usage'}}})
     + V2.kStep(3, 'The receipts', 'what we called, what we missed', `<p class="k-tags">${V2.kTag('good', 'CALLED IT')} ${V2.kTag('bad', 'MISSED')} ${V2.kTag('live', 'LIVE NOW')} ${V2.kTag('neutral', 'Even match')} ${V2.kMine()}</p>`
       + V2.kRoster(row2.map(([n, s]) => V2.kCard(n, {score: s, size: 'small', mine: n === 'Indeedee-F'})))
-      + V2.kRoster(['Rillaboom', 'Sneasler', 'Squawkabilly-Yellow'].map(n => V2.kCard(n, {score: 80, size: 'small'}))))
+      + V2.kRoster(['Rillaboom', 'Sneasler', 'Squawkabilly-Yellow'].map(n => V2.kCard(n, {score: 80, size: 'small'})))
+      + V2.kRoster(['Squawkabilly-Yellow', 'Crabominable', 'Kilowattrel', 'Tauros-Paldea-Combat', 'Basculegion', 'Sinistcha'].map(n => V2.kCard(n, {score: 77, tier: 'B tier'}))) /* hT, Nov 21: long names at normal size on phones */)
     + V2.kStep(4, 'The moves', 'the set players run', V2.kMoves([['Fake Out', '99%'], ['Parting Shot', '96%'], ['Flare Blitz', '95%'], ['Darkest Lariat', '41%'], 'Shadow Ball', 'Weather Ball'])
       + `<div class="k-movebox" style="max-width:240px;margin-top:16px">${V2.kMove('Close Combat', {pct: '88%', attrs: {'data-kit': 'move'}})}</div>`)) + `</div>`; };
 for (const w of WIDTHS) for (const mode of MODES) {
