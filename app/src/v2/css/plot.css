@@ -147,3 +147,40 @@
   .pl-row .pl-find{padding:0 var(--s1)}.pl-row .pl-find input{letter-spacing:-.04em}
 }
 .pl-fresh{margin:var(--s2) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+/* ---------- Piece 3: the accomplices (spec section 8) ---------- */
+.pl-s2{position:relative;margin-top:var(--s8)}.pl-s2 > .pl-node{top:var(--s1)}
+.pl-h2{margin:0;font-size:var(--t24);color:var(--ink)}.pl-sub{margin:var(--s1) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-3)}
+.pl-plates{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s3);margin-top:var(--s16)}
+.pl-plate{position:relative;display:flex;flex-direction:column;align-items:stretch;gap:var(--s1);min-width:0;margin:0;padding:var(--s16) var(--s3) var(--s3);border:0;background:var(--pt);color:var(--on-pt);text-align:center;cursor:pointer;
+  clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);overflow:visible}
+.pl-plates .pl-plate{clip-path:none;transform:skewX(-4deg)}.pl-plates .pl-plate > *{transform:skewX(4deg)}
+.pl-art{position:absolute;left:0;right:0;top:calc(-1 * var(--s16));height:120px;display:grid;place-items:end center;pointer-events:none}
+.pl-art img{max-width:92%;max-height:120px;object-fit:contain;filter:drop-shadow(0 6px 4px rgba(var(--cp,0,0,0),.25))}
+.pl-plate:hover .pl-art,.pl-plate:focus-visible .pl-art{translate:0 -4px}.pl-plate:focus-visible{outline:3px solid var(--ink);outline-offset:3px}
+.pl-tier{align-self:center;margin-top:0;padding:var(--s1) var(--s2);background:var(--ink);color:var(--bg);font-size:var(--t15);line-height:1}
+.pl-batag{align-self:center;padding:0 var(--s2);background:var(--on-pt);color:var(--pt);font:700 var(--t13)/1.5 var(--b)}
+.pl-mg{min-height:15px;font-size:var(--t13);line-height:1.15;opacity:.85}
+.pl-nm{font-size:var(--t15);line-height:1.3;overflow-wrap:normal}
+.pl-fact{font:400 var(--t13)/1.5 var(--b);opacity:.9}.pl-out{align-self:stretch;padding:0 var(--s1);background:var(--on-pt);color:var(--plot-seal);font-weight:700;opacity:1}
+.pl-pc{display:flex;justify-content:space-between;gap:var(--s2);padding:2px var(--s2);font:700 var(--t13)/1.5 var(--b);text-align:right}
+.pl-pc i{font-style:normal;font-weight:400;opacity:.75}
+.pl-it{background:var(--on-pt);color:var(--ink)}.pl-ab{background:var(--plate);color:var(--on-plate)}
+.pl-mvs{display:grid;gap:var(--s1);margin-top:var(--s1)}.pl-mv{justify-content:center;background:rgba(var(--cp-ink,0,0,0),.3);text-align:center}
+@media (max-width:1199.98px){.pl-plates{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s16)}}
+@media (max-width:699.98px){.pl-plates{gap:var(--s2);row-gap:var(--s12);margin-top:var(--s12)}.pl-plate{padding:var(--s12) var(--s1) var(--s2)}
+  .pl-art{top:calc(-1 * var(--s10));height:80px}.pl-art img{max-height:80px}.pl-tier{margin-top:0;font-size:var(--t13)}
+  .pl-nm{font-size:var(--t13)}.pl-pc i{display:none}.pl-pc{justify-content:center;padding:2px var(--s1)}.pl-h2{font-size:var(--t20)}}
+@media (max-width:379.98px){.pl-plates{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* the new page drops the Blueprint sheet frame (paper, grid, cut corners, crosses): the answer and the plates sit on the page, on the
+   plot line's grid like step 1, and the red plot line runs on through them */
+.pl2 .bd-result .bd-ans.bp{position:relative;margin:0;padding:0 0 var(--s4) var(--s16);border:0;background:none;clip-path:none}
+.pl2 .bd-result .bd-ans.bp > .bp-x{display:none}
+.pl2 .bd-result .bd-ans.bp::before{content:"";position:absolute;left:var(--s3);top:0;bottom:0;border-left:2px solid var(--pick)}
+@media (max-width:699.98px){.pl2 .bd-result .bd-ans.bp{padding-left:var(--s10)}.pl2 .bd-result .bd-ans.bp::before{left:calc(var(--s2) + 2px)}
+  .pl-plates .pl-plate{transform:none}.pl-plates .pl-plate > *{transform:none}.pl-plate{padding-left:var(--s1);padding-right:var(--s1)}
+  .pl-pc{letter-spacing:-.02em;white-space:nowrap}.pl-nm{white-space:nowrap;letter-spacing:-.02em}.pl-out{font-size:var(--t13);line-height:1.3}}
+@media (max-width:699.98px){.pl-nm{font:800 var(--t13)/1.3 var(--b);font-style:italic;letter-spacing:0}.pl-yet{display:none}}
+.pl-oshort{display:none}
+@media (max-width:699.98px){.pl-olong{display:none}.pl-oshort{display:inline}} /* 3 across at 380-699: the plate is ~96 px, "To catch" (the site's word) fits one line */
+.pl-mvs,.pl-pc{min-width:0}.pl-pc{overflow:hidden}.pl-t{white-space:nowrap;transform-origin:center}.pl-it .pl-t,.pl-ab .pl-t{transform-origin:right}
+.pl-plates{align-items:stretch}.pl-plates .pl-plate{height:100%}

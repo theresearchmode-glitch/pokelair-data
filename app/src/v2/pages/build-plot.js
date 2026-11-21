@@ -71,3 +71,33 @@ V2.plotAnswer = M => { const E = V2.esc, t = M.t, chips = t.gp || [], rk = M.G &
   return h.replace(/<p class="bp-k">Spec · tap a field to change it<\/p>[\s\S]*?(?=<p class="bp-k">Revisions|<div class="bd-opt bd-go">)/, '').replace(/<div class="bd-opt bd-go"><button type="button" class="bp-rebuild[\s\S]*?<\/button><\/div>/, ''); }; })();
 V2.bpPage = M => { const win = V2.buildWinners(true), cor = V2.buildCores(true), tab = V2.bdTab(false, !!win);
   return `<div class="bd2 bp2 pl2"><h1 class="vh">Build</h1><section class="pl pl1"><div class="pl-step pl-s1"><span class="pl-node" aria-hidden="true">1</span>${V2.plotSent(true)}</div></section><div class="bd-result" aria-live="polite">${V2.buildSheet(M)}</div>${V2.buildJump(false, !!win, tab)}<div class="bd-lower bp-lower" data-bdtab="${tab}"><div class="bd-lcol">${win}</div>${cor}</div></div>`; };
+
+// ---------- Piece 3 (spec section 8): the six on type-coloured plates ----------
+// Each plate shows exactly what Copy for Showdown exports (slotsPaste, the same call as data-bdcopy), so the page and the copy never
+// disagree: item, Ability and the four moves. A Mega shows its Mega form's Ability (the export names the base form's, which changes in
+// battle). Tier as "S tier 92", "Not in your box yet · to catch" for a Pokémon to catch, "Built around" for the pick; data-v2mon opens info.
+V2.plotSets = t => { const key = t.mons.map(m => m.n + '@' + (m.it || '')).join('|'); if (V2.plotSets.k === key) return V2.plotSets.v;
+  let txt = ''; try { txt = slotsPaste(t.mons.map(m => ({n: m.n, a: null, lock: false}))); } catch (e) {}
+  const blocks = txt.split(/\n\s*\n/).map(b => b.trim()).filter(Boolean), v = {};
+  t.mons.forEach((m, i) => { const b = blocks[i] || '', it = (b.match(/@\s*(.+)$/m) || [])[1], ab = (b.match(/^Ability:\s*(.+)$/m) || [])[1], mv = [...b.matchAll(/^-\s*(.+)$/gm)].map(x => x[1].trim());
+    const p = byName.get(m.n); v[m.n] = {it: (it || m.it || '').trim(), ab: p && p.m && p.a && p.a[0] ? p.a[0] : (ab || '').trim(), mv: mv.slice(0, 4)}; });
+  V2.plotSets.k = key; V2.plotSets.v = v; return v; };
+V2.plotPlate = (m, set) => { const E = V2.esc, p = byName.get(m.n), R = monRating(p), d = V2.disp(m.n), mega = /^Mega /.test(d), ba = !!ui.abLock && m.n === ui.abLock, ty = p && p.t ? p.t[0] : 'Normal';
+  return `<button type="button" class="pl-plate${ba ? ' pl-ba' : ''}" style="--pt:var(--pt-${E(ty)})" data-v2mon="${E(m.n)}" aria-label="${E(d)}${ba ? ', built around' : ''}${set.it ? ', ' + E(set.it) : ''}${R ? `, ${E(R.tier)} tier ${R.n}` : ''}${m.box ? '' : ', to catch'}: open its info">
+    <span class="pl-art" aria-hidden="true">${SPRITE_ID[m.n] ? `<img src="${V2.art(SPRITE_ID[m.n])}" alt="" decoding="async">` : ''}</span>
+    ${R ? `<span class="pl-tier u">${E(R.tier)}<span class="vh"> tier</span> ${R.n}</span>` : ''}${ba ? '<span class="pl-batag">Built around</span>' : ''}
+    <span class="pl-mg u">${mega ? 'Mega' : '&nbsp;'}</span><b class="pl-nm u">${E(mega ? d.slice(5) : d)}</b>
+    <span class="pl-fact${m.box ? '' : ' pl-out'}">${m.box ? 'In your box' : '<span class="pl-olong">Not in your box yet<span class="vh"> · to catch</span></span><span class="pl-oshort" aria-hidden="true">To catch</span>'}</span>
+    ${set.it ? `<span class="pl-pc pl-it"><i>Item</i><span class="pl-t">${E(set.it)}</span></span>` : ''}${set.ab ? `<span class="pl-pc pl-ab"><i>Ability</i><span class="pl-t">${E(set.ab)}</span></span>` : ''}
+    <span class="pl-mvs">${set.mv.map(x => `<span class="pl-pc pl-mv"><span class="pl-t">${E(x)}</span></span>`).join('')}</span></button>`; };
+(() => { const sheet = V2.buildSheet; V2.buildSheet = M => { const h = sheet(M), a = h.indexOf('<div class="bd-six bp-six'), b = h.indexOf('<div class="bp-near">');
+  if (a < 0 || b < a) return h; const sets = V2.plotSets(M.t);
+  return h.slice(0, a) + `<div class="pl-step pl-s2"><span class="pl-node" aria-hidden="true">2</span><h2 class="u pl-h2">The accomplices</h2><p class="pl-sub">Each with the set most players run. Tap one for its full info.</p><div class="bd-six pl-plates">${V2.bpOrder(M.t.mons).map(m => V2.plotPlate(m, sets[m.n] || {it: m.it || '', ab: '', mv: []})).join('')}</div></div>` + h.slice(b); }; })();
+/* a move, item or Ability too long for a narrow plate (phones: "Stomping Tantrum" in a 96 px plate) is drawn narrower (scaleX, down to
+   .72), never cut and never broken mid-word; runs after each draw, on resize and when the fonts load (as V2.fitWords does for names) */
+V2.plotChipFit = () => document.querySelectorAll('.pl-plate .pl-t').forEach(t => { t.style.transform = ''; t.style.display = 'inline-block';
+  const w = t.parentElement.clientWidth - (t.previousElementSibling && getComputedStyle(t.previousElementSibling).display !== 'none' ? t.previousElementSibling.offsetWidth + 8 : 0) - 8, n = t.scrollWidth;
+  if (w > 0 && n > w) t.style.transform = `scaleX(${Math.max(.72, w / n).toFixed(3)})`; });
+(() => { const after = V2.pages.build.after; V2.pages.build.after = () => { try { if (after) after(); } finally { V2.plotChipFit(); } }; })();
+addEventListener('resize', () => requestAnimationFrame(() => { if (document.querySelector('.pl-plate')) V2.plotChipFit(); }));
+try { document.fonts.ready.then(() => V2.plotChipFit()); } catch (e) {}
