@@ -98,7 +98,7 @@ ul.items{list-style:none;margin:0;padding:0;background:var(--card);border-radius
 
 <script>
 // HH keeps this list accurate. s: done | doing | wait | todo. Every done item names when it landed.
-const UPDATED = 'Sun Nov 22, 12:36 PM Eastern';
+const UPDATED = 'Sun Nov 22, 1:36 PM Eastern';
 const STOPS = [
   {s:'done', t:'The look is chosen', when:'Nov 21, morning', d:'One theme for every page: the crew planning the job (Sim, 8:35 AM).'},
   {s:'now',  t:'Reskin every page', when:'now → about Tue Nov 24', d:'Page by page on the shared kit, pictures to Sim for each.'},
@@ -139,20 +139,20 @@ const PHASES = [
   ['done','Team Preview Practice','6v6 board on the kit. Sim approved; merged 7:57 AM; GitHub run 1437 green (8:51 AM); on Preview v231.'],
   ['done','Test Run','Calmer version. Sim approved; merged 7:57 AM; GitHub run 1437 green (8:51 AM); on Preview v231.'],
   ['done','Usage','"The call sheet": Sim approved (9:57 AM); How it is played beside the top ten at 1440+ (2.46 screens); GitHub run 1439 green (11:24 AM); on Preview v233.'],
-  ['doing','Ratings (Pokémon rankings) — TOP PRIORITY','Round 2 A "the stairs" approved 12:26 PM; built by HH (stairs = S tier, Grandstand from A); Sim OK on looks 12:34 PM. Checks running; then the Home Top 10 strip.'],
-  ['doing','Popular Sets','"THE LOADOUT": Sim approved 11:48 AM; merged; GitHub run 1441 checking. Wide-screen bug found and fixed after the merge.'],
+  ['doing','Ratings (Pokémon rankings) — TOP PRIORITY','Built (stairs = S tier, Home Top 10 strip); Sim OK on looks 12:34 PM; all local checks green; pushed f7d854ec 1:27 PM, GitHub running; on Preview v234.'],
+  ['doing','Popular Sets','Merged; wide-screen fix and tests fixed after GitHub 1441; pushed f7d854ec, GitHub running.'],
   ['done','Archetypes','"The Playbooks": Sim approved; guide side by side at 1100+; GitHub run 1439 green (11:24 AM); on Preview v233.'],
-  ['doing','Winning Teams','"The Winning Crews": Sim approved 11:37 AM; merged; GitHub run 1441 checking.'],
+  ['doing','Winning Teams','Merged; pushed, GitHub running.'],
   ['doing','Events','Build helper hE building (events2 direction).'],
-  ['todo','This Week','Direction A "the slope" approved 12:06 PM. HH builds after Ratings.'],
-  ['todo','News','Direction approved 12:06 PM (PC mock as drawn). HH builds after This Week.'],
-  ['todo','Mystery Gifts','Direction approved 12:27 PM (PC mock + code-wrap fix). Build helper after Events.'],
-  ['todo','Track Record','Direction approved 12:34 PM (track2; desktop +720px OK). Build helper after Mystery Gifts.'],
-  ['todo','How We Calculate','Direction B "one grid" approved 12:34 PM. Second build helper.'],
-  ['todo','About','Direction A "the receipt" approved 12:36 PM. Second build helper after How We Calculate.'],
-  ['todo','Send Feedback',''],
-  ['todo','Page not found',''],
-  ['todo','Owner page','Lowest priority.']
+  ['todo','This Week','Direction A approved 12:06 PM. Build helper 1 after Events.'],
+  ['todo','News','Direction approved 12:06 PM. Build helper 1 after This Week.'],
+  ['todo','Mystery Gifts','Direction approved 12:27 PM. Build helper 1 after News.'],
+  ['todo','Track Record','Direction approved 12:34 PM. Build helper 2 after About.'],
+  ['doing','How We Calculate','Direction B approved 12:34 PM. Build helper 2 building.'],
+  ['todo','About','Direction A approved 12:36 PM. Build helper 2 after How We Calculate.'],
+  ['doing','Send Feedback','Direction approved 12:37 PM; HH built it on the kit, checks running.'],
+  ['doing','Page not found','Approved 12:40 PM; HH built it (q24 + s33 all passed); pushed f7d854ec, GitHub running.'],
+  ['doing','Owner page','Approved 12:42 PM; HH built it (q24 all passed); pushed, GitHub running.']
  ]},
  {n:'2b', h:'Info sheets: Moves, Abilities, Items', a:'Sim approved the design 11:29 AM Nov 22 (made in another chat; package in docs/rebuild/info-sheets/). Tap any move, Ability or item name to open its sheet; Search opens them too. Built our way: one step at a time, its own checks, pictures, Sim\'s OK before the next.', items:[
   ['doing','1. Data','Usage from raw sheets (out/info.json), text for all moves/Abilities/items, in-battle PP, Meowstic-F-Mega fix. Pushed; GitHub 1441 checking.'],
