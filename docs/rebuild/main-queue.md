@@ -1,5 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: Ratings + Home strip after-checks (queued); meanwhile HH builds Page not found (wrong turn + underdog), then Owner, then Send Feedback
+NOW: HH builds Send Feedback (PC mock as drawn, Sim approved 12:37 PM): baseline checks in copy fb, then the page; GitHub run for f7d854ec
 NEXT: on Sim's yes: one button system (helper job, every page checked)
 NEXT: push Home label (keep/home-label) after GitHub 1439
 NEXT: when GitHub is green: Preview (fresh data), pictures of the length fixes to Sim, Game Plan ticks
