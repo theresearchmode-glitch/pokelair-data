@@ -190,10 +190,15 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
   /* player review 2c (Nov 17): moves, items, Abilities (from the winning team sheets, tsTerms) and team styles (Archetypes) too; a move,
      item or Ability opens Winning Teams filtered by it, a style opens its Archetype guide */
   const terms = q => { q = q.trim().toLowerCase(); if (q.length < 3) return {t: [], st: []}; let t = [], st = [];
-    try { t = tsTerms().filter(x => x.k !== 'mon' && x.label.toLowerCase().includes(q)).sort((a, b) => (b.label.toLowerCase().startsWith(q) ? 1 : 0) - (a.label.toLowerCase().startsWith(q) ? 1 : 0) || b.c - a.c).slice(0, 5); } catch (e) {}
+    /* info sheets (Sim, Nov 22: "Search is the tying point"): EVERY move, item and Ability the site knows (INFO_TEXT), not only those on
+       winning team sheets; picking one opens its sheet (Winning Teams is the link inside it). Ranked: names that start with the words, then
+       the most used (META.info). Items not in Pokémon Champions show one line and no sheet (HANDOFF). */
+    try { const I = typeof META === 'object' && META.info, use = (k, n) => (I && I[k] && I[k][n] ? I[k][n][0] : 0);
+      for (const k of ['mv', 'it', 'ab']) for (const n of Object.keys((typeof INFO_TEXT === 'object' && INFO_TEXT[k]) || {})) if (n.toLowerCase().includes(q)) t.push({k, n, c: use(k, n), out: k === 'it' && (V2.IS_NOT_IN || []).includes(n)});
+      t = t.sort((a, b) => (b.n.toLowerCase().startsWith(q) ? 1 : 0) - (a.n.toLowerCase().startsWith(q) ? 1 : 0) || b.c - a.c || a.n.localeCompare(b.n)).slice(0, 6); } catch (e) {}
     try { st = GUIDE_ORDER.filter(k => ARCH[k] && ARCH[k].name.toLowerCase().includes(q)).slice(0, 2); } catch (e) {}
     return {t, st}; };
-  const KW = {move: 'Move', item: 'Item', ability: 'Ability'};
+  const KW = {mv: 'Move', it: 'Item', ab: 'Ability'}, N0 = typeof META === 'object' && META.info ? META.info.N : 0;
   const monHit = p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
   /* scan S34 A (Sim, Nov 20): a miss offers today's six highest-rated Pokémon as normal search rows (the same six as empty My Team's
      'Start from a Winner'), so a typo leads somewhere instead of a dead end */
@@ -205,11 +210,11 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
         + r.mons.map(monHit).join('')
         + tm.map(t => `<button type="button" class="np-hit" data-svact="open" data-id="${V2.esc(t.id)}"><span class="pg">Saved team</span><b>${V2.esc(t.name)}</b></button>`).join('')
         + T.st.map(k => `<a class="np-hit" href="#archetypes" data-v2close data-v2style="${V2.esc(k)}"><span class="pg">Team style</span><span class="nm"><b>${V2.esc(ARCH[k].name)}</b><small>How it plays and how to beat it</small></span></a>`).join('')
-        + T.t.map(x => `<a class="np-hit" href="#tournaments" data-v2close data-v2term="${V2.esc(x.k)}" data-v2termv="${V2.esc(x.v)}"><span class="pg">${KW[x.k] || 'Term'}</span><span class="nm"><b>${V2.esc(x.label)}</b><small>On ${x.c.toLocaleString('en-US')} winning team sheet${x.c === 1 ? '' : 's'}</small></span></a>`).join(''); };
+        + T.t.map(x => x.out ? `<p class="np-hit np-hitx"><span class="pg">Item</span><span class="nm"><b>${V2.esc(x.n)}</b><small>Not in Pokémon Champions.</small></span></p>` : `<button type="button" class="np-hit" data-v2info="${x.k}" data-v2infon="${V2.esc(x.n)}"><span class="pg">${KW[x.k]}</span><span class="nm"><b>${V2.esc(x.n)}</b><small>${N0 && x.c >= 20 ? `On ${Math.max(1, Math.round(100 * x.c / N0))}% of tournament teams` : N0 && x.c ? 'Rarely used' : 'What it does, who runs it'}</small></span></button>`).join(''); };
   /* a11y stress (Nov 16): the list itself re-announced every hit on each keystroke; now a short status says how many (or that nothing matched) */
   const say = sh.querySelector('[data-v2hitsay]'), draw2 = () => { draw(); if (!say) return; const q = inp.value.trim(), n = out.querySelector('.miss-k') ? 0 : out.querySelectorAll('.np-hit').length; /* S34: the top six after a miss aren't matches */ say.textContent = !q ? '' : n ? `${n} result${n === 1 ? '' : 's'}` : 'No matches'; };
   inp.addEventListener('input', draw2);
-  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = !out.querySelector('.miss-k') && out.querySelector('.np-hit'); if (h) { e.preventDefault(); h.click(); } } });
+  inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = !out.querySelector('.miss-k') && out.querySelector('.np-hit:not(.np-hitx)'); if (h) { e.preventDefault(); h.click(); } } });
   draw(); };
 /* a move, item or Ability from the search filters Winning Teams by it; a team style opens its Archetype guide (player review 2c) */
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2term],[data-v2style]'); if (!a) return;

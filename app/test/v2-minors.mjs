@@ -527,9 +527,13 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(1800); await p.evaluate(() => V2.openSearch()); await p.fill('[data-v2q]', 'trick room'); await p.waitForTimeout(400);
   const hits = await p.evaluate(() => [...document.querySelectorAll('[data-v2hits] .np-hit')].map(h => h.innerText.replace(/\s+/g, ' ').trim()));
   ok(hits.some(h => /^Move Trick Room/.test(h)) && hits.some(h => /^Team style Trick Room/.test(h)), `Player review 2c (Nov 17): site search finds the move and the team style 'Trick Room' (${hits.slice(0, 4).join(' | ')})`);
-  await p.click('[data-v2hits] [data-v2term="move"]'); await p.waitForTimeout(1500);
-  const wt = await p.evaluate(() => ({h: location.hash, f: (V2.wtUi && V2.wtUi.f || []).map(x => x.v).join(','), txt: (document.querySelector('#main .wt-find') || {}).innerText || ''}));
-  ok(wt.h === '#tournaments' && /Trick Room/.test(wt.f), `Player review 2c: picking the move opens Winning Teams filtered by it (${JSON.stringify(wt).slice(0, 120)})`); }
+  /* info sheets (Sim, Nov 22: Search is the tying point): picking the move opens its sheet; Winning Teams With It is the link inside */
+  await p.click('[data-v2hits] [data-v2info="mv"][data-v2infon="Trick Room"]'); await p.waitForTimeout(800);
+  const sh = await p.evaluate(() => ({kind: !!document.querySelector('.np-sheet .is2.kd-move'), name: ((document.querySelector('.np-sheet .is-tab h2') || {}).textContent || '').trim(), wt: !!document.querySelector('.np-sheet [data-v2term="move"][data-v2termv="Trick Room"]')}));
+  ok(sh.kind && sh.name === 'Trick Room' && sh.wt, `Info sheets (Nov 22): picking the move in Search opens its sheet, with Winning Teams With It inside (${JSON.stringify(sh)})`);
+  await p.click('.np-sheet [data-v2term="move"][data-v2termv="Trick Room"]'); await p.waitForTimeout(1500);
+  const wt = await p.evaluate(() => ({h: location.hash, f: (V2.wtUi && V2.wtUi.f || []).map(x => x.v).join(',')}));
+  ok(wt.h === '#tournaments' && /Trick Room/.test(wt.f), `Player review 2c: Winning Teams With It opens Winning Teams filtered by the move (${JSON.stringify(wt).slice(0, 120)})`); }
 { const vp = p.viewportSize(); await p.setViewportSize({width: 390, height: 844}); await p.goto('file://' + PAGE + '#tournaments'); await p.reload(); await p.waitForTimeout(2200);
   const w = await p.evaluate(() => { const vis = el => el && el.offsetParent !== null && el.getBoundingClientRect().height > 0, f = document.querySelector('#main .wt-find');
     const spots = [...document.querySelectorAll('#main .ra-spotw')].filter(vis); return {find: f ? Math.round(f.getBoundingClientRect().top + scrollY) : -1, spots: spots.length,
