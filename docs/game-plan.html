@@ -98,7 +98,7 @@ ul.items{list-style:none;margin:0;padding:0;background:var(--card);border-radius
 
 <script>
 // HH keeps this list accurate. s: done | doing | wait | todo. Every done item names when it landed.
-const UPDATED = 'Sun Nov 22, 7:16 AM Eastern';
+const UPDATED = 'Sun Nov 22, 8:37 AM Eastern';
 const STOPS = [
   {s:'done', t:'The look is chosen', when:'Nov 21, morning', d:'One theme for every page: the crew planning the job (Sim, 8:35 AM).'},
   {s:'now',  t:'Reskin every page', when:'now → about Tue Nov 24', d:'Page by page on the shared kit, pictures to Sim for each.'},
@@ -116,7 +116,7 @@ const PHASES = [
   ['done','Damage Calc shows % first','9:34 AM: merged (3be28375), on Preview v223.'],
   ['done','op.gg fix on the live site','12:39 PM: pushed to main, GitHub passed, live moved to it.'],
   ['done','Ratings: tier jump bar + phone swipe fade','2:04 PM: merged (34a2573d), on Preview v224.'],
-  ['doing','Build: shorter top on phones (Sim chose A, 6:58 AM)','One short label, then the sentence; the hint moved under HATCH IT. In the 5-page batch; full check running, then push.'],
+  ['doing','Build: shorter top on phones (Sim chose A)','Sim approved. Merged 7:57 AM; GitHub run 1437 checking (with the kit headline fix). On Preview v231 (today\'s data).'],
   ['done','Build: Plots that worked cards, compact phones (option A)','3:39 PM: 3,194 px at 390, under the 3,200 cap; Build tests pass.'],
   ['done','Move tickets site-wide, with type symbols','3:45 PM: in the kit (Sim chose A, 2:38 PM; symbols MIT set, 3:35 PM); on Preview v225.'],
   ['done','Compact kit on phones','4:59 PM: merged (846825f8), kit test 14 of 14.'],
@@ -128,19 +128,19 @@ const PHASES = [
   ['done','Pokémon page (case file, type bars, move tickets, hit list)','Merged 7:56 PM (Sim approved). GitHub run 1433 green (4:19 AM, 05369ef7).'],
   ['done','Empty My Team on the kit','Sim approved 8:01 PM; merged. GitHub run 1433 green (4:19 AM, 05369ef7).'],
   ['done','Type symbols on every type chip and the Type Chart','Sim approved 10:23 PM; merged 1:42 AM; on Preview. GitHub run 1433 green (4:19 AM, 05369ef7).'],
-  ['doing','Battle page','"The target". Sim approved (6:51 / 6:59 AM). In the 5-page batch; full check running since 7:01 AM, then push.'],
+  ['doing','Battle page','"The target". Sim approved. Merged 7:57 AM; GitHub run 1437 checking (with the kit headline fix). On Preview v231 (today\'s data).'],
   ['done','Team Sheet on the kit ("the dossier")','Sim approved 11:56 PM; merged 1:42 AM. GitHub run 1433 green (4:19 AM, 05369ef7).'],
   ['done','Compare on the kit ("the tug of war")','Sim approved; merged 1:42 AM. GitHub run 1433 green (4:19 AM, 05369ef7).'],
   ['done','Preview update with today\'s merges','1:28 AM: Preview v227 (type symbols, Compare, Team Sheet; 443 files). 7:57 PM: Preview v226 (Calc on the kit, war room, Pokémon page); 443 files incl. sprites; privacy check OK.']
  ]},
  {n:'2', h:'Pages still to reskin', a:'In Sim\'s priority order. Each one: built on the kit, its tests, phone no longer than today at 390, pictures to Sim, then merge.', items:[
-  ['doing','Speed Tiers','"Your six cut the line". Sim approved (6:51 / 6:59 AM). In the 5-page batch; full check running since 7:01 AM, then push.'],
-  ['doing','Type Chart','Helper hY1 is putting the rest of the page on the kit (since 6:59 AM). Pictures to Sim before merging.'],
-  ['doing','Team Preview Practice','6v6 board on the kit (your cards as wide as theirs). Sim approved (6:51 / 6:59 AM). In the 5-page batch; full check running since 7:01 AM, then push.'],
-  ['doing','Test Run','Calmer version (rows in words; pictures only in suspects and the open team). Sim approved (6:51 / 6:59 AM). In the 5-page batch; full check running since 7:01 AM, then push.'],
-  ['doing','Usage','Helper hU1 (2nd helper until 12 PM, Sim) since 7:04 AM. Calm rows, one bold idea. Pictures to Sim before merging.'],
+  ['doing','Speed Tiers','Sim approved. Merged 7:57 AM; GitHub run 1437 checking (with the kit headline fix). On Preview v231 (today\'s data).'],
+  ['doing','Type Chart','"The damage line": Sim approved the direction (8:22 AM, polish it, keep the character). Helper hY1 polishing + full checks.'],
+  ['doing','Team Preview Practice','6v6 board on the kit. Sim approved. Merged 7:57 AM; GitHub run 1437 checking (with the kit headline fix). On Preview v231 (today\'s data).'],
+  ['doing','Test Run','Calmer version. Sim approved. Merged 7:57 AM; GitHub run 1437 checking (with the kit headline fix). On Preview v231 (today\'s data).'],
+  ['doing','Usage','"The call sheet": Sim approved (8:22 AM). Main thread: polish done (facts as a table, move under them); full checks running.'],
   ['todo','Popular Sets',''],
-  ['todo','Archetypes',''],
+  ['doing','Archetypes','Keep as drawn (PC mock). Helper hA1 building since 8:12 AM.'],
   ['todo','Winning Teams',''],
   ['todo','Events','A mock-up exists from this morning; the page itself is not on the kit yet.'],
   ['todo','This Week',''],
@@ -154,6 +154,10 @@ const PHASES = [
   ['todo','Owner page','Lowest priority.']
  ]},
  {n:'3', h:'Checks before the switch', a:'Nothing switches until these pass on one commit.', items:[
+  ['doing','Safari engine (WebKit) checks on the new pages','8:3x AM: Build suggestions box/roster switch (COV-03) fails on Safari before and after the batch = old bug, to fix. Show-more swaps (COV-06) and share image (THEME-03) intermittent after the batch; 5x runs going.'],
+  ['doing','A desktop length rule','Sim, 8:00 AM: find the sweet spot (pages doubled on desktop). Lengths before vs after measured on Sim\'s PC (brief docs/rebuild/test-runs/pc-nov22-lengths-webkit.md), then a proposal.'],
+  ['done','Preview on today\'s data','8:02 AM: Preview v231 built from main\'s fresh data; all 26 pages say Data as of Nov 22, 0 errors.'],
+  ['done','Kit headline on the type scale at 341-384 wide','8:10 AM: holds 34px up to 384 (was 35.5-39.9px).'],
   ['todo','Full check of every reskin batch','Behaviour A-D, v2-minors, qcheck-all, about 40 minutes per batch of up to 4 pages (Sim\'s batch rule).'],
   ['todo','Every test on one commit, then the sealed set once','Carried over from the old plan (d4-check, never ticked).'],
   ['todo','Full check on Sim\'s PC passes on one commit','Carried over (gp5-full).'],
