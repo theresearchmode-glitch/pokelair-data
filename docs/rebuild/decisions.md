@@ -2045,3 +2045,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:07 PM: Sim: 'news is good' with one change: 'the clip and claim section should be more distinct' -> drawing options with pictures before building
 - 5:16 PM: Sim: 'recommended is great' -> News Clip and claim A (clip-out coupon); News OK; HH builds the coupon and merges News
 - 5:35 PM: Hourly check: 2 build helpers (hW2 Gifts, hM Track redo); main: Safari fixes checking, News coupon checks; Game Plan updated
+- 5:40 PM: Sim: 'love it. lets do it' -> audit Wave 1 (no looks change, pixel-identical proof) now by HH; then Wave 3 headline/step-heading sizes to Sim with pictures first
