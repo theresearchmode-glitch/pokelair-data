@@ -43,10 +43,10 @@
    its one line a margin scribble; phones: a 140px card beside the line, so the page stays about one screen */
 .nf2.nf-pg{display:block;max-width:none;width:auto}
 .nf2 .k-h1{max-width:none}.nf2 .k-head .k-kicker{display:table;max-width:100%}
-.nf2-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,520px);align-items:end;gap:var(--s6) var(--s16);padding-bottom:var(--s12)}
+.nf2-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,576px);align-items:end;gap:var(--s6) var(--s16);padding-bottom:var(--s12)}
 .nf2 .k-go{margin-top:var(--s6)}
-.nf2 .nf-dog{display:grid;grid-template-columns:minmax(0,200px) minmax(0,320px);align-items:center;gap:0 var(--s4);margin-top:120px}
-.nf2 .nf-dog .k-scrib{font-size:var(--t20);line-height:1.2;text-align:right}
+.nf2 .nf-dog{display:grid;grid-template-columns:minmax(0,200px) minmax(0,360px);align-items:center;gap:0 var(--s4);margin-top:120px}
+.nf2 .nf-dog .k-scrib{margin-inline:var(--s1);font-size:var(--t20);line-height:1.2;text-align:right} /* tilted 3°: its corners stay inside */
 @media (max-width:1099.98px){.nf2-two{grid-template-columns:minmax(0,1fr)}.nf2 .nf-dog{justify-self:start;margin-top:var(--s16)}}
 @media (max-width:699.98px){
   .nf2-two{grid-template-columns:minmax(0,1fr);gap:var(--s2);padding-bottom:var(--s6)}

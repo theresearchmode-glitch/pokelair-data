@@ -62,7 +62,7 @@ console.log(`  (this build: ${preview ? 'Preview, --preview-data' : 'real, no --
     const m = await p.evaluate(() => { const root = document.querySelector('#main [data-v2nf]'); if (!root) return null; const box = root.getBoundingClientRect(), out = [];
       for (const e of root.querySelectorAll('h1, p, a, span')) { const r = e.getBoundingClientRect(); if (!r.width) continue;
         if (r.left < box.left - 0.5 || r.right > box.right + 0.5 || r.right > innerWidth || r.left < 0) out.push(`${e.tagName} '${e.textContent.trim().slice(0, 20)}' ${Math.round(r.left)}-${Math.round(r.right)} (box ${Math.round(box.left)}-${Math.round(box.right)})`);
-        if (e.scrollWidth > e.clientWidth + 1 && getComputedStyle(e).display !== 'inline') out.push(`${e.tagName} '${e.textContent.trim().slice(0, 20)}' text wider than its box`); }
+        if (e.scrollWidth > e.clientWidth + 1 && getComputedStyle(e).display !== 'inline' && !e.querySelector('.k-art')) /* Nov 22: a kit card's picture stands out past its plate on purpose (the kit); this check is for text */ out.push(`${e.tagName} '${e.textContent.trim().slice(0, 20)}' text wider than its box`); }
       const h1 = root.querySelector('h1'), cs = getComputedStyle(h1), btn = root.querySelector('a[href="#home"]').getBoundingClientRect();
       return {out, side: document.documentElement.scrollWidth > innerWidth, font: cs.fontFamily, style: cs.fontStyle, btnH: btn.height, theme: document.documentElement.dataset.theme}; });
     const at = `${th} ${W} ${h}`; if (!m) { bad.push(`${at}: no not-found page`); await ctx.close(); continue; }
