@@ -1,5 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH: Preview v237 rebuild with the Winning Teams kicker fix; then publish; GitHub run on 7cca83f1
+NOW: HH: Build + Battle behaviour suites on HEAD after Wave 1 (task be0c3lpag); Preview v237 published; GitHub run on 7cca83f1
 NEXT: review hW2's Mystery Gifts, then Track Record fixes; pull the second account's alt/* branches (Wave 3 sizes first)
 NEXT: review hM's Track Record redo; hW2's Mystery Gifts; audit Wave 1 (no-looks) only after Sim's yes
 NEXT: merge This Week on Sim's yes; review hW2's News and hM's Track Record
