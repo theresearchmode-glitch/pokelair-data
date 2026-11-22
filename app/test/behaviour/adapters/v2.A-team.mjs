@@ -124,7 +124,7 @@ export default (ui, pg, o) => {
     current: async () => { const c = await cur0(); return /^not-in-v2:#\(none/.test(c || '') && await pg.evaluate(() => !!window.V2 && V2.route() === 'home') ? 'home' : c; },
     text: async () => (await pg.evaluate(() => !location.hash && !!window.V2 && V2.route() === 'home')) ? pg.evaluate(() => { const m = document.querySelector('#main'); return m ? m.innerText.replace(/\s+/g, ' ').trim() : ''; }) : text0(),
     /** the big headline (the tagline) */
-    homeHeadline: () => txt('#main .hm-hero h1, #main .sdh h1' /* The Stampede (Nov 18): the hero band's h1 */) || '',
+    homeHeadline: () => pg.evaluate(() => { const h = document.querySelector('#main .hm-hero h1, #main .sdh h1'); if (!h) return ''; const k = [...h.querySelectorAll('.sdh-k')], d = k.map(x => x.style.display); k.forEach(x => { x.style.display = 'none'; }); const t = h.innerText.replace(/\s+/g, ' ').trim(); k.forEach((x, i) => { x.style.display = d[i]; }); return t; }), /* The Stampede (Nov 18): the hero band's h1; Nov 22: without the product label above the tagline (Sim chose A, 10:51 AM) */
     /** the start buttons under the tagline, as shown */
     homeStartButtons: () => pg.evaluate(() => [...document.querySelectorAll('#main .hm-go a, #main [data-sdgo]' /* The Stampede (Nov 18): the start buttons carry data-sdgo (hero: Score My Team / Build Me a Team; six band: Battle) */)].filter(e => e.getClientRects().length).map(e => e.innerText.replace(/\s+/g, ' ').trim())),
     /** the tool tiles' names (the tile's bold name, without its "›") */
