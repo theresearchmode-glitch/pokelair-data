@@ -26,15 +26,20 @@ const pick = e => (e && ((e.champions && e.champions.shortDesc) || e.shortDesc |
 const OVR = {
   ab: {
     'Unseen Fist': 'Contact moves hit through protection, for 1/4 of their damage.', // RESEARCH 2: Champions = contact only, 1/4 damage through protection (Showdown/ABIL text says otherwise)
-    'Healer': 'Each turn, 50% chance to cure an adjacent ally\'s status.' // RESEARCH 2: 50% in Champions (ours said 30%)
+    'Healer': 'Each turn, 50% chance to cure an adjacent ally\'s status.', // RESEARCH 2: 50% in Champions (ours said 30%)
+    'Run Away': 'This Pokémon can always switch out: moves and Abilities that trap don\'t hold it.', // champions mod: onTrapPokemon/onMaybeTrapPokemon clear trapped (Showdown text said 'No competitive use')
+    'Regenerator': 'This Pokémon restores 1/3 of its max HP when it switches out.' // champions mod heals baseMaxhp/3; 'rounded down' dropped (not checked)
   },
   mv: {
-    'Milk Drink': 'Heals the user or an adjacent ally by 50% of its max HP.' // champions mod: target adjacentAllyOrSelf
+    'Milk Drink': 'Heals the user or an adjacent ally by 50% of its max HP.', // champions mod: target adjacentAllyOrSelf
+    'Curse': 'Ghost-type user: loses 1/2 of its max HP to curse a foe, which then loses 1/4 of its max HP every turn. Any other user: -1 Speed, +1 Attack and Defense.', // champions mod onHit; same outcome, plain words
+    'Encore': 'For 3 turns the target can only use the last move it used. If it hasn\'t moved yet this turn, it switches to that move now.', // champions mod: changeAction at once (unless Mental Herb), no onOverrideAction
+    'No Retreat': 'Raises the user\'s Attack, Defense, Sp. Atk, Sp. Def and Speed by 1; the user can\'t switch out. It can be used again for more boosts.' // champions mod drops the 'fails if already used' onTry
   },
   it: {}
 };
 // moves the design chat found behave differently in Champions with no Champions text; text kept from Showdown until ours is checked
-const TODO = {mv: ['Curse', 'Encore', 'Disable', 'No Retreat'], ab: ['Run Away', 'Berserk', 'Anger Shell', 'Emergency Exit', 'Wimp Out', 'Regenerator'], it: []};
+const TODO = {mv: [], ab: [], it: []}; // Nov 22: Curse, Encore, No Retreat, Run Away, Regenerator now ours (above); Anger Shell and Wimp Out are not in our Ability list (not in Champions); Disable, Berserk, Emergency Exit: Showdown's text still holds for the champions mod (checked: only edge cases differ)
 const out = {mv: {}, ab: {}, it: {}}, miss = {mv: [], ab: [], it: []}, notes = [];
 for (const n of MOVES) { const id = toID(n), e = MT[id]; const t = OVR.mv[n] || pick(e); if (!t) miss.mv.push(n);
   const b = PPC[id] ?? PP0[id]; if (b == null) notes.push('no PP: ' + n); out.mv[n] = [t, b == null ? null : inBattle(b)]; }
