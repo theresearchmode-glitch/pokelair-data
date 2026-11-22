@@ -67,13 +67,19 @@ V2.raSpot = n => { const E = V2.esc, U = V2.raUi, megas = !!U.f.mega && !V2.raFi
 // the stand shows everyone, the Megas view and No Megas; search, types, hidden gems and the box keep the list until Sim has seen them (brief section 7)
 V2.raFiltered2 = () => { const U = V2.raUi; return !!(U.q.trim() || U.ty.length || U.f.gem || U.f.box); };
 
+// one step of the stairs: the Pokémon stands on a slanted bar in its type colours, taller for a higher rank (by rank, so the heights never
+// fake the rating gaps); its #rank chip (#1 pink), big rating and ▲/▼ this week on the bar; the tier colour at its foot; tap opens its page
+V2.raStairs = (rows, megas) => { const E = V2.esc, wk = V2.gsWeek(), n = rows.length;
+  const step = (x, i) => { const p = x.p, k = lairRank(p), N = V2.raNums(p), sc = RS(x.r.total), mv = wk.get(p.n) || 0, rank = megas ? i + 1 : k ? k.rank : i + 1, nm = V2.kName(p.n), lvl = Math.min(i, 10);
+    return `<li><button type="button" class="rs-b${rank === 1 ? ' one' : ''}" data-v2mon="${E(p.n)}" data-raspot="${E(p.n)}" style="--b1:var(--ty-${p.t[0]});--b2:var(--ty-${p.t[1] || p.t[0]});--lv:${lvl}" aria-label="Number ${rank}: ${E(p.d)}, rated ${sc}, S tier${N.u != null ? ', on ' + E(V2.raPct(N.u)) + ' of teams' : ''}${mv ? (mv > 0 ? ', up ' : ', down ') + Math.abs(mv) + ' this week' : ''}: open its page">${V2.mon(p.n, {bare: true, iw: 104})}<span class="rs-col" aria-hidden="true"><b class="rs-rk u">#${rank}</b>${mv ? `<i class="rs-mv ${mv > 0 ? 'up' : 'dn'}">${mv > 0 ? '▲' : '▼'}${Math.abs(mv)}</i>` : ''}<b class="rs-sc u">${sc}</b></span><span class="rs-nm" aria-hidden="true">${nm.form ? `<small>${E(nm.form)}</small>` : ''}${E(nm.name)}</span></button></li>`; };
+  return `<section class="rs-wrap" id="ra-t-S" aria-labelledby="rs-h"><h2 class="vh" id="rs-h">S tier: ${megas ? 'the top Megas' : 'the top of the format'}, ${n} Pokémon</h2><ol class="rs-st" style="--n:${n}">${rows.map(step).join('')}</ol><p class="rs-cap"><span>S tier · ${n} Pokémon · rank, rating 0–100 · tap one for its page</span><span>Taller = higher rank</span></p></section>`; };
 V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoad();
   const all = lairRows(), rows = V2.raFilter(all), filtered = V2.raFiltered(), listy = V2.raFiltered2() || U.view === 'list', pf = activePerf(), reg = ((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑');
   let d = pf && pf.updated ? String(pf.updated).slice(0, 10) : ''; try { if (d) d = new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) {}
   const teams = RES && +RES.teams > 0 ? +RES.teams : 0;
   const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
     <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta" class="on" aria-current="page">Ratings</a><a href="#usage">Usage</a><a href="#sets">Popular Sets</a></nav></div>`;
-  const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Ratings</span></p><h1 class="u"><span>Who wins</span> <span class="pl">right now.</span></h1>
+  const head = `<section class="ra-h"><p class="k-kicker np-eyebrow ra-kk">META · THE LINE-UP</p><h1 class="u"><span>Who wins</span> <span class="pl">right now.</span></h1>
     <p class="ra-lede">Every Pokémon rated 0–100 from real tournament results, not opinion.</p>${tabs}
     <p class="ra-kick">Reg ${E(reg)} doubles${teams ? ` · ${E(basisNum(teams))} tournament teams` : ''}${typeof V2.tip === 'function' ? `<span class="ra-nw">${V2.tip('numbers')}</span>` : ''}</p>
     <p class="ra-links"><a class="np-link" href="#method=rating">How Ratings Work ›</a><a class="np-link" href="#track">Track Record ›</a></p></section>`;
@@ -88,12 +94,15 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
   // the advisor (Nov 15, Meta): the legend line moves into a '?' beside the title, same words
   TIPS.gskey = TIPS.gskey || ['How to read the Grandstand', 'The big number is each Pokémon\'s rating, 0–100. "Mega" marks a Mega. ▲ or ▼ means it moved up or down this week. ◆ marks a hidden gem: rarely used, but wins more than its use predicts. A short blue bar under a name means it is on your team.'];
   const key = V2.tip('gskey');
+  /* the stairs (Sim approved Nov 22, 12:26 PM: Ratings round 2 A; 'the stairs ARE the S tier'): every S-tier Pokémon of what's shown, as a plot
+     bar stepping down by rank; the Grandstand below starts at A, so no Pokémon shows twice. The list view keeps every tier as before. */
+  const sRows = rows.filter(x => lTier(x.r.total).k === 'S'), stairsOn = !listy && sRows.length > 0;
   let body;
   /* the tier bar (Sim, Nov 21: "see what's S tier, A tier, B tier and so on easily and look through everything"): every tier with its count,
      one tap jumps to it (opening it, and on phones the folded D and F tiers too); the kit's sentence with boxed words */
   const tierN = T => (filtered ? rows : all).filter(x => lTier(x.r.total).k === T.k).length;
   const tierBar = V2.kSent ? `<nav class="ra-tbar" aria-label="Jump to a tier">${V2.kSent(['Jump to', ...LTIERS.filter(T => tierN(T)).map(T => ({w: `${T.k} · ${tierN(T)}`, attrs: {'data-rajump': T.k, 'aria-label': `${T.k} tier, ${tierN(T)} Pokémon: jump to it`}}))], {hint: false})}</nav>` : '';
-  if (!listy) body = tierBar + `<div class="gs-title"><h2 class="u">The <span class="nw">${f.mega ? 'Megas' : 'Grandstand'}${key}</span></h2>${viewSw}</div>${rows.length ? V2.gsStand(rows, !!f.mega) : '<p class="tm-sub ra-none">No Pokémon match. Try clearing a filter.</p>'}`;
+  if (!listy) body = tierBar + `<div class="gs-title"><h2 class="u">The <span class="nw">${f.mega ? 'Megas' : 'Grandstand'}${key}</span></h2>${viewSw}</div>${rows.length ? V2.gsStand(stairsOn ? rows.filter(x => lTier(x.r.total).k !== 'S') : rows, !!f.mega) : '<p class="tm-sub ra-none">No Pokémon match. Try clearing a filter.</p>'}`;
   else if (filtered) body = (viewSw ? `<div class="gs-title"><h2 class="u">Every match</h2>${viewSw}</div>` : '') + (rows.length ? `<div class="ra-list">${colh}${grouped(rows)}</div>` : `<p class="tm-sub ra-none">${f.box && !(S.box || []).length ? 'Your box is empty. Add the Pokémon you own on My box.' : 'No Pokémon match. Try clearing a filter.'}</p>`);
   else body = tierBar + `<div class="gs-title"><h2 class="u">Every Pokémon, by tier</h2>${viewSw}</div><div class="ra-list ra-board">${colh}${LTIERS.map(T => { const inT = all.filter(x => lTier(x.r.total).k === T.k); if (!inT.length) return '';
       const cap = 12, open = U.open[T.k] || inT.length <= cap + 1, shown = open ? inT : inT.slice(0, cap);
@@ -108,7 +117,8 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
   /* phones (Sim's Q21 A, Nov 19; review #12 + #19): search and filters come first, above the featured #1 (they sat ~850-950px down), in the
      page and tab order too; the chips wrap into even rows (pages.css .ra-ctlt). 700+ keeps them under the hero; the page redraws when the width crosses 700 */
   const ph = innerWidth < 700, ctl = `<div class="gs-ctl${ph ? ' ra-ctlt' : ''}">${filt}</div>`;
-  return `<div class="ra gsp"><div class="gs-top">${head}${ph ? ctl : ''}<div class="ra-spotw" data-raspotw>${V2.raSpot(U.spot)}</div>${tabs}</div><div class="gs-body">${ph ? '' : ctl}${body}${legend}${about}</div></div>`; }};
+  const stairs = stairsOn ? V2.raStairs(sRows, !!f.mega && !V2.raFiltered2()) : ''; /* phones: right under the headline (approved mock); 700+: under the top band */
+  return `<div class="ra gsp rs-on"><div class="gs-top">${head}${ph ? stairs + ctl : ''}<div class="ra-spotw" data-raspotw>${V2.raSpot(U.spot)}</div>${tabs}</div>${ph ? '' : stairs}<div class="gs-body">${ph ? '' : ctl}${body}${legend}${about}</div></div>`; }};
 
 // search, filters, see all, tiers
 /* speed audit Nov 16 (4x CPU: 360 ms per keystroke, every key redrew the whole page): the redraw waits 250 ms after the last key (normal typing speed), so a

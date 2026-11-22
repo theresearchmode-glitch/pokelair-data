@@ -1,5 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH builds This Week on the kit (direction A "the slope", Sim approved 12:06 PM): copy wk, baseline checks running, then the page
+NOW: HH builds Ratings (A "the stairs" = S tier, Home Top 10 strip; Sim approved 12:26 PM), from hM round-2 mock (mk: meta2-mock.inject.js)
+NEXT: build helper after Events: This Week A, then News
 NEXT: on Sim's yes: one button system (helper job, every page checked)
 NEXT: push Home label (keep/home-label) after GitHub 1439
 NEXT: when GitHub is green: Preview (fresh data), pictures of the length fixes to Sim, Game Plan ticks
