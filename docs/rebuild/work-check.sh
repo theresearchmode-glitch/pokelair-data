@@ -28,6 +28,7 @@ tests=$(pgrep -fc 'node .*app/test/' 2>/dev/null || echo 0)
 lc=$(( (now - $(git -C /home/user/pokelair-data log -1 --format=%ct)) / 60 ))
 ld=$(( (now - $(stat -c %Y /home/user/pokelair-data/docs/rebuild/decisions.md 2>/dev/null || echo $now)) / 60 ))
 lp=$(( (now - $(stat -c %Y /home/user/pokelair-data/docs/game-plan.html 2>/dev/null || echo $now)) / 60 ))
+# Nov 22, 12 PM: 1 helper is the rule again; Sim (11:48 AM) allows ONE extra helper for reskin mock-ups only, until they are done: 2 while it runs, then set back to 1
 echo "Work check $(TZ=America/New_York date '+%a %b %-d, %-I:%M:%S %p')"
 echo "Helpers active: $active of ${NEED:-2}$names" | sed 's/\\n/\n/g'
 echo "Test processes running (main thread or helpers): $tests"
