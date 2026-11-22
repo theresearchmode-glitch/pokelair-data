@@ -59,37 +59,38 @@ V2.sugData = (ms, RD) => { if (ms.length < 1) return null; V2.planStart(ms); con
 // The numbers come from sheetData() (39-damage-calc-speed.js), the same function today's Team Sheet draws from.
 // Nov 12 (Sim: every feature of today's Team Sheet kept): head line with the team and regulation, "← My Team", Share as Image,
 // cards that open Edit Set, and the empty-team message (items 10-14).
+// Nov 21 (reskin, page 2 of the queue; HYBRID.md: Team Sheet "Keep as drawn"): THE DOSSIER on the shared kit (kit.js), from Sim's PC
+// mock-up (cohesion-nov21/pages/sheet.html). The kit header (kicker, headline, one lead line), "← My Team" and "Share as Image ›" as
+// quiet blue links, the one pink move COPY FOR SHOWDOWN., the key line, then one plan step: a file per Pokémon (the kit roster card,
+// Item / Ability / Nature, the four kit move tickets, the six stats at level 50 with their points). Every feature of the Tale of the
+// Tape kept: the team best in each stat in blue (ties all marked), ▲ / ▼ nature marks, the spread note said once, a card opens Edit Set.
 V2.openTeamSheet = () => { const ms = members(), r = (typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}, reg = `Reg ${V2.esc(String(r.id))} doubles · level 50`;
-  const back = '<a class="np-back" href="#team" data-v2close>← My Team</a>';
-  if (!ms.length) { V2.sheet(`<div class="ts2"><div class="np-eyebrow"><span>${back} · ${reg}</span></div><h2 class="u">Team Sheet</h2>
-    <p class="tm-sub">No team yet. Add Pokémon on My Team and their full sets show here.</p><div class="ts2-acts"><button type="button" class="np-btn" data-v2close data-v2search><span>Add a Pokémon</span></button></div></div>`, {label: 'Team Sheet', small: true}); return; }
-  let LU = null; /* Sim, Nov 20: no Lead mark on My Team (leads are Battle's call) */
-  // Nov 14, Sim's pick "Tale of the Tape" (docs/rebuild/mocks/team-sheet-tape): the six across the top, every fact read across in rows,
-  // the team's best in each stat on a blue plate (ties all marked). A real table: the Pokémon are the column headers, the facts the row headers.
-  const E = V2.esc, D = ms.map(m => sheetData(m)), N = D[0] ? D[0].stats.length : 0;
+  const back = '<a class="k-link sh-back" href="#team" data-v2close>←&nbsp;My Team</a>', kick = '<p class="k-kicker">MY TEAM · THE DOSSIER</p>';
+  if (!ms.length) { V2.sheet(`<div class="ts2 sh2">${kick}<h2 class="k-h1 u">Team <em>Sheet.</em></h2><p class="k-lead">${reg}</p><p class="sh-links">${back}</p>
+    <p class="k-lead sh-none">No team yet. Add Pokémon on My Team and their full sets show here.</p>${V2.kGo('ADD A POKÉMON.', {'data-v2close': true, 'data-v2search': true})}</div>`, {label: 'Team Sheet', small: true}); return; }
+  const E = V2.esc, D = ms.map(m => sheetData(m)), N = D[0] ? D[0].stats.length : 0, phone = innerWidth < 700;
   const best = [...Array(N)].map((_, k) => Math.max(...D.map(d => d.stats[k].val == null ? -1 : d.stats[k].val)));
-  const vs = LU ? (/^vs /.test(PLAN_VS[LU.by]) ? PLAN_VS[LU.by] : '(' + PLAN_VS[LU.by] + ')') : '';
-  const head = (m, i) => { const P = m.p, d = V2.disp(P.n), mega = /^Mega /.test(d), lead = LU && LU.lead.includes(m), t1 = P.t[0], t2 = P.t[1] || P.t[0];
-    return `<th scope="col" class="tt-mon"><button type="button" class="tt-pick" data-ts2edit="${m.i}" aria-label="${E(m.d)}: edit its set"><span class="tt-ban" aria-hidden="true" style="--b1:var(--ty-${t1});--b2:var(--ty-${t2})"><i class="tt-no u">${String(m.i + 1).padStart(2, '0')}</i><i class="tt-giant u">${E((mega ? d.slice(5) : d).toUpperCase())}</i>${V2.mon(P.n, {iw: 120, bare: true})}</span>
-      <span class="tt-mg u">${mega ? 'Mega' : '&nbsp;'}</span><b class="tt-nm u">${E(mega ? d.slice(5) : d)}</b></button></th>`; };
-  /* say it once (Nov 16, re-verify #17): when every column's spread note is the same ('Most common spread'), the key says it once */
+  /* say it once (Nov 16, re-verify #17): when every file's spread note is the same ('Most common spread'), the lead says it once */
   const srcs = [...new Set(D.filter(d => d && d.nat).map(d => String(d.src || '').replace(/<[^>]*>/g, '')))], srcOnce = srcs.length === 1 && srcs[0] ? srcs[0] : '';
-  const nat = (m, i) => { const d = D[i]; return d.nat ? `<b>${E(d.nat)}</b>${d.up && d.dn && d.up !== d.dn ? `<small class="tt-nb"><span class="up">+${d.up}</span> <span class="dn">−${d.dn}</span></small>` : ''}${srcOnce ? '' : `<small class="tt-src">${E(String(d.src || '').replace(/<[^>]*>/g, ''))}</small>`}` : '<b>Nature unknown</b>'; };
-  const mv = m => `<ul class="tt-mv">${[0, 1, 2, 3].map(j => { const x = m.moves[j]; return x ? `<li class="np-type" style="--tc:var(--ty-${V2.TYPES.includes(x.type) ? x.type : 'Normal'})">${E(x.name)}</li>` : '<li class="none">No move</li>'; }).join('')}</ul>`;
-  const stat = k => (m, i) => { const x = D[i].stats[k], top = x.val != null && x.val === best[k], w = x.val == null || !best[k] ? 0 : Math.round(100 * x.val / best[k]);
-    return `<div class="tt-st${top ? ' best' : ''}${x.mark ? ' ' + x.mark : ''}"><b class="u">${x.val == null ? '—' : x.val}</b><small>${x.mark === 'up' ? '<span aria-hidden="true">▲ </span><span class="vh">raised by nature, </span>' : x.mark === 'dn' ? '<span aria-hidden="true">▼ </span><span class="vh">lowered by nature, </span>' : ''}${x.pts == null ? '' : x.pts + ' points'}${top ? '<span class="vh">, team best</span>' : ''}</small><i class="tt-bar" aria-hidden="true" style="--w:${w}%"></i></div>`; };
-  const tape = (part, k) => { const ix = part.map(m => ms.indexOf(m));
-    const row = (label, f, cls) => `<tr class="${cls || ''}"><th scope="row" class="tt-rh u">${label}</th>${part.map((m, i) => `<td data-ts2edit="${m.i}">${f(m, ix[i])}</td>`).join('')}</tr>`;
-    return `<table class="tt"${k != null ? ` aria-label="Team Sheet, Pokémon ${ix[0] + 1} to ${ix[ix.length - 1] + 1}"` : ' aria-label="Team Sheet"'}><thead><tr><td class="tt-corner"></td>${part.map((m, i) => head(m, ix[i])).join('')}</tr></thead>
-      <tbody>${row('Item', m => E(m.heldItem || m.item || 'No item').replace(/ (\S{1,2})$/, '\u00a0$1'))}${row('Ability', m => E(m.ability || '—'))}${row('Nature', nat, 'tt-nat')}${row('Moves', m => mv(m), 'tt-mvs')}</tbody>
-      <tbody class="tt-stats"><tr class="tt-sh"><th scope="rowgroup" colspan="${part.length + 1}"><span class="u">Stats</span> <small>at level 50</small></th></tr>${(D[0] ? D[0].stats : []).map((s, k) => row(s.S, (m, i) => stat(k)(m, i), k % 2 ? 'odd' : '')).join('')}</tbody></table>`; };
-  const phone = innerWidth < 700, tiny = innerWidth < 380, parts = tiny && ms.length > 2 ? [ms.slice(0, 2), ms.slice(2, 4), ms.slice(4)].filter(x => x.length) : phone && ms.length > 3 ? [ms.slice(0, 3), ms.slice(3)] : [ms]; /* Sim Q19 (Nov 15): under 380 three tables of two, so every move chip fits its column */
-  const legend = `<p class="tt-key"><span><i class="tt-kbest" aria-hidden="true"></i>team best in that stat</span><span><b class="up">▲</b> raised by nature</span><span><b class="dn">▼</b> lowered by nature</span><span>points = stat points <span class="nw">(0–32)</span></span>${srcOnce ? `<span>Spreads: ${E(srcOnce.replace(/^Most common spread$/, 'each one\'s most common'))}</span>` : ''}${LU ? `<span>Lead = ${E(vs)}</span>` : ''}</p>`;
-  V2.sheet(`<div class="ts2 tt2"><div class="np-eyebrow"><span>${back} · ${V2.esc(teamTitleFor(ms))} · ${reg}</span></div><div class="tt-top"><h2 class="u">Team Sheet</h2>
-    <div class="ts2-acts"><button type="button" class="np-btn" data-v2copy><span>Copy for Showdown</span></button><button type="button" class="np-btn2" data-ts2share><span>Share as Image</span></button></div></div>
-    <p class="fine tt-help">Tap a column to edit its set · Big number: the stat at level 50</p>${legend}
-    <div class="tt-wrap">${parts.map((p, k) => tape(p, parts.length > 1 ? k : null)).join('')}</div></div>`, {label: 'Team Sheet'}); };
-(() => { let b = innerWidth < 700, tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { const nb = innerWidth < 700; if (nb === b) return; b = nb; if (document.querySelector('.np-sheet .tt2')) V2.openTeamSheet(); }, 150); }); })();
+  const nat = d => d.nat ? `${E(d.nat)}${d.up && d.dn && d.up !== d.dn ? ` <em class="tt-nb"><span class="up">+${d.up}</span> <span class="dn">−${d.dn}</span></em>` : ''}${srcOnce ? '' : `<small class="tt-src">${E(String(d.src || '').replace(/<[^>]*>/g, ''))}</small>`}` : 'Nature unknown';
+  const mv = m => `<ul class="k-moves sh-mv">${[0, 1, 2, 3].map(j => { const x = m.moves[j]; return x ? `<li>${V2.kMove(x.name)}</li>` : '<li><span class="k-move sh-nomv"><span class="k-mn"><b>No move</b></span></span></li>'; }).join('')}</ul>`;
+  /* the one idea (THE DOSSIER, Nov 22): the crew measured against itself. Each stat is a slanted plot bar drawn against the TEAM'S best in
+     that stat, so the best runs full length in Plot blue and every other file shows at a glance how far behind it is (Atk 111 of 205) */
+  const stat = i => (s, k) => { const x = D[i].stats[k], top = x.val != null && x.val === best[k], w = x.val == null || !(best[k] > 0) ? 0 : Math.max(4, Math.round(100 * x.val / best[k]));
+    return `<li class="sh-st${top ? ' best' : ''}${x.mark ? ' ' + x.mark : ''}"><span class="sh-sl">${E(s.S)}${x.mark === 'up' ? '<i aria-hidden="true">▲</i>' : x.mark === 'dn' ? '<i aria-hidden="true">▼</i>' : ''}</span><b class="u">${x.val == null ? '—' : x.val}</b><span class="sh-bar" aria-hidden="true"><i style="--w:${w}%"></i></span><small>${x.mark === 'up' ? '<span class="vh">raised by nature, </span>' : x.mark === 'dn' ? '<span class="vh">lowered by nature, </span>' : ''}${x.pts == null ? '' : x.pts + '<span class="vh"> points</span>'}${top ? '<span class="vh">, team best</span>' : ''}</small></li>`; };
+  const file = (m, i) => { const d = V2.disp(m.p.n), no = String(m.i + 1).padStart(2, '0');
+    const card = V2.kCard(m.p.n, {score: no, size: phone ? 'small' : 'normal', attrs: {'data-ts2edit': m.i, 'aria-label': `${m.d || d}: edit its set`}}).replace('class="k-card', 'class="k-card tt-pick');
+    /* two halves (sh-l: the card and its stats; sh-r: the set) sit side by side on phones; elsewhere they dissolve (display: contents) and the file reads card, Item / Ability / Nature, moves, stats */
+    return `<li class="sh-file" data-ts2edit="${m.i}"><div class="sh-l">${card}<ul class="sh-stats" aria-label="Stats at level 50">${(D[i] ? D[i].stats : []).map(stat(i)).join('')}</ul></div>
+      <div class="sh-r"><dl class="sh-kv"><div><dt>Item</dt><dd>${E(m.heldItem || m.item || 'No item').replace(/ (\S{1,2})$/, '\u00a0$1')}</dd></div><div><dt>Ability</dt><dd>${E(m.ability || '—')}</dd></div><div class="sh-nat"><dt>Nature</dt><dd>${nat(D[i])}</dd></div></dl>${mv(m)}</div></li>`; };
+  const title = teamTitleFor(ms), h1 = String(title).replace(/ \(sample\)$/, '');
+  const lead = `${E(title)} · ${reg}.${srcOnce ? ` Spreads: ${E(srcOnce.replace(/^Most common spread$/, 'each one\'s most common'))}.` : ''}`;
+  const key = `<p class="k-hint sh-key">Tap a card to edit its set · Big number: the stat at level 50 · each bar runs against the team\'s best, <span class="sh-kbest">full and blue</span> = team best · <b class="up">▲</b>&nbsp;raised / <b class="dn">▼</b>&nbsp;lowered by nature · small number: stat points <span class="nw">(0–32)</span></p>`;
+  V2.sheet(`<div class="ts2 sh2">${kick}<h2 class="k-h1 u">Team Sheet: <em class="sh-t">${E(h1)}.</em></h2><p class="k-lead">${lead}</p>
+    <p class="sh-links">${back}<button type="button" class="k-link sh-share" data-ts2share>Share as Image&nbsp;›</button></p>${V2.kGo('COPY FOR SHOWDOWN.', {'data-v2copy': true})}${key}
+    ${V2.kPlan(V2.kStep(1, 'The crew, file by file', 'one card per Pokémon', `<ol class="sh-dossier" aria-label="Team Sheet">${ms.map(file).join('')}</ol>`))}</div>`, {label: 'Team Sheet'});
+  const s = document.querySelector('.np-sheet .sh2'); if (s && V2.kFit) { V2.kFit(s); if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => V2.kFit(s)); } };
+(() => { let b = innerWidth < 700, tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { const nb = innerWidth < 700; if (nb === b) return; b = nb; if (document.querySelector('.np-sheet .sh-dossier')) V2.openTeamSheet(); }, 150); }); })();
 // Copy for Showdown: today's export (exportPaste) and clipboard helper (copyText)
 // Export to Showdown (today's Export panel, Nov 12: every feature kept): the same text as Copy for Showdown, shown so it can be
 // read or selected by hand when copying is blocked

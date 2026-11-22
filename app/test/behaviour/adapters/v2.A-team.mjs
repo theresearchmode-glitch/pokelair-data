@@ -302,14 +302,16 @@ export default (ui, pg, o) => {
     /** one Pokémon's card on the Team Sheet (the sheet over My Team), as shown */
     // Nov 14, Tale of the Tape: one Pokémon is a column of the table, not a card. Its "card" text = its column read top to bottom with the
     // row labels, the way today's card reads ("Garchomp Item Choice Scarf Ability Rough Skin ... HP 185 2 ..."), so the same checks apply.
-    teamSheetCard: name => pg.evaluate(n => { const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : ''; for (const tb of document.querySelectorAll('.np-sheet .ts2 table.tt')) { if (!tb.getClientRects().length) continue;
-        const hs = [...tb.querySelectorAll('thead th')], k = hs.findIndex(h => T(h.querySelector('.tt-pick')).replace(/ Lead.*$/, '').replace(/^\d\d /, '').startsWith(n.replace(/^Mega /, '')) || (h.querySelector('[aria-label]') || {}).getAttribute?.('aria-label')?.startsWith(n + ':')); if (k < 0) continue;
-        /* today's card reading order: name, "↑ Lead <plan>", Item, Ability, the moves, the nature and its spread line, the stats */
-        const out = [n], ld = hs[k].querySelector('.tt-lead:not(.no)'); if (ld) out.push('↑ ' + T(ld));
-        const rows = [...tb.querySelectorAll('tbody tr')].map(tr => ({h: T(tr.querySelector('th')), d: tr.querySelectorAll('td')[k]})).filter(x => x.h && x.d);
-        const by = h => rows.filter(x => x.h === h), rest = rows.filter(x => !['Item', 'Ability', 'Moves', 'Nature'].includes(x.h));
-        for (const x of [...by('Item'), ...by('Ability')]) out.push(x.h, T(x.d)); for (const x of by('Moves')) out.push(T(x.d)); for (const x of by('Nature')) out.push(T(x.d).replace(/^(\S+) /, '$1 '));
-        for (const x of rest) out.push(x.h, T(x.d).replace(/ (pts|points)/g, '').replace(/[▲▼] /g, '')); return out.join(' '); } return null; }, name),
+    // Nov 21 (reskin, THE DOSSIER on the shared kit): one Pokémon is a file again (kit card, Item / Ability / Nature, move tickets, six
+    // stats). Its "card" text keeps the reading the checks use: name, Item, Ability, the move names, the nature and its spread line, then
+    // each stat as "HP 185 2" (label, the stat at level 50, its stat points)
+    teamSheetCard: name => pg.evaluate(n => { const T = e => e ? e.innerText.replace(/\s+/g, ' ').trim() : '';
+        const f = [...document.querySelectorAll('.np-sheet .ts2 .sh-file')].filter(e => e.getClientRects().length).find(e => ((e.querySelector('.tt-pick') || {}).getAttribute?.('aria-label') || '').startsWith(n + ':')); if (!f) return null;
+        const out = [n], kv = h => [...f.querySelectorAll('.sh-kv > div')].find(d => T(d.querySelector('dt')) === h);
+        for (const h of ['Item', 'Ability']) { const d = kv(h); if (d) out.push(h, T(d.querySelector('dd'))); }
+        for (const b of f.querySelectorAll('.k-moves .k-mn b')) out.push(T(b)); { const d = kv('Nature'); if (d) out.push(T(d.querySelector('dd'))); }
+        for (const s of f.querySelectorAll('.sh-st')) { const p = (T(s.querySelector('small')).match(/(\d+) points/) || [])[1]; out.push(T(s.querySelector('.sh-sl')).replace(/[▲▼]/g, '').trim(), T(s.querySelector('b')), ...(p != null ? [p] : [])); }
+        return out.join(' '); }, name),
     focusSheetCard: name => pg.evaluate(n => { const b = [...document.querySelectorAll('.np-sheet .ts2 .tt-pick')].filter(e => e.getClientRects().length).find(e => (e.getAttribute('aria-label') || '').startsWith(n + ':')); if (b) b.focus(); return !!b && document.activeElement === b; }, name),
     // Nov 12 (TEAM-15): the Matchups section's real-games bar is drawn only (aria-hidden), so text can't see it: its three shares
     // (Favoured | Even match | Unfavoured), the section it sits in, and the lines just before and after it; null if not shown
