@@ -15,12 +15,12 @@ const open = async (hash, {W = 1440, th = 'light'} = {}) => {
   await p.addInitScript(t => { window.__PL_TEST = 1; try { localStorage.setItem('np2.theme', t); } catch (e) {} }, th === 'dark' ? 'night' : 'day');
   await p.goto('file://' + PAGE + hash, {timeout: 90000}); await p.waitForFunction(() => window.V2 && document.querySelector('#app .np-head'), null, {timeout: 30000}); await p.waitForTimeout(1200);
   return {ctx, p, errs}; };
-const look = p => p.evaluate(() => { const m = document.getElementById('main'), h1 = [...m.querySelectorAll('h1')], go = [...m.querySelectorAll('a')].find(a => a.textContent.trim() === 'Go to Home');
+const look = p => p.evaluate(() => { const m = document.getElementById('main'), h1 = [...m.querySelectorAll('h1')], go = [...m.querySelectorAll('a')].find(a => /^go to home\.?$/i.test(a.textContent.trim())); /* Nov 22 (Sim approved 12:40 PM): the kit's pink GO TO HOME. */
   return {route: V2.route(), nf: !!m.querySelector('[data-v2nf]'), h1: h1.map(h => h.textContent.replace(/\s+/g, ' ').trim()), eyebrow: (m.querySelector('.np-eyebrow') || {}).textContent || '',
     go: go ? go.getAttribute('href') : null, title: document.title, head: !!document.querySelector('#app .np-head'), bar: !!document.querySelector('#app .np-bar'),
     cur: [...document.querySelectorAll('.np-nav [aria-current], .np-bar [aria-current]')].map(a => a.textContent.trim()), hash: location.hash, txt: m.innerText.trim().length,
     owner: /Only for/.test(m.innerText)}; });
-const isNF = r => r.nf && r.h1.length === 1 && r.h1[0] === 'Nothing here.' && /Page not found/.test(r.eyebrow) && r.go === '#home' && r.head && r.bar && !r.cur.length && r.title === 'Page not found · NastyPlot';
+const isNF = r => r.nf && r.h1.length === 1 && r.h1[0] === 'Nothing here. Wrong turn.' && /Page not found/i.test(r.eyebrow) && r.go === '#home' && r.head && r.bar && !r.cur.length && r.title === 'Page not found · NastyPlot';
 const say = r => `route ${r.route}, h1 ${JSON.stringify(r.h1)}, eyebrow '${r.eyebrow.trim()}', Go to Home ${r.go}, current tab ${JSON.stringify(r.cur)}, title '${r.title}', address ${r.hash}`;
 
 // 1. unknown addresses
@@ -34,7 +34,7 @@ console.log(`  (this build: ${preview ? 'Preview, --preview-data' : 'real, no --
 { const {ctx, p} = await open('#home'); const bad = [];
   await p.evaluate(() => { const a = document.querySelector('.np-head a.logo'); a.focus(); location.hash = '#nonsense'; }); await p.waitForTimeout(600);
   const f = await p.evaluate(() => { const a = document.activeElement; return {tag: a && a.tagName, txt: a && a.textContent.trim(), nf: !!document.querySelector('#main [data-v2nf]')}; });
-  if (!f.nf || f.tag !== 'H1' || f.txt !== 'Nothing here.') bad.push(`arriving by a link: focus on ${f.tag} '${f.txt}', not-found ${f.nf}`);
+  if (!f.nf || f.tag !== 'H1' || f.txt.replace(/\s+/g, ' ') !== 'Nothing here. Wrong turn.') bad.push(`arriving by a link: focus on ${f.tag} '${f.txt}', not-found ${f.nf}`);
   const btn = p.locator('#main [data-v2nf] a[href="#home"]');
   if (!await btn.count()) bad.push('no Go to Home button on the page'); else { await btn.click(); await p.waitForTimeout(800); const r = await look(p);
     if (r.route !== 'home' || r.hash !== '#home' || r.nf || !r.cur.includes('Home')) bad.push(`after Go to Home: ${say(r)}`); }
