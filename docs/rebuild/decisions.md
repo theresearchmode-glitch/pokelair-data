@@ -2042,3 +2042,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:35 PM: Hourly check: 2 build helpers (hW2 News, hM Track Record); main: This Week merged, checks running; Game Plan updated
 - 4:57 PM: Sim: an ADDITIONAL helper for a consistent-ui audit (look-only, report only), on top of the 2 build helpers, don't cancel a running one. Started hC: scope app/src/v2, report docs/rebuild/research/consistency-audit-nov22.md, waves that change looks need Sim's yes with pictures
 - 4:58 PM: Sim confirmed audit scope: whole site (the new site, app/src/v2), report only for now so fixes can be planned
+- 5:07 PM: Sim: 'news is good' with one change: 'the clip and claim section should be more distinct' -> drawing options with pictures before building
