@@ -65,3 +65,5 @@
 .ow2-box .own-tab{width:100%}
 @media (max-width:959.98px){.ow2-two{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699.98px){.ow2-box{min-height:0;padding:var(--s4)}.ow2-box h2{font-size:var(--t22)}}
+/* phones with the stairs: How Ratings Work and Track Record move to the page's foot (approved mock), so the search starts on the first screen (Q21) */
+@media (max-width:699.98px){.rs-on .ra-h .ra-links{display:none}.rs-on .ra-lph{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);margin-top:var(--s4)}}

@@ -31,9 +31,9 @@ export default (ui, pg) => {
     ratingsSearch: async text => { await pg.fill('[data-raq]', text); await wait(500); },
     matchCount: () => ev(() => { const m = __dtx(document.querySelector('.ra-count')).match(/(\d+) of (\d+) match/); return m ? {n: +m[1], of: +m[2]} : null; }),
     /** the top of the ratings (only while nothing is searched or filtered and the full list is closed) */
-    topList: async () => (await ev(() => /match/.test(__dtx(document.querySelector('.ra-count'))) || !!document.querySelector('.ra-board'))) ? [] : rowsOf('.gs .gs-mon'),
+    topList: async () => (await ev(() => /match/.test(__dtx(document.querySelector('.ra-count'))) || !!document.querySelector('.ra-board'))) ? [] : rowsOf('.rs-st .rs-b, .gs .gs-mon'), /* Nov 22: the S tier stands on the stairs above the Grandstand (Sim approved 12:26 PM) */
     /** every row shown when searching / filtering or in the full list: [{id, name, rating, tier}] */
-    boardTiles: async () => (await ev(() => /match/.test(__dtx(document.querySelector('.ra-count'))) || !!document.querySelector('.ra-board'))) ? rowsOf('.ra-list .ra-row, .gs .gs-mon') : [],
+    boardTiles: async () => (await ev(() => /match/.test(__dtx(document.querySelector('.ra-count'))) || !!document.querySelector('.ra-board'))) ? rowsOf('.ra-list .ra-row, .rs-st .rs-b, .gs .gs-mon') : [],
     boardRows: () => ev(() => [...document.querySelectorAll('.ra-board .ra-tg')].filter(__dvis).map(s => ({tier: s.querySelector('.ra-tier').dataset.tier, head: __dtx(s.querySelector('.ra-tier span')), tiles: s.querySelectorAll('.ra-row').length, more: __dtx(s.querySelector('[data-ratier]'))}))),
     tapTierMore: async tier => { await ev(t => { const b = [...document.querySelectorAll(`[data-ratier="${t}"]`)].find(__dvis); if (!b) throw new Error('no more button on tier ' + t); b.click(); }, tier); await wait(500); },
     showWholeBoard: async () => { for (const T of ['S', 'A', 'B', 'C', 'D', 'F']) { const shut = await ev(t => { const b = document.querySelector(`[data-ratier="${t}"]`); return !!b && b.getAttribute('aria-expanded') !== 'true'; }, T); if (shut) await D.tapTierMore(T); } },
@@ -42,7 +42,7 @@ export default (ui, pg) => {
     tapFilterChip: async name => { await ev(n => { const bs = [...document.querySelectorAll('[data-raty], [data-raflag]')].filter(__dvis), clean = b => __dtx(b).replace(/^◆\s*/, '').replace(/\s+\d+$/, '');
       const b = bs.find(b => __dtx(b) === n) || bs.find(b => clean(b) === n.replace(/^◆\s*/, '')); if (!b) throw new Error('no chip ' + n); b.click(); }, name); await wait(500); },
     filterChips: () => ev(() => [...document.querySelectorAll('[data-raty], [data-raflag]:not([data-raflag="all"]):not([data-raflag="clear"])')].filter(__dvis).map(b => ({name: __dtx(b).replace(/^◆\s*/, '').replace(/\s+\d+$/, ''), on: b.getAttribute('aria-pressed') === 'true'}))),
-    hotText: () => ev(() => [...document.querySelectorAll('.ra-list, .gs')].filter(__dvis).map(l => __dtx(l) + ' ' + [...l.querySelectorAll('.ra-row, .gs-mon')].map(r => r.getAttribute('aria-label')).join(' ')).join(' ')),
+    hotText: () => ev(() => [...document.querySelectorAll('.ra-list, .rs-st, .gs')].filter(__dvis).map(l => __dtx(l) + ' ' + [...l.querySelectorAll('.ra-row, .rs-b, .gs-mon')].map(r => r.getAttribute('aria-label')).join(' ')).join(' ')),
     tapDetails: async () => { await pg.click('[data-raview="list"]'); await wait(500); },
     /** tap a Pokémon by id (Ratings: its row on the list or the stand; any other page: any tappable Pokémon, by id or by the name its label starts with) */
     openPokemon: async id => { await ev(n => { let e = [...document.querySelectorAll('.ra-list [data-v2mon], .gs [data-v2mon]')].filter(__dvis).find(e => e.dataset.v2mon === n);
@@ -268,8 +268,8 @@ export default (ui, pg) => {
     ratingOnRatings: async name => { const t = (await D.topList()).find(r => r.name === name || r.id === name); if (t) return t.rating;
       await D.ratingsSearch(name); const b = (await D.boardTiles()).find(r => r.name === name || r.id === name); await D.ratingsSearch(''); return b ? b.rating : null; },
     /** sprite, colour field and Mega mark for each Pokémon on Ratings (the stand's figures and the list's rows) */
-    pokemonArt: () => ev(() => [...document.querySelectorAll('#main .gs [data-v2mon], #main .ra-list [data-v2mon]')].filter(__dvis).map(e => { const m = e.querySelector('.np-mon'), s = (e.getAttribute('style') || '') + ' ' + (m ? m.getAttribute('style') || '' : '');
-      return {id: e.dataset.v2mon, sprite: !!e.querySelector('img[src*="art/"]'), field: /--b1:|--cp:/.test(s), mega: !!e.querySelector('.np-megatag') || /^mega$/i.test(((e.querySelector('.gs-mg, .mg:not(.none)') || {}).textContent || '').trim())}; })),
+    pokemonArt: () => ev(() => [...document.querySelectorAll('#main .rs-st [data-v2mon], #main .gs [data-v2mon], #main .ra-list [data-v2mon]')].filter(__dvis).map(e => { const m = e.querySelector('.np-mon'), s = (e.getAttribute('style') || '') + ' ' + (m ? m.getAttribute('style') || '' : '');
+      return {id: e.dataset.v2mon, sprite: !!e.querySelector('img[src*="art/"]'), field: /--b1:|--cp:/.test(s), mega: !!e.querySelector('.np-megatag') || /^mega$/i.test(((e.querySelector('.gs-mg, .mg:not(.none), .rs-nm small') || {}).textContent || '').trim())}; })),
     /** the rating Popular Sets shows for the looked-up Pokémon: the spotlight's big number (pages/sets.js .gs-big: "96" beside "S tier" and
      *  "Rated 96, #3 of 321"); today's "X tier, rated N" wording if a page still writes it */
     setsRating: () => ev(() => { const b = [...document.querySelectorAll('#main .st .gs-big > b')].find(__dvis); if (b && /^\d+$/.test(__dtx(b))) return +__dtx(b);
