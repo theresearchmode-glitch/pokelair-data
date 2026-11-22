@@ -4370,3 +4370,5 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* under 360 (not drawn in the mock): the biggest mover's card narrows and its shares drop a size, so "13% → 19%" stays on the screen at 320 */
 @media (max-width:359.98px){.wk2-big{grid-template-columns:104px minmax(0,1fr);gap:var(--s3)}.wk2-bn b{font-size:var(--t20)}}
 @media (max-width:389.98px){.wk2-used .k-fact{white-space:normal}} /* qcheck (Nov 22): three cards across at 320 are too narrow for "39% of teams · #1" on one line */
+/* qcheck Nov 22: at 700-1099 the receipt runs full width, so a 1deg tilt lifts the right end of each line ~13px onto the next; half the tilt there */
+@media (min-width:700px) and (max-width:1099.98px){.abt .abt-rc{rotate:-.5deg}}
