@@ -2035,3 +2035,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:42 PM: Hourly check: hE ended (Events built, sent to Sim); hW2 started on approved This Week/News/Gifts (2 build helpers per Sim 12:35 PM); Game Plan updated; GitHub 1442 fixes committed 4bfbab13
 - 2:50 PM: Sim: 'recommended is good to go pics look good' -> Send Feedback OK as built; Events OK with the 4 recommended choices (order latest win first, winner sprites on tickets, 'The latest win.', USE THIS TEAM.); How We Calculate OK (desktop +118); phone Home Top 10 strip A as built (+422 phone OK)
 - 3:06 PM: New rule (Sim): before answering a question or decision, list what I'd need to know that he hasn't told me; saved in CLAUDE.md and RULES.md 00m
+- 3:07 PM: Sim confirmed missing-info rule scope: only his questions/decisions; 'Nothing missing.' line always shown

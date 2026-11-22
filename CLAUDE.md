@@ -70,6 +70,7 @@ a starting idea: build it our way (this file, RULES.md, the kit, the word list, 
 Sim: "before you answer, list what you'd need to know that I haven't told you" for decisions or questions he asks. So every answer to
 a Sim question or decision opens with a short "What I'd need to know that you haven't told me" list (each item: what, and why it
 changes the answer), then the answer with the default I'd use meanwhile. If nothing is missing, one line: "Nothing missing."
+Scope (Sim, 3:08 PM, "yup both assumptions are right"): only Sim's questions and decisions, not status reports; the "Nothing missing." line is always shown.
 
 ## "STATUS REPORT" (Sim, Nov 22, 10:14 AM; a rule)
 When Sim says "status report": three short parts, nothing left out. NOW: what HH (main thread) and each helper are working on.
