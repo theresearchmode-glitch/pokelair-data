@@ -1,4 +1,4 @@
-// Battle Turn One (Sim's Q28 A, Nov 19): a card with no target has no empty strip beside its text, 320-2560. At 1366+ (Sim's Q27 A, Nov 19): the four cards sit 2 x 2, and both cards in a row are the same height (before: each was
+// Battle Turn One (Sim's Q28 A, Nov 19; Nov 22: also reads the target page's move rows, .btg-b, where the move list replaced the play-by-play cards): a card with no target has no empty strip beside its text, 320-2560. At 1366+ (Sim's Q27 A, Nov 19): the four cards sit 2 x 2, and both cards in a row are the same height (before: each was
 // centred in its row, so the shorter one sat lower, e.g. 124 + 96px). Several real opponents, light and dark, 1366-2560; also checks no card
 // overflows its text and nothing scrolls sideways. Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-pbppair.mjs
 import {chromium} from 'playwright'; import path from 'node:path';
@@ -11,11 +11,11 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 700, 820, 1099, 1
   const n = await p.evaluate(() => window.__ev('(META.events && META.events.events || []).length'));
   for (let i = 0; i < Math.min(n, 12); i++) {
     await p.evaluate(i => window.__ev(`S.opp = META.events.events[${i}].top[0].mons.map(m => m.n); V2.redraw()`), i); await p.waitForTimeout(250);
-    const m = await p.evaluate(() => { const bs = [...document.querySelectorAll('.pbp-band')].map(x => x.getBoundingClientRect());
-      const ov = [...document.querySelectorAll('.pbp-band, .pbp-tx')].filter(x => x.scrollWidth > x.clientWidth + 1).length;
+    const m = await p.evaluate(() => { const bs = [...document.querySelectorAll('.pbp-band, .btg-b')].map(x => x.getBoundingClientRect());
+      const ov = [...document.querySelectorAll('.pbp-band, .pbp-tx, .btg-b, .btg-mv, .btg-why')].filter(x => x.scrollWidth > x.clientWidth + 1).length;
       /* Q28 A: a card with no target leaves no empty column: its text reaches the Speed block (or the card's inner edge when Speed is
          hidden) within one grid gap */
-      const st = [...document.querySelectorAll('.pbp-band')].filter(x => !x.querySelector('.pbp-tgt:not(.none)')).map(x => { const tx = x.querySelector('.pbp-tx').getBoundingClientRect(),
+      const st = [...document.querySelectorAll('.pbp-band, .btg-b')].filter(x => !x.querySelector('.pbp-tgt:not(.none)')).map(x => { const tx = x.querySelector('.pbp-tx, .btg-mv').getBoundingClientRect(),
         sp = x.querySelector('.pbp-spe'), cs = getComputedStyle(x), gap = parseFloat(cs.columnGap) || 0, R = sp && getComputedStyle(sp).display !== 'none' ? sp.getBoundingClientRect().left - gap : x.getBoundingClientRect().right - parseFloat(cs.paddingRight);
         return Math.round(R - tx.right); });
       return {bs: bs.map(r => [Math.round(r.top), Math.round(r.height)]), ov, st, side: document.documentElement.scrollWidth > innerWidth}; });

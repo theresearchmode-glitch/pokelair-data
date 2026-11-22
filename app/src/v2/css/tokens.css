@@ -155,6 +155,8 @@
      (measured on --mtf-night #14131C, Nov 21: ink 15.8:1, quiet 9.4:1, Plot 10.4:1; on the card #1D1C26 14.4 / 8.6 / 9.5) and the frame's card shadow */
   --d-tmscore:clamp(80px,9vw + 40px,168px);--d-tmlong:clamp(28px,3vw + 20px,60px);
   --wr-ink:#F1EDE7;--wr-ink2:#BDB7C6;--wr-plot:#7CCBFF;--wr-on-plot:#14131C;--wr-shadow:rgba(0,0,0,.5);--wr-rule:rgba(241,237,231,.16);
+  /* Battle, the target (Nov 22): the war-room night panel (--mtf-night by day; a step lighter than the page at night so it still reads as a panel) */
+  --btg-panel:var(--mtf-night);
   color-scheme:light}
 :root[data-theme="night"]{
   /* the Damage Calc board at night (Sim, Q105 B, Nov 21): night blueprint paper; photos, sticky notes and move colours stay the same.
@@ -208,7 +210,7 @@
   --arn-hit-on:#C41E35;--arn-line:rgba(228,224,236,.2);--arn-dash:rgba(228,224,236,.36); /* the Arena under the scene, night */
   /* the kit at night: blue fills turn light with dark words (9.1:1), pink stays the saturated --k-go with white words (4.7:1), its offset
      shadow and the ink chips turn light (13.7:1) so they still read on the dark page */
-  --k-on-plot:#12121B;--k-go-shadow:#E4E0DA;--k-chip:#E4E0DA;--k-on-chip:#12121B;--k-art-shadow:rgba(0,0,0,.5);--k-card-shadow:rgba(0,0,0,.45);--k-neutral:rgba(228,224,236,.55);
+  --btg-panel:var(--surface);--k-on-plot:#12121B;--k-go-shadow:#E4E0DA;--k-chip:#E4E0DA;--k-on-chip:#12121B;--k-art-shadow:rgba(0,0,0,.5);--k-card-shadow:rgba(0,0,0,.45);--k-neutral:rgba(228,224,236,.55);
   color-scheme:dark}
 @media (max-width:1179.98px){:root{--gut:48px}}
 @media (max-width:699.98px){:root{--gut:16px}}

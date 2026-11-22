@@ -231,6 +231,9 @@ function turnOneData(mine, theirs, r) {
       /* nothing to hit (Nov 19 review): the act names no fainted target (Battle's card would draw it) and the why says so */
       if (!h2) { if (/ into /.test(b.act)) b.act = A.h.mv.name; b._h = null; b.why = `${was}: ${left.length ? 'no effect on ' + left.map(o => 'their ' + o.d).join(' or ') : 'no foe is left to hit'}`; return; }
       b.act = `${h2.mv.name} into ${left[0].d}`; b._h = h2; b.why = hitWhy(b.x, h2, left[0], false); note(b, {r: 2, s: was}); hits = [{o: left[0], h: h2}]; }
+    /* Battle's target (Nov 22): what this attack does to each foe it hits, from the same hits (no new calc). Not enumerable, so the
+       plan's plain-data output (experiments/same-battle.mjs, Home's plan board) is unchanged */
+    Object.defineProperty(b, 'hits', {value: hits.filter(x => x.h && x.h.r && x.h.r.hp).map(({o, h}) => ({o, mv: h.mv.name, type: h.r.type || h.mv.type, min: h.r.min, max: h.r.max, hp: h.r.hp, sash: !!h.r.sash, acc: h.acc, charge: !!h.charge})), enumerable: false, configurable: true});
     for (const {o, h} of hits) { if (!h || !h.r || !h.r.hp || h.charge || h.r.max < h.r.hp || h.r.sash || down.has(o)) continue;
       const j = at(o), tb = beats[j], later = j > i && !done.has(o), tie = tieOf(tb, b), by = `your ${b.x.d}`;
       const g = sureKO(h) && b.flinch !== 'likely' && !b.koRisk ? guardOf(o, b.x, h.mv) : '';
@@ -263,7 +266,10 @@ function turnOneData(mine, theirs, r) {
   const cap = s => s ? s[0].toUpperCase() + s.slice(1) : s;
   // koSure (Nov 19 review): Battle's KO stamp is drawn only for a sure KO, told from the hit, not the text: every roll KOs, 100% to
   // hit, not charging first, no Focus Sash / Sturdy, and the attacker isn't at risk of being flinched or KO'd first
-  for (const b of beats) { b.koSure = !!(b._h && / into /.test(b.act) && sureKO(b._h) && !b.koRisk && b.flinch !== 'likely'); delete b._h; }
+  for (const b of beats) { b.koSure = !!(b._h && / into /.test(b.act) && sureKO(b._h) && !b.koRisk && b.flinch !== 'likely');
+    /* their attack's type as it hits (Weather Ball in sun is Fire), for Battle's move line; not enumerable, as above */
+    if (!b.hits && b._h && b._h.r && b._h.r.hp) Object.defineProperty(b, 'hits', {value: [{o: null, mv: b._h.mv.name, type: b._h.r.type || b._h.mv.type, min: b._h.r.min, max: b._h.r.max, hp: b._h.r.hp, sash: !!b._h.r.sash, acc: b._h.acc, charge: !!b._h.charge}], enumerable: false, configurable: true});
+    delete b._h; }
   for (const b of beats) { let ns = b._n || []; delete b._n; b.main = cap(b.why);
     /* two Fake Outs at each other in a speed tie: one line for both */
     const ft = ns.find(n => n.k === 'fotie'), fl = ft && ns.find(n => n.k === 'flinch' && n.u === ft.t && n.tie);

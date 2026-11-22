@@ -106,17 +106,22 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) { const tag = `
   await side(p, `team ${tag}`);
   // ---- S29 Speed Tiers (desktop track, 1024+) ----
   if (W >= 1024) for (const w of [1024, 1440, 1920]) { await p.setViewportSize({width: w, height: 900}); await go(p, 'speed', 2000);
-    const Sp = await p.evaluate(() => { const tr = document.querySelector('.sp2-track.mine'); if (!tr) return null; const pr = document.createElement('i'); pr.style.background = 'var(--sd-hero)'; document.body.append(pr); const hero = getComputedStyle(pr).backgroundColor; pr.remove();
-      const bef = getComputedStyle(tr, '::before'), f = [...tr.querySelectorAll('.sp2-m:not(.me)')], me = [...tr.querySelectorAll('.sp2-m.me')];
+    /* Speed reskin (Nov 22, helper hT3; Sim approved the direction 'new speed tiers is good'): your six are no longer on one shared blue band above
+       the line; each is its own Plot blue band (.sp2-cut::before, the kit's --k-plot, slanted by clip-path) cut across the ladder. Same S29 checks
+       on the new look: each of yours on the blue, its number, name and Mega word readable there (4.5:1), the top 20's Pokémon one size and no
+       two of their rows overlapping, the field's Speed number on the scale, and the keyboard ring in the band's own ink (--k-on-plot) */
+    const Sp = await p.evaluate(() => { const tr = document.querySelector('.sp2-track.mine'); if (!tr) return null; const tok = v => { const pr = document.createElement('i'); pr.style.background = `var(${v})`; pr.style.color = `var(${v})`; document.body.append(pr); const c = getComputedStyle(pr).backgroundColor; pr.remove(); return c; }; const hero = tok('--k-plot');
+      const cuts = [...tr.querySelectorAll('.sp2-cut')], befs = cuts.map(c => getComputedStyle(c, '::before')), f = [...tr.querySelectorAll('.sp2-m:not(.me)')], me = [...tr.querySelectorAll('.sp2-m.me')];
       const imgs = f.map(x => { const i = x.querySelector('img'); return i ? Math.round(i.getBoundingClientRect().width) : 0; }), R = f.map(x => x.getBoundingClientRect());
       let ov = 0; for (let i = 0; i < R.length; i++) for (let j = i + 1; j < R.length; j++) { const a = R[i], c = R[j]; if (a.left < c.right - 1 && c.left < a.right - 1 && a.top < c.bottom - 1 && c.top < a.bottom - 1) ov++; }
-      const v = me[0] && me[0].querySelector('.v'), nm = me[0] && me[0].querySelector('.nm'), mg = tr.querySelector('.sp2-m.me .mg');
-      return {band: bef.backgroundColor, hero, skew: bef.transform !== 'none', imgs: [Math.min(...imgs), Math.max(...imgs)], n: f.length, ov, v: v && getComputedStyle(v).color, nm: nm && getComputedStyle(nm).color, mg: mg && getComputedStyle(mg).color, fv: f[0] && getComputedStyle(f[0].querySelector('.v')).fontSize}; });
+      const v = me[0] && me[0].querySelector('.v'), nm = me[0] && me[0].querySelector('.nm b'), mg = tr.querySelector('.sp2-m.me .sp2-form:not(:empty)');
+      return {band: befs.every(x => x.backgroundColor === hero) && befs.length === me.length ? hero : befs.map(x => x.backgroundColor).join(','), hero, skew: befs.every(x => x.clipPath !== 'none'), imgs: [Math.min(...imgs), Math.max(...imgs)], n: f.length, ov, v: v && getComputedStyle(v).color, nm: nm && getComputedStyle(nm).color, mg: mg && getComputedStyle(mg).color, fv: f[0] && getComputedStyle(f[0].querySelector('.v')).fontSize, ring: tok('--k-on-plot')}; });
     const cv = Sp && Sp.v ? ratio(Sp.v, Sp.hero) : 0, cn = Sp && Sp.nm ? ratio(Sp.nm, Sp.hero) : 0;
-    ok(Sp && Sp.band === Sp.hero && Sp.skew && Sp.imgs[0] >= 58 && Sp.imgs[1] <= 62 && Sp.ov === 0 && Sp.fv === '20px' && cv >= 4.5 && cn >= 4.5 && (!Sp.mg || ratio(Sp.mg, Sp.hero) >= 4.5) /* Q86 A (Sim, Nov 20): the Mega word too */,
-      `S29 ${w} ${th}: your six on the blue band (number ${cv.toFixed(2)}:1, name ${cn.toFixed(2)}:1${Sp && Sp.mg ? `, Mega ${ratio(Sp.mg, Sp.hero).toFixed(2)}:1` : ''}), top ${Sp ? Sp.n : '?'} at ${Sp ? Sp.imgs.join('-') : '?'} px, ${Sp ? Sp.ov : '?'} overlaps`);
-    await p.focus('.sp2-m.me >> nth=1'); await p.keyboard.press('Shift+Tab'); const fo = await p.evaluate(() => { const e = document.activeElement; return e && e.matches('.sp2-m.me:focus-visible') ? getComputedStyle(e).outlineColor : null; });
-    ok(fo === 'rgb(255, 255, 255)', `S29 ${w} ${th}: keyboard focus on your six shows a white ring on the band (${fo})`);
+    ok(Sp && Sp.band === Sp.hero && Sp.skew && Sp.imgs[0] >= 44 && Sp.imgs[0] === Sp.imgs[1] && Sp.ov === 0 && Sp.fv === '24px' && cv >= 4.5 && cn >= 4.5 && (!Sp.mg || ratio(Sp.mg, Sp.hero) >= 4.5) /* Q86 A (Sim, Nov 20): the Mega word too */,
+      `S29 ${w} ${th}: your six on blue bands (number ${cv.toFixed(2)}:1, name ${cn.toFixed(2)}:1${Sp && Sp.mg ? `, Mega ${ratio(Sp.mg, Sp.hero).toFixed(2)}:1` : ''}), top ${Sp ? Sp.n : '?'} at ${Sp ? Sp.imgs.join('-') : '?'} px, ${Sp ? Sp.ov : '?'} overlaps`);
+    /* the field's rows now sit between your bands, so focus the control just before your first band and Tab onto it */
+    await p.evaluate(() => { const all = [...document.querySelectorAll('#main button, #main a[href]')].filter(e => e.getClientRects().length), i = all.indexOf(document.querySelector('.sp2-m.me')); if (i > 0) all[i - 1].focus(); }); await p.keyboard.press('Tab'); const fo = await p.evaluate(() => { const e = document.activeElement; return e && e.matches('.sp2-m.me:focus-visible') ? getComputedStyle(e).outlineColor : null; });
+    ok(fo && fo === Sp.ring, `S29 ${w} ${th}: keyboard focus on your six shows a ring in the band's own ink (${fo}, ink ${Sp && Sp.ring})`);
     await side(p, `speed ${w} ${th}`); }
   if (W >= 1024) await p.setViewportSize({width: W, height: 900});
   // ---- S5 band with a Grassy Terrain team ----
