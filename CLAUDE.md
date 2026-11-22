@@ -40,6 +40,12 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
+## DESKTOP LENGTH RULE (Sim approved, Nov 22, 9:57 AM; research docs/rebuild/research/desktop-length-nov22.md)
+At 1440x900: the page's main thing (answer, number, verdict, top of the list) is on the first screen; the must-read part fits in two
+screens (NN/g: 74% of attention); caps: tool and list pages at most 3 screens, reference pages (Home, Pokémon page, This Week, Meta) at
+most 4; never longer than the page was before its reskin unless Sim OKs it; at 1280+ long single columns go two-up or side by side.
+Measured with experiments/page-lengths.mjs. Over the cap now: Speed Tiers 4.0, Test Run 3.6, My Team 3.7, Pokémon page 5.2, Home 5.9 (Home: Sim's call), Usage 3.1.
+
 ## THE MAIN THREAD BUILDS TOO (Sim, Nov 22, logged 8:31 AM)
 Sim: "Subagents working but are ya working, buddy?" then "make that a rule". The main thread does real build work itself (an approved
 page, a fix, a measurement), not only coordination, whenever helpers and checks are running. Coordination fits in between.

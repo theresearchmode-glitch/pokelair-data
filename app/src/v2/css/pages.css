@@ -3913,4 +3913,18 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .ar-guide .k-plan>.k-step:first-child{grid-column:1/-1}
   .ar-guide .k-plan>.k-step:nth-child(3){padding-left:var(--s12)}
   .ar-guide .k-plan>.k-step:nth-child(3)>.k-n{left:0}
+/* Speed Tiers at 1280 and up (Sim's desktop length rule, Nov 22): between your blue bands, the field's rows run two-up (left, then right,
+   in speed order), as they already do on phones; the bands keep the full width. Each row keeps its own track and tick marks, so a bar
+   still reads against its own row; the full-width scale on top is dropped because it no longer lines up with half-width rows. */
+@media (min-width:1280px){
+  .sp2-lad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s10)}
+  .sp2-cut,.sp2-fr.solo{grid-column:1/-1}
+  .sp2-fr.solo .sp2-m{padding-right:calc(50% + var(--s5))}
+  .sp2-cut{margin:var(--s3) 0 var(--s1);padding:var(--s1) 0}
+  .sp2-cut .sp2-m{min-height:64px}
+  .sp2-fr .sp2-m{min-height:44px}
+  .sp2-fr .sp2-bar{top:var(--s3);height:16px}
+  .sp2-cut .sp2-m .v{font-size:var(--t28)}
+  .sp2-cut .nm b{font-size:var(--t24)}
+  .sp2-track .sp2-sc{display:none}
 }

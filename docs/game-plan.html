@@ -98,7 +98,7 @@ ul.items{list-style:none;margin:0;padding:0;background:var(--card);border-radius
 
 <script>
 // HH keeps this list accurate. s: done | doing | wait | todo. Every done item names when it landed.
-const UPDATED = 'Sun Nov 22, 9:04 AM Eastern';
+const UPDATED = 'Sun Nov 22, 10:00 AM Eastern';
 const STOPS = [
   {s:'done', t:'The look is chosen', when:'Nov 21, morning', d:'One theme for every page: the crew planning the job (Sim, 8:35 AM).'},
   {s:'now',  t:'Reskin every page', when:'now → about Tue Nov 24', d:'Page by page on the shared kit, pictures to Sim for each.'},
@@ -135,13 +135,13 @@ const PHASES = [
  ]},
  {n:'2', h:'Pages still to reskin', a:'In Sim\'s priority order. Each one: built on the kit, its tests, phone no longer than today at 390, pictures to Sim, then merge.', items:[
   ['done','Speed Tiers','Sim approved; merged 7:57 AM; GitHub run 1437 green (8:51 AM); on Preview v231.'],
-  ['doing','Type Chart','"The damage line": Sim approved the direction (8:22 AM, polish it, keep the character). Helper hY1 polishing + full checks.'],
+  ['doing','Type Chart','"The damage line": Sim approved (9:55 AM). In the batch with Usage; local checks running, then push + GitHub.'],
   ['done','Team Preview Practice','6v6 board on the kit. Sim approved; merged 7:57 AM; GitHub run 1437 green (8:51 AM); on Preview v231.'],
   ['done','Test Run','Calmer version. Sim approved; merged 7:57 AM; GitHub run 1437 green (8:51 AM); on Preview v231.'],
-  ['doing','Usage','"The call sheet": Sim approved (8:22 AM). Main thread: polish done (facts as a table, move under them); full checks running.'],
-  ['todo','Popular Sets',''],
-  ['doing','Archetypes','Keep as drawn (PC mock). Helper hA1 building since 8:12 AM.'],
-  ['todo','Winning Teams',''],
+  ['doing','Usage','"The call sheet": Sim approved (9:57 AM). In the batch with Type Chart; local checks running, then push. Next: How it is played beside the top ten on wide screens (length rule).'],
+  ['doing','Popular Sets','"THE LOADOUT": Sim approved the direction (9:57 AM). Helper hS3 building since 10:00 AM.'],
+  ['wait','Archetypes','"The Playbooks" built (keep/archetypes-kit): all checks pass; page shorter on phone and desktop; an open guide is longer on desktop (fix: two steps side by side). Pictures sent; waits for Sim.'],
+  ['doing','Winning Teams','Keep as drawn (three teams as hands). Helper hW1 building since 9:4x AM.'],
   ['todo','Events','A mock-up exists from this morning; the page itself is not on the kit yet.'],
   ['todo','This Week',''],
   ['todo','News',''],
@@ -155,7 +155,7 @@ const PHASES = [
  ]},
  {n:'3', h:'Checks before the switch', a:'Nothing switches until these pass on one commit.', items:[
   ['doing','Safari engine (WebKit) checks on the new pages','8:3x AM: Build suggestions box/roster switch (COV-03) fails on Safari before and after the batch = old bug, to fix. Show-more swaps (COV-06) and share image (THEME-03) intermittent after the batch; 5x runs going.'],
-  ['wait','A desktop length rule','9:1x AM: measured before vs now for every page (docs/rebuild/research/desktop-length-nov22.md); proposal sent to Sim (caps 3 / 4 screens, never longer than before, use the width). Waits for Sim.'],
+  ['done','A desktop length rule','Sim approved 9:57 AM (CLAUDE.md DESKTOP LENGTH RULE): answer on screen 1, must-read in 2, caps 3/4 screens at 1440x900, never longer than before without Sim\'s OK. Over now: Speed 4.0, Test Run 3.6, My Team 3.7, Pokémon 5.2, Usage 3.1, Home 5.9.'],
   ['done','Preview on today\'s data','8:02 AM: Preview v231 built from main\'s fresh data; all 26 pages say Data as of Nov 22, 0 errors.'],
   ['done','Kit headline on the type scale at 341-384 wide','8:10 AM: holds 34px up to 384; GitHub run 1437 green.'],
   ['todo','Full check of every reskin batch','Behaviour A-D, v2-minors, qcheck-all, about 40 minutes per batch of up to 4 pages (Sim\'s batch rule).'],
