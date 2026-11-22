@@ -41,6 +41,7 @@ Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): a
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
 ## HELPERS: ONE AT A TIME IS THE RULE (Sim, Nov 22, logged 1:29 AM; LATEST)
+Exception (Sim, Nov 22, logged 7:00 AM): "until 12pm today, a 2nd helper is fine." Two helpers until 12:00 PM Sun Nov 22, then one again.
 Sim: "also 1 helper max is fine. im okay to take it a little slower. we have time. cant do anything if i run out of usage lol."
 At most ONE helper at once; above 1 ask Sim first. work-check.sh / stop-check.sh need 1. The 2-helper rule below is replaced.
 

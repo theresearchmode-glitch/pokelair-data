@@ -1970,3 +1970,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:57 AM: hP4 finished Practice (keep/practice-kit bf36e489): q25 fixed in the page (your cards as wide as theirs), every phone state shorter, all checks pass (C-battle 83/0, q25, unbounded, minors x3, sync, today). Pictures to Sim. Next helper: Type Chart (rest of the page on the kit).
 - 6:58 AM: Sim: 'recommended for build is good' - Build top A: one-line label 'Build · Reg M-C doubles', the sentence right after it, 'Blue words are buttons.' under HATCH IT.
 - 6:59 AM: Sim: 'recommended for all these is good to go!' - approved: Team Preview Practice on the kit (keep/practice-kit), Test Run calmer (keep/gauntlet-calm), Build top A (keep/build-top-a). They join the Battle + Speed Tiers batch; push when every check is clean.
+- 7:03 AM: Sim: 'until 12pm today, a 2nd helper is fine.' Two helpers until 12:00 PM Sun Nov 22, then back to one. Second slot: Usage on the kit (next in the queue).
