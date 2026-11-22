@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH: merged batch check (task bj2ssnk26: minors groups, kit-page, overlap, D-meta, A-team) on Events + How We Calculate + Feedback + fixes; then push
-NEXT: merge About when hM's fix lands (brings the evening #4 test edit for Feedback); Track Record after
+NOW: HH: Preview rebuild on today's data with Events, How We Calculate, Send Feedback, About (task b8y2codb4); then publish v235; GitHub run for 70cf10ab
+NEXT: merge This Week on Sim's yes; review hW2's News and hM's Track Record
 NEXT: merge Events (keep/events-kit) and How We Calculate (keep/method-kit, brings the evening #4 test edit) on Sim's yes; then GitHub full check
 NEXT: Ability/Item blue words in the calc and edit panel (info sheets)
 NEXT: Ratings filters as the kit sentence (everyone/Megas/no Megas/gems/my box/any type) with test updates
