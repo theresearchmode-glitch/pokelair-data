@@ -21,12 +21,12 @@ Helpers take the top open page. Each page is ONE job in its OWN copy (git worktr
 ## The queue
 | # | Page (id) | Mock call (HYBRID.md) | Status |
 |---|---|---|---|
-| 1 | My Team, empty (team-empty) | n/a | Sim approved 8:01 PM; tests running (copy te) |
-| 2 | Team Sheet (sheet) | Keep as drawn | open |
-| 3 | Compare (compare) | Redo with the rule | open |
-| 4 | Battle (battle) | Redo the lower half | helper hB: proposal |
+| 1 | My Team, empty (team-empty) | n/a | merged (4c632f93), push with the fix batch |
+| 2 | Team Sheet (sheet) | Keep as drawn | helper hS2 |
+| 3 | Compare (compare) | Redo with the rule | helper hC2 |
+| 4 | Battle (battle) | Sim (Nov 21, 10:23 PM): kit version fell flat; build direction A, "Plot the turn": turn one as a speed race track (the four moves on one Speed lane, fastest first, yours Plot blue / theirs Nasty pink, priority jumps ahead, KO/flinch marked where they land, the verdict as the finish line). Mock-up pictures first | next free helper |
 | 5 | Speed Tiers (speed) | Redo with the rule | open |
-| 6 | Type Chart (types) | Redo with the rule | symbols part: helper hY |
+| 6 | Type Chart (types) | Redo with the rule | symbols part approved by Sim 10:23 PM (tag keep/type-chips), merging |
 | 7 | Team Preview Practice (practice) | Redo with the rule | open |
 | 8 | Test Run (gauntlet) | Redo with the rule | open |
 | 9 | Usage (usage) | (not called) | open |
