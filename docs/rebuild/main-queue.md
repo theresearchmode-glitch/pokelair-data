@@ -1,5 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH: Chromium A-team + D-meta on the Safari fixes (task byjvazjf9); News coupon checks (bb0i9ivx7); then push News + Safari fixes and send Sim the PC rerun lines
+NOW: HH: GitHub run on 15d639bf (News coupon, Safari fixes, Wave 1); Sim's PC Safari rerun; Game Plan update
+NEXT: review hW2's Mystery Gifts, then Track Record fixes; pull the second account's alt/* branches (Wave 3 sizes first)
 NEXT: review hM's Track Record redo; hW2's Mystery Gifts; audit Wave 1 (no-looks) only after Sim's yes
 NEXT: merge This Week on Sim's yes; review hW2's News and hM's Track Record
 NEXT: merge Events (keep/events-kit) and How We Calculate (keep/method-kit, brings the evening #4 test edit) on Sim's yes; then GitHub full check
