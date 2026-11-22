@@ -107,7 +107,7 @@ t('BATTLE-01', 'page head: "Team preview · <team> vs their six", real sheet kic
   const {ui, close} = await open({team: TEAM}); await ui.go('Battle'); let tx = await ui.pageText();
   if (NEW) { /* mock-up: the typing help sits in the Their six sheet (Sim, Nov 12, Q2 = A); the head names the team once a sheet is in */
     await ui.enterOpponents(['Kingambit']); tx = await ui.pageText(); expect(/Bring these four\. Lead the pair\./.test(tx), 'no plan head with 1 of theirs');
-    await ui.pickTournamentTeam(1); tx = await ui.pageText(); hasAll(tx, ['Battle a team · Their real open team sheet', 'Champion', 'players'], 'real-sheet head');
+    await ui.pickTournamentTeam(1); tx = await ui.pageText(); hasAll(tx, ['BATTLE · THE TARGET', 'Their real open team sheet', 'Champion', 'players'], 'real-sheet head'); /* Nov 22, The target: the kit kicker; the sheet is named on the Vs line */
     await close(); return; }
   expect(/vs\s+their six/i.test(tx), 'head does not say "vs their six" with none of theirs in');
   lacks(tx, 'as you see them at team preview. Type', 'head');
@@ -192,7 +192,7 @@ t('BATTLE-07', 'empty and partial states: under 4 of yours, none of theirs, then
   else expect(await ui.sees('Type their Pokémon as you see them at team preview. Everything below fills in as you go.'), 'no "Type their Pokémon…" message with 4 and none of theirs');
   expect(!(await ui.sees(/bring these four/i)), 'plan shows with none of theirs');
   await ui.enterOpponents(['Kingambit', 'Pelipper']); const tx = await ui.pageText();
-  hasAll(tx, ['The read', 'Bring these four', NEW ? 'Turn one, play by play' : 'Turn one, in move order'], 'Battle with 2 of theirs'); /* Nov 14, Play-by-Play (Sim's pick): the new title */
+  hasAll(tx, ['The read', 'Bring these four', 'Turn one, in move order'], 'Battle with 2 of theirs'); /* Nov 22, The target: turn one is the hero's move list again, under today's title */
   await close(); });
 
 t('BATTLE-08', 'The read: your lead, their likely lead, biggest threat, Fake Out count', async () => {
@@ -234,7 +234,7 @@ t('BATTLE-09', 'Plan / Speed / Damage switch filters cards on phones; hidden on 
 
 t('BATTLE-10', 'Bring these four, lead the pair; one-Mega note when two Megas come', async () => {
   { const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); const tx = await ui.pageText();
-    if (NEW) { hasAll(tx, ['Bring these four. Lead the pair.', 'Lead pair tested on 13,000 ladder games'], 'Bring head');
+    if (NEW) { hasAll(tx, ['Bring these four', 'Lead pair tested on 13,000 ladder games'], 'Bring head'); /* Nov 22, The target: the headline names their biggest threat; 'Bring These Four' heads your four */
       expect(/Lead Mega Charizard Y \S+ Y Rillaboom [^]*Back Incineroar [^]*Whimsicott/i.test(tx), 'Lead/Back not Mega Charizard Y + Rillaboom / Incineroar + Whimsicott');
       expect(/Leave home Garchomp [^]*Sneasler/i.test(tx), 'no "Leave home: Garchomp, Sneasler"'); await close(); }
     else { hasAll(tx, ["NastyPlot's pick", 'Bring these four. Lead the pair.', 'Tested on 13,000 ladder games'], 'Bring card');
@@ -275,12 +275,12 @@ t('BATTLE-12', 'Watch out fold lists what shuts you down; open/closed remembered
 
 t('BATTLE-13', 'Turn one in move order with the planned moves, KO warning and field', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle'); const tx = await ui.pageText();
-  expect((NEW ? /Turn one, play by play Fastest moves first\. Your Mega Charizard Y \+ Rillaboom vs their likely Indeedee \(F\) \+ Pelipper/i : /Turn one, in move order your Mega Charizard Y \+ Rillaboom vs their likely Indeedee \(F\) \+ Pelipper/i).test(tx), 'turn one title wrong'); /* Nov 14: Play-by-Play title and sub-line */
-  expect((NEW ? /1 You · Rillaboom Fake Out into Pelipper .*?107 Speed \+3 priority/i : /1 You: Rillaboom 107 Speed, \+3 Fake Out Pelipper/i).test(tx), 'step 1 is not Rillaboom Fake Out on Pelipper'); /* new: the mock-up's step format */
-  expect((NEW ? /2 You · Mega Charizard Y Weather Ball .*?\d+ Speed/i : /2 You: Mega Charizard Y \d+ Speed Weather Ball/i).test(tx), 'step 2 is not Mega Charizard Y Weather Ball');
-  expect((NEW ? /3 Them · .+4 Them · /i : /3 Them: .+4 Them: /i).test(tx), 'steps 3-4 are not theirs');
+  expect((NEW ? /Turn one, in move order your Mega Charizard Y \+ Rillaboom vs their likely Indeedee \(F\) \+ Pelipper/i : /Turn one, in move order your Mega Charizard Y \+ Rillaboom vs their likely Indeedee \(F\) \+ Pelipper/i).test(tx), 'turn one title wrong'); /* Nov 14: Play-by-Play title and sub-line */
+  expect((NEW ? /1 Your Rillaboom 107 Speed · \+3 priority Normal Fake Out into their Pelipper/i : /1 You: Rillaboom 107 Speed, \+3 Fake Out Pelipper/i).test(tx), 'step 1 is not Rillaboom Fake Out on Pelipper'); /* new (Nov 22, The target): number, Your/Their + name, Speed, the move with its type word */
+  expect((NEW ? /2 Your Mega Charizard Y \d+ Speed .*?Weather Ball/i : /2 You: Mega Charizard Y \d+ Speed Weather Ball/i).test(tx), 'step 2 is not Mega Charizard Y Weather Ball');
+  expect((NEW ? /3 Their .+4 Their /i : /3 Them: .+4 Them: /i).test(tx), 'steps 3-4 are not theirs');
   expect(/Watch ?your Rillaboom can be KO'd by their Pelipper's Weather Ball \(from turn 2\)\. Consider Protect\./i.test(tx), 'no KO warning'); /* Sim's W11 (Nov 19): one subject per lead */ /* Nov 18 (design review #1): Rillaboom's Fake Out flinches Pelipper on turn one, so its threat is from turn 2; Nov 19: your/their on each name */
-  expect(/Pelipper Flinches/i.test(tx), 'Pelipper is not shown flinching from the Fake Out');
+  expect((NEW ? /Their Pelipper \d+ Speed (?:· [^ ]+ priority )?Flinches/i : /Pelipper Flinches/i).test(tx), 'Pelipper is not shown flinching from the Fake Out');
   expect((NEW ? /Field on turn 1: sun \+ Psychic Terrain \(Mega Charizard Y\)/i : /Field on turn 1 sun \+ Psychic Terrain \(Mega Charizard Y\)/i).test(tx), 'no field line');
   await ui.clearOpponents(); await ui.enterOpponents(['Kingambit']);
   expect(!/Turn one, in move order/i.test(await ui.pageText()), 'turn one shows with 1 of theirs');
@@ -854,7 +854,7 @@ t('X-07', 'their six and the log update live from another device', async () => {
 t('X-08', 'Battle text uses the site\'s punctuation (no " · " left in sentences)', async () => {
   const {ui, close} = await open({team: TEAM, opp: OPP2}); await ui.go('Battle');
   let tx = await ui.pageText();
-  if (NEW) tx = tx.replace(/Battle a team · (Team preview|Their real open team sheet)/g, '') /* the approved eyebrow (BATTLE-01, mocks/battle.tpl.html) */
+  if (NEW) tx = tx.replace(/Battle a team · (Team preview|Their real open team sheet)|BATTLE · THE TARGET/g, '') /* the approved eyebrow (BATTLE-01, mocks/battle.tpl.html); the kit kicker (Nov 22, The target) */
     .replace(/\b(You|Them) · /g, ''); /* the play-by-play step label "1 You · Rillaboom" (mocks/battle-playbyplay/BRIEF.md:27, BATTLE-13) */
   expect(!/\w · \w/.test(tx), '" · " separators left in Battle text: ' + (tx.match(/.{0,30}\w · \w.{0,30}/g) || []).join(' | ')); await close(); });
 

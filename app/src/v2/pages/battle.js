@@ -108,14 +108,14 @@ V2.btOnce = P => { const W = P.watch || [], dn = o => V2.disp(o.p.n); let thr = 
       const line = {c: o[0], k, d, also: []}; seen.set(key, line); out.push(line); }
     if (out.length) rows.push({o: w.o, out}); }
   return {thr, rows}; };
-V2.battleRead = (theirs, P) => { if (!P) return ''; const E = V2.esc, R = P.real; const thr = V2.btOnce(P).thr;
+V2.battleRead = (theirs, P, noBig) => { if (!P) return ''; /* noBig: the page's hero already names the biggest threat (battle-target.js), so it is said once */ const E = V2.esc, R = P.real; const thr = V2.btOnce(P).thr;
   const fos = theirs.filter(o => (o.moves || []).some(x => x && x.name === 'Fake Out'));
   const big = thr ? `<div class="bt-big">${V2.btPk(thr.o.p.n, '').replace(/<b>[\s\S]*?<\/b><small>&nbsp;<\/small>/, '')}<div><p class="k">Biggest threat</p><h3 class="u">${V2.rowName(V2.disp(thr.o.p.n))}</h3><p>${E(thr.t)}${thr.d ? ': ' + E(thr.d) : ''}</p></div></div>` : '';
   const fo = `<div class="bt-fo"><b class="u">${fos.length}</b><p>Fake Out on their side<small>${fos.length ? E(fos.map(o => o.d).join(', ')) + ' can flinch one of your leads on turn 1' : 'Nobody on their side can flinch your leads on turn 1'}</small></p></div>`;
   const nm = n => E((byName.get(n) || {}).d || n).replace(/ ([XYZ])$/, '\u00a0$1'); // 'Charizard Y' stays together (Nov 12 rule: form letters never alone on a line)
   const real = R ? `<div class="bt-real"><h2 class="u">From Real Games</h2>${R.key.length ? '<p class="bt-sub">The pairings that stand out:</p>' : ''}<!-- Battle Q2 B (Sim, Nov 13): the verdict and game count are said once, at the top -->
     ${R.key.length ? `<ul class="bt-pairs">${R.key.map(k => `<li><i class="${k.v > 0 ? 'he' : 'hu'}">${k.v > 0 ? 'Helps you' : 'Hurts you'}</i><span>Your ${nm(k.a)} vs their ${nm(k.b)}</span></li>`).join('')}</ul>` : '<p class="fine">No Pokémon pairing here stands out in real results.</p>'}</div>` : '';
-  return `<div class="bt-read"><h2 class="u">The Read</h2><p class="bt-sub">What decides this match</p>${big}${fo}</div>${real}`; };
+  return `<div class="bt-read"><h2 class="u">The Read</h2><p class="bt-sub">What decides this match</p>${noBig ? '' : big}${fo}</div>${real}`; };
 V2.battleWatch = P => { if (!P) return ''; const E = V2.esc, O = V2.btOnce(P), W = O.rows, said = !!O.thr || (P.watch || []).length > 0;
   const none = said ? 'Nothing else on their side shuts down your four' : 'Nothing on their side shuts down your four';
   return `<div class="bt-watch"><h2 class="u">Watch Out</h2><p class="bt-sub">${W.length ? `${W.length} more of their six can shut something down` : none}</p>${W.length ? `<div class="bt-rows">${W.map(w => `<div class="bt-r">${V2.mon(w.o.p.n, {iw: 52, bare: true})}<div><b>${V2.rowName(V2.disp(w.o.p.n))}</b>${w.out.map(({c, k, d, also}) => `<p class="tg"><em class="${c === 'lo' ? 'lo' : c === 'hi' ? 'hi' : 'mid'}">${E(k)}</em> ${V2.keepForm(E(d))}${also.length ? ` (also ${V2.keepForm(E(also.join(', ')))})` : ''}</p>`).join('')}</div></div>`).join('')}</div>` : `<p class="fine">${none}.</p>`}</div>`; };
