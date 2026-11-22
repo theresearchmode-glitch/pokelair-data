@@ -85,7 +85,7 @@ V2.pages.tournaments = {place: 'meta', draw() { const E = V2.esc, d = META.teams
   const facts = G.length ? `<p class="wt-facts"><b>${homeNum(V2.wtList().length)}</b> top-cut teams${G.map(([g, n]) => ` · <b>${n}</b> from ${/^last/i.test(g) ? 'the ' : ''}${E(g.toLowerCase())}`).join('')}</p>` : '';
   /* the Meta pages' shared header (eyebrow, headline, intro, then the Pokémon / Tournaments tabs: v2-minors measures it on every Meta page);
      the eyebrow is the kit's kicker chip, "SECTION · THE PLAN-NAME" (THEME 2.2) */
-  const head = `<section class="ra-h"><p class="k-kicker np-eyebrow ra-kk"><span>META · THE WINNING CREWS</span></p><h1 class="u"><span>The teams that</span> <span class="pl">won it.</span></h1>
+  const head = `<section class="ra-h"><p class="np-eyebrow wt2-kick"><span>META · THE WINNING CREWS</span></p><h1 class="u"><span>The teams that</span> <span class="pl">won it.</span></h1>
     <p class="ra-lede">Top-cut teams from real tournaments. Load one, practice against it, or compare it with yours.</p>${tabs}${facts}</section>`;
   const src = d ? `${E(ttSourceText(d.source))}${d.updated && V2.otherDay(new Date(d.updated).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) ? ', updated ' + E(new Date(d.updated).toLocaleDateString('en-US', {month: 'short', day: 'numeric'})) : ''}` : '';
   const top = `<div class="gs-top wt-top">${head}<div class="ra-spotw wt-spot-w">${V2.wtYours()}</div>${tabs}</div>`;
