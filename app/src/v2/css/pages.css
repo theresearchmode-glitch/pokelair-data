@@ -3993,8 +3993,6 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* ===== Winning Teams on the shared kit (Nov 22): Sim's PC mock-up "THE WINNING CREWS" (Keep as drawn). The Meta header stays the Meta
    pages' own (v2-minors measures it on all of them); its eyebrow is the kit's kicker chip. Below it: the plot sentence, the plan line,
    the top team as six roster cards with the one pink move, the runners-up as two calm panels, the rest as rows in words. Colours are tokens. ===== */
-.wt2 .ra-h .wt2-kick{justify-self:start;padding:var(--s1) var(--s3);background:var(--k-chip);color:var(--k-on-chip);font:800 var(--t15)/1.3 var(--u);font-style:italic;letter-spacing:.04em;transform:skewX(-10deg)}
-.wt2 .ra-h .wt2-kick::before{display:none}
 .wt2-ctl{display:grid;gap:var(--s3);min-width:0}
 .wt2-ctl .k-sent{margin:0}
 .wt2-find{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);min-width:0}
@@ -4192,8 +4190,6 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
    stays the Meta pages' own with the kit's kicker chip (the Winning Teams rule above); the counts are the kit's facts row; the All /
    Official / 100+ players filter is the plot sentence; the page is the plan line: 1 the latest score (six roster cards, USE THIS TEAM.),
    2 coming up (calendar tickets), 3 the ticket wall (ink date stub, name, the winner's six). Colours are tokens. ===== */
-.ev2 .ra-h .wt2-kick{justify-self:start;padding:var(--s1) var(--s3);background:var(--k-chip);color:var(--k-on-chip);font:800 var(--t15)/1.3 var(--u);font-style:italic;letter-spacing:.04em;transform:skewX(-10deg)}
-.ev2 .ra-h .wt2-kick::before{display:none}
 .ev2 .gs-top{grid-template-columns:minmax(0,1fr)}
 .ev2-intro{display:grid;gap:var(--s1);min-width:0}
 @media (min-width:1100px){.ev2 .ra-h{grid-template-columns:auto minmax(0,1fr);column-gap:var(--s12)}.ev2 .ra-h>*{grid-column:1/-1}
@@ -4372,3 +4368,4 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (max-width:389.98px){.wk2-used .k-fact{white-space:normal}} /* qcheck (Nov 22): three cards across at 320 are too narrow for "39% of teams · #1" on one line */
 /* qcheck Nov 22: at 700-1099 the receipt runs full width, so a 1deg tilt lifts the right end of each line ~13px onto the next; half the tilt there */
 @media (min-width:700px) and (max-width:1099.98px){.abt .abt-rc{rotate:-.5deg}}
+.ev2 .ra-h .k-kicker{margin-top:0} /* audit Wave 1 (P1-4): the kit kicker instead of the copied chip; Events keeps its head spacing */
