@@ -24,7 +24,7 @@ Helpers take the top open page. Each page is ONE job in its OWN copy (git worktr
 | 1 | My Team, empty (team-empty) | n/a | merged (4c632f93), push with the fix batch |
 | 2 | Team Sheet (sheet) | Keep as drawn | helper hS2 |
 | 3 | Compare (compare) | Redo with the rule | helper hC2 |
-| 4 | Battle (battle) | Sim (Nov 21, 10:23 PM): kit version fell flat; build direction A, "Plot the turn": turn one as a speed race track (the four moves on one Speed lane, fastest first, yours Plot blue / theirs Nasty pink, priority jumps ahead, KO/flinch marked where they land, the verdict as the finish line). Mock-up pictures first | next free helper |
+| 4 | Battle (battle) | Sim (Nov 22): concept 1 "Turn one is already written" (the script: cast list, then turn one told in the game's own battle text on the war-room panel, HP bars after each hit). Make it better and more creative, then build it. Mock scripts: helper hB2's copy scratchpad/bm, docs/rebuild/mocks/battle-3/c1-script.js; pictures docs/rebuild/pics/nov22/battle3/1-the-script-* | next helper slot |
 | 5 | Speed Tiers (speed) | Redo with the rule | open |
 | 6 | Type Chart (types) | Redo with the rule | symbols part approved by Sim 10:23 PM (tag keep/type-chips), merging |
 | 7 | Team Preview Practice (practice) | Redo with the rule | open |
