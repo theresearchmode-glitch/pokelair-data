@@ -520,7 +520,7 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
     const us = [...d.querySelectorAll('.pk-usual li')].filter(li => li.querySelector('.k-mp, :scope > small')).map(li => (li.querySelector('.k-mn b') || li.querySelector('b')).textContent.trim()); /* Nov 21: the move ticket's share is .k-mp (every ticket has a small 'what it does' line) */ const L = [...d.querySelectorAll('.pk-list')].find(x => /Moves/.test(x.querySelector('h3') ? x.querySelector('h3').textContent : ''));
     if (!us.length || !L) continue; n++; const names = [...L.querySelectorAll('.ms-br span')].map(s => s.textContent.trim()); const miss = us.filter(m => !names.includes(m)); if (miss.length) bad.push(p.n + ':' + miss.join('/')); } return {n, bad: bad.slice(0, 6), nb: bad.length}; })()`));
   ok(mv.nb === 0, `Player review 1d (Nov 17): every move 'Usually' names is in the Moves list below it (${mv.n} Pokémon; missing on ${mv.nb}: ${mv.bad.join(', ')})`); }
-{ await p.goto('file://' + PAGE + '#pokemon=garchomp'); await p.waitForTimeout(2000); const t = await p.evaluate(() => (document.querySelector('#main .pk-n:last-child') || {}).textContent || '');
+{ await p.goto('file://' + PAGE + '#pokemon=garchomp'); await p.waitForTimeout(2000); const t = await p.evaluate(() => (document.querySelector('#main .pk-run') || {}).textContent || ''); /* reskin (Nov 21): what players run is the rap sheet's big Speed (was the hero's last number) */
   ok(/Choice Scarf/.test(t) || !/Speed/.test(t), `Player review 1e (Nov 17): a Speed with the usual Choice Scarf says so (Garchomp: ${t.replace(/\s+/g, ' ').trim()})`); }
 { await p.evaluate(() => { try { localStorage.clear(); } catch (e) {} }); await p.goto('file://' + PAGE + '#team'); await p.reload(); await p.waitForTimeout(2200);
   const t = await p.evaluate(() => document.querySelector('#main').innerText); ok(/After 5 logged games, Build Me a Team weighs your own results/.test(t), 'Player review 2b (Nov 17): empty Your Games says what logging unlocks'); }
@@ -734,8 +734,8 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
     wl.push(...await p.evaluate(r => { const t = document.querySelector('#main').textContent; return [[/Build for Me\b/, 'Build for Me'], [/Count abilities/, 'Count abilities'], [/items, moves and abilities/, 'abilities (lower case)'], [/in the checklist/, 'the checklist']].filter(([re]) => re.test(t)).map(x => r + ': ' + x[1]); }, r)); }
   ok(!wl.length, `Audit v199 #16 (Nov 17): word-list names on Battle, My Team, This Week and How We Calculate (Build Me a Team, Abilities, Team Checks) (slips: ${wl.join(', ') || 'none'})`); }
 { await p.setViewportSize({width: 390, height: 900}); const lk = []; for (const n of ['Whimsicott', 'Incineroar', 'Flapple']) { await p.goto('file://' + PAGE + '#pokemon=' + n); await p.waitForTimeout(1500);
-    lk.push(await p.evaluate(() => ((document.querySelector('.pk-rate small') || {}).textContent || 'none').trim() + (document.querySelector('.pk-gauge .pk-rg') ? '' : ' (no band)'))); }
-  await p.setViewportSize({width: 1280, height: 900}); ok(lk.every(t => t !== 'none' && !/likely|\d+\s*[–-]\s*\d+|no band/.test(t)), `Sim (Nov 17): the Pokémon page rating line has no 'likely 81-92' words; the bar keeps its shaded band (Sim, later) (${lk.join(' | ')})`); }
+    lk.push(await p.evaluate(() => ((document.querySelector('.pk-rate small') || {}).textContent || 'none').trim())); } /* reskin (Nov 21, Sim approved the file mock-up): the kit card has no 0-100 gauge, so the band half is gone */
+  await p.setViewportSize({width: 1280, height: 900}); ok(lk.every(t => t !== 'none' && !/likely|\d+\s*[–-]\s*\d+/.test(t)), `Sim (Nov 17): the Pokémon page rating line has no 'likely 81-92' words (${lk.join(' | ')})`); }
 { const hd = []; const hctx = await b.newContext({hasTouch: true}), hq = await hctx.newPage();
   for (const w of [320, 360, 390, 414, 700, 1024, 1440]) { await hq.setViewportSize({width: w, height: 800}); await hq.goto('file://' + PAGE + '#home'); await hq.waitForTimeout(1200);
     await hq.evaluate(() => { location.hash = '#events'; }); await hq.waitForTimeout(800); await hq.evaluate(() => { location.hash = '#types'; }); await hq.waitForTimeout(800); await hq.goBack(); await hq.waitForTimeout(1000);
@@ -959,29 +959,31 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       return spread < 0.5 && m.every(x => x.h >= 44) && c && mb <= c.top && c.top - mb <= 8 ? 'ok' : `words ${spread.toFixed(1)}px apart, mark gap ${c ? (c.top - mb).toFixed(1) : '-'}, tap ${Math.min(...m.map(x => x.h)).toFixed(0)}px`; }); } }
   const bb = Object.entries(bar).filter(([, v]) => v !== 'ok');
   ok(!bb.length, `Sim Q5 B (Nov 17): the phone bar's five words sit on one line with the mark just above the current one, 320-699 (${bb.length ? bb.slice(0, 3).map(([k, v]) => k + ' ' + v).join('; ') : '14 of 14 ok'})`); await ctx.close(); }
-{ /* audit v199 #18 (Sim, Nov 17: Option A): from 700 the Pokémon page's Card sits left of the rating block, forms as even tiles; at 700-819
-     the tier word stays on one line and the three numbers keep a clear gap (at 700 'F tier' wrapped and 0.1% 39% 152 nearly touched) */
+{ /* audit v199 #18 (Sim, Nov 17: Option A), reskinned Nov 21 (Sim approved the "file" mock-up; docs/rebuild/reskin/27-pokemon.md): from 960
+     the kit card sits left of the verdict, facts and set; under 960 the kit hero stacks (the card on top). The tier word under the score stays on
+     one line, the facts in a row keep a clear gap (12px+), and the forms strip keeps its even tiles in full rows from 700 */
   const top = async (w, m) => { const q = await b.newPage({viewport: {width: w, height: 1000}}); await q.goto('file://' + PAGE + '#pokemon=' + m); await q.waitForTimeout(2200);
-    const r = await q.evaluate(() => { const R = s => { const e = document.querySelector(s); return e && e.getBoundingClientRect(); }, c = R('.pk-card'), s = R('.pk-is'), em = document.querySelector('.pk-rate em');
-      const tx = e => { const g = document.createRange(); g.selectNodeContents(e); const a = [...g.getClientRects()]; return {l: Math.min(...a.map(x => x.left)), r: Math.max(...a.map(x => x.right)), n: new Set(a.map(x => Math.round(x.top))).size}; };
-      const nb = [...document.querySelectorAll('.pk-n b')].map(tx), fs = document.querySelector('.pk-forms'), fw = [...document.querySelectorAll('.pk-forms a')].map(a => a.getBoundingClientRect());
-      return {side: !!(c && s && c.right <= s.left && c.top < s.bottom && s.top < c.bottom), tierLines: em ? tx(em).n : 0, gap: Math.round(Math.min(...nb.slice(1).map((x, i) => x.l - nb[i].r))),
-        forms: fw.length, formSpread: fw.length ? Math.round(Math.max(...fw.map(x => x.width)) - Math.min(...fw.map(x => x.width))) : 0, formRows: new Set(fw.map(x => Math.round(x.top))).size, formScroll: fs ? /auto|scroll/.test(getComputedStyle(fs).overflowX) && fs.scrollWidth > fs.clientWidth + 1 : false, /* a sideways scroller with tiles out of view */
+    const r = await q.evaluate(() => { const R = s => { const e = document.querySelector(s); return e && e.getBoundingClientRect(); }, c = R('.pk-card'), s = R('.pk-verdict'), /* Nov 21 (Sim, 6:46 PM): the fact tiles sit under the verdict, so at 960-1099 the set card can start below the hero card; the verdict is the right column's first part */ em = document.querySelector('.pk-rate .tier-tag'); /* .pk-is is display: contents from 960 (its parts sit in the hero grid) */
+      const tx = e => { const g = document.createRange(); g.selectNodeContents(e); const a = [...g.getClientRects()]; return {l: Math.min(...a.map(x => x.left)), r: Math.max(...a.map(x => x.right)), t: Math.round(Math.min(...a.map(x => x.top))), n: new Set(a.map(x => Math.round(x.top))).size}; };
+      const nb = [...document.querySelectorAll('.pk-is .k-facts b')].map(tx), pairs = nb.slice(1).map((x, i) => x.t === nb[i].t ? x.l - nb[i].r : null).filter(v => v != null);
+      const fs = document.querySelector('.pk-forms'), fw = [...document.querySelectorAll('.pk-forms a')].map(a => a.getBoundingClientRect());
+      return {side: !!(c && s && c.right <= s.left && c.top < s.bottom && s.top < c.bottom), tierLines: em ? tx(em).n : 0, gap: pairs.length ? Math.round(Math.min(...pairs)) : 99,
+        forms: fw.length, formSpread: fw.length ? Math.round(Math.max(...fw.map(x => x.width)) - Math.min(...fw.map(x => x.width))) : 0, formRows: new Set(fw.map(x => Math.round(x.top))).size, formScroll: fs ? /auto|scroll/.test(getComputedStyle(fs).overflowX) && fs.scrollWidth > fs.clientWidth + 1 : false,
         formOut: fs && fw.length ? Math.round(Math.max(...fw.map(x => x.right)) - fs.getBoundingClientRect().right) : 0}; }); /* the slanted tiles' corners may stick out a few px */
     await q.close(); return r; };
-  const t768 = await top(768, 'charizard'), t700 = await top(700, 'charizard-mega-y'), t700r = await top(700, 'rotom-wash'), t810 = await top(810, 'dragonite-mega'), t699 = await top(699, 'charizard');
-  ok(t768.side && t768.forms === 3 && t768.formSpread <= 2 && t768.formRows === 1 && !t768.formScroll && t768.formOut <= 8, `audit #18 (Nov 17): at 768 the Card sits left of the rating block and the 3 forms are even tiles in one row (${JSON.stringify(t768)})`);
-  ok(t700.side && t700.tierLines === 1 && t700.gap >= 12 && t700r.tierLines === 1 && t700r.gap >= 12 && t810.tierLines === 1 && t810.gap >= 12, `audit #18: at 700-819 the tier word is on one line and the three numbers are 12px+ apart (94 S tier ${t700.tierLines} line(s), gap ${t700.gap}; Wash Rotom ${t700r.tierLines}, ${t700r.gap}; 80 A tier at 810 ${t810.tierLines}, ${t810.gap})`);
+  const t1024 = await top(1024, 'charizard'), t768 = await top(768, 'charizard'), t700 = await top(700, 'charizard-mega-y'), t700r = await top(700, 'rotom-wash'), t810 = await top(810, 'dragonite-mega'), t699 = await top(699, 'charizard');
+  ok(t1024.side && !t768.side && !t699.side, `reskin (Nov 21): from 960 the card sits left of the verdict and set; under 960 it is on top (1024 ${t1024.side}, 768 ${t768.side}, 699 ${t699.side})`);
+  ok(t768.forms === 3 && t768.formSpread <= 2 && t768.formRows === 1 && !t768.formScroll && t768.formOut <= 8, `audit #18 (Nov 17): at 768 the 3 forms are even tiles in one row (${JSON.stringify(t768)})`);
+  ok([t700, t700r, t810, t1024].every(t => t.tierLines === 1 && t.gap >= 12), `audit #18: the tier word is on one line and the facts in a row are 12px+ apart (${[t700, t700r, t810, t1024].map(t => t.tierLines + ' line, gap ' + t.gap).join('; ')})`);
   ok(t700r.forms === 6 && t700r.formRows === 2 && t700r.formSpread <= 2 && !t700r.formScroll && t700r.formOut <= 8, `audit #18: six forms at 700 sit as 3 + 3 even tiles, nothing hidden off to the side (${JSON.stringify(t700r)})`);
-  ok(!t699.side, `audit #18: under 700 (phones) the Card stays above the rating block (${JSON.stringify(t699)})`);
-  /* the widest rating ('80 A tier') must fit its column at 700-899 (at 700 the 120 px number ran 58 px past it): every number and tier shown */
+  /* the widest score and tier ('80 A tier', '88 S tier'...) must stay inside the card at every width (it sits in the card's name row now) */
   const fit = async w => { const q = await b.newPage({viewport: {width: w, height: 1000}}); await q.goto('file://' + PAGE + '#pokemon=dragonite-mega'); await q.waitForTimeout(2200);
-    const r = await q.evaluate(() => { const nb = document.querySelector('.pk-rate>b'), em = document.querySelector('.pk-rate em'), is = document.querySelector('.pk-is'); let worst = -99, wv = '';
-      for (const n of ['80', '88', '40', '11', '94']) for (const t of ['A', 'S', 'C', 'F']) { nb.textContent = n; em.textContent = t + ' tier'; const R = is.getBoundingClientRect();
-        const o = Math.max(...[...document.querySelectorAll('.pk-rate *')].map(e => e.getBoundingClientRect().right)) - R.right, wide = R.right - document.querySelector('.pk-top').getBoundingClientRect().right;
-        if (Math.max(o, wide) > worst) { worst = Math.round(Math.max(o, wide)); wv = n + ' ' + t; } } return {worst, wv}; }); await q.close(); return r; };
-  const f700 = await fit(700), f768 = await fit(768), f849 = await fit(849);
-  ok(f700.worst <= 0 && f768.worst <= 0 && f849.worst <= 0, `audit #18: the widest rating and tier stay inside the rating column (px past it: 700 ${f700.worst} for ${f700.wv}, 768 ${f768.worst}, 849 ${f849.worst})`); }
+    const r = await q.evaluate(() => { const nb = document.querySelector('.pk-rate>b'), em = document.querySelector('.pk-rate .tier-tag'), cd = document.querySelector('.pk-card .k-plate'); let worst = -99, wv = '';
+      for (const n of ['80', '88', '40', '11', '94']) for (const t of ['A', 'S', 'C', 'F']) { nb.textContent = n; em.textContent = t + ' tier'; const R = cd.getBoundingClientRect();
+        const o = Math.max(...[...document.querySelectorAll('.pk-rate *')].map(e => e.getBoundingClientRect().right)) - R.right;
+        if (o > worst) { worst = Math.round(o); wv = n + ' ' + t; } } return {worst, wv}; }); await q.close(); return r; };
+  const f320 = await fit(320), f700 = await fit(700), f1024 = await fit(1024);
+  ok(f320.worst <= 0 && f700.worst <= 0 && f1024.worst <= 0, `audit #18: the widest score and tier stay inside the card (px past it: 320 ${f320.worst} for ${f320.wv}, 700 ${f700.worst}, 1024 ${f1024.worst})`); }
 { /* audit v199 #19 (Sim, Nov 17: Option A): under 430 This Week's Most Used is a ranked 5-row list (rank, sprite, name, 'of teams', share right);
      it was 3 + 2 tiles whose slanted plates crossed. No name breaks mid-word at 320. 430 up keeps the strip of five tiles */
   const wk = async w => { const q = await b.newPage({viewport: {width: w, height: 900}}); await q.goto('file://' + PAGE + '#weekly'); await q.waitForTimeout(2000);

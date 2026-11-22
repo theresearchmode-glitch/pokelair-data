@@ -3057,137 +3057,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* How We Calculate (Nov 15, plain until the designer's bold version): the small line under a label sits on its own line, never glued to it */
 .inf-legend .nplrow>b small,.inf-track b small{display:block;font:400 var(--t13)/1.5 var(--b)}
 
-/* ---------- The Pokémon page, "The Answer Page" (Sim's pick, Nov 15): the top and Base Stats ---------- */
-.pk{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s10)} /* the column never grows past the screen (a long name on the Card pushed it to 330 px at 320) */
-.pk-trail{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s2);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.pk-trail a{display:inline-flex;align-items:center;min-height:var(--tap);padding:0 var(--s2);margin:0 calc(var(--s2)*-1);color:var(--plot-text);text-decoration:none} /* the links themselves are 44 px tall (a drawn-on tap area is not counted by every check, nor every finger) */
-.pk-top{display:grid;grid-template-columns:minmax(260px,360px) minmax(0,1fr);gap:var(--s10);align-items:start}
-.pk-card .ms-card{margin:0}.pk-card .mc-nm{margin:0;font:900 var(--t28)/1.15 var(--u);font-style:italic;color:var(--card-ink)}
-.pk-is{display:grid;gap:var(--s4);min-width:0}
-.pk-kick{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);margin:0;font:700 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
-.pk-rank{padding:var(--s1) var(--s3);background:var(--plot);color:var(--on-mark);font:800 var(--t13)/1.5 var(--u);font-style:italic;letter-spacing:0;text-transform:none;transform:skewX(-10deg)}
-.pk-is h1{margin:0;font:900 var(--d-hero)/1 var(--u);font-style:italic}
-.pk-rate{display:flex;align-items:flex-end;gap:var(--s4)}.pk-rate>b{font:900 var(--d120)/.9 var(--u);font-style:italic}
-.pk-rate span{display:grid;gap:var(--s1);padding-bottom:var(--s3)}.pk-rate em{font:900 var(--t34)/1 var(--u);font-style:italic;color:var(--plot-text)}.pk-rate small{font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
-.pk-gauge{position:relative;height:var(--s8);margin-bottom:var(--s5);border-bottom:2px solid var(--rule)}
-
-.pk-gauge .pk-rg{position:absolute;bottom:0;left:calc(var(--lo)*1%);width:calc((var(--hi) - var(--lo))*1%);height:var(--s3);background:color-mix(in srgb,var(--plot) 35%,transparent)}.pk-gauge .pk-mk{position:absolute;bottom:0;left:calc(var(--v)*1%);width:var(--s2);height:var(--s6);background:var(--plot);transform:translateX(-50%) skewX(-10deg)}
-.pk-gauge span{position:absolute;top:calc(100% + var(--s1));left:calc(var(--v)*1%);font:600 var(--t13)/1 var(--b);color:var(--ink-3);transform:translateX(-50%)}.pk-gauge span:first-of-type{transform:none}.pk-gauge span:last-of-type{transform:translateX(-100%)}
-.pk-nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s4);padding:var(--s4) 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
-.pk-n{display:grid;gap:var(--s1)}.pk-n b{font:900 var(--t34)/1 var(--u);font-style:italic}.pk-n.few b{font-size:var(--t22)}.pk-n span{display:grid;font:600 var(--t15)/1.4 var(--b)}.pk-n small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-.pk-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3)}.pk-acts>.ms-add{margin:0} /* the sheet's top margin pushed it 8 px below the buttons (audit Nov 15) */
-/* Base Stats */
-.pk-stats{--nr:var(--s16);display:grid;gap:var(--s4);padding:var(--s6) var(--s8) var(--s8);background:var(--wash);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,24px 100%,0 calc(100% - 24px))}
-.pk-sh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s1) var(--s4)} /* phones: 'Total 634 +100' drops under the heading instead of pushing the panel wider */.pk-sh h2{margin:0;font:900 var(--t28)/1.2 var(--u);font-style:italic}
-.pk-tot{margin:0;display:flex;align-items:baseline;gap:var(--s2)}.pk-tot small{font:700 var(--t13)/1 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}.pk-tot b{font:900 var(--t34)/1 var(--u);font-style:italic}
-.pk-lanes{display:grid;gap:var(--s3);margin:0;background:repeating-linear-gradient(90deg,var(--rule) 0 1px,transparent 1px calc(100%/var(--n))) 112px 0/calc(100% - 112px - var(--nr)) 100% no-repeat}
-.pk-stats:has(.pk-v em){--nr:var(--s24)} /* a Mega: the number's room fits '159 +50' (audit Nov 15: it ran 18 px past the panel at 600) */
-.pk-lane{display:grid;grid-template-columns:96px minmax(0,1fr);gap:var(--s4);align-items:center}
-.pk-sl{padding:var(--s1) var(--s3);background:var(--c);color:var(--on);font:800 var(--t13)/1.5 var(--u);font-style:italic;transform:skewX(-10deg)}
-.pk-lane dd{position:relative;display:flex;align-items:center;margin:0;padding-right:var(--nr);min-height:var(--s8)} /* the right 64 px is the number's room, so every streak is measured on the same width as the scale */
-.pk-streak{display:block;flex:none;width:var(--w);height:var(--s6);background:linear-gradient(90deg,color-mix(in srgb,var(--c) 15%,transparent),var(--c));clip-path:polygon(0 42%,calc(100% - 16px) 0,100% 50%,calc(100% - 16px) 100%,0 58%)}
-.pk-v{position:absolute;left:calc((100% - var(--nr))*var(--f) + var(--s3));display:flex;align-items:baseline;gap:var(--s1);white-space:nowrap}.pk-lane b{font:900 var(--t28)/1 var(--u);font-style:italic} /* a Mega's change ('+50') follows its number */.pk-lane em,.pk-tot em{font:700 var(--t13)/1 var(--b);font-style:normal}.pk-lane em.up,.pk-tot em.up{color:var(--good-text)}.pk-lane em.dn,.pk-tot em.dn{color:var(--bad-text)}
-.pk-scale{position:relative;height:var(--s5);margin:0 var(--nr) 0 112px;font:600 var(--t13)/1 var(--b);color:var(--ink-3)}.pk-scale span{position:absolute;left:var(--v);transform:translateX(-50%)}.pk-scale span:first-child{transform:none}.pk-scale span:last-child{transform:translateX(-100%)}
-.pk-share{display:flex;height:var(--s6);margin-top:var(--s2);gap:2px}.pk-share i{display:flex;align-items:center;justify-content:center;min-width:0;background:var(--c);color:var(--on);font:800 var(--t13)/1 var(--b);font-style:normal;overflow:hidden;white-space:nowrap;transform:skewX(-10deg)}
-.pk-more{margin:0}
-@media (max-width:899.98px){.pk-is h1{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)} /* iPhone/iPad: the name shows once, on the Card (brief 1) */
-  .pk-acts .np-btn,.pk-acts .np-btn2{flex:1 1 160px}}
-@media (max-width:699.98px){.pk-top{grid-template-columns:minmax(0,1fr)}.pk-card{max-width:360px;width:100%;justify-self:center}}
-/* audit v199 #18, Sim Nov 17 (Option A): from 700 (iPad portrait) the Card sits left and the rating block right, as on desktop (it was a
-   360 px Card centred with ~150 px empty each side at 768); 5 : 6 columns, the Card centred on the block's height */
-@media (min-width:700px) and (max-width:899.98px){.pk-top{grid-template-columns:minmax(0,5fr) minmax(0,6fr);gap:var(--s8);align-items:center}.pk-rate em{white-space:nowrap}}
-/* the rating column is 304-385 px here: at 700-849 the tier word and the three numbers go one step down the scale (34 -> 28), so the tier
-   never wraps and 0.1% 39% 152 keep a clear gap; at 700-799 (column 304-358 px) the rating itself is 96 (not 120) and its tier 24, the only
-   sizes where the widest one ("80 A tier") fits beside it (120 ran 58 px past the column at 700). Measured on all 65 ratings shown, 700-899 */
-@media (min-width:700px) and (max-width:849.98px){.pk-rate em,.pk-n b{font-size:var(--t28)}}
-@media (min-width:700px) and (max-width:799.98px){.pk-rate>b{font-size:var(--d96)}.pk-rate em{font-size:var(--t24)}}
-@media (max-width:699.98px){.pk-stats{padding:var(--s5) var(--s4) var(--s6)}.pk-lane{grid-template-columns:88px minmax(0,1fr);gap:var(--s3)}.pk-sl{padding:var(--s1) var(--s2);white-space:nowrap}.pk-lanes{background-position:100px 0;background-size:calc(100% - 100px - var(--nr)) 100%}.pk-scale{margin-left:100px}.pk-scale span:nth-child(even){display:none} /* phones: the plates fit 'Sp. Atk' on one line; the scale shows 0, 80, 160 */
-  .pk-share span{display:none}.pk-rate>b{font-size:var(--d64)}.pk-n b{font-size:var(--t26)}}
-/* narrow phones (under 400): each stat on two lines, plate and number on top, the streak under them at the panel's full width (beside the
-   plate the streaks were ~90 px at 320, too short to read); the scale lines and labels follow the full width */
-@media (max-width:399.98px){.pk-n.few b{font-size:var(--t17)} /* 'None yet' on one line at 320 (audit Nov 15) */.pk-lane{grid-template-columns:minmax(0,1fr);gap:var(--s1)}.pk-sl{justify-self:start}
-  .pk-lane dd{padding-right:0;min-height:var(--s6)}.pk-lane b{font-size:var(--t22)}.pk-lane{position:relative}
-  .pk-v{left:clamp(100px, calc(100% * var(--f)), calc(100% - var(--s24) - var(--s4)));top:calc(var(--s8)*-1)} /* on the line above at the tip, but never on the plate (low stats) or past the panel (a Mega's '159 +30') */.pk-lanes{background-position:0 0;background-size:100% 100%}.pk-scale{margin:0}}
-.pk-more .np-link,.pk-tap{position:relative}.pk-more .np-link::after,.pk-tap::after{content:"";position:absolute;inset:-12px -8px} /* 44 px tap area, the line unmoved */
-.pk-404{display:flex;width:max-content;margin-top:var(--s4)} /* scan S3 A (Sim, Nov 20): the outline button on its own line (np-btn2 is 44 px tall) */
 .nf-go{margin:var(--s6) 0 0} /* Q24 (Nov 19): the not-found page's Go to Home, 24 px under its line (shell.js V2.nfHtml) */
-/* Pokémon page: jump links, each part's head, part 1 "How to build it" */
-.pk-jumps{display:flex;flex-wrap:wrap;gap:var(--s2)}.pk-jumps button{min-height:var(--tap);padding:0 var(--s4);background:var(--wash);color:var(--ink);font:700 var(--t15)/1 var(--b);transform:skewX(-10deg)}.pk-jumps button:hover{background:color-mix(in srgb,var(--plot) 14%,var(--wash))}
-.pk-sec{display:grid;gap:var(--s6);scroll-margin-top:var(--s16)}
-.pk-h{display:flex;align-items:flex-start;gap:var(--s4);padding-bottom:var(--s3);border-bottom:4px solid var(--ink)}
-.pk-no{display:grid;place-items:center;flex:none;width:var(--s10);height:var(--s10);background:var(--plot);color:var(--on-mark);font:900 var(--t24)/1 var(--u);font-style:italic;transform:skewX(-10deg)}
-.pk-h h2{margin:0;font:900 var(--t34)/1.1 var(--u);font-style:italic}.pk-h p{margin:var(--s1) 0 0;font:600 var(--t13)/1.5 var(--b);color:var(--ink-2)}
-.pk-k{margin:0 0 var(--s3);font:900 var(--t20)/1.2 var(--u);font-style:italic}
-.pk-build{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,5fr) minmax(0,4fr);gap:var(--s10);align-items:start}
-.pk-usual{order:2}.pk-ubase{margin-left:var(--s2);font-family:var(--b);font-size:var(--t13);font-weight:600;font-style:normal;color:var(--ink-2)}.pk-usual .k-moves{gap:var(--s1) var(--s2)}.pk-set{order:1}.pk-lists{order:3;display:grid;gap:var(--s6)}
-.pk-set dl{display:grid;gap:var(--s3);margin:0 0 var(--s4)}.pk-set dt{font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
-.pk-set dd{display:grid;margin:var(--s1) 0 0}.pk-set dd b{font:700 var(--t17)/1.3 var(--b)}.pk-set dd small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
-.pk-slots{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3);margin:0 0 var(--s4);padding:0;list-style:none}
-.pk-slots li{display:grid;align-content:center;gap:2px;min-height:var(--s16);padding:var(--s2) var(--s4) var(--s2) var(--s5);background:repeating-linear-gradient(-55deg,transparent 0 6px,color-mix(in srgb,var(--on-type) 10%,transparent) 6px 8px) var(--tc);color:var(--on-type);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
-.pk-slots b{min-width:0;font:900 var(--t17)/1.15 var(--u);font-style:italic}.pk-slots.pk-slots1{grid-template-columns:minmax(0,1fr)}.pk-slots1 li{min-height:var(--s16)} /* V2.fitWords: one per row on narrow phones */.pk-slots small{font:600 var(--t13)/1.4 var(--b)}
-.pk-ub{margin:0;font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
-.pk-empty{margin:0}
-@media (max-width:1099.98px){.pk-build{grid-template-columns:repeat(2,minmax(0,1fr))}.pk-usual{grid-column:1/-1;order:0}}
-@media (max-width:699.98px){.pk-build{grid-template-columns:minmax(0,1fr);gap:var(--s6)}.pk-h h2{font-size:var(--t26)}.pk-jumps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.pk-jumps button{padding:0 var(--s2);font-size:var(--t13)}}
-/* Pokémon page part 2 "Who it teams with": the partners as a fanned hand (outer Cards tilt more and sit lower, as in Winning Hands) */
-.pk-fan{display:flex;justify-content:center;gap:var(--s4);margin:0;padding:var(--s4) 0 0;list-style:none}@media (min-width:900px) and (max-width:1099.98px){.pk-fan{padding-inline:var(--s3);gap:var(--s6)}} /* a 6deg tilt leans ~12 px: room at the sides and between Cards (they poked out at 700-1024 and touched at 700, audit Nov 15) */
-.pk-fan li{flex:0 1 220px;display:grid;justify-items:center;align-content:start;gap:var(--s3);margin-top:calc(var(--s3)*(var(--i) - (var(--k) - 1)/2)*(var(--i) - (var(--k) - 1)/2))}
-.pk-fan .pk-pc{transform:rotate(calc((var(--i) - (var(--k) - 1)/2)*4deg))} /* only the Cards tilt; the numbers under them stay straight and inside the section */
-.pk-pc{display:block;width:100%;text-decoration:none;color:inherit}.pk-pc .ms-card{height:240px;margin:0}.pk-pc .mc-nm{min-width:0;max-width:100%;margin:0;font:900 var(--t20)/1.15 var(--u);font-style:italic;color:var(--card-ink)}
-.pk-pc:hover .ms-card,.pk-pc:focus-visible .ms-card{translate:0 calc(var(--s2)*-1)}
-.pk-pn{display:grid;justify-items:center;gap:var(--s1);margin:0}.pk-pn b{font:900 var(--t34)/1.15 var(--u);font-style:italic}.pk-pn small{font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
-.pk-fnote{display:flex;flex-wrap:wrap;align-items:center;justify-content:center;gap:var(--s4)}.pk-fnote .fine{margin:0}
-@media (max-width:899.98px){.pk-fan{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6) var(--s4)}.pk-fan li{margin-top:0}.pk-fan .pk-pc{transform:none}.pk-pc .ms-card{height:200px}}
-@media (max-width:699.98px){.pk-fan{display:flex;justify-content:flex-start;gap:var(--s4);overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:var(--s2);margin-inline:calc(var(--s4)*-1);padding-inline:var(--s4);scroll-padding-inline:var(--s4)}.pk-fan li{flex:0 0 min(46%, 180px);scroll-snap-align:start}} /* phones: the four partners in one swipe row (the 2x2 block was 841 px tall; Sim, Nov 15: keep within the limits, keep the wow) */ /* two across up to 899 (Nov 15: four across at 700-899 left ~90 px for a name) */
-@media (prefers-reduced-motion:reduce){.pk-pc:hover .ms-card,.pk-pc:focus-visible .ms-card{translate:none}}
-.pk-pc .mc-mon .np-mon,.pk-pc .mc-mon .np-mon .st{--iw:150px}.pk-pc .mc-mon{top:var(--s4)} /* the Card's own 272 px sprite size is for the big Card; a partner's sprite fits its 240 px Card */
-@media (max-width:699.98px){.pk-pc .mc-mon .np-mon,.pk-pc .mc-mon .np-mon .st{--iw:112px}.pk-pc .mc-nm{font-size:var(--t15)}}
-/* Pokémon page part 3 "What beats it": five boxes from danger to safe, a coloured head on each (tokens; white text by day, dark at night) */
-.pk-scale5{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s2)}
-.pk-tb{display:grid;align-content:start;gap:var(--s3);padding:0 0 var(--s4);background:var(--wash)}.pk-tb h3{margin:0;padding:var(--s2) var(--s3);background:var(--hc);color:var(--on-mark);font:900 var(--t17)/1.3 var(--u);font-style:italic}
-.pk-tb.q{--hc:var(--x4);outline:3px solid var(--bad-text);outline-offset:-3px}.pk-tb.q h3{color:var(--on-x4)} /* audit Nov 15: 4x weak is a deep red with white text, clearly apart from 2x weak's red in both themes */.pk-tb.d{--hc:var(--bad)}.pk-tb.n{--hc:var(--band-solid)}.pk-tb.h{--hc:var(--plot)}.pk-tb.z{--hc:color-mix(in srgb,var(--plot-text) 70%,var(--ink))}
-.pk-chips{display:flex;flex-wrap:wrap;gap:var(--s1);padding:0 var(--s3)}.pk-none,.pk-qr{margin:0;padding:0 var(--s3);font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pk-qr{font:700 var(--t13)/1.5 var(--b)}
-@media (max-width:899.98px){.pk-scale5{grid-template-columns:minmax(0,1fr)}.pk-tb{grid-template-columns:132px minmax(0,1fr);align-items:center;padding:0}.pk-tb h3{align-self:stretch;display:flex;align-items:center}
-  .pk-tb .pk-chips,.pk-tb .pk-none{padding:var(--s2) var(--s3)}.pk-tb .pk-qr{grid-column:2}.pk-tb>*:nth-child(n+3){grid-column:2}}
-/* Pokémon page part 4 "How fast it is": the line of the top 30 outsped, a flag per build in its own row (r0/r2 above, r1/r3 below) */
-.pk-speed{--rh:160px;position:relative;padding:calc(var(--up)*var(--rh)) 0 calc(var(--dn)*var(--rh) + var(--s10))}
-.pk-line{position:relative;height:4px;background:var(--plot)}.pk-line .tick{position:absolute;left:calc(var(--p)*1%);top:-6px;width:2px;height:16px;background:var(--plot)}
-.pk-tls{position:relative;height:0}.pk-tls span{position:absolute;top:var(--s3);left:calc(var(--p)*1%);white-space:nowrap;font:600 var(--t13)/1 var(--b);color:var(--ink-3);transform:translateX(-50%)}.pk-tls span:first-child{transform:none}.pk-tls span:last-child{transform:translateX(-100%)} /* labels are their own elements on the page background (inside the 2 px ticks, the contrast check read them as blue-on-blue) */
-.pk-sprite{position:absolute;bottom:2px;left:calc(var(--p)*1%);transform:translateX(-50%)}
-.pk-flag{position:absolute;left:calc(var(--l)*1%);width:17%;display:grid;gap:2px;padding:var(--s2) var(--s3);background:var(--wash);font:500 var(--t13)/1.4 var(--b)}
-.pk-flag.r0{top:calc(var(--up)*var(--rh) - var(--s4));translate:0 -100%}.pk-flag.r2{top:calc(var(--up)*var(--rh) - var(--rh) - var(--s4));translate:0 -100%} /* flags above stand on their stems, just over the line */
-.pk-flag.r1{top:calc(var(--up)*var(--rh) + var(--s10))}.pk-flag.r3{top:calc(var(--up)*var(--rh) + var(--rh) + var(--s10))} /* below the % labels */
-.pk-flag b{font:900 var(--t28)/1 var(--u);font-style:italic}.pk-flag span{font:700 var(--t13)/1.4 var(--b)}.pk-flag small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}.pk-flag em{font:700 var(--t13)/1.4 var(--b);font-style:normal;color:var(--plot-text)}
-.pk-flag.main{background:var(--pk-main);color:var(--on-pk-main)}.pk-flag.main small{color:var(--on-pk-main);opacity:.85}.pk-flag.main em{color:var(--on-pk-main)} /* night: the PLOT blue (the plate was too close to the other flags, audit Nov 15) */
-.pk-stem{position:absolute;left:calc(var(--p)*1%);width:2px;background:var(--ink-3)}
-.pk-stem.r0{top:calc(var(--up)*var(--rh) - var(--s4));height:var(--s4)}.pk-stem.r2{top:calc(var(--up)*var(--rh) - var(--rh) - var(--s4));height:calc(var(--rh) + var(--s4))}
-.pk-stem.r1{top:calc(var(--up)*var(--rh) + 4px);height:calc(var(--s10) - 4px)}.pk-stem.r3{top:calc(var(--up)*var(--rh) + 4px);height:calc(var(--rh) + var(--s10) - 4px)}
-.pk-ends{position:absolute;bottom:0;left:0;right:0;display:flex;justify-content:space-between;margin:0;font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
-.pk-tr{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--s4);padding:var(--s3) var(--s5);background:color-mix(in srgb,var(--band-ready) 18%,var(--wash));clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
-.pk-tr b{font:900 var(--t28)/1 var(--u);font-style:italic}.pk-tr span{display:grid;font:700 var(--t15)/1.4 var(--b)}.pk-tr small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}.pk-tr em{font:700 var(--t13)/1.4 var(--b);font-style:normal}
-.pk-splist{display:none}
-@media (max-width:1099.98px){.pk-speed,.pk-tr{display:none}.pk-splist{display:grid;gap:var(--s3)}
-  .pk-splist>div{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s1) var(--s4);align-items:center;padding:var(--s3) var(--s4);background:var(--wash)}.pk-splist>div.main{background:var(--plate);color:var(--on-plate)}
-  .pk-splist span{display:grid;font:700 var(--t15)/1.4 var(--b)}.pk-splist small{font:500 var(--t13)/1.4 var(--b);opacity:.85}.pk-splist b{font:900 var(--t28)/1 var(--u);font-style:italic}
-  .pk-splist i{grid-column:1/-1;height:var(--s2);background:linear-gradient(90deg,var(--plot) calc(var(--p)*1%),color-mix(in srgb,var(--ink) 12%,transparent) 0)}.pk-splist em{grid-column:1/-1;font:700 var(--t13)/1.4 var(--b);font-style:normal}}
-
-.pk-fm{display:inline-block;vertical-align:middle;margin-right:var(--s2)}.pk-flag b{display:flex;align-items:flex-end}
 .mh .mc-mon{top:var(--s10)} /* Sim, Nov 15 (B, recommended): no Pokémon pops out of its Card on The Hand; every one stands inside on the same floor */
 @media (max-width:699.98px){.mh .mc-mon{top:var(--s5)}.mh .mc-mon .np-mon,.mh .mc-mon .np-mon .st{--iw:80px}} /* small Cards (152 px): the Pokémon stays inside and clear of its name */
 @media (min-width:700px) and (max-width:1099.98px){.mh .mc-mon{top:var(--s5)}} /* tablets: a Mega two-line name stays clear */
-/* Pokémon page parts 5 and 6: Abilities (a share bar, then each Ability) and Why it rates N (Track Record's receipt, paper slips) */
-.pk-abbar{display:flex;gap:2px;height:var(--s4)}.pk-abbar i,.pk-abh i{display:block;background:var(--plot);transform:skewX(-10deg)}
-.pk-abbar .a1,.pk-abh .a1{background:color-mix(in srgb,var(--plot) 55%,var(--wash))}.pk-abbar .a2,.pk-abh .a2{background:color-mix(in srgb,var(--plot) 30%,var(--wash))}.pk-abh .ax{background:var(--rule)}
-.pk-abs{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:var(--s8)}.pk-ab p{margin:0;font:400 var(--t15)/1.5 var(--b)}
-.pk-abh{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3);margin-bottom:var(--s2)}.pk-abh i{width:var(--s3);height:var(--s3);align-self:center}.pk-abh b{font:900 var(--t20)/1.2 var(--u);font-style:italic}.pk-abh span{font:700 var(--t13)/1.5 var(--b);color:var(--plot-text)}
-.pk-why{display:grid;grid-template-columns:minmax(300px,4fr) minmax(0,7fr);gap:var(--s12);align-items:start}
-.pk-rc .pk-rt{margin:0 0 var(--s2);padding-top:var(--s3);border-top:2px dashed var(--rc-rule);font:800 var(--t15)/1.4 var(--b)}.pk-rc .trk-lines li{display:grid;gap:var(--s2)} /* room for the 1.5° tilt: lines never touch */
-.pk-rc .trk-bar .trk-stamp{bottom:auto;top:calc(var(--s3)*-1)} /* the stamp sits over the top edge of the barcode, never over its end */
-.pk-data{display:grid;gap:var(--s4);min-width:0}
-.pk-slips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4);margin:0;padding:0;list-style:none}
-.pk-slip{display:grid;gap:var(--s1);padding:var(--s4);background:var(--rc-paper);color:var(--rc-ink);border-top:4px solid var(--rc-good);box-shadow:0 4px 12px var(--rc-shadow)}
-.pk-slip span{font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--rc-ink2)}.pk-slip b{font:800 var(--t17)/1.35 var(--b)}.pk-slip small{font:400 var(--t13)/1.5 var(--b);color:var(--rc-ink2)}
-@media (max-width:1099.98px){.pk-why{grid-template-columns:minmax(0,1fr)}.pk-rc{max-width:480px;width:100%;justify-self:center}}
-@media (max-width:699.98px){.pk-abs{grid-template-columns:minmax(0,1fr);gap:var(--s5)}.pk-slips{grid-template-columns:minmax(0,1fr)}}
 /* Forms (Sim, Nov 15: A): a strip of forms under the top, and 'Forms side by side' as the last part */
 .pk-forms{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:var(--s3)}@media (max-width:1099.98px){.pk-forms{grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:max-content;overflow-x:auto;padding:0 var(--s2) var(--s2);scroll-padding-inline:var(--s2);scroll-snap-type:x mandatory}.pk-forms a{scroll-snap-align:start}} /* one even row; under 1100 it scrolls sideways (no lone tiles) */.pk-forms a{display:flex;align-items:center;gap:var(--s2);padding:var(--s1) var(--s4) var(--s1) var(--s1);background:var(--wash);color:var(--ink);text-decoration:none;transform:skewX(-10deg)}.pk-forms a>*{transform:skewX(10deg)}
 .pk-forms a[aria-current]{background:var(--pk-main);color:var(--on-pk-main)}.pk-forms a[aria-current] .mg{color:inherit} /* the blue "Mega" read 1.00:1 on the blue tile at night */.pk-forms span{display:grid}.pk-forms b{font:700 var(--t15)/1.3 var(--b)}.pk-forms small{font:500 var(--t13)/1.4 var(--b);opacity:.85}.pk-forms a[aria-current] small{opacity:1} /* pre-launch 5c (Nov 17): 85% opacity read 4.14:1 on the current form's blue tile; full, 5.5:1 */
@@ -3196,17 +3069,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .pk-ftw{overflow-x:auto}@media (max-width:899.98px){.pk-ft th[scope=row]{position:sticky;left:0;z-index:1;background:var(--bg)}.pk-ftw{scroll-snap-type:x proximity}.pk-ft th[scope=col]{scroll-snap-align:end}} /* phones: the row names stay while the forms scroll */.pk-ft{width:100%;border-collapse:collapse;font:600 var(--t15)/1.4 var(--b)}.pk-ft th[scope=col]{padding:0 var(--s2) var(--s3);vertical-align:bottom}.pk-ft th[scope=col] b{display:block;font:900 var(--t17)/1.2 var(--u);font-style:italic}
 .pk-ft th[scope=row]{padding:var(--s2) var(--s3) var(--s2) 0;text-align:left;font:900 var(--t17)/1.3 var(--u);font-style:italic;color:var(--plot-text);white-space:nowrap}
 .pk-ft td{padding:var(--s2);text-align:center;border-top:1px solid var(--rule)}.pk-ft td.best{background:var(--plot);color:var(--on-mark);font-weight:800}
-.pk-sec>.ra-links{margin:var(--s4) 0 0}
 .ed-full{margin:var(--s4) 0 0}.ed-full .np-link{display:inline-flex;align-items:center;min-height:var(--tap)} /* Full Popular Sets (Nov 15) */
-/* Sim, Nov 15 (Q1 A): parts 3-6 fold on phones to their heading and one summary line */
-.pk-sum{display:none}
-.pk-fold .pk-sum{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 var(--s4);margin:var(--s3) 0 0}.pk-sum p{margin:0;flex:1 1 200px;font:600 var(--t15)/1.5 var(--b);color:var(--ink-2)}.pk-sum .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
-.pk-fold:not(.open)>*:not(.pk-h):not(.pk-sum){display:none}.pk-fold.open .pk-sum p{display:none} /* every width (uniform; the desktop page was 4,200-5,750 px) */
-@media (max-width:699.98px){.pk-lsum{display:flex}}
-@media (max-width:699.98px){.pk-jumps{display:flex;flex-wrap:nowrap;overflow-x:auto;scroll-snap-type:x proximity;margin-inline:calc(var(--s4)*-1);padding-inline:var(--s4);scroll-padding-inline:var(--s4)}.pk-jumps>*{flex:none;scroll-snap-align:start}} /* phones: the jump links in one swipe row */
-@media (max-width:699.98px){.pk-set dl{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}.pk-set dl>div:last-child:nth-child(odd){grid-column:1/-1}} /* phones: the typical set two by two (it was 4 rows down a half-empty width) */
-@media (max-width:699.98px){.pk-lsum{order:3}.pk-lists:not(.open){display:none}.pk-lists{order:4}}.pk-lsum{display:none}@media (max-width:699.98px){.pk-build .pk-lsum{display:flex}} /* part 1 on phones: the full lists behind one tap (order: after the typical set and Usually) */
-@media (min-width:900px){.pk{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s12)}.pk>*{grid-column:1/-1}.pk>.pk-fold:not(.open){grid-column:auto}.pk>.pk-fold.pk-solo{grid-column:1/-1}} /* wide screens: folded parts two side by side (one line each ran a whole row); an opened part takes the full width */
 .bd-busyw{position:relative}.bd-busyw.first{min-height:min(70vh,var(--s24)*6)}.bd-busyw .bd-busy{position:sticky;top:var(--s24);z-index:1;margin:0 0 var(--s3)}.bd-prev{opacity:.4;pointer-events:none;transition:opacity .2s} /* Build: the last result stays while a new one is built (no jump) */
 @media (prefers-reduced-motion:reduce){.bd-prev{transition:none}}
 .bd-rebuild .bd-result{position:relative}.bd-rebuild .bd-result>.bd-busy{position:absolute;top:var(--s4);left:50%;translate:-50% 0;z-index:2;margin:0;white-space:nowrap;box-shadow:var(--shadow-lift)} /* floats over the faded result: takes no space, so nothing moves */.bd-rebuild .bd-result>:not(.bd-busy){opacity:.4;pointer-events:none;transition:opacity .2s} /* Build: the last Blueprint stays while a new one is built */
@@ -3247,34 +3110,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bt-sx b{font:600 var(--t13)/1.3 var(--b);text-align:center;overflow-wrap:anywhere}.bt-sx:hover b{color:var(--plot-text)}
 @media (max-width:699.98px){.bt-sixrow{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (min-width:1100px){.bt-sixrow .np-mon,.bt-sixrow .np-mon .st{--iw:112px}} /* Sim Q3 (Nov 16): bigger sprites fill the wide Your Six tiles */
-/* Base Stats B (Sim, Nov 15 night): clean bars with pop and depth */
-.pk-bs{display:grid;gap:var(--s3) var(--s10);margin:var(--s4) 0 0}
-@media (min-width:900px){.pk-bs{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,auto);grid-auto-flow:column}}
-.pk-bsr{display:grid;grid-template-columns:76px auto minmax(0,1fr);align-items:center;column-gap:var(--s3);min-height:40px}
-.pk-bsr dt{font:700 var(--t15)/1.2 var(--b);color:var(--c)}
-.pk-bsr dd{display:contents}
-.pk-bsr dd>b{min-width:56px;text-align:right;font:900 var(--t24)/1 var(--u);font-style:italic;color:var(--ink);text-shadow:0 2px 0 color-mix(in srgb,var(--c) 45%,transparent)}
-/* a Mega's change sits in its own end column, so every row keeps one height */.pk-bsd .pk-bsr{grid-template-columns:76px auto minmax(0,1fr) 36px}.pk-bsr dd>em{grid-column:4;grid-row:1;justify-self:start;font:700 var(--t13)/1 var(--b);font-style:normal}.pk-bsr dd>em.up{color:var(--good-text)}.pk-bsr dd>em.dn{color:var(--bad-text)}
-/* Sim, Nov 15 10:26 PM: 'a little too bubbly': square slanted bars (the site's skewed shapes), soft glow, depth from the lower edge */.pk-bt{grid-column:3;grid-row:1;position:relative;height:12px;margin:0 2px;border-radius:2px;transform:skewX(-14deg);background:color-mix(in srgb,var(--ink) 8%,transparent);box-shadow:inset 0 1px 2px color-mix(in srgb,var(--ink) 18%,transparent)}
-.pk-bt i{position:absolute;inset:0 auto 0 0;width:var(--w);border-radius:2px;background:linear-gradient(90deg,color-mix(in srgb,var(--c) 55%,var(--surface)),var(--c) 70%);box-shadow:0 2px 0 color-mix(in srgb,var(--c) 60%,var(--ink)),0 0 6px color-mix(in srgb,var(--c) 20%,transparent)}
-.pk-bt i::after{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:color-mix(in srgb,var(--surface) 30%,transparent)}
-@media (max-width:379.98px){.pk-bsr{grid-template-columns:64px auto minmax(0,1fr)}.pk-bsd .pk-bsr{grid-template-columns:64px auto minmax(0,1fr) 32px}.pk-bsr dd>b{min-width:48px;font-size:var(--t22)}}
-/* Sim, Nov 18: Base Stats calmer and half the height, on theme ('large bubbly numbers ... off theme'; he picked 'A on theme',
-   pics/nov18/stats-opt3-A3-*): our slanted number type, small and flat (no shadow), flat skewed bars, a quieter total; on phones two
-   columns, each stat's label and number on one line with its bar under them */
-.pk-stats{gap:var(--s3);padding:var(--s5) var(--s6) var(--s6)}.pk-tot b{font-size:var(--t26)}
-.pk-bs{gap:var(--s2) var(--s8);margin-top:var(--s2)}
-.pk-bsr{min-height:32px;grid-template-columns:64px 44px minmax(0,1fr)}.pk-bsd .pk-bsr{grid-template-columns:64px 44px minmax(0,1fr) 36px}
-.pk-bsr dt{font:700 var(--t13)/1.2 var(--b);letter-spacing:.02em}
-.pk-bsr dd>b{min-width:0;font:800 var(--t16)/1 var(--u);font-style:italic;font-synthesis:style;font-variant-numeric:tabular-nums;text-shadow:none}
-.pk-bt{height:8px;margin:0;border-radius:0;transform:skewX(-20deg);box-shadow:none;background:color-mix(in srgb,var(--ink) 9%,transparent)}
-.pk-bt i{border-radius:0;background:var(--c);box-shadow:none}.pk-bt i::after{display:none}
-@media (max-width:899.98px){.pk-bs{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,auto);grid-auto-flow:column;gap:var(--s3) var(--s5)}
-  .pk-bsr{grid-template-columns:minmax(0,1fr) auto;row-gap:var(--s1);min-height:0}.pk-bsd .pk-bsr{grid-template-columns:minmax(0,1fr) auto 32px;column-gap:var(--s2)}
-  .pk-bsr .pk-bt{grid-column:1 / -1;grid-row:2}.pk-bsr dd>em{grid-column:3}}
-@media (max-width:699.98px){.pk-stats{padding:var(--s5) var(--s4) var(--s6)}}
 /* touch (Nov 16 helper sweep): 44 px tap area for the two small text links left, the line unmoved */.bt-sub .np-link,.nprow .np-link{position:relative}.bt-sub .np-link::after,.nprow .np-link::after{content:"";position:absolute;inset:-12px -4px}
-/* Nov 16: the link keeps its › on its line; the line wraps under the text when there is no room */.pk-sum .np-link{white-space:nowrap}@media (max-width:699.98px){.pk-build .pk-lsum{flex-wrap:wrap;align-items:center;justify-content:space-between;gap:0 var(--s4)}}
 /* one system (Nov 16): "show more" is the blue link everywhere, 44px tap, centred under its list */.ev-more,.us-rest,.wt-more,.wt-open{min-height:var(--tap);display:inline-flex;align-items:center;justify-content:center}
 /* How We Calculate (audit Nov 16): the sources and team-check lists come from the shared method text (today's site styles them); here they
    had no styles, so each row's parts ran together ("replaysThe newest…"). Each row: the name, its description, then "Used for" and the
@@ -3333,9 +3169,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:1100px) and (max-width:1279.98px){.fn-cacts{column-gap:var(--s3)}} /* the corner links stay in one row beside the wider score column (All 113 Events wrapped alone at 1100-1180) */
 .tc-h h1{text-wrap-style:balance} /* morning helper (confirmed): a long one-word name joined to "hard." ran off the screen at 320 (Crabominable +46px); the break is allowed and the lines are balanced */
 .tc>.tc-h,.tc-h h1{min-width:0} /* the page grid sized its column to the headline (350px at 320): the headline may now shrink, so it wraps within the screen */
-@media (max-width:389.98px){.pk-pc .mc-nm{font-size:var(--t13);overflow-wrap:normal}} /* morning helper (confirmed): partner names broke mid-word at 320 (Incineroa/r) and Kingambit ran 2px over at 360; 13px fits them whole */
-@media (max-width:359.98px){.pk-pc .mc-nm{letter-spacing:-.03em}} /* 320-359: Whimsicott fits whole */
-@media (max-width:359.98px){.pk-pc .mc-id{left:var(--s2);right:var(--s2)}} /* 320-359: the name area 110px instead of 94, so Whimsicott and Basculegion fit whole (clear of the cut corner) */
 /* Sim Q45 A (Nov 19, 8:33 PM): Test Run on phones shows the Coin Flips pile's first 5 cards and a button for the rest; 700 and up: every card */
 .tp-morebtn{display:none}
 @media (max-width:699.98px){.tp-cards:not(.on)>.tp-more{display:none}.tp-morebtn{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}}
@@ -3385,3 +3218,167 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:699.98px){.ra-tbar .k-sent{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}.ra-tbar .k-sent > span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.ra-tbar .k-w{min-height:var(--tap);padding:0 var(--s2)}}
 /* Ratings phones (Sim, Nov 21: keep the swipe rows, "easy to use on cellphone"): the row fades at its right edge so the cut card reads as "more this way" */
 @media (max-width:699.98px){.ra .gs-rows{-webkit-mask-image:linear-gradient(90deg,var(--k-mask) 82%,transparent);mask-image:linear-gradient(90deg,var(--k-mask) 82%,transparent)}}
+
+/* ---------- The Pokémon page, "The file on <name>." (reskin on the shared kit; Sim approved HH's mock-up, Nov 21, 2:55 PM:
+   docs/rebuild/mocks/pokemon-file/index.html; brief docs/rebuild/reskin/27-pokemon.md). Kit tokens only (--k-*, type scale, 4px grid) ---------- */
+.pk-trail{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s2);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.pk-trail a{display:inline-flex;align-items:center;min-height:var(--tap);padding:0 var(--s2);margin:0 calc(var(--s2)*-1);color:var(--plot-text);text-decoration:none}
+.pk-404{display:flex;width:max-content;margin-top:var(--s4)} /* scan S3 A (Sim, Nov 20): the outline button on its own line */
+.pk-tap{position:relative}.pk-tap::after{content:"";position:absolute;inset:-12px -8px} /* 44 px tap area, the line unmoved */
+.pkf{display:block;min-width:0}
+.pkf .k-kicker{margin-top:var(--s4)}
+.pkf .k-h1 .pk-nm{color:var(--k-plot-text);font-style:inherit}
+.pkf .k-hero{align-items:start;margin-top:120px}
+.pkf .pk-forms{margin-top:var(--s10)}
+/* the hero card: a flat tint of type 1 over the art, its own top-cut share per week behind the art as slanted bars on an ink baseline */
+.pk-card{--pk-art:196px}
+.pk-card .k-plate::before{background:linear-gradient(color-mix(in srgb,var(--kc) 26%,var(--k-card)),color-mix(in srgb,var(--kc) 26%,var(--k-card))) top/100% var(--pk-art) no-repeat,var(--k-card)}
+.pk-plot{position:absolute;z-index:0;left:var(--s6);right:var(--s8);top:var(--s4);height:calc(var(--pk-art) - var(--s4));display:flex;align-items:flex-end;gap:var(--s3);border-bottom:3px solid var(--k-ink)}
+.pk-plot i{flex:1;height:calc(var(--h) * 1%);background:color-mix(in srgb,var(--k2) var(--k2mix,88%),var(--k-card));transform:skewX(-12deg);transform-origin:bottom}
+.pk-plot i:last-child{background:var(--k1)}
+.pk-card .k-art{z-index:1}
+.pk-types{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s2);margin-top:var(--s2)}
+.pkf .pk-rate .tier-tag{font:inherit;color:inherit}
+.pk-trend{display:flex;align-items:center;gap:var(--s3);margin:var(--s5) 0 0;font:600 var(--t15)/1.4 var(--b);color:var(--k-ink)}.pk-trend .k-tag{flex:none}
+.pk-basics{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s4);margin:var(--s3) 0 0;font:600 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
+.pk-basics span::before{content:"✓ ";color:var(--k-plot-text);font-weight:800}
+/* beside the card: the verdict line, four facts, How to build it */
+.pk-is{display:grid;gap:var(--s5);align-content:start;min-width:0}
+.pk-verdict{margin:0;font-size:var(--t28);line-height:1.15;color:var(--k-ink)}
+.pk-verdict em{font-style:inherit;color:var(--pk-t1,var(--k-plot-text))}
+.pkf .k-facts{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s3) var(--s5);margin:0}
+.pkf .k-facts b{font-size:var(--t28)}
+.pk-setc{min-width:0;padding:var(--s5) var(--s6) var(--s6);background:var(--k-card);box-shadow:0 1px 0 var(--k-rule),0 18px 36px -24px var(--k-card-shadow)}
+.pk-sh{margin:0 0 var(--s1);font-size:var(--t22);line-height:1.2;color:var(--k-ink)}
+.pk-sub{margin:0 0 var(--s3);font:600 var(--t13)/1.4 var(--b);color:var(--k-ink2)}
+.pk-kv{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s2) var(--s5);margin:0 0 var(--s4)}
+.pk-kv>div{min-width:0}.pk-kv dt{font:600 var(--t13)/1.4 var(--b);color:var(--k-ink2)}.pk-kv dd{margin:0}
+.pk-kv b{display:block;font:700 var(--t16)/1.3 var(--b);color:var(--k-ink)}.pk-kv small{display:block;font:500 var(--t13)/1.4 var(--b);color:var(--k-ink2)}
+.pk-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4) var(--s5);margin-top:var(--s5)}
+.pkf .pk-acts .k-go{margin:0}
+.pk-ink{display:inline-grid;place-items:center;min-height:var(--tap);padding:0 var(--s5);border:0;border-radius:0;background:var(--k-chip);color:var(--k-on-chip);font-size:var(--t15);line-height:1;white-space:nowrap;cursor:pointer;transform:skewX(-8deg)}
+.pk-ink:focus-visible,.pk-q:focus-visible,.pk-hr:focus-visible,.pk-pc:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
+.pk-qlinks{display:flex;flex-wrap:wrap;gap:0 var(--s5);flex-basis:100%}
+button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);text-align:left;cursor:pointer}
+.pk-acts .pk-lsum{display:none}
+.pk-setc .ms-add{margin:var(--s3) 0 0}
+.pk-lists{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s8)}
+@media (min-width:960px){.pkf .k-hero{grid-template-columns:minmax(0,420px) minmax(0,1fr);grid-template-areas:'card ver' 'card fac' 'card set' 'lst set';grid-template-rows:auto auto auto 1fr;gap:var(--s5) var(--s10)}
+  .pkf .k-hero-side,.pkf .pk-is{display:contents}.pkf .k-hero-card{grid-area:card}.pk-verdict{grid-area:ver}.pkf .pk-is>.k-facts{grid-area:fac}.pk-setc{grid-area:set;align-self:start}
+  .pkf .pk-lists{grid-area:lst;grid-template-columns:minmax(0,1fr);align-self:start;margin-top:var(--s4)}}
+.pk-lists .pk-k{margin:0 0 var(--s2);font-size:var(--t15)}.pk-lists .ms-br{grid-template-columns:minmax(0,8rem) minmax(0,1fr) 48px;min-height:28px}.pk-lists p{margin:var(--s2) 0 0;font:500 var(--t15)/1.5 var(--b)}
+/* the steps' small heads */
+.pk-lbl{margin:0 0 var(--s3);font-size:var(--t15);line-height:1.3;color:var(--k-ink)}
+.pkf .fine{margin:var(--s2) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
+/* 1 The rap sheet. */
+.pk-rap{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:'st sp wh' 'ab sp wh' 'da da da' 'ft ft ft';grid-template-rows:auto 1fr auto auto;gap:0 var(--s8)}
+.pk-stats{grid-area:st}.pk-abil{grid-area:ab}.pk-spd{grid-area:sp}.pk-why{grid-area:wh}.pk-data{grid-area:da;margin-top:var(--s8)}
+.pk-stats{padding-right:var(--s1)} /* the slanted bars' corners stay inside the panel */
+.pk-bs{display:grid;gap:var(--s1);margin:0}
+.pk-bsr{display:grid;grid-template-columns:64px minmax(0,1fr) 40px;align-items:center;gap:var(--s3);min-height:28px}.pk-bsd .pk-bsr{grid-template-columns:64px minmax(0,1fr) 40px 36px}
+.pk-bsr dt{font:600 var(--t13)/1.2 var(--b);color:var(--k-ink)}.pk-bsr dd{display:contents}
+.pk-bt{height:8px;background:color-mix(in srgb,var(--k-ink) 9%,transparent);transform:skewX(-20deg)}.pk-bt i{display:block;height:100%;width:var(--w);background:var(--c)}
+.pk-bsr dd>b{text-align:right;font:800 var(--t16)/1 var(--u);font-style:italic;font-synthesis:style;font-variant-numeric:tabular-nums;text-shadow:none;color:var(--k-ink)}
+.pk-bsr dd>em,.pk-lbl em{font:700 var(--t13)/1 var(--b);font-style:normal}.pk-bsr dd>em.up,.pk-lbl em.up{color:var(--k-plot-text)}.pk-bsr dd>em.dn,.pk-lbl em.dn{color:var(--k-nasty-text)}
+.pk-abil{margin:var(--s4) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--k-ink)}.pk-abil b{font-weight:700}
+.pk-run{display:flex;align-items:baseline;gap:var(--s3);margin:0 0 var(--s2)}.pk-run>b{font-size:var(--t34);line-height:1;color:var(--k-ink)}
+.pk-run span{font:600 var(--t15)/1.3 var(--b);color:var(--k-ink)}.pk-run small{display:block;font:500 var(--t13)/1.4 var(--b);color:var(--k-ink2)}
+.pk-sprows{margin:0;padding:0;list-style:none}
+.pk-sprows li{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s3);padding:var(--s1) 0;border-bottom:1px solid var(--k-rule);font:600 var(--t13)/1.4 var(--b);color:var(--k-ink)}
+.pk-sprows li b{font-weight:800}.pk-sprows small{display:block;font-weight:500;color:var(--k-ink2)}.pk-sprows em{flex:none;max-width:45%;font-style:normal;font-weight:500;text-align:right;color:var(--k-ink2)}
+.pk-spd .k-link{margin-top:var(--s1)}
+.pk-wbars{display:grid;gap:var(--s2);margin:0;padding:0;list-style:none}
+.pk-wbars li{display:grid;grid-template-columns:minmax(0,1fr) 44px;align-items:center;gap:var(--s1) var(--s3)}
+.pk-wbars span{font:600 var(--t13)/1.3 var(--b);color:var(--k-ink)}.pk-wbars b{grid-row:1/3;grid-column:2;font-size:var(--t22);line-height:1;text-align:right;color:var(--k-plot-text)}
+.pk-wb{grid-column:1;height:6px;background:color-mix(in srgb,var(--k-ink) 9%,transparent);transform:skewX(-20deg);position:relative}.pk-wb::before{content:"";position:absolute;inset:0 auto 0 0;width:calc(var(--v) * 1%);background:var(--k-plot)}
+.pk-wbars small{grid-column:1/-1;font:500 var(--t13)/1.4 var(--b);color:var(--k-ink2)}
+.pk-honest{margin:var(--s3) 0 0;padding:var(--s3);background:color-mix(in srgb,var(--k-ink) 6%,transparent);font:500 var(--t13)/1.5 var(--b);color:var(--k-ink)}.pk-honest b{font-weight:700}
+.pk-slips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3) var(--s6);margin:0;padding:0;list-style:none}
+.pk-slips li{display:grid;align-content:start;padding-top:var(--s2);border-top:3px solid var(--k-ink)}
+.pk-slips span{font:700 var(--t13)/1.4 var(--b);color:var(--k-ink2)}.pk-slips b{font:700 var(--t15)/1.4 var(--b);color:var(--k-ink)}.pk-slips small{font:500 var(--t13)/1.4 var(--b);color:var(--k-ink2)}
+.pk-oh{margin-top:var(--s5)}
+.pk-links{display:flex;flex-wrap:wrap;gap:0 var(--s5);margin:var(--s2) 0 0}
+.pk-fts{grid-area:ft;min-width:0;margin-top:var(--s8)}
+.pk-morebtn{display:none;grid-column:1/-1;justify-self:start}
+/* 2 Known associates. */
+.pk-duo{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s10)}.pk-duo.one{grid-template-columns:minmax(0,1fr)}
+.pkf .pk-fan{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s12) var(--s4);padding-top:var(--s10)}
+.pk-duo.one .pk-fan{grid-template-columns:repeat(4,minmax(0,1fr))}
+.pk-pc{display:block;color:inherit;text-decoration:none}
+.pk-wins{display:grid;gap:var(--s3);margin:0;padding:0;list-style:none}
+.pk-win{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s2) var(--s4);align-items:start;padding:var(--s3) var(--s4);background:var(--k-card);box-shadow:0 1px 0 var(--k-rule)}
+.pk-rec{grid-row:span 2;display:grid;place-items:center;min-width:64px;height:52px;padding:0 var(--s2);background:var(--k-chip);color:var(--k-on-chip);font-size:var(--t20);transform:skewX(-8deg)}
+.pk-wt{min-width:0}.pk-wt h4{margin:0;font-size:var(--t16);line-height:1.25;color:var(--k-ink)}
+.pk-wm,.pk-wset{margin:var(--s1) 0 0;font:600 var(--t13)/1.4 var(--b);color:var(--k-ink2)}.pk-wset b{color:var(--k-ink)}
+.pk-six{grid-column:2;display:flex;flex-wrap:wrap;gap:var(--s1)}.pk-six>span{border-radius:50%}.pk-six>.me{background:color-mix(in srgb,var(--k-nasty) 16%,transparent)}
+/* 3 Hit list. And who's hunting it. */
+.pk-fights{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s10)}
+.pk-ko{margin:0;padding:0;list-style:none}
+.pk-hr{display:grid;grid-template-columns:36px minmax(0,1fr) auto;gap:2px var(--s3);align-items:center;padding:var(--s2) 0;border-bottom:1px solid var(--k-rule);color:inherit;text-decoration:none}
+.pk-hm{grid-column:1;grid-row:1/4;align-self:center}
+.pk-hn{grid-column:2;grid-row:1;min-width:0;font:700 var(--t15)/1.3 var(--b);color:var(--k-ink)}
+.pk-hp{grid-column:3;grid-row:1;font-size:var(--t22);line-height:1;text-align:right;white-space:nowrap;color:var(--k-ink)}
+.pk-hv{grid-column:2;grid-row:2;font:500 var(--t13)/1.3 var(--b);color:var(--k-ink2)}
+.pk-ht{grid-column:3;grid-row:2;justify-self:end}.pk-ht .k-tag{font-size:var(--t13);padding:0 var(--s2)}.pk-ht .k-tag.k-neutral{padding:0 var(--s2)}
+.pk-dmg{grid-column:2/4;grid-row:3;position:relative;height:8px;margin-top:var(--s1);background:color-mix(in srgb,var(--k-ink) 8%,transparent);transform:skewX(-20deg)}
+.pk-dmg::before{content:"";position:absolute;left:0;top:0;bottom:0;width:calc(var(--lo) / 1.5 * 1%);background:var(--tc,var(--type-none))}
+.pk-dmg i{position:absolute;top:0;bottom:0;left:calc(var(--lo) / 1.5 * 1%);width:calc((var(--hi) - var(--lo)) / 1.5 * 1%);background:color-mix(in srgb,var(--tc,var(--type-none)) 45%,transparent)}
+.pk-dmg::after{content:"";position:absolute;left:66.67%;top:-4px;bottom:-4px;width:2px;background:var(--k-ink)}
+.pk-typeline{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin:var(--s5) 0 0;font:600 var(--t13)/1.4 var(--b);color:var(--k-ink2)}
+.pk-typeline>span:not(:first-child){margin-left:var(--s2)}
+@media (max-width:1099.98px){.pk-rap{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'st sp' 'ab sp' 'wh wh' 'da da' 'ft ft';grid-template-rows:auto 1fr auto auto auto}.pk-why{margin-top:var(--s8)}.pk-slips{grid-template-columns:repeat(2,minmax(0,1fr))}.pk-kv{grid-template-columns:repeat(2,minmax(0,1fr))}.pkf .k-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:959.98px){.pk-duo,.pk-fights{grid-template-columns:minmax(0,1fr)}.pkf .pk-fan{grid-template-columns:repeat(4,minmax(0,1fr))}}
+/* phones: the card on top, the set and its moves under it, the steps one column; nothing folds except the full move and item lists */
+@media (max-width:699.98px){
+  .pk-card{--pk-art:144px}
+  .pkf .k-hero{margin-top:96px}
+  .pk-verdict{font-size:var(--t20)}
+  .pkf .k-facts{gap:var(--s2) var(--s4)}.pkf .k-facts b{font-size:var(--t24)}
+  .pk-trend{font-size:var(--t13);gap:var(--s2)}
+  .pk-setc{padding:var(--s4)}
+  .pk-kv{gap:var(--s2) var(--s4);margin-bottom:var(--s3)}
+  .pk-acts{gap:var(--s2) var(--s4);margin-top:var(--s4)}.pk-acts .k-go{flex:1 1 100%}.pk-qlinks{display:contents}
+  .pk-acts .pk-lsum{display:inline-flex}
+  .pk-lists:not(.open){display:none}.pk-lists{grid-template-columns:minmax(0,1fr)}
+  /* phones (as the approved mock-up): no dashed plan line, the step number sits before its heading, so the content has the full width */
+  .pkf .k-plan{padding-left:0}.pkf .k-plan::before{display:none}.pkf .k-n{left:0;top:2px}.pkf .k-sec{margin-top:32px;padding-left:40px}.pkf .k-step{padding-top:var(--s4)}.pkf .k-step .k-n{top:calc(var(--s4) + 32px)}
+  .pk-rap{grid-template-columns:minmax(0,1fr);grid-template-areas:'st' 'ab' 'sp' 'wh' 'da';grid-template-rows:auto}
+  .pk-morebtn{display:inline-flex;grid-area:mb}.pk-rap{grid-template-areas:'st' 'ab' 'sp' 'wh' 'mb' 'da' 'ft'}.pk-rap:not(.open) .pk-more,.pk-rap:not(.open) .pk-wbars small{display:none}.pk-spd,.pk-why,.pk-data{margin-top:var(--s6)}
+  .pk-bs{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(3,auto);grid-auto-flow:column;gap:var(--s2) var(--s5)}
+  .pk-bsr{grid-template-columns:minmax(0,1fr) auto;row-gap:var(--s1);column-gap:var(--s2);min-height:0}.pk-bsd .pk-bsr{grid-template-columns:minmax(0,1fr) auto 28px}
+  .pk-bsr .pk-bt{grid-column:1/-1;grid-row:2}.pk-bsr dd>em{grid-column:3;grid-row:1}
+  .pk-sprows{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s4)}.pk-sprows li{display:grid;gap:0;padding:2px 0}.pk-sprows em{max-width:none;text-align:left}
+  .pk-wbars{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s4)}.pk-wbars li{align-items:start}
+  .pk-slips{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s4)}
+  .pk-abil{margin-top:var(--s3)}
+  .pkf .pk-fan{gap:var(--s10) var(--s2);padding-top:var(--s8)}
+  .pk-win{grid-template-columns:auto minmax(0,1fr);gap:var(--s1) var(--s3);padding:var(--s3)}.pk-rec{grid-row:span 1;min-width:52px;height:36px;font-size:var(--t17)}.pk-wt h4{font-size:var(--t15)}.pk-six{grid-column:1/-1}
+  .pk-fights{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}
+  .pk-hr{grid-template-columns:36px minmax(0,1fr) auto;gap:0 var(--s2);padding:var(--s1) 0}
+  .pk-hm{grid-row:1/5}
+  .pk-hn{grid-column:2/4;font-size:var(--t13)}.pk-hp{grid-column:2/4;grid-row:2;text-align:left;font-size:var(--t15)}
+  .pk-hp{grid-column:2/4}.pk-hv{grid-row:3;grid-column:2/4}.pk-ht{grid-row:4;align-self:center}.pk-dmg{grid-row:4;grid-column:2;margin-top:0}
+}
+/* narrow phones (320-359): the set's four move tickets one per row (two across cut the type word, "NORMA"), and the hit list's damage
+   in Instrument Sans so "139–165%" stays inside its half */
+@media (max-width:359.98px){.pk-usual .k-moves{grid-template-columns:minmax(0,1fr)}.pk-hp{font-family:var(--b);font-style:normal;font-weight:800;letter-spacing:0}}
+/* Sim, Nov 21 (6:3x PM): "a touch more pop of colour" and "no empty white space without a purpose": the header's right side holds the
+   four facts as bold tiles in the Pokemon's own type colours; each step sits on a full-width band tinted with a type colour; the data
+   slips are filled tiles. Colours are the type tokens (--ty-*), mixed with the kit paper so day and night both work. */
+.pk-hd{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s4) var(--s8);align-items:end}
+.pkf .k-facts.pk-hfx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2);margin:var(--s5) 0 var(--s6);padding:0;list-style:none}
+.pk-hfx li{display:grid;align-content:end;min-height:88px;padding:var(--s3) var(--s4);background:var(--pk-c1);color:var(--on-type);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.pk-hfx li:nth-child(2),.pk-hfx li:nth-child(3){background:var(--pk-c2)}
+.pk-hfx li b{font-size:var(--t34);line-height:1;color:var(--on-type)}.pk-hfx li span{font:600 var(--t13)/1.3 var(--b);color:var(--on-type)}
+/* Sim, Nov 21 (6:37 PM): the tinted bands read brown; keep the paper and carry the type colours in a slanted two-tone bar that opens
+   each step (the brand's slanted boxy shape), with room to breathe above and below. Solid type colours only, never mixed into paper. */
+.pkf .k-step{position:relative;margin-top:var(--s12);padding-top:var(--s8);padding-bottom:var(--s4)}
+.pkf .k-step::before{content:"";position:absolute;top:0;left:calc(var(--s16) * -1);right:0;height:16px;background:linear-gradient(100deg,var(--pk-c1) 0 calc(62% - 1px),transparent calc(62% - 1px) calc(62% + 8px),var(--pk-c2) calc(62% + 8px) 100%);clip-path:polygon(0 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+.pkf .k-step>.k-sec{margin-top:0}
+.pkf .k-step>.k-n{top:-8px;border-color:var(--k-paper);background:var(--pk-c1);color:var(--on-type)}
+@media (max-width:699.98px){.pkf .k-step{margin-top:var(--s8);padding-top:var(--s6)}.pkf .k-step>.k-n{top:calc(var(--s6) + 2px)}.pkf .k-step::before{left:0;height:10px;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%)}.pkf .k-step>.k-n{border-color:var(--pk-c1)}}
+.pk-slips li{padding:0 var(--s3) var(--s4);border-top:0;background:var(--k-card)}
+.pk-slips li>span{margin:0 calc(var(--s3) * -1) var(--s2);padding:var(--s2) var(--s3);background:var(--pk-c1);color:var(--on-type)}
+.pk-slips li:nth-child(even)>span{background:var(--pk-c2)}
+@media (min-width:1100px){.pkf .k-facts.pk-hfx{grid-template-columns:repeat(4,minmax(0,1fr))}.pk-hfx li:nth-child(3){background:var(--pk-c1)}.pk-hfx li:nth-child(4){background:var(--pk-c2)}.pk-hfx li{min-height:88px}.pk-hfx li b{font-size:var(--t26)}}
+@media (min-width:1024px){.pkf .pk-slips{grid-template-columns:repeat(5,minmax(0,1fr))}}
+@media (max-width:699.98px){.pk-hfx li{min-height:72px;padding:var(--s2) var(--s3)}.pk-hfx li b{font-size:var(--t26)}}
