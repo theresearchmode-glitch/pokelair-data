@@ -9,6 +9,7 @@
 #            data). Publish both beside foundation.html, or the Preview shows no page / no data. The privacy check reads preview.json.
 # Saved from the Nov 11 chat's scratch script extract/rebuild-mine.sh (same steps, folder made a variable).
 # Takes up to ~15 minutes; run it with a 900 s timeout or in the background.
+set -o pipefail; # Nov 22: a build that crashed (no browser) printed only "Node.js v22" through tail and went on with a stale page; now it stops
 REPO="$(cd "$(dirname "$0")/../../.." && pwd)"; S="${S:-/tmp/np-preview}"; mkdir -p "$S/redesign"; cd "$REPO"
 rm -rf "$S/bc3" && mkdir -p "$S/bc3/app" && (cd app && tar cf - --exclude=./dist --exclude=./node_modules .) | (cd "$S/bc3/app" && tar xf -) && for d in node_modules docs; do ln -s "$REPO/$d" "$S/bc3/$d"; done && ln -s "${OUT:-$REPO/out}" "$S/bc3/out"
 (cd "$S/bc3" && node app/build.mjs --v2 2>&1 | tail -2) || exit 1
