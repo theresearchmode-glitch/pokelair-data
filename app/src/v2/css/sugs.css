@@ -386,3 +386,6 @@ p,li,small{text-wrap-style:pretty}
 .sg-ghost{display:grid;grid-template-columns:72px minmax(0,1fr) 96px;gap:var(--s4);align-items:center;padding:var(--s4) 0;border-top:1px solid var(--rule)}
 .sg-ghost i{display:block;height:var(--s10);border-radius:var(--r-s);background:var(--wash);transform:skewX(-8deg)}.sg-ghost i:nth-child(2){height:var(--s5)}
 @media (prefers-reduced-motion:reduce){.sg2-wait::before{animation:none}}
+
+/* (in the sugs layer: .sg2-tip lives here, a later layer than pages) Test Run footnote "?" (qcheck Nov 22: a 7x20 tap target): the button box is 24x24 (WCAG 2.5.8) without growing the line, plus a 44px invisible tap layer */
+.tr-foot .sg2-tip{position:relative;display:inline-grid;place-items:center;min-width:var(--s6);min-height:var(--s6);margin:calc(var(--s1)*-1) 0;vertical-align:middle}.tr-foot .sg2-tip::before{content:"";position:absolute;left:50%;top:50%;width:var(--tap);height:var(--tap);transform:translate(-50%,-50%)}
