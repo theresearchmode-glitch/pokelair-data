@@ -3382,3 +3382,18 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (min-width:1100px){.pkf .k-facts.pk-hfx{grid-template-columns:repeat(4,minmax(0,1fr))}.pk-hfx li:nth-child(3){background:var(--pk-c1)}.pk-hfx li:nth-child(4){background:var(--pk-c2)}.pk-hfx li{min-height:88px}.pk-hfx li b{font-size:var(--t26)}}
 @media (min-width:1024px){.pkf .pk-slips{grid-template-columns:repeat(5,minmax(0,1fr))}}
 @media (max-width:699.98px){.pk-hfx li{min-height:72px;padding:var(--s2) var(--s3)}.pk-hfx li b{font-size:var(--t26)}}
+/* Reskin (Nov 21): the empty My Team on the shared kit (team.js V2.emptyHtml). The kit header sits in the lead; Build Me a Team is the page's one
+   pink move with Add a Pokémon beside it; the winners are kit roster cards (small) under a kit section head; the underdog's head uses the kit type */
+.tmk-e .k-head .k-kicker{margin-top:0}
+.tmk-e .k-h1 em{font-style:inherit;color:var(--k-plot-text)}
+.tmk-e .tm-e-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4) var(--s6);margin-top:var(--s2)}
+.tmk-e .tm-e-acts .k-go{margin:var(--s4) 0 0}
+.tmk-e .tm-e-acts .np-btn2{margin-top:var(--s4)}
+.tmk-e .tm-e-links{display:flex;flex-wrap:wrap;gap:0 var(--s6);margin-top:var(--s4)}
+.tmk-e .tm-e-win .k-h2{font-size:var(--t28)}
+.tmk-e .tm-e-sub{margin:var(--s2) 0 var(--s12);color:var(--k-ink2)}
+.tmk-e .tm-ud-k{margin:0 0 var(--s2)}
+.tmk-e .tm-ud h2.k-h2 span{color:var(--k-plot-text)}
+@media (min-width:900px){.tmk-e .tm-e-win .k-roster{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:699.98px){.tmk-e .tm-e-acts{gap:var(--s2)}.tmk-e .tm-e-acts .np-btn2{margin-top:var(--s2)}.tmk-e .tm-e-sub{margin-bottom:var(--s10)}}
+.tmk-e .k-kicker{color:var(--k-on-chip)}
