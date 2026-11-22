@@ -30,7 +30,7 @@ const css = `<style>
 .grm-fine{margin:12px 0 0;font-size:var(--t13);font-weight:600;line-height:1.5;color:var(--k-ink2)}
 .grm .pr-sheet{margin-top:16px}
 @media (max-width:1099.98px){.grm-parcels{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:699.98px){.grm .k-facts b{font-size:var(--t28)}.grm-parcels{grid-template-columns:minmax(0,1fr);gap:32px}.grm-box{padding:24px 12px 12px}.grm-lab{padding:12px}.grm-lab h3{font-size:var(--t20)}.grm-how li{font-size:var(--t15)}}
+@media (max-width:699.98px){.grm .k-facts b{font-size:var(--t22)}.grm-parcels{grid-template-columns:minmax(0,1fr);gap:32px}.grm-box{padding:24px 12px 12px}.grm-lab{padding:12px}.grm-lab h3{font-size:var(--t20)}.grm-how li{font-size:var(--t15)}}
 </style>`;
 const left = live.map(g => V2.prDaysLeft(g, now)).filter(d => d != null && d >= 0), soonest = left.length ? Math.min(...left) : null;
 const facts = live.length ? [[String(live.length), 'to claim · live right now'], ...(soonest != null ? [[soonest === 0 ? 'Today' : String(soonest), soonest === 0 ? 'one ends' : soonest === 1 ? 'day until one ends' : 'days until one ends']] : []), [String(live.length + past.length), 'gifts so far']] : [['0', 'to claim'], [String(past.length), 'gifts so far']];
