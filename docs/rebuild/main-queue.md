@@ -1,5 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH: polish sweep (experiments/polish-check.mjs, look-only) on Events, How We Calculate, Feedback, About, Page not found, Owner (task bc1qg38wg); Preview v235 published 4:21 PM
+NOW: HH: merged checks on This Week (task bbjn692qu: minors, overlap, D-meta, A-team); then push the batch after GitHub 1444
 NEXT: merge This Week on Sim's yes; review hW2's News and hM's Track Record
 NEXT: merge Events (keep/events-kit) and How We Calculate (keep/method-kit, brings the evening #4 test edit) on Sim's yes; then GitHub full check
 NEXT: Ability/Item blue words in the calc and edit panel (info sheets)
