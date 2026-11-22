@@ -16,7 +16,9 @@ for f in "$T"/a*.output; do
   # a helper inside one long tool call (e.g. waiting on a test) writes nothing until it returns: allow 3 h for that, 45 min otherwise
   lim=180 # not finished (no final reply): a long tool call, a backgrounded wait or a queued message can leave the file quiet for a while
   [ "$age" -le "$lim" ] || continue
-  if [ "$last" != "end_turn" ]; then
+  # Nov 22: a helper that ended its turn to wait on its OWN background test run (listed in .helpers-waiting) still counts while a test runs
+  waiting=0; grep -qx "$(basename "$f" .output)" /home/user/pokelair-data/docs/rebuild/.helpers-waiting 2>/dev/null && [ "$(pgrep -fc 'node .*app/test/' 2>/dev/null || echo 0)" -gt 0 ] && waiting=1
+  if [ "$last" != "end_turn" ] || [ "$waiting" = 1 ]; then
     active=$((active+1))
     d=$(head -c 20000 "$f" | grep -o '"description":"[^"]*"' | head -1 | cut -d'"' -f4)
     names="$names\n  - $(basename "$f" .output) (${age} min since last step) ${d}"
