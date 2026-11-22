@@ -1,5 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: GitHub full check of the pushed batch (de290013); meanwhile Ability/Item names on Popular Sets loadout + remaining spots; then Ratings build when Sim picks
+NOW: HH builds This Week on the kit (direction A "the slope", Sim approved 12:06 PM): copy wk, baseline checks running, then the page
 NEXT: on Sim's yes: one button system (helper job, every page checked)
 NEXT: push Home label (keep/home-label) after GitHub 1439
 NEXT: when GitHub is green: Preview (fresh data), pictures of the length fixes to Sim, Game Plan ticks
