@@ -718,7 +718,7 @@ const ARCHS = ['Tailwind', 'Trick Room', 'Rain', 'Sun', 'Sand', 'Snow', 'Psychic
 t('ARCH-01', 'Archetypes head and the Winning teams · Events · Archetypes switch', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Archetypes'); expect(await ui.current() === 'arch', 'not on Archetypes');
   const tx = await ui.text(); has(tx, 'Winning Teams Events Archetypes', 'switch'); expect(await ui.pressed(/^Archetypes$/), 'Archetypes not selected');
-  if (NEW) { has(tx, "The team styles you'll face most, how they win, and how to play into them.", 'hint'); has(tx, /Tap a region for its guide\./, 'map hint'); } /* new: guides open from the Weather Map's regions (Sim's pick, docs/rebuild/mocks/tournaments-tickets-weather/BRIEF.md section 7 and its pictures) */
+  if (NEW) { has(tx, "The team styles you'll face most, how they win, and how to play into them.", 'hint'); has(tx, /Tap a (?:region|playbook) for its guide\./, 'map hint'); } /* new: guides open from the Weather Map's regions (Sim's pick, docs/rebuild/mocks/tournaments-tickets-weather/BRIEF.md section 7); since the kit reskin (Nov 22, The Playbooks) from its books */
   else has(tx, "The team styles you'll face most, how they win, and how to play into them. Tap a guide to open it.", 'hint'); await close(); });
 
 t('ARCH-02', 'Share line from the latest top teams', async () => {
