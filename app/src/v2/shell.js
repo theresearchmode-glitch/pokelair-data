@@ -194,7 +194,7 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
        winning team sheets; picking one opens its sheet (Winning Teams is the link inside it). Ranked: names that start with the words, then
        the most used (META.info). Items not in Pokémon Champions show one line and no sheet (HANDOFF). */
     try { const I = typeof META === 'object' && META.info, use = (k, n) => (I && I[k] && I[k][n] ? I[k][n][0] : 0);
-      for (const k of ['mv', 'it', 'ab']) for (const n of Object.keys((typeof INFO_TEXT === 'object' && INFO_TEXT[k]) || {})) if (n.toLowerCase().includes(q)) t.push({k, n, c: use(k, n), out: k === 'it' && (V2.IS_NOT_IN || []).includes(n)});
+      for (const k of ['mv', 'it', 'ab']) for (const n of [...Object.keys((typeof INFO_TEXT === 'object' && INFO_TEXT[k]) || {}), ...(k === 'it' ? (V2.IS_NOT_IN || []) : [])]) if (n.toLowerCase().includes(q)) t.push({k, n, c: use(k, n), out: k === 'it' && (V2.IS_NOT_IN || []).includes(n)});
       t = t.sort((a, b) => (b.n.toLowerCase().startsWith(q) ? 1 : 0) - (a.n.toLowerCase().startsWith(q) ? 1 : 0) || b.c - a.c || a.n.localeCompare(b.n)).slice(0, 6); } catch (e) {}
     try { st = GUIDE_ORDER.filter(k => ARCH[k] && ARCH[k].name.toLowerCase().includes(q)).slice(0, 2); } catch (e) {}
     return {t, st}; };
