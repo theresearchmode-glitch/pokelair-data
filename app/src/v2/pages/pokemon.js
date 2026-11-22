@@ -64,7 +64,7 @@ V2.pkBuild = p => { const E = V2.esc, n = p.n, st = V2.pkTry(() => defSet(p), {}
   const ab = metaAbility(p) || bestAbility(p), abv = V2.pkTry(() => ab && abilityPct(p, ab), null);
   const itPct = ti && ti.it && ti.it[0] && ti.it[0][1] != null ? pctFmt(+ti.it[0][1]) : '';
   const kv = `<dl class="pk-kv">${ti && ti.it && ti.it.length ? `<div><dt>Item</dt><dd><b>${E(ti.it[0][0])}</b>${itPct || ti.it.length > 1 ? `<small>${[itPct, ti.it.length > 1 ? 'or ' + ti.it.slice(1).map(x => E(x[0])).join(' or ') : ''].filter(Boolean).join(' · ')}</small>` : ''}</dd></div>` : p.m ? `<div><dt>Item</dt><dd><b>${E(V2.pkTry(() => stoneFor(p), '') || 'Its Mega Stone')}</b></dd></div>` : ''}
-    <div><dt>Ability</dt><dd><b>${E(ab || '–')}</b>${abv != null ? `<small>${E(pctFmt(+abv))}</small>` : ''}</dd></div>${SB.na ? `<div><dt>Nature</dt><dd>${two(SB.na)}</dd></div>` : ''}${SB.w ? `<div><dt>Stat points</dt><dd><b>${E(SB.w)}</b></dd></div>` : ''}</dl>`;
+    <div><dt>Ability</dt><dd><b>${ab ? V2.kAbil(ab) : '–'}</b>${abv != null ? `<small>${E(pctFmt(+abv))}</small>` : ''}</dd></div>${SB.na ? `<div><dt>Nature</dt><dd>${two(SB.na)}</dd></div>` : ''}${SB.w ? `<div><dt>Stat points</dt><dd><b>${E(SB.w)}</b></dd></div>` : ''}</dl>`;
   const slots = pm.length ? `<div class="pk-usual"><h3 class="vh">Usually</h3>${V2.kMoves(pm.map(m => { const v = mvShare.get(m); return [m, v != null ? pctFmt(+v) : null]; }))}</div>` : '';
   const bars = (arr, k) => (arr || []).slice(0, k).map(([nm, v]) => `<div class="ms-br"><span>${E(nm)}</span><i style="--v:${Math.max(2, Math.min(100, +v || 0))}" aria-hidden="true"></i><b>${v == null ? '' : E(pctFmt(+v))}</b></div>`).join('');
   const sbM = V2.pkTry(() => setBasis(p, st, 'mv'), null), stn = lairStones(p, st);

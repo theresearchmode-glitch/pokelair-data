@@ -188,7 +188,7 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
   console.log(`meta_tour: ${nT} teams, ${rows.length} Pokémon`); }
 // 1b) info sheets (Sim approved the design Nov 22, 11:29 AM; docs/rebuild/info-sheets/HANDOFF.md): for every move, item and Ability, how many
 //     of the last 28 days' full team sheets run it and who runs it. Counted straight from the raw sheets, not from the top-12 lists above
-//     (those double-count: Protect would read 409%, and hide 183 moves). Each user: [name, how many of its teams run it, its teams].
+//     (those double-count: Protect would read 409%, and hide 183 moves). Each entry: [teams, top 8 users [name, how many of its teams run it, its teams], how many different Pokémon run it].
 //     Same KEEP filter, 28-day window, canonSet spelling and nameOf names as meta_tour. Writes out/info.json only.
 { const K = {mv: new Map(), it: new Map(), ab: new Map()}, per = new Map(); let N = 0;
   for (const T of V2) { if (lastD - new Date(T.d) > 28 * DAY) continue;
@@ -197,7 +197,7 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
       p.dk.forEach((m, i) => { const n = ns[i]; per.set(n, (per.get(n) || 0) + 1);
         const add = (k, x) => { if (!x) return; let o = K[k].get(x); if (!o) K[k].set(x, o = {t: 0, u: new Map()}); if (!seen[k].has(x)) { seen[k].add(x); o.t++; } o.u.set(n, (o.u.get(n) || 0) + 1); };
         for (const x of new Set(m.mv)) add('mv', x); add('it', m.i); add('ab', m.a); }); } }
-  const pack = M => Object.fromEntries([...M].sort((a, b) => b[1].t - a[1].t).map(([x, o]) => [x, [o.t, [...o.u].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8).map(([n, c]) => [n, c, per.get(n)])]]));
+  const pack = M => Object.fromEntries([...M].sort((a, b) => b[1].t - a[1].t).map(([x, o]) => [x, [o.t, [...o.u].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8).map(([n, c]) => [n, c, per.get(n)]), o.u.size]]));
   const recent = V2.filter(T => lastD - new Date(T.d) <= 28 * DAY);
   fs.writeFileSync('out/info.json', JSON.stringify({N, source: `Limitless team sheets · ${N.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
     period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', mv: pack(K.mv), it: pack(K.it), ab: pack(K.ab)}));

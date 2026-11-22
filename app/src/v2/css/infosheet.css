@@ -62,3 +62,17 @@
   .is-stats dd{font-size:var(--t17)}
   .is-links{gap:var(--s2) var(--s5)}
 }
+/* ABILITY = the ID card (approved round 3): a dark rounded card (--plate), a 12px logo-blue strip down the left, a big faint
+   fingerprint, a TRAIT ON FILE stamp; its section heads mark with a ring. The card is dark in both themes, like the plate. */
+.is-tab.kd-ability{clip-path:none;border-radius:var(--r-l);background:var(--plate);color:var(--on-plate);padding-left:calc(var(--s6) + 12px);box-shadow:var(--shadow-lift)}
+.is-tab.kd-ability::before{content:'';position:absolute;left:0;top:0;bottom:0;width:12px;background:var(--c)}
+.is-tab.kd-ability h2,.is-tab.kd-ability .is-sh{color:var(--on-plate)}
+.is-tab.kd-ability .is-kk{background:var(--c);color:var(--on-type)}
+.is-tab .fp{position:absolute;right:152px;top:50%;width:152px;height:180px;translate:0 -50%;color:var(--is-print);pointer-events:none}
+.is-tof{display:inline-block;margin-left:var(--s2);padding:0 var(--s2);border:2px solid var(--is-stamp-rim);font-size:var(--t13);font-weight:800;line-height:1.4;letter-spacing:.06em;transform:rotate(-3deg)}
+.is2.kd-ability .is-h h3::before{top:4px;width:12px;height:12px;border-radius:50%;transform:none;background:none;box-shadow:inset 0 0 0 3px var(--c)}
+/* a name that opens its sheet, inline wherever it shows: the site's blue word (blue words are buttons) */
+.is-w{display:inline;padding:0;margin:0;border:0;background:none;font:inherit;color:var(--k-plot-text);text-align:inherit;cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.is-w:hover{text-decoration-thickness:2px}
+@media (max-width:699.98px){.is-tab .fp{right:-12px;width:120px;height:152px}}
+.is2.kd-ability{--c:var(--is-ability)}

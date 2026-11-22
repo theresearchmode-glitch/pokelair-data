@@ -10,9 +10,9 @@ V2.IS_TARGET = {normal: 'One foe', randomNormal: 'A random foe', any: 'Any one',
   self: 'Itself', adjacentAlly: 'Its partner', adjacentAllyOrSelf: 'Itself or partner', allySide: 'Your side', allies: 'Your side', allyTeam: 'Your side',
   foeSide: 'Their side', all: 'Whole field', scripted: 'The last attacker'};
 // hand-written doubles lines (HANDOFF "Sim must check these before they ship"); every other move shows the lines its data gives
-V2.IS_HAND = {mv: {'Rock Slide': ['Hits both foes, each for 0.75× damage', 'Never hits your partner', 'Blocked by Protect and Wide Guard', 'Flinch only works if it moves first']}};
+V2.IS_HAND = {ab: {'Intimidate': ['Hits both foes at once', 'Works again each time it switches back in', 'Defiant and Competitive foes get a boost instead', 'Inner Focus, Oblivious, Own Tempo and Scrappy ignore it']}, mv: {'Rock Slide': ['Hits both foes, each for 0.75× damage', 'Never hits your partner', 'Blocked by Protect and Wide Guard', 'Flinch only works if it moves first']}};
 // the plain sentence, hand-written where the approved pictures wrote it (else Showdown's short text)
-V2.IS_LEAD = {mv: {'Rock Slide': 'Hits both foes. Each one hit has a 30% chance to flinch.'}};
+V2.IS_LEAD = {ab: {'Intimidate': 'When it comes in, lowers both foes’ Attack by 1 stage.'}, mv: {'Rock Slide': 'Hits both foes. Each one hit has a 30% chance to flinch.'}};
 V2.isMoveLines = (n, M) => { const t = M.t || 'normal', f = M.f || '', L = [];
   if (V2.IS_HAND.mv[n]) return V2.IS_HAND.mv[n];
   if (t === 'allAdjacentFoes') L.push('Hits both foes, each for 0.75× damage', 'Never hits your partner');
@@ -26,33 +26,45 @@ V2.isMoveLines = (n, M) => { const t = M.t || 'normal', f = M.f || '', L = [];
   if (f.includes('s')) L.push('A sound move: it goes through Substitute');
   if (f.includes('c')) L.push('Makes contact (Rocky Helmet and Rough Skin hurt the user)');
   return L.slice(0, 4); };
-V2.infoUse = (k, n) => { const I = typeof META === 'object' && META.info; if (!I || !I[k]) return null; const e = I[k][n]; return {N: I.N, src: I.source, period: I.period, t: e ? e[0] : 0, u: e ? e[1] : []}; };
-V2.openInfo = (kind, n) => { if (kind === 'mv') return V2.openMoveSheet(n); };
+V2.infoUse = (k, n) => { const I = typeof META === 'object' && META.info; if (!I || !I[k]) return null; const e = I[k][n]; return {N: I.N, src: I.source, period: I.period, t: e ? e[0] : 0, u: e ? e[1] : [], nu: e ? (e[2] != null ? e[2] : e[1].length) : 0}; };
+V2.openInfo = (kind, n) => kind === 'mv' ? V2.openMoveSheet(n) : kind === 'ab' ? V2.openAbilitySheet(n) : undefined;
+// the parts every kind shares (HANDOFF "The sheet, top to bottom")
+V2.isFmt = x => x.toLocaleString('en-US');
+V2.isH = (t, s) => `<div class="is-h"><h3 class="u">${V2.esc(t)}</h3>${s ? `<span>${V2.esc(s)}</span>` : ''}</div>`;
+V2.isShare = U => !U ? '' : U.t === 0 ? '<div class="is-sh is-sh0"><span>Not run on any tournament team in Reg M-C yet</span></div>'
+  : U.t < 20 ? `<div class="is-sh is-sh0"><span>Rarely used (on ${V2.isFmt(U.t)} team${U.t === 1 ? '' : 's'})</span></div>`
+  : (p => `<div class="is-sh"><b class="u">${p < 1 ? '<1' : p}%</b><span>of tournament teams</span></div>`)(Math.round(100 * U.t / U.N));
+V2.isStats = L => `<dl class="is-stats">${L.map(([l, v]) => `<div><dt>${V2.esc(l)}</dt><dd class="u">${V2.esc(v)}</dd></div>`).join('')}</dl>`;
+V2.isLines = L => L.length ? `<section class="is-sec">${V2.isH('On the field.', 'what it means in doubles')}<ul class="is-dbl">${L.map(t => `<li>${V2.esc(t)}</li>`).join('')}</ul></section>` : '';
+V2.isUsersOf = U => U && U.t >= 50 ? U.u.slice(0, 6) : [];
+V2.isUsers = (U, users) => { const E = V2.esc; return users.length ? `<section class="is-sec">${V2.isH('Usual suspects.', 'who runs it, and how often · tap one to open it')}<div class="is-users">${users.map(([p, c, tot]) => `<button type="button" class="is-u" data-v2mon="${E(p)}">${V2.mon(p, {iw: 48, bare: true})}<b>${V2.nameHtml(V2.disp(p))}</b><em class="u">${Math.round(100 * c / tot)}%</em><small>of ${V2.isFmt(tot)} ${E(V2.disp(p))} run it</small></button>`).join('')}</div><p class="is-src">Online tournaments, last 28 days (${E(U.period)}) · ${V2.isFmt(U.N)} teams</p></section>` : ''; };
+V2.isMore = (list, users, what) => { const E = V2.esc, shown = new Set(users.map(u => u[0])), rest = list.filter(q => !shown.has(q.n));
+  return list.length ? `<section class="is-sec">${V2.isH('Also capable.', `${what}: ${list.length} Pokémon in Reg M-C · tap one to open it`)}<div class="is-learn" data-islearn>${rest.map((q, i) => `<button type="button" class="is-l"${i >= 20 ? ' hidden' : ''} data-v2mon="${E(q.n)}" aria-label="${E(V2.disp(q.n))}">${V2.mon(q.n, {iw: 40, bare: true})}</button>`).join('')}</div>${rest.length > 20 ? `<button type="button" class="k-link is-all" data-isall>Show all ${rest.length}&nbsp;›</button>` : ''}</section>` : ''; };
+V2.isCredit = w => `<p class="is-credit">${w} text adapted from Pokémon Showdown (MIT License), © Guangcong Luo and contributors.</p>`;
+V2.isTab = (kind, n, sub, share, extra = '') => { const E = V2.esc, KK = {move: 'CASE FILE · MOVE', ability: 'ID CARD · ABILITY', item: 'EVIDENCE · ITEM'}[kind];
+  return `<div class="is-tab kd-${kind}">${extra}<span class="gh u" aria-hidden="true">${E(n.toUpperCase())}</span><div class="is-tn"><span class="is-kk u">${KK}</span><h2 class="u">${E(n)}</h2><div class="is-sub">${sub}</div></div>${share}</div>`; };
 V2.openMoveSheet = n => { const E = V2.esc, T = (typeof INFO_TEXT === 'object' && INFO_TEXT.mv[n]) || ['', null], M = (typeof MOVE_META === 'object' && MOVE_META[n]) || {}, m = typeof mvByName === 'object' && mvByName.get(n);
   if (!m && !T[0]) return;
   const ty = m && V2.TYPES.includes(m.type) ? m.type : '', cat = m ? ['Status', 'Physical', 'Special'][m.cat] : '', U = V2.infoUse('mv', n);
-  const fmt = x => x.toLocaleString('en-US'), pct = U && U.N ? Math.round(100 * U.t / U.N) : null;
-  const share = !U ? '' : U.t === 0 ? '<div class="is-sh is-sh0"><span>Not run on any tournament team in Reg M-C yet</span></div>'
-    : U.t < 20 ? `<div class="is-sh is-sh0"><span>Rarely used (on ${fmt(U.t)} team${U.t === 1 ? '' : 's'})</span></div>`
-    : `<div class="is-sh"><b class="u">${pct < 1 ? '<1' : pct}%</b><span>of tournament teams</span></div>`;
   const self = /^(self|allySide|allies|allyTeam|foeSide|all|adjacentAlly|adjacentAllyOrSelf)$/.test(M.t || '');
   const acc = typeof MOVE_ACC === 'object' && MOVE_ACC[n] != null ? MOVE_ACC[n] + '%' : self || (m && !m.cat) ? '—' : '100%';
   const pw = !m || !m.cat ? '—' : m.vbp || m.fixed || m.ohko ? 'Varies' : String(m.bp);
   const stats = [['Power', pw], ['Accuracy', acc], ['PP', T[1] != null ? String(T[1]) : '—'], ['Priority', M.p ? (M.p > 0 ? '+' : '') + M.p : '0'], ['Hits', V2.IS_TARGET[M.t || 'normal'] || 'One foe'], ['Contact', (M.f || '').includes('c') ? 'Yes' : 'No']];
-  const h = (t, s) => `<div class="is-h"><h3 class="u">${E(t)}</h3>${s ? `<span>${E(s)}</span>` : ''}</div>`;
-  const tab = `<div class="is-tab kd-move"><span class="gh u" aria-hidden="true">${E(n.toUpperCase())}</span><div class="is-tn"><span class="is-kk u">CASE FILE · MOVE</span><h2 class="u">${E(n)}</h2>
-    <div class="is-sub">${ty ? V2.typeChip(ty) : ''}${cat ? `<span>${E(cat)}</span>` : ''}</div></div>${share}</div>`;
-  const lines = V2.isMoveLines(n, M);
-  const dbl = lines.length ? `<section class="is-sec">${h('On the field.', 'what it means in doubles')}<ul class="is-dbl">${lines.map(t => `<li>${E(t)}</li>`).join('')}</ul></section>` : '';
-  const users = U && U.t >= 50 ? U.u.slice(0, 6) : [];
-  const us = users.length ? `<section class="is-sec">${h('Usual suspects.', 'who runs it, and how often · tap one to open it')}<div class="is-users">${users.map(([p, c, tot]) => `<button type="button" class="is-u" data-v2mon="${E(p)}">${V2.mon(p, {iw: 48, bare: true})}<b>${V2.nameHtml(V2.disp(p))}</b><em class="u">${Math.round(100 * c / tot)}%</em><small>of ${fmt(tot)} ${E(V2.disp(p))} run it</small></button>`).join('')}</div><p class="is-src">Online tournaments, last 28 days (${E(U.period)}) · ${fmt(U.N)} teams</p></section>` : '';
-  const mi = typeof MOVES === 'object' ? MOVES.findIndex(x => x[0] === n) : -1;
+  const users = V2.isUsersOf(U), mi = typeof MOVES === 'object' ? MOVES.findIndex(x => x[0] === n) : -1;
   const learn = mi < 0 || typeof ROSTER !== 'object' ? [] : ROSTER.filter(q => !q.m && (LEARN[q.n] || []).includes(mi)); /* Megas share their base form's list */
-  const shown = new Set(users.map(u => u[0])), rest = learn.filter(q => !shown.has(q.n));
-  const more = learn.length ? `<section class="is-sec">${h('Also capable.', `can learn it: ${learn.length} Pokémon in Reg M-C · tap one to open it`)}<div class="is-learn" data-islearn>${rest.map((q, i) => `<button type="button" class="is-l"${i >= 20 ? ' hidden' : ''} data-v2mon="${E(q.n)}" aria-label="${E(V2.disp(q.n))}">${V2.mon(q.n, {iw: 40, bare: true})}</button>`).join('')}</div>${rest.length > 20 ? `<button type="button" class="k-link is-all" data-isall>Show all ${rest.length}&nbsp;›</button>` : ''}</section>` : '';
   const links = `<div class="is-sec is-links">${V2.kLink('Try It in the Calc', {href: '#calc'})}${V2.kLink('Winning Teams With It', {href: '#tournaments', 'data-v2close': '', 'data-v2term': 'move', 'data-v2termv': n})}</div>`;
-  const credit = '<p class="is-credit">Move text adapted from Pokémon Showdown (MIT License), © Guangcong Luo and contributors.</p>';
-  V2.sheet(`<div class="is2 kd-move"${ty ? ` style="--c:var(--ty-${ty})"` : ''}>${tab}<p class="is-lead">${E(V2.IS_LEAD.mv[n] || T[0])}</p><dl class="is-stats">${stats.map(([l, v]) => `<div><dt>${E(l)}</dt><dd class="u">${E(v)}</dd></div>`).join('')}</dl>${dbl}${us}${more}${links}${credit}</div>`, {label: n}); };
+  V2.sheet(`<div class="is2 kd-move"${ty ? ` style="--c:var(--ty-${ty})"` : ''}>${V2.isTab('move', n, `${ty ? V2.typeChip(ty) : ''}${cat ? `<span>${E(cat)}</span>` : ''}`, V2.isShare(U))}<p class="is-lead">${E(V2.IS_LEAD.mv[n] || T[0])}</p>${V2.isStats(stats)}${V2.isLines(V2.isMoveLines(n, M))}${V2.isUsers(U, users)}${V2.isMore(learn, users, 'can learn it')}${links}${V2.isCredit('Move')}</div>`, {label: n}); };
+// the ABILITY sheet, "the ID card" (approved round 3): a dark rounded card, a logo-blue strip, a big faint fingerprint, TRAIT ON FILE
+V2.IS_FP = '<svg class="fp" viewBox="0 0 100 120" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">' + [6.0, 11.2, 16.4, 21.6, 26.8, 32.0, 37.2, 42.4, 47.6].map((r, i) => `<ellipse cx="50" cy="62" rx="${r}" ry="${(r * 1.22).toFixed(1)}" stroke-dasharray="${18 + 7 * i} ${[5, 9, 13][i % 3]}" transform="rotate(${13 * i} 50 62)"/>`).join('') + '</svg>';
+V2.openAbilitySheet = n => { const E = V2.esc, txt = (typeof INFO_TEXT === 'object' && INFO_TEXT.ab[n]) || (typeof ABIL === 'object' && ABIL[n]) || '';
+  if (!txt) return; const U = V2.infoUse('ab', n), seen = new Set();
+  const has = typeof ROSTER !== 'object' ? [] : ROSTER.filter(q => (q.a || []).includes(n)).filter(q => { const k = q.m ? q.b : q.n; if (seen.has(k)) return false; seen.add(k); return true; }); /* each species once */
+  const users = V2.isUsersOf(U), runs = U ? U.nu : 0;
+  const stats = [['Teams', U ? V2.isFmt(U.t) : '—'], ['Pokémon run it', U ? String(runs) : '—'], ['Can have it', String(has.length)]];
+  const links = `<div class="is-sec is-links">${V2.kLink('Winning Teams With It', {href: '#tournaments', 'data-v2close': '', 'data-v2term': 'ability', 'data-v2termv': n})}</div>`;
+  V2.sheet(`<div class="is2 kd-ability">${V2.isTab('ability', n, '<span>Ability</span><span class="is-tof u">TRAIT ON FILE</span>', V2.isShare(U), V2.IS_FP)}<p class="is-lead">${E(V2.IS_LEAD.ab[n] || txt)}</p>${V2.isStats(stats)}${V2.isLines(V2.IS_HAND.ab[n] || [])}${V2.isUsers(U, users)}${V2.isMore(has, users, 'can have it')}${links}${V2.isCredit('Ability')}</div>`, {label: n}); };
+// an Ability name anywhere: a blue word (the site's "blue words are buttons") that opens its sheet
+V2.kAbil = n => n && typeof INFO_TEXT === 'object' && INFO_TEXT.ab[n] ? `<button type="button" class="is-w" data-v2info="ab" data-v2infon="${V2.esc(n)}" aria-haspopup="dialog">${V2.esc(n)}</button>` : V2.esc(n || '');
 // every move ticket (V2.kMove) carries data-v2info; one tap opens its sheet. "Show all N" opens the rest of Also capable in place.
 document.addEventListener('click', e => { if (!e.target.closest) return; const b = e.target.closest('[data-v2info]');
   if (b) { e.preventDefault(); V2.openInfo(b.dataset.v2info, b.dataset.v2infon); return; }
