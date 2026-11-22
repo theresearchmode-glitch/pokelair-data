@@ -1,6 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: Ratings + Home strip after-checks (ra-after.sh, queued behind the minors run); meanwhile HH writes This Week (direction A "the slope") in copy wk
-NEXT: build helper after Events: This Week A, then News
+NOW: Ratings + Home strip after-checks (queued); meanwhile HH builds Page not found (wrong turn + underdog), then Owner, then Send Feedback
 NEXT: on Sim's yes: one button system (helper job, every page checked)
 NEXT: push Home label (keep/home-label) after GitHub 1439
 NEXT: when GitHub is green: Preview (fresh data), pictures of the length fixes to Sim, Game Plan ticks

@@ -2028,3 +2028,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:37 PM: Sim: 'feedback is good, move forward with recs' = Send Feedback direction (PC mock, desktop +301px OK). Build: whichever build helper frees first after its queue.
 - 12:40 PM: Sim: 'page not found is good, move forward with recs' = Page not found direction (Wrong turn + underdog card; build closes the +17px phone gap with a 140px card).
 - 12:42 PM: Sim: 'owner page is good, move forward with recs' = Owner page direction approved (plain, kit head, two boxes). All 12 reskin directions approved; all mock-ups merged (docs). Builds queued across HH + 2 build helpers.
+- 12:43 PM: Build split (bottleneck rule): HH: Page not found, Owner, Send Feedback + Ratings follow-ups/pushes; hE after Events: This Week, News, Mystery Gifts; hM: How We Calculate, About, Track Record. Reason: This Week needs long test rewrites (Most used list tests), better for an uninterrupted helper.
