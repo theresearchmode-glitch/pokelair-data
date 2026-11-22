@@ -171,7 +171,9 @@ document.addEventListener('keydown', e => { const S = V2._sheet; if (!S) return;
   const f = [...S.wrap.querySelectorAll('.np-sheet :is(a[href],button,input,select,textarea,summary,[tabindex])')].filter(x => x.tabIndex >= 0 && !x.disabled && shown(x)); /* the toast is not in this loop: while a sheet is open it sits under the backdrop (Sim, Nov 11), so its Undo can't be seen there (sweep, Nov 15) */
   if (!f.length) return; const i = f.indexOf(document.activeElement);
   if (i < 0) { e.preventDefault(); (e.shiftKey ? f[f.length - 1] : f[0]).focus(); return; }
-  if (e.shiftKey && i === 0) { e.preventDefault(); f[f.length - 1].focus(); } else if (!e.shiftKey && i === f.length - 1) { e.preventDefault(); f[0].focus(); } });
+  /* Safari (PC WebKit run, Nov 22, NAV-03v 3 of 3): its own Tab skips buttons and links unless the Mac setting is on, so it jumped straight out of
+     Search; we move focus ourselves on every Tab, in the same order, so every browser stays inside */
+  e.preventDefault(); f[(i + (e.shiftKey ? f.length - 1 : 1)) % f.length].focus(); });
 
 // ---------- search: places and Pokémon, from the header button or the / key ----------
 V2.find = q => { q = q.trim().toLowerCase(); if (!q) return {places: [], mons: []};

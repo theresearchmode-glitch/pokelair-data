@@ -533,13 +533,19 @@ after() { V2.mtBeltFit(); if (V2.mtfHashJump) V2.mtfHashJump();
     if (V2.mtHand3()) requestAnimationFrame(() => { const e = document.querySelector('#main .mt-edit'); if (e && e.getBoundingClientRect().top > innerHeight - 160) e.scrollIntoView({block: 'nearest', behavior: V2.smooth()}); });
     /* the war room (reskin page 1): the chosen one's detail sits under all six cards; on phones that is below the screen, so a tap brings it up */
     if (V2._tmk) requestAnimationFrame(() => { const e = document.querySelector('#main #tm-set'); if (e && e.getBoundingClientRect().top > innerHeight - 160) e.scrollIntoView({block: 'nearest', behavior: V2.smooth()}); }); }); });
-  document.querySelectorAll('a[data-tmjump]').forEach(a => !a._v2b && (a._v2b = 1) && a.addEventListener('click', e => { e.preventDefault(); V2._jumpPick = a.dataset.tmjump; requestAnimationFrame(V2.jumpSync); /* side-by-side sections: the one you tapped is marked, even when no scroll is needed (A7) */ const t = document.getElementById(a.dataset.tmjump); if (t) { t.scrollIntoView({behavior: V2.smooth()}); const h = t.querySelector('h2'); if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } } })); /* focus moves to the section heading, so Tab and screen readers carry on from there (audit TEAM-07) */
+  document.querySelectorAll('a[data-tmjump]').forEach(a => !a._v2b && (a._v2b = 1) && a.addEventListener('click', e => { e.preventDefault(); V2._jumpPick = a.dataset.tmjump; requestAnimationFrame(V2.jumpSync); /* side-by-side sections: the one you tapped is marked, even when no scroll is needed (A7) */ const t = document.getElementById(a.dataset.tmjump); if (t) { t.scrollIntoView({behavior: V2.smooth()}); V2.jumpSettle(t); const h = t.querySelector('h2'); if (h) { if (!h.hasAttribute('tabindex')) h.setAttribute('tabindex', '-1'); h.focus({preventScroll: true}); } } })); /* focus moves to the section heading, so Tab and screen readers carry on from there (audit TEAM-07) */
   V2.jumpSync(); // A7 proposal: the jump bar marks the section you are reading
   if (V2.muAfter) V2.muAfter(); // Matchups hook (pages/matchups.js): keeps an open threat sheet in step with the page
 }};
 // A7 proposal (Sim's fix plan: "a marker that is always wrong is worse than none"): the jump bar's underline follows the scroll.
 // The marked section is the last one whose top has passed just under the bar (ties, as in the desktop columns, go to the one
 // earlier in the bar, unless you tapped the other one); at the very end of the page the last one is marked.
+/* Safari (PC WebKit run, Nov 22, TEAM-07 3 of 3): the jump landed short because Suggestions was still loading and the page grew under it.
+   For 2 s after a jump, if the section's top moves off its place, scroll it back, unless the reader has scrolled or pressed a key since. */
+V2.jumpSettle = t => { let moved = false; const stop = () => { moved = true; }, ev = ['wheel', 'touchstart', 'keydown', 'pointerdown'];
+  ev.forEach(n => addEventListener(n, stop, {once: true, passive: true}));
+  [900, 1500, 2100].forEach((ms, i, all) => setTimeout(() => { if (!moved && t.isConnected) { const m = parseFloat(getComputedStyle(t).scrollMarginTop) || 0, top = t.getBoundingClientRect().top;
+    if (Math.abs(top - m) > 8) t.scrollIntoView({behavior: 'auto'}); } if (i === all.length - 1) ev.forEach(n => removeEventListener(n, stop)); }, ms)); };
 V2.jumpSync = () => { const nav = document.querySelector('.tm-jump'); if (!nav || nav.getAttribute('role') === 'tablist') return; /* phones: the tabs mark the chosen one (aria-selected), not the scroll */ const as = [...nav.querySelectorAll('[data-tmjump]')]; if (!as.length) return;
   // (Sim approved A7, Claude's recommendation for wide screens): from 700px the sections sit side by side, so "where you are" has
   // no single answer; there no section is marked (no underline) rather than a wrong one
