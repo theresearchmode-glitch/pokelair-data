@@ -1359,7 +1359,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .hm-udst2,.tm-ud-st,.bx-mon{display:block}.ud-nm{cursor:pointer} /* the heading itself opens the sheet (a button inside it changed how it wrapped); keyboard: the Info Sheet link */
 /* ---------- Type Chart (Nov 14, concept A 'Spotlight'; mock-ups docs/rebuild/mocks/types) ---------- */
 .tc{padding:0 var(--gut) var(--s16);display:grid;gap:var(--s5);overflow-x:clip}
-.tc-h{display:grid;gap:var(--s2)}.tc-h h1{font-size:var(--t34);margin:0}.tc-h h1 .pl{color:var(--plot-text)}
+.tc-h{display:grid;gap:var(--s2)}
 .tc-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5)}.tc-findw{position:relative;flex:0 1 320px}.tc-find input{border:0;background:none;font:500 var(--t16)/1 var(--b);color:var(--ink);width:100%;transform:skewX(10deg)}
 .tc-hits{position:absolute;left:0;right:0;top:calc(100% + var(--s1));z-index:5}
 .tc-team{display:flex;flex-wrap:wrap;gap:var(--s2)}.tc-tm{display:flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:var(--s1) var(--s3) var(--s1) var(--s1);border:1.5px solid var(--rule);font:600 var(--t13)/1 var(--b);color:var(--ink-2)}
@@ -1369,51 +1369,101 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tc-tp[aria-pressed="true"]{background:var(--tc);color:var(--on-type);border-color:var(--tc)}
 .tc-lbl{margin:0;font:700 var(--t13)/1.3 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap}
 .tc-ab{margin:0;font:600 var(--t15)/1.5 var(--b);color:var(--plot-text)}.tc .fine{margin:0}.tc-none{margin:0}
-.tc-main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:var(--s8);align-items:start}
-.tc-cardw .ms-card{--ch:420px}
 .tc-types{display:grid;gap:var(--s3);align-content:start}.tc-tile{display:grid;place-items:center;min-height:120px;padding:0 var(--s3);background:var(--tc);color:var(--on-type);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}.tc-tile b{font:900 var(--t28)/1 var(--u);font-style:italic;font-synthesis:style}
 /* type symbols (Sim, Nov 21, 3:35 PM; mock docs/rebuild/mocks/type-symbols): on each pick button the symbol sits above the word in the word's
    colour (ink when off, white when picked: the off/on look stays as it was); phones keep the 44px button (16px symbol), wide screens a bigger one */
 .tc-tp.sym{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:var(--s1) 0}.tc-tp .k-tyi{width:16px;height:16px}
 @media (min-width:700px){.tc-tp.sym{min-height:var(--s16);gap:var(--s1)}.tc-tp .k-tyi{width:24px;height:24px}}
 .tc-tile{align-content:center;gap:var(--s1)}.tc-tile .k-tyi{width:24px;height:24px}@media (min-width:700px){.tc-tile{gap:var(--s2)}.tc-tile .k-tyi{width:40px;height:40px}}
-.tc-right{display:grid;gap:var(--s4)}
-.tc-spec{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s2)}
-.tc-band{display:grid;align-content:start;gap:var(--s3);min-height:200px;padding:var(--s4) var(--s3);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
-.tc-band .m{font:900 var(--t34)/1 var(--u);font-style:italic;font-synthesis:style;display:grid}.tc-band .m small{font:700 var(--t13)/1.3 var(--b);font-style:normal;letter-spacing:.06em;text-transform:uppercase;margin-top:var(--s1)}
-.tc-band .ts{display:flex;flex-wrap:wrap;gap:var(--s1)}.tc-band i{font-style:normal;color:var(--ink-3)}
-.tc-band.b4{background:var(--bad);color:var(--on-mark)}.tc-band.b2{background:color-mix(in srgb,var(--bad) 22%,var(--surface))}
-.tc-band.bh{background:color-mix(in srgb,var(--good) 18%,var(--surface))}.tc-band.bq{background:color-mix(in srgb,var(--good) 30%,var(--surface))}
-.tc-band.b0{background:var(--plot);color:var(--on-mark)}.tc-band.none{background:var(--wash);color:var(--ink-3)}
-.tc-offs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--s3)}.tc-off{display:grid;gap:var(--s2);padding:var(--s4);background:var(--wash)}
-.tc-offh{display:flex;align-items:center;gap:var(--s2);font:700 var(--t15)/1 var(--b)}.tc-offr{display:grid;grid-template-columns:72px minmax(0,1fr);gap:var(--s2);align-items:center}
-.tc-offr .k{font:700 var(--t13)/1.3 var(--b)}.tc-offr .k.up{color:var(--good-text)}.tc-offr .k.dn{color:var(--mid-text)}.tc-offr .k.no{color:var(--bad-text)}.tc-offr .c{display:flex;flex-wrap:wrap;gap:var(--s1)}.tc-offr i{font-style:normal;color:var(--ink-3)}
-.tc-fold{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}.tc-fold summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:var(--s16);padding:var(--s2) 0;cursor:pointer;list-style:none}.tc-fold summary::-webkit-details-marker{display:none}
-.tc-fold summary span{display:grid}.tc-fold summary b{font:700 var(--t15)/1.4 var(--b)}.tc-fold summary small{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.tc-fold summary i{font-style:normal;font-size:var(--t20);color:var(--ink-3);transition:rotate .2s}.tc-fold[open] summary i{rotate:90deg}
+.tc-off{display:grid;gap:var(--s2)}.tc-offh{display:flex;align-items:center;gap:var(--s2);font:700 var(--t15)/1 var(--b)}.tc-offr{display:grid;grid-template-columns:72px minmax(0,1fr);gap:var(--s2);align-items:center}
+.tc-offr{padding-top:var(--s2);border-top:1px solid var(--k-rule)}.tc-offr .k{font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2)} /* reskin: quiet ink labels, as step 2's (pink and blue stay for the damage line, which is about taking hits) */.tc-offr .c{display:flex;flex-wrap:wrap;gap:var(--s1)}.tc-offr i{font:400 var(--t15)/1.3 var(--b);font-style:normal;color:var(--k-ink2)}
 .tc-gw{overflow-x:auto;padding-bottom:var(--s4)}.tc-grid{border-collapse:separate;border-spacing:2px;font:700 var(--t13)/1 var(--b);width:100%;table-layout:fixed}
 .tc-grid th{padding:var(--s1);color:var(--ink-2);font-weight:700}.tc-grid thead th{height:40px}.tc-grid thead th span{display:inline-block;padding:var(--s1);color:var(--on-type);background:var(--tc)}
 .tc-grid thead th.cor{width:112px;text-align:left;font:600 var(--t13)/1.3 var(--b)}.tc-grid tbody th{text-align:left}.tc-grid tbody th span{display:block;padding:var(--s1) var(--s2);color:var(--on-type);background:var(--tc);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 .tc-grid td{height:32px;text-align:center;background:var(--wash);color:var(--ink)}
-.tc-grid td.v2{background:color-mix(in srgb,var(--good) 55%,var(--surface))}.tc-grid td.v0_5{background:color-mix(in srgb,var(--bad) 22%,var(--surface))}.tc-grid td.v0{background:var(--ink);color:var(--surface)}
+.tc-grid td.v2{background:color-mix(in srgb,var(--k-nasty) 30%,var(--surface))}.tc-grid td.v0_5{background:color-mix(in srgb,var(--k-plot) 22%,var(--surface))} /* reskin (Nov 22): the chart reads like the damage line, pink = hurts, blue = shrugged off */.tc-grid td.v0{background:var(--ink);color:var(--surface)}
 .tc-grid td.lit{outline:2px solid var(--plot);outline-offset:-2px}.tc-grid thead th.lit span{outline:2px solid var(--plot);outline-offset:2px}
 .tc-prow{display:none}
-@media (max-width:699.98px){.tc-h h1{font-size:var(--t28)}.tc-picks{grid-template-columns:repeat(6,minmax(0,1fr))}.tc-tp{font-stretch:85%;letter-spacing:-.01em}
- .tc-main{grid-template-columns:minmax(0,1fr)}.tc-cardw .ms-card{--ch:280px}.tc-spec{grid-template-columns:minmax(0,1fr)}.tc-band{min-height:0;grid-template-columns:64px minmax(0,1fr);align-items:center}
+@media (max-width:699.98px){.tc-picks{grid-template-columns:repeat(6,minmax(0,1fr))}.tc-tp{font-stretch:85%;letter-spacing:-.01em}
  .tc-findw{flex-basis:100%;margin-inline:var(--s2)}.tc-team{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));width:100%}.tc-tm{justify-content:center;padding:var(--s1)}.tc-tm span{display:none}
  .tc-types{grid-template-columns:repeat(2,minmax(0,1fr))}.tc-tile{min-height:72px}.tc-gw{display:none}.tc-prow{display:grid;gap:var(--s3);padding-bottom:var(--s4)}}
 .tc-pl{justify-content:space-between}.tc-pl .tc-clear{text-transform:none;letter-spacing:0}
 .tc-show{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.tc-show b{color:var(--ink)}@media (max-width:699.98px){.tc-gnote{display:none}}
-.tc-prow .tc-offr{grid-template-columns:minmax(0,1fr);gap:var(--s1)} /* phones: today's longer labels sit above their chips */
 /* Type Chart polish (Nov 14): under 1100 the five bands run as rows (side by side they spilled at 720-800); under 1024 your six take one even
    row of their own (they wrapped 4+2 / 5+1); 'Clear' is a full-size tap target; narrower letters on the type buttons under 360 */
-@media (min-width:700px) and (max-width:1099.98px){.tc-main{grid-template-columns:260px minmax(0,1fr)}.tc-cardw .ms-card{--ch:360px}}
-@media (max-width:1099.98px){.tc-spec{grid-template-columns:minmax(0,1fr)}.tc-band{min-height:0;grid-template-columns:72px minmax(0,1fr);align-items:center}}
 @media (max-width:1023.98px){.tc-findw{flex-basis:100%}.tc-team{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));width:100%}.tc-tm{min-width:0}.tc-tm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 .tc-pl .tc-clear{min-height:var(--tap);padding:0 var(--s2)}
 @media (max-width:359.98px){.tc-tp{font-stretch:75%}}
 @media (min-width:700px) and (max-width:1023.98px){.tc-tm{flex-direction:column;justify-content:center;gap:2px;padding:var(--s1)}.tc-tm span{white-space:normal;overflow:visible;text-align:center;line-height:1.2}}
 @media (min-width:700px) and (max-width:1023.98px){.tc-tm span{font-stretch:85%;letter-spacing:-.01em}} /* every name on one line (Mega Charizard Y took two beside one-line neighbours) */
 @media (min-width:700px) and (max-width:1023.98px){.tc-team{gap:var(--s1)}.tc-tm{padding-inline:2px}}
+/* ---------- Type Chart on the kit (reskin, Nov 22): kit header, plan steps, and the damage line (the page's one idea: the 1x line is
+   normal damage; pink bars run right for each step a type hurts more, blue bars left for each step it is shrugged off, ink to the edge for none) ---------- */
+.tc .k-plan{margin-top:var(--s2)}.tc .k-sec{margin-top:var(--s12)}.tc .k-step:first-child .k-sec{margin-top:var(--s10)}
+.tc-dmg{display:grid;grid-template-columns:300px minmax(0,1fr);gap:var(--s10);align-items:start}
+.tc-cardw{display:grid;gap:var(--s4);padding-top:calc(var(--s16) - var(--s2))}.tc-cardw .k-facts{margin:0}.tc-cardw .k-facts b.bad{color:var(--k-nasty-text)}
+.tc-cardw.tc-types{padding-top:0}
+.tc-dr{display:grid;gap:var(--s4);min-width:0}
+.tc-ln{--tcl:136px;display:grid;gap:var(--s1);padding-right:var(--s1)} /* the slanted 4x bar keeps inside the page edge */
+.tc-ax{position:relative;margin:0 0 0 var(--tcl);height:20px;font:700 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
+.tc-ax>span{position:absolute;top:0;white-space:nowrap}.tc-ax .r{left:0}.tc-ax .n{left:60%;translate:-50% 0;color:var(--k-ink)}.tc-ax .w{right:0;color:var(--k-nasty-text)}
+.tc-rows{display:grid;margin:0;padding:0;list-style:none}
+.tc-r{display:grid;grid-template-columns:var(--tcl) minmax(0,1fr);align-items:center;min-height:var(--s12);border-bottom:1px solid var(--k-rule)}
+.tc-r:first-child{border-top:1px solid var(--k-rule)}
+.tc-rt{min-width:0}
+.tc-rk{position:relative;align-self:stretch;background:linear-gradient(to right,var(--k-rule) 1px,transparent 1px) 0 0/20% 100%}
+.tc-rk::before{content:"";position:absolute;left:60%;top:-1px;bottom:-1px;border-left:2px solid var(--k-ink);translate:-1px 0;z-index:1}
+.tc-bar{position:absolute;top:var(--s2);bottom:var(--s2);display:flex;align-items:center;padding:0 var(--s2);transform:skewX(-8deg);font-style:normal}
+.tc-bar b{transform:skewX(8deg);font-size:var(--t20);line-height:1;color:var(--k-on-go)}
+.tc-r.w .tc-bar{justify-content:flex-end;background:var(--k-go)}
+.tc-r.r .tc-bar{justify-content:flex-start;background:var(--k-plot)}.tc-r.r .tc-bar b{color:var(--k-on-plot)}
+.tc-r.z .tc-bar{justify-content:flex-start;background:var(--k-chip)}.tc-r.z .tc-bar b{color:var(--k-on-chip)}
+.tc-norm{display:grid;grid-template-columns:var(--tcl) minmax(0,1fr);align-items:start;gap:var(--s2) 0;margin-top:var(--s3)}
+.tc-norm .tc-lbl{min-height:28px}.tc-norm .ts,.tc-og .ts{display:flex;flex-wrap:wrap;gap:var(--s1)}
+.tc-offs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s10)}.tc-offs.n1{grid-template-columns:minmax(0,1fr);max-width:720px}
+.tc-o{display:grid;gap:var(--s3);align-content:start}
+.tc-oh{display:flex;align-items:center;gap:var(--s2);margin:0;font:italic 900 var(--t20)/1.2 var(--u);font-synthesis:style}
+.tc-og{display:grid;grid-template-columns:120px minmax(0,1fr);gap:var(--s3);align-items:start;padding-top:var(--s3);border-top:1px solid var(--k-rule)}
+.tc-og .cap{display:grid;margin:0;font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2)}.tc-og .cap b{font-size:var(--t22);line-height:1.1;color:var(--k-ink)}
+.tc-og .none{font:400 var(--t15)/1.5 var(--b);font-style:normal;color:var(--k-ink2)}
+.tc-full{display:grid;gap:var(--s3)}.tc .k-go{justify-self:start}
+/* polish (Nov 22, Sim's yes: "cleaned up a little and not so rough"): on wide screens the star card is the kit's hero size and the line
+   stretches to the card's height (rows share the room, each bar stays 32px), so no empty strip under the card; bigger type chips and a
+   slanted axis that reads like the rest of the kit */
+@media (min-width:1024px){
+  .tc-dmg{grid-template-columns:360px minmax(0,1fr);align-items:stretch}
+  .tc-cardw{padding-top:112px;align-content:start}.tc-cardw .k-facts{gap:var(--s3) var(--s8)}
+  .tc-cardw.tc-types{padding-top:0}
+  .tc-cardw .k-plate{min-height:300px;padding:200px 20px 20px}.tc-cardw .k-art{top:-112px;width:130%;height:312px} /* the kit's hero card size, by CSS so a resize across 1024 needs no redraw */
+  .tc-cardw .k-name{font-size:var(--t34)}.tc-cardw .k-name[data-kf="1"]{font-size:var(--t28)}.tc-cardw .k-name[data-kf="2"]{font-size:var(--t24)}.tc-cardw .k-form,.tc-cardw .k-fact{font-size:var(--t15)}
+  .tc-dr{display:flex;flex-direction:column}.tc-ln{flex:1;display:flex;flex-direction:column;--tcl:152px}
+  .tc-rows{flex:1;grid-auto-rows:minmax(var(--s12),1fr)}
+  .tc-bar{top:calc(50% - 16px);bottom:auto;height:32px}
+  .tc-rt .np-type,.tc-norm .np-type,.tc-og .np-type,.tc-oh .np-type{min-height:32px;font-size:var(--t15)}.tc-oh{font-size:var(--t24)}
+  .tc-ax{height:28px;font:italic 900 var(--t15)/1.5 var(--u);font-synthesis:style}
+  .tc-norm .tc-lbl{min-height:32px}
+}
+@media (max-width:1023.98px){.tc-dmg{grid-template-columns:minmax(0,1fr);gap:var(--s6)}.tc-cardw{grid-template-columns:minmax(0,280px) minmax(0,1fr);align-items:end;column-gap:var(--s8)}.tc-cardw.tc-types{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:899.98px){.tc-offs{grid-template-columns:minmax(0,1fr);row-gap:var(--s8)}}
+@media (max-width:699.98px){
+  .tc .k-step:first-child .k-sec{margin-top:var(--s6)}
+  /* phones: the card and its three facts side by side (HYBRID 6, facts beside instead of under so the page stays short), the line full width */
+  .tc-dmg{grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+  .tc-cardw{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end;gap:var(--s3);padding-top:var(--s8)}
+  .tc-cardw .k-plate{min-height:0;padding:72px 6px 8px}.tc-cardw .k-art{top:-40px;height:112px}.tc-cardw .k-name{font-size:var(--t17)}
+  .tc-cardw .k-facts{grid-template-columns:minmax(0,1fr);gap:var(--s2)}.tc-cardw .k-facts li{display:flex;align-items:baseline;gap:var(--s2)}
+  .tc-cardw.tc-types{grid-template-columns:repeat(2,minmax(0,1fr));padding-top:0}
+  .tc-ln{--tcl:108px}.tc-bar b{font-size:var(--t17)}
+  /* phone length (today 2,798 px at 390): rows 32px (bars 24px), tighter groups, and the phone chart's three groups beside their labels */
+  .tc-r{min-height:32px}.tc-bar{top:4px;bottom:4px}
+  .tc-offs{gap:var(--s4)}.tc-o{gap:var(--s2)}.tc-og{grid-template-columns:88px minmax(0,1fr);gap:var(--s2);padding-top:var(--s2)}.tc-og .cap b{font-size:var(--t20)}
+  .tc-prow .tc-offr{grid-template-columns:88px minmax(0,1fr);gap:var(--s2);align-items:start}.tc-prow{gap:var(--s2)}
+  .tc .k-go{margin-top:var(--s2)}.tc{gap:var(--s4);padding-bottom:var(--s8)}
+  .tc .k-sec{margin-top:var(--s6)}.tc-oh{font-size:var(--t17)}
+  .tc-prow .tc-tp .k-tyi{display:none} /* the phone chart's own type row: words only (the symbols are on the main picks above) */
+  .tc-norm{grid-template-columns:minmax(0,1fr);gap:var(--s1);margin-top:var(--s2)}.tc-norm .tc-lbl{min-height:0}.tc-dr{gap:var(--s3)}
+}
+.tc-ax .sh{display:none}@media (max-width:359.98px){.tc-ln{--tcl:96px}.tc-ax .lg{display:none}.tc-ax .sh{display:inline}}
 /* ---------- Team Preview Practice: reskin proposal (helper hP3, Nov 22; NOT approved yet). Sim (Nov 22): keep the 6v6 of the real game's
    team preview, "our new kit but in that style but upgraded". Their six against your six on the war room's night-plot board (dark by day
    and night, pink offset), art bursting out of slanted plates, type chips with symbol + word, Plot blue = yours, magenta = theirs, the plan
@@ -1682,49 +1732,6 @@ button.pp2-plate{cursor:pointer;width:100%}
 .tr-how summary::before,.tr-prep summary::before{content:"";flex:none;width:8px;height:8px;margin-right:var(--s1);border-right:2px solid var(--plot-text);border-bottom:2px solid var(--plot-text);rotate:-45deg;transition:rotate .2s}
 .tr-how[open] summary::before,.tr-prep[open] summary::before{rotate:45deg}
 @media (prefers-reduced-motion:reduce){.tr-how summary::before,.tr-prep summary::before{transition:none}}
-/* ---------- Type Chart: Skyline (Sim's pick, Nov 14; docs/rebuild/mocks/types/skyline/BRIEF.md) ---------- */
-.tc-sky{display:grid;grid-template-columns:320px minmax(0,1fr);grid-template-areas:"card takes" "card city" "leg city" "note city" "sort city";grid-template-rows:auto auto auto auto 1fr;column-gap:var(--s8);row-gap:var(--s4);align-items:start}
-.tc-sky>.tc-cardw{grid-area:card}.tc-takes{grid-area:takes;margin:0}.tc-sky>.tc-city{grid-area:city}.tc-leg{grid-area:leg}.tc-sky>.tc-ab{grid-area:note;margin:0}.tc-sorted{grid-area:sort;margin:0}
-.tc-city{container-type:inline-size;min-width:0}
-.tc-cv{position:relative;display:none;width:100%;max-width:var(--mw);margin:0 auto}.tc-cv svg{display:block;width:100%;height:auto;overflow:visible}
-@container (min-width:576px){.tc-cv.dia{display:block}}
-@container (min-width:340px) and (max-width:575.98px){.tc-cv.blk6{display:block}}
-@container (max-width:339.98px){.tc-cv.blk3{display:block}}
-.tw{--c:var(--ty)}.tw.n{--c:color-mix(in srgb,var(--ty) 50%,var(--bg))}.tw.q{--c:color-mix(in srgb,var(--ty) 34%,var(--bg))}
-.tw .lot{fill:var(--table);stroke:var(--table-edge);stroke-width:1}
-.tw .rf{fill:var(--c)}.tw .lw{fill:color-mix(in srgb,var(--c) 80%,rgb(var(--shade)))}.tw .rw{fill:color-mix(in srgb,var(--c) 62%,rgb(var(--shade)))}
-.tw.n .lw,.tw.q .lw{fill:color-mix(in srgb,var(--c) 86%,rgb(var(--shade)))}.tw.n .rw,.tw.q .rw{fill:color-mix(in srgb,var(--c) 72%,rgb(var(--shade)))}
-.tw .fl{fill:none;stroke:rgba(var(--shade),.3);stroke-width:1}
-.tw .lt{fill:none;stroke:color-mix(in srgb,var(--on-type) 40%,transparent);stroke-width:1}.tw.n .lt,.tw.q .lt{stroke:color-mix(in srgb,var(--bg) 50%,transparent)}
-.tw.w4 .rf,.tw.w2 .rf{stroke:var(--bad);stroke-width:4;stroke-linejoin:round}.tw.r .rf{stroke:var(--plot);stroke-width:4;stroke-linejoin:round}
-.tw.z .pl{fill:var(--ink);stroke:var(--ty);stroke-width:4;stroke-linejoin:round}
-.tc-cv .lb{position:absolute;translate:-50% -50%;display:flex;align-items:baseline;gap:var(--s1);white-space:nowrap;font:600 var(--t13)/1.1 var(--b);color:var(--on-type);pointer-events:none}
-.tc-cv .lb b{font-size:var(--t15);line-height:1}.tc-cv .lb.n,.tc-cv .lb.q{color:var(--ink)}.tc-cv .lb.z{color:var(--bg)}
-@container (min-width:640px){.tc-cv.dia .lb{flex-direction:column;align-items:center;gap:0}.tc-cv.dia .lb b{font-size:var(--t20)}.tc-cv.dia .lb.w4 b{font-size:var(--t28)}}
-.tc-leg{display:grid;gap:var(--s2);margin:0;padding:0;list-style:none;font:400 var(--t15)/1.5 var(--b)}.tc-leg li{display:flex;align-items:center;gap:var(--s3)}
-.tc-leg .k{flex:none;width:16px;height:16px}.tc-leg .k.w{background:var(--bad)}.tc-leg .k.n{background:color-mix(in srgb,var(--ink) 30%,var(--bg))}.tc-leg .k.r{background:var(--plot)}.tc-leg .k.z{background:var(--ink)}
-.tc-city.quiet{margin-top:var(--s4)}.tc-city.quiet .tc-cv{max-width:min(var(--mw),720px)}
-/* the streets: attacking with its own types */
-.tc-streets{container-type:inline-size;display:grid;gap:var(--s2);margin-top:var(--s6)}.tc-streets .tc-lbl,.tc-sub{margin:0}.tc-sub{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
-.tc-sts{display:grid;gap:var(--s6);margin-top:var(--s3)}
-.tc-st{display:grid;gap:var(--s4);align-content:start}
-.tc-ban{position:relative;display:flex;align-items:baseline;justify-content:center;gap:var(--s2);padding:var(--s3) var(--s5);color:var(--on-type);background:repeating-conic-gradient(from 200deg at 100% 0,color-mix(in srgb,var(--on-type) 22%,transparent) 0 3deg,transparent 3deg 8deg) right top/40% 100% no-repeat,var(--ty);clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}
-.tc-ban b{font-size:var(--t28);line-height:1}.tc-ban small{font:700 var(--t13)/1 var(--b);letter-spacing:.06em;text-transform:uppercase}
-.tc-grps{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s5) var(--s6)}
-.tc-grp{display:grid;gap:var(--s2);--bw:48px;--th:112px}.tc-grp.lo{--th:32px}.tc-grp.z{--th:8px}
-.tc-grp .cap{margin:0;display:flex;align-items:baseline;gap:var(--s2);font:700 var(--t13)/1 var(--b);letter-spacing:.06em;text-transform:uppercase}.tc-grp .cap b{font-size:var(--t22);letter-spacing:0;text-transform:none}
-.tc-grp .row{position:relative;display:flex;flex-wrap:wrap;gap:var(--s4) var(--s2);padding:0 var(--s1)}
-.tc-grp .blk{display:grid;justify-items:center;gap:var(--s2);min-width:var(--bw);font:600 var(--t15)/1.2 var(--b)}
-.tc-grp .blk i{position:relative;display:block;width:var(--bw);height:var(--th);background:repeating-linear-gradient(0deg,transparent 0 8px,rgba(var(--shade),.3) 8px 9px),var(--ty);box-shadow:0 4px 0 var(--table-edge)}
-.tc-grp .blk i::after{content:"";position:absolute;top:-4px;right:-8px;width:8px;height:100%;background:color-mix(in srgb,var(--ty) 62%,rgb(var(--shade)));transform:skewY(-30deg);transform-origin:left bottom}
-.tc-grp.z .blk i{height:8px;background:var(--ink);outline:2px solid var(--ty);outline-offset:-2px}.tc-grp.z .blk i::after{display:none}
-.tc-grp .none{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2);font-style:normal}
-@container (min-width:600px){.tc-st{grid-template-columns:176px minmax(0,1fr);align-items:start}.tc-ban{flex-direction:column;align-items:flex-start;justify-content:flex-end;min-height:112px;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}}
-@container (min-width:960px){.tc-streets.n2 .tc-sts{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s8)}.tc-streets.n2 .tc-st{grid-template-columns:minmax(0,1fr)}.tc-streets.n2 .tc-ban{flex-direction:row;align-items:baseline;justify-content:center;min-height:0}
- .tc-streets.n1 .tc-ban{width:176px;min-height:176px}}
-@media (max-width:1023.98px){.tc-sky{grid-template-columns:260px minmax(0,1fr);column-gap:var(--s6)}}
-@media (max-width:699.98px){.tc-sky{grid-template-columns:minmax(0,1fr);grid-template-areas:"card" "note" "takes" "city" "leg" "sort";grid-template-rows:none}
- .tc-grp{--bw:40px;--th:84px}.tc-grp.lo{--th:24px}.tc-grp .blk{font-size:var(--t13)}.tc-grps{gap:var(--s4) var(--s6)}.tc-grp .row{gap:var(--s3) var(--s2)}}
 /* ---------- Meta > Pokémon > Rating (Nov 14): the approved mock-up (Preview gallery ratings.html) ---------- */
 .ra{display:grid;gap:var(--s6);padding:0 var(--gut) var(--s16)}
 .ra-sub{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s8)}
@@ -2110,24 +2117,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (min-width:700px){.gs-spot{grid-template-columns:minmax(220px,4fr) minmax(0,7fr)}.gs-plate .np-mon{--iw:200px}}.gs-sinfo{position:relative}
 /* ---------- Meta > Usage: The Podium (Grandstand brief, section 4) ---------- */
 .us .us-src{flex:1 1 100%;margin:0;color:var(--ink-2)}
-.us-podium{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s8);align-items:end}
-.us-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:var(--s1);border-bottom:4px solid var(--plot)}
-.us-step{display:grid;justify-items:center;min-width:0}
-.us-blk{display:grid;place-items:center;width:100%;font:900 var(--d64)/1 var(--u);font-style:italic;color:var(--tier-ink);clip-path:polygon(0 var(--s3),var(--s3) 0,100% 0,100% 100%,0 100%)}
-.us-p1 .us-blk{height:168px;background:var(--podium-1)}.us-p2 .us-blk{height:120px;background:var(--podium-2)}.us-p3 .us-blk{height:96px;background:var(--podium-3)}
-.us-fig{display:grid;justify-items:center;align-content:end;width:100%;min-width:0;padding:0 2px;background:none;border:0;color:inherit;font:inherit;text-align:center;cursor:pointer}
-.us-art{position:relative;display:grid;place-items:end center;width:100%}
-.us-fig .np-mon{--iw:96px;transition:transform .15s ease}.us-fig.pod .np-mon{--iw:140px}.us-p1 .us-fig.pod .np-mon{--iw:176px}
-.us-fig:hover .np-mon,.us-fig:focus-visible .np-mon,.us-fig[aria-pressed="true"] .np-mon{transform:translateY(calc(var(--s1)*-1))}
-.us-fig[aria-pressed="true"] .us-tx b{color:var(--plot-text)}
-.us-tx{display:grid;justify-items:center;gap:2px;padding:var(--s2) 0;min-width:0;width:100%}.us-tx b{max-width:100%;font:700 var(--t15)/1.25 var(--b)}
-.us-rk{font:900 var(--t15)/1.2 var(--u);font-style:italic;color:var(--ink-2)}
-.us-step .us-tx{order:2}.us-step{grid-template-rows:auto auto auto}.us-step .us-fig.pod{grid-row:1}.us-step .us-blk{grid-row:2}
 /* share, teams and place stack one per line at every width (Sim, Nov 19; was phones only: side by side at 700+ it wrapped 2+1 and left '▼1 place' alone on a row) */
-.us-nums{display:flex;flex-direction:column;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px;font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}.us-nums b{font:900 var(--t17)/1 var(--u);font-style:italic;color:var(--ink)}.us-nums b .us-pct{font-size:var(--t13)}
-.us-nums small{font-size:inherit} /* '1,405 teams' in <small> was the browser's 'smaller' (10.8px, off the type scale; qcheck on GitHub, Nov 19): keeps the line's 13px */
-@media (max-width:399.98px){.us-bench .us-tx b,.us-bench .us-nums small{font-stretch:88%}} /* 320-399: bench names ('Basculegion' 76px) and 'N teams' (70px at 13px) fit their 68px column, as the empty My Team tiles do */
-.us-bench .us-fig{align-content:start} /* every card in a bench row starts at the top, so names and sprites line up even when one card has no 'place' line (was: the shorter cards sat a line lower) */
 .us-tr{font:700 var(--t13)/1 var(--b);font-style:normal;color:var(--plot-text)}.us-tr.down,.us-tr.dn{color:var(--bad-text)}
 .us-benches{display:grid;gap:var(--s4)}.us-bench{--gsw:96px}
 .us-bench::before{border-bottom-color:var(--plot)}
@@ -2143,23 +2133,18 @@ button.pp2-plate{cursor:pointer;width:100%}
 .us-mates .gs-row{--gsw:88px}.us-mates .gs-row::before{border-bottom-color:var(--plot)}.us-mates .gs-tx small{font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}
 .us-add{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s6)}.us-add p{margin:0}
 .us-rest{justify-self:center}
-.us-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--s3) var(--s2)}.us-list .us-fig .np-mon{--iw:72px}
 .us-count{margin:0;font:600 var(--t15)/1.4 var(--b)}.us-count b{font:900 var(--t24)/1 var(--u);font-style:italic}
 @media (prefers-reduced-motion:reduce){.us-fig .np-mon{transition:none}}
-@media (max-width:1099.98px){.us-podium{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:699.98px){.us-fig.pod .np-mon{--iw:96px}.us-p1 .us-fig.pod .np-mon{--iw:120px}.us-p1 .us-blk{height:120px}.us-p2 .us-blk{height:88px}.us-p3 .us-blk{height:72px}.us-blk{font-size:var(--t34)}
-  .us-bench{--gsw:72px}.us-bench .us-fig .np-mon{--iw:72px}.us-mates .gs-row{--gsw:64px}.us-tx>b{font-size:var(--t13)}.us-tx .us-nums b{font-size:var(--t15)}.us-hh h2{font-size:var(--t24)}
-}
-.us-step .us-fig.pod{grid-row:auto}.us-fig.pod .us-tx{padding-top:var(--s3)}.us-steps{border-bottom:0}.us-fig.pod .us-blk{border-bottom:4px solid var(--plot)}
+@media (max-width:699.98px){.us-bench{--gsw:72px}.us-bench .gs-mon .np-mon{--iw:72px}.us-mates .gs-row{--gsw:64px}.us-hh h2{font-size:var(--t24)}}
 .us-bar>i>i{background:linear-gradient(90deg,var(--ty-a,var(--plot)),var(--ty-b,var(--plot)))}
 /* Sim, Nov 14: Meta scrolled slowly on his Windows desktop (mouse wheel). His standing rule: sprite glow off on mouse screens except feature
    sprites. The stand and the podium draw ~80 sprites, each with drop-shadow filters (two at night) and a blurred pool; the spotlight keeps its. */
 @media (hover:hover) and (pointer:fine){
-  .gs .np-mon img,.us-podium .np-mon img,.us-mates .np-mon img,.us-list .np-mon img,:root[data-theme="night"] .gs .np-mon img,:root[data-theme="night"] .us-podium .np-mon img,:root[data-theme="night"] .us-mates .np-mon img,:root[data-theme="night"] .us-list .np-mon img{filter:none}
-  :root[data-theme="night"] .gs .np-mon .pool,:root[data-theme="night"] .us-podium .np-mon .pool,:root[data-theme="night"] .us-mates .np-mon .pool{filter:none}}
+  .gs .np-mon img,.us-mates .np-mon img,.us-list .np-mon img,:root[data-theme="night"] .gs .np-mon img,:root[data-theme="night"] :root[data-theme="night"] .us-mates .np-mon img,:root[data-theme="night"] .us-list .np-mon img{filter:none}
+  :root[data-theme="night"] .gs .np-mon .pool,:root[data-theme="night"] .us-mates .np-mon .pool{filter:none}}
 /* Sim, Nov 14: the slanted 93 looked off-centre (its ink sat ~0.1em right of the panel centre: the slant leans the tops right) */
 .fn-belt>b{translate:-.1em 0}
-.us-how,.us-podium,.us-mates{grid-template-columns:minmax(0,1fr)}@media (min-width:1100px){.us-podium{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.us-how,.us-mates{grid-template-columns:minmax(0,1fr)}
 /* Q42 A (Sim chose it, Nov 19): Usage on phones, 4.59 screens at 390 to about 3.8. Moves top 5, Items top 3, one row of 3 teammates, each
    with "N more ›"; Abilities and Natures side by side (two even columns, Moves and Items full width); "Also ranked 61–100" behind its
    button. Tablet and desktop: every bar, teammate and the line, no button (usage.js puts us-x on what phones fold away) */
@@ -2169,6 +2154,115 @@ button.pp2-plate{cursor:pointer;width:100%}
   .us-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.us-groups>:not(.us-half){grid-column:1/-1}}
 @media (max-width:559.98px){.gs-ctl .us-srcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.gs-ctl .us-srcs>*{white-space:normal;line-height:1.2;padding:var(--s1) var(--s2);text-align:center}}
 @media (max-width:559.98px){.us-sp{display:block;height:0;overflow:hidden}}@media (max-width:359.98px){.gs-ctl .us-srcs>*{font-size:var(--t13)}}
+/* ---------- Usage on the kit (hU1, Nov 22; a proposal for Sim, not approved): the plot sentence picks the list, the kit hero card is
+   the #1, and the top ten is "the call sheet": one calm row per rank (40px picture, rank, name) with the share of teams as a slanted
+   Plot-blue bar on one shared scale, then the share, teams and place change. Step 2 is How it is played, moves on the kit's tickets. ---------- */
+.us .gs-body{gap:0}
+.us-ctl{display:grid;gap:var(--s3);margin-bottom:var(--s2)}
+.us-sent.k-sent{margin-top:var(--s2)}
+.us-srcs{display:inline-flex;flex-wrap:wrap;gap:var(--s2) var(--s3)}
+.us-srcs .k-w:disabled{opacity:.5;cursor:default}
+.us .us-src{margin:0;color:var(--k-ink2)}
+.us .gs-ctl .ra-find{flex:0 1 480px}
+/* the hero: card left, facts and the one move right (the right half of the Meta header on desktop) */
+.us .us-spot.k-hero{grid-template-columns:minmax(0,280px) minmax(0,1fr);align-items:end;gap:var(--s4) var(--s6);margin-top:132px}
+.us .us-spot .us-acts{grid-column:1/-1}
+.us .us-spot .k-hero-c .k-score{font-size:var(--t28)}
+.us-tagl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+.us-sent.k-sent{font-size:var(--t28)}
+.us .us-spot .k-hero-c .k-plate{min-height:260px;padding-top:176px}
+.us .us-spot .k-hero-c .k-art{top:-108px;height:288px}
+.us .us-spot .gs-sinfo{gap:var(--s3)}
+.us .us-facts{display:grid;gap:var(--s2);margin:0}
+.us .us-facts p{display:flex;flex-direction:row-reverse;justify-content:flex-end;align-items:baseline;gap:var(--s2);margin:0}
+.us .us-facts b{font:900 var(--t26)/1 var(--u);font-style:italic;color:var(--k-ink);white-space:nowrap}
+.us .us-facts p:first-child b{color:var(--k-plot-text)}
+.us .us-facts span{font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2);white-space:nowrap}
+.us .us-spot .k-scrib{margin:0}
+.us .us-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s6);margin:0}
+.us .us-acts .k-go{margin:var(--s2) 0 0}
+.us .us-addl{border:0;background:none;padding:0;font-family:var(--b);cursor:pointer}
+/* the plan line under the header */
+.us .k-plan{margin-top:var(--s2)}
+.us .us-s1 .k-sec{margin-top:var(--s10)}
+.us .k-sec .gs-key{margin:0}
+/* the call sheet */
+.us-sheet{display:grid}
+.us-top{display:grid;margin:0;padding:0;list-style:none}
+.us-top>li{border-bottom:1px solid var(--k-rule)}
+.us-axis,.us-ln{display:grid;grid-template-columns:40px minmax(0,232px) minmax(0,1fr) 96px 120px;grid-template-areas:"a t b u m" "a t b u r";column-gap:var(--s4)}
+.us-axis{grid-template-areas:"a l b u m";align-items:end;padding:0 var(--s2) var(--s2);border-bottom:1px solid var(--k-rule)}
+.us-ax{grid-area:b;position:relative;height:20px}
+.us-ax i{position:absolute;bottom:0;transform:translateX(-50%);font:600 var(--t13)/1.3 var(--b);font-style:normal;color:var(--k-ink2);white-space:nowrap}
+.us-ax i:first-child{transform:none}.us-ax i:last-child{transform:translateX(-100%)}
+.us-axl{grid-area:l;font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2)}
+.us-ln{align-items:center;width:100%;min-height:56px;margin:0;padding:var(--s1) var(--s2);border:0;background:none;color:var(--k-ink);font:inherit;text-align:left;cursor:pointer}
+.us-ln:hover,.us-ln[aria-pressed="true"]{background:color-mix(in srgb,var(--k-plot) 8%,transparent)}
+.us-ln[aria-pressed="true"]{box-shadow:inset 4px 0 0 var(--k-plot)}
+.us-ln:focus-visible{outline:3px solid var(--k-plot);outline-offset:-3px}
+.us-ln .us-art{grid-area:a;display:grid;place-items:center}
+.us-ln .np-mon{--iw:40px}
+.us-ln .us-tx{grid-area:t;display:flex;align-items:baseline;gap:var(--s2);min-width:0}
+.us-ln .us-rk{flex:none;min-width:40px;font:900 var(--t15)/1.2 var(--u);font-style:italic;color:var(--k-ink2)}
+.us-ln .us-tx b{min-width:0;font:700 var(--t17)/1.3 var(--b);overflow-wrap:normal}
+.us-ln[aria-pressed="true"] .us-tx b{color:var(--k-plot-text)}
+.us-pb{grid-area:b;display:block;height:16px;background:linear-gradient(90deg,var(--k-rule) 1px,transparent 1px) 0 0/var(--tk) 100%,color-mix(in srgb,var(--k-ink) 5%,transparent);transform:skewX(-14deg)}
+.us-pb>i{display:block;height:100%;background:var(--k-plot)}
+.us-ln .us-nums{display:contents}
+.us-ln .us-u{grid-area:u;justify-self:end;font:900 var(--t22)/1 var(--u);font-style:italic;color:var(--k-ink);white-space:nowrap}
+.us-ln .us-u .us-pct{font-size:var(--t15)}
+.us-ln .us-tm{grid-area:m;align-self:end;font:500 var(--t13)/1.3 var(--b);color:var(--k-ink2);white-space:nowrap}
+.us-ln .us-tr{grid-area:r;align-self:start;line-height:1.3;white-space:nowrap}
+.us-ln:not(:has(.us-tr)) .us-tm{grid-row:1/3;align-self:center}
+.us-nob .us-ln{grid-template-areas:"a t t t m" "a t t t r"}
+.us-rest{justify-self:center;margin-top:var(--s2);border:0;background:none;padding:0 var(--s4);font-family:var(--b);cursor:pointer}
+.us-top+.us-top{margin-top:0}
+.us .us-list{display:grid;margin-top:var(--s3)}
+/* How it is played, on the plan line */
+.us .us-how{margin-top:var(--s16);border-top:0;padding-top:0}
+.us .us-how .k-sec{margin:0}
+.us .us-mvs{gap:var(--s2)}
+.us-mvs .k-moves>li:last-child:nth-child(odd){grid-column:1/-1}
+.us .us-bar>i{height:8px;transform:skewX(-14deg);background:color-mix(in srgb,var(--k-ink) 6%,transparent)}
+.us .us-bar>i>i{background:var(--k-plot)}
+@media (min-width:1100px){.us .us-groups{grid-template-columns:minmax(0,3fr) minmax(0,2fr) minmax(0,2fr);gap:var(--s6) var(--s8)}}
+@media (min-width:1100px){.us .us-groups>.us-mvs{grid-row:span 3}.us .us-groups>:nth-child(2):nth-last-child(3){grid-row:span 2}.us .us-groups>:nth-child(4):last-child{grid-column:3}}
+@media (min-width:700px) and (max-width:1099.98px){
+  .us .us-spot.k-hero{grid-template-columns:minmax(0,280px) minmax(0,1fr);margin-top:124px}
+  .us .us-facts b{font-size:var(--t34)}
+  .us .us-groups{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.us .us-groups>.us-mvs{grid-column:1/-1;grid-row:auto}
+  .us-axis,.us-ln{grid-template-columns:40px minmax(0,180px) minmax(0,1fr) 88px 104px;column-gap:var(--s3)}}
+@media (max-width:699.98px){
+  .us .us-spot.k-hero{grid-template-columns:minmax(0,1fr);gap:var(--s3);margin-top:76px}
+  .us .us-spot .k-hero-c .k-plate{min-height:0;padding:100px var(--s4) var(--s3)}
+  .us .us-spot .k-hero-c .k-art{top:-64px;height:164px}
+  .us-sent.k-sent{font-size:var(--t20)}
+  .us .us-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}
+  .us .us-facts p{flex-direction:column-reverse;align-items:flex-start;gap:0}
+  .us .us-facts b{font-size:var(--t20)}
+  .us .us-acts{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;row-gap:0}
+  .us .us-acts .k-go{width:calc(100% - 8px)}
+  .us .us-s1 .k-sec{margin-top:var(--s6)}
+  .us .us-how{margin-top:var(--s10)}
+  .us-how .us-bars:not(.on) .us-x{display:none}
+  .us-srcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));flex:1 1 100%;width:100%;gap:var(--s2)}
+  .us-srcs .k-w{min-height:52px;padding:0 var(--s2);font:700 var(--t15)/1.2 var(--b);white-space:normal;text-align:center}
+  .us-axis,.us-ln{grid-template-columns:40px minmax(0,1fr) 32px 76px;grid-template-areas:"a t r u" "a b b m";column-gap:var(--s2);row-gap:var(--s1)}
+  .us-axis{grid-template-areas:"a b b .";padding-inline:0}
+  .us-trw{display:none}
+  .us-axl{display:none}
+  .us-ln{min-height:0;padding:6px 0;row-gap:2px}
+  .us-ln .us-tx{gap:var(--s1)}.us-ln .us-rk{min-width:32px}
+  .us-ln .us-tx b{font-size:var(--t16)}
+  .us .us-spot .k-scrib{display:none}
+  .us-ln .us-u{font-size:var(--t20)}
+  .us-ln .us-tm{justify-self:end;align-self:center}
+  .us-ln .us-tr{justify-self:end;align-self:center}
+  .us-ln:not(:has(.us-tr)) .us-tm{grid-row:auto;align-self:center}
+  .us-nob .us-ln{grid-template-areas:"a t r u" "a t r m"}
+}
+@media (max-width:519.98px){.us-ax i.us-odd:not(:last-child){display:none}}
+@media (max-width:359.98px){.us-mvs .k-moves{grid-template-columns:minmax(0,1fr)}.us-srcs .k-w{font-size:var(--t13);padding:0 var(--s1)}.us .us-facts b{font-size:var(--t20)}.us-ln .us-rk{min-width:32px}}
 /* ---------- Meta > Sets (Grandstand brief, section 5) ---------- */
 .st-find{display:grid;gap:var(--s2)}.st-hits{display:flex;flex-wrap:wrap;gap:var(--s1)}
 .st-h2{margin:0;font:900 var(--t24)/1.1 var(--u);font-style:italic}.st-team{display:grid;gap:var(--s2)}.st-six{--gsw:80px}
@@ -2921,67 +3015,93 @@ button.pp2-plate{cursor:pointer;width:100%}
 .wx-psy{--wc:var(--ty-Psychic);background-image:repeating-radial-gradient(ellipse at 50% 120%,transparent 0 22px,var(--wx-mid) 22px 25px)}
 .wx-tr{--wc:var(--ty-Ghost);background-image:repeating-linear-gradient(0deg,var(--wx-hi) 0 1px,transparent 1px 16px),repeating-linear-gradient(90deg,var(--wx-hi) 0 1px,transparent 1px 16px),linear-gradient(var(--wx-dk),var(--wx-dk)),repeating-conic-gradient(from 0deg at 50% 50%,var(--wx-mid) 0 .8deg,transparent .8deg 22.5deg);background-size:36% 40%,36% 40%,36% 40%,auto;background-position:center;background-repeat:no-repeat,no-repeat,no-repeat,repeat} /* lines running back to a gridded far wall */
 .wx-elec{--wc:var(--ty-Electric);background-image:repeating-linear-gradient(-62deg,transparent 0 28px,var(--wx-hi) 28px 30px,transparent 30px 44px),linear-gradient(transparent 70%,var(--wx-dk))}
-/* the map: three rows, tallest first; widths in a row follow the counts */
-.ar-map{display:grid;gap:var(--s2)}
-.ar-row{display:flex;gap:var(--s2)}
-.ar-reg{flex:var(--g) 1 0;min-width:0;display:grid;grid-template-rows:auto auto 1fr auto;align-content:start;gap:var(--s1);padding:var(--s4) var(--s5) 0;border:0;border-radius:var(--r-s);text-align:left;font:inherit;cursor:pointer}
-.ar-row .ar-reg{height:var(--h)}
-.ar-reg:focus-visible{outline:3px solid var(--plot);outline-offset:3px}
-.ar-rk{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);font:800 var(--t13)/1.5 var(--u);font-style:italic}
-.ar-rk b{white-space:nowrap} /* "No. 7" stays whole; the Your style badge moves under it in narrow tiles (Nov 16 audit) */
-.ar-you{padding:0 var(--s2);background:var(--on-type);color:var(--tk-ink);font:800 var(--t13)/1.5 var(--u);font-style:italic;text-shadow:none;transform:skewX(-8deg)}
-.ar-nm{font:900 var(--t28)/1.15 var(--u);font-style:italic}
-.ar-sh{display:flex;align-items:flex-end;gap:var(--s2);margin:0}.ar-sh b{font:900 var(--d64)/1 var(--u);font-style:italic}.ar-sh small{font:600 var(--t13)/1.4 var(--b);padding-bottom:var(--s2)}.ar-sh small span{display:block}.ar-sh small .c3{display:none}
-.ar .ev-top{grid-template-columns:minmax(0,7fr) minmax(0,4fr)}@media (max-width:1099.98px){.ar .ev-top{grid-template-columns:minmax(0,1fr)}}
-.ar-km{align-self:end;display:flex;align-items:flex-end;gap:var(--s1);min-width:0;overflow:hidden}.ar-km .np-mon{--iw:72px}.ar-km .lead .np-mon{--iw:120px}
-.ar-row.r1 .ar-nm{font-size:var(--t22)}.ar-row.r1 .ar-sh b{font-size:var(--t34)}.ar-row.r1 .ar-km .np-mon{--iw:56px}.ar-row.r1 .ar-km .lead .np-mon{--iw:88px}
-.ar-row.r2 .ar-nm{font-size:var(--t20)}.ar-row.r2 .ar-sh b{font-size:var(--t28)}.ar-row.r2 .ar-km .np-mon{--iw:48px}.ar-row.r2 .ar-km .lead .np-mon{--iw:72px}
-.ar-row.r2 .ar-sh{flex-direction:column;align-items:flex-start;gap:0}.ar-row.r2 .ar-sh small .c1,.ar-row.r2 .ar-sh small .c2{display:none}.ar-row.r2 .ar-sh small .c3{display:block}.ar-row.r2 .ar-sh small{padding:0}
-.ar-note{margin:var(--s2) 0 0}
+/* ---------- Archetypes "The Playbooks" on the shared kit (reskin Nov 22; Sim's PC mock-up, "Keep as drawn") ----------
+   The kit head inside the Meta page frame (.ra-h keeps the tab bar's place and the 12px head spacing the Meta pages share); step 1 your
+   team's style; step 2 one book per style in its type colour (--wc, a token), white words, a darker spine on the left, a folded corner,
+   its lead key Pokémon at the bottom right. The two most played are the big books; then three, then three (each row shorter). */
+.ar .gs-top{grid-template-columns:minmax(0,1fr)}
+.ar-h .k-kicker{justify-self:start;margin:var(--s4) 0 0}
+@media (max-width:699.98px){.ar-h .k-kicker{margin-top:0}} /* phones: the Meta tabs stay inside the first 450px (v2-minors, Sim Q2 Nov 17) */
+.ar-h .k-kicker::before{content:none}
+.ar-h h1.k-h1{font-size:var(--d-khead);line-height:1}
+@media (min-width:700px){.ar-h h1.k-h1 em{display:block}} /* the mock-up's two lines: "What you'll face," / "style by style." */
+.ar-h .k-lead{margin:0;max-width:640px}
+.ar .k-plan{padding-bottom:var(--s8)}
+@media (min-width:700px){.ar .gs-body>.k-plan>.k-step>.k-sec{margin-top:var(--s12)}.ar .gs-body>.k-plan>.k-step:first-child>.k-sec{margin-top:var(--s10)}}
+.ar-yb{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s4) var(--s10)}
+.ar-yb .k-facts{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s8);margin:0}
+.ar-yb .k-facts li{flex:0 1 auto;min-width:0}
+.ar-yb .k-go{margin:0 0 var(--s2)}
+.ar-yb .k-lead{margin:0}
+.ar-books{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s3);margin:0;padding:0;list-style:none}
+.ar-books>li{grid-column:span 2;min-width:0;display:grid}
+.ar-books>li.big{grid-column:span 3}
+.ar-bk{position:relative;isolation:isolate;display:grid;align-content:start;justify-items:start;gap:var(--s1);width:100%;min-height:152px;margin:0;padding:var(--s4) 112px var(--s4) var(--s6);border:0;background:none;color:var(--on-type);font:inherit;text-align:left;text-shadow:0 1px 2px var(--wx-dk);cursor:pointer}
+.ar-bk::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,var(--wx-dk) 0 8px,transparent 8px),repeating-linear-gradient(115deg,var(--ar-stripe) 0 2px,transparent 2px 12px),var(--wc);clip-path:polygon(0 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%)}
+.big .ar-bk{min-height:224px;padding-right:200px}
+.mid .ar-bk{min-height:176px}
+.ar-bk:focus-visible,.ar-mini:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
+.ar-bkart{position:absolute;z-index:0;right:var(--s4);bottom:var(--s3);width:96px;height:96px;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 6px 6px var(--wx-dk));pointer-events:none}
+.big .ar-bkart{width:176px;height:176px}
+.ar-rk{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin:0;font:700 var(--t13)/1.5 var(--b);letter-spacing:.04em}
+.ar-rk b{white-space:nowrap}
+.ar-rk .k-mine{text-shadow:none}
+.ar-nm{font:900 var(--t24)/1.1 var(--u);font-style:italic;overflow-wrap:normal}
+.big .ar-nm{font-size:var(--t34)}
+.ar-pc{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s2);margin:0;font:600 var(--t15)/1.4 var(--b)}
+.ar-pc b{font:900 var(--t24)/1 var(--u);font-style:italic}
+.big .ar-pc b{font-size:var(--t34)}
+.ar-of{white-space:nowrap}.ar-ct{flex-basis:100%;white-space:nowrap}
+.ar-open{margin-top:var(--s1);font:700 var(--t15)/1.4 var(--b);text-decoration:underline}
+.ar-note{margin-top:var(--s3)}
 .ar-guide,.ar-map{scroll-margin-top:96px}
-.ar-sh small .c3{white-space:nowrap}
-/* iPhone: Tailwind, Sun and the third each a full row, each shorter than the one before; then two share a row, then three */
-@media (max-width:699.98px){
-  .ar-row{flex-wrap:wrap}.ar-row.r0 .ar-reg{flex-basis:100%}.ar-row.r0 .ar-reg:first-child{min-height:240px}.ar-row.r0 .ar-reg:last-child{min-height:216px}
-  .ar-row.r1 .ar-reg:first-child{flex-basis:100%;min-height:192px}.ar-row.r1 .ar-reg{min-height:176px}
-  .ar-row.r2 .ar-reg{min-height:152px;padding:var(--s3) var(--s3) 0}
-  .ar-nm{font-size:var(--t24)}.ar-row.r1 .ar-reg:not(:first-child) .ar-nm,.ar-row.r2 .ar-nm{font-size:var(--t16)}
-  .ar-row.r1 .ar-reg:not(:first-child) .ar-sh{flex-direction:column;align-items:flex-start;gap:0}.ar-row.r1 .ar-reg:not(:first-child) .ar-sh small .c1,.ar-row.r1 .ar-reg:not(:first-child) .ar-sh small .c2{display:none}.ar-row.r1 .ar-reg:not(:first-child) .ar-sh small .c3{display:block}
-  .ar-row.r2 .ar-sh b,.ar-row.r1 .ar-reg:not(:first-child) .ar-sh b{font-size:var(--t24)}
-  .ar-row.r1 .ar-reg:not(:first-child) .ar-km span:not(.lead),.ar-row.r2 .ar-km span:not(.lead){display:none}
-  .ar-km .lead .np-mon{--iw:96px}
-}
-/* the guide */
-.ar-guide{display:grid;gap:var(--s8)}
-.ar-gh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s6)}.ar-gh h2{margin:0;font:900 var(--t34)/1.2 var(--u);font-style:italic}.ar-gh .np-link{min-height:var(--tap)}
-.ar-ban{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s6);align-items:end;padding:var(--s8);border-radius:var(--r-s)}
-.ar-bt{display:grid;gap:var(--s2);justify-items:start}.ar-ban h2{margin:0;font:900 var(--d64)/1 var(--u);font-style:italic}
-.ar-what{margin:0;max-width:52ch;font:500 var(--t17)/1.5 var(--b)}
-.ar-kk{margin:0 0 var(--s2);font:700 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase}
-.ar-keys ul{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s2) var(--s3)}
-.ar-key{display:grid;justify-items:center;padding:0;border:0;background:none;color:inherit;font:600 var(--t13)/1.3 var(--b);text-align:center;cursor:pointer;min-height:var(--tap)}
-.ar-key .np-mon{--iw:80px}.ar-keys li.lead .ar-key .np-mon{--iw:128px}.ar-keys li.lead .ar-key span{font:900 var(--t15)/1.3 var(--u);font-style:italic}
-.ar-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s12)}
-.ar-beat h3,.ar-has h3,.ar-oth h3{margin:0 0 var(--s3);font:900 var(--t22)/1.3 var(--u);font-style:italic}
-.ar-beat ol{list-style:none;margin:0;padding:0}.ar-beat li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s3);align-items:start;padding:var(--s3) 0;border-top:1px solid var(--rule);font:400 var(--t16)/1.5 var(--b)}
-.ar-no{display:grid;place-items:center;width:var(--s8);height:var(--s8);font:900 var(--t15)/1 var(--u);font-style:italic;transform:skewX(-8deg);border-radius:var(--r-s)}
-.ar-has ul{list-style:none;margin:0;padding:0}.ar-has li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:var(--s3);align-items:center;padding:var(--s2) 0;border-top:1px solid var(--rule)}
-.ar-has li div{display:grid}.ar-has li b{font:600 var(--t16)/1.4 var(--b)}.ar-has li small{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+/* the guide: its book as the banner, then the plan (who runs it, how to beat it, what your team has), then the other styles */
+.ar-guide{display:grid;gap:var(--s6)}
+.ar-gh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s6)}
+.ar-ban{position:relative;isolation:isolate;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end;gap:var(--s4) var(--s10);padding:var(--s8) var(--s8) var(--s8) var(--s10);color:var(--on-type);text-shadow:0 1px 2px var(--wx-dk)}
+.ar-ban::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,var(--wx-dk) 0 12px,transparent 12px),repeating-linear-gradient(115deg,var(--ar-stripe) 0 2px,transparent 2px 12px),var(--wc);clip-path:polygon(0 0,100% 0,100% calc(100% - 24px),calc(100% - 24px) 100%,0 100%)}
+.ar-ban h2{margin:0;font:900 var(--d64)/1 var(--u);font-style:italic}
+.ar-ban .ar-pc b{font-size:var(--t34)}
+.ar-bt{display:grid;justify-items:start;gap:var(--s2);min-width:0}
+.ar-what{margin:0;max-width:60ch;font:500 var(--t17)/1.5 var(--b)}
+.ar-guide .k-sec{margin-top:var(--s12)}
+.ar-beat{display:grid;margin:0;padding:0;list-style:none}
+.ar-beat li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s4);align-items:start;padding:var(--s3) 0;border-top:1px solid var(--k-rule);font:400 var(--t16)/1.5 var(--b);color:var(--k-ink)}
+.ar-beat li:first-child{border-top:0}
+.ar-no{display:grid;place-items:center;width:var(--s8);height:var(--s8);background:var(--wc);color:var(--on-type);font:900 var(--t15)/1 var(--u);font-style:italic;transform:skewX(-8deg)}
+.ar-has{display:grid;margin:0;padding:0;list-style:none}
+.ar-has li{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:var(--s3);align-items:center;padding:var(--s2) 0;border-top:1px solid var(--k-rule)}
+.ar-has li:first-child{border-top:0}
+.ar-has li div{display:grid}.ar-has li b{font:700 var(--t16)/1.4 var(--b)}.ar-has li small{font:400 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
 .ar-ok{font:900 var(--t20)/1 var(--b);font-style:normal;color:var(--good-text)}
-.ar-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
-.ar-oth ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:var(--s2)}
-.ar-mini{position:relative;display:grid;align-content:end;gap:0;width:100%;min-height:96px;padding:var(--s2) var(--s3);border:0;border-radius:var(--r-s);text-align:left;font:inherit;cursor:pointer}
+.ar-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--k-ink2)}
+.ar-oth h3{margin:0 0 var(--s3);font:900 var(--t22)/1.3 var(--u);font-style:italic}
+.ar-oth ul{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:var(--s2);margin:0;padding:0;list-style:none}
+.ar-mini{position:relative;isolation:isolate;display:grid;align-content:end;width:100%;min-height:80px;margin:0;padding:var(--s2) var(--s3) var(--s2) var(--s4);border:0;background:none;color:var(--on-type);font:inherit;text-align:left;text-shadow:0 1px 2px var(--wx-dk);cursor:pointer}
+.ar-mini::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(90deg,var(--wx-dk) 0 6px,transparent 6px),var(--wc);clip-path:polygon(0 0,100% 0,100% calc(100% - 10px),calc(100% - 10px) 100%,0 100%)}
 .ar-mini span{font:900 var(--t15)/1.2 var(--u);font-style:italic}.ar-mini small{font:700 var(--t13)/1.5 var(--b)}
-.ar-mini .ar-you{position:absolute;top:var(--s2);left:var(--s2)}
-.ar-mini.on{outline:3px solid var(--ink);outline-offset:2px}
-.ar-mini:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
-.ar-pn{margin:0;font:900 var(--t28)/1.2 var(--u);font-style:italic}
-.ar-pl{list-style:none;margin:0;padding:0;display:grid;gap:var(--s2)}.ar-pl li{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s3);align-items:center;padding-left:var(--s3);border-left:4px solid var(--plot)}
-.ar-pl b.u{font:900 var(--t34)/1 var(--u);font-style:italic}.ar-pl span{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.ar-pl span b{color:var(--ink)}
-@media (max-width:1099.98px){.ar-ban{grid-template-columns:minmax(0,1fr)}.ar-cols{grid-template-columns:minmax(0,1fr);gap:var(--s8)}.ar-oth ul{grid-template-columns:repeat(4,minmax(0,1fr))}}
-@media (max-width:699.98px){.ar-ban{padding:var(--s5)}.ar-ban h2{font-size:var(--t34)}.ar-oth ul{grid-template-columns:repeat(2,minmax(0,1fr))}.ar-key .np-mon{--iw:64px}.ar-keys li.lead .ar-key .np-mon{--iw:96px}.ar-gh{display:grid;justify-items:start}}
-
-@media (max-width:429.98px){.ar-row.r2 .ar-sh small .c3{display:none}.ar-row.r2 .ar-sh small .c2{display:block}} /* the narrowest regions keep '7 of 90' on one line */
+.ar-mini.on{outline:3px solid var(--k-ink);outline-offset:3px}
+@media (max-width:1099.98px){.ar-oth ul{grid-template-columns:repeat(4,minmax(0,1fr))}.ar-ban{grid-template-columns:minmax(0,1fr)}
+  .ar-bk{padding-right:var(--s24)}.ar-bkart{width:80px;height:80px}.big .ar-bk{padding-right:152px}.big .ar-bkart{width:128px;height:128px}.ar-nm{font-size:var(--t22)}.big .ar-nm{font-size:var(--t28)}}
+/* phones (the mock-up's phone: two books a row, every row even): the Pokémon at the top right, the words under it across the book */
+@media (max-width:699.98px){
+  .ar-books{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+  .ar-books>li,.ar-books>li.big{grid-column:span 1}
+  .ar-bk,.big .ar-bk,.mid .ar-bk{min-height:0;align-content:start;padding:76px var(--s3) var(--s3) var(--s5)}
+  .big .ar-bk{padding-top:92px}
+  .ar-bkart,.big .ar-bkart{top:var(--s2);bottom:auto;right:var(--s2);width:68px;height:68px}
+  .big .ar-bkart{width:84px;height:84px}
+  .ar-nm,.big .ar-nm{font-size:var(--t20)}
+  .ar-pc b,.big .ar-pc b{font-size:var(--t20)}
+  .ar-pc{display:grid;justify-items:start;font-size:var(--t13)} /* every book the same three lines: share, "of top teams", count */
+  .ar-open{display:none}
+  .ar-yb{gap:var(--s4)}
+  .ar-yb .k-facts li{flex:1 1 140px}
+  .ar-ban{padding:var(--s5) var(--s5) var(--s6) var(--s8)}.ar-ban h2{font-size:var(--t34)}
+  .ar-oth ul{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ar-gh{display:grid;justify-items:start}
+}
+@media (max-width:359.98px){.ar-nm,.big .ar-nm{font-size:var(--t17)}.ar-bk,.big .ar-bk,.mid .ar-bk{padding-left:var(--s4);padding-right:var(--s2)}}
 .wx-misty{--wc:var(--ty-Fairy);background-image:radial-gradient(60% 40% at 30% 100%,var(--wx-mid) 0 99%,transparent),radial-gradient(50% 35% at 80% 105%,var(--wx-lo) 0 99%,transparent),radial-gradient(circle,var(--wx-mid) 2px,transparent 2.5px);background-size:auto,auto,30px 34px}
 
 /* ---------- This Week "The Front Page" (Nov 15) ---------- */
@@ -3139,10 +3259,6 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:389.98px){.ev-fc{flex-direction:column;align-items:flex-start;gap:0;line-height:1.2;padding:var(--s1) var(--s3)}}
 .ev-cpast .np-link,.ev-csrc a{position:relative}.ev-cpast .np-link::after,.ev-csrc a::after{content:"";position:absolute;inset:-12px -4px}
 
-/* the shortest row: the count and one Pokémon, the Pokémon to the right of the words, so 152px is enough */
-@media (min-width:700px){.ar-row.r2 .ar-reg{grid-template-columns:minmax(0,1fr) auto;grid-template-rows:auto auto 1fr;padding-bottom:0}.ar-row.r2 .ar-reg>:not(.ar-km){grid-column:1}.ar-row.r2 .ar-reg>.ar-km{grid-column:2;grid-row:1/-1}.ar-row.r2 .ar-km span:not(.lead){display:none}}
-@media (max-width:699.98px){.ar-row .ar-reg{height:auto}}
-.ar-ban h2{margin-bottom:var(--s2)}.ar-pl span{text-wrap-style:pretty} /* audit: guide name clear of its share; no lone '90' in the plate */
 
 /* audit fixes (Nov 15), This Week: small-phone ticket names may break anywhere; Most Used 3 + 2 on small phones; 3x3 weather tiles below
    1280 (9 across cut the numbers at 1100); counts never touch their words; shorter tiles; folds show their open/close mark */
@@ -3237,7 +3353,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 /* Nov 15 (colour audit #15): the KO stamp's text uses --on-mark: white on day red 4.55:1, dark on night red 7.33:1 (white on night red was 2.54:1) */
 /* Nov 15 (night contrast sweep): the Events/Archetypes plate label and Track Record step numbers used --on-plate on --plot (1.76:1 at night); now --on-mark like the other eight */
 /* Nov 15 (day contrast sweep): This Week's Rising/Falling labels and points use --on-mark by day (off-white on red was 4.36:1, white is 4.55:1) */
-:root[data-theme="night"] .tc-grid td.v2{background:color-mix(in srgb,var(--good) 40%,var(--surface))} /* Nov 15 (night contrast sweep): 2x cells were 3.76:1 at 55%; 40% measures 5.28:1 */
+:root[data-theme="night"] .tc-grid td.v2{background:color-mix(in srgb,var(--k-nasty) 36%,var(--surface))} /* Nov 15 (night contrast sweep): 2x cells were 3.76:1 at 55%; 40% measures 5.28:1 */
 .wk-kind{display:inline-flex;align-items:center;gap:var(--s1)}.wk-kind .kdic{width:var(--s4);height:var(--s4);flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round} /* Nov 15: the kind icon beside its word */
 .fn-uc .mg.none{display:block;visibility:hidden} /* Nov 15 (audit #15): every Undercard tile keeps the Mega line, so ratings and tiers sit level (Mega tiles were 6 px lower at 1280, measured 129 vs 135); same as My Box (.bx-f) */
 @media (max-width:399.98px){.trk-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);align-items:start}.trk-stats li:first-child{grid-column:1/-1}} /* Nov 15 (re-audit #7): at 320 "Oct 29" filled its column and read "Oct 2913"; the date gets its own row, the two counts share the next */
@@ -3404,7 +3520,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:499.98px){:not(.mt-belt)>.fn-belt.long{padding-inline:var(--s3)}:not(.mt-belt)>.fn-belt.long .w .u{font-size:var(--t20);white-space:nowrap}}
 @media (min-width:1100px) and (max-width:1279.98px){.fn-cacts{column-gap:var(--s3)}} /* the corner links stay in one row beside the wider score column (All 113 Events wrapped alone at 1100-1180) */
 .tc-h h1{text-wrap-style:balance} /* morning helper (confirmed): a long one-word name joined to "hard." ran off the screen at 320 (Crabominable +46px); the break is allowed and the lines are balanced */
-.tc>.tc-h,.tc-h h1{min-width:0} /* the page grid sized its column to the headline (350px at 320): the headline may now shrink, so it wraps within the screen */
+.tc>.tc-h,.tc-h>.k-head,.tc-h h1{min-width:0} /* the page grid sized its column to the headline (350px at 320): the headline may now shrink, so it wraps within the screen */
 /* Sim Q45 A (Nov 19, 8:33 PM): Test Run on phones shows the Coin Flips pile's first 5 cards and a button for the rest; 700 and up: every card */
 .tp-morebtn{display:none}
 @media (max-width:699.98px){.tp-cards:not(.on)>.tp-more{display:none}.tp-morebtn{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}}
@@ -3423,12 +3539,6 @@ button.pp2-plate{cursor:pointer;width:100%}
    the rows gives each its own 44px. Other widths unchanged. */
 .tm-sample .tm-sample-acts{row-gap:var(--s6)} /* Q69 A1, every width (Nov 20, Sim's PC run: on Windows the two links still stack at 820+, where the 700-819 rule stopped; a row gap only shows when they wrap) */
 
-/* ---- Q73 D1 (Sim chose the recommended option, Nov 20, 8:17 AM; audit-nov20-options.md D1): Usage podium benches. Under 600 a Mega's
-   "Mega" is the MEGA tag line (.gs-mg, as "Usually alongside") above the rest of its name, and the other bench names keep an empty
-   tag line of the same height, so the numbers in each bench row sit level. 600 and wider: the plain word on the name line, as before. ---- */
-.us-fig .us-tx .us-mg{display:inline;min-height:0;font:inherit;letter-spacing:inherit;color:inherit;text-transform:none}
-@media (max-width:599.98px){.us-fig .us-tx .us-mg{display:block;min-height:16px;font:900 var(--t13)/1.2 var(--u);font-style:italic;letter-spacing:-.02em;color:var(--plot-text);text-transform:uppercase}
-  .us-bench .us-nomg::before{content:"";display:block;min-height:16px}}
 
 /* ---- Q74 D2 (Sim chose the recommended option, Nov 20, 8:17 AM; audit-nov20-options.md D2): Events and Gifts filter chips. Under 700
    the three chips keep their own widths and grow to fill the row (no empty end); at every width the chip's words are centred in the
@@ -3763,3 +3873,58 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .dr-tn.l0 small{color:var(--k-nasty-text)}
 .dr-ok{font-weight:600;color:var(--k-ink2)}
 @container (max-width:599.98px){.dr .tp-cards .dr-row .dr-thru,.dr-row .dr-thru{grid-column:2;grid-row:1/3;display:grid;align-content:center;gap:0;font-size:var(--t13);line-height:1.3}.dr-row .dr-tk{font-size:var(--t13);letter-spacing:.04em}.dr-row .dr-tn{white-space:normal}}
+/* Usage polish (HH, Nov 22; Sim: "cleaned up a little and not so rough", keep the character): 700 and up, the one pink move sits in the
+   facts column under the facts (no loose row under the card), and the three facts line up as a table: numbers in one column, words in
+   the next, so 38.1% / 48.0% / 97 start and end on the same lines */
+@media (min-width:700px){
+  .us .us-spot .us-acts{grid-column:2;align-self:end;min-width:0}
+  .us .us-spot .us-acts .k-go{max-width:100%}
+  .us .us-spot .gs-sinfo{align-self:end}
+  .us .us-facts p{display:grid;grid-template-columns:minmax(0,max-content) minmax(0,1fr);justify-content:start;column-gap:var(--s3)}
+  .us .us-facts b{order:-1;min-width:4.4em}
+  .us .us-spot.k-hero{grid-template-rows:auto auto;align-items:end}
+  .us .us-spot .k-hero-c{grid-row:1/3}
+}
+/* 1100-1439: the hero shares the header row, so its facts column is narrow; the move takes the full width under card + facts (qcheck: offscreen at 1280) */
+@media (min-width:1100px) and (max-width:1439.98px){.us .us-spot .us-acts{grid-column:1/-1}}
+/* Usage fixes (HH, Nov 22, from the checks): the slanted move tickets get 4px of room on the left (q42: "Fighting" sat 2px out at 699);
+   tablets give names room so "Mega Charizard Y" stays one line (q72); phones move the place change down beside the bar, so the name row has
+   the width it needs (q72 at 320-360); the "Most used" tag is 15px (v2-unbounded: no Unbounded under 15px) */
+.us-mvs .k-moves{padding-left:var(--s1)}
+.us-tagl .gs-tag.u{font-size:var(--t15)}
+@media (min-width:700px) and (max-width:1099.98px){.us-axis,.us-ln{grid-template-columns:40px minmax(0,232px) minmax(0,1fr) 80px 96px}}
+@media (max-width:699.98px){.us-ln{grid-template-areas:"a t t u" "a b r m"}.us-nob .us-ln{grid-template-areas:"a t t u" "a t r m"}}
+@media (max-width:359.98px){.us-ln .us-tx b{font-size:var(--t15)}.us-ln .us-u{font-size:var(--t17)}.us-axis,.us-ln{grid-template-columns:40px minmax(0,1fr) 28px 64px}.us-ln .us-rk{min-width:28px}}
+/* Usage at 1440 and up (Sim's desktop length rule, Nov 22): the top ten and "How X is played" side by side, so the page uses the width
+   instead of running 3+ screens; step 2's number circle sits at its own column's left edge, the plan line runs down the first column */
+@media (min-width:1440px){
+  .us .k-plan{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,9fr);column-gap:var(--s16);align-items:start}
+  .us .us-how{margin-top:0;padding-left:var(--s12)}
+  .us .us-how>.k-n{left:0}
+  .us .us-s1 .us-axis,.us .us-s1 .us-ln{grid-template-columns:40px minmax(0,204px) minmax(120px,1fr) 72px 80px;column-gap:var(--s3)}
+  .us .us-s1 .us-ln .us-u{font-size:var(--t20)}
+  .us .us-how .us-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s6)}
+  .us .us-how .us-groups>.us-mvs{grid-column:1/-1;grid-row:auto}
+  .us .us-how .us-groups>:nth-child(4):last-child{grid-column:auto}
+/* Archetypes guide at 1100 and up (Sim, Nov 22: the desktop length rule; approved 10:10 AM): "How to beat it" and "What your team has"
+   side by side under "Who runs it", as today's guide had them; step 3's circle sits at its column's left edge */
+@media (min-width:1100px){
+  .ar-guide .k-plan{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s16);align-items:start}
+  .ar-guide .k-plan>.k-step:first-child{grid-column:1/-1}
+  .ar-guide .k-plan>.k-step:nth-child(3){padding-left:var(--s12)}
+  .ar-guide .k-plan>.k-step:nth-child(3)>.k-n{left:0}
+/* Speed Tiers at 1280 and up (Sim's desktop length rule, Nov 22): between your blue bands, the field's rows run two-up (left, then right,
+   in speed order), as they already do on phones; the bands keep the full width. Each row keeps its own track and tick marks, so a bar
+   still reads against its own row; the full-width scale on top is dropped because it no longer lines up with half-width rows. */
+@media (min-width:1280px){
+  .sp2-lad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s10)}
+  .sp2-cut,.sp2-fr.solo{grid-column:1/-1}
+  .sp2-fr.solo .sp2-m{padding-right:calc(50% + var(--s5))}
+  .sp2-cut{margin:var(--s3) 0 var(--s1);padding:var(--s1) 0}
+  .sp2-cut .sp2-m{min-height:64px}
+  .sp2-fr .sp2-m{min-height:44px}
+  .sp2-fr .sp2-bar{top:var(--s3);height:16px}
+  .sp2-cut .sp2-m .v{font-size:var(--t28)}
+  .sp2-cut .nm b{font-size:var(--t24)}
+  .sp2-track .sp2-sc{display:none}
+}

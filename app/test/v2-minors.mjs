@@ -900,8 +900,8 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   ok(/Always Drought/.test(st.tour) && !/Blaze/.test(st.tour), `Player review 4c (Nov 17): a Mega's Ability reads "Always Drought", not the base form's Blaze (${st.tour.slice(0, 90)})`);
   ok(/No usage numbers in this source/.test(st.ingame), `Player review 4c: Best data says where the nature numbers are (${st.ingame.slice(-120)})`); }
 { await p.goto('file://' + PAGE + '#usage'); await p.waitForTimeout(2000); await p.evaluate(() => window.__ev(`(() => { ui.metaSrc = 'tour'; V2.redraw(); })()`)); await p.waitForTimeout(800);
-  await p.evaluate(() => { const b = [...document.querySelectorAll('#main [data-v2mon], #main button')].find(x => /Charizard Y/.test(x.textContent)); if (b) b.click(); }); await p.waitForTimeout(800);
-  const u = await p.evaluate(() => document.querySelector('#main').innerText.replace(/\s+/g, ' ')), k = u.search(/ABILITIES/i);
+  await p.evaluate(() => { const b = [...document.querySelectorAll('#main [data-uspick], #main [data-v2mon], #main button')].find(x => /Charizard\sY/.test(x.textContent)); /* \s: the row keeps 'Charizard\u00a0Y' together */ if (b) b.click(); }); await p.waitForTimeout(800); /* Nov 22: Usage's call sheet picks with its rows (data-uspick) */
+  const u = await p.evaluate(() => document.querySelector('#main').innerText.replace(/\s+/g, ' ')), k = u.search(/ABILITIES/); /* Nov 22: the heading (shown in capitals), not the note's lowercase 'abilities and natures' */
   ok(k >= 0 && /Always Drought/.test(u.slice(k, k + 120)) && !/Blaze \d/.test(u), `Player review 4c: Usage (tournaments) gives Mega Charizard Y "Always Drought" (${u.slice(k, k + 80)})`); }
 { await p.goto('file://' + PAGE + '#speed'); await p.waitForTimeout(2500);
   const calc = await p.evaluate(() => window.__ev(`JSON.stringify([spdCalc(200, false, '', null, {up: true}), spdCalc(201, true, '', null, {up: true}), spdCalc(201, true, '', null, {})])`));
@@ -1187,7 +1187,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   { const us = [], ctx = await b.newContext({viewport: {width: 820, height: 900}}), q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#usage'); await q.waitForTimeout(2000);
     for (const s of ['ingame', 'tour', 'ladder']) { if (!await q.locator(`[data-ussrc="${s}"]:not([disabled])`).count()) { us.push([s, 'chip off', false]); continue; } await q.locator(`[data-ussrc="${s}"]`).first().click(); await q.waitForTimeout(800);
       const r = await q.evaluate(() => { const f = [...document.querySelectorAll('.ra-spot .gs-facts p')].map(p => p.innerText.replace(/\s+/g, ' ')), share = f.some(t => /Of teams\s*[\d.]+%/.test(t)), win = f.some(t => /Win rate\s*[\d.]+%/.test(t));
-        const podPct = [...document.querySelectorAll('.us-fig.pod .us-nums, .us-fig.bench .us-nums')].some(e => /%/.test(e.textContent)), listW = !!(window.__ev ? window.__ev('(metaDoc().top[0] || {}).w') : null), key = document.querySelector('.gs-key').textContent;
+        const podPct = [...document.querySelectorAll('.us-sheet .ten .us-nums')] /* kit reskin proposal (Nov 22): the top-ten rows (were the podium and benches) */.some(e => /%/.test(e.textContent)), listW = !!(window.__ev ? window.__ev('(metaDoc().top[0] || {}).w') : null), key = document.querySelector('.gs-key').textContent;
         return {share, win, podPct, listW, key}; });
       const needU = r.share && !r.podPct, needW = r.win && !r.listW, named = /from Online tournaments/.test(r.key);
       us.push([s, r.key, (needU || needW ? named : true) && !(r.share && /gives no percentages/.test(r.key)) && (!needU || /share/.test(r.key)) && (!needW || /win rate/.test(r.key))]); }

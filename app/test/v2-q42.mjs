@@ -4,7 +4,8 @@
 // inside). Each button: aria-expanded, aria-controls, opens and closes from the keyboard, focus stays on it, "Show Fewer" when open, its
 // state kept across a redraw. 390 x 844: at least 0.4 screens shorter than the same page with the cuts undone in place (same data; the CI
 // data differs from today's, so no fixed screen number). Tablet and desktop (700, 1440) unchanged: every bar, teammate and the line, no
-// button. Light and dark: nothing out of its box, nothing sideways, no lone teammate, no page errors. Exit 1 on any failure.
+// button. Kit reskin (hU1, Nov 22, proposal): Moves are the kit's move tickets two across, so phones show the top 4 (two even rows;
+// a set's four moves) instead of 5. Light and dark: nothing out of its box, nothing sideways, no lone teammate, no page errors. Exit 1 on any failure.
 //   PAGE=app/dist/v2.html node app/test/v2-q42.mjs   (a --v2 --preview-data build)
 import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -30,7 +31,7 @@ const boxes = p => p.evaluate(() => { const W = innerWidth, bad = [];
 const lab = (k, n, w) => `${n} more ${w} ›`;
 for (const th of ['light', 'dark']) {
   for (const W of [320, 390, 699]) { const [p, errs, c] = await open(W, th, true), n = await want(p); let x = await look(p);
-    ok(n.mv > 5 && x.mv === 5 && x.b.mv.t === lab('mv', n.mv - 5, 'moves') && x.b.mv.tag === 'BUTTON' && x.b.mv.exp === 'false' && x.b.mv.ctl === 'ok' && x.b.mv.h >= 44, `${th} ${W}: Moves shows 5 of ${n.mv} + "${x.b.mv.t}" (${x.b.mv.tag}, aria-expanded ${x.b.mv.exp}, controls ${x.b.mv.ctl}, ${x.b.mv.h}px)`);
+    ok(n.mv > 4 && x.mv === 4 && x.b.mv.t === lab('mv', n.mv - 4, 'moves') && x.b.mv.tag === 'BUTTON' && x.b.mv.exp === 'false' && x.b.mv.ctl === 'ok' && x.b.mv.h >= 44, `${th} ${W}: Moves shows 4 of ${n.mv} + "${x.b.mv.t}" (${x.b.mv.tag}, aria-expanded ${x.b.mv.exp}, controls ${x.b.mv.ctl}, ${x.b.mv.h}px)`);
     ok(n.it > 3 && x.it === 3 && x.b.it.t === lab('it', n.it - 3, 'items') && x.b.it.exp === 'false' && x.b.it.ctl === 'ok' && x.b.it.h >= 44, `${th} ${W}: Items shows 3 of ${n.it} + "${x.b.it.t}" (${x.b.it.h}px)`);
     ok(x.side, `${th} ${W}: Abilities and Natures side by side in two equal columns (${x.abW} and ${x.naW}px wide)`);
     ok(n.tm > 3 && x.tm === 3 && x.rows === '3' && x.b.tm.t === lab('tm', n.tm - 3, 'teammates') && x.b.tm.exp === 'false' && x.b.tm.ctl === 'ok' && x.b.tm.h >= 44, `${th} ${W}: Usually alongside shows one row of 3 of ${n.tm} (rows ${x.rows}) + "${x.b.tm.t}" (${x.b.tm.h}px)`);
@@ -43,7 +44,7 @@ for (const th of ['light', 'dark']) {
       await p.reload(); await p.waitForTimeout(4000);
       ok((L.H0 - L.H) / 844 >= 0.4, `${th} 390: page ${(L.H / 844).toFixed(2)} screens, ${((L.H0 - L.H) / 844).toFixed(2)} shorter than without Q42's cuts (${(L.H0 / 844).toFixed(2)}; at least 0.4; measured 0.54 today, 0.52 on the CI data, Nov 19)`); }
     let bx = await boxes(p); ok(!bx.bad.length && !bx.side, `${th} ${W}: nothing out of its box, nothing sideways (${bx.bad.slice(0, 3).join('; ') || 'clean'}${bx.side ? ', scrolls sideways' : ''})`);
-    for (const [k, all, cut, nm] of [['mv', n.mv, 5, 'Moves'], ['it', n.it, 3, 'Items'], ['tm', n.tm, 3, 'Usually alongside'], ['al', 1, 0, 'Also ranked']]) {
+    for (const [k, all, cut, nm] of [['mv', n.mv, 4, 'Moves'], ['it', n.it, 3, 'Items'], ['tm', n.tm, 3, 'Usually alongside'], ['al', 1, 0, 'Also ranked']]) {
       if (!x.b[k].t) { ok(false, `${th} ${W}: no ${nm} button to open`); continue; }
       const closed = x.b[k].t; await p.focus(`#main [data-usmore="${k}"]`); await p.keyboard.press('Enter'); await p.waitForTimeout(250); x = await look(p);
       const got = k === 'al' ? (x.also ? 1 : 0) : x[k];

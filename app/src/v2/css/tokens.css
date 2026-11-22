@@ -78,6 +78,7 @@
   --tk-scrim:rgba(26,20,8,.15); /* Nov 16 audit: under white text on type-coloured tickets (3.6-4.2:1 -> 4.6:1+) */
   /* weather scenes (Archetypes, This Week; Nov 15): light marks over a type colour, the same in both themes */
   --wx-lo:rgba(255,255,255,.10);--wx-mid:rgba(255,255,255,.2);--wx-hi:rgba(255,255,255,.34);--wx-dk:rgba(10,8,20,.28);
+  --ar-stripe:rgba(255,255,255,.06); /* Archetypes books (Nov 22): the faint diagonal lines, light enough that white words keep about 4.2:1 or better where a line runs under them */
   /* paper (Track Record's receipt, slips and chart sheet; Nov 15): white with dark words in both themes, waiting on Sim's yes; stamps use
      the day-theme good and bad text colours, which pass on white */
   --rc-paper:#FFFFFF;--rc-ink:#17161A;--rc-ink2:#48454F;--rc-rule:rgba(23,22,26,.28);--rc-shadow:rgba(10,8,20,.28);--rc-tape:rgba(0,120,191,.32);--rc-good:#0068AD;--rc-bad:#B3261E;
