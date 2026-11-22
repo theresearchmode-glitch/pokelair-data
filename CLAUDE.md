@@ -40,6 +40,11 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
+## ONE EXTRA HELPER, MOCK-UPS ONLY (Sim, Nov 22, logged 11:48 AM)
+Sim: "im going to allow one additional helper but for one specific task and only until this task is done then no more ... this helpers
+only job to be doing mock ups for the reskins so i can approve them." So: 1 build helper + 1 mock-up helper (direction pictures for the
+pages still to reskin). When the mock-ups are done, back to ONE helper. Never use the mock-up slot for anything else.
+
 ## EVERYTHING ON THE KIT; NOTIFY WHEN NEEDED (Sim, Nov 22, logged 11:36 AM)
 Sim: "everything is done with the kit not the old way." Every new or changed page, sheet or piece uses the shared kit (kit.js,
 the kit tokens and parts), never the old pre-reskin patterns. Sim: "send me a notification if you need me for anything ill be around":
