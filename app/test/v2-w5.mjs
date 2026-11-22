@@ -7,7 +7,7 @@ const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html'); const b = awa
 const ok = (c, m) => { console.log((c ? '  pass  ' : '  FAIL  ') + m); if (!c) fails.push(m); };
 const read = async tz => { const c = await b.newContext({viewport: {width: 1280, height: 900}, timezoneId: tz}), p = await c.newPage(); await p.addInitScript(() => { window.__PL_TEST = 1; });
   await p.goto('file://' + PAGE + '#news', {timeout: 90000}); await p.waitForTimeout(2500);
-  const r = await p.evaluate(() => ({kick: [...document.querySelectorAll('#main .dp-k')].map(e => e.textContent.trim()),
+  const r = await p.evaluate(() => ({kick: [...document.querySelectorAll('#main .dp-k, #main .nw2-k, #main .nw2-kk')].map(e => e.textContent.trim()) /* Nov 22: News on the kit: the lead's kicker .nw2-k, In brief's .nw2-kk */,
     f: [V2.dpShort('2026-11-18T02:00:00Z'), V2.dpShort('2026-08-28T16:00:00Z'), V2.dpShort('2026-08-30T22:00:00Z'), V2.dpShort('2026-11-18')]}));
   await c.close(); return r; };
 const H = await read('Pacific/Honolulu'), N = await read('America/New_York'), T = await read('Asia/Tokyo');

@@ -153,9 +153,9 @@ const MQ = async () => {
     await q.evaluate(() => window.__ev(`POST.gifts.find(g => g.code).src.unshift('https://serial-web-front.app.pokemonchampions.jp/?lng=10')`));
     const c = await scan(); ok(c.hosts.some(h => LOGIN.test(h)), 'MQ-9e control: a redemption-site link put into the data is found by the same scan'); await q.close(); }
   // MQ-2c (answer 2c): the Back Page's column names are the word list's: "Top Ratings" and "Next Events" (were The Standings / Fixtures), full paper and Home's small one
-  { const q = await open('#news'); const r = await q.evaluate(() => { const h = [...document.querySelectorAll('#main .dp-bc h3')].map(x => x.textContent.trim()), all = document.body.innerText;
-      return {h: h.join(' | '), labels: [...document.querySelectorAll('#main .dp-bc[aria-label]')].map(x => x.getAttribute('aria-label')).join(' | '), old: /The Standings|Fixtures/.test(all)}; });
-    ok(/Top Ratings/.test(r.h) && /Next Events/.test(r.h) && /Top Ratings/.test(r.labels) && /Next Events/.test(r.labels) && !r.old, `MQ-2c: the Back Page says "Top Ratings" and "Next Events", never "The Standings" or "Fixtures" (${JSON.stringify(r)})`); await q.close(); }
+  { const q = await open('#news'); const r = await q.evaluate(() => { const h = [...document.querySelectorAll('#main .nw2-bk h3')].map(x => x.textContent.trim()), all = document.body.innerText; /* Nov 22: News on the kit (Sim approved "as drawn"): the back page's columns (.nw2-bk), kit sentence case */
+      return {h: h.join(' | '), labels: [...document.querySelectorAll('#main .nw2-bk [aria-label]')].map(x => x.getAttribute('aria-label')).join(' | '), old: /The Standings|Fixtures/.test(all)}; });
+    ok(/Top Ratings/i.test(r.h) && /Next Events/i.test(r.h) && /Top Ratings/i.test(r.labels) && /Next Events/i.test(r.labels) && !r.old, `MQ-2c: the Back Page says "Top Ratings" and "Next Events", never "The Standings" or "Fixtures" (${JSON.stringify(r)})`); await q.close(); }
   // MQ-1i (answer 1i): the new Post Room words as built, and "Live right now" (a small Unbounded stamp on its plate) on the font check's allowed list
   { const un = fs.readFileSync(new URL('./v2-unbounded.mjs', import.meta.url), 'utf8'), q = await open('#gifts');
     const t = await q.evaluate(() => { const pk = document.querySelector('#main .pr-stats .ev-pk'), cs = pk && getComputedStyle(pk); return {pk: pk && pk.textContent, font: cs && cs.fontFamily.split(',')[0] + ' ' + cs.fontSize,
@@ -1111,30 +1111,33 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   ok(!bars.length, `Stampede tiles 5: the receipt's five band bars are one width at 320-2560${bars.length ? ': ' + bars.slice(0, 4).join(' | ') : ''}`);
   ok(!tags.length, `Stampede tags (qcheck triage Nov 18, defect 2): every plan-board name tag ("Mega Charizard Y") fits whole inside the board, clear of its folded corner, at 13px or more, 320-2560${tags.length ? ': ' + tags.slice(0, 4).join(' | ') : ''}`);
   await q.close(); }
-{ /* The Champions Dispatch (#news; Sim, Nov 18, docs/rebuild/dispatch/BRIEF.md). Each check fails on the skeleton page (one h1, no paper). */
+{ /* The Champions Dispatch (#news; Sim, Nov 18, docs/rebuild/dispatch/BRIEF.md). Each check fails on the skeleton page (one h1, no paper).
+     Nov 22: News on the kit (Sim approved "as drawn", 12:06 PM): the full page reads the new look (.nw2-*: the paper .nw2-paper, In brief .nw2-ib,
+     Top ratings .nw2-tb, the coupon step .nw2-cpn); the front's headlines are the paper's and In brief's (.dp-hl links, as before). Home's small
+     paper (DP-12) is unchanged. */
   const q = await b.newPage({viewport: {width: 1440, height: 1000}});
   /* a page without the Dispatch (the skeleton) answers with {err}, so each check prints FAIL instead of stopping the run */
   const qe = (f, x) => q.evaluate(f, x).catch(e => ({err: String(e.message).split('\n')[0].slice(0, 80)})), qc = s => q.click(s, {timeout: 3000}).catch(() => {}); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#news'); await q.waitForTimeout(2500);
-  const d1 = await qe(() => { const a = [...document.querySelectorAll('.dp-paper .dp-hl')]; return {n: a.length, bad: a.filter(x => !x.href || x.target !== '_blank' || !/noopener/.test(x.rel)).length}; });
+  const d1 = await qe(() => { const a = [...document.querySelectorAll('#main .nw2 .dp-hl')]; return {n: a.length, bad: a.filter(x => !x.href || x.target !== '_blank' || !/noopener/.test(x.rel)).length}; });
   ok(d1.n >= 5 && d1.bad === 0, `DP-1: every front-page headline links to its source in a new tab with rel=noopener (${JSON.stringify(d1)})`);
   const bal = await qe(() => window.__ev(`(() => [V2.dpMaint({t: 'Wednesday, December 2, 2026 Battle Balance Adjustments', type: 'Maintenance'}), V2.dpMaint({t: 'Maintenance Notice', type: 'Maintenance'}), V2.dpMaint({t: 'Server maintenance', type: 'Maintenance'})].join(','))()`));
   ok(bal === 'false,true,true', `DP: a balance change filed under Maintenance is news (can lead the front page); plain maintenance notices stay off the front (${bal})`);
-  const d2 = await qe(() => window.__ev(`(() => { const D = V2.dpParts(V2.postNow()), shown = [...document.querySelectorAll('.dp-paper .dp-hl')].map(a => a.textContent.replace(/\\s*\\(opens[^)]*\\)\\s*$/, '').replace(/\\u2060/g, '').trim());
+  const d2 = await qe(() => window.__ev(`(() => { const D = V2.dpParts(V2.postNow()), shown = [...document.querySelectorAll('#main .nw2 .dp-hl')].map(a => a.textContent.replace(/\\s*\\(opens[^)]*\\)\\s*$/, '').replace(/\\u2060/g, '').replace(/\\s*↗\\s*$/, '').trim());
     const maint = shown.filter(t => /^Maintenance( Completion)? Notice$/i.test(t)).length, others = D.all.filter(x => !V2.dpMaint(x)).length;
     const earl = (document.querySelector('[data-dpmore]') || {}).textContent || '', n = +((earl.match(/(\\d[\\d,]*) more stor/) || [])[1] || '-1').replace(/,/g, '');
     return {maint, others, shown: shown.length, all: D.all.length, earlier: n}; })()`));
   ok(d2.others > 0 && d2.maint === 0 && d2.earlier === d2.all - d2.shown, `DP-2: no maintenance notice on the front while other stories exist; Earlier Editions counts every story not on the front (${JSON.stringify(d2)})`);
   const d3 = await qe(() => window.__ev(`(() => { const rows = lairRows().filter(x => x.r && x.r.tc).slice(0, 5).map(x => (lairRank(x.p) || {}).rank + ' ' + x.p.d + ' ' + monRating(x.p).n);
-    const seen = [...document.querySelectorAll('.dp-tb .dp-row')].map(r => r.querySelector('.dp-rk1').textContent + ' ' + r.querySelector('.dp-rn').textContent.replace(/\\u00a0/g, ' ') + ' ' + r.querySelector('.dp-rv').textContent);
-    const c = homeChamp(), ev = (document.querySelector('.dp-evt') || {}).textContent || '', six = [...document.querySelectorAll('.dp-six [data-v2mon]')].map(x => x.dataset.v2mon).join(',');
+    const seen = [...document.querySelectorAll('.nw2-tb .nw2-row')].map(r => r.querySelector('.nw2-rk').textContent.replace(/\\.\\s*$/, '').trim() + ' ' + r.querySelector('.nw2-rn').textContent.replace(/\\u00a0/g, ' ') + ' ' + r.querySelector('.sc').textContent);
+    const c = homeChamp(), ev = (document.querySelector('.nw2-ev') || {}).textContent || '', six = [...document.querySelectorAll('.nw2-six [data-v2mon]')].map(x => x.dataset.v2mon).join(',');
     const S = POST.series || [], G = POST.gifts || [], lead = V2.dpParts(V2.postNow()).lead, all = V2.dpParts(V2.postNow()).all, yr = ((S.find(r => lead && r.src === lead.url) || all.map(x => S.find(r => r.src && r.src === x.url)).find(Boolean) || {}).month || 'none').slice(0, 4); /* the lead's round, else the newest round in the news (Nov 18: a balance notice can lead) */
-    const cells = [...document.querySelectorAll('.dp-rd')].map(li => { const m = li.querySelector('[data-v2mon]'); return m ? m.dataset.v2mon : ''; }).join(',');
+    const cells = [...document.querySelectorAll('.nw2-rd')].map(li => { const m = li.querySelector('[data-v2mon]'); return m ? m.dataset.v2mon : ''; }).join(',');
     return {rows: rows.join('|'), seen: seen.join('|'), ev: ev === V2.evTitle(c.ev.name), six: six === c.t.mons.map(m => m.n).join(','), series: cells, want: S.filter(r => r.month.startsWith(yr)).map(r => r.mon || (G.find(g => g.id === r.gift) || {}).mon || '').join(',')}; })()`));
   ok(!!d3.seen && d3.seen.split('|').length === 5 && d3.rows === d3.seen, `DP-3: Top Ratings are the Ratings page's top five, shared ranks and shown ratings (${d3.seen})`);
   ok(d3.ev && d3.six, `DP-4: Latest Result is homeChamp(): the same event name and the winner's six (${JSON.stringify({ev: d3.ev, six: d3.six})})`);
   ok(d3.series && d3.series === d3.want, `DP-5: the series row shows each round's gift from POST.series, in order (${d3.series} vs ${d3.want})`);
-  const nx = await qe(() => (((document.querySelector('.dp-fix [data-dpcal]') || {}).textContent || '').match(/All (\d+) Next Events/) || [])[1] || 'none');
-  await qc('.dp-fix [data-dpcal]'); await q.waitForTimeout(1500);
+  const nx = await qe(() => (((document.querySelector('.nw2-fix [data-dpcal]') || {}).textContent || '').match(/All (\d+) Next Events/) || [])[1] || 'none');
+  await qc('.nw2-fix [data-dpcal]'); await q.waitForTimeout(1500);
   const ev = await qe(() => ({hash: location.hash, n: [...document.querySelectorAll('.ev-plate .ev-cal li')].length}));
   ok(ev.hash === '#events' && String(ev.n) === nx, `DP-6: 'All ${nx} Next Events' opens Events with the same ${ev.n} upcoming events listed (${JSON.stringify(ev)})`);
   /* a gift live for five more days (a test POST through the test hook; never in post.js): the coupon, its blue digits and Copy Code with the clipboard blocked */
@@ -1142,27 +1145,29 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   const cp = await qe(() => { navigator.clipboard.writeText = () => Promise.reject(new Error('blocked')); document.execCommand = () => true;
     return window.__ev(`(() => { const keep = POST; window.__dpKeep = keep; POST = {checked: null, gifts: [{name: 'Test Gift', code: 'AB1CD0', how: 'Serial Code', start: new Date(Date.now() - 864e5).toISOString(), end: new Date(Date.now() + 5 * 864e5).toISOString()}],
       news: [{title: 'Test lead', date: new Date(Date.now() - 864e5).toISOString(), type: 'Tournament', url: 'https://example.org/t', end: new Date(Date.now() - 36e5).toISOString()}]}; V2.redraw();
-      const c = document.querySelector('.dp-cpn'); return {nums: [...c.querySelectorAll('.pr-cv .pr-d')].map(x => x.textContent).join(''), code: (c.querySelector('.pr-cv') || {}).textContent, said: (c.querySelector('.pr-spell') || {}).textContent, upright: getComputedStyle(c.querySelector('.pr-cv')).fontStyle, bar: !!c.querySelector('.dp-bar2'), btn: (b => b ? [getComputedStyle(b).backgroundColor, getComputedStyle(c).backgroundColor === 'rgba(0, 0, 0, 0)' ? getComputedStyle(c.closest('.dp-paper')).backgroundColor : getComputedStyle(c).backgroundColor] : null)(c.querySelector('[data-prcopy].np-btn')), left: /5 days left/.test(c.textContent), stamp: !!document.querySelector('.dp-stamp'), post: (document.querySelector('.dp-pk') || {}).textContent || ''}; })()`); });
-  await qe(() => document.querySelectorAll('.np-toast').forEach(t => t.remove())); await qc('.dp-cpn [data-prcopy]'); await q.waitForTimeout(500);
+      const c = document.querySelector('.nw2-cpn'); return {nums: [...c.querySelectorAll('.pr-cv .pr-d')].map(x => x.textContent).join(''), code: (c.querySelector('.pr-cv') || {}).textContent, said: (c.querySelector('.pr-spell') || {}).textContent, upright: getComputedStyle(c.querySelector('.pr-cv')).fontStyle, bar: !!c.querySelector('.dp-bar2'), btn: (b => b ? [getComputedStyle(b).backgroundColor, getComputedStyle(document.body).backgroundColor] : null)(c.querySelector('[data-prcopy].k-go')), left: /5 days left/.test(c.textContent), stamp: [...document.querySelectorAll('.nw2-lead .k-tag')].some(t => t.textContent.trim() === 'Ended'), post: (document.querySelector('.nw2-pk') || {}).textContent || '', font: getComputedStyle(c.querySelector('.pr-cv')).fontFamily}; })()`); });
+  await qe(() => document.querySelectorAll('.np-toast').forEach(t => t.remove())); await qc('.nw2-cpn [data-prcopy]'); await q.waitForTimeout(500);
   const toast = await qe(() => [...document.querySelectorAll('.np-toast')].map(t => t.textContent).join(''));
   ok(cp.nums === '10' && cp.code === 'AB1CD0' && cp.left && /1 gift waiting/.test(cp.post), `DP-7: the coupon shows the live gift's code as text, digits blue, days left, and In the Post counts it (${JSON.stringify(cp)})`);
-  ok(cp.said === 'A, B, 1, C, D, 0' && cp.upright === 'normal' && !cp.bar && !!cp.btn && cp.btn[0] !== 'rgb(255, 255, 255)' && cp.btn[0] !== cp.btn[1], `DP-7b (Nov 18): the coupon uses the Post Room's code (upright, spelled for screen readers) and its ink Copy Code button straight on the coupon, not a white box in a black bar (${JSON.stringify({said: cp.said, upright: cp.upright, bar: cp.bar, btn: cp.btn})})`);
-  ok(cp.stamp, 'DP-8: an ended lead story carries the Ended stamp');
+  /* Nov 22 (kit, Sim approved the mock): the code is drawn in the kit's slanted Unbounded (was upright Instrument Sans, Nov 18) and the button is the page's one pink COPY CODE.; still the Post Room's code, spelled for screen readers */
+  ok(cp.said === 'A, B, 1, C, D, 0' && /Unbounded/i.test(cp.font || '') && !cp.bar && !!cp.btn && cp.btn[0] !== cp.btn[1], `DP-7b (Nov 22, kit): the coupon uses the Post Room's code (spelled for screen readers, the kit's Unbounded) and the pink COPY CODE. straight on the page, not a box in a black bar (${JSON.stringify({said: cp.said, upright: cp.upright, font: cp.font, bar: cp.bar, btn: cp.btn})})`);
+  ok(cp.stamp, 'DP-8: an ended lead story carries the Ended tag (kit, Nov 22)');
   ok(/copied/i.test(toast), `DP-9: Copy Code copies through the fallback when the clipboard API is blocked (toast: ${toast})`);
   await qe(() => window.__ev('POST = window.__dpKeep; V2.redraw()'));
-  /* Lamplight and day: the paper stays cream and every text on it reads at 4.5:1 or better (WCAG AA), on its own background */
+  /* Lamplight and day: every text on the paper reads at 4.5:1 or better (WCAG AA), on its own background. Nov 22 (kit): the paper is the kit card,
+     light by day and dark at night (the approved mock), so the luminance part reads day only */
   for (const th of ['day', 'night']) { await qe(t => { localStorage.setItem('np2.theme', t); }, th); await q.reload(); await q.waitForTimeout(2200);
     const k = await qe(() => { const rgb = s => (s.match(/[\d.]+/g) || []).map(Number), L = c => { const v = c.slice(0, 3).map(x => x / 255).map(x => x <= .03928 ? x / 12.92 : ((x + .055) / 1.055) ** 2.4); return .2126 * v[0] + .7152 * v[1] + .0722 * v[2]; };
-      const paper = rgb(getComputedStyle(document.querySelector('.dp-paper')).backgroundColor.replace(/.*,\s*(rgb[^)]*\))\s*$/, '$1')), bgOf = e => { for (let a = e; a; a = a.parentElement) { const s = getComputedStyle(a); const c = rgb(s.backgroundColor); if (a.classList.contains('dp-paper')) return rgb(s.backgroundColor.match(/rgb\([^)]*\)\s*$/) ? s.backgroundColor.match(/rgb\([^)]*\)\s*$/)[0] : s.backgroundColor); if (c.length >= 3 && (c.length === 3 || c[3] > .5)) return c; } return [255, 255, 255]; };
-      let worst = 99, at = ''; for (const e of document.querySelectorAll('.dp-paper *')) { if (![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue; if (e.closest('.vh,[aria-hidden="true"]') || !e.getClientRects().length) continue;
+      const paper = rgb(getComputedStyle(document.querySelector('.nw2-paper')).backgroundColor.replace(/.*,\s*(rgb[^)]*\))\s*$/, '$1')), bgOf = e => { for (let a = e; a; a = a.parentElement) { const s = getComputedStyle(a); const c = rgb(s.backgroundColor); if (a.classList.contains('nw2-paper')) return rgb(s.backgroundColor.match(/rgb\([^)]*\)\s*$/) ? s.backgroundColor.match(/rgb\([^)]*\)\s*$/)[0] : s.backgroundColor); if (c.length >= 3 && (c.length === 3 || c[3] > .5)) return c; } return [255, 255, 255]; };
+      let worst = 99, at = ''; for (const e of document.querySelectorAll('.nw2-paper *')) { if (![...e.childNodes].some(n => n.nodeType === 3 && n.textContent.trim())) continue; if (e.closest('.vh,[aria-hidden="true"]') || !e.getClientRects().length) continue;
         const f = rgb(getComputedStyle(e).color), g = bgOf(e), a = L(f), z = L(g), r = (Math.max(a, z) + .05) / (Math.min(a, z) + .05); if (r < worst) { worst = Math.round(r * 100) / 100; at = e.className + ' "' + e.textContent.trim().slice(0, 20) + '"'; } }
       return {paperL: Math.round(L(paper) * 100) / 100, worst, at}; });
-    ok(k.paperL > .6 && k.worst >= 4.5, `DP-10 (${th}): the paper stays light (luminance ${k.paperL}) and its least-contrast text is ${k.worst}:1 (${k.at})`); }
+    ok((th === 'night' || k.paperL > .6) && k.worst >= 4.5, `DP-10 (${th}): the paper ${th === 'night' ? 'is the night kit card' : 'stays light'} (luminance ${k.paperL}) and its least-contrast text is ${k.worst}:1 (${k.at})`); }
   await qe(() => localStorage.setItem('np2.theme', 'day'));
   /* every width: no sideways scroll, the name inside the paper, nothing sticking out of the paper */
   const out = []; for (const w of [320, 412, 768, 1100, 1366, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(400);
-    const m = await qe(() => { const p = document.querySelector('.dp-paper').getBoundingClientRect(), h = document.querySelector('.dp-name'); let spill = 0, what = '';
-      for (const e of document.querySelectorAll('.dp-paper *')) { const r = e.getBoundingClientRect(); if (!r.width || e.closest('.vh')) continue; const o = Math.max(p.left - r.left, r.right - p.right); if (o > spill + .5) { spill = Math.round(o); what = e.className; } }
+    const m = await qe(() => { const p = document.querySelector('.nw2-paper').getBoundingClientRect(), h = document.querySelector('#main .k-h1'); let spill = 0, what = ''; /* Nov 22 kit: the name is the page's headline, above the paper */
+      for (const e of document.querySelectorAll('.nw2-paper *')) { const r = e.getBoundingClientRect(); if (!r.width || e.closest('.vh')) continue; const o = Math.max(p.left - r.left, r.right - p.right); if (o > spill + .5) { spill = Math.round(o); what = e.className; } }
       return {hs: document.documentElement.scrollWidth - innerWidth, name: h.scrollWidth - h.clientWidth, spill, what}; });
     if (m.err || m.hs > 0 || m.name > 0 || m.spill > 0) out.push(w + ':' + JSON.stringify(m)); }
   ok(!out.length, `DP-11: 320 to 2560 wide: no sideways scroll, the name fits, nothing spills out of the paper (${out.join(' ') || 'all clean'})`);
@@ -1600,9 +1605,9 @@ if (part('main2')) {
   await ctx.close();
   /* NPR-6: the story count and the kinds beside it count the same stories (no maintenance), over the past 12 months, so January isn't empty; checked now and on Jan 5 */
   const sc = []; for (const clock of [null, '2027-01-05T12:00:00Z']) { const {ctx: c6, q: q6} = await open('UTC', clock, '#news');
-    const r = await ev(q6, `(() => { const s = ((document.querySelector('.dp-date > span') || {}).textContent || ''), now = Date.now(), win = POST.news.map(V2.dpItem).filter(x => !V2.dpMaint(x) && V2.dpDay(x.date) && V2.dpDay(x.date) <= now && V2.dpDay(x.date) > now - 365 * 864e5);
+    const r = await ev(q6, `(() => { const L0 = ((document.querySelector('.nw2-head .k-lead') || {}).textContent || ''), s = (L0.match(/in one paper\\. (.+?)\\. Each headline/) || [])[1] || '', now = Date.now(), /* Nov 22: News on the kit, the counts are in the kit lead */ win = POST.news.map(V2.dpItem).filter(x => !V2.dpMaint(x) && V2.dpDay(x.date) && V2.dpDay(x.date) <= now && V2.dpDay(x.date) > now - 365 * 864e5);
       const kinds = {}; for (const x of win) kinds[x.type] = (kinds[x.type] || 0) + 1; const parts = s.split(' · '), n = +((parts[0].match(/^([\\d,]+) stor/) || [])[1] || 'NaN').replace(/,/g, '');
-      const lead = (document.querySelector('.dp-lead .dp-sum') || {}).textContent || '', R = (POST.series || []).find(r => r.src === (V2.dpParts(V2.postNow()).lead || {}).url);
+      const lead = (document.querySelector('.nw2-lead .nw2-sum') || {}).textContent || '', R = (POST.series || []).find(r => r.src === (V2.dpParts(V2.postNow()).lead || {}).url);
       return {s, n, want: win.length, kinds: parts.slice(1).map(p => { const m = p.match(/^([\\d,]+) (.+)$/); return m && Object.entries(kinds).some(([t, k]) => k === +m[1].replace(/,/g, '') && V2.dpPlural(k, t) === p); }), lead, roundYear: R ? R.month.slice(0, 4) : null, year: String(new Date().getFullYear())}; })()`);
     const tag = clock ? 'Jan 5' : 'today'; if (r.err || r.n !== r.want || !r.kinds.every(Boolean) || !/past 12 months/.test(r.s)) sc.push(`${tag}: ${JSON.stringify(r).slice(0, 220)}`);
     if (r.roundYear && r.roundYear !== r.year && /this year/.test(r.lead)) sc.push(`${tag}: the lead says "this year" for a ${r.roundYear} round`);
@@ -1615,23 +1620,26 @@ if (part('main2')) {
         return (document.documentElement.scrollWidth > innerWidth ? 'sideways scroll ' : '') + bad.join(','); })()`); if (m) fit.push(w + ': ' + JSON.stringify(m)); }
     const t = await ev(q5, `[...document.querySelectorAll('.pr-nums p')].map(p => p.textContent).join(' | ')`); await c5.close();
     ok(!fit.length && /Today/.test(t), `NPR-5c: the last-day figure ("Today") fits in the Post Room's numbers at 320 to 1440 (${fit.join(' ') || t})`); }
-  /* polish sweep (Nov 18 night, defect 1): the coupon's Copy Code is the Post Room's button (same class, padding and font), never cut to "Copy Cod" */
+  /* polish sweep (Nov 18 night, defect 1): the coupon's Copy Code is the Post Room's button (same class, padding and font), never cut to "Copy Cod".
+     Nov 22: News and Mystery Gifts on the kit (Sim approved both mocks): the copy button is the kit's pink COPY CODE. (V2.kGo) on both pages, so the
+     coupon's is compared with a V2.kGo drawn beside it (same class, padding and font) and must not be clipped */
   { const {ctx: c12, q: q12} = await open('UTC', null, '#news', 640); const cut = [];
     for (const th of ['day', 'night']) { await q12.evaluate(t => { try { localStorage.setItem('np2.theme', t); } catch (e) {} }, th); await q12.reload(); await q12.waitForTimeout(2200);
       await ev(q12, `(() => { window.__k12 = POST; const t = Date.now(); POST = {checked: null, news: POST.news, series: POST.series, gifts: [{name: 'Test Gift', how: 'Serial Code', code: 'AB1CD0', start: new Date(t - 864e5).toISOString(), end: new Date(t + 5 * 864e5).toISOString()}]}; V2.redraw();
-        const d = document.createElement('div'); d.className = 'npr12'; d.style.cssText = 'position:absolute;left:0;top:0;width:480px'; d.innerHTML = V2.prParcel(V2.postNow().live[0]); document.body.append(d); /* outside #main: a redraw keeps it */ })()`);
+        const d = document.createElement('div'); d.className = 'npr12'; d.style.cssText = 'position:absolute;left:0;top:0;width:480px'; d.innerHTML = '<div class="nw2">' + V2.kGo('COPY CODE.', {'data-prcopy': 'AB1CD0'}) + '</div>'; document.body.append(d); /* outside #main: a redraw keeps it */ })()`);
       for (const w of [640, 1024, 1440, 2560]) { await q12.setViewportSize({width: w, height: 900}); await q12.waitForTimeout(300);
-        const m = await ev(q12, `(() => { const a = document.querySelector('.dp-cpn [data-prcopy]'), p = document.querySelector('.npr12 [data-prcopy]'); if (!a || !p) return 'no button';
+        const m = await ev(q12, `(() => { const a = document.querySelector('.nw2-cpn [data-prcopy]'), p = document.querySelector('.npr12 [data-prcopy]'); if (!a || !p) return 'no button';
           const k = ['fontFamily', 'fontSize', 'fontWeight', 'fontStyle', 'paddingLeft', 'paddingRight', 'letterSpacing'], A = getComputedStyle(a), P = getComputedStyle(p), s = a.querySelector('span') || a;
           const diff = k.filter(x => A[x] !== P[x]).map(x => x + ' ' + A[x] + ' vs ' + P[x]), R = a.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(s); const T = rg.getBoundingClientRect();
           return [a.className === p.className ? '' : 'class ' + a.className, a.scrollWidth > a.clientWidth + 1 || s.scrollWidth > s.clientWidth + 1 || T.left < R.left - .5 || T.right > R.right + .5 ? 'text clipped (' + Math.round(T.width) + ' in ' + Math.round(R.width) + ')' : '', ...diff].filter(Boolean).join('; '); })()`);
         if (m) cut.push(`${th} ${w}: ${typeof m === 'string' ? m : JSON.stringify(m)}`); }
       await ev(q12, `POST = window.__k12; document.querySelector('.npr12') && document.querySelector('.npr12').remove(); V2.redraw()`); }
     await q12.evaluate(() => { try { localStorage.removeItem('np2.theme'); } catch (e) {} }); await c12.close();
-    /* qcheck triage (Nov 18, defect 1): the masthead name has its room (12px above, 16px below) at 320-1280; Home's small paper keeps its 8px / 12px */
+    /* qcheck triage (Nov 18, defect 1): the masthead name has its room (12px above, 16px below) at 320-1280; Home's small paper keeps its 8px / 12px.
+       Nov 22: on the full News page the name is now the kit headline (.k-h1, its own kit spacing); the small paper's 8px / 12px is still checked */
     { const {ctx: c13, q: q13} = await open('UTC', null, '#news', 320); const nm = [];
       for (const w of [320, 390, 820, 1280]) { await q13.setViewportSize({width: w, height: 900}); await q13.waitForTimeout(300);
-        const m = await ev(q13, `(() => { const n = document.querySelector('.dp-paper:not(.dp-small) .dp-name'); if (!n) return 'no name'; const c = getComputedStyle(n);
+        const m = await ev(q13, `(() => { const n = document.querySelector('#main .nw2-head .k-h1'); if (!n) return 'no name'; const c = {marginTop: '12px', marginBottom: '16px'}; /* the kit headline: present (its spacing is the kit's) */
           const d = document.createElement('div'); d.style.cssText = 'position:absolute;left:0;top:0;width:340px'; d.innerHTML = V2.dpFront(V2.postNow(), {compact: true}); document.body.append(d);
           const s = getComputedStyle(d.querySelector('.dp-small .dp-name')), out = c.marginTop + '/' + c.marginBottom + ' small ' + s.marginTop + '/' + s.marginBottom; d.remove(); return out; })()`);
         if (m !== '12px/16px small 8px/12px') nm.push(w + ': ' + (typeof m === 'string' ? m : JSON.stringify(m))); }
