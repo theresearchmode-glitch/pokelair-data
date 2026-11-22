@@ -21,9 +21,14 @@ V2.muSec = D => { if (!D.rows.length) return ''; const RD = D.RD, ms = D.ms, vie
     ${D.mu.any ? `<div class="tm-legend"><span class="lf"><b>${D.mu.fav}</b> Favoured</span><span class="le"><b>${D.mu.even}</b> Even match</span><span class="lu"><b>${D.mu.unf}</b> Unfavoured</span></div>
     ${V2.muSplit(D)}` : ''}
     <p class="fine">Damage calc: ${CH.LV[0]} ${D.calc.none}, ${CH.LV[1]} ${D.calc.shaky}, ${CH.LV[2]} ${D.calc.handles}, ${CH.LV[3]} ${D.calc.beats}</p>
-    <div class="mu-pick">${V2.slide('thr', V2.MUV, view, 'Matchups view')}</div>`;
+    ${V2._tmk ? V2.muSent(view) : `<div class="mu-pick">${V2.slide('thr', V2.MUV, view, 'Matchups view')}</div>`}`;
   return `<section class="tm-sec tm-mus" id="tm-mu">${head}<div class="mu-pane">${view === 'grid' ? V2.muGrid(RD, ms) : view === 'all' ? V2.muAll(RD, ms) : view === 'top' ? V2.muTop(RD) : V2.muOut(RD)}</div></section>`; };
 
+// the war room (reskin page 1, mock-up B): the view switch as a plot sentence, "Show me [stand-outs] [top 10] [top 12 grid] [all 30]" (4 boxed
+// words). It is the same [data-v2slide="thr"] group of buttons (shell.js V2.slidePick fires the same v2slide event), only drawn as kit words.
+V2.muSent = view => `<div class="k-sent u mu-pick mu-sent"><span>Show me</span> <span class="mu-sg" role="group" aria-label="Matchups view" data-v2slide="thr">${V2.MUV.map(([v, t]) => `<button type="button" class="k-w" data-v="${v}" aria-pressed="${v === view}"><span>${V2.esc(t.toLowerCase())}</span></button>`).join(' ')}</span></div>`;
+// the verdict as the kit's one tag (blue good, pink bad, outlined even); keeps today's class (tm-v vf/ve/vu) for the checks that read it
+V2.muTag = w => V2._tmk ? V2.kTag(w === 'Favoured' ? 'good' : w === 'Unfavoured' ? 'bad' : 'neutral', w).replace('class="k-tag', `class="tm-v ${V2.VCLS[w] || ''} k-tag`) : `<span class="tm-v ${V2.VCLS[w]}"><i aria-hidden="true"></i>${w}</span>`;
 // A4 proposal (Sim's fix plan, Nov 12: "your recommendation"): one verdict per row. The real-games word leads; the calc reading
 // shows only when it points the other way ("Calc disagrees: Beats it"); with no real-games verdict the calc is the row's verdict.
 // Player review 3e (Nov 17): a threat that is also on your team is a mirror match. Its real-games verdict leaves that pair out (ctrVal
@@ -36,7 +41,7 @@ V2.calcNote = (R, lv, n) => { const dis = R && ((R.w === 'Unfavoured' && lv >= 2
 // Stand-outs (Sim, Nov 11): only the threats real games call Unfavoured (worst first) or Favoured; the even ones are one line
 V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).filter(x => x.R && x.R.w !== 'Even match');
   const unf = rows.filter(x => x.R.w === 'Unfavoured'), fav = rows.filter(x => x.R.w === 'Favoured');
-  const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}${V2.isMirror(r.t.n) ? ', mirror match: your other five against it' : ''}">${V2._hand && byName.get(r.t.n) ? `<span class="mu-card" aria-hidden="true">${V2.msCard(byName.get(r.t.n), r.t.n, '', '', 112)}</span>` : V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}</span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span>${V2.calcNote(R, r.level, r.t.n)}</button></li>`;
+  const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}${V2.isMirror(r.t.n) ? ', mirror match: your other five against it' : ''}">${V2._hand && byName.get(r.t.n) ? `<span class="mu-card" aria-hidden="true">${V2.msCard(byName.get(r.t.n), r.t.n, '', '', 112)}</span>` : V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}</span>${V2.muTag(R.w)}${V2.calcNote(R, r.level, r.t.n)}</button></li>`;
   // review fix (Nov 13): the calc note sits after the badge, so names and badges line up across a row whether or not a cell has a note
   // Nov 12 height cut: no group headings (each row carries its verdict badge; the counts line above has the numbers)
   // Sim, Nov 13 (My Team Q1 B, Sim chose it): at most 4 of each (the most common threats first), so rows stay even and the page length no longer
@@ -50,7 +55,7 @@ V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).fil
 // Top 10 (by top-cut share), numbered; phones and tablets show 5 and "Show 5 more"; then the next 20 as tiles, worst first
 V2.muTop = RD => { const {top, rest, RV} = CH.top10(RD), more = !!ui.tlMore;
   const row = (r, i) => { const R = CH.realVs(r.t.n), vw = R ? `${R.w}, calc ${CH.LV[r.level]}` : CH.LV[r.level];
-    return `<li><button type="button" class="mu-row" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(vw)}${V2.isMirror(r.t.n) ? ', mirror match: your other five against it' : ''}"><span class="k">${i + 1}</span>${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}${V2.calcNote(R, r.level, r.t.n)}</span>${R ? `<span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span>` : V2.muLv(r.level)}</button></li>`; };
+    return `<li><button type="button" class="mu-row" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(vw)}${V2.isMirror(r.t.n) ? ', mirror match: your other five against it' : ''}"><span class="k">${i + 1}</span>${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}${V2.calcNote(R, r.level, r.t.n)}</span>${R ? V2.muTag(R.w) : V2.muLv(r.level)}</button></li>`; };
   const tile = r => { const R = RV.get(r), w = R ? `${R.w}, calc ${CH.LV[r.level]}` : CH.LV[r.level];
     return `<button type="button" class="mu-tile${R ? ' ' + V2.VCLS[R.w] : ''}" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(w)}" title="${V2.esc(r.t.d)}: ${V2.esc(w)}">${V2.muImg(r.t.n)}</button>`; };
   return `<ol class="tm-rows mu-rows${more ? ' is-more' : ''}">${top.map(row).join('')}</ol>

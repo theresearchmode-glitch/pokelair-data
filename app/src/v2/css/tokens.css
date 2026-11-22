@@ -129,8 +129,9 @@
   --arn-rowbg:rgba(12,11,18,.74);--arn-rim:rgba(255,255,255,.12);--arn-ic-shadow:rgba(0,0,0,.45);--arn-ic-edge:#17161A;
   --arn-plate-hi:rgba(30,28,42,.95);--arn-plate-lo:rgba(14,13,22,.95);--arn-plate-rim:rgba(255,255,255,.14);
   --arn-track:#0A0910;--arn-tick:rgba(10,9,16,.75);--arn-hp-hi:#7DF2AE;--arn-hp-dmg-hi:#FF5C74;--arn-hpl:#FFFFFF;--arn-on-hpl:#17161A;--arn-hp-sub:#C9C5D0;
-  /* My Team's frame (Sim, Nov 21): black frame, pink drop shadow, light panels; the chosen row yellow. Contrast (measured below in the build notes) */
-  --mtf-frame:#17161A;--mtf-drop:#E8364F;--mtf-panel:#F4F1EC;--mtf-ink:#17161A;--mtf-ink2:#5E5A66;--mtf-chosen:#FFE14D;--mtf-on-frame:#FFFFFF;--mtf-bar-sub:#C9C5D0;--mtf-rate:#0068AD;
+  /* My Team's frame (Sim, Nov 21): black frame, pink drop shadow, light panels; the chosen row black with a pink edge, pink accents (Sim, Nov 21, 7:13 AM: no yellow, 'more nasty plot'). Contrast (measured below in the build notes) */
+  --mtf-frame:#17161A;--mtf-drop:#E8364F;--mtf-panel:#F4F1EC;--mtf-ink:#17161A;--mtf-ink2:#5E5A66;--mtf-chosen:#E8364F;--mtf-on-frame:#FFFFFF;--mtf-bar-sub:#C9C5D0;--mtf-rate:#0068AD;
+  --mtf-night:#14131C;--mtf-n-surf:#1D1C26;--mtf-n-surf2:#272631;--mtf-n-sub:#B9B5C4;--mtf-n-link:#9BDCFF;--mtf-n-rule:rgba(255,255,255,.1);--mtf-n-add:rgba(255,255,255,.32);--mtf-n-glow:rgba(232,54,79,.4);--mtf-hot:#FF5C74;
   --mtf-cell:#FFFFFF;--mtf-link:#0068AD;--mtf-wash:#ECE8DF;--mtf-rule:rgba(23,22,26,.13);--mtf-ink3:#5E5A66;--mtf-card-warn:#FFB866;--mtf-ink2b:#48454F;--mtf-card-sub:#D9D5E0;--mtf-card-tile:rgba(255,255,255,.1);--mtf-card-link:#9BDCFF;--mtf-card-new:rgba(255,225,77,.22);--mtf-shadow-floor:rgba(23,22,26,.14);--mtf-stop:#C41E35;--mtf-add:rgba(23,22,26,.4);
   /* the Damage Calc board, 'Plot the hit' (Sim, Nov 21): graph paper, marker, photos, sticky notes; the same board in day and night until Sim picks a dark design.
      Contrast on the paper #FCFAF3 (measured, Nov 21): ink 17.2:1, ink-2 6.4:1, off switch words 5.2:1, blue marker 5.6:1, red marker words 5.6:1; weather/terrain icons 3.9-6.4:1 (icons need 3:1); the big damage in type colours 4.4:1+ (large text needs 3:1) */
@@ -150,6 +151,10 @@
   --k-chip:#17161A;--k-on-chip:#FFFFFF;--k-art-shadow:rgba(23,22,26,.25);--k-card-shadow:rgba(23,22,26,.16);--k-neutral:rgba(23,22,26,.5);
   --d-khead:clamp(34px,min(10.4vw,4vw + 32px),84px);--d-ksent:clamp(22px,2.8vw,34px);--d-ksec:clamp(26px,3.4vw,40px);--d-kgo:clamp(17px,min(5.2vw,2.6vw + 12px),36px);
   --d-kscore:clamp(48px,6vw,72px);
+  /* My Team, the war room (reskin page 1, Nov 21): the Strength Score number, a long team name's headline, the Night frame's own words
+     (measured on --mtf-night #14131C, Nov 21: ink 15.8:1, quiet 9.4:1, Plot 10.4:1; on the card #1D1C26 14.4 / 8.6 / 9.5) and the frame's card shadow */
+  --d-tmscore:clamp(80px,9vw + 40px,168px);--d-tmlong:clamp(28px,3vw + 20px,60px);
+  --wr-ink:#F1EDE7;--wr-ink2:#BDB7C6;--wr-plot:#7CCBFF;--wr-on-plot:#14131C;--wr-shadow:rgba(0,0,0,.5);--wr-rule:rgba(241,237,231,.16);
   color-scheme:light}
 :root[data-theme="night"]{
   /* the Damage Calc board at night (Sim, Q105 B, Nov 21): night blueprint paper; photos, sticky notes and move colours stay the same.
