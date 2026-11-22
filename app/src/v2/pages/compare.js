@@ -41,28 +41,40 @@ const CX2_LABEL = {ready: 'Matchups (damage calc, top 30)'};
 // re-audit Nov 15: a row is 'the same on both' only when both cells read the same; today's flag compares one number (Matchups' score,
 // a check's yes/no) while the cells show more (Beats/Handles counts, the Tailwind setter), so rows that differ were listed as the same
 V2.cxRows = (IA, IB) => cxFacts(IA, IB).map(r => { if (r.diff) return r; let d = false; try { const c = v => CX2[r.k.startsWith('ck:') ? 'ck' : r.k](v); d = c(r.a) !== c(r.b); } catch (e) {} return d ? {...r, diff: true} : r; });
+/* Compare on the kit (reskin proposal, Nov 22): HEAD TO HEAD. The one idea is the tug of war (compare-faceoff.js, V2.cmpTug): the top 30
+   threats that one team handles and the other can't, each pulled toward the team that has the answer. Every row, fold, link and hook of the
+   Face-Off page stays (What's different, the differing rows, Same on Both, Why These Scores, the picker, Swap, Change, the quick winners). */
+V2.cxCell = (r, v, NOTE) => NOTE.has(r.k) ? `<span class="cx2-note">${v == null ? '–' : v ? 'Has it' : 'No'}</span>` : CX2[r.k.startsWith('ck:') ? 'ck' : r.k](v);
+V2.cxRowHtml = (r, NOTE) => `<div class="cx2-row${NOTE.has(r.k) ? ' cx2-nrow' : ''}"><div class="cx2-lab">${V2.esc(CX2_LABEL[r.k] || V2.wl(r.label))}${NOTE.has(r.k) ? ' <small class="cx2-nk">note</small>' : ''}</div><div class="cx2-c a">${V2.cxCell(r, r.a, NOTE)}</div><div class="cx2-c b">${V2.cxCell(r, r.b, NOTE)}</div></div>`;
+V2.cxHrow = () => '<div class="cx2-row cx2-hrow"><div class="cx2-lab"></div><div class="cx2-c a"><b class="cx2-tm a">Team A</b></div><div class="cx2-c b"><b class="cx2-tm b">Team B</b></div></div>';
+// the page header on the kit: the back link, the kicker, the slanted headline, one lead line (the empty state's lead is today's hint)
+V2.cxTop = (leadHtml, hint) => `<div class="cx2-top cmp-top"><a class="np-back k-link" href="#team">← My Team</a>${V2.kHead({kicker: 'MY TEAM · HEAD TO HEAD', h1Html: 'Compare <em>Teams.</em>'}).replace('</header>', leadHtml ? `<p class="k-lead${hint ? ' tm-sub cx2-hint' : ''}">${leadHtml}</p></header>` : '</header>')}</div>`;
 V2.pages.compare = {place: 'team', draw() { /* scan S13 (Nov 20): the first visit starts with My Team as Team A when it has Pokémon; once per visit, so clearing it stays cleared */
   if (!ui.cx.seeded) { ui.cx.seeded = true; try { if (!ui.cx.A && !ui.cx.B && members().length) ui.cx.A = 'cur'; } catch (e) {} } const RA = cxResolve(ui.cx.A), RB = cxResolve(ui.cx.B); if (!RA) ui.cx.A = null; if (!RB) ui.cx.B = null;
-  const head = `<div class="cx2-top"><div class="np-eyebrow"><span><a class="np-back" href="#team">← My Team</a> · Compare · two teams side by side</span></div><h1 class="u">Compare Teams</h1></div>
-    <div class="cx2-heads">${V2.cxHead('A', RA)}${RA && RB ? '<button type="button" class="np-link cx2-swap" data-cxswap2>Swap A and B</button>' : '<span class="cx2-swap"></span>'}${V2.cxHead('B', RB)}</div>`;
-  if (!RA || !RB) return `<section class="cx2">${head}<p class="tm-sub cx2-hint">Pick two teams: your team, a saved one, an event winner or a pasted Showdown team. Once both are picked, every row is worked out the same way as on My Team.</p></section>`;
+  /* picking: the two corners face to face, each a team or its picker (Team B's offers the latest winners, scan S31) */
+  const face = `<div class="cx2-heads cmp-face cmp-pick">${V2.cxHead('A', RA)}<i class="cmp-vs u" aria-hidden="true">VS</i>${V2.cxHead('B', RB)}</div>${RA && RB ? '<button type="button" class="np-link k-link cx2-swap" data-cxswap2>Swap A and B ⇄</button>' : ''}`;
+  if (!RA || !RB) return `<section class="cx2 cmp">${V2.cxTop('Pick two teams: your team, a saved one, an event winner or a pasted Showdown team. Both are worked out as on My Team.', true)}${face}</section>`;
   const IA = CX.cache.get(cxKey(RA.slots)), IB = CX.cache.get(cxKey(RB.slots));
-  if (!IA || !IB) { V2.cxWork(); return `<section class="cx2">${head}<p class="tm-sub cx2-busy" role="status">Working out both teams: Strength Score, matchups, checks and speed…</p></section>`; }
-  if (IA.err || IB.err) return `<section class="cx2">${head}<p class="tm-sub cx2-hint" role="status">One of these teams couldn't be worked out. Try another team, or change this one on My Team.</p></section>`;
+  if (!IA || !IB) { V2.cxWork(); return `<section class="cx2 cmp">${V2.cxTop('')}${face}<p class="tm-sub cx2-busy" role="status">Working out both teams: Strength Score, matchups, checks and speed…</p></section>`; }
+  if (IA.err || IB.err) return `<section class="cx2 cmp">${V2.cxTop('')}${face}<p class="tm-sub cx2-hint" role="status">One of these teams couldn't be worked out. Try another team, or change this one on My Team.</p></section>`;
   const rows = V2.cxRows(IA, IB), diff = rows.filter(r => r.diff), same = rows.filter(r => !r.diff);
-  const says = ['thr', 'sc', 'field', 'grade', 'ready', 'weak'].map(k => (rows.find(r => r.k === k) || {}).say).concat(rows.filter(r => r.k.startsWith('ck:')).map(r => r.say)).filter(Boolean);
+  /* the threats sentence and the score sentence say what the tug of war and the face-off already show, so they're left out here */
+  const says = ['sc', 'field', 'ready', 'weak'].map(k => (rows.find(r => r.k === k) || {}).say).concat(rows.filter(r => r.k.startsWith('ck:')).map(r => r.say)).filter(Boolean);
   // known-bug CMP-04b (Nov 17): speed control, spread damage and lead support are notes, not counted (word list, Nov 9): no ✓/✗ for them, a plain 'Has it' / 'No' and a 'note' tag
   const NOTE = new Set([...((IA.CK || {items: []}).items), ...((IB.CK || {items: []}).items)].filter(i => i.note).map(i => 'ck:' + i.k));
-  const cell = (r, v) => NOTE.has(r.k) ? `<span class="cx2-note">${v == null ? '–' : v ? 'Has it' : 'No'}</span>` : CX2[r.k.startsWith('ck:') ? 'ck' : r.k](v);
-  const row = r => `<div class="cx2-row${NOTE.has(r.k) ? ' cx2-nrow' : ''}"><div class="cx2-lab">${V2.esc(CX2_LABEL[r.k] || V2.wl(r.label))}${NOTE.has(r.k) ? ' <small class="cx2-nk">note</small>' : ''}</div><div class="cx2-c a">${cell(r, r.a)}</div><div class="cx2-c b">${cell(r, r.b)}</div></div>`;
-  V2.cxHrow = () => '<div class="cx2-row cx2-hrow"><div class="cx2-lab"></div><div class="cx2-c a"><b class="cx2-tm a">Team A</b></div><div class="cx2-c b"><b class="cx2-tm b">Team B</b></div></div>';
   const tm = s => V2.esc(s).replace(/Team A/g, '<b class="cx2-tm a">Team A</b>').replace(/Team B/g, '<b class="cx2-tm b">Team B</b>');
-  return `<section class="cx2">${head}
-    <div class="cx2-sum"><h2 class="u">What's Different</h2>${says.length ? `<ul>${says.slice(0, 6).map(s => `<li>${tm(V2.wl(s))}</li>`).join('')}</ul>` : '<p class="tm-sub">These two line up the same on every row below.</p>'}</div>
-    <div class="cx2-grid">${diff.map(row).join('')}</div>
+  /* the Strength Score is in the face-off and the threats and matchups are the tug of war: the rows grid lists every other row that differs */
+  const above = r => ['grade', 'ready', 'thr'].includes(r.k), rest = diff.filter(r => !above(r));
+  const T = V2.cmpTally(IA), U = V2.cmpTally(IB);
+  const lead = T && U ? `Of the top 30 threats, ${tm('Team A')} beats or handles ${T.ok}, ${tm('Team B')} ${U.ok}.` : '';
+  const steps = V2.kStep(1, 'The tug of war.', 'threats only one of them handles', V2.cmpTug(IA, IB, rows))
+    + V2.kStep(2, "What's different.", rest.length ? `${rest.length} more row${rest.length === 1 ? '' : 's'} where they differ` : 'the rows where they differ', `<div class="cx2-sum">${says.length ? `<ul>${says.slice(0, 6).map(s => `<li>${tm(V2.wl(s))}</li>`).join('')}</ul>` : '<p class="tm-sub">These two line up the same on every row below.</p>'}</div>${rest.length ? V2.cxHrow() + `<div class="cx2-grid">${rest.map(r => V2.cxRowHtml(r, NOTE)).join('')}</div>` : ''}`)
+    + V2.kStep(3, 'The fine print.', 'what matches, and why the scores', `${same.length ? `<details class="cx2-same"${ui.cx.same ? ' open' : ''}><summary>Same on Both <span class="fine">${same.length} row${same.length === 1 ? '' : 's'}</span></summary>${V2.cxHrow()}<div class="cx2-grid">${same.map(r => V2.cxRowHtml(r, NOTE)).join('')}</div></details>` : ''}
     ${IA.G || IB.G ? `<details class="cx2-why"><summary>Why These Scores</summary><div class="cx2-whyg">${[['A', IA, RA], ['B', IB, RB]].map(([sd, I, R]) => I.G ? `<div class="cx2-whyi"><p class="cx2-whyt"><b class="cx2-tm ${sd.toLowerCase()}">Team ${sd}</b> ${V2.esc(R.name || '')}</p>${V2.whyHtml(I.G, {inline: true})}</div>` : '').join('')}</div><p class="fine">${V2.esc(CH.WHY_TEST)}</p><p class="fine">${V2.esc(CH.LETTERS)} <a class="np-link" href="#method">How the Strength Score works</a></p></details>` : ''}
-    ${same.length ? `<details class="cx2-same"${ui.cx.same ? ' open' : ''}><summary>Same on Both <span class="fine">${same.length} row${same.length === 1 ? '' : 's'}</span></summary>${V2.cxHrow()}<div class="cx2-grid">${same.map(row).join('')}</div></details>` : ''}
-    <p class="fine cx2-foot">The Strength Score and matchups are worked out exactly as on My Team: how each team's matchups look against the top 30 threats, not a prediction of this match. Speeds are the likely stat (your spread, or the most common one), in each team's own weather.</p></section>`; }};
+    <p class="fine cx2-foot">The Strength Score and matchups are worked out exactly as on My Team: how each team's matchups look against the top 30 threats, not a prediction of this match. Speeds are the likely stat (your spread, or the most common one), in each team's own weather.</p>${V2.kGo('TAKE ON ANOTHER TEAM.', {'data-cxp': 'B', 'aria-label': 'Take on another team: change Team B'})}`);
+  return `<section class="cx2 cxf cmp">${V2.cxTop(lead)}
+    <section class="cmp-face cxf-poster" aria-label="Team A against Team B">${V2.cmpHalf('A', RA, IA, IB)}<i class="cmp-vs cxf-vs u" aria-hidden="true">VS</i>${V2.cmpHalf('B', RB, IB, IA)}</section>
+    <button type="button" class="np-link k-link cx2-swap" data-cxswap2>Swap A and B ⇄</button>${V2.kPlan(steps)}</section>`; }};
 // work out what isn't cached yet, one side per frame, so the page answers at once (as today)
 V2.cxWork = () => { if (V2.cxBusy) return; V2.cxBusy = true; const step = () => requestAnimationFrame(() => setTimeout(() => { let R = null; try { R = [cxResolve(ui.cx.A), cxResolve(ui.cx.B)].find(r => r && !CX.cache.has(cxKey(r.slots))); if (R) { cxInfo(R.slots); step(); return; } } catch (e) { if (R) try { CX.cache.set(cxKey(R.slots), {err: true}); } catch (x) {} /* remembered, so the page says so instead of trying again forever (code review A1-M9) */ } V2.cxBusy = false; if (V2.route() === 'compare') V2.redraw(); }, 0)); step(); };
 
