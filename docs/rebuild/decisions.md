@@ -2052,3 +2052,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:10 PM: Sim: 'sounds like a plan, lets do it' -> after push: PC Safari rerun, Preview v236, Gifts, Track Record, second-account pictures (Wave 3 sizes first)
 - 6:11 PM: Sim: Preview shared by link with outside people (his second account) is fine
 - 6:14 PM: Sim's PC (Safari engine, design6 15d639bf): TEAM-07 and NAV-03v both pass 3 of 3 (were 3 of 3 FAIL at 70cf10ab). Safari fixes proven
+- 6:36 PM: Hourly check: 1 helper (hW2) per Sim's rule; work-check threshold set to 1; Game Plan updated; GitHub 1447 running; Safari fixes proven on PC
