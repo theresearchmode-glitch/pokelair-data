@@ -40,6 +40,10 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
+## THE MAIN THREAD BUILDS TOO (Sim, Nov 22, logged 8:31 AM)
+Sim: "Subagents working but are ya working, buddy?" then "make that a rule". The main thread does real build work itself (an approved
+page, a fix, a measurement), not only coordination, whenever helpers and checks are running. Coordination fits in between.
+
 ## CALL OUT BOTTLENECKS (Sim, Nov 22, logged 7:56 AM)
 Sim: "we should be doing everything as efficient as possible at all times. If you see a clear bottleneck or something slowing us down,
 always make sure to call it out and let me know so we can evaluate." Approved the same day: (1) GitHub runs the full check on the design
