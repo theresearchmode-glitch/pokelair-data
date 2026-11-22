@@ -3346,6 +3346,34 @@ button.pp2-plate{cursor:pointer;width:100%}
 .inf-fb{display:grid;gap:var(--s4);min-width:0}.inf-fb .row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4)}.inf-fb .ev-f{display:flex;flex-wrap:wrap;padding-right:var(--s3)}.inf-box textarea{flex:1;min-width:0}.inf-box{margin:0 var(--s4)} /* Nov 15: the box spans the page (no empty half); the slant of a 160px-tall box reaches 14px each side, so it is inset to stay inside the margins */.inf-q{margin:0;font:900 var(--t22)/1.3 var(--u);font-style:italic}.inf-box textarea{width:100%;min-height:160px;border:0;background:transparent;resize:vertical;font:400 var(--t16)/1.5 var(--b)}
 @media (max-width:1099.98px){.inf-tiles{grid-template-columns:repeat(2,minmax(0,1fr))}.inf-two{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:599.98px){.inf-tiles{grid-template-columns:minmax(0,1fr)}.inf-tile summary{min-height:0}}
+/* How We Calculate on the kit (Nov 22, Sim approved direction B "one grid", 12:34 PM): the counts under the intro; beside the head a compact key
+   (the 0-100 bar with the tier letters in it, the Strength Score line, the fine print); the parts as plan step 1, Track Record as step 2's pink move.
+   The rating bands' words stay in the page for screen readers and search (visually hidden): the letters on the bar say them */
+.mth .ra-h .k-kicker{display:table;width:max-content}
+.mth .mth-facts{margin:var(--s6) 0 0}
+.mth .mth-facts{align-items:flex-start}.mth .mth-upd{display:flex;flex-direction:column-reverse;justify-content:flex-end}
+.mth .mth-key{display:grid;gap:var(--s2);padding:var(--s5) var(--s6);background:var(--k-card);box-shadow:inset 4px 0 0 var(--k-plot),0 6px 16px var(--k-card-shadow)}
+.mth-scale{display:grid;gap:var(--s1);padding:var(--s1) var(--s2) 0}
+.mth-bar{display:flex;height:36px;margin:0;transform:skewX(-14deg)}.mth-bar i{display:grid;place-items:center;flex:var(--w) 0 0;background:var(--c)}
+.mth-bar b{transform:skewX(14deg);font-size:var(--t17);line-height:1;color:var(--tier-ink)}
+.mth-ax{position:relative;height:20px;margin:0}
+.mth-ax span{position:absolute;top:0;left:calc(var(--x) * 1%);transform:translateX(-50%);white-space:nowrap;font-size:var(--t13);font-weight:600;line-height:1.4;color:var(--k-ink2)}
+.mth-ax span:first-child{transform:none}.mth-ax span:last-child{transform:translateX(-100%)}
+.mth .mth-legend{margin:0;padding:0;background:none}
+.mth .mth-legend .nplegend{margin:0}
+.mth .mth-legend .chk{margin:0 0 var(--s2);font-family:var(--u);font-size:var(--t20);font-style:italic;font-weight:800;line-height:1.2;letter-spacing:0;text-transform:none;color:var(--k-ink)}
+.mth .mth-legend .mth-scale{margin:0 0 var(--s3)}
+.mth .mth-legend .mth-scale+.nplrow{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.mth .mth-legend .nplrow{margin:0 0 var(--s2);gap:var(--s1) var(--s3)}.mth .mth-legend .nplrow .npbands{margin:0}.mth .mth-legend .nplrow>b small{display:none}
+.mth .mth-legend .npdots{margin:var(--s2) 0 0;font-size:var(--t13);line-height:1.5;color:var(--k-ink2)}
+.mth .inf-tiles{margin:0}
+.mth .mth-go{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s6);padding:0;background:none;color:var(--k-ink);text-decoration:none}
+.mth .mth-go .k-go{margin:0}
+.mth .mth-go:hover .k-go{transform:skewX(-8deg) translate(2px,2px)}
+.mth-gt{display:grid;gap:2px;font-size:var(--t15);line-height:1.5;color:var(--k-ink2)}.mth-gt b{font-size:var(--t17);color:var(--k-ink)}.mth-gt small{font-size:var(--t13)}
+@media (max-width:699.98px){.mth .mth-key{padding:var(--s3) var(--s3) var(--s3) var(--s4)}.mth .ra-spotw{margin-left:calc(var(--s2) * -1);margin-right:calc(var(--s2) * -1)}.mth .mth-facts{margin-top:var(--s4)}
+  .mth-bar{height:28px}.mth-bar b{font-size:var(--t15)}.mth .mth-legend .chk{font-size:var(--t17)}.mth-ax span:nth-child(3),.mth-ax span:nth-child(5),.mth-ax span:last-child{display:none}.mth .k-sec .k-note{display:none}.mth .mth-go .mth-gt{font-size:var(--t13)}}
+
 /* colour audit (Nov 15): meanings Sim already approved, applied where they were missed: Lead is blue (Practice used red), 'them' is the pink --pick (Test Run red, Battle grey), ✗ is red (Compare grey) */
 
 .mu-lv{white-space:nowrap} /* Nov 15: the calc level ('Beats it') never splits */
