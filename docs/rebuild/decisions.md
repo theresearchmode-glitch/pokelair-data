@@ -2027,3 +2027,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:36 PM: Sim: 'love it. about is good. move forward.' = About direction A 'the receipt' approved (desktop +472px OK; words 'EVERYTHING WE SAVE' and 'Your name or email: NEVER' OK). Build: second build helper after How We Calculate. Work check: 2 helpers (Sim's allowance), main thread on Ratings checks; Game Plan updated.
 - 12:37 PM: Sim: 'feedback is good, move forward with recs' = Send Feedback direction (PC mock, desktop +301px OK). Build: whichever build helper frees first after its queue.
 - 12:40 PM: Sim: 'page not found is good, move forward with recs' = Page not found direction (Wrong turn + underdog card; build closes the +17px phone gap with a 140px card).
+- 12:42 PM: Sim: 'owner page is good, move forward with recs' = Owner page direction approved (plain, kit head, two boxes). All 12 reskin directions approved; all mock-ups merged (docs). Builds queued across HH + 2 build helpers.
