@@ -1,11 +1,13 @@
-// ---------- Meta > Tournaments > Archetypes (Nov 15): Sim's pick "The Weather Map" (docs/rebuild/mocks/tournaments-tickets-weather/BRIEF.md) ----------
-// Everything today's Archetypes tab does (42-archetype-guides.js renderGuides), from the same shared helpers: guideCounts (how many of the
-// latest top teams play each style), guideKeyMons, guideYours, GUIDE (what it is, How to beat it). All eight styles, biggest first, each
-// with its share and count, description, Key Pokémon, How to beat it and What your team has; the note that a team can count twice.
-// Each style is drawn as what it is, a flat scene in its own type colour (--ty-*, white text 4.6:1 or better): Tailwind Flying, Sun Fire,
-// Rain Water, Sand Ground, Snow Ice, Grassy Terrain Grass, Psychic Terrain Psychic, Trick Room Ghost; Electric Terrain Electric (This Week).
-// The scenes are still (no motion). New to the page and waiting on Sim's yes (brief section 9): the "Your team's style" plate, the
-// "Your style" tags, the ranks "No. 1" to "No. 8", and the names "The Weather Map", "Other styles", "‹ Back to the Weather Map".
+// ---------- Meta > Tournaments > Archetypes: "The Playbooks" on the shared kit (reskin Nov 22; Sim's PC mock-up, call "Keep as drawn") ----------
+// Mock-up: docs/rebuild/mocks/cohesion-nov21/pages/archetypes.html (branch claude/cohesion-mocks); plan-name "THE PLAYBOOKS" (PAGES.md).
+// Everything the Weather Map page did (Nov 15), from the same shared helpers: guideCounts (how many of the latest top teams play each
+// style), guideKeyMons, guideYours, GUIDE (what it is, How to beat it). All eight styles, most played first, each with its share and count;
+// the styles your team plays and how many top teams play them too; each style's guide (what it is, its key Pokémon as a mini roster of kit
+// cards, How to beat it, What your team has, Other styles); the note that a team can count twice.
+// The page: the kit head; step 1 "Your team's style" (the facts + the page's one pink move, OPEN YOUR PLAYBOOK.); step 2 "The playbooks",
+// one book per style in its type colour (V2.SDT_WXTY, as the Weather Map's scenes), the two most played as the big books, each with its
+// lead key Pokémon. A book opens its guide in place (V2.arUi.open), as the map's regions did; the tests' hooks are kept (.ar-reg, .ar-nm,
+// data-argo with the same label, .ar-guide, .ar-gh, data-arback, .ar-none .np-link).
 V2.arUi = V2.arUi || {open: null};
 V2.WX = {tw: 'tw', sun: 'sun', rain: 'rain', sand: 'sand', snow: 'snow', grassy: 'grassy', psy: 'psy', tr: 'tr', elec: 'elec'};
 V2.arData = () => { if (typeof guideCounts !== 'function') return null; const {counts, n} = guideCounts();
@@ -14,41 +16,43 @@ V2.arData = () => { if (typeof guideCounts !== 'function') return null; const {c
 // the styles your own team plays, read with the team's game-plan labels (teamPlanLabel), matched to the guide styles
 V2.arMine = () => { const ms = members(); if (!ms.length) return []; let lab = ''; try { lab = teamPlanLabel(ms.map(m => m.p.n)) || ''; } catch (e) {}
   const L = lab.split(' · ').map(x => x.trim().toLowerCase()); return GUIDE_ORDER.filter(k => L.includes(ARCH[k].name.toLowerCase())); };
-V2.arScene = k => `wx wx-${V2.WX[k] || 'tw'}`;
-V2.arRegion = (x, n, mine, row) => { const E = V2.esc, km = guideKeyMons(x.k), show = row === 0 ? 5 : row === 1 ? 3 : 2, you = mine.includes(x.k);
-  return `<button type="button" class="ar-reg ${V2.arScene(x.k)} r${row}" style="--g:${Math.max(1, x.c)}" data-argo="${x.k}" aria-label="${E(x.name)}, ${x.pct}% of top teams, ${x.c} of ${n}.${you ? ' Your style.' : ''} Open guide.">
-    <span class="ar-rk" aria-hidden="true"><b class="u">No. ${x.i + 1}</b>${you ? '<i class="ar-you">Your style</i>' : ''}</span>
+V2.arScene = k => `wx wx-${V2.WX[k] || 'tw'}`; /* This Week's tiles still use the scenes */
+// a style's colour: its type colour (a token), as the Weather Map's scenes; white words on it
+V2.arTy = k => `--wc:var(--ty-${(V2.SDT_WXTY || {})[k] || 'Flying'})`;
+V2.arArt = (n, cls) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img class="${cls}" src="${V2.art(id, true)}" alt="" loading="lazy" decoding="async">` : ''; };
+// one playbook: the whole book is the button; big = the two most played
+V2.arBook = (x, n, mine) => { const E = V2.esc, lead = (guideKeyMons(x.k) || [])[0], you = mine.includes(x.k), big = x.i < 2;
+  return `<li class="${big ? 'big' : x.i < 5 ? 'mid' : 'sm'}"><button type="button" class="ar-reg ar-bk" style="${V2.arTy(x.k)}" data-argo="${x.k}" aria-label="${E(x.name)}, ${x.pct}% of top teams, ${x.c} of ${n}.${you ? ' Your style.' : ''} Open guide.">
+    ${lead ? V2.arArt(lead.n, 'ar-bkart') : ''}<span class="ar-rk" aria-hidden="true"><b>No. ${x.i + 1}</b>${you ? V2.kMine('Your style') : ''}</span>
     <span class="ar-nm u" aria-hidden="true">${E(x.name)}</span>
-    <span class="ar-sh" aria-hidden="true"><b class="u">${x.pct}%</b><small><span class="c1">of top teams</span> <span class="c2">${x.c} of ${n}</span><span class="c3">${x.c} of ${n} teams</span></small></span>
-    <span class="ar-km" aria-hidden="true">${km.slice(0, show).map((p, j) => `<span class="${j ? '' : 'lead'}">${V2.mon(p.n, {bare: true})}</span>`).join('')}</span></button>`; };
-// row heights from the counts (audit, Nov 15): every region in a row is bigger than any region in the row under it, so a bigger region
-// always means more teams; widths in a row follow the counts. Phones use their own full-width rows (CSS), where the same holds.
-V2.arHeights = rows => { const sh = L => { const t = L.reduce((a, x) => a + Math.max(1, x.c), 0); return {mn: Math.min(...L.map(x => Math.max(1, x.c))) / t, mx: Math.max(...L.map(x => Math.max(1, x.c))) / t}; };
-  const [a, b, c] = rows.map(sh), h2 = 152, h1 = Math.min(360, Math.max(216, Math.ceil(1.08 * h2 * c.mx / b.mn / 4) * 4)), h0 = Math.min(440, Math.max(264, Math.ceil(1.08 * h1 * b.mx / a.mn / 4) * 4)); return [h0, h1, h2]; };
-V2.arMap = (D, mine) => { const R = D.rows, rows = [R.slice(0, 2), R.slice(2, 5), R.slice(5)], H = V2.arHeights(rows);
-  return `<section class="ar-map" aria-label="The Weather Map: the eight team styles, biggest first">${rows.map((L, r) => `<div class="ar-row r${r}" style="--h:${H[r]}px">${L.map(x => V2.arRegion(x, D.n, mine, r)).join('')}</div>`).join('')}</section>
-    <p class="fine ar-note">A team can count for more than one style, so the regions add up to more than ${D.n} teams.</p>`; };
-V2.arGuide = (x, D, mine) => { const E = V2.esc, g = GUIDE[x.k], km = guideKeyMons(x.k), ms = members(), y = ms.length ? guideYours(x.k, ms) : null, you = mine.includes(x.k);
-  const banner = `<section class="ar-ban ${V2.arScene(x.k)}" aria-label="${E(x.name)}"><div class="ar-bt">${you ? '<i class="ar-you">Your style</i>' : ''}<h2 class="u">${E(x.name)}</h2>
-      <p class="ar-sh"><b class="u">${x.pct}%</b><small><span>of top teams</span> <span>${x.c} of ${D.n}</span></small></p><p class="ar-what">${E(g.what)}</p></div>
-    ${km.length ? `<div class="ar-keys"><p class="ar-kk">Key Pokémon</p><ul>${km.map((p, j) => `<li class="${j ? '' : 'lead'}"><button type="button" class="ar-key" data-v2mon="${E(p.n)}" aria-label="${E(p.d)}: open its page">${V2.mon(p.n, {bare: true})}<span>${E(p.d)}</span></button></li>`).join('')}</ul></div>` : ''}</section>`;
-  const beat = `<section class="ar-beat"><h3 class="u">How to beat it</h3><ol>${g.beat.map((b, i) => `<li><i class="ar-no u ${V2.arScene(x.k)}" aria-hidden="true">${i + 1}</i><span>${E(b)}</span></li>`).join('')}</ol></section>`;
-  const has = y ? `<section class="ar-has"><h3 class="u">What your team has</h3>${y.length ? `<ul>${y.map(({m, why}) => `<li>${V2.mon(m.p.n, {iw: 48, bare: true})}<div><b>${E(m.d)}</b><small>${why.map(E).join(' · ')}</small></div><i class="ar-ok" aria-label="has an answer">✓</i></li>`).join('')}</ul>` : '<p class="ar-none"><b>Nothing on your team directly answers it.</b> One of the ideas in How to beat it would help.</p>'}</section>`
-    : `<section class="ar-has"><h3 class="u">What your team has</h3><p class="ar-none">Add your team on My Team to see which of your Pokémon answer it. <a class="np-link" href="#team">Go to My Team ›</a></p></section>`;
-  const others = `<nav class="ar-oth" aria-label="Other styles"><h3 class="u">Other styles</h3><ul>${D.rows.map(o => `<li><button type="button" class="ar-mini ${V2.arScene(o.k)}${o.k === x.k ? ' on' : ''}" data-argo="${o.k}" aria-current="${o.k === x.k}" aria-label="${E(o.name)}, ${o.pct}% of top teams${mine.includes(o.k) ? ', your style' : ''}"><span class="u">${E(o.name)}</span><small>${o.pct}%</small>${mine.includes(o.k) ? '<i class="ar-you">You</i>' : ''}</button></li>`).join('')}</ul></nav>`;
-  return `<section class="ar-guide"><header class="ar-gh"><h2 class="u">${E(x.name)} Guide</h2><button type="button" class="np-link" data-arback>‹ Back to the Weather Map</button></header>${banner}<div class="ar-cols">${beat}${has}</div>${others}</section>`; };
-// the plate at the top right: the styles your team plays and how many top teams play them too
-V2.arPlate = (D, mine) => { const E = V2.esc, L = mine.map(k => D.rows.find(r => r.k === k)).filter(Boolean);
-  return `<aside class="ev-plate ar-plate" aria-label="Your team's style"><p class="ev-pk u">Your team's style</p>${L.length ? `<p class="ar-pn u">${L.map(x => E(x.name)).join(' + ')}</p>
-    <ul class="ar-pl">${L.map(x => `<li><b class="u">${x.pct}%</b><span>of top teams also play <b>${E(x.name)}</b>, ${x.c}\u00a0of\u00a0${D.n}</span></li>`).join('')}</ul>` : `<p class="ar-none">${members().length ? "Your team doesn't play one of these eight styles: it's read as a balanced team." : 'Add your team on My Team to see which styles it plays.'}</p>`}</aside>`; };
+    <span class="ar-pc" aria-hidden="true"><b class="u">${x.pct}%</b> <span class="ar-of">of top teams</span> <span class="ar-ct">${x.c} of ${n}</span></span>
+    <span class="ar-open" aria-hidden="true">Open the guide ›</span></button></li>`; };
+V2.arBooks = (D, mine) => `<section class="ar-map" aria-label="The playbooks: the eight team styles, most played first"><ul class="ar-books">${D.rows.map(x => V2.arBook(x, D.n, mine)).join('')}</ul></section>
+    <p class="k-hint ar-note">A team can count for more than one style, so the books add up to more than ${D.n} teams.</p>`;
+// step 1: the styles your team plays and how many top teams play them too; the one pink move opens your (first) playbook
+V2.arYours = (D, mine) => { const L = mine.map(k => D.rows.find(r => r.k === k)).filter(Boolean);
+  if (!L.length) return members().length ? `<p class="k-lead ar-none">Your team doesn't play one of these eight styles: it's read as a balanced team.</p>`
+    : `<div class="ar-yb"><p class="k-lead ar-none">Add your team on My Team to see which styles it plays.</p>${V2.kGo('GO TO MY TEAM.', {href: '#team'})}</div>`;
+  return `<div class="ar-yb">${V2.kFacts(L.map(x => [x.pct + '%', `of top teams also play ${x.name}, ${x.c} of ${D.n}`, true]))}${V2.kGo('OPEN YOUR PLAYBOOK.', {'data-argo': L[0].k})}</div>`; };
+V2.arGuide = (x, D, mine) => { const E = V2.esc, g = GUIDE[x.k], km = guideKeyMons(x.k) || [], ms = members(), y = ms.length ? guideYours(x.k, ms) : null, you = mine.includes(x.k);
+  const banner = `<section class="ar-ban" style="${V2.arTy(x.k)}" aria-label="${E(x.name)}"><div class="ar-bt"><p class="ar-rk"><b>No. ${x.i + 1}</b>${you ? V2.kMine('Your style') : ''}</p><h2 class="u">${E(x.name)}</h2>
+      <p class="ar-pc"><b class="u">${x.pct}%</b> <span class="ar-of">of top teams</span> <span class="ar-ct">${x.c} of ${D.n}</span></p></div><p class="ar-what">${E(g.what)}</p></section>`;
+  const keys = km.length ? V2.kRoster(km.map(p => V2.kCard(p.n, {size: 'small', attrs: {'data-v2mon': p.n, 'aria-label': `${p.d}: open its page`}}))) : '<p class="k-lead">No key Pokémon in the latest top teams.</p>';
+  const beat = `<ol class="ar-beat">${g.beat.map((b, i) => `<li><i class="ar-no u" style="${V2.arTy(x.k)}" aria-hidden="true">${i + 1}</i><span>${E(b)}</span></li>`).join('')}</ol>`;
+  const has = y ? (y.length ? `<ul class="ar-has">${y.map(({m, why}) => `<li>${V2.mon(m.p.n, {iw: 48, bare: true})}<div><b>${E(m.d)}</b><small>${why.map(E).join(' · ')}</small></div><i class="ar-ok" aria-label="has an answer">✓</i></li>`).join('')}</ul>` : '<p class="ar-none"><b>Nothing on your team directly answers it.</b> One of the ideas in How to beat it would help.</p>')
+    : `<p class="ar-none">Add your team on My Team to see which of your Pokémon answer it. <a class="np-link" href="#team">Go to My Team ›</a></p>`;
+  const others = `<nav class="ar-oth" aria-label="Other styles"><h3 class="u">Other styles</h3><ul>${D.rows.map(o => `<li><button type="button" class="ar-mini${o.k === x.k ? ' on' : ''}" style="${V2.arTy(o.k)}" data-argo="${o.k}" aria-current="${o.k === x.k}" aria-label="${E(o.name)}, ${o.pct}% of top teams${mine.includes(o.k) ? ', your style' : ''}"><span class="u">${E(o.name)}</span><small>${o.pct}%${mine.includes(o.k) ? ' · yours' : ''}</small></button></li>`).join('')}</ul></nav>`;
+  return `<section class="ar-guide"><header class="ar-gh"><h2 class="k-h2 u">${E(x.name)} Guide</h2><button type="button" class="np-link" data-arback>‹ Back to the playbooks</button></header>${banner}${V2.kPlan(
+    V2.kStep(1, 'Who runs it.', 'Key Pokémon · tap one for its page', keys) + V2.kStep(2, 'How to beat it.', `${g.beat.length} ways in`, beat) + V2.kStep(3, 'What your team has.', y ? `${y.length} of your ${ms.length} answer it` : '', has))}${others}</section>`; };
 V2.pages.archetypes = {place: 'meta', draw() { const D = V2.arData(), U = V2.arUi;
   const tabs = `${V2.tourTabs('archetypes')}`;
-  const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Archetypes</span></p><h1 class="u"><span>What you'll face,</span> <span class="pl">style by style.</span></h1>
-    <p class="ra-lede">The team styles you'll face most, how they win, and how to play into them.</p>${tabs}${D && D.n ? `<p class="wt-facts">From the latest <b>${D.n}</b> top tournament teams</p>` : ''}</section>`;
-  if (!D || !D.n) return `<div class="ra gsp ar"><div class="gs-top wt-top ev-top">${head}${tabs}</div><div class="gs-body"><p class="tm-sub">Usage numbers appear once top teams load.</p></div></div>`;
-  const mine = V2.arMine(), x = U.open && D.rows.find(r => r.k === U.open);
-  const body = x ? V2.arGuide(x, D, mine) : `<header class="ev-wh"><h2 class="u">The Weather Map</h2><p>The bigger the region, the more of the ${D.n} top teams play that style. Tap a region for its guide.</p></header>${V2.arMap(D, mine)}`;
-  return `<div class="ra gsp ar"><div class="gs-top wt-top ev-top">${head}<div class="ra-spotw">${V2.arPlate(D, mine)}</div>${tabs}</div><div class="gs-body">${body}</div></div>`; }};
+  const head = `<section class="ra-h ar-h"><p class="k-kicker np-eyebrow">META · THE PLAYBOOKS</p><h1 class="k-h1 u">What you'll face, <em>style by style.</em></h1>
+    <p class="k-lead ra-lede">The team styles you'll face most, how they win, and how to play into them.${D && D.n ? ` From the latest <b>${D.n}</b> top tournament teams` : ''}</p>${tabs}</section>`;
+  if (!D || !D.n) return `<div class="ra gsp ar"><div class="gs-top">${head}${tabs}</div><div class="gs-body"><p class="k-lead">Usage numbers appear once top teams load.</p></div></div>`;
+  const mine = V2.arMine(), x = U.open && D.rows.find(r => r.k === U.open), L = mine.map(k => D.rows.find(r => r.k === k)).filter(Boolean);
+  const body = x ? V2.arGuide(x, D, mine) : V2.kPlan(V2.kStep(1, "Your team's style", L.length ? L.map(r => r.name).join(' + ') : '', V2.arYours(D, mine))
+    + V2.kStep(2, 'The playbooks', `Most played first. Tap a playbook for its guide.`, V2.arBooks(D, mine)));
+  return `<div class="ra gsp ar"><div class="gs-top">${head}${tabs}</div><div class="gs-body">${body}</div></div>`; }};
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-argo],[data-arback]'); if (!b) return;
   V2.arUi.open = b.dataset.argo || null; if (location.hash !== '#archetypes') location.hash = '#archetypes'; else V2.redraw();
   const t = document.querySelector(V2.arUi.open ? '.ar-guide' : '.ar-map'); if (t) t.scrollIntoView({block: 'start'}); });
