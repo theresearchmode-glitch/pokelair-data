@@ -3545,3 +3545,11 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 }
 /* 1100-1439: the hero shares the header row, so its facts column is narrow; the move takes the full width under card + facts (qcheck: offscreen at 1280) */
 @media (min-width:1100px) and (max-width:1439.98px){.us .us-spot .us-acts{grid-column:1/-1}}
+/* Usage fixes (HH, Nov 22, from the checks): the slanted move tickets get 4px of room on the left (q42: "Fighting" sat 2px out at 699);
+   tablets give names room so "Mega Charizard Y" stays one line (q72); phones move the place change down beside the bar, so the name row has
+   the width it needs (q72 at 320-360); the "Most used" tag is 15px (v2-unbounded: no Unbounded under 15px) */
+.us-mvs .k-moves{padding-left:var(--s1)}
+.us-tagl .gs-tag.u{font-size:var(--t15)}
+@media (min-width:700px) and (max-width:1099.98px){.us-axis,.us-ln{grid-template-columns:40px minmax(0,232px) minmax(0,1fr) 80px 96px}}
+@media (max-width:699.98px){.us-ln{grid-template-areas:"a t t u" "a b r m"}.us-nob .us-ln{grid-template-areas:"a t t u" "a t r m"}}
+@media (max-width:359.98px){.us-ln .us-tx b{font-size:var(--t15)}.us-ln .us-u{font-size:var(--t17)}.us-axis,.us-ln{grid-template-columns:40px minmax(0,1fr) 28px 64px}.us-ln .us-rk{min-width:28px}}
