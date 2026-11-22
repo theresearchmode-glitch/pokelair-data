@@ -138,7 +138,7 @@ button.k-card{cursor:pointer;width:100%}
   .k-roster .k-plate{min-height:0;padding:72px 4px 8px 6px}
   .k-roster .k-art{top:-40px;height:112px}
   .k-roster .k-nm{grid-template-columns:minmax(0,1fr)}
-  .k-roster .k-sc{grid-row:1;display:flex;align-items:baseline;justify-content:flex-start;gap:6px;text-align:left}
+  .k-roster .k-sc{grid-row:1;display:flex;align-items:baseline;justify-content:flex-start;gap:6px;margin-bottom:var(--s1);text-align:left} /* qcheck (Nov 21): the score never touches the form line under it ("Mega")*/
   .k-roster .k-score{font-size:var(--t24)}
   .k-roster .k-tier{display:none}
   .k-roster .k-name{font-size:var(--t17)}

@@ -118,7 +118,7 @@ for (const h of ROUTES) { const s = await visit(h);
     topMon = (s.rows[0] || {}).n || ''; } }
 // one Pokémon page: today's #1 on the Meta list (so the route follows today's data)
 { const slug = encodeURIComponent(String(topMon || 'Incineroar').toLowerCase()), s = await visit('pokemon=' + slug);
-  ok(!!topMon && s.pk.h1.replace(/\s+/g, ' ').includes(topMon.replace(/-Mega.*/, '').replace(/-/g, ' ').split(' ')[0]) && s.title.startsWith(s.pk.h1.trim()),
+  ok(!!topMon && s.pk.h1.replace(/\s+/g, ' ').includes(topMon.replace(/-Mega.*/, '').replace(/-/g, ' ').split(' ')[0]) && s.title.startsWith(s.pk.h1.trim().replace(/^The file on /, '').replace(/\.$/, '')) /* reskin (Sim approved, Nov 21): the heading reads 'The file on <name>.'; the tab starts with the name */,
     `P5 #pokemon=${decodeURIComponent(slug)} opens that Pokémon's page (heading "${s.pk.h1}", tab "${s.title}")`);
   ok(/^\d{1,3}$/.test(s.pk.sc) && +s.pk.sc <= 100 && /^\S+ tier$/.test(s.pk.tier), `P5 #pokemon=${decodeURIComponent(slug)} rating "${s.pk.sc} ${s.pk.tier}"`); }
 await b.close(); srv.close();

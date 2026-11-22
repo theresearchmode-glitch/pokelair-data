@@ -157,7 +157,7 @@
   .tmk-work .k-sec{margin:var(--s4) 0 var(--s3);row-gap:2px}
   .tmk-work .k-h2{font-size:var(--t24)}
   .tmk-work .k-step:first-child .k-sec{margin-top:var(--s6)}
-  .tmk-head .mtf-k{margin-top:var(--s3);font-size:var(--t13)}
+  .tmk-head .mtf-k{margin-top:var(--s3);font-size:var(--t13);font-stretch:80%} /* q84 S5 (Sim, Nov 20): the status line stays one line at 390 and 360, also for a long weather name (Grassy Terrain) */
   .tmk-head .mtf-smp{font-size:var(--t20)}
   .tmk-head .tm-sample{margin-top:var(--s2);font-size:var(--t15)}
   .tmk-head .mtf-score{gap:var(--s3);margin-top:var(--s2)}

@@ -32,7 +32,7 @@ V2.pkVerdict = p => { const E = V2.esc, H = lairHead(p), u = H.hU, st = V2.pkTry
 // the hero: the kit card (score + tier in its name row, the rank line above the name, its types), its weekly bars behind the art, the
 // trend under it and the Champions basics; beside it the verdict line, four facts and How to build it
 V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), k = V2.kName(n), t1 = p.t[0], t2 = p.t[1];
-  const rk = (rankTxt(p, 'cap') || '').replace(/ with results$/, ' rated'), W = V2.pkWeeks(p), ok = W.length >= 2;
+  const rk = rankTxt(p, 'cap') || '', /* Sim, Nov 19 (Q15 A): the rank says '#N of M with results' (the card's shorter 'rated' put back to the approved wording, Nov 21) */ W = V2.pkWeeks(p), ok = W.length >= 2;
   const top = ok ? Math.max(10, ...W.map(w => w.v)) * 1.08 : 0;
   const plot = ok ? `<span class="pk-plot" aria-hidden="true">${W.map(w => `<i style="--h:${(100 * w.v / top).toFixed(1)}"></i>`).join('')}</span>` : '';
   const card = V2.kCard(n, {size: 'hero', score: rs, tier: T.k + ' tier', form: [k.form, rk || 'No results yet'].filter(Boolean).join(' · ')})
