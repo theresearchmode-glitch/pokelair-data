@@ -186,6 +186,22 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
     period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', updated: new Date().toISOString(), note: 'Moves, items, abilities and natures as players registered them.',
     top: rows.slice(0, 60), more: rows.slice(60, 100)}));
   console.log(`meta_tour: ${nT} teams, ${rows.length} Pokémon`); }
+// 1b) info sheets (Sim approved the design Nov 22, 11:29 AM; docs/rebuild/info-sheets/HANDOFF.md): for every move, item and Ability, how many
+//     of the last 28 days' full team sheets run it and who runs it. Counted straight from the raw sheets, not from the top-12 lists above
+//     (those double-count: Protect would read 409%, and hide 183 moves). Each user: [name, how many of its teams run it, its teams].
+//     Same KEEP filter, 28-day window, canonSet spelling and nameOf names as meta_tour. Writes out/info.json only.
+{ const K = {mv: new Map(), it: new Map(), ab: new Map()}, per = new Map(); let N = 0;
+  for (const T of V2) { if (lastD - new Date(T.d) > 28 * DAY) continue;
+    for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(nameOf); if (ns.some(n => !n)) continue; N++;
+      const seen = {mv: new Set(), it: new Set(), ab: new Set()};
+      p.dk.forEach((m, i) => { const n = ns[i]; per.set(n, (per.get(n) || 0) + 1);
+        const add = (k, x) => { if (!x) return; let o = K[k].get(x); if (!o) K[k].set(x, o = {t: 0, u: new Map()}); if (!seen[k].has(x)) { seen[k].add(x); o.t++; } o.u.set(n, (o.u.get(n) || 0) + 1); };
+        for (const x of new Set(m.mv)) add('mv', x); add('it', m.i); add('ab', m.a); }); } }
+  const pack = M => Object.fromEntries([...M].sort((a, b) => b[1].t - a[1].t).map(([x, o]) => [x, [o.t, [...o.u].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8).map(([n, c]) => [n, c, per.get(n)])]]));
+  const recent = V2.filter(T => lastD - new Date(T.d) <= 28 * DAY);
+  fs.writeFileSync('out/info.json', JSON.stringify({N, source: `Limitless team sheets · ${N.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
+    period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', mv: pack(K.mv), it: pack(K.it), ab: pack(K.ab)}));
+  console.log(`info: ${N} teams, ${K.mv.size} moves, ${K.it.size} items, ${K.ab.size} Abilities`); }
 // 2) recent top finishes (events with 32+ players, last 14 days): top 4 of each, newest first, up to 60 teams
 { const out = [];
   for (const T of [...V2].reverse()) { if (lastD - new Date(T.d) > 14 * DAY || (T.p || 0) < 32) continue;
