@@ -8,11 +8,13 @@ for (const th of ['light', 'dark']) for (const W of [1024, 1180, 1280, 1319, 132
   const c = await b.newContext({viewport: {width: W, height: 900}, colorScheme: th}), p = await c.newPage(); const errs = []; p.on('pageerror', e => errs.push(e.message));
   await p.goto('file://' + PAGE + '#calc', {timeout: 90000}); await p.waitForTimeout(4000); const tag = `${th} ${W}`;
   const m = await p.evaluate(() => { const t = document.querySelector('.arn-kbbar .t'); if (!t) return null; const r = t.getClientRects(), cs = getComputedStyle(t), lh = parseFloat(cs.lineHeight) || parseFloat(cs.fontSize) * 1.2;
-    return {fs: parseFloat(cs.fontSize), lines: Math.round(t.getBoundingClientRect().height / lh), cut: t.scrollWidth > t.clientWidth + 1, sx: document.documentElement.scrollWidth > innerWidth}; });
+    return {kgo: !!t.closest('.pc-kgo'), fs: parseFloat(cs.fontSize), lines: Math.round(t.getBoundingClientRect().height / lh), cut: t.scrollWidth > t.clientWidth + 1, sx: document.documentElement.scrollWidth > innerWidth}; });
   if (!m) { ok(false, `${tag}: the KO Board bar is on the page`); await c.close(); continue; }
   /* Nov 21 (main thread, under Sim's design authority): Plot the hit puts the KO Board in the 260px side column at 1320+, so its title stays 17
      there too (the Arena's 20 from 1450 wrapped it to three lines; the mock has two): 17 at every width */
-  ok(m.fs === 17, `${tag}: title at 17 (${m.fs})`);
+  /* Nov 21 Calc reskin (Sim approved, 4:49 PM): the KO Board opens from the page's one pink move (the kit's big slanted button, display type);
+     the title rule (17) holds for the plain bar only; the pink move must stay on one line and uncut (checked below) */
+  ok(m.kgo || m.fs === 17, `${tag}: title at 17, or the kit's pink move (${m.kgo ? 'pink move ' + m.fs : m.fs})`);
   /* Nov 21: Plot the hit (Sim approved): from 1320 the KO Board sits in the board's 260px bottom-left column, where the approved mock
      (calc-options/the-plot/the-plot-4-desktop-light.png) writes its title on two lines; Q52's one line holds where the bar is wider (1280-1319) */
   if (W >= 1280 && W < 1320) ok(m.lines === 1, `${tag}: title on one line (${m.lines})`);
