@@ -1147,20 +1147,23 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .np-sheet:has(>.ms2){overflow-x:hidden}.ms2{overflow-x:clip}
 /* Sim, Nov 13 (11:04 PM): on a tall window the card stretched into a long strip; it stops at the brief's size (392 x 656, as at 1440 x 900) and the buttons follow right under it */
 @media (min-width:1000px){.ms2 .ms-card{max-height:656px}}
-/* ---------- Speed Tiers on the kit (reskin proposal, Nov 22, helper hT2; not approved yet): "Your six cut the line". One ladder in move
+/* ---------- Speed Tiers on the kit (Nov 22; Sim approved the direction; helper hT2 drew it, hT3 finished it): "Your six cut the line". One ladder in move
    order: the top 20 as Speed bars in their first type's colour with the Pokémon riding the tip; each of yours a Plot blue band cut across
    the ladder at its own Speed, its art bursting out of the band, its outspeed share and Speed-point tip written on the cut.
    Columns: --c1 the Speed number, --c2 the name, then the bar track (a thin rule every 50 Speed, --tick) ---------- */
 .sp2{padding:0 var(--gut) var(--s16)}
-.sp2-h .k-h1 .pl{display:block} /* two sentences, two lines (it ran on and left 'top 20.' alone, Nov 15) */
-.sp2-ctl .k-sent{margin-top:var(--s6);font-size:var(--t28)}
+.sp2-h .k-h1 .pl{display:block;margin-top:var(--s2);font-size:var(--d-ksec);line-height:1.05} /* two sentences, two lines (it ran on and left 'top 20.' alone, Nov 15).
+   Finish (Nov 22): 'Who moves first.' is the kit headline at the size every reskinned page uses (one line, like 'Plot the hit.'); the
+   second sentence steps down to the kit's section size, so the header is no taller than the other kit pages' */
+.sp2-ctl .k-sent{margin-top:var(--s6);font-size:var(--t26)}
 .sp2-ctl .sp2-wx .k-sent{margin-top:var(--s3)}
+.sp2-wx4{display:inline-flex;flex-wrap:nowrap;gap:inherit} /* Sand and Snow keep together (no lone last word) */
 .sp2-empty{display:grid;justify-items:start;gap:var(--s2);margin-top:var(--s6)}
 .sp2-empty .k-lead{margin:0}
 .k-sec .sp2-view{margin-left:auto}.sp2-view .k-sent{margin:0;font-size:var(--t20)}
 .sp2-track{--c1:88px;--c2:248px;--c2c:var(--c2);margin-top:var(--s2)}
 .sp2-sc{display:grid;grid-template-columns:var(--c1) var(--c2) minmax(0,1fr);align-items:end;min-height:24px;margin-bottom:var(--s6);padding-right:var(--s8);font-size:var(--t13);font-weight:600;line-height:1.3;color:var(--k-ink2)}
-.sp2-sc>.u{padding-right:var(--s4);text-align:right;font-size:var(--t13);font-weight:800}
+.sp2-sc>.sp2-sc-l{padding-right:var(--s4);text-align:right;font-size:var(--t13);font-weight:800} /* a small label: Instrument Sans (Unbounded stays for 15px and up, v2-unbounded) */
 .sp2-sc .sp2-tr{grid-area:auto;position:relative;align-self:stretch;background:none}
 .sp2-sc i{position:absolute;bottom:0;left:var(--x);translate:-50% 0;font-style:normal;font-variant-numeric:tabular-nums}
 .sp2-lad{margin:0;padding:0;list-style:none}
@@ -1192,6 +1195,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2-cut .sp2-bar>i{background:var(--k-on-plot);box-shadow:none}
 .sp2-cut .sp2-bar>.np-mon{bottom:calc(var(--s3)*-1)}
 .sp2-cut .sp2-m:focus-visible{outline-color:var(--k-on-plot)}
+.sp2-cut .k-tag.k-neutral,.sp2-list li.me .k-tag.k-neutral{border-color:var(--k-on-plot);color:var(--k-on-plot)} /* a tie on a blue band (finish, Nov 22) */
 .sp2-cs{grid-area:cs;align-self:start;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s4);margin:var(--s1) 0 0;padding-right:var(--s4);color:var(--k-on-plot);font-size:var(--t15);font-weight:600;line-height:1.4}
 .sp2-cs b.u{font-size:var(--t22);line-height:1}
 .sp2-cs small{font-size:var(--t15);font-weight:600;line-height:1.4}
@@ -1219,13 +1223,13 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2-list .sp2-li:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
 .sp2-list li.me .sp2-li:focus-visible{outline-color:var(--k-on-plot)}
 /* tablets: the name column narrows */
-@media (max-width:1023.98px){.sp2-track{--c1:72px;--c2:200px}}
+@media (max-width:1023.98px){.sp2-track{--c1:80px;--c2:208px}.sp2-cut .sp2-m .v{font-size:var(--t28)}.sp2-cut .nm b{font-size:var(--t22)}.sp2-ctl .k-sent{font-size:var(--t22)}} /* finish (Nov 22): 80px fits a cut's big number, 208px a name and its Yours tag */
 /* phones: each row is Speed | Pokémon | name over a thin bar (the bar and sprite step out of the track: display:contents) */
 @media (max-width:699.98px){
   .sp2-track{--c1:48px}
   .sp2-view .k-sent{font-size:var(--t15)}.k-sec .sp2-view{margin-left:0}
   .sp2-sc{grid-template-columns:var(--c1) 40px minmax(0,1fr);gap:0 var(--s2);padding-right:var(--s4)}
-  .sp2-sc>.u{padding-right:0}
+  .sp2-sc>.sp2-sc-l{padding-right:0}
   .sp2-m{grid-template-columns:var(--c1) 40px minmax(0,1fr);grid-template-areas:"v mon nm" "v mon tr";align-items:end;gap:0 var(--s2);min-height:44px;padding:0 var(--s4) 0 0}
   .sp2 .k-sent{font-size:var(--t15);gap:var(--s1) var(--s2)}.sp2 .k-w{padding:0 var(--s1)}.sp2-ctl .k-sent{margin-top:var(--s4)}
   .sp2-m .v{grid-area:v;align-self:center;padding-right:0;font-size:var(--t20)}
@@ -1264,7 +1268,11 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .sp2-list .tag{flex-direction:column;align-items:end;padding-right:var(--s1)}
   .sp2-list li.me .sp2-cs{grid-column:1/-1;padding-left:calc(var(--c1,48px) + var(--s2))}
 }
-@media (max-width:359.98px){.sp2-cut .nm b{font-size:var(--t15)}}
+@media (max-width:359.98px){.sp2-cut .nm b{font-size:var(--t15)}
+  /* finish (Nov 22): under 360 a half-width row is too narrow for Speed, Pokémon and a long name side by side (Archaludon ran out
+     of its box at 320): the Speed number sits over the name, beside the Pokémon */
+  .sp2-fr .sp2-m{grid-template-columns:32px minmax(0,1fr);grid-template-areas:"mon v" "mon nm" "mon tr";column-gap:var(--s2)}
+  .sp2-fr .sp2-m .v{justify-self:start;align-self:end}}
 /* ---------- Damage Calc: the root and today's KO Board, its tiles and its every-hit table (reused inside the Arena's KO Board, arena-calc.css; the "Their Side" layout was removed Nov 19) ---------- */
 .dc2{padding:0 var(--gut) var(--s16);overflow-x:clip}
 /* the KO Board */

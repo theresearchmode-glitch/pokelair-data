@@ -1,5 +1,5 @@
 // ---------- Speed Tiers, Battle's tool: who moves first, your six against the 20 most-used others ----------
-// Reskin proposal (Nov 22, helper hT2, NOT approved yet): "Your six cut the line". One ladder in move order (fastest first; slowest first
+// The kit reskin (Nov 22; Sim approved the direction, "new speed tiers is good"; built by helper hT2, finished by hT3): "Your six cut the line". One ladder in move order (fastest first; slowest first
 // under Trick Room): each of the top 20 is a type-coloured Speed bar with the Pokémon riding its tip; each of yours is a Plot blue band cut
 // across the ladder at its own Speed, its art bursting out of the band and its numbers written on the cut (its outspeed share of the top 30
 // and the Speed points that pass the threat just above). Everything above a cut moves before it; everything under it, after.
@@ -22,7 +22,10 @@ V2.spHead = D => { const E = V2.esc, tr = spdUi.tr, cond = [spdUi.tw ? 'your Tai
   const h1 = `<span>Who moves <em>first.</em></span> <span class="pl">${D.mine.length ? `Your six vs the top ${D.thr.length}.` : `The top ${D.thr.length}.`}</span>`;
   return `<section class="sp2-h">${V2.kHead({kicker: 'Battle · Speed Tiers · level 50', h1Html: h1, lead: `${tr ? 'Slowest first' : 'Fastest first'}, with each side's usual spread and item; ${wx}${cond.length ? `; ${cond.join(', ')}` : ''}.`})}
     <div class="sp2-ctl">${V2.kSent(['With', tog('tw', 'Your Tailwind'), tog('up', 'You +1'), 'vs', tog('twOpp', 'Their Tailwind'), tog('icy', 'Them −1'), tog('par', 'They\'re Paralyzed'), 'or', tog('tr', 'Trick Room')], {label: 'Speed conditions', hint: false})}
-    <div class="sp2-wx">${V2.kSent(['In', wxb('auto', D.autoW ? `Your Weather (${D.autoW})` : 'Your Weather (None)'), wxb('', 'No Weather'), wxb('sun', 'Sun'), wxb('rain', 'Rain'), wxb('sand', 'Sand'), wxb('snow', 'Snow')], {label: 'Weather'})}</div></div></section>`; };
+    <div class="sp2-wx">${V2.kSent(['In', wxb('auto', D.autoW ? `Your Weather (${D.autoW})` : 'Your Weather (None)'), wxb('', 'No Weather'), wxb('sun', 'Sun'), wxb('rain', 'Rain'), wxb('sand', 'Sand'), wxb('snow', 'Snow')], {label: 'Weather'})
+      /* finish (Nov 22): the last two weather words wrap together, so Snow is never left alone on the last row (it was, at 390, 600 and 1280);
+         grouping more words cost a whole row on phones */
+      .replace(/<button[^>]*data-spdwx="sand"[\s\S]*?data-spdwx="snow"[\s\S]*?<\/button>/, m => `<span class="sp2-wx4">${m}</span>`)}</div></div></section>`; };
 
 // the ladder's scale: a thin rule every 50 Speed (100 when the top is very fast), the labels on top
 V2.spScale = rows => { const mx = Math.max(1, ...rows.map(r => r.v)), step = mx > 400 ? 100 : 50, ticks = []; for (let t = step; t < mx; t += step) ticks.push(t); return {mx, step, ticks}; };
@@ -41,10 +44,10 @@ V2.spLadder = D => { const E = V2.esc, rows = D.rows, {mx, ticks} = V2.spScale(r
   const row = r => { const t = (r.p.t || [])[0], tie = V2.spTie(rows, r), d = V2.disp(r.p.n), k = d.startsWith('Mega ') ? {form: 'Mega', name: d.slice(5).replace(/ (\S)$/, '\u00a0$1')} : {form: '', name: d};
     const cs = r.me ? V2.spCutParts(D, V2.spSum(D, r)) : null;
     const lab = `${r.v} ${E(V2.disp(r.p.n))}: Speed${r.me ? ', yours' : ''}${tie ? ', a tie' : ''}${cs ? E(`; ${cs.head}${cs.tip ? '; ' + cs.tip : ''}`) : ''}; open its info`;
-    const nm = r.me ? `<span class="nm"><small class="sp2-form">${k.form ? E(k.form) : ''}</small><b class="u">${E(k.name)}</b>${V2.kMine('Yours')}</span>` : `<span class="nm">${V2.spName(r)}${tie ? V2.kTag('neutral', 'Tie') : ''}</span>`;
+    const nm = r.me ? `<span class="nm"><small class="sp2-form">${k.form ? E(k.form) : ''}</small><b class="u">${E(k.name)}</b>${V2.kMine('Yours')}${tie ? V2.kTag('neutral', 'Tie') : ''}</span>` : `<span class="nm">${V2.spName(r)}${tie ? V2.kTag('neutral', 'Tie') : ''}</span>`;
     const btn = `<button type="button" class="sp2-m${r.me ? ' me' : ''}" data-v2mon="${E(r.p.n)}" aria-label="${lab}"><b class="v u">${r.v}</b>${nm}${cs ? cs.html : ''}<span class="sp2-tr" aria-hidden="true"><span class="sp2-bar" style="--w:${pct(r.v)}%${V2.TYPES.includes(t) ? `;--c:var(--tyn-${t})` : ''}"><i></i>${V2.mon(r.p.n, {iw: r.me ? 104 : 48, bare: true})}</span></span></button>`;
     return `<li class="${r.me ? 'sp2-cut' : 'sp2-fr'}${solo.has(r) ? ' solo' : ''}">${btn}</li>`; };
-  const scale = `<div class="sp2-sc" aria-hidden="true"><span class="u">Speed</span><span></span><span class="sp2-tr">${ticks.map(t => `<i style="--x:${pct(t)}%">${t}</i>`).join('')}</span></div>`;
+  const scale = `<div class="sp2-sc" aria-hidden="true"><span class="sp2-sc-l">Speed</span><span></span><span class="sp2-tr">${ticks.map(t => `<i style="--x:${pct(t)}%">${t}</i>`).join('')}</span></div>`;
   return `<div class="sp2-track${D.mine.length ? ' mine' : ''}" style="--tick:${pct(ticks[0] || mx)}%">${scale}<ol class="sp2-lad" aria-label="Turn order, ${spdUi.tr ? 'slowest' : 'fastest'} first${D.mine.length ? ': your six are the blue bands; everything above a band moves before it' : ''}">${rows.map(row).join('')}</ol>
     <p class="sp2-k"><span>↑ ${spdUi.tr ? 'Trick Room: moves first' : 'Moves first'}</span><span>${D.mine.length ? 'Each blue band is one of yours: above it moves before it, under it after' : `The top ${D.thr.length}`}</span><span>Moves last ↓</span></p></div>`; };
 

@@ -588,7 +588,7 @@ t('SPEED-05', 'race track / list view (remembered), markers open the info sheet,
     if (NEW) { await ui.pg.goBack(); await ui.pg.waitForTimeout(900); expect(await ui.pg.evaluate(() => location.hash) === '#speed', 'Back from the Pokémon page did not return to Speed Tiers'); } /* Nov 15: the marker opens the Pokémon page; Back returns */
     else await ui.pg.keyboard.press('Escape'); await ui.tapIn(NEW ? /^List$/ : 'List view'); await ui.reload(); await ui.go('Speed Tiers');
     expect(await ui.isPressed(NEW ? /^List$/ : 'List view') === true, 'List view not remembered after reload');
-    const rows = await ui.speedRowText(); expect(rows.some(r => /You/.test(r) && /Speed points/.test(r)), 'list rows lack "YOU" tags or how the number was worked out'); await close(); }
+    const rows = await ui.speedRowText(); /* Speed reskin (Nov 22): the kit's You tag is set in capitals (YOU), so match either case */ expect(rows.some(r => /\bYou\b/i.test(r) && /Speed points/.test(r)), 'list rows lack "YOU" tags or how the number was worked out'); await close(); }
   const {ui, pg, close} = await open({team: TEAM, width: 390}); await ui.go('Speed Tiers');
   if (!NEW) expect(await ui.sees(/(Swipe|Scroll) the track/i), 'no "Swipe the track" hint on a phone'); // the new phone track is vertical (Speed Q2/Q4): nothing scrolls sideways, so no hint
   expect(await ui.noSideScroll(), 'the page itself scrolls sideways'); await close(); });
