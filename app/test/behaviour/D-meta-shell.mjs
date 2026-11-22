@@ -613,8 +613,10 @@ t('TOP-05', 'Team list: top 3, "More Winning Teams" shows more, "Show fewer" fol
   await ui.go('Winning Teams'); const n0 = await d.teamCards(); expect(n0 === 3, 'cards: ' + n0); expect((NEW ? /More Winning Teams · \d+ in all/ /* one system (Nov 16): the show-more link 'More Winning Teams · N in all ›'; the three cards show it's the top 3 */ : /Showing the top 3 of \d+/).test(await ui.text()), 'no count of all the winning teams');
   await ui.tap(/More Winning Teams/); const n1 = await d.teamCards(); expect(n1 > 3, 'more not shown: ' + n1); await ui.tap((NEW ? /^Show Fewer/i : /^Show fewer/i)); expect(await d.teamCards() === 3, 'did not fold back'); }));
 t('TOP-06', 'Card actions: Load team (confirm, Undo), Practice against, Compare', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Winning Teams'); await ui.tap(/^Load team$/i); expect(has(await ui.text(), 'Replace your current team?'), 'no confirm'); await ui.tap(/^Cancel$/);
-  expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'Cancel changed the team'); await ui.tap(/^Load team$/i); await ui.tap(/^Replace$/);
+  /* kit reskin (Nov 22, Sim's mock-up "THE WINNING CREWS"): the top team's Load Team is the page's pink move, "USE THIS TEAM." (THEME 2.5); same data-wtask, same question */
+  const LOAD = NEW ? /^(Load team|Use this team\.?)$/i : /^Load team$/i;
+  await ui.go('Winning Teams'); await ui.tap(LOAD); expect(has(await ui.text(), 'Replace your current team?'), 'no confirm'); await ui.tap(/^Cancel$/);
+  expect(JSON.stringify(await ui.team()) === JSON.stringify(TEAM), 'Cancel changed the team'); await ui.tap(LOAD); await ui.tap(/^Replace$/);
   expect(await ui.current() === 'report', 'did not open My Team'); expect(await d.toastHasUndo(), 'no Undo'); const loaded = await ui.team(); expect(loaded.includes('Gholdengo'), 'first card not loaded: ' + loaded);
   await ui.go('Winning Teams'); await ui.tap(/^(Practice against|Set as Opponent)( ›)?$/i); /* Sim, Nov 14 naming */ expect(await ui.current() === 'matchup', 'Practice against opened ' + await ui.current());
   expect(has(await d.toastText() || '', 'Opponent set'), 'toast: ' + await d.toastText());

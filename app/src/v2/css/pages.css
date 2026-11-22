@@ -3941,3 +3941,78 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .dr .tp-cards .dr-thru{gap:0 var(--s3);font-size:var(--t13);line-height:1.4}
   .dr .tp-cards .dr-tk{flex-basis:100%}
 }
+
+/* ===== Winning Teams on the shared kit (Nov 22): Sim's PC mock-up "THE WINNING CREWS" (Keep as drawn). The Meta header stays the Meta
+   pages' own (v2-minors measures it on all of them); its eyebrow is the kit's kicker chip. Below it: the plot sentence, the plan line,
+   the top team as six roster cards with the one pink move, the runners-up as two calm panels, the rest as rows in words. Colours are tokens. ===== */
+.wt2 .ra-h .wt2-kick{justify-self:start;padding:var(--s1) var(--s3);background:var(--k-chip);color:var(--k-on-chip);font:800 var(--t15)/1.3 var(--u);font-style:italic;letter-spacing:.04em;transform:skewX(-10deg)}
+.wt2 .ra-h .wt2-kick::before{display:none}
+.wt2-ctl{display:grid;gap:var(--s3);min-width:0}
+.wt2-ctl .k-sent{margin:0}
+.wt2-find{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);min-width:0}
+.wt2-find .wt2-or{display:block;margin:0} /* the sentence's own words (k-sent: its size and the qcheck exception for the kit's fluid display type) */
+.wt2-find .wt-find{flex:1 1 280px;max-width:420px}
+.wt2-ctl .wt-src{margin:0}
+.wt2-yours{gap:var(--s3)}
+.wt2-yrec{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s2) var(--s3);margin:0;font:600 var(--t15)/1.4 var(--b);color:var(--k-ink2)}
+.wt2-yrec>b{font-size:var(--t34);line-height:1;color:var(--k-ink)}
+.wt2-tags{display:inline-flex;flex-wrap:wrap;gap:var(--s2)}
+.wt2-six{display:grid;grid-template-columns:repeat(6,var(--tap));gap:var(--s2);min-width:0}
+.wt2-six:not(.sm){grid-template-columns:repeat(6,minmax(0,56px))}
+.wt2-six .np-mon{--iw:52px}
+.wt2-six.sm .np-mon{--iw:40px}
+.wt2-m{display:grid;place-items:center;min-width:var(--tap);min-height:var(--tap);margin:0;padding:0;border:0;background:none;color:inherit;cursor:pointer}
+.wt2-m:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
+.wt2-pl{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s2) var(--s3);margin:0;font:600 var(--t15)/1.4 var(--b);color:var(--k-ink2)}
+.wt2-pl>b{font-size:var(--t17);line-height:1.2;color:var(--k-ink)}
+.wt2-pl.big{margin-top:var(--s6)}
+.wt2-pl.big>b{font-size:var(--t24)}
+.wt2-go{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s8);margin-top:var(--s1)}
+.wt2-links{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s6);margin:0}
+.wt2-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s6);margin:0}
+.wt2-acts .wt2-links{display:contents}
+.wt2-rh .np-btn2{margin-left:auto}
+.wt2-links .k-link,.wt2-acts .k-link{min-height:var(--tap)}
+.wt2-go .k-go{margin-top:var(--s4)}
+.wt2-tap{margin:var(--s2) 0 0}
+.wt2-top .wt-sure{margin-top:var(--s6)}
+.wt2-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6)}
+.wt2-run{display:grid;align-content:start;gap:var(--s3);min-width:0;padding:var(--s5) var(--s6);background:var(--k-card);box-shadow:inset 0 0 0 1px var(--k-rule);clip-path:polygon(0 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%)}
+.wt2-rh{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--s2) var(--s3)}
+.wt2-rh h3{margin:0;font-size:var(--t22);line-height:1.15;text-wrap:balance}
+.wt2 .wt-names{text-wrap:pretty}
+.wt2-ev{margin:0;font:500 var(--t15)/1.4 var(--b);color:var(--k-ink2)}
+.wt2 .k-sec .wt-open{margin-left:auto}
+.wt2-lone{margin:var(--s4) 0 0}
+.wt2 .k-plan{padding-bottom:var(--s8)} /* desktop length (Nov 22): no taller than the page before its reskin (1922 px at 1440) */
+.wt2-rows{display:grid}
+.wt2-row{display:grid;grid-template-columns:40px minmax(0,1fr);align-items:start;gap:var(--s2) var(--s4);padding:var(--s4) 0;border-top:1px solid var(--k-rule)}
+.wt2-row:first-child{border-top:0;padding-top:0}
+.wt2-no{font-size:var(--t24);line-height:1.2;color:var(--k-ink2)}
+.wt2-rt{display:grid;gap:var(--s1);min-width:0}
+.wt2-row .wt2-rt{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s6)}.wt2-row .wt2-rt>*{grid-column:1}.wt2-row .wt2-rt>.wt2-six{grid-column:2;grid-row:1/span 5;align-self:start}
+.wt2-rhd{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s3);margin:0}
+.wt2-rhd b{font-size:var(--t17);line-height:1.3}
+.wt2 .wt-mbtns{justify-content:flex-start;margin-top:var(--s4)}
+.wt2 .wt-res{gap:var(--s3)}
+@media (max-width:1099.98px){.wt2-two{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:359.98px){.wt2-links{column-gap:var(--s2)}}
+@media (max-width:699.98px){
+  .wt2-find .wt-find{flex-basis:200px}
+  .wt2-rh h3{font-size:var(--t20)}
+  .wt2-six .np-mon{--iw:40px}
+  .wt2-six,.wt2-six:not(.sm){grid-template-columns:repeat(6,var(--tap));justify-content:space-between;gap:0;max-width:calc(6 * var(--tap) + 5 * var(--s2))} /* 8px between pictures, closing up to touching at 320 */
+  .wt2-run{padding:var(--s4) var(--s3)}
+  .wt2-pl.big{margin-top:var(--s4)}
+  .wt2-pl.big>b{font-size:var(--t20)}
+  .wt2-go{gap:var(--s2)}
+  .wt2-links{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 var(--s3);width:100%}
+  .wt2-links .k-link{line-height:1.3}
+  .wt2-acts{display:grid;grid-template-columns:minmax(0,1fr);justify-items:start}
+  .wt2-acts .wt2-links{display:grid}
+  .wt2-rh{grid-template-columns:minmax(0,1fr);justify-items:start}.wt2-rh .np-btn2{margin-left:0}
+  .wt2-row{grid-template-columns:32px minmax(0,1fr)}
+  .wt2-row .wt2-rt{grid-template-columns:minmax(0,1fr)}.wt2-row .wt2-rt>.wt2-six{grid-column:1;grid-row:auto;margin:var(--s1) 0}
+  .wt2 .k-sec .wt-open{margin-left:0}
+}
+.wt2 .wt-sure{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:var(--s3) var(--s4)}
