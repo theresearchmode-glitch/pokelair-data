@@ -20,5 +20,10 @@ V2.sdHero = V2.sdHero || (() => `<section class="sd-band sd-hero" aria-label="Sh
 V2.sdSix = V2.sdSix || (() => `<section class="sd-band sd-six"><h2 class="u">Call six out of the herd.</h2></section>`);
 V2.sdTools = V2.sdTools || (() => `<section class="sd-band sd-tools"><h2 class="u">Same herd. Twelve tools.</h2></section>`);
 V2.sdPost = V2.sdPost || (() => `<section class="sd-band sd-post"><h2 class="u">The post is in.</h2></section>`);
-V2.sdPage = () => `<div class="sd">${V2.sdHero()}${V2.sdSix()}${V2.sdTools()}${V2.sdPost()}</div>`;
+// the top 10 right now (Sim approved Nov 22, 12:26 PM, with the Ratings stairs): under the hero, the ten best by rating, each a tap to its page,
+// and SEE ALL RATINGS to the Ratings page, so the rankings players look for are on the front page
+V2.sdTop = () => { const E = V2.esc; let top = []; try { top = lairRows().slice(0, 10); } catch (e) {} if (!top.length) return '';
+  return `<section class="sd-top" aria-labelledby="sd-top-h"><h2 class="u" id="sd-top-h">The top 10 <em>right now.</em></h2><ol>${top.map((x, i) => { const k = lairRank(x.p), rk = k ? k.rank : i + 1;
+    return `<li><button type="button" data-v2mon="${E(x.p.n)}" aria-label="Number ${rk}: ${E(x.p.d)}, rated ${RS(x.r.total)}: open its page"><b class="r u" aria-hidden="true">${rk}</b>${V2.mon(x.p.n, {bare: true, iw: 40})}<span class="n" aria-hidden="true">${E(x.p.d).replace(/ (\S)$/, '\u00a0$1')}</span><b class="s u" aria-hidden="true">${RS(x.r.total)}</b></button></li>`; }).join('')}</ol>${V2.kGo('SEE ALL RATINGS ›', {href: '#meta'})}</section>`; };
+V2.sdPage = () => `<div class="sd">${V2.sdHero()}${V2.sdTop()}${V2.sdSix()}${V2.sdTools()}${V2.sdPost()}</div>`;
 V2.sdAfter = () => { for (const f of [V2.sdHeroAfter, V2.sdSixAfter, V2.sdToolsAfter, V2.sdPostAfter]) if (typeof f === 'function') try { f(); } catch (e) {} };
