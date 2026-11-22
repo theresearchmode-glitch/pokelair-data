@@ -59,9 +59,13 @@ What I saw looking at them (my eyes, not a measurement):
 Measured by injecting each candidate on every route (scratchpad lengths.mjs, same method as experiments/page-lengths.mjs: scrollHeight
 after 2 s). Each cell: screens (change vs today in px). Caps (CLAUDE.md desktop length rule): tool and list pages 3, reference pages 4.
 
-**Not trusted: My Team (`team`).** Its height moved +144 to +194 px under candidates that do not touch its 84/40 sizes (e.g. step-A40
-+0 but step-B34 +169; at 390 every step candidate +272). The page's own state differs between loads; I did not find why. Its numbers
-below are left in but are not evidence.
+**Not trusted: My Team (`team`), and now explained (measured after the first push).** Its height moved +144 to +272 px under
+candidates that do not touch its 84/40 sizes. Cause, measured with five plain reloads and NO candidate CSS (scratchpad teamnoise.mjs):
+one section finishes loading after the 2 s mark and grows. 1440: `H@2s 3285` in 4 of 5 loads (one already `3479`), `H@5s 3479` in all 5;
+390: `H@2s 3656` in 2 of 5 loads, `3928` in the others, `H@5s 3928` in all 5. In plain words: the length script (2 s wait, same as
+experiments/page-lengths.mjs) catches My Team half-loaded. Its real length is **3.87 screens at 1440** (3479/900; cap 3) and **4.65 at
+390** (3928/844), not the 3.65-3.7 used so far. The My Team cells in the table are timing noise, not the candidates.
+Follow-up for HH: experiments/page-lengths.mjs should wait for the page to stop growing (not a fixed 2 s) before its numbers are used.
 
 
 **1440 wide** (screens = height / 900; only pages where some candidate changes the height by 8px or more)
