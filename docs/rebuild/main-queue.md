@@ -1,5 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH builds Ratings (A "the stairs" = S tier, Home Top 10 strip; Sim approved 12:26 PM), from hM round-2 mock (mk: meta2-mock.inject.js)
+NOW: Ratings + Home strip after-checks (ra-after.sh, queued behind the minors run); meanwhile HH writes This Week (direction A "the slope") in copy wk
 NEXT: build helper after Events: This Week A, then News
 NEXT: on Sim's yes: one button system (helper job, every page checked)
 NEXT: push Home label (keep/home-label) after GitHub 1439
