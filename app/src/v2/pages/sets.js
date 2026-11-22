@@ -39,7 +39,8 @@ V2.stSpreads = p => { const d = META.doubles, row = d && p ? findIn(d, p) : null
 V2.loPct = v => v == null || v === '' ? '' : ((+v) < 1 ? (+v).toFixed(1) : Math.round(+v)) + '%';
 // one labelled value: the top choice (its share when the source gives one), the runners-up in quiet words under it
 V2.loVal = (label, arr, n, lead) => { const E = V2.esc, L = (arr || []).slice(0, n); if (!L.length && !lead) return '';
-  const one = ([k, v]) => `${E(k)}${v != null ? ` <small>${V2.loPct(v)}</small>` : ''}`;
+  const kw = {Item: V2.kItem, Ability: V2.kAbil}[label], nm = k => kw ? kw(k) : E(k); /* info sheets (Nov 22): item and Ability names open their sheets */
+  const one = ([k, v]) => `${nm(k)}${v != null ? ` <small>${V2.loPct(v)}</small>` : ''}`;
   const main = lead || one(L[0]), rest = lead ? '' : L.slice(1).map(one).join(' · ');
   return `<div class="lo-v"><small class="lo-vl">${label}</small><b class="u">${main}</b>${rest ? `<span class="lo-vr">${rest}</span>` : ''}</div>`; };
 V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = members(), p = V2.stMon();

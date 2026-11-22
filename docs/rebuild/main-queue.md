@@ -1,5 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: full local check of the batch (bt.sh: Winning Teams, Popular Sets, info data, Move sheet); push after GitHub 1440; then Ability sheet (step 3)
+NOW: GitHub full check of the pushed batch (de290013); meanwhile Ability/Item names on Popular Sets loadout + remaining spots; then Ratings build when Sim picks
 NEXT: on Sim's yes: one button system (helper job, every page checked)
 NEXT: push Home label (keep/home-label) after GitHub 1439
 NEXT: when GitHub is green: Preview (fresh data), pictures of the length fixes to Sim, Game Plan ticks

@@ -90,3 +90,5 @@
 .is-tab .ev{position:absolute;right:212px;top:16px;padding:2px var(--s2);border:3px solid var(--is-stamp);color:var(--is-stamp);font-size:var(--t20);font-weight:900;line-height:1.2;letter-spacing:.08em;transform:rotate(-8deg);opacity:.85}
 .is2.kd-item .is-h h3::before{top:8px;width:16px;height:12px;transform:none;clip-path:polygon(4px 0,100% 0,100% 100%,4px 100%,0 50%)}
 @media (max-width:699.98px){.is-tab .ev{display:none}.is-tab.kd-item{padding-left:64px}}
+/* on the dark loadout panel (Popular Sets): the name keeps the panel's ink and big slanted type; the underline marks it as a button */
+.lo-v .is-w{color:inherit;text-decoration-color:var(--plate-link)}
