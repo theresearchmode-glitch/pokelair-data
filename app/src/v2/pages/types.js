@@ -1,5 +1,5 @@
 // ---------- Type Chart (Nov 14), Battle's tool: what hits a Pokemon (or one or two types) hard, and what its own types hit ----------
-// Concept A 'Spotlight' (mock-ups docs/rebuild/mocks/types). Every number comes from today's shared type logic (20-types-data.js:
+// On the shared kit (reskin, Nov 22; was Concept A 'Spotlight' + the Skyline): kit header, three plan steps, the damage line. Every number comes from today's shared type logic (20-types-data.js:
 // typeGroups with the Ability's notes, typeOffence, EFF); the state is today's (ui.typesSel, ui.typesMon, ui.typesCleared, ui.tcAtk),
 // so both sites agree. Today's controls all stay: look up a Pokemon, your team, pick one or two types, Clear, the full 18x18 chart, and
 // on phones the attacking-type row.
@@ -24,56 +24,58 @@ V2.tcRow = () => { const a = TYPES.includes(ui.tcAtk) ? ui.tcAtk : 'Fire', chip 
   return `<div class="tc-prow"><p class="tc-lbl">Attacking type</p><div class="tc-picks" role="group" aria-label="Attacking type">${TYPES.map(t => `<button type="button" class="tc-tp sym${t === a ? ' on' : ''}" data-tcatk="${t}" aria-pressed="${t === a}" style="--tc:var(--ty-${t})">${V2.kTy(t)}${t}</button>`).join('')}</div>
     <div class="tc-off"><div class="tc-offh">${chip(a)}<b>attacks hit…</b></div>${grp('Super effective (2×)', x => x >= 2, 'up')}${grp('Not very effective (½×)', x => x > 0 && x < 1, 'dn')}${grp('No effect (0×)', x => x === 0, 'no')}<p class="fine">Every other type takes normal damage.</p></div></div>`; };
 
-/* morning helper (confirmed): 'Name hard.' is kept together (no lone 'hard.'), unless the pair is wider than the screen (a long one-word
-   name at 320, Crabominable +46px): then the join becomes an ordinary space so the headline wraps instead of running off */
-V2.tcFitHead = () => { const h = document.querySelector('.tc-h h1'), j = h && h.querySelector('.tc-j'); if (!j) return; j.textContent = '\u00a0'; h.style.fontSize = '';
-  const fits = () => { const edge = h.parentElement.getBoundingClientRect().right; return ![...h.querySelectorAll('span')].some(s => s.getBoundingClientRect().right > edge + 1); };
-  /* first one or two steps down the type scale (28 -> 26 -> 24), so the pair stays together; only then may 'hard.' wrap */
-  if (fits()) return; const base = parseFloat(getComputedStyle(h).fontSize);
-  for (const v of ['--t26', '--t24']) { const px = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(v)); if (!(px < base)) continue; h.style.fontSize = `var(${v})`; if (fits()) return; }
-  h.style.fontSize = ''; j.textContent = ' '; };
-V2.pages.types = {place: 'battle', after() { V2.tcFitHead(); }, draw() { const E = V2.esc, chip = V2.typeChip, X = V2.tcState(), {sel, mon} = X;
-  const who = mon ? E(V2.disp(mon.n)) : sel.length ? sel.join(' and ') : '';
-  const head = `<section class="tc-h"><p class="np-eyebrow"><span>Battle · Type Chart</span></p><h1 class="u">${who ? `<span>What hits ${who}</span><span class="tc-j">&nbsp;</span><span class="pl">hard.</span>` : '<span>What hits</span>&nbsp;<span class="pl">what.</span>' /* 'hard.' never alone on a line (re-check Nov 15) */}</h1></section>`;
+/* the headline on the kit (reskin, Nov 22): 'Name hard.' stays together while it fits; when it doesn't (most names on phones), the join
+   becomes an ordinary space; a single long word that still runs off (Crabominable at 320) steps the headline down the scale (34, then 28) */
+V2.tcFitHead = () => { const h = document.querySelector('.tc-h h1'), j = h && h.querySelector('.tc-j'); if (!h) return; if (j) j.textContent = '\u00a0'; h.style.fontSize = '';
+  /* the edge is the page's own content edge (the header could grow to the headline's widest unbroken piece) */
+  const pg = h.closest('.tc'), edge = pg ? pg.getBoundingClientRect().right - parseFloat(getComputedStyle(pg).paddingRight) : innerWidth;
+  const rg = document.createRange(), fits = () => { rg.selectNodeContents(h); return [...rg.getClientRects()].every(r => r.right <= edge + 1); }; /* every line's text, not only its box */
+  if (fits()) return; if (j) j.textContent = ' '; if (fits()) return;
+  for (const v of ['--t34', '--t28']) { h.style.fontSize = `var(${v})`; if (fits()) return; } };
+/* phone length: on a phone the headline keeps to three lines; a long name steps it down the scale (34, then 28) until it does */
+V2.tcFitLines = () => { const h = document.querySelector('.tc-h h1'); if (!h || innerWidth >= 700) return; const lines = () => h.getBoundingClientRect().height / (parseFloat(getComputedStyle(h).lineHeight) || parseFloat(getComputedStyle(h).fontSize));
+  for (const v of ['--t34', '--t28']) { if (lines() <= 3.5) return; const px = parseFloat(getComputedStyle(document.documentElement).getPropertyValue(v)); if (px < parseFloat(getComputedStyle(h).fontSize)) h.style.fontSize = `var(${v})`; } };
+
+// the damage line (reskin, Nov 22): one row per attacking type that does more or less than normal damage, hardest first. The 1x line is
+// normal damage; a pink bar runs right for each step it hurts more (2x, 4x), a blue bar left for each step it is shrugged off (1/2, 1/4),
+// and an ink bar to the far edge for no effect. The types that hit it normally share one row of chips under it.
+V2.TC_STEP = {4: 2, 2: 1, 1: 0, .5: -1, .25: -2, 0: -3};
+V2.tcLine = (list, chip) => { const pos = v => (v + 3) * 20, mul = m => m === 4 ? '4×' : m === 2 ? '2×' : m === .5 ? '½' : m === .25 ? '¼' : '0';
+  const rows = list.filter(o => o.m !== 1), norm = list.filter(o => o.m === 1);
+  const row = o => { const v = V2.TC_STEP[o.m], a = Math.min(pos(v), 60), b = Math.max(pos(v), 60), k = o.m > 1 ? 'w' : o.m === 0 ? 'z' : 'r';
+    return `<li class="tc-r ${k}"><span class="tc-rt">${chip(o.t)}</span><span class="tc-rk"><i class="tc-bar" style="left:${a}%;width:${b - a}%"><b class="u">${mul(o.m)}</b></i></span></li>`; };
+  return `<div class="tc-ln"><p class="tc-ax" aria-hidden="true"><span class="r">← <span class="lg">Shrugs it off</span><span class="sh">Less</span></span><span class="n">1×<span class="lg"> normal</span></span><span class="w"><span class="lg">Hurts</span><span class="sh">More</span> →</span></p>
+    <ul class="tc-rows" aria-hidden="true">${rows.map(row).join('')}</ul>
+    ${norm.length ? `<div class="tc-norm" aria-hidden="true"><p class="tc-lbl">Normal damage</p><div class="ts">${norm.map(o => chip(o.t)).join('')}</div></div>` : ''}</div>`; };
+
+V2.pages.types = {place: 'battle', after() { V2.tcFitHead(); V2.tcFitLines(); }, draw() { const E = V2.esc, chip = V2.typeChip, X = V2.tcState(), {sel, mon} = X;
+  const who = mon ? E(V2.disp(mon.n)).replace(/ (\S)$/, '&nbsp;$1') /* 'Charizard Y': a lone letter stays with its name */ : sel.length ? sel.join(' and ') : '';
+  const head = `<section class="tc-h">${V2.kHead({kicker: 'Battle · Type Chart', h1Html: who ? `What hits <em>${who}</em><span class="tc-j">&nbsp;</span>hard.` : 'What hits <em>what.</em>',
+    leadHtml: mon ? `<span class="tc-show">Showing <b>${E(V2.disp(mon.n))}</b>, ability ${E(X.ab || '')}${X.onTeam ? ' (from your team)' : ''}</span>` : sel.length ? `Taking hits as ${E(sel.join(' and '))}.` : ''})}</section>`;
   const team = X.team.length ? `<div class="tc-team" role="group" aria-label="Your team">${X.team.map(m => `<button type="button" class="tc-tm${mon && m.p.n === mon.n ? ' on' : ''}" data-tcmon="${E(m.p.n)}" aria-pressed="${!!(mon && m.p.n === mon.n)}" aria-label="${E(V2.disp(m.p.n))}">${V2.mon(m.p.n, {iw: 40, bare: true})}<span>${V2.rowName(V2.disp(m.p.n))}</span></button>`).join('')}</div>` : '';
   const find = `<div class="tc-findw"><label class="np-field tc-find">${V2.ICON.search}<input type="search" data-tcfind value="${E(V2.tcFind || '')}" placeholder="Look up a Pokémon" aria-label="Look up a Pokémon: type its name" autocomplete="off">${V2.CLR}</label><div class="bd-hits tc-hits" data-tchits>${V2.tcFind ? V2.tcHits(V2.tcFind) : ''}</div></div>`;
   const picks = `<div class="tc-picks" role="group" aria-label="Or pick one or two types">${TYPES.map(t => `<button type="button" class="tc-tp sym${sel.includes(t) ? ' on' : ''}" data-tctype="${t}" aria-pressed="${sel.includes(t)}" style="--tc:var(--ty-${t})">${V2.kTy(t)}${t}</button>`).join('')}</div>`;
-  const ctl = `<div class="tc-ctl">${find}${team}</div>${mon ? `<p class="tc-show">Showing <b>${E(V2.disp(mon.n))}</b>, ability ${E(X.ab || '')}${X.onTeam ? ' (from your team)' : ''}</p>` : ''}<p class="tc-lbl tc-pl"><span>Or pick one or two types</span>${sel.length || mon ? '<button type="button" class="np-link tc-clear" data-tcclear>Clear</button>' : ''}</p>${picks}`;
-  const fold = `<details class="tc-fold" data-tcfold${V2.tcOpen ? ' open' : ''}><summary><span><b>Full type chart</b><small>Every attacking type against every defending type</small></span><i aria-hidden="true">›</i></summary>${V2.tcGrid(sel)}<p class="fine tc-gnote">Rows attack, columns defend. 2 = super effective, ½ = not very effective, 0 = no effect, blank = normal.</p>${V2.tcRow()}</details>`;
-  const wrap = body => `<div class="tc">${V2.battleToolsBar('types')}${head}${ctl}${body}${fold}</div>`;
-  if (!sel.length) return wrap(`<p class="tm-sub tc-none">Pick one or two types above, or look up a Pokémon.</p><div class="tc-city quiet" aria-hidden="true">${V2.tcCity(TYPES.map(t => ({t, m: 1})), true)}</div>`);
+  const ctl = `<div class="tc-ctl">${team}${find}</div><p class="tc-lbl tc-pl"><span>Or pick one or two types</span>${sel.length || mon ? '<button type="button" class="np-link tc-clear" data-tcclear>Clear</button>' : ''}</p>${picks}`;
+  const full = V2.kStep(sel.length ? 3 : 1, 'The whole chart.', 'every type against every type', `<div class="tc-full" data-tcfold>${V2.tcGrid(sel)}<p class="fine tc-gnote">Rows attack, columns defend. 2 = super effective, ½ = not very effective, 0 = no effect, blank = normal.</p>${V2.tcRow()}</div>${V2.kGo('PLOT THE HIT.', {href: '#calc'})}`);
+  const wrap = body => `<div class="tc">${V2.battleToolsBar('types')}${head}${ctl}${body}</div>`;
+  if (!sel.length) return wrap(`<p class="k-lead tc-none">Pick one or two types above, or look up a Pokémon.</p>${V2.kPlan(full)}`);
   const {groups: g, abNotes} = typeGroups(sel, X.ab), off = typeOffence(sel);
   const mulOf = t => g.q.includes(t) ? 4 : g.d.includes(t) ? 2 : g.h.includes(t) ? .5 : g.qr.includes(t) ? .25 : g.z.includes(t) ? 0 : 1;
   const list = TYPES.map((t, i) => ({t, m: mulOf(t), i})).sort((a, b) => b.m - a.m || a.i - b.i);
-  const left = mon ? `<div class="tc-cardw">${V2.msCard(mon, mon.n, `<h2 class="u">${V2.nameHtml(V2.disp(mon.n))}</h2>`, `<div class="ms-ty">${mon.t.map(chip).join('')}</div>`)}</div>`
+  // beside the card: three counts (weak spots, resists, immune); a weak count is in pink, as its bars
+  const nW = g.q.length + g.d.length, facts = `<ul class="k-facts">${[[nW, nW === 1 ? 'weak spot' : 'weak spots', nW ? ' bad' : ''], [g.h.length + g.qr.length, 'resists', ''], [g.z.length, 'immune', '']].map(([v, l, c]) => `<li><b class="u${c}">${v}</b><span>${l}</span></li>`).join('')}</ul>`;
+  const left = mon ? `<div class="tc-cardw">${V2.kCard(mon.n, {fact: mon.t.join(' · ')})}${facts}</div>`
     : `<div class="tc-cardw tc-types">${sel.map(t => `<span class="tc-tile big" style="--tc:var(--ty-${t})">${V2.kTy(t)}<b>${t}</b></span>`).join('')}</div>`;
   // the text version (screen readers, and what the tests read): today's five groups and today's sentence
   const bands = [['4×', 'weak', g.q, 'b4'], ['2×', 'weak', g.d, 'b2'], ['½', 'resists', g.h, 'bh'], ['¼', 'resists', g.qr, 'bq'], ['0', 'immune', g.z, 'b0']];
   const sr = `<div class="vh"><ul>${bands.map(([m, w, ts, c]) => `<li class="tc-band ${c}">${m} ${w}: <span class="ts">${ts.length ? ts.map(chip).join(' ') : 'none'}</span></li>`).join('')}</ul><p>Everything not listed hits it for normal damage.</p></div>`;
-  const legend = `<ul class="tc-leg" aria-hidden="true"><li><i class="k w"></i>Tall, red edge: it is weak here</li><li><i class="k n"></i>Short and faded: normal damage</li><li><i class="k r"></i>Low, blue edge: it resists</li><li><i class="k z"></i>Flat plate: immune</li></ul>`;
   const note = abNotes.length ? `<p class="tc-ab">${E(abNotes.join('. '))}.</p>` : '';
-  const grp = (m, w, ts, k) => `<div class="tc-grp ${k}"><p class="cap"><b class="u">${m}</b><span>${w}</span></p><div class="row">${ts.length ? ts.map(t => `<span class="blk" style="--ty:var(--ty-${t})"><i aria-hidden="true"></i><span>${t}</span></span>`).join('') : '<i class="none">Nothing</i>'}</div></div>`;
-  const streets = `<section class="tc-streets n${off.length}"><p class="tc-lbl">Attacking with its own types</p><p class="tc-sub">Everything not standing here takes normal damage.</p><div class="tc-sts">${off.map(o => `<div class="tc-st" style="--ty:var(--ty-${o.atk})"><div class="tc-ban"><b class="u">${o.atk}</b> <small>attacks</small></div><div class="tc-grps">${grp('2×', 'Hits hard', o.se, 'hi')}${grp('½', 'Half damage', o.nv, 'lo')}${o.no.length ? grp('0', 'No effect', o.no, 'z') : ''}</div></div>`).join('')}</div></section>`;
-  return wrap(`<div class="tc-sky">${left}<p class="tc-lbl tc-takes">Taking hits as ${sel.map(chip).join(' ')}</p><div class="tc-city" aria-hidden="true">${V2.tcCity(list)}</div>${sr}${legend}${note}<p class="fine tc-sorted">Sorted from hits hardest (back) to can't touch it (front).</p></div>${streets}`); }};
+  const hurt = V2.kStep(1, 'Where it hurts.', '', `<div class="tc-dmg">${left}<div class="tc-dr">${V2.tcLine(list, chip)}${sr}${note}</div></div>`);
+  const grp = (m, w, ts) => `<div class="tc-og"><p class="cap"><b class="u">${m}</b> <span>${w}</span></p><div class="ts">${ts.length ? ts.map(chip).join('') : '<i class="none">Nothing</i>'}</div></div>`;
+  const back = V2.kStep(2, 'Hitting back.', 'attacking with its own types',
+    `<div class="tc-offs n${off.length}">${off.map(o => `<div class="tc-o" style="--ty:var(--ty-${o.atk})"><p class="tc-oh">${chip(o.atk)} <span>attacks</span></p>${grp('2×', 'hits hard', o.se)}${grp('½', 'half damage', o.nv)}${o.no.length ? grp('0', 'no effect', o.no) : ''}</div>`).join('')}</div>`);
+  return wrap(V2.kPlan(hurt + back + full)); }};
 
-// ---------- Skyline (Sim's pick, Nov 14; brief docs/rebuild/mocks/types/skyline/BRIEF.md): the 18 attacking types as towers ----------
-// Three drawings of the same city; the room the city has picks one (container query): a diamond on wide columns, a slanted block of
-// six on phones, a block of three on the narrowest. Heights follow the multiplier; six to a row, hardest hits at the back, so a tall
-// tower never stands in front of a shorter one. Roof labels are text laid over the drawing at a fixed size (the type scale).
-V2.TC_H = {4: 1.4375, 2: .85, 1: .2875, .5: .1375, .25: .0625, 0: 0};
-V2.tcCity = (list, quiet) => [['dia', 160, 6], ['blk6', 120, 6], ['blk3', 120, 3]].map(([kind, L, per]) => {
-  const P = list.map((o, k) => { const r = Math.floor(k / per), c = k % per, x = kind === 'dia' ? (c - r) * L / 2 : c * L / 2, y = kind === 'dia' ? (c + r) * L / 4 : c * L / 4 + r * L / 2;
-    return {...o, x, y, h: (quiet ? V2.TC_H[1] : V2.TC_H[o.m]) * L}; });
-  const w = .86 * L / 2, d = w / 2, pad = 6, f = n => Math.round(n * 10) / 10;
-  const x0 = Math.min(...P.map(p => p.x)) - L / 2 - pad, x1 = Math.max(...P.map(p => p.x)) + L / 2 + pad, y0 = Math.min(...P.map(p => Math.min(p.y - L / 4, p.y - d - p.h))) - pad, y1 = Math.max(...P.map(p => p.y)) + L / 4 + pad, W = x1 - x0, H = y1 - y0;
-  const st = m => quiet ? 'q' : m >= 2 ? 'w' + m : m === 1 ? 'n' : m === 0 ? 'z' : 'r', mul = m => m === 4 ? '4×' : m === 2 ? '2×' : m === .5 ? '½' : m === .25 ? '¼' : m === 0 ? '0' : '';
-  const tower = p => { const {x, y, h} = p, pt = a => a.map(([u, v]) => `${f(u)},${f(v)}`).join(' '), lot = pt([[x, y - L / 4], [x + L / 2, y], [x, y + L / 4], [x - L / 2, y]]);
-    if (!quiet && p.m === 0) return `<g class="tw z" style="--ty:var(--ty-${p.t})"><polygon class="lot" points="${lot}"/><polygon class="pl" vector-effect="non-scaling-stroke" points="${pt([[x, y - d], [x + w, y], [x, y + d], [x - w, y]])}"/></g>`;
-    let lines = ''; for (let k = L * .075; k < h - 2; k += L * .075) lines += `<polyline class="fl" vector-effect="non-scaling-stroke" points="${pt([[x - w, y - k], [x, y + d - k], [x + w, y - k]])}"/>`;
-    return `<g class="tw ${st(p.m)}" style="--ty:var(--ty-${p.t})"><polygon class="lot" points="${lot}"/><polygon class="lw" points="${pt([[x - w, y - h], [x, y + d - h], [x, y + d], [x - w, y]])}"/><polygon class="rw" points="${pt([[x, y + d - h], [x + w, y - h], [x + w, y], [x, y + d]])}"/>${lines}<polygon class="rf" vector-effect="non-scaling-stroke" points="${pt([[x, y - d - h], [x + w, y - h], [x, y + d - h], [x - w, y - h]])}"/><polyline class="lt" vector-effect="non-scaling-stroke" points="${pt([[x - w, y - h], [x, y - d - h], [x + w, y - h]])}"/></g>`; };
-  const order = P.slice().sort((a, b) => a.y - b.y || a.x - b.x);
-  const labels = P.map(p => `<span class="lb ${st(p.m)}" style="left:${f((p.x - x0) / W * 100)}%;top:${f((p.y - p.h - x0 * 0 - y0) / H * 100)}%">${mul(p.m) && !quiet ? `<b class="u">${mul(p.m)}</b> ` : ''}<span>${p.t}</span></span>`).join('');
-  return `<div class="tc-cv ${kind}" style="--mw:${Math.round(kind === 'blk3' ? W * 1.25 : W)}px"><svg viewBox="${f(x0)} ${f(y0)} ${f(W)} ${f(H)}" focusable="false">${order.map(tower).join('')}</svg>${labels}</div>`; }).join('');
 // the look-up box: Build's search (same names, Megas included), picks a Pokemon
 V2.tcHits = q => (V2.buildHits ? V2.buildHits(q) : '').replace(/data-bdpick=/g, 'data-tcpick=');
 document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-tcfind]'); if (!i) return; V2.tcFind = i.value; const h = document.querySelector('[data-tchits]'); if (h) h.innerHTML = V2.tcHits(i.value); });
