@@ -64,7 +64,7 @@ V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = m
   const tag = mine ? 'On your team' : k ? `#${k.rank} rated` : 'Looked up';
   const id = `<div class="lo-id"><div class="lo-card">${V2.kCard(p.n, {mine: tag})}</div><div class="lo-idt"><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
       ${T ? `<p class="gs-big"><b class="u">${RS(x.r.total)}</b><span><i class="u tier-tag" style="--tc:var(--tier-${T.k.toLowerCase()})">${T.k} tier</i><small class="st-pill">Rated ${RS(x.r.total)}${k ? `, #${k.rank} of ${k.of}` : ''}</small></span></p>` : ''}</div>
-      <div class="gs-facts">${V2.gsShare(N.u != null ? V2.raPct(N.u) : null, 'tournament')}<p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div><button type="button" class="k-link lo-pg" data-v2mon="${E(p.n)}">Pokémon Page&nbsp;›</button></div>`;
+      <div class="gs-facts">${V2.gsShare(N.u != null ? V2.raPct(N.u) : null, 'tournament')}<p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div></div>`;
   // the right of the panel: Item / Ability / Nature, the moves, your own set, the one pink move
   const stone = p.m && t && t.it && t.it.length ? t.it[0][0] : null, mAb = p.m && p.a && p.a[0];
   const nums = (t && t.na || []).length && (t.na || []).every(y => y[1] == null);
@@ -78,7 +78,7 @@ V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = m
   const tune = V2.stSpreads(p);
   const tm = (t && t.tm || []).slice(0, 6).filter(([n]) => byName.get(n));
   const mates = tm.length ? `<div class="us-mates lo-mates">${V2.kRoster(tm.map(([n, v]) => { const qq = byName.get(n); return V2.kCard(n, {size: 'small', fact: v != null ? `${Math.round(+v)}% of its teams` : '', attrs: {'data-v2setmon': n, 'aria-label': `${qq.d}${v != null ? `, on ${Math.round(+v)}% of its teams` : ''}: show its loadout`}}); }))}</div>` : '';
-  const plan = V2.kPlan(`<section class="k-step st-how"><span class="k-n" aria-hidden="true">1</span><div class="k-sec"><h2 class="k-h2 u">The loadout.</h2><span class="k-note">what strong players run on it</span></div>${hero}</section>`
+  const plan = V2.kPlan(`<section class="k-step st-how"><span class="k-n" aria-hidden="true">1</span><div class="k-sec"><h2 class="k-h2 u">The loadout.</h2><span class="k-note">what strong players run on it</span><button type="button" class="k-link lo-pg" data-v2mon="${E(p.n)}">Pokémon Page&nbsp;›</button></div>${hero}</section>`
     + (tune ? V2.kStep(2, 'The fine-tuning.', 'stat points, most used first', tune) : '')
     + (mates ? V2.kStep(tune ? 3 : 2, 'Usually alongside.', 'tap one for its loadout', mates) : '')
     + (S2.note ? `<p class="fine st-note">${S2.note}</p>` : ''));

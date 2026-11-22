@@ -3797,14 +3797,16 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .lo .k-plan>.k-step>.k-sec{margin:var(--s8) 0 var(--s4)}
 .lo .k-plan>.k-step:first-child>.k-sec{margin-top:var(--s8)}
 /* step 1: the night panel. Inside it the kit's chip, link and big-move shadow take the panel's own light words */
-.lo-hero{--k-chip:var(--wr-ink);--k-on-chip:var(--wr-on-plot);--k-go-shadow:var(--wr-ink2);display:grid;grid-template-columns:240px minmax(0,1fr);gap:var(--s6) var(--s10);margin:var(--s8) var(--s3) 0 0;padding:var(--s6) var(--s8);background:var(--btg-panel);color:var(--wr-ink);box-shadow:12px 12px 0 var(--k-nasty)}
+.lo-hero{--k-chip:var(--wr-ink);--k-on-chip:var(--wr-on-plot);--k-go-shadow:var(--wr-ink2);display:grid;align-items:start;grid-template-columns:240px minmax(0,1fr);gap:var(--s6) var(--s10);margin:var(--s8) var(--s3) 0 0;padding:var(--s6) var(--s8);background:var(--btg-panel);color:var(--wr-ink);box-shadow:12px 12px 0 var(--k-nasty)}
 .lo-id{display:grid;align-content:start;gap:var(--s2);min-width:0}
 .lo-card .k-plate{min-height:0;padding-top:88px}
 .lo-card .k-art{top:-40px;height:144px}
 .lo-idt{display:grid;gap:var(--s1) var(--s2);margin-top:var(--s2)}
 .lo .gs-big{align-items:flex-end;gap:var(--s3)}
 .lo .gs-big>b{font:900 var(--d-kscore)/.9 var(--u);font-style:italic;color:var(--wr-plot)}
-.lo .gs-big small{color:var(--wr-ink2)}
+.lo .gs-big{flex-wrap:wrap;row-gap:var(--s1)}.lo .gs-big>span{display:contents}
+.lo .gs-big i{margin-bottom:var(--s1);font-size:var(--t20)}
+.lo .gs-big small{flex:1 1 100%;color:var(--wr-ink2)} /* the rating line under the number and its tier, one line */
 .lo .gs-facts{gap:var(--s3);padding-top:var(--s2);border-top:1px solid var(--wr-rule)}
 /* three even facts as a flex row: the old spotlight's narrow-phone grid columns (sugs.css, a later layer: min-content columns) don't
    reach a flex row, so the facts keep the panel's full width */
@@ -3828,8 +3830,8 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .lo-none{margin:0;font:500 var(--t15)/1.5 var(--b);color:var(--wr-ink2)}
 .lo-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s8)}
 .lo-acts .k-go{margin:0}
-.lo-hero .k-link{color:var(--wr-plot)}
-.lo-pg{justify-self:start;padding:0;border:0;background:none;font-family:inherit;cursor:pointer}
+.lo .k-sec .lo-pg{margin-left:auto}
+.lo-pg{padding:0;border:0;background:none;font-family:inherit;cursor:pointer}
 /* step 2: the slanted plot bars */
 .lo-sp{display:grid;gap:var(--s2);max-width:880px}
 .lo-rows{display:grid;gap:var(--s1);margin:0;padding:0;list-style:none}
@@ -3845,7 +3847,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* tablets and small laptops: the panel's facts column narrows; the look-up takes its own row over the team */
 @media (max-width:1099.98px){.lo-hero{grid-template-columns:200px minmax(0,1fr);gap:var(--s6);padding:var(--s6)}.lo .gs-big>b{font-size:var(--t34)}}
 /* narrow tablets: the panel stacks; the card sits beside its tier and rating, the facts and the set run the full width under it */
-@media (max-width:959.98px){.lo-hero{grid-template-columns:minmax(0,1fr)}.lo-id{grid-template-columns:minmax(0,200px) minmax(0,1fr);align-items:end;column-gap:var(--s6)}.lo .gs-facts,.lo-pg{grid-column:1/-1}}
+@media (max-width:959.98px){.lo-hero{grid-template-columns:minmax(0,1fr)}.lo-id{grid-template-columns:minmax(0,200px) minmax(0,1fr);align-items:end;column-gap:var(--s6)}.lo .gs-facts{grid-column:1/-1}}
 @media (max-width:899.98px){.lo-pick{grid-template-columns:minmax(0,1fr)}.lo-pick>.st-find{max-width:480px}}
 /* phones */
 @media (max-width:699.98px){
