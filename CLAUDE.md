@@ -40,7 +40,7 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
-## HELPERS: TWO AT A TIME (Sim, Nov 22 ~1 AM: one extra helper allowed ONLY for the 3 Battle mock-ups; otherwise 2 max)
+## HELPERS: TWO AT A TIME (Sim, Nov 22, logged 12:57 AM: one extra helper allowed ONLY for the 3 Battle mock-ups; otherwise 2 max)
 ## (older heading kept:) HELPERS: TWO AT A TIME (Sim, Nov 21, just before 12:21 PM, LATEST: '2 helpers is a great idea. do it!' for the reskin; overrides the ONE-at-a-time rule below)
 At most TWO helpers/subagents at once, each in its own copy, on approved reskin work. Going above 2: ask Sim first. work-check.sh / stop-check.sh need 2.
 NO design authority (Sim cancelled it, Nov 21, by 12:27 PM): every visual decision needs Sim's yes with pictures. Executive (non-visual) authority until 9:00 AM Sun Nov 22.
