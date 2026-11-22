@@ -2011,3 +2011,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:57 AM: Sim: the mock-up helper does ONE mock-up at a time. It was already briefed to go page by page and report after each; told it again: finish one page, report, then the next; never two pages or two browser jobs at once.
 - 11:59 AM: Ability sheet (ID card) built; opens from the blue Ability word on the Pokémon sheet and page, war room, Team Sheet; 0 page errors; phone 1,479px (1.75 screens; approved 1.6). Pictures + questions to Sim.
 - 12:00 PM: 12 PM: the 2-until-noon allowance ended. Running: hE (Events build, the 1 helper) + hM (mock-ups only, Sim's 11:48 AM extra slot) = 2, allowed. work-check stays at 2 while hM runs; back to 1 when the mock-ups are done. No new helper.
+- 12:00 PM: Sim: 'recommendd is good for both' (Ability sheet): Intimidate's On the field lines checked; Ability names stay blue words. Ability sheet approved -> Item sheet (step 4) next.
