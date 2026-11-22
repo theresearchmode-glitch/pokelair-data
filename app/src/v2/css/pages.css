@@ -2451,56 +2451,148 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .cxf-score{min-width:0}.cxf-score small{display:block}@media (max-width:379.98px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:88px}}
 @media (max-width:379.98px){.cxf-half,.cxf-half.a,.cxf-half.b{padding-left:var(--s4);padding-right:var(--s4)}.cxf-half{column-gap:var(--s2)}}
 
-/* ---------- Test Run: "Three Piles" (Sim's pick, Nov 14): pink = they're better prepared (them), grey = about even, blue = you're better prepared ---------- */
-.tp{--pk:var(--pick);--pk-d:color-mix(in srgb,var(--pick) 62%,var(--tier-shade));--gy:var(--ink-3);--gy-d:color-mix(in srgb,var(--ink-3) 62%,var(--tier-shade));--bl:var(--plot);--bl-d:color-mix(in srgb,var(--plot) 62%,var(--tier-shade))}
-.tp-table{margin-top:var(--s6);padding:var(--s6) var(--s6) var(--s8);background-color:var(--table);background-image:linear-gradient(var(--table-line) 1px,transparent 1px),linear-gradient(90deg,var(--table-line) 1px,transparent 1px);background-size:24px 24px;clip-path:polygon(0 0,100% 0,100% calc(100% - 24px),calc(100% - 24px) 100%,0 100%)}
-.tp-th{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s4)}.tp-th h2{margin:0;font-size:var(--t28)}.tp-th p{margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
-.tp-piles{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,1fr);gap:var(--s6);align-items:start;margin-top:var(--s5)}
-.tp-pile{display:grid;align-content:start;gap:var(--s3);min-width:0}
-.tp-ph{display:flex;align-items:center;gap:var(--s3);padding-bottom:var(--s2);border-bottom:3px solid var(--c)}.tp-pile.p{--c:var(--pk);--cd:var(--pk-d)}.tp-pile.c{--c:var(--gy);--cd:var(--gy-d)}.tp-pile.g{--c:var(--bl);--cd:var(--bl-d)}
-.tp-n{font:900 var(--d64)/.9 var(--u);font-style:italic;color:transparent;-webkit-text-stroke:2px var(--c)}
-.tp-name{margin:0;padding:2px var(--s3);background:var(--cd);color:var(--tier-lit);font:900 var(--t17)/1.3 var(--u);font-style:italic;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
-.tp-word{margin:var(--s1) 0 0;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
-.tp-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s3)}.tp-pile.c .tp-cards{grid-template-columns:repeat(2,minmax(0,1fr))}
-.tp-card{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:var(--s2);min-width:0;padding:var(--s3) var(--s3) var(--s3) var(--s2);background:var(--surface);border:0;border-left:6px solid var(--c);color:inherit;font:inherit;text-align:left;cursor:pointer;
-  box-shadow:4px 4px 0 color-mix(in srgb,var(--c) 30%,transparent);rotate:-1deg;transition:translate .15s}
-.tp-cards>.tp-card:nth-child(even){rotate:1deg}
-.tp-card:hover,.tp-card:focus-visible{translate:0 calc(var(--s1)*-1)}.tp-card:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
-.tp-card.on{outline:3px solid var(--c);outline-offset:0}
-.tp-card.first{box-shadow:0 0 0 3px var(--plate),4px 4px 0 color-mix(in srgb,var(--c) 30%,transparent)}
-.tp-start{position:absolute;top:calc(var(--s3)*-1);right:var(--s3);z-index:1;padding:0 var(--s2);background:var(--plate);color:var(--on-plate);font:900 var(--t13)/1.5 var(--u);font-style:italic;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
-.tp-lead{margin:calc(var(--s3)*-1) 0 calc(var(--s3)*-1) calc(var(--s3)*-1)}.tp-lead .np-mon,.tp-lead .np-mon .st{--iw:80px}
-.tp-ct{display:grid;gap:2px;min-width:0}.tp-ct b{font:900 var(--t20)/1.15 var(--u);font-style:italic}.tp-ct small{font:500 var(--t13)/1.35 var(--b);color:var(--ink-2)}
-.tp-five{display:flex;gap:2px;margin-top:var(--s1)}.tp-five .np-mon,.tp-five .np-mon .st{--iw:28px}
-.tp-pile.c .tp-cards>.tp-card:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - var(--s3)/2)}
-/* the open card */
-.tp-open{position:relative;display:grid;gap:var(--s3);padding:var(--s6) var(--s5) var(--s5);background:var(--surface);border:3px solid var(--c);margin-top:var(--s3)}
-.tp-open .tp-start{top:calc(var(--s3)*-1);left:var(--s3);right:auto}
-.tp-from{display:none;margin:0;font:600 var(--t13)/1.5 var(--b);color:var(--ink-2)}.tp-open.p .tp-from b{color:var(--pick-text)}.tp-open.g .tp-from b{color:var(--plot-text)}.tp-open.c .tp-from b{color:var(--ink)}@media (min-width:1100px){.tp-from{display:block}} /* Sim Q1 B (Nov 16): on wide screens the open card sits in the third column, so it names the pile it came from */
-.tp-open h3{margin:0;font:900 var(--t26)/1.1 var(--u);font-style:italic}.tp-evf{margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
-.tp-six{display:flex;flex-wrap:wrap;gap:var(--s1)}.tp-six .m{position:relative}.tp-six .np-mon,.tp-six .np-mon .st{--iw:48px}
-.tp-six .bang{position:absolute;right:0;top:0;display:grid;place-items:center;width:18px;height:18px;background:var(--bad);color:var(--on-mark);font:900 var(--t13)/1 var(--u);border-radius:50%}
-.tp-v{margin:var(--s1) 0 0;font:900 var(--t26)/1.1 var(--u);font-style:italic;color:var(--c)}.tp-open.p .tp-v{color:var(--pick-text)}.tp-open.g .tp-v{color:var(--plot-text)}.tp-open.c .tp-v{color:var(--ink-2)}
-.tp-say{margin:0;font:500 var(--t15)/1.5 var(--b)}
-.tp-bh{margin:var(--s2) 0 0;font:900 var(--t17)/1.2 var(--u);font-style:italic;color:var(--plot-text)}
-.tp-four{display:flex;align-items:flex-end;gap:var(--s1)}.tp-four .np-mon,.tp-four .np-mon .st{--iw:56px}.tp-four .big .np-mon,.tp-four .big .np-mon .st{--iw:80px}
-.tp-open .tr-btns{display:flex;flex-wrap:wrap;gap:var(--s3)}.tp-open .tr-prep>summary{list-style:none;cursor:pointer;font:600 var(--t15)/1.5 var(--b);color:var(--plot-text);min-height:var(--tap);display:flex;align-items:center}.tp-open .tr-prep>summary::-webkit-details-marker{display:none}
-.tp-pile.p{--c:var(--pk)}.tp-open.p{--c:var(--pk)}.tp-open.c{--c:var(--gy)}.tp-open.g{--c:var(--bl)}
-.tp-none{margin:0}
-@media (hover:hover) and (pointer:fine){.tp .np-mon img,:root[data-theme="night"] .tp .np-mon img{filter:none}}
-@media (prefers-reduced-motion:reduce){.tp-card{transition:none}.tp-card:hover{translate:none}}
-@media (max-width:1099.98px){.tp-piles{grid-template-columns:minmax(0,1fr)}.tp-cards,.tp-pile.c .tp-cards{grid-template-columns:repeat(2,minmax(0,1fr))}.tp-open{grid-column:1/-1}
-  .tp-cards>.tp-card:last-child:nth-child(odd){grid-column:1/-1;justify-self:center;width:calc(50% - var(--s3)/2)}}
-@media (max-width:699.98px){.tp-table{padding:var(--s4) var(--s3) var(--s6)}.tp-cards,.tp-pile.c .tp-cards{grid-template-columns:minmax(0,1fr)}.tp-card,.tp-cards>.tp-card:nth-child(even){rotate:none}
-  .tp-cards>.tp-card:last-child:nth-child(odd),.tp-pile.c .tp-cards>.tp-card:last-child:nth-child(odd){grid-column:auto;width:auto;justify-self:stretch}.tp-n{font-size:var(--t34)}.tp-open h3{font-size:var(--t20)}}
-.tp-pile{grid-template-columns:minmax(0,1fr)}.tp-open{min-width:0}.tp-open .tr-btns>*{max-width:100%;white-space:normal;text-align:center}
-@media (min-width:1100px) and (max-width:1279.98px){.tp-ct b{font-size:var(--t17)}.tp-lead .np-mon,.tp-lead .np-mon .st{--iw:64px}}
-.tp-open{grid-template-columns:minmax(0,1fr)}
-.tp-name{white-space:nowrap}@media (max-width:699.98px){.tp-name{white-space:normal}} /* phones: the pile name wraps as it did before Nov 16 (one line cut "The Good Matchups" at 320-340) */.tp-ph{min-height:72px}.tp-ph>div{min-width:0}
-@media (min-width:1100px) and (max-width:1599.98px){.tp-ph{gap:var(--s2)}.tp-pile.g .tp-name,.tp-pile.p .tp-name{font-size:var(--t15)}.tp-pile.g .tp-n,.tp-pile.p .tp-n{font-size:var(--t34)}}
-.tp-open{margin-top:var(--s6);clip-path:polygon(0 -24px,100% -24px,100% 0,calc(100% - 16px) 100%,0 100%)}.tp-open .tp-start{top:calc(var(--s3)*-1.5)}
-.tp-four{flex-wrap:wrap}@media (min-width:1100px) and (max-width:1439.98px){.tp-four{display:grid;grid-template-columns:repeat(2,max-content);align-items:end;gap:var(--s1) var(--s2)}} /* front pair over back pair, no lone sprite (Sim, Nov 16) */.tp-four .big .np-mon,.tp-four .big .np-mon .st{--iw:64px}.tp-four .np-mon,.tp-four .np-mon .st{--iw:48px}
-@media (min-width:1100px) and (max-width:1279.98px){.tp-pile.g .tp-name,.tp-pile.p .tp-name{font-size:var(--t13)}}
+/* ---------- Test Run on the kit (reskin proposal, Nov 22): THE DRY RUN ----------
+   The piles of Nov 14 (pink = they're better prepared, grey = about even, blue = you're better prepared) on the shared kit. The one idea:
+   every top team is its six Pokémon, each standing on YOUR answer to it: the slanted blocks of Compare's tug of war (3 Beats it,
+   2 Handles it, 1 Shaky, empty with a pink "!" No answer), the level word written wherever there is room (the open team) and in the key. */
+.dr{--y:var(--k-plot);--yt:var(--k-plot-text);--t:var(--k-nasty);--tt:var(--k-nasty-text);gap:0;color:var(--k-ink)}
+.dr .k-lead{margin-top:16px}
+.dr .tr-how{max-width:640px;margin-top:8px}
+.dr .tr-how summary{flex-wrap:nowrap;gap:2px 12px}.dr .tr-how summary>small{min-width:0}.dr .tr-how summary>span{font-size:var(--t15);font-weight:700;color:var(--k-plot-text)}
+.dr .tr-how summary small{font-size:var(--t13);color:var(--k-ink2)}
+.dr .tr-how>p{margin:4px 0 8px;font-size:var(--t15);line-height:1.5;color:var(--k-ink2)}
+.dr .k-plan{padding-bottom:40px}
+.dr .tr-foot{margin:0 0 0 72px}
+/* the blocks: one side's answer to one Pokémon */
+.dr-bk{display:flex;justify-content:center;gap:4px}
+.dr-bk i{display:block;width:14px;height:8px;box-shadow:inset 0 0 0 2px var(--k-rule);transform:skewX(-14deg)}
+.dr-m{--c:var(--y)}.dr-m.t{--c:var(--t)}
+.dr-bk[data-l="1"] i:first-child{background:color-mix(in srgb,var(--c) 40%,var(--k-card));box-shadow:none}
+.dr-bk[data-l="2"] i:nth-child(-n+2),.dr-bk[data-l="3"] i{background:var(--c);box-shadow:none}
+.dr-m.l0 .dr-bk i{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--k-nasty) 55%,transparent)}
+.dr .bang{position:absolute;top:-4px;right:-4px;display:grid;place-items:center;width:20px;height:20px;background:var(--k-go);color:var(--k-on-go);font-size:var(--t15);line-height:1;transform:skewX(-8deg)}
+.dr-m{position:relative;display:grid;justify-items:center;align-content:start;gap:4px;min-width:0}
+.dr-a{position:relative;display:block;width:100%;max-width:56px;aspect-ratio:1}
+.dr-a img{display:block;width:100%;height:100%;object-fit:contain;filter:drop-shadow(0 4px 3px var(--k-art-shadow))}
+.dr-m.l0 .dr-a img{filter:none}
+.dr-w{font-size:var(--t13);font-weight:700;line-height:1.2;text-align:center;color:var(--k-ink2)}
+.dr-m.l0 .dr-w{color:var(--tt)}.dr-m.y.l2 .dr-w,.dr-m.y.l3 .dr-w{color:var(--yt)}.dr-m.t.l2 .dr-w,.dr-m.t.l3 .dr-w{color:var(--tt)}
+/* the key, once, at the top of the piles */
+.dr-key{--c:var(--y);display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;margin:0 0 24px;font-size:var(--t13);font-weight:600;line-height:1.4;color:var(--k-ink2)}
+.dr-key>span{position:relative;display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--k-ink)}
+.dr-key .bang{position:static}
+.dr-key>.dr-kc{display:none}.dr-key>.dr-kc b{font-size:var(--t15)}.dr-kc .y{color:var(--yt)}.dr-kc .t{color:var(--tt)}
+.dr-kc>span{display:inline-flex;align-items:baseline;gap:6px}
+@media (max-width:1439.98px){.dr-key>.dr-kc{display:inline-flex;gap:16px}}
+/* step 1: the usual suspects (kit roster cards; the art bursts out of the top) */
+.dr-sus .k-roster{padding-top:48px}
+.dr-sus .k-sc{margin-bottom:4px}
+.dr-also{margin:24px 0 0;font-size:var(--t13);font-weight:600;line-height:1.5;color:var(--k-ink2)}
+.dr-none{margin:0;font-size:var(--t17);line-height:1.5}
+/* step 2: the piles, and the open team beside them on wide screens */
+.dr-board{display:grid;grid-template-columns:minmax(0,1fr);gap:40px;align-items:start}
+.dr-board.two{grid-template-columns:minmax(0,1fr) minmax(0,440px)}
+.dr-side{position:sticky;top:96px;min-width:0}
+.dr .tp-piles{display:grid;grid-template-columns:minmax(0,1fr);gap:40px;margin:0}
+.dr .tp-pile{--c:var(--k-neutral);--ct:var(--k-ink);display:grid;gap:0;min-width:0}
+.dr .tp-pile.p,.dr-open.p{--c:var(--k-nasty);--ct:var(--k-nasty-text)}.dr .tp-pile.g,.dr-open.g{--c:var(--k-plot);--ct:var(--k-plot-text)}.dr-open.c{--c:var(--k-neutral);--ct:var(--k-ink)}
+.dr .tp-ph{display:flex;align-items:center;gap:12px;min-height:0;padding:0 0 8px;border-bottom:3px solid var(--c)}
+.dr .tp-n{font-size:var(--d-ksec);line-height:1;color:var(--ct);-webkit-text-stroke:0}
+.dr .tp-name{margin:0;padding:0;background:none;color:var(--k-ink);font-size:var(--t20);line-height:1.2;clip-path:none;white-space:normal}
+.dr .tp-word{margin:2px 0 0;font-size:var(--t13);font-weight:600;line-height:1.3;color:var(--k-ink2)}
+.dr .tp-cards{display:grid;grid-template-columns:minmax(0,1fr);gap:0;container-type:inline-size}
+.dr .tp-pile.c .tp-cards{grid-template-columns:minmax(0,1fr)}
+/* a team's row: who and where, their six on your answers, the two counts */
+.dr-row{position:relative;display:grid;grid-template-columns:minmax(140px,200px) minmax(0,1fr) auto;align-items:center;gap:8px 20px;width:100%;min-width:0;margin:0;padding:16px 12px 12px 16px;border:0;border-bottom:1px solid var(--k-rule);border-radius:0;background:none;color:var(--k-ink);font:inherit;text-align:left;cursor:pointer;rotate:none;box-shadow:none;outline:0}
+.dr-row::before{content:"";position:absolute;left:0;top:12px;bottom:12px;width:4px;background:var(--c);transform:skewX(-8deg)}
+.dr-row:hover{background:color-mix(in srgb,var(--c) 6%,transparent);translate:none}
+.dr-row.on{background:color-mix(in srgb,var(--c) 12%,transparent);outline:0}
+.dr-row:focus-visible{outline:3px solid var(--k-plot);outline-offset:-3px}
+.dr .tp-card.first{box-shadow:none}
+.dr-id{display:grid;gap:2px;min-width:0}
+.dr-id b{font-size:var(--t20);line-height:1.15}
+.dr-id small{font-size:var(--t13);font-weight:500;line-height:1.35;color:var(--k-ink2)}
+.dr .tp-start{position:static;justify-self:start;margin:0 0 4px;padding:0 8px;background:var(--k-chip);color:var(--k-on-chip);font-size:var(--t15);line-height:1.5;clip-path:none;transform:skewX(-8deg)}
+.dr-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;min-width:0}
+.dr-sc{display:grid;gap:4px;min-width:96px}
+.dr-sc>span{display:flex;align-items:baseline;gap:6px;white-space:nowrap}
+.dr-sc b{font-size:var(--t24);line-height:1}.dr-sc b small{font-size:var(--t15)}
+.dr-sc .y b{color:var(--yt)}.dr-sc .t b{color:var(--tt)}
+.dr-sc>span>small{font-size:var(--t13);font-weight:600;line-height:1.2;color:var(--k-ink2)}
+@container (max-width:599.98px){
+  /* a narrow column (phones, and beside the open team at 1100-1439): who, where and the counts on the left, the six on the right */
+  .dr-row{grid-template-columns:minmax(0,160px) minmax(0,1fr);grid-template-rows:auto auto;gap:4px 12px}
+  .dr-id{grid-column:1;grid-row:1}
+  .dr-sc{grid-column:1;grid-row:2;display:flex;gap:12px;min-width:0}
+  .dr-sc>span{flex-direction:row;align-items:baseline;gap:4px}
+  .dr-sc>span>small{display:none}
+  .dr-sc b{font-size:var(--t17)}.dr-sc b small{font-size:var(--t15)}
+  .dr-six{grid-column:2;grid-row:1/3;gap:4px}
+  .dr-id b{font-size:var(--t17)}
+}
+@container (max-width:339.98px){.dr .tp-cards .dr-six{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 8px}.dr .tp-cards .dr-six .dr-a{max-width:40px}} /* 320-370: three and three, so the pictures stay readable */
+/* the open team: both ways, the four to bring, the one pink move, the prep */
+.dr-open{position:relative;isolation:isolate;display:grid;gap:16px;margin:16px 0 24px;padding:32px 24px 24px;border:0;background:none;clip-path:none}
+.dr-open::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(var(--c) 0 8px,color-mix(in srgb,var(--c) 7%,var(--k-card)) 8px);clip-path:polygon(0 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%)}
+.dr-side .dr-open{margin:0}
+.dr-open>.tp-start{position:absolute;top:-12px;left:16px;margin:0}
+.dr-oh{display:grid;gap:4px}
+.dr-open .tp-from{display:block;margin:0;font-size:var(--t13);font-weight:600;color:var(--k-ink2)}.dr-open .tp-from b{color:var(--ct)}
+.dr-open h3{margin:0;font-size:var(--t26);line-height:1.1}
+.dr-open .tp-evf{margin:0;font-size:var(--t13);line-height:1.5;color:var(--k-ink2)}
+.dr-open .tp-v{margin:8px 0 0;font-size:var(--t15)}
+.dr-lane{display:grid;gap:12px;padding-top:12px;border-top:1px solid var(--k-rule)}
+.dr-lh{display:flex;align-items:baseline;gap:12px;margin:0}
+.dr-lh b{font-size:var(--t34);line-height:1;white-space:nowrap}.dr-lh b small{font-size:var(--t15)}
+.dr-lane.y .dr-lh b{color:var(--yt)}.dr-lane.t .dr-lh b{color:var(--tt)}
+.dr-lh span{font-size:var(--t15);font-weight:700;line-height:1.3}
+.dr .tr-six.dr-big,.dr-big{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:12px 4px}
+.dr .tr-six .m{padding:0;background:none;clip-path:none}
+.dr-big .dr-a{max-width:64px}
+.dr-open .tp-say{margin:0;font-size:var(--t15);line-height:1.5}
+.dr-open .tp-bh{margin:8px 0 0;font-size:var(--t17);line-height:1.2;color:var(--k-ink)}
+.dr-open .tp-four{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;align-items:end}
+.dr-open .tp-four>span{display:grid;justify-items:center;gap:2px;min-width:0;text-align:center}
+.dr-open .tp-four .dr-a{max-width:64px}.dr-open .tp-four .big .dr-a{max-width:88px}
+.dr-open .tp-four b{font-size:var(--t13);font-weight:700;line-height:1.25}
+.dr-open .tp-four small{font-size:var(--t13);font-weight:600;line-height:1.2;color:var(--k-ink2)}.dr-open .tp-four .big small{color:var(--k-plot-text)}
+.dr-open .tr-plan{margin:0;font-size:var(--t15);line-height:1.5}.dr-open .tr-plan .w{color:var(--k-nasty-text)}
+.dr-open .tr-btns{display:flex;flex-wrap:wrap;align-items:center;gap:8px 28px}
+.dr-open .k-go{max-width:100%;margin:8px 0 8px}
+.dr-side .k-go{font-size:var(--t26)}
+.dr-copy{margin:0;padding:0;border:0;background:none;font-family:var(--b);cursor:pointer}
+.dr-open .tr-prep summary{font-size:var(--t15);font-weight:700;color:var(--k-plot-text)}
+.dr .tr-foot{display:flex;align-items:center;gap:8px}
+@media (min-width:1100px) and (max-width:1439.98px){.dr-board.two{grid-template-columns:minmax(0,1fr) minmax(0,380px)}}
+@media (max-width:699.98px){
+  .dr .tr-foot{margin-left:0}
+  .dr-sus .k-roster{gap:56px 8px}
+  .dr-open{padding:28px 12px 20px}
+  .dr-big{gap:12px 2px}
+  .dr-open .tr-btns{flex-direction:column;align-items:stretch}.dr-open .k-go{text-align:center}
+  .dr-row{padding-left:12px}
+  /* phones: one dense line a team (HYBRID: lists over 6 become rows with small pictures): who, where and the counts on the left, the six on the right */
+  .dr .tp-cards .dr-row{grid-template-columns:minmax(0,112px) minmax(0,1fr);grid-template-rows:auto auto;align-items:center;gap:4px 8px;padding:12px 0 12px 12px}
+  .dr .tp-cards .dr-id{grid-column:1;grid-row:1}
+  .dr .tp-cards .dr-sc{grid-column:1;grid-row:2;display:flex;gap:12px;min-width:0}
+  .dr .tp-cards .dr-sc>span{flex-direction:row;align-items:baseline;gap:4px}
+  .dr .tp-cards .dr-sc>span>small{display:none}
+  .dr .tp-cards .dr-sc b{font-size:var(--t17)}.dr .tp-cards .dr-sc b small{font-size:var(--t15)}
+  .dr .tp-cards .dr-six{grid-column:2;grid-row:1/3;gap:2px}
+  .dr .tp-cards .dr-id b{font-size:var(--t17)}
+  .dr .tp-cards .dr-bk{gap:2px}.dr .tp-cards .dr-bk i{width:8px;height:6px}
+  .dr .tp-cards .dr-row .bang{top:-6px;right:-6px}
+  .dr-key{gap:4px 16px;margin-bottom:16px}
+  .dr .tr-how summary>small{display:none}
+  .dr .k-sec{margin-top:40px}
+  .dr .tp-cards .dr-pl{display:none}
+  .dr .tp-ph{flex-wrap:wrap}
+  .dr-key .dr-kl{display:none}
+  .dr .k-plan{padding-bottom:24px}
+  .dr .tp-cards .tp-start{position:absolute;top:-12px;left:12px;margin:0}
+  .dr-sus .k-roster{padding-top:40px}.dr-also{margin-top:12px}
+}
+@media (prefers-reduced-motion:reduce){.dr-row{transition:none}}
 /* audit fix (Nov 14): 1100-1279 the name no longer runs under the score, and Spec gets the full width (it was cut off) */
 @media (min-width:1100px) and (max-width:1279.98px){.bp-top{grid-template-columns:minmax(0,1fr)}.bp-tb{grid-template-columns:minmax(0,1fr)}.bp-right{border-left:0;border-top:1px solid var(--rule)}}
 @media (max-width:1279.98px){.bp .bp-left{grid-template-columns:minmax(0,1fr)}.bp .bp-left>*{grid-column:1/-1;min-width:0}.bp .bp-spec .np-slide{width:100%;min-width:0}}
