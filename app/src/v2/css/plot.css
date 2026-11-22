@@ -116,6 +116,8 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
 .bd-ans.bp .pl-meta2 .bd-brk{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.bd-ans.bp .pl-meta2 .np-link{font-size:var(--t15);color:var(--plot-text)}
 @media (max-width:699.98px){.bd-ans .pl-seal b{font-size:var(--t34)}.bd-ans.bp .pl-meta2 .bd-brk{display:none}}
 .bd-ans .pl-seal{padding:var(--s3) var(--s2)}
+.bd-ans .pl-seal{height:156px} /* every band the same size, with room for a two-line word ("Tournament ready"); Sim's stamp bug + v2-q83 */
+@media (max-width:699.98px){.bd-ans .pl-seal{height:116px}}
 /* contrast (Nov 20, found by v2-q83's new seal check): white on the logo red #E8364F is about 4:1, under 4.5:1 for small words; the seal,
    the "N to catch" tag and the small HATCH ANOTHER use the deeper seal colour (--plot-seal), the big HATCH IT keeps the logo colour */
 .pl-seal,.bd-ans .pl-seal{background:var(--plot-seal);box-shadow:inset 0 0 0 5px var(--plot-seal),inset 0 0 0 7px var(--on-plot-seal)}

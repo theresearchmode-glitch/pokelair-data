@@ -15,7 +15,8 @@ for (const [route, read] of [
     return {sc: (t.match(/(\d{1,3}) (?:Top tier|Tournament ready|Solid|Needs work|Missing a basic)/) || [])[1], load: !!m.querySelector('.np-loading')}; }],
   ['meta', () => { const m = document.querySelector('#main'); if (!m) return null; const t = m.innerText.replace(/\s+/g, ' ');
     /* Q60 (Nov 20): on phones the S tier's count sits on its band as "See All 11 ›" (no "11 Pokémon" line) */
-    return {s: (t.match(/S tier[^0-9]{0,40}(\d+) Pokémon/) || t.match(/90\+ (\d+) Pokémon/) || t.match(/90\+[^0-9]{0,60}See All (\d+)/) || [])[1], load: !!m.querySelector('.np-loading')}; }]]) {
+    /* Ratings round 2 (Sim, Nov 22): the S tier is the stairs; their heading reads "S tier, 90+ · <words> · 11 Pokémon" */
+    return {s: (t.match(/S tier, 90\+ · [^·]{0,40} · (\d+) Pokémon/) || t.match(/S tier[^0-9]{0,40}(\d+) Pokémon/) || t.match(/90\+ (\d+) Pokémon/) || t.match(/90\+[^0-9]{0,60}See All (\d+)/) || [])[1], load: !!m.querySelector('.np-loading')}; }]]) {
   const p = await b.newPage({viewport: {width: 390, height: 844}});
   await p.addInitScript(d => { let w; Object.defineProperty(window, '__NP_CLAUDE', {configurable: true, get: () => w, set: v => {
     w = v && v.use ? {use: async n => { const r = await v.use(n); if (n !== 'db' || !r) return r;
