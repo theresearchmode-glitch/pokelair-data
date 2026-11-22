@@ -13,4 +13,4 @@ swipe/close back), not a page. Research only, nothing built. Their findings (loo
   LEARN needs the Dec 2 patch moves (by hand or a generator from Showdown data/mods/champions, MIT, credit Guangcong Luo and contributors).
 - Suggested sheet: header facts; one plain sentence; doubles lines; usage + top users; who learns it (legal now); links to sets and calc;
   a "changed Dec 2" note. Ability interactions to check against Champions rules first.
-Note for this chat: don't build any of it until Sim brings the final mock-ups. Keep V2.kMove's signature stable so the hook stays easy.
+Note for this chat (Sim, Nov 22): the WHOLE section is designed and set up by another chat. This chat does not build or touch it; it keeps V2.kMove stable so their work merges cleanly.
