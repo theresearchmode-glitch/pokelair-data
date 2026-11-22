@@ -141,7 +141,9 @@ export default (ui, pg) => {
     looksDark: () => ev(() => { const c = getComputedStyle(document.body).backgroundColor.match(/[\d.]+/g).map(Number); return (0.2126 * c[0] + 0.7152 * c[1] + 0.0722 * c[2]) / 255 < 0.4; }),
     tapWinner: async () => { await ev(() => { const b = [...document.querySelectorAll('#main .wk-win [data-evgo]')].find(__dvis); if (!b) throw new Error('no winner row'); b.click(); }); await wait(900); },
     /** New Tech's kind markers: the word as written (CSS shows it in capitals) and whether an icon is drawn beside it */
-    kindMarkers: () => ev(() => [...document.querySelectorAll('#main .wk-kind')].filter(__dvis).map(k => ({word: k.textContent.trim(), icon: !!k.querySelector('svg')}))),
+    kindMarkers: () => ev(() => [...[...document.querySelectorAll('#main .wk-kind')].filter(__dvis).map(k => ({word: k.textContent.trim(), icon: !!k.querySelector('svg')})),
+      /* Nov 22 (This Week on the kit, Sim approved A): a move is the kit's move ticket; its marker is the ticket itself, with the type's symbol and word */
+      ...[...document.querySelectorAll('#main .wk-tech .k-move')].filter(__dvis).map(k => ({word: 'Move', icon: !!k.querySelector('.k-mt svg') && !!k.querySelector('.k-mt span').textContent.trim()}))]),
     // ---------------- Track Record (Nov 15, The Receipt: src/v2/pages/track.js) ----------------
     hasChart: () => ev(() => [...document.querySelectorAll('#main svg')].filter(__dvis).some(s => s.querySelectorAll('path,polyline,line').length > 4)),
     /** number of rows inside a fold */

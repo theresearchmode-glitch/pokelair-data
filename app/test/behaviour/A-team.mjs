@@ -66,14 +66,14 @@ t('HOME-04', 'Data line names the month, the source and "Data as of <date>"', as
 t('HOME-05', 'This week in the ratings: chips with arrow + number open the matching info sheet', async () => {
   const r = await homePage(); if (!NEW) has(await r.ui.text(), /This [Ww]eek in the [Rr]atings/); /* new site (Sim Q4b B, Nov 18): "Ratings on the Move" on This Week, checked below through ratingMoves */
   // new build (decisions.md Nov 12, Sim "add a few more"): up to 7 rows on desktop, each "<name> ▲ up N points" (shown scale)
-  const chips = await r.ui.ratingMoves(); if (NEW) has(await r.ui.text(), 'Ratings on the Move', 'This Week'); ok(chips.length >= 1 && chips.length <= (NEW ? 12 : 6), `${chips.length} rating-move chips`); /* new: every mover, up to 12 (V2.homeWeek(12)) */
-  for (const c of chips) ok((NEW ? /[▲▼] \d+ (up|down) Rating \d+$/ : /[▲▼] \d+$/).test(c.text), `chip "${c.text}" has no arrow and number`);
+  const chips = await r.ui.ratingMoves(); if (NEW) has(await r.ui.text(), 'Our ratings moved too.', 'This Week'); /* Nov 22: This Week on the kit (Sim approved A): the strip's kit heading */ ok(chips.length >= 1 && chips.length <= (NEW ? 12 : 6), `${chips.length} rating-move chips`); /* new: every mover, up to 12 (V2.homeWeek(12)) */
+  for (const c of chips) ok((NEW ? /Rating \d+ [▲▼]\d+$/ /* Nov 22 kit: name, 'Rating N', then the move; up/down is in the spoken label */ : /[▲▼] \d+$/).test(c.text), `chip "${c.text}" has no arrow and number`);
   const c = chips[0], rating = +(c.label.match(/rating (\d+)/) || [])[1]; ok(rating, 'chip label names no rating: ' + c.label);
-  await r.ui.tapPokemon(c.text.replace(/ [▲▼].*/, '')); const s = await r.ui.infoSheet(); ok(s && s.includes(c.text.replace(/ [▲▼].*/, '')), 'chip did not open its info sheet');
+  await r.ui.tapPokemon(c.text.replace(/ (Rating \d+ )?[▲▼].*/, '') /* Nov 22 kit: 'Name Rating N ▲N' */); const s = await r.ui.infoSheet(); ok(s && s.includes(c.text.replace(/ (Rating \d+ )?[▲▼].*/, '') /* Nov 22 kit: 'Name Rating N ▲N' */), 'chip did not open its info sheet');
   await r.close(); });
 t('HOME-05b', 'This week chip\'s rating matches the info sheet it opens', async () => {
   const r = await homePage(); const c = (await r.ui.ratingMoves())[0], rating = +(c.label.match(/rating (\d+)/) || [])[1];
-  await r.ui.tapPokemon(c.text.replace(/ [▲▼].*/, '')); const s = await r.ui.infoSheet() || '';
+  await r.ui.tapPokemon(c.text.replace(/ (Rating \d+ )?[▲▼].*/, '') /* Nov 22 kit: 'Name Rating N ▲N' */); const s = await r.ui.infoSheet() || '';
   const pr = +((s.match(/\b(\d+) [SABCDF] tier(?: Rating)?\b/) || [])[1]); /* Nov 15: the Pokémon page's rating; Nov 21 reskin: '93 S tier' on the card, no 'Rating' word */
   ok(NEW ? pr === rating : s.startsWith('✕ ' + rating + ' ') || new RegExp('^\\D*' + rating + ' ').test(s), `chip says rating ${rating}, ${NEW ? 'the page says ' + pr : 'info sheet hero says ' + s.slice(0, 12)}`); await r.close(); },
   {known: NEW ? '' : 'chip label "Whimsicott, rating 78" but its info sheet shows 88 (This week reads the weekly track data, the sheet the live rating)'});

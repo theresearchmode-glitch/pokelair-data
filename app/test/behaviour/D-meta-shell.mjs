@@ -184,7 +184,7 @@ t('THEME-02', 'Menu Auto / Light / Dark: Auto follows the device, Light and Dark
   await d.deviceDark(true); expect(await d.looksDark(), 'Auto did not follow the device to dark'); await d.deviceDark(false); expect(!(await d.looksDark()), 'Auto did not follow the device back to light'); }), NEW ? {skip: 'old-site design; the new site\'s approved version is THEME-02v (Sim, Nov 16, batch 17)'} : {});
 
 t('THEME-03', 'Share image has its own Light/Dark choice (see WEEK-02)', run({team: TEAM, mode: 'dark'}, async ({ui, d}) => {
-  await ui.go('This Week'); await ui.tap(NEW ? 'Share as Image' : 'Share this week'); expect(await d.shareCard(), 'no share image');
+  await ui.go('This Week'); await ui.tap('Share this week') /* This Week on the kit (Nov 22, Sim approved A 12:06 PM): the pink SHARE THIS WEEK. (tap matches any case) */; expect(await d.shareCard(), 'no share image');
   await d.tapInDialog(/^Light$/); await ui.pg.waitForTimeout(700); const light = await d.shareImageBrightness();
   await d.tapInDialog(/^Dark$/); await ui.pg.waitForTimeout(700); const dark = await d.shareImageBrightness();
   expect(light > dark + 0.15, `image brightness light ${light} vs dark ${dark}`); expect(await d.looksDark(), 'the site theme changed'); }));
@@ -387,7 +387,7 @@ t('SHELL-26', 'Copy for Showdown gives six Showdown blocks at Level 50', run({te
   expect(/@ .*Charizardite|@ /.test(txt), 'no items in the paste'); expect(has(await d.toastText() || '', 'Copied') || await d.dialogText(), 'no "Copied" toast or dialog'); }));
 
 t('SHELL-27', 'Share card: tall image, Light/Dark, Save image downloads a PNG', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('This Week'); await ui.tap(NEW ? 'Share as Image' : 'Share this week'); const c = await d.until(() => d.shareCard()); expect(c && c.h > c.w, 'share image: ' + JSON.stringify(c));
+  await ui.go('This Week'); await ui.tap('Share this week') /* This Week on the kit (Nov 22, Sim approved A 12:06 PM): the pink SHARE THIS WEEK. (tap matches any case) */; const c = await d.until(() => d.shareCard()); expect(c && c.h > c.w, 'share image: ' + JSON.stringify(c));
   expect(has(c.text, 'Light') && has(c.text, 'Dark') && has(c.text, 'Save image'), 'dialog lacks the picker or Save image');
   const name = await d.saveShareImage(); expect(/This week in Reg M-C - NastyPlot\.png/.test(name || ''), 'download name: ' + name);
   await d.closeDialog(); expect(!(await d.shareCard()), 'Escape did not close'); }));
@@ -666,23 +666,25 @@ t('ARCH-02', 'Inside a guide: how to beat it and what your team has (B ARCH-04)'
 // =============================== WEEK · This Week ===============================
 t('WEEK-01', 'This Week head: two date ranges, team and event counts, Share button', run({team: TEAM}, async ({ui}) => {
   await ui.go('This Week'); const tx = await ui.text(); expect(/Tournament teams, [A-Z][a-z]{2} \d+ – .*against .*\d/.test(tx), 'no ranges');
-  expect((NEW ? /This week [\d,]+ teams \d+ events/ : /This Week [\d,]+ teams \d+ events/).test(tx) && /Week before [\d,]+ teams \d+ events/.test(tx), 'no counts'); expect(has(tx, NEW ? 'Share as Image' : 'Share this week'), 'no share button'); }));
+  /* Nov 22 (kit reskin, Sim approved A): the counts are kit facts, "1,810 teams, Nov 3 – 9 · 51 events · 1,769 teams the week before · 57 events" */
+  expect((NEW ? /[\d,]+ teams, [A-Z][a-z]{2} \d+ – .*? \d+ events [\d,]+ teams the week before · \d+ events/ : /This Week [\d,]+ teams \d+ events/).test(tx) && (NEW || /Week before [\d,]+ teams \d+ events/.test(tx)), 'no counts'); expect(has(tx, 'Share this week'), 'no share button'); }));
 t('WEEK-02', 'Share this week opens a 1200-wide image', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('This Week'); await ui.tap(NEW ? 'Share as Image' : 'Share this week'); const c = await d.until(() => d.shareCard()); expect(c && c.w === 1200, 'image: ' + JSON.stringify(c)); }));
+  await ui.go('This Week'); await ui.tap('Share this week') /* This Week on the kit (Nov 22, Sim approved A 12:06 PM): the pink SHARE THIS WEEK. (tap matches any case) */; const c = await d.until(() => d.shareCard()); expect(c && c.w === 1200, 'image: ' + JSON.stringify(c)); }));
 t('WEEK-02b', 'Without data, Share says "Nothing to share yet"', run({team: TEAM, account: false}, async ({ui, d}) => {
-  await ui.go('This Week'); const b = await ui.sees(NEW ? 'Share as Image' : 'Share this week'); if (b) { await ui.tap(NEW ? 'Share as Image' : 'Share this week'); expect(has(await d.toastText() || '', 'Nothing to share yet'), 'toast: ' + await d.toastText()); }
+  await ui.go('This Week'); const b = await ui.sees('Share this week'); if (b) { await ui.tap('Share this week') /* This Week on the kit (Nov 22, Sim approved A 12:06 PM): the pink SHARE THIS WEEK. (tap matches any case) */; expect(has(await d.toastText() || '', 'Nothing to share yet'), 'toast: ' + await d.toastText()); }
   else expect(has(await ui.text(), "This week's changes appear"), 'no empty note'); }));
 t('WEEK-03', 'Rising and Falling: "a% → b% of teams", points; tap opens the sheet', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('This Week'); const tx = await ui.text(); expect(has(tx, 'Rising') && has(tx, 'Falling'), 'no Rising/Falling');
-  expect(/\d+(\.\d)?% → \d+(\.\d)?% of teams ▲\d/.test(tx) && /▼\d/.test(tx), 'rows lack the change'); await d.openPokemon(await d.firstPokemon()); expect(await d.sheetIsOpen(), 'no sheet'); }));
+  await ui.go('This Week'); const tx = await ui.text(); /* Nov 22 (kit reskin, Sim approved A "the slope"): each side opens on its "▲ Biggest rise" / "▼ Biggest fall" card (or the side's empty note) */
+  expect(NEW ? (/Biggest rise|rose enough/.test(tx) && /Biggest fall|dropped enough/.test(tx)) : has(tx, 'Rising') && has(tx, 'Falling'), 'no Rising/Falling');
+  expect((NEW ? /\d+(\.\d)?% → \d+(\.\d)?% of teams · ▲\d/ : /\d+(\.\d)?% → \d+(\.\d)?% of teams ▲\d/).test(tx) && /▼\d/.test(tx), 'rows lack the change'); await d.openPokemon(await d.firstPokemon()); expect(await d.sheetIsOpen(), 'no sheet'); }));
 t('WEEK-04', 'Most used this week: five tiles open their sheet', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('This Week'); expect(has(await ui.text(), "Most used this week, % of this week's tournament teams."), 'no caption'); const ids = await d.pokemonOnPage();
+  await ui.go('This Week'); { const tx = await ui.text(); expect(NEW ? has(tx, 'Most used this week') && /\d+(\.\d)?% of teams · #1/.test(tx) : has(tx, "Most used this week, % of this week's tournament teams."), 'no caption'); } /* Nov 22 kit: a roster of six, each card "39% of teams · #1" */ const ids = await d.pokemonOnPage();
   expect(ids.length >= 13, 'few tappable Pokémon: ' + ids.length); await d.openPokemon('Sneasler'); expect(await d.sheetName() === 'Sneasler', 'tile did not open Sneasler'); }));
 t('WEEK-05', 'New tech: kind word, "a% → b% of its teams", Details shows team counts', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('This Week'); const tx = await ui.text(); expect((NEW ? /(Move|Item|Ability) .+ \d+(\.\d)?% → \d+(\.\d)?% of its teams \(\d+ .+ teams this week, \d+ the week before\) ▲\d+/ : /(Move|Item|Ability) .+ \d+(\.\d)?% → \d+(\.\d)?% of its teams ▲\d+/).test(tx), 'no new tech rows');
-  if (!NEW) await d.tapDetails(); /* new site (Nov 15): the team counts are always shown, no Details button; the same counts are checked */ expect(/\(\d+ .+ teams this week, \d+ the week before\)/.test(await ui.text()), 'Details did not show team counts'); }));
+  await ui.go('This Week'); const tx = await ui.text(); expect((NEW ? /(Item|Ability|Status|Physical|Special) .+ \d+(\.\d)?% → \d+(\.\d)?% of its teams \(\d+ teams this week, \d+ the week before\) ▲\d+/ /* Nov 22 kit: a move is its move ticket (type, name, Status / Physical / Special), an item or Ability its ink chip; the counts no longer repeat the name (as in the approved mock) */ : /(Move|Item|Ability) .+ \d+(\.\d)?% → \d+(\.\d)?% of its teams ▲\d+/).test(tx), 'no new tech rows');
+  if (!NEW) await d.tapDetails(); /* new site (Nov 15): the team counts are always shown, no Details button; the same counts are checked */ expect(/\(\d+ (.+ )?teams this week, \d+ the week before\)/.test(await ui.text()), 'Details did not show team counts'); }));
 t('WEEK-06', 'Winners this week open that event on Events', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('This Week'); expect(has(await ui.text(), 'Winners This Week'), 'no winners'); await d.tapWinner();
+  await ui.go('This Week'); expect(has(await ui.text(), 'Winners This Week'), 'no winners'); /* has() ignores case: the kit's "Winners this week" */ await d.tapWinner();
   expect(await ui.current() === 'events' && has(await ui.text(), '‹ All events'), 'winner did not open its event'); }));
 t('WEEK-07', 'Team styles with % and real changes only', run({team: TEAM}, async ({ui}) => {
   await ui.go('This Week'); const tx = await ui.text(); expect(has(tx, "% of this week's tournament teams using each style"), 'no styles caption'); expect(/Tailwind \d+(\.\d)?%/.test(tx), 'no style %'); }));
