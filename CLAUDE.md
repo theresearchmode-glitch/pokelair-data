@@ -43,6 +43,8 @@ approved build, never for look-only research (do small measurements myself); eve
 ## THE MAIN THREAD BUILDS TOO (Sim, Nov 22, logged 8:31 AM)
 Sim: "Subagents working but are ya working, buddy?" then "make that a rule". The main thread does real build work itself (an approved
 page, a fix, a measurement), not only coordination, whenever helpers and checks are running. Coordination fits in between.
+Enforced (Sim, Nov 22, 8:50 AM: "thats a rule that keeps being broken"): docs/rebuild/main-queue.md (NOW + 3+ NEXT) and stop-check.sh blocks a
+turn ending unless a main-thread job runs (its pid in docs/rebuild/.main-running) and the queue is fresh.
 
 ## CALL OUT BOTTLENECKS (Sim, Nov 22, logged 7:56 AM)
 Sim: "we should be doing everything as efficient as possible at all times. If you see a clear bottleneck or something slowing us down,

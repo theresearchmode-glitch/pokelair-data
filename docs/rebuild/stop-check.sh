@@ -9,6 +9,15 @@ out=$(bash /home/user/pokelair-data/docs/rebuild/work-check.sh "$sid" 2>/dev/nul
 n=$(echo "$out" | sed -n 's/^HELPERS_ACTIVE=//p'); n=${n:-0}
 if [ "$n" -lt 1 ]; then  # Sim, Nov 22, 1:29 AM: 1 helper is the rule
   jq -n --arg r "WORK CHECK (Sim's rule, CLAUDE.md 'ALWAYS WORKING, ALWAYS 3 HELPERS'): only $n of 2 helpers are active. Before ending the turn: refill the free slot(s) with approved build work, make sure the main thread has its next task started, and set a wake-up. Facts:
-$out" '{decision:"block", reason:$r}'
+$out" '{decision:"block", reason:$r}'; exit 0
 fi
+# Nov 22 (Sim: "im not sure why you stop working when subagents are working ... i need to ensure it isnt"): the MAIN thread must have
+# its own job running when a turn ends: a process whose pid is in docs/rebuild/.main-running, and docs/rebuild/main-queue.md
+# edited in the last 45 min with a NOW line and 3+ NEXT lines.
+D=/home/user/pokelair-data/docs/rebuild; why=""
+pid=$(cat $D/.main-running 2>/dev/null | head -1); { [ -n "$pid" ] && kill -0 "$pid" 2>/dev/null; } || why="no main-thread job running (.main-running has no live pid)"
+q=$D/main-queue.md; age=$(( ( $(date +%s) - $(stat -c %Y $q 2>/dev/null || echo 0) ) / 60 ))
+[ "$age" -le 45 ] || why="$why; main-queue.md not updated for $age min"
+[ "$(grep -c '^NEXT:' $q 2>/dev/null)" -ge 3 ] && grep -q '^NOW:' $q 2>/dev/null || why="$why; main-queue.md needs a NOW line and 3+ NEXT lines"
+if [ -n "$why" ]; then jq -n --arg r "MAIN THREAD CHECK (Sim, Nov 22: the main thread never stops while helpers work): $why. Start the NOW job as a tracked background run, write its pid to docs/rebuild/.main-running, keep main-queue.md current, then continue." '{decision:"block", reason:$r}'; exit 0; fi
 exit 0
