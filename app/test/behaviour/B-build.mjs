@@ -97,7 +97,7 @@ t('X-12', 'Settings and team are saved: Megas on team 1 survives a reload (accou
 // =====================================================================================================
 t('AUTO-01', 'Build page head and the How It Works fold', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Build'); const tx = await ui.text();
-  has(tx, /Build\W{1,3}real winning teams/i, 'kicker'); has(tx, 'Build Me a Team'); has(tx, NEW ? 'Winning tournament teams you can field from your box or the whole roster.' : 'Winning tournament teams you can field from your box.'); /* new: the approved Build mock-up's line (docs/rebuild/mocks/build.tpl.html line 176) */
+  has(tx, NEW ? /Build\W{1,3}Reg M-\w+ doubles/i : /Build\W{1,3}real winning teams/i, 'kicker'); has(tx, 'Build Me a Team'); if (NEW) has(tx, 'Blue words are buttons.'); else has(tx, 'Winning tournament teams you can field from your box.'); /* Nov 22 (Sim chose Build top A, 6:58 AM): one short label, then the sentence; the intro line was cut */ /* new: the approved Build mock-up's line (docs/rebuild/mocks/build.tpl.html line 176) */
   expect(await ui.isUnfolded(/^How It Works/) === false, 'How it works should start closed');
   const f = await ui.unfold(/^How It Works/); for (const p of ['Six that work together', 'The why', NEW ? 'Matchups' : 'Ready for the top threats']) has(f, /* new: the word list's 'Matchups' replaces 'ready for the top threats' (CLAUDE.md word list, Sim approved Nov 9) */ new RegExp(p, 'i'), 'How it works');
   await close(); });

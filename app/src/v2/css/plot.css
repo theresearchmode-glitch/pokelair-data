@@ -422,3 +422,5 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
    but take one text line of room (the tap reaches 12 px above and below), and the six sit a little smaller; the page stays no longer than today */
 @media (max-width:699.98px){.pl-win:not(.pl-big) .pl-wa .np-link,.pl-win:not(.pl-big) .pl-wsets > summary{margin-block:calc(var(--s3) * -1)}
   .pl-win:not(.pl-big) .pl-wt{margin-block:var(--s1) 0}.pl-win:not(.pl-big) .pl-wsix span{height:32px}.pl-win:not(.pl-big) .pl-wsix img{max-height:32px}}
+/* Build top A (Sim, Nov 22, 6:58 AM): the hint sits under the sentence, left, quiet */
+.pl-hint2{margin:var(--s2) 0 0;text-align:left;font-weight:500}
