@@ -49,6 +49,10 @@ pages still to reskin). When the mock-ups are done, back to ONE helper. Never us
 Sim: "sounds like a plan. i just wanted the builds approved so then after, all resources can just focus on making it happen." The mock-up
 helper switches to building once its mock-ups are done: 2 build helpers + HH building, for the rest of Nov 22. Above that, ask Sim.
 
+## ONE EXTRA HELPER FOR THE CONSISTENT-UI AUDIT (Sim, Nov 22, about 5 PM)
+Sim: "can we put a helper on doing a /consistent-ui:consistent-ui audit?" then "an additional one dont cancel one thats running rn".
+So 3 helpers until the audit report is in: 2 build + 1 look-only audit (hC). Then back to 2 build helpers for the rest of Nov 22.
+
 ## EVERYTHING ON THE KIT; NOTIFY WHEN NEEDED (Sim, Nov 22, logged 11:36 AM)
 Sim: "everything is done with the kit not the old way." Every new or changed page, sheet or piece uses the shared kit (kit.js,
 the kit tokens and parts), never the old pre-reskin patterns. Sim: "send me a notification if you need me for anything ill be around":
