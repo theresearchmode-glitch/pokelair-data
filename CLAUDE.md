@@ -40,6 +40,11 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
+## EVERYTHING ON THE KIT; NOTIFY WHEN NEEDED (Sim, Nov 22, logged 11:36 AM)
+Sim: "everything is done with the kit not the old way." Every new or changed page, sheet or piece uses the shared kit (kit.js,
+the kit tokens and parts), never the old pre-reskin patterns. Sim: "send me a notification if you need me for anything ill be around":
+when a decision or picture needs him, send a phone notification (PushNotification) as well as the chat message. Work order is HH's call.
+
 ## SEARCH IS THE TYING POINT (Sim, Nov 22; logged time: 11:29 AM (11:29:22)  date: Sun Nov 22, 2026)
 Sim: "the info, abilities, pokemon, tools, everything on the site should be accessible easily from our search bar. i want that to be a tying point."
 Everything on the site is reachable from Search: every page and tool, every Pokémon, every move, item and Ability (each to its info sheet once
