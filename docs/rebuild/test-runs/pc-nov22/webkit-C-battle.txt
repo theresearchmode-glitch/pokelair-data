@@ -1,0 +1,89 @@
+  pass  NAV-01  Battle tab opens Battle and stays highlighted on its sub-pages
+  pass  NAV-02  menu group "Battle" lists the six Battle pages in order, each opens its page
+  pass  NAV-03  "← Battle" back link on the five Battle sub-pages; "← Pokémon ratings" on Track record
+  pass  NAV-04  tool switch Speed tiers · Damage calc · Type chart (tap and keyboard)
+  pass  NAV-05  "More ways to prep" cards on Battle open the four tools
+  pass  NAV-06  "Practice against" on Winning teams loads that six into Battle with its real sheet
+  pass  BATTLE-01  page head: "Team preview · <team> vs their six", real sheet kicker and event line
+  pass  BATTLE-02  their six: type, Enter picks, focus moves on, no duplicates, × removes and refocuses, survives reload
+  pass  BATTLE-03  "Clear their six" empties all six and the plan disappears
+  pass  BATTLE-04  recent opponents: a past six is one tap away, and survives reload when signed in
+  pass  BATTLE-05  "Practice against a top team" loads a tournament six; select resets when the six changes
+  pass  BATTLE-06  "Copy for Showdown" for their open team sheet copies six full sets
+  pass  BATTLE-07  empty and partial states: under 4 of yours, none of theirs, then the plan fills in
+  pass  BATTLE-08  The read: your lead, their likely lead, biggest threat, Fake Out count
+  pass  BATTLE-09  Plan / Speed / Damage switch filters cards on phones; hidden on desktop where all cards show
+  pass  BATTLE-10  Bring these four, lead the pair; one-Mega note when two Megas come
+  pass  BATTLE-11  From real games: approved verdict words, "so far" under six, gone under four
+  pass  BATTLE-12  Watch out fold lists what shuts you down; open/closed remembered
+  pass  BATTLE-13  Turn one in move order with the planned moves, KO warning and field
+  pass  BATTLE-14  Who moves first: Trick Room reverses the order, their Tailwind doubles their Speed
+  pass  BATTLE-15  Damage both ways: Rain changes Water and Fire hits; Intimidate lowers your physical hits
+  skip  BATTLE-16  Damage calc card: tap one of yours to open the calc against their first Pokémon  (the calc picker comes with the Damage Calc page (not rebuilt yet))
+  skip  BATTLE-17  Team preview practice entry opens Practice  (the Practice entry comes with the Practice page (not rebuilt yet))
+  pass  BATTLE-18  Deeper read: archetype matchup, their threats, full 6×6 matchup grid
+  skip  BATTLE-20  "?" tips explain, long notes fold behind "More"  (the "What the calc counts" tip sits on the calc picker; the damage legend is shown in full, nothing behind "More")
+  pass  LOG-01  Battle log is pre-filled with the plan's four in order; picks update the order line
+  pass  LOG-02  Win/Loss disabled until four are picked; Win logs the game, saved and kept after reload
+  pass  LOG-03  Your record: overall %, this team, lead pairs after games
+  pass  LOG-04  delete a logged game from Recent battles
+  pass  LOG-05  log a game from a Showdown replay (paste or file); errors for bad logs
+  pass  LOG-06  "Your games · this six" on My team: log a loss with leads, then Undo
+  pass  LOG-07  a logged win shows on Home as "1–0"
+  pass  CALC-01  Damage calc head and "How the calc works →" link
+  pass  CALC-02  attacker/defender defaults and pickers grouped Your team / Top of the meta / Everyone
+  pass  CALC-03  move strips and "Other moves" change the result
+  pass  CALC-04  Set details: defender points kept legal (66 total); changing nature drops "assumed spread"
+  pass  CALC-05  Swap trades attacker and defender; move resets to the new attacker's
+  pass  CALC-06  field: weather follows the attacker's setter until you pick; Rain halves Fire
+  pass  CALC-07  result: Sneasler Close Combat into Mega Charizard Y; Garchomp Earthquake into Corviknight is No effect
+  pass  CALC-08  "Report a mistake" under the result opens feedback pre-filled with the calc
+  pass  CALC-09  best hits table: your hits on them / their hits on you
+  pass  CALC-10  "No effect" pinned mini bar jumps back to the result
+  pass  SPEED-01  Speed tiers head
+  pass  SPEED-02  Trick Room puts the slowest first
+  pass  SPEED-03  weather picker: Chlorophyll doubles Venusaur in sun only
+  pass  SPEED-04  Your six vs the field: outspeed % per Pokémon, falls under their Tailwind
+  pass  SPEED-05  race track / list view (remembered), markers open the info sheet, track scrolls on narrow screens
+  pass  SPEED-06  no team: message and "Go to My team"; footnote with its tip
+  pass  TYPES-01  pick up to two types (third replaces the older), Clear
+  pass  TYPES-02  look up a Pokémon: ability changes the defence (Heat Rotom, Levitate)
+  pass  TYPES-03  your team quick picks
+  pass  TYPES-04  Fire/Flying result: Rock 4× weak, Ground immune, STAB lines
+  pass  TYPES-05  full type chart: 18×18 grid on wide screens, attacking-type picker on phones
+  pass  TEST-01  Test run head and "How it works" fold
+  pass  TEST-02  Test run empty state under 4 Pokémon; falls back to built-in team lists without daily data
+  pass  TEST-03  summary counts: better prepared / about even / they're better prepared
+  pass  TEST-04  one card per top team, least prepared first, no-answer marks
+  pass  TEST-05  Matchup prep fold: level words for each Pokémon both ways (also MATCHUPS-07)
+  pass  TEST-06  "Practice in Battle mode" loads the team into Battle
+  pass  TEST-07  "Copy for Showdown" on a Test run card
+  pass  TEST-08  show more teams / show fewer
+  pass  TEST-09  Test run footnote and its tip
+  pass  PRAC-01  start screen: "Use my team" needs exactly six; real-team mode otherwise
+  pass  PRAC-02  pick four, then two leads; Reveal enabled only after 4 + 2
+  pass  PRAC-03  reveal: banner, both fours, per-Pokémon bars, score saved, next team
+  pass  PRAC-04  score line after one round
+  pass  TRACK-01  Track record head, stats and how it works
+  pass  TRACK-02  top-8 teams by rating band with a verdict line
+  pass  TRACK-03  biggest hits / misses; tap a Pokémon for its sheet
+  pass  TRACK-04  week by week chart with a line per band
+  pass  TRACK-06  events checked fold and "How ratings work →"
+  pass  TRACK-07  no data: "Collecting"
+  pass  MATCHUPS-01  top 10 threats with real-games word and calc level; phones show 5 + "Show 5 more"; tap opens the sheet
+  pass  MATCHUPS-02  legend counts in the approved words
+  pass  MATCHUPS-03  scouting report sheet: one threat at a time; Escape closes it
+  pass  MATCHUPS-04  your six vs the top 12 chart; tap a row for the full matchup
+  pass  MATCHUPS-05  threat preparation card: ready %, groups by level
+  pass  MATCHUPS-06  meta threats list uses the scouting level words
+  pass  X-01  their six and your picks show as Pokémon art tiles
+  pass  X-02  two- and three-choice switches show exactly one choice and move with a tap
+  pass  X-03  folds remember open/closed per device (Speed tiers fold)
+  pass  X-04  a calc button stays under your finger when the page redraws
+  pass  X-05  browser Back closes an open sheet first, then steps back a page
+  pass  X-06  Battle toggles are not swallowed by the double-tap guard
+  skip  X-07  their six and the log update live from another device  (the kit's fake account fires onSnapshot once at load; a later remote change can't be pushed (kit change needed))
+  pass  X-08  Battle text uses the site's punctuation (no " · " left in sentences)
+  pass  X-09  keyboard: arrows + Enter pick in their six, Escape closes the list, Tab stays in the open sheet
+
+behaviour: 83 pass, 0 FAIL, 0 known bugs, 0 fixed?, 4 skipped; 474s  (webkit, adapter v2)
