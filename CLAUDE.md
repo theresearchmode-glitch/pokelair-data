@@ -66,6 +66,11 @@ Sim: "the designer doesnt know our rules and how we do things. itll have the pro
 the mock up is a mock up." The Moves / Items / Abilities sheets come from another chat as a prompt + package + mock-up. Treat the mock-up as
 a starting idea: build it our way (this file, RULES.md, the kit, the word list, Search, tests, Sim's yes with pictures).
 
+## MISSING INFO FIRST (Sim, Nov 22, logged 3:06 PM; a rule)
+Sim: "before you answer, list what you'd need to know that I haven't told you" for decisions or questions he asks. So every answer to
+a Sim question or decision opens with a short "What I'd need to know that you haven't told me" list (each item: what, and why it
+changes the answer), then the answer with the default I'd use meanwhile. If nothing is missing, one line: "Nothing missing."
+
 ## "STATUS REPORT" (Sim, Nov 22, 10:14 AM; a rule)
 When Sim says "status report": three short parts, nothing left out. NOW: what HH (main thread) and each helper are working on.
 JUST DONE: what was recently completed. NEXT: what is in line next. Short and sweet.

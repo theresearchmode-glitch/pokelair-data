@@ -103,6 +103,10 @@ record of where every page stands. Keep it current at all times:
 4. At the start of every chat, read the checklist; at the end of every work session, confirm it matches HANDOVER.md.
 5. A page is "Built" only when every one of today's features for it (docs/rebuild/inventory) is found on the new site.
 
+## 00m. Missing info first (Sim, Nov 22, 3:06 PM; permanent)
+Before answering any question or decision from Sim, list what I would need to know that he has not told me (each with why it
+changes the answer); then answer, saying which default I use until he fills it in. Nothing missing: say so in one line.
+
 ## 00c. Every recommendation comes with a short reason (Sim, Nov 12, 8:55 PM Eastern; for now and always)
 Whenever Claude recommends something (an option, a default, a design, a next step), it gives a short, quick reason why, right
 next to the recommendation: one line in plain words. Example: "I recommend C. Why: blue and red stay easy to tell apart for
