@@ -28,11 +28,11 @@ const side = p => p.evaluate(() => document.documentElement.scrollWidth > innerW
 
 // ---------- A1: the sample note's two links ----------
 /* Nov 21: My Team frame (Sim approved): the two are full buttons in the header's .mtf-bb (a 2-column grid), no longer links in .tm-sample-acts */
-const taps = p => p.evaluate(() => { const L = [...document.querySelectorAll('#main .tm-sample-acts .np-link, #main .mtf-bb > .mtf-btn')].filter(x => x.getClientRects().length);
+const taps = p => p.evaluate(() => { const L = [...document.querySelectorAll('#main .tm-sample-acts .np-link, #main .mtf-bb > .mtf-btn, #main .tmk-new .k-w') /* Nov 22: the war room (Sim approved Nov 21): the two are words in the plot sentence (.tmk-new .k-w) */].filter(x => x.getClientRects().length);
   if (L.length < 2) return null; L[0].scrollIntoView({block: 'center'});
   /* Nov 21: My Team frame (Sim approved): the frame's buttons are slanted (clip-path slants the left and right 8px), so a point in a slanted edge
      is outside the drawn button: it may miss it, but it must never land on another link or button (a tap on Build never opens Import) */
-  return L.map(a => { const q = a.getBoundingClientRect(), cut = getComputedStyle(a).clipPath !== 'none' ? 10 : 0; let bad = 0, n = 0;
+  return L.map(a => { const q = a.getBoundingClientRect(), cs = getComputedStyle(a), cut = cs.clipPath !== 'none' || /^matrix\(1, 0, -?0\.[1-9]/.test(cs.transform) ? 10 : 0; /* Nov 22: the war room's sentence words are skewed (skewX), so their box corners lie outside the drawn word, like a clip-path slant */ let bad = 0, n = 0;
     for (let x = q.left + 2; x < q.right - 1; x += 6) for (const y of [q.top + 2, q.top + q.height / 2, q.bottom - 2]) { n++; const k = document.elementFromPoint(x, y); if (k && (k === a || a.contains(k))) continue;
       const corner = cut && (x < q.left + cut || x > q.right - cut), other = k && k.closest('a,button'); if (!(corner && !other)) bad++; }
     return {t: a.textContent.trim(), bad, n, top: Math.round(q.top), l: Math.round(q.left), r: Math.round(q.right)}; }); });
@@ -43,7 +43,7 @@ for (const [W, th] of [[700, 'light'], [768, 'light'], [768, 'dark'], [819, 'lig
   /* Nov 20 (Sim's PC run on Windows, v2-q69 + tap-size at 820: the text measured a little wider, so the two links stacked where Linux
      keeps them on one line, and the stacked spacing only applied at 700-819): force the stack (narrow the row) at 820 and 1024 so this
      machine checks the Windows case too */
-  if (W >= 820) { const grid = await p.evaluate(() => { const r = document.querySelector('#main .tm-sample-acts, #main .mtf-bb'); if (r) r.style.maxWidth = '150px'; return !!(r && r.matches('.mtf-bb')); }); await p.waitForTimeout(150); const F = await taps(p);
+  if (W >= 820) { const grid = await p.evaluate(() => { const r = document.querySelector('#main .tm-sample-acts, #main .mtf-bb, #main .tmk-new'); if (r) r.style.maxWidth = '150px'; return !!(r && r.matches('.mtf-bb')); }); await p.waitForTimeout(150); const F = await taps(p);
     /* Nov 21: the frame's two buttons sit in a fixed 2-column grid, so squeezed they stay side by side; what matters is that they never overlap */
     if (grid) ok(F && F.length === 2 && (F[0].r <= F[1].l || F[1].r <= F[0].l), `${tag} forced narrow: the two buttons stay apart (${F ? F.map(x => x.l + '-' + x.r).join(' | ') : 'none'})`);
     else ok(F && F.length === 2 && F[0].top !== F[1].top, `${tag} forced stack: the two links stack (${F ? F.map(x => x.top).join(' / ') : 'none'})`);
@@ -81,10 +81,15 @@ const lay = p => p.evaluate(() => { const r = id => { const e = document.getElem
   const w = document.querySelector('#main .tm-work'), f = document.querySelector('#main details[data-v2adj]');
   return {areas: w ? getComputedStyle(w).gridTemplateAreas : '', mu: r('tm-mu'), sg: r('tm-sg'), ck: r('tm-ck'), yg: r('tm-yg'), fold: !!f, open: !!(f && f.open),
     ctl: !!(f && f.open && f.querySelector('.sg2-ctl') && f.querySelector('.sg2-ctl').getClientRects().length), loose: !!document.querySelector('#main .tm-sgs > .sg2-adj'),
-    inFrame: !!document.querySelector('#main .mtf-sg #tm-sg'), frame: (f => f ? (q => ({l: q.left, r: q.right}))(f.getBoundingClientRect()) : null)(document.querySelector('#main .mtf'))}; }); /* Nov 21: My Team frame (Sim approved) */
+    inFrame: !!document.querySelector('#main .mtf-sg #tm-sg'), war: !!document.querySelector('#main .k-step #tm-ck'), frame: (f => f ? (q => ({l: q.left, r: q.right}))(f.getBoundingClientRect()) : null)(document.querySelector('#main .mtf'))}; }); /* Nov 21: My Team frame (Sim approved) */
 const shape = (x, tag) => { const {mu, sg, ck, yg} = x; if (!(mu && sg && ck && yg)) { ok(false, `${tag}: Matchups, Suggestions, Team Checks and Your Games all shown`); return; }
   /* Nov 21: My Team frame (Sim approved): Suggestions moved into the frame (third part, above the Game Plan bar), so Q71's "Suggestions full
      width under Matchups" became: Suggestions inside the frame, above Matchups; Team Checks | Your Games side by side under Matchups */
+  /* Nov 22: the war room (Sim approved the pictures, Nov 21) draws My Team as plan steps in one column at every width: step 2 holds Suggestions
+     (with the Game Plan), then Matchups, then Team Checks and Your Games. So here: all four the same width and left edge, in that order,
+     each below the one before (none overlapping). The Q71 grid (Suggestions under Matchups, Team Checks | Your Games side by side) is retired with it. */
+  if (x.war) { const L = [sg, mu, ck, yg], same = L.every(q => Math.abs(q.l - sg.l) <= 1 && Math.abs(q.w - sg.w) <= 1), order = sg.b <= mu.t + 1 && mu.b <= ck.t + 1 && ck.b <= yg.t + 1;
+    ok(same && order, `${tag}: war room: Suggestions, Matchups, Team Checks, Your Games one column, same width, in order (${L.map(q => Math.round(q.l) + '-' + Math.round(q.r) + '@' + Math.round(q.t)).join(' / ')})`); return; }
   if (x.inFrame) ok(sg.b <= mu.t && x.frame && sg.l >= x.frame.l - 1 && sg.r <= x.frame.r + 1, `${tag}: Suggestions in the frame, above Matchups (${Math.round(sg.l)}-${Math.round(sg.r)} in ${x.frame ? Math.round(x.frame.l) + '-' + Math.round(x.frame.r) : 'no frame'}, bottom ${Math.round(sg.b)} vs Matchups ${Math.round(mu.t)})`);
   else ok(Math.abs(sg.w - mu.w) <= 1 && Math.abs(sg.l - mu.l) <= 1 && sg.t > mu.t, `${tag}: Suggestions full width under Matchups (${Math.round(sg.w)} vs ${Math.round(mu.w)}px)`);
   ok(Math.abs(ck.t - yg.t) <= 1 && ck.r <= yg.l && ck.t >= (x.inFrame ? mu.b : sg.b), `${tag}: Team Checks | Your Games side by side under Suggestions (tops ${Math.round(ck.t)} / ${Math.round(yg.t)}, ${Math.round(ck.l)}-${Math.round(ck.r)} | ${Math.round(yg.l)}-${Math.round(yg.r)})`);

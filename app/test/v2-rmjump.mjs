@@ -33,13 +33,13 @@ for (const W of [1440, 1100]) { const r = await run(W, false);
   /* each slot's top and left (a Card moving sideways counts too: Nov 20) */
   /* Nov 21: My Team frame (Sim approved): the six are the frame's rows (.mtf-rows > .mtf-row, drawn in slot order 0-5; an empty spot is
      .mtf-add with data-v2addto), so a slot is its row; the old Hand (.mh-slot) is no longer drawn for a team of 1-6 */
-  const SLOTS = '#main .mtf-rows > .mtf-row';
+  const SLOTS = '#main .mtf-party .mtf-row'; /* Nov 22: the war room (Sim approved Nov 21) draws each of the six as a .mtf-row kit card inside the frame's party, no longer as direct children of .mtf-rows */
   const pos = () => p.evaluate(S => Object.fromEntries([...document.querySelectorAll(S)].map(s => { const k = s.matches('[data-v2addto]') ? 'ADD' : (s.getAttribute('aria-label') || '').split(',')[0], r = s.getBoundingClientRect(); return [k, [Math.round(r.top), Math.round(r.left)]]; })), SLOTS);
   const order = () => p.evaluate(S => [...document.querySelectorAll(S)].map(s => s.matches('[data-v2addto]') ? 'ADD' + s.dataset.v2addto : (s.getAttribute('aria-label') || '').split(',')[0]).join('|'), SLOTS);
   const before = await pos(), ord0 = await order(), removed = await p.evaluate(S => (document.querySelector(S + '.on[data-tmsel]').getAttribute('aria-label') || '').split(',')[0], SLOTS);
   const slotOf = await p.evaluate(S => [...document.querySelectorAll(S)].indexOf(document.querySelector(S + '.on[data-tmsel]')), SLOTS); /* the row's place among the six = its team slot (0-5) */
   await p.click('#main [data-v2rm]'); await p.waitForTimeout(2500);
-  const after = await pos(), ord1 = await order(), groups = await p.evaluate(() => [...document.querySelectorAll('#main .mtf-party > .mtf-bar b')].map(b => b.textContent.trim()).join('|')); /* Nov 21: the frame's one bar, "Your six" (Sim's approved mock) */
+  const after = await pos(), ord1 = await order(), groups = await p.evaluate(() => document.querySelectorAll('#main .mtf-party .k-roster').length); /* Nov 22: the war room (Sim approved Nov 21) has no "Your six" bar; the six are ONE roster list (one group), never split into Lead / Back / Bench */
   const roleWords = await p.evaluate(() => { const h = document.querySelector('#main .mtf-party'); return h ? (h.innerText.match(/\b(Lead|Back|Bench)\b/g) || []).join(',') : 'no six'; });
   /* Nov 20: every other Card holds still (top and left within 1px): first the Cards above and beside the removed one (the old Q9 C
      strength, now 1px), then, as its own line, the Cards in the rows below it */
@@ -49,7 +49,7 @@ for (const W of [1440, 1100]) { const r = await run(W, false);
   const addAt = !!after.ADD && near(after.ADD, before[removed]);
   /* slot order: the Add card sits in the removed Card's own slot, everything else in the same order as before */
   const sameOrder = slotOf >= 0 && ord1 === ord0.split('|').map(k => k === removed ? 'ADD' + slotOf : k).join('|');
-  ok(groups === 'Your six' && !roleWords && !movedUp.length && addAt && sameOrder && !errs.length, `820 (Nov 20): after Remove one group "${groups}" (Lead / Back / Bench words: ${roleWords || 'none'}), no Card above or beside it moves (${movedUp.join(', ') || 'none'}), the Add Card takes ${removed}'s place (${before[removed]} -> ${after.ADD}) in slot ${slotOf + 1} (order ${ord1})`);
+  ok(groups === 1 && !roleWords && !movedUp.length && addAt && sameOrder && !errs.length, `820 (Nov 20): after Remove the six are one group (${groups} roster list) (Lead / Back / Bench words: ${roleWords || 'none'}), no Card above or beside it moves (${movedUp.join(', ') || 'none'}), the Add Card takes ${removed}'s place (${before[removed]} -> ${after.ADD}) in slot ${slotOf + 1} (order ${ord1})`);
   ok(!movedDown.length, `820 (Nov 20): no Card in the rows below the removed one moves either (${movedDown.join(', ') || 'none'})`);
   await p.close(); }
 { const r = await run(390, true);
