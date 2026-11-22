@@ -81,3 +81,4 @@
 .fb2-mail{min-height:var(--tap);padding:0;border:0;background:none;cursor:pointer}
 @media (max-width:959.98px){.fb2-two{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699.98px){.fb2 .k-sent{gap:6px;font-size:var(--t15)}.fb2 .k-w{padding:0 var(--s2)}.fb2 .k-sec,.fb2 .k-n{display:none}.fb2 .inf-fb{padding-top:var(--s5)}.fb2-box textarea{min-height:104px}.fb2-row .k-go{margin-top:var(--s3)}.fb2-anon{padding:var(--s4)}.fb2-anon h2{margin-bottom:var(--s1);font-size:var(--t22)}.fb2-anon p{font-size:var(--t13)}}
+@media (min-width:1100px){.fb2-br{display:none}} /* one line on desktop, as in the approved mock */
