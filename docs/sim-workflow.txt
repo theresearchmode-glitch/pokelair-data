@@ -83,3 +83,11 @@ ALWAYS WORKING, ALWAYS 3 HELPERS (Sim, Nov 20, 10:26 PM; stated many times): all
 
 
 NO GENERIC AI DESIGN (Sim, Nov 21, about 2:31 PM): "i dont want generic ai design thats a MAJOR MAJOR MAJOR MAJOR MAJOR RULE." Every design built from NastyPlot's own identity; ask "could this be any other site?" before sending. Full text in CLAUDE.md.
+
+PERMANENT OPERATING RULES (Sim, Nov 22, 8:51 AM: "add those to our permanent operating rules"):
+1. The main thread never stops while helpers work. It always does real build work itself (an approved page, a fix, a measurement); coordination fits in between. Enforced: docs/rebuild/main-queue.md (NOW + 3+ NEXT jobs) and the stop check blocks a turn ending unless a main-thread job is running (pid in docs/rebuild/.main-running).
+2. Efficiency at all times: any clear bottleneck or slowdown is called out to Sim right away, with a fix, so he can evaluate.
+3. GitHub runs the full check on the design branch (not live); locally only the changed pages' checks. Don't push new code while GitHub checks the last code push; batch code pushes.
+4. Redesign pages: one quick direction picture (drawn on the real page) before the full build; build fully only after Sim's yes.
+5. One shared 'before' test baseline per morning for all helpers.
+6. Honest about what is and isn't checked; when a page or the plan is slowing down, say so with numbers.

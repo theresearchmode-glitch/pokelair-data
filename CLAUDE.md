@@ -4,7 +4,7 @@ This repo is Sim's (Simran's). These are his standing preferences for any sessio
 
 **Sim is he/him (Sim, Nov 19, 10:13 AM; said many times).** Never 'she' or 'her' for Sim, in chat, docs, commits or helper briefs.
 
-**Sim's general workflow rules for any chat: docs/sim-workflow.txt** (Sim, Nov 19).
+**Sim's general workflow rules for any chat: docs/sim-workflow.txt** (Sim, Nov 19). **PERMANENT OPERATING RULES (Sim, Nov 22): docs/rebuild/RULES.md section 00o** (main thread never stops and builds too; call out bottlenecks; GitHub runs the full check; direction picture before redesign builds; one shared baseline).
 
 **Brand kit (Sim, Nov 19): docs/brand/nastyplot-brand-assets/** (start with its README.txt): both logos (devil + wordmark, chevron), outline versions,
 site icons, social pictures and headers, fonts, colours.txt, logo-guide.png (don't recolour, stretch, rotate or add effects). Use these files, never redraw a logo.

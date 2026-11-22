@@ -4,6 +4,14 @@ CLAUDE.md points here. These rules came from the Nov 11 chat after Sim found tha
 Where an older line in CLAUDE.md says otherwise (e.g. "Faster flow: put fixes live directly", "decide on your own
 recommendation" under authority), the rules below win.
 
+## 00o. Permanent operating rules (Sim, Nov 22)
+1. The main thread never stops while helpers work. It always does real build work itself (an approved page, a fix, a measurement); coordination fits in between. Enforced: docs/rebuild/main-queue.md (NOW + 3+ NEXT jobs) and the stop check blocks a turn ending unless a main-thread job is running (pid in docs/rebuild/.main-running).
+2. Efficiency at all times: any clear bottleneck or slowdown is called out to Sim right away, with a fix, so he can evaluate.
+3. GitHub runs the full check on the design branch (not live); locally only the changed pages' checks. Don't push new code while GitHub checks the last code push; batch code pushes.
+4. Redesign pages: one quick direction picture (drawn on the real page) before the full build; build fully only after Sim's yes.
+5. One shared 'before' test baseline per morning for all helpers.
+6. Honest about what is and isn't checked; when a page or the plan is slowing down, say so with numbers.
+
 ## 00t. Times come only from the clock (Sim, Nov 13, rule written 8:54 AM Eastern by the clock: "I am very very punctual about timing")
 Every time written anywhere (messages to Sim, checklist notes and 't' fields, docs, commit messages, scheduled task prompts) is
 copied from `bash docs/rebuild/now.sh` run in the SAME step, never typed, estimated ("6:2x", "~3:25") or reused from an earlier
