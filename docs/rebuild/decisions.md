@@ -2047,3 +2047,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:35 PM: Hourly check: 2 build helpers (hW2 Gifts, hM Track redo); main: Safari fixes checking, News coupon checks; Game Plan updated
 - 5:40 PM: Sim: 'love it. lets do it' -> audit Wave 1 (no looks change, pixel-identical proof) now by HH; then Wave 3 headline/step-heading sizes to Sim with pictures first
 - 5:53 PM: Sim: second Claude account never publishes artifacts; only this chat publishes. It works on its own alt/* branches; HH reviews and merges
+- 5:55 PM: Sim: down to 1 helper here for a couple of days (usage). Stopped hM (Track Record fixes, not started in code); hW2 finishes Mystery Gifts, then takes the Track Record fixes. Big parallel work goes to the second account

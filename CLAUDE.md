@@ -49,6 +49,10 @@ pages still to reskin). When the mock-ups are done, back to ONE helper. Never us
 Sim: "sounds like a plan. i just wanted the builds approved so then after, all resources can just focus on making it happen." The mock-up
 helper switches to building once its mock-ups are done: 2 build helpers + HH building, for the rest of Nov 22. Above that, ask Sim.
 
+## ONE HELPER HERE FOR A COUPLE OF DAYS (Sim, Nov 22, logged 5:55 PM; LATEST, overrides the helper counts below)
+Sim: "since we have that account doing that can we go down to 1 helper agent here, I need to conserve usage here for a couple days."
+At most ONE helper in this chat until Sim says otherwise; big parallel work goes to the second account (below). Above 1: ask Sim first.
+
 ## SIM'S SECOND CLAUDE ACCOUNT (Sim, Nov 22, logged 5:53 PM)
 Sim runs big parallel jobs on a second Claude account to save usage here. It NEVER publishes artifacts ("only we publish here"):
 it works on its own branches (alt/*), never main or claude/design6; HH reviews, checks and merges. Brief: docs/rebuild/test-runs/other-account-nov22-prompt.md.
