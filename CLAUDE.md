@@ -85,7 +85,13 @@ If Sim replies but skips a question, ask it again in the next message with its p
 The RECOMMENDED picture's top label band is GREEN (#0B6B2E, white text), the others black (Sim, Nov 19, 8:39 AM); the labeller
 docs/rebuild/preview-kit/label-picture.cjs does it for any label containing RECOMMENDED.
 
-## ONE document for the rebuild: the Plans page (Sim, Nov 18; replaces the Rebuild Checklist)
+## THE GAME PLAN is the one plans page now (Sim, Nov 21, ~7:30 PM)
+Sim: the old Plans page got bloated and hard to follow. New page "NastyPlot Game Plan" (https://claude.ai/artifact/R1xwJERwi9298VXA5a6ppm,
+source docs/game-plan.html): everything from Nov 21 onward, the road to the switch with estimated dates, accurate ticks (the ITEMS
+lists in its script; done = merged + checks passed + Sim's OK on looks, with the time). Keep it current every 45-60 min. The old
+Plans page (below) is left as it is, as Sim's reference archive: don't update it any more.
+
+## ONE document for the rebuild: the Plans page (Sim, Nov 18; replaces the Rebuild Checklist) (ARCHIVE since Nov 21)
 Sim, Nov 18: "i want to be using 1 document not 2". The Plans page (https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ, source
 docs/foundation-plan.html) is the single place to follow the rebuild: Step 1 opens with "Every page, where it stands" (the old
 Rebuild Checklist, merged), then what is left, then Reg M-D, the Strength Score, the launch and Ideas. Keep it current (every 45 min
