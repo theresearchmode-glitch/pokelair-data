@@ -49,6 +49,10 @@ pages still to reskin). When the mock-ups are done, back to ONE helper. Never us
 Sim: "sounds like a plan. i just wanted the builds approved so then after, all resources can just focus on making it happen." The mock-up
 helper switches to building once its mock-ups are done: 2 build helpers + HH building, for the rest of Nov 22. Above that, ask Sim.
 
+## SIM'S SECOND CLAUDE ACCOUNT (Sim, Nov 22, logged 5:53 PM)
+Sim runs big parallel jobs on a second Claude account to save usage here. It NEVER publishes artifacts ("only we publish here"):
+it works on its own branches (alt/*), never main or claude/design6; HH reviews, checks and merges. Brief: docs/rebuild/test-runs/other-account-nov22-prompt.md.
+
 ## ONE EXTRA HELPER FOR THE CONSISTENT-UI AUDIT (Sim, Nov 22, about 5 PM)
 Sim: "can we put a helper on doing a /consistent-ui:consistent-ui audit?" then "an additional one dont cancel one thats running rn".
 So 3 helpers until the audit report is in: 2 build + 1 look-only audit (hC). Then back to 2 build helpers for the rest of Nov 22.
