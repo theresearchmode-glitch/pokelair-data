@@ -1,0 +1,16 @@
+
+=== run 1 ===
+  (FAILSHOT: page.screenshot: Target page, context or browser has been closed)
+  FAIL  NAV-03v  Header lists the five places and marks the current one; Search opens, keeps focus inside, closes 3 ways  -> Tab left Search after 1 presses
+
+behaviour: 0 pass, 1 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 3s  (webkit, adapter v2)
+=== run 2 ===
+  (FAILSHOT: page.screenshot: Target page, context or browser has been closed)
+  FAIL  NAV-03v  Header lists the five places and marks the current one; Search opens, keeps focus inside, closes 3 ways  -> Tab left Search after 1 presses
+
+behaviour: 0 pass, 1 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 3s  (webkit, adapter v2)
+=== run 3 ===
+  (FAILSHOT: page.screenshot: Target page, context or browser has been closed)
+  FAIL  NAV-03v  Header lists the five places and marks the current one; Search opens, keeps focus inside, closes 3 ways  -> Tab left Search after 1 presses
+
+behaviour: 0 pass, 1 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 3s  (webkit, adapter v2)

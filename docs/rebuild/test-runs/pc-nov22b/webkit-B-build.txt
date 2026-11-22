@@ -1,0 +1,93 @@
+  known X-01  Back steps through pages and lands at the old scroll spot  -> Back did not return to Build: report
+  pass  X-02  Changes that replace team members show a toast with Undo; Undo brings the old six back
+  pass  X-03  A quick double tap on Apply makes only one change (one Undo step)
+  pass  X-04  Two/three-choice switches are sliders: the circle slides to the new choice, buttons stay readable
+  pass  X-05  The ├ù in a Pok├⌐mon box empties it and keeps the keyboard up
+  known X-06  Pok├⌐mon name boxes: type part of a name, Enter picks; no match says so; Esc closes the list  -> timed out waiting for "No matches. Try fewer letters." to show
+  pass  X-07  Phone: focusing Build around lifts the box into the upper screen so its list has room
+  pass  X-08  Headings and slider labels are in Title Case
+  pass  X-09  Page opens and button taps are counted anonymously (counts only, no team data)
+  pass  X-10  Tapping a built-team tile opens that Pok├⌐mon's info sheet
+  pass  X-11  Pages draw from the daily data (cores, archetype counts, sets numbers)
+  pass  X-12  Settings and team are saved: Megas on team 1 survives a reload (account and this browser)
+  pass  AUTO-01  Build page head and the How It Works fold
+  pass  AUTO-02  Build from My box / Whole roster: box count, switching rebuilds, choice is remembered
+  pass  AUTO-03  Pool rules: a tiny box says how many are usable; Never-suggest Pok├⌐mon are never built in
+  pass  AUTO-04  Megas on team: 0 rebuilds a no-Mega team with the warning toast; one value shared on all pages
+  pass  AUTO-05  Build around a Pok├⌐mon: chip, button label, every option has it, ├ù clears, not saved
+  pass  AUTO-06  "Build around it" on an info sheet opens Build with the pick, Whole roster, and builds
+  known AUTO-07  Build me a team: busy state with the spinner line, then a team card  -> Build button should be the main (yellow) button before results
+  pass  AUTO-08  Result card: kicker, title, option count, Strength Score + band + rank, six tiles with items, readiness, checks, why, Sets and roles
+  pass  AUTO-09  Proven teams lead; a Fresh take slides in as option 2
+  pass  AUTO-10  Use this team: your six become the built six, My team opens, toast with Undo
+  pass  AUTO-11  Save the built team: toast, "Already saved", listed in Saved teams; disabled at 10
+  pass  AUTO-12  Try another cycles the options and wraps; hidden with a single option
+  known AUTO-13  Copy for Showdown copies the built six as Showdown text  -> timed out waiting for toast /Copied/
+  pass  AUTO-14  No-result notes (tiny box, no Mega-capable box) with no "Doubles" label
+  known AUTO-15  Start from a recent winner: three cards; Sets; Load team needs a second tap; Practice against; Compare  -> fold heading missing /3 winning teams, full sets, ready to load/: ┬½5 Plots that worked Real winners at recent tournaments. Borrow one. 9-1 1st place of 66 players ┬╖ Nov 9 Load Team Amyverse VGC Champions Arena #18 Full sets ΓÇ║ Pelipper Mega Venusaur Archaludon Mega Charizard Y Grimmsnarl Annihilape C
+  pass  AUTO-16  Build page order: Build me a team, How it works, Build around a core, Start from a recent winner (kept after a build)
+  pass  CORES-01  Cores head, intro line with team count and ranking, and the ? explanation
+  pass  CORES-02  Kind switch: Pairs, Trios, Full teams (not saved)
+  pass  CORES-03  Sort: Most used changes the ranking line and order
+  pass  CORES-04  Filter by a Pok├⌐mon: chip, only cores with it, ├ù clears
+  pass  CORES-05  Core rows: rank, names, tags, % wins; Details shows points vs avg, teams, % of all teams; top 3 then a fold
+  pass  CORES-06  Show more adds 15 rows
+  pass  CORES-07  Add to my team puts the core on a full team, opens My team, toast with what left, Undo
+  pass  CORES-08  Full teams ΓÇ║ Load team replaces the six (no confirm), opens My team, toast with Undo
+  pass  CORES-09  Teams with it opens Winning teams filtered by the core
+  pass  CORES-10  Practice against (full teams) sets the Battle opponent
+  pass  CORES-11  Copy for Showdown (full teams) gives six blocks
+  pass  CORES-12  Empty state: a filter with no cores says so
+  pass  CORES-13  Menu ΓÇ║ Build around a core opens Build scrolled to the cores
+  pass  BUILD-01  Edit panel: Edit set opens "Edit <name>" with the six strip; strip switches; Remove with Undo; Esc closes
+  pass  BUILD-02  Team actions: Save team names and saves (then "Update saved team"); Γï» ΓÇ║ Clear team empties with Undo
+  pass  BUILD-04  A locked Pok├⌐mon is never swapped out (All suggestions, cores)
+  pass  BUILD-06  Problems and team checks: summary line, a Speed control row with fixes; Quick add puts the pick on the team with Undo
+  known BUILD-07  Plan settings: Pick from, Swap my Mega, Count abilities, Refresh, Never suggest (with toasts, saved)  -> summary missing /Box \+ catch, 2 Megas/: ┬½Suggest from My Box Box + Catch Whole Roster Megas on team 0 1 2 Swap my Mega? No Yes Count Abilities? No Yes┬╗
+  pass  COV-01  All suggestions head; reached from "See all suggestions ΓÇ║"; ΓåÉ My Team goes back
+  pass  COV-02  Opening after a team change shows at once with a working line, then the cards
+  pass  COV-03  Suggest from My box / Whole roster changes the list and is remembered (separate from My team's)
+  pass  COV-04  Swap/add cards: "Pok├⌐mon to Add" on a short team, "One Pok├⌐mon In, One Out" on a full one, with their details
+  known COV-05  Swap/Add applies in place with a toast and Undo  -> left the page
+  pass  COV-06  Only 3 cards first; "N More Swaps ┬╖ Showing 3 of N" unfolds the rest; More suggestions loads more
+  known COV-07  Nothing improves: the honest note pointing to Whole roster  -> note missing Nothing in your box improves this team without costing something (every swap gives up some defense, offense, readiness for a top threat or a game-plan job). Try "Whole roster" to see what to catch.: ┬½Γ£ò 1 optional swap All Suggestions Nothing to fix. Your team has every basic and no swap
+  known COV-08  Too few Pok├⌐mon: note and Go to My team  -> note missing Add at least two Pok├⌐mon on My team to get suggestions.: ┬½Γ£ò 15 suggestions All Suggestions Every change the planner found for your team, best first, each with how it moves the Strength Score. Suggest from My Box Box + Catch Whole Roster Pok├⌐mon to Add Suggestion 1 + Gholdengo To catch S
+  pass  COV-09  Game-plan gap note shows on All suggestions when nothing in the pool closes the gap
+  pass  COV-11  Bigger plans fold: settings, multi-change suggestions only, hint
+  known COV-12  How Scoring Works lives at the bottom of My team  -> not at the bottom
+  pass  SUGG-01  One planner everywhere: My team, Bigger plans and the threat sheet show the same top suggestion
+  pass  SUGG-02  My team sliders Suggest from / Megas / Swap my Mega are the same settings as Plan settings
+  pass  SUGG-03  My team suggestion card: out ΓåÆ in, score chip, lane line, Apply, Why? reasons
+  pass  SUGG-04  Bigger plans card: Suggestion N ┬╖ K changes, score, lane, rows with set line, more reasons, Apply suggestion N
+  pass  SUGG-05  Planner rules: locked Pok├⌐mon stay; Pok├⌐mon just swapped out are not offered back
+  pass  SUGG-06  Lanes: Fix / Small edge / Option lines on My team and on every All suggestions card
+  pass  SUGG-07  Add Protect card: shown when few run Protect; Add Protect puts it in their sets
+  pass  SUGG-07b  Add Protect: the toast offers Undo, and Undo takes Protect back out
+  pass  SUGG-08  Nothing to fix: card with Battle and Sets, then side-grades that keep every check
+  pass  SUGG-09  Apply: writes the plan, keeps the place under your finger, toast with the score move and Undo
+  pass  SUGG-10  Undo bar: shows on My team and Bigger plans, steps back with "Undone: ΓÇª", disappears after another change
+  pass  SUGG-11  Show N more suggestions opens the next ones, then See all suggestions ΓÇ║ opens All suggestions
+  pass  SUGG-12  Bigger plans ΓÇ║ More suggestions adds 3 per tap
+  pass  SUGG-13  While suggestions are worked out after an edit, the old ones fade and cannot be tapped, then refresh
+  pass  SUGG-14  No-plan messages: nothing for an empty team; Bigger plans says no change raises the score
+  known SUGG-14b  No-plan wording is exact: the score as shown elsewhere, and no "no change" verdict while still working  -> score in the no-plan note missing /\(it's at \d+\)\./: ┬½1 optional swap All Suggestions Nothing to fix. Your team has every basic and no swap clearly beats it in real games. Every change the planner found for your team, best first, each with how it moves the Strength Score. Suggest from My Box Box +
+  pass  SUGG-15  Mega-over-goal note and game-plan gap note on My team and All suggestions
+  known SUGG-16  Fix your items first: Item Clause card, Give X Y with Undo, card gone  -> card missing Fix your items first: ┬½19 suggestions All Suggestions Every change the planner found for your team, best first, each with how it moves the Strength Score. Suggest from My Box Box + Catch Whole Roster One Pok├⌐mon In, One Out Suggestion 1, 1 change +3 (81 ΓåÆ 84) Fix two of your Pok├⌐mon hol
+  known SUGG-17  Set check tips: a rare item gets "X: Y instead of Z" with Use Y  -> tips heading missing /Set Check: What Most Players Run/i: ┬½20 suggestions All Suggestions Every change the planner found for your team, best first, each with how it moves the Strength Score. Suggest from My Box Box + Catch Whole Roster One Pok├⌐mon In, One Out Suggestion 1, 1 change +4 (81 ΓåÆ 85) Opti
+  pass  SUGG-19  Threat sheet Best fix: shows the fix and Apply this fix applies it
+  pass  SUGG-19b  Threat sheet Best fix: the sheet closes after Apply this fix
+  pass  SETS-01  Popular sets head and the Rating ┬╖ Usage ┬╖ Sets switch
+  pass  SETS-02  Look up a Pok├⌐mon shows its sets, empties the box, and is remembered
+  pass  SETS-03  Your team picker: six tiles, the shown one highlighted on first open, tap switches
+  pass  SETS-04  Which Pok├⌐mon opens first: last looked up, else first team member, else the top-rated
+  pass  SETS-05  Pok├⌐mon header: tier, rating, rank, and your own set when it is on your team
+  pass  SETS-06  Source switch Best data ┬╖ Tournaments ┬╖ Showdown changes the numbers and is remembered
+  pass  SETS-07  Set card: moves, item, ability, nature, teammates (tap ΓåÆ their sets), source note
+  known SETS-08  Ways in: Nothing-to-fix Sets button, the editor's Full popular sets, the info sheet  -> nothing visible to tap matching /^Sets$/
+  pass  ARCH-01  Archetypes head and the Winning teams ┬╖ Events ┬╖ Archetypes switch
+  pass  ARCH-02  Share line from the latest top teams
+  pass  ARCH-03  Eight guides, most common first, each with share and basis
+  pass  ARCH-04  Guide body: what it does, Key Pok├⌐mon, How to beat it, What your team has
+  pass  ARCH-05  Archetype words label teams elsewhere (My team, built teams)
+
+behaviour: 77 pass, 0 FAIL, 14 known bugs, 0 fixed?, 0 skipped; 665s  (webkit, adapter v2)

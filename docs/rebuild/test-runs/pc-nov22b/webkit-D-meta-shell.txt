@@ -1,0 +1,169 @@
+  known NAV-01  Desktop main tabs: five tabs, Meta lit on Meta pages, live x/6 count  -> count is null
+  pass  NAV-02  Phone bottom bar: five tabs, stays put while scrolling, each opens its page
+  pass  NAV-02b  Desktop has no bottom bar
+  skip  NAV-03  The Γï» menu lists the 24 pages, marks the current one, traps focus, closes 4 ways  (old-site design; the new site's approved version is NAV-03v (Sim, Nov 16, batch 17))
+  known NAV-03b  The Γï» button looks "on" only on pages outside the five main tabs (About & Legal)  -> Γï» on-state: Ratings false, This Week false, About false
+  known NAV-04  Meta section switch Pok├⌐mon | Tournaments  -> This Week shows the section switch
+  known NAV-05  Second-level sliders Rating/Usage/Sets and Winning Teams/Events/Archetypes  -> Tournaments slider: {"items":["Winning Teams","Events","Archetypes","This Week"],"selected":"Winning Teams","announced":["Winning Teams"]}
+  pass  NAV-05b  The slider tells screen readers the page that is shown (one choice marked)
+  known NAV-06  Back links on Meta sub-pages  -> This Week: back link "null"
+  skip  NAV-07  Each Meta page opens at its top, named, and marked in the menu  (old-site design; the new site's approved version is NAV-07v (Sim, Nov 16, batch 17))
+  known NAV-08  Back steps through pages to the same scroll place, closes the sheet first; no page in the address  -> Back landed at 0, was 701
+  skip  NAV-09  A new page opens at its top  (old-site design; the new site's approved version is NAV-09v (Sim, Nov 16, batch 17))
+  known NAV-10  Keyboard focus stays inside an open Pok├⌐mon sheet  -> focus left the sheet after 13 Tabs
+  known NAV-11  Section colours: all Meta pages share one accent; Battle, Home, Build, My Team differ  -> section colours not distinct: {"Ratings":"RGB(0, 120, 191)","Usage":"RGB(0, 120, 191)","Popular Sets":"RGB(0, 120, 191)","Winning Teams":"RGB(0, 120, 191)","Events":"RGB(0, 120, 191)","Archetypes":"RGB(0, 120, 191)","This Week":"RGB(0, 120, 191)","Track Record":"RGB(0, 120, 191)","How We Calculate":
+  pass  BROKEN-04  Reload reopens the page you were on
+  pass  JUMP-01  Search opens from the header button, Ctrl+K (toggles) and "/" (not while typing)
+  pass  JUMP-01b  Phone: the search is an icon button in the header
+  known JUMP-02  Empty search lists 14 tools, Home first, each with a description  -> a tool row lacks a description or Tool label
+  known JUMP-02b  Phone: the "Tool" label is hidden  -> Tool label shows on a phone
+  known JUMP-03  Typing finds Pok├⌐mon (with rating and types), saved teams, and says when nothing matches  -> Garchomp row: Rated 92, S tier Dragon Ground
+  known JUMP-04  Choosing results: arrows+Enter open a Pok├⌐mon sheet, a tool opens its page, a saved team loads, Esc and backdrop close  -> ArrowDown did not move the highlight
+  pass  JUMP-05  Search finds the tools it lists (e.g. "speed" ΓåÆ Speed Tiers)
+  known BROKEN-10  Search finds every menu page, under its menu name  -> not findable by its menu name: Build for Me, Battle a Team, Pok├⌐mon Ratings
+  known THEME-01  Day/night button switches to Dark, saves it, and agrees with the menu picker  -> did not turn dark
+  pass  THEME-01b  A dark choice survives a reload
+  skip  THEME-02  Menu Auto / Light / Dark: Auto follows the device, Light and Dark override it  (old-site design; the new site's approved version is THEME-02v (Sim, Nov 16, batch 17))
+  pass  THEME-03  Share image has its own Light/Dark choice (see WEEK-02)
+  pass  SHELL-01  Tab title, icon and the slanted Unbounded headline font
+  pass  SHELL-01c  Tab title follows in-app navigation (Ratings, Damage Calc, Events), not only the first load
+  known SHELL-02  Header controls in order, nothing overflowing (desktop)  -> header controls: NastyPlot, Home | Home | Build | My Team | Battle | Meta | Search Pok├⌐mon, tools and teams | My Box | Day mode is on. Switch to auto: follow your device | All 10 Gifts ΓÇ║ | All 67 Stories ΓÇ║
+  known SHELL-02b  Header on a phone: logo, search, day/night, Γï»  -> phone header: NastyPlot, Home | Search Pok├⌐mon, tools and teams | My Box | Day mode is on. Switch to auto: follow your device | All 10 Gifts ΓÇ║ | All 67 Stories ΓÇ║
+  pass  SHELL-03  "Data as of" dates show on the pages
+  known SHELL-04  Stale data gets an amber note on Home and Meta pages only  -> Home: note Some data is older than usual: Tournament sets, tournament win rates, top teams, win model, in-game rankings, team preview practice and ratings track record, last updated Nov 10; events, last updated Nov 13. Everything else is current.
+  pass  SHELL-04b  Fresh data: no stale-data note
+  known SHELL-05  A new regulation shows a calm banner with its start date and event count  -> Home: banner New regulation: Reg M-D started Nov 8, 2026. Numbers are from Reg M-C until there's enough Reg M-D data; the two are never mixed. 3 Reg M-D events so far, switches at 20. Some data is older than usual: Tournament sets, tournament win rates, top teams, win model, events, in-game rankings
+  known SHELL-06  Footer: tagline, disclaimer, sources and links into About  -> footer: NastyPlot is an unofficial, fanΓÇæmade tool, not affiliated with Nintendo, The Pok├⌐mon Company or Game Freak; Pok├⌐mon names are trademarks of their owners. Data as of Nov 10 (12 days old). How We Calcul
+  pass  SHELL-07  Toast with Undo after loading a team; Undo brings your team back
+  known SHELL-07b  A plain toast goes after about 2 s; an Undo toast stays about 6 s  -> plain toast still showing after 3 s
+  pass  SHELL-08  Undo bar steps back through applied suggestions (My Team pages)
+  known SHELL-09  "?" tips: one at a time, link to How We Calculate, close on scroll / Escape / second tap  -> no small picture on the tip
+  pass  SHELL-10  The ├ù in a search box empties it and brings the full list back
+  known SHELL-11  Long paragraphs fold to More / Less  -> footer disclaimer has no More
+  skip  SHELL-12  Text style: Title Case page names, commas not dots in lists, "Mega X" naming  (old-site design; the new site's approved version is SHELL-12v (Sim, Nov 16, batch 17))
+  pass  SHELL-13  Sliding pickers: one choice at a time, the list follows (Usage source)
+  pass  SHELL-14  Folds remember open/closed across a reload
+  known SHELL-15  "Details" shows the sample sizes behind the top list  -> label: Grandstand
+  known SHELL-16  A rarely used Pok├⌐mon shows "Early read"  -> no tile marked as an estimate on the board
+  known SHELL-17  First visit: the welcome card shows on Home; "Got it" removes it for good  -> welcome card lacks How NastyPlot works
+  pass  SHELL-17b  Welcome card "Copy a top team" opens Winning Teams
+  pass  SHELL-17c  Returning visitors never see the welcome card
+  pass  SHELL-18  What's new shows once after an update, stays for the visit, ├ù dismisses it
+  pass  SHELL-18b  First-time visitors never see What's new
+  pass  SHELL-19  First visit starts with the real sample team and a note
+  known SHELL-20  Feedback: anonymous, no name/email fields, too-short check, sent with personal details removed  -> dialog does not name the page: ABOUT ┬╖ TIP US OFF Tell us what's off. Spotted a bug, a wrong number or a better idea? It goes straight to the people who make NastyPlot. 1 The tip. what kind o
+  known SHELL-20b  "Report a mistake" on a sheet sends what was on screen  -> mistake dialog: ABOUT ┬╖ TIP US OFF Tell us what's off. Spotted a bug, a wrong number or a better idea? It goes straight to the people who make NastyPlot. 1 The tip. what kind of note is it? It's something broke confu
+  pass  SHELL-20c  Viewers who cannot save see no feedback buttons
+  known SHELL-21  Owner-only panels on Home: feedback and what people use  -> owner panels missing
+  pass  SHELL-21b  Owner panels are absent for a viewer without an account
+  pass  SHELL-22  Page visits are counted anonymously (saved when the tab is left)
+  known SHELL-23  Saved Teams says where teams are saved (account vs this browser)  -> no account note
+  pass  SHELL-23b  Without an account: "Saved in this browser only"
+  skip  SHELL-23c  A change on another device arrives live with a toast  (needs a second device pushing a live change; the fake account fires its snapshot once (kit change needed: a push helper))
+  known SHELL-24  Shared team link: banner, Not now keeps your team and clears the address; Load it loads  -> nothing visible to tap matching /^Load it$/
+  pass  SHELL-25  Box link opens My Box with the link pasted and Add / Replace ready
+  pass  SHELL-26  Copy for Showdown gives six Showdown blocks at Level 50
+  pass  SHELL-27  Share card: tall image, Light/Dark, Save image downloads a PNG
+  known SHELL-28  Darkrai on empty screens and tips, never beside ratings  -> not in v2 yet: Darkrai on empty screens: cut from the rebuild by Sim (Nov 11, CLAUDE.md), replaced by the rotating featured underdog
+  pass  SHELL-29  With no live data the pages still work from the built-in snapshot
+  pass  SHELL-30  A fast double tap on "Add to team" adds once
+  pass  SHELL-31  Keep your place: a tapped filter chip stays under the finger
+  pass  SHELL-32  Reduced motion: no page fade and no shimmering S cards
+  known SHELL-32b  Without reduced motion the page fades in on switch  -> no page fade on switch (so SHELL-32 could not fail)
+  pass  SHELL-33  Every Pok├⌐mon on Ratings stands on its own colour field; Megas get the Mega contour
+  pass  SHELL-34  Broken data for one page never breaks the others
+  pass  RATE-01  Ratings head: kicker with team count and date; "How ratings work ΓåÆ" opens the method section
+  pass  RATE-02  Ratings search by name or type, with a match count
+  pass  RATE-03  Filter: two types at most, flags, badge count, Clear
+  pass  RATE-04  No matches: clear message and "0 of N match"; empty box message
+  pass  RATE-05  Top of the ratings: #1 first, rows in rating order, 20 on desktop; a row opens its sheet
+  pass  RATE-05b  Phone: the top list is shorter (16 rows)
+  pass  RATE-06  Details on the top list shows win % and games
+  pass  RATE-07  Every Pok├⌐mon, by Tier: six tier rows, "+N more" / "Show fewer", remembered
+  pass  RATE-08  About the Ratings: track record line and four number cells
+  pass  RATE-09  Rating bands: tier letter matches the number everywhere on the board
+  pass  RULE-RATING-ONE-NUMBER  A Pok├⌐mon's rating is the same number on Ratings, its sheet, search and Popular Sets
+  known SHEET-01  Sheet opens from any Pok├⌐mon, closes with Γ£ò / backdrop / Escape / Back, focus returns (PKMN-01)  -> Escape did not close
+  known SHEET-02  Sheet header: rating with tier and rank, types, % of teams, win rate and games (PKMN-02)  -> no tier/rank
+  pass  SHEET-02b  Phone sheet fits the screen
+  known SHEET-03  Sheet tabs Info | Meta | Rating; the last tab is remembered (PKMN-04)  -> tabs: 
+  known SHEET-03b  First visit opens the sheet on Info  -> Cannot read properties of undefined (reading 'name')
+  skip  SHEET-03c  Sideways swipe moves to the next sheet tab  (touch swipe gestures are not reliably simulated headless; check on iPhone)
+  known SHEET-04  Info tab: usual set, stats, abilities with share, weaknesses, speed builds (PKMN-05)  -> usual set / stats missing
+  pass  SHEET-05  Meta tab: typical set, move and item bars, "Brought with" partners open their sheet (PKMN-06)
+  pass  SHEET-06  Rating tab: why it rates N, what the data says, other tier lists open a new tab (PKMN-07)
+  known SHEET-07  Sheet actions: Add to team, Build around it, Popular Sets (PKMN-03)  -> full team not said
+  pass  META-01  Usage source line names the source and size
+  pass  META-02  Usage source switch changes the list; starts on Online tournaments again after a reload
+  pass  META-03  Usage search filters every rank; says when nothing matches
+  pass  META-03b  The "rest of the list" button hides while searching
+  pass  META-04  Usage rows: rank, name, types, usage and team count; trend badges where ranks moved
+  pass  META-05  Expanded usage row: bars "Of N teams", teammates, Add to team
+  pass  META-06  Top 10, then "Ranks 11ΓÇô60" shows the rest and flips
+  pass  META-07  Usage without data says so
+  pass  BROKEN-13  No-data message works on the public site (does not mention Claude)
+  pass  SETS-01  Look up a Pok├⌐mon: its sets show and stay after reload (B SETS-02)
+  pass  SETS-02  Your Team row: tap a member to see its sets (B SETS-03)
+  pass  SETS-03  Default: your first team member, else the #1 rated Pok├⌐mon (B SETS-04)
+  pass  SETS-03b  Default with no team: the #1 rated Pok├⌐mon
+  pass  SETS-04  Set head: tier pill and "Your <Pok├⌐mon>: Ability @ Item, moves" (B SETS-05)
+  pass  SETS-05  Sets source switch Best data / Tournaments / Showdown, remembered (B SETS-06/07)
+  pass  TOP-01  Winning Teams source line with update date
+  pass  TOP-02  Team search: suggestions with kind and count; Enter makes a chip; nonsense says so
+  pass  TOP-03  Team search results: count, "Often with" adds a filter, cards with matches
+  pass  TOP-04  Your Team strip: checks badge with six; asks for six when not full
+  pass  TOP-04b  Your Team strip with five Pok├⌐mon asks to add six
+  pass  TOP-05  Team list: top 3, "More Winning Teams" shows more, "Show fewer" folds back
+  pass  TOP-06  Card actions: Load team (confirm, Undo), Practice against, Compare
+  pass  TOP-07  Winning Teams without data says so
+  pass  EVT-01  Events head: total, online and official counts, "?" explains
+  known EVT-02  Next events calendar: countdowns, Show all, recent results open the event  -> rows: 2
+  pass  EVT-03  Event filter Official keeps only official events
+  known EVT-04  Event list 12 at a time with "Show more"  -> cards: 13
+  pass  EVT-05  Event detail: placings 1stΓåÆ16th, opens at top, "ΓÇ╣ All events" returns
+  pass  EVT-06  Team sheet card: Sets shows items/moves; Load team needs a second tap and loads the exact sheet
+  pass  EVT-07  Events without data: empty note
+  pass  ARCH-01  Archetype list sorted by share with team counts (B ARCH-03)
+  pass  ARCH-02  Inside a guide: how to beat it and what your team has (B ARCH-04)
+  pass  WEEK-01  This Week head: two date ranges, team and event counts, Share button
+  pass  WEEK-02  Share this week opens a 1200-wide image
+  pass  WEEK-02b  Without data, Share says "Nothing to share yet"
+  pass  WEEK-03  Rising and Falling: "a% ΓåÆ b% of teams", points; tap opens the sheet
+  pass  WEEK-04  Most used this week: five tiles open their sheet
+  pass  WEEK-05  New tech: kind word, "a% ΓåÆ b% of its teams", Details shows team counts
+  pass  WEEK-06  Winners this week open that event on Events
+  pass  WEEK-07  Team styles with % and real changes only
+  pass  WEEK-08  New in top cut: first top 8 this regulation, or "nothing new"
+  pass  WEEK-09  How we decide what changed: fold with thresholds and date
+  pass  WEEK-10  This Week without data: empty note
+  pass  WEEK-11  Kind marker: icon and word, never colour alone
+  pass  TRACK-01  Track Record head and stats
+  pass  TRACK-02  How the check works: three steps and the fair-test line
+  pass  TRACK-03  Top-8 teams by the rating we gave: four bands and a verdict
+  pass  TRACK-04  Biggest hits and misses open their sheet
+  pass  TRACK-05  Week by week chart (or the "from about" note)
+  pass  TRACK-06  Coming as the data grows: with only 3 events it lists the verdict and misses still to come
+  pass  TRACK-06b  With 34 events the "coming" list is gone (everything is shown)
+  pass  TRACK-07  Events Checked fold: one row per event checked, remembered
+  pass  TRACK-08  Track Record link and empty state
+  pass  TRACK-08b  Track Record without data: Collecting
+  pass  METHOD-01  How We Calculate head: freshness, team and game counts
+  pass  METHOD-02  How to read our numbers: rating bands and Strength Score bands with the approved words
+  pass  METHOD-03  Ten remembered sections; each opens with content
+  pass  RULE-WORDS  Meta pages, menu and search use the approved words (Matchups, Strength Score, Test runΓÇª)
+  pass  METHOD-04  Links and tips open How We Calculate at the right section
+  pass  METHOD-05  Track Record card opens Track Record
+  pass  DUP-12  Every data source named in How We Calculate is credited in About and the footer
+  pass  ABOUT-01  About head with the four chips
+  known ABOUT-02  Eight sections; Privacy promises no names, no cookies; folds are not remembered  -> section missing or open: Privacy
+  pass  ABOUT-03  Contact email hidden until "Show email"; then a mail link and Copy
+  known ABOUT-04  Footer About & Legal opens at the top; Contact opens Removal & Contact in view  -> nothing visible to tap matching /^About & Legal$/
+  pass  ABOUT-05  Rules caption under legality statements elsewhere
+  (FAILSHOT: page.screenshot: Target page, context or browser has been closed)
+  FAIL  NAV-03v  Header lists the five places and marks the current one; Search opens, keeps focus inside, closes 3 ways  -> Tab left Search after 1 presses
+  pass  NAV-07v  Each Meta page opens at its top, with one headline and its tab title, and Meta lit in the header
+  pass  NAV-09v  A new page opens at its top
+  pass  THEME-02v  Day/Night: with no choice saved the page follows the device; the button's choice then holds
+  pass  SHELL-12v  Text style: Title Case place names, "Mega X" naming in Search
+
+behaviour: 116 pass, 1 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 536s  (webkit, adapter v2)
