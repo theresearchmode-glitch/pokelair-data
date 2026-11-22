@@ -20,6 +20,12 @@
 button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{background:var(--plate);color:var(--on-plate)}
 :root[data-theme="night"] .np-chip[aria-pressed="true"],:root[data-theme="night"] .np-chip.on{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
 .np-type{display:inline-flex;align-items:center;min-height:28px;padding:0 var(--s4);font:700 var(--t13)/1 var(--b);color:var(--on-type);background:var(--tc,var(--type-none));clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+/* type symbols (Sim approved the look, Nov 21, 3:35 PM): the symbol before the word, white on the type colour like the word; 12px sides as in the mock */
+.np-type.sym{gap:var(--s1);padding:0 var(--s3)}.np-type .k-tyi{width:16px;height:16px}
+/* phones: 6px before the symbol, a 2px gap and 8px after the word (the slant needs the 8px, or the last letter is cut), so a chip with
+   its symbol is exactly as wide as the chip was before (16 + 16 = 6 + 16px symbol + 2 + 8); no row of chips wraps where it didn't before
+   (measured 320-430: My Team, Type Chart, Pokémon page, search) */
+@media (max-width:699.98px){.np-type.sym{gap:2px;padding:0 var(--s2) 0 6px}}
 /* tabs */
 .np-tabs{display:flex;gap:var(--s8);border-bottom:1px solid var(--rule)}
 .np-tabs a,.np-tabs button{position:relative;padding:var(--s3) 0;font:600 var(--t15)/1.2 var(--b);color:var(--ink-2);white-space:nowrap;min-height:var(--tap)}

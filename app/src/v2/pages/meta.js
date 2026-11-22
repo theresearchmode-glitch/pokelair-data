@@ -21,7 +21,7 @@ V2.raRow = x => { const E = V2.esc, p = x.p, r = x.r, k = lairRank(p), N = V2.ra
   const tag = mine ? '<span class="ra-mine"><i aria-hidden="true"></i>On your team</span>' : '';
   return `<button type="button" class="ra-row" data-v2mon="${E(p.n)}" data-raspot="${E(p.n)}" aria-label="${E(p.d)}, rated ${RS(r.total)}${k ? ', number ' + k.rank : ''}${N.u != null ? ', on ' + E(V2.raPct(N.u)) + ' of teams' : ''}${N.w != null ? ', ' + E(winFmt(N.w)) + ' wins in ' + Math.round(N.g).toLocaleString('en-US') + ' games' : ''}${mine ? ', on your team' : ''}: open its page">
     <span class="ra-rk u">${k ? k.rank : '–'}</span>${V2.mon(p.n, {bare: true})}
-    <span class="ra-nm"><span class="ra-nl"><b>${gem ? '<span class="ra-gem" title="Hidden gem">◆</span> ' : ''}${V2.nameHtml(p.d)}</b>${tag}</span><span class="ra-ty">${p.t.map(V2.typeChip).join('')}</span>
+    <span class="ra-nm"><span class="ra-nl"><b>${gem ? '<span class="ra-gem" title="Hidden gem">◆</span> ' : ''}${V2.nameHtml(p.d)}</b>${tag}</span><span class="ra-ty">${p.t.map(V2.typeWord).join('')}</span>
       <span class="ra-ph">${N.u != null ? `<b>${E(V2.raPct(N.u))}</b> of tournament teams` : ''}${N.w != null ? ` · <b>${E(winFmt(N.w))}</b> win rate` : ''}</span></span>
     <span class="ra-bar" aria-hidden="true"><i style="width:${RS(r.total)}%"></i></span><span class="ra-sc u"${bandAt(r.total)}>${RS(r.total)}${unsure ? '<small title="Few games: an estimate">?</small>' : ''}</span>
     <span class="ra-ut">${N.u != null ? `${E(V2.raPct(N.u))}` : '–'}</span><span class="ra-wr">${N.w != null ? `<b>${E(winFmt(N.w))}</b><small>${E(V2.raGames(N.g))}</small>` : '<b>–</b><small>too few games</small>'}</span></button>`; };
