@@ -221,3 +221,7 @@
   .tmk-head .k-sent{font-size:var(--t17)}
   .tmk-work .mtf{margin-left:0}
 }
+/* 700-1023 (Nov 22, v2-rmjump: Remove must not move the page, Sim Nov 18): after Remove, "Saved ✓" becomes the wider Save Team pill, which
+   wrapped the one-line link row at 820-917 and pushed the six down 44px. Here the six links always sit three to a row (two even rows, as
+   on phones 380-699), so the row is the same height saved or not. 1024 and up keep one line (both states fit, measured). */
+@media (min-width:700px) and (max-width:1023.98px){.tmk-head .mtf-acts{display:grid;grid-template-columns:repeat(3,max-content);gap:0 var(--s6)}}

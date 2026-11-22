@@ -28,7 +28,10 @@ for (const th of ['light', 'dark']) for (const W of [320, 360, 390, 430]) for (c
     const behind = e => { for (let x = e; x; x = x.parentElement) { const cs = getComputedStyle(x); if (cs.backgroundImage && cs.backgroundImage !== 'none') return {img: x.className || x.tagName};
       const c = rgb(cs.backgroundColor); if (c.length === 3 || (c.length === 4 && c[3] === 1)) return {c: c.slice(0, 3)}; } return {c: [255, 255, 255]}; };
     const frame = !!document.querySelector('#main .mtf-rows');
-    const ls = [...document.querySelectorAll('#main .mtf-row .nm .mg, #main .mtf-sum .mtf-nav h2 .mg')].filter(x => !x.classList.contains('none') && x.getClientRects().length);
+    /* Nov 22: the war room (Sim approved Nov 21) draws each of the six as a kit card: "Mega" is its small form line (.k-form) above the name;
+       the bar's name (h2) is visually hidden on phones (kept for screen readers), so a label that isn't drawn (1px clip) is not counted */
+    const shown = x => { const q = x.getBoundingClientRect(); return x.getClientRects().length && q.width > 2 && q.height > 2 && !x.closest('[style*="clip"]') && getComputedStyle(x.closest('h2') || x).clipPath === 'none'; };
+    const ls = [...document.querySelectorAll('#main .mtf-row .k-form, #main .mtf-row .nm .mg, #main .mtf-sum .mtf-nav h2 .mg')].filter(x => !x.classList.contains('none') && (!x.matches('.k-form') || x.textContent.trim() === 'Mega') && shown(x));
     return {frame, labels: ls.map(x => { const cs = getComputedStyle(x), box = x.closest('.mtf-row, .mtf-nav'), c = box.getBoundingClientRect(), L = (() => { const g = document.createRange(); g.selectNodeContents(x); return g.getBoundingClientRect(); })() /* the word itself (the label is a full-width block) */, bh = behind(x);
       const pic = x.closest('.mtf-row') ? x.closest('.mtf-row').querySelector('img') : null, P = pic && pic.getClientRects().length ? pic.getBoundingClientRect() : null;
       const ov = P ? Math.max(0, Math.min(L.right, P.right) - Math.max(L.left, P.left)) * Math.max(0, Math.min(L.bottom, P.bottom) - Math.max(L.top, P.top)) : 0;
