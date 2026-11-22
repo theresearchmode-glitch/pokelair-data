@@ -92,7 +92,7 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
 .pl-mon img{max-width:88px;max-height:92px;object-fit:contain;filter:drop-shadow(0 6px 4px var(--rule))}
 .pl-mon:hover,.pl-mon:focus-visible{transform:translateY(-4px)}.pl-mon:focus-visible{outline:3px solid var(--ink);outline-offset:2px}
 .pl-catch::after{content:"";position:absolute;top:var(--s2);right:var(--s2);width:12px;height:12px;border:2px solid var(--bg);border-radius:50%;background:var(--pick)}
-.pl-seal{display:grid;justify-items:center;align-content:center;height:120px;border-radius:var(--r-l);background:var(--pick);color:var(--on-mark);box-shadow:inset 0 0 0 5px var(--pick),inset 0 0 0 7px var(--on-mark)}
+.pl-seal{display:grid;justify-items:center;align-content:center;min-height:120px;border-radius:var(--r-l);background:var(--pick);color:var(--on-mark);box-shadow:inset 0 0 0 5px var(--pick),inset 0 0 0 7px var(--on-mark)}
 .pl-seal small{font:700 var(--t13)/1.2 var(--b);letter-spacing:.08em;text-transform:uppercase}
 .pl-seal b{font-size:var(--d64);line-height:1}
 .pl-seal .w span{font-size:var(--t17)}
@@ -105,7 +105,7 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
 .pl-meta2 b{color:var(--ink)}.pl-meta2 .bd-brk{margin:0}
 @media (max-width:1199.98px){.pl-arow{grid-template-columns:minmax(0,1fr) 196px}.pl-tl{display:block;border-bottom:0;padding:0}.pl-six{margin-top:var(--s3);padding-bottom:var(--s1);border-bottom:2px solid var(--pick)}}
 @media (max-width:699.98px){
-  .pl-arow{grid-template-columns:minmax(0,1fr) 122px;gap:var(--s3)}.pl-seal{height:92px;box-shadow:inset 0 0 0 4px var(--pick),inset 0 0 0 6px var(--on-mark)}.pl-seal b{font-size:var(--t34)}.pl-seal small{font-size:var(--t13);letter-spacing:0}.pl-seal .w span{font-size:var(--t13)}
+  .pl-arow{grid-template-columns:minmax(0,1fr) 122px;gap:var(--s3)}.pl-seal{min-height:92px;box-shadow:inset 0 0 0 4px var(--pick),inset 0 0 0 6px var(--on-mark)}.pl-seal b{font-size:var(--t34)}.pl-seal small{font-size:var(--t13);letter-spacing:0}.pl-seal .w span{font-size:var(--t13)}
   .pl-title{font-size:var(--t22)}.pl-tm{font-size:var(--t17)}
   .pl-mon{width:calc((100vw - var(--s16)) / 6);height:60px}.pl-mon img{max-width:100%;max-height:56px}
   .pl-row .pl-go{margin-left:0;width:100%;justify-content:center}.pl-row .pl-w{display:none}

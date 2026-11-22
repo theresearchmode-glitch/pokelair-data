@@ -20,11 +20,11 @@
 .ra-h .ra-kk{margin-bottom:0} /* the Meta head is a grid with a 12px row gap (Review Nov 17 #4); the kit kicker adds no extra */
 @media (max-width:1099.98px){.rs-st{grid-template-columns:repeat(6,minmax(0,1fr));row-gap:var(--s6)}}
 @media (max-width:699.98px){
-  .rs-st{display:flex;gap:var(--s2);margin:0 calc(var(--s4) * -1);padding:var(--s8) var(--s4) var(--s1);overflow-x:auto;scroll-snap-type:x proximity;-webkit-mask-image:linear-gradient(90deg,var(--k-mask) 86%,transparent);mask-image:linear-gradient(90deg,var(--k-mask) 86%,transparent)}
+  .rs-st{display:flex;gap:var(--s2);margin:0 calc(var(--s4) * -1);padding:var(--s6) var(--s4) var(--s1);overflow-x:auto;scroll-snap-type:x proximity;-webkit-mask-image:linear-gradient(90deg,var(--k-mask) 86%,transparent);mask-image:linear-gradient(90deg,var(--k-mask) 86%,transparent)}
   .rs-st li{flex:0 0 76px;scroll-snap-align:start}
   .rs-b .np-mon{--iw:64px;margin-bottom:calc(var(--s4) * -1)}
-  .rs-col{height:calc(88px - var(--lv) * 4px);padding:var(--s5) var(--s1) var(--s1)}
-  .rs-sc{padding-right:var(--s2);font-size:var(--t24)}.rs-rk{font-size:var(--t15)}.rs-nm{min-height:0;margin-top:var(--s1);font-size:var(--t13)}.rs-nm small{font-size:var(--t13)}.rs-cap{display:none}
+  .rs-col{height:calc(88px - var(--lv) * 4px);padding:var(--s5) var(--s1) var(--s3)} /* the rating clears the 6px tier stripe */
+  .rs-sc{padding-right:var(--s4);font-size:var(--t24)} /* clears the 12px slant of the bar's right edge */.rs-rk{font-size:var(--t15)}.rs-nm{height:2.5em;min-height:0;margin-top:var(--s1);overflow:hidden;font-size:var(--t13)} /* one height in every view (Megas view: q21), room for the Mega line + one name line */.rs-nm small{font-size:var(--t13)}.rs-cap{display:none}
   /* the #1 card under the stairs: compact on phones (the stairs already show the ranking; approved mock: 72px picture) */
   .rs-on .gs-spot{grid-template-columns:96px minmax(0,1fr);gap:var(--s3)}.rs-on .gs-plate{min-height:0}.rs-on .gs-plate .np-mon{--iw:88px}
   .rs-on .gs-spot h2{font-size:var(--t24)}.rs-on .gs-big b{font-size:var(--t34)}.rs-on .gs-big small{display:none}.rs-on .gs-spot .ra-ty{display:none}
