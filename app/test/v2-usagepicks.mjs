@@ -16,7 +16,7 @@ const pick = async (p, k) => { await p.locator(`#main [data-ussrc="${k}"]`).firs
 
 // ---- Q13 A: opens on Online tournaments ----
 { const {ctx, p, errs} = await open('usage');
-  const s = await p.evaluate(() => ({glob: window.__ev('ui.metaSrc'), first: (document.querySelector('#main .us-p1 [data-uspick]') || {}).dataset?.uspick || '', want: window.__ev('(META.doubles_tour && META.doubles_tour.top[0] || {}).n'),
+  const s = await p.evaluate(() => ({glob: window.__ev('ui.metaSrc'), first: (document.querySelector('#main .us-sheet .ten[data-uspick]') || {}) /* kit reskin (Nov 22): the first row of the top ten (was the podium's #1 block) */.dataset?.uspick || '', want: window.__ev('(META.doubles_tour && META.doubles_tour.top[0] || {}).n'),
     line: (document.querySelector('#main .us-src') || {}).textContent || '', tourLine: window.__ev('V2.usLine ? V2.usLine(META.doubles_tour) : ""')}));
   const o = await on(p);
   ok(o === 'tour' && s.first === s.want && s.line === s.tourLine, `Q13 A: Usage opens on Online tournaments (chip on: "${o}"; #1 on the podium ${s.first}, tournaments' #1 ${s.want}; line "${s.line.slice(0, 60)}")`);
@@ -48,16 +48,16 @@ for (const W of [390, 1280]) { const {ctx, p} = await open('usage', W); const re
   ok(t.empty && /% of Showdown ladder teams/.test(t.txt) && !/% of ladder teams/.test(t.txt), `W2c: the empty My Team says "% of Showdown ladder teams" (${t.empty ? t.lab.slice(0, 140) : 'empty My Team not shown'})`);
   ok(/ of Showdown ladder teams/.test(t.ring) && !/ of ladder teams/.test(t.ring), `W2c: the old Home ringside (V2.homeRing, not drawn while The Stampede is Home) says "Showdown ladder teams" too`);
   await ctx.close(); }
-// ---- Podium/bench numbers (Sim, Nov 19): share, teams and place stack one per line at every width, none overflows its column ----
+// ---- Top-ten numbers (Sim, Nov 19, for the podium: share, teams and place each readable, none overflowing). Kit reskin proposal (hU1,
+// Nov 22): the podium became one row per rank, so the check reads the rows: share, teams and place each on one line, none past its row ----
 for (const theme of ['day', 'night']) for (const W of [320, 390, 700, 1100, 1440, 1920]) {
   const ctx = await b.newContext({viewport: {width: W, height: 900}}); const p = await ctx.newPage();
   await p.addInitScript(t => { window.__PL_TEST = 1; try { localStorage.setItem('np2.theme', t); } catch (e) {} }, theme);
   await p.goto('file://' + PAGE + '#usage', {timeout: 90000}); await p.waitForTimeout(2200);
-  const r = await p.evaluate(() => { const nums = [...document.querySelectorAll('#main .us-nums')]; const shared = [], over = [];
-    nums.forEach((n, i) => { const tops = [...n.children].map(c => Math.round(c.getBoundingClientRect().top)); if (new Set(tops).size !== tops.length) shared.push(i + ': ' + n.innerText.replace(/\s+/g, ' ')); });
-    // the numbers' own fit: .us-nums and each of its items stay inside their .us-tx column (the Pokémon name above is a separate check, not this one)
-    nums.forEach(n => { const t = n.closest('.us-tx'), R = t.getBoundingClientRect(); if (n.scrollWidth > t.clientWidth + 1 || [...n.children].some(c => { const r = c.getBoundingClientRect(); return r.left < R.left - 1 || r.right > R.right + 1; })) over.push(t.innerText.replace(/\s+/g, ' ').slice(0, 40)); });
-    return {n: nums.length, kids: nums.reduce((s, n) => s + n.children.length, 0), shared, over}; });
-  ok(r.n > 0 && r.kids >= r.n * 2 && !r.shared.length && !r.over.length, `podium ${theme} ${W}: each number in ${r.n} .us-nums on its own line (${r.shared.length} sharing a row${r.shared.length ? ': ' + r.shared.slice(0, 2).join(' | ') : ''}); ${r.over.length} .us-tx overflowing${r.over.length ? ': ' + r.over.slice(0, 2).join(' | ') : ''}`);
+  const r = await p.evaluate(() => { const rows = [...document.querySelectorAll('#main .us-sheet .ten')]; const wrap = [], over = []; let kids = 0;
+    rows.forEach(row => { const R = row.getBoundingClientRect(); for (const c of row.querySelectorAll('.us-u, .us-tm, .us-tr')) { kids++; const q = c.getBoundingClientRect(), lh = parseFloat(getComputedStyle(c).lineHeight) || 20;
+      if (q.height > lh * 1.5 + 2) wrap.push(c.innerText.replace(/\s+/g, ' ')); if (q.left < R.left - 1 || q.right > R.right + 1) over.push(c.innerText.replace(/\s+/g, ' ')); } });
+    return {n: rows.length, kids, wrap, over}; });
+  ok(r.n === 10 && r.kids >= r.n * 2 && !r.wrap.length && !r.over.length, `top ten ${theme} ${W}: share, teams and place of ${r.n} rows each on one line (${r.wrap.length} wrapping${r.wrap.length ? ': ' + r.wrap.slice(0, 2).join(' | ') : ''}); ${r.over.length} past their row${r.over.length ? ': ' + r.over.slice(0, 2).join(' | ') : ''}`);
   await ctx.close(); }
 await b.close(); console.log(`v2-usagepicks: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

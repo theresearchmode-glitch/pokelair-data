@@ -2,7 +2,7 @@
 //  C  (Q72) Home 700-1279: the Events and How We Calculate titles share one left edge (700-1099); the six "More tools" links sit in one
 //     row (700-1279) spread across the full width (700-1099); the headline "Same herd. Twelve tools." breaks after "herd." with
 //     "Twelve tools." whole on line 2 (700-1279, and phones as before); one line from 1280 as before.
-//  D1 (Q73) Usage podium benches, 320-599: a Mega name puts "MEGA" on the tag line (.gs-mg, as "Usually alongside" does), so every
+//  D1 (Q73) Usage podium benches (since the kit reskin proposal, Nov 22: the top-ten rows, see the D1 block), 320-599: a Mega name puts "MEGA" on the tag line (.gs-mg, as "Usually alongside" does), so every
 //     bench row's numbers sit level (0px spread); 600+ keeps "Mega Charizard Y" on the name line and level rows.
 //  D2 (Q74) Events and Gifts filter chips: at 320-430 the chips fill their row (0px empty); at 390-1440 each chip's words are centred
 //     in its 44px chip (top and bottom space within 2px).
@@ -51,21 +51,23 @@ for (const th of ['light', 'dark']) {
 
   // D1 + E1: Usage
   for (const W of [320, 360, 390, 430, 599, 600, 1024, 1440]) { const tag = `usage ${W} ${th}`, P = await open('usage', W, th);
-    const R = await P.p.evaluate(() => { const rows = [...document.querySelectorAll('.us-benches .us-bench')].filter(r => r.getClientRects().length);
-      const spread = rows.map(r => { const t = [...r.querySelectorAll('.us-nums')].map(n => n.getBoundingClientRect().top); return t.length ? Math.max(...t) - Math.min(...t) : 0; });
-      const megas = [...document.querySelectorAll('.us-benches .us-tx>b')].filter(x => /^Mega /.test(x.textContent.trim())).map(x => { const g = x.querySelector('.gs-mg');
-        const gr = g && g.getBoundingClientRect(), br = x.getBoundingClientRect(), cs = g && getComputedStyle(g);
-        return {txt: x.textContent.replace(/\s+/g, ' ').trim(), tag: !!g && cs.display === 'block' && g.textContent.trim() === 'Mega' && cs.textTransform === 'uppercase', inline: !g || cs.display === 'inline', h: br.height, lh: parseFloat(getComputedStyle(x).lineHeight)}; });
+    /* kit reskin (hU1, Nov 22, proposal): the podium benches are gone; the top ten is one row per rank (the call sheet). D1's aim, every
+       row's numbers level and Mega names whole, is checked on the rows: each share sits on its name's line, each row's parts stay inside
+       the row, and a name keeps its last word whole on one line (no "Mega Charizard / Y") */
+    const R = await P.p.evaluate(() => { const rows = [...document.querySelectorAll('.us-sheet .ten')].filter(r => r.getClientRects().length);
+      const spread = rows.map(r => { const u = r.querySelector('.us-u'), n = r.querySelector('.us-tx b'); if (!u || !n) return 99; const a = u.getBoundingClientRect(), z = n.getBoundingClientRect(); return Math.max(0, Math.abs((a.top + a.bottom) / 2 - (z.top + parseFloat(getComputedStyle(n).lineHeight) / 2)) - 6); });
+      const outR = rows.filter(r => { const R0 = r.getBoundingClientRect(); return [...r.querySelectorAll('.us-tx b, .us-u, .us-tm, .us-tr, .us-pb')].some(e => { const q = e.getBoundingClientRect(); return q.width && (q.left < R0.left - 1 || q.right > R0.right + 1 || q.top < R0.top - 1 || q.bottom > R0.bottom + 1); }); }).length;
+      const megas = rows.map(r => r.querySelector('.us-tx b')).filter(x => /^Mega /.test(x.textContent.trim())).map(x => { const rg = document.createRange(), t = x.firstChild, L = t.data.length, i = Math.max(0, t.data.lastIndexOf(' ') + 1); /* the last word: 'Charizard\u00a0Y' is one (usage.js joins a lone end letter) */
+        rg.setStart(t, i); rg.setEnd(t, L); const lines = new Set([...rg.getClientRects()].map(q => Math.round(q.top))).size; return {txt: x.textContent.trim(), tag: lines === 1, inline: lines === 1, h: x.getBoundingClientRect().height, lh: parseFloat(getComputedStyle(x).lineHeight)}; });
       const more = [...document.querySelectorAll('.us-more')].filter(x => x.getClientRects().length && /\d+ more/.test(x.textContent)).map(x => {
         const walk = document.createTreeWalker(x, NodeFilter.SHOW_TEXT); let tn, mr = null, ar = null; while ((tn = walk.nextNode())) { if (tn.parentElement.closest('.vh')) continue;
           const i = tn.data.indexOf('more'), j = tn.data.indexOf('›'), rg = document.createRange();
           if (i >= 0) { rg.setStart(tn, i + 3); rg.setEnd(tn, i + 4); mr = rg.getBoundingClientRect().right; } if (j >= 0) { rg.setStart(tn, j); rg.setEnd(tn, j + 1); ar = rg.getBoundingClientRect().left; } }
         return {t: x.textContent.replace(/\s+/g, ' ').trim(), gap: mr != null && ar != null ? ar - mr : null}; });
-      return {rows: spread.length, spread, megas, more}; });
-    ok(R.rows >= 2 && R.spread.every(s => s <= 0.5), `${tag}: every podium bench row's numbers level (${R.rows} rows, spread ${R.spread.map(r1).join('/')}px)`);
-    ok(R.megas.length > 0, `${tag}: a Mega on the benches to check (${R.megas.map(m => m.txt).join(', ') || 'none'})`);
-    if (W < 600) ok(R.megas.length && R.megas.every(m => m.tag), `${tag}: each bench Mega shows the MEGA tag line (${R.megas.map(m => `${m.txt}: ${m.tag ? 'tag' : 'no tag'}`).join('; ')})`);
-    else ok(R.megas.length && R.megas.every(m => m.inline && m.h <= m.lh * 1.5), `${tag}: Mega names read "Mega ..." on one line as before (${R.megas.map(m => `${m.txt} ${r1(m.h)}px`).join('; ')})`);
+      return {rows: spread.length, spread, megas, more, outR}; });
+    ok(R.rows === 10 && R.spread.every(s => s <= 0.5) && !R.outR, `${tag}: every top-ten row's share sits on its name's line, parts inside the row (${R.rows} rows, off by ${R.spread.map(r1).join('/')}px, ${R.outR} rows spilling)`);
+    ok(R.megas.length > 0, `${tag}: a Mega in the top ten to check (${R.megas.map(m => m.txt).join(', ') || 'none'})`);
+    ok(R.megas.length && R.megas.every(m => m.tag) && (W < 360 || R.megas.every(m => m.h <= m.lh * 1.5)), `${tag}: Mega names keep their last word whole, one line from 360 (${R.megas.map(m => `${m.txt} ${r1(m.h)}px${m.tag ? '' : ' split'}`).join('; ')})`);
     if (W < 700) { ok(R.more.length >= 2, `${tag}: the "N more ›" buttons to check (${R.more.length})`);
       ok(R.more.length && R.more.every(m => m.gap >= 2 && m.gap <= 5), `${tag}: a space before the › in every "N more ›" (${R.more.map(m => `"${m.t}" ${m.gap == null ? '-' : r1(m.gap)}px`).join('; ')})`);
       ok(R.more.length && R.more.every(m => /^\d+ more (moves|items|teammates) ›$/.test(m.t)), `${tag}: the spoken text still "N more moves ›" (${R.more.map(m => m.t).join(' | ')})`); }
