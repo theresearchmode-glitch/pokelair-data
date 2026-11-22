@@ -2037,3 +2037,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:06 PM: New rule (Sim): before answering a question or decision, list what I'd need to know that he hasn't told me; saved in CLAUDE.md and RULES.md 00m
 - 3:07 PM: Sim confirmed missing-info rule scope: only his questions/decisions; 'Nothing missing.' line always shown
 - 3:37 PM: Hourly check: 2 build helpers (hW2 This Week, hM About fix) as Sim allowed for Nov 22; main thread: merged batch check running; How We Calculate 'Updated' overlap fixed (qcheck 0 new)
+- 4:07 PM: Sim: 'Thank you this is fine with me' -> About (A the receipt) OK as built; desktop +403 within his +472
