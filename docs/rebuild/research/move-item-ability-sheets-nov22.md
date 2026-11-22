@@ -14,3 +14,7 @@ swipe/close back), not a page. Research only, nothing built. Their findings (loo
 - Suggested sheet: header facts; one plain sentence; doubles lines; usage + top users; who learns it (legal now); links to sets and calc;
   a "changed Dec 2" note. Ability interactions to check against Champions rules first.
 Note for this chat (Sim, Nov 22): the WHOLE section is designed and set up by another chat. This chat does not build or touch it; it keeps V2.kMove stable so their work merges cleanly.
+
+## Sim, Nov 22 (time: 11:29 AM (11:29:22)  date: Sun Nov 22, 2026)
+- Search must find every move, item and Ability and open its sheet (today: only those on winning team sheets, to Winning Teams).
+- The other chat sends a prompt, package and mock-up; the mock-up is a mock-up. We build it our way, with our rules and checks.

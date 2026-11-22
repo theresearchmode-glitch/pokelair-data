@@ -40,6 +40,18 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
+## SEARCH IS THE TYING POINT (Sim, Nov 22; logged time: 11:29 AM (11:29:22)  date: Sun Nov 22, 2026)
+Sim: "the info, abilities, pokemon, tools, everything on the site should be accessible easily from our search bar. i want that to be a tying point."
+Everything on the site is reachable from Search: every page and tool, every Pokémon, every move, item and Ability (each to its info sheet once
+those exist), team styles, types, saved teams. Any new page, sheet or feature is not done until Search finds it. Checked Nov 22 (shell.js
+openSearch): today Search finds pages, Pokémon, saved teams, team styles, and moves/items/Abilities ONLY if they are on winning team sheets
+(tsTerms, 3+ letters), and those open Winning Teams filtered, not an info sheet. Gaps: all other moves/items/Abilities; types by name.
+
+## OUTSIDE DESIGNS ARE INPUT, OUR RULES WIN (Sim, Nov 22; logged time: 11:29 AM (11:29:22)  date: Sun Nov 22, 2026)
+Sim: "the designer doesnt know our rules and how we do things. itll have the prompt and package but we do it how we do things in our way and
+the mock up is a mock up." The Moves / Items / Abilities sheets come from another chat as a prompt + package + mock-up. Treat the mock-up as
+a starting idea: build it our way (this file, RULES.md, the kit, the word list, Search, tests, Sim's yes with pictures).
+
 ## "STATUS REPORT" (Sim, Nov 22, 10:14 AM; a rule)
 When Sim says "status report": three short parts, nothing left out. NOW: what HH (main thread) and each helper are working on.
 JUST DONE: what was recently completed. NEXT: what is in line next. Short and sweet.

@@ -93,3 +93,5 @@ PERMANENT OPERATING RULES (Sim, Nov 22, 8:51 AM: "add those to our permanent ope
 6. Honest about what is and isn't checked; when a page or the plan is slowing down, say so with numbers.
 
 STATUS REPORT (Sim, Nov 22, 10:14 AM): when Sim says "status report": NOW (HH + each helper), JUST DONE, NEXT. Short, nothing left out.
+
+- Search is the tying point (Sim, Nov 22, time: 11:29 AM (11:29:22)  date: Sun Nov 22, 2026): everything on the site must be findable from the search bar. Outside designs (the Moves/Items/Abilities package) are input; we build them our way.
