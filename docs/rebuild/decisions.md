@@ -2055,3 +2055,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:36 PM: Hourly check: 1 helper (hW2) per Sim's rule; work-check threshold set to 1; Game Plan updated; GitHub 1447 running; Safari fixes proven on PC
 - 6:42 PM: Correction: Wave 1 step 4 changed Winning Teams' head (+3 to +28 px; off-screen at 320). My proof had used route 'top' instead of 'tournaments'. Reverted for Winning Teams; Events keeps the kit kicker (pixel-identical). Found by the whole-site qcheck
 - 6:47 PM: Sim: Mystery Gifts 'looks good to me. go with recs' -> OK as built, desktop +150 OK, hW2's 4 differences kept
+- 6:50 PM: Second account: only Job 2 (Wave 3 sizes) finished and pushed (alt/wave3-sizes); merged its docs/pictures; jobs 1,3,4,5 not started (it ran out of usage)
