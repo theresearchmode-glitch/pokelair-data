@@ -3351,7 +3351,7 @@ button.pp2-plate{cursor:pointer;width:100%}
    The rating bands' words stay in the page for screen readers and search (visually hidden): the letters on the bar say them */
 .mth .ra-h .k-kicker{display:table;width:max-content}
 .mth .mth-facts{margin:var(--s6) 0 0}
-.mth .mth-facts{align-items:flex-start}.mth .mth-upd{display:flex;flex-direction:column-reverse;justify-content:flex-end}
+.mth .mth-facts{align-items:flex-start}.mth .mth-upd{display:flex;flex-direction:column-reverse;justify-content:flex-end;gap:var(--s1)} /* label 4px under the number, as the other two facts (qcheck overlap) */
 .mth .mth-key{display:grid;gap:var(--s2);padding:var(--s5) var(--s6);background:var(--k-card);box-shadow:inset 4px 0 0 var(--k-plot),0 6px 16px var(--k-card-shadow)}
 .mth-scale{display:grid;gap:var(--s1);padding:var(--s1) var(--s2) 0}
 .mth-bar{display:flex;height:36px;margin:0;transform:skewX(-14deg)}.mth-bar i{display:grid;place-items:center;flex:var(--w) 0 0;background:var(--c)}
