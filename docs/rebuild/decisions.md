@@ -2053,3 +2053,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:11 PM: Sim: Preview shared by link with outside people (his second account) is fine
 - 6:14 PM: Sim's PC (Safari engine, design6 15d639bf): TEAM-07 and NAV-03v both pass 3 of 3 (were 3 of 3 FAIL at 70cf10ab). Safari fixes proven
 - 6:36 PM: Hourly check: 1 helper (hW2) per Sim's rule; work-check threshold set to 1; Game Plan updated; GitHub 1447 running; Safari fixes proven on PC
+- 6:42 PM: Correction: Wave 1 step 4 changed Winning Teams' head (+3 to +28 px; off-screen at 320). My proof had used route 'top' instead of 'tournaments'. Reverted for Winning Teams; Events keeps the kit kicker (pixel-identical). Found by the whole-site qcheck
