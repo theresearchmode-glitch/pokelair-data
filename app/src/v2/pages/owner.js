@@ -61,5 +61,6 @@ V2.ownerFill = async () => { const el = document.querySelector('[data-ownuse]'),
 V2.pages.owner = {place: '', draw() {
   if (!V2.OWN) return V2.nfHtml(); /* Sim's Q24 A (Nov 19): visitors get the site's not-found page (shell.js), not 'Only for the site's owner.' */
   setTimeout(V2.ownerFill, 0);
-  return `<div class="ra gsp infp"><section class="ra-h"><p class="np-eyebrow"><span>Owner · only you see this</span></p><h1 class="u"><span>What people</span> <span class="pl">use and say.</span></h1><p class="ra-lede">Anonymous counts and feedback. No names, nothing typed except feedback people chose to send.</p></section>
-    <div class="inf-two"><section><h2 class="u">What People Use</h2><div data-ownuse><p class="fine">Loading…</p></div></section><section><h2 class="u">Feedback</h2><div data-ownfb><p class="fine">Loading…</p></div></section></div></div>`; }};
+  /* on the kit (Sim approved Nov 22, 12:42 PM; mock docs/rebuild/mocks/reskin-nov22/owner-mock): kept plain, two boxes in one step */
+  return `<div class="ra gsp infp ow2"><div class="k-head"><p class="k-kicker np-eyebrow">OWNER · ONLY YOU SEE THIS</p><h1 class="k-h1 u">What people <br><em>use and say.</em></h1><p class="k-lead">Anonymous counts and feedback. No names, nothing typed except feedback people chose to send.</p></div>
+    ${V2.kPlan(V2.kStep(1, 'The counts and the notes.', 'newest first · people, not visits', `<div class="ow2-two"><section class="ow2-box"><h2 class="u">What they use.</h2><div data-ownuse><p class="fine">Loading…</p></div></section><section class="ow2-box"><h2 class="u">What they say.</h2><div data-ownfb><p class="fine">Loading…</p></div></section></div>`))}</div>`; }};
