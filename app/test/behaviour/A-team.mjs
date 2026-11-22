@@ -74,7 +74,7 @@ t('HOME-05', 'This week in the ratings: chips with arrow + number open the match
 t('HOME-05b', 'This week chip\'s rating matches the info sheet it opens', async () => {
   const r = await homePage(); const c = (await r.ui.ratingMoves())[0], rating = +(c.label.match(/rating (\d+)/) || [])[1];
   await r.ui.tapPokemon(c.text.replace(/ [▲▼].*/, '')); const s = await r.ui.infoSheet() || '';
-  const pr = +((s.match(/\b(\d+) [SABCDF] tier Rating/) || [])[1]); /* Nov 15: the Pokémon page's rating */
+  const pr = +((s.match(/\b(\d+) [SABCDF] tier(?: Rating)?\b/) || [])[1]); /* Nov 15: the Pokémon page's rating; Nov 21 reskin: '93 S tier' on the card, no 'Rating' word */
   ok(NEW ? pr === rating : s.startsWith('✕ ' + rating + ' ') || new RegExp('^\\D*' + rating + ' ').test(s), `chip says rating ${rating}, ${NEW ? 'the page says ' + pr : 'info sheet hero says ' + s.slice(0, 12)}`); await r.close(); },
   {known: NEW ? '' : 'chip label "Whimsicott, rating 78" but its info sheet shows 88 (This week reads the weekly track data, the sheet the live rating)'});
 
@@ -1078,32 +1078,38 @@ t('PKMN-01', 'A Pokémon tapped on Home opens its page (#pokemon=); keyboard foc
 
 t('PKMN-02', 'Top: name, types, "#N of M with results", rating with its tier, three numbers', async () => {
   const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
-  for (const x of [/Kingambit Dark Steel #\d+ of \d+ with (?:tournament )?results/, /\b\d+ [SABCDF] tier Rating/, /[\d.]+% of teams of [\d.]+k/, /[\d.]+% win rate [\d,]+ games/, /\d+ Speed at level 50/]) has(s, x, 'top'); await r.close(); });
+  /* reskin (Sim approved the Pokémon page, Nov 21): the card reads rank, name, types, then the rating and tier; the facts sit as tiles under the verdict */
+  for (const x of [/#\d+ of \d+ with (?:tournament )?results Kingambit Dark Steel \d+ [SABCDF] tier\b/, /[\d.]+% of (?:tournament )?teams/, /[\d.]+% win rate · [\d,]+ games/, /\d+ Speed at level 50|Speed at Level 50 \d+/i /* the 4th tile shows Speed, or team-preview facts when that data is in; Speed always has its own block in the rap sheet */]) has(s, x, 'top'); await r.close(); });
 
-t('PKMN-03', 'Add to My Team fills the first empty slot ("On your team" after); Popular Sets; Build Around It; a full team says so', async () => {
-  const r = await aopen({team: TEAM.slice(0, 5)}); await r.ui.tapPokemon('Kingambit'); has(await r.ui.pokemonPage(), 'Add to My Team'); await r.ui.tapText(/^Add to My Team$/, 1000);
+t('PKMN-03', 'USE THIS SET. fills the first empty slot ("On your team" after); Popular Sets; Build Around It; a full team says so', async () => {
+  /* reskin (Sim approved the Pokémon page, Nov 21, 7:01 PM): the page's one pink move "USE THIS SET." adds it to My Team (was "Add to My Team") */
+  const r = await aopen({team: TEAM.slice(0, 5)}); await r.ui.tapPokemon('Kingambit'); has(await r.ui.pokemonPage(), 'USE THIS SET.'); await r.ui.tapText(/^USE THIS SET\.$/, 1000);
   ok(await r.ui.waitToast(/Kingambit added to your team/), 'no toast'); has(await r.ui.pokemonPage() || '', 'On your team', 'page after adding'); ok((await r.ui.team()).includes('Kingambit'), 'not on the team');
   await r.ui.tapText(/^Popular Sets$/, 900); ok(await r.ui.current() === 'sets', 'Popular Sets did not open'); has(await r.ui.text(), 'Kingambit', 'Popular Sets');
   await r.ui.go('Home', 600); await r.ui.tapPokemon('Rillaboom'); has(await r.ui.pokemonPage(), /On your team/); await r.ui.tapText(/^Build Around It$/, 1200); ok(await r.ui.current() === 'auto', 'Build Around It did not open Build'); await r.close();
   const f = await homePage(); await f.ui.tapPokemon('Kingambit'); has(await f.ui.pokemonPage(), /Team full|already on your team|On your team|remove one/, 'full team page'); await f.close(); });
 
-t('PKMN-04', 'Jump links ("On this page") go to each part and move keyboard focus into it', async () => {
-  const r = await homePage(); await r.ui.tapPokemon('Kingambit');
-  for (const [name, id] of [['What beats it', 'pk-s3'], ['How fast it is', 'pk-s4'], ['How to build it', 'pk-s1']]) { await r.ui.tapJump(name); ok(await r.ui.focusInside() === id, name + ': focus in ' + await r.ui.focusInside()); } await r.close(); });
+t('PKMN-04', 'The plan steps are the map: the rap sheet, then the hit list, in order, (no "Jump to" chips)', async () => {
+  /* reskin (Sim approved, Nov 21; brief 27-pokemon.md item 4): no "Jump to" chip wall, the numbered plan steps are the map. The old jump links (and
+     their focus move) are gone with them; this checks the steps instead */
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
+  has(s, /The rap sheet\..*Hit list\. And who's hunting it\./, 'steps in order'); ok(!/Jump to/.test(s), '"Jump to" chips still shown');
+  await r.close(); });
 
-t('PKMN-05', 'Build, stats, abilities, type matchups, speed: usual set, base stats, "Most used", weak/resists, speed builds, Speed Tiers link', async () => {
-  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.openAllParts() >= 1, 'no folded part to open'); const s = await r.ui.pokemonPage();
-  for (const x of [/Usually .+ Adamant/, /Base Stats TOTAL \d+ HP \d+ Attack \d+/, /Abilities (Hide )?Defiant most used, \d+%/i, /What beats it Type Matchups/, /(4|2)× weak/, /Resists/, /Speed at Level 50/i, /What players run/i, /Trick Room build/i, /outspeeds \d+% of the top 30/, /Speed Tiers ›/]) has(s, x, 'page');
+t('PKMN-05', 'Build, stats, abilities, type matchups, speed: usual set, base stats, "most used", weak/resists, speed builds, Speed Tiers link', async () => {
+  /* reskin: everything shows on desktop (no folds); phones keep one fold, "The full file", for the extras (Sim approved option A, Nov 21) */
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); await r.ui.openAllParts(); const s = await r.ui.pokemonPage();
+  for (const x of [/Nature Adamant/, /Usually DARK Kowtow Cleave/, /Base stats · total \d+ HP \d+ Attack \d+/i, /Defiant \(most used, \d+%\)/i, /(4|2)× weak/, /Resists/, /Speed at Level 50/i, /what players run/i, /Trick Room build/i, /outspeeds \d+% of the top 30/, /Speed Tiers ›/]) has(s, x, 'page');
   await r.ui.tapInPage('Speed Tiers ›'); ok(await r.ui.current() === 'speed', 'Speed Tiers link did not open Speed Tiers'); await r.close(); });
 
-t('PKMN-06', 'How to build it and partners: typical set, moves and items with %, a partner opens its own page', async () => {
-  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); const s = await r.ui.pokemonPage();
-  for (const x of [/Typical set ABILITY \w+ \d+%/i, /of [\d,]+ teams/ /* Sim, Nov 18, Q10 A: How to build it uses tournament sets and names its base ('of N teams'), whatever source Usage last used */, /Items \S.* \d+%/, /Who it teams with/]) has(s, x, 'page');
-  /* the first proper-case name after 'Brought with' (the big faint capitals before it read joined in WebKit, Nov 17, C-I8) */ const partner = (s.match(/Who it teams with Brought with .*?\b([A-Z][a-z][\w-]*)/) || [])[1] || 'Sneasler'; await r.ui.tapInPage(partner);
+t('PKMN-06', 'How to build it and its associates: typical set, moves and items with %, a partner opens its own page', async () => {
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); await r.ui.openAllParts(); const s = await r.ui.pokemonPage();
+  for (const x of [/How to build it Typical set: the one players run most/i, /Ability Defiant \d+%/, /of [\d,]+ teams/ /* Sim, Nov 18, Q10 A: How to build it uses tournament sets and names its base ('of N teams') */, /Items \S.* \d+%/, /Known associates\./]) has(s, x, 'page');
+  /* the first partner card's name after 'Brought with it most' */ const partner = (s.match(/Brought with it most .*?\b([A-Z][a-z][\w-]*)/) || [])[1] || 'Sneasler'; await r.ui.tapInPage(partner);
   ok(new RegExp(partner, 'i').test(await r.ui.pageHash()), 'partner page did not open: ' + await r.ui.pageHash()); await r.close(); });
 
 t('PKMN-07', 'Why it rates N: its bars, What the data says, other tier lists, How Ratings Work and Track Record links', async () => {
-  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); ok(await r.ui.openAllParts() >= 1, 'no folded part to open'); const s = await r.ui.pokemonPage();
+  const r = await homePage(); await r.ui.tapPokemon('Kingambit'); await r.ui.openAllParts(); const s = await r.ui.pokemonPage();
   for (const x of [/Why it rates \d+/i, /Top-cut presence \d+/, /Picked by strong players \d+/, /Win rate \d+/, /What the data says/i, /Other tier lists/i, /How Ratings Work ›/, /Track Record ›/]) has(s, x, 'page');
   await r.ui.tapInPage('Track Record ›'); ok(await r.ui.current() === 'track', 'Track Record link did not open'); await r.close(); });
 } else {

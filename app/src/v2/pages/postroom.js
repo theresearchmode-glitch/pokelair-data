@@ -133,7 +133,7 @@ V2.prHow = () => `<aside class="pr-howto" aria-labelledby="prHowH"><h3 class="u"
 V2.pages.gifts = {place: 'home', draw() { const E = V2.esc, U = V2.prUi, P = V2.postNow(), live = P.live.map(V2.prG), past = P.past.map(V2.prG), now = Date.now();
   const left = live.map(g => V2.prDaysLeft(g, now)).filter(d => d != null && d >= 0), soonest = left.length ? Math.min(...left) : null;
   const since = !live.length && past.length && Number.isFinite(past[0].end) ? Math.round((V2.prDayN(now, past[0].dayEnd) - V2.prDayN(past[0].end, past[0].dayEnd)) / 864e5) : null;
-  const num = (n, l) => `<p><b class="u">${n}</b><span>${l}</span></p>`;
+  const num = (n, l) => `<p><b class="u${typeof n === 'number' ? '' : ' pr-w'}">${n}</b><span>${l}</span></p>`; /* qcheck (Nov 21): a word ('Today') takes a step down on phones so it never runs into the next number */
   // a day count of 0 shows the word "Today", never a lone "0" beside "ends today" (review, Nov 18); no "0 gifts so far" when there are none
   const nums = live.length ? num(live.length, 'to claim') + (soonest != null ? (soonest === 0 ? num('Today', 'one ends') : num(soonest, soonest === 1 ? 'day until one ends' : 'days until one ends')) : '') + num(live.length + past.length, 'gifts so far')
     : num(0, 'to claim') + (since != null ? (since === 0 ? num('Today', 'the last one ended') : num(since, since === 1 ? 'day since the last one ended' : 'days since the last one ended')) : '') + (past.length ? num(past.length, 'gifts so far') : '');
