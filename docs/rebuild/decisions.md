@@ -1943,3 +1943,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:59 PM: Game Plan updated 11:59 PM. 2nd helper slot held on purpose: Sim stopped the Speed Tiers/Practice helpers and HH asked whether to restart them; refilling before his answer would override his stop.
 - 12:03 AM: nastyplot.org DNSSEC checked (Cloudflare API, read-only GET /zones/.../dnssec): status 'active', DS record present. Done; told Sim.
 - 12:04 AM: 2nd helper slot filled with hG2: Test Run on the kit (next queue page that wasn't stopped; pictures before anything merges). Speed Tiers / Practice still wait on Sim's answer.
+- 12:20 AM: Sim: new Speed Tiers (draft 'your six cut the line') is good -> finish it (tests, phone length, polish incl. the oversized headline). Practice: keep the current page's 6v6 picking layout (like real Pokémon Champions team preview), redone in the new kit style, upgraded.
