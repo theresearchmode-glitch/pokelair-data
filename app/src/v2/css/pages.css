@@ -1147,56 +1147,124 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .np-sheet:has(>.ms2){overflow-x:hidden}.ms2{overflow-x:clip}
 /* Sim, Nov 13 (11:04 PM): on a tall window the card stretched into a long strip; it stops at the brief's size (392 x 656, as at 1440 x 900) and the buttons follow right under it */
 @media (min-width:1000px){.ms2 .ms-card{max-height:656px}}
-/* ---------- Speed Tiers (Nov 13; Sim's Speed Q1 A race track on desktop, Q2 A slim track on phones; mock: scratchpad speedmock) ---------- */
-.sp2-h{display:grid;gap:var(--s2)}.sp2-h h1{font-size:var(--t34);margin:0}.sp2-h h1 .pl{color:var(--plot-text)}.sp2-h .tm-sub{margin:0}
-.sp2-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);margin-top:var(--s6)}.sp2 .chips{display:flex;flex-wrap:wrap;gap:var(--s2)}
-.sp2-wx{margin-top:var(--s2)} /* audit v199 #12 (Nov 17): weather chips the same 15px as the other chips (one size per kind of control) */
-.sp2-empty{display:grid;justify-items:start;gap:var(--s3);margin-top:var(--s6)}
-.sp2-track{position:relative;margin-top:var(--s8);height:var(--h)}.sp2-axis{position:absolute;left:0;right:0;top:var(--ay);height:1px;background:var(--rule)}
-.sp2-m{position:absolute;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;width:var(--mw);padding:0;text-align:center;color:var(--ink)}
-.sp2-m .v{font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style;font-variant-numeric:tabular-nums}.sp2-m.me .v{color:var(--plot-text);font-size:var(--t24)}
-.sp2-m .nm{font:600 var(--t13)/1.3 var(--b);margin-top:var(--s1);overflow-wrap:anywhere}.sp2-m.me .nm{font-size:var(--t15)}
-.sp2-k{display:flex;justify-content:space-between;gap:var(--s4);margin-top:var(--s2);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-.sp2-list{list-style:none;margin:var(--s6) 0 0;padding:0}
-.sp2-list li{display:grid;grid-template-columns:48px minmax(0,1fr) auto;gap:var(--s3);align-items:center;padding:var(--s2) 0;border-top:1px solid var(--rule)}
-.sp2-list .v{font:900 var(--t20)/1 var(--u);font-style:italic;font-synthesis:style;text-align:right;font-variant-numeric:tabular-nums}.sp2-list li.me .v{color:var(--plot-text)}
-.sp2-li{display:flex;align-items:center;gap:var(--s3);min-width:0;min-height:var(--tap);padding:0;text-align:left;color:var(--ink)}
-.sp2-list .nm{display:grid;min-width:0;font:600 var(--t15)/1.4 var(--b)}.sp2-list .nm small{font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-.sp2-list .tag{font:700 var(--t13)/1.5 var(--b);color:var(--plot-text);white-space:nowrap}
-@media (min-width:1024px){.sp2-list{columns:2;column-gap:var(--s12)}.sp2-list li{break-inside:avoid}}
-.sp2-sum{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 var(--s8);margin-top:var(--s8)}
-.sp2-sum-k{margin:var(--s8) 0 0;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.sp2-sum-k+.sp2-sum{margin-top:var(--s2)}
-.sp2-sum p{margin:0;padding:var(--s2) 0;border-top:1px solid var(--rule);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.sp2-sum b{color:var(--ink)}.sp2-sum small{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-@media (max-width:899.98px){.sp2-sum{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:599.98px){.sp2-sum{grid-template-columns:minmax(0,1fr)}.sp2-h h1{font-size:var(--t28)}.sp2-ctl .np-slide{width:100%}
-  .sp2-ctl .chips{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));width:100%}.sp2-ctl .chips .np-chip:last-child:nth-child(odd){grid-column:1/-1} /* the last spans only when it would sit alone (6 chips since "You +1", Nov 17) */
-  .sp2-wx{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.sp2-wx .np-chip:first-child{grid-column:1/-1}.sp2 .np-chip{justify-content:center}}
-.sp2-foot{margin-top:var(--s6);max-width:72ch}
-.sp2{padding:0 var(--gut) var(--s16)} /* the same side gutters as Battle */
-@media (max-width:599.98px){.sp2 .sp2-wx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.sp2 .sp2-wx .np-chip:first-child{grid-column:auto}} /* audit v199 #12: six weather chips in 3 even rows of 2 (were 1 + 3 + 2) */
-@media (min-width:600px) and (max-width:899.98px){.sp2-ctl .chips{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));width:100%}.sp2-ctl .np-chip{justify-content:center}} /* no lone Trick Room on its own line (3 + 2) */
-/* review Nov 17 #3: at 600-899 the six weather chips wrapped 5 + 1 (one row of 6 needs 746-759px or more, by label); now 2 even rows
-   of 3 under the 3 columns above. A column is never narrower than its label (Your Weather (None) needs 189px; a column is 179 at 600) */
-@media (min-width:600px) and (max-width:899.98px){.sp2 .sp2-wx{display:grid;grid-template-columns:repeat(3,minmax(max-content,1fr));width:100%}.sp2-wx .np-chip{justify-content:center}}
-/* Speed Tiers, Sim's Speed Q4 A (Nov 14): the split slim track, yours left of the Speed line, the field right */
-.sp2-vs-h{display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr);gap:var(--s2);margin-top:var(--s6);padding-bottom:var(--s2);border-bottom:1px solid var(--rule);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3);text-align:center}
-.sp2-vs-h .u{font:800 var(--t15)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--ink)}.sp2-vs-h .u:first-child{text-align:right;color:var(--plot-text)}.sp2-vs-h .u:last-child{text-align:left}
-.sp2-vs{position:relative;list-style:none;margin:0;padding:0}.sp2-vs::before{content:"";position:absolute;left:50%;top:0;bottom:0;width:1px;background:var(--rule)}
-.sp2-vs li{position:relative;display:grid;grid-template-columns:minmax(0,1fr) 56px minmax(0,1fr);gap:var(--s2);align-items:center;min-height:48px}
-.sp2-vs .v{justify-self:center;padding:var(--s1) 0;background:var(--bg);font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style;font-variant-numeric:tabular-nums;color:var(--ink-2)}.sp2-vs .v.me{color:var(--plot-text);font-size:var(--t20)}
-.sp2-vs .mine,.sp2-vs .them{display:flex;flex-wrap:wrap;gap:0 var(--s2)}.sp2-vs .mine{justify-content:flex-end}
-.sp2-vs .chip2{display:flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:0;font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}.sp2-vs .chip2.me{font-size:var(--t15);font-weight:700;color:var(--ink);text-align:right}
-/* Sim's Speed Q5 A (Nov 14): on desktop your six sit on a soft blue field above the line, labelled, the top 20 on the page below */
-.sp2-track.mine::before{content:"";position:absolute;left:calc(var(--s4)*-1);right:calc(var(--s4)*-1);top:0;height:var(--ay);background:var(--sd-hero);border-radius:var(--r-s);transform:skewX(-4deg)}
-.sp2-track.mine::after{content:"Your six";position:absolute;left:0;top:var(--s3);font:800 var(--t22)/1.3 var(--u);font-style:italic;font-synthesis:style;color:var(--sd-on-band)}
-/* scan S29 A (Sim, Nov 20): your six on Home's solid blue band (white numbers and names), the top 20's numbers at 20 px */
-.sp2-m.me .v,.sp2-m.me .nm{color:var(--sd-on-band)}.sp2-m.me .nm .mg,.sp2-m.me .nm b{color:var(--sd-on-band)} /* Q86 A (Sim, Nov 20): the Mega word white on the band, keeping its bold 800 (the light blue --sd-line2 was 3.17:1 there) */
-.sp2-m:not(.me) .v{font-size:var(--t20)}.sp2-m.me:focus-visible{outline-color:var(--sd-on-band)} /* the focus ring shows on the blue band */
-.sp2-vs.solo li{grid-template-columns:56px minmax(0,1fr)}.sp2-vs.solo::before{left:28px} /* no team yet: the field alone */
-.sp2-vs .chip2{max-width:100%}.sp2-vs .chip2>span{min-width:0}.sp2-vs .chip2 .np-mon{flex:none} /* 320: long names (Mega Charizard Y) wrap inside their side instead of running past the screen */
-@media (max-width:399.98px){.sp2-vs li,.sp2-vs-h{grid-template-columns:minmax(0,1fr) 48px minmax(0,1fr);gap:var(--s1)}.sp2-vs .chip2.me{font-size:var(--t13)}.sp2-vs .chip2.me .np-mon,.sp2-vs .chip2.me .np-mon .st{--iw:32px}} /* 320-399: one-word names (Whimsicott) fit beside their sprite */
-.sp2-vs .them .chip2{text-align:left}
-@media (max-width:359.98px){.sp2-vs .chip2 .np-mon,.sp2-vs .chip2 .np-mon .st{--iw:28px}} /* 320: "Mega Garchomp Z" fits its side */
+/* ---------- Speed Tiers on the kit (reskin proposal, Nov 22, helper hT2; not approved yet): "Your six cut the line". One ladder in move
+   order: the top 20 as Speed bars in their first type's colour with the Pokémon riding the tip; each of yours a Plot blue band cut across
+   the ladder at its own Speed, its art bursting out of the band, its outspeed share and Speed-point tip written on the cut.
+   Columns: --c1 the Speed number, --c2 the name, then the bar track (a thin rule every 50 Speed, --tick) ---------- */
+.sp2{padding:0 var(--gut) var(--s16)}
+.sp2-h .k-h1 .pl{display:block} /* two sentences, two lines (it ran on and left 'top 20.' alone, Nov 15) */
+.sp2-ctl .k-sent{margin-top:var(--s6);font-size:var(--t28)}
+.sp2-ctl .sp2-wx .k-sent{margin-top:var(--s3)}
+.sp2-empty{display:grid;justify-items:start;gap:var(--s2);margin-top:var(--s6)}
+.sp2-empty .k-lead{margin:0}
+.k-sec .sp2-view{margin-left:auto}.sp2-view .k-sent{margin:0;font-size:var(--t20)}
+.sp2-track{--c1:88px;--c2:248px;--c2c:var(--c2);margin-top:var(--s2)}
+.sp2-sc{display:grid;grid-template-columns:var(--c1) var(--c2) minmax(0,1fr);align-items:end;min-height:24px;margin-bottom:var(--s6);padding-right:var(--s8);font-size:var(--t13);font-weight:600;line-height:1.3;color:var(--k-ink2)}
+.sp2-sc>.u{padding-right:var(--s4);text-align:right;font-size:var(--t13);font-weight:800}
+.sp2-sc .sp2-tr{grid-area:auto;position:relative;align-self:stretch;background:none}
+.sp2-sc i{position:absolute;bottom:0;left:var(--x);translate:-50% 0;font-style:normal;font-variant-numeric:tabular-nums}
+.sp2-lad{margin:0;padding:0;list-style:none}
+.sp2-m{display:grid;grid-template-columns:var(--c1) var(--c2) minmax(0,1fr);grid-template-areas:"v nm tr";align-items:center;width:100%;min-height:56px;margin:0;padding:0 var(--s8) 0 0;border:0;background:none;color:var(--k-ink);font:inherit;text-align:left;cursor:pointer}
+.sp2-m .v{grid-area:v;padding-right:var(--s4);text-align:right;font-size:var(--t24);line-height:1;font-variant-numeric:tabular-nums}
+.sp2-m .nm{grid-area:nm;display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s2);min-width:0;padding-right:var(--s3);font-size:var(--t15);font-weight:600;line-height:1.3}
+.sp2-m .nm .mg{color:var(--k-plot-text)}
+.sp2-m .nm .k-tag{padding:0 var(--s2);font-size:var(--t13)}
+.sp2-tr{grid-area:tr;position:relative;align-self:stretch;min-width:0;background:repeating-linear-gradient(90deg,var(--k-rule) 0 1px,transparent 1px var(--tick))}
+.sp2-bar{position:absolute;left:0;top:var(--s4);width:var(--w);height:20px}
+.sp2-bar>i{display:block;height:100%;background:linear-gradient(90deg,color-mix(in srgb,var(--c,var(--k-ink2)) 14%,var(--k-card)),color-mix(in srgb,var(--c,var(--k-ink2)) 62%,var(--k-card)));box-shadow:inset -4px 0 0 var(--c,var(--k-ink2));clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.sp2-bar>.np-mon{position:absolute;left:100%;bottom:-2px;translate:-50% 0;pointer-events:none}
+.sp2-fr{border-top:1px solid var(--k-rule)}
+.sp2-fr:last-child{border-bottom:1px solid var(--k-rule)}
+.sp2-m:hover .nm>:not(.k-tag):not(.mg),.sp2-m:hover .nm{text-decoration:underline}
+.sp2-m:focus-visible{outline:3px solid var(--k-plot);outline-offset:-3px}
+/* the cut: one of yours, a Plot blue band across the whole ladder */
+.sp2-cut{position:relative;isolation:isolate;margin:var(--s12) 0 var(--s2);padding:var(--s3) 0}
+.sp2-cut::before{content:"";position:absolute;z-index:-1;inset:0 calc(var(--s4)*-1);background:var(--k-plot);clip-path:polygon(16px 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+.sp2-cut .sp2-m{grid-template-columns:var(--c1) var(--c2c) minmax(0,1fr);grid-template-areas:"v nm tr" ". cs cs";min-height:88px;color:var(--k-on-plot)}
+.sp2-cut .nm{align-self:end}
+.sp2-cut .sp2-m .v{font-size:var(--t34)}
+.sp2-cut .nm{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s2);color:var(--k-on-plot)}
+.sp2-cut .nm .sp2-form{flex-basis:100%}
+.sp2-form{min-height:1.2em;font-size:var(--t13);font-weight:700;line-height:1.2}
+.sp2-cut .nm b{flex-basis:100%;font-size:var(--t26);line-height:1.05;white-space:nowrap}
+.sp2-cut .sp2-tr{background:repeating-linear-gradient(90deg,color-mix(in srgb,var(--k-on-plot) 22%,transparent) 0 1px,transparent 1px var(--tick))}
+.sp2-cut .sp2-bar{top:auto;bottom:16px;height:24px}
+.sp2-cut .sp2-bar>i{background:var(--k-on-plot);box-shadow:none}
+.sp2-cut .sp2-bar>.np-mon{bottom:calc(var(--s3)*-1)}
+.sp2-cut .sp2-m:focus-visible{outline-color:var(--k-on-plot)}
+.sp2-cs{grid-area:cs;align-self:start;display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s4);margin:var(--s1) 0 0;padding-right:var(--s4);color:var(--k-on-plot);font-size:var(--t15);font-weight:600;line-height:1.4}
+.sp2-cs b.u{font-size:var(--t22);line-height:1}
+.sp2-cs small{font-size:var(--t15);font-weight:600;line-height:1.4}
+.sp2-cut+.sp2-fr{border-top:0}
+.sp2-k{display:flex;justify-content:space-between;gap:var(--s4);margin:var(--s3) 0 0;font-size:var(--t13);font-weight:600;line-height:1.5;color:var(--k-ink2)}
+.sp2-sum-k{margin:0 0 var(--s2);max-width:72ch;font-size:var(--t13);line-height:1.5;color:var(--k-ink2)}
+.sp2-foot{max-width:72ch;margin:0}
+/* List: every row with its small print; yours are the same blue cuts */
+.sp2-list{margin:var(--s2) 0 0;padding:0;list-style:none}
+.sp2-list li{position:relative;isolation:isolate;display:grid;grid-template-columns:var(--c1,88px) minmax(0,1fr) auto;align-items:center;gap:0 var(--s3);padding:var(--s2) 0;border-top:1px solid var(--k-rule)}
+.sp2-list li::after{content:"";position:absolute;left:0;top:var(--s3);bottom:var(--s3);width:4px;background:var(--c,var(--k-ink2));transform:skewX(-8deg)}
+.sp2-list .v{padding-right:var(--s1);text-align:right;font-size:var(--t24);line-height:1;font-variant-numeric:tabular-nums}
+.sp2-li{display:flex;align-items:center;gap:var(--s3);min-width:0;min-height:var(--tap);padding:0;border:0;background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.sp2-list .nm{display:block;min-width:0;font-size:var(--t15);font-weight:600;line-height:1.4}
+.sp2-list .nm .mg{color:var(--k-plot-text)}
+.sp2-list .nm small{display:block;font-size:var(--t13);font-weight:400;line-height:1.5;color:var(--k-ink2)}
+.sp2-list .tag{display:flex;gap:var(--s2);padding-right:var(--s4)}
+.sp2-list .tag .k-tag{padding:0 var(--s2);font-size:var(--t13)}
+.sp2-list li.me{margin:var(--s2) 0;padding:var(--s3) 0;border-top:0;color:var(--k-on-plot)}
+.sp2-list li.me::before{content:"";position:absolute;z-index:-1;inset:0 calc(var(--s4)*-1);background:var(--k-plot);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.sp2-list li.me::after{display:none}
+.sp2-list li.me .nm .mg,.sp2-list li.me .nm small{color:var(--k-on-plot)}
+.sp2-list li.me+li{border-top:0}
+.sp2-list li.me .sp2-cs{grid-column:2/-1;padding:var(--s1) var(--s4) 0 0}
+.sp2-list .sp2-li:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
+.sp2-list li.me .sp2-li:focus-visible{outline-color:var(--k-on-plot)}
+/* tablets: the name column narrows */
+@media (max-width:1023.98px){.sp2-track{--c1:72px;--c2:200px}}
+/* phones: each row is Speed | Pokémon | name over a thin bar (the bar and sprite step out of the track: display:contents) */
+@media (max-width:699.98px){
+  .sp2-track{--c1:48px}
+  .sp2-view .k-sent{font-size:var(--t15)}.k-sec .sp2-view{margin-left:0}
+  .sp2-sc{grid-template-columns:var(--c1) 40px minmax(0,1fr);gap:0 var(--s2);padding-right:var(--s4)}
+  .sp2-sc>.u{padding-right:0}
+  .sp2-m{grid-template-columns:var(--c1) 40px minmax(0,1fr);grid-template-areas:"v mon nm" "v mon tr";align-items:end;gap:0 var(--s2);min-height:44px;padding:0 var(--s4) 0 0}
+  .sp2 .k-sent{font-size:var(--t15);gap:var(--s1) var(--s2)}.sp2 .k-w{padding:0 var(--s1)}.sp2-ctl .k-sent{margin-top:var(--s4)}
+  .sp2-m .v{grid-area:v;align-self:center;padding-right:0;font-size:var(--t20)}
+  .sp2-m .nm{grid-area:nm;padding-right:0;font-size:var(--t15)}
+  .sp2-m .sp2-tr,.sp2-m .sp2-bar{display:contents}
+  .sp2-m .sp2-bar>i{grid-area:tr;width:var(--w);height:6px;margin:var(--s1) 0 var(--s1)}
+  .sp2-m .sp2-bar>.np-mon{grid-area:mon;position:static;translate:none;align-self:center}
+  .sp2-m .sp2-bar>.np-mon,.sp2-m .sp2-bar>.np-mon .st{--iw:40px}
+  .sp2-lad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s2)}
+  .sp2-cut,.sp2-fr.solo{grid-column:1/-1}
+  .sp2-fr{--c1:40px;border-top:1px solid var(--k-rule)}.sp2-fr:last-child{border-bottom:0}
+  .sp2-fr .sp2-m{grid-template-columns:var(--c1) 32px minmax(0,1fr);gap:0 var(--s1);padding-right:var(--s1)}
+  .sp2-fr .sp2-m .v{font-size:var(--t17)}
+  .sp2-fr .sp2-m .nm{display:block;font-size:var(--t13);line-height:1.25}
+  .sp2-fr .sp2-m .nm .mg{display:block}
+  .sp2-fr .sp2-m .nm .k-tag{margin-left:var(--s1)}
+  .sp2-fr .sp2-m .sp2-bar>.np-mon,.sp2-fr .sp2-m .sp2-bar>.np-mon .st{--iw:32px}
+  .sp2-fr.solo .sp2-m{padding-right:calc(50% + var(--s1))}
+  .sp2-cut{margin:var(--s5) 0 var(--s1);padding:var(--s1) 0 var(--s2)}
+  .sp2-cut::before{inset:0 calc(var(--s3)*-1)}
+  .sp2-cut .sp2-m{--c1:64px;grid-template-columns:var(--c1) 56px minmax(0,1fr);grid-template-areas:"v mon nm" "v mon tr" "cs cs cs";min-height:0}
+  .sp2-cut .sp2-m .v{font-size:var(--t24)}
+  .sp2-cut .nm{align-items:center;gap:0 var(--s1)}.sp2-cut .nm .sp2-form,.sp2-cut .nm b{flex-basis:auto;min-height:0}.sp2-cut .nm .sp2-form:empty{display:none}.sp2-cut .nm b{font-size:var(--t17)}
+  .sp2 .k-h2{font-size:var(--t24)}.sp2 .k-step:first-child .k-note{display:none}
+  .sp2-cut .sp2-m .sp2-bar>i{height:8px}
+  .sp2-cut .sp2-m .sp2-bar>.np-mon{align-self:end;margin-top:calc(var(--s6)*-1)}
+  .sp2-cut .sp2-m .sp2-bar>.np-mon,.sp2-cut .sp2-m .sp2-bar>.np-mon .st{--iw:64px}
+  .sp2-cs{display:grid;margin:var(--s1) 0 0;padding:0 var(--s2);font-size:var(--t13)}.sp2-cs small{font-size:var(--t13)}
+  .sp2-sc{display:none}
+  .sp2-cs b.u{font-size:var(--t17)}
+  .sp2-k{display:none}
+  .sp2-cut .sp2-cs{line-height:1.3}
+  .sp2-list li{grid-template-columns:var(--c1,48px) minmax(0,1fr) auto;gap:0 var(--s2);padding:var(--s1) 0}
+  .sp2-list li.me{padding:var(--s2) 0}
+  .sp2-list .v{font-size:var(--t20)}
+  .sp2-list .tag{flex-direction:column;align-items:end;padding-right:var(--s1)}
+  .sp2-list li.me .sp2-cs{grid-column:1/-1;padding-left:calc(var(--c1,48px) + var(--s2))}
+}
+@media (max-width:359.98px){.sp2-cut .nm b{font-size:var(--t15)}}
 /* ---------- Damage Calc: the root and today's KO Board, its tiles and its every-hit table (reused inside the Arena's KO Board, arena-calc.css; the "Their Side" layout was removed Nov 19) ---------- */
 .dc2{padding:0 var(--gut) var(--s16);overflow-x:clip}
 /* the KO Board */
@@ -2953,7 +3021,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:1100px) and (max-width:1366.98px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:160px}}
 @media (min-width:700px) and (max-width:819.98px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:104px}}
 .us-bh small{font-size:inherit} /* re-check Nov 15: a <small> inside the 13px line fell to 10.8px (browser default), off the type scale */
-.sp2-h h1 .pl{display:block} /* re-check Nov 15: two sentences, two lines (it ran on and left 'top 20.' alone) */
 .hm-acts .np-link{min-width:var(--tap);justify-content:center} /* re-check Nov 15: Got It was 39px wide */
 @media (max-width:359.98px){.gs-facts b{font-size:var(--t15)}} /* re-check Nov 15: at 320 '37.5%' and '52.0%' were wider than their columns and touched */
 .tt-sh small{margin-left:var(--s2)} /* re-audit Nov 15: 'Stats' and 'at level 50' read as one word */

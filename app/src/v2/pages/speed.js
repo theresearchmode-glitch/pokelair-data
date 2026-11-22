@@ -1,9 +1,12 @@
-// ---------- Speed Tiers (Nov 13), Battle's tool: who moves first, your six against the 20 most-used others ----------
-// Sim's picks (Nov 13, morning): Speed Q1 A (desktop: the race track, your six above the line, the field below) and Speed Q2 A
-// (phones: the slim vertical track). Every number comes from today's shared logic (39-damage-calc-speed.js speedData: likely
-// Speed, item, weather abilities, Tailwind, -1, paralysis, Trick Room, Unburden, the outspeed share of the top 30 and the Speed
-// points it takes to pass the threat above); nothing here works anything out. Today's controls all stay: the five conditions and
-// the weather (your team's weather, none, or any of the four), Track / List, and each list row's spread, item and notes.
+// ---------- Speed Tiers, Battle's tool: who moves first, your six against the 20 most-used others ----------
+// Reskin proposal (Nov 22, helper hT2, NOT approved yet): "Your six cut the line". One ladder in move order (fastest first; slowest first
+// under Trick Room): each of the top 20 is a type-coloured Speed bar with the Pokémon riding its tip; each of yours is a Plot blue band cut
+// across the ladder at its own Speed, its art bursting out of the band and its numbers written on the cut (its outspeed share of the top 30
+// and the Speed points that pass the threat just above). Everything above a cut moves before it; everything under it, after.
+// Every number comes from today's shared logic (39-damage-calc-speed.js speedData: likely Speed, item, weather abilities, Tailwind, -1,
+// paralysis, Trick Room, Unburden, the outspeed share of the top 30 and the Speed points it takes to pass the threat above); nothing here
+// works anything out. Today's controls all stay (data-spd / data-spdwx / data-spview): the six conditions and the weather (your team's
+// weather, none, or any of the four) as the kit's plot sentence, Track / List, and each list row's spread, item and notes.
 V2.spView = () => V2.LS.get('np2.spview') === 'list' ? 'list' : 'track';
 V2.spName = r => V2.rowName(V2.disp(r.p.n));
 // one row's small print, as today's list: spread, Scarf, weather doubling, Unburden, the ability note and base Speed
@@ -11,60 +14,59 @@ V2.spNote = (r, W) => [r.s.label, r.s.scarf ? 'Choice Scarf' : '', r.wxUp ? `${r
   (typeof spdAbNote === 'function' ? spdAbNote(r.ab) : '').replace(/^ · /, ''), `base ${r.p.st[5]}`].filter(Boolean).join(' · ');
 V2.spTie = (rows, r) => rows.some(o => o !== r && o.v === r.v && o.me !== r.me);
 
-V2.spHead = (D, view) => { const E = V2.esc, tr = spdUi.tr, cond = [spdUi.tw ? 'your Tailwind' : '', spdUi.up ? 'your six at +1 Speed' : '', spdUi.twOpp ? 'their Tailwind' : '', spdUi.icy ? 'their −1 Speed' : '',
+// the header (kit): kicker, headline, lead, then the conditions and the weather as two plot sentences (at most 6 blue words each)
+V2.spHead = D => { const E = V2.esc, tr = spdUi.tr, cond = [spdUi.tw ? 'your Tailwind' : '', spdUi.up ? 'your six at +1 Speed' : '', spdUi.twOpp ? 'their Tailwind' : '', spdUi.icy ? 'their −1 Speed' : '',
     spdUi.par ? 'they\'re paralyzed' : '', tr ? 'Trick Room: the slowest moves first' : ''].filter(Boolean);
   const wx = spdUi.wx === 'auto' ? (D.autoW ? `weather: ${D.autoW}, from your team` : 'no weather on your team') : spdUi.wx ? `weather: ${spdUi.wx}` : 'no weather';
-  const tog = (k, t) => `<button type="button" class="np-chip" data-spd="${k}" aria-pressed="${!!spdUi[k]}">${t}</button>`;
-  const wxb = (k, t) => `<button type="button" class="np-chip" data-spdwx="${k}" aria-pressed="${spdUi.wx === k}">${t}</button>`;
-  return `<section class="sp2-h"><p class="np-eyebrow"><span>Battle · Speed Tiers · level 50</span></p><h1 class="u"><span>Who moves first.</span> <span class="pl">${D.mine.length ? `Your six vs the top\u00a0${D.thr.length}.` : `The top ${D.thr.length}.`}</span></h1>
-    <p class="tm-sub">${tr ? 'Slowest first' : 'Fastest first'}, with each side's usual spread and item; ${E(wx)}${cond.length ? `; ${E(cond.join(', '))}` : ''}.</p></section>
-    <div class="sp2-ctl"><div class="np-slide" role="group" aria-label="Show as" style="--n:2;--i:${view === 'list' ? 1 : 0}"><span class="thumb" aria-hidden="true"></span><button type="button" data-spview="track" aria-pressed="${view !== 'list'}"><span>Track</span></button><button type="button" data-spview="list" aria-pressed="${view === 'list'}"><span>List</span></button></div>
-      <div class="chips" role="group" aria-label="Speed conditions">${tog('tw', 'Your Tailwind')}${tog('up', 'You +1')}${tog('twOpp', 'Their Tailwind')}${tog('icy', 'Them −1')}${tog('par', 'They\'re Paralyzed')}${tog('tr', 'Trick Room')}</div></div>
-    <div class="sp2-wx chips" role="group" aria-label="Weather">${wxb('auto', D.autoW ? `Your Weather (${E(D.autoW)})` : 'Your Weather (None)')}${wxb('', 'No Weather')}${wxb('sun', 'Sun')}${wxb('rain', 'Rain')}${wxb('sand', 'Sand')}${wxb('snow', 'Snow')}</div>`; };
+  const tog = (k, w) => ({w, on: !!spdUi[k], attrs: {'data-spd': k}}), wxb = (k, w) => ({w, on: spdUi.wx === k, attrs: {'data-spdwx': k}});
+  const h1 = `<span>Who moves <em>first.</em></span> <span class="pl">${D.mine.length ? `Your six vs the top ${D.thr.length}.` : `The top ${D.thr.length}.`}</span>`;
+  return `<section class="sp2-h">${V2.kHead({kicker: 'Battle · Speed Tiers · level 50', h1Html: h1, lead: `${tr ? 'Slowest first' : 'Fastest first'}, with each side's usual spread and item; ${wx}${cond.length ? `; ${cond.join(', ')}` : ''}.`})}
+    <div class="sp2-ctl">${V2.kSent(['With', tog('tw', 'Your Tailwind'), tog('up', 'You +1'), 'vs', tog('twOpp', 'Their Tailwind'), tog('icy', 'Them −1'), tog('par', 'They\'re Paralyzed'), 'or', tog('tr', 'Trick Room')], {label: 'Speed conditions', hint: false})}
+    <div class="sp2-wx">${V2.kSent(['In', wxb('auto', D.autoW ? `Your Weather (${D.autoW})` : 'Your Weather (None)'), wxb('', 'No Weather'), wxb('sun', 'Sun'), wxb('rain', 'Rain'), wxb('sand', 'Sand'), wxb('snow', 'Snow')], {label: 'Weather'})}</div></div></section>`; };
 
-// desktop race track (1024+): x by Speed, your six in lanes above the line, the field in lanes below, so no two names touch
-// code review B12: on the first draw .sp2 doesn't exist yet; estimate from the window and the gutter (it fell back to 1200 and cut the
-// outer Pokémon off at 1024-1199), then after() checks the real width once and redraws if it was off
-V2.spW = () => { const el = document.querySelector('.sp2'); if (el) { const cs = getComputedStyle(el); return Math.max(600, el.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight)); }
-  const g = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--gut')) || 48; return Math.max(600, document.documentElement.clientWidth - 2 * g); };
-V2.spTrack = D => { const rows = D.rows, tr = spdUi.tr, Wd = V2.spW(), pad = 48; V2._spWUsed = Wd;
-  const vs = rows.map(r => r.v), mx = Math.max(...vs), mn = Math.min(...vs), span = mx - mn || 1;
-  const x = v => Math.round(pad + (Wd - 2 * pad) * (tr ? v - mn : mx - v) / span);
-  const lanes = (list, wid) => { const last = []; return list.map(r => { const X = x(r.v); let k = 0; while (last[k] != null && Math.abs(X - last[k]) < wid) k++; last[k] = X; return {...r, X, k}; }); };
-  const M = lanes(rows.filter(r => r.me), 120), T = lanes(rows.filter(r => !r.me), 84), mk = M.length ? Math.max(...M.map(r => r.k)) + 1 : 0, tk = Math.max(...T.map(r => r.k)) + 1;
-  /* scan S29 A (Sim, Nov 20): the top 20 at 60 px (was 36) in 132 px lanes with 84 px name boxes (0 overlaps at 1024 / 1440 / 1920) */
-  const AY = mk * 152 + 16, H = AY + 24 + tk * 132;
-  const mon = (r, iw, top, w) => `<button type="button" class="sp2-m${r.me ? ' me' : ''}" data-v2mon="${V2.esc(r.p.n)}" style="left:${r.X}px;top:${top}px;--mw:${w}px" aria-label="${r.v} ${V2.esc(V2.disp(r.p.n))}: Speed${r.me ? ', yours' : ''}${V2.spTie(rows, r) ? ', a tie' : ''}, open its info"><span class="v u">${r.v}</span>${V2.mon(r.p.n, {iw, bare: true})}<span class="nm">${V2.spName(r)}</span></button>`;
-  return `<div class="sp2-track${M.length ? ' mine' : ''}" style="--h:${H}px;--ay:${AY}px"><i class="sp2-axis" aria-hidden="true"></i>
-    ${M.map(r => mon(r, 64, AY - 152 * (r.k + 1) + 8, 120)).join('')}${T.map(r => mon(r, 60, AY + 24 + 132 * r.k, 84)).join('')}</div>
-    <p class="sp2-k"><span>← Moves first</span><span>${D.mine.length ? `Your six above the line · the top ${D.thr.length} below` : `The top ${D.thr.length}`}</span><span>Moves last →</span></p>`; };
+// the ladder's scale: a thin rule every 50 Speed (100 when the top is very fast), the labels on top
+V2.spScale = rows => { const mx = Math.max(1, ...rows.map(r => r.v)), step = mx > 400 ? 100 : 50, ticks = []; for (let t = step; t < mx; t += step) ticks.push(t); return {mx, step, ticks}; };
+V2.spSum = (D, r) => D.sums.find(x => x.p.n === r.p.n);
+// the words on a cut: today's summary line (the outspeed share of the top 30) and its Speed-point tip, as the old ".sp2-sum" lines
+V2.spCutParts = (D, s) => { const E = V2.esc; if (!s) return null;
+  const head = s.os ? `${outspeedTxt(s.os, {tr: spdUi.tr})} threats${s.cond ? ` (${s.cond})` : ''}` : `moves first against ${s.beat} of the ${D.thr.length} here`;
+  const tip = !s.tip ? '' : s.tip.need != null ? `${s.tip.need - s.tip.cur} more Speed points (${s.tip.need} total) outspeeds ${V2.disp(s.tip.above.p.n)}` : `Can't outspeed ${V2.disp(s.tip.above.p.n)} with this nature`;
+  return {head, tip, html: `<span class="sp2-cs"><span class="sp2-cs-m"><b class="sp2-cs-n vh">${E(V2.disp(s.p.n))}</b> ${E(head).replace(/(\d+%)/, '<b class="u">$1</b>')}</span>${tip ? `<small>${E(tip)}</small>` : ''}</span>`}; };
 
-// phones and tablets (under 1024; Speed Q3 A): the slim track, split (Sim, Nov 14, Speed Q4 A, after "hard to tell which 6 are
-// ours"): your six left of the Speed line, the top 20 right, fastest at the top (slowest under Trick Room), equal speeds on one row
-V2.spVSplit = D => { const g = []; for (const r of D.rows) { const l = g[g.length - 1]; if (l && l.v === r.v) l.items.push(r); else g.push({v: r.v, items: [r]}); }
-  const one = r => `<button type="button" class="chip2${r.me ? ' me' : ''}" data-v2mon="${V2.esc(r.p.n)}" aria-label="${V2.esc(V2.disp(r.p.n))}, ${r.v} Speed${r.me ? ', yours' : ''}: open its info">${r.me ? `<span>${V2.spName(r)}</span>${V2.mon(r.p.n, {iw: 40, bare: true})}` : `${V2.mon(r.p.n, {iw: 32, bare: true})}<span>${V2.spName(r)}</span>`}</button>`;
-  if (!D.mine.length) return `<ol class="sp2-vs solo" aria-label="Turn order">${g.map(G => `<li><b class="v u">${G.v}</b><span class="them">${G.items.map(one).join('')}</span></li>`).join('')}</ol>`;
-  return `<div class="sp2-vs-h" aria-hidden="true"><span class="u">Your six</span><span>Speed</span><span class="u">Top ${D.thr.length}</span></div><ol class="sp2-vs" aria-label="Turn order: your six on the left, the top ${D.thr.length} on the right">${g.map(G => `<li><span class="mine">${G.items.filter(r => r.me).map(one).join('')}</span><b class="v u${G.items.some(r => r.me) ? ' me' : ''}">${G.v}</b><span class="them">${G.items.filter(r => !r.me).map(one).join('')}</span></li>`).join('')}</ol>`; };
+// Track: the ladder. A row of the top 20 = its Speed, its name, its bar (its first type's colour) with the Pokémon at the tip.
+// A row of yours = the cut: a Plot blue band across the whole ladder, the same three columns, white bar, its art bursting out of the band
+V2.spLadder = D => { const E = V2.esc, rows = D.rows, {mx, ticks} = V2.spScale(rows), pct = v => (100 * v / mx).toFixed(2);
+  /* phones pair the top 20 two to a row between your cuts; the last of an odd run takes the whole row (no half-filled row) */
+  const solo = new Set(); { let run = []; for (const r of [...rows, null]) { if (!r || r.me) { if (run.length % 2) solo.add(run[run.length - 1]); run = []; } else run.push(r); } }
+  const row = r => { const t = (r.p.t || [])[0], tie = V2.spTie(rows, r), d = V2.disp(r.p.n), k = d.startsWith('Mega ') ? {form: 'Mega', name: d.slice(5).replace(/ (\S)$/, '\u00a0$1')} : {form: '', name: d};
+    const cs = r.me ? V2.spCutParts(D, V2.spSum(D, r)) : null;
+    const lab = `${r.v} ${E(V2.disp(r.p.n))}: Speed${r.me ? ', yours' : ''}${tie ? ', a tie' : ''}${cs ? E(`; ${cs.head}${cs.tip ? '; ' + cs.tip : ''}`) : ''}; open its info`;
+    const nm = r.me ? `<span class="nm"><small class="sp2-form">${k.form ? E(k.form) : ''}</small><b class="u">${E(k.name)}</b>${V2.kMine('Yours')}</span>` : `<span class="nm">${V2.spName(r)}${tie ? V2.kTag('neutral', 'Tie') : ''}</span>`;
+    const btn = `<button type="button" class="sp2-m${r.me ? ' me' : ''}" data-v2mon="${E(r.p.n)}" aria-label="${lab}"><b class="v u">${r.v}</b>${nm}${cs ? cs.html : ''}<span class="sp2-tr" aria-hidden="true"><span class="sp2-bar" style="--w:${pct(r.v)}%${V2.TYPES.includes(t) ? `;--c:var(--tyn-${t})` : ''}"><i></i>${V2.mon(r.p.n, {iw: r.me ? 104 : 48, bare: true})}</span></span></button>`;
+    return `<li class="${r.me ? 'sp2-cut' : 'sp2-fr'}${solo.has(r) ? ' solo' : ''}">${btn}</li>`; };
+  const scale = `<div class="sp2-sc" aria-hidden="true"><span class="u">Speed</span><span></span><span class="sp2-tr">${ticks.map(t => `<i style="--x:${pct(t)}%">${t}</i>`).join('')}</span></div>`;
+  return `<div class="sp2-track${D.mine.length ? ' mine' : ''}" style="--tick:${pct(ticks[0] || mx)}%">${scale}<ol class="sp2-lad" aria-label="Turn order, ${spdUi.tr ? 'slowest' : 'fastest'} first${D.mine.length ? ': your six are the blue bands; everything above a band moves before it' : ''}">${rows.map(row).join('')}</ol>
+    <p class="sp2-k"><span>↑ ${spdUi.tr ? 'Trick Room: moves first' : 'Moves first'}</span><span>${D.mine.length ? 'Each blue band is one of yours: above it moves before it, under it after' : `The top ${D.thr.length}`}</span><span>Moves last ↓</span></p></div>`; };
 
-// the list: every row with today's small print (spread, item, notes, base Speed) and You / Tie tags
-V2.spList = D => `<ol class="sp2-list">${D.rows.map(r => `<li class="${r.me ? 'me' : ''}"><b class="v u">${r.v}</b><button type="button" class="sp2-li" data-v2mon="${V2.esc(r.p.n)}" aria-label="${V2.esc(V2.disp(r.p.n))}: open its info">${V2.mon(r.p.n, {iw: 40, bare: true})}<span class="nm">${V2.spName(r)}<small>${V2.esc(V2.spNote(r, D.W))}</small></span></button><span class="tag">${r.me ? 'You' : ''}${V2.spTie(D.rows, r) ? `${r.me ? ' · ' : ''}Tie` : ''}</span></li>`).join('')}</ol>`;
+// List: every row with today's small print (spread, item, notes, base Speed) and You / Tie tags; yours are the same blue cuts with their words
+V2.spList = D => `<ol class="sp2-list">${D.rows.map(r => { const t = (r.p.t || [])[0]; return `<li class="${r.me ? 'me' : ''}"${V2.TYPES.includes(t) ? ` style="--c:var(--tyn-${t})"` : ''}><b class="v u">${r.v}</b><button type="button" class="sp2-li" data-v2mon="${V2.esc(r.p.n)}" aria-label="${V2.esc(V2.disp(r.p.n))}: open its info">${V2.mon(r.p.n, {iw: 40, bare: true})}<span class="nm">${V2.spName(r)}<small>${V2.esc(V2.spNote(r, D.W))}</small></span></button><span class="tag">${r.me ? V2.kMine('You') : ''}${V2.spTie(D.rows, r) ? V2.kTag('neutral', 'Tie') : ''}</span>${r.me ? ((V2.spCutParts(D, V2.spSum(D, r)) || {}).html || '') : ''}</li>`; }).join('')}</ol>`;
 
-// one line per member of yours: today's outspeed share of the top 30 and the Speed points to pass the threat just above
-V2.spSums = D => { const E = V2.esc; if (!D.sums.length) return '';
-  const n30 = (D.sums.find(x => x.os) || {}).os; // audit v199 #7 (Nov 17): the shares count the top 30, the track shows 20 of them; say so once
-  return `${n30 ? `<p class="sp2-sum-k">Each share counts all top ${n30.n} threats; the track shows the ${D.thr.length} most used that aren't on your team.</p>` : ''}<div class="sp2-sum">${D.sums.map(({p, beat, tip, os, cond}) => `<p><b>${E(V2.disp(p.n))}</b> ${os ? `${outspeedTxt(os, {tr: spdUi.tr})} threats${cond ? ` (${E(cond)})` : ''}` : `moves first against ${beat} of the ${D.thr.length} here`}${!tip ? ''
-    : tip.need != null ? `<small>${tip.need - tip.cur} more Speed points (${tip.need} total) outspeeds ${E(V2.disp(tip.above.p.n))}</small>` : `<small>Can't outspeed ${E(V2.disp(tip.above.p.n))} with this nature</small>`}</p>`).join('')}</div>`; };
+// the view switch (Track / List) as two blue words beside the step title
+V2.spViewSw = view => `<div class="sp2-view">${V2.kSent(['Show it as', {w: 'Track', on: view !== 'list', attrs: {'data-spview': 'track'}}, {w: 'List', on: view === 'list', attrs: {'data-spview': 'list'}}], {label: 'Show as', hint: false})}</div>`;
 
-V2.pages.speed = {place: 'battle', after() { if (V2._spWUsed && document.querySelector('.sp2') && Math.abs(V2.spW() - V2._spWUsed) > 4 && V2._spFix !== V2._spWUsed) { V2._spFix = V2._spWUsed; V2.redraw(); } }, draw() { let D; try { D = speedData(); } catch (e) { console.error(e); D = null; }
-  const view = V2.spView(), wide = matchMedia('(min-width:1024px)').matches;
-  if (!D) return `<div class="sp2">${V2.battleToolsBar('speed')}<p class="tm-sub">Speed Tiers couldn't load. Try again in a moment.</p></div>`;
-  const empty = !D.mine.length ? `<div class="sp2-empty"><p class="tm-sub">Add Pokémon on My Team to place them against the top ${D.thr.length}.</p><a class="np-btn" href="#team">Go to My Team</a></div>` : '';
-  const body = view === 'list' ? V2.spList(D) : wide ? V2.spTrack(D) : V2.spVSplit(D);
-  return `<div class="sp2">${V2.battleToolsBar('speed')}${V2.spHead(D, view)}${empty}${body}${V2.spSums(D)}
-    <p class="fine sp2-foot">Level 50, 31 IVs. Yours use your items, and your spreads where you set them. Theirs are assumed, since their real spreads and items are hidden: the most common natures and items, fast Pokémon at 32 Speed points. Weather speed Abilities (Chlorophyll, Swift Swim, Sand Rush, Slush Rush) double Speed in their weather.</p></div>`; }};
+V2.pages.speed = {place: 'battle', draw() { let D; try { D = speedData(); } catch (e) { console.error(e); D = null; }
+  const view = V2.spView();
+  if (!D) return `<div class="sp2">${V2.battleToolsBar('speed')}<p class="k-lead">Speed Tiers couldn't load. Try again in a moment.</p></div>`;
+  const empty = !D.mine.length ? `<div class="sp2-empty"><p class="k-lead">Add Pokémon on My Team to place them against the top ${D.thr.length}.</p>${V2.kGo('GO TO MY TEAM.', {href: '#team'})}</div>` : '';
+  const n30 = (D.sums.find(x => x.os) || {}).os; /* audit v199 #7 (Nov 17): the shares count the top 30, the ladder shows 20 of them; say so once */
+  const note = n30 ? `<p class="sp2-sum-k">Each share counts all top ${n30.n} threats; the ladder shows the ${D.thr.length} most used that aren't on your team.</p>` : '';
+  const body = view === 'list' ? V2.spList(D) : V2.spLadder(D);
+  const foot = `<p class="fine sp2-foot">Level 50, 31 IVs. Yours use your items, and your spreads where you set them. Theirs are assumed, since their real spreads and items are hidden: the most common natures and items, fast Pokémon at 32 Speed points. Weather speed Abilities (Chlorophyll, Swift Swim, Sand Rush, Slush Rush) double Speed in their weather.</p>`;
+  const go = D.mine.length ? V2.kGo('PLAN TURN ONE.', {href: '#battle'}) : '';
+  return `<div class="sp2">${V2.battleToolsBar('speed')}${V2.spHead(D)}${empty}${V2.kPlan(
+    V2.kStep(1, D.mine.length ? 'Your six cut the line.' : 'Who gets the jump.', spdUi.tr ? 'slowest first' : 'fastest first', body).replace(/(<div class="k-sec">[\s\S]*?)<\/div>/, (m, a) => a + V2.spViewSw(view) + '</div>')
+    + V2.kStep(2, 'The fine print.', 'how the speeds are worked out', note + foot + go))}</div>`; }};
 
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('.sp2 [data-spview]'); if (t) { V2.LS.set('np2.spview', t.dataset.spview); V2.redraw(); return; }
   const b = e.target.closest && e.target.closest('.sp2 [data-spd],.sp2 [data-spdwx]'); if (!b) return; e.stopImmediatePropagation();
   if (b.dataset.spdwx != null) spdUi.wx = b.dataset.spdwx; else { const k = b.dataset.spd; spdUi[k] = !spdUi[k]; } V2.redraw(); }, true);
-// the track is placed in pixels: redraw when the window is resized across a width that changes it
-(() => { let w = innerWidth, t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { if (Math.abs(innerWidth - w) < 8) return; w = innerWidth; if (document.querySelector('.sp2')) V2.redraw(); }, 150); }); })();
