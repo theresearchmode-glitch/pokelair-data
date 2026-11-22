@@ -121,7 +121,7 @@ export default (ui, pg) => {
     /** is the keyboard focus inside the open sheet (the threat sheet) */
     focusInSheet: () => pg.evaluate(() => { const s = document.querySelector('.np-sheet'); return !!(s && s.contains(document.activeElement)); }),
     // ---- Battle: their six shown as art (the poster's "Their Six" half; the two-column page's .bt-theirs before their plan is in) ----
-    opponentPictures: () => pg.evaluate(() => new Set([...document.querySelectorAll('#main .pbp-half.them [data-v2mon], #main .bt-theirs [data-v2mon]')].filter(b => b.getClientRects().length && b.querySelector('img')).map(b => b.dataset.v2mon)).size),
+    opponentPictures: () => pg.evaluate(() => new Set([...document.querySelectorAll('#main .pbp-half.them [data-v2mon], #main .btg-them [data-v2mon], #main .bt-theirs [data-v2mon]')].filter(b => b.getClientRects().length && b.querySelector('img')).map(b => b.dataset.v2mon)).size),
     /** top (px) of a visible button with this exact text in the page; the calc's weather / terrain names answer for their field card's list */
     buttonTop: (label, scrollToMiddle = false) => pg.evaluate(([l, sc]) => { let b = [...document.querySelectorAll('#main button')].find(e => e.innerText.trim() === l && e.getClientRects().length);
       if (!b) { const s = [...document.querySelectorAll('#main .dc2 [data-dcfield]')].find(s => [...s.options].some(o => o.text === l)); b = s && (s.closest('label,.dc2-fc,[class*=field]') || s); }

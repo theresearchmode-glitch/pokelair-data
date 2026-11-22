@@ -143,9 +143,9 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         if (t && down.has(t) && down.get(t) < j) st.intoDown.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ')'); });
       for (const bt of T.beats) if (bt.act === 'Fainted') { st.fainted++; if (bt.me || !bt.plan) st.faintBad.push(tag + ': ' + bt.x.d); } }
     /* Nov 19 visual check: Battle's card shows a KO stamp only for a sure KO ('KOs', or 'OHKO' with no chance); a chance KO
-       ('OHKO 19%') or a KO named only in a note gets none. Read from each card as Battle draws it (V2.pbpBeat) */
-    if (typeof V2 === 'object' && V2.pbpBeat) T.beats.forEach((bt, i) => { if (!/ into /.test(bt.act)) return; const main = bt.main != null ? bt.main : String(bt.why).split('; ')[0];
-      const stamp = /pbp-tgt ko/.test(V2.pbpBeat(bt, i, T, i + 1)), sure = /^KOs\\b/i.test(main) || /\\bOHKO\\b(?! \\d)/.test(main);
+       ('OHKO 19%') or a KO named only in a note gets none. Read from each card as Battle draws it (V2.btgBeat since Nov 22, The target; was V2.pbpBeat) */
+    if (typeof V2 === 'object' && V2.btgBeat) T.beats.forEach((bt, i) => { if (!/ into /.test(bt.act)) return; const main = bt.main != null ? bt.main : String(bt.why).split('; ')[0];
+      const stamp = /btg-ko1/.test(V2.btgBeat(bt, i, T, {inLead: false, hits: []})), sure = /^KOs\\b/i.test(main) || /\\bOHKO\\b(?! \\d)/.test(main);
       if (stamp) st.koStamp++; if (stamp && !sure) st.koStampBad.push(tag + ': ' + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') stamp ' + stamp); });
     /* Nov 19 review (small): no act aims 'into' a foe its own why calls KO'd earlier this turn (the card would draw a Pokémon that is
        gone), and no why carries a double closing parenthesis ('(up to 287% to your Basculegion (F))') */
@@ -213,11 +213,11 @@ const st = await p.evaluate(() => window.__ev(`(() => { const teams = [], refOf 
         /* Nov 19 review: the KO stamp on Battle's card (V2.pbpBeat) shows exactly when the KO is sure, told from the calc, not the
            line's text: every roll KOs, Sash/Sturdy don't hold, 100% to hit, not charging, and the attacker isn't at risk of being
            flinched or KO'd first (flinch 'likely', koRisk) */
-        if (am && typeof V2 === 'object' && V2.pbpBeat) { const A = atkOf(bt.x, mv), i = T.beats.indexOf(bt), acc = moveAcc(mv, A.ability, F.weather, side(t, 'def'), A.item);
+        if (am && typeof V2 === 'object' && V2.btgBeat) { const A = atkOf(bt.x, mv), i = T.beats.indexOf(bt), acc = moveAcc(mv, A.ability, F.weather, side(t, 'def'), A.item);
           /* at risk, told from the calc (not the code's koRisk flag; fifth review, Nov 19): an earlier attack line of the other side that
              can KO this attacker on some roll (Sash and charging aside), or one in a speed tie with it */
           const risk = canKO.some(c => c.t === bt.x && c.i < i) || canKO.some(c => c.t === bt.x && c.i > i && tied(bt, T.beats[c.i]));
-          const sure = r.min >= r.hp && !r.sash && acc >= 100 && !chargesFirst(mv, F.weather, A.item) && !risk && bt.flinch !== 'likely', stamp = /pbp-tgt ko/.test(V2.pbpBeat(bt, i, T, i + 1));
+          const sure = r.min >= r.hp && !r.sash && acc >= 100 && !chargesFirst(mv, F.weather, A.item) && !risk && bt.flinch !== 'likely', stamp = /btg-ko1/.test(V2.btgBeat(bt, i, T, {inLead: false, hits: []}));
           if (sure) st.koSureN++; if (stamp !== sure) st.koSureBad.push(tag + ': ' + (bt.me ? 'your ' : 'their ') + bt.x.d + ' ' + bt.act + ' (' + bt.why + ') stamp ' + stamp + ', ' + dmgP(100 * r.min / r.hp) + '-' + dmgP(100 * r.max / r.hp) + '%, ' + acc + '% to hit'); }
         /* Nov 19 review: their hit that can KO your lead before it moves (any roll, any accuracy; not Sash, not charging) puts that
            lead at risk (koRisk), so its own KO isn't sure; told from the calc and the turn order, not the line's text */
