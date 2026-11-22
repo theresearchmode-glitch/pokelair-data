@@ -2049,3 +2049,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:53 PM: Sim: second Claude account never publishes artifacts; only this chat publishes. It works on its own alt/* branches; HH reviews and merges
 - 5:55 PM: Sim: down to 1 helper here for a couple of days (usage). Stopped hM (Track Record fixes, not started in code); hW2 finishes Mystery Gifts, then takes the Track Record fixes. Big parallel work goes to the second account
 - 5:55 PM: Sim: 'do what you think is best for the helper situation while keeping them to 1 helper' -> kept plan: hW2 only (Gifts, then Track Record fixes)
+- 6:10 PM: Sim: 'sounds like a plan, lets do it' -> after push: PC Safari rerun, Preview v236, Gifts, Track Record, second-account pictures (Wave 3 sizes first)
