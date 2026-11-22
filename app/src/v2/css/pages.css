@@ -3553,3 +3553,15 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (min-width:700px) and (max-width:1099.98px){.us-axis,.us-ln{grid-template-columns:40px minmax(0,232px) minmax(0,1fr) 80px 96px}}
 @media (max-width:699.98px){.us-ln{grid-template-areas:"a t t u" "a b r m"}.us-nob .us-ln{grid-template-areas:"a t t u" "a t r m"}}
 @media (max-width:359.98px){.us-ln .us-tx b{font-size:var(--t15)}.us-ln .us-u{font-size:var(--t17)}.us-axis,.us-ln{grid-template-columns:40px minmax(0,1fr) 28px 64px}.us-ln .us-rk{min-width:28px}}
+/* Usage at 1440 and up (Sim's desktop length rule, Nov 22): the top ten and "How X is played" side by side, so the page uses the width
+   instead of running 3+ screens; step 2's number circle sits at its own column's left edge, the plan line runs down the first column */
+@media (min-width:1440px){
+  .us .k-plan{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,9fr);column-gap:var(--s16);align-items:start}
+  .us .us-how{margin-top:0;padding-left:var(--s12)}
+  .us .us-how>.k-n{left:0}
+  .us .us-s1 .us-axis,.us .us-s1 .us-ln{grid-template-columns:40px minmax(0,204px) minmax(120px,1fr) 72px 80px;column-gap:var(--s3)}
+  .us .us-s1 .us-ln .us-u{font-size:var(--t20)}
+  .us .us-how .us-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s6)}
+  .us .us-how .us-groups>.us-mvs{grid-column:1/-1;grid-row:auto}
+  .us .us-how .us-groups>:nth-child(4):last-child{grid-column:auto}
+}
