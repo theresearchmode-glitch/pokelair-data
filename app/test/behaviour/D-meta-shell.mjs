@@ -335,14 +335,14 @@ t('SHELL-20', 'Feedback: anonymous, no name/email fields, too-short check, sent 
   for (const k of ['Something broke', 'Confusing', 'Idea', 'I like this', 'Wrong info']) expect(has(dl, k), 'kind missing: ' + k);
   const f = await d.dialogFields(); expect(f.length === 1 && /textarea/i.test(f[0].type), 'feedback asks for more than a message: ' + JSON.stringify(f));
   expect(!f.some(x => /name|e-?mail/i.test(x.ph + x.label)), 'feedback asks for a name or email');
-  await d.typeFeedback('ok'); await d.tapInDialog(/^Send$/); expect(has(await d.dialogText() || '', 'Write a few words first'), 'no too-short message');
-  await d.typeFeedback('The usage list is great, write me at me' + String.fromCharCode(64) + 'example.com please'); await d.tapInDialog(/^Send$/);
+  await d.typeFeedback('ok'); await d.tapInDialog(/^Send( it\.?)?$/i); expect(has(await d.dialogText() || '', 'Write a few words first'), 'no too-short message');
+  await d.typeFeedback('The usage list is great, write me at me' + String.fromCharCode(64) + 'example.com please'); await d.tapInDialog(/^Send( it\.?)?$/i);
   const tx = await d.until(() => d.toastText()); expect(has(tx || '', 'Thanks! Feedback sent.') && has(tx, 'Personal details were removed'), 'toast: ' + tx);
   expect(!(await d.dialogText()), 'dialog stayed open'); const saved = JSON.stringify(await d.savedFeedback());
   expect(saved && has(saved, 'usage list is great') && !saved.includes(String.fromCharCode(64)), 'saved feedback: ' + saved); }));
 t('SHELL-20b', '"Report a mistake" on a sheet sends what was on screen', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); await d.openPokemon('Incineroar'); await d.tapInSheet(/^Report a mistake( ›)?$/); const dl = await d.dialogText();
-  expect(dl && has(dl, 'Report a mistake') && has(dl, 'Incineroar'), 'mistake dialog: ' + (dl || '').slice(0, 200)); await d.tapInDialog(/^Send$/);
+  expect(dl && has(dl, 'Report a mistake') && has(dl, 'Incineroar'), 'mistake dialog: ' + (dl || '').slice(0, 200)); await d.tapInDialog(/^Send( it\.?)?$/i);
   expect(has(await d.until(() => d.toastText()) || '', 'Thanks! Mistake reported.'), 'toast: ' + await d.toastText()); }));
 t('SHELL-20c', 'Viewers who cannot save see no feedback buttons', run({team: TEAM, account: false}, async ({ui, d}) => {
   expect(!has(await d.footerText(), 'Send feedback'), 'Send feedback shows'); await ui.go('Ratings'); await d.openPokemon('Incineroar');

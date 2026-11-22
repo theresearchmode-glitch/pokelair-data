@@ -67,3 +67,16 @@
 @media (max-width:699.98px){.ow2-box{min-height:0;padding:var(--s4)}.ow2-box h2{font-size:var(--t22)}}
 /* phones with the stairs: How Ratings Work and Track Record move to the page's foot (approved mock), so the search starts on the first screen (Q21) */
 @media (max-width:699.98px){.rs-on .ra-h .ra-links{display:none}.rs-on .ra-lph{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);margin-top:var(--s4)}}
+/* ===== Send Feedback on the kit (Sim approved Nov 22, 12:37 PM): the form as a plot sentence, the box, the pink SEND IT., "Anonymous. Always." beside it */
+.fb2{display:block}.fb2 .k-head .k-kicker{display:table;max-width:100%}
+.fb2-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);align-items:start;gap:var(--s6) var(--s12)}
+.fb2 .k-sent{margin-top:0;font-size:var(--t28)}
+.fb2-box{display:block;margin:var(--s4) 0 0}
+.fb2-box textarea{display:block;width:100%;min-height:132px;padding:var(--s3) var(--s4);border:3px solid var(--k-plot);border-radius:0;background:var(--k-card);color:var(--k-ink);font:500 var(--t17)/1.5 var(--b);resize:vertical}
+.fb2-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s5);margin-top:var(--s1)}.fb2-row .k-go{margin-top:var(--s4)}
+.fb2-row .fine{font-size:var(--t13);font-weight:600;color:var(--k-ink2)}
+.fb2-anon{padding:var(--s5) var(--s6);background:var(--k-card);box-shadow:inset 4px 0 0 var(--k-plot),0 6px 18px var(--k-card-shadow)}
+.fb2-anon h2{margin:0 0 var(--s2);font-size:var(--t28);line-height:1.1;color:var(--k-ink)}.fb2-anon p{margin:0 0 var(--s2);font-size:var(--t15);line-height:1.5;color:var(--k-ink2)}
+.fb2-mail{min-height:var(--tap);padding:0;border:0;background:none;cursor:pointer}
+@media (max-width:959.98px){.fb2-two{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:699.98px){.fb2 .k-sent{gap:6px;font-size:var(--t15)}.fb2 .k-w{padding:0 var(--s2)}.fb2 .k-sec,.fb2 .k-n{display:none}.fb2 .inf-fb{padding-top:var(--s5)}.fb2-box textarea{min-height:104px}.fb2-row .k-go{margin-top:var(--s3)}.fb2-anon{padding:var(--s4)}.fb2-anon h2{margin-bottom:var(--s1);font-size:var(--t22)}.fb2-anon p{font-size:var(--t13)}}
