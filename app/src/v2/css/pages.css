@@ -3535,10 +3535,13 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
    facts column under the facts (no loose row under the card), and the three facts line up as a table: numbers in one column, words in
    the next, so 38.1% / 48.0% / 97 start and end on the same lines */
 @media (min-width:700px){
-  .us .us-spot .us-acts{grid-column:2;align-self:end}
+  .us .us-spot .us-acts{grid-column:2;align-self:end;min-width:0}
+  .us .us-spot .us-acts .k-go{max-width:100%}
   .us .us-spot .gs-sinfo{align-self:end}
   .us .us-facts p{display:grid;grid-template-columns:minmax(0,max-content) minmax(0,1fr);justify-content:start;column-gap:var(--s3)}
   .us .us-facts b{order:-1;min-width:4.4em}
   .us .us-spot.k-hero{grid-template-rows:auto auto;align-items:end}
   .us .us-spot .k-hero-c{grid-row:1/3}
 }
+/* 1100-1439: the hero shares the header row, so its facts column is narrow; the move takes the full width under card + facts (qcheck: offscreen at 1280) */
+@media (min-width:1100px) and (max-width:1439.98px){.us .us-spot .us-acts{grid-column:1/-1}}
