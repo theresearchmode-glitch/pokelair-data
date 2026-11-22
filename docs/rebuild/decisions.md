@@ -2039,3 +2039,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:37 PM: Hourly check: 2 build helpers (hW2 This Week, hM About fix) as Sim allowed for Nov 22; main thread: merged batch check running; How We Calculate 'Updated' overlap fixed (qcheck 0 new)
 - 4:07 PM: Sim: 'Thank you this is fine with me' -> About (A the receipt) OK as built; desktop +403 within his +472
 - 4:30 PM: Sim: 'this week looks good' -> This Week (A the slope) OK as built, desktop +46 OK, hW2's 4 small differences kept
+- 4:35 PM: Hourly check: 2 build helpers (hW2 News, hM Track Record); main: This Week merged, checks running; Game Plan updated
