@@ -70,7 +70,7 @@ V2.pages.track = {place: 'meta', draw() { const E = V2.esc, T = META.track;
   let say = '';
   if (n && !early) { const r = trRates(T.ev), ratio = r[0] && r[3] ? r[0] / r[3] : null; if (ratio && isFinite(ratio)) say = ratio >= 100 ? Math.round(ratio / 10) * 10 + '×' : ratio >= 10 ? Math.round(ratio) + '×' : ratio.toFixed(1) + '×'; }
   const side = `<div class="trk-say2">${say ? `<p class="trk-big u" aria-hidden="true">${E(say)} more top 8s</p><p class="trk-sl">The ratings called the top 8s before the events were played.</p>` : ''}${V2.kGo('SEE HOW WE RATE.', {href: '#method=rating'})}</div>`;
-  const s1 = V2.kStep(1, 'The receipt.', 'how often each Pokémon made a top 8, by the rating we gave', `<div class="trk-r1">${receipt}${side}</div>`);
+  const s1 = V2.kStep(1, 'The receipt.', 'top-8 teams, by the rating we gave', `<div class="trk-r1">${receipt}${side}</div>`);
   const s2 = n ? V2.kStep(2, 'The calls.', 'three we called, three we missed', calls) : '';
   const s3 = V2.kStep(n ? 3 : 2, 'How we check.', 'every rating saved, then checked later', `${how}${weeks}${coming}${evl}${foot}`);
   return `<div class="ra gsp trk trk2"><div class="trk-top">${head}${stats}</div>${V2.kPlan(s1 + s2 + s3)}</div>`; }};
