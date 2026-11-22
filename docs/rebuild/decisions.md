@@ -1910,3 +1910,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:01 PM: Sim: 'lovely. lets move forward': Pokémon page approved (tiles under the sentence, stronger colour version). Merge to main once the pk chain passes.
 - 7:09 PM: War room full run done: all pass except MU-02 (old sentence; test updated, 3330fafc) and BR-C1 control in v2-minors groups (tops 521..546; passed in earlier runs; timing). Re-running both in wr as a tracked task.
 - 7:10 PM: Sim: Home = A (recommended): keep today's Home with its bold bands; hH's kit version (keep/home-kit) not merged, kept as a tag.
+- 7:18 PM: War room merged into main (1fc1e769, clean merge; its tests all pass: MU-02 with the updated test, groups re-run all passed). Quick post-merge checks running in ck (kit-page, overlap team+calc, MU-02, X-04, minors main1, arena).
