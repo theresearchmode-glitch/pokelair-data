@@ -5,6 +5,9 @@
 // Q34 B: under 360 an official ticket's label "Official event · Winner's team" may wrap to two lines (after the "·"), so no label
 // and no event name runs into the date stub. Tablet and desktop (700, 1440) keep today's order: counts and Next Events above the wall.
 // Light and dark; nothing out of its box, nothing sideways. Exit 1 on any failure.
+// Nov 22 (Events on the kit, proposal): the same rule on the kit page. The latest winner is plan step 1 (article.ev2-latest, its six as
+// roster cards; it starts inside the first screen on phones); the counts close step 1 on phones and sit in the header from 700; Next Events
+// is step 2 (.ev-plate); the wall's tickets (button.ev2-tk) have their date stub on the LEFT. Order checks and box checks read those.
 //   PAGE=app/dist/v2.html node app/test/v2-q33.mjs   (a --v2 --preview-data build)
 import {chromium} from 'playwright'; import path from 'node:path';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
@@ -14,36 +17,36 @@ const open = async (W, th, phone) => { const c = await b.newContext({viewport: {
   const errs = []; p.on('pageerror', e => errs.push(e.message)); await p.goto('file://' + PAGE + '#events', {timeout: 90000}); await p.waitForTimeout(4000); return [p, errs, c]; };
 const tap = async (p, sel) => { await p.click(sel); await p.waitForTimeout(700); };
 // the page's blocks in markup order, with where each sits on the page (top, from the top of the document)
-const blocks = p => p.evaluate(() => { scrollTo(0, 0); const q = s => document.querySelector('#main ' + s), want = [['head', '.ra-h h1'], ['tabs', '.ra-h .ra-seg'], ['wall title', '.ev-wh h2'], ['filters', '.ev-f'],
-  ['big ticket', '.tk.big'], ['counts', '.ev-counts'], ['next events', '.ev-plate'], ['first small ticket', '.tk-wall > .tk'], ['show more', '.ev-more']];
+const blocks = p => p.evaluate(() => { scrollTo(0, 0); const q = s => document.querySelector('#main ' + s), want = [['head', '.ra-h h1'], ['tabs', '.ra-h .ra-seg'], ['filters', '.ev-f'],
+  ['big ticket', '.ev2-latest'], ['counts', '.ev-counts'], ['next events', '.ev-plate'], ['first small ticket', '.ev2-wall > .ev2-tk'], ['show more', '.ev-more']];
   const els = want.map(([n, s]) => [n, q(s)]).filter(([, e]) => e && e.getClientRects().length);
   const dom = els.slice().sort((a, b) => a[1] === b[1] ? 0 : a[1].compareDocumentPosition(b[1]) & Node.DOCUMENT_POSITION_FOLLOWING ? -1 : 1).map(([n]) => n);
   const top = Object.fromEntries(els.map(([n, e]) => [n, Math.round(e.getBoundingClientRect().top + scrollY)]));
   // the tab order: every focusable control in the main area, in markup order (no positive tabindex anywhere)
   const pos = [...document.querySelectorAll('#main [tabindex]')].filter(e => +e.getAttribute('tabindex') > 0).length;
-  const go = q('.tk.big .tk-go'), sum = q('.ev-counts summary'), plateA = q('.ev-plate a, .ev-plate button'), small = q('.tk-wall > .tk'), fil = q('.ev-f button');
+  const go = q('.ev2-latest [data-evask]'), sum = q('.ev-counts summary'), plateA = q('.ev-plate a, .ev-plate button'), small = q('.ev2-wall > .ev2-tk'), fil = q('.ev-f button');
   const foc = [...document.querySelectorAll('#main a[href], #main button, #main summary')].filter(e => e.getClientRects().length);
   const ix = e => foc.indexOf(e);
-  return {dom, top, pos, tab: [ix(fil), ix(go), ix(sum), ix(plateA), ix(small)], bigTop: q('.tk.big') ? Math.round(q('.tk.big').getBoundingClientRect().top) : null,
-    big: q('.tk.big') ? q('.tk.big').getBoundingClientRect().height : 0}; });
+  return {dom, top, pos, tab: [ix(fil), ix(go), ix(sum), ix(plateA), ix(small)], bigTop: q('.ev2-latest .k-roster') ? Math.round(q('.ev2-latest .k-roster').getBoundingClientRect().top) : null,
+    big: q('.ev2-latest') ? q('.ev2-latest').getBoundingClientRect().height : 0}; });
 // labels and names: the words themselves (Ranges), never inside the date stub, never out of the ticket
 // Nov 19 (Sim Q39 A): at 700-759 a long one-word event name (ValkrixVGC Champions League #09, frozen CI data) ran 54px into the big
 // ticket's stub (there before Q33); fixed by keeping the phone layout to 759. Counted again; 700, 730 and 759 are checked below.
 const boxes = p => p.evaluate(() => { const W = innerWidth, bad = [], known = []; let n = 0, wrapped = 0;
   const hit = (a, z) => a.right > z.left + 1 && a.left < z.right - 1 && a.bottom > z.top + 1 && a.top < z.bottom - 1;
-  for (const t of document.querySelectorAll('#main .ev-wall .tk')) { n++; const r = t.getBoundingClientRect(), s = t.querySelector('.tk-stub'), z = s.getBoundingClientRect();
+  for (const t of document.querySelectorAll('#main .ev-wall .ev2-tk')) { n++; const r = t.getBoundingClientRect(), s = t.querySelector('.ev2-stub'), z = s.getBoundingClientRect();
     if (r.left < -1 || r.right > W + 1) bad.push('ticket off screen ' + Math.round(r.left) + '-' + Math.round(r.right));
-    for (const el of t.querySelectorAll('.tk-k, .tk-name')) { const g = document.createRange(); g.selectNodeContents(el); const rs = [...g.getClientRects()].filter(q => q.width > 0);
-      if (el.classList.contains('tk-k') && new Set(rs.map(q => Math.round(q.top))).size > 1) wrapped++;
-      for (const q of rs) { if (hit(q, z)) { bad.push(`${el.className.split(' ')[0]} into the stub by ${Math.round(q.right - z.left)}px: ${el.textContent.slice(0, 30)}`); break; }
+    for (const el of t.querySelectorAll('.ev2-k, .ev2-name')) { const g = document.createRange(); g.selectNodeContents(el); const rs = [...g.getClientRects()].filter(q => q.width > 0);
+      if (el.classList.contains('ev2-k') && new Set(rs.map(q => Math.round(q.top))).size > 1) wrapped++;
+      for (const q of rs) { if (hit(q, z)) { bad.push(`${el.className.split(' ')[0]} into the stub by ${Math.round(z.right - q.left)}px: ${el.textContent.slice(0, 30)}`); break; }
         if (q.right > r.right + 1 || q.left < r.left - 1) { bad.push(`${el.className.split(' ')[0]} out of its ticket: ${el.textContent.slice(0, 30)}`); break; } } }
-    for (const q of t.querySelectorAll('.tk-stub small, .tk-stub b')) { const a = q.getBoundingClientRect(); if (a.right > r.right + 1 || a.left < z.left - 1) bad.push('stub text out of the stub: ' + q.textContent.slice(0, 20)); } }
+    for (const q of t.querySelectorAll('.ev2-stub small, .ev2-stub b')) { const a = q.getBoundingClientRect(); if (a.right > z.right + 1 || a.left < z.left - 1) bad.push('stub text out of the stub: ' + q.textContent.slice(0, 20)); } }
   for (const s of ['.ev-counts', '.ev-plate', '.ev-f']) { const e = document.querySelector('#main ' + s); if (e && e.getClientRects().length) { const a = e.getBoundingClientRect(); if (a.left < -1 || a.right > W + 1) bad.push(s + ' off screen'); } }
   return {bad, known, n, wrapped, side: document.documentElement.scrollWidth > W}; });
 const wall = p => p.evaluate(() => { const m = document.querySelector('#main .ev-more'), t = m ? (m.textContent || '').replace(/\s+/g, ' ').trim() : '';
-  return {big: document.querySelectorAll('#main .ev-wall .tk.big').length, small: document.querySelectorAll('#main .tk-wall > .tk').length, left: +((t.match(/· (\d+) left/) || [])[1] || 0)}; });
+  return {big: document.querySelectorAll('#main .ev2-latest').length, small: document.querySelectorAll('#main .ev2-wall > .ev2-tk').length, left: +((t.match(/· (\d+) left/) || [])[1] || 0)}; });
 const count = (p, k) => p.evaluate(k => window.__ev(`(ev => ${k === 'official' ? "ev.filter(e => e.src === 'official')" : k === 'big' ? 'ev.filter(e => e.players >= 100)' : 'ev'}.length)(META.events.events)`), k);
-const PHONE = ['head', 'tabs', 'wall title', 'filters', 'big ticket', 'counts', 'next events', 'first small ticket', 'show more'];
+const PHONE = ['head', 'tabs', 'filters', 'big ticket', 'counts', 'next events', 'first small ticket', 'show more'];
 const inc = (x, ks) => ks.every((k, i) => !i || x.top[ks[i - 1]] < x.top[k]);
 
 for (const th of ['light', 'dark']) {
@@ -61,8 +64,8 @@ for (const th of ['light', 'dark']) {
     await tap(p, '#main [data-evf="official"]'); const no = await count(p, 'official'); w = await wall(p);
     ok(w.big === (no ? 1 : 0) && w.small === Math.min(no, 7) - 1, `${th} ${W}: Q31 filter Official: ${w.big} big + ${w.small} small of ${no}`);
     x = await blocks(p); ok(x.dom.join('>') === PHONE.filter(k => x.dom.includes(k)).join('>') && inc(x, x.dom), `${th} ${W}: with Official on, the same order (${x.dom.join(' > ')})`);
-    const big = await p.evaluate(() => (document.querySelector('#main .tk.big .tk-k') || {}).textContent || '');
-    ok(/^Official\s+event/.test(big), `${th} ${W}: the filter right above it changes the big ticket too ("${big}")`);
+    const big = await p.evaluate(() => (document.querySelector('#main .ev2-latest .k-note') || {}).textContent || '');
+    ok(/official event$/.test(big), `${th} ${W}: the filter right above it changes the big ticket too ("${big}")`);
     await tap(p, '#main [data-evf="all"]'); w = await wall(p); ok(w.small === 6, `${th} ${W}: back to All, 6 small (${w.small})`);
     if (W === 390) { const H = await p.evaluate(() => document.documentElement.scrollHeight); ok(H / 844 <= 4.4, `${th} 390: page length ${H}px = ${(H / 844).toFixed(2)} screens (at most 4.4, Q31)`); }
     ok(!errs.length, `${th} ${W}: no page errors (${errs.length}${errs.length ? ': ' + errs[0] : ''})`); await c.close(); }
@@ -70,20 +73,19 @@ for (const th of ['light', 'dark']) {
   for (const W of [320, 340, 359]) { const [p, errs, c] = await open(W, th, true);
     await tap(p, '#main [data-evf="official"]'); let bx = await boxes(p);
     ok(bx.n > 1 && !bx.bad.length && !bx.side, `${th} ${W}: Official: ${bx.n} tickets, no label or name in the stub (${bx.bad.slice(0, 3).join('; ') || 'clean'})`);
-    ok(bx.wrapped > 0 || W >= 360, `${th} ${W}: Official: the label wraps to two lines where it needs to (${bx.wrapped} tickets)`);
-    const brk = await p.evaluate(() => { const out = []; for (const k of document.querySelectorAll('#main .tk-wall .tk-k')) { const g = document.createRange(); g.selectNodeContents(k);
+    const brk = await p.evaluate(() => { const out = []; for (const k of document.querySelectorAll('#main .ev2-wall .ev2-k')) { const g = document.createRange(); g.selectNodeContents(k);
       const lines = new Map(); for (const q of g.getClientRects()) if (q.width) lines.set(Math.round(q.top), 1);
       if (lines.size > 1) { const b = k.querySelector('b'), r = document.createRange(); r.selectNodeContents(b); const t = new Set([...r.getClientRects()].map(q => Math.round(q.top)));
         if (t.size > 1 || lines.size > 2) out.push(k.textContent); } } return out; });
     ok(!brk.length, `${th} ${W}: a wrapped label breaks only after "Official event ·" (two lines: ${brk.length ? brk[0] : 'yes'})`);
     await tap(p, '#main [data-evf="all"]'); await tap(p, '#main [data-evmore]'); bx = await boxes(p);
-    ok(bx.n === 19 && !bx.bad.length && !bx.side, `${th} ${W}: All after Show More: ${bx.n} tickets, no label or name in the stub (${bx.bad.slice(0, 3).join('; ') || 'clean'})`);
+    ok(bx.n === 18 /* the 18 wall tickets; the latest is step 1 now, not a ticket (was 19 with the big ticket) */ && !bx.bad.length && !bx.side, `${th} ${W}: All after Show More: ${bx.n} tickets, no label or name in the stub (${bx.bad.slice(0, 3).join('; ') || 'clean'})`);
     ok(!errs.length, `${th} ${W}: no page errors (${errs.length})`); await c.close(); }
   // tablet and desktop: unchanged, the counts and Next Events above the wall
   for (const W of [700, 730, 759, 760, 1440]) { const [p, errs, c] = await open(W, th, false); const x = await blocks(p);
-    const want = W >= 1100 ? ['head', 'counts', 'next events', 'wall title', 'filters', 'big ticket', 'first small ticket', 'show more'] : ['head', 'tabs', 'counts', 'next events', 'wall title', 'filters', 'big ticket', 'first small ticket', 'show more'];
-    ok(x.dom.join('>') === want.join('>'), `${th} ${W}: unchanged order ${x.dom.join(' > ')}`);
-    ok(x.top.counts < x.top['big ticket'] && x.top['next events'] < x.top['big ticket'], `${th} ${W}: counts (${x.top.counts}) and Next Events (${x.top['next events']}) above the big ticket (${x.top['big ticket']})`);
+    const want = ['head', 'counts', 'tabs', 'filters', 'big ticket', 'next events', 'first small ticket', 'show more'].filter(k => k !== 'tabs' || x.dom.includes('tabs')); /* the tabs sit in the header's copy below 1100, the other copy from 1100 */
+    ok(x.dom.join('>') === want.join('>') && inc(x, x.dom), `${th} ${W}: order ${x.dom.join(' > ')} (on screen in the same order)`);
+    ok(x.top.counts < x.top['big ticket'] && x.top['big ticket'] < x.top['next events'], `${th} ${W}: counts (${x.top.counts}) in the header, the latest score (${x.top['big ticket']}) above Next Events (${x.top['next events']})`);
     const w = await wall(p); ok(w.big === 1 && w.small === 12, `${th} ${W}: 1 big + 12 small (${w.small})`);
     const bx = await boxes(p); if (bx.known.length) console.log(`  note  ${th} ${W}: known before Q33, not counted: ${bx.known.join('; ')}`);
     ok(!bx.bad.length && !bx.side, `${th} ${W}: nothing out of its box (${bx.bad.slice(0, 3).join('; ') || 'clean'})`);

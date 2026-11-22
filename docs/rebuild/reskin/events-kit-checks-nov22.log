@@ -1,0 +1,46 @@
+Events on the kit (helper hE), checks, Nov 22. BEFORE = untouched build of c2fc2e20 (base.html / base-pd.html), AFTER = this commit's build (new.html / new-pd.html).
+Base q31/q33/q72/q84 were run with the test files as they were at c2fc2e20; AFTER with the updated test files in this commit.
+dms  BEFORE: behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 506s  (adapter v2)
+dms  AFTER:  behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 528s  (adapter v2)
+kitpage  BEFORE: kit-page: all 14 views passed (7 widths x day and night)
+kitpage  AFTER:  kit-page: all 14 views passed (7 widths x day and night)
+overlap  BEFORE: v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 44s)
+overlap  AFTER:  v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 44s)
+qcheck  BEFORE: qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 32s
+qcheck  AFTER:  qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 32s
+tap  BEFORE: tap-size: all passed
+tap  AFTER:  tap-size: all passed
+unb  BEFORE: v2-unbounded: none outside the named exception across 28 pages
+unb  AFTER:  v2-unbounded: none outside the named exception across 28 pages
+min-main1  BEFORE: v2-minors (main1):all passed
+min-main1  AFTER:  v2-minors (main1):all passed
+min-main2  BEFORE: v2-minors (main2):1 failed
+min-main2  AFTER:  v2-minors (main2):1 failed
+min-groups  BEFORE: v2-minors (groups):all passed
+min-groups  AFTER:  v2-minors (groups):all passed
+tokens  BEFORE: tokens-doc: up to date (573 tokens)
+tokens  AFTER:  tokens-doc: up to date (573 tokens)
+guard  BEFORE: v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+guard  AFTER:  v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+q31  BEFORE: v2-q31: all passed
+q31  AFTER:  v2-q31: all passed
+q32  BEFORE: v2-q32: all passed
+q32  AFTER:  v2-q32: all passed
+q33  BEFORE: v2-q33: all passed
+q33  AFTER:  v2-q33: all passed
+q72  BEFORE: v2-q72: all passed
+q72  AFTER:  v2-q72: all passed
+q84  BEFORE: v2-q84: all passed
+q84  AFTER:  v2-q84: all passed
+
+v2-minors main2's one failure is the same before and after (Stampede hero 1, Home; not Events):
+  FAIL  Stampede hero 1: one h1 "Sharply raise your win rate.", four plates, every named Pokémon a button whose spoken name starts with its words, the herd aria-hidden ({"h1":["Pokémon Champions tea
+
+D-meta-shell EVT lines AFTER:
+  pass  EVT-01  Events head: total, online and official counts, "?" explains
+  known EVT-02  Next events calendar: countdowns, Show all, recent results open the event  -> rows: 2
+  pass  EVT-03  Event filter Official keeps only official events
+  known EVT-04  Event list 12 at a time with "Show more"  -> cards: 13
+  pass  EVT-05  Event detail: placings 1st→16th, opens at top, "‹ All events" returns
+  pass  EVT-06  Team sheet card: Sets shows items/moves; Load team needs a second tap and loads the exact sheet
+  pass  EVT-07  Events without data: empty note

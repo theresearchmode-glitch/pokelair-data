@@ -24,27 +24,44 @@ V2.ticket = (ev, big) => { const E = V2.esc, w = ev.top[0], ns = w ? w.mons.map(
     <div class="tk-mid"><span class="tk-tag u">Latest result</span>${k}<h3 class="tk-name u">${E(V2.evTitle(ev.name))}</h3>
       <ul class="tk-five">${rest.map(n => `<li>${V2.mon(n, {bare: true})}<span>${E(V2.disp(n)).replace(/ (\S{1,2})$/, '\u00a0$1')}</span></li>`).join('')}</ul>
       <button type="button" class="tk-go" data-evgo="${E(ev.id)}">See the placings, 1st to ${placeTxt(ev.top.length)} ›</button></div>${stub}</article>`; };
-// Next Events (today's calendarHTML: the next events with a countdown, Show all, the recent official ones with results, the source)
+// Next Events (today's calendarHTML: the next events with a countdown, Show all, the recent official ones with results, the source).
+// On the kit (Nov 22): each upcoming event is a small calendar ticket (ink date stub, name, dates and place); a live one wears the kit's pink
+// LIVE NOW tag. Two show (two across on desktop); "All N ›" is the step's one link and lists them all.
 V2.evCal = () => { const C = META.calendar, E = V2.esc;
   if (!C || typeof CAL === 'undefined') return '<p class="ev-none">The event calendar appears after the next data refresh.</p>';
   const t = CAL.today(), next = C.ev.filter(e => e.e >= t && e.t !== 'national'), past = C.ev.filter(e => e.e < t && ['regional', 'sc', 'international', 'worlds'].includes(e.t)).slice(-3).reverse();
-  const shown = V2.evUi.cal ? next : next.slice(0, 2) /* two, so the plate stays level with the headline (audit: an empty strip beside a tall plate) */, age = C.checked ? CAL.days(t, C.checked) : 0;
+  const shown = V2.evUi.cal ? next : next.slice(0, 2), age = C.checked ? CAL.days(t, C.checked) : 0;
   const row = e => { const [k, w] = CAL.when(e), d = new Date(e.s + 'T12:00:00'), place = e.t === 'online' ? '' : [e.city !== e.n ? e.city : '', CAL.country(e.cc)].filter(Boolean).join(', ');
-    const inner = `<span class="ev-cd" aria-hidden="true"><b class="u">${d.getDate()}</b><small>${d.toLocaleDateString('en-US', {month: 'short'})}</small></span><span class="ev-cm"><b>${E(e.n)}</b><small>${E(CAL.range(e))}${place ? ' · ' + E(place) : ''}${e.n.toLowerCase().includes(CAL.type[e.t].toLowerCase()) ? '' : ' · ' + CAL.type[e.t]}</small></span><span class="ev-cw ${k}">${w}</span>`;
+    const kind = e.n.toLowerCase().includes(CAL.type[e.t].toLowerCase()) ? '' : CAL.type[e.t];
+    const inner = `<span class="ev-cd" aria-hidden="true"><b class="u">${d.getDate()}</b><small>${d.toLocaleDateString('en-US', {month: 'short'})}</small></span><span class="ev-cm"><span class="ev2-ckw"><small class="ev2-ck">${E(CAL.range(e))}${kind ? ' · ' + E(kind) : ''}</small><span class="ev-cw ${k}${k === 'live' ? ' k-tag u k-live' : ''}">${w}</span></span><b class="u">${E(e.n)}</b>${place ? `<small>${E(place)}</small>` : ''}</span>`;
     return `<li>${e.url ? `<a class="ev-crow" href="${E(e.url)}" target="_blank" rel="noopener" aria-label="${E(e.n)}, ${E(CAL.range(e))}, ${w}: details (opens a new tab)">${inner}</a>` : `<span class="ev-crow">${inner}</span>`}</li>`; };
-  const pastH = past.length ? `<p class="ev-cpast">Recent: ${past.map(e => { const r = CAL.results(e); return r ? `<button type="button" class="np-link" data-evgo="${E(r.id)}">${E(e.n)} Results ›</button>` : `<span>${E(e.n)} · results not in yet</span>`; }).join('')}</p>` : '';
-  return `${shown.length ? `<ul class="ev-cal">${shown.map(row).join('')}</ul>` : '<p class="ev-none">No upcoming events listed right now.</p>'}
-    ${next.length > shown.length || V2.evUi.cal ? `<button type="button" class="np-link ev-call" data-evcal aria-expanded="${V2.evUi.cal}">${V2.evUi.cal ? 'Show Fewer' : `Show All ${next.length} ›`}</button>` : ''}${pastH}
+  const pastH = past.length ? `<p class="ev-cpast"><span>Recent:</span> ${past.map(e => { const r = CAL.results(e); return r ? `<button type="button" class="np-link k-link" data-evgo="${E(r.id)}">${E(e.n)} Results&nbsp;›</button>` : `<span>${E(e.n)} · results not in yet</span>`; }).join('')}</p>` : '';
+  return `${shown.length ? `<ul class="ev-cal${shown.length % 2 ? ' odd' : ''}">${shown.map(row).join('')}</ul>` : '<p class="ev-none">No upcoming events listed right now.</p>'}${pastH}
     <p class="fine ev-csrc">From <a href="${E(C.src.url || 'https://victoryroad.pro/')}" target="_blank" rel="noopener">${E(C.src.name)}</a>${C.checked ? `, checked ${E(evDate(C.checked))}${age > 2 ? ` (${age} days ago)` : ''}` : ''}. VGC days, in each event's local dates.</p>`; };
-// the plate at the top right: counted this regulation, what counts, Next Events
-V2.evPlate = () => { const E = META.events, ev = E ? E.events : [], on = ev.filter(e => e.src !== 'official').length, off = ev.length - on;
-  const cell = (v, l) => `<span class="ev-n"><b class="u">${homeNum(v)}</b><small>${l}</small></span>`;
-  return `<aside class="ev-plate" aria-label="Next events"><h2 class="u ev-ph">Next Events</h2>${V2.evCal()}</aside>`; };
-/* say it once (Nov 16, re-verify #2): the counts sit under the headline (they were said twice, and the left column stood half empty beside the tall plate) */
+V2.evCalBtn = () => { const C = META.calendar; if (!C || typeof CAL === 'undefined') return ''; const t = CAL.today(), n = C.ev.filter(e => e.e >= t && e.t !== 'national').length;
+  return n > 2 || V2.evUi.cal ? `<button type="button" class="np-link k-link ev-call" data-evcal aria-expanded="${V2.evUi.cal}">${V2.evUi.cal ? 'Show Fewer' : `All ${n}&nbsp;›`}</button>` : ''; };
+// plan step 2: Coming up (the step itself carries .ev-plate, its title .ev-ph: dispatch.js scrolls to it, the tests read it)
+V2.evPlate = n => `<section class="k-step ev-plate" aria-label="Next events"><span class="k-n" aria-hidden="true">${n}</span><div class="k-sec"><h2 class="k-h2 u ev-ph">Coming up.</h2><span class="k-note">from the Victory Road calendar</span>${V2.evCalBtn()}</div>${V2.evCal()}</section>`;
+/* say it once (Nov 16, re-verify #2): the counts sit under the headline. On the kit: the kit's facts row (big slanted numbers, small words) */
 V2.evCounts = () => { const E = META.events, ev = E ? E.events : [], on = ev.filter(e => e.src !== 'official').length, off = ev.length - on;
   const cell = (v, l) => `<span class="ev-n"><b class="u">${homeNum(v)}</b><small>${l}</small></span>`;
-  return E ? `<div class="ev-counts"><p class="ev-pk u">Counted this regulation</p><p class="ev-ns" role="group" aria-label="Events counted">${cell(ev.length, 'events')}${off ? cell(on, 'online') + cell(off, 'official') : ''}</p>
+  return E ? `<div class="ev-counts"><p class="ev-ns" role="group" aria-label="Events counted this regulation">${cell(ev.length, 'events')}${off ? cell(on, 'online') + cell(off, 'official') : ''}<span class="ev-reg">this regulation</span></p>
     <details class="ev-what"><summary>What counts as an event?</summary><p>${V2.esc(V2.evSrc(E.source))}</p></details></div>` : ''; };
+// a wall ticket on the kit (Nov 22): ink date stub on the left (the mock's), the player count, the name slanted, the winner's six as small
+// pictures (the winner's first Pokémon first). The whole ticket opens the placings. This Week keeps V2.ticket.
+V2.evTk = ev => { const E = V2.esc, w = ev.top[0], ns = w ? w.mons.map(m => m.n) : [], off = ev.src === 'official';
+  const say = `${V2.evTitle(ev.name)}, ${evDate(ev.date)}, ${homeNum(ev.players)} players${off ? ', official event' : ''}. Winner's team: ${ns.map(n => V2.disp(n)).join(', ')}.`;
+  return `<button type="button" class="ev2-tk${off ? ' off' : ''}" data-evgo="${E(ev.id)}" aria-label="${E(say)} Open the placings."><span class="ev2-stub" aria-hidden="true"><b class="u">${V2.evDay(ev.date)}</b><small>${E(V2.evMonth(ev.date))}</small></span>
+    <span class="ev2-body" aria-hidden="true"><small class="ev2-k">${off ? '<b>Official\u00a0event</b> · ' : ''}${homeNum(ev.players)}&nbsp;players</small><b class="ev2-name u">${E(V2.evTitle(ev.name)).replace(/\b([A-Z])-([A-Z])\b/g, '$1-⁠$2')}</b>
+    <span class="ev2-six">${ns.map(n => V2.mon(n, {bare: true})).join('')}</span></span></button>`; };
+// plan step 1: the latest result's winning six as the kit's roster cards, the page's one pink move (USE THIS TEAM.: today's Load Team of
+// the winner, asking first when a team is already there) and the way into the placings
+V2.evLatest = (ev, after = '') => { const E = V2.esc, U = V2.evUi, w = ev.top[0], ns = w ? w.mons.map(m => m.n).filter(n => byName.get(n)) : [], off = ev.src === 'official', key = ev.id + '#0';
+  const note = `${V2.evTitle(ev.name)} · ${evDate(ev.date)} · ${homeNum(ev.players)} players${off ? ' · official event' : ''}`;
+  const cards = V2.kRoster(ns.map(n => V2.kCard(n, {attrs: {'data-v2mon': n, 'aria-label': `${V2.disp(n)}: open its page`}})));
+  const who = w ? teamWho(w) : '', go = U.sure === key ? V2.evActs(key)
+    : `<div class="ev2-go">${V2.kGo('USE THIS TEAM.', {'data-evask': key, 'aria-label': `Use This Team: ${who.replace(/^Challenger · /, '')} team, ${V2.evTitle(ev.name)}`})}<button type="button" class="np-link k-link ev2-pl" data-evgo="${E(ev.id)}">See the placings, 1st to ${placeTxt(ev.top.length)}&nbsp;›</button></div>`;
+  return `<article class="ev2-latest">${V2.kStep(1, 'The latest win.', note, `${cards}<p class="k-hint ev2-tap">Tap a card for its page.</p>${go}${after}`)}</article>`; };
 // an event opened: its placings, each with today's actions (Load Team, Sets, Set as Opponent, Compare, Copy for Showdown)
 V2.evActs = key => { const E = V2.esc, U = V2.evUi, sure = U.sure === key, open = !!U.sets[key];
   return sure ? `<div class="wt-acts wt-sure" role="group" aria-label="Load this team"><span class="wt-q">Replace your current team?</span><button type="button" class="np-btn" data-evload="${E(key)}"><span>Replace</span></button><button type="button" class="np-btn2" data-evx><span>Cancel</span></button></div>`
@@ -62,26 +79,30 @@ V2.evOpen = ev => { const E = V2.esc, off = ev.src === 'official';
     <h3 class="u ev-plh">The Placings, 1st to ${placeTxt(ev.top.length)}</h3><div class="wt-rows ev-rows">${ev.top.map((t, i) => V2.evRow(ev, t, i)).join('')}</div></section>`; };
 V2.pages.events = {place: 'meta', draw() { const E = V2.esc, D = META.events, U = V2.evUi;
   const tabs = `${V2.tourTabs('events')}`;
-  const ev = D ? D.events : [], on = ev.filter(e => e.src !== 'official').length, opened = D && U.open && ev.find(e => e.id === U.open);
-  /* Sim Q33 B (Nov 19): on phones the wall leads: its header, filters and the latest winner's big ticket come right under the tabs, then the
-     counts and Next Events, then the rest of the wall. Real markup order, so reading and tab order match the screen. 700 and up unchanged */
+  const ev = D ? D.events : [], opened = D && U.open && ev.find(e => e.id === U.open);
+  /* Sim Q33 B (Nov 19): on phones the latest winner comes first, so the counts move under it (the end of step 1); 700 and up they sit in the header */
   const lead = D && !opened && innerWidth < 700;
-  const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Tournaments · Events</span></p><h1 class="u"><span>Every result,</span> <span class="pl">event by event.</span></h1>
-    <p class="ra-lede">Recent tournaments and who won them, with every top-cut team sheet inside.</p>${tabs}${D && !lead ? V2.evCounts() : ''}</section>`;
-  const top = `<div class="gs-top wt-top ev-top">${head}${lead ? '' : `<div class="ra-spotw">${V2.evPlate()}</div>`}${tabs}</div>`;
-  if (!D) return `<div class="ra gsp ev">${top}<div class="gs-body"><p class="tm-sub">Tournament results appear here after the next data refresh.</p></div></div>`;
-  if (opened) return `<div class="ra gsp ev">${top}<div class="gs-body">${V2.evOpen(opened)}</div></div>`;
+  /* on the kit (Nov 22, HH's events2 mock "THE JOBS"): the Meta pages' shared header with the kit's kicker chip, the counts as the kit's facts
+     row, then the plot sentence (the All / Official / 100+ players filter) and the plan line: 1 the latest score (Sim Q33 B: the latest
+     winner first), 2 coming up (Next Events), 3 the ticket wall. One column at every width, so the markup order is the screen order */
+  const head = `<section class="ra-h"><p class="np-eyebrow wt2-kick"><span>META · THE JOBS</span></p><h1 class="u"><span>Every event.</span> <span class="pl">Every winning crew.</span></h1>
+    <div class="ev2-intro"><p class="ra-lede">Recent tournaments and who won them, with every top-cut team sheet inside.</p>${D && !lead ? V2.evCounts() : ''}</div>${tabs}</section>`;
+  const top = `<div class="gs-top wt-top ev-top">${head}${tabs}</div>`;
+  if (!D) return `<div class="ra gsp ev ev2">${top}<div class="gs-body"><p class="tm-sub">Tournament results appear here after the next data refresh.</p></div></div>`;
+  if (opened) return `<div class="ra gsp ev ev2">${top}<div class="gs-body">${V2.evOpen(opened)}</div></div>`;
   let list = ev; if (U.filter === 'official') list = list.filter(e => e.src === 'official'); else if (U.filter === 'big') list = list.filter(e => e.players >= 100);
-  const cap = (innerWidth < 700 ? 7 : 13) + U.more * 12 /* Sim Q31 (Nov 19): phones open on the big ticket plus 6 (was 12); Show More still adds 12 */, shown = list.slice(0, cap), small = shown.slice(1);
+  const cap = (innerWidth < 700 ? 7 : 13) + U.more * 12 /* Sim Q31 (Nov 19): phones open on the latest plus 6 (desktop 12); Show More adds 12 */, shown = list.slice(0, cap), small = shown.slice(1);
   const n = {all: ev.length, official: ev.filter(e => e.src === 'official').length, big: ev.filter(e => e.players >= 100).length};
-  const seg = `<div class="ev-f" role="group" aria-label="Which events">${[['all', 'All'], ['official', 'Official'], ['big', '100+ players']].map(([k, t]) => `<button type="button" class="np-chip ev-fc" data-evf="${k}" aria-pressed="${U.filter === k}">${t}<small>${n[k]}</small></button>`).join('')}</div>`;
-  /* the two-column wall keeps every row full: an odd last ticket runs the full width (filters can leave an odd count) */
-  const mid = lead ? `<div class="ev-mid">${V2.evCounts()}${V2.evPlate()}</div>` : ''; /* Q33 B: the counts and Next Events after the latest winner (phones) */
-  const wall = shown.length ? `${V2.ticket(shown[0], true)}${mid}<div class="tk-wall${small.length % 2 ? ' odd' : ''}">${small.map(e => V2.ticket(e)).join('')}</div>` : `<p class="tm-sub">No events here yet.</p>${mid}`;
-  return `<div class="ra gsp ev">${top}<div class="gs-body"><section class="ev-wall"><header class="ev-wh"><h2 class="u">The Ticket Wall</h2><p>Newest first. Each ticket shows the winner's six, the winner's first Pokémon up front. Tap a ticket for the event's placings.</p></header>
-    ${seg}${wall}${list.length > cap ? `<button type="button" class="np-link ev-more" data-evmore>Show More · ${list.length - cap} left ›</button>` : ''}</section></div></div>`; }};
+  const seg = `<div class="k-sent u ev-f ev2-f" role="group" aria-label="Which events"><span>Show me</span> ${[['all', 'all'], ['official', 'official'], ['big', '100+ players']].map(([k, t]) => `<button type="button" class="k-w ev-fc" data-evf="${k}" aria-pressed="${U.filter === k}"><span>${t}<small class="ev2-n">${n[k]}</small></span></button>`).join(' ')}</div><p class="k-hint">Blue words are buttons.</p>`;
+  /* no lone ticket and no half row: three across from 1100 (a last row of one or two runs the full width), two across from 800 */
+  const r3 = small.length % 3, r2 = small.length % 2;
+  const wall = small.length ? `<div class="ev2-wall${r3 ? ' m3-' + r3 : ''}${r2 ? ' m2-1' : ''}">${small.map(V2.evTk).join('')}</div>` : '';
+  const more = list.length > cap ? `<button type="button" class="np-link k-link ev-more" data-evmore>Show More · ${list.length - cap} left&nbsp;›</button>` : '';
+  const s1 = shown.length ? V2.evLatest(shown[0], lead ? V2.evCounts() : '') : V2.kStep(1, 'The latest win.', '', `<p class="tm-sub">No events here yet.</p>${lead ? V2.evCounts() : ''}`);
+  const s3 = small.length ? V2.kStep(3, 'The ticket wall.', 'newest first · tap a ticket for its placings', `<div class="ev-wall">${wall}${more}</div>`) : '';
+  return `<div class="ra gsp ev ev2">${top}<div class="gs-body"><div class="ev2-ctl">${seg}</div>${V2.kPlan(s1 + V2.evPlate(2) + s3)}</div></div>`; }};
 /* Sim Q31: the phone cap follows the window across 700 (the wall redraws once when the band changes) */
-(() => { const band = () => innerWidth < 700 ? 0 : 1; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (document.querySelector('.ev-wall')) V2.redraw(); }, 150); }); })();
+(() => { const band = () => innerWidth < 700 ? 0 : 1; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (document.querySelector('.ev2')) V2.redraw(); }, 150); }); })();
 // bring an opened event (or, on the way back, its card) just under the sticky header, once the page has drawn
 V2.evScrollTo = sel => { let n = 0; const go = () => { const el = document.querySelector(sel); if (!el) { if (++n < 20) requestAnimationFrame(go); return; } const h = (document.querySelector('.np-head') || {}).offsetHeight || 0; scrollTo({top: Math.max(0, el.getBoundingClientRect().top + scrollY - h - 16)});
   const f = el.matches('button,a[href]') ? el : el.querySelector('[data-evback], button, a[href]'); if (f) f.focus({preventScroll: true}); }; requestAnimationFrame(go); }; /* focus follows: '‹ All Events' when an event opens, the card's button on the way back (sweep, Nov 15) */

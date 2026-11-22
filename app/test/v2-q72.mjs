@@ -82,7 +82,9 @@ for (const th of ['light', 'dark']) {
       const oneRow = Math.max(...ch.map(c => c.top)) - Math.min(...ch.map(c => c.top)) <= 1;
       return {n: ch.length, oneRow, empty: oneRow ? (fr.right - parseFloat(cs.paddingRight)) - Math.max(...ch.map(c => c.r)) + (Math.min(...ch.map(c => c.l)) - fr.left - parseFloat(cs.paddingLeft)) : null, inner, ch}; });
     if (!R) { ok(false, `${tag}: filter chips found`); await done(P, tag); continue; }
-    if (W <= 430) ok(R.oneRow && Math.abs(R.empty) <= 1, `${tag}: the ${R.n} chips fill their row (${R.oneRow ? r1(R.empty) + 'px empty' : 'not one row'})`);
+    /* Nov 22 (Events on the kit, proposal): Events' filter is the kit's plot sentence ("Show me [all 115] [official 8] [100+ players 25]"), words that wrap
+       like a sentence, so only Gifts' chips still fill a row; both still keep 44px taps with their words centred (below) */
+    if (W <= 430 && route !== 'events') ok(R.oneRow && Math.abs(R.empty) <= 1, `${tag}: the ${R.n} chips fill their row (${R.oneRow ? r1(R.empty) + 'px empty' : 'not one row'})`);
     if (W >= 390) ok(R.ch.every(c => c.h >= 44 && Math.abs(c.above - c.below) <= 2), `${tag}: each chip's words centred in its 44px chip (${R.ch.map(c => `${r1(c.h)}px: ${r1(c.above)} above / ${r1(c.below)} below`).join('; ')})`);
     await done(P, tag); }
 

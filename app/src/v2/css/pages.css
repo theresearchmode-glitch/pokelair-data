@@ -4016,3 +4016,106 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .wt2 .k-sec .wt-open{margin-left:0}
 }
 .wt2 .wt-sure{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:var(--s3) var(--s4)}
+
+/* ===== Events on the shared kit (Nov 22): HH's events2 mock "THE JOBS" (docs/rebuild/mocks/cohesion-nov21/events2.html). The Meta header
+   stays the Meta pages' own with the kit's kicker chip (the Winning Teams rule above); the counts are the kit's facts row; the All /
+   Official / 100+ players filter is the plot sentence; the page is the plan line: 1 the latest score (six roster cards, USE THIS TEAM.),
+   2 coming up (calendar tickets), 3 the ticket wall (ink date stub, name, the winner's six). Colours are tokens. ===== */
+.ev2 .ra-h .wt2-kick{justify-self:start;padding:var(--s1) var(--s3);background:var(--k-chip);color:var(--k-on-chip);font:800 var(--t15)/1.3 var(--u);font-style:italic;letter-spacing:.04em;transform:skewX(-10deg)}
+.ev2 .ra-h .wt2-kick::before{display:none}
+.ev2 .gs-top{grid-template-columns:minmax(0,1fr)}
+.ev2-intro{display:grid;gap:var(--s1);min-width:0}
+@media (min-width:1100px){.ev2 .ra-h{grid-template-columns:auto minmax(0,1fr);column-gap:var(--s12)}.ev2 .ra-h>*{grid-column:1/-1}
+  .ev2 .ra-h>h1{grid-column:1}.ev2 .ra-h>.ev2-intro{grid-column:2;align-self:end}}
+.ev2 .ev-counts{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s6);margin-top:var(--s3)}
+.ev2 .ev-ns{align-items:baseline;gap:var(--s2) var(--s6)}
+.ev2 .ev-n b{font-size:var(--t34);line-height:1.1;color:var(--k-ink)}
+.ev2 .ev-n small{font:600 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
+.ev2 .ev-reg{align-self:end;font:600 var(--t15)/1.5 var(--b);color:var(--k-ink2)}
+.ev2 .ev-what summary{color:var(--k-plot-text)}
+.ev2 .ev-what p{max-width:640px}
+.ev2-ctl{display:grid;min-width:0}
+.ev2-ctl .k-sent{margin:0}
+.ev2 .ev-f.k-sent{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s3)}
+.ev2 .ev-f .ev-fc{display:inline-grid;flex:none;flex-direction:row;min-width:0;padding:0 var(--s4);line-height:1.15}
+.ev2 .ev-fc small.ev2-n{margin-left:var(--s2);font:600 var(--t20)/1 var(--b);font-style:normal;opacity:1}
+.ev2 .k-plan{padding-bottom:var(--s8)}
+.ev2 .k-sec{margin-top:var(--s12)} /* desktop length (Nov 22): no taller than the page before its reskin (2541 px at 1440) */
+/* 1: the latest score */
+.ev2-latest{display:block;min-width:0}
+.ev2-tap{margin:var(--s2) 0 0}
+.ev2-go{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s8);margin-top:var(--s1)}
+.ev2-go .k-go{margin-top:var(--s4)}
+.ev2-go .k-link,.ev2 .ev-cpast .k-link{min-height:var(--tap)}
+.ev2-latest .wt-sure{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4);margin-top:var(--s6)}
+/* 2: coming up: calendar tickets, two across */
+.ev2 .ev-plate{display:block;padding:0;background:none;border:0;clip-path:none}
+.ev2 .ev-cal{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5)}
+.ev2 .ev-cal.odd>li:last-child{grid-column:1/-1}
+.ev2 .ev-cal li+li{border-top:0}
+.ev2 .ev-crow,.ev2-tk{position:relative;display:grid;grid-template-columns:80px minmax(0,1fr);align-items:stretch;gap:0;min-height:100%;margin:0;padding:0;border:0;background:var(--k-card);color:var(--k-ink);font:inherit;text-align:left;text-decoration:none;filter:drop-shadow(0 6px 12px var(--k-card-shadow));clip-path:polygon(0 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%)}
+.ev2 .ev-crow:focus-visible,.ev2-tk:focus-visible{outline:3px solid var(--k-plot);outline-offset:-3px}
+.ev2 .ev-cd,.ev2-stub{display:grid;align-content:center;justify-items:center;gap:var(--s1);min-width:0;padding:var(--s3) var(--s2);background:var(--k-chip);color:var(--k-on-chip);border-right:3px dashed var(--k-paper)}
+.ev2 .ev-cd b,.ev2-stub b{font-size:var(--t34);line-height:1;color:inherit}
+.ev2 .ev-cd small,.ev2-stub small{font:700 var(--t13)/1.2 var(--b);letter-spacing:.06em;text-transform:uppercase;color:inherit}
+.ev2 .ev-cm{display:grid;align-content:center;justify-items:start;gap:var(--s1);padding:var(--s3) var(--s5) var(--s4)}
+.ev2 .ev-cm>b{font:900 var(--t17)/1.25 var(--u);font-style:italic;color:var(--k-ink);text-wrap:balance}
+.ev2-ckw{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s3)}
+.ev2 .ev-cm small{font:500 var(--t15)/1.4 var(--b);color:var(--k-ink2)}
+.ev2 .ev-cm small.ev2-ck,.ev2-k{font:700 var(--t13)/1.4 var(--b);letter-spacing:.02em;color:var(--k-ink2)} /* not upper case: the words read as written (the behaviour tests read "N players") */
+.ev2 .ev-cw{font:700 var(--t13)/1.4 var(--b);color:var(--k-ink)}
+.ev2 .ev-cw.k-tag{font:800 var(--t15)/1.4 var(--u);font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--k-on-go)}
+.ev2 .ev-call{margin-left:auto}
+.ev2 .ev-cpast{margin:var(--s4) 0 0;gap:0 var(--s6);font-size:var(--t15);color:var(--k-ink2)}
+.ev2 .ev-csrc{margin:var(--s1) 0 0;color:var(--k-ink2)}
+/* 3: the ticket wall */
+.ev2 .ev-wall{display:grid;gap:var(--s5)}
+.ev2-wall{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s5)}
+.ev2-wall>.ev2-tk{grid-column:span 2}
+.ev2-wall.m3-1>.ev2-tk:last-child{grid-column:1/-1}
+.ev2-wall.m3-2>.ev2-tk:nth-last-child(-n+2){grid-column:span 3}
+.ev2-tk{cursor:pointer}
+.ev2-tk:hover .ev2-name{color:var(--k-plot-text)}
+.ev2-body{display:grid;align-content:start;gap:var(--s1);min-width:0;padding:var(--s3) var(--s4) var(--s4)}
+.ev2-k b{font-weight:800;color:var(--k-ink)}
+.ev2-name{font-size:var(--t17);line-height:1.3;color:var(--k-ink);overflow-wrap:normal;hyphens:none;text-wrap:balance}
+.ev2-six{display:flex;flex-wrap:nowrap;gap:var(--s1);margin-top:var(--s1);min-width:0}
+.ev2-six .np-mon{--iw:40px}
+.ev2 .ev-more{justify-self:start;margin:0}
+@media (min-width:800px) and (max-width:1099.98px){
+  .ev2-wall{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ev2-wall>.ev2-tk,.ev2-wall.m3-2>.ev2-tk:nth-last-child(-n+2),.ev2-wall.m3-1>.ev2-tk:last-child{grid-column:auto}
+  .ev2-wall.m2-1>.ev2-tk:last-child{grid-column:1/-1}
+}
+@media (max-width:799.98px){
+  .ev2-wall{grid-template-columns:minmax(0,1fr)}
+  .ev2-wall>.ev2-tk,.ev2-wall.m3-2>.ev2-tk:nth-last-child(-n+2),.ev2-wall.m3-1>.ev2-tk:last-child{grid-column:auto}
+}
+@media (max-width:699.98px){
+  .ev2 .ev-counts{gap:0 var(--s6);margin-top:var(--s6)}
+  .ev2 .ev-f.k-sent{gap:var(--s2);font-size:var(--t17)}.ev2 .ev-f .ev-fc{padding:0 var(--s3)}
+  .ev2 .ev-fc small.ev2-n{font-size:var(--t15)}
+  .ev2 .ev-n b{font-size:var(--t28)}
+  .ev2 .ev-cal{grid-template-columns:minmax(0,1fr);gap:var(--s3)}
+  .ev2 .ev-crow,.ev2-tk{grid-template-columns:64px minmax(0,1fr)}
+  .ev2 .ev-cd b,.ev2-stub b{font-size:var(--t28)}
+  .ev2 .ev-cm{padding:var(--s2) var(--s4) var(--s3)}
+  .ev2 .ev-cm>b{font-size:var(--t15)}
+  .ev2 .k-sec{margin-top:var(--s6)}
+  .ev2.gsp{gap:var(--s4)}.ev2 .gs-body{gap:0} /* Q33 B: the latest winner's six start on the first screen down to 320 */
+  .ev2 .ev-cm small{font-size:var(--t13)}
+  .ev2 .ev-wall,.ev2-wall{gap:var(--s3)}
+  .ev2-body{padding:var(--s2) var(--s3) var(--s3)}
+  .ev2-name{font-size:var(--t15)}
+  .ev2-six{justify-content:space-between;gap:0;max-width:calc(6 * 44px)}
+  .ev2-go{gap:0}
+  .ev2 .ev-call{margin-left:0}
+  .ev2 .ev-cpast{display:grid;gap:0}
+}
+@media (max-width:359.98px){
+  .ev2 .ev-f.k-sent{font-size:var(--t15)}.ev2 .ev-f .ev-fc{padding:0 var(--s2)}.ev2 .ev-fc small.ev2-n{margin-left:var(--s1);font-size:var(--t13)}
+  .ev2 .k-sec{margin-top:var(--s4)}.ev2 .k-note{font-size:var(--t13)} /* Q33 B: the sentence keeps to two lines, so the latest winner starts on the first screen */
+  .ev2 .ev-crow,.ev2-tk{grid-template-columns:56px minmax(0,1fr)}
+  .ev2-six .np-mon{--iw:32px}
+  .ev2 .ev-ns{gap:var(--s1) var(--s4)}
+}

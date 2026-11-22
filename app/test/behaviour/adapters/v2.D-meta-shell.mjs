@@ -114,9 +114,11 @@ export default (ui, pg) => {
         if (cut.length) throw new Error('no ' + l + ' button, and ' + cut.length + ' paragraph(s) are cut short'); }, [within, label]); await wait(300); },
     // ---------------- Events (Nov 15, The Ticket Wall: src/v2/pages/events.js) ----------------
     // Translation: today's event cards = the tickets (the latest result across the wall and the rest; each opens the event's placings).
-    eventCards: () => ev(() => [...document.querySelectorAll('#main .ev-wall .tk[data-evgo]')].filter(__dvis).map(__dtx)),
-    chooseEventFilter: async name => { await ev(n => { const b = [...document.querySelectorAll('#main [data-evf]')].filter(__dvis).find(b => (b.firstChild ? b.firstChild.textContent : '').trim() === n); if (!b) throw new Error('no filter ' + n); b.click(); }, name); await wait(600); },
-    openEvent: async m => { await ev(m => { const b = [...document.querySelectorAll('#main .tk[data-evgo]')].filter(__dvis).find(b => __dtx(b).includes(m)); if (!b) throw new Error('no event ' + m); (b.matches('article') ? b.querySelector('.tk-go') : b).click(); }, m); await wait(800); },
+    // Nov 22 (Events on the kit): the latest result is plan step 1 (article.ev2-latest, its "See the placings" button opens it); the rest are
+    // the wall's tickets (button.ev2-tk). The filter words are the plot sentence's boxed words ("all 115": the word, then its count).
+    eventCards: () => ev(() => [...document.querySelectorAll('#main .ev2-latest, #main .ev-wall .ev2-tk[data-evgo]')].filter(__dvis).map(__dtx)),
+    chooseEventFilter: async name => { await ev(n => { const b = [...document.querySelectorAll('#main [data-evf]')].filter(__dvis).find(b => { const s = b.querySelector('span') || b; return (s.firstChild ? s.firstChild.textContent : '').trim().toLowerCase() === n.toLowerCase(); }); if (!b) throw new Error('no filter ' + n); b.click(); }, name); await wait(600); },
+    openEvent: async m => { await ev(m => { const b = [...document.querySelectorAll('#main .ev2-latest, #main .ev2-tk[data-evgo]')].filter(__dvis).find(b => __dtx(b).includes(m)); if (!b) throw new Error('no event ' + m); (b.matches('article') ? b.querySelector('[data-evgo]') : b).click(); }, m); await wait(800); },
     /** number of placings in an open event (each has one Load Team button, or Replace while its question is asked) */
     placings: () => ev(() => [...document.querySelectorAll('#main .ev-open [data-evask], #main .ev-open [data-evload]')].filter(__dvis).length),
     /** Next Events: head, rows {text, countdownOk}, whether rows open a new tab (same reading as today's calendar helper) */
