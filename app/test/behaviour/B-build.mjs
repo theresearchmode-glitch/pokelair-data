@@ -701,7 +701,7 @@ t('SETS-06', 'Source switch Best data · Tournaments · Showdown changes the num
 
 t('SETS-07', 'Set card: moves, item, ability, nature, teammates (tap → their sets), source note', async () => {
   const {ui, close} = await open({team: TEAM, box: BOX}); await ui.go('Popular Sets'); const tx = await ui.text();
-  has(tx, /Moves .+ \d+(\.\d)?%/, 'moves'); has(tx, /Item .+/, 'item'); has(tx, /Ability /, 'ability'); has(tx, /Nature /, 'nature'); has(tx, /Teammates /, 'teammates'); has(tx, /From .+ battles|From .+ teams|From /, 'source note');
+  has(tx, /Moves .+ \d+(\.\d)?%/, 'moves'); has(tx, /Item .+/, 'item'); has(tx, /Ability /, 'ability'); has(tx, /Nature /, 'nature'); has(tx, /Teammates |Usually alongside/, 'teammates'); /* Nov 22: THE LOADOUT (Sim approved 11:48 AM) names the step 'Usually alongside.' */ has(tx, /From .+ battles|From .+ teams|From /, 'source note');
   await ui.scrollPageTo(900); await ui.tapTeammate('Kingambit'); expect(await ui.setsShownPokemonId() === 'Kingambit', 'teammate tap did not switch'); const top = await ui.paneTop(); expect(top > -200 && top < 120, 'did not scroll back up to the sets: pane top ' + top); await close(); });
 
 t('SETS-08', 'Ways in: Nothing-to-fix Sets button, the editor\'s Full popular sets, the info sheet', async () => {

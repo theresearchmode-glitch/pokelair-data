@@ -1213,7 +1213,7 @@ if (part('main2')) {
       for (const x of r) if (x.lines > 1) wr.push(`${w}: "${x.n}" on ${x.lines} lines`); if (r.length === 2 && r[0].top !== r[1].top) wr.push(`${w}: buttons not side by side`); }
     ok(!wr.length, `Stampede hero 0: Score My Team and Build Me a Team each on one line, side by side, 360 to 899 wide (${wr.join(' | ') || 'all one line'})`); }
   // 1. the tagline is the page's one h1, the named Pokémon are buttons that open their page, the crowd is hidden from screen readers
-  const a = await hero(1440, 900, {wait: true, fn: () => { const h1 = [...document.querySelectorAll('#main h1')].map(e => e.textContent.replace(/\s+/g, ' ').trim());
+  const a = await hero(1440, 900, {wait: true, fn: () => { const h1 = [...document.querySelectorAll('#main h1')].map(e => { const c = e.cloneNode(true); c.querySelectorAll('.sdh-k').forEach(k => k.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); }) /* Nov 22: without the product label above the tagline (Sim chose A, 10:51 AM) */;
     const named = [...document.querySelectorAll('#main .sdh-plate, #main .sdh-tag:not([hidden]), #main .sdh-tick li:not([hidden]) button')].filter(e => e.getClientRects().length);
     const bad = named.filter(e => e.tagName !== 'BUTTON' || !e.dataset.v2mon || !e.getAttribute('aria-label').startsWith(e.innerText.replace(/\s+/g, ' ').trim())).map(e => e.innerText);
     const deco = [...document.querySelectorAll('#main .sdh-crowd, #main .sdh-f, #main .sdh-m, #main .sdh-lines')].filter(e => e.getAttribute('aria-hidden') !== 'true').length;
