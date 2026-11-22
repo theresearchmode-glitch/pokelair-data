@@ -1300,7 +1300,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (min-width:700px){.tc-tp.sym{min-height:var(--s16);gap:var(--s1)}.tc-tp .k-tyi{width:24px;height:24px}}
 .tc-tile{align-content:center;gap:var(--s1)}.tc-tile .k-tyi{width:24px;height:24px}@media (min-width:700px){.tc-tile{gap:var(--s2)}.tc-tile .k-tyi{width:40px;height:40px}}
 .tc-off{display:grid;gap:var(--s2)}.tc-offh{display:flex;align-items:center;gap:var(--s2);font:700 var(--t15)/1 var(--b)}.tc-offr{display:grid;grid-template-columns:72px minmax(0,1fr);gap:var(--s2);align-items:center}
-.tc-offr .k{font:700 var(--t13)/1.3 var(--b)}.tc-offr .k.up{color:var(--good-text)}.tc-offr .k.dn{color:var(--mid-text)}.tc-offr .k.no{color:var(--bad-text)}.tc-offr .c{display:flex;flex-wrap:wrap;gap:var(--s1)}.tc-offr i{font-style:normal;color:var(--ink-3)}
+.tc-offr{padding-top:var(--s2);border-top:1px solid var(--k-rule)}.tc-offr .k{font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2)} /* reskin: quiet ink labels, as step 2's (pink and blue stay for the damage line, which is about taking hits) */.tc-offr .c{display:flex;flex-wrap:wrap;gap:var(--s1)}.tc-offr i{font:400 var(--t15)/1.3 var(--b);font-style:normal;color:var(--k-ink2)}
 .tc-gw{overflow-x:auto;padding-bottom:var(--s4)}.tc-grid{border-collapse:separate;border-spacing:2px;font:700 var(--t13)/1 var(--b);width:100%;table-layout:fixed}
 .tc-grid th{padding:var(--s1);color:var(--ink-2);font-weight:700}.tc-grid thead th{height:40px}.tc-grid thead th span{display:inline-block;padding:var(--s1);color:var(--on-type);background:var(--tc)}
 .tc-grid thead th.cor{width:112px;text-align:left;font:600 var(--t13)/1.3 var(--b)}.tc-grid tbody th{text-align:left}.tc-grid tbody th span{display:block;padding:var(--s1) var(--s2);color:var(--on-type);background:var(--tc);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
@@ -1328,7 +1328,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tc-cardw{display:grid;gap:var(--s4);padding-top:calc(var(--s16) - var(--s2))}.tc-cardw .k-facts{margin:0}.tc-cardw .k-facts b.bad{color:var(--k-nasty-text)}
 .tc-cardw.tc-types{padding-top:0}
 .tc-dr{display:grid;gap:var(--s4);min-width:0}
-.tc-ln{--tcl:136px;display:grid;gap:var(--s1)}
+.tc-ln{--tcl:136px;display:grid;gap:var(--s1);padding-right:var(--s1)} /* the slanted 4x bar keeps inside the page edge */
 .tc-ax{position:relative;margin:0 0 0 var(--tcl);height:20px;font:700 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
 .tc-ax>span{position:absolute;top:0;white-space:nowrap}.tc-ax .r{left:0}.tc-ax .n{left:60%;translate:-50% 0;color:var(--k-ink)}.tc-ax .w{right:0;color:var(--k-nasty-text)}
 .tc-rows{display:grid;margin:0;padding:0;list-style:none}
@@ -1351,8 +1351,24 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tc-og .cap{display:grid;margin:0;font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2)}.tc-og .cap b{font-size:var(--t22);line-height:1.1;color:var(--k-ink)}
 .tc-og .none{font:400 var(--t15)/1.5 var(--b);font-style:normal;color:var(--k-ink2)}
 .tc-full{display:grid;gap:var(--s3)}.tc .k-go{justify-self:start}
+/* polish (Nov 22, Sim's yes: "cleaned up a little and not so rough"): on wide screens the star card is the kit's hero size and the line
+   stretches to the card's height (rows share the room, each bar stays 32px), so no empty strip under the card; bigger type chips and a
+   slanted axis that reads like the rest of the kit */
+@media (min-width:1024px){
+  .tc-dmg{grid-template-columns:360px minmax(0,1fr);align-items:stretch}
+  .tc-cardw{padding-top:112px;align-content:start}.tc-cardw .k-facts{gap:var(--s3) var(--s8)}
+  .tc-cardw.tc-types{padding-top:0}
+  .tc-cardw .k-plate{min-height:300px;padding:200px 20px 20px}.tc-cardw .k-art{top:-112px;width:130%;height:312px} /* the kit's hero card size, by CSS so a resize across 1024 needs no redraw */
+  .tc-cardw .k-name{font-size:var(--t34)}.tc-cardw .k-name[data-kf="1"]{font-size:var(--t28)}.tc-cardw .k-name[data-kf="2"]{font-size:var(--t24)}.tc-cardw .k-form,.tc-cardw .k-fact{font-size:var(--t15)}
+  .tc-dr{display:flex;flex-direction:column}.tc-ln{flex:1;display:flex;flex-direction:column;--tcl:152px}
+  .tc-rows{flex:1;grid-auto-rows:minmax(var(--s12),1fr)}
+  .tc-bar{top:calc(50% - 16px);bottom:auto;height:32px}
+  .tc-rt .np-type,.tc-norm .np-type,.tc-og .np-type,.tc-oh .np-type{min-height:32px;font-size:var(--t15)}.tc-oh{font-size:var(--t24)}
+  .tc-ax{height:28px;font:italic 900 var(--t15)/1.5 var(--u);font-synthesis:style}
+  .tc-norm .tc-lbl{min-height:32px}
+}
 @media (max-width:1023.98px){.tc-dmg{grid-template-columns:minmax(0,1fr);gap:var(--s6)}.tc-cardw{grid-template-columns:minmax(0,280px) minmax(0,1fr);align-items:end;column-gap:var(--s8)}.tc-cardw.tc-types{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:899.98px){.tc-offs{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:899.98px){.tc-offs{grid-template-columns:minmax(0,1fr);row-gap:var(--s8)}}
 @media (max-width:699.98px){
   .tc .k-step:first-child .k-sec{margin-top:var(--s6)}
   /* phones: the card and its three facts side by side (HYBRID 6, facts beside instead of under so the page stays short), the line full width */
