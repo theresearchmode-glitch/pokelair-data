@@ -1908,3 +1908,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:55 PM: Checked Politoed's 'Maybe' tag: no bug. The mock-up used made-up numbers (84–100%, Maybe); the real page computes 120–143% with Weather Ball in rain, every roll a KO, so it shows KO (pkHits: KO lo>=1, Likely mid>=1, Maybe hi>=1).
 - 6:59 PM: Calc reskin post-merge checks all pass in ck (16c8989c): C-battle 83 pass 0 fail; overlap calc 0 findings; v2-arena all pass; v2-q46 all passed. Calc reskin is done on main.
 - 7:01 PM: Sim: 'lovely. lets move forward': Pokémon page approved (tiles under the sentence, stronger colour version). Merge to main once the pk chain passes.
+- 7:09 PM: War room full run done: all pass except MU-02 (old sentence; test updated, 3330fafc) and BR-C1 control in v2-minors groups (tops 521..546; passed in earlier runs; timing). Re-running both in wr as a tracked task.
