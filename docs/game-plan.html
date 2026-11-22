@@ -98,7 +98,7 @@ ul.items{list-style:none;margin:0;padding:0;background:var(--card);border-radius
 
 <script>
 // HH keeps this list accurate. s: done | doing | wait | todo. Every done item names when it landed.
-const UPDATED = 'Sun Nov 22, 11:30 AM Eastern';
+const UPDATED = 'Sun Nov 22, 11:35 AM Eastern';
 const STOPS = [
   {s:'done', t:'The look is chosen', when:'Nov 21, morning', d:'One theme for every page: the crew planning the job (Sim, 8:35 AM).'},
   {s:'now',  t:'Reskin every page', when:'now → about Tue Nov 24', d:'Page by page on the shared kit, pictures to Sim for each.'},
@@ -141,7 +141,7 @@ const PHASES = [
   ['done','Usage','"The call sheet": Sim approved (9:57 AM); How it is played beside the top ten at 1440+ (2.46 screens); GitHub run 1439 green (11:24 AM); on Preview v233.'],
   ['doing','Popular Sets','"THE LOADOUT": helper hS3 rechecking its last fix (a 13px Unbounded word on phones), then pictures for Sim.'],
   ['done','Archetypes','"The Playbooks": Sim approved; guide side by side at 1100+; GitHub run 1439 green (11:24 AM); on Preview v233.'],
-  ['doing','Winning Teams','Keep as drawn (three teams as hands). Helper hW1 building since 9:4x AM.'],
+  ['wait','Winning Teams','"The Winning Crews" built by helper hW1 (keep/tournaments-kit a750cbbf): its checks pass; phone shorter (3,386 to 3,087 at 390); opened lists 98px longer at 1440. Pictures sent 11:35 AM; waits for Sim.'],
   ['todo','Events','A mock-up exists from this morning; the page itself is not on the kit yet.'],
   ['todo','This Week',''],
   ['todo','News',''],
@@ -152,6 +152,15 @@ const PHASES = [
   ['todo','Send Feedback',''],
   ['todo','Page not found',''],
   ['todo','Owner page','Lowest priority.']
+ ]},
+ {n:'2b', h:'Info sheets: Moves, Abilities, Items', a:'Sim approved the design 11:29 AM Nov 22 (made in another chat; package in docs/rebuild/info-sheets/). Tap any move, Ability or item name to open its sheet; Search opens them too. Built our way: one step at a time, its own checks, pictures, Sim\'s OK before the next.', items:[
+  ['todo','1. Data','Usage from the raw Online tournament sheets (data/t2, last 28 days; never the top-12 lists), in-battle PP, move/Ability/item text with our overrides (Unseen Fist, Healer, Milk Drink, Curse, Encore, Disable, No Retreat, Run Away), item sentences, Meowstic-F-Mega learnset fix, MIT notice. Package received 11:35 AM.'],
+  ['todo','2. Move sheet (case file)','Every move ticket (V2.kMove) opens it. Pictures to Sim, his OK.'],
+  ['todo','3. Ability sheet (ID card)','Ability names open it everywhere they show.'],
+  ['todo','4. Item sheet (evidence tag)','Item names open it; two new colour tokens (manila, stamp red). Items not in Champions: one line, no sheet.'],
+  ['todo','5. Search opens the sheets','Sim\'s rule: Search is the tying point. Every move, item and Ability findable, not only those on winning sheets.'],
+  ['todo','6. Sim checks the hand-written On the field lines','Rock Slide, Intimidate, Focus Sash and the top ~20 items/Abilities, before they ship.'],
+  ['todo','7. Dec 2 patch','CHANGES DEC 2 stamp, Rock Slide/Flash Fire/Stalwart text, new learners (with the patch-dec2 step).']
  ]},
  {n:'3', h:'Checks before the switch', a:'Nothing switches until these pass on one commit.', items:[
   ['doing','Safari engine (WebKit) checks on the new pages','COV-03/06 (Whole Roster switch): the page works; the test read the list before its 240 ms redraw. Test fixed, pushed 11:26 AM: WebKit 4 of 4 runs green, Chromium B-build 77 pass; went up with the Home label (GitHub running). Next: TEAM-07 jump link, NAV-03v Search focus; THEME-03 still intermittent.'],
