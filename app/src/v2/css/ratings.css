@@ -38,7 +38,7 @@
 .sd-top li button:hover{background:var(--wash)}
 .sd-top .np-mon{--iw:40px}.sd-top .r{font-size:var(--t20);text-align:right}.sd-top .n{min-width:0;font-size:var(--t15);font-weight:700;line-height:1.2}.sd-top .s{font-size:var(--t20);color:var(--k-plot-text)}
 .sd-top .k-go{margin:0}
-@media (max-width:1099.98px){.sd-top{grid-template-columns:minmax(0,1fr)}.sd-top ol{grid-template-columns:repeat(2,minmax(0,1fr))}.sd-top .k-go{grid-row:3;justify-self:start}}
+@media (max-width:1099.98px){.sd-top{grid-template-columns:minmax(0,1fr);padding-block:var(--s6)}.sd-top li button{min-height:48px}.sd-top ol{grid-template-columns:repeat(2,minmax(0,1fr))}.sd-top .k-go{grid-row:3;justify-self:start}}
 @media (max-width:699.98px){.sd-top{padding:var(--s6) var(--s4)}.sd-top h2{font-size:var(--t26)}.sd-top ol{column-gap:var(--s3)}.sd-top li button{grid-template-columns:20px 32px minmax(0,1fr) auto;gap:var(--s1)}.sd-top .np-mon{--iw:32px}.sd-top .r,.sd-top .s{font-size:var(--t17)}.sd-top .n{font-size:var(--t13)}}
 /* ===== Page not found on the kit (Sim approved Nov 22, 12:40 PM): the headline and GO TO HOME beside today's underdog as a hero card,
    its one line a margin scribble; phones: a 140px card beside the line, so the page stays about one screen */
