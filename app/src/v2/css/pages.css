@@ -3763,3 +3763,125 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .dr-tn.l0 small{color:var(--k-nasty-text)}
 .dr-ok{font-weight:600;color:var(--k-ink2)}
 @container (max-width:599.98px){.dr .tp-cards .dr-row .dr-thru,.dr-row .dr-thru{grid-column:2;grid-row:1/3;display:grid;align-content:center;gap:0;font-size:var(--t13);line-height:1.3}.dr-row .dr-tk{font-size:var(--t13);letter-spacing:.04em}.dr-row .dr-tn{white-space:normal}}
+
+/* ---------- Popular Sets, THE LOADOUT (kit reskin, Nov 22; Sim approved the direction from the picture, ~9:57 AM) ----------
+   The kit head in the Meta frame (as Archetypes: .ra-h keeps the tab bar's place and the 12px head spacing), the plot sentence, the look-up
+   beside "Your team", then the plan: 1 the set on Battle's night panel (the same look as .btg-hero: --btg-panel, the war room's --wr-*
+   words, the pink offset), 2 the stat-point spreads as slanted plot bars, 3 the teammates as kit cards. Colours are tokens only. */
+.lo .gs-top{grid-template-columns:minmax(0,1fr)}
+.lo .gs-body{gap:0}
+.lo-h .k-kicker{justify-self:start;margin:var(--s4) 0 0}
+.lo-h .k-kicker::before{content:none}
+.lo-h h1.k-h1{font-size:var(--d-khead);line-height:1}
+.lo-h .k-lead{margin:0;max-width:640px}
+@media (max-width:699.98px){.lo-h .k-kicker{margin-top:0}}
+/* the plot sentence and the controls under it */
+.lo-ctl{display:grid;gap:var(--s3);min-width:0}
+.lo-sent.k-sent{margin-top:var(--s2);font-size:var(--t28)}
+/* wide screens: the two quiet links sit at the end of the intro line (the tab bar under the head carries the same places) */
+@media (min-width:1100px){.lo-h{grid-template-columns:auto minmax(0,1fr);column-gap:var(--s8);align-items:baseline}.lo-h>:not(.ra-lede):not(.ra-links){grid-column:1/-1}.lo-h>.ra-links{margin:0}}
+.lo-srcs{display:inline-flex;flex-wrap:wrap;gap:var(--s2) var(--s3)}
+.lo .k-hint{margin:0}
+.lo .us-src{margin:0;color:var(--k-ink2)}
+.lo-pick{display:grid;grid-template-columns:minmax(0,360px) minmax(0,1fr);align-items:end;gap:var(--s4) var(--s10);margin-top:var(--s2)}
+.lo-pick>.st-find{align-self:center}
+.lo-pick>.st-find:only-child{grid-column:1}
+.lo .st-team{gap:var(--s1)}
+@media (min-width:1280px){.lo .st-team{grid-template-columns:148px minmax(0,1fr);align-items:center;column-gap:var(--s4)}.lo-lab{display:grid;gap:var(--s1)}}
+.lo-lab{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s2);margin:0;font:900 var(--t17)/1.3 var(--u);font-style:italic;color:var(--k-ink)}
+.lo-lab small{font:600 var(--t13)/1.3 var(--b);font-style:normal;color:var(--k-ink2)}
+.lo .st-six{--gsw:64px}
+.lo .st-six .gs-tx b{font-size:var(--t13)}
+/* the plan */
+.lo .k-plan{padding-bottom:var(--s4)}
+.lo .k-plan>.k-step>.k-sec{margin:var(--s8) 0 var(--s4)}
+.lo .k-plan>.k-step:first-child>.k-sec{margin-top:var(--s8)}
+/* step 1: the night panel. Inside it the kit's chip, link and big-move shadow take the panel's own light words */
+.lo-hero{--k-chip:var(--wr-ink);--k-on-chip:var(--wr-on-plot);--k-go-shadow:var(--wr-ink2);display:grid;grid-template-columns:240px minmax(0,1fr);gap:var(--s6) var(--s10);margin:var(--s8) var(--s3) 0 0;padding:var(--s6) var(--s8);background:var(--btg-panel);color:var(--wr-ink);box-shadow:12px 12px 0 var(--k-nasty)}
+.lo-id{display:grid;align-content:start;gap:var(--s2);min-width:0}
+.lo-card .k-plate{min-height:0;padding-top:88px}
+.lo-card .k-art{top:-40px;height:144px}
+.lo-idt{display:grid;gap:var(--s1) var(--s2);margin-top:var(--s2)}
+.lo .gs-big{align-items:flex-end;gap:var(--s3)}
+.lo .gs-big>b{font:900 var(--d-kscore)/.9 var(--u);font-style:italic;color:var(--wr-plot)}
+.lo .gs-big small{color:var(--wr-ink2)}
+.lo .gs-facts{gap:var(--s3);padding-top:var(--s2);border-top:1px solid var(--wr-rule)}
+/* three even facts as a flex row: the old spotlight's narrow-phone grid columns (sugs.css, a later layer: min-content columns) don't
+   reach a flex row, so the facts keep the panel's full width */
+.lo .gs-facts{display:flex}.lo .gs-facts>p{flex:1 1 0;min-width:0}
+.lo-card{padding-bottom:var(--s3)}
+.lo .gs-facts p{display:flex;flex-direction:column-reverse;justify-content:flex-end}
+.lo .gs-facts span{color:var(--wr-ink2);white-space:nowrap}
+.lo .gs-facts b{font-size:var(--t17);color:var(--wr-ink)}
+.lo-set{display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:var(--s3);min-width:0}
+.lo-kv{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s8)}
+.lo-v{display:grid;align-content:start;gap:2px;min-width:0}
+.lo-vl{margin:0;font:700 var(--t13)/1.3 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--wr-ink2)}
+.lo-v>b{font-size:var(--t22);line-height:1.15;color:var(--wr-ink);overflow-wrap:normal}
+.lo-v>b small{font-size:var(--t15);color:var(--wr-ink2)}
+.lo-vr{font:500 var(--t13)/1.4 var(--b);color:var(--wr-ink2)}
+.lo-kv .st-nonum{flex:1 1 100%;margin:0;color:var(--wr-ink2)}
+.lo-mv{display:grid;gap:var(--s2);min-width:0}
+.lo-also{margin:var(--s1) 0 0;font:500 var(--t15)/1.5 var(--b);color:var(--wr-ink2)}
+.lo-also b{font-weight:700;color:var(--wr-ink)}
+.lo .st-mine{border-left-color:var(--wr-plot);color:var(--wr-ink)}
+.lo-none{margin:0;font:500 var(--t15)/1.5 var(--b);color:var(--wr-ink2)}
+.lo-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s8)}
+.lo-acts .k-go{margin:0}
+.lo-hero .k-link{color:var(--wr-plot)}
+.lo-pg{justify-self:start;padding:0;border:0;background:none;font-family:inherit;cursor:pointer}
+/* step 2: the slanted plot bars */
+.lo-sp{display:grid;gap:var(--s2);max-width:880px}
+.lo-rows{display:grid;gap:var(--s1);margin:0;padding:0;list-style:none}
+.lo-r{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr) 64px;align-items:center;gap:var(--s4);font:600 var(--t15)/1.4 var(--b);color:var(--k-ink)}
+.lo-r>b{font-size:var(--t20);line-height:1;text-align:right;color:var(--k-ink)}
+.lo-b{display:block;height:12px;background:color-mix(in srgb,var(--k-ink) 8%,transparent);transform:skewX(-14deg)}
+.lo-b>i{display:block;height:100%;background:var(--k-plot)}
+.lo-sp .st-nonum{margin:0;color:var(--k-ink2)}
+/* step 3: the teammates */
+.lo-mates{display:block}
+.lo-mates .k-roster{padding-top:40px}
+.lo .st-note{margin:var(--s4) 0 0;color:var(--k-ink2)}
+/* tablets and small laptops: the panel's facts column narrows; the look-up takes its own row over the team */
+@media (max-width:1099.98px){.lo-hero{grid-template-columns:200px minmax(0,1fr);gap:var(--s6);padding:var(--s6)}.lo .gs-big>b{font-size:var(--t34)}}
+/* narrow tablets: the panel stacks; the card sits beside its tier and rating, the facts and the set run the full width under it */
+@media (max-width:959.98px){.lo-hero{grid-template-columns:minmax(0,1fr)}.lo-id{grid-template-columns:minmax(0,200px) minmax(0,1fr);align-items:end;column-gap:var(--s6)}.lo .gs-facts,.lo-pg{grid-column:1/-1}}
+@media (max-width:899.98px){.lo-pick{grid-template-columns:minmax(0,1fr)}.lo-pick>.st-find{max-width:480px}}
+/* phones */
+@media (max-width:699.98px){
+  .lo-sent.k-sent{font-size:var(--t20);margin-top:var(--s2)}
+  .lo-ctl{gap:var(--s2)}
+  .lo-pick{margin-top:0}
+  .lo-srcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));flex:1 1 100%;width:100%;gap:var(--s2)}
+  .lo-srcs .k-w{min-height:52px;padding:0 var(--s2);font:700 var(--t15)/1.2 var(--b);white-space:normal;text-align:center}
+  .lo .k-sent .k-menu{max-width:100%}
+  .lo .k-sent .k-menu>span{white-space:normal}
+  .lo .st-six{--gsw:56px}
+  .lo .k-plan>.k-step>.k-sec{margin:var(--s6) 0 var(--s3)}
+  .lo .k-plan>.k-step:first-child>.k-sec{margin-top:var(--s6)}
+  .lo-hero{grid-template-columns:minmax(0,1fr);gap:var(--s3);margin:var(--s8) var(--s2) 0 0;padding:var(--s4) var(--s3);box-shadow:6px 6px 0 var(--k-nasty)}
+  .lo-id{grid-template-columns:minmax(0,148px) minmax(0,1fr);align-items:end;column-gap:var(--s3)}
+  .lo-card .k-plate{min-height:0;padding:96px var(--s2) var(--s2)}
+  .lo-card .k-art{top:-24px;height:120px;width:110%}
+  .lo-card .k-name{font-size:var(--t17)}
+  .lo-idt{margin:0}
+  .lo .gs-big{flex-wrap:wrap;column-gap:var(--s2)}
+  .lo .gs-big>b{font-size:var(--t34)}
+  .lo-id{column-gap:var(--s3)}
+  .lo .gs-facts b{font-size:var(--t17)}
+  .lo-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3)}
+  .lo-v>b{font-size:var(--t17)}
+  .lo-v>b small{font-size:var(--t13)}
+  .lo-v:first-child{grid-column:1/-1}
+  .lo-kv .st-nonum{grid-column:1/-1}
+  .lo-also{font-size:var(--t13)}
+  .lo-acts{display:grid;justify-items:center;row-gap:0}
+  .lo-acts .k-go{width:calc(100% - 8px)}
+  .lo-r{grid-template-columns:minmax(0,1fr) 72px 48px;gap:var(--s2);font-size:var(--t13)}
+  .lo-r>b{font-size:var(--t15)}
+  .lo-mates .k-roster{padding-top:40px;row-gap:var(--s10)}
+  .lo-mates .k-roster .k-fact{display:block} /* phones keep each teammate's share (the kit hides card facts in a phone roster) */
+}
+/* the tier word stays one piece; under 360 the card column narrows and the moves go one per row (a two-across ticket there cuts "NORMAL") */
+.lo .gs-big .tier-tag{white-space:nowrap}
+@media (max-width:359.98px){.lo-id{grid-template-columns:minmax(0,124px) minmax(0,1fr)}.lo-hero .k-moves{grid-template-columns:minmax(0,1fr)}.lo .gs-big>b{font-size:var(--t28)}}
