@@ -21,7 +21,12 @@ V2.ppHead = (h1Html, leadHtml) => `<div class="pp2-h">${V2.kHead({kicker: 'BATTL
 
 // every name in one six takes the smallest size any of them needed (V2.kFit fits each name alone; the kit evens only its own rosters)
 V2.ppEven = () => document.querySelectorAll('.pp2-six').forEach(r => { const g = [...r.querySelectorAll('.nw')], m = Math.max(0, ...g.map(e => +e.dataset.kf || 0)); g.forEach(e => { if ((+e.dataset.kf || 0) < m) e.dataset.kf = String(m); }); });
-V2.ppEvenSoon = () => requestAnimationFrame(() => requestAnimationFrame(() => { if (document.querySelector('.pp2-board .nw')) V2.ppEven(); }));
+// the reveal on desktop (two sides): each of your plates and the one of theirs beside it share one height, so the two sixes stay in rows
+V2.ppRows = () => { const me = [...document.querySelectorAll('.pp2.rev .pp2-plate.me')], th = [...document.querySelectorAll('.pp2.rev .pp2-plate.them')];
+  [...me, ...th].forEach(e => { e.style.minHeight = ''; }); if (innerWidth < 1180 || me.length !== th.length) return;
+  const h = me.map((e, i) => Math.max(e.getBoundingClientRect().height, th[i].getBoundingClientRect().height));
+  me.forEach((e, i) => { e.style.minHeight = th[i].style.minHeight = Math.ceil(h[i]) + 'px'; }); };
+V2.ppEvenSoon = () => requestAnimationFrame(() => requestAnimationFrame(() => { if (document.querySelector('.pp2-board .nw')) { V2.ppEven(); V2.ppRows(); } }));
 addEventListener('resize', V2.ppEvenSoon);
 try { document.fonts.addEventListener('loadingdone', V2.ppEvenSoon); } catch (e) {}
 V2.pages.practice = {place: 'battle', draw() { V2.ppEvenSoon(); const E = V2.esc, P = META.practice, s = prScore(), tools = V2.battleToolsBar('practice');
@@ -48,7 +53,10 @@ V2.pages.practice = {place: 'battle', draw() { V2.ppEvenSoon(); const E = V2.esc
   const stamp = n => !rev || !t ? '' : `<b class="pp2-stamp k-tag u ${inT(n) ? 'yes k-good' : 'no k-neutral'}">${inT(n) ? (tL(n) ? 'They led' : 'They brought') : 'Not in their four'}</b>`;
   const mine = n => { const on = pickI(n) >= 0, ld = isL(n), lab = E(V2.disp(n)) + (on ? (ld ? ': bringing, leading' : ': bringing') : '');
     return `<button type="button" class="pp2-plate me${on ? ' on' : ''}${ld ? ' ld' : ''}${rev && t ? (inT(n) ? ' ok' : ' miss') : ''}${!rev && !on && nP === 4 ? ' dim' : ''}" style="--cp:${V2.ppCp(n)};${V2.ppKc(n)}"${rev ? ' tabindex="-1"' : ` data-ppick="${E(n)}" aria-pressed="${on}"`} aria-label="${lab}">${V2.mon(n, {iw: 112, bare: true})}<span class="tx">${V2.ppName(n)}<span class="ty">${V2.ppTy(n)}${stamp(n)}</span>${rev ? bars(n) : ''}</span>${rev || on ? `<span class="pp2-mk">${rev ? big(n) : `<i class="pp2-no u" aria-hidden="true">${pickI(n) + 1}</i>`}${ld ? '<i class="pp2-rib u">Lead</i>' : ''}</span>` : ''}</button>`; };
-  const theirs = n => `<div class="pp2-plate them" style="--cp:${V2.ppCp(n)};${V2.ppKc(n)}"><span class="tx">${V2.ppName(n)}<span class="ty">${V2.ppTy(n)}</span></span>${V2.mon(n, {iw: 96, bare: true})}</div>`;
+  // the reveal of a real game answers on their side too: what this opponent led, brought and left back (as the real game shows after a battle)
+  const oStamp = n => { if (!rev || !r) return ''; const ld = r.tl.some(x => prBase(x) === prBase(n)), br = ld || r.tb.some(x => prBase(x) === prBase(n));
+    return `<b class="pp2-stamp k-tag u ${br ? 'brought' : 'k-neutral'}">${ld ? 'Led' : br ? 'Brought' : 'Left back'}</b>`; };
+  const theirs = n => `<div class="pp2-plate them" style="--cp:${V2.ppCp(n)};${V2.ppKc(n)}"><span class="tx">${V2.ppName(n)}<span class="ty">${V2.ppTy(n)}${oStamp(n)}</span></span>${V2.mon(n, {iw: 96, bare: true})}</div>`;
   const meter = rev ? '' : V2.ppMeter(nP, nL);
   const board = `<section class="pp2-board pp2-arena"><div class="pp2-side mine"><div class="pp2-top"><p class="pp2-cap u">Your six</p>${meter}</div><div class="pp2-six">${pr.six.map(mine).join('')}</div></div><div class="pp2-seam" aria-hidden="true"><b class="u">VS</b></div><div class="pp2-side them"><div class="pp2-top"><p class="pp2-cap u">Their six · as seen at team preview</p></div><div class="pp2-six">${o.six.map(theirs).join('')}</div>${who}</div></section>`;
   if (!rev) { const stage = nP < 4 ? 1 : 2, line = nP ? `Bringing <b>${pr.pick.map(n => E(V2.disp(n))).join(', ')}</b>${nL ? `. Leading <b>${pr.lead.map(n => E(V2.disp(n))).join(' + ')}</b>` : ''}.` : '';
