@@ -323,3 +323,10 @@ span.nw2-box{cursor:default}
 /* under 360 (not drawn in the mock): the paper's sides and the series gaps narrow so four round names fit their columns, and the winner's six go 3 + 3 (six 44px taps do not fit one row) */
 @media (max-width:359.98px){.nw2-paper{padding-inline:var(--s2)}.nw2-ser{column-gap:var(--s1)}.nw2-six{display:grid;grid-template-columns:repeat(3,minmax(44px,1fr));gap:var(--s2)}.nw2-six button{display:grid;place-items:center;width:100%;min-height:44px}}
 .nw2-lh,.nw2-ib h3,.nw2-erl h3{position:relative} /* Q70: each headline's 44px touch layer (.dp-hl::before, above) sits on its own heading, not on the whole step */
+/* News Clip and claim as a clip-out coupon (Sim chose A, Nov 22, 5:16 PM): manila paper, dashed cut line, scissors on the corner,
+   "MYSTERY GIFT" down the stub; the same paper in both themes (tokens --is-manila / --is-tag-ink / --cpn-*) */
+.nw2-cpn{position:relative;width:fit-content;max-width:100%;box-sizing:border-box;margin-top:var(--s2);padding:28px var(--s8) var(--s6) 72px;background:var(--is-manila);color:var(--is-tag-ink);border:3px dashed var(--is-tag-ink);rotate:-1deg}
+.nw2-cpn::before{content:"✂";position:absolute;left:calc(var(--s4) * -1);top:calc(var(--s5) * -1);padding:0 var(--s1);background:var(--k-paper);color:var(--k-ink);font-size:var(--t28);line-height:1;rotate:90deg}
+.nw2-cpn::after{content:"MYSTERY GIFT";position:absolute;left:var(--s4);top:0;bottom:0;display:grid;place-items:center;padding:0 var(--s3) 0 var(--s3);border-right:2px dashed var(--is-tag-ink);writing-mode:vertical-rl;rotate:180deg;font:800 var(--t13)/1 var(--b);letter-spacing:.16em;color:var(--is-tag-ink)}
+.nw2-cpn .nw2-code{color:var(--is-tag-ink)}.nw2-cpn .pr-d{color:var(--cpn-num)}.nw2-cpn .nw2-fine{color:var(--cpn-fine)}
+@media (max-width:699.98px){.nw2-cpn{padding:var(--s6) var(--s5) var(--s5) 52px;rotate:none}.nw2-cpn::after{left:var(--s2)}}
