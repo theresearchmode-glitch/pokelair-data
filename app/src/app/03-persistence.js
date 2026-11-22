@@ -4,7 +4,7 @@ let db=null,uid=null,docRef=null,saveTimer=null;
 var META_AT=0;
 /* pre-launch check 1 (Nov 17): which daily documents have answered at least once, and whether there is no data store at all; the
    rebuild waits for all of them before drawing numbers (bridge.js V2.dataReady), so a page never shows the built-in numbers and then swaps */
-var META_SEEN=new Set(),META_NODB=false,META_KEYS=['doubles','doubles_ingame','doubles_tour','singles','status','teams','history','perf','results','model','events','track','practice','weekly','calendar','post'];
+var META_SEEN=new Set(),META_NODB=false,META_KEYS=['doubles','doubles_ingame','doubles_tour','singles','status','teams','history','perf','results','model','events','track','practice','weekly','calendar','post','info'];
 let writing=null,pending=false,lastJson='';
 // Multi-device safety (Nov 7, Sim): each part of your data (box, saved teams, current team, …) is saved on its own, and only
 // when it changed, so a phone or tab that was open with older data can't overwrite what you did on another device. The page

@@ -60,7 +60,9 @@ V2.kMoveFacts = name => { const m = typeof mvByName === 'object' && mvByName.get
   const cat = ['Status', 'Physical', 'Special'][m.cat] || '';
   const what = !m.cat ? 'Status' : m.vbp || m.fixed || m.ohko ? cat + ' · power\u00a0varies' : cat + ' · ' + m.bp + '\u00a0power'; /* number and 'power' stay together */
   return {type: V2.TYPES.includes(m.type) ? m.type : '', what}; };
-V2.kMove = (name, o = {}) => { const f = V2.kMoveFacts(name), tag = o.attrs ? 'button' : 'span';
+V2.kMove = (name, o = {}) => { const f = V2.kMoveFacts(name); /* Nov 22 (info sheets, Sim approved 11:29 AM): every move ticket opens its sheet; o.plain keeps a plain ticket */
+  if (!o.attrs && !o.plain && typeof V2.openInfo === 'function') o = {...o, attrs: {'data-v2info': 'mv', 'data-v2infon': name, 'aria-haspopup': 'dialog'}};
+  const tag = o.attrs ? 'button' : 'span';
   return `<${tag}${tag === 'button' ? ' type="button"' : ''} class="k-move"${f.type ? ` style="--mc:var(--ty-${f.type})"` : ''}${V2.kAttrs(o.attrs)}>`
     + `<span class="k-mt">${f.type ? V2.kTy(f.type) : ''}<span>${V2.esc(f.type || 'Move')}</span></span><span class="k-mn"><b>${V2.esc(name)}</b>${f.what ? `<small>${V2.esc(f.what)}</small>` : ''}</span>`
     + `${o.pct != null && o.pct !== '' ? `<b class="k-mp u">${V2.esc(o.pct)}</b>` : ''}</${tag}>`; };
