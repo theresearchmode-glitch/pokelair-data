@@ -23,7 +23,7 @@
 .sg2-why summary::-webkit-details-marker{display:none}
 .sg2-why .q{font:900 var(--t15)/1 var(--u);font-style:italic;color:var(--plot-text)}
 .sg2-why .n{font:600 var(--t13)/1 var(--b);color:var(--ink-3)}
-.sg2-why .q::after{content:"›";display:inline-block;margin-left:var(--s1);font-style:normal;transition:rotate .2s}
+.sg2-why .q::after{content:"›";display:inline-block;margin-left:var(--s1);font-style:normal;transition:rotate var(--dur-2)}
 .sg2-why[open] .q::after{rotate:90deg}
 .tm-sug .sg2-why ul{display:grid;gap:var(--s2);padding-bottom:var(--s2)}
 .tm-sug .sg2-why li{display:block;position:relative;padding:0 0 0 var(--s4);border-top:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
@@ -53,7 +53,7 @@
 .sg2-fold>summary::-webkit-details-marker{display:none}
 .sg2-fold>summary .t{font:900 var(--t20)/1.25 var(--u);font-style:italic}
 .sg2-fold>summary .s{grid-column:1;font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-.sg2-fold>summary::after{content:"›";grid-column:2;grid-row:1/span 2;font:700 var(--t24)/1 var(--b);color:var(--plot-text);transition:rotate .2s}
+.sg2-fold>summary::after{content:"›";grid-column:2;grid-row:1/span 2;font:700 var(--t24)/1 var(--b);color:var(--plot-text);transition:rotate var(--dur-2)}
 .sg2-fold[open]>summary::after{rotate:90deg}
 .sg2-fb{display:grid;gap:var(--s8);padding-bottom:var(--s4)}
 /* desktop: an open fold is too long for the narrow column (it would leave the wide one empty): Team Checks moves to its own
@@ -151,9 +151,9 @@
   .bp-ref .bd-win>summary{padding:var(--s3) var(--s2)}.bp-ref .bd-win>summary::after{content:"›"}.bp-ref .bd-win[open]>summary::after{content:"×"}} /* Q83 item 7: phones keep the six at 44 px on one row: the marker is the site's › (× when open) */
 /* ONE fold marker (Nov 16, one system; the advisor's root cause B): every text fold ends in the same grey › on the right, turning down
    when open. Loaded last so it settles every page's own marker. How We Calculate's tiles stay tiles; Build's reference sheets keep "Open ›". */
-.sg2-fold>summary::after,.ed-weak>summary::after,.wk-fold summary::after,.tm-ckok>summary::after,.mu-grp>summary::after,.mu-thr>summary::after,.tr-how summary::after,.tr-prep summary::after,.cx2-same summary::after,.cx2-why>summary::after{content:"›";flex:none;width:auto;height:auto;margin:0 0 0 auto;border:0;transform:none;translate:none;rotate:0deg;justify-self:end;font:700 var(--t20)/1 var(--b);color:var(--ink-3);transition:rotate .2s}
+.sg2-fold>summary::after,.ed-weak>summary::after,.wk-fold summary::after,.tm-ckok>summary::after,.mu-grp>summary::after,.mu-thr>summary::after,.tr-how summary::after,.tr-prep summary::after,.cx2-same summary::after,.cx2-why>summary::after{content:"›";flex:none;width:auto;height:auto;margin:0 0 0 auto;border:0;transform:none;translate:none;rotate:0deg;justify-self:end;font:700 var(--t20)/1 var(--b);color:var(--ink-3);transition:rotate var(--dur-2)}
 .sg2-fold[open]>summary::after,.ed-weak[open]>summary::after,.wk-fold[open] summary::after,.tm-ckok[open]>summary::after,.mu-grp[open]>summary::after,.mu-thr[open]>summary::after,.tr-how[open] summary::after,.tr-prep[open] summary::after,.cx2-same[open] summary::after,.cx2-why[open]>summary::after{content:"›";transform:none;rotate:90deg}
-.dc2-fold summary i,.tc-fold summary i,.ra-about summary i{font:700 var(--t20)/1 var(--b);font-style:normal;color:var(--ink-3);rotate:0deg;transition:rotate .2s}.dc2-fold[open] summary i,.tc-fold[open] summary i,.ra-about[open] summary i{rotate:90deg}
+.dc2-fold summary i,.tc-fold summary i,.ra-about summary i{font:700 var(--t20)/1 var(--b);font-style:normal;color:var(--ink-3);rotate:0deg;transition:rotate var(--dur-2)}.dc2-fold[open] summary i,.tc-fold[open] summary i,.ra-about[open] summary i{rotate:90deg}
 .tr-how summary::before,.tr-prep summary::before,.cx2-same summary::before,.cxf .cx2-why>summary::before,.cxf .cx2-same>summary::before{content:none}
 .tr-prep summary,.cx2-why>summary{display:flex;align-items:center;gap:var(--s3);list-style:none}.tr-prep summary::-webkit-details-marker,.cx2-why>summary::-webkit-details-marker,.tr-how summary::-webkit-details-marker{display:none}.tr-how summary{list-style:none}
 /* ONE chip (Nov 16, one system item 5; helper inventory): Meta's chips and the Damage Calc's 'In play' toggles take the site chip's look
@@ -312,7 +312,7 @@ p,li,small{text-wrap-style:pretty}
 /* Sim Q4 (Nov 16, recommended): one style for text folds - title, its one-line summary, and the grey › on the right that turns when open.
    About's rows and Events' "What counts as an event?" had no marker (and Events' title was link blue); How We Calculate's tiles stay tiles */
 .inf-row summary{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s4)}.inf-row summary>*{grid-column:1}
-.inf-row>summary::after,.ev-what>summary::after{content:"›";grid-column:2;grid-row:1/span 2;align-self:center;margin:0 0 0 auto;font:700 var(--t20)/1 var(--b);color:var(--ink-3);transition:rotate .2s}
+.inf-row>summary::after,.ev-what>summary::after{content:"›";grid-column:2;grid-row:1/span 2;align-self:center;margin:0 0 0 auto;font:700 var(--t20)/1 var(--b);color:var(--ink-3);transition:rotate var(--dur-2)}
 .inf-row[open]>summary::after,.ev-what[open]>summary::after{rotate:90deg}
 .ev-what summary{list-style:none;color:var(--ink);gap:var(--s4)}.ev-what summary::-webkit-details-marker{display:none}
 @media (prefers-reduced-motion:reduce){.inf-row>summary::after,.ev-what>summary::after{transition:none}}

@@ -10,10 +10,10 @@
      no-preference) and the ticker stays the still strip of sd-hero.css. */
 @media (prefers-reduced-motion:no-preference){
   /* the surge */
-  .sdh-surge .sdh-f{animation:sdh-surge 720ms cubic-bezier(.16,1,.3,1) backwards;transform-origin:50% 100%}
+  .sdh-surge .sdh-f{animation:sdh-surge 720ms var(--ease-glide) backwards;transform-origin:50% 100%}
   .sdh-surge .sdh-f.f1{animation-delay:40ms}.sdh-surge .sdh-f.f2{animation-delay:70ms}
   .sdh-surge .sdh-f.f3{animation-delay:110ms}.sdh-surge .sdh-f.f4{animation-delay:140ms}
-  .sdh-surge .sdh-herd{animation:sdh-surge-m 700ms cubic-bezier(.16,1,.3,1) backwards;transform-origin:50% 80%}
+  .sdh-surge .sdh-herd{animation:sdh-surge-m 700ms var(--ease-glide) backwards;transform-origin:50% 80%}
   @keyframes sdh-surge{from{transform:translate3d(0,-4%,0) scale(.88)}}
   @keyframes sdh-surge-m{from{transform:translate3d(0,-3%,0) scale(.94)}}
   /* the ticker: one track, the list then its copy, each with one gap after it, moves left by one list's width and starts again */
