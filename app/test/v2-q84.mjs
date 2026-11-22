@@ -148,10 +148,13 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) { const tag = `
   // ---- S6 Events (resize the desktop page through the tablet widths) ----
   if (W >= 1024) { await go(p, 'events', 2000); const below = [];
     for (const w of [768, 799, 800, 870, 1024, 1099]) { await p.setViewportSize({width: w, height: 900}); await p.waitForTimeout(700);
-      const Ev = await p.evaluate(() => { const wl = document.querySelector('.tk-wall'); if (!wl) return null; const cols = getComputedStyle(wl).gridTemplateColumns.split(' ').filter(Boolean).length;
-        let over = -999; for (const t of wl.querySelectorAll(':scope>.tk')) { const st = t.querySelector('.tk-stub'); if (!st) continue; const sl = st.getBoundingClientRect().left;
-          for (const e of t.querySelectorAll('.tk-name, .tk-five .np-mon img, .tk-k')) { const r = e.getBoundingClientRect(); if (r.width) over = Math.max(over, Math.round(r.right - sl)); } }
-        return {cols, over, n: wl.querySelectorAll(':scope>.tk').length}; });
+      /* Nov 22 (Events on the kit, proposal): the wall is .ev2-wall, its tickets .ev2-tk with the date stub on the LEFT; "per row" counts the
+         tickets that share the first row (the grid has 6 tracks from 1100), "into the stub" is how far any name, label or picture reaches left of the stub's right edge */
+      const Ev = await p.evaluate(() => { const wl = document.querySelector('.ev2-wall'); if (!wl) return null; const tk = [...wl.querySelectorAll(':scope>.ev2-tk')]; const y0 = tk.length ? Math.round(tk[0].getBoundingClientRect().top) : 0;
+        const cols = tk.filter(t => Math.round(t.getBoundingClientRect().top) === y0).length;
+        let over = -999; for (const t of tk) { const st = t.querySelector('.ev2-stub'); if (!st) continue; const sr = st.getBoundingClientRect().right;
+          for (const e of t.querySelectorAll('.ev2-name, .ev2-six .np-mon img, .ev2-k')) { const r = e.getBoundingClientRect(); if (r.width) over = Math.max(over, Math.round(sr - r.left)); } }
+        return {cols, over, n: tk.length}; });
       const want = w >= 800 ? 2 : 1, good = !!Ev && Ev.cols === want && Ev.over <= 0, msg = `${w}: ${Ev ? Ev.cols : '?'} per row (want ${want}), stub ${Ev ? Ev.over : '?'} px`;
       /* 768 and 799 keep one per row: reported with 800, so the line can only pass once two per row starts exactly at 800 */
       if (w < 800) { below.push([good, msg]); } else if (w === 800) { ok(good && below.every(x => x[0]), `S6 ${th}: two tickets per row from 800, one below, nothing into the date stub (${[...below.map(x => x[1]), msg].join('; ')})`); }
