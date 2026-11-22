@@ -19,12 +19,17 @@ V2.drBk = l => `<span class="dr-bk" data-l="${l}" aria-hidden="true"><i></i><i><
 V2.drImg = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id != null ? `<img src="${V2.art(id)}" alt="" loading="lazy" decoding="async">` : ''; };
 // one Pokémon standing on its answer: the art, the blocks, a pink "!" when there is no answer; o.word writes the level under it
 V2.drMon = (n, lvl, side, o = {}) => `<span class="dr-m ${side} l${lvl}${o.cls ? ' ' + o.cls : ''}"${o.attrs || ''}><span class="dr-a">${V2.drImg(n)}${lvl === 0 ? '<b class="bang u" aria-hidden="true">!</b>' : ''}</span>${V2.drBk(lvl)}${o.word ? `<small class="dr-w">${V2.esc(V2.DR_LV[lvl])}</small>` : ''}${o.name ? `<b class="dr-nm">${V2.esc(o.name)}</b>` : ''}</span>`;
+// Nov 22 (Sim: the rows with six pictures each looked "extremely chaotic"): a row names only the Pokémon of theirs that get through
+// (no answer first, then shaky), in words; pictures stay in Usual suspects and the open team
+V2.drThru = (theirs, lv) => { const E = V2.esc, w = theirs.map((o, j) => ({d: V2.disp(o.p.n), l: lv(j)})).filter(x => x.l <= 1).sort((a, b) => a.l - b.l);
+  if (!w.length) return '<span class="dr-ok">You answer all six.</span>';
+  return `<span class="dr-tk">Gets through</span> ${w.map(x => `<span class="dr-tn l${x.l}"><b>${E(x.d)}</b> <small>${x.l ? 'shaky' : 'no answer'}</small></span>`).join('')}`; };
 // a top team's row (a button: tap to flip it open). The six stand on your answers; the two counts say it in numbers.
 V2.tpCard = (x, first) => { const E = V2.esc, P = V2.tpPile(x.e), pr = x.pr, on = V2.tpOn === x.ix, word = {p: "they're better prepared", c: 'about even', g: "you're better prepared"}[P];
   const lv = j => pr && pr.you[j] ? pr.you[j].level : (x.un.includes(j) ? 0 : 2);
   return `<button type="button" class="tp-card dr-row ${P}${first ? ' first' : ''}${on ? ' on' : ''}" data-tpflip="${x.ix}" aria-expanded="${on}" aria-label="${E(V2.tpPlace(x.t.who))}, ${E(V2.tpEv(x.t.ev))}, ${word}.${pr ? ` You answer ${pr.yN} of their ${pr.n}; they answer ${pr.tN} of your six.` : ''} ${on ? 'Open below.' : 'Tap to see what to bring.'}">
     <span class="dr-id" aria-hidden="true">${first ? '<span class="tp-start u">Start here</span>' : ''}<b class="u">${E(V2.tpPlace(x.t.who))}</b><small>${E(V2.tpEv(x.t.ev)).replace(/ · ([\d,]+ players)$/, '<span class="dr-pl"> · $1</span>')}</small></span>
-    <span class="dr-six" aria-hidden="true">${x.theirs.map((o, j) => V2.drMon(o.p.n, lv(j), 'y')).join('')}</span>
+    <span class="dr-thru" aria-hidden="true">${V2.drThru(x.theirs, lv)}</span>
     ${pr ? `<span class="dr-sc" aria-hidden="true"><span class="y"><b class="u">${pr.yN}<small>/${pr.n}</small></b><small>you answer</small></span><span class="t"><b class="u">${pr.tN}<small>/6</small></b><small>they answer</small></span></span>` : ''}</button>`; };
 // the open team: both ways (your answers to their six, theirs to your six), the four to bring, the one pink move, the prep
 V2.tpOpen = (x, ms, top) => { const E = V2.esc, pr = x.pr, P = V2.tpPile(x.e), nm = i => E(ms[i].d), all = (k, n) => k === n ? `all ${n}` : `${k} of ${n}`;
