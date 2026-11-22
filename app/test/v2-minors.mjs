@@ -360,13 +360,13 @@ const HQ = async () => {
     ok(/^. [A-Z][a-z]+'s numbers arrive [A-Z][a-z]{2} \d{1,2}\.$/.test(want.early) && lad.endsWith(want.now) && /[A-Z][a-z]{2} \d{4}/.test(lad) && !/numbers arrive/.test(tour), `HQ Q4a (Sim: A): the Usage page's Showdown ladder line names its month and when the next arrives (HOME-04 moved from Home) ("${lad}"; tournaments: "${tour}"; ${JSON.stringify(want)})`); }
   // Q4b B: HOME-05's rating moves live on This Week as "Ratings on the Move", under "Pokémon on the Move": every mover (V2.homeWeek(12)), each
   // a button to its page whose words read name, arrow + points, up/down, rating; tiles keep their words inside at 320-1440
-  { const rm = []; for (const w of [320, 390, 820, 1440]) { const r = await hq(w, 900, {hash: '#weekly', rm: 'reduce', fn: () => JSON.parse(window.__ev(`(() => { const s = document.querySelector('#main .wk-move + .wk-rm'), want = V2.homeWeek(12);
-      if (!s) return JSON.stringify({none: 1}); const T = [...s.querySelectorAll('.wk-rc')], bad = [];
+  { const rm = []; for (const w of [320, 390, 820, 1440]) { const r = await hq(w, 900, {hash: '#weekly', rm: 'reduce', fn: () => JSON.parse(window.__ev(`(() => { const s = document.querySelector('#main .wk-move + .wk2-rm'), want = V2.homeWeek(12); /* Nov 22: This Week on the kit (Sim approved A): "Our ratings moved too." (.wk2-rm, buttons .wk2-rc) right under the movers */
+      if (!s) return JSON.stringify({none: 1}); const T = [...s.querySelectorAll('.wk2-rc')], bad = [];
       for (const b of T) { const B = b.getBoundingClientRect(); for (const e of b.querySelectorAll('span,b,small')) { if (!e.getClientRects().length) continue; const x = e.getBoundingClientRect(); if (x.right > B.right + 1 || x.left < B.left - 1 || x.bottom > B.bottom + 1) bad.push('out ' + e.textContent.trim().slice(0, 16)); if (parseFloat(getComputedStyle(e).fontSize) < 13) bad.push('small'); }
-        if (B.height < 44) bad.push('tap ' + B.height); if (!/^.+ [▲▼] \\d+ (up|down) Rating \\d+$/.test(b.innerText.replace(/\\s+/g, ' ').trim())) bad.push('words ' + b.innerText.replace(/\\s+/g, ' ')); }
+        if (B.height < 44) bad.push('tap ' + B.height); if (!/^.+ Rating \\d+ [▲▼]\\d+$/.test(b.innerText.replace(/\\s+/g, ' ').trim()) || !/ (up|down) \\d+ points? this week, rating \\d+$/.test(b.getAttribute('aria-label') || '')) bad.push('words ' + b.innerText.replace(/\\s+/g, ' ')); } /* Nov 22 kit: name, Rating N, arrow + points on screen; up/down in the spoken label */
       return JSON.stringify({n: T.length, want: want.length, same: T.map(b => b.dataset.v2mon).join() === want.map(x => x.n).join(), bad: bad.slice(0, 3), hs: document.documentElement.scrollWidth - innerWidth}); })()`))});
       if (r.none || !r.n || r.n !== r.want || !r.same || r.bad.length || r.hs > 0) rm.push(`${w}: ${JSON.stringify(r)}`); }
-    ok(!rm.length, `HQ Q4b (Sim: B): This Week shows "Ratings on the Move" under "Pokémon on the Move": every rating mover as a button (name, arrow + points, up/down, rating), nothing spills 320-1440${rm.length ? ': ' + rm.join(' | ') : ''}`); }
+    ok(!rm.length, `HQ Q4b (Sim: B): This Week shows its rating moves ("Our ratings moved too.", kit, Nov 22) under the movers: every rating mover as a button (name, rating, arrow + points; up/down spoken), nothing spills 320-1440${rm.length ? ': ' + rm.join(' | ') : ''}`); }
   // Q7a B: the hero crowd comes from 4 sprite sheets at 128px, except the 35 nearest (highest rated), which keep their own 384px file; every
   // Pokémon is still drawn, and Home asks for far fewer picture files (before: 345-359 at 1440, after: about 60)
   { const sh = []; for (const [w, h] of [[1440, 900], [390, 844]]) { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
@@ -992,19 +992,20 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
         if (o > worst) { worst = Math.round(o); wv = n + ' ' + t; } } return {worst, wv}; }); await q.close(); return r; };
   const f320 = await fit(320), f700 = await fit(700), f1024 = await fit(1024);
   ok(f320.worst <= 0 && f700.worst <= 0 && f1024.worst <= 0, `audit #18: the widest score and tier stay inside the card (px past it: 320 ${f320.worst} for ${f320.wv}, 700 ${f700.worst}, 1024 ${f1024.worst})`); }
-{ /* audit v199 #19 (Sim, Nov 17: Option A): under 430 This Week's Most Used is a ranked 5-row list (rank, sprite, name, 'of teams', share right);
-     it was 3 + 2 tiles whose slanted plates crossed. No name breaks mid-word at 320. 430 up keeps the strip of five tiles */
+{ /* audit v199 #19 (Sim, Nov 17: Option A) was a ranked 5-row list under 430. Nov 22: This Week on the kit (Sim approved A "the slope", 12:06 PM):
+     Most used this week is a kit roster of six cards (six across on desktop, 3 x 2 on phones, never 5 + 1), each card "N% of teams · #rank" (the
+     rank kept from #19), no name broken mid-word at 320, no sideways scroll. Reads the new look; the old list is gone */
   const wk = async w => { const q = await b.newPage({viewport: {width: w, height: 900}}); await q.goto('file://' + PAGE + '#weekly'); await q.waitForTimeout(2000);
-    const r = await q.evaluate(() => { const L = [...document.querySelectorAll('.wk-top li')], R = e => e.getBoundingClientRect(), vis = e => !!e && getComputedStyle(e).display !== 'none';
-      const broken = []; for (const s of document.querySelectorAll('.wk-top .wk-tm span')) { const tn = s.firstChild; if (!tn || tn.nodeType !== 3) continue; let i = 0;
+    const r = await q.evaluate(() => { const L = [...document.querySelectorAll('#main .wk2-used .k-roster > li')], R = e => e.getBoundingClientRect();
+      const broken = []; for (const s of document.querySelectorAll('#main .wk2-used .k-name')) { const tn = s.firstChild; if (!tn || tn.nodeType !== 3) continue; let i = 0;
         for (const wd of tn.data.split(' ')) { const g = document.createRange(); g.setStart(tn, i); g.setEnd(tn, i + wd.length); if (wd && new Set([...g.getClientRects()].map(x => Math.round(x.top))).size > 1) broken.push(wd); i += wd.length + 1; } }
       const tops = new Set(L.map(e => Math.round(R(e).top))).size, lefts = new Set(L.map(e => Math.round(R(e).left))).size;
-      const pr = L.map(e => Math.round(R(e).right - R(e.querySelector('.wk-tm b')).right)), rk = L.map(e => vis(e.querySelector('.wk-rk')) ? e.querySelector('.wk-rk').textContent : '').join('');
-      return {n: L.length, rows: tops, cols: lefts, ranks: rk, ofTeams: L.filter(e => vis(e.querySelector('.wk-tm small'))).length, shareRight: Math.max(...pr), broken, hs: document.documentElement.scrollWidth - innerWidth}; }); await q.close(); return r; };
-  const w390 = await wk(390), w320 = await wk(320), w429 = await wk(429), w430 = await wk(430), w1280 = await wk(1280);
-  ok(w390.n === 5 && w390.rows === 5 && w390.cols === 1 && w390.ranks === '12345' && w390.ofTeams === 5 && w390.shareRight <= 4, `audit #19 (Nov 17): at 390 Most Used is a ranked list of 5 rows, 'of teams' under each name, the share on the right (${JSON.stringify(w390)})`);
-  ok(w320.rows === 5 && w320.cols === 1 && !w320.broken.length && w320.hs <= 0 && w429.rows === 5 && !w429.broken.length, `audit #19: at 320 and 429 the list holds: 5 rows, no name broken mid-word, no sideways scroll (320 ${JSON.stringify(w320)})`);
-  ok(w430.rows === 1 && w430.cols === 5 && !w430.ranks && !w430.ofTeams && w1280.rows === 1 && w1280.cols === 5 && !w1280.ranks, `audit #19: from 430 the five stay one strip of tiles, no ranks or 'of teams' (430 ${JSON.stringify(w430)}, 1280 rows ${w1280.rows})`); }
+      const facts = L.map(e => { const f = e.querySelector('.k-fact'); return f && f.getClientRects().length ? f.textContent : ''; }), ranks = facts.map(t => (t.match(/#(\d)$/) || [])[1] || '').join('');
+      return {n: L.length, rows: tops, cols: lefts, ranks, facts: facts.filter(t => /^\d+(\.\d)?% of teams · #\d$/.test(t)).length, broken, hs: document.documentElement.scrollWidth - innerWidth}; }); await q.close(); return r; };
+  const w390 = await wk(390), w320 = await wk(320), w1280 = await wk(1280);
+  ok(w390.n === 6 && w390.rows === 2 && w390.cols === 3 && w390.ranks === '123456' && w390.facts === 6, `audit #19 / kit (Nov 22): at 390 Most used is the kit roster, 3 x 2, each card "% of teams · #rank" (${JSON.stringify(w390)})`);
+  ok(w320.rows === 2 && w320.cols === 3 && !w320.broken.length && w320.hs <= 0, `audit #19 / kit: at 320 the roster holds 3 x 2, no name broken mid-word, no sideways scroll (${JSON.stringify(w320)})`);
+  ok(w1280.rows === 1 && w1280.cols === 6 && w1280.ranks === '123456', `audit #19 / kit: from desktop the six are one row with their ranks (1280 ${JSON.stringify(w1280)})`); }
 // The Post Room (#gifts, Nov 18): a test fixture (made-up gifts, set inside the page; post.js is never touched); each check fails on the skeleton page
 { const FX = `{checked: '2026-11-17', news: [], gifts: [{id: 'a', name: 'Training Ticket', amount: 2, how: 'Serial Code', code: 'AB1CD0E', start: '2026-11-01T00:00:00Z', end: '2026-11-22T23:59:00Z'},
     {id: 'b', name: 'Quick Coupons', amount: 100, how: 'Event Gift', start: '2026-11-01T00:00:00Z', end: '2026-12-31T23:59:00Z'}].concat(Array.from({length: 14}, (_, i) => i % 2

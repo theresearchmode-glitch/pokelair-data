@@ -18,7 +18,8 @@ V2.kSent = (parts, o = {}) => { const ws = (parts || []).filter(p => p && typeof
 // the plan line (THEME 2.3): V2.kPlan(steps) holds the page; each V2.kStep is a numbered section. o.link = {label, attrs}: the step's one quiet link (HYBRID 4)
 V2.kPlan = html => `<div class="k-plan">${html}</div>`;
 V2.kStep = (n, title, note, bodyHtml, o = {}) => `<section class="k-step"><span class="k-n" aria-hidden="true">${V2.esc(n)}</span><div class="k-sec"><h2 class="k-h2 u">${V2.esc(title)}</h2>${note ? `<span class="k-note">${V2.esc(note)}</span>` : ''}${o.link ? V2.kLink(o.link.label, o.link.attrs) : ''}</div>${bodyHtml || ''}</section>`;
-V2.kLink = (label, attrs = {}) => `<a class="k-link"${V2.kAttrs(Object.assign({href: '#'}, attrs))}>${V2.esc(label)}&nbsp;›</a>`;
+/* Nov 22 (This Week): attrs.class is added to k-link (it used to write a second class attribute, which the browser ignores) */
+V2.kLink = (label, attrs = {}) => { const {class: c, ...a} = attrs || {}; return `<a class="k-link${c ? ' ' + V2.esc(c) : ''}"${V2.kAttrs(Object.assign({href: '#'}, a))}>${V2.esc(label)}&nbsp;›</a>`; };
 // a Pokémon's card name in two parts: the form on the small line above ('Mega', 'Paldean · Combat', 'Female', 'Yellow') and the name.
 // A lone form letter stays with the word before it ('Charizard Y'), so a name line never ends with one letter (HYBRID 7).
 V2.kName = n => { let d = V2.disp(n), form = '', m;
