@@ -1949,3 +1949,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:48 AM: Batch 562577ac checks so far: A-team 139/0, B-build 77/0, D-meta 117/0; C-battle 82/1 (X-04 Rain moved 21px), kit-page 2/14, v2-partial (old Compare function name), v2-rmjump (null), v2-q69 24 failed (My Team 1024 layout). Investigating which merge causes each once the runs end; nothing pushed.
 - 12:50 AM: Sim: doesn't like either Battle concept; wants 3 fresh creative mock-ups that scream NastyPlot, highly usable and polished. Asked Sim for a 3rd active helper (A, recommended) or wait for a slot (B).
 - 12:57 AM: Sim: yes to a 3rd helper just for the 3 Battle mock-ups; otherwise 2 helpers max. Resumed hB2 with the brief (3 new concepts, NastyPlot, highly usable, polished).
+- 12:58 AM: Sim: after the current tasks finish (hT3 Speed Tiers, hP3 Practice, hG2 Test Run, hB2 Battle mock-ups), go down to 1 helper for usage conservation until Sim says 2 again.

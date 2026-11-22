@@ -40,6 +40,11 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
+## HELPERS: ONE AT A TIME AFTER TONIGHT'S TASKS (Sim, Nov 22, logged 12:58 AM; LATEST, overrides the two-helper rules below)
+Sim: "after these tasks are finished i think we need to go down to 1 helper. I know itll slow us down but its necessary for usage
+conservation until I say we can go back to 2." The tasks running then (Speed Tiers finish, Practice, Test Run, the Battle mock-ups) finish;
+after that: at most ONE helper at a time until Sim says 2 again. Going above 1: ask Sim first. work-check.sh / stop-check.sh need 1.
+
 ## HELPERS: TWO AT A TIME (Sim, Nov 22, logged 12:57 AM: one extra helper allowed ONLY for the 3 Battle mock-ups; otherwise 2 max)
 ## (older heading kept:) HELPERS: TWO AT A TIME (Sim, Nov 21, just before 12:21 PM, LATEST: '2 helpers is a great idea. do it!' for the reskin; overrides the ONE-at-a-time rule below)
 At most TWO helpers/subagents at once, each in its own copy, on approved reskin work. Going above 2: ask Sim first. work-check.sh / stop-check.sh need 2.
