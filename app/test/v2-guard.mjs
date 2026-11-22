@@ -5,6 +5,7 @@
 //   3. font sizes off the type scale: font-size / font shorthand must use var(--tNN), never a literal size
 //   4. colours outside tokens.css: no hex, rgb(), hsl() or named colours in the other CSS files or in inline styles
 //   5. spacing off the 4px grid: margin / padding / gap / inset literals must be 0, 1, 2, 6 or a multiple of 4 px
+//   6. unbalanced braces in a CSS file (Nov 22: a merge lost two closing braces and nested the rest inside @media)
 // Usage: node app/test/v2-guard.mjs        (also run by `node app/build.mjs --v2`)
 // What it can't see: values computed in JS at run time (V2.toast's bottom offset) and colours inside SVG art data.
 import fs from 'node:fs';
@@ -55,6 +56,10 @@ function checkDecls(file, src, body, at, media, isTokens) {
   }
 }
 
+// 6. (Nov 22) every { has its }: a lost closing brace (a merge) silently nests the rest of a file inside the last @media
+for (const f of fs.readdirSync(CSS).filter(f => f.endsWith('.css'))) { const t = noComments(fs.readFileSync(path.join(CSS, f), 'utf8')).replace(/"[^"\n]*"|'[^'\n]*'/g, '""');
+  let d = 0, open = []; t.split('\n').forEach((ln, i) => { for (const ch of ln) { if (ch === '{') { d++; open.push(i + 1); } else if (ch === '}') { d--; open.pop(); } } });
+  if (d !== 0) add(path.join(CSS, f), open.length ? open[open.length - 1] : 0, 'unbalanced braces', `${d > 0 ? d + ' unclosed { (last opened here)' : -d + ' extra }'}`); }
 for (const f of fs.readdirSync(CSS).filter(f => f.endsWith('.css'))) {
   const file = path.join(CSS, f), raw = fs.readFileSync(file, 'utf8'), src = noComments(raw), isTokens = f === 'tokens.css';
   for (const b of blocks(src)) {

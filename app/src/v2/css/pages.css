@@ -3906,6 +3906,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .us .us-how .us-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s6)}
   .us .us-how .us-groups>.us-mvs{grid-column:1/-1;grid-row:auto}
   .us .us-how .us-groups>:nth-child(4):last-child{grid-column:auto}
+}
 /* Archetypes guide at 1100 and up (Sim, Nov 22: the desktop length rule; approved 10:10 AM): "How to beat it" and "What your team has"
    side by side under "Who runs it", as today's guide had them; step 3's circle sits at its column's left edge */
 @media (min-width:1100px){
@@ -3913,6 +3914,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .ar-guide .k-plan>.k-step:first-child{grid-column:1/-1}
   .ar-guide .k-plan>.k-step:nth-child(3){padding-left:var(--s12)}
   .ar-guide .k-plan>.k-step:nth-child(3)>.k-n{left:0}
+}
 /* Speed Tiers at 1280 and up (Sim's desktop length rule, Nov 22): between your blue bands, the field's rows run two-up (left, then right,
    in speed order), as they already do on phones; the bands keep the full width. Each row keeps its own track and tick marks, so a bar
    still reads against its own row; the full-width scale on top is dropped because it no longer lines up with half-width rows. */
@@ -3927,4 +3929,15 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .sp2-cut .sp2-m .v{font-size:var(--t28)}
   .sp2-cut .nm b{font-size:var(--t24)}
   .sp2-track .sp2-sc{display:none}
+}
+/* Test Run, wide containers (Sim's desktop length rule, Nov 22): the two counts sit side by side on one line and the row padding is
+   tighter, so each team is one calm line (100 px -> about 64 px; 20 teams) */
+@container (min-width:600px){
+  .dr .tp-cards .dr-row{padding-top:var(--s1);padding-bottom:var(--s1)}
+  .dr .tp-cards .dr-sc{display:flex;gap:var(--s5);min-width:0}
+  .dr .tp-cards .dr-sc>span{gap:var(--s1)}
+  .dr .tp-cards .dr-sc b{font-size:var(--t20)}
+  .dr .tp-cards .dr-sc>span>small{display:none} /* the key above the piles says once what the two counts are */
+  .dr .tp-cards .dr-thru{gap:0 var(--s3);font-size:var(--t13);line-height:1.4}
+  .dr .tp-cards .dr-tk{flex-basis:100%}
 }
