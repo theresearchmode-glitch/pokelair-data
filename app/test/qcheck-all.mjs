@@ -14,7 +14,7 @@ if (!routes) { const b = await chromium.launch(), p = await b.newPage(); await p
 const found = [], t0 = Date.now();
 /* Nov 17 (Sim found the Top 10 bug on his iPhone): the default view of a page isn't enough. Every switchable view (each choice in a
    sliding picker or tab list on the page: Matchups Top 10 / Grid / All 30, Box sort, Speed List...) is checked too. VIEWS=0 skips them. */
-const SEL = "#main .np-slide, #main [role=tablist]";
+const SEL = "#main .np-slide, #main [role=tablist], #main .sp2-view .k-sent"; /* Speed reskin (Nov 22): Track / List became two blue words in a kit sentence; keep checking the List view */
 const views = {}; if (process.env.VIEWS !== '0') { const b = await chromium.launch(), p = await b.newPage({viewport: {width: 1280, height: 900}});
   for (const r of routes) { await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1500);
     views[r] = await p.evaluate(S => [...document.querySelectorAll(S)].filter(e => e.getClientRects().length).flatMap((g, j) => [...g.querySelectorAll('button')].map((x, k) => ({j, k, on: x.getAttribute('aria-pressed') === 'true' || x.getAttribute('aria-selected') === 'true', t: x.textContent.trim().replace(/\s+/g, ' ').slice(0, 24)})).filter(v => !v.on)), SEL); }
