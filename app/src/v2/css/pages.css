@@ -3335,7 +3335,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .inf-saved{padding:var(--s6);background:var(--wash)}.inf-saved ul{list-style:none;margin:0 0 var(--s3);padding:0;display:grid;gap:var(--s3)}
 /* About on the kit (Nov 22, Sim approved direction A "the receipt", 12:36 PM): the promise stamps, the receipt (white paper in both themes, like
    Track Record's), the fine print beside it */
-.abt .ra-h .k-kicker{max-width:100%}
+.abt .k-head .k-kicker{display:table;max-width:100%}
 .abt-st{display:flex;flex-wrap:wrap;gap:var(--s3);margin:var(--s6) 0 0;padding:0;list-style:none}
 .abt-st li{padding:var(--s1) var(--s4);border:3px solid var(--k-nasty);color:var(--k-nasty-text);font-size:var(--t22);line-height:1.2;rotate:-2deg}.abt-st li:nth-child(2n){rotate:1.5deg}
 .abt-two{display:grid;grid-template-columns:minmax(0,560px) minmax(0,1fr);gap:var(--s6) var(--s12);align-items:start}
