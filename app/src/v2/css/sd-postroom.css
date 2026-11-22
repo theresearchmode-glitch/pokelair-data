@@ -8,7 +8,7 @@
 .pr-nums{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:var(--s4) var(--s10)}
 .pr-nums p{display:grid;align-content:start;gap:var(--s1);margin:0;max-width:16ch}.pr-nums b{font-size:var(--t34);line-height:1}.pr-nums span{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 @media (max-width:1099.98px){.pr-top{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:479.98px){.pr-nums{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s4)}}
+@media (max-width:479.98px){.pr-nums{grid-template-columns:repeat(3,auto);justify-content:space-between;column-gap:var(--s4)}.pr-nums b.pr-w{font-size:var(--t24);line-height:1.4}}
 /* section heads */
 .pr-sh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s3) var(--s6);margin:0 0 var(--s6)}
 .pr-sh h2{margin:0;font-size:var(--t34);line-height:1.2}
