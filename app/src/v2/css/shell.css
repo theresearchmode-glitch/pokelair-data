@@ -31,8 +31,8 @@
    reduced motion keeps both still */
 .np-ldlogo{animation:np-float 2.4s ease-in-out infinite}
 @keyframes np-float{0%,100%{transform:translateY(0)}50%{transform:translateY(-6px)}}
-.np-ldbar{position:relative;width:160px;height:4px;overflow:hidden;border-radius:4px;background:var(--rule)}
-.np-ldbar::after{content:'';position:absolute;inset:0;width:40%;border-radius:4px;background:var(--plot);animation:np-glide 1.6s cubic-bezier(.65,0,.35,1) infinite}
+.np-ldbar{position:relative;width:160px;height:4px;overflow:hidden;border-radius:var(--r-s);background:var(--rule)}
+.np-ldbar::after{content:'';position:absolute;inset:0;width:40%;border-radius:var(--r-s);background:var(--plot);animation:np-glide 1.6s cubic-bezier(.65,0,.35,1) infinite}
 @keyframes np-glide{from{transform:translateX(-100%)}to{transform:translateX(250%)}}
 @media (prefers-reduced-motion:reduce){.np-loading,.np-ldlogo,.np-ldbar::after{animation:none}.np-ldbar::after{width:100%;opacity:.35}}
 /* phone: logo + search on top, the five places in a bottom bar */

@@ -324,7 +324,7 @@
 @media (max-width:479.98px){.shd2{padding:var(--s6) var(--s4)}.shd2-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s3)}}
 /* Import sheet, Clear Team, empty-state links (R4, Nov 11) */
 .imp2{padding:var(--s8)}.imp2 h2{font-size:var(--t28);margin:var(--s2) 0 var(--s2)}.imp2 .tm-sub{margin:0 0 var(--s4)}
-.imp2-in{display:block;width:100%;min-height:208px;resize:vertical;padding:var(--s3) var(--s4);border:1.5px solid var(--ink);border-radius:4px;background:var(--surface);color:var(--ink);font:400 var(--t15)/1.5 var(--b)}
+.imp2-in{display:block;width:100%;min-height:208px;resize:vertical;padding:var(--s3) var(--s4);border:1.5px solid var(--ink);border-radius:var(--r-s);background:var(--surface);color:var(--ink);font:400 var(--t15)/1.5 var(--b)}
 .imp2-in::placeholder{color:var(--ink-3)}.imp2-in:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
 .imp2-note{margin:var(--s2) 0 0;min-height:1.5em;font-size:var(--t15);color:var(--ink)}.imp2-note:empty{min-height:0}
 /* Form errors (Sim's W3b A, Nov 19): the field in error gets a 2px red edge (here, after each form's own field styles; a slanted .np-field box takes it on its own outline shape, not
@@ -362,7 +362,7 @@
 :root[data-theme="night"] .bx-add{border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
 .bx-sort{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);margin-bottom:var(--s4)}.bx-sort .lbl{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bx-sort .np-slide{flex:1 1 auto;max-width:520px}
 /* the box: the only coloured surface on the page */
-.bx-box{position:relative;container-type:inline-size;border-radius:18px;overflow:hidden;padding:var(--s4) var(--s3) var(--s5);
+.bx-box{position:relative;container-type:inline-size;border-radius:var(--r-xl);overflow:hidden;padding:var(--s4) var(--s3) var(--s5);
   background:radial-gradient(75% 65% at 0 0,color-mix(in oklab,var(--w0) 40%,transparent),transparent 72%),radial-gradient(75% 65% at 100% 0,color-mix(in oklab,var(--w1) 40%,transparent),transparent 72%),
   radial-gradient(75% 65% at 0 100%,color-mix(in oklab,var(--w2) 36%,transparent),transparent 72%),radial-gradient(75% 65% at 100% 100%,color-mix(in oklab,var(--w3) 36%,transparent),transparent 72%),var(--wash)}
 :root[data-theme="night"] .bx-box{background:radial-gradient(75% 65% at 0 0,color-mix(in oklab,var(--w0) 30%,transparent),transparent 72%),radial-gradient(75% 65% at 100% 0,color-mix(in oklab,var(--w1) 30%,transparent),transparent 72%),
@@ -377,7 +377,7 @@
 :root[data-theme="night"] .bx-arr{border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
 .bx-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1) var(--s1)}
 @container (max-width:560.98px){.bx-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
-.bx-t{position:relative;display:flex;flex-direction:column;align-items:center;gap:var(--s1);min-width:0;padding:var(--s2) var(--s1) var(--s2);border:0;border-radius:10px;background:none;color:var(--ink);cursor:pointer;transition:transform .15s,background-color .15s,box-shadow .15s}
+.bx-t{position:relative;display:flex;flex-direction:column;align-items:center;gap:var(--s1);min-width:0;padding:var(--s2) var(--s1) var(--s2);border:0;border-radius:var(--r-l);background:none;color:var(--ink);cursor:pointer;transition:transform .15s,background-color .15s,box-shadow .15s}
 .bx-t .np-mon{--iw:min(96px,100%);width:100%}
 .bx-t>b{display:block;max-width:100%;font:600 var(--t13)/1.25 var(--b);font-stretch:88%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 @container (max-width:420.98px){.bx-t>b{font-stretch:75%}.bx-t{padding-inline:0}.bx-grid{gap:var(--s1) 0}}
@@ -421,12 +421,12 @@
 .bx-sync{margin:var(--s4) 0 var(--s3)}
 @media (min-width:600px) and (max-width:899.98px){.bx-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--s10);align-items:start}.bx-tools>.bx-links{grid-row:1/4}}
 /* empty box: today's underdog keeps it company */
-.bx-empty{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s6);align-items:center;padding:var(--s8);border-radius:18px;background:var(--wash)}
+.bx-empty{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s6);align-items:center;padding:var(--s8);border-radius:var(--r-xl);background:var(--wash)}
 .bx-empty .np-mon{--iw:200px}.bx-empty h2{font-size:var(--t28);margin:0 0 var(--s2)}.bx-empty p{margin:0 0 var(--s4);line-height:1.5}.bx-empty .row{display:flex;flex-wrap:wrap;gap:var(--s3)}
 @media (max-width:599.98px){.bx-empty{grid-template-columns:minmax(0,1fr);text-align:left}.bx-empty .np-mon{--iw:160px}}
 /* swap sheet */
 .bx-swap{padding:var(--s8)}.bx-swap h2{font-size:var(--t28);margin:var(--s2) 0 var(--s4)}.bx-swap ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);list-style:none;margin:0;padding:0}
-.bx-swapb{width:100%;padding:var(--s2);border:0;border-radius:10px;background:none;color:var(--ink);cursor:pointer}.bx-swapb:hover{background:var(--wash)}
+.bx-swapb{width:100%;padding:var(--s2);border:0;border-radius:var(--r-l);background:none;color:var(--ink);cursor:pointer}.bx-swapb:hover{background:var(--wash)}
 @media (max-width:479.98px){.bx-swap{padding:var(--s6) var(--s4)}}
 /* phones: the box runs nearly edge to edge like the phone concept, names a touch tighter; the narrowest phones (320) show 3 across,
    ten even rows, so the longest names (Meowscarada) never cut */
@@ -445,7 +445,7 @@
 .yg2{padding:var(--s8)}.yg2 h2{font-size:var(--t28);margin:var(--s2) 0 var(--s4)}
 .yg2-h{margin:var(--s5) 0 var(--s2);font:600 var(--t15)/1.5 var(--b)}.yg2-h small{margin-left:var(--s2);font-size:var(--t13);color:var(--ink-3);font-weight:500}
 .yg2-leads{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1)}
-.yg2-l{padding:var(--s2) 0;border:0;border-radius:10px;background:none;color:var(--ink);cursor:pointer}.yg2-l[aria-pressed="true"]{background:var(--wash);box-shadow:inset 0 0 0 2px var(--plot)}
+.yg2-l{padding:var(--s2) 0;border:0;border-radius:var(--r-l);background:none;color:var(--ink);cursor:pointer}.yg2-l[aria-pressed="true"]{background:var(--wash);box-shadow:inset 0 0 0 2px var(--plot)}
 .yg2-l .np-mon b{font-size:var(--t13);line-height:1.25}
 .yg2-opp{display:flex;flex-wrap:wrap;gap:var(--s2)}.yg2-opp:empty{display:none}
 .yg2-o{display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--tap);padding:0 var(--s1) 0 var(--s2);background:var(--wash);font-size:var(--t15);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
@@ -457,7 +457,7 @@
 .cx2{padding:var(--s8) var(--gut) var(--s16)}.cx2-top h1{font-size:var(--d64);margin:var(--s2) 0 var(--s6)}@media (max-width:599.98px){.cx2-top h1{font-size:var(--t34)}}
 .cx2-heads{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:var(--s4) var(--s6);align-items:stretch}
 .cx2-swap{align-self:center}
-.cx2-head{min-width:0;padding:var(--s5);border-radius:10px;background:var(--wash)}
+.cx2-head{min-width:0;padding:var(--s5);border-radius:var(--r-l);background:var(--wash)}
 .cx2-head.empty{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2);width:100%;min-height:180px;justify-content:center;border:1.5px dashed color-mix(in srgb,var(--ink) 30%,transparent);background:none;color:var(--ink);cursor:pointer;text-align:left}
 .cx2-head.empty .nm{font:900 var(--t24)/1.1 var(--u);font-style:italic}.cx2-head.empty:hover{background:var(--wash)}
 /* scan S31 A (Sim, Nov 20): an empty Team B holds the 3 newest event winners, one tap compares; phones show the newest only */
@@ -472,7 +472,7 @@
 .cx2-b{display:inline-flex;align-items:center;justify-content:center;flex:none;width:36px;height:36px;font:900 var(--t20)/1 var(--u);font-style:italic;color:var(--on-plate);transform:skewX(-12deg)}
 .cx2-b.a,.cx2-b.b{background:var(--ink);color:var(--bg)} /* Sim, Nov 13 (Look Q2 B): both teams in plain ink, told apart by their letters; a team is neither good nor selected */
 .cx2-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2);list-style:none;margin:var(--s4) 0 0;padding:0}
-.cx2-six .np-mon{--iw:min(64px,100%)}.cx2-six .np-mon b{font-size:var(--t13);line-height:1.25;font-stretch:85%}.cx2-e{aspect-ratio:1;border-radius:10px;border:1.5px dashed var(--rule)}
+.cx2-six .np-mon{--iw:min(64px,100%)}.cx2-six .np-mon b{font-size:var(--t13);line-height:1.25;font-stretch:85%}.cx2-e{aspect-ratio:1;border-radius:var(--r-l);border:1.5px dashed var(--rule)}
 @media (max-width:899.98px){.cx2-heads{grid-template-columns:minmax(0,1fr)}.cx2-swap{justify-self:center}}
 @media (max-width:479.98px){.cx2-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s2)}}
 .cx2-hint,.cx2-busy{margin-top:var(--s6)}
@@ -505,7 +505,7 @@
 /* Preview only: a page still to be rebuilt, beside its approved mock-up */
 .cm2{display:grid;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s10);align-items:center;min-height:calc(100svh - 240px);padding:var(--s16) var(--gut)}
 .cm2 h1{font-size:var(--d64);margin:var(--s3) 0}.cm2 p{max-width:52ch;line-height:1.5}.cm2 .row{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s6)}
-.cm2-shot{display:block;border-radius:10px;overflow:hidden;box-shadow:0 1px 2px rgba(var(--shade),.12),0 12px 28px -12px rgba(var(--shade),.4)}.cm2-shot img{display:block;width:100%;height:auto}
+.cm2-shot{display:block;border-radius:var(--r-l);overflow:hidden;box-shadow:0 1px 2px rgba(var(--shade),.12),0 12px 28px -12px rgba(var(--shade),.4)}.cm2-shot img{display:block;width:100%;height:auto}
 @media (max-width:899.98px){.cm2{grid-template-columns:minmax(0,1fr);gap:var(--s8);padding-block:var(--s10)}.cm2 h1{font-size:var(--t34)}}
 .cm2-all{display:inline-flex;align-items:center;min-height:var(--tap)}
 .cm2 .tm-sub{margin:0}.cm2 .cm2-what{margin-top:var(--s3);color:var(--ink)}
@@ -1329,7 +1329,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    (calc.js V2.dcTipShow), the tiles stay clean. Touch screens (no hover): a short name under each tile, one line (a long one ends in an
    ellipsis), so every row is even; phones go to four across (as tablets) so the names fit: six across left 37-48px for up to 62px names. */
 .dc2-kt .nm{display:none}.dc2-tip{display:none}
-@media (hover:hover) and (pointer:fine){.dc2-tip.show{position:fixed;z-index:60;display:block;max-width:min(360px,calc(100vw - var(--s4)));padding:var(--s1) var(--s2);border-radius:4px;background:var(--ink);color:var(--bg);font:600 var(--t13)/1.5 var(--b);pointer-events:none}}
+@media (hover:hover) and (pointer:fine){.dc2-tip.show{position:fixed;z-index:60;display:block;max-width:min(360px,calc(100vw - var(--s4)));padding:var(--s1) var(--s2);border-radius:var(--r-s);background:var(--ink);color:var(--bg);font:600 var(--t13)/1.5 var(--b);pointer-events:none}}
 @media (hover:none){.dc2-kt .nm{display:block;max-width:100%;margin-top:2px;overflow:hidden;font:600 var(--t13)/1.3 var(--b);font-stretch:87.5%;white-space:nowrap;text-overflow:ellipsis;color:var(--ink)}}
 @media (hover:none) and (max-width:699.98px){.dc2-kb .dc2-kts{grid-template-columns:repeat(4,minmax(0,1fr))}}
 @media (hover:none) and (min-width:1024px){.dc2-kt .nm{font-stretch:75%}}
