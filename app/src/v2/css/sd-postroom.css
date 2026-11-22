@@ -119,3 +119,35 @@
 /* Sim Q56 A (Nov 19, 10:42 PM): at 700-819 a sheet of 9+ stamps sits 5 across and a long name ("Incineroar") ran past its stamp; one size
    smaller there with a little less side padding (still the slanted logo font) */
 @media (min-width:700px) and (max-width:819.98px){.pr-st{padding-inline:var(--s3)}.pr-nm{font-size:var(--t13)}}
+/* ---------- Mystery Gifts (#gifts) on the kit (Nov 22, Sim approved "as drawn (fix the code wrap)", 12:27 PM; mock
+   docs/rebuild/mocks/reskin-nov22/gifts-mock.inject.js). Page classes gr2-*; the parcel's kraft and white label stay the same by day and
+   night, as drawn (tokens --gr-*). At the end of this file so they follow the Post Room's pr-* rules (Home's band keeps those). ---------- */
+.gr2 .k-head .k-kicker{display:table;width:max-content}
+.gr2-crumb{display:inline-flex;align-items:center;min-height:44px;font-size:var(--t15);font-weight:700;color:var(--k-plot-text);text-decoration:none}
+.gr2-top{display:grid;gap:var(--s2)}.gr2 .k-kicker{margin-top:var(--s2)}.gr2 .k-facts{margin-top:var(--s3)}.gr2 .k-step:first-child .k-sec{margin-top:var(--s10)}.gr2 .gr2-parcels{margin-top:28px}
+.gr2 .k-facts b{font-size:var(--t34)}.gr2 .k-facts li:first-child b{color:var(--k-nasty-text)}
+.gr2-parcels{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:var(--s6);align-items:start}
+.gr2 .gr2-box{position:relative;padding:28px var(--s4) var(--s4);background:linear-gradient(90deg,transparent 46%,var(--gr-tape) 46% 54%,transparent 54%) top/100% 28px no-repeat,var(--gr-kraft)}
+.gr2-lab{position:relative;display:grid;gap:var(--s2);padding:var(--s4);background:var(--gr-label);color:var(--gr-ink);box-shadow:0 2px 6px var(--gr-shadow)}
+.gr2-k{margin:0;font-size:var(--t13);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gr-stamp)}
+.gr2-lab h3{margin:0;font-size:var(--t24);line-height:1.15;color:var(--gr-ink)}
+.gr2-when{margin:0;font-size:var(--t13);line-height:1.4;color:var(--gr-ink2)}
+.gr2-code{container-type:inline-size;padding:var(--s2) var(--s3);border:2px dashed var(--gr-ink)}
+.gr2-code .pr-code{display:block;white-space:nowrap;font-family:var(--u);font-style:italic;font-weight:800;font-synthesis:style;line-height:1.1;letter-spacing:.02em;--d-grcode:min(var(--t28),calc(100cqw / var(--prw)));font-size:var(--d-grcode);color:var(--gr-ink)}
+.gr2-code .pr-code *{font:inherit}.gr2-code .pr-d{color:var(--gr-link)}
+.gr2-lab .k-go{margin:var(--s1) 0 0;justify-self:start;font-size:var(--t22);padding:var(--s3) var(--s5)}
+.gr2-cp2{justify-self:start;min-height:44px;padding:0 var(--s4);border:3px solid var(--gr-edge);background:var(--gr-label);color:var(--gr-link);font-family:var(--u);font-size:var(--t17);font-weight:800;font-style:italic;line-height:1;font-synthesis:style;transform:skewX(-8deg);cursor:pointer}
+.gr2-none{margin:0;font-size:var(--t15);line-height:1.5;color:var(--gr-ink)}
+.gr2-src{margin:0;font-size:var(--t13);line-height:1.4;color:var(--gr-ink2)}.gr2-src a{color:var(--gr-link)}
+.gr2-st{position:absolute;right:var(--s3);top:-20px;z-index:1;display:grid;justify-items:center;min-width:88px;padding:var(--s1) var(--s2);border:3px solid var(--gr-stamp);background:var(--gr-label);color:var(--gr-stamp);font-family:var(--u);font-size:var(--t13);font-weight:800;font-style:italic;line-height:1.1;font-synthesis:style;text-transform:uppercase;transform:rotate(4deg)}
+.gr2-st b{font-size:var(--t26);line-height:1}
+.gr2-how{list-style:none;margin:0;padding:0;counter-reset:h}
+.gr2-how li{display:grid;grid-template-columns:40px minmax(0,1fr);align-items:center;gap:var(--s4);min-height:52px;border-top:1px solid var(--k-rule);font-size:var(--t17);font-weight:600;color:var(--k-ink)}
+.gr2-how li::before{counter-increment:h;content:counter(h);display:grid;place-items:center;width:32px;height:28px;background:var(--k-plot);color:var(--k-on-plot);font-family:var(--u);font-size:var(--t15);font-weight:800;font-style:italic;line-height:1;font-synthesis:style;transform:skewX(-10deg)}
+.gr2-fine{margin:var(--s3) 0 0;font-size:var(--t13);font-weight:600;line-height:1.5;color:var(--k-ink2)}
+.gr2 .pr-sheet{margin-top:var(--s4)}
+@media (max-width:1099.98px){.gr2-parcels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:699.98px){.gr2 .k-facts b{font-size:var(--t22)}.gr2-parcels{grid-template-columns:minmax(0,1fr);gap:var(--s8)}.gr2 .gr2-box{padding:var(--s6) var(--s3) var(--s3)}.gr2-lab{padding:var(--s3)}.gr2-lab h3{font-size:var(--t20)}.gr2-how li{font-size:var(--t15)}}
+.gr2-src a{position:relative;padding-top:calc(var(--s6) + var(--s1))}.gr2-src a~a{padding:0 0 calc(var(--s6) + var(--s1))} /* C8: each source link's tap area reaches 44px tall, as the old label's */
+@media (min-width:700px) and (max-width:899.98px){.gr2 .pr-sheet{--c:var(--pc4,4)}} /* the kit's step is narrower than the old full-width sheet: four stamps a row here keep long names ("Incineroar") inside (v2-q43) */
+@media (max-width:359.98px){.gr2 .k-facts b{font-size:var(--t17)}} /* the kit's own under-360 size again, so "Today" fits beside the other facts at 320 (NPR-5c) */

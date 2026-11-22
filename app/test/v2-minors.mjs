@@ -100,9 +100,9 @@ const MQ = async () => {
   // MQ-G1 (Sim, Nov 18: "just mystery gifts"): #gifts shows only Serial Code and Event Gift entries, from the real post.js; the tabs' counts match the stamps
   { const q = await open('#gifts'); await q.click('#main [data-prmore]', {timeout: 3000}).catch(() => {}); await q.waitForTimeout(400);
     const r = await q.evaluate(() => window.__ev(`(() => { const kinds = [...document.querySelectorAll('#main .pr-sw')].map(li => (li.className.match(/pr-(\\w+)$/) || [])[1]);
-      const lab = [...document.querySelectorAll('#main .pr-parcel .pr-meta')].map(m => m.textContent);
+      const lab = [...document.querySelectorAll('#main .pr-parcel .gr2-lab')].map(m => m.textContent); /* Nov 22: Mystery Gifts on the kit, the parcel's white label */
       const raw = (POST.gifts || []).map(g => g.how), shown = [...V2.postNow().live, ...V2.postNow().past].map(g => V2.prG(g).how);
-      const tabs = Object.fromEntries([...document.querySelectorAll('#main [data-prf]')].map(t => [t.dataset.prf, +t.querySelector('small').textContent]));
+      const tabs = Object.fromEntries([...document.querySelectorAll('#main [data-prf]')].map(t => [t.dataset.prf, +(t.textContent.match(/(\\d+)\\s*$/) || [])[1]])); /* kit sentence words: 'all · 7' */
       const P = V2.postNow().past.map(V2.prG);
       return {kinds: [...new Set(kinds)].join(','), labels: lab.filter(t => /Battle Pass|Competition|Livestream|Early download/i.test(t)).length, raw: [...new Set(raw)].join(','), shown: [...new Set(shown)].join(','),
         tabs, want: {all: P.length, mon: P.filter(g => g.isMon).length, item: P.filter(g => !g.isMon).length}, stamps: kinds.length}; })()`));
@@ -120,7 +120,11 @@ const MQ = async () => {
     ok(/Named exception \(Sim, Nov 18, morning questions 1a[^\n]*\n[^\n]*\.pr-parcel/.test(ds), 'MQ-1a: design-system.md names the Post Room parcel as the exception to "no boxes in boxes" (Sim, Nov 18, 1a)'); }
   // MQ-1b (answer 1b): every label's middle column is headed "Sent", the date right under it, and how it is given on the line below;
   // on #gifts and on Home's compact parcel (they share V2.prLabel)
-  for (const [hash, sel] of [['#gifts', '#main .pr-counter .pr-meta'], ['#home', '.sdp .pr-meta']]) { const q = await open(hash);
+  /* Nov 22: Mystery Gifts on the kit (Sim approved the mock): its label says it in one line, "Sent <date> · collect by <date>", with how it is
+     given in the kicker ("Mystery Gift · Serial code"); Home's compact parcel keeps the three columns */
+  { const q = await open('#gifts'); const r = await q.evaluate(() => [...document.querySelectorAll('#main .gr2-lab')].map(l => (l.querySelector('.gr2-k') || {}).textContent + ' / ' + (l.querySelector('.gr2-when') || {}).textContent));
+    ok(r.length > 0 && r.every(x => /^Mystery Gift · (Serial code|Event gift) \/ Sent ([A-Z][a-z]{2} \d{1,2}(, \d{4})?|date not confirmed) · collect by /i.test(x)), `MQ-1b #gifts (kit): each label reads how it is given, then "Sent <date> · collect by" (${r.join(' | ')})`); await q.close(); }
+  for (const [hash, sel] of [['#home', '.sdp .pr-meta']]) { const q = await open(hash);
     const r = await q.evaluate(sel => [...document.querySelectorAll(sel)].map(m => { const d = m.children[1]; return d ? [...d.children].map(c => c.tagName + ':' + c.textContent.trim()).join(' / ') : 'none'; }), sel);
     ok(r.length > 0 && r.every(x => /^DT:Sent \/ DD:([A-Z][a-z]{2} \d{1,2}(, \d{4})?|Date not confirmed) \/ DD:(Serial code|Event gift)$/.test(x)), `MQ-1b ${hash}: the label's middle column reads "Sent", the date, then how it is given (${r.join(' | ')})`);
     await q.close(); }
@@ -147,7 +151,7 @@ const MQ = async () => {
   // site. (Nothing to change on the built pages: this guards it. It can fail: MQ-9e control adds such a link and must be caught.)
   { const q = await open('#gifts'); const LOGIN = /(^|\.)(app\.pokemonchampions\.jp|rewards\.pokemon\.com|club\.pokemon\.com|accounts\.nintendo\.com|join\.pokemon\.com)$/i;
     const scan = () => q.evaluate(() => window.__ev(`(() => { const d = document.createElement('div'); d.innerHTML = V2.pages.gifts.draw() + V2.pages.news.draw() + V2.sdPost();
-      return {steps: [...d.querySelectorAll('.pr-howto li')].map(li => li.textContent).join(' | '), hosts: [...d.querySelectorAll('a[href]')].map(a => { try { return new URL(a.getAttribute('href'), 'https://x.invalid/').hostname; } catch (e) { return ''; } }).filter(Boolean)}; })()`));
+      return {steps: [...d.querySelectorAll('.pr-howto li, .gr2-how li')] /* Nov 22: Mystery Gifts on the kit, step 2 How to collect */.map(li => li.textContent).join(' | '), hosts: [...d.querySelectorAll('a[href]')].map(a => { try { return new URL(a.getAttribute('href'), 'https://x.invalid/').hostname; } catch (e) { return ''; } }).filter(Boolean)}; })()`));
     const r = await scan(), bad = r.hosts.filter(h => LOGIN.test(h));
     ok(/Submenu and choose Mystery Gift/.test(r.steps) && /Mailbox/.test(r.steps) && !bad.length, `MQ-9e: #gifts gives the in-game steps and #gifts, #news and Home's band link no login or code redemption site (${r.hosts.length} links; ${bad.join(',') || 'none bad'})`);
     await q.evaluate(() => window.__ev(`POST.gifts.find(g => g.code).src.unshift('https://serial-web-front.app.pokemonchampions.jp/?lng=10')`));
@@ -158,16 +162,17 @@ const MQ = async () => {
     ok(/Top Ratings/.test(r.h) && /Next Events/.test(r.h) && /Top Ratings/.test(r.labels) && /Next Events/.test(r.labels) && !r.old, `MQ-2c: the Back Page says "Top Ratings" and "Next Events", never "The Standings" or "Fixtures" (${JSON.stringify(r)})`); await q.close(); }
   // MQ-1i (answer 1i): the new Post Room words as built, and "Live right now" (a small Unbounded stamp on its plate) on the font check's allowed list
   { const un = fs.readFileSync(new URL('./v2-unbounded.mjs', import.meta.url), 'utf8'), q = await open('#gifts');
-    const t = await q.evaluate(() => { const pk = document.querySelector('#main .pr-stats .ev-pk'), cs = pk && getComputedStyle(pk); return {pk: pk && pk.textContent, font: cs && cs.fontFamily.split(',')[0] + ' ' + cs.fontSize,
-      words: ['Special delivery.', 'No postage due.', 'Waiting at the Counter', 'The Stamp Sheet', 'How to collect', 'to claim', 'gifts so far', 'Collect by'].filter(w => !document.querySelector('#main').textContent.includes(w))}; });
-    ok(/'\.pr-stats \.ev-pk'/.test(un) && t.pk === 'Live right now' && !t.words.length, `MQ-1i: the Post Room's words are as built and "Live right now" (${t.font}) is on v2-unbounded's allowed list (${JSON.stringify(t)})`); await q.close(); }
+    /* Nov 22 (kit, Sim approved the mock): "live right now" is in the first fact ("to claim · live right now"), no stamp plate; the words in the kit's sentence case */
+    const t = await q.evaluate(() => { const pk = document.querySelector('#main .k-facts'), cs = pk && getComputedStyle(pk.querySelector('b')); return {pk: pk && pk.textContent, font: cs && cs.fontFamily.split(',')[0] + ' ' + cs.fontSize,
+      words: ['Special delivery.', 'No postage due.', 'Waiting at the counter', 'The stamp sheet', 'How to collect', 'to claim', 'gifts so far', 'collect by'].filter(w => !document.querySelector('#main').textContent.toLowerCase().includes(w.toLowerCase()))}; });
+    ok(/'\.pr-stats \.ev-pk'/.test(un) && /live right now/i.test(t.pk || '') && !t.words.length, `MQ-1i: the Post Room's words are as built and "Live right now" (${t.font}) is on v2-unbounded's allowed list (${JSON.stringify(t)})`); await q.close(); }
   // MQ-1f (answer 1f): Search finds both pages by name and by the words players type; the top bar keeps its five places
   for (const W of [390, 1440]) { const q = await open('#home', W); const hits = {};
     for (const w of ['gifts', 'mystery', 'codes', 'news', 'dispatch']) { await q.evaluate(() => V2.openSearch()); await q.waitForTimeout(300); await q.fill('[data-v2q]', w); await q.waitForTimeout(250);
       hits[w] = await q.evaluate(() => [...document.querySelectorAll('.np-sheet .np-hit')].map(h => (h.getAttribute('href') || '') + ' ' + ((h.querySelector('b') || {}).textContent || '')).join(' | '));
       await q.keyboard.press('Escape'); await q.waitForTimeout(250); }
     await q.evaluate(() => V2.openSearch()); await q.waitForTimeout(300); await q.fill('[data-v2q]', 'mystery'); await q.waitForTimeout(250); await q.locator('.np-sheet a.np-hit[href="#gifts"]').first().click().catch(() => {}); await q.waitForTimeout(1200);
-    const went = await q.evaluate(() => [location.hash, document.title, !!document.querySelector('#main .pr-counter')]);
+    const went = await q.evaluate(() => [location.hash, document.title, !!document.querySelector('#main .gr2-parcels, #main .pr-counter')]); /* Nov 22: the kit page's parcels */
     const bar = await q.evaluate(() => [V2.places.length, [...document.querySelectorAll('.np-head .np-nav a, .np-bar a')].filter(a => a.getClientRects().length).map(a => a.getAttribute('href')).join(',')]);
     const g = /#gifts Mystery Gifts/, n = /#news Champions News/;
     ok(g.test(hits.gifts) && g.test(hits.mystery) && g.test(hits.codes) && n.test(hits.news) && n.test(hits.dispatch) && went.join() === '#gifts,Mystery Gifts · NastyPlot,true'
@@ -844,7 +849,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       return `${hid.length} of ${rows.length} rows covered`; }); }
   ok(/^0 of [1-9]/.test(r), `Build: the 'Build around' name list sits above the sticky tab bar at 390 (${r})`); await q.close(); }
 // qcheck triage (Nov 18, defects 3-4): the Mystery Gifts 'Home' back link and My Team's Your Games '?' keep a 44px tap at every phone width
-{ const tp = []; for (const [w, r, sel] of [[390, 'gifts', '#main .np-back'], [320, 'team', '#main .tm-yg-n .sg2-tip'], [390, 'team', '#main .tm-yg-n .sg2-tip']]) { const q = await b.newPage({viewport: {width: w, height: 844}}); await q.addInitScript(() => { window.__PL_TEST = 1; });
+{ const tp = []; for (const [w, r, sel] of [[390, 'gifts', '#main .gr2-crumb'] /* Nov 22: Mystery Gifts on the kit, its ‹ Home link */, [320, 'team', '#main .tm-yg-n .sg2-tip'], [390, 'team', '#main .tm-yg-n .sg2-tip']]) { const q = await b.newPage({viewport: {width: w, height: 844}}); await q.addInitScript(() => { window.__PL_TEST = 1; });
     await q.goto('file://' + PAGE + '#' + r); await q.waitForTimeout(2000); tp.push(w + ' ' + r + ': ' + await q.evaluate(sel => { const e = document.querySelector(sel); if (!e) return 'none'; const R = e.getBoundingClientRect(); return Math.round(R.width) + 'x' + Math.round(R.height); }, sel)); await q.close(); }
   ok(tp.every(t => { const m = t.match(/(\d+)x(\d+)$/); return m && +m[1] >= 44 && +m[2] >= 44; }), `qcheck triage (Nov 18): Gifts' Home link and My Team's Your Games '?' are at least 44x44 (${tp.join(' | ')})`); }
 { const sp = []; for (const [w, r] of [[390, 'build'], [390, 'speed'], [1280, 'calc'], [1280, 'battle'], [390, 'team']]) { await p.setViewportSize({width: w, height: 900}); await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1800);
@@ -1016,12 +1021,12 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
   const draw = () => q.evaluate(([fx, r]) => window.__ev(`(() => { POST = ${fx}; V2.prUi = {f: 'all', all: false}; ${r} })()`), [FX, redraw]);
   await draw(); await q.waitForTimeout(500);
   const pr = await q.evaluate(() => { const m = document.querySelector('#main'), st = [...m.querySelectorAll('.pr-sw')];
-    return {parcels: m.querySelectorAll('.pr-parcel').length, stamps: st.length, more: ((m.querySelector('[data-prmore]') || {}).textContent || '').trim(), rub: [...m.querySelectorAll('.pr-rub')].map(r => (r.className.match(/pr-(soon|plenty)/) || ['', '?'])[1] + ':' + r.textContent.trim()).join(' | '),
-      code: (m.querySelector('.pr-parcel .pr-cv') || {}).innerHTML || '', spell: ((m.querySelector('.pr-spell') || {}).textContent || ''), nocode: ((m.querySelector('.pr-none') || {}).textContent || ''), codes: m.querySelectorAll('.pr-parcel .pr-cv').length,
+    return {parcels: m.querySelectorAll('.pr-parcel').length, stamps: st.length, more: ((m.querySelector('[data-prmore]') || {}).textContent || '').trim(), rub: [...m.querySelectorAll('.gr2-st')].map(r => r.textContent.replace(/\s+/g, ' ').trim()).join(' | '), /* Nov 22 kit: the label's red days-left stamp (the mock has one colour) */
+      code: (m.querySelector('.pr-parcel .pr-cv') || {}).innerHTML || '', spell: ((m.querySelector('.pr-spell') || {}).textContent || ''), nocode: ((m.querySelector('.gr2-none') || {}).textContent || ''), codes: m.querySelectorAll('.pr-parcel .pr-cv').length,
       monBtn: st.filter(x => x.querySelector('button.pr-st[data-v2mon],button.pr-st[data-prset]')).length, itemDiv: st.filter(x => x.querySelector('div.pr-st')).length, cols: new Set(st.map(x => Math.round(x.getBoundingClientRect().left))).size}; });
   ok(pr.parcels === 2 && pr.stamps === 12 && /^Show All 14 Stamps/.test(pr.more), `Post Room: 2 live gifts make 2 parcels, 14 past gifts show 12 stamps and "Show All 14 Stamps" (${pr.parcels} parcels, ${pr.stamps} stamps, "${pr.more}")`);
   ok(pr.cols === 6 && pr.monBtn === 6 && pr.itemDiv === 6, `Post Room: six stamps across at 1280; Pokémon stamps are buttons, item stamps are not (${pr.cols} across, ${pr.monBtn} buttons, ${pr.itemDiv} items)`);
-  ok(pr.rub === 'soon:5 days left | plenty:44 days left', `Post Room: days left count from the viewer's local day, red at 7 or fewer, blue above (Nov 17 in New York: ${pr.rub})`);
+  ok(pr.rub === '5 days left | 44 days left', `Post Room: days left count from the viewer's local day (Nov 17 in New York: ${pr.rub}); the kit's stamp is red at any count, as drawn (was red at 7 or fewer, blue above)`);
   ok(pr.code === 'AB<b class="pr-d">1</b>CD<b class="pr-d">0</b>E' && pr.spell === 'A, B, 1, C, D, 0, E', `Post Room: in the code only digits are blue, and screen readers get it spelled (${pr.code} / ${pr.spell})`);
   ok(pr.codes === 1 && /^No code: it waits in your in-game mailbox/.test(pr.nocode), `Post Room: a gift with no code shows no code area and says why (${pr.codes} code areas; "${pr.nocode}")`);
   await q.evaluate(() => document.querySelectorAll('.np-toast').forEach(t => t.remove())); if (await q.$('[data-prcopy]')) await q.click('[data-prcopy]'); await q.waitForTimeout(500);
@@ -1041,11 +1046,11 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     const seven = []; for (const [w, want] of [[390, '3+3'], [820, '4+3'], [1440, '7'], [2560, '7']]) { const got = await rowsAt(w); if (got !== want) seven.push(`${w}: ${got} (want ${want})`); }
     ok(!seven.length, `Post Room: 7 stamps in even rows (one row of 7 on desktop; on a phone 3+3 until Show All, Q43), no blank spaces, none wider than 220px (${seven.join(' | ') || 'all as planned'})`); }
   await q.evaluate(() => { localStorage.setItem('np2.theme', 'night'); }); await q.reload(); await q.waitForTimeout(2500); await draw(); await q.waitForTimeout(400);
-  const dim = await q.evaluate(() => { const e = document.querySelector('#main .pr-label'); if (!e) return {theme: document.documentElement.dataset.theme, label: 'none'}; const c = getComputedStyle(e).backgroundColor.match(/\d+/g).map(Number), pg = getComputedStyle(document.body).backgroundColor.match(/\d+/g).map(Number), L = a => (a[0] * .3 + a[1] * .59 + a[2] * .11) / 255; return {label: L(c).toFixed(2), page: L(pg).toFixed(2), theme: document.documentElement.dataset.theme}; });
+  const dim = await q.evaluate(() => { const e = document.querySelector('#main .gr2-lab'); if (!e) return {theme: document.documentElement.dataset.theme, label: 'none'}; const c = getComputedStyle(e).backgroundColor.match(/\d+/g).map(Number), pg = getComputedStyle(document.body).backgroundColor.match(/\d+/g).map(Number), L = a => (a[0] * .3 + a[1] * .59 + a[2] * .11) / 255; return {label: L(c).toFixed(2), page: L(pg).toFixed(2), theme: document.documentElement.dataset.theme}; });
   ok(dim.theme === 'night' && +dim.label > .75 && +dim.page < .2, `Post Room "Dim Paper": at night the page is dark and the label stays paper (lightness label ${dim.label}, page ${dim.page})`);
   await q.evaluate(() => window.__ev(`(() => { POST = {checked: null, news: [], gifts: [{id: 'old', name: 'VP', amount: 10, how: 'Serial Code', start: '2026-01-01T00:00:00Z', end: '2026-02-01T00:00:00Z'}]}; V2.redraw(); })()`)); await q.waitForTimeout(400);
-  const em = await q.evaluate(() => { const m = document.querySelector('#main'); return {shelf: ((m.querySelector('.pr-shelf') || {}).textContent || '').replace(/\s+/g, ' ').trim(), stamps: m.querySelectorAll('.pr-sw').length, plate: ((m.querySelector('.pr-stats .ev-pk') || {}).textContent || '')}; });
-  ok(/Nothing at the counter right now\.\s*The next gift will wait here\./.test(em.shelf) && em.stamps === 1 && em.plate === 'Nothing live right now', `Post Room empty state: no live gift shows the empty shelf and its line, and the stamp sheet still shows (${JSON.stringify(em)})`);
+  const em = await q.evaluate(() => { const m = document.querySelector('#main'); return {shelf: ((m.querySelector('.pr-shelf') || {}).textContent || '').replace(/\s+/g, ' ').trim(), stamps: m.querySelectorAll('.pr-sw').length, plate: ((m.querySelector('.k-facts') || {}).textContent || '')}; }); /* Nov 22 kit: the first fact says it */
+  ok(/Nothing at the counter right now\.\s*The next gift will wait here\./.test(em.shelf) && em.stamps === 1 && /nothing live right now/i.test(em.plate), `Post Room empty state: no live gift shows the empty shelf and its line, and the stamp sheet still shows (${JSON.stringify(em)})`);
   await q.close(); }
 // Stampede tools band (Nov 18; docs/rebuild/stampede/BRIEF.md section 3): live data, every tool reachable, every row full, nothing spills
 { const q = await b.newPage({viewport: {width: 1440, height: 900}}); await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
@@ -1539,10 +1544,10 @@ if (part('main2')) {
   const read = (q, g) => ev(q, `(() => { const keep = POST, g = ${JSON.stringify(g)}; try { POST = {checked: null, gifts: [g], news: keep.news, series: keep.series};
       const el = h => { const d = document.createElement('div'); d.innerHTML = h; return d; }, tx = (d, s) => ((d.querySelector(s) || {}).textContent || '').replace(/\\s+/g, ' ').trim();
       const pr = el(V2.pages.gifts.draw()), dp = el(V2.dpFront(V2.postNow())), sl = el(V2.sdpSlip(V2.prG(g))), hm = el(V2.sdPost()), cpm = tx(dp, '.dp-cpm');
-      const by = [...pr.querySelectorAll('.pr-counter .pr-meta div')].find(x => /Collect by/.test(x.textContent));
-      return {rub: tx(pr, '.pr-counter .pr-rub'), hmRub: tx(hm, '.sdp-gifts .pr-rub'), cp: tx(dp, '.dp-cpm b'), mast: tx(dp, '.dp-pk span'), slip: tx(sl, '.sdp-sw i'),
-        by: by ? by.querySelector('dd').childNodes[0].textContent.trim() : '', range: (cpm.match(/[A-Z][a-z]{2} \\d+ – [A-Z][a-z]{2} \\d+/) || [''])[0], how: (cpm.match(/Serial [Cc]ode/) || [''])[0],
-        copy: (dp.querySelector('.dp-cpn [data-prcopy]') || {dataset: {}}).dataset.prcopy, nums: [...pr.querySelectorAll('.pr-nums p')].map(p => p.querySelector('b').textContent + '/' + p.querySelector('span').textContent)}; } finally { POST = keep; } })()`);
+      const by = (tx(pr, '.gr2-when').match(/collect by ([A-Z][a-z]{2} \\d+(, \\d{4})?)/) || [])[1] || ''; /* Nov 22: Mystery Gifts on the kit, the label's one line and its days-left stamp */
+      return {rub: tx(pr, '.gr2-st'), hmRub: tx(hm, '.sdp-gifts .pr-rub'), cp: tx(dp, '.dp-cpm b'), mast: tx(dp, '.dp-pk span'), slip: tx(sl, '.sdp-sw i'),
+        by, range: (cpm.match(/[A-Z][a-z]{2} \\d+ – [A-Z][a-z]{2} \\d+/) || [''])[0], how: (cpm.match(/Serial [Cc]ode/) || [''])[0],
+        copy: (dp.querySelector('.dp-cpn [data-prcopy]') || {dataset: {}}).dataset.prcopy, nums: [...pr.querySelectorAll('.k-facts li')].map(p => p.querySelector('b').textContent + '/' + p.querySelector('span').textContent)}; } finally { POST = keep; } })()`);
   const days = s => /last day|ends today/i.test(s) ? 0 : /tomorrow/i.test(s) ? 1 : /-?\d+/.test(s) ? +s.match(/-?\d+/)[0] : null;
   const TZ = {Tokyo: 'Asia/Tokyo', LA: 'America/Los_Angeles', UTC: 'UTC'};
   /* [gift, clock, days left per zone, Collect by per zone, the Dispatch's date range per zone] */
@@ -1610,9 +1615,9 @@ if (part('main2')) {
   /* the new "Today" figure fits beside the other numbers at every width */
   { const {ctx: c5, q: q5} = await open('UTC', '2026-11-22T23:00:00Z', '#gifts', 320); await ev(q5, `(() => { window.__k5 = POST; POST = {checked: null, news: POST.news, gifts: [${JSON.stringify(G1)}]}; V2.redraw(); })()`); const fit = [];
     for (const w of [320, 390, 768, 1100, 1440]) { await q5.setViewportSize({width: w, height: 900}); await q5.waitForTimeout(300);
-      const m = await ev(q5, `(() => { const S = document.querySelector('.pr-stats'); if (!S) return 'no stats'; const R = S.getBoundingClientRect(), bad = [...S.querySelectorAll('.pr-nums b, .pr-nums span')].filter(e => { const r = e.getBoundingClientRect(); return e.scrollWidth > e.clientWidth + 1 || r.left < R.left - .5 || r.right > R.right + .5; }).map(e => e.textContent);
+      const m = await ev(q5, `(() => { const S = document.querySelector('#main .gr2 .k-facts'); if (!S) return 'no stats'; const R = S.getBoundingClientRect(), bad = [...S.querySelectorAll('b, span')] /* Nov 22: the kit facts */.filter(e => { const r = e.getBoundingClientRect(); return e.scrollWidth > e.clientWidth + 1 || r.left < R.left - .5 || r.right > R.right + .5; }).map(e => e.textContent);
         return (document.documentElement.scrollWidth > innerWidth ? 'sideways scroll ' : '') + bad.join(','); })()`); if (m) fit.push(w + ': ' + JSON.stringify(m)); }
-    const t = await ev(q5, `[...document.querySelectorAll('.pr-nums p')].map(p => p.textContent).join(' | ')`); await c5.close();
+    const t = await ev(q5, `[...document.querySelectorAll('#main .gr2 .k-facts li')].map(p => p.textContent).join(' | ')`); await c5.close();
     ok(!fit.length && /Today/.test(t), `NPR-5c: the last-day figure ("Today") fits in the Post Room's numbers at 320 to 1440 (${fit.join(' ') || t})`); }
   /* polish sweep (Nov 18 night, defect 1): the coupon's Copy Code is the Post Room's button (same class, padding and font), never cut to "Copy Cod" */
   { const {ctx: c12, q: q12} = await open('UTC', null, '#news', 640); const cut = [];
@@ -1690,7 +1695,15 @@ const wkPair = async (br, url, ok) => {
   ok(!st.length, `WK-1 (WebKit pair): the stamps' perforated edge, read off the pixels on #gifts 390 / 1440 and Home's post band 1440: no paper outside the holes' line, holes along each edge, solid middle, bitten corners (${st.join(' | ').slice(0, 400) || 'clean'})`);
   /* WK-2: every Copy Code row on #gifts (320-2560) and Home and News (390-2560) */
   const bad = [], seen = {beside: 0, meant: 0};
-  for (const [route, sel, ws] of [['gifts', '#main .pr-crow', [320, 390, 600, 820, 1024, 1100, 1180, 1280, 1300, 1360, 1400, 1440, 1600, 1920, 2560]], ['home', '.sdp .pr-crow', [390, 820, 1100, 1440, 2560]], ['news', '.dp-crow', [390, 820, 1100, 1300, 1440, 2560]]]) {
+  /* Nov 22: Mystery Gifts on the kit (Sim approved, "fix the code wrap"): the code sits in its own dashed box over the copy button and sizes itself
+     to the box. Its rows: the code on one line, inside its box, 13px+, at 320-2560 (counted with the others) */
+  await go('gifts', 1440);
+  for (const w of [320, 390, 600, 820, 1024, 1100, 1180, 1280, 1300, 1360, 1400, 1440, 1600, 1920, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(300);
+    const rs = await q.evaluate(() => [...document.querySelectorAll('#main .gr2-code')].filter(c => c.getClientRects().length).map(c => { const cv = c.querySelector('.pr-cv'), B = c.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(cv);
+      const X = rg.getBoundingClientRect(), fs = parseFloat(getComputedStyle(cv).fontSize), why = []; if (X.right > B.right + 1 || X.left < B.left - 1) why.push('overflows'); if (X.height > fs * 1.2 * 1.6) why.push('code on two lines'); if (fs < 13) why.push(fs + 'px');
+      return {why: why.join(', '), code: cv.textContent}; }));
+    for (const r of rs) { if (r.why) bad.push(`gifts ${w} ${r.code}: ${r.why}`); else seen.meant++; } }
+  for (const [route, sel, ws] of [['home', '.sdp .pr-crow', [390, 820, 1100, 1440, 2560]], ['news', '.dp-crow', [390, 820, 1100, 1300, 1440, 2560]]]) {
     await go(route, 1440);
     for (const w of ws) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(300);
       const rs = await q.evaluate(sel => [...document.querySelectorAll(sel)].filter(c => c.getClientRects().length).map(c => {
