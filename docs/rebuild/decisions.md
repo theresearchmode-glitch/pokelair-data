@@ -1918,3 +1918,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:57 PM: Preview v226 published (Calc on the kit, war room, Pokémon page); file list checked: 443 files incl. v2art sprites and 7 fonts; privacy check OK (only 'Search').
 - 8:00 PM: Empty My Team on the kit built as a proposal (copy te, tag keep/team-empty): phone 390 2,465 px (today 2,576), desktop 1440 1,453 (today 1,245); every control/hook kept; pictures to Sim. Freed disk: removed merged/tagged copies qf, mvt, pk, hh (12 GB free).
 - 8:01 PM: Sim: empty My Team on the kit approved ('recommended is good, go for it'). Running its tests in te, then merge.
+- 8:13 PM: Pokémon page post-merge checks in ck (40a4434c + war room): kit 14/14, overlap pokemon+team 0, pksrc/q24/s33 all passed, v2-minors main1 all passed. Waiting on GitHub run 1429 to tick Calc, war room, Pokémon page.
