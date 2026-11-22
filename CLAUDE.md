@@ -40,6 +40,12 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
+## CALL OUT BOTTLENECKS (Sim, Nov 22, logged 7:56 AM)
+Sim: "we should be doing everything as efficient as possible at all times. If you see a clear bottleneck or something slowing us down,
+always make sure to call it out and let me know so we can evaluate." Approved the same day: (1) GitHub runs the full check on the design
+branch (claude/design6, not live); locally only the changed pages' checks; (2) redesign pages first send ONE quick direction picture
+(about 30 min, drawn on the real page) and are built only after Sim's yes; (3) one shared "before" baseline per morning for all helpers.
+
 ## HELPERS: ONE AT A TIME IS THE RULE (Sim, Nov 22, logged 1:29 AM; LATEST)
 Exception (Sim, Nov 22, logged 7:03 AM): "until 12pm today, a 2nd helper is fine." Two helpers until 12:00 PM Sun Nov 22, then one again.
 Sim: "also 1 helper max is fine. im okay to take it a little slower. we have time. cant do anything if i run out of usage lol."
