@@ -3531,3 +3531,14 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (min-width:700px) and (max-width:1099.98px){.cmp-tot,.cmp-r{grid-template-columns:minmax(0,1fr) 168px minmax(0,1fr);gap:12px}.cmp-s{gap:8px}.cmp-bk{gap:4px}.cmp-bk i{width:28px;height:20px}.cmp-t img{width:40px;height:40px}
   .cmp-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:4px}.cmp-six .np-mon{--iw:min(56px,100%)}}
 @media (min-width:700px) and (max-width:899.98px){.cmp-s{flex-direction:column;gap:4px}.cmp-s.a{align-items:flex-end}.cmp-s.b{align-items:flex-start}.cmp-s.b .cmp-w{order:-1}}
+/* Usage polish (HH, Nov 22; Sim: "cleaned up a little and not so rough", keep the character): 700 and up, the one pink move sits in the
+   facts column under the facts (no loose row under the card), and the three facts line up as a table: numbers in one column, words in
+   the next, so 38.1% / 48.0% / 97 start and end on the same lines */
+@media (min-width:700px){
+  .us .us-spot .us-acts{grid-column:2;align-self:end}
+  .us .us-spot .gs-sinfo{align-self:end}
+  .us .us-facts p{display:grid;grid-template-columns:minmax(0,max-content) minmax(0,1fr);justify-content:start;column-gap:var(--s3)}
+  .us .us-facts b{order:-1;min-width:4.4em}
+  .us .us-spot.k-hero{grid-template-rows:auto auto;align-items:end}
+  .us .us-spot .k-hero-c{grid-row:1/3}
+}
