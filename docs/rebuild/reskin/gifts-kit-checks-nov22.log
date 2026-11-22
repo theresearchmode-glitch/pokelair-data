@@ -1,0 +1,49 @@
+Mystery Gifts on the kit (hW2, Nov 22). Frozen data out/ @0c992f69. BEFORE = untouched HEAD 70cf10ab build + untouched tests; AFTER = this commit's build + updated tests. Log stamps are the machine clock (UTC).
+
+== BEFORE (gfB)
+### guard exit 0 21:22:18 :: v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+### dms exit 0 21:31:08 :: behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 529s  (adapter v2)
+### kitpage exit 0 21:31:34 :: kit-page: all 14 views passed (7 widths x day and night)
+### overlap exit 0 21:32:20 :: v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 46s)
+### qcheck exit 0 21:32:51 :: qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 12 findings, 0 new; 31s
+### tap exit 0 21:34:30 :: tap-size: all passed
+### unb exit 0 21:35:33 :: v2-unbounded: none outside the named exception across 28 pages
+### min-main1 exit 0 21:47:33 :: v2-minors (main1):all passed
+### min-main2 exit 1 21:53:50 :: v2-minors (main2):1 failed
+### min-groups exit 0 22:01:48 :: v2-minors (groups):all passed
+### tokens exit 1 22:01:48 :: tokens-doc: design-system.md is out of date with tokens.css; run node app/test/tokens-doc.mjs --write
+### q43 exit 0 22:03:23 :: v2-q43: all passed
+### q72 exit 0 22:08:02 :: v2-q72: all passed
+### post-doc exit 0 22:08:32 :: ALL PASS
+(the before tokens line read the copy's source, already edited)
+
+== AFTER, first run (gfA, build 'aft')
+### guard exit 0 22:14:13 :: v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+### dms exit 0 22:23:09 :: behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 535s  (adapter v2)
+### kitpage exit 0 22:23:38 :: kit-page: all 14 views passed (7 widths x day and night)
+### overlap exit 0 22:24:24 :: v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 46s)
+### qcheck exit 0 22:24:55 :: qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 31s
+### tap exit 0 22:26:28 :: tap-size: all passed
+### unb exit 1 22:27:29 :: v2-unbounded: 1 new kinds of text in Unbounded under 15px (not stamps/tags or fitted names) across 28 pages
+### min-main1 exit 1 22:39:29 :: v2-minors (main1):1 failed
+### min-main2 exit 1 22:46:01 :: v2-minors (main2):5 failed
+### min-groups exit 1 22:54:35 :: v2-minors (groups):4 failed
+### tokens exit 0 22:54:35 :: tokens-doc: up to date (594 tokens)
+### q43 exit 0 22:56:10 :: v2-q43: all passed
+### q72 exit 1 23:00:47 :: v2-q72: 14 failed
+### post-doc exit 0 23:01:17 :: ALL PASS
+
+== FINAL build 'aft2' (fixes and test updates after the first run)
+guard :: v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+tokens :: tokens-doc: up to date (594 tokens)
+overlap :: v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 44s)
+qcheck :: qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 31s
+tap :: tap-size: all passed
+unb :: v2-unbounded: none outside the named exception across 28 pages
+q43 :: v2-q43: all passed
+post-doc :: ALL PASS
+min-groups :: v2-minors (groups):all passed
+min-main1 :: v2-minors (main1):all passed
+min-main2 :: v2-minors (main2):all passed
+q72 :: v2-q72: all passed
+D-meta-shell (build 'aft'): behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 535s  (adapter v2)

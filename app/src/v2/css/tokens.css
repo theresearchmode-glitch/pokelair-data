@@ -18,6 +18,9 @@
   --pr-num:#0068AD;--pr-soon:#C41E2B;--pr-plenty:#0068AD;--pr-rub-bg:rgba(255,255,255,.9);--pr-shadow:rgba(30,20,50,.18);--pr-shadow-2:rgba(30,20,50,.10);
   --pr-ev:#F4CDEB;--pr-ev-2:#EDB9E1;--pr-ev-ink:#8E1A74;--pr-se:#C9E4F6;--pr-se-2:#B2D7F1;--pr-se-ink:#035C97;
   --pr-post:rgba(60,57,66,.92);--pr-post-bg:rgba(255,255,255,.62);--pr-blank:rgba(23,22,26,.2);--pr-art:none;
+  /* Mystery Gifts on the kit (Nov 22, Sim approved the mock 12:27 PM): the parcel's kraft, tape and white label with its ink, the same by day
+     and by night (as drawn; not redefined in the night block). Label ink 17.7:1, ink-2 8.6:1, stamp 5.9:1 and link 6.9:1 on the white label */
+  --gr-kraft:#C8A26B;--gr-tape:rgba(0,0,0,.1);--gr-label:#FFFFFF;--gr-ink:#17161A;--gr-ink2:#4A4850;--gr-stamp:#C41E35;--gr-link:#005D94;--gr-edge:#0078BF;--gr-shadow:rgba(0,0,0,.15);
  /* Home, The Stampede, tools band (Nov 18; brief section 3): the beige band, its white plates and their offset shade, the ink feature
     plates (Ratings, Battle, Test Run), the blue Speed race, the podium blocks, your / their names on ink, the health bar's lost part */
  --sd-beige:#EFEAE0;--sd-card:#FFFFFF;--sd-card-ink:#17161A;--sd-card-ink2:#48454F;--sd-card-shade:#DBD3C5;

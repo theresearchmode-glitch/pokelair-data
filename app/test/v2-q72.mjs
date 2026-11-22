@@ -75,8 +75,8 @@ for (const th of ['light', 'dark']) {
 
   // D2: Events and Gifts chips
   for (const route of ['events', 'gifts']) for (const W of [320, 360, 390, 430, 768, 1024, 1440]) { const tag = `${route} ${W} ${th}`, P = await open(route, W, th);
-    const R = await P.p.evaluate(() => { const f = [...document.querySelectorAll('#main .ev-f')].find(x => x.getClientRects().length && x.querySelector('.ev-fc')); if (!f) return null;
-      const ch = [...f.querySelectorAll('.ev-fc')].map(c => { const r = c.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(c); const t = rg.getBoundingClientRect();
+    const R = await P.p.evaluate(() => { const f = [...document.querySelectorAll('#main .ev-f, #main .gr2 .k-sent')].find(x => x.getClientRects().length && x.querySelector('.ev-fc, .k-w')); if (!f) return null; /* Nov 22: Mystery Gifts on the kit, its stamp filter is the kit's sentence */
+      const ch = [...f.querySelectorAll('.ev-fc, .k-w')].map(c => { const r = c.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(c); const t = rg.getBoundingClientRect();
         return {l: r.left, r: r.right, top: r.top, h: r.height, above: t.top - r.top, below: r.bottom - t.bottom}; });
       const fr = f.getBoundingClientRect(), cs = getComputedStyle(f), inner = fr.width - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
       const oneRow = Math.max(...ch.map(c => c.top)) - Math.min(...ch.map(c => c.top)) <= 1;
@@ -84,7 +84,7 @@ for (const th of ['light', 'dark']) {
     if (!R) { ok(false, `${tag}: filter chips found`); await done(P, tag); continue; }
     /* Nov 22 (Events on the kit, proposal): Events' filter is the kit's plot sentence ("Show me [all 115] [official 8] [100+ players 25]"), words that wrap
        like a sentence, so only Gifts' chips still fill a row; both still keep 44px taps with their words centred (below) */
-    if (W <= 430 && route !== 'events') ok(R.oneRow && Math.abs(R.empty) <= 1, `${tag}: the ${R.n} chips fill their row (${R.oneRow ? r1(R.empty) + 'px empty' : 'not one row'})`);
+    if (W <= 430 && route !== 'events' && route !== 'gifts') ok(R.oneRow /* Nov 22: Gifts' filter is a kit sentence too (words wrap like a sentence) */ && Math.abs(R.empty) <= 1, `${tag}: the ${R.n} chips fill their row (${R.oneRow ? r1(R.empty) + 'px empty' : 'not one row'})`);
     if (W >= 390) ok(R.ch.every(c => c.h >= 44 && Math.abs(c.above - c.below) <= 2), `${tag}: each chip's words centred in its 44px chip (${R.ch.map(c => `${r1(c.h)}px: ${r1(c.above)} above / ${r1(c.below)} below`).join('; ')})`);
     await done(P, tag); }
 

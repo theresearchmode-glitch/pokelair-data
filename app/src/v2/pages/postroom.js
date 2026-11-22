@@ -130,35 +130,47 @@ V2.prShelf = () => `<div class="pr-shelf"><svg class="pr-box0" viewBox="0 0 120 
   <p class="u">Nothing at the counter right now.</p><p>The next gift will wait here.</p></div>`;
 V2.prHow = () => `<aside class="pr-howto" aria-labelledby="prHowH"><h3 class="u" id="prHowH">How to collect</h3><ol><li>In the game, open the Submenu and choose Mystery Gift.</li><li>Enter the code from the label.</li><li>The gift arrives in your Mailbox.</li></ol>
   <p>A code can stop early or not work in every account. Real codes never ask for your password.</p></aside>`;
+// ---------- Mystery Gifts (#gifts) on the shared kit (Nov 22): Sim approved "as drawn (fix the code wrap)" (12:27 PM; +87px desktop length OK;
+// mock docs/rebuild/mocks/reskin-nov22/gifts-mock.inject.js) ----------
+// ‹ Home, kit header (kicker HOME · THE LOOT, "Special delivery. No postage due.", lead), the counts as kit facts, then the plan line:
+// 1 Waiting at the counter (each live gift a kraft parcel with its white label: kind, name, dates, the code (sized to its label, so a long code
+// shrinks instead of wrapping), the first code gets the page's ONE pink COPY CODE., the others a blue outlined copy code; days-left stamp),
+// 2 How to collect, 3 The stamp sheet (the filter as the kit's sentence, today's stamps). Same data and hooks as before (V2.postNow, V2.prG,
+// V2.prDaysLeft, V2.prDate, V2.PR_HOW, V2.PR_NOCODE, V2.prCode, V2.prEm, V2.prStamp; data-prcopy, data-prf, data-prmore, data-prset,
+// data-v2mon, #pr-sheet-l, .pr-parcel). The parcel keeps its kraft and white label at night, as drawn (tokens --gr-*). Page classes gr2-*.
 V2.pages.gifts = {place: 'home', draw() { const E = V2.esc, U = V2.prUi, P = V2.postNow(), live = P.live.map(V2.prG), past = P.past.map(V2.prG), now = Date.now();
   const left = live.map(g => V2.prDaysLeft(g, now)).filter(d => d != null && d >= 0), soonest = left.length ? Math.min(...left) : null;
   const since = !live.length && past.length && Number.isFinite(past[0].end) ? Math.round((V2.prDayN(now, past[0].dayEnd) - V2.prDayN(past[0].end, past[0].dayEnd)) / 864e5) : null;
-  const num = (n, l) => `<p><b class="u${typeof n === 'number' ? '' : ' pr-w'}">${n}</b><span>${l}</span></p>`; /* qcheck (Nov 21): a word ('Today') takes a step down on phones so it never runs into the next number */
-  // a day count of 0 shows the word "Today", never a lone "0" beside "ends today" (review, Nov 18); no "0 gifts so far" when there are none
-  const nums = live.length ? num(live.length, 'to claim') + (soonest != null ? (soonest === 0 ? num('Today', 'one ends') : num(soonest, soonest === 1 ? 'day until one ends' : 'days until one ends')) : '') + num(live.length + past.length, 'gifts so far')
-    : num(0, 'to claim') + (since != null ? (since === 0 ? num('Today', 'the last one ended') : num(since, since === 1 ? 'day since the last one ended' : 'days since the last one ended')) : '') + (past.length ? num(past.length, 'gifts so far') : '');
-  const stats = `<div class="pr-stats"><p class="ev-pk${live.length ? '' : ' pr-pk-off'}">${live.length ? 'Live right now' : 'Nothing live right now'}</p><div class="pr-nums">${nums}</div></div>`;
-  const head = `<div class="pr-top"><section class="ra-h"><p class="np-eyebrow"><span><a class="np-back" href="#home">Home</a> · Mystery Gifts</span></p><h1 class="u"><span>Special delivery.</span> <span class="pl">No postage due.</span></h1>
-    <p class="ra-lede">Every Mystery Gift in Pokémon Champions, parcel by parcel. The code is on the label, and so is the last day to collect it.</p></section>${stats}</div>`;
-  const key = live.some(g => g.code && /\d/.test(g.code)) ? `<p class="pr-key"><span class="pr-cv" aria-hidden="true"><b class="pr-d">1</b> <b class="pr-d">0</b> <b class="pr-d">2</b></span> Blue characters are numbers. The rest are letters.</p>` : '';
-  const counter = `<section class="pr-counter" aria-labelledby="prCtrH"><header class="pr-sh"><h2 class="u" id="prCtrH">Waiting at the Counter</h2>${key}</header>
-    ${live.length ? `<div class="pr-parcels${live.length % 2 ? ' odd' : ''}" style="--prw-row:${Math.max(1, ...live.map(g => V2.prEm(g.code)))}">${live.map(g => V2.prParcel(g)).join('')}${V2.prHow()}</div>` : V2.prShelf()}</section>`;
+  // a day count of 0 shows the word "Today", never a lone "0" (review, Nov 18); no "0 gifts so far" when there are none
+  const facts = live.length ? [[String(live.length), 'to claim · live right now'], ...(soonest != null ? [[soonest === 0 ? 'Today' : String(soonest), soonest === 0 ? 'one ends' : soonest === 1 ? 'day until one ends' : 'days until one ends']] : []), [String(live.length + past.length), 'gifts so far']]
+    : [['0', 'to claim · nothing live right now'], ...(since != null ? [[since === 0 ? 'Today' : String(since), since === 0 ? 'the last one ended' : since === 1 ? 'day since the last one ended' : 'days since the last one ended']] : []), ...(past.length ? [[String(past.length), 'gifts so far']] : [])];
+  const head = `<a class="gr2-crumb" href="#home">‹ Home</a><div class="gr2-top"><div class="k-head"><p class="k-kicker">HOME · THE LOOT</p><h1 class="k-h1 u">Special delivery.<br><em>No postage due.</em></h1>
+    <p class="k-lead">Every Mystery Gift in Pokémon Champions, parcel by parcel. The code is on the label, and so is the last day to collect it.</p></div>${V2.kFacts(facts)}</div>`;
+  // 1 the parcels: the first code gets the page's one pink move; the others a blue outlined copy button (same data-prcopy)
+  let pink = false;
+  const parcel = g => { const d = V2.prDaysLeft(g, now), md = {month: 'short', day: 'numeric'};
+    const end = !Number.isFinite(g.end) ? 'end date not confirmed' : g.dayEnd ? V2.prDate(g.end, undefined, true) : `${V2.prDate(g.end)} · until ${new Date(g.end).toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit'})}`;
+    const c = g.code ? g.code.replace(/\s+/g, '') : '';
+    const code = g.code ? `<div class="gr2-code" style="--prw:${V2.prEm(g.code) || 1}">${V2.prCode(g.code)}</div>${!pink && (pink = true) ? V2.kGo('COPY CODE.', {'data-prcopy': c, 'aria-label': `Copy code ${c}`}) : `<button type="button" class="gr2-cp2" data-prcopy="${E(c)}" aria-label="Copy code ${E(c)}">copy code</button>`}` : `<p class="gr2-none">${V2.PR_NOCODE[g.how]}</p>`;
+    return `<article class="gr2-box pr-parcel" aria-label="Mystery Gift: ${E(g.name)}">${d != null && d >= 0 ? `<span class="gr2-st" aria-hidden="true">${d === 0 ? '<b>Last</b> day' : `<b>${d}</b> ${d === 1 ? 'day left' : 'days left'}`}</span>` : ''}<div class="gr2-lab">
+      <p class="gr2-k">Mystery Gift · ${E(V2.PR_HOW[g.how])}</p><h3 class="u">${E(g.name)}</h3><p class="gr2-when">Sent ${Number.isFinite(g.start) ? V2.prDate(g.start, md, g.dayStart) : 'date not confirmed'} · collect by ${end}${g.extras.length ? ` · also inside: ${g.extras.map(E).join(', ')}` : ''}</p>
+      ${code}${g.src.length ? `<p class="gr2-src">Source: ${g.src.slice(0, 2).map(x => `<a href="${E(x.url)}" target="_blank" rel="noopener noreferrer">${E(x.name || 'Source')}</a>`).join(' and ')}</p>` : ''}${d != null && d >= 0 ? `<span class="vh">, ${d === 0 ? 'last day to collect it' : `${d} ${d === 1 ? 'day' : 'days'} left`}</span>` : ''}</div></article>`; };
+  const s1 = V2.kStep(1, 'Waiting at the counter.', live.some(g => g.code && /\d/.test(g.code)) ? 'blue characters are numbers; the rest are letters' : '', live.length ? `<div class="gr2-parcels" style="--n:${Math.min(3, live.length)}">${live.map(parcel).join('')}</div>` : V2.prShelf());
+  const s2 = V2.kStep(2, 'How to collect.', '', `<ol class="gr2-how"><li>In the game, open the Submenu and choose Mystery Gift.</li><li>Enter the code from the label.</li><li>The gift arrives in your Mailbox.</li></ol><p class="gr2-fine">A code can stop early or not work in every account. Real codes never ask for your password.</p>`);
+  // 3 the stamp sheet: today's stamps (V2.prStamp), the filter as the kit's sentence (data-prf)
   const n = {all: past.length, mon: past.filter(g => g.isMon).length, item: past.filter(g => !g.isMon).length};
   const list = U.f === 'mon' ? past.filter(g => g.isMon) : U.f === 'item' ? past.filter(g => !g.isMon) : past, cap = 12, shown = U.all ? list : list.slice(0, cap);
-  // Sim, Nov 18: no empty spaces and no lone stamp row. For each width's most stamps per row (8 desktop, 6 tablet, 4 phone,
-  // 3 smallest phones) take the fewest rows, then spread the stamps evenly over them (7 stamps: one row of 7; 4 + 3 on a phone)
+  // Sim, Nov 18: no empty spaces and no lone stamp row: for each width's most stamps per row take the fewest rows, then spread the stamps evenly
   const per = M => { const k = shown.length || 1, r = Math.ceil(k / M); return Math.ceil(k / r); };
-  const cols = `--pc8:${per(8)};--pc6:${per(6)};--pc4:${per(4)};--pc3:${per(3)}`;
-  const mons = past.filter(g => g.mon), sets = mons.filter(g => g.nature || g.moves.length).length; /* the line promises only what POST holds (audit W14) */
-  const chips = `<div class="ev-f pr-f" role="group" aria-label="Which stamps">${[['all', 'All'], ['mon', 'Pokémon'], ['item', 'Items']].map(([k, t]) => `<button type="button" class="np-chip ev-fc" data-prf="${k}" aria-pressed="${U.f === k}">${t}<small>${n[k]}</small></button>`).join('')}</div>`;
-  /* Q43 A (Sim chose it, Nov 19, 8:25 PM): on phones (under 700) the sheet shows its first 6 stamps (two full rows of 3) and the same button
-     opens the rest in place, so no stamp sits alone on a row; 6 or fewer in the chosen filter: no button. A CSS-only cut (pr-sheet without
-     'on'), so 700+ keeps its 12 and its button only past 12 (pr-mph: the button is for phones only). Focus stays: the redraw merges in place. */
+  const mons = past.filter(g => g.mon), sets = mons.filter(g => g.nature || g.moves.length).length; /* the hint promises only what POST holds (audit W14) */
+  const hint = `Blue words are buttons. ${!mons.length ? '' : sets === mons.length ? 'Tap a Pokémon for the nature and moves it came with.' : sets ? 'Tap a Pokémon for its page, or for the nature and moves it came with where a source lists them.' : 'Tap a Pokémon for its page.'}`.trim();
+  const sent = past.length ? V2.kSent(['Show', ...[['all', 'all'], ['mon', 'Pokémon'], ['item', 'items']].map(([k, t]) => ({w: `${t} · ${n[k]}`, on: U.f === k, attrs: {'data-prf': k}}))], {label: 'Which stamps', hint}) : '';
+  /* Q43 A (Sim, Nov 19): on phones the sheet shows its first 6 stamps and the button opens the rest in place; 700+ keeps 12 (pr-mph: phones only) */
   const more = list.length > 6 ? `<button type="button" class="np-link pr-more${list.length > cap ? '' : ' pr-mph'}" data-prmore aria-expanded="${U.all}" aria-controls="pr-sheet-l">${U.all ? 'Show Fewer Stamps' : `Show All ${list.length} Stamps ›`}</button>` : '';
-  const note = `<p class="fine pr-note">${P.checked ? `Gift list checked ${E(V2.prDate(V2.prDayOf(P.checked), {month: 'short', day: 'numeric'}))}. ` : ''}Dates are each campaign's listed end times, shown in your time zone. A code can stop working early.</p>`;
-  const sheet = `<section class="pr-stamps" aria-labelledby="prStH"><header class="pr-sh"><h2 class="u" id="prStH">The Stamp Sheet</h2><p>Every gift so far gets a stamp, postmarked the day it ended. ${!mons.length ? '' : sets === mons.length ? 'Tap a Pokémon for the nature and moves it came with.' : sets ? 'Tap a Pokémon for its page, or for the nature and moves it came with where a source lists them.' : 'Tap a Pokémon to open its page.'}</p></header>
-    ${past.length ? chips : ''}${shown.length ? `<ul class="pr-sheet${U.all ? ' on' : ''}" id="pr-sheet-l" style="${cols}">${shown.map(V2.prStamp).join('')}</ul>` : `<p class="pr-nost">${past.length ? 'No stamps of this kind yet.' : 'No stamps yet. Each gift gets one the day it ends.'}</p>`}${more}${note}</section>`;
-  return `<div class="ra pr">${head}${counter}${sheet}</div>`; }};
+  const sheet = `${sent}${shown.length ? `<ul class="pr-sheet${U.all ? ' on' : ''}" id="pr-sheet-l" style="--pc8:${per(8)};--pc6:${per(6)};--pc4:${per(4)};--pc3:${per(3)}">${shown.map(V2.prStamp).join('')}</ul>` : `<p class="pr-nost">${past.length ? 'No stamps of this kind yet.' : 'No stamps yet. Each gift gets one the day it ends.'}</p>`}${more}
+    <p class="gr2-fine">${P.checked ? `Gift list checked ${E(V2.prDate(V2.prDayOf(P.checked), {month: 'short', day: 'numeric'}))}. ` : ''}Dates are each campaign's listed end times, shown in your time zone. A code can stop working early.</p>`;
+  const s3 = V2.kStep(3, 'The stamp sheet.', 'every gift so far, postmarked the day it ended', `<div class="gr2-stamps">${sheet}</div>`);
+  return `<div class="ra pr gr2">${head}${V2.kPlan(s1 + s2 + s3)}</div>`; }};
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-prcopy],[data-prf],[data-prmore],[data-prset]'); if (!b) return; const d = b.dataset;
   if (d.prcopy) { const c = d.prcopy; V2.copy(c).then(ok => V2.toast(ok ? `Copied ${V2.esc(c)}` : 'Could not copy here: your browser blocked it. Select the code on the label instead.')); /* the shared copy with its fallback, as Build's Copy for Showdown */ return; }
   if (d.prset) { V2.prSet(d.prset); return; }
