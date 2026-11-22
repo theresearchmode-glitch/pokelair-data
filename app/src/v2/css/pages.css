@@ -3898,7 +3898,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* Usage at 1440 and up (Sim's desktop length rule, Nov 22): the top ten and "How X is played" side by side, so the page uses the width
    instead of running 3+ screens; step 2's number circle sits at its own column's left edge, the plan line runs down the first column */
 @media (min-width:1440px){
-  .us .k-plan{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,9fr);column-gap:var(--s16);align-items:start}
+  .us:not(.lo) .k-plan{display:grid;grid-template-columns:minmax(0,11fr) minmax(0,9fr);column-gap:var(--s16);align-items:start} /* Nov 22: not Popular Sets (.lo shares .us): its loadout panel stays full width */
   .us .us-how{margin-top:0;padding-left:var(--s12)}
   .us .us-how>.k-n{left:0}
   .us .us-s1 .us-axis,.us .us-s1 .us-ln{grid-template-columns:40px minmax(0,204px) minmax(120px,1fr) 72px 80px;column-gap:var(--s3)}
