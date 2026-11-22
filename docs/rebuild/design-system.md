@@ -1025,5 +1025,6 @@ Generated from app/src/v2/css/tokens.css: 572 tokens (569 by day, 204 changed by
 |---|---|---|
 | (max-width:1179.98px) | --gut | `48px` |
 | (max-width:699.98px) | --gut | `16px` |
+| (max-width:384.98px) | --d-khead | `34px` |
 
 <!-- tokens:end -->

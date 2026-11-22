@@ -214,4 +214,6 @@
   color-scheme:dark}
 @media (max-width:1179.98px){:root{--gut:48px}}
 @media (max-width:699.98px){:root{--gut:16px}}
+/* Nov 22 (qcheck): the kit headline held 34px up to 384 wide; between 341 and 384, 10.4vw gave 35.5-39.9px, off the type scale */
+@media (max-width:384.98px){:root{--d-khead:34px}}
 /* Sim Q1 (Nov 15): 'them' / Team B is magenta (--them), clearly apart from red (--bad); measured: day fill #B4238F white text 5.87:1, text #9A1A7B 7.17:1 on the page; night fill #E57FD3 dark text 7.36:1, text #EC9BDF 9.15:1 */
