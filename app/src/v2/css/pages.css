@@ -1359,7 +1359,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .hm-udst2,.tm-ud-st,.bx-mon{display:block}.ud-nm{cursor:pointer} /* the heading itself opens the sheet (a button inside it changed how it wrapped); keyboard: the Info Sheet link */
 /* ---------- Type Chart (Nov 14, concept A 'Spotlight'; mock-ups docs/rebuild/mocks/types) ---------- */
 .tc{padding:0 var(--gut) var(--s16);display:grid;gap:var(--s5);overflow-x:clip}
-.tc-h{display:grid;gap:var(--s2)}.tc-h h1{font-size:var(--t34);margin:0}.tc-h h1 .pl{color:var(--plot-text)}
+.tc-h{display:grid;gap:var(--s2)}
 .tc-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5)}.tc-findw{position:relative;flex:0 1 320px}.tc-find input{border:0;background:none;font:500 var(--t16)/1 var(--b);color:var(--ink);width:100%;transform:skewX(10deg)}
 .tc-hits{position:absolute;left:0;right:0;top:calc(100% + var(--s1));z-index:5}
 .tc-team{display:flex;flex-wrap:wrap;gap:var(--s2)}.tc-tm{display:flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:var(--s1) var(--s3) var(--s1) var(--s1);border:1.5px solid var(--rule);font:600 var(--t13)/1 var(--b);color:var(--ink-2)}
@@ -1369,51 +1369,101 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tc-tp[aria-pressed="true"]{background:var(--tc);color:var(--on-type);border-color:var(--tc)}
 .tc-lbl{margin:0;font:700 var(--t13)/1.3 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2);display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap}
 .tc-ab{margin:0;font:600 var(--t15)/1.5 var(--b);color:var(--plot-text)}.tc .fine{margin:0}.tc-none{margin:0}
-.tc-main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:var(--s8);align-items:start}
-.tc-cardw .ms-card{--ch:420px}
 .tc-types{display:grid;gap:var(--s3);align-content:start}.tc-tile{display:grid;place-items:center;min-height:120px;padding:0 var(--s3);background:var(--tc);color:var(--on-type);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}.tc-tile b{font:900 var(--t28)/1 var(--u);font-style:italic;font-synthesis:style}
 /* type symbols (Sim, Nov 21, 3:35 PM; mock docs/rebuild/mocks/type-symbols): on each pick button the symbol sits above the word in the word's
    colour (ink when off, white when picked: the off/on look stays as it was); phones keep the 44px button (16px symbol), wide screens a bigger one */
 .tc-tp.sym{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:var(--s1) 0}.tc-tp .k-tyi{width:16px;height:16px}
 @media (min-width:700px){.tc-tp.sym{min-height:var(--s16);gap:var(--s1)}.tc-tp .k-tyi{width:24px;height:24px}}
 .tc-tile{align-content:center;gap:var(--s1)}.tc-tile .k-tyi{width:24px;height:24px}@media (min-width:700px){.tc-tile{gap:var(--s2)}.tc-tile .k-tyi{width:40px;height:40px}}
-.tc-right{display:grid;gap:var(--s4)}
-.tc-spec{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s2)}
-.tc-band{display:grid;align-content:start;gap:var(--s3);min-height:200px;padding:var(--s4) var(--s3);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
-.tc-band .m{font:900 var(--t34)/1 var(--u);font-style:italic;font-synthesis:style;display:grid}.tc-band .m small{font:700 var(--t13)/1.3 var(--b);font-style:normal;letter-spacing:.06em;text-transform:uppercase;margin-top:var(--s1)}
-.tc-band .ts{display:flex;flex-wrap:wrap;gap:var(--s1)}.tc-band i{font-style:normal;color:var(--ink-3)}
-.tc-band.b4{background:var(--bad);color:var(--on-mark)}.tc-band.b2{background:color-mix(in srgb,var(--bad) 22%,var(--surface))}
-.tc-band.bh{background:color-mix(in srgb,var(--good) 18%,var(--surface))}.tc-band.bq{background:color-mix(in srgb,var(--good) 30%,var(--surface))}
-.tc-band.b0{background:var(--plot);color:var(--on-mark)}.tc-band.none{background:var(--wash);color:var(--ink-3)}
-.tc-offs{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:var(--s3)}.tc-off{display:grid;gap:var(--s2);padding:var(--s4);background:var(--wash)}
-.tc-offh{display:flex;align-items:center;gap:var(--s2);font:700 var(--t15)/1 var(--b)}.tc-offr{display:grid;grid-template-columns:72px minmax(0,1fr);gap:var(--s2);align-items:center}
-.tc-offr .k{font:700 var(--t13)/1.3 var(--b)}.tc-offr .k.up{color:var(--good-text)}.tc-offr .k.dn{color:var(--mid-text)}.tc-offr .k.no{color:var(--bad-text)}.tc-offr .c{display:flex;flex-wrap:wrap;gap:var(--s1)}.tc-offr i{font-style:normal;color:var(--ink-3)}
-.tc-fold{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}.tc-fold summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s3);min-height:var(--s16);padding:var(--s2) 0;cursor:pointer;list-style:none}.tc-fold summary::-webkit-details-marker{display:none}
-.tc-fold summary span{display:grid}.tc-fold summary b{font:700 var(--t15)/1.4 var(--b)}.tc-fold summary small{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.tc-fold summary i{font-style:normal;font-size:var(--t20);color:var(--ink-3);transition:rotate .2s}.tc-fold[open] summary i{rotate:90deg}
+.tc-off{display:grid;gap:var(--s2)}.tc-offh{display:flex;align-items:center;gap:var(--s2);font:700 var(--t15)/1 var(--b)}.tc-offr{display:grid;grid-template-columns:72px minmax(0,1fr);gap:var(--s2);align-items:center}
+.tc-offr{padding-top:var(--s2);border-top:1px solid var(--k-rule)}.tc-offr .k{font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2)} /* reskin: quiet ink labels, as step 2's (pink and blue stay for the damage line, which is about taking hits) */.tc-offr .c{display:flex;flex-wrap:wrap;gap:var(--s1)}.tc-offr i{font:400 var(--t15)/1.3 var(--b);font-style:normal;color:var(--k-ink2)}
 .tc-gw{overflow-x:auto;padding-bottom:var(--s4)}.tc-grid{border-collapse:separate;border-spacing:2px;font:700 var(--t13)/1 var(--b);width:100%;table-layout:fixed}
 .tc-grid th{padding:var(--s1);color:var(--ink-2);font-weight:700}.tc-grid thead th{height:40px}.tc-grid thead th span{display:inline-block;padding:var(--s1);color:var(--on-type);background:var(--tc)}
 .tc-grid thead th.cor{width:112px;text-align:left;font:600 var(--t13)/1.3 var(--b)}.tc-grid tbody th{text-align:left}.tc-grid tbody th span{display:block;padding:var(--s1) var(--s2);color:var(--on-type);background:var(--tc);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 .tc-grid td{height:32px;text-align:center;background:var(--wash);color:var(--ink)}
-.tc-grid td.v2{background:color-mix(in srgb,var(--good) 55%,var(--surface))}.tc-grid td.v0_5{background:color-mix(in srgb,var(--bad) 22%,var(--surface))}.tc-grid td.v0{background:var(--ink);color:var(--surface)}
+.tc-grid td.v2{background:color-mix(in srgb,var(--k-nasty) 30%,var(--surface))}.tc-grid td.v0_5{background:color-mix(in srgb,var(--k-plot) 22%,var(--surface))} /* reskin (Nov 22): the chart reads like the damage line, pink = hurts, blue = shrugged off */.tc-grid td.v0{background:var(--ink);color:var(--surface)}
 .tc-grid td.lit{outline:2px solid var(--plot);outline-offset:-2px}.tc-grid thead th.lit span{outline:2px solid var(--plot);outline-offset:2px}
 .tc-prow{display:none}
-@media (max-width:699.98px){.tc-h h1{font-size:var(--t28)}.tc-picks{grid-template-columns:repeat(6,minmax(0,1fr))}.tc-tp{font-stretch:85%;letter-spacing:-.01em}
- .tc-main{grid-template-columns:minmax(0,1fr)}.tc-cardw .ms-card{--ch:280px}.tc-spec{grid-template-columns:minmax(0,1fr)}.tc-band{min-height:0;grid-template-columns:64px minmax(0,1fr);align-items:center}
+@media (max-width:699.98px){.tc-picks{grid-template-columns:repeat(6,minmax(0,1fr))}.tc-tp{font-stretch:85%;letter-spacing:-.01em}
  .tc-findw{flex-basis:100%;margin-inline:var(--s2)}.tc-team{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));width:100%}.tc-tm{justify-content:center;padding:var(--s1)}.tc-tm span{display:none}
  .tc-types{grid-template-columns:repeat(2,minmax(0,1fr))}.tc-tile{min-height:72px}.tc-gw{display:none}.tc-prow{display:grid;gap:var(--s3);padding-bottom:var(--s4)}}
 .tc-pl{justify-content:space-between}.tc-pl .tc-clear{text-transform:none;letter-spacing:0}
 .tc-show{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.tc-show b{color:var(--ink)}@media (max-width:699.98px){.tc-gnote{display:none}}
-.tc-prow .tc-offr{grid-template-columns:minmax(0,1fr);gap:var(--s1)} /* phones: today's longer labels sit above their chips */
 /* Type Chart polish (Nov 14): under 1100 the five bands run as rows (side by side they spilled at 720-800); under 1024 your six take one even
    row of their own (they wrapped 4+2 / 5+1); 'Clear' is a full-size tap target; narrower letters on the type buttons under 360 */
-@media (min-width:700px) and (max-width:1099.98px){.tc-main{grid-template-columns:260px minmax(0,1fr)}.tc-cardw .ms-card{--ch:360px}}
-@media (max-width:1099.98px){.tc-spec{grid-template-columns:minmax(0,1fr)}.tc-band{min-height:0;grid-template-columns:72px minmax(0,1fr);align-items:center}}
 @media (max-width:1023.98px){.tc-findw{flex-basis:100%}.tc-team{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));width:100%}.tc-tm{min-width:0}.tc-tm span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}}
 .tc-pl .tc-clear{min-height:var(--tap);padding:0 var(--s2)}
 @media (max-width:359.98px){.tc-tp{font-stretch:75%}}
 @media (min-width:700px) and (max-width:1023.98px){.tc-tm{flex-direction:column;justify-content:center;gap:2px;padding:var(--s1)}.tc-tm span{white-space:normal;overflow:visible;text-align:center;line-height:1.2}}
 @media (min-width:700px) and (max-width:1023.98px){.tc-tm span{font-stretch:85%;letter-spacing:-.01em}} /* every name on one line (Mega Charizard Y took two beside one-line neighbours) */
 @media (min-width:700px) and (max-width:1023.98px){.tc-team{gap:var(--s1)}.tc-tm{padding-inline:2px}}
+/* ---------- Type Chart on the kit (reskin, Nov 22): kit header, plan steps, and the damage line (the page's one idea: the 1x line is
+   normal damage; pink bars run right for each step a type hurts more, blue bars left for each step it is shrugged off, ink to the edge for none) ---------- */
+.tc .k-plan{margin-top:var(--s2)}.tc .k-sec{margin-top:var(--s12)}.tc .k-step:first-child .k-sec{margin-top:var(--s10)}
+.tc-dmg{display:grid;grid-template-columns:300px minmax(0,1fr);gap:var(--s10);align-items:start}
+.tc-cardw{display:grid;gap:var(--s4);padding-top:calc(var(--s16) - var(--s2))}.tc-cardw .k-facts{margin:0}.tc-cardw .k-facts b.bad{color:var(--k-nasty-text)}
+.tc-cardw.tc-types{padding-top:0}
+.tc-dr{display:grid;gap:var(--s4);min-width:0}
+.tc-ln{--tcl:136px;display:grid;gap:var(--s1);padding-right:var(--s1)} /* the slanted 4x bar keeps inside the page edge */
+.tc-ax{position:relative;margin:0 0 0 var(--tcl);height:20px;font:700 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
+.tc-ax>span{position:absolute;top:0;white-space:nowrap}.tc-ax .r{left:0}.tc-ax .n{left:60%;translate:-50% 0;color:var(--k-ink)}.tc-ax .w{right:0;color:var(--k-nasty-text)}
+.tc-rows{display:grid;margin:0;padding:0;list-style:none}
+.tc-r{display:grid;grid-template-columns:var(--tcl) minmax(0,1fr);align-items:center;min-height:var(--s12);border-bottom:1px solid var(--k-rule)}
+.tc-r:first-child{border-top:1px solid var(--k-rule)}
+.tc-rt{min-width:0}
+.tc-rk{position:relative;align-self:stretch;background:linear-gradient(to right,var(--k-rule) 1px,transparent 1px) 0 0/20% 100%}
+.tc-rk::before{content:"";position:absolute;left:60%;top:-1px;bottom:-1px;border-left:2px solid var(--k-ink);translate:-1px 0;z-index:1}
+.tc-bar{position:absolute;top:var(--s2);bottom:var(--s2);display:flex;align-items:center;padding:0 var(--s2);transform:skewX(-8deg);font-style:normal}
+.tc-bar b{transform:skewX(8deg);font-size:var(--t20);line-height:1;color:var(--k-on-go)}
+.tc-r.w .tc-bar{justify-content:flex-end;background:var(--k-go)}
+.tc-r.r .tc-bar{justify-content:flex-start;background:var(--k-plot)}.tc-r.r .tc-bar b{color:var(--k-on-plot)}
+.tc-r.z .tc-bar{justify-content:flex-start;background:var(--k-chip)}.tc-r.z .tc-bar b{color:var(--k-on-chip)}
+.tc-norm{display:grid;grid-template-columns:var(--tcl) minmax(0,1fr);align-items:start;gap:var(--s2) 0;margin-top:var(--s3)}
+.tc-norm .tc-lbl{min-height:28px}.tc-norm .ts,.tc-og .ts{display:flex;flex-wrap:wrap;gap:var(--s1)}
+.tc-offs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s10)}.tc-offs.n1{grid-template-columns:minmax(0,1fr);max-width:720px}
+.tc-o{display:grid;gap:var(--s3);align-content:start}
+.tc-oh{display:flex;align-items:center;gap:var(--s2);margin:0;font:italic 900 var(--t20)/1.2 var(--u);font-synthesis:style}
+.tc-og{display:grid;grid-template-columns:120px minmax(0,1fr);gap:var(--s3);align-items:start;padding-top:var(--s3);border-top:1px solid var(--k-rule)}
+.tc-og .cap{display:grid;margin:0;font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2)}.tc-og .cap b{font-size:var(--t22);line-height:1.1;color:var(--k-ink)}
+.tc-og .none{font:400 var(--t15)/1.5 var(--b);font-style:normal;color:var(--k-ink2)}
+.tc-full{display:grid;gap:var(--s3)}.tc .k-go{justify-self:start}
+/* polish (Nov 22, Sim's yes: "cleaned up a little and not so rough"): on wide screens the star card is the kit's hero size and the line
+   stretches to the card's height (rows share the room, each bar stays 32px), so no empty strip under the card; bigger type chips and a
+   slanted axis that reads like the rest of the kit */
+@media (min-width:1024px){
+  .tc-dmg{grid-template-columns:360px minmax(0,1fr);align-items:stretch}
+  .tc-cardw{padding-top:112px;align-content:start}.tc-cardw .k-facts{gap:var(--s3) var(--s8)}
+  .tc-cardw.tc-types{padding-top:0}
+  .tc-cardw .k-plate{min-height:300px;padding:200px 20px 20px}.tc-cardw .k-art{top:-112px;width:130%;height:312px} /* the kit's hero card size, by CSS so a resize across 1024 needs no redraw */
+  .tc-cardw .k-name{font-size:var(--t34)}.tc-cardw .k-name[data-kf="1"]{font-size:var(--t28)}.tc-cardw .k-name[data-kf="2"]{font-size:var(--t24)}.tc-cardw .k-form,.tc-cardw .k-fact{font-size:var(--t15)}
+  .tc-dr{display:flex;flex-direction:column}.tc-ln{flex:1;display:flex;flex-direction:column;--tcl:152px}
+  .tc-rows{flex:1;grid-auto-rows:minmax(var(--s12),1fr)}
+  .tc-bar{top:calc(50% - 16px);bottom:auto;height:32px}
+  .tc-rt .np-type,.tc-norm .np-type,.tc-og .np-type,.tc-oh .np-type{min-height:32px;font-size:var(--t15)}.tc-oh{font-size:var(--t24)}
+  .tc-ax{height:28px;font:italic 900 var(--t15)/1.5 var(--u);font-synthesis:style}
+  .tc-norm .tc-lbl{min-height:32px}
+}
+@media (max-width:1023.98px){.tc-dmg{grid-template-columns:minmax(0,1fr);gap:var(--s6)}.tc-cardw{grid-template-columns:minmax(0,280px) minmax(0,1fr);align-items:end;column-gap:var(--s8)}.tc-cardw.tc-types{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:899.98px){.tc-offs{grid-template-columns:minmax(0,1fr);row-gap:var(--s8)}}
+@media (max-width:699.98px){
+  .tc .k-step:first-child .k-sec{margin-top:var(--s6)}
+  /* phones: the card and its three facts side by side (HYBRID 6, facts beside instead of under so the page stays short), the line full width */
+  .tc-dmg{grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+  .tc-cardw{grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end;gap:var(--s3);padding-top:var(--s8)}
+  .tc-cardw .k-plate{min-height:0;padding:72px 6px 8px}.tc-cardw .k-art{top:-40px;height:112px}.tc-cardw .k-name{font-size:var(--t17)}
+  .tc-cardw .k-facts{grid-template-columns:minmax(0,1fr);gap:var(--s2)}.tc-cardw .k-facts li{display:flex;align-items:baseline;gap:var(--s2)}
+  .tc-cardw.tc-types{grid-template-columns:repeat(2,minmax(0,1fr));padding-top:0}
+  .tc-ln{--tcl:108px}.tc-bar b{font-size:var(--t17)}
+  /* phone length (today 2,798 px at 390): rows 32px (bars 24px), tighter groups, and the phone chart's three groups beside their labels */
+  .tc-r{min-height:32px}.tc-bar{top:4px;bottom:4px}
+  .tc-offs{gap:var(--s4)}.tc-o{gap:var(--s2)}.tc-og{grid-template-columns:88px minmax(0,1fr);gap:var(--s2);padding-top:var(--s2)}.tc-og .cap b{font-size:var(--t20)}
+  .tc-prow .tc-offr{grid-template-columns:88px minmax(0,1fr);gap:var(--s2);align-items:start}.tc-prow{gap:var(--s2)}
+  .tc .k-go{margin-top:var(--s2)}.tc{gap:var(--s4);padding-bottom:var(--s8)}
+  .tc .k-sec{margin-top:var(--s6)}.tc-oh{font-size:var(--t17)}
+  .tc-prow .tc-tp .k-tyi{display:none} /* the phone chart's own type row: words only (the symbols are on the main picks above) */
+  .tc-norm{grid-template-columns:minmax(0,1fr);gap:var(--s1);margin-top:var(--s2)}.tc-norm .tc-lbl{min-height:0}.tc-dr{gap:var(--s3)}
+}
+.tc-ax .sh{display:none}@media (max-width:359.98px){.tc-ln{--tcl:96px}.tc-ax .lg{display:none}.tc-ax .sh{display:inline}}
 /* ---------- Team Preview Practice: reskin proposal (helper hP3, Nov 22; NOT approved yet). Sim (Nov 22): keep the 6v6 of the real game's
    team preview, "our new kit but in that style but upgraded". Their six against your six on the war room's night-plot board (dark by day
    and night, pink offset), art bursting out of slanted plates, type chips with symbol + word, Plot blue = yours, magenta = theirs, the plan
@@ -1682,49 +1732,6 @@ button.pp2-plate{cursor:pointer;width:100%}
 .tr-how summary::before,.tr-prep summary::before{content:"";flex:none;width:8px;height:8px;margin-right:var(--s1);border-right:2px solid var(--plot-text);border-bottom:2px solid var(--plot-text);rotate:-45deg;transition:rotate .2s}
 .tr-how[open] summary::before,.tr-prep[open] summary::before{rotate:45deg}
 @media (prefers-reduced-motion:reduce){.tr-how summary::before,.tr-prep summary::before{transition:none}}
-/* ---------- Type Chart: Skyline (Sim's pick, Nov 14; docs/rebuild/mocks/types/skyline/BRIEF.md) ---------- */
-.tc-sky{display:grid;grid-template-columns:320px minmax(0,1fr);grid-template-areas:"card takes" "card city" "leg city" "note city" "sort city";grid-template-rows:auto auto auto auto 1fr;column-gap:var(--s8);row-gap:var(--s4);align-items:start}
-.tc-sky>.tc-cardw{grid-area:card}.tc-takes{grid-area:takes;margin:0}.tc-sky>.tc-city{grid-area:city}.tc-leg{grid-area:leg}.tc-sky>.tc-ab{grid-area:note;margin:0}.tc-sorted{grid-area:sort;margin:0}
-.tc-city{container-type:inline-size;min-width:0}
-.tc-cv{position:relative;display:none;width:100%;max-width:var(--mw);margin:0 auto}.tc-cv svg{display:block;width:100%;height:auto;overflow:visible}
-@container (min-width:576px){.tc-cv.dia{display:block}}
-@container (min-width:340px) and (max-width:575.98px){.tc-cv.blk6{display:block}}
-@container (max-width:339.98px){.tc-cv.blk3{display:block}}
-.tw{--c:var(--ty)}.tw.n{--c:color-mix(in srgb,var(--ty) 50%,var(--bg))}.tw.q{--c:color-mix(in srgb,var(--ty) 34%,var(--bg))}
-.tw .lot{fill:var(--table);stroke:var(--table-edge);stroke-width:1}
-.tw .rf{fill:var(--c)}.tw .lw{fill:color-mix(in srgb,var(--c) 80%,rgb(var(--shade)))}.tw .rw{fill:color-mix(in srgb,var(--c) 62%,rgb(var(--shade)))}
-.tw.n .lw,.tw.q .lw{fill:color-mix(in srgb,var(--c) 86%,rgb(var(--shade)))}.tw.n .rw,.tw.q .rw{fill:color-mix(in srgb,var(--c) 72%,rgb(var(--shade)))}
-.tw .fl{fill:none;stroke:rgba(var(--shade),.3);stroke-width:1}
-.tw .lt{fill:none;stroke:color-mix(in srgb,var(--on-type) 40%,transparent);stroke-width:1}.tw.n .lt,.tw.q .lt{stroke:color-mix(in srgb,var(--bg) 50%,transparent)}
-.tw.w4 .rf,.tw.w2 .rf{stroke:var(--bad);stroke-width:4;stroke-linejoin:round}.tw.r .rf{stroke:var(--plot);stroke-width:4;stroke-linejoin:round}
-.tw.z .pl{fill:var(--ink);stroke:var(--ty);stroke-width:4;stroke-linejoin:round}
-.tc-cv .lb{position:absolute;translate:-50% -50%;display:flex;align-items:baseline;gap:var(--s1);white-space:nowrap;font:600 var(--t13)/1.1 var(--b);color:var(--on-type);pointer-events:none}
-.tc-cv .lb b{font-size:var(--t15);line-height:1}.tc-cv .lb.n,.tc-cv .lb.q{color:var(--ink)}.tc-cv .lb.z{color:var(--bg)}
-@container (min-width:640px){.tc-cv.dia .lb{flex-direction:column;align-items:center;gap:0}.tc-cv.dia .lb b{font-size:var(--t20)}.tc-cv.dia .lb.w4 b{font-size:var(--t28)}}
-.tc-leg{display:grid;gap:var(--s2);margin:0;padding:0;list-style:none;font:400 var(--t15)/1.5 var(--b)}.tc-leg li{display:flex;align-items:center;gap:var(--s3)}
-.tc-leg .k{flex:none;width:16px;height:16px}.tc-leg .k.w{background:var(--bad)}.tc-leg .k.n{background:color-mix(in srgb,var(--ink) 30%,var(--bg))}.tc-leg .k.r{background:var(--plot)}.tc-leg .k.z{background:var(--ink)}
-.tc-city.quiet{margin-top:var(--s4)}.tc-city.quiet .tc-cv{max-width:min(var(--mw),720px)}
-/* the streets: attacking with its own types */
-.tc-streets{container-type:inline-size;display:grid;gap:var(--s2);margin-top:var(--s6)}.tc-streets .tc-lbl,.tc-sub{margin:0}.tc-sub{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
-.tc-sts{display:grid;gap:var(--s6);margin-top:var(--s3)}
-.tc-st{display:grid;gap:var(--s4);align-content:start}
-.tc-ban{position:relative;display:flex;align-items:baseline;justify-content:center;gap:var(--s2);padding:var(--s3) var(--s5);color:var(--on-type);background:repeating-conic-gradient(from 200deg at 100% 0,color-mix(in srgb,var(--on-type) 22%,transparent) 0 3deg,transparent 3deg 8deg) right top/40% 100% no-repeat,var(--ty);clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}
-.tc-ban b{font-size:var(--t28);line-height:1}.tc-ban small{font:700 var(--t13)/1 var(--b);letter-spacing:.06em;text-transform:uppercase}
-.tc-grps{display:flex;flex-wrap:wrap;align-items:flex-end;gap:var(--s5) var(--s6)}
-.tc-grp{display:grid;gap:var(--s2);--bw:48px;--th:112px}.tc-grp.lo{--th:32px}.tc-grp.z{--th:8px}
-.tc-grp .cap{margin:0;display:flex;align-items:baseline;gap:var(--s2);font:700 var(--t13)/1 var(--b);letter-spacing:.06em;text-transform:uppercase}.tc-grp .cap b{font-size:var(--t22);letter-spacing:0;text-transform:none}
-.tc-grp .row{position:relative;display:flex;flex-wrap:wrap;gap:var(--s4) var(--s2);padding:0 var(--s1)}
-.tc-grp .blk{display:grid;justify-items:center;gap:var(--s2);min-width:var(--bw);font:600 var(--t15)/1.2 var(--b)}
-.tc-grp .blk i{position:relative;display:block;width:var(--bw);height:var(--th);background:repeating-linear-gradient(0deg,transparent 0 8px,rgba(var(--shade),.3) 8px 9px),var(--ty);box-shadow:0 4px 0 var(--table-edge)}
-.tc-grp .blk i::after{content:"";position:absolute;top:-4px;right:-8px;width:8px;height:100%;background:color-mix(in srgb,var(--ty) 62%,rgb(var(--shade)));transform:skewY(-30deg);transform-origin:left bottom}
-.tc-grp.z .blk i{height:8px;background:var(--ink);outline:2px solid var(--ty);outline-offset:-2px}.tc-grp.z .blk i::after{display:none}
-.tc-grp .none{font:400 var(--t15)/1.5 var(--b);color:var(--ink-2);font-style:normal}
-@container (min-width:600px){.tc-st{grid-template-columns:176px minmax(0,1fr);align-items:start}.tc-ban{flex-direction:column;align-items:flex-start;justify-content:flex-end;min-height:112px;clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}}
-@container (min-width:960px){.tc-streets.n2 .tc-sts{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s8)}.tc-streets.n2 .tc-st{grid-template-columns:minmax(0,1fr)}.tc-streets.n2 .tc-ban{flex-direction:row;align-items:baseline;justify-content:center;min-height:0}
- .tc-streets.n1 .tc-ban{width:176px;min-height:176px}}
-@media (max-width:1023.98px){.tc-sky{grid-template-columns:260px minmax(0,1fr);column-gap:var(--s6)}}
-@media (max-width:699.98px){.tc-sky{grid-template-columns:minmax(0,1fr);grid-template-areas:"card" "note" "takes" "city" "leg" "sort";grid-template-rows:none}
- .tc-grp{--bw:40px;--th:84px}.tc-grp.lo{--th:24px}.tc-grp .blk{font-size:var(--t13)}.tc-grps{gap:var(--s4) var(--s6)}.tc-grp .row{gap:var(--s3) var(--s2)}}
 /* ---------- Meta > Pokémon > Rating (Nov 14): the approved mock-up (Preview gallery ratings.html) ---------- */
 .ra{display:grid;gap:var(--s6);padding:0 var(--gut) var(--s16)}
 .ra-sub{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s8)}
@@ -3237,7 +3244,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 /* Nov 15 (colour audit #15): the KO stamp's text uses --on-mark: white on day red 4.55:1, dark on night red 7.33:1 (white on night red was 2.54:1) */
 /* Nov 15 (night contrast sweep): the Events/Archetypes plate label and Track Record step numbers used --on-plate on --plot (1.76:1 at night); now --on-mark like the other eight */
 /* Nov 15 (day contrast sweep): This Week's Rising/Falling labels and points use --on-mark by day (off-white on red was 4.36:1, white is 4.55:1) */
-:root[data-theme="night"] .tc-grid td.v2{background:color-mix(in srgb,var(--good) 40%,var(--surface))} /* Nov 15 (night contrast sweep): 2x cells were 3.76:1 at 55%; 40% measures 5.28:1 */
+:root[data-theme="night"] .tc-grid td.v2{background:color-mix(in srgb,var(--k-nasty) 36%,var(--surface))} /* Nov 15 (night contrast sweep): 2x cells were 3.76:1 at 55%; 40% measures 5.28:1 */
 .wk-kind{display:inline-flex;align-items:center;gap:var(--s1)}.wk-kind .kdic{width:var(--s4);height:var(--s4);flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round} /* Nov 15: the kind icon beside its word */
 .fn-uc .mg.none{display:block;visibility:hidden} /* Nov 15 (audit #15): every Undercard tile keeps the Mega line, so ratings and tiers sit level (Mega tiles were 6 px lower at 1280, measured 129 vs 135); same as My Box (.bx-f) */
 @media (max-width:399.98px){.trk-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);align-items:start}.trk-stats li:first-child{grid-column:1/-1}} /* Nov 15 (re-audit #7): at 320 "Oct 29" filled its column and read "Oct 2913"; the date gets its own row, the two counts share the next */
@@ -3404,7 +3411,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:499.98px){:not(.mt-belt)>.fn-belt.long{padding-inline:var(--s3)}:not(.mt-belt)>.fn-belt.long .w .u{font-size:var(--t20);white-space:nowrap}}
 @media (min-width:1100px) and (max-width:1279.98px){.fn-cacts{column-gap:var(--s3)}} /* the corner links stay in one row beside the wider score column (All 113 Events wrapped alone at 1100-1180) */
 .tc-h h1{text-wrap-style:balance} /* morning helper (confirmed): a long one-word name joined to "hard." ran off the screen at 320 (Crabominable +46px); the break is allowed and the lines are balanced */
-.tc>.tc-h,.tc-h h1{min-width:0} /* the page grid sized its column to the headline (350px at 320): the headline may now shrink, so it wraps within the screen */
+.tc>.tc-h,.tc-h>.k-head,.tc-h h1{min-width:0} /* the page grid sized its column to the headline (350px at 320): the headline may now shrink, so it wraps within the screen */
 /* Sim Q45 A (Nov 19, 8:33 PM): Test Run on phones shows the Coin Flips pile's first 5 cards and a button for the rest; 700 and up: every card */
 .tp-morebtn{display:none}
 @media (max-width:699.98px){.tp-cards:not(.on)>.tp-more{display:none}.tp-morebtn{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}}
