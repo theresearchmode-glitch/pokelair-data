@@ -3352,7 +3352,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .abt-fine .k-h2{margin:0 0 var(--s3);font-size:var(--t28)}
 @media (max-width:959.98px){.abt-two{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699.98px){.abt .abt-rc{padding:var(--s4) var(--s3) var(--s6);rotate:none}.abt .abt-rc li{padding:var(--s2) 0}.abt-rn{font-size:var(--t22)}.abt-rk{margin-bottom:var(--s2)}.abt .abt-rc .inf-rc{font-size:var(--t15)}
-  .abt-st{display:grid;grid-template-columns:repeat(2,max-content);gap:var(--s2);margin-top:var(--s3)}.abt-st li{font-size:var(--t17);padding:var(--s1) var(--s3)}.abt .k-step:first-child .k-sec{margin-top:var(--s6)}.abt .k-sec .k-note{display:none}.abt-d{line-height:1.4}.abt .inf-row summary{padding:var(--s2) 0}.abt-fine .k-h2{font-size:var(--t24)}}
+  .abt-st{display:grid;grid-template-columns:repeat(2,max-content);gap:var(--s2);margin-top:var(--s3)}.abt-st li{font-size:var(--t17);padding:var(--s1) var(--s3)}.abt .k-step:first-child .k-sec{margin-top:var(--s6)}.abt .k-sec .k-note{display:none}.abt .inf-row summary{padding:var(--s2) 0}.abt-fine .k-h2{font-size:var(--t24)}}
 .inf-saved li{display:grid;gap:var(--s1)}.inf-saved .fine{margin:0}.inf-saved>.fine:first-of-type{margin:0 0 var(--s4)}
 .inf-rc{display:grid;grid-template-columns:auto minmax(var(--s4),1fr) auto;align-items:baseline;gap:var(--s2);margin:0;font:400 var(--t15)/1.4 var(--b)}.inf-rc i{border-bottom:2px dotted var(--rule)}.inf-rc b{font-weight:700}
 /* About's parts (Nov 15): today's full texts inside the rows; its source list, licence box and email line in the new look */
@@ -4290,3 +4290,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .ev2-six .np-mon{--iw:32px}
   .ev2 .ev-ns{gap:var(--s1) var(--s4)}
 }
+/* polish sweep Nov 22: "Build Me a Team and Suggestions" spilled its tile 4-7px at 1120-1200 (five narrow columns) */
+@media (min-width:1100px) and (max-width:1279.98px){.inf-tile summary{padding-inline:var(--s4)}.inf-tile summary b{font-size:var(--t17)}}
+/* polish sweep Nov 22: About's four stamps went 3+1 at 700-799; two by two there, as on phones */
+@media (min-width:700px) and (max-width:799.98px){.abt-st{display:grid;grid-template-columns:repeat(2,max-content)}}
