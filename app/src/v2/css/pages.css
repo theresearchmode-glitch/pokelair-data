@@ -81,26 +81,71 @@
 .tm-tsbtn{margin-left:auto;min-height:var(--tap);font:600 var(--t15)/1.2 var(--b);color:var(--plot-text);white-space:nowrap}
 .tm-tsbtn small{font:600 var(--t13)/1 var(--b);color:var(--ink-3)}
 .ts2{padding:var(--s8)}
-.ts2 h2{font-size:var(--t34);margin-top:var(--s2)}
-.ts2-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s6);margin:var(--s4) 0 var(--s6)}
-.ts2-acts .up,.ts2-nb .up,.ts2-st .up i{color:var(--good-text)}.ts2-acts .dn,.ts2-nb .dn,.ts2-st .dn i{color:var(--bad-text)}
-.ts2-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s6)}
-/* cards in one row share row lines (subgrid): headers, moves, nature and stats line up across the row whatever wraps */
-.ts2-card{cursor:pointer;display:grid;grid-row:span 4;grid-template-rows:subgrid;row-gap:var(--s3);align-content:start;padding-top:var(--s4);border-top:1px solid var(--rule)}
-.ts2-grid{row-gap:var(--s3)}
-.ts2-card header{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:end;gap:var(--s3)}
-.ts2-card h3{font-size:var(--t20)}.ts2-card h3 .mg{margin-right:var(--s1)}.ts2-card h3 .mg.none{display:none}
-.ts2-card header p{display:grid;margin-top:var(--s1);font:600 var(--t15)/1.5 var(--b)}
-.ts2-card em{font:500 var(--t13)/1.5 var(--b);font-style:normal;color:var(--ink-3);margin-right:var(--s1)}
-.ts2-mv{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
-.ts2-mv li{justify-content:center;min-height:36px;font-size:var(--t15);padding:0 var(--s3);white-space:nowrap}.ts2-mv li.none{display:flex;align-items:center;justify-content:center;color:var(--ink-3);font:500 var(--t13)/1 var(--b)}
-.ts2-nat{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s1) var(--s3);font:600 var(--t15)/1.5 var(--b)}
-.ts2-nat span{font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-.ts2-st{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1);text-align:center}
-.ts2-st span{display:block;font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.ts2-st i{font-style:normal;font-weight:800}
-.ts2-st b{display:block;font:800 var(--t15)/1.4 var(--u);font-style:italic}.ts2-st small{display:block;font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-@media (max-width:1099.98px){.ts2-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:699.98px){.ts2{padding:var(--s6) var(--s4)}.ts2-grid{grid-template-columns:minmax(0,1fr)}.tm-tsbtn{margin-left:0}}
+@media (max-width:699.98px){.ts2{padding:var(--s6) var(--s4)}.tm-tsbtn{margin-left:0}}
+/* ---------- Team Sheet: THE DOSSIER on the shared kit (reskin, Nov 21; HYBRID "Keep as drawn": cohesion-nov21/pages/sheet.html) ----------
+   the kit header, links and pink move, then one plan step: a file per Pokémon (kit card, Item / Ability / Nature, kit move tickets, six stats) */
+.np-sheet:has(.sh2){background:var(--k-paper)}
+.sh2 .k-kicker{margin-top:0}
+.sh-t{overflow-wrap:anywhere}
+.sh-links{display:flex;flex-wrap:wrap;align-items:center;gap:0 24px;margin:8px 0 0}
+.sh-share{margin:0;padding:0;border:0;background:none;font-family:var(--b);cursor:pointer}
+.sh2 .k-go{margin-top:12px}
+.sh-key{max-width:760px;margin-top:16px}
+.sh-kbest{color:var(--k-plot-text)}
+.sh2 .up{color:var(--good-text)}.sh2 .dn{color:var(--bad-text)}
+.sh2 .k-plan{padding-bottom:16px}
+.sh-dossier{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:72px 24px;margin:0;padding:56px 0 0;list-style:none}
+.sh-file{display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:12px;min-width:0;cursor:pointer}
+.sh-l,.sh-r{display:contents}
+.sh-file .k-card{order:1}.sh-kv{order:2}.sh-file .k-moves{order:3}.sh-stats{order:4}
+.sh-file .k-score{font-size:var(--t15);color:var(--k-ink2)}
+.sh-file .k-card:hover .k-art{translate:0 -4px}
+.sh-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin:4px 0 0}
+.sh-kv>div{min-width:0;padding-top:8px;border-top:1px solid var(--k-rule)}
+.sh-kv .sh-nat{grid-column:1/-1}
+.sh-kv dt{font-size:var(--t13);font-weight:600;line-height:1.4;color:var(--k-ink2)}
+.sh-kv dd{margin:0;font-size:var(--t17);font-weight:700;line-height:1.3;color:var(--k-ink)}
+.sh-kv dd em{font-size:var(--t13);font-weight:600;font-style:normal}
+.sh-kv dd small{display:block;font-size:var(--t13);font-weight:500;color:var(--k-ink2)}
+.sh-nomv{min-height:52px;color:var(--k-ink2)}.sh-nomv .k-mn{padding-left:12px}
+.sh-stats{display:grid;gap:2px;margin:0;padding:0;list-style:none}
+.sh-st{display:grid;grid-template-columns:44px 40px minmax(0,1fr) 20px;align-items:center;gap:0 8px;min-width:0;min-height:20px}
+.sh-sl{font-size:var(--t13);font-weight:600;line-height:1.2;color:var(--k-ink2);white-space:nowrap}
+.sh-sl i{margin-left:2px;font-style:normal;font-weight:700}
+.sh-st.up .sh-sl i{color:var(--good-text)}.sh-st.dn .sh-sl i{color:var(--bad-text)}
+.sh-st b{font-size:var(--t15);line-height:1.2;color:var(--k-ink);text-align:right;white-space:nowrap}
+.sh-bar{display:block;height:12px;background:var(--k-rule);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+.sh-bar i{display:block;width:var(--w);height:100%;background:var(--k-ink2);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+.sh-st small{font-size:var(--t13);line-height:1.2;color:var(--k-ink2);text-align:right;white-space:nowrap}
+.sh-st.best b{color:var(--k-plot-text)}.sh-st.best .sh-bar i{background:var(--k-plot)}
+@media (prefers-reduced-motion:reduce){.sh-file .k-card:hover .k-art{translate:none}}
+@media (max-width:999.98px){.sh-dossier{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* phones (phone length: no longer than today's Tale of the Tape, 2269px at 390): the card with its stats under it on the left, the set
+   (the moves, then Item / Ability / Nature one line each) on the right; the moves' "what it does" line is left to the move tickets elsewhere */
+@media (max-width:699.98px){
+  .sh2 .k-plan{padding-bottom:8px}
+  .sh-dossier{grid-template-columns:minmax(0,1fr);gap:40px;padding-top:40px}
+  .sh-file{grid-template-columns:152px minmax(0,1fr);gap:8px 12px;align-items:start}
+  .sh-l,.sh-r{display:grid;align-content:start;gap:8px;min-width:0}
+  .sh-file .k-moves{order:1}.sh-kv{order:2}
+  .sh-kv{grid-template-columns:minmax(0,1fr);gap:4px;margin:0}
+  .sh-kv>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;padding-top:4px}
+  .sh-kv dd{font-size:var(--t15)}
+  .sh-file .k-small .k-nm{grid-template-columns:minmax(0,1fr) auto}
+  .sh-file .k-small .k-sc{grid-row:auto;display:grid}
+  .sh-file .k-mn small{display:none}
+  .sh-stats{gap:0}
+  .sh-st{grid-template-columns:34px 30px minmax(0,1fr) 16px;gap:0 4px;min-height:18px}
+}
+/* the smallest phones: the stat bars and the moves (two across) take the full width under the card, so each bar reads and each type word fits its tab */
+@media (max-width:379.98px){
+  .sh-file{grid-template-columns:128px minmax(0,1fr)}
+  .sh-l,.sh-r{display:contents}
+  .sh-file .k-card{grid-column:1;grid-row:1}
+  .sh-kv{grid-column:2;grid-row:1;align-self:end}
+  .sh-stats{grid-column:1/-1;grid-row:2}
+  .sh-file .k-moves{grid-column:1/-1;grid-row:3}
+}
 
 /* Save Team sheet (R4, Nov 11) */
 .tm-eb{align-items:flex-start;line-height:1.3}.tm-eb::before{margin-top:4px}.tm-eb>span{min-width:0;overflow-wrap:anywhere}
@@ -561,7 +606,6 @@
 .svt2-empty{margin-top:var(--s4)}.svt2-empty .np-btn{width:100%}
 
 /* Team Sheet cards open Edit Set (Nov 12): a visible focus ring for keyboards */
-.ts2-card:focus-visible{outline:2px solid var(--plot);outline-offset:var(--s1)}
 
 /* Edit Set: slot header and the Weak / Resists fold (Nov 12, today's features) */
 .ed-head{margin:0 0 var(--s4);align-items:baseline}.ed-use{font:500 var(--t15)/1.3 var(--b);color:var(--ink-2)}
@@ -607,8 +651,6 @@
 .hs2-mb{position:relative}.hs2-mb::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
 .hs2>summary{grid-template-columns:minmax(0,1fr) 0 20px}.hs2{margin-top:var(--s6)}
 .hs2>summary{padding-right:var(--s10)}
-.ts2-lead{margin:0 0 var(--s1);font:600 var(--t13)/1.3 var(--b);color:var(--plot-text)}
-@media (max-width:699.98px){.ts2-lead.no{display:none}}
 
 /* ---------- Home (Nov 12, piece 1: the hero; ported from the approved mock-up docs/rebuild/mocks/home.tpl.html) ---------- */
 .hm-k{margin:0;text-align:center;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
@@ -2266,55 +2308,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .wt-fan>.wt-card:first-child{margin-left:0}.wt-fan>.wt-card:last-child{margin-right:0}
 .wt-f i{margin-right:var(--s1)}
 
-/* ---------- Team Sheet: "Tale of the Tape" (Sim's pick, Nov 14) ---------- */
-.tt-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6)}.tt-top h2{margin:var(--s3) 0 0;font-size:var(--d64);line-height:1} /* re-check Nov 15: clear of the eyebrow line above */
-.tt2 .ts2-acts{margin:0}.tt-help{margin:var(--s2) 0 0}
-.tt-key{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s5);margin:var(--s2) 0 var(--s4);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.tt-key span{display:inline-flex;align-items:center;gap:var(--s1)}
-.tt-kbest{width:16px;height:8px;background:var(--plot);clip-path:polygon(3px 0,100% 0,calc(100% - 3px) 100%,0 100%)}
-.tt2 .up{color:var(--plot-text)}.tt2 .dn{color:var(--bad-text)}
-.tt-wrap{display:grid;gap:var(--s8)}
-.tt{width:100%;border-collapse:collapse;table-layout:fixed}
-.tt-corner{width:112px}
-.tt th,.tt td{padding:var(--s2) var(--s1);text-align:center;vertical-align:middle;font:500 var(--t15)/1.4 var(--b)}
-.tt tbody td{border-bottom:1px solid var(--rule);cursor:pointer}
-.tt .tt-rh{padding-left:0;text-align:left;font:900 var(--t17)/1.2 var(--u);font-style:italic;color:var(--plot-text);border-bottom:1px solid var(--rule)}
-.tt thead th{padding:0 var(--s1) var(--s3);border-bottom:2px solid var(--plot);vertical-align:bottom}
-/* the six across the top: a slanted banner in its two type colours, outlined number and name behind the Pokémon */
-.tt-pick{display:grid;justify-items:center;gap:2px;width:100%;padding:0;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
-.tt-ban{position:relative;display:grid;place-items:end center;width:100%;height:148px;overflow:hidden;background:linear-gradient(160deg,var(--b1),var(--b2));clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
-.tt-ban::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(120deg,transparent 0 10px,color-mix(in srgb,var(--tier-lit) 10%,transparent) 10px 11px)}
-.tt-no{position:absolute;left:var(--s4);top:var(--s1);z-index:2;font:900 var(--t26)/1 var(--u);font-style:italic;color:transparent;-webkit-text-stroke:1px var(--tier-lit)}
-.tt-giant{position:absolute;left:var(--s2);bottom:calc(var(--s2)*-1);font:900 var(--t34)/1 var(--u);font-style:italic;white-space:nowrap;color:transparent;-webkit-text-stroke:1px color-mix(in srgb,var(--tier-lit) 45%,transparent)}
-.tt-ban .np-mon{--iw:120px;position:relative;z-index:1}
-.tt-pick:hover .tt-ban .np-mon,.tt-pick:focus-visible .tt-ban .np-mon{translate:0 calc(var(--s1)*-1)}
-.tt-pick:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
-.tt-mg{min-height:16px;font:900 var(--t13)/1.2 var(--u);font-style:italic;color:var(--plot-text)}
-.tt-nm{max-width:100%;font:900 var(--t17)/1.2 var(--u);font-style:italic;overflow-wrap:normal}
-.tt-lead{padding:0 var(--s2);background:var(--plot);color:var(--on-mark);font:900 var(--t13)/1.5 var(--u);font-style:italic;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}.tt-lead.no{background:none}
-/* set rows */
-.tt-nat b{display:block;font-weight:700}.tt-nb,.tt-src{display:block;font:500 var(--t13)/1.4 var(--b)}.tt-src{color:var(--ink-3)}
-.tt-mv{display:grid;gap:var(--s1);margin:0;padding:0;list-style:none}.tt-mv .np-type{display:flex;justify-content:center;min-height:24px;padding:0 var(--s2);text-align:center;line-height:1.2}.tt-mv .none{font:500 var(--t13)/1.4 var(--b);color:var(--ink-3)}
-/* stat rows: the number, its points, a bar against the team's best; the best on a blue plate */
-.tt-sh th{padding:var(--s6) 0 var(--s2);text-align:left;border-bottom:2px solid var(--plot)}.tt-sh .u{font:900 var(--t22)/1 var(--u);font-style:italic}.tt-sh small{font:500 var(--t13)/1 var(--b);color:var(--ink-2)}
-.tt-stats tr.odd>*{background:var(--table)}
-.tt-st{display:grid;justify-items:center;gap:2px;padding:var(--s1) var(--s2)}
-.tt-st b{font:900 var(--t28)/1 var(--u);font-style:italic}.tt-st small{font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
-.tt-bar{display:block;justify-self:stretch;height:3px;margin-top:var(--s1);background:linear-gradient(90deg,currentColor var(--w),var(--rule) var(--w));opacity:.45;transform:skewX(var(--slant))}
-.tt-st.up b,.tt-st.up small{color:var(--plot-text)}.tt-st.dn b,.tt-st.dn small{color:var(--bad-text)}
-.tt-st.best{background:var(--plot);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}.tt-st.best b,.tt-st.best small{color:var(--on-mark)}.tt-st.best .tt-bar{opacity:.8}
-@media (hover:hover) and (pointer:fine){.tt-ban .np-mon img,:root[data-theme="night"] .tt-ban .np-mon img{filter:none}}
-@media (prefers-reduced-motion:reduce){.tt-pick:hover .tt-ban .np-mon{translate:none}}
-@media (max-width:1099.98px){.tt-corner{width:80px}.tt-ban{height:120px}.tt-ban .np-mon{--iw:96px}.tt-nm{font-size:var(--t13)}.tt .tt-rh{font-size:var(--t15)}.tt-st b{font-size:var(--t22)}.tt th,.tt td{font-size:var(--t13)}.tt-giant{font-size:var(--t26)}}
-@media (max-width:699.98px){.tt-top h2{font-size:var(--t34)}.tt-corner{width:56px}.tt .tt-rh{font-size:var(--t13)}.tt-ban{height:104px}.tt-ban .np-mon{--iw:88px}
-  .tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}.tt-no{font-size:var(--t20)}.tt-mv .np-type{font-size:var(--t13);padding:var(--s1) 6px}}
-.tt thead th{vertical-align:top}
-@media (max-width:1099.98px){.tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}}
-@media (max-width:1099.98px){.tt thead th{padding-left:0;padding-right:0}}
-@media (max-width:699.98px){.tt-corner{width:64px}}@media (max-width:379.98px){.tt-mv .np-type{padding:var(--s1) 6px}.tt td{padding-left:2px;padding-right:2px}}
-/* Nov 15 (re-audit #15): under 380 the move text touched the chips' slanted edges (2px sides, now 6px); the moves start at the top of
-   every column, so the four rows line up instead of each column floating to its own middle */
-.tt td:has(.tt-mv){vertical-align:top}
-
 /* ---------- Battle a team: "Play-by-Play" (Sim's pick, Nov 14): you PLOT blue, them the site's own pink (--pick) ---------- */
 .pbp{--you:var(--plot);--you-d:color-mix(in srgb,var(--plot) 62%,var(--tier-shade));--them-d:color-mix(in srgb,var(--them) 62%,var(--tier-shade));--you-dd:color-mix(in srgb,var(--plot) 38%,var(--tier-shade));--them-dd:color-mix(in srgb,var(--them) 38%,var(--tier-shade))}
 /* the verdict on a filled slanted plate: blue Favoured, dark plate Even match, red Unfavoured (never the pink: pink means them) */
@@ -2899,7 +2892,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2-h h1 .pl{display:block} /* re-check Nov 15: two sentences, two lines (it ran on and left 'top 20.' alone) */
 .hm-acts .np-link{min-width:var(--tap);justify-content:center} /* re-check Nov 15: Got It was 39px wide */
 @media (max-width:359.98px){.gs-facts b{font-size:var(--t15)}} /* re-check Nov 15: at 320 '37.5%' and '52.0%' were wider than their columns and touched */
-.tt-sh small{margin-left:var(--s2)} /* re-audit Nov 15: 'Stats' and 'at level 50' read as one word */
 
 /* ---------- info pages, DRAFTS for Sim's review (Nov 15; only drawn in review mode) ---------- */
 .infp{display:grid;gap:var(--s10)}
@@ -2944,8 +2936,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .fn-uc .mg.none{display:block;visibility:hidden} /* Nov 15 (audit #15): every Undercard tile keeps the Mega line, so ratings and tiers sit level (Mega tiles were 6 px lower at 1280, measured 129 vs 135); same as My Box (.bx-f) */
 @media (max-width:399.98px){.trk-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);align-items:start}.trk-stats li:first-child{grid-column:1/-1}} /* Nov 15 (re-audit #7): at 320 "Oct 29" filled its column and read "Oct 2913"; the date gets its own row, the two counts share the next */
 .trk-stats{align-items:start} /* Nov 15: labels start level under each number */
-@media (max-width:429.98px){.tt thead th{padding-left:2px;padding-right:2px}.tt-nm{font-stretch:88%}.tt td{padding-left:var(--s1);padding-right:var(--s1)}} /* Nov 15 (re-audit #5): at 320-390 the names touched ("Charizard YWhimsicottBasculegion") and the move chips met the next column; a small gap each side, names in the approved narrower letters (88%, as Home and My Box) */
-@media (max-width:379.98px){.tt td{font-stretch:88%;padding-left:6px;padding-right:6px}.tt-mv .np-type{font-stretch:88%}} /* Nov 15 (re-audit #5): the approved narrower letters for cell text on the smallest phones ("Adaptability" met the edge, chips met the next column) */
 @media (max-width:399.98px){.mt-id .tm-name{font-size:var(--t20)}} /* Nov 15 (re-audit #4): beside the score box at 320 the name column is ~140 px; "Tailwind" broke mid-word at 24 px */
 .tm-name{text-wrap-style:balance} /* Nov 15 (re-audit #4): no lone word on the team name's last line */
 /* Nov 15 (re-audit #10): tap areas: the search chip x (was 8x15), Events' stacked Recent links (20 px tall, hit areas overlapped), the calendar link (~40 px) */
