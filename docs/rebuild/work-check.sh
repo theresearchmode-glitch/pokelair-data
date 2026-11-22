@@ -27,9 +27,9 @@ lc=$(( (now - $(git -C /home/user/pokelair-data log -1 --format=%ct)) / 60 ))
 ld=$(( (now - $(stat -c %Y /home/user/pokelair-data/docs/rebuild/decisions.md 2>/dev/null || echo $now)) / 60 ))
 lp=$(( (now - $(stat -c %Y /home/user/pokelair-data/docs/game-plan.html 2>/dev/null || echo $now)) / 60 ))
 echo "Work check $(TZ=America/New_York date '+%a %b %-d, %-I:%M:%S %p')"
-echo "Helpers active: $active of ${NEED:-2}$names" | sed 's/\\n/\n/g'
+echo "Helpers active: $active of ${NEED:-1}$names" | sed 's/\\n/\n/g'
 echo "Test processes running (main thread or helpers): $tests"
 echo "Minutes since last commit: $lc   since decision log: $ld   since Plans source edit: $lp"
-[ "$active" -lt "${NEED:-2}" ] && echo "PROBLEM: fewer than ${NEED:-2} helper(s) on approved work. Refill now (CLAUDE.md 'ALWAYS WORKING, ALWAYS 3 HELPERS')."
+[ "$active" -lt "${NEED:-1}" ] && echo "PROBLEM: fewer than ${NEED:-1} helper(s) on approved work. Refill now (CLAUDE.md 'ALWAYS WORKING, ALWAYS 3 HELPERS')."
 [ "$lp" -gt 60 ] && echo "PROBLEM: Plans page source older than 60 min (rule: update every 45-60 min)."
 echo "HELPERS_ACTIVE=$active"

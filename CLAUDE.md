@@ -40,7 +40,11 @@ Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to te
 Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
 approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
 
-## HELPERS: TWO AT A TIME IS THE RULE (Sim, Nov 22, logged 1:13 AM: "actually, 2 helpers is fine. lets keep that as the rule"; LATEST)
+## HELPERS: ONE AT A TIME IS THE RULE (Sim, Nov 22, logged 1:29 AM; LATEST)
+Sim: "also 1 helper max is fine. im okay to take it a little slower. we have time. cant do anything if i run out of usage lol."
+At most ONE helper at once; above 1 ask Sim first. work-check.sh / stop-check.sh need 1. The 2-helper rule below is replaced.
+
+## (replaced) HELPERS: TWO AT A TIME IS THE RULE (Sim, Nov 22, logged 1:13 AM: "actually, 2 helpers is fine. lets keep that as the rule"; LATEST)
 At most 2 helpers at once; above 2 ask Sim first. work-check.sh / stop-check.sh need 2. The 1-helper note below is replaced.
 
 ## (replaced) HELPERS: ONE AT A TIME AFTER TONIGHT'S TASKS (Sim, Nov 22, logged 12:58 AM)
