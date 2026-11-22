@@ -45,6 +45,10 @@ Sim: "im going to allow one additional helper but for one specific task and only
 only job to be doing mock ups for the reskins so i can approve them." So: 1 build helper + 1 mock-up helper (direction pictures for the
 pages still to reskin). When the mock-ups are done, back to ONE helper. Never use the mock-up slot for anything else.
 
+## TWO BUILD HELPERS FOR THE REST OF NOV 22 (Sim, logged 12:35 PM)
+Sim: "sounds like a plan. i just wanted the builds approved so then after, all resources can just focus on making it happen." The mock-up
+helper switches to building once its mock-ups are done: 2 build helpers + HH building, for the rest of Nov 22. Above that, ask Sim.
+
 ## EVERYTHING ON THE KIT; NOTIFY WHEN NEEDED (Sim, Nov 22, logged 11:36 AM)
 Sim: "everything is done with the kit not the old way." Every new or changed page, sheet or piece uses the shared kit (kit.js,
 the kit tokens and parts), never the old pre-reskin patterns. Sim: "send me a notification if you need me for anything ill be around":
