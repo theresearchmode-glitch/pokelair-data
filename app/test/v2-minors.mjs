@@ -1494,7 +1494,7 @@ if (part('main2')) {
     await q.addInitScript(e => { window.__PL_TEST = 1; if (e && !sessionStorage.getItem('pz')) { sessionStorage.setItem('pz', 1); localStorage.setItem('cc2.state', JSON.stringify({slots: [{n: ''}, {n: ''}, {n: ''}, {n: ''}, {n: ''}, {n: ''}], teams: []})); localStorage.setItem('cc2.welcomed', '"1"'); } }, empty);
     await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2200);
     for (const w of [1100, 1280, 1440, 1920, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(400); await q.evaluate(() => window.V2.sdSixAfter && window.V2.sdSixAfter());
-      const m = await q.evaluate(() => { const tk = document.querySelector('#main .sdh-tick'), k = document.querySelector('#main .sds-k'); if (!tk || !k) return {err: 'no ticker or line-up'};
+      const m = await q.evaluate(() => { const tk = document.querySelector('#main .sd-top') || document.querySelector('#main .sdh-tick'), k = document.querySelector('#main .sds-k'); /* Nov 22: the Top 10 strip (Sim approved 12:26 PM) sits between the ticker and the line-up; the seam is measured under it */ if (!tk || !k) return {err: 'no ticker or line-up'};
         /* the ticker is tilted with the bands: its bottom edge, at x, from its rotated corners (bottom-left is the lowest point) */
         const T = tk.getBoundingClientRect(), tan = Math.tan(Math.abs(parseFloat(getComputedStyle(tk).rotate) || 0) * Math.PI / 180), K = k.getBoundingClientRect(), gap = Math.round(K.top - (T.bottom - (K.left - T.left) * tan));
         const P = [...document.querySelectorAll('#main .sds-part')].map(e => e.getBoundingClientRect()), side = P.length === 3 && Math.abs(P[0].top - P[2].top) < P[0].height && P[2].left > P[0].right;
