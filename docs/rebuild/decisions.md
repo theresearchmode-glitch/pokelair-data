@@ -1952,3 +1952,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:58 AM: Sim: after the current tasks finish (hT3 Speed Tiers, hP3 Practice, hG2 Test Run, hB2 Battle mock-ups), go down to 1 helper for usage conservation until Sim says 2 again.
 - 1:10 AM: hB2 round 2: 3 new Battle mock-ups (1 The script, 2 Pink over blue, 3 The target, recommended); phone 390: 3,605 / 3,770 / 3,421 px (today 4,107). Pictures to Sim. Helper ended (Sim's extra slot for this job only).
 - 1:12 AM: Sim: Battle = concept 1 'Turn one is already written' (the script); make it better, more creative, and build it ('make this a go'). Queued for the next helper slot (Sim's 1-helper rule after the running tasks); bisect: the type-chips merge (b29de0df) is what breaks q69 (My Team 1024 layout).
+- 1:13 AM: Sim: 2 helpers is fine; keep that as the rule (replaces the 1-helper plan from 12:58 AM).
