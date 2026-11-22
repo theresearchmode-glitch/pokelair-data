@@ -2117,24 +2117,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (min-width:700px){.gs-spot{grid-template-columns:minmax(220px,4fr) minmax(0,7fr)}.gs-plate .np-mon{--iw:200px}}.gs-sinfo{position:relative}
 /* ---------- Meta > Usage: The Podium (Grandstand brief, section 4) ---------- */
 .us .us-src{flex:1 1 100%;margin:0;color:var(--ink-2)}
-.us-podium{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s8);align-items:end}
-.us-steps{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:var(--s1);border-bottom:4px solid var(--plot)}
-.us-step{display:grid;justify-items:center;min-width:0}
-.us-blk{display:grid;place-items:center;width:100%;font:900 var(--d64)/1 var(--u);font-style:italic;color:var(--tier-ink);clip-path:polygon(0 var(--s3),var(--s3) 0,100% 0,100% 100%,0 100%)}
-.us-p1 .us-blk{height:168px;background:var(--podium-1)}.us-p2 .us-blk{height:120px;background:var(--podium-2)}.us-p3 .us-blk{height:96px;background:var(--podium-3)}
-.us-fig{display:grid;justify-items:center;align-content:end;width:100%;min-width:0;padding:0 2px;background:none;border:0;color:inherit;font:inherit;text-align:center;cursor:pointer}
-.us-art{position:relative;display:grid;place-items:end center;width:100%}
-.us-fig .np-mon{--iw:96px;transition:transform .15s ease}.us-fig.pod .np-mon{--iw:140px}.us-p1 .us-fig.pod .np-mon{--iw:176px}
-.us-fig:hover .np-mon,.us-fig:focus-visible .np-mon,.us-fig[aria-pressed="true"] .np-mon{transform:translateY(calc(var(--s1)*-1))}
-.us-fig[aria-pressed="true"] .us-tx b{color:var(--plot-text)}
-.us-tx{display:grid;justify-items:center;gap:2px;padding:var(--s2) 0;min-width:0;width:100%}.us-tx b{max-width:100%;font:700 var(--t15)/1.25 var(--b)}
-.us-rk{font:900 var(--t15)/1.2 var(--u);font-style:italic;color:var(--ink-2)}
-.us-step .us-tx{order:2}.us-step{grid-template-rows:auto auto auto}.us-step .us-fig.pod{grid-row:1}.us-step .us-blk{grid-row:2}
 /* share, teams and place stack one per line at every width (Sim, Nov 19; was phones only: side by side at 700+ it wrapped 2+1 and left '▼1 place' alone on a row) */
-.us-nums{display:flex;flex-direction:column;flex-wrap:wrap;justify-content:center;align-items:center;gap:2px;font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}.us-nums b{font:900 var(--t17)/1 var(--u);font-style:italic;color:var(--ink)}.us-nums b .us-pct{font-size:var(--t13)}
-.us-nums small{font-size:inherit} /* '1,405 teams' in <small> was the browser's 'smaller' (10.8px, off the type scale; qcheck on GitHub, Nov 19): keeps the line's 13px */
-@media (max-width:399.98px){.us-bench .us-tx b,.us-bench .us-nums small{font-stretch:88%}} /* 320-399: bench names ('Basculegion' 76px) and 'N teams' (70px at 13px) fit their 68px column, as the empty My Team tiles do */
-.us-bench .us-fig{align-content:start} /* every card in a bench row starts at the top, so names and sprites line up even when one card has no 'place' line (was: the shorter cards sat a line lower) */
 .us-tr{font:700 var(--t13)/1 var(--b);font-style:normal;color:var(--plot-text)}.us-tr.down,.us-tr.dn{color:var(--bad-text)}
 .us-benches{display:grid;gap:var(--s4)}.us-bench{--gsw:96px}
 .us-bench::before{border-bottom-color:var(--plot)}
@@ -2150,23 +2133,18 @@ button.pp2-plate{cursor:pointer;width:100%}
 .us-mates .gs-row{--gsw:88px}.us-mates .gs-row::before{border-bottom-color:var(--plot)}.us-mates .gs-tx small{font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}
 .us-add{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s6)}.us-add p{margin:0}
 .us-rest{justify-self:center}
-.us-list{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:var(--s3) var(--s2)}.us-list .us-fig .np-mon{--iw:72px}
 .us-count{margin:0;font:600 var(--t15)/1.4 var(--b)}.us-count b{font:900 var(--t24)/1 var(--u);font-style:italic}
 @media (prefers-reduced-motion:reduce){.us-fig .np-mon{transition:none}}
-@media (max-width:1099.98px){.us-podium{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:699.98px){.us-fig.pod .np-mon{--iw:96px}.us-p1 .us-fig.pod .np-mon{--iw:120px}.us-p1 .us-blk{height:120px}.us-p2 .us-blk{height:88px}.us-p3 .us-blk{height:72px}.us-blk{font-size:var(--t34)}
-  .us-bench{--gsw:72px}.us-bench .us-fig .np-mon{--iw:72px}.us-mates .gs-row{--gsw:64px}.us-tx>b{font-size:var(--t13)}.us-tx .us-nums b{font-size:var(--t15)}.us-hh h2{font-size:var(--t24)}
-}
-.us-step .us-fig.pod{grid-row:auto}.us-fig.pod .us-tx{padding-top:var(--s3)}.us-steps{border-bottom:0}.us-fig.pod .us-blk{border-bottom:4px solid var(--plot)}
+@media (max-width:699.98px){.us-bench{--gsw:72px}.us-bench .gs-mon .np-mon{--iw:72px}.us-mates .gs-row{--gsw:64px}.us-hh h2{font-size:var(--t24)}}
 .us-bar>i>i{background:linear-gradient(90deg,var(--ty-a,var(--plot)),var(--ty-b,var(--plot)))}
 /* Sim, Nov 14: Meta scrolled slowly on his Windows desktop (mouse wheel). His standing rule: sprite glow off on mouse screens except feature
    sprites. The stand and the podium draw ~80 sprites, each with drop-shadow filters (two at night) and a blurred pool; the spotlight keeps its. */
 @media (hover:hover) and (pointer:fine){
-  .gs .np-mon img,.us-podium .np-mon img,.us-mates .np-mon img,.us-list .np-mon img,:root[data-theme="night"] .gs .np-mon img,:root[data-theme="night"] .us-podium .np-mon img,:root[data-theme="night"] .us-mates .np-mon img,:root[data-theme="night"] .us-list .np-mon img{filter:none}
-  :root[data-theme="night"] .gs .np-mon .pool,:root[data-theme="night"] .us-podium .np-mon .pool,:root[data-theme="night"] .us-mates .np-mon .pool{filter:none}}
+  .gs .np-mon img,.us-mates .np-mon img,.us-list .np-mon img,:root[data-theme="night"] .gs .np-mon img,:root[data-theme="night"] :root[data-theme="night"] .us-mates .np-mon img,:root[data-theme="night"] .us-list .np-mon img{filter:none}
+  :root[data-theme="night"] .gs .np-mon .pool,:root[data-theme="night"] .us-mates .np-mon .pool{filter:none}}
 /* Sim, Nov 14: the slanted 93 looked off-centre (its ink sat ~0.1em right of the panel centre: the slant leans the tops right) */
 .fn-belt>b{translate:-.1em 0}
-.us-how,.us-podium,.us-mates{grid-template-columns:minmax(0,1fr)}@media (min-width:1100px){.us-podium{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}}
+.us-how,.us-mates{grid-template-columns:minmax(0,1fr)}
 /* Q42 A (Sim chose it, Nov 19): Usage on phones, 4.59 screens at 390 to about 3.8. Moves top 5, Items top 3, one row of 3 teammates, each
    with "N more ›"; Abilities and Natures side by side (two even columns, Moves and Items full width); "Also ranked 61–100" behind its
    button. Tablet and desktop: every bar, teammate and the line, no button (usage.js puts us-x on what phones fold away) */
@@ -2176,6 +2154,115 @@ button.pp2-plate{cursor:pointer;width:100%}
   .us-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.us-groups>:not(.us-half){grid-column:1/-1}}
 @media (max-width:559.98px){.gs-ctl .us-srcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.gs-ctl .us-srcs>*{white-space:normal;line-height:1.2;padding:var(--s1) var(--s2);text-align:center}}
 @media (max-width:559.98px){.us-sp{display:block;height:0;overflow:hidden}}@media (max-width:359.98px){.gs-ctl .us-srcs>*{font-size:var(--t13)}}
+/* ---------- Usage on the kit (hU1, Nov 22; a proposal for Sim, not approved): the plot sentence picks the list, the kit hero card is
+   the #1, and the top ten is "the call sheet": one calm row per rank (40px picture, rank, name) with the share of teams as a slanted
+   Plot-blue bar on one shared scale, then the share, teams and place change. Step 2 is How it is played, moves on the kit's tickets. ---------- */
+.us .gs-body{gap:0}
+.us-ctl{display:grid;gap:var(--s3);margin-bottom:var(--s2)}
+.us-sent.k-sent{margin-top:var(--s2)}
+.us-srcs{display:inline-flex;flex-wrap:wrap;gap:var(--s2) var(--s3)}
+.us-srcs .k-w:disabled{opacity:.5;cursor:default}
+.us .us-src{margin:0;color:var(--k-ink2)}
+.us .gs-ctl .ra-find{flex:0 1 480px}
+/* the hero: card left, facts and the one move right (the right half of the Meta header on desktop) */
+.us .us-spot.k-hero{grid-template-columns:minmax(0,280px) minmax(0,1fr);align-items:end;gap:var(--s4) var(--s6);margin-top:132px}
+.us .us-spot .us-acts{grid-column:1/-1}
+.us .us-spot .k-hero-c .k-score{font-size:var(--t28)}
+.us-tagl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}
+.us-sent.k-sent{font-size:var(--t28)}
+.us .us-spot .k-hero-c .k-plate{min-height:260px;padding-top:176px}
+.us .us-spot .k-hero-c .k-art{top:-108px;height:288px}
+.us .us-spot .gs-sinfo{gap:var(--s3)}
+.us .us-facts{display:grid;gap:var(--s2);margin:0}
+.us .us-facts p{display:flex;flex-direction:row-reverse;justify-content:flex-end;align-items:baseline;gap:var(--s2);margin:0}
+.us .us-facts b{font:900 var(--t26)/1 var(--u);font-style:italic;color:var(--k-ink);white-space:nowrap}
+.us .us-facts p:first-child b{color:var(--k-plot-text)}
+.us .us-facts span{font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2);white-space:nowrap}
+.us .us-spot .k-scrib{margin:0}
+.us .us-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s6);margin:0}
+.us .us-acts .k-go{margin:var(--s2) 0 0}
+.us .us-addl{border:0;background:none;padding:0;font-family:var(--b);cursor:pointer}
+/* the plan line under the header */
+.us .k-plan{margin-top:var(--s2)}
+.us .us-s1 .k-sec{margin-top:var(--s10)}
+.us .k-sec .gs-key{margin:0}
+/* the call sheet */
+.us-sheet{display:grid}
+.us-top{display:grid;margin:0;padding:0;list-style:none}
+.us-top>li{border-bottom:1px solid var(--k-rule)}
+.us-axis,.us-ln{display:grid;grid-template-columns:40px minmax(0,232px) minmax(0,1fr) 96px 120px;grid-template-areas:"a t b u m" "a t b u r";column-gap:var(--s4)}
+.us-axis{grid-template-areas:"a l b u m";align-items:end;padding:0 var(--s2) var(--s2);border-bottom:1px solid var(--k-rule)}
+.us-ax{grid-area:b;position:relative;height:20px}
+.us-ax i{position:absolute;bottom:0;transform:translateX(-50%);font:600 var(--t13)/1.3 var(--b);font-style:normal;color:var(--k-ink2);white-space:nowrap}
+.us-ax i:first-child{transform:none}.us-ax i:last-child{transform:translateX(-100%)}
+.us-axl{grid-area:l;font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2)}
+.us-ln{align-items:center;width:100%;min-height:56px;margin:0;padding:var(--s1) var(--s2);border:0;background:none;color:var(--k-ink);font:inherit;text-align:left;cursor:pointer}
+.us-ln:hover,.us-ln[aria-pressed="true"]{background:color-mix(in srgb,var(--k-plot) 8%,transparent)}
+.us-ln[aria-pressed="true"]{box-shadow:inset 4px 0 0 var(--k-plot)}
+.us-ln:focus-visible{outline:3px solid var(--k-plot);outline-offset:-3px}
+.us-ln .us-art{grid-area:a;display:grid;place-items:center}
+.us-ln .np-mon{--iw:40px}
+.us-ln .us-tx{grid-area:t;display:flex;align-items:baseline;gap:var(--s2);min-width:0}
+.us-ln .us-rk{flex:none;min-width:40px;font:900 var(--t15)/1.2 var(--u);font-style:italic;color:var(--k-ink2)}
+.us-ln .us-tx b{min-width:0;font:700 var(--t17)/1.3 var(--b);overflow-wrap:normal}
+.us-ln[aria-pressed="true"] .us-tx b{color:var(--k-plot-text)}
+.us-pb{grid-area:b;display:block;height:16px;background:linear-gradient(90deg,var(--k-rule) 1px,transparent 1px) 0 0/var(--tk) 100%,color-mix(in srgb,var(--k-ink) 5%,transparent);transform:skewX(-14deg)}
+.us-pb>i{display:block;height:100%;background:var(--k-plot)}
+.us-ln .us-nums{display:contents}
+.us-ln .us-u{grid-area:u;justify-self:end;font:900 var(--t22)/1 var(--u);font-style:italic;color:var(--k-ink);white-space:nowrap}
+.us-ln .us-u .us-pct{font-size:var(--t15)}
+.us-ln .us-tm{grid-area:m;align-self:end;font:500 var(--t13)/1.3 var(--b);color:var(--k-ink2);white-space:nowrap}
+.us-ln .us-tr{grid-area:r;align-self:start;line-height:1.3;white-space:nowrap}
+.us-ln:not(:has(.us-tr)) .us-tm{grid-row:1/3;align-self:center}
+.us-nob .us-ln{grid-template-areas:"a t t t m" "a t t t r"}
+.us-rest{justify-self:center;margin-top:var(--s2);border:0;background:none;padding:0 var(--s4);font-family:var(--b);cursor:pointer}
+.us-top+.us-top{margin-top:0}
+.us .us-list{display:grid;margin-top:var(--s3)}
+/* How it is played, on the plan line */
+.us .us-how{margin-top:var(--s16);border-top:0;padding-top:0}
+.us .us-how .k-sec{margin:0}
+.us .us-mvs{gap:var(--s2)}
+.us-mvs .k-moves>li:last-child:nth-child(odd){grid-column:1/-1}
+.us .us-bar>i{height:8px;transform:skewX(-14deg);background:color-mix(in srgb,var(--k-ink) 6%,transparent)}
+.us .us-bar>i>i{background:var(--k-plot)}
+@media (min-width:1100px){.us .us-groups{grid-template-columns:minmax(0,3fr) minmax(0,2fr) minmax(0,2fr);gap:var(--s6) var(--s8)}}
+@media (min-width:1100px){.us .us-groups>.us-mvs{grid-row:span 3}.us .us-groups>:nth-child(2):nth-last-child(3){grid-row:span 2}.us .us-groups>:nth-child(4):last-child{grid-column:3}}
+@media (min-width:700px) and (max-width:1099.98px){
+  .us .us-spot.k-hero{grid-template-columns:minmax(0,280px) minmax(0,1fr);margin-top:124px}
+  .us .us-facts b{font-size:var(--t34)}
+  .us .us-groups{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.us .us-groups>.us-mvs{grid-column:1/-1;grid-row:auto}
+  .us-axis,.us-ln{grid-template-columns:40px minmax(0,180px) minmax(0,1fr) 88px 104px;column-gap:var(--s3)}}
+@media (max-width:699.98px){
+  .us .us-spot.k-hero{grid-template-columns:minmax(0,1fr);gap:var(--s3);margin-top:76px}
+  .us .us-spot .k-hero-c .k-plate{min-height:0;padding:100px var(--s4) var(--s3)}
+  .us .us-spot .k-hero-c .k-art{top:-64px;height:164px}
+  .us-sent.k-sent{font-size:var(--t20)}
+  .us .us-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}
+  .us .us-facts p{flex-direction:column-reverse;align-items:flex-start;gap:0}
+  .us .us-facts b{font-size:var(--t20)}
+  .us .us-acts{display:grid;grid-template-columns:minmax(0,1fr);justify-items:center;row-gap:0}
+  .us .us-acts .k-go{width:calc(100% - 8px)}
+  .us .us-s1 .k-sec{margin-top:var(--s6)}
+  .us .us-how{margin-top:var(--s10)}
+  .us-how .us-bars:not(.on) .us-x{display:none}
+  .us-srcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));flex:1 1 100%;width:100%;gap:var(--s2)}
+  .us-srcs .k-w{min-height:52px;padding:0 var(--s2);font:700 var(--t15)/1.2 var(--b);white-space:normal;text-align:center}
+  .us-axis,.us-ln{grid-template-columns:40px minmax(0,1fr) 32px 76px;grid-template-areas:"a t r u" "a b b m";column-gap:var(--s2);row-gap:var(--s1)}
+  .us-axis{grid-template-areas:"a b b .";padding-inline:0}
+  .us-trw{display:none}
+  .us-axl{display:none}
+  .us-ln{min-height:0;padding:6px 0;row-gap:2px}
+  .us-ln .us-tx{gap:var(--s1)}.us-ln .us-rk{min-width:32px}
+  .us-ln .us-tx b{font-size:var(--t16)}
+  .us .us-spot .k-scrib{display:none}
+  .us-ln .us-u{font-size:var(--t20)}
+  .us-ln .us-tm{justify-self:end;align-self:center}
+  .us-ln .us-tr{justify-self:end;align-self:center}
+  .us-ln:not(:has(.us-tr)) .us-tm{grid-row:auto;align-self:center}
+  .us-nob .us-ln{grid-template-areas:"a t r u" "a t r m"}
+}
+@media (max-width:519.98px){.us-ax i.us-odd:not(:last-child){display:none}}
+@media (max-width:359.98px){.us-mvs .k-moves{grid-template-columns:minmax(0,1fr)}.us-srcs .k-w{font-size:var(--t13);padding:0 var(--s1)}.us .us-facts b{font-size:var(--t20)}.us-ln .us-rk{min-width:32px}}
 /* ---------- Meta > Sets (Grandstand brief, section 5) ---------- */
 .st-find{display:grid;gap:var(--s2)}.st-hits{display:flex;flex-wrap:wrap;gap:var(--s1)}
 .st-h2{margin:0;font:900 var(--t24)/1.1 var(--u);font-style:italic}.st-team{display:grid;gap:var(--s2)}.st-six{--gsw:80px}
@@ -3430,12 +3517,6 @@ button.pp2-plate{cursor:pointer;width:100%}
    the rows gives each its own 44px. Other widths unchanged. */
 .tm-sample .tm-sample-acts{row-gap:var(--s6)} /* Q69 A1, every width (Nov 20, Sim's PC run: on Windows the two links still stack at 820+, where the 700-819 rule stopped; a row gap only shows when they wrap) */
 
-/* ---- Q73 D1 (Sim chose the recommended option, Nov 20, 8:17 AM; audit-nov20-options.md D1): Usage podium benches. Under 600 a Mega's
-   "Mega" is the MEGA tag line (.gs-mg, as "Usually alongside") above the rest of its name, and the other bench names keep an empty
-   tag line of the same height, so the numbers in each bench row sit level. 600 and wider: the plain word on the name line, as before. ---- */
-.us-fig .us-tx .us-mg{display:inline;min-height:0;font:inherit;letter-spacing:inherit;color:inherit;text-transform:none}
-@media (max-width:599.98px){.us-fig .us-tx .us-mg{display:block;min-height:16px;font:900 var(--t13)/1.2 var(--u);font-style:italic;letter-spacing:-.02em;color:var(--plot-text);text-transform:uppercase}
-  .us-bench .us-nomg::before{content:"";display:block;min-height:16px}}
 
 /* ---- Q74 D2 (Sim chose the recommended option, Nov 20, 8:17 AM; audit-nov20-options.md D2): Events and Gifts filter chips. Under 700
    the three chips keep their own widths and grow to fill the row (no empty end); at every width the chip's words are centred in the
@@ -3770,3 +3851,25 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .dr-tn.l0 small{color:var(--k-nasty-text)}
 .dr-ok{font-weight:600;color:var(--k-ink2)}
 @container (max-width:599.98px){.dr .tp-cards .dr-row .dr-thru,.dr-row .dr-thru{grid-column:2;grid-row:1/3;display:grid;align-content:center;gap:0;font-size:var(--t13);line-height:1.3}.dr-row .dr-tk{font-size:var(--t13);letter-spacing:.04em}.dr-row .dr-tn{white-space:normal}}
+/* Usage polish (HH, Nov 22; Sim: "cleaned up a little and not so rough", keep the character): 700 and up, the one pink move sits in the
+   facts column under the facts (no loose row under the card), and the three facts line up as a table: numbers in one column, words in
+   the next, so 38.1% / 48.0% / 97 start and end on the same lines */
+@media (min-width:700px){
+  .us .us-spot .us-acts{grid-column:2;align-self:end;min-width:0}
+  .us .us-spot .us-acts .k-go{max-width:100%}
+  .us .us-spot .gs-sinfo{align-self:end}
+  .us .us-facts p{display:grid;grid-template-columns:minmax(0,max-content) minmax(0,1fr);justify-content:start;column-gap:var(--s3)}
+  .us .us-facts b{order:-1;min-width:4.4em}
+  .us .us-spot.k-hero{grid-template-rows:auto auto;align-items:end}
+  .us .us-spot .k-hero-c{grid-row:1/3}
+}
+/* 1100-1439: the hero shares the header row, so its facts column is narrow; the move takes the full width under card + facts (qcheck: offscreen at 1280) */
+@media (min-width:1100px) and (max-width:1439.98px){.us .us-spot .us-acts{grid-column:1/-1}}
+/* Usage fixes (HH, Nov 22, from the checks): the slanted move tickets get 4px of room on the left (q42: "Fighting" sat 2px out at 699);
+   tablets give names room so "Mega Charizard Y" stays one line (q72); phones move the place change down beside the bar, so the name row has
+   the width it needs (q72 at 320-360); the "Most used" tag is 15px (v2-unbounded: no Unbounded under 15px) */
+.us-mvs .k-moves{padding-left:var(--s1)}
+.us-tagl .gs-tag.u{font-size:var(--t15)}
+@media (min-width:700px) and (max-width:1099.98px){.us-axis,.us-ln{grid-template-columns:40px minmax(0,232px) minmax(0,1fr) 80px 96px}}
+@media (max-width:699.98px){.us-ln{grid-template-areas:"a t t u" "a b r m"}.us-nob .us-ln{grid-template-areas:"a t t u" "a t r m"}}
+@media (max-width:359.98px){.us-ln .us-tx b{font-size:var(--t15)}.us-ln .us-u{font-size:var(--t17)}.us-axis,.us-ln{grid-template-columns:40px minmax(0,1fr) 28px 64px}.us-ln .us-rk{min-width:28px}}
