@@ -339,9 +339,11 @@ V2.asOf = () => { try { const t = typeof dataDateText === 'function' ? dataDateT
 // Page not found on the kit (Sim approved Nov 22, 12:40 PM; mock docs/rebuild/mocks/reskin-nov22/notfound-mock): "WRONG TURN: the underdog + a way
 // home" (PAGES.md). Today's underdog as a hero kit card (the rotating featured Pokémon, celebrated, never mocked), its one line as a margin scribble,
 // the pink GO TO HOME. The one main button; no score, tier or team data here.
-V2.lostDog = () => { const n = V2.underdog ? V2.underdog() : 'Flapple', d = V2.disp(n);
-  return `<aside class="nf-dog" aria-label="Today's underdog">${V2.kScrib(`Lost? ${d}'s been here all along.`)}${V2.kCard(n, {size: 'hero', form: "Today's underdog", fact: 'Tap to meet it', attrs: {'data-v2mon': n, 'aria-label': `${d}: open its info`}})}</aside>`; };
-V2.nfHtml = () => `<div class="ra gsp nf-pg nf2" data-v2nf><div class="nf2-two"><div class="k-head"><p class="k-kicker np-eyebrow">PAGE NOT FOUND · WRONG TURN</p><h1 class="k-h1 u">Nothing here. <br><em>Wrong turn.</em></h1><p class="k-lead ra-lede">This address doesn't match a page on NastyPlot. It may be an old or mistyped link.</p>${V2.kGo('GO TO HOME.', {href: '#home'})}</div>${V2.lostDog()}</div></div>`;
+V2.lostDog = () => { const n = V2.underdog ? V2.underdog() : 'Flapple', d = V2.esc(V2.disp(n));
+  return `<aside class="nf-dog" aria-label="Today's underdog"><button type="button" class="nf-dogst" data-v2mon="${V2.esc(n)}" aria-label="${d}: open its info">${V2.mon(n, {bare: true, ft: true})}</button><div class="nf-dogtx"><p class="np-eyebrow"><span>Today's underdog</span></p><p class="nf-dogl u">Lost? ${d}'s been here all along.</p></div></aside>`; };
+V2.nfDog = () => { const n = V2.underdog ? V2.underdog() : 'Flapple', d = V2.disp(n);
+  return `<aside class="nf-dog nf2-dog" aria-label="Today's underdog">${V2.kScrib(`Lost? ${d}'s been here all along.`)}${V2.kCard(n, {size: 'hero', form: "Today's underdog", fact: 'Tap to meet it', attrs: {'data-v2mon': n, 'aria-label': `${d}: open its info`}})}</aside>`; };
+V2.nfHtml = () => `<div class="ra gsp nf-pg nf2" data-v2nf><div class="nf2-two"><div class="k-head"><p class="k-kicker np-eyebrow">PAGE NOT FOUND · WRONG TURN</p><h1 class="k-h1 u">Nothing here. <br><em>Wrong turn.</em></h1><p class="k-lead ra-lede">This address doesn't match a page on NastyPlot. It may be an old or mistyped link.</p>${V2.kGo('GO TO HOME.', {href: '#home'})}</div>${V2.nfDog()}</div></div>`;
 V2.pages.notfound = {place: '', draw: () => V2.nfHtml()};
 /* own keys only: '#constructor' or '#toString' found the object's built-ins and broke the draw */
 V2.route = () => { const h = (location.hash || '').slice(1).split('=')[0]; /* Nov 15: '#method=rating' opens How We Calculate at that part */ return Object.prototype.hasOwnProperty.call(V2.pages, h) ? h : h ? 'notfound' : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
