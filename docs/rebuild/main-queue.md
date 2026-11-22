@@ -1,7 +1,8 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH: Send Feedback after-checks (task btzzw1z14), then pictures to Sim; push after GitHub run 1442; review hM's How We Calculate redo (sent back after 1:57 PM: drifted from mock B)
+NOW: HH: app tests on the info-sheet texts (8dc08726); then push; waiting on Sim: Feedback, Events, How We Calculate +118, phone Home strip A/B
+NEXT: merge Events (keep/events-kit) and How We Calculate (keep/method-kit, brings the evening #4 test edit) on Sim's yes; then GitHub full check
+NEXT: Ability/Item blue words in the calc and edit panel (info sheets)
 NEXT: Ratings filters as the kit sentence (everyone/Megas/no Megas/gems/my box/any type) with test updates
-NEXT: info sheets: TODO texts (Curse, Encore, Disable, No Retreat + 6 Abilities); Ability/Item words in calc and edit panel
 NEXT: on Sim's yes: one button system (helper job, every page checked)
 NEXT: push Home label (keep/home-label) after GitHub 1439
 NEXT: when GitHub is green: Preview (fresh data), pictures of the length fixes to Sim, Game Plan ticks
