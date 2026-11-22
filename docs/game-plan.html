@@ -98,7 +98,7 @@ ul.items{list-style:none;margin:0;padding:0;background:var(--card);border-radius
 
 <script>
 // HH keeps this list accurate. s: done | doing | wait | todo. Every done item names when it landed.
-const UPDATED = 'Sun Nov 22, 3:37 AM Eastern';
+const UPDATED = 'Sun Nov 22, 4:27 AM Eastern';
 const STOPS = [
   {s:'done', t:'The look is chosen', when:'Nov 21, morning', d:'One theme for every page: the crew planning the job (Sim, 8:35 AM).'},
   {s:'now',  t:'Reskin every page', when:'now → about Tue Nov 24', d:'Page by page on the shared kit, pictures to Sim for each.'},
@@ -122,18 +122,18 @@ const PHASES = [
   ['done','Calc: Pokémon names, HP line, All moves clip fix','5:54 PM: merged; arena, q46, q47 pass.'],
   ['done','Home stays as it is today','7:10 PM: Sim chose to keep its bold bands; the kit version is kept on a tag only.'],
   ['done','My Box stays as it is','11:57 AM: Sim: no change.'],
-  ['doing','Damage Calc on the kit','Merged into main 6:43 PM. GitHub runs 1429 and 1430 found problems on today\'s batch; all fixed (last: the word list on the threat sheet, the My Team length limit). Ticked once GitHub run 1431 is green.'],
-  ['doing','My Team war room','Merged 7:18 PM. Fixed after GitHub: status line one line on phones, the score no longer touches "Mega" on phone cards (q84 all passed). Waiting on GitHub\'s new run.'],
-  ['doing','Pokémon page (case file, type bars, move tickets, hit list)','Merged 7:56 PM. Its tests now read the approved page (7 of 7 pass); the card rank is back to Sim\'s Nov 19 wording "#N of M with results". Waiting on GitHub\'s new run.'],
-  ['doing','Empty My Team on the kit','Sim approved 8:01 PM. All its tests passed (My Team 139/0, minors x3); merged and pushed with the GitHub fixes (GitHub run 1431 started 10:26 PM).'],
-  ['doing','Type symbols on every type chip and the Type Chart','Pushed 1:42 AM (7fa88e7b), on Preview v227. GitHub run 1432 then failed 4 checks (remove-jump, Mega labels, My Team layout, token doc): fixed (19e7c644, one real bug: Remove made My Team jump 44px at 820-917 wide). Re-checking, then push.'],
+  ['done','Damage Calc on the kit','Merged 6:43 PM (Sim approved). GitHub run 1433 green (4:19 AM, 05369ef7).'],
+  ['done','My Team war room','Merged 7:18 PM (Sim approved). Remove no longer moves the six at 820-917 wide (fixed 3:39 AM). GitHub run 1433 green (4:19 AM, 05369ef7).'],
+  ['done','Pokémon page (case file, type bars, move tickets, hit list)','Merged 7:56 PM (Sim approved). GitHub run 1433 green (4:19 AM, 05369ef7).'],
+  ['done','Empty My Team on the kit','Sim approved 8:01 PM; merged. GitHub run 1433 green (4:19 AM, 05369ef7).'],
+  ['done','Type symbols on every type chip and the Type Chart','Sim approved 10:23 PM; merged 1:42 AM; on Preview. GitHub run 1433 green (4:19 AM, 05369ef7).'],
   ['doing','Battle page','"The target" (Sim, 1:26 AM; make it more NastyPlot and polished): the one helper (hB3) is building it since 2:45 AM. Pictures to Sim before merging.'],
-  ['doing','Team Sheet on the kit ("the dossier": stat bars against the team\'s best)','Pushed 1:42 AM with the batch; ticked when GitHub is green after the fixes.'],
-  ['doing','Compare on the kit ("the tug of war")','Pushed 1:42 AM with the batch; ticked when GitHub is green after the fixes.'],
+  ['done','Team Sheet on the kit ("the dossier")','Sim approved 11:56 PM; merged 1:42 AM. GitHub run 1433 green (4:19 AM, 05369ef7).'],
+  ['done','Compare on the kit ("the tug of war")','Sim approved; merged 1:42 AM. GitHub run 1433 green (4:19 AM, 05369ef7).'],
   ['done','Preview update with today\'s merges','1:28 AM: Preview v227 (type symbols, Compare, Team Sheet; 443 files). 7:57 PM: Preview v226 (Calc on the kit, war room, Pokémon page); 443 files incl. sprites; privacy check OK.']
  ]},
  {n:'2', h:'Pages still to reskin', a:'In Sim\'s priority order. Each one: built on the kit, its tests, phone no longer than today at 390, pictures to Sim, then merge.', items:[
-  ['wait','Speed Tiers','Finished by the helper (keep/speed-final): phone 390 shorter in every state (2,795 vs 2,952 with a team); its tests pass. Going on the Preview with Test Run; pictures to Sim. Waits for Sim\'s yes.'],
+  ['wait','Speed Tiers','Finished (keep/speed-final): phone 390 shorter in every state; its tests pass. On Preview v229 (3:39 AM); pictures sent. Waits for Sim\'s yes.'],
   ['todo','Type Chart','The symbols part is built (waiting on Sim); the rest of the page is still to do.'],
   ['wait','Team Preview Practice','Saved (keep/practice-wip). Checks on top of main: all pass except q25, which reads the old card sizes. Resumes after Battle.'],
   ['wait','Test Run','"The dry run": every top team as its six, with your answer under each. All checks pass on top of main (Battle 83/0, minors x3, overlap 0). Phone 390: 2,614 px (today 2,626). On Preview v228 (2:17 AM); pictures sent. Waits for Sim\'s yes.'],
