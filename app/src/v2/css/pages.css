@@ -81,26 +81,71 @@
 .tm-tsbtn{margin-left:auto;min-height:var(--tap);font:600 var(--t15)/1.2 var(--b);color:var(--plot-text);white-space:nowrap}
 .tm-tsbtn small{font:600 var(--t13)/1 var(--b);color:var(--ink-3)}
 .ts2{padding:var(--s8)}
-.ts2 h2{font-size:var(--t34);margin-top:var(--s2)}
-.ts2-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s6);margin:var(--s4) 0 var(--s6)}
-.ts2-acts .up,.ts2-nb .up,.ts2-st .up i{color:var(--good-text)}.ts2-acts .dn,.ts2-nb .dn,.ts2-st .dn i{color:var(--bad-text)}
-.ts2-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s6)}
-/* cards in one row share row lines (subgrid): headers, moves, nature and stats line up across the row whatever wraps */
-.ts2-card{cursor:pointer;display:grid;grid-row:span 4;grid-template-rows:subgrid;row-gap:var(--s3);align-content:start;padding-top:var(--s4);border-top:1px solid var(--rule)}
-.ts2-grid{row-gap:var(--s3)}
-.ts2-card header{display:grid;grid-template-columns:72px minmax(0,1fr);align-items:end;gap:var(--s3)}
-.ts2-card h3{font-size:var(--t20)}.ts2-card h3 .mg{margin-right:var(--s1)}.ts2-card h3 .mg.none{display:none}
-.ts2-card header p{display:grid;margin-top:var(--s1);font:600 var(--t15)/1.5 var(--b)}
-.ts2-card em{font:500 var(--t13)/1.5 var(--b);font-style:normal;color:var(--ink-3);margin-right:var(--s1)}
-.ts2-mv{list-style:none;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
-.ts2-mv li{justify-content:center;min-height:36px;font-size:var(--t15);padding:0 var(--s3);white-space:nowrap}.ts2-mv li.none{display:flex;align-items:center;justify-content:center;color:var(--ink-3);font:500 var(--t13)/1 var(--b)}
-.ts2-nat{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s1) var(--s3);font:600 var(--t15)/1.5 var(--b)}
-.ts2-nat span{font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-.ts2-st{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1);text-align:center}
-.ts2-st span{display:block;font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.ts2-st i{font-style:normal;font-weight:800}
-.ts2-st b{display:block;font:800 var(--t15)/1.4 var(--u);font-style:italic}.ts2-st small{display:block;font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)}
-@media (max-width:1099.98px){.ts2-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
-@media (max-width:699.98px){.ts2{padding:var(--s6) var(--s4)}.ts2-grid{grid-template-columns:minmax(0,1fr)}.tm-tsbtn{margin-left:0}}
+@media (max-width:699.98px){.ts2{padding:var(--s6) var(--s4)}.tm-tsbtn{margin-left:0}}
+/* ---------- Team Sheet: THE DOSSIER on the shared kit (reskin, Nov 21; HYBRID "Keep as drawn": cohesion-nov21/pages/sheet.html) ----------
+   the kit header, links and pink move, then one plan step: a file per Pokémon (kit card, Item / Ability / Nature, kit move tickets, six stats) */
+.np-sheet:has(.sh2){background:var(--k-paper)}
+.sh2 .k-kicker{margin-top:0}
+.sh-t{overflow-wrap:anywhere}
+.sh-links{display:flex;flex-wrap:wrap;align-items:center;gap:0 24px;margin:8px 0 0}
+.sh-share{margin:0;padding:0;border:0;background:none;font-family:var(--b);cursor:pointer}
+.sh2 .k-go{margin-top:12px}
+.sh-key{max-width:760px;margin-top:16px}
+.sh-kbest{color:var(--k-plot-text)}
+.sh2 .up{color:var(--good-text)}.sh2 .dn{color:var(--bad-text)}
+.sh2 .k-plan{padding-bottom:16px}
+.sh-dossier{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:72px 24px;margin:0;padding:56px 0 0;list-style:none}
+.sh-file{display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:12px;min-width:0;cursor:pointer}
+.sh-l,.sh-r{display:contents}
+.sh-file .k-card{order:1}.sh-kv{order:2}.sh-file .k-moves{order:3}.sh-stats{order:4}
+.sh-file .k-score{font-size:var(--t15);color:var(--k-ink2)}
+.sh-file .k-card:hover .k-art{translate:0 -4px}
+.sh-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 12px;margin:4px 0 0}
+.sh-kv>div{min-width:0;padding-top:8px;border-top:1px solid var(--k-rule)}
+.sh-kv .sh-nat{grid-column:1/-1}
+.sh-kv dt{font-size:var(--t13);font-weight:600;line-height:1.4;color:var(--k-ink2)}
+.sh-kv dd{margin:0;font-size:var(--t17);font-weight:700;line-height:1.3;color:var(--k-ink)}
+.sh-kv dd em{font-size:var(--t13);font-weight:600;font-style:normal}
+.sh-kv dd small{display:block;font-size:var(--t13);font-weight:500;color:var(--k-ink2)}
+.sh-nomv{min-height:52px;color:var(--k-ink2)}.sh-nomv .k-mn{padding-left:12px}
+.sh-stats{display:grid;gap:2px;margin:0;padding:0;list-style:none}
+.sh-st{display:grid;grid-template-columns:44px 40px minmax(0,1fr) 20px;align-items:center;gap:0 8px;min-width:0;min-height:20px}
+.sh-sl{font-size:var(--t13);font-weight:600;line-height:1.2;color:var(--k-ink2);white-space:nowrap}
+.sh-sl i{margin-left:2px;font-style:normal;font-weight:700}
+.sh-st.up .sh-sl i{color:var(--good-text)}.sh-st.dn .sh-sl i{color:var(--bad-text)}
+.sh-st b{font-size:var(--t15);line-height:1.2;color:var(--k-ink);text-align:right;white-space:nowrap}
+.sh-bar{display:block;height:12px;background:var(--k-rule);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+.sh-bar i{display:block;width:var(--w);height:100%;background:var(--k-ink2);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+.sh-st small{font-size:var(--t13);line-height:1.2;color:var(--k-ink2);text-align:right;white-space:nowrap}
+.sh-st.best b{color:var(--k-plot-text)}.sh-st.best .sh-bar i{background:var(--k-plot)}
+@media (prefers-reduced-motion:reduce){.sh-file .k-card:hover .k-art{translate:none}}
+@media (max-width:999.98px){.sh-dossier{grid-template-columns:repeat(2,minmax(0,1fr))}}
+/* phones (phone length: no longer than today's Tale of the Tape, 2269px at 390): the card with its stats under it on the left, the set
+   (the moves, then Item / Ability / Nature one line each) on the right; the moves' "what it does" line is left to the move tickets elsewhere */
+@media (max-width:699.98px){
+  .sh2 .k-plan{padding-bottom:8px}
+  .sh-dossier{grid-template-columns:minmax(0,1fr);gap:40px;padding-top:40px}
+  .sh-file{grid-template-columns:152px minmax(0,1fr);gap:8px 12px;align-items:start}
+  .sh-l,.sh-r{display:grid;align-content:start;gap:8px;min-width:0}
+  .sh-file .k-moves{order:1}.sh-kv{order:2}
+  .sh-kv{grid-template-columns:minmax(0,1fr);gap:4px;margin:0}
+  .sh-kv>div{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 6px;padding-top:4px}
+  .sh-kv dd{font-size:var(--t15)}
+  .sh-file .k-small .k-nm{grid-template-columns:minmax(0,1fr) auto}
+  .sh-file .k-small .k-sc{grid-row:auto;display:grid}
+  .sh-file .k-mn small{display:none}
+  .sh-stats{gap:0}
+  .sh-st{grid-template-columns:34px 30px minmax(0,1fr) 16px;gap:0 4px;min-height:18px}
+}
+/* the smallest phones: the stat bars and the moves (two across) take the full width under the card, so each bar reads and each type word fits its tab */
+@media (max-width:379.98px){
+  .sh-file{grid-template-columns:128px minmax(0,1fr)}
+  .sh-l,.sh-r{display:contents}
+  .sh-file .k-card{grid-column:1;grid-row:1}
+  .sh-kv{grid-column:2;grid-row:1;align-self:end}
+  .sh-stats{grid-column:1/-1;grid-row:2}
+  .sh-file .k-moves{grid-column:1/-1;grid-row:3}
+}
 
 /* Save Team sheet (R4, Nov 11) */
 .tm-eb{align-items:flex-start;line-height:1.3}.tm-eb::before{margin-top:4px}.tm-eb>span{min-width:0;overflow-wrap:anywhere}
@@ -561,7 +606,6 @@
 .svt2-empty{margin-top:var(--s4)}.svt2-empty .np-btn{width:100%}
 
 /* Team Sheet cards open Edit Set (Nov 12): a visible focus ring for keyboards */
-.ts2-card:focus-visible{outline:2px solid var(--plot);outline-offset:var(--s1)}
 
 /* Edit Set: slot header and the Weak / Resists fold (Nov 12, today's features) */
 .ed-head{margin:0 0 var(--s4);align-items:baseline}.ed-use{font:500 var(--t15)/1.3 var(--b);color:var(--ink-2)}
@@ -607,8 +651,6 @@
 .hs2-mb{position:relative}.hs2-mb::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
 .hs2>summary{grid-template-columns:minmax(0,1fr) 0 20px}.hs2{margin-top:var(--s6)}
 .hs2>summary{padding-right:var(--s10)}
-.ts2-lead{margin:0 0 var(--s1);font:600 var(--t13)/1.3 var(--b);color:var(--plot-text)}
-@media (max-width:699.98px){.ts2-lead.no{display:none}}
 
 /* ---------- Home (Nov 12, piece 1: the hero; ported from the approved mock-up docs/rebuild/mocks/home.tpl.html) ---------- */
 .hm-k{margin:0;text-align:center;font:600 var(--t13)/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
@@ -1254,6 +1296,11 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tc-main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:var(--s8);align-items:start}
 .tc-cardw .ms-card{--ch:420px}
 .tc-types{display:grid;gap:var(--s3);align-content:start}.tc-tile{display:grid;place-items:center;min-height:120px;padding:0 var(--s3);background:var(--tc);color:var(--on-type);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}.tc-tile b{font:900 var(--t28)/1 var(--u);font-style:italic;font-synthesis:style}
+/* type symbols (Sim, Nov 21, 3:35 PM; mock docs/rebuild/mocks/type-symbols): on each pick button the symbol sits above the word in the word's
+   colour (ink when off, white when picked: the off/on look stays as it was); phones keep the 44px button (16px symbol), wide screens a bigger one */
+.tc-tp.sym{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:var(--s1) 0}.tc-tp .k-tyi{width:16px;height:16px}
+@media (min-width:700px){.tc-tp.sym{min-height:var(--s16);gap:var(--s1)}.tc-tp .k-tyi{width:24px;height:24px}}
+.tc-tile{align-content:center;gap:var(--s1)}.tc-tile .k-tyi{width:24px;height:24px}@media (min-width:700px){.tc-tile{gap:var(--s2)}.tc-tile .k-tyi{width:40px;height:40px}}
 .tc-right{display:grid;gap:var(--s4)}
 .tc-spec{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s2)}
 .tc-band{display:grid;align-content:start;gap:var(--s3);min-height:200px;padding:var(--s4) var(--s3);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
@@ -2261,55 +2308,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .wt-fan>.wt-card:first-child{margin-left:0}.wt-fan>.wt-card:last-child{margin-right:0}
 .wt-f i{margin-right:var(--s1)}
 
-/* ---------- Team Sheet: "Tale of the Tape" (Sim's pick, Nov 14) ---------- */
-.tt-top{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6)}.tt-top h2{margin:var(--s3) 0 0;font-size:var(--d64);line-height:1} /* re-check Nov 15: clear of the eyebrow line above */
-.tt2 .ts2-acts{margin:0}.tt-help{margin:var(--s2) 0 0}
-.tt-key{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s5);margin:var(--s2) 0 var(--s4);font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}.tt-key span{display:inline-flex;align-items:center;gap:var(--s1)}
-.tt-kbest{width:16px;height:8px;background:var(--plot);clip-path:polygon(3px 0,100% 0,calc(100% - 3px) 100%,0 100%)}
-.tt2 .up{color:var(--plot-text)}.tt2 .dn{color:var(--bad-text)}
-.tt-wrap{display:grid;gap:var(--s8)}
-.tt{width:100%;border-collapse:collapse;table-layout:fixed}
-.tt-corner{width:112px}
-.tt th,.tt td{padding:var(--s2) var(--s1);text-align:center;vertical-align:middle;font:500 var(--t15)/1.4 var(--b)}
-.tt tbody td{border-bottom:1px solid var(--rule);cursor:pointer}
-.tt .tt-rh{padding-left:0;text-align:left;font:900 var(--t17)/1.2 var(--u);font-style:italic;color:var(--plot-text);border-bottom:1px solid var(--rule)}
-.tt thead th{padding:0 var(--s1) var(--s3);border-bottom:2px solid var(--plot);vertical-align:bottom}
-/* the six across the top: a slanted banner in its two type colours, outlined number and name behind the Pokémon */
-.tt-pick{display:grid;justify-items:center;gap:2px;width:100%;padding:0;background:none;border:0;color:inherit;font:inherit;cursor:pointer}
-.tt-ban{position:relative;display:grid;place-items:end center;width:100%;height:148px;overflow:hidden;background:linear-gradient(160deg,var(--b1),var(--b2));clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
-.tt-ban::before{content:'';position:absolute;inset:0;background:repeating-linear-gradient(120deg,transparent 0 10px,color-mix(in srgb,var(--tier-lit) 10%,transparent) 10px 11px)}
-.tt-no{position:absolute;left:var(--s4);top:var(--s1);z-index:2;font:900 var(--t26)/1 var(--u);font-style:italic;color:transparent;-webkit-text-stroke:1px var(--tier-lit)}
-.tt-giant{position:absolute;left:var(--s2);bottom:calc(var(--s2)*-1);font:900 var(--t34)/1 var(--u);font-style:italic;white-space:nowrap;color:transparent;-webkit-text-stroke:1px color-mix(in srgb,var(--tier-lit) 45%,transparent)}
-.tt-ban .np-mon{--iw:120px;position:relative;z-index:1}
-.tt-pick:hover .tt-ban .np-mon,.tt-pick:focus-visible .tt-ban .np-mon{translate:0 calc(var(--s1)*-1)}
-.tt-pick:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
-.tt-mg{min-height:16px;font:900 var(--t13)/1.2 var(--u);font-style:italic;color:var(--plot-text)}
-.tt-nm{max-width:100%;font:900 var(--t17)/1.2 var(--u);font-style:italic;overflow-wrap:normal}
-.tt-lead{padding:0 var(--s2);background:var(--plot);color:var(--on-mark);font:900 var(--t13)/1.5 var(--u);font-style:italic;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}.tt-lead.no{background:none}
-/* set rows */
-.tt-nat b{display:block;font-weight:700}.tt-nb,.tt-src{display:block;font:500 var(--t13)/1.4 var(--b)}.tt-src{color:var(--ink-3)}
-.tt-mv{display:grid;gap:var(--s1);margin:0;padding:0;list-style:none}.tt-mv .np-type{display:flex;justify-content:center;min-height:24px;padding:0 var(--s2);text-align:center;line-height:1.2}.tt-mv .none{font:500 var(--t13)/1.4 var(--b);color:var(--ink-3)}
-/* stat rows: the number, its points, a bar against the team's best; the best on a blue plate */
-.tt-sh th{padding:var(--s6) 0 var(--s2);text-align:left;border-bottom:2px solid var(--plot)}.tt-sh .u{font:900 var(--t22)/1 var(--u);font-style:italic}.tt-sh small{font:500 var(--t13)/1 var(--b);color:var(--ink-2)}
-.tt-stats tr.odd>*{background:var(--table)}
-.tt-st{display:grid;justify-items:center;gap:2px;padding:var(--s1) var(--s2)}
-.tt-st b{font:900 var(--t28)/1 var(--u);font-style:italic}.tt-st small{font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
-.tt-bar{display:block;justify-self:stretch;height:3px;margin-top:var(--s1);background:linear-gradient(90deg,currentColor var(--w),var(--rule) var(--w));opacity:.45;transform:skewX(var(--slant))}
-.tt-st.up b,.tt-st.up small{color:var(--plot-text)}.tt-st.dn b,.tt-st.dn small{color:var(--bad-text)}
-.tt-st.best{background:var(--plot);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}.tt-st.best b,.tt-st.best small{color:var(--on-mark)}.tt-st.best .tt-bar{opacity:.8}
-@media (hover:hover) and (pointer:fine){.tt-ban .np-mon img,:root[data-theme="night"] .tt-ban .np-mon img{filter:none}}
-@media (prefers-reduced-motion:reduce){.tt-pick:hover .tt-ban .np-mon{translate:none}}
-@media (max-width:1099.98px){.tt-corner{width:80px}.tt-ban{height:120px}.tt-ban .np-mon{--iw:96px}.tt-nm{font-size:var(--t13)}.tt .tt-rh{font-size:var(--t15)}.tt-st b{font-size:var(--t22)}.tt th,.tt td{font-size:var(--t13)}.tt-giant{font-size:var(--t26)}}
-@media (max-width:699.98px){.tt-top h2{font-size:var(--t34)}.tt-corner{width:56px}.tt .tt-rh{font-size:var(--t13)}.tt-ban{height:104px}.tt-ban .np-mon{--iw:88px}
-  .tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}.tt-no{font-size:var(--t20)}.tt-mv .np-type{font-size:var(--t13);padding:var(--s1) 6px}}
-.tt thead th{vertical-align:top}
-@media (max-width:1099.98px){.tt-nm{font:700 var(--t13)/1.2 var(--b);font-style:normal}}
-@media (max-width:1099.98px){.tt thead th{padding-left:0;padding-right:0}}
-@media (max-width:699.98px){.tt-corner{width:64px}}@media (max-width:379.98px){.tt-mv .np-type{padding:var(--s1) 6px}.tt td{padding-left:2px;padding-right:2px}}
-/* Nov 15 (re-audit #15): under 380 the move text touched the chips' slanted edges (2px sides, now 6px); the moves start at the top of
-   every column, so the four rows line up instead of each column floating to its own middle */
-.tt td:has(.tt-mv){vertical-align:top}
-
 /* ---------- Battle a team: "Play-by-Play" (Sim's pick, Nov 14): you PLOT blue, them the site's own pink (--pick) ---------- */
 .pbp{--you:var(--plot);--you-d:color-mix(in srgb,var(--plot) 62%,var(--tier-shade));--them-d:color-mix(in srgb,var(--them) 62%,var(--tier-shade));--you-dd:color-mix(in srgb,var(--plot) 38%,var(--tier-shade));--them-dd:color-mix(in srgb,var(--them) 38%,var(--tier-shade))}
 /* the verdict on a filled slanted plate: blue Favoured, dark plate Even match, red Unfavoured (never the pink: pink means them) */
@@ -2386,52 +2384,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:379.98px){.pbp .bt-verdict b,.pbp .bt-verdict b.vf,.pbp .bt-verdict b.ve,.pbp .bt-verdict b.vu{font-size:var(--t28)}}
 
 /* ---------- Compare: "The Face-Off" (Sim's pick, Nov 14): Team A PLOT blue, Team B the site's own pink (--pick), as on Battle ---------- */
-.cxf{--a-d:color-mix(in srgb,var(--plot) 62%,var(--tier-shade));--a-dd:color-mix(in srgb,var(--plot) 38%,var(--tier-shade));--b-d:color-mix(in srgb,var(--them) 62%,var(--tier-shade));--b-dd:color-mix(in srgb,var(--them) 38%,var(--tier-shade))}
-.cxf-top{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s2) var(--s6)}.cxf-top .np-eyebrow{flex-basis:100%}.cxf-top h1{margin:0}
-.cxf-poster{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);margin-top:var(--s5);isolation:isolate}
-.cxf-half{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-areas:"id id" "score hero" "six six";align-items:end;gap:var(--s2) var(--s4);min-height:420px;padding:var(--s5) var(--s8) var(--s4);color:var(--tier-lit);overflow:hidden}
-.cxf-half::after{content:'';position:absolute;inset:0;z-index:-1;background:repeating-linear-gradient(120deg,transparent 0 12px,color-mix(in srgb,var(--tier-lit) 8%,transparent) 12px 13px)}
-.cxf-half.a{background:linear-gradient(160deg,var(--a-d),var(--a-dd));clip-path:polygon(0 0,100% 0,calc(100% - 64px) 100%,0 100%);margin-right:-32px}
-.cxf-half.b{grid-template-areas:"id id" "hero score" "six six";background:linear-gradient(200deg,var(--b-d),var(--b-dd));clip-path:polygon(64px 0,100% 0,100% 100%,0 100%);margin-left:-32px;padding-left:var(--s16)}
-.cxf-half.a{padding-right:var(--s16)}
-.cxf-id{grid-area:id;display:flex;align-items:flex-start;gap:var(--s3);min-width:0}.cxf-half.b .cxf-id{flex-direction:row-reverse;text-align:right}
-.cxf-id h2{margin:0;font:900 var(--t26)/1.1 var(--u);font-style:italic;overflow-wrap:anywhere}.cxf-id p{margin:var(--s1) 0 0;font:500 var(--t13)/1.4 var(--b);opacity:.9}.cxf-id .np-link{color:inherit;text-decoration:underline}
-.cxf-badge{display:inline-grid;place-items:center;flex:none;min-width:36px;height:36px;padding:0 var(--s2);background:var(--tier-lit);color:var(--tier-ink);font:900 var(--t22)/1 var(--u);font-style:italic;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
-.cxf-score{grid-area:score;position:relative;display:grid;align-content:end;z-index:1}.cxf-half.b .cxf-score{justify-items:end;text-align:right}
-.cxf-score>b{font:900 var(--d120)/.9 var(--u);font-style:italic}.cxf-score>span{font:900 var(--t26)/1.1 var(--u);font-style:italic}.cxf-score small{font:500 var(--t13)/1.4 var(--b);opacity:.9}
-.cxf-ghost{position:absolute;left:-8px;top:-48px;z-index:-1;font:900 calc(var(--d120)*2)/1 var(--u);font-style:italic;color:transparent;-webkit-text-stroke:2px color-mix(in srgb,var(--tier-lit) 18%,transparent)}.cxf-half.b .cxf-ghost{left:auto;right:-8px}
-.cxf-hero{grid-area:hero;display:grid;place-items:end center}.cxf-half.b .cxf-hero .np-mon img{transform:scaleX(-1)}
-.cxf-six{grid-area:six;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1);margin:0;padding:var(--s3) 0 0;list-style:none;border-top:1px solid color-mix(in srgb,var(--tier-lit) 30%,transparent)}
-.cxf-six li{display:grid;justify-items:center;min-width:0;text-align:center}.cxf-six b{font:700 var(--t13)/1.2 var(--b)}
-.cxf-vs{position:absolute;left:50%;top:44%;z-index:2;translate:-50% -50%;padding:var(--s2) var(--s4);background:var(--plate);color:var(--on-plate);font:900 var(--t34)/1 var(--u);font-style:italic;rotate:-8deg;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
-/* tale of the tape: one thick bar per number, A's part blue and B's part pink in proportion, meeting at a slash */
-.cxf-tape{display:grid;gap:var(--s4);margin-top:var(--s8)}.cxf-tape h2{margin:0;font-size:var(--t26)}
-.cxf-bn{display:flex;justify-content:center;align-items:center;gap:var(--s2);margin:0 0 var(--s1)}.cxf-bn b{font:900 var(--t17)/1.2 var(--u);font-style:italic}
-.cxf-ahead{padding:0 var(--s2);color:var(--tier-lit);font:700 var(--t13)/1.5 var(--b);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}.cxf-ahead.a{background:var(--a-d)}.cxf-ahead.b{background:var(--b-d)}
-.cxf-bar{display:grid;grid-template-columns:calc(var(--a)*1%) minmax(0,1fr);color:var(--tier-lit)}
-.cxf-bar>span{display:flex;align-items:center;gap:var(--s3);min-width:0;min-height:52px;padding:var(--s2) var(--s5)}
-.cxf-bar .a{background:linear-gradient(90deg,var(--a-dd),var(--a-d));clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%);margin-right:-6px}
-.cxf-bar .b{justify-content:flex-end;background:linear-gradient(270deg,var(--b-dd),var(--b-d));clip-path:polygon(12px 0,100% 0,100% 100%,0 100%);margin-left:-6px}
-.cxf-bar b{flex:none;font:900 var(--t34)/1 var(--u);font-style:italic}.cxf-bar small{min-width:0;font:600 var(--t13)/1.3 var(--b);opacity:.92}.cxf-bar .a small{margin-left:auto;text-align:right}
-/* the two columns */
-.cxf-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s10);margin-top:var(--s8)}
-.cxf-col{display:grid;align-content:start;gap:var(--s3);padding-top:var(--s3);border-top:3px solid var(--a-d)}.cxf-col.b{border-top-color:var(--b-d)}
-.cxf-col h3{display:flex;align-items:center;gap:var(--s2);margin:0;font:900 var(--t22)/1.2 var(--u);font-style:italic}.cxf-col .cxf-badge{min-width:28px;height:28px;font-size:var(--t15);color:var(--tier-lit)}.cxf-col.a .cxf-badge{background:var(--a-d)}.cxf-col.b .cxf-badge{background:var(--b-d)}
-.cxf-thr{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);margin:0;padding:0;list-style:none}.cxf-thr li{display:flex;align-items:center;gap:var(--s1);font:600 var(--t15)/1.3 var(--b)}.cxf-thr img{width:32px;height:32px;object-fit:contain}
-.cxf-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3);margin:var(--s2) 0 0;padding-top:var(--s3);border-top:1px solid var(--rule)}.cxf-facts dt{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)}.cxf-facts dd{margin:0;font:900 var(--t17)/1.3 var(--u);font-style:italic}
-.cxf-facts dd.ok{color:var(--good-text)}.cxf-facts dd.no{color:var(--bad-text)}.cxf-col.a .cxf-tm{color:var(--plot-text)}.cxf-col.b .cxf-tm{color:var(--them-text)}
 .cxf .cx2-tm.a{color:var(--plot-text)}.cxf .cx2-tm.b{color:var(--them-text)}
 .cxf-more{margin:var(--s8) 0 var(--s3);font-size:var(--t22)} /* Nov 15 (re-audit #5): the headline sat on the rule */
 .cx2-hrow{border-bottom:0;padding:0 0 var(--s2)}.cx2-hrow .cx2-tm{font:700 var(--t13)/1.5 var(--b);letter-spacing:.02em}
 @media (max-width:699.98px){.cx2-hrow .cx2-lab{display:none}}
-@media (hover:hover) and (pointer:fine){.cxf-poster .np-mon img,:root[data-theme="night"] .cxf-poster .np-mon img{filter:none}}
-@media (max-width:1099.98px){.cxf-ghost{display:none}.cxf-half{min-height:360px;padding:var(--s4) var(--s10) var(--s4) var(--s5)}.cxf-half.b{padding-left:var(--s10);padding-right:var(--s5)}.cxf-score>b{font-size:var(--d64)}.cxf-six b{display:none}.cxf-hero .np-mon{--iw:160px}}
-@media (max-width:699.98px){.cxf-poster{grid-template-columns:minmax(0,1fr)}.cxf-half.a{margin:0 0 -20px;padding-right:var(--s5);clip-path:polygon(0 0,100% 0,100% calc(100% - 28px),0 100%)}.cxf-half.b{margin:0;padding:var(--s10) var(--s5) var(--s4);clip-path:polygon(0 28px,100% 0,100% 100%,0 100%)}
-  .cxf-half{min-height:0}.cxf-vs{top:50%;font-size:var(--t26)}.cxf-id h2{font-size:var(--t20)}.cxf-hero .np-mon{--iw:128px}
-  .cxf-bar>span{flex-direction:column;align-items:flex-start;justify-content:center;gap:2px;padding:var(--s2) var(--s3)}.cxf-bar .b{align-items:flex-end}.cxf-bar .a small{margin-left:0;text-align:left}.cxf-bar .b small{text-align:right}.cxf-bar b{font-size:var(--t22)}
-  .cxf-cols{grid-template-columns:minmax(0,1fr);gap:var(--s6)}.cxf-facts{grid-template-columns:repeat(3,minmax(0,1fr))}}
-.cxf-score>span{white-space:nowrap}
-.cxf-bar{column-gap:4px}.cxf-bar .a{margin-right:0}.cxf-bar .b{margin-left:0}
 /* both folds read the same: a › that turns when open, same size and weight, same thin rule above (polish, Nov 14) */
 .cxf .cx2-why>summary,.cxf .cx2-same>summary{display:flex;align-items:center;gap:var(--s2);min-height:var(--tap);padding:var(--s3) 0;font:600 var(--t17)/1.3 var(--b);list-style:none;cursor:pointer}
 .cxf .cx2-why>summary::-webkit-details-marker,.cxf .cx2-same>summary::-webkit-details-marker{display:none}
@@ -2439,17 +2395,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .cxf .cx2-why[open]>summary::before,.cxf .cx2-same[open]>summary::before{transform:rotate(90deg)}
 .cxf .cx2-same{margin-top:0;border-top:1px solid var(--rule)}.cxf .cx2-why{margin-top:var(--s6)}
 @media (prefers-reduced-motion:reduce){.cxf .cx2-why>summary::before,.cxf .cx2-same>summary::before{transition:none}}
-/* polish (Nov 14): the score column takes what it needs, so the big number never spills; the word stays on one line only where it fits */
-@media (min-width:700px){.cxf-half.a{grid-template-columns:auto minmax(0,1fr)}.cxf-half.b{grid-template-columns:minmax(0,1fr) auto}}
-.cxf-score>span{white-space:normal}@media (min-width:1280px){.cxf-score>span{white-space:nowrap}}
-@media (max-width:699.98px){.cxf-half,.cxf-half.b{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"id id" "score hero" "six six"}
-  .cxf-half.b .cxf-id{flex-direction:row;text-align:left}.cxf-half.b .cxf-score{justify-items:start;text-align:left}.cxf-hero .np-mon{--iw:112px}
-  .cxf-score>b{font-size:var(--d64)}.cxf-score>span{font-size:var(--t20)}.cxf-vs{left:auto;right:var(--s4);translate:0 -50%}}
-@media (max-width:1279.98px){.cxf-six b{display:none}}
-.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:240px}@media (max-width:1099.98px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:160px}}@media (max-width:699.98px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:112px}}
-@media (max-width:699.98px){.cxf-half,.cxf-half.b{grid-template-columns:minmax(0,1fr) auto}}
-.cxf-score{min-width:0}.cxf-score small{display:block}@media (max-width:379.98px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:88px}}
-@media (max-width:379.98px){.cxf-half,.cxf-half.a,.cxf-half.b{padding-left:var(--s4);padding-right:var(--s4)}.cxf-half{column-gap:var(--s2)}}
 
 /* ---------- Test Run: "Three Piles" (Sim's pick, Nov 14): pink = they're better prepared (them), grey = about even, blue = you're better prepared ---------- */
 .tp{--pk:var(--pick);--pk-d:color-mix(in srgb,var(--pick) 62%,var(--tier-shade));--gy:var(--ink-3);--gy-d:color-mix(in srgb,var(--ink-3) 62%,var(--tier-shade));--bl:var(--plot);--bl-d:color-mix(in srgb,var(--plot) 62%,var(--tier-shade))}
@@ -2878,8 +2823,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tm-six.mh .sx-plan{justify-content:flex-start;text-align:left}
 .tm-six.mh .sx-gpl{min-height:0;display:inline;position:relative}.tm-six.mh .sx-gpl::after{content:"";position:absolute;inset:-12px -4px -16px} /* Nov 15: 43 -> 44px+ tall: the panel's clipped top edge is 19px above, so the extra goes below */
 /* quality pass Nov 15 (Compare): the giant score keeps clear of its band word; Change and Swap keep their look but get a 44px tap area */
-.cxf-score>b{margin-bottom:var(--s5)}.cx2-tm{white-space:nowrap} /* 'Team A' never splits across lines */
-.cxf-id .np-link,.cx2-swap{position:relative}.cxf-id .np-link::after,.cx2-swap::after{content:"";position:absolute;inset:-12px -6px}
+.cx2-tm{white-space:nowrap} /* 'Team A' never splits across lines */
+.cx2-swap{position:relative}.cx2-swap::after{content:"";position:absolute;inset:-12px -6px}
 
 /* audit fixes (Nov 15): the latest ticket's five as 3 + 2 (two centred) up to 1099; filter chips stack their count on small phones;
    Recent and source links get a 44px tap area */
@@ -2933,7 +2878,6 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
    stacked halves (in the flow, not over them). 700-1099: hidden (decoration only; the blue and pink halves already say who faces whom) */
 @media (max-width:699.98px){.pbp-vs{position:relative;left:auto;top:auto;translate:none;justify-self:center;margin:0 0 calc(var(--s5)*-1)}} /* morning helper (confirmed): the badge sat 24px up into your last row of names; it still straddles the seam, below the names */
 @media (min-width:700px) and (max-width:1099.98px){.pbp-vs{display:none}}
-@media (max-width:699.98px){.cxf-score{margin-top:var(--s3)}} /* Compare phones: the score clear of the Change line above */
 /* re-check Nov 15: Winning Hands at 1100-1279: the champion's six (200px Cards) and the two hands below (100px) ran off both edges; one size
    down here so each hand fits its width. The rows' links (Sets, Set as Opponent, Compare, Show Fewer) keep their look with a 44px tap area */
 @media (min-width:1100px) and (max-width:1279.98px){.wt .wt-card{--cw:160px;--ch:224px}.wt .wt-card .mc-mon .np-mon,.wt .wt-card .mc-mon .np-mon .st{--iw:120px}
@@ -2944,20 +2888,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* re-check Nov 15, This Week at 320: the label on its own line, the two counts under it (they ran into each other); a change note may wrap */
 @media (max-width:389.98px){.wk-cn{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:0}.wk-cl{grid-column:1/-1}.wk-chg b{white-space:normal}}
 /* re-audit Nov 15 (Compare): the hero Pokémon one size down where its column is narrow, so it no longer sits over the score (700-1366) */
-@media (min-width:1100px) and (max-width:1366.98px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:176px}}
-@media (min-width:700px) and (max-width:1099.98px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:120px}}
-/* the band word stays in its own column: one line only from 1367, a size down below 1100 */
-@media (max-width:1366.98px){.cxf-score>span{white-space:normal}}@media (min-width:700px) and (max-width:1099.98px){.cxf-score>span{font-size:var(--t20)}}
-/* the score column takes at most ~58% so the hero keeps room (it was squeezed to 107px at 1100 and drawn over the score) */
-@media (min-width:700px){.cxf-half.a{grid-template-columns:fit-content(58%) minmax(0,1fr)}.cxf-half.b{grid-template-columns:minmax(0,1fr) fit-content(58%)}}
-@media (min-width:1100px) and (max-width:1366.98px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:160px}}
-@media (min-width:700px) and (max-width:819.98px){.cxf-hero .np-mon,.cxf-hero .np-mon .st{--iw:104px}}
 .us-bh small{font-size:inherit} /* re-check Nov 15: a <small> inside the 13px line fell to 10.8px (browser default), off the type scale */
 .sp2-h h1 .pl{display:block} /* re-check Nov 15: two sentences, two lines (it ran on and left 'top 20.' alone) */
 .hm-acts .np-link{min-width:var(--tap);justify-content:center} /* re-check Nov 15: Got It was 39px wide */
 @media (max-width:359.98px){.gs-facts b{font-size:var(--t15)}} /* re-check Nov 15: at 320 '37.5%' and '52.0%' were wider than their columns and touched */
-.tt-sh small{margin-left:var(--s2)} /* re-audit Nov 15: 'Stats' and 'at level 50' read as one word */
-@media (max-width:699.98px){.cxf-half.b .cxf-id{padding-right:calc(var(--s16) + var(--s4))}} /* re-audit Nov 15: Team B's name clear of the VS plate on phones */
 
 /* ---------- info pages, DRAFTS for Sim's review (Nov 15; only drawn in review mode) ---------- */
 .infp{display:grid;gap:var(--s10)}
@@ -3002,12 +2936,8 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .fn-uc .mg.none{display:block;visibility:hidden} /* Nov 15 (audit #15): every Undercard tile keeps the Mega line, so ratings and tiers sit level (Mega tiles were 6 px lower at 1280, measured 129 vs 135); same as My Box (.bx-f) */
 @media (max-width:399.98px){.trk-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);align-items:start}.trk-stats li:first-child{grid-column:1/-1}} /* Nov 15 (re-audit #7): at 320 "Oct 29" filled its column and read "Oct 2913"; the date gets its own row, the two counts share the next */
 .trk-stats{align-items:start} /* Nov 15: labels start level under each number */
-@media (max-width:429.98px){.tt thead th{padding-left:2px;padding-right:2px}.tt-nm{font-stretch:88%}.tt td{padding-left:var(--s1);padding-right:var(--s1)}} /* Nov 15 (re-audit #5): at 320-390 the names touched ("Charizard YWhimsicottBasculegion") and the move chips met the next column; a small gap each side, names in the approved narrower letters (88%, as Home and My Box) */
-@media (max-width:379.98px){.tt td{font-stretch:88%;padding-left:6px;padding-right:6px}.tt-mv .np-type{font-stretch:88%}} /* Nov 15 (re-audit #5): the approved narrower letters for cell text on the smallest phones ("Adaptability" met the edge, chips met the next column) */
 @media (max-width:399.98px){.mt-id .tm-name{font-size:var(--t20)}} /* Nov 15 (re-audit #4): beside the score box at 320 the name column is ~140 px; "Tailwind" broke mid-word at 24 px */
 .tm-name{text-wrap-style:balance} /* Nov 15 (re-audit #4): no lone word on the team name's last line */
-@media (max-width:699.98px){.cxf-half.b .cxf-id{margin-top:var(--s6)}} /* Nov 15 (re-audit #3): Team B's headline starts below the VS badge (it sat under its lower half and broke "Challeng/er" at 320) */
-@media (max-width:359.98px){.cxf-id h2{font-size:var(--t17)}} /* Nov 15 (re-audit #3): at 320 "Challenger" (141 px at 20) was wider than its 128 px box */
 /* Nov 15 (re-audit #10): tap areas: the search chip x (was 8x15), Events' stacked Recent links (20 px tall, hit areas overlapped), the calendar link (~40 px) */
 .wt-f button{position:relative}.wt-f button::after{content:"";position:absolute;inset:-16px -20px}
 .ev-cpast .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
@@ -3397,3 +3327,126 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (min-width:900px){.tmk-e .tm-e-win .k-roster{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (max-width:699.98px){.tmk-e .tm-e-acts{gap:var(--s2)}.tmk-e .tm-e-acts .np-btn2{margin-top:var(--s2)}.tmk-e .tm-e-sub{margin-bottom:var(--s10)}}
 .tmk-e .k-kicker{color:var(--k-on-chip)}
+
+/* ---------- Compare on the kit (reskin proposal, Nov 22): HEAD TO HEAD. The face-off (two corners, VS) and the tug of war ----------
+   Team A = Plot blue, Team B = the site's "them" magenta (Sim Q1, Nov 15: Team B is magenta, clearly apart from red/pink "bad"). */
+.cmp{--a-c:var(--k-plot);--a-t:var(--k-plot-text);--b-c:var(--them);--b-t:var(--them-text)}
+.cmp .a{--sc:var(--a-c);--sct:var(--a-t)}.cmp .b{--sc:var(--b-c);--sct:var(--b-t)}
+.cmp .cmp-top .np-back{margin:0;font-size:var(--t15);font-weight:700}
+.cmp .cmp-top h1{margin:0;font-size:var(--d-khead)}
+.cmp .cmp-top .k-kicker{margin-top:8px}
+.cmp .k-lead .cx2-tm{font-weight:700}
+/* the face-off: two corners facing each other, a slanted VS between */
+.cmp-face{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);gap:16px;align-items:stretch;margin-top:40px}
+.cmp-vs{align-self:center;display:grid;place-items:center;width:72px;height:72px;background:var(--k-chip);color:var(--k-on-chip);font-size:var(--t28);line-height:1;transform:skewX(-10deg) rotate(-6deg)}
+.cmp-half,.cmp .cx2-head,.cmp .cx2-qp{position:relative;isolation:isolate;min-width:0;margin:0;padding:28px 24px 20px;border:0;border-radius:0;background:none;color:var(--k-ink)}
+.cmp-half::before,.cmp .cx2-head::before,.cmp .cx2-qp::before{content:"";position:absolute;inset:0;z-index:-1;background:linear-gradient(var(--sc) 0 8px,color-mix(in srgb,var(--sc) 9%,var(--k-card)) 8px);clip-path:polygon(0 0,100% 0,100% calc(100% - 20px),calc(100% - 20px) 100%,0 100%)}
+.cmp-half.b::before,.cmp .cx2-head.b::before,.cmp .cx2-qp.b::before{clip-path:polygon(0 0,100% 0,100% 100%,20px 100%,0 calc(100% - 20px))}
+.cmp-half{display:grid;align-content:start;gap:20px}
+.cmp .cxf-id{display:flex;align-items:flex-start;gap:12px;min-width:0}
+.cmp-half.b .cxf-id{flex-direction:row-reverse;text-align:right}
+.cmp-badge{display:inline-grid;place-items:center;flex:none;width:40px;height:40px;background:var(--sc);color:var(--k-paper);font-size:var(--t22);line-height:1;transform:skewX(-10deg)}
+.cmp-nm{margin:0;font-size:var(--t24);line-height:1.15;overflow-wrap:normal;hyphens:none}
+.cmp .cxf-id p{margin:4px 0 0;font-size:var(--t13);font-weight:600;line-height:1.4;color:var(--k-ink2)}
+.cmp .cxf-id .np-link{position:relative;font-weight:700;color:var(--k-plot-text)}.cmp .cxf-id .np-link::after{content:"";position:absolute;inset:-12px -6px}
+.cmp-score{display:flex;align-items:flex-end;gap:16px;min-width:0;margin:0}
+.cmp-half.b .cmp-score{flex-direction:row-reverse;text-align:right}
+.cmp-score>b{font-size:var(--d-khead);line-height:.9;color:var(--sct)}
+.cmp-sw{display:grid;gap:2px;min-width:0;padding-bottom:4px}.cmp-sw span{font-size:var(--t20);line-height:1.15}
+.cmp-sw small{font-size:var(--t13);font-weight:600;line-height:1.35;color:var(--k-ink2)}.cmp-sw .cmp-ahead{color:var(--sct);font-weight:700}
+.cmp-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin:0;padding:12px 0 0;list-style:none;border-top:1px solid var(--k-rule)}
+.cmp-six li{display:grid;justify-items:center;min-width:0;text-align:center}.cmp-six .np-mon{--iw:min(64px,100%)}
+.cmp-six b{font-size:var(--t13);font-weight:700;line-height:1.2}
+@media (max-width:1279.98px){.cmp-six b{display:none}}
+.cmp .cx2-swap{display:inline-flex;align-items:center;min-height:44px;margin:8px 0 0;padding:0;border:0;background:none;font:inherit;font-size:var(--t15);font-weight:700;color:var(--k-plot-text);cursor:pointer}
+/* the picking corners (one or both teams not picked yet): the same plates; Team B's lists the latest winners */
+.cmp-pick{margin-top:40px}
+.cmp .cx2-head.empty{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;width:100%;min-height:180px;cursor:pointer;text-align:left}
+.cmp .cx2-head.empty .nm,.cmp .cx2-qp .top .nm{font-family:var(--u);font-style:italic;font-synthesis:style;font-weight:900;font-size:var(--t24);line-height:1.1}
+.cmp .cx2-head.empty .fine{color:var(--k-ink2)}
+.cmp .cx2-b.a,.cmp .cx2-b.b{background:var(--sc);color:var(--k-paper);transform:skewX(-10deg)}
+.cmp .cx2-qp .k{color:var(--k-ink2)}
+.cmp .cx2-qp .cx2-opt{border-bottom-color:var(--k-rule)}
+.cmp .cx2-hd .np-link{color:var(--k-plot-text);font-weight:700}
+.cmp .cx2-hint,.cmp .cx2-busy{margin-top:16px}
+.cmp .cx2-busy,.cmp p.cx2-hint[role="status"]{margin-top:32px}
+@media (max-width:899.98px){.cmp-pick .cmp-vs{justify-self:center;width:56px;height:56px;font-size:var(--t22)}}
+/* the tug of war: totals, then the threats only one team handles, each pulled toward the team with the answer */
+.cmp-tug{display:grid;gap:8px}
+.cmp-cap{margin:0;font-size:var(--t15);font-weight:700;line-height:1.4;text-align:center;color:var(--k-ink2)}
+.cmp-tot,.cmp-r{display:grid;grid-template-columns:minmax(0,1fr) 240px minmax(0,1fr);gap:16px}
+.cmp-tot{align-items:end;padding-bottom:16px;border-bottom:3px solid var(--k-ink)}
+.cmp-tt{display:grid;gap:2px;margin:0;min-width:0}.cmp-tt.a{justify-items:end;text-align:right}
+.cmp-tt b{font-size:var(--d-kscore);line-height:1;color:var(--sct)}.cmp-tt span{font-size:var(--t15);font-weight:700;line-height:1.3}
+.cmp-tt small{font-size:var(--t13);font-weight:600;line-height:1.4;color:var(--k-ink2)}
+.cmp-of{margin:0;padding-bottom:8px;text-align:center;font-size:var(--t24);line-height:1;color:var(--k-ink2)}
+.cmp-gh{display:flex;align-items:center;gap:12px;margin:24px 0 4px;font-family:var(--u);font-style:italic;font-synthesis:style;font-weight:900;font-size:var(--t20);line-height:1.2}
+.cmp-gh.b{flex-direction:row-reverse;text-align:right}.cmp-gh b{color:var(--sct)}.cmp-gh .cmp-badge{width:32px;height:32px;font-size:var(--t17)}
+.cmp-rows{margin:0;padding:0;list-style:none}
+.cmp-r{align-items:center;min-height:64px;padding:8px 0;border-bottom:1px solid var(--k-rule)}
+.cmp-s{display:flex;align-items:center;gap:16px;min-width:0}.cmp-s.a{justify-content:flex-end}
+.cmp-w{font-size:var(--t15);font-weight:600;font-style:normal;line-height:1.3;white-space:nowrap;color:var(--k-ink2)}
+.cmp-s.on .cmp-w{font-weight:800;color:var(--sct)}
+.cmp-bk{display:flex;gap:6px;flex:none}.cmp-s.a .cmp-bk{flex-direction:row-reverse}
+.cmp-bk i{display:block;width:40px;height:24px;box-shadow:inset 0 0 0 2px var(--k-rule);transform:skewX(-14deg)}
+.cmp-bk[data-l="1"] i:first-child{background:color-mix(in srgb,var(--sc) 40%,var(--k-card));box-shadow:none}
+.cmp-bk[data-l="2"] i:nth-child(-n+2),.cmp-bk[data-l="3"] i{background:var(--sc);box-shadow:none}
+.cmp-t{display:flex;align-items:center;justify-content:center;gap:8px;min-width:0}
+.cmp-t img{flex:none;width:48px;height:48px;object-fit:contain}.cmp-t b{min-width:0;font-size:var(--t15);font-weight:700;line-height:1.25}
+.cmp-also{margin:8px 0 0}.cmp-also.b{text-align:right}
+.cmp-even{margin:16px 0 0;text-align:center}
+.cmp .k-step .cx2-sum{margin:0 0 24px}.cmp .k-step .cx2-sum ul{margin:0}
+.cmp .k-step .cx2-same{margin-top:0}
+.cmp .k-go{margin-top:40px}
+/* phones: the two corners side by side (both halves are short), VS on the seam at the top; the tug rows stack word over blocks */
+@media (max-width:699.98px){
+  .cmp-face:not(.cmp-pick){grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:8px;margin-top:32px}
+  .cmp-face:not(.cmp-pick) .cmp-vs{position:absolute;left:50%;top:-20px;z-index:2;width:44px;height:40px;font-size:var(--t17);translate:-50% 0}
+  .cmp-pick{margin-top:24px}
+  .cmp-half{gap:12px;padding:20px 12px 12px}
+  .cmp-half .cxf-id,.cmp-half.b .cxf-id{flex-direction:column;gap:8px}.cmp-half.b .cxf-id{align-items:flex-end}
+  .cmp-badge{width:32px;height:32px;font-size:var(--t17)}
+  .cmp-nm{font-size:var(--t17)}
+  .cmp-score,.cmp-half.b .cmp-score{flex-direction:column;align-items:flex-start;gap:4px}.cmp-half.b .cmp-score{align-items:flex-end}
+  .cmp-score>b{font-size:var(--d64)}
+  .cmp-sw span{font-size:var(--t15)}
+  .cmp-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:4px;padding-top:8px}
+  .cmp .cx2-head,.cmp .cx2-qp{padding:20px 16px 16px}
+  .cmp .cx2-head.empty{min-height:120px}
+  .cmp-tot,.cmp-r{grid-template-columns:minmax(0,1fr) 96px minmax(0,1fr);gap:8px}
+  .cmp-tt b{font-size:var(--t34)}
+  .cmp-of{font-size:var(--t17)}
+  .cmp-gh{gap:8px;margin-top:16px;font-size:var(--t17)}.cmp-gh .cmp-badge{width:28px;height:28px;font-size:var(--t15)}
+  .cmp-r{min-height:0;padding:8px 0}
+  .cmp-s{flex-direction:column;gap:4px}.cmp-s.a{align-items:flex-end}.cmp-s.b{align-items:flex-start}.cmp-s.b .cmp-w{order:-1}
+  .cmp-w{font-size:var(--t13)}
+  .cmp-bk{gap:4px}.cmp-bk i{width:24px;height:16px}
+  .cmp-t{flex-direction:column;gap:2px;text-align:center}.cmp-t img{width:40px;height:40px}.cmp-t b{font-size:var(--t13);line-height:1.2}
+  .cmp .k-go{margin-top:32px}
+}
+@media (max-width:359.98px){.cmp-tot,.cmp-r{grid-template-columns:minmax(0,1fr) 84px minmax(0,1fr);gap:6px}.cmp-bk i{width:20px}.cmp-tt b{font-size:var(--t28)}.cmp-score>b{font-size:var(--t34)}}
+@media (max-width:699.98px){.cmp-six .np-mon{--iw:min(44px,100%)}.cmp .cx2-row{padding:8px 0;gap:4px 16px}.cmp .k-step .cx2-sum{margin-bottom:16px}.cmp-tt small{line-height:1.3}}
+@media (max-width:699.98px){.cmp-tot,.cmp-r{grid-template-columns:minmax(0,1fr) 116px minmax(0,1fr);gap:6px}.cmp-nm{font-size:var(--t15)}.cmp-t img{width:36px;height:36px}}
+@media (max-width:359.98px){.cmp-tot,.cmp-r{grid-template-columns:minmax(0,1fr) 96px minmax(0,1fr)}}
+@media (max-width:699.98px){.cmp .cmp-tot{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;padding-bottom:12px}.cmp-of{display:none}.cmp-tt span{font-size:var(--t13)}}
+/* the picking corners stack under 900; the VS sits on the seam between them (no row of its own) */
+@media (max-width:899.98px){.cmp .cmp-pick{grid-template-columns:minmax(0,1fr);gap:16px}.cmp .cmp-pick .cmp-vs{position:relative;z-index:2;justify-self:center;width:52px;height:48px;margin:-32px 0;font-size:var(--t20)}}
+@media (max-width:699.98px){.cmp .cx2-six .np-mon{--iw:min(52px,100%)}.cmp .cx2-six{row-gap:0}}
+/* wide screens: each corner's likely lead bursts out of the top of its plate, on the inner side, facing the other team */
+.cmp-star{display:none}
+@media (min-width:1100px){
+  .cmp-half>.cxf-id,.cmp-half>.cmp-score,.cmp-half>.cmp-six,.cmp-half>p{position:relative;z-index:1}
+  .cmp-half>.cxf-id{max-width:60%}.cmp-half.b>.cxf-id{margin-left:auto}
+  .cmp-star{display:block;position:absolute;z-index:0;top:-72px;right:8px;width:clamp(180px,16vw,240px);height:clamp(200px,17vw,260px);pointer-events:none}
+  .cmp-half.b .cmp-star{right:auto;left:8px}
+  .cmp-star img{width:100%;height:100%;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 8px 6px var(--k-art-shadow))}
+  .cmp-half.b .cmp-star img{transform:scaleX(-1)}
+  .cmp-face:not(.cmp-pick){margin-top:96px}
+}
+@media (min-width:1100px){.cmp-half{--star:clamp(170px,15vw,230px)}.cmp-half>.cxf-id{max-width:none}.cmp-half.a>.cxf-id,.cmp-half.a>.cmp-score{margin-right:calc(var(--star) - 16px)}.cmp-half.b>.cxf-id,.cmp-half.b>.cmp-score{margin-left:calc(var(--star) - 16px)}
+  .cmp-star{width:var(--star);height:calc(var(--star) + 24px);top:-64px}}
+@media (min-width:700px) and (max-width:1366.98px){.cmp-score,.cmp-half.b .cmp-score{flex-direction:column;align-items:flex-start;gap:4px}.cmp-half.b .cmp-score{align-items:flex-end}}
+/* tablets: a narrower centre and smaller blocks so both sides fit; each corner's six goes 3 x 2 */
+@media (min-width:700px) and (max-width:1099.98px){.cmp-tot,.cmp-r{grid-template-columns:minmax(0,1fr) 168px minmax(0,1fr);gap:12px}.cmp-s{gap:8px}.cmp-bk{gap:4px}.cmp-bk i{width:28px;height:20px}.cmp-t img{width:40px;height:40px}
+  .cmp-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:4px}.cmp-six .np-mon{--iw:min(56px,100%)}}
+@media (min-width:700px) and (max-width:899.98px){.cmp-s{flex-direction:column;gap:4px}.cmp-s.a{align-items:flex-end}.cmp-s.b{align-items:flex-start}.cmp-s.b .cmp-w{order:-1}}

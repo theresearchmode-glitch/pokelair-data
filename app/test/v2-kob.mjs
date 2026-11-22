@@ -73,8 +73,8 @@ for (const [W, th] of RUNS) {
       ok(!(await p.$('.arn-kbfull')), `${dt}: no full-width board under 1024`);
     } else {
       const F = await p.evaluate(() => { const f = document.querySelector('.arn-kbfull'), g = document.querySelector('.pc-board'); /* Nov 21: Plot the hit (Sim approved): the board .pc-board (was the Arena's .arn-grid) */ if (!f || !f.getClientRects().length) return null;
-        const cols = [...f.querySelectorAll('.kob-col')], fr = f.getBoundingClientRect(), gr = g.getBoundingClientRect();
-        return {w: fr.width, gw: gr.width, below: fr.top >= gr.bottom - 1, tiles: [...document.querySelectorAll('.dc2-kt')].filter(e => e.getClientRects().length).length,
+        const cols = [...f.querySelectorAll('.kob-col')], fr = f.getBoundingClientRect(), gr = g.getBoundingClientRect(), pl = document.querySelector('.pck .k-plan'), st = pl ? pl.getBoundingClientRect() : null; /* Nov 21 Calc reskin (Sim approved): the graph paper sits inside the plan line's indent; the opened board runs the plan's full width under it */
+        return {w: fr.width, gw: st ? st.width : gr.width, below: fr.top >= gr.bottom - 1, tiles: [...document.querySelectorAll('.dc2-kt')].filter(e => e.getClientRects().length).length,
           dir: !!f.querySelector('.dc2-dir'), intro: !!f.querySelector('.dc2-kb > .fine'), fold: !!f.querySelector('.dc2-all'),
           cols: cols.map(c => { const r = c.getBoundingClientRect(), rows = [...c.querySelectorAll('.kob-r')], h = c.querySelector('h3 b');
             return {g: c.dataset.g, top: Math.round(r.top), left: Math.round(r.left), right: Math.round(r.right), n: rows.length, hn: +(h && h.textContent), none: /None in this group/.test(c.textContent),

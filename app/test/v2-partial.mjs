@@ -17,14 +17,15 @@ const r = await p.evaluate(() => window.__ev(`(() => {
   if (!G3 || !G3.partial) return {skip: 'no partial score for 3 Pokemon'};
   const txt = h => { const d = document.createElement('div'); d.innerHTML = h; return d.textContent.replace(/\\s+/g, ' '); };
   const cell = txt(CX2.grade(G3)), cell6 = txt(CX2.grade(G6));
-  const half = txt(V2.cxfHalf('A', {name: 'Test', sub: '', slots: S.slots.slice(0, 3)}, {G: G3}));
-  const tape = txt(V2.cxfTape({G: G3}, {G: G6}));
+  /* Nov 22 Compare reskin (Sim approved): the team corner is V2.cmpHalf (was V2.cxfHalf); the Tale of the Tape bars are gone, their score and 'points ahead' sit in each corner */
+  const half = txt(V2.cmpHalf('A', {name: 'Test', sub: '', slots: S.slots.slice(0, 3)}, {G: G3}, {G: G6}));
+  const tape = half;
   return {cell, cell6, half, tape}; })()`));
 if (r.skip) { console.log('v2-partial: skipped, ' + r.skip); process.exit(1); }
 ok(/so far/.test(r.cell) && /3 of 6 picked/.test(r.cell), `Compare: a 3-Pokémon team's score says "so far" and "3 of 6 picked" (${r.cell.trim().slice(0, 60)})`);
 ok(!/so far/.test(r.cell6), 'Compare: a full six has no "so far"');
-ok(/so far/.test(r.half), 'Tale of the Tape: the partial team\'s score line says "so far"');
-ok(/so far/.test(r.tape) && !/ahead/.test(r.tape), 'Tale of the Tape: the Strength Score bar labels the partial team "so far" and calls no one ahead');
+ok(/so far/.test(r.half), 'Compare corner: the partial team\'s score line says "so far"');
+ok(/so far/.test(r.tape) && !/ahead/.test(r.tape), 'Compare corner: the partial team is labelled "so far" and no one is called ahead');
 const rcText = () => p.evaluate(() => { const e = document.querySelector('#app .sds-rc'); return e ? {w: (e.querySelector('.sds-w') || {}).textContent || '', rk: (e.querySelector('.sds-rk') || {}).textContent || '', n: (e.querySelector('.sds-n') || {}).textContent || ''} : null; });
 await p.evaluate(() => { location.hash = '#home'; }); await p.waitForTimeout(1500);
 const rc6 = await rcText();
