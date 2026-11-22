@@ -13,5 +13,5 @@ So for every list page: calm rows, few pictures, the main thing first, one bold 
 - A mini roster per style is fine if it's few pictures per style (3-4), not six for every style.
 
 ## Winning Teams (#tournaments) — "THE WINNING CREWS", each team as a row of six roster cards, "USE THIS TEAM." Keep as drawn (PC mock).
-- RISK: many teams x six cards is the same pattern Sim called chaotic on Test Run. Keep the six small and the rows calm,
+- Checked Nov 22 (9:1x AM, today's page at 1440): only THREE teams show as card hands (champion big + 2), the rest behind 'More Winning Teams'. Keep that limit; then the six-card rows are fine. (Earlier worry:) many teams x six cards is the same pattern Sim called chaotic on Test Run. Keep the six small and the rows calm,
   or show the six big only for the opened/top team. Show Sim the density honestly in the pictures (a full page, not a crop).
