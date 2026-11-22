@@ -78,7 +78,7 @@ after that: at most ONE helper at a time until Sim says 2 again. Going above 1: 
 ## HELPERS: TWO AT A TIME (Sim, Nov 22, logged 12:57 AM: one extra helper allowed ONLY for the 3 Battle mock-ups; otherwise 2 max)
 ## (older heading kept:) HELPERS: TWO AT A TIME (Sim, Nov 21, just before 12:21 PM, LATEST: '2 helpers is a great idea. do it!' for the reskin; overrides the ONE-at-a-time rule below)
 At most TWO helpers/subagents at once, each in its own copy, on approved reskin work. Going above 2: ask Sim first. work-check.sh / stop-check.sh need 2.
-NO design authority (Sim cancelled it, Nov 21, by 12:27 PM): every visual decision needs Sim's yes with pictures. Executive (non-visual) authority until 10:00 PM Sun Nov 22 (Sim, logged 1:33 AM Nov 22; was 9:00 AM); decision summary due before 10 PM.
+NO design authority (Sim cancelled it, Nov 21, by 12:27 PM): every visual decision needs Sim's yes with pictures. Executive (non-visual) authority until 9:00 AM Mon Nov 23 (Sim, extended Nov 22 at 10:17 AM; was 10 PM Sun); decision summary due before 9 AM Mon.
 
 ## HELPERS: ONE AT A TIME (Sim, Nov 21, 6:49 AM, LATEST; overrides the helper counts below)
 Sim, Nov 21: "after 7 AM today, I would like to reduce the amount of helpers to just one helper at a time. I need to conserve usage."
