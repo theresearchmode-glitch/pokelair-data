@@ -2165,3 +2165,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:22 AM: GitHub run 1481 on ce3ff7d9: SUCCESS (all green: News ears, Test Run 320, Battle 1100-1439). Pushing batch: hL's Test Run lane labels 1100-1439 + suspects names 700-1099, logs, Game Plan.
 - 5:36 AM: Hourly work check 5:36 AM: 1 helper (hP polish); main: minors x3 on HEAD (main1, main2 passed); Game Plan 5:04 (fresh); 5:45 summary ready.
 - 5:38 AM: Minors x3 on f0f47e1d (frozen data, with all hL merges): main1, main2, groups all passed (ticker flake did not repeat).
+- 5:44 AM: Polish every 20px 700-2560 on Battle, Test Run, News, My Team (HEAD 3f4a3808): no spill except the known My Team score-plate slant overhang (checked by eye 2:36 AM). Sending the 5:45 summary.
+- 5:44 AM: 5:45 AM summary sent to Sim (chat + 6 before/after pictures + summary file + phone notification).
