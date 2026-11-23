@@ -1,5 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH (design authority to 9 AM Mon, Sim 9:12 PM): verify the 9 empty-space fixes + My Team (qcheck changed pages, minors, behaviour, q59/q17/q84), then merge-ready. Helper: hW2 Job 5 (last job).
+NOW: HH (design + executive authority to 9 AM Mon; Sim asleep): final page sweep on the changed pages (vg.sh), then Preview refresh. Helper: hK Wave 2 kit parts (branch hk-wave2).
 NEXT: Job 3 length options under authority: Speed Tiers B, Test Run A, Pokémon page A (second account's pictures), build one at a time
 NEXT: Wave 2 kit parts build (Sim's A for all five): the one helper once hW2 ends
 NEXT: Track Record (2px over the +720 cap): decide and merge
