@@ -2227,3 +2227,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:31 AM: Desktop polish every 40px 1100-2560 (25 pages, HEAD with hI + hJ): no spills or sideways scroll except the known My Team score-plate slant.
 - 10:35 AM: Hourly work check 10:35 AM: 1 helper (hB, My Box tests); main: Chromium D-meta on HEAD; Game Plan 9:36 (fresh).
 - 10:40 AM: Chromium D-meta on HEAD (hI + hJ): 117 pass 0 FAIL (THEME-03 passes in Chromium). WebKit recheck alone when hB finishes.
+- 10:44 AM: Merged My Box 'The PC' (hB, mybox-pc d77e0ab1) for the Preview and Sim's review (not live). Checked by hB: guard clean, A-team 139/0, qcheck box 0 new (incl. 700-1440), tap-size, polish box 'lone 1, space 3' (old 'lone 1, space 7'), minors groups + main1 all passed, main2 only the Home 2560 ticker timing check (known flake; base also fails it standalone). Lengths: shorter at 320-1280; 1440 +3px and 600 ~+50px need Sim's OK. Kit choices vs mock listed for Sim.
