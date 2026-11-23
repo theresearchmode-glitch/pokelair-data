@@ -2205,3 +2205,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:37 AM: Hourly work check 8:37 AM: 1 helper (hJ, iPhone spots A-D); main: final behaviour A/C/D run; Game Plan 7:58 (fresh).
 - 8:45 AM: GitHub run 1486 (e48b522a): 2 reds in part 2: v2-unbounded (the 13px chips Sim approved this morning: Ratings chips, Grandstand switch, Speed Tiers word buttons) -> added to its named list with the reason; tokens-doc out of date after hP's tokens -> regenerated. Local: v2-unbounded 'none outside the named exception', tokens-doc up to date. Pushing.
 - 8:45 AM: 9 AM summary sent to Sim (summary file + phone notification).
+- 8:51 AM: Final Chromium behaviour on HEAD (frozen data): A-team 139/0, C-battle 83/0, D-meta-shell see fin2.log.
