@@ -133,3 +133,12 @@
 @media (max-width:699.98px){.is-tab.kd-nature{margin-right:var(--s10);padding:var(--s8) var(--s4) var(--s4) var(--s8)}.is-tab.kd-nature::before{left:var(--s4)}
   .is-sh0 span{white-space:normal} /* a long 'Not run on any ...' line wraps inside the tab instead of running out of it */
   .nt-stamp{display:none}.nt-pic{width:80px;gap:var(--s1)}.nt-pic div{height:36px;font-size:var(--t15)}.nt-pic .nn{height:76px}}
+/* narrow phones (under 380; measured: at 360 and 375 "Adamant" broke onto two lines beside the picture): the picture goes above the name, its two tiles side by side, so the name keeps the tab's full width; the share line wraps */
+@media (max-width:379.98px){.kd-nature .is-pn{flex-wrap:wrap;row-gap:var(--s3)}.kd-nature .is-pn .is-tn{flex-basis:100%}
+  .nt-pic{grid-auto-flow:column;grid-auto-columns:80px;width:auto}.nt-pic .nn{height:56px}
+  .kd-nature .is-sh{flex-wrap:wrap;column-gap:var(--s2);row-gap:0}.kd-nature .is-sh span{white-space:normal}}
+/* 700-899 wide (measured Nov 23: beside the share, "Adamant" broke onto two lines at 700 and "Bashful" at 820): the share goes under the name, as on
+   phones, and the stamp is left out (it would sit on the kicker); a long "Not run on any ..." share never takes the name's room */
+.kd-nature .is-sh0{max-width:240px}
+@media (min-width:700px) and (max-width:899.98px){.is-tab.kd-nature{grid-template-columns:minmax(0,1fr)}.nt-stamp{display:none}
+  .kd-nature .is-sh{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--s2);max-width:none;text-align:left}}
