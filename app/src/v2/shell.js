@@ -225,7 +225,7 @@ document.addEventListener('click', e => { const a = e.target.closest && e.target
 // a Pokémon picked anywhere opens its info sheet; pages replace V2.openMon when the full sheet is built (R4)
 V2.openMon = n => { const p = V2.byName.get(n); if (!p) return;
   V2.sheet(`<div class="np-monsheet">${V2.mon(n, {iw: 220, bare: true})}<div><h2 class="u">${V2.esc(V2.disp(n))}</h2><div class="ty">${(p.t || []).map(V2.typeChip).join('')}</div><p class="fine">Abilities: ${(p.a || []).map(V2.esc).join(', ')}</p>${V2.addBtn ? V2.addBtn(n) : ''}</div></div>`, {label: V2.disp(n), small: true}); };
-document.addEventListener('click', e => { const m = e.target.closest('[data-v2mon]'); if (m) { e.preventDefault(); V2.openMon(m.dataset.v2mon); }
+document.addEventListener('click', e => { const m = e.target.closest('[data-v2mon]'); if (m && !e.target.closest('[data-v2info]')) { e.preventDefault(); V2.openMon(m.dataset.v2mon); } /* an info word inside a Pokémon's card opens only its own sheet (Nov 22) */
   if (e.target.closest('[data-v2search]')) V2.openSearch(); });
 document.addEventListener('keydown', e => { if ((e.key === 'k' || e.key === 'K') && (e.ctrlKey || e.metaKey) && !e.altKey) { e.preventDefault(); if (!V2._sheet) V2.openSearch(); else if (document.querySelector('.np-sheet .np-find')) V2.closeSheet(); return; } /* a second Ctrl+K closes Search, as today (JUMP-01) */ if (e.key === '/' && !V2._sheet && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); V2.openSearch(); } });
 // ---------- the Apple-style slider (Sim's favourite, kept from today's site; design-system.md "Slider") ----------

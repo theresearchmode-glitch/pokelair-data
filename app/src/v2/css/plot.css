@@ -430,3 +430,11 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
    in the same slanted dashed boxes) across the whole lane, and the underdog stands bigger beside them, so the waiting part reads as the
    team about to be hatched rather than a mostly empty strip */
 @media (min-width:1100px){.pl-places{grid-template-columns:repeat(5,minmax(0,1fr))}.pl-dog .np-mon{--iw:168px}.pl-dog{max-width:440px}}
+/* the plate's name is its button and covers the whole plate (a tap anywhere opens the Pokémon); its item, Ability and moves sit above that
+   cover as their own info words, in the plate's own ink with an underline (blue would fight the type colour) (Nov 22, HH design authority) */
+.pl-go{position:static;padding:0;margin:0;border:0;background:none;font:inherit;color:inherit;letter-spacing:inherit;text-transform:inherit;cursor:pointer}
+.pl-go::after{content:"";position:absolute;inset:0;z-index:0}
+.pl-go:focus-visible{outline:none}.pl-plate:has(.pl-go:focus-visible){outline:3px solid var(--k-plot);outline-offset:3px}
+.pl-plate .is-w,.pl-plate .pl-mv{position:relative;z-index:1}
+.pl-plate .pl-pc .is-w,.pl-plate .pl-pc .is-w:hover{color:inherit;text-decoration-color:currentColor}
+button.pl-mv{width:100%;border:0;color:inherit;cursor:pointer;font:inherit}button.pl-mv .pl-t{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
