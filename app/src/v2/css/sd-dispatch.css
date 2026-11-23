@@ -201,6 +201,7 @@ a.dp-fr:hover .dp-fn{text-decoration:underline}
 }
 @container dp (max-width:699.98px){
   .dp-top .dp-topc{display:none}
+  .dp-top{flex-wrap:wrap;row-gap:0} /* Sim, Nov 23 (iPhone 393): on Home's small paper the issue line and the date each broke in two side by side ("No. 69 · Late / Edition"); now each takes its own whole line, as on the News page, in the same height */
   .dp-name{white-space:normal;font-size:var(--d-papertwo)}
   .dp-name span{display:block}
   .dp-small .dp-name{font-size:var(--d-mini)}

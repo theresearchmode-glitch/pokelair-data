@@ -1275,6 +1275,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .sp2-sc>.sp2-sc-l{padding-right:0}
   .sp2-m{grid-template-columns:var(--c1) 40px minmax(0,1fr);grid-template-areas:"v mon nm" "v mon tr";align-items:end;gap:0 var(--s2);min-height:44px;padding:0 var(--s4) 0 0}
   .sp2 .k-sent{font-size:var(--t15);gap:var(--s1) var(--s2)}.sp2 .k-w{padding:0 var(--s1)}.sp2-ctl .k-sent{margin-top:var(--s4)}
+  @media (max-width:439.98px){.sp2 .k-w{padding:0 var(--s2);font-size:var(--t13)}} /* Sim, Nov 23 (iPhone 393): at 15px with 4px sides the slanted letters of "Your Tailwind", "They're Paralyzed" and "No Weather" ran into the chip's border; a size down with 8px sides, as the Ratings chips under 440, and every row still fits */
   .sp2-m .v{grid-area:v;align-self:center;padding-right:0;font-size:var(--t20)}
   .sp2-m .nm{grid-area:nm;padding-right:0;font-size:var(--t15)}
   .sp2-m .sp2-tr,.sp2-m .sp2-bar{display:contents}
@@ -2254,7 +2255,7 @@ button.pp2-plate{cursor:pointer;width:100%}
   .us-trw{display:none}
   .us-axl{display:none}
   .us-ln{min-height:0;padding:6px 0;row-gap:2px}
-  .us-ln .us-tx{gap:var(--s1)}.us-ln .us-rk{min-width:32px}
+  .us-ln .us-tx{gap:var(--s1)}.us-ln .us-rk{min-width:40px} /* Sim, Nov 23 (iPhone 393): at 32px the slanted "#10" ran into "Pelipper", and "#20"-"#60" (37-39px) pushed their names out of line; 40px, as on desktop, holds every rank */
   .us-ln .us-tx b{font-size:var(--t16)}
   .us .us-spot .k-scrib{display:none}
   .us-ln .us-u{font-size:var(--t20)}
@@ -3439,6 +3440,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ra-seg[aria-label="Tournament views"]{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media (max-width:699.98px){.ra-seg[aria-label="Tournament views"]{grid-template-columns:repeat(4,minmax(0,1fr))}.ra-seg[aria-label="Tournament views"] a{white-space:normal;padding:0 var(--s2);text-align:center;line-height:1.2}}
 @media (max-width:359.98px){.ra-seg[aria-label="Tournament views"] a{font-stretch:88%;padding:0 var(--s1)}} /* at 320 "Archetypes" was wider than its tab */
+@media (min-width:360px) and (max-width:439.98px){.ra-seg[aria-label="Tournament views"] a{font-stretch:88%}} /* Sim, Nov 23 (iPhone 393): at 15px "Winning Teams" and "This Week" broke onto two lines and "Events" / "Archetypes" touched their slanted tab; the approved 88% letters keep all four on one line from 375 (at 360-374 the two-word tabs still wrap, as before) */
 @media (max-width:389.98px){.tk:not(.big) .tk-name{font-size:var(--t13);font-stretch:88%;overflow-wrap:break-word}} /* Sim Q17 (Nov 15): under 390 no word breaks: smaller name in the approved 88% letters (moving the winner down would shrink six sprites to ~26 px) */
 @media (max-width:359.98px){.tk:not(.big) .tk-hero{width:56px}.tk:not(.big) .tk-hero .np-mon{--iw:56px}.tk:not(.big) .tk-mid{padding-right:var(--s2)}} /* Q17 at 320-359: room for "TOURNAMENT" (it reached 17 px into the stub) */
 @media (max-width:339.98px){.tk:not(.big) .tk-mid{padding-left:var(--s2)}}
@@ -4487,6 +4489,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (min-width:1100px) and (max-width:1279.98px){.bt2.bt-noopp>.bt-yours .bt-sixrow{grid-template-columns:repeat(3,minmax(0,1fr))}}
 /* polish-check (Nov 23): at 320 the three Winning Teams links in a row of three ran 4-6px out ("Copy for Showdown"); on the narrowest
    phones each may wrap onto two lines inside its third */
+@media (min-width:360px) and (max-width:439.98px){.wt2-links{grid-template-columns:repeat(3,auto);justify-content:space-between;column-gap:var(--s2)}.wt2-links .k-link{font-size:var(--t13)}} /* Sim, Nov 23 (iPhone 393): in three equal thirds "Copy for Showdown" and "Set as Opponent" broke in two while "Compare" sat alone between their lines; at 13px, as the same three links on Build, they share one even line from 375 (at 360-374 the runner-up cards are 8px too narrow and "Copy for Showdown" still breaks, as before) */
 @media (max-width:359.98px){.wt2-links .k-link{white-space:normal;text-align:left;line-height:1.2;font-size:var(--t13)}}
 /* Wave 2's kit filter chip is slanted (-8deg): on phones its corners reached 3-5px past the chip grid's edge and the row scrolled sideways
    (v2-q21); the grid keeps a small inner margin so the slant stays inside */
