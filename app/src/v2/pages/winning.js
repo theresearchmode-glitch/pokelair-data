@@ -76,7 +76,7 @@ V2.wtResults = () => { const E = V2.esc, U = V2.wtUi, pool = tsPool(), hits = po
   return `<section class="wt-res" aria-live="polite"><p class="wt-cnt"><b class="u">${homeNum(hits.length)}</b>&nbsp;team${hits.length === 1 ? '' : 's'} match${note ? ', ' + note : ''}<span class="wt-pool"> · searched all ${homeNum(pool.length)} event team sheets</span></p>
     ${mates.length && hits.length >= 3 ? `<p class="wt-mates"><span>Often with:</span>${mates.map(([n, k]) => `<button type="button" class="np-chip" data-tsadd="${E(n)}">${E(V2.disp(n))}&nbsp;<b>${Math.round(100 * k / hits.length)}%</b></button>`).join('')}</p>` : ''}
     ${hits.length ? `<div class="wt2-rows">${hits.slice(0, cap).map(row).join('')}</div>` : '<p class="tm-sub">No winning team has all of these. Remove a filter.</p>'}
-    ${hits.length > cap ? `<button type="button" class="np-link wt-more" data-tsmore>Show More · ${hits.length - cap} left ›</button>` : ''}</section>`; };
+    ${hits.length > cap ? V2.kMore(hits.length - cap, {vh: 'matching teams', attrs: {class: 'wt-more', 'data-tsmore': ''}}) /* Wave 2 (Sim chose A, Nov 22): the kit show-more */ : ''}</section>`; };
 
 V2.pages.tournaments = {place: 'meta', draw() { const E = V2.esc, d = META.teams, U = V2.wtUi, G = V2.wtGroups();
   if (!U.grp || !G.some(([g]) => g === U.grp)) U.grp = G.length ? G[0][0] : null;
@@ -99,11 +99,11 @@ V2.pages.tournaments = {place: 'meta', draw() { const E = V2.esc, d = META.teams
   const all = V2.wtList().filter(x => x.t.section === U.grp), three = all.slice(0, 3), evs = new Set(three.map(x => x.t.event)), same = evs.size === 1;
   const step = 6, shown = U.more ? all.slice(3, 3 + step * U.more) : [], left = all.length - 3 - shown.length;
   const s1 = three[0] ? V2.wtTop(three[0], same) : '';
-  const moreLink = all.length > 3 && !U.more ? `<button type="button" class="np-link k-link wt-open" data-wtmore>More Winning Teams · ${all.length} in all&nbsp;›</button>` : '';
+  const moreLink = all.length > 3 && !U.more ? V2.kMore(all.length - 3, {vh: 'winning teams', attrs: {class: 'wt-open', 'data-wtmore': ''}}) /* Wave 2: the kit show-more (was "More Winning Teams · N in all ›") */ : '';
   const s2 = three.length > 1 ? V2.kStep(2, three.length > 2 ? 'The runners-up.' : 'The runner-up.', same ? 'same tournament' : 'the next teams in the list', `<div class="wt2-two">${three.slice(1).map(x => V2.wtRun(x, same)).join('')}</div>`)
     .replace(/(<div class="k-sec">[\s\S]*?)<\/div>/, (m, a) => a + moreLink + '</div>') : '';
   const s3 = U.more ? V2.kStep(3, 'More Winning Teams', `${3 + shown.length} of ${all.length} shown`, `<div class="wt2-rows">${shown.map(V2.wtRow).join('')}</div>
-      <p class="wt-mbtns">${left > 0 ? `<button type="button" class="np-btn2" data-wtmore><span>Show More · ${left} left</span></button>` : ''}<button type="button" class="np-link k-link" data-wtless>Show Fewer</button></p>`) : '';
+      <p class="wt-mbtns">${left > 0 ? V2.kMore(left, {vh: 'winning teams', attrs: {'data-wtmore': ''}}) + '<button type="button" class="k-link wt-less" data-wtless>Show fewer</button>' : V2.kMore(0, {open: true, vh: 'winning teams', attrs: {'data-wtless': ''}})}</p>`) : '';
   const lone = three.length === 1 && moreLink ? `<p class="wt2-lone">${moreLink}</p>` : '';
   return `<div class="ra gsp wt wt2">${top}<div class="gs-body">${ctl}${spotN}${V2.kPlan(s1 + s2 + lone + s3)}</div></div>`; }};
 

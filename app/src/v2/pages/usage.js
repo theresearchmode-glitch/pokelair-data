@@ -45,8 +45,10 @@ V2.usRows = (list, sc, cls, lbl) => `<ol class="us-top${sc ? '' : ' us-nob'}"${l
    V2.wkTechBtn); its state (V2.usUi.open) is kept across redraws, other picks and the mouse hover swap. */
 /* E1 (Nov 20 audit): the button is a flex box, so a plain space before the hidden word was trimmed and "3 more›" lost its space; a
    no-break space after "more" keeps 3px before the ›, as "Ratings ›" (the spoken text stays "3 more moves ›") */
-V2.usMoreIn = (k, n, open) => open ? 'Show Fewer' : k === 'al' ? `Also ranked ${n} ›` : `${n} more\u00a0<span class="vh">${({mv: 'moves', it: 'items', tm: 'teammates'})[k]} </span>›`;
-V2.usMoreB = (k, n) => { const o = !!V2.usUi.open[k]; return `<button type="button" class="np-link us-more" data-usmore="${k}" data-n="${n}" aria-expanded="${o}" aria-controls="us-l-${k}">${V2.usMoreIn(k, n, o)}</button>`; };
+/* Wave 2 (Sim chose A, Nov 22): the kit show-more (V2.kMore), "Show N more" / "Show fewer"; the noun stays for screen readers
+   (was "N more ›" and "Also ranked 61–100 ›"; the ranks show as the opened line's own start, "Also ranked 61–100: ...") */
+V2.usMoreIn = (k, n, open) => V2.kMoreIn(n, {open, vh: ({mv: 'moves', it: 'items', tm: 'teammates', al: 'ranked Pokémon'})[k]});
+V2.usMoreB = (k, n) => { const o = !!V2.usUi.open[k]; return V2.kMore(n, {open: o, vh: ({mv: 'moves', it: 'items', tm: 'teammates', al: 'ranked Pokémon'})[k], attrs: {class: 'us-more', 'data-usmore': k, 'data-n': n, 'aria-controls': 'us-l-' + k}}); };
 V2.usCut = {mv: 4, it: 3}; // phones: Moves top 4 (two rows of move tickets: a set's four), Items top 3
 V2.usPct = v => v == null ? '' : ((+v) < 1 ? (+v).toFixed(1) : Math.round(+v)) + '%';
 V2.usBars = (title, arr, n, bas, tc, k) => { if (!(arr && arr.length)) return ''; const L = arr.slice(0, n), c = k && V2.usCut[k], x = c && L.length > c ? L.length - c : 0;
@@ -108,7 +110,7 @@ V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
   let body;
   if (q) { const hit = rows.filter(byQ); body = `<p class="us-count"><b class="u">${hit.length}</b> ${hit.length ? `match${hit.length === 1 ? '' : 'es'}` : ''}</p>${hit.length ? `<div class="us-list">${V2.usAxis(sc)}${V2.usRows(hit, sc, 'row', 'Matches')}</div>` : '<p class="tm-sub">No Pokémon in this list matches that.</p>'}`; }
   else { const pick = rows.find(R => R.t.n === U.pick) || rows[0], ten = rows.slice(0, 10), rest = rows.slice(10);
-    const also = d.more && d.more.length ? `${V2.usMoreB('al', `${d.more[0].r}–${d.more[d.more.length - 1].r}`)}<p class="fine us-also${U.open.al ? ' on' : ''}" id="us-l-al">Also ranked ${d.more[0].r}–${d.more[d.more.length - 1].r}: ${d.more.slice(0, 40).map(m => { const p = byName.get(m.n); return E(p ? p.d : m.n); }).join(', ')}${d.more.length > 40 ? ` and ${d.more.length - 40} more` : ''}</p>` : '';
+    const also = d.more && d.more.length ? `${V2.usMoreB('al', Math.min(40, d.more.length)) /* the line shows up to 40 */}<p class="fine us-also${U.open.al ? ' on' : ''}" id="us-l-al">Also ranked ${d.more[0].r}–${d.more[d.more.length - 1].r}: ${d.more.slice(0, 40).map(m => { const p = byName.get(m.n); return E(p ? p.d : m.n); }).join(', ')}${d.more.length > 40 ? ` and ${d.more.length - 40} more` : ''}</p>` : '';
     const step1 = `<section class="k-step us-s1"><span class="k-n" aria-hidden="true">1</span><div class="k-sec gs-title"><h2 class="k-h2 u">The top ten</h2><span class="k-note gs-key">${V2.usKey(rows)}</span></div>
       <div class="us-sheet">${V2.usAxis(sc)}${V2.usRows(ten, sc, 'ten', 'The ten most used')}
       ${rest.length ? `${U.all ? V2.usRows(rest, sc, 'row', `Ranks 11 to ${rows[rows.length - 1].t.r}`) : ''}<button type="button" class="k-link us-rest" data-usrest aria-expanded="${U.all}">${U.all ? 'Show the top 10' : `Ranks 11–${rows[rows.length - 1].t.r}&nbsp;›`}</button>` : ''}

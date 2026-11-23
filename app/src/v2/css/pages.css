@@ -1780,7 +1780,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ra-ut{font:600 var(--t17)/1 var(--b);text-align:right}
 .ra-wr{display:grid;justify-items:end;gap:var(--s1)}.ra-wr b{font:600 var(--t17)/1 var(--b)}.ra-wr small{font:400 var(--t13)/1 var(--b);color:var(--ink-2)}
 .ra-seeall{justify-self:start;margin-top:var(--s5)}.ra-bh{margin:var(--s5) 0 0;font-size:var(--t24)}
-.ra-more{justify-self:start;min-height:var(--tap);padding:0 var(--s4);font:700 var(--t15)/1 var(--b);color:var(--plot-text)}
+/* .ra-more: the kit show-more since Wave 2 (Nov 23); only its place here */.ra-more{padding:0 var(--s4)}
 .ra-legend{margin:0}.ra-none{margin:var(--s4) 0}
 .ra-about{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}.ra-about summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);min-height:var(--tap);padding:var(--s4) 0;cursor:pointer;list-style:none}
 .ra-about summary::-webkit-details-marker{display:none}.ra-about summary span{display:grid;gap:var(--s1)}.ra-about summary b{font:700 var(--t17)/1.2 var(--b)}.ra-about summary small{font:400 var(--t13)/1.4 var(--b);color:var(--ink-2)}.ra-about summary i{font:700 var(--t20)/1 var(--b);font-style:normal;color:var(--ink-2)}
@@ -2047,6 +2047,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .gs-main{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s2);align-content:start;min-width:0}
 .gs-wd{display:flex;justify-content:space-between;align-items:center;gap:var(--s3);margin:0;min-height:var(--tap);font:700 var(--t13)/1.4 var(--b);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
 .gs-wd .np-link{flex:none;display:inline-flex;align-items:center;min-height:var(--tap);text-transform:none;letter-spacing:0;font-size:var(--t15)}
+/* Wave 2 (Nov 23): the tier's show-more is the kit's V2.kMore on this line; its dashed line runs to the end of the row */.gs-wd .k-more{flex:1 1 auto;width:auto;text-transform:none;letter-spacing:0}
 .gs-row{position:relative;display:flex;justify-content:center}
 .gs-row::before{content:'';position:absolute;left:0;right:0;top:calc(var(--gsw) - var(--s2));height:var(--s3);background:color-mix(in srgb,var(--ink) 7%,transparent);border-bottom:4px solid var(--tc);clip-path:polygon(var(--s3) 0,100% 0,calc(100% - var(--s3)) 100%,0 100%)}
 .gs-mon{position:relative;flex:0 0 calc(100% / var(--c));min-width:0;display:grid;justify-items:center;align-content:start;padding:0 2px var(--s2);background:none;border:0;color:inherit;font:inherit;text-align:center;cursor:pointer}
@@ -2150,7 +2151,7 @@ button.pp2-plate{cursor:pointer;width:100%}
    button. Tablet and desktop: every bar, teammate and the line, no button (usage.js puts us-x on what phones fold away) */
 .us-more{display:none}
 @media (max-width:699.98px){.us-how .us-bars:not(.on)>.us-x,.us-mates:not(.on)>.us-x,.us-also:not(.on){display:none}
-  .us-more{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);justify-self:center}
+  .us-more{display:flex} /* Wave 2: the kit show-more (kit.css .k-more), shown on phones only */
   .us-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.us-groups>:not(.us-half){grid-column:1/-1}}
 @media (max-width:559.98px){.gs-ctl .us-srcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.gs-ctl .us-srcs>*{white-space:normal;line-height:1.2;padding:var(--s1) var(--s2);text-align:center}}
 @media (max-width:559.98px){.us-sp{display:block;height:0;overflow:hidden}}@media (max-width:359.98px){.gs-ctl .us-srcs>*{font-size:var(--t13)}}
@@ -2611,7 +2612,6 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:699.98px){.wt .wt-fan:not(.wt-mini) .wt-card .mc-id h3{font:700 var(--t13)/1.2 var(--b);font-style:normal}}
 @media (max-width:699.98px){.wt-hh h3{font-size:var(--t20)}} /* audit v199 #3: Winning Teams no longer shrinks the shared Tournaments tab bar (it now matches Events, Archetypes, This Week) */
 @media (max-width:699.98px){.wt .ra-seg,.ev .ra-seg,.ar .ra-seg{grid-template-columns:auto auto auto}}
-.wt-open{max-width:100%;white-space:normal;text-align:center}.wt-open span{white-space:normal}
 .wt-two>.wt-hand{min-width:0}
 .wt-hand{grid-template-columns:minmax(0,1fr)}.wt-hand>.wt-fan{justify-self:stretch}
 .wt-fan>.wt-card:first-child{margin-left:0}.wt-fan>.wt-card:last-child{margin-right:0}
@@ -2895,7 +2895,6 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ev-wh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s6)}
 .ev-wh h2{margin:0;font:900 var(--t34)/1.2 var(--u);font-style:italic}@media (max-width:429.98px){.ev-wh h2{font-size:var(--t28)}}.ev-wh p{margin:0;max-width:60ch;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .ev-f{display:flex;flex-wrap:wrap;gap:var(--s2)}.ev-fc{display:inline-flex;align-items:baseline;gap:var(--s2)}.ev-f small{font:500 var(--t13)/1.5 var(--b);opacity:.8}
-.ev-more{justify-self:center}
 
 /* the ticket */
 .tk{--tk-tilt:0deg;position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"h m s" "h f s";align-items:center;width:100%;min-width:0;margin:var(--s6) 0 0;padding:0 0 0 var(--s4);border:0;border-radius:var(--r-s);text-align:left;font:inherit;color:var(--on-type);cursor:pointer;
@@ -3307,7 +3306,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .wk-evall,.wk-tmore{display:none}
 @media (max-width:699.98px){.wk{gap:var(--s6)}.wk>.np-eyebrow{margin-bottom:calc(var(--s4)*-1)}.wk-hl{margin-top:var(--s6)}.wk-tix .tk{margin-top:var(--s4)}.wk-top{padding:var(--s3) 0}
   .wk-tix>:nth-child(n+2),.wk-tech ul:not(.on)>li:nth-child(n+3){display:none}
-  .wk-evall,.wk-tmore{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}}
+  .wk-evall{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}.wk-tmore{display:flex;margin-top:var(--s2)} /* Wave 2: wk-tmore is the kit show-more */}
 .wk-fold summary::after{content:"›";margin-left:var(--s2);font-weight:700;transition:rotate var(--dur-2)}.wk-fold[open] summary::after{rotate:90deg}
 /* Track Record: the receipt's shadow comes from its column (the torn-edge mask cut a box-shadow away, so the white paper barely showed on
    the light page); the receipt runs level with the right column; Total clear of the verdict; the slips one height; stamps clear of words */
@@ -3324,7 +3323,7 @@ button.pp2-plate{cursor:pointer;width:100%}
    down here so each hand fits its width. The rows' links (Sets, Set as Opponent, Compare, Show Fewer) keep their look with a 44px tap area */
 @media (min-width:1100px) and (max-width:1279.98px){.wt .wt-card{--cw:160px;--ch:224px}.wt .wt-card .mc-mon .np-mon,.wt .wt-card .mc-mon .np-mon .st{--iw:120px}
   .wt .wt-two .wt-card{--cw:76px;--ch:108px;--ov:2px}.wt .wt-two .wt-card .mc-mon .np-mon,.wt .wt-two .wt-card .mc-mon .np-mon .st{--iw:68px}.wt .wt-two .wt-card .mc-id h3{font-size:var(--t13)}}
-.wt-acts .np-link,[data-wtless],[data-evsets]{position:relative}.wt-acts .np-link::after,[data-wtless]::after,[data-evsets]::after{content:"";position:absolute;inset:-12px -8px}
+.wt-acts .np-link,[data-wtless]:not(.k-more),[data-evsets]{position:relative}.wt-acts .np-link::after,[data-wtless]:not(.k-more)::after,[data-evsets]::after{content:"";position:absolute;inset:-12px -8px} /* not the kit show-more: its ::after is its dashed line */
 @media (max-width:359.98px){.wt .ra-seg a,.ev .ra-seg a,.ar .ra-seg a,.wk .ra-seg a{font-size:var(--t13);padding:0 var(--s1)}}
 @media (min-width:1100px){.mh-gh span{white-space:nowrap}.mh-hand{grid-template-rows:auto auto;row-gap:0}.mh-hand .mh-grp{display:grid;grid-row:span 2;grid-template-rows:subgrid;align-content:start}.mh-gh{align-self:end}} /* audit Nov 15: the three headers share one row (subgrid), so Lead, Back and Bench Cards start level */ /* 'stay out this game' on one line, so the three headers are one height */
 /* re-check Nov 15, This Week at 320: the label on its own line, the two counts under it (they ran into each other); a change note may wrap */
@@ -3530,7 +3529,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:699.98px){.bt-sixrow{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (min-width:1100px){.bt-sixrow .np-mon,.bt-sixrow .np-mon .st{--iw:112px}} /* Sim Q3 (Nov 16): bigger sprites fill the wide Your Six tiles */
 /* touch (Nov 16 helper sweep): 44 px tap area for the two small text links left, the line unmoved */.bt-sub .np-link,.nprow .np-link{position:relative}.bt-sub .np-link::after,.nprow .np-link::after{content:"";position:absolute;inset:-12px -4px}
-/* one system (Nov 16): "show more" is the blue link everywhere, 44px tap, centred under its list */.ev-more,.us-rest,.wt-more,.wt-open{min-height:var(--tap);display:inline-flex;align-items:center;justify-content:center}
+/* one system (Nov 16): "show more" is the blue link everywhere, 44px tap, centred under its list */.us-rest{min-height:var(--tap);display:inline-flex;align-items:center;justify-content:center} /* Wave 2 (Nov 23): .ev-more, .wt-more and .wt-open are the kit show-more (kit.css .k-more) */
 /* How We Calculate (audit Nov 16): the sources and team-check lists come from the shared method text (today's site styles them); here they
    had no styles, so each row's parts ran together ("replaysThe newest…"). Each row: the name, its description, then "Used for" and the
    numbers in the small line; rows split by the thin rule, no boxes; text kept to a readable line length */
@@ -4047,7 +4046,8 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .wt2-rh h3{margin:0;font-size:var(--t22);line-height:1.15;text-wrap:balance}
 .wt2 .wt-names{text-wrap:pretty}
 .wt2-ev{margin:0;font:500 var(--t15)/1.4 var(--b);color:var(--k-ink2)}
-.wt2 .k-sec .wt-open{margin-left:auto}
+.wt2 .k-sec .wt-open{flex:1 1 auto;width:auto} /* Wave 2: the kit show-more fills the rest of the step's title line */
+.wt-mbtns .k-more{flex:1 1 auto;width:auto}.wt-less{display:inline-flex;align-items:center;min-height:var(--tap);border:0;background:none;padding:0;font-family:var(--b);cursor:pointer}
 .wt2-lone{margin:var(--s4) 0 0}
 .wt2 .k-plan{padding-bottom:var(--s8)} /* desktop length (Nov 22): no taller than the page before its reskin (1922 px at 1440) */
 .wt2-rows{display:grid}
@@ -4078,7 +4078,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .wt2-rh{grid-template-columns:minmax(0,1fr);justify-items:start}.wt2-rh .np-btn2{margin-left:0}
   .wt2-row{grid-template-columns:32px minmax(0,1fr)}
   .wt2-row .wt2-rt{grid-template-columns:minmax(0,1fr)}.wt2-row .wt2-rt>.wt2-six{grid-column:1;grid-row:auto;margin:var(--s1) 0}
-  .wt2 .k-sec .wt-open{margin-left:0}
+  .wt2 .k-sec .wt-open{margin-left:0;flex-basis:100%}
 }
 .wt2 .wt-sure{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:var(--s3) var(--s4)}
 
@@ -4267,7 +4267,6 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .ev2-name{font-size:var(--t17);line-height:1.3;color:var(--k-ink);overflow-wrap:normal;hyphens:none;text-wrap:balance}
 .ev2-six{display:flex;flex-wrap:nowrap;gap:var(--s1);margin-top:var(--s1);min-width:0}
 .ev2-six .np-mon{--iw:40px}
-.ev2 .ev-more{justify-self:start;margin:0}
 @media (min-width:800px) and (max-width:1099.98px){
   .ev2-wall{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ev2-wall>.ev2-tk,.ev2-wall.m3-2>.ev2-tk:nth-last-child(-n+2),.ev2-wall.m3-1>.ev2-tk:last-child{grid-column:auto}

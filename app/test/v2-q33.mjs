@@ -44,7 +44,8 @@ const boxes = p => p.evaluate(() => { const W = innerWidth, bad = [], known = []
   for (const s of ['.ev-counts', '.ev-plate', '.ev-f']) { const e = document.querySelector('#main ' + s); if (e && e.getClientRects().length) { const a = e.getBoundingClientRect(); if (a.left < -1 || a.right > W + 1) bad.push(s + ' off screen'); } }
   return {bad, known, n, wrapped, side: document.documentElement.scrollWidth > W}; });
 const wall = p => p.evaluate(() => { const m = document.querySelector('#main .ev-more'), t = m ? (m.textContent || '').replace(/\s+/g, ' ').trim() : '';
-  return {big: document.querySelectorAll('#main .ev2-latest').length, small: document.querySelectorAll('#main .ev2-wall > .ev2-tk').length, left: +((t.match(/· (\d+) left/) || [])[1] || 0)}; });
+// Wave 2 (Nov 23): the show-more is the kit's V2.kMore now; its label reads "Show N more" (was "Show More · N left"), so the count is read from the new words. Same check.
+  return {big: document.querySelectorAll('#main .ev2-latest').length, small: document.querySelectorAll('#main .ev2-wall > .ev2-tk').length, left: +((t.match(/Show (\d+) more/) || [])[1] || 0)}; });
 const count = (p, k) => p.evaluate(k => window.__ev(`(ev => ${k === 'official' ? "ev.filter(e => e.src === 'official')" : k === 'big' ? 'ev.filter(e => e.players >= 100)' : 'ev'}.length)(META.events.events)`), k);
 const PHONE = ['head', 'tabs', 'filters', 'big ticket', 'counts', 'next events', 'first small ticket', 'show more'];
 const inc = (x, ks) => ks.every((k, i) => !i || x.top[ks[i - 1]] < x.top[k]);

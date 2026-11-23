@@ -23,9 +23,10 @@ V2.wkRates2 = () => { const E = V2.esc, HW = V2.homeWeek(12); if (!HW.length) re
 // CSS-only cuts, so tablet and desktop keep every ticket and row and never see the link or the button. The toggle changes the list's
 // class without a redraw, so focus stays on the button; its state is kept for redraws (theme, data refresh).
 V2.wkUi = V2.wkUi || {tech: false};
-V2.wkTechBtn = (n, open) => `<button type="button" class="np-link wk-tmore" data-wktech aria-expanded="${open}" aria-controls="wk-techl">${open ? 'Show Fewer' : `Show all ${n} ›`}</button>`;
+/* Wave 2 (Sim chose A, Nov 22): the kit show-more (V2.kMore), "Show N more" (N = the rows still folded; was "Show all N ›") / "Show fewer" */
+V2.wkTechBtn = (n, open) => V2.kMore(n - 2, {open, attrs: {class: 'wk-tmore', 'data-wktech': '', 'data-n': n, 'aria-controls': 'wk-techl'}});
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-wktech]'); if (!b) return; const l = document.getElementById(b.getAttribute('aria-controls')); if (!l) return;
-  const open = V2.wkUi.tech = !V2.wkUi.tech; l.classList.toggle('on', open); b.setAttribute('aria-expanded', open); b.textContent = open ? 'Show Fewer' : `Show all ${l.children.length} ›`; });
+  const open = V2.wkUi.tech = !V2.wkUi.tech; l.classList.toggle('on', open); b.setAttribute('aria-expanded', open); b.innerHTML = V2.kMoreIn(l.children.length - 2, {open}); });
 V2.pages.weekly = {place: 'meta', draw() { const E = V2.esc, W = META.weekly, tabs = V2.tourTabs('weekly');
   const shell = (top, body) => `<div class="ra gsp wk wk2"><div class="gs-top">${top}</div><div class="gs-body">${body}</div></div>`;
   const head = lead => `<section class="ra-h"><p class="k-kicker np-eyebrow">META · THE BRIEFING</p><h1 class="k-h1 u">This week, <em>who moved.</em></h1>${lead ? `<p class="k-lead ra-lede">${lead}</p>` : ''}${tabs}</section>`;

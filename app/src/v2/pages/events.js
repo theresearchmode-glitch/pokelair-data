@@ -97,7 +97,7 @@ V2.pages.events = {place: 'meta', draw() { const E = V2.esc, D = META.events, U 
   /* no lone ticket and no half row: three across from 1100 (a last row of one or two runs the full width), two across from 800 */
   const r3 = small.length % 3, r2 = small.length % 2;
   const wall = small.length ? `<div class="ev2-wall${r3 ? ' m3-' + r3 : ''}${r2 ? ' m2-1' : ''}">${small.map(V2.evTk).join('')}</div>` : '';
-  const more = list.length > cap ? `<button type="button" class="np-link k-link ev-more" data-evmore>Show More · ${list.length - cap} left&nbsp;›</button>` : '';
+  const more = list.length > cap ? V2.kMore(list.length - cap, {attrs: {class: 'ev-more', 'data-evmore': ''}}) /* Wave 2 (Sim chose A, Nov 22): the kit show-more */ : '';
   const s1 = shown.length ? V2.evLatest(shown[0], lead ? V2.evCounts() : '') : V2.kStep(1, 'The latest win.', '', `<p class="tm-sub">No events here yet.</p>${lead ? V2.evCounts() : ''}`);
   const s3 = small.length ? V2.kStep(3, 'The ticket wall.', 'newest first · tap a ticket for its placings', `<div class="ev-wall">${wall}${more}</div>`) : '';
   return `<div class="ra gsp ev ev2">${top}<div class="gs-body"><div class="ev2-ctl">${seg}</div>${V2.kPlan(s1 + V2.evPlate(2) + s3)}</div></div>`; }};

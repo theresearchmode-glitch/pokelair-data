@@ -11,7 +11,7 @@ const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
 const b = await chromium.launch(); const fails = [], ok = (c, m) => { console.log((c ? '  pass  ' : '  FAIL  ') + m); if (!c) fails.push(m); };
 const st = p => p.evaluate(() => { const vis = e => !!e && e.getClientRects().length > 0, bt = document.querySelector('#main [data-ralow]'), r = bt && bt.getBoundingClientRect();
   const ids = bt ? (bt.getAttribute('aria-controls') || '').split(' ').filter(Boolean) : [], secs = ids.map(id => document.getElementById(id));
-  return {btn: vis(bt) ? [...bt.children].map(e => e.textContent.trim()).join(' ') : '', tag: bt ? bt.tagName : '', type: bt ? bt.getAttribute('type') : '', exp: bt ? bt.getAttribute('aria-expanded') : '', ids, h: r ? Math.round(r.height) : 0,
+  return {btn: vis(bt) ? bt.textContent.replace(/\s+/g, ' ').trim() : '' /* Wave 2 (Nov 23): the fold is the kit show-more (V2.kMore: chevron box + label + note), so its words are read as one line */, tag: bt ? bt.tagName : '', type: bt ? bt.getAttribute('type') : '', exp: bt ? bt.getAttribute('aria-expanded') : '', ids, h: r ? Math.round(r.height) : 0,
     secsOk: secs.length > 0 && secs.every(Boolean), shown: secs.filter(vis).length, mons: secs.filter(vis).reduce((a, s) => a + s.querySelectorAll('.gs-mon').length, 0),
     focus: document.activeElement === bt, H: document.documentElement.scrollHeight, side: document.documentElement.scrollWidth > innerWidth}; });
 // N from each tier's own count (the band's screen-reader line, built from the same rows as the tiles), not from the button; C's band says "60+"
@@ -31,9 +31,9 @@ for (const th of ['light', 'dark']) for (const W of [320, 360, 375, 390, 430, 69
     ok(!x.btn && !x.tag && bands.every(t => t.line && !t.words && !t.fold), `${tag}: unchanged: every tier (${bands.length}) keeps its words line, no fold button ("${x.btn}")`);
   } else {
     const w = await want(p);
-    ok(bands.every(t => t.words && !t.line && t.allOnBand && t.fit && t.allH >= 44), `${tag}: every tier's words and See All on its band, inside it, no separate line, See All ≥44px (${bands.map(t => t.k + (t.words && !t.line && t.allOnBand && t.fit && t.allH >= 44 ? '' : '!')).join(' ')})`);
+    ok(bands.every(t => t.words && !t.line && t.allOnBand && t.fit && t.allH >= 44), `${tag}: every tier's words and its show-more (was See All) on its band, inside it, no separate line, See All ≥44px (${bands.map(t => t.k + (t.words && !t.line && t.allOnBand && t.fit && t.allH >= 44 ? '' : '!')).join(' ')})`);
     ok(x.tag === 'BUTTON' && x.type === 'button' && x.exp === 'false' && x.secsOk && x.ids.join(' ') === bands.filter(t => t.k === 'D' || t.k === 'F').map(t => 'ra-t-' + t.k).join(' ') && x.h >= 44, `${tag}: a real button, aria-expanded ${x.exp}, aria-controls "${x.ids.join(' ')}", ${x.h}px`);
-    ok(x.btn === `Show D and F tiers › ${w.n} more Pokémon, rated under ${w.under}` && x.shown === 0, `${tag}: "${x.btn}" (data: ${w.n} D and F Pokémon), the D and F tiers folded (${x.shown} shown)`);
+    ok(x.btn === `Show ${w.n} more The D and F tiers, rated under ${w.under}` /* Wave 2: the kit label "Show N more" + the note (was "Show D and F tiers ›" + "N more Pokémon, rated under 60") */ && x.shown === 0, `${tag}: "${x.btn}" (data: ${w.n} D and F Pokémon), the D and F tiers folded (${x.shown} shown)`);
     ok(bands.filter(t => ['S', 'A', 'B', 'C'].includes(t.k)).every(t => !t.fold), `${tag}: S, A, B and C stay open`);
     if (W === 390) { const L = await p.evaluate(() => { const H = document.documentElement.scrollHeight, back = [];
         document.querySelectorAll('#main .gs-fold').forEach(s => { s.classList.add('on'); back.push(() => s.classList.remove('on')); });
@@ -46,11 +46,11 @@ for (const th of ['light', 'dark']) for (const W of [320, 360, 375, 390, 430, 69
       ok((L.H0 - L.H) / 844 >= 0.5 && L.H1 === L.H, `${tag}: page ${L.H}px (${(L.H / 844).toFixed(2)} screens), ${((L.H0 - L.H) / 844).toFixed(2)} shorter than before (${L.H0}px, ${(L.H0 / 844).toFixed(2)}; fc9fcdb2 measured 3406, 4.04); at least 0.5`); }
     if (!x.tag) { ok(false, `${tag}: the D and F fold button is there to open them`); ok(!errs.length, `${tag}: no page errors (${errs.length})`); await c.close(); continue; }
     await p.focus('#main [data-ralow]'); await p.keyboard.press('Enter'); await p.waitForTimeout(300); x = await st(p);
-    ok(x.exp === 'true' && x.shown === x.ids.length && x.btn === 'Show Fewer Fold the D and F tiers away' && x.focus, `${tag}: Enter opens D and F in place (${x.shown} shown), aria-expanded ${x.exp}, "${x.btn}", focus stays ${x.focus}`);
+    ok(x.exp === 'true' && x.shown === x.ids.length && x.btn === 'Show fewer Fold the D and F tiers away' /* Wave 2: the kit's "Show fewer" */ && x.focus, `${tag}: Enter opens D and F in place (${x.shown} shown), aria-expanded ${x.exp}, "${x.btn}", focus stays ${x.focus}`);
     for (const k of ['D', 'F']) { const shut = await p.evaluate(k => { const a = document.querySelector(`#ra-t-${k} [data-ratier]`); return !!a && a.getAttribute('aria-expanded') !== 'true'; }, k); if (shut) { await p.click(`#ra-t-${k} [data-ratier]`); await p.waitForTimeout(600); } }
     x = await st(p); ok(x.exp === 'true' && x.shown === x.ids.length && x.mons === w.n, `${tag}: after See All on D and F (a redraw) they stay open and show every D and F Pokémon (${x.mons} of ${w.n})`);
     await p.focus('#main [data-ralow]'); await p.keyboard.press('Enter'); await p.waitForTimeout(300); x = await st(p);
-    ok(x.exp === 'false' && x.shown === 0 && x.btn.startsWith('Show D and F tiers ›') && x.focus, `${tag}: Enter again folds them (${x.shown} shown), "${x.btn}", focus stays ${x.focus}`);
+    ok(x.exp === 'false' && x.shown === 0 && x.btn.startsWith(`Show ${w.n} more`) /* Wave 2: the kit label */ && x.focus, `${tag}: Enter again folds them (${x.shown} shown), "${x.btn}", focus stays ${x.focus}`);
   }
   ok(!x.side, `${tag}: nothing scrolls sideways`); ok(!errs.length, `${tag}: no page errors (${errs.length}${errs.length ? ': ' + errs[0].slice(0, 80) : ''})`); await c.close();
 }

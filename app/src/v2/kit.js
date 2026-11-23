@@ -68,6 +68,16 @@ V2.kMove = (name, o = {}) => { const f = V2.kMoveFacts(name); /* Nov 22 (info sh
     + `<span class="k-mt">${f.type ? V2.kTy(f.type) : ''}<span>${V2.esc(f.type || 'Move')}</span></span><span class="k-mn"><b>${V2.esc(name)}</b>${f.what ? `<small>${V2.esc(f.what)}</small>` : ''}</span>`
     + `${o.pct != null && o.pct !== '' ? `<b class="k-mp u">${V2.esc(o.pct)}</b>` : ''}</${tag}>`; };
 // a set's moves: always two across (no half rows); each ticket stacks when its column is narrow; items are names or [name, pct]
+/* the show-more (Wave 2 part 1, Sim chose option A, Nov 22: "recommended is good to go"; docs/rebuild/research/wave2-proposal.md 1):
+   the list's tail. A solid PLOT-blue slanted box with the kit chevron, "Show N more" / "Show fewer" in Unbounded slanted 800, then a
+   dashed PLOT line to the end of the list's width; 48px. o.open: a toggle (aria-expanded, the chevron turns up, "Show fewer");
+   o.label replaces the words (kept only where a page needs its own noun); o.vh: a word for screen readers only ("Show 4 more moves"); o.note: a small second line; o.attrs: the page's hooks
+   (class is added to k-more, so every data-* and class a test or the page's JS reads stays). */
+V2.kMore = (n, o = {}) => { const {class: c, ...a} = o.attrs || {}, tog = 'open' in o;
+  return `<button type="button" class="k-more${c ? ' ' + V2.esc(c) : ''}"${tog ? ` aria-expanded="${!!o.open}"` : ''}${V2.kAttrs(a)}>${V2.kMoreIn(n, o)}</button>`; };
+// the inside of a show-more, for a page that toggles it in place (no redraw, so focus stays): b.innerHTML = V2.kMoreIn(n, {open, note})
+V2.kMoreIn = (n, o = {}) => { const label = o.label || ('open' in o && o.open ? 'Show fewer' : `Show ${n} more`);
+  return `<span class="k-more-b" aria-hidden="true">${V2.K_CHEV}</span><span class="k-more-t"><span class="k-more-l u">${V2.esc(label)}${o.vh ? `<span class="vh"> ${V2.esc(o.vh)}</span>` : ''}</span>${o.note ? ` <small class="k-more-n">${V2.esc(o.note)}</small>` : ''}</span>`; };
 V2.kMoves = list => `<ul class="k-moves">${(list || []).map(x => { const [n, pct] = Array.isArray(x) ? x : [x]; return `<li>${V2.kMove(n, {pct})}</li>`; }).join('')}</ul>`;
 V2.kMine = (text = 'Yours') => `<span class="k-mine">${V2.esc(text)}</span>`;
 // names drop a size before they wrap (HYBRID 7): each [data-kmax] steps down its levels (kit.css) until its line fits its box; every

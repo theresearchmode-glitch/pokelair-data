@@ -466,8 +466,8 @@ t('RATE-06', 'Details on the top list shows win % and games', run({team: TEAM}, 
 t('RATE-07', 'Every Pokémon, by Tier: six tier rows, "+N more" / "Show fewer", remembered', run({team: TEAM}, async ({ui, d, ls}) => {
   await ui.go('Ratings'); if (await d.foldIsOpen('Every Pokémon, by Tier')) await d.toggleFold('Every Pokémon, by Tier'); await d.toggleFold('Every Pokémon, by Tier');
   const rows = await d.boardRows(); expect(rows.map(r => r.tier).join() === 'S,A,B,C,D,F', 'tiers: ' + rows.map(r => r.tier));
-  expect(/Top of the [Ff]ormat(:| ·) \d+/.test(rows[0].head), 'S row head: ' + rows[0].head); const f = rows[5]; expect(/^\+\d+ more( ›)?$/.test(f.more), 'F row has no "+N more": ' + f.more);
-  await d.tapTierMore('F'); const f2 = (await d.boardRows())[5]; expect(f2.tiles > f.tiles && f2.more === (NEW ? 'Show Fewer' : 'Show fewer'), 'F row did not expand: ' + JSON.stringify(f2));
+  expect(/Top of the [Ff]ormat(:| ·) \d+/.test(rows[0].head), 'S row head: ' + rows[0].head); const f = rows[5]; expect(/^(\+\d+ more( ›)?|Show \d+ more)$/.test(f.more), 'F row has no "+N more": ' + f.more); /* Wave 2 (Nov 23): the new site's tail is the kit show-more, "Show N more" */
+  await d.tapTierMore('F'); const f2 = (await d.boardRows())[5]; expect(f2.tiles > f.tiles && f2.more === 'Show fewer' /* Wave 2: the new site's kit label is "Show fewer" too (was "Show Fewer") */, 'F row did not expand: ' + JSON.stringify(f2));
   expect(await ls('cc2.chf.lairboard') == 1 || /"open":\{[^}]*"F":true/.test(JSON.stringify(await ls('np2.ra.board'))), 'open state not remembered'); /* new site: the opened tier is remembered */ }));
 
 t('RATE-08', 'About the Ratings: track record line and four number cells', run({team: TEAM}, async ({ui, d}) => {
@@ -610,8 +610,8 @@ t('TOP-04', 'Your Team strip: checks badge with six; asks for six when not full'
 t('TOP-04b', 'Your Team strip with five Pokémon asks to add six', run({team: FIVE}, async ({ui}) => {
   await ui.go('Winning Teams'); expect(has(await ui.text(), (NEW ? 'Add six Pokémon on My Team to compare.' : 'Add six Pokémon on My team to compare.')), 'no "add six" line'); }));
 t('TOP-05', 'Team list: top 3, "More Winning Teams" shows more, "Show fewer" folds back', run({team: TEAM}, async ({ui, d}) => {
-  await ui.go('Winning Teams'); const n0 = await d.teamCards(); expect(n0 === 3, 'cards: ' + n0); expect((NEW ? /More Winning Teams · \d+ in all/ /* one system (Nov 16): the show-more link 'More Winning Teams · N in all ›'; the three cards show it's the top 3 */ : /Showing the top 3 of \d+/).test(await ui.text()), 'no count of all the winning teams');
-  await ui.tap(/More Winning Teams/); const n1 = await d.teamCards(); expect(n1 > 3, 'more not shown: ' + n1); await ui.tap((NEW ? /^Show Fewer/i : /^Show fewer/i)); expect(await d.teamCards() === 3, 'did not fold back'); }));
+  await ui.go('Winning Teams'); const n0 = await d.teamCards(); expect(n0 === 3, 'cards: ' + n0); expect((NEW ? /Show \d+ more winning teams/ /* Wave 2 (Nov 23): the kit show-more, "Show N more" + its spoken noun (was 'More Winning Teams · N in all ›'); */ /* one system (Nov 16): the show-more link 'More Winning Teams · N in all ›'; the three cards show it's the top 3 */ : /Showing the top 3 of \d+/).test(await ui.text()), 'no count of all the winning teams');
+  await ui.tap(NEW ? /^Show \d+ more/ /* Wave 2: the kit show-more */ : /More Winning Teams/); const n1 = await d.teamCards(); expect(n1 > 3, 'more not shown: ' + n1); await ui.tap((NEW ? /^Show Fewer/i : /^Show fewer/i)); expect(await d.teamCards() === 3, 'did not fold back'); }));
 t('TOP-06', 'Card actions: Load team (confirm, Undo), Practice against, Compare', run({team: TEAM}, async ({ui, d}) => {
   /* kit reskin (Nov 22, Sim's mock-up "THE WINNING CREWS"): the top team's Load Team is the page's pink move, "USE THIS TEAM." (THEME 2.5); same data-wtask, same question */
   const LOAD = NEW ? /^(Load team|Use this team\.?)$/i : /^Load team$/i;

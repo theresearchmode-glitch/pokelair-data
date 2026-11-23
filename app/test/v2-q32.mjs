@@ -41,7 +41,7 @@ for (const th of ['light', 'dark']) {
     ok(x.gap === 24 && x.tk === 16, `${th} ${W}: gaps 24/16 (section ${x.gap}, ticket ${x.tk})`);
     ok(x.tmin === '108' && !x.tlow, `${th} ${W}: weather tiles min-height 108, the approved mock's (min ${x.tmin}, heights ${x.tiles}, ${x.tlow} under 108)`);
     ok(x.tix === 1 && x.link === 'All of this week’s winners on Events\u00a0›' && x.href === '#events' && x.linkH >= 44, `${th} ${W}: Winners shows 1 ticket of ${n.ws} + "${x.link}" (${x.href}, ${x.linkH}px tall)`);
-    ok(n.tech > 2 && x.rows === 2 && x.btn === `Show all ${n.tech} ›` && x.tag === 'BUTTON' && x.exp === 'false' && x.ctl === 'ok' && x.btnH >= 44, `${th} ${W}: New Tech shows 2 rows + "${x.btn}" (${n.tech} in the data; ${x.tag}, aria-expanded ${x.exp}, controls ${x.ctl}, ${x.btnH}px)`);
+    ok(n.tech > 2 && x.rows === 2 && x.btn === `Show ${n.tech - 2} more` /* Wave 2 (Nov 23): the kit show-more's words (was "Show all N ›") */ && x.tag === 'BUTTON' && x.exp === 'false' && x.ctl === 'ok' && x.btnH >= 44, `${th} ${W}: New Tech shows 2 rows + "${x.btn}" (${n.tech} in the data; ${x.tag}, aria-expanded ${x.exp}, controls ${x.ctl}, ${x.btnH}px)`);
     if (W === 390) { // Nov 19: relative to the same page with Q32's phone cuts undone in place (same data): the frozen CI data and today's data differ in length
       const L = await p.evaluate(() => { const H = document.documentElement.scrollHeight, q = s => [...document.querySelectorAll('#main ' + s)], set = (s, k, v) => q(s).forEach(e => e.style.setProperty(k, v));
         const d = getComputedStyle(q('.wk-tix > *')[0]).display; q('.wk-tix > *').forEach(e => e.style.setProperty('display', d)); q('.wk-tech ul').forEach(u => u.classList.add('on'));
@@ -51,9 +51,9 @@ for (const th of ['light', 'dark']) {
       ok((L.H0 - L.H) / 844 >= 0.7, `${th} 390: page ${(L.H / 844).toFixed(2)} screens, ${((L.H0 - L.H) / 844).toFixed(2)} shorter than without Q32's cuts that remain on the kit page (${(L.H0 / 844).toFixed(2)}; at least 0.7; was 0.8 with the old Most Used and Biggest rise gaps)`); }
     let bx = await boxes(p); note(bx, `${th} ${W}`); ok(!bx.bad.length && !bx.side, `${th} ${W}: nothing out of its box, nothing sideways (${bx.bad.slice(0, 3).join('; ') || 'clean'}${bx.side ? ', scrolls sideways' : ''})`);
     if (!x.btn) ok(false, `${th} ${W}: no Show all button to open`); else { await p.focus('#main [data-wktech]'); await p.keyboard.press('Enter'); await p.waitForTimeout(300); x = await look(p);
-    ok(x.rows === n.tech && x.exp === 'true' && x.btn === 'Show Fewer' && x.focus, `${th} ${W}: Show all opens all ${n.tech} rows (${x.rows}), aria-expanded ${x.exp}, "${x.btn}", focus stays on it ${x.focus}`);
+    ok(x.rows === n.tech && x.exp === 'true' && x.btn === 'Show fewer' /* Wave 2: kit words */ && x.focus, `${th} ${W}: Show all opens all ${n.tech} rows (${x.rows}), aria-expanded ${x.exp}, "${x.btn}", focus stays on it ${x.focus}`);
     bx = await boxes(p); note(bx, `${th} ${W} opened`); ok(!bx.bad.length && !bx.side, `${th} ${W}: opened, nothing out of its box (${bx.bad.slice(0, 3).join('; ') || 'clean'})`);
-    await p.click('#main [data-wktech]'); await p.waitForTimeout(300); x = await look(p); ok(x.rows === 2 && x.exp === 'false' && x.btn === `Show all ${n.tech} ›`, `${th} ${W}: Show Fewer back to 2 rows (${x.rows}, "${x.btn}")`); }
+    await p.click('#main [data-wktech]'); await p.waitForTimeout(300); x = await look(p); ok(x.rows === 2 && x.exp === 'false' && x.btn === `Show ${n.tech - 2} more` /* Wave 2: kit words */, `${th} ${W}: Show Fewer back to 2 rows (${x.rows}, "${x.btn}")`); }
     if (!x.link) ok(false, `${th} ${W}: no Events link to open`); else { await p.click('#main .wk-evall'); await p.waitForTimeout(1500); const ev = await p.evaluate(() => [location.hash, !!document.querySelector('#main .ev-wall')]);
     ok(ev[0] === '#events' && ev[1], `${th} ${W}: the Events link opens ${ev[0]} (Ticket Wall drawn: ${ev[1]})`); }
     ok(!errs.length, `${th} ${W}: no page errors (${errs.length}${errs.length ? ': ' + errs[0] : ''})`); await c.close(); }
