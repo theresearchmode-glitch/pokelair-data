@@ -92,13 +92,13 @@ V2.plotSets = t => { const key = t.mons.map(m => m.n + '@' + (m.it || '')).join(
 V2.plotPlate = (m, set) => { const E = V2.esc, p = byName.get(m.n), R = monRating(p), d = V2.disp(m.n), mega = /^Mega /.test(d), ba = !!ui.abLock && m.n === ui.abLock, ty = p && p.t ? p.t[0] : 'Normal';
   /* Nov 22 (HH, design authority to 9 AM Mon; info words, Sim approved): the plate is no longer one big button, so its item, Ability and moves can
      be words that open their info sheets (a button can't hold buttons). The name is the plate's button and still covers the whole plate
-     (.pl-go::after), so a tap anywhere else on it opens the Pokémon as before */
+     (.pl-nmb::after), so a tap anywhere else on it opens the Pokémon as before */
   const lab = `${E(d)}${ba ? ', built around' : ''}${set.it ? ', ' + E(set.it) : ''}${R ? `, ${E(R.tier)} tier ${R.n}` : ''}${m.box ? '' : ', to catch'}: open its info`;
   const w = (k, n) => k === 'it' ? V2.kItem(n) : V2.kAbil(n);
   return `<div class="pl-plate${ba ? ' pl-ba' : ''}" style="--pt:var(--pt-${E(ty)})" data-v2mon="${E(m.n)}">
     <span class="pl-art" aria-hidden="true">${SPRITE_ID[m.n] ? `<img src="${V2.art(SPRITE_ID[m.n])}" alt="" decoding="async">` : ''}</span>
     ${R ? `<span class="pl-tier u">${E(R.tier)}<span class="vh"> tier</span> ${R.n}</span>` : ''}${ba ? '<span class="pl-batag">Built around</span>' : ''}
-    <span class="pl-mg u">${mega ? 'Mega' : '&nbsp;'}</span><b class="pl-nm u"><button type="button" class="pl-go" aria-label="${lab}">${E(mega ? d.slice(5) : d)}</button></b>
+    <span class="pl-mg u">${mega ? 'Mega' : '&nbsp;'}</span><b class="pl-nm u"><button type="button" class="pl-nmb" aria-label="${lab}">${E(mega ? d.slice(5) : d)}</button></b>
     <span class="pl-fact${m.box ? '' : ' pl-out'}">${m.box ? 'In your box' : '<span class="pl-olong">Not in your box yet<span class="vh"> · to catch</span></span><span class="pl-oshort" aria-hidden="true">To catch</span>'}</span>
     ${set.it ? `<span class="pl-pc pl-it"><i>Item</i><span class="pl-t">${w('it', set.it)}</span></span>` : ''}${set.ab ? `<span class="pl-pc pl-ab"><i>Ability</i><span class="pl-t">${w('ab', set.ab)}</span></span>` : ''}
     <span class="pl-mvs">${set.mv.map(x => `<button type="button" class="pl-pc pl-mv" data-v2info="mv" data-v2infon="${E(x)}" aria-haspopup="dialog"><span class="pl-t">${E(x)}</span></button>`).join('')}</span></div>`; };
