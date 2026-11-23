@@ -1034,7 +1034,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bt-lfour::after{content:"";position:absolute;inset:-12px -4px}
 .bt-lacts{gap:var(--s3);align-items:center}.bt-lacts .np-btn2{min-width:120px}.bt-lacts .k-btn{padding:0 var(--s3)} /* Wave 2 finish (Nov 23): the kit button is wider (Unbounded 800); 12px sides keep Your Games two lines at 1440 */
 @media (min-width:820px){.bt-log{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s10)}}
-@media (min-width:1100px) and (max-width:1439.98px){.bt-log{column-gap:var(--s5)}} /* Nov 23 (hL): the wider kit Win / Loss buttons took 20px from the words; a 20px gap gives it back, so Your Games is no longer at 1280 than before */
+@media (min-width:1100px) and (max-width:1439.98px){.bt-log{column-gap:var(--s3)}} /* Nov 23 (hL): the wider kit Win / Loss buttons (two equal 141px columns) took 30px from the words; a 12px gap gives it back, so Your Games is no longer at 1280 than before */
 .bt-lacts{display:flex;flex-wrap:wrap}
 @media (max-width:559.98px){.bt-lacts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.bt-lacts .np-link{grid-column:1/-1}.bt-lacts .np-btn2{min-width:0;width:100%}}
 /* Battle tools (Q6 option A, branch only until Sim says yes): the bar on 700+, the list on phones */
