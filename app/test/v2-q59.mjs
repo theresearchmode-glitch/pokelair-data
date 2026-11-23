@@ -40,7 +40,9 @@ const phone = async (W, th, weak) => { const [p, errs, c] = await open(W, th, we
   ok(SEC.every(k => x.links.some(l => l.k === k && l.txt === NAMES[k])), `${tag}: the "On this page" bar links Matchups, Suggestions and Team Checks (${x.links.map(l => l.txt).join(' | ') || 'none'})`);
   ok(x.links.length && x.links.every(l => l.h >= 44 && l.l >= 0 && l.r <= x.W + 0.5), `${tag}: its links 44px+ tall and inside the screen (${x.links.map(l => `${l.h}px ${Math.round(l.l)}-${Math.round(l.r)}`).join(', ')})`);
   /* Nov 21: Sim accepted the war room's +172 px at 390 (6:16 PM, option A) and the roster score's 4px gap above 'Mega' (qcheck fix) adds 8: limit 3,750 + 172 + 8 */
-  if (W === 390 && !weak) ok(x.H <= 3930, `${tag}: page ${x.H} px (${(x.H / 844).toFixed(2)} screens), within the 3,930 px limit (page-heights.md + the war room's accepted +172)`);
+  /* Nov 22, 9:17 PM: My Team 'The Party' (Sim approved 8:06 PM); HH under Sim's design authority (to 9 AM Mon) accepted +74 px at 390 (4,004:
+     the party band, the six's hint and the buttons under the name) against 1440 going 3,501 -> about 2,600; flagged in the 9 AM summary */
+  if (W === 390 && !weak) ok(x.H <= 4010, `${tag}: page ${x.H} px (${(x.H / 844).toFixed(2)} screens), within the 4,010 px limit (page-heights.md + the war room's +172 + the Party's +80, HH's call under Sim's design authority)`);
   for (const k of ['tm-sg', 'tm-ck', 'tm-mu']) { if (!x.links.some(l => l.k === k)) { ok(false, `${tag}: tap ${NAMES[k]}: no link to tap`); continue; }
     await p.evaluate(() => scrollTo(0, 0)); await p.waitForTimeout(200);
     await p.locator(`.tm-jump [data-tmjump="${k}"]`).scrollIntoViewIfNeeded(); await p.tap(`.tm-jump [data-tmjump="${k}"]`); await p.waitForTimeout(1500); const L = await landed(p, k);
