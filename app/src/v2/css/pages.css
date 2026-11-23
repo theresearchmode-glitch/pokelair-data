@@ -4489,6 +4489,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (min-width:1100px) and (max-width:1279.98px){.bt2.bt-noopp>.bt-yours .bt-sixrow{grid-template-columns:repeat(3,minmax(0,1fr))}}
 /* polish-check (Nov 23): at 320 the three Winning Teams links in a row of three ran 4-6px out ("Copy for Showdown"); on the narrowest
    phones each may wrap onto two lines inside its third */
+@media (min-width:360px) and (max-width:439.98px){.wt2-links{grid-template-columns:repeat(3,auto);justify-content:space-between;column-gap:var(--s2)}.wt2-links .k-link{font-size:var(--t13)}} /* Sim, Nov 23 (iPhone 393): in three equal thirds "Copy for Showdown" and "Set as Opponent" broke in two while "Compare" sat alone between their lines; at 13px, as the same three links on Build, they share one even line from 375 (at 360-374 the runner-up cards are 8px too narrow and "Copy for Showdown" still breaks, as before) */
 @media (max-width:359.98px){.wt2-links .k-link{white-space:normal;text-align:left;line-height:1.2;font-size:var(--t13)}}
 /* Wave 2's kit filter chip is slanted (-8deg): on phones its corners reached 3-5px past the chip grid's edge and the row scrolled sideways
    (v2-q21); the grid keeps a small inner margin so the slant stays inside */
