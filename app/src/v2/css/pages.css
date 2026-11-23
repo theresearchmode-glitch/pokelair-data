@@ -4380,6 +4380,12 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
    rows a step shorter (still a 28px+ row per type) */
 @media (min-width:1280px){.tc-grid td{height:28px}.tc-grid tbody th span{padding-block:2px}}
 @media (min-width:1440px){.tc-picks{grid-template-columns:repeat(18,minmax(0,1fr))}}
+.tc-fin{display:grid;justify-items:start} /* length (Nov 23): the chart's key sits beside the button, not on a line of its own (phones hide the key, so they keep the button alone) */
+@media (min-width:700px){.tc-fin{display:flex;align-items:center;flex-wrap:wrap;gap:var(--s3) var(--s6)}.tc-fin .k-go{margin:0}.tc-fin .tc-gnote{flex:1 1 280px}}
+/* Type Chart length, chosen version C (Nov 23, 1440 length): a little off each half. The whole chart is a reference table (no cell is tapped): from 1280 its rows are
+   24px (were 28). From 1024 the damage line's rows are 40px (were 48); each bar stays 32px */
+@media (min-width:1280px){.tc-grid td{height:var(--s6);padding-block:0}.tc-grid tbody th{padding-block:0}.tc-grid tbody th span{padding-block:2px}}
+@media (min-width:1024px){.tc-rows{grid-auto-rows:minmax(var(--s10),1fr)}.tc-r{min-height:var(--s10)}}
 /* polish-check (Nov 22 night): in the slimmer 1100-1439 Test Run lane the lane heading ran 2px past it (a 12px gap); 8px there */
 @media (min-width:1100px) and (max-width:1439.98px){.dr-side .dr-lh{gap:var(--s2)}.dr-side .dr-big>*{min-width:0}.dr-side .dr-big .dr-m{grid-template-columns:minmax(0,1fr)}.dr-side .dr-big .dr-bk{gap:var(--s1)}.dr-side .dr-big .dr-bk i{width:12px}}
 /* Nov 23 (hL): the 340px lane (1100-1439) gave each of the six 45px, so "Handles it" (61px) broke onto two lines beside one-line
