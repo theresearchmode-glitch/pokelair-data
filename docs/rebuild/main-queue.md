@@ -1,8 +1,8 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH (design authority to 9 AM): vy.sh (qcheck about/track/tournaments/meta, minors groups, q21) after the polish fixes; GitHub run on 7c54cb2b (check 2:54). Helper: hK2 finishing Wave 2. Next: merge hK2, Preview, 5:45 summary.
-NEXT: review + merge hK's Wave 2 parts one part at a time (pictures, checks)
-NEXT: GitHub full check on claude/design6; fix anything red
-NEXT: phone sweep (390) of tonight's changed pages; dark-theme spot checks
+NOW: HH (design authority to 9 AM): C-battle in WebKit (wk2.sh); B-build WebKit 77/0 done; Preview v240 published. GitHub run on d39d94e2 (check 3:40). Helper: hL (Battle 1280, Test Run 320 name, News hero).
+NEXT: review + merge hL; 5:45 AM summary (send + notification); Preview refresh after hL
+NEXT: GitHub batches every ~40 min; Game Plan hourly
+NEXT: before 9 AM: full summary incl. lengths for Sim
 NEXT: 5:45 AM summary (decisions from 10 PM), Preview refresh before it
 NEXT: before 9 AM: full summary incl. lengths waiting on Sim (This Week +46, News +72, Gifts +150, My Team phone 4,004, Pokémon page 4.83)
 NEXT: merge My Team Party after checks; Preview; empty-space scan findings to Sim (Events, About, This Week heroes first)
