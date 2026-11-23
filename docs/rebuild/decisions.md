@@ -2081,3 +2081,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:55 PM: Second account pushed one part of Job 5 (alt/info-words) before it was stopped; hW2 told to review/reuse it after re-running its checks
 - 7:58 PM: Sim: extra helper hE2 to scan every built page for egregious empty space (look-only, 1280/1440/1920, marked pictures + ranked report). Helpers now: hW2 (Job 5), hX (HH's queue), hE2 (scan)
 - 7:59 PM: Sim: 'this is great. you can go' -> HH builds My Team 'The Party' on the kit (hooks and tests kept), pictures before merge
+- 8:00 PM: Sim: as helpers finish their tasks, let them; no refills until back to 1 helper as normal
