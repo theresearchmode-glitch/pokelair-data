@@ -108,7 +108,9 @@ export default (ui, pg, o) => {
     infoSheetBox: () => pg.evaluate(() => { const s = document.querySelector('.np-sheet'); if (!s || !s.querySelector('.ms2')) return null; const r = s.getBoundingClientRect(); return {w: Math.round(r.width), h: Math.round(r.height), top: Math.round(r.top), bottom: Math.round(r.bottom)}; }),
     focusInfoTab: () => pg.focus('.ms2 [data-mstab][aria-selected="true"]'),
     // ---------- the Pokémon page (#pokemon=<name>, Nov 15: replaces the info sheet; every Pokémon tap opens it) ----------
-    pokemonPage: () => pg.evaluate(() => { const m = document.querySelector('#main .pk'); return m && window.V2 && V2.route() === 'pokemon' ? m.innerText.replace(/\s+/g, ' ').trim() : null; }),
+    pokemonPage: () => pg.evaluate(() => { const m = document.querySelector('#main .pk'); if (!(m && window.V2 && V2.route() === 'pokemon')) return null;
+      /* Pokémon page B (Sim chose it, Nov 23 12:40 PM): the rap sheet shows one part at a time behind a switch; the other parts are one tap away, so their text counts as on the page */
+      const hp = [...m.querySelectorAll('.pk-pane[hidden]')]; hp.forEach(x => { x.hidden = false; }); const t = m.innerText; hp.forEach(x => { x.hidden = true; }); return t.replace(/\s+/g, ' ').trim(); }),
     pageHash: () => pg.evaluate(() => location.hash),
     /** taps every 'Show ›' on the Pokémon page (parts fold since Nov 15, Sim Q1 A); returns how many it opened */
     openAllParts: async () => { const n = await pg.evaluate(() => { const bs = [...document.querySelectorAll('#main [data-pkopen][aria-expanded="false"], #main [data-pklists][aria-expanded="false"], #main [data-pkmore][aria-expanded="false"]')].filter(b => b.getClientRects().length); bs.forEach(b => b.click()); return bs.length; }); await pg.waitForTimeout(500); return n; },
