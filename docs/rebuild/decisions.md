@@ -2088,3 +2088,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:08 PM: Sim: 'sounds good' to the helper plan (3 finishing, no new ones; 1 from 9 PM)
 - 8:16 PM: Second account pushes checked and merged (docs/pictures only): alt/wave2-parts (5 kit parts, 2 options each, recs A), alt/length-options (Speed B, Test Run A, Pokémon page A; My Team options superseded by The Party). alt/info-words (monsheet.js) left for hW2 to re-check before merging
 - 8:17 PM: Sim: 'recommended is good to go. move forward as you see best fit' -> Wave 2 option A for all five kit parts approved (show-more, filter chip, secondary button, empty line, lost header). Job 3 length options: Sim has not seen those pictures yet -> send before building
+- 8:30 PM: Second account Safari check (WebKit 26.6, playwright 1.63): 6 of 7 old Safari fails pass 3/3 (old engine quirks); 1 real candidate: C-battle X-04, Damage Calc Rain button moves 21px on redraw at phone width (limit 12). Queued for a fix
