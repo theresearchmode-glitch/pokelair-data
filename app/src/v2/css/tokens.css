@@ -216,6 +216,9 @@
      shadow and the ink chips turn light (13.7:1) so they still read on the dark page */
   --btg-panel:var(--surface);--k-on-plot:#12121B;--k-go-shadow:#E4E0DA;--k-chip:#E4E0DA;--k-on-chip:#12121B;--k-art-shadow:rgba(0,0,0,.5);--k-card-shadow:rgba(0,0,0,.45);--k-neutral:rgba(228,224,236,.55);
   color-scheme:dark}
+/* ultra-wide screens (HH, design authority to 9 AM Mon; second empty-space sweep: at 2560 eight pages left half their width empty): the page
+   frame stops growing at 1,920px of content and centres, so lines and layouts keep the shape they were designed at */
+@media (min-width:2112px){:root{--gut:max(96px,calc((100vw - 1920px) / 2))}}
 @media (max-width:1179.98px){:root{--gut:48px}}
 @media (max-width:699.98px){:root{--gut:16px}}
 /* Nov 22 (qcheck): the kit headline held 34px up to 384 wide; between 341 and 384, 10.4vw gave 35.5-39.9px, off the type scale */
