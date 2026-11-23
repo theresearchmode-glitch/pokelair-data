@@ -72,7 +72,7 @@ V2.openTeamSheet = () => { const ms = members(), r = (typeof regInfo === 'functi
   const best = [...Array(N)].map((_, k) => Math.max(...D.map(d => d.stats[k].val == null ? -1 : d.stats[k].val)));
   /* say it once (Nov 16, re-verify #17): when every file's spread note is the same ('Most common spread'), the lead says it once */
   const srcs = [...new Set(D.filter(d => d && d.nat).map(d => String(d.src || '').replace(/<[^>]*>/g, '')))], srcOnce = srcs.length === 1 && srcs[0] ? srcs[0] : '';
-  const nat = d => d.nat ? `${E(d.nat)}${d.up && d.dn && d.up !== d.dn ? ` <em class="tt-nb"><span class="up">+${d.up}</span> <span class="dn">−${d.dn}</span></em>` : ''}${srcOnce ? '' : `<small class="tt-src">${E(String(d.src || '').replace(/<[^>]*>/g, ''))}</small>`}` : 'Nature unknown';
+  const nat = d => d.nat ? `${V2.kNat(d.nat)}${d.up && d.dn && d.up !== d.dn ? ` <em class="tt-nb"><span class="up">+${d.up}</span> <span class="dn">−${d.dn}</span></em>` : ''}${srcOnce ? '' : `<small class="tt-src">${E(String(d.src || '').replace(/<[^>]*>/g, ''))}</small>`}` : 'Nature unknown';
   const mv = m => `<ul class="k-moves sh-mv">${[0, 1, 2, 3].map(j => { const x = m.moves[j]; return x ? `<li>${V2.kMove(x.name)}</li>` : '<li><span class="k-move sh-nomv"><span class="k-mn"><b>No move</b></span></span></li>'; }).join('')}</ul>`;
   /* the one idea (THE DOSSIER, Nov 22): the crew measured against itself. Each stat is a slanted plot bar drawn against the TEAM'S best in
      that stat, so the best runs full length in Plot blue and every other file shows at a glance how far behind it is (Atk 111 of 205) */
