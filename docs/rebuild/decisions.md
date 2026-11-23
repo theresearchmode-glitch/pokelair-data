@@ -2070,3 +2070,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:33 PM: Sim: 'nah leave those' (asked which: holding the sweep fixes until he says)
 - 7:34 PM: Sim clarified: 'leave those' meant hP's half-finished Job 3 pictures (they don't matter). Sweep fixes N1-N4 go ahead
 - 7:37 PM: Hourly check: 1 helper (hW2, Job 5 next); main: Wave 3 checks + sweep fixes; Game Plan updated
+- 7:39 PM: Sim: My Team 'looks absolutely terrible ... killed all its character ... boring white page ... must be addressed at once. put a helper on what you're doing and you personally redesign this, immediately.' -> new helper hX takes HH's queue (sweep fixes, Wave 3 checks, push); HH redesigns My Team now, direction pictures first
