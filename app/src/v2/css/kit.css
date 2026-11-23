@@ -7,6 +7,7 @@
 .k-head{position:relative}
 .k-kicker{display:inline-block;margin:28px 0 var(--s3);padding:var(--s1) var(--s3);background:var(--k-chip);color:var(--k-on-chip);font-family:var(--u);font-size:var(--t15);font-weight:800;font-style:italic;line-height:1.3;letter-spacing:.04em;transform:skewX(-10deg)}
 .k-h1{margin:0;font-size:var(--d-khead);line-height:1;color:var(--k-ink);overflow-wrap:normal;hyphens:none}
+@media (max-width:339.98px){.k-h1{font-weight:800}} /* Nov 23 (v2-q33): at 320 the day weight (900) pushed Events' 'winning crew.' to a 4th line while night (800) fit; under 340 both themes use 800, so the headline breaks the same in both */
 .k-h1 em{color:var(--k-plot-text);font-style:inherit}
 .k-lead{max-width:640px;margin:var(--s4) 0 0;font-size:var(--t17);line-height:1.5;color:var(--k-ink2)}
 

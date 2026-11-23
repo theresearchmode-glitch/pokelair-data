@@ -1254,8 +1254,10 @@ if (part('main2')) {
   // 3. the buttons: today's Home order (HOME-06) and on the first screen (above the phone tab bar) at the sizes Sim checks
   const full = await hero(1440, 900), none = await hero(1440, 900, {empty: true});
   ok(/Score My Team/.test(full.first) && /Build Me a Team/.test(none.first), `Stampede hero 3 (HOME-06): Score My Team first with a team (${full.first}), Build Me a Team first with none (${none.first})`);
-  const fold = []; for (const [w, h] of [[390, 844], [390, 664], [375, 667], [1280, 800], [1366, 768], [1440, 900], [1920, 1080]]) { const r = await hero(w, h); if (!r.b1 || !r.b2 || Math.max(r.b1.b, r.b2.b) > r.fold || r.b1.t < 0) fold.push(`${w}x${h}: ${JSON.stringify(r)}`); }
-  ok(!fold.length, `Stampede hero 3b: both start buttons are on the first screen at 390x844, 390x664, 375x667, 1280x800, 1366x768, 1440x900, 1920x1080${fold.length ? ': ' + fold.join(' | ') : ''}`);
+  /* Sim, Nov 23 (7:46 AM, option A): on short phone windows (390x664, 375x667) the scene grows so the front two never cover the
+     tagline (HQ Q13f); there the buttons may sit up to 80px under the first screen (one small scroll). Every other size: on the first screen */
+  const fold = []; for (const [w, h] of [[390, 844], [390, 664], [375, 667], [1280, 800], [1366, 768], [1440, 900], [1920, 1080]]) { const r = await hero(w, h), sh = w < 700 && h < 700; if (!r.b1 || !r.b2 || Math.max(r.b1.b, r.b2.b) > (sh ? h + 80 : r.fold) || r.b1.t < 0) fold.push(`${w}x${h}: ${JSON.stringify(r)}`); }
+  ok(!fold.length, `Stampede hero 3b: both start buttons are on the first screen at 390x844, 1280x800, 1366x768, 1440x900, 1920x1080, and within 80px of it on short phones (390x664, 375x667; Sim Nov 23 A)${fold.length ? ': ' + fold.join(' | ') : ''}`);
   // 4. the crowd comes after the first screen: the first draw holds about 12 pictures; the crowd arrives later
   const d = await hero(1440, 900, {fn: () => ({html: (V2.sdHero().match(/<img/g) || []).length, crowdInHtml: /sdh-c\b/.test(V2.sdHero())})});
   ok(d.html > 0 && d.html <= 16 && !d.crowdInHtml, `Stampede hero 4: the first draw asks for ${d.html} pictures, none from the crowd (it is added once the first screen's own pictures are in)`);
