@@ -2213,3 +2213,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:24 AM: Preview v244 published (foundation 238bc7c2 verified): hI sweep + hJ spots.
 - 9:26 AM: My Box hB steps 1-3 (53303f05) reviewed: desktop/phone match the mock with real data; all functions kept. Sent to Sim as work in progress. Notes to hB: 700-779 band +400px (must not be longer), Your Six item·Ability lines uneven (make consistent), more widths + on-your-team pictures.
 - 9:31 AM: GitHub run 1487 on 833bdfbe: SUCCESS (all green). Local on HEAD with hJ: v2-unbounded clean; minors main2 only the known ticker flake. Pushing batch (hJ spots A-D, Preview v244 logs).
+- 9:36 AM: Hourly work check 9:36 AM: 1 helper (hB, My Box); main: WebKit C-battle on HEAD (hJ Calc cards); Game Plan updated.
