@@ -2140,3 +2140,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:54 AM: GitHub run 1478 on 7c54cb2b: SUCCESS (Wave 2 + fixes all green). Batch push: polish fixes, hK2 Wave 2 finish.
 - 3:13 AM: On the hK2 merge: q59 all passed, A-team 139 pass 0 FAIL; minors main2 only the 2560 ticker timing flake (local only; GitHub green). Preview refresh with Wave 2 running.
 - 3:14 AM: Preview v240 published (foundation 3f38a45b verified on the artifact, v2.js b5f8f610, preview.json eb2cbcaf): Wave 2 kit parts everywhere + polish fixes.
+- 3:18 AM: Tried and dropped: My Team plan as three columns at 1440+ (2,927 px, but the Checks column ends early and leaves a big empty block = against the empty-space rule). Lengths re-measured on frozen data (lengths-0315.json); My Team 1440 3.40 on the test data's sample with optional swaps (goes to Sim).
