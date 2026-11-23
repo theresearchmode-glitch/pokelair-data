@@ -4411,3 +4411,5 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* polish-check (Nov 23): the room for the slanted "230×" moves from the number's own padding (its box ran 2px out of the receipt's line)
    to the line itself, so the box stays inside and the slant still has space */
 .trk-tot{padding-right:var(--s4)}.trk-tot b{padding-right:0}
+/* Pokémon page length (hQ, Nov 23): the line that replaced the full Moves and Items lists, inside the set card */
+.pk-also{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s5);margin:var(--s3) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--k-ink2)}.pk-also b{font-weight:700;color:var(--k-ink)}
