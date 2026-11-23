@@ -81,7 +81,7 @@ V2.bxEmpty = () => { const n = V2.underdog(), d = V2.esc(V2.disp(n));
 
 V2.pages.box = {place: 'box', draw() { const D = V2.bxData(), E = V2.esc, n = S.box.length, smp = V2.boxSample(), ms = members();
   const onN = S.box.filter(b => D.on.has(b)).length;
-  const head = `<div class="mb-head"><header class="k-head"><p class="k-kicker"><a class="mb-back" href="#team">← My Team</a> · The Pokémon you own</p><h1 class="k-h1 u">My <em>Box</em></h1>
+  const head = `<div class="mb-head"><header class="k-head"><p class="k-kicker mb-kick"><a class="mb-back" href="#team">← My Team</a> · The Pokémon you own</p><h1 class="k-h1 u">My <em>Box</em></h1>
     <p class="k-lead">${smp ? 'A sample box to start with: add the Pokémon you own and remove the rest. ' : ''}Build and the suggestions pick from these when set to “My Box”.</p></header>
     <div class="mb-tally bx-count"><p><b class="u">${n}</b><span>Pokémon${smp ? ' (sample)' : ''}</span></p>${n ? `<p><b class="u">${D.pages}</b><span>${D.pages > 1 ? 'Boxes' : 'Box'}</span></p><p><b class="u">${onN}</b><span><i class="mb-flag mb-key" aria-hidden="true"></i>On your team</span></p>` : ''}</div></div>`;
   const sort = `<div class="mb-sort"><span class="mb-cap" id="mb-sortl">Arrange by</span><div class="mb-seg" role="group" aria-labelledby="mb-sortl" data-v2slide="box-sort">${BX_SORTS.map(([v, t]) => `<button type="button" class="k-chip" data-v="${v}" aria-pressed="${(D.so === 'za' ? 'az' : D.so) === v}"><span>${t}</span></button>`).join('')}</div></div>`;
