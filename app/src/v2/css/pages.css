@@ -4418,3 +4418,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .pkf .pk-ft thead td{border:0;border-bottom:1px solid var(--rule)}
   .pkf .pk-ft th[scope=col]{display:flex;font-size:var(--t15);align-items:center;gap:var(--s2);padding:var(--s1) var(--s2) var(--s1) 0;border-top:1px solid var(--rule);text-align:left}
   .pkf .pk-ft th[scope=col] .np-mon{width:44px;height:44px;flex:none}}
+/* Test Run's open team at 1100+ (HH, design authority to 9 AM Mon): the card is taller than a laptop window (1,036 px at 1280x800) while it
+   sticks, so SET AS OPPONENT sat below the window; its two buttons now come right after the team's name, always in view */
+@media (min-width:1100px){.dr-side .dr-open{display:flex;flex-direction:column}.dr-side .dr-open>*{order:2}.dr-side .dr-open>.tp-start,.dr-side .dr-open>.dr-oh{order:0}
+  .dr-side .dr-open>.tr-btns{order:1;margin:0 0 var(--s4)}}
