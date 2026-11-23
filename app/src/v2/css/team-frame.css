@@ -52,7 +52,7 @@
 .tmk-work .mtf-party{min-width:0}
 .tmk-work .mtf .k-roster{padding-top:var(--s16)}
 .tmk-work .mtf-row.k-card{min-height:0;box-shadow:none}
-.tmk-work .mtf-row .lkm{position:absolute;right:var(--s2);top:var(--s2);z-index:2;width:20px;height:20px;fill:none;stroke:var(--wr-ink);stroke-width:2}
+.mtf-row .lkm{position:absolute;right:var(--s2);top:var(--s2);z-index:2;width:20px;height:20px;fill:none;stroke:var(--wr-ink);stroke-width:2}
 /* an empty spot: the card's shape as a dashed outline with + */
 .tmk-work .mtf-add .k-plate{min-height:200px;border:2px dashed var(--mtf-n-add);align-content:end}
 .tmk-work .mtf-add .k-plate::before{display:none}
