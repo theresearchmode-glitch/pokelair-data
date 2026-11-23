@@ -54,8 +54,8 @@ Sim: "Love it! I am extending your executive authority until 6PM today. confirm 
 pushes, tests, helper jobs within the helper limit, fixes that don't change the look) on HH's recommendation until 6:00 PM Mon Nov 23,
 each logged with its time; summary of those decisions at 6 PM. Design authority is NOT extended: it ends 9:00 AM Mon Nov 23, then
 every visual decision goes back to Sim's yes with pictures.
-Sim, logged 6:19 AM Mon Nov 23: "no ill be around so no design authority thats back to me." Design authority ENDED early;
-visual decisions are Sim's (pictures, recommended label green) from now on. Executive authority to 6 PM stands.
+Sim, logged 6:19 AM: "no ill be around so no design authority thats back to me." HH misread this as ending design authority early;
+Sim corrected it (logged 6:20 AM): "no you still have design authority until 9am." Design authority runs to 9:00 AM, then Sim's.
 
 ## FULL DESIGN AUTHORITY UNTIL 9:00 AM MON NOV 23 (Sim, logged 9:12 PM Sun Nov 22; LATEST)
 Sim: "im giving you design authority until 9am tomorrow ... BE NASTY PLOT AS FUCK. USE WHAT WE HAVE BUT MAKE IT AS BEST AS POSSIBLE MAKE THE
