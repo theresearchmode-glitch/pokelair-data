@@ -1686,6 +1686,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .tr-lede{margin:0;max-width:72ch;font:400 var(--t16)/1.5 var(--b);color:var(--ink-2)}
 .tr .u{font-family:var(--u);font-weight:900;font-style:italic;font-synthesis:style}
 @media (max-width:359.98px){.tr .k-name[data-kf="3"],.tr .k-name[data-kf="4"],.tr .k-name[data-kf="5"]{font-family:var(--b);font-weight:700}} /* Nov 23 (hL): under 360 the kit's fit levels 3-5 (body font) apply again inside the Test Run; .tr .u above kept Unbounded, so Staraptor / Aerodactyl spilled their small cards at 320. From 360 Unbounded 13px fits, so it stays */
+@media (min-width:700px) and (max-width:1099.98px){.tr .k-name[data-kf="3"],.tr .k-name[data-kf="4"],.tr .k-name[data-kf="5"]{font-family:var(--b);font-weight:700;font-size:var(--t13)}} /* Nov 23 (hL): the same at 700-1099, where six small cards share a row (Meowscarada ran 14px out at 960, 11px at 1024); at 13px, the size Unbounded had at level 5, so the cards and the page keep their height */
 /* scoreboard */
 .tr-board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}
 .tr-board>div{display:flex;align-items:baseline;gap:var(--s3);padding:var(--s4) var(--s6);clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%)}
