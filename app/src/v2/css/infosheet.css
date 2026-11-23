@@ -108,3 +108,28 @@
 .is-photo small{display:block;margin-top:var(--s1);font:700 var(--t13)/1.2 var(--b);color:var(--id-ink2);text-align:center;text-transform:uppercase;letter-spacing:.04em}
 .is-photo small b{display:block;font:700 var(--t13)/1.2 var(--b);color:var(--id-ink);letter-spacing:0;text-transform:none;overflow-wrap:anywhere}
 @media (max-width:699.98px){.is-photo{width:80px}.is-photo small{letter-spacing:0;font-stretch:88%}.is-ph{height:68px}.is-ph .np-mon,.is-ph .np-mon .st{width:68px}}
+/* NATURE = the psych profile, a clipboard (Sim approved Nov 23, 4:38 PM; HANDOFF section 2): cream paper with faint ruled lines every 28px, a 2px
+   margin line and a pencil underline in the raised stat's colour (--sc), a metal clip on top; the picture is the raised stat over the lowered
+   one. Paper, ink and stat colours are the same in day and night (--nt-*). A small stamp, hidden under 700 wide. */
+.is-tab.kd-nature{margin-right:var(--s10);padding:var(--s8) var(--s6) var(--s5) calc(var(--s10) + var(--s1));clip-path:none;border-radius:var(--r-l);color:var(--nt-ink);
+  background:repeating-linear-gradient(180deg,transparent 0 27px,var(--nt-rule) 27px 28px),var(--nt-paper);box-shadow:var(--shadow-lift)}
+.is-tab.kd-nature::before{content:'';position:absolute;left:var(--s6);top:0;bottom:0;width:2px;background:var(--sc)}
+.is-tab.kd-nature .gh{-webkit-text-stroke-color:var(--nt-ghost)}
+.is-tab.kd-nature h2,.is-tab.kd-nature .is-sh{color:var(--nt-ink)}
+.is-tab.kd-nature h2::after{content:'';display:block;width:70%;height:6px;margin-top:2px;border-radius:3px;background:var(--sc);transform:skewX(var(--slant)) rotate(-1.2deg)}
+.is-tab.kd-nature .is-kk{background:var(--nt-ink);color:var(--nt-paper)}
+.is-tab.kd-nature .is-sub{color:var(--nt-ink2)}
+.nt-clip{position:absolute;top:0;left:50%;width:120px;height:22px;margin-left:-60px;border-radius:0 0 var(--r-m) var(--r-m);background:linear-gradient(180deg,var(--nt-clip-hi),var(--nt-clip))}
+.nt-clip::after{content:'';position:absolute;left:50%;top:6px;width:24px;height:8px;margin-left:-12px;border-radius:var(--r-s);background:var(--nt-clip-slot)}
+.nt-stamp{position:absolute;right:192px;top:var(--s4);padding:var(--s1) var(--s2);border:2px solid var(--sc);color:var(--sc);font-size:var(--t15);font-weight:800;line-height:1.2;letter-spacing:.04em;transform:rotate(-8deg)}
+/* the picture: the raised stat (filled) over the lowered stat (outlined); a neutral nature gets one flat tile */
+.nt-pic{flex:none;display:grid;gap:var(--s2);width:96px;transform:rotate(-2deg)}
+.nt-pic div{display:flex;align-items:center;justify-content:center;gap:var(--s1);height:40px;border-radius:var(--r-m);font-size:var(--t17);font-weight:800;line-height:1;white-space:nowrap}
+.nt-pic .up{background:var(--sc);color:var(--on-nt)}
+.nt-pic .dn{background:var(--nt-card);color:var(--sd);box-shadow:inset 0 0 0 2px var(--sd)}
+.nt-pic .nn{flex-direction:column;gap:2px;height:88px;background:var(--nt-flat);color:var(--nt-flat-ink);font-size:var(--t15);white-space:normal;text-align:center}
+.nt-pic .nn small{font:600 var(--t13)/1.2 var(--b)}
+.nt-lead{display:grid;gap:var(--s1)}.nt-lead .is-src{margin:0}
+@media (max-width:699.98px){.is-tab.kd-nature{margin-right:var(--s10);padding:var(--s8) var(--s4) var(--s4) var(--s8)}.is-tab.kd-nature::before{left:var(--s4)}
+  .is-sh0 span{white-space:normal} /* a long 'Not run on any ...' line wraps inside the tab instead of running out of it */
+  .nt-stamp{display:none}.nt-pic{width:80px;gap:var(--s1)}.nt-pic div{height:36px;font-size:var(--t15)}.nt-pic .nn{height:76px}}

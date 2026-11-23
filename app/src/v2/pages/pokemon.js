@@ -60,7 +60,7 @@ V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T 
 V2.pkBuild = p => { const E = V2.esc, n = p.n, st = V2.pkTry(() => defSet(p), {}) || {}; /* option A (audit #1): the lists use the Typical set's source (tournament sets, Nov 8) */
   const ti = V2.pkTry(() => topItems(p), null), SB = lairSetBits(p), pm = V2.pkTry(() => (popularMoves(p) || []).slice(0, 4).map(m => m.name), []);
   const mvShare = new Map((st.mv || []).map(([nm, v]) => [nm, v]));
-  const two = arr => arr && arr.length ? `<b>${E(arr[0])}</b>${arr.length > 1 ? `<small>or ${arr.slice(1).map(E).join(' or ')}</small>` : ''}` : '';
+  const two = arr => arr && arr.length ? `<b>${V2.kNat(arr[0])}</b>${arr.length > 1 ? `<small>or ${arr.slice(1).map(V2.kNat).join(' or ')}</small>` : ''}` : ''; /* natures open their sheet (Dossier step 3, Nov 23) */
   const ab = metaAbility(p) || bestAbility(p), abv = V2.pkTry(() => ab && abilityPct(p, ab), null);
   const itPct = ti && ti.it && ti.it[0] && ti.it[0][1] != null ? pctFmt(+ti.it[0][1]) : '';
   const kv = `<dl class="pk-kv">${ti && ti.it && ti.it.length ? `<div><dt>Item</dt><dd><b>${V2.kItem(ti.it[0][0])}</b>${itPct || ti.it.length > 1 ? `<small>${[itPct, ti.it.length > 1 ? 'or ' + ti.it.slice(1).map(x => V2.kItem(x[0])).join(' or ') : ''].filter(Boolean).join(' · ')}</small>` : ''}</dd></div>` : p.m ? `<div><dt>Item</dt><dd><b>${V2.pkTry(() => stoneFor(p), '') ? V2.kItem(V2.pkTry(() => stoneFor(p), '')) : 'Its Mega Stone'}</b></dd></div>` : ''}

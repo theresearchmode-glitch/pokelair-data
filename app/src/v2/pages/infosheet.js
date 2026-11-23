@@ -27,7 +27,7 @@ V2.isMoveLines = (n, M) => { const t = M.t || 'normal', f = M.f || '', L = [];
   if (f.includes('c')) L.push('Makes contact (Rocky Helmet and Rough Skin hurt the user)');
   return L.slice(0, 4); };
 V2.infoUse = (k, n) => { const I = typeof META === 'object' && META.info; if (!I || !I[k]) return null; const e = I[k][n]; return {N: I.N, src: I.source, period: I.period, t: e ? e[0] : 0, u: e ? e[1] : [], nu: e ? (e[2] != null ? e[2] : e[1].length) : 0}; };
-V2.openInfo = (kind, n) => kind === 'mv' ? V2.openMoveSheet(n) : kind === 'ab' ? V2.openAbilitySheet(n) : kind === 'it' ? V2.openItemSheet(n) : undefined;
+V2.openInfo = (kind, n) => kind === 'mv' ? V2.openMoveSheet(n) : kind === 'ab' ? V2.openAbilitySheet(n) : kind === 'it' ? V2.openItemSheet(n) : kind === 'nt' ? V2.openNatureSheet(n) : undefined;
 // the parts every kind shares (HANDOFF "The sheet, top to bottom")
 V2.isFmt = x => x.toLocaleString('en-US');
 V2.isH = (t, s) => `<div class="is-h"><h3 class="u">${V2.esc(t)}</h3>${s ? `<span>${V2.esc(s)}</span>` : ''}</div>`;
@@ -41,7 +41,7 @@ V2.isUsers = (U, users) => { const E = V2.esc; return users.length ? `<section c
 V2.isMore = (list, users, what) => { const E = V2.esc, shown = new Set(users.map(u => u[0])), rest = list.filter(q => !shown.has(q.n));
   return list.length ? `<section class="is-sec">${V2.isH('Also capable.', `${what}: ${list.length} Pokémon in Reg M-C · tap one to open it`)}<div class="is-learn" data-islearn>${rest.map((q, i) => `<button type="button" class="is-l"${i >= 20 ? ' hidden' : ''} data-v2mon="${E(q.n)}" aria-label="${E(V2.disp(q.n))}">${V2.mon(q.n, {iw: 40, bare: true})}</button>`).join('')}</div>${rest.length > 20 ? V2.kMore(rest.length - 20, {vh: 'Pokémon', attrs: {class: 'is-all', 'data-isall': ''}}) /* Wave 2 (Sim chose A, Nov 22): the kit show-more (was "Show all N ›") */ : ''}</section>` : ''; };
 V2.isCredit = w => `<p class="is-credit">${w} text adapted from Pokémon Showdown (MIT License), © Guangcong Luo and contributors.</p>`;
-V2.isTab = (kind, n, sub, share, extra = '', pic = '') => { const E = V2.esc, KK = {move: 'CASE FILE · MOVE', ability: 'ID CARD · ABILITY', item: 'EVIDENCE · ITEM'}[kind];
+V2.isTab = (kind, n, sub, share, extra = '', pic = '') => { const E = V2.esc, KK = {move: 'CASE FILE · MOVE', ability: 'ID CARD · ABILITY', item: 'EVIDENCE · ITEM', nature: 'PSYCH PROFILE · NATURE'}[kind];
   /* pic (Sim approved the pictures, Nov 23 4:33 PM; docs/mockups/sheet-pics-natures-nov23): a picture left of the name, decorative */
   return `<div class="is-tab kd-${kind}">${extra}<span class="gh u" aria-hidden="true">${E(n.toUpperCase())}</span>${pic ? `<div class="is-pn">${pic}` : ''}<div class="is-tn"><span class="is-kk u">${KK}</span><h2 class="u">${E(n)}</h2><div class="is-sub">${sub}</div></div>${pic ? '</div>' : ''}${share}</div>`; };
 // the move's TYPE SEAL (Sim, Nov 23, Q1 A): a slanted tile in a deeper shade of the type colour with the white type symbol (#kty-, MIT, approved
@@ -85,6 +85,50 @@ V2.openItemSheet = n => { const E = V2.esc, txt = (typeof INFO_TEXT === 'object'
 // an item name anywhere: a blue word that opens its sheet (no button for 'No item' or an item without a sheet); a Mega letter stays with its name
 V2.kItem = n => { const t = V2.keepForm(V2.esc(n || '')).replace(/ (\S{1,2})$/, '\u00a0$1');
   return n && typeof INFO_TEXT === 'object' && INFO_TEXT.it[n] && !V2.IS_NOT_IN.includes(n) ? `<button type="button" class="is-w" data-v2info="it" data-v2infon="${V2.esc(n)}" aria-haspopup="dialog">${t}</button>` : t; };
+// the NATURE sheet, "the psych profile" (Dossier step 3; Sim approved the design Nov 23, 4:38 PM, and the word "Nature" at 5:56 PM, with one line
+// that Pokémon Champions calls it a Stat Alignment; docs/mockups/sheet-pics-natures-nov23/HANDOFF.md section 2): a clipboard (cream ruled paper,
+// a metal clip, a margin line and a pencil underline in the raised stat's colour, dark ink in both themes), the picture ▲ raised over ▼ lowered,
+// one plain sentence, the stat strip, On the field, Usual suspects (not for neutral natures: their few users are almost surely mistakes), links.
+// The raise/lower table is the calc's (NAT_UP / NAT_DN, natBits in 39-damage-calc-speed.js); the five neutral natures each sit on one stat
+// (the usual nature grid: Hardy Attack ... Serious Speed). Data: META.info.nt (update.mjs; 4th field = how many Pokémon run it, ntN = all
+// Pokémon with a readable nature), so the share is "of tournament Pokémon" (a nature belongs to one Pokémon, not a team).
+V2.NT_SAME = {Hardy: 'Atk', Docile: 'Def', Bashful: 'SpA', Quirky: 'SpD', Serious: 'Spe'};
+V2.NT_SN = {Atk: 'Attack', Def: 'Defense', SpA: 'Sp. Atk', SpD: 'Sp. Def', Spe: 'Speed'};
+V2.ntAll = () => typeof NAT_UP === 'object' ? [...Object.values(NAT_UP).flat(), ...Object.keys(V2.NT_SAME)] : [];
+V2.ntBits = n => { if (V2.NT_SAME[n]) return {up: V2.NT_SAME[n], dn: V2.NT_SAME[n]}; if (typeof natBits !== 'function') return null; const b = natBits(n); return b.up && b.dn ? b : null; };
+V2.ntUse = n => { const I = typeof META === 'object' && META.info; if (!I || !I.nt || !I.ntN) return null; const e = I.nt[n];
+  return {N: I.N, M: I.ntN, period: I.period, t: e ? e[0] : 0, u: e ? e[1] : [], nu: e ? e[2] : 0, m: e ? (e[3] || 0) : 0}; };
+// "On the field" (HANDOFF section 2, rules from tools/mock-natures.cjs LINES; Sim reads these before they ship)
+V2.ntLines = (n, up, dn) => { const S = V2.NT_SN;
+  if (up === dn) return ['No stat is raised or lowered; HP is never changed either', 'Almost never chosen on purpose: pick a nature that helps', `Same as ${Object.keys(V2.NT_SAME).filter(x => x !== n).join(', ').replace(/, ([^,]*)$/, ' and $1')}`];
+  const L = [`${S[up]} ×1.1, ${S[dn]} ×0.9. HP is never changed`];
+  if (up === 'Atk' && dn === 'SpA') L.push('The usual pick for physical attackers: Sp. Atk goes unused');
+  if (up === 'SpA' && dn === 'Atk') L.push('The usual pick for special attackers: Attack goes unused');
+  if (up === 'Spe' && dn === 'SpA') L.push('The usual pick for fast physical attackers');
+  if (up === 'Spe' && dn === 'Atk') L.push('The usual pick for fast special attackers');
+  if (up === 'Spe') L.push('Outspeeds the same Pokémon with the same Speed points and a neutral Speed nature');
+  if (dn === 'Spe') L.push('For Trick Room, where the slower Pokémon moves first');
+  if (up === 'Def' || up === 'SpD') L.push('For bulky support Pokémon that need to stay in');
+  if (dn === 'Def' || dn === 'SpD') L.push('Rare on tournament teams: most players lower the attacking stat they don’t use');
+  return L.slice(0, 4); };
+V2.ntStamp = (up, dn) => up === 'Spe' ? 'QUICK TEMPER' : dn === 'Spe' ? 'TAKES ITS TIME' : up === 'Atk' || up === 'SpA' ? 'HITS HARD' : 'THICK SKIN';
+V2.openNatureSheet = n => { const E = V2.esc, B = V2.ntBits(n); if (!B) return; const {up, dn} = B, S = V2.NT_SN, neu = up === dn, U = V2.ntUse(n);
+  const sc = `var(--nt-${(neu ? 'none' : up).toLowerCase()})`, sd = `var(--nt-${dn.toLowerCase()})`;
+  const pic = neu ? `<div class="nt-pic" aria-hidden="true"><div class="nn u"><span>▲▼</span>${E(S[up])}<small>cancel out</small></div></div>`
+    : `<div class="nt-pic" aria-hidden="true"><div class="up u">▲ ${up.toUpperCase()}</div><div class="dn u" style="--sd:${sd}">▼ ${dn.toUpperCase()}</div></div>`;
+  const share = !U ? '' : U.m === 0 ? '<div class="is-sh is-sh0"><span>Not run on any tournament Pokémon in Reg M-C yet</span></div>'
+    : U.m < 20 ? `<div class="is-sh is-sh0"><span>Rarely used (on ${V2.isFmt(U.m)} Pokémon)</span></div>`
+    : (p => `<div class="is-sh"><b class="u">${p < 1 ? '<1' : p}%</b><span>of tournament Pokémon</span></div>`)(Math.round(100 * U.m / U.M));
+  const extra = `<span class="nt-clip" aria-hidden="true"></span>${neu ? '' : `<span class="nt-stamp u" aria-hidden="true">${V2.ntStamp(up, dn)}</span>`}`;
+  const tab = V2.isTab('nature', n, `<span>${neu ? 'Neutral nature' : 'Nature'}</span>`, share, extra, pic);
+  const lead = neu ? 'Raises and lowers the same stat, so it does nothing.' : `Raises ${S[up]} by 10% and lowers ${S[dn]} by 10%.`;
+  const runs = U ? String(U.nu) : '—', teams = U ? V2.isFmt(U.t) : '—';
+  const stats = neu ? [['Pokémon run it', runs], ['Teams', teams]] : [['Raises', S[up] + ' +10%'], ['Lowers', S[dn] + ' −10%'], ['Pokémon run it', runs], ['Teams', teams]];
+  const users = neu ? [] : V2.isUsersOf(U);
+  const links = `<div class="is-sec is-links">${up === 'Spe' || dn === 'Spe' ? V2.kLink('Speed Tiers', {href: '#speed'}) : V2.kLink('Try It in the Calc', {href: '#calc'})}</div>`;
+  V2.sheet(`<div class="is2 kd-nature" style="--sc:${sc}">${tab}<div class="nt-lead"><p class="is-lead">${E(lead)}</p><p class="is-src">Pokémon Champions calls a nature a Stat Alignment.</p></div>${V2.isStats(stats)}${V2.isLines(V2.ntLines(n, up, dn))}${V2.isUsers(U, users)}${links}</div>`, {label: n + ' nature'}); };
+// a nature name anywhere: a blue word that opens its sheet (only the 25 real natures)
+V2.kNat = n => n && V2.ntBits(n) ? `<button type="button" class="is-w" data-v2info="nt" data-v2infon="${V2.esc(n)}" aria-haspopup="dialog">${V2.esc(n)}</button>` : V2.esc(n || '');
 // every move ticket (V2.kMove) carries data-v2info; one tap opens its sheet. "Show all N" opens the rest of Also capable in place.
 document.addEventListener('click', e => { if (!e.target.closest) return; const b = e.target.closest('[data-v2info]');
   if (b) { e.preventDefault(); V2.openInfo(b.dataset.v2info, b.dataset.v2infon); return; }
