@@ -2279,3 +2279,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:58 PM: Sim: 'I actually like option B more I don't wanna get rid of the whole herd lol' -> Home takes option B (full stampede; post joins the tools band on desktop). hY finishing B's prep; merge after its checks.
 - 3:05 PM: B-build on HEAD: 77 pass, 0 FAIL. Next main job: D-meta-shell in Safari's engine on HEAD (Pokémon page B tests).
 - 3:13 PM: Sim: 'i'm extending your design and executive authority until 9 AM tomorrow. Confirm receipt and let's keep working.' -> DESIGN and EXECUTIVE authority extended to 9:00 AM Tue Nov 24. Every visual decision still told to Sim in chat with pictures and logged with its time; summary of all decisions due at 9 AM Tue. All other rules unchanged (1 helper, kit, word list, length caps, tests).
+- 3:14 PM: Sim: 'I don't the 6pm today one! tysm HH' -> no 6 PM summary today; only the full summary at 9 AM Tue. The 5:45 PM reminder disabled.
