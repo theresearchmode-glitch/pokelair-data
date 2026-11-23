@@ -49,6 +49,12 @@ pages still to reskin). When the mock-ups are done, back to ONE helper. Never us
 Sim: "sounds like a plan. i just wanted the builds approved so then after, all resources can just focus on making it happen." The mock-up
 helper switches to building once its mock-ups are done: 2 build helpers + HH building, for the rest of Nov 22. Above that, ask Sim.
 
+## USE THE LOADED SKILLS (Sim, Nov 23; a standing rule)
+Sim: "we have a lot of skills that I have loaded in specifically to be helping you out so I am absolutely 100% imploring you to take a
+look at those especially things such as the code review or design review ... use those to your advantage." Before merging a real change,
+run the matching skill: code-review (correctness) on the diff, design review / critique on visual work (with our rules and the kit
+winning over a skill's generic advice), accessibility skills on new controls. Skills that start subagents count toward the helper limit.
+
 ## HELPERS: BACK TO ONE; TWO FROM 4 PM WED NOV 25 (Sim, logged 4:53 PM Mon Nov 23; LATEST for helper counts)
 Sim: "once the current tasks are done, lets work our way back down to our standard 1 helper agent ... after 4PM on Wednesday we can have 2
 helper agents at a time as standard again." The two running now finish; then at most ONE until 4:00 PM Wed Nov 25, then TWO as standard.
