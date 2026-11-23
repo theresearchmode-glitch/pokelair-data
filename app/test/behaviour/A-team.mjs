@@ -108,7 +108,9 @@ t('HOME-08', 'All 11 Tools: each card opens the page named on it', async () => {
   noErrs(r); await r.close(); });
 
 t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy for Showdown copies', async () => {
-  const r = await homePage(); await r.ui.grantClipboard(); const tx = await r.ui.text();
+  /* Sim, Nov 23: on desktop (1100+) Home's Winning Teams is a chip and Load Team / Copy for Showdown live on the Winning Teams page; phones
+     and iPads keep the Winning Teams plate with both, so this runs at 820 */
+  const r = await aopen({team: TEAM, width: 820}); await r.ui.grantClipboard(); const tx = await r.ui.text();
   // new build (Home piece 2, the mock-up's duel; Preview v74, Sim "love it"; decisions.md Nov 12): the same line with "·" between parts
   // the Stampede (Sim, Nov 18): the champion's six sits on the tools band's Winning Teams plate, "This six won <event> on <date>: N players, W-L.",
   // and the Events plate carries the count ("113 events", opening Events) where today's Home had "All N Events ›"
