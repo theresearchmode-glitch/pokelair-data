@@ -2067,3 +2067,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:29 PM: Sim: 'no you do job 5. that was an accident there.' -> Job 5 (info words) back here: hW2 after Track Record; second account's Job 5 run was accidental (Sim handles it). Its alt/info-words branch, if pushed, is not merged
 - 7:30 PM: Sim: the other account is doing Job 3 now -> stopped hP (it was on Job 3 here) to avoid double work and save usage; back to 1 helper (hW2)
 - 7:30 PM: Sim stopped the second account's Job 5 run; Job 5 is hW2's here. Second account: Job 3 (length options). 10 PM reminder deleted (hP already stopped)
+- 7:33 PM: Sim: 'nah leave those' (asked which: holding the sweep fixes until he says)
