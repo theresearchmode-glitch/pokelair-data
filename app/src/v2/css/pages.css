@@ -4473,6 +4473,14 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (min-width:1440px){.tc-picks{grid-template-columns:repeat(18,minmax(0,1fr))}}
 /* polish-check (Nov 22 night): in the slimmer 1100-1439 Test Run lane the lane heading ran 2px past it (a 12px gap); 8px there */
 @media (min-width:1100px) and (max-width:1439.98px){.dr-side .dr-lh{gap:var(--s2)}.dr-side .dr-big>*{min-width:0}.dr-side .dr-big .dr-m{grid-template-columns:minmax(0,1fr)}.dr-side .dr-big .dr-bk{gap:var(--s1)}.dr-side .dr-big .dr-bk i{width:12px}}
+/* Nov 23 (hL): the 340px lane (1100-1439) gave each of the six 45px, so "Handles it" (61px) broke onto two lines beside one-line
+   "Beats it" and ran 3px out. Here the two lanes and the four reach 8px into the open card's
+   24px sides (the card, its heading and SET AS OPPONENT. keep their room), and the answer words sit evenly as a two-line stack
+   ("Handles / it", "No / answer") in the site's approved 88% letters (Sim Q17), each word inside its 48px column. The four names
+   take the same letters on one line (a Mega on two, "Mega / Charizard Y"), and the four stand on one baseline */
+@media (min-width:1100px) and (max-width:1439.98px){.dr-side .dr-lane,.dr-side .tp-four{margin-inline:calc(var(--s2) * -1)}.dr-side .dr-w{width:min-content;font-stretch:88%}
+  .dr-side .tp-four{align-items:stretch}.dr-side .tp-four>span{align-content:end}.dr-side .tp-four b{font-stretch:88%;text-wrap:balance}
+  .dr-side .k-go{font-size:var(--t20);padding-inline:var(--s5)}} /* SET AS OPPONENT. at 22px with 28px sides needed 325px in a 292px card: its words ran to the button's right edge; 20px words with 20px sides fit with room */
 /* polish-check (Nov 22 night): Your Six beside Their Six is too narrow for six names at 1100-1279 (Basculegion ran 6-8px out); three across */
 @media (min-width:1100px) and (max-width:1279.98px){.bt2.bt-noopp>.bt-yours .bt-sixrow{grid-template-columns:repeat(3,minmax(0,1fr))}}
 /* polish-check (Nov 23): at 320 the three Winning Teams links in a row of three ran 4-6px out ("Copy for Showdown"); on the narrowest
