@@ -2222,3 +2222,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:58 AM: D-meta-shell in WebKit on HEAD (hJ Gifts/Track/Home): see wk8b.log.
 - 9:58 AM: D-meta WebKit on HEAD: 116 pass, 1 FAIL = THEME-03 'no share image' (earlier WebKit runs today passed it, 117/0). Rerunning to see if it repeats (hJ's changes don't touch the share image; unsure why yet).
 - 10:10 AM: THEME-03 'no share image' repeats in WebKit on HEAD (116/1, twice). Passed in WebKit at 7:27 AM (before hI + hJ) and in Chromium at 8:50 (after hI). Bisecting: WebKit D-meta at 3c864528 (hI merged, hJ not).
+- 10:18 AM: GitHub run 1488 on aea4ddec (hJ iPhone spots): SUCCESS (all green, Chromium). The WebKit-only THEME-03 issue is being bisected locally.
