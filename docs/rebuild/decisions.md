@@ -2058,3 +2058,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:50 PM: Second account: only Job 2 (Wave 3 sizes) finished and pushed (alt/wave3-sizes); merged its docs/pictures; jobs 1,3,4,5 not started (it ran out of usage)
 - 6:51 PM: Sim: Wave 3 sizes 'recs is good to go' -> headline 84 everywhere (kit --d-khead), step heading 40 everywhere (kit --d-ksec); HH builds; Usage two-up heading wrap gets its own picture
 - 7:09 PM: Sim: second account will only do Job 4 (sweep); jobs 1 (Wave 2 pictures), 3 (length options), 5 (info words build) come back here. Plan: hW2 (only helper) after Track Record -> Job 5; HH main thread -> Job 3 then Job 1 pictures between checks
+- 7:11 PM: Sim: 'do them in the order you think is best' -> order kept: hW2 Track Record then Job 5; HH Wave 3 checks/push, then Job 3 pictures, then Job 1
