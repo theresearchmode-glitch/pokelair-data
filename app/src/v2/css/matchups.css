@@ -30,9 +30,9 @@
 .mu-rows{grid-template-columns:minmax(0,1fr)}.mu-rows li:nth-last-child(2):nth-child(odd){border-bottom:1px solid var(--rule)}
 /* wide enough for two columns without squeezing a name onto two lines: 1-5 down the left, 6-10 down the right */
 @container (min-width:760px){.mu-rows{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:repeat(5,auto);grid-auto-flow:column}.mu-rows li:nth-child(5){border-bottom:0}}
-.mu-more{display:none;min-height:var(--tap);margin-top:var(--s1)}
-@media (max-width:1179.98px){.mu-rows:not(.is-more) li:nth-child(n+6){display:none}.mu-rows:not(.is-more) li:nth-child(5){border-bottom:0}.mu-more{display:inline-flex;align-items:center}}
-.mu-pane>.mu-more[data-muall]{display:inline-flex;align-items:center}
+.mu-more{display:none;margin-top:var(--s1)} /* Wave 2: the kit show-more (kit.css .k-more) */
+@media (max-width:1179.98px){.mu-rows:not(.is-more) li:nth-child(n+6){display:none}.mu-rows:not(.is-more) li:nth-child(5){border-bottom:0}.mu-more{display:flex}}
+.mu-pane>.mu-more[data-muall]{display:flex}
 .mu-h3{margin-top:var(--s6)}.mu-bsub{margin-top:var(--s2)}
 /* the next 20: small tiles, worst first, the verdict as a slanted bar under each */
 .mu-tiles{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:var(--s2) var(--s1);margin-top:var(--s2)}

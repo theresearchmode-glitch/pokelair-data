@@ -28,17 +28,17 @@ const lone = r => { const a = r.split('+').map(Number); return a.length > 1 && a
 // one phone round: the cut, the button, keyboard open and close, every filter
 const phone = async (p, th, W, tag) => { const n = await want(p); let x = await look(p);
   if (n.all <= 6) { ok(x.n === n.all && !x.btn, `${th} ${W}${tag}: ${n.all} stamps, 6 or fewer: all shown (${x.n}), no button`); return n; }
-  ok(x.n === 6 && x.rows === '3+3' && x.btn === `Show All ${n.all} Stamps ›` && x.tag === 'BUTTON' && x.exp === 'false' && x.ctl === 'ok' && x.h >= 44, `${th} ${W}${tag}: first 6 of ${n.all} stamps in two full rows (${x.n}, rows ${x.rows}) + "${x.btn}" (${x.tag}, aria-expanded ${x.exp}, controls ${x.ctl}, ${x.h}px)`);
+  ok(x.n === 6 && x.rows === '3+3' && x.btn === `Show all ${n.all} stamps` /* Wave 2 (Nov 23): the kit show-more's words + spoken noun (was "Show All N Stamps ›") */ && x.tag === 'BUTTON' && x.exp === 'false' && x.ctl === 'ok' && x.h >= 44, `${th} ${W}${tag}: first 6 of ${n.all} stamps in two full rows (${x.n}, rows ${x.rows}) + "${x.btn}" (${x.tag}, aria-expanded ${x.exp}, controls ${x.ctl}, ${x.h}px)`);
   let bx = await boxes(p); ok(!bx.bad.length && !bx.side, `${th} ${W}${tag}: nothing out of its box, nothing sideways (${bx.bad.slice(0, 3).join('; ') || 'clean'}${bx.side ? ', scrolls sideways' : ''})`);
   if (!x.btn) { ok(false, `${th} ${W}${tag}: no Show All button to open`); return n; }
   await p.focus('#main [data-prmore]'); await p.keyboard.press('Enter'); await p.waitForTimeout(400); x = await look(p);
-  ok(x.n === n.all && x.exp === 'true' && x.btn === 'Show Fewer Stamps' && x.focus, `${th} ${W}${tag}: Enter opens all ${n.all} (${x.n}, rows ${x.rows}), aria-expanded ${x.exp}, "${x.btn}", focus stays ${x.focus}`);
+  ok(x.n === n.all && x.exp === 'true' && x.btn === 'Show fewer stamps' /* Wave 2: kit words */ && x.focus, `${th} ${W}${tag}: Enter opens all ${n.all} (${x.n}, rows ${x.rows}), aria-expanded ${x.exp}, "${x.btn}", focus stays ${x.focus}`);
   if (lone(x.rows)) console.log(`  note  ${th} ${W}${tag}: opened, rows ${x.rows} (the open sheet's rows are from before Q43, Sim Nov 18: 3+3+1 for 7)`);
   bx = await boxes(p); ok(!bx.bad.length && !bx.side, `${th} ${W}${tag}: opened, nothing out of its box (${bx.bad.slice(0, 3).join('; ') || 'clean'})`);
   await p.focus('#main [data-prmore]'); await p.keyboard.press('Space'); await p.waitForTimeout(400); x = await look(p);
-  ok(x.n === 6 && x.exp === 'false' && x.btn === `Show All ${n.all} Stamps ›` && x.focus, `${th} ${W}${tag}: Space closes it again (${x.n}, "${x.btn}", focus stays ${x.focus})`);
+  ok(x.n === 6 && x.exp === 'false' && x.btn === `Show all ${n.all} stamps` /* Wave 2 */ && x.focus, `${th} ${W}${tag}: Space closes it again (${x.n}, "${x.btn}", focus stays ${x.focus})`);
   for (const f of ['mon', 'item', 'all']) { await p.click(`#main [data-prf="${f}"]`); await p.waitForTimeout(400); x = await look(p); const k = n[f];
-    ok(k > 6 ? x.n === 6 && x.btn === `Show All ${k} Stamps ›` && !lone(x.rows) : x.n === k && !x.btn && (k < 3 || !lone(x.rows)), `${th} ${W}${tag}: filter ${f} (${k} stamps): ${x.n} shown, rows ${x.rows || 'none'}, button "${x.btn || 'none'}"`); }
+    ok(k > 6 ? x.n === 6 && x.btn === `Show all ${k} stamps` /* Wave 2 */ && !lone(x.rows) : x.n === k && !x.btn && (k < 3 || !lone(x.rows)), `${th} ${W}${tag}: filter ${f} (${k} stamps): ${x.n} shown, rows ${x.rows || 'none'}, button "${x.btn || 'none'}"`); }
   return n; };
 for (const th of ['light', 'dark']) {
   for (const W of [320, 390, 699]) { const [p, errs, c] = await open(W, th, true); const n = await phone(p, th, W, '');

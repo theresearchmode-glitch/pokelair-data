@@ -239,7 +239,7 @@ V2.fixRows = (D, useA, a, tRows, P) => { const ms = D.ms, out = problemRows(ms, 
     return `<details class="sg2-prob sg2-pf" data-v2pk="${V2.esc(key)}"${V2.fx.open.has(key) ? ' open' : ''}><summary>${head}<span class="sg2-fixn">${n} ${P && P.nothing ? `idea${n > 1 ? 's' : ''}` : `fix${n > 1 ? 'es' : ''}`}</span></summary><div class="sg2-qbox"><p class="sg2-k">Quick add</p><ul class="sg2-qps">${Q.picks.map(pl => pick(key, pl)).join('')}</ul></div></details>`; };
   const real = out.filter(o => o[0] !== 'ok'), rows = out.map(row), cap = ui.needsAll ? rows.length : 4, more = rows.length - cap;
   return {real, html: (real.length ? '' : `<div class="sg2-prob"><span class="sg2-sev ok">${PROB_TXT.clear}</span><span class="sg2-pt">${PROB_TXT.clearWhy}</span></div>`) + rows.slice(0, cap).join('')
-    + (more > 0 ? `<button type="button" class="np-link sg2-all" data-v2needs>Show ${more} More ›</button>` : ui.needsAll && rows.length > 4 ? '<button type="button" class="np-link sg2-all" data-v2needs>Show Fewer</button>' : '')}; };
+    + (more > 0 || ui.needsAll && rows.length > 4 ? V2.kMore(more, {open: !!ui.needsAll, attrs: {class: 'sg2-nmore', 'data-v2needs': ''}}) /* Wave 2 (Sim chose A, Nov 22): the kit show-more (was "Show N More ›" / "Show Fewer") */ : '')}; };
 V2.fixFold = D => { const ms = D.ms; if (!ms || !ms.length) return ''; const useA = $('useAbil').checked, a = analyze(playForm(ms), useA), {tRows} = offenseRows(ms, useA);
   const ready = V2.plan.key === V2.planKey() && V2.plan.plans, P = ready ? V2.plan.plans : null; if (P) ui.plans = P;
   let pr; try { pr = V2.fixRows(D, useA, a, tRows, P); } catch (e) { console.error(e); pr = {real: [], html: ''}; }

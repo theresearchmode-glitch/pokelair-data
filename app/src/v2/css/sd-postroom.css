@@ -106,7 +106,7 @@
 @media (max-width:699.98px){.pr-st{padding:var(--s3) var(--s3) var(--s4)}.pr-pic{padding-top:var(--s6)}.pr-my{font:700 var(--t13)/1.5 var(--b);font-style:normal}.pr-nm{margin-top:var(--s2);font:700 var(--t13)/1.5 var(--b)}
   .pr-how{letter-spacing:0;text-transform:none}.pr-amt{font-size:var(--t17)}.pr-pm{width:52px;height:52px;top:calc(var(--s2) * -1);right:calc(var(--s2) * -1)}.pr-pm>span{width:min-content;line-height:1.05}.pr-pm .pr-pmw{display:none}.pr-pm svg{display:none}}
 .pr-nost{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
-.pr-stamps{display:grid;grid-template-columns:minmax(0,1fr)}.pr-more{justify-self:center;display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s5)}
+.pr-stamps{display:grid;grid-template-columns:minmax(0,1fr)}.pr-more{margin-top:var(--s5)} /* Wave 2: the kit show-more (kit.css .k-more) */
 .pr-note{margin:var(--s5) 0 0}
 /* Q43 A (Sim chose it, Nov 19): phones show the first 6 stamps (two full rows of 3) and "Show All N Stamps ›" opens the rest in place;
    700+ unchanged (12, then its button past 12; pr-mph is the phones-only button) */

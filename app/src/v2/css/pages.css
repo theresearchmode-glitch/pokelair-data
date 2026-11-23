@@ -496,7 +496,7 @@
 .cx2-opt .t{min-width:0}.cx2-opt .t b{display:block;font:600 var(--t15)/1.3 var(--b)}.cx2-opt .t span{display:block;font-size:var(--t13);color:var(--ink-2)}
 .cx2-opt .s{display:flex;flex:none}.cx2-opt .s img{width:32px;height:32px;object-fit:contain}
 @media (max-width:479.98px){.cx2-pick{padding:var(--s6) var(--s4)}.cx2-opt{flex-wrap:wrap}.cx2-opt .s img{width:28px;height:28px}}
-.cx2-more{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}
+.cx2-more{margin-top:var(--s2)} /* Wave 2: the kit show-more */
 .cx2-paste{min-height:120px}.cx2-pacts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);margin-top:var(--s3)}.cx2-pacts .fine{margin:0}
 /* a narrow Compare cell stacks the score's word under its number, so "Tournament ready" never runs out of the cell */
 .cx2-c{container-type:inline-size}.cx2-c .np-score .w{min-width:0}
@@ -987,7 +987,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:519.98px){.bt-tab{white-space:normal;text-align:left;align-items:center}.bt-tab>span{display:block}.bt-tab{flex-direction:column;align-items:flex-start;justify-content:center}}
 @media (max-width:519.98px){.bt-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 var(--s3);margin-top:var(--s4)}
   .bt-tab{white-space:normal;align-items:flex-start;text-align:left;padding:var(--s1) 0;font-size:var(--t15)}.bt-tab small,.bt-hint{display:none}}
-.bt-oallb{margin-top:var(--s4);min-height:var(--tap);display:inline-flex;align-items:center} /* quality pass Nov 15: was 20px tall */.bt-acts+.fine{margin-top:var(--s2)}
+.bt-oallb{margin-top:var(--s4)} /* Wave 2: the kit show-more (kit.css .k-more) */.bt-acts+.fine{margin-top:var(--s2)}
 .bt-labrow{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4)}
 @media (max-width:519.98px){.bt-acts.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s3)}.bt-acts.two>*{width:100%;min-width:0;padding-left:var(--s2);padding-right:var(--s2);white-space:normal}}
 .bt-labrow .np-link{display:inline-flex;align-items:center;justify-content:flex-end;min-height:var(--tap);min-width:var(--tap)}
@@ -1720,7 +1720,6 @@ button.pp2-plate{cursor:pointer;width:100%}
  .tr-card{padding:var(--s4) var(--s4) var(--s4) var(--s6)}.tr-ct .tr-who{text-align:left}.tr-mid{grid-template-columns:minmax(0,1fr)}.tr-six{grid-template-columns:repeat(3,minmax(0,1fr))}
  .tr-btns .np-btn{width:100%}}
 .tr-how{max-width:72ch}.tr-how summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3);cursor:pointer;padding:var(--s2) 0}.tr-how summary .u{font-size:var(--t17);color:var(--plot-text)}.tr-how summary small{font:400 var(--t13)/1.4 var(--b);color:var(--ink-2)}.tr-how p{margin:var(--s2) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
-.tr-more{display:grid;justify-items:start;gap:var(--s1);width:100%;padding:var(--s4) var(--s6);text-align:left;background:var(--wash);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}.tr-more b{font-size:var(--t17);color:var(--plot-text)}.tr-more span{font:400 var(--t13)/1.4 var(--b);color:var(--ink-2)}
 .tr-foot{display:flex;align-items:center;gap:var(--s2)}
 /* Test Run checks (Nov 14): long button words wrap at 320 (the card ran 27px past the screen); folds are full tap height; the cards sit a little tighter so three fit the desktop height limit */
 .tr-list>*,.tr-mid>*{min-width:0}.tr .np-btn,.tr .np-btn2{max-width:100%}.tr .np-btn span,.tr .np-btn2 span{white-space:normal;text-align:center}
@@ -3589,7 +3588,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .tc>.tc-h,.tc-h>.k-head,.tc-h h1{min-width:0} /* the page grid sized its column to the headline (350px at 320): the headline may now shrink, so it wraps within the screen */
 /* Sim Q45 A (Nov 19, 8:33 PM): Test Run on phones shows the Coin Flips pile's first 5 cards and a button for the rest; 700 and up: every card */
 .tp-morebtn{display:none}
-@media (max-width:699.98px){.tp-cards:not(.on)>.tp-more{display:none}.tp-morebtn{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}}
+@media (max-width:699.98px){.tp-cards:not(.on)>.tp-more{display:none}.tp-morebtn{display:flex;margin-top:var(--s2)} /* Wave 2: the kit show-more */}
 /* Sim Q44 A (Nov 19, 8:33 PM): How We Calculate on phones 360-599 (one column of tiles there): each part's big number sits beside its words (the ten tiles were
    number, then words, stacked); the outline number keeps its size and the titles keep the full width. Under 360 and 600 up unchanged */
 @media (min-width:360px) and (max-width:599.98px){

@@ -9,7 +9,7 @@ V2.tpUi = V2.tpUi || {open: undefined};
 V2.DR_LV = ['No answer', 'Shaky', 'Handles it', 'Beats it'];
 /* Q45: the Coin Flips 'N more' button opens the rest in place (no redraw, focus stays on the button); its state is kept for redraws */
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-tpmore]'); if (!b) return; const l = document.getElementById(b.getAttribute('aria-controls')); if (!l) return;
-  const open = V2.tpUi.more = !l.classList.contains('on'); l.classList.toggle('on', open); b.setAttribute('aria-expanded', open); const n = l.querySelectorAll('.tp-more').length; b.textContent = open ? 'Show Fewer' : `${n} more coin flip${n === 1 ? '' : 's'} ›`; });
+  const open = V2.tpUi.more = !l.classList.contains('on'); l.classList.toggle('on', open); b.setAttribute('aria-expanded', open); const n = l.querySelectorAll('.tp-more').length; b.innerHTML = V2.kMoreIn(n, {open, vh: `coin flip${n === 1 ? '' : 's'}`}); });
 V2.tpPile = e => e <= -2 ? 'p' : e >= 2 ? 'g' : 'c';
 V2.tpWide = () => innerWidth >= 1100;
 V2.tpPlace = who => String(who || '').replace(/^Challenger · /, '').split(' · ')[0];
@@ -70,7 +70,7 @@ V2.trHead = n => V2.kHead({kicker: 'BATTLE · THE DRY RUN', h1Html: `Your six vs
   const cMore = Math.max(0, piles.c.length - 5), cOpen = !!(V2.tpUi.more || (openX && piles.c.indexOf(openX) >= 5));
   const pile = (k, name, word) => { const L = piles[k];
     const cards = L.map((x, i) => { const c = V2.tpCard(x, x === firstP); return (k === 'c' && i >= 5 ? c.replace('class="tp-card ', 'class="tp-card tp-more ') : c) + (!wide && openX === x ? openHtml : ''); }).join('');
-    const more = k === 'c' && cMore ? `<button type="button" class="np-link tp-morebtn" data-tpmore aria-expanded="${cOpen}" aria-controls="tp-cards-c">${cOpen ? 'Show Fewer' : `${cMore} more coin flip${cMore === 1 ? '' : 's'} ›`}</button>` : '';
+    const more = k === 'c' && cMore ? V2.kMore(cMore, {open: cOpen, vh: `coin flip${cMore === 1 ? '' : 's'}`, attrs: {class: 'tp-morebtn', 'data-tpmore': '', 'aria-controls': 'tp-cards-c'}}) /* Wave 2 (Sim chose A, Nov 22): the kit show-more (was "N more coin flips ›") */ : '';
     return `<section class="tp-pile ${k}" aria-label="${name}: ${L.length} team${L.length === 1 ? '' : 's'}, ${word}"><header class="tp-ph"><b class="tp-n u" aria-hidden="true">${L.length}</b><div><p class="tp-name u">${name}</p><p class="tp-word">${word[0].toUpperCase() + word.slice(1)}</p></div></header>
       <div class="tp-cards${k === 'c' && cOpen ? ' on' : ''}"${k === 'c' ? ' id="tp-cards-c"' : ''}>${cards || `<p class="fine tp-none">No teams in this pile.</p>`}</div>${more}</section>`; };
   const tools = V2.battleToolsBar('gauntlet');
