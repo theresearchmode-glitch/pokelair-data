@@ -158,8 +158,6 @@
 .tr-prep summary,.cx2-why>summary{display:flex;align-items:center;gap:var(--s3);list-style:none}.tr-prep summary::-webkit-details-marker,.cx2-why>summary::-webkit-details-marker,.tr-how summary::-webkit-details-marker{display:none}.tr-how summary{list-style:none}
 /* ONE chip (Nov 16, one system item 5; helper inventory): Meta's chips and the Damage Calc's 'In play' toggles take the site chip's look
    (wash, 10px slant, black plate when on, the lit night edge); the calc's round pills broke the slanted-chip rule */
-.ra-chip{clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
-:root[data-theme="night"] .ra-chip[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
 /* ONE segmented control (Nov 16, one system item 4): Meta's link segments (Ratings / Usage / Sets; Winning Teams / Events / Archetypes)
    take the shell switch's look: flush track, 10px slant, 44px, the lit plate for the page you're on */
 .ra-seg{padding:0;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}

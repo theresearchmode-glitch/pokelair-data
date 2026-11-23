@@ -1758,9 +1758,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ra-right{display:grid;gap:var(--s4);align-content:start;min-width:0}
 .ra-find{display:flex;align-items:center;gap:var(--s4)}.ra-q{flex:1;min-width:0}.ra-count{flex:none;margin:0;font:600 var(--t15)/1 var(--b);color:var(--ink-2)}.ra-count b{font-size:var(--t24);color:var(--ink)}
 .ra-filt,.ra-bytier{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}.ra-fl{font:600 var(--t13)/1 var(--b);color:var(--ink-2);margin-right:var(--s2)}
-.ra-chip{display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--tap);padding:0 var(--s4);font:600 var(--t15)/1 var(--b);color:var(--ink);background:var(--wash);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
-.ra-chip small{font-size:var(--t13);color:var(--ink-2)}.ra-chip[aria-pressed="true"]{background:var(--plate);color:var(--on-plate)}.ra-chip[aria-pressed="true"] small{color:inherit}
-.ra-clear{min-height:var(--tap);padding:0 var(--s2)}
+/* Wave 2 part 2 (Nov 23): Ratings' chips are the kit filter chip (kit.css .k-chip); .ra-chip's rules went with them */
 .ra-types{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:var(--s2)}
 .ra-types .tc-tp.on{background:var(--tc);border-color:var(--tc);color:var(--on-type)}
 /* the list */
@@ -2264,7 +2262,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:519.98px){.us-ax i.us-odd:not(:last-child){display:none}}
 @media (max-width:359.98px){.us-mvs .k-moves{grid-template-columns:minmax(0,1fr)}.us-srcs .k-w{font-size:var(--t13);padding:0 var(--s1)}.us .us-facts b{font-size:var(--t20)}.us-ln .us-rk{min-width:32px}}
 /* ---------- Meta > Sets (Grandstand brief, section 5) ---------- */
-.st-find{display:grid;gap:var(--s2)}.st-hits{display:flex;flex-wrap:wrap;gap:var(--s1)}
+.st-find{display:grid;gap:var(--s2)}.st-hits{display:flex;flex-wrap:wrap;gap:var(--s2)} /* Wave 2 part 2: kit chips need 8px between their slanted outlines */
 .st-h2{margin:0;font:900 var(--t24)/1.1 var(--u);font-style:italic}.st-team{display:grid;gap:var(--s2)}.st-six{--gsw:80px}
 .st .gs-mon.on .gs-tx b{color:var(--plot-text)}.st .gs-mon.on .np-mon{transform:translateY(calc(var(--s1)*-1))}.st .gs-mon.on .gs-base{box-shadow:0 0 0 2px var(--plot)}
 .st-mine{margin:0;padding-left:var(--s3);border-left:4px solid var(--plot);font:500 var(--t15)/1.5 var(--b)}
@@ -2566,7 +2564,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .wt-sug{position:absolute;z-index:20;left:0;right:0;top:calc(100% + var(--s1));display:grid;padding:var(--s1);background:var(--surface);box-shadow:0 8px 24px var(--scrim)}
 .wt-opt{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:var(--s3);min-height:44px;padding:0 var(--s3);background:none;border:0;color:inherit;font:600 var(--t15)/1.3 var(--b);text-align:left;cursor:pointer}
 .wt-opt:hover,.wt-opt[aria-selected="true"]{background:var(--wash)}.wt-opt small{font-weight:500;color:var(--ink-2)}
-.wt-chipsrow{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);flex-basis:100%}.wt-f i{font-style:normal;color:var(--ink-2)}.wt-f button{margin-left:var(--s1);background:none;border:0;color:inherit;font:inherit;cursor:pointer}
+.wt-chipsrow{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);flex-basis:100%}.wt-f{cursor:default}.wt-f i{font-style:normal;color:inherit;opacity:.85} /* Wave 2 part 2: a chosen filter is a filled kit chip, so its kind word takes the chip's colour */.wt-f button{margin-left:var(--s1);background:none;border:0;color:inherit;font:inherit;cursor:pointer}
 .wt-src{margin:0}
 /* rows: every team after the third, and search results */
 .wt-more-s{display:grid;justify-items:center;gap:var(--s4);margin-top:var(--s8)}.wt-mh{justify-self:start;margin:0;font-size:var(--t26)}

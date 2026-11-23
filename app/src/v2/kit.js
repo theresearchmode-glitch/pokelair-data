@@ -78,6 +78,12 @@ V2.kMore = (n, o = {}) => { const {class: c, ...a} = o.attrs || {}, tog = 'open'
 // the inside of a show-more, for a page that toggles it in place (no redraw, so focus stays): b.innerHTML = V2.kMoreIn(n, {open, note})
 V2.kMoreIn = (n, o = {}) => { const label = o.label || ('open' in o && o.open ? 'Show fewer' : `Show ${n} more`);
   return `<span class="k-more-b" aria-hidden="true">${V2.K_CHEV}</span><span class="k-more-t"><span class="k-more-l u">${V2.esc(label)}${o.vh ? `<span class="vh"> ${V2.esc(o.vh)}</span>` : ''}</span>${o.note ? ` <small class="k-more-n">${V2.esc(o.note)}</small>` : ''}</span>`; };
+/* the filter chip (Wave 2 part 2, Sim chose option A, Nov 22; wave2-proposal.md 2): the kit's boxed blue word at chip size. 3px PLOT
+   outline skewed -8deg (words counter-skewed), Unbounded slanted 15, a count in Instrument Sans 13; chosen = filled PLOT. One rule
+   players learn once: blue box = tap, filled = chosen. V2.kChip(label, {on, count, html, attrs}); html: the label as given (a ◆, a vh word);
+   on: null leaves aria-pressed off (an add chip, not a toggle). */
+V2.kChip = (label, o = {}) => { const {class: c, ...a} = o.attrs || {};
+  return `<button type="button" class="k-chip${c ? ' ' + V2.esc(c) : ''}"${o.on == null ? '' : ` aria-pressed="${!!o.on}"`}${V2.kAttrs(a)}><span>${o.html != null ? o.html : V2.esc(label)}${o.count != null && o.count !== '' ? `<small>${V2.esc(o.count)}</small>` : ''}</span></button>`; };
 V2.kMoves = list => `<ul class="k-moves">${(list || []).map(x => { const [n, pct] = Array.isArray(x) ? x : [x]; return `<li>${V2.kMove(n, {pct})}</li>`; }).join('')}</ul>`;
 V2.kMine = (text = 'Yours') => `<span class="k-mine">${V2.esc(text)}</span>`;
 // names drop a size before they wrap (HYBRID 7): each [data-kmax] steps down its levels (kit.css) until its line fits its box; every

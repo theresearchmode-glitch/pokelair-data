@@ -124,7 +124,8 @@ V2.battleWatch = P => { if (!P) return ''; const E = V2.esc, O = V2.btOnce(P), W
 // Damage both ways, Who moves first and Deeper read, from battlePlan (damage, speed, prio, r) and today's shared helpers
 // (koShort / dmgP / koText / dmgRange, fieldWords, archMatchup, deeperThreats). The switches are today's: they change bmUi.
 V2.btUi.tab = V2.btUi.tab || (() => { const t = LS.get('cc2.v2.bttab', null); return ['dmg', 'spd', 'deep'].includes(t) ? t : null; })(); // the open tab is remembered on this device (audit X-03; today remembered Deeper Read under cc2.chf.mufold)
-V2.btChip = (attr, on, t) => `<button type="button" class="np-chip" ${attr} aria-pressed="${!!on}">${V2.esc(t)}</button>`;
+/* Wave 2 part 2 (Sim chose A, Nov 22): the kit filter chip (was np-chip); attr is the page's own data-* hook, written as given */
+V2.btChip = (attr, on, t) => V2.kChip(t, {on: !!on}).replace('<button type="button" class="k-chip"', `<button type="button" class="k-chip" ${attr}`);
 V2.battleTabs = (theirs, P) => { if (!P) return ''; const n = P.chosen.length * theirs.length, t = V2.btUi.tab;
   const b = (k, lab) => `<button type="button" class="bt-tab${t === k ? ' on' : ''}" data-bttab="${k}" aria-expanded="${t === k}" aria-controls="bt-pane">${lab}</button>`; /* no counts beside the names (Sim, Nov 12: too wordy) */
   return `<nav class="bt-tabs" aria-label="Detail">${b('dmg', '<span>Damage</span> <span>Both Ways</span>')}${b('spd', '<span>Who Moves</span> <span>First</span>')}${b('deep', '<span>Deeper</span> <span>Read</span>')}</nav>`; };
