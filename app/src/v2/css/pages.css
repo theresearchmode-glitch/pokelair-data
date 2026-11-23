@@ -3439,6 +3439,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ra-seg[aria-label="Tournament views"]{grid-template-columns:repeat(4,minmax(0,1fr))}
 @media (max-width:699.98px){.ra-seg[aria-label="Tournament views"]{grid-template-columns:repeat(4,minmax(0,1fr))}.ra-seg[aria-label="Tournament views"] a{white-space:normal;padding:0 var(--s2);text-align:center;line-height:1.2}}
 @media (max-width:359.98px){.ra-seg[aria-label="Tournament views"] a{font-stretch:88%;padding:0 var(--s1)}} /* at 320 "Archetypes" was wider than its tab */
+@media (min-width:360px) and (max-width:439.98px){.ra-seg[aria-label="Tournament views"] a{font-stretch:88%}} /* Sim, Nov 23 (iPhone 393): at 15px "Winning Teams" and "This Week" broke onto two lines and "Events" / "Archetypes" touched their slanted tab; the approved 88% letters keep all four on one line from 375 (at 360-374 the two-word tabs still wrap, as before) */
 @media (max-width:389.98px){.tk:not(.big) .tk-name{font-size:var(--t13);font-stretch:88%;overflow-wrap:break-word}} /* Sim Q17 (Nov 15): under 390 no word breaks: smaller name in the approved 88% letters (moving the winner down would shrink six sprites to ~26 px) */
 @media (max-width:359.98px){.tk:not(.big) .tk-hero{width:56px}.tk:not(.big) .tk-hero .np-mon{--iw:56px}.tk:not(.big) .tk-mid{padding-right:var(--s2)}} /* Q17 at 320-359: room for "TOURNAMENT" (it reached 17 px into the stub) */
 @media (max-width:339.98px){.tk:not(.big) .tk-mid{padding-left:var(--s2)}}
