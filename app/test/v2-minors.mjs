@@ -306,7 +306,7 @@ const HQ = async () => {
   // edge where a head touches the last line (before the change: 3.05-3.47% at 1280-2560, 0.63% at 412)
   { const cv = []; const cmp = await b.newPage();
     /* Sim, Nov 23 (iPhone 16 in the Claude app, about 393x660): a short phone window let Rillaboom cover 'rate'; short windows are checked too */
-    for (const wh of [320, 360, 390, 412, '393x660', '375x600', '430x700', 600, 820, 1100, 1280, 1440, 1920, 2560]) { const [w, sh] = String(wh).split('x').map(Number), h = sh || (w < 700 ? 844 : w >= 1900 ? 1080 : 900);
+    for (const wh of [320, 360, 390, 412, '393x660', '375x600', '430x700', 600, 820, 1100, 1280, 1440, 1920, 2560]) { const [w, wh2] = String(wh).split('x').map(Number), h = wh2 || (w < 700 ? 844 : w >= 1900 ? 1080 : 900);
       const {q, ctx} = await hq(w, h, {rm: 'reduce', keep: true}); await q.waitForFunction(() => [...document.querySelectorAll('#main .sdh-f img, #main .sdh-m img')].every(i => i.complete), null, {timeout: 15000}).catch(() => {}); await q.waitForTimeout(400);
       /* the pictures must have loaded: a broken image draws an icon and a frame, which this test would count as covering */
       const broken = await q.evaluate(() => [...document.querySelectorAll('#main .sdh-f img, #main .sdh-m img')].filter(i => !i.naturalWidth).length); if (broken) cv.push(`${w}: ${broken} hero pictures didn't load`);
