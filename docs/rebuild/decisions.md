@@ -2215,3 +2215,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:31 AM: GitHub run 1487 on 833bdfbe: SUCCESS (all green). Local on HEAD with hJ: v2-unbounded clean; minors main2 only the known ticker flake. Pushing batch (hJ spots A-D, Preview v244 logs).
 - 9:36 AM: Hourly work check 9:36 AM: 1 helper (hB, My Box); main: WebKit C-battle on HEAD (hJ Calc cards); Game Plan updated.
 - 9:41 AM: C-battle in WebKit on HEAD (hJ Calc set cards): see wk6b.log result.
+- 9:44 AM: Page lengths after hI + hJ (frozen data): Build 390 -24, Calc 390 -18, Gifts 390 -52, Track 390 -56; nothing longer. My Team shows 390 4018->3730 and 1440 3061->2829, but hJ saw the same team 1440 swing between runs: not trusted until re-measured (unsure why: suggestions loading late is my guess, not tested).
