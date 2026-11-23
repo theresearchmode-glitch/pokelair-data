@@ -94,7 +94,7 @@
    sit on the tilted red flag where the herd ticker ran (sd-hero.css hides the ticker there: these ten name the same Pokémon, each a tap to
    its page, and SEE ALL RATINGS has the rest) */
 @media (min-width:1100px){
-  .sd-top{--tp:max(var(--s6),calc((100vw - 1240px) / 2));position:relative;z-index:1;padding-top:var(--s2);padding-bottom:var(--s10);background:var(--sd-ink);border-bottom:0}
+  .sd-top{--tp:max(var(--s6),calc((100vw - 1240px) / 2));position:relative;z-index:1;padding-top:var(--s2);padding-bottom:var(--s6);background:var(--sd-ink);border-bottom:0}
   .sd-top h2{color:var(--sd-on-band)}.sd-top h2 em{color:var(--sd-chev)}
   .sd-top ol{margin:var(--s2) calc(var(--tp) * -1 - var(--s8)) 0;padding:var(--s2) calc(var(--tp) + var(--s8)) var(--s3);background:var(--sd-flag);rotate:var(--sd-tilt);column-gap:var(--s6)}
   .sd-top li button{border-top-color:color-mix(in srgb,var(--sd-on-band) 28%,transparent);color:var(--sd-on-band)}

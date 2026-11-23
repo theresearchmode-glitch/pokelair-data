@@ -345,7 +345,7 @@
 @media (min-width:1100px){
   .sdt-tc,.sdt-grid>.sdt-sm,.sdt-ends{display:none}
   .sdt-grid{gap:var(--s5)}
-  .sdt-ra,.sdt-dc,.sdt-wt,.sdt-bt{grid-column:span 3;display:flex;flex-direction:column;row-gap:var(--s3)}
+  .sdt-ra,.sdt-dc,.sdt-wt,.sdt-bt{grid-column:span 3;display:flex;flex-direction:column;row-gap:var(--s3)}.sdt-dc{grid-column:span 2}.sdt-wt{grid-column:span 4}
   /* each of the four: its picture on top in one 96px stage, then the name and its short line (as the iPad tiles) */
   .sdt-ra>:last-child,.sdt-dc>:last-child,.sdt-wt>.sdt-pic,.sdt-bt>.sdt-vs{order:-1;flex:0 0 96px;height:96px;margin:0;padding:0;align-self:stretch}
   .sdt-wt>.sdt-tx{margin-top:0}.sdt-acts{flex-direction:row;flex-wrap:wrap;gap:0 var(--s5)}
