@@ -368,4 +368,5 @@
   .sdt-cpic>b{font-size:var(--t13);color:var(--plot-text);white-space:nowrap}
   .sdt-cty{display:grid;grid-template-columns:repeat(3,12px);gap:2px}.sdt-cty i{display:block;height:12px;background:var(--ty)}
   .sdt-more{margin-top:var(--s3)}
+  .sdt-speed{margin-top:var(--s10)}.sdt-chips{margin-top:var(--s3)}.sdt-more{margin-top:var(--s2)}
 }

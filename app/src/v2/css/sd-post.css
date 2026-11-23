@@ -111,3 +111,17 @@
      clear between the masthead rule and the tallest letters, 3px between the "p" of Dispatch and the lead's rule (was 8 / 11) */
   .sdp .dp-small .dp-name{margin:2px 0 var(--s1)}
 }
+/* Home length, option B (Nov 23, direction for Sim): the stampede keeps its whole first screen, and at 1100+ the post joins the tools band
+   as its last row: Post X (the phone's "one parcel, one front page", Sim Nov 18) on the same beige, the gift parcel beside the Dispatch's
+   front page. The red band's heading row (The post is in., the Pelipper, its line) steps aside; the past-gift stamps, the second slip,
+   the Sent line and the paper's more stories are on Gifts / News, one tap away (All 10 Gifts, All 69 Stories) */
+@media (min-width:1100px){
+  .sd-band.sdp{margin-top:calc(var(--sd-cut) * -1 - var(--s8));padding-top:0;color:var(--ink)}
+  .sdp::before{background:var(--sd-beige);clip-path:none}
+  .sdp-top{display:none}
+  .sdp-ch h3{color:var(--ink)}.sdp-all{color:var(--ink)}.sdp-all:focus-visible{outline-color:var(--plot)}
+  .sdp .sdp-stamps,.sdp .sdp-other,.sdp .pr-sent,.sdp .dp-more{display:none}
+  .sdp .pr-parcel.pr-cpt{padding-bottom:var(--s5)}
+  .sdp-cols{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5)}
+  .sdp-ch{margin-bottom:var(--s2)}.sd-band.sdp:last-child{padding-bottom:var(--s6)}
+}
