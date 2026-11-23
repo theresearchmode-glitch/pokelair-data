@@ -44,8 +44,7 @@ V2.loVal = (label, arr, n, lead) => { const E = V2.esc, L = (arr || []).slice(0,
   const main = lead || one(L[0]), rest = lead ? '' : L.slice(1).map(one).join(' · ');
   return `<div class="lo-v"><small class="lo-vl">${label}</small><b class="u">${main}</b>${rest ? `<span class="lo-vr">${rest}</span>` : ''}</div>`; };
 V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = members(), p = V2.stMon();
-  const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
-    <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Ratings</a><a href="#usage">Usage</a><a href="#sets" class="on" aria-current="page">Popular Sets</a></nav></div>`;
+  const tabs = V2.pkTabs('sets'); /* Natures page (Nov 23): the four Pokémon views in one place */
   const head = `<section class="ra-h lo-h"><p class="k-kicker np-eyebrow">META · THE LOADOUT</p><h1 class="k-h1 u">How it's built <em>right now.</em></h1>
     <p class="k-lead ra-lede">The moves, items, Abilities and natures real players run, and who they pair it with.</p>${tabs}<p class="ra-links"><a class="np-link" href="#meta">Ratings ›</a><a class="np-link" href="#usage">Usage ›</a></p></section>`;
   const q = U.q.trim().toLowerCase(), hits = q ? ROSTER.filter(x => x.d.toLowerCase().includes(q)).slice(0, 8) : [];

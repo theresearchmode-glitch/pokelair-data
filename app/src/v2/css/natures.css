@@ -1,0 +1,87 @@
+/* ---------- Meta > Pokémon > Natures (Sim approved 4:42 PM Nov 23; pages/natures.js; HANDOFF section 3) ----------
+   The grid: a 5 x 5 table of squares, rows = the stat raised, columns = the stat lowered, each square filled with its raised stat's colour
+   (--ntp-*: the Nature sheet's stat colours by day, the brighter stat colours at night) at an opacity that grows with how often it is run.
+   The line-up: rows in two columns on desktop, one on phones. Every square and row is one button that opens the Nature sheet. */
+.ntp-chip{display:inline-flex;align-items:center;gap:2px;padding:2px var(--s2);border-radius:4px;font:700 var(--t13)/1.4 var(--b);white-space:nowrap;vertical-align:middle}
+.ntp-chip.ntp-up{background:var(--sc);color:var(--on-ntp)}
+.ntp-chip.ntp-dn{color:var(--sc);box-shadow:inset 0 0 0 2px var(--sc)}
+.ntp-chip .ntp-sh{display:none}
+/* the big four (desktop only), beside the headline: one slanted plot bar */
+.ntp-big{display:none}
+@media (min-width:1100px){.ntp-big{display:block;margin:0}}
+@media (min-width:1100px) and (max-width:1439.98px){.ntp-bs em{font-size:var(--t15)}.ntp-bs b{font-size:var(--t13)}.ntp-bs .ntp-ps{font:700 var(--t13)/1 var(--b)}} /* the 12.5% slice is ~58px wide here: its share ran into the next one's at 17px */
+.ntp-bh{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3);margin:0 0 var(--s3)}
+.ntp-bh b{font-size:var(--t22);color:var(--ink)}.ntp-bh span{font:600 var(--t15)/1.3 var(--b);color:var(--ink-2)}
+.ntp-bar{display:flex;gap:var(--s1);align-items:stretch}
+.ntp-bs{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s1);min-width:var(--s16);padding:0;border:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.ntp-bs i{display:block;align-self:stretch;height:48px;margin-bottom:var(--s1);background:var(--sc);transform:skewX(-8deg)} /* the kit boxes' slant */
+.ntp-br i{background:var(--wash);box-shadow:inset 0 0 0 1px var(--rule)}
+.ntp-bs b{max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font:700 var(--t15)/1.2 var(--b)}
+.ntp-bs em{font-size:var(--t17)}.ntp-br{cursor:default}.ntp-br b{color:var(--ink-2)}
+button.ntp-bs:hover b{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+button.ntp-bs:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+/* the grid */
+.ntp-grid{display:grid;grid-template-columns:max-content repeat(5,minmax(0,1fr));gap:var(--s2)}
+.ntp-hd{display:flex;align-items:center;justify-content:center;min-width:0}
+.ntp-row{justify-content:flex-start;padding-right:var(--s2)}
+.ntp-corner{justify-content:flex-start;align-items:flex-end;font:600 var(--t13)/1.3 var(--b);color:var(--ink-3)}
+.ntp-col{padding-bottom:var(--s1)}
+.ntp-sq{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;gap:var(--s1);min-width:0;min-height:92px;padding:var(--s3);border:0;border-radius:6px;
+  background:var(--surface);box-shadow:inset 0 0 0 1px var(--rule);color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.ntp-fill{position:absolute;inset:0;background:var(--sc);opacity:var(--a);pointer-events:none}
+.ntp-sq>b,.ntp-sq>em,.ntp-sq>small{position:relative;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ntp-sq>b{font:700 var(--t16)/1.2 var(--b)}
+.ntp-sq>em{font-size:var(--t20);line-height:1.05}
+.ntp-sq>small{font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.ntp-sq.ntp-hot{color:var(--on-ntp)}.ntp-sq.ntp-hot>small{color:var(--on-ntp)}
+.ntp-neu{background:repeating-linear-gradient(-45deg,var(--wash) 0 6px,transparent 6px 12px),var(--surface)}
+.ntp-neu>em{font-size:var(--t15);color:var(--ink-2)}
+.ntp-sq:hover{box-shadow:inset 0 0 0 2px var(--ink)}
+.ntp-sq:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+.ntp-key{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s4);margin:var(--s3) 0 0;font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.ntp-key .ntp-kph{display:none}
+/* the line-up */
+.ntp-list{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:1fr 1fr;column-gap:var(--s10)}
+.ntp-ln{display:grid;grid-template-columns:28px minmax(0,1fr) auto;align-items:center;gap:var(--s3);width:100%;min-height:var(--tap);padding:var(--s3) 0;border:0;border-bottom:1px solid var(--rule);
+  background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer}
+.ntp-ln:hover .ntp-nl b{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:3px}
+.ntp-ln:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+.ntp-rk{font-size:var(--t17);color:var(--ink-3);text-align:center}
+.ntp-nm{display:flex;flex-direction:column;gap:var(--s1);min-width:0}
+.ntp-nl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s2)}
+.ntp-nl b{font:700 var(--t17)/1.2 var(--b);margin-right:var(--s1)}
+.ntp-who{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s4);font:400 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.ntp-w{display:inline-flex;align-items:center;gap:var(--s1);white-space:nowrap}
+.ntp-w .np-mon{flex:none}
+.ntp-pc{display:flex;flex-direction:column;align-items:flex-end;text-align:right}
+.ntp-pc b{font-size:var(--t22)}
+.ntp-pc small{margin-top:var(--s1);font:400 var(--t13)/1.3 var(--b);color:var(--ink-3)}
+.ntp-src{margin:var(--s4) 0 0}
+/* a part-filled square's small line in the full ink (ink-2 measured 3.4:1 on Bold at night); at night the brighter stat colours fill to 80%
+   of the day's strength so the light words stay 4.5:1+ (natures.js) */
+.ntp-sq:not(.ntp-neu):not(.ntp-hot)>small{color:var(--ink)}
+:root[data-theme="night"] .ntp-sq:not(.ntp-hot) .ntp-fill{opacity:calc(var(--a) * .8)}
+/* under 1280 the striped squares' "changes nothing" takes two lines (it ran 15px past its square at 1100) */
+@media (max-width:1279.98px){.ntp-neu>em{white-space:normal;line-height:1.15}}
+/* tablets: the grid keeps its row heads; smaller words so a ~90px square holds "Adamant" and "26.4%" */
+@media (min-width:700px) and (max-width:1099.98px){.ntp-list{column-gap:var(--s6)}.ntp-sq{padding:var(--s2)}.ntp-sq>b{font-size:var(--t15)}.ntp-sq>em{font-size:var(--t15)}.ntp-sq>small{white-space:normal}}
+@media (min-width:700px) and (max-width:899.98px){.ntp-sq{min-height:72px}.ntp-sq>small,.ntp-neu>em{display:none}} /* narrow tablets: name and share only, as on phones (the row heads stay) */
+@media (max-width:899.98px){.ntp-list{grid-template-columns:1fr}}
+/* phones (HANDOFF: no row-header column; a 3px left edge in the raised stat's colour; name and share only) */
+@media (max-width:699.98px){
+  .ntp-grid{grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s1)}
+  .ntp-row,.ntp-corner{display:none}
+  .ntp-col .ntp-chip{padding:2px var(--s1)}.ntp-chip .ntp-lg{display:none}.ntp-chip .ntp-sh{display:inline}
+  .ntp-sq{min-height:58px;padding:6px 2px 6px 8px;box-shadow:inset 3px 0 0 var(--rc),inset 0 0 0 1px var(--rule)}
+  .ntp-sq:hover{box-shadow:inset 3px 0 0 var(--rc),inset 0 0 0 2px var(--ink)}
+  .ntp-sq>b{font-size:var(--t13);letter-spacing:-.02em}.ntp-sq>small{display:none}
+  /* the share as a small bold label (Instrument Sans 15): at 320 a square is 51px wide, too narrow for "<0.1%" in Unbounded at its 15px floor */
+  .ntp-sq>em{font:700 var(--t15)/1.2 var(--b);letter-spacing:-.02em;overflow:visible}
+  .ntp-neu>em{display:none}
+  .ntp-key .ntp-kph{display:inline}
+  .ntp-ln{grid-template-columns:24px minmax(0,1fr) auto;padding:var(--s2) 0}
+  .ntp-who{gap:2px var(--s2)}.ntp-wn{display:none}.ntp-w .np-mon{--iw:28px}
+}
+/* small phones: narrower letters keep the longest names ("Adamant", "Naughty") inside a 51px square, never cut */
+@media (min-width:360px) and (max-width:439.98px){.ntp-sq>b{font-stretch:88%}}
+@media (max-width:359.98px){.ntp-ps{display:none}.ntp-sq{padding-left:6px}.ntp-sq>b{font-stretch:75%;letter-spacing:-.01em}}

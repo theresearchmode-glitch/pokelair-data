@@ -95,8 +95,7 @@ V2.usKey = rows => { const R = rows[0], has = rows.some(x => x.u != null), noW =
 V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
   if (!V2.usDoc()) { const alt = ['tour', 'ingame', 'ladder'].find(k => META[SRC[k]]); if (alt) U.src = alt; }
   const d = V2.usDoc(), kind = d && (d.kind || 'ladder');
-  const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
-    <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Ratings</a><a href="#usage" class="on" aria-current="page">Usage</a><a href="#sets">Popular Sets</a></nav></div>`;
+  const tabs = V2.pkTabs('usage'); /* Natures page (Nov 23): the four Pokémon views in one place */
   const rows = d ? (d.top || []).map(t => V2.usRow(t, kind)) : [];
   const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Usage</span></p><h1 class="k-h1 u"><span>Who gets picked</span> <span class="pl">right now.</span></h1>
     <p class="ra-lede">The most used Pokémon, from the ranked ladder, online tournaments or the Showdown ladder.</p>${tabs}<p class="ra-links"><a class="np-link" href="#meta">Ratings ›</a><a class="np-link" href="#sets">Popular Sets ›</a></p></section>`;
