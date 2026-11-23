@@ -93,7 +93,7 @@ V2.toast = (html, ms = 4000) => { document.querySelectorAll('.np-toast').forEach
     if (sh && ub) { const bar = document.createElement('div'), m = document.createElement('span'); bar.className = 'sg2-undo np-sheet-undo'; bar.setAttribute('role', 'status');
       /* the toast keeps its own Undo (full test run, Nov 16: Clear Team closes its sheet right after, and an Undo moved into it went with it);
          the sheet's bar has a twin that presses the toast's, and the toast stays (under the backdrop) while the bar is up */
-      const tw = document.createElement('button'); tw.type = 'button'; tw.className = 'np-btn2'; tw.innerHTML = '<span>Undo</span>'; tw.addEventListener('click', () => { if (ub.isConnected) ub.click(); bar.remove(); });
+      const tw = document.createElement('button'); tw.type = 'button'; tw.className = 'np-btn2 k-btn'; tw.innerHTML = '<span>Undo</span>'; tw.addEventListener('click', () => { if (ub.isConnected) ub.click(); bar.remove(); });
       m.textContent = t.textContent.replace(/\s*Undo\s*$/, ''); bar.append(m, tw); V2._ubar = bar;
       const host = [...sh.children].find(c => !c.classList.contains('x') && c.tagName !== 'BUTTON') || sh; host.prepend(bar); } }
   const gone = () => { if (t.matches(':focus-within,:hover') || (V2._ubar && V2._ubar.isConnected && t.contains(t.querySelector('#toastUndo,[data-v2undo],[data-bxundo]')))) { V2._tt = setTimeout(gone, 1000); return; } t.remove(); }; clearTimeout(V2._tt); V2._tt = setTimeout(gone, ms); return t; };

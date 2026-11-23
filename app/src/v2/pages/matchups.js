@@ -111,7 +111,7 @@ V2.muSheetHtml = () => { const D = V2.teamData(); if (D.empty || !D.RD) return '
     <p class="mu-sum">${sum}${sum ? ' · ' : ''}${CH.handTxt(RD)}</p><p class="fine">${V2.esc(CH.LEGEND)}</p>${det}
     ${tiles}<p class="mu-key mu-skey"><span class="k">Damage calc:</span>${[D.calc.none, D.calc.shaky, D.calc.handles, D.calc.beats].map((n, l) => `<span><i class="mu-g l${l}" aria-hidden="true">${V2.MUG[l]}</i>${CH.LV[l]} ${n}</span>`).join('')}</p>
     <div class="mu-cols">${list ? `<div>${list}</div>` : ''}<div>${ck}${real}${best}</div></div>
-    <div class="mu-acts"><button type="button" class="np-btn2" data-mufull><span>All 30 Matchups</span></button><button type="button" class="np-btn2" data-v2close><span>Close</span></button></div></div>`; };
+    <div class="mu-acts"><button type="button" class="np-btn2 k-btn" data-mufull><span>All 30 Matchups</span></button><button type="button" class="np-btn2 k-btn" data-v2close><span>Close</span></button></div></div>`; };
 // from: the row or tile that opened it (focus goes back there on Close or Escape, even where a tap doesn't focus a button)
 V2.muOpen = (n, from) => { V2.muSel = n || null; V2.sheet(V2.muSheetHtml(), {label: 'Matchups: top 30 threats', focus: '.mu-st[aria-pressed="true"]'}); if (from && V2._sheet) V2._sheet.back = from; };
 // redraw the open sheet in place (a tile picked, or the suggestions finished), keeping the focus on the same control

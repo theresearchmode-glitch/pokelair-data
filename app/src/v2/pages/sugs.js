@@ -48,7 +48,7 @@ V2.sgCard = ({pl, k, g0, attr, side, hidden, why, main, facts}) => { const g1 = 
   const W = why || {lines: pl._why && pl._why.length ? pl._why : side ? ['Keeps every check and your speed control', 'About the same Strength Score as now, with a different look'] : [], wk: pl._wk};
   const wk = W.wk ? `<li>Weak spots: <b>${V2.esc(W.wk[0])}</b> → <b>${V2.esc(W.wk[1])}</b></li>` : '', L = W.lines.filter(Boolean), nr = L.length + (wk ? 1 : 0);
   return `<li${hidden ? ' hidden' : ''}><span class="np-eyebrow">Suggestion ${k + 1}</span>${d != null ? `<div class="tm-mv"><b>${d > 0 ? '+' + d : d < 0 ? '−' + Math.abs(d) : '±0'}</b><span>${r0} → ${r1}</span>${word ? `<em class="sg2-band">${V2.esc(word)}</em>` : ''}</div>` : ''}<div class="tm-swaps">${pl.ch.map(V2.sgSwap).join('')}</div>${facts || ''}
-    ${ln ? `<p class="sg2-ln ${ln.k}"><b>${ln.tag}</b> ${ln.text}</p>` : ''}${main ? `<button type="button" class="np-btn" ${attr}="${k}">Apply</button>` : `<button type="button" class="np-btn2" ${attr}="${k}"><span>Apply</span></button>`}
+    ${ln ? `<p class="sg2-ln ${ln.k}"><b>${ln.tag}</b> ${ln.text}</p>` : ''}${main ? `<button type="button" class="np-btn" ${attr}="${k}">Apply</button>` : `<button type="button" class="np-btn2 k-btn" ${attr}="${k}"><span>Apply</span></button>`}
     ${nr ? `<details class="sg2-why"><summary><span class="q">Why?</span><span class="n">${nr} reason${nr === 1 ? '' : 's'}</span></summary><ul>${wk}${L.map(l => `<li>${V2.undotHtml(V2.wl(l))}</li>`).join('')}</ul></details>` : ''}</li>`; };
 
 // ---------- the section: the settings, then the suggestions (the first; Show more opens the next two; then See all) ----------
@@ -102,13 +102,13 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
 // today's "Set check: what most players run" (57-set-tips.js setTips): a rare item, Ability or move next to what most players run, with
 // one tap to use theirs (today's [data-settip] handler: Undo in the message). Nov 15 parity: the file was not in the new build.
 V2.setTipsCard = () => { let tips = []; try { tips = setTips(); } catch (e) { return ''; } ui.setTips = tips; if (!tips.length) return ''; const E = V2.esc, what = t => t.k === 'it' ? 'item' : t.k === 'ab' ? 'Ability' : 'move';
-  return `<div class="sg2-fix sg2-tips" role="group" aria-label="Set check: what most players run">${tips.map((t, x) => `<p class="sg2-ln fix tip"><b>Tip</b> ${E(t.p.d)}: ${E(t.to)} instead of ${E(t.from)} (${what(t)}). ${E(t.why)}</p><button type="button" class="np-btn2" data-settip="${x}"><span>Use ${E(t.to)}</span></button>`).join('')}<p class="fine">Tips come from what players run, not from the Strength Score.</p></div>`; };
+  return `<div class="sg2-fix sg2-tips" role="group" aria-label="Set check: what most players run">${tips.map((t, x) => `<p class="sg2-ln fix tip"><b>Tip</b> ${E(t.p.d)}: ${E(t.to)} instead of ${E(t.from)} (${what(t)}). ${E(t.why)}</p><button type="button" class="np-btn2 k-btn" data-settip="${x}"><span>Use ${E(t.to)}</span></button>`).join('')}<p class="fine">Tips come from what players run, not from the Strength Score.</p></div>`; };
 V2.itemFixCard = ms0 => { const ms = typeof members === 'function' ? members() : ms0; /* with their items, as today's fix planner passes them */ let pr = []; try { pr = itemProblems(ms); } catch (e) {} if (!pr.length) return ''; const E = V2.esc;
   const rows = pr.map(x => { const tgt = x.k === 'clause' ? x.ms[x.ms.length - 1] : x.ms[0]; let fix = ''; try { fix = tgt && tgt.i >= 0 ? itemFixFor(tgt, ms) : ''; } catch (e) {}
-    return `<p class="sg2-ln fix"><b>Fix</b> ${E(x.k === 'clause' ? 'Item Clause' : x.k === 'scarftr' ? 'Clashes with Trick Room' : 'Item does nothing')}: ${E(x.why)}</p>${fix ? `<button type="button" class="np-btn2" data-itfix="${tgt.i}|${E(fix)}"><span>Give ${E(tgt.d)} ${E(fix)}</span></button>` : ''}`; }).join('');
+    return `<p class="sg2-ln fix"><b>Fix</b> ${E(x.k === 'clause' ? 'Item Clause' : x.k === 'scarftr' ? 'Clashes with Trick Room' : 'Item does nothing')}: ${E(x.why)}</p>${fix ? `<button type="button" class="np-btn2 k-btn" data-itfix="${tgt.i}|${E(fix)}"><span>Give ${E(tgt.d)} ${E(fix)}</span></button>` : ''}`; }).join('');
   return `<div class="sg2-fix sg2-items" role="group" aria-label="Fix your items first">${rows}${typeof regNote === 'function' ? regNote('fine') : ''}</div>`; }; /* parity, Nov 15: today's card ends with the rules caption, visible (a hover title never reaches touch screens) */
 V2.protCard = ms => { let f = null; try { f = LANE.protFix(ms); } catch (e) {} if (!f) return ''; const W = LANE.protWords(f);
-  return `<div class="sg2-fix"><p class="sg2-ln fix"><b>Fix</b> ${W.fix}</p><p class="tm-sub">${W.who} ${f.who.map(m => `<b>${V2.esc(m.d)}</b>`).join(' and ')}.</p><button type="button" class="np-btn2" data-protfix><span>${W.btn}</span></button></div>`; };
+  return `<div class="sg2-fix"><p class="sg2-ln fix"><b>Fix</b> ${W.fix}</p><p class="tm-sub">${W.who} ${f.who.map(m => `<b>${V2.esc(m.d)}</b>`).join(' and ')}.</p><button type="button" class="np-btn2 k-btn" data-protfix><span>${W.btn}</span></button></div>`; };
 // Nothing to fix: every basic, no fix and no swap past the measured bar (today's plans.nothing, LANE.apply); the edge now is in
 // play: Battle, and the sets (words from LANE.NONE)
 V2.noneCard = () => { const N = LANE.NONE;
@@ -122,7 +122,7 @@ V2.noneCard = () => { const N = LANE.NONE;
 V2.appliedSay = (t) => { const b = document.querySelector('.sg2-undo'), r = b && b.getBoundingClientRect(), rs = s => [...document.querySelectorAll(s)].map(e => e.getBoundingClientRect()).filter(q => q.height);
   const top = Math.max(0, ...rs('.np-head,.tm-jump').filter(q => q.top < innerHeight / 2).map(q => q.bottom)), bot = Math.min(innerHeight, ...rs('.np-bar,.np-dock').filter(q => q.top > innerHeight / 2).map(q => q.top));
   if (r && r.height && r.top >= top && r.bottom <= bot) return true; toast(t, true); return false; }; /* true: the bar is the message (Apply's focus goes to its Undo) */
-V2.undoBar = () => { const t = undoTop(); return t ? `<div class="sg2-undo" role="status"><span>Applied <b>${V2.esc(t.label)}</b></span><button type="button" class="np-btn2" data-undobar><span>Undo</span></button></div>` : ''; };
+V2.undoBar = () => { const t = undoTop(); return t ? `<div class="sg2-undo" role="status"><span>Applied <b>${V2.esc(t.label)}</b></span><button type="button" class="np-btn2 k-btn" data-undobar><span>Undo</span></button></div>` : ''; };
 
 // Show more: the next suggestions open in place (already worked out) and the link becomes See all suggestions (as today)
 document.addEventListener('click', e => { if (!e.target.closest || !e.target.closest('[data-v2sgmore]')) return; ui.sugMore = members().map(m => m.p.n).join(',');
@@ -166,8 +166,8 @@ V2.allSugsHtml = () => { const ms = members(), U = V2.sgAll, E = V2.esc, busy = 
     return V2.sgCard({pl, k, g0, attr: 'data-v2plana', side: side && shown.includes(pl), why, main: !k, facts: V2.sgaFacts(pl)}); };
   const notes = P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${E(P.gapNote)}</p>` : '';
   const one = S1.length ? `<h3 class="u sga2-h3">${ms.length >= 6 ? 'One Pokémon In, One Out' : 'Pokémon to Add'}</h3><ol class="tm-sug sga2-two">${S1.map((pl, k) => card(pl, k)).join('')}</ol>
-    ${left > 0 ? `<button type="button" class="sga2-strip" data-v2sgamore><b class="u">Show ${Math.min(6, left)} More</b><span>Showing ${S1.length} of ${singles.length}</span></button>` : ''}` : '';
-  const big = `<h3 class="u sga2-h3">Bigger Plans</h3><p class="tm-sub">Two or more changes at once.</p>${multi.length ? `<ol class="tm-sug sga2-big">${M1.map((pl, j) => card(pl, S1.length + j)).join('')}</ol>${bleft > 0 ? `<button type="button" class="sga2-strip" data-v2sgbmore><b class="u">Show ${Math.min(3, bleft)} More</b><span>Showing ${M1.length} of ${multi.length}</span></button>` : ''}`
+    ${left > 0 ? `${V2.kMore(Math.min(6, left), {note: `Showing ${S1.length} of ${singles.length}`, attrs: {class: 'sga2-strip', 'data-v2sgamore': true}}) /* Wave 2 finish (Nov 23): the kit show-more (was the "Show 6 More" strip); its count line stays as the small note */}` : ''}` : '';
+  const big = `<h3 class="u sga2-h3">Bigger Plans</h3><p class="tm-sub">Two or more changes at once.</p>${multi.length ? `<ol class="tm-sug sga2-big">${M1.map((pl, j) => card(pl, S1.length + j)).join('')}</ol>${bleft > 0 ? `${V2.kMore(Math.min(3, bleft), {note: `Showing ${M1.length} of ${multi.length}`, attrs: {class: 'sga2-strip', 'data-v2sgbmore': true}})}` : ''}`
     : `<p class="tm-sub">No plan with two or more changes raises the Strength Score${g0 != null ? ` (it’s at ${Math.round(g0)})` : ''}.</p>`}`;
   const end = left > 0 || bleft > 0 ? '' : `<p class="tm-sub sga2-end">That’s every change the planner found in ${E(poolW)}.${ui.pool !== 'all' ? ' For more, set Suggest from to Whole Roster above.' : ''}</p>`;
   const body = all.length ? notes + one + big + end : `${notes}<p class="tm-sub">No suggestions for this team from this pool.${ui.pool !== 'all' ? ' Try Whole Roster above.' : ''}</p>`;
@@ -230,7 +230,7 @@ V2.fixRows = (D, useA, a, tRows, P) => { const ms = D.ms, out = problemRows(ms, 
     return `<li class="sg2-qp"><div class="sg2-qt"><img src="${V2.art(SPRITE_ID[p.n])}" alt=""><div><b>${V2.nameHtml(p.d)}</b><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></div></div>
       <p class="sg2-tags">${p.m ? tag('Mega', 'mega', 'Mega Evolution') : ''}${I.box ? tag('In your box', '', '') : I.catch ? tag('To catch', '', 'Not in your box yet') : ''}${pl.gem ? tag('Hidden gem', 'gem', '') : idea ? tag('Idea', '', (idea.match(/title="([^"]*)"/) || [])[1] || '') : ''}</p>
       ${I.why ? `<p class="sg2-qw">${V2.esc(V2.undot(I.why))}</p>` : ''}${I.thr ? `<p class="sg2-qw">${V2.undotHtml(I.thr)}</p>` : ''}
-      <div class="sg2-qa"><button type="button" class="np-btn2" data-v2qa="${i}"><span>${V2.esc(I.btn)}</span></button><span class="fine" title="${V2.esc(V2.wl(I.fitTitle))}">${V2.wl(I.fit)}</span></div></li>`; };
+      <div class="sg2-qa"><button type="button" class="np-btn2 k-btn" data-v2qa="${i}"><span>${V2.esc(I.btn)}</span></button><span class="fine" title="${V2.esc(V2.wl(I.fitTitle))}">${V2.wl(I.fit)}</span></div></li>`; };
   const row = ([s, l, tx, key]) => { const Q = key && P && qa++ < 8 ? quickList(key, P, ms, used) : null, n = Q ? Q.picks.length : 0, minor = !Q && (s === 'lo' || s === 'ok');
     // A2 proposal: a weakness the "No major weak spot" check lets pass is called minor, so the two can't read as a contradiction
     if (l === 'Weakness' && (D.basics || []).some(x => /major weak spot/i.test(x.label) && x.ok)) l = 'Minor weakness';
@@ -340,7 +340,7 @@ V2.exclLine = () => { const L = V2.exclNames(), E = V2.esc;
   return `<p class="fine sg2-excl">${L.length ? `<span>Never suggested: ${L.slice(0, 4).map(([, d]) => `<b>${E(d)}</b>`).join(', ')}${L.length > 4 ? ` and ${L.length - 4} more` : ''}</span><button type="button" class="np-link" data-v2excl>Change ›</button>` : ''}</p>`.replace('<p class="fine sg2-excl"></p>', ''); }; /* empty list: the link sits with See All Suggestions instead (no extra row) */
 V2.exclSheet = () => { const E = V2.esc, L = V2.exclNames();
   return `<div class="ex2"><div class="np-eyebrow">Suggestions</div><h2 class="u">Never Suggest</h2><p class="fine">These never appear in suggestions or Build Me a Team${L.length ? '' : '. Nothing here yet'}.</p>
-    ${L.length ? `<ul class="ex2-list">${L.map(([n, d]) => `<li><b>${E(d)}</b><button type="button" class="np-btn2" data-exallow="${E(n)}"><span>Allow Again</span></button></li>`).join('')}</ul>` : ''}
+    ${L.length ? `<ul class="ex2-list">${L.map(([n, d]) => `<li><b>${E(d)}</b><button type="button" class="np-btn2 k-btn" data-exallow="${E(n)}"><span>Allow Again</span></button></li>`).join('')}</ul>` : ''}
     <label class="np-field ex2-add">${V2.ICON.search}<input type="search" data-exq placeholder="Add a Pokémon" aria-label="Add a Pokémon never to suggest" autocomplete="off">${V2.CLR}</label><div class="hits" data-exhits aria-live="polite"></div></div>`; };
 V2.exclOpen = (focus) => { V2.sheet(V2.exclSheet(), {label: 'Never suggest', small: true, focus: focus || '[data-exq]'}); };
 document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2excl],[data-exallow],[data-exadd]'); if (!t) return; const d = t.dataset;

@@ -19,7 +19,7 @@ if (window.__NP_PREVIEW) {
     const dk = V2.theme() === 'night', img = `thumbs/${f}-${dk ? 'dusk' : 'light'}.jpg`, href = `${f}.html#${dk ? 'dusk' : 'light'}`;
     return `<section class="cm2"><div class="cm2-t"><div class="np-eyebrow"><span>${name} · coming next</span></div><h1 class="u">${name}</h1>
       <p class="tm-sub">This page is being rebuilt in the new design. Until then, here is the approved mock-up it's built from (a picture with real data; its buttons don't work yet).</p>
-      <p class="tm-sub cm2-what">${V2.esc(what)}</p><div class="row"><a class="np-btn" href="${href}">Open the ${name} Mock-up</a><a class="np-btn2" href="#team"><span>Go to My Team</span></a><a class="np-link cm2-all" href="gallery.html">All mock-ups</a></div></div>
+      <p class="tm-sub cm2-what">${V2.esc(what)}</p><div class="row"><a class="np-btn" href="${href}">Open the ${name} Mock-up</a><a class="np-btn2 k-btn" href="#team"><span>Go to My Team</span></a><a class="np-link cm2-all" href="gallery.html">All mock-ups</a></div></div>
       <a class="cm2-shot" href="${href}" aria-label="Open the ${name} mock-up"><img src="${img}" alt="The approved ${name} mock-up" loading="lazy"></a></section>`; }};
   // land on the first rebuilt page, not a placeholder
   if (!location.hash || location.hash === '#') { /* Sim's Q24 A (Nov 19): only an empty address lands on My Team; an unknown one shows the not-found page (shell.js), as on the real site */ /* Nov 12 fix: team and box links pass through (they were swallowed here) */ try { history.replaceState(null, '', location.pathname + location.search + '#team'); } catch (e) {} }

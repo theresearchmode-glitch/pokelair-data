@@ -47,7 +47,7 @@ V2.bxSum = (n, o = {}) => { const b = byName.get(n); if (!b) return ''; const fs
   return `<div class="bx-sum${o.sheet ? ' in-sheet' : ''}"><div class="bx-art" style="--cp:${V2.cp(F)}">${V2.mon(F, {sel: true, iw: o.sheet ? 180 : 240, bare: true})}<p class="bx-plate"><b>Rated ${rs}</b> · ${E(T.k)} tier</p></div>
     <div class="bx-sumb"><h2 class="u">${V2.nameHtml(V2.disp(F))}</h2><div class="bx-ty">${(p.t || []).map(V2.typeChip).join('')}${onTeam ? '<span class="np-chip bx-chip">On your team</span>' : ''}</div>${forms}
     <div class="bx-nums">${num(E(V2.shareTxt(H)), 'of tournament teams')}${(H.hW != null && H.hG >= 30 ? num(E(pctFmt(H.hW)), 'win rate') : num('Too few', 'win rate', H.hG ? Math.round(H.hG) + ' games' : 'no tournament games yet', true)) /* Box Q3 B (Sim, Nov 13): too few games said in words, not a lone dash */}${num(p.st[5], 'base Speed')}</div>
-    <div class="bx-acts">${onTeam ? '' : `<button type="button" class="np-btn" data-bxteam="${E(F)}">${full ? 'Swap Into My Team' : 'Add to My Team'}</button>`}<button type="button" class="${onTeam ? 'np-btn' : 'np-btn2'}" data-v2mon="${E(F)}">${onTeam ? 'Pokémon Page' : '<span>Pokémon Page</span>'}</button><button type="button" class="np-btn2" data-hmaround="${E(F)}"><span>Build Around It</span></button><button type="button" class="np-btn2" data-bxrm="${E(n)}"><span>Remove from Box</span></button></div></div></div>`; }; // Build Around It: Sim, Nov 13 (My Box Q2 B, as the approved mock-up); Home's handler (ui.abLock, then Build)
+    <div class="bx-acts">${onTeam ? '' : `<button type="button" class="np-btn" data-bxteam="${E(F)}">${full ? 'Swap Into My Team' : 'Add to My Team'}</button>`}<button type="button" class="${onTeam ? 'np-btn' : 'np-btn2 k-btn'}" data-v2mon="${E(F)}">${onTeam ? 'Pokémon Page' : '<span>Pokémon Page</span>'}</button><button type="button" class="np-btn2 k-btn" data-hmaround="${E(F)}"><span>Build Around It</span></button><button type="button" class="np-btn2 k-btn" data-bxrm="${E(n)}"><span>Remove from Box</span></button></div></div></div>`; }; // Build Around It: Sim, Nov 13 (My Box Q2 B, as the approved mock-up); Home's handler (ui.abLock, then Build)
 
 // E20 proposal (Sim's check, Nov 12): the shared syncText names the Claude account, which can't be on the public site; the new site
 // says it in plain words (today's site keeps its wording). Local = this browser's storage, so "browser", not "device".
@@ -57,7 +57,7 @@ V2.syncTxt = st => !V2.canStore ? V2.noStoreTxt : st === 'local' ? 'Saved in thi
 V2.shareTxt = H => H.hU == null ? '–' : +H.hU === 0 && H.hG > 0 ? '<0.1%' : pctFmt(H.hU);
 V2.bxEmpty = () => { const n = V2.underdog(), d = V2.esc(V2.disp(n));
   return `<div class="bx-empty"><button type="button" class="bx-mon" data-v2mon="${V2.esc(n)}" aria-label="${d}: open its info">${V2.mon(n, {bare: true, ft: true})}</button><div><h2 class="u">Your box is empty.</h2><p>Add the Pokémon you own, and Build and the suggestions pick from them. ${d} would love a spot.</p>
-    <div class="row"><button type="button" class="np-btn" data-bxadd><span>Add a Pokémon</span></button><button type="button" class="np-btn2" data-bxaddn="${V2.esc(n)}"><span>Add ${d}</span></button></div></div></div>`; };
+    <div class="row"><button type="button" class="np-btn" data-bxadd><span>Add a Pokémon</span></button><button type="button" class="np-btn2 k-btn" data-bxaddn="${V2.esc(n)}"><span>Add ${d}</span></button></div></div></div>`; };
 
 V2.pages.box = {place: 'box', draw() { const D = V2.bxData(), E = V2.esc, n = S.box.length;
   const head = `<div class="bx-lead"><div class="np-eyebrow"><span><a class="np-back" href="#team">← My Team</a> · The Pokémon you own</span></div><h1 class="u">My Box</h1>
@@ -66,7 +66,7 @@ V2.pages.box = {place: 'box', draw() { const D = V2.bxData(), E = V2.esc, n = S.
   const sort = `<div class="bx-sort"><span class="lbl">Arrange by</span>${V2.slide('box-sort', BX_SORTS, D.so === 'za' ? 'az' : D.so, 'Arrange by')}</div>`;
   const tools = `<div class="bx-tools"><ul class="bx-links"><li><button type="button" data-bxlink="copy">Copy Box Link</button></li><li><button type="button" data-bxlink="open" aria-expanded="${!!V2.bx.linkOpen}">Open a Box Link</button>
       <div class="bx-linkin"${V2.bx.linkOpen ? '' : ' hidden'}><p class="fine">Paste a box link or code from another device, account or friend.</p><label class="np-field"><input data-bxlinkin aria-label="Box link or code" autocomplete="off" value="${E(V2.bx.linkVal || '')}"></label>
-      <div class="row"><button type="button" class="np-btn2" data-bxlink="add"><span>Add to My Box</span></button><button type="button" class="np-btn2" data-bxlink="replace"><span>Replace My Box</span></button></div><p class="bx-msg" data-bxmsg role="status">${E(V2.bx.msg || '')}</p></div></li>
+      <div class="row"><button type="button" class="np-btn2 k-btn" data-bxlink="add"><span>Add to My Box</span></button><button type="button" class="np-btn2 k-btn" data-bxlink="replace"><span>Replace My Box</span></button></div><p class="bx-msg" data-bxmsg role="status">${E(V2.bx.msg || '')}</p></div></li>
       <li><button type="button" data-bxreset>${V2.bx.ask ? 'Tap Again to Reset' : 'Reset Box'}</button></li></ul>
     <p class="fine bx-sync">${E(V2.syncTxt(ui.syncSt || 'local'))}</p></div>`;
   if (!n) return `<section class="bx2 is-empty">${head}<div class="bx-mid">${V2.bxEmpty()}</div>${tools}</section>`;
@@ -98,7 +98,7 @@ V2.bxAdd = n => { const p = byName.get(n); if (!p) return; if (!boxAdd(p)) { toa
 // Sim, Nov 12: adding a Mega form when the team already has a Mega stops and asks first (only one Pokemon can Mega Evolve per
 // battle). `skip` is the slot being replaced (replacing the team's own Mega needs no warning).
 V2.bxMegaOk = (p, skip, go) => { const other = p.m && members().find(m => m.mega && m.i !== skip); if (!other) return go();
-  V2.sheet(`<div class="bx-swap"><div class="np-eyebrow">Two Megas</div><h2 class="u">Add ${V2.esc(V2.disp(p.n))} too?</h2><p>Your team already has ${V2.esc(V2.disp(other.p.n))}. Only one Pok\u00e9mon can Mega Evolve in a battle.</p><div class="bx-acts"><button type="button" class="np-btn2" data-bxmegago><span>Add Anyway</span></button><button type="button" class="np-btn2" data-bxmegano><span>Cancel</span></button></div></div>`, {label: 'Two Megas', small: true});
+  V2.sheet(`<div class="bx-swap"><div class="np-eyebrow">Two Megas</div><h2 class="u">Add ${V2.esc(V2.disp(p.n))} too?</h2><p>Your team already has ${V2.esc(V2.disp(other.p.n))}. Only one Pok\u00e9mon can Mega Evolve in a battle.</p><div class="bx-acts"><button type="button" class="np-btn2 k-btn" data-bxmegago><span>Add Anyway</span></button><button type="button" class="np-btn2 k-btn" data-bxmegano><span>Cancel</span></button></div></div>`, {label: 'Two Megas', small: true});
   const yes = document.querySelector('[data-bxmegago]'), no = document.querySelector('[data-bxmegano]');
   if (yes) yes.addEventListener('click', go); if (no) no.addEventListener('click', () => V2.closeSheet()); if (no) no.focus(); };
 // win rate needs 30+ tournament games, as on today's site (Sim, Nov 12: go)

@@ -565,7 +565,7 @@ t('META-05', 'Expanded usage row: bars "Of N teams", teammates, Add to team', ru
   await d.openUsageRow('Kingambit'); await d.tapInUsageRow('Kingambit', (NEW ? /^Add to My Team$/ : /^Add to team$/)); expect(/Kingambit added/.test(await d.toastText() || ''), 'toast: ' + await d.toastText()); expect((await ui.team()).includes('Kingambit'), 'not added'); }));
 t('META-06', 'Top 10, then "Ranks 11–60" shows the rest and flips', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Usage'); expect((await d.usageRows()).length === 10, 'not 10 rows'); await d.tapRestOfList(); const r = await d.usageRows();
-  expect(r.length > 10 && r[10].rank === 11, 'rest not shown'); expect(has(await ui.text(), 'Show the top 10'), 'button did not flip'); await d.tapRestOfList(); expect((await d.usageRows()).length === 10, 'did not fold back'); }));
+  expect(r.length > 10 && r[10].rank === 11, 'rest not shown'); expect(has(await ui.text(), NEW ? 'Show fewer' : 'Show the top 10') /* Wave 2 finish (Nov 23): the new site's button is the kit show-more, "Show N more" / "Show fewer" */, 'button did not flip'); await d.tapRestOfList(); expect((await d.usageRows()).length === 10, 'did not fold back'); }));
 t('META-07', 'Usage without data says so', run({team: TEAM, account: false}, async ({ui}) => { await ui.go('Usage'); expect(has(await ui.text(), 'No meta data loaded yet'), 'no no-data line'); }));
 t('BROKEN-13', 'No-data message works on the public site (does not mention Claude)', run({team: TEAM, account: false}, async ({ui}) => {
   await ui.go('Usage'); expect(!/Claude/.test(await ui.text()), 'no-data text mentions Claude: ' + (await ui.text()).match(/[^.]*Claude[^.]*\./)); }),

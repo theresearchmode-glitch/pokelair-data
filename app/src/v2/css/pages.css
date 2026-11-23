@@ -1032,7 +1032,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .bt-lsay{margin-top:var(--s2);font:400 var(--t17)/1.5 var(--b);color:var(--ink-2)}.bt-lgl .fine{margin-top:var(--s1)}
 .bt-lfour{display:inline;min-height:0;padding:0;border:0;background:none;color:var(--ink);font:inherit;text-align:left;cursor:pointer;text-decoration:underline;text-decoration-color:var(--rule);text-underline-offset:4px;position:relative}
 .bt-lfour::after{content:"";position:absolute;inset:-12px -4px}
-.bt-lacts{gap:var(--s3);align-items:center}.bt-lacts .np-btn2{min-width:120px}
+.bt-lacts{gap:var(--s3);align-items:center}.bt-lacts .np-btn2{min-width:120px}.bt-lacts .k-btn{padding:0 var(--s3)} /* Wave 2 finish (Nov 23): the kit button is wider (Unbounded 800); 12px sides keep Your Games two lines at 1440 */
 @media (min-width:820px){.bt-log{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s10)}}
 .bt-lacts{display:flex;flex-wrap:wrap}
 @media (max-width:559.98px){.bt-lacts{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.bt-lacts .np-link{grid-column:1/-1}.bt-lacts .np-btn2{min-width:0;width:100%}}
@@ -2130,7 +2130,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .us-mates{display:grid;gap:var(--s2)}.us-mates h3{margin:0;font:900 var(--t24)/1.1 var(--u);font-style:italic}.us-mates .np-eyebrow{margin:0}
 .us-mates .gs-row{--gsw:88px}.us-mates .gs-row::before{border-bottom-color:var(--plot)}.us-mates .gs-tx small{font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}
 .us-add{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s6)}.us-add p{margin:0}
-.us-rest{justify-self:center}
+/* .us-rest: Wave 2 finish (Nov 23), the kit show-more (kit.css .k-more) sets the look */
 .us-count{margin:0;font:600 var(--t15)/1.4 var(--b)}.us-count b{font:900 var(--t24)/1 var(--u);font-style:italic}
 @media (prefers-reduced-motion:reduce){.us-fig .np-mon{transition:none}}
 @media (max-width:699.98px){.us-bench{--gsw:72px}.us-bench .gs-mon .np-mon{--iw:72px}.us-mates .gs-row{--gsw:64px}.us-hh h2:not(.k-h2){font-size:var(--t24)}}
@@ -2213,7 +2213,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .us-ln .us-tr{grid-area:r;align-self:start;line-height:1.3;white-space:nowrap}
 .us-ln:not(:has(.us-tr)) .us-tm{grid-row:1/3;align-self:center}
 .us-nob .us-ln{grid-template-areas:"a t t t m" "a t t t r"}
-.us-rest{justify-self:center;margin-top:var(--s2);border:0;background:none;padding:0 var(--s4);font-family:var(--b);cursor:pointer}
+
 .us-top+.us-top{margin-top:0}
 .us .us-list{display:grid;margin-top:var(--s3)}
 /* How it is played, on the plan line */
@@ -3526,7 +3526,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:699.98px){.bt-sixrow{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (min-width:1100px){.bt-sixrow .np-mon,.bt-sixrow .np-mon .st{--iw:112px}} /* Sim Q3 (Nov 16): bigger sprites fill the wide Your Six tiles */
 /* touch (Nov 16 helper sweep): 44 px tap area for the two small text links left, the line unmoved */.bt-sub .np-link,.nprow .np-link{position:relative}.bt-sub .np-link::after,.nprow .np-link::after{content:"";position:absolute;inset:-12px -4px}
-/* one system (Nov 16): "show more" is the blue link everywhere, 44px tap, centred under its list */.us-rest{min-height:var(--tap);display:inline-flex;align-items:center;justify-content:center} /* Wave 2 (Nov 23): .ev-more, .wt-more and .wt-open are the kit show-more (kit.css .k-more) */
+/* one system (Nov 16): "show more" is the blue link everywhere, 44px tap, centred under its list */ /* Wave 2 (Nov 23): .ev-more, .wt-more and .wt-open are the kit show-more (kit.css .k-more) */
 /* How We Calculate (audit Nov 16): the sources and team-check lists come from the shared method text (today's site styles them); here they
    had no styles, so each row's parts ran together ("replaysThe newest…"). Each row: the name, its description, then "Used for" and the
    numbers in the small line; rows split by the thin rule, no boxes; text kept to a readable line length */
