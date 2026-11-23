@@ -2145,3 +2145,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:35 AM: Hourly check 3:35 AM: 1 helper (hL); main: C-battle WebKit; Game Plan updated.
 - 3:39 AM: C-battle in WebKit on 5d9f0fba: 83 pass 0 FAIL (incl. X-04 calc Rain). D-meta-shell WebKit next.
 - 3:45 AM: GitHub run 1479 (d39d94e2) red, 2 checks: v2-q18 Battle 1440 Log a Win/Loss 131 vs 141 wide (hK2's k-btn move made them content-width). Fix: .bt-lg a 2-equal-column grid (phone unchanged). Checked: v2-q18 on frozen data, all passed (141x44 both). Second red, minors groups BR-C1 control (one frame at 584 vs 521): rerunning locally to see if it is a flake.
+- 3:50 AM: D-meta-shell in WebKit (Safari engine) on 1ef8badc, frozen data: 117 pass 0 FAIL. All four behaviour suites now checked in WebKit tonight except A-team (B 77/0, C 83/0, D 117/0).
