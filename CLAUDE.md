@@ -49,6 +49,11 @@ pages still to reskin). When the mock-ups are done, back to ONE helper. Never us
 Sim: "sounds like a plan. i just wanted the builds approved so then after, all resources can just focus on making it happen." The mock-up
 helper switches to building once its mock-ups are done: 2 build helpers + HH building, for the rest of Nov 22. Above that, ask Sim.
 
+## DESIGN AND EXECUTIVE AUTHORITY TO 9:00 AM TUE NOV 24 (Sim, logged 3:13 PM Mon Nov 23; LATEST, overrides the 6 PM end below)
+Sim: "i'm extending your design and executive authority until 9 AM tomorrow. Confirm receipt and let's keep working." HH decides visual and
+non-visual questions on his own recommendation until 9:00 AM Tue Nov 24, tells Sim in chat each time a visual/design decision is made (with
+pictures), logs every decision with its clock time, and gives a summary of all decisions at 9 AM. All other rules unchanged (1 helper).
+
 ## DESIGN AUTHORITY ALSO TO 6:00 PM MON NOV 23 (Sim, logged in decisions.md; LATEST, overrides the 9 AM end below)
 Sim: "you have design authority until 6PM as well but like tell me in chat when you made a visual/design decision so i can atleast see what
 happened." Until 6:00 PM Mon Nov 23 HH decides visual questions on his own recommendation, AND tells Sim in chat each time a visual/design
