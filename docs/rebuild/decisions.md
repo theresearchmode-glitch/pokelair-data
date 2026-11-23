@@ -2167,3 +2167,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:38 AM: Minors x3 on f0f47e1d (frozen data, with all hL merges): main1, main2, groups all passed (ticker flake did not repeat).
 - 5:44 AM: Polish every 20px 700-2560 on Battle, Test Run, News, My Team (HEAD 3f4a3808): no spill except the known My Team score-plate slant overhang (checked by eye 2:36 AM). Sending the 5:45 summary.
 - 5:44 AM: 5:45 AM summary sent to Sim (chat + 6 before/after pictures + summary file + phone notification).
+- 5:46 AM: Type Chart length (1440 2,845 px = 3.16; cap 2,700): measured, not changed under authority. Options for Sim at 9 AM: (A) Hitting back moves under the Charizard card at 1100+, where there is ~150px empty (needs a resize redraw; est. -100px), plus bar rows 48->44 (-40); (B) leave as is (Sim OK). Trimming alone would flatten the look. Main: final behaviour A-D on HEAD (fin.sh).
