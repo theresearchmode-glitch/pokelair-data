@@ -2087,3 +2087,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:07 PM: Sim: 2 helpers allowed until 9 PM. Running now: hW2 (Job 5), hX (HH's queue: Wave 3 checks, sweep fixes, push), hE2 (empty-space scan) = 3, all finishing their jobs; no new helper started; from 9 PM back to 1
 - 8:08 PM: Sim: 'sounds good' to the helper plan (3 finishing, no new ones; 1 from 9 PM)
 - 8:16 PM: Second account pushes checked and merged (docs/pictures only): alt/wave2-parts (5 kit parts, 2 options each, recs A), alt/length-options (Speed B, Test Run A, Pokémon page A; My Team options superseded by The Party). alt/info-words (monsheet.js) left for hW2 to re-check before merging
+- 8:17 PM: Sim: 'recommended is good to go. move forward as you see best fit' -> Wave 2 option A for all five kit parts approved (show-more, filter chip, secondary button, empty line, lost header). Job 3 length options: Sim has not seen those pictures yet -> send before building
