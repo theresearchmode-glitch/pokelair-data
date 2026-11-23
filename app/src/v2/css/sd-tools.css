@@ -381,7 +381,8 @@
 @media (min-width:1100px){
   .sdt-grid>.sdt-speed{display:none}
   .sdt-grid>.sdt-dc{--k:24px;order:-5;grid-column:1/-1;display:grid;grid-template-columns:minmax(200px,260px) minmax(0,1fr);align-items:end;column-gap:var(--s10);
-    margin-top:var(--s10);padding:var(--s6) calc(var(--s10) + var(--k)) var(--s6) calc(var(--s12) + var(--k));color:var(--sd-on-band)}
+    margin-top:var(--s4);padding:var(--s4) calc(var(--s10) + var(--k)) var(--s4) calc(var(--s12) + var(--k));color:var(--sd-on-band)}
+  .sdt-desc{margin-bottom:var(--s3)}
   .sdt-grid>.sdt-dc::before{background:var(--sd-flag)}
   .sdt-grid>.sdt-dc .sdt-tx{align-self:center}
   .sdt-grid>.sdt-dc .sdt-t{font-size:var(--t34);line-height:1.05}
@@ -390,7 +391,7 @@
     align-items:end;column-gap:var(--s8);row-gap:var(--s3);margin:0}
   /* the duel: sprites break out of the band's top; the attacker runs in streaks, the chevron strikes, the defender stands in the flash */
   .sdt-grid>.sdt-dc .sdt-duel{position:relative;grid-area:duel;grid-template-columns:minmax(0,1fr) var(--s16) minmax(0,1fr);align-items:end;margin-top:calc(var(--s24) * -1)}
-  .sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:176px}
+  .sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:152px}
   .sdt-grid>.sdt-dc .sdt-duel::before{content:"";position:absolute;left:-12%;width:58%;bottom:var(--s8);height:56%;z-index:0;
     background:repeating-linear-gradient(180deg,var(--sd-streak) 0 2px,transparent 2px var(--s4));clip-path:polygon(16% 0,100% 0,84% 100%,0 100%)}
   .sdt-grid>.sdt-dc .sdt-m{z-index:2}
@@ -404,20 +405,27 @@
   .sdt-grid>.sdt-dc .sdt-cc,.sdt-grid>.sdt-dc .sdt-s{display:none}.sdt-grid>.sdt-dc .sdt-l{display:inline}
   /* the four big cards, white, each picture on its ground */
   .sdt-grid>.sdt-wt{display:none}
-  .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{grid-column:span 3;display:flex;flex-direction:column;row-gap:var(--s3);margin-top:var(--s8)}
+  .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{grid-column:span 3;display:flex;flex-direction:column;row-gap:var(--s3);margin-top:var(--s5)}
   .sdt-grid>.sdt-ink{color:var(--sd-card-ink)}.sdt-grid>.sdt-ink::before{background:var(--sd-card)}.sdt-grid>.sdt-ink .sdt-d{color:var(--sd-card-ink2)}
   :root[data-theme="night"] .sdt-grid>.sdt-ink::after{background:var(--sd-card-shade);inset:0;translate:var(--s2) var(--s2)}
-  .sdt-ra>.sdt-pod,.sdt-bt>.sdt-vs,.sdt-pr>.sdt-pp,.sdt-ar>.sdt-wx{order:-1;position:relative;isolation:isolate;flex:0 0 128px;height:128px;margin:calc(var(--s12) * -1) 0 var(--s1);padding:0 var(--s2) var(--s3);align-self:stretch;align-items:end}
+  .sdt-ra>.sdt-pod,.sdt-bt>.sdt-vs,.sdt-pr>.sdt-pp,.sdt-ar>.sdt-wx{order:-1;position:relative;isolation:isolate;flex:0 0 128px;height:128px;margin:calc(var(--s12) * -1) 0 var(--s1);padding:0 var(--s2) var(--s3);align-self:stretch;align-items:end;flex-basis:116px;height:116px}
   .sdt-ra>.sdt-pod::before,.sdt-bt>.sdt-vs::before,.sdt-pr>.sdt-pp::before,.sdt-ar>.sdt-wx::before{content:"";position:absolute;left:calc(var(--s2) * -1);right:calc(var(--s2) * -1);bottom:0;height:52px;z-index:-1;
     background:var(--stage);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
   .sdt-ra{--stage:var(--sd-race)}.sdt-bt{--stage:var(--sd-them)}.sdt-pr{--stage:var(--sd-flag)}.sdt-ar{--stage:var(--ty-Flying)}
   .sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:60px}.sdt-ra .sdt-blk>span,.sdt-blk small,.sdt-step .sdt-mn{display:none}
   .sdt-bt .sdt-side{--cap:76px;padding-top:0}.sdt-bt .sdt-vs{grid-template-columns:minmax(0,1fr) var(--s10) minmax(0,1fr)}.sdt-bt .sdt-side .sdt-mn{display:none}
-  .sdt-pr .sdt-pp{flex:0 0 128px;justify-content:flex-end;gap:var(--s1)}.sdt-pr .sdt-pp6 .np-mon{--iw:44px}
+  .sdt-pr .sdt-pp{flex:0 0 116px;justify-content:flex-end;gap:0}
+  /* Team Preview Practice as a real team preview (Sim, Nov 23: 'looks rough'): the six in one row standing on the red ground, 'Pick 4' above */
+  .sdt-pr .sdt-pp{align-items:stretch}.sdt-pr .sdt-pp6{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:0;row-gap:0;width:auto;margin-inline:calc(var(--s3) * -1)}.sdt-pr .sdt-pp6 .np-mon{--iw:72px}
+  .sdt-pr .sdt-pp6>.sdt-art:nth-child(-n+3){margin-bottom:calc(var(--s8) * -1);translate:var(--s4) 0}.sdt-pr .sdt-pp6{margin-inline:calc(var(--s3) * -1) var(--s2)}
+  .sdt-pr .sdt-pick{position:absolute;bottom:var(--s3);right:var(--s1);z-index:2;font-size:var(--t15)}
+  /* Load Team and Copy for Showdown leave Home on desktop (Sim, Nov 23: Winning Teams is a chip there; they stay on the Winning Teams
+     page, and phones and iPads keep the Winning Teams plate with both) */
+
   .sdt-ar .sdt-wx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.sdt-ar .sdt-wxi{display:flex;flex-direction:column;align-items:center;gap:var(--s1)}.sdt-ar .sdt-art .np-mon{--iw:88px}
   .sdt-grid>.sdt-ar .sdt-tx,.sdt-grid>.sdt-pr .sdt-tx{margin-top:0}
   .sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t24);line-height:1.1}
   .sdt-ra .sdt-l,.sdt-bt .sdt-l,.sdt-pr .sdt-l,.sdt-ar .sdt-l{display:none}.sdt-ra .sdt-s,.sdt-bt .sdt-s,.sdt-pr .sdt-s,.sdt-ar .sdt-s{display:inline}
-  .sdt-chips ul{grid-template-columns:repeat(7,minmax(0,1fr))}.sdt-chips{margin-top:var(--s6)}
+  .sdt-chips ul{grid-template-columns:repeat(7,minmax(0,1fr))}.sdt-chips{margin-top:var(--s4)}
 }
 @media (min-width:1100px) and (max-width:1279.98px){.sdt-chips ul{grid-template-columns:repeat(4,minmax(0,1fr))}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:136px}.sdt-grid>.sdt-dc{column-gap:var(--s6)}}
