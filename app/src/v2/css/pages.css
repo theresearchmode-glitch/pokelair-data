@@ -2255,7 +2255,7 @@ button.pp2-plate{cursor:pointer;width:100%}
   .us-trw{display:none}
   .us-axl{display:none}
   .us-ln{min-height:0;padding:6px 0;row-gap:2px}
-  .us-ln .us-tx{gap:var(--s1)}.us-ln .us-rk{min-width:32px}
+  .us-ln .us-tx{gap:var(--s1)}.us-ln .us-rk{min-width:40px} /* Sim, Nov 23 (iPhone 393): at 32px the slanted "#10" ran into "Pelipper", and "#20"-"#60" (37-39px) pushed their names out of line; 40px, as on desktop, holds every rank */
   .us-ln .us-tx b{font-size:var(--t16)}
   .us .us-spot .k-scrib{display:none}
   .us-ln .us-u{font-size:var(--t20)}
