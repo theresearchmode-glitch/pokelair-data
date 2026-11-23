@@ -2129,3 +2129,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:15 AM: GitHub run 1476 on 3062b1e8: SUCCESS (polish fixes green). Batch push: Wave 2 merge + Usage iPad fix.
 - 1:36 AM: Hourly check 1:35 AM: 1 helper (hK2); main: vw.sh (minors x3 + polish on Wave 2 pages); Game Plan updated.
 - 2:04 AM: Wave 2 checks: minors main1 + groups all passed; main2 1 fail = My Team 390 4,024px vs 4.75 screens (kit show-more 44px) -> limits raised +25 (accepted, flag to Sim). Polish: fixed the chip at 320 and Winning Teams links at 320. Older polish findings (Track TOTAL tilt, calc 320 set, Test Run small card 320) unchanged from before tonight.
+- 2:07 AM: GitHub run 1477 (Wave 2, 4f789f53): 13/15; fails = v2-q21 (read the old chip class; the slanted kit chips also made the phone chip row scroll 3-5px) and minors main2 (My Team 390 length, limit raised at 2:04). Fixed: q21 reads .k-chip, chip grid 12px inner margin; q21 ALL PASSED.
