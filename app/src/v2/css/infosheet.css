@@ -92,3 +92,11 @@
 @media (max-width:699.98px){.is-tab .ev{display:none}.is-tab.kd-item{padding-left:64px}}
 /* on the dark loadout panel (Popular Sets): the name keeps the panel's ink and big slanted type; the underline marks it as a button */
 .lo-v .is-w{color:inherit;text-decoration-color:var(--plate-link)}
+
+/* pictures on the sheets (Sim approved Nov 23, 4:33 PM; docs/mockups/sheet-pics-natures-nov23): the picture sits left of the name */
+.is-pn{position:relative;z-index:1;display:flex;align-items:center;gap:var(--s5);min-width:0}.is-pn .is-tn{min-width:0}
+/* the move's type seal: a slanted tile, a deeper shade of the type colour, the white type symbol */
+.is-seal{flex:none;display:grid;place-items:center;width:84px;height:84px;border-radius:var(--r-l);transform:skewX(-10deg);
+  background:color-mix(in srgb,var(--c) 62%,var(--sd-ink));box-shadow:inset 0 0 0 2px var(--sd-speed),0 6px 14px -6px var(--sd-shade)}
+.is-seal svg{width:52px;height:52px;fill:var(--sd-on-band);transform:skewX(10deg)}
+@media (max-width:699.98px){.is-pn{gap:var(--s3)}.is-seal{width:64px;height:64px}.is-seal svg{width:40px;height:40px}}
