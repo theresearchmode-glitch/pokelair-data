@@ -60,7 +60,7 @@
 .dc2.pc .pc-kits .arn-set{position:relative;display:grid;align-content:start;padding:var(--s3) var(--s3) var(--s2);border:0;border-radius:0;background:var(--p);color:var(--pc-ink);rotate:var(--r);box-shadow:0 22px 22px -18px var(--pc-drop)}
 .dc2.pc .pc-kits .arn-set.a{--p:var(--pc-note-a);--r:1.2deg}.dc2.pc .pc-kits .arn-set.d{--p:var(--pc-note-d);--r:-1.2deg}
 .dc2.pc .pc-kits .arn-set::before{content:"";position:absolute;left:0;right:0;top:0;height:16px;background:linear-gradient(180deg,var(--pc-note-top),transparent)}
-.dc2.pc .pc-kits .arn-set header{display:block;margin:0 0 2px}.dc2.pc .pc-kits .arn-set header img{display:none}
+.dc2.pc .pc-kits .arn-set header{display:block;margin:0 0 2px}.arn-set header .pc-sset{display:inline} /* the title's "'s set" (Nov 23: its own span, so phones can drop it); in the line, not a grid row as the header's other spans */.dc2.pc .pc-kits .arn-set header img{display:none}
 /* the set's source right under the note's title ('most used set' / 'estimated set' / 'your set'): it says whether the set is assumed or the
    player's own, so it stays on the note (Nov 21; the port had hidden it: CALC-01/02/04). Small, in the note's secondary ink. */
 .dc2.pc .pc-kits .arn-set header small{display:block;font:500 var(--t13)/1.3 var(--b);color:var(--pc-on-paper2)}
@@ -247,7 +247,13 @@
   .dc2.pc.pck .pc-pic{aspect-ratio:4/3} /* 16:9 tried (Sim's shorter-photos ask, Nov 21): it cropped the Pokémon and the ring covered the name, so 4:3 stays */
   .dc2.pc.pck .pc-kits .arn-st .lb{font:700 var(--t13)/1.2 var(--b);font-style:normal}
   .pck .pc-krv{font-size:var(--t17)}.pck .pc-krn b{font-size:var(--t15)}.pck .pc-kr{min-height:48px}
-  .dc2.pc.pck .pc-kgo .arn-kbbar{display:block}}
+  .dc2.pc.pck .pc-kgo .arn-kbbar{display:block}
+  /* Nov 23 (hJ, HH's design authority): the two set cards stay even on phones. The title is the name only ("'s set" drops; the small line
+     under it already says "most used set" / "your set"), and both titles keep room for two lines, the name sitting on its small line, so a
+     one-line name ("Sneasler") beside a two-line one ("Mega Charizard Y") leaves the Item, Ability, Nature, points and stage rows level.
+     (A subgrid can't do it: the cards are size containers for the stage row's container query) */
+  .pck .arn-set header .pc-sset{display:none}
+  .dc2.pc.pck .pc-kits .arn-set header b{display:grid;align-content:end;min-height:2.4em}}
 @media (max-width:359.98px){.dc2.pc.pck .pc-five button{font-stretch:75%}.dc2.pc.pck .pc-kits .arn-set{padding:var(--s2)}}
 /* under 380 the step is narrower than today's full-width board: a long name ('Charizard Y') wraps under its photo instead of widening it, and the
    two tilted photos get a little more room (they touched at 320) */
