@@ -2162,3 +2162,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:03 AM: qcheck on every page (27 pages + 15 views, 5 widths, day/night) on f2581296, frozen data: 80 findings, 0 new. Helper hP started (approved under design authority): polish findings on My Team/guide/sheet/team-empty (off-scale 20.3px/23px text, line height 1.3, two lone rows), no page longer; branch hp-polish.
 - 5:03 AM: Preview v242 published (foundation 68e4de7f verified on the artifact): hL's Test Run lane labels 1100-1439 and suspects names 700-1099.
 - 5:12 AM: C-battle in WebKit on 35b749f5 (hL's Test Run lane + suspects fixes): 83 pass 0 FAIL.
+- 5:22 AM: GitHub run 1481 on ce3ff7d9: SUCCESS (all green: News ears, Test Run 320, Battle 1100-1439). Pushing batch: hL's Test Run lane labels 1100-1439 + suspects names 700-1099, logs, Game Plan.
