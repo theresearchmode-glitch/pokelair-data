@@ -343,99 +343,7 @@
 @media (max-width:479.98px){.imp2{padding:var(--s6) var(--s4)}}
 /* the narrowest phones: the action row's two columns are 140px, so its labels step down one size together (Copy for Showdown fits) */
 @media (max-width:359.98px){.tm-acts .np-btn2{font-size:var(--t13);padding:0 var(--s2)}}
-/* ===== My Box (R4, Nov 11): Sim's in-game box concept (docs/redesign/box/NOTES.md) ===== */
-.bx2{display:grid;gap:var(--s8) var(--s10);grid-template-columns:minmax(0,1fr);grid-template-areas:"lead" "mid" "team" "tools";padding:var(--s8) var(--gut) var(--s16)}
-.bx-lead{grid-area:lead}.bx-mid{grid-area:mid;min-width:0}.bx-team{grid-area:team;min-width:0}.bx-side{grid-area:side;display:none}.bx-tools{grid-area:tools}
-@media (min-width:900px){.bx2{grid-template-columns:minmax(0,1fr) 300px;grid-template-areas:"lead lead" "mid side" "team tools";grid-template-rows:auto auto auto}.bx-side{display:block}
-  .bx-lead{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--s10);align-items:end}.bx-lead>.np-eyebrow,.bx-lead>h1,.bx-lead>.bx-count,.bx-lead>.bx-why{grid-column:1}
-  .bx-lead>.bx-add{grid-column:2;grid-row:3/5;align-self:end;margin-bottom:var(--s6)}}
-@media (min-width:1400px){.bx2{grid-template-columns:280px minmax(0,1fr) 300px;grid-template-areas:"lead mid side" "tools mid side" "team mid side";grid-template-rows:auto auto minmax(0,1fr);align-items:start}
-  .bx-lead{display:block}.bx-lead>.bx-add{margin-bottom:0}}
-/* the empty box: its wide layout comes after the base rule (Nov 11: it came before and lost, so at 1400+ the empty box and its
-   underdog were squeezed into the 280px lead column) */
-.bx2.is-empty{grid-template-areas:"lead" "mid" "tools"}@media (min-width:900px) and (max-width:1399.98px){.bx2.is-empty{grid-template-areas:"lead lead" "mid mid" "tools tools"}}
-@media (min-width:1400px){.bx2.is-empty{grid-template-areas:"lead mid mid" "tools mid mid"}}
-.bx-lead h1{font-size:var(--d64);margin:var(--s2) 0 var(--s1)}@media (max-width:599.98px){.bx-lead h1{font-size:var(--t34)}}
-.bx-count{margin:0;font:600 var(--t17)/1.5 var(--b);color:var(--ink)}.bx-why{margin:var(--s2) 0 var(--s6);color:var(--ink-2);line-height:1.5}
-.bx-add{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:56px;padding:0 var(--s5);border:1.5px solid var(--ink);background:none;color:var(--ink-2);transform:skewX(-8deg);font:500 var(--t17)/1 var(--b);cursor:pointer}
-.bx-add>*{transform:skewX(8deg)}.bx-add b{font:700 var(--t24)/1 var(--b);color:var(--ink)}.bx-add:hover{background:var(--wash)}
-:root[data-theme="night"] .bx-add{border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
-.bx-sort{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);margin-bottom:var(--s4)}.bx-sort .lbl{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2)}.bx-sort .np-slide{flex:1 1 auto;max-width:520px}
-/* the box: the only coloured surface on the page */
-.bx-box{position:relative;container-type:inline-size;border-radius:var(--r-xl);overflow:hidden;padding:var(--s4) var(--s3) var(--s5);
-  background:radial-gradient(75% 65% at 0 0,color-mix(in oklab,var(--w0) 40%,transparent),transparent 72%),radial-gradient(75% 65% at 100% 0,color-mix(in oklab,var(--w1) 40%,transparent),transparent 72%),
-  radial-gradient(75% 65% at 0 100%,color-mix(in oklab,var(--w2) 36%,transparent),transparent 72%),radial-gradient(75% 65% at 100% 100%,color-mix(in oklab,var(--w3) 36%,transparent),transparent 72%),var(--wash)}
-:root[data-theme="night"] .bx-box{background:radial-gradient(75% 65% at 0 0,color-mix(in oklab,var(--w0) 30%,transparent),transparent 72%),radial-gradient(75% 65% at 100% 0,color-mix(in oklab,var(--w1) 30%,transparent),transparent 72%),
-  radial-gradient(75% 65% at 0 100%,color-mix(in oklab,var(--w2) 26%,transparent),transparent 72%),radial-gradient(75% 65% at 100% 100%,color-mix(in oklab,var(--w3) 26%,transparent),transparent 72%),var(--surface)}
-.bx-box>*{position:relative}
-.bx-hd{display:grid;grid-template-columns:var(--tap) minmax(0,1fr) var(--tap);align-items:center;gap:var(--s3);margin-bottom:var(--s2)}
-.bx-name{text-align:center}.bx-name h2{font-size:var(--t28);margin:0}.bx-name p{margin:var(--s1) 0 0;font-size:var(--t13);color:var(--ink-2)}
-.bx-arr{width:var(--tap);height:var(--tap);border-radius:50%;border:0;background:var(--surface);color:var(--ink);box-shadow:0 1px 2px rgba(var(--shade),.14),0 4px 10px -4px rgba(var(--shade),.3);cursor:pointer;font-size:var(--t13)}
-:root[data-theme="night"] .bx-arr{background:var(--wash)}
-/* Arrows Q1 B (proposal): the box arrows are slanted like every other button (they were the only round buttons) */
-.bx-arr{border-radius:0;transform:skewX(-12deg);border:1.5px solid var(--ink);box-shadow:none}.bx-arr span{display:inline-block;transform:skewX(12deg)}
-:root[data-theme="night"] .bx-arr{border-color:color-mix(in srgb,var(--ink) 42%,transparent)}
-.bx-grid{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1) var(--s1)}
-@container (max-width:560.98px){.bx-grid{grid-template-columns:repeat(5,minmax(0,1fr))}}
-.bx-t{position:relative;display:flex;flex-direction:column;align-items:center;gap:var(--s1);min-width:0;padding:var(--s2) var(--s1) var(--s2);border:0;border-radius:var(--r-l);background:none;color:var(--ink);cursor:pointer;transition:transform var(--dur-1),background-color var(--dur-1),box-shadow var(--dur-1)}
-.bx-t .np-mon{--iw:min(96px,100%);width:100%}
-.bx-t>b{display:block;max-width:100%;font:600 var(--t13)/1.25 var(--b);font-stretch:88%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-@container (max-width:420.98px){.bx-t>b{font-stretch:75%}.bx-t{padding-inline:0}.bx-grid{gap:var(--s1) 0}}
-.bx-t:hover{background:color-mix(in srgb,var(--surface) 45%,transparent)}
-@media (min-width:900px){.bx-t.auto{background:var(--surface);transform:translateY(-4px);box-shadow:0 1px 2px rgba(var(--shade),.12),0 10px 22px -10px rgba(var(--shade),.42)}
-  :root[data-theme="night"] .bx-t.auto{background:var(--wash);box-shadow:0 0 0 1px var(--rule),0 10px 22px -10px rgba(var(--shade),.6)}}
-.bx-t.sel{background:var(--surface);transform:translateY(-4px);box-shadow:0 1px 2px rgba(var(--shade),.12),0 10px 22px -10px rgba(var(--shade),.42)}
-:root[data-theme="night"] .bx-t.sel{background:var(--wash);box-shadow:0 0 0 1px var(--rule),0 10px 22px -10px rgba(var(--shade),.6)}
-.bx-t:focus-visible{outline:3px solid var(--plot);outline-offset:-1px}
-.bx-on{display:inline-block;width:20px;height:7px;background:var(--plot);transform:skewX(-24deg)}.bx-t .bx-on{position:absolute;top:var(--s2);right:var(--s2)}.bx-onkey{display:flex;justify-content:center;align-items:center;gap:var(--s2);margin:0 0 var(--s3);font-size:var(--t13);color:var(--ink-2)}
-.bx-dots{display:flex;justify-content:center;gap:0;margin-top:var(--s3)}
-.bx-dots button{width:var(--tap);height:var(--tap);padding:0;border:0;background:none;cursor:pointer;position:relative}
-.bx-dots button::after{content:"";position:absolute;left:var(--s2);right:var(--s2);top:50%;height:6px;translate:0 -50%;background:color-mix(in srgb,var(--ink) 22%,transparent);transform:skewX(-24deg)}
-.bx-dots button[aria-pressed="true"]::after{background:var(--ink)}
-/* your team under the box */
-.bx-team{margin-top:0}.bx-teamhd{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s4);padding-bottom:var(--s3);border-bottom:1px solid var(--rule)}
-.bx-teamhd h2{font-size:var(--t24);margin:0}.bx-teamhd .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}.bx-team ul{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2);list-style:none;margin:var(--s4) 0 0;padding:0}
-.bx-team .np-mon{--iw:min(72px,100%)}.bx-team .np-mon b{font-size:var(--t13);line-height:1.25}.bx-team .np-mon small{font-size:var(--t13);color:var(--ink-2)}
-@media (max-width:599.98px),(min-width:1400px){.bx-team ul{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s4)}}
-/* the picked Pokémon */
-.bx-art{position:relative;display:grid;justify-items:center;padding:calc(var(--s16) + var(--s4)) var(--s4) var(--s8);background:radial-gradient(130% 62% at 50% 100%,rgba(var(--cp,150,150,165),.34),rgba(var(--cp,150,150,165),.08) 60%,transparent 82%),var(--wash);clip-path:polygon(0 5%,100% 0,100% 95%,0 100%);overflow:hidden}
-:root[data-theme="night"] .bx-art{background:radial-gradient(130% 62% at 50% 100%,rgba(var(--cp,150,150,165),.3),rgba(var(--cp,150,150,165),.06) 60%,transparent 82%),var(--wash)}
-.bx-art>*{position:relative}.bx-plate{position:absolute;left:var(--s4);top:var(--s6);margin:0;white-space:nowrap;padding:var(--s2) var(--s4);background:var(--plate);color:var(--on-plate);transform:skewX(-12deg);font:600 var(--t15)/1.2 var(--b)}
-.bx-plate b{font:900 var(--t17)/1 var(--u);font-style:italic;font-synthesis:style}
-.bx-sumb h2{font-size:var(--t34);margin:var(--s4) 0 var(--s3);overflow-wrap:break-word}.bx-ty{display:flex;flex-wrap:wrap;gap:var(--s2);align-items:center}
-.bx-chip{min-height:28px;padding:0 var(--s3);font-size:var(--t13);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
-.bx-forms{margin-top:var(--s5)}.bx-fr{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:var(--s1);margin-top:var(--s2)}
-.bx-f{flex-direction:column;gap:var(--s1);min-height:var(--tap);padding:var(--s2) var(--s1);border:0;background:none;color:var(--ink);cursor:pointer;text-align:center}.bx-f .np-mon{--iw:56px}
-.bx-f span{justify-items:center}.bx-f b .mg{display:block;margin:0}.bx-f b .mg.none{display:block;visibility:hidden}
-.bx-nums{display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;gap:var(--s3);margin:var(--s6) 0;padding-block:var(--s4);border-block:1px solid var(--rule)}
-.bx-n b{display:block;font:900 var(--t28)/1.05 var(--u);font-style:italic;letter-spacing:-.02em}:root[data-theme="night"] .bx-n b{font-weight:800}.bx-n span{font-size:var(--t13);color:var(--ink-2)}
-.bx-acts{display:flex;flex-wrap:wrap;gap:var(--s3)}.bx-acts .np-btn{flex:1 1 100%}.bx-acts .np-btn2{flex:1 1 140px}
-.bx-sum.in-sheet{padding:var(--s6) var(--s4) var(--s4)}
-.bx-sum.in-sheet .bx-art{padding:var(--s12) var(--s4) var(--s6)}.bx-sum.in-sheet .bx-plate{top:var(--s4)}
-.bx-sum.in-sheet h2{font-size:var(--t28)}.bx-sum.in-sheet .bx-nums{margin:var(--s5) 0}
-/* tools under the lead */
-.bx-links{list-style:none;margin:0;padding:0;border-bottom:1px solid var(--rule)}.bx-links>li{border-top:1px solid var(--rule)}
-.bx-links>li>button{display:flex;align-items:center;justify-content:space-between;width:100%;min-height:52px;padding:0;border:0;background:none;color:var(--ink);font:600 var(--t16)/1.3 var(--b);cursor:pointer;text-align:left}
-.bx-links>li>button::after{content:"›";font-size:var(--t20);color:var(--ink-3)}.bx-links>li>button[aria-expanded="true"]::after{transform:rotate(90deg)}
-.bx-linkin{padding-bottom:var(--s4)}.bx-linkin .fine{margin:0 0 var(--s2)}.bx-linkin .row{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s3)}.bx-msg{margin:var(--s2) 0 0;font-size:var(--t15)}.bx-msg:empty{display:none}
-.bx-sync{margin:var(--s4) 0 var(--s3)}
-@media (min-width:600px) and (max-width:899.98px){.bx-tools{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--s10);align-items:start}.bx-tools>.bx-links{grid-row:1/4}}
-/* empty box: today's underdog keeps it company */
-.bx-empty{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s6);align-items:center;padding:var(--s8);border-radius:var(--r-xl);background:var(--wash)}
-.bx-empty .np-mon{--iw:200px}.bx-empty h2{font-size:var(--t28);margin:0 0 var(--s2)}.bx-empty p{margin:0 0 var(--s4);line-height:1.5}.bx-empty .row{display:flex;flex-wrap:wrap;gap:var(--s3)}
-@media (max-width:599.98px){.bx-empty{grid-template-columns:minmax(0,1fr);text-align:left}.bx-empty .np-mon{--iw:160px}}
-/* swap sheet */
-.bx-swap{padding:var(--s8)}.bx-swap h2{font-size:var(--t28);margin:var(--s2) 0 var(--s4)}.bx-swap ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);list-style:none;margin:0;padding:0}
-.bx-swapb{width:100%;padding:var(--s2);border:0;border-radius:var(--r-l);background:none;color:var(--ink);cursor:pointer}.bx-swapb:hover{background:var(--wash)}
-@media (max-width:479.98px){.bx-swap{padding:var(--s6) var(--s4)}}
-/* phones: the box runs nearly edge to edge like the phone concept, names a touch tighter; the narrowest phones (320) show 3 across,
-   ten even rows, so the longest names (Meowscarada) never cut */
-@media (max-width:599.98px){.bx-box{margin-inline:calc(var(--s2) - var(--gut));padding-inline:var(--s2)}}
-@container (max-width:420.98px){.bx-t>b{letter-spacing:-.02em}}
-@container (max-width:310.98px){.bx-grid{grid-template-columns:repeat(3,minmax(0,1fr))}.bx-t>b{font-stretch:88%;letter-spacing:0}}
-/* the picked Pokémon stays in view while you look through the box (wide screens) */
-/* Nov 12 bug fix: the panel stays pinned only inside its own column (the aside stretches over its grid rows), so it never slides over Copy Box Link / Reset Box below it at 900-1399 */
-@media (min-width:900px){.bx-side{align-self:start}} /* Sim, Nov 12: no pinned panel, the whole page scrolls as one (the panel was taller than its pinned space, so the sides scrolled in turns) */
+/* ===== My Box: moved to css/box.css (The PC, Nov 23) ===== */
 /* Your Games on My Team (R4, Nov 11): under Suggestions on desktop; beside Matchups on tablets; last on phones */
 .tm-yg{grid-area:yg}
 .tm-yg-hd{margin-top:var(--s4);display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6)}.tm-yg-hd .tm-sub{flex:1 1 220px;margin:0}
@@ -1084,19 +992,15 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 
 /* Home Q1 B (Sim, Nov 13): Home's underdog drawn as on the empty My Team (featured tile: floor ring in its own colour) */
 .hm-udst2{width:100%;max-width:200px;justify-self:center}
-.bx-n small{display:block;font:500 var(--t13)/1.5 var(--b);color:var(--ink-3)} /* i42: too few games in words, as the info sheet */
 
 /* Battle Q3 B (Sim, Nov 13): Your Six on the empty Battle page, below the empty-state line */
 .bt-yours{margin-top:var(--s10);padding-top:var(--s8);border-top:1px solid var(--rule)}.bt-yours h2{font-size:var(--t24);margin:0}.bt-yours .bt-sub{margin:var(--s1) 0 var(--s4)}
 
 /* Box Q1 B (proposal): a box that isn't full keeps its full size and shows its empty spots, like the in-game box; the arrows and dots stay put when you flip boxes */
-.bx-grid:has(.bx-slot){grid-auto-rows:1fr}.bx-slot{border:1.5px dashed color-mix(in srgb,var(--ink) 16%,transparent);border-radius:var(--r-s);margin:var(--s1)}
 
 /* Box Q3 B (Sim, Nov 13): 'Too few' (too few games for a win rate) in words, one size below the numbers, on one line; 17 px under 360 */
-.bx-n.few b,.ms-n.few b{font-size:var(--t20);line-height:1.4;white-space:nowrap}@media (max-width:359.98px){.bx-n.few b,.ms-n.few b{font-size:var(--t17)}}
+.ms-n.few b{font-size:var(--t20);line-height:1.4;white-space:nowrap}@media (max-width:359.98px){.ms-n.few b{font-size:var(--t17)}}
 /* Box Q4 B (Sim, Nov 13): the on-your-team mark sits before the name, never on the sprite */
-.bx-t>b .bx-on{position:static;display:inline-block;width:12px;height:6px;margin-right:var(--s1);vertical-align:middle}.bx-t>b:has(.bx-on){font-stretch:75%}
-@container (max-width:420.98px){.bx-t>b .bx-on{width:8px;margin-right:2px}}
 /* Battle Q1 B (Sim, Nov 13): while their six is empty, wide screens use two columns: Their Six + Battle Log left, Your Six right */
 /* re-audit Nov 15: the empty Battle page's two-column layout (six beside Your Games, 820px) removed: the six needs My Team's full width (names were cut from 1280 up) */
 
@@ -3566,7 +3470,6 @@ button.pp2-plate{cursor:pointer;width:100%}
 /* audit Nov 16 (WCAG 1.4.12 text spacing): names wrap instead of being cut with "…": Build's winning-event names (cut at 320 even at normal
    spacing) and My Box names (cut when a reader raises letter/word spacing); at normal spacing box names still fit on one line */
 .bd-wev{white-space:normal;overflow:visible;text-overflow:clip;text-wrap-style:balance}
-.bx-t>b{white-space:normal;overflow:visible;text-overflow:clip;overflow-wrap:anywhere}
 /* style guide: the logo row (Nov 16) */
 .sg-logo{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:var(--s6);align-items:end}
 .sg-logo figure{display:grid;gap:var(--s2);margin:0}.sg-logo img{display:block;width:auto;max-width:100%}.sg-logo figcaption{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}

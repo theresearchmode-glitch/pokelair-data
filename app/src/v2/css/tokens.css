@@ -231,3 +231,18 @@
 /* the same for the kit sentence: 2.8vw gave 22-24px (23px at 820) between 786 and 856 wide; it holds 22 there (phones set their own 20) */
 @media (min-width:700px) and (max-width:856.98px){:root{--d-ksent:var(--t22)}}
 /* Sim Q1 (Nov 15): 'them' / Team B is magenta (--them), clearly apart from red (--bad); measured: day fill #B4238F white text 5.87:1, text #9A1A7B 7.17:1 on the page; night fill #E57FD3 dark text 7.36:1, text #EC9BDF 9.15:1 */
+/* My Box, "The PC" (Sim approved the design, Nov 23; mock-up docs/mockups/mybox-pc/): the blue box wallpaper, the selected slot and its
+   yellow ring, the box bar, Your Six's dark rows and the foil edge of the card. The wallpaper is the same blue in day and night (the stage). */
+:root{
+  --mb-stage-1:#0B78C2;--mb-stage-2:#04508A;--mb-wall-hi:rgba(255,255,255,.2);--mb-wall-lo:rgba(0,20,60,.35);--mb-stripe:rgba(255,255,255,.05);--mb-dot:rgba(255,255,255,.2);
+  --mb-slot-line:rgba(255,255,255,.24);--mb-floor:rgba(4,30,60,.55);--mb-on-wall:#FFFFFF;--mb-name-shade:rgba(0,0,0,.3);--mb-slot-hover:rgba(255,255,255,.12);
+  --mb-sel:#FFFFFF;--mb-on-sel:#17161A;--mb-ring:#FFC71F;--mb-sel-glow:rgba(0,120,191,.5);--mb-sel-shadow:rgba(0,10,30,.5);--mb-flag:#FFFFFF;--mb-flag-key:#0B78C2;
+  --mb-bar:#17161A;--mb-on-bar:#FFFFFF;--mb-arrow:#E8364F;--mb-dot-off:rgba(255,255,255,.3);
+  --mb-pm:#17161A;--mb-on-pm:#FFFFFF;--mb-pm-sub:rgba(255,255,255,.72);--mb-pm-drop:rgba(0,0,0,.4);--mb-pm-empty:rgba(23,22,26,.22);
+  --mb-foil:linear-gradient(135deg,#FFE27A,#FFC71F 16%,#E8364F 40%,#7B4BD6 56%,#0078BF 72%,#62BEF7 88%,#FFE27A);
+  --mb-card-line:rgba(127,127,150,.06);--mb-art-floor:rgba(0,120,191,.38);--mb-art-drop:rgba(0,0,0,.25);--mb-on-strip:#FFFFFF;--mb-cur-drop:rgba(0,0,0,.28);
+  --mb-chip:#17161A;--mb-on-chip:#FFFFFF}
+:root[data-theme="night"]{
+  --mb-bar:#FFFFFF;--mb-on-bar:#17161A;--mb-dot-off:rgba(23,22,26,.3);--mb-pm:#1C1B28;--mb-pm-empty:rgba(228,224,236,.2);
+  --mb-art-drop:rgba(0,0,0,.45);--mb-chip:#FFFFFF;--mb-on-chip:#17161A}
+:root{--d-mbrate:56px;--d-mbscore:52px;--d-mbgh:128px}

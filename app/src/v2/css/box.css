@@ -1,0 +1,241 @@
+/* ===== My Box: "The PC" (Sim chose the design Nov 23; the six new items approved 7:48 AM; brief docs/rebuild/reskin/mybox-pc-brief.md,
+   mock-up docs/mockups/mybox-pc/). The game's PC box on the kit: Your Six | the box on its blue wallpaper | the foil card.
+   1280+: one grid, three columns that start and end on the same lines (header row, body, footer rows). 700-1279: Your Six is a strip
+   of six tiles on top, the box and the card side by side. Under 700: one column, the card inline under the box (no bottom sheet).
+   Colours: tokens.css (--mb-*). Hooks the tests read: .bx-grid, .bx-count, .bx-side, .bx-empty, data-bx*. ===== */
+.mb{padding:0 var(--gut) var(--s10)}
+
+/* ---- the head: kit header on the left, the three counts on the right ---- */
+.mb-head{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;column-gap:var(--s12);padding-bottom:var(--s5);margin-bottom:var(--s5);border-bottom:1px solid var(--rule)}
+.mb-head .k-lead{max-width:560px}
+.mb-back{display:inline-flex;align-items:center;min-height:var(--tap);margin:calc(var(--s3) * -1) 0;color:inherit;text-decoration:none}
+.mb-back:hover{text-decoration:underline}
+.mb-back:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
+.mb-tally{display:flex;margin:0}
+.mb-tally p{margin:0;padding:0 0 var(--s1) var(--s6)}
+.mb-tally p+p{margin-left:var(--s6);border-left:1px solid var(--rule)}
+.mb-tally b{display:block;font-size:var(--t34);line-height:1;color:var(--ink)}
+.mb-tally span{display:flex;align-items:center;gap:var(--s2);margin-top:var(--s2);font:600 var(--t13)/1.3 var(--b);color:var(--ink-3);white-space:nowrap}
+/* the on-your-team flag: a corner on the box slots, a little blue square here (the key) */
+.mb-flag{position:absolute;z-index:2;left:6px;top:0;width:20px;height:20px;background:var(--mb-flag);clip-path:polygon(4px 0,100% 0,0 100%,0 100%)}
+.mb-flag.mb-key{position:relative;left:auto;flex:none;display:inline-block;width:18px;height:18px;background:var(--mb-flag-key);clip-path:none}
+.mb-flag.mb-key::after{content:"";position:absolute;left:2px;top:2px;width:12px;height:12px;background:var(--mb-flag);clip-path:polygon(3px 0,100% 0,0 100%)}
+
+/* ---- the grid ---- */
+.mb-grid{display:grid;grid-template-columns:clamp(248px,21.2vw,304px) minmax(0,1fr) clamp(296px,23vw,316px);
+  grid-template-areas:"sixh bar card" "six wall card" "score sort card" "score tools card";grid-template-rows:56px minmax(0,1fr) auto auto;column-gap:28px;row-gap:var(--s3)}
+.mb-sixh{grid-area:sixh;display:flex;align-items:center;justify-content:space-between;gap:var(--s3);padding:0 var(--s1);border-bottom:1px solid var(--rule)}
+.mb-sixh h2{margin:0;font-size:var(--t17);line-height:1.2;color:var(--ink)}
+.mb-sixs{display:none}.mb-sixs>span{color:var(--band)}
+.mb-sixh .k-link{white-space:nowrap}
+.mb-six{grid-area:six;display:flex;flex-direction:column;gap:var(--s2);margin:0;padding:0;list-style:none;min-width:0}
+.mb-wall{grid-area:wall}.mb-score{grid-area:score}.mb-sort{grid-area:sort}.mb-tools{grid-area:tools}.mb-side{grid-area:card;min-width:0}.mb-bar{grid-area:bar}
+
+/* ---- Your Six: slanted rows tinted with the first type ---- */
+.mb-pm{position:relative;flex:1 1 0;min-height:72px;display:grid;grid-template-columns:64px minmax(0,1fr) auto;align-items:center;column-gap:var(--s3);padding:var(--s1) var(--s4) var(--s1) 6px;
+  background:linear-gradient(100deg,color-mix(in srgb,var(--ac) 32%,var(--mb-pm)) 0,var(--mb-pm) 60%);color:var(--mb-on-pm);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.mb-pm::before{content:"";position:absolute;left:0;top:0;bottom:0;width:4px;background:var(--ac)}
+.mb-pm img{width:64px;height:64px;object-fit:contain;filter:drop-shadow(0 4px 4px var(--mb-pm-drop))}
+.mb-pn{display:block;min-width:0}
+.mb-pn small{display:block;font:700 var(--t13)/1.2 var(--b);letter-spacing:.1em;text-transform:uppercase;color:var(--mb-pm-sub)}
+.mb-pn b{display:block;font-size:var(--t15);line-height:1.2;white-space:nowrap;overflow-wrap:normal}
+.mb-pn b[data-kf="1"]{font-size:var(--t13)}
+.mb-pn b[data-kf="2"],.mb-pn b[data-kf="3"]{font-family:var(--b);font-weight:700;font-style:normal;font-size:var(--t15);font-stretch:80%}
+.mb-pn b[data-kf="3"]{font-size:var(--t13);font-stretch:75%;letter-spacing:-.01em}
+.mb-pn em>span{display:inline-block}
+.mb-pn em{display:block;margin-top:var(--s1);font:500 var(--t13)/1.3 var(--b);font-style:normal;color:var(--mb-pm-sub)}
+.mb-pr{display:flex;flex-direction:column;align-items:flex-end;gap:6px}
+.mb-pr b{font-size:var(--t24);line-height:1}
+.mb-tier{display:inline-grid;place-items:center;min-height:20px;padding:0 var(--s2);background:var(--tc);color:var(--tier-ink);font-size:var(--t13);line-height:1;white-space:nowrap;clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+.mb-pe{display:grid;place-items:center;grid-template-columns:minmax(0,1fr);background:var(--wash);color:var(--ink-3);font:600 var(--t13)/1.3 var(--b)}
+.mb-pe::before{display:none}
+
+/* ---- the Strength Score card under Your Six ---- */
+.mb-score{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;column-gap:var(--s4);padding:var(--s3) var(--s5);background:var(--wash);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.mb-score>b{font-size:var(--d-mbscore);line-height:1;color:var(--band,var(--plot-text))}
+.mb-score strong{display:block;font-size:var(--t17);line-height:1.2;color:var(--band,var(--plot-text))}
+.mb-score span{display:block;margin-top:var(--s1);font:500 var(--t13)/1.4 var(--b);color:var(--ink-3)}
+
+/* ---- the box bar: black by day, white at night; pink arrows; the box dots ---- */
+.mb-bar{display:grid;grid-template-columns:56px minmax(0,1fr) 56px;align-items:center;background:var(--mb-bar);color:var(--mb-on-bar);clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+.mb-arr{display:grid;place-items:center;width:100%;height:100%;min-height:var(--tap);padding:0;border:0;background:none;color:var(--mb-arrow);cursor:pointer}
+.mb-arr svg{width:14px;height:14px;fill:currentColor}
+.mb-arr:hover{background:color-mix(in srgb,var(--mb-on-bar) 10%,transparent)}
+.mb-arr:focus-visible{outline:3px solid var(--mb-arrow);outline-offset:-6px}
+.mb-bt{display:flex;align-items:center;justify-content:center;gap:var(--s3);min-width:0}
+.mb-bt h2{margin:0;font-size:var(--t26);line-height:1;color:inherit;white-space:nowrap}
+.mb-bt>span{font:600 var(--t13)/1 var(--b);opacity:.72;white-space:nowrap}
+.mb-dots{display:inline-flex}
+.mb-dots button{position:relative;width:28px;height:var(--tap);padding:0;border:0;background:none;color:inherit;cursor:pointer}
+.mb-dots button::after{content:"";position:absolute;left:6px;right:6px;top:50%;height:6px;translate:0 -50%;background:var(--mb-dot-off);transform:skewX(-24deg)}
+.mb-dots button[aria-pressed="true"]::after{background:var(--mb-arrow)}
+.mb-dots button:focus-visible{outline:3px solid var(--mb-arrow);outline-offset:-6px}
+
+/* ---- the wallpaper: the striped blue stage, light from the top right, halftone dots from the bottom left ---- */
+.mb-wall{position:relative;container-type:inline-size;min-width:0;padding:20px var(--s4);overflow:hidden;
+  background:radial-gradient(420px 280px at 88% -4%,var(--mb-wall-hi),transparent 70%),radial-gradient(500px 300px at 0 110%,var(--mb-wall-lo),transparent 70%),linear-gradient(165deg,var(--mb-stage-1),var(--mb-stage-2))}
+.mb-wall::before{content:"";position:absolute;inset:0;background:repeating-linear-gradient(120deg,var(--mb-stripe) 0 16px,transparent 16px 42px);pointer-events:none}
+.mb-wall::after{content:"";position:absolute;inset:0;background:radial-gradient(circle,var(--mb-dot) 1.1px,transparent 1.6px) 0 0/10px 10px;-webkit-mask-image:linear-gradient(30deg,var(--sd-mask),transparent 34%);mask-image:linear-gradient(30deg,var(--sd-mask),transparent 34%);pointer-events:none}
+.mb-wall .bx-grid{position:relative;z-index:1;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));grid-auto-rows:1fr;gap:var(--s3) var(--s1);height:100%}
+/* a slot: thin slanted outline, a soft floor, the sprite, the name in white */
+.mb-t,.bx-slot{position:relative;min-width:0;min-height:96px}
+.mb-t{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:var(--s1);margin:0;padding:0 0 var(--s2);border:0;background:none;color:var(--mb-on-wall);font:inherit;cursor:pointer}
+.mb-t::before,.bx-slot::before{content:"";position:absolute;inset:0 var(--s1);border:1px solid var(--mb-slot-line);transform:skewX(-7deg)}
+.bx-slot::before{border-style:dashed;opacity:.6}
+.mb-t:hover::before{background:var(--mb-slot-hover)}
+.mb-fl{position:absolute;left:50%;bottom:28px;width:64%;height:12px;translate:-50% 0;border-radius:50%;background:radial-gradient(closest-side,var(--mb-floor),transparent)}
+.mb-t img{position:relative;z-index:1;width:min(76px,90%);aspect-ratio:1;object-fit:contain}
+.mb-t>b{position:relative;z-index:1;max-width:100%;font:600 var(--t13)/1.2 var(--b);white-space:nowrap;text-shadow:0 1px 0 var(--mb-name-shade)}
+.mb-t:focus-visible{outline:3px solid var(--mb-on-wall);outline-offset:2px}
+/* the picked slot (or, before a pick, the slot the card shows): white, the yellow ring, the sprite lifted, a blue floor glow, the cursor */
+.mb-t.mb-cur-on::before{border:3px solid var(--mb-ring);background:var(--mb-sel);box-shadow:0 10px 20px -6px var(--mb-sel-shadow)}
+.mb-t.mb-cur-on>b{color:var(--mb-on-sel);text-shadow:none}
+.mb-t.mb-cur-on img{translate:0 -6px}
+.mb-t.mb-cur-on .mb-fl{width:80%;height:16px;background:radial-gradient(closest-side,var(--mb-sel-glow),transparent)}
+.mb-cur{position:absolute;z-index:4;left:50%;top:-20px;width:28px;height:auto;translate:-50% 0;filter:drop-shadow(0 4px 0 var(--mb-cur-drop));pointer-events:none}
+@media (prefers-reduced-motion:no-preference){.mb-t img{transition:translate var(--dur-2) var(--ease-snap)}}
+/* narrow boxes: names a touch narrower, then gone (the card names the slot); smaller sprites */
+@container (max-width:499.98px){.mb-t>b{font-stretch:78%;letter-spacing:-.01em}}
+@container (max-width:399.98px){.mb-t>b{display:none}.mb-t,.bx-slot{min-height:64px}.mb-t{justify-content:center;padding:0}.mb-fl{bottom:6px;height:8px}.mb-flag{left:4px;width:14px;height:14px}
+  .mb-cur{top:-16px;width:20px}}
+
+/* ---- under the box: Arrange by, then Add a Pokémon and the box link tools ---- */
+.mb-cap{display:block;margin:0;font:700 var(--t13)/1.2 var(--b);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
+.mb-sort{display:flex;flex-direction:column;gap:var(--s2);min-width:0;padding-top:var(--s3);border-top:1px solid var(--rule)}
+.mb-seg{display:flex;flex-wrap:wrap;gap:6px}
+.mb-seg .k-chip{flex:1 1 auto;padding:0 var(--s3);font-size:var(--t13)}
+.mb-tools{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);min-width:0}
+.mb-add{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);padding:0 var(--s5);border:0;background:var(--mb-chip);color:var(--mb-on-chip);font-size:var(--t15);line-height:1;white-space:nowrap;cursor:pointer;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.mb-add b{font-style:normal}
+.mb-add:hover{background:var(--plot);color:var(--k-on-plot)}
+.mb-add:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
+.mb-links2{display:flex;flex-wrap:wrap;gap:0 var(--s4);margin-left:auto}
+.mb-links2 .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;cursor:pointer;white-space:nowrap}
+.mb-links2 .mb-reset{color:var(--ink-2)}
+
+/* ---- the card: a foil edge, the type-colour strip, the art, the facts, the buttons ---- */
+.mb-cw{position:relative;height:100%;padding:var(--s1);background:var(--mb-foil);clip-path:polygon(16px 0,100% 0,100% calc(100% - 16px),calc(100% - 16px) 100%,0 100%,0 16px)}
+.mb-card{position:relative;container-type:inline-size;height:100%;display:flex;flex-direction:column;padding:0 var(--s6) var(--s5);color:var(--card-ink);
+  background:repeating-linear-gradient(135deg,var(--mb-card-line) 0 1px,transparent 1px 8px),linear-gradient(170deg,var(--card-face-1),var(--card-face-2));clip-path:polygon(12px 0,100% 0,100% calc(100% - 12px),calc(100% - 12px) 100%,0 100%,0 12px)}
+.mb-strip{display:flex;justify-content:space-between;align-items:center;gap:var(--s3);min-height:var(--tap);margin:0 calc(var(--s6) * -1);padding:0 var(--s6);background:linear-gradient(90deg,var(--t1),var(--t2));color:var(--mb-on-strip);font:700 var(--t13)/1.2 var(--b);letter-spacing:.1em;text-transform:uppercase}
+.mb-top{flex:1;display:flex;flex-direction:column;min-height:0}
+.mb-ph{position:relative;flex:1;min-height:220px;display:grid;place-items:end center;padding-bottom:var(--s2)}
+.mb-gh{position:absolute;right:var(--s2);top:20px;font-size:var(--d-mbgh);line-height:.8;letter-spacing:-.04em;color:transparent;-webkit-text-stroke:2px var(--card-giant);white-space:nowrap;pointer-events:none}
+.mb-ph::after{content:"";position:absolute;left:50%;bottom:var(--s2);width:210px;max-width:90%;height:30px;translate:-50% 0;border-radius:50%;background:radial-gradient(closest-side,var(--mb-art-floor),transparent)}
+.mb-ph img{position:relative;z-index:1;width:100%;max-width:240px;height:220px;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 14px 12px var(--mb-art-drop))}
+.mb-form{min-height:1.2em;margin:var(--s1) 0 0;font:700 var(--t13)/1.2 var(--b);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.mb-nm{margin:0 0 var(--s3);font-size:var(--t34);line-height:1.05;color:var(--card-ink);white-space:nowrap;overflow-wrap:normal}
+.mb-nm[data-kf="1"]{font-size:var(--t28)}.mb-nm[data-kf="2"]{font-size:var(--t24)}.mb-nm[data-kf="3"]{font-size:var(--t20)}
+.mb-ty{display:flex;flex-wrap:wrap;gap:6px}
+.mb-rr{display:flex;align-items:center;gap:var(--s3);margin-top:var(--s4);padding:var(--s3) 0;border-block:1px solid var(--rule)}
+.mb-rr>b{font-size:var(--d-mbrate);line-height:.9;color:var(--plot-text)}
+.mb-rr .mb-tier{min-height:24px;padding:0 var(--s3)}
+.mb-rr small{margin-left:auto;font:500 var(--t13)/1.35 var(--b);color:var(--ink-3);text-align:right}
+.mb-forms{margin-top:var(--s3)}
+.mb-hasf .mb-ph{min-height:140px}.mb-hasf .mb-ph img{height:140px}.mb-hasf .mb-gh{top:var(--s2)}
+.mb-fr{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:var(--s1);margin-top:var(--s2)}
+.mb-f{display:flex;flex-direction:column;align-items:center;gap:2px;min-height:var(--tap);padding:var(--s1);border:0;background:none;color:var(--card-ink);font:inherit;text-align:center;cursor:pointer;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.mb-f img{width:40px;height:40px;object-fit:contain}
+.mb-f span{display:grid;justify-items:center}
+.mb-f b{font:700 var(--t13)/1.2 var(--b)}.mb-f b .mg{display:block}.mb-f b .mg.none{display:block;visibility:hidden}
+.mb-f small{font:500 var(--t13)/1.3 var(--b);color:var(--ink-3)}
+.mb-f[aria-pressed="true"]{background:color-mix(in srgb,var(--plot) 16%,transparent)}
+.mb-f:focus-visible{outline:3px solid var(--plot);outline-offset:-3px}
+.mb-nums{display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;gap:var(--s3);margin:var(--s3) 0 0}
+.mb-nums dt{font:700 var(--t13)/1.2 var(--b);letter-spacing:.1em;text-transform:uppercase;color:var(--ink-3)}
+.mb-nums dd{margin:6px 0 0;font-size:var(--t24);line-height:1;white-space:nowrap}
+.mb-nums .few dd{font-size:var(--t17);line-height:1.2}
+.mb-nums small{display:block;margin-top:2px;font:500 var(--t13)/1.3 var(--b);color:var(--ink-3)}
+.mb-src{margin:var(--s2) 0 0;font:500 var(--t13)/1.4 var(--b);color:var(--ink-3)}
+.mb-acts{display:grid;gap:var(--s2);padding-top:var(--s4)}
+.mb-acts .np-btn,.mb-acts .np-btn2{width:100%}
+.mb-links{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 var(--s3);margin:var(--s2) 0 0}
+.mb-links .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;cursor:pointer;white-space:nowrap}
+.mb-links .mb-rm{color:var(--ink-2)}
+
+/* a narrow card (1280-1360, tablets): a little less padding, the numbers and the strip a size down so nothing runs past the foil */
+@container (max-width:259.98px){.mb-strip{letter-spacing:.04em}.mb-nums dd{font-size:var(--t20)}.mb-nums .few dd{font-size:var(--t15)}.mb-rr>b{font-size:var(--t34)}}
+@media (max-width:1359.98px){.mb-card{padding:0 var(--s4) var(--s4)}.mb-strip{margin:0 calc(var(--s4) * -1);padding:0 var(--s4)}}
+
+/* ---- the box link row (Open a Box Link) and the sync line, under the grid ---- */
+.mb-linkrow{margin-top:var(--s4)}
+.bx-linkin{max-width:880px;padding-bottom:var(--s3)}.bx-linkin .fine{margin:0 0 var(--s2)}
+.mb-linkf{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3)}.mb-linkf .np-field{flex:1 1 280px;min-width:0}
+.bx-msg{margin:var(--s2) 0 0;font-size:var(--t15)}.bx-msg:empty{display:none}
+.bx-sync{margin:0}
+
+/* ---- the empty box: today's underdog keeps it company ---- */
+.mb.is-empty .mb-tools{margin-top:var(--s6)}
+.bx-empty{display:grid;grid-template-columns:auto minmax(0,1fr);gap:var(--s6);align-items:center;padding:var(--s8);background:var(--wash);clip-path:polygon(16px 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+.bx-empty .np-mon{--iw:200px}.bx-empty h2{font-size:var(--t28);margin:0 0 var(--s2)}.bx-empty p{margin:0 0 var(--s4);line-height:1.5}.bx-empty .row{display:flex;flex-wrap:wrap;gap:var(--s3)}
+@media (max-width:599.98px){.bx-empty{grid-template-columns:minmax(0,1fr);clip-path:none}.bx-empty .np-mon{--iw:160px}}
+
+/* ---- the swap sheet (Swap into My Team: pick the one it replaces) ---- */
+.bx-swap{padding:var(--s8)}.bx-swap h2{font-size:var(--t28);margin:var(--s2) 0 var(--s4)}.bx-swap ul{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);list-style:none;margin:0;padding:0}
+.bx-swap .bx-acts{display:flex;flex-wrap:wrap;gap:var(--s3)}
+.bx-swapb{width:100%;padding:var(--s2);border:0;border-radius:var(--r-l);background:none;color:var(--ink);cursor:pointer}.bx-swapb:hover{background:var(--wash)}
+@media (max-width:479.98px){.bx-swap{padding:var(--s6) var(--s4)}}
+
+/* ===== 700-1279: Your Six a strip on top (the Strength Score in its header), the box and the card side by side ===== */
+@media (max-width:1279.98px){
+  .mb-grid{grid-template-columns:minmax(0,1fr) clamp(280px,33vw,316px);grid-template-areas:"sixh sixh" "six six" "bar card" "wall card" "sort card" "tools card";grid-template-rows:auto auto 56px minmax(0,1fr) auto auto}
+  .mb-sixh{min-height:48px}.mb-sixs{display:inline}.mb-score{display:none}
+  .mb-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));margin-bottom:var(--s5)}
+  .mb-pm{grid-template-columns:minmax(0,1fr);justify-items:center;align-content:start;row-gap:var(--s1);padding:var(--s2) var(--s3) var(--s3);text-align:center;clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+  .mb-pm img{width:56px;height:56px}
+  .mb-pn{width:100%}
+  .mb-pr{flex-direction:row;align-items:center}
+  .mb-pr b{font-size:var(--t20)}
+}
+@media (max-width:1023.98px){.mb-pn em{display:none}
+  .mb-head{grid-template-columns:minmax(0,1fr)}.mb-tally{margin-top:var(--s5)}.mb-tally p:first-child{padding-left:0}
+  .mb-seg{gap:var(--s1)}.mb-seg .k-chip{flex:1 1 0;min-width:0;padding:0 var(--s1);font-family:var(--b);font-weight:700;font-style:normal}}
+/* ===== 700-779 and phones: the box takes the full width, the card sits under it (art beside the name), then Add and the box link.
+   (At 780 the box column beside the card is about 360 wide, phone-sized slots; narrower, the slots turned into slivers.) ===== */
+@media (max-width:779.98px){
+  .mb-grid{grid-template-columns:minmax(0,1fr);grid-template-areas:"sixh" "six" "bar" "wall" "sort" "card" "tools";grid-template-rows:none;row-gap:var(--s3)}
+  .mb-side{margin-top:var(--s3)}
+  .mb-card{padding:0 var(--s4) var(--s4)}
+  .mb-strip{margin:0 calc(var(--s4) * -1);padding:0 var(--s4)}
+  .mb-top{display:grid;grid-template-columns:clamp(120px,30%,200px) minmax(0,1fr);align-items:end;column-gap:var(--s3);padding-top:var(--s3)}
+  .mb-ph{min-height:0;padding:0}.mb-gh{display:none}.mb-ph::after{width:100px;bottom:0}
+  .mb-ph img,.mb-hasf .mb-ph img{width:100%;height:clamp(140px,22vw,200px)}
+  .mb-hasf .mb-ph{min-height:0}
+  .mb-nm{font-size:var(--t28)}.mb-nm[data-kf="1"]{font-size:var(--t24)}.mb-nm[data-kf="2"]{font-size:var(--t20)}.mb-nm[data-kf="3"]{font-size:var(--t17)}
+  .mb-rr{flex-wrap:wrap;gap:var(--s1) var(--s2);margin-top:var(--s3);padding:0;border:0}
+  .mb-rr>b{font-size:var(--t34)}
+  .mb-rr small{flex-basis:100%;margin:0;text-align:left}
+  .mb-nums{margin-top:var(--s4);padding-top:var(--s3);border-top:1px solid var(--rule)}
+  .mb-nums dd{font-size:var(--t20)}
+  .mb-acts{grid-template-columns:repeat(auto-fit,minmax(200px,1fr))}
+}
+@media (max-width:779.98px){.mb-pr .mb-tier{display:none}}
+@media (max-width:699.98px){.mb-nm{font-size:var(--t24)}.mb-nm[data-kf="1"]{font-size:var(--t20)}.mb-nm[data-kf="2"],.mb-nm[data-kf="3"]{font-size:var(--t17)}}
+/* ===== phones: one column; the counts in a line; Your Six sprites only; the card inline under the box ===== */
+@media (max-width:699.98px){
+  .mb{padding-top:0}
+  .mb-head{grid-template-columns:minmax(0,1fr);padding-bottom:var(--s4);margin-bottom:var(--s4)}
+  .mb-tally{flex-wrap:wrap;gap:var(--s2) var(--s5);margin-top:var(--s4)}
+  .mb-tally p,.mb-tally p+p{display:flex;align-items:center;gap:6px;margin:0;padding:0;border:0}
+  .mb-tally b{font-size:var(--t20)}.mb-tally span{margin:0}
+  .mb-sixh{min-height:var(--tap);padding:0;border:0}.mb-sixh h2{font-size:var(--t15)}
+  .mb-six{gap:var(--s1);margin-bottom:var(--s3)}
+  .mb-pm{aspect-ratio:1;min-height:0;padding:0;place-items:center;align-content:center;background:linear-gradient(160deg,color-mix(in srgb,var(--ac) 40%,var(--mb-pm)),var(--mb-pm));clip-path:polygon(5px 0,100% 0,calc(100% - 5px) 100%,0 100%)}
+  .mb-pm::before,.mb-pn,.mb-pr{display:none}
+  .mb-pm img{width:90%;height:90%}
+  .mb-pe{font-size:var(--t13)}.mb-pe span{display:none}
+  .mb-bar{grid-template-columns:48px minmax(0,1fr) 48px;min-height:48px;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+  .mb-bt h2{font-size:var(--t20)}
+  .mb-wall{padding:var(--s3) var(--s2)}
+  .mb-wall .bx-grid{gap:6px 0}
+  .mb-sort{padding-top:var(--s1);border:0}.mb-sort .mb-cap{display:none}
+  .mb .k-kicker{font-size:var(--t13)}
+  .mb-tools{gap:0;margin-top:var(--s3)}
+  .mb-add{flex:1 1 100%}
+  .mb-links2{display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;width:100%;margin:0}
+  .mb-links2 .np-link{font-size:var(--t13)}
+  .mb-dots{display:none}
+}
+/* the narrowest cards and phones (320-359): the strip's two labels stay on one line, the header and the sort words a step tighter */
+@container (max-width:279.98px){.mb-strip{letter-spacing:0}}
+@media (max-width:359.98px){.mb-sixh h2,.mb-sixh .k-link{font-size:var(--t13)}.mb-seg .k-chip{font-stretch:80%}.mb-seg .k-chip>span{letter-spacing:-.01em}}

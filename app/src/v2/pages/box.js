@@ -2,88 +2,112 @@
 // unchanged it says so, as the sample team does
 V2.boxSample = () => { try { const d = new Set(DEFAULT_BOX.map(b => b === 'Rotom' ? 'Rotom-Wash' : b).filter(b => byName.has(b) && !byName.get(b).m));
   return S.box.length === d.size && S.box.every(b => d.has(b)); } catch (e) { return false; } };
-// ---------- My Box (R4, Nov 11) ----------
-// Sim's chosen concept (docs/redesign/box/NOTES.md, Nov 10): an in-game Pokémon box in the light design. Boxes of 30 (six across
-// on wide screens, five on phones), a wallpaper mixed from the types inside, the picked Pokémon lifted onto a tile with its
-// summary beside the box (on phones: a sheet from the bottom), your team underneath. Every step is today's shared code
-// (31-box-data.js, 45-team-links.js): sort, add, remove, reset, Undo, box links. Rule fixes from NOTES.md: slanted chips, not
-// rounded pills; one size per kind of text (long names use the narrower width of the same font, never a smaller size); dark mode.
+// ---------- My Box: "The PC" (Sim chose the design Nov 23; the six new items approved 7:48 AM) ----------
+// Brief docs/rebuild/reskin/mybox-pc-brief.md, mock-up docs/mockups/mybox-pc/. The game's PC box on the kit: Your Six on the left (each
+// member's real item · Ability and rating, the Strength Score under them), the box in the middle (boxes of 30, six across and five down on
+// every screen, the blue wallpaper, the logo's chevron as the cursor over the picked slot), and the foil trading card on the right with the
+// picked Pokémon ("Box 1 · Slot 2"). 700-1279: Your Six becomes a strip on top, box and card side by side; phones: one column, the card
+// inline under the box (no bottom sheet). Every step is today's shared code (31-box-data.js, 45-team-links.js): sort, add, remove, reset,
+// Undo, box links. Hooks kept for the tests: data-bx*, .bx-grid, .bx-count, .bx-side, .bx-empty, [data-v2slide="box-sort"].
+// Earlier: R4 (Nov 11), Sim's in-game box concept (docs/redesign/box/NOTES.md).
 
 V2.bx = {page: 0, sel: null, ask: false};
-// no icons: only Rating has one in the slider's set, and one taller button breaks the row (ik 'none' turns them off)
-const BX_SORTS = [['az', 'A–Z', 'none'], ['type', 'Type', 'none'], ['new', 'Newest', 'none'], ['old', 'Oldest', 'none'], ['rating', 'Rating', 'none']];
+const BX_SORTS = [['az', 'A–Z'], ['type', 'Type'], ['new', 'Newest'], ['old', 'Oldest'], ['rating', 'Rating']];
 V2.bxPer = () => 30;
 // the box's pages: 30 each, in the chosen order
 V2.bxData = () => { const so = boxSortNow(), rows = boxRows(so), per = V2.bxPer(), pages = Math.max(1, Math.ceil(rows.length / per));
   if (V2.bx.page >= pages) V2.bx.page = pages - 1; if (V2.bx.page < 0) V2.bx.page = 0;
   const on = new Set(members().map(m => ownKey(m.p)));
-  // E18 proposal (Sim's check, Nov 12): nothing is picked until the player taps; wide screens (side panel) show the first tile's
-  // summary meanwhile ("shown"), and only there does that tile look picked (.auto, CSS from 900px); phones show no pick on load
+  // E18 (Sim's check, Nov 12): nothing is picked until the player taps; the card shows the first slot meanwhile ("shown"), and only that
+  // slot wears the cursor (its button is not pressed). The PC (Nov 23): the card is on every screen now (phones too, inline), so the
+  // shown slot has the cursor on phones as well.
   if (V2.bx.sel && !S.box.includes(V2.bx.sel)) V2.bx.sel = null;
   const here = rows.slice(V2.bx.page * per, V2.bx.page * per + per);
+  if (V2.bx.sel && !here.some(r => r[0] === V2.bx.sel)) V2.bx.sel = null; /* a pick on another box (after a sort) is let go: the card shows this box */
   return {so, rows, per, pages, on, here, shown: V2.bx.sel || (here[0] || [])[0] || null}; };
-// what the page header says about this box's range: letters for A–Z, types for Type, the order otherwise
+// what the box bar says about this box's range: letters for A–Z, types for Type, the order otherwise (screen readers; the bar shows "n of N")
 V2.bxRange = (so, here) => { if (!here.length) return ''; const a = here[0], z = here[here.length - 1];
   if (so === 'az' || so === 'za') return `${a[1][0]} to ${z[1][0]}`;
   if (so === 'type') { const t = r => ((byName.get(r[0]) || {}).t || [''])[0]; return t(a) === t(z) ? t(a) : `${t(a)} to ${t(z)}`; }
   return {new: 'Newest first', old: 'Oldest first', rating: 'Highest rated first'}[so] || ''; };
-// the wallpaper: one soft colour per corner from the four most common types in this box (ties: A–Z), rays over it
-V2.bxWall = here => { const c = {}; for (const [n] of here) { const p = byName.get(n); if (p) for (const t of p.t) c[t] = (c[t] || 0) + (t === p.t[0] ? 2 : 1); }
-  const ts = Object.keys(c).sort((a, b) => c[b] - c[a] || a.localeCompare(b)); while (ts.length < 4) ts.push(ts[ts.length - 1] || 'Normal');
-  return ts.slice(0, 4).map((t, i) => `--w${i}:var(--tyn-${t})`).join(';'); };
+// the cursor: the logo's chevron (Home's "raise" arrow, V2.sdhChv), pink over blue with its ink and white edges
+V2.bxChv = () => (V2.sdhChv ? V2.sdhChv() : '').replace(/^<span[^>]*>/, '').replace(/<\/span>$/, '').replace('<svg ', '<svg class="mb-cur" aria-hidden="true" ');
+// one slot: the sprite on its floor, the name (hidden where the slot is too narrow: phones), the on-your-team corner flag, the cursor
+V2.bxTile = (n, d, on, sel, shown, k) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null;
+  return `<button type="button" class="bx-t mb-t${sel ? ' sel' : ''}${shown ? ' mb-cur-on' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}, slot ${k}${on ? ', on your team' : ''}">${on ? '<i class="mb-flag" aria-hidden="true"></i>' : ''}${shown ? V2.bxChv() : ''}<i class="mb-fl" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy" decoding="async">` : ''}<b>${V2.tileName(d)}</b></button>`; };
+const bxTierC = k => `var(--tier-${String(k || 'f').toLowerCase()})`;
+const bxTierChip = k => `<span class="mb-tier u" style="--tc:${bxTierC(k)}">${V2.esc(k)}&nbsp;tier</span>`;
+// Your Six: the team in its order, each row tinted with its first type, its real item · Ability (the team's set) and its rating
+V2.bxSix = ms => { const E = V2.esc;
+  const row = m => { const id = SPRITE_ID[m.p.n], k = V2.kName(m.p.n), R = monRating(m.p), it = m.heldItem || m.item || 'No item', t = (m.p.t || [])[0];
+    return `<li class="mb-pm" style="--ac:var(--ty-${V2.TYPES.includes(t) ? t : 'Normal'})"><img src="${V2.art(id)}" alt="" loading="lazy" decoding="async"><span class="mb-pn"><small${k.form ? '' : ' aria-hidden="true"'}>${k.form ? E(k.form) : '&nbsp;'}</small><b class="u" data-kmax="3">${E(k.name).replace(/ (\S)$/, '&nbsp;$1')}</b><em><span>${V2.keepForm(E(it))}${m.ability ? ' ·' : ''}</span>${m.ability ? ` <span>${E(m.ability)}</span>` : ''}</em></span>${R ? `<span class="mb-pr"><b class="u">${R.n}</b>${bxTierChip(R.tier)}</span>` : ''}</li>`; };
+  const empty = Array.from({length: Math.max(0, 6 - ms.length)}, () => '<li class="mb-pm mb-pe"><span>Empty spot</span></li>').join('');
+  return `<ol class="mb-six" aria-label="Your Six">${ms.map(row).join('')}${empty}</ol>`; };
+// the team's Strength Score: the same number and band word My Team shows (team.js), the team's name under it
+V2.bxScoreOf = ms => { if (!ms.length) return null; try { const RD = prepOf(ms), G = RD ? CH.gradeOf(RD, proChecks(ms, true), ms) : null; if (!G) return null;
+  return {s: Math.round(G.s), word: CH.wordOf(G.s), so: G.partial ? ' so far' : '', band: ({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[G.band] || 'solid'}; } catch (e) { return null; } };
 
-V2.bxTile = (n, d, on, sel, auto) => `<button type="button" class="bx-t${sel ? ' sel' : auto ? ' auto' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}${on ? ', on your team' : ''}">${V2.mon(n, {iw: 96, bare: true})}<b>${on ? '<i class="bx-on" aria-hidden="true"></i>' : ''}${V2.esc(d)}</b></button>`;
-
-// the summary of the picked Pokémon (beside the box on wide screens, in a sheet on phones)
-// F proposal (Sim, Nov 12): a species with more than one form (a Mega) shows a Forms row, as the info sheet does; the tapped form's
-// rating and numbers fill the panel, Info Sheet opens that form and Add / Swap adds that form (as the info sheet's own Add does).
-// The box itself keeps the species (n); Remove from Box removes the species.
+// the card: the picked Pokémon as a foil trading card (the strip names its box and slot, and says if it is on your team)
+// F (Sim, Nov 12): a species with more than one form (a Mega) shows a Forms row; the tapped form's rating and numbers fill the card, the
+// Pokémon Page opens that form and Add / Swap adds that form. The box keeps the species (n); Remove from Box removes the species.
 V2.bxSum = (n, o = {}) => { const b = byName.get(n); if (!b) return ''; const fs = ROSTER.filter(q => q.b === b.b), F = V2.bx.form && V2.bx.form.of === n && fs.some(q => q.n === V2.bx.form.f) ? V2.bx.form.f : n;
-  const p = byName.get(F), E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p);
-  const onTeam = members().some(m => ownKey(m.p) === n), st = V2.addState(F), full = st === 'full';
-  const forms = fs.length > 1 ? `<div class="bx-forms"><div class="np-eyebrow">Forms · tap one to show it</div><div class="bx-fr" role="group" aria-label="Forms of ${E(V2.disp(b.b))}">${fs.map(q => { const rq = rating(q);
-    return `<button type="button" class="ms-f bx-f" data-bxform="${E(q.n)}" data-bxof="${E(n)}" aria-pressed="${q.n === F}">${V2.mon(q.n, {iw: 48, bare: true})}<span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${RS(rq.total)} · ${E(lTier(rq.total).k)} tier</small></span></button>`; }).join('')}</div></div>` : '';
-  const num = (b, l, sm, w) => `<div class="bx-n${w ? ' few' : ''}"><b>${b}</b><span>${l}</span>${sm ? `<small>${sm}</small>` : ''}</div>`; // sm: the info sheet's words for too few games (rule 10.1, i42)
-  return `<div class="bx-sum${o.sheet ? ' in-sheet' : ''}"><div class="bx-art" style="--cp:${V2.cp(F)}">${V2.mon(F, {sel: true, iw: o.sheet ? 180 : 240, bare: true})}<p class="bx-plate"><b>Rated ${rs}</b> · ${E(T.k)} tier</p></div>
-    <div class="bx-sumb"><h2 class="u">${V2.nameHtml(V2.disp(F))}</h2><div class="bx-ty">${(p.t || []).map(V2.typeChip).join('')}${onTeam ? '<span class="np-chip bx-chip">On your team</span>' : ''}</div>${forms}
-    <div class="bx-nums">${num(E(V2.shareTxt(H)), 'of tournament teams')}${(H.hW != null && H.hG >= 30 ? num(E(pctFmt(H.hW)), 'win rate') : num('Too few', 'win rate', H.hG ? Math.round(H.hG) + ' games' : 'no tournament games yet', true)) /* Box Q3 B (Sim, Nov 13): too few games said in words, not a lone dash */}${num(p.st[5], 'base Speed')}</div>
-    <div class="bx-acts">${onTeam ? '' : `<button type="button" class="np-btn" data-bxteam="${E(F)}">${full ? 'Swap Into My Team' : 'Add to My Team'}</button>`}<button type="button" class="${onTeam ? 'np-btn' : 'np-btn2 k-btn'}" data-v2mon="${E(F)}">${onTeam ? 'Pokémon Page' : '<span>Pokémon Page</span>'}</button><button type="button" class="np-btn2 k-btn" data-hmaround="${E(F)}"><span>Build Around It</span></button><button type="button" class="np-btn2 k-btn" data-bxrm="${E(n)}"><span>Remove from Box</span></button></div></div></div>`; }; // Build Around It: Sim, Nov 13 (My Box Q2 B, as the approved mock-up); Home's handler (ui.abLock, then Build)
+  const p = byName.get(F), E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), id = SPRITE_ID[F];
+  const kn = V2.kName(F), onTeam = members().some(m => ownKey(m.p) === n), st = V2.addState(F), full = st === 'full', t1 = (p.t || [])[0], t2 = (p.t || [])[1] || t1;
+  const forms = fs.length > 1 ? `<div class="mb-forms"><p class="mb-cap">Forms · tap one to show it</p><div class="mb-fr" role="group" aria-label="Forms of ${E(V2.disp(b.b))}">${fs.map(q => { const rq = rating(q);
+    return `<button type="button" class="mb-f" data-bxform="${E(q.n)}" data-bxof="${E(n)}" aria-pressed="${q.n === F}"><img src="${V2.art(SPRITE_ID[q.n])}" alt="" loading="lazy" decoding="async"><span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${RS(rq.total)} · ${E(lTier(rq.total).k)} tier</small></span></button>`; }).join('')}</div></div>` : '';
+  // Usage / Win rate / Speed: win rate needs 30+ tournament games, as today (Box Q3 B, Sim Nov 13: too few games said in words)
+  const few = !(H.hW != null && H.hG >= 30), ad = (V2.asOf && V2.asOf().match(/[A-Z][a-z]{2} \d{1,2}/)) || null;
+  const src = (H.hU != null ? 'Online tournaments' : 'No tournament games yet') + (ad ? ', ' + ad[0] : '');
+  const rk = rankTxt(p, 'cap');
+  const main = onTeam ? `<button type="button" class="np-btn mb-main" data-hmaround="${E(F)}">Build Around It</button>`
+    : `<button type="button" class="np-btn mb-main" data-bxteam="${E(F)}">${full ? 'Swap into My Team' : 'Add to My Team'}</button><button type="button" class="np-btn2 k-btn" data-hmaround="${E(F)}"><span>Build Around It</span></button>`;
+  return `<div class="mb-cw" style="--t1:var(--ty-${V2.TYPES.includes(t1) ? t1 : 'Normal'});--t2:var(--ty-${V2.TYPES.includes(t2) ? t2 : 'Normal'})"><div class="mb-card bx-sum${fs.length > 1 ? ' mb-hasf' : ''}">
+    <p class="mb-strip"><span>${o.slot ? `Box ${o.box} · Slot ${o.slot}` : 'In your box'}</span><span>${onTeam ? 'On your team' : 'Not on your team'}</span></p>
+    <div class="mb-top"><div class="mb-ph"><span class="mb-gh u" aria-hidden="true">${rs}</span><img src="${V2.art(id, true)}" alt="" decoding="async"></div>
+    <div class="mb-idn"><p class="mb-form"${kn.form ? '' : ' aria-hidden="true"'}>${kn.form ? E(kn.form) : '&nbsp;'}</p><h2 class="mb-nm u" data-kmax="3">${E(kn.name).replace(/ (\S)$/, '&nbsp;$1')}</h2><div class="mb-ty">${(p.t || []).map(V2.typeChip).join('')}</div>
+    <div class="mb-rr"><b class="u">${rs}</b>${bxTierChip(T.k)}<small>${rk ? E(rk) : 'No tournament results yet'}</small></div></div></div>${forms}
+    <dl class="mb-nums"><div><dt>Usage</dt><dd class="u">${E(V2.shareTxt(H))}</dd></div><div${few ? ' class="few"' : ''}><dt>Win rate</dt><dd class="u">${few ? 'Too few' : E(pctFmt(H.hW))}</dd>${few ? `<small>${H.hG ? Math.round(H.hG) + ' games' : 'No games yet'}</small>` : ''}</div><div><dt>Speed</dt><dd class="u">${p.st[5]}</dd></div></dl>
+    <p class="mb-src">${E(src)}</p>
+    <div class="mb-acts">${main}</div>
+    <p class="mb-links"><button type="button" class="np-link" data-v2mon="${E(F)}">Pokémon Page ›</button><button type="button" class="np-link mb-rm" data-bxrm="${E(n)}">Remove from Box</button></p></div></div>`; }; // Build Around It: Sim, Nov 13 (My Box Q2 B); Home's handler (ui.abLock, then Build)
 
-// E20 proposal (Sim's check, Nov 12): the shared syncText names the Claude account, which can't be on the public site; the new site
-// says it in plain words (today's site keeps its wording). Local = this browser's storage, so "browser", not "device".
+// E20 (Sim's check, Nov 12): the shared syncText names the Claude account, which can't be on the public site; plain words here.
 V2.syncTxt = st => !V2.canStore ? V2.noStoreTxt : st === 'local' ? 'Saved in this browser only. To use your box on another device, copy its box link.' : 'Saved and kept in step across your devices.';
-// E19 proposal (Sim's check, Nov 12): the share is stored rounded to 0.1 (meta_tour), so 0 with tournament games means under 0.05%:
-// shown as "<0.1%" (the site's own rule for tiny shares, pctFmt); no tournament games at all stays "–"
+// E19 (Sim's check, Nov 12): a 0 share with tournament games is under 0.05%: "<0.1%"; no tournament games at all stays "–"
 V2.shareTxt = H => H.hU == null ? '–' : +H.hU === 0 && H.hG > 0 ? '<0.1%' : pctFmt(H.hU);
 V2.bxEmpty = () => { const n = V2.underdog(), d = V2.esc(V2.disp(n));
   return `<div class="bx-empty"><button type="button" class="bx-mon" data-v2mon="${V2.esc(n)}" aria-label="${d}: open its info">${V2.mon(n, {bare: true, ft: true})}</button><div><h2 class="u">Your box is empty.</h2><p>Add the Pokémon you own, and Build and the suggestions pick from them. ${d} would love a spot.</p>
     <div class="row"><button type="button" class="np-btn" data-bxadd><span>Add a Pokémon</span></button><button type="button" class="np-btn2 k-btn" data-bxaddn="${V2.esc(n)}"><span>Add ${d}</span></button></div></div></div>`; };
 
-V2.pages.box = {place: 'box', draw() { const D = V2.bxData(), E = V2.esc, n = S.box.length;
-  const head = `<div class="bx-lead"><div class="np-eyebrow"><span><a class="np-back" href="#team">← My Team</a> · The Pokémon you own</span></div><h1 class="u">My Box</h1>
-    <p class="bx-count">${n} Pokémon${V2.boxSample() ? ' (sample)' : ''}${n ? ` · ${D.pages} box${D.pages > 1 ? 'es' : ''}` : ''}</p><p class="bx-why">${V2.boxSample() ? 'A sample box to start with: add the Pokémon you own and remove the rest. ' : ''}Build and the suggestions pick from these when set to “My Box”.</p>
-    <button type="button" class="bx-add" data-bxadd><span>Add a Pokémon</span><b aria-hidden="true">+</b></button></div>`;
-  const sort = `<div class="bx-sort"><span class="lbl">Arrange by</span>${V2.slide('box-sort', BX_SORTS, D.so === 'za' ? 'az' : D.so, 'Arrange by')}</div>`;
-  const tools = `<div class="bx-tools"><ul class="bx-links"><li><button type="button" data-bxlink="copy">Copy Box Link</button></li><li><button type="button" data-bxlink="open" aria-expanded="${!!V2.bx.linkOpen}">Open a Box Link</button>
-      <div class="bx-linkin"${V2.bx.linkOpen ? '' : ' hidden'}><p class="fine">Paste a box link or code from another device, account or friend.</p><label class="np-field"><input data-bxlinkin aria-label="Box link or code" autocomplete="off" value="${E(V2.bx.linkVal || '')}"></label>
-      <div class="row"><button type="button" class="np-btn2 k-btn" data-bxlink="add"><span>Add to My Box</span></button><button type="button" class="np-btn2 k-btn" data-bxlink="replace"><span>Replace My Box</span></button></div><p class="bx-msg" data-bxmsg role="status">${E(V2.bx.msg || '')}</p></div></li>
-      <li><button type="button" data-bxreset>${V2.bx.ask ? 'Tap Again to Reset' : 'Reset Box'}</button></li></ul>
+V2.pages.box = {place: 'box', draw() { const D = V2.bxData(), E = V2.esc, n = S.box.length, smp = V2.boxSample(), ms = members();
+  const onN = S.box.filter(b => D.on.has(b)).length;
+  const head = `<div class="mb-head"><header class="k-head"><p class="k-kicker"><a class="mb-back" href="#team">← My Team</a> · The Pokémon you own</p><h1 class="k-h1 u">My <em>Box</em></h1>
+    <p class="k-lead">${smp ? 'A sample box to start with: add the Pokémon you own and remove the rest. ' : ''}Build and the suggestions pick from these when set to “My Box”.</p></header>
+    <div class="mb-tally bx-count"><p><b class="u">${n}</b><span>Pokémon${smp ? ' (sample)' : ''}</span></p>${n ? `<p><b class="u">${D.pages}</b><span>${D.pages > 1 ? 'Boxes' : 'Box'}</span></p><p><b class="u">${onN}</b><span><i class="mb-flag mb-key" aria-hidden="true"></i>On your team</span></p>` : ''}</div></div>`;
+  const sort = `<div class="mb-sort"><span class="mb-cap" id="mb-sortl">Arrange by</span><div class="mb-seg" role="group" aria-labelledby="mb-sortl" data-v2slide="box-sort">${BX_SORTS.map(([v, t]) => `<button type="button" class="k-chip" data-v="${v}" aria-pressed="${(D.so === 'za' ? 'az' : D.so) === v}"><span>${t}</span></button>`).join('')}</div></div>`;
+  const tools = `<div class="mb-tools"><button type="button" class="mb-add u" data-bxadd><span><b aria-hidden="true">+</b> Add a Pokémon</span></button><span class="mb-links2"><button type="button" class="np-link" data-bxlink="copy">Copy Box Link</button><button type="button" class="np-link" data-bxlink="open" aria-expanded="${!!V2.bx.linkOpen}">Open a Box Link</button><button type="button" class="np-link mb-reset" data-bxreset>${V2.bx.ask ? 'Tap Again to Reset' : 'Reset Box'}</button></span></div>`;
+  const linkRow = `<div class="mb-linkrow">${V2.bx.linkOpen ? `<div class="bx-linkin"><p class="fine">Paste a box link or code from another device, account or friend.</p><div class="mb-linkf"><label class="np-field"><input data-bxlinkin aria-label="Box link or code" autocomplete="off" value="${E(V2.bx.linkVal || '')}"></label>
+      <button type="button" class="np-btn2 k-btn" data-bxlink="add"><span>Add to My Box</span></button><button type="button" class="np-btn2 k-btn" data-bxlink="replace"><span>Replace My Box</span></button></div><p class="bx-msg" data-bxmsg role="status">${E(V2.bx.msg || '')}</p></div>` : ''}
     <p class="fine bx-sync">${E(V2.syncTxt(ui.syncSt || 'local'))}</p></div>`;
-  if (!n) return `<section class="bx2 is-empty">${head}<div class="bx-mid">${V2.bxEmpty()}</div>${tools}</section>`;
-  const nav = D.pages > 1, dots = nav ? `<div class="bx-dots" role="group" aria-label="Boxes">${Array.from({length: D.pages}, (_, i) => `<button type="button" data-bxpage="${i}" aria-label="Box ${i + 1}" aria-pressed="${i === V2.bx.page}"></button>`).join('')}</div>` : '';
-  const box = `<div class="bx-box" style="${V2.bxWall(D.here)}" data-bxswipe><div class="bx-hd">${nav ? '<button type="button" class="bx-arr" data-bxgo="-1" aria-label="Previous box"><span>◀</span></button>' : '<span></span>'}
-      <div class="bx-name"><h2 class="u">Box ${V2.bx.page + 1}</h2><p>${D.here.length} of ${n} · ${E(V2.bxRange(D.so, D.here))}</p></div>${nav ? '<button type="button" class="bx-arr" data-bxgo="1" aria-label="Next box"><span>▶</span></button>' : '<span></span>'}</div>
-    ${D.here.some(([b]) => D.on.has(b)) ? '<p class="bx-onkey"><i class="bx-on" aria-hidden="true"></i>On your team</p>' : ''}<div class="bx-grid">${D.here.map(([b, d]) => V2.bxTile(b, d, D.on.has(b), b === V2.bx.sel, !V2.bx.sel && b === D.shown)).join('')}${nav ? '<i class="bx-slot" aria-hidden="true"></i>'.repeat(Math.max(0, D.per - D.here.length)) : ''}</div>${dots}</div>`;
-  const ms = members(), four = ms.length >= 4 ? CH.four(ms) : null, role = m => !four ? '' : four.lead.includes(m.p.n) ? 'Lead' : four.back.includes(m.p.n) ? 'Back' : 'Bench';
-  const team = `<div class="bx-team"><div class="bx-teamhd"><h2 class="u">Your Team</h2><a class="np-link" href="#team">Open My Team ›</a></div>
-    ${ms.length ? `<ul>${(four ? [...ms].sort((a, b) => ['Lead', 'Back', 'Bench'].indexOf(role(a)) - ['Lead', 'Back', 'Bench'].indexOf(role(b))) : ms).map(m => `<li>${V2.mon(m.p.n, {iw: 72, sub: role(m)})}</li>`).join('')}</ul>` : '<p class="fine">No team yet. Pick a Pokémon in your box and add it.</p>'}</div>`;
-  return `<section class="bx2">${head}<div class="bx-mid">${sort}${box}</div>${team}<aside class="bx-side" aria-label="Picked Pokémon">${D.shown ? V2.bxSum(D.shown) : ''}</aside>${tools}</section>`; }};
+  if (!n) return `<section class="bx2 mb is-empty">${head}${V2.bxEmpty()}${tools}${linkRow}</section>`;
+  const nav = D.pages > 1, k0 = D.here.findIndex(r => r[0] === D.shown);
+  const dots = nav ? `<span class="mb-dots" role="group" aria-label="Boxes">${Array.from({length: D.pages}, (_, i) => `<button type="button" data-bxpage="${i}" aria-label="Box ${i + 1}" aria-pressed="${i === V2.bx.page}"></button>`).join('')}</span>` : '';
+  const arr = d => nav ? `<button type="button" class="mb-arr" data-bxgo="${d}" aria-label="${d < 0 ? 'Previous' : 'Next'} box"><svg viewBox="0 0 12 12" aria-hidden="true"><path d="${d < 0 ? 'M9 1 3 6l6 5z' : 'M3 1l6 5-6 5z'}"/></svg></button>` : '<span></span>';
+  const bar = `<div class="mb-bar">${arr(-1)}<div class="mb-bt"><h2 class="u">Box ${V2.bx.page + 1}</h2><span>${D.here.length} of ${n}<span class="vh"> · ${E(V2.bxRange(D.so, D.here))}</span></span>${dots}</div>${arr(1)}</div>`;
+  const wall = `<div class="mb-wall" data-bxswipe><div class="bx-grid">${D.here.map(([b, d], i) => V2.bxTile(b, d, D.on.has(b), b === V2.bx.sel, b === D.shown, i + 1)).join('')}${'<i class="bx-slot" aria-hidden="true"></i>'.repeat(Math.max(0, D.per - D.here.length))}</div></div>`;
+  const sc = V2.bxScoreOf(ms), title = ms.length ? teamTitleFor(ms) : '';
+  const sixh = `<div class="mb-sixh"><h2 class="u">Your Six${sc ? `<span class="mb-sixs"> · <span style="--band:var(--band-${sc.band})">${sc.s} ${E(sc.word)}</span></span>` : ''}</h2><a class="k-link" href="#team">Open My Team&nbsp;›</a></div>`;
+  const score = `<div class="mb-score"${sc ? ` style="--band:var(--band-${sc.band})"` : ''}>${sc ? `<b class="u">${sc.s}</b><div><strong class="u">${E(sc.word)}</strong><span>Strength Score${sc.so}${title ? ' · ' + E(title) : ''}</span></div>` : `<div><strong class="u">${ms.length ? 'Not rated yet' : 'No team yet'}</strong><span>${ms.length ? `${ms.length} of 6 picked. The Strength Score shows once the team can be rated.` : 'Pick a Pokémon in your box and add it.'}</span></div>`}</div>`;
+  const card = `<aside class="mb-side bx-side" aria-label="Picked Pokémon">${D.shown ? V2.bxSum(D.shown, {box: V2.bx.page + 1, slot: k0 + 1}) : ''}</aside>`;
+  return `<section class="bx2 mb">${head}<div class="mb-grid">${sixh}${bar}${V2.bxSix(ms)}${wall}${score}${sort}${card}${tools}</div>${linkRow}</section>`; }};
 
 // ---------- actions ----------
 const bxRe = () => V2.redraw();
-V2.bxNarrow = () => matchMedia('(max-width:899.98px)').matches;
-V2.bxPick = n => { V2.bx.sel = n; V2.bx.form = null; if (V2.bxNarrow()) { bxRe(); V2.sheet(V2.bxSum(n, {sheet: true}), {label: V2.disp(n), small: true}); return; } bxRe();
-  const t = document.querySelector(`[data-bxsel="${CSS.escape(n)}"]`); if (t) t.focus({preventScroll: true}); };
+// The PC (Nov 23): the card is on the page at every width (phones: under the box), so a pick never opens a sheet. On phones, when the card
+// is below the screen, the page brings its top into view; focus stays on the slot, so the arrow keys keep moving through the box.
+V2.bxPick = n => { V2.bx.sel = n; V2.bx.form = null; bxRe();
+  const t = document.querySelector(`[data-bxsel="${CSS.escape(n)}"]`); if (t) t.focus({preventScroll: true});
+  const c = document.querySelector('#main .mb-side'); if (c && innerWidth < 700) { const r = c.getBoundingClientRect(); if (r.top > innerHeight - 96) scrollBy({top: r.top - innerHeight + Math.min(r.height, innerHeight * .6), behavior: V2.smooth ? V2.smooth() : 'auto'}); } };
 V2.bxToast = t => V2.toast(V2.esc(t) + ' <button type="button" data-bxundo>Undo</button>', V2.UNDO_MS);
 V2.bxAddPick = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">Add to My Box</h2><label class="np-field">${V2.ICON.search}<input type="search" data-bxq placeholder="Find a Pokémon you own" aria-label="Add a Pokémon to your box" autocomplete="off">${V2.CLR}</label><div class="hits" data-bxhits aria-live="polite"></div></div>`, {label: 'Add to My Box', small: true, focus: '[data-bxq]'});
   const inp = sh.querySelector('[data-bxq]'), out = sh.querySelector('[data-bxhits]');
@@ -113,9 +137,8 @@ V2.bxGo = d => { const D = V2.bxData(); V2.bx.page = (V2.bx.page + d + D.pages) 
 document.addEventListener('click', async e => { const t = e.target.closest && e.target.closest('[data-bxsel],[data-bxform],[data-bxgo],[data-bxpage],[data-bxadd],[data-bxaddn],[data-bxteam],[data-bxrm],[data-bxreset],[data-bxlink],[data-bxundo]'); if (!t) return;
   const d = t.dataset;
   if (d.bxsel) V2.bxPick(d.bxsel);
-  else if (d.bxform) { V2.bx.sel = d.bxof; V2.bx.form = {of: d.bxof, f: d.bxform}; const sh = document.querySelector('.bx-sum.in-sheet');
-    if (sh) sh.outerHTML = V2.bxSum(d.bxof, {sheet: true}); else bxRe();
-    const k = document.querySelector(`${sh ? ".bx-sum.in-sheet" : ".bx-side"} [data-bxform="${CSS.escape(d.bxform)}"]`); if (k) k.focus({preventScroll: true}); }
+  else if (d.bxform) { V2.bx.sel = d.bxof; V2.bx.form = {of: d.bxof, f: d.bxform}; bxRe();
+    const k = document.querySelector(`.bx-side [data-bxform="${CSS.escape(d.bxform)}"]`); if (k) k.focus({preventScroll: true}); }
   else if (d.bxgo) V2.bxGo(+d.bxgo);
   else if (d.bxpage !== undefined) { V2.bx.page = +d.bxpage; V2.bx.sel = null; bxRe(); }
   else if (d.bxadd !== undefined) V2.bxAddPick();
