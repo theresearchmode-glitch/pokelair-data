@@ -98,7 +98,7 @@ ul.items{list-style:none;margin:0;padding:0;background:var(--card);border-radius
 
 <script>
 // HH keeps this list accurate. s: done | doing | wait | todo. Every done item names when it landed.
-const UPDATED = 'Mon Nov 23, 10:45 AM Eastern';
+const UPDATED = 'Mon Nov 23, 11:36 AM Eastern';
 const STOPS = [
   {s:'done', t:'The look is chosen', when:'Nov 21, morning', d:'One theme for every page: the crew planning the job (Sim, 8:35 AM).'},
   {s:'now',  t:'Reskin every page', when:'now → about Tue Nov 24', d:'Page by page on the shared kit, pictures to Sim for each.'},
@@ -123,7 +123,7 @@ const PHASES = [
   ['done','Calc: Pokémon names, HP line, All moves clip fix','5:54 PM: merged; arena, q46, q47 pass.'],
   ['done','Home stays as it is today','7:10 PM: Sim chose to keep its bold bands; the kit version is kept on a tag only.'],
   ['done','My Box stays as it is','11:57 AM: Sim: no change.'],
-  ['doing','My Box: The PC (redesign)','Built by hB (all functions kept; A-team 139/0, qcheck 0 new, tap-size, polish better than before; shorter at 320-1280). On the Preview (v245, 10:44 AM) for Sim\'s review; 1440 +3px and 600 ~+50px need his OK.'],
+  ['doing','My Box: The PC (redesign)','Built by hB, merged 2225343a (all functions kept; A-team 139/0, WebKit 0 fail, qcheck 0 new, tap-size). On the Preview (v245) for Sim\'s review. 11:20 AM: HH fix for 480-699 wide (sprites sized, no squeeze), testing now. Longer than before at 640-699 (+149..+179) and 1400/1440 (+35/+3): need Sim\'s OK.'],
   ['done','Damage Calc on the kit','Merged 6:43 PM (Sim approved). GitHub run 1433 green (4:19 AM, 05369ef7).'],
   ['done','My Team war room','Merged 7:18 PM (Sim approved). Remove no longer moves the six at 820-917 wide (fixed 3:39 AM). GitHub run 1433 green (4:19 AM, 05369ef7).'],
   ['done','Pokémon page (case file, type bars, move tickets, hit list)','Merged 7:56 PM (Sim approved). GitHub run 1433 green (4:19 AM, 05369ef7).'],
@@ -170,6 +170,8 @@ const PHASES = [
  {n:'3', h:'Checks before the switch', a:'Nothing switches until these pass on one commit.', items:[
   ['doing','Safari engine (WebKit) checks on the new pages','COV-03/06 (Whole Roster switch): the page works; the test read the list before its 240 ms redraw. Test fixed, pushed 11:26 AM: WebKit 4 of 4 runs green, Chromium B-build 77 pass; went up with the Home label (GitHub running). Next: TEAM-07 jump link, NAV-03v Search focus; THEME-03 still intermittent.'],
   ['done','A desktop length rule','Sim approved 9:57 AM (CLAUDE.md DESKTOP LENGTH RULE): answer on screen 1, must-read in 2, caps 3/4 screens at 1440x900, never longer than before without Sim\'s OK. Over now: Speed 4.0, Test Run 3.6, My Team 3.7, Pokémon 5.2, Usage 3.1, Home 5.9.'],
+  ['wait','Pokémon page under its cap (5.2 screens)','hQ built options A/B/C (pictures sent ~11:20 AM, B recommended). Waiting on Sim\'s pick; nothing merged.'],
+  ['doing','Type Chart under 3 screens (3.16 at 1440)','Helper hT building options from 11:26 AM; pictures to Sim, nothing merges without his pick.'],
   ['done','Preview on today\'s data','8:02 AM: Preview v231 built from main\'s fresh data; all 26 pages say Data as of Nov 22, 0 errors.'],
   ['done','Kit headline on the type scale at 341-384 wide','8:10 AM: holds 34px up to 384; GitHub run 1437 green.'],
   ['todo','Full check of every reskin batch','Behaviour A-D, v2-minors, qcheck-all, about 40 minutes per batch of up to 4 pages (Sim\'s batch rule).'],

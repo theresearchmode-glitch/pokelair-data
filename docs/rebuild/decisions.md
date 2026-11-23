@@ -2240,3 +2240,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:21 AM: My Box 480-699 fix checked: qcheck box at 480/560/640/699/700 '0 findings, 0 new'; tap-size all passed.
 - 11:26 AM: hQ done: Pokémon page length options (branches hq-pklen-A / hq-pklen-B, not merged). Both reach the 1440 cap (A 3.91, B 3.89); layout alone tops out at 4.47. Sent to Sim with labelled pictures (B recommended: one switch in the rap sheet, nothing cut, phones -68px; A: nothing behind a tap but the desktop forms table cut, phones +23px). Visual decision = Sim's call (content trade-off), not made under authority.
 - 11:26 AM: Helper hT started (HH's call under design authority; options for Sim, nothing merges without his pick): Type Chart length options (3.16 at 1440, cap 3), branch ht-tclen, worktree scratchpad/ht2.
+- 11:36 AM: Game Plan v42: My Box row (480-699 fix testing, length OKs), Pokémon page length waiting on Sim, Type Chart length options with hT.
