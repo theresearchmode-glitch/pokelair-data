@@ -2261,3 +2261,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:45 PM: Sim: 'yeah my box is fine' -> My Box lengths OK'd (640-699 +149..+179, 1400 +35, 1440 +3). My Box 'The PC' done pending GitHub green.
 - 1:08 PM: A-team on HEAD: 138/1 (PKMN-07: Pokémon page B shows one rap-sheet part at a time; the test read only the visible one). Adapter now reads all parts (one tap away); test meaning unchanged. C-battle 83/0. Rerunning A-team.
 - 1:08 PM: GitHub run 1494 (379fcb48) green: saved-data fixes + v2-saved in CI, Type Chart C, My Box 480-699, run-1489 test fixes. Pushing the next batch: Pokémon page B, Type Chart 1280, A-team adapter (PKMN-07).
+- 1:25 PM: A-team rerun 138/1: PKMN-07 now only failed tapping Track Record (in B's hidden part). Adapter now taps the part's switch first, as a player would; PKMN-01..07 alone: 7 pass, 0 FAIL. Pushed (cancels the 1:08 run, which would have been red on PKMN-07).
