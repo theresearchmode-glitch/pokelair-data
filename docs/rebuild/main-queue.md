@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH (design authority to 9 AM): Preview rebuild with hL's last merges (Test Run lanes + suspects). qcheck every page 0 new. GitHub run on ce3ff7d9 (check ~5:20). Helper: hP (polish findings My Team/guide/sheet/team-empty, branch hp-polish).
-NEXT: publish Preview; 5:45 AM summary (send + notification); review + merge hP; push batch after GitHub run; Game Plan ~5:15; full summary before 9 AM
+NOW: HH (design authority to 9 AM): Type Chart desktop length 3.16 -> under the 3-screen cap at 1440 (measuring structure first, types-*.png). 5:45 summary sent. Helper: hP (polish findings My Team/guide/sheet/team-empty).
+NEXT: GitHub run on 3bb742f8 (~6:08), push batch; review + merge hP; Preview; Game Plan ~6:05; full summary before 9 AM
 NEXT: GitHub batches every ~40 min; Game Plan hourly
 NEXT: before 9 AM: full summary incl. lengths for Sim
 NEXT: 5:45 AM summary (decisions from 10 PM), Preview refresh before it
