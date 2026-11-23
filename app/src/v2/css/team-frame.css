@@ -346,3 +346,5 @@
 /* phones: tighter steps between the band's groups (the page must not be longer than before) */
 @media (max-width:699.98px){.pty2 .mtf{margin-top:var(--s4);gap:var(--s4)}.pty2 .mtf-acts{margin-top:var(--s4)}.pty2 .tmk-new{margin-top:var(--s3)}.tm-hero.pty2{padding-bottom:var(--s5)}.pty2 .mtf-score{margin-top:var(--s3)}}
 .pty2 .mtf-score .win b{color:var(--pty-on)}
+/* the six's hint (Sim, Nov 22: kept from the old page, 'Your six · tap one to see it'): white on the band, never link blue */
+.pty2-tap{margin:0 0 var(--s2);font-size:var(--t13);font-weight:600;line-height:1.5;color:var(--pty-on)}
