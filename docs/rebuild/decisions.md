@@ -2083,3 +2083,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:59 PM: Sim: 'this is great. you can go' -> HH builds My Team 'The Party' on the kit (hooks and tests kept), pictures before merge
 - 8:00 PM: Sim: as helpers finish their tasks, let them; no refills until back to 1 helper as normal
 - 8:06 PM: Sim: My Team Party 'looks good to me. lets go with it' -> merge after checks pass; empty-space scan (hE2) still to report
+- 8:07 PM: Sim: second account runs Job 1 (Wave 2 pictures); here: Job 5 (hW2) minus the part the second account pushed. hW2 told to drop Wave 2 and stop after Job 5
