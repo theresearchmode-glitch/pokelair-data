@@ -2271,3 +2271,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:24 PM: WebKit A-team on 2a18d83e (My Team A): 139 pass, 0 FAIL (the :has() split works in Safari's engine). Next main job: full D-meta-shell on HEAD (SHEET fixes).
 - 2:33 PM: Full D-meta-shell on HEAD: 117 pass, 0 FAIL (SHEET-05/06 fixed). Next main job: Preview rebuild with Pokémon page B, Type Chart 1280, My Team A.
 - 2:34 PM: Preview v248 published (Pokémon page B, Type Chart 1280, My Team A, saved-data fixes). Next main job: qcheck-all every page on HEAD (after today's merges).
+- 2:35 PM: Game Plan v48: Home waiting on Sim (A/B), My Team done.
