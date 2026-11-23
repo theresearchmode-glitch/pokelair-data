@@ -2178,3 +2178,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:22 AM: Final behaviour run on 35ccfec3 (frozen data): B 77/0, C 83/0, D 117/0. A-team 71 pass 68 FAIL, all after ADD-01 with 'Target page, context or browser has been closed' = the test browser crashed mid-run (load: 3 runs + helper in parallel), not page faults. Rerunning A-team alone.
 - 6:36 AM: Hourly work check 6:36 AM: 1 helper (hP); main: A-team rerun alone; minors groups + q59 passed on the iPhone fixes; Game Plan updated.
 - 6:38 AM: A-team rerun alone on 35ccfec3 (frozen data): 139 pass 0 FAIL. The 68 fails in the shared run were the test browser crashing under load, confirmed. Final behaviour: A 139/0, B 77/0, C 83/0, D 117/0.
+- 6:40 AM: iPhone fixes checks (frozen data): q59 all passed, minors groups + main1 all passed, qcheck home/meta 0 new. Running: q21 (its earlier line was filtered out), and the new HQ Q13f short-window check on the fix and on the old hero (to show it can fail).
