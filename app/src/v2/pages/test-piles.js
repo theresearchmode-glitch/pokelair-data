@@ -32,7 +32,7 @@ V2.tpCard = (x, first) => { const E = V2.esc, P = V2.tpPile(x.e), pr = x.pr, on 
     <span class="dr-thru" aria-hidden="true">${V2.drThru(x.theirs, lv)}</span>
     ${pr ? `<span class="dr-sc" aria-hidden="true"><span class="y"><b class="u">${pr.yN}<small>/${pr.n}</small></b><small>you answer</small></span><span class="t"><b class="u">${pr.tN}<small>/6</small></b><small>they answer</small></span></span>` : ''}</button>`; };
 // the open team: both ways (your answers to their six, theirs to your six), the four to bring, the one pink move, the prep
-V2.tpOpen = (x, ms, top) => { const E = V2.esc, pr = x.pr, P = V2.tpPile(x.e), nm = i => E(ms[i].d), all = (k, n) => k === n ? `all ${n}` : `${k} of ${n}`;
+V2.tpOpen = (x, ms, top) => { const E = V2.esc, pr = x.pr, P = V2.tpPile(x.e), nm = i => V2.keepForm(E(ms[i].d)), /* Nov 23 (hL): a Mega's letter stays with its name ("Charizard Y") */ all = (k, n) => k === n ? `all ${n}` : `${k} of ${n}`;
   const verdict = {p: "They're better prepared", c: 'About even', g: "You're better prepared"}[P];
   const lane = (k, head, n, of, html) => `<div class="dr-lane ${k}"><p class="dr-lh"><b class="u">${n}<small> of ${of}</small></b><span>${head}</span></p>${html}</div>`;
   const six = `<div class="tr-six dr-big">${x.theirs.map((o, j) => { const no = x.un.includes(j), r = pr && pr.you[j], l = r ? r.level : no ? 0 : 2;
