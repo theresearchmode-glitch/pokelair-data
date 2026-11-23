@@ -4408,3 +4408,13 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* Test Run at 1100-1439 (HH, design authority to 9 AM Mon; the second account's option A, measured 4.65 -> 3.36 screens at 1280): the open
    team's lane goes 380 -> 340px so the pile rows keep their one-line layout, as at 1440; its pink button one size down to fit */
 @media (min-width:1100px) and (max-width:1439.98px){.dr-board.two{grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:var(--s8)}.dr-side .k-go{font-size:var(--t22)}}
+/* Pokémon page at 1280+ (HH, design authority to 9 AM Mon; the second account's option A "forms as a strip", measured 5.20 -> 4.80 screens
+   at 1440): Forms side by side turned on its side, one row per form (sprite + name), the facts as columns, best-in-row marks kept.
+   --fr (forms + 1) comes from pokemon.js, so 1, 2 or 3 forms all lay out */
+@media (min-width:1280px){.pkf .pk-ft{display:grid;grid-auto-flow:column;grid-template-rows:repeat(var(--fr,4),auto);grid-template-columns:minmax(0,2.2fr);grid-auto-columns:minmax(0,1fr);border-collapse:separate}
+  .pkf .pk-ft :is(thead,tbody,tr){display:contents}
+  .pkf .pk-ft th[scope=row]{padding:0 var(--s1) var(--s2);border-bottom:1px solid var(--rule);font-size:var(--t15);white-space:normal;text-align:center;align-self:end}
+  .pkf .pk-ft td{display:grid;place-items:center;padding:var(--s2) var(--s1);border-top:1px solid var(--rule);font-size:var(--t13);text-align:center}
+  .pkf .pk-ft thead td{border:0;border-bottom:1px solid var(--rule)}
+  .pkf .pk-ft th[scope=col]{display:flex;font-size:var(--t15);align-items:center;gap:var(--s2);padding:var(--s1) var(--s2) var(--s1) 0;border-top:1px solid var(--rule);text-align:left}
+  .pkf .pk-ft th[scope=col] .np-mon{width:44px;height:44px;flex:none}}
