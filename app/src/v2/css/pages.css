@@ -2095,7 +2095,8 @@ button.pp2-plate{cursor:pointer;width:100%}
 .gs-ctl .ra-q input{min-height:var(--tap)}
 @media (max-width:419.98px){.gs-spot{grid-template-columns:minmax(0,1fr) minmax(0,2fr);gap:var(--s3)}.gs-plate{min-height:150px}.gs-plate .np-mon{--iw:120px}.gs-big{flex-wrap:wrap;column-gap:var(--s2)}.gs-spot .ra-acts>*{max-width:100%}
   .gs-view{flex:1 1 100%}.gs-view>*{flex:1 1 0}}
-@media (max-width:359.98px){.gs-big i{font-size:var(--t17)}.gs-spot .np-btn,.gs-spot .np-btn2{padding-inline:var(--s3)}.gs-view>*{font-size:var(--t13)}}
+@media (max-width:359.98px){.gs-big i{font-size:var(--t17)}.gs-spot .np-btn,.gs-spot .np-btn2{padding-inline:var(--s3)}}
+@media (max-width:439.98px){.gs-view>*,.gs-ctl .ra-filt .k-chip{font-size:var(--t13)}} /* Sim, Nov 23 (iPhone): 'List with win rates' and 'Hidden Gems 2' were 2-15px wider than their slanted chips under 440; both groups a size down, each row even */
 @media (max-width:359.98px){.gs-vx{display:none}}
 @media (max-width:699.98px){.gs-ctl .ra-filt{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.gs-ctl .ra-filt>*{justify-content:center;text-align:center}}
 @media (max-width:419.98px){.gs-ctl .ra-filt{grid-template-columns:repeat(2,minmax(0,1fr))}}

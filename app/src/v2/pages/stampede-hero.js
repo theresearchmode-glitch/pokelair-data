@@ -116,7 +116,8 @@ V2.sdhChvPlace = () => { const S = document.querySelector('#main .sdh-scene'), h
   const m = document.createElement('i'); m.style.cssText = 'display:inline-block;width:0;height:0'; const rg = document.createRange(); rg.setStart(t, k); rg.collapse(true); rg.insertNode(m);
   const B = m.getBoundingClientRect(), Sb = S.getBoundingClientRect(), fs = parseFloat(getComputedStyle(h).fontSize); m.remove(); h.querySelector('.l1').normalize();
   const ht = fs * (wd ? .62 : .66), up = fs * (wd ? .1 : .4); c.style.height = ht + 'px'; c.style.left = (B.left - Sb.left + fs * .06) + 'px'; c.style.top = (B.top - Sb.top - up - ht) + 'px'; c.hidden = false; };
-V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) return; try { V2.sdhChvPlace(); } catch (e) {}
+V2.SDH_ROOM = 150;
+V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) return; if (!V2._sdhGrow) { const fd = S.querySelector('.sdh-fold'); if (fd) fd.style.minHeight = ''; } try { V2.sdhChvPlace(); } catch (e) {}
   // the first screen: the window height less everything above the hero (header, a data note) and the phone tab bar
   const bar = document.querySelector('.np-bar'), bh = bar && getComputedStyle(bar).position === 'fixed' ? bar.offsetHeight : 0, t0 = Math.round(S.getBoundingClientRect().top + scrollY + bh);
   if (S.style.getPropertyValue('--sdh-top') !== t0 + 'px') S.style.setProperty('--sdh-top', t0 + 'px');
@@ -127,7 +128,12 @@ V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) r
   for (const el of S.querySelectorAll('.sdh-m')) { const i = +el.dataset.sdhi; V2.sdhPut(el, P[i]); }
   // the front row stops under the tagline's last line (Q13f B, Sim Nov 18: sprites never cover its words at any width)
   const fr = S.querySelector('.sdh-front'), fs = parseFloat(getComputedStyle(S.querySelector('.sdh-h')).fontSize) || 0;
-  if (fr) { fr.style.removeProperty('--fcap'); fr.style.setProperty('--fcap', Math.max(80, Math.round(fr.getBoundingClientRect().bottom - sr.top - hb - V2.SDH_SLOPE * w * (row ? .375 : .25))) + 'px'); } /* Q13f B: clear of the words, the tilt's rise at the outer columns counted */
+  if (fr) { fr.style.removeProperty('--fcap'); const room = Math.round(fr.getBoundingClientRect().bottom - sr.top - hb - V2.SDH_SLOPE * w * (row ? .375 : .25)), fd = S.querySelector('.sdh-fold');
+    /* Sim, Nov 23 (iPhone in the Claude app, a short window): the front two climbed over 'win rate.' because the room under the tagline was
+       under the 80px floor. On phones the scene now grows until they have SDH_ROOM px, so they never cover the words (the buttons may then
+       sit just under the first screen on a very short window) */
+    if (!row && fd && room < V2.SDH_ROOM && !V2._sdhGrow) { V2._sdhGrow = 1; fd.style.minHeight = (fd.offsetHeight + V2.SDH_ROOM - room) + 'px'; try { V2.sdhLayout(); } finally { V2._sdhGrow = 0; } return; }
+    fr.style.setProperty('--fcap', Math.max(80, room) + 'px'); } /* Q13f B: clear of the words, the tilt's rise at the outer columns counted */
   const named = new Set(row ? [0, 1, 2, 3] : [0, 1]);
   // the two start buttons: if either one's words would break onto a second line (a narrow window; a desktop window measures differently
   // from a phone at the same width), both step down to 13px together, so they stay side by side and level (polish, Nov 18)
