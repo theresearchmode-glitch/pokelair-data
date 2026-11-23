@@ -2277,3 +2277,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:55 PM: qcheck-all every page on HEAD after today's merges: 27 pages + 11 views x 5 widths x 2 themes, 80 findings, 0 new (34 known no longer seen; left in the list, since other runs' widths may still need them). Next main job: B-build behaviour on HEAD.
 - 2:57 PM: GitHub run 1497 (cf5fc467) green: Pokémon page B, Type Chart C + 1280, My Team A, saved-data fixes, all test fixes. Preview v248 already has them.
 - 2:58 PM: Sim: 'I actually like option B more I don't wanna get rid of the whole herd lol' -> Home takes option B (full stampede; post joins the tools band on desktop). hY finishing B's prep; merge after its checks.
+- 3:05 PM: B-build on HEAD: 77 pass, 0 FAIL. Next main job: D-meta-shell in Safari's engine on HEAD (Pokémon page B tests).
