@@ -97,3 +97,7 @@
 /* ultra-wide (Nov 22 night): the site frame centres at 1,920px of content from 2112 wide, but Home's hero is Sim's approved band (Home stays as
    it is): it keeps its own 96px gutter so its sprites and tagline sit exactly as before (v2-minors HQ Q13f at 2560) */
 @media (min-width:2112px){.sdh{--gut:96px}}
+/* Home length (Nov 23, direction for Sim): at 1100+ the top 10 takes the ticker's place on the red flag (ratings.css), so the ticker steps aside */
+@media (min-width:1100px){.sdh-tick{display:none}.sdh{padding-bottom:var(--s4)}}
+/* Home length, option B (Nov 23): the top 10's ink strip follows the ledge straight on */
+@media (min-width:1100px){.sdh{padding-bottom:0}}

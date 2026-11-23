@@ -181,3 +181,10 @@ button.sds-nm::before{content:"";position:absolute;left:50%;top:50%;width:max(10
   .sds-b i{flex:0 0 32px;height:12px}
   .sds-b span{margin-top:0;padding-right:0;font-stretch:100%}
 }
+/* Home length (Nov 23, direction for Sim): at 1280+ the line-up's column is a little wider and "New here?" reads across in three steps,
+   so the line-up ends level with the receipt instead of running a third of a screen past it */
+@media (min-width:1280px){
+  .sds-wl{margin-top:var(--s5)}
+  .sds-wl ol{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s5);max-width:none}
+  .sds-wl li{grid-template-columns:minmax(0,1fr)}.sds-wl li::before{grid-row:auto}
+}

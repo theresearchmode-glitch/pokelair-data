@@ -1234,8 +1234,13 @@ if (part('main2')) {
     ok(!wr.length, `Stampede hero 0: Score My Team and Build Me a Team each on one line, side by side, 360 to 899 wide (${wr.join(' | ') || 'all one line'})`); }
   // 1. the tagline is the page's one h1, the named Pokémon are buttons that open their page, the crowd is hidden from screen readers
   const a = await hero(1440, 900, {wait: true, fn: () => { const h1 = [...document.querySelectorAll('#main h1')].map(e => { const c = e.cloneNode(true); c.querySelectorAll('.sdh-k').forEach(k => k.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); }) /* Nov 22: without the product label above the tagline (Sim chose A, 10:51 AM) */;
-    const named = [...document.querySelectorAll('#main .sdh-plate, #main .sdh-tag:not([hidden]), #main .sdh-tick li:not([hidden]) button')].filter(e => e.getClientRects().length);
-    const bad = named.filter(e => e.tagName !== 'BUTTON' || !e.dataset.v2mon || !e.getAttribute('aria-label').startsWith(e.innerText.replace(/\s+/g, ' ').trim())).map(e => e.innerText);
+    /* Nov 23 (Home length): at 1100+ the herd ticker steps aside and the top 10 rides the hero's red flag, so its ten buttons count too.
+       Their spoken name reads "Number N: <Pokémon>, rated ..." (the rank and score are drawn beside the name), so for them the name
+       after "Number N: " must be the Pokémon's own words */
+    const named = [...document.querySelectorAll('#main .sdh-plate, #main .sdh-tag:not([hidden]), #main .sdh-tick li:not([hidden]) button, #main .sd-top li button')].filter(e => e.getClientRects().length);
+    const said = e => { const l = e.getAttribute('aria-label') || '', top = e.closest('.sd-top'); if (!top) return l.startsWith(e.innerText.replace(/\s+/g, ' ').trim());
+      const m = l.match(/^Number (\d+): (.*)$/), n = ((e.querySelector('.n') || {}).textContent || '').replace(/\s+/g, ' ').trim(); return !!m && !!n && m[2].startsWith(n); };
+    const bad = named.filter(e => e.tagName !== 'BUTTON' || !e.dataset.v2mon || !said(e)).map(e => e.innerText);
     const deco = [...document.querySelectorAll('#main .sdh-crowd, #main .sdh-f, #main .sdh-m, #main .sdh-lines')].filter(e => e.getAttribute('aria-hidden') !== 'true').length;
     return {h1, named: named.length, bad, deco, plates: document.querySelectorAll('#main .sdh-plate').length}; }});
   ok(a.h1.length === 1 && a.h1[0] === 'Sharply raise your win rate.' && a.plates === 4 && a.named >= 8 && !a.bad.length && !a.deco, `Stampede hero 1: one h1 "Sharply raise your win rate.", four plates, every named Pokémon a button whose spoken name starts with its words, the herd aria-hidden (${JSON.stringify(a)})`);
@@ -1265,8 +1270,9 @@ if (part('main2')) {
   const wd = []; for (const w of [320, 340, 360, 390, 412, 600, 768, 820, 900, 1024, 1100, 1180, 1366, 1500, 1920, 2560]) { const r = await hero(w, 900, {rm: 'reduce', fn: () => { const L = [...document.querySelectorAll('#main .sdh-tick li')];
       const vis = L.filter(l => l.getClientRects().length && !l.hidden), cut = vis.filter(l => { const x = l.getBoundingClientRect(); return x.left < 0 || x.right > innerWidth; }).map(l => l.innerText);
       return {hs: document.documentElement.scrollWidth - innerWidth, vis: vis.length, cut, hiddenFocusable: L.filter(l => l.hidden && l.getClientRects().length).length}; }});
-    if (r.hs > 0 || !r.vis || r.cut.length || r.hiddenFocusable) wd.push(w + ': ' + JSON.stringify(r)); }
-  ok(!wd.length, `Stampede hero 5 (reduced motion: the still strip): 320-2560 (odd widths too) no sideways scroll, the ticker shows whole names only${wd.length ? ': ' + wd.join(' | ') : ''}`);
+    /* Nov 23 (Home length): at 1100+ the ticker steps aside for the top 10 on the red flag, so names are required only under 1100; no sideways scroll and nothing hidden focusable at every width */
+    if (r.hs > 0 || (w < 1100 && !r.vis) || r.cut.length || r.hiddenFocusable) wd.push(w + ': ' + JSON.stringify(r)); }
+  ok(!wd.length, `Stampede hero 5 (reduced motion: the still strip): 320-2560 (odd widths too) no sideways scroll, the ticker shows whole names only (under 1100; at 1100+ the top 10 takes its place)${wd.length ? ': ' + wd.join(' | ') : ''}`);
   // 6. contrast from the tokens (both themes): white on the hero blue and the red 4.5:1+, the tagline's second line and the ticker numbers 3:1+ (display / 24px+ bold)
   for (const night of [false, true]) { const c = await hero(1440, 900, {night, fn: () => { const v = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
       const L = hx => { const m = hx.replace('#', ''), c = [0, 2, 4].map(i => parseInt(m.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4)); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
@@ -1290,7 +1296,12 @@ if (part('main2')) {
     V2.redraw(); const S2 = document.querySelector('#main .sdh'); return JSON.stringify({first: seen.first, names: Object.keys(seen.names).sort().join(','), ends: Math.round(seen.ends), go, again: S2.classList.contains('sdh-surge')}); })()`)).then(x => JSON.parse(x));
   ok(/sdh-surge/.test(m.first) && /sdh-surge,sdh-surge-m/.test(m.names) && m.ends > 0 && m.ends <= 900 && !m.go && !m.again, `Stampede motion 2: the surge runs once on arrival (${m.names}), ends by ${m.ends}ms (900 at most), the buttons and plates never move, a redraw does not replay it (${JSON.stringify(m)})`);
   // 3. the ticker: list + aria-hidden copy (buttons out of the tab order) moving as one track, seamless (the copy matches), a pause button 44px+ that pauses it
-  for (const [w, h] of [[1440, 900], [390, 844], [320, 700], [2560, 1200]]) { const t = await watch(w, h, 'no-preference', async () => { const tk = document.querySelector('#main .sdh-tick'), U = [...tk.querySelectorAll('.sdh-trk ul')], tr = tk.querySelector('.sdh-trk'), pz = tk.querySelector('.sdh-tpz');
+  /* Nov 23 (Home length): at 1100+ the ticker steps aside for the top 10 on the red flag (sd-hero.css), so there the check asks that it is
+     not shown and nothing in it runs; the marquee itself is checked at 390 and 320 */
+  for (const [w, h] of [[1440, 900], [2560, 1200]]) { const t = await watch(w, h, 'no-preference', () => { const tk = document.querySelector('#main .sdh-tick'), top = document.querySelectorAll('#main .sd-top li button').length;
+      return {shown: !!tk && !!tk.getClientRects().length, running: tk ? tk.getAnimations({subtree: true}).filter(a => a.playState === 'running').length : 0, top, hs: document.documentElement.scrollWidth - innerWidth}; });
+    ok(!t.shown && !t.running && t.top === 10 && t.hs <= 0, `Stampede motion 3 (${w}): at 1100+ the ticker steps aside (not shown, nothing in it runs) and the top 10 names its ten instead, no sideways scroll (${JSON.stringify(t)})`); }
+  for (const [w, h] of [[390, 844], [320, 700]]) { const t = await watch(w, h, 'no-preference', async () => { const tk = document.querySelector('#main .sdh-tick'), U = [...tk.querySelectorAll('.sdh-trk ul')], tr = tk.querySelector('.sdh-trk'), pz = tk.querySelector('.sdh-tpz');
       const names = u => [...u.children].filter(l => !l.hidden).map(l => l.innerText.replace(/\s+/g, ' ')).join('|'), pr = pz ? pz.getBoundingClientRect() : {};
       const res = {uls: U.length, same: U.length === 2 && names(U[0]) === names(U[1]) && Math.abs(U[0].offsetWidth - U[1].offsetWidth) < 1 && Math.abs(tr.scrollWidth - 2 * U[0].offsetWidth) < 2, hid: U[1] && U[1].getAttribute('aria-hidden') === 'true' && [...U[1].querySelectorAll('button')].every(x => x.tabIndex === -1), anim: tr ? getComputedStyle(tr).animationName : '',
         pz: pz ? Math.round(Math.min(pr.width, pr.height)) : 0, inWin: pz ? pr.left >= 0 && pr.right <= innerWidth : false, label: pz && pz.getAttribute('aria-label'), hs: document.documentElement.scrollWidth - innerWidth};
@@ -1299,7 +1310,8 @@ if (part('main2')) {
     ok(t.uls === 2 && t.same && t.hid && t.anim === 'sdh-mq' && t.pz >= 44 && t.inWin && t.paused && t.resumed && t.hs <= 0, `Stampede motion 3 (${w}): the ticker scrolls as list + matching aria-hidden copy (copy buttons tabindex -1), the ${t.pz}px pause button (${t.label}) pauses and restarts it, no sideways scroll (${JSON.stringify(t)})`); }
   // 4. a keyboard user: tabbing into the ticker stops it at its start, so the focused name is on screen
   const k = await (async () => {
-    const ctx = await b.newContext({viewport: {width: 1440, height: 900}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; window.NP_SD_MOTION = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
+    /* Nov 23 (Home length): at 1100+ the ticker steps aside for the top 10 on the red flag, so the keyboard check runs at 1024 (a mouse-and-keyboard laptop width where it shows) */
+    const ctx = await b.newContext({viewport: {width: 1024, height: 768}}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; window.NP_SD_MOTION = 1; }); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500);
     await q.evaluate(() => document.querySelector('#main .sdh-tick').scrollIntoView({block: 'center'})); await q.waitForTimeout(1500); await q.focus('#main .sdh-go a:last-child'); await q.keyboard.press('Tab'); await q.waitForTimeout(200);
     const r = await q.evaluate(() => { const a = document.activeElement, x = a.getBoundingClientRect(); return {inTick: !!a.closest('.sdh-trk ul:not([aria-hidden])'), tf: (t => t ? getComputedStyle(t).transform : 'no track')(document.querySelector('#main .sdh-trk')), on: x.left >= 0 && x.right <= innerWidth}; }); await ctx.close(); return r; })();
   ok(k.inTick && k.tf === 'none' && k.on, `Stampede motion 4: Tab from the start buttons lands on the ticker's first name, the ticker stops at its start and the name is on screen (${JSON.stringify(k)})`); }
@@ -1360,8 +1372,10 @@ if (part('main2')) {
     lay.push(w + ':' + await qe(() => { const g = document.querySelector('.sdp-gifts'), n = document.querySelector('.sdp-news'); if (!g || !n) return 'missing'; const a = g.getBoundingClientRect(), z = n.getBoundingClientRect();
       const st = [...document.querySelectorAll('.sdp-stamps .pr-sw')].filter(e => e.getClientRects().length).length, gb = document.querySelector('.sdp-gb').getBoundingClientRect().bottom, pb = document.querySelector('.sdp-tilt').getBoundingClientRect().bottom;
       return (Math.abs(a.top - z.top) < 2 ? (Math.abs(gb - pb) <= 12 ? 'level' : 'uneven ' + Math.round(gb - pb)) : z.top >= a.bottom ? 'stacked' : 'overlap') + ',' + st; })); }
-  const want = {2560: 'level,4', 1920: 'level,4', 1440: 'level,4', 1366: 'level,4', 1100: 'stacked,4', 390: 'stacked,0', 360: 'stacked,0'}; /* phones: no stamps (Sim, Nov 18: Post X) */
-  ok(lay.every(x => x.split(':')[1] === want[x.split(':')[0]]), `SDP-4: gifts and news side by side ending level from 1360, stacked gifts first below; 4 stamps, none on phones (Post X) (${lay.join(' | ')})`);
+  /* phones: no stamps (Sim, Nov 18: Post X). Home length option B (Sim chose B, Nov 23): at 1100+ the post is Post X too, the parcel beside the
+     paper from 1100 and the stamps on Gifts, one tap away */
+  const want = {2560: 'level,0', 1920: 'level,0', 1440: 'level,0', 1366: 'level,0', 1100: 'level,0', 390: 'stacked,0', 360: 'stacked,0'};
+  ok(lay.every(x => x.split(':')[1] === want[x.split(':')[0]]), `SDP-4: gifts and news side by side ending level from 1100, stacked gifts first below; no stamps (Post X on phones, and on desktop with option B) (${lay.join(' | ')})`);
   /* every width, day and night: no sideways scroll, no text under 13px or outside the band, the code slip's parts never overlap, white text 4.5:1 on the red, every link and button 44px tall */
   const wd = []; for (const th of ['day', 'night']) { await qe(t => localStorage.setItem('np2.theme', t), th); await q.reload(); await q.waitForTimeout(2200);
     for (const w of [320, 340, 412, 600, 768, 1024, 1180, 1366, 1440, 1500, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(450);
