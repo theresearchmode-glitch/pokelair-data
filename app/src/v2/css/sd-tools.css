@@ -307,6 +307,10 @@
 /* Q29 A (Sim, Nov 19): under 360 the longer 'Damage Calculator' doesn't fit a half tile; Ratings and Damage Calculator one per row,
    and Team Preview Practice puts its title above its six (as Battle does), so every title and the Ratings numbers show whole */
 @media (max-width:359.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-dc{grid-column:1/-1}}
+/* Nov 23 (hJ, HH's design authority): on phones the Ratings podium's sprites stood flush on their plates, so a sprite whose art ends in a
+   flat cut (Kingambit's rock) and its glow read as cropped by the plate. Each sprite is lifted 4px clear of its plate and the top plates go
+   24 -> 20px, so the podium keeps its 64px picture row: 40 sprite + 4 + 20 plate (the 16px #3 plate stays lower, still a podium) */
+@media (max-width:699.98px){.sdt-step .np-mon{margin-bottom:var(--s1)}.sdt-step.s1 .sdt-blk{min-height:var(--s5)}}
 /* Practice's 22px title (under 380) didn't fit beside its six at 360-379 either ('Preview' under the sprites): title above, the same A look */
 @media (max-width:379.98px){.sdt-grid>.sdt-pr{flex-direction:column;align-items:stretch}.sdt-grid>.sdt-pr>.sdt-pp{order:2;align-self:center}}
 /* iPads (700-1099), Sim Nov 18 ('the iPad loadout is too plain', took the recommendation): the six big plates of the phone layout, then

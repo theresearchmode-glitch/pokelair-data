@@ -157,3 +157,8 @@
   .gr2 .gr2-top>.k-facts{gap:var(--s12);margin:0 0 var(--s4)}.gr2 .gr2-top>.k-facts b{font-size:var(--d64);line-height:1}}
 /* qcheck (Nov 22 night): the slanted gift name's glyphs reached 4px up into "CONTENTS" above it on the Home parcel; a little air between */
 .pr-what dd{margin-top:var(--s1)}
+/* Nov 23 (hJ, HH's design authority): on phones the three stamp chips share one row. With "Show" beside them they need 434px even at 17px,
+   so "items · 4" fell alone onto a second row under 480. As the Ratings tier bar on phones: "Show" is spoken, not shown (the group is
+   "Which stamps"), and the three chips grow to fill the row edge to edge at 15px with 8px sides (331px at 375). Under 360 the three can't share a row at 15px (13 would fit, but Unbounded stays 15+), so 320-359 keeps today's sentence */
+@media (min-width:360px) and (max-width:479.98px){.gr2-stamps .k-sent{font-size:var(--t15)}.gr2-stamps .k-sent > span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .gr2-stamps .k-w{flex:1 1 auto;padding:0 var(--s2)}}

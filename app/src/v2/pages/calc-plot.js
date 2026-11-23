@@ -98,7 +98,7 @@ V2.pages.calc.draw = function () { let C; try { C = calcData(); } catch (e) { co
   ${V2.kStep(3, K.s3, K.s3n, `<div class="pc-conds"><div class="pc-blk pc-sky"><h3>${W.sky}</h3>${V2.pcFive('wx', V2.DC_WX, wx, 'Weather')}</div>
     <div class="pc-blk pc-gnd"><h3>${W.ground}</h3>${V2.pcFive('tr', V2.DC_TR, tr, 'Terrain')}</div>
     <div class="pc-blk pc-turn"><h3>${W.turn}</h3><div class="pc-sws arn-sw" role="group" aria-label="In play">${sw.map(([k, t]) => `<button type="button" data-dct="${k}" aria-pressed="${swOn(k)}"><span>${t}</span>${swOn(k) ? V2.pcRing() : ''}</button>`).join('')}</div></div></div>
-    ${V2.arnSets(C).replace('<div class="arn-sets">', '<div class="arn-sets pc-kits">').replace(`<b class="u">${AW.attacker}</b>`, `<b class="u">${E(dA)}'s\u00a0set</b>`).replace(`<b class="u">${AW.defender}</b>`, `<b class="u">${E(dD)}'s\u00a0set</b>`)}`)}
+    ${V2.arnSets(C).replace('<div class="arn-sets">', '<div class="arn-sets pc-kits">').replace(`<b class="u">${AW.attacker}</b>`, `<b class="u">${E(dA)}<span class="pc-sset">'s\u00a0set</span></b>`).replace(`<b class="u">${AW.defender}</b>`, `<b class="u">${E(dD)}<span class="pc-sset">'s\u00a0set</span></b>`)}`)}
   ${V2.kStep(4, K.s4, KO.note, `<div class="pc-kob">${KO.body}</div>
     <div class="pc-links arn-links"><a class="np-link k-link" href="#method">${AW.how}&nbsp;›</a>${V2.FB && V2.FB.ok ? `<a class="np-link k-link" href="#feedback" data-fbmistake="calc" aria-label="Report a mistake in this hit">${AW.report}&nbsp;›</a>` : ''}${V2.arnNotes(C)}</div>`)}`)}
   ${V2.arnKBFull(C)}</div>`; };
