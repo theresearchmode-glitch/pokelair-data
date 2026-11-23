@@ -2164,3 +2164,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:12 AM: C-battle in WebKit on 35b749f5 (hL's Test Run lane + suspects fixes): 83 pass 0 FAIL.
 - 5:22 AM: GitHub run 1481 on ce3ff7d9: SUCCESS (all green: News ears, Test Run 320, Battle 1100-1439). Pushing batch: hL's Test Run lane labels 1100-1439 + suspects names 700-1099, logs, Game Plan.
 - 5:36 AM: Hourly work check 5:36 AM: 1 helper (hP polish); main: minors x3 on HEAD (main1, main2 passed); Game Plan 5:04 (fresh); 5:45 summary ready.
+- 5:38 AM: Minors x3 on f0f47e1d (frozen data, with all hL merges): main1, main2, groups all passed (ticker flake did not repeat).
