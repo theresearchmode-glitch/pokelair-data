@@ -32,6 +32,12 @@ Nothing went to the live site. Everything is on claude/design6 and on the Previe
 - 3:14 AM Preview v240: Wave 2 everywhere + polish fixes.
 - 3:18 AM tried and dropped: My Team plan in three columns at 1440+ (shorter, but left a big empty block).
 - 3:45 AM GitHub 1479 caught Battle's Log a Win / Log a Loss at different widths after the kit move; fixed (equal again).
+- 4:11 AM merged hL: News at 1440, "In the post" and "Next event" move up beside the paper's name (the empty right half of
+  the hero is gone; same length). Test Run 320: the Usual suspects names fit. Preview v241.
+- 4:24 AM merged hL: Battle 1100-1439, Your Games' gap 12 px so every width is back to its old length with the equal buttons.
+- 4:48 AM merged hL: Test Run 1100-1439, open team card: answer words as even two-line stacks, the four names level,
+  SET AS OPPONENT 20 px there (it touched its edge). Same length.
+- 5:02 AM merged hL: Test Run 700-1099, Usual suspects names fit (Meowscarada spilled 14 px). Same length. hL done.
 
 ## Lengths for Sim's OK (the rule: never longer than before without Sim's OK)
 - My Team phone 390: 4,024 px on the test data (old limit 3,930). HH accepted it in steps: the six's hint +28, the buttons under the
@@ -44,8 +50,10 @@ Nothing went to the live site. Everything is on claude/design6 and on the Previe
 
 ## Checks
 - GitHub full runs on claude/design6: 1475 ALL GREEN (12:20 AM), 1476 ALL GREEN (1:08 AM), 1477 13/15 (fixed, pushed 2:08 AM),
-  1478 ALL GREEN (2:54 AM), 1479 13/15 (Battle buttons fixed 3:45 AM; one scroll-timing check rerun locally).
-- Safari engine (WebKit) on frozen data: Build 77/0, Battle 83/0 (incl. the Damage Calc Rain fix); Meta/shell running.
+  1478 ALL GREEN (2:54 AM), 1479 13/15 (Battle buttons fixed 3:45 AM), 1480 ALL GREEN (4:34 AM); 4:36 AM push running.
+- Safari engine (WebKit) on frozen data: all four test groups 0 FAIL (My Team 139, Build 77, Battle 83 incl. the Damage Calc
+  Rain fix, Meta/shell 117, run again after the News change).
+- Page lengths 4:25 AM (frozen data): no page longer than at 3:15 AM; News 1440 14 px shorter.
 - Local (frozen data): behaviour A 139/0, B 77/0, C 83/0, D 117/0; minors all three parts; qcheck on every changed page 0 new.
 - Known flake: Home's ticker pause test at 2560 under load (passes on GitHub).
 
@@ -55,3 +63,4 @@ Nothing went to the live site. Everything is on claude/design6 and on the Previe
 ## Not checked / open
 - Real iPhone Safari for the Damage Calc Rain fix (second account's WebKit run passed).
 - The Pokémon page's length (needs Sim's call on content).
+- Test Run with a team open is over the 3-screen cap (1280 4.0, 1100-1200 ~4.7); it was before tonight too.
