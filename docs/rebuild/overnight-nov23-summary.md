@@ -61,6 +61,8 @@ Nothing went to the live site. Everything is on claude/design6 and on the Previe
   docs/rebuild/reskin/mybox-pc-brief.md, build on branch mybox-pc. Helper hJ on the four iPhone spots A-D (Calc set cards,
   Gifts chips, Track stats, Home Ratings tile).
 - Safari engine on the latest build: My Team 139/0, Build 77/0, Battle 83/0, Meta 117/0.
+- 8:45 AM GitHub 1486: 2 reds from this morning's fixes (the Unbounded-size check listed the approved 13px phone chips; the
+  design-system doc needed regenerating). Both fixed and pushed (833bdfbe).
 
 ## Lengths for Sim's OK (the rule: never longer than before without Sim's OK)
 - My Team phone 390: 4,024 px on the test data (old limit 3,930). HH accepted it in steps: the six's hint +28, the buttons under the
