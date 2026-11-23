@@ -49,6 +49,12 @@ pages still to reskin). When the mock-ups are done, back to ONE helper. Never us
 Sim: "sounds like a plan. i just wanted the builds approved so then after, all resources can just focus on making it happen." The mock-up
 helper switches to building once its mock-ups are done: 2 build helpers + HH building, for the rest of Nov 22. Above that, ask Sim.
 
+## DESIGN AUTHORITY FOR THE 9 EMPTY-SPACE FIXES (Sim, logged 8:48 PM Sun Nov 22)
+Sim: "approach these fixes however you see best fit. make best use of our space ... for those 9 fixes im giving you design authority as well."
+Scope: ONLY the 9 fixes from docs/rebuild/research/empty-space-scan-nov22.md (My Team, Events, About, This Week, Pokémon page, Gifts,
+Archetypes, Not-found/Owner, Speed Tiers, Compare). Ends when those 9 are done. Each choice logged; before/after pictures to Sim. All
+other visual decisions still need Sim's yes with pictures. Rules still apply (no generic AI design, kit only, length caps, tests).
+
 ## TWO HELPERS UNTIL 9 PM SUN NOV 22 (Sim, logged 8:07 PM; LATEST): then back to ONE. Helpers already running finish their jobs; none is refilled past the limit.
 
 ## (replaced) TWO HELPERS UNTIL 10 PM SUN NOV 22 (Sim, logged 7:13 PM): "lets add 1 more helper agent until 10PM." After 10 PM back to ONE. Sim, 7:22 PM: back to ONE as soon as hP's length-option pictures are done (Job B returns to the queue).
