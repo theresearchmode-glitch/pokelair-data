@@ -3186,7 +3186,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .trk-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s6);align-items:end}
 .trk-h h1 .pl{color:var(--plot-text)}
 .trk-stats{list-style:none;margin:0;padding:0;display:flex;gap:var(--s8)}.trk-stats b{white-space:nowrap}.trk-stats li{display:grid}.trk-stats b{font:900 var(--t34)/1.1 var(--u);font-style:italic}.trk-stats span{font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
-.trk h2{margin:0;font:900 var(--t34)/1.2 var(--u);font-style:italic}
+.trk h2:where(:not(.k-h2)){margin:0;font:900 var(--t34)/1.2 var(--u);font-style:italic} /* Wave 3 (Sim, 6:51 PM): the plan steps keep the kit's 40px .k-h2 */
 .trk-body{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:var(--s12);align-items:stretch}
 .trk-right{display:grid;gap:var(--s10);align-content:space-between}
 /* the receipt */
@@ -3215,16 +3215,8 @@ button.pp2-plate{cursor:pointer;width:100%}
 .trk-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6)}
 .trk-cols h3{margin:0 0 var(--s3);font:900 var(--t20)/1.3 var(--u);font-style:italic}
 .trk-slips{list-style:none;margin:0;padding:0;display:grid;gap:var(--s4);grid-auto-rows:1fr}
-.trk-slip{position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:stretch;width:100%;height:100%;padding:0 0 0 var(--s4);border:0;text-align:left;font:inherit;color:var(--rc-ink);cursor:pointer;
-  background:radial-gradient(circle at 0 50%,var(--bg) 5px,transparent 5.5px) 0 0/12px 16px repeat-y,var(--rc-paper);box-shadow:0 4px 12px var(--rc-shadow);transform:rotate(calc((var(--i) - 1) * .5deg))}
 .trk-slip:focus-visible{outline:3px solid var(--plot);outline-offset:3px}
-.trk-sp{display:grid;place-items:end center;width:88px;margin:var(--s2) 0;border-radius:var(--r-s);background:repeating-linear-gradient(135deg,var(--tk-line) 0 1px,transparent 1px 7px),linear-gradient(115deg,var(--ta),var(--tb))}.trk-sp .np-mon{--iw:80px}
-.trk-st{display:grid;align-content:center;gap:var(--s1);min-width:0;padding:var(--s3)}.trk-st b{font:900 var(--t17)/1.25 var(--u);font-style:italic;overflow-wrap:break-word}.trk-st span{font:400 var(--t13)/1.5 var(--b);color:var(--rc-ink2)}
-.trk-sr{display:grid;align-content:center;justify-items:center;min-width:72px;padding:var(--s3);border-left:2px dashed var(--rc-rule)}.trk-sr small{font:700 var(--t13)/1.5 var(--b);text-transform:uppercase;letter-spacing:.06em;color:var(--rc-ink2)}.trk-sr b{font:900 var(--t34)/1 var(--u);font-style:italic}
-.trk-slip .trk-stamp{position:static;justify-self:start;margin:var(--s2) 0 var(--s1) var(--s1);font-size:var(--t13);transform:rotate(-8deg)}
-/* Audit v199 #2 (Nov 17): at 1100-1365 a card is narrower than on a phone (284-343px), so the phone's compact card follows the card's own width */
 .trk-slips>li{container-type:inline-size}
-@container (max-width:379.98px){.trk-sp{width:64px}.trk-sp .np-mon{--iw:60px}.trk-sr{min-width:64px;padding-inline:var(--s2)}.trk-st{padding-inline:var(--s2)}.trk-st b{font-size:var(--t15)}.trk-slip .trk-stamp{white-space:nowrap;padding-inline:var(--s2);margin-left:0;letter-spacing:.01em}}
 @container (max-width:299.98px){.trk-sr{padding-inline:var(--s1)}.trk-sr small{letter-spacing:.03em}.trk-st{padding-inline:var(--s1) var(--s2)}} /* 320-wide phones: 'Charizard Y' stays whole */ /* Nov 15 (re-audit #6): in the text column's flow, under the words */
 .trk-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 /* how we check */
@@ -3241,6 +3233,33 @@ button.pp2-plate{cursor:pointer;width:100%}
 .trk-evs summary small{margin-left:var(--s2);font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .trk-evs ul{list-style:none;margin:var(--s2) 0 0;padding:0}.trk-evs li{display:grid;padding:var(--s2) 0;border-top:1px solid var(--rule)}.trk-evs li b{font:600 var(--t15)/1.4 var(--b)}.trk-evs li span{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 .trk-links{margin:0}
+/* Track Record on the kit (Nov 22, Sim approved HH's track2 direction, 12:34 PM): kit head and facts, the plan's three steps; the receipt stays the
+   hero (white paper in both themes) with the verdict stamp and the one pink move beside it; the calls are kit roster cards, verdict tag under each */
+.trk2{gap:0}
+.trk2 .trk-top{grid-template-columns:minmax(0,1fr);align-items:start;gap:var(--s6)}.trk2 .trk-h .k-h1{max-width:none}
+.trk2 .k-head .k-kicker{display:table;max-width:100%}
+.trk2 .trk-stats.k-facts{margin:0;gap:var(--s3) var(--s8)}
+.trk2 .trk-stats b{font-size:var(--t34)}
+.trk-r1{display:grid;grid-template-columns:minmax(0,480px) minmax(0,1fr);gap:var(--s10) var(--s12);align-items:center}
+.trk-say2{display:grid;gap:var(--s4);justify-items:start}
+.trk-big{display:inline-block;margin:0;padding:var(--s1) var(--s5);border:4px solid var(--k-nasty);color:var(--k-nasty-text);font-size:var(--d-kgo);line-height:1.1;rotate:-4deg}
+.trk-sl{margin:0;max-width:440px;font-size:var(--t17);line-height:1.5;color:var(--k-ink2)}
+.trk-say2 .k-go{margin-top:var(--s1)}
+.trk2 .trk-cols{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6) var(--s4)}
+.trk2 .trk-gh{margin:0;font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--k-ink2)}
+.trk2 .trk-slips{grid-auto-rows:auto;gap:var(--s12) var(--s4);padding-top:var(--s12)}
+.trk2 .trk-cols>div{display:grid;grid-template-rows:auto 1fr}.trk2 .trk-gh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap} /* desktop: the tag under each card says it; the group names stay for screen readers and the page's text */.trk2 .trk-gh .k-tag{display:none}
+.trk2 .k-sec{margin-top:var(--s8)}
+.trk2 .trk-slips>li{display:grid;grid-template-rows:1fr auto;gap:var(--s3);justify-items:start;container-type:normal}
+.trk2 .trk-slip.k-card{align-self:end;height:auto}
+.trk2 .trk-slip .k-fact{white-space:normal}
+.trk2 .trk-slip .k-tier{text-transform:none}
+.trk2 .trk-calls>.fine{margin:var(--s4) 0 0}
+.trk2 .trk-flow{margin-top:0}
+.trk2 .trk-wk{margin-top:var(--s4)}.trk2 .trk-wk h2{font-size:var(--t24)}
+.trk2 .trk-evs,.trk2 .trk-next,.trk2 .trk-links{margin-top:var(--s5)}
+@media (max-width:1099.98px){.trk-r1{grid-template-columns:minmax(0,1fr)}.trk2 .trk-cols{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:699.98px){.trk2 .trk-stats b{font-size:var(--t22)}.trk-big{font-size:var(--t22);white-space:nowrap}.trk-sl{display:none}.trk-say2{gap:var(--s2)}.trk2 .trk-slips{gap:var(--s10) var(--s2);padding-top:var(--s10)}.trk2 .trk-slips .k-fact{display:block}.trk2 .trk-slips .k-tag{display:none}.trk2 .trk-slips .k-sc{margin-bottom:var(--s2)}.trk2 .trk-gh{position:static;display:flex;align-items:center;gap:var(--s3);width:auto;height:auto;margin:0 0 var(--s2);overflow:visible;clip:auto}.trk2 .trk-gh .k-tag{display:inline-block}.trk2 .trk-slips>li{grid-template-rows:auto}}
 @media (max-width:1099.98px){.trk-top{grid-template-columns:minmax(0,1fr)}.trk-body{grid-template-columns:minmax(0,1fr)}.trk-left{justify-self:center;width:min(100%,440px)}.trk-cols{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699.98px){.trk-rc,.trk-slip,.trk-paper{transform:none}.trk-flow{grid-template-columns:minmax(0,1fr);gap:var(--s3)}.trk-flow li+li::before{content:none}.trk-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}.trk-stats b{font-size:var(--t22)}
   .trk-sp{width:64px}.trk-sp .np-mon{--iw:60px}.trk-sr{min-width:64px}.trk-st b{font-size:var(--t15)}.trk-paper{padding:var(--s3)}}
@@ -3294,9 +3313,9 @@ button.pp2-plate{cursor:pointer;width:100%}
    the light page); the receipt runs level with the right column; Total clear of the verdict; the slips one height; stamps clear of words */
 .trk-left{filter:drop-shadow(0 8px 14px var(--rc-shadow));display:flex}
 @media (min-width:1100px){.trk-rc{flex:1;display:flex;flex-direction:column;gap:var(--s2)}.trk-bar{margin-top:auto}}
-.trk-tot{margin-bottom:var(--s2)}.trk-slip{min-height:176px}
+.trk-tot{margin-bottom:var(--s2)}
 .trk-links .np-link{position:relative}.trk-links .np-link::after{content:"";position:absolute;inset:-12px -4px}
-@media (max-width:699.98px){.trk-slip{min-height:0}.trk-slip .trk-stamp{right:var(--s2)}.trk-sr{align-content:start;padding-bottom:var(--s10)}.trk-leg{display:grid;grid-template-columns:repeat(2,auto);justify-content:start}.trk-calls .fine{margin-top:var(--s4)}}
+@media (max-width:699.98px){.trk-leg{display:grid;grid-template-columns:repeat(2,auto);justify-content:start}.trk-calls .fine{margin-top:var(--s4)}}
 /* re-audit Nov 15: the VS badge sat on Pokémon names wherever the halves' Pokémon reach the middle. Phones: it sits in the seam between the
    stacked halves (in the flow, not over them). 700-1099: hidden (decoration only; the blue and pink halves already say who faces whom) */
 @media (max-width:699.98px){.pbp-vs{position:relative;left:auto;top:auto;translate:none;justify-self:center;margin:0 0 calc(var(--s5)*-1)}} /* morning helper (confirmed): the badge sat 24px up into your last row of names; it still straddles the seam, below the names */
@@ -4422,3 +4441,11 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
    sticks, so SET AS OPPONENT sat below the window; its two buttons now come right after the team's name, always in view */
 @media (min-width:1100px){.dr-side .dr-open{display:flex;flex-direction:column}.dr-side .dr-open>*{order:2}.dr-side .dr-open>.tp-start,.dr-side .dr-open>.dr-oh{order:0}
   .dr-side .dr-open>.tr-btns{order:1;margin:0 0 var(--s4)}}
+@media (max-width:699.98px){.trk2 .trk-stats.k-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}} /* phones: the three counts in one row, as the approved mock */
+@media (max-width:359.98px){.trk2 .trk-stats b{font-size:var(--t17)}}
+/* qcheck Nov 22: at 700-1099 the kit receipt runs full width (655px at 820), so the 1.5deg tilt lifts each line's right end onto the next; half the tilt there (as About's receipt) */
+@media (min-width:700px) and (max-width:1099.98px){.trk2 .trk-rc{transform:rotate(-.75deg)}}
+/* sweep O1 (Nov 22): the slanted, tilted "230×" ran 3-13px past its row (the slant and the tilt draw past the letters' box); room for them on
+   the right, and on phones the kit's score size (48px) so the "×" clears the receipt's edge */
+.trk-tot b{padding-right:var(--s4)}
+@media (max-width:699.98px){.trk-tot b{font-size:var(--d-kscore)}}
