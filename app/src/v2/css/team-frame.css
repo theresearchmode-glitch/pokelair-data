@@ -380,8 +380,11 @@
   .pty2 .mtf-acts{grid-column:1;grid-row:5;align-self:start;margin:var(--s4) 0 0}.pty2 .tm-jump{grid-column:1;grid-row:6;align-self:start;margin:var(--s2) 0 0}
   .pty2 .mtf-score{grid-row:3/7;align-self:end;margin-top:var(--s5)}.pty2 .mtf-score .mtf-sw{max-width:300px}
   .pty2 .mtf{grid-row:7;margin-top:var(--s10)}.pty2 .tmk-new{grid-row:8;margin-top:var(--s10)}}
-@media (min-width:1100px){.pty2-work .k-plan{padding-bottom:var(--s2)}.pty2-work .k-plan::before{bottom:var(--s2)}.pty2-work .k-plan>.k-step:nth-child(3){display:contents}
-  .pty2-work .k-plan>.k-step:nth-child(3)>.k-n{position:relative;left:-52px;grid-column:1;grid-row:2;align-self:start;justify-self:start}
-  .pty2-work .k-plan>.k-step:nth-child(3)>.k-sec{grid-column:1;grid-row:2}
-  .pty2-work .k-plan>.k-step:nth-child(3)>.tm-cks{grid-column:1;grid-row:3}
-  .pty2-work .k-plan>.k-step:nth-child(3)>.tm-yg{grid-column:2;grid-row:3}}
+@media (min-width:1100px){.pty2-work .k-plan{padding-bottom:var(--s2)}.pty2-work .k-plan::before{bottom:var(--s2)}
+  /* only with Your Games (a full six): a team still being built has no record, so step 3 stays whole under the upgrade */
+  .pty2-work .k-plan:has(>.k-step>.tm-yg){grid-template-rows:1fr auto auto} /* 1fr: when the matchups run longer, the extra space goes under the upgrade, never between step 3's heading and its checks */
+  .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3){display:contents}
+  .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3)>.k-n{position:relative;left:-52px;grid-column:1;grid-row:2;align-self:start;justify-self:start}
+  .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3)>.k-sec{grid-column:1;grid-row:2}
+  .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3)>.tm-cks{grid-column:1;grid-row:3}
+  .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3)>.tm-yg{grid-column:2;grid-row:3}}
