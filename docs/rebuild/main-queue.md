@@ -1,6 +1,8 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 3:10 PM (3:10:53)  date: Mon Nov 23, 2026
-NOW: HH (design + executive authority to 6 PM): D-meta-shell in Safari's engine on HEAD (Pokémon page B). Helper: hY (Home option B, Sim's pick 2:58 PM: rebase, v2-minors ticker checks, 16px trim, checks).
-NEXT: hY's report -> merge Home B, before/after pictures to Sim, push (no push while a GitHub run is going), Preview
-NEXT: 9 AM Tue summary of all decisions (no 6 PM one: Sim, 3:14 PM)
-NEXT: Game Plan hourly (v48 at 2:35)
+Updated: time: 4:06 PM (4:06:27)  date: Mon Nov 23, 2026
+NOW: HH (design + executive authority to 9 AM Tue): A-team on HEAD (HOME-09 fix, padlock fix). Helper: hZ (phone lengths at 390).
+NEXT: Sim's pick A/B for the Home tools (Calc hero, white cards with coloured ground) -> build it for real (1100+), under the 4-screen cap
+NEXT: Battle opens on the Damage Calc tab (Sim, 4:0x PM): find why and fix
+NEXT: GitHub run on the latest push; Preview refresh after
+NEXT: other account: alt/len1280 and alt/fullcheck -> review when pushed
+NEXT: 9 AM Tue summary (reminder 8:30 AM)
