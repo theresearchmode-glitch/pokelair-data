@@ -337,3 +337,35 @@
 @media (min-width:700px) and (max-width:1099.98px){.sdt-end.ev{padding-left:0}.sdt-big{width:280px}
   .sdt-more ul{display:flex;justify-content:space-between;gap:0 var(--s4)}}
 @media (min-width:700px) and (max-width:1279.98px){.sdt-h span{display:block}}
+/* Team Preview Practice's chip shows only on the desktop rack below (under 1100 Practice keeps its own plate) */
+.sdt-chips li.sdt-chd{display:none}
+/* ---- Home length (Nov 23, direction for Sim): the desktop rack, 1100 and wider. Tools B (the phone and iPad layout Sim chose, Nov 18)
+   laid out for a wide screen: the Speed Tiers race, then Ratings, Damage Calc, Winning Teams and Battle in one row with their short lines,
+   then the other seven tools as picture chips in one row (Practice joins them here), then More tools ---- */
+@media (min-width:1100px){
+  .sdt-tc,.sdt-grid>.sdt-sm,.sdt-ends{display:none}
+  .sdt-grid{gap:var(--s5)}
+  .sdt-ra,.sdt-dc,.sdt-wt,.sdt-bt{grid-column:span 3;display:flex;flex-direction:column;row-gap:var(--s3)}
+  /* each of the four: its picture on top in one 96px stage, then the name and its short line (as the iPad tiles) */
+  .sdt-ra>:last-child,.sdt-dc>:last-child,.sdt-wt>.sdt-pic,.sdt-bt>.sdt-vs{order:-1;flex:0 0 96px;height:96px;margin:0;padding:0;align-self:stretch}
+  .sdt-wt>.sdt-tx{margin-top:0}.sdt-acts{flex-direction:row;flex-wrap:wrap;gap:0 var(--s5)}
+  .sdt-ra .sdt-t,.sdt-dc .sdt-t,.sdt-wt .sdt-t,.sdt-bt .sdt-t{font-size:var(--t22);line-height:1.2}
+  .sdt-pod{align-items:end}.sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:56px}
+  .sdt-blk{min-height:var(--s5);padding:0}.sdt-step.s1 .sdt-blk{min-height:var(--s8)}.sdt-blk b{font-size:var(--t15)}.sdt-blk small,.sdt-step .sdt-mn{display:none}
+  .sdt-hit{margin:0;gap:var(--s1);align-content:end}.sdt-hpw,.sdt-hit .sdt-cc{display:none}.sdt-hp{justify-self:stretch;width:100%;height:var(--s2)}.sdt-duel .np-mon{--iw:64px}.sdt-duel .sdt-m{min-height:0}
+  .sdt-wt .sdt-pic{display:flex;align-items:flex-end}.sdt-six{width:100%}.sdt-six .np-mon{--iw:40px}.sdt-six .sdt-mn,.sdt-cap{display:none}
+  .sdt-vs{grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr)}.sdt-side{--cap:56px;padding-top:0}.sdt-side .sdt-mn{display:none}
+  .sdt-ra .sdt-l,.sdt-dc .sdt-l,.sdt-wt .sdt-l,.sdt-bt .sdt-l{display:none}.sdt-ra .sdt-s,.sdt-dc .sdt-s,.sdt-wt .sdt-s,.sdt-bt .sdt-s{display:inline}
+  .sdt-chips{display:block;margin-top:var(--s5)}
+  .sdt-chips ul{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:1fr;gap:var(--s3);margin:0;padding:0;list-style:none}
+  .sdt-chips li.sdt-chd{display:block}
+  .sdt-chp{display:flex;align-items:center;gap:var(--s2);min-height:56px;height:100%;padding:var(--s1) var(--s3) var(--s1) var(--s4);background:var(--sd-card);color:var(--sd-card-ink);text-decoration:none;
+    clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+  .sdt-chp:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+  .sdt-chp>b{min-width:0;font:700 var(--t15)/1.25 var(--b)}
+  .sdt-cpic{flex:0 0 40px;display:flex;align-items:center;justify-content:center;min-height:40px}
+  .sdt-cpic .np-mon{--iw:40px;width:40px}.sdt-cpic .np-mon .st{width:40px}
+  .sdt-cpic>b{font-size:var(--t13);color:var(--plot-text);white-space:nowrap}
+  .sdt-cty{display:grid;grid-template-columns:repeat(3,12px);gap:2px}.sdt-cty i{display:block;height:12px;background:var(--ty)}
+  .sdt-more{margin-top:var(--s3)}
+}
