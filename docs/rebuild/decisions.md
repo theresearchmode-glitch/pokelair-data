@@ -2123,3 +2123,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:35 AM: Hourly check 12:35 AM: 1 helper (hK); main: B-build 77/0 on frozen data, C-battle running; Game Plan updated.
 - 12:41 AM: Frozen-data checks after the polish fixes: B-build 77 pass 0 FAIL, C-battle 83 pass 0 FAIL. Preview refresh running.
 - 12:42 AM: Preview v239 published (foundation a2db076b, v2.js af9da1d0 verified on the artifact, preview.json eb2cbcaf): everything through the polish fixes.
+- 12:51 AM: Phone/tablet empty-space scan (390/820, every route): 1 flag (Usage 820, right half under Abilities) -> fixed (Items span two rows at 700-899). Preview v239 published 12:42; overnight before/after pictures in pics/nov23/overnight.
