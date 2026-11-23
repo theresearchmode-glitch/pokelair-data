@@ -1,4 +1,4 @@
-# Overnight, Sun Nov 22 -> Mon Nov 23 (HH under Sim's design + executive authority to 9 AM)
+# Overnight, Sun Nov 22 -> Mon Nov 23 (HH under Sim's design + executive authority; both now extended to 6 PM Mon)
 
 Every decision has its clock time in docs/rebuild/decisions.md. Pictures: docs/rebuild/pics/nov22/empty-fix/ (the 9 fixes),
 docs/rebuild/pics/nov23/overnight/ (later changes), docs/rebuild/pics/nov23/wave2-build/ (kit parts).
@@ -42,6 +42,19 @@ Nothing went to the live site. Everything is on claude/design6 and on the Previe
   SET AS OPPONENT 20 px there (it touched its edge). Same length.
 - 5:02 AM merged hL: Test Run 700-1099, Usual suspects names fit (Meowscarada spilled 14 px). Same length. hL done.
 
+
+## 5:45 AM -> 9 AM
+- 6:07-6:16 AM Sim's iPhone 16 pictures ("just some polish needed"): fixed and pushed with his yes (6:20 AM):
+  Home hero grows on short phone windows so Rillaboom/Sneasler never cover "win rate."; Ratings tabs and filter chips 13px under 440;
+  podium steps 2px apart on phones so numbers clear the stripe (Meta 390 +6px, the only page that grew).
+- 6:20 AM HQ Q13f now also tests short windows (393x660 = iPhone 16 in the Claude app, 375x600, 430x700). Proven: fails on the old hero
+  (4.19% of the tagline covered at 393x660), passes on the fix. My first edit had a syntax slip (fixed 6:41 AM, pushed 6:51).
+- 6:47 AM merged hP polish: Go buttons and "New crew?" on the type scale; phone section notes 13px at 1.5; My Team facts Item, then
+  Ability + Nature; phone footer links 2 + 3. 15 pages shorter at 390, none longer. Preview v243 (6:51 AM).
+- 6:56 AM tried and dropped: Type Chart "Hitting back" under the card at 1100+ (made the page longer, 2,845 -> 3,013 at 1440).
+- 7:05 AM full-site polish check after all of it: nothing new.
+- Helper hI sweeping every page at iPhone 16 size (393x660, 375x600, 430x700); design choices come to Sim with pictures.
+
 ## Lengths for Sim's OK (the rule: never longer than before without Sim's OK)
 - My Team phone 390: 4,024 px on the test data (old limit 3,930). HH accepted it in steps: the six's hint +28, the buttons under the
   name, Wave 2's kit show-more +16. Desktop 1440 went from 3,501 to about 2,830.
@@ -67,3 +80,4 @@ Nothing went to the live site. Everything is on claude/design6 and on the Previe
 - Real iPhone Safari for the Damage Calc Rain fix (second account's WebKit run passed).
 - The Pokémon page's length (needs Sim's call on content).
 - Test Run with a team open is over the 3-screen cap (1280 4.0, 1100-1200 ~4.7); it was before tonight too.
+- Type Chart 3.16 at 1440 (cap 3): the one layout idea made it longer; options are a content call (e.g. the whole chart folded) or Sim's OK.
