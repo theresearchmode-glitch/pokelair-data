@@ -228,6 +228,7 @@
 /* More tools (lead, Nov 18): the six tools without a plate, one quiet row of links */
 .sdt-more{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s5);margin-top:var(--s8);padding-top:var(--s4);border-top:1px solid var(--rule)}
 .sdt-mh{font:700 var(--t15)/1.3 var(--b);color:var(--ink)}
+.sdt-of{display:none}
 .sdt-more ul{display:flex;flex-wrap:wrap;gap:0 var(--s5)}
 .sdt-more .np-link{display:inline-block;min-height:var(--tap);padding-top:var(--s3)}
 
@@ -412,7 +413,11 @@
   .sdt-ra>.sdt-pod::before,.sdt-bt>.sdt-vs::before,.sdt-pr>.sdt-pp::before,.sdt-ar>.sdt-wx::before{content:"";position:absolute;left:calc(var(--s2) * -1);right:calc(var(--s2) * -1);bottom:0;height:52px;z-index:-1;
     background:var(--stage);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
   .sdt-ra{--stage:var(--sd-race)}.sdt-bt{--stage:var(--sd-them)}.sdt-pr{--stage:var(--sd-flag)}.sdt-ar{--stage:var(--ty-Flying)}
-  .sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:60px}.sdt-ra .sdt-blk>span,.sdt-blk small,.sdt-step .sdt-mn{display:none}
+  .sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:60px}.sdt-blk small,.sdt-step .sdt-mn{display:none}
+  /* design critique (Nov 23, recognition over recall): the podium keeps each Pokémon's name under its number, narrow letters to fit */
+  .sdt-ra .sdt-blk>span{display:block;font:700 var(--t13)/1.2 var(--b);font-stretch:75%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  /* and the big damage number says whose HP it is */
+  .sdt-grid>.sdt-dc .sdt-of{display:block;margin-top:var(--s1);font:700 var(--t17)/1.3 var(--b)}
   .sdt-bt .sdt-side{--cap:76px;padding-top:0}.sdt-bt .sdt-vs{grid-template-columns:minmax(0,1fr) var(--s10) minmax(0,1fr)}.sdt-bt .sdt-side .sdt-mn{display:none}
   .sdt-pr .sdt-pp{flex:0 0 116px;justify-content:flex-end;gap:0}
   /* Team Preview Practice as a real team preview (Sim, Nov 23: 'looks rough'): the six in one row standing on the red ground, 'Pick 4' above */
