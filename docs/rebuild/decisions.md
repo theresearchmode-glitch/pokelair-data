@@ -2060,3 +2060,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:09 PM: Sim: second account will only do Job 4 (sweep); jobs 1 (Wave 2 pictures), 3 (length options), 5 (info words build) come back here. Plan: hW2 (only helper) after Track Record -> Job 5; HH main thread -> Job 3 then Job 1 pictures between checks
 - 7:11 PM: Sim: 'do them in the order you think is best' -> order kept: hW2 Track Record then Job 5; HH Wave 3 checks/push, then Job 3 pictures, then Job 1
 - 7:13 PM: Sim: one more helper until 10 PM tonight (2 total). New helper hP: Job 3 (length-option pictures) then Job 1 (Wave 2 kit-part pictures), pictures only; stops at 10 PM
+- 7:14 PM: Sim: 'your rec is good to go' -> hP on picture jobs (Job 3 then Job 1) until 10 PM confirmed
