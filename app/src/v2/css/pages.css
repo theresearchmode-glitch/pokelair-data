@@ -1275,6 +1275,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .sp2-sc>.sp2-sc-l{padding-right:0}
   .sp2-m{grid-template-columns:var(--c1) 40px minmax(0,1fr);grid-template-areas:"v mon nm" "v mon tr";align-items:end;gap:0 var(--s2);min-height:44px;padding:0 var(--s4) 0 0}
   .sp2 .k-sent{font-size:var(--t15);gap:var(--s1) var(--s2)}.sp2 .k-w{padding:0 var(--s1)}.sp2-ctl .k-sent{margin-top:var(--s4)}
+  @media (max-width:439.98px){.sp2 .k-w{padding:0 var(--s2);font-size:var(--t13)}} /* Sim, Nov 23 (iPhone 393): at 15px with 4px sides the slanted letters of "Your Tailwind", "They're Paralyzed" and "No Weather" ran into the chip's border; a size down with 8px sides, as the Ratings chips under 440, and every row still fits */
   .sp2-m .v{grid-area:v;align-self:center;padding-right:0;font-size:var(--t20)}
   .sp2-m .nm{grid-area:nm;padding-right:0;font-size:var(--t15)}
   .sp2-m .sp2-tr,.sp2-m .sp2-bar{display:contents}
