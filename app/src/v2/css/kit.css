@@ -223,3 +223,5 @@ button.k-move{cursor:pointer}
    (-8deg, the kit's skew) while the words stay upright; the box hugs its words. ===== */
 .k-none{position:relative;width:fit-content;max-width:calc(100% - 8px);margin:var(--s2) var(--s1) 0;padding:var(--s2) var(--s4);font-family:var(--b);font-size:var(--t15);font-style:normal;font-weight:500;line-height:1.5;letter-spacing:0;color:var(--k-ink2)}
 .k-none::before{content:"";position:absolute;inset:0;border:2px dashed var(--k-ink2);transform:skewX(-8deg);pointer-events:none}
+/* the filter chip on the narrowest phones (polish-check Nov 23: "◆ Hidden Gems 2" ran 5px out of its half of the row at 320): a size down */
+@media (max-width:359.98px){.k-chip{padding:0 var(--s2);font-size:var(--t13)}.k-chip>span{gap:var(--s1)}}

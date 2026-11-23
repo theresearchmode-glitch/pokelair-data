@@ -1399,7 +1399,7 @@ if (part('main2')) {
   // Nov 18 evening (Sim: recommended): a team that shows optional swaps ("Optional swaps:") is its own state with its own limit, as 5 of 6
   // has (CI's frozen data gives the sample team one optional swap: +363px, 4.47 screens); measured + margin: 4.75
   { const {q, c} = await mtOpen(390); const r = await q.evaluate(() => ({H: document.documentElement.scrollHeight, scr: +(document.documentElement.scrollHeight / 844).toFixed(2), opt: /Optional swaps:/.test(document.body.innerText)}));
-    const lim = r.opt ? 4.75 : 4.3;
+    const lim = r.opt ? 4.78 : 4.3; /* Nov 23 (HH, design authority to 9 AM): Wave 2's kit show-more (44px, Sim chose A) adds about 16px to the frozen data's sample team with optional swaps (4.75 -> 4.77); flagged in the 9 AM summary */
     ok(r.scr <= lim, `Sim, Nov 18 (C): My Team at 390 is at most ${lim} screens long${r.opt ? ' (with optional swaps)' : ''} (${r.scr} screens, ${r.H}px)`);
     // 2. the Hand three across; the editing panel shut until a Card is tapped, with the hint; tapped, it opens under the whole Hand with Replace, Edit Set, Remove and Lock
     /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): was three groups side by side (Lead | Back | Bench); now ONE
