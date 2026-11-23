@@ -29,6 +29,16 @@
   .rs-on .gs-spot{grid-template-columns:96px minmax(0,1fr);gap:var(--s3)}.rs-on .gs-plate{min-height:0}.rs-on .gs-plate .np-mon{--iw:88px}
   .rs-on .gs-spot h2{font-size:var(--t24)}.rs-on .gs-big b{font-size:var(--t34)}.rs-on .gs-big small{display:none}.rs-on .gs-spot .ra-ty{display:none}
   .rs-on .gs-spot .ra-acts{display:flex;flex-wrap:wrap;gap:var(--s2)}.rs-on .gs-spot .ra-acts>*{min-height:var(--tap);padding-block:0}
+  /* phone length (Nov 23; no longer than before the reskin, 2,930 px at 390): the #1 card's two buttons sit side by side across the
+     whole card (they stacked in the narrow right column), "On your team" under them; the tag, name, rating and facts stay beside the picture */
+  .rs-on .gs-spot{row-gap:var(--s2);align-items:start;justify-items:start}
+  .rs-on .gs-spot>.gs-plate{grid-row:1/span 4;align-self:center;justify-self:stretch}
+  .rs-on .gs-spot>.gs-sinfo{display:contents}.rs-on .gs-spot>.gs-sinfo>*{grid-column:2}
+  .rs-on .gs-spot>.gs-sinfo>.ra-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-column:1/-1;justify-self:stretch}
+  .rs-on .gs-spot>.gs-sinfo>.ra-mine{grid-column:1/-1}
+  @media (max-width:389.98px){.rs-on .gs-spot>.gs-sinfo>.ra-acts{grid-template-columns:minmax(0,1fr)}} /* under 390 the two names don't fit side by side: one under the other, full width */
+  /* one 16px step between the page's parts (around the tier bar, the Grandstand title and the links at the foot it was 32-48px) */
+  .ra.rs-on.gsp{gap:var(--s4)}.rs-on .rs-wrap{margin-top:0}.rs-on .ra-tbar{margin:0}.rs-on .ra-tbar .k-sent{margin-top:0}.rs-on .gs-body>.gs-title{margin-top:0}
 }
 /* Home: the top 10 right now (under the hero): rank, sprite, name, rating, each a tap to its page; SEE ALL RATINGS to the Ratings page */
 .sd-top{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--s3) var(--s6);padding:var(--s8) max(var(--s6),calc((100% - 1240px) / 2));background:var(--k-paper);border-bottom:1px solid var(--k-rule)}
@@ -66,7 +76,7 @@
 @media (max-width:959.98px){.ow2-two{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699.98px){.ow2-box{min-height:0;padding:var(--s4)}.ow2-box h2{font-size:var(--t22)}}
 /* phones with the stairs: How Ratings Work and Track Record move to the page's foot (approved mock), so the search starts on the first screen (Q21) */
-@media (max-width:699.98px){.rs-on .ra-h .ra-links{display:none}.rs-on .ra-lph{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);margin-top:var(--s4)}}
+@media (max-width:699.98px){.rs-on .ra-h .ra-links{display:none}.rs-on .ra-lph{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);margin-top:0}}
 /* ===== Send Feedback on the kit (Sim approved Nov 22, 12:37 PM): the form as a plot sentence, the box, the pink SEND IT., "Anonymous. Always." beside it */
 .fb2{display:block}.fb2 .k-head .k-kicker{display:table;max-width:100%}
 .fb2-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);align-items:start;gap:var(--s6) var(--s12)}
