@@ -4379,3 +4379,14 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (max-width:359.98px){.lo-srcs{column-gap:var(--s1)}.lo-srcs .k-w{padding:0 var(--s1)}} /* at 320 "tournaments" (about 74px) did not fit the 80px chip minus 8px each side */
 /* N3 Popular Sets 900-1099: the three facts beside the loadout ran ~10px past their 59px columns ("Base Speed", "53.7%") */
 @media (min-width:900px) and (max-width:1099.98px){.lo-id .gs-facts{column-gap:var(--s2)}.lo-id .gs-facts b{font-size:var(--t15)}.lo-id .gs-facts span{white-space:normal}} /* 17px was still too wide: Unbounded "53.7%" is 68px at 17; at 15 it is 60 in a 62px column (the phones at 320 use 15 too) */
+/* Events hero at 1100+ (HH, design authority for the empty-space fixes, Sim 8:48 PM Nov 22): the headline runs the full width (two lines),
+   the intro and the counts sit in one row under it, so nothing is squeezed into a thin side column and no block under the headline is empty */
+@media (min-width:1100px){.ev2 .ra-h{grid-template-columns:minmax(0,1fr)}.ev2 .ra-h>h1,.ev2 .ra-h>.ev2-intro{grid-column:1}
+  .ev2 .ra-h>.ev2-intro{display:grid;grid-template-columns:minmax(0,440px) minmax(0,1fr);column-gap:var(--s12);align-items:start;margin-top:var(--s4)}
+  .ev2 .ev2-intro .ev-counts{margin-top:0}}
+/* This Week hero at 1100+ (HH, design authority for the empty-space fixes, Sim 8:48 PM Nov 22): the headline runs the full width (two lines,
+   not four squeezed in half the page); the counts and SHARE THIS WEEK sit beside the intro, so the top right isn't empty */
+@media (min-width:1100px){.wk2 .gs-top{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s12);row-gap:var(--s3);align-items:center}
+  .wk2 .gs-top>.ra-h{display:contents}.wk2 .gs-top>.ra-h>*,.wk2 .gs-top>.ra-sub{grid-column:1/-1}
+  .wk2 .gs-top>.ra-h>.k-kicker{grid-row:1}.wk2 .gs-top>.ra-h>h1{grid-row:2}.wk2 .gs-top>.ra-h>.ra-lede{grid-column:1;grid-row:3}
+  .wk2 .gs-top>.wk2-side{grid-column:2;grid-row:3;align-self:center}.wk2 .gs-top>.ra-h>.ra-sub{grid-row:4}.wk2 .gs-top>.ra-sub{grid-row:5}}

@@ -16,7 +16,10 @@ V2.pages.about = {place: '', draw() { const E = V2.esc, want = ((location.hash |
   const parts = (typeof ABT_PARTS === 'function' ? ABT_PARTS('') : []).filter(p => p[0] !== 'priv').map(p => p.map(x => typeof x === 'string' ? x.split("which threats you're ready for").join('which threats you have an answer for') : x)); /* word list (Nov 16): Matchups is about answers, not readiness */
   /* a link to a part scrolls there once per arrival, never on a redraw (code review A1-I4: Day/Night jumped back to it) */
   if (want && V2._abtAt !== V2.drawN) { V2._abtAt = V2.drawN; setTimeout(() => { const d = document.getElementById('abt-' + want); if (d) d.scrollIntoView({block: 'start'}); }, 60); }
-  const rows = parts.map(([k, , , sub, body]) => `<details class="inf-row" id="abt-${k}"${want === k ? ' open' : ''}><summary><b>${E(V2.ABT_TITLE[k] || k)}</b><span>${sub}</span></summary><div class="inf-fine">${V2.wl(body).replace(/class="chghost abtshow"/, 'class="np-link"').replace(/>Show email</, '>Show Email<')}</div></details>`).join('');
+  /* Nov 22 (HH, design authority for the empty-space fixes, Sim 8:48 PM): at 1100+ the first two rows (what NastyPlot is, the disclaimer)
+     start open, so The Fine Print fills its column beside the receipt with real words instead of empty space (no fold to open) */
+  const wide = !want && innerWidth >= 1100;
+  const rows = parts.map(([k, , , sub, body], i) => `<details class="inf-row" id="abt-${k}"${want === k || (wide && i < 2) ? ' open' : ''}><summary><b>${E(V2.ABT_TITLE[k] || k)}</b><span>${sub}</span></summary><div class="inf-fine">${V2.wl(body).replace(/class="chghost abtshow"/, 'class="np-link"').replace(/>Show email</, '>Show Email<')}</div></details>`).join('');
   /* reskin (Nov 22, Sim approved direction A "the receipt", 12:36 PM, with its words "EVERYTHING WE SAVE" and "Your name or email: NEVER"; mock
      docs/rebuild/mocks/reskin-nov22/about-mock.inject.js): the kit head with the promise as four tilted stamps; "Everything we save" printed as
      NastyPlot's receipt (the Track Record's paper: white in both themes), each thing kept a line item with a dotted leader to where it lives;
