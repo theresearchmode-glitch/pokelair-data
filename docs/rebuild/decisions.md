@@ -2107,3 +2107,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:25 PM: Design authority: How We Calculate hero at 1100+: headline full width, intro + counts row, the key as one wide two-column card (1440 2.22 -> 2.15 screens).
 - 10:32 PM: Design authority: Build plates: item/Ability/moves are info words (plate = div, the name is the button covering the plate); shell: an info word inside a Pokémon card opens only its sheet. My Team phone -8 px (hint/New crew spacing). Checks: chain bc.sh (C-battle, B-build, q83, s16, q59, qcheck).
 - 10:33 PM: Second empty-space sweep (1366/1600/2560, day): 11 flags on 8 routes. Fixed: Track Record (big two-line verdict stamp). Pokémon page 1366 hero right (same as 1280 fix? check). 2560-only flags (build, events, about, gifts, pokemon, not-found/owner) left for a site-wide ultra-wide frame decision later.
+- 10:34 PM: Design authority: ultra-wide frame cap (content max 1,920 px, centred, from 2112 wide via --gut) for the 2560 flags.
