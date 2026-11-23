@@ -2272,3 +2272,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:33 PM: Full D-meta-shell on HEAD: 117 pass, 0 FAIL (SHEET-05/06 fixed). Next main job: Preview rebuild with Pokémon page B, Type Chart 1280, My Team A.
 - 2:34 PM: Preview v248 published (Pokémon page B, Type Chart 1280, My Team A, saved-data fixes). Next main job: qcheck-all every page on HEAD (after today's merges).
 - 2:35 PM: Game Plan v48: Home waiting on Sim (A/B), My Team done.
+- 2:49 PM: hX ended: Home options' shared Post X findings fixed on hw-homelen (1f069309; A 57f74fb9, B 023b12e9): qcheck 0 new on both, tap-size passed, unbounded clean. Left for the merge: 2 v2-minors stampede ticker checks (desktop ticker now hidden), +16px at 1440 (4.01 screens; trim the name's margins). SHEET-05/06 failures in its run were from its older base, already fixed on HEAD. Waiting on Sim's A/B.
