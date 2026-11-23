@@ -1,5 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH (design authority to 9 AM): vu.sh (qcheck usage/news/gauntlet/battle/build + minors x3) then vw.sh (minors x3 + polish on the Wave 2 pages); GitHub run on 4f789f53 (check 2:01 AM). Helper: hK2 finishing Wave 2. Next: 5:45 AM summary.
+NOW: HH (design authority to 9 AM): vx.sh (minors main2, q59, qcheck meta/tournaments/sets/usage, D-meta) after Wave 2 fixes; GitHub run on 4f789f53. Helper: hK2 finishing Wave 2. Next: 5:45 AM summary, Preview refresh before it.
 NEXT: review + merge hK's Wave 2 parts one part at a time (pictures, checks)
 NEXT: GitHub full check on claude/design6; fix anything red
 NEXT: phone sweep (390) of tonight's changed pages; dark-theme spot checks
