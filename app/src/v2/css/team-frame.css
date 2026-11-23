@@ -225,3 +225,97 @@
    wrapped the one-line link row at 820-917 and pushed the six down 44px. Here the six links always sit three to a row (two even rows, as
    on phones 380-699), so the row is the same height saved or not. 1024 and up keep one line (both states fit, measured). */
 @media (min-width:700px) and (max-width:1023.98px){.tmk-head .mtf-acts{display:grid;grid-template-columns:repeat(3,max-content);gap:0 var(--s6)}}
+
+/* ===== My Team "The Party" (Sim chose it 7:53 PM Nov 22; built on the kit). The six move into the blue party band at the top: the chosen
+   one is the big white card (its whole set and buttons), the six are party rows beside it (types, item and Ability, moves, rating bar).
+   The chosen card reuses the frame detail rules below (copied from .tmk-work with its colours set for the white card). ===== */
+.pty2 .mtf-sum{--wr-ink:var(--pty-ink);--wr-ink2:var(--pty-ink2);--wr-plot:var(--pty-band);--wr-rule:var(--sd-paper-rule)}
+.pty2 .mtf-sum{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s4) var(--s12);margin:var(--s8) 0 0;padding:var(--s6) 0 0;background:none;border-top:3px solid var(--wr-plot);box-shadow:none}
+.pty2 .mtf-sl,.pty2 .mtf-inf{display:grid;align-content:start;gap:var(--s4);min-width:0;margin:0;padding:0;background:none}
+.pty2 .mtf-nav{display:flex;align-items:center;gap:var(--s2);min-height:var(--tap);margin:0;padding:0;background:none}
+.pty2 .mtf-nav h2{flex:0 1 auto;min-width:0;margin:0;font-size:var(--t24);line-height:1.15;color:var(--wr-ink);white-space:normal;overflow:visible;overflow-wrap:normal}
+.pty2 .mtf-nav > span{flex:none;font-size:var(--t15);font-weight:600;color:var(--wr-ink2);white-space:nowrap}
+.pty2 .mtf-nav .mtf-step:last-child{margin-left:auto}
+.pty2 .mtf-step{flex:none;display:grid;place-items:center;width:var(--tap);height:var(--tap);padding:0;border:0;background:none;color:var(--wr-plot);font-size:var(--t34);font-weight:900;line-height:1;cursor:pointer}
+.pty2 .mtf-step[disabled]{opacity:.4;cursor:default}
+.pty2 .mtf-step:focus-visible,.pty2 .mtf-do .np-link:focus-visible{outline:3px solid var(--wr-plot);outline-offset:2px}
+.pty2 .mtf-tr{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4)}
+.pty2 .mtf-ty{display:flex;gap:var(--s1);margin:0}
+.pty2 .mtf-tr .rate{display:flex;align-items:baseline;gap:var(--s2);margin:0;color:var(--wr-plot)}
+.pty2 .mtf-tr .rate b{font-size:var(--t34);line-height:1}
+.pty2 .mtf-tr .rate span{font-size:var(--t15);color:var(--wr-ink2)}
+.pty2 .mtf-ia{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);margin:0}
+.pty2 .mtf-ia div{display:grid;align-content:start;padding:var(--s2) 0 0;background:none;border:0;border-top:1px solid var(--wr-rule)}
+.pty2 .mtf-ia dt{font-size:var(--t13);font-weight:600;line-height:1.3;color:var(--wr-ink2)}
+.pty2 .mtf-ia dd{margin:0;font-size:var(--t17);font-weight:700;line-height:1.3;color:var(--wr-ink)}
+.pty2 .mtf-ia dd small{display:inline;font-size:var(--t13);font-weight:500;color:var(--wr-ink2)}
+.pty2 .mtf-mv{margin:0}
+.pty2 .mtf-do{display:flex;flex-wrap:wrap;gap:0 var(--s5);margin:0}
+.pty2 .mtf-do .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;font-size:var(--t15);font-weight:700;color:var(--wr-plot)}
+.pty2 .mtf-do .sx-a.on{color:var(--wr-ink)}
+/* the quiet links' "›" is drawn, so each button keeps its own name ("Edit Set", as the focus checks read it) */
+.pty2 .mtf-do .np-link:not(.sx-info)::after{content:"\00a0›" / ""}
+/* the band */
+.tm-hero.pty2{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s6);align-items:end;padding:var(--s8) max(var(--s6),calc((100% - 1240px) / 2)) var(--s8);background:var(--pty-band);background-image:repeating-linear-gradient(-60deg,var(--pty-stripe) 0 14px,transparent 14px 40px);color:var(--pty-on)}
+.pty2 .mtf-head{display:contents}
+.pty2 .mtf-head>*{grid-column:1;margin-left:0;margin-right:0;max-width:none}
+.pty2 .mtf-k{margin:0 0 var(--s2);color:var(--pty-on);font-weight:700}
+.pty2 .k-kicker{justify-self:start;margin:0 0 var(--s2);background:var(--pty-ink);color:var(--pty-on)}
+.pty2 .tm-name{color:var(--pty-on);-webkit-text-stroke:.08em var(--pty-ink);paint-order:stroke fill;filter:drop-shadow(.05em .05em 0 var(--pty-ink))}
+.pty2 .tm-name em{color:var(--pty-gold)}
+.pty2 .tm-name .mtf-smp{color:var(--pty-sky);-webkit-text-stroke:0;filter:none}
+.pty2 .tm-sample,.pty2 .tm-gone,.pty2 .mtf-wait{margin:var(--s2) 0 0;color:var(--pty-on)}
+.pty2 .mtf-score{grid-column:2;grid-row:1/6;align-self:center;display:grid;grid-template-columns:auto auto;align-items:center;column-gap:var(--s4);margin:0;padding:var(--s3) var(--s6) var(--s3) var(--s5);background:var(--pty-ink);transform:skewX(-10deg);box-shadow:8px 8px 0 var(--pty-hot)}
+.pty2 .mtf-score>*{transform:skewX(10deg)}
+.pty2 .mtf-score .n{margin:0;color:var(--pty-on)}
+.pty2 .mtf-score .band{color:var(--pty-sky)}
+.pty2 .mtf-score .lab,.pty2 .mtf-score .win,.pty2 .mtf-score p:not(.n):not(.band){color:var(--pty-sub)}
+.pty2 .mtf{grid-column:1/-1;order:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:var(--s5);align-items:stretch;margin:var(--s6) 0 0;padding:0;background:none;box-shadow:none;color:var(--pty-on)}
+.pty2 .mtf-acts{grid-column:1/-1;order:2;display:flex;flex-wrap:wrap;gap:var(--s3);margin:var(--s6) 0 0}
+.pty2 .mtf-acts .np-link{min-height:var(--tap);padding:0 var(--s4);background:var(--pty-card);color:var(--pty-ink);font-weight:800;transform:skewX(-10deg);box-shadow:4px 4px 0 var(--pty-ink)}
+.pty2 .mtf-acts .mtf-saved{background:var(--pty-chip);color:var(--pty-on);box-shadow:none}
+.pty2 .tmk-new{grid-column:1/-1;order:3;margin:var(--s4) 0 0;color:var(--pty-on)}
+.pty2 .tmk-new .k-w{border-color:var(--pty-on);color:var(--pty-on)}
+.pty2 .tm-jump{grid-column:1/-1;order:4;margin:var(--s2) 0 0;color:var(--pty-sub)}
+.pty2 .tm-jump a{color:var(--pty-on)}.pty2 .tm-jump .k-hint{color:var(--pty-sub)}
+/* the chosen one: the big white card */
+.pty2 .mtf-sum{grid-column:1;grid-row:1;align-self:start;position:relative;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);grid-template-rows:auto auto auto auto;gap:var(--s3) var(--s3);margin:0;padding:var(--s5) var(--s6) var(--s5) var(--s6);background:var(--pty-card);border:4px solid var(--pty-ink);box-shadow:10px 10px 0 var(--pty-hot);color:var(--pty-ink)}
+.pty2 .mtf-sum .pty2-art{grid-column:2;grid-row:2/4;justify-self:center;align-self:center;width:120%;height:200px;margin-top:0;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 12px 8px var(--pty-drop))}
+.pty2 .mtf-sl{display:contents}.pty2 .mtf-sum .mtf-nav{grid-column:1/-1;grid-row:1}.pty2 .mtf-sum .mtf-tr{grid-column:1;grid-row:2;flex-direction:column;align-items:flex-start}.pty2 .mtf-sum .mtf-ia{grid-column:1;grid-row:3}
+.pty2 .mtf-inf{grid-column:1/-1;grid-row:4}
+.pty2 .mtf-mv{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* the six: party rows */
+.pty2 .mtf-party{grid-column:2;grid-row:1;min-width:0}
+.pty2 .mtf .k-roster{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s2);margin:0;padding:0}
+.pty2 .mtf-row.k-card{display:grid;grid-template-columns:84px minmax(0,1fr) minmax(0,1.1fr) 132px;grid-template-rows:auto auto auto;align-items:center;column-gap:var(--s3);width:100%;min-height:0;padding:var(--s1) var(--s4) var(--s1) var(--s2);background:var(--pty-ink);border-left:10px solid var(--kc);color:var(--pty-on);filter:none;box-shadow:5px 5px 0 var(--pty-drop);cursor:pointer}
+.pty2 .mtf-row .k-plate,.pty2 .mtf-row .k-nm,.pty2 .mtf-row .pty2-x{display:contents}
+.pty2 .mtf-row .k-plate::before,.pty2 .mtf-row .k-plate::after{display:none}
+.pty2 .mtf-row .k-art{position:static;grid-column:1;grid-row:1/4;width:84px;height:72px;transform:none;object-fit:contain;object-position:50% 100%}
+.pty2 .mtf-row .k-id{grid-column:2;grid-row:1;color:var(--pty-on)}
+.pty2 .mtf-row .k-form{color:var(--pty-sky)}
+.pty2 .mtf-row .k-name{color:var(--pty-on)}
+.pty2 .mtf-row .k-sc{grid-column:4;grid-row:1/3;align-self:end;display:flex;align-items:baseline;justify-content:flex-end;gap:var(--s2)}
+.pty2 .mtf-row .k-score{color:var(--pty-on)}
+.pty2 .mtf-row .k-tier{color:var(--pty-sub)}
+.pty2-ty{grid-column:2;grid-row:2;display:flex;flex-wrap:wrap;gap:var(--s1)}
+.pty2-ty i{padding:0 var(--s2);background:var(--c);color:var(--pty-on);font-size:var(--t13);font-style:normal;font-weight:800;line-height:1.5;text-transform:uppercase;transform:skewX(-10deg)}
+.pty2-set{grid-column:2;grid-row:3;font-size:var(--t13);line-height:1.5;color:var(--pty-sub)}
+.pty2-mv{grid-column:3;grid-row:1/4;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s1)}
+.pty2-mv i{overflow:hidden;padding:0 var(--s2);background:color-mix(in srgb,var(--mc) 65%,var(--pty-ink));border-left:4px solid var(--mc);font-size:var(--t13);font-style:normal;font-weight:700;line-height:1.5;white-space:nowrap;text-overflow:ellipsis;color:var(--pty-on)}
+.pty2-bar{grid-column:4;grid-row:3;display:block;height:12px;background:var(--pty-row2);transform:skewX(-14deg);overflow:hidden}
+.pty2-bar i{display:block;width:var(--w);height:100%;background:var(--pty-sky)}
+.pty2 .mtf-row.on{outline:3px solid var(--pty-gold);outline-offset:2px}
+.pty2 .mtf-row:focus-visible{outline:3px solid var(--pty-gold);outline-offset:3px}
+.pty2 .mtf-add.k-card{display:grid;place-items:center;min-height:72px;background:transparent;border:3px dashed var(--pty-chip-rim);color:var(--pty-on)}
+.pty2 .mtf-add .k-plate{display:block;min-height:0;padding:0}
+/* the plan underneath, two up from 1100 */
+@media (min-width:1100px){.pty2-work .k-plan{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);column-gap:var(--s12);align-items:start}
+  .pty2-work .k-plan>.k-step:nth-child(1){grid-column:1;grid-row:1/3}.pty2-work .k-plan>.k-step:nth-child(2){grid-column:2;grid-row:1}.pty2-work .k-plan>.k-step:nth-child(3){grid-column:2;grid-row:2}
+  .pty2-work .tm-sgs,.pty2-work .tm-cks,.pty2-work .tm-yg,.pty2-work .tm-mus{max-width:none}
+  .pty2-work .k-plan>.k-step:nth-child(2) .mu-out{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:1279.98px){.pty2 .mtf-row.k-card{grid-template-columns:72px minmax(0,1fr) 120px}.pty2-mv{display:none}.pty2 .mtf-row .k-sc{grid-column:3}.pty2-bar{grid-column:3}.pty2 .mtf-row .k-art{width:72px;height:64px}}
+@media (max-width:899.98px){.pty2 .mtf{grid-template-columns:minmax(0,1fr)}.pty2 .mtf-sum,.pty2 .mtf-party{grid-column:1;grid-row:auto}.tm-hero.pty2{grid-template-columns:minmax(0,1fr)}.pty2 .mtf-score{grid-column:1;grid-row:auto;justify-self:start;margin-top:var(--s4)}}
+@media (max-width:699.98px){.tm-hero.pty2{padding:var(--s5) var(--s4) var(--s6)}
+  .pty2 .mtf-sum{padding:var(--s3) var(--s4);box-shadow:6px 6px 0 var(--pty-hot)}.pty2 .mtf-sum{grid-template-columns:minmax(0,1fr) 130px}.pty2 .mtf-sum .pty2-art{width:150px;height:130px}.pty2 .mtf-sum .mtf-ia{grid-template-columns:minmax(0,1fr)}.pty2 .mtf-sum .mtf-nav>span{display:none}
+  .pty2 .mtf-row.k-card{grid-template-columns:56px minmax(0,1fr) auto;padding-right:var(--s3)}.pty2 .mtf-row .k-art{width:56px;height:52px}
+  .pty2-set,.pty2-bar{display:none}.pty2 .mtf-row .k-sc{grid-column:3;grid-row:1/3;align-self:center}.pty2 .mtf-row .k-tier{display:none}}

@@ -480,7 +480,7 @@ V2.pages.team = {place: 'team', draw() {
   const tName = (title || '').replace(/\s*\(sample\)\s*$/i, ''), tCut = Math.max(tName.lastIndexOf(' · '), tName.lastIndexOf(' ')), tKey = tCut > 0 ? tName.slice(tCut).replace(/^( · | )/, '') : tName, tHead = tCut > 0 ? tName.slice(0, tName.length - tKey.length) : '';
   const nbsp = x => V2.esc(x).replace(/(Mega \S+) ([XYZ])\b/g, '$1 $2');
   const mtfHead = `<div class="mtf-head tmk-head"><p class="mtf-k"><span class="mtf-lg">My team · </span>${ms.length} of 6${wx ? ` · ${V2.esc(wx).replace(/ team$/, '<span class="mtf-lg"> team</span>')}` : ''}${ms.length ? ` · ${L.illegal ? 'Not legal yet' : 'Legal<span class="mtf-lg"> for ' + V2.esc(REG_NAME) + '</span> ✓'}` : ''}</p>
-    <p class="k-kicker">MY TEAM · THE WAR ROOM</p>
+    <p class="k-kicker">MY TEAM · THE PARTY</p>
     ${title ? `<h1 class="tm-name k-h1 u"${tName.length > 18 ? ' data-long="1"' : ''}>${nbsp(tHead)}<em>${nbsp(tKey)}</em>${sampleT ? ' <span class="mtf-smp">(sample)</span>' : ''}</h1>` : ''}
     ${sampleT ? `<p class="fine tm-sample">This is a sample team, here to show how NastyPlot works.</p>` : ''}${goneNote(S.slots) ? `<p class="fine tm-gone" role="status">${goneNote(S.slots)}</p>` : ''}
     ${s == null ? `<p class="tm-wait mtf-wait">${ms.length} of 6 picked. The Strength Score shows once the team can be rated.</p>` : `<div class="mtf-score" style="--band:var(--band-${bandWord})${sh}"><p class="n u">${s}</p><div class="mtf-sw"><p class="band u">${V2.esc(G ? CH.wordOf(G.s) : word)}</p><p class="lab">Strength Score${G && G.partial ? ' so far' : ''}</p>${win ? `<p class="win"${wh}>${win}. <b>${V2.esc(rank)}.</b></p>` : rank ? `<p class="win"${wh}><b>${V2.esc(rank)}</b></p>` : ''}${low ? '<p class="fine tm-low">Few real games back this mix yet, so it\'s a best guess.</p>' : ''}</div></div>`}
@@ -518,9 +518,10 @@ V2.pages.team = {place: 'team', draw() {
   // Nov 18: the hero is drawn with the belt's last fit (mt-wide), so a redraw no longer drops the belt's full-width row and puts it back
   // in after(): that flip moved everything under the belt 30px and back, and scroll anchoring moved the page 30px on each redraw
   if (V2.mtfFrame && V2.isHand(D)) { /* Reskin page 1 (mock-up B): the kit header, then the plan line with four steps */
-    const steps = [['The crew', 'your six · tap one to see it', V2.mtfFrame(D, sel)], ['The upgrade and the plan', 'Suggestions · Game Plan', sgSec + V2.mtfPlan(D, legalMark)],
+    /* My Team 'The Party' (Sim chose it 7:53 PM Nov 22, 'you can go' 7:59 PM): the six live in the blue party band at the top (the frame moves into the hero), so the plan line starts at the upgrade */
+    const steps = [['The upgrade and the plan', 'Suggestions · Game Plan', sgSec + V2.mtfPlan(D, legalMark)],
       muSec ? ['Who we’re up against', `Matchups · the top ${D.rows.length} threats · verdicts from real games`, muSec] : null, ['Checks and record', `Team Checks${ms.length === 6 ? ' · Your Games' : ''}`, ckSec + (V2.ygSec ? V2.ygSec(ms) : '')]].filter(Boolean);
-    return `<section class="tm-hero mt mtf-hero tmk">${mtfHead}</section><div class="tm-work mt-work tmk-work">${V2.kPlan(steps.map(([t, n, h], i) => V2.kStep(i + 1, t, n, h)).join(''))}</div>`; }
+    return `<section class="tm-hero mt mtf-hero tmk pty2">${mtfHead}${V2.mtfFrame(D, sel)}</section><div class="tm-work mt-work tmk-work pty2-work">${V2.kPlan(steps.map(([t, n, h], i) => V2.kStep(i + 1, t, n, h)).join(''))}</div>`; }
   return `<section class="tm-hero mt${V2._mtWide && innerWidth < 1100 ? ' mt-wide' : ''}">${mtHead}${V2.sixHtml(D, sel)}</section>${tabbed ? tabBar : jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}${tabbed ? ' tm-tabbed' : ''}">${tabPanels(`${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}`)}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },
 after() { V2.mtBeltFit(); if (V2.mtfHashJump) V2.mtfHashJump();
