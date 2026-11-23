@@ -9,8 +9,9 @@
   const F = c => `style="fill:${c};${S}"`, INK = 'style="fill:var(--ia-line)"', WH = 'style="fill:var(--ia-white)"';
   const HI = 'style="fill:var(--ia-hi)"', HL = 'style="fill:none;stroke:var(--ia-hi);stroke-width:3;stroke-linecap:round"';
   const DK = c => `color-mix(in srgb,${c} 70%,var(--ia-line))`; // the shade side of the same colour, mixed with the outline ink
-  const svg = b => `<svg class="ia" viewBox="0 0 64 64" focusable="false" aria-hidden="true">${b}</svg>`;
-  const sym = (ty, x, y, s) => `<svg x="${x}" y="${y}" width="${s}" height="${s}" viewBox="0 0 256 256" style="fill:var(--on-type)"><use href="#kty-${ty}"/></svg>`;
+  // every drawing leans like NastyPlot's slanted Unbounded headlines and the move seal (skewX -8, re-centred)
+  const svg = b => `<svg class="ia" viewBox="0 0 64 64" focusable="false" aria-hidden="true"><g transform="translate(4.5 0) skewX(-8)">${b}</g></svg>`;
+  const sym = (ty, x, y, s, f = 'var(--ia-line)') => `<svg x="${x}" y="${y}" width="${s}" height="${s}" viewBox="0 0 256 256" style="fill:${f}"><use href="#kty-${ty}"/></svg>`;
   // small marks for the seed and rock families: terrain (seeds, ink) and weather (rocks, white on the shade side)
   const MARK = {
     grassy: `<path d="M25 50C25 43 23 37 20 33C26 36 29 42 29 50Z" ${INK}/><path d="M30 50C30 41 31 34 33 27C36 35 35 42 34 50Z" ${INK}/><path d="M38 50C38 43 40 37 44 34C43 40 42 45 42 50Z" ${INK}/>`,
@@ -24,8 +25,8 @@
   // the shared shapes (HANDOFF "The drawing job"): one Mega Stone, one berry, one seed, one rock; each family member only changes colour and mark
   const SHAPE = {
     // a cut stone in the Mega's main type, the white type symbol in it, and an ink X / Y / Z tag when the Pokémon has more than one Mega
-    stone: (ty, letter) => { const c = `var(--ty-${ty})`; return svg(`<path d="M18 8H46L58 24H6Z" ${F(c)}/><path d="M6 24H58L34 58H30Z" ${F(DK(c))}/>`
-      + `<path d="M20 11H30L24 21H12Z" ${HI}/>${sym(ty, 22, 25, 21)}`
+    stone: (ty, letter) => { const c = `var(--tyn-${ty})`; return svg(`<path d="M18 8H46L58 24H6Z" ${F(c)}/><path d="M6 24H58L34 58H30Z" ${F(DK(c))}/>`
+      + `<path d="M20 11H30L24 21H12Z" ${HI}/>${sym(ty, 21, 25, 22, 'var(--ia-white)')}`
       + (letter ? `<path d="M42 44H60L57 58H39Z" ${INK}/><text x="49.5" y="55.6" text-anchor="middle" style="fill:var(--ia-white);font:italic 800 12px var(--u);font-synthesis:style">${letter}</text>` : '')); },
     // a round berry with a leaf; a berry that softens a type's hit wears that type's colour and its white symbol
     berry: (c, ty) => svg(`<path d="M32 19L30 12" style="fill:none;${S};stroke-width:3"/><circle cx="32" cy="38" r="20" ${F(c)}/>`
@@ -60,14 +61,16 @@
       + `<path d="M31 46C22 46 14 40 12 32C21 32 28 38 31 46Z" ${F('var(--ia-white)')}/><path d="M33 36C40 34 48 28 50 20C41 21 35 28 33 36Z" ${F('var(--ia-white)')}/>`
       + `<path d="M36 21C31 15 31 9 35 3C40 9 40 15 36 21Z" ${F('var(--ia-white)')}/><path d="M31 53C38 53 44 49 46 43C39 43 33 47 31 53Z" ${F('var(--ia-white)')}/>`),
     // a domed helmet with rock spikes and a visor slit
-    'Rocky Helmet': (c => svg(`<path d="M14 30L5 20L20 23ZM22 20L18 6L31 15ZM34 15L39 2L45 17ZM46 22L57 13L52 29Z" ${F(DK(c))}/>`
-      + `<path d="M10 44C10 24 20 13 32 13C44 13 54 24 54 44Z" ${F(c)}/><path d="M5 42H59L56 52H8Z" ${F(DK(c))}/>`
-      + `<path d="M20 33H44L42 38H22Z" ${INK}/><path d="M16 30C17 24 21 19 26 17" ${HL}/>`))('var(--ty-Rock)'),
+    // a front-on battle helmet: rock spikes along the crown, cheek guards down to the jaw, a T-shaped face opening in ink
+    'Rocky Helmet': (c => svg(`<path d="M13 26L4 19L18 18ZM21 16L18 3L30 12ZM34 12L37 0L43 13ZM46 16L57 8L51 21Z" ${F(DK(c))}/>`
+      + `<path d="M10 58C7 46 8 31 14 23C19 16 25 13 32 13C39 13 45 16 50 23C56 31 57 46 54 58H38V42H26V58Z" ${F(c)}/>`
+      + `<path d="M16 32H48L47 40H38V56H26V40H17Z" ${INK}/><path d="M32 13V30" style="fill:none;stroke:var(--ia-line);stroke-width:2"/>`
+      + `<path d="M15 28C17 22 21 18 26 16" ${HL}/>`))('var(--ty-Rock)'),
     // a feather in the Fairy colour, its shaft and a notch in the vane
     'Fairy Feather': svg(`<path d="M50 6C58 18 54 30 46 36L40 34L42 40C36 46 30 49 22 52C20 40 26 20 50 6Z" ${F('var(--ty-Fairy)')}/>`
       + `<path d="M8 60C20 50 34 32 50 6" style="fill:none;${S}"/><path d="M26 41C28 31 32 23 38 17" ${HL}/>`)};
   // the drawn set: the 20 most-used items on tournament teams (Oct 21 - Nov 18), plus one of each family member Sim should see
-  const BERRY = {'Sitrus Berry': ['var(--ia-sitrus)'], 'Chople Berry': ['var(--ty-Fighting)', 'Fighting'], 'Colbur Berry': ['var(--ty-Dark)', 'Dark'], 'Occa Berry': ['var(--ty-Fire)', 'Fire']};
+  const BERRY = {'Sitrus Berry': ['var(--ia-sitrus)'], 'Chople Berry': ['var(--tyn-Fighting)', 'Fighting'], 'Colbur Berry': ['var(--tyn-Dark)', 'Dark'], 'Occa Berry': ['var(--tyn-Fire)', 'Fire']};
   const SEED = {'Miracle Seed': ['var(--ty-Grass)', 'sprout'], 'Grassy Seed': ['var(--arn-k-grassy)', 'grassy'], 'Psychic Seed': ['var(--arn-k-psychic)', 'psychic'],
     'Electric Seed': ['var(--arn-k-electric)', 'electric'], 'Misty Seed': ['var(--arn-k-misty)', 'misty']};
   const ROCK = {'Damp Rock': ['var(--arn-k-rain)', 'rain'], 'Heat Rock': ['var(--arn-k-sun)', 'sun'], 'Icy Rock': ['var(--arn-k-snow)', 'snow'], 'Smooth Rock': ['var(--arn-k-sand)', 'sand']};
