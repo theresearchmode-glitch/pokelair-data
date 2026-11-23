@@ -1,5 +1,7 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH: My Team 'The Party' (Sim chose it 7:53 PM): refined mock sent 7:58 PM; measuring today's true lengths (stable wait) as the baseline; build on the kit after Sim's go. Helpers: hW2 Job 5, hX HH's queue (Wave 3 checks, sweep fixes, push), hE2 empty-space scan
+NOW: HH: My Team 'The Party' build, finishing its checks: q17 (Mega label) and rmjump fixed; 320 score plate fixed; phone length 4,004 vs limit 3,930 (+74) after trims, to Sim with pictures; q84 tap hint question. Helpers: hW2 Job 5 (last job), hX Wave 3 reruns. hE2 done (empty-space scan 9fbb34bf).
+NEXT: merge My Team Party after checks; Preview; empty-space scan findings to Sim (Events, About, This Week heroes first)
+NEXT: review second account round 3 (alt/calc-rain, alt/length-trim) when pushed
 NEXT: Job 3 (length options pictures: Speed Tiers, Test Run, My Team, Pokémon page) by HH; then Job 1 (Wave 2 kit-part pictures); hW2 after Track Record: Job 5 (Ability/Item blue words build). Second account: Job 4 sweep only
 NEXT: review hW2's Mystery Gifts, then Track Record fixes; pull the second account's alt/* branches (Wave 3 sizes first)
 NEXT: review hM's Track Record redo; hW2's Mystery Gifts; audit Wave 1 (no-looks) only after Sim's yes
