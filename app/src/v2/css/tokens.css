@@ -223,4 +223,11 @@
 @media (max-width:699.98px){:root{--gut:16px}}
 /* Nov 22 (qcheck): the kit headline held 34px up to 384 wide; between 341 and 384, 10.4vw gave 35.5-39.9px, off the type scale */
 @media (max-width:384.98px){:root{--d-khead:34px}}
+/* Nov 23 (hP, polish): the go button's fluid size ran off the type scale on phones (20.3px at 390, 18.7 at 360, 23 at 460); under 470 wide,
+   where it is still under the display floor of 24, it steps on the scale instead: 17 / 20 / 22 (at 390 a hair smaller than before, so no page grows) */
+@media (max-width:469.98px){:root{--d-kgo:var(--t22)}}
+@media (max-width:419.98px){:root{--d-kgo:var(--t20)}}
+@media (max-width:359.98px){:root{--d-kgo:var(--t17)}}
+/* the same for the kit sentence: 2.8vw gave 22-24px (23px at 820) between 786 and 856 wide; it holds 22 there (phones set their own 20) */
+@media (min-width:700px) and (max-width:856.98px){:root{--d-ksent:var(--t22)}}
 /* Sim Q1 (Nov 15): 'them' / Team B is magenta (--them), clearly apart from red (--bad); measured: day fill #B4238F white text 5.87:1, text #9A1A7B 7.17:1 on the page; night fill #E57FD3 dark text 7.36:1, text #EC9BDF 9.15:1 */

@@ -74,6 +74,7 @@
 .tmk-work .mtf-tr .rate span{font-size:var(--t15);color:var(--wr-ink2)}
 .tmk-work .mtf-ia{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);margin:0}
 .tmk-work .mtf-ia div{display:grid;align-content:start;padding:var(--s2) 0 0;background:none;border:0;border-top:1px solid var(--wr-rule)}
+.tmk-work .mtf-ia > div:first-child:nth-last-child(3){grid-column:1 / -1} /* Nov 23 (hP, polish): with three facts (no Nature or Stat points data) the Item leads on its own row, then two, instead of a lone fact at the end */
 .tmk-work .mtf-ia dt{font-size:var(--t13);font-weight:600;line-height:1.3;color:var(--wr-ink2)}
 .tmk-work .mtf-ia dd{margin:0;font-size:var(--t17);font-weight:700;line-height:1.3;color:var(--wr-ink)}
 .tmk-work .mtf-ia dd small{display:inline;font-size:var(--t13);font-weight:500;color:var(--wr-ink2)}
@@ -246,6 +247,7 @@
 .pty2 .mtf-tr .rate span{font-size:var(--t15);color:var(--wr-ink2)}
 .pty2 .mtf-ia{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);margin:0}
 .pty2 .mtf-ia div{display:grid;align-content:start;padding:var(--s2) 0 0;background:none;border:0;border-top:1px solid var(--wr-rule)}
+.pty2 .mtf-ia > div:first-child:nth-last-child(3){grid-column:1 / -1}
 .pty2 .mtf-ia dt{font-size:var(--t13);font-weight:600;line-height:1.3;color:var(--wr-ink2)}
 .pty2 .mtf-ia dd{margin:0;font-size:var(--t17);font-weight:700;line-height:1.3;color:var(--wr-ink)}
 .pty2 .mtf-ia dd small{display:inline;font-size:var(--t13);font-weight:500;color:var(--wr-ink2)}

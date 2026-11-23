@@ -109,3 +109,8 @@ html,body{overflow-x:clip}
 @media (min-width:700px){.np-foot{display:grid;grid-template-columns:minmax(0,1fr);grid-template-areas:"lg" "tx" "nav";row-gap:0;align-items:center}
   .np-foot>.np-lg{grid-area:lg}.np-foot>.np-ftxt{grid-area:tx}.np-foot>nav{grid-area:nav;margin:var(--s3) 0 0;justify-self:start}.np-foot>.np-fsrc{grid-column:1/-1}}
 @media (min-width:1100px){.np-foot{grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"lg nav" "tx nav";column-gap:var(--s10)}.np-foot>nav{margin:0;justify-self:end}}
+/* Nov 23 (hP, polish): phone footer links in two even-looking rows, 2 then 3 (How We Calculate, About / Privacy, Contact, Sources and Credits), in reading
+   order, instead of 4 + a lone one (or 3 + 2 at 320). A zero-height break sits after the second link; the links only change order around it,
+   so focus order is unchanged. Only for the usual five (with Send Feedback or Owner added they wrap as before). Up to 535 wide, where the five still need two rows; under 360 the gap is 8px so the second row fits */
+@media (max-width:535.98px){.np-foot nav:has(> :nth-child(5):last-child)::before{content:"";flex-basis:100%;order:1}.np-foot nav > :first-child:nth-last-child(5) ~ :nth-child(n+3){order:2}}
+@media (max-width:359.98px){.np-foot nav{column-gap:var(--s2)}}
