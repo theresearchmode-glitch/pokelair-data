@@ -105,7 +105,7 @@
 /* ---- under the box: Arrange by, then Add a Pokémon and the box link tools ---- */
 .mb-cap{display:block;margin:0;font:700 var(--t13)/1.2 var(--b);letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3)}
 .mb-sort{display:flex;flex-direction:column;gap:var(--s2);min-width:0;padding-top:var(--s3);border-top:1px solid var(--rule)}
-.mb-seg{display:flex;flex-wrap:wrap;gap:6px}
+.mb-seg{display:flex;flex-wrap:wrap;gap:6px;padding:0 var(--s1)} /* the chips lean (skewX -8deg): 4px each side keeps their corners inside the column */
 .mb-seg .k-chip{flex:1 1 auto;padding:0 var(--s3);font-size:var(--t13)}
 .mb-tools{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4);min-width:0}
 .mb-add{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);padding:0 var(--s5);border:0;background:var(--mb-chip);color:var(--mb-on-chip);font-size:var(--t15);line-height:1;white-space:nowrap;cursor:pointer;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
@@ -240,7 +240,7 @@
   .mb .k-kicker{font-size:var(--t13)}
   .mb-tools{gap:0;margin-top:var(--s3)}
   .mb-add{flex:1 1 100%}
-  .mb-links2{display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;width:100%;margin:0}
+  .mb-links2{display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 var(--s3);width:100%;margin:0}
   .mb-links2 .np-link{font-size:var(--t13)}
   .mb-dots{display:none}
 }
