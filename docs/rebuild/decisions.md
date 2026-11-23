@@ -2225,3 +2225,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:18 AM: GitHub run 1488 on aea4ddec (hJ iPhone spots): SUCCESS (all green, Chromium). The WebKit-only THEME-03 issue is being bisected locally.
 - 10:20 AM: THEME-03 WebKit: also fails at 3c864528 (with RATE-02 that time), but hI's CSS only touches widths under 440/700 while THEME-03 runs at 1280; its last passes (7:27) were on an idle machine, and these three ran while hB's tests ran in parallel. My read (not proven): load timing on the share image. Recheck alone when hB finishes. Chromium and GitHub pass it.
 - 10:31 AM: Desktop polish every 40px 1100-2560 (25 pages, HEAD with hI + hJ): no spills or sideways scroll except the known My Team score-plate slant.
+- 10:35 AM: Hourly work check 10:35 AM: 1 helper (hB, My Box tests); main: Chromium D-meta on HEAD; Game Plan 9:36 (fresh).
