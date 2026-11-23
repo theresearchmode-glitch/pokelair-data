@@ -407,6 +407,9 @@ jobs:
       # the new site never says "Ready for" / "N% ready" (word list: Matchups; Sim, Nov 12): reads every built page, fold, sheet and "?"
       - run: node app/build.mjs --v2 && node experiments/v2-words.mjs
         if: ${{ !cancelled() }}
+      # players' saved teams, box and settings carry over both ways between today's page and the new site (saved-data contract, Nov 23)
+      - run: node app/build.mjs && node app/build.mjs --v2 && node app/test/v2-saved.mjs
+        if: ${{ !cancelled() }}
   # v2-minors (the small fixes' checks, 18-21 min in one go) as three parallel parts; each runs its share once (PART in the file's header).
   v2-minors:
     name: new site small checks (v2-minors ${{ matrix.part }})
