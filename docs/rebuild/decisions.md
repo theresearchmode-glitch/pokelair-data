@@ -2202,3 +2202,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:11 AM: B-build in WebKit on HEAD (hI sweep): 77 pass 0 FAIL.
 - 8:18 AM: Phone polish every 20px 320-700 (25 pages, after hI): spills only Calc 'set estimate' title at 320-360 (hJ's spot A covers the Calc set cards), Speed Tiers 360 one row ('203 Mega Garchomp Z'), My Team 700 score slant (known). No sideways scroll anywhere.
 - 8:25 AM: Scheduled 'Authority decision summary' fired (written before Sim extended executive authority to 6 PM at 6:18 AM). Plan: the 9 AM message is the overnight design + executive summary (10 PM to 9 AM, docs/rebuild/overnight-nov23-summary.md); the full executive summary since Thu Nov 19 goes with the 6 PM summary, when the extended authority ends. Game Plan updated at 7:58 AM (v39).
+- 8:37 AM: Hourly work check 8:37 AM: 1 helper (hJ, iPhone spots A-D); main: final behaviour A/C/D run; Game Plan 7:58 (fresh).
