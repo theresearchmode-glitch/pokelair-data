@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH (design + executive authority to 6 PM): WebKit D-meta rerun on HEAD (THEME-03 'no share image' once; checking if it repeats). hJ batch pushed 9:31 (GitHub check ~10:17). Helper: hB (My Box The PC: built + reviewed, finishing A-team + minors).
-NEXT: review hB final report, merge My Box, Preview + pictures to Sim; GitHub check; 6 PM summary
+NOW: HH (design + executive authority to 6 PM): WebKit pictures of My Box (1440/1024/390). My Box on Preview v245 for Sim's review; A-team WebKit 139/0. Helper: hQ (Pokémon page length options, branch hq-pklen, pictures for Sim).
+NEXT: GitHub run on the My Box push (~11:37); Sim's My Box review -> fixes; hQ options to Sim; 6 PM summary
 NEXT: GitHub batches every ~40 min; Game Plan hourly
 NEXT: before 9 AM: full summary incl. lengths for Sim
 NEXT: 5:45 AM summary (decisions from 10 PM), Preview refresh before it
