@@ -297,7 +297,7 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
 .pl-low .np-field:focus-within{outline:3px solid var(--on-pl-band);outline-offset:3px}
 .pl-low .bd-pick{min-height:var(--tap);border-color:var(--on-pl-band);color:var(--on-pl-band)}.pl-low .bd-x{color:var(--on-pl-band)}
 .pl-chint{flex:1 1 320px;min-width:0;margin:0;font:400 var(--t13)/1.5 var(--b);color:var(--pl-band-2)}
-.pl-chint .np-link{display:inline-block;min-height:0;padding-block:calc((var(--tap) - 1lh) / 2);margin-block:calc((1lh - var(--tap)) / 2)} /* Sim, Nov 23 (iPhone 393): the 44px link stretched its line, so "toward the average. How Cores Are Ranked" sat 12px lower than the lines above; the tap area stays 44px (the .wt-acts pattern) */
+.pl-chint .np-link{display:inline;min-height:0} /* Sim, Nov 23 (iPhone 393): the 44px link stretched its line, so "toward the average. How Cores Are Ranked" sat 12px lower than the lines above; the 44px tap area stays, drawn by the shared .bd-hint .np-link::before (components.css) */
 .pl-cores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s12);margin:var(--s2) 0 0;padding:0;list-style:none}
 .pl-core{display:grid;grid-template-columns:auto minmax(0,1fr) auto auto;align-items:center;gap:0 var(--s4);min-width:0;min-height:76px;padding:var(--s2) 0;border-top:1px solid var(--pl-band-rule)}
 .pl-csp{display:flex;align-items:flex-end;gap:var(--s1);min-width:104px}
