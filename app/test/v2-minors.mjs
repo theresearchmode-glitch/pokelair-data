@@ -305,7 +305,8 @@ const HQ = async () => {
   // without the tagline (A != B is the tagline's ink), C = the page; covered = ink pixels where C != A. Up to 0.15% allowed: the anti-aliased
   // edge where a head touches the last line (before the change: 3.05-3.47% at 1280-2560, 0.63% at 412)
   { const cv = []; const cmp = await b.newPage();
-    for (const w of [320, 360, 390, 412, 600, 820, 1100, 1280, 1440, 1920, 2560]) { const h = w < 700 ? 844 : w >= 1900 ? 1080 : 900;
+    /* Sim, Nov 23 (iPhone 16 in the Claude app, about 393x660): a short phone window let Rillaboom cover 'rate'; short windows are checked too */
+    for (const wh of [320, 360, 390, 412, '393x660', '375x600', '430x700', 600, 820, 1100, 1280, 1440, 1920, 2560]) { const [w, sh] = String(wh).split('x').map(Number), h = sh || (w < 700 ? 844 : w >= 1900 ? 1080 : 900);
       const {q, ctx} = await hq(w, h, {rm: 'reduce', keep: true}); await q.waitForFunction(() => [...document.querySelectorAll('#main .sdh-f img, #main .sdh-m img')].every(i => i.complete), null, {timeout: 15000}).catch(() => {}); await q.waitForTimeout(400);
       /* the pictures must have loaded: a broken image draws an icon and a frame, which this test would count as covering */
       const broken = await q.evaluate(() => [...document.querySelectorAll('#main .sdh-f img, #main .sdh-m img')].filter(i => !i.naturalWidth).length); if (broken) cv.push(`${w}: ${broken} hero pictures didn't load`);
@@ -318,8 +319,8 @@ const HQ = async () => {
       const x = await cmp.evaluate(async ([A, B, C]) => { const ld = s => new Promise(r => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.width; c.height = i.height; const g = c.getContext('2d'); g.drawImage(i, 0, 0); r(g.getImageData(0, 0, i.width, i.height).data); }; i.src = 'data:image/png;base64,' + s; });
         const [a, bb, c] = await Promise.all([ld(A), ld(B), ld(C)]), d = (p, q, i) => Math.abs(p[i] - q[i]) + Math.abs(p[i + 1] - q[i + 1]) + Math.abs(p[i + 2] - q[i + 2]); let m = 0, k = 0;
         for (let i = 0; i < a.length; i += 4) if (d(a, bb, i) > 60) { m++; if (d(c, a, i) > 60) k++; } return {m, pct: +(100 * k / Math.max(1, m)).toFixed(2)}; }, [A, B, C]);
-      if (x.m < 5000 || x.pct > 0.15) cv.push(`${w}: ${x.pct}% of ${x.m} tagline pixels covered`); }
-    await cmp.close(); ok(!cv.length, `HQ Q13f (Sim: B): the hero sprites never cover the tagline's words, 320-2560 (0.15% of its pixels at most: a head's edge touching the line)${cv.length ? ': ' + cv.join(' | ') : ''}`); }
+      if (x.m < 5000 || x.pct > 0.15) cv.push(`${wh}: ${x.pct}% of ${x.m} tagline pixels covered`); }
+    await cmp.close(); ok(!cv.length, `HQ Q13f (Sim: B): the hero sprites never cover the tagline's words, 320-2560 and short phone windows (0.15% of its pixels at most: a head's edge touching the line)${cv.length ? ': ' + cv.join(' | ') : ''}`); }
   // Q13e A: every "›" link or button on Home answers a tap anywhere in a 44px band through its middle, links inside a sentence too
   { const ch = []; for (const w of [390, 1440]) { const r = await hq(w, 900, {rm: 'reduce', fn: async () => { const out = []; for (const e of document.querySelectorAll('#main a, #main button')) { if (!/›\s*$/.test(e.textContent) || !e.getClientRects().length || e.closest('[aria-hidden="true"]')) continue;
       e.scrollIntoView({block: 'center'}); await new Promise(r => setTimeout(r, 40)); const x = e.getBoundingClientRect(), cx = x.left + x.width / 2, cy = x.top + x.height / 2;
