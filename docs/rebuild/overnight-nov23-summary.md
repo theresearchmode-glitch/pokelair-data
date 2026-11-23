@@ -23,7 +23,15 @@ Nothing went to the live site. Everything is on claude/design6 and on the Previe
   "lost" screens on the Page-not-found shape. 44 px tall (not 48) so no page got longer.
 - 2:04 AM / 2:07 AM after Wave 2: filter chip a size down under 360; Ratings' phone chip grid keeps a 12 px inner margin (slanted
   chips made the row scroll); Winning Teams' three links may wrap at 13 px under 360.
-- hK2 (helper) is finishing Wave 2: the other pages' secondary buttons and two leftover show-mores.
+- 2:36 AM full-site polish check (27 pages, 320-2560): nothing new from tonight; fixed two older spills (About receipt line at 320,
+  Track Record TOTAL box).
+- 2:37 AM tried and dropped: Test Run small-card name at 13px under 360 (still too wide); left for a layout fix (helper hL on it).
+- 2:46 AM merged hK2: 53 more secondary buttons on the kit, Usage ranks 11-100 and All Suggestions on the kit's show-more.
+  Accepted: Battle +51 px at 1280 only when their six is in (hL is fixing it).
+- 2:47 AM helper hL started: Battle 1280 +51, Test Run 320 small-card name, News 1440 hero's right half filled with its own content.
+- 3:14 AM Preview v240: Wave 2 everywhere + polish fixes.
+- 3:18 AM tried and dropped: My Team plan in three columns at 1440+ (shorter, but left a big empty block).
+- 3:45 AM GitHub 1479 caught Battle's Log a Win / Log a Loss at different widths after the kit move; fixed (equal again).
 
 ## Lengths for Sim's OK (the rule: never longer than before without Sim's OK)
 - My Team phone 390: 4,024 px on the test data (old limit 3,930). HH accepted it in steps: the six's hint +28, the buttons under the
@@ -35,7 +43,9 @@ Nothing went to the live site. Everything is on claude/design6 and on the Previe
   (lengths-now.json vs lengths-pre.json) and can be put on a page.
 
 ## Checks
-- GitHub full runs on claude/design6: 1475 ALL GREEN (12:20 AM), 1476 ALL GREEN (1:08 AM), 1477 13/15 (fixed, pushed 2:08 AM).
+- GitHub full runs on claude/design6: 1475 ALL GREEN (12:20 AM), 1476 ALL GREEN (1:08 AM), 1477 13/15 (fixed, pushed 2:08 AM),
+  1478 ALL GREEN (2:54 AM), 1479 13/15 (Battle buttons fixed 3:45 AM; one scroll-timing check rerun locally).
+- Safari engine (WebKit) on frozen data: Build 77/0, Battle 83/0 (incl. the Damage Calc Rain fix); Meta/shell running.
 - Local (frozen data): behaviour A 139/0, B 77/0, C 83/0, D 117/0; minors all three parts; qcheck on every changed page 0 new.
 - Known flake: Home's ticker pause test at 2560 under load (passes on GitHub).
 
