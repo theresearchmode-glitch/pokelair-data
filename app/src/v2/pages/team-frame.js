@@ -39,7 +39,7 @@ V2.mtfDetail = (D, sel) => { const E = V2.esc, {ms} = D; if (!sel || !ms.include
 // the Night frame: the six (3 x 2 on phones), then the chosen one's detail under them
 V2.mtfFrame = (D, sel) => { const {ms} = D, at = i => ms.find(m => m.i === i);
   const cards = [0, 1, 2, 3, 4, 5].map(i => at(i) ? V2.mtfRow(D, at(i), sel) : V2.mtfAdd(i)); /* the six in the team's own slot order (Sim, Nov 20: no plan order) */
-  return `<div class="mtf"><div class="mtf-party" role="group" aria-label="${V2.MTF_W.six}">${V2.kRoster(cards).replace('<ul class="k-roster"', '<ul class="k-roster mtf-rows"')}</div>${V2.mtfDetail(D, sel)}</div>`; };
+  return `<div class="mtf"><div class="mtf-party" role="group" aria-label="${V2.MTF_W.six}">${V2._tmk ? `<p class="pty2-tap">${V2.MTF_W.six} · ${V2.MTF_W.tap}</p>` : ''}${V2.kRoster(cards).replace('<ul class="k-roster"', '<ul class="k-roster mtf-rows"')}</div>${V2.mtfDetail(D, sel)}</div>`; };
 // step 2's foot (mock B): the lead line, the page's ONE pink move to Battle, then Game Plan / Legal / Team Sheet as quiet links.
 // The lead advice lives in Battle (Sim, Nov 20: 'that should be done in the lead calc').
 V2.mtfPlan = (D, legalMark) => { const {ms} = D; if (!ms.length) return '';

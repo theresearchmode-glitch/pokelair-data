@@ -332,3 +332,19 @@
 @media (max-width:699.98px){.pty2 .mtf .mtf-row.k-card{grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto auto;align-items:center}
   .pty2 .mtf .mtf-row.k-card .k-art{grid-column:1;grid-row:1/3}.pty2 .mtf .mtf-row.k-card .k-id{grid-column:2;grid-row:1;align-self:end}
   .pty2 .mtf .mtf-row.k-card .k-sc{grid-column:2;grid-row:2;justify-content:flex-start;align-self:start}}
+/* phones: the sprite stays in its 44px column (the Mega line beside it is never covered); the white card's "Mega" is PLOT blue (4.5:1 on white) */
+@media (max-width:699.98px){.pty2 .mtf .mtf-row.k-card .k-art{width:44px;height:44px}
+  .pty2 .mtf-sum .mtf-nav{padding-top:var(--s1)}}
+.pty2 .mtf-sum .mtf-nav h2 .mg{color:var(--pty-band)}
+/* every party row is the same height, the Add spot too, so Remove never moves the rows below (v2-rmjump) */
+.pty2 .mtf .k-roster{grid-auto-rows:1fr}
+/* phones: the slanted score plate keeps clear of the screen edge; at 399 and under the white card's name steps down so it never runs into its › */
+@media (max-width:699.98px){.pty2 .mtf-score{justify-self:stretch;margin-left:var(--s4);margin-right:var(--s4)}}
+@media (max-width:399.98px){.pty2 .mtf-nav h2{font-size:var(--t20)}}
+@media (max-width:399.98px){.pty2 .mtf-score{grid-template-columns:auto minmax(0,1fr);row-gap:0}.pty2 .mtf-score .mtf-sw{display:contents}
+  .pty2 .mtf-score .n{grid-column:1;grid-row:1/3}.pty2 .mtf-score .band{grid-column:2;grid-row:1;align-self:end}.pty2 .mtf-score .lab{grid-column:2;grid-row:2;align-self:start}.pty2 .mtf-score .win{grid-column:1/-1;grid-row:3;margin-top:var(--s2)}}
+/* phones: tighter steps between the band's groups (the page must not be longer than before) */
+@media (max-width:699.98px){.pty2 .mtf{margin-top:var(--s4);gap:var(--s4)}.pty2 .mtf-acts{margin-top:var(--s4)}.pty2 .tmk-new{margin-top:var(--s3)}.tm-hero.pty2{padding-bottom:var(--s5)}.pty2 .mtf-score{margin-top:var(--s3)}}
+.pty2 .mtf-score .win b{color:var(--pty-on)}
+/* the six's hint (Sim, Nov 22: kept from the old page, 'Your six · tap one to see it'): white on the band, never link blue */
+.pty2-tap{margin:0 0 var(--s2);font-size:var(--t13);font-weight:600;line-height:1.5;color:var(--pty-on)}
