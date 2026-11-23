@@ -437,4 +437,4 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
 .pl-go:focus-visible{outline:none}.pl-plate:has(.pl-go:focus-visible){outline:3px solid var(--k-plot);outline-offset:3px}
 .pl-plate .is-w,.pl-plate .pl-mv{position:relative;z-index:1}
 .pl-plate .pl-pc .is-w,.pl-plate .pl-pc .is-w:hover{color:inherit;text-decoration-color:currentColor}
-button.pl-mv{width:100%;border:0;color:inherit;cursor:pointer;font:inherit}button.pl-mv .pl-t{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+button.pl-mv{width:100%;border:0;color:inherit;cursor:pointer}button.pl-mv .pl-t{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
