@@ -3,7 +3,7 @@
 //   PAGE=app/dist/v2.html OUT=lengths-now.json node experiments/page-lengths.mjs     (a --v2 --preview-data --art=../src/v2/art/ build)
 import {chromium} from 'playwright'; import path from 'node:path'; import fs from 'node:fs';
 const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html'), OUT = process.env.OUT || 'lengths.json';
-const R = ['home','build','team','battle','calc','practice','gauntlet','speed','types','meta','usage','sets','archetypes','tournaments','events','weekly','news','gifts','track','method','about','feedback','box','pokemon=Garchomp','compare'];
+const R = ['home','build','team','battle','calc','practice','gauntlet','speed','types','meta','usage','sets','natures','archetypes','tournaments','events','weekly','news','gifts','track','method','about','feedback','box','pokemon=Garchomp','compare'];
 const W = [[390, 844], [1280, 800], [1440, 900], [1920, 1080]];
 const b = await chromium.launch(), res = {};
 for (const [w, h] of W) { const c = await b.newContext({viewport: {width: w, height: h}, hasTouch: w < 700}), p = await c.newPage();
