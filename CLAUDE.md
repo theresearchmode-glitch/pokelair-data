@@ -49,7 +49,7 @@ pages still to reskin). When the mock-ups are done, back to ONE helper. Never us
 Sim: "sounds like a plan. i just wanted the builds approved so then after, all resources can just focus on making it happen." The mock-up
 helper switches to building once its mock-ups are done: 2 build helpers + HH building, for the rest of Nov 22. Above that, ask Sim.
 
-## TWO HELPERS UNTIL 9 PM SUN NOV 22 (Sim, logged 8:08 PM; LATEST): then back to ONE. Helpers already running finish their jobs; none is refilled past the limit.
+## TWO HELPERS UNTIL 9 PM SUN NOV 22 (Sim, logged 8:07 PM; LATEST): then back to ONE. Helpers already running finish their jobs; none is refilled past the limit.
 
 ## (replaced) TWO HELPERS UNTIL 10 PM SUN NOV 22 (Sim, logged 7:13 PM): "lets add 1 more helper agent until 10PM." After 10 PM back to ONE. Sim, 7:22 PM: back to ONE as soon as hP's length-option pictures are done (Job B returns to the queue).
 
