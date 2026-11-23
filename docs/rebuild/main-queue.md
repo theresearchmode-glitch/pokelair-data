@@ -1,10 +1,10 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH (design + executive authority to 9 AM Mon; Sim asleep): final page sweep on the changed pages (vg.sh), then Preview refresh. Helper: hK Wave 2 kit parts (branch hk-wave2).
-NEXT: Job 3 length options under authority: Speed Tiers B, Test Run A, Pokémon page A (second account's pictures), build one at a time
-NEXT: Wave 2 kit parts build (Sim's A for all five): the one helper once hW2 ends
-NEXT: Track Record (2px over the +720 cap): decide and merge
-NEXT: scan leftovers: Build's empty waiting sections, Test Run's side card taller than the window, 1920 headline air
-NEXT: second empty-space sweep at 1366/1600/2560 and dark theme after the fixes land; Preview; decision summary before 9 AM
+NOW: HH (design + executive authority to 9 AM Mon): Build/Battle/Meta check reruns (bc.sh, then bd.sh: B-build, D-meta on the art build, q83, s16, q59, qcheck). Helper: hK Wave 2 kit parts.
+NEXT: review + merge hK's Wave 2 parts one part at a time (pictures, checks)
+NEXT: GitHub full check on claude/design6; fix anything red
+NEXT: phone sweep (390) of tonight's changed pages; dark-theme spot checks
+NEXT: 5:45 AM summary (decisions from 10 PM), Preview refresh before it
+NEXT: before 9 AM: full summary incl. lengths waiting on Sim (This Week +46, News +72, Gifts +150, My Team phone 4,004, Pokémon page 4.83)
 NEXT: merge My Team Party after checks; Preview; empty-space scan findings to Sim (Events, About, This Week heroes first)
 NEXT: review second account round 3 (alt/calc-rain, alt/length-trim) when pushed
 NEXT: Job 3 (length options pictures: Speed Tiers, Test Run, My Team, Pokémon page) by HH; then Job 1 (Wave 2 kit-part pictures); hW2 after Track Record: Job 5 (Ability/Item blue words build). Second account: Job 4 sweep only
