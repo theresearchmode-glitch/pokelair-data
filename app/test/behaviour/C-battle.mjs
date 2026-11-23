@@ -32,7 +32,8 @@ t('NAV-02', 'menu group "Battle" lists the six Battle pages in order, each opens
      mock-up docs/rebuild/mocks/battle.tpl.html:199), names in title case (decisions.md:604), the first one named "Battle" (decisions.md:879) */
     const {ui, close} = await open({team: TEAM}); await ui.go('Battle');
     /* Sim, Nov 19 (9:3x AM): 'Damage Calc First, then Battle, Then Team Preview Practice, then test run, then speed tiers, then type chart', named Damage Calculator */
-    const want = ['Damage Calculator', 'Battle', 'Team Preview Practice', 'Test Run', 'Speed Tiers', 'Type Chart'], bar = await ui.toolsBar();
+    /* Sim, Nov 23: Battle first (the page Battle opens on), then Damage Calculator */
+    const want = ['Battle', 'Damage Calculator', 'Team Preview Practice', 'Test Run', 'Speed Tiers', 'Type Chart'], bar = await ui.toolsBar();
     expect(JSON.stringify(bar.slice(0, 6)) === JSON.stringify(want), 'Battle tools bar is ' + JSON.stringify(bar));
     const pane = {'Battle': 'matchup', 'Team Preview Practice': 'practice', 'Test Run': 'gauntlet', 'Speed Tiers': 'speed', 'Damage Calculator': 'calc', 'Type Chart': 'types'};
     for (const n of want) { await ui.go('Battle'); await ui.toolSwitch(n); expect(await ui.current() === pane[n], `tools bar "${n}" opened ${await ui.current()}`); }

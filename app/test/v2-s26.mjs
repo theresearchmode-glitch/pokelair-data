@@ -11,6 +11,6 @@ for (const W of [390, 1440]) { const c = await b.newContext({viewport: {width: W
   await p.evaluate(() => { location.hash = '#battle'; }); await p.waitForTimeout(1500);
   const x = await p.evaluate(() => ({cur: [...document.querySelectorAll('[aria-current="page"]')].map(a => a.textContent.trim()), bar: [...document.querySelectorAll('.bt-tools a')].map(a => a.getAttribute('href'))}));
   ok(x.cur.includes('Battle'), `${W}: on #battle, Battle is marked current (${x.cur.join(', ')})`);
-  ok(x.bar[0] === '#calc' && x.bar[1] === '#battle', `${W}: tools bar still Damage Calculator, then Battle (${x.bar.slice(0, 3).join(', ')})`);
+  ok(x.bar[0] === '#battle' && x.bar[1] === '#calc', `${W}: tools bar Battle, then Damage Calculator (Sim, Nov 23) (${x.bar.slice(0, 3).join(', ')})`);
   ok(!errs.length, `${W}: no page errors (${errs.length})`); await c.close(); }
 await b.close(); console.log(fails.length ? `v2-s26: ${fails.length} FAILED` : 'v2-s26: all passed'); process.exit(fails.length ? 1 : 0);
