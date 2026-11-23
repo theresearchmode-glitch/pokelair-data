@@ -4479,3 +4479,6 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* Wave 2's kit filter chip is slanted (-8deg): on phones its corners reached 3-5px past the chip grid's edge and the row scrolled sideways
    (v2-q21); the grid keeps a small inner margin so the slant stays inside */
 @media (max-width:699.98px){.gs-ctl .ra-filt{padding-inline:var(--s3)}}
+/* polish-check (Nov 23): at 320 the receipt's "* * * EVERYTHING WE SAVE * * *" line was 25px wider than the receipt (letter-spaced caps);
+   on the narrowest phones it tightens and may wrap */
+@media (max-width:359.98px){.abt .abt-rk{letter-spacing:.02em;white-space:normal;overflow-wrap:normal}}
