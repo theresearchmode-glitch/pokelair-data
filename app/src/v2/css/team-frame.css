@@ -317,6 +317,11 @@
   .pty2-work .k-plan>.k-step:nth-child(2) .mu-out{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:1279.98px){.pty2 .mtf-row.k-card{grid-template-columns:72px minmax(0,1fr) 120px}.pty2-mv{display:none}.pty2 .mtf-row .k-sc{grid-column:3}.pty2-bar{grid-column:3}.pty2 .mtf-row .k-art{width:72px;height:64px}}
 @media (max-width:899.98px){.pty2 .mtf{grid-template-columns:minmax(0,1fr)}.pty2 .mtf-sum,.pty2 .mtf-party{grid-column:1;grid-row:auto}.tm-hero.pty2{grid-template-columns:minmax(0,1fr)}.pty2 .mtf-score{grid-column:1;grid-row:auto;justify-self:start;margin-top:var(--s4)}}
+/* Sim, Nov 23 (a ~905px window): at 900-1099 the team name sat beside the big score in a 125px column, so 'Tailwind' broke as 'Tailwin / d'.
+   The name takes the full width there and the score goes under it, as under 900 */
+@media (min-width:900px) and (max-width:1099.98px){.tm-hero.pty2{grid-template-columns:minmax(0,1fr)}.pty2 .mtf-score{grid-column:1;grid-row:auto;justify-self:start;margin-top:var(--s4)}
+  /* the picked Pokémon's card was 340px there: item ran into Ability, the name into '1 of 6'. Card and six side by side get a wider card */
+  .pty2 .mtf{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pty2 .mtf .k-roster{align-content:start}.pty2 .mtf-sum{grid-template-columns:minmax(0,1.5fr) minmax(0,.6fr)}}
 @media (max-width:699.98px){.tm-hero.pty2{padding:var(--s5) var(--s4) var(--s6)}
   .pty2 .mtf-sum{padding:var(--s3) var(--s4);box-shadow:6px 6px 0 var(--pty-hot)}.pty2 .mtf-sum{grid-template-columns:minmax(0,1fr) 110px;gap:var(--s2) var(--s3)}.pty2 .mtf-sum .pty2-art{grid-row:2;width:120px;height:96px}.pty2 .mtf-sum .mtf-ia{grid-column:1/-1;grid-row:3;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2) var(--s4)}.pty2 .mtf-sum .mtf-nav>span{display:none}
   .pty2 .mtf-acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}
