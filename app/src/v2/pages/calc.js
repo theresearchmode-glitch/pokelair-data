@@ -400,7 +400,7 @@ V2.pages.calc = {place: 'battle', after() { /* the move names are fitted (V2.fit
 document.addEventListener('click', e => { const s = e.target.closest && e.target.closest('.dc2 [data-arnst]');
   if (s) { const I = dc.inv[(s.dataset.arnst === 'a' ? 'atk:' + dc.a : 'def:' + dc.d)]; if (I) I.boost = Math.max(-2, Math.min(2, (+I.boost || 0) + +s.dataset.d)); V2.redraw(); return; }
   const t = e.target.closest && e.target.closest('.dc2 [data-dcmv],.dc2 [data-dckb]'); if (!t) {
-    const b = e.target.closest && e.target.closest('.dc2 [data-dcw],.dc2 [data-dct],.dc2 [data-dcdir],.dc2 [data-dcterr],.dc2 #dcSwap'); if (b) setTimeout(() => V2.redraw(), 0); return; }
+    const b = e.target.closest && e.target.closest('.dc2 [data-dcw],.dc2 [data-dct],.dc2 [data-dcdir],.dc2 [data-dcterr],.dc2 #dcSwap'); if (b) V2.dcKeep(b); return; }
   if (t.dataset.dcmv) { if (dc.mv === t.dataset.dcmv) return; dc.mv = t.dataset.dcmv; dc.spread = null; }
   else if (dc.dir === 'theirs') { dc.a = t.dataset.dckb; dc.d = t.dataset.dckbo; dc.mv = t.dataset.dckbm; dc.spread = null; dc.wSet = dc.tSet = false; }
   else { dc.d = t.dataset.dckb; dc.a = t.dataset.dckbo; dc.mv = t.dataset.dckbm; dc.spread = null; dc.wSet = dc.tSet = false; }
@@ -421,6 +421,12 @@ document.addEventListener('focusin', e => { const t = dcTipOf(e); if (t && V2.dc
 document.addEventListener('focusout', e => { if (dcTipOf(e)) V2.dcTipHide(); });
 document.addEventListener('keydown', e => { if (e.key === 'Escape') V2.dcTipHide(); });
 addEventListener('scroll', () => { const el = document.querySelector('body > .dc2-tip.show'); if (el) { if (V2.dcTipT && V2.dcTipT.isConnected) V2.dcTipShow(V2.dcTipT); else V2.dcTipHide(); } }, {passive: true}); addEventListener('hashchange', V2.dcTipHide);
-document.addEventListener('change', e => { const t = e.target; if (!t.closest || !t.closest('.dc2')) return; setTimeout(() => V2.redraw(), 0); });
+/* the control the player just used stays under their finger (Safari run, Nov 22: test C-battle X-04, Rain moved 21 px at 390 in WebKit). The
+   redraw keeps the scroll, but a line above can change its wrap with the new numbers (WebKit wraps the HP line "of Sneasler's HP: 138–163
+   damage · 157 HP" onto 2 lines, "45–54 damage" fits on 1), so the page above shrinks or grows. After the redraw, scroll by however far
+   that control moved. Nothing on screen changes; Chrome's text fits either way, so there it moves 0 px and nothing scrolls. */
+V2.dcKeep = el => { const y = el.getBoundingClientRect().top; setTimeout(() => { V2.redraw(); if (!el.isConnected || !el.getClientRects().length) return;
+  const d = el.getBoundingClientRect().top - y; if (Math.abs(d) >= 1) scrollBy(0, d); }, 0); };
+document.addEventListener('change', e => { const t = e.target; if (!t.closest || !t.closest('.dc2')) return; V2.dcKeep(t); });
 document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('.dc2 [data-dcfold]')) return; V2.dcOpen = V2.dcOpen || {}; V2.dcOpen[d.dataset.dcfold] = d.open;
   if (d.dataset.dcfold === 'k') { const f = document.querySelector('.dc2 .arn-kbfull'); if (f) f.hidden = !d.open; if (!d.open) V2.kobUi.g = 'ko'; } }, true);
