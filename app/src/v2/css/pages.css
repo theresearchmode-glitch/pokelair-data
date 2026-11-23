@@ -4393,3 +4393,11 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* Pokémon page at 1100+ (HH, design authority for the empty-space fixes, Sim 8:48 PM Nov 22): the verdict, the four numbers and the set start
    right under the intro; only the card keeps the room its sprite needs above it (the right column no longer waits for the sprite) */
 @media (min-width:1100px){.pkf .k-hero{margin-top:var(--s8)}.pkf .k-hero-card{margin-top:88px}}
+/* Speed Tiers' fine print at 1100+ (HH, design authority for the empty-space fixes, Sim 8:48 PM Nov 22): its two notes side by side and
+   PLAN TURN ONE. at the right end of the same row, so the step runs the page's full width instead of one narrow column */
+@media (min-width:1100px){.k-step:has(> .sp2-foot){display:grid;grid-template-columns:minmax(0,.7fr) minmax(0,1.3fr) auto;column-gap:var(--s10);align-items:start}
+  .k-step:has(> .sp2-foot)>.k-sec{grid-column:1/-1}.k-step>.sp2-sum-k,.k-step>.sp2-foot{max-width:none;margin:0}.k-step:has(> .sp2-foot)>.k-go{align-self:center;margin-top:0}}
+/* Compare at 1100+ while Team B is still being picked (HH, design authority for the empty-space fixes, Sim 8:48 PM Nov 22): Team A's six
+   grow to fill their card (three across, big sprites) beside Team B's list, instead of a thin row over an empty card */
+@media (min-width:1100px){.cmp-pick .cx2-head.a .cx2-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s4)}
+  .cmp-pick .cx2-head.a .cx2-six .np-mon,.cmp-pick .cx2-head.a .cx2-six .np-mon>*{--iw:112px}.cmp-pick .cx2-head.a .cx2-six .np-mon b{font-size:var(--t15)}}
