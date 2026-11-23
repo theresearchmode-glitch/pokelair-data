@@ -2100,3 +2100,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:36 PM: Design authority: merged Track Record (keep/track-kit-hw2; 2 px over the +720 cap, OK) and hW2's Job 5 info words (keep/info-words; Build's plot cards/sheet left as plain text: a button can't sit inside the card's button, redesign later). hW2 ended.
 - 9:36 PM: Merged second account Job A alt/calc-rain 6487a04 (Damage Calc: tapped weather/terrain control stays under the finger after redraw; Safari X-04 fixed; C-battle 83/0 x3 both engines, their run). Job B not started (covered by the empty-space fixes).
 - 9:37 PM: Helper hK started: Wave 2 kit parts build (Sim's A for all five), branch hk-wave2, no push. 1 helper.
+- 9:53 PM: Sim (going to bed): 'You have design and executive authority until 9AM tomorrow ... Define the rules of design and building for me please and confirm receipt.' -> confirmed; HH works through the night on his own calls, summary before 9 AM.
