@@ -3424,7 +3424,9 @@ button.pp2-plate{cursor:pointer;width:100%}
 :root[data-theme="night"] .tc-grid td.v2{background:color-mix(in srgb,var(--k-nasty) 36%,var(--surface))} /* Nov 15 (night contrast sweep): 2x cells were 3.76:1 at 55%; 40% measures 5.28:1 */
 .wk-kind{display:inline-flex;align-items:center;gap:var(--s1)}.wk-kind .kdic{width:var(--s4);height:var(--s4);flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round} /* Nov 15: the kind icon beside its word */
 .fn-uc .mg.none{display:block;visibility:hidden} /* Nov 15 (audit #15): every Undercard tile keeps the Mega line, so ratings and tiers sit level (Mega tiles were 6 px lower at 1280, measured 129 vs 135); same as My Box (.bx-f) */
-@media (max-width:399.98px){.trk-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);align-items:start}.trk-stats li:first-child{grid-column:1/-1}} /* Nov 15 (re-audit #7): at 320 "Oct 29" filled its column and read "Oct 2913"; the date gets its own row, the two counts share the next */
+/* Nov 15 (re-audit #7) put "Oct 29" on its own row under 400 (at 34px it filled its column and read "Oct 2913" at 320). Nov 23 (hJ, HH's design
+   authority): the numbers are 22px on phones now (17 under 360) and "Oct 29" is 70px wide in a 101px+ column, so the date sits beside the two
+   counts as an even three-up row at every phone width; the own-row rule left the right third of the hero empty at 393 */
 .trk-stats{align-items:start} /* Nov 15: labels start level under each number */
 @media (max-width:399.98px){.mt-id .tm-name{font-size:var(--t20)}} /* Nov 15 (re-audit #4): beside the score box at 320 the name column is ~140 px; "Tailwind" broke mid-word at 24 px */
 .tm-name{text-wrap-style:balance} /* Nov 15 (re-audit #4): no lone word on the team name's last line */
