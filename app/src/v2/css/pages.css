@@ -3275,7 +3275,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .abt-end{margin:var(--s3) 0 0;font-size:var(--t13);line-height:1.5;color:var(--rc-ink2)}
 .abt-fine .k-h2{margin:0 0 var(--s3)} /* Wave 3: the kit step size, 40 */
 @media (max-width:959.98px){.abt-two{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:699.98px){.abt .abt-rc{padding:var(--s4) var(--s3) var(--s6);rotate:none}.abt .abt-rc li{padding:var(--s2) 0}.abt-rn{font-size:var(--t22)}.abt-rk{margin-bottom:var(--s2)}.abt .abt-rc .inf-rc{font-size:var(--t15)}
+@media (max-width:699.98px){.abt .k-plan{padding-bottom:var(--s4)}.abt .abt-rc{padding:var(--s4) var(--s3) var(--s6);rotate:none}.abt .abt-rc li{padding:var(--s2) 0}.abt-rn{font-size:var(--t22)}.abt-rk{margin-bottom:var(--s2)}.abt .abt-rc .inf-rc{font-size:var(--t15)}
   .abt-st{display:grid;grid-template-columns:repeat(2,max-content);gap:var(--s2);margin-top:var(--s3)}.abt-st li{font-size:var(--t17);padding:var(--s1) var(--s3)}.abt .k-step:first-child .k-sec{margin-top:var(--s6)}.abt .k-sec .k-note{display:none}.abt .inf-row summary{padding:var(--s2) 0}.abt-fine .k-h2{font-size:var(--t24)}}
 .inf-saved li{display:grid;gap:var(--s1)}.inf-saved .fine{margin:0}.inf-saved>.fine:first-of-type{margin:0 0 var(--s4)}
 .inf-rc{display:grid;grid-template-columns:auto minmax(var(--s4),1fr) auto;align-items:baseline;gap:var(--s2);margin:0;font:400 var(--t15)/1.4 var(--b)}.inf-rc i{border-bottom:2px dotted var(--rule)}.inf-rc b{font-weight:700}
