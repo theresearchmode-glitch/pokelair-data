@@ -388,6 +388,11 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
 @media (max-width:379.98px){.pl-wr .pl-out2{flex:1 1 100%}}
 /* phones: "With a Pokémon…" fits its box at 380-699 (it read "With a Pokémo…": 89 px for 111); the segments keep 44 px */
 @media (max-width:699.98px){.pl-low .np-slide button{padding:0 var(--s1);min-width:var(--tap)}.pl-low .np-field{padding:0 var(--s1)}}
+/* Sim, Nov 23 (iPhone 393): at 4px sides "Full Teams" and "Most Used" touched their box's right border; Pairs / Trios / Full Teams has its own row,
+   so 8px; Top Rated / Most Used shares its row with the search box, so 6px from 390, where "With a Pokémon…" still fits (under 390 it keeps 4px).
+   Only under 440: from 440 the two groups share a row and more width would push the search box onto a line of its own */
+@media (max-width:439.98px){.pl-low [data-v2slide="bdckind"] button{padding:0 var(--s2)}}
+@media (min-width:390px) and (max-width:439.98px){.pl-low [data-v2slide="bdcsort"] button{padding:0 6px}}
 /* contrast: the Item chip's words are ink on its white in day AND night (night ink on white was 1.3:1); MEGA and "In your box" at
    full white (4.1:1 and 4.3:1 at .85 / .9) */
 .pl-it{color:var(--on-pt-it)}
