@@ -2142,3 +2142,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:14 AM: Preview v240 published (foundation 3f38a45b verified on the artifact, v2.js b5f8f610, preview.json eb2cbcaf): Wave 2 kit parts everywhere + polish fixes.
 - 3:18 AM: Tried and dropped: My Team plan as three columns at 1440+ (2,927 px, but the Checks column ends early and leaves a big empty block = against the empty-space rule). Lengths re-measured on frozen data (lengths-0315.json); My Team 1440 3.40 on the test data's sample with optional swaps (goes to Sim).
 - 3:31 AM: B-build in WebKit (Safari engine) on f285f9d8: 77 pass 0 FAIL. Running C-battle in WebKit next (Battle VS, calc Rain fix).
+- 3:35 AM: Hourly check 3:35 AM: 1 helper (hL); main: C-battle WebKit; Game Plan updated.
