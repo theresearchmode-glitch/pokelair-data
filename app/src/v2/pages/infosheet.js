@@ -76,11 +76,14 @@ V2.kAbil = n => n && typeof INFO_TEXT === 'object' && INFO_TEXT.ab[n] ? `<button
 // the ITEM sheet, "the evidence tag" (approved round 3): a manila tag with a punched hole, a string and a dashed tear line, a red EVIDENCE
 // stamp (hidden under 700 wide); manila with dark ink in both themes. Items not in Pokémon Champions (HANDOFF) get no sheet.
 V2.IS_NOT_IN = ['Safety Goggles', 'Covert Cloak', 'Clear Amulet', 'Loaded Dice', 'Choice Band', 'Choice Specs', 'Assault Vest'];
+// the item's EVIDENCE BAG (Sim OK'd the drawings v2, Nov 23): our own drawing (item-art.js) in a clear bag, left of the name. Decorative;
+// an item with no drawing gets no bag
+V2.isBag = n => { const a = V2.itemArt ? V2.itemArt(n) : ''; return a ? (V2.kTySprite && V2.kTySprite(), `<div class="evbag" aria-hidden="true">${a}</div>`) : ''; };
 V2.openItemSheet = n => { const E = V2.esc, txt = (typeof INFO_TEXT === 'object' && INFO_TEXT.it[n]) || ''; if (!txt || V2.IS_NOT_IN.includes(n)) return;
   const U = V2.infoUse('it', n), users = V2.isUsersOf(U);
   const stats = [['Teams', U ? V2.isFmt(U.t) : '—'], ['Pokémon run it', U ? String(U.nu) : '—'], ['Uses per battle', /Single use/i.test(txt) ? '1' : 'No limit']];
   const links = `<div class="is-sec is-links">${V2.kLink('Winning Teams With It', {href: '#tournaments', 'data-v2close': '', 'data-v2term': 'item', 'data-v2termv': n})}</div>`;
-  const tab = `<div class="is-tagw"><svg class="str" viewBox="0 0 70 80" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M57 54 C 40 40, 20 30, 4 2"/></svg>${V2.isTab('item', n, '<span>Held item</span>', V2.isShare(U), '<span class="ev u" aria-hidden="true">EVIDENCE</span>')}</div>`;
+  const tab = `<div class="is-tagw"><svg class="str" viewBox="0 0 70 80" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M57 54 C 40 40, 20 30, 4 2"/></svg>${V2.isTab('item', n, '<span>Held item</span>', V2.isShare(U), '<span class="ev u" aria-hidden="true">EVIDENCE</span>', V2.isBag(n))}</div>`;
   V2.sheet(`<div class="is2 kd-item">${tab}<p class="is-lead">${E(V2.IS_LEAD.it[n] || txt)}</p>${V2.isStats(stats)}${V2.isLines(V2.IS_HAND.it[n] || [])}${V2.isUsers(U, users)}${links}${V2.isCredit('Item')}</div>`, {label: n}); };
 // an item name anywhere: a blue word that opens its sheet (no button for 'No item' or an item without a sheet); a Mega letter stays with its name
 V2.kItem = n => { const t = V2.keepForm(V2.esc(n || '')).replace(/ (\S{1,2})$/, '\u00a0$1');
