@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH (design + executive authority to 6 PM; tell Sim each visual decision in chat): page lengths on HEAD after iPhone fixes + hP polish (pl.sh). Preview v243 published 6:51. Helper: hI (iPhone 16 sweep, every page, branch hi-iphone).
-NEXT: GitHub run on 7bbb2880 (~7:37); review hI; full summary before 9 AM; Type Chart length option A (tell Sim); 6 PM summary
+NOW: HH (design + executive authority to 6 PM; tell Sim each visual decision): fixes for GitHub 1485 (Events 320 weight, hero 3b per Sim's A), local q33 + minors main2 running before the push. My Box 'The PC' package saved (docs/mockups/mybox-pc); waiting on Sim's OK for the six new items; mapping today's box features meanwhile. Helper: hJ (iPhone spots A-D).
+NEXT: push 1485 fixes; My Box build (after Sim's OK); full summary before 9 AM; Game Plan; 6 PM summary
 NEXT: GitHub batches every ~40 min; Game Plan hourly
 NEXT: before 9 AM: full summary incl. lengths for Sim
 NEXT: 5:45 AM summary (decisions from 10 PM), Preview refresh before it
