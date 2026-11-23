@@ -51,7 +51,7 @@ V2.btOppSheet = () => { const E = V2.esc, opp = S.opp.slice(0, 6); while (opp.le
   const rec = V2.btRecent(), all = (META.teams && META.teams.teams) || [];
   const recent = rec.length ? `<h3 class="bt-oh">Recent Opponents</h3><ul class="bt-oteams">${rec.map((x, i) => `<li><button type="button" class="bt-oteam" data-btrecent="${i}" aria-label="Load ${E(x.map(n => V2.disp(n)).join(', '))}"><span class="bt-osix" aria-hidden="true">${x.map(n => V2.mon(n, {iw: 36, bare: true})).join('')}</span><span><b>${E(x.map(n => V2.disp(n)).slice(0, 2).join(', '))} +4</b><small>Faced before</small></span></button></li>`).join('')}</ul>` : '';
   const more = all.length ? (V2.btUi.allTeams ? `<h3 class="bt-oh">All ${all.length} Tournament Teams</h3><ul class="bt-oteams bt-oall">${all.map((t, i) => `<li><button type="button" class="bt-oteam" data-btteamall="${i}"><span class="bt-osix" aria-hidden="true">${t.mons.slice(0, 6).map(n => V2.mon(n, {iw: 28, bare: true})).join('')}</span><span><b>${E(teamWho(t))}</b><small>${E(evShort(t.event))} · ${E(teamPlanLabel(t.mons))}</small></span></button></li>`).join('')}</ul>`
-    : `<button type="button" class="np-link bt-oallb" data-btall>Show All ${all.length} Tournament Teams</button>`) : '';
+    : V2.kMore(all.length, {label: `Show all ${all.length}`, vh: 'tournament teams', attrs: {class: 'bt-oallb', 'data-btall': ''}}) /* Wave 2 (Sim chose A, Nov 22): the kit show-more; "Show all N" because it opens the whole list (a different order from the 10 above), not N more */) : '';
   return `<div class="bt-osheet"><h2 class="u">Their Six</h2><p class="bt-sub">Type them as you see them at team preview, pick one of ${all.length} top tournament teams, or a recent opponent (${rec.length || 'none yet'}).</p><div class="bt-oslots">${opp.map(slot).join('')}</div>
     ${recent}${teams.length ? `<h3 class="bt-oh">Or Pick a Top Tournament Team</h3><ul class="bt-oteams">${teams.map(team).join('')}</ul>` : ''}${more}</div>`; };
 // their open team sheet when the six is a known tournament team (today's sdOppSheet: the player first, else any team with these six)
@@ -124,7 +124,8 @@ V2.battleWatch = P => { if (!P) return ''; const E = V2.esc, O = V2.btOnce(P), W
 // Damage both ways, Who moves first and Deeper read, from battlePlan (damage, speed, prio, r) and today's shared helpers
 // (koShort / dmgP / koText / dmgRange, fieldWords, archMatchup, deeperThreats). The switches are today's: they change bmUi.
 V2.btUi.tab = V2.btUi.tab || (() => { const t = LS.get('cc2.v2.bttab', null); return ['dmg', 'spd', 'deep'].includes(t) ? t : null; })(); // the open tab is remembered on this device (audit X-03; today remembered Deeper Read under cc2.chf.mufold)
-V2.btChip = (attr, on, t) => `<button type="button" class="np-chip" ${attr} aria-pressed="${!!on}">${V2.esc(t)}</button>`;
+/* Wave 2 part 2 (Sim chose A, Nov 22): the kit filter chip (was np-chip); attr is the page's own data-* hook, written as given */
+V2.btChip = (attr, on, t) => V2.kChip(t, {on: !!on}).replace('<button type="button" class="k-chip"', `<button type="button" class="k-chip" ${attr}`);
 V2.battleTabs = (theirs, P) => { if (!P) return ''; const n = P.chosen.length * theirs.length, t = V2.btUi.tab;
   const b = (k, lab) => `<button type="button" class="bt-tab${t === k ? ' on' : ''}" data-bttab="${k}" aria-expanded="${t === k}" aria-controls="bt-pane">${lab}</button>`; /* no counts beside the names (Sim, Nov 12: too wordy) */
   return `<nav class="bt-tabs" aria-label="Detail">${b('dmg', '<span>Damage</span> <span>Both Ways</span>')}${b('spd', '<span>Who Moves</span> <span>First</span>')}${b('deep', '<span>Deeper</span> <span>Read</span>')}</nav>`; };

@@ -183,3 +183,43 @@ button.k-move{cursor:pointer}
 .k-mt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--s1)}
 @container (max-width:299.98px){.k-mt{flex-direction:row;justify-content:flex-start;gap:6px}}
 @container (max-width:159.98px){.k-mt{gap:var(--s1);padding:2px var(--s1)}.k-tyi{width:12px;height:12px}.k-mp{padding:0 var(--s1)}}
+
+/* ===== the show-more (Wave 2 part 1, Sim chose A, Nov 22): the list's tail. A solid PLOT-blue slanted box with the chevron,
+   "Show N more" in Unbounded slanted 800, then a dashed PLOT line to the end of the list's width (it echoes the pink dashed plan
+   line; blue because it is a button). The whole row is the tap: 44px (the site's --tap), not the picture's 48, so no page that
+   swaps its old 44px link for it gets longer (HH's rule for this build, Nov 23: no page longer at 1440 or 390). ===== */
+.k-more{display:flex;align-items:center;gap:var(--s3);width:100%;min-width:0;min-height:var(--tap);margin:0;padding:0 0 0 2px;border:0;border-radius:0;background:none;color:var(--k-plot-text);font:inherit;text-align:left;cursor:pointer}
+.k-more::after{content:"";flex:1 1 var(--s6);min-width:var(--s6);border-top:2px dashed var(--k-plot)}
+/* the 2px left pad keeps the slanted box inside its column (the -8deg skew reaches 2px past its own left edge) */
+.k-more-b{display:grid;place-items:center;flex:none;width:28px;height:28px;background:var(--k-plot);color:var(--k-on-plot);transform:skewX(-8deg)}
+.k-more-b .k-chev{width:16px;height:16px;transform:skewX(8deg);transition:transform .15s ease}
+.k-more[aria-expanded="true"] .k-more-b .k-chev{transform:skewX(8deg) rotate(180deg)}
+.k-more-t{display:grid;flex:0 1 auto;min-width:0}
+.k-more-l{font-size:var(--t15);font-weight:800;line-height:1.2;letter-spacing:0;white-space:nowrap}
+.k-more-n{font-size:var(--t13);font-weight:600;line-height:1.3;color:var(--k-ink2)}
+.k-more:hover .k-more-l{text-decoration:underline}
+.k-more:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
+
+/* ===== the filter chip (Wave 2 part 2, Sim chose A, Nov 22): the boxed blue word at chip size; chosen = filled PLOT ===== */
+.k-chip{display:inline-grid;place-items:center;min-height:var(--tap);margin:0;padding:0 var(--s3);border:3px solid var(--k-plot);border-radius:0;background:transparent;color:var(--k-plot-text);font-family:var(--u);font-size:var(--t15);font-weight:800;font-style:italic;line-height:1.1;letter-spacing:0;white-space:nowrap;cursor:pointer;transform:skewX(-8deg)}
+.k-chip>span{display:inline-flex;align-items:baseline;gap:6px;min-width:0;transform:skewX(8deg)}
+.k-chip small{font-family:var(--b);font-size:var(--t13);font-style:normal;font-weight:600;line-height:1;color:inherit;opacity:.85}
+.k-chip[aria-pressed="true"],.k-chip.k-on{background:var(--k-plot);color:var(--k-on-plot)}
+.k-chip:hover{background:color-mix(in srgb,var(--k-plot) 12%,transparent)}
+.k-chip[aria-pressed="true"]:hover,.k-chip.k-on:hover{background:var(--k-plot)}
+.k-chip:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
+@media (forced-colors:active){.k-chip{border-color:ButtonText}.k-chip[aria-pressed="true"],.k-chip.k-on{forced-color-adjust:none;background:Highlight;color:HighlightText}}
+
+/* ===== the secondary button (Wave 2 part 3, Sim chose A, Nov 22): k-go's outline sibling. 44px (the site's --tap, as np-btn2 was), not
+   the picture's 48, so no page gets longer. The kit layer comes after components, so it wins over .np-btn2's look. ===== */
+.k-btn{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);padding:0 var(--s5);border:3px solid var(--k-ink);border-radius:0;background:transparent;color:var(--k-ink);font-family:var(--u);font-size:var(--t15);font-weight:800;font-style:italic;line-height:1;letter-spacing:0;text-decoration:none;white-space:nowrap;cursor:pointer;transform:skewX(-8deg);transition:box-shadow .12s ease}
+.k-btn>span{transform:none}
+.k-btn:hover{box-shadow:4px 4px 0 var(--k-plot)}
+.k-btn:active{transform:skewX(-8deg) translate(2px,2px);box-shadow:none}
+.k-btn:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
+@media (prefers-reduced-motion:reduce){.k-btn{transition:none}}
+
+/* ===== the empty line (Wave 2 part 4, Sim chose A, Nov 22): the empty slot. The dashed outline is drawn on ::before so it can slant
+   (-8deg, the kit's skew) while the words stay upright; the box hugs its words. ===== */
+.k-none{position:relative;width:fit-content;max-width:calc(100% - 8px);margin:var(--s2) var(--s1) 0;padding:var(--s2) var(--s4);font-family:var(--b);font-size:var(--t15);font-style:normal;font-weight:500;line-height:1.5;letter-spacing:0;color:var(--k-ink2)}
+.k-none::before{content:"";position:absolute;inset:0;border:2px dashed var(--k-ink2);transform:skewX(-8deg);pointer-events:none}

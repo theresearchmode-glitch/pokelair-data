@@ -43,7 +43,7 @@
 .is-learn{display:flex;flex-wrap:wrap;gap:2px}
 .is-l{min-width:var(--tap);min-height:var(--tap);padding:0;border:0;border-radius:var(--r-m);background:none;cursor:pointer}
 .is-l:hover{background:var(--wash)}
-.is-all{margin-top:var(--s2);padding:0;border:0;background:none;cursor:pointer}
+.is-all{margin-top:var(--s2)} /* Wave 2: the kit show-more (kit.css .k-more) */
 .is-src{margin:var(--s2) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
 .is-links{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6)}
 .is-credit{margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--k-ink2)}

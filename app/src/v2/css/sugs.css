@@ -39,7 +39,7 @@
 .sg2-fix{display:grid;gap:var(--s3);justify-items:start;margin-top:var(--s5);padding:var(--s5);background:var(--wash)}
 .sg2-fix .tm-sub{margin:0}.sg2-fix .tm-sub b{color:var(--ink)}
 /* Nothing to fix: the big slanted verdict (approved mock), then where the edge is now */
-.sg2-none{margin:var(--s4) 0 0;font-size:var(--t15);line-height:1.5;color:var(--ink-2)}.sg2-none b{color:var(--ink);font-weight:700}
+.sg2-none{margin:var(--s4) var(--s1) 0} /* Wave 2 part 4: the kit empty line */.sg2-none b{color:var(--ink);font-weight:700}
 .sg2-nact{display:flex;gap:var(--s5);margin:0 0 var(--s2)}.sg2-nact .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
 /* the Undo bar: what was applied, one tap back */
 .sg2-undo{display:flex;align-items:center;justify-content:space-between;gap:var(--s3) var(--s5);flex-wrap:wrap;margin-top:var(--s5);padding:var(--s3) var(--s6) var(--s3) var(--s5);background:var(--wash);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
@@ -158,8 +158,6 @@
 .tr-prep summary,.cx2-why>summary{display:flex;align-items:center;gap:var(--s3);list-style:none}.tr-prep summary::-webkit-details-marker,.cx2-why>summary::-webkit-details-marker,.tr-how summary::-webkit-details-marker{display:none}.tr-how summary{list-style:none}
 /* ONE chip (Nov 16, one system item 5; helper inventory): Meta's chips and the Damage Calc's 'In play' toggles take the site chip's look
    (wash, 10px slant, black plate when on, the lit night edge); the calc's round pills broke the slanted-chip rule */
-.ra-chip{clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
-:root[data-theme="night"] .ra-chip[aria-pressed="true"]{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate);outline:1.5px solid var(--plot);outline-offset:-1.5px}
 /* ONE segmented control (Nov 16, one system item 4): Meta's link segments (Ratings / Usage / Sets; Winning Teams / Events / Archetypes)
    take the shell switch's look: flush track, 10px slant, 44px, the lit plate for the page you're on */
 .ra-seg{padding:0;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}

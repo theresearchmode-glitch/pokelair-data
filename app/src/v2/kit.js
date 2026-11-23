@@ -44,7 +44,8 @@ V2.kHero = (cardHtml, sideHtml) => `<div class="k-hero"><div class="k-hero-card"
 V2.kFacts = facts => `<ul class="k-facts">${(facts || []).map(([v, l, key]) => `<li><b class="u${key ? ' k-key' : ''}">${V2.esc(v)}</b><span>${V2.esc(l)}</span></li>`).join('')}</ul>`;
 V2.kScrib = text => `<span class="k-scrib u">${V2.esc(text)}</span>`;
 // the page's ONE big pink move (THEME 2.5): an <a> when attrs.href is given, else a <button>
-V2.kGo = (label, attrs = {}) => attrs && attrs.href ? `<a class="k-go u" data-kmax="2"${V2.kAttrs(attrs)}>${V2.esc(label)}</a>` : `<button type="button" class="k-go u" data-kmax="2"${V2.kAttrs(attrs)}>${V2.esc(label)}</button>`;
+/* Wave 2 (Nov 23): attrs.class is added to k-go (it used to write a second class attribute, which the browser ignores; no caller passed one) */
+V2.kGo = (label, attrs = {}) => { const {class: c, ...a} = attrs || {}, cls = `k-go u${c ? ' ' + V2.esc(c) : ''}`; return a.href ? `<a class="${cls}" data-kmax="2"${V2.kAttrs(a)}>${V2.esc(label)}</a>` : `<button type="button" class="${cls}" data-kmax="2"${V2.kAttrs(a)}>${V2.esc(label)}</button>`; };
 // the one verdict tag (THEME 2.6): good = blue, bad = pink, live = pink, neutral = outlined
 V2.kTag = (kind, text) => `<span class="k-tag u k-${['good', 'bad', 'live', 'neutral'].includes(kind) ? kind : 'neutral'}">${V2.esc(text)}</span>`;
 // the move ticket (Sim chose A, Nov 21, 2:38 PM: "a cohesive thing we can apply everywhere with pokemon moves so ppl know yeah thats a move name").
@@ -68,6 +69,32 @@ V2.kMove = (name, o = {}) => { const f = V2.kMoveFacts(name); /* Nov 22 (info sh
     + `<span class="k-mt">${f.type ? V2.kTy(f.type) : ''}<span>${V2.esc(f.type || 'Move')}</span></span><span class="k-mn"><b>${V2.esc(name)}</b>${f.what ? `<small>${V2.esc(f.what)}</small>` : ''}</span>`
     + `${o.pct != null && o.pct !== '' ? `<b class="k-mp u">${V2.esc(o.pct)}</b>` : ''}</${tag}>`; };
 // a set's moves: always two across (no half rows); each ticket stacks when its column is narrow; items are names or [name, pct]
+/* the show-more (Wave 2 part 1, Sim chose option A, Nov 22: "recommended is good to go"; docs/rebuild/research/wave2-proposal.md 1):
+   the list's tail. A solid PLOT-blue slanted box with the kit chevron, "Show N more" / "Show fewer" in Unbounded slanted 800, then a
+   dashed PLOT line to the end of the list's width; 48px. o.open: a toggle (aria-expanded, the chevron turns up, "Show fewer");
+   o.label replaces the words (kept only where a page needs its own noun); o.vh: a word for screen readers only ("Show 4 more moves"); o.note: a small second line; o.attrs: the page's hooks
+   (class is added to k-more, so every data-* and class a test or the page's JS reads stays). */
+V2.kMore = (n, o = {}) => { const {class: c, ...a} = o.attrs || {}, tog = 'open' in o;
+  return `<button type="button" class="k-more${c ? ' ' + V2.esc(c) : ''}"${tog ? ` aria-expanded="${!!o.open}"` : ''}${V2.kAttrs(a)}>${V2.kMoreIn(n, o)}</button>`; };
+// the inside of a show-more, for a page that toggles it in place (no redraw, so focus stays): b.innerHTML = V2.kMoreIn(n, {open, note})
+V2.kMoreIn = (n, o = {}) => { const label = o.label || ('open' in o && o.open ? 'Show fewer' : `Show ${n} more`);
+  return `<span class="k-more-b" aria-hidden="true">${V2.K_CHEV}</span><span class="k-more-t"><span class="k-more-l u">${V2.esc(label)}${o.vh ? `<span class="vh"> ${V2.esc(o.vh)}</span>` : ''}</span>${o.note ? ` <small class="k-more-n">${V2.esc(o.note)}</small>` : ''}</span>`; };
+/* the filter chip (Wave 2 part 2, Sim chose option A, Nov 22; wave2-proposal.md 2): the kit's boxed blue word at chip size. 3px PLOT
+   outline skewed -8deg (words counter-skewed), Unbounded slanted 15, a count in Instrument Sans 13; chosen = filled PLOT. One rule
+   players learn once: blue box = tap, filled = chosen. V2.kChip(label, {on, count, html, attrs}); html: the label as given (a ◆, a vh word);
+   on: null leaves aria-pressed off (an add chip, not a toggle). */
+V2.kChip = (label, o = {}) => { const {class: c, ...a} = o.attrs || {};
+  return `<button type="button" class="k-chip${c ? ' ' + V2.esc(c) : ''}"${o.on == null ? '' : ` aria-pressed="${!!o.on}"`}${V2.kAttrs(a)}><span>${o.html != null ? o.html : V2.esc(label)}${o.count != null && o.count !== '' ? `<small>${V2.esc(o.count)}</small>` : ''}</span></button>`; };
+/* the secondary button (Wave 2 part 3, Sim chose option A, Nov 22; wave2-proposal.md 3): k-go's outline sibling. Same shape and slant
+   as k-go (skewX -8deg, square corners, the words slant with the box), Unbounded slanted 800, 3px ink outline, no fill; on hover the
+   k-go offset shadow appears in PLOT blue. Pink k-go = the one main move, ink outline = the others. It carries np-btn2 too, so every
+   page's layout rule for its secondary buttons (place, width) still applies; the kit layer sets the look. */
+V2.kBtn = (label, attrs = {}) => { const {class: c, ...a} = attrs || {}, cls = `np-btn2 k-btn${c ? ' ' + V2.esc(c) : ''}`;
+  return a.href ? `<a class="${cls}"${V2.kAttrs(a)}><span>${V2.esc(label)}</span></a>` : `<button type="button" class="${cls}"${V2.kAttrs(a)}><span>${V2.esc(label)}</span></button>`; };
+/* the empty line (Wave 2 part 4, Sim chose option A, Nov 22; wave2-proposal.md 4): "nothing here yet" sits in an empty slot, a slanted box
+   with a 2px dashed outline, Instrument Sans 500 in the kit's one grey. For any kind of empty (no match, no data yet, none this week).
+   Pages that already write the line add class k-none to it (their own class stays as the hook); new code: V2.kNone(text) or {html}. */
+V2.kNone = (text, o = {}) => `<p class="k-none${o.class ? ' ' + V2.esc(o.class) : ''}">${o.html != null ? o.html : V2.esc(text)}</p>`;
 V2.kMoves = list => `<ul class="k-moves">${(list || []).map(x => { const [n, pct] = Array.isArray(x) ? x : [x]; return `<li>${V2.kMove(n, {pct})}</li>`; }).join('')}</ul>`;
 V2.kMine = (text = 'Yours') => `<span class="k-mine">${V2.esc(text)}</span>`;
 // names drop a size before they wrap (HYBRID 7): each [data-kmax] steps down its levels (kit.css) until its line fits its box; every

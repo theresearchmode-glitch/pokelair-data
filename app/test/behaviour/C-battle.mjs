@@ -780,8 +780,8 @@ t('MATCHUPS-01', 'top 10 threats with real-games word and calc level; phones sho
     await ui.tapThreat('Archaludon'); const s = await ui.scoutSheet(); expect(s && (NEW ? /Matchups/i : /Scouting report/i).test(s) && /Archaludon/.test(s), 'tapping a threat did not open the scouting sheet'); await close(); }
   const {ui, close} = await open({team: TEAM, width: 390}); await ui.go('My Team', 1200); if (NEW) await ui.matchupsView('Top 10');
   expect((await ui.threatRows()).filter(x => /^\d+ /.test(x)).length === 5, 'phone does not show 5');
-  await ui.tapIn((NEW ? 'Show 5 More' : 'Show 5 more')); expect((await ui.threatRows()).filter(x => /^\d+ /.test(x)).length === 10, (NEW ? '"Show 5 More" did not show 10' : '"Show 5 more" did not show 10'));
-  expect(await ui.sees((NEW ? 'Show Top 5 Only' : 'Show top 5 only')), (NEW ? 'no "Show Top 5 Only"' : 'no "Show top 5 only"')); await close(); });
+  await ui.tapIn(('Show 5 more' /* Wave 2 (Nov 23): the new site's kit show-more says "Show 5 more" too */)); expect((await ui.threatRows()).filter(x => /^\d+ /.test(x)).length === 10, '"Show 5 more" did not show 10');
+  expect(await ui.sees((NEW ? 'Show fewer' /* Wave 2: the kit show-more's open words (was "Show Top 5 Only") */ : 'Show top 5 only')), (NEW ? 'no "Show fewer"' : 'no "Show top 5 only"')); await close(); });
 
 t('MATCHUPS-02', 'legend counts in the approved words', async () => {
   const {ui, close} = await open({team: TEAM}); await ui.go('My Team', 1200); const m = await ui.matchupsText();

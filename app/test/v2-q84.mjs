@@ -79,7 +79,7 @@ for (const th of ['light', 'dark']) for (const W of [390, 1440]) { const tag = `
   await go(p, 'pokemon=qwxyz', 1500);
   const N = await p.evaluate(() => { const a = document.querySelector('.pk-404'); if (!a) return null; const r = a.getBoundingClientRect(), sp = a.querySelector('span'), lh = sp ? sp.getClientRects().length : 9;
     return {cls: a.className, inP: !!a.closest('p'), h: Math.round(r.height), lines: lh, txt: a.textContent.trim(), href: a.getAttribute('href')}; });
-  ok(N && /\bnp-btn2\b/.test(N.cls) && !N.inP && N.lines === 1 && N.h <= 48 && N.txt === 'Every Pokémon, by tier ›' && N.href === '#meta', `S3 ${tag}: the way out is the outline button on its own line, one line (${JSON.stringify(N)})`);
+  ok(N && /\bk-go\b/.test(N.cls) && !N.inP && N.h <= 64 && N.txt === 'EVERY POKÉMON, BY TIER.' && N.href === '#meta' /* Wave 2 part 5 (Nov 23): the way out is the kit's pink k-go now, as on Page not found (was the np-btn2 outline "Every Pokémon, by tier ›"); k-go has no inner span, so its one line is held by its height */, `S3 ${tag}: the way out is the outline button on its own line, one line (${JSON.stringify(N)})`);
   await side(p, `pokemon 404 ${tag}`);
   // ---- S19 and S7 with the scan's team ----
   await setTeam(p, SCAN); await go(p, 'team', 4000);

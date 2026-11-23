@@ -420,7 +420,9 @@ V2.redraw = pre => { const app = document.getElementById('app'); if (!app || !ap
 // the whole page as HTML (header, the page, footer, phone bar); V2.draw puts it in fresh, V2.redraw merges it in place
 // one page's error never blanks the whole site (audit SHELL-34; today's safe() wrapper does the same per section): the header, menus
 // and footer still draw, the page says what happened, and the error goes to the console for the checks to catch
-V2.safeDraw = P => { try { return P.draw(); } catch (e) { console.error(e); return '<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Something went wrong drawing it. Reload to try again; the rest of the site still works.</p></div></section>'; } };
+V2.safeDraw = P => { try { return P.draw(); } catch (e) { console.error(e); /* Wave 2 part 5 (Sim chose A, Nov 22): the Page-not-found shape, with one way out (RELOAD. reloads the page); no underdog on an error */
+    return `<div class="ra gsp nf-pg nf2" data-v2err><div class="nf2-two"><div class="k-head"><p class="k-kicker np-eyebrow">PAGE · DIDN\u2019T LOAD</p><h1 class="k-h1 u">This page <em>didn\u2019t load.</em></h1><p class="k-lead">Something went wrong drawing it. Reload to try again; the rest of the site still works.</p>${V2.kGo('RELOAD.', {'data-v2reload': ''})}</div></div></div>`; } };
+document.addEventListener('click', e => { if (e.target.closest && e.target.closest('[data-v2reload]')) location.reload(); });
 /* pre-launch check 1 (Nov 17): the page shipped with built-in numbers drew them first and swapped ~1.2 s later (Home 10,209 -> 13,826
    teams, the Game Plan's lead and bench flipped, Strength Score 92 -> 93). Numbers are drawn only once every daily document has answered
    (META_SEEN, 03-persistence.js), or there is no data store (a plain file, the tests, signed out), or after 8 s (a document that never

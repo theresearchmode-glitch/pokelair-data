@@ -16,13 +16,13 @@ for (const th of ['light', 'dark']) for (const W of [320, 390, 699, 700, 1440]) 
   if (x.all < 0) { ok(false, `${tag}: Test Run shows its three piles (no Coin Flips pile found)`); await c.close(); continue; }
   if (!phone || x.all <= 5) ok(x.vis === x.all && !x.btn, `${tag}: every Coin Flips card (${x.vis} of ${x.all}), no button ("${x.btn}")`);
   else {
-    const n = x.all - 5; ok(x.vis === 5 && x.btn === `${n} more coin flip${n === 1 ? '' : 's'} ›` && x.exp === 'false' && x.h >= 44, `${tag}: 5 of ${x.all} cards + "${x.btn}" (aria-expanded ${x.exp}, ${x.h}px)`);
+    const n = x.all - 5; ok(x.vis === 5 && x.btn === `Show ${n} more coin flip${n === 1 ? '' : 's'}` /* Wave 2 (Nov 23): the kit show-more's words + spoken noun (was "N more coin flips ›") */ && x.exp === 'false' && x.h >= 44, `${tag}: 5 of ${x.all} cards + "${x.btn}" (aria-expanded ${x.exp}, ${x.h}px)`);
     if (W === 390) { const L = await p.evaluate(() => { const H = document.documentElement.scrollHeight; document.getElementById('tp-cards-c').classList.add('on'); const H0 = document.documentElement.scrollHeight; document.getElementById('tp-cards-c').classList.remove('on'); return {H, H0}; });
       ok((L.H0 - L.H) / 844 >= 0.8, `${tag}: page ${(L.H / 844).toFixed(2)} screens, ${((L.H0 - L.H) / 844).toFixed(2)} shorter than with every card (${(L.H0 / 844).toFixed(2)}; at least 0.8)`); }
     await p.focus('#main [data-tpmore]'); await p.keyboard.press('Enter'); await p.waitForTimeout(300); x = await st(p);
-    ok(x.vis === x.all && x.exp === 'true' && x.btn === 'Show Fewer' && x.focus, `${tag}: Enter opens all ${x.all} (${x.vis}), aria-expanded ${x.exp}, "${x.btn}", focus stays ${x.focus}`);
+    ok(x.vis === x.all && x.exp === 'true' && x.btn === 'Show fewer coin flips' /* Wave 2: kit words */ && x.focus, `${tag}: Enter opens all ${x.all} (${x.vis}), aria-expanded ${x.exp}, "${x.btn}", focus stays ${x.focus}`);
     await p.keyboard.press('Enter'); await p.waitForTimeout(300); x = await st(p);
-    ok(x.vis === 5 && x.exp === 'false' && x.btn.endsWith('›'), `${tag}: Enter again closes back to 5 (${x.vis}), "${x.btn}"`);
+    ok(x.vis === 5 && x.exp === 'false' && /^Show \d+ more/.test(x.btn) /* Wave 2: kit words (was ends with ›) */, `${tag}: Enter again closes back to 5 (${x.vis}), "${x.btn}"`);
   }
   ok(!x.side, `${tag}: nothing scrolls sideways`); ok(!errs.length, `${tag}: no page errors (${errs.length})`); await c.close();
 }

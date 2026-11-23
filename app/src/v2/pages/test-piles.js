@@ -9,7 +9,7 @@ V2.tpUi = V2.tpUi || {open: undefined};
 V2.DR_LV = ['No answer', 'Shaky', 'Handles it', 'Beats it'];
 /* Q45: the Coin Flips 'N more' button opens the rest in place (no redraw, focus stays on the button); its state is kept for redraws */
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-tpmore]'); if (!b) return; const l = document.getElementById(b.getAttribute('aria-controls')); if (!l) return;
-  const open = V2.tpUi.more = !l.classList.contains('on'); l.classList.toggle('on', open); b.setAttribute('aria-expanded', open); const n = l.querySelectorAll('.tp-more').length; b.textContent = open ? 'Show Fewer' : `${n} more coin flip${n === 1 ? '' : 's'} ›`; });
+  const open = V2.tpUi.more = !l.classList.contains('on'); l.classList.toggle('on', open); b.setAttribute('aria-expanded', open); const n = l.querySelectorAll('.tp-more').length; b.innerHTML = V2.kMoreIn(n, {open, vh: `coin flip${n === 1 ? '' : 's'}`}); });
 V2.tpPile = e => e <= -2 ? 'p' : e >= 2 ? 'g' : 'c';
 V2.tpWide = () => innerWidth >= 1100;
 V2.tpPlace = who => String(who || '').replace(/^Challenger · /, '').split(' · ')[0];
@@ -54,7 +54,7 @@ V2.drSuspects = rows => { const M = new Map(); for (const x of rows) { if (!x.pr
   return [...M.values()].sort((a, b) => b.teams - a.teams || b.no - a.no); };
 V2.drPhone = () => innerWidth < 700;
 V2.drSuspectsHtml = (rows, total) => { const L = V2.drSuspects(rows), k = V2.drPhone() ? Math.min(3, L.length) : L.length >= 6 ? 6 : L.length >= 4 ? 4 : L.length, S = L.slice(0, k); /* phones: one row of three (THEME 4.1) */
-  if (!S.length) return `<p class="dr-none">Nothing gets through: you beat or handle every one of their Pokémon, in all ${total} teams.</p>`;
+  if (!S.length) return `<p class="dr-none k-none">Nothing gets through: you beat or handle every one of their Pokémon, in all ${total} teams.</p>`;
   const fact = s => s.no ? `No answer in ${s.no}${s.teams > s.no ? ` · Shaky in ${s.teams - s.no}` : ''}` : `Shaky in all ${s.teams}`;
   return `<div class="dr-sus">${V2.kRoster(S.map(s => V2.kCard(s.n, {size: 'small', score: s.teams, tier: `of ${total} teams`, fact: fact(s), attrs: {'data-v2mon': s.n, 'aria-label': `${s.d}: gets through in ${s.teams} of ${total} teams (${fact(s)}). Open its page`}})))}</div>${L.length > k ? `<p class="dr-also">Also: ${L.slice(k, k + 8).map(s => `${V2.esc(s.d)} ${s.teams}`).join(' · ')}${L.length > k + 8 ? ' · …' : ''}</p>` : ''}`; };
 V2.drKey = () => `<p class="dr-key" aria-label="Under each of their Pokémon: your answer to it"><span class="dr-kl">Your answer to each:</span> ${[3, 2, 1, 0].map(l => `<span>${V2.drBk(l)}${l === 0 ? '<b class="bang u" aria-hidden="true">!</b>' : ''}${V2.DR_LV[l]}</span>`).join('')}<span class="dr-kc"><span><b class="u y">3/6</b>you answer</span><span><b class="u t">6/6</b>they answer</span></span></p>`;
@@ -70,9 +70,9 @@ V2.trHead = n => V2.kHead({kicker: 'BATTLE · THE DRY RUN', h1Html: `Your six vs
   const cMore = Math.max(0, piles.c.length - 5), cOpen = !!(V2.tpUi.more || (openX && piles.c.indexOf(openX) >= 5));
   const pile = (k, name, word) => { const L = piles[k];
     const cards = L.map((x, i) => { const c = V2.tpCard(x, x === firstP); return (k === 'c' && i >= 5 ? c.replace('class="tp-card ', 'class="tp-card tp-more ') : c) + (!wide && openX === x ? openHtml : ''); }).join('');
-    const more = k === 'c' && cMore ? `<button type="button" class="np-link tp-morebtn" data-tpmore aria-expanded="${cOpen}" aria-controls="tp-cards-c">${cOpen ? 'Show Fewer' : `${cMore} more coin flip${cMore === 1 ? '' : 's'} ›`}</button>` : '';
+    const more = k === 'c' && cMore ? V2.kMore(cMore, {open: cOpen, vh: `coin flip${cMore === 1 ? '' : 's'}`, attrs: {class: 'tp-morebtn', 'data-tpmore': '', 'aria-controls': 'tp-cards-c'}}) /* Wave 2 (Sim chose A, Nov 22): the kit show-more (was "N more coin flips ›") */ : '';
     return `<section class="tp-pile ${k}" aria-label="${name}: ${L.length} team${L.length === 1 ? '' : 's'}, ${word}"><header class="tp-ph"><b class="tp-n u" aria-hidden="true">${L.length}</b><div><p class="tp-name u">${name}</p><p class="tp-word">${word[0].toUpperCase() + word.slice(1)}</p></div></header>
-      <div class="tp-cards${k === 'c' && cOpen ? ' on' : ''}"${k === 'c' ? ' id="tp-cards-c"' : ''}>${cards || `<p class="fine tp-none">No teams in this pile.</p>`}</div>${more}</section>`; };
+      <div class="tp-cards${k === 'c' && cOpen ? ' on' : ''}"${k === 'c' ? ' id="tp-cards-c"' : ''}>${cards || `<p class="tp-none k-none">No teams in this pile.</p>`}</div>${more}</section>`; };
   const tools = V2.battleToolsBar('gauntlet');
   const ph = V2.drPhone(), s1 = V2.kStep(1, 'Usual suspects.', ph ? `shaky or no answer, across all ${rows.length}` : `their Pokémon you're shaky on, or have no answer to, across all ${rows.length} teams`, V2.drSuspectsHtml(rows, rows.length));
   const s2 = V2.kStep(2, 'The three piles.', ph ? 'pink pile first · tap a team to flip it' : `all ${rows.length} top teams · work through the pink pile first · tap one to flip it`,

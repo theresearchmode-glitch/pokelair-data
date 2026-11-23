@@ -69,8 +69,10 @@ for (const th of ['light', 'dark']) {
     ok(R.megas.length > 0, `${tag}: a Mega in the top ten to check (${R.megas.map(m => m.txt).join(', ') || 'none'})`);
     ok(R.megas.length && R.megas.every(m => m.tag) && (W < 360 || R.megas.every(m => m.h <= m.lh * 1.5)), `${tag}: Mega names keep their last word whole, one line from 360 (${R.megas.map(m => `${m.txt} ${r1(m.h)}px${m.tag ? '' : ' split'}`).join('; ')})`);
     if (W < 700) { ok(R.more.length >= 2, `${tag}: the "N more ›" buttons to check (${R.more.length})`);
-      ok(R.more.length && R.more.every(m => m.gap >= 2 && m.gap <= 5), `${tag}: a space before the › in every "N more ›" (${R.more.map(m => `"${m.t}" ${m.gap == null ? '-' : r1(m.gap)}px`).join('; ')})`);
-      ok(R.more.length && R.more.every(m => /^\d+ more (moves|items|teammates) ›$/.test(m.t)), `${tag}: the spoken text still "N more moves ›" (${R.more.map(m => m.t).join(' | ')})`); }
+      /* Wave 2 (Nov 23): these are the kit show-more now ("Show N more" beside a chevron box, no ›), so the old "space before the ›"
+         check has nothing left to measure; what stays: no stray ›, and the spoken text keeps its noun */
+      ok(R.more.length && R.more.every(m => m.gap == null && !/›/.test(m.t)), `${tag}: no stray › in any "Show N more" (${R.more.map(m => `"${m.t}"`).join('; ')})`);
+      ok(R.more.length && R.more.every(m => /^Show \d+ more (moves|items|teammates|ranked Pokémon)$/.test(m.t)), `${tag}: the spoken text "Show N more moves" (${R.more.map(m => m.t).join(' | ')})`); }
     await done(P, tag); }
 
   // D2: Events and Gifts chips

@@ -54,7 +54,7 @@ V2.buildAnswer = () => { const r = ui.ab;
 V2.buildAnswer0 = () => { const E = V2.esc, r = ui.ab;
   const res = r && r.doubles; if (!res) return '';
   // today's three no-result notes (22-auto-build.js col()), without the format word (AUTO-14)
-  if (!res.teams || !res.teams.length) return `<p class="bd-none" role="status">${res.noMega != null ? `No strong team with exactly ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool. ${ui.abSrc === 'all' ? 'Try a different number of Megas on team' + (ui.abLock ? ' or build without the pick' : '') + '.' : 'Add Mega-capable Pokémon to your box, switch to Whole Roster, or change Megas on team.'}`
+  if (!res.teams || !res.teams.length) return `<p class="bd-none k-none" role="status">${res.noMega != null ? `No strong team with exactly ${res.noMega} Mega${res.noMega === 1 ? '' : 's'} from this pool. ${ui.abSrc === 'all' ? 'Try a different number of Megas on team' + (ui.abLock ? ' or build without the pick' : '') + '.' : 'Add Mega-capable Pokémon to your box, switch to Whole Roster, or change Megas on team.'}`
     : res.short != null ? `Only ${res.short} usable Pokémon in your box for doubles. Add more in My Box, or switch to Whole Roster.` : 'No legal team from this pool.'}</p>`;
   const t = abTeam('doubles'), n = res.teams.length, k = ((ui.abIdx && ui.abIdx.doubles) || 0) % n;
   let G = null, CK = null; try { CK = proChecks(t._ms, true); G = CH.gradeOf(t._rd, CK, t._ms); } catch (e) {}

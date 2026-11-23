@@ -496,7 +496,7 @@
 .cx2-opt .t{min-width:0}.cx2-opt .t b{display:block;font:600 var(--t15)/1.3 var(--b)}.cx2-opt .t span{display:block;font-size:var(--t13);color:var(--ink-2)}
 .cx2-opt .s{display:flex;flex:none}.cx2-opt .s img{width:32px;height:32px;object-fit:contain}
 @media (max-width:479.98px){.cx2-pick{padding:var(--s6) var(--s4)}.cx2-opt{flex-wrap:wrap}.cx2-opt .s img{width:28px;height:28px}}
-.cx2-more{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}
+.cx2-more{margin-top:var(--s2)} /* Wave 2: the kit show-more */
 .cx2-paste{min-height:120px}.cx2-pacts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3);margin-top:var(--s3)}.cx2-pacts .fine{margin:0}
 /* a narrow Compare cell stacks the score's word under its number, so "Tournament ready" never runs out of the cell */
 .cx2-c{container-type:inline-size}.cx2-c .np-score .w{min-width:0}
@@ -768,7 +768,7 @@
 .bd-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4);margin-top:var(--s6);padding-bottom:var(--s8)}
 .bd-catch{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)} /* Build Q3 B (Sim, Nov 13): right after the buttons it belongs with */
 .bd-mtip{margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)} /* Q13d (Nov 18): the Megas tip under the Blueprint's Spec, worded as the tips beside it */
-.bd-busy,.bd-none{padding:var(--s8) 0;font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.bd-busy{padding:var(--s8) 0;font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}.bd-none{margin:var(--s8) var(--s1)} /* Wave 2 part 4: the kit empty line */
 @media (max-width:1179.98px){.bd-ans{grid-template-columns:minmax(0,1fr);gap:var(--s5)}.bd-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s5)}.bd-why{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:var(--s4)}}
 @media (max-width:699.98px){.bd-pk .np-mon{--iw:88px}.bd-lock h2{font-size:var(--t28)}.bd-catch{margin-left:0;flex-basis:100%}.bd-acts .np-btn{flex-basis:100%}}
 @media (max-width:379.98px){.bd-why{grid-template-columns:minmax(0,1fr)}}
@@ -987,7 +987,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 @media (max-width:519.98px){.bt-tab{white-space:normal;text-align:left;align-items:center}.bt-tab>span{display:block}.bt-tab{flex-direction:column;align-items:flex-start;justify-content:center}}
 @media (max-width:519.98px){.bt-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:0 var(--s3);margin-top:var(--s4)}
   .bt-tab{white-space:normal;align-items:flex-start;text-align:left;padding:var(--s1) 0;font-size:var(--t15)}.bt-tab small,.bt-hint{display:none}}
-.bt-oallb{margin-top:var(--s4);min-height:var(--tap);display:inline-flex;align-items:center} /* quality pass Nov 15: was 20px tall */.bt-acts+.fine{margin-top:var(--s2)}
+.bt-oallb{margin-top:var(--s4)} /* Wave 2: the kit show-more (kit.css .k-more) */.bt-acts+.fine{margin-top:var(--s2)}
 .bt-labrow{display:flex;align-items:baseline;justify-content:space-between;gap:var(--s4)}
 @media (max-width:519.98px){.bt-acts.two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s3)}.bt-acts.two>*{width:100%;min-width:0;padding-left:var(--s2);padding-right:var(--s2);white-space:normal}}
 .bt-labrow .np-link{display:inline-flex;align-items:center;justify-content:flex-end;min-height:var(--tap);min-width:var(--tap)}
@@ -1720,7 +1720,6 @@ button.pp2-plate{cursor:pointer;width:100%}
  .tr-card{padding:var(--s4) var(--s4) var(--s4) var(--s6)}.tr-ct .tr-who{text-align:left}.tr-mid{grid-template-columns:minmax(0,1fr)}.tr-six{grid-template-columns:repeat(3,minmax(0,1fr))}
  .tr-btns .np-btn{width:100%}}
 .tr-how{max-width:72ch}.tr-how summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3);cursor:pointer;padding:var(--s2) 0}.tr-how summary .u{font-size:var(--t17);color:var(--plot-text)}.tr-how summary small{font:400 var(--t13)/1.4 var(--b);color:var(--ink-2)}.tr-how p{margin:var(--s2) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
-.tr-more{display:grid;justify-items:start;gap:var(--s1);width:100%;padding:var(--s4) var(--s6);text-align:left;background:var(--wash);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}.tr-more b{font-size:var(--t17);color:var(--plot-text)}.tr-more span{font:400 var(--t13)/1.4 var(--b);color:var(--ink-2)}
 .tr-foot{display:flex;align-items:center;gap:var(--s2)}
 /* Test Run checks (Nov 14): long button words wrap at 320 (the card ran 27px past the screen); folds are full tap height; the cards sit a little tighter so three fit the desktop height limit */
 .tr-list>*,.tr-mid>*{min-width:0}.tr .np-btn,.tr .np-btn2{max-width:100%}.tr .np-btn span,.tr .np-btn2 span{white-space:normal;text-align:center}
@@ -1759,9 +1758,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ra-right{display:grid;gap:var(--s4);align-content:start;min-width:0}
 .ra-find{display:flex;align-items:center;gap:var(--s4)}.ra-q{flex:1;min-width:0}.ra-count{flex:none;margin:0;font:600 var(--t15)/1 var(--b);color:var(--ink-2)}.ra-count b{font-size:var(--t24);color:var(--ink)}
 .ra-filt,.ra-bytier{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2)}.ra-fl{font:600 var(--t13)/1 var(--b);color:var(--ink-2);margin-right:var(--s2)}
-.ra-chip{display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--tap);padding:0 var(--s4);font:600 var(--t15)/1 var(--b);color:var(--ink);background:var(--wash);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
-.ra-chip small{font-size:var(--t13);color:var(--ink-2)}.ra-chip[aria-pressed="true"]{background:var(--plate);color:var(--on-plate)}.ra-chip[aria-pressed="true"] small{color:inherit}
-.ra-clear{min-height:var(--tap);padding:0 var(--s2)}
+/* Wave 2 part 2 (Nov 23): Ratings' chips are the kit filter chip (kit.css .k-chip); .ra-chip's rules went with them */
 .ra-types{display:grid;grid-template-columns:repeat(auto-fill,minmax(96px,1fr));gap:var(--s2)}
 .ra-types .tc-tp.on{background:var(--tc);border-color:var(--tc);color:var(--on-type)}
 /* the list */
@@ -1780,8 +1777,8 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ra-ut{font:600 var(--t17)/1 var(--b);text-align:right}
 .ra-wr{display:grid;justify-items:end;gap:var(--s1)}.ra-wr b{font:600 var(--t17)/1 var(--b)}.ra-wr small{font:400 var(--t13)/1 var(--b);color:var(--ink-2)}
 .ra-seeall{justify-self:start;margin-top:var(--s5)}.ra-bh{margin:var(--s5) 0 0;font-size:var(--t24)}
-.ra-more{justify-self:start;min-height:var(--tap);padding:0 var(--s4);font:700 var(--t15)/1 var(--b);color:var(--plot-text)}
-.ra-legend{margin:0}.ra-none{margin:var(--s4) 0}
+/* .ra-more: the kit show-more since Wave 2 (Nov 23); only its place here */.ra-more{padding:0 var(--s4)}
+.ra-legend{margin:0}.ra-none{margin:var(--s4) var(--s1)}
 .ra-about{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}.ra-about summary{display:flex;align-items:center;justify-content:space-between;gap:var(--s4);min-height:var(--tap);padding:var(--s4) 0;cursor:pointer;list-style:none}
 .ra-about summary::-webkit-details-marker{display:none}.ra-about summary span{display:grid;gap:var(--s1)}.ra-about summary b{font:700 var(--t17)/1.2 var(--b)}.ra-about summary small{font:400 var(--t13)/1.4 var(--b);color:var(--ink-2)}.ra-about summary i{font:700 var(--t20)/1 var(--b);font-style:normal;color:var(--ink-2)}
 .ra-about[open] summary i{rotate:45deg}
@@ -2047,6 +2044,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .gs-main{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s2);align-content:start;min-width:0}
 .gs-wd{display:flex;justify-content:space-between;align-items:center;gap:var(--s3);margin:0;min-height:var(--tap);font:700 var(--t13)/1.4 var(--b);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}
 .gs-wd .np-link{flex:none;display:inline-flex;align-items:center;min-height:var(--tap);text-transform:none;letter-spacing:0;font-size:var(--t15)}
+/* Wave 2 (Nov 23): the tier's show-more is the kit's V2.kMore on this line; its dashed line runs to the end of the row */.gs-wd .k-more{flex:1 1 auto;width:auto;text-transform:none;letter-spacing:0}
 .gs-row{position:relative;display:flex;justify-content:center}
 .gs-row::before{content:'';position:absolute;left:0;right:0;top:calc(var(--gsw) - var(--s2));height:var(--s3);background:color-mix(in srgb,var(--ink) 7%,transparent);border-bottom:4px solid var(--tc);clip-path:polygon(var(--s3) 0,100% 0,calc(100% - var(--s3)) 100%,0 100%)}
 .gs-mon{position:relative;flex:0 0 calc(100% / var(--c));min-width:0;display:grid;justify-items:center;align-content:start;padding:0 2px var(--s2);background:none;border:0;color:inherit;font:inherit;text-align:center;cursor:pointer}
@@ -2150,7 +2148,7 @@ button.pp2-plate{cursor:pointer;width:100%}
    button. Tablet and desktop: every bar, teammate and the line, no button (usage.js puts us-x on what phones fold away) */
 .us-more{display:none}
 @media (max-width:699.98px){.us-how .us-bars:not(.on)>.us-x,.us-mates:not(.on)>.us-x,.us-also:not(.on){display:none}
-  .us-more{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);justify-self:center}
+  .us-more{display:flex} /* Wave 2: the kit show-more (kit.css .k-more), shown on phones only */
   .us-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4)}.us-groups>:not(.us-half){grid-column:1/-1}}
 @media (max-width:559.98px){.gs-ctl .us-srcs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.gs-ctl .us-srcs>*{white-space:normal;line-height:1.2;padding:var(--s1) var(--s2);text-align:center}}
 @media (max-width:559.98px){.us-sp{display:block;height:0;overflow:hidden}}@media (max-width:359.98px){.gs-ctl .us-srcs>*{font-size:var(--t13)}}
@@ -2264,7 +2262,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:519.98px){.us-ax i.us-odd:not(:last-child){display:none}}
 @media (max-width:359.98px){.us-mvs .k-moves{grid-template-columns:minmax(0,1fr)}.us-srcs .k-w{font-size:var(--t13);padding:0 var(--s1)}.us .us-facts b{font-size:var(--t20)}.us-ln .us-rk{min-width:32px}}
 /* ---------- Meta > Sets (Grandstand brief, section 5) ---------- */
-.st-find{display:grid;gap:var(--s2)}.st-hits{display:flex;flex-wrap:wrap;gap:var(--s1)}
+.st-find{display:grid;gap:var(--s2)}.st-hits{display:flex;flex-wrap:wrap;gap:var(--s2)} /* Wave 2 part 2: kit chips need 8px between their slanted outlines */
 .st-h2{margin:0;font:900 var(--t24)/1.1 var(--u);font-style:italic}.st-team{display:grid;gap:var(--s2)}.st-six{--gsw:80px}
 .st .gs-mon.on .gs-tx b{color:var(--plot-text)}.st .gs-mon.on .np-mon{transform:translateY(calc(var(--s1)*-1))}.st .gs-mon.on .gs-base{box-shadow:0 0 0 2px var(--plot)}
 .st-mine{margin:0;padding-left:var(--s3);border-left:4px solid var(--plot);font:500 var(--t15)/1.5 var(--b)}
@@ -2566,7 +2564,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .wt-sug{position:absolute;z-index:20;left:0;right:0;top:calc(100% + var(--s1));display:grid;padding:var(--s1);background:var(--surface);box-shadow:0 8px 24px var(--scrim)}
 .wt-opt{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:center;gap:var(--s3);min-height:44px;padding:0 var(--s3);background:none;border:0;color:inherit;font:600 var(--t15)/1.3 var(--b);text-align:left;cursor:pointer}
 .wt-opt:hover,.wt-opt[aria-selected="true"]{background:var(--wash)}.wt-opt small{font-weight:500;color:var(--ink-2)}
-.wt-chipsrow{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);flex-basis:100%}.wt-f i{font-style:normal;color:var(--ink-2)}.wt-f button{margin-left:var(--s1);background:none;border:0;color:inherit;font:inherit;cursor:pointer}
+.wt-chipsrow{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);flex-basis:100%}.wt-f{cursor:default}.wt-f i{font-style:normal;color:inherit;opacity:.85} /* Wave 2 part 2: a chosen filter is a filled kit chip, so its kind word takes the chip's colour */.wt-f button{margin-left:var(--s1);background:none;border:0;color:inherit;font:inherit;cursor:pointer}
 .wt-src{margin:0}
 /* rows: every team after the third, and search results */
 .wt-more-s{display:grid;justify-items:center;gap:var(--s4);margin-top:var(--s8)}.wt-mh{justify-self:start;margin:0;font-size:var(--t26)}
@@ -2611,7 +2609,6 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:699.98px){.wt .wt-fan:not(.wt-mini) .wt-card .mc-id h3{font:700 var(--t13)/1.2 var(--b);font-style:normal}}
 @media (max-width:699.98px){.wt-hh h3{font-size:var(--t20)}} /* audit v199 #3: Winning Teams no longer shrinks the shared Tournaments tab bar (it now matches Events, Archetypes, This Week) */
 @media (max-width:699.98px){.wt .ra-seg,.ev .ra-seg,.ar .ra-seg{grid-template-columns:auto auto auto}}
-.wt-open{max-width:100%;white-space:normal;text-align:center}.wt-open span{white-space:normal}
 .wt-two>.wt-hand{min-width:0}
 .wt-hand{grid-template-columns:minmax(0,1fr)}.wt-hand>.wt-fan{justify-self:stretch}
 .wt-fan>.wt-card:first-child{margin-left:0}.wt-fan>.wt-card:last-child{margin-right:0}
@@ -2742,7 +2739,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .dr-sus .k-roster{padding-top:48px}
 .dr-sus .k-sc{margin-bottom:4px}
 .dr-also{margin:24px 0 0;font-size:var(--t13);font-weight:600;line-height:1.5;color:var(--k-ink2)}
-.dr-none{margin:0;font-size:var(--t17);line-height:1.5}
+.dr-none{margin:0 var(--s1)} /* Wave 2 part 4: the kit empty line */
 /* step 2: the piles, and the open team beside them on wide screens */
 .dr-board{display:grid;grid-template-columns:minmax(0,1fr);gap:40px;align-items:start}
 .dr-board.two{grid-template-columns:minmax(0,1fr) minmax(0,440px)}
@@ -2881,7 +2878,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ev-what summary{min-height:var(--tap);display:flex;align-items:center;cursor:pointer;font:600 var(--t15)/1.5 var(--b);color:var(--plot-text)}
 .ev-what p{margin:0 0 var(--s2);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .ev-ph{margin:var(--s2) 0 0;font:900 var(--t22)/1.2 var(--u);font-style:italic}
-.ev-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.ev-none{margin:0 var(--s1)} /* Wave 2 part 4: the kit empty line */
 .ev-cal{list-style:none;margin:0;padding:0;display:grid;width:100%}
 .ev-cal li+li{border-top:1px solid var(--rule)}
 .ev-crow{display:grid;grid-template-columns:auto minmax(0,1fr) auto;align-items:center;gap:var(--s3);min-height:var(--tap);padding:var(--s2) 0;color:inherit;text-decoration:none}
@@ -2895,7 +2892,6 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ev-wh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s2) var(--s6)}
 .ev-wh h2{margin:0;font:900 var(--t34)/1.2 var(--u);font-style:italic}@media (max-width:429.98px){.ev-wh h2{font-size:var(--t28)}}.ev-wh p{margin:0;max-width:60ch;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .ev-f{display:flex;flex-wrap:wrap;gap:var(--s2)}.ev-fc{display:inline-flex;align-items:baseline;gap:var(--s2)}.ev-f small{font:500 var(--t13)/1.5 var(--b);opacity:.8}
-.ev-more{justify-self:center}
 
 /* the ticket */
 .tk{--tk-tilt:0deg;position:relative;display:grid;grid-template-columns:auto minmax(0,1fr) auto;grid-template-areas:"h m s" "h f s";align-items:center;width:100%;min-width:0;margin:var(--s6) 0 0;padding:0 0 0 var(--s4);border:0;border-radius:var(--r-s);text-align:left;font:inherit;color:var(--on-type);cursor:pointer;
@@ -3074,7 +3070,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ar-has li:first-child{border-top:0}
 .ar-has li div{display:grid}.ar-has li b{font:700 var(--t16)/1.4 var(--b)}.ar-has li small{font:400 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
 .ar-ok{font:900 var(--t20)/1 var(--b);font-style:normal;color:var(--good-text)}
-.ar-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--k-ink2)}
+.ar-none{margin:0 var(--s1)} /* Wave 2 part 4: the kit empty line */
 .ar-oth h3{margin:0 0 var(--s3);font:900 var(--t22)/1.3 var(--u);font-style:italic}
 .ar-oth ul{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:var(--s2);margin:0;padding:0;list-style:none}
 .ar-mini{position:relative;isolation:isolate;display:grid;align-content:end;width:100%;min-height:80px;margin:0;padding:var(--s2) var(--s3) var(--s2) var(--s4);border:0;background:none;color:var(--on-type);font:inherit;text-align:left;text-shadow:0 1px 2px var(--wx-dk);cursor:pointer}
@@ -3114,7 +3110,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .wk-cn{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s5);margin:0;font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .wk-cl{min-width:7.5em;font-weight:700;color:var(--ink)}.wk-cn b{font:900 var(--t22)/1.2 var(--u);font-style:italic;color:var(--ink)}
 .wk h2{margin:0 0 var(--s4)}.wk h2:not(.k-h2){font:900 var(--t34)/1.2 var(--u);font-style:italic}
-.wk-cap{margin:var(--s3) 0 0}.wk-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.wk-cap{margin:var(--s3) 0 0}.wk-none{margin:0 var(--s1)} /* Wave 2 part 4: the kit empty line (the leads 'k-lead wk-none' / 'k-lead ar-none' keep their old look: they are page leads, not empty slots) */.k-lead.wk-none,.k-lead.ar-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.k-lead.ar-none{color:var(--k-ink2)}
 .wk-sides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s8)}
 .wk-side{display:grid;gap:var(--s4);align-content:start}
 .wk-st{justify-self:start;margin:0;padding:var(--s1) var(--s4);color:var(--on-mark);font:900 var(--t17)/1.5 var(--u);font-style:italic;transform:skewX(-10deg)}
@@ -3218,7 +3214,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .trk-slip:focus-visible{outline:3px solid var(--plot);outline-offset:3px}
 .trk-slips>li{container-type:inline-size}
 @container (max-width:299.98px){.trk-sr{padding-inline:var(--s1)}.trk-sr small{letter-spacing:.03em}.trk-st{padding-inline:var(--s1) var(--s2)}} /* 320-wide phones: 'Charizard Y' stays whole */ /* Nov 15 (re-audit #6): in the text column's flow, under the words */
-.trk-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.trk-none{margin:0 var(--s1)} /* Wave 2 part 4: the kit empty line */
 /* how we check */
 .trk-how h2{margin-bottom:var(--s4)}
 .trk-flow{list-style:none;margin:0 0 var(--s3);padding:0;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s6)}
@@ -3256,7 +3252,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .trk2 .trk-slip .k-tier{text-transform:none}
 .trk2 .trk-calls>.fine{margin:var(--s4) 0 0}
 .trk2 .trk-flow{margin-top:0}
-.trk2 .trk-wk{margin-top:var(--s4)}.trk2 .trk-wk h2{font-size:var(--t24)}
+.trk2 .trk-wk{margin-top:var(--s4)}.trk2 .trk-wk:has(>.k-none){margin-top:0} /* Wave 2 part 4: the empty slot is 16px taller than the old line; the page stays its length */.trk2 .trk-wk h2{font-size:var(--t24)}
 .trk2 .trk-evs,.trk2 .trk-next,.trk2 .trk-links{margin-top:var(--s5)}
 @media (max-width:1099.98px){.trk-r1{grid-template-columns:minmax(0,1fr)}.trk2 .trk-cols{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699.98px){.trk2 .trk-stats b{font-size:var(--t22)}.trk-big{font-size:var(--t22);white-space:nowrap}.trk-sl{display:none}.trk-say2{gap:var(--s2)}.trk2 .trk-slips{gap:var(--s10) var(--s2);padding-top:var(--s10)}.trk2 .trk-slips .k-fact{display:block}.trk2 .trk-slips .k-tag{display:none}.trk2 .trk-slips .k-sc{margin-bottom:var(--s2)}.trk2 .trk-gh{position:static;display:flex;align-items:center;gap:var(--s3);width:auto;height:auto;margin:0 0 var(--s2);overflow:visible;clip:auto}.trk2 .trk-gh .k-tag{display:inline-block}.trk2 .trk-slips>li{grid-template-rows:auto}}
@@ -3307,7 +3303,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .wk-evall,.wk-tmore{display:none}
 @media (max-width:699.98px){.wk{gap:var(--s6)}.wk>.np-eyebrow{margin-bottom:calc(var(--s4)*-1)}.wk-hl{margin-top:var(--s6)}.wk-tix .tk{margin-top:var(--s4)}.wk-top{padding:var(--s3) 0}
   .wk-tix>:nth-child(n+2),.wk-tech ul:not(.on)>li:nth-child(n+3){display:none}
-  .wk-evall,.wk-tmore{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}}
+  .wk-evall{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}.wk-tmore{display:flex;margin-top:var(--s2)} /* Wave 2: wk-tmore is the kit show-more */}
 .wk-fold summary::after{content:"›";margin-left:var(--s2);font-weight:700;transition:rotate var(--dur-2)}.wk-fold[open] summary::after{rotate:90deg}
 /* Track Record: the receipt's shadow comes from its column (the torn-edge mask cut a box-shadow away, so the white paper barely showed on
    the light page); the receipt runs level with the right column; Total clear of the verdict; the slips one height; stamps clear of words */
@@ -3324,7 +3320,7 @@ button.pp2-plate{cursor:pointer;width:100%}
    down here so each hand fits its width. The rows' links (Sets, Set as Opponent, Compare, Show Fewer) keep their look with a 44px tap area */
 @media (min-width:1100px) and (max-width:1279.98px){.wt .wt-card{--cw:160px;--ch:224px}.wt .wt-card .mc-mon .np-mon,.wt .wt-card .mc-mon .np-mon .st{--iw:120px}
   .wt .wt-two .wt-card{--cw:76px;--ch:108px;--ov:2px}.wt .wt-two .wt-card .mc-mon .np-mon,.wt .wt-two .wt-card .mc-mon .np-mon .st{--iw:68px}.wt .wt-two .wt-card .mc-id h3{font-size:var(--t13)}}
-.wt-acts .np-link,[data-wtless],[data-evsets]{position:relative}.wt-acts .np-link::after,[data-wtless]::after,[data-evsets]::after{content:"";position:absolute;inset:-12px -8px}
+.wt-acts .np-link,[data-wtless]:not(.k-more),[data-evsets]{position:relative}.wt-acts .np-link::after,[data-wtless]:not(.k-more)::after,[data-evsets]::after{content:"";position:absolute;inset:-12px -8px} /* not the kit show-more: its ::after is its dashed line */
 @media (max-width:359.98px){.wt .ra-seg a,.ev .ra-seg a,.ar .ra-seg a,.wk .ra-seg a{font-size:var(--t13);padding:0 var(--s1)}}
 @media (min-width:1100px){.mh-gh span{white-space:nowrap}.mh-hand{grid-template-rows:auto auto;row-gap:0}.mh-hand .mh-grp{display:grid;grid-row:span 2;grid-template-rows:subgrid;align-content:start}.mh-gh{align-self:end}} /* audit Nov 15: the three headers share one row (subgrid), so Lead, Back and Bench Cards start level */ /* 'stay out this game' on one line, so the three headers are one height */
 /* re-check Nov 15, This Week at 320: the label on its own line, the two counts under it (they ran into each other); a change note may wrap */
@@ -3530,7 +3526,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:699.98px){.bt-sixrow{grid-template-columns:repeat(3,minmax(0,1fr))}}
 @media (min-width:1100px){.bt-sixrow .np-mon,.bt-sixrow .np-mon .st{--iw:112px}} /* Sim Q3 (Nov 16): bigger sprites fill the wide Your Six tiles */
 /* touch (Nov 16 helper sweep): 44 px tap area for the two small text links left, the line unmoved */.bt-sub .np-link,.nprow .np-link{position:relative}.bt-sub .np-link::after,.nprow .np-link::after{content:"";position:absolute;inset:-12px -4px}
-/* one system (Nov 16): "show more" is the blue link everywhere, 44px tap, centred under its list */.ev-more,.us-rest,.wt-more,.wt-open{min-height:var(--tap);display:inline-flex;align-items:center;justify-content:center}
+/* one system (Nov 16): "show more" is the blue link everywhere, 44px tap, centred under its list */.us-rest{min-height:var(--tap);display:inline-flex;align-items:center;justify-content:center} /* Wave 2 (Nov 23): .ev-more, .wt-more and .wt-open are the kit show-more (kit.css .k-more) */
 /* How We Calculate (audit Nov 16): the sources and team-check lists come from the shared method text (today's site styles them); here they
    had no styles, so each row's parts ran together ("replaysThe newest…"). Each row: the name, its description, then "Used for" and the
    numbers in the small line; rows split by the thin rule, no boxes; text kept to a readable line length */
@@ -3590,7 +3586,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .tc>.tc-h,.tc-h>.k-head,.tc-h h1{min-width:0} /* the page grid sized its column to the headline (350px at 320): the headline may now shrink, so it wraps within the screen */
 /* Sim Q45 A (Nov 19, 8:33 PM): Test Run on phones shows the Coin Flips pile's first 5 cards and a button for the rest; 700 and up: every card */
 .tp-morebtn{display:none}
-@media (max-width:699.98px){.tp-cards:not(.on)>.tp-more{display:none}.tp-morebtn{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}}
+@media (max-width:699.98px){.tp-cards:not(.on)>.tp-more{display:none}.tp-morebtn{display:flex;margin-top:var(--s2)} /* Wave 2: the kit show-more */}
 /* Sim Q44 A (Nov 19, 8:33 PM): How We Calculate on phones 360-599 (one column of tiles there): each part's big number sits beside its words (the ten tiles were
    number, then words, stacked); the outline number keeps its size and the titles keep the full width. Under 360 and 600 up unchanged */
 @media (min-width:360px) and (max-width:599.98px){
@@ -3635,7 +3631,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 /* ---------- The Pokémon page, "The file on <name>." (reskin on the shared kit; Sim approved HH's mock-up, Nov 21, 2:55 PM:
    docs/rebuild/mocks/pokemon-file/index.html; brief docs/rebuild/reskin/27-pokemon.md). Kit tokens only (--k-*, type scale, 4px grid) ---------- */
 .pk-trail{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s2);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.pk-trail a{display:inline-flex;align-items:center;min-height:var(--tap);padding:0 var(--s2);margin:0 calc(var(--s2)*-1);color:var(--plot-text);text-decoration:none}
-.pk-404{display:flex;width:max-content;margin-top:var(--s4)} /* scan S3 A (Sim, Nov 20): the outline button on its own line */
+/* .pk-404 (scan S3 A, Nov 20: the outline button on its own line) is the kit k-go since Wave 2 part 5 (Nov 23): its own rules went */
 .pk-tap{position:relative}.pk-tap::after{content:"";position:absolute;inset:-12px -8px} /* 44 px tap area, the line unmoved */
 .pkf{display:block;min-width:0}
 .pkf .k-kicker{margin-top:var(--s4)}
@@ -4047,7 +4043,8 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .wt2-rh h3{margin:0;font-size:var(--t22);line-height:1.15;text-wrap:balance}
 .wt2 .wt-names{text-wrap:pretty}
 .wt2-ev{margin:0;font:500 var(--t15)/1.4 var(--b);color:var(--k-ink2)}
-.wt2 .k-sec .wt-open{margin-left:auto}
+.wt2 .k-sec .wt-open{flex:1 1 auto;width:auto} /* Wave 2: the kit show-more fills the rest of the step's title line */
+.wt-mbtns .k-more{flex:1 1 auto;width:auto}.wt-less{display:inline-flex;align-items:center;min-height:var(--tap);border:0;background:none;padding:0;font-family:var(--b);cursor:pointer}
 .wt2-lone{margin:var(--s4) 0 0}
 .wt2 .k-plan{padding-bottom:var(--s8)} /* desktop length (Nov 22): no taller than the page before its reskin (1922 px at 1440) */
 .wt2-rows{display:grid}
@@ -4078,7 +4075,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .wt2-rh{grid-template-columns:minmax(0,1fr);justify-items:start}.wt2-rh .np-btn2{margin-left:0}
   .wt2-row{grid-template-columns:32px minmax(0,1fr)}
   .wt2-row .wt2-rt{grid-template-columns:minmax(0,1fr)}.wt2-row .wt2-rt>.wt2-six{grid-column:1;grid-row:auto;margin:var(--s1) 0}
-  .wt2 .k-sec .wt-open{margin-left:0}
+  .wt2 .k-sec .wt-open{margin-left:0;flex-basis:100%}
 }
 .wt2 .wt-sure{display:flex;flex-wrap:wrap;align-items:center;justify-content:flex-start;gap:var(--s3) var(--s4)}
 
@@ -4267,7 +4264,6 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .ev2-name{font-size:var(--t17);line-height:1.3;color:var(--k-ink);overflow-wrap:normal;hyphens:none;text-wrap:balance}
 .ev2-six{display:flex;flex-wrap:nowrap;gap:var(--s1);margin-top:var(--s1);min-width:0}
 .ev2-six .np-mon{--iw:40px}
-.ev2 .ev-more{justify-self:start;margin:0}
 @media (min-width:800px) and (max-width:1099.98px){
   .ev2-wall{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ev2-wall>.ev2-tk,.ev2-wall.m3-2>.ev2-tk:nth-last-child(-n+2),.ev2-wall.m3-1>.ev2-tk:last-child{grid-column:auto}

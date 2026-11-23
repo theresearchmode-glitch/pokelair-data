@@ -14,7 +14,8 @@ const open = async (W, th, phone) => { const c = await b.newContext({viewport: {
   const p = await c.newPage(); await p.addInitScript(() => { window.__PL_TEST = 1; });
   const errs = []; p.on('pageerror', e => errs.push(e.message)); await p.goto('file://' + PAGE + '#events', {timeout: 90000}); await p.waitForTimeout(4000); return [p, errs, c]; };
 const wall = p => p.evaluate(() => { const m = document.querySelector('#main .ev-more'), t = m ? (m.textContent || '').replace(/\s+/g, ' ').trim() : '';
-  return {big: document.querySelectorAll('#main .ev2-latest').length, small: document.querySelectorAll('#main .ev2-wall > .ev2-tk').length, more: t, left: +((t.match(/· (\d+) left/) || [])[1] || 0)}; });
+// Wave 2 (Nov 23): the show-more is the kit's V2.kMore now; its label reads "Show N more" (was "Show More · N left"), so the count is read from the new words. Same check.
+  return {big: document.querySelectorAll('#main .ev2-latest').length, small: document.querySelectorAll('#main .ev2-wall > .ev2-tk').length, more: t, left: +((t.match(/Show (\d+) more/) || [])[1] || 0)}; });
 const count = (p, k) => p.evaluate(k => window.__ev(`(ev => ${k === 'official' ? "ev.filter(e => e.src === 'official')" : k === 'big' ? 'ev.filter(e => e.players >= 100)' : 'ev'}.length)(META.events.events)`), k);
 const tap = async (p, sel) => { await p.click(sel); await p.waitForTimeout(700); };
 // the words themselves (a Range), not the name's box. Known before Q31, not part of it: under 360 an official ticket's one-line
@@ -33,7 +34,7 @@ for (const th of ['light', 'dark']) {
   // phones: 1 big + 6, Show More adds 12, filters keep working and reset Show More
   for (const W of [320, 390, 699]) { const [p, errs, c] = await open(W, th, true), all = await count(p, 'all');
     let x = await wall(p); ok(x.big === 1 && x.small === 6, `${th} ${W}: 1 big + 6 small tickets on first load (${x.big} + ${x.small})`);
-    ok(x.left === all - 7 && /^Show More · \d+ left/.test(x.more), `${th} ${W}: "${x.more}" says ${all - 7} left (of ${all})`);
+    ok(x.left === all - 7 && /^Show \d+ more$/ /* Wave 2: the kit label (was "Show More · N left") */.test(x.more), `${th} ${W}: "${x.more}" says ${all - 7} left (of ${all})`);
     await tap(p, '#main [data-evmore]'); x = await wall(p); ok(x.small === 18 && x.left === all - 19, `${th} ${W}: Show More adds 12 (${x.small} small, ${x.left} left)`);
     let bx = await boxes(p); note(bx, `${th} ${W} after Show More`); ok(!bx.bad.length && !bx.side, `${th} ${W}: after Show More nothing out of its box, nothing sideways (${bx.bad.slice(0, 3).join('; ') || 'clean'}${bx.side ? ', scrolls sideways' : ''})`);
     const gap = await p.evaluate(() => Math.round(parseFloat(getComputedStyle(document.querySelector('#main .ev2-wall')).rowGap)) + '/' + Math.round(parseFloat(getComputedStyle(document.querySelector('#main .ev-wall')).rowGap)));
