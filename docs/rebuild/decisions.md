@@ -2234,3 +2234,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:51 AM: Pushed batch with My Box 'The PC' (design branch, not live) for GitHub's full check.
 - 10:52 AM: Helper hQ started (HH's call under design authority; output is options for Sim, nothing merges without his pick): Pokémon page desktop length options (4.85 screens at 1440, cap 4), 2-3 options built on branch hq-pklen with pictures + lengths.
 - 10:52 AM: hQ worktree is scratchpad/hq2 (scratchpad/hq was an old scratch folder; corrected before hQ started work).
+- 11:11 AM: A-team in WebKit on 2c2cece4 (with My Box The PC): 139 pass 0 FAIL (BOX-01..07 pass in the Safari engine).
