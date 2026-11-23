@@ -2200,3 +2200,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:56 AM: Fixes for GitHub 1485 checked locally: v2-q33 all passed; minors main2 only the known ticker flake (Stampede motion 3, 2560), hero 3b passes. Pushing batch (fixes + hI merge + box package + logs).
 - 7:58 AM: My Box: 'before' baseline measured (frozen data, 900-tall windows: 390 2402, 820 2038, 1024 1987, 1280 1858, 1440 1440 px) and pictures in scratchpad/boxbefore. Build brief written: docs/rebuild/reskin/mybox-pc-brief.md (all functions kept, 13px floor, on-your-team card state, 3 layouts).
 - 8:11 AM: B-build in WebKit on HEAD (hI sweep): 77 pass 0 FAIL.
+- 8:18 AM: Phone polish every 20px 320-700 (25 pages, after hI): spills only Calc 'set estimate' title at 320-360 (hJ's spot A covers the Calc set cards), Speed Tiers 360 one row ('203 Mega Garchomp Z'), My Team 700 score slant (known). No sideways scroll anywhere.
