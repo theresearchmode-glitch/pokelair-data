@@ -1,8 +1,8 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 4:06 PM (4:06:27)  date: Mon Nov 23, 2026
-NOW: HH (design + executive authority to 9 AM Tue): A-team on HEAD (HOME-09 fix, padlock fix). Helper: hZ (phone lengths at 390).
-NEXT: Sim's pick A/B for the Home tools (Calc hero, white cards with coloured ground) -> build it for real (1100+), under the 4-screen cap
-NEXT: Battle opens on the Damage Calc tab (Sim, 4:0x PM): find why and fix
-NEXT: GitHub run on the latest push; Preview refresh after
-NEXT: other account: alt/len1280 and alt/fullcheck -> review when pushed
+Updated: time: 4:31 PM (4:31:10)  date: Mon Nov 23, 2026
+NOW: HH (design + executive authority to 9 AM Tue): Home tools A full checks on home-tools (A-team running; qcheck 16 'new' at 1100 to review). Helpers: hZ (phone lengths at 390), hW2 (Speed Tiers controls options; 2 helpers on Sim's ask until hZ ends).
+NEXT: review qcheck 'new' at 1100 (1100 isn't in the known list's widths?), fix, merge home-tools, pictures day+night to Sim, push after GitHub 1501
+NEXT: My Team 900-1099 fix committed (f62e2493): qcheck team running; push with the batch
+NEXT: hW2's Speed Tiers options -> pictures to Sim
+NEXT: other account alt/len1280, alt/fullcheck -> review
 NEXT: 9 AM Tue summary (reminder 8:30 AM)
