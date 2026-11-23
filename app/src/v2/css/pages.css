@@ -4413,3 +4413,19 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .trk-tot{padding-right:var(--s4)}.trk-tot b{padding-right:0}
 /* Pokémon page length (hQ, Nov 23): the line that replaced the full Moves and Items lists, inside the set card */
 .pk-also{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s5);margin:var(--s3) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--k-ink2)}.pk-also b{font-weight:700;color:var(--k-ink)}
+/* option B (hQ, Nov 23): the rap sheet's switch. One part at a time on every screen size; each part lays out its own pieces */
+.pk-sw{display:flex;flex-wrap:wrap;gap:var(--s2);margin:0 0 var(--s6)}
+.pk-rap.pk-rapsw{display:block}
+.pk-pane[hidden]{display:none}
+.pk-rap.pk-rapsw .pk-more,.pk-rap.pk-rapsw .pk-wbars small{display:revert}
+.pk-pst{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'st sp' 'ab sp';grid-template-rows:auto 1fr;gap:0 var(--s12)}
+.pk-pwh{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,2fr);grid-template-areas:'wh da';gap:0 var(--s10)}
+.pk-pwh .pk-why{margin-top:0}.pk-pwh .pk-data{margin-top:0}.pkf .pk-pwh .pk-slips{grid-template-columns:repeat(3,minmax(0,1fr))}
+.pk-pft .pk-fts{margin-top:0}
+@media (max-width:1099.98px){.pk-pwh{grid-template-columns:minmax(0,1fr);grid-template-areas:'wh' 'da'}.pk-pwh .pk-data{margin-top:var(--s8)}.pkf .pk-pwh .pk-slips{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:699.98px){.pk-pst{grid-template-columns:minmax(0,1fr);grid-template-areas:'st' 'ab' 'sp'}.pk-sw{margin-bottom:var(--s4)}.pk-sw .k-chip{flex:1 1 auto}}
+/* option B: in "Why it rates N" the chip names the part, so its own small head is for screen readers only; from 1100 the other tier
+   lists take the free sixth place beside the five data slips */
+.pk-pwh .pk-why>.pk-lbl:first-child{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+@media (min-width:1100px){.pk-rapsw .pk-pwh .pk-data{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3) var(--s6);align-content:start}.pk-pwh .pk-data>h3{grid-column:1/-1;margin:0}
+  .pkf .pk-pwh .pk-slips{display:contents}.pk-pwh .pk-oth .pk-oh{margin-top:0}.pk-pwh .pk-oth .ms-out{grid-template-columns:minmax(0,1fr)}}

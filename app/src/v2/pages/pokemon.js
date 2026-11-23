@@ -108,7 +108,7 @@ V2.pkWhy = p => { const E = V2.esc, r = rating(p), rs = RS(r.total), B = V2.bars
   const outs = O ? `<h4 class="pk-lbl u pk-oh">Other tier lists</h4><div class="ms-out pk-out">${O.lists.map(L => { const v = O.data[L.k] && O.data[L.k][p.n]; return `<a href="${E(L.url)}" target="_blank" rel="noopener"><b>${v ? E(L.tiers[v]) : '–'}</b><span>${E(L.name)}<small>${v ? E(L.how) : 'not listed · ' + E(L.note)} · ${E(perfDateText(L.date))}</small></span></a>`; }).join('')}</div><p class="fine">Shown for comparison, not counted in the score.</p>` : '';
   return `<div class="pk-why"><h3 class="pk-lbl u" id="pk-s6">Why it rates ${rs}</h3>${B.length ? `<ul class="pk-wbars">${bars}</ul><p class="fine">Each bar ranks it against the ${of} Pokémon with tournament results: 94 means better than 94% of them.${r.band >= 10 ? ' Few games so far, so treat it as an estimate.' : ''}</p>`
     : `<p class="fine">No tournament results yet, so this is a rough placeholder from its stats, typing and tools (never above ${RS(30)}). It moves up once it shows up at events.</p>`}${honest}</div>
-    <div class="pk-data pk-more" id="pk-more"><h3 class="pk-lbl u">What the data says</h3>${slips}${outs}<p class="pk-links">${V2.kLink('Track Record', {href: '#track'})}${V2.FB && V2.FB.ok ? V2.kLink('Report a Mistake', {href: '#feedback', 'data-fbmistake': 'pokemon'}) : ''}</p></div>`; }; /* Report a Mistake: the feedback note records this Pokémon */
+    <div class="pk-data pk-more" id="pk-more"><h3 class="pk-lbl u">What the data says</h3>${slips}<div class="pk-oth">${outs}<p class="pk-links">${V2.kLink('Track Record', {href: '#track'})}${V2.FB && V2.FB.ok ? V2.kLink('Report a Mistake', {href: '#feedback', 'data-fbmistake': 'pokemon'}) : ''}</p></div></div>`; }; /* Report a Mistake: the feedback note records this Pokémon */
 // Forms (Sim, Nov 15: A): a strip to jump between forms, and "Forms side by side" as a table
 V2.pkForms = p => { const E = V2.esc, forms = ROSTER.filter(q => q.b === p.b); if (forms.length < 2) return {strip: '', table: ''};
   const fc = forms.length <= 3 ? forms.length : forms.length % 3 === 0 ? 3 : forms.length % 2 === 0 ? 2 : 3; /* audit #18 (Nov 17): 700-1099 even tiles, full rows (4 as 2 + 2, 6 as 3 + 3) */
@@ -124,10 +124,16 @@ V2.pkForms = p => { const E = V2.esc, forms = ROSTER.filter(q => q.b === p.b); i
     <p class="fine">On teams, win rate and rating: tournament teams. Base stats: game data.</p></div>`;
   return {strip, table}; };
 V2.pkStep = (n, id, title, note, body, link) => V2.kStep(n, title, note, body, link ? {link} : {}).replace('<h2 class="k-h2 u">', `<h2 class="k-h2 u" id="${id}">`);
-// phones (to stay no longer than today's page): the evidence behind the rating (what the data says, other tier lists, each bar's note,
-// the Speed fine print, Forms side by side) sits behind one "The full file ›" tap, as the full move and item lists do; desktop shows it all
-V2.pkRap = p => { const open = V2.pkOpen('pk-more'); return V2.pkStep(1, 'pk-s1', 'The rap sheet.', `stats, speed, and why it rates ${RS(rating(p).total)}`,
-  `<div class="pk-rap${open ? ' open' : ''}">${V2.pkStats(p)}${V2.pkSpeed(p)}${V2.pkWhy(p)}${V2.pkForms(p).table}<button type="button" class="k-link pk-morebtn" data-pkmore aria-expanded="${open}" aria-controls="pk-more">${open ? 'Hide the full file' : 'The full file ›'}</button></div>`, {label: 'How Ratings Work', attrs: {href: '#method=rating'}}); };
+// option B (hQ, Nov 23, for Sim to choose): the rap sheet's three parts behind one switch, on every screen size: Stats and speed (the
+// default), Why it rates N (the bars, the honest part, what the data says, other tier lists), Forms side by side (only with forms).
+// One part shows at a time; it replaces the phones' "The full file ›" fold. The choice is remembered on this device.
+V2.pkView = () => { try { return localStorage.getItem('np2.pkview') || 'st'; } catch (e) { return 'st'; } };
+V2.pkRap = p => { const rs = RS(rating(p).total), ft = V2.pkForms(p).table, P = [['st', 'Stats and speed'], ['wh', `Why it rates ${rs}`], ...(ft ? [['ft', 'Forms side by side']] : [])];
+  let v = V2.pkView(); if (!P.some(x => x[0] === v)) v = 'st';
+  const sw = `<div class="pk-sw" role="group" aria-label="Rap sheet part">${P.map(([k, l]) => V2.kChip(l, {on: k === v, attrs: {'data-pkview': k, 'aria-controls': 'pk-p' + k}})).join('')}</div>`;
+  const pane = (k, html) => `<div class="pk-pane pk-p${k}" id="pk-p${k}"${k === v ? '' : ' hidden'}>${html}</div>`;
+  return V2.pkStep(1, 'pk-s1', 'The rap sheet.', `stats, speed, and why it rates ${rs}`,
+    `${sw}<div class="pk-rap pk-rapsw">${pane('st', V2.pkStats(p) + V2.pkSpeed(p))}${pane('wh', V2.pkWhy(p))}${ft ? pane('ft', ft) : ''}</div>`, {label: 'How Ratings Work', attrs: {href: '#method=rating'}}); };
 
 // 2. Known associates: the four partners it is brought with most (Showdown replays; kit cards, the share in the score's place) and the
 // crews that won with it (META.events: first place, newest first; record, event, the six, its exact set from the open team sheet)
@@ -190,5 +196,6 @@ V2.pages.pokemon = {place: 'meta', after() { V2.pkFocusName(); }, draw() { const
     ${top}${V2.pkForms(p).strip}${V2.kPlan(V2.pkRap(p) + V2.pkPartners(p) + V2.pkHits(p))}</div>`; }};
 // (code review A1-I1, Nov 17: a hashchange listener here reset every other page's title to 'NastyPlot' after V2.setTitle had set it; V2.setTitle handles every route, so it is gone)
 
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-pkmore]'); if (!b) return; const r = b.closest('.pk-rap'); if (!r) return; const open = !r.classList.contains('open');
-  r.classList.toggle('open', open); b.setAttribute('aria-expanded', open); b.textContent = open ? 'Hide the full file' : 'The full file ›'; try { localStorage.setItem('np2.pkopen.pk-more', open ? '1' : '0'); } catch (x) {} });
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-pkview]'); if (!b) return; const k = b.getAttribute('data-pkview'), r = b.closest('.k-step'); if (!r) return;
+  r.querySelectorAll('[data-pkview]').forEach(x => x.setAttribute('aria-pressed', String(x === b))); r.querySelectorAll('.pk-pane').forEach(x => { x.hidden = x.id !== 'pk-p' + k; });
+  try { localStorage.setItem('np2.pkview', k); } catch (x) {} });
