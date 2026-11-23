@@ -2748,7 +2748,7 @@ button.pp2-plate{cursor:pointer;width:100%}
   .dr .tp-cards .dr-pl{display:none}
   .dr .tp-ph{flex-wrap:wrap}
   .dr-key .dr-kl{display:none}
-  .dr .k-plan{padding-bottom:24px}
+  .dr .k-plan{padding-bottom:var(--s4)} /* phone length (Nov 23): no longer than before the reskin, 2,626 px at 390 */
   .dr .tp-cards .tp-start{position:absolute;top:-12px;left:12px;margin:0}
   .dr-sus .k-roster{padding-top:40px}.dr-also{margin-top:12px}
 }
