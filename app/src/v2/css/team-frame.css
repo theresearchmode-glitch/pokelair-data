@@ -357,3 +357,5 @@
    its name, so they're next to the six you just tapped instead of under the whole set (v2-minors: Remove within 650px of the tapped Card) */
 @media (max-width:699.98px){.pty2 .mtf-sum .mtf-inf{display:contents}.pty2 .mtf-sum .mtf-do{grid-column:1/-1;grid-row:2;margin:0}
   .pty2 .mtf-sum .mtf-tr{grid-row:3}.pty2 .mtf-sum .mtf-ia{grid-row:4}.pty2 .mtf-sum .mtf-mv{grid-column:1/-1;grid-row:5}}
+/* phones: a little air between each party row's name and its score (qcheck: the slanted score's glyphs reached 3-4px into the name line) */
+@media (max-width:699.98px){.pty2 .mtf .mtf-row.k-card .k-sc{margin-top:var(--s1)}}

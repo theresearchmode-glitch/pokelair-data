@@ -155,3 +155,5 @@
    right half was empty) */
 @media (min-width:1800px){.gr2-top{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s16);align-items:end}
   .gr2 .gr2-top>.k-facts{gap:var(--s12);margin:0 0 var(--s4)}.gr2 .gr2-top>.k-facts b{font-size:var(--d64);line-height:1}}
+/* qcheck (Nov 22 night): the slanted gift name's glyphs reached 4px up into "CONTENTS" above it on the Home parcel; a little air between */
+.pr-what dd{margin-top:var(--s1)}
