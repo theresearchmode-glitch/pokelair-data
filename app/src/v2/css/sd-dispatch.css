@@ -335,3 +335,9 @@ span.nw2-box{cursor:default}
 /* the back page's column is under 295px at 700-799 (235 at 700), too narrow for six 44px sprites in a row (v2-q41: the sixth ran 8px past it);
    there the six sit as two even rows of three */
 @media (min-width:700px) and (max-width:799.98px){.nw2-six{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s2)}}
+/* the nameplate's ears (Nov 23, hL; V2.nwEars in dispatch.js): In the post and Next event beside the name where it leaves room, the lead story full width */
+.nw2-eared{display:grid;grid-template-columns:minmax(0,1fr) 300px;column-gap:var(--s6)}
+.nw2-eared>*{grid-column:1;justify-self:start}
+.nw2-eared>.nw2-ears{grid-column:2;grid-row:1/span 4;align-self:end;justify-self:stretch;display:grid;gap:var(--s3)}
+.nw2-ears .nw2-box{margin:0}
+.nw2-r1.nw2-solo{grid-template-columns:minmax(0,1fr)}
