@@ -541,14 +541,14 @@ t('PLAY-01', 'Game Plan fold: rows with Covered/Missing/Partly; Speed control co
   has(f, /(Covered|Missing|Partly|Optional)/); await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(await r.ui.foldOpen('Game Plan') === true, 'Game Plan fold not remembered'); await r.close(); });
 
 t('PLAY-02', 'Types fold: Offense/Defense switch, type grid, Mega pick with two Megas', async () => {
-  if (NEW) { /* new build (Sim, Nov 12): a "Types" part inside the Things to Know fold: Offense / Defense slider (kept in np2.seg.types
+  if (NEW) { /* new build (Sim, Nov 12): a "Types" part inside the Things to Know fold: Offense / Defense slider (kept in cc2.seg.types since Nov 23
     across reloads), offense headline "You OHKO or 2HKO N of the top 30 threats", defense headline weaknesses vs resistances, the type
     rows, the two-Mega pick when the team has two Megas, and "Full Tables ›" opening a "Full Tables" sheet with two tables */
     const r = await myTeam({team: ['Charizard-Mega-Y', 'Salamence-Mega', 'Incineroar', 'Whimsicott', 'Rillaboom', 'Sneasler']}); await r.ui.openFold('Things to Know', true, 800);
     let f = await r.ui.typesPart() || ''; ok(await r.ui.chosen('Offense') === true && await r.ui.chosen('Defense') === false, 'Offense is not the first view');
     const o = f.match(/^Types Offense Defense What you hit\. You OHKO or 2HKO (\d+) of the top 30 threats (\d+)\/18 types hit super effectively by at least one of yours /);
     ok(o && +o[1] <= 30 && +o[2] <= 18, 'Offense view: ' + f.slice(0, 200)); has(f, /Nobody hits super effectively /, 'Offense view'); ok(!/Only one Mega Evolves/.test(f), 'the Mega pick shows on Offense');
-    await r.ui.choose('Defense', 900); f = await r.ui.typesPart() || ''; ok(await r.ui.chosen('Defense') === true, 'Defense not chosen'); ok(await r.ls('np2.seg.types') === 'def', 'Defense not kept in np2.seg.types: ' + await r.ls('np2.seg.types'));
+    await r.ui.choose('Defense', 900); f = await r.ui.typesPart() || ''; ok(await r.ui.chosen('Defense') === true, 'Defense not chosen'); ok(await r.ls('cc2.seg.types') === 'def', 'Defense not kept in cc2.seg.types (today's key, saved-data contract Nov 23): ' + await r.ls('cc2.seg.types'));
     has(f, /^Types Offense Defense What hits you\. (\d+ more weakness(es)? than resistances|Every weakness is covered by a resist) 6\/6 Pokémon /, 'Defense view');
     for (const s of ['More weak than resist', 'Nobody resists', 'Even split']) has(f, s, 'Defense view');
     has(f, /Only one Mega Evolves per battle, so this reads Mega Charizard Y as the Mega and the others in base form\. Show: Mega Charizard Y · Mega Salamence /, 'two-Mega pick');
@@ -1218,7 +1218,7 @@ t('X-06', 'Back closes what\'s open on top first and stays on the page', async (
 
 t('X-07', 'Folds and views stay as left after reload (Game Plan, Types view, info-sheet tab, box sort, pool)', async () => {
   if (NEW) { /* new build (Sim, Nov 12): Game Plan is a sheet from the plan line (nothing remembered: no sheet after a reload); Types sits
-    in the Things to Know fold (fold kept open, cc2.chf.rfix) and keeps its Offense / Defense view (np2.seg.types); the pool is kept */
+    in the Things to Know fold (fold kept open, cc2.chf.rfix) and keeps its Offense / Defense view (cc2.seg.types); the pool is kept */
     const r = await myTeam(); await r.ui.openFold('Things to Know', true, 600); await r.ui.choose('Defense', 800); await r.ui.choose('Whole roster', 900);
     await r.ui.tapText(/^Game [Pp]lan( ›)?($| How to play)/, 900); /* Nov 21: My Team frame (Sim approved): the Game Plan bar is one button */ ok(await r.ui.gamePlanSheet(), 'Game Plan sheet did not open');
     await r.ui.reload(2500); await r.ui.go('My Team', 2500); ok(!(await r.ui.gamePlanSheet()), 'Game Plan sheet came back after a reload');
