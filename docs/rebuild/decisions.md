@@ -2075,3 +2075,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:46 PM: Sim: 'stop. direct a is too tame and ripping off all of what makes the homepage the homepage. i said inspired by not stolen from' -> stopped My Team direction A (blue crowd band + pink ticker copied Home); no further drawing until Sim picks a new idea
 - 7:48 PM: Sim: My Team = MY TEAM the star, no versus, no rules, 'NASTY PLOT AF', go -> HH drawing 'Sharply raised': the six on type-colour plot bars (height = rating), logo chevrons rising, team name huge, score as the boost
 - 7:48 PM: Sim: no chevron themes ('every chevron themed theme ... terrible'). New direction: 'The Crew' heist poster: six tall type-colour panels, each Pokémon a role read from its set, team name as the title, score as the rating badge
+- 7:50 PM: Sim: mock-ups of 1 Hall of Fame and 2 Party screen, 'nasty plot af in execution'
