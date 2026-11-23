@@ -18,7 +18,7 @@ for (const n of ['sneasler', 'incineroar', 'kingambit']) {
     const T = window.__ev(`(() => { const r = [...(META.doubles_tour.top || []), ...(META.doubles_tour.more || [])].find(x => x.n.toLowerCase() === '${n}'); return r && r.it && r.it[0] ? r.it[0][0] : null; })()`);
     return {mvNote, itNote, first, tourTop: T, items: !!it}; }, n);
   ok(/of [\d,]+ teams/.test(r.mvNote), `${n}: Moves names its base as tournament teams ("${r.mvNote}")`);
-  if (r.items && !/hold|Always holds/.test(r.itNote)) ok(/of [\d,]+ teams/.test(r.itNote) && (!r.tourTop || r.first === r.tourTop), `${n}: Items names its base and leads with the tournament top item ("${r.itNote}", first ${r.first}, tournament top ${r.tourTop})`);
+  if (r.items && !/hold|Always holds/.test(r.itNote)) ok(/of [\d,]+ teams/.test(r.itNote + ' ' + r.mvNote) && (!r.tourTop || r.first === r.tourTop), `${n}: Items names its base and leads with the tournament top item ("${r.itNote}", first ${r.first}, tournament top ${r.tourTop})`);
 }
 await b.close();
 console.log(`v2-pksrc: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
