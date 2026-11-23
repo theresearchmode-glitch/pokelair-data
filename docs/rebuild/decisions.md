@@ -2110,3 +2110,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:34 PM: Design authority: ultra-wide frame cap (content max 1,920 px, centred, from 2112 wide via --gut) for the 2560 flags.
 - 10:36 PM: Hourly check 10:35 PM: 1 helper (hK, Wave 2 kit parts); main: bc.sh checks; Game Plan v30 published 10:35. Design authority until 9 AM (Sim 9:12 PM) stands.
 - 10:50 PM: Checks: C-battle 83 pass 0 FAIL (art build; Battle VS ok). B-build 2 fails from the plate change (double data-v2mon) fixed; rerun chained (bd.sh): B-build, D-meta (art build), q83, s16, q59, qcheck build/track/gifts/archetypes.
+- 10:53 PM: Tried and dropped: Pokémon page head+hero as one grid at 1100+ (the page's own layered rules fight display:contents; broke the layout). Pokémon page stays as is; length (4.83 at 1440) goes to Sim.
