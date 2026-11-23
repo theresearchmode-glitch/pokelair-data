@@ -4476,3 +4476,6 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* polish-check (Nov 23): at 320 the three Winning Teams links in a row of three ran 4-6px out ("Copy for Showdown"); on the narrowest
    phones each may wrap onto two lines inside its third */
 @media (max-width:359.98px){.wt2-links .k-link{white-space:normal;text-align:left;line-height:1.2;font-size:var(--t13)}}
+/* Wave 2's kit filter chip is slanted (-8deg): on phones its corners reached 3-5px past the chip grid's edge and the row scrolled sideways
+   (v2-q21); the grid keeps a small inner margin so the slant stays inside */
+@media (max-width:699.98px){.gs-ctl .ra-filt{padding-inline:var(--s3)}}
