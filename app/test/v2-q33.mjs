@@ -55,7 +55,9 @@ for (const th of ['light', 'dark']) {
     ok(x.dom.join('>') === PHONE.join('>'), `${th} ${W}: markup order ${x.dom.join(' > ')}`);
     ok(inc(x, x.dom), `${th} ${W}: on screen in the same order (tops ${x.dom.map(k => x.top[k]).join(', ')})`);
     ok(x.top['big ticket'] < x.top.counts && x.top['big ticket'] < x.top['next events'], `${th} ${W}: the big ticket (${x.top['big ticket']}) above the counts (${x.top.counts}) and Next Events (${x.top['next events']})`);
-    ok(x.bigTop != null && x.bigTop < 844 - 60, `${th} ${W}: the big ticket starts inside the first screen (top ${x.bigTop} of 844, with at least 60px of it showing; 120 failed on the frozen CI data at 320 dark: 76px, was 1590 before Q33)`);
+    /* <= (was <): "at least 60px of it showing" includes exactly 60. Wave 3 (Sim approved the kit headline at 6:51 PM, Nov 22): the kit's line height 1 (was .95)
+       makes Events' 4-line headline 7px taller at 320, so the ticket starts at 784 (exactly 60px showing; 777 before) */
+    ok(x.bigTop != null && x.bigTop <= 844 - 60, `${th} ${W}: the big ticket starts inside the first screen (top ${x.bigTop} of 844, with at least 60px of it showing; 120 failed on the frozen CI data at 320 dark: 76px, was 1590 before Q33)`);
     ok(!x.pos && x.tab.every((v, i) => v >= 0 && (!i || x.tab[i - 1] < v)), `${th} ${W}: tab order filters > big ticket > counts > Next Events > small tickets (${x.tab.join(', ')}; ${x.pos} positive tabindex)`);
     let bx = await boxes(p); ok(!bx.bad.length && !bx.side, `${th} ${W}: nothing out of its box, nothing sideways (${bx.n} tickets; ${bx.bad.slice(0, 3).join('; ') || 'clean'}${bx.side ? ', scrolls sideways' : ''})`);
     // Q31 still holds: 6 small, Show More adds 12, filters change the whole wall (the big ticket too) and reset Show More
