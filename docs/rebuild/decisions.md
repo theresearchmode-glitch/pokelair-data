@@ -2069,3 +2069,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:30 PM: Sim stopped the second account's Job 5 run; Job 5 is hW2's here. Second account: Job 3 (length options). 10 PM reminder deleted (hP already stopped)
 - 7:33 PM: Sim: 'nah leave those' (asked which: holding the sweep fixes until he says)
 - 7:34 PM: Sim clarified: 'leave those' meant hP's half-finished Job 3 pictures (they don't matter). Sweep fixes N1-N4 go ahead
+- 7:37 PM: Hourly check: 1 helper (hW2, Job 5 next); main: Wave 3 checks + sweep fixes; Game Plan updated
