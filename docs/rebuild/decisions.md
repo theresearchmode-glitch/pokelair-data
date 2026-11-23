@@ -2079,3 +2079,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:50 PM: Disk 98% full (hX bottleneck): removed finished worktrees bt, ev, hp, isx, tk, oldtm, fb -> 13G free. Note: tk (hM's stopped Track copy) had uncommitted edits to track.js/pages.css; superseded by hW2's committed Track fix (keep/track-kit-hw2), so nothing needed was lost
 - 7:53 PM: Sim: 'the party one is much better. refine it make it better make it the best you and lets go with it.' -> My Team direction = Party screen; HH refines, then builds it on the kit (pictures before merge)
 - 7:55 PM: Second account pushed one part of Job 5 (alt/info-words) before it was stopped; hW2 told to review/reuse it after re-running its checks
+- 7:58 PM: Sim: extra helper hE2 to scan every built page for egregious empty space (look-only, 1280/1440/1920, marked pictures + ranked report). Helpers now: hW2 (Job 5), hX (HH's queue), hE2 (scan)
