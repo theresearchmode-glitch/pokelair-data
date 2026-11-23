@@ -2211,3 +2211,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:08 AM: Helper hB started: My Box 'The PC' build on branch mybox-pc (brief docs/rebuild/reskin/mybox-pc-brief.md), steps desktop -> phone -> 700-1179 -> tests, progress note + pictures after each step; nothing pushed until HH reviews and Sim sees pictures.
 - 9:23 AM: qcheck on every page (before the hJ merge, after hI): see result line.
 - 9:24 AM: Preview v244 published (foundation 238bc7c2 verified): hI sweep + hJ spots.
+- 9:26 AM: My Box hB steps 1-3 (53303f05) reviewed: desktop/phone match the mock with real data; all functions kept. Sent to Sim as work in progress. Notes to hB: 700-779 band +400px (must not be longer), Your Six item·Ability lines uneven (make consistent), more widths + on-your-team pictures.
