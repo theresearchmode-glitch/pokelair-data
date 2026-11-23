@@ -151,3 +151,7 @@
 .gr2-src a{position:relative;padding-top:calc(var(--s6) + var(--s1))}.gr2-src a~a{padding:0 0 calc(var(--s6) + var(--s1))} /* C8: each source link's tap area reaches 44px tall, as the old label's */
 @media (min-width:700px) and (max-width:899.98px){.gr2 .pr-sheet{--c:var(--pc4,4)}} /* the kit's step is narrower than the old full-width sheet: four stamps a row here keep long names ("Incineroar") inside (v2-q43) */
 @media (max-width:359.98px){.gr2 .k-facts b{font-size:var(--t17)}} /* the kit's own under-360 size again, so "Today" fits beside the other facts at 320 (NPR-5c) */
+/* Gifts at 1800+ (HH, design authority for the empty-space fixes, Sim 8:48 PM Nov 22): the three counts, big, beside the headline (the hero's
+   right half was empty) */
+@media (min-width:1800px){.gr2-top{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s16);align-items:end}
+  .gr2 .gr2-top>.k-facts{gap:var(--s12);margin:0 0 var(--s4)}.gr2 .gr2-top>.k-facts b{font-size:var(--d64);line-height:1}}
