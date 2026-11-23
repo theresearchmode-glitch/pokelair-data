@@ -25,7 +25,7 @@ V2.plotHelp = () => { const E = V2.esc, lk = ui.abLock && byName.get(ui.abLock),
     <div class="pl-hc pl-hr"><b>${lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team'}</b><p><span class="pl-ht">Six from real winning teams, in an instant. </span><button type="button" class="np-link" data-bdhow>How It Works ›</button></p></div></div>`; };
 V2.plotWait = () => { const n = V2.underdog ? V2.underdog() : 'Flapple', d = V2.esc(V2.disp(n));
   const st = (k, h) => `<div class="pl-step pl-wait"><span class="pl-node" aria-hidden="true">${k}</span><h2 class="u pl-h">${h}</h2><span class="pl-w8">waiting for your plot</span></div>`;
-  return `<div class="pl-waits"><div class="pl-wl">${st(2, 'The accomplices')}<div class="pl-places" aria-hidden="true"><i></i><i></i><i></i></div>${st(3, 'Why it works')}${st(4, 'Got a Plan B?')}</div>
+  return `<div class="pl-waits"><div class="pl-wl">${st(2, 'The accomplices')}<div class="pl-places" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div>${st(3, 'Why it works')}${st(4, 'Got a Plan B?')}</div>
     <aside class="pl-dog" aria-label="Today's underdog"><p><b>${d} is waiting to see what you hatch.</b> Today's underdog. Somebody's favourite.</p><button type="button" class="pl-dogst" data-v2mon="${V2.esc(n)}" aria-label="${d}: open its info">${V2.mon(n, {bare: true})}</button></aside></div>`; };
 /* Nov 20, piece 5: the lower half is V2.plotLower (Plots that worked + Partners in crime, no V2.buildJump tabs); before a build its line is dashed and there is no end */
 V2.plotPage0 = () => { V2.bdSrcDefault(); /* a new visitor's untouched sample box starts on Whole Roster (S17), as buildHead did */ const busy = !!(ui.ab && ui.ab.busy), none = !busy && ui.ab ? V2.buildAnswer0() : '';

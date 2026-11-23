@@ -426,3 +426,7 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
   .pl-win:not(.pl-big) .pl-wt{margin-block:var(--s1) 0}.pl-win:not(.pl-big) .pl-wsix span{height:32px}.pl-win:not(.pl-big) .pl-wsix img{max-height:32px}}
 /* Build top A (Sim, Nov 22, 6:58 AM): the hint sits under the sentence, left, quiet */
 .pl-hint2{margin:var(--s2) 0 0;text-align:left;font-weight:500}
+/* before a plot (HH, design authority to 9 AM Mon, Sim 9:12 PM): the accomplices' row shows five empty slots (your pick + five = the six,
+   in the same slanted dashed boxes) across the whole lane, and the underdog stands bigger beside them, so the waiting part reads as the
+   team about to be hatched rather than a mostly empty strip */
+@media (min-width:1100px){.pl-places{grid-template-columns:repeat(5,minmax(0,1fr))}.pl-dog .np-mon{--iw:168px}.pl-dog{max-width:440px}}
