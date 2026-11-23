@@ -1097,7 +1097,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     const m = await q.evaluate(() => { const R = e => e.getBoundingClientRect(), o = {bt: '', tr: '', dc: '', bars: ''};
       /* 2. Battle: every sprite inside its own side (you / them), none in the VS's box, none under 56px */
       const vs = document.querySelector('#main .sdt-vsw'); if (!vs) o.bt = 'no VS'; else { const V = R(vs);
-        for (const s of document.querySelectorAll('#main .sdt-side')) { const S = R(s); for (const st of s.querySelectorAll('.np-mon .st')) { const r = R(st);
+        for (const s of document.querySelectorAll('#main .sdt-side')) { const S = R(s); for (const st of s.querySelectorAll('.np-mon .st')) { if (!st.getClientRects().length) continue; /* Nov 23: one per side on desktop, the second hidden */ const r = R(st);
           if (r.left < S.left - 1 || r.right > S.right + 1) o.bt = `sprite ${Math.round(r.left)}-${Math.round(r.right)} out of its side ${Math.round(S.left)}-${Math.round(S.right)}`;
           else if (r.right > V.left + 1 && r.left < V.right - 1) o.bt = 'sprite over the VS'; else if (r.width < 56) o.bt = `sprite ${Math.round(r.width)}px`; } }
         /* and every name shown under a sprite is on top: the middle of each of its lines hits the name itself, not a neighbour's sprite */
