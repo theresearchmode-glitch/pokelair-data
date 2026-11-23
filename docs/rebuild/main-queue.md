@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH (design + executive authority to 6 PM): final behaviour run on HEAD (fin.sh: A-team 139/0 done, C-battle, D-meta). 1485 fixes pushed 7:56. My Box The PC approved; brief written; build goes to the helper after hJ. Helper: hJ (iPhone spots A-D).
-NEXT: GitHub run on e48b522a (~8:42); 9 AM summary to Sim; My Box build (helper) + reviews; 6 PM summary (design + executive since Nov 19)
+NOW: HH (design + executive authority to 6 PM; tell Sim each visual decision): qcheck every page on HEAD before hJ merge (running); hJ merged 9:08 (A-D); 9 AM summary sent. Helper: hB (My Box The PC build, branch mybox-pc).
+NEXT: GitHub run on 833bdfbe (~9:31), push hJ batch after it; review hB steps + pictures to Sim; Preview with box when ready; 6 PM summary
 NEXT: GitHub batches every ~40 min; Game Plan hourly
 NEXT: before 9 AM: full summary incl. lengths for Sim
 NEXT: 5:45 AM summary (decisions from 10 PM), Preview refresh before it
