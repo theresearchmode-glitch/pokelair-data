@@ -4371,3 +4371,11 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .ev2 .ra-h .k-kicker{margin-top:0}
 .wt2 .ra-h .wt2-kick{justify-self:start;padding:var(--s1) var(--s3);background:var(--k-chip);color:var(--k-on-chip);font:800 var(--t15)/1.3 var(--u);font-style:italic;letter-spacing:.04em;transform:skewX(-10deg)}
 .wt2 .ra-h .wt2-kick::before{display:none} /* Winning Teams keeps its own chip for now: the kit kicker's layout (display:table, top margin from the ratings layer) moved its head; Wave 3 */ /* audit Wave 1 (P1-4): the kit kicker instead of the copied chip; Events keeps its head spacing */
+/* sweep Nov 22 evening (second account, job 4) fixes, sizes only:
+   N1 This Week 900-1079: the weather tiles are narrow and "9.0%" / "6.0%" ran 4px past their tile */
+@media (min-width:900px) and (max-width:1079.98px){.wk2 .wk-tile>span{font-size:var(--t24)}.wk2 .wk-chg b{white-space:normal}} /* and the change badge ("▼ 3.2 points", 93px) may wrap: it ran 2px past its 103px tile at 960 */
+/* N2 Popular Sets under 400: "Online tournaments" ran up to 20px past its chip in the three-up source switch */
+@media (max-width:399.98px){.lo-srcs .k-w{padding:0 var(--s2);font-size:var(--t13)}}
+@media (max-width:359.98px){.lo-srcs{column-gap:var(--s1)}.lo-srcs .k-w{padding:0 var(--s1)}} /* at 320 "tournaments" (about 74px) did not fit the 80px chip minus 8px each side */
+/* N3 Popular Sets 900-1099: the three facts beside the loadout ran ~10px past their 59px columns ("Base Speed", "53.7%") */
+@media (min-width:900px) and (max-width:1099.98px){.lo-id .gs-facts{column-gap:var(--s2)}.lo-id .gs-facts b{font-size:var(--t15)}.lo-id .gs-facts span{white-space:normal}} /* 17px was still too wide: Unbounded "53.7%" is 68px at 17; at 15 it is 60 in a 62px column (the phones at 320 use 15 too) */

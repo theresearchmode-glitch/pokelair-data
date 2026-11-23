@@ -330,3 +330,5 @@ span.nw2-box{cursor:default}
 .nw2-cpn::after{content:"MYSTERY GIFT";position:absolute;left:var(--s4);top:0;bottom:0;display:grid;place-items:center;padding:0 var(--s3) 0 var(--s3);border-right:2px dashed var(--is-tag-ink);writing-mode:vertical-rl;rotate:180deg;font:800 var(--t13)/1 var(--b);letter-spacing:.16em;color:var(--is-tag-ink)}
 .nw2-cpn .nw2-code{color:var(--is-tag-ink)}.nw2-cpn .pr-d{color:var(--cpn-num)}.nw2-cpn .nw2-fine{color:var(--cpn-fine)}
 @media (max-width:699.98px){.nw2-cpn{padding:var(--s6) var(--s5) var(--s5) 52px;rotate:none}.nw2-cpn::after{left:var(--s2)}}
+/* sweep Nov 22 evening N4: the winner's six sat 4 + 2 / 5 + 1 in the narrow back-page column (700-1099); six even columns, 44px sprites */
+@media (min-width:700px) and (max-width:1099.98px){.nw2-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1)}.nw2-six .np-mon{--iw:44px}.nw2-six button{display:grid;place-items:center;min-height:44px}}
