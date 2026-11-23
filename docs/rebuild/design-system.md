@@ -1092,6 +1092,7 @@ Generated from app/src/v2/css/tokens.css: 616 tokens (613 by day, 204 changed by
 
 | Width | Token | Value |
 |---|---|---|
+| (min-width:2112px) | --gut | `max(96px,calc((100vw - 1920px) / 2))` |
 | (max-width:1179.98px) | --gut | `48px` |
 | (max-width:699.98px) | --gut | `16px` |
 | (max-width:384.98px) | --d-khead | `34px` |
