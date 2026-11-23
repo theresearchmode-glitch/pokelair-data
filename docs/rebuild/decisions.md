@@ -2317,3 +2317,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:59 PM: Design (HH authority): item drawings v2 in hi-items: all drawings slanted -8deg (NastyPlot's slant), bright type colours for stones/berries (white mark on the stone's dark facet, ink on berries), Rocky Helmet redrawn as a spiked battle helmet. Day and night stay the same (Sim: 'your choices are good for day/night').
 - 6:00 PM: Sim OK'd the item drawings v2 ('love it. lets do it'). HH merges hi-items and wires the drawings into the item sheet's evidence bag.
 - 6:02 PM: Design (HH authority): on phones the item bag sits above the name (40px drawing), since beside it 'Raichunite Y' broke mid-word at 390. Desktop: bag left of the name, like the seal and ID photo.
+- 6:06 PM: Checked: v2-minors main1 on t1rules (with Battle sprite fix): 'v2-minors (main1):all passed' (the Battle sprite test that failed before now passes).
