@@ -55,6 +55,7 @@
     "src/v2/shell.js",
     "src/v2/type-icons.js",
     "src/v2/kit.js",
+    "src/v2/item-art.js",
     "src/v2/pages/guide.js",
     "src/v2/pages/team.js",
     "src/v2/pages/six.js",
