@@ -3186,7 +3186,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .trk-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s6);align-items:end}
 .trk-h h1 .pl{color:var(--plot-text)}
 .trk-stats{list-style:none;margin:0;padding:0;display:flex;gap:var(--s8)}.trk-stats b{white-space:nowrap}.trk-stats li{display:grid}.trk-stats b{font:900 var(--t34)/1.1 var(--u);font-style:italic}.trk-stats span{font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
-.trk h2:not(.k-h2){margin:0;font:900 var(--t34)/1.2 var(--u);font-style:italic} /* Wave 3 (Sim, 6:51 PM): the plan steps keep the kit's 40px .k-h2 */
+.trk h2:where(:not(.k-h2)){margin:0;font:900 var(--t34)/1.2 var(--u);font-style:italic} /* Wave 3 (Sim, 6:51 PM): the plan steps keep the kit's 40px .k-h2 */
 .trk-body{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:var(--s12);align-items:stretch}
 .trk-right{display:grid;gap:var(--s10);align-content:space-between}
 /* the receipt */
@@ -4394,3 +4394,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (max-width:359.98px){.trk2 .trk-stats b{font-size:var(--t17)}}
 /* qcheck Nov 22: at 700-1099 the kit receipt runs full width (655px at 820), so the 1.5deg tilt lifts each line's right end onto the next; half the tilt there (as About's receipt) */
 @media (min-width:700px) and (max-width:1099.98px){.trk2 .trk-rc{transform:rotate(-.75deg)}}
+/* sweep O1 (Nov 22): the slanted, tilted "230×" ran 3-13px past its row (the slant and the tilt draw past the letters' box); room for them on
+   the right, and on phones the kit's score size (48px) so the "×" clears the receipt's edge */
+.trk-tot b{padding-right:var(--s4)}
+@media (max-width:699.98px){.trk-tot b{font-size:var(--d-kscore)}}
