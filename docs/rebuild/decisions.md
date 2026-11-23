@@ -2120,3 +2120,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:13 AM: Polish-check on the 15 changed pages (320-2560): fixed my own new findings: Build's plate name button shared the class pl-go with the Hatch button (caught its styles and full-plate cover) -> renamed pl-nmb; Battle Your Six 3 across at 1100-1279; Test Run 1100-1439 lane six + bars fit. Left: My Team score plate's slant drawn 15px past its box (intended slant); older findings unchanged. B-build X-10/AUTO-08 2/0; full B-build + q83 running.
 - 12:23 AM: B-build 37/40 on a main-repo build = live out/ data (wrong data for the suite; my slip). q83 all passed. Rerunning B-build + C-battle on the frozen-data copy (bb.sh).
 - 12:27 AM: GitHub run 1475 on e1bb3a0a: SUCCESS (all 15 jobs green; everything to 11:40 PM). Batch push of the polish fixes and the rest.
+- 12:35 AM: Hourly check 12:35 AM: 1 helper (hK); main: B-build 77/0 on frozen data, C-battle running; Game Plan updated.
