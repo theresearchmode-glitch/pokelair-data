@@ -2270,3 +2270,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:14 PM: GitHub run 1496 red only on D-meta-shell SHEET-05/06: Pokémon page B shows one rap-sheet part at a time, and its moves line reads 'Fake Out Physical · 40 power 99%'. Info kept; adapter now taps the part's switch, SHEET-05 regex allows the new line. SHEET-01..07 locally: 2 pass, 0 FAIL, 5 known (as before). Chromium A-team with My Team A: 139/0. Pushing the batch (D fix + My Team A).
 - 2:24 PM: WebKit A-team on 2a18d83e (My Team A): 139 pass, 0 FAIL (the :has() split works in Safari's engine). Next main job: full D-meta-shell on HEAD (SHEET fixes).
 - 2:33 PM: Full D-meta-shell on HEAD: 117 pass, 0 FAIL (SHEET-05/06 fixed). Next main job: Preview rebuild with Pokémon page B, Type Chart 1280, My Team A.
+- 2:34 PM: Preview v248 published (Pokémon page B, Type Chart 1280, My Team A, saved-data fixes). Next main job: qcheck-all every page on HEAD (after today's merges).
