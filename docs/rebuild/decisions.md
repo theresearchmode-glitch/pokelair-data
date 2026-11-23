@@ -2323,3 +2323,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:21 PM: Preview v250 published (Speed Tiers B, item drawings in the bag, Battle sprites); file list checked: 443 files incl. v2art/*.webp, foundation.html, v2.js, preview.json.
 - 6:27 PM: hN done (Nature data + sheet + taps + Search), merged 822a32ef. 'On the field' lines and the sheet pictures sent to Sim for review. Helper slot refilled: hP5 builds the Natures page under Meta (Dossier step 5).
 - 6:32 PM: Checked on c2e6b321 (Speed Tiers B + item bags): qcheck speed 12 SIZE notes all pre-existing; tap-size all passed; v2-minors main2/groups all passed; v2-q23 all passed; D-meta-shell behaviour 117 pass, 0 FAIL.
+- 6:45 PM: Sim: 'the on the field lines are good, go with your recommendation.' All 10 Nature 'On the field' lines approved as written by hN (merged 822a32ef).
