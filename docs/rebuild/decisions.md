@@ -2186,3 +2186,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:51 AM: HQ Q13f proven: on the OLD hero it FAILS (393x660: 4.19% of the tagline covered; 375x600: 5.08%), on the fix it passes; q21 ALL PASSED. Pushing: test syntax fix + hP polish (cancels the run on 4bdbc83e, which would fail on the test file).
 - 6:51 AM: Preview v243 published (foundation f1e11fd7 verified on the artifact): Sim's iPhone fixes + hP polish.
 - 6:55 AM: Page lengths after the iPhone fixes + hP polish (frozen data): 15 pages shorter at 390 (sets -30, weekly -26, Pokemon -26, gifts -24, others -2 to -6); only Meta 390 +6 (the podium fix Sim approved); desktop unchanged. Saved lengths-nov23-0700.json.
+- 6:56 AM: Tried and dropped (design authority): Type Chart 'Hitting back' under the card at 1100+. Stacked in the 360px column it is 521px tall, so step 1 grew to 1,101px and the page got LONGER (1440: 2,845 -> 3,013). Reverted. Type Chart stays 3.16 at 1440; goes to Sim as a length item.
