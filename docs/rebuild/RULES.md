@@ -12,6 +12,22 @@ recommendation" under authority), the rules below win.
 5. One shared 'before' test baseline per morning for all helpers.
 6. Honest about what is and isn't checked; when a page or the plan is slowing down, say so with numbers.
 
+## 00k. Use every tool in the arsenal, skills first (Sim, Nov 23, 5:02 PM Eastern; permanent)
+Sim: "we have a lot of skills that I have loaded in specifically to be helping you out ... use those to your advantage" and then "put that
+into a rule section because I want to make sure that no matter what we are making the best use of all of the tools in our arsenal,
+especially things like skills that I have added on".
+- Before starting a piece of work, check the skill list for one that fits and use it (the Skill tool). No "it's simple, I'll skip it".
+- Every real change, before it merges, gets the matching skill:
+  - code: `code-review` on the diff (or `superpowers:requesting-code-review`);
+  - visual work: a design review / critique skill (`design-skills:design-critique`, `design-superpowers:design-review`, `website-design:web-review`);
+  - new controls and pages: `design-skills:accessibility-audit` / `ui-consistency:accessibility`;
+  - cross-page look: `consistent-ui` / `ui-consistency:verifying`;
+  - bugs: `superpowers:systematic-debugging`; finishing claims: `superpowers:verification-before-completion`.
+- Plugins, MCP tools and connectors count too: use them when they do the job better than a hand-made script.
+- Our rules win over a skill's generic advice (no generic AI design, the kit, the word list, length caps, Sim's yes on visual decisions).
+- A skill that starts subagents counts toward the helper limit.
+- Say in the status message which skill ran and what it changed.
+
 ## 00t. Times come only from the clock (Sim, Nov 13, rule written 8:54 AM Eastern by the clock: "I am very very punctual about timing")
 Every time written anywhere (messages to Sim, checklist notes and 't' fields, docs, commit messages, scheduled task prompts) is
 copied from `bash docs/rebuild/now.sh` run in the SAME step, never typed, estimated ("6:2x", "~3:25") or reused from an earlier

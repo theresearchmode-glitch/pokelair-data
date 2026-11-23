@@ -49,7 +49,7 @@ pages still to reskin). When the mock-ups are done, back to ONE helper. Never us
 Sim: "sounds like a plan. i just wanted the builds approved so then after, all resources can just focus on making it happen." The mock-up
 helper switches to building once its mock-ups are done: 2 build helpers + HH building, for the rest of Nov 22. Above that, ask Sim.
 
-## USE THE LOADED SKILLS (Sim, Nov 23; a standing rule)
+## USE THE LOADED SKILLS (Sim, Nov 23; a standing rule; full rule: docs/rebuild/RULES.md section 00k)
 Sim: "we have a lot of skills that I have loaded in specifically to be helping you out so I am absolutely 100% imploring you to take a
 look at those especially things such as the code review or design review ... use those to your advantage." Before merging a real change,
 run the matching skill: code-review (correctness) on the diff, design review / critique on visual work (with our rules and the kit
