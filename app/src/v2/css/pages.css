@@ -1102,9 +1102,35 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2-h .k-h1 .pl{display:block;margin-top:var(--s2);font-size:var(--d-ksec);line-height:1.05} /* two sentences, two lines (it ran on and left 'top 20.' alone, Nov 15).
    Finish (Nov 22): 'Who moves first.' is the kit headline at the size every reskinned page uses (one line, like 'Plot the hit.'); the
    second sentence steps down to the kit's section size, so the header is no taller than the other kit pages' */
-.sp2-ctl .k-sent{margin-top:var(--s6);font-size:var(--t26)}
-.sp2-ctl .sp2-wx .k-sent{margin-top:var(--s3)}
-.sp2-wx4{display:inline-flex;flex-wrap:nowrap;gap:inherit} /* Sand and Snow keep together (no lone last word) */
+/* the controls, option B "the face-off" (Sim, Nov 23: the blue-word sentence wrapped ragged): your side and theirs face each other across a big
+   slanted "vs", each a small label over a tidy row of the kit's chips (You in Plot blue, the colour of your bands below; Them in Nasty pink),
+   then the field: Trick Room and the weather as one strip of six joined chips (one choice). One line on wide screens, two below 1280 */
+.sp2-ctl{display:grid;grid-template-columns:repeat(3,max-content);align-items:end;gap:var(--s3) var(--s6);margin-top:var(--s6)}
+.sp2-fx{grid-column:1/-1;display:flex;align-items:end;gap:var(--s6)} /* the field: Trick Room, then the weather */
+.sp2-g{display:grid;gap:var(--s2);justify-items:start}
+.sp2-gl{font-family:var(--u);font-size:var(--t13);font-style:italic;font-weight:800;line-height:1.2;letter-spacing:.06em;text-transform:uppercase;color:var(--k-ink2)}
+.sp2-gme .sp2-gl{color:var(--k-plot-text)}.sp2-gth .sp2-gl{color:var(--k-nasty-text)}
+.sp2-vs{font-family:var(--u);font-size:var(--t34);font-style:italic;font-weight:900;line-height:44px;letter-spacing:-.02em;color:var(--k-ink)}
+.sp2-chs{display:flex;gap:var(--s2)}.sp2-chs .k-chip{flex:none}
+.sp2-gwx .sp2-chs{gap:0}.sp2-gwx .k-chip+.k-chip{border-left-width:0} /* one strip: the six share their borders */
+/* very wide: the whole face-off on one line, the field after a thin rule (the sides end, the field begins) */
+@media (min-width:1680px){.sp2-ctl{grid-template-columns:repeat(3,max-content) minmax(0,1fr)}.sp2-fx{grid-column:auto;justify-self:end;padding-left:var(--s6);border-left:1px solid var(--k-rule)}}
+/* half screens, tablets and phones: the vs moves into Them's label ("vs them"), the chips a little closer */
+@media (max-width:1099.98px){.sp2-ctl{grid-template-columns:repeat(2,max-content);column-gap:var(--s4)}.sp2-fx{gap:var(--s4)}.sp2-vs{display:none}
+  .sp2-gth .sp2-gl::before{content:"vs ";color:var(--k-ink)}.sp2-chs .k-chip{padding:0 var(--s2)}}
+@media (min-width:700px) and (max-width:759.98px){.sp2-chs .k-chip{font-size:var(--t13)}} /* 700-759: a size down so Them and the weather strip keep inside the column */
+/* phones: three even columns, each label over its chips: You (two) beside Field (one), Them (three), the weather three by two; the vs sits
+   on the label line between You and Them */
+@media (max-width:699.98px){.sp2-ctl{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);margin-top:var(--s4)}
+  .sp2-fx{display:contents}
+  .sp2-g{grid-template-columns:subgrid;grid-template-rows:auto auto;row-gap:var(--s1);justify-items:stretch}
+  .sp2-gme{grid-column:1/3}.sp2-gfd{grid-column:3/4;grid-row:1}.sp2-gth,.sp2-gwx{grid-column:1/-1}
+  .sp2-gl{grid-column:1/-1}
+  .sp2-chs{grid-column:1/-1;display:grid;grid-template-columns:subgrid}
+  .sp2-chs .k-chip{min-width:0;padding:0 var(--s1)}
+  .sp2-gwx .k-chip:nth-child(3n+1){border-left-width:3px}.sp2-gwx .k-chip:nth-child(n+4){border-top-width:0}}
+@media (max-width:439.98px){.sp2-chs .k-chip{font-size:var(--t13)}}
+@media (max-width:359.98px){.sp2-chs .k-chip{white-space:normal;text-align:center;letter-spacing:-.02em}} /* 320: two-word chips (Trick Room, Team (Sun)) may take two lines inside the same 44px, so no word touches the slanted border */
 .sp2-empty{display:grid;justify-items:start;gap:var(--s2);margin-top:var(--s6)}
 .sp2-empty .k-lead{margin:0}
 .k-sec .sp2-view{margin-left:auto}.sp2-view .k-sent{margin:0;font-size:var(--t20)}
@@ -1170,7 +1196,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2-list .sp2-li:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
 .sp2-list li.me .sp2-li:focus-visible{outline-color:var(--k-on-plot)}
 /* tablets: the name column narrows */
-@media (max-width:1023.98px){.sp2-track{--c1:80px;--c2:208px}.sp2-cut .sp2-m .v{font-size:var(--t28)}.sp2-cut .nm b{font-size:var(--t22)}.sp2-ctl .k-sent{font-size:var(--t22)}} /* finish (Nov 22): 80px fits a cut's big number, 208px a name and its Yours tag */
+@media (max-width:1023.98px){.sp2-track{--c1:80px;--c2:208px}.sp2-cut .sp2-m .v{font-size:var(--t28)}.sp2-cut .nm b{font-size:var(--t22)}} /* finish (Nov 22): 80px fits a cut's big number, 208px a name and its Yours tag */
 /* phones: each row is Speed | Pokémon | name over a thin bar (the bar and sprite step out of the track: display:contents) */
 @media (max-width:699.98px){
   .sp2-track{--c1:48px}
@@ -1178,7 +1204,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .sp2-sc{grid-template-columns:var(--c1) 40px minmax(0,1fr);gap:0 var(--s2);padding-right:var(--s4)}
   .sp2-sc>.sp2-sc-l{padding-right:0}
   .sp2-m{grid-template-columns:var(--c1) 40px minmax(0,1fr);grid-template-areas:"v mon nm" "v mon tr";align-items:end;gap:0 var(--s2);min-height:44px;padding:0 var(--s4) 0 0}
-  .sp2 .k-sent{font-size:var(--t15);gap:var(--s1) var(--s2)}.sp2 .k-w{padding:0 var(--s1)}.sp2-ctl .k-sent{margin-top:var(--s4)}
+  .sp2 .k-sent{font-size:var(--t15);gap:var(--s1) var(--s2)}.sp2 .k-w{padding:0 var(--s1)}
   @media (max-width:439.98px){.sp2 .k-w{padding:0 var(--s2);font-size:var(--t13)}} /* Sim, Nov 23 (iPhone 393): at 15px with 4px sides the slanted letters of "Your Tailwind", "They're Paralyzed" and "No Weather" ran into the chip's border; a size down with 8px sides, as the Ratings chips under 440, and every row still fits */
   .sp2-m .v{grid-area:v;align-self:center;padding-right:0;font-size:var(--t20)}
   .sp2-m .nm{grid-area:nm;padding-right:0;font-size:var(--t15)}

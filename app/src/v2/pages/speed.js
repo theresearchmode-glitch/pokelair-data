@@ -18,14 +18,16 @@ V2.spTie = (rows, r) => rows.some(o => o !== r && o.v === r.v && o.me !== r.me);
 V2.spHead = D => { const E = V2.esc, tr = spdUi.tr, cond = [spdUi.tw ? 'your Tailwind' : '', spdUi.up ? 'your six at +1 Speed' : '', spdUi.twOpp ? 'their Tailwind' : '', spdUi.icy ? 'their −1 Speed' : '',
     spdUi.par ? 'they\'re paralyzed' : '', tr ? 'Trick Room: the slowest moves first' : ''].filter(Boolean);
   const wx = spdUi.wx === 'auto' ? (D.autoW ? `weather: ${D.autoW}, from your team` : 'no weather on your team') : spdUi.wx ? `weather: ${spdUi.wx}` : 'no weather';
-  const tog = (k, w) => ({w, on: !!spdUi[k], attrs: {'data-spd': k}}), wxb = (k, w) => ({w, on: spdUi.wx === k, attrs: {'data-spdwx': k}});
-  const h1 = `<span>Who moves <em>first.</em></span> <span class="pl">${D.mine.length ? `Your six vs the top ${D.thr.length}.` : `The top ${D.thr.length}.`}</span>`;
+  /* the controls (Sim, Nov 23: the sentence of loose blue words wrapped ragged at every width): three labelled groups of the kit's chips,
+     your side, their side and the field, with the weather as one strip of six (one choice). Each chip shows a short word; its full name
+     (the old blue word, also what a screen reader says) sits in the vh span, so "Tailwind" under You is still "Your Tailwind" */
+  const nm = (full, vis) => full === vis ? E(vis) : `<span class="vh">${E(full)}</span><span aria-hidden="true">${E(vis)}</span>`;
+  const tog = (k, full, vis) => V2.kChip('', {html: nm(full, vis), on: !!spdUi[k], attrs: {'data-spd': k}}), wxb = (k, full, vis) => V2.kChip('', {html: nm(full, vis), on: spdUi.wx === k, attrs: {'data-spdwx': k}});
+  const grp = (c, label, gl, chips) => `<div class="sp2-g sp2-g${c}" role="group" aria-label="${label}"><span class="sp2-gl" aria-hidden="true">${gl}</span><span class="sp2-chs">${chips}</span></div>`;
+  const h1 = `<span>Who moves <em>first.</em></span> <span class="pl">${D.mine.length ? `Your six vs the top ${D.thr.length}.` : `The top ${D.thr.length}.`}</span>`;
   return `<section class="sp2-h">${V2.kHead({kicker: 'Battle · Speed Tiers · level 50', h1Html: h1, lead: `${tr ? 'Slowest first' : 'Fastest first'}, with each side's usual spread and item; ${wx}${cond.length ? `; ${cond.join(', ')}` : ''}.`})}
-    <div class="sp2-ctl">${V2.kSent(['With', tog('tw', 'Your Tailwind'), tog('up', 'You +1'), 'vs', tog('twOpp', 'Their Tailwind'), tog('icy', 'Them −1'), tog('par', 'They\'re Paralyzed'), 'or', tog('tr', 'Trick Room')], {label: 'Speed conditions', hint: false})}
-    <div class="sp2-wx">${V2.kSent(['In', wxb('auto', D.autoW ? `Your Weather (${D.autoW})` : 'Your Weather (None)'), wxb('', 'No Weather'), wxb('sun', 'Sun'), wxb('rain', 'Rain'), wxb('sand', 'Sand'), wxb('snow', 'Snow')], {label: 'Weather'})
-      /* finish (Nov 22): the last two weather words wrap together, so Snow is never left alone on the last row (it was, at 390, 600 and 1280);
-         grouping more words cost a whole row on phones */
-      .replace(/<button[^>]*data-spdwx="sand"[\s\S]*?data-spdwx="snow"[\s\S]*?<\/button>/, m => `<span class="sp2-wx4">${m}</span>`)}</div></div></section>`; };
+    <div class="sp2-ctl" role="group" aria-label="Speed conditions">${grp('me', 'Your side', 'You', tog('tw', 'Your Tailwind', 'Tailwind') + tog('up', 'You +1 Speed', '+1 Speed'))}<span class="sp2-vs" aria-hidden="true">vs</span>${grp('th', 'Their side', 'Them', tog('twOpp', 'Their Tailwind', 'Tailwind') + tog('icy', 'Them −1 Speed', '−1 Speed') + tog('par', 'They\'re Paralyzed', 'Paralyzed'))}<div class="sp2-fx">${grp('fd', 'The field', 'Field', tog('tr', 'Trick Room', 'Trick Room'))}${grp('wx', 'Weather', 'Weather',
+      wxb('auto', D.autoW ? `Your Weather (${D.autoW})` : 'Your Weather (None)', `Team (${D.autoW ? D.autoW[0].toUpperCase() + D.autoW.slice(1) : 'none'})`) + wxb('', 'No Weather', 'None') + wxb('sun', 'Sun', 'Sun') + wxb('rain', 'Rain', 'Rain') + wxb('sand', 'Sand', 'Sand') + wxb('snow', 'Snow', 'Snow'))}</div></div></section>`; };
 
 // the ladder's scale: a thin rule every 50 Speed (100 when the top is very fast), the labels on top
 V2.spScale = rows => { const mx = Math.max(1, ...rows.map(r => r.v)), step = mx > 400 ? 100 : 50, ticks = []; for (let t = step; t < mx; t += step) ticks.push(t); return {mx, step, ticks}; };
