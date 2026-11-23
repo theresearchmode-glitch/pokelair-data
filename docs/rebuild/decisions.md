@@ -2231,3 +2231,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:44 AM: Preview v245 published (foundation b6dd9eb0 verified): My Box 'The PC' for Sim's review.
 - 10:45 AM: Helper slot free: no approved build work left in the queue (checked: the Move, Ability and Item info sheets already exist in infosheet.js; My Box waits on Sim's review). Asked Sim for the next approved item rather than starting unapproved work. Game Plan updated.
 - 10:51 AM: WebKit D-meta on deab6286 (HEAD incl. hI + hJ): 117 pass 0 FAIL. THEME-03 passes again; the 3 earlier fails ran beside hB's test load, so it reads as load timing (now with evidence: same code, idle-ish machine, passes). Not a page fault.
+- 10:51 AM: Pushed batch with My Box 'The PC' (design branch, not live) for GitHub's full check.
