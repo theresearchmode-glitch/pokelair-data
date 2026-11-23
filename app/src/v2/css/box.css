@@ -247,3 +247,5 @@
 /* the narrowest cards and phones (320-359): the strip's two labels stay on one line, the header and the sort words a step tighter */
 @container (max-width:279.98px){.mb-strip{letter-spacing:0}}
 @media (max-width:359.98px){.mb-sixh h2,.mb-sixh .k-link{font-size:var(--t13)}.mb-seg .k-chip{font-stretch:80%}.mb-seg .k-chip>span{letter-spacing:-.01em}}
+/* 480-599.98 phones in a wider window (Nov 23, HH: 600-699 measured +71 to +265 px over the old page): the box rows and Your Six tiles stop growing with the width */
+@media (min-width:480px) and (max-width:699.98px){.mb-wall .bx-grid{grid-auto-rows:auto}.mb-t,.bx-slot{min-height:76px}.mb-t img{width:min(64px,90%)}.mb-pm{aspect-ratio:auto;height:72px}.mb-pm img{width:auto;height:64px}}
