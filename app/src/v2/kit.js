@@ -84,6 +84,12 @@ V2.kMoreIn = (n, o = {}) => { const label = o.label || ('open' in o && o.open ? 
    on: null leaves aria-pressed off (an add chip, not a toggle). */
 V2.kChip = (label, o = {}) => { const {class: c, ...a} = o.attrs || {};
   return `<button type="button" class="k-chip${c ? ' ' + V2.esc(c) : ''}"${o.on == null ? '' : ` aria-pressed="${!!o.on}"`}${V2.kAttrs(a)}><span>${o.html != null ? o.html : V2.esc(label)}${o.count != null && o.count !== '' ? `<small>${V2.esc(o.count)}</small>` : ''}</span></button>`; };
+/* the secondary button (Wave 2 part 3, Sim chose option A, Nov 22; wave2-proposal.md 3): k-go's outline sibling. Same shape and slant
+   as k-go (skewX -8deg, square corners, the words slant with the box), Unbounded slanted 800, 3px ink outline, no fill; on hover the
+   k-go offset shadow appears in PLOT blue. Pink k-go = the one main move, ink outline = the others. It carries np-btn2 too, so every
+   page's layout rule for its secondary buttons (place, width) still applies; the kit layer sets the look. */
+V2.kBtn = (label, attrs = {}) => { const {class: c, ...a} = attrs || {}, cls = `np-btn2 k-btn${c ? ' ' + V2.esc(c) : ''}`;
+  return a.href ? `<a class="${cls}"${V2.kAttrs(a)}><span>${V2.esc(label)}</span></a>` : `<button type="button" class="${cls}"${V2.kAttrs(a)}><span>${V2.esc(label)}</span></button>`; };
 V2.kMoves = list => `<ul class="k-moves">${(list || []).map(x => { const [n, pct] = Array.isArray(x) ? x : [x]; return `<li>${V2.kMove(n, {pct})}</li>`; }).join('')}</ul>`;
 V2.kMine = (text = 'Yours') => `<span class="k-mine">${V2.esc(text)}</span>`;
 // names drop a size before they wrap (HYBRID 7): each [data-kmax] steps down its levels (kit.css) until its line fits its box; every

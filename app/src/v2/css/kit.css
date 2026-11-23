@@ -209,3 +209,12 @@ button.k-move{cursor:pointer}
 .k-chip[aria-pressed="true"]:hover,.k-chip.k-on:hover{background:var(--k-plot)}
 .k-chip:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
 @media (forced-colors:active){.k-chip{border-color:ButtonText}.k-chip[aria-pressed="true"],.k-chip.k-on{forced-color-adjust:none;background:Highlight;color:HighlightText}}
+
+/* ===== the secondary button (Wave 2 part 3, Sim chose A, Nov 22): k-go's outline sibling. 44px (the site's --tap, as np-btn2 was), not
+   the picture's 48, so no page gets longer. The kit layer comes after components, so it wins over .np-btn2's look. ===== */
+.k-btn{display:inline-flex;align-items:center;justify-content:center;min-height:var(--tap);padding:0 var(--s5);border:3px solid var(--k-ink);border-radius:0;background:transparent;color:var(--k-ink);font-family:var(--u);font-size:var(--t15);font-weight:800;font-style:italic;line-height:1;letter-spacing:0;text-decoration:none;white-space:nowrap;cursor:pointer;transform:skewX(-8deg);transition:box-shadow .12s ease}
+.k-btn>span{transform:none}
+.k-btn:hover{box-shadow:4px 4px 0 var(--k-plot)}
+.k-btn:active{transform:skewX(-8deg) translate(2px,2px);box-shadow:none}
+.k-btn:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
+@media (prefers-reduced-motion:reduce){.k-btn{transition:none}}

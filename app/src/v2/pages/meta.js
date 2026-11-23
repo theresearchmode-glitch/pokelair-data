@@ -64,7 +64,7 @@ V2.raSpot = n => { const E = V2.esc, U = V2.raUi, megas = !!U.f.mega && !V2.raFi
     <div class="gs-sinfo"><p class="gs-tag u">${E(tag)}</p><h2 class="u">${V2.nameHtml(p.d)}</h2><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
       <p class="gs-big"><b class="u">${RS(r.total)}</b><span><i class="u">${T.k} tier</i><small>${E2(T.d)}</small></span></p>
       <div class="gs-facts">${V2.gsShare(N.u != null ? V2.raPct(N.u) : null, 'tournament')}<p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div>
-      <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Pokémon Page</span></button><button type="button" class="np-btn2" data-hmaround="${E(p.n)}"><span>Build Around It</span></button></div>
+      <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Pokémon Page</span></button><button type="button" class="np-btn2 k-btn" data-hmaround="${E(p.n)}"><span>Build Around It</span></button></div>
       ${mine ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : ''}</div></div>`; };
 // the stand shows everyone, the Megas view and No Megas; search, types, hidden gems and the box keep the list until Sim has seen them (brief section 7)
 V2.raFiltered2 = () => { const U = V2.raUi; return !!(U.q.trim() || U.ty.length || U.f.gem || U.f.box); };
