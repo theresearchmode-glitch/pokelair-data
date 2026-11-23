@@ -2084,3 +2084,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:00 PM: Sim: as helpers finish their tasks, let them; no refills until back to 1 helper as normal
 - 8:06 PM: Sim: My Team Party 'looks good to me. lets go with it' -> merge after checks pass; empty-space scan (hE2) still to report
 - 8:07 PM: Sim: second account runs Job 1 (Wave 2 pictures); here: Job 5 (hW2) minus the part the second account pushed. hW2 told to drop Wave 2 and stop after Job 5
+- 8:07 PM: Sim: 2 helpers allowed until 9 PM. Running now: hW2 (Job 5), hX (HH's queue: Wave 3 checks, sweep fixes, push), hE2 (empty-space scan) = 3, all finishing their jobs; no new helper started; from 9 PM back to 1
