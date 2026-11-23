@@ -2104,3 +2104,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:55 PM: Sim: if all done before 9 AM, keep going as HH sees fit; summary at 5:45 AM of all decisions from 10 PM to then (reminder scheduled 5:30 AM). Full summary before 9 AM.
 - 10:09 PM: Design authority: Battle (no opponent yet) at 1100+: Your Six faces Their Six with Compare's VS stamp, Your Games under it on the right; page 1440 1,283 -> 1,075 px. Also qcheck fixes: My Team phone name/score gap, Home parcel gift name.
 - 10:23 PM: Preview v238 published (foundation e5284e53, v2.js d860ae62, preview.json eb2cbcaf; 443 files): My Team Party, empty-space fixes, Battle VS, Test Run, Pokémon forms strip, Build waiting slots, Track Record, info words, calc Rain fix.
+- 10:25 PM: Design authority: How We Calculate hero at 1100+: headline full width, intro + counts row, the key as one wide two-column card (1440 2.22 -> 2.15 screens).
