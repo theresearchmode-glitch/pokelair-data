@@ -52,6 +52,7 @@ helper switches to building once its mock-ups are done: 2 build helpers + HH bui
 ## FULL DESIGN AUTHORITY UNTIL 9:00 AM MON NOV 23 (Sim, logged 9:12 PM Sun Nov 22; LATEST)
 Sim: "im giving you design authority until 9am tomorrow ... BE NASTY PLOT AS FUCK. USE WHAT WE HAVE BUT MAKE IT AS BEST AS POSSIBLE MAKE THE
 MOST OF IT. BE CREATIVE WITH WHAT WE HAVE. NO EMPTY BIG EMPTY SPACES. NO GENERIC BORING TO LOOK AT NONSENSE. im trusting ya partner."
+Sim, 9:15 PM: "also remember, cohesion and creativity!" (every page should feel like one site, each with its own creative idea).
 Until 9:00 AM Mon Nov 23: HH makes visual decisions on his own recommendation (with the executive authority, same end time). Every decision
 logged with its time; before/after pictures to Sim as work lands; one summary of all decisions before 9 AM. All other rules still apply
 (no generic AI design, the kit, the word list, length caps, tests, helper limit of 1). After 9 AM: back to Sim's yes with pictures.
