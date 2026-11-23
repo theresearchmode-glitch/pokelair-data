@@ -2139,3 +2139,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:48 AM: Checks on HEAD after polish fixes: qcheck about/track/tournaments/meta 0 new; minors groups all passed; q21 ALL PASSED. Now vz.sh on the hK2 merge (minors main2, q59, A-team).
 - 2:54 AM: GitHub run 1478 on 7c54cb2b: SUCCESS (Wave 2 + fixes all green). Batch push: polish fixes, hK2 Wave 2 finish.
 - 3:13 AM: On the hK2 merge: q59 all passed, A-team 139 pass 0 FAIL; minors main2 only the 2560 ticker timing flake (local only; GitHub green). Preview refresh with Wave 2 running.
+- 3:14 AM: Preview v240 published (foundation 3f38a45b verified on the artifact, v2.js b5f8f610, preview.json eb2cbcaf): Wave 2 kit parts everywhere + polish fixes.
