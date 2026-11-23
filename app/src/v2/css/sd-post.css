@@ -95,3 +95,14 @@
   .sdp .pr-parcel.pr-cpt{padding-bottom:var(--s5)}
   .sdp-top{margin-bottom:var(--s5)}
 }
+/* Home length (Nov 23, hX): the small paper in a desktop column (1100+; phones and iPads as they were). Its display sizes follow the
+   paper's width (cqi), so in a 380-540px column they fell between the kit's steps (qcheck: SIZE 28.7 / 30.1px "A New Mystery Gift" at
+   1280): the lead headline now steps 34 / 28 / 24 and the name 34 / 28 below its display range. The name's two stacked lines keep
+   their tight newspaper leading, with 16px between them so the lines' letters never touch (qcheck: OVERLAP "The Champions" x "Dispatch") */
+@media (min-width:1100px){
+  @container dp (max-width:699.98px){.sdp .dp-small .dp-name span+span{margin-top:var(--s4)}}
+  @container dp (max-width:521.98px){.sdp .dp-small .dp-lead:not(.dp-long) .dp-lh{font-size:var(--t28)}}
+  @container dp (max-width:437.98px){.sdp .dp-small .dp-lead:not(.dp-long) .dp-lh{font-size:var(--t24)}}
+  @container dp (max-width:443.98px){.sdp .dp-small .dp-name{font-size:var(--t34)}}
+  @container dp (max-width:377.98px){.sdp .dp-small .dp-name{font-size:var(--t28)}}
+}
