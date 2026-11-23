@@ -98,7 +98,7 @@
 .btg-pk:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
 .btg-home{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s4);margin:var(--s3) 0 0}.btg-home .btg-gl{margin:0;color:var(--k-ink2)}
 .btg-home .np-link{min-height:var(--tap);display:inline-flex;align-items:center}
-.btg-acts{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6);margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--rule)}.btg-acts .fine{margin:0;max-width:60ch}
+.btg-acts{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6);margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--rule)}.btg-acts .fine{flex:1 1 280px;margin:0;max-width:60ch} /* Wave 2 finish (Nov 23): the line gives way to the wider kit buttons, so they stay on its row (1100-1280) */
 .btg-acts .row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4)}
 .btg-acts .np-link{min-height:var(--tap);min-width:var(--tap);display:inline-flex;align-items:center;justify-content:center}
 

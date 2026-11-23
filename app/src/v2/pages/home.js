@@ -6,8 +6,8 @@
 // bench from the game plan, weather word, sample note), the Strength Score belt and VS, the Champion's corner (latest winner's six,
 // Load / Copy / All events). Behaviour and words are today's Home (HOME-06/07/09/10/11/16): same data hooks, same rules.
 V2.homeFight = () => { const E = V2.esc, ms = members(), has = ms.length > 0, n = (typeof RES === 'object' && RES && RES.teams) || 0, C = homeChamp();
-  const go = has ? `<a class="np-btn" href="#team">Score My Team</a><a class="np-btn2" href="#build"><span>Build Me a Team</span></a>`
-    : `<a class="np-btn" href="#build">Build Me a Team</a><a class="np-btn2" href="#team"><span>Score My Team</span></a>`;
+  const go = has ? `<a class="np-btn" href="#team">Score My Team</a><a class="np-btn2 k-btn" href="#build"><span>Build Me a Team</span></a>`
+    : `<a class="np-btn" href="#build">Build Me a Team</a><a class="np-btn2 k-btn" href="#team"><span>Score My Team</span></a>`;
   const cpOf = nm => { const m = (typeof ART_META === 'object' && ART_META[SPRITE_ID[nm]]) || [150, 150, 165]; return `${m[0]},${m[1]},${m[2]}`; };
   const fighter = (nm, it, lead) => `<button type="button" class="ff${lead ? ' lead' : ''}" style="--cp:${cpOf(nm)}" data-v2mon="${E(nm)}" aria-label="${E(V2.disp(nm))}${it ? ', ' + E(it) : ''}${lead ? ', lead' : ''}: open its info">${V2.mon(nm, {bare: true, tag: true})}<b>${V2.disp(nm).startsWith('Mega ') ? '<span class="ffm">Mega </span>' : ''}${V2.tileName(V2.disp(nm))}</b><small>${it ? V2.keepForm(E(it)) : '&nbsp;'}${lead ? '<span class="ff-sep"> · </span><em class="ff-ld">Lead</em>' : ''}</small></button>`;
   let FC = null; try { FC = C && ms.length >= 4 ? CH.fourVs(ms, C.six.map(x => x.p.n)) : null; } catch (e) { FC = null; }
@@ -38,7 +38,7 @@ V2.homeFight = () => { const E = V2.esc, ms = members(), has = ms.length > 0, n 
     : `<p class="fn-plan hm-plan"><strong class="u">Game Plan</strong> <span>${has ? 'Add at least four Pokémon and NastyPlot plans your four and two leads.' : 'Add your six and NastyPlot plans your four and two leads against the Champion.'}</span></p>`;
   return `<section class="fn-hero hm-hero"><p class="fn-band"><span class="live">Tonight's main event</span><span>Pokémon Champions · Reg M-C · VGC doubles</span><span>${n ? homeNum(n) + ' real tournament teams' : 'Real tournament results'}</span></p>
     <div class="fn-top"><h1 class="u fn-h hm-tag"><span>Sharply raise</span> <span class="pl">your win rate.</span></h1><div class="fn-go"><p class="hm-intro">Score your team, see what beats it, and plan every match, from ${n ? homeNum(n) + ' real tournament teams' : 'real tournament results'}.</p>
-      <div class="h3-go hm-go">${go}<a class="np-btn2" href="#battle"><span>Battle</span></a></div><p class="hm-imp">Already have a team? <button type="button" class="np-link" data-v2homeimport>Import a Team ›</button></p></div></div>
+      <div class="h3-go hm-go">${go}<a class="np-btn2 k-btn" href="#battle"><span>Battle</span></a></div><p class="hm-imp">Already have a team? <button type="button" class="np-link" data-v2homeimport>Import a Team ›</button></p></div></div>
     <div class="fn-ring${C ? '' : ' solo'}">${you}<div class="fn-mid">${belt}${C ? '<p class="u fn-vs" aria-hidden="true">VS</p>' : ''}${prep}</div>${them}</div>${plan}</section>`; };
 // Player review 3a (Nov 17): the ladder numbers are monthly (Smogon posts each month on the 1st of the next), so say how old they are:
 // ". November's numbers arrive Dec 1." Shown only until that date; '' when the month is unknown.
@@ -90,7 +90,7 @@ V2.homeMeta = () => { const E = V2.esc, rows = lairRows(), top = rows.slice(0, 1
   const n = V2.underdog(), d = E(V2.disp(n));
   const dog = `<div class="hm-ud fn-dog" style="--cp:${(m => m ? m.slice(0, 3).join(',') : '150,150,165')((typeof ART_META === 'object' && ART_META[SPRITE_ID[n]]) || null)}"><button type="button" class="hm-udst2" data-v2mon="${E(n)}" tabindex="-1" aria-label="${d}: open its info">${V2.mon(n, {bare: true, ft: true})}</button><div><p class="fn-k">The underdog of the night</p><h3 class="u ud-nm" data-v2mon="${E(n)}">${d}. <span>Somebody's favourite.</span></h3>
     <p>Rarely picked in tournaments, but every Pokémon deserves its moment. Maybe it's yours?</p>
-    <div class="row hm-acts"><button type="button" class="np-btn2" data-hmaround="${E(n)}"><span>Build Around It</span></button><button type="button" class="np-link" data-v2mon="${E(n)}">Pokémon Page ›</button></div>
+    <div class="row hm-acts"><button type="button" class="np-btn2 k-btn" data-hmaround="${E(n)}"><span>Build Around It</span></button><button type="button" class="np-link" data-v2mon="${E(n)}">Pokémon Page ›</button></div>
     <a class="np-link hm-fav" href="#build"><span>Or Build Around Your Favourite<span class="nw"> Pokémon ›</span></span></a></div></div>`;
   const wk = ''; /* moved into the Meta strip's This Week view (say it once, Nov 16) */
   return `${under}<section class="fn-pair${wk ? '' : ' solo'}">${dog}${wk}</section>`; };
@@ -145,7 +145,7 @@ V2.homeMore = () => { const E = V2.esc, img = n => { const id = typeof SPRITE_ID
     <div class="hm-cores">${cores.map(c => { const ps = c.slice(0, 3).map(n => byName.get(n)); return `<a class="hm-core" href="#build" data-hmcores><span class="hm-pi">${ps.map(p => img(p.n)).join('')}</span><span class="hm-pn">${ps.map(p => V2.rowName(p.d)).join(' · ')}</span><small><b>${E(winFmt(c[4] * 100))}</b> wins · ${homeNum(c[3])} teams</small></a>`; }).join('')}</div><a class="np-link hm-all" href="#build" data-hmcores>All Cores ›</a></div>` : '';
   const L = Array.isArray(S.log) ? S.log : [], ls = L.length ? logStats(L) : null;
   const bt = `<div class="hm-mp"><h3 class="u hm-mh">Your Games${ls ? ' · ' + ls.w + '–' + ls.l : ''}</h3>${ls ? `<div class="hm-log"><p><b>${ls.w}–${ls.l}</b><span>${ls.pct}% wins</span></p><p><b>${ls.n}</b><span>logged</span></p><p class="hm-dots" aria-label="Last ${Math.min(10, L.length)} games">${L.slice(-10).map(e => `<i class="${e.r === 'W' ? 'w' : 'l'}">${e.r === 'W' ? 'W' : 'L'}</i>`).join('')}</p></div><a class="np-link hm-all" href="#battle">Your Games ›</a>`
-    : `<p class="hm-hint">Log your games after each match and your record shows up here.</p><div class="row hm-acts"><a class="np-btn2" href="#battle"><span>Log a Game</span></a></div>`}</div>`;
+    : `<p class="hm-hint">Log your games after each match and your record shows up here.</p><div class="row hm-acts"><a class="np-btn2 k-btn" href="#battle"><span>Log a Game</span></a></div>`}</div>`;
   const sub = 'Doubles is played in pairs' + (tr ? ' · What Changed This Week' : '') + (co ? ' · Winning Cores' : '') + ' · Your Games'; // the section names as headed (title case, Sim's Nov 12 rule)
   return `<section class="hm-moresec"><details class="sg2-fold hm-more" data-hmmore${V2.hmUi.more ? ' open' : ''}><summary><span class="t">More on Home</span><span class="s">${E(sub)}</span></summary>
     <div class="hm-moreb">${pr}${tr}${co}${bt}<p class="hm-hint hm-src">${E((RES && RES.source) || '')}${RES && RES.source ? ' · ' : ''}Ratings: top-cut presence, conversion and win rate at real tournaments.</p></div></details></section>`; };
@@ -156,7 +156,7 @@ document.addEventListener('toggle', e => { const d = e.target; if (!d.matches ||
 V2.homeWelcome = () => { let seen = false; try { seen = !!LS.get('cc2.welcomed', ''); } catch (e) {} if (seen) return '';
   return `<section class="hm-welcome"><div class="hm-wl"><p class="np-eyebrow">New here?</p><h2 class="u">How fight night works.</h2>
     <p class="hm-hint">The team in your corner is a sample to explore. Replace it any time: Build Me a Team above, or copy a top team.</p>
-    <div class="row hm-acts"><a class="np-btn2" href="#tournaments" data-hmwelcome><span>Copy a Top Team</span></a><button type="button" class="np-link" data-hmwelcome>Got It</button></div></div>
+    <div class="row hm-acts"><a class="np-btn2 k-btn" href="#tournaments" data-hmwelcome><span>Copy a Top Team</span></a><button type="button" class="np-link" data-hmwelcome>Got It</button></div></div>
     <ol class="hm-steps"><li><b>Get a team</b><span>Let us build one from real winning teams, copy a top team, or type your own six.</span></li>
     <li><b>Read your Strength Score</b><span>How strong your six is, its Matchups against the top threats, and exactly what to change.</span></li>
     <li><b>Plan each match</b><span>Scout their six, see who moves first, run the damage, and get a turn 1 plan.</span></li></ol></section>`; };
@@ -190,7 +190,7 @@ if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => { if
 V2.pages.home = {place: 'home', draw() { if (V2.STAMPEDE) return V2.sdPage(); /* Sim, Nov 18: The Stampede replaces this Home (stampede.js); the old draw stays until Sim's yes on the new one */ return `<div class="hm2 fn">${V2.homeFight()}${V2.homeNew()}${V2.homeWelcome()}${V2.homeRing()}${V2.homeMeta()}${V2.homeTools()}</div>`; } /* say it once (Nov 15 night): More on Home's four parts live on their own pages (pairs -> Practice, What Changed -> This Week, Cores -> Build, Your Games -> Battle) */, after() { if (V2.STAMPEDE) return V2.sdAfter(); V2.fitUsed(); }};
 // Load this team (HOME-09): with a team of your own, the first tap asks ("Tap again"); the second loads it with Undo (today's loadSheet)
 // Sim Q10c (Nov 15): one replace-team confirmation everywhere, the same question and buttons as Winning Teams' cards and Events
-V2.hmSure = k => `<div class="wt-acts wt-sure" role="group" aria-label="Load this team"><span class="wt-q">Replace your current team?</span><button type="button" class="np-btn" data-hmload="${V2.esc(k)}"><span>Replace</span></button><button type="button" class="np-btn2" data-hmx><span>Cancel</span></button></div>`;
+V2.hmSure = k => `<div class="wt-acts wt-sure" role="group" aria-label="Load this team"><span class="wt-q">Replace your current team?</span><button type="button" class="np-btn" data-hmload="${V2.esc(k)}"><span>Replace</span></button><button type="button" class="np-btn2 k-btn" data-hmx><span>Cancel</span></button></div>`;
 document.addEventListener('click', e => { if (!e.target.closest || !e.target.closest('[data-hmx]')) return; V2.hmUi.sure = null; clearTimeout(V2.hmUi.t); V2.redraw(); });
 document.addEventListener('click', async e => { const L = e.target.closest('[data-hmload]'), Cp = e.target.closest('[data-hmcopy]'), P = e.target.closest('[data-hmprep]');
   if (L) { const k = L.dataset.hmload, x = evTeam(k); if (!x) return; if (members().length && V2.hmUi.sure !== k) { V2.hmUi.sure = k; clearTimeout(V2.hmUi.t); V2.hmUi.t = setTimeout(() => { V2.hmUi.sure = null; if (V2.route() === 'home' || V2.route() === 'build') V2.redraw(); }, 6000); V2.redraw(); return; }

@@ -124,7 +124,7 @@ V2.prSet = id => { const P = V2.postNow(), g = [...P.live, ...P.past].map(V2.prG
   V2.sheet(`<div class="pr-setsh"><p class="np-eyebrow"><span>Mystery Gift · ${V2.PR_HOW[g.how]}</span></p><h2 class="u">${E(g.name)}</h2>${V2.mon(g.mon, {bare: true, iw: 160})}
     <dl class="pr-setdl">${row('Nature', g.nature)}${row('Ability', g.ability)}${row('Held item', g.held)}${row('Also inside', g.extras.join(', '))}${g.moves.length ? `<div><dt>Moves</dt><dd><ul>${g.moves.map(m => `<li>${E(m)}</li>`).join('')}</ul></dd></div>` : ''}</dl>
     ${g.src.length ? `<p class="pr-src">Source: ${g.src.map(x => `<a href="${E(x.url)}" target="_blank" rel="noopener noreferrer">${E(x.name || 'Source')}</a>`).join(', ')}</p>` : ''}
-    <button type="button" class="np-btn2" data-v2mon="${E(g.mon)}"><span>Open ${E(V2.disp(g.mon))}'s Page</span></button></div>`, {label: g.name, small: true}); };
+    <button type="button" class="np-btn2 k-btn" data-v2mon="${E(g.mon)}"><span>Open ${E(V2.disp(g.mon))}'s Page</span></button></div>`, {label: g.name, small: true}); };
 // the empty counter: an empty parcel shelf and one line (Sim decides the final words)
 V2.prShelf = () => `<div class="pr-shelf"><svg class="pr-box0" viewBox="0 0 120 72" aria-hidden="true" focusable="false"><g fill="none" stroke="currentColor" stroke-width="3" stroke-linejoin="round" stroke-linecap="round"><path d="M14 30h92v38H14z"/><path d="M14 30 4 14h48l8 16M106 30l10-16H68l-8 16"/><path d="M48 46h24" stroke-dasharray="4 5"/></g></svg>
   <p class="u">Nothing at the counter right now.</p><p>The next gift will wait here.</p></div>`;

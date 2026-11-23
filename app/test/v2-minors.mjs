@@ -213,7 +213,7 @@ const AS = async () => {
       return {h, n: s.querySelectorAll('.sga2-two > li').length, strip: st ? st.innerText.replace(/\s+/g, ' ').trim() : ''}; });
     await q.click('.np-sheet [data-v2sgamore]', {timeout: 3000}).catch(() => {}); await q.waitForTimeout(500);
     const r2 = await q.evaluate(() => ({n: document.querySelectorAll('.np-sheet .sga2-two > li').length, f: document.activeElement && document.activeElement.getAttribute('data-v2plana'), eb: document.activeElement && document.activeElement.closest('li') ? document.activeElement.closest('li').querySelector('.np-eyebrow').textContent : ''}));
-    const m = r.strip.match(/^Show (\d+) More Showing 6 of (\d+)$/);
+    const m = r.strip.match(/^Show (\d+) more Showing 6 of (\d+)$/); /* Wave 2 finish (Nov 23): the strip is the kit show-more now, "Show N more" (the kit's one casing), its count line the small note */
     ok(r.h[0] === 'One Pokémon In, One Out' && r.n === 6 && m && r2.n === Math.min(12, +m[2]) && r2.f === '6' && r2.eb === 'Suggestion 7',
       `AS-3 (Q5 C): "One Pokémon In, One Out" with 6 cards, "${r.strip}"; Show More opens ${r2.n} (focus on ${r2.eb || 'nothing'})`); await c.close(); }
   // AS-4: "Bigger Plans" is an open section (no fold) of two-or-more-change plans only, each Apply mapped to its own plan
@@ -233,7 +233,7 @@ const AS = async () => {
       st = s.querySelector('[data-v2sgbmore]'); return {n, strip: st ? st.innerText.replace(/\\s+/g, ' ').trim() : '', end: !!s.querySelector('.sga2-end'), multi: [...(V2.plan.plans || []), ...((V2.plan.plans || {}).more || [])].filter(pl => pl.ch.length > 1).length}; })()`));
     if (r.multi >= 2) { await q.click('.np-sheet [data-v2sgbmore]'); await q.waitForTimeout(500);
       const r2 = await q.evaluate(() => ({n: document.querySelectorAll('.np-sheet .sga2-big > li').length, f: document.activeElement && document.activeElement.closest('.sga2-big > li') === document.querySelectorAll('.np-sheet .sga2-big > li')[1]}));
-      ok(r.n === 1 && r.strip === `Show ${Math.min(3, r.multi - 1)} More Showing 1 of ${r.multi}` && !r.end && r2.n === Math.min(4, r.multi) && r2.f,
+      ok(r.n === 1 && r.strip === `Show ${Math.min(3, r.multi - 1)} more Showing 1 of ${r.multi}` /* Wave 2 finish (Nov 23): kit show-more casing */ && !r.end && r2.n === Math.min(4, r.multi) && r2.f,
         `AS-4b (Q3 B): Bigger Plans shows 1 of ${r.multi}, "${r.strip}", no end line yet (${r.end}); Show More opens ${r2.n}, focus on the second plan (${r2.f})`); }
     else ok(r.n === r.multi && !r.strip, `AS-4b (Q3 B): ${r.multi} Bigger Plan(s), no strip needed (${r.n} shown)`);
     await c.close(); }
