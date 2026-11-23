@@ -1,5 +1,10 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH: My Team 'The Party' build, finishing its checks: q17 (Mega label) and rmjump fixed; 320 score plate fixed; phone length 4,004 vs limit 3,930 (+74) after trims, to Sim with pictures; q84 tap hint question. Helpers: hW2 Job 5 (last job), hX Wave 3 reruns. hE2 done (empty-space scan 9fbb34bf).
+NOW: HH (design authority to 9 AM Mon, Sim 9:12 PM): verify the 9 empty-space fixes + My Team (qcheck changed pages, minors, behaviour, q59/q17/q84), then merge-ready. Helper: hW2 Job 5 (last job).
+NEXT: Job 3 length options under authority: Speed Tiers B, Test Run A, Pokémon page A (second account's pictures), build one at a time
+NEXT: Wave 2 kit parts build (Sim's A for all five): the one helper once hW2 ends
+NEXT: Track Record (2px over the +720 cap): decide and merge
+NEXT: scan leftovers: Build's empty waiting sections, Test Run's side card taller than the window, 1920 headline air
+NEXT: second empty-space sweep at 1366/1600/2560 and dark theme after the fixes land; Preview; decision summary before 9 AM
 NEXT: merge My Team Party after checks; Preview; empty-space scan findings to Sim (Events, About, This Week heroes first)
 NEXT: review second account round 3 (alt/calc-rain, alt/length-trim) when pushed
 NEXT: Job 3 (length options pictures: Speed Tiers, Test Run, My Team, Pokémon page) by HH; then Job 1 (Wave 2 kit-part pictures); hW2 after Track Record: Job 5 (Ability/Item blue words build). Second account: Job 4 sweep only
