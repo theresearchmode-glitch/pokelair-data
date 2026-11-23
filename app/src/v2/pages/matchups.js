@@ -5,7 +5,7 @@
 // Sim, Nov 11: most of the 30 are "Even match", so the section opens on the stand-outs (Unfavoured, then Favoured) with "See all 30".
 // The view is kept under the new build's own key (today's page doesn't know "Stand-outs", so it never sees it).
 V2.MUV = [['out', 'Stand-Outs'], ['top', 'Top 10'], ['grid', 'Top 12 Grid'], ['all', 'All 30']];
-V2.muView = () => { const v = LS.get('np2.seg.thr', 'out'); return V2.MUV.some(x => x[0] === v) ? v : 'out'; };
+V2.muView = () => { const v = LS.get('cc2.seg.thr', LS.get('np2.seg.thr', 'out')); return V2.MUV.some(x => x[0] === v) ? v : 'out'; };
 V2.MUG = ['✗', '~', '✓', '✓✓']; // a shape per calc level, so the colour is never the only signal
 V2.MUC = {win: 'cw', trade: 'ct', lose: 'cl', none: 'cn'}; // grid cells: CH.cellOf's four answers
 V2.VCLS = {'Favoured': 'vf', 'Even match': 've', 'Unfavoured': 'vu'};
@@ -124,12 +124,12 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
   if (th && th.closest('#main')) { V2.muOpen(th.dataset.muthr, th.matches('button') ? th : (th.querySelector('button') || th)); return; } /* a grid row hands over its threat button, so focus can return there (sweep, Nov 15) */
   if (t.closest('[data-mumore]')) { ui.tlMore = !ui.tlMore; V2.redraw(); const b = document.querySelector('[data-mumore]'); if (b && e.detail === 0) b.focus({preventScroll: true}); return; } // keyboard: focus stays on the button
   if (t.closest('[data-muall]')) { ui.threatsAll = true; V2.redraw(); return; }
-  if (t.closest('[data-mufull]')) { V2.closeSheet(true); LS.set('np2.seg.thr', 'all'); V2.tmUi.tab = 'tm-mu'; V2.redraw(); V2.tmGo('tm-mu'); return; } /* phones: opens the Matchups tab */
+  if (t.closest('[data-mufull]')) { V2.closeSheet(true); LS.set('cc2.seg.thr', 'all'); V2.tmUi.tab = 'tm-mu'; V2.redraw(); V2.tmGo('tm-mu'); return; } /* phones: opens the Matchups tab */
   if (t.closest('[data-mufix]')) { const pl = (ui.planList || [])[0]; if (!pl) return; V2.closeSheet(true); applyPlan(pl); render(); /* code review C6: the normal save-and-refresh path (persist + fresh caches + redraw), as its siblings use */ V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`); } });
 // the view switch (the shared slider) and the remembered open threats in All 30 (today's ui.thrOpen)
-document.addEventListener('v2slide', e => { if (e.detail.key !== 'thr') return; LS.set('np2.seg.thr', e.detail.value); V2.redraw(); });
+document.addEventListener('v2slide', e => { if (e.detail.key !== 'thr') return; LS.set('cc2.seg.thr', e.detail.value); V2.redraw(); });
 // "See all 30" from the stand-outs
-document.addEventListener('click', e => { if (!e.target.closest || !e.target.closest('[data-muall30]')) return; LS.set('np2.seg.thr', 'all'); V2.tmUi.tab = 'tm-mu'; V2.redraw(); V2.tmGo('tm-mu'); });
+document.addEventListener('click', e => { if (!e.target.closest || !e.target.closest('[data-muall30]')) return; LS.set('cc2.seg.thr', 'all'); V2.tmUi.tab = 'tm-mu'; V2.redraw(); V2.tmGo('tm-mu'); });
 document.addEventListener('toggle', e => { const d = e.target; if (d && d.dataset && d.dataset.muopen) { ui.thrOpen = ui.thrOpen || {}; ui.thrOpen[d.dataset.muopen] = d.open; } }, true);
 // after My Team redraws: the open sheet follows the new numbers, and Close / Escape still return to the row that opened it
 V2.muAfter = () => { const S = V2._sheet; if (!S || !S.wrap.querySelector('.mu-sh')) return; V2.muSheetRedraw();

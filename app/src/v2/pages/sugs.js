@@ -300,7 +300,7 @@ addEventListener('scroll', () => { const p = document.querySelector('.sg2-tipop'
 // Offense / Defense switch, today's headlines (threat 2HKOs, types hit; weaknesses vs resists, top threats that beat 3+),
 // the type lists, the two-Mega pick, and Full Tables (today's offense table and defense grid) as a sheet.
 // Working-out is today's shared logic: analyze, offenseRows, prepOf, playForm, mult (no maths copied here).
-V2.ty = {mode: (() => { try { return LS.get('np2.seg.types', 'off') === 'def' ? 'def' : 'off'; } catch (e) { return 'off'; } })()};
+V2.ty = {mode: (() => { try { return LS.get('cc2.seg.types', LS.get('np2.seg.types', 'off')) === 'def' ? 'def' : 'off'; } catch (e) { return 'off'; } })()};
 V2.tyData = () => { const ms = members(); if (!ms.length) return null; const msPlay = playForm(ms), a = analyze(msPlay, true);
   let RD = null; try { RD = prepOf(ms); } catch (e) {}
   const RDd = RD ? {over: RD.rows.filter(r => r.losers.length >= 3), hit: RD.rows.filter(r => r.rows.some(x => x.du && x.du.nM <= 2)).length, noHit: RD.rows.filter(r => !r.rows.some(x => x.du && x.du.nM <= 2)).sort((x, y) => y.t.w - x.t.w)} : null;
@@ -329,7 +329,7 @@ V2.openTypeTables = () => { const D = V2.tyData(); if (!D) return; const {a, off
   const defT = `<table class="ty2-tb ty2-grid"><thead><tr><th>Attack</th>${msPlay.map(x => `<th title="${E(x.d)}">${E(x.d.replace('Mega ', 'M·').slice(0, 12))}</th>`).join('')}<th>Weak</th><th>Resist</th><th>Net</th></tr></thead><tbody>${a.rows.map(t => `<tr${t.w > t.r ? ' class="no"' : ''}><td>${V2.typeChip(t.atk)}</td>${msPlay.map(x => `<td>${m(mult(t.atk, x.types, x.ability, true))}</td>`).join('')}<td>${t.w || ''}</td><td>${t.r || ''}</td><td>${t.net > 0 ? '+' + t.net : t.net < 0 ? t.net : '0'}</td></tr>`).join('')}</tbody></table>`;
   V2.sheet(`<div class="gp2 ty2s"><div class="np-eyebrow"><span>My Team · Types</span></div><h2 class="u">Full Tables</h2>
     <h3 class="u">Offense: what you hit</h3><div class="ty2-wrap">${offT}</div><h3 class="u">Defense: what hits you</h3><div class="ty2-wrap">${defT}</div></div>`, {label: 'Full Tables'}); };
-document.addEventListener('v2slide', e => { if (e.detail.key !== 'types') return; V2.ty.mode = e.detail.value; try { LS.set('np2.seg.types', V2.ty.mode); } catch (er) {} const el = document.querySelector('.ty2'); if (el) { el.outerHTML = V2.typesHtml(); const f = document.querySelector(`.ty2 [data-v2slide="types"] [data-v="${V2.ty.mode}"]`); if (f) f.focus(); } });
+document.addEventListener('v2slide', e => { if (e.detail.key !== 'types') return; V2.ty.mode = e.detail.value; try { LS.set('cc2.seg.types', V2.ty.mode); } catch (er) {} const el = document.querySelector('.ty2'); if (el) { el.outerHTML = V2.typesHtml(); const f = document.querySelector(`.ty2 [data-v2slide="types"] [data-v="${V2.ty.mode}"]`); if (f) f.focus(); } });
 document.addEventListener('click', e => { if (e.target.closest('[data-v2tytables]')) { V2.openTypeTables(); return; }
   const b = e.target.closest('[data-v2megapick]'); if (b) { ui.megaPick = b.dataset.v2megapick; const el = document.querySelector('.ty2'); if (el) el.outerHTML = V2.typesHtml(); } });
 

@@ -305,7 +305,7 @@ document.addEventListener('focusin', e => { const t = e.target; try { if (!t.mat
   if (r.top < top) scrollBy(0, r.top - top); else if (r.bottom > bot && r.height < bot - top) scrollBy(0, r.bottom - bot); });
 V2.setTheme = m => { m = m === 'day' || m === 'night' ? m : 'auto'; const t = m === 'auto' ? V2.devTheme() : m; window.__npThMode = m;
   V2._thLast = t; /* the observer below then knows this change is already redrawn (code review B-m1: it redrew twice) */ document.documentElement.dataset.theme = t; document.documentElement.dataset.look = t === 'night' ? 'dark' : 'light'; /* the shared share-image code reads data-look (code review C8) */
-  if (m === 'auto') { V2.LS.del('np2.theme'); V2.LS.del('cc2.theme'); /* Auto saves nothing; today's site's old choice must not come back on reload */ } else V2.LS.set('np2.theme', m);
+  if (m === 'auto') { V2.LS.del('np2.theme'); V2.LS.del('cc2.theme'); /* Auto saves nothing; today's site's old choice must not come back on reload */ } else { V2.LS.set('np2.theme', m); V2.LS.set('cc2.theme', JSON.stringify(m === 'night' ? 'dark' : 'light')); } /* today's site reads cc2.theme (saved-data contract, Nov 23) */
   V2.redraw(); }; // in place: focus stays on Day/Night (A5)
 /* Sim, Nov 16: the theme can change without the theme button (the phone or app switching to dark on its own: head.html listens for it);
    whatever changes it, the page redraws once, so theme-drawn parts (the button's label, Build's lighting) follow */

@@ -156,10 +156,10 @@ await A.p.reload(); await v2Ready(A.p);
   ok(same(r.box, wantBox) && r.six[SWAP_AT] === ADD && t.includes(SDISP[ADD]), `SV-3 after a reload the new page shows the change (box ${r.box.length}, slot ${SWAP_AT + 1} ${r.six[SWAP_AT]}, shown on the page ${t.includes(SDISP[ADD])})`); }
 // gaps (settings): a Day choice made on the new page, and two views today's page remembers
 await A.ev("V2.setTheme('day')"); await A.p.waitForTimeout(200);
-{ const l = await lsAll(A.p); gap(l['cc2.theme'] === '"light"', `theme: Day picked on the new page reaches today's page's key (cc2.theme ${l['cc2.theme'] || 'unset'}; the new page saved np2.theme ${l['np2.theme'] || 'unset'})`); }
+{ const l = await lsAll(A.p); ok(l['cc2.theme'] === '"light"', `theme: Day picked on the new page reaches today's page's key (cc2.theme ${l['cc2.theme'] || 'unset'}; the new page saved np2.theme ${l['np2.theme'] || 'unset'})`); }
 { const mu = await A.ev('V2.muView()'), ty = await A.ev('V2.ty.mode');
-  gap(mu === 'grid', `Matchups view: today's saved cc2.seg.thr "grid" is read by the new page (it opens on "${mu}"; it reads np2.seg.thr)`);
-  gap(ty === 'def', `Types view: today's saved cc2.seg.types "def" is read by the new page (it opens on "${ty}"; it reads np2.seg.types)`); }
+  ok(mu === 'grid', `Matchups view: today's saved cc2.seg.thr "grid" is read by the new page (it opens on "${mu}"; it reads np2.seg.thr)`);
+  ok(ty === 'def', `Types view: today's saved cc2.seg.types "def" is read by the new page (it opens on "${ty}"; it reads np2.seg.types)`); }
 ok(!A.errs.length, `no page errors on the new page (${A.errs.join(' | ') || 'none'})`);
 await A.c.close();
 // SV-4: today's page opens what the new page wrote
