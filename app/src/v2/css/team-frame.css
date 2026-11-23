@@ -361,3 +361,8 @@
 @media (max-width:699.98px){.pty2 .mtf .mtf-row.k-card .k-sc{margin-top:var(--s1)}}
 /* phones: the hint and "New crew?" one step closer (pays back the 12px the name/score air added; v2-q59 limit 4,010) */
 @media (max-width:699.98px){.pty2-tap{margin-bottom:var(--s1)}.pty2 .tmk-new{margin-top:var(--s2)}}
+/* My Team at 1100+ (HH, design authority to 9 AM Mon): the team's name runs the band's full width on one line (with "(sample)" beside it), and the
+   Strength Score plate sits beside the line under it, instead of squeezing the name into three lines next to the plate (1440: -59px) */
+@media (min-width:1100px){.pty2 .mtf-k{grid-row:1}.pty2 .k-kicker{grid-row:2}.pty2 .tm-name{grid-column:1/-1;grid-row:3}.pty2 .tm-name .mtf-smp{display:inline;margin-left:.3em}
+  .pty2 .tm-sample,.pty2 .tm-gone,.pty2 .mtf-wait{grid-row:4;align-self:center}.pty2 .mtf-score{grid-row:4;align-self:start}
+  .pty2 .mtf{grid-row:5}.pty2 .mtf-acts{grid-row:6}.pty2 .tmk-new{grid-row:7}.pty2 .tm-jump{grid-row:8}}
