@@ -705,7 +705,8 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   const tl = await p.evaluate(() => { const n = [...document.querySelectorAll('.trk-slip')].map(s => s.dataset.v2mon)[0]; if (!n) return ['(no card on Track Record)', ''];
     const t = document.createElement('template'); t.innerHTML = V2.trSlip({n, r: 80}, true, 'on 2 top-8 teams<br>won ' + V2.esc('Players\' Cup "A" & B <C>'), 0); const s = t.content.querySelector('.trk-slip');
     return [s ? s.getAttribute('aria-label') : '(no card drawn)', s ? s.querySelector('.k-fact').textContent : '']; });
-  ok(tl[0].includes(`top-8 teams, won Players' Cup "A" & B <C>.`) && tl[1].endsWith(`won Players' Cup "A" & B <C>`), `Review Nov 17 #8: Track Record card labels read event titles as written, with no "amp" or "#39" ('${tl[0]}')`); }
+  /* Nov 22 (Track on the kit): the card shows the short fact; the event's title lives in the spoken label only, so the label is what is read here */
+  ok(tl[0].includes(`top-8 teams, won Players' Cup "A" & B <C>.`) && !/&amp;|&#39;|amp;/.test(tl[0] + tl[1]), `Review Nov 17 #8: Track Record card labels read event titles as written, with no "amp" or "#39" ('${tl[0]}')`); }
 { const tt = []; await p.setViewportSize({width: 390, height: 844}); for (const r of ['meta', 'usage', 'sets', 'tournaments', 'events', 'archetypes', 'weekly']) { await p.goto('file://' + PAGE + '#' + r); await p.waitForTimeout(1500);
     tt.push([r, await p.evaluate(() => { const t = [...document.querySelectorAll('#main .ra-tabs')].find(e => e.getClientRects().length), h = document.querySelector('#main .ra-lede') || document.querySelector('#main h1'); if (!t || !h) return [9999, 999];
       const T = t.closest('.ra-sub').getBoundingClientRect(); return [Math.round(T.top + scrollY), Math.round(T.top - h.getBoundingClientRect().bottom)]; })]); }

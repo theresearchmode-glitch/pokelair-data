@@ -12,10 +12,13 @@ V2.trBandC = b => { try { const k = lTier([80, 60, 40, 0][b]).k.toLowerCase(); r
    name: HYBRID's fix for the CALLED IT wrap). A miss that won one event says "won 1 event" so the six cards stay even; the event's full name
    stays in the card's spoken label. 'text' is HTML and already escaped (review Nov 17 #8), so the label only drops tags and guards quotes */
 V2.trSlip = (m, hit, text, i) => { const E = V2.esc, p = byName.get(m.n); if (!p) return '';
-  const said = text.replace(/<br>/g, ', ').replace(/<[^>]+>/g, '').replace(/"/g, '&quot;'), shown = !hit && m.w === 1 ? 'won 1 event' : text, T = '\u0001F\u0001';
+  /* on screen the approved mock's short fact (track2, HH Nov 22): a call "105 top 8s" / "won 10" on two lines (the mock's dot left out: Sim, Nov 17 Q1, no dots on the cards); a miss "won 1 event", or its first line
+     ("on 4 top-8 teams" / "no top 8 in N events") when it won nothing; the full sentence (events, the event's name) stays in the spoken label */
+  const said = text.replace(/<br>/g, ', ').replace(/<[^>]+>/g, '').replace(/"/g, '&quot;'), T = '\u0001F\u0001';
+  const shown = hit ? `${homeNum(m.c)} top 8${m.c === 1 ? '' : 's'}<br>${m.w ? `won ${homeNum(m.w)}` : 'no wins'}` : m.w ? `won ${homeNum(m.w)} event${m.w === 1 ? '' : 's'}` : text.split('<br>')[0].replace(/^(on [\d,]+ top-8 teams?).*/, '$1');
   const card = V2.kCard(m.n, {score: RS(m.r), tier: 'rated', fact: T, attrs: {'data-v2mon': m.n}}).replace(T, shown)
     .replace('class="k-card', `class="trk-slip ${hit ? 'hit' : 'miss'} k-card`).replace(/ aria-pressed="[^"]*"/, '')
-    .replace('<button type="button"', `<button type="button" style="--i:${i}" aria-label="${E(p.d)}, rated ${RS(m.r)}, ${said}. ${hit ? 'Called it' : 'Missed'}."`);
+    .replace('<button type="button"', `<button type="button" aria-label="${E(p.d)}, rated ${RS(m.r)}, ${said}. ${hit ? 'Called it' : 'Missed'}."`);
   return `<li>${card.replace(/<span class="k-plate">/, '<span class="k-plate" aria-hidden="true">')}${V2.kTag(hit ? 'good' : 'bad', hit ? 'CALLED IT' : 'MISSED').replace('<span ', '<span aria-hidden="true" ')}</li>`; };
 V2.trChart = T => { const W = new Map(); for (const e of T.ev) { const k = trWeek(e.date); if (!W.has(k)) W.set(k, []); W.get(k).push(e); }
   const wk = [...W.keys()].sort(); if (wk.length < TR_MIN.weeks) return null; const R = wk.map(k => trRates(W.get(k)));

@@ -3186,7 +3186,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .trk-top{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:var(--s6);align-items:end}
 .trk-h h1 .pl{color:var(--plot-text)}
 .trk-stats{list-style:none;margin:0;padding:0;display:flex;gap:var(--s8)}.trk-stats b{white-space:nowrap}.trk-stats li{display:grid}.trk-stats b{font:900 var(--t34)/1.1 var(--u);font-style:italic}.trk-stats span{font:500 var(--t13)/1.5 var(--b);color:var(--ink-2)}
-.trk h2{margin:0;font:900 var(--t34)/1.2 var(--u);font-style:italic}
+.trk h2:not(.k-h2){margin:0;font:900 var(--t34)/1.2 var(--u);font-style:italic} /* Wave 3 (Sim, 6:51 PM): the plan steps keep the kit's 40px .k-h2 */
 .trk-body{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,7fr);gap:var(--s12);align-items:stretch}
 .trk-right{display:grid;gap:var(--s10);align-content:space-between}
 /* the receipt */
@@ -3236,7 +3236,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 /* Track Record on the kit (Nov 22, Sim approved HH's track2 direction, 12:34 PM): kit head and facts, the plan's three steps; the receipt stays the
    hero (white paper in both themes) with the verdict stamp and the one pink move beside it; the calls are kit roster cards, verdict tag under each */
 .trk2{gap:0}
-.trk2 .trk-top{align-items:end;gap:var(--s6) var(--s12)}
+.trk2 .trk-top{grid-template-columns:minmax(0,1fr);align-items:start;gap:var(--s6)}.trk2 .trk-h .k-h1{max-width:none}
 .trk2 .k-head .k-kicker{display:table;max-width:100%}
 .trk2 .trk-stats.k-facts{margin:0;gap:var(--s3) var(--s8)}
 .trk2 .trk-stats b{font-size:var(--t34)}
@@ -3248,18 +3248,18 @@ button.pp2-plate{cursor:pointer;width:100%}
 .trk2 .trk-cols{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s6) var(--s4)}
 .trk2 .trk-gh{margin:0;font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--k-ink2)}
 .trk2 .trk-slips{grid-auto-rows:auto;gap:var(--s12) var(--s4);padding-top:var(--s12)}
-.trk2 .trk-cols>div{display:grid;grid-template-rows:auto 1fr}.trk2 .trk-gh{display:flex;align-items:center;gap:var(--s3);margin-bottom:var(--s2)}.trk2 .trk-gh .k-tag{display:none}
-.trk2 .k-sec{margin-top:var(--s10)}
+.trk2 .trk-cols>div{display:grid;grid-template-rows:auto 1fr}.trk2 .trk-gh{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap} /* desktop: the tag under each card says it; the group names stay for screen readers and the page's text */.trk2 .trk-gh .k-tag{display:none}
+.trk2 .k-sec{margin-top:var(--s8)}
 .trk2 .trk-slips>li{display:grid;grid-template-rows:1fr auto;gap:var(--s3);justify-items:start;container-type:normal}
 .trk2 .trk-slip.k-card{align-self:end;height:auto}
 .trk2 .trk-slip .k-fact{white-space:normal}
 .trk2 .trk-slip .k-tier{text-transform:none}
 .trk2 .trk-calls>.fine{margin:var(--s4) 0 0}
 .trk2 .trk-flow{margin-top:0}
-.trk2 .trk-wk{margin-top:var(--s6)}.trk2 .trk-wk h2{font-size:var(--t24)}
+.trk2 .trk-wk{margin-top:var(--s4)}.trk2 .trk-wk h2{font-size:var(--t24)}
 .trk2 .trk-evs,.trk2 .trk-next,.trk2 .trk-links{margin-top:var(--s5)}
 @media (max-width:1099.98px){.trk-r1{grid-template-columns:minmax(0,1fr)}.trk2 .trk-cols{grid-template-columns:minmax(0,1fr)}}
-@media (max-width:699.98px){.trk2 .trk-stats b{font-size:var(--t22)}.trk-big{font-size:var(--t22);white-space:nowrap}.trk-sl{display:none}.trk-say2{gap:var(--s2)}.trk2 .trk-slips{gap:var(--s10) var(--s2);padding-top:var(--s10)}.trk2 .trk-slips .k-fact{display:block}.trk2 .trk-slips .k-tag{display:none}.trk2 .trk-slips .k-sc{margin-bottom:var(--s2)}.trk2 .trk-gh .k-tag{display:inline-block}.trk2 .trk-slips>li{grid-template-rows:auto}}
+@media (max-width:699.98px){.trk2 .trk-stats b{font-size:var(--t22)}.trk-big{font-size:var(--t22);white-space:nowrap}.trk-sl{display:none}.trk-say2{gap:var(--s2)}.trk2 .trk-slips{gap:var(--s10) var(--s2);padding-top:var(--s10)}.trk2 .trk-slips .k-fact{display:block}.trk2 .trk-slips .k-tag{display:none}.trk2 .trk-slips .k-sc{margin-bottom:var(--s2)}.trk2 .trk-gh{position:static;display:flex;align-items:center;gap:var(--s3);width:auto;height:auto;margin:0 0 var(--s2);overflow:visible;clip:auto}.trk2 .trk-gh .k-tag{display:inline-block}.trk2 .trk-slips>li{grid-template-rows:auto}}
 @media (max-width:1099.98px){.trk-top{grid-template-columns:minmax(0,1fr)}.trk-body{grid-template-columns:minmax(0,1fr)}.trk-left{justify-self:center;width:min(100%,440px)}.trk-cols{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699.98px){.trk-rc,.trk-slip,.trk-paper{transform:none}.trk-flow{grid-template-columns:minmax(0,1fr);gap:var(--s3)}.trk-flow li+li::before{content:none}.trk-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}.trk-stats b{font-size:var(--t22)}
   .trk-sp{width:64px}.trk-sp .np-mon{--iw:60px}.trk-sr{min-width:64px}.trk-st b{font-size:var(--t15)}.trk-paper{padding:var(--s3)}}
@@ -4390,3 +4390,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .ev2 .ra-h .k-kicker{margin-top:0}
 .wt2 .ra-h .wt2-kick{justify-self:start;padding:var(--s1) var(--s3);background:var(--k-chip);color:var(--k-on-chip);font:800 var(--t15)/1.3 var(--u);font-style:italic;letter-spacing:.04em;transform:skewX(-10deg)}
 .wt2 .ra-h .wt2-kick::before{display:none} /* Winning Teams keeps its own chip for now: the kit kicker's layout (display:table, top margin from the ratings layer) moved its head; Wave 3 */ /* audit Wave 1 (P1-4): the kit kicker instead of the copied chip; Events keeps its head spacing */
+@media (max-width:699.98px){.trk2 .trk-stats.k-facts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3)}} /* phones: the three counts in one row, as the approved mock */
+@media (max-width:359.98px){.trk2 .trk-stats b{font-size:var(--t17)}}
+/* qcheck Nov 22: at 700-1099 the kit receipt runs full width (655px at 820), so the 1.5deg tilt lifts each line's right end onto the next; half the tilt there (as About's receipt) */
+@media (min-width:700px) and (max-width:1099.98px){.trk2 .trk-rc{transform:rotate(-.75deg)}}
