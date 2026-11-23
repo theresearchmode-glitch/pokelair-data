@@ -2176,3 +2176,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:20 AM: Sim: 'yes push the iphone fixes and no you still have design authority until 9am.' -> Correction of my 6:19 reading: design authority stays until 9:00 AM Mon Nov 23, then back to Sim. iPhone fixes approved by Sim: push.
 - 6:20 AM: Pushed iPhone fixes batch (Sim's yes): HEAD 4bdbc83e. Local so far: q59 all passed; minors groups (Home incl. new short-window check) and qcheck home/meta still running; GitHub runs the full check.
 - 6:22 AM: Final behaviour run on 35ccfec3 (frozen data): B 77/0, C 83/0, D 117/0. A-team 71 pass 68 FAIL, all after ADD-01 with 'Target page, context or browser has been closed' = the test browser crashed mid-run (load: 3 runs + helper in parallel), not page faults. Rerunning A-team alone.
+- 6:36 AM: Hourly work check 6:36 AM: 1 helper (hP); main: A-team rerun alone; minors groups + q59 passed on the iPhone fixes; Game Plan updated.
