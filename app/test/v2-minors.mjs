@@ -1372,8 +1372,10 @@ if (part('main2')) {
     lay.push(w + ':' + await qe(() => { const g = document.querySelector('.sdp-gifts'), n = document.querySelector('.sdp-news'); if (!g || !n) return 'missing'; const a = g.getBoundingClientRect(), z = n.getBoundingClientRect();
       const st = [...document.querySelectorAll('.sdp-stamps .pr-sw')].filter(e => e.getClientRects().length).length, gb = document.querySelector('.sdp-gb').getBoundingClientRect().bottom, pb = document.querySelector('.sdp-tilt').getBoundingClientRect().bottom;
       return (Math.abs(a.top - z.top) < 2 ? (Math.abs(gb - pb) <= 12 ? 'level' : 'uneven ' + Math.round(gb - pb)) : z.top >= a.bottom ? 'stacked' : 'overlap') + ',' + st; })); }
-  const want = {2560: 'level,4', 1920: 'level,4', 1440: 'level,4', 1366: 'level,4', 1100: 'stacked,4', 390: 'stacked,0', 360: 'stacked,0'}; /* phones: no stamps (Sim, Nov 18: Post X) */
-  ok(lay.every(x => x.split(':')[1] === want[x.split(':')[0]]), `SDP-4: gifts and news side by side ending level from 1360, stacked gifts first below; 4 stamps, none on phones (Post X) (${lay.join(' | ')})`);
+  /* phones: no stamps (Sim, Nov 18: Post X). Home length option B (Sim chose B, Nov 23): at 1100+ the post is Post X too, the parcel beside the
+     paper from 1100 and the stamps on Gifts, one tap away */
+  const want = {2560: 'level,0', 1920: 'level,0', 1440: 'level,0', 1366: 'level,0', 1100: 'level,0', 390: 'stacked,0', 360: 'stacked,0'};
+  ok(lay.every(x => x.split(':')[1] === want[x.split(':')[0]]), `SDP-4: gifts and news side by side ending level from 1100, stacked gifts first below; no stamps (Post X on phones, and on desktop with option B) (${lay.join(' | ')})`);
   /* every width, day and night: no sideways scroll, no text under 13px or outside the band, the code slip's parts never overlap, white text 4.5:1 on the red, every link and button 44px tall */
   const wd = []; for (const th of ['day', 'night']) { await qe(t => localStorage.setItem('np2.theme', t), th); await q.reload(); await q.waitForTimeout(2200);
     for (const w of [320, 340, 412, 600, 768, 1024, 1180, 1366, 1440, 1500, 2560]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(450);

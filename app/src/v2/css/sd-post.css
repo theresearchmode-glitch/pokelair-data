@@ -121,6 +121,7 @@
   .sdp-top{display:none}
   .sdp-ch h3{color:var(--ink)}.sdp-all{color:var(--ink)}.sdp-all:focus-visible{outline-color:var(--plot)}
   .sdp .sdp-stamps,.sdp .sdp-other,.sdp .pr-sent,.sdp .dp-more{display:none}
+  .sdp .sdp-two>.sdp-other{display:block} /* with no news (sdp-solo) the gifts keep the whole width as two parcels side by side (v2-minors SDP-6) */
   .sdp .pr-parcel.pr-cpt{padding-bottom:var(--s5)}
   .sdp-cols{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5)}
   .sdp-ch{margin-bottom:var(--s2)}.sd-band.sdp:last-child{padding-bottom:var(--s6)}
