@@ -2077,3 +2077,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:48 PM: Sim: no chevron themes ('every chevron themed theme ... terrible'). New direction: 'The Crew' heist poster: six tall type-colour panels, each Pokémon a role read from its set, team name as the title, score as the rating badge
 - 7:50 PM: Sim: mock-ups of 1 Hall of Fame and 2 Party screen, 'nasty plot af in execution'
 - 7:50 PM: Disk 98% full (hX bottleneck): removed finished worktrees bt, ev, hp, isx, tk, oldtm, fb -> 13G free. Note: tk (hM's stopped Track copy) had uncommitted edits to track.js/pages.css; superseded by hW2's committed Track fix (keep/track-kit-hw2), so nothing needed was lost
+- 7:53 PM: Sim: 'the party one is much better. refine it make it better make it the best you and lets go with it.' -> My Team direction = Party screen; HH refines, then builds it on the kit (pictures before merge)
