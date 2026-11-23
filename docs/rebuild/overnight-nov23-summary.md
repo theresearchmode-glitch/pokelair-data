@@ -16,7 +16,7 @@ Nothing went to the live site. Everything is on claude/design6 and on the Previe
   at 1366/1600/2560).
 - 10:34 PM Ultra-wide screens: from 2112 wide the page frame stops growing at 1,920 px of content and centres (eight pages were
   half empty at 2560). Home's hero keeps its own 96 px gutter (Home stays as Sim approved it).
-- 11:00 PM-ish My Team, 1100+: the team name on one line across the band, the Strength Score plate beside the line under it.
+- 11:12 PM (logged with the lengths) My Team, 1100+: the team name on one line across the band, the Strength Score plate beside the line under it.
 - 11:12 PM Type Chart: the 18 type buttons in one row from 1440; the whole chart's rows 28 px from 1280. 3.32 -> 3.16 screens.
 - 12:51 AM Usage on iPads (700-899): Items span two rows so Natures sits under Abilities (no empty right half; ~110 px shorter).
 - 12:59 AM Merged hK's Wave 2 kit parts (Sim chose A for all five): show-more, filter chip, secondary button, empty line, and the
