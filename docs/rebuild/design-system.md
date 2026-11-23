@@ -1096,5 +1096,9 @@ Generated from app/src/v2/css/tokens.css: 616 tokens (613 by day, 204 changed by
 | (max-width:1179.98px) | --gut | `48px` |
 | (max-width:699.98px) | --gut | `16px` |
 | (max-width:384.98px) | --d-khead | `34px` |
+| (max-width:469.98px) | --d-kgo | `var(--t22)` |
+| (max-width:419.98px) | --d-kgo | `var(--t20)` |
+| (max-width:359.98px) | --d-kgo | `var(--t17)` |
+| (min-width:700px) and (max-width:856.98px) | --d-ksent | `var(--t22)` |
 
 <!-- tokens:end -->

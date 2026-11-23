@@ -17,6 +17,9 @@ const ALLOW = new Set(['.gr2-box .gr2-st' /* Nov 22: Mystery Gifts on the kit, t
   /* Home's plan board (Nov 18): each lead's name is a short tag on its slanted colour plate, the same kind as exception (a) (a long name
      already drops to Instrument Sans: .sds-tg.nar); and the Practice plate's "Pick 4" tag on its slanted plate under 700 */
   '.sds-tk .sds-tg.u', '.sdt-pp .u.sdt-pick',
+  /* Nov 23 (Sim's iPhone 16 pictures, approved 6:20 AM / hI sweep 7:40 AM): under 440 the Ratings filter chips, the Grandstand / List
+     switch and Speed Tiers' word buttons drop to 13px so their slanted words fit their chips */
+  '.k-chip span', '.gs-vx', '.k-w span',
   /* Nov 18 evening (Sim: recommended, keep as built): on phones Home's two start buttons drop to 13px to stay on one line, and the
      Ratings podium's score and the Events / How We Calculate chip numbers are 13px badges inside small tiles */
   '.sdh-go .sdh-b1', '.sdh-b2 span', '.sdt-blk .u', '.sdt-cpic .u',
