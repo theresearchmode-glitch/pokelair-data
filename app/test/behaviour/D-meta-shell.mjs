@@ -520,7 +520,7 @@ t('SHEET-04', 'Info tab: usual set, stats, abilities with share, weaknesses, spe
 
 t('SHEET-05', 'Meta tab: typical set, move and item bars, "Brought with" partners open their sheet (PKMN-06)', run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); await d.openPokemon('Incineroar'); await d.tapSheetTab('Meta'); const s = await d.sheetPanel();
-  expect(has(s, 'Typical Set') && /Fake Out \d+(\.\d)?%/.test(s), 'typical set / Fake Out bar missing'); expect(has(s, 'Brought with'), 'no Brought with');
+  expect(has(s, 'Typical Set') && /Fake Out[^%]{0,40}?\d+(\.\d)?%/.test(s) /* page B (Nov 23): the moves line reads "Fake Out Physical · 40 power 99%" */, 'typical set / Fake Out bar missing'); expect(has(s, 'Brought with'), 'no Brought with');
   const p = await d.broughtWith(); expect(p.length >= 1 && p.length <= 4, 'partners: ' + p); await d.openPokemon(p[0]);
   expect(await d.sheetIsOpen() && await d.sheetName() !== 'Incineroar', 'partner did not open its sheet'); }));
 

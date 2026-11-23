@@ -333,11 +333,15 @@ export default (ui, pg) => {
            (how to build it, who it teams with), Rating = part 6 (why it rates N). Folded parts open with their "Show ›", as a player taps them */
         const P = {info: ['pk-s3', 'pk-s4', 'pk-s5'], meta: ['pk-s1', 'pk-s2'], rating: ['pk-s6']}[l.split(' ')[0]] || [];
         for (const id of P) { const o = document.querySelector(`#main [data-pkopen="${id}"]`); if (o && o.getAttribute('aria-expanded') !== 'true') o.click(); }
+        /* page B (Nov 23): Rating and Info are parts of the rap sheet's switch; tap the part, as a player would */
+        const sw = {rating: 'wh', info: 'st'}[l.split(' ')[0]]; const c = sw && document.querySelector(`#main [data-pkview="${sw}"]`); if (c) c.click();
         const first = P.map(id => document.getElementById(id)).find(Boolean); if (first) first.scrollIntoView({block: 'start'}); return 'page'; }, name);
       if (where === 'sheet') await tapEl(n => [...document.querySelectorAll('.np-sheet .ms2 [data-mstab]')].filter(__dvis).find(b => __dtx(b).toLowerCase().startsWith(n.toLowerCase())) || null, name, 'sheet tab ' + name, 400);
       else if (!where) throw new Error('no sheet tab ' + name); else await wait(300); },
     sheetPanel: () => ev(() => { const p = [...document.querySelectorAll('.np-sheet .ms2 [data-mspan]')].filter(x => !x.hidden && __dvis(x)); if (p.length) return p.map(__dtx).join(' ');
-      return window.V2 && V2.route() === 'pokemon' && document.querySelector('#main .pk') ? __dtx(document.querySelector('#main')) : null; }),
+      /* Pokémon page B (Sim chose it, Nov 23 12:40 PM): the rap sheet shows one part at a time behind a switch; the parts not showing are one tap away, so they count */
+      if (!(window.V2 && V2.route() === 'pokemon' && document.querySelector('#main .pk'))) return null; const hp = [...document.querySelectorAll('#main .pk .pk-pane[hidden]')];
+      hp.forEach(x => { x.hidden = false; }); const t = __dtx(document.querySelector('#main')); hp.forEach(x => { x.hidden = true; }); return t; }),
     tapInSheet: async m => { const page = await ev(() => !!(window.V2 && V2.route() === 'pokemon' && !document.querySelector('.np-sheet .ms2')));
       /* reskin (Nov 21, Sim approved the "file" mock-up): on the Pokémon page "Add to My Team" is the page's pink USE THIS SET. (the same
          data-v2add tap, the same toast and "On your team ✓" line), so the old words tap that button */
