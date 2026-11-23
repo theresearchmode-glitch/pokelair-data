@@ -2111,3 +2111,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:36 PM: Hourly check 10:35 PM: 1 helper (hK, Wave 2 kit parts); main: bc.sh checks; Game Plan v30 published 10:35. Design authority until 9 AM (Sim 9:12 PM) stands.
 - 10:50 PM: Checks: C-battle 83 pass 0 FAIL (art build; Battle VS ok). B-build 2 fails from the plate change (double data-v2mon) fixed; rerun chained (bd.sh): B-build, D-meta (art build), q83, s16, q59, qcheck build/track/gifts/archetypes.
 - 10:53 PM: Tried and dropped: Pokémon page head+hero as one grid at 1100+ (the page's own layered rules fight display:contents; broke the layout). Pokémon page stays as is; length (4.83 at 1440) goes to Sim.
+- 10:55 PM: BOTTLENECK found: every GitHub full-check run on claude/design6 tonight was cancelled by the next push (frequent log commits). Change: commit locally, push in batches about every 40 min so a run finishes. Next push after the current run ends.
