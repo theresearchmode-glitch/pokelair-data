@@ -2250,3 +2250,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:01 PM: WebKit A-team on eaad5060 (My Box 480-699 fix): 139 pass, 0 FAIL. Next main job: Chromium A-team on HEAD (saved-data fixes touch the Types slider and theme).
 - 12:17 PM: Chromium A-team on HEAD: 133/6. PLAY-02 read the old np2.seg.types key (test updated to cc2.seg.types, same meaning); SAVED-03..07 'Target crashed' (browser crash under load, hM running too). Pushed the test fix; rerunning A-team.
 - 12:18 PM: Disk was full (454 MB free): it crashed the browser in A-team (SAVED-03..07 'Target crashed') and the rerun. Removed finished worktrees hs2, ht2, mb, hj (branches kept; all committed): 7.6 GB free. Rerunning A-team.
+- 12:18 PM: My 12:17 A-team edit had a SyntaxError (an apostrophe inside a quoted string); the 12:21 rerun printed nothing because of it, not the disk. Fixed (node --check ok), pushed; rerunning A-team.
