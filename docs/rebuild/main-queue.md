@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH (design authority to 9 AM): full-site polish-check on HEAD after hL merge (pc.sh, frozen data). Preview v241 published 4:11. WebKit A/B/C/D all 0 FAIL. GitHub run on 913517fd (check ~4:40). Helper: hL re-measuring Battle with equal Win/Loss buttons.
-NEXT: merge hL's Battle re-measure if needed; push next batch after GitHub run; 5:45 AM summary (send + notification); Game Plan hourly (due ~4:35)
+NOW: HH (design authority to 9 AM): page lengths on HEAD f2581296 (frozen data, pl.sh) for the 5:45 and 9 AM summaries. hL merged twice (Battle all widths back to old length). Helper: hL on Test Run 1100-1439 side-lane labels (Handles it wraps).
+NEXT: GitHub run on 913517fd (check ~4:40), then push batch (hL merges); 5:45 AM summary (send + notification); review hL's Test Run fix; Preview after it
 NEXT: GitHub batches every ~40 min; Game Plan hourly
 NEXT: before 9 AM: full summary incl. lengths for Sim
 NEXT: 5:45 AM summary (decisions from 10 PM), Preview refresh before it
