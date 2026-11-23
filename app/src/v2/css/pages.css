@@ -1100,7 +1100,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 /* re-audit Nov 15: the empty Battle page's two-column layout (six beside Your Games, 820px) removed: the six needs My Team's full width (names were cut from 1280 up) */
 
 /* Battle Q2 B: the actions wrap as two whole groups ([Pick your four first, Win, Loss] and [Replay, Record]), never one link alone; phones keep their grid */
-.bt-lg{display:flex;flex-wrap:nowrap;align-items:center;gap:var(--s3)}@media (max-width:559.98px){.bt-lg{display:contents}}
+.bt-lg{display:inline-grid;grid-template-columns:1fr 1fr;align-items:center;gap:var(--s3)}.bt-lg>.np-link{grid-column:1/-1}@media (max-width:559.98px){.bt-lg{display:contents}}
 /* review fix (Nov 13): two across on phones there is room, so the My Team actions keep the one button size (15px) and the Saved Teams count */
 @media (max-width:399.98px){.tm-acts:has(.tm-saved) .np-btn2{font-size:var(--t15);padding:0 var(--s3)}.tm-acts:has(.tm-saved) .tm-svl small{display:inline}}
 /* review fix (Nov 13, "Your pick" pushed its tile up): the six tiles share five row lines (sprite, name, item, role, tag), names sit on
