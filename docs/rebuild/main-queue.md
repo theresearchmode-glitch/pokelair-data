@@ -1,5 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH: Build + Battle behaviour suites on HEAD after Wave 1 (task be0c3lpag); Preview v237 published; GitHub run on 7cca83f1
+NOW: HH: My Team 'The Party' (Sim chose it 7:53 PM): refined mock sent 7:58 PM; measuring today's true lengths (stable wait) as the baseline; build on the kit after Sim's go. Helpers: hW2 Job 5, hX HH's queue (Wave 3 checks, sweep fixes, push), hE2 empty-space scan
 NEXT: Job 3 (length options pictures: Speed Tiers, Test Run, My Team, Pokémon page) by HH; then Job 1 (Wave 2 kit-part pictures); hW2 after Track Record: Job 5 (Ability/Item blue words build). Second account: Job 4 sweep only
 NEXT: review hW2's Mystery Gifts, then Track Record fixes; pull the second account's alt/* branches (Wave 3 sizes first)
 NEXT: review hM's Track Record redo; hW2's Mystery Gifts; audit Wave 1 (no-looks) only after Sim's yes
