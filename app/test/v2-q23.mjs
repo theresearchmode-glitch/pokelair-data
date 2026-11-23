@@ -39,7 +39,9 @@ for (const night of [false, true]) for (const W of [320, 390, 768, 1280, 1920]) 
     return {side: document.documentElement.scrollWidth > innerWidth, lines: [
       one('six', '#main #sds-h', SIX, '#main .sds-line', () => getComputedStyle(document.querySelector('#main .sd-six')).backgroundColor, null),
       one('tools', '#main #sdt-h', TOOLS, '#main .sdt', s => getComputedStyle(s).backgroundColor, '.sdt-grid'),
-      one('post', '#main #sdpH', POST, '#main .sdp', s => getComputedStyle(s, '::before').backgroundColor, '.sdp-cols')]}; }, [SIX, TOOLS, W < 700 ? POST_S : POST_L]);
+      /* Home B (Sim chose it, Nov 23): at 1100+ the post is the tools band's last row, Mystery Gifts and Champions News under their own
+         headings; the red post band and its line are on phones and iPads only */
+      ...(innerWidth < 1100 ? [one('post', '#main #sdpH', POST, '#main .sdp', s => getComputedStyle(s, '::before').backgroundColor, '.sdp-cols')] : [])]}; }, [SIX, TOOLS, W < 700 ? POST_S : POST_L]);
   views++; const tag = `${night ? 'night' : 'day'} ${W}`; if (r.side) side.push(tag);
   for (const o of r.lines) { const t = `${tag} ${o.name}`;
     if (o.missing) { miss.push(`${t} (shown: ${JSON.stringify(o.texts)})`); continue; }
