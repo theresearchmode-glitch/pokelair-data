@@ -105,4 +105,9 @@
   @container dp (max-width:437.98px){.sdp .dp-small .dp-lead:not(.dp-long) .dp-lh{font-size:var(--t24)}}
   @container dp (max-width:443.98px){.sdp .dp-small .dp-name{font-size:var(--t34)}}
   @container dp (max-width:377.98px){.sdp .dp-small .dp-name{font-size:var(--t28)}}
+  /* Home length (Nov 23, hY): Home at 1440x900 was 3,610 (A) / 3,613 (B) px, just over the 4-screen cap of 3,600. The name's own margins
+     8 above / 12 below become 2 / 4 (14px; the 16px between its stacked lines stays: at 12 qcheck's OVERLAP "The Champions" x "Dispatch"
+     came back at 1440; 0 above would put its ascenders on the masthead rule). Measured on the untilted paper at 1280 and 1440: about 3px
+     clear between the masthead rule and the tallest letters, 3px between the "p" of Dispatch and the lead's rule (was 8 / 11) */
+  .sdp .dp-small .dp-name{margin:2px 0 var(--s1)}
 }
