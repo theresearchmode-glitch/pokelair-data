@@ -117,7 +117,10 @@ export default (ui, pg, o) => {
     browserBack: async (wait = 900) => { await pg.goBack(); await pg.waitForTimeout(wait); },
     tapJump: name => tapFound(n => [...document.querySelectorAll('#main .pk-jumps [data-pkjump]')].find(e => e.innerText.trim() === n) || null, name, 'jump link ' + name, 900),
     focusInside: () => pg.evaluate(() => { const a = document.activeElement; const s = a && a.closest && a.closest('section'); return s ? s.getAttribute('aria-labelledby') || '' : (a ? a.id || a.tagName : ''); }),
-    tapInPage: name => tapFound(n => [...document.querySelectorAll('#main .pk a, #main .pk button')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').includes(n)) || null, name, 'on the Pokémon page: ' + name, 1200),
+    /* Pokémon page B (Nov 23): a link in a rap-sheet part that isn't showing is reached the way a player would, by tapping that part's switch first */
+    tapInPage: async name => { await pg.evaluate(n => { const m = document.querySelector('#main .pk'); if (!m) return;
+        const p = [...m.querySelectorAll('.pk-pane[hidden]')].find(x => [...x.querySelectorAll('a, button')].some(e => (e.getAttribute('aria-label') || e.textContent || '').replace(/\s+/g, ' ').includes(n)));
+        const b = p && m.querySelector(`[data-pkview="${p.id.replace('pk-p', '')}"]`); if (b) b.click(); }, name); await pg.waitForTimeout(300); return tapFound(n => [...document.querySelectorAll('#main .pk a, #main .pk button')].find(e => e.getClientRects().length && (e.getAttribute('aria-label') || e.innerText || '').replace(/\s+/g, ' ').includes(n)) || null, name, 'on the Pokémon page: ' + name, 1200); },
     // ---------- Home (pages/home.js, Nov 12): same names and return shapes as today's adapter ----------
     // Home is the page with no hash too (V2.route falls back to it), so go / current / text treat "#home" and "no hash" alike
     // (the shared v2.mjs only knows hash routes); every other page goes through the shared adapter unchanged.
