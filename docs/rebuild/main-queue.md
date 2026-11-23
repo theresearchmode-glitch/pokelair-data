@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH (design authority to 9 AM): GitHub 1479 fix (Battle Win/Loss equal width, b7141551; q18 passed); minors groups rerun (BR-C1 flake check); D-meta WebKit (wk3.sh). Helper: hL (2 of 3 done: Battle 1280, Test Run 320; News hero next).
-NEXT: push batch when minors pass; review + merge hL (re-measure Battle 1280 with equal buttons); 5:45 AM summary (send + notification); Preview refresh after hL
+NOW: HH (design authority to 9 AM): full-site polish-check on HEAD after hL merge (pc.sh, frozen data). Preview v241 published 4:11. WebKit A/B/C/D all 0 FAIL. GitHub run on 913517fd (check ~4:40). Helper: hL re-measuring Battle with equal Win/Loss buttons.
+NEXT: merge hL's Battle re-measure if needed; push next batch after GitHub run; 5:45 AM summary (send + notification); Game Plan hourly (due ~4:35)
 NEXT: GitHub batches every ~40 min; Game Plan hourly
 NEXT: before 9 AM: full summary incl. lengths for Sim
 NEXT: 5:45 AM summary (decisions from 10 PM), Preview refresh before it
