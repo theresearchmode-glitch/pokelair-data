@@ -2062,3 +2062,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:13 PM: Sim: one more helper until 10 PM tonight (2 total). New helper hP: Job 3 (length-option pictures) then Job 1 (Wave 2 kit-part pictures), pictures only; stops at 10 PM
 - 7:14 PM: Sim: 'your rec is good to go' -> hP on picture jobs (Job 3 then Job 1) until 10 PM confirmed
 - 7:22 PM: Sim: 'after this task is done back to 1 helper only' -> hP stops after Job A (length-option pictures); Job B (Wave 2 pictures) back to the queue; then 1 helper
+- 7:29 PM: Second account Job 4 sweep in (alt/sweep, merged docs): Chromium A-D all green (139/77/83/117, 0 FAIL); 4 real new layout spots (This Week weather numbers clipped at 960, Sets source chips overlap at 320, Sets Base Speed spill 960-1040, News six 5+1 at 880); older WebKit fails same on the 9:44 AM build. HH fixes N1-N4 next (no look change beyond fitting); Track TOTAL spill to hW2
