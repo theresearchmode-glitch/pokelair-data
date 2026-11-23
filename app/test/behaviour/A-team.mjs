@@ -548,7 +548,7 @@ t('PLAY-02', 'Types fold: Offense/Defense switch, type grid, Mega pick with two 
     let f = await r.ui.typesPart() || ''; ok(await r.ui.chosen('Offense') === true && await r.ui.chosen('Defense') === false, 'Offense is not the first view');
     const o = f.match(/^Types Offense Defense What you hit\. You OHKO or 2HKO (\d+) of the top 30 threats (\d+)\/18 types hit super effectively by at least one of yours /);
     ok(o && +o[1] <= 30 && +o[2] <= 18, 'Offense view: ' + f.slice(0, 200)); has(f, /Nobody hits super effectively /, 'Offense view'); ok(!/Only one Mega Evolves/.test(f), 'the Mega pick shows on Offense');
-    await r.ui.choose('Defense', 900); f = await r.ui.typesPart() || ''; ok(await r.ui.chosen('Defense') === true, 'Defense not chosen'); ok(await r.ls('cc2.seg.types') === 'def', 'Defense not kept in cc2.seg.types (today's key, saved-data contract Nov 23): ' + await r.ls('cc2.seg.types'));
+    await r.ui.choose('Defense', 900); f = await r.ui.typesPart() || ''; ok(await r.ui.chosen('Defense') === true, 'Defense not chosen'); ok(await r.ls('cc2.seg.types') === 'def', 'Defense not kept in cc2.seg.types (the live site key, saved-data contract Nov 23): ' + await r.ls('cc2.seg.types'));
     has(f, /^Types Offense Defense What hits you\. (\d+ more weakness(es)? than resistances|Every weakness is covered by a resist) 6\/6 Pokémon /, 'Defense view');
     for (const s of ['More weak than resist', 'Nobody resists', 'Even split']) has(f, s, 'Defense view');
     has(f, /Only one Mega Evolves per battle, so this reads Mega Charizard Y as the Mega and the others in base form\. Show: Mega Charizard Y · Mega Salamence /, 'two-Mega pick');
