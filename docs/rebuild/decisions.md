@@ -2318,3 +2318,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:00 PM: Sim OK'd the item drawings v2 ('love it. lets do it'). HH merges hi-items and wires the drawings into the item sheet's evidence bag.
 - 6:02 PM: Design (HH authority): on phones the item bag sits above the name (40px drawing), since beside it 'Raichunite Y' broke mid-word at 390. Desktop: bag left of the name, like the seal and ID photo.
 - 6:06 PM: Checked: v2-minors main1 on t1rules (with Battle sprite fix): 'v2-minors (main1):all passed' (the Battle sprite test that failed before now passes).
+- 6:20 PM: GitHub run 1502: one FAIL, Stampede tiles 2 'Battle 1180: sprite 56px' (the old sizing). Fixed by bbd74b56 (local main1 all passed). Pushed the batch: Battle sprites, Speed Tiers B, item drawings + bag.
