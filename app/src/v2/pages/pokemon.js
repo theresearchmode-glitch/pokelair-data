@@ -190,8 +190,5 @@ V2.pages.pokemon = {place: 'meta', after() { V2.pkFocusName(); }, draw() { const
     ${top}${V2.pkForms(p).strip}${V2.kPlan(V2.pkRap(p) + V2.pkPartners(p) + V2.pkHits(p))}</div>`; }};
 // (code review A1-I1, Nov 17: a hashchange listener here reset every other page's title to 'NastyPlot' after V2.setTitle had set it; V2.setTitle handles every route, so it is gone)
 
-// phones: the full Moves and Items lists sit behind "Every move and item ›" (the typical set and the four moves already sum them up); desktop shows them
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-pklists]'); if (!b) return; const l = document.getElementById('pk-lists'); if (!l) return; const open = !l.classList.contains('open');
-  l.classList.toggle('open', open); b.setAttribute('aria-expanded', open); b.textContent = open ? 'Hide every move and item' : 'Every move and item ›'; try { localStorage.setItem('np2.pkopen.pk-lists', open ? '1' : '0'); } catch (x) {} });
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-pkmore]'); if (!b) return; const r = b.closest('.pk-rap'); if (!r) return; const open = !r.classList.contains('open');
   r.classList.toggle('open', open); b.setAttribute('aria-expanded', open); b.textContent = open ? 'Hide the full file' : 'The full file ›'; try { localStorage.setItem('np2.pkopen.pk-more', open ? '1' : '0'); } catch (x) {} });

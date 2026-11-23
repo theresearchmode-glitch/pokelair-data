@@ -3579,13 +3579,13 @@ button.pp2-plate{cursor:pointer;width:100%}
 .pk-ink:focus-visible,.pk-q:focus-visible,.pk-hr:focus-visible,.pk-pc:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
 .pk-qlinks{display:flex;flex-wrap:wrap;gap:0 var(--s5);flex-basis:100%}
 button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);text-align:left;cursor:pointer}
-.pk-acts .pk-lsum{display:none}
+
 .pk-setc .ms-add{margin:var(--s3) 0 0}
-.pk-lists{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s8)}
+
 @media (min-width:960px){.pkf .k-hero{grid-template-columns:minmax(0,420px) minmax(0,1fr);grid-template-areas:'card ver' 'card fac' 'card set' 'lst set';grid-template-rows:auto auto auto 1fr;gap:var(--s5) var(--s10)}
   .pkf .k-hero-side,.pkf .pk-is{display:contents}.pkf .k-hero-card{grid-area:card}.pk-verdict{grid-area:ver}.pkf .pk-is>.k-facts{grid-area:fac}.pk-setc{grid-area:set;align-self:start}
-  .pkf .pk-lists{grid-area:lst;grid-template-columns:minmax(0,1fr);align-self:start;margin-top:var(--s4)}}
-.pk-lists .pk-k{margin:0 0 var(--s2);font-size:var(--t15)}.pk-lists .ms-br{grid-template-columns:minmax(0,8rem) minmax(0,1fr) 48px;min-height:28px}.pk-lists p{margin:var(--s2) 0 0;font:500 var(--t15)/1.5 var(--b)}
+}
+
 /* the steps' small heads */
 .pk-lbl{margin:0 0 var(--s3);font-size:var(--t15);line-height:1.3;color:var(--k-ink)}
 .pkf .fine{margin:var(--s2) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
@@ -3657,8 +3657,8 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .pk-setc{padding:var(--s4)}
   .pk-kv{gap:var(--s2) var(--s4);margin-bottom:var(--s3)}
   .pk-acts{gap:var(--s2) var(--s4);margin-top:var(--s4)}.pk-acts .k-go{flex:1 1 100%}.pk-qlinks{display:contents}
-  .pk-acts .pk-lsum{display:inline-flex}
-  .pk-lists:not(.open){display:none}.pk-lists{grid-template-columns:minmax(0,1fr)}
+
+
   /* phones (as the approved mock-up): no dashed plan line, the step number sits before its heading, so the content has the full width */
   .pkf .k-plan{padding-left:0}.pkf .k-plan::before{display:none}.pkf .k-n{left:0;top:2px}.pkf .k-sec{margin-top:32px;padding-left:40px}.pkf .k-step{padding-top:var(--s4)}.pkf .k-step .k-n{top:calc(var(--s4) + 32px)}
   .pk-rap{grid-template-columns:minmax(0,1fr);grid-template-areas:'st' 'ab' 'sp' 'wh' 'da';grid-template-rows:auto}
