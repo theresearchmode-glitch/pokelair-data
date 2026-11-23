@@ -44,7 +44,8 @@ V2.kHero = (cardHtml, sideHtml) => `<div class="k-hero"><div class="k-hero-card"
 V2.kFacts = facts => `<ul class="k-facts">${(facts || []).map(([v, l, key]) => `<li><b class="u${key ? ' k-key' : ''}">${V2.esc(v)}</b><span>${V2.esc(l)}</span></li>`).join('')}</ul>`;
 V2.kScrib = text => `<span class="k-scrib u">${V2.esc(text)}</span>`;
 // the page's ONE big pink move (THEME 2.5): an <a> when attrs.href is given, else a <button>
-V2.kGo = (label, attrs = {}) => attrs && attrs.href ? `<a class="k-go u" data-kmax="2"${V2.kAttrs(attrs)}>${V2.esc(label)}</a>` : `<button type="button" class="k-go u" data-kmax="2"${V2.kAttrs(attrs)}>${V2.esc(label)}</button>`;
+/* Wave 2 (Nov 23): attrs.class is added to k-go (it used to write a second class attribute, which the browser ignores; no caller passed one) */
+V2.kGo = (label, attrs = {}) => { const {class: c, ...a} = attrs || {}, cls = `k-go u${c ? ' ' + V2.esc(c) : ''}`; return a.href ? `<a class="${cls}" data-kmax="2"${V2.kAttrs(a)}>${V2.esc(label)}</a>` : `<button type="button" class="${cls}" data-kmax="2"${V2.kAttrs(a)}>${V2.esc(label)}</button>`; };
 // the one verdict tag (THEME 2.6): good = blue, bad = pink, live = pink, neutral = outlined
 V2.kTag = (kind, text) => `<span class="k-tag u k-${['good', 'bad', 'live', 'neutral'].includes(kind) ? kind : 'neutral'}">${V2.esc(text)}</span>`;
 // the move ticket (Sim chose A, Nov 21, 2:38 PM: "a cohesive thing we can apply everywhere with pokemon moves so ppl know yeah thats a move name").

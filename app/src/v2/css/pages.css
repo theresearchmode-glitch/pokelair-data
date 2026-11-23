@@ -3631,7 +3631,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 /* ---------- The Pokémon page, "The file on <name>." (reskin on the shared kit; Sim approved HH's mock-up, Nov 21, 2:55 PM:
    docs/rebuild/mocks/pokemon-file/index.html; brief docs/rebuild/reskin/27-pokemon.md). Kit tokens only (--k-*, type scale, 4px grid) ---------- */
 .pk-trail{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s2);font:600 var(--t13)/1.5 var(--b);color:var(--ink-3)}.pk-trail a{display:inline-flex;align-items:center;min-height:var(--tap);padding:0 var(--s2);margin:0 calc(var(--s2)*-1);color:var(--plot-text);text-decoration:none}
-.pk-404{display:flex;width:max-content;margin-top:var(--s4)} /* scan S3 A (Sim, Nov 20): the outline button on its own line */
+/* .pk-404 (scan S3 A, Nov 20: the outline button on its own line) is the kit k-go since Wave 2 part 5 (Nov 23): its own rules went */
 .pk-tap{position:relative}.pk-tap::after{content:"";position:absolute;inset:-12px -8px} /* 44 px tap area, the line unmoved */
 .pkf{display:block;min-width:0}
 .pkf .k-kicker{margin-top:var(--s4)}
