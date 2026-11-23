@@ -2325,3 +2325,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:32 PM: Checked on c2e6b321 (Speed Tiers B + item bags): qcheck speed 12 SIZE notes all pre-existing; tap-size all passed; v2-minors main2/groups all passed; v2-q23 all passed; D-meta-shell behaviour 117 pass, 0 FAIL.
 - 6:45 PM: Sim: 'the on the field lines are good, go with your recommendation.' All 10 Nature 'On the field' lines approved as written by hN (merged 822a32ef).
 - 6:46 PM: Checked: the calc OVERLAP qcheck notes (Heat Wave x 88-104%, Mega x Charizard Y...) are also on c2e6b321, before the Nature merge = pre-existing, not from Nature. Looked at 1440: the stacked move-card lines touch (line-height 1) and the chosen-move circle covers the first letters ('H'eat Wave, 'F'ire). Queued as a Calc polish item.
+- 6:47 PM: Design (HH authority): Damage Calc chosen-move ring widened (desktop inset -12/-16, phones -12/-8) so it no longer covers the first letters of the move card. Before/after sent to Sim.
