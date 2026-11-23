@@ -13,3 +13,5 @@
 .sd-six{background:var(--sd-ink);color:var(--sd-on-band)}
 .sd-tools{background:var(--sd-tools-bg);color:var(--ink)}
 .sd-post{background:var(--sd-flag);color:var(--sd-on-band)}
+/* Home length (Nov 23, direction for Sim): at 1100+ the bands keep 40px of room above and below their content, not 64 (the slanted cut stays) */
+@media (min-width:1100px){.sd-band{padding-top:var(--s10);padding-bottom:calc(var(--s10) + var(--sd-cut))}.sd-band+.sd-band{padding-top:calc(var(--s10) + var(--sd-cut))}.sd-band:last-child{padding-bottom:var(--s10)}}
