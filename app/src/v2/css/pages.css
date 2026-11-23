@@ -4386,6 +4386,12 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
    24px (were 28). From 1024 the damage line's rows are 40px (were 48); each bar stays 32px */
 @media (min-width:1280px){.tc-grid td{height:var(--s6);padding-block:0}.tc-grid tbody th{padding-block:0}.tc-grid tbody th span{padding-block:2px}}
 @media (min-width:1024px){.tc-rows{grid-auto-rows:minmax(var(--s10),1fr)}.tc-r{min-height:var(--s10)}}
+/* Type Chart at 1280 (Nov 23, hU; 1280x800 was 3.49 screens, cap 3): from 1280 to 1439 the 18 type buttons take one row as at 1440, in the
+   site's 87.5% letters below 1400 (the 9-wide pair of rows stays below 1280); from 1024 to 1439 the look-up box shrinks (200-320px) so it sits beside
+   the team instead of on its own line when it fits, and step 2's group labels and column gap are a step narrower so a group's chips keep to one line */
+@media (min-width:1280px) and (max-width:1439.98px){.tc-picks{grid-template-columns:repeat(18,minmax(0,1fr))}}
+@media (min-width:1280px) and (max-width:1399.98px){.tc-tp{font-stretch:87.5%}} /* under 1400 a button is under 63px: "Electric" and "Fighting" (53px) keep 4px+ inside the slant */
+@media (min-width:1024px) and (max-width:1439.98px){.tc-findw{flex:1 1 200px;max-width:320px}.tc-offs{column-gap:var(--s6)}.tc-og{grid-template-columns:96px minmax(0,1fr)}}
 /* polish-check (Nov 22 night): in the slimmer 1100-1439 Test Run lane the lane heading ran 2px past it (a 12px gap); 8px there */
 @media (min-width:1100px) and (max-width:1439.98px){.dr-side .dr-lh{gap:var(--s2)}.dr-side .dr-big>*{min-width:0}.dr-side .dr-big .dr-m{grid-template-columns:minmax(0,1fr)}.dr-side .dr-big .dr-bk{gap:var(--s1)}.dr-side .dr-big .dr-bk i{width:12px}}
 /* Nov 23 (hL): the 340px lane (1100-1439) gave each of the six 45px, so "Handles it" (61px) broke onto two lines beside one-line
