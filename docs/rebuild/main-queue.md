@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-NOW: HH (design authority to 9 AM, executive to 6 PM): checks on Sim's iPhone fixes (qcheck home/meta running; q59 + minors groups passed); A-team rerun alone (crash in the shared run); prove the new HQ Q13f short-window check fails on old code. Helper: hP (polish findings, visual -> pictures).
-NEXT: GitHub run on 4bdbc83e (~7:06); Preview with iPhone fixes; review hP; full summary before 9 AM; 6 PM executive summary
+NOW: HH (design + executive authority to 6 PM; tell Sim each visual decision in chat): page lengths on HEAD after iPhone fixes + hP polish (pl.sh). Preview v243 published 6:51. Helper: hI (iPhone 16 sweep, every page, branch hi-iphone).
+NEXT: GitHub run on 7bbb2880 (~7:37); review hI; full summary before 9 AM; Type Chart length option A (tell Sim); 6 PM summary
 NEXT: GitHub batches every ~40 min; Game Plan hourly
 NEXT: before 9 AM: full summary incl. lengths for Sim
 NEXT: 5:45 AM summary (decisions from 10 PM), Preview refresh before it
