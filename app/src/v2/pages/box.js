@@ -40,7 +40,7 @@ const bxTierChip = k => `<span class="mb-tier u" style="--tc:${bxTierC(k)}">${V2
 // Your Six: the team in its order, each row tinted with its first type, its real item · Ability (the team's set) and its rating
 V2.bxSix = ms => { const E = V2.esc;
   const row = m => { const id = SPRITE_ID[m.p.n], k = V2.kName(m.p.n), R = monRating(m.p), it = m.heldItem || m.item || 'No item', t = (m.p.t || [])[0];
-    return `<li class="mb-pm" style="--ac:var(--ty-${V2.TYPES.includes(t) ? t : 'Normal'})"><img src="${V2.art(id)}" alt="" loading="lazy" decoding="async"><span class="mb-pn"><small${k.form ? '' : ' aria-hidden="true"'}>${k.form ? E(k.form) : '&nbsp;'}</small><b class="u" data-kmax="3">${E(k.name).replace(/ (\S)$/, '&nbsp;$1')}</b><em><span>${V2.keepForm(E(it))}${m.ability ? ' ·' : ''}</span>${m.ability ? ` <span>${E(m.ability)}</span>` : ''}</em></span>${R ? `<span class="mb-pr"><b class="u">${R.n}</b>${bxTierChip(R.tier)}</span>` : ''}</li>`; };
+    return `<li class="mb-pm" style="--ac:var(--ty-${V2.TYPES.includes(t) ? t : 'Normal'})"><img src="${V2.art(id)}" alt="" loading="lazy" decoding="async"><span class="mb-pn"><small${k.form ? '' : ' aria-hidden="true"'}>${k.form ? E(k.form) : '&nbsp;'}</small><b class="u" data-kmax="3">${E(k.name).replace(/ (\S)$/, '&nbsp;$1')}</b><em><span data-kmax="2">${V2.keepForm(E(it))}</span>${m.ability ? `<span data-kmax="2"><span class="vh">, </span>${E(m.ability)}</span>` : ''}</em></span>${R ? `<span class="mb-pr"><b class="u">${R.n}</b>${bxTierChip(R.tier)}</span>` : ''}</li>`; };
   const empty = Array.from({length: Math.max(0, 6 - ms.length)}, () => '<li class="mb-pm mb-pe"><span>Empty spot</span></li>').join('');
   return `<ol class="mb-six" aria-label="Your Six">${ms.map(row).join('')}${empty}</ol>`; };
 // the team's Strength Score: the same number and band word My Team shows (team.js), the team's name under it
@@ -65,7 +65,7 @@ V2.bxSum = (n, o = {}) => { const b = byName.get(n); if (!b) return ''; const fs
     <p class="mb-strip"><span>${o.slot ? `Box ${o.box} · Slot ${o.slot}` : 'In your box'}</span><span>${onTeam ? 'On your team' : 'Not on your team'}</span></p>
     <div class="mb-top"><div class="mb-ph"><span class="mb-gh u" aria-hidden="true">${rs}</span><img src="${V2.art(id, true)}" alt="" decoding="async"></div>
     <div class="mb-idn"><p class="mb-form"${kn.form ? '' : ' aria-hidden="true"'}>${kn.form ? E(kn.form) : '&nbsp;'}</p><h2 class="mb-nm u" data-kmax="3">${E(kn.name).replace(/ (\S)$/, '&nbsp;$1')}</h2><div class="mb-ty">${(p.t || []).map(V2.typeChip).join('')}</div>
-    <div class="mb-rr"><b class="u">${rs}</b>${bxTierChip(T.k)}<small>${rk ? E(rk) : 'No tournament results yet'}</small></div></div></div>${forms}
+    <div class="mb-rr"><b class="u">${rs}</b>${bxTierChip(T.k)}<small>${rk ? E(rk) : 'No tournament results yet'}</small></div><p class="mb-rk">${rk ? E(rk) : 'No tournament results yet'}</p></div></div>${forms}
     <dl class="mb-nums"><div><dt>Usage</dt><dd class="u">${E(V2.shareTxt(H))}</dd></div><div${few ? ' class="few"' : ''}><dt>Win rate</dt><dd class="u">${few ? 'Too few' : E(pctFmt(H.hW))}</dd>${few ? `<small>${H.hG ? Math.round(H.hG) + ' games' : 'No games yet'}</small>` : ''}</div><div><dt>Speed</dt><dd class="u">${p.st[5]}</dd></div></dl>
     <p class="mb-src">${E(src)}</p>
     <div class="mb-acts">${main}</div>
@@ -99,7 +99,7 @@ V2.pages.box = {place: 'box', draw() { const D = V2.bxData(), E = V2.esc, n = S.
   const sixh = `<div class="mb-sixh"><h2 class="u">Your Six${sc ? `<span class="mb-sixs"> · <span style="--band:var(--band-${sc.band})">${sc.s} ${E(sc.word)}</span></span>` : ''}</h2><a class="k-link" href="#team">Open My Team&nbsp;›</a></div>`;
   const score = `<div class="mb-score"${sc ? ` style="--band:var(--band-${sc.band})"` : ''}>${sc ? `<b class="u">${sc.s}</b><div><strong class="u">${E(sc.word)}</strong><span>Strength Score${sc.so}${title ? ' · ' + E(title) : ''}</span></div>` : `<div><strong class="u">${ms.length ? 'Not rated yet' : 'No team yet'}</strong><span>${ms.length ? `${ms.length} of 6 picked. The Strength Score shows once the team can be rated.` : 'Pick a Pokémon in your box and add it.'}</span></div>`}</div>`;
   const card = `<aside class="mb-side bx-side" aria-label="Picked Pokémon">${D.shown ? V2.bxSum(D.shown, {box: V2.bx.page + 1, slot: k0 + 1}) : ''}</aside>`;
-  return `<section class="bx2 mb">${head}<div class="mb-grid">${sixh}${bar}${V2.bxSix(ms)}${wall}${score}${sort}${card}${tools}</div>${linkRow}</section>`; }};
+  return `<section class="bx2 mb">${head}<div class="mb-grid">${sixh}${bar}${V2.bxSix(ms)}${wall}${score}<div class="mb-foot">${sort}${tools}</div>${card}</div>${linkRow}</section>`; }};
 
 // ---------- actions ----------
 const bxRe = () => V2.redraw();

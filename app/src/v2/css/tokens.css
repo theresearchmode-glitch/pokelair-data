@@ -235,7 +235,7 @@
    yellow ring, the box bar, Your Six's dark rows and the foil edge of the card. The wallpaper is the same blue in day and night (the stage). */
 :root{
   --mb-stage-1:#0B78C2;--mb-stage-2:#04508A;--mb-wall-hi:rgba(255,255,255,.2);--mb-wall-lo:rgba(0,20,60,.35);--mb-stripe:rgba(255,255,255,.05);--mb-dot:rgba(255,255,255,.2);
-  --mb-slot-line:rgba(255,255,255,.24);--mb-floor:rgba(4,30,60,.55);--mb-on-wall:#FFFFFF;--mb-name-shade:rgba(0,0,0,.3);--mb-slot-hover:rgba(255,255,255,.12);
+  --mb-slot-line:rgba(255,255,255,.24);--mb-floor:rgba(4,30,60,.55);--mb-on-wall:#FFFFFF;--mb-slot-hover:rgba(255,255,255,.12);
   --mb-sel:#FFFFFF;--mb-on-sel:#17161A;--mb-ring:#FFC71F;--mb-sel-glow:rgba(0,120,191,.5);--mb-sel-shadow:rgba(0,10,30,.5);--mb-flag:#FFFFFF;--mb-flag-key:#0B78C2;
   --mb-bar:#17161A;--mb-on-bar:#FFFFFF;--mb-arrow:#E8364F;--mb-dot-off:rgba(255,255,255,.3);
   --mb-pm:#17161A;--mb-on-pm:#FFFFFF;--mb-pm-sub:rgba(255,255,255,.72);--mb-pm-drop:rgba(0,0,0,.4);--mb-pm-empty:rgba(23,22,26,.22);
