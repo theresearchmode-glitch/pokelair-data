@@ -79,7 +79,7 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
   const teams = RES && +RES.teams > 0 ? +RES.teams : 0;
   const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
     <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta" class="on" aria-current="page">Ratings</a><a href="#usage">Usage</a><a href="#sets">Popular Sets</a></nav></div>`;
-  const head = `<section class="ra-h"><p class="k-kicker np-eyebrow ra-kk">META · THE LINE-UP</p><h1 class="u"><span>Who wins</span> <span class="pl">right now.</span></h1>
+  const head = `<section class="ra-h"><p class="k-kicker np-eyebrow ra-kk">META · THE LINE-UP</p><h1 class="k-h1 u"><span>Who wins</span> <span class="pl">right now.</span></h1>
     <p class="ra-lede">Every Pokémon rated 0–100 from real tournament results, not opinion.</p>${tabs}
     <p class="ra-kick">Reg ${E(reg)} doubles${teams ? ` · ${E(basisNum(teams))} tournament teams` : ''}${typeof V2.tip === 'function' ? `<span class="ra-nw">${V2.tip('numbers')}</span>` : ''}</p>
     <p class="ra-links"><a class="np-link" href="#method=rating">How Ratings Work ›</a><a class="np-link" href="#track">Track Record ›</a></p></section>`;

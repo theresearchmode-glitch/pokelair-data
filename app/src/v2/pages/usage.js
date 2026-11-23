@@ -96,7 +96,7 @@ V2.pages.usage = {place: 'meta', draw() { const E = V2.esc, U = V2.usUi;
   const tabs = `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
     <nav class="ra-seg" aria-label="Pokémon views"><a href="#meta">Ratings</a><a href="#usage" class="on" aria-current="page">Usage</a><a href="#sets">Popular Sets</a></nav></div>`;
   const rows = d ? (d.top || []).map(t => V2.usRow(t, kind)) : [];
-  const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Usage</span></p><h1 class="u"><span>Who gets picked</span> <span class="pl">right now.</span></h1>
+  const head = `<section class="ra-h"><p class="np-eyebrow"><span>Meta · Usage</span></p><h1 class="k-h1 u"><span>Who gets picked</span> <span class="pl">right now.</span></h1>
     <p class="ra-lede">The most used Pokémon, from the ranked ladder, online tournaments or the Showdown ladder.</p>${tabs}<p class="ra-links"><a class="np-link" href="#meta">Ratings ›</a><a class="np-link" href="#sets">Popular Sets ›</a></p></section>`;
   /* kit: the source is the plot sentence ("Count the picks on [Ranked ladder] [Online tournaments] [Showdown ladder]"); the three boxed words
      keep their group (.us-srcs, data-ussrc) and today's names; the search and the source line sit under it */

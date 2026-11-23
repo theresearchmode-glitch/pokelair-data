@@ -1742,7 +1742,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ra-seg a.on{background:var(--plate);color:var(--on-plate)}
 .ra-links{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);margin:0 0 0 auto}
 .ra-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s8)}
-.ra-h{display:grid;gap:var(--s3)}.ra-h h1{margin:0;font-size:var(--d64);line-height:.95}.ra-h h1 .pl{display:block;color:var(--plot-text)}
+.ra-h{display:grid;gap:var(--s3)}.ra-h h1{margin:0}.ra-h h1:not(.k-h1){font-size:var(--d64);line-height:.95} /* Wave 3 (Sim, Nov 22, 6:51 PM): kit headlines keep the kit size, 84 */.ra-h h1 .pl{display:block;color:var(--plot-text)}
 .ra-lede{margin:0;max-width:44ch;font:400 var(--t17)/1.5 var(--b);color:var(--ink-2)}.ra-kick{display:flex;flex-wrap:wrap;align-items:center;margin:0;font:600 var(--t13)/1.5 var(--b);color:var(--ink-2)}
 /* the spotlight */
 .ra-spotw{margin-top:var(--s6)}.ra-spot{display:grid;gap:var(--s4)}
@@ -1793,7 +1793,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 /* tablet: the spotlight lies flat (picture beside its numbers) */
 @media (min-width:700px) and (max-width:1023.98px){.ra-spot{grid-template-columns:240px minmax(0,1fr);column-gap:var(--s6)}.ra-plate{grid-row:span 4}.ra-plate .np-mon{--iw:160px}.ra-cap{font-size:var(--t15)}}
 /* phones: compact rows (rank, sprite, name + numbers line, rating) */
-@media (max-width:699.98px){.ra-h h1{font-size:var(--t34)}.ra-links{margin:0}.ra-seg{width:100%}
+@media (max-width:699.98px){.ra-h h1:not(.k-h1){font-size:var(--t34)}.ra-links{margin:0}.ra-seg{width:100%}
  .ra-spot{grid-template-columns:136px minmax(0,1fr);column-gap:var(--s4)}.ra-plate{grid-row:span 2;padding:var(--s3) var(--s2) var(--s8)}.ra-plate .np-mon{--iw:112px}.ra-cap{display:none}
  .ra-sinfo h2{font-size:var(--t28)}.ra-stats,.ra-acts,.ra-mine,.ra-hint{grid-column:1/-1}.ra-stats b{font-size:var(--t24)}
  .ra-colh{display:none}.ra-row{grid-template-columns:32px 56px minmax(0,1fr) auto;column-gap:var(--s2)}.ra-bar,.ra-ut,.ra-wr{display:none}.ra-ph{display:block}.ra-sc{grid-column:4}
@@ -2032,7 +2032,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .gs-spot .ra-acts{display:flex;flex-wrap:wrap;gap:var(--s3);margin-top:var(--s2)}
 .gs-body{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s4)}
 .gs-title{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s6);margin-top:var(--s4)}
-.gs-title h2{margin:0;font:900 var(--t28)/1.1 var(--u);font-style:italic}
+.gs-title h2{margin:0}.gs-title h2:not(.k-h2){font:900 var(--t28)/1.1 var(--u);font-style:italic}
 .gs-view{display:flex;gap:var(--s1)}
 .gs-key{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s1) var(--s4);margin:0 0 0 auto;color:var(--ink-2)}.gs-key b{font-weight:700;color:var(--ink)}.gs-key .gs-mine{display:inline-block;vertical-align:middle;margin:0}
 .gs-key .up,.gs-sc .up{color:var(--plot-text)}.gs-key .dn,.gs-sc .dn{color:var(--bad-text)}
@@ -2077,7 +2077,7 @@ button.pp2-plate{cursor:pointer;width:100%}
   .gs-blk{display:flex;justify-content:flex-start;align-items:center;gap:var(--s3);margin:0;padding:var(--s1) var(--s5);clip-path:polygon(var(--s3) 0,100% 0,calc(100% - var(--s3)) 100%,0 100%)}.gs-blk::before,.gs-blk::after{display:none}
   .gs-blk b{font-size:var(--t34)}.gs-blk small{margin-left:auto}
   .gs-step[data-tier="S"]{--gsw:76px}.gs-step[data-tier="A"]{--gsw:68px}.gs-step[data-tier="B"]{--gsw:64px}.gs-step[data-tier="C"]{--gsw:64px}.gs-step[data-tier="D"]{--gsw:56px}.gs-step[data-tier="F"]{--gsw:56px}
-  .gs-sc .u{font-size:var(--t20)}.gs-title h2{font-size:var(--t24)}
+  .gs-sc .u{font-size:var(--t20)}.gs-title h2:not(.k-h2){font-size:var(--t24)}
   /* Sim, Nov 20 (option C, team-meta-length-nov20.md): the tier's words under its "90+" inside the band, See All on the band; D and F fold behind one button */
   .gs-bnd{min-height:52px;padding-block:var(--s1);flex-wrap:nowrap;text-align:left}.gs-bnd>b,.gs-bnd>small{flex:none;white-space:nowrap}
   .gs-bw{flex:1 1 auto;min-width:0;display:grid;justify-items:start}.gs-blk .gs-bw>span{font:800 var(--t17)/1.2 var(--b)}.gs-blk .gs-bw>.gs-bd{font:700 var(--t13)/1.2 var(--b)}
@@ -2123,7 +2123,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .us-bench::before{border-bottom-color:var(--plot)}
 .us-bench .us-fig{flex:0 0 calc(100% / var(--c))}@media (max-width:699.98px){.us-bench{justify-content:space-evenly}} /* a short row spreads out so long names never touch (Nov 16 audit: "WhimsicottBasculegion" at 320) */
 .us-how{display:grid;gap:var(--s4);padding-top:var(--s6);border-top:1px solid var(--rule)}
-.us-hh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:var(--s2) var(--s6)}.us-hh h2{margin:0;font:900 var(--t28)/1.1 var(--u);font-style:italic}.us-hh p{margin:0}
+.us-hh{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:baseline;gap:var(--s2) var(--s6)}.us-hh h2{margin:0}.us-hh h2:not(.k-h2){font:900 var(--t28)/1.1 var(--u);font-style:italic}.us-hh p{margin:0}
 .us-groups{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--s4) var(--s8)}
 .us-bars{display:grid;gap:var(--s2);align-content:start}.us-bh{margin:0;font:700 var(--t13)/1.4 var(--b);letter-spacing:.04em;text-transform:uppercase;color:var(--ink-2)}.us-bh small{text-transform:none;letter-spacing:0;font-weight:500}
 .us-bar{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px var(--s3);margin:0;align-items:baseline}.us-bar span{font:600 var(--t15)/1.3 var(--b);min-width:0}.us-bar b{font:900 var(--t15)/1.2 var(--u);font-style:italic}
@@ -2135,7 +2135,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .us-rest{justify-self:center}
 .us-count{margin:0;font:600 var(--t15)/1.4 var(--b)}.us-count b{font:900 var(--t24)/1 var(--u);font-style:italic}
 @media (prefers-reduced-motion:reduce){.us-fig .np-mon{transition:none}}
-@media (max-width:699.98px){.us-bench{--gsw:72px}.us-bench .gs-mon .np-mon{--iw:72px}.us-mates .gs-row{--gsw:64px}.us-hh h2{font-size:var(--t24)}}
+@media (max-width:699.98px){.us-bench{--gsw:72px}.us-bench .gs-mon .np-mon{--iw:72px}.us-mates .gs-row{--gsw:64px}.us-hh h2:not(.k-h2){font-size:var(--t24)}}
 .us-bar>i>i{background:linear-gradient(90deg,var(--ty-a,var(--plot)),var(--ty-b,var(--plot)))}
 /* Sim, Nov 14: Meta scrolled slowly on his Windows desktop (mouse wheel). His standing rule: sprite glow off on mouse screens except feature
    sprites. The stand and the podium draw ~80 sprites, each with drop-shadow filters (two at night) and a blurred pool; the spotlight keeps its. */
@@ -3113,7 +3113,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .wk-mrow{display:flex;flex-wrap:wrap;align-items:end;justify-content:space-between;gap:var(--s4)}
 .wk-cn{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s5);margin:0;font:500 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .wk-cl{min-width:7.5em;font-weight:700;color:var(--ink)}.wk-cn b{font:900 var(--t22)/1.2 var(--u);font-style:italic;color:var(--ink)}
-.wk h2{margin:0 0 var(--s4);font:900 var(--t34)/1.2 var(--u);font-style:italic}
+.wk h2{margin:0 0 var(--s4)}.wk h2:not(.k-h2){font:900 var(--t34)/1.2 var(--u);font-style:italic}
 .wk-cap{margin:var(--s3) 0 0}.wk-none{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
 .wk-sides{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s8)}
 .wk-side{display:grid;gap:var(--s4);align-content:start}
@@ -3174,12 +3174,12 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:1099.98px){.wk-two{grid-template-columns:minmax(0,1fr)}.wk-tiles{grid-template-columns:repeat(3,minmax(0,1fr))}.wk-tile{min-height:136px}.wk-arrow{display:none}.wk-mast h1{font-size:var(--d64)}
   .wk-new ul{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:699.98px){.wk-sides{grid-template-columns:minmax(0,1fr)}.wk-top ul{grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s1)}.wk-tm .np-mon{--iw:56px}.wk-tm b{font-size:var(--t17)}.wk-tm span{font-size:var(--t13);padding:0}
-  .wk-hmon .np-mon{--iw:112px}.wk-hs{font-size:var(--t28)}.wk h2{font-size:var(--t28)}.wk-tile{min-height:120px;padding:var(--s2)}.wk-tile>span{font-size:var(--t22)}.wk-tile b.u{font-size:var(--t13)}}
+  .wk-hmon .np-mon{--iw:112px}.wk-hs{font-size:var(--t28)}.wk h2:not(.k-h2){font-size:var(--t28)}.wk-tile{min-height:120px;padding:var(--s2)}.wk-tile>span{font-size:var(--t22)}.wk-tile b.u{font-size:var(--t13)}}
 @media (max-width:429.98px){.wk-mast h1{font-size:var(--t34)}.wk-hl{padding-right:var(--s4)}.wk-hn{font-size:var(--t17)}.wk-tm .np-mon{--iw:48px}.wk-tm b{font-size:var(--t15)}}
 /* This Week on phones: the counts as an even 3-column table, New Tech's points under the words, headlines one size down */
 @media (max-width:699.98px){.wk-cn{display:grid;grid-template-columns:7.5em max-content max-content;gap:var(--s2) var(--s4)}.wk-cl{min-width:0}.wk-mrow>div{display:grid;gap:var(--s1);width:100%}
   .wk-tr{grid-template-columns:auto minmax(0,1fr);grid-template-areas:"m t" "m p"}.wk-tr>.np-mon{grid-area:m}.wk-tt{grid-area:t}.wk-tr .wk-pts{grid-area:p;justify-self:start}}
-@media (max-width:429.98px){.wk h2{font-size:var(--t24)}.wk-hs{font-size:var(--t24)}.wk-hl{gap:var(--s2)}.wk-hmon .np-mon{--iw:96px}}
+@media (max-width:429.98px){.wk h2:not(.k-h2){font-size:var(--t24)}.wk-hs{font-size:var(--t24)}.wk-hl{gap:var(--s2)}.wk-hmon .np-mon{--iw:96px}}
 
 /* ---------- Track Record "The Receipt" (Nov 15) ---------- */
 .trk{display:grid;gap:var(--s10)}
@@ -3317,7 +3317,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 
 /* ---------- info pages, DRAFTS for Sim's review (Nov 15; only drawn in review mode) ---------- */
 .infp{display:grid;gap:var(--s10)}
-.inf-grp h2,.infp h2{margin:0 0 var(--s4);font:900 var(--t28)/1.2 var(--u);font-style:italic}
+.inf-grp h2,.infp h2{margin:0 0 var(--s4)}:is(.inf-grp,.infp) h2:not(.k-h2){font:900 var(--t28)/1.2 var(--u);font-style:italic}
 .inf-tiles{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s3)}.inf-gk{font:700 var(--t13)/1.4 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}
 .inf-tile{background:var(--wash);clip-path:polygon(0 0,calc(100% - 16px) 0,100% 16px,100% 100%,0 100%)}
 .inf-tile summary{display:grid;gap:var(--s1);padding:var(--s5) var(--s5) var(--s6);cursor:pointer;list-style:none;min-height:148px;align-content:start}.inf-tile summary::-webkit-details-marker{display:none}
@@ -3349,7 +3349,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .abt-d{margin:0;font-size:var(--t13);line-height:1.5;color:var(--rc-ink2)}
 .abt-tot{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s4);margin:var(--s4) 0 0;font:800 var(--t17)/1.3 var(--b);color:var(--rc-ink)}.abt-tot b{font-size:var(--t26);color:var(--rc-bad);text-transform:uppercase}
 .abt-end{margin:var(--s3) 0 0;font-size:var(--t13);line-height:1.5;color:var(--rc-ink2)}
-.abt-fine .k-h2{margin:0 0 var(--s3);font-size:var(--t28)}
+.abt-fine .k-h2{margin:0 0 var(--s3)} /* Wave 3: the kit step size, 40 */
 @media (max-width:959.98px){.abt-two{grid-template-columns:minmax(0,1fr)}}
 @media (max-width:699.98px){.abt .abt-rc{padding:var(--s4) var(--s3) var(--s6);rotate:none}.abt .abt-rc li{padding:var(--s2) 0}.abt-rn{font-size:var(--t22)}.abt-rk{margin-bottom:var(--s2)}.abt .abt-rc .inf-rc{font-size:var(--t15)}
   .abt-st{display:grid;grid-template-columns:repeat(2,max-content);gap:var(--s2);margin-top:var(--s3)}.abt-st li{font-size:var(--t17);padding:var(--s1) var(--s3)}.abt .k-step:first-child .k-sec{margin-top:var(--s6)}.abt .k-sec .k-note{display:none}.abt .inf-row summary{padding:var(--s2) 0}.abt-fine .k-h2{font-size:var(--t24)}}

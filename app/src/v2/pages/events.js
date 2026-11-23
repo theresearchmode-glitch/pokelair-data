@@ -85,7 +85,7 @@ V2.pages.events = {place: 'meta', draw() { const E = V2.esc, D = META.events, U 
   /* on the kit (Nov 22, HH's events2 mock "THE JOBS"): the Meta pages' shared header with the kit's kicker chip, the counts as the kit's facts
      row, then the plot sentence (the All / Official / 100+ players filter) and the plan line: 1 the latest score (Sim Q33 B: the latest
      winner first), 2 coming up (Next Events), 3 the ticket wall. One column at every width, so the markup order is the screen order */
-  const head = `<section class="ra-h"><p class="k-kicker np-eyebrow ra-kk"><span>META · THE JOBS</span></p><h1 class="u"><span>Every event.</span> <span class="pl">Every winning crew.</span></h1>
+  const head = `<section class="ra-h"><p class="k-kicker np-eyebrow ra-kk"><span>META · THE JOBS</span></p><h1 class="k-h1 u"><span>Every event.</span> <span class="pl">Every winning crew.</span></h1>
     <div class="ev2-intro"><p class="ra-lede">Recent tournaments and who won them, with every top-cut team sheet inside.</p>${D && !lead ? V2.evCounts() : ''}</div>${tabs}</section>`;
   const top = `<div class="gs-top wt-top ev-top">${head}${tabs}</div>`;
   if (!D) return `<div class="ra gsp ev ev2">${top}<div class="gs-body"><p class="tm-sub">Tournament results appear here after the next data refresh.</p></div></div>`;
