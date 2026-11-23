@@ -20,9 +20,9 @@ V2.spHead = D => { const E = V2.esc, tr = spdUi.tr, cond = [spdUi.tw ? 'your Tai
   const wx = spdUi.wx === 'auto' ? (D.autoW ? `weather: ${D.autoW}, from your team` : 'no weather on your team') : spdUi.wx ? `weather: ${spdUi.wx}` : 'no weather';
   /* the controls (Sim, Nov 23: the sentence of loose blue words wrapped ragged at every width): three labelled groups of the kit's chips,
      your side, their side and the field, with the weather as one strip of six (one choice). Each chip shows a short word; its full name
-     (the old blue word, also what a screen reader says) sits in the vh span, so "Tailwind" under You is still "Your Tailwind" */
-  const nm = (full, vis) => full === vis ? E(vis) : `<span class="vh">${E(full)}</span><span aria-hidden="true">${E(vis)}</span>`;
-  const tog = (k, full, vis) => V2.kChip('', {html: nm(full, vis), on: !!spdUi[k], attrs: {'data-spd': k}}), wxb = (k, full, vis) => V2.kChip('', {html: nm(full, vis), on: spdUi.wx === k, attrs: {'data-spdwx': k}});
+     (the old blue word) is the button's aria-label and sits in the vh span, so "Tailwind" under You is still "Your Tailwind" */
+  const nm = (full, vis) => full === vis ? E(vis) : `<span class="vh">${E(full)}</span>${E(vis)}`, al = (full, vis) => full === vis ? {} : {'aria-label': full};
+  const tog = (k, full, vis) => V2.kChip('', {html: nm(full, vis), on: !!spdUi[k], attrs: {'data-spd': k, ...al(full, vis)}}), wxb = (k, full, vis) => V2.kChip('', {html: nm(full, vis), on: spdUi.wx === k, attrs: {'data-spdwx': k, ...al(full, vis)}});
   const grp = (c, label, gl, chips) => `<div class="sp2-g sp2-g${c}" role="group" aria-label="${label}"><span class="sp2-gl" aria-hidden="true">${gl}</span><span class="sp2-chs">${chips}</span></div>`;
   const h1 = `<span>Who moves <em>first.</em></span> <span class="pl">${D.mine.length ? `Your six vs the top ${D.thr.length}.` : `The top ${D.thr.length}.`}</span>`;
   return `<section class="sp2-h">${V2.kHead({kicker: 'Battle · Speed Tiers · level 50', h1Html: h1, lead: `${tr ? 'Slowest first' : 'Fastest first'}, with each side's usual spread and item; ${wx}${cond.length ? `; ${cond.join(', ')}` : ''}.`})}

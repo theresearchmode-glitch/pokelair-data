@@ -1108,10 +1108,10 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .sp2-ctl{display:grid;grid-template-columns:repeat(3,max-content);align-items:end;gap:var(--s3) var(--s6);margin-top:var(--s6)}
 .sp2-fx{grid-column:1/-1;display:flex;align-items:end;gap:var(--s6)} /* the field: Trick Room, then the weather */
 .sp2-g{display:grid;gap:var(--s2);justify-items:start}
-.sp2-gl{font-family:var(--u);font-size:var(--t13);font-style:italic;font-weight:800;line-height:1.2;letter-spacing:.06em;text-transform:uppercase;color:var(--k-ink2)}
+.sp2-gl{font-family:var(--u);font-size:var(--t15);font-style:italic;font-weight:800;line-height:1.2;letter-spacing:.06em;text-transform:uppercase;color:var(--k-ink2)}
 .sp2-gme .sp2-gl{color:var(--k-plot-text)}.sp2-gth .sp2-gl{color:var(--k-nasty-text)}
 .sp2-vs{font-family:var(--u);font-size:var(--t34);font-style:italic;font-weight:900;line-height:44px;letter-spacing:-.02em;color:var(--k-ink)}
-.sp2-chs{display:flex;gap:var(--s2)}.sp2-chs .k-chip{flex:none}
+.sp2-chs{display:flex;gap:var(--s2)}.sp2-chs .vh{font-size:var(--t15)} /* the hidden full name: never seen, kept at body size */.sp2-chs .k-chip{flex:none}
 .sp2-gwx .sp2-chs{gap:0}.sp2-gwx .k-chip+.k-chip{border-left-width:0} /* one strip: the six share their borders */
 /* very wide: the whole face-off on one line, the field after a thin rule (the sides end, the field begins) */
 @media (min-width:1680px){.sp2-ctl{grid-template-columns:repeat(3,max-content) minmax(0,1fr)}.sp2-fx{grid-column:auto;justify-self:end;padding-left:var(--s6);border-left:1px solid var(--k-rule)}}
