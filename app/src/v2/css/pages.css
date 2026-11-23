@@ -4449,3 +4449,10 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
    the right, and on phones the kit's score size (48px) so the "×" clears the receipt's edge */
 .trk-tot b{padding-right:var(--s4)}
 @media (max-width:699.98px){.trk-tot b{font-size:var(--d-kscore)}}
+/* Battle before their six is in, 1100+ (HH, design authority to 9 AM Mon): Your Six faces Their Six across the page, with the Compare
+   page's slanted VS between them, and Your Games under it on the right (the right column was mostly empty and Your Six sat alone below) */
+@media (min-width:1100px){.bt2.bt-noopp>.bt-yours{position:relative;grid-column:2;grid-row:3;align-self:start;margin:0;padding:0 0 0 var(--s10);border:0;border-left:1px solid var(--rule)}
+  .bt2.bt-noopp>.bt-yours::before{content:"VS";position:absolute;left:0;top:60px;display:grid;place-items:center;width:56px;height:52px;translate:-50% 0;background:var(--k-chip);color:var(--k-on-chip);font:900 var(--t22)/1 var(--u);font-style:italic;transform:skewX(-10deg) rotate(-6deg)}
+  .bt2.bt-noopp>.bt-yours h2{font-size:var(--t28)}.bt2.bt-noopp>.bt-yours .bt-sixrow{gap:var(--s2)}
+  .bt2.bt-noopp>.bt-yours{margin-top:var(--s6)}.bt2.bt-noopp>.bt-yours .bt-sixrow .np-mon,.bt2.bt-noopp>.bt-yours .bt-sixrow .np-mon .st{--iw:72px}.bt2.bt-noopp>.bt-yours .bt-sx b .mg{display:block}
+  .bt2.bt-noopp>.bt-log{grid-row:4;margin-top:var(--s8)}}
