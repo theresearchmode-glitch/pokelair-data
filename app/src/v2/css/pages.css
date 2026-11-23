@@ -4482,3 +4482,6 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* polish-check (Nov 23): at 320 the receipt's "* * * EVERYTHING WE SAVE * * *" line was 25px wider than the receipt (letter-spaced caps);
    on the narrowest phones it tightens and may wrap */
 @media (max-width:359.98px){.abt .abt-rk{letter-spacing:.02em;white-space:normal;overflow-wrap:normal}}
+/* polish-check (Nov 23): the room for the slanted "230×" moves from the number's own padding (its box ran 2px out of the receipt's line)
+   to the line itself, so the box stays inside and the slant still has space */
+.trk-tot{padding-right:var(--s4)}.trk-tot b{padding-right:0}
