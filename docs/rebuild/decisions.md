@@ -2295,3 +2295,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:31 PM: Sim on the My Team 900-1099 fix pictures: 'this looks great.! keep up with ya gameplan'.
 - 4:41 PM: My Team: the same item/Ability overlap at 1100-1379 fixed (words column wider, art narrower). qcheck team at 900/1000/1100/1180/1280/1380/1440: no OVERLAP; its 96 'new' are SIZE notes on headings at widths the known list never measured (the clamp sizes); NOT checked against the build before the fix (correction, 4:41 PM).
 - 4:41 PM: Game Plan v50: Home tools, Speed Tiers controls, today's small fixes.
+- 4:47 PM: Dossier hand-off (Sim, 4:4x PM: info-sheet pictures + Natures; 'you're in charge of the work'). Order: 1 move seal, 2 Ability ID photo, 3 nature data + sheet + tappable + search, 4 item drawings (sheet of ~20 to Sim first), 5 Natures page; Levitate count bug investigated alongside. Step 1 done: move type seal (guard clean, tap-size, unbounded; typeless moves: none of 510, checked).
