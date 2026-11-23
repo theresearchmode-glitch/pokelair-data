@@ -359,3 +359,5 @@
   .pty2 .mtf-sum .mtf-tr{grid-row:3}.pty2 .mtf-sum .mtf-ia{grid-row:4}.pty2 .mtf-sum .mtf-mv{grid-column:1/-1;grid-row:5}}
 /* phones: a little air between each party row's name and its score (qcheck: the slanted score's glyphs reached 3-4px into the name line) */
 @media (max-width:699.98px){.pty2 .mtf .mtf-row.k-card .k-sc{margin-top:var(--s1)}}
+/* phones: the hint and "New crew?" one step closer (pays back the 12px the name/score air added; v2-q59 limit 4,010) */
+@media (max-width:699.98px){.pty2-tap{margin-bottom:var(--s1)}.pty2 .tmk-new{margin-top:var(--s2)}}
