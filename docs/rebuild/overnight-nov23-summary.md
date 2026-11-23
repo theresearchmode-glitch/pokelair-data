@@ -53,7 +53,14 @@ Nothing went to the live site. Everything is on claude/design6 and on the Previe
   Ability + Nature; phone footer links 2 + 3. 15 pages shorter at 390, none longer. Preview v243 (6:51 AM).
 - 6:56 AM tried and dropped: Type Chart "Hitting back" under the card at 1100+ (made the page longer, 2,845 -> 3,013 at 1440).
 - 7:05 AM full-site polish check after all of it: nothing new.
-- Helper hI sweeping every page at iPhone 16 size (393x660, 375x600, 430x700); design choices come to Sim with pictures.
+- 7:40 AM merged hI's iPhone 16 sweep: Tournaments tabs one line, Speed Tiers word buttons, Usage rank column, Home's small
+  Dispatch masthead, Winning Teams card links, Build cores switches + note. Build 390 -24px, nothing longer. Pictures sent.
+- 7:36 AM GitHub 1485: 2 reds. Home buttons on short phones (Sim chose A: words clear, buttons one small scroll down; test
+  updated for short phones only) and Events 320 day (headlines weight 800 under 340 so it breaks like night). Pushed 7:56 AM.
+- 7:48 AM Sim approved My Box "The PC" and its six new items; package in docs/mockups/mybox-pc, brief in
+  docs/rebuild/reskin/mybox-pc-brief.md, build on branch mybox-pc. Helper hJ on the four iPhone spots A-D (Calc set cards,
+  Gifts chips, Track stats, Home Ratings tile).
+- Safari engine on the latest build: My Team 139/0, Build 77/0, Battle 83/0, Meta 117/0.
 
 ## Lengths for Sim's OK (the rule: never longer than before without Sim's OK)
 - My Team phone 390: 4,024 px on the test data (old limit 3,930). HH accepted it in steps: the six's hint +28, the buttons under the
@@ -73,7 +80,8 @@ Nothing went to the live site. Everything is on claude/design6 and on the Previe
 - Local (frozen data): behaviour A 139/0, B 77/0, C 83/0, D 117/0; minors all three parts; qcheck on every changed page 0 new.
 - Known flake: Home's ticker pause test at 2560 under load (passes on GitHub).
 
-## Bottleneck found and fixed
+## Bottlenecks found and fixed
+- Disk full at 7:49 AM (helper copies); removed 5 merged copies (~9 GB).
 - Every GitHub run tonight was being cancelled by my next small push. Now: commit locally, push in batches ~every 40 min.
 
 ## Not checked / open

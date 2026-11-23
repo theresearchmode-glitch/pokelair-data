@@ -2199,3 +2199,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:50 AM: Disk was full (worktree add failed: no space left). Removed 5 helper copies whose branches are merged (hi, hp, hl, iw2, ab; branches kept): ~9 GB free. Box build copy ready: scratchpad/mb on branch mybox-pc. Sim: the info-sheets zip was the wrong file.
 - 7:56 AM: Fixes for GitHub 1485 checked locally: v2-q33 all passed; minors main2 only the known ticker flake (Stampede motion 3, 2560), hero 3b passes. Pushing batch (fixes + hI merge + box package + logs).
 - 7:58 AM: My Box: 'before' baseline measured (frozen data, 900-tall windows: 390 2402, 820 2038, 1024 1987, 1280 1858, 1440 1440 px) and pictures in scratchpad/boxbefore. Build brief written: docs/rebuild/reskin/mybox-pc-brief.md (all functions kept, 13px floor, on-your-team card state, 3 layouts).
+- 8:11 AM: B-build in WebKit on HEAD (hI sweep): 77 pass 0 FAIL.
