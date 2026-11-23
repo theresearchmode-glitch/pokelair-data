@@ -1234,8 +1234,13 @@ if (part('main2')) {
     ok(!wr.length, `Stampede hero 0: Score My Team and Build Me a Team each on one line, side by side, 360 to 899 wide (${wr.join(' | ') || 'all one line'})`); }
   // 1. the tagline is the page's one h1, the named Pokémon are buttons that open their page, the crowd is hidden from screen readers
   const a = await hero(1440, 900, {wait: true, fn: () => { const h1 = [...document.querySelectorAll('#main h1')].map(e => { const c = e.cloneNode(true); c.querySelectorAll('.sdh-k').forEach(k => k.remove()); return c.textContent.replace(/\s+/g, ' ').trim(); }) /* Nov 22: without the product label above the tagline (Sim chose A, 10:51 AM) */;
-    const named = [...document.querySelectorAll('#main .sdh-plate, #main .sdh-tag:not([hidden]), #main .sdh-tick li:not([hidden]) button')].filter(e => e.getClientRects().length);
-    const bad = named.filter(e => e.tagName !== 'BUTTON' || !e.dataset.v2mon || !e.getAttribute('aria-label').startsWith(e.innerText.replace(/\s+/g, ' ').trim())).map(e => e.innerText);
+    /* Nov 23 (Home length): at 1100+ the herd ticker steps aside and the top 10 rides the hero's red flag, so its ten buttons count too.
+       Their spoken name reads "Number N: <Pokémon>, rated ..." (the rank and score are drawn beside the name), so for them the name
+       after "Number N: " must be the Pokémon's own words */
+    const named = [...document.querySelectorAll('#main .sdh-plate, #main .sdh-tag:not([hidden]), #main .sdh-tick li:not([hidden]) button, #main .sd-top li button')].filter(e => e.getClientRects().length);
+    const said = e => { const l = e.getAttribute('aria-label') || '', top = e.closest('.sd-top'); if (!top) return l.startsWith(e.innerText.replace(/\s+/g, ' ').trim());
+      const m = l.match(/^Number (\d+): (.*)$/), n = ((e.querySelector('.n') || {}).textContent || '').replace(/\s+/g, ' ').trim(); return !!m && !!n && m[2].startsWith(n); };
+    const bad = named.filter(e => e.tagName !== 'BUTTON' || !e.dataset.v2mon || !said(e)).map(e => e.innerText);
     const deco = [...document.querySelectorAll('#main .sdh-crowd, #main .sdh-f, #main .sdh-m, #main .sdh-lines')].filter(e => e.getAttribute('aria-hidden') !== 'true').length;
     return {h1, named: named.length, bad, deco, plates: document.querySelectorAll('#main .sdh-plate').length}; }});
   ok(a.h1.length === 1 && a.h1[0] === 'Sharply raise your win rate.' && a.plates === 4 && a.named >= 8 && !a.bad.length && !a.deco, `Stampede hero 1: one h1 "Sharply raise your win rate.", four plates, every named Pokémon a button whose spoken name starts with its words, the herd aria-hidden (${JSON.stringify(a)})`);
@@ -1265,8 +1270,9 @@ if (part('main2')) {
   const wd = []; for (const w of [320, 340, 360, 390, 412, 600, 768, 820, 900, 1024, 1100, 1180, 1366, 1500, 1920, 2560]) { const r = await hero(w, 900, {rm: 'reduce', fn: () => { const L = [...document.querySelectorAll('#main .sdh-tick li')];
       const vis = L.filter(l => l.getClientRects().length && !l.hidden), cut = vis.filter(l => { const x = l.getBoundingClientRect(); return x.left < 0 || x.right > innerWidth; }).map(l => l.innerText);
       return {hs: document.documentElement.scrollWidth - innerWidth, vis: vis.length, cut, hiddenFocusable: L.filter(l => l.hidden && l.getClientRects().length).length}; }});
-    if (r.hs > 0 || !r.vis || r.cut.length || r.hiddenFocusable) wd.push(w + ': ' + JSON.stringify(r)); }
-  ok(!wd.length, `Stampede hero 5 (reduced motion: the still strip): 320-2560 (odd widths too) no sideways scroll, the ticker shows whole names only${wd.length ? ': ' + wd.join(' | ') : ''}`);
+    /* Nov 23 (Home length): at 1100+ the ticker steps aside for the top 10 on the red flag, so names are required only under 1100; no sideways scroll and nothing hidden focusable at every width */
+    if (r.hs > 0 || (w < 1100 && !r.vis) || r.cut.length || r.hiddenFocusable) wd.push(w + ': ' + JSON.stringify(r)); }
+  ok(!wd.length, `Stampede hero 5 (reduced motion: the still strip): 320-2560 (odd widths too) no sideways scroll, the ticker shows whole names only (under 1100; at 1100+ the top 10 takes its place)${wd.length ? ': ' + wd.join(' | ') : ''}`);
   // 6. contrast from the tokens (both themes): white on the hero blue and the red 4.5:1+, the tagline's second line and the ticker numbers 3:1+ (display / 24px+ bold)
   for (const night of [false, true]) { const c = await hero(1440, 900, {night, fn: () => { const v = n => getComputedStyle(document.documentElement).getPropertyValue(n).trim();
       const L = hx => { const m = hx.replace('#', ''), c = [0, 2, 4].map(i => parseInt(m.slice(i, i + 2), 16) / 255).map(x => x <= .03928 ? x / 12.92 : Math.pow((x + .055) / 1.055, 2.4)); return .2126 * c[0] + .7152 * c[1] + .0722 * c[2]; };
