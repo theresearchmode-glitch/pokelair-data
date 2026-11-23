@@ -113,7 +113,7 @@ t('HOME-09', 'Champion\'s six: load needs a second tap, loads with Undo; Copy fo
   // the Stampede (Sim, Nov 18): the champion's six sits on the tools band's Winning Teams plate, "This six won <event> on <date>: N players, W-L.",
   // and the Events plate carries the count ("113 events", opening Events) where today's Home had "All N Events ›"
   ok((NEW ? /The Champion's (?:six|corner) · latest winner .+ Champion · \d+-\d+ · [A-Z][a-z]{2} \d+ · \d+ players|This six won .+ on [A-Z][a-z]{2} \d+: [\d,]+ players, \d+-\d+(?:-\d+)?\./i : /The Champion's Six Latest winner .+ Champion, \d+-\d+, [A-Z][a-z]{2} \d+, \d+ players/).test(tx), 'no champion line with record, date, players');
-  ok((NEW ? /All \d+ Events ›|\b[\d,]+ events Events\b/ : /All \d+ events ›/).test(tx), 'no "All N events ›" link'); /* Sim, Nov 14: Title Case links */
+  ok((NEW ? /All \d+ Events ›|\b[\d,]+ events Events\b|\b[\d,]+ Events\b/ /* Home B (Nov 23): at 1100+ Events is a chip with its count, '113 Events' */ : /All \d+ events ›/).test(tx), 'no "All N events ›" link'); /* Sim, Nov 14: Title Case links */
   await r.ui.tapText(NEW ? 'Load Team' : 'Load this team'); /* Sim, Nov 14 (Q3 A): one name, Load Team */ ok(await r.ui.sees(NEW ? 'Replace your current team?' : 'Tap again to replace your team'), 'first tap did not ask to tap again'); /* Sim Q10c (Nov 15): Replace / Cancel everywhere */
   ok((await r.ui.team()).join() === TEAM.join(), 'first tap already replaced the team');
   await r.ui.tapText(NEW ? 'Replace' : 'Tap again to replace your team', 1200); const now = await r.ui.team(); ok(now.join() !== TEAM.join() && now.length === 6, 'second tap did not load the champion six');

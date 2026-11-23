@@ -355,7 +355,8 @@
   .sdt-hit{margin:0;gap:var(--s1);align-content:end}.sdt-hpw,.sdt-hit .sdt-cc{display:none}.sdt-hp{justify-self:stretch;width:100%;height:var(--s2)}.sdt-duel .np-mon{--iw:64px}.sdt-duel .sdt-m{min-height:0}
   .sdt-wt .sdt-pic{display:flex;align-items:flex-end}.sdt-six{width:100%}.sdt-six .np-mon{--iw:40px}.sdt-six .sdt-mn,.sdt-cap{display:none}
   .sdt-vs{grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr)}.sdt-side{--cap:56px;padding-top:0}.sdt-side .sdt-mn{display:none}
-  .sdt-ra .sdt-l,.sdt-dc .sdt-l,.sdt-wt .sdt-l,.sdt-bt .sdt-l{display:none}.sdt-ra .sdt-s,.sdt-dc .sdt-s,.sdt-wt .sdt-s,.sdt-bt .sdt-s{display:inline}
+  .sdt-ra .sdt-l,.sdt-dc .sdt-l,.sdt-bt .sdt-l{display:none}.sdt-ra .sdt-s,.sdt-dc .sdt-s,.sdt-bt .sdt-s{display:inline}
+  /* Winning Teams keeps its long line on desktop: which event the six won, when, players and record (HOME-09; Home B hid it, Nov 23) */
   .sdt-chips{display:block;margin-top:var(--s5)}
   .sdt-chips ul{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:1fr;gap:var(--s3);margin:0;padding:0;list-style:none}
   .sdt-chips li.sdt-chd{display:block}
