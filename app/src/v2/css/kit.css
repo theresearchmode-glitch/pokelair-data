@@ -218,3 +218,8 @@ button.k-move{cursor:pointer}
 .k-btn:active{transform:skewX(-8deg) translate(2px,2px);box-shadow:none}
 .k-btn:focus-visible{outline:3px solid var(--k-plot);outline-offset:4px}
 @media (prefers-reduced-motion:reduce){.k-btn{transition:none}}
+
+/* ===== the empty line (Wave 2 part 4, Sim chose A, Nov 22): the empty slot. The dashed outline is drawn on ::before so it can slant
+   (-8deg, the kit's skew) while the words stay upright; the box hugs its words. ===== */
+.k-none{position:relative;width:fit-content;max-width:calc(100% - 8px);margin:var(--s2) var(--s1) 0;padding:var(--s2) var(--s4);font-family:var(--b);font-size:var(--t15);font-style:normal;font-weight:500;line-height:1.5;letter-spacing:0;color:var(--k-ink2)}
+.k-none::before{content:"";position:absolute;inset:0;border:2px dashed var(--k-ink2);transform:skewX(-8deg);pointer-events:none}

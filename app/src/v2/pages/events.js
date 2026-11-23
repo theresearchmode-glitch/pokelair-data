@@ -28,7 +28,7 @@ V2.ticket = (ev, big) => { const E = V2.esc, w = ev.top[0], ns = w ? w.mons.map(
 // On the kit (Nov 22): each upcoming event is a small calendar ticket (ink date stub, name, dates and place); a live one wears the kit's pink
 // LIVE NOW tag. Two show (two across on desktop); "All N ›" is the step's one link and lists them all.
 V2.evCal = () => { const C = META.calendar, E = V2.esc;
-  if (!C || typeof CAL === 'undefined') return '<p class="ev-none">The event calendar appears after the next data refresh.</p>';
+  if (!C || typeof CAL === 'undefined') return '<p class="ev-none k-none">The event calendar appears after the next data refresh.</p>';
   const t = CAL.today(), next = C.ev.filter(e => e.e >= t && e.t !== 'national'), past = C.ev.filter(e => e.e < t && ['regional', 'sc', 'international', 'worlds'].includes(e.t)).slice(-3).reverse();
   const shown = V2.evUi.cal ? next : next.slice(0, 2), age = C.checked ? CAL.days(t, C.checked) : 0;
   const row = e => { const [k, w] = CAL.when(e), d = new Date(e.s + 'T12:00:00'), place = e.t === 'online' ? '' : [e.city !== e.n ? e.city : '', CAL.country(e.cc)].filter(Boolean).join(', ');
@@ -36,7 +36,7 @@ V2.evCal = () => { const C = META.calendar, E = V2.esc;
     const inner = `<span class="ev-cd" aria-hidden="true"><b class="u">${d.getDate()}</b><small>${d.toLocaleDateString('en-US', {month: 'short'})}</small></span><span class="ev-cm"><span class="ev2-ckw"><small class="ev2-ck">${E(CAL.range(e))}${kind ? ' · ' + E(kind) : ''}</small><span class="ev-cw ${k}${k === 'live' ? ' k-tag u k-live' : ''}">${w}</span></span><b class="u">${E(e.n)}</b>${place ? `<small>${E(place)}</small>` : ''}</span>`;
     return `<li>${e.url ? `<a class="ev-crow" href="${E(e.url)}" target="_blank" rel="noopener" aria-label="${E(e.n)}, ${E(CAL.range(e))}, ${w}: details (opens a new tab)">${inner}</a>` : `<span class="ev-crow">${inner}</span>`}</li>`; };
   const pastH = past.length ? `<p class="ev-cpast"><span>Recent:</span> ${past.map(e => { const r = CAL.results(e); return r ? `<button type="button" class="np-link k-link" data-evgo="${E(r.id)}">${E(e.n)} Results&nbsp;›</button>` : `<span>${E(e.n)} · results not in yet</span>`; }).join('')}</p>` : '';
-  return `${shown.length ? `<ul class="ev-cal${shown.length % 2 ? ' odd' : ''}">${shown.map(row).join('')}</ul>` : '<p class="ev-none">No upcoming events listed right now.</p>'}${pastH}
+  return `${shown.length ? `<ul class="ev-cal${shown.length % 2 ? ' odd' : ''}">${shown.map(row).join('')}</ul>` : '<p class="ev-none k-none">No upcoming events listed right now.</p>'}${pastH}
     <p class="fine ev-csrc">From <a href="${E(C.src.url || 'https://victoryroad.pro/')}" target="_blank" rel="noopener">${E(C.src.name)}</a>${C.checked ? `, checked ${E(evDate(C.checked))}${age > 2 ? ` (${age} days ago)` : ''}` : ''}. VGC days, in each event's local dates.</p>`; };
 V2.evCalBtn = () => { const C = META.calendar; if (!C || typeof CAL === 'undefined') return ''; const t = CAL.today(), n = C.ev.filter(e => e.e >= t && e.t !== 'national').length;
   return n > 2 || V2.evUi.cal ? `<button type="button" class="np-link k-link ev-call" data-evcal aria-expanded="${V2.evUi.cal}">${V2.evUi.cal ? 'Show Fewer' : `All ${n}&nbsp;›`}</button>` : ''; };

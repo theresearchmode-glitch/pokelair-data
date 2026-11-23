@@ -90,6 +90,10 @@ V2.kChip = (label, o = {}) => { const {class: c, ...a} = o.attrs || {};
    page's layout rule for its secondary buttons (place, width) still applies; the kit layer sets the look. */
 V2.kBtn = (label, attrs = {}) => { const {class: c, ...a} = attrs || {}, cls = `np-btn2 k-btn${c ? ' ' + V2.esc(c) : ''}`;
   return a.href ? `<a class="${cls}"${V2.kAttrs(a)}><span>${V2.esc(label)}</span></a>` : `<button type="button" class="${cls}"${V2.kAttrs(a)}><span>${V2.esc(label)}</span></button>`; };
+/* the empty line (Wave 2 part 4, Sim chose option A, Nov 22; wave2-proposal.md 4): "nothing here yet" sits in an empty slot, a slanted box
+   with a 2px dashed outline, Instrument Sans 500 in the kit's one grey. For any kind of empty (no match, no data yet, none this week).
+   Pages that already write the line add class k-none to it (their own class stays as the hook); new code: V2.kNone(text) or {html}. */
+V2.kNone = (text, o = {}) => `<p class="k-none${o.class ? ' ' + V2.esc(o.class) : ''}">${o.html != null ? o.html : V2.esc(text)}</p>`;
 V2.kMoves = list => `<ul class="k-moves">${(list || []).map(x => { const [n, pct] = Array.isArray(x) ? x : [x]; return `<li>${V2.kMove(n, {pct})}</li>`; }).join('')}</ul>`;
 V2.kMine = (text = 'Yours') => `<span class="k-mine">${V2.esc(text)}</span>`;
 // names drop a size before they wrap (HYBRID 7): each [data-kmax] steps down its levels (kit.css) until its line fits its box; every

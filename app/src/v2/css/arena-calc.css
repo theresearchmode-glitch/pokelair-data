@@ -189,7 +189,7 @@
 .kob-t[aria-selected="true"]{background:var(--gb) bottom/100% 6px no-repeat,var(--arn-fill);color:var(--arn-on-fill)}.kob-t[aria-selected="true"] span{color:var(--arn-on-fill)}
 .kob-t:focus-visible{outline:3px solid var(--plot);outline-offset:-3px}
 .kob-p .dc2-kts{margin-top:var(--s2)}.kob-p[hidden]{display:none}
-.kob-none{margin:var(--s3) 0 0}
+.kob-none{margin:var(--s3) var(--s1) 0} /* Wave 2 part 4: the kit empty line */
 /* Sim Q58 C (Nov 19): from 1024 the opened board leaves the right column and spans the page under the Arena: the three groups side by
    side, each a big slanted count over a 6px rule in the bar's colour, then one row per threat (attacker, threat, its name, the move,
    the damage in numbers, the HP it has left). A row does what a tile does: it puts that hit on the table. */
