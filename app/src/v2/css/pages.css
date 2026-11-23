@@ -4456,3 +4456,12 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .bt2.bt-noopp>.bt-yours h2{font-size:var(--t28)}.bt2.bt-noopp>.bt-yours .bt-sixrow{gap:var(--s2)}
   .bt2.bt-noopp>.bt-yours{margin-top:var(--s6)}.bt2.bt-noopp>.bt-yours .bt-sixrow .np-mon,.bt2.bt-noopp>.bt-yours .bt-sixrow .np-mon .st{--iw:72px}.bt2.bt-noopp>.bt-yours .bt-sx b .mg{display:block}
   .bt2.bt-noopp>.bt-log{grid-row:4;margin-top:var(--s8)}}
+/* How We Calculate at 1100+ (HH, design authority to 9 AM Mon): the headline runs the full width (2 lines, not 5 squeezed beside the key);
+   the intro with the three counts beside it, then "How to read our numbers" as one wide card under them (the scale and bands on the left,
+   what each number means on the right), so nothing stands empty beside or under it */
+@media (min-width:1100px){.mth .gs-top{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s12);row-gap:var(--s4);align-items:end}
+  .mth .gs-top>.ra-h{display:contents}.mth .gs-top>.ra-h>.k-kicker{grid-column:1/-1;grid-row:1;justify-self:start}.mth .gs-top>.ra-h>h1{grid-column:1/-1;grid-row:2}
+  .mth .gs-top>.ra-h>.ra-lede{grid-column:1;grid-row:3;margin:0}.mth .gs-top>.ra-h>.mth-facts{grid-column:2;grid-row:3;margin:0;column-gap:var(--s6)}
+  .mth .gs-top>.ra-spotw{grid-column:1/-1;grid-row:4;margin-top:var(--s4)}
+  .mth .mth-key .nplegend{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:var(--s12);align-items:start}
+  .mth .mth-key .nplegend>*{grid-column:1}.mth .mth-key .nplegend>.npdots{grid-column:2;grid-row:1/span 4;margin-top:0}}
