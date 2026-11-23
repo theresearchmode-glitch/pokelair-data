@@ -2071,3 +2071,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:34 PM: Sim clarified: 'leave those' meant hP's half-finished Job 3 pictures (they don't matter). Sweep fixes N1-N4 go ahead
 - 7:37 PM: Hourly check: 1 helper (hW2, Job 5 next); main: Wave 3 checks + sweep fixes; Game Plan updated
 - 7:39 PM: Sim: My Team 'looks absolutely terrible ... killed all its character ... boring white page ... must be addressed at once. put a helper on what you're doing and you personally redesign this, immediately.' -> new helper hX takes HH's queue (sweep fixes, Wave 3 checks, push); HH redesigns My Team now, direction pictures first
+- 7:41 PM: Sim on My Team: 'before the reskin it was dull and we ... made it even more dull. this page should have the fun that the homepage does, maybe not to that extreme ... how well the homepage used nastyplot this should be doing that.' -> direction: Home's NastyPlot energy, toned down
