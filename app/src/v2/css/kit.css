@@ -126,6 +126,8 @@ button.k-card{cursor:pointer;width:100%}
   .k-kicker{margin:var(--s4) 0 var(--s2)}
   .k-lead{margin-top:var(--s2)}
   .k-sent{gap:var(--s2);margin-top:var(--s4);font-size:var(--t20)}
+  .k-note{font-size:var(--t13);line-height:1.5} /* Nov 23 (hP, polish): on phones a long note wraps, so it reads as running text at 1.5; at 13px its line is the same 19.5px as 15px at 1.3, so no page grows (Events already used 13 here) */
+  .k-sec .k-note{margin-bottom:-2px} /* beside a short title it sits on the title's baseline, where the smaller letters reach 1px lower: this takes it back */
   .k-w{min-height:44px;padding:0 var(--s3)}
   .k-hint{margin-top:var(--s1)}
   .k-plan{padding:0 0 var(--s8)}

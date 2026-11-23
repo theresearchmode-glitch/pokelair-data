@@ -53,7 +53,7 @@
   .nf2-two{grid-template-columns:minmax(0,1fr);gap:var(--s2);padding-bottom:var(--s6)}
   .nf2 .nf-dog{grid-template-columns:140px minmax(0,1fr);align-items:end;gap:var(--s3);margin:var(--s16) 0 0}
   .nf2 .nf-dog .k-scrib{order:2;align-self:center;text-align:left;overflow-wrap:anywhere}
-  .nf2 .nf-dog .k-plate{min-height:0;padding:88px var(--s2) var(--s2)}.nf2 .nf-dog .k-art{top:-52px;height:140px}.nf2 .nf-dog .k-name{font-size:var(--t20)}
+  .nf2 .nf-dog .k-plate{min-height:0;padding:88px var(--s2) var(--s2)}.nf2 .nf-dog .k-art{top:-52px;height:140px}.nf2 .nf-dog .k-name{font-size:var(--t20)}.nf2 .nf-dog .k-name[data-kf="1"]{font-size:var(--t17)}.nf2 .nf-dog .k-name[data-kf="2"],.nf2 .nf-dog .k-name[data-kf="3"],.nf2 .nf-dog .k-name[data-kf="4"],.nf2 .nf-dog .k-name[data-kf="5"]{font-size:var(--t15)} /* Nov 23 (hP, polish): the phone name size kept the kit's fit levels from stepping down (this layer wins), so a long underdog ("Annihilape") jumped to level 3, the body font, at 20px; now levels 1-2 step 17 / 15 in Unbounded and 3-5 keep the kit's 15 */
   .nf2 .k-go{margin-top:var(--s3)}.nf2 .k-lead{margin-top:var(--s3);font-size:var(--t15)}.nf2 .k-kicker{margin-top:var(--s2)}
 }
 /* ===== Owner page on the kit (Sim approved Nov 22, 12:42 PM): kept plain, the counts and the notes as two boxes */
