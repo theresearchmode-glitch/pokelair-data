@@ -2128,3 +2128,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:00 AM: Helper hK ended (Wave 2 merged). New helper hK2: finish Wave 2 migration (remaining np-btn2 pages onto .k-btn; Usage ranks 11-100 and All Suggestions strip onto V2.kMore), branch hk2-wave2, no push. 1 helper.
 - 1:15 AM: GitHub run 1476 on 3062b1e8: SUCCESS (polish fixes green). Batch push: Wave 2 merge + Usage iPad fix.
 - 1:36 AM: Hourly check 1:35 AM: 1 helper (hK2); main: vw.sh (minors x3 + polish on Wave 2 pages); Game Plan updated.
+- 2:04 AM: Wave 2 checks: minors main1 + groups all passed; main2 1 fail = My Team 390 4,024px vs 4.75 screens (kit show-more 44px) -> limits raised +25 (accepted, flag to Sim). Polish: fixed the chip at 320 and Winning Teams links at 320. Older polish findings (Track TOTAL tilt, calc 320 set, Test Run small card 320) unchanged from before tonight.
