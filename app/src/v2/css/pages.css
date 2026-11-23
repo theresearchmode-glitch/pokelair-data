@@ -4405,3 +4405,6 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
    page's own pieces instead of standing empty. Gifts: the three counts, big, beside the headline. Archetypes: the intro beside the headline. */
 @media (min-width:1600px){.ar-h{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,520px);column-gap:var(--s12);align-items:end}.ar-h>*{grid-column:1}
   .ar-h>.ra-lede{grid-column:2;grid-row:2;margin:0 0 var(--s3);font-size:var(--t20)}}
+/* Test Run at 1100-1439 (HH, design authority to 9 AM Mon; the second account's option A, measured 4.65 -> 3.36 screens at 1280): the open
+   team's lane goes 380 -> 340px so the pile rows keep their one-line layout, as at 1440; its pink button one size down to fit */
+@media (min-width:1100px) and (max-width:1439.98px){.dr-board.two{grid-template-columns:minmax(0,1fr) minmax(0,340px);gap:var(--s8)}.dr-side .k-go{font-size:var(--t22)}}
