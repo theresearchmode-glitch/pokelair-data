@@ -2320,3 +2320,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:06 PM: Checked: v2-minors main1 on t1rules (with Battle sprite fix): 'v2-minors (main1):all passed' (the Battle sprite test that failed before now passes).
 - 6:20 PM: GitHub run 1502: one FAIL, Stampede tiles 2 'Battle 1180: sprite 56px' (the old sizing). Fixed by bbd74b56 (local main1 all passed). Pushed the batch: Battle sprites, Speed Tiers B, item drawings + bag.
 - 6:21 PM: Checked: the 12 qcheck SIZE 37.4px notes at 1100 on Speed Tiers are on the commit before B too (975e00bf, same lines) = pre-existing, not from B.
+- 6:21 PM: Preview v250 published (Speed Tiers B, item drawings in the bag, Battle sprites); file list checked: 443 files incl. v2art/*.webp, foundation.html, v2.js, preview.json.
