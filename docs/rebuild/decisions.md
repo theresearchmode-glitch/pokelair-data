@@ -2446,3 +2446,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:38 AM: Sim: run 1 and 2 now. A1-M9 test now waits for the end state (up to 15 s) and prints mons/A/B/ms; qcheck skips .k-art (deliberate 130% bleed) with experiments/pkart.cjs kept as its pixel check. main1 x2 running in ptold.
 - 9:39 AM: Low-usage mode (Sim, 9:3x AM: 'i wanna keep working but i dont want to have much usage'): no helpers until 4:01 PM Wed; .sim-paused set again so the work check doesn't demand one. Main thread works items 1-2 only. Game Plan update held (usage).
 - 9:41 AM: Sim: 'other chat' = PC chat on THIS account; 'other acc' = second account on Pro (much less usage). Saved in CLAUDE.md.
+- 9:43 AM: Best approach (Sim: 'go with that'): item 3 (Pokémon page hero at 820, empty space beside the top card) goes to the other acc as a small pictures-only job; build here only after Sim picks. 'On the field' check held. No helpers here.
