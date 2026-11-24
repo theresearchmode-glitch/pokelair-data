@@ -466,9 +466,14 @@ const IMG = async () => { /* The REAL item pictures (Sim, Nov 23, 9:3x PM): the 
   const all = await q.evaluate(() => { const L = window.__ev('REGMC_ITEMS'), bad = [], fall = []; for (const n of L) { const h = V2.isBag(n), u = V2.itemImg(n);
     if (!!u !== /<img /.test(h)) bad.push(n); if (!u) fall.push(n); } return {n: L.length, bad, fall}; });
   ok(all.n === 166 && !all.bad.length, `Item pictures: each of the ${all.n} items has an <img> in its bag exactly when it has a picture (${all.n - all.fall.length} with a picture, ${all.fall.length} on the drawing${all.fall.length && all.fall.length < 20 ? ': ' + all.fall.join(', ') : ''})${all.bad.length ? '; WRONG: ' + all.bad.slice(0, 6).join(', ') : ''}`);
-  const noImg = await q.evaluate(ks => ['Rocky Helmet', 'Sitrus Berry', 'Leftovers', 'Charizardite Y'].filter(n => !(ks || []).includes(n) && V2.itemArt(n)), keys), dr = [];
+  /* an item with no picture keeps the drawing. Once every item has its picture there is none left, so these four are made picture-less for the
+     check (V2.itemImg answers '' for them only), as an item added later without a picture would be */
+  const NOPIC = ['Rocky Helmet', 'Sitrus Berry', 'Leftovers', 'Charizardite Y'];
+  await q.evaluate(L => { V2._itemImg1 = V2.itemImg; V2.itemImg = (n, s) => L.includes(n) ? '' : V2._itemImg1(n, s); }, NOPIC);
+  const noImg = await q.evaluate(L => L.filter(n => V2.itemArt(n)), NOPIC), dr = [];
   for (const n of noImg) { const r = await bag(n); if (!(r.bag && !r.img && r.svg)) dr.push(`${n} ${JSON.stringify(r)}`); }
-  ok(noImg.length > 0 && !dr.length, `Item pictures: an item without a picture (${noImg.join(', ') || 'none to test'}) keeps our drawing (svg.ia) in the bag and shows no <img>${dr.length ? ': ' + dr.join(' | ') : ''}`);
+  await q.evaluate(() => { V2.itemImg = V2._itemImg1; });
+  ok(noImg.length > 0 && !dr.length, `Item pictures: an item without a picture (made picture-less for the check: ${noImg.join(', ') || 'none to test'}) keeps our drawing (svg.ia) in the bag and shows no <img>${dr.length ? ': ' + dr.join(' | ') : ''}`);
   /* the stand-in: V2.itemImg answers a real sprite file for Life Orb only, as a picture from the PC would be answered */
   await q.evaluate(() => { V2._itemImg0 = V2.itemImg; V2.itemImg = (n, s) => n === 'Life Orb' ? V2.art(445, !s) : ''; });
   const st = await bag('Life Orb'); await q.evaluate(() => { V2.itemImg = V2._itemImg0; });
