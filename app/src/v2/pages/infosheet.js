@@ -41,9 +41,15 @@ V2.isUsers = (U, users) => { const E = V2.esc; return users.length ? `<section c
 V2.isMore = (list, users, what) => { const E = V2.esc, shown = new Set(users.map(u => u[0])), rest = list.filter(q => !shown.has(q.n));
   return list.length ? `<section class="is-sec">${V2.isH('Also capable.', `${what}: ${list.length} Pokémon in Reg M-C · tap one to open it`)}<div class="is-learn" data-islearn>${rest.map((q, i) => `<button type="button" class="is-l"${i >= 20 ? ' hidden' : ''} data-v2mon="${E(q.n)}" aria-label="${E(V2.disp(q.n))}">${V2.mon(q.n, {iw: 40, bare: true})}</button>`).join('')}</div>${rest.length > 20 ? V2.kMore(rest.length - 20, {vh: 'Pokémon', attrs: {class: 'is-all', 'data-isall': ''}}) /* Wave 2 (Sim chose A, Nov 22): the kit show-more (was "Show all N ›") */ : ''}</section>` : ''; };
 V2.isCredit = w => `<p class="is-credit">${w} text adapted from Pokémon Showdown (MIT License), © Guangcong Luo and contributors.</p>`;
+/* the sheet's name (Nov 24): a Mega Stone's X / Y / Z never sits alone on a phone's second line (lone-letter rule). The letter, a no-break
+   space and the two letters before it are one unbreakable piece (the title wraps anywhere when a word is wider than the tag, so a plain
+   no-break space alone still left "Raichunite / Y" at 390); a long one (12+ letters) drops one step (28 to 26) on phones, so Raichunite Y and
+   Lucarionite Z fit on one line at 390 (infosheet.css .is-tl) */
+V2.isTitle = (kind, n) => { const E = V2.esc, m = kind === 'item' && /^(.*\S)(\S{2}) ([XYZ])$/.exec(n);
+  return m ? `<h2 class="u${n.length >= 12 ? ' is-tl' : ''}">${E(m[1])}<span class="is-nw">${E(m[2])}\u00a0${m[3]}</span></h2>` : `<h2 class="u">${E(n)}</h2>`; };
 V2.isTab = (kind, n, sub, share, extra = '', pic = '') => { const E = V2.esc, KK = {move: 'CASE FILE · MOVE', ability: 'ID CARD · ABILITY', item: 'EVIDENCE · ITEM', nature: 'PSYCH PROFILE · NATURE'}[kind];
   /* pic (Sim approved the pictures, Nov 23 4:33 PM; docs/mockups/sheet-pics-natures-nov23): a picture left of the name, decorative */
-  return `<div class="is-tab kd-${kind}">${extra}<span class="gh u" aria-hidden="true">${E(n.toUpperCase())}</span>${pic ? `<div class="is-pn">${pic}` : ''}<div class="is-tn"><span class="is-kk u">${KK}</span><h2 class="u">${E(n)}</h2><div class="is-sub">${sub}</div></div>${pic ? '</div>' : ''}${share}</div>`; };
+  return `<div class="is-tab kd-${kind}">${extra}<span class="gh u" aria-hidden="true">${E(n.toUpperCase())}</span>${pic ? `<div class="is-pn">${pic}` : ''}<div class="is-tn"><span class="is-kk u">${KK}</span>${V2.isTitle(kind, n)}<div class="is-sub">${sub}</div></div>${pic ? '</div>' : ''}${share}</div>`; };
 // the move's TYPE SEAL (Sim, Nov 23, Q1 A): a slanted tile in a deeper shade of the type colour with the white type symbol (#kty-, MIT, approved
 // Nov 21). Decorative: the type chip beside the name says the type in words. A typeless move gets no seal
 V2.isSeal = ty => ty && typeof V2.TY_ICON === 'object' && V2.TY_ICON[ty] ? (V2.kTySprite(), `<div class="is-seal" aria-hidden="true"><svg viewBox="0 0 256 256" focusable="false"><use href="#kty-${ty}"/></svg></div>`) : '';

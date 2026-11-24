@@ -10,7 +10,7 @@
 .is-tab .gh{position:absolute;right:-8px;top:-12px;font-size:var(--d96);font-weight:900;line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--is-ghost);white-space:nowrap;pointer-events:none}
 .is-tn{position:relative;min-width:0}
 .is-kk{display:inline-block;margin-bottom:var(--s2);padding:2px var(--s2);background:var(--plate);color:var(--on-plate);font-size:var(--t13);font-weight:800;line-height:1.4;letter-spacing:.04em;transform:skewX(-8deg)}
-.is-tab h2{margin:0;font-size:var(--t34);font-weight:800;line-height:1.05;color:var(--on-type);overflow-wrap:anywhere}
+.is-nw{white-space:nowrap}.is-tab h2{margin:0;font-size:var(--t34);font-weight:800;line-height:1.05;color:var(--on-type);overflow-wrap:anywhere}
 .is-sub{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin-top:var(--s2);font:600 var(--t15)/1.3 var(--b)}
 .is-tab .np-type{box-shadow:0 0 0 2px var(--is-rim)}
 .is-sh{position:relative;text-align:right}
@@ -51,7 +51,7 @@
   .np-sheet:has(.is2){width:100%}
   .is2{gap:var(--s5);padding:var(--s4) var(--s4) var(--s6)}
   .is-tab{grid-template-columns:1fr;padding:var(--s4)}
-  .is-tab h2{font-size:var(--t28)}
+  .is-tab h2{font-size:var(--t28)}.is-tab h2.is-tl{font-size:var(--t26)} /* a long Mega Stone name with its letter, phones only (V2.isTitle) */
   .is-tab .gh{font-size:var(--d64)}
   .is-sh{display:flex;align-items:baseline;gap:var(--s2);text-align:left}
   .is-sh b{font-size:var(--t26)}
