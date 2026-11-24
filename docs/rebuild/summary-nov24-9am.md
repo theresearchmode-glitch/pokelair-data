@@ -33,9 +33,11 @@ Source: docs/rebuild/decisions.md (every entry with its logged time). Pictures w
 
 - 4:34 AM Track Record at 1100-1279: the stamp and button were cut off at the window edge; now sized to their column.
 
+- 4:41 AM Track Record at 1280+: stamp and button inside their column, no size jump at 1280.
+- 4:4x AM Pokémon page on phones: every Item/Ability/Nature word gets a 44px tap area (rows a little taller), decided under my authority.
+
 ## Milestone
 - The other account's overnight full check on 136e7cd9: EVERY test passed (all GitHub jobs, WebKit My Team/Build/Battle/Meta, qcheck-all): 0 real failures, 0 flakes. First time every test passes on one commit. GitHub runs 1507-1510 green too.
 
 ## Waiting on Sim
-2. Pokémon page on phones: the Nature row and its 'or' words are 30-33px tap targets; reaching 44px needs ~23px more row gap (page +23px). Recommend yes (tap size matters more than 23px).
-3. Ability sheets and Megas: keep both counts with one note line (A, recommended) or credit the base form (B).
+2. Ability sheets and Megas: keep both counts with one note line (A, recommended) or credit the base form (B).

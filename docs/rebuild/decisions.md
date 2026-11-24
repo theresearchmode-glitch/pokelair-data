@@ -2421,3 +2421,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:35 AM: Helper slot: hTR2 fixes Track Record's stamp/button overhang at 1280+ (~31px into the gutter) and the 1279->1280 size jump.
 - 4:36 AM: Hourly check: 1 helper (hTR2), main job b83bry12j running, Game Plan v62.
 - 4:41 AM: Design (HH authority): hTR2 merged (d7cf0de3): Track stamp/button sized to their column from 1100 up; overhang at 1280 +31 -> inside, no size jump at 1279/1280 (55.3 -> 55.4px), 1400+ unchanged. qcheck track 0 findings; tap-size passed; length unchanged.
+- 4:41 AM: Design (HH authority): decided the queued Pokemon-page tap question myself rather than wait (authority to 9 AM; tap size is a stated priority): hNR gives every .pk-kv word a 44px tap area on phones with the needed row gap (~23px), no overlap. Removed from the 'waiting on Sim' list.
