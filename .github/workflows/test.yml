@@ -132,6 +132,10 @@ jobs:
         if: ${{ !cancelled() }}
       - run: node experiments/tour-modes-test.mjs
         if: ${{ !cancelled() }}
+      # the regulation profile (regulation.json; reg-md-plan 0.1, gap G1): one place for the regulation, sources say "not available
+      # yet" for a regulation they have no page for, and a scratch Reg M-D profile leaves no hand-written M-C in the page's own code
+      - run: node experiments/reg-profile-test.mjs
+        if: ${{ !cancelled() }}
       # Mystery Gifts and news (app/src/data/post.js): every gift sourced, codes cited, dates parse, start before end, every link https
       - run: node experiments/post-data-test.mjs
         if: ${{ !cancelled() }}
