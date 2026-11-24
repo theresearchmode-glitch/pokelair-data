@@ -12,7 +12,8 @@ Source: docs/rebuild/decisions.md (every entry with its logged time). Pictures w
 - 9:45 PM Archetypes 700-899: playbooks use the page's phone layout (books overlapped, No. 8 off-screen).
 - 9:58 PM Real item images: the 166 from Sim's PC approved (contact sheet), wired into the bag; drawings as fallback.
 - 10:34 PM Search item hits show the real picture; Mega Stone titles keep X/Y/Z with the word on phones.
-- (night) see below for anything added after 10:34 PM.
+- 11:34 PM Sheet titles on phones never break inside a word (917 titles: 276 mid-word breaks at 320 -> 0; picture moves above long names; item tag +60px).
+- 11:50 PM Events, Speed Tiers, Test Run under 3 screens at 1280 (the other account's option A each): 2.96 / 2.94 / 2.95. Every tool page is now under 3 screens at 1280 and 1440.
 
 ## Non-visual decisions (executive)
 - Helper count kept at 1 (Sim, 4:53 PM): hW2, hI, hN, hP5, hR, hT4, hS2, hC2, hK, hH, hN10, hA, hI2, hS3, hR2, hL, one at a time.
@@ -23,5 +24,4 @@ Source: docs/rebuild/decisions.md (every entry with its logged time). Pictures w
 - Other account: Job 1 (1280 lengths) applied 10:2x PM; Job 2 report used for follow-ups; overnight brief written 10:24 PM.
 
 ## Waiting on Sim
-1. Events, Speed Tiers, Test Run are still over 3 screens at 1280: option pictures from the other account (alt/len1280b) to pick.
 2. Ability sheets and Megas: keep both counts with one note line (A, recommended) or credit the base form (B).
