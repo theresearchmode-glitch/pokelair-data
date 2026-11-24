@@ -689,6 +689,8 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
 { await p.goto('file://' + PAGE + '#home'); await p.waitForTimeout(2500);
   const rn = await p.evaluate(() => window.__ev(`(() => { const R = {id: 'M-C', since: '2026-09-01', now: {id: 'M-D', since: '2026-12-02', events: 3, need: {events: 20}}}, P = META.perf, o1 = META.reg, o2 = P && P.reg; META.reg = R; if (P) P.reg = R; try { return V2.dataNote().replace(/<[^>]+>/g, ''); } finally { META.reg = o1; if (P) P.reg = o2; } })()`));
   ok(/3 Reg M-D events so far, switches at 20\./.test(rn), `Known-bug SHELL-05 (Nov 17): the new-regulation note says how far along it is (${String(rn).slice(0, 200)})`); }
+{ const cd = await p.evaluate(() => window.__ev(`(() => { const R = {id: 'M-C', since: '2026-09-01', now: null}, P = META.perf, o1 = META.reg, o2 = P && P.reg, d0 = Date.now; META.reg = R; if (P) P.reg = R; Date.now = () => Date.parse('2026-11-25T12:00:00Z'); try { return V2.dataNote().replace(/<[^>]+>/g, ''); } finally { Date.now = d0; META.reg = o1; if (P) P.reg = o2; } })()`));
+  ok(/Reg M-D is coming: M-C ends .* \(in 7 days\), with the Dec 2 balance patch\./.test(cd), `M-D countdown (Nov 24): before M-C ends, the note counts down to it (${String(cd).slice(0, 160)})`); }
 { const lin = [];
   /* Home's ranks and most used moved for Sim's Nov 18 redesign (the Stampede): the hero's plates, tags and ticker (ratings) and the six's ring
      names stand in for .hm-rk / .hm-used; on Home every such button is read, not only the first */
