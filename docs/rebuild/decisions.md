@@ -2384,3 +2384,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:59 PM: Checked after the review fixes: v2-minors main2 all passed; v2-arena 'all Damage Calc (Plot the hit) checks pass' (Hardy/short words at 44px+ with the padding fix); tap-size '1 failed' under load, then 'tap-size: all passed' alone on the same build (flake). v2-minors main1/main2 on HEAD also all passed (groups still running).
 - 11:04 PM: Checked on HEAD (item pictures in Search merged): v2-minors main1, main2, groups all passed.
 - 11:08 PM: GitHub run 1507 (136e7cd9: Natures, types in Search, Calc polish, kit headings, Archetypes, item images, Job 1, THEME-03) GREEN: 15 of 15 jobs success. Pushing HEAD (item pictures in Search, review fixes).
+- 11:19 PM: Checked: WebKit B-build on HEAD: behaviour: 77 pass, 0 FAIL, 14 known bugs, 0 fixed?, 0 skipped; 891s  (webkit, adapter v2).
