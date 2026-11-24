@@ -102,3 +102,12 @@ V2.pages.calc.draw = function () { let C; try { C = calcData(); } catch (e) { co
   ${V2.kStep(4, K.s4, KO.note, `<div class="pc-kob">${KO.body}</div>
     <div class="pc-links arn-links"><a class="np-link k-link" href="#method">${AW.how}&nbsp;›</a>${V2.FB && V2.FB.ok ? `<a class="np-link k-link" href="#feedback" data-fbmistake="calc" aria-label="Report a mistake in this hit">${AW.report}&nbsp;›</a>` : ''}${V2.arnNotes(C)}</div>`)}`)}
   ${V2.arnKBFull(C)}</div>`; };
+/* polish triage #2 (Nov 24): at 1100+ the hit sentence ("Mega Charizard Y hits Sneasler with Heat Wave") missed one line by a few
+   pixels and left "Heat Wave" alone on line 2. As the Plot sentence is fitted (build-plot.js V2.plotFit): when it's only a little too
+   wide, its display size steps down until it sits on one line, never under 28px; longer sentences still wrap as before. Phones untouched */
+V2.calcSentFit = () => document.querySelectorAll('.dc2 > .k-sent').forEach(s => { s.style.removeProperty('font-size'); if (innerWidth < 1100) return;
+  const W = s.clientWidth, line = () => { const m = c => { const q = c.getBoundingClientRect(); return q.top + q.height / 2; }, k = [...s.children]; return k.length && k.every(c => Math.abs(m(c) - m(k[0])) < 4); };
+  for (let px = parseFloat(getComputedStyle(s).fontSize), i = 0; W > 1 && !line() && i < 8; i++) { px -= 1; if (px < 28) { s.style.removeProperty('font-size'); return; } s.style.fontSize = px + 'px'; } });
+(() => { const after = V2.pages.calc.after; V2.pages.calc.after = () => { try { if (after) after(); } finally { V2.calcSentFit(); } }; })();
+addEventListener('resize', () => requestAnimationFrame(() => { if (document.querySelector('.dc2 > .k-sent')) V2.calcSentFit(); }));
+try { document.fonts.ready.then(() => { if (document.querySelector('.dc2 > .k-sent')) V2.calcSentFit(); }); } catch (e) {}
