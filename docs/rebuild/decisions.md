@@ -2404,3 +2404,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:36 AM: GitHub run 1509 (ed7f6e58: long titles, 1280 options A, Calc/Types polish) GREEN. Pushing HEAD (My Team polish). Game Plan v59.
 - 1:42 AM: Checked: WebKit A-team on HEAD (before hP3): 139 pass, 0 FAIL.
 - 1:52 AM: Baseline: full polish-check on HEAD, 28 views 320-2560: 'spill 27, uneven 23, lone 93, tap 10, bodyhead 3, lineh 17, glow 8, boxes 13, space 185; page errors 0'. Saved to docs/rebuild/research/polish-all-nov24-night.txt. Remaining spills are mostly the Pokemon partner % (hPS on it) and the 94 score line box (checked earlier: not visible).
+- 2:12 AM: Checked WebKit on HEAD: behaviour: 83 pass, 0 FAIL, 0 known bugs, 0 fixed?, 4 skippe;behaviour: 118 pass, 0 FAIL, 41 known bugs, 0 fixed?, 7 skip;
