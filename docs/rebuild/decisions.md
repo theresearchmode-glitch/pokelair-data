@@ -2426,3 +2426,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:57 AM: Checked on the hP4/hP5 head: qcheck-all: 28 pages + 11 views x 5 widths x 2 themes, 73 findings, 0 new; 1325s; v2-minors main1/main2/groups all passed.
 - 4:57 AM: Preview v257 published (Sets/Usage/This Week/Winning Teams polish, Track fixes).
 - 5:08 AM: Checked WebKit D-meta-shell on HEAD (Track fixes): behaviour: 118 pass, 0 FAIL, 41 known bugs, 0 fixed?, 7 skip
+- 5:08 AM: Design (HH authority): hNR merged (68a63a2b): Pokemon page on phones, every Item/Ability/Nature word tap area 44px+ (27-33 -> 46-49), no overlap (135 taps, 0 wrong). Costs +46px on phones (not the ~23 estimated: the last 'or' word also needed room before the move tickets); accepted: tapping the right word matters more than ~5% of a screen. Desktop unchanged. Open for Sim: tablets 700-1099 keep the small areas (+46px there too if extended).
