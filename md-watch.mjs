@@ -16,7 +16,7 @@
 //   WATCH_FAKE_LIMITLESS=down | stale           pretend Limitless doesn't answer | its newest event is 5 days old
 import fs from 'node:fs';
 import {activeReg, nextRegIds, sdGuess, regName} from './formats.mjs';
-import {FEED} from './post-news.mjs';
+const FEED = 'https://champions-news.pokemon-home.com/en/json/list.json'; // the same feed as post-news.mjs FEED (main has no post-news.mjs; Nov 24)
 const UA = {'User-Agent': 'pokelair-data (personal team-builder stats)'}, out = process.env.WATCH_REPORT || 'watch-report.json';
 const fake = new Set(String(process.env.WATCH_FAKE_FOUND || '').split(',').filter(Boolean)), fakeL = process.env.WATCH_FAKE_LIMITLESS || '';
 async function get(url, json = true) { const c = new AbortController(), to = setTimeout(() => c.abort(), 30000);
