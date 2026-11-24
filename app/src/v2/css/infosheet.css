@@ -103,6 +103,8 @@
 /* the main pick and its "or" line sit right on top of each other: each word's tap area grows away from its neighbour only (Nov 23: Jolly's grown area covered Adamant, so tapping Adamant opened Jolly) */
 /* a short word that opens a sheet (Hardy, Calm in the Calc's set line) still gets a 44px-wide tap target (GitHub run 1504: Hardy 42x47) */
 .dc2-set .is-w{display:inline-block;padding-inline:var(--s3);margin-inline:calc(var(--s3) * -1)} /* 24px wider tap box (Lax 25px -> 49px) with the text where it was: no gap before the comma (review Nov 23) */
+/* Nov 24 (qcheck, Option A checks): short words in the Pokémon page basics (Blaze 33px, Timid 35px wide) reach 44px+ wide by growing to the right only, text where it was */
+.pk-kv .is-w{padding-inline-end:var(--s5);margin-inline-end:calc(var(--s5) * -1)}
 .pk-kv dd b:has(+ small) .is-w{padding-bottom:0;margin-bottom:0}.pk-kv dd b + small .is-w{padding-top:0;margin-top:0}
 .lo-v .is-w{color:inherit;text-decoration-color:var(--plate-link)}
 /* phone sweep (hPS, Nov 24): the same pairs grow their tap areas away from each other to 44px, text where it was. Popular Sets: Timid's
