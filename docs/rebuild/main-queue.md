@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 12:47 AM (12:47:30)  date: Tue Nov 24, 2026
-NOW: HH: WebKit A-team on HEAD (full qcheck-all: 0 new). Helper: hP3 (My Team polish).
+NOW: HH: full polish-check on every page (320-2560, day+night style) on HEAD for the morning baseline. Helper: hPS (phone sweep fixes).
 NEXT: GitHub run for ed7f6e58 (pushed 12:36 AM)
 NEXT: merge hP3; checks; push; Preview
 NEXT: review hPS (phone sweep fixes); merge; checks; push; Preview
