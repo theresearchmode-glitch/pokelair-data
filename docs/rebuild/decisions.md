@@ -2493,3 +2493,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:38 PM: Sim: yes to a smaller Home hero (the herd, about half, every format); prompt for the other acc (2 options + LCP before/after). M-D countdown moved to Home only (Meta tabs limit). main1/main2 re-running before push.
 - 5:39 PM: Sim: smaller Home hero added to the plan (Thu Nov 26, a helper; HH design authority, pictures to Sim). Game Plan v69.
 - 5:52 PM: Sim: Gemini = extra helper for code reviews and non-design tasks only when Claude usage is low; HH writes prompts (template docs/rebuild/gemini-prompt-template.md) and double-checks its work. Saved in CLAUDE.md.
+- 6:18 PM: Sim's go: push md-watch fix 668f235e to main (Gemini job 2 findings)
