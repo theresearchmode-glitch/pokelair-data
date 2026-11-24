@@ -2355,3 +2355,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:29 PM: Helper slot: hN10 replaces NAV-10 with a keyboard check that fits the Pokemon page (tab order, visible focus) plus the info sheet's focus trap and focus return; proven to fail.
 - 9:34 PM: hN10 merged (9e6bc225): NAV-10 for the new site is a real keyboard check (tab order skip-link > header > content > footer, every stop visible, Shift+Tab reverse, info sheets trap focus and return it); proven to fail 4 ways; 3/3 pass; off the known list. No site bug.
 - 9:34 PM: Helper slot: hA fixes the Archetypes OFFSCREEN finding at 720 (found in hK's qcheck run; real-bug fix). Asked Sim the Mega Ability counting question (default: keep both, A recommended).
+- 9:35 PM: Hourly check: 1 helper (hA), cc.sh + page lengths running; Game Plan v55.
