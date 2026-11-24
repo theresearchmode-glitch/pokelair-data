@@ -38,7 +38,7 @@ Written Tue Nov 24 (light-usage day) for Sim's review. Everything on this accoun
 ## Fri Nov 27
 | Who | Job |
 |---|---|
-| HH | Fix the sweep's findings (day-one empty states, #5); **#7** every-4-hours schedule ready to flip (update.yml + refresh + Preview); **#8 watcher** (Showdown M-D format, Limitless M-D events, official news → GitHub issue) |
+| HH | Fix the sweep's findings (day-one empty states, #5); **#7** every-4-hours schedule ready to flip (update.yml + refresh + Preview); **#8 watcher** (Showdown M-D format, Limitless M-D events, official news → GitHub issue); **Limitless alarm** (phone alert if the data job can't reach Limitless or finds no new events for 2+ days) and the **"tournament data paused" note** on the site |
 | Helper 1 | **M-D test teams** (G11): fixture teams so the audits test something on day one; re-pinnable Showdown commit in test.yml |
 | Helper 2 | Switch: final checks list from the Game Plan (full check on one commit, final polish pass) |
 | PC chat | Full check on the switch candidate commit |
@@ -70,3 +70,19 @@ PC chat, 1 helper only.
 ## Already done (Nov 24)
 Live data unblocked (threat-check); daily Preview data; A1-M9 sturdier; Option A on the Pokémon page; info-sheet lines fact-checked;
 Dec 2 patch map + Psych Up list; polish triage (fixes coming from the other account as patches).
+
+## After Dec 2: December to launch (Sim approved the order, Nov 24)
+Docs: public-site-plan.md (all on Cloudflare, nastyplot.org), RULES-ONE-PAGE-draft.md, honest-review-nov24.md.
+| When | What | Done when |
+|---|---|---|
+| Dec 3-4 | Rules down to one page (Sim's review of the draft); hooks match it; old rules archived | Sim's yes; hooks quiet |
+| Dec 3-5 | Public site: `--public` build reads the tested JSON over HTTP; data copy to Cloudflare R2 each morning (also our data backup) | same numbers as the Claude build on the same day |
+| Dec 5-8 | Practice public site on a hidden Cloudflare URL; every test against it; real-phone speed test | all tests pass there |
+| Dec 5-12 | **Showdown-only backup numbers**: the data job builds usage, sets and win rates from Showdown replays and switches to them, labelled, when Limitless is down | a test with Limitless "switched off" still produces labelled numbers |
+| Dec 8-12 | Feedback (Worker + D1 + Turnstile), Web Analytics, Email Routing, owner page behind Access | privacy test: no ID, email or name stored |
+| Dec 10-14 | Export teams on the Claude site, Import on nastyplot.org | a tester's teams survive the move |
+| Dec 10-16 | **Official events (Victory Road) as a second tournament source** | their top cuts show beside Limitless's |
+| Dec 12-20 | Speed: per-page scripts; first visit under 2.5 s on 4G on a real phone | measured |
+| Dec 14-24 | 3-5 real testers use nastyplot.org (hidden link) for a week | their notes triaged |
+| Dec 20-30 | Strength Score only if it beats today's on the walk-forward test; privacy page; Limitless terms read | gate passed or skipped |
+| January | Launch with Sim's yes; Claude version stays as the private preview | live on nastyplot.org |
