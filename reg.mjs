@@ -30,7 +30,7 @@ if (process.env.REG_OFFLINE === '1') {
 if (!list && !Object.keys(sd).length) { console.log('::warning::reg: no source answered; kept yesterday\'s out/reg.json'); process.exit(0); }
 const r = detectReg(list || [], sd, prev, today);
 // a source that failed today doesn't erase what it showed yesterday
-if (!list && prev && prev.seen) r.seen = prev.seen;
+if (!list && prev) { if (prev.seen) r.seen = prev.seen; if (!r.now && prev.now && prev.now.from === 'limitless') r.now = prev.now; } /* keeps yesterday's banner too (code review, Nov 24) */
 if (r.now) console.log(`::warning::reg: ${r.now.name} is being played since ${r.now.since} (${r.now.events} events, ${r.now.players} players${r.now.ladder ? ', ' + r.now.ladder + '+ Showdown replays' : ''}); numbers stay on ${r.name} until it has ${r.now.need.events} events and ${r.now.need.players} players`);
 if (r.switched && r.switched.on === today) console.log(`::warning::reg: switched from ${regName(r.switched.from)} to ${r.name} (started ${r.since}); every step now counts ${r.name} events only`);
 fs.writeFileSync('out/reg.json', JSON.stringify(r));

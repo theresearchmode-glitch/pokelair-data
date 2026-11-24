@@ -213,8 +213,8 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
       out.push({player: p.nm, event: `${T.name} · ${T.p} players`, record: `${p.w}-${p.l}${p.ti ? '-' + p.ti : ''} · #${p.pl}`, section: lastD - new Date(T.d) <= 7 * DAY ? 'Last 7 days' : 'Last 14 days', mons: ns}); }
     if (out.length >= 60) break; }
   // keep yesterday's official-event teams (official.mjs refreshes them next; if its sources are down they'd otherwise vanish)
-  const prevT = readJSON('out/teams.json', null), off = prevT && Array.isArray(prevT.teams) ? prevT.teams.filter(t => t && t.section === 'Official events') : [];
-  fs.writeFileSync('out/teams.json', JSON.stringify({source: `Limitless · top 4 of ${RG.name} events with 32+ players` + (off.length ? ' + ' + ((prevT.source || '').match(/\+ ((?:RK9|Victory Road) official events.*)$/) || [, 'Victory Road official events (top 8)'])[1] : ''), updated: new Date().toISOString(), teams: [...off, ...out.slice(0, 60)].slice(0, 90)}));
+  const prevT = readJSON('out/teams.json', null), off = prevT && (prevT.reg || 'M-C') === FORMAT && Array.isArray(prevT.teams) ? prevT.teams.filter(t => t && t.section === 'Official events') : [];
+  fs.writeFileSync('out/teams.json', JSON.stringify({reg: FORMAT, source: `Limitless · top 4 of ${RG.name} events with 32+ players` + (off.length ? ' + ' + ((prevT.source || '').match(/\+ ((?:RK9|Victory Road) official events.*)$/) || [, 'Victory Road official events (top 8)'])[1] : ''), updated: new Date().toISOString(), teams: [...off, ...out.slice(0, 60)].slice(0, 90)}));
   console.log(`teams: ${out.length}`); }
 // 3) usage-rank history for trends: one entry per day for the last 21 days, each from the 14 days before it
 { const days = [];
@@ -240,6 +240,6 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
   console.log(`matches: ${M.length} games, ${teams.length} distinct teams, ${plist.length} players`); }
 // 5) top-cut evidence for the ratings (top-cut share, conversion, win rate, rating-weighted usage, bring/lead rates
 // from replays), into results.tc of out/limitless.json. Runs last so it reads today's matches.json.
-{ const R = readJSON('out/replays.json', null), REP = Array.isArray(R) ? R : R ? (Object.values(R).find(Array.isArray) || []) : [];
+{ const R0 = readJSON('out/replays.json', null), R = R0 && R0.format && R0.format !== RG.sd ? null : R0, REP = /* another regulation's replays never reach the ratings (code review, Nov 24) */ Array.isArray(R) ? R : R ? (Object.values(R).find(Array.isArray) || []) : [];
   const tc = topcut(V2, nameOf, readJSON('out/matches.json', null), REP);
   if (tc) { out.results.tc = tc; fs.writeFileSync('out/limitless.json', JSON.stringify(out)); console.log(`topcut: ${Object.keys(tc.rows).length} Pokémon from ${tc.events} events`); } }

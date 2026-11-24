@@ -59,7 +59,7 @@ export function readReg(file = 'out/reg.json') { try { const r = JSON.parse(fs.r
 const endDay = id => REG_END[id] ? REG_END[id].slice(0, 10) : null;
 export function activeReg(file) { const r = readReg(file);
   if (!r) return {...SITE_REG, name: regName(SITE_REG.id), end: endDay(SITE_REG.id)};
-  return {id: r.id, name: regName(r.id), sd: r.sd || (r.id === SITE_REG.id ? SITE_REG.sd : sdGuess(r.id, String(r.since || '').slice(0, 4))), since: r.since || SITE_REG.since, end: r.now && r.now.id !== r.id ? r.now.since : endDay(r.id)}; }
+  return {id: r.id, name: regName(r.id), sd: r.sd || (r.id === SITE_REG.id ? SITE_REG.sd : sdGuess(r.id, String(r.since || '').slice(0, 4))), since: r.since || SITE_REG.since, end: (() => { const e = endDay(r.id), n = r.now && r.now.id !== r.id ? r.now.since : null; return e && n ? (e < n ? e : n) : (e || n); })()} /* never past the official end (code review, Nov 24) */; }
 // Official end of each regulation (Nov 17). Limitless can keep tagging events with the old regulation after it ends (checked
 // Nov 17: events listed from Dec 3 tagged "Regulation Set M-C"), so an event dated at or after the end never counts for it,
 // whatever its tag: it counts for the next regulation. M-C ends Dec 1, 5:59 PM PST (pokemon.com "Get Ready for Regulation Set
