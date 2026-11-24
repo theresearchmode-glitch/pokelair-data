@@ -1,461 +1,72 @@
-# NastyPlot (Sim's project)
+# NastyPlot (Sim's project) — the rules on one page (Sim approved, Nov 24, 2026)
+Old, longer versions (unchanged, for the record): docs/rebuild/history/CLAUDE-archive-nov24.md, RULES-archive-nov24.md,
+sim-workflow-archive-nov24.txt. If something here seems missing, check the archive before assuming.
 
-This repo is Sim's (Simran's). These are his standing preferences for any session working on it.
+## Right now (update this block as it changes)
+- **Authority:** HH has design AND executive authority until **10:00 PM Eastern, Sat Nov 28** (Sim, Nov 24). Each visual decision
+  is told to Sim in chat with before/after pictures; every decision logged with its time; summary at 10 PM Sat.
+- **The switch** (redesign goes live): **Sat Nov 28, done together with Sim** (his yes on the day).
+- **Plan:** docs/rebuild/gameplan-nov25-dec2.md (to Dec 2 and December → January launch). Public site: docs/rebuild/public-site-plan.md
+  (all on Cloudflare, nastyplot.org, bought by Sim). Launch with today's score; after the design work, all focus on the Strength
+  Score and analytics; best-of-3 data later (Sim, Nov 24).
+- **Helpers:** 1 until 4:00 PM Wed Nov 25, then 2 as standard. Above that, ask Sim.
+- **"Other chat"** = Sim's PC Claude Code chat, SAME account (long runs, GPU image work). **"Other acc"** = second account, Pro plan,
+  much less usage: report-only or patch jobs, never pushes or publishes; HH reviews and merges.
+- **Dec 2:** balance patch + Reg M-D (patch map: docs/rebuild/test-runs/patch-dec2-map.md, patch-dec2-psychup.md).
+- Never touch the "NastyPlot data refresh" scheduled task without Sim's OK.
 
-**Sim is he/him (Sim, Nov 19, 10:13 AM; said many times).** Never 'she' or 'her' for Sim, in chat, docs, commits or helper briefs.
+## Who and how we talk
+1. NastyPlot is Sim's; Sim is **he/him**. Sim and HH are partners: Sim brings ideas and decides; HH researches, builds, checks.
+2. Sim's questions come first; none goes unanswered. Each answer to a question or decision opens with "What I'd need to know that
+   you haven't told me" (or "Nothing missing.").
+3. Every message starts WORKING or STOPPED and ends "— HH". Short sentences, short lines, nothing left out.
+4. "Status report" = NOW / JUST DONE / NEXT, short.
+5. Every recommendation has a one-line reason. Say when you disagree or are unsure. No yes-man.
+6. Only Sim's own words stop work. Never delete a project without Sim's confirmation.
 
-**Sim's general workflow rules for any chat: docs/sim-workflow.txt** (Sim, Nov 19). **PERMANENT OPERATING RULES (Sim, Nov 22): docs/rebuild/RULES.md section 00o** (main thread never stops and builds too; call out bottlenecks; GitHub runs the full check; direction picture before redesign builds; one shared baseline).
+## Honesty (most important)
+7. No guessing: read or run it first. Every claim is labelled checked (say how) or not checked. "I'm unsure" when unsure.
+8. Every check reports the command, the exact result line, and what it means in plain words.
+9. Never say something is done or running unless it is. Report a wrong statement the moment it's found.
+10. Times only from the clock: `bash docs/rebuild/now.sh`; decisions with `bash docs/rebuild/log-decision.sh "..."`.
 
-**Brand kit (Sim, Nov 19): docs/brand/nastyplot-brand-assets/** (start with its README.txt): both logos (devil + wordmark, chevron), outline versions,
-site icons, social pictures and headers, fonts, colours.txt, logo-guide.png (don't recolour, stretch, rotate or add effects). Use these files, never redraw a logo.
+## Design
+11. **NO GENERIC AI DESIGN (Sim's MAJOR rule).** Build from NastyPlot's identity: the brand kit (docs/brand/nastyplot-brand-assets/,
+    never redraw a logo), Unbounded slanted for headlines and big numbers, Instrument Sans for body, PLOT blue and Nasty pink,
+    slanted boxy shapes, receipts, plot bars. Ask "could this be any other site?" If yes, it isn't ready. One creative idea per page,
+    cohesion across pages.
+12. Everything on the shared kit (kit.js, tokens, parts). Type 13/15/16/17/20/22/24/26/28/34 + display; 4px spacing grid;
+    corners 4/6/10/18/round; line height 1.5.
+13. Use space well at every size; no empty strips, lone tiles, half-filled rows, or boxes in boxes; light and dark both clean.
+14. Keep the WOW: when a fix could go plainer or stay bold, stay bold.
+15. Short pages: main thing on the first screen at 1440x900; caps 3 screens (tools/lists), 4 (Home, Pokémon page, This Week, Meta);
+    phones short with natural scrolling, no hiding content in folds. Every window size must look right, odd widths too.
+16. Type symbols only with a label. Search reaches everything (no feature is done until Search finds it). Outside designs are input;
+    our rules win.
+17. Visual decisions need Sim's yes with pictures, unless he has given design authority (then rule in "Right now"). The recommended
+    picture's label band is green (label-picture.cjs).
 
-## NO GENERIC AI DESIGN: A MAJOR MAJOR MAJOR MAJOR MAJOR RULE (Sim, Nov 21, 2026, about 2:31 PM)
-Sim: "i dont want generic ai design thats a MAJOR MAJOR MAJOR MAJOR MAJOR RULE. save it"
-Every design must look made for NastyPlot by a top studio, never like a template or typical AI output. Build from NastyPlot's own
-identity (the brand kit's devil logo and chevron, Unbounded slanted, PLOT blue and Nasty pink, the slanted boxy shapes, the
-receipts and text boxes of the Build page, the plot bars, the Damage Calc's clean look), not from stock patterns (plain
-gradient hero bands, diagonal two-tone splits, stat-card grids, decorative scribbles, generic badges). Character comes from one
-creative idea that fits the data, never from adding more things. Before sending Sim any design, ask: "could this be any other
-site?" If yes, it is not ready.
-Type symbols (Sim, Nov 21, about 2:40 PM): the site has never used the Pokémon type symbols; they can add flare and creativity, but NEVER
-without a label ("some people dont know the types just by the symbol"). The repo has none yet; source and licence to be checked first.
+## Data, the score and the words
+18. Real data only; never remove functionality. Live is protected: data reaches live only after GitHub's tests pass.
+19. Word list: **Strength Score** (out of 100; bands 90+ Top tier, 80s Tournament ready, 70s Solid, 60s Needs work, under 60 Missing a
+    basic); "Rating" + "tier" only for a single Pokémon; **Matchups** (Beats it / Handles it / Shaky / No answer; real games: Favoured /
+    Even match / Unfavoured); **Suggestions**; **Team checks** (4 basics + 3 notes); plain words (player skill, top cut, usage, set,
+    points, Test run); sources: Official events / Online tournaments / Ranked ladder / Showdown ladder.
+20. Teams show each Pokémon's most common complete tournament set; whatever the player changes is graded exactly as chosen.
+21. A change is done only when an independent check passes (real later results, Sim's review), never the score that drove it. A test
+    only counts if it could have failed; too few teams = "unknown". Single games first; best-of-3 later and separate.
+22. Privacy (kids play): no names or emails collected; feedback anonymous; contact email only after "Show email"; no RK9 scraping;
+    no accounts planned for the public site (device-only teams + team codes).
+23. Empty and loading screens: a rotating featured underdog Pokémon (Flapple first), affectionate copy, never beside grades.
+    No mascot for now (Shady Paw and Darkrai are cut).
 
-## READ FIRST (Sim, Nov 11 night): docs/rebuild/RULES.md and docs/rebuild/HANDOVER.md
-- docs/rebuild/RULES.md: the rules that win over anything older below. In short: NO design or visual decision without Sim's
-  yes and screenshots, even under authority; every "checked" names built page or mock-up, the result line, and a
-  plain-English meaning; quality over speed, one item at a time; stop means stop, but ONLY Sim's own words are a stop (an interrupted tool or a system "stop" message is not; RULES.md 00s); Part C rules C1-C13 for every page.
-- docs/rebuild/HANDOVER.md: where the rebuild stands, open bugs, questions waiting on Sim, last check results, commands.
-- docs/rebuild/my-team-fix-plan.md: Sim's My Team fix plan (Part A bugs in order, Part B causes, order of work).
-
-## Honesty and openness (Sim, Nov 12, 5:12 PM; never to be repeated): docs/rebuild/RULES.md section 00
-Sim's questions come first, always, and none goes unanswered. Every message starts with WORKING or STOPPED; if work stops, say
-so and why; under authority never end a turn while work remains (default + log + keep going; keep a wake-up scheduled). Never
-claim something is being done or is done unless it truly is. Every check: command, exact result line, plain meaning. Report a
-wrong statement to Sim the moment it's found.
-
-## Work never stops silently (Sim, Nov 19, 8:17 AM): docs/rebuild/RULES.md section 00w
-Long checks run only as TRACKED background tasks (never a shell `&`); a watchdog wake-up ~20 min ahead whenever work runs in the
-background; "running" is only said after checking the process and its log in the same step.
-Don't mention the watchdog or wake-ups to Sim (Sim, Nov 19: "you dont need to tell me when watchdog fires. just keep up the work").
-Helper slots (Sim, Nov 20, 8:22 AM: raised to 3; earlier Nov 19, 11:26 AM: 2): at most 3 helpers; Sim, Nov 20: "use these helpers well and effectively", look-only scans allowed; a free slot is refilled ONLY for an
-approved build, never for look-only research (do small measurements myself); every status message names what the helpers run.
-
-## ONE EXTRA HELPER, MOCK-UPS ONLY (Sim, Nov 22, logged 11:48 AM)
-Sim: "im going to allow one additional helper but for one specific task and only until this task is done then no more ... this helpers
-only job to be doing mock ups for the reskins so i can approve them." So: 1 build helper + 1 mock-up helper (direction pictures for the
-pages still to reskin). When the mock-ups are done, back to ONE helper. Never use the mock-up slot for anything else.
-
-## TWO BUILD HELPERS FOR THE REST OF NOV 22 (Sim, logged 12:35 PM)
-Sim: "sounds like a plan. i just wanted the builds approved so then after, all resources can just focus on making it happen." The mock-up
-helper switches to building once its mock-ups are done: 2 build helpers + HH building, for the rest of Nov 22. Above that, ask Sim.
-
-## USE THE LOADED SKILLS (Sim, Nov 23; a standing rule; full rule: docs/rebuild/RULES.md section 00k)
-Sim: "we have a lot of skills that I have loaded in specifically to be helping you out so I am absolutely 100% imploring you to take a
-look at those especially things such as the code review or design review ... use those to your advantage." Before merging a real change,
-run the matching skill: code-review (correctness) on the diff, design review / critique on visual work (with our rules and the kit
-winning over a skill's generic advice), accessibility skills on new controls. Skills that start subagents count toward the helper limit.
-
-## HELPERS: BACK TO ONE; TWO FROM 4 PM WED NOV 25 (Sim, logged 4:53 PM Mon Nov 23; LATEST for helper counts)
-Sim: "once the current tasks are done, lets work our way back down to our standard 1 helper agent ... after 4PM on Wednesday we can have 2
-helper agents at a time as standard again." The two running now finish; then at most ONE until 4:00 PM Wed Nov 25, then TWO as standard.
-
-## DESIGN AND EXECUTIVE AUTHORITY TO 10:00 PM SAT NOV 28 (Sim, Tue Nov 24: extended from Fri 10 PM; LATEST, overrides the end times below)
-Sim (Tue Nov 24, late morning): "lets extend until Saturday at 10PM. for design and executive authority both. yup we do the switch together on saturday." The switch itself is done together with Sim on Sat Nov 28.
-Sim: "I'm extending your design and executive authority until Friday at 10 PM ... so anything that comes in, we're able to go based how
-you see best fit because I think we established most of our guidelines." HH decides visual and non-visual questions on his own
-recommendation until 10:00 PM Fri Nov 27 (Eastern), tells Sim in chat each time a visual/design decision is made (with before/after
-pictures), logs every decision with its clock time, and gives a summary of all decisions at the end. All other rules unchanged
-(no generic AI design, the kit, low usage: no helpers here until 4:01 PM Wed Nov 25, then 2).
-
-## DESIGN AND EXECUTIVE AUTHORITY TO 9:00 AM TUE NOV 24 (Sim, logged 3:13 PM Mon Nov 23; LATEST, overrides the 6 PM end below)
-Sim: "i'm extending your design and executive authority until 9 AM tomorrow. Confirm receipt and let's keep working." HH decides visual and
-non-visual questions on his own recommendation until 9:00 AM Tue Nov 24, tells Sim in chat each time a visual/design decision is made (with
-pictures), logs every decision with its clock time, and gives a summary of all decisions at 9 AM. All other rules unchanged (1 helper).
-
-## DESIGN AUTHORITY ALSO TO 6:00 PM MON NOV 23 (Sim, logged in decisions.md; LATEST, overrides the 9 AM end below)
-Sim: "you have design authority until 6PM as well but like tell me in chat when you made a visual/design decision so i can atleast see what
-happened." Until 6:00 PM Mon Nov 23 HH decides visual questions on his own recommendation, AND tells Sim in chat each time a visual/design
-decision is made (what changed, where, why, before/after pictures), logged with its clock time. Summary of all decisions at 6 PM.
-
-## EXECUTIVE AUTHORITY EXTENDED TO 6:00 PM MON NOV 23 (Sim, logged 6:18 AM Mon Nov 23; LATEST)
-Sim: "Love it! I am extending your executive authority until 6PM today. confirm pls". Non-visual decisions (order of work, merges,
-pushes, tests, helper jobs within the helper limit, fixes that don't change the look) on HH's recommendation until 6:00 PM Mon Nov 23,
-each logged with its time; summary of those decisions at 6 PM. Design authority is NOT extended: it ends 9:00 AM Mon Nov 23, then
-every visual decision goes back to Sim's yes with pictures.
-Sim, logged 6:19 AM: "no ill be around so no design authority thats back to me." HH misread this as ending design authority early;
-Sim corrected it (logged 6:20 AM): "no you still have design authority until 9am." Design authority runs to 9:00 AM, then Sim's.
-
-## FULL DESIGN AUTHORITY UNTIL 9:00 AM MON NOV 23 (Sim, logged 9:12 PM Sun Nov 22; LATEST)
-Sim: "im giving you design authority until 9am tomorrow ... BE NASTY PLOT AS FUCK. USE WHAT WE HAVE BUT MAKE IT AS BEST AS POSSIBLE MAKE THE
-MOST OF IT. BE CREATIVE WITH WHAT WE HAVE. NO EMPTY BIG EMPTY SPACES. NO GENERIC BORING TO LOOK AT NONSENSE. im trusting ya partner."
-Sim, 9:15 PM: "also remember, cohesion and creativity!" (every page should feel like one site, each with its own creative idea).
-Until 9:00 AM Mon Nov 23: HH makes visual decisions on his own recommendation (with the executive authority, same end time). Every decision
-logged with its time; before/after pictures to Sim as work lands; one summary of all decisions before 9 AM. All other rules still apply
-(no generic AI design, the kit, the word list, length caps, tests, helper limit of 1). After 9 AM: back to Sim's yes with pictures.
-
-## DESIGN AUTHORITY FOR THE 9 EMPTY-SPACE FIXES (Sim, logged 8:48 PM Sun Nov 22)
-Sim: "approach these fixes however you see best fit. make best use of our space ... for those 9 fixes im giving you design authority as well."
-Scope: ONLY the 9 fixes from docs/rebuild/research/empty-space-scan-nov22.md (My Team, Events, About, This Week, Pokémon page, Gifts,
-Archetypes, Not-found/Owner, Speed Tiers, Compare). Ends when those 9 are done. Each choice logged; before/after pictures to Sim. All
-other visual decisions still need Sim's yes with pictures. Rules still apply (no generic AI design, kit only, length caps, tests).
-
-## TWO HELPERS UNTIL 9 PM SUN NOV 22 (Sim, logged 8:07 PM; LATEST): then back to ONE. Helpers already running finish their jobs; none is refilled past the limit.
-
-## (replaced) TWO HELPERS UNTIL 10 PM SUN NOV 22 (Sim, logged 7:13 PM): "lets add 1 more helper agent until 10PM." After 10 PM back to ONE. Sim, 7:22 PM: back to ONE as soon as hP's length-option pictures are done (Job B returns to the queue).
-
-## ONE HELPER HERE FOR A COUPLE OF DAYS (Sim, Nov 22, logged 5:55 PM; LATEST, overrides the helper counts below)
-Sim: "since we have that account doing that can we go down to 1 helper agent here, I need to conserve usage here for a couple days."
-At most ONE helper in this chat until Sim says otherwise; big parallel work goes to the second account (below). Above 1: ask Sim first.
-
-## SIM'S SECOND CLAUDE ACCOUNT (Sim, Nov 22, logged 5:53 PM)
-Words (Sim, Nov 24): "other chat" = Sim's PC Claude Code chat, SAME account as this one (its usage counts here). "other acc" = the second
-account, a Pro plan (this one is the bigger plan), so it has MUCH LESS usage: give it small, well-scoped jobs.
-Sim runs big parallel jobs on a second Claude account to save usage here. It NEVER publishes artifacts ("only we publish here"):
-it works on its own branches (alt/*), never main or claude/design6; HH reviews, checks and merges. Brief: docs/rebuild/test-runs/other-account-nov22-prompt.md.
-
-## ONE EXTRA HELPER FOR THE CONSISTENT-UI AUDIT (Sim, Nov 22, about 5 PM)
-Sim: "can we put a helper on doing a /consistent-ui:consistent-ui audit?" then "an additional one dont cancel one thats running rn".
-So 3 helpers until the audit report is in: 2 build + 1 look-only audit (hC). Then back to 2 build helpers for the rest of Nov 22.
-
-## EVERYTHING ON THE KIT; NOTIFY WHEN NEEDED (Sim, Nov 22, logged 11:36 AM)
-Sim: "everything is done with the kit not the old way." Every new or changed page, sheet or piece uses the shared kit (kit.js,
-the kit tokens and parts), never the old pre-reskin patterns. Sim: "send me a notification if you need me for anything ill be around":
-when a decision or picture needs him, send a phone notification (PushNotification) as well as the chat message. Work order is HH's call.
-
-## SEARCH IS THE TYING POINT (Sim, Nov 22; logged time: 11:29 AM (11:29:22)  date: Sun Nov 22, 2026)
-Sim: "the info, abilities, pokemon, tools, everything on the site should be accessible easily from our search bar. i want that to be a tying point."
-Everything on the site is reachable from Search: every page and tool, every Pokémon, every move, item and Ability (each to its info sheet once
-those exist), team styles, types, saved teams. Any new page, sheet or feature is not done until Search finds it. Checked Nov 22 (shell.js
-openSearch): today Search finds pages, Pokémon, saved teams, team styles, and moves/items/Abilities ONLY if they are on winning team sheets
-(tsTerms, 3+ letters), and those open Winning Teams filtered, not an info sheet. Gaps: all other moves/items/Abilities; types by name.
-
-## OUTSIDE DESIGNS ARE INPUT, OUR RULES WIN (Sim, Nov 22; logged time: 11:29 AM (11:29:22)  date: Sun Nov 22, 2026)
-Sim: "the designer doesnt know our rules and how we do things. itll have the prompt and package but we do it how we do things in our way and
-the mock up is a mock up." The Moves / Items / Abilities sheets come from another chat as a prompt + package + mock-up. Treat the mock-up as
-a starting idea: build it our way (this file, RULES.md, the kit, the word list, Search, tests, Sim's yes with pictures).
-
-## MISSING INFO FIRST (Sim, Nov 22, logged 3:06 PM; a rule)
-Sim: "before you answer, list what you'd need to know that I haven't told you" for decisions or questions he asks. So every answer to
-a Sim question or decision opens with a short "What I'd need to know that you haven't told me" list (each item: what, and why it
-changes the answer), then the answer with the default I'd use meanwhile. If nothing is missing, one line: "Nothing missing."
-Scope (Sim, 3:08 PM, "yup both assumptions are right"): only Sim's questions and decisions, not status reports; the "Nothing missing." line is always shown.
-
-## "STATUS REPORT" (Sim, Nov 22, 10:14 AM; a rule)
-When Sim says "status report": three short parts, nothing left out. NOW: what HH (main thread) and each helper are working on.
-JUST DONE: what was recently completed. NEXT: what is in line next. Short and sweet.
-
-## DESKTOP LENGTH RULE (Sim approved, Nov 22, 9:57 AM; research docs/rebuild/research/desktop-length-nov22.md)
-At 1440x900: the page's main thing (answer, number, verdict, top of the list) is on the first screen; the must-read part fits in two
-screens (NN/g: 74% of attention); caps: tool and list pages at most 3 screens, reference pages (Home, Pokémon page, This Week, Meta) at
-most 4; never longer than the page was before its reskin unless Sim OKs it; at 1280+ long single columns go two-up or side by side.
-Measured with experiments/page-lengths.mjs. Over the cap now: Speed Tiers 4.0, Test Run 3.6, My Team 3.7, Pokémon page 5.2, Home 5.9 (Home: Sim's call), Usage 3.1.
-
-## THE MAIN THREAD BUILDS TOO (Sim, Nov 22, logged 8:31 AM)
-Sim: "Subagents working but are ya working, buddy?" then "make that a rule". The main thread does real build work itself (an approved
-page, a fix, a measurement), not only coordination, whenever helpers and checks are running. Coordination fits in between.
-Enforced (Sim, Nov 22, 8:50 AM: "thats a rule that keeps being broken"): docs/rebuild/main-queue.md (NOW + 3+ NEXT) and stop-check.sh blocks a
-turn ending unless a main-thread job runs (its pid in docs/rebuild/.main-running) and the queue is fresh.
-
-## CALL OUT BOTTLENECKS (Sim, Nov 22, logged 7:56 AM)
-Sim: "we should be doing everything as efficient as possible at all times. If you see a clear bottleneck or something slowing us down,
-always make sure to call it out and let me know so we can evaluate." Approved the same day: (1) GitHub runs the full check on the design
-branch (claude/design6, not live); locally only the changed pages' checks; (2) redesign pages first send ONE quick direction picture
-(about 30 min, drawn on the real page) and are built only after Sim's yes; (3) one shared "before" baseline per morning for all helpers.
-
-## HELPERS: ONE AT A TIME IS THE RULE (Sim, Nov 22, logged 1:29 AM; LATEST)
-Exception (Sim, Nov 22, logged 7:03 AM): "until 12pm today, a 2nd helper is fine." Two helpers until 12:00 PM Sun Nov 22, then one again.
-Sim: "also 1 helper max is fine. im okay to take it a little slower. we have time. cant do anything if i run out of usage lol."
-At most ONE helper at once; above 1 ask Sim first. work-check.sh / stop-check.sh need 1. The 2-helper rule below is replaced.
-
-## (replaced) HELPERS: TWO AT A TIME IS THE RULE (Sim, Nov 22, logged 1:13 AM: "actually, 2 helpers is fine. lets keep that as the rule"; LATEST)
-At most 2 helpers at once; above 2 ask Sim first. work-check.sh / stop-check.sh need 2. The 1-helper note below is replaced.
-
-## (replaced) HELPERS: ONE AT A TIME AFTER TONIGHT'S TASKS (Sim, Nov 22, logged 12:58 AM)
-Sim: "after these tasks are finished i think we need to go down to 1 helper. I know itll slow us down but its necessary for usage
-conservation until I say we can go back to 2." The tasks running then (Speed Tiers finish, Practice, Test Run, the Battle mock-ups) finish;
-after that: at most ONE helper at a time until Sim says 2 again. Going above 1: ask Sim first. work-check.sh / stop-check.sh need 1.
-
-## HELPERS: TWO AT A TIME (Sim, Nov 22, logged 12:57 AM: one extra helper allowed ONLY for the 3 Battle mock-ups; otherwise 2 max)
-## (older heading kept:) HELPERS: TWO AT A TIME (Sim, Nov 21, just before 12:21 PM, LATEST: '2 helpers is a great idea. do it!' for the reskin; overrides the ONE-at-a-time rule below)
-At most TWO helpers/subagents at once, each in its own copy, on approved reskin work. Going above 2: ask Sim first. work-check.sh / stop-check.sh need 2.
-NO design authority (Sim cancelled it, Nov 21, by 12:27 PM): every visual decision needs Sim's yes with pictures. Executive (non-visual) authority until 9:00 AM Mon Nov 23 (Sim, extended Nov 22 at 10:17 AM; was 10 PM Sun); decision summary due before 9 AM Mon.
-
-## HELPERS: ONE AT A TIME (Sim, Nov 21, 6:49 AM, LATEST; overrides the helper counts below)
-Sim, Nov 21: "after 7 AM today, I would like to reduce the amount of helpers to just one helper at a time. I need to conserve usage."
-From 7:00 AM Nov 21: at most ONE helper/subagent running at a time. Sim, 6:50 AM: "If you need more than one helper, just make sure you ask me in the chat and I'll let you know if that's something we can afford to do." Main thread keeps working (still never idle). Going above 1: ask Sim
-first. work-check.sh / stop-check.sh need 1. (The 3-helper rules below are kept for the record.)
-
-## ALWAYS WORKING, ALWAYS 3 HELPERS: OF UTMOST IMPORTANCE (Sim, Nov 21, 1 AM: "I want this rule of doing so to be of utmost importance. cant stress it enough. key to us being efficient.")
-Sim, Nov 21: up to 4 helpers until 10 AM Eastern today, then back to 3.
-### (Nov 20 wording) (Sim, Nov 20, 10:26 PM: "MAKE SURE THIS IS NOTED AND FOLLOWED AT ALL TIMES")
-Sim, Nov 20: "theres too many times im finding you're not working and theres barely any helpers running. that is NOT the gameplan
-and how we operate. I am tired of having to keep reminding you." So, at all times while there is approved work:
-- ALL 3 helper slots are filled with approved build work (pieces of the current build, its tests, its fixes). A slot that frees up is
-  refilled in the same turn. Never "waiting for a run" with an empty slot.
-- The main thread never waits on a test: it starts the next piece in its own separate copy (never two jobs in one copy).
-- Every status message names the 3 helpers and what the main thread is doing. If fewer than 3 run, say why in the same message.
-- Before ending any turn: check helpers running = 3 and the main thread has its next task started; set a wake-up.
-
-## Never idle while there is work (Sim, Nov 20, BIG RULE)
-Sim, Nov 20: "if we have things to do, lets make sure we're always doing it. thats a big rule". Never just watch helpers or checks:
-while they run, the main thread always does the next useful piece of work itself (reviews, prep, Plans page, Preview, summaries,
-small fixes). Keep a short list of next tasks so there is never a gap. (Also in docs/sim-workflow.txt.)
-
-## Plans page ticks always accurate (Sim, Nov 19, 8:44 AM): docs/rebuild/RULES.md section 00p
-Tick each step the moment it lands (pushed + checks passed + screenshots; pages need Sim's OK), with commit and clock time in the note;
-every Plans update re-checks ticks against reality.
-
-## Times are always read from the clock (Sim, Nov 12)
-Decisions are announced in chat WITH their clock time (Sim, Nov 19, 8:40 AM: "put in timestamps next to the decisions you are making and
-announce them in the chat ... VERY punctual ... never lie"): run now.sh in the same step, log with log-decision.sh, and write the
-exact logged time beside each decision in the message. Never type a time from memory; never round.
-Nov 13: run `bash docs/rebuild/now.sh` in the same step as writing any time; `git config core.hooksPath .githooks` at session
-start (commit guard). docs/rebuild/RULES.md section 00t.
-Sim is strict and punctual about times. Never type a time from memory or estimate it ("~3:25"). Every time written anywhere
-(decisions.md, docs, messages to Sim, commit messages) comes from the clock first: `TZ=America/New_York date`. For the decision
-log use `bash docs/rebuild/log-decision.sh "..."`, which stamps the entry with the clock's time itself.
-
-## Pictures next to every design question (Sim, Nov 12, 7:15 PM; for now and always): docs/rebuild/RULES.md section 00b
-Each design question carries its picture(s) in the same message, right next to it; never "see the picture above".
-If Sim replies but skips a question, ask it again in the next message with its picture(s) again (Sim, Nov 12, 8:23 PM).
-The RECOMMENDED picture's top label band is GREEN (#0B6B2E, white text), the others black (Sim, Nov 19, 8:39 AM); the labeller
-docs/rebuild/preview-kit/label-picture.cjs does it for any label containing RECOMMENDED.
-
-## THE GAME PLAN is the one plans page now (Sim, Nov 21, ~7:30 PM)
-Sim: the old Plans page got bloated and hard to follow. New page "NastyPlot Game Plan" (https://claude.ai/artifact/R1xwJERwi9298VXA5a6ppm,
-source docs/game-plan.html): everything from Nov 21 onward, the road to the switch with estimated dates, accurate ticks (the ITEMS
-lists in its script; done = merged + checks passed + Sim's OK on looks, with the time). Keep it current every 45-60 min. The old
-Plans page (below) is left as it is, as Sim's reference archive: don't update it any more.
-
-## ONE document for the rebuild: the Plans page (Sim, Nov 18; replaces the Rebuild Checklist) (ARCHIVE since Nov 21)
-Sim, Nov 18: "i want to be using 1 document not 2". The Plans page (https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ, source
-docs/foundation-plan.html) is the single place to follow the rebuild: Step 1 opens with "Every page, where it stands" (the old
-Rebuild Checklist, merged), then what is left, then Reg M-D, the Strength Score, the launch and Ideas. Keep it current (every 45 min
-to 1 hour at most). The old Rebuild Checklist page was deleted (Sim, Nov 18); its ticks and notes are kept in docs/rebuild/history/rebuild-checklist-export-nov18.json.
-
-## Every recommendation comes with a short reason (Sim, Nov 12, 8:55 PM): docs/rebuild/RULES.md section 00c
-One quick line in plain words saying why, right next to each recommendation.
-
-## No yes-man (Sim, Nov 12): always say when you disagree or are unsure; challenge, look deeper; never confirm or agree
-without checking first. (docs/rebuild/RULES.md section 0.)
-
-## Design philosophy (Sim, Nov 12): usability and easy accessibility are key factors in every design decision
-Phone length is DONE for now (Sim, Nov 20, evening: the Preview v219 pages are 'short enough now on mobile. dont do more from there'; Q87 cancelled). Sim, Nov 20: the pages feel natural to scroll on mobile; don't bury content behind show/hide folds or tabs that have to be opened and closed all day. Prefer natural scrolling over more folds. Short pages on phones (Sim, Nov 19, 10:07 AM): "make sure our pages are not running super long on mobile. i dont want people to be
-scrolling 10 times to just see the info!" Every page's length at 390 wide is measured and kept short (docs/rebuild/RULES.md 0b).
-(docs/rebuild/RULES.md section 0b).
-
-## Be proactive and efficient (Sim, Nov 17; a standing rule)
-Helper limit (Sim, Nov 20, 8:22 AM, LATEST: at most 3 helpers/subagents at once. Going above 3: ALWAYS ask Sim first, never on my own (Sim, Nov 20: "I need to always assess usage"). Earlier, Nov 19, 4:46 AM: at most 2 (last night used more usage than Sim wants). Use them only where they clearly help; fewer is fine. Earlier: 3 (Nov 18). Earlier the same day: 4, then 3, then 5/7/15 overnight.
-Make the website process run as smoothly and quickly as possible. Think ahead: what will the next steps need (data, research,
-measurements, decisions), and start it early instead of waiting until it blocks. Use helper agents in parallel for research,
-data pulls, measurements and look-only audits, without asking first (Nov 20: at most 3 helpers; just tell Sim what is
-running). Keep the site itself to one change at a time in the main thread, tested, as before. Start long-running data pulls and
-checks early and work on something else while they run; batch pushes so GitHub runs finish. Name the next decisions Sim will
-need before they block the work. This replaces "lean usage: no helpers unless Sim agrees" and the heavy-task warning below
-(both kept for the record; Sim, Nov 17: "usage is not a problem for right now").
-
-## Usage warning (Sim, Nov 6; paused Nov 17: usage is not a problem for now, see 'Be proactive and efficient')
-Before starting a task that will be heavy on usage, warn Sim first and let him decide. Heavy means things like: many helper
-agents, long multi-hour runs with lots of back-and-forth, big redesigns or full-site rewrites, repeated large screenshot
-batches, or anything likely to take more than about an hour of active work. Give a rough size (light / medium / heavy), what
-makes it heavy, and a lighter option if one exists. Background computer time (a script running on its own) is cheap; say so.
-Ultracode (Sim, Nov 9): when Sim describes a task, say up front whether turning ultracode on (many helper agents plus skeptic
-agents) would really help it, with a rough usage multiple, so he can turn it on himself. Default: off; it mainly helps big look-only
-audits and research sweeps, not our one-change-at-a-time work.
-
-## How Sim likes work done
-- Shorter replies (Sim, Nov 16): leave nothing out, but use tight wording: short sentences, short lines, no long run-ons.
-- Preview before live: nothing goes to the live artifact without his explicit go (unless he says "publish when done" for that change).
-- Faster flow (Sim, Nov 10, latest, overrides the line above for now): skip the Preview for today's site; send Sim screenshots
-  and put fixes live directly. The rebuild lives on its own artifact, "NastyPlot Full Redesign", until the switch.
-- Watch the build live (Sim, Nov 11): while the rebuild is being built, the "NastyPlot Full Redesign" artifact
-  (https://claude.ai/artifact/8KBkk7PtbGjVzLzLKK5akf) is republished after EVERY finished step (each piece of a page, not only
-  whole pages), with its index card text saying what's new, so Sim can watch the new site come together. Check its file list
-  (v2art/*.webp, 346 files) after each publish.
-  Sim, Nov 11: the Preview opens straight into the new site (index.html forwards to foundation.html, built with
-  --preview-data), so it reads as one real site growing; pages not rebuilt yet show "Coming next" with their approved mock-up
-  (pages/coming.js, Preview builds only). The old card gallery stays as gallery.html.
-- Every Preview or live publish must carry the 345 sprite files (sp/*.webp) beside the page; check the artifact's file list
-  (Artifact list, scope files) before sending Sim a link (Nov 9: a Preview went out with no sprites).
-- Real data only, never remove functionality, be careful. Ask when unsure.
-- Authority (Sim, Nov 11): when Sim gives Claude decision-making authority (e.g. "executive control until 7PM EST"), reply first with
-  an express confirmation that you understand and got it, restating the scope and the end time. Decide on your own recommendation
-  until then, log every decision in docs/rebuild/decisions.md, and give him a summary of the decisions when the time is up.
-- Lean usage (Nov 6): replaced Nov 17 by 'Be proactive and efficient': helpers in parallel without asking; tell Sim what runs.
-- Local PC chat (Sim, Nov 11): Sim has a local Claude Code chat on his Windows PC (RTX 3080, faster than the cloud machine,
-  doesn't restart). Whenever a task would go faster there (test runs, polish checks, screenshot batches, image work on the
-  GPU, anything heavy in a browser), say so up front and give him a ready-to-paste prompt: what to pull, what to run, where
-  to save results (commit to the working branch), and "fix only setup, never the code or tests". Briefs live in
-  docs/rebuild/gpu-jobs.md or docs/rebuild/test-runs/.
-- He tests on iPhone, iPad and the Claude desktop app on Windows (mouse wheel, 100% scaling). Desktop sprite glow is off on mouse
-  screens except feature sprites, for smooth scrolling; never give filtered sprites their own layers (will-change), it made it worse.
-- He has a sharp eye for symmetry and small details; keep layouts even and labels clear.
-- Every window size must look right (Sim, Nov 9): the layout has to survive any resize, including odd window shapes and dragging
-  the window while a page is open. Check odd widths, not only phone / tablet / desktop.
-- Using space well is very, very important to him, on every page and every screen size: no empty strips beside text,
-  no half-filled rows. Prefer even columns or side-by-side layouts over narrowing content.
-- Seamless and clean, in light AND dark mode: no boxes stacked inside boxes in different shades (page > card > cell
-  should be at most page + one card colour), dividers are thin soft rules (--ar-rule), not heavy dark lines.
-- Type system (Nov 7, Sim chose): every headline, big number and the tagline use the logo's font, Unbounded, slanted
-  (synthetic italic, font-synthesis: style), no pink offset "misprint" shadow; body and small labels use Instrument Sans.
-  Tagline: "Sharply raise your win rate." with "your win rate." in the logo's PLOT blue.
-- Design scale (Nov 7): text 13/15/16/17/20/22/24/26/28/34 (+ display), spacing on a 4px grid (1/2/6 allowed),
-  corners 4/6/10/18/round, paragraphs line-height 1.5.
-
-## Studio-level polish, every change (Sim, Nov 10)
-After many fast changes the formatting rules slipped (an outside polish review found half-slanted headlines, sizes off the
-scale, text falling out of boxes, lone tiles, empty desktop halves). The standard is a high-quality design studio: every tiny
-detail right. So:
-- Every site change runs experiments/polish-check.mjs (all pages, 320-2560 wide, light and dark) before it goes to the Preview
-  (Sim, Nov 10: a small one-spot fix only needs the page it touches checked, e.g. VIEWS=ratings, not the full sweep),
-  and introduces no new finding. Look at the flagged spots with your own eyes; the check finds, it doesn't judge.
-- The rules it measures are the rules above: the type scale, the 4px grid, Unbounded slanted for every headline and big number
-  (the whole headline, not half), line height 1.5, no text out of its box or wrapping unevenly beside its neighbours, no lone
-  tile or half-filled row, no empty half on desktop, no boxes in boxes, one size per kind of control.
-- New components (sliders, chips, tiles) are checked at their narrowest and widest real size before they ship.
-- Keep the WOW (Sim, Nov 10: "hard to obtain and very easy to lose"). Polish fixes the details; it never flattens the look:
-  the big slanted Unbounded headlines and numbers, bold colour fields, large sprites, the slanted boxy shapes and the sliders
-  stay as strong as they are. When a fix could go "safer and plainer" or "right and just as bold", choose bold. Compare
-  before/after screenshots of each batch for impact, not only for rule-following.
-
-## Plans are always checklists (Sim, Nov 8)
-Update rhythm (Sim, Nov 18, latest): a Plans page update every 45 minutes to 1 hour AT MOST (ticks, notes, new steps); keep a reminder scheduled. (Nov 17: about once an hour.)
-Sim, Nov 17: the Plans page is ONE clean game plan to the January launch (Step 1 finish the redesign + switch, Step 2 Reg M-D,
-Step 3 Strength Score (before the launch, Sim), Step 4 launch, Ideas): only what's left. Add new work as a step in the right part, tick it when done; the
-old sections are archived in docs/rebuild/plans-archive-nov17.html.
-ORDER OF WORK (Sim, Nov 10, latest): 1) the rebuild into the new design, 2) then integrating Regulation M-D, 3) then the
-launch plan. Rebuild plan: docs/rebuild-plan.md and the Plans page section "Rebuild into the new design" (Claude leads; Sim
-approves the direction, each page and the switch; nothing starts until he says go). What the redesign chat decided and made:
-docs/redesign/HANDOFF.md and docs/redesign/concepts/ (that chat is retired; everything runs through this one). Look polish on
-today's design is frozen; bug fixes continue. R0 decisions (Sim, Nov 10) are in docs/rebuild-plan.md; Helper agents (Sim, Nov 10, latest): for the
-rebuild, use them wherever they genuinely help, without asking first; just tell him when you do (he'll say if it's a problem).
-Changes to the site still land one at a time.
-Earlier focus (Nov 10): the NastyPlot Focus page (https://claude.ai/artifact/1AgBoBNeSXHGRDu8kpYPGX, source
-docs/focus-plan.html; ticks in its own db collection "progress"): grading fixes from the outside review (GRADING-REVIEW.md),
-then site cleanup. Tick steps there. The older Plans page below keeps the full history and ideas.
-Every plan made for Sim lives as a checklist on the NastyPlot Plans page (https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ,
-source docs/foundation-plan.html; ticks are in its db collection "progress"). Add each new plan there as its own section,
-tick steps as they're done (with the date and a short note), and put every idea that isn't scheduled yet in "Ideas, not
-scheduled yet" so nothing gets lost. Keep the page current at all times.
-
-## Sets on teams (Sim, Nov 8)
-Most players don't know what moves to run. Any team the site builds or that a player types in SHOWS each Pokémon's most common
-COMPLETE tournament set (item + Ability + four moves that real players run together, update.mjs `cs`). In the grade, a set the
-player hasn't changed counts as a typical build of that Pokémon (Sim chose this Nov 8 after a test: typical build predicted
-winners 55.3% vs 54.5-54.8% for grading the exact popular set). Whatever the player changes is graded exactly as they chose. Our popular-set numbers must agree with established
-sites (Pikalytics tournaments, Pokémon Zone, MetaVGC, PokéBase); any disagreement gets explained, not ignored.
-Corrected (Sim, Nov 17): crosscheck.mjs only checks daily that their top item is in our top 2 and their top move in our top 4; it
-does not compare percentages, Abilities or complete sets, and Pikalytics' copy has been frozen since about Nov 9
-(docs/rebuild/research/cross-source-nov17.md). Wider checks are planned in Step 3; until then, don't claim the numbers "agree".
-
-## When a phase counts as done (Sim, Nov 8)
-A phase is done only when it passes a check that is INDEPENDENT of the thing being changed: real later results, and Sim's own
-review. Never judge a change with the same score that drove it (Build for Me picked teams by the grade and was then "checked" with
-the grade, so it passed while Sim found it worse). If Sim's review or real use disagrees with the numbers, the phase stays open
-until the disagreement is explained and fixed. Never start the next phase while an earlier one has an open problem.
-
-## Public launch (Sim, Nov 8)
-NastyPlot launches to the public sometime in January 2027, as a normal public website (not only the private Claude page).
-Build with that in mind: a brand-new visitor with no saved teams must have a clean first experience; nothing may depend on
-Claude-only features without a plan for the public site; kids play Pokémon, so the privacy rules below are strict.
-
-## Empty and loading screens: a rotating featured Pokémon (Sim, Nov 11; replaces Darkrai and Shady Paw)
-**Shady Paw is cut. He is NOT the NastyPlot mascot and must not be used anywhere (Sim, Nov 11). Darkrai is cut from the
-rebuild too.** NastyPlot has no mascot for now; a real one is a separate project for later.
-Sim, Nov 11: Darkrai was "forcing a mascot at an unnecessary time". In the rebuild, empty and loading screens show a featured
-Pokémon that rotates, plus one line of copy. Sim's idea and its point: spotlight the Pokémon that never get one. The featured
-Pokémon comes from the bottom of our own ratings ("underdog"): even the lowest-rated Pokémon is somebody's favourite, so it gets
-its moment on our site, with playful, affectionate copy (celebrate it, never mock it). It rotates so many different Pokémon get a
-turn; pick from the bottom of the ratings, preferring ones with enough games for the rating to mean something. The first underdog is Flapple (Sim: "it's the cutest"). Rotation rule (Sim approved, Nov 11): Flapple first, then one a day from the 12 lowest-rated Pokémon
-that have real games (at least 1% of teams), since the very bottom of the ratings has almost no games (Flapple: 43
-tournament games, 0.1% of teams). Every new spot is shown to Sim first. Never beside grades or a team's data. The live site keeps its current Darkrai
-spot (empty My Team) until the rebuild replaces it. A real NastyPlot mascot is its own project for later, in a separate chat.
-Darkrai and Shady Paw files stay in docs/mascot/ as history.
-
-## Balance patch on Wed Dec 2, 2026 (Sim approved the plan, Nov 18; DON'T FORGET)
-Official: news.pokemon-home.com/en/page/877.html (posted Nov 18), applies at maintenance Dec 2, all regulations. New moves
-(Psych Up x22, Tailwind Emolga, Roost Hydreigon/Beedrill, Slack Off Emboar, Wonder Room Umbreon, Play Rough all Eeveelutions);
-Rock Slide 90->95% accuracy and flinch 30->20%; Screech/Metal Sound 85->100%; Steel Wing/Frost Breath 90->100%; Flash Fire's boost
-stays through Mega Evolution; Stalwart also ignores Substitute. On Dec 2, not before: update the pinned Showdown Champions data
-once it has the patch, regenerate move-acc.js / move-meta.js and the move lists (experiments/gen-move-meta.mjs), run legality-check
-and calc-check, check Flash Fire and Stalwart in the calc, and add a short site note for the first weeks that ratings and sets
-come from games before the patch. Plans page step "patch-dec2"; a scheduled reminder fires Dec 2.
-
-## The grade is a Strength Score (Sim, Nov 9)
-The 0-100 grade must say how strong the team is altogether, derived from all the factors we have studied and measured (Pokémon and
-sets, the 4 basics, readiness for the top threats, learned matchups, the team's own record...). NOT "what percentage of other teams
-it beats": that may appear as a small line under the score, never as the score itself. It ships only if it predicts real wins at
-least as well as today's grade (walk-forward scoreboard, keep/drop rule, never-get-worse gate); otherwise back to the drawing board.
-Plan: "What we learned about matchups and synergy" > "Strength Score" on the Plans page.
-Design approved (Nov 9): 100 = has everything winning teams have and no weak spots; a solid tournament team about 80, the best-built
-90+, a missing basic drops clearly (60s), beginner 30-50; each factor moves it in proportion to its measured effect on real wins;
-team, not player (records count only after player skill is taken out); a small rank line underneath. Guiding principle (Sim): give the
-best team-building advice possible, and be honest that how players use the team and their skill matter a lot.
-
-## Privacy and safety
-- COPPA: no names or emails collected; feedback stays anonymous.
-- The contact email is shown only after "Show email". No RK9 scraping.
-- No model identifiers in commits.
-
-## How we test (Sim, Nov 8, after the no-Mega 98)
-A no-Mega team graded 98 while real no-Mega teams win 34%: the grade never counted the team as a whole, and every test only
-looked at real teams, where nearly everyone already has a Mega. To stop gaps like this:
-- Start from the game, not the data: before changing the grade, list what decides real battles (expert guides, top players,
-  Sim) and check in the CODE that the grade can see each one. Keep the "What can the grade see?" table current.
-- A test only counts if it could have failed. Say what it could and couldn't detect. Too few teams to tell = "unknown",
-  never "no effect" or "doesn't matter".
-- Test where the grade is used: real teams AND the teams Build for Me and suggestions make AND deliberately broken teams
-  (remove the Mega, speed control, Protect, Fake Out/Intimidate: the grade must drop about as much as real results say).
-- Never tell Sim something is done or doesn't matter without these. The Deep Check plan on the Plans page comes first.
-
-## Single games first (Sim, Nov 8)
-Pokémon Champions ranked play and online competitions are single games (best of 1). Get the grade right for ONE game
-first: build and test on single-game data (Showdown ladder replays, best-of-1 tournament rounds). Best-of-3 VGC events
-(Regionals, Worlds, most Limitless events) are a later, separate step; don't mix their round results in as if they were games.
-
-## How we work together (Sim, Nov 8)
-Sim and Claude are partners: Sim brings the ideas, Claude does the research and the proper work, and each helps the other in
-both. Be 100% frank. If unsure, say "I'm unsure" and why; never fill a gap with a guess presented as fact, never a made-up
-answer. If something seems missing, say so plainly, unasked. Do the due diligence at every step (check sources, check the
-code, test before claiming); no shortcuts. Correct earlier wrong statements as soon as they're found.
-
-## Word list (Sim approved, Nov 9)
-One name per idea, everywhere on the site:
-- **Strength Score** (was "Grade", Nov 9, Preview; final with Sim's review): the team's number out of 100, with its band word: 90+ Top tier,
-  80s Tournament ready, 70s Solid, 60s Needs work, under 60 Missing a basic (colours: blue, purple, neutral, amber, muted grey-brown;
-  red now allowed: Sim removed the "never red" rule, Nov 12, 8:36 PM). The rank among tournament teams is only the small line under it. "Rating" is only for a single Pokémon, always with "tier"
-  for its letter ("S tier", "A tier"), so a Pokémon's tier never reads like a team's score.
-- **Matchups**: how the team does against the top threats (not "readiness" / "ready for the top 30" / "Threats" as the idea's name).
-  The four levels: **Beats it / Handles it / Shaky / No answer** (were Well handled / Handled / Shaky / Unanswered).
-  The real-games word under each threat: **Favoured / Even match / Unfavoured** (Sim, Nov 9; Nov 10: no "Real games:" prefix, "it's too much"; the section says once that verdicts come from real games).
-- **Suggestions**, numbered "Suggestion 1" (not Fix it / plans / ideas). (The "Different option" label was removed Nov 9: Sim rejected it.)
-- **Team checks**: the 4 basics, plus 3 notes (not checklist / game plan / pillars). Sim, Nov 9: speed control, spread damage and
-  lead support are notes, not counted (real games: teams with them won no more often, experiments/checks-real.mjs).
-- Plain words: player skill (not Elo), wins more than average (not win edge), reaches top cut more often than its use predicts (not
-  conversion), today's tournament teams (not field), points (not pts), Test run (not Gauntlet); data sources are always Official events /
-  Online tournaments / Ranked ladder (the in-game one) / Showdown ladder (Sim, Nov 10: a separate source, keep both names).
-- Kept as players know them: Archetypes, spread, top cut, usage, set, Mega, speed control, Tailwind, Trick Room, core, hidden gem, best guess.
-
-## Focus and honesty (Sim, Nov 9)
-After Claude's honest review, Sim agreed:
-- Finish before adding (Sim, Nov 9; clarified Nov 17): this was about the redesign process and making sure the site's systems
-  work well, not a ban on new features. While a system is being rebuilt or fixed, finish and test it before adding to it. New
-  features are welcome as planned steps on the Plans page (Sim decides which and when); don't use this rule to block or defer
-  them. Work then (Nov 9) = finishing, fixing and refining what existed (Team Sheet, share image, the grade) and the process fixes. (Darkrai's Preview spot is gone: replaced by the featured
-  underdog, see above; Shady Paw is cut.)
-- Multitask where it helps (Sim, Nov 9): look-only work (sweeps, measurements, background runs) can run alongside a change; always
-  tell Sim when we are multitasking. Changes themselves stay one at a time:
-- Batches (Sim, Nov 19, 10:28 AM: "lovely that sounds like a plan to me" to merging one at a time with each change's own test, and
-  the full ~40-minute check once per batch of up to about 4 changes): changes still merge one at a time, each passing its own test
-  at once; the full check runs once per batch, before the push.
-- One thing at a time: at most ONE grade/model change and ONE site item in progress. Finish (tested, reviewed, live or
-  dropped) before starting the next. Small batches. Don't skip ahead of an open step on the Plans page.
-- NO GUESSING (Sim, Nov 9): check before acting or claiming anything, including small things (where a file lives, how a
-  script loads its data, what a test needs). Read the code or run it first; "I think" is never enough.
-- Every claim to Sim is labelled: **measured** (with the number and the test) or **my guess, not yet tested**. No conclusions
-  from partial runs.
-- Live is protected: the daily data/model reaches the live site only if it passes the checks; otherwise yesterday's stays.
-- Code tests run on a frozen data snapshot (they fail only when code breaks); daily data checks run separately and alert.
-- Before pushing to main, run every check GitHub runs (.github/workflows: golden.mjs, same-grade.mjs, suggest-audit.mjs and the
-  rest), not only app/test/run.mjs (Nov 9: two check scripts still read the old letters and turned main red).
-- The January launch work is parked until Sim says.
+## Working
+24. The main thread builds too and is never idle while there's approved work; long runs are TRACKED background tasks.
+25. Changes land one at a time, each with its own test; GitHub runs the full check per batch. Before pushing to main, every check
+    GitHub runs must pass. Push only to claude/design6 (main only with Sim's go). No model names in commits.
+26. Use the loaded skills on real changes: code review on diffs, design review on visual work (our rules win), accessibility on new controls.
+27. Call out bottlenecks. Send usage-saving jobs to the other acc (small/medium) or the PC chat (long runs, GPU), with ready-to-paste prompts.
+28. The Game Plan page (artifact R1xwJERwi9298VXA5a6ppm, docs/game-plan.html) is Sim's one plan page: ticks only when merged + checked
+    + (for looks) Sim's OK; updated after each finished item. The Preview (artifact 8KBkk7PtbGjVzLzLKK5akf) updates daily at 7:41 AM
+    and after each merged batch; it always carries its sprites and art.
+29. Sim tests on iPhone, iPad and the Claude desktop app on Windows (mouse wheel, 100%); he has a sharp eye for symmetry and detail.
