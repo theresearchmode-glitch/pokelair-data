@@ -2419,3 +2419,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:13 AM: GitHub run 1512 (edd6f6e7: hP4 lone rows) GREEN. Pushing HEAD (hP5 polish).
 - 4:34 AM: Design (HH authority): hTR merged (1f27a73a): Track Record at 1100-1279: the '230x more top 8s' stamp and SEE HOW WE RATE button were clipped at the window edge (1100-1199); now sized to their column (tokens --d-trkbig/--d-trkgo). qcheck track 4 -> 0 at 1100 and 0 at 1040-1260; tap-size, main1 passed; length unchanged. Open: at 1280 both still overhang their column by ~31px into the gutter (on screen).
 - 4:35 AM: Helper slot: hTR2 fixes Track Record's stamp/button overhang at 1280+ (~31px into the gutter) and the 1279->1280 size jump.
+- 4:36 AM: Hourly check: 1 helper (hTR2), main job b83bry12j running, Game Plan v62.
