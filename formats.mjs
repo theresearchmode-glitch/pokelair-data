@@ -44,7 +44,13 @@ export function oddEvents(ids, readT, log = console.log) {
 // (Limitless is fetched by format, Showdown by format id, RK9 events by date window). Once it has enough, the active
 // regulation switches to it and every step starts over from its own events only. REG_AUTO_SWITCH=0 holds the switch
 // (banner only) for a manual check.
-export const SITE_REG = {id: 'M-C', sd: 'gen9championsvgc2026regmc', since: '2026-09-01'};
+// The regulation profile (regulation.json, Nov 24): the one place the site's regulation is written. REG_PROFILE is the full entry
+// for the site's regulation (name, Showdown id, dates, outside sources' ids, rules); SITE_REG keeps its old shape for every caller.
+export const REG_FILE = JSON.parse(fs.readFileSync(new URL('./regulation.json', import.meta.url), 'utf8'));
+export const regProfile = (id = REG_FILE.site) => { const r = REG_FILE.regs[id]; return r ? {id, ...r} : null; };
+export const REG_PROFILE = regProfile();
+if (!REG_PROFILE || !REG_PROFILE.sd || !REG_PROFILE.since) throw new Error(`regulation.json: site "${REG_FILE.site}" needs an entry with sd and since`);
+export const SITE_REG = {id: REG_PROFILE.id, sd: REG_PROFILE.sd, since: REG_PROFILE.since};
 export const REG_SWITCH = {events: 20, players: 1200};
 export const REG_AUTO_SWITCH = (typeof process !== 'undefined' && process.env && process.env.REG_AUTO_SWITCH) !== '0';
 export const regName = id => 'Reg ' + id;
@@ -63,8 +69,8 @@ export function activeReg(file) { const r = readReg(file);
 // Official end of each regulation (Nov 17). Limitless can keep tagging events with the old regulation after it ends (checked
 // Nov 17: events listed from Dec 3 tagged "Regulation Set M-C"), so an event dated at or after the end never counts for it,
 // whatever its tag: it counts for the next regulation. M-C ends Dec 1, 5:59 PM PST (pokemon.com "Get Ready for Regulation Set
-// M-C"). Add each regulation's end here when it is official.
-export const REG_END = {'M-C': '2026-12-02T01:59:00Z'};
+// M-C"). Each regulation's end lives in regulation.json ("end"), added when it is official.
+export const REG_END = Object.fromEntries(Object.entries(REG_FILE.regs).filter(([, r]) => r.end).map(([id, r]) => [id, r.end])); /* from regulation.json */
 export const regAt = (f, date) => { let id = f; for (let i = 0; i < 4; i++) { const end = REG_END[id], t = Date.parse(String(date || ''));
   if (!end || !isFinite(t) || t < Date.parse(end)) break; const nx = nextRegIds(id)[0]; if (!nx) break; id = nx; } return id; };
 // an event's regulation: saved with it from Nov 1; older saved events are all Reg M-C (the only format the job ever fetched)
