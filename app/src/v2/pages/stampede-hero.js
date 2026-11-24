@@ -38,7 +38,7 @@ V2.sdHero = () => {
   // today's Home order (HOME-06): Score My Team first with a team, Build Me a Team first with none
   const go = has ? `<a class="sdh-b1" data-sdgo href="#team">Score My Team</a><a class="sdh-b2" data-sdgo href="#build"><span>Build Me a Team</span></a>`
     : `<a class="sdh-b1" data-sdgo href="#build">Build Me a Team</a><a class="sdh-b2" data-sdgo href="#team"><span>Score My Team</span></a>`;
-  const say = R.length ? `Every one of the ${num(R.length)} Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating${D.teams ? `, worked out from ${num(D.teams)} real tournament teams` : ''}.`
+  const say = R.length ? `Every one of the ${num(R.length)} Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating${D.teams ? `, worked out from ${num(D.teams)} real tournament teams${V2.freshAgo() ? ` (${V2.freshAgo()})` : ''}` : ''}.`
     : 'Every Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating.';
   return `<section class="sd-band sd-hero sdh${V2.sdhUi.surged || !V2.sdMotion() ? '' : ' sdh-surge'}" aria-labelledby="sdh-h">
     <div class="sdh-fold"><div class="sdh-scene">

@@ -354,6 +354,11 @@ V2.otherDay = d => { const a = V2.asOf && V2.asOf(); return d && a && new RegExp
 /* functions stress test (Nov 16): with storage blocked, Save still said "Saved" and nothing survived a reload; one check, and the save words say so */
 V2.canStore = (() => { try { localStorage.setItem('np2.probe', '1'); localStorage.removeItem('np2.probe'); return true; } catch (e) { return false; } })();
 V2.noStoreTxt = 'This browser blocks saving, so it lasts until you close the page.';
+/* Nov 24 (competitor scan: rivals show how fresh their data is; freshness is our specialty): "updated 7 h ago" from the OLDEST of the
+   core parts (results, teams, events, model), the same parts "Data as of" stands on, so it never claims fresher than the slowest part */
+V2.freshAgo = (now = Date.now()) => { try { if (typeof DATA_AT !== 'object' || typeof DATA_CORE === 'undefined') return ''; const ts = DATA_CORE.map(k => DATA_AT[k]).filter(x => x != null);
+  if (!ts.length) return ''; const m = Math.max(0, (now - Math.min(...ts)) / 6e4);
+  return m < 60 ? `updated ${Math.max(1, Math.round(m))} min ago` : m < 48 * 60 ? `updated ${Math.round(m / 60)} h ago` : `updated ${Math.round(m / 1440)} days ago`; } catch (e) { return ''; } };
 V2.asOf = () => { try { const t = typeof dataDateText === 'function' ? dataDateText() : ''; if (t) return t;
   /* no live data (SHELL-29, Nov 16): the built-in snapshot's own date, as the Ratings line used to show it, so the footer is never dateless */
   const pf = typeof activePerf === 'function' ? activePerf() : null, u = pf && pf.updated ? Date.parse(String(pf.updated).slice(0, 10) + 'T12:00:00Z') : NaN; if (isNaN(u)) return '';

@@ -691,6 +691,9 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   ok(/3 Reg M-D events so far, switches at 20\./.test(rn), `Known-bug SHELL-05 (Nov 17): the new-regulation note says how far along it is (${String(rn).slice(0, 200)})`); }
 { const cd = await p.evaluate(() => window.__ev(`(() => { const R = {id: 'M-C', since: '2026-09-01', now: null}, P = META.perf, o1 = META.reg, o2 = P && P.reg, d0 = Date.now; META.reg = R; if (P) P.reg = R; Date.now = () => Date.parse('2026-11-25T12:00:00Z'); try { if (location.hash && location.hash !== '#home') location.hash = '#home'; return V2.dataNote().replace(/<[^>]+>/g, ''); } finally { Date.now = d0; META.reg = o1; if (P) P.reg = o2; } })()`));
   ok(/Reg M-D is coming: M-C ends .* \(in 7 days\), with the Dec 2 balance patch\./.test(cd), `M-D countdown (Nov 24): before M-C ends, the note counts down to it (${String(cd).slice(0, 160)})`); }
+{ const fa = await p.evaluate(() => window.__ev(`(() => { const o = {...DATA_AT}; for (const k of Object.keys(DATA_AT)) delete DATA_AT[k]; const t = Date.parse('2026-11-24T10:38:00Z');
+    DATA_AT.results = t; DATA_AT.teams = t + 6e4; DATA_AT.events = t; DATA_AT.model = t - 36e5; try { return [V2.freshAgo(t + 7 * 36e5), V2.freshAgo(t + 20 * 6e4), V2.freshAgo(t + 3 * 864e5)]; } finally { for (const k of Object.keys(DATA_AT)) delete DATA_AT[k]; Object.assign(DATA_AT, o); } })()`));
+  ok(fa[0] === 'updated 8 h ago' && fa[1] === 'updated 1 h ago' && fa[2] === 'updated 3 days ago', `Freshness stamp (Nov 24): counts from the oldest core part, in min / h / days (${JSON.stringify(fa)})`); }
 { const lin = [];
   /* Home's ranks and most used moved for Sim's Nov 18 redesign (the Stampede): the hero's plates, tags and ticker (ratings) and the six's ring
      names stand in for .hm-rk / .hm-used; on Home every such button is read, not only the first */

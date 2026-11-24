@@ -84,7 +84,7 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
   const teams = RES && +RES.teams > 0 ? +RES.teams : 0;
   const tabs = V2.pkTabs('meta'); /* Natures page (Nov 23): the four Pokémon views in one place */
   const head = `<section class="ra-h"><p class="k-kicker np-eyebrow ra-kk">META · THE LINE-UP</p><h1 class="k-h1 u"><span>Who wins</span> <span class="pl">right now.</span></h1>
-    <p class="ra-lede">Every Pokémon rated 0–100 from real tournament results, not opinion.</p>${tabs}
+    <p class="ra-lede">Every Pokémon rated 0–100 from real tournament results, not opinion.${V2.freshAgo() ? ` ${V2.freshAgo().replace(/^u/, 'U')}.` : ''}</p>${tabs}
     <p class="ra-kick">Reg ${E(reg)} doubles${teams ? ` · ${E(basisNum(teams))} tournament teams` : ''}${typeof V2.tip === 'function' ? `<span class="ra-nw">${V2.tip('numbers')}</span>` : ''}</p>
     <p class="ra-links"><a class="np-link" href="#method=rating">How Ratings Work ›</a><a class="np-link" href="#track">Track Record ›</a></p></section>`;
   const gems = all.filter(x => isGem(x.p)).length, f = U.f, chip = (k, l) => V2.kChip('', {html: l, on: !!f[k], attrs: {'data-raflag': k}}) /* Wave 2 part 2 (Sim chose A, Nov 22): the kit filter chip (was the grey ra-chip) */;
