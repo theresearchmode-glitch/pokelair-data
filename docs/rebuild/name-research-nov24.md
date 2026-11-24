@@ -59,3 +59,8 @@ a typo for intimidate / intimate / "intimate data" (results include an "Intimate
 Risk: a non-player can read "Intimi-data" as "intimate data" — the same "sounds wrong" problem Sim wants to escape.
 - Logo idea (Sim, Nov 24): sharp teeth / a bite (Intimidate on Mightyena for years). HH's twist: the teeth ARE our plot bars — bars down
   from the top and up from the bottom, slanted, closing like a jaw; reads as a bite AND a bar chart. Pink upper teeth, blue lower.
+
+## Round 6: Intimidata-style (one famous Ability/move/item, a few letters changed) (Nov 24)
+All three plain domains free: tallywind, prankstats, moxidata, sturdata, winnerfocus, focusstash, calcommander, goodasdata,
+unburdata, tailwinning, swordsdata. Two free (.org/.net): metabreaker, makeitwin, willowin, forewin, anticipata, metasurge,
+protactic, dracometa, metagrind, regenerata. Taken: quickcalc, analytix, tactician.
