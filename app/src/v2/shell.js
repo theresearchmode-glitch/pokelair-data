@@ -306,9 +306,11 @@ V2.THEME_WORD = {day: 'Day mode', night: 'Night mode', auto: 'Auto: follows your
 V2.REG_END_MC = '2026-12-02T01:59:00Z';
 /* Nov 24 (competitor scan: rivals already mention Reg M-D; we said nothing): until M-C ends, a countdown line, shown in the Home hero's
    text under the herd (as a note above the hero it pushed the start buttons off the first screen: Stampede hero 3b; on Meta, the tabs) */
-V2.mdCountdown = (now = Date.now()) => { try { const r = typeof regInfo === 'function' && regInfo(); if (!r || r.now || r.id !== 'M-C' || now >= Date.parse(V2.REG_END_MC)) return '';
-  const end = new Date(V2.REG_END_MC), d = Math.max(1, Math.round((end - now) / 864e5)), when = end.toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'});
-  return `Reg M-D is coming: M-C ends ${when} (${d === 1 ? 'tomorrow' : `in ${d} days`}), with the Dec 2 balance patch.`; } catch (e) { return ''; } };
+V2.mdCountdown = (now = Date.now()) => { try { const r = typeof regInfo === 'function' && regInfo(), endMs = Date.parse(V2.REG_END_MC); if (!r || r.now || r.id !== 'M-C' || !(now < endMs)) return '';
+  /* calendar days in the viewer's own time zone, so the last day says "today" (code review, Nov 24: it said "tomorrow" 59 min before the end) */
+  const end = new Date(endMs), day = x => Date.UTC(x.getFullYear(), x.getMonth(), x.getDate()), d = Math.round((day(end) - day(new Date(now))) / 864e5),
+    when = end.toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'});
+  return `Reg M-D is coming: M-C ends ${when} (${d <= 0 ? 'today' : d === 1 ? 'tomorrow' : `in ${d} days`}), with the Dec 2 balance patch.`; } catch (e) { return ''; } };
 V2.dataNote = () => { const E = V2.esc, out = [];
   /* review Nov 18 (C5): a --split Preview whose preview.json couldn't be read (missing, 404, offline) says so, on every page (V2.shell),
      rather than showing the built-in numbers as if they were today's */
@@ -356,9 +358,11 @@ V2.canStore = (() => { try { localStorage.setItem('np2.probe', '1'); localStorag
 V2.noStoreTxt = 'This browser blocks saving, so it lasts until you close the page.';
 /* Nov 24 (competitor scan: rivals show how fresh their data is; freshness is our specialty): "updated 7 h ago" from the OLDEST of the
    core parts (results, teams, events, model), the same parts "Data as of" stands on, so it never claims fresher than the slowest part */
-V2.freshAgo = (now = Date.now()) => { try { if (typeof DATA_AT !== 'object' || typeof DATA_CORE === 'undefined') return ''; const ts = DATA_CORE.map(k => DATA_AT[k]).filter(x => x != null);
-  if (!ts.length) return ''; const m = Math.max(0, (now - Math.min(...ts)) / 6e4);
-  return m < 60 ? `updated ${Math.max(1, Math.round(m))} min ago` : m < 48 * 60 ? `updated ${Math.round(m / 60)} h ago` : `updated ${Math.round(m / 1440)} days ago`; } catch (e) { return ''; } };
+V2.freshAgo = (now = Date.now()) => { try { if (!Number.isFinite(now) || typeof DATA_AT !== 'object' || !DATA_AT || typeof DATA_CORE === 'undefined') return '';
+  const ts = DATA_CORE.map(k => DATA_AT[k]).filter(Number.isFinite); if (!ts.length) return '';
+  /* round first, then pick the unit, so 59.5 min reads "1 h" and 47.5 h reads "2 days" (code review, Nov 24) */
+  const m = Math.max(0, (now - Math.min(...ts)) / 6e4), mins = Math.max(1, Math.round(m)), hrs = Math.round(m / 60);
+  return mins < 60 ? `updated ${mins} min ago` : hrs < 48 ? `updated ${hrs} h ago` : `updated ${Math.round(m / 1440)} days ago`; } catch (e) { return ''; } };
 V2.asOf = () => { try { const t = typeof dataDateText === 'function' ? dataDateText() : ''; if (t) return t;
   /* no live data (SHELL-29, Nov 16): the built-in snapshot's own date, as the Ratings line used to show it, so the footer is never dateless */
   const pf = typeof activePerf === 'function' ? activePerf() : null, u = pf && pf.updated ? Date.parse(String(pf.updated).slice(0, 10) + 'T12:00:00Z') : NaN; if (isNaN(u)) return '';

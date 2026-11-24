@@ -258,13 +258,13 @@ function* planFixesG(ms,pool,useA,opts){
       /* Nov 24: a plan that sets the weather a teammate's Ability needs (rain for Swift Swim Mega Swampert) ranks first: on Nov 24's data
          the rain setter had slipped to the 3rd plan (suggest-gaps failed on live data, passed on frozen data) */
       const wxKey=pl=>pl.gap&&pl.gap.fix.includes('weather')&&pl.gap.why.some(w=>/^Sets [a-z ]+ for /.test(w))?1:0;
-      let ranked=short.filter(qual).sort((x,y)=>(wxKey(y)-wxKey(x))||(ipOf(x)-ipOf(y))||gKey(y)-gKey(x)||tsKey(y)-tsKey(x)||x.score-y.score);
+      let ranked=short.filter(qual).sort((x,y)=>(ipOf(x)-ipOf(y))||(wxKey(y)-wxKey(x))||gKey(y)-gKey(x)||tsKey(y)-tsKey(x)||x.score-y.score); /* item fixes (an illegal team) still come first (code review, Nov 24) */
       /* Variety (Sim, Nov 9: "it keeps suggesting the same pokemon"; Step D). On 400 real teams, Kingambit, Basculegion and Farigiraf
          were 48% of every Suggestion 1, because many strong Pokémon are tied within the score's margin of error and the engine always
          took the one a hair ahead (real one-swap pairs among viable Pokémon: 52.4%, a coin flip). Options within SUGG_TIE score points
          of the best count as ties; among ties the order is a fixed shuffle per team (the same team always shows the same order), so
          every tied Pokémon, rarely used ones included, gets a fair place. Real problems (item fixes) still come first. */
-      if(ranked.length>1){const T=PLAN_TIE,top=gKey(ranked[0]),ip=ipOf(ranked[0]),tied=ranked.filter(pl=>ipOf(pl)===ip&&gKey(pl)>=top-T),rest=ranked.filter(pl=>!tied.includes(pl));
+      if(ranked.length>1){const T=PLAN_TIE,top=gKey(ranked[0]),ip=ipOf(ranked[0]),wx=wxKey(ranked[0]),tied=ranked.filter(pl=>ipOf(pl)===ip&&wxKey(pl)===wx&&gKey(pl)>=top-T),rest=ranked.filter(pl=>!tied.includes(pl));
         const key=ms.map(m=>m.p.n).sort().join('|'),h=str=>{let x=2166136261;for(let i=0;i<str.length;i++){x^=str.charCodeAt(i);x=Math.imul(x,16777619)}return x>>>0};
         const hk=pl=>h(key+'#'+pl.ch.map(x=>x.c.p.b).sort().join(','));tied.sort((x,y)=>hk(x)-hk(y));ranked=[...tied,...rest]}
       all=[...ranked,...all.filter(pl=>pl.team.length<6)]}}
