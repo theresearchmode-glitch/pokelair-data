@@ -1,4 +1,8 @@
-# Public site plan (January 2027) — draft for Sim, Tue Nov 24
+# Public site plan (January 2027) — draft for Sim, Tue Nov 24 (updated: all on Cloudflare)
+Sim (Nov 24): the domain **nastyplot.org** is already bought, through Cloudflare (checked: app/src/v2/head.html already points
+og:image at nastyplot.org). "I want as much as possible and is safe to do done through Cloudflare." HH builds it.
+Cloudflare connection here: signed in as the NastyPlot Cloudflare account (checked: whoami, nastyplotgaming@ account).
+
 Goal: NastyPlot as a normal public website, free to visit, fast on phones, safe for kids (COPPA), with today's data, and no
 dependence on Claude-only features. Writing it now; building it after Dec 2 (game plan).
 
@@ -14,23 +18,22 @@ dependence on Claude-only features. Writing it now; building it after Dec 2 (gam
 Everything else (pages, calc, scores, search, sprites, fonts) is plain HTML/JS and works anywhere (my view; to be proven by
 the practice build in step 3 below).
 
-## 2. The plan (recommendations, each with its reason)
-| Piece | Recommendation | Why |
+## 2. The plan: everything on Cloudflare
+| Piece | Cloudflare product | Why |
 |---|---|---|
-| Hosting | **Cloudflare Pages** (static files), free tier | fast worldwide CDN, free, the Cloudflare tools are already connected here; Vercel is the fallback |
-| Domain | buy one Sim chooses (e.g. nastyplot.com / .gg, availability not checked) | a real name for a public site; ~$10-30/year |
-| Daily data | the page fetches the tested JSON straight from the CDN (the `live` branch's out/ files, copied to the site each morning by the GitHub job after the tests pass) | no database needed; same "only tested data" rule as today |
-| Saved teams | **device only** (localStorage, already works), plus "Copy my team code / Paste a team code" to move between devices | no accounts = no personal data = simplest COPPA position |
-| Moving today's testers' teams | a one-time "Export my teams" button on the Claude version before the switch to public, and "Import" on the public site | Claude-synced teams can't be read from outside Claude |
-| Feedback | a tiny Cloudflare Worker + D1 table: text (emails/phones/@handles stripped as today), kind, page, phone/desktop, date. No IDs, rate-limited | keeps today's anonymous design; free tier |
-| Usage | page-view **totals per day per page** only (a Worker counter), no IDs, no cookies, no third-party analytics | answers "which pages matter" without tracking anyone |
-| Share image | normal browser download (a link with `download`) | no Claude needed |
-| Owner page | password-protected Worker page for feedback + totals | Sim's view of what people say and use |
-| Privacy page | plain-words page: what we store (only on your device), feedback is anonymous, no accounts, no ads, contact via "Show email" | COPPA and trust |
-| Speed | split the script per page; images already WebP; fonts self-hosted | 2.75 s → under 2.5 s on 4G goal (Game Plan) |
+| The site itself | **Workers static assets** (or Pages) on nastyplot.org | free, fast worldwide, same account as the domain |
+| Daily data | the GitHub job (after the tests pass) uploads out/*.json to **R2** (or deploys them with the site); the page reads them | only tested data, like today; no database for reading |
+| Saved teams | the visitor's own device (localStorage, already works) + team codes | no accounts = no personal data (kids) |
+| Moving testers' teams | "Export my teams" on the Claude version, "Import" on nastyplot.org | Claude-synced teams can't be read from outside |
+| Feedback / report a mistake | a small **Worker + D1** table, **Turnstile** to stop spam (no puzzles for normal people) | same anonymous design as today |
+| Which pages people use | **Cloudflare Web Analytics** (no cookies, no IDs, totals only) | free, privacy-friendly, no code of ours storing anything |
+| Contact email | **Email Routing** (e.g. hello@nastyplot.org forwards to Sim's inbox), still shown only after "Show email" | Sim's real address never appears |
+| Owner page | a Worker page behind **Cloudflare Access** (only Sim's email can open it) | no passwords to manage |
+| Security / speed | Cloudflare's free SSL, caching, DDoS protection, HTTP/3; per-page scripts; WebP images; self-hosted fonts | 2.75 s → under 2.5 s on 4G goal |
+| Privacy page | plain words: nothing stored about you except on your device; feedback anonymous; no ads, no trackers | COPPA and trust |
 
 ## 3. Steps (after Dec 2), each with its check
-1. **Decisions from Sim** (Dec 3): domain name; Cloudflare account (Sim's own, free); owner password storage.
+1. **Already settled**: domain nastyplot.org, Cloudflare account connected. Sim only says yes to the launch itself.
 2. **Data from files** (Dec 3-5): a build flag `--public` where the page reads out/*.json over HTTP instead of the database.
    Check: the public build shows the same numbers as the Claude build on the same day (a script compares them).
 3. **Practice public build** (Dec 5-8): deploy to a hidden Cloudflare Pages URL; run every test against it (behaviour,
@@ -48,7 +51,5 @@ the practice build in step 3 below).
   already replaced by IDs (no-names check passes daily).
 - Cost: hosting and Workers on free tiers; only the domain costs money (my estimate; Cloudflare's limits not re-checked).
 
-## 5. Questions for Sim (none block the next 8 days)
-1. Domain name ideas, and do you already own one?
-2. Your own Cloudflare account, or another host you prefer?
-3. OK with "no accounts, teams live on your device + team codes"? (My strong recommendation for kids' privacy.)
+## 5. Question for Sim (doesn't block the next 8 days)
+1. OK with "no accounts, teams live on your device + team codes"? (My strong recommendation for kids' privacy.)
