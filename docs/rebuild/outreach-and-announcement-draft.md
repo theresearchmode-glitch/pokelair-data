@@ -49,3 +49,4 @@ for no-ads/no-account (Statmie and ChampDex are ad-free too).
 - Every number in the posts filled from the live site that day ({N}, sources, update rate).
 - Each subreddit's rules on self-promotion read; post once, answer every comment.
 - The share card ready (Strength Score card is in the December plan).
+- Sim loved the line "Others are toolboxes; we're a coach with receipts" (Nov 24) -> candidate for the announcement / About page / second tagline.
