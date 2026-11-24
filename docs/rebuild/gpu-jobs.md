@@ -57,3 +57,26 @@ The main chat names a base commit (the last fully checked one). Then:
 3. Commit only that file and push. Report the summary lines (every "==" heading with its result line).
 Fix only setup (a missing install, a path), never the code or the tests. If a check fails, don't retry it more than once: report
 it exactly as printed.
+
+## Job 4: upscale every item (Sim, Nov 23; same route as Job 2)
+Sim chose real item images (PokéAPI, as for the Pokémon) upscaled on his PC. The list is `docs/rebuild/art/items-list.tsv`
+(166 items: name, PokéAPI file name, source size). Two kinds: 126 are 30 px pixel icons, 40 (the new Champions Mega Stones and
+Fairy Feather) are 160 px smooth art. The site shows them at 96 px (desktop) and 48 px (phones) inside a small clear "evidence bag".
+Use the RTX 3080 (GPU) for every upscale: realesrgan-ncnn-vulkan with `-g 0` (the NVIDIA card; check `-g` lists it) and confirm
+in the report that it ran on the GPU (the tool prints the device), never the CPU.
+1. Download each `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/<file>.png` to a work folder outside the
+   repo. Report any that fail; do not substitute art from anywhere else.
+2. TEST OF 6 FIRST: Focus Sash, Life Orb, Sitrus Berry, Charizardite Y (30 px) and Floettite, Raichunite Y (160 px).
+   - 30 px icons: try BOTH (a) realesrgan-x4plus-anime x4 twice (to 480 px) and (b) nearest-neighbour x8 to 240 px then
+     realesrgan-x4plus-anime x4, and pick the cleaner; 160 px art: realesrgan-x4plus-anime x4 (640 px).
+   - Then trim, centre, and save every result at 512 px on the long side (transparent WebP, quality 90).
+   - Clean the alpha edge the same way as Job 2 (bleed the edge colour, erode 1 px, re-feather 0.6 px; skip erosion if a thin
+     part loses more than 3%).
+   - Make ONE check sheet `docs/rebuild/art/items-test.png`: the 6 at 96 px and at 48 px, on light #FBFAF7 and on the dark
+     #1B1A22, plus the original small icon beside each, and the (a)/(b) versions side by side for the 30 px ones.
+   - Commit the sheet and push to the branch named below, then STOP and tell Sim, so the main chat can review the look
+     (especially whether the upscaled pixel icons sit well next to the smooth new art).
+3. Only after the main chat or Sim says go: run all 166 the chosen way, save `docs/rebuild/art/items512/<file>.webp`, and make
+   `docs/rebuild/art/items-contact.webp` (all 166 small, on light and dark). Commit and push. Report: count, time taken, total
+   size, which ran on the GPU, any that look wrong (list them).
+Branch: `alt/items` (never main or claude/design6). Fix only setup, never the site code or tests.
