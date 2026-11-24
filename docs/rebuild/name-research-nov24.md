@@ -44,3 +44,9 @@ Web searches (WebSearch, 5 queries): no Pokémon team, podcast, channel, esports
 book or game titled "Nasty Plot"; no NastyPlot social accounts found. Searching "Nasty Plot" returns films with "Nasty" in the title
 and plot articles. Not checked: Google itself (likely shows the move's pages: Bulbapedia, Smogon, Serebii), social handles directly,
 trademarks.
+
+## Round 5: "a famous Pokémon phrase, changed just slightly so it means what we do" (Nov 24)
+Free plain domains (checked RDAP): intimidata (.org .net), calcmind (.org .net), statsdance (.org .net), followmeta (.org .net),
+metasight (.org), hiddenstats (.org .net), thinkroom (.org), statroom (.org), metaburst (.org), plotarmored (all), nastyplan (all),
+statsmash (.org .net), calcbeam (.org .net), statsurge (.org .net), calcmeta (.org .net).
+Taken: teamreview, foursight, metareader, wiseguard, youturn, datadance, prepup, metablast.
