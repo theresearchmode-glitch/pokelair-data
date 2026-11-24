@@ -2491,3 +2491,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:28 PM: Sim: Home hero line now 'Everything for Pokémon Champions' (was 'Pokémon Champions team builder'); og:title + description match. Checked: 390 two even lines; 320 shows 'POKÉMON CHAMPIONS' (2 lines); v2-overlap home: 0 findings (4 widths x 2 themes).
 - 5:32 PM: Sim chose 'The Pokémon Champions coach' for the hero line (HH rec). Checked: 390 two lines, 320 'POKÉMON CHAMPIONS COACH', v2-overlap home 0 findings. og:title 'NastyPlot · The Pokémon Champions coach'.
 - 5:38 PM: Sim: yes to a smaller Home hero (the herd, about half, every format); prompt for the other acc (2 options + LCP before/after). M-D countdown moved to Home only (Meta tabs limit). main1/main2 re-running before push.
+- 5:39 PM: Sim: smaller Home hero added to the plan (Thu Nov 26, a helper; HH design authority, pictures to Sim). Game Plan v69.
