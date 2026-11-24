@@ -2473,3 +2473,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:56 PM: Checks after merging add-sprites + fixtures (frozen data): threat-check PASS, golden 10/10, same-grade ALL PASSED, lead-logic ALL PASSED, legality rc 0, suggest-audit PASSED, run.mjs ALL PASSED. Pushing.
 - 1:01 PM: Ideas list added to the game plan: three.js for a launch 'wow' moment (Sim); Speed Tiers 1280 two-row after the switch.
 - 1:05 PM: Sim: SEO 'super duper important' -> December plan: real addresses + search-ready pages, sitemap, previews, Search Console (Dec 8-20); accessibility audit + test; error/uptime alarms; first-60-seconds test in the tester week; the big five ideas listed for after launch. Saved in CLAUDE.md and the game plan.
+- 1:08 PM: Sim + HH: nastyplot.org goes live quietly about Dec 7 (not announced) so Google indexes early and we fix real issues for a month+; January = the announcement. Game plan December section rewritten; CLAUDE.md updated.

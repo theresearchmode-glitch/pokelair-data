@@ -3,7 +3,8 @@
 **Big dates**
 - 🔁 **Sat Nov 28:** the switch (new site goes live). We do it together.
 - ⚔️ **Wed Dec 2:** Reg M-D + balance patch.
-- 🚀 **January:** public launch on nastyplot.org.
+- 🌐 **About Dec 7:** nastyplot.org live, quietly.
+- 🚀 **January:** the big announcement.
 
 **Who does what**
 - **HH** = this chat. Core code, decisions, publishing.
@@ -55,29 +56,35 @@
 ---
 
 ## December → launch
-- **Dec 3–5:**
-  - **HH:** rules on one page (✅ done early).
-  - **HH:** public site reads the tested data.
-  - **HH:** daily data copy to Cloudflare.
-- **Dec 5–12:**
-  - **HH:** practice site on a hidden Cloudflare link, every test run against it.
-  - **HH:** backup numbers from Showdown for when Limitless is down.
-- **Dec 8–14:**
-  - **HH:** feedback, page-view totals, hello@ email, your owner page.
-  - **HH:** "Export / Import my teams".
-- **Dec 10–16:** **HH:** official events (Victory Road) as a second source.
-- **Dec 8–20:** 🔎 **HH: found on Google (Sim: "super duper important").** Real addresses like nastyplot.org/pokemon/garchomp,
-  a plain search-engine version of every page, titles and descriptions, sitemap, link previews, Google Search Console.
-- **Dec 12–20:**
-  - **HH:** speed (under 2.5 s on a phone).
-  - **HH:** accessibility check (screen readers, contrast, keyboard) + a test so it stays fixed.
-  - **HH:** error and uptime alarms for real visitors (anonymous, on Cloudflare).
-- **Dec 14–24:** 👉 **You:** 3–5 testers use the site for a week (+ a "first 60 seconds" fresh-eyes test).
-- **Dec 20–30:**
-  - **HH:** privacy page.
-  - **HH:** read Limitless's terms.
-  - **HH:** the new Strength Score, only if it beats today's.
-- **January:** 👉 **You:** say yes → **launch** 🚀
+**Plan (Sim + HH, Nov 24): nastyplot.org goes live QUIETLY in early December** (real site, not announced). Google starts finding
+us, and we get a month+ of fixing real issues before the January announcement.
+
+**Dec 3–7: get nastyplot.org up quietly**
+- **HH:** rules on one page (✅ done early).
+- **HH:** the site reads the tested data from Cloudflare (no Claude needed). Daily copy = our backup too.
+- **HH:** GitHub sends each tested day to Cloudflare automatically.
+- **HH:** privacy page + "not affiliated" line (needed the moment it's public).
+- **HH:** every test run against nastyplot.org itself.
+- 👉 **You:** 2–3 clicks I can't do (Cloudflare permission, Google "verify"). I'll walk you through each.
+- 🎯 **About Dec 7: nastyplot.org is live, quietly.**
+
+**Dec 7–20: make it findable and solid (on the live site)**
+- 🔎 **HH: found on Google (Sim: "super duper important").** Real addresses like nastyplot.org/pokemon/garchomp, search-ready
+  pages, titles and descriptions, sitemap, link previews, Google Search Console.
+- **HH:** feedback, page-view totals, hello@ email, your owner page.
+- **HH:** "Export / Import my teams".
+- **HH:** backup numbers from Showdown for when Limitless is down; official events as a second source.
+- **HH:** speed (under 2.5 s on a phone).
+- **HH:** accessibility check (screen readers, contrast, keyboard) + a test so it stays fixed.
+- **HH:** error and uptime alarms for real visitors.
+
+**Dec 14–31: real people, real fixes**
+- 👉 **You:** 3–5 testers use nastyplot.org for a week (+ a "first 60 seconds" fresh-eyes test).
+- **HH:** fix what they and the alarms find.
+- **HH:** read Limitless's terms.
+- **HH:** the new Strength Score, only if it beats today's.
+
+**January:** 👉 **You:** say yes → **the announcement** 🚀 (outreach, YouTubers).
 
 **After launch:** all focus on the Strength Score and the analytics, then best-of-3 data.
 
