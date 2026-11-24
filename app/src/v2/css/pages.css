@@ -1357,6 +1357,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 .tc-oh{display:flex;align-items:center;gap:var(--s2);margin:0;font:italic 900 var(--t20)/1.2 var(--u);font-synthesis:style}
 .tc-og{display:grid;grid-template-columns:120px minmax(0,1fr);gap:var(--s3);align-items:start;padding-top:var(--s3);border-top:1px solid var(--k-rule)}
 .tc-og .cap{display:grid;margin:0;font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2)}.tc-og .cap b{font-size:var(--t22);line-height:1.1;color:var(--k-ink)}
+.tc-og .ts.ev,.tc-offr .c.ev{display:grid;grid-template-columns:repeat(var(--evk),max-content)} /* hP2 polish, Nov 24: wrapped chips split evenly (types.js tcEven) */
 .tc-og .none{font:400 var(--t15)/1.5 var(--b);font-style:normal;color:var(--k-ink2)}
 .tc-full{display:grid;gap:var(--s3)}.tc .k-go{justify-self:start}
 /* polish (Nov 22, Sim's yes: "cleaned up a little and not so rough"): on wide screens the star card is the kit's hero size and the line
@@ -1377,6 +1378,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
 }
 @media (max-width:1023.98px){.tc-dmg{grid-template-columns:minmax(0,1fr);gap:var(--s6)}.tc-cardw{grid-template-columns:minmax(0,280px) minmax(0,1fr);align-items:end;column-gap:var(--s8)}.tc-cardw.tc-types{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:899.98px){.tc-offs{grid-template-columns:minmax(0,1fr);row-gap:var(--s8)}}
+@media (min-width:900px) and (max-width:1023.98px){.tc-og{grid-template-columns:96px minmax(0,1fr)}} /* hP2 polish, Nov 24: two attackers side by side, the label column as at 1024-1439, so three chips share a line (were 2 + 1) */
 @media (max-width:699.98px){
   .tc .k-step:first-child .k-sec{margin-top:var(--s6)}
   /* phones: the card and its three facts side by side (HYBRID 6, facts beside instead of under so the page stays short), the line full width */
