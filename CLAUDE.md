@@ -59,6 +59,13 @@ winning over a skill's generic advice), accessibility skills on new controls. Sk
 Sim: "once the current tasks are done, lets work our way back down to our standard 1 helper agent ... after 4PM on Wednesday we can have 2
 helper agents at a time as standard again." The two running now finish; then at most ONE until 4:00 PM Wed Nov 25, then TWO as standard.
 
+## DESIGN AND EXECUTIVE AUTHORITY TO 10:00 PM FRI NOV 27 (Sim, logged Tue Nov 24 morning; LATEST, overrides the end times below)
+Sim: "I'm extending your design and executive authority until Friday at 10 PM ... so anything that comes in, we're able to go based how
+you see best fit because I think we established most of our guidelines." HH decides visual and non-visual questions on his own
+recommendation until 10:00 PM Fri Nov 27 (Eastern), tells Sim in chat each time a visual/design decision is made (with before/after
+pictures), logs every decision with its clock time, and gives a summary of all decisions at the end. All other rules unchanged
+(no generic AI design, the kit, low usage: no helpers here until 4:01 PM Wed Nov 25, then 2).
+
 ## DESIGN AND EXECUTIVE AUTHORITY TO 9:00 AM TUE NOV 24 (Sim, logged 3:13 PM Mon Nov 23; LATEST, overrides the 6 PM end below)
 Sim: "i'm extending your design and executive authority until 9 AM tomorrow. Confirm receipt and let's keep working." HH decides visual and
 non-visual questions on his own recommendation until 9:00 AM Tue Nov 24, tells Sim in chat each time a visual/design decision is made (with

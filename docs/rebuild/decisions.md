@@ -2448,3 +2448,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:41 AM: Sim: 'other chat' = PC chat on THIS account; 'other acc' = second account on Pro (much less usage). Saved in CLAUDE.md.
 - 9:43 AM: Best approach (Sim: 'go with that'): item 3 (Pokémon page hero at 820, empty space beside the top card) goes to the other acc as a small pictures-only job; build here only after Sim picks. 'On the field' check held. No helpers here.
 - 9:52 AM: Sim: GitHub repo keeps the name pokelair-data (no rename).
+- 9:55 AM: Sim: design + executive authority extended to 10:00 PM Fri Nov 27 (confirmed). Sim chose Option A (four facts beside the hero card at 700-959) for the Pokémon page.
