@@ -2096,6 +2096,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .us-ctl{display:grid;gap:var(--s3);margin-bottom:var(--s2)}
 .us-sent.k-sent{margin-top:var(--s2)}
 .us-srcs{display:inline-flex;flex-wrap:wrap;gap:var(--s2) var(--s3)}
+@media (min-width:700px){.us-srcs>.k-w,.lo-srcs>.k-w{flex:1 1 auto}} /* hP5, Nov 24: when the three sources wrap (700-1279), each row fills the width instead of leaving one chip beside an empty strip */
 .us-srcs .k-w:disabled{opacity:.5;cursor:default}
 .us .us-src{margin:0;color:var(--k-ink2)}
 .us .gs-ctl .ra-find{flex:0 1 480px}
@@ -3990,6 +3991,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
    the top team as six roster cards with the one pink move, the runners-up as two calm panels, the rest as rows in words. Colours are tokens. ===== */
 .wt2-ctl{display:grid;gap:var(--s3);min-width:0}
 .wt2-ctl .k-sent{margin:0}
+@media (min-width:1180px) and (max-width:1239.98px){.wt2-ctl{--d-ksent:32px}} /* hP5, Nov 24: from 1180 to 1239 the 2.8vw sentence (33-34px) pushed "Last 7 days" alone onto a second row; held at 32px there it stays one row */
 .wt2-find{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s4);min-width:0}
 .wt2-find .wt2-or{display:block;margin:0} /* the sentence's own words (k-sent: its size and the qcheck exception for the kit's fluid display type) */
 .wt2-find .wt-find{flex:1 1 280px;max-width:420px}
@@ -4111,7 +4113,9 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .lo .gs-facts span{color:var(--wr-ink2);white-space:nowrap}
 .lo .gs-facts b{font-size:var(--t17);color:var(--wr-ink)}
 .lo-set{display:grid;grid-template-columns:minmax(0,1fr);align-content:start;gap:var(--s3);min-width:0}
-.lo-kv{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s8)}
+.lo-kv{display:flex;flex-wrap:wrap;gap:var(--s3) var(--s6)} /* hP5, Nov 24: 24 between the facts (was 32), so Item, Ability and Nature share one row from about 560 wide */
+.lo-set{container-type:inline-size}
+@container (max-width:559.98px){.lo-kv{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s6)}.lo-kv .lo-v:first-child,.lo-kv .st-nonum{grid-column:1/-1}} /* too narrow for three: the item on its row, Ability and Nature side by side (the phone layout), never Nature alone */
 .lo-v{display:grid;align-content:start;gap:2px;min-width:0}
 .lo-vl{margin:0;font:700 var(--t13)/1.3 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--wr-ink2)}
 .lo-v>b{font-size:var(--t22);line-height:1.15;color:var(--wr-ink);overflow-wrap:normal}
@@ -4337,6 +4341,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .wk2-key{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s5);margin:var(--s3) 0 0;font-size:var(--t13);font-weight:600;color:var(--k-ink2)}
 .wk2-key i{display:inline-block;width:20px;height:10px;margin-right:6px;vertical-align:middle;transform:skewX(-14deg)}
 .wk2-key .wk2-k0{background:color-mix(in srgb,var(--k-ink) 28%,transparent)}.wk2-key .wk2-k1{background:var(--k-plot)}
+@media (max-width:479.98px){.wk2-key{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;column-gap:var(--s4)}.wk2-key span{display:flex;align-items:baseline;text-wrap:balance}.wk2-key i{flex:none}}@media (max-width:359.98px){.wk2-key{column-gap:var(--s2)}.wk2-key i{margin-right:var(--s1)}} /* hP5, Nov 24: phones, the three keys side by side (wrapping inside) instead of "lost this week" alone on a second row */
 .wk2-key .wk2-k2{background:repeating-linear-gradient(90deg,var(--k-nasty) 0 3px,transparent 3px 6px);box-shadow:inset 0 0 0 2px var(--k-nasty)}
 /* our ratings moved too: one quiet strip */
 .wk2-rm{margin-top:var(--s6)}
