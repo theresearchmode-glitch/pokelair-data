@@ -10,13 +10,14 @@ V2.IS_TARGET = {normal: 'One foe', randomNormal: 'A random foe', any: 'Any one',
   self: 'Itself', adjacentAlly: 'Its partner', adjacentAllyOrSelf: 'Itself or partner', allySide: 'Your side', allies: 'Your side', allyTeam: 'Your side',
   foeSide: 'Their side', all: 'Whole field', scripted: 'The last attacker'};
 // hand-written doubles lines (HANDOFF "Sim must check these before they ship"); every other move shows the lines its data gives
-V2.IS_HAND = {it: {'Focus Sash': ['Fake Out or any chip damage first breaks it', 'Multi-hit moves can still finish it', 'Best on fast, frail Pokémon']}, ab: {'Intimidate': ['Hits both foes at once', 'Works again each time it switches back in', 'Defiant and Competitive foes get a boost instead', 'Inner Focus, Oblivious, Own Tempo and Scrappy ignore it']}, mv: {'Rock Slide': ['Hits both foes, each for 0.75× damage', 'Never hits your partner', 'Blocked by Protect and Wide Guard', 'Flinch only works if it moves first']}};
+// Nov 24: fact-checked against Showdown 1242c1e (docs/rebuild/test-runs/is-hand-check-nov24.md); 2 misleading lines fixed, Intimidate completed
+V2.IS_HAND = {it: {'Focus Sash': ['Any damage first, like Fake Out, switches it off (it needs full HP)', 'Multi-hit moves can still finish it', 'Best on fast, frail Pokémon']}, ab: {'Intimidate': ['Hits both foes at once', 'Works again each time it switches back in', 'Defiant and Competitive foes still lose 1 Attack, then gain 2 Attack (Defiant) or 2 Sp. Atk (Competitive)', 'Clear Body, White Smoke, Hyper Cutter, Inner Focus, Oblivious, Own Tempo and Scrappy ignore it', 'Mirror Armor bounces it back; Guard Dog raises its Attack instead']}, mv: {'Rock Slide': ['Hits both foes at 0.75× each (full damage if one foe is left)', 'Never hits your partner', 'Blocked by Protect and Wide Guard', 'Flinch only works if it moves first']}};
 // the plain sentence, hand-written where the approved pictures wrote it (else Showdown's short text)
 V2.IS_LEAD = {it: {'Focus Sash': 'At full HP, it survives a hit that would knock it out, with 1 HP left. Then it’s used up.'}, ab: {'Intimidate': 'When it comes in, lowers both foes’ Attack by 1 stage.'}, mv: {'Rock Slide': 'Hits both foes. Each one hit has a 30% chance to flinch.'}};
 V2.isMoveLines = (n, M) => { const t = M.t || 'normal', f = M.f || '', L = [];
   if (V2.IS_HAND.mv[n]) return V2.IS_HAND.mv[n];
-  if (t === 'allAdjacentFoes') L.push('Hits both foes, each for 0.75× damage', 'Never hits your partner');
-  if (t === 'allAdjacent') L.push('Hits both foes and your partner, each for 0.75× damage');
+  if (t === 'allAdjacentFoes') L.push('Hits both foes at 0.75× each (full damage if one foe is left)', 'Never hits your partner');
+  if (t === 'allAdjacent') L.push('Hits both foes and your partner at 0.75× each (full damage if only one is left)');
   if (/^(Fake Out|First Impression)$/.test(n)) L.push('Only works on its first turn out');
   if (M.p > 0) L.push(`Moves before normal moves (priority +${M.p})`);
   if (M.p < 0) L.push(`Moves after normal moves (priority ${M.p})`);
