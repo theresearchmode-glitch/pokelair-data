@@ -76,9 +76,14 @@ V2.kAbil = n => n && typeof INFO_TEXT === 'object' && INFO_TEXT.ab[n] ? `<button
 // the ITEM sheet, "the evidence tag" (approved round 3): a manila tag with a punched hole, a string and a dashed tear line, a red EVIDENCE
 // stamp (hidden under 700 wide); manila with dark ink in both themes. Items not in Pokémon Champions (HANDOFF) get no sheet.
 V2.IS_NOT_IN = ['Safety Goggles', 'Covert Cloak', 'Clear Amulet', 'Loaded Dice', 'Choice Band', 'Choice Specs', 'Assault Vest'];
-// the item's EVIDENCE BAG (Sim OK'd the drawings v2, Nov 23): our own drawing (item-art.js) in a clear bag, left of the name. Decorative;
-// an item with no drawing gets no bag
-V2.isBag = n => { const a = V2.itemArt ? V2.itemArt(n) : ''; return a ? (V2.kTySprite && V2.kTySprite(), `<div class="evbag" aria-hidden="true">${a}</div>`) : ''; };
+// the item's EVIDENCE BAG (Sim OK'd the drawings v2, Nov 23): in a clear bag, left of the name. Decorative (the name is beside it).
+// Sim, Nov 23 (9:3x PM): the REAL item picture when there is one (V2.itemImg; not slanted: the real look, only the bag tilts), else our
+// own drawing (item-art.js). The phone file (art-s/, 128px) is picked by the bag's own size (62px desktop, 40px under 700 wide).
+// An item with neither gets no bag.
+V2.isBag = n => { const u = V2.itemImg ? V2.itemImg(n) : '';
+  if (u) { const s = V2.itemImg(n, true), E = V2.esc;
+    return `<div class="evbag" aria-hidden="true"><img class="ia ia-img" src="${E(u)}"${s !== u ? ` srcset="${E(s)} 128w, ${E(u)} 192w" sizes="(max-width: 699.98px) 40px, 62px"` : ''} alt="" width="62" height="62" loading="lazy" decoding="async"></div>`; }
+  const a = V2.itemArt ? V2.itemArt(n) : ''; return a ? (V2.kTySprite && V2.kTySprite(), `<div class="evbag" aria-hidden="true">${a}</div>`) : ''; };
 V2.openItemSheet = n => { const E = V2.esc, txt = (typeof INFO_TEXT === 'object' && INFO_TEXT.it[n]) || ''; if (!txt || V2.IS_NOT_IN.includes(n)) return;
   const U = V2.infoUse('it', n), users = V2.isUsersOf(U);
   const stats = [['Teams', U ? V2.isFmt(U.t) : '—'], ['Pokémon run it', U ? String(U.nu) : '—'], ['Uses per battle', /Single use/i.test(txt) ? '1' : 'No limit']];

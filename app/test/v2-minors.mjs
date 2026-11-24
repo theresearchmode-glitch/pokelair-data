@@ -438,6 +438,46 @@ const HQ = async () => {
     ok(!gp.length, `HQ polish 2: no small tools plate has an empty band over 110px between its picture and its words, 700-2560 (iPads show Cores, Archetypes and Sets as plates again, Sim Nov 18)${gp.length ? ': ' + gp.join(' | ') : ''}`); }
 };
 if (process.env.ONLY === 'HQ') { await HQ(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+const IMG = async () => { /* The REAL item pictures (Sim, Nov 23, 9:3x PM): the item sheet's evidence bag shows the item's real picture when the build has one
+  (ITEM_IMG, from art/items.json, experiments/v2-items.py), else our drawing (item-art.js); with no pictures at all every bag is the drawing,
+  no <img> appears and nothing errors. The frozen test data and CI have no pictures yet, so the "real pictures" check says UNKNOWN there
+  (never a silent pass); a stand-in (V2.itemImg pointed at a sprite file for Life Orb) checks the wiring on every build. */
+  const ctx = await b.newContext({viewport: {width: 1440, height: 900}}), q = await ctx.newPage(), errs = [], badReq = [];
+  q.on('pageerror', e => errs.push(e.message)); q.on('requestfailed', r => { if (/\/items\//.test(r.url())) badReq.push(r.url().split('/').slice(-2).join('/')); });
+  await q.addInitScript(() => { window.__PL_TEST = 1; });
+  await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2200);
+  const bag = n => q.evaluate(async n => { V2.openItemSheet(n); await new Promise(r => setTimeout(r, 300)); const g = document.querySelector('.np-sheet .evbag');
+    const i = g && g.querySelector('img'); if (i && !i.complete) await new Promise(r => { i.addEventListener('load', r); i.addEventListener('error', r); setTimeout(r, 4000); });
+    const out = !g ? {bag: 0} : {bag: 1, img: !!i, w: i ? i.naturalWidth : 0, svg: !!g.querySelector('svg.ia'), alt: i ? i.getAttribute('alt') : null, lazy: i ? i.loading : '', size: i ? i.getAttribute('width') + 'x' + i.getAttribute('height') : '',
+      tf: i ? getComputedStyle(i).transform : '', bw: i ? i.offsetWidth : 0 /* layout width: the bag's 3deg tilt widens its on-screen box */};
+    V2.closeSheet(); await new Promise(r => setTimeout(r, 300)); return out; }, n);
+  const keys = await q.evaluate(() => window.__ev(`typeof ITEM_IMG === 'object' && ITEM_IMG ? Object.keys(ITEM_IMG) : null`));
+  ok(Array.isArray(keys), `Item pictures: the page carries the item picture map ITEM_IMG (${keys ? keys.length + ' pictures' : 'missing'})`);
+  if (keys && keys.length) {
+    // every picture in the map loads (a file listed in items.json but missing from art/items/ fails here)
+    const dead = await q.evaluate(ks => Promise.all(ks.map(n => new Promise(r => { const i = new Image(); i.onload = () => r(i.naturalWidth > 0 ? '' : n); i.onerror = () => r(n); i.src = V2.itemImg(n); }))).then(a => a.filter(Boolean)), keys);
+    ok(!dead.length, `Item pictures (real): every one of the ${keys.length} pictures in ITEM_IMG loads from the art folder${dead.length ? ': missing ' + dead.slice(0, 6).join(', ') : ''}`);
+    const withImg = ['Life Orb', 'Focus Sash', ...keys].filter((n, i, a) => keys.includes(n) && a.indexOf(n) === i).slice(0, 3), got = [];
+    for (const n of withImg) { const r = await bag(n); if (!(r.bag && r.img && r.w > 0 && !r.svg)) got.push(`${n} ${JSON.stringify(r)}`); }
+    ok(!got.length, `Item pictures (real): an item with a picture (${withImg.join(', ')}) shows an <img> that loaded (naturalWidth > 0) inside .evbag, no drawing${got.length ? ': ' + got.join(' | ') : ''}`);
+  } else console.log('  unknown  Item pictures (real): this build has no item pictures (no art/items.json: experiments/v2-items.py has not been run on the PC\'s set), so the real files are not checked here; the stand-in check below covers the wiring');
+  /* every one of the 166 items (REGMC_ITEMS): its bag holds an <img> exactly when ITEM_IMG has its picture, else no <img> (with no pictures at all:
+     no <img> anywhere); the names that fall back to the drawing are listed */
+  const all = await q.evaluate(() => { const L = window.__ev('REGMC_ITEMS'), bad = [], fall = []; for (const n of L) { const h = V2.isBag(n), u = V2.itemImg(n);
+    if (!!u !== /<img /.test(h)) bad.push(n); if (!u) fall.push(n); } return {n: L.length, bad, fall}; });
+  ok(all.n === 166 && !all.bad.length, `Item pictures: each of the ${all.n} items has an <img> in its bag exactly when it has a picture (${all.n - all.fall.length} with a picture, ${all.fall.length} on the drawing${all.fall.length && all.fall.length < 20 ? ': ' + all.fall.join(', ') : ''})${all.bad.length ? '; WRONG: ' + all.bad.slice(0, 6).join(', ') : ''}`);
+  const noImg = await q.evaluate(ks => ['Rocky Helmet', 'Sitrus Berry', 'Leftovers', 'Charizardite Y'].filter(n => !(ks || []).includes(n) && V2.itemArt(n)), keys), dr = [];
+  for (const n of noImg) { const r = await bag(n); if (!(r.bag && !r.img && r.svg)) dr.push(`${n} ${JSON.stringify(r)}`); }
+  ok(noImg.length > 0 && !dr.length, `Item pictures: an item without a picture (${noImg.join(', ') || 'none to test'}) keeps our drawing (svg.ia) in the bag and shows no <img>${dr.length ? ': ' + dr.join(' | ') : ''}`);
+  /* the stand-in: V2.itemImg answers a real sprite file for Life Orb only, as a picture from the PC would be answered */
+  await q.evaluate(() => { V2._itemImg0 = V2.itemImg; V2.itemImg = (n, s) => n === 'Life Orb' ? V2.art(445, !s) : ''; });
+  const st = await bag('Life Orb'); await q.evaluate(() => { V2.itemImg = V2._itemImg0; });
+  ok(st.bag && st.img && st.w > 0 && !st.svg && st.alt === '' && st.lazy === 'lazy' && st.size === '62x62' && st.tf === 'none' && st.bw === 62,
+    `Item pictures (stand-in, V2.itemImg pointed at a sprite file): the bag shows the <img>, loaded, alt="" (decorative), 62x62, lazy, not slanted, drawn 62px wide at 1440 (${JSON.stringify(st)})`);
+  ok(!errs.length && !badReq.length, `Item pictures: no page error and no failed item picture request (${[...errs, ...badReq.map(x => 'failed ' + x)].join(' / ') || 'none'})`);
+  await ctx.close();
+};
+if (process.env.ONLY === 'IMG') { await IMG(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- HQ end (run with the rest just before the browser closes) ----
 if (part('main1')) {
 await p.goto('file://' + PAGE + '#build'); await p.waitForTimeout(2500);
@@ -1846,6 +1886,7 @@ if (part('main2')) { /* Types in Search (Sim, Nov 22: "Search is the tying point
   ok(p1.h === '#types' && String(p1.sel) === 'Fire' && /Fire/.test(p1.head) && !p1.open && p2.h === '#types' && String(p2.sel) === 'Ghost' && /Ghost/.test(p2.head), `Types in Search: picking the Fire hit opens the Type Chart on Fire alone and closes Search; Enter on "Ghost type" while on #types moves it to Ghost (${p1.h} [${p1.sel}] "${p1.head}" search open ${p1.open}; then ${p2.h} [${p2.sel}] "${p2.head}")`);
   ok(!errs.length, `Types in Search: no page error (${errs.join(' / ') || 'none'})`);
   await ctx.close(); }
+if (part('main2')) await IMG(); // the real item pictures (IMG, defined above; ONLY=IMG runs it alone)
 if (part('main2')) { // Sim, Nov 18: Base Stats calm and compact, on theme (no big bubbly numbers): at most 260px tall on a phone, numbers 16px in the slanted
   // type with no shadow, a Mega's numbers line up in each column, nothing spills out, at 320-1440
   const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();

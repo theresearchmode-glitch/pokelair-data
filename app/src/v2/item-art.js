@@ -88,3 +88,8 @@
   // the drawing for an item, or '' (then the sheet shows no bag). Any Mega Stone uses the one stone shape, so every stone has one
   V2.itemArt = n => { if (!n) return ''; if (typeof V2.kTySprite === 'function') V2.kTySprite(); return V2.ITEM_ART[n] || V2.iaStone(n) || ''; };
 })();
+// the REAL item picture (Sim, Nov 23, 9:3x PM: PokéAPI's item images upscaled on his PC, like the Pokémon art), or '' when the item has none.
+// ITEM_IMG (item name -> file) is written into the page by the build from art/items.json (experiments/v2-items.py); the files sit in the
+// art folder beside the sprites (art/items/, 192px; art-s/items/, 128px for phones). An item with no picture keeps the drawing above.
+V2.itemImg = (n, small) => { const f = n && typeof ITEM_IMG === 'object' && ITEM_IMG && Object.prototype.hasOwnProperty.call(ITEM_IMG, n) ? ITEM_IMG[n] : '';
+  return f ? (small ? V2.ART_SMALL : V2.ART_BASE).replace(/\/?$/, '/') + 'items/' + encodeURIComponent(f) + '.webp' : ''; };
