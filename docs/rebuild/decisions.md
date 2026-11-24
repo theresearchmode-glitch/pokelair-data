@@ -2460,3 +2460,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:16 AM: Design (HH authority): polish fixes #2 Calc sentence one line at 1100+, #3 Build cores '+N points' never splits, #4 Home tile blurbs balanced, merged from the other acc (4898dde2, dfba97f0, 05d5a5f3); before/after pictures sent to Sim. #6 not needed (taps already 44px+). #1 Speed Tiers controls at 1280-1679 parked for the M-D week (needs a layout choice; doesn't fit one row). Checks on our HEAD running (tap-size, main1/2/groups).
 - 11:18 AM: Other acc: M-D roster generator job (gen-roster.mjs, proof on M-C, dry run with Mega Heatran) sent by Sim.
 - 11:44 AM: Polish fixes on our HEAD 7797bff5: tap-size, main1, main2, groups all passed. Pushing.
+- 11:59 AM: Other acc: gen-roster.mjs merged (6ba3a56b). Checked here: run on our Showdown copy, output cmp app/src/data/data.js -> IDENTICAL. M-D game plan item #3 done early (Helper 1 Wed now: sprite script + reviewing roster-day steps).

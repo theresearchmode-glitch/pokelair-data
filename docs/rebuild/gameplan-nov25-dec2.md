@@ -23,7 +23,7 @@ Written Tue Nov 24 (light-usage day) for Sim's review. Everything on this accoun
 | HH | Resume: re-enable hourly check, helpers to 2 (work-check NEED), GitHub runs since 1517, Preview has Option A | runs green, Preview published |
 | HH | Ask D1, D2. Send the decisions summary so far (authority log since 9:55 AM Tue) | Sim answered |
 | HH | **M-D #1 regulation profile**: one source (formats.mjs SITE_REG grows: name, Showdown id, dates, rules, outside-source ids) that the page, the data job and sources.mjs / official.mjs all read; the 83 "M-C" texts in 41 page files read it | grep finds no hard-coded "M-C" outside the profile; reg-test + v2-minors pass |
-| Helper 1 | **M-D #3 roster generator** (experiments/gen-roster.mjs): Showdown champions data → data.js ROSTER/ABIL/MOVES/LEARN + a change report (added, removed, changed incl. existing Pokémon) | it rebuilds today's data.js identically (or every difference explained) |
+| Helper 1 | DONE EARLY Nov 24 (other acc, gen-roster.mjs, rebuilds data.js identically). Wed: **#4 sprite script** instead; then roster-day dry run end to end | sprite script works for Mega Heatran 10311 |
 | Helper 2 | **Switch blockers** from the Game Plan "The switch" list: saved-data contract (v2-saved), "What's new" note, underdog on empty screens, anything else still todo there | each ticked with its check |
 | PC chat | Full check of the latest commit (every GitHub step + WebKit groups + qcheck-all) as the switch baseline | report on alt/pc-fullcheck-nov25 |
 
