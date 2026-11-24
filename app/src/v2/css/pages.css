@@ -3705,7 +3705,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .pkf .k-facts{gap:var(--s2) var(--s4)}.pkf .k-facts b{font-size:var(--t24)}
   .pk-trend{font-size:var(--t13);gap:var(--s2)}
   .pk-setc{padding:var(--s4)}
-  .pk-kv{gap:var(--s2) var(--s4);margin-bottom:var(--s3)}
+  .pk-kv{gap:calc(var(--s8) + 6px) var(--s4);margin-bottom:calc(var(--s6) + var(--s1))} /* room for 44px tap areas (infosheet.css, hNR Nov 24): the "or" word grows 26px down, the next main word 28px up */
   .pk-acts{gap:var(--s2) var(--s4);margin-top:var(--s4)}.pk-acts .k-go{flex:1 1 100%}.pk-qlinks{display:contents}
 
 
