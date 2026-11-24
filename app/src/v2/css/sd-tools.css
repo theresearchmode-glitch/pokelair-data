@@ -22,7 +22,7 @@
 .sdt-go::after{content:"";position:absolute;inset:0;z-index:1}
 .sdt-go:focus-visible{outline:none}.sdt-go:focus-visible::after{outline:3px solid var(--plot);outline-offset:var(--s1);border-radius:var(--r-s)}
 @media (hover:hover){.sdt-p:hover .sdt-go{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:var(--s1)}}
-.sdt-d{font:400 var(--t15)/1.5 var(--b);color:var(--sd-card-ink2);max-width:60ch}
+.sdt-d{font:400 var(--t15)/1.5 var(--b);color:var(--sd-card-ink2);max-width:60ch;text-wrap:balance} /* polish triage #4 (Nov 24): even lines, no "1 plan." left alone (pretty only stops one-word last lines) */
 .sdt-ink .sdt-d{color:var(--sd-feat-ink2)}
 .sdt-s{display:none}
 
