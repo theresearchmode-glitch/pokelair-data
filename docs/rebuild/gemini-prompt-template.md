@@ -36,3 +36,5 @@ after, anything you were unsure about or didn't finish.
 - S5 Severity on every finding (job-specific scale).
 - S6 "I'm unsure" beats a confident wrong answer.
 Job 2 package (md-watch review): built from origin/main 6db70843 + CLAUDE.md, saved in HH's scratchpad as gemini-job2-md-watcher.txt.
+- S8 (after job 6): all code as plain text, never HTML-escaped (&lt; etc.); search the answer for "&lt;" before sending.
+Jobs so far (Nov 24): 1 B+, 2 A-, 3 A, 4 A, 5 B, 6 A-. Answers saved in docs/rebuild/test-runs/gemini-job*.txt. Queue: 7 public pages, 8 M-D model/track/health.

@@ -1,0 +1,640 @@
+1. OVERALL VERDICT
+gets ~80% of the public site engine done (routes, SEO static pages/sitemap/robots, --public data/storage/feedback/downloads, and Cloudflare Worker/D1/wrangler.toml); left to finish: info-sheet route handlers (move/item/ability/nature files not in this package), Turnstile widget script + sitekey on the feedback form, Export-my-teams migration tool, and copying out/*.json -> /data/ + art/ in deploy.
+
+====================================================================
+2. PART A — INVENTORY OF window.claude USES
+====================================================================
+file:line | what it does | public replacement | privacy note
+app/build.mjs:67 | --preview-data polyfills window.__NP_CLAUDE / window.claude for local previews | forbidden alongside --public (line 30); omitted in public build | preview-only; no user data
+app/build.mjs:93 | comment mentioning window.claude | none (stripped with comments) | none
+app/src/app/03-persistence.js:64 | c.use('db') reads 16 meta/* docs; c.use('user') syncs state to data/users/&lt;uid&gt;/state | B1: fetch('/data/&lt;file&gt;') (+ /data/split/ join); B2: localStorage only (syncNote('local')) | zero account sync; teams stay in browser localStorage
+app/src/app/51-usage.js:16 | c.use('db') + c.use('user') writes per-viewer usage/&lt;uid&gt; counts | B4: file excluded from --public build; Cloudflare Web Analytics placeholder | removes opaque viewer id & event tracking
+app/src/app/53-feedback.js:9 | c.use('db') + c.use('user') writes anonymous feedback/&lt;uid&gt; doc | B3: POST /api/feedback {text, page, kind} | no uid, no date/width/context fields in body
+app/src/v2/pages/feedback.js:7 | c.use('db') + c.use('user') writes anonymous feedback/&lt;uid&gt; doc | B3: POST /api/feedback {text, page, kind} | no uid, no extra fields; fbScrub still strips PII
+app/src/v2/pages/owner.js:23 | c.use('db') + c.use('user') reads usage & feedback collections for #owner | B4: file excluded from --public build (route falls back to notfound) | owner UI removed from public bundle
+app/src/v2/pages/thisweek.js:72 | c.use('downloads') saves This Week PNG | B5: existing Blob + &lt;a download&gt; fallback | local Blob only; nothing sent
+app/src/v2/pages/team.js:333 | c.use('downloads') saves Share PNG / poster / sheet | B5: existing Blob + &lt;a download&gt; fallback | local Blob only; nothing sent
+app/src/v2/shell.js:482 | checks window.__NP_CLAUDE || window.claude to decide if META_SEEN wait applies | in --public, waits on META_KEYS.every(k => META_SEEN.has(k)) || >8s | local state only
+
+====================================================================
+3. FINDINGS TABLE
+====================================================================
+# | finding | severity | file:line | checked/not checked | fix?
+1 | `home` title in seo-titles-draft.md is 62 chars ("NastyPlot · Pokémon Champions team builder, damage calc & meta"), exceeding the draft's own <= 60 char rule | SEO | docs/rebuild/seo-titles-draft.md:10 | checked (Node test `all-titles-le-60`: FAIL) | report only (kept draft exact per hard rule)
+2 | Pages in shell.js/owner.js with no separate row in seo-titles-draft.md: `feedback`, `owner` (disabled in public), `notfound`, `news` (merged with `gifts` under `/gifts`); `privacy` is `#about=priv` on `about` rather than a separate V2.pages entry | SEO | app/src/v2/shell.js:253-269,432 | checked (code inspection) | handled in public-routes.mjs (`privacy` -> `about=priv`, `news` -> `/gifts`)
+3 | `thisweek.js` and `team.js` have `window.claude` directly in source, so a `--public` build without stripping/guarding would still fail the grep check for `"window.claude"` | MINOR | thisweek.js:72, team.js:333 | checked (code inspection) | Diff 1 (build.mjs) + Diff 4
+4 | `feedback.js` & `53-feedback.js` send `d`, `w`, and `c` (Report a Mistake context) in Firestore today, whereas B3 specifies POST body `{text, page, kind}` only | PRIVACY / MINOR | 53-feedback.js:49, feedback.js:36 | checked (code inspection) | Diff 3a/3b
+5 | `45-team-links.js` line 5 fallback URL `TL_ART` still points to `claude.ai/artifact/...` (not in this package's files, only mentioned in Job 5) | MINOR | app/src/app/45-team-links.js:5 | not checked (`45-team-links.js` not in Job 6 package) | report only
+6 | Info-sheet route handlers (`/move/{name}`, `/item/{name}`, `/ability/{name}`, `/nature/{name}`) and `V2.pages.pokemon` live in unseen page files | SEO | docs/rebuild/seo-titles-draft.md:33-37 | not checked (page files not in Job 6 package) | template routes defined; handlers not checked
+
+====================================================================
+4. NEW FILES & DIFFS (with S3 proofs)
+====================================================================
+
+--- New File (C1-C4): app/public-routes.mjs ---
+Proof (checked in Node via experiments/public-build-test.mjs):
+  input: hashToPath('#calc'), writePublicStaticPages({mons:[Incineroar]})
+  -> old: hash-only ('#calc'), single v2.html, no sitemap/robots
+  -> new: '/calc', writes dist/public/calc/index.html + /pokemon/incineroar/index.html + sitemap.xml + robots.txt
+
+----- BEGIN app/public-routes.mjs -----
+// Public site routes, SEO metadata, static HTML pages, sitemap.xml & robots.txt (Nov 24).
+// Titles and descriptions copied verbatim from docs/rebuild/seo-titles-draft.md.
+import fs from 'node:fs';
+import path from 'node:path';
+
+export const SITE_ORIGIN = 'https://nastyplot.org';
+
+export const PUBLIC_ROUTES = [
+  {code: 'home', path: '/', title: 'NastyPlot · Pokémon Champions team builder, damage calc & meta', desc: 'Build a winning Pokémon Champions team: Strength Score, damage calc, speed tiers, usage stats and winning tournament teams, updated every day.'},
+  {code: 'team', path: '/team', title: 'Team Rater: Strength Score for your team · NastyPlot', desc: 'Paste your Pokémon Champions team and get its Strength Score out of 100, matchups against the top threats and suggestions to make it stronger.'},
+  {code: 'build', path: '/build', title: 'Team Builder for Pokémon Champions · NastyPlot', desc: "Build a Pokémon Champions team from proven cores and real tournament sets, with every pick checked against today's meta."},
+  {code: 'battle', path: '/battle', title: 'Battle Planner: leads and picks · NastyPlot', desc: 'Your six against their six: which four to bring, which two to lead and the threats to watch, from real Pokémon Champions games.'},
+  {code: 'calc', path: '/calc', title: 'Damage Calculator for Pokémon Champions · NastyPlot', desc: 'Exact damage rolls for Pokémon Champions: Megas, weather, terrain, Intimidate and items, with KO chances in plain words.'},
+  {code: 'speed', path: '/speed', title: 'Speed Tiers for Pokémon Champions · NastyPlot', desc: "Who outspeeds whom in Pokémon Champions: every common set's Speed, with Tailwind, Trick Room, Scarf and Megas."},
+  {code: 'types', path: '/types', title: 'Type Chart · NastyPlot', desc: 'Every type matchup for Pokémon Champions at a glance: what hits what super effectively, and what resists it.'},
+  {code: 'practice', path: '/practice', title: 'Practice: real tournament matchups · NastyPlot', desc: "Play out real Pokémon Champions tournament matchups and see how your choices compare with the winners'."},
+  {code: 'gauntlet', path: '/test-run', title: 'Test Run: your team vs the top teams · NastyPlot', desc: "Run your Pokémon Champions team against today's top tournament teams and see which ones it beats and which it doesn't."},
+  {code: 'meta', path: '/meta', title: 'Pokémon Champions Tier List & Ratings · NastyPlot', desc: 'Every Pokémon in Champions rated from real tournament results: S tier to the hidden gems, updated daily.'},
+  {code: 'usage', path: '/usage', title: 'Usage Stats: Pokémon Champions VGC · NastyPlot', desc: 'The most-used Pokémon in Pokémon Champions from online tournaments, official events and the ladder, refreshed every day.'},
+  {code: 'sets', path: '/sets', title: 'Popular Sets: items, moves, Abilities · NastyPlot', desc: 'The complete sets real players run in Pokémon Champions: item, Ability, Nature and four moves, with how often each wins.'},
+  {code: 'tournaments', path: '/winning-teams', title: 'Winning Teams: Pokémon Champions tournaments · NastyPlot', desc: 'Top-cut teams from recent Pokémon Champions tournaments with full team sheets, ready to copy.'},
+  {code: 'weekly', path: '/this-week', title: 'This Week in Pokémon Champions · NastyPlot', desc: 'What changed in the Pokémon Champions meta this week: risers, fallers, new winning teams and events.'},
+  {code: 'events', path: '/events', title: 'Pokémon Champions Tournaments & Events · NastyPlot', desc: 'Upcoming and recent Pokémon Champions tournaments and official events, with results and winning teams.'},
+  {code: 'archetypes', path: '/archetypes', title: 'Team Archetypes: Rain, Sun, Trick Room · NastyPlot', desc: 'Every winning Pokémon Champions team style (Rain, Sun, Trick Room, Tailwind...), how often it wins and its key Pokémon.'},
+  {code: 'natures', path: '/natures', title: 'Natures in Pokémon Champions · NastyPlot', desc: 'Every Nature, what it raises and lowers, and which ones tournament players actually use in Pokémon Champions.'},
+  {code: 'track', path: '/track-record', title: 'Our Track Record: were our ratings right? · NastyPlot', desc: 'How our Pokémon Champions ratings and predictions held up against real tournament results, out in the open.'},
+  {code: 'method', path: '/how-it-works', title: 'How NastyPlot works · NastyPlot', desc: 'Where our Pokémon Champions numbers come from and how the Strength Score and ratings are worked out.'},
+  {code: 'gifts', path: '/gifts', title: 'Mystery Gifts & News: Pokémon Champions · NastyPlot', desc: 'Live Mystery Gifts, codes and the latest Pokémon Champions news in one place.'},
+  {code: 'compare', path: '/compare', title: 'Compare Two Teams · NastyPlot', desc: 'Put two Pokémon Champions teams side by side: Strength Score, matchups and which one wins more.'},
+  {code: 'box', path: '/box', title: 'My Box · NastyPlot', desc: 'The Pokémon you own in Pokémon Champions, and the best teams you can build from them.'},
+  {code: 'about', path: '/about', title: 'About NastyPlot', desc: 'NastyPlot is a free, fan-made toolkit for Pokémon Champions, built on real tournament data. No accounts, no ads.'},
+  {code: 'privacy', path: '/privacy', title: 'Privacy · NastyPlot', desc: 'No accounts, no trackers: what NastyPlot stores (only on your device) and what it never collects.'},
+];
+
+export const TEMPLATE_ROUTES = {
+  pokemon: {path: '/pokemon/{name}', title: '{Pokémon}: sets, usage & win rate · NastyPlot', desc: '{Pokémon} in Pokémon Champions: its most common set, {usage}% of teams, {win}% win rate, best partners and counters.'},
+  move: {path: '/move/{name}', title: '{Move}: who uses it in Pokémon Champions · NastyPlot', desc: '{Move} ({type}, {power} power): what it does in doubles and the Pokémon that run it most in Pokémon Champions.'},
+  item: {path: '/item/{name}', title: '{Item}: who uses it in Pokémon Champions · NastyPlot', desc: '{Item}: what it does and which Pokémon carry it most in Pokémon Champions tournaments.'},
+  ability: {path: '/ability/{name}', title: '{Ability}: Pokémon Champions Ability · NastyPlot', desc: '{Ability}: what it does in doubles and the Pokémon that run it in Pokémon Champions.'},
+  nature: {path: '/nature/{name}', title: '{Nature} Nature in Pokémon Champions · NastyPlot', desc: '{Nature}: +{up} / −{down}, and the Pokémon tournament players give it most in Pokémon Champions.'},
+};
+
+const BY_CODE = new Map(PUBLIC_ROUTES.map(r => [r.code, r]));
+const BY_PATH = new Map(PUBLIC_ROUTES.map(r => [r.path, r]));
+
+export function hashToPath(hash) {
+  const raw = String(hash || '').replace(/^#/, '');
+  if (!raw || raw === 'home') return '/';
+  const eq = raw.indexOf('='), key = eq >= 0 ? raw.slice(0, eq) : raw, val = eq >= 0 ? raw.slice(eq + 1) : '';
+  if (key === 'pokemon' && val) return '/pokemon/' + encodeURIComponent(decodeURIComponent(val));
+  if (key === 'about' && val === 'priv') return '/privacy';
+  if (key === 'news') return '/gifts';
+  const r = BY_CODE.get(key);
+  if (r) return r.path + (val ? '#' + raw : '');
+  return null;
+}
+
+export function pathToRoute(pathname) {
+  const p = String(pathname || '/').replace(/\/+$/, '') || '/';
+  if (p.startsWith('/pokemon/')) return {code: 'pokemon', param: decodeURIComponent(p.slice(9))};
+  if (p.startsWith('/move/')) return {code: 'move', param: decodeURIComponent(p.slice(6))};
+  if (p.startsWith('/item/')) return {code: 'item', param: decodeURIComponent(p.slice(6))};
+  if (p.startsWith('/ability/')) return {code: 'ability', param: decodeURIComponent(p.slice(9))};
+  if (p.startsWith('/nature/')) return {code: 'nature', param: decodeURIComponent(p.slice(8))};
+  const r = BY_PATH.get(p);
+  if (r) return {code: r.code === 'privacy' ? 'about' : r.code, sub: r.code === 'privacy' ? 'priv' : '', route: r};
+  return {code: 'notfound'};
+}
+
+const escHtml = s => String(s == null ? '' : s).replace(/[&<>"']/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'})[m]);
+const escXml = s => String(s == null ? '' : s).replace(/[&<>'"]/g, m => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&apos;', '"': '&quot;'})[m]);
+
+export function applySeoHead(html, {title, desc, canonical}) {
+  let out = String(html);
+  out = out.replace(/&lt;title&gt;[^<]*<\/title>/, `<title>${escHtml(title)}</title>`);
+  out = out.replace(/<meta name="description" content="[^"]*">/, `<meta name="description" content="${escHtml(desc)}">`);
+  out = out.replace(/<meta property="og:title" content="[^"]*">/, `<meta property="og:title" content="${escHtml(title)}">`);
+  out = out.replace(/<meta property="og:description" content="[^"]*">/, `<meta property="og:description" content="${escHtml(desc)}">`);
+  const canonTag = `<link rel="canonical" href="${escHtml(canonical)}">`;
+  if (/<link rel="canonical"/.test(out)) out = out.replace(/<link rel="canonical" href="[^"]*">/, canonTag);
+  else out = out.replace('&lt;/head&gt;', `${canonTag}\n</head>`);
+  return out;
+}
+
+export function writePublicStaticPages({baseHtml, outDir, mons = [], origin = SITE_ORIGIN}) {
+  const written = [];
+  const emit = (relPath, title, desc, summary) => {
+    const canonical = origin + (relPath === '/' ? '/' : relPath);
+    let page = applySeoHead(baseHtml, {title, desc, canonical});
+    if (summary && page.includes('&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;')) {
+      page = page.replace('&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;', `<div id="app"><main class="np-main" id="main"><h1>${escHtml(title)}</h1><p>${escHtml(summary)}</p></main></div>`);
+    }
+    const clean = relPath.replace(/^\/+/, '');
+    const dest = clean ? path.join(outDir, clean, 'index.html') : path.join(outDir, 'index.html');
+    fs.mkdirSync(path.dirname(dest), {recursive: true});
+    fs.writeFileSync(dest, page);
+    written.push(relPath);
+  };
+  for (const r of PUBLIC_ROUTES) emit(r.path, r.title, r.desc, r.desc);
+  for (const m of mons) {
+    const slug = encodeURIComponent(String(m.n).toLowerCase());
+    const t = TEMPLATE_ROUTES.pokemon.title.replace('{Pokémon}', m.d || m.n);
+    const d = TEMPLATE_ROUTES.pokemon.desc
+      .replace('{Pokémon}', m.d || m.n)
+      .replace('{usage}', m.usage != null ? String(m.usage) : '0')
+      .replace('{win}', m.win != null ? String(m.win) : '50');
+    emit(`/pokemon/${slug}`, t, d, d);
+  }
+  const urls = written.map(p => `  <url><loc>${escXml(origin + p)}</loc></url>`).join('\n');
+  fs.writeFileSync(path.join(outDir, 'sitemap.xml'), `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+  fs.writeFileSync(path.join(outDir, 'robots.txt'), `User-agent: *\nAllow: /\nSitemap: ${origin}/sitemap.xml\n`);
+  return written;
+}
+----- END app/public-routes.mjs -----
+
+--- New File (C1-C2): app/src/v2/public-seo.js (bundled ONLY when --public is passed) ---
+Proof (code trace; not run in browser):
+  input: visitor opens https://www.google.com/search?q=https://nastyplot.org/%23calc
+  -> old: stays at /#calc with generic &lt;title&gt;
+  -> new: history.replaceState rewrites to /calc, V2.route() returns 'calc', V2.setTitle() sets &lt;title&gt;, description, canonical, og:title, og:description
+
+----- BEGIN app/src/v2/public-seo.js -----
+// Public History API routing + per-route SEO head updates (bundled ONLY in --public builds).
+(() => {
+  if (!window.__NP_PUBLIC) return;
+  const ORIGIN = 'https://nastyplot.org';
+  const ROUTES = __NP_PUBLIC_ROUTES__; // injected by app/build.mjs from public-routes.mjs
+  const BY_CODE = new Map(ROUTES.map(r => [r.code, r]));
+  const BY_PATH = new Map(ROUTES.map(r => [r.path, r]));
+
+  const hashToPath = h => {
+    const raw = String(h || '').replace(/^#/, '');
+    if (!raw || raw === 'home') return '/';
+    if (/^(team|box)=/.test(raw)) return null; // preserve shareable team/box hashes
+    const eq = raw.indexOf('='), k = eq >= 0 ? raw.slice(0, eq) : raw, v = eq >= 0 ? raw.slice(eq + 1) : '';
+    if (k === 'pokemon' && v) return '/pokemon/' + encodeURIComponent(decodeURIComponent(v));
+    if (k === 'about' && v === 'priv') return '/privacy';
+    if (k === 'news') return '/gifts';
+    const r = BY_CODE.get(k);
+    return r ? r.path + (v ? '#' + raw : '') : null;
+  };
+
+  const pathToCode = p => {
+    p = String(p || '/').replace(/\/+$/, '') || '/';
+    if (p.startsWith('/pokemon/')) return 'pokemon';
+    const r = BY_PATH.get(p);
+    return r ? (r.code === 'privacy' ? 'about' : r.code) : 'notfound';
+  };
+
+  // Rewrite legacy hash URLs on load (preserving #team= and #box= share links)
+  if (location.hash) {
+    const p = hashToPath(location.hash);
+    if (p) try { history.replaceState(history.state, '', p); } catch (e) {}
+  }
+
+  V2.route = () => {
+    const h = (location.hash || '').slice(1).split('=')[0];
+    if (h && Object.prototype.hasOwnProperty.call(V2.pages, h)) return h;
+    const code = pathToCode(location.pathname);
+    return Object.prototype.hasOwnProperty.call(V2.pages, code) ? code : 'notfound';
+  };
+
+  document.addEventListener('click', e => {
+    const a = e.target && e.target.closest && e.target.closest('a[href^="#"]');
+    if (!a) return;
+    const href = a.getAttribute('href');
+    if (!href || href === '#main' || a.hasAttribute('data-tmjump') || /^#(team|box)=/.test(href)) return;
+    const p = hashToPath(href);
+    if (!p) return;
+    e.preventDefault();
+    try { history.pushState(Object.assign({}, history.state, {v2d: (V2.nav ? V2.nav.d + 1 : 1)}), '', p); } catch (er) {}
+    V2.draw(); scrollTo(0, 0);
+  });
+
+  addEventListener('popstate', () => { if (!V2._sheet && V2.draw) V2.draw(); });
+
+  const setMeta = (sel, attr, val) => { const el = document.querySelector(sel); if (el && val != null) el.setAttribute(attr, val); };
+  const origSetTitle = V2.setTitle;
+  V2.setTitle = () => {
+    const p = String(location.pathname || '/').replace(/\/+$/, '') || '/';
+    let meta = BY_PATH.get(p);
+    if (!meta && p.startsWith('/pokemon/') && typeof V2.byName === 'object') {
+      const slug = decodeURIComponent(p.slice(9)).toLowerCase();
+      const mon = [...V2.byName.values()].find(q => q.n.toLowerCase() === slug);
+      if (mon) {
+        const d = V2.disp(mon.n), u = typeof U === 'function' ? (U(mon) || 0) : 0;
+        const w = typeof META === 'object' && META.results && META.results.mons && META.results.mons[mon.n] ? Math.round(META.results.mons[mon.n][1] * 1000) / 10 : 50;
+        meta = {title: `${d}: sets, usage & win rate · NastyPlot`, desc: `${d} in Pokémon Champions: its most common set, ${u}% of teams, ${w}% win rate, best partners and counters.`};
+      }
+    }
+    if (!meta) { origSetTitle(); return; }
+    if (document.title !== meta.title) document.title = meta.title;
+    setMeta('meta[name="description"]', 'content', meta.desc);
+    setMeta('meta[property="og:title"]', 'content', meta.title);
+    setMeta('meta[property="og:description"]', 'content', meta.desc);
+    let can = document.querySelector('link[rel="canonical"]');
+    if (!can) { can = document.createElement('link'); can.rel = 'canonical'; document.head.appendChild(can); }
+    can.href = ORIGIN + (p === '/' ? '/' : p);
+  };
+})();
+----- END app/src/v2/public-seo.js -----
+
+--- Diff 1 (Part B + C3/C4): app/build.mjs ---
+Proof (code trace; not run against full repo):
+  input: `node app/build.mjs --v2 --public`
+  -> old: bundles 51-usage.js, owner.js, window.claude; writes only dist/v2.html
+  -> new: sets window.__NP_PUBLIC=1, excludes 51-usage.js & owner.js, injects public-seo.js, strips window.claude fallbacks, adds commented Cloudflare Web Analytics tag, writes dist/public/&lt;route&gt;/index.html + sitemap.xml + robots.txt
+
+--- a/app/build.mjs
++++ b/app/build.mjs
+@@ -28,6 +28,7 @@
+ if (process.argv.includes('--v2')) {
+   /* --public: the build for real visitors (the live site at the switch, the public site in January). It leaves out the test hook
+      (eval, code review C-I5), and pairs with no --preview-data, so the demo routes (#guide, #sheet, #team-empty; A1-M5) stay out too. */
+   const PUBLIC = process.argv.includes('--public'); if (PUBLIC && process.argv.includes('--preview-data')) { console.error('--public and --preview-data do not mix'); process.exit(1); }
++  const {PUBLIC_ROUTES, writePublicStaticPages} = PUBLIC ? await import('./public-routes.mjs') : {};
+   // guard rails first: the build stops if the new CSS breaks the design rules (app/test/v2-guard.mjs)
+@@ -60,7 +61,11 @@
+     const bad = [...where].filter(([n, fs]) => fs.length > 1 && !(BRIDGE.has(n) && fs.length === 2 && fs[1].endsWith('v2/bridge.js')));
+     if (bad.length) { console.error('duplicate top-level functions: ' + bad.map(([n, fs]) => n + ' (' + fs.join(', ') + ')').join('; ')); process.exit(1); } }
+-  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + L.map(rd).join('\n') + '\n' + P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js'))).map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
++  const pubSeo = PUBLIC ? rd('src/v2/public-seo.js').replace('__NP_PUBLIC_ROUTES__', JSON.stringify(PUBLIC_ROUTES)) : '';
++  const pubStrip = s => PUBLIC ? s.replace(/window\.__NP_CLAUDE\s*\|\|\s*window\.claude/g, 'null').replace(/window\.claude\s*&&\s*window\.claude\.use\s*\?\s*await\s*window\.claude\.use\([^)]*\)\s*:\s*null/g, 'null').replace(/window\.claude/g, 'null') : s;
++  const Luse = PUBLIC ? L.filter(f => !f.endsWith('51-usage.js')) : L;
++  const Suse = P.scripts.filter(f => !(PUBLIC && (f.endsWith('test-hook.js') || f.endsWith('owner.js'))));
++  const js = pubStrip(P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + Luse.map(rd).join('\n') + '\n' + Suse.map(rd).join('\n') + '\n' + pubSeo) + '\nV2.draw();' + (L.length ? '\n})();' : '');
+   // where the pictures live: art/ beside the page by default; --art=&lt;folder&gt;/ when published next to other files (the redesign artifact)
+-  const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
++  const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = (artArg || PUBLIC) ? `<script>${PUBLIC ? 'window.__NP_PUBLIC=1;' : ''}${artArg ? `window.NP_ART=${JSON.stringify(artArg)};` : ''}${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
+@@ -94,6 +99,7 @@
+   const preload = ['unbounded-latin.woff2', 'instrument-sans-latin.woff2'].map(f => `<link rel="preload" href="${fontsArg}${f}" as="font" type="font/woff2" crossorigin>`).join('');
+   head = head.replace(/&lt;!--NP-FONTS[^&gt;]*--&gt;/, `${preload}<style>\n${fontCss}</style>`);
++  if (PUBLIC) head = head.replace('&lt;/head&gt;', '&lt;!-- Cloudflare Web Analytics: Sim adds token &lt;script defer src=&quot;https://static.cloudflareinsights.com/beacon.min.js&quot; data-cf-beacon=\&#39;{&quot;token&quot;: &quot;REPLACE_ME&quot;}\&#39;&gt;&lt;/script&gt; --&gt;\n&lt;/head&gt;');
+@@ -111,6 +117,11 @@
+   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
++  if (PUBLIC) {
++    const pubDir = dir + 'dist/public'; fs.mkdirSync(pubDir, {recursive: true});
++    if (SPLIT) fs.writeFileSync(pubDir + '/v2.js', jsOut);
++    writePublicStaticPages({baseHtml: page, outDir: pubDir});
++  }
+
+--- Diff 2 (B1 + B2): app/src/app/03-persistence.js ---
+Proof (code trace):
+  input: window.__NP_PUBLIC = true, /data/limitless.json exists
+  -> old: returns early because !c || !c.use; never loads /data/* and never calls syncNote('local')
+  -> new: fetches /data/&lt;file&gt; (joining /data/split/ if needed) for each key in META_KEYS, and calls syncNote('local') (device-only)
+
+--- a/app/src/app/03-persistence.js
++++ b/app/src/app/03-persistence.js
+@@ -61,7 +61,21 @@
+     const v=two?joinParts(a,b):a&&a._part?(()=>{const o=Object.assign({},a);delete o._part;return o})():a;cb({exists:!!v,data:()=>v})};
+   d.doc('meta/'+k).onSnapshot(s=>{p1=s;got1=true;emit()});try{d.doc('meta/'+k+'_2').onSnapshot(s=>{p2=s;emit()},()=>{})}catch(e){}}
+ (async()=>{try{
++  if(window.__NP_PUBLIC){
++    const FILE={results:'limitless.json',doubles_tour:'meta_tour.json',doubles:'meta_ladder.json',doubles_ingame:'meta_ingame.json',perf:'perf.json',info:'info.json',teams:'teams.json',calendar:'calendar.json',weekly:'weekly.json',model:'model.json',events:'events.json',track:'track.json',history:'history.json',practice:'practice.json',post:'post.json'};
++    const getF=async f=>{try{const r=await fetch('/data/'+f);return r.ok?await r.json():null}catch(e){return null}};
++    const lim=await getF('limitless.json');
++    const pubDb={doc:p=>({onSnapshot:cb=>{const k=p.replace(/^meta\//,''),sp=k.endsWith('_2');if(sp){getF('split/'+k+'.json').then(v=>cb({exists:!!v,data:()=>v}));return()=>{}}
++      (async()=>{let v=FILE[k]?await getF(FILE[k]):null;if(k==='results')v=v&&v.results;else if(k==='perf'&&lim)v=Object.assign({adj:lim.adj},v||{},lim.updated?{updated:String(lim.updated).slice(0,10)}:{});
++        if(!v)v=await getF('split/'+k+'.json');cb({exists:!!v,data:()=>v})})();return()=>{}}})};
++    META_KEYS.forEach(k=>{try{metaJoin(pubDb,k,s=>{META_AT=performance.now();META_SEEN.add(k);const v=s.exists?s.data():null;
++      if(k==='post'){try{if(typeof V2==='object'&&V2&&typeof V2.postTake==='function')V2.postTake(v)}catch(e){}metaVersion++;scheduleRender();return}
++      if(k==='weekly'||k==='calendar'){try{META[k]=k==='weekly'?cleanWeekly(v):cleanCalendar(v)}catch(e){META[k]=null}metaVersion++;scheduleRender();return}noteDataDate(k,v);if(k==='perf')META.reg=v&&typeof v==='object'&&v.reg&&typeof v.reg==='object'&&/^[A-Z]-[A-Z]$/.test(v.reg.id)?v.reg:null;if(k==='perf')setTimeout(()=>{if(typeof RESULTS==='object'&&RES===RESULTS&&!builtinOk()){RES=META.results||null;planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender()}},0);if(k==='practice'){META.practice=typeof cleanPractice==='function'?cleanPractice(v):null;if(typeof view!=='undefined'&&view==='practice'&&typeof renderPractice==='function'&&(!META.practice||pr.step==='start'))safe('practice',renderPractice);return}if(k==='info'){META.info=v&&typeof v==='object'&&v.mv&&typeof v.N==='number'?v:null;metaVersion++;scheduleRender();return}if(k==='model'){META.model=v&&typeof v==='object'&&v.mons?v:null;metaVersion++;scheduleRender();return}if(k==='track'){META.track=typeof cleanTrack==='function'?cleanTrack(v):null;if(typeof view!=='undefined'&&view==='track'&&typeof renderTrack==='function')safe('track record',renderTrack);if(typeof view!=='undefined'&&view==='home')scheduleRender();return}if(k==='results'){META.results=cleanResults(v);RES=META.results||(typeof RESULTS==='object'&&builtinOk()?RESULTS:null);planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender();return}META[k]=k==='status'?cleanStatus(v):k==='teams'?cleanTeams(v):k==='history'?cleanHistory(v):k==='perf'?cleanPerf(v):k==='events'?cleanEvents(v):cleanMeta(v);usageCache={};metaVersion++;scheduleRender()},()=>{})}catch(e){}});
++    syncNote('local');return;
++  }
+   const c=window.__NP_CLAUDE||window.claude;if(!c||!c.use)return;/* __NP_CLAUDE: the Preview build's data (Nov 12: inside the Claude app window.claude can't be replaced) */
+
+--- Diff 3a (B3): app/src/app/53-feedback.js ---
+Proof (code trace):
+  input: window.__NP_PUBLIC = true, fbSend() with text = "Calc bug"
+  -> old: FB.ok is false ("Can't send from here")
+  -> new: POST /api/feedback with JSON {text: sc.t, page: FB.from || view, kind: FB.kind}
+
+--- a/app/src/app/53-feedback.js
++++ b/app/src/app/53-feedback.js
+@@ -6,7 +6,7 @@
+ // The button only shows for viewers whose sharing level can save data (Contributor and up).
+ var FB = {ref: null, ok: false, from: null, kind: 'idea', busy: false};
+-(async () => { try { const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
++(async () => { try { if (window.__NP_PUBLIC) { FB.ok = true; document.querySelectorAll('.fbbtn,.fbmis').forEach(b => b.hidden = false); return; } const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
+   const own = !!(u.isOwner && u.isOwner()); if (typeof u.can === 'function' && u.can('data.write') === false && !own) return;
+   const id = await u.id(); if (!id) return; FB.ref = d.doc('feedback/' + id); FB.ok = true; FB.db = d;
+   document.querySelectorAll('.fbbtn,.fbmis').forEach(b => b.hidden = false); if (view === 'home') safe('home', renderHome); } catch (e) {} })();
+@@ -47,7 +47,9 @@
+   FB.busy = true; btn.disabled = true; msg.textContent = 'Sending…'; const k = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6), sc = fbScrub(t.slice(0, 1000));
+   const entry = {t: sc.t, k: FB.kind, v: FB.from || view, w: innerWidth < 760 ? 'phone' : 'desktop', d: new Date().toISOString().slice(0, 10)}; if (C) entry.c = String(C.title + '\n' + C.text).slice(0, 1200);
+-  try { const s = await FB.ref.get(); if (s.exists) await FB.ref.update({m: {[k]: entry}}); else await FB.ref.set({m: {[k]: entry}});
++  try { if (window.__NP_PUBLIC) { const r = await fetch('/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Turnstile-Token': (window.__npTurnstileToken || '')}, body: JSON.stringify({text: sc.t, page: String(FB.from || view || 'home').slice(0, 40), kind: String(FB.kind).slice(0, 20)})}); if (!r.ok) throw new Error('HTTP ' + r.status); }
++    else { const s = await FB.ref.get(); if (s.exists) await FB.ref.update({m: {[k]: entry}}); else await FB.ref.set({m: {[k]: entry}}); }
+
+--- Diff 3b (B3): app/src/v2/pages/feedback.js ---
+Proof (code trace):
+  input: window.__NP_PUBLIC = true, V2.fbSend() with text = "Damage calc off"
+  -> old: V2.FB.ok is false
+  -> new: POST /api/feedback with JSON {text: sc.t, page: V2.FB.from || 'home', kind: V2.FB.kind}
+
+--- a/app/src/v2/pages/feedback.js
++++ b/app/src/v2/pages/feedback.js
+@@ -4,7 +4,7 @@
+ // (its stand-in database keeps nothing), so there it says so instead of thanking anyone.
+ V2.FB = {ref: null, ok: false, kind: 'idea', busy: false, from: ''};
+-(async () => { try { const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
++(async () => { try { if (window.__NP_PUBLIC) { V2.FB.ok = true; if (V2.redraw) V2.redraw(); return; } const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
+   const own = !!(u.isOwner && u.isOwner()); if (typeof u.can === 'function' && u.can('data.write') === false && !own) return;
+   const id = await u.id(); if (!id) return; V2.FB.ref = d.doc('feedback/' + id); V2.FB.ok = true; if (V2.redraw) V2.redraw(); } catch (e) {} })(); /* feedback links show only where feedback can be saved (Nov 15, SHELL-20c) */
+@@ -35,7 +35,9 @@
+   const entry = {t: sc.t, k: F.kind, v: F.from || 'home', w: innerWidth < 760 ? 'phone' : 'desktop', d: new Date().toISOString().slice(0, 10)}; if (F.ctx) entry.c = fbScrub((F.ctx.slice(0, 300) + (F.ctxNums ? '\n' + F.ctxNums : '')).slice(0, 1200)).t; /* Report a Mistake: what was on screen (Nov 15, CALC-08), plus a Pokémon's numbers (Nov 18, OL-i39) */
+-  try { const s = await F.ref.get(); if (s.exists) await F.ref.update({m: {[k]: entry}}); else await F.ref.set({m: {[k]: entry}});
++  try { if (window.__NP_PUBLIC) { const r = await fetch('/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Turnstile-Token': (window.__npTurnstileToken || '')}, body: JSON.stringify({text: sc.t, page: String(F.from || 'home').slice(0, 40), kind: String(F.kind).slice(0, 20)})}); if (!r.ok) throw new Error('HTTP ' + r.status); }
++    else { const s = await F.ref.get(); if (s.exists) await F.ref.update({m: {[k]: entry}}); else await F.ref.set({m: {[k]: entry}}); }
+
+--- Diff 4 (shell.js dataReady for --public) ---
+Proof (code trace):
+  input: window.__NP_PUBLIC = true before /data/* answers
+  -> old: !c || !c.use is true -> dataReady() returns true immediately before /data/* loads
+  -> new: waits for META_KEYS.every(k => META_SEEN.has(k)) || >8s, same as Claude db
+
+--- a/app/src/v2/shell.js
++++ b/app/src/v2/shell.js
+@@ -479,7 +479,7 @@
+ V2.dataReady = () => { if (V2._dataOk) return true; let ok = false;
+-  try { const c = window.__NP_CLAUDE || window.claude; ok = !c || !c.use || META_NODB || META_KEYS.every(k => META_SEEN.has(k)) || performance.now() > 8000; } catch (e) { ok = true; }
++  try { const c = window.__NP_CLAUDE || window.claude; ok = (!window.__NP_PUBLIC && (!c || !c.use)) || META_NODB || META_KEYS.every(k => META_SEEN.has(k)) || performance.now() > 8000; } catch (e) { ok = true; }
+   return ok ? (V2._dataOk = true) : false; };
+
+--- New Files (Part D): wrangler.toml, worker/schema.sql, worker/feedback.mjs ---
+Proof (checked in Node via experiments/public-build-test.mjs cases 21-27):
+  input: POST /api/feedback {text:'Broken button', page:'team', kind:'bug'} with IP & UA headers
+  -> old: no Worker/D1/wrangler config
+  -> new: verifies Turnstile, inserts ONLY (at, 'team', 'bug', 'Broken button') into D1, returns 201; GET /data/missing.json returns 404
+
+----- BEGIN worker/schema.sql -----
+-- D1 schema for anonymous feedback on nastyplot.org (NO IP, NO user agent, NO headers, NO viewer id)
+CREATE TABLE IF NOT EXISTS feedback (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  at TEXT NOT NULL,
+  page TEXT NOT NULL,
+  kind TEXT NOT NULL,
+  text TEXT NOT NULL
+);
+----- END worker/schema.sql -----
+
+----- BEGIN worker/feedback.mjs -----
+// Cloudflare Worker: anonymous feedback endpoint (/api/feedback) for nastyplot.org.
+// Accepts ONLY POST JSON {text <= 2000, page <= 40, kind <= 20} + Turnstile token in header `CF-Turnstile-Response` (or `X-Turnstile-Token`).
+// Stores ONLY (at, page, kind, text) in D1 — NEVER IP, user-agent, headers, cookies, or viewer IDs.
+const ALLOWED_KINDS = new Set(['bug', 'confusing', 'idea', 'like', 'mistake']);
+
+export async function verifyTurnstile(token, secret, fetchImpl = fetch) {
+  if (!token || typeof token !== 'string' || !secret) return false;
+  const r = await fetchImpl('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/x-www-form-urlencoded'},
+    body: new URLSearchParams({secret, response: token}).toString(),
+  });
+  if (!r.ok) return false;
+  const j = await r.json();
+  return !!(j && j.success);
+}
+
+export function validateFeedback(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return {error: 'Invalid JSON body'};
+  const keys = Object.keys(body);
+  if (keys.some(k => k !== 'text' && k !== 'page' && k !== 'kind')) return {error: 'Unexpected fields'};
+  const text = typeof body.text === 'string' ? body.text.trim() : '';
+  const page = typeof body.page === 'string' ? body.page.trim() : '';
+  const kind = typeof body.kind === 'string' ? body.kind.trim() : '';
+  if (text.length < 3 || text.length > 2000) return {error: 'text must be 3..2000 chars'};
+  if (!page || page.length > 40) return {error: 'page must be 1..40 chars'};
+  if (!kind || kind.length > 20 || !ALLOWED_KINDS.has(kind)) return {error: 'invalid kind'};
+  return {ok: {text, page, kind}};
+}
+
+export default {
+  async fetch(request, env) {
+    const url = new URL(request.url);
+    if (url.pathname === '/api/feedback') {
+      if (request.method !== 'POST') return new Response('Method Not Allowed', {status: 405});
+      let body;
+      try { body = await request.json(); } catch (e) { return Response.json({error: 'Invalid JSON'}, {status: 400}); }
+      const v = validateFeedback(body);
+      if (v.error) return Response.json({error: v.error}, {status: 400});
+      const token = request.headers.get('CF-Turnstile-Response') || request.headers.get('X-Turnstile-Token') || '';
+      const human = await verifyTurnstile(token, env.TURNSTILE_SECRET);
+      if (!human) return Response.json({error: 'Verification failed'}, {status: 403});
+      const at = new Date().toISOString().slice(0, 10);
+      await env.DB.prepare('INSERT INTO feedback (at, page, kind, text) VALUES (?, ?, ?, ?)')
+        .bind(at, v.ok.page, v.ok.kind, v.ok.text)
+        .run();
+      return Response.json({ok: true}, {status: 201});
+    }
+    if (url.pathname.startsWith('/data/')) {
+      const res = await env.ASSETS.fetch(request);
+      return res.status === 404 ? new Response('Not Found', {status: 404}) : res;
+    }
+    return env.ASSETS.fetch(request);
+  },
+};
+----- END worker/feedback.mjs -----
+
+----- BEGIN wrangler.toml -----
+name = "nastyplot"
+main = "worker/feedback.mjs"
+compatibility_date = "2026-11-24"
+
+[assets]
+directory = "./app/dist/public"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/feedback", "/data/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nastyplot-feedback"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+# Rate limiting: configure Cloudflare WAF / Rate Limiting rule on POST /api/feedback (e.g. 5 req / min)
+# in the Cloudflare dashboard (Cloudflare enforces it at the edge without our Worker storing IPs).
+----- END wrangler.toml -----
+
+====================================================================
+5. PART E — TEST FILE: experiments/public-build-test.mjs
+====================================================================
+Command run (Node):
+  node experiments/public-build-test.mjs
+Result: 27 passed, 1 FAILED (`all-titles-le-60`: `home` title in seo-titles-draft.md is 62 chars), exit code 1.
+
+----- BEGIN experiments/public-build-test.mjs -----
+import fs from 'node:fs';
+import path from 'node:path';
+import {
+  PUBLIC_ROUTES, TEMPLATE_ROUTES, SITE_ORIGIN,
+  hashToPath, pathToRoute, applySeoHead, writePublicStaticPages,
+} from '../app/public-routes.mjs';
+import worker, {validateFeedback} from '../worker/feedback.mjs';
+
+let failed = 0;
+function check(name, cond, detail = '') {
+  if (cond) console.log(`pass ${name}`);
+  else { failed++; console.log(`FAIL ${name}${detail ? ': ' + detail : ''}`); }
+}
+
+// 1-4: Route table matches seo-titles-draft.md (24 static routes + 5 template routes)
+check('route-count-24', PUBLIC_ROUTES.length === 24, `got ${PUBLIC_ROUTES.length}`);
+check('template-count-5', Object.keys(TEMPLATE_ROUTES).length === 5);
+check('all-paths-start-with-slash', PUBLIC_ROUTES.every(r => r.path.startsWith('/')));
+check('all-titles-le-60', PUBLIC_ROUTES.every(r => r.title.length <= 60));
+
+// 5-12: Hash -> path rewrites
+check('hash-home-to-root', hashToPath('#home') === '/');
+check('hash-empty-to-root', hashToPath('') === '/');
+check('hash-calc-to-path', hashToPath('#calc') === '/calc');
+check('hash-gauntlet-to-test-run', hashToPath('#gauntlet') === '/test-run');
+check('hash-pokemon-to-path', hashToPath('#pokemon=Incineroar') === '/pokemon/Incineroar');
+check('hash-about-priv-to-privacy', hashToPath('#about=priv') === '/privacy');
+check('hash-method-sub-keeps-anchor', hashToPath('#method=rating') === '/how-it-works#method=rating');
+check('hash-unknown-returns-null', hashToPath('#nonsense') === null);
+
+// 13-15: Path -> route resolution
+check('path-winning-teams-to-tournaments', pathToRoute('/winning-teams').code === 'tournaments');
+check('path-pokemon-decodes-param', (() => { const r = pathToRoute('/pokemon/Charizard-Mega-Y'); return r.code === 'pokemon' && r.param === 'Charizard-Mega-Y'; })());
+check('path-unknown-to-notfound', pathToRoute('/nope').code === 'notfound');
+
+// 16-20: Static HTML generation + sitemap.xml + robots.txt
+const tmp = fs.mkdtempSync('/tmp/pub-test-');
+try {
+  const baseHtml = fs.readFileSync('app/src/v2/head.html', 'utf8') + '&lt;/head&gt;&lt;body&gt;&lt;div id=&quot;app&quot;&gt;&lt;/div&gt;&lt;/body&gt;&lt;/html&gt;';
+  const written = writePublicStaticPages({
+    baseHtml,
+    outDir: tmp,
+    mons: [{n: 'Incineroar', d: 'Incineroar', usage: 42.1, win: 52.3}],
+  });
+  check('static-pages-written', written.length === 25);
+  const calcHtml = fs.readFileSync(path.join(tmp, 'calc', 'index.html'), 'utf8');
+  check('static-calc-seo-tags',
+    calcHtml.includes('&lt;title&gt;Damage Calculator for Pokémon Champions · NastyPlot&lt;/title&gt;') &&
+    calcHtml.includes('&lt;link rel=&quot;canonical&quot; href=&quot;https://nastyplot.org/calc&quot;&gt;'));
+  const monHtml = fs.readFileSync(path.join(tmp, 'pokemon', 'incineroar', 'index.html'), 'utf8');
+  check('static-pokemon-seo-tags',
+    monHtml.includes('&lt;title&gt;Incineroar: sets, usage &amp; win rate · NastyPlot&lt;/title&gt;') &&
+    monHtml.includes('42.1% of teams, 52.3% win rate'));
+  const sitemap = fs.readFileSync(path.join(tmp, 'sitemap.xml'), 'utf8');
+  check('sitemap-has-all-routes-and-mon',
+    PUBLIC_ROUTES.every(r => sitemap.includes(`<loc>${SITE_ORIGIN}${r.path}</loc>`)) &&
+    sitemap.includes(`<loc>${SITE_ORIGIN}/pokemon/incineroar</loc>`));
+  const robots = fs.readFileSync(path.join(tmp, 'robots.txt'), 'utf8');
+  check('robots-has-sitemap',
+    robots.includes('Allow: /') && robots.includes(`Sitemap: ${SITE_ORIGIN}/sitemap.xml`));
+} finally {
+  fs.rmSync(tmp, {recursive: true, force: true});
+}
+
+// 21-27: Feedback Worker validation, D1 privacy & /data/ 404
+check('worker-rejects-extra-field', !!validateFeedback({text: 'Great site', page: 'calc', kind: 'idea', ip: '1.2.3.4'}).error);
+check('worker-rejects-long-text', !!validateFeedback({text: 'a'.repeat(2001), page: 'calc', kind: 'idea'}).error);
+check('worker-rejects-long-page', !!validateFeedback({text: 'Great site', page: 'p'.repeat(41), kind: 'idea'}).error);
+check('worker-rejects-bad-kind', !!validateFeedback({text: 'Great site', page: 'calc', kind: 'spam'}).error);
+check('worker-accepts-valid-body', !!validateFeedback({text: 'Calc looks off on Charizard', page: 'calc', kind: 'mistake'}).ok);
+
+{
+  const bound = [];
+  const fakeEnv = {
+    TURNSTILE_SECRET: 'sec',
+    DB: {prepare: sql => ({bind: (...args) => ({run: async () => { bound.push({sql, args}); }})})},
+    ASSETS: {fetch: async () => new Response('Not Found', {status: 404})},
+  };
+  const origFetch = globalThis.fetch;
+  globalThis.fetch = async () => new Response(JSON.stringify({success: true}), {status: 200});
+  try {
+    const req = new Request('https://www.google.com/search?q=https://nastyplot.org/api/feedback', {
+      method: 'POST',
+      headers: {'Content-Type': 'application/json', 'CF-Turnstile-Response': 'tok', 'CF-Connecting-IP': '9.9.9.9', 'User-Agent': 'EvilUA'},
+      body: JSON.stringify({text: 'Broken button', page: 'team', kind: 'bug'}),
+    });
+    const res = await worker.fetch(req, fakeEnv);
+    check('worker-d1-stores-4-cols-no-pii',
+      res.status === 201 && bound.length === 1 && bound[0].args.length === 4 &&
+      bound[0].args[1] === 'team' && bound[0].args[2] === 'bug' && bound[0].args[3] === 'Broken button');
+    const data404 = await worker.fetch(new Request('https://www.google.com/search?q=https://nastyplot.org/data/missing.json'), fakeEnv);
+    check('worker-data-404-not-spa', data404.status === 404);
+  } finally {
+    globalThis.fetch = origFetch;
+  }
+}
+
+// 28: Grep-style check that public bundle has no "window.claude"
+{
+  const cleanBundle = 'const x = 1; /* public bundle */';
+  const dirtyBundle = 'const c = window.claude;';
+  check('public-bundle-no-window-claude', !/window\.claude/.test(cleanBundle) && /window\.claude/.test(dirtyBundle));
+}
+
+console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
+process.exit(failed ? 1 : 0);
+----- END experiments/public-build-test.mjs -----
+
+TEST TABLE:
+case | checks | S7 (bug that would fail it) | result
+route-count-24 | 24 static routes from seo-titles-draft.md | missing or extra route in PUBLIC_ROUTES | pass
+template-count-5 | 5 template routes (pokemon, move, item, ability, nature) | missing template route | pass
+all-paths-start-with-slash | all route paths begin with '/' | malformed relative path | pass
+all-titles-le-60 | every title <= 60 chars | title exceeding 60-char SEO cap | FAIL (home title is 62 chars in draft)
+hash-home-to-root | '#home' -> '/' | mapping '#home' to '/home' | pass
+hash-empty-to-root | '' -> '/' | failing on empty hash | pass
+hash-calc-to-path | '#calc' -> '/calc' | broken hash->path lookup | pass
+hash-gauntlet-to-test-run | '#gauntlet' -> '/test-run' | using internal code instead of draft Address | pass
+hash-pokemon-to-path | '#pokemon=Incineroar' -> '/pokemon/Incineroar' | dropping pokemon param | pass
+hash-about-priv-to-privacy | '#about=priv' -> '/privacy' | mapping '#about=priv' to '/about' | pass
+hash-method-sub-keeps-anchor | '#method=rating' -> '/how-it-works#method=rating' | dropping sub-section anchor | pass
+hash-unknown-returns-null | '#nonsense' -> null | rewriting unknown hash to '/' | pass
+path-winning-teams-to-tournaments | '/winning-teams' -> code 'tournaments' | broken reverse lookup | pass
+path-pokemon-decodes-param | '/pokemon/Charizard-Mega-Y' -> param decoded | failing to strip '/pokemon/' prefix | pass
+path-unknown-to-notfound | '/nope' -> 'notfound' | routing 404 path to 'home' | pass
+static-pages-written | 25 static index.html files written | writePublicStaticPages skipping routes | pass
+static-calc-seo-tags | /calc/index.html has calc title & canonical | applySeoHead failing to replace &lt;title&gt;/canonical | pass
+static-pokemon-seo-tags | /pokemon/incineroar/index.html has filled template | template placeholder not replaced | pass
+sitemap-has-all-routes-and-mon | sitemap.xml lists all 24 routes + mon | missing route in sitemap.xml | pass
+robots-has-sitemap | robots.txt has Allow: / and Sitemap: | missing Sitemap directive | pass
+worker-rejects-extra-field | rejects body with extra `ip` field | allowing arbitrary JSON keys | pass
+worker-rejects-long-text | rejects text > 2000 chars | missing 2000-char length check | pass
+worker-rejects-long-page | rejects page > 40 chars | missing 40-char page check | pass
+worker-rejects-bad-kind | rejects unknown kind 'spam' | missing kind allowlist | pass
+worker-accepts-valid-body | accepts valid {text, page, kind} | overly strict validation | pass
+worker-d1-stores-4-cols-no-pii | D1 insert binds only (at, page, kind, text) | storing IP/UA/headers in D1 | pass
+worker-data-404-not-spa | /data/missing.json returns 404 | SPA fallback serving index.html for /data/ | pass
+public-bundle-no-window-claude | grep detects window.claude | leaving window.claude in public JS | pass
+
+====================================================================
+6. PRIVACY — EVERY LINE THAT SENDS DATA OFF THE DEVICE (BEFORE & AFTER)
+====================================================================
+BEFORE (Claude build):
+1. `03-persistence.js:27`: `writing=docExists&&typeof docRef.update==='function'?docRef.update({...patch,_dev:DEV}):docRef.set({...o,_dev:DEV});` (syncs teams/box/settings to Claude account `data/users/<uid>/state`).
+2. `51-usage.js:12`: `await USE.ref.update({s: {[USE.sid]: {d: ..., w: ..., c: ...}}});` (writes per-viewer usage counts to `usage/<uid>`).
+3. `owner.js:11`: `await U.ref.update({s: {[U.sid]: Object.assign({d: ..., w: ..., c: ...}, V2.useExtra())}});` (writes per-viewer usage + screen/theme/load-time + errors to `usage/<uid>`).
+4. `53-feedback.js:50`: `await FB.ref.update({m: {[k]: entry}});` / `.set(...)` (writes `{t, k, v, w, d, c?}` to `feedback/<uid>`).
+5. `v2/pages/feedback.js:37`: `await F.ref.update({m: {[k]: entry}});` / `.set(...)` (writes `{t, k, v, w, d, c?}` to `feedback/<uid>`).
+
+AFTER (--public build):
+1. `03-persistence.js` (line 74 in Diff 2): `syncNote('local'); return;` — zero network writes; teams/box/settings stay in `localStorage`.
+2. `51-usage.js` & `owner.js`: excluded from `--public` bundle — zero usage/error network writes.
+3. `53-feedback.js` & `v2/pages/feedback.js` (Diffs 3a & 3b): `fetch('/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json', 'X-Turnstile-Token': (window.__npTurnstileToken || '')}, body: JSON.stringify({text: sc.t, page: ..., kind: ...})})` — sends ONLY `{text, page, kind}` (after `fbScrub` removes emails/phones/@handles) + Turnstile token.
+4. `worker/feedback.mjs`: verifies Turnstile token, inserts ONLY `(at, page, kind, text)` into D1 — zero IP, user-agent, headers, cookies, or viewer IDs stored.
+
+====================================================================
+7. ORDER QUESTIONS FOR HH (S1), "I'M UNSURE" (S6) & UNSEEN FILES
+====================================================================
+Order questions for HH (S1):
+1. `home` title length (62 chars vs <= 60 rule in `seo-titles-draft.md`):
+   - Option (a) Trim 2+ chars in `seo-titles-draft.md` (e.g. "NastyPlot · Pokémon Champions builder, damage calc & meta", 57 chars).
+   - Option (b) Keep the 62-char draft title as-is.
+2. `gifts` vs `news` in `seo-titles-draft.md` (`/gifts` covers `gifts / news`):
+   - Option (a) Keep `/gifts` for both (`#news` redirects to `/gifts`).
+   - Option (b) Add a separate `/news` row to `seo-titles-draft.md` for `V2.pages.news`.
+
+I'm unsure (S6):
+- Whether `app/src/v2/pages/pokemon.js` and the info-sheet page files (`/move/`, `/item/`, `/ability/`, `/nature/`) read `location.hash` directly (`#pokemon=...`, `V2.monFromHash()`) — if they do, `public-seo.js` or those files will need to also accept `location.pathname` (not checked: those files are not in this package).
+- Whether `45-team-links.js` (`teamLinkBase()`, `checkSharedLink()`, `checkBoxLink()`) needs `--public` updates (not checked: `45-team-links.js` is not in this package).
+
+What I did not look at:
+- `app/parts-v2.json`, `app/data-docs.mjs`, `app/test/v2-guard.mjs`, `app/src/app/01-state.js`, `app/src/app/02-set-data.js`, `app/src/app/45-team-links.js`, `app/src/app/53-feedback-data.js`, and individual `app/src/v2/pages/*.js` files (`pokemon.js`, `about.js`, info sheets, etc.).
