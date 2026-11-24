@@ -1,0 +1,27 @@
+# Decision summary, design + executive authority 3:13 PM Mon Nov 23 -> 9:00 AM Tue Nov 24 (DRAFT, finished before 9 AM)
+Source: docs/rebuild/decisions.md (every entry with its logged time). Pictures were sent in chat with each design decision.
+
+## Design decisions HH made on his own authority (each sent to Sim with pictures)
+- 5:59 PM Item drawings v2 (slant, bright type colours, new Rocky Helmet). Superseded 9:38 PM by Sim's real-image choice.
+- 6:02 PM Item bag above the name on phones (long names stopped breaking).
+- 6:47 PM Damage Calc: chosen-move ring wide enough to clear the first letters.
+- 6:55 PM Natures page accepted (5x5 grid, the big four bar, the line-up; lighter low-share squares for readable text).
+- 8:08 PM Search finds the 18 types (symbol tile always with the name); picking opens the Type Chart on it.
+- 8:19 PM Damage Calc KO Board rows one column at 700-899 (damage sat on the move line); 4px under the photo's Mega line.
+- 8:49 PM Kit section headings step on the type scale (26/28/34/40) instead of sliding (37.4px at 1100); About 960-979 band.
+- 9:45 PM Archetypes 700-899: playbooks use the page's phone layout (books overlapped, No. 8 off-screen).
+- 9:58 PM Real item images: the 166 from Sim's PC approved (contact sheet), wired into the bag; drawings as fallback.
+- 10:34 PM Search item hits show the real picture; Mega Stone titles keep X/Y/Z with the word on phones.
+- (night) see below for anything added after 10:34 PM.
+
+## Non-visual decisions (executive)
+- Helper count kept at 1 (Sim, 4:53 PM): hW2, hI, hN, hP5, hR, hT4, hS2, hC2, hK, hH, hN10, hA, hI2, hS3, hR2, hL, one at a time.
+- Batched pushes so GitHub runs were not cancelled: 5:40, 6:20, 7:36, 9:45, 10:23 PM (+ night).
+- Preview inlines the 166 item pictures as data: URIs (the artifact holds at most 511 files and already had 443); the public site keeps files.
+- Tests fixed so they can fail (Type Chart, Calc band, HOME-09, NAV-10 rewritten as a real keyboard check); THEME-03 test wait (WebKit 6/6).
+- 39 old qcheck known findings cleared after each was checked fixed; 2 kept.
+- Other account: Job 1 (1280 lengths) applied 10:2x PM; Job 2 report used for follow-ups; overnight brief written 10:24 PM.
+
+## Waiting on Sim
+1. Events, Speed Tiers, Test Run are still over 3 screens at 1280: option pictures from the other account (alt/len1280b) to pick.
+2. Ability sheets and Megas: keep both counts with one note line (A, recommended) or credit the base form (B).
