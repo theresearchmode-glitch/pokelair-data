@@ -14,10 +14,12 @@
 // Also: none of the 300 most-run tournament teams may be called a weather nobody uses (the rule must not flag real teams).
 // Uses the built page (run app/build.mjs first). Usage: node experiments/suggest-audit.mjs [teams=20] [steps=4]
 import fs from 'node:fs'; import {createRequire} from 'node:module';
+import {withFixtures} from './md-fixtures.mjs';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const APP = new URL('../app/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = APP + '../out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const NT = +(process.argv[2] || 20), STEPS = +(process.argv[3] || 4);
 const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json')};
+withFixtures(D); /* Reg M-D day (gap G11): no real teams yet -> the fixture teams, with a "fixture teams" line (experiments/md-fixtures.mjs) */
 const page = APP + 'suggest-audit.html'; fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(APP + 'dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const b = await chromium.launch(), fails = [], ok = (c, m) => { console.log((c ? '  ok   ' : '  FAIL ') + m); if (!c) fails.push(m); };
 const pg = await (await b.newContext({viewport: {width: 1280, height: 900}})).newPage(); const errs = []; pg.on('pageerror', e => errs.push(e.message));

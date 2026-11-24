@@ -4,10 +4,12 @@
 // Usage: node experiments/same-grade.mjs [teams=6]     (build the page first: node app/build.mjs)
 import {fileURLToPath, pathToFileURL} from 'node:url';
 import fs from 'node:fs'; import {createRequire} from 'node:module';
+import {withFixtures} from './md-fixtures.mjs';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = fileURLToPath(new URL('../', import.meta.url)), OUT = ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const N = +(process.argv[2] || 6), L = rd('limitless.json');
 const D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json')};
+withFixtures(D); /* Reg M-D day (gap G11): no real teams yet -> the fixture teams, with a "fixture teams" line (experiments/md-fixtures.mjs) */
 const page = ROOT + `app/same-${process.pid}.html`;
 fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const b = await chromium.launch(), pg = await (await b.newContext({viewport: {width: 1280, height: 900}})).newPage(), errs = []; pg.on('pageerror', e => errs.push(e.message));

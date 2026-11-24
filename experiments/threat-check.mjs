@@ -6,9 +6,11 @@
 // Needs playwright and @smogon/calc (npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0).
 // Usage: node experiments/threat-check.mjs
 import fs from 'node:fs'; import {createRequire} from 'node:module';
+import {withFixtures, withFixturesOfficial} from './md-fixtures.mjs';
 const require = createRequire(import.meta.url), {chromium} = require('playwright'), SC = require('@smogon/calc'), {Generations, Pokemon, Move, Field, calculate} = SC, G0 = Generations.get(0);
 const APP = new URL('../app/', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = APP + '../out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json'), DOCS = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/history': rd('history.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json')};
+withFixtures(DOCS); /* Reg M-D day (gap G11): no real teams yet -> the fixture teams, with a "fixture teams" line (experiments/md-fixtures.mjs) */
 const page = APP + 'verify-threats.html'; fs.writeFileSync(page, '<!doctype html><meta charset="utf-8">' + fs.readFileSync(APP + 'dist/page.html', 'utf8').replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);'));
 const b = await chromium.launch(), pg = await (await b.newContext({viewport: {width: 1200, height: 900}})).newPage(); const errs = [];
 pg.on('pageerror', e => errs.push(e.message));
@@ -172,7 +174,7 @@ const USER = [
   {n: 'Primarina', item: 'Leftovers', ability: 'Liquid Voice', nat: 'Modest', sp: {hp: 32, atk: 0, def: 0, spa: 32, spd: 2, spe: 0}, moves: ['Hyper Voice', 'Protect', 'Moonblast', 'Calm Mind']},
   {n: 'Charizard-Mega-Y', item: 'Charizardite Y', ability: 'Blaze', nat: 'Timid', sp: {hp: 2, atk: 0, def: 0, spa: 32, spd: 0, spe: 32}, moves: ['Heat Wave', 'Protect', 'Weather Ball', 'Solar Beam']},
   {n: 'Farigiraf', item: 'Sitrus Berry', ability: 'Armor Tail', nat: 'Bold', sp: {hp: 27, atk: 0, def: 20, spa: 0, spd: 19, spe: 0}, moves: ['Trick Room', 'Helping Hand', 'Psychic', 'Thunderbolt']}, HYD];
-const OFF = rd('official.json'), REG = [];
+const OFF = withFixturesOfficial(rd('official.json')), REG = [];
 for (const e of OFF.events) for (const t of e.teams) if (t.st <= 2 && REG.length < 10 && t.mons.length === 6) REG.push({who: `${t.player} #${t.st} · ${e.name}`, team: t.mons.map(m => ({n: m.n, item: m.i, ability: m.a, nat: m.nt, moves: m.mv}))});
 const rep = async team => ev(`(a) => { const r = THR.report(a); return {score: r.score, un: r.rows.filter(x => x.level === 0).map(x => x.t.n), shaky: r.rows.filter(x => x.level === 1).map(x => x.t.n)} }`, team);
 const user = await rep(USER), regs = []; for (const r of REG) { try { regs.push({who: r.who, ...(await rep(r.team))}); } catch (e) { regs.push({who: r.who, error: e.message.slice(0, 80)}); } }
