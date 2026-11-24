@@ -14,7 +14,6 @@ Written Tue Nov 24 (light-usage day) for Sim's review. Everything on this accoun
 ## Decisions only Sim makes (asked early so nothing waits)
 - D1 ANSWERED (Sim, Tue Nov 24): switch target **Sat Nov 28** for sure (fallback Sun Nov 29). The switch itself always needs Sim's yes.
 - D2 ANSWERED (Sim, Tue Nov 24): Sim is not around much on Thanksgiving: Thursday runs on HH's authority; one picture summary Thu night.
-  picture summary Thu night.
 - D3 (Fri): go / no-go for the switch, after the full check on one commit and Sim's own use of the Preview.
 - D4 (roster day): the M-D change report (what's added, removed, changed) before it goes live.
 
