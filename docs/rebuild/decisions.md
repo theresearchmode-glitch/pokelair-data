@@ -2396,3 +2396,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:03 AM: Helper slot: hP3 fixes My Team / Team Sheet polish rows (action buttons 5+1/4+2, do-rows 4+1, 3px spill at 320) under design authority; intentional layouts left with reasons.
 - 12:36 AM: GitHub run 1508 (850f4c89: item pictures in Search + review fixes) GREEN. Local on f5dc8537+: v2-minors main1/main2/groups all passed (behaviour groups still running). Pushing HEAD (long titles, 1280 options A, Calc/Types polish). Game Plan v58.
 - 12:47 AM: Preview v255 published (1280 layouts, long titles, item pictures in Search, Calc/Types polish). Build: no-names 0, fonts 7, COPY-OK.
+- 1:00 AM: Checked on f5dc8537 (1280 options A + long titles): v2-minors main1/main2/groups all passed; A-team behaviour: 139 pass, 0 FAIL;behaviour: 83 pass, 0 FAIL;behaviour: 118 pass, 0 FAIL;
