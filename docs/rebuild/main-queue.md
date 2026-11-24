@@ -1,9 +1,8 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 9:46 PM (9:46:37)  date: Mon Nov 23, 2026
-NOW: HH: full local tests on HEAD f5dc8537+ (v2-minors main1/main2/groups, A-team, C-battle, D-meta). Helper: hP2 (polish rows on Meta/Types/Calc). GitHub 1508 running.
-NEXT: GitHub run for 3a06857f (the 9:45 PM batch): fix any red
-NEXT: review Sim's PC item test sheet (alt/items) when it lands; go/adjust for all 166
-NEXT: merge hI2's wiring; build with the PC images; picture sheet to Sim
-NEXT: Ability sheets Mega rule: waiting on Sim (default: keep both)
-NEXT: Events, Speed Tiers, Test Run still over 3 screens at 1280: layout options to Sim at 9 AM with pictures
-NEXT: 9 AM Tue summary of all decisions (reminder 8:30 AM)
+Updated: time: 12:47 AM (12:47:30)  date: Tue Nov 24, 2026
+NOW: HH (design + executive authority to 9 AM Tue): local behaviour C-battle + D-meta on HEAD (A-team done: 139/0). Helper: hP3 (My Team polish rows).
+NEXT: GitHub run for ed7f6e58 (pushed 12:36 AM)
+NEXT: merge hP3; checks; push; Preview
+NEXT: other account alt/fullcheck2 report when it lands: act on real failures
+NEXT: 9 AM summary (docs/rebuild/summary-nov24-9am.md): finish before 8:45 AM with pictures; reminder 8:30 AM
+NEXT: waiting on Sim: Mega Ability counting rule (A recommended)
