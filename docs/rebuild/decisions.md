@@ -2416,3 +2416,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:50 AM: Design (HH authority): hP5 merged (ec8c767f): Popular Sets facts never leave Nature alone (24px gap; phone layout under 560 via container query), Sets/Usage source chips fill their rows when they wrap (700+), Winning Teams sentence one row at 1180-1239 (32px there), This Week phone key three columns. Rest measured as false positives or intentional. polish lone 24 -> 21, none added; qcheck same; main1/main2/tap-size passed; no page longer.
 - 3:50 AM: Helper slot: hTR checks/fixes Track Record's qcheck OFFSCREEN findings at 1100 (pre-existing on tonight's base).
 - 4:07 AM: Checked WebKit on HEAD (with hP4): A-team 139 pass 0 FAIL; B-build 77 pass 0 FAIL.
+- 4:13 AM: GitHub run 1512 (edd6f6e7: hP4 lone rows) GREEN. Pushing HEAD (hP5 polish).
