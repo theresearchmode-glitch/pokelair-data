@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 12:47 AM (12:47:30)  date: Tue Nov 24, 2026
-NOW: HH (design + executive authority to 9 AM Tue): local behaviour C-battle + D-meta on HEAD (A-team done: 139/0). Helper: hP3 (My Team polish rows).
+NOW: HH: full qcheck-all on HEAD (with hP2 polish + long titles + 1280 A). Local behaviour all green (A 139/0, C 83/0, D 118/0). Helper: hP3.
 NEXT: GitHub run for ed7f6e58 (pushed 12:36 AM)
 NEXT: merge hP3; checks; push; Preview
 NEXT: other account alt/fullcheck2 report when it lands: act on real failures
