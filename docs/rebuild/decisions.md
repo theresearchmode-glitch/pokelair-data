@@ -2456,3 +2456,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:09 AM: Sim: Reg M-D work all on this account from 4:01 PM Wed Nov 25, split between this chat and the PC chat; the 9-point list approved. Queue saved in main-queue.md.
 - 11:11 AM: Game plan Nov 25 4:01 PM -> Dec 2 written (docs/rebuild/gameplan-nov25-dec2.md) for Sim. Sim: fix the scattered 'Reg M-C' texts (83 in 41 page files, checked by grep) = M-D #1 regulation profile, first HH job Wed 4:01 PM.
 - 11:13 AM: Sim: game plan approved; switch target Sat Nov 28 for sure; not around much Thu (Thanksgiving): Thursday on HH authority, one picture summary Thu night.
+- 11:14 AM: Sim: design + executive authority extended to 10:00 PM Sat Nov 28 (confirmed); the switch is done together with Sim on Sat.

@@ -43,9 +43,9 @@ Written Tue Nov 24 (light-usage day) for Sim's review. Everything on this accoun
 | Helper 2 | Switch: final checks list from the Game Plan (full check on one commit, final polish pass) |
 | PC chat | Full check on the switch candidate commit |
 | Sim | Uses the Preview for real; **D3 go / no-go** in the evening |
-| 10 PM | HH's authority ends: summary of every decision with pictures |
+| 10 PM | (authority now runs to Sat 10 PM) |
 
-## Sat Nov 28 (switch day; Sun as fallback)
+## Sat Nov 28 (switch day, done together with Sim; Sun as fallback; HH authority ends 10 PM with the summary)
 - Morning: Sim's yes → publish the new site live with sprites and fonts; undo plan (docs/undo-plan.md, re-checked Fri) at hand.
 - The live data refresh and the Preview job point at the new site; check both the next morning.
 - Watch the first day: behaviour, data, Search, saved teams carry over. Rollback kept two weeks.
