@@ -44,7 +44,7 @@ V2.sdHero = () => {
     <div class="sdh-fold"><div class="sdh-scene">
       <svg class="sdh-lines" aria-hidden="true" focusable="false"></svg>
       <div class="sdh-crowd" aria-hidden="true"></div><i class="sdh-haze" aria-hidden="true"></i>
-      <h1 class="u sdh-h" id="sdh-h"><span class="k-kicker sdh-k"><span class="sdh-ka">Everything for </span>Pokémon Champions</span><span class="l1">Sharply raise</span> <span class="l2">your win rate.</span></h1>${V2.sdhChv()}
+      <h1 class="u sdh-h" id="sdh-h"><span class="k-kicker sdh-k"><span class="sdh-ka">The </span>Pokémon Champions coach</span><span class="l1">Sharply raise</span> <span class="l2">your win rate.</span></h1>${V2.sdhChv()}
       <div class="sdh-herd">${herd}</div>
       <div class="sdh-front">${front}</div>
     </div>

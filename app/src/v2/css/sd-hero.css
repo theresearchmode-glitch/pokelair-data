@@ -93,7 +93,7 @@
    what NastyPlot is; no outline or shadow from the headline; on phones it keeps clear of the chevron at the top right */
 .sdh-h .sdh-k{display:table;margin:0 auto var(--s3);-webkit-text-stroke:0;paint-order:normal;text-shadow:none;letter-spacing:.04em;text-transform:uppercase}
 @media (max-width:899.98px){.sdh-h .sdh-k{margin:0 var(--s10) var(--s3) 0;letter-spacing:.02em;text-wrap:balance}} /* 15px (the type rule's minimum for Unbounded); two even lines on phones */
-@media (max-width:379.98px){.sdh-h .sdh-ka{display:none}} /* 320-379: "POKÉMON CHAMPIONS" alone (Nov 24: was "TEAM BUILDER"; Sim: the line says "Everything for Pokémon Champions"), so the headline stays clear of the crowd (v2-overlap at 320) */
+@media (max-width:379.98px){.sdh-h .sdh-ka{display:none}} /* 320-379: "POKÉMON CHAMPIONS COACH" without "The" (Nov 24: was "TEAM BUILDER"; the line is "The Pokémon Champions coach"), so the headline stays clear of the crowd (v2-overlap at 320) */
 /* ultra-wide (Nov 22 night): the site frame centres at 1,920px of content from 2112 wide, but Home's hero is Sim's approved band (Home stays as
    it is): it keeps its own 96px gutter so its sprites and tagline sit exactly as before (v2-minors HQ Q13f at 2560) */
 @media (min-width:2112px){.sdh{--gut:96px}}
