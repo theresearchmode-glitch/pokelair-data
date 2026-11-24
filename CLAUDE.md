@@ -100,6 +100,8 @@ Sim: "since we have that account doing that can we go down to 1 helper agent her
 At most ONE helper in this chat until Sim says otherwise; big parallel work goes to the second account (below). Above 1: ask Sim first.
 
 ## SIM'S SECOND CLAUDE ACCOUNT (Sim, Nov 22, logged 5:53 PM)
+Words (Sim, Nov 24): "other chat" = Sim's PC Claude Code chat, SAME account as this one (its usage counts here). "other acc" = the second
+account, a Pro plan (this one is the bigger plan), so it has MUCH LESS usage: give it small, well-scoped jobs.
 Sim runs big parallel jobs on a second Claude account to save usage here. It NEVER publishes artifacts ("only we publish here"):
 it works on its own branches (alt/*), never main or claude/design6; HH reviews, checks and merges. Brief: docs/rebuild/test-runs/other-account-nov22-prompt.md.
 
