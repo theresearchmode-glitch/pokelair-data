@@ -27,3 +27,12 @@ JOB:
 Deliver: the branch name (or the patch files), and a short report: what you changed and why (file:line), every check line before and
 after, anything you were unsure about or didn't finish.
 ```
+
+## Stricter rules, added to every Gemini job from job 2 on (Nov 24, after job 1's review: 6 of 8 findings real, 2 fixes redone)
+- S1 Order: quote the rule that sets any priority/sort order before changing it; if none, ask HH ("Order question for HH").
+- S2 Time zones: every time names its zone; Actions/cron = UTC; visitors = their own zone; test UTC-midnight edges.
+- S3 Proof per fix: input -> old result -> new result, or no diff.
+- S4 Smallest change: only the lines the finding needs.
+- S5 Severity on every finding (job-specific scale).
+- S6 "I'm unsure" beats a confident wrong answer.
+Job 2 package (md-watch review): built from origin/main 6db70843 + CLAUDE.md, saved in HH's scratchpad as gemini-job2-md-watcher.txt.
