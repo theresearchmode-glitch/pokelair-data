@@ -395,3 +395,24 @@
   .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3)>.k-sec{grid-column:1;grid-row:2}
   .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3)>.tm-cks{grid-column:1;grid-row:3}
   .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3)>.tm-yg{grid-column:2;grid-row:3}}
+/* hP3 polish (Nov 24, polish-check on My Team / Team Sheet): rows that split into a lone last item get even splits instead */
+/* the six head buttons: phones under 360, 2 x 3 (every label on one line); 360-699, three columns sized to their labels, so no
+   label breaks (Why This Score? broke at 390); 360-399 a little narrower type (font-stretch, the 320 cards' precedent), never smaller */
+@media (max-width:359.98px){.pty2 .mtf-acts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:360px) and (max-width:699.98px){.pty2 .mtf-acts{grid-template-columns:repeat(3,auto)}}
+@media (min-width:360px) and (max-width:399.98px){.pty2 .mtf-acts .np-link{font-stretch:87.5%}}
+/* 700-889: the six ran 4+2 and 5+1; now two rows of three that fill the row, as on phones */
+@media (min-width:700px) and (max-width:889.98px){.pty2 .mtf-acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.pty2 .mtf-acts .np-link{justify-content:center}}
+/* the card's five links: where one line can't hold them, three then two (was four and a lone Pokémon Page); 'Lock ›' lost its
+   extra gap (the lock button's own flex gap sat before the arrow) */
+.pty2 .mtf-do .sx-a{gap:0}
+@media (max-width:539.98px),(min-width:900px) and (max-width:1299.98px){.pty2 .mtf-do::after{content:"";flex-basis:100%;order:1}.pty2 .mtf-do>:nth-child(n+4){order:2}}
+@media (max-width:359.98px){.pty2 .mtf-do{column-gap:var(--s3)}}
+/* 'New crew? build me a team or import a team': where it can't take one line (under 590, 700-769) it broke as '... or' / 'import a
+   team' (3+1); it now breaks after 'build me a team', so 'or' starts the next line (2+2; 1+1+2 under 380). Same number of lines; the second line
+   takes back the row gap of the break's own (empty) line */
+@media (max-width:589.98px),(min-width:700px) and (max-width:769.98px){.pty2 .tmk-new::after{content:"";flex-basis:100%;order:1}.pty2 .tmk-new>:nth-child(n+3){order:2;margin-top:calc(var(--s2) * -1)}}
+/* matchup counts on phones: three even columns (the kit's flex row put Unfavoured alone on a second line at 320) */
+@media (max-width:519.98px){.tmk-work .tm-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s3)}}
+/* stand-out rows under 360: a 36px picture (the 320 precedent), so 'Charizard Y' fits beside it (ran 3px past at 320) */
+@media (max-width:359.98px){.tmk-work .mu-out .mu-row{grid-template-columns:36px minmax(0,1fr)}.tmk-work .mu-out .mu-row > img{width:36px;height:36px}}
