@@ -118,6 +118,8 @@
   border-radius:var(--r-m);background:var(--ev-bag);border:1.5px solid var(--ev-bag-line);box-shadow:inset 0 8px 0 -4px var(--ev-bag-sheen)}
 .evbag::before{content:'';position:absolute;inset-inline:calc(var(--sz) * .1);top:calc(var(--sz) * .145);border-top:2px dashed var(--ev-bag-line)}
 .evbag .ia{width:var(--sz);height:var(--sz);margin-top:calc(var(--sz) * .16)}
+/* the real item picture (Sim, Nov 23): the same box as the drawing, the whole picture shown (object-fit), never slanted */
+.evbag .ia-img{display:block;object-fit:contain}
 .is-pn .evbag{margin:0 var(--s1)}
 /* phones: the item tag is narrow (string, hole, share line), so the bag sits above the name and the name keeps the full width */
 @media (max-width:699.98px){.kd-item .is-pn{flex-direction:column;align-items:flex-start;gap:var(--s2)}.is-pn .evbag{--sz:40px}}

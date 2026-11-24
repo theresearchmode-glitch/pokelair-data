@@ -40,6 +40,9 @@ if (process.argv.includes('--v2')) {
   const meta = fs.existsSync(dir + 'src/v2/art/meta.json') ? rd('src/v2/art/meta.json') : '{}';
   // the hero crowd's sprite sheets (Sim Q7a B, Nov 18; experiments/v2-crowd-sheets.py): where each picture sits in art/crowd-<n>.webp
   const crowd = fs.existsSync(dir + 'src/v2/art/crowd.json') ? rd('src/v2/art/crowd.json').trim() : 'null';
+  // the real item pictures (Sim, Nov 23): experiments/v2-items.py writes art/items/<file>.webp and art/items.json (item name -> file) when
+  // the PC's upscaled set is there; without it ITEM_IMG is {} and every item keeps our drawing (item-art.js). JSON.parse fails a bad map.
+  const itemImg = fs.existsSync(dir + 'src/v2/art/items.json') ? JSON.stringify(JSON.parse(rd('src/v2/art/items.json'))) : '{}';
   // today's logic (P.logic, in today's order) is one closure: 00-main.js opens it, so the v2 shell and pages go inside it and it is
   // closed after the first draw. 15-visual-helpers.js brings SPRITE_ID itself when it is included.
   const L = P.logic || [], hasIds = L.some(f => f.endsWith('15-visual-helpers.js'));
@@ -51,7 +54,7 @@ if (process.argv.includes('--v2')) {
     for (const f of [...L, ...P.scripts]) for (const m of rd(f).matchAll(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/gm)) { if (!where.has(m[1])) where.set(m[1], []); where.get(m[1]).push(f); }
     const bad = [...where].filter(([n, fs]) => fs.length > 1 && !(BRIDGE.has(n) && fs.length === 2 && fs[1].endsWith('v2/bridge.js')));
     if (bad.length) { console.error('duplicate top-level functions: ' + bad.map(([n, fs]) => n + ' (' + fs.join(', ') + ')').join('; ')); process.exit(1); } }
-  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\n` + L.map(rd).join('\n') + '\n' + P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js'))).map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
+  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImg};\n` + L.map(rd).join('\n') + '\n' + P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js'))).map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
   // where the pictures live: art/ beside the page by default; --art=<folder>/ when published next to other files (the redesign artifact)
   const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
   // --one-art-size (Nov 17): Claude-hosted builds (Preview, live artifact) use the 384px sprites only: an artifact holds at most 511 files,
