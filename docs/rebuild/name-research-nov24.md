@@ -1,0 +1,21 @@
+# Name research (Sim, Nov 24) — domain checks
+Checked with the registries' RDAP (Verisign for .com/.net, PIR for .org): 200 = registered (taken), 404 = not registered (free).
+Method verified: nastyplot.org = taken (Sim owns it), google.* = taken. "Free" means not registered at check time; buy soon to keep it.
+Sim's rule: the plain name must be free as .com, .org or .net (no "vgc"/"tool" extras).
+Shortlist (free plain domains):
+- swordsdance: .org .net free (.com taken)
+- dragondance: .org free
+- weaknesspolicy: .com .org .net all free
+- mirrorherb: .com .org .net all free
+- expertbelt: .org .net free
+- wiseglasses: .org .net free
+- choicespecs: .org free
+- trickroom: .org free
+- battlebond: .org .net free
+- expshare: .org free
+- victorystar: .net free
+- shellsmash: .org .net free
+- boosterenergy: .org .net free
+- clearamulet / covertcloak: all free
+Taken everywhere (out by Sim's rule): helpinghand, coaching, tailwind, calmmind, followme, futuresight, mindseye, costar, psychup,
+analytic, forewarn, supereffective, plustwo, victorydance (.net only free), and more (full run in the chat log).
