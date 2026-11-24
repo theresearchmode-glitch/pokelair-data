@@ -31,6 +31,8 @@ Source: docs/rebuild/decisions.md (every entry with its logged time). Pictures w
 
 - 3:5x AM Popular Sets facts never leave Nature alone; Sets/Usage source chips fill their rows; Winning Teams sentence on one row at 1180-1239; This Week phone key in three columns.
 
+- 4:34 AM Track Record at 1100-1279: the stamp and button were cut off at the window edge; now sized to their column.
+
 ## Milestone
 - The other account's overnight full check on 136e7cd9: EVERY test passed (all GitHub jobs, WebKit My Team/Build/Battle/Meta, qcheck-all): 0 real failures, 0 flakes. First time every test passes on one commit. GitHub runs 1507-1510 green too.
 
