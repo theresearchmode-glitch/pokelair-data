@@ -92,6 +92,8 @@
 @media (max-width:699.98px){.is-tab .ev{display:none}.is-tab.kd-item{padding-left:64px}}
 /* on the dark loadout panel (Popular Sets): the name keeps the panel's ink and big slanted type; the underline marks it as a button */
 /* the main pick and its "or" line sit right on top of each other: each word's tap area grows away from its neighbour only (Nov 23: Jolly's grown area covered Adamant, so tapping Adamant opened Jolly) */
+/* a short word that opens a sheet (Hardy, Calm in the Calc's set line) still gets a 44px-wide tap target (GitHub run 1504: Hardy 42x47) */
+.dc2-set .is-w{display:inline-block;min-width:44px}
 .pk-kv dd b:has(+ small) .is-w{padding-bottom:0;margin-bottom:0}.pk-kv dd b + small .is-w{padding-top:0;margin-top:0}
 .lo-v .is-w{color:inherit;text-decoration-color:var(--plate-link)}
 
