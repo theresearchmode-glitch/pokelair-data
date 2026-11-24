@@ -64,3 +64,8 @@ Risk: a non-player can read "Intimi-data" as "intimate data" — the same "sound
 All three plain domains free: tallywind, prankstats, moxidata, sturdata, winnerfocus, focusstash, calcommander, goodasdata,
 unburdata, tailwinning, swordsdata. Two free (.org/.net): metabreaker, makeitwin, willowin, forewin, anticipata, metasurge,
 protactic, dracometa, metagrind, regenerata. Taken: quickcalc, analytix, tactician.
+
+## Round 7: twists on things ONLY Pokémon has (Sim: round 6 "could belong to any video game") (Nov 24)
+Free: plotball (all 3), calcball (all 3), masterplot (.org .net; "Masterplots" is a 1949 literature reference series, Wikipedia),
+plotdex (.org .net), rarecalc (.org .net), plotcandy (.org .net), gymplot (.org .net), masterstats (.org .net).
+Taken: masterplan, ultraplan, statball, raredata.
