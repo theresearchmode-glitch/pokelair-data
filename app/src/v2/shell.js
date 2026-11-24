@@ -311,7 +311,7 @@ V2.mdCountdown = (now = Date.now(), short = false) => { try { const r = typeof r
   const end = new Date(endMs), day = x => Date.UTC(x.getFullYear(), x.getMonth(), x.getDate()), d = Math.round((day(end) - day(new Date(now))) / 864e5),
     when = end.toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'});
   const lt = d <= 0 ? 'today' : d === 1 ? 'tomorrow' : `in ${d} days`; /* short form for phones: the long one pushed the start buttons off the first screen at 390x844 (Stampede hero 3b, Nov 24) */
-  return short ? `Reg M-D arrives ${lt}.` : `Reg M-D is coming: M-C ends ${when} (${lt}), with the Dec 2 balance patch.`; } catch (e) { return ''; } };
+  return short ? `Reg M-D ${d <= 0 ? 'arrives today' : d === 1 ? 'arrives tomorrow' : `in ${d} days`}.` : `Reg M-D is coming: M-C ends ${when} (${lt}), with the Dec 2 balance patch.`; } catch (e) { return ''; } };
 V2.dataNote = () => { const E = V2.esc, out = [];
   /* review Nov 18 (C5): a --split Preview whose preview.json couldn't be read (missing, 404, offline) says so, on every page (V2.shell),
      rather than showing the built-in numbers as if they were today's */
