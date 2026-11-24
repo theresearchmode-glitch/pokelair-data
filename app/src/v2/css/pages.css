@@ -3632,6 +3632,11 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (min-width:960px){.pkf .k-hero{grid-template-columns:minmax(0,420px) minmax(0,1fr);grid-template-areas:'card ver' 'card fac' 'card set' 'lst set';grid-template-rows:auto auto auto 1fr;gap:var(--s5) var(--s10)}
   .pkf .k-hero-side,.pkf .pk-is{display:contents}.pkf .k-hero-card{grid-area:card}.pk-verdict{grid-area:ver}.pkf .pk-is>.k-facts{grid-area:fac}.pk-setc{grid-area:set;align-self:start}
 }
+/* Option A (pkhero, Nov 24): 700-959 the hero stacked with an empty strip beside the 520px card; the four facts stand in a column beside it
+   (the 960+ layout's idea: the facts next to the card), the verdict and How to build it full width under them */
+@media (min-width:700px) and (max-width:959.98px){.pkf .k-hero{grid-template-columns:minmax(0,1fr) minmax(0,216px);grid-template-areas:'card fac' 'ver ver' 'set set';gap:var(--s5) var(--s6)}
+  .pkf .k-hero-side,.pkf .pk-is{display:contents}.pkf .k-hero-card{grid-area:card;max-width:none}.pk-verdict{grid-area:ver}.pkf .pk-is>.k-facts.pk-hfx{grid-area:fac;grid-template-columns:minmax(0,1fr);align-self:start;margin:0}.pkf .pk-hfx li:nth-child(3){background:var(--pk-c1)}.pkf .pk-hfx li:nth-child(4){background:var(--pk-c2)}.pk-setc{grid-area:set}
+}
 
 /* the steps' small heads */
 .pk-lbl{margin:0 0 var(--s3);font-size:var(--t15);line-height:1.3;color:var(--k-ink)}
