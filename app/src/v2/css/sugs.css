@@ -162,6 +162,7 @@
 .ra-seg a.on{background:linear-gradient(180deg,var(--plate-hi),var(--plate-lo));box-shadow:var(--lit-edge);color:var(--on-plate)}
 @media (max-width:699.98px){.ra-seg a{padding:0 var(--s2)}} /* phones: "Popular Sets" on one line from 360 up */
 @media (max-width:699.98px){.ra-seg{display:flex}.ra-seg a{flex:1 1 auto;min-width:min-content;text-align:center}} /* phones: columns size to their words, so one-word "Archetypes" is never cut; two-word names wrap */
+@media (max-width:374.98px){.ra-seg[aria-label="Tournament views"] a{white-space:nowrap;padding:0 var(--s1)}} /* phone sweep Nov 24 (hPS): at 320 and 360-374 "Winning Teams" and "This Week" broke onto two lines while "Events" and "Archetypes" sat on one; 4px sides keep all four on one line (measured: 7-8px between each word and its tab edge at 320 and 360) */
 /* ONE section-heading size (Nov 16; advisor C: H1 display, H2 Unbounded 28-34): every section H2 is 24 on phones and 28 from 700px.
    These were 20-26. Pokémon names that are H2s for structure (Calc sides, the Lead card) are names, not section heads, and keep their size. */
 .bd-hd h2,.bt-lgl h2,.bt-yours h2,.ev-plate .ev-ph,.dc2-kbh h2,.st-team .st-h2,.bx-teamhd h2,.bt-labrow .bt-lab{font-size:var(--t24)}

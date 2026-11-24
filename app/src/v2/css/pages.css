@@ -1215,7 +1215,7 @@ button.bd-pk,button.bd-alt-pk{border:0;background:none;padding:0;margin:0;color:
   .sp2-lad{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:var(--s2)}
   .sp2-cut,.sp2-fr.solo{grid-column:1/-1}
   .sp2-fr{--c1:40px;border-top:1px solid var(--k-rule)}.sp2-fr:last-child{border-bottom:0}
-  .sp2-fr .sp2-m{grid-template-columns:var(--c1) 32px minmax(0,1fr);gap:0 var(--s1);padding-right:var(--s1)}
+  .sp2-fr .sp2-m{grid-template-columns:var(--c1) 32px minmax(0,1fr);gap:0 2px;padding-right:0} /* phone sweep Nov 24: 2px gaps and no right padding, so "Mega Garchomp Z" (one unbreakable name) stays inside its row at 360 in a window with a scrollbar (it ran 4px out) */
   .sp2-fr .sp2-m .v{font-size:var(--t17)}
   .sp2-fr .sp2-m .nm{display:block;font-size:var(--t13);line-height:1.25}
   .sp2-fr .sp2-m .nm .mg{display:block}
@@ -4573,3 +4573,11 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .ev2.gsp{padding-bottom:var(--s4)}.ev2 .k-plan{padding-bottom:var(--s2)}
   .ev2 .k-plan>.k-step:last-child>.k-sec{margin-top:var(--s8)}
 }
+/* phone sweep (hPS, Nov 24): small phone fixes from docs/rebuild/research/phone-sweep-nov24.md */
+/* Pokémon page "Brought with it most": under 380 the four cards are 66-81px wide and the 24px "65%" ran 3-13px past its card; 20px and no right pad keep it inside */
+@media (max-width:379.98px){.pkf .pk-fan .k-score{padding-right:0;font-size:var(--t20)}}
+/* Track Record: the tilted 64/48px "230×" hung 11px below its TOTAL line; the line takes the room as padding and gives it back as margin, so nothing moves */
+@media (max-width:699.98px){.trk-tot{padding-bottom:var(--s3);margin-bottom:calc(var(--s2) - var(--s3))}}
+/* Team Sheet: under 360 "Build Around It" (138px at 15px) was wider than its 130px button; 13px as the kit's chips use under 360, and the
+   pair takes 8px more of the row (4px sides, 8px gap) so the slanted border clears the letters */
+@media (max-width:359.98px){.ms-left .ms-go{padding:0 var(--s1);gap:var(--s2)}.ms-left .ms-go .k-btn{padding:0 var(--s2);font-size:var(--t13)}}

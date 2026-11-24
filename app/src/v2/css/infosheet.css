@@ -105,6 +105,11 @@
 .dc2-set .is-w{display:inline-block;padding-inline:var(--s3);margin-inline:calc(var(--s3) * -1)} /* 24px wider tap box (Lax 25px -> 49px) with the text where it was: no gap before the comma (review Nov 23) */
 .pk-kv dd b:has(+ small) .is-w{padding-bottom:0;margin-bottom:0}.pk-kv dd b + small .is-w{padding-top:0;margin-top:0}
 .lo-v .is-w{color:inherit;text-decoration-color:var(--plate-link)}
+/* phone sweep (hPS, Nov 24): the same pairs grow their tap areas away from each other to 44px, text where it was. Popular Sets: Timid's
+   area covered the top of Modest's (Modest 42px; Modest is positioned so the note line under it doesn't take its lower half); Pokémon page: Item and Ability (the first row, nothing tappable above) reach up over
+   their label. The second row (Nature) can't: the "or" word above it (Life Orb) needs that room, and two 44px areas don't fit in its 65px */
+.lo-v>b:has(+ .lo-vr) .is-w{padding:var(--s6) 0 0;margin:calc(var(--s6) * -1) 0 0}.lo-v>b + .lo-vr .is-w{position:relative;padding:0 0 var(--s8);margin:0 0 calc(var(--s8) * -1)}
+.pk-kv>div:nth-child(-n+2) dd>b .is-w{padding-top:var(--s6);margin-top:calc(var(--s6) * -1)}
 
 /* pictures on the sheets (Sim approved Nov 23, 4:33 PM; docs/mockups/sheet-pics-natures-nov23): the picture sits left of the name */
 .is-pn{position:relative;z-index:1;display:flex;align-items:center;gap:var(--s5);min-width:0}.is-pn .is-tn{min-width:0}
