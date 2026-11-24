@@ -64,7 +64,7 @@ V2.sugData = (ms, RD) => { if (ms.length < 1) return null; V2.planStart(ms); con
 // quiet blue links, the one pink move COPY FOR SHOWDOWN., the key line, then one plan step: a file per Pokémon (the kit roster card,
 // Item / Ability / Nature, the four kit move tickets, the six stats at level 50 with their points). Every feature of the Tale of the
 // Tape kept: the team best in each stat in blue (ties all marked), ▲ / ▼ nature marks, the spread note said once, a card opens Edit Set.
-V2.openTeamSheet = () => { const ms = members(), r = (typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}, reg = `Reg ${V2.esc(String(r.id))} doubles · level 50`;
+V2.openTeamSheet = () => { const ms = members(), r = (typeof regInfo === 'function' && regInfo()) || {id: REG_PROFILE.id}, reg = `Reg ${V2.esc(String(r.id))} doubles · level 50`;
   const back = '<a class="k-link sh-back" href="#team" data-v2close>←&nbsp;My Team</a>', kick = '<p class="k-kicker">MY TEAM · THE DOSSIER</p>';
   if (!ms.length) { V2.sheet(`<div class="ts2 sh2">${kick}<h2 class="k-h1 u">Team <em>Sheet.</em></h2><p class="k-lead">${reg}</p><p class="sh-links">${back}</p>
     <p class="k-lead sh-none">No team yet. Add Pokémon on My Team and their full sets show here.</p>${V2.kGo('ADD A POKÉMON.', {'data-v2close': true, 'data-v2search': true})}</div>`, {label: 'Team Sheet', small: true}); return; }

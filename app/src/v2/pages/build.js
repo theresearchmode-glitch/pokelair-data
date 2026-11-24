@@ -12,7 +12,7 @@ V2.bdBoxUntouched = () => { try { const d = new Set(DEFAULT_BOX.map(b => b === '
   return bx.length === d.size && bx.every(b => d.has(b)); } catch (e) { return false; } };
 V2.bdSrcDefault = () => { if (ui.abSrc !== 'all' && LS.get('cc2.absrc', null) == null && V2.bdBoxUntouched()) ui.abSrc = 'all'; };
 V2.buildHead = () => { V2.bdSrcDefault(); const E = V2.esc, nBox = (S.box || []).length, lk = ui.abLock && byName.get(ui.abLock);
-  const head = `<div class="bd-head"><div><p class="np-eyebrow"><span>Build ·<span class="bd-rw"> real winning teams ·</span> ${E(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} doubles</span></p><h1 class="u">Build me <span class="pl">a team.</span></h1></div>
+  const head = `<div class="bd-head"><div><p class="np-eyebrow"><span>Build ·<span class="bd-rw"> real winning teams ·</span> ${E(REG_PROFILE.name)} doubles</span></p><h1 class="u">Build me <span class="pl">a team.</span></h1></div>
     <div class="bd-side"><p>Winning tournament teams you can field from your box or the whole roster.</p><button type="button" class="np-link" data-bdhow>How It Works ›</button></div></div>`;
   const src = V2.slide('bdsrc', [['box', 'My Box'], ['all', 'Whole Roster']], ui.abSrc === 'all' ? 'all' : 'box', 'Build from');
   const meg = V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on team');

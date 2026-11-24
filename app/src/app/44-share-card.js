@@ -43,7 +43,7 @@ async function buildShareCard() {
   const title = (typeof teamTitleFor === 'function' ? teamTitleFor(ms) : '') || 'My team';
   ctx.font = 'italic 800 62px "Sofia Sans Condensed", sans-serif'; const tt = scFit(ctx, title.toUpperCase(), 1070);
   ctx.fillStyle = SC.pink; ctx.fillText(tt, 68, 266); ctx.fillStyle = SC.ink; ctx.fillText(tt, 64, 262);
-  ctx.font = '700 15px "JetBrains Mono", monospace'; ctx.fillStyle = SC.mute; ctx.fillText('POKÉMON CHAMPIONS · VGC DOUBLES · REG M-C', 66, 296);
+  ctx.font = '700 15px "JetBrains Mono", monospace'; ctx.fillStyle = SC.mute; ctx.fillText('POKÉMON CHAMPIONS · VGC DOUBLES · ' + REG_PROFILE.name.toUpperCase() + '', 66, 296);
   // the six
   const cw = 170, gap = 14, x0 = (SC.W - (6 * cw + 5 * gap)) / 2, y0 = 330, chh = 262;
   const imgs = await Promise.all(ms.map(m => { const id = typeof SPRITE_ID === 'object' && SPRITE_ID ? SPRITE_ID[m.p.n] : null; return id ? scImg('sp/' + id + '.webp') : Promise.resolve(null); }));

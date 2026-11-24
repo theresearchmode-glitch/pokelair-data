@@ -1,6 +1,10 @@
 // Builds the PokéLair page from src/ (parts.json lists the order). Output: dist/page.html, published as the artifact.
 import fs from 'node:fs'; import crypto from 'node:crypto';
 import {perfDoc} from './data-docs.mjs';
+// the regulation profile (regulation.json via formats.mjs, Nov 24): the page gets the site's regulation at build time as REG_PROFILE
+// ({id, name, long, sd, since, end, sources, rules}); no page file writes "M-C" itself. Static HTML says %REG_NAME% / %REG_LONG%.
+import {REG_PROFILE} from '../formats.mjs';
+const REG_JS = `const REG_PROFILE=${JSON.stringify(REG_PROFILE)};`, regHtml = t => t.replace(/%REG_NAME%/g, REG_PROFILE.name).replace(/%REG_LONG%/g, REG_PROFILE.long);
 const parts = JSON.parse(fs.readFileSync(new URL('./parts.json', import.meta.url)));
 import {fileURLToPath} from 'node:url';
 // fileURLToPath works on Windows too (URL.pathname gives "/C:/..." there)
@@ -57,7 +61,7 @@ if (process.argv.includes('--v2')) {
     for (const f of [...L, ...P.scripts]) for (const m of rd(f).matchAll(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/gm)) { if (!where.has(m[1])) where.set(m[1], []); where.get(m[1]).push(f); }
     const bad = [...where].filter(([n, fs]) => fs.length > 1 && !(BRIDGE.has(n) && fs.length === 2 && fs[1].endsWith('v2/bridge.js')));
     if (bad.length) { console.error('duplicate top-level functions: ' + bad.map(([n, fs]) => n + ' (' + fs.join(', ') + ')').join('; ')); process.exit(1); } }
-  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + L.map(rd).join('\n') + '\n' + P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js'))).map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
+  const js = REG_JS + '\n' + P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + L.map(rd).join('\n') + '\n' + P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js'))).map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
   // where the pictures live: art/ beside the page by default; --art=<folder>/ when published next to other files (the redesign artifact)
   const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
   // --one-art-size (Nov 17): Claude-hosted builds (Preview, live artifact) use the 384px sprites only: an artifact holds at most 511 files,
@@ -109,7 +113,7 @@ if (process.argv.includes('--v2')) {
   /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words) */
   const v2Fail = `window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}`;
   const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}" onerror="${v2Fail.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"></script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
-  const page = head.replace('<meta charset="utf-8">', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + mainTag + `</body></html>\n`;
+  const page = head.replace('<meta charset="utf-8">', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + regHtml(rd(P.body)) + mainTag + `</body></html>\n`;
   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
   if (SPLIT) { fs.writeFileSync(dir + 'dist/v2.js', jsOut); if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson);
     console.log(`v2 --split: dist/v2.js ${(jsOut.length / 1024).toFixed(0)} KB${previewJson ? `, dist/preview.json ${(previewJson.length / 1024).toFixed(0)} KB` : ''} (publish them beside the page)`); }
@@ -136,6 +140,7 @@ let out = parts.map(p => { const s = fs.readFileSync(dir + p, 'utf8').replace(/\
 // esbuild-minified copy of the scripts before and after (identical). `node app/build.mjs --keep-comments` keeps them.
 let dropped = 0;
 // The same for /* */ comments in the <style> block (about 10 KB gzipped more).
+out = regHtml(out); { const at = out.indexOf('<script'); if (at < 0) throw new Error('no <script> in page'); out = out.slice(0, at) + `<script>${REG_JS}</script>` + out.slice(at); }
 if (!process.argv.includes('--keep-comments')) {
   out = out.replace(/<script>([\s\S]*?)<\/script>/g, (m, code) => '<script>' + code.split('\n').filter(l => { const c = /^\s*\/\/[^\n]*$/.test(l); if (c) dropped++; return !c; }).join('\n') + '</script>');
   out = out.replace(/<style>([\s\S]*?)<\/style>/g, (m, css) => '<style>' + css.replace(/\/\*[\s\S]*?\*\//g, () => { dropped++; return ''; }) + '</style>'); }

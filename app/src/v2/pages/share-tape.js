@@ -18,7 +18,7 @@ V2.tapeImage = async (ms, dark) => { ms = (ms || members()).slice(0, 6); if (!ms
   x.fillStyle = P.sheet; x.fillRect(0, 0, W, H); x.strokeStyle = dark ? 'rgba(255,255,255,.025)' : 'rgba(22,20,26,.03)'; x.lineWidth = 1; for (let k = -H; k < W + H; k += 14) { x.beginPath(); x.moveTo(k, 0); x.lineTo(k - H, H); x.stroke(); }
   // top: the logo, the format line; the eyebrow, the team name, the score
   await ARB.logo(x, dark, M, 34, 180);
-  ARB.fnt(x, '700 17px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.textAlign = 'right'; x.fillText('POKÉMON CHAMPIONS · REG M-C DOUBLES · LEVEL 50', W - M, 62); x.textAlign = 'left';
+  ARB.fnt(x, '700 17px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.textAlign = 'right'; x.fillText('POKÉMON CHAMPIONS · ' + REG_PROFILE.name.toUpperCase() + ' DOUBLES · LEVEL 50', W - M, 62); x.textAlign = 'left';
   x.fillStyle = P.blue; ARB.para(x, M + 14, 118, 28, 12, 2); x.fill(); ARB.fnt(x, 'italic 900 22px Unbounded, sans-serif', true); x.fillStyle = P.blue; x.fillText('Team Sheet', M + 40, 131);
   const hasScore = sc && /^\d+$/.test(sc.num), nameMax = hasScore ? 700 : W - 2 * M;
   const ns = fit(f.name, nameMax, ['italic 900 #px Unbounded, sans-serif', 58, true], 30); x.fillStyle = P.ink; x.fillText(scFit(x, f.name, nameMax), M, 196);

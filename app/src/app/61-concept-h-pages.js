@@ -101,7 +101,7 @@ function chHotHtml() { const rows = lairRows(); if (rows.length < 8) return ''; 
     ${K === 1 ? `<div class="chhot2${M ? ' chhot2s' : ''}"${dbAttr('hot')}>${big(top[0], 'ink')}${M ? `<div class="chhotrows chhotside">${top.slice(1, 1 + M).map((x, i) => row(x, i + 1)).join('')}</div>` : ''}</div>` : tieCard(top.slice(0, K))}
     <div class="chhotrows"${dbAttr('hot')}>${top.slice(K + M).map((x, i) => row(x, i + K + M)).join('')}</div>`; }
 CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec.classList.add('chlair');
-  if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg ${((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑')} doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
+  if (!sec.querySelector('.chpghead')) { const pf = activePerf(); sec.querySelector('.head').insertAdjacentHTML('afterend', CH.head(`Rated 0–100 from real results · Reg ${((typeof regInfo === 'function' && regInfo()) || {id: REG_PROFILE.id}).id.replace('-', '‑')} doubles${pf && pf.updated ? ' · data from ' + esc(pf.updated) : ''}`, 'Pokémon', ''));
     /* "How to read our numbers" from the page title's "?" (Nov 2) */
     /* the big "Pokémon" title repeated the Pokémon tab right above it: it stays for screen readers only, and its "?" sits on the line above (Sim, Nov 10) */
     { const t = sec.querySelector(':scope > .chpghead .chpgt'), k = sec.querySelector(':scope > .chpghead > .chk'); if (t) t.classList.add('sr'); if (k && typeof tip === 'function') k.insertAdjacentHTML('afterend', tip('numbers')); }
@@ -112,7 +112,7 @@ CH.wrap('renderLair', bodyOnly => { const sec = $('lair'); if (!sec) return; sec
   // the date line is rebuilt on every render: the first render can run before today's data has loaded (Oct 29 fix)
   { const k = sec.querySelector(':scope > .chpghead .chk'), pf = activePerf(); if (k) { let d = pf && pf.updated ? String(pf.updated).slice(0, 10) : '';
       try { if (d) d = new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) {}
-      k.textContent = `Rated 0–100 from real results · Reg ${((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑')} doubles${RES && +RES.teams > 0 ? ' · ' + basisNum(RES.teams) + ' teams' : ''}${d ? ' · data as of ' + d : ''}`; } }
+      k.textContent = `Rated 0–100 from real results · Reg ${((typeof regInfo === 'function' && regInfo()) || {id: REG_PROFILE.id}).id.replace('-', '‑')} doubles${RES && +RES.teams > 0 ? ' · ' + basisNum(RES.teams) + ' teams' : ''}${d ? ' · data as of ' + d : ''}`; } }
   const hot = $('chHot'); const filtered = !!((ui.lq || '').trim() || (ui.lty || []).length || Object.values(ui.lf || {}).some(Boolean));
   if (hot) { hot.hidden = filtered; if (!filtered && !bodyOnly) hot.innerHTML = chHotHtml(); }
   // the full board under the hot list, folded until you search or filter
@@ -253,7 +253,7 @@ buildShareCard = async function () { const ms = members(); if (!ms.length) retur
   const title = ((typeof teamTitleFor === 'function' ? teamTitleFor(ms) : '') || 'My team').toUpperCase(); let fz = 92;
   do { x.font = `400 ${fz}px Anton, Impact, sans-serif`; } while (x.measureText(title).width > 700 && --fz > 40); // stays clear of the readiness label on the right
   x.fillStyle = P.shadow; x.fillText(title, 62, 238); x.fillStyle = P.ink; x.fillText(title, 56, 232); // your team: ink with a blue offset (red is for opponents)
-  x.font = '700 20px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('POKÉMON CHAMPIONS · VGC DOUBLES · REG M-C · BRING 6 PICK 4', 58, 274);
+  x.font = '700 20px "Instrument Sans", monospace'; x.fillStyle = P.mute; x.fillText('POKÉMON CHAMPIONS · VGC DOUBLES · ' + REG_PROFILE.name.toUpperCase() + ' · BRING 6 PICK 4', 58, 274);
   // the six on a blue halftone band
   const by = 296, bh = 316; x.fillStyle = P.blue; x.fillRect(0, by, W, bh); x.fillStyle = 'rgba(255,255,255,.22)'; for (let yy = by + 4; yy < by + bh; yy += 9) for (let xx = (yy / 9 % 2) * 4.5; xx < W; xx += 9) { x.beginPath(); x.arc(xx, yy, 1.4, 0, 7); x.fill(); }
   const src = id => (window.__SPR && window.__SPR[id]) || 'sp/' + id + '.webp';

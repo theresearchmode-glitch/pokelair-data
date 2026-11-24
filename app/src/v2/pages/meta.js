@@ -79,7 +79,7 @@ V2.raStairs = (rows, megas) => { const E = V2.esc, wk = V2.gsWeek(), n = rows.le
 V2.pkTabs = on => `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
     <nav class="ra-seg" aria-label="Pokémon views">${[['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['natures', 'Natures']].map(([h, t]) => `<a href="#${h}"${h === on ? ' class="on" aria-current="page"' : ''}>${t}</a>`).join('')}</nav></div>`;
 V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoad();
-  const all = lairRows(), rows = V2.raFilter(all), filtered = V2.raFiltered(), listy = V2.raFiltered2() || U.view === 'list', pf = activePerf(), reg = ((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑');
+  const all = lairRows(), rows = V2.raFilter(all), filtered = V2.raFiltered(), listy = V2.raFiltered2() || U.view === 'list', pf = activePerf(), reg = ((typeof regInfo === 'function' && regInfo()) || {id: REG_PROFILE.id}).id.replace('-', '‑');
   let d = pf && pf.updated ? String(pf.updated).slice(0, 10) : ''; try { if (d) d = new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) {}
   const teams = RES && +RES.teams > 0 ? +RES.teams : 0;
   const tabs = V2.pkTabs('meta'); /* Natures page (Nov 23): the four Pokémon views in one place */

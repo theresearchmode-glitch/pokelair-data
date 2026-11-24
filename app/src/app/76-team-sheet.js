@@ -25,7 +25,7 @@ TS.card = (m, o = {}) => {
     <div class="ts-spr"><p class="ts-nat"><b>${nl}</b><span class="ts-src">${src}</span></p><div class="ts-stats" role="group" aria-label="Stats at level 50, with stat points below">${stats}</div></div>
   </article>`; };
 TS.addCard = i => `<button type="button" class="ts-card ts-add" data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="ts-plus" aria-hidden="true">+</span><span>Add a Pokémon</span></button>`;
-function renderSheet() { const o = $('npSheetOut'); if (!o) return; const ms = members(), r = (typeof regInfo === 'function' && regInfo()) || {id: 'M-C'};
+function renderSheet() { const o = $('npSheetOut'); if (!o) return; const ms = members(), r = (typeof regInfo === 'function' && regInfo()) || {id: REG_PROFILE.id};
   const head = CH.head(`${ms.length ? esc(teamTitleFor(ms)) + ' · ' : ''}Reg ${esc(String(r.id).replace('-', '‑'))} doubles · level 50`, 'Team Sheet', '');
   if (!ms.length) { o.innerHTML = head + `<p class="ts-empty">No team yet. Add Pokémon on My Team and their full sets show here.</p><div class="ts-acts"><button type="button" class="ar-btn ar-primary" data-view="report"><span>Open My Team</span></button></div>`; return; }
   o.innerHTML = head + `<div class="ts-acts"><button type="button" class="ar-btn ar-primary" data-tsshare="1"><span>Share as image</span></button><button type="button" class="ar-btn" data-tscopy="1">Copy as text</button><span class="ts-key">Big number: the stat at level 50 · small number: stat points (0–32) · <b class="up">+</b>/<b class="dn">−</b> nature</span></div>

@@ -215,7 +215,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
       <div class="ar-trio">${cells.join('')}<span class="ar-muline">${muLine}</span></div>
       ${muBar || `<span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span>`}</div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
-    const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>Team checks ${ck.pass}/${ck.n}</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
+    const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(REG_PROFILE.name)} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>Team checks ${ck.pass}/${ck.n}</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
     stats = `<div class="ar-tstats ar-c${Math.max(3, cells.length)}">${rec}${chk}${leg}</div>`; }
   else stats = '';
   /* the stage: all six as equal art tiles (no roles on the art), the game plan line under them */
@@ -292,7 +292,7 @@ AR.parts = () => { document.querySelectorAll('#chTeam ~ .chparts .chparth > .n:n
   /* usability 5 (Nov 7): on phones the full team sheet (about a screen of text) is a fold; each set is also one tap away on
      the Pokémon above. Open on iPad and desktop; the choice is remembered, and the Sets jump link opens it */
   { const so = $('chSheetOut'); if (so && !so.closest('details.ar-sheetfold')) { const n = (members() || []).length, w = document.createElement('div');
-      w.innerHTML = CH.fold('sheet2', 'Open team sheet', `${n ? n + ' sets, ' : ''}Reg M-C, bring 6, pick 4`, '', false); const d = w.firstElementChild;
+      w.innerHTML = CH.fold('sheet2', 'Open team sheet', `${n ? n + ' sets, ' : ''}${REG_PROFILE.name}, bring 6, pick 4`, '', false); const d = w.firstElementChild;
       d.classList.add('ar-sheetfold'); d.id = 'chSets'; so.before(d); d.querySelector('.chbody').append(so); } }
   /* Nov 10 (Sim): section 4 is back as its own compact part: "All Six Sets", one fold, closed until opened */
   document.querySelectorAll('[data-pane="report"] .seg:not(.ar-seg), [data-pane="home"] .chhtop .seg:not(.ar-seg)').forEach(s => s.classList.add('ar-seg'));

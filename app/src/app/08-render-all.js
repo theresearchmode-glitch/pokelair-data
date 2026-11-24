@@ -108,7 +108,7 @@ function render(){
   const useA=$('useAbil').checked;const ms=members();const msPlay=playForm(ms);const a=analyze(msPlay,useA);
   {const empty=!ms.length;const sc=$('startCard');if(sc)sc.hidden=!empty;for(const id of ['defense','fixes']){const e=$(id);if(e)e.hidden=empty}}
   document.querySelectorAll('[data-megas]').forEach(x=>x.setAttribute('aria-pressed',+x.dataset.megas===megaGoal()));
-  $('eyebrow').textContent='Pokémon Champions · Regulation M-C · VGC Doubles · bring 6, pick 4';showDataDate();
+  $('eyebrow').textContent='Pokémon Champions · ' + REG_PROFILE.long + ' · VGC Doubles · bring 6, pick 4';showDataDate();
   const loaded=S.teams.find(t=>t.id===S.loadedId);
   $('teamTitle').textContent=loaded?loaded.name:'Team';document.querySelectorAll('.tc').forEach(tc=>tc.textContent=ms.length?ms.length+'/6':'');
   $('saveBtn').textContent=loaded?'Update saved team':'Save team';

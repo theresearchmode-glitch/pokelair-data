@@ -105,12 +105,12 @@ function lairStones(p, st) { const megas = ROSTER.filter(q => q.m && q.b === p.b
 function brKeyOf(p) { return p.n === 'Floette-Mega' ? 'Floette-Eternal' : p.n.replace(/-Mega(-[XYZ])?$/, ''); }
 
 // ---------- the regulation in force (moved from 43-data-health.js, Nov 11) ----------
-const PAGE_REG = 'M-C';
+const PAGE_REG = REG_PROFILE.id; /* regulation.json via the build */
 function regInfo() { const r = (META.perf && META.perf.reg) || META.reg; /* META.reg: kept even when a thin first day of a new regulation fails cleanPerf (Nov 7) */ if (!r || typeof r !== 'object' || !/^[A-Z]-[A-Z]$/.test(r.id)) return null;
   const day = d => /^\d{4}-\d{2}-\d{2}$/.test(String(d || '')) ? String(d) : '', now = r.now && typeof r.now === 'object' && /^[A-Z]-[A-Z]$/.test(r.now.id) && r.now.id !== r.id && day(r.now.since) ? r.now : null;
   return {id: r.id, since: day(r.since), now: now ? {id: now.id, since: day(now.since), events: +now.events || 0, players: +now.players || 0, need: now.need && +now.need.events > 0 ? +now.need.events : null} : null}; }
 // the regulation's name (switch it here for Reg M-D) and the rules note under team checks and Import (moved from 56-about.js, R4 Nov 11)
-var REG_NAME = 'Reg M-C';
+var REG_NAME = REG_PROFILE.name; /* regulation.json via the build */
 function regNote(cls) { return `<p class="regnote${cls ? ' ' + cls : ''}">Based on our reading of the ${esc(REG_NAME)} rules — check the official rules before an event.</p>`; }
 
 // ---------- moved from 25-ratings-page.js (Nov 14), shared with the new site's Meta page ----------

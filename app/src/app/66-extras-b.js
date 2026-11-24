@@ -51,7 +51,7 @@ async function buildTeamPoster(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   x.restore();
   /* text on the banner: ink or white, whichever reads better on both colours */
   const ink = '#1D2140', TX = Math.min(PO.cr('#ffffff', c1), PO.cr('#ffffff', c2)) >= Math.min(PO.cr(ink, c1), PO.cr(ink, c2)) ? '#ffffff' : ink, SH = TX === '#ffffff' ? 'rgba(20,16,40,.55)' : 'rgba(255,255,255,.7)';
-  x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = TX; x.fillText('MY TEAM · POKÉMON CHAMPIONS · REG M-C DOUBLES', 56, 78);
+  x.font = '700 24px "Instrument Sans", monospace'; x.fillStyle = TX; x.fillText('MY TEAM · POKÉMON CHAMPIONS · ' + REG_PROFILE.name.toUpperCase() + ' DOUBLES', 56, 78);
   /* the name: as big as fits, up to two lines */
   /* a " · " stays with the word before it, so no line starts with a dot */
   const title = f.name.toUpperCase(), words = title.replace(/ · /g, '\u00a0· ').split(/ +/); let fz = 132, lines = [title];

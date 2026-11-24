@@ -95,7 +95,7 @@ function parsePaste(text) {
     const paren = head.match(/\(([^()]+)\)\s*$/); const speciesName = paren ? paren[1] : head;
     let p = speciesFromPaste(speciesName);
     if (!p) { if (pasteProse(lines)) { notes.push(`Skipped "${lines[0].slice(0, 30)}${lines[0].length > 30 ? '…' : ''}": not a team`); continue; }
-      const sug = pasteSuggest(speciesName); notes.push(sug ? `Skipped "${speciesName}": did you mean ${sug}?` : `Skipped "${speciesName}": not on the M-C roster`); continue; }
+      const sug = pasteSuggest(speciesName); notes.push(sug ? `Skipped "${speciesName}": did you mean ${sug}?` : `Skipped "${speciesName}": not on the ${REG_PROFILE.id} roster`); continue; }
     /* code review A2-M2: "Charizard-Mega-Y @ Charizardite X" kept Mega Y without a word; the form named wins, and the paste is told */
     if (item && p.m && STONE_RE.test(item) && byName.get(p.b)) { const mf = megaFormFor(byName.get(p.b), {it: [[item, 100]]}); if (mf && mf.m && mf.n !== p.n) notes.push(`${p.d}: kept as named (${item} is for ${mf.d})`); }
     if (item && !p.m && STONE_RE.test(item)) { const mf = megaFormFor(p, {it: [[item, 100]]}); if (mf !== p) p = mf;
@@ -133,7 +133,7 @@ function importPaste(raw) { const sh = typeof decodeTeam === 'function' ? decode
     : r.notes.length ? (r.notes.join('. ') + '.').replace(/\?\./g, '?') : 'No Pokémon found. Paste the team text, one Pokémon per block.'};
   keepUndo(); S.slots = normSlots(r.slots); S.loadedId = null; ui.paste = null;
   const sk = r.notes.map(n => { const x = n.match(/^(.+?): skipped (item|move|ability) "(.+?)"/); return x ? `${x[3]} (${x[1]})` : null; }).filter(Boolean);
-  const skm = r.notes.map(n => { const x = n.match(/^Skipped "(.+?)": not on the M-C roster/); return x ? x[1] : null; }).filter(Boolean);
+  const skm = r.notes.map(n => { const x = n.match(/^Skipped "(.+?)": not on the [A-Z]-[A-Z] roster/); return x ? x[1] : null; }).filter(Boolean);
   const typo = r.notes.map(n => { const x = n.match(/^Skipped "(.+?)": did you mean (.+?)\?$/); return x ? `${x[1]} (did you mean ${x[2]}?)` : null; }).filter(Boolean); /* 6a */
   /* 6c (Nov 17): Item Clause: the same held item on two or more Pokémon is said at import (Team Checks also catches it later) */
   const itc = {}; r.slots.forEach(sl => { const it = sl.it && sl.it.doubles; if (it) (itc[it] = itc[it] || []).push(byName.get(sl.n).d); });
@@ -144,7 +144,7 @@ function importPaste(raw) { const sh = typeof decodeTeam === 'function' ? decode
   const dup = r.notes.map(n => { const x = n.match(/^Skipped a second (.+?) \(one per species\)/); return x ? ((byName.get(x[1]) || {}).d || x[1]) : null; }).filter(Boolean).concat((r.over || []).filter(n => got.has(sp(n))).map(n => (byName.get(sp(n)) || {}).d || n));
   const over = (r.over || []).filter(n => !got.has(sp(n))), dupN = [...new Set(dup)];
   const misc = r.notes.filter(n => /: a second "|: kept as named \(|: skipped stat points \(one stat over 32\)/.test(n)), megas = r.slots.filter(s => (byName.get(s.n) || {}).m).length;
-  return {msg: `Imported ${r.slots.length} Pokémon` + (typo.length ? `. Not found: ${typo.slice(0, 3).join(', ')}${typo.length > 3 ? ` and ${typo.length - 3} more` : ''}` : '') + (clash.length ? `. Item Clause: ${clash.map(([it, a]) => `${a.length} hold ${it} (${a.join(', ')})`).join('; ')}; only one of each item per team` : '') + (skm.length ? `. Not in Reg M-C, left out: ${skm.slice(0, 3).join(', ')}${skm.length > 3 ? ` and ${skm.length - 3} more` : ''}` : '')
+  return {msg: `Imported ${r.slots.length} Pokémon` + (typo.length ? `. Not found: ${typo.slice(0, 3).join(', ')}${typo.length > 3 ? ` and ${typo.length - 3} more` : ''}` : '') + (clash.length ? `. Item Clause: ${clash.map(([it, a]) => `${a.length} hold ${it} (${a.join(', ')})`).join('; ')}; only one of each item per team` : '') + (skm.length ? `. Not in ${REG_PROFILE.name}, left out: ${skm.slice(0, 3).join(', ')}${skm.length > 3 ? ` and ${skm.length - 3} more` : ''}` : '')
     + (sk.length ? `. Not in Champions, skipped: ${sk.slice(0, 3).join(', ')}${sk.length > 3 ? ` and ${sk.length - 3} more` : ''}` : '')
     + (dup.length ? `. One of each Pokémon per team: left out ${dup.length} more ${dupN.slice(0, 3).join(', ')}${dupN.length > 3 ? ` and ${dupN.length - 3} others` : ''}` : '')
     + (over.length ? `. Only 6 fit: left out ${over.slice(0, 3).join(', ')}${over.length > 3 ? ` and ${over.length - 3} more` : ''}` : '')

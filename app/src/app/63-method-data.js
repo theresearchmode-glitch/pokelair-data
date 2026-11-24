@@ -6,7 +6,7 @@
 const NP_SOURCES = [
   {k: 'tour', name: 'Limitless', what: 'Online tournaments: every standing, open team sheet and pairing.', use: 'Ratings, top threats, usage, sets, team records, Build me a team, the team-strength model', main: true},
   {k: 'official', name: 'Victory Road', what: 'Official Regionals and Internationals: results and the top 64 Masters team lists (full sheets via VR Pastes), checked against Liquipedia. (RK9 was read until Nov 1; its terms forbid automated reading, so it was replaced.)', use: 'Events page, each Pokémon’s official-events row, top-cut sets, cross-check'},
-  {k: 'replays', name: 'Pokémon Showdown replays', what: 'The newest public Reg M-C games: team preview, the four each side brought and the leads.', use: 'Bring and lead rates on each Pokémon (shown, not scored)'},
+  {k: 'replays', name: 'Pokémon Showdown replays', what: 'The newest public ' + REG_PROFILE.name + ' games: team preview, the four each side brought and the leads.', use: 'Bring and lead rates on each Pokémon (shown, not scored)'},
   {k: 'smogon', name: 'Smogon usage stats', what: 'Monthly Showdown ladder stats, in two cuts: 1760+ rating (the strongest players) and 1630+.', use: 'Pokémon ratings (the 1760+ usage: how strong players build); Usage page (ladder view) and common spreads for speed tiers (the 1630+ stats)'}, /* Nov 16 (words audit): the row named one cut but the site uses both (ladder.mjs) */
   {k: 'ingame', name: 'op.gg', what: 'The official in-game Ranked Doubles usage order.', use: 'Usage page (in-game view)'},
   {k: 'ladder', name: 'Showdowntier', what: 'Showdown ladder usage and win rates, last 14 days, and its tier list.', use: 'Each Pokémon’s sheet, cross-check'},

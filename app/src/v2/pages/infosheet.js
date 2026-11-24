@@ -32,7 +32,7 @@ V2.openInfo = (kind, n) => kind === 'mv' ? V2.openMoveSheet(n) : kind === 'ab' ?
 // the parts every kind shares (HANDOFF "The sheet, top to bottom")
 V2.isFmt = x => x.toLocaleString('en-US');
 V2.isH = (t, s) => `<div class="is-h"><h3 class="u">${V2.esc(t)}</h3>${s ? `<span>${V2.esc(s)}</span>` : ''}</div>`;
-V2.isShare = U => !U ? '' : U.t === 0 ? '<div class="is-sh is-sh0"><span>Not run on any tournament team in Reg M-C yet</span></div>'
+V2.isShare = U => !U ? '' : U.t === 0 ? '<div class="is-sh is-sh0"><span>Not run on any tournament team in ' + REG_PROFILE.name + ' yet</span></div>'
   : U.t < 20 ? `<div class="is-sh is-sh0"><span>Rarely used (on ${V2.isFmt(U.t)} team${U.t === 1 ? '' : 's'})</span></div>`
   : (p => `<div class="is-sh"><b class="u">${p < 1 ? '<1' : p}%</b><span>of tournament teams</span></div>`)(Math.round(100 * U.t / U.N));
 V2.isStats = L => `<dl class="is-stats">${L.map(([l, v]) => `<div><dt>${V2.esc(l)}</dt><dd class="u">${V2.esc(v)}</dd></div>`).join('')}</dl>`;
@@ -40,7 +40,7 @@ V2.isLines = L => L.length ? `<section class="is-sec">${V2.isH('On the field.', 
 V2.isUsersOf = U => U && U.t >= 50 ? U.u.slice(0, 6) : [];
 V2.isUsers = (U, users) => { const E = V2.esc; return users.length ? `<section class="is-sec">${V2.isH('Usual suspects.', 'who runs it, and how often · tap one to open it')}<div class="is-users">${users.map(([p, c, tot]) => `<button type="button" class="is-u" data-v2mon="${E(p)}">${V2.mon(p, {iw: 48, bare: true})}<b>${V2.nameHtml(V2.disp(p))}</b><em class="u">${Math.round(100 * c / tot)}%</em><small>of ${V2.isFmt(tot)} ${E(V2.disp(p))} run it</small></button>`).join('')}</div><p class="is-src">Online tournaments, last 28 days (${E(U.period)}) · ${V2.isFmt(U.N)} teams</p></section>` : ''; };
 V2.isMore = (list, users, what) => { const E = V2.esc, shown = new Set(users.map(u => u[0])), rest = list.filter(q => !shown.has(q.n));
-  return list.length ? `<section class="is-sec">${V2.isH('Also capable.', `${what}: ${list.length} Pokémon in Reg M-C · tap one to open it`)}<div class="is-learn" data-islearn>${rest.map((q, i) => `<button type="button" class="is-l"${i >= 20 ? ' hidden' : ''} data-v2mon="${E(q.n)}" aria-label="${E(V2.disp(q.n))}">${V2.mon(q.n, {iw: 40, bare: true})}</button>`).join('')}</div>${rest.length > 20 ? V2.kMore(rest.length - 20, {vh: 'Pokémon', attrs: {class: 'is-all', 'data-isall': ''}}) /* Wave 2 (Sim chose A, Nov 22): the kit show-more (was "Show all N ›") */ : ''}</section>` : ''; };
+  return list.length ? `<section class="is-sec">${V2.isH('Also capable.', `${what}: ${list.length} Pokémon in ${REG_PROFILE.name} · tap one to open it`)}<div class="is-learn" data-islearn>${rest.map((q, i) => `<button type="button" class="is-l"${i >= 20 ? ' hidden' : ''} data-v2mon="${E(q.n)}" aria-label="${E(V2.disp(q.n))}">${V2.mon(q.n, {iw: 40, bare: true})}</button>`).join('')}</div>${rest.length > 20 ? V2.kMore(rest.length - 20, {vh: 'Pokémon', attrs: {class: 'is-all', 'data-isall': ''}}) /* Wave 2 (Sim chose A, Nov 22): the kit show-more (was "Show all N ›") */ : ''}</section>` : ''; };
 V2.isCredit = w => `<p class="is-credit">${w} text adapted from Pokémon Showdown (MIT License), © Guangcong Luo and contributors.</p>`;
 /* the sheet's name (Nov 24): a Mega Stone's X / Y / Z never sits alone on a phone's second line (lone-letter rule). The letter, a no-break
    space and the two letters before it are one unbreakable piece (the title wraps anywhere when a word is wider than the tag, so a plain
@@ -153,7 +153,7 @@ V2.openNatureSheet = n => { const E = V2.esc, B = V2.ntBits(n); if (!B) return; 
   const sc = `var(--nt-${(neu ? 'none' : up).toLowerCase()})`, sd = `var(--nt-${dn.toLowerCase()})`;
   const pic = neu ? `<div class="nt-pic" aria-hidden="true"><div class="nn u"><span>▲▼</span>${E(S[up])}<small>cancel out</small></div></div>`
     : `<div class="nt-pic" aria-hidden="true"><div class="up u">▲ ${up.toUpperCase()}</div><div class="dn u" style="--sd:${sd}">▼ ${dn.toUpperCase()}</div></div>`;
-  const share = !U ? '' : U.m === 0 ? '<div class="is-sh is-sh0"><span>Not run on any tournament Pokémon in Reg M-C yet</span></div>'
+  const share = !U ? '' : U.m === 0 ? '<div class="is-sh is-sh0"><span>Not run on any tournament Pokémon in ' + REG_PROFILE.name + ' yet</span></div>'
     : U.m < 20 ? `<div class="is-sh is-sh0"><span>Rarely used (on ${V2.isFmt(U.m)} Pokémon)</span></div>`
     : (p => `<div class="is-sh"><b class="u">${p < 1 ? '<1' : p}%</b><span>of tournament Pokémon</span></div>`)(Math.round(100 * U.m / U.M));
   const extra = `<span class="nt-clip" aria-hidden="true"></span>${neu ? '' : `<span class="nt-stamp u" aria-hidden="true">${V2.ntStamp(up, dn)}</span>`}`;

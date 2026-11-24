@@ -56,7 +56,7 @@
       <button type="button" data-thm="light" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2.5M12 19.5V22M2 12h2.5M19.5 12H22M4.9 4.9l1.8 1.8M17.3 17.3l1.8 1.8M4.9 19.1l1.8-1.8M17.3 6.7l1.8-1.8"/></svg>Light</button>
       <button type="button" data-thm="dark" aria-pressed="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M20 14.5A8.5 8.5 0 1 1 9.5 4a7 7 0 0 0 10.5 10.5z"/></svg>Dark</button>
     </div>
-    <div class="sidecred" id="sideFoot">Pokémon Champions, Reg M-C</div>
+    <div class="sidecred" id="sideFoot">Pokémon Champions, %REG_NAME%</div>
   </div>
 </aside>
 <div class="scrim" id="scrim" hidden></div>
@@ -68,7 +68,7 @@
   <div class="inner">
     <div class="titlerow">
       <div>
-        <div class="eyebrow" id="eyebrow">Pokémon Champions · Regulation M-C</div>
+        <div class="eyebrow" id="eyebrow">Pokémon Champions · %REG_LONG%</div>
         <div class="vtrow"><span class="hmark" aria-hidden="true"><svg viewBox="0 0 24 24"><path class="lm2" d="M3 20.4 12 13l9 7.4v-4.6L12 8.4l-9 7.4z"/><path class="lm1" d="M3 12.6 12 5.2l9 7.4V8L12 .6 3 8z"/></svg></span><h1><span class="brand"><span class="ar-logo" aria-hidden="true"><span class="ar-logo-n">Nasty</span><span class="ar-logo-p"><span>Plot</span></span></span><span class="sr">NastyPlot</span></span><span class="vt" id="viewTitle">Team</span></h1></div>
       </div>
       <button type="button" class="jumpbtn" data-jumpbtn aria-label="Search Pokémon, tools or saved teams"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m15.5 15.5 5 5"/></svg><span class="jbt">Search Pokémon, tools, teams</span><kbd class="jbk">Ctrl K</kbd></button>
@@ -274,7 +274,7 @@
 
 <div class="view" data-pane="ratings" hidden>
   <section id="lair"><div class="seg teamsw" role="group" aria-label="Pokémon by"><button type="button" data-view="ratings" aria-pressed="true">Rating</button><button type="button" data-view="meta" aria-pressed="false">Usage</button><button type="button" data-view="sets" aria-pressed="false">Sets</button></div>
-    <div class="head"><div><h2>NastyPlot ratings <button type="button" class="tipq" data-tip="rating" aria-label="What is the NastyPlot rating?">?</button></h2><p class="hint">Every Pokémon legal in Regulation M-C, scored 0–100 like a school grade (S 90+, A 80s, B 70s, C 60s, D 50s, F under 50) from real results across several sources. Tap any Pokémon for its rank and the full breakdown.</p><p class="t2" id="ratingTrack"></p></div></div>
+    <div class="head"><div><h2>NastyPlot ratings <button type="button" class="tipq" data-tip="rating" aria-label="What is the NastyPlot rating?">?</button></h2><p class="hint">Every Pokémon legal in %REG_LONG%, scored 0–100 like a school grade (S 90+, A 80s, B 70s, C 60s, D 50s, F under 50) from real results across several sources. Tap any Pokémon for its rank and the full breakdown.</p><p class="t2" id="ratingTrack"></p></div></div>
     <div class="lhero" id="lairHero"></div>
     <div class="lctl">
       <div class="lsearch"><input class="field" id="lairQ" type="search" placeholder="Find a Pokémon or type" autocomplete="off" aria-label="Find a Pokémon"></div>
