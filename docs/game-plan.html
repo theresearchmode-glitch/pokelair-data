@@ -3,221 +3,289 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Instrument+Sans:wght@400;500;600;700&display=swap">
 <style>
-/* Layout: one reading column. The road to the switch is drawn as NastyPlot's plan line (dashed pink rail, numbered stops),
-   then each stop's checklist. Ticks live in the ITEMS list in the script below; HH keeps them accurate. */
+/* Layout: one reading column. Top: the road (a dashed pink plan line with the four big dates), then "right now", then each phase
+   as a checklist. Everything is drawn from the PLAN data in the script at the bottom: HH edits only that to keep the page current. */
 :root{
   --paper:#F7F5F0; --card:#FFFFFF; --ink:#17161A; --mute:#5D5964; --rule:rgba(23,22,26,.12);
-  --plot:#0078BF; --plot-ink:#005E96; --nasty:#E8364F; --nasty-ink:#C21F3A; --done:#16794A; --done-bg:#E3F3EA;
-  --wait-bg:#FDE7EA; --doing-bg:#E2F0F9; --todo-bg:#EDEBE6;
+  --plot:#0078BF; --plot-ink:#005E96; --nasty:#E8364F; --nasty-ink:#C21F3A;
+  --done:#16794A; --done-bg:#E3F3EA; --doing-bg:#E2F0F9; --sim-bg:#FDE7EA; --todo-bg:#EDEBE6;
   --head:"Unbounded",system-ui,sans-serif; --body:"Instrument Sans",system-ui,sans-serif;
 }
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
   --paper:#14131C; --card:#1D1C26; --ink:#ECE8E2; --mute:#A9A4AE; --rule:rgba(236,232,226,.13);
-  --plot:#4FB2F0; --plot-ink:#6CC0F4; --nasty:#F2566C; --nasty-ink:#FF8193; --done:#5FD08F; --done-bg:#183326;
-  --wait-bg:#3A1C24; --doing-bg:#14293A; --todo-bg:#26252E; color-scheme:dark}}
+  --plot:#4FB2F0; --plot-ink:#6CC0F4; --nasty:#F2566C; --nasty-ink:#FF8193;
+  --done:#5FD08F; --done-bg:#183326; --doing-bg:#14293A; --sim-bg:#3A1C24; --todo-bg:#26252E; color-scheme:dark}}
 :root[data-theme="dark"]{
   --paper:#14131C; --card:#1D1C26; --ink:#ECE8E2; --mute:#A9A4AE; --rule:rgba(236,232,226,.13);
-  --plot:#4FB2F0; --plot-ink:#6CC0F4; --nasty:#F2566C; --nasty-ink:#FF8193; --done:#5FD08F; --done-bg:#183326;
-  --wait-bg:#3A1C24; --doing-bg:#14293A; --todo-bg:#26252E; color-scheme:dark}
+  --plot:#4FB2F0; --plot-ink:#6CC0F4; --nasty:#F2566C; --nasty-ink:#FF8193;
+  --done:#5FD08F; --done-bg:#183326; --doing-bg:#14293A; --sim-bg:#3A1C24; --todo-bg:#26252E; color-scheme:dark}
 *{box-sizing:border-box}
-body{background:var(--paper);color:var(--ink);font:16px/1.5 var(--body);
-  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:32px 64px}
-.wrap{max-width:800px;margin:0 auto}
-h1,h2,h3{font-family:var(--head);font-style:italic;font-synthesis:style;font-weight:800;letter-spacing:-.01em;text-wrap:balance;margin:0}
-.kick{display:inline-block;background:var(--ink);color:var(--paper);font:700 13px/1 var(--head);font-style:italic;letter-spacing:.04em;
-  padding:6px 12px 6px 10px;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
-h1{font-size:clamp(30px,7vw,48px);line-height:1.05;margin-top:12px}
-h1 em{color:var(--plot);font-style:inherit}
-.lead{color:var(--mute);margin:12px 0 0;max-width:62ch}
-.upd{font-size:13px;color:var(--mute);margin-top:8px}
-.key{display:flex;flex-wrap:wrap;gap:8px 16px;margin:20px 0 0;padding:0;list-style:none;font-size:13px;color:var(--mute)}
-.key li{display:flex;align-items:center;gap:6px}
-/* the road: the plan line */
-.road{margin:32px 0 8px;padding:20px 20px 8px;background:var(--card);border-radius:10px}
-.road h2{font-size:20px}
-.road p.sub{font-size:13px;color:var(--mute);margin:4px 0 16px}
-.stops{list-style:none;margin:0;padding:0 0 0 36px;position:relative}
-.stops::before{content:"";position:absolute;left:13px;top:6px;bottom:18px;border-left:2px dashed var(--nasty)}
-.stop{position:relative;padding:0 0 16px}
-.stop .n{position:absolute;left:-36px;top:0;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;
-  border:3px solid var(--nasty);background:var(--card);color:var(--nasty-ink);font:800 13px/1 var(--head);font-style:italic}
-.stop.done .n{background:var(--done);border-color:var(--done);color:var(--card)}
-.stop.now .n{background:var(--nasty-ink);border-color:var(--nasty-ink);color:var(--card)}
-.stop b{display:block;font-weight:700}
-.stop .when{font:700 13px/1.4 var(--body);color:var(--plot-ink)}
-.stop small{display:block;font-size:13px;color:var(--mute)}
-.est{font-size:13px;color:var(--mute);margin:4px 0 12px;padding-top:12px;border-top:1px solid var(--rule)}
-/* sections */
-section.ph{margin-top:40px}
-.ph h2{font-size:22px}
-.ph .about{color:var(--mute);font-size:15px;margin:6px 0 0}
-.bar{display:flex;align-items:center;gap:12px;margin:12px 0 8px;font:600 13px/1 var(--body);color:var(--mute)}
-.bar i{flex:1;height:8px;background:var(--todo-bg);position:relative;clip-path:polygon(0 0,100% 0,calc(100% - 4px) 100%,0 100%)}
-.bar i span{position:absolute;inset:0 auto 0 0;background:var(--plot)}
-ul.items{list-style:none;margin:0;padding:0;background:var(--card);border-radius:10px}
-.it{display:grid;grid-template-columns:28px minmax(0,1fr);gap:4px 12px;padding:12px 16px;border-top:1px solid var(--rule)}
-.it:first-child{border-top:0}
-.box{width:22px;height:22px;margin-top:1px;border:2px solid var(--mute);border-radius:4px;display:grid;place-items:center}
-.it.done .box{background:var(--done);border-color:var(--done)}
-.it.done .box::after{content:"";width:10px;height:5px;border:solid var(--card);border-width:0 0 3px 3px;transform:translateY(-1px) rotate(-45deg)}
-.it.doing .box{border-color:var(--plot);background:linear-gradient(90deg,var(--plot) 0 50%,transparent 50%)}
-.it.wait .box{border-color:var(--nasty)}
-.it .t{font-weight:600;min-width:0}
-.it .t .tag{display:inline-block;margin-left:6px;padding:1px 8px;border-radius:10px;font:700 12px/1.6 var(--body);vertical-align:1px;white-space:nowrap}
-.tag.done{background:var(--done-bg);color:var(--done)}.tag.doing{background:var(--doing-bg);color:var(--plot-ink)}
-.tag.wait{background:var(--wait-bg);color:var(--nasty-ink)}.tag.todo{background:var(--todo-bg);color:var(--mute)}
-.it .note{grid-column:2;font-size:14px;color:var(--mute);min-width:0;overflow-wrap:anywhere}
-.ref{margin-top:40px;font-size:14px;color:var(--mute)}
-.ref a{color:var(--plot-ink)}
-@media (max-width:480px){.road{padding:16px 16px 4px}.it{padding:12px}}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.wrap{max-width:860px;margin:0 auto;padding-block:32px 64px}
+h1,h2,.big{font-family:var(--head);font-style:italic;font-synthesis:style;letter-spacing:-.01em;text-wrap:balance}
+h1{font-size:34px;line-height:1.1;margin:0;font-weight:800}
+h1 em{font-style:inherit;color:var(--nasty)}
+.sub{margin:8px 0 0;color:var(--mute);font-size:15px}
+.sub b{color:var(--ink);font-weight:600}
+h2{font-size:22px;line-height:1.2;margin:0;font-weight:800;scroll-margin-top:72px}
+h2 small{display:block;font:500 15px/1.4 var(--body);font-style:normal;color:var(--mute);margin-top:4px;letter-spacing:0}
+/* sticky section chips */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);margin:24px 0 8px;padding-block:8px;
+  border-bottom:1px solid var(--rule);display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{flex:none;font:600 15px/1 var(--body);color:var(--ink);text-decoration:none;padding:10px 14px;border-radius:999px;
+  background:var(--todo-bg);min-height:40px;display:flex;align-items:center;gap:6px}
+nav a:hover{background:var(--doing-bg)}
+nav a:focus-visible,button:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+nav .n{font:700 13px/1 var(--body);background:var(--nasty);color:#fff;border-radius:999px;padding:3px 7px}
+section{margin-top:48px}
+/* the road: dashed plan line with stops */
+.road{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:28px}
+.road::before{content:"";position:absolute;left:12px;right:12px;top:11px;border-top:3px dashed var(--nasty);opacity:.7}
+.stop{position:relative;padding-top:34px;min-width:0}
+.stop::before{content:"";position:absolute;left:4px;top:2px;width:18px;height:18px;border-radius:50%;background:var(--paper);
+  border:3px solid var(--nasty)}
+.stop.past::before{background:var(--nasty)}
+.stop .when{font:700 13px/1.3 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--nasty-ink)}
+.stop .what{font-family:var(--head);font-style:italic;font-synthesis:style;font-weight:800;font-size:17px;line-height:1.2;margin-top:4px}
+.stop .left{font-size:13px;color:var(--mute);margin-top:4px;font-variant-numeric:tabular-nums}
+@media (max-width:640px){.road{grid-template-columns:1fr;gap:0}.road::before{left:12px;right:auto;top:12px;bottom:12px;border-top:0;border-left:3px dashed var(--nasty)}
+  .stop{padding:0 0 18px 36px}.stop::before{top:2px}}
+/* right now */
+.now{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.who{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0}
+.who h3{margin:0;font:700 13px/1.3 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--plot-ink)}
+.who p{margin:6px 0 0;font-size:15px}
+.who.sim{background:var(--sim-bg);border-color:transparent}
+.who.sim h3{color:var(--nasty-ink)}
+@media (max-width:640px){.now{grid-template-columns:1fr}}
+/* checklists */
+.phase{margin-top:20px}
+.phase h3{margin:0 0 4px;font:700 17px/1.3 var(--body)}
+.phase .ph-note{margin:0 0 8px;color:var(--mute);font-size:15px}
+ul.items{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+ul.items li{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--rule)}
+.pill{font:700 13px/1 var(--body);border-radius:999px;padding:6px 10px;text-align:center;white-space:nowrap}
+.s-done{background:var(--done-bg);color:var(--done)}
+.s-doing{background:var(--doing-bg);color:var(--plot-ink)}
+.s-next,.s-later{background:var(--todo-bg);color:var(--mute)}
+.s-sim{background:var(--sim-bg);color:var(--nasty-ink)}
+.it b{font-weight:600}
+.it .d{display:block;color:var(--mute);font-size:15px;margin-top:2px}
+.tag{font:600 13px/1.4 var(--body);color:var(--mute);white-space:nowrap;text-align:right}
+li.is-done .it b{color:var(--mute)}
+@media (max-width:520px){ul.items li{grid-template-columns:minmax(0,1fr);gap:6px}.pill{justify-self:start}.tag{text-align:left}}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}
+.count{font-size:15px;color:var(--mute);font-variant-numeric:tabular-nums}
+button.toggle{font:600 15px/1 var(--body);color:var(--ink);background:var(--card);border:1px solid var(--rule);border-radius:999px;
+  padding:10px 14px;min-height:40px;cursor:pointer}
+body.hide-done li.is-done{display:none}
+/* ideas and long term */
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0}
+.card b{display:block;font-weight:700}
+.card span{display:block;color:var(--mute);font-size:15px;margin-top:4px}
+@media (max-width:640px){.cards{grid-template-columns:1fr}}
+.log{margin-top:16px;border-left:3px solid var(--plot);padding-left:16px;display:grid;gap:10px}
+.log div{font-size:15px}.log time{font-weight:700;color:var(--plot-ink);margin-right:6px}
+footer{margin-top:56px;color:var(--mute);font-size:13px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
 </style>
 
 <div class="wrap">
-  <span class="kick">THE GAME PLAN · NASTYPLOT</span>
-  <h1>Road to <em>the switch.</em></h1>
-  <p class="lead">Everything from Nov 21 onward: what's done, what's running, and what's left before the new site replaces today's live site. The old Plans page stays as the archive.</p>
-  <p class="upd" id="upd"></p>
-  <ul class="key" aria-label="What the marks mean">
-    <li><span class="tag done">Done</span> merged, checks passed, Sim's OK where it's a look</li>
-    <li><span class="tag doing">Working on it</span></li>
-    <li><span class="tag wait">Waiting on Sim</span></li>
-    <li><span class="tag todo">To do</span></li>
-  </ul>
+  <header>
+    <h1>Game <em>Plan.</em></h1>
+    <p class="sub" id="stamp"></p>
+    <div class="road" id="road"></div>
+  </header>
 
-  <div class="road">
-    <h2>The road</h2>
-    <p class="sub">Dates are HH's estimate, not a promise. See the note under the stops.</p>
-    <ol class="stops" id="stops"></ol>
-    <p class="est" id="est"></p>
-  </div>
+  <nav aria-label="Sections">
+    <a href="#now">Right now</a>
+    <a href="#you">For Sim <span class="n" id="simN"></span></a>
+    <a href="#week">This week</a>
+    <a href="#december">December</a>
+    <a href="#later">After launch</a>
+    <a href="#ideas">Ideas</a>
+    <a href="#done">Done</a>
+  </nav>
 
-  <div id="phases"></div>
+  <section id="now">
+    <h2>Right now<small>Who is doing what at this moment.</small></h2>
+    <div class="now" id="nowGrid"></div>
+  </section>
 
-  <p class="ref">Older plans and history (Reg M-D, Strength Score, the January launch, Ideas, every tick before Nov 21): <a href="https://claude.ai/artifact/22pgABvJfs2yYfJaPu5yjZ">the old Plans page</a>.</p>
+  <section id="you">
+    <h2>For Sim<small>The only things that need you. Everything else is HH's job.</small></h2>
+    <ul class="items" id="simList" style="margin-top:16px"></ul>
+  </section>
+
+  <section id="week">
+    <h2>This week<small>Wed Nov 25 to Wed Dec 2: the switch, then Reg M-D and the balance patch.</small></h2>
+    <div class="bar"><span class="count" id="weekCount"></span><button class="toggle" id="hideDone" type="button" aria-pressed="false">Hide done</button></div>
+    <div id="weekPhases"></div>
+  </section>
+
+  <section id="december">
+    <h2>December<small>nastyplot.org goes live quietly about Dec 7, then a month of real-world fixing before the January announcement.</small></h2>
+    <div id="decPhases"></div>
+  </section>
+
+  <section id="later">
+    <h2>After launch<small>The long game, in order.</small></h2>
+    <div class="cards" id="laterCards"></div>
+  </section>
+
+  <section id="ideas">
+    <h2>Ideas<small>Not scheduled. Nothing gets lost.</small></h2>
+    <div class="cards" id="ideaCards"></div>
+  </section>
+
+  <section id="done">
+    <h2>Done<small>Newest first.</small></h2>
+    <div class="log" id="doneLog"></div>
+  </section>
+
+  <footer>Kept current by HH after each finished item. Source: docs/game-plan.html (the PLAN data at the bottom). Detail for HH: docs/rebuild/gameplan-detail-nov25.md.</footer>
 </div>
 
 <script>
-// HH keeps this list accurate. s: done | doing | wait | todo. Every done item names when it landed.
-const UPDATED = 'Tue Nov 24, 5:52 AM Eastern';
-const STOPS = [
-  {s:'done', t:'The look is chosen', when:'Nov 21, morning', d:'One theme for every page: the crew planning the job (Sim, 8:35 AM).'},
-  {s:'now',  t:'Reskin every page', when:'now → about Tue Nov 24', d:'Page by page on the shared kit, pictures to Sim for each.'},
-  {s:'todo', t:'Full checks + polish', when:'about Tue Nov 24 → Wed Nov 25', d:'Every test on one commit, the PC run, a final polish pass.'},
-  {s:'todo', t:'Sim uses it for real', when:'about Wed Nov 25 → Fri Nov 27', d:'iPhone, iPad, Windows, a day or two.'},
-  {s:'todo', t:'The switch', when:'about Fri Nov 27 – Sat Nov 28', d:"Sim's one yes, then the new site goes live with an undo plan."},
-  {s:'todo', t:'Balance patch', when:'Wed Dec 2 (fixed date)', d:'Data and calc updates on whichever site is live then.'}
-];
-const EST = "How the dates were worked out: 5 big pages were reskinned today in about 7 hours with 2 helpers. About 20 pages are left, mostly smaller ones, so about 2 more full working days if Sim answers picture questions as quickly as today. The checks before the switch took about half a day last time (Nov 19-20). The two days of real use come from the Nov 18 plan. What would move it later: slow picture answers, a page that needs a redesign, a failing test that needs a real fix, or using fewer helpers to save usage. My estimate, not measured.";
-const PHASES = [
- {n:'1', h:'Today: one NastyPlot', a:'Sim, Nov 21: reskin every page into one theme, on one shared kit. What landed today.', items:[
-  ['done','The theme and its guide','8:35 AM: Sim picked the crew-planning-the-job direction; guide and page list written (b0c583d9).'],
-  ['done','Shared kit (headers, plot sentence, plan steps, roster card, big pink move, tags)','12:48 PM: Sim approved it with its judgment calls; kit test 14 of 14 views pass.'],
-  ['done','Phone overlap check for every page','1:33 PM: v2-overlap merged (234c2b20); now runs on GitHub.'],
-  ['done','Damage Calc shows % first','9:34 AM: merged (3be28375), on Preview v223.'],
-  ['done','op.gg fix on the live site','12:39 PM: pushed to main, GitHub passed, live moved to it.'],
-  ['done','Ratings: tier jump bar + phone swipe fade','2:04 PM: merged (34a2573d), on Preview v224.'],
-  ['done','Build: shorter top on phones (Sim chose A)','Sim approved; merged 7:57 AM; GitHub run 1437 green (8:51 AM); on Preview v231.'],
-  ['done','Build: Plots that worked cards, compact phones (option A)','3:39 PM: 3,194 px at 390, under the 3,200 cap; Build tests pass.'],
-  ['done','Move tickets site-wide, with type symbols','3:45 PM: in the kit (Sim chose A, 2:38 PM; symbols MIT set, 3:35 PM); on Preview v225.'],
-  ['done','Compact kit on phones','4:59 PM: merged (846825f8), kit test 14 of 14.'],
-  ['done','Calc: Pokémon names, HP line, All moves clip fix','5:54 PM: merged; arena, q46, q47 pass.'],
-  ['done','Home stays as it is today','7:10 PM: Sim chose to keep its bold bands; the kit version is kept on a tag only.'],
-  ['done','My Box stays as it is','11:57 AM: Sim: no change.'],
-  ['done','My Box: The PC (redesign)','Sim approved the design and six new items 7:48 AM; built by hB, merged 2225343a; HH fix for 480-699; A-team 139/0 Chromium and Safari engine; Sim OK on the lengths 12:45 PM.'],
-  ['done','Damage Calc on the kit','Merged 6:43 PM (Sim approved). GitHub run 1433 green (4:19 AM, 05369ef7).'],
-  ['done','My Team war room','Merged 7:18 PM (Sim approved). Remove no longer moves the six at 820-917 wide (fixed 3:39 AM). GitHub run 1433 green (4:19 AM, 05369ef7).'],
-  ['done','Pokémon page (case file, type bars, move tickets, hit list)','Merged 7:56 PM (Sim approved). GitHub run 1433 green (4:19 AM, 05369ef7).'],
-  ['done','Empty My Team on the kit','Sim approved 8:01 PM; merged. GitHub run 1433 green (4:19 AM, 05369ef7).'],
-  ['done','Type symbols on every type chip and the Type Chart','Sim approved 10:23 PM; merged 1:42 AM; on Preview. GitHub run 1433 green (4:19 AM, 05369ef7).'],
-  ['done','Battle page','"The target". Sim approved; merged 7:57 AM; GitHub run 1437 green (8:51 AM); on Preview v231.'],
-  ['done','Team Sheet on the kit ("the dossier")','Sim approved 11:56 PM; merged 1:42 AM. GitHub run 1433 green (4:19 AM, 05369ef7).'],
-  ['done','Compare on the kit ("the tug of war")','Sim approved; merged 1:42 AM. GitHub run 1433 green (4:19 AM, 05369ef7).'],
-  ['done','Preview update with today\'s merges','1:28 AM: Preview v227 (type symbols, Compare, Team Sheet; 443 files). 7:57 PM: Preview v226 (Calc on the kit, war room, Pokémon page); 443 files incl. sprites; privacy check OK.']
- ]},
- {n:'2', h:'Pages still to reskin', a:'In Sim\'s priority order. Each one: built on the kit, its tests, phone no longer than today at 390, pictures to Sim, then merge.', items:[
-  ['done','Speed Tiers','Sim approved; merged 7:57 AM; GitHub run 1437 green (8:51 AM); on Preview v231.'],
-  ['done','Type Chart','"The damage line": Sim approved (9:55 AM); merged in the batch; GitHub run 1439 green (11:24 AM, 71af3011); on Preview v233.'],
-  ['done','Team Preview Practice','6v6 board on the kit. Sim approved; merged 7:57 AM; GitHub run 1437 green (8:51 AM); on Preview v231.'],
-  ['done','Test Run','Calmer version. Sim approved; merged 7:57 AM; GitHub run 1437 green (8:51 AM); on Preview v231.'],
-  ['done','Usage','"The call sheet": Sim approved (9:57 AM); How it is played beside the top ten at 1440+ (2.46 screens); GitHub run 1439 green (11:24 AM); on Preview v233.'],
-  ['done','Ratings (Pokémon rankings) — TOP PRIORITY','Built (stairs = S tier, Home Top 10 strip); Sim OK on looks 12:34 PM; pushed f7d854ec 1:27 PM; GitHub run 1442 failed 4 jobs: 3 fixed locally (data-swap reader, Build stamp size, Page not found), 1 waits on Sim (phone Home +422 px from the Top 10 strip; pictures sent 2:42 PM). Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Popular Sets','Merged; wide-screen fix and tests fixed after GitHub 1441; pushed f7d854ec, GitHub running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Archetypes','"The Playbooks": Sim approved; guide side by side at 1100+; GitHub run 1439 green (11:24 AM); on Preview v233.'],
-  ['done','Winning Teams','Merged; pushed, GitHub running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Events','Sim OK 2:50 PM (with the 4 recommended choices); merged; local checks passed; pushed 4:20 PM (70cf10ab), GitHub run 1444 running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','This Week','Sim OK 4:30 PM; merged; all local checks passed; pushed 5:10 PM, GitHub running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','News','Sim OK 5:16 PM with the clip-out coupon (A); merged; all local checks passed; pushed 6:12 PM (15d639bf), GitHub run 1447 running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Mystery Gifts','Sim OK 6:47 PM (+150 desktop OK); merged; checks green (one test made clock-proof); push next. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Track Record','hW2 fixed it to the mock; checks green; 2 px over the +720 cap; pictures sent to Sim for his OK. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','How We Calculate','Sim OK 2:50 PM (desktop +118 OK); merged; local checks passed; pushed 4:20 PM (70cf10ab), GitHub run 1444 running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','About','Sim OK 4:07 PM; merged; pushed 4:20 PM (70cf10ab), GitHub run 1444 running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Send Feedback','Sim OK 2:50 PM; merged; local checks passed; pushed 4:20 PM (70cf10ab), GitHub run 1444 running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Page not found','Approved 12:40 PM; HH built it (q24 + s33 all passed); pushed f7d854ec, GitHub running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','My Team: "The Party" (redesign)','Sim chose it 7:53 PM, OK on the build 8:06 PM. Desktop 1440 about 2,600 px (was 3,501). Phone fixes done (Mega label, Remove, 320 score plate, the six\'s hint back, buttons under the name); phone 390 4,004 px accepted under Sim\'s design authority (flag in the 9 AM summary). On claude/design6; final checks running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Empty-space fixes (9 pages)','Sim gave design authority 8:48 PM. Built 9:10 PM: Events, This Week, About, Pokémon page, Not found, Speed Tiers, Compare, Gifts, Archetypes, My Team at 1920. Before/after pictures sent. Checks running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Overnight design authority (to 9 AM Mon); executive to 6 PM','Sim, 9:12 PM; executive extended to 6 PM (Sim, 6:18 AM). GitHub 1475-1482 green except 1477/1479 (fixed). Sim\'s iPhone fixes (Home hero on short windows, Ratings chips, podium) approved and pushed 6:20 AM. hL merged 4 fixes; Preview v242. Safari engine 0 FAIL. 5:45 AM summary sent; full summary before 9 AM. hP on polish findings. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Owner page','Approved 12:42 PM; HH built it (q24 all passed); pushed, GitHub running. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.']
- ]},
- {n:'2b', h:'Info sheets: Moves, Abilities, Items', a:'Sim approved the design 11:29 AM Nov 22 (made in another chat; package in docs/rebuild/info-sheets/). Tap any move, Ability or item name to open its sheet; Search opens them too. Built our way: one step at a time, its own checks, pictures, Sim\'s OK before the next.', items:[
-  ['done','1. Data','Usage from raw sheets (out/info.json), text for all moves/Abilities/items, in-battle PP, Meowstic-F-Mega fix. Pushed; GitHub 1441 checking. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','2. Move sheet (case file)','Sim OK 11:55 AM. Pushed (de290013); GitHub run 1441 checking. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','3. Ability sheet (ID card)','Sim OK 12:00 PM. Pushed; GitHub run 1441 checking. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','4. Item sheet (evidence tag)','Sim OK 12:06 PM. Pushed; GitHub run 1441 checking. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','5. Search opens the sheets','Built: Search finds every move/item/Ability and opens its sheet. Pushed; GitHub run 1441 checking. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['todo','6. Sim checks the hand-written On the field lines','Rock Slide, Intimidate, Focus Sash and the top ~20 items/Abilities, before they ship.'],
-  ['todo','7. Dec 2 patch','CHANGES DEC 2 stamp, Rock Slide/Flash Fire/Stalwart text, new learners (with the patch-dec2 step).']
- ]},
- {n:'3', h:'Checks before the switch', a:'Nothing switches until these pass on one commit.', items:[
-  ['done','Safari engine (WebKit) checks on the new pages','Nov 24: My Team 139/0, Build 77/0, Battle 83/0, Meta 118/0 in WebKit on the overnight heads (HH) and on 136e7cd9 (the other account\'s full check); THEME-03 test wait fixed (6/6).'],
-  ['done','A desktop length rule','Sim approved 9:57 AM (CLAUDE.md DESKTOP LENGTH RULE): answer on screen 1, must-read in 2, caps 3/4 screens at 1440x900, never longer than before without Sim\'s OK. Over now: Speed 4.0, Test Run 3.6, My Team 3.7, Pokémon 5.2, Usage 3.1, Home 5.9.'],
-  ['done','Tool pages at 1280 under 3 screens','Other account Job 1 (10:2x PM) + its overnight option A for Events, Speed Tiers, Test Run (HH picked under design authority, 11:50 PM): every tool page now under 3 screens at 1280x800 and 1440x900 (Events 2.96, Speed 2.94, Test Run 2.95, Usage 2.90, Build 2.99, Calc 3.00, Track 3.00); qcheck 0 new; GitHub runs 1507 and 1508 green.'],
-  ['done','Sheet titles on phones never break inside a word','All 917 move, item, Ability and nature titles: 276 mid-word breaks at 320 -> 0 and no lone letters at 320-600, in Chrome and Safari\'s engine (11:34 PM); desktop pixel-identical.'],
-  ['doing','Polish sweep (studio-level, night of Nov 23)','Merged overnight: Calc and Type Chart chip rows (12:02 AM), My Team actions and links (1:28 AM), phone sweep fixes (2:13 AM: spills 15 -> 0, tap targets 44px+, Meta tabs, Track total), lone rows on Home, How We Calculate, Pokémon page, Test Run, News (3:02 AM), Sets, Usage, Winning Teams, This Week (3:50 AM), Track Record at 1100+ (4:34 and 4:41 AM), Pokémon page word taps 44px+ on phones and tablets (5:08 and 5:26 AM). Helper on the Pokémon art at tablet widths. GitHub runs 1507-1513 green; full qcheck 0 new.'],
-  ['done','Pokémon page under its cap','Sim chose B (12:40 PM); merged 2a7cc653: Garchomp 1440 4.85 -> 3.89 screens (reference cap 4); qcheck 0 new.'],
-  ['done','Type Chart under 3 screens at 1440','Option C chosen by HH (design authority) 11:55 AM, merged 12:21 PM (dcab52ab): 1440 2,845 -> 2,637 px (2.93); phones unchanged; qcheck 0 new, C-battle 83/0. 12:22 PM: helper hU on 1280 (3.49 screens: the type buttons wrap).'],
-  ['done','My Team under 3 screens at 1440','HH chose hV\'s option A (design authority) 1:34 PM: 3,061 -> 2,672 px (2.97); phones unchanged; qcheck 0 new; A-team 139/0 Chromium and Safari engine; Preview v248. GitHub run 1497 green 2:57 PM.'],
-  ['done','Home under 4 screens at 1440','Sim chose B (2:58 PM: keep the whole herd); merged 3:34 PM: 5,471 -> 3,599 px (4.00); phones unchanged; qcheck 0 new, v2-minors main2 and D-meta 117/0; Preview v249.'],
-  ['done','Home tools: the Damage Calculator leads (Sim, 3:4x-4:2x PM)','Sim chose A, built and merged: calc band with the hit landing, four white cards (Ratings, Battle, Archetypes, Team Preview Practice), Speed Tiers and Winning Teams as chips; Load Team / Copy off Home on desktop. Battle sprites now fill their sides (60-88px); v2-minors main1 all passed. GitHub run 1502 checking. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Speed Tiers controls: clean, not a pile of words','Sim chose B, the face-off (5:56 PM). Pushed 6:20 PM; local checks all passed (D-meta 117/0, v2-minors, q23, tap-size); Preview v250. GitHub run 1503: its only real red was the old Speed test (updated, passes locally). Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Info sheet pictures and Natures (the Dossier hand-off)','Move seal and Ability ID photo; Nature sheet, taps and Search (Sim OK on the lines 6:45 PM); Natures page under Meta; types in Search; real item images (166 from Sim\'s RTX 3080, approved 9:58 PM) in the evidence bag and in Search. GitHub run 1507 GREEN (15/15) at 11:08 PM; Preview v254.'],
-  ['done','Small fixes from Sim today','Battle tools bar opens with Battle first (4:07 PM); locked Pokémon padlock no longer makes its row taller (4:04 PM); My Team name no longer breaks "Tailwin / d" at 900-1099, item/Ability overlap fixed 900-1379 (4:41 PM).'],
-  ['done','Saved settings carry over','v2-saved in the GitHub check; 3 settings gaps fixed 11:55 AM; run 1494 green. Re-checked Nov 24: merged, GitHub runs 1507-1513 green, on the Preview.'],
-  ['done','Preview on today\'s data','8:02 AM: Preview v231 built from main\'s fresh data; all 26 pages say Data as of Nov 22, 0 errors.'],
-  ['done','Kit headline on the type scale at 341-384 wide','8:10 AM: holds 34px up to 384; GitHub run 1437 green.'],
-  ['todo','Full check of every reskin batch','Behaviour A-D, v2-minors, qcheck-all, about 40 minutes per batch of up to 4 pages (Sim\'s batch rule).'],
-  ['done','Every test on one commit','The other account ran every GitHub check plus WebKit My Team / Build / Battle / Meta and qcheck-all on 136e7cd9 overnight (report 2:5x AM): 0 real failures, 0 flakes, 0 FIXED? (docs/rebuild/test-runs/fullcheck-nov24.md). The sealed set on the final commit before the switch is its own step below.'],
-  ['todo','Full check on Sim\'s PC passes on one commit','Carried over (gp5-full).'],
-  ['todo','Final polish pass and a fresh outside audit','Carried over (np-polish).'],
-  ['done','Phone length of every reskinned page at 390','hZ table docs/rebuild/research/phone-length-nov23.md: Ratings, Compare, Test Run, About back under their pre-reskin lengths (merged 4:54 PM); Sim accepted Not found +69 and Calc +13 (4:55 PM); My Team, Pokémon page, My Box accepted earlier.'],
-  ['done','Today\'s live site hosts its own fonts','Nov 20, 8:20 AM (checked then).']
- ]},
- {n:'4', h:'Sim\'s review', a:'', items:[
-  ['todo','Sim uses the reskinned Preview for real','iPhone, iPad, Windows. The old design passed this on Nov 19; the reskin needs its own look.'],
-  ['todo','Sim\'s OK on every reskinned page','Given page by page as they land.']
- ]},
- {n:'5', h:'The switch', a:'Carried over from the old plan; none ticked yet.', items:[
-  ['doing','Saved-data contract holds','11:55 AM: new test v2-saved (hS) checks teams, box, settings both ways between today\'s page and the new site; 3 settings gaps fixed by HH; all passed; now in the GitHub check. Still to prove at the switch: same artifact URL, real account.'],
-  ['todo','Sim\'s one yes, told exactly what changes',''],
-  ['todo','Publish the new site live with sprites and fonts; undo plan ready','Also publish og-icon.png (brand kit 4-social/facebook/facebook-profile-720.png) at nastyplot.org/og-icon.png for link previews (Nov 22).'],
-  ['todo','"What\'s New" entry for the new design',''],
-  ['todo','Rotating underdog replaces Darkrai on the live empty screens',''],
-  ['todo','Main\'s data job flips with the page','']
- ]},
- {n:'6', h:'Right after the switch', a:'', items:[
-  ['todo','Balance patch on Wed Dec 2','Data, move lists, calc checks, a site note (CLAUDE.md has the list). Doesn\'t hold the switch (Sim, Nov 19).'],
-  ['todo','Lighter first visit (2.75 s on 4G, goal 2.5 s)','Sim, Nov 19: after the switch.'],
-  ['todo','Watch the first days; keep the rollback two weeks',''],
-  ['todo','Battle tap-to-pick grid','Sim: right after the checks.']
- ]}
-];
-const L = {done:'Done', doing:'Working on it', wait:'Waiting on Sim', todo:'To do'};
-const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-document.getElementById('upd').textContent = 'Updated ' + UPDATED;
-document.getElementById('stops').innerHTML = STOPS.map((x, i) => `<li class="stop ${x.s}"><span class="n" aria-hidden="true">${x.s === 'done' ? '✓' : i + 1}</span><b>${esc(x.t)}</b><span class="when">${esc(x.when)}</span><small>${esc(x.d)}</small></li>`).join('');
-document.getElementById('est').textContent = EST;
-document.getElementById('phases').innerHTML = PHASES.map(p => {
-  const n = p.items.length, d = p.items.filter(i => i[0] === 'done').length;
-  return `<section class="ph"><h2>${esc(p.h)}</h2>${p.a ? `<p class="about">${esc(p.a)}</p>` : ''}
-  <div class="bar"><i><span style="width:${Math.round(100 * d / n)}%"></span></i>${d} of ${n} done</div>
-  <ul class="items">${p.items.map(([s, t, note]) => `<li class="it ${s}"><span class="box" aria-hidden="true"></span><span class="t">${esc(t)}<span class="tag ${s}">${L[s]}</span></span>${note ? `<span class="note">${esc(note)}</span>` : ''}</li>`).join('')}</ul></section>`; }).join('');
+/* ===== PLAN: edit only this to update the page. s = done | doing | next | later | sim ===== */
+const PLAN = {
+  updated: 'Tue Nov 24, 1:13 PM',
+  road: [
+    {when: 'Sat Nov 28', what: 'The switch', date: '2026-11-28'},
+    {when: 'Wed Dec 2', what: 'Reg M-D + patch', date: '2026-12-02'},
+    {when: 'About Dec 7', what: 'nastyplot.org, quietly', date: '2026-12-07'},
+    {when: 'January', what: 'The announcement', date: '2027-01-11'}
+  ],
+  now: [
+    {who: 'HH (this chat)', t: 'Light day until 4:01 PM Wed: checking the other account\'s patches and the 7:41 AM data update. From Wed: the "Reg M-C" one-place fix.'},
+    {who: 'Helpers', t: 'None today (usage). Two from 4:00 PM Wed.'},
+    {who: 'Other account', t: 'Building the M-D watcher + Limitless alarm, and the live-data gap fix (info-sheet counts, Gifts/news).'},
+    {who: 'PC chat', t: 'Free. Next: full test run as the switch baseline (Wed).'}
+  ],
+  sim: [
+    {s: 'sim', t: 'Go / no-go for the switch', d: 'After using the Preview for real.', tag: 'Fri Nov 27'},
+    {s: 'sim', t: 'Say yes: the switch', d: 'We do it together. Same link; old site kept 2 weeks as a backup.', tag: 'Sat Nov 28'},
+    {s: 'sim', t: 'OK the M-D change list', d: 'What\'s new, removed or changed in the roster.', tag: 'Dec 2'},
+    {s: 'sim', t: '2–3 clicks for nastyplot.org', d: 'A Cloudflare permission and Google\'s "verify". HH walks you through each.', tag: 'Dec 3–7'},
+    {s: 'sim', t: 'Find 3–5 testers', d: 'For a week on nastyplot.org.', tag: 'by Dec 14'},
+    {s: 'sim', t: 'Launch outreach plan', d: 'Small YouTubers and communities. HH can draft a list and a message.', tag: 'December'},
+    {s: 'sim', t: 'Say yes: the announcement', d: '', tag: 'January'}
+  ],
+  week: [
+    {h: 'Wed Nov 25 (from 4:01 PM)', items: [
+      {s: 'next', t: 'One place for the regulation', d: 'Every "Reg M-C" mention (83 in 41 files) reads one setting, so M-D is a one-line change.', tag: 'HH'},
+      {s: 'done', t: 'Sprite script for new Pokémon', d: 'Done early by the other account; rebuilds existing pictures byte for byte.', tag: 'Nov 24'},
+      {s: 'next', t: 'Last switch blockers', d: 'Saved teams carry over, "What\'s new", underdog screens.', tag: 'Helper'},
+      {s: 'next', t: 'Full test run (switch baseline)', d: '', tag: 'PC chat'}
+    ]},
+    {h: 'Thu Nov 26 (Thanksgiving: Sim off)', items: [
+      {s: 'next', t: 'M-C and M-D numbers never mixed', d: 'Score, ratings and trends restart cleanly at the switch.', tag: 'HH'},
+      {s: 'next', t: 'Practice switch on made-up M-D data', d: 'Including the day-one fix: today the site drops all results under 100 proven teams.', tag: 'Helper'},
+      {s: 'next', t: 'Roster-day dry run, start to finish', d: '', tag: 'Helper'},
+      {s: 'next', t: 'Check every page of the practice switch', d: '', tag: 'PC chat'},
+      {s: 'next', t: 'Short picture summary for Sim', d: '', tag: 'HH, night'}
+    ]},
+    {h: 'Fri Nov 27', items: [
+      {s: 'next', t: 'Fix what the practice switch found', d: '', tag: 'HH'},
+      {s: 'doing', t: 'Alarms to Sim\'s phone', d: 'Limitless down, M-D spotted, tests failed. Being built by the other account.', tag: 'HH'},
+      {s: 'doing', t: 'Live data includes info-sheet counts and Gifts/news', d: 'The new site needs them. Being built by the other account.', tag: 'HH'},
+      {s: 'next', t: 'Data every 4 hours, ready to switch on', d: '', tag: 'HH'},
+      {s: 'done', t: 'Test teams for M-D day', d: 'Done early by the other account; no check passes on nothing any more.', tag: 'Nov 24'},
+      {s: 'next', t: 'Final checks on the switch version', d: '', tag: 'Helper + PC'}
+    ]},
+    {h: 'Sat Nov 28: the switch', items: [
+      {s: 'next', t: 'New site goes live, undo plan ready, watched all day', d: '', tag: 'HH + Sim'},
+      {s: 'next', t: 'Summary of every decision', d: 'HH\'s authority ends 10 PM.', tag: 'HH, 10 PM'}
+    ]},
+    {h: 'Sun Nov 29 – Tue Dec 1', items: [
+      {s: 'done', t: 'Balance patch mapped', d: 'Every place in our code, the Psych Up list from the official page, Mega forms included.', tag: 'Nov 24'},
+      {s: 'next', t: 'Patch ready and waiting', d: 'New moves, Rock Slide, accuracy changes, the tests that change.', tag: 'HH'}
+    ]},
+    {h: 'Wed Dec 2: Reg M-D + balance patch', items: [
+      {s: 'next', t: 'Apply the patch, run every check', d: '', tag: 'HH'},
+      {s: 'done', t: 'Roster generator', d: 'One command rebuilds every Pokémon, move and Ability, and lists what changed (proved identical on M-C).', tag: 'Nov 24'},
+      {s: 'next', t: 'Run it on the M-D roster → change list for Sim', d: '', tag: 'HH'},
+      {s: 'next', t: 'Data every 4 hours for 2 weeks; "Reg M-D is here" note', d: '', tag: 'HH'}
+    ]}
+  ],
+  december: [
+    {h: 'Dec 3–7: nastyplot.org up, quietly', note: 'The parts that make it safe to be public come first.', items: [
+      {s: 'done', t: 'Rules on one page', d: 'Done early, Nov 24.', tag: 'Nov 24'},
+      {s: 'next', t: 'The site reads tested data from Cloudflare', d: 'No Claude needed; the daily copy is also our backup.', tag: 'HH'},
+      {s: 'next', t: 'GitHub sends each tested day to Cloudflare', d: '', tag: 'HH'},
+      {s: 'next', t: 'Privacy page', d: 'Nothing stored about anyone except on their own device.', tag: 'HH'},
+      {s: 'next', t: 'Every test run against nastyplot.org itself', d: '', tag: 'HH'}
+    ]},
+    {h: 'Dec 7–20: findable and solid', items: [
+      {s: 'next', t: 'Found on Google', d: 'Real addresses (nastyplot.org/pokemon/garchomp), search-ready pages, sitemap, link previews, Search Console. Sim: "super duper important".', tag: 'HH'},
+      {s: 'next', t: 'Feedback, page-view totals, hello@ email, owner page', d: 'Anonymous, on Cloudflare.', tag: 'HH'},
+      {s: 'next', t: 'Export / Import my teams', d: 'No accounts: teams live on your device.', tag: 'HH'},
+      {s: 'next', t: 'Backup data sources', d: 'Showdown numbers when Limitless is down; official events as a second source.', tag: 'HH'},
+      {s: 'next', t: 'Speed: under 2.5 s on a phone', d: 'Today 2.75 s.', tag: 'HH'},
+      {s: 'next', t: 'Accessibility check + a test so it stays fixed', d: '', tag: 'HH'},
+      {s: 'next', t: 'Error and uptime alarms', d: '', tag: 'HH'}
+    ]},
+    {h: 'Dec 14–31: real people, real fixes', items: [
+      {s: 'sim', t: 'Testers use the site for a week', d: 'Plus a "first 60 seconds" fresh-eyes test.', tag: 'Sim'},
+      {s: 'next', t: 'Fix what testers and alarms find', d: '', tag: 'HH'},
+      {s: 'next', t: 'Read Limitless\'s terms', d: '', tag: 'HH'},
+      {s: 'next', t: 'New Strength Score, only if it beats today\'s', d: 'Otherwise we launch with today\'s.', tag: 'HH'}
+    ]}
+  ],
+  later: [
+    {t: 'Strength Score and analytics, the best they can be', d: 'All focus after the design work (Sim, Nov 24).'},
+    {t: 'Team Preview Coach', d: 'Their 6 → which 4 to bring and which 2 to lead, from real games.'},
+    {t: 'Best-of-3 data', d: 'For real tournaments (Regionals, Worlds), kept separate from single games.'},
+    {t: 'Updates within the hour', d: 'Once the site runs on Cloudflare, fresh data costs almost nothing.'}
+  ],
+  ideas: [
+    {t: 'Daily KO puzzle', d: 'A shareable damage puzzle a day. Brings people back.'},
+    {t: '"What went wrong?" from a replay', d: 'Paste a Showdown replay, see the 2–3 turning points.'},
+    {t: 'Weekly meta forecast', d: 'With a public record of how often we were right.'},
+    {t: 'Tournament day mode', d: 'Top-cut teams live as big events happen.'},
+    {t: 'three.js for the launch', d: 'One "wow" moment, loaded on one page only.'},
+    {t: 'Speed Tiers controls at 1280', d: 'A two-row layout, after the switch (pictures first).'}
+  ],
+  done: [
+    {when: 'Nov 24', t: 'Live site unstuck after 3 days on old data; the redesign now gets data every morning at 7:41'},
+    {when: 'Nov 24', t: 'Roster generator, sprite script and M-D test teams (other account), checked and merged'},
+    {when: 'Nov 24', t: 'Mega Heatran pictures upscaled on Sim\'s PC'},
+    {when: 'Nov 24', t: 'Info-sheet tips fact-checked; 2 misleading lines fixed'},
+    {when: 'Nov 24', t: 'Pokémon page on tablets: the four facts fill the empty strip'},
+    {when: 'Nov 24', t: 'Polish fixes: Damage Calc sentence, Build cores, Home tiles'},
+    {when: 'Nov 24', t: 'Rules on one page; game plan, public-site plan and honest review written'}
+  ]
+};
+
+/* ===== drawing (no need to touch) ===== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const LABEL = {done: 'Done', doing: 'Doing', next: 'Next', later: 'Later', sim: 'Sim'};
+const li = i => `<li class="${i.s === 'done' ? 'is-done' : ''}"><span class="pill s-${i.s}">${LABEL[i.s]}</span>
+  <span class="it"><b>${esc(i.t)}</b>${i.d ? `<span class="d">${esc(i.d)}</span>` : ''}</span><span class="tag">${esc(i.tag || '')}</span></li>`;
+const phases = list => list.map(p => `<div class="phase"><h3>${esc(p.h)}</h3>${p.note ? `<p class="ph-note">${esc(p.note)}</p>` : ''}<ul class="items">${p.items.map(li).join('')}</ul></div>`).join('');
+const today = new Date(); today.setHours(0, 0, 0, 0);
+$('stamp').innerHTML = `Everything we're doing, in one place. Updated <b>${esc(PLAN.updated)}</b>.`;
+$('road').innerHTML = PLAN.road.map(r => { const d = new Date(r.date + 'T00:00:00'), n = Math.round((d - today) / 864e5);
+  const left = n > 1 ? `in ${n} days` : n === 1 ? 'tomorrow' : n === 0 ? 'today' : 'done';
+  return `<div class="stop${n < 0 ? ' past' : ''}"><div class="when">${esc(r.when)}</div><div class="what">${esc(r.what)}</div><div class="left">${left}</div></div>`; }).join('');
+$('nowGrid').innerHTML = PLAN.now.map(w => `<div class="who"><h3>${esc(w.who)}</h3><p>${esc(w.t)}</p></div>`).join('');
+const openSim = PLAN.sim.filter(i => i.s !== 'done');
+$('simN').textContent = openSim.length;
+$('simList').innerHTML = PLAN.sim.map(li).join('');
+$('weekPhases').innerHTML = phases(PLAN.week);
+$('decPhases').innerHTML = phases(PLAN.december);
+const all = [...PLAN.week, ...PLAN.december].flatMap(p => p.items), nd = all.filter(i => i.s === 'done').length;
+$('weekCount').textContent = `${nd} of ${all.length} done to launch`;
+$('laterCards').innerHTML = PLAN.later.map(c => `<div class="card"><b>${esc(c.t)}</b><span>${esc(c.d)}</span></div>`).join('');
+$('ideaCards').innerHTML = PLAN.ideas.map(c => `<div class="card"><b>${esc(c.t)}</b><span>${esc(c.d)}</span></div>`).join('');
+$('doneLog').innerHTML = PLAN.done.map(d => `<div><time>${esc(d.when)}</time>${esc(d.t)}</div>`).join('');
+const btn = $('hideDone'), setHide = on => { document.body.classList.toggle('hide-done', on); btn.setAttribute('aria-pressed', on); btn.textContent = on ? 'Show done' : 'Hide done'; };
+let hide = false; try { hide = localStorage.getItem('gp-hide') === '1'; } catch (e) {}
+setHide(hide);
+btn.addEventListener('click', () => { hide = !hide; setHide(hide); try { localStorage.setItem('gp-hide', hide ? '1' : '0'); } catch (e) {} });
 </script>
