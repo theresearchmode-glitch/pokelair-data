@@ -4,6 +4,10 @@
 in=$(cat)
 [ "$(echo "$in" | jq -r '.stop_hook_active // false')" = "true" ] && exit 0
 [ -f /home/user/pokelair-data/docs/rebuild/.no-approved-work ] && exit 0
+# Sim's own pause (Sim, Nov 24: "do what you think is best"): docs/rebuild/.sim-paused holds the resume time (epoch seconds).
+# Until then no work check runs; after it, the file is ignored. Set ONLY on Sim's own words, logged with log-decision.sh.
+P=/home/user/pokelair-data/docs/rebuild/.sim-paused
+[ -f "$P" ] && [ "$(date +%s)" -lt "$(cat "$P" 2>/dev/null || echo 0)" ] && exit 0
 sid=$(echo "$in" | jq -r '.session_id // empty')
 out=$(bash /home/user/pokelair-data/docs/rebuild/work-check.sh "$sid" 2>/dev/null)
 n=$(echo "$out" | sed -n 's/^HELPERS_ACTIVE=//p'); n=${n:-0}
