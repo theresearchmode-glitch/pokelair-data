@@ -31,3 +31,8 @@ Turn Zero: turnzero.org and turnzero.net free; turnzero.com registered since 200
 "Turn Zero Sim Racing" (turnzerosimracing.com), a racing-sim business, not Pokémon. Web search: no Pokémon/VGC use of "Turn Zero".
 Others in HH's top 10: hardread (.org/.net), plotarmored (all free), outread (.org/.net), sixtofour (.org/.net), speedtie (.org/.net),
 bestofone (.org/.net), trickroom (.org), swordsdance (.org/.net), weaknesspolicy (all free).
+
+## Decision (Sim, Nov 24): Turn Zero dropped (clashes)
+Checked: "Turn Zero Nexus" runs Pokémon TCG events on Limitless; GonkasVGC "Turn Zero" VGC series reported by the other account,
+not confirmed by HH's search; turnzero.gg (Warhammer), Turn Zero Games (LA), Turn Zero Sim Racing (.com). NastyPlot stays.
+Open until about Dec 7 (quiet launch): any new name idea gets the same checks (plain .com/.org/.net free, no Pokémon clash).
