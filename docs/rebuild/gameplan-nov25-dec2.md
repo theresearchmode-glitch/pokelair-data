@@ -32,6 +32,7 @@
 - **HH:** fix what the practice switch found.
 - **HH:** alarms: Limitless down, M-D spotted, tests failed → your phone.
 - **HH:** data every 4 hours, ready to switch on for M-D.
+- **HH:** the live data job also delivers the info-sheet counts and the Mystery Gifts/news (the new site needs them; today it only gets them on the Preview).
 - **Helper 1:** test teams for M-D day.
 - **Helper 2 + PC chat:** final checks on the switch version.
 - 👉 **You:** use the Preview for real, then **go / no-go** for Saturday.

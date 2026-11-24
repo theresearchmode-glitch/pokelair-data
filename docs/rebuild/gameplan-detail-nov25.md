@@ -86,3 +86,10 @@ Docs: public-site-plan.md (all on Cloudflare, nastyplot.org), RULES-ONE-PAGE-dra
 | Dec 14-24 | 3-5 real testers use nastyplot.org (hidden link) for a week | their notes triaged |
 | Dec 20-30 | Strength Score only if it beats today's on the walk-forward test; privacy page; Limitless terms read | gate passed or skipped |
 | January | Launch with Sim's yes; Claude version stays as the private preview | live on nastyplot.org |
+
+## FOUND Nov 24 12:4x (checked): switch gap — the new site's data the live refresh doesn't deliver
+The new site reads meta/info (info-sheet counts) and meta/post (Mystery Gifts / news) (03-persistence.js META_KEYS; build.mjs 79).
+The live data refresh writes neither, and main's daily job makes neither (update.mjs on main: 0 mentions of info.json; main has
+no out/post.json). Sizes: info.json 84 KB, post.json 23 KB (under the 200 KB split). Fix BEFORE Sat (Fri at the latest):
+1. main's update.mjs gets the info step (from design6) so out/info.json is made daily and tested; out/post.json moves to main.
+2. The data refresh task also writes meta/info and meta/post (needs Sim's OK: we never edit that task without it).
