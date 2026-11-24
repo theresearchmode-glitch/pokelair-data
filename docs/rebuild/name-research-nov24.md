@@ -51,3 +51,9 @@ metasight (.org), hiddenstats (.org .net), thinkroom (.org), statroom (.org), me
 statsmash (.org .net), calcbeam (.org .net), statsurge (.org .net), calcmeta (.org .net).
 Taken: teamreview, foursight, metareader, wiseguard, youturn, datadance, prepup, metablast.
 - Intimidata: Sim likes it (Nov 24); next: clash check, Google check, logo direction when we come back to it.
+
+## Intimidata deep check (Sim asked, Nov 24)
+Domains: intimidata.org and .net free; intimidata.com REGISTERED 2026-09-26 (two months ago) via World4You (Austria), site answers
+with an empty page (title blank). Web searches: no product, app, company or Pokémon use named Intimidata; search engines treat it as
+a typo for intimidate / intimate / "intimate data" (results include an "Intimate Data" company and pages about intimacy).
+Risk: a non-player can read "Intimi-data" as "intimate data" — the same "sounds wrong" problem Sim wants to escape.
