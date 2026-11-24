@@ -74,3 +74,45 @@ Taken: masterplan, ultraplan, statball, raredata.
 All 3 free: haxproof, goldbottlecap, speedcreep(s), gotawaysafely, wildappeared. Two free: calced/calcd (.org), outspeed (.org),
 outspeeds (.org .net), hypertrained (.org .net), backtwo (.org .net), damageroll, critroll, nohax, goldcap, wildstats (.org .net).
 Taken: hypertrain, highroll, ohko, maxroll, crithappens, bottlecaps. Dex: overdone (ChampDex app already exists for Champions).
+
+## Round 9: 1-word names (Sim: short, 1 word; loves Calcd) (Nov 24)
+Free plain domains (checked RDAP):
+- calcd com:T org:F net:T
+- carbos com:T org:T net:F
+- terad com:T org:F net:T
+- outsped com:T org:F net:F
+- choiced com:T org:F net:F
+- scarfed com:T org:F net:T
+- specsd com:T org:F net:F
+- snarled com:T org:F net:F
+- crited com:?000 org:F net:F
+- flinched com:T org:F net:F
+- setupd com:T org:F net:F
+- statted com:T org:F net:F
+- calcked com:F org:F net:F
+- plusoned com:T org:F net:F
+- twoed com:T org:F net:F
+- ohkod com:F org:F net:F
+- sweepd com:T org:F net:F
+- readd com:T org:T net:F
+- hardreads com:T org:F net:F
+- dmgcalc com:T org:F net:F
+- speedtied com:F org:F net:F
+- teraed com:T org:F net:F
+- megaed com:T org:F net:F
+- statdust com:T org:F net:F
+- metanome com:T org:F net:F
+- calcoon com:T org:F net:T
+- statmie com:T org:F net:F
+- scorelax com:T org:T net:F
+- calcy com:T org:F net:T
+- statora com:T org:F net:T
+- plotty com:T org:T net:F
+- statcium com:F org:F net:F
+- everstat com:T org:F net:F
+- statstone com:T org:F net:F
+- megastat com:T org:F net:F
+- calcazam com:T org:F net:F
+- outspeedr com:F org:F net:F
+- benchd com:T org:F net:T
+(T = taken, F = free)
