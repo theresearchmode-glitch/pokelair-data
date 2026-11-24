@@ -17,6 +17,7 @@ Source: docs/rebuild/decisions.md (every entry with its logged time). Pictures w
 - 11:34 PM (WebKit too) all 917 titles fit at 320-600 with no mid-word break.
 - 12:02 AM Polish: Calc condition chips split evenly (3+2, no lone chip), Type Chart groups 2+2; polish-check lone rows 18 -> 11 on those pages.
 - 1:28 AM My Team polish: header actions 3 per row with every label on one line, card links 3+2, legend in 3 even columns, the 320 matchup spill fixed.
+- 2:2x AM Phone sweep fixes (from the other account's report): Pokémon page partner % fits its card at 320, small tap targets grown to 44px+ without moving text, Meta tab labels one line each at 320-374, Track total and two small spills fixed.
 
 ## Non-visual decisions (executive)
 - Helper count kept at 1 (Sim, 4:53 PM): hW2, hI, hN, hP5, hR, hT4, hS2, hC2, hK, hH, hN10, hA, hI2, hS3, hR2, hL, one at a time.
@@ -27,4 +28,5 @@ Source: docs/rebuild/decisions.md (every entry with its logged time). Pictures w
 - Other account: Job 1 (1280 lengths) applied 10:2x PM; Job 2 report used for follow-ups; overnight brief written 10:24 PM.
 
 ## Waiting on Sim
-2. Ability sheets and Megas: keep both counts with one note line (A, recommended) or credit the base form (B).
+2. Pokémon page on phones: the Nature row and its 'or' words are 30-33px tap targets; reaching 44px needs ~23px more row gap (page +23px). Recommend yes (tap size matters more than 23px).
+3. Ability sheets and Megas: keep both counts with one note line (A, recommended) or credit the base form (B).
