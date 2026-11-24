@@ -2,12 +2,22 @@ name: Update Limitless data
 on:
   schedule:
     - cron: '7 9 * * *'   # daily, about 5:07 AM New York time in summer, 4:07 AM in winter (GitHub can start it up to an hour late), before NastyPlot's 6:52 refresh
+    # Data every 4 hours, READY TO FLIP (Nov 24, game plan #7): these five extra times only do work when the repository variable
+    # FAST_DATA is 1 (Settings > Secrets and variables > Actions > Variables). Off (missing or anything else): they start and stop at once
+    # (shown as "skipped"), so the job stays daily. With the 9:07 run they make 1, 5, 9, 13, 17, 21 UTC.
+    - cron: '7 1,5,13,17,21 * * *'
   workflow_dispatch:
 permissions:
   contents: write   # commit the day's data
   issues: write     # open, refresh or close the one "Daily data problem" issue (last step)
+# one run at a time: a 4-hourly run waits for the one before it (the job can take up to 150 minutes) instead of overlapping it
+concurrency:
+  group: update-data
+  cancel-in-progress: false
 jobs:
   update:
+    # the daily run and runs by hand always; the extra 4-hourly times only with FAST_DATA=1
+    if: github.event_name != 'schedule' || github.event.schedule == '7 9 * * *' || vars.FAST_DATA == '1'
     runs-on: ubuntu-latest
     timeout-minutes: 150
     steps:
