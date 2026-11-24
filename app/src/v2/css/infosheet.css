@@ -110,6 +110,11 @@
    their label. The second row (Nature) can't: the "or" word above it (Life Orb) needs that room, and two 44px areas don't fit in its 65px */
 .lo-v>b:has(+ .lo-vr) .is-w{padding:var(--s6) 0 0;margin:calc(var(--s6) * -1) 0 0}.lo-v>b + .lo-vr .is-w{position:relative;padding:0 0 var(--s8);margin:0 0 calc(var(--s8) * -1)}
 .pk-kv>div:nth-child(-n+2) dd>b .is-w{padding-top:var(--s6);margin-top:calc(var(--s6) * -1)}
+/* phones (hNR, Nov 24): every word in the basics list gets a 44px tap area with no two overlapping: each main pick reaches 28px up over
+   its label (24px measured 43.5px: the "or" line under it takes its last pixel), each "or" word 26px down; pages.css gives the rows the
+   room (row gap 38px, 28px before the moves) so neighbouring areas stay 2px apart */
+@media (max-width:699.98px){.pk-kv dd>b .is-w,.pk-kv>div:nth-child(-n+2) dd>b .is-w{padding-top:calc(var(--s6) + var(--s1));margin-top:calc((var(--s6) + var(--s1)) * -1)}
+  .pk-kv dd b + small .is-w{padding-bottom:calc(var(--s6) + 2px);margin-bottom:calc((var(--s6) + 2px) * -1)}}
 
 /* pictures on the sheets (Sim approved Nov 23, 4:33 PM; docs/mockups/sheet-pics-natures-nov23): the picture sits left of the name */
 .is-pn{position:relative;z-index:1;display:flex;align-items:center;gap:var(--s5);min-width:0}.is-pn .is-tn{min-width:0}
