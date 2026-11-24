@@ -91,6 +91,8 @@
 .is2.kd-item .is-h h3::before{top:8px;width:16px;height:12px;transform:none;clip-path:polygon(4px 0,100% 0,100% 100%,4px 100%,0 50%)}
 @media (max-width:699.98px){.is-tab .ev{display:none}.is-tab.kd-item{padding-left:64px}}
 /* on the dark loadout panel (Popular Sets): the name keeps the panel's ink and big slanted type; the underline marks it as a button */
+/* the main pick and its "or" line sit right on top of each other: each word's tap area grows away from its neighbour only (Nov 23: Jolly's grown area covered Adamant, so tapping Adamant opened Jolly) */
+.pk-kv dd b:has(+ small) .is-w{padding-bottom:0;margin-bottom:0}.pk-kv dd b + small .is-w{padding-top:0;margin-top:0}
 .lo-v .is-w{color:inherit;text-decoration-color:var(--plate-link)}
 
 /* pictures on the sheets (Sim approved Nov 23, 4:33 PM; docs/mockups/sheet-pics-natures-nov23): the picture sits left of the name */
