@@ -27,6 +27,9 @@ Source: docs/rebuild/decisions.md (every entry with its logged time). Pictures w
 - 39 old qcheck known findings cleared after each was checked fixed; 2 kept.
 - Other account: Job 1 (1280 lengths) applied 10:2x PM; Job 2 report used for follow-ups; overnight brief written 10:24 PM.
 
+## Milestone
+- The other account's overnight full check on 136e7cd9: EVERY test passed (all GitHub jobs, WebKit My Team/Build/Battle/Meta, qcheck-all): 0 real failures, 0 flakes. First time every test passes on one commit. GitHub runs 1507-1510 green too.
+
 ## Waiting on Sim
 2. Pokémon page on phones: the Nature row and its 'or' words are 30-33px tap targets; reaching 44px needs ~23px more row gap (page +23px). Recommend yes (tap size matters more than 23px).
 3. Ability sheets and Megas: keep both counts with one note line (A, recommended) or credit the base form (B).
