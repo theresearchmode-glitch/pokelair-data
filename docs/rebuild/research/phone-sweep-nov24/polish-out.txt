@@ -1,0 +1,384 @@
+  layout 320px · 16s
+  layout 340px · 32s
+  layout 360px · 48s
+  layout 380px · 64s
+  layout 400px · 80s
+  layout 420px · 96s
+  layout 440px · 112s
+  layout 460px · 128s
+  layout 480px · 144s
+  layout 500px · 160s
+  layout 520px · 176s
+  layout 540px · 192s
+  layout 560px · 208s
+  layout 580px · 224s
+  layout 600px · 240s
+  layout 620px · 256s
+  layout 640px · 272s
+  layout 660px · 288s
+  layout 680px · 304s
+  style light 320px · 320s
+  style light 360px · 336s
+  style light 390px · 352s
+  style light 414px · 368s
+  style dark 320px · 384s
+  style dark 360px · 400s
+  style dark 390px · 416s
+  style dark 414px · 432s
+spill    pokemon=Garchomp li > a.pk-pc "Charizard 65%" +12px  @ 320
+spill    pokemon=Garchomp li > a.pk-pc "Kingambit 56%" +12px  @ 320
+spill    pokemon=Garchomp li > a.pk-pc "Incineroar 66%" +12px  @ 320
+spill    pokemon=Garchomp li > a.pk-pc "Whimsicott 59%" +12px  @ 320
+spill    pokemon=Garchomp li > a.pk-pc "Charizard 65%" +7px  @ 340
+spill    pokemon=Garchomp li > a.pk-pc "Kingambit 56%" +7px  @ 340
+spill    pokemon=Garchomp li > a.pk-pc "Incineroar 66%" +7px  @ 340
+spill    pokemon=Garchomp li > a.pk-pc "Whimsicott 59%" +7px  @ 340
+spill    pokemon=Garchomp li > a.pk-pc "Charizard 65%" +2px  @ 360
+spill    pokemon=Garchomp li > a.pk-pc "Kingambit 56%" +2px  @ 360
+spill    pokemon=Garchomp li > a.pk-pc "Incineroar 66%" +2px  @ 360
+spill    pokemon=Garchomp li > a.pk-pc "Whimsicott 59%" +2px  @ 360
+spill    sheet     li > button.mu-row.mu-nk "Mega Charizard Y Unfavou" +3px  @ 320
+spill    sheet     div.row.ms-go > button.np-btn2.k-btn "Build Around It" +4px  @ 320
+spill    speed     li.sp2-fr > button.sp2-m "203 Mega Garchomp Z" +4px  @ 360
+spill    team      li > button.mu-row.mu-nk "Mega Charizard Y Unfavou" +3px  @ 320
+spill    track     section.trk-rc > p.trk-tot "TOTAL 230×" +9px  @ 320-680
+uneven   archetypes div.ra-sub > nav.ra-seg: "Winning Teams"×2 "Events"×1 "Archetypes"×1 "This Week"×2  @ 320-360
+uneven   calc      div.pc-blk.pc-turn > div.pc-sws.arn-sw: "Hits both foes"×2 "Screen up"×1 "Helping Hand"×2  @ 340-380
+uneven   calc      div.pc-blk.pc-turn > div.pc-sws.arn-sw: "Hits both foes"×2 "Screen up"×1 "Helping Hand"×1  @ 400
+uneven   events    div.ra-sub > nav.ra-seg: "Winning Teams"×2 "Events"×1 "Archetypes"×1 "This Week"×2  @ 320-360
+uneven   meta      div.gs-rows > div.gs-row: "MEGA Salamence 87 "×1 "MEGA Staraptor 86"×1 "Sinistcha 86"×1 "Hisuian Arcanine 8"×2  @ 320-680
+uneven   meta      div.gs-rows > div.gs-row: "MEGA Gengar 77"×1 "Basculegion (F) 76"×2 "Annihilape 75"×1 "Indeedee 75"×1  @ 320-680
+uneven   sets      div.k-sent.u > span.us-srcs.lo-srcs: "Best data"×1 "Online tournaments"×2 "Showdown ladder"×2  @ 320-480
+uneven   sets      div.k-sent.u > span.us-srcs.lo-srcs: "Best data"×1 "Online tournaments"×2 "Showdown ladder"×1  @ 500-520
+uneven   sheet     div.mtf-head.tmk-head > p.mtf-acts: "Saved Teams 1 ›"×2 "More ⋯"×1 "Saved ✓"×1  @ 320-360
+uneven   sheet     div.mtf-head.tmk-head > p.mtf-acts: "Why This Score? ›"×2 "Team Sheet ↗"×1 "Share as Image ›"×2  @ 340-360
+uneven   sheet     div.mtf-head.tmk-head > p.mtf-acts: "Why This Score? ›"×2 "Team Sheet ↗"×1 "Share as Image ›"×1  @ 380-400
+uneven   speed     div.sp2-g.sp2-gme > span.sp2-chs: "Your Tailwind Tail"×1 "You +1 Speed +1 Sp"×2  @ 320
+uneven   speed     div.sp2-g.sp2-gth > span.sp2-chs: "Their Tailwind Tai"×1 "Them −1 Speed −1 S"×2 "They're Paralyzed "×1  @ 320
+uneven   team      div.mtf-head.tmk-head > p.mtf-acts: "Saved Teams 1 ›"×2 "More ⋯"×1 "Saved ✓"×1  @ 320-360
+uneven   team      div.mtf-head.tmk-head > p.mtf-acts: "Why This Score? ›"×2 "Team Sheet ↗"×1 "Share as Image ›"×2  @ 340-360
+uneven   team      div.mtf-head.tmk-head > p.mtf-acts: "Why This Score? ›"×2 "Team Sheet ↗"×1 "Share as Image ›"×1  @ 380-400
+uneven   tournaments div.ra-sub > nav.ra-seg: "Winning Teams"×2 "Events"×1 "Archetypes"×1 "This Week"×2  @ 320-360
+uneven   tournaments div.wt2-go > p.wt2-links: "Copy for Showdown"×2 "Set as Opponent ›"×2 "Compare ›"×1  @ 320-340,440
+uneven   tournaments article.wt2-run > p.wt2-links: "Copy for Showdown"×2 "Set as Opponent ›"×2 "Compare ›"×1  @ 320-360,440-480
+uneven   tournaments article.wt2-run > p.wt2-links: "Copy for Showdown"×2 "Set as Opponent ›"×1 "Compare ›"×1  @ 380,500-520
+uneven   tournaments div.wt2-go > p.wt2-links: "Copy for Showdown"×2 "Set as Opponent ›"×1 "Compare ›"×1  @ 460-480
+uneven   usage     div.k-sent.u > span.us-srcs: "Ranked ladder"×1 "Online tournaments"×2 "Showdown ladder"×2  @ 440-480
+uneven   usage     div.k-sent.u > span.us-srcs: "Ranked ladder"×1 "Online tournaments"×2 "Showdown ladder"×1  @ 500-520
+uneven   weekly    div.ra-sub > nav.ra-seg: "Winning Teams"×2 "Events"×1 "Archetypes"×1 "This Week"×2  @ 320-360
+lone     build     div.pl-win.pl-big > div.pl-wr: 3 items, rows 2+1  @ 320-360
+lone     build     div.pl-win > div.pl-wr: 3 items, rows 2+1  @ 320-360
+lone     build     ol.pl-cores.bd-clist > li.pl-core.pl-c2: 3 items, rows 2+1  @ 380-680
+lone     build     div.pl-sent.u > span.pl-ln: 3 items, rows 2+1  @ 400-480
+lone     build     div.pl-step.pl-s6 > div.pl-ctl: 4 items, rows 2+1+1  @ 480-580
+lone     build     div.pl-step.pl-s6 > div.pl-ctl: 4 items, rows 3+1  @ 600-680
+lone     calc      section.k-step > section.pc-board: 3 items, rows 2+1  @ 320-680
+lone     calc      div.pc-blk.pc-turn > div.pc-sws.arn-sw: 5 items, rows 3+2  @ 320-680
+lone     calc      li > button.pc-kr.ko: 3 items, rows 2+1  @ 320
+lone     calc      div.dc2.arn > div.k-sent.u: 5 items, rows 2+1+1+1  @ 560-620
+lone     calc      div.dc2.arn > div.k-sent.u: 5 items, rows 2+2+1  @ 640-680
+lone     events    div.ev-counts > p.ev-ns: 4 items, rows 3+1  @ 320-680
+lone     events    section.k-step.ev-plate > div.k-sec: 3 items, rows 2+1  @ 520-680
+lone     gauntlet  section.k-step > p.dr-key: 5 items, rows 2+2+1  @ 320-380
+lone     gauntlet  section.k-step > p.dr-key: 5 items, rows 3+1+1  @ 400-440
+lone     gauntlet  section.k-step > p.dr-key: 5 items, rows 3+2  @ 460-560
+lone     gauntlet  section.k-step > p.dr-key: 5 items, rows 4+1  @ 580-680
+lone     gifts     div.gr2-stamps > div.k-sent.u: 3 items, rows 2+1  @ 360
+lone     guide     section.sg > div.row: 4 items, rows 2+1+1  @ 320-380
+lone     guide     section.sg > div.row: 11 items, rows 3+3+3+2  @ 320-360
+lone     guide     section.sg > div.row: 11 items, rows 3+1+5+2  @ 480-500
+lone     guide     section.sg > div.row: 4 items, rows 3+1  @ 520-680
+lone     guide     section.sg > div.row: 11 items, rows 3+2+5+1  @ 520
+lone     guide     section.sg > div.swatches: 4 items, rows 3+1  @ 540-680
+lone     home      div.sds-rc > ol.sds-bands: 5 items, rows 4+1  @ 520-640
+lone     home      div.sds-rc > ol.sds-bands: 5 items, rows 3+2  @ 660-680
+lone     meta      div.gs-sinfo > div.gs-facts: 3 items, rows 2+1  @ 320-340
+lone     method    div.nplrow > div.npbands: 5 items, rows 2+2+1  @ 340-400
+lone     method    div.nplrow > div.npbands: 5 items, rows 3+2  @ 420-540
+lone     method    div.nplrow > div.npbands: 5 items, rows 4+1  @ 560-680
+lone     news      section.nw2-lead > ol.nw2-ser: 7 items, rows 4+3  @ 320-680
+lone     news      section.k-step > div.k-sec: 3 items, rows 2+1  @ 680
+lone     pokemon=Garchomp div.ra.pk > nav.pk-trail: 3 items, rows 2+1  @ 320-680
+lone     pokemon=Garchomp li > button.k-move: 3 items, rows 2+1  @ 320-680
+lone     pokemon=Garchomp ul.pk-wins > li.pk-win: 3 items, rows 2+1  @ 320-680
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 4+3+3+1  @ 320
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 4+4+3  @ 340-380
+lone     pokemon=Garchomp div.k-hero-card > p.pk-basics: 4 items, rows 3+1  @ 360-440
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 5+4+2  @ 400
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 5+5+1  @ 420-440
+lone     pokemon=Garchomp section.k-step > div.pk-sw: 3 items, rows 2+1  @ 440-640
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 6+5  @ 460-520
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 7+4  @ 540-600
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 8+3  @ 620-680
+lone     pokemon=Garchomp section.k-step > div.k-sec: 3 items, rows 2+1  @ 680
+lone     sets      li > button.k-move: 3 items, rows 2+1  @ 320-680
+lone     sets      div.gs-spot.ra-spot > div.lo-id: 3 items, rows 2+1  @ 340-360
+lone     sets      div.lo-ctl > div.k-sent.u: 4 items, rows 2+1+1  @ 520-680
+lone     sets      section.k-step.st-how > div.k-sec: 3 items, rows 2+1  @ 620-680
+lone     sheet     div.mtf-head.tmk-head > nav.tm-jump.tmk-jump: 3 items, rows 2+1  @ 320
+lone     sheet     div.mtf-inf > p.mtf-do: 5 items, rows 2+2+1  @ 320
+lone     sheet     #tm-mu.tm-sec.tm-mus > div.tm-legend: 3 items, rows 2+1  @ 320
+lone     sheet     li > button.mu-row.mu-nk: 4 items, rows 2+1+1  @ 320-680
+lone     sheet     li > button.mu-row.mu-nk: 3 items, rows 2+1  @ 320-680
+lone     sheet     div.ms-tyr > div: 3 items, rows 2+1  @ 320-340
+lone     sheet     div.ms-sp > div.main: 3 items, rows 2+1  @ 320-680
+lone     sheet     div.ms-sp > div: 3 items, rows 2+1  @ 320-680
+lone     sheet     div.mtf-inf > p.mtf-do: 5 items, rows 3+2  @ 340-380
+lone     sheet     div.mtf-inf > p.mtf-do: 5 items, rows 4+1  @ 400-520
+lone     sheet     div.mtf-head.tmk-head > div.k-sent.u: 4 items, rows 2+1+1  @ 420-580
+lone     speed     button.sp2-m.me > span.nm: 3 items, rows 2+1  @ 380-420
+lone     team      div.mtf-head.tmk-head > nav.tm-jump.tmk-jump: 3 items, rows 2+1  @ 320
+lone     team      div.mtf-inf > p.mtf-do: 5 items, rows 2+2+1  @ 320
+lone     team      #tm-mu.tm-sec.tm-mus > div.tm-legend: 3 items, rows 2+1  @ 320
+lone     team      li > button.mu-row.mu-nk: 4 items, rows 2+1+1  @ 320-680
+lone     team      li > button.mu-row.mu-nk: 3 items, rows 2+1  @ 320-680
+lone     team      div.mtf-inf > p.mtf-do: 5 items, rows 3+2  @ 340-380
+lone     team      div.mtf-inf > p.mtf-do: 5 items, rows 4+1  @ 400-520
+lone     team      div.mtf-head.tmk-head > div.k-sent.u: 4 items, rows 2+1+1  @ 420-580
+lone     tournaments article.wt2-top > p.wt2-pl.big: 3 items, rows 2+1  @ 420-620
+lone     types     div.tc-og > div.ts: 3 items, rows 2+1  @ 320-340
+lone     types     div.tc-og > div.ts: 4 items, rows 3+1  @ 340-420
+lone     types     div.tc-offr > span.c: 4 items, rows 3+1  @ 340-420
+lone     usage     li.us-bar > button.k-move: 3 items, rows 2+1  @ 320-680
+lone     weekly    li > button.wk2-r: 3 items, rows 2+1  @ 320-680
+lone     weekly    li.wk2-up > button.wk2-rc: 3 items, rows 2+1  @ 320-680
+lone     weekly    li.wk2-dn > button.wk2-rc: 3 items, rows 2+1  @ 320-680
+lone     weekly    div.wk-move > p.wk2-key: 3 items, rows 2+1  @ 340-440
+lone     weekly    li > button.wk-fr: 3 items, rows 2+1  @ 400-680
+tap      battle    26px (p.bt-lsay > button.bt-lfour "0 of 4 picked")  @ 320,360,390,414,320d,360d,390d,414d
+tap      build     18px (p.pl-chint.bd-hint > button.np-link "How Cores Are Rank")  @ 320,360,390,414,320d,360d,390d,414d
+tap      home      25px (h3.u.sdt-t > a.sdt-go "Speed Tiers")  @ 320,360,390,414,320d,360d,390d,414d
+tap      home      19px (h3.u.sdt-t > a.sdt-go "Ratings")  @ 320,360,390,414,320d,360d,390d,414d
+tap      home      21px (h3.u.sdt-t > a.sdt-go "Winning Teams")  @ 320,360,390,414,320d,360d,390d,414d
+tap      home      37px (h3.u.sdt-t > a.sdt-go "Damage Calculator")  @ 360,390,414,360d,390d,414d
+tap      home      41px (h3.u.sdt-t > a.sdt-go "Team Preview Pract")  @ 414,414d
+tap      pokemon=Garchomp 33px (b > button. "Choice Scarf")  @ 320,360,390,414,320d,360d,390d,414d
+tap      pokemon=Garchomp 30px (small > button. "Life Orb")  @ 320,360,390,414,320d,360d,390d,414d
+tap      sets      42px (span.lo-vr > button. "Modest")  @ 320,360,390,414,320d,360d,390d,414d
+lineh    archetypes 1.4 (section.k-step > p.k-hint.ar-note)  @ 320,360,390,414,320d,360d,390d,414d
+lineh    archetypes 1.3 (li > span)  @ 360,390,414,360d,390d,414d
+lineh    build     1.4 (span.pl-cwho > small)  @ 320,360,390,414,320d,360d,390d,414d
+lineh    calc      1.3 (div.pc-ans > p.pc-l2)  @ 320,360,320d,360d
+lineh    gifts     1.4 (div.gr2-lab > p.gr2-src)  @ 320,320d
+lineh    gifts     1.4 (div.gr2-lab > p.gr2-when)  @ 360,390,414,360d,390d,414d
+lineh    guide     1 (section.sg > div.np-eyebrow)  @ 320,320d
+lineh    meta      1.4 (span > small)  @ 320,360,390,414,320d,360d,390d,414d
+lineh    news      1.35 (h3 > a.dp-hl)  @ 320,360,390,414,320d,360d,390d,414d
+lineh    news      1.3 (span > small)  @ 320,360,320d,360d
+lineh    pokemon=Garchomp 1.4 (p.pk-trend > span)  @ 320,360,390,414,320d,360d,390d,414d
+lineh    pokemon=Garchomp 1.3 (p.pk-run > span)  @ 320,360,390,414,320d,360d,390d,414d
+lineh    practice  1 (div.hm-mp > p.np-eyebrow)  @ 320,360,320d,360d
+lineh    sheet     1.3 (span > small)  @ 320,360,390,414,320d,360d,390d,414d
+lineh    speed     1.3 (span.sp2-cs > span.sp2-cs-m)  @ 320
+lineh    speed     1.4 (span.sp2-cs > small)  @ 320,360,320d,360d
+lineh    tournaments 1.4 (div.wt2-ctl > p.k-hint.wt-src)  @ 320,360,390,414,320d,360d,390d,414d
+lineh    weekly    1.4 (span.wk2-tw > p)  @ 320,360,390,414,320d,360d,390d,414d
+lineh    weekly    1.3 (span > small)  @ 320,360,390,414,320d,360d,390d,414d
+glow     guide     div.w > span "Top tier"  @ 320d,360d,390d,414d
+glow     weekly    li.wk-tile.wx > b.u "Tailwind"  @ 320,360,390,414,320d,360d,390d,414d
+glow     weekly    li.wk-tile.wx > span.u "56%"  @ 320,360,390,414,320d,360d,390d,414d
+glow     weekly    li.wk-tile.wx > b.u "Grassy Terrain"  @ 320,360,390,414,320d,360d,390d,414d
+glow     weekly    li.wk-tile.wx > span.u "35%"  @ 320,360,390,414,320d,360d,390d,414d
+glow     weekly    li.wk-tile.wx > b.u "Trick Room"  @ 320,360,390,414,320d,360d,390d,414d
+glow     weekly    li.wk-tile.wx > span.u "31%"  @ 320,360,390,414,320d,360d,390d,414d
+glow     weekly    li.wk-tile.wx > b.u "Sun"  @ 320,360,390,414,320d,360d,390d,414d
+glow     weekly    li.wk-tile.wx > span.u "28%"  @ 320,360,390,414,320d,360d,390d,414d
+boxes    calc      div.pc-ph.a > span.pc-pic (4 shades)  @ 320,360,390,414,320d,360d,390d,414d
+boxes    calc      div.pc-ph.d > span.pc-pic (4 shades)  @ 320,360,390,414,320d,360d,390d,414d
+boxes    gifts     div.gr2-lab > button.k-go.u (4 shades)  @ 320,360,390,414,320d,360d,390d,414d
+boxes    home      #sdh-h.u.sdh-h > span.k-kicker.sdh-k (4 shades)  @ 320,360,390,414,320d,360d,390d,414d
+boxes    home      div.sds-rc > a.np-btn.sds-rb (4 shades)  @ 320,360,390,414,320d,360d,390d,414d
+boxes    home      button.sds-tk.you > span.sds-tg.u (4 shades)  @ 320,360,390,414,320d,360d,390d,414d
+boxes    sets      button.k-move > span.k-mt (4 shades)  @ 320,360,390,414
+boxes    sheet     button.k-move > span.k-mt (4 shades)  @ 320,360,390,414
+boxes    sheet     li > button.k-move (4 shades)  @ 320d,360d,390d,414d
+boxes    sheet     button.k-move > span.k-mt (5 shades)  @ 320d,360d,390d,414d
+boxes    team      button.k-move > span.k-mt (4 shades)  @ 320,360,390,414
+boxes    team      li > button.k-move (4 shades)  @ 320d,360d,390d,414d
+boxes    team      button.k-move > span.k-mt (5 shades)  @ 320d,360d,390d,414d
+space    about     7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    about     27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    about     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    about     3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    archetypes 7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    archetypes 27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    archetypes 57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    archetypes 3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    battle    7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    battle    12.2px (p.bt-sub > a.np-link marginTop)  @ 320,360,390,414,320d,360d,390d,414d
+space    battle    12.3px (p.bt-sub > a.np-link paddingTop)  @ 320,360,390,414,320d,360d,390d,414d
+space    battle    27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    battle    57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    battle    3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    box       7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    box       27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    box       57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    box       3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    build     7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    build     2.8px (div.pl-sw > div.pl-sent.u rowGap)  @ 320,360,390,414,320d,360d,390d,414d
+space    build     4.8px (div.pl-sent.u > span.pl-ln columnGap)  @ 320,360,390,414,320d,360d,390d,414d
+space    build     0.8px (span.pl-grp > button.pl-pl paddingTop)  @ 320,360,390,414,320d,360d,390d,414d
+space    build     1.2px (span.pl-grp > button.pl-pl paddingBottom)  @ 320,360,390,414,320d,360d,390d,414d
+space    build     3.6px (span.pl-grp > button.pl-pl rowGap)  @ 320,360,390,414,320d,360d,390d,414d
+space    build     6.4px (span.pl-ln > button.pl-go paddingLeft)  @ 320,360,390,414,320d,360d,390d,414d
+space    build     27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    build     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    build     3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    build     16.9px (div.pl-wr > button.pl-out2.u marginLeft)  @ 414
+space    build     17.9px (div.pl-wr > button.pl-out2.u marginLeft)  @ 414d
+space    calc      7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    calc      27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    calc      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    calc      3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    compare   7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    compare   5.5px (div.np-mon > div.st marginLeft)  @ 320,320d
+space    compare   27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    compare   12.2px (div.np-mon > div.st marginLeft)  @ 360,360d
+space    compare   57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    compare   17.2px (div.np-mon > div.st marginLeft)  @ 390,390d
+space    compare   3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    compare   21.2px (div.np-mon > div.st marginLeft)  @ 414,414d
+space    events    7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    events    27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    events    57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    events    3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    feedback  7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    feedback  12.2px (#abtMail.abtmail > button.np-link.k-link marginTop)  @ 320,360,390,414,320d,360d,390d,414d
+space    feedback  27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    feedback  57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    feedback  3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    gauntlet  7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    gauntlet  27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    gauntlet  57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    gauntlet  3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    gifts     7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    gifts     27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    gifts     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    gifts     3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    guide     7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    guide     2.8px (div.np-mon.sel > div.st marginLeft)  @ 320,320d
+space    guide     27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    guide     9.5px (div.np-mon.sel > div.st marginLeft)  @ 360,360d
+space    guide     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    guide     14.5px (div.np-mon.sel > div.st marginLeft)  @ 390,390d
+space    guide     3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    guide     2.2px (div.np-mon.sel > div.st marginLeft)  @ 414,414d
+space    guide     18.5px (div.np-mon.sel > div.st marginLeft)  @ 414,414d
+space    home      7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    home      4.4px (div.np-mon > div.st marginLeft)  @ 320,390,414,320d,390d,414d
+space    home      16.2px (div.np-mon > div.st marginLeft)  @ 320,320d
+space    home      28.3px (div.np-mon > div.st marginLeft)  @ 320,320d
+space    home      18px (div.np-mon > div.st marginLeft)  @ 320,320d
+space    home      17.1px (div.sdt-vs > div.sdt-side.you paddingTop)  @ 320,320d
+space    home      27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    home      0.6px (div.np-mon > div.st marginLeft)  @ 360,360d
+space    home      18px (article.sdt-p.sdt-ra > div.sdt-tx marginTop)  @ 360,360d
+space    home      17.9px (div.sdt-vs > div.sdt-side.you paddingTop)  @ 360,390,414,360d,390d,414d
+space    home      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    home      37.5px (article.sdt-p.sdt-ra > div.sdt-tx marginTop)  @ 390,414,390d,414d
+space    home      1.4px (div.np-mon > div.st marginLeft)  @ 390,390d
+space    home      17.1px (div.np-mon > div.st marginLeft)  @ 390,390d
+space    home      3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    home      7.4px (div.np-mon > div.st marginLeft)  @ 414,414d
+space    home      15.1px (div.np-mon > div.st marginLeft)  @ 414,414d
+space    meta      7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    meta      10px (span.ra-nw > button.sg2-tip marginTop)  @ 320,360,390,414,320d,360d,390d,414d
+space    meta      27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    meta      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    meta      3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    method    7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    method    27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    method    57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    method    3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    natures   7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    natures   27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    natures   57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    natures   3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    news      7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    news      106px (div.k-sec > a.k-link marginLeft)  @ 320,320d
+space    news      27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    news      146px (div.k-sec > a.k-link marginLeft)  @ 360,360d
+space    news      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    news      66px (div.k-sec > button.k-link.nw2-earl marginLeft)  @ 390,390d
+space    news      3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    news      90px (div.k-sec > button.k-link.nw2-earl marginLeft)  @ 414,414d
+space    pokemon=Garchomp 7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    pokemon=Garchomp 93px (div.k-sec > a.k-link marginLeft)  @ 320,320d
+space    pokemon=Garchomp 85px (div.k-sec > a.k-link marginLeft)  @ 320,320d
+space    pokemon=Garchomp 27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    pokemon=Garchomp 133px (div.k-sec > a.k-link marginLeft)  @ 360,360d
+space    pokemon=Garchomp 125px (div.k-sec > a.k-link marginLeft)  @ 360,360d
+space    pokemon=Garchomp 57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    pokemon=Garchomp 163px (div.k-sec > a.k-link marginLeft)  @ 390,390d
+space    pokemon=Garchomp 155px (div.k-sec > a.k-link marginLeft)  @ 390,390d
+space    pokemon=Garchomp 198px (div.k-sec > a.k-link marginLeft)  @ 390,390d
+space    pokemon=Garchomp 3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    pokemon=Garchomp 187px (div.k-sec > a.k-link marginLeft)  @ 414,414d
+space    pokemon=Garchomp 179px (div.k-sec > a.k-link marginLeft)  @ 414,414d
+space    pokemon=Garchomp 222px (div.k-sec > a.k-link marginLeft)  @ 414,414d
+space    practice  7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    practice  27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    practice  57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    practice  3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    sets      7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    sets      27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    sets      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    sets      3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    sets      25px (div.k-sec > button.k-link.lo-pg marginLeft)  @ 414,414d
+space    sheet     7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    sheet     11px (p.tm-sub > button.sg2-tip marginTop)  @ 320,360,390,414,320d,360d,390d,414d
+space    sheet     10px (p.tm-sub > button.sg2-tip marginRight)  @ 320,360,390,414,320d,360d,390d,414d
+space    sheet     27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    sheet     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    sheet     3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    speed     7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    speed     140.5px (li.sp2-fr.solo > button.sp2-m paddingRight)  @ 320,320d
+space    speed     27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    speed     160.5px (li.sp2-fr.solo > button.sp2-m paddingRight)  @ 360,360d
+space    speed     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    speed     175.5px (li.sp2-fr.solo > button.sp2-m paddingRight)  @ 390,390d
+space    speed     3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    speed     187.5px (li.sp2-fr.solo > button.sp2-m paddingRight)  @ 414,414d
+space    team      7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    team      11px (p.tm-sub > button.sg2-tip marginTop)  @ 320,360,390,414,320d,360d,390d,414d
+space    team      10px (p.tm-sub > button.sg2-tip marginRight)  @ 320,360,390,414,320d,360d,390d,414d
+space    team      27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    team      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    team      3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    team-empty 7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    team-empty 27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    team-empty 57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    team-empty 3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    tournaments 7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    tournaments 27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    tournaments 57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    tournaments 3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    track     7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    track     51px (p.trk-tot > b.u marginLeft)  @ 320,320d
+space    track     10px (span.nw > button.sg2-tip marginTop)  @ 320,360,390,414,320d,360d,390d,414d
+space    track     12.2px (p.trk-links > a.np-link marginTop)  @ 320,360,390,414,320d,360d,390d,414d
+space    track     12.3px (p.trk-links > a.np-link paddingTop)  @ 320,360,390,414,320d,360d,390d,414d
+space    track     27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    track     30.9px (p.trk-tot > b.u marginLeft)  @ 360,360d
+space    track     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    track     60.9px (p.trk-tot > b.u marginLeft)  @ 390,390d
+space    track     3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    track     84.9px (p.trk-tot > b.u marginLeft)  @ 414,414d
+space    types     7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    types     27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    types     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    types     3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    usage     7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    usage     27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    usage     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    usage     3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    weekly    7.2px (header.np-head > div.tools marginLeft)  @ 320,320d
+space    weekly    10px (h3.wk2-sub.u > button.sg2-tip marginTop)  @ 320,360,390,414,320d,360d,390d,414d
+space    weekly    27.2px (header.np-head > div.tools marginLeft)  @ 360,360d
+space    weekly    57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    weekly    42px (div.k-sec > a.k-link.k-link marginLeft)  @ 390,390d
+space    weekly    3.1px (header.np-head > div.tools marginLeft)  @ 414,414d
+space    weekly    66px (div.k-sec > a.k-link.k-link marginLeft)  @ 414,414d
+
+polish check: spill 17, uneven 24, lone 79, tap 10, lineh 19, glow 9, boxes 13, space 183; page errors 0; 432s
+exit 0
