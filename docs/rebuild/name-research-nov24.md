@@ -57,3 +57,5 @@ Domains: intimidata.org and .net free; intimidata.com REGISTERED 2026-09-26 (two
 with an empty page (title blank). Web searches: no product, app, company or Pokémon use named Intimidata; search engines treat it as
 a typo for intimidate / intimate / "intimate data" (results include an "Intimate Data" company and pages about intimacy).
 Risk: a non-player can read "Intimi-data" as "intimate data" — the same "sounds wrong" problem Sim wants to escape.
+- Logo idea (Sim, Nov 24): sharp teeth / a bite (Intimidate on Mightyena for years). HH's twist: the teeth ARE our plot bars — bars down
+  from the top and up from the bottom, slanted, closing like a jaw; reads as a bite AND a bar chart. Pink upper teeth, blue lower.
