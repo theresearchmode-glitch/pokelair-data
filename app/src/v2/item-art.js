@@ -92,4 +92,5 @@
 // ITEM_IMG (item name -> file) is written into the page by the build from art/items.json (experiments/v2-items.py); the files sit in the
 // art folder beside the sprites (art/items/, 192px; art-s/items/, 128px for phones). An item with no picture keeps the drawing above.
 V2.itemImg = (n, small) => { const f = n && typeof ITEM_IMG === 'object' && ITEM_IMG && Object.prototype.hasOwnProperty.call(ITEM_IMG, n) ? ITEM_IMG[n] : '';
+  if (f && f.startsWith('data:')) return f; /* Claude-hosted builds inline the picture (build.mjs --one-art-size) */
   return f ? (small ? V2.ART_SMALL : V2.ART_BASE).replace(/\/?$/, '/') + 'items/' + encodeURIComponent(f) + '.webp' : ''; };
