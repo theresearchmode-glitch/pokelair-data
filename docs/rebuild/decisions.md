@@ -2425,3 +2425,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:54 AM: GitHub run 1513 (5b6ff37d: hP5 polish) GREEN. Pushing HEAD (Track 1100-1279 + 1280+ fixes).
 - 4:57 AM: Checked on the hP4/hP5 head: qcheck-all: 28 pages + 11 views x 5 widths x 2 themes, 73 findings, 0 new; 1325s; v2-minors main1/main2/groups all passed.
 - 4:57 AM: Preview v257 published (Sets/Usage/This Week/Winning Teams polish, Track fixes).
+- 5:08 AM: Checked WebKit D-meta-shell on HEAD (Track fixes): behaviour: 118 pass, 0 FAIL, 41 known bugs, 0 fixed?, 7 skip
