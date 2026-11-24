@@ -116,3 +116,13 @@ Free plain domains (checked RDAP):
 - outspeedr com:F org:F net:F
 - benchd com:T org:F net:T
 (T = taken, F = free)
+
+## Top-5 deep research (Sim, Nov 24): Calcd, Statmie, Statdust, Intimidata, Choiced
+- Statmie: OUT. statmie.com registered 2026-11-02 (Cloudflare) and LIVE: "Statmie — free Pokémon GO and Pokémon Champions VGC tools"
+  (meta, top teams, damage calculator, speed tiers, archetypes; 7 languages). A direct competitor (also worth watching).
+- Statdust: statdust.com (2024, Porkbun) is live: "independent analytics for the 2026 international football tournament". Different
+  sport, same "stats site" idea. .org/.net free. Web search: nothing else.
+- Calcd: calcd.com since 1998 (GoDaddy), behind a Cloudflare bot check (content unknown). calcd.net registered 2026-10-06 via
+  Cloudflare (502, no site) — ASK SIM whether it's his. calcd.org free. Web: "calc'd" = calculated (damage calc slang), no brand found.
+- Choiced: choiced.com since 2008 (Annulet), behind a Cloudflare bot check. .org/.net free. Web: no Pokémon or brand use found.
+- Intimidata: see above (.com registered Sep 2026, blank; "intimate data" misreading).
