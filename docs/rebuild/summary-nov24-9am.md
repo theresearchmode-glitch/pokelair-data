@@ -40,5 +40,4 @@ Source: docs/rebuild/decisions.md (every entry with its logged time). Pictures w
 - The other account's overnight full check on 136e7cd9: EVERY test passed (all GitHub jobs, WebKit My Team/Build/Battle/Meta, qcheck-all): 0 real failures, 0 flakes. First time every test passes on one commit. GitHub runs 1507-1510 green too.
 
 ## Waiting on Sim
-2. Tablets (700-1099): the same Pokémon page words are still 30-33px tall; fixing them adds the same 46px there. Recommend yes.
-3. Ability sheets and Megas: keep both counts with one note line (A, recommended) or credit the base form (B).
+2. Ability sheets and Megas: keep both counts with one note line (A, recommended) or credit the base form (B).
