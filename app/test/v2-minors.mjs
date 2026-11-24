@@ -1070,15 +1070,30 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     const R = lairRows().filter(x => x.r.tc), top9 = R.slice(0, 9).map(x => ({n: x.p.n, s: x.p.st[5]})).sort((a, b) => a.s - b.s).map(x => x.n);
     const race = [...s.querySelectorAll('.sdt-run')].map(e => e.dataset.v2mon);
     const TY = [...s.querySelectorAll('.sdt-types li')].map(li => [li.querySelector('.sdt-flag').textContent.trim(), (li.querySelector('[data-v2mon]') || {}).dataset ? li.querySelector('[data-v2mon]').dataset.v2mon : '']);
-    const tyOk = TY.length === 18 && TY.every(([t, n]) => !n) && !/Under each flag/.test(s.querySelector('.sdt-tc').textContent); const tc = s.querySelector('.sdt-tc').getBoundingClientRect(), ra = s.querySelector('.sdt-ra').getBoundingClientRect(), dc = s.querySelector('.sdt-dc').getBoundingClientRect(); const tyRow = Math.abs(tc.width - ra.width) < 2 && Math.abs(tc.top - ra.top) < 2 && Math.abs(dc.top - ra.top) < 2;
+    const tyOk = TY.length === 18 && TY.every(([t, n]) => !n) && !/Under each flag/.test(s.querySelector('.sdt-tc').textContent);
     const pod = [...s.querySelectorAll('.sdt-step')].map(e => [e.className.match(/s(\\d)/)[1], e.querySelector('.sdt-blk b').textContent]);
     const tieOk = pod.length === 3 && pod.every(a => pod.every(b => (a[1] === b[1]) === (a[0] === b[0])));
     const big = [...s.querySelectorAll('.sdt-big b')].map(e => e.textContent.replace(/,/g, ''));
-    const tcHidden = !s.querySelector('.sdt-tc').getClientRects().length; /* Home B (Sim, Nov 23): at 1100+ the Type Chart is a chip */
-    return JSON.stringify({tcHidden, plates: go.length, toolsOk: want === got, raceOk: race.length === 9 && race.join() === top9.join(), tyOk, tyRow, tieOk, pod, nums: big.join('/') === META.events.events.length + '/' + RES.teams, big}); })()`));
+    return JSON.stringify({plates: go.length, toolsOk: want === got, raceOk: race.length === 9 && race.join() === top9.join(), tyOk, tieOk, pod, nums: big.join('/') === META.events.events.length + '/' + RES.teams, big}); })()`));
   const m = JSON.parse(d);
   ok(m.plates === 12 && m.toolsOk, `Stampede tools (Nov 18): twelve plates and a More tools row reach all ${''}18 of today's Home tools, same pages (${m.plates} plates, match ${m.toolsOk})`);
-  ok(m.raceOk && m.tyOk && (m.tyRow || m.tcHidden), `Stampede tools: Speed Tiers is the nine highest rated by base Speed; Type Chart is 18 flags only, no Pokémon (Sim, Nov 18: A), as wide as Ratings, with Damage Calc on the same row where the plate shows (at 1100+ it is a chip, Sim Nov 23) (race ${m.raceOk}, types ${m.tyOk}, row ${m.tyRow}, chip ${m.tcHidden})`);
+  ok(m.raceOk && m.tyOk, `Stampede tools: Speed Tiers is the nine highest rated by base Speed; Type Chart is 18 flags only, no Pokémon (Sim, Nov 18: A) (race ${m.raceOk}, types ${m.tyOk})`);
+  { /* Type Chart, where it shows (code review, Nov 23: at 1440 the plate is hidden, so the old "same row as Ratings" check passed on 'hidden'):
+       iPads (700-1099, Tools B) show the plate as a full-width strip, its 18 flags 6 across in 3 rows, each flag inside the plate; phones (under
+       700) and desktop (1100+, Home B, Sim Nov 23) hide the plate and show the Type Chart chip instead, linking to #types. Exactly one of the two shows. */
+    const tyl = []; for (const w of [390, 820, 1024, 1100, 1440]) { await q.setViewportSize({width: w, height: 900}); await q.waitForTimeout(400);
+      const r = await q.evaluate(() => { const R = e => e.getBoundingClientRect(), s = document.querySelector('#main .sdt'), tc = s.querySelector('.sdt-tc'), g = s.querySelector('.sdt-grid'), ch = s.querySelector('.sdt-chips [data-sdtool="Type Chart"]');
+        const pl = !!tc.getClientRects().length, cv = !!(ch && ch.getClientRects().length), o = {pl, chip: cv};
+        if (pl) { const T = R(tc), G = R(g), F = [...tc.querySelectorAll('.sdt-types li')].filter(l => l.getClientRects().length).map(R);
+          o.full = Math.abs(T.left - G.left) < 2 && Math.abs(T.right - G.right) < 2; o.flags = F.length; o.cols = new Set(F.map(r => Math.round(r.left))).size; o.rows = new Set(F.map(r => Math.round(r.top))).size;
+          o.inside = F.every(r => r.left >= T.left - 1 && r.right <= T.right + 1 && r.top >= T.top - 1 && r.bottom <= T.bottom + 1); }
+        if (cv) o.href = ch.getAttribute('href'); return o; });
+      const want = w >= 700 && w < 1100 ? 'plate' : 'chip', got = r.pl && !r.chip ? 'plate' : r.chip && !r.pl ? 'chip' : r.pl ? 'both' : 'neither';
+      if (got !== want) tyl.push(`${w}: ${got} shows (want the ${want})`);
+      else if (got === 'plate' && !(r.full && r.flags === 18 && r.cols === 6 && r.rows === 3 && r.inside)) tyl.push(`${w}: plate ${JSON.stringify(r)}`);
+      else if (got === 'chip' && r.href !== '#types') tyl.push(`${w}: chip goes to ${r.href}`); }
+    ok(!tyl.length, `Stampede tools: the Type Chart shows at every width: on iPads (820, 1024) its plate is a full-width strip of 18 flags, 6 across in 3 rows, all inside; on phones (390) and desktop (1100, 1440) the plate hides and the Type Chart chip (to #types) shows instead${tyl.length ? ': ' + tyl.join(' | ') : ''}`);
+    await q.setViewportSize({width: 1440, height: 900}); await q.waitForTimeout(300); }
   ok(m.tieOk && m.nums, `Stampede tools: tied ratings share a podium step; Events and How We Calculate show the Events page's count and RES.teams (${JSON.stringify(m.pod)}, ${JSON.stringify(m.big)})`);
   const lay = []; for (const [w, th] of [[320, 'day'], [390, 'night'], [820, 'day'], [1100, 'night'], [1440, 'day']]) { await q.evaluate(t => { try { localStorage.setItem('np2.theme', t); } catch (e) {} }, th); await q.setViewportSize({width: w, height: 900}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(1800);
     await q.evaluate(() => document.fonts.ready.then(() => 1)); await q.waitForTimeout(200); /* measure in the real fonts: a fallback font is wider (a name 'spilling' under load, Nov 18) */
@@ -1109,9 +1124,21 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       const t = document.querySelector('#main .sdt-tr, #main .sdt-pp'); if (!t) o.tr = 'no picture'; else { const P = R(t.closest('.sdt-p')), X = R(t.closest('.sdt-p').querySelector('.sdt-tx')), S = [...t.querySelectorAll('.np-mon .st')].map(R);
         const empty = Math.round(X.top - Math.max(...S.map(r => r.bottom), t.classList.contains('sdt-pp') ? R(t).bottom : 0 /* Practice's "Pick 4" is part of its picture */) - 12 + Math.max(0, Math.min(...S.map(r => r.top)) - P.top)), small = Math.round(Math.min(...S.map(r => r.width)));
         if (empty > 32 || small < 44) o.tr = `empty ${empty}px, smallest sprite ${small}px`; }
-      /* 4. Damage Calc: the spare height is shared above and below the picture (within 8px), or there is none to speak of (24px at most) */
-      const h = document.querySelector('#main .sdt-hit'); if (innerWidth < 1100 || (h && getComputedStyle(h.closest('.sdt-p')).display === 'grid')) {} /* 1100+ since Sim's Nov 23 Home tools: the calc is the band, its picture beside the words */ /* phones and iPads (Sim, Nov 18: Tools B): a half tile with its picture on top, by design */ else if (!h) o.dc = 'no picture'; else { const p = h.closest('.sdt-p'), P = R(p), H = R(h), X = R(p.querySelector('.sdt-tx')), pb = parseFloat(getComputedStyle(p).paddingBottom);
-        const up = Math.round(H.top - X.bottom - (parseFloat(getComputedStyle(p).rowGap) || 0)), down = Math.round(P.bottom - pb - H.bottom); if (Math.abs(up - down) > 8 && Math.max(up, down) > 24) o.dc = `${up}px above, ${down}px below`; }
+      /* 4. Damage Calc (Sim's Nov 23 Home tools, A): at 1100+ the calc is the band. Its big number (.sdt-pct) and "of X's HP" line (.sdt-of)
+         show inside the band, the number whole (its text inside its own box and the band, nothing cut off), the two sprites (64px or more)
+         inside the band, clear of the words. Under 1100 (phones and iPads, Tools B) the calc is a half tile with its picture on top and no
+         number, by design: the check is 1100-2560 only, and says so. (Code review, Nov 23: the old spare-height check skipped every width.) */
+      if (innerWidth >= 1100) { const p = document.querySelector('#main .sdt-grid>.sdt-dc'), vis = e => e && e.getClientRects().length && R(e).width > 0;
+        const out = (r, B, s = 1) => r.left < B.left - s || r.right > B.right + s || r.top < B.top - s || r.bottom > B.bottom + s;
+        if (!vis(p)) o.dc = 'no calc band'; else { const P = R(p), pc = p.querySelector('.sdt-pct'), of = p.querySelector('.sdt-of'), hw = p.querySelector('.sdt-hpw'), bad = [];
+          if (!vis(pc)) bad.push('no number'); else { const N = R(pc), rg = document.createRange(); rg.selectNodeContents(pc); const L = [...rg.getClientRects()].filter(r => r.width);
+            if (!/^\d[\d.]*[–-]\d[\d.]*%$/.test(pc.textContent.trim())) bad.push(`number "${pc.textContent}"`);
+            if (out(N, P) || !L.length || L.some(r => r.left < N.left - 1.5 || r.right > N.right + 1.5 /* across only: at line-height 1 the glyph box is taller than the line by design */ || out(r, P)) || pc.scrollWidth > pc.clientWidth + 1) bad.push(`number cut off (${Math.round(N.left - P.left)}-${Math.round(P.right - N.right)}px in, ${pc.scrollWidth}/${pc.clientWidth} wide)`); }
+          if (!vis(of)) bad.push('no "of X\'s HP" line'); else { if (!/^of .+['’]s HP$/.test(of.textContent.trim())) bad.push(`line "${of.textContent}"`); if (out(R(of), P)) bad.push('the HP line is out of the band'); }
+          const S = [...p.querySelectorAll('.sdt-duel .np-mon .st')].filter(vis).map(R), W = vis(hw) ? R(hw) : null;
+          if (S.length !== 2) bad.push(S.length + ' sprites'); for (const r of S) { if (out(r, P)) bad.push(`sprite ${Math.round(r.left)}-${Math.round(r.right)} x ${Math.round(r.top)}-${Math.round(r.bottom)} out of the band ${Math.round(P.left)}-${Math.round(P.right)} x ${Math.round(P.top)}-${Math.round(P.bottom)}`);
+            else if (r.width < 64) bad.push(`sprite ${Math.round(r.width)}px`); else if (W && r.right > W.left + 1 && r.left < W.right - 1 && r.bottom > W.top + 1 && r.top < W.bottom - 1) bad.push('a sprite over the words'); }
+          if (bad.length) o.dc = bad.join(', '); } }
       /* 5. the receipt's five band bars: one width (untransformed, within 1px) */
       const B = [...document.querySelectorAll('#main .sds-b i')].map(e => e.offsetWidth); if (B.length !== 5) o.bars = B.length + ' bars'; else if (Math.max(...B) - Math.min(...B) > 1) o.bars = B.join('/');
       /* the plan board's name tags: the whole slanted tag 4px or more inside the board, clear of its folded top-right corner (24px), 13px or more */
@@ -1122,7 +1149,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     for (const [k, a] of [['bt', bt], ['tr', tr], ['dc', dc], ['bars', bars], ['tags', tags]]) if (m[k]) a.push(w + ': ' + m[k]); }
   ok(!bt.length, `Stampede tiles 2 (Nov 18 night): Battle, at 320-2560 every sprite stays inside its side, clear of the VS, and is 56px or more; no name under a sprite${bt.length ? ': ' + bt.slice(0, 4).join(' | ') : ''}`);
   ok(!tr.length, `Stampede tiles 3: Test Run, at 320-2560 the sprites fill the plate (32px or less left empty between its top and its words) and none is under 44px${tr.length ? ': ' + tr.slice(0, 4).join(' | ') : ''}`);
-  ok(!dc.length, `Stampede tiles 4: Damage Calc, at 1100-2560 (phones and iPads: Tools B puts the picture on top) the picture sits in the middle of the spare height (no empty band only above it)${dc.length ? ': ' + dc.slice(0, 4).join(' | ') : ''}`);
+  ok(!dc.length, `Stampede tiles 4: Damage Calc band, at 1100-2560 (under 1100 Tools B has no number, not checked here) the damage number and "of X's HP" line show inside the band, the number not cut off, both sprites (64px+) inside the band and clear of the words${dc.length ? ': ' + dc.slice(0, 4).join(' | ') : ''}`);
   ok(!bars.length, `Stampede tiles 5: the receipt's five band bars are one width at 320-2560${bars.length ? ': ' + bars.slice(0, 4).join(' | ') : ''}`);
   ok(!tags.length, `Stampede tags (qcheck triage Nov 18, defect 2): every plan-board name tag ("Mega Charizard Y") fits whole inside the board, clear of its folded corner, at 13px or more, 320-2560${tags.length ? ': ' + tags.slice(0, 4).join(' | ') : ''}`);
   await q.close(); }
@@ -1757,6 +1784,50 @@ const wkPair = async (br, url, ok) => {
   ok(!bad.length && seen.meant > 10, `WK-2 (WebKit pair): Copy Code rows on #gifts 320-2560, Home and News: never overflow or break, 13px+, Copy Code beside the code wherever it fits there at 24px (${seen.meant} such rows), a row's parcels line up (${bad.join(' | ').slice(0, 500) || 'all good'})`);
   await q.close(); };
 // wk-pair end
+if (part('main2')) { /* Natures (Dossier step 3, Sim approved the page 4:42 PM Nov 23; code review Nov 23: no test yet). The 25 squares of #natures each open
+  their Nature sheet; Search "adam" finds Adamant labelled Nature and opens its sheet; a nature word on a page with sets (V2.kNat) opens it too;
+  with no nature data the page still draws all 25 and throws nothing. Share numbers come from META.info.nt (out/info.json). The frozen test data
+  has no info.json, so there the real numbers are UNKNOWN (said as such below, never a silent pass); a small made-up META.info checks that the
+  square and the sheet show the share it gives. */
+  const ctx = await b.newContext({viewport: {width: 1440, height: 900}}), q = await ctx.newPage(), errs = []; q.on('pageerror', e => errs.push(e.message)); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  const sheet = () => q.evaluate(() => { const s = document.querySelector('.np-sheet'); return s && s.querySelector('.is2.kd-nature') ? ((s.querySelector('.is-tab h2') || {}).textContent || '').trim() : s ? 'another sheet' : 'no sheet'; });
+  const tap = sel => q.click(sel, {timeout: 3000}).catch(() => {}); /* a missing square is reported by the sheet check, not waited out */
+  const shut = async () => { await q.keyboard.press('Escape'); await q.waitForTimeout(400); };
+  await q.goto('file://' + PAGE + '#natures'); await q.waitForTimeout(2500);
+  const g = await q.evaluate(() => { const sq = [...document.querySelectorAll('#main .ntp-grid [data-v2info="nt"]')].filter(e => e.getClientRects().length).map(e => e.dataset.v2infon), all = V2.ntAll();
+    return {n: sq.length, uniq: new Set(sq).size, same: sq.slice().sort().join() === all.slice().sort().join(), data: window.__ev(`!!(typeof META === 'object' && META.info && META.info.nt && META.info.ntN)`) /* META is the page's own (script) global: only __ev reaches it */}; });
+  ok(g.n === 25 && g.uniq === 25 && g.same, `Natures: #natures shows 25 grid squares, one per nature, each a [data-v2info="nt"] button (${g.n} squares, ${g.uniq} different, all 25 natures ${g.same})`);
+  const opened = []; for (const n of ['Adamant', 'Timid', 'Serious']) { await tap(`#main .ntp-grid [data-v2infon="${n}"]`); await q.waitForTimeout(600); const t = await sheet(); if (t !== n) opened.push(`${n} opened ${t}`); await shut(); }
+  ok(!opened.length, `Natures: tapping a square (Adamant, Timid, neutral Serious) opens that nature's sheet (.kd-nature, named on it)${opened.length ? ': ' + opened.join(' | ') : ''}`);
+  if (g.data) { const d = await q.evaluate(() => { const u = V2.ntUse('Adamant'), sq = document.querySelector('#main .ntp-grid [data-v2infon="Adamant"] em'); return {want: V2.ntpPct(100 * u.m / u.M), got: sq ? sq.textContent.trim() : 'none'}; });
+    ok(d.want === d.got, `Natures (real data): the Adamant square shows its share of tournament Pokémon from META.info.nt (${d.got}, want ${d.want})`); }
+  else console.log('  unknown  Natures (real data): this build has no nature data (META.info.nt absent: the frozen test data has no out/info.json), so the real shares are not checked here; the made-up data check below stands in');
+  await q.evaluate(() => V2.openSearch()); await q.waitForTimeout(300); await q.fill('[data-v2q]', 'adam'); await q.waitForTimeout(400);
+  const hit = await q.evaluate(() => [...document.querySelectorAll('[data-v2hits] .np-hit[data-v2info="nt"]')].filter(h => h.getClientRects().length).map(h => (h.querySelector('.pg') || {}).textContent + ': ' + h.dataset.v2infon).join(' | '));
+  if (/Nature: Adamant/.test(hit)) { await tap('[data-v2hits] .np-hit[data-v2info="nt"][data-v2infon="Adamant"]'); await q.waitForTimeout(600); }
+  const sA = await sheet(); ok(/Nature: Adamant/.test(hit) && sA === 'Adamant', `Natures: Search "adam" lists Adamant labelled Nature and tapping it opens the Adamant sheet (hits: ${hit || 'none'}; opened ${sA})`); await shut();
+  /* each nature word shown is tapped where a finger lands, the middle of the word (q.mouse at its centre, so a neighbour lying over it is
+     caught as the wrong sheet opening, not waited out) */
+  const kw = []; for (const h of ['#sets', '#pokemon=sneasler']) { await q.goto('file://' + PAGE + h); await q.waitForTimeout(2200);
+    const ns = await q.evaluate(() => [...document.querySelectorAll('#main .is-w[data-v2info="nt"]')].filter(e => e.getClientRects().length).slice(0, 6).map((e, i) => (e.dataset.ht4 = i, e.dataset.v2infon)));
+    if (!ns.length) { kw.push(h + ': no nature word shown'); continue; }
+    for (let i = 0; i < ns.length; i++) { const c = await q.evaluate(k => { const e = document.querySelector(`#main [data-ht4="${k}"]`); e.scrollIntoView({block: 'center'}); const r = e.getBoundingClientRect(); return [r.left + r.width / 2, r.top + r.height / 2]; }, i);
+      await q.mouse.click(c[0], c[1]); await q.waitForTimeout(600); const t = await sheet(); kw.push(`${h} ${ns[i]}${t === ns[i] ? ' ok' : ': opened ' + t}`); await shut(); } }
+  ok(kw.every(x => / ok$/.test(x)), `Natures: every nature word on a page that shows sets (V2.kNat on #sets and #pokemon=sneasler, up to 6 each), tapped in its middle, opens its own sheet (${kw.join(' | ')})`);
+  /* no nature data: META.info without nt / ntN (as a day the data job leaves it out), set before #natures draws */
+  const e0 = errs.length; await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(1800);
+  await q.evaluate(() => window.__ev(`META.info = Object.assign({}, typeof META.info === 'object' && META.info ? META.info : {N: 500}); delete META.info.nt; delete META.info.ntN; location.hash = '#natures';`)); await q.waitForTimeout(1200);
+  const z = await q.evaluate(() => ({n: [...document.querySelectorAll('#main .ntp-grid [data-v2info="nt"]')].filter(e => e.getClientRects().length).length, nt: window.__ev(`'nt' in META.info`), line: /Nature numbers appear after the next data refresh/.test(document.querySelector('#main').innerText)}));
+  await tap('#main .ntp-grid [data-v2infon="Jolly"]'); await q.waitForTimeout(600); const zJ = await sheet(); await shut();
+  ok(z.n === 25 && !z.nt && z.line && zJ === 'Jolly' && errs.length === e0, `Natures with no nature data (META.info.nt deleted before the page draws): still 25 squares, the line-up says the numbers come later, a square still opens its sheet, no page error (${z.n} squares, nt gone ${!z.nt}, line ${z.line}, Jolly opened ${zJ}, errors ${errs.slice(e0).join(' / ') || 'none'})`);
+  /* made-up nature data (the numbers are invented for this check only): Adamant on 800 of 2,000 Pokémon = 40% on its square and its sheet */
+  await q.evaluate(() => window.__ev(`META.info = {N: 1000, ntN: 2000, period: 'test', nt: {Adamant: [300, [['sneasler', 50, 60]], 1, 800], Jolly: [100, [['garchomp', 20, 40]], 1, 200]}}; V2.redraw();`)); await q.waitForTimeout(800);
+  const f = await q.evaluate(() => { const e = document.querySelector('#main .ntp-grid [data-v2infon="Adamant"] em'); return e ? e.textContent.trim() : 'none'; });
+  await tap('#main .ntp-grid [data-v2infon="Adamant"]'); await q.waitForTimeout(600);
+  const fs2 = await q.evaluate(() => ((document.querySelector('.np-sheet .kd-nature .is-sh') || {}).innerText || 'none').replace(/\s+/g, ' ').trim()); await shut();
+  ok(f === '40%' && /^40% of tournament Pokémon$/.test(fs2) && errs.length === e0, `Natures (made-up data): the Adamant square and its sheet show the share META.info.nt gives (square ${f}, sheet "${fs2}"; want 40% and "40% of tournament Pokémon")`);
+  ok(!errs.length, `Natures: no page error across the checks (${errs.join(' / ') || 'none'})`);
+  await ctx.close(); }
 if (part('main2')) { // Sim, Nov 18: Base Stats calm and compact, on theme (no big bubbly numbers): at most 260px tall on a phone, numbers 16px in the slanted
   // type with no shadow, a Mega's numbers line up in each column, nothing spills out, at 320-1440
   const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();
