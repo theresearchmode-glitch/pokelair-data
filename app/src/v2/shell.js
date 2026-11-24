@@ -202,16 +202,23 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
       t = t.sort((a, b) => (b.n.toLowerCase().startsWith(q) ? 1 : 0) - (a.n.toLowerCase().startsWith(q) ? 1 : 0) || (b.f || 0) - (a.f || 0) || a.n.localeCompare(b.n)).slice(0, 6); } catch (e) {} /* ranked by share (review Nov 23: natures count Pokémon, the rest count teams, so raw counts don't compare) */
     try { st = GUIDE_ORDER.filter(k => ARCH[k] && ARCH[k].name.toLowerCase().includes(q)).slice(0, 2); } catch (e) {}
     return {t, st}; };
+  /* the 18 types by name (Sim, Nov 22: "Search is the tying point"; types by name was the checked gap): "fire", "Fire type", "gho" each
+     list a Type hit, its symbol beside its name (never alone, Sim Nov 21), that opens the Type Chart on that type. {lead}: the query is the
+     whole type name, so the Type hit goes first (above the pages and Pokémon); a part of a name ("gho") lists it after them */
+  const types = q => { q = q.trim().toLowerCase().replace(/\s+/g, ' '); const b = q.replace(/ types?$/, ''); if (b.length < 3 || !V2.TYPES) return {ts: [], lead: false};
+    const ts = V2.TYPES.filter(t => t.toLowerCase().startsWith(b)); /* "fire blast" is a move, not the type: only a query that is (part of) a type name, with or without "type" */
+    return {ts, lead: ts.some(t => t.toLowerCase() === b)}; };
+  const tyHit = t => `<a class="np-hit np-tyh" href="#types" data-v2close data-v2type="${V2.esc(t)}" style="--tc:var(--ty-${t})"><span class="pg">Type</span><span class="nm"><b>${V2.kTy ? `<span class="np-tyb" aria-hidden="true">${V2.kTy(t)}</span>` : ''}${V2.esc(t)}</b><small>What it hits hard and what hits it hard</small></span></a>`;
   const KW = {mv: 'Move', it: 'Item', ab: 'Ability', nt: 'Nature'}, N0 = typeof META === 'object' && META.info ? META.info.N : 0, M0 = typeof META === 'object' && META.info ? META.info.ntN || 0 : 0;
   const monHit = p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
   /* scan S34 A (Sim, Nov 20): a miss offers today's six highest-rated Pokémon as normal search rows (the same six as empty My Team's
      'Start from a Winner'), so a typo leads somewhere instead of a dead end */
   const missTop = () => { let top = []; try { top = lairRows().slice(0, 6).map(x => x.p); } catch (e) {} return top.length ? `<p class="miss-k">Or meet today's top six</p>${top.map(monHit).join('')}` : ''; };
-  const draw = () => { const r = V2.find(inp.value), tm = teams(inp.value), T = terms(inp.value);
+  const draw = () => { const r = V2.find(inp.value), tm = teams(inp.value), T = terms(inp.value), Y = types(inp.value), yh = Y.ts.map(tyHit).join('');
     out.innerHTML = !inp.value.trim() ? '<p class="fine">Type a Pokémon\'s name, a saved team, or a page like Battle.</p>' + V2.TOOLS.map(k => { const pl = V2.findPlaces.find(x => x[0] === k && !x[2]); return pl ? `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${pl[1]}</b><small>${V2.esc(V2.placeLines[k] || '')}</small></span></a>` : ''; }).join('') /* the tools, as today's empty search lists them (Nov 15) */
-      : !r.places.length && !r.mons.length && !tm.length && !T.t.length && !T.st.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>${missTop()}`
-      : r.places.map(([k, n, act]) => act ? `<button type="button" class="np-hit" data-v2place="${V2.findPlaces.findIndex(x => x[1] === n)}"><span class="pg">Page</span><b>${n}</b></button>` : `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${n}</b>${V2.placeLines[k] ? `<small>${V2.esc(V2.placeLines[k])}</small>` : ''}</span></a>`).join('')
-        + r.mons.map(monHit).join('')
+      : !r.places.length && !r.mons.length && !tm.length && !T.t.length && !T.st.length && !Y.ts.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>${missTop()}`
+      : (Y.lead ? yh : '') + r.places.map(([k, n, act]) => act ? `<button type="button" class="np-hit" data-v2place="${V2.findPlaces.findIndex(x => x[1] === n)}"><span class="pg">Page</span><b>${n}</b></button>` : `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${n}</b>${V2.placeLines[k] ? `<small>${V2.esc(V2.placeLines[k])}</small>` : ''}</span></a>`).join('')
+        + r.mons.map(monHit).join('') + (Y.lead ? '' : yh)
         + tm.map(t => `<button type="button" class="np-hit" data-svact="open" data-id="${V2.esc(t.id)}"><span class="pg">Saved team</span><b>${V2.esc(t.name)}</b></button>`).join('')
         + T.st.map(k => `<a class="np-hit" href="#archetypes" data-v2close data-v2style="${V2.esc(k)}"><span class="pg">Team style</span><span class="nm"><b>${V2.esc(ARCH[k].name)}</b><small>How it plays and how to beat it</small></span></a>`).join('')
         + T.t.map(x => x.out ? `<p class="np-hit np-hitx"><span class="pg">Item</span><span class="nm"><b>${V2.esc(x.n)}</b><small>Not in Pokémon Champions.</small></span></p>` : `<button type="button" class="np-hit" data-v2info="${x.k}" data-v2infon="${V2.esc(x.n)}"><span class="pg">${KW[x.k]}</span><span class="nm"><b>${V2.esc(x.n)}</b><small>${x.k === 'nt' ? (M0 && x.c >= 20 ? `On ${Math.round(100 * x.c / M0) || 'under 1'}% of tournament Pokémon` /* as the sheet's '<1%' */ : M0 && x.c ? 'Rarely used' : 'What it raises and lowers') : N0 && x.c >= 20 ? `On ${Math.max(1, Math.round(100 * x.c / N0))}% of tournament teams` : N0 && x.c ? 'Rarely used' : 'What it does, who runs it'}</small></span></button>`).join(''); };
@@ -221,6 +228,11 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
   inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = !out.querySelector('.miss-k') && out.querySelector('.np-hit:not(.np-hitx)'); if (h) { e.preventDefault(); h.click(); } } });
   draw(); };
 /* a move, item or Ability from the search filters Winning Teams by it; a team style opens its Archetype guide (player review 2c) */
+/* a Type hit opens the Type Chart on that type alone: today's own state keys (pages/types.js: a type pick there sets the same ones), and the
+   phones' attacking-type row starts on it too; already on #types, the hash doesn't change, so it redraws */
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2type]'); if (!a || typeof ui !== 'object') return; const t = a.dataset.v2type;
+  if (!(V2.TYPES || []).includes(t)) return; ui.typesSel = [t]; ui.typesMon = null; ui.typesAuto = false; ui.typesCleared = true; ui.tcAtk = t; V2.tcFind = '';
+  if (location.hash === '#types') setTimeout(() => V2.redraw(), 0); }, true);
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2term],[data-v2style]'); if (!a) return;
   if (a.dataset.v2style) { if (V2.arUi) V2.arUi.open = a.dataset.v2style; const t0 = Date.now(), go = () => { const g = location.hash === '#archetypes' && document.querySelector('.ar-guide'); if (g) g.scrollIntoView({block: 'start'}); else if (Date.now() - t0 < 3000) requestAnimationFrame(go); }; requestAnimationFrame(go); /* land on the guide, as a style tap on Archetypes does */ }
   else if (V2.wtUi) { V2.wtUi.f = [{k: a.dataset.v2term, v: a.dataset.v2termv}]; V2.wtUi.q = ''; V2.wtUi.fmore = 0; } }, true);
