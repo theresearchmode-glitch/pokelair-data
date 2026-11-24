@@ -25,3 +25,9 @@ All .com, .org and .net free (checked, RDAP): mewtrics, porystats, gengarithm, a
 metagrossary, trainerlytics, champlans, matchupdex, strengthdex, vgclytics, setupdex, specsdex, vgcwise.
 .com free only via .org/.net: megalytics (.org), teamlytics, scorebunny, calcazam, dexdata, tierdex, champdex.
 Web clash check (WebSearch, Nov 24): no use found for Mewtrics, Porystats, Gengarithm.
+
+## Round 4 (HH's own picks; Sim: "turn zero is really good")
+Turn Zero: turnzero.org and turnzero.net free; turnzero.com registered since 2005 (Squarespace, expires 2027-01-26), redirects to
+"Turn Zero Sim Racing" (turnzerosimracing.com), a racing-sim business, not Pokémon. Web search: no Pokémon/VGC use of "Turn Zero".
+Others in HH's top 10: hardread (.org/.net), plotarmored (all free), outread (.org/.net), sixtofour (.org/.net), speedtie (.org/.net),
+bestofone (.org/.net), trickroom (.org), swordsdance (.org/.net), weaknesspolicy (all free).
