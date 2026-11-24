@@ -128,7 +128,7 @@ footer{margin-top:56px;color:var(--mute);font-size:13px}
   </section>
 
   <section id="december">
-    <h2>December<small>nastyplot.org goes live quietly about Dec 7, then a month of real-world fixing before the January announcement.</small></h2>
+    <h2>December<small>nastyplot.org goes live quietly about Dec 7; the announcement is about Dec 18 (moved up from January).</small></h2>
     <div id="decPhases"></div>
   </section>
 
@@ -153,12 +153,12 @@ footer{margin-top:56px;color:var(--mute);font-size:13px}
 <script>
 /* ===== PLAN: edit only this to update the page. s = done | doing | next | later | sim ===== */
 const PLAN = {
-  updated: 'Tue Nov 24, 3:19 PM',
+  updated: 'Tue Nov 24, 4:17 PM',
   road: [
     {when: 'Sat Nov 28', what: 'The switch', date: '2026-11-28'},
     {when: 'Wed Dec 2', what: 'Reg M-D + patch', date: '2026-12-02'},
     {when: 'About Dec 7', what: 'nastyplot.org, quietly', date: '2026-12-07'},
-    {when: 'January', what: 'The announcement', date: '2027-01-11'}
+    {when: 'About Dec 18', what: 'The announcement', date: '2026-12-18'}
   ],
   now: [
     {who: 'HH (this chat)', t: 'Light day until 4:01 PM Wed: checking the other account\'s patches and the 7:41 AM data update. From Wed: the "Reg M-C" one-place fix.'},
@@ -171,10 +171,10 @@ const PLAN = {
     {s: 'sim', t: 'Say yes: the switch', d: 'We do it together. Same link; old site kept 2 weeks as a backup.', tag: 'Sat Nov 28'},
     {s: 'sim', t: 'OK the M-D change list', d: 'What\'s new, removed or changed in the roster.', tag: 'Dec 2'},
     {s: 'sim', t: '2–3 clicks for nastyplot.org', d: 'A Cloudflare permission and Google\'s "verify". HH walks you through each.', tag: 'Dec 3–7'},
-    {s: 'sim', t: 'Find 3–5 testers', d: 'For a week on nastyplot.org.', tag: 'by Dec 14'},
-    {s: 'sim', t: 'Launch outreach plan', d: 'Small YouTubers and communities. HH can draft a list and a message.', tag: 'December'},
+    {s: 'sim', t: 'Find 3–5 testers', d: 'For a few days on nastyplot.org.', tag: 'by Dec 9'},
+    {s: 'sim', t: 'Launch outreach plan', d: 'Small YouTubers and communities. HH can draft a list and a message.', tag: 'by Dec 14'},
     {s: 'sim', t: 'Name: NastyPlot stays unless a better idea comes', d: 'Swords Dance, Weakness Policy, Turn Zero looked at; Turn Zero dropped (clashes). Drop any idea in chat and HH checks it.', tag: 'by Dec 7'},
-    {s: 'sim', t: 'Say yes: the announcement', d: '', tag: 'January'}
+    {s: 'sim', t: 'Say yes: the announcement', d: 'Moved up from January (Sim, Nov 24): winter break, M-D two weeks old.', tag: 'about Dec 18'}
   ],
   week: [
     {h: 'Wed Nov 25 (from 4:01 PM)', items: [
@@ -230,15 +230,15 @@ const PLAN = {
       {s: 'next', t: 'Accessibility check + a test so it stays fixed', d: '', tag: 'HH'},
       {s: 'next', t: 'Error and uptime alarms', d: '', tag: 'HH'}
     ]},
-    {h: 'Dec 14–31: real people, real fixes', items: [
-      {s: 'sim', t: 'Testers use the site for a week', d: 'Plus a "first 60 seconds" fresh-eyes test.', tag: 'Sim'},
+    {h: 'Dec 9–18: real people, real fixes, then the announcement', items: [
+      {s: 'sim', t: 'Testers use the site', d: 'Plus a "first 60 seconds" fresh-eyes test.', tag: 'Dec 9–15'},
       {s: 'next', t: 'Fix what testers and alarms find', d: '', tag: 'HH'},
       {s: 'next', t: 'Read Limitless\'s terms', d: '', tag: 'HH'},
-      {s: 'next', t: 'New Strength Score, only if it beats today\'s', d: 'Otherwise we launch with today\'s.', tag: 'HH'}
+      {s: 'next', t: 'Competitor scan', d: 'Statmie, Pikalytics, VGC Helper, ChampDex, Pokémon Zone and more: what they have, what only we have, our edge.', tag: 'other acc'}
     ]}
   ],
   later: [
-    {t: 'Strength Score and analytics, the best they can be', d: 'All focus after the design work (Sim, Nov 24).'},
+    {t: 'Strength Score and analytics, the best they can be', d: 'All focus after the design work (Sim, Nov 24). The new score ships only if it beats today\'s.'},
     {t: 'Team Preview Coach', d: 'Their 6 → which 4 to bring and which 2 to lead, from real games.'},
     {t: 'Best-of-3 data', d: 'For real tournaments (Regionals, Worlds), kept separate from single games.'},
     {t: 'Updates within the hour', d: 'Once the site runs on Cloudflare, fresh data costs almost nothing.'}

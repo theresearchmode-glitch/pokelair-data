@@ -2482,3 +2482,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:05 PM: Mistake found by Sim: name-research-nov24.md was committed locally but not pushed (3 commits). Pushed now; checked on GitHub.
 - 3:19 PM: Sim: Turn Zero not worth it (Pokémon-side clashes). NastyPlot stays; any new name idea checked before ~Dec 7. Game Plan + research doc updated.
 - 3:36 PM: Name: Sim likes 'Intimidata' (Intimidate + data; intimidata.org/.net free). To be continued later today. NastyPlot stays until decided.
+- 4:17 PM: Sim: announcement moved up to about Dec 18 (from January); quiet go-live about Dec 7 unchanged. Competitor scan approved (other acc). Game Plan v67, CLAUDE.md updated.
