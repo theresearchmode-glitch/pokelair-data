@@ -112,8 +112,9 @@
 .pk-kv>div:nth-child(-n+2) dd>b .is-w{padding-top:var(--s6);margin-top:calc(var(--s6) * -1)}
 /* phones (hNR, Nov 24): every word in the basics list gets a 44px tap area with no two overlapping: each main pick reaches 28px up over
    its label (24px measured 43.5px: the "or" line under it takes its last pixel), each "or" word 26px down; pages.css gives the rows the
-   room (row gap 38px, 28px before the moves) so neighbouring areas stay 2px apart */
-@media (max-width:699.98px){.pk-kv dd>b .is-w,.pk-kv>div:nth-child(-n+2) dd>b .is-w{padding-top:calc(var(--s6) + var(--s1));margin-top:calc((var(--s6) + var(--s1)) * -1)}
+   room (row gap 38px, 28px before the moves) so neighbouring areas stay 2px apart. Tablets too (hNR2, Nov 24): 700-1099 has the same
+   two-column list (Life Orb 27px, Adamant 33px, Modest 32px before), so the rule runs to 1099.98; desktop 1100+ (four columns) unchanged */
+@media (max-width:1099.98px){.pk-kv dd>b .is-w,.pk-kv>div:nth-child(-n+2) dd>b .is-w{padding-top:calc(var(--s6) + var(--s1));margin-top:calc((var(--s6) + var(--s1)) * -1)}
   .pk-kv dd b + small .is-w{padding-bottom:calc(var(--s6) + 2px);margin-bottom:calc((var(--s6) + 2px) * -1)}}
 
 /* pictures on the sheets (Sim approved Nov 23, 4:33 PM; docs/mockups/sheet-pics-natures-nov23): the picture sits left of the name */
