@@ -87,6 +87,11 @@
 - Pokémon page tablet fix.
 - Rules on one page.
 
+## 💡 Ideas (not scheduled)
+- **three.js for launch:** one "wow" moment (e.g. a 3D spin of the share card or a launch-day intro), loaded only on that one
+  page so the rest of the site stays fast. Decide closer to launch. (Sim, Nov 24)
+- **Speed Tiers controls at 1280:** a two-row layout, after the switch (pictures first).
+
 ## 👉 Open for you (no rush)
 - Testers: who?
 - Launch outreach: small YouTubers. I can draft a list and a message when you want.
