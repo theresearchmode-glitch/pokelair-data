@@ -2441,3 +2441,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:23 AM: GitHub 1516 on main c565e865: success; Promote to live 56: success; live = c565e865 (Nov 24 data). Data refresh fired by hand (Sim: 'yes ofcouse. run it').
 - 7:24 AM: daily-data.sh tested on live c565e865: exit 0, DATA-DATE 2026-11-24, no-names 0, COPY-OK. Scheduled 'Preview daily data' at 7:41 AM ET daily (trig_014FJu3gufbrwjZwJhnax2EE).
 - 7:42 AM: Preview daily data (first automatic run): daily-data.sh exit 0, DATA-DATE Nov 24, live c565e865, no-names 0, COPY-OK; published Preview v259.
+- 9:15 AM: Sim: back on pause until tomorrow (resume 4:01 PM Wed Nov 25 as scheduled). The daily data refresh (6:52) and Preview daily data (7:41) keep running, as Sim asked.
