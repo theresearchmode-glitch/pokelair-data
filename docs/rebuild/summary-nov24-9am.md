@@ -27,6 +27,8 @@ Source: docs/rebuild/decisions.md (every entry with its logged time). Pictures w
 - 39 old qcheck known findings cleared after each was checked fixed; 2 kept.
 - Other account: Job 1 (1280 lengths) applied 10:2x PM; Job 2 report used for follow-ups; overnight brief written 10:24 PM.
 
+- 3:0x AM More lone rows fixed (Pokémon type line, How We Calculate bands, Test Run key, Home chips at 1100-1279, Pokémon basics, News latest round); How We Calculate +24px at 390 for even rows (my call).
+
 ## Milestone
 - The other account's overnight full check on 136e7cd9: EVERY test passed (all GitHub jobs, WebKit My Team/Build/Battle/Meta, qcheck-all): 0 real failures, 0 flakes. First time every test passes on one commit. GitHub runs 1507-1510 green too.
 
