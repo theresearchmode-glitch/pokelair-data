@@ -2433,3 +2433,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:36 AM: Hourly check: 1 helper (hKA), local tests running, Game Plan v63.
 - 5:38 AM: Checked on the hNR head: v2-minors main1/main2 all passed; D-meta-shell behaviour: 118 pass, 0 FAIL.
 - 5:39 AM: CORRECTION to 5:38 AM: v2-minors main1 had 1 FAIL on the hNR head (not 'all passed'); main2 all passed; D-meta 118/0. Investigating the main1 failure.
+- 5:52 AM: Sim asked why the Game Plan shows many pages 'working on it'. Checked: those were stale ticks (the pages were merged, OK'd and GitHub-green since Nov 22-23; the 'doing' status was never flipped). Game Plan v64: 25 items moved to done with a re-checked note; 2 stay open (polish sweep in progress; saved-data contract still to prove at the switch).
