@@ -2402,3 +2402,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:28 AM: Design (HH authority): hP3 merged (f6d75a31): My Team header actions 3 per row with labels on one line (2x3 under 360), card links 3+2 instead of 4+1/2+2+1, New crew line breaks after 'build me a team', matchup legend 3 even columns, the 320 matchup spill fixed. polish team+sheet: uneven 4->0, lone 22->12, spill 20->18; qcheck team 0 new; main1 and A-team 139/0; lengths same except +42px at 320.
 - 1:28 AM: Helper slot: hPS fixes the phone sweep's items 1-5 (Pokemon partner % spill, tap targets under 44px, Meta tab labels, Track total spill, small spills) under design authority.
 - 1:36 AM: GitHub run 1509 (ed7f6e58: long titles, 1280 options A, Calc/Types polish) GREEN. Pushing HEAD (My Team polish). Game Plan v59.
+- 1:42 AM: Checked: WebKit A-team on HEAD (before hP3): 139 pass, 0 FAIL.
