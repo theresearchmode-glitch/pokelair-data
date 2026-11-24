@@ -2417,3 +2417,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:50 AM: Helper slot: hTR checks/fixes Track Record's qcheck OFFSCREEN findings at 1100 (pre-existing on tonight's base).
 - 4:07 AM: Checked WebKit on HEAD (with hP4): A-team 139 pass 0 FAIL; B-build 77 pass 0 FAIL.
 - 4:13 AM: GitHub run 1512 (edd6f6e7: hP4 lone rows) GREEN. Pushing HEAD (hP5 polish).
+- 4:34 AM: Design (HH authority): hTR merged (1f27a73a): Track Record at 1100-1279: the '230x more top 8s' stamp and SEE HOW WE RATE button were clipped at the window edge (1100-1199); now sized to their column (tokens --d-trkbig/--d-trkgo). qcheck track 4 -> 0 at 1100 and 0 at 1040-1260; tap-size, main1 passed; length unchanged. Open: at 1280 both still overhang their column by ~31px into the gutter (on screen).
