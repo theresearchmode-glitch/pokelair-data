@@ -196,10 +196,10 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
        winning team sheets; picking one opens its sheet (Winning Teams is the link inside it). Ranked: names that start with the words, then
        the most used (META.info). Items not in Pokémon Champions show one line and no sheet (HANDOFF). */
     try { const I = typeof META === 'object' && META.info, use = (k, n) => (I && I[k] && I[k][n] ? I[k][n][0] : 0);
-      for (const k of ['mv', 'it', 'ab']) for (const n of [...Object.keys((typeof INFO_TEXT === 'object' && INFO_TEXT[k]) || {}), ...(k === 'it' ? (V2.IS_NOT_IN || []) : [])]) if (n.toLowerCase().includes(q)) t.push({k, n, c: use(k, n), out: k === 'it' && (V2.IS_NOT_IN || []).includes(n)});
+      for (const k of ['mv', 'it', 'ab']) for (const n of [...Object.keys((typeof INFO_TEXT === 'object' && INFO_TEXT[k]) || {}), ...(k === 'it' ? (V2.IS_NOT_IN || []) : [])]) if (n.toLowerCase().includes(q)) t.push({k, n, c: use(k, n), f: I && I.N ? use(k, n) / I.N : 0, out: k === 'it' && (V2.IS_NOT_IN || []).includes(n)});
       /* natures (Dossier step 3, Nov 23): all 25, each opens its sheet; ranked by how many Pokémon run it (META.info.nt 4th field) */
-      if (V2.ntAll) for (const n of V2.ntAll()) if (n.toLowerCase().includes(q)) t.push({k: 'nt', n, c: I && I.nt && I.nt[n] ? (I.nt[n][3] || 0) : 0});
-      t = t.sort((a, b) => (b.n.toLowerCase().startsWith(q) ? 1 : 0) - (a.n.toLowerCase().startsWith(q) ? 1 : 0) || b.c - a.c || a.n.localeCompare(b.n)).slice(0, 6); } catch (e) {}
+      if (V2.ntAll) for (const n of V2.ntAll()) if (n.toLowerCase().includes(q)) { const c = I && I.nt && I.nt[n] ? (I.nt[n][3] || 0) : 0; t.push({k: 'nt', n, c, f: I && I.ntN ? c / I.ntN : 0}); }
+      t = t.sort((a, b) => (b.n.toLowerCase().startsWith(q) ? 1 : 0) - (a.n.toLowerCase().startsWith(q) ? 1 : 0) || (b.f || 0) - (a.f || 0) || a.n.localeCompare(b.n)).slice(0, 6); } catch (e) {} /* ranked by share (review Nov 23: natures count Pokémon, the rest count teams, so raw counts don't compare) */
     try { st = GUIDE_ORDER.filter(k => ARCH[k] && ARCH[k].name.toLowerCase().includes(q)).slice(0, 2); } catch (e) {}
     return {t, st}; };
   const KW = {mv: 'Move', it: 'Item', ab: 'Ability', nt: 'Nature'}, N0 = typeof META === 'object' && META.info ? META.info.N : 0, M0 = typeof META === 'object' && META.info ? META.info.ntN || 0 : 0;
