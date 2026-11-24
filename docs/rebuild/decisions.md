@@ -2431,3 +2431,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:26 AM: Design (HH authority): hNR2 merged (9174c8fa): the 44px tap areas on the Pokemon page basics now cover tablets 700-1099 too (27-33 -> 46-49px; 315 taps, 0 wrong); +42px at 700-1099; 1100+ unchanged. qcheck Garchomp TAP findings at 720/820/1024 gone.
 - 5:26 AM: Helper slot: hKA checks the Pokemon page's big art flagged OFFSCREEN at 720-1024 (pre-existing): real cut-off or deliberate bleed.
 - 5:36 AM: Hourly check: 1 helper (hKA), local tests running, Game Plan v63.
+- 5:38 AM: Checked on the hNR head: v2-minors main1/main2 all passed; D-meta-shell behaviour: 118 pass, 0 FAIL.
