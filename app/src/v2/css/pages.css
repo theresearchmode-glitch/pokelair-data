@@ -3921,6 +3921,21 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .us .us-how .us-groups>.us-mvs{grid-column:1/-1;grid-row:auto}
   .us .us-how .us-groups>:nth-child(4):last-child{grid-column:auto}
 }
+/* Usage at 1280-1439 (alt/len1280, Nov 23: the desktop length rule, "at 1280+ long single columns go two-up"; 1280x800 was 3.61 screens,
+   cap 3): the two columns of 1440, a little more to the top ten (23:17), with a 32px gap and the second column 40px in, so both have room: the rank rows keep a fixed
+   212px rank and name (no wrapped "Mega Charizard Y") and the move tickets keep whole type names. Not below 1280: at 1100 the bars shrank to
+   ~50px and the teammate names ran together. Nothing is hidden; 1440 and up, 1100-1279 and phones are unchanged */
+@media (min-width:1280px) and (max-width:1439.98px){
+  .us:not(.lo) .k-plan{display:grid;grid-template-columns:minmax(0,23fr) minmax(0,17fr);column-gap:var(--s8);align-items:start}
+  .us .us-how{margin-top:0;padding-left:var(--s10)}
+  .us .us-how>.k-n{left:0}
+  .us .us-s1 .us-axis,.us .us-s1 .us-ln{grid-template-columns:40px 212px minmax(0,1fr) 64px 72px;column-gap:var(--s1)}
+  .us .us-s1 .us-ln .us-u{font-size:var(--t20)}
+  .us .us-how .us-groups{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s4) var(--s6)}
+  .us .us-how .us-groups>.us-mvs{grid-column:1/-1;grid-row:auto}
+  .us .us-how .us-groups>:nth-child(4):last-child{grid-column:auto}
+}
+
 /* Archetypes guide at 1100 and up (Sim, Nov 22: the desktop length rule; approved 10:10 AM): "How to beat it" and "What your team has"
    side by side under "Who runs it", as today's guide had them; step 3's circle sits at its column's left edge */
 @media (min-width:1100px){
@@ -4252,6 +4267,22 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .ev2-six .np-mon{--iw:32px}
   .ev2 .ev-ns{gap:var(--s1) var(--s4)}
 }
+/* Events at 1280-1439 (alt/len1280, Nov 23: the desktop length rule, "at 1280+ long single columns go two-up"; 1280x800 was 3.44 screens,
+   cap 3): "The latest win" and "Coming up" side by side (2:1), as Usage sets its first two steps side by side at 1440; the ticket wall keeps
+   the full width under them. "Coming up"'s calendar tickets stack in its column, its number circle sits at its column's left edge and the
+   plan's dashed line runs down the first column. The tickets' date stub is 64px with a 28px date as on tablets, and the plan ends 32px under the wall.
+   Nothing is hidden; 1440 and up, 1100-1279 and phones are unchanged */
+@media (min-width:1280px) and (max-width:1439.98px){
+  .ev2 .k-plan{display:grid;grid-template-columns:minmax(0,2fr) minmax(0,1fr);column-gap:var(--s10);align-items:start;padding-bottom:var(--s8)}
+  .ev2 .k-plan>.ev-plate{margin-top:var(--s12);padding-left:var(--s12)}
+  .ev2 .k-plan>.ev-plate>.k-sec{margin-top:0}
+  .ev2 .k-plan>.ev-plate>.k-n{left:0}
+  .ev2 .k-plan>.k-step:last-child{grid-column:1/-1}
+  .ev2 .ev-cal{grid-template-columns:minmax(0,1fr);gap:var(--s3)}
+  .ev2 .ev-cpast{display:grid;gap:0}
+  .ev2 .ev-crow,.ev2-tk{grid-template-columns:64px minmax(0,1fr)}
+  .ev2 .ev-cd b,.ev2-stub b{font-size:var(--t28)}
+}
 /* polish sweep Nov 22: "Build Me a Team and Suggestions" spilled its tile 4-7px at 1120-1200 (five narrow columns) */
 @media (min-width:1100px) and (max-width:1279.98px){.inf-tile summary{padding-inline:var(--s4)}.inf-tile summary b{font-size:var(--t17)}}
 /* polish sweep Nov 22: About's four stamps went 3+1 at 700-799; two by two there, as on phones */
@@ -4475,3 +4506,25 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .pk-pwh .pk-why>.pk-lbl:first-child{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
 @media (min-width:1100px){.pk-rapsw .pk-pwh .pk-data{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3) var(--s6);align-content:start}.pk-pwh .pk-data>h3{grid-column:1/-1;margin:0}
   .pkf .pk-pwh .pk-slips{display:contents}.pk-pwh .pk-oth .pk-oh{margin-top:0}.pk-pwh .pk-oth .ms-out{grid-template-columns:minmax(0,1fr)}}
+/* Track Record at 1280-1439 (alt/len1280, Nov 23: the desktop length rule; 1280x800 was 3.06 screens, cap 3): the plan ends 16px over the
+   footer instead of 64px (the footer brings its own 32px). Nothing is hidden; 1440 and up, 1100-1279 and phones are unchanged */
+@media (min-width:1280px) and (max-width:1439.98px){.trk .k-plan{padding-bottom:var(--s4)}}
+/* Speed Tiers at 1280-1439 (alt/len1280, Nov 23: the desktop length rule; 1280x800 was 3.28 screens, cap 3): the field already runs
+   two-up between the blue bands, so only the spacing tightens: 40px over each step (was 64px), 16px over the controls (was 24px), 8px
+   over each band (was 12px), and the plan ends 16px over the footer (was 64px). Nothing is hidden; 1440 and up, 1100-1279 and phones
+   are unchanged. Still over the cap (see docs/rebuild/research/len1280-nov23.md) */
+@media (min-width:1280px) and (max-width:1439.98px){
+  .sp2 .k-plan{padding-bottom:var(--s4)}
+  .sp2 .k-plan>.k-step>.k-sec{margin-top:var(--s10)}
+  .sp2 .sp2-ctl{margin-top:var(--s4)}
+  .sp2 .sp2-cut{margin-top:var(--s2)}
+}
+/* Test Run at 1280-1439 (alt/len1280, Nov 23: the desktop length rule; 1280x800 was 3.36 screens, cap 3): the piles already sit beside
+   the side panel, so only the spacing tightens: 40px over each step (was 64px), 24px between the piles (was 40px), and the plan ends 16px
+   over the note under it (was 40px). Nothing is hidden; 1440 and up, 1100-1279 and phones are unchanged. Still over the cap (see
+   docs/rebuild/research/len1280-nov23.md) */
+@media (min-width:1280px) and (max-width:1439.98px){
+  .dr .k-plan{padding-bottom:var(--s4)}
+  .dr .k-plan>.k-step>.k-sec{margin-top:var(--s10)}
+  .dr .tp-piles{gap:var(--s6)}
+}

@@ -444,3 +444,17 @@ section.pl{position:relative;padding-left:var(--s16);margin-top:var(--s4)} /* sc
 .pl-plate .is-w,.pl-plate .pl-mv{position:relative;z-index:1}
 .pl-plate .pl-pc .is-w,.pl-plate .pl-pc .is-w:hover{color:inherit;text-decoration-color:currentColor}
 button.pl-mv{width:100%;border:0;color:inherit;cursor:pointer}button.pl-mv .pl-t{text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+/* Build at 1280-1439 (alt/len1280, Nov 23: the desktop length rule; 1280x800 was 3.40 screens, cap 3): the four "tap one" picks sit two by
+   two in a wider third column, so each name stays whole (they stood one under another and made the help row 293px tall); Partners in crime gives its names the width they have at 1440:
+   40px sprites, "wins" over "+3.9 vs avg" as on phones, a 12px gap (32px between the two lists, ADD 12px padded), so names and counts stop breaking onto extra lines;
+   the gaps around the help row, under the two plan bands and over the dark band's two headings are 16-24px (were 24-40px).
+   Nothing is hidden; 1440 and up, 1100-1279 and phones are unchanged */
+@media (min-width:1280px) and (max-width:1439.98px){
+  .pl-help{grid-template-columns:minmax(0,1fr) minmax(0,1fr) minmax(0,1.6fr) minmax(0,1fr)}.pl-help .pl-chips{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .pl-core{gap:0 var(--s3)}
+  .pl-csp{min-width:84px}.pl-csp img{width:40px;height:40px}
+  .pl-cdot{display:none}.pl-cvs{display:block}
+  .pl-help{margin-top:var(--s4)}.pl-waits{margin-top:var(--s6)}.pl0{padding-bottom:var(--s6)}.pl0 .pl-waits::before{bottom:calc(-1 * var(--s6))}.pl-low{padding-bottom:var(--s6)}
+  .pl-cores{column-gap:var(--s8)}.pl-core .pl-cadd{padding:0 var(--s3)}
+  .pl-low > .pl-step{padding-top:var(--s4)}
+}

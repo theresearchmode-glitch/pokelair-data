@@ -270,3 +270,7 @@
 /* C-battle X-04 (Nov 21): the answer keeps its height when the numbers change on phones: two lines for the verdict, a row for the "hangs on" line */
 .pc-sm0{display:none}
 @media (max-width:699.98px){.dc2.pc.pck .pc-ans .pc-vd{display:grid;align-content:center;min-height:calc(2.2em + var(--s1))}.dc2.pc.pck .pc-sm0{display:block}.dc2.pc.pck .pc-ans .pc-sm{min-height:2.6em}} /* two lines: the hangs-on line can wrap at 390 (X-04 with the test team) */
+/* Damage Calc at 1280-1439 (alt/len1280, Nov 23: the desktop length rule; 1280x800 was 3.15 screens, cap 3): its four steps are already
+   full width, so the space between them is 40px (was 64px) and the plan ends 8px over the footer (was 32px). Nothing is hidden;
+   1440 and up, 1100-1279 and phones are unchanged */
+@media (min-width:1280px) and (max-width:1439.98px){.pck .k-plan>.k-step>.k-sec{margin-top:var(--s10)}.pck .k-plan{padding-bottom:var(--s2)}}
