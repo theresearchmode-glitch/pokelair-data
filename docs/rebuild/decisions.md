@@ -2432,3 +2432,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:26 AM: Helper slot: hKA checks the Pokemon page's big art flagged OFFSCREEN at 720-1024 (pre-existing): real cut-off or deliberate bleed.
 - 5:36 AM: Hourly check: 1 helper (hKA), local tests running, Game Plan v63.
 - 5:38 AM: Checked on the hNR head: v2-minors main1/main2 all passed; D-meta-shell behaviour: 118 pass, 0 FAIL.
+- 5:39 AM: CORRECTION to 5:38 AM: v2-minors main1 had 1 FAIL on the hNR head (not 'all passed'); main2 all passed; D-meta 118/0. Investigating the main1 failure.
