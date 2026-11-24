@@ -19,3 +19,9 @@ Shortlist (free plain domains):
 - clearamulet / covertcloak: all free
 Taken everywhere (out by Sim's rule): helpinghand, coaching, tailwind, calmmind, followme, futuresight, mindseye, costar, psychup,
 analytic, forewarn, supereffective, plustwo, victorydance (.net only free), and more (full run in the chat log).
+
+## Round 3: coined names (Sim: built from what we do + a Pokémon root, "oh that's clever")
+All .com, .org and .net free (checked, RDAP): mewtrics, porystats, gengarithm, alakalc, calcadex, rotomdata, statchu, plotchu,
+metagrossary, trainerlytics, champlans, matchupdex, strengthdex, vgclytics, setupdex, specsdex, vgcwise.
+.com free only via .org/.net: megalytics (.org), teamlytics, scorebunny, calcazam, dexdata, tierdex, champdex.
+Web clash check (WebSearch, Nov 24): no use found for Mewtrics, Porystats, Gengarithm.
