@@ -14,6 +14,7 @@ Source: docs/rebuild/decisions.md (every entry with its logged time). Pictures w
 - 10:34 PM Search item hits show the real picture; Mega Stone titles keep X/Y/Z with the word on phones.
 - 11:34 PM Sheet titles on phones never break inside a word (917 titles: 276 mid-word breaks at 320 -> 0; picture moves above long names; item tag +60px).
 - 11:50 PM Events, Speed Tiers, Test Run under 3 screens at 1280 (the other account's option A each): 2.96 / 2.94 / 2.95. Every tool page is now under 3 screens at 1280 and 1440.
+- 12:02 AM Polish: Calc condition chips split evenly (3+2, no lone chip), Type Chart groups 2+2; polish-check lone rows 18 -> 11 on those pages.
 
 ## Non-visual decisions (executive)
 - Helper count kept at 1 (Sim, 4:53 PM): hW2, hI, hN, hP5, hR, hT4, hS2, hC2, hK, hH, hN10, hA, hI2, hS3, hR2, hL, one at a time.
