@@ -3695,7 +3695,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .pk-typeline>.np-type,.pk-tg{vertical-align:middle;margin:0 var(--s2) var(--s2) 0}
 .pk-tg{display:inline-flex;align-items:center;gap:var(--s2);white-space:nowrap}
 .pk-typeline>:has(+ .pk-tg){margin-right:var(--s4)} /* the wider gap before each label sits at the end of the line before, so a line never starts indented */
-@media (max-width:1099.98px){.pk-rap{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'st sp' 'ab sp' 'wh wh' 'da da' 'ft ft';grid-template-rows:auto 1fr auto auto auto}.pk-why{margin-top:var(--s8)}.pk-slips{grid-template-columns:repeat(2,minmax(0,1fr))}.pk-kv{grid-template-columns:repeat(2,minmax(0,1fr))}.pkf .k-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:1099.98px){.pk-rap{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'st sp' 'ab sp' 'wh wh' 'da da' 'ft ft';grid-template-rows:auto 1fr auto auto auto}.pk-why{margin-top:var(--s8)}.pk-slips{grid-template-columns:repeat(2,minmax(0,1fr))}.pk-kv{grid-template-columns:repeat(2,minmax(0,1fr));row-gap:calc(var(--s8) + 6px);margin-bottom:calc(var(--s6) + var(--s1))}.pkf .k-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:959.98px){.pk-duo,.pk-fights{grid-template-columns:minmax(0,1fr)}.pkf .pk-fan{grid-template-columns:repeat(4,minmax(0,1fr))}}
 /* phones: the card on top, the set and its moves under it, the steps one column; nothing folds except the full move and item lists */
 @media (max-width:699.98px){
@@ -3705,7 +3705,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .pkf .k-facts{gap:var(--s2) var(--s4)}.pkf .k-facts b{font-size:var(--t24)}
   .pk-trend{font-size:var(--t13);gap:var(--s2)}
   .pk-setc{padding:var(--s4)}
-  .pk-kv{gap:calc(var(--s8) + 6px) var(--s4);margin-bottom:calc(var(--s6) + var(--s1))} /* room for 44px tap areas (infosheet.css, hNR Nov 24): the "or" word grows 26px down, the next main word 28px up */
+  .pk-kv{column-gap:var(--s4)} /* row gap and bottom margin (room for the 44px tap areas, infosheet.css) come from the under-1100 rule above */
   .pk-acts{gap:var(--s2) var(--s4);margin-top:var(--s4)}.pk-acts .k-go{flex:1 1 100%}.pk-qlinks{display:contents}
 
 
