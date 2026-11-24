@@ -2413,3 +2413,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:03 AM: Helper slot: hP5 takes the remaining lone/uneven rows on Build, Popular Sets, Usage, This Week, Winning Teams, Gifts, Archetypes, Track Record.
 - 3:32 AM: Checked: all 69 code checks + main1 on 5f99c80b: red=0. GitHub run 1511 (1ed93ac5: phone sweep fixes) GREEN. Pushing HEAD (hP4 lone rows).
 - 3:32 AM: Preview v256 published (overnight polish + phone fixes).
+- 3:50 AM: Design (HH authority): hP5 merged (ec8c767f): Popular Sets facts never leave Nature alone (24px gap; phone layout under 560 via container query), Sets/Usage source chips fill their rows when they wrap (700+), Winning Teams sentence one row at 1180-1239 (32px there), This Week phone key three columns. Rest measured as false positives or intentional. polish lone 24 -> 21, none added; qcheck same; main1/main2/tap-size passed; no page longer.
