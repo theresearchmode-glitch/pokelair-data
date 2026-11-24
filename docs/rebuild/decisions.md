@@ -2494,3 +2494,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:39 PM: Sim: smaller Home hero added to the plan (Thu Nov 26, a helper; HH design authority, pictures to Sim). Game Plan v69.
 - 5:52 PM: Sim: Gemini = extra helper for code reviews and non-design tasks only when Claude usage is low; HH writes prompts (template docs/rebuild/gemini-prompt-template.md) and double-checks its work. Saved in CLAUDE.md.
 - 6:18 PM: Sim's go: push md-watch fix 668f235e to main (Gemini job 2 findings)
+- 6:30 PM: Sim's go: push Dec 2 switch safety 25c3464b to main (Gemini job 3: fixes 1,3,4,9 + reg-switch-test)
