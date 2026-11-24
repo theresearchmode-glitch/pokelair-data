@@ -51,7 +51,11 @@
   .np-sheet:has(.is2){width:100%}
   .is2{gap:var(--s5);padding:var(--s4) var(--s4) var(--s6)}
   .is-tab{grid-template-columns:1fr;padding:var(--s4)}
-  .is-tab h2{font-size:var(--t28)}.is-tab h2.is-tl{font-size:var(--t26)} /* a long Mega Stone name with its letter, phones only (V2.isTitle) */
+  .is-tab h2{font-size:var(--t28)}
+  /* a long name steps down only as far as it must so no word breaks in the middle (V2.isFit, measured at open); a picture moves above the name past 24 */
+  .is-tab h2[data-fs="26"]{font-size:var(--t26)}.is-tab h2[data-fs="24"]{font-size:var(--t24)}.is-tab h2[data-fs="22"]{font-size:var(--t22)}
+  .is-tab h2[data-fs="20"]{font-size:var(--t20)}.is-tab h2[data-fs="17"]{font-size:var(--t17)}.is-tab h2[data-fs="16"]{font-size:var(--t16)}
+  .is-pn.is-stk{flex-direction:column;align-items:flex-start;gap:var(--s2)}
   .is-tab .gh{font-size:var(--d64)}
   .is-sh{display:flex;align-items:baseline;gap:var(--s2);text-align:left}
   .is-sh b{font-size:var(--t26)}
@@ -89,7 +93,12 @@
 .is-tab.kd-item .is-kk{background:var(--is-tag-ink);color:var(--is-manila)}
 .is-tab .ev{position:absolute;right:212px;top:16px;padding:2px var(--s2);border:3px solid var(--is-stamp);color:var(--is-stamp);font-size:var(--t20);font-weight:900;line-height:1.2;letter-spacing:.08em;transform:rotate(-8deg);opacity:.85}
 .is2.kd-item .is-h h3::before{top:8px;width:16px;height:12px;transform:none;clip-path:polygon(4px 0,100% 0,100% 100%,4px 100%,0 50%)}
-@media (max-width:699.98px){.is-tab .ev{display:none}.is-tab.kd-item{padding-left:64px}}
+/* phones (hL, Nov 24): the tag takes the X's column too, its top-right corner cut away under the X (the tab's own cut corner, 48px), and the
+   string and hole sit 8-12px tighter, so the name has 40-60px more room (Houndoominite: 17px at 320 wide before, 20 now; 24 at 360) */
+@media (max-width:699.98px){.is-tab .ev{display:none}
+  .is-tagw{margin-right:0;padding-left:var(--s3)}.is-tagw .str{left:-12px}
+  .is-tab.kd-item{padding-left:56px;clip-path:polygon(32px 0,calc(100% - 48px) 0,100% 48px,100% 100%,32px 100%,0 50%)}
+  .is-tab.kd-item::before{left:16px}.is-tab.kd-item::after{left:44px}}
 /* on the dark loadout panel (Popular Sets): the name keeps the panel's ink and big slanted type; the underline marks it as a button */
 /* the main pick and its "or" line sit right on top of each other: each word's tap area grows away from its neighbour only (Nov 23: Jolly's grown area covered Adamant, so tapping Adamant opened Jolly) */
 /* a short word that opens a sheet (Hardy, Calm in the Calc's set line) still gets a 44px-wide tap target (GitHub run 1504: Hardy 42x47) */

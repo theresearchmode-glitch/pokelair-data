@@ -1923,6 +1923,36 @@ if (part('main2')) { /* Item pictures in Search (Nov 24; Search is the tying poi
   ok(dead.pic === 'img-dead' && live.pic === 'img' && none.pic === 'none' && Math.abs((none.h || 0) - h0) <= 0.5 && Math.abs((live.h || 0) - h0) <= 0.5, `Item pictures in Search (stand-ins, the check can fail): a picture pointed at a missing file reads "${dead.pic}" (want img-dead), a working one "${live.pic}" (want img, row ${live.h}px), an item with neither picture nor drawing "${none.pic}" (want none, row ${none.h}px; want ${h0})`);
   ok(!errs.length, `Item pictures in Search: no page error (${errs.join(' / ') || 'none'})`);
   await ctx.close(); }
+if (part('main2')) { /* LN (hL, Nov 24): a sheet's name never breaks inside a word on phones and never leaves a lone letter on a line. Before the fix
+  232 of 917 titles broke mid-word at 320 wide ("Charizardi / te X", "Comeu / ppance") and 40 at 390. The longest names of each kind (by measured
+  width at 28px: the longest items, moves and Abilities, the Mega X / Y / Z stones, the hyphen moves with a one-letter part, the longest nature)
+  open in their real sheets at 320 and 390, with made-up usage for every name (numbers invented for this check only) so the Ability photo
+  beside the name shows, as on the live site. Each title's lines are read from where each letter lands: a line that ends in a letter followed
+  by a line that starts with one is a mid-word break; a line holding one letter is a lone letter. The size must stay on the scale (16-28) and
+  1440 must keep the desktop name (34px, no step-down, picture beside). Fails on the build before the fix (proved: 320 and 390 both failed). */
+  const LN = [['it', 'Houndoominite'], ['it', 'Kangaskhanite'], ['it', 'Chesnaughtite'], ['it', 'Charizardite X'], ['it', 'Garchompite Z'], ['it', 'Raichunite Y'], ['it', 'Absolite Z'],
+    ['mv', 'Comeuppance'], ['mv', 'Flamethrower'], ['mv', 'Extrasensory'], ['mv', 'U-turn'], ['mv', 'X-Scissor'], ['mv', 'Will-O-Wisp'], ['mv', 'Baby-Doll Eyes'],
+    ['ab', 'Electromorphosis'], ['ab', 'Adaptability'], ['ab', 'Anticipation'], ['nt', 'Adamant']];
+  const lnRun = async w => { const ctx = await b.newContext({viewport: {width: w, height: 800}}), q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+    await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500); await q.evaluate(() => document.fonts.ready);
+    await q.evaluate(() => window.__ev(`(() => { const u = [['Garchomp', 50, 60]], o = k => Object.fromEntries(Object.keys(INFO_TEXT[k]).map(n => [n, [100, u, 1]])); META.info = {N: 1000, period: 'test', mv: o('mv'), it: o('it'), ab: o('ab')}; })()`));
+    const r = await q.evaluate(async L => { const out = [];
+      const lines = h => { const o = []; const tw = document.createTreeWalker(h, NodeFilter.SHOW_TEXT); let t, top0 = null, cur = '';
+        while ((t = tw.nextNode())) for (let i = 0; i < t.data.length; i++) { const rg = document.createRange(); rg.setStart(t, i); rg.setEnd(t, i + 1); const rc = [...rg.getClientRects()].filter(x => x.width > 0)[0];
+          if (rc) { const top = Math.round(rc.top); if (top0 !== null && top > top0 + 4) { o.push(cur); cur = ''; } top0 = top; } cur += t.data[i]; }
+        o.push(cur); return o; };
+      for (const [k, n] of L) { V2.openInfo(k, n); await new Promise(r => requestAnimationFrame(() => requestAnimationFrame(r))); const h = document.querySelector('.np-sheet .is-tab h2');
+        if (!h) { out.push({n, bad: 'no sheet'}); continue; } const ls = lines(h), fs = parseFloat(getComputedStyle(h).fontSize);
+        const mid = ls.slice(0, -1).some((l, i) => /[^\s-]$/.test(l) && /^\S/.test(ls[i + 1])), lone = ls.some(l => /^\s*\S\s*$/.test(l)), pic = !!document.querySelector('.np-sheet .is-pn'), stk = !!document.querySelector('.np-sheet .is-pn.is-stk');
+        out.push({n, ls: ls.map(l => l.trim()).join(' / '), fs, mid, lone, stk, pic, bad: mid ? 'breaks mid-word' : lone ? 'lone letter' : ![16, 17, 20, 22, 24, 26, 28, 34].includes(fs) ? 'size off the scale' : ''}); V2.closeSheet(true, true); }
+      return out; }, LN); await ctx.close(); return r; };
+  for (const w of [320, 390]) { const r = await lnRun(w), bad = r.filter(x => x.bad);
+    ok(!bad.length && r.every(x => x.fs >= 16 && x.fs <= 28), `LN ${w}: the ${r.length} longest sheet names never break inside a word nor leave a lone letter, sizes 16-28 (${bad.length ? 'FAILS: ' + bad.map(x => `${x.n} "${x.ls || ''}" ${x.fs || ''}px ${x.bad}`).join(' | ') + ' ;; ' : ''}${r.map(x => `${x.n} ${x.fs}${x.stk ? ' above' : ''}`).join(', ')})`); }
+  { const ctx = await b.newContext({viewport: {width: 1440, height: 900}}), q = await ctx.newPage(); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2000);
+    const d = await q.evaluate(async () => { const o = []; for (const [k, n] of [['mv', 'Comeuppance'], ['it', 'Houndoominite'], ['nt', 'Adamant']]) { V2.openInfo(k, n); await new Promise(r => setTimeout(r, 200)); const h = document.querySelector('.np-sheet .is-tab h2');
+      o.push(`${n} ${parseFloat(getComputedStyle(h).fontSize)}px${h.dataset.fs ? ' data-fs ' + h.dataset.fs : ''}${document.querySelector('.np-sheet .is-stk') ? ' stacked' : ''}`); V2.closeSheet(true, true); } return o; });
+    ok(d.every(x => /^\S+ 34px$/.test(x)), `LN 1440: desktop names unchanged (34px, no step-down, picture beside): ${d.join(', ')}`); await ctx.close(); }
+}
 if (part('main2')) await IMG(); // the real item pictures (IMG, defined above; ONLY=IMG runs it alone)
 if (part('main2')) { // Sim, Nov 18: Base Stats calm and compact, on theme (no big bubbly numbers): at most 260px tall on a phone, numbers 16px in the slanted
   // type with no shadow, a Mega's numbers line up in each column, nothing spills out, at 320-1440
