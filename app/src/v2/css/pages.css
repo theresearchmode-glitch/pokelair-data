@@ -3032,6 +3032,14 @@ button.pp2-plate{cursor:pointer;width:100%}
   .ar-oth ul{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ar-gh{display:grid;justify-items:start}
 }
+/* 700-899 (Nov 23, qcheck OFFSCREEN at 720): three books a row are too narrow for the side Pokémon (the books grew past their cells,
+   overlapped and reached the window edge), so the books take the phone book's inside: Pokémon top right, words across the book */
+@media (min-width:700px) and (max-width:899.98px){
+  .ar-bk,.big .ar-bk,.mid .ar-bk{min-height:0;padding:76px var(--s3) var(--s4) var(--s5)}
+  .big .ar-bk{padding-top:92px}
+  .ar-bkart,.big .ar-bkart{top:var(--s2);bottom:auto;right:var(--s2);width:68px;height:68px}
+  .big .ar-bkart{width:84px;height:84px}
+}
 @media (max-width:359.98px){.ar-nm,.big .ar-nm{font-size:var(--t17)}.ar-bk,.big .ar-bk,.mid .ar-bk{padding-left:var(--s4);padding-right:var(--s2)}}
 .wx-misty{--wc:var(--ty-Fairy);background-image:radial-gradient(60% 40% at 30% 100%,var(--wx-mid) 0 99%,transparent),radial-gradient(50% 35% at 80% 105%,var(--wx-lo) 0 99%,transparent),radial-gradient(circle,var(--wx-mid) 2px,transparent 2.5px);background-size:auto,auto,30px 34px}
 
