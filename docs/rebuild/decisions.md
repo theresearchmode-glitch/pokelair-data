@@ -2439,3 +2439,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:00 AM: Sim: 'lets get to work right now and fix this' (threat-check blocking live since Nov 22) + redesign Preview gets the daily data updates. Pause lifted for these two jobs.
 - 7:05 AM: Live fix: threat-check pinned Basculegion (Scarf row solid, Life Orb row none); cause = its top item flipped Scarf 28% -> Life Orb 28.1% on Nov 22. Local threat-check PASS (exit 0). Pushed to main c565e865 (Sim's go: 'fix this'); GitHub run 1516 running. Same fix cherry-picked to t1rules. Preview v258 building on today's data (main out + info.json rebuilt Oct 27-Nov 24).
 - 7:23 AM: GitHub 1516 on main c565e865: success; Promote to live 56: success; live = c565e865 (Nov 24 data). Data refresh fired by hand (Sim: 'yes ofcouse. run it').
+- 7:24 AM: daily-data.sh tested on live c565e865: exit 0, DATA-DATE 2026-11-24, no-names 0, COPY-OK. Scheduled 'Preview daily data' at 7:41 AM ET daily (trig_014FJu3gufbrwjZwJhnax2EE).
