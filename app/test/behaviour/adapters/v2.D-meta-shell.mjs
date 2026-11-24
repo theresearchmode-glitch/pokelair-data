@@ -130,8 +130,9 @@ export default (ui, pg) => {
         const ok = n <= 0 ? /Live now/i.test(w) : n === 1 ? /Tomorrow/i.test(w) : new RegExp(`in ${n} days`).test(w); return {text: __dtx(r), countdownOk: ok}; })}; }),
     // ---------------- This Week (Nov 15, The Front Page: src/v2/pages/thisweek.js) ----------------
     /** the share image in the open share sheet (today's dialog): its size once drawn */
-    shareCard: () => ev(() => { const s = [...document.querySelectorAll('.np-sheet')].filter(__dvis).pop(), i = s && s.querySelector('[data-wkimg] img'); if (!i || !i.complete || !i.naturalWidth) return null;
-      return {w: i.naturalWidth, h: i.naturalHeight, src: (i.src || '').slice(0, 40), text: __dtx(s)}; }),
+    /* waits up to 4 s for the image to finish drawing (WebKit, Nov 23: one check right after the tap failed 1 in 3 runs while the image was still being made) */
+    shareCard: async () => { for (let k = 0; k < 20; k++) { const r = await ev(() => { const s = [...document.querySelectorAll('.np-sheet')].filter(__dvis).pop(), i = s && s.querySelector('[data-wkimg] img'); if (!i || !i.complete || !i.naturalWidth) return null;
+      return {w: i.naturalWidth, h: i.naturalHeight, src: (i.src || '').slice(0, 40), text: __dtx(s)}; }); if (r) return r; await wait(200); } return null; },
     /** tap a button in the open sheet by its words (today's tapInDialog; the new build's dialogs are .np-sheet) */
     tapInDialog: async m => { const ok = await ev(([src, fl]) => { const re = new RegExp(src, fl); const d = [...document.querySelectorAll('.np-sheet')].filter(__dvis).pop(); const b = d && [...d.querySelectorAll('button')].filter(__dvis).find(b => re.test(__dtx(b)));
         if (!b) return false; b.click(); return true; }, [m.source, m.flags]); if (!ok) throw new Error('nothing in the sheet matching ' + m); await wait(500); },
