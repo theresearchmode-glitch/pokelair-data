@@ -2442,3 +2442,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:24 AM: daily-data.sh tested on live c565e865: exit 0, DATA-DATE 2026-11-24, no-names 0, COPY-OK. Scheduled 'Preview daily data' at 7:41 AM ET daily (trig_014FJu3gufbrwjZwJhnax2EE).
 - 7:42 AM: Preview daily data (first automatic run): daily-data.sh exit 0, DATA-DATE Nov 24, live c565e865, no-names 0, COPY-OK; published Preview v259.
 - 9:15 AM: Sim: back on pause until tomorrow (resume 4:01 PM Wed Nov 25 as scheduled). The daily data refresh (6:52) and Preview daily data (7:41) keep running, as Sim asked.
+- 9:34 AM: Other account BIG TASK 1 received (zips unpacked in scratch bt1a/bt1b, report-only, no code change): A1-M9 can't reproduce (0 of 11 fail; proposes wait-for-end-state test change); Pokémon art 700-1099 = deliberate bleed, 168/168 whole, no sideways scroll (proposes qcheck pixel judging or known-list). Decisions on resume 4:01 PM Wed.
