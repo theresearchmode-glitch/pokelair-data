@@ -313,6 +313,10 @@ span.nw2-box{cursor:default}
  .nw2-paper{margin-top:var(--s5);padding:var(--s3) var(--s4) var(--s4)}.nw2-top>span:nth-child(3){display:none}
  .nw2-lh{font-size:var(--t26)}
  .nw2-ser{grid-template-columns:repeat(4,minmax(0,1fr));row-gap:var(--s3)}.nw2-ser .np-mon{--iw:48px}
+ /* hP4 Nov 24: the latest round takes the row's empty columns (7 rounds: 4 + 3 left one cell blank), sprite beside its month and gift */
+ .nw2-ser>.nw2-last{grid-column:span var(--fill)}
+ .nw2-last :is(button,.nw2-ng){grid-template-columns:auto auto;justify-content:center;align-items:center;column-gap:var(--s2)}
+ .nw2-last .np-mon{grid-row:1 / 3;--iw:64px}.nw2-last b{align-self:end;justify-self:start}.nw2-last small{align-self:start;justify-self:start;text-align:left}
  .nw2-side{grid-template-columns:minmax(0,1fr);gap:var(--s2)}.nw2-box{padding:var(--s3)}.nw2-box b{font-size:var(--t20)}
  .nw2-ib,.nw2-erl{grid-template-columns:minmax(0,1fr)}.nw2-ib:not(.on)>li:nth-child(n+3){display:none}.nw2-ib .k-link{display:none}
  .nw2-ph .dp-bmore{display:inline-flex;align-items:center;min-height:44px}

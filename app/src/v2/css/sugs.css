@@ -300,6 +300,7 @@ input::placeholder,textarea::placeholder{color:var(--ink-3);opacity:1}
 p,li,small{text-wrap-style:pretty}
 .tm-e-w small{text-wrap-style:balance}.tm-e-w .tm-e-src{display:block} /* the empty My Team tiles' share line (W2c's longer 'Showdown ladder teams'): the source starts its own line, so every tile wraps the same (the % no longer decides it) */
 .bt-verdict small.bt-vrisk{text-wrap-style:balance} /* Sim's Q14 A (Nov 19): its two lines balance (no lone "(see Watch)."); here because this layer sets small to pretty */
+.pk-typeline{text-wrap-style:balance} /* hP4 Nov 24: the Pokémon page type line balances its chips (6 + 5, not 10 + 1); here because this layer sets p to pretty */
 /* Nov 16 audit (detector, day and night): white words on the type-coloured tickets, the Events plate and This Week's headline measured 3.6-4.2:1;
    a 15% dark layer under the ticket lines brings every type colour to 4.6:1+ (official tickets are gold with dark ink and stay as they are) */
 .tk:not(.off),.ev-oh,.wk-hl{background:repeating-linear-gradient(135deg,var(--tk-line) 0 1px,transparent 1px 7px),linear-gradient(var(--tk-scrim),var(--tk-scrim)),linear-gradient(115deg,var(--ta),var(--tb))}
