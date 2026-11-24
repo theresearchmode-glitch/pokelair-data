@@ -21,7 +21,6 @@
   "NAV-05": "(b) same as NAV-04: \"This Week\" is the 4th item of the Tournaments slider (Sim Q8). Sorted Nov 17.",
   "NAV-06": "(b) the new site uses the header Back button (Sim, Nov 12), no \"\u2190 Meta\" links in pages. Sorted Nov 17.",
   "NAV-08": "(b + c) b: the new site keeps the page in the address on purpose (a reload reopens it; BROKEN-04 passes) and the Pok\u00e9mon sheet is a page (decisions.md Nov 15 3:24 PM). c: the scroll half: go() changes pages by setting the address with no tap, and the scroll is saved on a tap or page-hide (shell.js navSaveY); with real taps Back restores it (probe Nov 17: Ratings y=701 \u2192 Build tab \u2192 Back = y 700). The old \"possible real bug\" label is not confirmed. Sorted Nov 17.",
-  "NAV-10": "(b) the Pok\u00e9mon sheet became a page (decisions.md Nov 15 3:24 PM); a page doesn't trap focus. The old \"possible real bug\" label is not confirmed. Sorted Nov 17.",
   "NAV-11": "(b) one accent (--plot) for every section (parity-nov15 \"Deliberate differences Sim approved\"). Sorted Nov 17.",
   "JUMP-02": "(b) the new search lists places labelled \"Page\", each with a description (\"Home \u00b7 Start here\"), not 14 \"Tool\" rows. Sorted Nov 17.",
   "JUMP-02b": "(b) the new design shows its \"Page\" label on phones too. Sorted Nov 17.",

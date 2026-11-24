@@ -105,7 +105,78 @@ t('NAV-09', 'A new page opens at its top', run({team: TEAM}, async ({ui, d}) => 
   await d.openMenu(); await d.tapMenuPage('Track Record'); await ui.pg.waitForTimeout(600); expect(await ui.current() === 'track' && await d.scrollY() < 5, `Track Record opened at ${await d.scrollY()}`);
   await d.scrollToBottom(); await ui.go('Events'); await ui.pg.waitForTimeout(500); expect(await d.scrollY() < 5, 'Events opened at ' + await d.scrollY()); }), NEW ? {skip: 'old-site design; the new site\'s approved version is NAV-09v (Sim, Nov 16, batch 17)'} : {});
 
-t('NAV-10', 'Keyboard focus stays inside an open Pokémon sheet', run({team: TEAM}, async ({ui, d}) => {
+/* NAV-10 on the new site (Nov 24, hN10): the Pokémon sheet became a page (decisions.md Nov 15 3:24 PM), and a page doesn't trap focus,
+   so the old body "passed" only because the page has 50+ tab stops inside #main (it guarded nothing). The new body checks what a
+   keyboard player needs on a page instead, on Sneasler's page (many sets, moves, items and Abilities):
+   (1) Tab from the top: skip link, then the header, then the page's own content, then the footer (never back up a region, nothing
+       outside those four), and the page's main controls (a move, an item, an Ability, "Use this set") are all reached;
+   (2) every stop is really visible: not zero-size, not hidden / transparent / inert / aria-hidden, and inside the window once the
+       browser has scrolled to it; (3) Shift+Tab walks back through exactly the same stops; (4) Escape on the page throws nothing;
+   (5) a move, an item and an Ability word each open their info sheet (.np-sheet) by Enter, focus moves into it and stays there for
+       30 Tabs (some Shift+Tab), and closing it (Escape, or Enter on its ✕) puts focus back on the word that opened it.
+   It can fail: proven Nov 24 by hiding one control (visibility:hidden), turning off the sheet's trap, and moving focus elsewhere on close. */
+const navStop = pg => pg.evaluate(() => { const a = document.activeElement, W = window.__n10 || (window.__n10 = []);
+  if (!a || a === document.body || a === document.documentElement) return null;
+  let i = W.indexOf(a); if (i < 0) { W.push(a); i = W.length - 1; }
+  const reg = a.closest('.np-skip') || a.classList.contains('np-skip') ? 'skip' : a.closest('.np-sheet') ? 'sheet' : a.closest('header') ? 'header' : a.closest('footer') ? 'footer' : a.closest('#main') ? 'main' : 'other';
+  const b = a.getBoundingClientRect(); let bad = '';
+  if (!(b.width > 0 && b.height > 0)) bad = 'zero-size';
+  else if (b.bottom <= 0 || b.top >= innerHeight || b.right <= 0 || b.left >= innerWidth) bad = `outside the window (top ${Math.round(b.top)}, window ${innerHeight})`;
+  for (let e = a; e && !bad; e = e.parentElement) { const s = getComputedStyle(e);
+    if (s.visibility === 'hidden' || s.visibility === 'collapse') bad = 'visibility:hidden'; else if (s.display === 'none') bad = 'display:none';
+    else if (Number(s.opacity) === 0) bad = 'opacity 0'; else if (e.hidden || e.inert || e.getAttribute('aria-hidden') === 'true') bad = 'inside hidden/inert/aria-hidden'; }
+  return {i, reg, bad, kind: a.dataset.v2info || '', name: (a.getAttribute('aria-label') || a.textContent || a.tagName).replace(/\s+/g, ' ').trim().slice(0, 50)}; });
+const nav10v2 = run({team: TEAM, hash: '#pokemon=Sneasler', wait: 1500}, async ({ui, errs}) => {
+  const pg = ui.pg, kb = pg.keyboard;
+  expect(await pg.evaluate(() => window.V2 && V2.route()) === 'pokemon', 'Sneasler\'s page did not open: ' + await pg.evaluate(() => location.hash));
+  // (1) + (2): Tab from the top until focus wraps round to the first stop again
+  const ORDER = ['skip', 'header', 'main', 'footer'], seq = [];
+  for (let n = 0; n < 150; n++) { await kb.press('Tab'); const s = await navStop(pg); if (!s) continue; /* the page itself, between the last stop and the first */
+    if (seq.length && s.i === seq[0].i) break; seq.push(s);
+    expect(!s.bad, `Tab stop ${seq.length} "${s.name}" (${s.reg}) is not visible: ${s.bad}`);
+    expect(ORDER.includes(s.reg), `Tab stop ${seq.length} "${s.name}" is outside the skip link, header, page and footer (${s.reg})`);
+    const prev = seq.length > 1 ? seq[seq.length - 2] : null;
+    expect(!prev || ORDER.indexOf(s.reg) >= ORDER.indexOf(prev.reg), `Tab went back from the ${prev && prev.reg} to the ${s.reg} at stop ${seq.length} "${s.name}"`); }
+  expect(seq.length >= 20 && seq.length < 150, `${seq.length} Tab stops (focus never wrapped round, or the page has almost none)`);
+  expect(seq[0].reg === 'skip', 'the first Tab stop is not the skip link: ' + seq[0].name);
+  for (const r of ['header', 'main', 'footer']) expect(seq.some(s => s.reg === r), 'no Tab stop in the ' + r);
+  const main = seq.filter(s => s.reg === 'main');
+  for (const [k, what] of [['mv', 'a move'], ['it', 'an item'], ['ab', 'an Ability']]) expect(main.some(s => s.kind === k), `Tab never reaches ${what} word on the page`);
+  expect(main.some(s => /^Use this set/.test(s.name)), 'Tab never reaches "Use this set"');
+  // (3) focus is on the first stop again (it wrapped); Shift+Tab goes round backwards to the last stop, then walks back through the same stops
+  { let s = null; for (let n = 0; n < 3 && !s; n++) { await kb.press('Shift+Tab'); s = await navStop(pg); }
+    expect(s && s.i === seq[seq.length - 1].i, `Shift+Tab from the skip link went to "${s ? s.name : 'the page'}", not round to the last stop "${seq[seq.length - 1].name}"`); }
+  for (let j = seq.length - 2; j >= 0; j--) { await kb.press('Shift+Tab'); const s = await navStop(pg);
+    expect(s && s.i === seq[j].i, `Shift+Tab from "${seq[j + 1].name}" went to "${s ? s.name : 'the page'}", not back to "${seq[j].name}"`);
+    expect(!s.bad, `Shift+Tab stop "${s.name}" is not visible: ${s.bad}`); }
+  // (4) Escape on the page (focus on a page control) throws nothing and leaves the page showing
+  const firstMain = seq.findIndex(s => s.reg === 'main'); for (let j = 0; j < firstMain; j++) await kb.press('Tab');
+  await kb.press('Escape'); await sleep(300);
+  expect(!errs.length, 'page errors after Escape: ' + errs.join(' | '));
+  expect(await pg.evaluate(() => V2.route()) === 'pokemon', 'Escape left the Pokémon page');
+  // (5) each kind of info word: open by Enter, focus trapped in the sheet for 30 Tabs, closing returns focus to the word
+  const sheetOpen = () => pg.evaluate(() => [...document.querySelectorAll('.np-sheet')].filter(s => s.getClientRects().length).length);
+  for (const [k, what, close] of [['mv', 'move', 'Escape'], ['it', 'item', 'Escape'], ['ab', 'Ability', 'x']]) {
+    await pg.evaluate(() => { document.activeElement && document.activeElement.blur && document.activeElement.blur(); scrollTo(0, 0); });
+    const at = seq.findIndex(s => s.reg === 'main' && s.kind === k), word = seq[at];
+    await pg.evaluate(() => { const s = document.querySelector('.np-skip'); if (s) s.focus(); }); /* start from the top again */
+    let s = await navStop(pg); for (let n = 0; n < 150 && !(s && s.i === word.i); n++) { await kb.press('Tab'); s = await navStop(pg); }
+    expect(s && s.i === word.i, `could not Tab to the ${what} word "${word.name}" again`);
+    await kb.press('Enter'); await sleep(500);
+    expect(await sheetOpen() === 1, `Enter on the ${what} word "${word.name}" did not open one info sheet (${await sheetOpen()} open)`);
+    s = await navStop(pg); expect(s && s.reg === 'sheet', `opening the ${what} sheet did not move focus into it (focus: ${s ? s.name + ', ' + s.reg : 'the page'})`);
+    for (let n = 0; n < 30; n++) { await kb.press(n % 7 === 6 ? 'Shift+Tab' : 'Tab'); s = await navStop(pg);
+      expect(s && s.reg === 'sheet', `focus left the ${what} sheet after ${n + 1} Tabs (now on ${s ? '"' + s.name + '", ' + s.reg : 'the page'})`);
+      expect(!s.bad, `a stop in the ${what} sheet is not visible: "${s.name}" ${s.bad}`); }
+    if (close === 'x') { await pg.evaluate(() => { const x = [...document.querySelectorAll('.np-sheet button.x[data-v2close]')].find(b => b.getClientRects().length); if (x) x.focus(); }); await kb.press('Enter'); }
+    else await kb.press('Escape');
+    await sleep(500);
+    expect(await sheetOpen() === 0, `${close === 'x' ? 'Enter on ✕' : 'Escape'} did not close the ${what} sheet`);
+    s = await navStop(pg); expect(s && s.i === word.i, `closing the ${what} sheet put focus on ${s ? '"' + s.name + '" (' + s.reg + ')' : 'the page'}, not back on "${word.name}"`);
+    expect(await pg.evaluate(() => V2.route()) === 'pokemon', `closing the ${what} sheet left the Pokémon page`); }
+  expect(!errs.length, 'page errors: ' + errs.join(' | ')); });
+t('NAV-10', NEW ? 'Keyboard on the Pokémon page: sensible Tab order, every stop visible, Shift+Tab back; an info sheet traps focus and returns it'
+  : 'Keyboard focus stays inside an open Pokémon sheet', NEW ? nav10v2 : run({team: TEAM}, async ({ui, d}) => {
   await ui.go('Ratings'); await d.focusPokemon('Incineroar'); await d.key('Enter'); expect(await d.sheetIsOpen(), 'Enter on a row did not open its sheet');
   for (let i = 0; i < 40; i++) { await ui.pg.keyboard.press(i % 9 === 8 ? 'Shift+Tab' : 'Tab'); expect(await d.sheetFocusInside(), 'focus left the sheet after ' + (i + 1) + ' Tabs'); } }));
 
