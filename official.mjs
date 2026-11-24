@@ -18,8 +18,12 @@
 import fs from 'node:fs'; import crypto from 'node:crypto';
 import {readJSON, dec, ROSTER, mapMon, validItem, bad} from './names.mjs';
 import {opid, okeys, keyScore} from './pid.mjs';
+import {activeReg, regProfile} from './formats.mjs';
 export const UA = 'NastyPlot data job (github.com/theresearchmode-glitch/pokelair-data; simran.jsbagga@gmail.com)';
-const TOP = +(process.env.OFFICIAL_TOP || 64), REG = process.env.OFFICIAL_REG || 'M-C', REG_START = '2026-09-01', CACHE = process.env.OFFICIAL_CACHE || '';
+// gap G1 (Nov 24): the regulation and its first day come from the regulation profile (regulation.json, the regulation our numbers
+// are built from). With no official id listed for it, every event is skipped as not this regulation's, never read as another one's.
+const RGP = regProfile(activeReg().id) || {}, RG_ID = (RGP.sources || {}).official || null;
+const TOP = +(process.env.OFFICIAL_TOP || 64), REG = process.env.OFFICIAL_REG || RG_ID || 'not-available-yet', REG_START = RGP.since || activeReg().since, CACHE = process.env.OFFICIAL_CACHE || '';
 const DIR = 'data/official', VR = 'https://victoryroad.pro/wp-json/wp/v2/pages', LQ = 'https://liquipedia.net/pokemon/api.php';
 const GAP = {'victoryroad.pro': 1100, 'www.vrpastes.com': 1100, 'vrpaste-backend.vercel.app': 1100, 'liquipedia.net': 2100}, GAP0 = process.env.GAP != null ? +process.env.GAP : null;  /* GAP=0 only for the offline stress test */
 const sleep = ms => new Promise(r => setTimeout(r, ms));

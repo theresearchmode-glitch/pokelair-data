@@ -13,6 +13,7 @@
         "pikalytics": "championstournaments",
         "official": "M-C"
       },
+      "items": "data/regmc-items.txt",
       "rules": {"format": "VGC doubles", "bring": 6, "pick": 4, "level": 50, "points": [0, 32], "itemClause": true}
     }
   }

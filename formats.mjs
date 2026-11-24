@@ -46,7 +46,9 @@ export function oddEvents(ids, readT, log = console.log) {
 // (banner only) for a manual check.
 // The regulation profile (regulation.json, Nov 24): the one place the site's regulation is written. REG_PROFILE is the full entry
 // for the site's regulation (name, Showdown id, dates, outside sources' ids, rules); SITE_REG keeps its old shape for every caller.
-export const REG_FILE = JSON.parse(fs.readFileSync(new URL('./regulation.json', import.meta.url), 'utf8'));
+// REG_PROFILE_FILE=<path> reads another profile (a scratch M-D copy for a dry run); the real site always uses regulation.json.
+const regFilePath = (typeof process !== 'undefined' && process.env && process.env.REG_PROFILE_FILE) || new URL('./regulation.json', import.meta.url);
+export const REG_FILE = JSON.parse(fs.readFileSync(regFilePath, 'utf8'));
 export const regProfile = (id = REG_FILE.site) => { const r = REG_FILE.regs[id]; return r ? {id, ...r} : null; };
 export const REG_PROFILE = regProfile();
 if (!REG_PROFILE || !REG_PROFILE.sd || !REG_PROFILE.since) throw new Error(`regulation.json: site "${REG_FILE.site}" needs an entry with sd and since`);
@@ -74,7 +76,10 @@ export const REG_END = Object.fromEntries(Object.entries(REG_FILE.regs).filter((
 export const regAt = (f, date) => { let id = f; for (let i = 0; i < 4; i++) { const end = REG_END[id], t = Date.parse(String(date || ''));
   if (!end || !isFinite(t) || t < Date.parse(end)) break; const nx = nextRegIds(id)[0]; if (!nx) break; id = nx; } return id; };
 // an event's regulation: saved with it from Nov 1; older saved events are all Reg M-C (the only format the job ever fetched)
-export const regOf = e => regAt((e && typeof e.f === 'string' && e.f) || SITE_REG.id, e && (e.d || e.date));
+// history: the job saved no format before Nov 1, and every event it saved then was Reg M-C. This is a fact about old files, so it
+// stays 'M-C' when the site moves on (with SITE_REG.id here, old M-C events would count as the new regulation after a switch).
+export const LEGACY_REG = 'M-C';
+export const regOf = e => regAt((e && typeof e.f === 'string' && e.f) || LEGACY_REG, e && (e.d || e.date));
 export const sameReg = (e, id) => regOf(e) === id;
 export const inRegWindow = (date, reg) => { const d = String(date || '').slice(0, 10); return !!d && d >= reg.since && (!reg.end || d < reg.end); };
 // list: Limitless tournaments of any format [{format, date, players}]; sd: {showdownFormat: {n, first}} from replay searches;
@@ -97,3 +102,14 @@ export function detectReg(list, sd, prev, today) {
   let switched = prev && prev.switched || null;
   if (now && REG_AUTO_SWITCH && now.events >= REG_SWITCH.events && now.players >= REG_SWITCH.players) { switched = {from: id, to: now.id, on: today}; id = now.id; since = now.since; sdId = sdFor(id); now = null; }
   return {id, name: regName(id), since, sd: sdId, site: SITE_REG.id, now: now ? {...now, name: regName(now.id), need: REG_SWITCH} : null, switched, seen, checked: today}; }
+// ---------- outside sources and the regulation profile (gap G1, Nov 24) ----------
+// The ids each outside source uses for a regulation (regulation.json "sources"); {} when the profile has no entry for it.
+export const regSources = id => ((regProfile(id) || {}).sources) || {};
+// Is this fetched page really about regulation id? null when it is, else the reason (shown as "not available yet: <reason>").
+// Showdowntier names the regulation in its page; Pikalytics' tournament page has no regulation in its address, so the names of the
+// sample events it lists must mostly be this regulation's.
+export function sourcePageCheck(kind, html, id) { const h = String(html || '');
+  if (kind === 'showdowntier') return new RegExp(`Regulation ${id}\\b`).test(h) ? null : `its page does not say Regulation ${id}`;
+  if (kind === 'pikalytics') { const regs = [...h.matchAll(/\bReg(?:ulation)?(?: Set)? ?([A-Z])-([A-Z])\b/gi)].map(m => `${m[1]}-${m[2]}`.toUpperCase()), ours = regs.filter(r => r === id).length;
+    return !regs.length || ours * 2 >= regs.length ? null : `its sample events are mostly ${[...new Set(regs.filter(r => r !== id))].join('/')}`; }
+  return null; }

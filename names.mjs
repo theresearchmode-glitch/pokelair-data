@@ -1,6 +1,7 @@
 // Shared name and text helpers for the data scripts (official.mjs, sources.mjs): species text -> NastyPlot roster name,
 // held-item check, HTML to text. Paths are relative to the working folder, so a dry run can run from a scratch copy.
 import fs from 'node:fs';
+import {activeReg, regProfile} from './formats.mjs';
 export const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 export const dec = s => s.replace(/&amp;/g, '&').replace(/&#0?39;|&apos;|&#8217;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n));
 export const text = h => dec(h.replace(/<!--[\s\S]*?-->|<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n')).split('\n').map(x => x.trim()).filter(Boolean);
@@ -26,7 +27,10 @@ export function mapMon(species, item) {
   if (ROSTER.has(n)) return n; const b = n.split('-')[0]; return ROSTER.has(b) ? b : null; }
 // An item must look like an item: not a field label, not empty, a sane length; checked against the Reg M-C item list
 // (data/regmc-items.txt) when that file exists. Bad parses become '' (unknown) and are counted.
-const ITEMS = new Set((() => { try { return fs.readFileSync('data/regmc-items.txt', 'utf8').split(/\r?\n/).map(x => x.trim()).filter(Boolean); } catch (e) { return []; } })());
+// the item list's file comes from the regulation profile (regulation.json "items"); a regulation with none listed yet checks no items
+// (an empty list) rather than judging its items against another regulation's list
+const ITEMS_FILE = (regProfile(activeReg().id) || {}).items || null;
+const ITEMS = new Set((() => { try { if (!ITEMS_FILE) return []; return fs.readFileSync(ITEMS_FILE, 'utf8').split(/\r?\n/).map(x => x.trim()).filter(Boolean); } catch (e) { return []; } })());
 export const bad = {items: 0};
 export function validItem(it) { const s = String(it || '').trim(); if (!s) return '';
   if (/:\s*$/.test(s) || /Alignment|Ability|Held Item|Nature/i.test(s) || s.length > 30 || (ITEMS.size && !ITEMS.has(s))) { bad.items++; return ''; } return s; }

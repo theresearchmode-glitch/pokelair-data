@@ -8,6 +8,7 @@
 //  - names: sites list a species ("Charizard"); we split Megas out. Everything here is compared per species (a team can
 //    hold only one of a species, so the plain form and its Megas add up exactly), except checks marked per form.
 import fs from 'node:fs';
+import {activeReg} from './formats.mjs';
 const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
 const S = rd('sources.json') || {}, P = rd('perf.json') || {}, MT = rd('meta_tour.json'), ML = rd('meta_ladder.json'), OF = rd('official.json');
 // species key: Megas fold into their species; Floette's plain entry is Floette-Eternal
@@ -56,7 +57,7 @@ const bestForm = (sets, rows) => { const U = Object.fromEntries((rows || []).map
   for (const [k, v] of Object.entries(sets || {})) { const s = spec(k), u = U[k] != null ? U[k] : 0; if (!D[s] || u > best[s]) { D[s] = v; best[s] = u; } } return D; };
 const mtSp = MT ? bySpecies(metaRows(MT).map(r => [r.n, r.u, r.w, r.teams])) : null;
 // 2. Recent tournaments + sets: our last-4-weeks team sheets vs Pikalytics (tournaments, about the last 2 weeks)
-compare({id: 'tour-vs-pikalytics', ours: mtSp, theirs: S.pika && fromSrc(S.pika.rows), oursName: MT && MT.source, theirsName: S.pika && `Pikalytics Reg M-C (${S.pika.scope || 'recent tournaments'})`,
+compare({id: 'tour-vs-pikalytics', ours: mtSp, theirs: S.pika && fromSrc(S.pika.rows), oursName: MT && MT.source, theirsName: S.pika && `Pikalytics ${activeReg().name} (${S.pika.scope || 'recent tournaments'})`,
   known: 'Same population: both are Limitless tournament team sheets (Pikalytics championstournaments since Nov 8; before that this compared against its Showdown ladder stats by mistake). Checked Nov 8 on the top 39: top item agrees 39/39, top Ability 39/39, the same top-4 moves 37/39 (Indeedee: Pikalytics merges both forms; Annihilape: its 2nd-4th moves are near-tied). Small gaps come from different time windows. Its usage table names species while its core lists name Megas, so Mega species are not comparable',
   tolU: [6, .45], tolW: 4, sets: S.pika && {ours: setsOf(MT), theirs: bestForm(S.pika.sets, S.pika.rows)}});
 // 3. (Removed Nov 9) Limitless vs the official events' whole field: it read RK9 data, retired Nov 1 (RK9 terms), and was

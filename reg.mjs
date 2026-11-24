@@ -6,7 +6,7 @@
 // If both sources fail, yesterday's file stays (a ::warning:: in the log). REG_OFFLINE=1 builds it from the saved tournaments
 // in data/index.json only (no network; they are all one regulation, so it can't see a new one) for local previews.
 import fs from 'node:fs';
-import {detectReg, readReg, activeReg, nextRegIds, sdGuess, regName, SITE_REG} from './formats.mjs';
+import {detectReg, readReg, activeReg, nextRegIds, sdGuess, regName, SITE_REG, LEGACY_REG} from './formats.mjs';
 const UA = {'User-Agent': 'pokelair-data (personal team-builder stats)'}, sleep = ms => new Promise(r => setTimeout(r, ms));
 async function getJSON(url) { const c = new AbortController(), to = setTimeout(() => c.abort(), 30000);
   try { const r = await fetch(url, {headers: UA, signal: c.signal}); if (!r.ok) throw new Error(url + ' ' + r.status); return await r.json(); } finally { clearTimeout(to); } }
@@ -14,7 +14,7 @@ const prev = readReg(), act = activeReg(), today = new Date().toISOString().slic
 let list = null; const sd = {};
 if (process.env.REG_OFFLINE === '1') {
   let idx = {tournaments: {}}; try { idx = JSON.parse(fs.readFileSync('data/index.json', 'utf8')); } catch (e) {}
-  list = Object.values(idx.tournaments || {}).map(t => ({format: t.f || SITE_REG.id, date: t.d, players: t.p}));
+  list = Object.values(idx.tournaments || {}).map(t => ({format: t.f || LEGACY_REG, date: t.d, players: t.p}));
 } else {
   try { list = []; for (let page = 1; page <= 3; page++) { if (page > 1) await sleep(6500);
       const r = await getJSON(`https://play.limitlesstcg.com/api/tournaments?game=VGC&limit=100&page=${page}`); if (!Array.isArray(r) || !r.length) break; list.push(...r); }
