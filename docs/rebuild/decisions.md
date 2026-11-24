@@ -2420,3 +2420,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:34 AM: Design (HH authority): hTR merged (1f27a73a): Track Record at 1100-1279: the '230x more top 8s' stamp and SEE HOW WE RATE button were clipped at the window edge (1100-1199); now sized to their column (tokens --d-trkbig/--d-trkgo). qcheck track 4 -> 0 at 1100 and 0 at 1040-1260; tap-size, main1 passed; length unchanged. Open: at 1280 both still overhang their column by ~31px into the gutter (on screen).
 - 4:35 AM: Helper slot: hTR2 fixes Track Record's stamp/button overhang at 1280+ (~31px into the gutter) and the 1279->1280 size jump.
 - 4:36 AM: Hourly check: 1 helper (hTR2), main job b83bry12j running, Game Plan v62.
+- 4:41 AM: Design (HH authority): hTR2 merged (d7cf0de3): Track stamp/button sized to their column from 1100 up; overhang at 1280 +31 -> inside, no size jump at 1279/1280 (55.3 -> 55.4px), 1400+ unchanged. qcheck track 0 findings; tap-size passed; length unchanged.
