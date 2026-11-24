@@ -153,7 +153,7 @@ footer{margin-top:56px;color:var(--mute);font-size:13px}
 <script>
 /* ===== PLAN: edit only this to update the page. s = done | doing | next | later | sim ===== */
 const PLAN = {
-  updated: 'Tue Nov 24, 4:17 PM',
+  updated: 'Tue Nov 24, 5:11 PM',
   road: [
     {when: 'Sat Nov 28', what: 'The switch', date: '2026-11-28'},
     {when: 'Wed Dec 2', what: 'Reg M-D + patch', date: '2026-12-02'},
@@ -195,6 +195,7 @@ const PLAN = {
       {s: 'doing', t: 'Alarms to Sim\'s phone', d: 'Limitless down, M-D spotted, tests failed. Being built by the other account.', tag: 'HH'},
       {s: 'doing', t: 'Live data includes info-sheet counts and Gifts/news', d: 'The new site needs them. Being built by the other account.', tag: 'HH'},
       {s: 'next', t: 'Data every 4 hours, ready to switch on', d: '', tag: 'HH'},
+      {s: 'next', t: 'Reg M-D banner + countdown on the site', d: 'Competitor scan: Pokémon Zone and Victory Road already mention M-D; we say nothing yet.', tag: 'HH'},
       {s: 'done', t: 'Test teams for M-D day', d: 'Done early by the other account; no check passes on nothing any more.', tag: 'Nov 24'},
       {s: 'next', t: 'Final checks on the switch version', d: '', tag: 'Helper + PC'}
     ]},
@@ -226,7 +227,12 @@ const PLAN = {
       {s: 'next', t: 'Feedback, page-view totals, hello@ email, owner page', d: 'Anonymous, on Cloudflare.', tag: 'HH'},
       {s: 'next', t: 'Export / Import my teams', d: 'No accounts: teams live on your device.', tag: 'HH'},
       {s: 'next', t: 'Backup data sources', d: 'Showdown numbers when Limitless is down; official events as a second source.', tag: 'HH'},
-      {s: 'next', t: 'Speed: under 2.5 s on a phone', d: 'Today 2.75 s.', tag: 'HH'},
+      {s: 'next', t: 'Speed: main picture under 2 s on a phone', d: 'Competitor scan: we\'re 3.2–3.6 s, most rivals 0.7–2.4 s. Split the page so each page loads only its own code.', tag: 'HH, first'},
+      {s: 'next', t: '"Updated 3 h ago · N events" stamp on Home and Meta', d: 'Rivals show their data\'s age and source on the page; freshness is our specialty.', tag: 'HH'},
+      {s: 'next', t: 'One-screen result after a paste', d: 'Score, top 3 fixes, worst 3 threats, turn-1 plan, then the deep pages.', tag: 'HH'},
+      {s: 'next', t: 'Strength Score share card + Track Record on Home', d: 'The two things only we have, front and centre.', tag: 'HH'},
+      {s: 'next', t: 'Rental codes on winning teams (where sources have them)', d: 'Four rivals have them: one tap into the game.', tag: 'HH'},
+      {s: 'next', t: 'Installable (home-screen icon, works offline for calc + speed)', d: 'Closes most of the "app" gap without an app store.', tag: 'HH'},
       {s: 'next', t: 'Accessibility check + a test so it stays fixed', d: '', tag: 'HH'},
       {s: 'next', t: 'Error and uptime alarms', d: '', tag: 'HH'}
     ]},
@@ -234,14 +240,15 @@ const PLAN = {
       {s: 'sim', t: 'Testers use the site', d: 'Plus a "first 60 seconds" fresh-eyes test.', tag: 'Dec 9–15'},
       {s: 'next', t: 'Fix what testers and alarms find', d: '', tag: 'HH'},
       {s: 'next', t: 'Read Limitless\'s terms', d: '', tag: 'HH'},
-      {s: 'next', t: 'Competitor scan', d: 'Statmie, Pikalytics, VGC Helper, ChampDex, Pokémon Zone and more: what they have, what only we have, our edge.', tag: 'other acc'}
+      {s: 'done', t: 'Competitor scan', d: '16 tools checked: only we have a whole-team score and a track record; we\'re slower on phones and less fresh. Report: docs/rebuild/research/competitors-nov24.md.', tag: 'Nov 24'}
     ]}
   ],
   later: [
     {t: 'Strength Score and analytics, the best they can be', d: 'All focus after the design work (Sim, Nov 24). The new score ships only if it beats today\'s.'},
     {t: 'Team Preview Coach', d: 'Their 6 → which 4 to bring and which 2 to lead, from real games.'},
     {t: 'Best-of-3 data', d: 'For real tournaments (Regionals, Worlds), kept separate from single games.'},
-    {t: 'Updates within the hour', d: 'Once the site runs on Cloudflare, fresh data costs almost nothing.'}
+    {t: 'Updates within the hour', d: 'Once the site runs on Cloudflare, fresh data costs almost nothing. Rivals: Pikalytics live, ChampDex every 6 h.'},
+    {t: 'Spanish and Portuguese', d: 'Statmie has 7 languages; LAIC São Paulo had 652 players.'}
   ],
   ideas: [
     {t: 'Daily KO puzzle', d: 'A shareable damage puzzle a day. Brings people back.'},
@@ -258,7 +265,8 @@ const PLAN = {
     {when: 'Nov 24', t: 'Info-sheet tips fact-checked; 2 misleading lines fixed'},
     {when: 'Nov 24', t: 'Pokémon page on tablets: the four facts fill the empty strip'},
     {when: 'Nov 24', t: 'Polish fixes: Damage Calc sentence, Build cores, Home tiles'},
-    {when: 'Nov 24', t: 'Rules on one page; game plan, public-site plan and honest review written'}
+    {when: 'Nov 24', t: 'Rules on one page; game plan, public-site plan and honest review written'},
+    {when: 'Nov 24', t: 'Competitor scan (16 tools); switch checklist, privacy page and SEO titles drafted; announcement moved to about Dec 18'}
   ]
 };
 
