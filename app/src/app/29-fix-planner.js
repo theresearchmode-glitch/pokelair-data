@@ -255,7 +255,10 @@ function* planFixesG(ms,pool,useA,opts){
           /* matchups are already inside the grade, so readiness is only a guard against a collapse (was −3, Phase 3 Nov 8) */
           return pl._ts>=tsBase-8&&((pl._g>=gBase+TS_GAIN&&(pl._sure==null||pl._sure>=SWAP_MIN))||(fixOf(pl)&&pl._g>=gBase)||(ipOf(pl)<ip0&&pl._g>=gBase-3));}
         return pl._ts>=tsBase+TS_GAIN||(fixOf(pl)&&pl._ts>=tsBase-3)};
-      let ranked=short.filter(qual).sort((x,y)=>(ipOf(x)-ipOf(y))||gKey(y)-gKey(x)||tsKey(y)-tsKey(x)||x.score-y.score);
+      /* Nov 24: a plan that sets the weather a teammate's Ability needs (rain for Swift Swim Mega Swampert) ranks first: on Nov 24's data
+         the rain setter had slipped to the 3rd plan (suggest-gaps failed on live data, passed on frozen data) */
+      const wxKey=pl=>pl.gap&&pl.gap.fix.includes('weather')&&pl.gap.why.some(w=>/^Sets [a-z ]+ for /.test(w))?1:0;
+      let ranked=short.filter(qual).sort((x,y)=>(wxKey(y)-wxKey(x))||(ipOf(x)-ipOf(y))||gKey(y)-gKey(x)||tsKey(y)-tsKey(x)||x.score-y.score);
       /* Variety (Sim, Nov 9: "it keeps suggesting the same pokemon"; Step D). On 400 real teams, Kingambit, Basculegion and Farigiraf
          were 48% of every Suggestion 1, because many strong Pokémon are tied within the score's margin of error and the engine always
          took the one a hair ahead (real one-swap pairs among viable Pokémon: 52.4%, a coin flip). Options within SUGG_TIE score points
