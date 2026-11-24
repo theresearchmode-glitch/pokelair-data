@@ -51,7 +51,10 @@ const C = [
      Zard Y is faster and its Ancient Power does 86-102%, so a high roll KOs Pelipper first: soft */
   [{n: 'Pelipper', ability: 'Drizzle', item: 'Damp Rock', moves: ['Hurricane', 'Weather Ball', 'Tailwind', 'Protect']}, 'Charizard-Mega-Y', [{n: 'Pelipper', ability: 'Drizzle', item: 'Damp Rock', moves: ['Hurricane', 'Weather Ball', 'Tailwind', 'Protect']}], 'solid', 'your rain: Weather Ball SE on Zard, Tailwind first'],
   [{n: 'Pelipper', ability: 'Drizzle', item: 'Damp Rock', moves: ['Helping Hand', 'Hurricane', 'Weather Ball', 'Wide Guard']}, 'Charizard-Mega-Y', [{n: 'Pelipper'}], 'soft', 'no Tailwind: Zard faster, Ancient Power 86-102% can KO first'],
-  ['Basculegion', 'Charizard-Mega-Y', null, 'solid', 'Wave Crash SE, Adaptability; usually faster'],
+  /* Nov 24: Basculegion's set is pinned, like Pelipper's. Its most-used item flipped from Choice Scarf (28%) to Life Orb (28.1%) on Nov 22,
+     so the unpinned row flipped with the data. With Scarf it moves first and OHKOs; with Life Orb Zard Y is faster and Solar Beam OHKOs first */
+  [{n: 'Basculegion', ability: 'Adaptability', item: 'Choice Scarf', moves: ['Wave Crash', 'Last Respects', 'Aqua Jet', 'Flip Turn']}, 'Charizard-Mega-Y', null, 'solid', 'Scarf: Wave Crash SE, Adaptability, faster'],
+  [{n: 'Basculegion', ability: 'Adaptability', item: 'Life Orb', moves: ['Aqua Jet', 'Last Respects', 'Protect', 'Wave Crash']}, 'Charizard-Mega-Y', null, 'none', 'Life Orb: Zard Y faster, Solar Beam OHKOs first'],
   ['Charizard-Mega-Y', 'Kingambit', null, 'solid', 'sun Heat Wave 2x on Steel, Zard faster'],
   ['Kingambit', 'Charizard-Mega-Y', null, 'none', 'Zard faster and KOs with Fire'],
   ['Garchomp', 'Archaludon', null, 'any', 'Earthquake SE; Archaludon Draco back'],
