@@ -1,0 +1,64 @@
+name: Reg M-D watcher and Limitless alarm
+# md-watch.mjs (Nov 24): once a day, after the daily data job, and on demand. Read-only: it never changes the site or the data.
+#   - "Reg M-D spotted: <where>" (Showdown formats, Limitless tournaments, official news): opened ONCE per place; never a duplicate
+#     (a title that exists, open or closed, is skipped).
+#   - "Limitless data paused since <date>": opened when Limitless doesn't answer or has no new event for 2+ days; its text refreshed
+#     while it lasts (a comment only when the date changes); closed with a note when data flows again.
+# Run it by hand (Actions > this workflow > Run workflow) with "dry" ticked to see the issue texts in the log without opening anything;
+# fake_found / fake_limitless pretend a sighting or an outage (the dry runs in docs/rebuild/test-runs/watcher-nov24.md).
+on:
+  schedule:
+    - cron: '23 13 * * *'   # daily, after the data job (9:07 UTC) and its refresh
+  workflow_dispatch:
+    inputs:
+      dry:
+        description: 'Dry run: print the issues it would open or close, open nothing'
+        type: boolean
+        default: true
+      fake_found:
+        description: 'Pretend a sighting (showdown,limitless,news), for testing'
+        default: ''
+      fake_limitless:
+        description: 'Pretend Limitless is down or stale (down | stale), for testing'
+        default: ''
+permissions:
+  contents: read
+  issues: write
+jobs:
+  watch:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - name: Look for Reg M-D and check Limitless
+        env:
+          WATCH_REPORT: ${{ runner.temp }}/watch.json
+          WATCH_DRY: ${{ inputs.dry && '1' || '' }}
+          WATCH_FAKE_FOUND: ${{ inputs.fake_found }}
+          WATCH_FAKE_LIMITLESS: ${{ inputs.fake_limitless }}
+        run: node md-watch.mjs
+      - name: Issues
+        if: ${{ !inputs.dry }}
+        uses: actions/github-script@v8
+        env:
+          WATCH_REPORT: ${{ runner.temp }}/watch.json
+        with:
+          script: |
+            const fs = require('fs'), R = JSON.parse(fs.readFileSync(process.env.WATCH_REPORT, 'utf8'));
+            const run = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
+            const all = (await github.paginate(github.rest.issues.listForRepo, {...context.repo, state: 'all', per_page: 100})).filter(i => !i.pull_request);
+            // 1. each sighting once, ever
+            for (const s of R.spotted || []) { if (all.some(i => i.title === s.title)) continue;
+              await github.rest.issues.create({...context.repo, title: s.title, body: `${s.body}\n\nRun: ${run}`}); }
+            // 2. the Limitless alarm: one open issue at most
+            const open = all.filter(i => i.state === 'open' && i.title.startsWith('Limitless data paused since '));
+            if (!R.paused) { for (const i of open) { await github.rest.issues.createComment({...context.repo, issue_number: i.number, body: `Data flows again. ${run}`});
+                await github.rest.issues.update({...context.repo, issue_number: i.number, state: 'closed', state_reason: 'completed'}); } return; }
+            const body = `${R.paused.body}\n\nLast checked: ${run}`;
+            if (!open.length) { await github.rest.issues.create({...context.repo, title: R.paused.title, body}); return; }
+            const i = open[0], moved = i.title !== R.paused.title;
+            await github.rest.issues.update({...context.repo, issue_number: i.number, title: R.paused.title, body});
+            if (moved) await github.rest.issues.createComment({...context.repo, issue_number: i.number, body: `Still paused; now: ${R.paused.title.slice(28)}. ${run}`});
