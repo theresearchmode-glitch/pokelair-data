@@ -50,3 +50,4 @@ Free plain domains (checked RDAP): intimidata (.org .net), calcmind (.org .net),
 metasight (.org), hiddenstats (.org .net), thinkroom (.org), statroom (.org), metaburst (.org), plotarmored (all), nastyplan (all),
 statsmash (.org .net), calcbeam (.org .net), statsurge (.org .net), calcmeta (.org .net).
 Taken: teamreview, foursight, metareader, wiseguard, youturn, datadance, prepup, metablast.
+- Intimidata: Sim likes it (Nov 24); next: clash check, Google check, logo direction when we come back to it.
