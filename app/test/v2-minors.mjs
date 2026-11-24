@@ -455,7 +455,7 @@ const IMG = async () => { /* The REAL item pictures (Sim, Nov 23, 9:3x PM): the 
   ok(Array.isArray(keys), `Item pictures: the page carries the item picture map ITEM_IMG (${keys ? keys.length + ' pictures' : 'missing'})`);
   if (keys && keys.length) {
     // every picture in the map loads (a file listed in items.json but missing from art/items/ fails here)
-    const dead = await q.evaluate(ks => Promise.all(ks.map(n => new Promise(r => { const i = new Image(); i.onload = () => r(i.naturalWidth > 0 ? '' : n); i.onerror = () => r(n); i.src = V2.itemImg(n); }))).then(a => a.filter(Boolean)), keys);
+    const dead = await q.evaluate(ks => Promise.all(ks.flatMap(n => [false, true].map(sm => new Promise(r => { const i = new Image(); i.onload = () => r(i.naturalWidth > 0 ? '' : n + (sm ? ' (small)' : '')); i.onerror = () => r(n + (sm ? ' (small)' : '')); i.src = V2.itemImg(n, sm); })))).then(a => a.filter(Boolean)), keys); /* both sizes: the 128px files serve Search and phone bags (review Nov 23) */
     ok(!dead.length, `Item pictures (real): every one of the ${keys.length} pictures in ITEM_IMG loads from the art folder${dead.length ? ': missing ' + dead.slice(0, 6).join(', ') : ''}`);
     const withImg = ['Life Orb', 'Focus Sash', ...keys].filter((n, i, a) => keys.includes(n) && a.indexOf(n) === i).slice(0, 3), got = [];
     for (const n of withImg) { const r = await bag(n); if (!(r.bag && r.img && r.w > 0 && !r.svg)) got.push(`${n} ${JSON.stringify(r)}`); }
@@ -1904,8 +1904,9 @@ if (part('main2')) { /* Item pictures in Search (Nov 24; Search is the tying poi
         return {pg: ((h.querySelector('.pg') || {}).textContent || '').trim(), n, h: +h.getBoundingClientRect().height.toFixed(1), pic: !t ? 'none' : i ? (i.naturalWidth > 0 ? 'img' : 'img-dead') : t.querySelector('svg') ? 'svg' : 'empty',
           hid: !t || (t.getAttribute('aria-hidden') === 'true' && (!i || i.getAttribute('alt') === '')), want: h.dataset.v2infon || n }; }); }); };
   const exp = n => q.evaluate(n => V2.itemImg(n, true) ? 'img' : V2.itemArt(n) ? 'svg' : 'none', n);
-  const seen = [], bad = []; let h0 = 0;
-  for (const w of ['life', 'sitrus', 'charizardite', 'choice', 'orb']) for (const r of await rows(w)) { if (r.pg !== 'Item' && !h0) h0 = r.h;
+  const seen = [], bad = []; let h0 = ((await rows('battle')).find(r => r.pg !== 'Item') || {}).h || 0; /* the plain row height first, from a query with no items (review Nov 23) */
+  if (!h0) bad.push('no plain row to measure (query "battle")');
+  for (const w of ['life', 'sitrus', 'charizardite', 'choice', 'orb']) for (const r of await rows(w)) {
     const e = r.pg === 'Item' ? await exp(r.want) : 'none'; seen.push(`${r.n} ${r.pic}`);
     if (r.pic !== e || !r.hid || !r.n || (h0 && Math.abs(r.h - h0) > 0.5)) bad.push(`${r.pg} ${r.n}: ${r.pic} (want ${e}) ${r.hid ? '' : 'NOT hidden '}h${r.h} vs ${h0}`); }
   const anyImg = seen.some(x => / img$/.test(x));

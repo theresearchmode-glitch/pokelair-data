@@ -236,7 +236,8 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
    phones' attacking-type row starts on it too; already on #types, the hash doesn't change, so it redraws */
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2type]'); if (!a || typeof ui !== 'object') return; const t = a.dataset.v2type;
   if (!(V2.TYPES || []).includes(t)) return; ui.typesSel = [t]; ui.typesMon = null; ui.typesAuto = false; ui.typesCleared = true; ui.tcAtk = t; V2.tcFind = '';
-  if (location.hash === '#types') setTimeout(() => V2.redraw(), 0); }, true);
+  /* already on #types: don't follow the link (it would replace the sheet's history entry, so Back after closing did nothing; review Nov 23) */
+  if (location.hash === '#types') { e.preventDefault(); setTimeout(() => V2.redraw(), 0); } }, true);
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2term],[data-v2style]'); if (!a) return;
   if (a.dataset.v2style) { if (V2.arUi) V2.arUi.open = a.dataset.v2style; const t0 = Date.now(), go = () => { const g = location.hash === '#archetypes' && document.querySelector('.ar-guide'); if (g) g.scrollIntoView({block: 'start'}); else if (Date.now() - t0 < 3000) requestAnimationFrame(go); }; requestAnimationFrame(go); /* land on the guide, as a style tap on Archetypes does */ }
   else if (V2.wtUi) { V2.wtUi.f = [{k: a.dataset.v2term, v: a.dataset.v2termv}]; V2.wtUi.q = ''; V2.wtUi.fmore = 0; } }, true);
