@@ -155,7 +155,7 @@
   --k-paper:var(--bg);--k-card:var(--surface);--k-ink:var(--ink);--k-ink2:var(--ink-3);--k-rule:var(--rule);
   --k-plot:var(--plot);--k-plot-text:var(--plot-text);--k-on-plot:#FFFFFF;--k-nasty:#E8364F;--k-nasty-text:var(--pick-text);--k-go:#DA2C48;--k-on-go:#FFFFFF;--k-go-shadow:#17161A;
   --k-chip:#17161A;--k-on-chip:#FFFFFF;--k-art-shadow:rgba(23,22,26,.25);--k-card-shadow:rgba(23,22,26,.16);--k-neutral:rgba(23,22,26,.5);
-  --d-khead:clamp(34px,min(10.4vw,4vw + 32px),84px);--d-ksent:clamp(22px,2.8vw,34px);--d-ksec:clamp(26px,3.4vw,40px);--d-kgo:clamp(17px,min(5.2vw,2.6vw + 12px),36px);
+  --d-khead:clamp(34px,min(10.4vw,4vw + 32px),84px);--d-ksent:clamp(22px,2.8vw,34px);--d-ksec:40px;--d-kgo:clamp(17px,min(5.2vw,2.6vw + 12px),36px);
   --d-kscore:clamp(48px,6vw,72px);
   /* My Team, the war room (reskin page 1, Nov 21): the Strength Score number, a long team name's headline, the Night frame's own words
      (measured on --mtf-night #14131C, Nov 21: ink 15.8:1, quiet 9.4:1, Plot 10.4:1; on the card #1D1C26 14.4 / 8.6 / 9.5) and the frame's card shadow */
@@ -237,6 +237,12 @@
 @media (max-width:359.98px){:root{--d-kgo:var(--t17)}}
 /* the same for the kit sentence: 2.8vw gave 22-24px (23px at 820) between 786 and 856 wide; it holds 22 there (phones set their own 20) */
 @media (min-width:700px) and (max-width:856.98px){:root{--d-ksent:var(--t22)}}
+/* Nov 23 (hK, qcheck at 1100): the plan-step title (.k-h2) ran 3.4vw between 765 and 1176 wide, so most of that band sat between scale
+   steps (37.4px at 1100). It now steps on the site's own breakpoints, each band keeping the size it already hit there: 40 from 1100
+   (was 37.4-40), 34 from 900 (was 30.6-37.4; exactly 34 at 1000), 28 from 700 (was 26-30.6; 28 at 820), 26 on phones (as before) */
+@media (max-width:1099.98px){:root{--d-ksec:var(--t34)}}
+@media (max-width:899.98px){:root{--d-ksec:var(--t28)}}
+@media (max-width:699.98px){:root{--d-ksec:var(--t26)}}
 /* Sim Q1 (Nov 15): 'them' / Team B is magenta (--them), clearly apart from red (--bad); measured: day fill #B4238F white text 5.87:1, text #9A1A7B 7.17:1 on the page; night fill #E57FD3 dark text 7.36:1, text #EC9BDF 9.15:1 */
 /* My Box, "The PC" (Sim approved the design, Nov 23; mock-up docs/mockups/mybox-pc/): the blue box wallpaper, the selected slot and its
    yellow ring, the box bar, Your Six's dark rows and the foil edge of the card. The wallpaper is the same blue in day and night (the stage). */

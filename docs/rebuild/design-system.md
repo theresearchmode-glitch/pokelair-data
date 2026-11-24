@@ -489,7 +489,7 @@ Generated from app/src/v2/css/tokens.css: 694 tokens (691 by day, 218 changed by
 | --d-arntag | `clamp(34px,6.4cqi,64px)` | same |  |
 | --d-khead | `clamp(34px,min(10.4vw,4vw + 32px),84px)` | same |  |
 | --d-ksent | `clamp(22px,2.8vw,34px)` | same |  |
-| --d-ksec | `clamp(26px,3.4vw,40px)` | same |  |
+| --d-ksec | `40px` | same |  |
 | --d-kgo | `clamp(17px,min(5.2vw,2.6vw + 12px),36px)` | same |  |
 | --d-kscore | `clamp(48px,6vw,72px)` | same |  |
 | --d-tmscore | `clamp(80px,9vw + 40px,168px)` | same |  |
@@ -1208,5 +1208,8 @@ Generated from app/src/v2/css/tokens.css: 694 tokens (691 by day, 218 changed by
 | (max-width:419.98px) | --d-kgo | `var(--t20)` |
 | (max-width:359.98px) | --d-kgo | `var(--t17)` |
 | (min-width:700px) and (max-width:856.98px) | --d-ksent | `var(--t22)` |
+| (max-width:1099.98px) | --d-ksec | `var(--t34)` |
+| (max-width:899.98px) | --d-ksec | `var(--t28)` |
+| (max-width:699.98px) | --d-ksec | `var(--t26)` |
 
 <!-- tokens:end -->
