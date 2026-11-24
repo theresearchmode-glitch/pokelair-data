@@ -2369,3 +2369,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:58 PM: Design (HH authority): Sim's PC delivered all 166 items (alt/items 175fafea, 512px WebP, RTX 3080). Contact sheet reviewed: approved (clean, one family on light and dark). hI2 told to wire them from docs/rebuild/art/items512 and redo the pictures.
 - 10:03 PM: Checked: WebKit D-meta-shell on HEAD: 117 pass, 1 FAIL (THEME-03 'no share image', the flake the other account saw), 0 'fixed?' (new NAV-10 passes in WebKit). THEME-03 re-running alone x3.
 - 10:04 PM: Checked: WebKit THEME-03 alone x3: pass, pass, FAIL ('no share image', 3s). Intermittent even alone, so not only load; also seen on 59b6744d (before tonight). Queued: find whether the share image is slow to build in Safari (real) or the test waits too little.
+- 10:05 PM: Checked: THEME-03 with the 4-s wait: WebKit 6 of 6 pass ('1 pass, 0 FAIL' x6). Fixed (test timing, not the site).
