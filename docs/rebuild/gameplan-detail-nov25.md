@@ -93,3 +93,10 @@ The live data refresh writes neither, and main's daily job makes neither (update
 no out/post.json). Sizes: info.json 84 KB, post.json 23 KB (under the 200 KB split). Fix BEFORE Sat (Fri at the latest):
 1. main's update.mjs gets the info step (from design6) so out/info.json is made daily and tested; out/post.json moves to main.
 2. The data refresh task also writes meta/info and meta/post (needs Sim's OK: we never edit that task without it).
+
+## Found Nov 24 (checked): suggest-gaps on TODAY's data
+On frozen test data: ALL PASSED (that's what GitHub runs). On today's data: 2 FAILED. A Swift Swim Mega Swampert team with no rain
+now gets its rain setter (Pelipper) as the 3rd Fix-it plan, not in the first two (my box and whole roster, 6 Pokémon). The data
+moved, and the "needs rain" pull isn't strong enough to stay on top. Real suggestion-quality issue (a player would want rain first).
+To do (Wed/Thu, HH): make "a Swift Swim / Chlorophyll / Sand Rush Mega with no weather" rank its weather setter first regardless of
+the day's data, and run suggest-gaps on today's data as well as frozen.
