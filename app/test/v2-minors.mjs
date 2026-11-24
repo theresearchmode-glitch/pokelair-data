@@ -1828,6 +1828,24 @@ if (part('main2')) { /* Natures (Dossier step 3, Sim approved the page 4:42 PM N
   ok(f === '40%' && /^40% of tournament Pokémon$/.test(fs2) && errs.length === e0, `Natures (made-up data): the Adamant square and its sheet show the share META.info.nt gives (square ${f}, sheet "${fs2}"; want 40% and "40% of tournament Pokémon")`);
   ok(!errs.length, `Natures: no page error across the checks (${errs.join(' / ') || 'none'})`);
   await ctx.close(); }
+if (part('main2')) { /* Types in Search (Sim, Nov 22: "Search is the tying point"; types by name was the checked gap, Nov 24). Every one of the 18 types,
+  typed by name, lists a Type hit first with its symbol (the #kty- sprite) beside its name (never alone); "fire type" works too; "fire blast" is
+  the move, not the type; "type chart" still finds the page; picking a Type hit opens #types on that type alone (ui.typesSel), from #types too. */
+  const ctx = await b.newContext({viewport: {width: 1440, height: 900}}), q = await ctx.newPage(), errs = []; q.on('pageerror', e => errs.push(e.message)); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2200);
+  const hits = async t => { await q.evaluate(() => { if (!document.querySelector('.np-sheet [data-v2q]')) V2.openSearch(); }); await q.fill('[data-v2q]', t); await q.waitForTimeout(150);
+    return q.evaluate(() => [...document.querySelectorAll('[data-v2hits] .np-hit')].map(h => ({pg: ((h.querySelector('.pg') || {}).textContent || '').trim(), b: ((h.querySelector('b') || {}).textContent || '').trim(), ty: h.dataset.v2type || '', sym: !!h.querySelector('b .np-tyb svg.k-tyi use[href^="#kty-"]')}))); };
+  const all = await q.evaluate(() => V2.TYPES.slice()), bad = [];
+  for (const t of all) for (const w of [t.toLowerCase(), t + ' type']) { const h = await hits(w), f = h[0] || {}; if (!(f.pg === 'Type' && f.ty === t && f.b === t && f.sym)) bad.push(`"${w}": first ${f.pg || 'none'} ${f.b || ''}${f.sym ? '' : ' (no symbol)'}`); }
+  ok(all.length === 18 && !bad.length, `Types in Search: each of the ${all.length} types, typed as "fire" or "Fire type", lists a Type hit first, named, with its symbol beside the name${bad.length ? ': ' + bad.slice(0, 4).join(' | ') : ''}`);
+  const fb = await hits('fire blast'), tc = await hits('type chart'), gh = await hits('gho');
+  ok(!fb.some(x => x.pg === 'Type') && fb.some(x => x.pg === 'Move' && x.b === 'Fire Blast') && tc.some(x => x.pg === 'Page' && x.b === 'Type Chart') && gh.some(x => x.ty === 'Ghost'), `Types in Search: "fire blast" lists the move and no Type hit, "type chart" still lists the Type Chart page, "gho" lists the Ghost type (fire blast: ${fb.map(x => x.pg + ' ' + x.b).join(', ') || 'none'}; type chart: ${tc.map(x => x.pg + ' ' + x.b).join(', ') || 'none'}; gho: ${gh.map(x => x.pg + ' ' + x.b).join(', ') || 'none'})`);
+  const at = async () => q.evaluate(() => ({h: location.hash, sel: window.__ev('ui.typesSel'), head: ((document.querySelector('#main .tc h1') || document.querySelector('#main h1') || {}).textContent || '').trim(), open: !!document.querySelector('.np-sheet .np-find')}));
+  await hits('fire'); await q.click('[data-v2hits] [data-v2type="Fire"]', {timeout: 3000}).catch(() => {}); await q.waitForTimeout(900); const p1 = await at();
+  await hits('Ghost type'); await q.keyboard.press('Enter'); await q.waitForTimeout(900); const p2 = await at();
+  ok(p1.h === '#types' && String(p1.sel) === 'Fire' && /Fire/.test(p1.head) && !p1.open && p2.h === '#types' && String(p2.sel) === 'Ghost' && /Ghost/.test(p2.head), `Types in Search: picking the Fire hit opens the Type Chart on Fire alone and closes Search; Enter on "Ghost type" while on #types moves it to Ghost (${p1.h} [${p1.sel}] "${p1.head}" search open ${p1.open}; then ${p2.h} [${p2.sel}] "${p2.head}")`);
+  ok(!errs.length, `Types in Search: no page error (${errs.join(' / ') || 'none'})`);
+  await ctx.close(); }
 if (part('main2')) { // Sim, Nov 18: Base Stats calm and compact, on theme (no big bubbly numbers): at most 260px tall on a phone, numbers 16px in the slanted
   // type with no shadow, a Mega's numbers line up in each column, nothing spills out, at 320-1440
   const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();
