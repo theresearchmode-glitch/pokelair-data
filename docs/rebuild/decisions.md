@@ -2458,3 +2458,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:13 AM: Sim: game plan approved; switch target Sat Nov 28 for sure; not around much Thu (Thanksgiving): Thursday on HH authority, one picture summary Thu night.
 - 11:14 AM: Sim: design + executive authority extended to 10:00 PM Sat Nov 28 (confirmed); the switch is done together with Sim on Sat.
 - 11:16 AM: Design (HH authority): polish fixes #2 Calc sentence one line at 1100+, #3 Build cores '+N points' never splits, #4 Home tile blurbs balanced, merged from the other acc (4898dde2, dfba97f0, 05d5a5f3); before/after pictures sent to Sim. #6 not needed (taps already 44px+). #1 Speed Tiers controls at 1280-1679 parked for the M-D week (needs a layout choice; doesn't fit one row). Checks on our HEAD running (tap-size, main1/2/groups).
+- 11:18 AM: Other acc: M-D roster generator job (gen-roster.mjs, proof on M-C, dry run with Mega Heatran) sent by Sim.
