@@ -49,7 +49,7 @@ V2.sdHero = () => {
       <div class="sdh-front">${front}</div>
     </div>
     <div class="sdh-ledge"><ul class="sdh-plates" aria-label="The four highest rated">${plates}</ul>
-      <p class="sdh-say">${E(say)}${V2.mdCountdown() ? ` <b>${E(V2.mdCountdown())}</b>` : ''} <a class="sdh-all" href="#meta">All Ratings ›</a></p>
+      <p class="sdh-say">${E(say)}${V2.mdCountdown() ? ` <b class="sdh-cd"><span class="sdh-cdl">${E(V2.mdCountdown())}</span><span class="sdh-cds">${E(V2.mdCountdown(Date.now(), true))}</span></b>` : ''} <a class="sdh-all" href="#meta">All Ratings ›</a></p>
       <div class="sdh-go hm-go">${go}</div></div></div>
     ${tick ? `<div class="sdh-tick"><ul aria-label="Next in the ratings">${tick}</ul></div>` : ''}
   </section>`; };

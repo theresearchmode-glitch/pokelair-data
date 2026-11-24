@@ -101,3 +101,7 @@
 @media (min-width:1100px){.sdh-tick{display:none}.sdh{padding-bottom:var(--s4)}}
 /* Home length, option B (Nov 23): the top 10's ink strip follows the ledge straight on */
 @media (min-width:1100px){.sdh{padding-bottom:0}}
+
+/* M-D countdown: the short form on phones (the long one pushed the start buttons below the fold at 390x844; Nov 24) */
+.sdh-cds{display:none}
+@media (max-width:699.98px){.sdh-cdl{display:none}.sdh-cds{display:inline}}

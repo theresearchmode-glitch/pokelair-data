@@ -306,11 +306,12 @@ V2.THEME_WORD = {day: 'Day mode', night: 'Night mode', auto: 'Auto: follows your
 V2.REG_END_MC = '2026-12-02T01:59:00Z';
 /* Nov 24 (competitor scan: rivals already mention Reg M-D; we said nothing): until M-C ends, a countdown line, shown in the Home hero's
    text under the herd (as a note above the hero it pushed the start buttons off the first screen: Stampede hero 3b; on Meta, the tabs) */
-V2.mdCountdown = (now = Date.now()) => { try { const r = typeof regInfo === 'function' && regInfo(), endMs = Date.parse(V2.REG_END_MC); if (!r || r.now || r.id !== 'M-C' || !(now < endMs)) return '';
+V2.mdCountdown = (now = Date.now(), short = false) => { try { const r = typeof regInfo === 'function' && regInfo(), endMs = Date.parse(V2.REG_END_MC); if (!r || r.now || r.id !== 'M-C' || !(now < endMs)) return '';
   /* calendar days in the viewer's own time zone, so the last day says "today" (code review, Nov 24: it said "tomorrow" 59 min before the end) */
   const end = new Date(endMs), day = x => Date.UTC(x.getFullYear(), x.getMonth(), x.getDate()), d = Math.round((day(end) - day(new Date(now))) / 864e5),
     when = end.toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'});
-  return `Reg M-D is coming: M-C ends ${when} (${d <= 0 ? 'today' : d === 1 ? 'tomorrow' : `in ${d} days`}), with the Dec 2 balance patch.`; } catch (e) { return ''; } };
+  const lt = d <= 0 ? 'today' : d === 1 ? 'tomorrow' : `in ${d} days`; /* short form for phones: the long one pushed the start buttons off the first screen at 390x844 (Stampede hero 3b, Nov 24) */
+  return short ? `Reg M-D arrives ${lt}.` : `Reg M-D is coming: M-C ends ${when} (${lt}), with the Dec 2 balance patch.`; } catch (e) { return ''; } };
 V2.dataNote = () => { const E = V2.esc, out = [];
   /* review Nov 18 (C5): a --split Preview whose preview.json couldn't be read (missing, 404, offline) says so, on every page (V2.shell),
      rather than showing the built-in numbers as if they were today's */
