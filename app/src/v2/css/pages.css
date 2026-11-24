@@ -2668,10 +2668,14 @@ button.pp2-plate{cursor:pointer;width:100%}
 /* the key, once, at the top of the piles */
 .dr-key{--c:var(--y);display:flex;flex-wrap:wrap;align-items:center;gap:8px 20px;margin:0 0 24px;font-size:var(--t13);font-weight:600;line-height:1.4;color:var(--k-ink2)}
 .dr-key>span{position:relative;display:inline-flex;align-items:center;gap:8px;font-weight:700;color:var(--k-ink)}
+/* hP4 Nov 24: the four levels are one group (.dr-kv) and the two counts another (.dr-kc), so a wrap breaks between the groups, never "4 + 1" */
+.dr-key>.dr-kv{flex-wrap:wrap;gap:8px 20px}.dr-kv>span{position:relative;display:inline-flex;align-items:center;gap:8px}
 .dr-key .bang{position:static}
 .dr-key>.dr-kc{display:none}.dr-key>.dr-kc b{font-size:var(--t15)}.dr-kc .y{color:var(--yt)}.dr-kc .t{color:var(--tt)}
 .dr-kc>span{display:inline-flex;align-items:baseline;gap:6px}
-@media (max-width:1439.98px){.dr-key>.dr-kc{display:inline-flex;gap:16px}}
+@media (max-width:1439.98px){.dr-key>.dr-kc{display:inline-flex;gap:16px}.dr-key,.dr-key>.dr-kv{column-gap:16px}}
+@media (max-width:1099.98px){.dr-key .dr-kl{display:none}} /* label + levels + counts fit one line from 1100 (905px); below, the label goes (as on phones) so the key stays two lines */
+@media (max-width:599.98px){.dr-key>.dr-kv{display:grid;grid-template-columns:repeat(2,max-content);gap:4px 12px}} /* 2 + 2, not 3 + 1 */
 /* step 1: the usual suspects (kit roster cards; the art bursts out of the top) */
 .dr-sus .k-roster{padding-top:48px}
 .dr-sus .k-sc{margin-bottom:4px}
@@ -3346,6 +3350,10 @@ button.pp2-plate{cursor:pointer;width:100%}
 .mth .mth-legend .mth-scale{margin:0 0 var(--s3)}
 .mth .mth-legend .mth-scale+.nplrow{position:absolute;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
 .mth .mth-legend .nplrow{margin:0 0 var(--s2);gap:var(--s1) var(--s3)}.mth .mth-legend .nplrow .npbands{margin:0}.mth .mth-legend .nplrow>b small{display:none}
+/* hP4 Nov 24: the five Strength Score bands sit as five even columns (number over word), never "4 + 1"; under 560 two then three, each row full */
+.mth .mth-legend .nplrow .npbands{flex:1 1 100%;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s2) var(--s3)}
+.mth .mth-legend .nplrow .npbands>span{display:grid;align-content:start;white-space:normal;line-height:1.3}
+@media (max-width:559.98px){.mth .mth-legend .nplrow .npbands{grid-template-columns:repeat(6,minmax(0,1fr))}.mth .mth-legend .nplrow .npbands>span{grid-column:span 2}.mth .mth-legend .nplrow .npbands>span:nth-child(-n+2){grid-column:span 3}}
 .mth .mth-legend .npdots{margin:var(--s2) 0 0;font-size:var(--t13);line-height:1.5;color:var(--k-ink2)}
 .mth .inf-tiles{margin:0}
 .mth .mth-go{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s6);padding:0;background:none;color:var(--k-ink);text-decoration:none}
@@ -3597,6 +3605,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .pkf .pk-rate .tier-tag{font:inherit;color:inherit}
 .pk-trend{display:flex;align-items:center;gap:var(--s3);margin:var(--s5) 0 0;font:600 var(--t15)/1.4 var(--b);color:var(--k-ink)}.pk-trend .k-tag{flex:none}
 .pk-basics{display:flex;flex-wrap:wrap;gap:var(--s1) var(--s4);margin:var(--s3) 0 0;font:600 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
+@media (max-width:479.98px){.pk-basics{display:grid;grid-template-columns:repeat(2,max-content)}} /* hP4 Nov 24: 2 + 2, not "Has a Mega" alone under 3 */
 .pk-basics span::before{content:"✓ ";color:var(--k-plot-text);font-weight:800}
 /* beside the card: the verdict line, four facts, How to build it */
 .pk-is{display:grid;gap:var(--s5);align-content:start;min-width:0}
@@ -3680,8 +3689,11 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .pk-dmg::before{content:"";position:absolute;left:0;top:0;bottom:0;width:calc(var(--lo) / 1.5 * 1%);background:var(--tc,var(--type-none))}
 .pk-dmg i{position:absolute;top:0;bottom:0;left:calc(var(--lo) / 1.5 * 1%);width:calc((var(--hi) - var(--lo)) / 1.5 * 1%);background:color-mix(in srgb,var(--tc,var(--type-none)) 45%,transparent)}
 .pk-dmg::after{content:"";position:absolute;left:66.67%;top:-4px;bottom:-4px;width:2px;background:var(--k-ink)}
-.pk-typeline{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin:var(--s5) 0 0;font:600 var(--t13)/1.4 var(--b);color:var(--k-ink2)}
-.pk-typeline>span:not(:first-child){margin-left:var(--s2)}
+/* hP4 Nov 24: inline flow so the lines balance (text-wrap) instead of leaving one chip alone; a label is glued to its first chip (.pk-tg) */
+.pk-typeline{margin:var(--s5) 0 calc(-1 * var(--s2));font:600 var(--t13)/1.4 var(--b);color:var(--k-ink2)}
+.pk-typeline>.np-type,.pk-tg{vertical-align:middle;margin:0 var(--s2) var(--s2) 0}
+.pk-tg{display:inline-flex;align-items:center;gap:var(--s2);white-space:nowrap}
+.pk-typeline>:has(+ .pk-tg){margin-right:var(--s4)} /* the wider gap before each label sits at the end of the line before, so a line never starts indented */
 @media (max-width:1099.98px){.pk-rap{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-areas:'st sp' 'ab sp' 'wh wh' 'da da' 'ft ft';grid-template-rows:auto 1fr auto auto auto}.pk-why{margin-top:var(--s8)}.pk-slips{grid-template-columns:repeat(2,minmax(0,1fr))}.pk-kv{grid-template-columns:repeat(2,minmax(0,1fr))}.pkf .k-facts{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:959.98px){.pk-duo,.pk-fights{grid-template-columns:minmax(0,1fr)}.pkf .pk-fan{grid-template-columns:repeat(4,minmax(0,1fr))}}
 /* phones: the card on top, the set and its moves under it, the steps one column; nothing folds except the full move and item lists */
