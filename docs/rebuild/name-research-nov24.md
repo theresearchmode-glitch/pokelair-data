@@ -36,3 +36,11 @@ bestofone (.org/.net), trickroom (.org), swordsdance (.org/.net), weaknesspolicy
 Checked: "Turn Zero Nexus" runs Pokémon TCG events on Limitless; GonkasVGC "Turn Zero" VGC series reported by the other account,
 not confirmed by HH's search; turnzero.gg (Warhammer), Turn Zero Games (LA), Turn Zero Sim Racing (.com). NastyPlot stays.
 Open until about Dec 7 (quiet launch): any new name idea gets the same checks (plain .com/.org/.net free, no Pokémon clash).
+
+## NastyPlot clash check (Sim asked, Nov 24)
+Domains: nastyplot.org = Sim's. nastyplot.com registered 2021-01-03 via DreamHost (renewed to 2027-01-03), no website answers
+(checked: curl, nothing returned). nastyplot.net free.
+Web searches (WebSearch, 5 queries): no Pokémon team, podcast, channel, esports org or brand named NastyPlot/Nasty Plot; no band, film,
+book or game titled "Nasty Plot"; no NastyPlot social accounts found. Searching "Nasty Plot" returns films with "Nasty" in the title
+and plot articles. Not checked: Google itself (likely shows the move's pages: Bulbapedia, Smogon, Serebii), social handles directly,
+trademarks.
