@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 9:46 PM (9:46:37)  date: Mon Nov 23, 2026
-NOW: HH: WebKit (Safari engine) D-meta-shell behaviour on HEAD (natures, Natures page, types in Search touch Meta + Search). Helper: hI2 (item image wiring). PC: all 166 items, way (a).
+NOW: HH: WebKit C-battle behaviour on HEAD (tonight: Calc ring, KO rows, Hardy target, Battle bar). Helper: hI2 (real item images, all 166).
 NEXT: GitHub run for 3a06857f (the 9:45 PM batch): fix any red
 NEXT: review Sim's PC item test sheet (alt/items) when it lands; go/adjust for all 166
 NEXT: merge hI2's wiring; build with the PC images; picture sheet to Sim
