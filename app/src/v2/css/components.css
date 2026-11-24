@@ -150,6 +150,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
 .np-hit .mg{margin-right:var(--s1)}.np-hit .mg.none{display:none}
 .np-hit .nm{display:grid;gap:2px;min-width:0}.np-hit .nm small{font:500 var(--t13)/1.4 var(--b);color:var(--ink-2)} /* a page's line, a Pokémon's rating (Nov 15) */
 .np-tyh b{display:flex;align-items:center;gap:var(--s2)}.np-tyb{display:inline-flex;align-items:center;justify-content:center;width:36px;height:28px;flex:none;color:var(--on-type);background:var(--tc);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)} /* a Type hit (Nov 24): its symbol white on the type colour in the type pill's slanted shape (kit rule), beside its name */
+.np-ith b{display:flex;align-items:center;gap:var(--s2)}.np-itb{display:inline-flex;align-items:center;justify-content:center;width:36px;height:28px;flex:none;margin-block:-6px}.np-hit .np-itb img,.np-itb svg{width:28px;height:28px;object-fit:contain} /* an Item hit (Nov 24): the item's picture in the Type tile's slot, before its name; it hangs past the name's line (-6px) so the row keeps the height of the hits without one */
 @media (max-width:379.98px){.np-find{padding:var(--s6) var(--s4)}.np-hit{grid-template-columns:40px 1fr}.np-hit img{width:40px;height:40px}.np-hit .ty{grid-column:2}}
 /* the simple Pokémon sheet (the full info sheet replaces it in R4) */
 .np-monsheet{display:flex;align-items:center;gap:var(--s8);padding:var(--s8)}

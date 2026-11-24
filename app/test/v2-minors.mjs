@@ -1891,6 +1891,37 @@ if (part('main2')) { /* Types in Search (Sim, Nov 22: "Search is the tying point
   ok(p1.h === '#types' && String(p1.sel) === 'Fire' && /Fire/.test(p1.head) && !p1.open && p2.h === '#types' && String(p2.sel) === 'Ghost' && /Ghost/.test(p2.head), `Types in Search: picking the Fire hit opens the Type Chart on Fire alone and closes Search; Enter on "Ghost type" while on #types moves it to Ghost (${p1.h} [${p1.sel}] "${p1.head}" search open ${p1.open}; then ${p2.h} [${p2.sel}] "${p2.head}")`);
   ok(!errs.length, `Types in Search: no page error (${errs.join(' / ') || 'none'})`);
   await ctx.close(); }
+if (part('main2')) { /* Item pictures in Search (Nov 24; Search is the tying point): an Item hit shows the item's real picture (V2.itemImg, the phone
+  file) in the Type tile's slot before its name, else our drawing (V2.itemArt), else no picture; decorative (aria-hidden, alt=""); the label
+  "Item" and the name stay; Move hits get none; every hit row keeps the height of a row without a picture. Can fail: a picture that doesn't
+  load (a stand-in pointed at a missing file must be caught), a drawing shown where the real picture exists, a picture on a Move, a taller row. */
+  const ctx = await b.newContext({viewport: {width: 1440, height: 900}}), q = await ctx.newPage(), errs = []; q.on('pageerror', e => errs.push(e.message)); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2200);
+  const rows = async t => { await q.evaluate(() => { if (!document.querySelector('.np-sheet [data-v2q]')) V2.openSearch(); }); await q.fill('[data-v2q]', t); await q.waitForTimeout(150);
+    return q.evaluate(async () => { const hs = [...document.querySelectorAll('[data-v2hits] .np-hit')];
+      await Promise.all(hs.map(h => h.querySelector('.np-itb img')).filter(i => i && !i.complete).map(i => new Promise(r => { i.addEventListener('load', r); i.addEventListener('error', r); setTimeout(r, 4000); })));
+      return hs.map(h => { const t = h.querySelector('.np-itb'), i = t && t.querySelector('img'), n = ((h.querySelector('b') || {}).textContent || '').trim();
+        return {pg: ((h.querySelector('.pg') || {}).textContent || '').trim(), n, h: +h.getBoundingClientRect().height.toFixed(1), pic: !t ? 'none' : i ? (i.naturalWidth > 0 ? 'img' : 'img-dead') : t.querySelector('svg') ? 'svg' : 'empty',
+          hid: !t || (t.getAttribute('aria-hidden') === 'true' && (!i || i.getAttribute('alt') === '')), want: h.dataset.v2infon || n }; }); }); };
+  const exp = n => q.evaluate(n => V2.itemImg(n, true) ? 'img' : V2.itemArt(n) ? 'svg' : 'none', n);
+  const seen = [], bad = []; let h0 = 0;
+  for (const w of ['life', 'sitrus', 'charizardite', 'choice', 'orb']) for (const r of await rows(w)) { if (r.pg !== 'Item' && !h0) h0 = r.h;
+    const e = r.pg === 'Item' ? await exp(r.want) : 'none'; seen.push(`${r.n} ${r.pic}`);
+    if (r.pic !== e || !r.hid || !r.n || (h0 && Math.abs(r.h - h0) > 0.5)) bad.push(`${r.pg} ${r.n}: ${r.pic} (want ${e}) ${r.hid ? '' : 'NOT hidden '}h${r.h} vs ${h0}`); }
+  const anyImg = seen.some(x => / img$/.test(x));
+  ok(!bad.length && seen.some(x => /^Life Orb /.test(x)), `Item pictures in Search: each Item hit for "life", "sitrus", "charizardite", "choice", "orb" shows its real picture (loaded) when it has one, else the drawing, decorative; Moves and Abilities none; every row ${h0}px like the rest (${seen.join(', ')})${bad.length ? '; WRONG: ' + bad.join(' | ') : ''}`);
+  if (!anyImg) console.log('  unknown  Item pictures in Search (real): this build has no item pictures, so a real <img> was not checked; the stand-in below covers it');
+  // can fail: a stand-in Life Orb picture pointed at a missing file must read img-dead (and a working one, a sprite file, img)
+  await q.evaluate(() => { V2._iI = V2.itemImg; V2.itemImg = (n, s) => n === 'Life Orb' ? V2.art(445, true).replace(/[^/]+$/, 'no-such-item.webp') : V2._iI(n, s); });
+  const dead = (await rows('life orb')).find(r => r.n === 'Life Orb') || {};
+  await q.evaluate(() => { V2.itemImg = (n, s) => n === 'Life Orb' ? V2.art(445, true) : V2._iI(n, s); });
+  const live = (await rows('life orb')).find(r => r.n === 'Life Orb') || {};
+  await q.evaluate(() => { V2.itemImg = (n, s) => n === 'Sitrus Berry' ? '' : V2._iI(n, s); V2._iA = V2.itemArt; V2.itemArt = n => n === 'Sitrus Berry' ? '' : V2._iA(n); });
+  const none = (await rows('sitrus')).find(r => r.n === 'Sitrus Berry') || {};
+  await q.evaluate(() => { V2.itemImg = V2._iI; V2.itemArt = V2._iA; });
+  ok(dead.pic === 'img-dead' && live.pic === 'img' && none.pic === 'none' && Math.abs((none.h || 0) - h0) <= 0.5 && Math.abs((live.h || 0) - h0) <= 0.5, `Item pictures in Search (stand-ins, the check can fail): a picture pointed at a missing file reads "${dead.pic}" (want img-dead), a working one "${live.pic}" (want img, row ${live.h}px), an item with neither picture nor drawing "${none.pic}" (want none, row ${none.h}px; want ${h0})`);
+  ok(!errs.length, `Item pictures in Search: no page error (${errs.join(' / ') || 'none'})`);
+  await ctx.close(); }
 if (part('main2')) await IMG(); // the real item pictures (IMG, defined above; ONLY=IMG runs it alone)
 if (part('main2')) { // Sim, Nov 18: Base Stats calm and compact, on theme (no big bubbly numbers): at most 260px tall on a phone, numbers 16px in the slanted
   // type with no shadow, a Mega's numbers line up in each column, nothing spills out, at 320-1440
