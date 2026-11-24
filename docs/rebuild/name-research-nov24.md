@@ -69,3 +69,8 @@ protactic, dracometa, metagrind, regenerata. Taken: quickcalc, analytix, tactici
 Free: plotball (all 3), calcball (all 3), masterplot (.org .net; "Masterplots" is a 1949 literature reference series, Wikipedia),
 plotdex (.org .net), rarecalc (.org .net), plotcandy (.org .net), gymplot (.org .net), masterstats (.org .net).
 Taken: masterplan, ultraplan, statball, raredata.
+
+## Round 8: full creative — VGC slang + Pokémon-only mechanics (Nov 24)
+All 3 free: haxproof, goldbottlecap, speedcreep(s), gotawaysafely, wildappeared. Two free: calced/calcd (.org), outspeed (.org),
+outspeeds (.org .net), hypertrained (.org .net), backtwo (.org .net), damageroll, critroll, nohax, goldcap, wildstats (.org .net).
+Taken: hypertrain, highroll, ohko, maxroll, crithappens, bottlecaps. Dex: overdone (ChampDex app already exists for Champions).
