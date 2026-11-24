@@ -13,6 +13,10 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
 - **Helpers:** 1 until 4:00 PM Wed Nov 25, then 2 as standard. Above that, ask Sim.
 - **"Other chat"** = Sim's PC Claude Code chat, SAME account (long runs, GPU image work). **"Other acc"** = second account, Pro plan,
   much less usage: report-only or patch jobs, never pushes or publishes; HH reviews and merges.
+- **Gemini (Sim, Nov 24):** Sim's Google Gemini subscription is a third helper for when Claude usage is low: code reviews and
+  non-design tasks ONLY (absolutely no design work). HH writes its prompts in the same package style (template:
+  docs/rebuild/gemini-prompt-template.md); it works on its own alt/gemini-* branch or delivers patches, never main or claude/design6,
+  never publishes; HH double-checks everything it does before merging.
 - **Dec 2:** balance patch + Reg M-D (patch map: docs/rebuild/test-runs/patch-dec2-map.md, patch-dec2-psychup.md).
 - **Off limits (Sim, Nov 24): never delete or alter** the live site artifact "NastyPlot" (5VBfLTR5sM4JU5NswJYyGk), the Preview
   "NastyPlot Full Redesign" (8KBkk7PtbGjVzLzLKK5akf), the "NastyPlot Game Plan" (R1xwJERwi9298VXA5a6ppm), or Raj's documents.
