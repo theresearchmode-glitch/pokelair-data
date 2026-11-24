@@ -2461,3 +2461,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:18 AM: Other acc: M-D roster generator job (gen-roster.mjs, proof on M-C, dry run with Mega Heatran) sent by Sim.
 - 11:44 AM: Polish fixes on our HEAD 7797bff5: tap-size, main1, main2, groups all passed. Pushing.
 - 11:59 AM: Other acc: gen-roster.mjs merged (6ba3a56b). Checked here: run on our Showdown copy, output cmp app/src/data/data.js -> IDENTICAL. M-D game plan item #3 done early (Helper 1 Wed now: sprite script + reviewing roster-day steps).
+- 12:08 PM: PC chat: Mega Heatran (10311) art + Heatranite item, upscaled on Sim's GPU (alt/heatran-art d3da55cc), merged into t1rules (fast-forward). Checked: art 384x287 RGBA like 10034 (384 wide), sp 512x512 like 10034; looked at by eye: clean. Not wired in (roster day).
