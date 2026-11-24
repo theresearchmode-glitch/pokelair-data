@@ -4466,11 +4466,12 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
    stamps big, on two lines, and its column fills the receipt's height instead of a small stamp floating in empty space */
 @media (min-width:1100px){.trk2 .trk-r1{align-items:stretch}.trk-say2{align-content:center;gap:var(--s6)}
   .trk-big{max-width:560px;padding:var(--s3) var(--s8);border-width:6px;font-size:var(--d64);line-height:1.05}.trk-sl{font-size:var(--t20)}}
-/* 1100-1279 (Nov 24, qcheck OFFSCREEN at 1100-1179): the say column is only 373-472px there, but the stamp (510px at 64px) and the
-   one-line button (507px at 36px) kept their full size and ran past the window's right edge. Both now scale with their column so they
-   fit inside it, stamp tilt and button shadow included (stamp never under 40px). 1280 and up keep 64px / 36px as before. */
-@media (min-width:1100px) and (max-width:1279.98px){.trk-say2{container-type:inline-size}
-  .trk-big{font-size:var(--d-trkbig)}.trk-say2 .k-go{font-size:var(--d-trkgo)}}
+/* 1100 and up (Nov 24, qcheck OFFSCREEN at 1100-1179; 1280-1339 ran ~31px into the right gutter): the say column is 373-530px up to
+   about 1340 wide, but the stamp (510px at 64px) and the one-line button (507px at 36px) kept their full size. Both scale with their
+   column so they fit inside it (stamp never under 40px), reaching 64px / 36px from about 1340 wide, so 1440 and up look as before and
+   1279 -> 1280 has no jump. The stamp keeps 8px clear of the column's edge so its -4deg tilt stays inside too. */
+@media (min-width:1100px){.trk-say2{container-type:inline-size}
+  .trk-big{max-width:min(560px,100% - var(--s2));font-size:var(--d-trkbig)}.trk-say2 .k-go{font-size:var(--d-trkgo)}}
 /* Type Chart (HH, design authority to 9 AM Mon; 1440 was 3.32 screens, cap 3): the 18 type buttons in one row, and the whole chart's
    rows a step shorter (still a 28px+ row per type) */
 @media (min-width:1280px){.tc-grid td{height:28px}.tc-grid tbody th span{padding-block:2px}}
