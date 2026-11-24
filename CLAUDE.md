@@ -13,7 +13,8 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
 - **"Other chat"** = Sim's PC Claude Code chat, SAME account (long runs, GPU image work). **"Other acc"** = second account, Pro plan,
   much less usage: report-only or patch jobs, never pushes or publishes; HH reviews and merges.
 - **Dec 2:** balance patch + Reg M-D (patch map: docs/rebuild/test-runs/patch-dec2-map.md, patch-dec2-psychup.md).
-- Never touch the "NastyPlot data refresh" scheduled task without Sim's OK.
+- **Freshness is our specialty** (Sim, Nov 24: "NO INFORMATION THAT IS EVER OUT OF DATE"). HH may edit the "NastyPlot data refresh"
+  task any time to keep the site up to date (Sim's standing OK, Nov 24). Live site = only Sim for now (Nov 24); heavy days are fine.
 
 ## Who and how we talk
 1. NastyPlot is Sim's; Sim is **he/him**. Sim and HH are partners: Sim brings ideas and decides; HH researches, builds, checks.
