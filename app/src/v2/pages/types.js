@@ -48,7 +48,14 @@ V2.tcLine = (list, chip) => { const pos = v => (v + 3) * 20, mul = m => m === 4 
     <ul class="tc-rows" aria-hidden="true">${rows.map(row).join('')}</ul>
     ${norm.length ? `<div class="tc-norm" aria-hidden="true"><p class="tc-lbl">Normal damage</p><div class="ts">${norm.map(o => chip(o.t)).join('')}</div></div>` : ''}</div>`; };
 
-V2.pages.types = {place: 'battle', after() { V2.tcFitHead(); V2.tcFitLines(); }, draw() { const E = V2.esc, chip = V2.typeChip, X = V2.tcState(), {sel, mon} = X;
+/* even chip rows (hP2 polish, Nov 24): a group of type chips that wraps with one left over (4 as 3 + 1) splits evenly instead (2 + 2),
+   when the count divides into its rows; 3 that can't share a line stay 2 + 1 (nothing evener exists) */
+V2.tcEven = () => document.querySelectorAll('.tc-og .ts, .tc-offr .c').forEach(c => { c.classList.remove('ev'); c.style.removeProperty('--evk');
+  const k = [...c.children].filter(x => x.offsetWidth), n = k.length; if (n < 4) return; const tops = [...new Set(k.map(x => Math.round(x.getBoundingClientRect().top / 6)))], r = tops.length;
+  if (r < 2) return; const per = Math.ceil(n / r); if (n % per) return; c.style.setProperty('--evk', per); c.classList.add('ev'); });
+V2.tcEvenSoon = () => requestAnimationFrame(() => { if (document.querySelector('.tc-og')) V2.tcEven(); });
+addEventListener('resize', V2.tcEvenSoon); try { document.fonts.addEventListener('loadingdone', V2.tcEvenSoon); } catch (e) {}
+V2.pages.types = {place: 'battle', after() { V2.tcFitHead(); V2.tcFitLines(); V2.tcEven(); }, draw() { const E = V2.esc, chip = V2.typeChip, X = V2.tcState(), {sel, mon} = X;
   const who = mon ? E(V2.disp(mon.n)).replace(/ (\S)$/, '&nbsp;$1') /* 'Charizard Y': a lone letter stays with its name */ : sel.length ? sel.join(' and ') : '';
   const head = `<section class="tc-h">${V2.kHead({kicker: 'Battle · Type Chart', h1Html: who ? `What hits <em>${who}</em><span class="tc-j">&nbsp;</span>hard.` : 'What hits <em>what.</em>',
     leadHtml: mon ? `<span class="tc-show">Showing <b>${E(V2.disp(mon.n))}</b>, ability ${E(X.ab || '')}${X.onTeam ? ' (from your team)' : ''}</span>` : sel.length ? `Taking hits as ${E(sel.join(' and '))}.` : ''})}</section>`;

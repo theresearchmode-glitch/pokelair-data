@@ -274,3 +274,16 @@
    full width, so the space between them is 40px (was 64px) and the plan ends 8px over the footer (was 32px). Nothing is hidden;
    1440 and up, 1100-1279 and phones are unchanged */
 @media (min-width:1280px) and (max-width:1439.98px){.pck .k-plan>.k-step>.k-sec{margin-top:var(--s10)}.pck .k-plan{padding-bottom:var(--s2)}}
+/* the condition chips at 700 and up (hP2 polish, Nov 24): a row of five that can't fit on one line goes 3 + 2 (this turn: 2 + 3, its long names first), both rows
+   filling the width as the phone does (at 870-996 this turn keeps its chips' own widths, 3 + 2), instead of 4 + 1 or 2 + 2 + 1 with a chip left alone. The line it needs: the sky 636px, the ground 730px, this turn
+   859px of chips beside the 136px label */
+@media (min-width:700px){.pck .pc-conds .pc-blk{container:pcb/inline-size}}
+@container pcb (max-width:774.98px){.dc2.pc.pck .pc-sky .pc-five{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}}
+@container pcb (max-width:869.98px){.dc2.pc.pck .pc-gnd .pc-five{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}}
+@container pcb (max-width:996.98px){.dc2.pc.pck .pc-turn .pc-sws{display:grid;grid-template-columns:repeat(6,minmax(0,1fr))}
+  .dc2.pc.pck .pc-turn .pc-sws button{padding:0 var(--s2);text-align:center;text-wrap:balance}
+  .dc2.pc.pck .pc-turn .pc-sws>button:nth-child(-n+2){grid-column:span 3}.dc2.pc.pck .pc-turn .pc-sws>button:nth-child(n+3){grid-column:span 2}}
+@container pcb (max-width:869.98px){.dc2.pc.pck .pc-blk .pc-five>button{grid-column:span 2}.dc2.pc.pck .pc-blk .pc-five>button:nth-child(n+4){grid-column:span 3}}
+@container pcb (min-width:870px) and (max-width:996.98px){.dc2.pc.pck .pc-turn .pc-sws{grid-template-columns:repeat(3,max-content)}
+  .dc2.pc.pck .pc-turn .pc-sws>button:nth-child(n){grid-column:auto;padding:0 var(--s4)}}
+@container pcb (min-width:775px) and (max-width:869.98px){.dc2.pc.pck .pc-sky .pc-five{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}.dc2.pc.pck .pc-sky .pc-five>button:nth-child(n){grid-column:auto}} /* the sky still fits on one line: it fills the width too, as the ground and this turn under it do */
