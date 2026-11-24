@@ -19,7 +19,7 @@
 .pc-ph.a{--r:-3deg;--t:var(--pc-tint-a)}.pc-ph.d{grid-area:pd;--r:3deg;--t:var(--pc-tint-d)}
 .pc-pic{position:relative;display:block;width:100%;aspect-ratio:1;overflow:hidden;background:var(--t)}.pc-pic img{position:absolute;inset:4%;width:92%;height:92%;object-fit:contain}.pc-ph.d .pc-pic img{transform:scaleX(-1)}
 .pc-ph small{margin-top:6px;font:700 var(--t13)/1.2 var(--b);color:var(--pc-ink2)}
-.pc-ph b{display:flex;align-items:center;gap:6px;max-width:100%;font-size:var(--t16);line-height:1.2;white-space:nowrap}
+.pc-ph b{display:flex;align-items:center;gap:6px;max-width:100%;font-size:var(--t16);line-height:1.2;white-space:nowrap;margin-top:var(--s1)} /* Nov 23: 4px under the 'Mega' line, so its g no longer grazes the name's capitals (the ink was 0-2px apart) */
 .pc-ph .pc-ring-ph{inset:-4px -6px auto;width:calc(100% + 12px);height:auto;aspect-ratio:1}
 .pc-ph .arn-pickbtn{position:absolute;inset:0;z-index:2;width:100%;height:100%;margin:0;padding:0;border:0;background:none;cursor:pointer}
 .pc-ph:has(.arn-pickbtn:focus-visible){outline:3px solid var(--plot);outline-offset:4px}
@@ -218,6 +218,9 @@
   .dc2.pc.pck .pc-kits .arn-set>header,.dc2.pc.pck .pc-kits .arn-set>.arn-st,.dc2.pc.pck .pc-kits .arn-set>.arn-pts[open]{grid-column:1/-1}
   .pck .pc-krs{grid-template-columns:repeat(2,minmax(0,1fr))}
   .pck .pc-krv{font-size:var(--t24)}}
+/* Nov 23: 700-899 the KO rows stay one column: two columns left about 40px for the name beside the 24px damage, which was drawn over
+   "your Mega Charizard Y's Weather Ball" (from about 830px the two columns fit; checked 700-1320) */
+@media (min-width:700px) and (max-width:899.98px){.pck .pc-krs{grid-template-columns:minmax(0,1fr)}}
 @media (min-width:1320px){.dc2.pc.pck .pc-board{grid-template-columns:260px minmax(0,1fr) 260px;padding:var(--s8) var(--s8) var(--s6)}
   .dc2.pc.pck .pc-kits{display:grid}.pck .pc-krv{font-size:var(--t28)}}
 /* phones: the sky and the ground five across (icon over word, Instrument Sans: Unbounded never under 15px); this turn 3 + 2 filling the row;
