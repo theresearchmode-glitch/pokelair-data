@@ -4,7 +4,6 @@ NOW: HH (design + executive authority to 9 AM Tue): batch2 check on t1rules c2e6
 NEXT: push the batch once GitHub run 1502 ends green (Battle sprites, Speed Tiers B, item drawings + bag), Preview refresh
 NEXT: Calc polish: chosen-move circle covers the first letters of the move card ("H"eat Wave, "F"ire); stacked lines touch (qcheck OVERLAP, pre-existing)
 NEXT: Ability sheets: Megas are credited by team sheets under the pre-Mega Ability (Blaze on Mega Charizard Y) but by the roster under the Mega Ability; pick one rule (ask Sim)
-NEXT: Search ranks natures by Pokémon count, moves/items/Abilities by team count: sort by share (review #5)
 NEXT: Game Plan update (v52): Speed B, item drawings, Nature in progress
 NEXT: review hN's Nature work; "On the field" lines to Sim
 NEXT: Natures page under Meta (Dossier step 5)
