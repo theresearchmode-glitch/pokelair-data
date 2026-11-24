@@ -43,10 +43,32 @@ V2.isMore = (list, users, what) => { const E = V2.esc, shown = new Set(users.map
 V2.isCredit = w => `<p class="is-credit">${w} text adapted from Pokémon Showdown (MIT License), © Guangcong Luo and contributors.</p>`;
 /* the sheet's name (Nov 24): a Mega Stone's X / Y / Z never sits alone on a phone's second line (lone-letter rule). The letter, a no-break
    space and the two letters before it are one unbreakable piece (the title wraps anywhere when a word is wider than the tag, so a plain
-   no-break space alone still left "Raichunite / Y" at 390); a long one (12+ letters) drops one step (28 to 26) on phones, so Raichunite Y and
-   Lucarionite Z fit on one line at 390 (infosheet.css .is-tl) */
+   no-break space alone still left "Raichunite / Y" at 390). A hyphenated word with a one-letter part (U-turn, X-Scissor, Will-O-Wisp) is
+   one piece too, so no line is "U-" or "X-". The size is set on phones by V2.isFit (below), never by letter count */
 V2.isTitle = (kind, n) => { const E = V2.esc, m = kind === 'item' && /^(.*\S)(\S{2}) ([XYZ])$/.exec(n);
-  return m ? `<h2 class="u${n.length >= 12 ? ' is-tl' : ''}">${E(m[1])}<span class="is-nw">${E(m[2])}\u00a0${m[3]}</span></h2>` : `<h2 class="u">${E(n)}</h2>`; };
+  return m ? `<h2 class="u">${E(m[1])}<span class="is-nw">${E(m[2])} ${m[3]}</span></h2>`
+    : `<h2 class="u">${n.split(' ').map(w => /^\S+$/.test(w) && w.includes('-') && w.split('-').some(x => x.length === 1) ? `<span class="is-nw">${E(w)}</span>` : E(w)).join(' ')}</h2>`; };
+/* phones (hL, Nov 24): a sheet's name never breaks inside a word. Names break only at spaces and hyphens; when the widest piece (a word, or a
+   kept-together piece above) is wider than the name's room, the name steps down the type scale (28, 26, 24 ... 16) only as far as it must.
+   A picture beside the name (the move's seal, the Ability's photo, the nature's arrows) stays beside it while the name fits at 24 or more;
+   past that the picture moves above the name, as the item's bag always does on phones, and the name takes the full width. Measured on the
+   real fonts at open, on resize and once the fonts load (before: 232 titles broke mid-word at 320 wide, 40 at 390; v2-minors main2 LN) */
+V2.IS_FS = [28, 26, 24, 22, 20, 17, 16];
+V2.isFit = () => { const h = document.querySelector('.np-sheet .is-tab h2'); if (!h) return; const pn = h.closest('.is-tab').querySelector('.is-pn');
+  h.removeAttribute('data-fs'); if (pn) pn.classList.remove('is-stk');
+  if (!matchMedia('(max-width:699.98px)').matches) return;
+  /* the test is the browser's own line breaking: with mid-word breaks switched off for a moment, a word wider than its room sticks out past
+     the tab's inner right edge (the tab's width is fixed by the sheet; the name's own box may grow). 1px to spare: at 140.2px in a 140px
+     room the word already breaks (letter-spacing, rounding) */
+  const tab = h.closest('.is-tab'), lim = tab.getBoundingClientRect().right - parseFloat(getComputedStyle(tab).paddingRight) - 1, rg = document.createRange(); rg.selectNodeContents(h);
+  h.style.overflowWrap = 'normal';
+  const fits = fs => { if (fs === 28) h.removeAttribute('data-fs'); else h.dataset.fs = fs; return rg.getBoundingClientRect().right <= lim; };
+  const pic = pn && !pn.closest('.kd-item'); /* the item's bag is always above the name on phones (infosheet.css) */
+  let done = false; if (pic) for (const fs of [28, 26, 24]) if ((done = fits(fs))) break;
+  if (!done) { if (pic) pn.classList.add('is-stk'); for (const fs of V2.IS_FS) if ((done = fits(fs))) break; }
+  h.style.overflowWrap = ''; };
+if (!V2._isFitOn) { V2._isFitOn = 1; let t = 0; addEventListener('resize', () => { cancelAnimationFrame(t); t = requestAnimationFrame(V2.isFit); });
+  try { document.fonts.ready.then(() => V2.isFit()); document.fonts.addEventListener('loadingdone', () => V2.isFit()); } catch (e) {} } /* a font that loads after the sheet opened */
 V2.isTab = (kind, n, sub, share, extra = '', pic = '') => { const E = V2.esc, KK = {move: 'CASE FILE · MOVE', ability: 'ID CARD · ABILITY', item: 'EVIDENCE · ITEM', nature: 'PSYCH PROFILE · NATURE'}[kind];
   /* pic (Sim approved the pictures, Nov 23 4:33 PM; docs/mockups/sheet-pics-natures-nov23): a picture left of the name, decorative */
   return `<div class="is-tab kd-${kind}">${extra}<span class="gh u" aria-hidden="true">${E(n.toUpperCase())}</span>${pic ? `<div class="is-pn">${pic}` : ''}<div class="is-tn"><span class="is-kk u">${KK}</span>${V2.isTitle(kind, n)}<div class="is-sub">${sub}</div></div>${pic ? '</div>' : ''}${share}</div>`; };
@@ -63,7 +85,7 @@ V2.openMoveSheet = n => { const E = V2.esc, T = (typeof INFO_TEXT === 'object' &
   const users = V2.isUsersOf(U), mi = typeof MOVES === 'object' ? MOVES.findIndex(x => x[0] === n) : -1;
   const learn = mi < 0 || typeof ROSTER !== 'object' ? [] : ROSTER.filter(q => !q.m && (LEARN[q.n] || []).includes(mi)); /* Megas share their base form's list */
   const links = `<div class="is-sec is-links">${V2.kLink('Try It in the Calc', {href: '#calc'})}${V2.kLink('Winning Teams With It', {href: '#tournaments', 'data-v2close': '', 'data-v2term': 'move', 'data-v2termv': n})}</div>`;
-  V2.sheet(`<div class="is2 kd-move"${ty ? ` style="--c:var(--ty-${ty})"` : ''}>${V2.isTab('move', n, `${ty ? V2.typeChip(ty) : ''}${cat ? `<span>${E(cat)}</span>` : ''}`, V2.isShare(U), '', V2.isSeal(ty))}<p class="is-lead">${E(V2.IS_LEAD.mv[n] || T[0])}</p>${V2.isStats(stats)}${V2.isLines(V2.isMoveLines(n, M))}${V2.isUsers(U, users)}${V2.isMore(learn, users, 'can learn it')}${links}${V2.isCredit('Move')}</div>`, {label: n}); };
+  V2.sheet(`<div class="is2 kd-move"${ty ? ` style="--c:var(--ty-${ty})"` : ''}>${V2.isTab('move', n, `${ty ? V2.typeChip(ty) : ''}${cat ? `<span>${E(cat)}</span>` : ''}`, V2.isShare(U), '', V2.isSeal(ty))}<p class="is-lead">${E(V2.IS_LEAD.mv[n] || T[0])}</p>${V2.isStats(stats)}${V2.isLines(V2.isMoveLines(n, M))}${V2.isUsers(U, users)}${V2.isMore(learn, users, 'can learn it')}${links}${V2.isCredit('Move')}</div>`, {label: n}); V2.isFit(); };
 // the ABILITY sheet, "the ID card" (approved round 3): a dark rounded card, a logo-blue strip, a big faint fingerprint, TRAIT ON FILE
 V2.IS_FP = '<svg class="fp" viewBox="0 0 100 120" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round">' + [6.0, 11.2, 16.4, 21.6, 26.8, 32.0, 37.2, 42.4, 47.6].map((r, i) => `<ellipse cx="50" cy="62" rx="${r}" ry="${(r * 1.22).toFixed(1)}" stroke-dasharray="${18 + 7 * i} ${[5, 9, 13][i % 3]}" transform="rotate(${13 * i} 50 62)"/>`).join('') + '</svg>';
 // the Ability's ID PHOTO (Sim, Nov 23, Q2 A): the Pokémon most often seen with it (the first Usual suspects row) stapled to the ID card,
@@ -76,7 +98,7 @@ V2.openAbilitySheet = n => { const E = V2.esc, txt = (typeof INFO_TEXT === 'obje
   const users = V2.isUsersOf(U), runs = U ? U.nu : 0;
   const stats = [['Teams', U ? V2.isFmt(U.t) : '—'], ['Pokémon run it', U ? String(runs) : '—'], ['Can have it', String(has.length)]];
   const links = `<div class="is-sec is-links">${V2.kLink('Winning Teams With It', {href: '#tournaments', 'data-v2close': '', 'data-v2term': 'ability', 'data-v2termv': n})}</div>`;
-  V2.sheet(`<div class="is2 kd-ability">${V2.isTab('ability', n, '<span>Ability</span><span class="is-tof u">TRAIT ON FILE</span>', V2.isShare(U), V2.IS_FP, V2.isPhoto(users))}<p class="is-lead">${E(V2.IS_LEAD.ab[n] || txt)}</p>${V2.isStats(stats)}${V2.isLines(V2.IS_HAND.ab[n] || [])}${V2.isUsers(U, users)}${V2.isMore(has, users, 'can have it')}${links}${V2.isCredit('Ability')}</div>`, {label: n}); };
+  V2.sheet(`<div class="is2 kd-ability">${V2.isTab('ability', n, '<span>Ability</span><span class="is-tof u">TRAIT ON FILE</span>', V2.isShare(U), V2.IS_FP, V2.isPhoto(users))}<p class="is-lead">${E(V2.IS_LEAD.ab[n] || txt)}</p>${V2.isStats(stats)}${V2.isLines(V2.IS_HAND.ab[n] || [])}${V2.isUsers(U, users)}${V2.isMore(has, users, 'can have it')}${links}${V2.isCredit('Ability')}</div>`, {label: n}); V2.isFit(); };
 // an Ability name anywhere: a blue word (the site's "blue words are buttons") that opens its sheet
 V2.kAbil = n => n && typeof INFO_TEXT === 'object' && INFO_TEXT.ab[n] ? `<button type="button" class="is-w" data-v2info="ab" data-v2infon="${V2.esc(n)}" aria-haspopup="dialog">${V2.esc(n)}</button>` : V2.esc(n || '');
 // the ITEM sheet, "the evidence tag" (approved round 3): a manila tag with a punched hole, a string and a dashed tear line, a red EVIDENCE
@@ -95,7 +117,7 @@ V2.openItemSheet = n => { const E = V2.esc, txt = (typeof INFO_TEXT === 'object'
   const stats = [['Teams', U ? V2.isFmt(U.t) : '—'], ['Pokémon run it', U ? String(U.nu) : '—'], ['Uses per battle', /Single use/i.test(txt) ? '1' : 'No limit']];
   const links = `<div class="is-sec is-links">${V2.kLink('Winning Teams With It', {href: '#tournaments', 'data-v2close': '', 'data-v2term': 'item', 'data-v2termv': n})}</div>`;
   const tab = `<div class="is-tagw"><svg class="str" viewBox="0 0 70 80" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="2"><path d="M57 54 C 40 40, 20 30, 4 2"/></svg>${V2.isTab('item', n, '<span>Held item</span>', V2.isShare(U), '<span class="ev u" aria-hidden="true">EVIDENCE</span>', V2.isBag(n))}</div>`;
-  V2.sheet(`<div class="is2 kd-item">${tab}<p class="is-lead">${E(V2.IS_LEAD.it[n] || txt)}</p>${V2.isStats(stats)}${V2.isLines(V2.IS_HAND.it[n] || [])}${V2.isUsers(U, users)}${links}${V2.isCredit('Item')}</div>`, {label: n}); };
+  V2.sheet(`<div class="is2 kd-item">${tab}<p class="is-lead">${E(V2.IS_LEAD.it[n] || txt)}</p>${V2.isStats(stats)}${V2.isLines(V2.IS_HAND.it[n] || [])}${V2.isUsers(U, users)}${links}${V2.isCredit('Item')}</div>`, {label: n}); V2.isFit(); };
 // an item name anywhere: a blue word that opens its sheet (no button for 'No item' or an item without a sheet); a Mega letter stays with its name
 V2.kItem = n => { const t = V2.keepForm(V2.esc(n || '')).replace(/ (\S{1,2})$/, '\u00a0$1');
   return n && typeof INFO_TEXT === 'object' && INFO_TEXT.it[n] && !V2.IS_NOT_IN.includes(n) ? `<button type="button" class="is-w" data-v2info="it" data-v2infon="${V2.esc(n)}" aria-haspopup="dialog">${t}</button>` : t; };
@@ -140,7 +162,7 @@ V2.openNatureSheet = n => { const E = V2.esc, B = V2.ntBits(n); if (!B) return; 
   const stats = neu ? [['Pokémon run it', runs], ['Teams', teams]] : [['Raises', S[up] + ' +10%'], ['Lowers', S[dn] + ' −10%'], ['Pokémon run it', runs], ['Teams', teams]];
   const users = neu ? [] : V2.isUsersOf(U);
   const links = `<div class="is-sec is-links">${up === 'Spe' || dn === 'Spe' ? V2.kLink('Speed Tiers', {href: '#speed'}) : V2.kLink('Try It in the Calc', {href: '#calc'})}</div>`;
-  V2.sheet(`<div class="is2 kd-nature" style="--sc:${sc}">${tab}<div class="nt-lead"><p class="is-lead">${E(lead)}</p><p class="is-src">Pokémon Champions calls a nature a Stat Alignment.</p></div>${V2.isStats(stats)}${V2.isLines(V2.ntLines(n, up, dn))}${V2.isUsers(U, users)}${links}</div>`, {label: n + ' nature'}); };
+  V2.sheet(`<div class="is2 kd-nature" style="--sc:${sc}">${tab}<div class="nt-lead"><p class="is-lead">${E(lead)}</p><p class="is-src">Pokémon Champions calls a nature a Stat Alignment.</p></div>${V2.isStats(stats)}${V2.isLines(V2.ntLines(n, up, dn))}${V2.isUsers(U, users)}${links}</div>`, {label: n + ' nature'}); V2.isFit(); };
 // a nature name anywhere: a blue word that opens its sheet (only the 25 real natures)
 V2.kNat = n => n && V2.ntBits(n) ? `<button type="button" class="is-w" data-v2info="nt" data-v2infon="${V2.esc(n)}" aria-haspopup="dialog">${V2.esc(n)}</button>` : V2.esc(n || '');
 // every move ticket (V2.kMove) carries data-v2info; one tap opens its sheet. "Show all N" opens the rest of Also capable in place.
