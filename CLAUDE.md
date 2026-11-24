@@ -9,6 +9,7 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
 - **Plan:** docs/rebuild/gameplan-nov25-dec2.md (Sim's simple version; HH's detail: gameplan-detail-nov25.md) (to Dec 2 and December → January launch). Public site: docs/rebuild/public-site-plan.md
   (all on Cloudflare, nastyplot.org, bought by Sim). Launch with today's score; after the design work, all focus on the Strength
   Score and analytics; best-of-3 data later (Sim, Nov 24).
+  **Being found on Google (SEO) is "super duper important"** (Sim, Nov 24): real page addresses, search-ready pages, before launch.
 - **Helpers:** 1 until 4:00 PM Wed Nov 25, then 2 as standard. Above that, ask Sim.
 - **"Other chat"** = Sim's PC Claude Code chat, SAME account (long runs, GPU image work). **"Other acc"** = second account, Pro plan,
   much less usage: report-only or patch jobs, never pushes or publishes; HH reviews and merges.

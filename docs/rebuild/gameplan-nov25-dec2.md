@@ -66,8 +66,13 @@
   - **HH:** feedback, page-view totals, hello@ email, your owner page.
   - **HH:** "Export / Import my teams".
 - **Dec 10–16:** **HH:** official events (Victory Road) as a second source.
-- **Dec 12–20:** **HH:** speed (under 2.5 s on a phone).
-- **Dec 14–24:** 👉 **You:** 3–5 testers use the site for a week.
+- **Dec 8–20:** 🔎 **HH: found on Google (Sim: "super duper important").** Real addresses like nastyplot.org/pokemon/garchomp,
+  a plain search-engine version of every page, titles and descriptions, sitemap, link previews, Google Search Console.
+- **Dec 12–20:**
+  - **HH:** speed (under 2.5 s on a phone).
+  - **HH:** accessibility check (screen readers, contrast, keyboard) + a test so it stays fixed.
+  - **HH:** error and uptime alarms for real visitors (anonymous, on Cloudflare).
+- **Dec 14–24:** 👉 **You:** 3–5 testers use the site for a week (+ a "first 60 seconds" fresh-eyes test).
 - **Dec 20–30:**
   - **HH:** privacy page.
   - **HH:** read Limitless's terms.
@@ -88,6 +93,8 @@
 - Rules on one page.
 
 ## 💡 Ideas (not scheduled)
+- **After launch, the big five:** Team Preview Coach (pick 4 + leads vs their 6), daily KO puzzle, "what went wrong?" from a
+  replay, weekly meta forecast with a public track record, tournament day mode.
 - **three.js for launch:** one "wow" moment (e.g. a 3D spin of the share card or a launch-day intro), loaded only on that one
   page so the rest of the site stays fast. Decide closer to launch. (Sim, Nov 24)
 - **Speed Tiers controls at 1280:** a two-row layout, after the switch (pictures first).
