@@ -304,17 +304,17 @@ V2.THEME_WORD = {day: 'Day mode', night: 'Night mode', auto: 'Auto: follows your
 // ---------- data note (parity, Nov 15): today's #healthBar and #regBar (43-data-health.js), one calm line on Home and the Meta
 // pages: a source past its usual age is named with its day, and a new or changed regulation is said plainly. Empty when all is current.
 V2.REG_END_MC = '2026-12-02T01:59:00Z';
+/* Nov 24 (competitor scan: rivals already mention Reg M-D; we said nothing): until M-C ends, a countdown line, shown in the Home hero's
+   text under the herd (as a note above the hero it pushed the start buttons off the first screen: Stampede hero 3b; on Meta, the tabs) */
+V2.mdCountdown = (now = Date.now()) => { try { const r = typeof regInfo === 'function' && regInfo(); if (!r || r.now || r.id !== 'M-C' || now >= Date.parse(V2.REG_END_MC)) return '';
+  const end = new Date(V2.REG_END_MC), d = Math.max(1, Math.round((end - now) / 864e5)), when = end.toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'});
+  return `Reg M-D is coming: M-C ends ${when} (${d === 1 ? 'tomorrow' : `in ${d} days`}), with the Dec 2 balance patch.`; } catch (e) { return ''; } };
 V2.dataNote = () => { const E = V2.esc, out = [];
   /* review Nov 18 (C5): a --split Preview whose preview.json couldn't be read (missing, 404, offline) says so, on every page (V2.shell),
      rather than showing the built-in numbers as if they were today's */
   if (window.__NP_PVFAIL) out.push(`<b>This Preview couldn't read today's data</b> (preview.json: ${E(window.__NP_PVFAIL)}). The numbers shown are the built-in copy and may be out of date. Reload to try again.`);
   try { const r = typeof regInfo === 'function' && regInfo();
     if (r && r.now) out.push(`<b>New regulation: Reg ${E(r.now.id)} started ${E(regDay(r.now.since))}.</b> Numbers are from Reg ${E(r.id)} until there's enough Reg ${E(r.now.id)} data; the two are never mixed. ${r.now.events ? `${r.now.events.toLocaleString('en-US')} Reg ${E(r.now.id)} event${r.now.events === 1 ? '' : 's'} so far${r.now.need ? `, switches at ${r.now.need}` : ''}.` : `Seen on the Showdown ladder; no Reg ${E(r.now.id)} tournaments yet.`}`); /* known-bug SHELL-05 (Nov 17): how far along it is, as today's page says */
-    /* Nov 24 (competitor scan: rivals already mention Reg M-D; we said nothing): until M-C ends, a countdown. The end time mirrors
-       formats.mjs REG_END (the official end of M-C); the regulation profile job will make this read one shared setting */
-    else if (r && !r.now && r.id === 'M-C' && Date.now() < Date.parse(V2.REG_END_MC) && /^(#home)?$/.test(location.hash || '')) { /* Home only: on the Meta pages the extra line pushed the tabs past Sim's Q2 limit on phones (v2-minors, Nov 24) */ const end = new Date(V2.REG_END_MC), d = Math.max(1, Math.round((end - Date.now()) / 864e5)),
-        when = end.toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'});
-      out.push(`<b>Reg M-D is coming:</b> M-C ends ${E(when)} (${d === 1 ? 'tomorrow' : `in ${d} days`}), with the Dec 2 balance patch.`); }
     else if (r && r.id !== PAGE_REG) out.push(`<b>Numbers are from Reg ${E(r.id)}.</b> Anything new in Reg ${E(r.id)} may be missing until NastyPlot is updated for it.`); } catch (e) {}
   try { const st = typeof healthStale === 'function' ? healthStale() : [];
     if (st.length && window.__NP_PREVIEW) out.push(`<b>This Preview uses a saved copy of the data</b> from ${E(st[0].day)}; the live site updates every morning.`);
