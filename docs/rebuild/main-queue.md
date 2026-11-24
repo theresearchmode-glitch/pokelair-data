@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 9:46 PM (9:46:37)  date: Mon Nov 23, 2026
-NOW: HH: Preview v254 (Job 1 1280 layouts, THEME-03 test, item images) then Game Plan v56. Helper: hS3 (item pictures in Search, finishing checks).
+NOW: HH: v2-minors main1/main2/groups on HEAD (item pictures in Search merged). Helper: hR2 (code review of tonight's later diff).
 NEXT: GitHub run for 3a06857f (the 9:45 PM batch): fix any red
 NEXT: review Sim's PC item test sheet (alt/items) when it lands; go/adjust for all 166
 NEXT: merge hI2's wiring; build with the PC images; picture sheet to Sim
