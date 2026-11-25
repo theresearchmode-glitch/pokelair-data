@@ -12,7 +12,7 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
   **Being found on Google (SEO) is "super duper important"** (Sim, Nov 24): real page addresses, search-ready pages, before launch.
 - **Work mode (Sim, Wed Nov 25, 5:55 AM):** back to regular work now (usage saving ended early); constant work as normal,
   hourly work check + night check on.
-- **Helpers:** 2 (Sim, Wed Nov 25: "you can have an additional helper"). Above that, ask Sim.
+- **Helpers:** 1 until 4:00 PM Wed Nov 25 (Sim, 7:33 AM: usage 89%; drop to 1 when the next helper finishes), then 2. Above that, ask Sim.
 - **"Other chat"** = Sim's PC Claude Code chat, SAME account (long runs, GPU image work). **"Other acc"** = second account, Pro plan,
   much less usage: report-only, patch jobs, and (Sim, Nov 24) merging + testing Gemini's jobs; pushes ONLY to alt/other-* branches,
   never publishes; HH reviews and merges. HH may push alt/gemini-* branches so GitHub tests Gemini's work (Sim, Nov 24).
