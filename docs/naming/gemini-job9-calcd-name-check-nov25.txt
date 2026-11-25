@@ -1,0 +1,94 @@
+GEMINI JOB 9 — Calc'd: is the name safe to use? (Research only, NO design)
+Project: NastyPlot (Sim's Pokémon Champions website)
+Reviewer: Neon (Gemini) | Checked: 2026-11-24 Eastern / 2026-11-25 UTC
+
+====================================================================
+VERDICT
+====================================================================
+not safe (for a kid-facing Pokémon site right now): Googling "calcd" puts an adult anatomy calculator (calcsd.info) at #1 and "Anal. Calcd." at #2; Googling "calc'd" returns Calcium + Vitamin D supplements; a live UK calculator site named "calcd" already exists at calcd.co.uk; and calcd.com / calcd.net are already taken.
+
+====================================================================
+1. DOMAINS
+====================================================================
+item | finding | source link | date | checked?
+calcd.com | Taken: registered since 1998 (GoDaddy), behind Cloudflare bot check (content unknown). Google site:calcd.com returns 0 indexed pages. | docs/rebuild/name-research-nov24.md (HH RDAP) | 2026-11-24 Eastern | checked (HH RDAP in file + Google Search; live site behind bot check = not checked)
+calcd.org | Free at HH's Nov 24 RDAP check (PIR 404). Google search returns 0 indexed pages. | docs/rebuild/name-research-nov24.md (HH RDAP) | 2026-11-24 Eastern | checked (HH RDAP in file + Google Search; live RDAP re-check today = not checked)
+calcd.net | Taken: registered 2026-10-06 via Cloudflare (502, no site — HH noted "ASK SIM whether it's his"). Google search returns 0 indexed pages. | docs/rebuild/name-research-nov24.md (HH RDAP) | 2026-11-24 Eastern | checked (HH RDAP in file + Google Search; owner = not checked)
+calcd.gg | 0 indexed pages in Google Search; registration/RDAP/parking status unknown. | — | 2026-11-24 Eastern | not checked (no live RDAP/WHOIS/HTTP access; Google Search only)
+calcd.app | 0 indexed pages in Google Search; registration/RDAP/parking status unknown. | — | 2026-11-24 Eastern | not checked (no live RDAP/WHOIS/HTTP access; Google Search only)
+calcd.io | 0 indexed pages in Google Search; registration/RDAP/parking status unknown. | — | 2026-11-24 Eastern | not checked (no live RDAP/WHOIS/HTTP access; Google Search only)
+getcalcd.com | 0 indexed pages in Google Search; registration/RDAP/parking status unknown. | — | 2026-11-24 Eastern | not checked (no live RDAP/WHOIS/HTTP access; Google Search only)
+calcd.co | 0 indexed pages in Google Search; registration/RDAP/parking status unknown. | — | 2026-11-24 Eastern | not checked (no live RDAP/WHOIS/HTTP access; Google Search only)
+calcd.co.uk (discovered clash) | LIVE site: "calcd: UK money calculators | mortgage, tax and more" — free UK finance/tax/mortgage calculators branded "calcd". | https://www.calcd.co.uk/ and https://www.calcd.co.uk/about/ | 2026-11-24 Eastern | checked (Google Search snippets)
+
+====================================================================
+2. CLASHES (PRODUCTS, APPS, COMPANIES, GAMES & VGC SLANG)
+====================================================================
+item | finding | source link | date | checked?
+calcd (UK finance site) | Live UK web app literally named "calcd" ("UK project building free money calculators" for mortgage, tax, take-home pay, pensions, VAT). Direct name + "calculator" category overlap. | https://www.calcd.co.uk/about/ | 2026-11-24 Eastern | checked (Google Search)
+calcSD (adult site) | Live site one letter away ("calcSD") that dominates #1/#3/#5 on Google for "calcd"; an adult male anatomy (penis length/girth) calculator. Major kid-safety clash in search. | https://calcsd.info/ | 2026-11-24 Eastern | checked (Google Search)
+numbrrrs ("Calc'd" feature) | iOS-style calculator app on Product Hunt (launched Sep–Nov 2025) whose yearly calculator Wrapped recap is called "Calc'd" ("gives you a hilarious yearly Calc'd"). | https://www.producthunt.com/products/numbrrrs | 2026-11-24 Eastern | checked (Google Search)
+CALCD (HiQLCD database) | Automotive Life Cycle Assessment (LCA) database for China named "CALCD". | https://www.hiq.earth/databases/industries/automotive | 2026-11-24 Eastern | checked (Google Search)
+CalcD (bioinformatics / GitHub) | R package function (`evobiR::CalcD`) and GitHub/Gist tools (`calcD_from_fas`, `CalcD.R`, `calcD.jl`) for Patterson's D-statistic (ABBA-BABA test). | https://www.rdocumentation.org/packages/evobiR/versions/1.1/topics/CalcD ; https://github.com/brunonevado/calcD_from_fas | 2026-11-24 Eastern | checked (Google Search)
+Anal. Calcd. (chemistry) | Standard organic chemistry abbreviation for "Calculated" in elemental analysis; ranks #2 on Google for "calcd". | https://chemistry.stackexchange.com/questions/7055/what-does-anal-calcd-stand-for-written-out | 2026-11-24 Eastern | checked (Google Search)
+Apple App Store / Google Play / Crunchbase | No standalone app or Crunchbase company named Calc'd / Calcd / Calced found via Google Search (only changelog text "Calc'd available cap" in Rolfes ITX). | https://apps.apple.com/rs/app/rolfes-itx/id1589766958?platform=mac | 2026-11-24 Eastern | checked (Google Search; direct App Store / Play Store / Crunchbase UI search = not checked)
+Pokémon / VGC brands | No Pokémon/VGC website, app, or brand named Calc'd / Calcd / Calced found. | — | 2026-11-24 Eastern | checked (Google Search)
+VGC slang: "calc'd" / "calced" | YES — widely used VGC/competitive Pokémon verb slang meaning "ran damage calculations for" (especially EV spreads). Quotes: (1) r/PokemonChampions (2026-04-20): "live the hits they were calc'd for"; (2) r/VGC (2026-05-12): "one-shot things they wouldn't have calc'd for"; (3) r/VGC (2026-06-17): "surprise mons you haven't calc'd for"; (4) r/PokemonChampions (2026-09-07): "What are your favorite calc-ed EV spreads?"; (5) Nugget Bridge (2015-03-11): "The reason I calc'd for Return...". Note: "you got calc'd" was NOT found as a common phrase in search results. | https://www.reddit.com/r/PokemonChampions/comments/1sqp3eq/where_do_you_look_up_common_ev_spreads_for/ ; https://www.reddit.com/r/VGC/comments/1tb25kb/unexpected_sneasler_tech_cool_replay/ ; https://www.reddit.com/r/VGC/comments/1u7xcp0/skill_improvement_how_do_i_start_training_in_vgc/ ; https://www.reddit.com/r/PokemonChampions/comments/1w9kls5/what_are_your_favorite_calced_ev_spreads/ ; https://nuggetbridge.com/reports/chesnaught-expecting-this-an-undefeated-senior-champion-st-charles/ | 2026-11-24 Eastern | checked (Google Search)
+
+====================================================================
+3. TRADEMARKS (DISCLAIMER: I AM NOT A LAWYER)
+====================================================================
+Note: I am not a lawyer. Web search is NOT a legal clearance search; before committing to any name, Sim should run direct searches on USPTO Trademark Search, EUIPO eSearch plus, and UK IPO (or consult a trademark attorney).
+
+item | finding | source link | date | checked?
+USPTO (CALCD / CALC'D / CALCED) | Google Search across trademarks.justia.com, trademarkia.com, and the open web returned 0 trademark listings for CALCD / CALC'D / CALCED (only chemistry patents containing "Calcd."). Live USPTO database was not queried directly. | https://patents.google.com/patent/US3749679A/en (patent noise only) | 2026-11-24 Eastern | not checked (live USPTO Trademark Search not queried; web search only)
+EUIPO (CALCD / CALC'D / CALCED) | Google Search returned 0 EUIPO trademark listings for CALCD / CALC'D / CALCED. Live EUIPO eSearch plus was not queried directly. | — | 2026-11-24 Eastern | not checked (live EUIPO database not queried; web search only)
+UK IPO (CALCD / CALC'D / CALCED) | Google Search returned 0 UK IPO trademark listings, BUT `calcd.co.uk` is an active UK calculator brand in commerce (potential unregistered / common-law "passing off" overlap in the UK if both are online calculators). Live UK IPO search was not queried directly. | https://www.calcd.co.uk/about/ | 2026-11-24 Eastern | not checked (live UK IPO database not queried; live UK brand clash found via web search)
+
+====================================================================
+4. GOOGLE SEARCH & THE APOSTROPHE PROBLEM
+====================================================================
+item | finding | source link | date | checked?
+Query: "calcd" (top results returned) | 1. calcSD (penis size calculator) — https://calcsd.info/ ; 2. "What does 'Anal. Calcd.' stand for written out?" — https://chemistry.stackexchange.com/questions/7055/what-does-anal-calcd-stand-for-written-out ; 3. Chart Calculator - calcSD — https://calcsd.info/chart ; 4. MDCalc — https://www.mdcalc.com/ ; 5. Measuring Properly - calcSD — https://calcsd.info/posts/measuring ; 6. CM/ECF California Central District — https://ecf.cacd.uscourts.gov/ ; 7. dict.cn/calcd — http://m.dict.cn/calcd ; 8. ISCD Precision Calculator — https://my.iscd.org/Shop/Product-Catalog/Product-Details?productid={60B68FC8-17D6-EA11-A813-000D3A1A1F8C} ; 9. Calcs.com — https://calcs.com/ | URLs listed inline | 2026-11-24 Eastern | checked (Google Search; 9 results returned)
+Query: "calc'd" (top results returned) | 1. Calcium with Vitamin D (Cleveland Clinic) — https://my.clevelandclinic.org/health/drugs/20207-calcium-vitamin-d-tablets ; 2. Cal D 500mg Tablet (MedEx) — https://medex.com.bd/brands/14420/cal-d-500-mg-tablet ; 3. Vitamin D Calculator (GrassrootsHealth) — https://grassrootshealth.net/dcalculator/ ; 4. About colecalciferol (NHS) — https://www.nhs.uk/medicines/colecalciferol/about-colecalciferol/ ; 5. Vitamin D Calculator (OmegaQuant) — https://omegaquant.com/vitamin-d-calculator/ ; 6. Vitamin D and Calcium (Johns Hopkins) — https://www.hopkinsmedicine.org/health/wellness-and-prevention/vitamin-d-and-calcium ; 7. Effect Size Calculators (UCCS) — https://lbecker.uccs.edu/ ; 8. Caltrate 600+D3 — https://www.caltrate.com/calcium-supplement-products/600d3/ | URLs listed inline | 2026-11-24 Eastern | checked (Google Search; 8 results returned)
+Query: "calcd pokemon" (top results returned) | 1. Pokémon Damage Calculator (Showdown) — https://calc.pokemonshowdown.com/ ; 2. Pokémon Champions Damage Calculator (Showdown) — https://calc.pokemonshowdown.com/champions.html?mode=champions ; 3. VGC Multi Calc — https://vgcmulticalc.com/ ; 4. NCP VGC Damage Calculator — https://nerd-of-now.github.io/NCP-VGC-Damage-Calculator/ ; 5. Gen III/IV Catch Rate Calculator — https://www.dragonflycave.com/calculators/gen-iii-iv-catch-rate/ ; 6. FusionCalc — https://fusioncalc.com/ ; 7. Candy Calc — https://richi3f.github.io/candy-calc/ ; 8. YouTube Short @ck49vgc — https://www.youtube.com/shorts/Q2vdbZPDsDA | URLs listed inline | 2026-11-24 Eastern | checked (Google Search; 8 results returned)
+How hard to rank? | Bare "calcd": medium-hard at launch because Google treats it as a typo for "calcSD" (adult site) or chemistry "calcd.", though no single global consumer brand owns exact-match "calcd" outside UK's calcd.co.uk. "calcd pokemon": medium — must outrank entrenched Showdown / VGC Multi Calc pages for brand-intent queries. | Same SERPs above | 2026-11-24 Eastern | checked (analysis of SERPs above)
+The apostrophe problem | Google does NOT treat "calcd" and "calc'd" the same. "calcd" -> calcSD (adult anatomy calculator) + chemistry "Anal. Calcd."; "calc'd" -> tokenized as "calc d" -> Calcium + Vitamin D supplements. Because URLs cannot contain an apostrophe (calcd.org), visitors who see "CALC'D" in the logo will split between typing "calc'd" (Vitamin D) and "calcd" (adult site). | Same SERPs above | 2026-11-24 Eastern | checked (side-by-side Google Search)
+
+====================================================================
+5. SOCIAL HANDLES
+====================================================================
+Note: Google Search returned 0 indexed profiles for @calcd, @calcdgg, @calcd_gg, r/calcd, or discord.gg/calcd. Because empty, private, suspended, or newly registered handles often do not appear in Google Search, availability CANNOT be confirmed from search alone.
+
+item | finding | source link | date | checked?
+X (@calcd / @calcdgg / @calcd_gg) | 0 indexed results in Google Search; live availability unknown. | — | 2026-11-24 Eastern | not checked (direct X lookup required)
+Instagram (@calcd / @calcdgg / @calcd_gg) | 0 indexed results in Google Search; live availability unknown. | — | 2026-11-24 Eastern | not checked (direct Instagram lookup required)
+TikTok (@calcd / @calcdgg / @calcd_gg) | 0 indexed results in Google Search; live availability unknown. | — | 2026-11-24 Eastern | not checked (direct TikTok lookup required)
+YouTube (@calcd / @calcdgg / @calcd_gg) | 0 indexed results in Google Search; live availability unknown. | — | 2026-11-24 Eastern | not checked (direct YouTube lookup required)
+Reddit (r/calcd) | 0 indexed results in Google Search; live availability unknown. | — | 2026-11-24 Eastern | not checked (direct Reddit lookup required)
+Discord vanity (discord.gg/calcd) | 0 indexed results in Google Search; live availability unknown (note: Discord vanity URLs also require Server Boost Level 3). | — | 2026-11-24 Eastern | not checked (direct Discord lookup required)
+Bluesky (@calcd.bsky.social / @calcdgg.bsky.social) | 0 indexed results in Google Search; live availability unknown (custom domain handle like @calcd.org would work if domain is owned). | — | 2026-11-24 Eastern | not checked (direct Bluesky lookup required)
+
+====================================================================
+6. SAY-IT TEST & KID-SAFETY
+====================================================================
+item | finding | source link | date | checked?
+Pronunciation out loud | Intended: "kalkt" (1 syllable, rhymes with "talked" / "chalked"). Without the apostrophe (in URLs like calcd.org), first-time readers often read "kalk-dee" (calc + D) or "kalsd". | — | 2026-11-24 Eastern | checked (linguistic analysis)
+Homophone & misspellings | Sounds identical to "caulked" (bathroom caulk) and close to "cocked" in noisy voice chat/streams. Likely typed misspellings: calced, calcked, calked, caulked, calc d, calc'd, calcd. | — | 2026-11-24 Eastern | checked (linguistic analysis)
+Kid-safety | Word itself is clean VGC slang ("calculated"), BUT: (1) Googling "calcd" currently puts an explicit adult anatomy calculator (calcsd.info) at #1 and "Anal. Calcd." at #2 — serious hazard for kids/parents searching the site name; (2) spoken homophone ("caulked"/"cocked") invites juvenile puns on streams/voice; (3) note that a "calculator devil" character ("Chip") could also draw minor parent sensitivity for younger kids compared to a neutral mascot. | https://calcsd.info/ ; https://chemistry.stackexchange.com/questions/7055/what-does-anal-calcd-stand-for-written-out | 2026-11-24 Eastern | checked (Google Search + analysis)
+
+====================================================================
+THE 3 BIGGEST RISKS
+====================================================================
+1. Kid-safety SERP hazard (CRITICAL): Searching "calcd" on Google today puts an adult penis-measurement calculator (calcsd.info) at #1, #3, and #5, and "Anal. Calcd." at #2. Until Calc'd builds enough domain authority to own #1 globally, any kid or parent who Googles the site name hits adult content immediately.
+2. The apostrophe splits brand search in half: "CALC'D" in the logo vs "calcd.org" in the URL creates two broken search paths — "calcd" goes to calcSD (adult site) and "calc'd" goes to Calcium + Vitamin D supplements (Cleveland Clinic / NHS / Caltrate), hurting word-of-mouth discovery and SEO (which Sim marked "super duper important").
+3. Live calculator clash + domain/trademark friction: A live UK calculator site literally named "calcd" already operates at calcd.co.uk (same "calculator" category), calcd.com (1998) and calcd.net (Oct 2026) are already registered, and spoken "calc'd" sounds like "caulked" / invites 6+ spelling variants (calced/calcked/calked/calc'd/calcd).
+
+====================================================================
+WHAT COULD NOT BE CHECKED
+====================================================================
+- Live RDAP / WHOIS / HTTP checks for calcd.gg, calcd.app, calcd.io, getcalcd.com, calcd.co, and live site content behind Cloudflare bot protection on calcd.com (VM has no internet access; Google Search returned 0 indexed pages).
+- Owner of calcd.net (registered 2026-10-06 via Cloudflare — Sim should confirm whether he bought it).
+- Official trademark registries: live queries on USPTO Trademark Search (tmsearch.uspto.gov), EUIPO eSearch plus, and UK IPO (web search only; I am not a lawyer).
+- Live handle availability on X, Instagram, TikTok, YouTube, Reddit (r/calcd), Discord vanity, and Bluesky (unindexed/empty handles do not appear in Google Search).
+- Direct in-store searches inside Apple App Store, Google Play Store, and Crunchbase UI (checked via Google site: search only).
