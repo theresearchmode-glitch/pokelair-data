@@ -417,7 +417,7 @@ jobs:
       - run: node app/build.mjs --v2 && node experiments/v2-words.mjs
         if: ${{ !cancelled() }}
       # Accessibility code checks (job 18: arrow-list pickers, kCard aria-pressed, guide tablist, sets role, winning combobox, sugs aria-live)
-      - run: PAGE=app/dist/v2.html node experiments/a11y-code.mjs
+      - run: node app/build.mjs --v2 --preview-data && PAGE=app/dist/v2.html node experiments/a11y-code.mjs   # needs the data build: Winning Teams' search box only exists with teams
         if: ${{ !cancelled() }}
       # players' saved teams, box and settings carry over both ways between today's page and the new site (saved-data contract, Nov 23)
       - run: node app/build.mjs && node app/build.mjs --v2 && node app/test/v2-saved.mjs
