@@ -57,7 +57,7 @@ jobs:
       - run: node weekly.mjs || node skip.mjs "weekly digest skipped"
       # upcoming official VGC events from Victory Road's season calendar (out/calendar.json; keeps yesterday's file on failure)
       - run: node calendar.mjs || node skip.mjs "calendar skipped"
-      - run: node model.mjs || node skip.mjs "model skipped"
+      - run: MODEL_SHADOW=${{ vars.MODEL_SHADOW || '0' }} node model.mjs || node skip.mjs "model skipped"
       # each six's own record with player skill and opponents taken out, added to out/model.json for grade v2 (Nov 7)
       - run: node six.mjs || node skip.mjs "six records skipped"
       # which Pokémon beat which in real games, added to out/model.json for Plan a Match (Nov 8)
@@ -84,6 +84,8 @@ jobs:
       - run: node crosscheck.mjs || node skip.mjs "crosscheck skipped"
       - run: node ratings-snapshot.mjs || node skip.mjs "ratings snapshot skipped"
       - run: node scoreboard.mjs || node skip.mjs "scoreboard skipped"
+      # opt-in shadow model scoreboard (rule 21 gate 3): paired daily grading when MODEL_SHADOW=1
+      - run: if [ "${{ vars.MODEL_SHADOW || '0' }}" = "1" ]; then node shadow-scoreboard.mjs || node skip.mjs "shadow scoreboard skipped"; fi
       # the ratings' track record: each saved snapshot against the events played after it (out/track.json, page meta/track)
       - run: node track.mjs || node skip.mjs "track record skipped"
       # last guard before saving: nothing that was a name may be committed (converts any straggler, then checks)
