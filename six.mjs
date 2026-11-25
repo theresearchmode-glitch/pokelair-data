@@ -7,9 +7,11 @@
 // good on log-loss as no record at all and a little better at picking winners, at all three date cut-offs), so a few games barely move a six and hundreds of games move it a lot.
 // Adds to out/model.json: sixes = {"Mon1|Mon2|…" (sorted): [δ, games]} for sixes with 10+ games. The page adds δ to its own
 // team strength for that exact six; every other team is graded on the model alone.
-import fs from 'node:fs';
+import fs from 'node:fs'; import {activeReg, SITE_REG} from './formats.mjs';
 const MF = process.env.MODEL_FILE || 'out/model.json'; // MATCHES / MODEL_FILE: experiments
 const M = JSON.parse(fs.readFileSync(process.env.MATCHES || 'out/matches.json', 'utf8')), MD = JSON.parse(fs.readFileSync(MF, 'utf8'));
+const curReg = activeReg().id, mReg = M.reg || SITE_REG.id, mdReg = MD.reg || SITE_REG.id;
+if (mReg !== mdReg || mReg !== curReg) { console.log(`six: reg mismatch (matches ${mReg}, model ${mdReg}, active ${curReg}), skipped`); process.exit(0); }
 if (!MD.ships || !MD.mons) { console.log('six: model not shipped, nothing added'); process.exit(0); }
 const TAU = .1, SIG_S = .6, ITERS = 300, MIN_G = 10, calib = MD.calib; // 10+ games: keeps meta/model under the 256 KB the page database takes per write
 const teams = M.teams.map(k => k.split('|'));

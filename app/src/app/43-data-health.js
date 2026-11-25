@@ -2,7 +2,9 @@
 // Each data document carries its own date. A source past its usual age (the same limits as the daily job's health gate,
 // health.mjs) gets a calm amber note on Home and the Meta pages (CSS shows #healthBar only there), naming it and the day it
 // was last updated, so stale numbers are never shown as if they were fresh. A missing document is simply not listed.
-const HEALTH = [['doubles_tour', 'Tournament sets', 2], ['perf', 'Tournament win rates', 2], ['teams', 'Top teams', 2], ['model', 'Win model', 2], ['events', 'Events', 3], ['doubles_ingame', 'In-game rankings', 3], ['practice', 'Team preview practice', 4], ['track', 'Ratings track record', 2], ['doubles', 'Showdown ladder stats', 45]];
+// In-game rankings: 9999 days (paused Nov 18: op.gg's Terms ban automated reads; the list is frozen at Nov 17), the same as
+// health.mjs. The Meta pages say "paused since Nov 17 (op.gg)" instead. If the read resumes, restore 3 here and in health.mjs.
+const HEALTH = [['doubles_tour', 'Tournament sets', 2], ['perf', 'Tournament win rates', 2], ['teams', 'Top teams', 2], ['model', 'Win model', 2], ['events', 'Events', 3], ['doubles_ingame', 'In-game rankings', 9999], ['practice', 'Team preview practice', 4], ['track', 'Ratings track record', 2], ['doubles', 'Showdown ladder stats', 45]];
 const healthDay = t => { try { return new Date(t).toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) { return ''; } };
 function healthStale(now) { now = now || Date.now(); const out = []; const at = typeof DATA_AT === 'object' ? DATA_AT : {};
   for (const [k, label, days] of HEALTH) { const t = at[k]; if (!t) continue; const age = Math.floor((now - t) / 864e5); if (age > days) out.push({k, label, age, day: healthDay(t)}); }

@@ -8,7 +8,7 @@
 V2.usUi = {q: '', pick: null, all: false, src: 'tour', open: {}};
 V2.usDoc = () => META[SRC[V2.usUi.src]];
 // shared helpers that read ui.metaSrc (trendFor's badges) see Usage's own source while they run, then it is put back
-V2.usAs = f => { const g = ui.metaSrc; ui.metaSrc = V2.usUi.src; try { return f(); } finally { ui.metaSrc = g; } };
+V2.usAs = f => { const g = ui.metaSrc, gv = ui.metaView; ui.metaSrc = ui.metaView = V2.usUi.src; try { return f(); } finally { ui.metaSrc = g; ui.metaView = gv; } }; /* merge with main (Nov 28): main's trendKey reads ui.metaView, so both are swapped */
 V2.usSrcs = [['ingame', 'Ranked ladder'], ['tour', 'Online tournaments'], ['ladder', 'Showdown ladder']]; // today's order (parity, Nov 15)
 V2.usLine = d => { const per = d.period && !String(d.source).includes(d.period) ? ' · ' + (/^\d{4}-\d{2}$/.test(d.period) ? new Date(d.period + '-15T12:00:00').toLocaleDateString('en-US', {month: 'short', year: 'numeric'}) : d.period) : '';
   return `${d.source || ''}${per}${d.battles ? ` · ${(+d.battles).toLocaleString('en-US')} battles` : ''}`; };

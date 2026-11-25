@@ -6,10 +6,14 @@
 //   2. accuracy: held-out calibrated log-loss not worse than yesterday's by more than 0.005, and better than a coin flip (0.693)
 //   3. stability: the 200 most-played real sixes keep their order (rank correlation 0.85+ between yesterday's and today's strength)
 // GUARD_PREV=<file> compares with that file instead of git's committed copy (for tests).
-import fs from 'node:fs'; import {execSync} from 'node:child_process';
+import fs from 'node:fs'; import {execSync} from 'node:child_process'; import {activeReg, SITE_REG} from './formats.mjs';
 const F = 'out/model.json', now = JSON.parse(fs.readFileSync(F, 'utf8'));
 let prevTxt = null; try { prevTxt = process.env.GUARD_PREV ? fs.readFileSync(process.env.GUARD_PREV, 'utf8') : execSync('git show HEAD:' + F, {encoding: 'utf8', maxBuffer: 64e6}); } catch (e) {}
-const prev = prevTxt ? JSON.parse(prevTxt) : null, bad = [];
+const rawPrev = prevTxt ? JSON.parse(prevTxt) : null, curReg = now.reg || activeReg().id, prevReg = rawPrev && (rawPrev.reg || SITE_REG.id);
+const prev = rawPrev && prevReg === curReg ? rawPrev : null, bad = [];
+if (rawPrev && !prev) console.log(`model guard: ignoring previous ${prevReg} model (active ${curReg})`);
+if (!now.ships) { if (prev && prev.ships) { console.log(`::warning::model guard: ${curReg} model did not ship -> kept previous ${curReg} model`); fs.writeFileSync(F, prevTxt); process.exit(1); }
+  console.log(`model guard: ${curReg} not ready (${now.games || 0} games, ${now.events || 0} events); no previous ${curReg} model, accepted`); process.exit(0); }
 // 1. complete
 if (Object.keys(now.mons || {}).length < 250) bad.push(`only ${Object.keys(now.mons || {}).length} Pokémon`);
 for (const k of ['noMega', 'protectLow']) if (!(now.team && now.team[k] < 0)) bad.push(`team factor ${k} missing or not negative (${now.team && now.team[k]})`);

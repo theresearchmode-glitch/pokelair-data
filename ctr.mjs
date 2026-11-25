@@ -5,9 +5,11 @@
 // point better (56.3% → 56.8%) with better-calibrated chances; averaged over the whole field it added nothing, so the page
 // uses it only when the opponent is known (Battle: Plan a Match), never in the team grade.
 // Adds to out/model.json: ctr = {sp: [Pokémon on 1%+ of teams], v: [c for each pair a<b, in thousandths, row by row]}.
-import fs from 'node:fs';
+import fs from 'node:fs'; import {activeReg, SITE_REG} from './formats.mjs';
 const MF = process.env.MODEL_FILE || 'out/model.json';
 const M = JSON.parse(fs.readFileSync(process.env.MATCHES || 'out/matches.json', 'utf8')), MD = JSON.parse(fs.readFileSync(MF, 'utf8'));
+const curReg = activeReg().id, mReg = M.reg || SITE_REG.id, mdReg = MD.reg || SITE_REG.id;
+if (mReg !== mdReg || mReg !== curReg) { console.log(`ctr: reg mismatch (matches ${mReg}, model ${mdReg}, active ${curReg}), skipped`); process.exit(0); }
 if (!MD.ships || !MD.mons) { console.log('ctr: model not shipped, nothing added'); process.exit(0); }
 const LAM = 300, ITERS = 250, calib = MD.calib, sig = z => 1 / (1 + Math.exp(-z)), teams = M.teams.map(k => k.split('|'));
 const spF = new Map(); for (const f of Object.keys(MD.sets || {})) { const sp = f.split(/[@:#]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(f); }

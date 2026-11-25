@@ -25,7 +25,7 @@ const act = activeReg(), next = nextRegIds(act.id)[0], today = new Date().toISOS
 const R = {next: next || null, checked: today, spotted: [], paused: null, notes: []};
 if (!next) { R.notes.push(`no next regulation after ${act.id}`); fs.writeFileSync(out, JSON.stringify(R, null, 1)); process.exit(0); }
 const nextName = regName(next), ids = [y, y + 1].map(yr => sdGuess(next, yr)), letter = next.replace('-', ''); // "MD"
-const nameRe = new RegExp(`Reg(ulation)?\\s*${next.replace('-', '\\s*-?\\s*')}\\b`, 'i');                          // Reg M-D, Regulation M-D
+const nameRe = new RegExp(`Reg(ulation)?(?:\\s+Set)?\\s*${next.replace('-', '\\s*-?\\s*')}\\b`, 'i');             // Reg M-D, Regulation (Set) M-D: pokemon.com writes "Regulation Set M-C" (code review, Nov 24)
 const spot = (where, detail, link) => R.spotted.push({where, title: `${nextName} spotted: ${where}`,
   body: `${detail}\n\n${link ? `Where: ${link}\n\n` : ''}Found by md-watch.mjs on ${today} (it only reads; nothing on the site or in the data changed). ` +
     `Next: docs/reg-md-plan.md Phase 1 (roster generator experiments/gen-roster.mjs, sprites experiments/add-sprites.mjs).`});
@@ -38,7 +38,8 @@ else try { const t = await get('https://raw.githubusercontent.com/smogon/pokemon
 // 1b + 2. Limitless: one page of the newest tournaments (one request)
 let list = null;
 if (fakeL === 'down') R.notes.push('FAKE (dry run): Limitless did not answer');
-else try { list = await get('https://play.limitlesstcg.com/api/tournaments?game=VGC&limit=100&page=1'); if (!Array.isArray(list)) throw new Error('not a list'); }
+else try { const L = 'https://play.limitlesstcg.com/api/tournaments?game=VGC&limit=100&page=1'; /* one retry after 10 s, so a single blip is not an alarm (code review, Nov 24) */
+  try { list = await get(L); } catch (e) { R.notes.push(`Limitless first try failed (${e.message}); retrying once`); await new Promise(r => setTimeout(r, 10000)); list = await get(L); } if (!Array.isArray(list)) throw new Error('not a list'); }
   catch (e) { R.notes.push(`Limitless not reached (${e.message})`); list = null; }
 if (fake.has('limitless')) spot('Limitless', `FAKE (dry run): 3 Limitless VGC tournaments are marked ${next}.`, 'https://play.limitlesstcg.com/tournaments?game=VGC');
 else if (list) { const md = list.filter(t => String(t && t.format || '').toUpperCase() === next);
@@ -57,11 +58,11 @@ else { const hit = []; let n = 0;
 // 2. Limitless alarm: no answer, or the newest saved tournament is 2+ days old
 /* data/index.json is written by the daily job on main (the branch scheduled workflows run on); WATCH_INDEX reads another copy (tests) */
 const IDX = process.env.WATCH_INDEX || 'data/index.json';
-let newest = null; try { newest = Object.values(JSON.parse(fs.readFileSync(IDX, 'utf8')).tournaments || {}).map(t => String(t.d || '').slice(0, 10)).filter(Boolean).sort().pop() || null; } catch (e) {}
+let newest = null; try { newest = Object.values(JSON.parse(fs.readFileSync(IDX, 'utf8')).tournaments || {}).map(t => String(t.d || '').slice(0, 10)).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort().pop() || null; } catch (e) {}
 if (fakeL === 'stale') newest = new Date(Date.now() - 5 * 864e5).toISOString().slice(0, 10);
 const age = newest ? Math.floor((Date.parse(today) - Date.parse(newest)) / 864e5) : null, down = fakeL === 'down' || !list;
 if (down || age === null || age >= 2) { const since = newest || 'unknown';
-  R.paused = {title: `Limitless data paused since ${since}`, body: `${down ? 'Limitless did not answer today (one request to its tournaments API).' : `No new Limitless event since ${since} (${age} days; the alarm starts at 2).`}` +
+  R.paused = {title: `Limitless data paused since ${since}`, body: `${down ? 'Limitless did not answer today (two tries, 10 s apart, to its tournaments API).' : age === null ? `No saved Limitless tournaments found in ${IDX}.` : `No new Limitless event since ${since} (${age} days; the alarm starts at 2).`}` +
     `\n\nNewest saved tournament: ${since} (${IDX}). Checked ${today} by md-watch.mjs; this issue closes by itself when data flows again.` +
     `\nBackup plan: docs/rebuild/gameplan-detail-nov25.md (Limitless backup).`}; }
 else R.notes.push(`Limitless: newest saved tournament ${newest} (${age} day${age === 1 ? '' : 's'} old)`);

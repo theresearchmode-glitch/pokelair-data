@@ -9,9 +9,18 @@
 // rarely used Pokémon with one fixed set could pile up credit across 5 set features (Mega Camerupt rated as the best
 // Pokémon in the game). Also ships the held-out calibration slope and the spread of real teams, so the page can score a
 // team against real tournament teams instead of a fixed range that any odd team could max out.
-import fs from 'node:fs'; import {pilotTest} from './pilot.mjs'; import {deckBasics} from './team-basics.mjs';
+import fs from 'node:fs'; import {pilotTest} from './pilot.mjs'; import {deckBasics} from './team-basics.mjs'; import {activeReg, SITE_REG} from './formats.mjs';
 const M = JSON.parse(fs.readFileSync(process.env.MATCHES || 'out/matches.json', 'utf8')); // MATCHES=file: experiments (e.g. out/matches_ab.json)
-const teams = M.teams.map(k => k.split('|')), G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1]);
+const curReg = M.reg || activeReg().id;
+const teams = (M.teams || []).map(k => k.split('|')), G = (M.m || []).filter(g => g[2] !== .5 && g[0] !== g[1]);
+// On early days of a new regulation (0 games or too few events to split/fit), write a stamped not-ready model instead of keeping an old regulation's model
+{ const dest = process.env.MODEL_OUT || (process.env.TRAIN_ONLY === '1' ? 'out/model_train.json' : 'out/model.json');
+  let prev = null; try { prev = JSON.parse(fs.readFileSync(dest, 'utf8')); } catch (e) {}
+  const prevReg = prev && (prev.reg || SITE_REG.id);
+  if (G.length === 0 || (M.events || []).length < 5) {
+    if (prev && prev.ships && prev.mons && prevReg === curReg) { console.log(`model: NOT shipped today (${G.length} games), so ${dest} keeps the previous ${curReg} model`); process.exit(1); }
+    fs.writeFileSync(dest, JSON.stringify({reg: curReg, updated: new Date().toISOString(), ships: false, games: G.length, events: (M.events || []).length, v: 3, mons: {}, pairs: {}, sets: {}, note: 'too few games to fit model yet'}));
+    console.log(`model: ${curReg} not ready (${G.length} games, ${(M.events || []).length} events); wrote stamped not-ready model`); process.exit(0); } }
 const monIx = new Map(), mons = [];
 teams.flat().forEach(n => { if (!monIx.has(n)) { monIx.set(n, mons.length); mons.push(n); } });
 // pair features: pairs on 30+ distinct teams in games
@@ -83,7 +92,7 @@ const EVID_K = +(process.env.EVID_K ?? 1000), EVID_KP = +(process.env.EVID_KP ??
 const SETTINGS = (() => { try { return JSON.parse(fs.readFileSync('model-settings.json', 'utf8')); } catch (e) { return {}; } })();
 const TEAM_HALF = process.env.TEAM_HALF != null && process.env.TEAM_HALF !== '' ? +process.env.TEAM_HALF : (SETTINGS.teamHalf != null ? +SETTINGS.teamHalf : null);
 const TEAM_PRIOR = +(process.env.TEAM_PRIOR || 0);
-function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0, teamHalf, teamPrior} = opt || {};
+function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0, teamHalf, teamPrior, evidK = EVID_K, evidKp = EVID_KP} = opt || {};
   if (teamHalf == null) teamHalf = TEAM_HALF != null ? TEAM_HALF : half;
   // TEAM_PRIOR: the long-run (no-recency) value of the basics first, then the recency fit is pulled toward it
   if (TEAM_PRIOR > 0 && TEAMF.length && teamPrior == null && teamHalf > 0) teamPrior = {T0: Array.from(fit(games, {...opt, teamHalf: 0, teamPrior: false}).T), lam: TEAM_PRIOR * .1};
@@ -117,10 +126,10 @@ function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = fals
     for (const t of [A, B]) { for (const j of tf[t].f) hb[j] += h; if (usePairs) for (const j of tf[t].p) hq[j] += h; } }
   const vb = Array.from(hb, (h, j) => 1 / (h + 2 * lb)), vq = Array.from(hq, (h, j) => 1 / (h + 2 * lp));
   // evidence shrink: each Pokémon's / pair's effect scaled by n/(n+K), n = its team appearances in the games fitted
-  if (EVID_K > 0 || EVID_KP > 0) { const nb = new Float64Array(mons.length), nq = new Float64Array(pairs.length);
+  if (evidK > 0 || evidKp > 0) { const nb = new Float64Array(mons.length), nq = new Float64Array(pairs.length);
     for (const [A, B] of games) for (const t of [A, B]) { for (const j of tf[t].f) nb[j]++; for (const j of tf[t].p) nq[j]++; }
-    if (EVID_K > 0) for (let j = 0; j < b.length; j++) b[j] *= nb[j] / (nb[j] + EVID_K);
-    if (EVID_KP > 0) for (let j = 0; j < q.length; j++) q[j] *= nq[j] / (nq[j] + EVID_KP); }
+    if (evidK > 0) for (let j = 0; j < b.length; j++) b[j] *= nb[j] / (nb[j] + evidK);
+    if (evidKp > 0) for (let j = 0; j < q.length; j++) q[j] *= nq[j] / (nq[j] + evidKp); }
   return {b, q, s, c, T, x, useSets, vb, vq}; }
 function score(model, games, skillToo) { let ll = 0, acc = 0;
   for (const [A, B, r, , pa, pb, , dA, dB] of games) { const eta = model.x(A, dA) - model.x(B, dB) + (skillToo ? model.s[pa] - model.s[pb] : 0), p = 1 / (1 + Math.exp(-eta));
@@ -217,7 +226,7 @@ if (F) { let n = 0; meanX = 0; for (const [A, B, , , , , , dA, dB] of GF) { mean
 const dist = (() => { if (!F) return null; const last = GF.reduce((a, g) => evDates[g[3]] > a ? evDates[g[3]] : a, ''), since = new Date(new Date(last).getTime() - 45 * 864e5).toISOString().slice(0, 10);
   const seenTD = new Set(), xs = []; for (const [A, B, , ev, , , , dA, dB] of GF) { if (evDates[ev] < since) continue; for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k)) continue; seenTD.add(k); { const dv = xClamp(t, d) - meanX; xs.push(meanX + (dv > 0 ? dv * credit(t) : dv)); } } }
   xs.sort((a, b) => a - b); return {since, n: xs.length, q: Array.from({length: 101}, (_, i) => +xs[Math.round(i / 100 * (xs.length - 1))].toFixed(4))}; })();
-const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: useSets ? LC.lc : null, eval: ev, games: G.length, events: M.events.length,
+const out = {reg: curReg, updated: new Date().toISOString(), ships, shrink: K, setShrink: useSets ? LC.lc : null, eval: ev, games: G.length, events: M.events.length,
   note: 'x(team) = sum of mons + sum of pairs + sum over each member\'s set features of coef * (has − setFreq) ("Mon@Item", "Mon:Move"); P(A beats B) = 1/(1+exp(-calib*(x(A)-x(B)))). Player skill removed. meanX = average tournament team; dist = percentiles of x over real teams in the last 45 days.',
   meanX: +meanX.toFixed(4), v: 3, half: HALF || null, teamHalf: TEAM_HALF != null ? TEAM_HALF : (HALF || null), ...(TEAM_PRIOR ? {teamPrior: TEAM_PRIOR} : {}), center: !!useSets, calib: +calib.toFixed(3), dist, setRange, supK: SUP_K, tested: [...tested].sort(),
   setFreq: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +freq[j].toFixed(3)])) : {},
@@ -234,7 +243,123 @@ const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: use
   pilot: TRAIN_ONLY ? {} : pilotTest(M)};
 // never replace a working model with an unshipped one (the daily job keeps yesterday's; update.yml reports the skip)
 { const dest = process.env.MODEL_OUT || (TRAIN_ONLY ? 'out/model_train.json' : 'out/model.json'); let prev = null; try { prev = JSON.parse(fs.readFileSync(dest, 'utf8')); } catch (e) {}
-  if (!ships && prev && prev.ships && prev.mons) { console.log(`model: NOT shipped today, so ${dest} keeps the previous model (from ${String(prev.updated || '').slice(0, 10)})`); process.exit(1); }
+  const prevReg = prev && (prev.reg || SITE_REG.id);
+  if (!ships && prev && prev.ships && prev.mons && prevReg === curReg) { console.log(`model: NOT shipped today, so ${dest} keeps the previous ${curReg} model (from ${String(prev.updated || '').slice(0, 10)})`); process.exit(1); }
   fs.writeFileSync(dest, JSON.stringify(out)); }
 console.log(`calibration slope ${calib.toFixed(3)} · real-team spread p50 ${dist && dist.q[50]} p99 ${dist && dist.q[99]}`);
 console.log(`model: ${ships ? 'ships' : 'NOT shipped (no better than raw win rates)'}, ${mons.length} Pokémon, ${pairs.length} pairs, ${useSets ? Object.keys(out.sets).length + ' set features' : 'no set features (they did not help)'}, ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+
+// Opt-in shadow mode (Kip job 24, Part 3; rule 21 gate 3): when MODEL_SHADOW=1, also fit the lab-winning "combo"
+// (no-evid-hier + Blade-Chest d=4) and write out/model_shadow.json (same shape + "bc" + "sixDelta"), never touching out/model.json.
+if (process.env.MODEL_SHADOW === '1' && ships && F) {
+  const sig = z => 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, z))));
+  const makeRng = (seed = 99) => { let st = seed >>> 0; return () => { st = (st * 1664525 + 1013904223) >>> 0; return st / 4294967296; }; };
+  const fitCombo = (games, D = 4, lbc = 15) => {
+    const base = fit(games, {...LAM, lb: LAM.lb * 2.5, lp: LAM.lp * 1.5, useSets, lc: LC ? LC.lc : 40, evidK: 0, evidKp: 0});
+    let last = -Infinity; for (const g of games) last = Math.max(last, day(evDates[g[3]]));
+    const W = games.map(g => HALF ? Math.pow(.5, (last - day(evDates[g[3]])) / HALF) : 1), Wn = games.length / (W.reduce((a, x) => a + x, 0) || 1);
+    const dl = new Float64Array(teams.length), md = new Float64Array(teams.length), vd = new Float64Array(teams.length), tau2 = .01;
+    const baseX = games.map(g => [base.x(g[0], g[7]), base.x(g[1], g[8])]);
+    for (let it = 1; it <= 120; it++) {
+      const gd = new Float64Array(teams.length);
+      for (let i = 0; i < games.length; i++) {
+        const g = games[i], e = (sig(baseX[i][0] + dl[g[0]] - baseX[i][1] - dl[g[1]] + base.s[g[4]] - base.s[g[5]]) - g[2]) * W[i] * Wn;
+        gd[g[0]] += e; gd[g[1]] -= e;
+      }
+      const c1 = 1 - .9 ** it, c2 = 1 - .999 ** it;
+      for (let j = 0; j < dl.length; j++) {
+        if (!gd[j] && !dl[j]) continue;
+        const gr = gd[j] + dl[j] / tau2;
+        md[j] = .9 * md[j] + .1 * gr; vd[j] = .999 * vd[j] + .001 * gr * gr;
+        dl[j] -= .04 * (md[j] / c1) / (Math.sqrt(vd[j] / c2) + 1e-8);
+      }
+    }
+    const ng = new Int32Array(teams.length);
+    for (const g of games) { ng[g[0]]++; ng[g[1]]++; }
+    for (let j = 0; j < dl.length; j++) if (ng[j] < 10) dl[j] = 0;
+    const rng = makeRng(99), U = new Float64Array(mons.length * D), Vc = new Float64Array(mons.length * D);
+    for (let i = 0; i < U.length; i++) { U[i] = (rng() - .5) * .03; Vc[i] = (rng() - .5) * .03; }
+    const P = [U, Vc], Mm = P.map(a => new Float64Array(a.length)), Vv = P.map(a => new Float64Array(a.length));
+    const baseEta = games.map(([A, B, , , pa, pb, , dA, dB]) => (base.x(A, dA) + dl[A]) - (base.x(B, dB) + dl[B]) + base.s[pa] - base.s[pb]);
+    const bcDot = (A, B) => {
+      let val = 0;
+      for (let d = 0; d < D; d++) {
+        let uA = 0, vA = 0, uB = 0, vB = 0;
+        for (const j of tf[A].f) { uA += U[j * D + d]; vA += Vc[j * D + d]; }
+        for (const j of tf[B].f) { uB += U[j * D + d]; vB += Vc[j * D + d]; }
+        val += (uA * vB - uB * vA) / 6;
+      }
+      return val;
+    };
+    const bcIters = Math.min(150, +(process.env.ITERS || 250));
+    for (let it = 1; it <= bcIters; it++) {
+      const gU = new Float64Array(U.length), gV = new Float64Array(Vc.length);
+      for (let gi = 0; gi < games.length; gi++) {
+        const [A, B, r] = games[gi], dW = ((sig(baseEta[gi] + bcDot(A, B)) - r) * W[gi] * Wn) / 6;
+        for (let d = 0; d < D; d++) {
+          let uA = 0, vA = 0, uB = 0, vB = 0;
+          for (const j of tf[A].f) { uA += U[j * D + d]; vA += Vc[j * D + d]; }
+          for (const j of tf[B].f) { uB += U[j * D + d]; vB += Vc[j * D + d]; }
+          for (const j of tf[A].f) { gU[j * D + d] += dW * vB; gV[j * D + d] -= dW * uB; }
+          for (const j of tf[B].f) { gU[j * D + d] -= dW * vA; gV[j * D + d] += dW * uA; }
+        }
+      }
+      const c1 = 1 - .9 ** it, c2 = 1 - .999 ** it;
+      for (const [k, gr] of [[0, gU], [1, gV]]) {
+        const a = P[k], m = Mm[k], v = Vv[k];
+        for (let j = 0; j < a.length; j++) {
+          const gg = gr[j] + 2 * lbc * a[j];
+          m[j] = .9 * m[j] + .1 * gg; v[j] = .999 * v[j] + .001 * gg * gg;
+          a[j] -= .02 * (m[j] / c1) / (Math.sqrt(v[j] / c2) + 1e-8);
+        }
+      }
+    }
+    return {...base, dl, U, Vc, D, lbc, predictLogit: (A, B, dA, dB) => (base.x(A, dA) + dl[A]) - (base.x(B, dB) + dl[B]) + bcDot(A, B)};
+  };
+  const sTrain = fitCombo(train, 4, 15);
+  const sCalib = (() => { const pts = test.map(([A, B, r, , , , , dA, dB]) => [sTrain.predictLogit(A, B, dA, dB), r]); let w = 1;
+    for (let k = 0; k < 30; k++) { let g = 0, h = 0; for (const [e, r] of pts) { const p = sig(w * e); g += (p - r) * e; h += p * (1 - p) * e * e; } w -= g / (h || 1); } return w; })();
+  let sLl = 0, sAcc = 0, sCalLl = 0;
+  for (const [A, B, r, , , , , dA, dB] of test) {
+    const eta = sTrain.predictLogit(A, B, dA, dB), p = sig(eta), pc = sig(sCalib * eta);
+    sLl -= r * Math.log(p) + (1 - r) * Math.log(1 - p);
+    sCalLl -= r * Math.log(pc) + (1 - r) * Math.log(1 - pc);
+    sAcc += (p > .5) === (r === 1) ? 1 : 0;
+  }
+  const sFull = fitCombo(GF, 4, 15);
+  const sSetRange = (() => { if (!useSets) return {}; const vals = new Map(), sigM = new Map(), seenTD = new Set();
+    for (const [A, B, , , , , , dA, dB] of GF) for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k) || d == null) continue; seenTD.add(k); const has = new Set(deckF[d]);
+      for (const n of teams[t]) { const fj = spFeats.get(n) || []; let v = 0; for (const j of fj) v += sFull.c[j] * ((has.has(j) ? 1 : 0) - freq[j]);
+        if (!vals.has(n)) { vals.set(n, []); sigM.set(n, new Map()); } vals.get(n).push(v); const key = fj.filter(j => has.has(j)).join(','); const g = sigM.get(n).get(key) || {c: 0, v}; g.c++; sigM.get(n).set(key, g); } }
+    const res = {}; for (const [n, a] of vals) { if (!spFeats.has(n)) continue; a.sort((x, y) => x - y); const builds = [...sigM.get(n).values()];
+      const common = builds.filter(b => b.c >= 5); const top = (common.length ? common : [builds.sort((x, y) => y.c - x.c)[0]]).reduce((m, b) => Math.max(m, b.v), -1e9);
+      const lo = a.length ? a[0] : Math.min(0, top); res[n] = [+Math.min(lo, top).toFixed(4), +top.toFixed(4)]; } return res; })();
+  const sxClamp = (t, d) => { let v = 0; for (const j of tf[t].f) v += sFull.b[j]; for (const j of tf[t].p) v += sFull.q[j]; { const tv = teamVec(t, d); for (let k = 0; k < tv.length; k++) v += sFull.T[k] * tv[k]; } if (!useSets || d == null) return v; const has = new Set(deckF[d]);
+    for (const n of teams[t]) { let u = 0; for (const j of (spFeats.get(n) || [])) u += sFull.c[j] * ((has.has(j) ? 1 : 0) - freq[j]); const r = sSetRange[n]; v += r ? Math.max(r[0], Math.min(r[1], u)) : u; } return v; };
+  let sMeanX = 0; { let n = 0; for (const [A, B, , , , , , dA, dB] of GF) { sMeanX += sxClamp(A, dA) + sxClamp(B, dB); n += 2; } sMeanX /= n; }
+  const sDist = (() => { const last = GF.reduce((a, g) => evDates[g[3]] > a ? evDates[g[3]] : a, ''), since = new Date(new Date(last).getTime() - 45 * 864e5).toISOString().slice(0, 10);
+    const seenTD = new Set(), xs = []; for (const [A, B, , evi, , , , dA, dB] of GF) { if (evDates[evi] < since) continue; for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k)) continue; seenTD.add(k); const dv = sxClamp(t, d) - sMeanX; xs.push(sMeanX + (dv > 0 ? dv * credit(t) : dv)); } }
+    xs.sort((a, b) => a - b); return {since, n: xs.length, q: Array.from({length: 101}, (_, i) => +xs[Math.round(i / 100 * (xs.length - 1))].toFixed(4))}; })();
+  const bcVecs = arr => Object.fromEntries(mons.map((n, j) => [n, Array.from({length: 4}, (_, d) => +arr[j * 4 + d].toFixed(4))]));
+  const sixDelta = {}; for (let j = 0; j < sFull.dl.length; j++) if (Math.abs(sFull.dl[j]) >= .0005) sixDelta[M.teams[j]] = +sFull.dl[j].toFixed(4);
+  const shadowOut = {
+    ...out,
+    shadow: 'combo',
+    eval: {...ev, shadow_combo: {logloss: +(sLl / test.length).toFixed(4), acc: +(sAcc / test.length).toFixed(4), calibrated_logloss: +(sCalLl / test.length).toFixed(4), slope: +sCalib.toFixed(3), n: test.length}},
+    meanX: +sMeanX.toFixed(4),
+    calib: +sCalib.toFixed(3),
+    dist: sDist,
+    setRange: sSetRange,
+    team: TEAMF.length ? Object.fromEntries(TEAMF.map((k, i) => [k, +sFull.T[i].toFixed(4)])) : {},
+    mons: Object.fromEntries(mons.map((n, j) => [n, +sFull.b[j].toFixed(4)])),
+    pairs: Object.fromEntries(pairs.map((k, j) => [k, +sFull.q[j].toFixed(4)]).filter(([, v]) => Math.abs(v) >= .005)),
+    monSd: Object.fromEntries(mons.map((n, j) => [n, +Math.sqrt(sFull.vb[j]).toFixed(3)])),
+    pairSd: Object.fromEntries(pairs.map((k, j) => [k, Math.abs(sFull.q[j]) >= .005 ? +Math.sqrt(sFull.vq[j]).toFixed(3) : null]).filter(([, v]) => v != null)),
+    sets: useSets ? Object.fromEntries(setNames.map((k, j) => [k, +sFull.c[j].toFixed(4)])) : {},
+    bc: {d: 4, lbc: 15, u: bcVecs(sFull.U), v: bcVecs(sFull.Vc)},
+    sixDelta
+  };
+  const sDest = process.env.MODEL_SHADOW_OUT || 'out/model_shadow.json';
+  fs.writeFileSync(sDest, JSON.stringify(shadowOut));
+  console.log(`model_shadow (combo): acc ${(sAcc / test.length).toFixed(4)} cal_ll ${(sCalLl / test.length).toFixed(4)} slope ${sCalib.toFixed(3)} -> ${sDest}`);
+}

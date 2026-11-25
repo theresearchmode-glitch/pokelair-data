@@ -1,6 +1,7 @@
 // Shared name and text helpers for the data scripts (official.mjs, sources.mjs): species text -> NastyPlot roster name,
 // held-item check, HTML to text. Paths are relative to the working folder, so a dry run can run from a scratch copy.
 import fs from 'node:fs';
+import {activeReg, regProfile, LEGACY_REG} from './formats.mjs';
 export const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 export const dec = s => s.replace(/&amp;/g, '&').replace(/&#0?39;|&apos;|&#8217;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n));
 export const text = h => dec(h.replace(/<!--[\s\S]*?-->|<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n')).split('\n').map(x => x.trim()).filter(Boolean);
@@ -26,7 +27,19 @@ export function mapMon(species, item) {
   if (ROSTER.has(n)) return n; const b = n.split('-')[0]; return ROSTER.has(b) ? b : null; }
 // An item must look like an item: not a field label, not empty, a sane length; checked against the Reg M-C item list
 // (data/regmc-items.txt) when that file exists. Bad parses become '' (unknown) and are counted.
-const ITEMS = new Set((() => { try { return fs.readFileSync('data/regmc-items.txt', 'utf8').split(/\r?\n/).map(x => x.trim()).filter(Boolean); } catch (e) { return []; } })());
+// the item list's file comes from the regulation profile (regulation.json "items"); if missing on disk, fall back to M-C's list and say so
+const _act = activeReg(), ITEMS_FILE = (regProfile(_act.id) || {}).items || null;
+const ITEMS = new Set((() => {
+  const readList = f => fs.readFileSync(f, 'utf8').split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+  if (!ITEMS_FILE) return [];
+  try { return readList(ITEMS_FILE); } catch (e) {
+    const fb = (regProfile(LEGACY_REG) || {}).items;
+    if (fb && fb !== ITEMS_FILE) {
+      try { const xs = readList(fb); console.log(`names: ${ITEMS_FILE} not found for ${_act.name}; falling back to ${fb}`); return xs; } catch (e2) {}
+    }
+    return [];
+  }
+})());
 export const bad = {items: 0};
 export function validItem(it) { const s = String(it || '').trim(); if (!s) return '';
   if (/:\s*$/.test(s) || /Alignment|Ability|Held Item|Nature/i.test(s) || s.length > 30 || (ITEMS.size && !ITEMS.has(s))) { bad.items++; return ''; } return s; }
@@ -41,6 +54,14 @@ export function validItem(it) { const s = String(it || '').trim(); if (!s) retur
 const fold = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
 const DATA_JS = (() => { try { return fs.readFileSync('app/src/data/data.js', 'utf8'); } catch (e) { return ''; } })();
 const grabJS = k => { try { const m = DATA_JS.match(new RegExp('const ' + k + '=([\\s\\S]*?);\\n')); return m ? JSON.parse(m[1]) : null; } catch (e) { return null; } };
+// Natures (Dossier step 3, Nov 23): the 25 names from data.js SETS.NAT, matched case-, space- and punctuation-free. Misspellings seen on
+// Limitless sheets (data/t2 check, Nov 23: "Adament" x16, "Modeste", "Quieto"...) where only one nature fits are mapped; anything else
+// ("mid", "ve") is not a nature we can read: '' (left out of the counts, never guessed).
+const NAT_LIST = (() => { try { const m = DATA_JS.match(/"NAT":(\[[^\]]*\])/); return m ? JSON.parse(m[1]) : []; } catch (e) { return []; } })();
+const NAT_MAP = new Map(NAT_LIST.map(x => [fold(x), x]));
+const NAT_TYPO = {adament: 'Adamant', adaman: 'Adamant', ademant: 'Adamant', admant: 'Adamant', adamnt: 'Adamant', asamant: 'Adamant', admanant: 'Adamant', adamat: 'Adamant',
+  modeste: 'Modest', modesto: 'Modest', quieto: 'Quiet', quite: 'Quiet', jelly: 'Jolly', sasay: 'Sassy'};
+export const canonNature = s => { const k = fold(s || ''); return !k ? '' : NAT_MAP.get(k) || (NAT_TYPO[k] && NAT_MAP.has(fold(NAT_TYPO[k])) ? NAT_TYPO[k] : ''); };
 const LIST = {i: new Map([...ITEMS].map(x => [fold(x), x])), a: new Map(Object.keys(grabJS('ABIL') || {}).map(x => [fold(x), x])),
   mv: new Map((grabJS('MOVES') || []).map(x => [fold(x[0]), x[0]]))};
 const STONE_TYPO = {staraptorite: 'Staraptite', dragonitite: 'Dragoninite', dragonitinite: 'Dragoninite', golisopodite: 'Golisopite', venosaurite: 'Venusaurite',

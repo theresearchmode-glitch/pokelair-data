@@ -410,14 +410,14 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
 function pctBars(arr,limit){return (arr||[]).slice(0,limit).map(([n,v])=>`<div class="bar"><span class="bn" style="--w:${Math.max(0,Math.min(100,+v||0))}%">${esc(n)}</span><span class="bv">${v==null?'':(+v).toFixed(1)+'%'}</span></div>`).join('')}
 function stat(title,arr,limit,bas){return arr&&arr.length?`<div class="stat"><h4>${title}${bas?' · '+bas:''}</h4>${pctBars(arr,limit)}</div>`:''}
 function renderMeta(){
-  if(!META[SRC[ui.metaSrc]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaSrc=alt}
-  document.querySelectorAll('[data-src]').forEach(x=>{const has=!!META[SRC[x.dataset.src]];x.disabled=!has;x.title=has?'':'No data from this source yet'});
-  const d=metaDoc(),st=META.status;
-  $('srcSeg').hidden=false;document.querySelectorAll('[data-src]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.src===ui.metaSrc));
+  if(!META[SRC[ui.metaView]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaView=alt}
+  document.querySelectorAll('[data-src]').forEach(x=>{const has=!!META[SRC[x.dataset.src]];x.disabled=!has;x.title=has?(x.dataset.src==='ingame'?'Ranked ladder: paused since Nov 17 (op.gg)':''):'No data from this source yet'});
+  const d=META[SRC[ui.metaView]],st=META.status;
+  $('srcSeg').hidden=false;document.querySelectorAll('[data-src]').forEach(x=>x.setAttribute('aria-pressed',x.dataset.src===ui.metaView));
   $('metaTitle').textContent='Doubles meta';
   if(!d){$('metaSource').textContent='Live data appears here when the page is opened in Claude.';$('metaList').innerHTML='<div class="empty-note">No meta data loaded yet.</div>';$('metaStatus').innerHTML='';return}
   const when=t=>{try{return new Date(t).toLocaleString([], {month:'short',day:'numeric',hour:'numeric',minute:'2-digit'})}catch(e){return t}};
-  $('metaSource').textContent=`${d.source}${d.period&&!String(d.source).includes(d.period)?' · '+(/^\d{4}-\d{2}$/.test(d.period)?new Date(d.period+'-15T12:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'}):d.period):''}${d.battles?` · ${(+d.battles).toLocaleString()} battles`:''}`;
+  $('metaSource').textContent=`${d.source}${d.period&&!String(d.source).includes(d.period)?' · '+(/^\d{4}-\d{2}$/.test(d.period)?new Date(d.period+'-15T12:00:00').toLocaleDateString('en-US',{month:'short',year:'numeric'}):d.period):''}${d.battles?` · ${(+d.battles).toLocaleString()} battles`:''}${ui.metaView==='ingame'?' · paused since Nov 17 (op.gg)':''}`;
   $('metaStatus').innerHTML=st?`Last refresh ${esc(when(st.lastRun))}${st.ok===false?' · <span class="bad">failed: '+esc(st.note||'')+'</span>':st.note?' · '+esc(st.note):''} · ${esc(st.schedule||'Refreshes daily')}`:'';
   const kind=d.kind||'ladder';
   const umx=Math.max(0,...(d.top||[]).map(x=>+x.u||0));

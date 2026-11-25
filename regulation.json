@@ -1,0 +1,35 @@
+{
+  "_": "The regulation profile (reg-md-plan.md 0.1, gap G1). ONE source of truth for the regulation the site is built for. The daily data job reads it through formats.mjs (SITE_REG, REG_END, regProfile) and switches by date when today (UTC) >= the next regulation's 'since'. A regulation's 'end' stays here for good: events dated after it count for the next one. Source ids set to null mean the source has no page for that regulation yet: the job then says 'not available yet' instead of reading another regulation's numbers.",
+  "site": "M-C",
+  "regs": {
+    "M-C": {
+      "name": "Reg M-C",
+      "long": "Regulation M-C",
+      "sd": "gen9championsvgc2026regmc",
+      "since": "2026-09-01",
+      "end": "2026-12-02T01:59:00Z",
+      "sources": {
+        "showdowntier": "dmc",
+        "pikalytics": "championstournaments",
+        "official": "M-C"
+      },
+      "items": "data/regmc-items.txt",
+      "rules": {"format": "VGC doubles", "bring": 6, "pick": 4, "level": 50, "points": [0, 32], "itemClause": true}
+    },
+    "M-D": {
+      "name": "Reg M-D",
+      "long": "Regulation M-D",
+      "sd": "gen9championsvgc2026regmd",
+      "since": "2026-12-02",
+      "end": "2027-03-03T01:59:00Z",
+      "announced": {"url": "https://news.pokemon-home.com/en/page/878.html", "date": "2026-11-25", "new": ["Heatran", "Dondozo", "Tatsugiri"], "newMegas": ["Heatran-Mega", "Tatsugiri-Mega"], "count": {"newPokemon": 24, "newMegas": 4, "source": "https://www.pokemon.com/us/news/regulation-set-m-d-is-coming-to-pokemon-champions"}, "megaAbilities": {"Heatran-Mega": "Water Compaction", "Tatsugiri-Mega": "new Ability: +1 Sp. Atk on entry (name not given)", "source": "https://nintendoeverything.com/pokemon-champions-announces-mega-heatran-and-mega-tatsugiri-new-abilities-revealed/"}, "note": "Official: Dec 2 2026 02:00 UTC to Mar 3 2027 01:59 UTC. 24 new Pokemon and 4 Megas in all; only Heatran, Dondozo, Tatsugiri, Mega Heatran and Mega Tatsugiri are named so far (full roster in game: Recruit > Recruit Pokemon > Roster Info)."},
+      "sources": {
+        "showdowntier": null,
+        "pikalytics": null,
+        "official": null
+      },
+      "items": "data/regmd-items.txt",
+      "rules": {"format": "VGC doubles", "bring": 6, "pick": 4, "level": 50, "points": [0, 32], "itemClause": true}
+    }
+  }
+}
