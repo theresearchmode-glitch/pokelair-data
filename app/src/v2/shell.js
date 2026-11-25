@@ -37,7 +37,8 @@ V2.cp = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m
 // same shape (no reserved blank line above every name); elsewhere (rows, sentences) Mega stays inline before the name (nameHtml)
 // o.tag (i42, Nov 13): a bare tile that writes its own name still gets the corner Mega tag (A9), so its name never wraps below its neighbours
 V2.mon = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
-  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id, !(o.iw && o.iw <= 80) || o.big)}" alt="" loading="lazy" decoding="async">` : ''}${V2.disp(n).startsWith('Mega ') && (!o.bare || o.tag) ? '<span class="np-megatag">Mega</span>' : ''}</div>${o.bare ? '' : `<b>${V2.esc(V2.disp(n).replace(/^Mega /, ''))}</b>`}${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
+  const big = !(o.iw && o.iw <= 80) || o.big;
+  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id, big)}" alt="" loading="lazy" decoding="async">` : ''}${V2.disp(n).startsWith('Mega ') && (!o.bare || o.tag) ? '<span class="np-megatag">Mega</span>' : ''}</div>${o.bare ? '' : `<b>${V2.esc(V2.disp(n).replace(/^Mega /, ''))}</b>`}${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
 // drawn icons (the ⌕ glyph renders tiny in Instrument Sans)
 V2.ICON = {fwd: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M9 4.5 16.5 12 9 19.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>', back: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><path d="M15 4.5 7.5 12l7.5 7.5" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>', search: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>',
   // My Box: a storage box (lid, body, handle slot), drawn like the search glass
@@ -214,10 +215,10 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
   const itPic = n => { let u = '', a = ''; try { u = V2.itemImg ? V2.itemImg(n, true) : ''; a = u ? '' : V2.itemArt ? V2.itemArt(n) : ''; } catch (e) {}
     return u ? `<span class="np-itb" aria-hidden="true"><img src="${V2.esc(u)}" alt="" width="28" height="28" loading="lazy" decoding="async"></span>` : a ? `<span class="np-itb" aria-hidden="true">${a}</span>` : ''; };
   const KW = {mv: 'Move', it: 'Item', ab: 'Ability', nt: 'Nature'}, N0 = typeof META === 'object' && META.info ? META.info.N : 0, M0 = typeof META === 'object' && META.info ? META.info.ntN || 0 : 0;
-  const monHit = p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
+  const monHit = p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" width="240" height="240" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return V2.unrated(p) ? `<small>${V2.NOT_RATED}</small>` : r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
   /* scan S34 A (Sim, Nov 20): a miss offers today's six highest-rated Pokémon as normal search rows (the same six as empty My Team's
      'Start from a Winner'), so a typo leads somewhere instead of a dead end */
-  const missTop = () => { let top = []; try { top = lairRows().slice(0, 6).map(x => x.p); } catch (e) {} return top.length ? `<p class="miss-k">Or meet today's top six</p>${top.map(monHit).join('')}` : ''; };
+  const missTop = () => { let top = []; try { top = V2.ratedRows().slice(0, 6).map(x => x.p); /* Not rated yet (Nov 25) */ } catch (e) {} return top.length ? `<p class="miss-k">Or meet today's top six</p>${top.map(monHit).join('')}` : ''; };
   const draw = () => { const r = V2.find(inp.value), tm = teams(inp.value), T = terms(inp.value), Y = types(inp.value), yh = Y.ts.map(tyHit).join('');
     out.innerHTML = !inp.value.trim() ? '<p class="fine">Type a Pokémon\'s name, a saved team, or a page like Battle.</p>' + V2.TOOLS.map(k => { const pl = V2.findPlaces.find(x => x[0] === k && !x[2]); return pl ? `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${pl[1]}</b><small>${V2.esc(V2.placeLines[k] || '')}</small></span></a>` : ''; }).join('') /* the tools, as today's empty search lists them (Nov 15) */
       : !r.places.length && !r.mons.length && !tm.length && !T.t.length && !T.st.length && !Y.ts.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>${missTop()}`
@@ -319,6 +320,30 @@ V2.regDay = (now = Date.now()) => { try { const r = typeof regInfo === 'function
   const d = Math.floor((now - Date.parse(r.since + 'T00:00:00Z')) / 864e5) + 1; if (!(d >= 1 && d <= 28)) return ''; const today = new Date(now).toISOString().slice(0, 10);
   const ev = (typeof META === 'object' && META.events && Array.isArray(META.events.events)) ? META.events.events.filter(e => { const x = String((e && e.date) || ''); return x >= r.since && x <= today; }).length : 0;
   return `Day ${d} of Reg ${String(r.id).replace('-', '\u2011')} · ${ev} event${ev === 1 ? '' : 's'}`; } catch (e) { return ''; } };
+/* Strength Score source (Sim, Wed Nov 25, 6:52 AM): before a new regulation has results, the score falls back to the old check
+   (CH.gradeOf v1) against the built-in usage snapshot (app/src/data/data.js, built on Reg M-C). It stays, with one line saying so.
+   V2.SNAP_REG: the regulation that snapshot was built on (update it when data.js is regenerated). '' when the score uses live data. */
+/* empty data pages (Nov 25, HH design call; rule 23): under the page's one plain line, today's underdog as the 404 page's hero card,
+   so a day-one or not-yet-loaded page isn't a heading, a line and a blank screen. Never beside a grade. */
+V2.dayDog = () => { const ud = V2.underdog ? V2.underdog() : 'Flapple', ud2 = V2.disp(ud);
+  return `<aside class="nf-dog nf2-dog dd-dog" aria-label="Today's underdog">${V2.kCard(ud, {size: 'hero', form: "Today's underdog", fact: 'Keeping your seat warm till the results land.', attrs: {'data-v2mon': ud, 'aria-label': `${ud2}: open its info`}})}</aside>`; };
+V2.SNAP_REG = 'M-C';
+V2.scoreSrc = G => { try { if (!G || G.v !== 1) return ''; const id = ((typeof regInfo === 'function' && regInfo()) || {}).id; if (!id || id === V2.SNAP_REG) return '';
+  if (typeof RES === 'object' && RES && RES.tc) return ''; if (typeof liveUsage === 'function' && typeof S === 'object' && liveUsage(S.format)) return '';
+  const nb = x => String(x).replace('-', '\u2011'); return `Graded against Reg\u00a0${nb(V2.SNAP_REG)}'s teams until Reg\u00a0${nb(id)} results arrive`; } catch (e) { return ''; } };
+/* Not rated yet (Sim, Nov 25, 6:52 AM): in a new regulation's early days (its first 28 days, counted as V2.regDay does) or while no Pokémon
+   has tournament results at all, a Pokémon with no results of its own shows the words "Not rated yet": no number, no tier, no rank, and it
+   is left out of ranked lists, podiums, tiers, top-N lists and spotlights until it has results. With no results, ratings() falls back to
+   stats (Gyarados showed "97 S tier #1" on a practice day one). A Pokémon has results when its rating carries tc (v3Apply; lairRank uses
+   the same test). On a regulation past day 28 with results (Reg M-C today) both are false for every Pokémon, so nothing changes. */
+V2.NOT_RATED = 'Not rated yet';
+V2._nr = {R: null, none: false};
+V2.noRatings = () => { try { const R = ratings(); if (V2._nr.R !== R) { let none = true; for (const v of R.values()) if (v && v.tc) { none = false; break; } V2._nr = {R, none}; } return V2._nr.none; } catch (e) { return false; } };
+V2.regYoung = (now = Date.now()) => { try { const r = typeof regInfo === 'function' && regInfo(); if (!r || r.now || !r.since || !isFinite(now)) return false;
+  return Math.floor((now - Date.parse(r.since + 'T00:00:00Z')) / 864e5) + 1 <= 28; } catch (e) { return false; } };
+V2.unrated = p => { try { if (!p) return false; const r = ratings().get(p.n); if (r && r.tc) return false; return V2.noRatings() || V2.regYoung(); } catch (e) { return false; } };
+/* lairRows() without the unrated (the same list, same order, on a rated regulation) */
+V2.ratedRows = () => lairRows().filter(x => !V2.unrated(x.p));
 V2.dataNote = () => { const E = V2.esc, out = [];
   /* review Nov 18 (C5): a --split Preview whose preview.json couldn't be read (missing, 404, offline) says so, on every page (V2.shell),
      rather than showing the built-in numbers as if they were today's */
@@ -390,7 +415,16 @@ V2.nfDog = () => { const n = V2.underdog ? V2.underdog() : 'Flapple', d = V2.dis
 V2.nfHtml = () => `<div class="ra gsp nf-pg nf2" data-v2nf><div class="nf2-two"><div class="k-head"><p class="k-kicker np-eyebrow">PAGE NOT FOUND · WRONG TURN</p><h1 class="k-h1 u">Nothing here. <br><em>Wrong turn.</em></h1><p class="k-lead">This address doesn't match a page on NastyPlot. It may be an old or mistyped link.</p>${V2.kGo('GO TO HOME.', {href: '#home'})}</div>${V2.nfDog()}</div></div>`;
 V2.pages.notfound = {place: '', draw: () => V2.nfHtml()};
 /* own keys only: '#constructor' or '#toString' found the object's built-ins and broke the draw */
-V2.route = () => { const h = (location.hash || '').slice(1).split('=')[0]; /* Nov 15: '#method=rating' opens How We Calculate at that part */ return Object.prototype.hasOwnProperty.call(V2.pages, h) ? h : h ? 'notfound' : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
+V2.PUB_PATHS = {home: '/', team: '/team', build: '/build', battle: '/battle', calc: '/calc', speed: '/speed', types: '/types', practice: '/practice', gauntlet: '/test-run', meta: '/meta', usage: '/usage', sets: '/sets', tournaments: '/winning-teams', weekly: '/this-week', events: '/events', archetypes: '/archetypes', natures: '/natures', track: '/track-record', method: '/how-it-works', gifts: '/gifts', news: '/gifts', compare: '/compare', box: '/box', about: '/about', 'about=priv': '/privacy'};
+V2.PUB_FROM_PATH = p => { const c = String(p || '/').replace(/\/+$/, '') || '/';
+  if (c === '/privacy') return {r: 'about', sub: 'priv'};
+  if (c === '/gifts') return {r: V2.pages.gifts ? 'gifts' : (V2.pages.news ? 'news' : 'home'), sub: ''};
+  if (c.startsWith('/pokemon/')) return {r: 'pokemon', sub: decodeURIComponent(c.slice(9))};
+  for (const [k, v] of Object.entries(V2.PUB_PATHS)) if (v === c && !k.includes('=')) return {r: k, sub: ''};
+  return null; };
+V2.route = () => { let h = (location.hash || '').slice(1).split('=')[0];
+  if (!h && window.__NP_PUBLIC) { const m = V2.PUB_FROM_PATH(location.pathname); if (m) h = m.r; else if (location.pathname && location.pathname !== '/' && location.pathname !== '/v2.html' && location.pathname !== '/index.html') return 'notfound'; }
+  /* Nov 15: '#method=rating' opens How We Calculate at that part */ return Object.prototype.hasOwnProperty.call(V2.pages, h) || (window.__NP_ROUTES && Object.prototype.hasOwnProperty.call(window.__NP_ROUTES, h)) ? h : h ? 'notfound' : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
 // Word list (Sim, Nov 9; Nov 12: "fix them based on your recommendation"): the idea is Matchups and its levels are Beats it /
 // Handles it, never "ready". Shared logic (also today's site) still writes "Ready for ..."; the new site says it the word list's way.
 // The "81%" in "Ready for 81% of the top 30" is a weighted score, not a share of threats, so the plain count is shown instead.
@@ -484,7 +518,8 @@ V2.warmDraw = () => { let pre = null; const P = V2.pages[V2.route()], warm = (P 
     () => { const stamp = V2.preStamp(); V2.prePend = true; pre = {tag: V2.preOk, stamp, r: V2.shell()}; }]; let i = 0;
   /* V2.prePend: while built HTML waits for the next step, code the draw set up to look at the page "just after the draw" waits too
      (V2.afterPre; sugs.js ckWinSoon): without it, the winners pass found no Suggestions on the page and started at once (+0.5 s of blocking) */
-  const next = () => { if (i < steps.length) { try { steps[i++](); } catch (e) { pre = null; } setTimeout(next, 0); } else try { V2.redraw(pre); } finally { V2.prePend = false; } }; setTimeout(next, 0); };
+  const sched = fn => window.__NP_PUBLIC && typeof requestIdleCallback === 'function' ? requestIdleCallback(fn, {timeout: 120}) : setTimeout(fn, 0);
+  const next = () => { if (i < steps.length) { try { steps[i++](); } catch (e) { pre = null; } sched(next); } else try { V2.redraw(pre); } finally { V2.prePend = false; } }; sched(next); };
 V2.afterPre = fn => { const go = () => { if (V2.prePend) setTimeout(go, 0); else fn(); }; setTimeout(go, 0); };
 V2.dataReady = () => { if (V2._dataOk) return true; let ok = false;
   try { const c = window.__NP_CLAUDE || window.claude; ok = !c || !c.use || META_NODB || META_KEYS.every(k => META_SEEN.has(k)) || performance.now() > 8000; } catch (e) { ok = true; }
@@ -507,13 +542,34 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
 /* audit Nov 16 (WCAG 2.4.2): each page has its own browser title, its name as the menu and search show it ("Meta · NastyPlot"); Home keeps "NastyPlot";
    Pokémon pages set their own fuller title (pages/pokemon.js) */
 V2.setTitle = () => { try { const r = V2.route(); if (r === 'pokemon') return; const h = document.querySelector('#main h1'); if (document.querySelector('#main [data-v2nf]')) { if (document.title !== 'Page not found · NastyPlot') document.title = 'Page not found · NastyPlot'; return; } /* Q24: the not-found page, #owner for visitors included */
+  if (window.__NP_PUBLIC && window.__NP_SEO) {
+    const sk = location.hash === '#about=priv' || location.pathname === '/privacy' ? 'privacy' : r;
+    const seo = window.__NP_SEO[sk];
+    if (seo) {
+      if (document.title !== seo.title) document.title = seo.title;
+      const setM = (sel, val) => { const el = document.querySelector(sel); if (el && el.getAttribute('content') !== val) el.setAttribute('content', val); };
+      setM('meta[name="description"]', seo.desc); setM('meta[property="og:title"]', seo.title); setM('meta[property="og:description"]', seo.desc);
+      let can = document.querySelector('link[rel="canonical"]');
+      if (!can) { can = document.createElement('link'); can.rel = 'canonical'; document.head.appendChild(can); }
+      const url = 'https://nastyplot.org' + seo.path; if (can.getAttribute('href') !== url) can.setAttribute('href', url);
+      return;
+    }
+  }
   const nm = ((V2.findPlaces || []).find(([k, n]) => k === (r === 'team-empty' ? 'team' : r) && typeof n === 'string') || [])[1]; /* design audit #14: the empty-team view is My Team too */
   const t = r === 'home' ? 'NastyPlot' : nm ? nm + ' · NastyPlot' : h ? h.textContent.replace(/\s+/g, ' ').trim().slice(0, 60) + ' · NastyPlot' : 'NastyPlot'; if (document.title !== t) document.title = t; } catch (e) {} };
 /* V2.drawN counts arrivals (a full draw), so a page can do arrival-only things, like scrolling to a linked part, once per arrival and
    never again on a redraw (code review A1-I4, Nov 17) */
 // pre-launch check 6e (Nov 17): say once, after the first draw, when this device's saved data couldn't be read (01-state.js)
 setTimeout(() => { try { if (STATE_UNREADABLE && !V2._unrSaid) { V2._unrSaid = 1; V2.toast("Your saved teams on this device couldn't be read, so the sample team is showing. A copy of the old data was kept.", 10000); } } catch (e) {} }, 1500);
-V2.draw = () => { const app = document.getElementById('app'); if (!app) return; V2.drawN = (V2.drawN || 0) + 1; const {P, html} = V2.shell();
+V2._routeLoad = {};
+V2.loadRoute = r => { const src = window.__NP_ROUTES && window.__NP_ROUTES[r]; if (!src || V2.pages[r] || V2._routeLoad[r]) return;
+  V2._routeLoad[r] = true; const s = document.createElement('script'); s.src = src;
+  s.onload = () => { V2._routeLoad[r] = false; V2.draw(); };
+  s.onerror = () => { V2._routeLoad[r] = false; V2.pages[r] = {place: '', draw: () => V2.safeDraw({draw(){throw new Error('Route chunk failed: ' + r)}})}; V2.draw(); };
+  document.head.appendChild(s); };
+V2.draw = () => { const app = document.getElementById('app'); if (!app) return;
+  const r0 = V2.route(); if (window.__NP_ROUTES && !V2.pages[r0] && window.__NP_ROUTES[r0]) { V2.loadRoute(r0); const m = document.getElementById('main'); if (m) m.innerHTML = V2.loadingHtml(); return; }
+  V2.drawN = (V2.drawN || 0) + 1; const {P, html} = V2.shell();
   // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the
   // pictures already on screen and put them back in place of their identical new copies (same src), so nothing re-decodes.
   const keep = new Map(); for (const i of app.querySelectorAll('img[src]')) { const k = i.getAttribute('src'); if (!keep.has(k)) keep.set(k, []); keep.get(k).push(i); }

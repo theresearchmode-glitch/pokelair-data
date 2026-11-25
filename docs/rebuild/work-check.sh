@@ -36,3 +36,8 @@ echo "Minutes since last commit: $lc   since decision log: $ld   since Plans sou
 [ "$active" -lt "${NEED:-1}" ] && echo "PROBLEM: fewer than ${NEED:-1} helper(s) on approved work. Refill now (CLAUDE.md 'Right now: Helpers')."
 [ "$lp" -gt 60 ] && echo "PROBLEM: Plans page source older than 60 min (rule: update every 45-60 min)."
 echo "HELPERS_ACTIVE=$active"
+
+# Disk (Sim, Nov 25: "make sure you are on top of our disk usage so that we don't have crashes"): the scratch worktrees fill the disk fast
+avail_kb=$(df -Pk /tmp | awk 'NR==2{print $4}'); avail_g=$((avail_kb/1024/1024))
+echo "Disk free: ${avail_g} GB"
+[ "$avail_g" -lt 6 ] && echo "PROBLEM: disk under 6 GB free. Remove finished scratch worktrees now (git worktree remove --force <path>; never ones a helper or a run is using), then old dist/ copies."

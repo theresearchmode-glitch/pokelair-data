@@ -60,10 +60,10 @@ V2.pages.sets = {place: 'meta', draw() { const E = V2.esc, U = V2.stUi, team = m
   if (!p) return `<div class="ra gsp us st lo">${top}<div class="gs-body">${ctl}<p class="tm-sub">Look up a Pokémon to see its popular sets.</p></div></div>`;
   const mine = team.find(m => m.p.n === p.n), t = S2.t, set = hasSet(t);
   // the left of the panel: the card (its tag on the ink chip), the types (symbol + word), the tier and rating, the three facts
-  const x = lairRows().find(y => y.p.n === p.n), N = V2.raNums(p), k = lairRank(p), stA = V2.addState(p.n), T = x ? lTier(x.r.total) : null;
+  const un = V2.unrated(p) /* Not rated yet (Sim, Nov 25): the words in the pill, no number, no tier */, x = un ? null : lairRows().find(y => y.p.n === p.n), N = V2.raNums(p), k = lairRank(p), stA = V2.addState(p.n), T = x ? lTier(x.r.total) : null;
   const tag = mine ? 'On your team' : k ? `#${k.rank} rated` : 'Looked up';
   const id = `<div class="lo-id"><div class="lo-card">${V2.kCard(p.n, {mine: tag})}</div><div class="lo-idt"><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
-      ${T ? `<p class="gs-big"><b class="u">${RS(x.r.total)}</b><span><i class="u tier-tag" style="--tc:var(--tier-${T.k.toLowerCase()})">${T.k} tier</i><small class="st-pill">Rated ${RS(x.r.total)}${k ? `, #${k.rank} of ${k.of}` : ''}</small></span></p>` : ''}</div>
+      ${T ? `<p class="gs-big"><b class="u">${RS(x.r.total)}</b><span><i class="u tier-tag" style="--tc:var(--tier-${T.k.toLowerCase()})">${T.k} tier</i><small class="st-pill">Rated ${RS(x.r.total)}${k ? `, #${k.rank} of ${k.of}` : ''}</small></span></p>` : un ? `<p class="gs-big"><span><small class="st-pill">${V2.NOT_RATED}</small></span></p>` : ''}</div>
       <div class="gs-facts">${V2.gsShare(N.u != null ? V2.raPct(N.u) : null, 'tournament')}<p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div></div>`;
   // the right of the panel: Item / Ability / Nature, the moves, your own set, the one pink move
   const stone = p.m && t && t.it && t.it.length ? t.it[0][0] : null, mAb = p.m && p.a && p.a[0];

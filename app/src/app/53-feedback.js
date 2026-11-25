@@ -6,7 +6,8 @@
 // time); its key is random. The box never asks for contact details. Only the owner can read everyone's.
 // The button only shows for viewers whose sharing level can save data (Contributor and up).
 var FB = {ref: null, ok: false, from: null, kind: 'idea', busy: false};
-(async () => { try { const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
+if (window.__NP_PUBLIC) { window.__npTurnstileCb = tok => { window.__npTurnstileToken = typeof tok === 'string' ? tok : ''; }; }
+(async () => { try { if (window.__NP_PUBLIC) { FB.ok = true; document.querySelectorAll('.fbbtn,.fbmis').forEach(b => b.hidden = false); return; } const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
   const own = !!(u.isOwner && u.isOwner()); if (typeof u.can === 'function' && u.can('data.write') === false && !own) return;
   const id = await u.id(); if (!id) return; FB.ref = d.doc('feedback/' + id); FB.ok = true; FB.db = d;
   document.querySelectorAll('.fbbtn,.fbmis').forEach(b => b.hidden = false); if (view === 'home') safe('home', renderHome); } catch (e) {} })();
@@ -44,7 +45,8 @@ async function fbSend() { const ta = $('fbText'), msg = $('fbMsg'), btn = $('fbS
   if (!FB.ok) { msg.textContent = "Can't send from here: your access level can't save data."; return; }
   FB.busy = true; btn.disabled = true; msg.textContent = 'Sending…'; const k = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6), sc = fbScrub(t.slice(0, 1000));
   const entry = {t: sc.t, k: FB.kind, v: FB.from || view, w: innerWidth < 760 ? 'phone' : 'desktop', d: new Date().toISOString().slice(0, 10)}; if (C) entry.c = String(C.title + '\n' + C.text).slice(0, 1200);
-  try { const s = await FB.ref.get(); if (s.exists) await FB.ref.update({m: {[k]: entry}}); else await FB.ref.set({m: {[k]: entry}});
+  try { if (window.__NP_PUBLIC) { const tok = window.__npTurnstileToken || (document.querySelector('[name="cf-turnstile-response"]') || {}).value || ''; const r = await fetch(window.NP_FEEDBACK_URL || '/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json', 'CF-Turnstile-Response': tok}, body: JSON.stringify({text: sc.t, page: String(FB.from || view || 'home').slice(0, 40), kind: String(FB.kind).slice(0, 20)})}); if (!r.ok) throw new Error('HTTP ' + r.status); }
+    else { const s = await FB.ref.get(); if (s.exists) await FB.ref.update({m: {[k]: entry}}); else await FB.ref.set({m: {[k]: entry}}); }
     track('feedback:' + FB.kind); fbClose(); toast((C ? 'Thanks! Mistake reported.' : 'Thanks! Feedback sent.') + (sc.n ? ' Personal details were removed.' : '')); if (C) { FB.ctx = null; FB.kind = 'idea'; } }
   catch (e) { msg.textContent = "Couldn't send. Try again in a moment."; btn.disabled = false; }
   finally { FB.busy = false; } }

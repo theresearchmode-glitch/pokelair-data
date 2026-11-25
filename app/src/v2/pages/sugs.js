@@ -140,7 +140,7 @@ V2.SGA_POOL = {box: 'your box', boxfill: 'your box and the best Pokémon to catc
 // line: the Ability its set runs, the item after Item Clause is settled across the new six, assignItems)
 V2.sgaFacts = pl => { const E = V2.esc; let tA = pl.team; try { if (typeof assignItems === 'function') tA = assignItems(pl.team); } catch (e) {}
   return `<div class="sga2-facts">${pl.ch.map(x => { const p = x.c.p, mem = x.c.mem || pl.team.find(m => m.p === p) || {}; let tier = '', role = '', gem = false, it = '';
-    try { const r = rating(p); tier = `${lTier(r.total).k} tier ${RS(r.total)}`; } catch (e) {}
+    try { const r = rating(p); tier = V2.unrated(p) ? V2.NOT_RATED : `${lTier(r.total).k} tier ${RS(r.total)}`; } catch (e) {}
     try { role = monRole(mem) || ''; } catch (e) {}
     try { gem = !!pl.gem || isGem(p); } catch (e) {}
     try { const t = tA.find(m => m.p === p); it = (t && t.item) || ''; } catch (e) {}

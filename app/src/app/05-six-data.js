@@ -53,4 +53,4 @@ function natInfo(m) { let sp = m.spread, own = !!(sp && sp.nat && !sp.assumed), 
   const words = pts ? K.map((k, j) => [pts[k], L[j]]).filter(x => x[0] > 0).sort((a, b) => b[0] - a[0]).map(x => `${x[0]} ${x[1]}`).join(', ') : '';
   return {nat: nat || '', natNote, words, ptsNote}; }
 // a Pokémon's rating out of 100 and its tier letter ("S"), or null when it can't be rated
-function monRating(p) { let r = null, tier = ''; try { r = rating(p).total; tier = lTier(r).k; } catch (e) {} return r == null ? null : {n: RS(r), tier}; }
+function monRating(p) { let r = null, tier = ''; try { const V = typeof window === 'object' && window.V2; if (V && typeof V.unrated === 'function' && V.unrated(p)) return null; /* Not rated yet (Sim, Nov 25): no number or tier for it (v2 shell.js) */ r = rating(p).total; tier = lTier(r).k; } catch (e) {} return r == null ? null : {n: RS(r), tier}; }

@@ -4,7 +4,9 @@
 // v: the page they came from, w: phone or desktop, d: the date only}. No contact field. The Preview only pretends to save
 // (its stand-in database keeps nothing), so there it says so instead of thanking anyone.
 V2.FB = {ref: null, ok: false, kind: 'idea', busy: false, from: ''};
-(async () => { try { const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
+if (window.__NP_PUBLIC) { window.__npTurnstileCb = tok => { window.__npTurnstileToken = typeof tok === 'string' ? tok : ''; }; }
+(async () => { try { if (window.__NP_PUBLIC) { V2.FB.ok = true; if (V2.redraw) V2.redraw(); return; }
+  const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
   const own = !!(u.isOwner && u.isOwner()); if (typeof u.can === 'function' && u.can('data.write') === false && !own) return;
   const id = await u.id(); if (!id) return; V2.FB.ref = d.doc('feedback/' + id); V2.FB.ok = true; if (V2.redraw) V2.redraw(); } catch (e) {} })(); /* feedback links show only where feedback can be saved (Nov 15, SHELL-20c) */
 // the page they came from: the last page opened before Send Feedback (first read once every page has registered)
@@ -28,7 +30,8 @@ V2.fbSend = async () => { const F = V2.FB, ta = document.getElementById('fbText2
   if (!F.ok) { msg.textContent = "Can't send from here: your access level can't save data."; return; }
   F.busy = true; btn.disabled = true; msg.textContent = 'Sending…'; const k = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6), sc = fbScrub(t.slice(0, 1000));
   const entry = {t: sc.t, k: F.kind, v: F.from || 'home', w: innerWidth < 760 ? 'phone' : 'desktop', d: new Date().toISOString().slice(0, 10)}; if (F.ctx) entry.c = fbScrub((F.ctx.slice(0, 300) + (F.ctxNums ? '\n' + F.ctxNums : '')).slice(0, 1200)).t; /* Report a Mistake: what was on screen (Nov 15, CALC-08), plus a Pokémon's numbers (Nov 18, OL-i39) */
-  try { const s = await F.ref.get(); if (s.exists) await F.ref.update({m: {[k]: entry}}); else await F.ref.set({m: {[k]: entry}});
+  try { if (window.__NP_PUBLIC) { const tok = window.__npTurnstileToken || (document.querySelector('[name="cf-turnstile-response"]') || {}).value || ''; const res = await fetch(window.NP_FEEDBACK_URL || '/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json', 'CF-Turnstile-Response': tok}, body: JSON.stringify({text: sc.t, page: String(F.from || 'home').slice(0, 40), kind: String(F.kind).slice(0, 20)})}); if (!res.ok) throw new Error('HTTP ' + res.status); }
+    else { const s = await F.ref.get(); if (s.exists) await F.ref.update({m: {[k]: entry}}); else await F.ref.set({m: {[k]: entry}}); }
     ta.value = ''; F.draft = ''; F.ctx = ''; F.ctxNums = ''; const cx = document.querySelector('.inf-ctx'); if (cx) cx.remove(); msg.textContent = 'Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : ''); V2.toast('Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : '')); }
   catch (e) { msg.textContent = "Couldn't send. Try again in a moment."; }
   finally { F.busy = false; btn.disabled = false; } };
@@ -48,7 +51,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
    report sent them (53-feedback.js fbMisContext): rating and range, tier, rank, tournament share / wins / games, the moves, items and
    Ability shown, and the data date. Only site data: nothing about the viewer. */
 V2.fbMonNums = p => { const r = rating(p), src = r.src || {}, st = setFor(p) || {}, pf = activePerf(), L = [], rk = rankTxt(p);
-  L.push(`${p.d} · rated ${RS(r.total)} (${rRange(r)}, ${lTier(r.total).k} tier${rk ? ', ' + rk : ''})`);
+  L.push(V2.unrated(p) ? `${p.d} · ${V2.NOT_RATED.toLowerCase()} (no tournament results)` : `${p.d} · rated ${RS(r.total)} (${rRange(r)}, ${lTier(r.total).k} tier${rk ? ', ' + rk : ''})`);
   if (src.tour) L.push(`Tournaments: ${src.tour[0]}% of teams, ${src.tour[1]}% won, ${(+src.tour[2]).toLocaleString('en-US')} games`);
   if (st.mv && st.mv.length) L.push('Moves shown: ' + st.mv.slice(0, 5).map(([n, v]) => n + (v == null ? '' : ' ' + (+v).toFixed(1) + '%')).join(', '));
   if (st.it && st.it.length) L.push('Items shown: ' + st.it.slice(0, 3).map(([n, v]) => n + (v == null ? '' : ' ' + (+v).toFixed(1) + '%')).join(', '));

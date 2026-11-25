@@ -525,9 +525,12 @@ function bestHitOn(atkP,atkMoves,defP,aMem,dMem,field){let best=null;const A0={p
   if(F.dAtkStage)D.atkBoost=F.dAtkStage;
   // best by what you can count on: a move's damage is weighed by its accuracy, a two-turn move that charges first or a move
   // that must recharge counts for less, so a coin-flip OHKO move or Hyper Beam doesn't outrank a reliable attack
-  for(const mv of atkMoves){if(!mv||!mv.bp)continue;const A=F.aStage?{...A0,boost:mv.name==='Body Press'?0:mv.cat===1?F.aStage.atk||0:F.aStage.spa||0}:A0;
-    const r=damage({atk:A,def:D,move:mv,spread:!!mv.spread,weather:F.weather||'',terrain:F.terrain||'',auras:F.auras});if(!r||!r.hp)continue;
-    const ch=chargesFirst(mv,F.weather,A.item,A.ability),acc=moveAcc(mv,A.ability,F.weather,D,A.item),val=r.max*acc/100*(ch?.5:1)*(mv.recharge?.7:1);
+  // field.dStage {def,spd} (Commander, Nov 25): the target's Defense / Sp. Def stage, by the stat the move hits (Psyshock,
+  // Psystrike and Secret Sword hit Defense); Body Press hits with the user's own Defense stage (aStage.def)
+  for(const mv of atkMoves){if(!mv||!mv.bp)continue;const A=F.aStage?{...A0,boost:mv.name==='Body Press'?F.aStage.def||0:mv.cat===1?F.aStage.atk||0:F.aStage.spa||0}:A0;
+    const Dm=F.dStage?{...D,boost:(mv.cat===1||['Psyshock','Psystrike','Secret Sword'].includes(mv.name))?F.dStage.def||0:F.dStage.spd||0}:D;
+    const r=damage({atk:A,def:Dm,move:mv,spread:!!mv.spread,weather:F.weather||'',terrain:F.terrain||'',auras:F.auras});if(!r||!r.hp)continue;
+    const ch=chargesFirst(mv,F.weather,A.item,A.ability),acc=moveAcc(mv,A.ability,F.weather,Dm,A.item),val=r.max*acc/100*(ch?.5:1)*(mv.recharge?.7:1);
     if(!best||val>best.val)best={mv,r,val,charge:ch,acc,recharge:!!mv.recharge}}return best}
 // plain words for what a best hit depends on: "charges first", "70% to hit", "must recharge", "one-hit KO move"
 function hitNote(b){if(!b)return '';const t=[];if(b.charge)t.push('charges first');if(b.acc!=null&&b.acc<100)t.push(b.acc+'% to hit');if(b.recharge)t.push('must recharge');if(b.r&&b.r.ohko)t.push('one-hit KO move');return t.join(', ')}

@@ -19,7 +19,7 @@
 // Can't detect: real claude.ai storage or the real db service (both are stand-ins here); two devices at once (experiments/sync-logic.mjs);
 // team and box links (#team= / #box=); usage/ and feedback/ writes; whether the switch republishes the same artifact URL.
 // Usage: node app/build.mjs && node app/build.mjs --v2 && node app/test/v2-saved.mjs     (PAGE=... for another new build, OLD=... for another old one)
-import {chromium} from 'playwright'; import {perfDoc} from '../data-docs.mjs'; import path from 'node:path'; import fs from 'node:fs'; import {fileURLToPath} from 'node:url';
+import {chromium} from 'playwright'; import {perfDoc} from '../data-docs.mjs'; import path from 'node:path'; import fs from 'node:fs'; import {fileURLToPath} from 'node:url'; import http from 'node:http';
 const ROOT = path.resolve(fileURLToPath(new URL('../..', import.meta.url)));
 const PAGE = path.resolve(process.env.PAGE || path.join(ROOT, 'app/dist/v2.html')), OLD = path.resolve(process.env.OLD || path.join(ROOT, 'app/dist/page.html'));
 const STRICT = !!process.env.STRICT;
@@ -69,6 +69,13 @@ const tmp = path.join(ROOT, `app/dist/_saved-old-${process.pid}.html`);
 process.on('exit', () => { try { fs.unlinkSync(tmp); } catch (e) {} });
 
 const b = await chromium.launch();
+/* the pages are served over http, as players get them: opened as file://, Chromium lost the page's storage on about 1 reload in 4
+   (checked Nov 25: the failing runs came back re-seeded, or with the starting box of 36), which failed SV-3 at random */
+const srv = http.createServer((q, r) => { const f = path.resolve(decodeURIComponent(q.url.split('?')[0].split('#')[0]));
+  if (!f.startsWith(ROOT) || !fs.existsSync(f) || !fs.statSync(f).isFile()) { r.writeHead(404); r.end(); return; }
+  const ext = path.extname(f), type = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript', '.json': 'application/json', '.css': 'text/css', '.png': 'image/png', '.webp': 'image/webp', '.svg': 'image/svg+xml', '.woff2': 'font/woff2'}[ext] || 'application/octet-stream';
+  r.writeHead(200, {'content-type': type}); fs.createReadStream(f).pipe(r); });
+await new Promise(res => srv.listen(0, '127.0.0.1', res)); srv.unref(); const SRV = `http://127.0.0.1:${srv.address().port}`;
 // a page with storage seeded ONCE per tab (a reload keeps what the page wrote) and, if `acc` is given, a fake account store in the page
 async function open(file, {ls = {}, acc = null, scheme = 'light', hash = 'team'} = {}) {
   const c = await b.newContext({viewport: {width: 1280, height: 900}, colorScheme: scheme}), p = await c.newPage(), errs = [];
@@ -84,7 +91,7 @@ async function open(file, {ls = {}, acc = null, scheme = 'light', hash = 'team'}
       update: async d => { writes.push({op: 'update', path: k, keys: Object.keys(d)}); if (!store[k]) throw Object.assign(new Error('missing'), {code: 'invalid_argument'}); store[k] = Object.assign({}, store[k], JSON.parse(JSON.stringify(d))); }});
     const claude = {use: async n => n === 'db' ? {doc} : n === 'user' ? {id: async () => 'u-saved-test', isOwner: () => false, can: () => true} : null};
     Object.defineProperty(window, '__NP_CLAUDE', {configurable: true, get: () => claude, set: () => {}}); window.claude = claude; }, [ls, acc, ACC, acc ? DOCS : {}]);
-  await p.goto('file://' + file + '#' + hash);
+  await p.goto(SRV + file + '#' + hash);
   await p.waitForFunction(() => typeof window.__ev === 'function', null, {timeout: 15000}).catch(() => {});
   return {c, p, errs, ev: s => p.evaluate(s => { try { return window.__ev(s); } catch (e) { return 'ERR ' + String(e.message || e).slice(0, 120); } }, s)}; }
 const txt = (p, sel) => p.evaluate(s => { const n = document.querySelector(s); return n ? n.innerText.replace(/\s+/g, ' ') : ''; }, sel);

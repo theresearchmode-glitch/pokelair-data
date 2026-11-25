@@ -7,7 +7,7 @@ Page list from the code (checked: V2.pages in app/src/v2). Rules used:
 
 | Page (code) | Address | Title | Description |
 |---|---|---|---|
-| home | / | NastyPlot · Pokémon Champions team builder, damage calc & meta | Build a winning Pokémon Champions team: Strength Score, damage calc, speed tiers, usage stats and winning tournament teams, updated every day. |
+| home | / | NastyPlot · Pokémon Champions team builder & damage calc | Build a winning Pokémon Champions team: Strength Score, damage calc, speed tiers, usage stats and winning tournament teams, updated every day. |
 | team (My Team) | /team | Team Rater: Strength Score for your team · NastyPlot | Paste your Pokémon Champions team and get its Strength Score out of 100, matchups against the top threats and suggestions to make it stronger. |
 | build | /build | Team Builder for Pokémon Champions · NastyPlot | Build a Pokémon Champions team from proven cores and real tournament sets, with every pick checked against today's meta. |
 | battle | /battle | Battle Planner: leads and picks · NastyPlot | Your six against their six: which four to bring, which two to lead and the threats to watch, from real Pokémon Champions games. |

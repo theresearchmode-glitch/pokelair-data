@@ -49,7 +49,7 @@ V2.slab = async (ms, shape, light, nameAs) => { /* light (Nov 15): the same look
   const nameLines = (maxW, start, min) => { for (let s = start; s >= min; s -= 2) { ARB.fnt(x, `italic 900 ${s}px Unbounded, sans-serif`, true); const Ln = ARB.wrapN(x, name, maxW, 2); if (Ln) return {s, Ln}; } ARB.fnt(x, `italic 900 ${min}px Unbounded, sans-serif`, true); return {s: min, Ln: [scFit(x, name, maxW)]}; };
   if (tall) {
     await ARB.logo(x, !light, 48, 40, 230);
-    ARB.fnt(x, '700 20px "Instrument Sans", sans-serif'); x.fillStyle = K.ink2; x.textAlign = 'right'; x.fillText('POKÉMON CHAMPIONS · VGC DOUBLES · REG M-C', W - 48, 82); x.textAlign = 'left';
+    ARB.fnt(x, '700 20px "Instrument Sans", sans-serif'); x.fillStyle = K.ink2; x.textAlign = 'right'; x.fillText('POKÉMON CHAMPIONS · VGC DOUBLES · ' + regName().toUpperCase(), W - 48, 82); x.textAlign = 'left';
     if (arch) { ARB.fnt(x, '800 22px "Instrument Sans", sans-serif'); x.fillStyle = K.blue; x.fillText(scFit(x, arch, 520), 60, 186); }
     const N = nameLines(560, 92, 44); x.fillStyle = K.ink; ARB.fnt(x, `italic 900 ${N.s}px Unbounded, sans-serif`, true); N.Ln.forEach((l, i) => x.fillText(l, 56, 186 + N.s * 1.05 * (i + 1)));
     if (sc && /^\d+$/.test(sc.num)) { ARB.fnt(x, 'italic 900 230px Unbounded, sans-serif', true); x.fillStyle = K.ink; x.textAlign = 'right'; x.fillText(sc.num, W - 60, 340); /* audit Nov 15: the slant left 19 px; now on the same edge as STRENGTH SCORE */
@@ -78,6 +78,6 @@ V2.slab = async (ms, shape, light, nameAs) => { /* light (Nov 15): the same look
     order.slice(2).forEach((m, i) => V2.slabCard(x, m, imgs[i + 2], 660 + i * 145, 548, 112, 100, i % 2 ? 2 : -2, false, K.ink3));
     if (!order[1]) V2.slabOpen(x, 1010, 205, 210, 250, 4, K, true); for (let i = Math.max(0, order.length - 2); i < 4; i++) V2.slabOpen(x, 660 + i * 145, 548, 112, 100, i % 2 ? 2 : -2, K);
     ARB.tagline(x, ARB.PAL(!light), 520, 646, 26);
-    ARB.fnt(x, '600 15px "Instrument Sans", sans-serif'); x.fillStyle = K.ink2; x.fillText('Pokémon Champions · VGC doubles · Reg M-C · NastyPlot, unofficial fan tool', 44, 604); /* in the words column: the leads stand where the mock had it, the items fill the bottom right */
+    ARB.fnt(x, '600 15px "Instrument Sans", sans-serif'); x.fillStyle = K.ink2; x.fillText('Pokémon Champions · VGC doubles · ' + regName() + ' · NastyPlot, unofficial fan tool', 44, 604); /* in the words column: the leads stand where the mock had it, the items fill the bottom right */
   }
   return c; };

@@ -107,3 +107,7 @@
 /* short phone windows (390x664, 375x667): no room for the countdown line without pushing the start buttons past Sim's 80px limit
    (Nov 24: +23px, 746 -> 770); it's a 7-day note, so there it gives way to the buttons */
 @media (max-width:699.98px) and (max-height:699.98px){.sdh-cd{display:none}}
+
+/* Not rated yet, day one (Nov 25): with no herd, today's underdog card stands at the gate, bottom centre of the scene, above the cut */
+.sdh-gate{position:absolute;z-index:4;left:50%;bottom:calc(var(--sdh-cut) / 2 + 2cqh);transform:translateX(-50%);width:min(280px,60cqw)}.sdh-gate .k-card{width:100%;pointer-events:auto}
+@media (max-width:699.98px){.sdh-gate{display:none}} /* phones: the headline fills the scene, so the card would cover it; the caption says it */

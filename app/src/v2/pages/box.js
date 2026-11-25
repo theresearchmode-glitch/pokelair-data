@@ -34,7 +34,7 @@ V2.bxRange = (so, here) => { if (!here.length) return ''; const a = here[0], z =
 V2.bxChv = () => (V2.sdhChv ? V2.sdhChv() : '').replace(/^<span[^>]*>/, '').replace(/<\/span>$/, '').replace('<svg ', '<svg class="mb-cur" aria-hidden="true" ');
 // one slot: the sprite on its floor, the name (hidden where the slot is too narrow: phones), the on-your-team corner flag, the cursor
 V2.bxTile = (n, d, on, sel, shown, k) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null;
-  return `<button type="button" class="bx-t mb-t${sel ? ' sel' : ''}${shown ? ' mb-cur-on' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}, slot ${k}${on ? ', on your team' : ''}">${on ? '<i class="mb-flag" aria-hidden="true"></i>' : ''}${shown ? V2.bxChv() : ''}<i class="mb-fl" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy" decoding="async">` : ''}<b>${V2.tileName(d)}</b></button>`; };
+  return `<button type="button" class="bx-t mb-t${sel ? ' sel' : ''}${shown ? ' mb-cur-on' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}, slot ${k}${on ? ', on your team' : ''}">${on ? '<i class="mb-flag" aria-hidden="true"></i>' : ''}${shown ? V2.bxChv() : ''}<i class="mb-fl" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" width="240" height="240" loading="lazy" decoding="async">` : ''}<b>${V2.tileName(d)}</b></button>`; };
 const bxTierC = k => `var(--tier-${String(k || 'f').toLowerCase()})`;
 const bxTierChip = k => `<span class="mb-tier u" style="--tc:${bxTierC(k)}">${V2.esc(k)}&nbsp;tier</span>`;
 // Your Six: the team in its order, each row tinted with its first type, its real item · Ability (the team's set) and its rating
@@ -51,10 +51,10 @@ V2.bxScoreOf = ms => { if (!ms.length) return null; try { const RD = prepOf(ms),
 // F (Sim, Nov 12): a species with more than one form (a Mega) shows a Forms row; the tapped form's rating and numbers fill the card, the
 // Pokémon Page opens that form and Add / Swap adds that form. The box keeps the species (n); Remove from Box removes the species.
 V2.bxSum = (n, o = {}) => { const b = byName.get(n); if (!b) return ''; const fs = ROSTER.filter(q => q.b === b.b), F = V2.bx.form && V2.bx.form.of === n && fs.some(q => q.n === V2.bx.form.f) ? V2.bx.form.f : n;
-  const p = byName.get(F), E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), id = SPRITE_ID[F];
+  const p = byName.get(F), E = V2.esc, r = rating(p), un = V2.unrated(p) /* Not rated yet (Sim, Nov 25) */, rs = RS(r.total), T = lTier(r.total), H = lairHead(p), id = SPRITE_ID[F];
   const kn = V2.kName(F), onTeam = members().some(m => ownKey(m.p) === n), st = V2.addState(F), full = st === 'full', t1 = (p.t || [])[0], t2 = (p.t || [])[1] || t1;
   const forms = fs.length > 1 ? `<div class="mb-forms"><p class="mb-cap">Forms · tap one to show it</p><div class="mb-fr" role="group" aria-label="Forms of ${E(V2.disp(b.b))}">${fs.map(q => { const rq = rating(q);
-    return `<button type="button" class="mb-f" data-bxform="${E(q.n)}" data-bxof="${E(n)}" aria-pressed="${q.n === F}"><img src="${V2.art(SPRITE_ID[q.n])}" alt="" loading="lazy" decoding="async"><span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${RS(rq.total)} · ${E(lTier(rq.total).k)} tier</small></span></button>`; }).join('')}</div></div>` : '';
+    return `<button type="button" class="mb-f" data-bxform="${E(q.n)}" data-bxof="${E(n)}" aria-pressed="${q.n === F}"><img src="${V2.art(SPRITE_ID[q.n])}" alt="" loading="lazy" decoding="async"><span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${V2.unrated(q) ? V2.NOT_RATED : `${RS(rq.total)} · ${E(lTier(rq.total).k)} tier`}</small></span></button>`; }).join('')}</div></div>` : '';
   // Usage / Win rate / Speed: win rate needs 30+ tournament games, as today (Box Q3 B, Sim Nov 13: too few games said in words)
   const few = !(H.hW != null && H.hG >= 30), ad = (V2.asOf && V2.asOf().match(/[A-Z][a-z]{2} \d{1,2}/)) || null;
   const src = (H.hU != null ? 'Online tournaments' : 'No tournament games yet') + (ad ? ', ' + ad[0] : '');
@@ -63,9 +63,9 @@ V2.bxSum = (n, o = {}) => { const b = byName.get(n); if (!b) return ''; const fs
     : `<button type="button" class="np-btn mb-main" data-bxteam="${E(F)}">${full ? 'Swap into My Team' : 'Add to My Team'}</button><button type="button" class="np-btn2 k-btn" data-hmaround="${E(F)}"><span>Build Around It</span></button>`;
   return `<div class="mb-cw" style="--t1:var(--ty-${V2.TYPES.includes(t1) ? t1 : 'Normal'});--t2:var(--ty-${V2.TYPES.includes(t2) ? t2 : 'Normal'})"><div class="mb-card bx-sum${fs.length > 1 ? ' mb-hasf' : ''}">
     <p class="mb-strip"><span>${o.slot ? `Box ${o.box} · Slot ${o.slot}` : 'In your box'}</span><span>${onTeam ? 'On your team' : 'Not on your team'}</span></p>
-    <div class="mb-top"><div class="mb-ph"><span class="mb-gh u" aria-hidden="true">${rs}</span><img src="${V2.art(id, true)}" alt="" decoding="async"></div>
+    <div class="mb-top"><div class="mb-ph"><span class="mb-gh u" aria-hidden="true">${un ? '' : rs}</span><img src="${V2.art(id, true)}" alt="" decoding="async"></div>
     <div class="mb-idn"><p class="mb-form"${kn.form ? '' : ' aria-hidden="true"'}>${kn.form ? E(kn.form) : '&nbsp;'}</p><h2 class="mb-nm u" data-kmax="3">${E(kn.name).replace(/ (\S)$/, '&nbsp;$1')}</h2><div class="mb-ty">${(p.t || []).map(V2.typeChip).join('')}</div>
-    <div class="mb-rr"><b class="u">${rs}</b>${bxTierChip(T.k)}<small>${rk ? E(rk) : 'No tournament results yet'}</small></div><p class="mb-rk">${rk ? E(rk) : 'No tournament results yet'}</p></div></div>${forms}
+    <div class="mb-rr">${un ? '' : `<b class="u">${rs}</b>${bxTierChip(T.k)}`}<small>${un ? V2.NOT_RATED : rk ? E(rk) : 'No tournament results yet'}</small></div><p class="mb-rk">${un ? V2.NOT_RATED : rk ? E(rk) : 'No tournament results yet'}</p></div></div>${forms}
     <dl class="mb-nums"><div><dt>Usage</dt><dd class="u">${E(V2.shareTxt(H))}</dd></div><div${few ? ' class="few"' : ''}><dt>Win rate</dt><dd class="u">${few ? 'Too few' : E(pctFmt(H.hW))}</dd>${few ? `<small>${H.hG ? Math.round(H.hG) + ' games' : 'No games yet'}</small>` : ''}</div><div><dt>Speed</dt><dd class="u">${p.st[5]}</dd></div></dl>
     <p class="mb-src">${E(src)}</p>
     <div class="mb-acts">${main}</div>
@@ -157,7 +157,7 @@ document.addEventListener('click', async e => { const t = e.target.closest && e.
   else if (d.bxlink === 'open') { V2.bx.linkOpen = !V2.bx.linkOpen; V2.bx.msg = ''; bxRe(); if (V2.bx.linkOpen) { const f = document.querySelector('[data-bxlinkin]'); if (f) f.focus(); } }
   else if (d.bxlink === 'add' || d.bxlink === 'replace') { const f = document.querySelector('[data-bxlinkin]'), x = decodeBox(f && f.value);
     if (!x || !x.names.length) { V2.bx.linkVal = f ? f.value : ''; V2.bx.msg = 'That doesn’t look like a box link. Copy it again with Copy Box Link, then paste the whole thing.'; bxRe(); return; }
-    V2.bx.linkVal = ''; V2.bx.msg = x.skipped ? `${x.skipped} Pokémon in that link aren’t in ${REG_NAME}, so they were left out.` : ''; if (!x.skipped) V2.bx.linkOpen = false;
+    V2.bx.linkVal = ''; V2.bx.msg = x.skipped ? `${x.skipped} Pokémon in that link aren’t in ${regName()}, so they were left out.` : ''; if (!x.skipped) V2.bx.linkOpen = false;
     applyBox(x, d.bxlink); V2.bx.page = 0; V2.bx.sel = null; bxRe(); } });
 document.addEventListener('input', e => { if (e.target.matches && e.target.matches('[data-bxlinkin]')) V2.bx.linkVal = e.target.value; });
 document.addEventListener('v2slide', e => { if (e.detail.key !== 'box-sort') return; setBoxSort(e.detail.value); V2.bx.page = 0; V2.bx.sel = null; bxRe(); });

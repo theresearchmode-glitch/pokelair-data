@@ -16,7 +16,7 @@ function teamCode() {
   if (!s.length) return '';
   const loaded = S.teams.find(t => t.id === S.loadedId), o = {v: 1, f, s}; if (loaded && loaded.name) o.n = String(loaded.name).slice(0, 60);
   return tlB64(JSON.stringify(o)); }
-function teamLinkBase() { try { const h = location.hostname; if (/^https?:$/.test(location.protocol) && h && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) && h !== 'localhost' && h !== '127.0.0.1') return location.origin + location.pathname; } catch (e) {} return TL_ART; }
+function teamLinkBase() { try { const h = location.hostname; if (/^https?:$/.test(location.protocol) && h && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) && h !== 'localhost' && h !== '127.0.0.1') return location.origin + location.pathname; } catch (e) {} return window.__NP_PUBLIC ? 'https://nastyplot.org/' : TL_ART; }
 function teamLink() { const c = teamCode(); return c ? teamLinkBase() + '#team=' + c : ''; }
 // accepts a full link, "team=<code>" or the bare code; returns {f, n, slots} or null
 function decodeTeam(text) {
@@ -83,7 +83,7 @@ document.addEventListener('click', async e => { const b = e.target && e.target.c
   if (b.id === 'boxLinkOpen') { const p = $('boxLinkIn'); if (!p) return; p.hidden = !p.hidden; b.setAttribute('aria-expanded', String(!p.hidden)); if (!p.hidden) { const f = $('boxLinkField'); if (f) f.focus(); } return; }
   const f = $('boxLinkField'), x = decodeBox(f && f.value);
   if (!x || !x.names.length) { if (msg) msg.textContent = 'That doesn’t look like a box link. Copy it again with Copy box link, then paste the whole thing.'; return; }
-  applyBox(x, b.id === 'boxLinkReplace' ? 'replace' : 'add'); if (f) f.value = ''; if (msg) msg.textContent = x.skipped ? `${x.skipped} Pokémon in that link aren’t in ${typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C'}, so they were left out.` : '';
+  applyBox(x, b.id === 'boxLinkReplace' ? 'replace' : 'add'); if (f) f.value = ''; if (msg) msg.textContent = x.skipped ? `${x.skipped} Pokémon in that link aren’t in ${regName()}, so they were left out.` : '';
   const p = $('boxLinkIn'); if (p && !x.skipped) p.hidden = true; const o = $('boxLinkOpen'); if (o && !x.skipped) o.setAttribute('aria-expanded', 'false'); });
 // a box link opened directly (outside Claude): offer it in the paste box, never applied silently
 function checkBoxLink() { let raw = ''; try { raw = location.hash || ''; } catch (e) {} if (!/box=/.test(raw)) return; const x = decodeBox(raw); if (!x || !x.names.length) return;

@@ -49,28 +49,39 @@ function turnOneData(mine, theirs, r) {
   const INTIM_NO = ['Clear Body', 'Hyper Cutter', 'White Smoke', 'Full Metal Body', 'Inner Focus', 'Oblivious', 'Own Tempo', 'Scrappy', 'Mirror Armor'], INTIM_UP = ['Defiant', 'Guard Dog', 'Contrary'];
   const entryAb = x => { const bp = x && x.p && x.p.m ? baseP(x.p) : null; if (bp) { const a = baseAb(x, bp); if (a) return a; } return abilityOf(x); };
   const intimOf = y => entryAb(y) === 'Intimidate' || abilityOf(y) === 'Intimidate', sideOfX = x => L.includes(x) ? L : opp, foesOf = x => L.includes(x) ? opp : L;
-  const stage = new Map([...L, ...opp].map(x => { const n = foesOf(x).filter(intimOf).length, ab = entryAb(x), it = sideDefaults(x.p, 'atk', calcM(x)).item; let atk = 0, spa = 0, spe = 0;
+  // Commander (Reg M-D, Nov 25; Showdown's commander: onStart/onAllyAfterSwitchIn): a Tatsugiri with Commander leading beside its
+  // own side's Dondozo jumps into it as the leads come out, before any move. Until Dondozo faints it can't move, be hit or be
+  // targeted (semi-invulnerable; spread moves skip it), and Dondozo gets +2 Attack, Defense, Sp. Atk, Sp. Def and Speed and can't
+  // switch out. Only one Tatsugiri commands a Dondozo. cmd: the commanding Tatsugiri; dozoUp: its Dondozo.
+  const isDozo = x => !!(x && x.p && /^Dondozo(-|$)/.test(String(x.p.n || ''))), isTatsu = x => !!(x && x.p && /^Tatsugiri(-|$)/.test(String(x.p.n || ''))), cmd = new Map(), dozoUp = new Set();
+  const nGas = [...L, ...opp].some(x => entryAb(x) === 'Neutralizing Gas');
+  if (!nGas) for (const S of [L, opp]) { const tt = S.find(x => isTatsu(x) && (entryAb(x) === 'Commander' || abilityOf(x) === 'Commander')), z = tt && S.find(x => x !== tt && isDozo(x));
+    if (tt && z) { cmd.set(tt, z); dozoUp.add(z); } }
+  const act = arr => arr.filter(x => !cmd.has(x));
+  const stage = new Map([...L, ...opp].map(x => { const n = foesOf(x).filter(y => intimOf(y) && !cmd.has(y)).length, ab = entryAb(x), it = sideDefaults(x.p, 'atk', calcM(x)).item; let atk = 0, spa = 0, spe = 0, def = 0, spd = 0;
     if (n && !INTIM_NO.includes(ab) && !((x.types || x.p.t || []).includes('Grass') && sideOfX(x).some(y => entryAb(y) === 'Flower Veil'))) {
       if (INTIM_UP.includes(ab)) atk = n; else { atk = -n; if (ab === 'Competitive') spa = 2 * n; if (ab === 'Rattled') spe = n; if (it === 'White Herb') atk += 1; } }
     /* Mirror Armor sends the drop back to the Intimidate user (unless that user's own Ability blocks it) */
     if (intimOf(x) && !INTIM_NO.includes(ab) && !INTIM_UP.includes(ab)) atk -= foesOf(x).filter(y => entryAb(y) === 'Mirror Armor').length;
-    return [x, {atk: Math.max(-6, Math.min(6, atk)), spa: Math.min(6, spa), spe: Math.min(6, spe)}]; }));
+    if (dozoUp.has(x)) { atk += 2; spa += 2; spe += 2; def += 2; spd += 2; } /* Commander */
+    const cl = v => Math.max(-6, Math.min(6, v));
+    return [x, {atk: cl(atk), spa: cl(spa), spe: cl(spe), def: cl(def), spd: cl(spd)}]; }));
   /* Sim's W11 (Nov 19): a one-hit KO chance in plain words ('OHKO 6%' was cryptic); the Damage Calc keeps its short form */
   const koShort = r => koShortCalc(r).replace(/^OHKO (\d+(?:\.\d+)?)%$/, '$1% chance to KO in one hit');
-  const stOf = x => stage.get(x) || {atk: 0, spa: 0, spe: 0};
+  const stOf = x => stage.get(x) || {atk: 0, spa: 0, spe: 0, def: 0, spd: 0};
   // the stage a move hits with, in plain words for its line: 'at −1 Attack', 'at +2 Sp. Atk' (Body Press: Defense, untouched; Foul Play: the target's Attack)
   /* d: the target; Unaware (the target's) ignores the stage, as the calc does, so no note then (Nov 19 review); unless the attacker
      has Mold Breaker, Teravolt or Turboblaze, which ignore Unaware (the calc clears the target's Ability then; independent review) */
-  const stageNote = (x, mv, d) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat || (d && abilityOf(d) === 'Unaware' && !MOLD.includes(abilityOf(x)))) return ''; const s = stOf(x), v = mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
+  const stageNote = (x, mv, d) => { if (!mv || mv.name === 'Foul Play' || !mv.cat || (d && abilityOf(d) === 'Unaware' && !MOLD.includes(abilityOf(x)))) return ''; const s = stOf(x), bp = mv.name === 'Body Press', v = bp ? s.def : mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${bp ? 'Defense' : mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
   const hitNotes = (x, h, d) => [hitNote(h), stageNote(x, h && h.mv, d)].filter(Boolean).join(', ');
-  const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, calcM(a), calcM(d), {...F, aStage: stOf(a), dAtkStage: stOf(d).atk});
+  const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, calcM(a), calcM(d), {...F, aStage: stOf(a), dAtkStage: stOf(d).atk, dStage: stOf(d)});
   // speed in that field: Chlorophyll / Swift Swim / Sand Rush / Slush Rush double in their weather
   // a Speed stage (Rattled after Intimidate) multiplies first, as the game applies stages before other modifiers: +1 is ×1.5, +2 ×2
   const speF = x => { const k = stOf(x).spe || 0; return (k ? Math.floor(spe(x) * (2 + k) / 2) : spe(x)) * (typeof speedMul === 'function' ? speedMul(abilityOf(x), F.weather) : 1); };
   // their threat to each of my leads: the hardest single hit
-  const danger = opp.map(o => { let worst = null; for (const m of L) { const h = hitOn(o, o.moves || [], m); if (h && (!worst || h.r.max / h.r.hp > worst.pct)) worst = {pct: h.r.max / h.r.hp, h, on: m}; } return {o, worst}; })
+  const danger = act(opp).map(o => { let worst = null; for (const m of act(L)) { const h = hitOn(o, o.moves || [], m); if (h && (!worst || h.r.max / h.r.hp > worst.pct)) worst = {pct: h.r.max / h.r.hp, h, on: m}; } return {o, worst}; })
     .sort((a, b) => (b.worst ? b.worst.pct : 0) - (a.worst ? a.worst.pct : 0));
-  const fast = opp.filter(o => L.some(m => speF(o) > speF(m))).length;
+  const fast = act(opp).filter(o => act(L).some(m => speF(o) > speF(m))).length;
   // Fake Out's rules (design review #1; Nov 19 review): it fails into a priority blocker on the target's side (Armor Tail, Queenly
   // Majesty, Dazzling) and against a grounded target in Psychic Terrain; it has no effect on a Ghost type unless the user has Scrappy;
   // Inner Focus, Shield Dust and Covert Cloak take the hit but don't flinch. Mold Breaker (Teravolt, Turboblaze) ignores the
@@ -85,11 +96,11 @@ function turnOneData(mine, theirs, r) {
   // they just attack, so their turn-one KO stays a turn-one KO)
   // Their Fake Out targets are decided up front, fastest first: each aims at your lead that threatens them most among those it can
   // flinch and no other Fake Out has taken; one with no such target attacks instead.
-  const threatOf = m => { let v = 0; for (const o of opp) { const h = hitOn(m, memberMoves(m).moves, o); if (h) v = Math.max(v, h.r.max / h.r.hp); } return v; };
-  const myByThreat = L.slice().sort((a, b) => threatOf(b) - threatOf(a)), theirFOT = new Map();
+  const threatOf = m => { let v = 0; for (const o of act(opp)) { const h = hitOn(m, memberMoves(m).moves, o); if (h) v = Math.max(v, h.r.max / h.r.hp); } return v; };
+  const myByThreat = act(L).sort((a, b) => threatOf(b) - threatOf(a)), theirFOT = new Map();
   // (third check, Nov 19) once your plan is known, a lead that moves before their Fake Out user (Protect at +4, or a faster Fake Out
   // of your own at +3) is skipped: it has already moved, so their Fake Out goes to your other lead (pickFOT below, after the plan)
-  const pickFOT = (skip, stopped) => { theirFOT.clear(); for (const o of opp.filter(o => (o.moves || []).some(x => x && x.name === 'Fake Out')).sort((a, b) => (stopped ? stopped(a) - stopped(b) : 0) || speF(b) - speF(a))) {
+  const pickFOT = (skip, stopped) => { theirFOT.clear(); for (const o of act(opp).filter(o => (o.moves || []).some(x => x && x.name === 'Fake Out')).sort((a, b) => (stopped ? stopped(a) - stopped(b) : 0) || speF(b) - speF(a))) {
     const t = myByThreat.find(t => ![...theirFOT.values()].includes(t) && foFx(o, t, L) === 'ok' && !skip(t, o)); if (t) theirFOT.set(o, t); } };
   pickFOT(() => false);
   // their bracket: Fake Out +3 when they use it; otherwise their likely attack's own priority (Extreme Speed +2, Sucker Punch +1,
@@ -100,6 +111,7 @@ function turnOneData(mine, theirs, r) {
   const pr = (m, n) => movePrio(mvOf(m, n), m.ability, {terrain: F.terrain, grounded: grounded(m)});
   const planLines = () => { lines = []; used = new Set();
   for (const m of L) { const mv = names(m), partner = L.find(x => x !== m);
+    if (cmd.has(m)) { const z = cmd.get(m); lines.push([m, `Commander: into your ${z.d}`, `can't move or be hit while your ${z.d} is in; it gets +2 Attack, Defense, Sp. Atk, Sp. Def and Speed`, 0]); continue; }
     /* aim only where it flinches, and never at a faster Fake Out user that will already have moved (second review, Nov 19) */
     const fd = mv.has('Fake Out') && !used.has('fake') ? danger.find(d => foFx(m, d.o, opp) === 'ok' && !(theirFOT.has(d.o) && speF(d.o) > speF(m))) : null;
     if (fd) { used.add('fake'); lines.push([m, `Fake Out ${fd.o.d}`, fd.worst ? `stops its ${fd.worst.h.mv.name}, up to ${dmgP(100 * fd.worst.pct)}% of your ${fd.worst.on.d}'s HP` /* 'its': the target, named above it on the card */ : fd === danger[0] ? 'their biggest threat' : 'it can be flinched', pr(m, 'Fake Out'), fd.o]); continue; }
@@ -111,9 +123,9 @@ function turnOneData(mine, theirs, r) {
     // such a move is dropped and the next best is planned; one that only dents the partner stays, with its note
     let best = null, pool = memberMoves(m).moves;
     for (let tries = 0; tries < 6; tries++) { best = null;
-      for (const o of opp) { const h = hitOn(m, pool, o); if (!h) continue; const pct = h.r.max / h.r.hp, ko = h.r.min >= h.r.hp && !h.charge && !h.r.sash;
-        const hitsAlly = h.mv.ally && allyHit(h.mv, partner);
-        const val = (ko ? 2 : 0) + pct * (h.charge ? .3 : 1) * (h.acc / 100) + (h.mv.spread ? .3 : 0) - (hitsAlly ? .4 : 0); if (!best || val > best.val) best = {o, h, pct, ko, val, hitsAlly}; }
+      for (const o of act(opp)) { const h = hitOn(m, pool, o); if (!h) continue; const pct = h.r.max / h.r.hp, ko = h.r.min >= h.r.hp && !h.charge && !h.r.sash;
+        const hitsAlly = h.mv.ally && !cmd.has(partner) && allyHit(h.mv, partner);
+        const val = (ko ? 2 : 0) + pct * (h.charge ? .3 : 1) * (h.acc / 100) + (h.mv.spread && act(opp).length > 1 ? .3 : 0) - (hitsAlly ? .4 : 0); if (!best || val > best.val) best = {o, h, pct, ko, val, hitsAlly}; }
       if (best && best.hitsAlly) { const r2 = hitOn(m, [best.h.mv], partner); if (r2 && r2.r.max >= r2.r.hp) { const bad = best.h.mv.name; pool = pool.filter(x => x && x.name !== bad); best = null; continue; } }
       break; }
     // [4] is a Fake Out's target; [5] the attack itself (target, hit, partner hit), read by the KO pass after the turn order
@@ -130,21 +142,22 @@ function turnOneData(mine, theirs, r) {
   // their Fake Out targets again, now skipping your leads that move before each user, and letting a user your faster Fake Out
   // surely flinches choose last (it takes no target from its partner); re-plan if that changed them (at most 3 rounds)
   const myPr = t => { const ln = lines.find(l => l[0] === t); return ln ? ln[3] || 0 : 0; }, fotKey = () => [...theirFOT].map(([o, t]) => opp.indexOf(o) + ':' + L.indexOf(t)).join();
-  for (let k = 0; k < 3; k++) { const was = fotKey(); pickFOT((t, o) => myPr(t) > 3 || (myPr(t) === 3 && speF(t) > speF(o)), o => +lines.some(l => l[4] === o && speF(l[0]) > speF(o) && !opp.some(u => u !== o && (u.moves || []).some(x => x && x.name === 'Fake Out') && speF(u) >= speF(l[0])))); if (fotKey() === was) break; planLines(); }
+  for (let k = 0; k < 3; k++) { const was = fotKey(); pickFOT((t, o) => myPr(t) > 3 || (myPr(t) === 3 && speF(t) > speF(o)), o => +lines.some(l => l[4] === o && speF(l[0]) > speF(o) && !act(opp).some(u => u !== o && (u.moves || []).some(x => x && x.name === 'Fake Out') && speF(u) >= speF(l[0])))); if (fotKey() === was) break; planLines(); }
   // turn order: priority bracket first (your planned move; theirs: Fake Out if they carry it), then Speed inside a bracket
   // (Stall always moves last inside its bracket)
   // Tailwind re-orders the rest of the turn (review, Nov 19): from Gen 8 on (Showdown too), the queue is re-sorted by current Speed
   // after every action, so once a side's Tailwind is up, its partner that hasn't moved yet moves at double Speed this same turn.
   // Pokémon Champions follows Gen 9's rules; this re-sort is assumed there, not confirmed in Champions. (Trick Room: −7, so it only
   // flips the order from next turn.) Ties are found as each mover is picked, at the Speed it moves with.
-  const cand = [...L, ...opp].map(x => { const me = L.includes(x), ln = me ? lines.find(l => l[0] === x) : null; return {x, s: speF(x), me, p: me ? (ln ? ln[3] || 0 : 0) : oPr(x), st: abilityOf(x) === 'Stall' ? 1 : 0, act: me && ln ? ln[1] : ''}; });
+  const cand = [...L, ...opp].map(x => { const me = L.includes(x), ln = me ? lines.find(l => l[0] === x) : null; return {x, s: speF(x), me, p: me ? (ln ? ln[3] || 0 : 0) : cmd.has(x) ? 0 : oPr(x), st: abilityOf(x) === 'Stall' ? 1 : 0, act: me && ln ? ln[1] : '', pre: cmd.has(x) ? 1 : 0}; });
   const twUp = {true: false, false: false}, order = [];
-  const cmp = (a, b) => b.p - a.p || a.st - b.st || b.es - a.es;
+  const cmp = (a, b) => (b.pre || 0) - (a.pre || 0) || b.p - a.p || a.st - b.st || b.es - a.es;
   while (cand.length) { cand.forEach(c => { c.tw = twUp[c.me]; c.es = c.s * (c.tw ? 2 : 1); }); cand.sort(cmp); const c = cand.shift();
-    const n = cand.find(y => y.me !== c.me && y.p === c.p && y.st === c.st && y.es === c.es); if (n) c.tie = n.x;
+    const n = c.pre ? null : cand.find(y => !y.pre && y.me !== c.me && y.p === c.p && y.st === c.st && y.es === c.es); if (n) c.tie = n.x;
     order.push(c); if (c.act === 'Tailwind') twUp[c.me] = true; }
   // their Fake Out line names its target from the start, so a flinched user's plan says whom it meant (third check, Nov 19)
-  const theirAct = o => { const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = theirFOT.has(o);
+  const theirAct = o => { if (cmd.has(o)) return [`Commander: into their ${cmd.get(o).d}`, `can't move or be hit while their ${cmd.get(o).d} is in; it gets +2 Attack, Defense, Sp. Atk, Sp. Def and Speed`];
+    const d = danger.find(x => x.o === o); if (!d || !d.worst) return null; const fo = theirFOT.has(o);
     return fo ? [`Fake Out ${theirFOT.get(o).d}`, ''] : [`${d.worst.h.mv.name} into ${d.worst.on.d}`, `up to ${dmgP(100 * d.worst.pct)}% of its HP, ${koShort(d.worst.h.r)}${hitNotes(o, d.worst.h, d.worst.on) ? ' (' + hitNotes(o, d.worst.h, d.worst.on) + ')' : ''}`]; }; /* hitNotes: '90% to hit', 'at −1 Attack' as yours says (Nov 19 review) */ /* one wording for both lines (audit Nov 15) */
   // the beats, in move order: who moves, their Speed and bracket, the action and one short why (all plain text)
   // Why lines (Nov 19 wording pass, after a visual check found 10-line notes): each beat's why is its main fact, and the notes that
@@ -155,7 +168,7 @@ function turnOneData(mine, theirs, r) {
   const sideOf = x => L.includes(x) ? 'your' : 'their', nm = x => `${sideOf(x)} ${x.d}`;
   const beats = order.map(o => { const ln = o.me ? lines.find(l => l[0] === o.x) : null, th = o.me ? null : theirAct(o.x);
     const why = ln ? ln[2] : th ? th[1] : 'no damaging move found into your leads', tw = o.me ? 'your' : 'their';
-    return {x: o.x, me: o.me, speed: o.es, prio: o.p, act: ln ? ln[1] : th ? th[0] : theirFOT.has(o.x) ? `Fake Out ${theirFOT.get(o.x).d}` : 'Unknown move', ...(o.tw ? {tw: 1} : {}), _tie: o.tie, why, _h: ln ? (ln[5] ? ln[5].h : null) : th && !theirFOT.has(o.x) ? danger.find(x => x.o === o.x).worst.h : null,
+    return {x: o.x, me: o.me, speed: o.es, prio: o.p, act: ln ? ln[1] : th ? th[0] : theirFOT.has(o.x) ? `Fake Out ${theirFOT.get(o.x).d}` : 'Unknown move', ...(o.tw ? {tw: 1} : {}), _tie: o.tie, why, _h: ln ? (ln[5] ? ln[5].h : null) : th && !theirFOT.has(o.x) && !cmd.has(o.x) ? danger.find(x => x.o === o.x).worst.h : null,
       _n: o.tw ? [{r: 3, s: `moves at double Speed: ${tw} Tailwind is up`, tag: `Double Speed (${tw} Tailwind)`}] /* Gen 9 turn order (the queue re-sorts after each move); assumed for Champions, not confirmed in the game */ : []}; });
   const note = (tb, n) => { tb._n.push(n); };
   // a speed tie between the two sides in one bracket: either may move first
@@ -200,11 +213,11 @@ function turnOneData(mine, theirs, r) {
     return !!((d && d.u && first(d.u, d.p)) || (f && f.sure && first(f.u, 3))); };
   const guardOf = (o, a, mv) => { const g = [], pm = movesOf(o).find(n => PROTECT.includes(n)); if (pm) g.push(pm);
     /* Quick Guard blocks a priority move (Nov 19 review) */
-    if (movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) > 0 && opp.some(y => !gone3(y) && movesOf(y).includes('Quick Guard'))) g.push('Quick Guard');
-    if (mv.spread) { if (opp.some(y => !gone3(y) && movesOf(y).includes('Wide Guard'))) g.push('Wide Guard'); }
+    if (movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) > 0 && act(opp).some(y => !gone3(y) && movesOf(y).includes('Quick Guard'))) g.push('Quick Guard');
+    if (mv.spread) { if (act(opp).some(y => !gone3(y) && movesOf(y).includes('Wide Guard'))) g.push('Wide Guard'); }
     else if (!['Stalwart', 'Propeller Tail'].includes(abilityOf(a)) && mv.name !== 'Snipe Shot') {
       const rp = !(a.types || a.p.t || []).includes('Grass') && abilityOf(a) !== 'Overcoat';
-      const rd = opp.find(y => y !== o && !down.has(y) && !(flinched.get(y) || {}).sure && movesOf(y).some(n => n === 'Follow Me' || (n === 'Rage Powder' && rp)));
+      const rd = act(opp).find(y => y !== o && !down.has(y) && !(flinched.get(y) || {}).sure && movesOf(y).some(n => n === 'Follow Me' || (n === 'Rage Powder' && rp)));
       if (rd) g.push(movesOf(rd).includes('Follow Me') ? 'Follow Me' : 'Rage Powder'); }
     return g.join(' or '); };
   // their likely attack that can KO its target on some roll (the hit, its target), or null; the same test their koPass uses
@@ -224,9 +237,9 @@ function turnOneData(mine, theirs, r) {
       tb.koRisk = 1; note(tb, {r: 1, k: 'ko', u: b.x, s: `may be KO'd first by their ${b.x.d}${why ? ' (' + why + ')' : ''}`}); return; }
     const ln = lines.find(l => l[0] === b.x), A = ln && ln[5]; if (!A || b.act !== ln[1]) return;
     if (tiedKORisk(b)) b.koRisk = 1; /* its note comes from the tied foe's own pass */
-    let hits = A.h.mv.spread ? opp.map(o => ({o, h: o === A.o ? A.h : hitOn(b.x, [A.h.mv], o)})) : [{o: A.o, h: A.h}];
+    let hits = A.h.mv.spread ? act(opp).map(o => ({o, h: o === A.o ? A.h : hitOn(b.x, [A.h.mv], o)})) : [{o: A.o, h: A.h}];
     const gone = hits.filter(x => down.has(x.o)).map(x => x.o);
-    if (gone.length) { const left = opp.filter(o => !down.has(o)), was = gone.map(o => 'their ' + o.d).join(' and ') + (gone.length > 1 ? ' are' : ' is') + " KO'd earlier this turn";
+    if (gone.length) { const left = act(opp).filter(o => !down.has(o)), was = gone.map(o => 'their ' + o.d).join(' and ') + (gone.length > 1 ? ' are' : ' is') + " KO'd earlier this turn";
       const h2 = left.length === 1 ? reAim(b.x, ln, left[0]) : null;
       /* nothing to hit (Nov 19 review): the act names no fainted target (Battle's card would draw it) and the why says so */
       if (!h2) { if (/ into /.test(b.act)) b.act = A.h.mv.name; b._h = null; b.why = `${was}: ${left.length ? 'no effect on ' + left.map(o => 'their ' + o.d).join(' or ') : 'no foe is left to hit'}`; return; }
@@ -255,7 +268,7 @@ function turnOneData(mine, theirs, r) {
       if (!b.me && t) b.act = `Fake Out ${t.d}`;
       const fx = t ? foFx(b.x, t, side) : 'none', tb = t ? beats.find(y => y.x === t) : null, tie = tieOf(tb, b);
       if (t && fx === 'ok' && (!done.has(t) || tie)) {
-        const f = {u: b.x, sure: b.me && !tie && b.flinch !== 'likely' && ![...theirFOT].some(([o, u]) => u === b.x && speF(o) >= speF(b.x)) && !opp.some(y => movesOf(y).includes('Quick Guard') && speF(y) >= speF(b.x)), tie}; /* nor when a Quick Guard of theirs may go first: it blocks Fake Out (+3) (review, Nov 19) */ /* not sure when your Fake Out user may be flinched first (their Fake Out at it is faster or tied) */ if (done.has(t)) mayNote(tb, f); else flinched.set(t, f);
+        const f = {u: b.x, sure: b.me && !tie && b.flinch !== 'likely' && ![...theirFOT].some(([o, u]) => u === b.x && speF(o) >= speF(b.x)) && !act(opp).some(y => movesOf(y).includes('Quick Guard') && speF(y) >= speF(b.x)), tie}; /* nor when a Quick Guard of theirs may go first: it blocks Fake Out (+3) (review, Nov 19) */ /* not sure when your Fake Out user may be flinched first (their Fake Out at it is faster or tied) */ if (done.has(t)) mayNote(tb, f); else flinched.set(t, f);
         /* theirs is a guess (if they carry it, at their likely target); a risk to it (your faster Fake Out) stays as its note */
         if (!b.me) b.why = 'if they have it: a flinch. Protect blocks it'; /* its target is on the line above (act 'Fake Out X') */
         if (tie) note(b, {r: 1, k: 'fotie', t, s: `speed tie: works only if ${b.me ? 'yours' : 'theirs'} goes first`, tag: 'Speed tie'}); }

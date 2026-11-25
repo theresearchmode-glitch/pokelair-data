@@ -88,7 +88,7 @@ V2.pages.events = {place: 'meta', draw() { const E = V2.esc, D = META.events, U 
   const head = `<section class="ra-h"><p class="k-kicker np-eyebrow ra-kk"><span>META · THE JOBS</span></p><h1 class="k-h1 u"><span>Every event.</span> <span class="pl">Every winning crew.</span></h1>
     <div class="ev2-intro"><p class="ra-lede">Recent tournaments and who won them, with every top-cut team sheet inside.</p>${D && !lead ? V2.evCounts() : ''}</div>${tabs}</section>`;
   const top = `<div class="gs-top wt-top ev-top">${head}${tabs}</div>`;
-  if (!D) return `<div class="ra gsp ev ev2">${top}<div class="gs-body"><p class="tm-sub">Tournament results appear here after the next data refresh.</p></div></div>`;
+  if (!D) return `<div class="ra gsp ev ev2">${top}<div class="gs-body"><p class="tm-sub">Tournament results appear here after the next data refresh.</p>${V2.dayDog()}</div></div>`;
   if (opened) return `<div class="ra gsp ev ev2">${top}<div class="gs-body">${V2.evOpen(opened)}</div></div>`;
   let list = ev; if (U.filter === 'official') list = list.filter(e => e.src === 'official'); else if (U.filter === 'big') list = list.filter(e => e.players >= 100);
   const cap = (innerWidth < 700 ? 7 : 13) + U.more * 12 /* Sim Q31 (Nov 19): phones open on the latest plus 6 (desktop 12); Show More adds 12 */, shown = list.slice(0, cap), small = shown.slice(1);
