@@ -72,7 +72,8 @@ check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page:
   check('W11-wrangler-app-dist',
     toml.includes('directory = "./app/dist"') &&
     toml.includes('main = "worker/feedback.mjs"') &&
-    toml.includes('"/api/feedback"') && toml.includes('"/data/*"'));
+    toml.includes('run_worker_first = ["/api/feedback"]') /* Nov 25: /data/* are plain static files (Free plan: Worker requests count toward 100,000 a day) */ &&
+    /workers_dev = false/.test(toml) && /preview_urls = false/.test(toml) /* no duplicate site on workers.dev or preview addresses (SEO audit #4) */);
 
   const fb2 = fs.readFileSync('app/src/v2/pages/feedback.js', 'utf8');
   const fb1 = fs.readFileSync('app/src/app/53-feedback.js', 'utf8');

@@ -1,12 +1,19 @@
 name = "nastyplot"
 main = "worker/feedback.mjs"
 compatibility_date = "2026-11-24"
+# Only nastyplot.org serves the site: no *.workers.dev copy and no preview addresses, so search engines never see a duplicate
+# site (SEO audit Nov 25 #4).
+workers_dev = false
+preview_urls = false
 
 [assets]
 directory = "./app/dist"
 binding = "ASSETS"
 not_found_handling = "single-page-application"
-run_worker_first = ["/api/feedback", "/data/*"]
+# Only the feedback API runs the Worker. /data/* are plain static files: on the Free plan every Worker request counts toward
+# 100,000 a day and a visit loads about 17 data files, so routing /data/* through the Worker capped us near 5,800 visits a day
+# (launch review Nov 25, C). A missing data file is a 404 from the assets setting; the page treats any non-OK answer as "not found".
+run_worker_first = ["/api/feedback"]
 
 [[d1_databases]]
 binding = "DB"
