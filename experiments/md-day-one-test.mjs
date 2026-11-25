@@ -61,6 +61,7 @@ const seedHealthy = (dir, reg, since, date, padBytes = true) => {
   wr(dir, 'out/reg.json', {id: reg, name: 'Reg ' + reg, since, sd: reg === 'M-C' ? 'gen9championsvgc2026regmc' : 'gen9championsvgc2026regmd', checked: date});
   wr(dir, 'out/limitless.json', {reg, updated: iso, results: {Pikachu: 10}, adj: {Pikachu: 0.5}, teams: 500, pad: big});
   wr(dir, 'out/meta_tour.json', {reg, updated: iso, top: Array.from({length: 15}, (_, i) => ({n: `Mon${i}`, u: 10})), pad: padBytes ? 'x'.repeat(6000) : ''});
+  wr(dir, 'out/info.json', {reg, updated: iso, N: 500, mv: {Protect: padBytes ? 'x'.repeat(1200) : ''}});
   wr(dir, 'out/teams.json', {reg, updated: iso, teams: Array.from({length: 6}, () => ['Mon0']), pad: padBytes ? 'x'.repeat(2500) : ''});
   wr(dir, 'out/history.json', {reg, days: [{d: since, tour: {Mon0: 1}}, {d: date, tour: {Mon0: 1}}], pad: padBytes ? 'x'.repeat(1200) : ''});
   wr(dir, 'out/model.json', makeFullModel(reg, iso));
@@ -77,7 +78,7 @@ const seedHealthy = (dir, reg, since, date, padBytes = true) => {
   wr(dir, 'out/crosscheck.json', {reg, updated: iso, checks: [], pad: 'x'.repeat(300)});
   wr(dir, 'out/ratings_log.json', {reg, updated: iso, byReg: {[reg]: [{d: date, r: {Mon0: 85, Mon1: 70, Mon2: 50, Mon3: 30}}]}, pad: 'x'.repeat(300)});
   wr(dir, 'out/scoreboard.json', {reg, updated: iso, byReg: {[reg]: [{date, reg, model: {heldOutAcc: 0.56, calibratedLogloss: 0.675}}]}, history: [{date, reg}], pad: 'x'.repeat(300)});
-  wr(dir, 'out/matches.json', {reg, updated: iso, events: [['e1', date, 64]], players: 64, teams: ['Mon000|Mon001|Mon002|Mon003|Mon004|Mon005', 'Mon006|Mon007|Mon008|Mon009|Mon010|Mon011'], m: [[0, 1, 1, 0, 0, 1]]});
+  wr(dir, 'out/matches.json', {reg, updated: iso, events: [['e1', date, 64]], players: 64, teams: ['Mon000|Mon001|Mon002|Mon003|Mon004|Mon005', 'Mon006|Mon007|Mon008|Mon009|Mon010|Mon011'], m: [[0, 1, 1, 0, 0, 1]], pad: padBytes ? 'x'.repeat(5500) : ''});
 };
 
 let passed = 0;
@@ -89,7 +90,7 @@ seedHealthy(d1, 'M-C', '2026-09-01', '2026-12-01');
 wr(d1, 'out/prev_mc_model.json', makeFullModel('M-C', '2026-11-30T10:00:00Z'));
 
 await test('1. regstate on day before reports M-C day 92', () => {
-  const rs = run('regstate.mjs', d1);
+  const rs = run('regstate.mjs', d1, ['--now=2026-12-01']);
   // Note: regstate uses today's clock unless called via buildRegState; test CLI writes out/regstate.json and check pure date too
   assert.equal(rs.code, 0);
   const out = rd(d1, 'out/regstate.json');
@@ -193,6 +194,8 @@ await test('11. health.mjs on switch day marks empty-but-stamped M-D files as th
   wr(d2h, 'out/regstate.json', {reg: 'M-D', day: 1, events: 0, players: 0, games: 0, since: '2026-12-02', updated: iso});
   wr(d2h, 'out/limitless.json', {reg: 'M-D', updated: iso, results: {}, adj: {}, teams: 0});
   wr(d2h, 'out/meta_tour.json', {reg: 'M-D', updated: iso, top: []});
+  wr(d2h, 'out/info.json', {reg: 'M-D', updated: iso, N: 0, mv: {}});
+  wr(d2h, 'out/matches.json', {reg: 'M-D', updated: iso, events: [], players: 0, teams: [], m: []});
   wr(d2h, 'out/teams.json', {reg: 'M-D', updated: iso, teams: []});
   wr(d2h, 'out/history.json', {reg: 'M-D', days: []});
   wr(d2h, 'out/model.json', {reg: 'M-D', updated: iso, ships: false, games: 0, events: 0, mons: {}});

@@ -94,7 +94,7 @@ if (PF) { const want = {tour: ['Limitless table', 2], adj: ['Limitless win share
 const S = rd('sources.json'); if (S && S.problems && S.problems.length) console.log(`::warning::Outside sources with problems today: ${S.problems.join(' | ')}`);
 // the newest tournament should be recent too (catches Limitless returning nothing new while the file still gets a new date)
 try { const idx = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/index.json'), 'utf8')); const last = Math.max(...Object.values(idx.tournaments).map(t => Date.parse(t.d)));
-  if (!inLaunch && (now - last) / DAY > 4) problems.push(`Limitless: newest tournament is ${Math.floor((now - last) / DAY)} days old (limit 4)`); } catch (e) { problems.push('Limitless index (data/index.json) unreadable'); }
+  if ((now - last) / DAY > 4) problems.push(`Limitless: newest tournament is ${Math.floor((now - last) / DAY)} days old (limit 4)`); } catch (e) { problems.push('Limitless index (data/index.json) unreadable'); }
 // the event calendar should list something still to come (catches Victory Road's calendar page changing shape)
 { const C = rd('calendar.json'); if (C && Array.isArray(C.ev)) { const today = new Date(now).toISOString().slice(0, 10);
   if (!C.ev.some(e => String(e.e || e.s || '') >= today)) problems.push('Event calendar: no upcoming events listed'); } }

@@ -18,11 +18,13 @@ export function buildRegState({regObj, rawReg, matches, today} = {}) {
   const events = mOk && Array.isArray(matches.events) ? matches.events.length : (seen ? +seen.events || 0 : 0);
   const players = mOk && typeof matches.players === 'number' ? matches.players : (seen ? +seen.players || 0 : 0);
   const games = mOk && Array.isArray(matches.m) ? matches.m.length : 0;
-  return {reg: RG.id, day, events, players, games, since, updated: new Date().toISOString()};
+  const updated = today ? `${today}T12:00:00.000Z` : new Date().toISOString();
+  return {reg: RG.id, day, events, players, games, since, updated};
 }
 
 if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
-  const out = buildRegState({matches: rd('out/matches.json')});
+  const nowArg = (process.argv.find(x => x.startsWith('--now=')) || '').slice(6) || undefined;
+  const out = buildRegState({matches: rd('out/matches.json'), today: nowArg});
   fs.writeFileSync('out/regstate.json', JSON.stringify(out));
   console.log(`regstate: ${out.reg} day ${out.day} (since ${out.since}), ${out.events} events, ${out.players} players, ${out.games} games`);
 }
