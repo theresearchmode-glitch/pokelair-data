@@ -319,6 +319,13 @@ V2.regDay = (now = Date.now()) => { try { const r = typeof regInfo === 'function
   const d = Math.floor((now - Date.parse(r.since + 'T00:00:00Z')) / 864e5) + 1; if (!(d >= 1 && d <= 28)) return ''; const today = new Date(now).toISOString().slice(0, 10);
   const ev = (typeof META === 'object' && META.events && Array.isArray(META.events.events)) ? META.events.events.filter(e => { const x = String((e && e.date) || ''); return x >= r.since && x <= today; }).length : 0;
   return `Day ${d} of Reg ${String(r.id).replace('-', '\u2011')} · ${ev} event${ev === 1 ? '' : 's'}`; } catch (e) { return ''; } };
+/* Strength Score source (Sim, Wed Nov 25, 6:52 AM): before a new regulation has results, the score falls back to the old check
+   (CH.gradeOf v1) against the built-in usage snapshot (app/src/data/data.js, built on Reg M-C). It stays, with one line saying so.
+   V2.SNAP_REG: the regulation that snapshot was built on (update it when data.js is regenerated). '' when the score uses live data. */
+V2.SNAP_REG = 'M-C';
+V2.scoreSrc = G => { try { if (!G || G.v !== 1) return ''; const id = ((typeof regInfo === 'function' && regInfo()) || {}).id; if (!id || id === V2.SNAP_REG) return '';
+  if (typeof RES === 'object' && RES && RES.tc) return ''; if (typeof liveUsage === 'function' && typeof S === 'object' && liveUsage(S.format)) return '';
+  const nb = x => String(x).replace('-', '\u2011'); return `Graded against Reg\u00a0${nb(V2.SNAP_REG)}'s teams until Reg\u00a0${nb(id)} results arrive`; } catch (e) { return ''; } };
 V2.dataNote = () => { const E = V2.esc, out = [];
   /* review Nov 18 (C5): a --split Preview whose preview.json couldn't be read (missing, 404, offline) says so, on every page (V2.shell),
      rather than showing the built-in numbers as if they were today's */
