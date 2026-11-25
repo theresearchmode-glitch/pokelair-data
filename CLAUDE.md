@@ -79,6 +79,9 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
     Helpers always send their report before stopping, never end a turn while their own background work runs (Sim, Nov 25);
     a helper shown "completed" with no report is asked at once. Merge only what a helper reports as checked (Nov 25: a merge
     went in before the helper's last check and carried a My Box bug).
+    Every merge into claude/design6 or main passes `REPORT_OK=1 bash docs/rebuild/merge-check.sh origin/<branch>` first
+    (report read, GitHub green on the source tip, no conflict markers, every test by exit code); a git pre-push hook refuses
+    an unstamped merge (docs/rebuild/pre-push-hook.sh, installed in .git/hooks).
 25. Changes land one at a time, each with its own test; GitHub runs the full check per batch. Before pushing to main, every check
     GitHub runs must pass. Push only to claude/design6 (main only with Sim's go). No model names in commits.
 26. Use the loaded skills on real changes: code review on diffs, design review on visual work (our rules win), accessibility on new controls.
