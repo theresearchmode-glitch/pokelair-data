@@ -52,7 +52,7 @@ function syncNote(st){ui.syncSt=st;const t=syncText(st);
 // (Nov 10: meta/results reached 263,734 bytes and the morning refresh was refused). split-docs.mjs moves whole keys or the tail
 // of an array to part 2 and stamps both parts with the same id; here they are joined back in order. Part 2 is used only when
 // its stamp matches part 1, so a refresh caught halfway never mixes two days; with no part 2 the document is used as it is.
-function joinParts(a,b){const o=Object.assign({},a);for(const k in b){if(k==='_part')continue;const x=o[k],y=b[k];o[k]=Array.isArray(x)&&Array.isArray(y)?x.concat(y):x&&y&&typeof x==='object'&&typeof y==='object'&&!Array.isArray(x)?Object.assign({},x,y):y}delete o._part;return o}
+function joinParts(a,b){const o=Object.assign({},a);for(const k of Object.keys(b)){if(k==='_part'||k==='__proto__')continue;const x=o[k],y=b[k];o[k]=Array.isArray(x)&&Array.isArray(y)?x.concat(y):x&&y&&typeof x==='object'&&typeof y==='object'&&!Array.isArray(x)?Object.assign({},x,y):y}delete o._part;return o}
 // speed (Nov 17, helper report): an empty or unmatched second part used to send the same document again (cleaning, ratings, a full
 // redraw and a planner restart, twice); now a document goes on only when its first part or a matching second part is new
 var META_EMITS={};

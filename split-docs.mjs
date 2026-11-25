@@ -31,7 +31,7 @@ export function split(doc, limit = LIMIT) {
   return {a, b};
 }
 // the page's join (kept identical to joinParts in app/src/app/03-persistence.js), used here to prove the split loses nothing
-export function join(a, b) { const o = {...a}; for (const k in b) { if (k === '_part') continue; const x = o[k], y = b[k]; o[k] = Array.isArray(x) && Array.isArray(y) ? x.concat(y) : x && y && typeof x === 'object' && typeof y === 'object' && !Array.isArray(x) ? {...x, ...y} : y; } delete o._part; return o; }
+export function join(a, b) { const o = {...a}; for (const k of Object.keys(b)) { if (k === '_part' || k === '__proto__') continue; /* Kip job 36 A #9 */ const x = o[k], y = b[k]; o[k] = Array.isArray(x) && Array.isArray(y) ? x.concat(y) : x && y && typeof x === 'object' && typeof y === 'object' && !Array.isArray(x) ? {...x, ...y} : y; } delete o._part; return o; }
 // same content regardless of key order (moving a key to part 2 changes where it sits in the object, not what it holds)
 export const canon = x => JSON.stringify(x, (k, v) => v && typeof v === 'object' && !Array.isArray(v) ? Object.fromEntries(Object.keys(v).sort().map(q => [q, v[q]])) : v);
 if (process.argv[1] && process.argv[1].endsWith('split-docs.mjs')) {
