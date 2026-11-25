@@ -56,6 +56,14 @@ ok(allPages.length > 360 && !badOg.length, `og:url = the canonical address and o
 ok(!!h404 && !/og:url|rel="canonical"/.test(h404), '404.html has no canonical and no og:url');
 const brandOg = path.join(ROOT, 'docs/brand/nastyplot-brand-assets/4-social/facebook/facebook-profile-720.png');
 ok(fs.existsSync(path.join(D, 'og-image.png')) && fs.readFileSync(path.join(D, 'og-image.png')).equals(fs.readFileSync(brandOg)), 'dist/og-image.png is the brand-kit file, byte for byte');
+// SEO fix 10 (Nov 25): every sitemap address has <lastmod> = the data date (the oldest of the core parts the page's "Data as of" line
+// stands on: results, teams, events, model, read from out/), and the on-device pages (/box, /compare) are left out
+const dataDate = (() => { const ds = []; for (const k of ['results', 'teams', 'events', 'model']) for (const f of [`out/${k}.json`, `out/split/${k}.json`]) {
+  try { const v = JSON.parse(fs.readFileSync(path.join(ROOT, f), 'utf8')), t = v && (v.updated || v.pulled || v.date); if (t && !isNaN(Date.parse(t))) { ds.push(new Date(Date.parse(String(t).length === 10 ? t + 'T12:00:00Z' : t)).toISOString().slice(0, 10)); break; } } catch (e) {} }
+  return ds.sort()[0] || null; })();
+const smUrls = [...sm.matchAll(/<url>([\s\S]*?)<\/url>/g)].map(x => x[1]);
+ok(!!dataDate && smUrls.length > 360 && smUrls.every(u => u.includes(`<lastmod>${dataDate}</lastmod>`)), `every sitemap address has <lastmod>${dataDate}</lastmod>, the data date (${smUrls.filter(u => u.includes(`<lastmod>${dataDate}</lastmod>`)).length} of ${smUrls.length})`);
+ok(smUrls.length > 0 && !/nastyplot\.org\/(box|compare)</.test(sm), 'the on-device pages (/box, /compare) are not in the sitemap');
 // served like Cloudflare Pages (developers.cloudflare.com/pages/configuration/serving-pages): a file if it exists, /x -> x.html, then the
 // _redirects 200 rules; otherwise 404.html with status 404, or, with no top-level 404.html, the page with 200 (Pages' SPA mode)
 const T = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp'};

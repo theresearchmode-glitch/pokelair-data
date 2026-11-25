@@ -209,10 +209,16 @@ if (process.argv.includes('--v2')) {
       '  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()', '  Cross-Origin-Opener-Policy: same-origin',
       '  X-Frame-Options: DENY', ''].join('\n');
   };
-  let writeHeaders = null, ownFileRows = [];
+  let writeHeaders = null, ownFileRows = [], lastmod = '';
   if (PUBLIC) {
     fs.writeFileSync(dir + 'dist/robots.txt', 'User-agent: *\nAllow: /\nSitemap: https://nastyplot.org/sitemap.xml\n');
-    const urls = seoRows.map(r => `  <url><loc>https://nastyplot.org${r.path}</loc></url>`).join('\n');
+    /* SEO fix 10 (Nov 25): <lastmod> = the data date, the oldest of the core parts the page's "Data as of" line stands on (results, teams,
+       events, model: DATA_CORE in 02-set-data.js), read from out/ the same way (updated, pulled or date); the build date only if none
+       has a date. The on-device pages (/box, /compare: a player's own box or teams, nothing to index) stay out. */
+    const dataDates = []; for (const k of ['results', 'teams', 'events', 'model']) for (const f of [`out/${k}.json`, `out/split/${k}.json`]) {
+      try { const v = JSON.parse(fs.readFileSync(dir + '../' + f, 'utf8')), t = v && (v.updated || v.pulled || v.date); if (t && !isNaN(Date.parse(t))) { dataDates.push(new Date(Date.parse(String(t).length === 10 ? t + 'T12:00:00Z' : t)).toISOString().slice(0, 10)); break; } } catch (e) {} }
+    lastmod = dataDates.sort()[0] || new Date().toISOString().slice(0, 10); if (!dataDates.length) console.log('public: no data date in out/, sitemap lastmod = build date ' + lastmod);
+    const urls = seoRows.filter(r => !['/box', '/compare'].includes(r.path)).map(r => `  <url><loc>https://nastyplot.org${r.path}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n');
     fs.writeFileSync(dir + 'dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
     /* soft 404s (Nov 25, SEO): no '/* /v2.html 200' catch-all any more (every wrong address answered 200). Each tool address has its own
        rule, read from V2.PUB_PATHS (shell.js) so a new page can't be missed; anything else gets dist/404.html with status 404 (written below). */
@@ -280,7 +286,7 @@ if (process.argv.includes('--v2')) {
     }
     /* SEO fix 2 (Nov 25): one file per tool page (dist/team.html at /team) with its own words from the SEO map, on the shared stylesheet */
     for (const r of ownFileRows) fs.writeFileSync(dir + `dist${r.path}.html`, ownHead(ph, r.title, r.desc, `https://nastyplot.org${r.path}`));
-    const urls = [...seen.keys()].map(s => `  <url><loc>https://nastyplot.org/pokemon/${s}</loc></url>`).join('\n');
+    const urls = [...seen.keys()].map(s => `  <url><loc>https://nastyplot.org/pokemon/${s}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n');
     fs.writeFileSync(dir + 'dist/sitemap.xml', fs.readFileSync(dir + 'dist/sitemap.xml', 'utf8').replace('</urlset>', urls + '\n</urlset>'));
     /* No /pokemon/:name rule (Nov 25): Pages serves dist/pokemon/<slug>.html at /pokemon/<slug> by itself (docs: Serving Pages, route
        matching), and a rule would also catch unknown names. An unknown Pokémon has no file, so it gets 404.html with status 404.
