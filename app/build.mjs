@@ -1,5 +1,5 @@
 // Builds the PokéLair page from src/ (parts.json lists the order). Output: dist/page.html, published as the artifact.
-import fs from 'node:fs'; import crypto from 'node:crypto';
+import fs from 'node:fs'; import path from 'node:path'; import crypto from 'node:crypto';
 import {perfDoc} from './data-docs.mjs';
 const parts = JSON.parse(fs.readFileSync(new URL('./parts.json', import.meta.url)));
 import {fileURLToPath} from 'node:url';
@@ -75,7 +75,8 @@ if (process.argv.includes('--v2')) {
   let previewJson = null;
   for (const f of ['dist/v2.js', 'dist/preview.json']) fs.rmSync(dir + f, {force: true}); /* no stale split files beside a one-file build */
   let prevTag = '';
-  if (process.argv.includes('--preview-data')) { const o = f => { try { return JSON.parse(fs.readFileSync(dir + '../out/' + f, 'utf8')); } catch (e) { return null; } }, L = o('limitless.json') || {};
+  const outDir = process.env.OUT ? path.resolve(process.env.OUT) : path.resolve(dir, '../out');
+  if (process.argv.includes('--preview-data')) { const o = f => { try { return JSON.parse(fs.readFileSync(path.join(outDir, f), 'utf8')); } catch (e) { return null; } }, L = o('limitless.json') || {};
     const D = {'meta/results': L.results, 'meta/perf': perfDoc(L, o('perf.json')), /* Nov 15: all of out/perf.json as the morning refresh writes it (ratings-snapshot.mjs); with adj alone the page fell back to its built-in Nov 1 ratings */ 'meta/doubles_tour': o('meta_tour.json'), 'meta/info': o('info.json'), /* info sheets (Nov 22): who runs each move, item and Ability */ 'meta/teams': o('teams.json'), 'meta/calendar': o('calendar.json'), 'meta/weekly': o('weekly.json'), 'meta/model': o('model.json'), 'meta/doubles': o('meta_ladder.json'), 'meta/events': o('events.json'), 'meta/track': o('track.json'), 'meta/history': o('history.json'), 'meta/practice': o('practice.json'), 'meta/doubles_ingame': o('meta_ingame.json'), /* Nov 18 (switch blocker 5): the Mystery Gifts and news list, as the daily job writes it (post-news.mjs); none = the page's built-in POST */ 'meta/post': o('post.json')};
     // privacy (Sim's review item 19, Nov 11): no real player name goes into the Preview's page source. Each name becomes the same
     // neutral stand-in everywhere it appears ("Player 12"), so matching a team to its own sets still works; none is shown on screen.
@@ -110,7 +111,8 @@ if (process.argv.includes('--v2')) {
   const v2Fail = `window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}`;
   const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}" onerror="${v2Fail.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"></script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
   const page = head.replace('<meta charset="utf-8">', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + mainTag + `</body></html>\n`;
-  fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
+  const v2Out = process.env.V2_OUT ? path.resolve(process.env.V2_OUT) : path.join(dir, 'dist/v2.html');
+  fs.mkdirSync(path.dirname(v2Out), {recursive: true}); fs.writeFileSync(v2Out, page);
   if (SPLIT) { fs.writeFileSync(dir + 'dist/v2.js', jsOut); if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson);
     console.log(`v2 --split: dist/v2.js ${(jsOut.length / 1024).toFixed(0)} KB${previewJson ? `, dist/preview.json ${(previewJson.length / 1024).toFixed(0)} KB` : ''} (publish them beside the page)`); }
   /* Sim, Nov 16 (B-I3, option B): a static first screen. A phone used to show a blank page for about 2 s while the script ran (first paint
