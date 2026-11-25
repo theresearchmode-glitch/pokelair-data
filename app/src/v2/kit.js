@@ -99,13 +99,23 @@ V2.kMoves = list => `<ul class="k-moves">${(list || []).map(x => { const [n, pct
 V2.kMine = (text = 'Yours') => `<span class="k-mine">${V2.esc(text)}</span>`;
 // names drop a size before they wrap (HYBRID 7): each [data-kmax] steps down its levels (kit.css) until its line fits its box; every
 // name in one roster then takes the smallest size any of them needed, so a row reads even. Runs when kit parts arrive, on resize and once the fonts load.
-V2.kFit = root => { const r = root || document, over = e => e.scrollWidth > e.clientWidth + 1;
-  const fit = e => { const max = +e.dataset.kmax || 0; e.dataset.kf = '0'; if (e.clientWidth < 2) return 0; let f = 0; while (f < max && over(e)) e.dataset.kf = String(++f); return f; };
+V2.kFit = root => { const r = root || document;
   const els = r.querySelectorAll ? [...r.querySelectorAll('[data-kmax]')] : []; if (r.matches && r.matches('[data-kmax]')) els.push(r);
-  const lv = new Map(els.map(e => [e, fit(e)]));
+  if (!els.length) return;
+  const lv = new Map(); let todo = [], maxAll = 0;
+  for (const e of els) { e.dataset.kf = '0'; lv.set(e, 0); const mx = +e.dataset.kmax || 0; if (mx > maxAll) maxAll = mx; }
+  for (const e of els) { if (e.clientWidth >= 2 && e.scrollWidth > e.clientWidth + 1 && (+e.dataset.kmax || 0) > 0) todo.push(e); }
+  for (let f = 1; f <= maxAll && todo.length; f++) {
+    for (const e of todo) { e.dataset.kf = String(f); lv.set(e, f); }
+    const next = [];
+    for (const e of todo) { if (f < (+e.dataset.kmax || 0) && e.scrollWidth > e.clientWidth + 1) next.push(e); }
+    todo = next;
+  }
   const rows = new Set(els.map(e => e.closest('.k-roster')).filter(Boolean));
-  for (const row of rows) for (const sel of ['.k-name', '.k-form']) { const g = [...row.querySelectorAll(sel)], m = Math.max(0, ...g.map(e => lv.has(e) ? lv.get(e) : +e.dataset.kf || 0)); for (const e of g) if ((+e.dataset.kf || 0) < m && e.clientWidth > 1) e.dataset.kf = String(m); } };
-try { new MutationObserver(ms => { const add = []; for (const m of ms) for (const nd of m.addedNodes) if (nd.nodeType === 1 && (nd.matches('[data-kmax]') || nd.querySelector('[data-kmax]'))) add.push(nd);
-  if (add.length) for (const nd of add) if (nd.isConnected) V2.kFit(nd.closest('.k-roster') || nd); }).observe(document.documentElement, {childList: true, subtree: true}); } catch (e) {}
+  const writes = [];
+  for (const row of rows) for (const sel of ['.k-name', '.k-form']) { const g = [...row.querySelectorAll(sel)], m = Math.max(0, ...g.map(e => lv.has(e) ? lv.get(e) : +e.dataset.kf || 0)); for (const e of g) if ((+e.dataset.kf || 0) < m && e.clientWidth > 1) writes.push([e, String(m)]); }
+  for (const [e, m] of writes) e.dataset.kf = m; };
+try { new MutationObserver(ms => { const roots = new Set(); for (const m of ms) for (const nd of m.addedNodes) if (nd.nodeType === 1 && nd.isConnected && (nd.matches('[data-kmax]') || nd.querySelector('[data-kmax]'))) roots.add(nd.closest('.k-roster') || nd);
+  for (const rt of roots) if (rt.isConnected) V2.kFit(rt); }).observe(document.documentElement, {childList: true, subtree: true}); } catch (e) {}
 addEventListener('resize', () => { cancelAnimationFrame(V2._kfR); V2._kfR = requestAnimationFrame(() => { if (document.querySelector('[data-kmax]')) V2.kFit(); }); });
 try { document.fonts.addEventListener('loadingdone', () => { if (document.querySelector('[data-kmax]')) V2.kFit(); }); } catch (e) {}

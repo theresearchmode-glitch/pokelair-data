@@ -5,7 +5,7 @@
 // (Remove), data-v2lock (Lock), data-v2mon (Pokémon Page), data-v2addto (an empty spot), data-v2gplan (the Game Plan sheet).
 // Phone (under 1000): the six are one row of six taps and the tapped Pokémon opens right under it; desktop shows all six sets.
 V2.MTF_W = {six: 'Your six', tap: 'tap one to see it', of: (k, n) => `${k} of ${n}`, add: 'Add a Pokémon', plan: "How to play this six against the meta's top six."};
-V2.mtfImg = (n, cls = '') => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img class="${cls}" src="${V2.art(id)}" alt="" loading="lazy" decoding="async">` : ''; };
+V2.mtfImg = (n, cls = '') => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img class="${cls}" src="${V2.art(id)}" alt="" width="240" height="240" loading="lazy" decoding="async">` : ''; };
 V2.mtfTy = t => V2.TYPES.includes(t) ? t : 'Normal';
 // every width (Sim, Nov 21, 7:05 AM: squeezed names 'really rough'): the form on a small line above, the name one clean line, never squeezed
 V2.mtfSplit = d => { const q = []; let mg = false; if (d.startsWith('Mega ')) { mg = true; q.push('Mega'); d = d.slice(5); }
