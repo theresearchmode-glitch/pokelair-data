@@ -22,7 +22,7 @@
       "sd": "gen9championsvgc2026regmd",
       "since": "2026-12-02",
       "end": "2027-03-03T01:59:00Z",
-      "announced": {"url": "https://news.pokemon-home.com/en/page/878.html", "date": "2026-11-25", "new": ["Heatran", "Dondozo", "Tatsugiri"], "newMegas": ["Heatran-Mega", "Tatsugiri-Mega"], "note": "Official: Dec 2 2026 02:00 UTC to Mar 3 2027 01:59 UTC; full details later."},
+      "announced": {"url": "https://news.pokemon-home.com/en/page/878.html", "date": "2026-11-25", "new": ["Heatran", "Dondozo", "Tatsugiri"], "newMegas": ["Heatran-Mega", "Tatsugiri-Mega"], "count": {"newPokemon": 24, "newMegas": 4, "source": "https://www.pokemon.com/us/news/regulation-set-m-d-is-coming-to-pokemon-champions"}, "megaAbilities": {"Heatran-Mega": "Water Compaction", "Tatsugiri-Mega": "new Ability: +1 Sp. Atk on entry (name not given)", "source": "https://nintendoeverything.com/pokemon-champions-announces-mega-heatran-and-mega-tatsugiri-new-abilities-revealed/"}, "note": "Official: Dec 2 2026 02:00 UTC to Mar 3 2027 01:59 UTC. 24 new Pokemon and 4 Megas in all; only Heatran, Dondozo, Tatsugiri, Mega Heatran and Mega Tatsugiri are named so far (full roster in game: Recruit > Recruit Pokemon > Roster Info)."},
       "sources": {
         "showdowntier": null,
         "pikalytics": null,
