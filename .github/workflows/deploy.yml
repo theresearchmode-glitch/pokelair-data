@@ -4,7 +4,7 @@ name: Deploy nastyplot.org
 # DEPLOY_ENABLED is "true" (Settings > Secrets and variables > Actions > Variables). Nothing else needs changing to switch it on.
 # Runs after "Promote to live" moves `live` (only ever to a commit whose full test run passed), or by hand (Run workflow).
 # Needs: secret CLOUDFLARE_API_TOKEN (scoped: Workers Scripts, D1, Workers Routes + DNS on nastyplot.org only), variables
-# CLOUDFLARE_ACCOUNT_ID and D1_DATABASE_ID. Rollback by hand: Actions > this workflow > Run workflow with rollback = true
+# CLOUDFLARE_ACCOUNT_ID; optional variable CF_ANALYTICS_TOKEN (Web Analytics; none = no analytics). The D1 id is in wrangler.toml. Rollback by hand: Actions > this workflow > Run workflow with rollback = true
 # (or locally: npx wrangler@4.45.0 rollback). After a deploy, the smoke test below rolls back by itself if the site answers wrong.
 on:
   workflow_run:
@@ -47,12 +47,15 @@ jobs:
         run: |
           npm ci && npx playwright install --with-deps chromium
           node public-site.mjs site
+        env:
+          CF_ANALYTICS_TOKEN: ${{ vars.CF_ANALYTICS_TOKEN }}
       - name: Deploy
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
         run: |
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::CLOUDFLARE_API_TOKEN secret is missing"; exit 1; }
-          test -n "${{ vars.D1_DATABASE_ID }}" || { echo "::error::D1_DATABASE_ID variable is missing"; exit 1; }
-          sed -e 's#^directory = .*#directory = "./site"#' -e 's#REPLACE_WITH_D1_DATABASE_ID#${{ vars.D1_DATABASE_ID }}#' wrangler.toml > wrangler.deploy.toml
+          sed -e 's#^directory = .*#directory = "./site"#' wrangler.toml > wrangler.deploy.toml
+          # the feedback and counts tables (CREATE TABLE IF NOT EXISTS: a no-op once they exist)
+          npx --yes wrangler@4.45.0 d1 execute nastyplot-feedback --remote --file worker/schema.sql -c wrangler.deploy.toml -y
           npx --yes wrangler@4.45.0 deploy -c wrangler.deploy.toml --message "live $(git rev-parse --short HEAD)"
       - name: Smoke test (rolls back by itself if the site answers wrong)
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}

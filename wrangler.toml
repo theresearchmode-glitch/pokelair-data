@@ -22,7 +22,7 @@ run_worker_first = ["/api/feedback", "/api/count"]
 [[d1_databases]]
 binding = "DB"
 database_name = "nastyplot-feedback"
-database_id = "REPLACE_WITH_D1_DATABASE_ID"
+database_id = "6a292fdc-4a06-4871-966a-0db608333206" # created by Sim + Dos, Nov 25 (an id, not a secret)
 
 # Rate limiting: configure Cloudflare WAF / Rate Limiting rule on POST /api/feedback (e.g. 5 req / min) and POST /api/count (e.g. 30 req / min)
 # in the Cloudflare dashboard (Cloudflare enforces it at the edge without our Worker storing IPs).
