@@ -19,6 +19,10 @@ nastyplot.org; Cloudflare/GitHub settings; rewriting git history; rotating keys;
    numbers switch at the next update" while the data still says M-C after REG_END_MC (pictures to Sim) + plan a hand-run data job at about
    02:05 UTC Dec 2; (c) DEFUSE rules-fixes-test.mjs:174, which fails CI from 2026-12-02T01:59Z unless the new Flash Fire/Stalwart text is in
    data.js (check the balance patch notes: news 877/patch page; if the text isn't known yet, make the test wait for the data, not the clock).
+   RISK (HH 3:35 PM): after the switch this test is in main's CI; from 2026-12-02T01:59Z it fails until the Dec 2 patch data lands
+   (patch-dec2-map.md + patch-dec2-psychup.md: move accuracies, Flash Fire/Stalwart, Psych Up list...). A red main blocks Promote and
+   freezes the live data. Plan the patch landing as ONE tested batch, ready on a branch by Dec 1, landed right after the start
+   (with the hand-run data job); the test's clock check stays as the safety net. Texts: kip-job16 quotes the official 877 page.
 2. **Merge alt/gemini-routes, then alt/gemini-seo2** into design6 (gate; wrangler.toml: keep workers_dev=false, preview_urls=false,
    run_worker_first=["/api/feedback"] from design6 AND not_found_handling="404-page" from routes).
 3. **Public-repo safety check** (started 4:05 PM): fix what is safe (remove a secret/personal detail from current files, tighten a
