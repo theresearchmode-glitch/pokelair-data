@@ -3879,7 +3879,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* phone length (Nov 23; no longer than before the reskin, 1,328 px at 390): from 380 to 599 wide "← My Team" sits beside the headline's
    first line (it had a 44px row of its own; under 380 the headline needs the width, so it keeps its row); the page starts 24px under the
    header bar as Ratings does; the two cards sit 12px under the lead and the VS stamp overlaps both cards' edges */
-@media (min-width:380px) and (max-width:599.98px){.cmp .cmp-top{position:relative}.cmp .cmp-top>.np-back{position:absolute;top:var(--s8);right:0;z-index:1}.cmp .cmp-top .k-kicker{margin-top:0}}
+@media (min-width:380px) and (max-width:599.98px){.cmp .cmp-top{position:relative}.cmp .cmp-top>.np-back{display:inline-block;margin-bottom:var(--s2)} /* Nov 25: absolute top-right covered "Teams." and the kicker at 380-599 (practice-switch review) */.cmp .cmp-top .k-kicker{margin-top:0}}
 @media (max-width:699.98px){.cx2.cmp{padding-top:var(--s6)}.cmp .cmp-pick{margin-top:var(--s3)}.cmp .cmp-pick .cmp-vs{margin:-40px 0}}
 @media (max-width:699.98px){.cmp .cx2-six .np-mon{--iw:min(52px,100%)}.cmp .cx2-six{row-gap:0}}
 /* wide screens: each corner's likely lead bursts out of the top of its plate, on the inner side, facing the other team */
