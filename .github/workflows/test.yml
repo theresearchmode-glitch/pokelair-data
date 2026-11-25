@@ -251,6 +251,8 @@ jobs:
       - run: PAGE=app/dist/v2.html node experiments/commander-test.mjs
       # Strength Score source line (Sim, Nov 25): 'Graded against Reg M-C's teams...' only before Reg M-D has results
       - run: PAGE=app/dist/v2.html node experiments/score-src-test.mjs
+      # Not rated yet (Sim, Nov 25): no number/tier/rank for a Pokémon without results in a new regulation's early days
+      - run: PAGE=app/dist/v2.html node experiments/unrated-test.mjs
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q25.mjs
         if: ${{ !cancelled() }}

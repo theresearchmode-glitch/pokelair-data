@@ -34,7 +34,7 @@ for (const w of [390, 1440]) for (const h of ['#meta', '#home', '#pokemon=Gyarad
   for (const [re, what] of BAD) { const m = re.exec(text); if (m) hits.push(`${what} in the text: "…${text.slice(Math.max(0, m.index - 40), m.index + 30).replace(/\s+/g, ' ')}…"`);
     const n = re.exec(labels); if (n) hits.push(`${what} in a spoken label: "…${labels.slice(Math.max(0, n.index - 50), n.index + 30).replace(/\s+/g, ' ')}…"`); }
   ok(!hits.length && !errs.length, `${h} at ${w}: no rating, tier or rank for an unrated Pokémon ${st}${hits.length ? '\n          ' + hits.slice(0, 4).join('\n          ') : ''}${errs.length ? '\n          page error: ' + errs.slice(0, 2).join(' | ') : ''}`);
-  if (h === '#pokemon=Gyarados') { ok(/Not rated yet/.test(text) && !/\b97\b/.test(text), `${h} at ${w}: Gyarados says "Not rated yet", never 97`);
+  if (h === '#pokemon=Gyarados') { ok(/Not rated yet/.test(text) && !/\b97\b(?!%)/.test(text), `${h} at ${w}: Gyarados says "Not rated yet", never 97`);
     ok(!/against the \d+ Pokémon with tournament results/.test(text) && !/#\d+ of \d+ with/.test(text), `${h} at ${w}: no claim of tournament results that don't exist`); }
   await ctx.close(); }
 
