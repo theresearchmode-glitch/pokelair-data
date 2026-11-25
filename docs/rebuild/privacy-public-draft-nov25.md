@@ -1,4 +1,4 @@
-# Privacy page for nastyplot.org: DRAFT for Sim's OK (HH, Wed Nov 25, 3:36 PM)
+# Privacy page for nastyplot.org: APPROVED words (Sim, Nov 25); ships only when each row is true
 The public site's version of About → Privacy. Same layout as today's page (rows of: title · short tag · text), new words, because
 today's text describes the Claude-hosted version ("Your Claude account", "the anonymous ID Claude gives this page") — untrue on
 nastyplot.org (launch review D). Every sentence must be TRUE ON THE DAY IT GOES LIVE; the "Must be true first" list says what the
