@@ -39,8 +39,12 @@ for (const f of fs.readdirSync(ART)) if (/\.(webp|png)$/.test(f)) { fs.copyFileS
 fs.mkdirSync(path.join(DIR, 'data'), {recursive: true});
 const rd = f => { try { return JSON.parse(fs.readFileSync(path.join('out', f), 'utf8')); } catch (e) { return null; } };
 const docs = Object.fromEntries(Object.entries(DOC_SOURCES).map(([k, get]) => [k, get()])); docs.perf = perfDoc(rd('limitless.json'), rd('perf.json'));
+/* info (the info sheets' usage counts) is made only by main's daily job (out/info.json since Nov 24): if it's missing the page
+   shows the sheets without counts, so it's a warning, not a stop. Every other document must be there. */
+const OPTIONAL = new Set(['info']);
 const missing = Object.keys(docs).filter(k => !docs[k] || typeof docs[k] !== 'object');
-if (missing.length) fail('daily documents missing or unreadable: ' + missing.join(', '));
+for (const k of missing.filter(k => OPTIONAL.has(k))) { console.log(`::warning::public-site: ${k} missing (out/ has no file for it); written as an empty document`); delete docs[k]; }
+if (missing.some(k => !OPTIONAL.has(k))) fail('daily documents missing or unreadable: ' + missing.filter(k => !OPTIONAL.has(k)).join(', '));
 for (const [k, v] of Object.entries(docs)) { const f = path.join(DIR, 'data', k + '.json'); fs.writeFileSync(f, JSON.stringify(v)); files++;
   const n = spawnSync(process.execPath, ['app/test/no-names.mjs', f], {encoding: 'utf8'}); if (n.status !== 0) fail(`data/${k}.json: ${(n.stdout || '').trim().split('\n').pop()}`); }
 // documents the page asks for that the refresh never writes (singles, status, info: old keys): a file holding null, which the page reads

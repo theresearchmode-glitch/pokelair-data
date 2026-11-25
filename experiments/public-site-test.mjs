@@ -16,7 +16,7 @@ const keys = JSON.parse(fs.readFileSync(path.join(ROOT, 'app/src/app/03-persiste
 const dataOk = keys.filter(k => { try { JSON.parse(fs.readFileSync(path.join(D, 'data', k + '.json'), 'utf8')); return true; } catch (e) { return false; } });
 ok(dataOk.length === keys.length, `every document the page asks for is a readable file (${dataOk.length} of ${keys.length})`);
 const filled = keys.filter(k => { try { const v = JSON.parse(fs.readFileSync(path.join(D, 'data', k + '.json'), 'utf8')); return v && typeof v === 'object'; } catch (e) { return false; } });
-ok(['model', 'perf', 'teams', 'results', 'events', 'doubles_tour', 'info'].every(k => filled.includes(k)), `the main documents have data (${filled.length} filled)`);
+ok(['model', 'perf', 'teams', 'results', 'events', 'doubles_tour', ...(fs.existsSync(path.join(ROOT, 'out/info.json')) ? ['info'] : [])].every(k => filled.includes(k)), `the main documents have data (${filled.length} filled)`);
 const art = all.filter(f => f.startsWith('art/')).length; ok(art > 300, `the pictures are there (${art})`);
 const v = all.includes('v2.html') ? fs.readFileSync(path.join(D, 'v2.html'), 'utf8') : '';
 ok(/NP_ART\s*=\s*["']\/?art\//.test(v) || v.includes('"art/"') || v.includes("'art/'"), 'the page looks for pictures in /art/');
