@@ -34,7 +34,7 @@ V2.sdtData = () => { const D = V2.sdData(), day = typeof CAL !== 'undefined' ? C
   const rows = D.rows || [], top = rows.slice(0, 9), out = {D, rows}; V2._sdt = {D, day, ver, cal: META.calendar, out};
   out.race = top.map((x, i) => ({...x, k: i + 1})).filter(x => x.spe != null).sort((a, b) => a.spe - b.spe || a.k - b.k);
   out.types = V2.SDT_TYPES.map(t => ({t, x: rows.find(y => y.types.includes(t)) || null})); // the true highest rated: a two-type Pokémon stands under both flags (lead, Nov 18)
-  try { out.all = lairRows().length; } catch (e) { out.all = D.rated; }
+  try { out.all = V2.ratedRows().length; /* Not rated yet (Nov 25): only the rated count */ } catch (e) { out.all = D.rated; }
   try { const keep = Object.assign({}, coreUi); Object.assign(coreUi, {kind: 'pairs', sort: 'win', mon: null}); try { out.core = coreRows()[0] || null; } finally { Object.assign(coreUi, keep); } } catch (e) { out.core = null; }
   try { const A = V2.arData(); out.arch = A ? A.rows.filter(x => x.c > 0).slice(0, 2).map(x => ({...x, ty: V2.SDT_WXTY[x.k] || 'Normal', mon: (guideKeyMons(x.k) || [])[0] || null})) : []; } catch (e) { out.arch = []; }
   try { const x = rows.find(y => !y.mega), st = x && setFor(x.p, 'doubles', 'ingame'); out.set = x && st && st.it && st.it[0] ? {x, item: st.it[0][0]} : null; } catch (e) { out.set = null; }

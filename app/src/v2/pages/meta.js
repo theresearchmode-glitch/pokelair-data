@@ -57,7 +57,7 @@ V2.gsStand = (rows, megas) => { const U = V2.raUi, wk = V2.gsWeek(), mr = new Ma
       <div class="gs-main">${ph ? '' : `<p class="gs-wd"><span aria-hidden="true">${E2(T.d)}</span>${all}</p>`}<div class="gs-rows">${out.join('')}</div></div></section>`; }).join('')}</div>`; };
 V2.gsLowNote = open => open ? 'Fold the D and F tiers away' : `The D and F tiers, rated under ${LTIERS.find(T => T.k === 'C').show}`;
 // the spotlight: #1 (or the top Mega in the Megas view) by default; on a mouse screen the Pokémon under the pointer steps up here
-V2.raSpot = n => { const E = V2.esc, U = V2.raUi, megas = !!U.f.mega && !V2.raFiltered2(), all = lairRows(), pool = megas ? all.filter(y => y.p.m) : all, x = pool.find(y => y.p.n === n) || all.find(y => y.p.n === n) || pool[0]; if (!x) return '';
+V2.raSpot = n => { const E = V2.esc, U = V2.raUi, megas = !!U.f.mega && !V2.raFiltered2(), all = V2.ratedRows() /* Not rated yet (Nov 25): no spotlight for an unrated Pokémon */, pool = megas ? all.filter(y => y.p.m) : all, x = pool.find(y => y.p.n === n) || all.find(y => y.p.n === n) || pool[0]; if (!x) return '';
   const p = x.p, r = x.r, T = lTier(r.total), k = lairRank(p), N = V2.raNums(p), mine = V2.raOnTeam(p), top = x === pool[0];
   const tag = top ? (megas ? 'The top Mega right now' : '#1 right now') : k ? `#${k.rank} of ${k.of}` : 'Rated';
   return `<div class="gs-spot ra-spot" style="--ta:var(--ty-${p.t[0]});--tb:var(--ty-${p.t[1] || p.t[0]})"><div class="gs-plate">${V2.mon(p.n, {bare: true})}</div>
@@ -79,7 +79,7 @@ V2.raStairs = (rows, megas) => { const E = V2.esc, wk = V2.gsWeek(), n = rows.le
 V2.pkTabs = on => `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
     <nav class="ra-seg" aria-label="Pokémon views">${[['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['natures', 'Natures']].map(([h, t]) => `<a href="#${h}"${h === on ? ' class="on" aria-current="page"' : ''}>${t}</a>`).join('')}</nav></div>`;
 V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoad();
-  const all = lairRows(), rows = V2.raFilter(all), filtered = V2.raFiltered(), listy = V2.raFiltered2() || U.view === 'list', pf = activePerf(), reg = regId().replace('-', '‑');
+  const all = V2.ratedRows() /* Not rated yet (Sim, Nov 25): an unrated Pokémon is left out of the stairs, tiers and list (shell.js) */, rows = V2.raFilter(all), filtered = V2.raFiltered(), listy = V2.raFiltered2() || U.view === 'list', pf = activePerf(), reg = regId().replace('-', '‑');
   let d = pf && pf.updated ? String(pf.updated).slice(0, 10) : ''; try { if (d) d = new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) {}
   const teams = RES && +RES.teams > 0 ? +RES.teams : 0;
   const tabs = V2.pkTabs('meta'); /* Natures page (Nov 23): the four Pokémon views in one place */

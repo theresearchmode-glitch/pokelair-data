@@ -286,7 +286,7 @@ V2.emptyHtml = (o = {}) => { const n = V2.underdog(), d = V2.esc(V2.disp(n)), nS
   const add = (i, g, k) => `<div class="sx-slot sx-empty"><button type="button" class="sx-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="sx-addart" aria-hidden="true"><i>+</i></span><b>Add</b><small>${g} ${k}</small></button></div>`;
   /* Sim, Nov 20: no Lead / Back / Bench before the six are known (leads are Battle's call): Spot 1-6 */
   const spots = `<div class="tm-six sx tm-e-six"><div class="sx-grps">${[0, 1, 2].map(j => `<div class="sx-grp" role="group" aria-label="Spots ${j * 2 + 1} and ${j * 2 + 2}"><div class="sx-tiles">${add(j * 2, 'Spot', j * 2 + 1)}${add(j * 2 + 1, 'Spot', j * 2 + 2)}</div></div>`).join('')}</div></div>`;
-  let top = []; try { top = lairRows().slice(0, 6).map(x => x.p); } catch (e) {}
+  let top = []; try { top = V2.ratedRows().slice(0, 6).map(x => x.p); /* Not rated yet (Nov 25) */ } catch (e) {}
   /* Reskin (Nov 21): the empty war room on the shared kit. The kit header (kicker chip, slanted headline with its blue words), the page's one pink
      move (Build Me a Team), the winners as kit roster cards (score + tier in the name row, never over the art), section heads in the kit's type.
      Every control and data hook of the Nov 13 Q1 B page stays (data-v2addto, data-hmaround, data-v2search, data-v2import, data-v2saved, data-v2add, data-v2mon). */

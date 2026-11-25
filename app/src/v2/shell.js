@@ -214,10 +214,10 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
   const itPic = n => { let u = '', a = ''; try { u = V2.itemImg ? V2.itemImg(n, true) : ''; a = u ? '' : V2.itemArt ? V2.itemArt(n) : ''; } catch (e) {}
     return u ? `<span class="np-itb" aria-hidden="true"><img src="${V2.esc(u)}" alt="" width="28" height="28" loading="lazy" decoding="async"></span>` : a ? `<span class="np-itb" aria-hidden="true">${a}</span>` : ''; };
   const KW = {mv: 'Move', it: 'Item', ab: 'Ability', nt: 'Nature'}, N0 = typeof META === 'object' && META.info ? META.info.N : 0, M0 = typeof META === 'object' && META.info ? META.info.ntN || 0 : 0;
-  const monHit = p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
+  const monHit = p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return V2.unrated(p) ? `<small>${V2.NOT_RATED}</small>` : r ? `<small aria-label="Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier">${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier</small>` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
   /* scan S34 A (Sim, Nov 20): a miss offers today's six highest-rated Pokémon as normal search rows (the same six as empty My Team's
      'Start from a Winner'), so a typo leads somewhere instead of a dead end */
-  const missTop = () => { let top = []; try { top = lairRows().slice(0, 6).map(x => x.p); } catch (e) {} return top.length ? `<p class="miss-k">Or meet today's top six</p>${top.map(monHit).join('')}` : ''; };
+  const missTop = () => { let top = []; try { top = V2.ratedRows().slice(0, 6).map(x => x.p); /* Not rated yet (Nov 25) */ } catch (e) {} return top.length ? `<p class="miss-k">Or meet today's top six</p>${top.map(monHit).join('')}` : ''; };
   const draw = () => { const r = V2.find(inp.value), tm = teams(inp.value), T = terms(inp.value), Y = types(inp.value), yh = Y.ts.map(tyHit).join('');
     out.innerHTML = !inp.value.trim() ? '<p class="fine">Type a Pokémon\'s name, a saved team, or a page like Battle.</p>' + V2.TOOLS.map(k => { const pl = V2.findPlaces.find(x => x[0] === k && !x[2]); return pl ? `<a class="np-hit" href="#${k}" data-v2close><span class="pg">Page</span><span class="nm"><b>${pl[1]}</b><small>${V2.esc(V2.placeLines[k] || '')}</small></span></a>` : ''; }).join('') /* the tools, as today's empty search lists them (Nov 15) */
       : !r.places.length && !r.mons.length && !tm.length && !T.t.length && !T.st.length && !Y.ts.length ? `<p class="fine">Nothing called “${V2.esc(inp.value.trim())}”. Try part of the name.</p>${missTop()}`
@@ -326,6 +326,19 @@ V2.SNAP_REG = 'M-C';
 V2.scoreSrc = G => { try { if (!G || G.v !== 1) return ''; const id = ((typeof regInfo === 'function' && regInfo()) || {}).id; if (!id || id === V2.SNAP_REG) return '';
   if (typeof RES === 'object' && RES && RES.tc) return ''; if (typeof liveUsage === 'function' && typeof S === 'object' && liveUsage(S.format)) return '';
   const nb = x => String(x).replace('-', '\u2011'); return `Graded against Reg\u00a0${nb(V2.SNAP_REG)}'s teams until Reg\u00a0${nb(id)} results arrive`; } catch (e) { return ''; } };
+/* Not rated yet (Sim, Nov 25, 6:52 AM): in a new regulation's early days (its first 28 days, counted as V2.regDay does) or while no Pokémon
+   has tournament results at all, a Pokémon with no results of its own shows the words "Not rated yet": no number, no tier, no rank, and it
+   is left out of ranked lists, podiums, tiers, top-N lists and spotlights until it has results. With no results, ratings() falls back to
+   stats (Gyarados showed "97 S tier #1" on a practice day one). A Pokémon has results when its rating carries tc (v3Apply; lairRank uses
+   the same test). On a regulation past day 28 with results (Reg M-C today) both are false for every Pokémon, so nothing changes. */
+V2.NOT_RATED = 'Not rated yet';
+V2._nr = {R: null, none: false};
+V2.noRatings = () => { try { const R = ratings(); if (V2._nr.R !== R) { let none = true; for (const v of R.values()) if (v && v.tc) { none = false; break; } V2._nr = {R, none}; } return V2._nr.none; } catch (e) { return false; } };
+V2.regYoung = (now = Date.now()) => { try { const r = typeof regInfo === 'function' && regInfo(); if (!r || r.now || !r.since || !isFinite(now)) return false;
+  return Math.floor((now - Date.parse(r.since + 'T00:00:00Z')) / 864e5) + 1 <= 28; } catch (e) { return false; } };
+V2.unrated = p => { try { if (!p) return false; const r = ratings().get(p.n); if (r && r.tc) return false; return V2.noRatings() || V2.regYoung(); } catch (e) { return false; } };
+/* lairRows() without the unrated (the same list, same order, on a rated regulation) */
+V2.ratedRows = () => lairRows().filter(x => !V2.unrated(x.p));
 V2.dataNote = () => { const E = V2.esc, out = [];
   /* review Nov 18 (C5): a --split Preview whose preview.json couldn't be read (missing, 404, offline) says so, on every page (V2.shell),
      rather than showing the built-in numbers as if they were today's */

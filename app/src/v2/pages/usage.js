@@ -77,7 +77,7 @@ const t0src = R => R.p && !(V2.usDoc() && (V2.usDoc().top || []).find(x => x.n =
    OPEN ITS FILE. (its Pokémon page, "the file"); Add to My Team is the quiet second action. The card's big number is its usage rank; the
    rating moves from a fine line into the facts (Of teams, Win rate, Rating), so the facts row says everything once. */
 V2.usOneIn = u => u >= 10 && u < 100 ? `on more than 1 in ${Math.ceil(100 / u)} teams!` : ''; // a true lower bound: 38.1% > 1/3
-V2.usSpot = (R, d) => { if (!R || !R.p) return ''; const E = V2.esc, p = R.p, x = lairRows().find(y => y.p.n === p.n), st = V2.addState(p.n), sn = V2.usSrcs.find(y => y[0] === V2.usUi.src);
+V2.usSpot = (R, d) => { if (!R || !R.p) return ''; const E = V2.esc, p = R.p, x = V2.unrated(p) ? null : lairRows().find(y => y.p.n === p.n) /* Not rated yet (Nov 25) */, st = V2.addState(p.n), sn = V2.usSrcs.find(y => y[0] === V2.usUi.src);
   const card = V2.kCard(p.n, {size: 'hero', score: '#' + R.t.r});
   const one = R.u != null ? V2.usOneIn(+R.u) : '';
   return `<div class="gs-spot ra-spot us-spot k-hero"><div class="k-hero-card">${card}</div>

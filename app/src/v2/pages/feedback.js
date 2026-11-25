@@ -48,7 +48,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
    report sent them (53-feedback.js fbMisContext): rating and range, tier, rank, tournament share / wins / games, the moves, items and
    Ability shown, and the data date. Only site data: nothing about the viewer. */
 V2.fbMonNums = p => { const r = rating(p), src = r.src || {}, st = setFor(p) || {}, pf = activePerf(), L = [], rk = rankTxt(p);
-  L.push(`${p.d} · rated ${RS(r.total)} (${rRange(r)}, ${lTier(r.total).k} tier${rk ? ', ' + rk : ''})`);
+  L.push(V2.unrated(p) ? `${p.d} · ${V2.NOT_RATED.toLowerCase()} (no tournament results)` : `${p.d} · rated ${RS(r.total)} (${rRange(r)}, ${lTier(r.total).k} tier${rk ? ', ' + rk : ''})`);
   if (src.tour) L.push(`Tournaments: ${src.tour[0]}% of teams, ${src.tour[1]}% won, ${(+src.tour[2]).toLocaleString('en-US')} games`);
   if (st.mv && st.mv.length) L.push('Moves shown: ' + st.mv.slice(0, 5).map(([n, v]) => n + (v == null ? '' : ' ' + (+v).toFixed(1) + '%')).join(', '));
   if (st.it && st.it.length) L.push('Items shown: ' + st.it.slice(0, 3).map(([n, v]) => n + (v == null ? '' : ' ' + (+v).toFixed(1) + '%')).join(', '));

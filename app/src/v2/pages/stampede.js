@@ -10,7 +10,7 @@ V2.sdData = () => { let R = null; try { R = ratings(); } catch (e) {} if (V2._sd
   // herd (hero builder, Nov 18, lead's decision): every Pokémon the Ratings page lists (lairRows, no results filter: 345), the ones with
   // tournament results first in rating order, then the rest (placeholder ratings) at the back; rank = the Ratings page's shared rank
   let herd = []; try { const all = lairRows().map(x => ({p: x.p, n: x.p.n, d: x.p.d, r: RS(x.r.total), types: x.p.t || [], spe: x.p.st ? x.p.st[5] : null, mega: !!x.p.m, tc: !!x.r.tc}));
-    herd = all.filter(x => x.tc).concat(all.filter(x => !x.tc)); herd.forEach(x => { try { x.rank = x.tc ? (lairRank(x.p) || {}).rank || null : null; /* lairRank gives {rank, of}: the number only (the hero said 'rated number [object Object]', polish Nov 18) */ } catch (e) { x.rank = null; } }); } catch (e) {}
+    herd = all.filter(x => x.tc).concat(all.filter(x => !x.tc && !V2.unrated(x.p))); /* Not rated yet (Nov 25): an unrated Pokémon is not in the herd, its plates or ticker */ herd.forEach(x => { try { x.rank = x.tc ? (lairRank(x.p) || {}).rank || null : null; /* lairRank gives {rank, of}: the number only (the hero said 'rated number [object Object]', polish Nov 18) */ } catch (e) { x.rank = null; } }); } catch (e) {}
   let champ = null; try { champ = homeChamp(); } catch (e) {}
   const ev = META && META.events && Array.isArray(META.events.events) ? META.events.events.length : 0;
   const D = {rows, rated: rows.length, herd, ratedAll: herd.length, teams: (typeof RES === 'object' && RES && RES.teams) || 0, events: ev, champ};
@@ -22,7 +22,7 @@ V2.sdTools = V2.sdTools || (() => `<section class="sd-band sd-tools"><h2 class="
 V2.sdPost = V2.sdPost || (() => `<section class="sd-band sd-post"><h2 class="u">The post is in.</h2></section>`);
 // the top 10 right now (Sim approved Nov 22, 12:26 PM, with the Ratings stairs): under the hero, the ten best by rating, each a tap to its page,
 // and SEE ALL RATINGS to the Ratings page, so the rankings players look for are on the front page
-V2.sdTop = () => { const E = V2.esc; let top = []; try { top = lairRows().slice(0, 10); } catch (e) {} if (!top.length) return '';
+V2.sdTop = () => { const E = V2.esc; let top = []; try { top = V2.ratedRows().slice(0, 10); /* Not rated yet (Nov 25) */ } catch (e) {} if (!top.length) return '';
   return `<section class="sd-top" aria-labelledby="sd-top-h"><h2 class="u" id="sd-top-h">The top 10 <em>right now.</em></h2><ol>${top.map((x, i) => { const k = lairRank(x.p), rk = k ? k.rank : i + 1;
     return `<li><button type="button" data-v2mon="${E(x.p.n)}" aria-label="Number ${rk}: ${E(x.p.d)}, rated ${RS(x.r.total)}: open its page"><b class="r u" aria-hidden="true">${rk}</b>${V2.mon(x.p.n, {bare: true, iw: 40})}<span class="n" aria-hidden="true">${E(x.p.d).replace(/ (\S)$/, '\u00a0$1')}</span><b class="s u" aria-hidden="true">${RS(x.r.total)}</b></button></li>`; }).join('')}</ol>${V2.kGo('SEE ALL RATINGS ›', {href: '#meta'})}</section>`; };
 V2.sdPage = () => `<div class="sd">${V2.sdHero()}${V2.sdTop()}${V2.sdSix()}${V2.sdTools()}${V2.sdPost()}</div>`;
