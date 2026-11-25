@@ -2497,3 +2497,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:30 PM: Sim's go: push Dec 2 switch safety 25c3464b to main (Gemini job 3: fixes 1,3,4,9 + reg-switch-test)
 - 7:30 PM: Sim: yes to (a) the other account merges and tests Gemini jobs, (b) HH may push alt/gemini-* branches so GitHub tests them; first fix the other account's GitHub push
 - 8:26 PM: Sim: tonight low-usage watchdog (30 min, stops when the queue is empty); from 4 PM Wed back to constant work mode through the night (re-enable the hourly work check trig_01Vq2hj3TiUjVrcP9obYbRva and night check trig_01V5GbLvecHHCnpRxyqS4JPm at the 4:01 PM resume)
+- 9:03 PM: Sim: Kip's design trial (job 20) looked bad; Kip stays code + research only, no design (rule unchanged). HH keeps the one useful idea: the Day N note replaces the existing data line under the Meta tabs (0px added)
