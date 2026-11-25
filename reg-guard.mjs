@@ -6,7 +6,7 @@ import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {activeReg, readReg, SITE_REG} from './formats.mjs';
 
-export const EXEMPT = new Set(['reg.json', 'calendar.json', 'skips.json', 'official_perf.json',
+export const EXEMPT = new Set(['reg.json', 'calendar.json', 'skips.json',
   /* every regulation's history in one file (job 8 byReg): emptying them would lose M-C's history for good (Scout's review, Nov 24) */
   'ratings_log.json', 'scoreboard.json']);
 

@@ -48,7 +48,7 @@ jobs:
       # VR Pastes, checked against Liquipedia's API. Polite: one request a second per site, our User-Agent, only new or
       # edited events, every paste read once. If anything fails or disagrees with yesterday's file, out/official.json is kept.
       # (RK9 was read here until Nov 1; its terms, rk9.gg/terms 5.3, forbid automated extraction, so rk9.mjs and
-      # rk9-field.mjs were removed. The whole-field table they made is kept frozen in out/official_perf.json.)
+      # rk9-field.mjs were removed; the frozen whole-field table they made, out/official_perf.json, was removed Nov 25.)
       - run: node official.mjs || node skip.mjs "official events skipped (previous out/official.json kept)"
         env:
           NP_PID_KEY: ${{ secrets.NP_PID_KEY || secrets.THE_NP_PID_KEY }}

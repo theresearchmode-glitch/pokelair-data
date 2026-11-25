@@ -53,7 +53,6 @@ const FILES = [
   ['events.json', 'Events', 3, d => d.updated, [10e3, 5e6], d => arr(d.events, 5) || 'fewer than 5 events', [20, d => Array.isArray(d.events)], 'daily events.mjs (2d+1d buffer)'],
   ['official.json', 'Official events (Victory Road + VR Pastes, top 64)', 3, d => d.updated, [1e3, 5e6], d => Array.isArray(d.events) || 'no event list', [20, d => Array.isArray(d.events)], 'daily official.mjs (external Victory Road + Liquipedia)'],
   ['official_compare.json', 'Official events compare', 3, (d, f) => d.updated || mtimeIso(f), [40, 2e6], d => typeof d.pass === 'boolean' || 'no pass flag', [20, d => typeof d.pass === 'boolean'], 'daily official.mjs check', {optional: true}],
-  ['official_perf.json', 'Official events whole-field (frozen Nov 1: RK9 terms)', 9999, (d, f) => d.updated || d.asOf || mtimeIso(f), [100, 5e6], d => typeof d === 'object' || 'unreadable', null, 'frozen Nov 1 (rk9.gg/terms 5.3)', {frozen: true, optional: true, skipRegCheck: true}],
   ['perf.json', 'Ratings inputs', 2, d => d.updated, [5e3, 2e6], d => !!(d.tour && d.adj) || 'no Limitless table', [20, d => !!(d.reg && d.reg.id === REG)], 'daily perf.mjs + 1d buffer'],
   ['practice.json', 'Team preview practice', 4, d => d.updated, [5e3, 2e6], d => arr(d.rounds, 20) || 'fewer than 20 games', [20, d => Array.isArray(d.rounds)], 'daily practice.mjs (needs replay volume, 4d limit)'],
   ['weekly.json', 'This week vs last week', 2, d => d.updated, [200, 1e6], d => d.v === 1 || 'unknown version', [20, d => d.v === 1], 'daily weekly.mjs + 1d buffer'],
@@ -85,8 +84,6 @@ for (const [file, label, days, dateOf, [lo, hi], shape, thinRule, basis, opts = 
   else if (opts.frozen) { status = 'frozen'; why = why || basis; }
   else if (!opts.noAgeCheck && !old(label, date, days)) status = 'stale';
   const a = age(date); rows.push({label, file, date: date.slice(0, 10), age: isNaN(a) ? '' : Math.max(0, Math.floor(a)), days, basis, status, why}); }
-// official_perf.json (every team and match of the official events) is frozen since RK9 reads stopped on Nov 1: not checked
-// for freshness; perf.mjs marks it frozen and the page drops it 28 days after its newest event.
 // every part of the ratings inputs, by the date of its own data
 const PF = rd('perf.json');
 if (PF) { const want = {tour: ['Limitless table', 2], adj: ['Limitless win shares', 2], ingame: ['op.gg order (paused Nov 18)', 9999], official: ['Official events table (frozen)', 28], smogon: ['Smogon 1760+ usage', 40], ladder: ['Showdowntier ladder', 3]};

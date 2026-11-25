@@ -2,7 +2,7 @@
 //   tour     Limitless tournament usage and game win rate per Pokémon (update.mjs, limitless.json "tour")
 //   adj      Limitless: each Pokémon's own share of team wins (update.mjs, limitless.json "adj")
 //   ingame   op.gg's in-game Ranked Doubles order (opgg.mjs, meta_ingame.json)
-//   official official events, every Masters team and match: frozen. Read from RK9 (rk9-field.mjs, out/official_perf.json)
+//   official official events, every Masters team and match: retired (RK9's terms; its frozen file removed Nov 25)
 //            until Nov 1, when RK9 reads stopped (its terms forbid automated extraction). No permitted source gives every
 //            team and match yet (Victory Road lists the top ~128 with Swiss records, not the matches), so the last values
 //            are kept as they are, marked frozen with the date of their newest event; the page shows them for 28 days
@@ -18,20 +18,15 @@ import fs from 'node:fs';
 import {activeReg, regProfile} from './formats.mjs';
 const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
 const day = t => String(t || '').slice(0, 10), today = new Date().toISOString().slice(0, 10);
-const L = rd('limitless.json'), G = rd('meta_ingame.json'), O = rd('official_perf.json'), Lad = rd('meta_ladder.json'), S = rd('sources.json') || {}, out = {updated: today};
+const L = rd('limitless.json'), G = rd('meta_ingame.json'), Lad = rd('meta_ladder.json'), S = rd('sources.json') || {}, out = {updated: today};
 if (L && L.tour && Array.isArray(L.tour.rows) && L.tour.rows.length >= 50) out.tour = Object.assign({}, L.tour, {updated: L.tour.updated || day(L.updated)});
 else console.log('::warning::perf: no tournament table in limitless.json; tour left out');
 if (L && L.adj && Array.isArray(L.adj.rows) && L.adj.rows.length >= 50) out.adj = Object.assign({}, L.adj, {updated: day(L.updated)});
 if (G && Array.isArray(G.top)) { const rows = [...G.top, ...(G.more || [])].sort((a, b) => a.r - b.r), d = day(G.updated);
   if (rows.length >= 100) out.ingame = {label: `${G.source}${d ? ` · ${d}` : ''} (all ${rows.length} Pokémon ranked)`, names: rows.map(x => x.n), season: G.period || '', updated: d};
   else console.log(`::warning::perf: in-game order has only ${rows.length} Pokémon; ingame left out`); }
-/* Nov 1: RK9's terms forbid automated extraction, so the whole-field table read from RK9 is no longer shown (set
-   SHOW_RK9_FROZEN=1 to bring it back). Ratings don't read it, so no rating changes. */
-if (process.env.SHOW_RK9_FROZEN === '1' && O && Array.isArray(O.rows) && O.rows.length >= 30 && O.teams >= 300) { const evs = O.events || [], ds = evs.map(e => e.date).filter(Boolean).sort(), asOf = ds[ds.length - 1] || day(O.updated);
-  const M = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'], md = d => `${M[+d.slice(5, 7) - 1]} ${+d.slice(8, 10)}`;
-  out.official = {label: `RK9 (read before Nov 1, now frozen) · ${evs.length} official VGC events (${ds.length ? `${md(ds[0])} – ${md(asOf)}` : ''}), all ${Number(O.teams).toLocaleString('en-US')} Masters teams, ${Number(O.matches).toLocaleString('en-US')} matches`,
-    rows: O.rows, megas: [], split: true, teams: O.teams, matches: O.matches, events: evs, frozen: true, asOf, updated: asOf}; }
-else console.log('perf: official-events table retired (RK9, Nov 1); left out as planned');
+/* Nov 1: RK9's terms forbid automated extraction; the whole-field table read from RK9 was retired then and its frozen file
+   (out/official_perf.json) removed Nov 25 (Sim). Ratings never read it. */
 if (Lad && Lad.usage1760 && Array.isArray(Lad.usage1760.rows) && Lad.usage1760.rows.length >= 30) out.smogon = {label: `Smogon usage stats · 1760+ rating, ${Lad.usage1760.month} (${Number(Lad.usage1760.battles || 0).toLocaleString('en-US')} battles)`, rows: Lad.usage1760.rows, updated: Lad.usage1760.month};
 else console.log('::warning::perf: no Smogon 1760+ usage (meta_ladder.json usage1760); smogon left out');
 if (S.sdt) out.ladder = {label: `Showdowntier · ${Number(S.sdt.battles || 0).toLocaleString('en-US')} ladder battles, ${S.sdt.from} – ${S.sdt.to}`, rows: S.sdt.rows.map(r => [r.n, r.u, r.w, r.r]), updated: S.sdt.date || S.sdt.to};
