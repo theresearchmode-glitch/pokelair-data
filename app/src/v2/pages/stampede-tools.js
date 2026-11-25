@@ -64,7 +64,9 @@ V2.sdTools = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n => 
   const types = V2.sdtPlate('Type Chart', 'sdt-tc', 'What your six resists, and what hits it.', 'What your six resists.', tc);
   // Ratings: the podium (#2, #1, #3)
   const pod = R.length >= 3 ? `<div class="sdt-pod">${[[R[1], V2.sdtRank(R, 1)], [R[0], 1], [R[2], V2.sdtRank(R, 2)]].map(([x, k]) => `<button type="button" class="sdt-m sdt-step s${k}" data-v2mon="${E(x.n)}" aria-label="${E(V2.disp(x.n))}, rated ${x.r}, number ${k}: open its info">${V2.mon(x.n, {bare: true})}<span class="sdt-blk"><b class="u">${x.r}</b><span>${nm(x.n)}</span></span></button>`).join('')}</div>` : '';
-  const ratings = V2.sdtPlate('Ratings', 'sdt-ra sdt-ink', `All ${num(X.all)} Pokémon, rated out of 100.`, `All ${num(X.all)}, out of 100.`, pod);
+  /* Not rated yet, day one (Nov 25): with no Pokémon rated, the plate says when ratings start instead of 'All 0 Pokémon' */
+  const r0 = !X.all && V2.noRatings && V2.noRatings();
+  const ratings = V2.sdtPlate('Ratings', 'sdt-ra sdt-ink', r0 ? 'Ratings start with the first tournament results.' : `All ${num(X.all)} Pokémon, rated out of 100.`, r0 ? 'From the first results.' : `All ${num(X.all)}, out of 100.`, pod);
   // Winning Teams: the latest winner's six, with today's Load Team (asks first when you have a team) and Copy for Showdown
   const C = X.D.champ; let wins = '';
   if (C) { const ev = C.ev, t = C.t, key = ev.id + '#' + ev.top.indexOf(t), wl = (String(t.record || '').match(/\b(\d+-\d+(?:-\d+)?)\b/) || [])[1] || '', title = V2.evTitle(ev.name), sure = V2.hmUi && V2.hmUi.sure === key;
