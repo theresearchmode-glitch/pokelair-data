@@ -83,6 +83,56 @@ const PROBE_EXPR = `(() => {
     /* Showdown blizzard: field weather snow = never misses, whoever uses it */
     if (a5 !== 100) return 'Blizzard in snow: expected 100, got ' + a5;
   });
+  check('2c. Mega Sol: Weather Ball is 100 BP Fire with sun boost in clear, rain, sand, snow, and Cloud Nine', () => {
+    const wb = {name: 'Weather Ball', type: 'Normal', cat: 2, bp: 50};
+    const atk = {p: {n: 'Meganium-Mega', t: ['Grass', 'Fairy'], st: [80, 92, 115, 143, 115, 80], a: ['Mega Sol']}, sp: 32, spS: 32, nat: 'Modest', item: '', ability: 'Mega Sol', boost: 0};
+    const def = {p: {n: 'Incineroar', t: ['Fire', 'Dark'], st: [95, 115, 90, 80, 90, 60], a: ['Intimidate']}, hpSp: 32, defSp: 0, spdSp: 0, nat: 'Careful', item: '', ability: 'Intimidate', boost: 0};
+    const base = damage({atk, def, move: wb, weather: ''});
+    if (!base || base.type !== 'Fire' || base.bp !== 100) return 'clear weather: expected Fire 100 BP, got ' + JSON.stringify(base && {type: base.type, bp: base.bp});
+    for (const w of ['rain', 'sand', 'snow']) {
+      const r = damage({atk, def, move: wb, weather: w});
+      if (!r || r.type !== 'Fire' || r.bp !== 100 || r.max !== base.max) return w + ': expected Fire 100 BP max ' + base.max + ', got ' + JSON.stringify(r && {type: r.type, bp: r.bp, max: r.max});
+    }
+    const cn = damage({atk, def: {...def, ability: 'Cloud Nine'}, move: wb, weather: 'rain'});
+    if (!cn || cn.type !== 'Fire' || cn.max !== base.max) return 'Cloud Nine in rain: expected Fire max ' + base.max + ', got ' + JSON.stringify(cn && {type: cn.type, max: cn.max});
+  });
+  check('2d. Mega Sol: Solar Beam and Solar Blade keep full power in rain, sand, and snow (non-Mega Sol halved)', () => {
+    const sb = {name: 'Solar Beam', type: 'Grass', cat: 2, bp: 120, charge: true};
+    const sbl = {name: 'Solar Blade', type: 'Grass', cat: 1, bp: 125, charge: true};
+    const meg = {p: {n: 'Meganium-Mega', t: ['Grass', 'Fairy'], st: [80, 92, 115, 143, 115, 80], a: ['Mega Sol']}, sp: 32, spA: 32, spS: 32, nat: 'Hardy', item: '', ability: 'Mega Sol', boost: 0};
+    const reg = {...meg, ability: 'Overgrow'};
+    const def = {p: {n: 'Incineroar', t: ['Fire', 'Dark'], st: [95, 115, 90, 80, 90, 60], a: ['Intimidate']}, hpSp: 32, defSp: 0, spdSp: 0, nat: 'Hardy', item: '', ability: 'Intimidate', boost: 0};
+    for (const mv of [sb, sbl]) {
+      const clear = damage({atk: meg, def, move: mv, weather: ''});
+      for (const w of ['rain', 'sand', 'snow']) {
+        const ms = damage({atk: meg, def, move: mv, weather: w});
+        if (!ms || ms.max !== clear.max) return mv.name + ' Mega Sol in ' + w + ': expected ' + clear.max + ', got ' + (ms && ms.max);
+        const ov = damage({atk: reg, def, move: mv, weather: w});
+        if (!ov || ov.max >= clear.max) return mv.name + ' Overgrow in ' + w + ': expected halved (<' + clear.max + '), got ' + (ov && ov.max);
+      }
+    }
+  });
+  check('2e. Hydro Steam gets 1.5x boost in sun and under Mega Sol (not 0.5x halved like Surf)', () => {
+    const hs = {name: 'Hydro Steam', type: 'Water', cat: 2, bp: 80};
+    const sf = {name: 'Surf', type: 'Water', cat: 2, bp: 90};
+    const atk = {p: {n: 'Walking Wake', t: ['Water', 'Dragon'], st: [99, 83, 91, 125, 83, 109], a: ['Protosynthesis']}, sp: 32, spS: 32, nat: 'Modest', item: '', ability: 'Protosynthesis', boost: 0};
+    const def = {p: {n: 'Garchomp', t: ['Dragon', 'Ground'], st: [108, 130, 95, 80, 85, 102], a: ['Rough Skin']}, hpSp: 32, defSp: 0, spdSp: 0, nat: 'Hardy', item: '', ability: 'Rough Skin', boost: 0};
+    const hsClear = damage({atk, def, move: hs, weather: ''});
+    const hsSun = damage({atk, def, move: hs, weather: 'sun'});
+    const hsMegaSol = damage({atk: {...atk, ability: 'Mega Sol'}, def, move: hs, weather: ''});
+    const sfClear = damage({atk, def, move: sf, weather: ''});
+    const sfSun = damage({atk, def, move: sf, weather: 'sun'});
+    if (!(hsSun && hsClear && hsSun.max > hsClear.max * 1.4)) return 'Hydro Steam in sun not boosted 1.5x: clear ' + (hsClear && hsClear.max) + ', sun ' + (hsSun && hsSun.max);
+    if (!(hsMegaSol && hsMegaSol.max === hsSun.max)) return 'Hydro Steam Mega Sol mismatch vs sun: ' + (hsMegaSol && hsMegaSol.max) + ' vs ' + (hsSun && hsSun.max);
+    if (!(sfSun && sfClear && sfSun.max < sfClear.max * 0.6)) return 'Surf in sun not halved: clear ' + (sfClear && sfClear.max) + ', sun ' + (sfSun && sfSun.max);
+  });
+  check('2f. Electro Shot charges in clear/sun and fires turn 1 in rain (field weather)', () => {
+    const es = {name: 'Electro Shot', type: 'Electric', cat: 2, bp: 130, charge: true};
+    if (chargesFirst(es, 'rain', '', 'Stamina') !== false) return 'Electro Shot should not charge in rain';
+    if (chargesFirst(es, '', '', 'Stamina') !== true) return 'Electro Shot should charge in clear weather';
+    if (chargesFirst(es, 'sun', '', 'Stamina') !== true) return 'Electro Shot should charge in sun';
+    if (chargesFirst(es, 'rain', '', 'Mega Sol') !== false) return 'Electro Shot with Mega Sol in field rain should not charge (Champions in-game behavior)';
+  });
 
   // 3. Eelevate & Iron Ball grounding in allyHit
   check('3. allyHit: Eelevate immune to Ground; Iron Ball grounds Flying/Levitate/Eelevate/Air Balloon', () => {
