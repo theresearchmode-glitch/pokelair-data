@@ -242,7 +242,7 @@ if (process.argv.includes('--v2')) {
         and canonical address, so search engines see the right words before any script runs. Same slug rule as V2.pubSlug (pokemon.js). */
   if (PUBLIC) {
     let h = fs.readFileSync(dir + 'dist/v2.html', 'utf8');
-    h = h.replace(/(src|href)="(v2\.(?:js|css)|fonts\/)/g, '$1="/$2').replace(/url\(fonts\//g, 'url(/fonts/');
+    h = h.replace(/(src|href)="(v2\.(?:js|css)|fonts\/)/g, '$1="/$2').replace(/url\((['"]?)fonts\//g, 'url($1/fonts/'); /* quoted or not (Kip job 33 F5) */
     h = h.replace(/<link rel="icon" type="image\/svg\+xml" href="data:[^"]*">/, '<link rel="icon" type="image/svg+xml" href="/favicon.svg">')
       .replace(/<link rel="icon" type="image\/png" sizes="32x32" href="data:[^"]*">/, '<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">')
       .replace(/<link rel="apple-touch-icon" sizes="180x180" href="data:[^"]*">/, '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">');
@@ -255,13 +255,15 @@ if (process.argv.includes('--v2')) {
     /* the 840 KB stylesheet goes in one shared file (/v2.css) for the Pokémon pages: 346 inline copies made 322 MB (checked Nov 25) */
     let ph = h; const st = [...h.matchAll(/<style>\n?([\s\S]*?)\n?<\/style>/g)].sort((x, y) => y[1].length - x[1].length)[0];
     if (st && st[1].length > 100000) { const css = st[1]; fs.writeFileSync(dir + 'dist/v2.css', css); ph = h.replace(st[0], `<link rel="stylesheet" href="/v2.css?v=${hash(css)}">`); }
-    const seen = new Map(); fs.mkdirSync(dir + 'dist/pokemon', {recursive: true});
+    const seen = new Map(); fs.rmSync(dir + 'dist/pokemon', {recursive: true, force: true}); fs.mkdirSync(dir + 'dist/pokemon', {recursive: true}); /* only this build's pages (Kip job 33 F4) */
     for (const p of roster) {
       const s = slug(p.n); if (!s) throw new Error('public build: empty address for ' + p.n);
       if (seen.has(s)) throw new Error(`public build: ${p.n} and ${seen.get(s)} share the address /pokemon/${s}`); seen.set(s, p.n);
       const name = disp(p.n), title = (t => t.length <= 60 ? t : `${name}: Champions set, rating & partners`)(`${name} in Pokémon Champions: best set, rating & partners`) /* same as V2.pubTitle (pokemon.js) */, desc = `${name} in Pokémon Champions doubles: its best tournament set, its rating and its best partners, from real tournament results. Free, no account.`;
-      const page = ph.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title><link rel="canonical" href="https://nastyplot.org/pokemon/${s}">`)
-        .replace(/(<meta name="description" content=")[^"]*"/, `$1${esc(desc)}"`).replace(/(<meta property="og:title" content=")[^"]*"/, `$1${esc(title)}"`);
+      /* one canonical (the page carries its own), og:description too, and callbacks so a '$' in a name is never a pattern (Kip job 33 F6) */
+      const page = ph.replace(/<link rel="canonical"[^>]*>/g, '').replace(/<title>[^<]*<\/title>/, () => `<title>${esc(title)}</title><link rel="canonical" href="https://nastyplot.org/pokemon/${s}">`)
+        .replace(/(<meta name="description" content=")[^"]*"/, (m, a) => `${a}${esc(desc)}"`).replace(/(<meta property="og:title" content=")[^"]*"/, (m, a) => `${a}${esc(title)}"`)
+        .replace(/(<meta property="og:description" content=")[^"]*"/, (m, a) => `${a}${esc(desc)}"`);
       fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
     }
     const urls = [...seen.keys()].map(s => `  <url><loc>https://nastyplot.org/pokemon/${s}</loc></url>`).join('\n');

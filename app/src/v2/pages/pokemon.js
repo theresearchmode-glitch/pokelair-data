@@ -16,7 +16,7 @@ V2.pubSlug = n => String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u03
 V2.pubTitle = name => { const t = `${name} in Pokémon Champions: best set, rating & partners`; return t.length <= 60 ? t : `${name}: Champions set, rating & partners`; };
 V2.monFromHash = () => { let k = ''; try { k = decodeURIComponent((location.hash.split('=')[1] || '')).toLowerCase(); } catch (e) {}
   /* Nov 25: on the public site the address carries it (/pokemon/garchomp); before, the page fell back to its default Pokémon */
-  if (!k && window.__NP_PUBLIC && /^\/pokemon\/./.test(location.pathname)) { try { k = decodeURIComponent(location.pathname.slice(9)).replace(/\/+$/, '').toLowerCase(); } catch (e) {} }
+  if (!k && window.__NP_PUBLIC && /^\/pokemon\/./.test(location.pathname)) { try { k = decodeURIComponent(location.pathname.slice(9)).replace(/\/+$/, '').replace(/\.html$/i, '').toLowerCase(); /* /pokemon/garchomp.html too (Kip job 33 F3) */ } catch (e) {} }
   return k && typeof ROSTER === 'object' ? ROSTER.find(q => q.n.toLowerCase() === k || V2.pubSlug(q.n) === k) || null : null; };
 V2.STATS = [['HP', 'hp'], ['Attack', 'atk'], ['Defense', 'def'], ['Sp. Atk', 'spa'], ['Sp. Def', 'spd'], ['Speed', 'spe']];
 V2.pkTry = (f, d) => { try { const v = f(); return v == null ? d : v; } catch (e) { return d; } };
@@ -44,7 +44,7 @@ V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T 
   const rk = rankTxt(p, 'cap') || '', /* Sim, Nov 19 (Q15 A): the rank says '#N of M with results' (the card's shorter 'rated' put back to the approved wording, Nov 21) */ W = V2.pkWeeks(p), ok = W.length >= 2;
   const top = ok ? Math.max(10, ...W.map(w => w.v)) * 1.08 : 0;
   const plot = ok ? `<span class="pk-plot" aria-hidden="true">${W.map(w => `<i style="--h:${(100 * w.v / top).toFixed(1)}"></i>`).join('')}</span>` : '';
-  const un = V2.unrated(p) /* Not rated yet (Sim, Nov 25): the words in the rank line, no number and no tier */, card = V2.kCard(n, {size: 'hero', score: un ? '' : rs, tier: un ? '' : T.k + ' tier', form: [k.form, un ? V2.NOT_RATED : rk || 'No results yet'].filter(Boolean).join(' · ')})
+  const un = V2.unrated(p) /* Not rated yet (Sim, Nov 25): the words in the rank line, no number and no tier */, card = V2.kCard(n, {size: 'hero', alt: V2.disp(n) /* SEO review Nov 25 #9: the page's main picture has its name (Google Images); loads at once */, score: un ? '' : rs, tier: un ? '' : T.k + ' tier', form: [k.form, un ? V2.NOT_RATED : rk || 'No results yet'].filter(Boolean).join(' · ')})
     .replace('<span class="k-plate">', `<span class="k-plate">${plot}`).replace('<span class="k-sc">', '<span class="k-sc pk-rate">')
     .replace(/<small class="k-tier">([^<]*)<\/small>/, '<small class="k-tier"><span class="tier-tag">$1</span></small>')
     .replace(/(<b class="k-name u"[^>]*>[^<]*<\/b>)/, `$1<span class="pk-types">${(p.t || []).map(V2.typeChip).join('')}</span>`);

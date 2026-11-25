@@ -19,6 +19,7 @@ ok(roster.every(p => sm.includes(`<loc>https://nastyplot.org/pokemon/${slug(p.n)
 const g = files.has('garchomp.html') ? fs.readFileSync(path.join(D, 'pokemon/garchomp.html'), 'utf8') : '';
 ok(/<title>Garchomp in Pokémon Champions: best set, rating &amp; partners<\/title>/.test(g) && g.includes('<link rel="canonical" href="https://nastyplot.org/pokemon/garchomp">') && /<meta name="description" content="Garchomp in Pokémon Champions/.test(g),
   'garchomp.html has its own title, description and canonical address');
+ok((g.match(/<link rel="canonical"/g) || []).length === 1 && /<meta property="og:description" content="Garchomp in Pokémon Champions/.test(g), `garchomp.html has exactly one canonical tag (${(g.match(/<link rel="canonical"/g) || []).length}) and its own og:description (Kip job 33 F6)`);
 const v = fs.existsSync(path.join(D, 'v2.html')) ? fs.readFileSync(path.join(D, 'v2.html'), 'utf8') : '';
 ok(v.length > 0 && !/(src|href)="(v2\.(js|css)|fonts\/)/.test(v) && !/url\(fonts\//.test(v), "the page's own files load from the site root (no relative v2.js, v2.css or fonts/)");
 ok(['favicon.ico', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png'].every(f => fs.existsSync(path.join(D, f))), 'the brand icons are at the site root');
@@ -49,10 +50,10 @@ const srv = http.createServer((q, s) => { const p = decodeURIComponent(q.url.spl
 await new Promise(res => srv.listen(0, '127.0.0.1', res));
 const {chromium} = await import('playwright'); const b = await chromium.launch();
 try { const q = await b.newPage({viewport: {width: 1280, height: 900}}), errs = []; q.on('pageerror', e => errs.push(String(e).slice(0, 100)));
-  for (const [u, want] of [['/pokemon/garchomp', 'Garchomp'], ['/pokemon/mr-mime', 'Mr. Mime'], ['/pokemon/charizard-mega-y', 'Mega Charizard Y']]) {
+  for (const [u, want] of [['/pokemon/garchomp', 'Garchomp'], ['/pokemon/mr-mime', 'Mr. Mime'], ['/pokemon/charizard-mega-y', 'Mega Charizard Y'], ['/pokemon/sneasler.html', 'Sneasler']]) {
     await q.goto(`http://127.0.0.1:${srv.address().port}${u}`); await q.waitForFunction(w => (document.querySelector('#main h1') || {}).innerText && document.querySelector('#main h1').innerText.includes(w), want, {timeout: 15000}).catch(() => {});
     const h1 = await q.evaluate(() => ((document.querySelector('#main h1') || {}).innerText || '').replace(/\s+/g, ' '));
-    const ft = (fs.readFileSync(path.join(D, 'pokemon', u.slice(9) + '.html'), 'utf8').match(/<title>([^<]*)<\/title>/) || [])[1] || '', dt = await q.evaluate(() => document.title);
+    const ft = (fs.readFileSync(path.join(D, 'pokemon', u.slice(9).replace(/\.html$/, '') + '.html'), 'utf8').match(/<title>([^<]*)<\/title>/) || [])[1] || '', dt = await q.evaluate(() => document.title);
     ok(ft.replace(/&amp;/g, '&') === dt, `${u}: the title the page sets matches the file's ("${dt}")`);
     ok(h1.includes(want) && !errs.length, `${u} shows ${want} (h1 "${h1.slice(0, 40)}"${errs.length ? '; errors: ' + errs.join(' | ') : ''})`); errs.length = 0; }
   // wrong addresses answer 404 and say noindex; real tool addresses answer 200 and show their page (Nov 25, SEO)
