@@ -29,8 +29,12 @@ Repo theresearchmode-glitch/pokelair-data is PUBLIC (checked: GitHub API private
 10. Actions pinned by tag (actions/checkout@v5, setup-node@v5, github-script@v8, upload-artifact@v4), not by commit: low risk;
     pin by commit hash later.
 
-## Still to check
-- Other personal details in docs: names, Windows user paths (e.g. C:\Users\<name> in pasted reports), locations, school/age info.
-- IDs that could be misused: artifact ids, trigger ids, session ids in docs (an artifact id alone doesn't grant access; check sharing).
-- worker/ + public build: CSP, CORS, input handling (feedback guard reviewed today), source map in the deploy (launch review E).
-- Dependencies: package-lock audit (npm audit) and action pinning.
+## Last part (4:35 PM, Nov 25; the scheduled reminder; checked by grep and by reading worker/ and app/build.mjs)
+11. Locations, school, age: none found (git grep for school/age/"years old"/city/address in all current files except out/ and data/;
+    the 3 hits are words like "class" in plan text). Nothing to fix.
+12. Worker CORS/input: worker/feedback-lib.mjs refuses other sites' Origin and cross-site Sec-Fetch-Site, caps the body at 16 KB,
+    scrubs emails/phones/@handles, needs Turnstile (tests: feedback-guard-test 44 checks, feedback-worker-test). OK.
+13. CSP: the public build writes one Content-Security-Policy plus nosniff and no-referrer for every path (app/build.mjs:208). OK.
+14. Source map: a split build writes dist/v2.js.map (app/build.mjs:192). Low risk (the source is public in this repo anyway); the
+    deploy workflow (queue item 6) leaves it out of the deployed folder, as launch review E asks.
+Nothing left on this check except Sim's two calls (item 6: "Sim (Simran)" in START-HERE; item 8: Preview link sharing).
