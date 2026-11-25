@@ -13,9 +13,12 @@ Never overnight without Sim: anything on the live site artifact (5VBfLTR5sM4JU5N
 nastyplot.org; Cloudflare/GitHub settings; rewriting git history; rotating keys; deleting anything. These are listed for the morning.
 
 ## The queue (top first; skip an item only if blocked, and say why)
-1. **M-D dates** (main's data pipeline): M-D runs Wed Dec 2 6:00 PM PST to Wed Mar 3 2027 5:59 PM PST = 2026-12-03T02:00Z to
-   2027-03-04T01:59Z (checked on pokemon.com Nov 25); M-C end 2026-12-02T01:59Z stays. Use the helper's plan (M-D date-fix plan,
-   Nov 25 afternoon). Test branch from main -> GitHub green -> fast-forward main; then design6. Every changed test fails first.
+1. **M-D start (dates are RIGHT; corrected 3:33 PM):** Pokémon HOME news 878 (in-game source): Dec 2 02:00 UTC to Mar 3 2027 01:59 UTC =
+   regulation.json. pokemon.com's "Wed Dec 2 6 PM PST" is a slip. To do (helper's Plan A, report Nov 25 3:31 PM): (a) note the sources in
+   regulation.json + a test pinning since/end to the HOME text; (b) close the 3-7 h hole after the start: a page line "Reg M-D has started;
+   numbers switch at the next update" while the data still says M-C after REG_END_MC (pictures to Sim) + plan a hand-run data job at about
+   02:05 UTC Dec 2; (c) DEFUSE rules-fixes-test.mjs:174, which fails CI from 2026-12-02T01:59Z unless the new Flash Fire/Stalwart text is in
+   data.js (check the balance patch notes: news 877/patch page; if the text isn't known yet, make the test wait for the data, not the clock).
 2. **Merge alt/gemini-routes, then alt/gemini-seo2** into design6 (gate; wrangler.toml: keep workers_dev=false, preview_urls=false,
    run_worker_first=["/api/feedback"] from design6 AND not_found_handling="404-page" from routes).
 3. **Public-repo safety check** (started 4:05 PM): fix what is safe (remove a secret/personal detail from current files, tighten a
