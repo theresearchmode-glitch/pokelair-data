@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 4:24 PM (4:24:49)  date: Wed Nov 25, 2026
-NOW: HH: full local test run of alt/patch-dec2 (the Dec 2 balance patch batch; pid in .main-running), GitHub run on the same tip.
-NOW (helper): anonymous team-check counter + Web Analytics prep (alt/gemini-counter).
-NEXT: "Reg M-D has started" line (alt/md-started): 390x844 adds 25px (start buttons 801 -> 826px): check the fold rule, pictures to Sim.
-NEXT: merge alt/gemini-seo2 (contains routes; 404 test fixed 4:15 PM) into design6 through the gate once GitHub is green.
-NEXT: 1a M-D sources note + pinning test (formats.mjs REG_END: HOME news 878); 1b remove data/rk9 safely.
-NEXT: rest of docs/rebuild/night-plan-nov25.md in order (3 safety, 4 counter, 5 Turnstile after Dos job 1, 6 deploy off, 7 privacy page, 8-11).
+Updated: time: 5:12 PM (5:12:39)  date: Wed Nov 25, 2026
+NOW: HH: local tests of alt/batch-nov25 (seo2 + deploy workflow + M-D line + public privacy + Turnstile; pid in .main-running); GitHub runs: patch-dec2, design6, no-rk9, batch.
+NOW (helper): phone speed (night plan 9, LCP) on its own branch.
+NEXT: merge alt/batch-nov25 into design6 through the gate when GitHub is green; Preview + Game Plan after.
+NEXT: alt/no-rk9 -> main by fast-forward when green, then into design6.
+NEXT: privacy rows 4 + 5 words for Sim (counter + Turnstile now built); /pokemon list page + light 404 (pictures).
+NEXT: alt/patch-dec2 stays waiting for Dec 1 night (md-start-night-plan.md).
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
