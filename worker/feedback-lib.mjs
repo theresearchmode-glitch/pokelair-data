@@ -22,6 +22,11 @@ export function originAllowed(request, env = {}) {
   if (origin == null || origin === '') return env.REQUIRE_ORIGIN !== '1';
   return list.includes(origin.replace(/\/+$/, ''));
 }
+// Privacy page row 3 (Sim's approved words): feedback is deleted after 180 days. Runs once a day (wrangler.toml [triggers]);
+// 'at' is the date only (YYYY-MM-DD, UTC), so text dates compare correctly.
+export const KEEP_DAYS = 180;
+export const PURGE_SQL = 'DELETE FROM feedback WHERE at < ?';
+export const purgeCutoff = (now = Date.now()) => new Date(now - KEEP_DAYS * 864e5).toISOString().slice(0, 10);
 export async function readCapped(request, max = MAX_BODY_BYTES) {
   const len = request.headers.get('Content-Length');
   if (len != null && len !== '' && (!/^\d+$/.test(len) || +len > max)) return {tooBig: true};

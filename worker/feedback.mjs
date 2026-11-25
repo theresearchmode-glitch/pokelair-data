@@ -3,7 +3,7 @@
 // Accepts ONLY POST JSON {text <= 2000, page <= 40, kind <= 20} + Turnstile token in header `CF-Turnstile-Response` (or `X-Turnstile-Token`).
 // Stores ONLY (at, page, kind, text) in D1 — NEVER IP, user-agent, headers, cookies, or viewer IDs.
 // Only `export default` here: the helpers live in feedback-lib.mjs (Cloudflare accepts only entry points as named exports).
-import {originAllowed, readCapped, scrubContact, verifyTurnstile, validateFeedback, validateCount, COUNT_MAX_BYTES, COUNT_SQL} from './feedback-lib.mjs';
+import {PURGE_SQL, purgeCutoff, originAllowed, readCapped, scrubContact, verifyTurnstile, validateFeedback, validateCount, COUNT_MAX_BYTES, COUNT_SQL} from './feedback-lib.mjs';
 
 /* Kip job 34 #5: anything unexpected on an /api/ address (a body cut off mid-way, D1 or the rate limiter failing) answers a plain
    503 with no details, instead of an uncaught error. Pages and data files go straight to the assets. */
@@ -14,6 +14,10 @@ export default {
       const res = await env.ASSETS.fetch(request);
       return url.pathname.startsWith('/data/') && res.status === 404 ? new Response('Not Found', {status: 404}) : res; }
     try { return await api(request, env, url); } catch (e) { return Response.json({error: 'Try again later'}, {status: 503}); }
+  },
+  /* the daily clean-up (Nov 25): feedback older than 180 days is deleted, as the Privacy page says */
+  async scheduled(controller, env) {
+    await env.DB.prepare(PURGE_SQL).bind(purgeCutoff(controller && controller.scheduledTime || Date.now())).run();
   },
 };
 async function api(request, env, url) {

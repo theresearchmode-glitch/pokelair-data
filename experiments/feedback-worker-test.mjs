@@ -118,5 +118,20 @@ check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page:
     fb1.includes('window.__NP_PUBLIC') && fb1.includes('CF-Turnstile-Response') && fb1.includes('__npTurnstileCb'));
 }
 
+// W22 (Nov 25): the daily clean-up deletes feedback older than 180 days and nothing newer, on the real schema in SQLite;
+// wrangler.toml runs it once a day
+{
+  const {DatabaseSync} = await import('node:sqlite');
+  const db = new DatabaseSync(':memory:'); db.exec(fs.readFileSync('worker/schema.sql', 'utf8'));
+  const ins = db.prepare('INSERT INTO feedback (at, page, kind, text) VALUES (?, ?, ?, ?)');
+  for (const at of ['2026-05-28', '2026-05-29', '2026-05-30', '2026-11-25']) ins.run(at, 'home', 'idea', 'x');
+  const env = {DB: {prepare: sql => ({bind: (...a) => ({run: async () => db.prepare(sql).run(...a)})})}};
+  await worker.scheduled({scheduledTime: Date.parse('2026-11-25T07:17:00Z')}, env);
+  const left = db.prepare('SELECT at FROM feedback ORDER BY at').all().map(r => r.at);
+  check('W22-daily-delete-after-180-days', JSON.stringify(left) === JSON.stringify(['2026-05-29', '2026-05-30', '2026-11-25']), JSON.stringify(left));
+  const wt = fs.readFileSync('wrangler.toml', 'utf8');
+  check('W23-cleanup-runs-daily', /\[triggers\]\s*\ncrons = \["17 7 \* \* \*"\]/.test(wt));
+}
+
 console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
 if (failed) process.exit(1);

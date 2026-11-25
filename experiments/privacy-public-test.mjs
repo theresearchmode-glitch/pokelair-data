@@ -26,7 +26,7 @@ const showIn = async (p, sel) => { const before = await p.evaluate(() => documen
 { const {p, errs, rc} = await open(pubFile);
   ok(!!rc, 'public: the receipt (#abt-priv) draws');
   const t = rc ? rc.text : '';
-  for (const bad of ['Claude', 'anonymous ID', '180 days', 'Export', 'We count visits and team checks', "We don't count visits yet"])
+  for (const bad of ['Claude', 'anonymous ID', 'Export', 'We count visits and team checks', "We don't count visits yet"])
     ok(!t.includes(bad), `public: the receipt never says "${bad}"`);
   const titles = rc ? rc.rows.map(r => r.t) : [];
   const want = ['Your teams', 'Team codes', 'Feedback', 'Visit counts', 'Spam protection', 'No accounts, no ads', 'Kids', 'Contact', 'Not affiliated'];
@@ -34,7 +34,7 @@ const showIn = async (p, sel) => { const before = await p.evaluate(() => documen
   for (const s of ["Nothing about your teams is sent to us.", 'Clearing your browser data removes them.', 'To move a team to another device, use a team code.',
     'A team code holds the six Pokémon and their sets, nothing else: no name, no device, no date.', 'Anyone you give it to can open the team.',
     "There's no field for contact details, and any email address, phone number or @handle typed into a message is removed before it's saved.",
-    "Only the owner reads feedback, and it's never shown on the site.", 'We count team checks as plain totals (for example "1,200 team checks today"): no cookies, no ads, no tracking across other sites, nothing that identifies you.', "The feedback form uses Cloudflare Turnstile to check a person is sending it, not a bot.", "We don't store IP addresses.",
+    "Only the owner reads feedback, it's never shown on the site, and it's deleted after 180 days.", 'We count team checks as plain totals (for example "1,200 team checks today"): no cookies, no ads, no tracking across other sites, nothing that identifies you.', "The feedback form uses Cloudflare Turnstile to check a person is sending it, not a bot.", "We don't store IP addresses.",
     'There are no accounts, no logins, no ads and no third-party trackers.', "The site's fonts and pictures come from NastyPlot itself.",
     'Lots of young players use NastyPlot, so we never ask for names, emails or anything personal.', 'a parent can ask us to delete it: tap "Show email" below.',
     'Questions, deletion requests or a mistake on the site.', 'NastyPlot is an unofficial fan site, not affiliated with Nintendo, Game Freak or The Pokémon Company.'])
