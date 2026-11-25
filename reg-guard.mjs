@@ -30,7 +30,7 @@ export function emptyFor(file, reg, sd = '', now = new Date().toISOString()) {
     case 'meta_ladder.json': return {reg, format: 'doubles', kind: 'ladder', month: null, source: '', period: '', battles: 0, updated: now, note: '', top: [], more: [], usage1760: null};
     case 'meta_ingame.json': return {reg, format: 'doubles', kind: 'ingame', source: '', period: '', updated: now, top: [], more: []};
     case 'sources.json': return {reg, updated: now, problems: []};
-    case 'perf.json': return {updated: day, reg: {id: reg}};
+    case 'perf.json': return {updated: day, reg: (() => { try { const r = activeReg(); return {id: reg, name: r.name, since: r.since}; } catch (e) { return {id: reg}; } })()}; /* the banner keeps its name and start date (Scout's review) */
     case 'crosscheck.json': return {reg, updated: now, checks: []};
     case 'ratings_log.json': return {reg, updated: now, days: []};
     case 'scoreboard.json': return {reg, updated: now, today: null, history: []};
