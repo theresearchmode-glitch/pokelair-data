@@ -64,6 +64,15 @@ const dataDate = (() => { const ds = []; for (const k of ['results', 'teams', 'e
 const smUrls = [...sm.matchAll(/<url>([\s\S]*?)<\/url>/g)].map(x => x[1]);
 ok(!!dataDate && smUrls.length > 360 && smUrls.every(u => u.includes(`<lastmod>${dataDate}</lastmod>`)), `every sitemap address has <lastmod>${dataDate}</lastmod>, the data date (${smUrls.filter(u => u.includes(`<lastmod>${dataDate}</lastmod>`)).length} of ${smUrls.length})`);
 ok(smUrls.length > 0 && !/nastyplot\.org\/(box|compare)</.test(sm), 'the on-device pages (/box, /compare) are not in the sitemap');
+// SEO fix 7 (Nov 25): each Pokémon file carries its BreadcrumbList as JSON-LD in the HTML (a data block: no CSP hash needed), the
+// same one the page's script writes after load (NastyPlot > Ratings > <Name>; Ratings at /meta is the site's list of every Pokémon)
+const ldOf = h => { let bc = null, n = 0; for (const x of h.matchAll(/<script type="application\/ld\+json"[^>]*>([\s\S]*?)<\/script>/g)) { n++;
+  try { const j = JSON.parse(x[1]); for (const o of (j['@graph'] || [j])) if (o['@type'] === 'BreadcrumbList') bc = o; } catch (e) {} } return {n, bc}; };
+const gl = ldOf(g), gi = gl.bc ? gl.bc.itemListElement : [];
+ok(gl.n === 1 && gi.length === 3 && gi[0].item === 'https://nastyplot.org/' && gi[1].item === 'https://nastyplot.org/meta' && gi[2].name === 'Garchomp' && gi[2].item === 'https://nastyplot.org/pokemon/garchomp',
+  `garchomp.html carries its BreadcrumbList in the file (${gi.map(i => i.name).join(' > ') || 'none'})`);
+const noBc = [...files].filter(f => !ldOf(rdD('pokemon/' + f)).bc);
+ok(files.size > 300 && !noBc.length, `every Pokémon file has a BreadcrumbList (${files.size - noBc.length} of ${files.size})`);
 // served like Cloudflare Pages (developers.cloudflare.com/pages/configuration/serving-pages): a file if it exists, /x -> x.html, then the
 // _redirects 200 rules; otherwise 404.html with status 404, or, with no top-level 404.html, the page with 200 (Pages' SPA mode)
 const T = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp'};
@@ -86,6 +95,9 @@ try { const q = await b.newPage({viewport: {width: 1280, height: 900}}), errs = 
     const h1 = await q.evaluate(() => ((document.querySelector('#main h1') || {}).innerText || '').replace(/\s+/g, ' '));
     const ft = (fs.readFileSync(path.join(D, 'pokemon', u.slice(9).replace(/\.html$/, '') + '.html'), 'utf8').match(/<title>([^<]*)<\/title>/) || [])[1] || '', dt = await q.evaluate(() => document.title);
     ok(ft.replace(/&amp;/g, '&') === dt, `${u}: the title the page sets matches the file's ("${dt}")`);
+    const fileBc = ldOf(fs.readFileSync(path.join(D, 'pokemon', u.slice(9).replace(/\.html$/, '') + '.html'), 'utf8')).bc, liveLd = await q.evaluate(() => (document.getElementById('np-jsonld') || {}).textContent || '');
+    let liveBc = null; try { const j = JSON.parse(liveLd); for (const o of (j['@graph'] || [j])) if (o['@type'] === 'BreadcrumbList') liveBc = o; } catch (e) {}
+    ok(!!fileBc && JSON.stringify(liveBc) === JSON.stringify(fileBc), `${u}: the breadcrumb the page's script writes matches the file's`);
     ok(h1.includes(want) && !errs.length, `${u} shows ${want} (h1 "${h1.slice(0, 40)}"${errs.length ? '; errors: ' + errs.join(' | ') : ''})`); errs.length = 0; }
   // wrong addresses answer 404 and say noindex; real tool addresses answer 200 and show their page (Nov 25, SEO)
   for (const [u, want, h1w] of [['/zzz', 404, 'Wrong turn'], ['/pokemon/not-a-pokemon', 404, 'No Pokémon'], ['/team', 200, ''], ['/this-week', 200, ''], ['/', 200, '']]) {

@@ -158,7 +158,7 @@ if (process.argv.includes('--v2')) {
       routeManifest[rk] = `/routes/${fn}?v=${hash(code)}`; /* from the site root: /pokemon/x would look in /pokemon/routes/ (Nov 25) */
     }
   }
-  let pubTag = '', seoRows = [];
+  let pubTag = '', seoRows = [], pokemonLd = null;
   if (PUBLIC) {
     const seoPath = dir + '../docs/rebuild/seo-titles-draft.md';
     const seoMap = {};
@@ -174,9 +174,9 @@ if (process.argv.includes('--v2')) {
         seoRows.push({key, path: addr, title, desc});
       }
     }
-    const {websiteJsonLd, jsonLdScriptTag} = await import('./public-jsonld.mjs');
+    const {websiteJsonLd, jsonLdScriptTag, pokemonPageGraphJsonLd} = await import('./public-jsonld.mjs'); pokemonLd = (s, name) => jsonLdScriptTag(pokemonPageGraphJsonLd(s, name, seoMap.home || null));
     const wsLd = websiteJsonLd(seoMap.home || null);
-    const ldRuntime = `(function(){var base=${JSON.stringify(wsLd).replace(/</g, '\\u003c')};function syncLd(){var el=document.getElementById('np-jsonld');if(!el)return;var p=String(location.pathname||'/').replace(/\\/+$/,'')||'/';if(p.indexOf('/pokemon/')===0){var slug=decodeURIComponent(p.slice(9));var label=slug;try{var m=typeof byName==='object'&&byName&&byName.get(slug);if(m&&m.d)label=m.d}catch(e){}var ws=Object.assign({},base);delete ws['@context'];el.textContent=JSON.stringify({'@context':'https://schema.org','@graph':[ws,{'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'NastyPlot',item:'https://nastyplot.org/'},{'@type':'ListItem',position:2,name:'Ratings',item:'https://nastyplot.org/meta'},{'@type':'ListItem',position:3,name:label,item:'https://nastyplot.org/pokemon/'+encodeURIComponent(slug)}]}]})}else{el.textContent=JSON.stringify(base)}}window.__npSyncJsonLd=syncLd;addEventListener('popstate',syncLd);addEventListener('hashchange',syncLd);var ps=history.pushState,rs=history.replaceState;if(ps)history.pushState=function(){var r=ps.apply(this,arguments);syncLd();return r};if(rs)history.replaceState=function(){var r=rs.apply(this,arguments);syncLd();return r};syncLd()})();`;
+    const ldRuntime = `(function(){var base=${JSON.stringify(wsLd).replace(/</g, '\\u003c')};function syncLd(){var el=document.getElementById('np-jsonld');if(!el)return;var p=String(location.pathname||'/').replace(/\\/+$/,'')||'/';if(p.indexOf('/pokemon/')===0){var slug=decodeURIComponent(p.slice(9)).replace(/\\.html$/,'');if(el.textContent.indexOf('"item":"https://nastyplot.org/pokemon/'+encodeURIComponent(slug)+'"')>=0)return;var label=slug;try{var m=typeof byName==='object'&&byName&&byName.get(slug);if(m&&m.d)label=m.d;else if(typeof ROSTER==='object'&&window.V2&&V2.pubSlug){for(var i=0;i<ROSTER.length;i++)if(V2.pubSlug(ROSTER[i].n)===slug){label=typeof disp==='function'?disp(ROSTER[i].n):ROSTER[i].n;break}}}catch(e){}var ws=Object.assign({},base);delete ws['@context'];el.textContent=JSON.stringify({'@context':'https://schema.org','@graph':[ws,{'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'NastyPlot',item:'https://nastyplot.org/'},{'@type':'ListItem',position:2,name:'Ratings',item:'https://nastyplot.org/meta'},{'@type':'ListItem',position:3,name:label,item:'https://nastyplot.org/pokemon/'+encodeURIComponent(slug)}]}]})}else{el.textContent=JSON.stringify(base)}}window.__npSyncJsonLd=syncLd;addEventListener('popstate',syncLd);addEventListener('hashchange',syncLd);var ps=history.pushState,rs=history.replaceState;if(ps)history.pushState=function(){var r=ps.apply(this,arguments);syncLd();return r};if(rs)history.replaceState=function(){var r=rs.apply(this,arguments);syncLd();return r};syncLd()})();`;
     pubTag = jsonLdScriptTag(wsLd) + '\n' + `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest).replace(/</g, '\\u003c')};` : ''}${ldRuntime}</script>\n`;
   }
   /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words).
@@ -281,7 +281,9 @@ if (process.argv.includes('--v2')) {
       if (seen.has(s)) throw new Error(`public build: ${p.n} and ${seen.get(s)} share the address /pokemon/${s}`); seen.set(s, p.n);
       const name = disp(p.n), title = (t => t.length <= 60 ? t : `${name}: Champions set, rating & partners`)(`${name} in Pokémon Champions: best set, rating & partners`) /* same as V2.pubTitle (pokemon.js) */, desc = `${name} in Pokémon Champions doubles: its best tournament set, its rating and its best partners, from real tournament results. Free, no account.`;
       /* one canonical (the page carries its own), og:description too, and callbacks so a '$' in a name is never a pattern (Kip job 33 F6) */
-      const page = ownHead(ph, title, desc, `https://nastyplot.org/pokemon/${s}`);
+      /* SEO fix 7 (Nov 25): the page's BreadcrumbList is in the file (the same @graph the page's script writes into #np-jsonld; the script
+         keeps the file's when it is for the same address: it runs before the roster loads and used to write the address, "mr-mime", as the name) */
+      const page = ownHead(ph, title, desc, `https://nastyplot.org/pokemon/${s}`).replace(/<script type="application\/ld\+json" id="np-jsonld">[\s\S]*?<\/script>/, () => pokemonLd(s, name));
       fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
     }
     /* SEO fix 2 (Nov 25): one file per tool page (dist/team.html at /team) with its own words from the SEO map, on the shared stylesheet */
