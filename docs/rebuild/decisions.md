@@ -2539,3 +2539,10 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:51 AM: Sim: @nastyplot was taken; he claimed @NastyPlotHQ on X (Twitter) and YouTube. Use @NastyPlotHQ as the social name.
 - 9:45 AM: Sim (usage 91%): a second helper until 12 PM today on the most useful task. HH picks j19 (public site, Dec 7) brought up to date with the redesign and green on GitHub.
 - 9:58 AM: Fixed v2-saved SV-3 flake (test opened pages as file://; storage lost on some reloads; now served over http, 12/12 pass) and j18's A11Y-5 (CI step ran on a build without data). Both pushed; j18 re-merged with design6.
+- 10:36 AM: Hourly check 10:36: Game Plan v74 published; j18/j19/design6 GitHub runs in progress; switch helper pushing f457981c.
+- 10:45 AM: Sim: mascot (Kip's fox idea) parked until after the launch announcement; then a hand-drawn fox in our cut-paper slanted style, clearly not Zorua/Zoroark/Ninetales, never replacing Home's crowd hero. Rule 23 (no mascot for now) stands.
+- 10:47 AM: Design (HH authority): switch fix d's 4-boxes-in-a-row view chooser removed (broke 'stand-outs' mid-word at 390, touched edge). My Team at 390 on live data 4.38 screens vs 4.3 goal: small overage, to show Sim; GitHub's frozen-data limit (4.78) being rechecked.
+- 10:50 AM: Sim sent Dos the switch-candidate baseline job (alt/gemini-switch, frozen data, junctions).
+- 10:58 AM: j19 (public site for nastyplot.org) merged into claude/design6 at 98dcaaf4 after GitHub green on 8802521b; local build/run/commander/score-src/unrated pass.
+- 11:22 AM: Sim (usage 92%): 2 helpers until 4 PM. j18 BR-C1 GitHub failure = timing (4/4 pass locally, tops steady 521); failed job re-run requested.
+- 11:47 AM: j18 merged into claude/design6 (f30b65fb): one conflict (test.yml paths list: union of both). Local: build, run.mjs ALL PASSED, strength-invariants 0 FAIL, commander/score-src/unrated pass, a11y 0 FAIL, CSP pass. Disk freed to 8.2 GB (j19u, j18w, k23w removed).

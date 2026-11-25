@@ -21,13 +21,13 @@ const CH = {};
 CH.SS_MID = 80; CH.SS_K = 122;
 CH.ssOfE = e => e == null || !isFinite(e) ? null : Math.max(0, Math.min(100, CH.SS_MID + CH.SS_K * (e - .5)));
 CH.WORDS = [[90, 'Top tier'], [80, 'Tournament ready'], [70, 'Solid'], [60, 'Needs work'], [-1, 'Missing a basic']];
-CH.wordOf = s => s == null ? '' : CH.WORDS.find(w => s >= w[0])[1];
+CH.wordOf = s => s == null || !isFinite(s) ? '' : CH.WORDS.find(w => s >= w[0])[1];
 CH.wordOfL = L => ({A: 'Top tier', B: 'Tournament ready', C: 'Solid', D: 'Needs work', F: 'Missing a basic'})[String(L || '')[0]] || '';
 CH.grade = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F'; // the band (colours, data-band)
 // Nov 9 (Sim chose: plus/minus on every letter, so players feel the difference inside a band): same ranking, finer labels.
 // Tested on later games: the top and bottom bands differ clearly; neighbouring steps differ by ~1-2 wins per 100 games, too small to
 // confirm with today's data, so a step is a rank (where the team sits), not a promise of more wins. F stays plain.
-CH.gradeFull = s => CH.grade(s);
+CH.gradeFull = s => CH.grade(Math.round(s));
 CH.gradeOld = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F';
 // this exact six's own record (δ in team-strength units, and its games), from model.sixes
 CH.sixOf = ms => { const S = META.model && META.model.sixes; if (!S || !ms || ms.length !== 6) return null; const v = S[ms.map(m => (m.p || m).n).sort().join('|')]; if (!Array.isArray(v)) return null;
@@ -55,7 +55,7 @@ CH.SD_K = .7; // experiments/unsure.mjs (Nov 8): the raw spreads were about 30% 
    100+ games of its own is at least Medium. */
 CH.sureOf = (ms, six) => { const sd = CH.sdOf(ms); if (sd == null) return null; let k = sd <= .12 ? 2 : sd <= .2 ? 1 : 0; if (six && six.g >= 100) k = Math.max(k, 1);
   return [{w: 'Low', t: 'few real games back this exact mix, so it could move a lot as results come in'}, {w: 'Medium', t: 'its Pokémon are well known, but this mix of them less so'}, {w: 'High', t: 'its Pokémon and pairings are backed by lots of real games'}][k]; };
-CH.sdOf = ms => { const M = META.model; if (!(CH.SD_K > 0) || !M || !M.monSd || !ms || ms.length !== 6) return null; const ns = ms.map(m => (m.p || m).n), mx = Math.max(...Object.values(M.monSd)), p0 = +M.pairSd0 || .05;
+CH.sdOf = ms => { const M = META.model; if (!(CH.SD_K > 0) || !M || !M.monSd || !ms || ms.length !== 6) return null; const vals = Object.values(M.monSd).filter(isFinite); if (!vals.length) return null; const ns = ms.map(m => (m.p || m).n), mx = Math.max(...vals), p0 = +M.pairSd0 || .05;
   let v = 0; for (const n of ns) v += (M.monSd[n] ?? mx) ** 2;
   for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = ns[i] < ns[j] ? ns[i] + '|' + ns[j] : ns[j] + '|' + ns[i]; v += ((M.pairSd || {})[k] ?? p0) ** 2; }
   return Math.sqrt(v) * CH.SD_K; };
@@ -74,7 +74,7 @@ CH.fieldWin = y => { const q = META.model && META.model.dist && META.model.dist.
      of above-average strength is held back for a never-seen combination (it was half). */
 CH.MU_K = .003; CH.MU_AVG = 79;
 CH.strengthOf = (ms, ready) => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = ms.map(m => m.p.n);
-  if (new Set(names.map(n => (byName.get(n) || {}).b || n)).size < 6) return null; const xs = strengthX(names, ms); if (!xs || !isFinite(xs.x0)) return null;
+  if (new Set(names.map(n => (byName.get(n) || {}).b || n)).size < 6) return null; const xs = strengthX(names, ms, true); if (!xs || !isFinite(xs.x0)) return null;
   const M = META.model, mx = M.meanX || 0, k = typeof testedPairs === 'function' ? testedPairs(names) : null, cr = k == null || !M.supK ? 1 : .75 + .25 * Math.min(1, k / M.supK);
   const dv = xs.x0 - mx, x = mx + (dv > 0 ? dv * cr : dv), mu = ready == null ? 0 : CH.MU_K * (ready - CH.MU_AVG);
   const six = CH.sixOf(ms), y0 = x + mu, y = y0 + (six ? six.d : 0), pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
@@ -86,7 +86,7 @@ CH.strengthOf = (ms, ready) => { try { if (!ms || ms.length !== 6 || typeof mode
 CH.PARTIAL_V2 = true;
 CH.partialOf = ms => { try { if (!ms || !ms.length || ms.length >= 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = ms.map(m => m.p.n);
   if (new Set(names.map(n => (byName.get(n) || {}).b || n)).size < names.length) return null; const M = META.model, mx = M.meanX || 0;
-  const xk = strengthX(names, ms).x0; if (!isFinite(xk)) return null; const y = xk + (6 - names.length) / 6 * mx, pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
+  const xk = strengthX(names, ms, true).x0; if (!isFinite(xk)) return null; const y = xk + (6 - names.length) / 6 * mx, pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
   const ss = CH.ssOfE(e); return {x: y, y, six: null, mu: 0, pct, ss, ss0: ss, ssMu: ss, pct0: pct, pMu: pct, e, e0: e, eMu: e, rg: null, su: null, partialN: names.length}; } catch (e) { return null; } };
 // The letter (Sim, Oct 30): readiness for the top 30 threats, minus 6 points for each of the team checklist's checks it misses.
 // Measured on 904 tournament teams with records: each missed check cost about 1% of games won, and 6 points per miss put the
@@ -132,16 +132,18 @@ CH.letterBounds = L => { const T = [[90, 101, 'A'], [80, 90, 'B'], [70, 80, 'C']
 CH.teamKey = ms => (ms || []).map(m => [m.p && m.p.n, m.heldItem || '', m.ability || '', (m.moves || []).map(x => x && x.name).join(',')].join('|')).sort().join(';');
 CH.ownKeys = () => { const sig = JSON.stringify(S.slots) + '#' + JSON.stringify((S.teams || []).map(t => t.slots)); if (CH._okC && CH._okC.sig === sig) return CH._okC.ks; const ks = new Set(); CH._okC = {sig, ks}; try { const cur = typeof members === 'function' ? members() : []; if (cur.length) ks.add(CH.teamKey(cur));
   for (const t of S.teams || []) { const r = typeof teamRating === 'function' ? teamRating(t.slots) : null; if (r && r.ms && r.ms.length) ks.add(CH.teamKey(r.ms)); } } catch (e) {} return ks; };
-CH.sticky = (ms, s) => { const now = CH.gradeFull(s); let map; try { map = JSON.parse(localStorage.getItem('np.gl') || '{}') || {}; } catch (e) { return now; }
+CH.sticky = (ms, s) => { const sr = Math.round(s), now = CH.gradeFull(sr); let map; try { map = JSON.parse(localStorage.getItem('np.gl') || '{}') || {}; } catch (e) { return now; }
   const k = CH.teamKey(ms); if (!k) return now; const prev = map[k]; let out = now;
-  if (prev && prev !== now) { const b = CH.letterBounds(prev); if (b && s >= b[0] - CH.STICKY && s < b[1] + CH.STICKY) out = prev; }
+  if (prev && prev !== now) { const b = CH.letterBounds(prev); if (b && sr >= b[0] - CH.STICKY && sr < b[1] + CH.STICKY) out = prev; }
   if (map[k] !== out && !CH._ownBusy) { CH._ownBusy = true; let own; try { own = CH.ownKeys(); } finally { CH._ownBusy = false; }
     if (own.has(k)) { map[k] = out; const ks = Object.keys(map); if (ks.length > 60) delete map[ks[0]]; try { localStorage.setItem('np.gl', JSON.stringify(map)); } catch (e) {} } }
   return out; };
 CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && !x.note && x.k !== 'reach') : [], mp = CH.modelPts(ms), rec = CH.recOf(ms);
-  const illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
-  if (st) { const s = Math.round(st.ss * 10) / 10; const L = CH._ownBusy ? CH.gradeFull(s) : CH.sticky(ms, s); return {v: 2, s, letter: L, band: L[0] === 'F' ? 'F' : L[0], word: CH.wordOf(s), rk: st.pct, e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.ss0, pMu: st.ssMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
+  const dupSp = !!(ms && ms.length > 1 && new Set(ms.map(m => (m && m.p && m.p.b) || (m && m.p && m.p.n) || '')).size < ms.length);
+  const illegal = dupSp || (typeof itemClash === 'function' && ms ? itemClash(ms).length > 0 : !!(CK && CK.items.some(x => x.k === 'items' && !x.ok))), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
+  if (st) { const s = Math.round(st.ss * 10) / 10; const L = CH._ownBusy ? CH.gradeFull(s) : CH.sticky(ms, s); return {v: 2, s, letter: L, band: L[0] === 'F' ? 'F' : L[0], word: CH.wordOfL(L), rk: st.pct, e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.ss0, pMu: st.ssMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
   // fewer than six (or the model not loaded yet): the old check, marked so far
+  if (!isFinite(RD.score)) return null;
   const raw = RD.score - CH.GMISS * miss.length + (mp || 0), clamp = v => Math.min(100, Math.max(0, Math.round(v))), chk = clamp(raw);
   let s = chk, w = 0, real = null; if (rec) { w = rec.g / (rec.g + CH.REC_K); real = CH.recScore(rec.wr); s = clamp((1 - w) * raw + w * real); }
   return {v: 1, s, letter: CH.gradeOld(s), chk, real, w, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; };
@@ -208,7 +210,7 @@ CH.sideGrades = (more, g0, base) => { const ok = []; for (const pl of more) { if
 
 // moved unchanged from 60-concept-h.js (R4, Nov 11)
 /* Strength Score (Nov 9): a change shows in score points, "+7 (76 → 83)", and the band word when it changes */
-CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(g0), w1 = CH.wordOf(g1);
+CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(r0), w1 = CH.wordOf(r1);
   return `${d > 0 ? '+' + d : d < 0 ? '\u2212' + Math.abs(d) : '\u00b10'} (${r0} \u2192 ${r1})${w0 !== w1 ? ', ' + w1 : ''}`; };
 // ---------- text helpers for the score (moved from 60-concept-h.js, Nov 11; the share images and the new build use them) ----------
 CH.gradeNum = G => !G ? '' : G.v === 2 ? `${Math.round(G.s)} \u00b7 ${CH.wordOfL(G.letter)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;

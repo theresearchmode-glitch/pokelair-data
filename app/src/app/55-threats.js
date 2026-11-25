@@ -329,8 +329,8 @@ const THR = (() => {
   let thCache = {key: null, list: null};
   function threatList(n = 30) { let res = null; try { res = RES; } catch (e) {} const tc = res && res.tc && res.tc.rows && Object.keys(res.tc.rows).length >= 50 ? res.tc.rows : null;
     const key = metaVersion + '|' + (tc ? 'tc' : 'u') + '|' + n; if (thCache.key === key) return thCache.list;
-    let list = tc ? Object.entries(tc).filter(([k, r]) => byName.has(k) && Array.isArray(r)).sort((a, b) => b[1][1] - a[1][1]).slice(0, n).map(([k, r]) => ({n: k, w: +r[1], src: 'top cut'}))
-      : ROSTER.map(p => ({n: p.n, w: U(p)})).filter(x => x.w > 0).sort((a, b) => b.w - a.w).slice(0, n).map(x => ({...x, src: 'usage'}));
+    let list = tc ? Object.entries(tc).filter(([k, r]) => byName.has(k) && Array.isArray(r) && isFinite(+r[1]) && +r[1] > 0).sort((a, b) => +b[1][1] - +a[1][1]).slice(0, n).map(([k, r]) => ({n: k, w: +r[1], src: 'top cut'}))
+      : ROSTER.map(p => ({n: p.n, w: U(p)})).filter(x => isFinite(x.w) && x.w > 0).sort((a, b) => b.w - a.w).slice(0, n).map(x => ({...x, src: 'usage'}));
     const sides = []; for (const x of list) { try { const s = side({n: x.n, top: true}); sides.push({...s, w: x.w, src: x.src, setSrc: s.spec && s.spec.sets ? `top-cut sets (${s.spec.sets})` : 'all tournament teams'}); } catch (e) {} }
     thCache = {key, list: sides}; return sides; }
   // report for spec arrays (tests, real sheets) or ready-made sides
@@ -338,8 +338,8 @@ const THR = (() => {
      straight through (same rows, same order); the background planner steps it (teamReportG), so a phone never spends a whole
      report (150-300 ms at 4x CPU, the scroll hitch on My Team) in one step. */
   function* reportSidesG(team, ths) { const modes = teamModes(team), rows = []; for (const t of ths) { rows.push(vsThreat(team, t, modes)); yield; }
-    const W = ths.reduce((a, t) => a + t.w, 0) || 1;
-    return {score: Math.round(100 * rows.reduce((a, r) => a + r.t.w * PTS[r.level], 0) / W), modes, rows, team, W}; }
+    const wOf = t => isFinite(+t.w) && +t.w > 0 ? +t.w : 0, W = ths.reduce((a, t) => a + wOf(t), 0) || 1;
+    return {score: Math.round(100 * rows.reduce((a, r) => a + wOf(r.t) * PTS[r.level], 0) / W), modes, rows, team, W}; }
   function reportSides(team, ths) { const g = reportSidesG(team, ths); let r; do r = g.next(); while (!r.done); return r.value; }
   function report(teamSpecs, threatSpecs) { const team = teamSpecs.map(side), ths = threatSpecs ? threatSpecs.map(x => ({...side(x), w: x.w})) : threatList();
     return reportSides(team, ths); }

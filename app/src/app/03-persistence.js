@@ -61,7 +61,14 @@ function metaJoin(d,k,cb){let p1=null,p2=null,got1=false,sent=null;const emit=()
     const v=two?joinParts(a,b):a&&a._part?(()=>{const o=Object.assign({},a);delete o._part;return o})():a;cb({exists:!!v,data:()=>v})};
   d.doc('meta/'+k).onSnapshot(s=>{p1=s;got1=true;emit()});try{d.doc('meta/'+k+'_2').onSnapshot(s=>{p2=s;emit()},()=>{})}catch(e){}}
 (async()=>{try{
-  const c=window.__NP_CLAUDE||window.claude;if(!c||!c.use)return;/* __NP_CLAUDE: the Preview build's data (Nov 12: inside the Claude app window.claude can't be replaced) */
+  let c=window.__NP_CLAUDE||window.claude;
+  if((!c||!c.use)&&window.__NP_PUBLIC){
+    const base=String(window.NP_DATA||'/data/').replace(/\/?$/,'/');
+    const cache=new Map();
+    const load=k=>{if(!cache.has(k))cache.set(k,fetch(base+k+'.json').then(r=>r.ok?r.json():null).catch(()=>null));return cache.get(k)};
+    c={use:async n=>n==='db'?{doc:p=>({onSnapshot:cb=>{if(!p.startsWith('meta/')||p.endsWith('_2')){setTimeout(()=>cb({exists:false,data:()=>null}),0);return()=>{}}load(p.slice(5)).then(v=>cb({exists:v!=null,data:()=>v}));return()=>{}},get:async()=>({exists:false}),set:async()=>{},update:async()=>{}})}:null};
+  }
+  if(!c||!c.use)return;/* __NP_CLAUDE: the Preview build's data (Nov 12: inside the Claude app window.claude can't be replaced) */
   const [d,u]=await Promise.all([c.use('db'),c.use('user')]);
   if(!d){META_NODB=true;if(typeof scheduleRender==='function')scheduleRender()}
   if(d){META_KEYS.forEach(k=>{try{metaJoin(d,k,s=>{META_AT=performance.now();META_SEEN.add(k);const v=s.exists?s.data():null;/* weekly digest and event calendar (Nov): their own cleaners, kept out of the data-date line (a fresh calendar must not hide stale results) */
