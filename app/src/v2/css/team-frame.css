@@ -425,15 +425,13 @@
    1. the plan's own 32px bottom padding sat on top of the work area's 32px: one 64px empty strip before the footer (rule 13); the plan keeps 8px
    2. phones: a stand-out's calc note reads 'Calc: Handles it' on one line, the short form Sim chose for the cards (Q20 A), not two lines
    3. phones: the even tile (fix b) is the button itself, so its 'See all 30' line goes
-   4. phones: the view sentence's four boxed words are one row of four equal boxes (a long word takes two lines inside its 44px box, so
-      no word is ever left alone on a second row); 'Show me' is kept for screen readers only (the Ratings bar's phone precedent)
+   4. (taken out by HH, Nov 25 10:55 AM: four boxes in one row broke "stand-outs" mid-word and touched the edge at 390; the view
+      sentence stays as Sim approved it)
    5. phones: the Matchups block's gaps one step tighter on the 4px grid (counts 12px under the heading, 8px under the bar and the words),
       the counts' numbers 28px (still Unbounded slanted), a stand-out row 8px above and 4px under its words */
 @media (max-width:699.98px){.tmk-work .k-plan{padding-bottom:var(--s2)}.tmk-work .k-plan::before{bottom:var(--s4)}
   .tmk-work .mu-out .mu-long{display:none}.tmk-work .mu-out .mu-row .mu-dis .mu-calc{white-space:nowrap}
   .tmk-work .mu-evn .mu-row .mu-dis{display:none}
-  .tmk-work .mu-sent>span:first-child{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-  .tmk-work .mu-sent{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s1)}.tmk-work .mu-sent .k-w{padding:0 var(--s1);line-height:1.15;text-align:center;white-space:normal;overflow-wrap:normal}
   .tmk-work .tm-legend{margin-top:var(--s3)}.tmk-work .mu-split{margin-bottom:var(--s2)}.tmk-work .mu-sent{margin:var(--s3) 0 var(--s2)}
   .tmk-work .mu-out .mu-row{padding:var(--s2) 0 var(--s1)}}
 @media (max-width:519.98px){.tmk-work .tm-legend b{font-size:var(--t28)}}
