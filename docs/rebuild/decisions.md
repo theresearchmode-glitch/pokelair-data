@@ -2555,3 +2555,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:30 PM: Queue fix 2: alt/main-skipfix (6671555b) = main + test.yml 'if' on 4 jobs: skip after a skipped/cancelled data run. Pushed for GitHub to test; lands on main (fast-forward) only when green. Fixes 1 (batch helper pushes) and 3 (Dos long runs) in effect.
 - 12:39 PM: Sim: My Team phones take 4.35 screens (no optional swaps): step note 'Matchups · top 30 threats · real games' on one line + step 1 spacing same as steps 2-3. The test's no-swap limit follows (4.3 -> 4.35).
 - 12:47 PM: Dos baseline 'maybe real' #69 (Events 320 big ticket): passes on Linux frozen data (top 753 vs Windows 787): Windows font width, not a page bug. iPhone not checked.
+- 12:55 PM: Main queue fix landed: main fast-forwarded 744d582f -> 6671555b (test.yml skips test jobs after a skipped/cancelled data run). GitHub green on 6671555b (all 4 jobs).
