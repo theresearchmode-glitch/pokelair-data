@@ -2571,3 +2571,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:28 PM: Scout's feedback guard (origin, 16 KB cap, emails/phones removed before storing) reviewed and in claude/design6 (e8cc0bde); both worker tests now in GitHub's checks (31036f1b). Checked: ALL PASSED + ALL PASSED (43); scrub keeps 252/4/0, 13,631, 44.5%.
 - 2:30 PM: Sim: hello@nastyplot.org receive-only for now (Cloudflare Email Routing to his Gmail, tonight with Dos). Sending as hello@ not needed yet.
 - 2:33 PM: Design (HH authority): phone timeline line at a whole pixel (-8px, on the 4px grid) so Safari draws it (it dropped the dashed border at -9.5px: 292 vs 7,312 red px in WebKit iPhone). Line 1.5px off the margin's exact centre. Picture sent to Sim.
+- 2:36 PM: Hourly 2:35: helper on public 404 routing (SEO fix 4) + Limitless request/credit facts.
