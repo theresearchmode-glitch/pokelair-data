@@ -2615,3 +2615,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:39 PM: Sim sent Scout's job (Dec 2 patch independent check).
 - 5:40 PM: Sim: Scout's last day is probably Friday Nov 27.
 - 5:41 PM: Sim OK: Scout plan (now patch check; Thu launch-branch code review; Fri switch runbook walk-through).
+- 6:08 PM: Kip job 35 + Scout patch report received. Kip #1 (shadow scoreboard graded in-sample) checked real: fixed on alt/shadow-order (grades only unseen events), GitHub dispatched, for main before the 09:07 UTC data run. Score-changing findings (EB ridge, six double-count, band inflation 75.5% at 80+) wait for Sim (launch keeps today's score).
