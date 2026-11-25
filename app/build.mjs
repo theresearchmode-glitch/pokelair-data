@@ -249,9 +249,15 @@ if (process.argv.includes('--v2')) {
     h = h.replace(/<link rel="icon" type="image\/svg\+xml" href="data:[^"]*">/, '<link rel="icon" type="image/svg+xml" href="/favicon.svg">')
       .replace(/<link rel="icon" type="image\/png" sizes="32x32" href="data:[^"]*">/, '<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">')
       .replace(/<link rel="apple-touch-icon" sizes="180x180" href="data:[^"]*">/, '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">');
+    /* SEO fix 6 (Nov 25): the link-preview picture is the brand kit's 720 px devil profile picture (4-social/facebook/facebook-profile-720.png,
+       the one head.html's note names), copied as is to /og-image.png below; the old /og-icon.png was never published */
+    const ogSrc = dir + '../docs/brand/nastyplot-brand-assets/4-social/facebook/facebook-profile-720.png'; if (!fs.existsSync(ogSrc)) throw new Error('public build: brand-kit og image missing');
+    if (!h.includes('<meta property="og:image" content="https://nastyplot.org/og-icon.png">')) throw new Error('public build: og:image tag not found');
+    h = h.replace('<meta property="og:image" content="https://nastyplot.org/og-icon.png">', '<meta property="og:image" content="https://nastyplot.org/og-image.png">'); fs.copyFileSync(ogSrc, dir + 'dist/og-image.png');
     const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     /* a page's own head: title + canonical, description, og:title, og:description (callbacks, so a '$' in a value is never a pattern) */
-    const ownHead = (html, title, desc, url) => html.replace(/<link rel="canonical"[^>]*>/g, '').replace(/<title>[^<]*<\/title>/, () => `<title>${esc(title)}</title><link rel="canonical" href="${url}">`)
+    /* SEO fix 6 (Nov 25): og:url = the canonical address, written with it */
+    const ownHead = (html, title, desc, url) => html.replace(/<link rel="canonical"[^>]*>|<meta property="og:url"[^>]*>/g, '').replace(/<title>[^<]*<\/title>/, () => `<title>${esc(title)}</title><link rel="canonical" href="${url}"><meta property="og:url" content="${url}">`)
       .replace(/(<meta name="description" content=")[^"]*"/, (m, a) => `${a}${esc(desc)}"`).replace(/(<meta property="og:title" content=")[^"]*"/, (m, a) => `${a}${esc(title)}"`)
       .replace(/(<meta property="og:description" content=")[^"]*"/, (m, a) => `${a}${esc(desc)}"`);
     const homeRow = seoRows.find(r => r.path === '/'); if (homeRow) h = ownHead(h, homeRow.title, homeRow.desc, 'https://nastyplot.org/'); /* "/" (index.html) is Home */
@@ -280,7 +286,7 @@ if (process.argv.includes('--v2')) {
        matching), and a rule would also catch unknown names. An unknown Pokémon has no file, so it gets 404.html with status 404.
        "/" is index.html, the same page; 404.html is the same page with noindex, so the site's own not-found view draws there. */
     fs.writeFileSync(dir + 'dist/index.html', h);
-    if (!/<meta name="robots"/.test(h)) fs.writeFileSync(dir + 'dist/404.html', h.replace(/<link rel="canonical"[^>]*>/g, '').replace(/<title>/, '<meta name="robots" content="noindex"><title>')); else throw new Error('public build: the page already has a robots tag');
+    if (!/<meta name="robots"/.test(h)) fs.writeFileSync(dir + 'dist/404.html', h.replace(/<link rel="canonical"[^>]*>|<meta property="og:url"[^>]*>/g, '').replace(/<title>/, '<meta name="robots" content="noindex"><title>')); else throw new Error('public build: the page already has a robots tag');
     /* the brand kit's icons at the site root (search engines look for /favicon.ico and a real icon URL; never redrawn, copied as is) */
     const icoDir = dir + '../docs/brand/nastyplot-brand-assets/3-website-icons/';
     for (const f of ['favicon.ico', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png']) if (fs.existsSync(icoDir + f)) fs.copyFileSync(icoDir + f, dir + 'dist/' + f);

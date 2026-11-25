@@ -47,6 +47,15 @@ ok(toolRows.length >= 20 && !badTool.length, `every tool page has its own file w
 const homeRow = seoRows.find(r => r.path === '/');
 ok(!!homeRow && headOk(rdD('index.html'), homeRow), "index.html carries Home's title, description and canonical");
 ok(toolRows.every(r => rdD(r.path.slice(1) + '.html').includes('<link rel="stylesheet" href="/v2.css?v=')), 'the tool pages share the one stylesheet file (/v2.css)');
+// SEO fix 6 (Nov 25): og:url = the page's canonical address on every built page (none on 404.html); og:image is a brand-kit file
+// (4-social/facebook/facebook-profile-720.png, copied as is, never redrawn) at /og-image.png
+const allPages = [...fs.readdirSync(D).filter(f => f.endsWith('.html') && f !== '404.html'), ...[...files].map(f => 'pokemon/' + f)];
+const badOg = allPages.filter(f => { const h = rdD(f), c = (h.match(/<link rel="canonical" href="([^"]*)">/) || [])[1], u = h.match(/<meta property="og:url" content="[^"]*">/g) || [];
+  return !(c && u.length === 1 && u[0] === `<meta property="og:url" content="${c}">`) || !h.includes('<meta property="og:image" content="https://nastyplot.org/og-image.png">'); });
+ok(allPages.length > 360 && !badOg.length, `og:url = the canonical address and og:image = /og-image.png on every page (${allPages.length - badOg.length} of ${allPages.length}; wrong: ${badOg.slice(0, 4).join(' ') || 'none'})`);
+ok(!!h404 && !/og:url|rel="canonical"/.test(h404), '404.html has no canonical and no og:url');
+const brandOg = path.join(ROOT, 'docs/brand/nastyplot-brand-assets/4-social/facebook/facebook-profile-720.png');
+ok(fs.existsSync(path.join(D, 'og-image.png')) && fs.readFileSync(path.join(D, 'og-image.png')).equals(fs.readFileSync(brandOg)), 'dist/og-image.png is the brand-kit file, byte for byte');
 // served like Cloudflare Pages (developers.cloudflare.com/pages/configuration/serving-pages): a file if it exists, /x -> x.html, then the
 // _redirects 200 rules; otherwise 404.html with status 404, or, with no top-level 404.html, the page with 200 (Pages' SPA mode)
 const T = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp'};
