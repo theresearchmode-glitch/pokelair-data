@@ -520,7 +520,7 @@ V2.pages.team = {place: 'team', draw() {
   if (V2.mtfFrame && V2.isHand(D)) { /* Reskin page 1 (mock-up B): the kit header, then the plan line with four steps */
     /* My Team 'The Party' (Sim chose it 7:53 PM Nov 22, 'you can go' 7:59 PM): the six live in the blue party band at the top (the frame moves into the hero), so the plan line starts at the upgrade */
     const steps = [['The upgrade and the plan', 'Suggestions · Game Plan', sgSec + V2.mtfPlan(D, legalMark)],
-      muSec ? ['Who we’re up against', `Matchups · the top ${D.rows.length} threats · verdicts from real games`, muSec] : null, ['Checks and record', `Team Checks${ms.length === 6 ? ' · Your Games' : ''}`, ckSec + (V2.ygSec ? V2.ygSec(ms) : '')]].filter(Boolean);
+      muSec ? ['Who we’re up against', `Matchups · top ${D.rows.length} threats · real games`, muSec] : null, ['Checks and record', `Team Checks${ms.length === 6 ? ' · Your Games' : ''}`, ckSec + (V2.ygSec ? V2.ygSec(ms) : '')]].filter(Boolean);
     return `<section class="tm-hero mt mtf-hero tmk pty2">${mtfHead}${V2.mtfFrame(D, sel)}</section><div class="tm-work mt-work tmk-work pty2-work">${V2.kPlan(steps.map(([t, n, h], i) => V2.kStep(i + 1, t, n, h)).join(''))}</div>`; }
   return `<section class="tm-hero mt${V2._mtWide && innerWidth < 1100 ? ' mt-wide' : ''}">${mtHead}${V2.sixHtml(D, sel)}</section>${tabbed ? tabBar : jump}<div class="tm-work${V2.isHand(D) ? ' mt-work' : ''}${tabbed ? ' tm-tabbed' : ''}">${tabPanels(`${V2.isHand(D) ? muSec : ''}<div class="tm-c1">${setSec}${sgSec}</div><div class="tm-c2">${V2.isHand(D) ? '' : muSec}${ckSec}`)}${V2.ygSec ? V2.ygSec(ms) : ''}</div></div>`;
 },

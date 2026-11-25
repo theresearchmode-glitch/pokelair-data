@@ -435,3 +435,5 @@
   .tmk-work .tm-legend{margin-top:var(--s3)}.tmk-work .mu-split{margin-bottom:var(--s2)}.tmk-work .mu-sent{margin:var(--s3) 0 var(--s2)}
   .tmk-work .mu-out .mu-row{padding:var(--s2) 0 var(--s1)}}
 @media (max-width:519.98px){.tmk-work .tm-legend b{font-size:var(--t28)}}
+/* Sim, Nov 25 12:39 PM (took 4.35 screens): phones: step 1's heading gets the same space above it as steps 2 and 3 */
+@media (max-width:699.98px){.tmk-work .k-step:first-child .k-sec{margin-top:var(--s4)}}
