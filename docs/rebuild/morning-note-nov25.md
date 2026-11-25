@@ -3,6 +3,9 @@
 - Kip job 24 (mega stack 2) is with Kip. Lab round 2 (combo over 8 weeks) running.
 ## JUST DONE (Tue night)
 - Redesign batch pushed to claude/design6 (bcdf69f1): all tests green; countdown short form; tagline sliver fixed.
+- Kip lab ROUND 2 (8 weeks, 38,477 later games, paired): the COMBO (clean ridge + matchup term) beats today's model:
+  accuracy +0.48 pts [0.16, 0.80], better log loss in EVERY slice (small/big events, common/rare teams). Sim decides; the
+  next gate is the shadow check on new games (Kip job 24 part 3). Logs: docs/rebuild/test-runs/v3-lab-run2-nov24.*
 - Kip lab: its copy of today's model is proven IDENTICAL to model.mjs on the real games (0.00000 difference).
 - Kip job 23 (6 parts) applied on 4 branches and pushed. Working: feedback Worker (test passes), freshness test, data-pipeline docs,
   practice-switch script, Mega Sol calc changes. NEEDS FIXING (3, found by running the tests here):
