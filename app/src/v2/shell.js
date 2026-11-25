@@ -312,7 +312,7 @@ V2.REG_START_MD = '2026-12-02T02:00:00Z';
    In that gap the data still says M-C with nothing about M-D, so the same line says so, for up to 2 days (then the data note's
    staleness line takes over). It hides as soon as the data knows M-D (r.now or r.id M-D). */
 V2.mdCountdown = (now = Date.now(), short = false) => { try { const r = typeof regInfo === 'function' && regInfo(), endMs = Date.parse(V2.REG_END_MC), stMs = Date.parse(V2.REG_START_MD);
-  if (r && !r.now && r.id === 'M-C' && now >= stMs && now < stMs + 2 * 864e5) return short ? 'Reg M-D has started; numbers update soon.' : 'Reg M-D has started: our numbers switch to it at the next data update.';
+  if (r && !r.now && r.id === 'M-C' && now >= stMs && now < stMs + 2 * 864e5) return short ? 'Reg M-D has started.' : 'Reg M-D has started: our numbers switch to it at the next data update.';
   if (!r || r.now || r.id !== 'M-C' || !(now < endMs)) return '';
   /* calendar days in the viewer's own time zone, so the last day says "today" (code review, Nov 24: it said "tomorrow" 59 min before the end) */
   const end = new Date(endMs), day = x => Date.UTC(x.getFullYear(), x.getMonth(), x.getDate()), d = Math.round((day(end) - day(new Date(now))) / 864e5),
