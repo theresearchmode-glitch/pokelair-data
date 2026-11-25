@@ -228,7 +228,7 @@ if (process.argv.includes('--v2')) {
     /* SEO fix 10 (Nov 25): <lastmod> = the data date, the oldest of the core parts the page's "Data as of" line stands on (results, teams,
        events, model: DATA_CORE in 02-set-data.js), read from out/ the same way (updated, pulled or date); the build date only if none
        has a date. The on-device pages (/box, /compare: a player's own box or teams, nothing to index) stay out. */
-    const dataDates = []; for (const k of ['results', 'teams', 'events', 'model']) for (const f of [`out/${k}.json`, `out/split/${k}.json`]) {
+    const dataDates = []; for (const k of ['limitless', 'teams', 'events', 'model']) /* results = limitless.json's results (Kip job 34 #8b) */ for (const f of [`out/${k}.json`, `out/split/${k}.json`]) {
       try { const v = JSON.parse(fs.readFileSync(dir + '../' + f, 'utf8')), t = v && (v.updated || v.pulled || v.date); if (t && !isNaN(Date.parse(t))) { dataDates.push(new Date(Date.parse(String(t).length === 10 ? t + 'T12:00:00Z' : t)).toISOString().slice(0, 10)); break; } } catch (e) {} }
     lastmod = dataDates.sort()[0] || new Date().toISOString().slice(0, 10); if (!dataDates.length) console.log('public: no data date in out/, sitemap lastmod = build date ' + lastmod);
     const urls = seoRows.filter(r => !['/box', '/compare'].includes(r.path)).map(r => `  <url><loc>https://nastyplot.org${r.path}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n');

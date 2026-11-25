@@ -13,7 +13,8 @@ const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); 
 const DOCS = {results: () => (rd('limitless.json') || {}).results, doubles_tour: () => rd('meta_tour.json'), teams: () => rd('teams.json'), history: () => rd('history.json'),
   model: () => rd('model.json'), doubles: () => rd('meta_ladder.json'), doubles_ingame: () => rd('meta_ingame.json'), events: () => rd('events.json'), track: () => rd('track.json'),
   practice: () => rd('practice.json'), weekly: () => rd('weekly.json'), calendar: () => rd('calendar.json'),
-  post: () => rd('post.json') /* Nov 18: Mystery Gifts and news (post-news.mjs); about 22 KB, far under the limit */};
+  post: () => rd('post.json') /* Nov 18: Mystery Gifts and news (post-news.mjs); about 22 KB, far under the limit */,
+  info: () => rd('info.json') /* Nov 25 (Kip job 34 #6): who runs each move, item and Ability (the info sheets); the page asks for meta/info */};
 export const DOC_SOURCES = DOCS; /* Nov 25: the public site's deploy (public-site.mjs) writes the same documents as files */
 export function split(doc, limit = LIMIT) {
   const a = {...doc}, b = {}; let guard = 0;

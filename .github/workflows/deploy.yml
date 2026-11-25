@@ -10,6 +10,7 @@ on:
   workflow_run:
     workflows: ["Promote to live"]
     types: [completed]
+    branches: [main]
   workflow_dispatch:
     inputs:
       rollback:
@@ -26,13 +27,15 @@ jobs:
     if: ${{ vars.DEPLOY_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success') }}
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    # the API token only in the steps that call Cloudflare (Kip job 34 #7): npm ci and the build never see it
     env:
-      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       SITE: https://nastyplot.org
     steps:
       - name: Roll back (by hand only)
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.rollback }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: npx --yes wrangler@4.45.0 rollback --name nastyplot --message "rollback by hand" -y && exit 0
       - uses: actions/checkout@v5
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
@@ -51,6 +54,8 @@ jobs:
           CF_ANALYTICS_TOKEN: ${{ vars.CF_ANALYTICS_TOKEN }}
       - name: Deploy
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::CLOUDFLARE_API_TOKEN secret is missing"; exit 1; }
           sed -e 's#^directory = .*#directory = "./site"#' wrangler.toml > wrangler.deploy.toml
@@ -59,6 +64,8 @@ jobs:
           npx --yes wrangler@4.45.0 deploy -c wrangler.deploy.toml --message "live $(git rev-parse --short HEAD)"
       - name: Smoke test (rolls back by itself if the site answers wrong)
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
         run: |
           sleep 20
           bad=0

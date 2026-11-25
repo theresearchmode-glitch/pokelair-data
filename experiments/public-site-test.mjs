@@ -4,6 +4,8 @@
 import fs from 'node:fs'; import path from 'node:path'; import {spawnSync} from 'node:child_process'; import {fileURLToPath} from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'), D = path.join(ROOT, 'site-test');
 let bad = 0; const ok = (c, m) => { console.log(`  ${c ? 'pass' : 'FAIL'}  ${m}`); if (!c) bad++; };
+/* a fresh GitHub checkout has no app/dist (Kip job 34 #3): build from none */
+fs.rmSync(path.join(ROOT, 'app/dist'), {recursive: true, force: true});
 const r = spawnSync(process.execPath, ['public-site.mjs', 'site-test'], {cwd: ROOT, encoding: 'utf8'});
 ok(r.status === 0, `public-site.mjs builds the folder (${(r.stdout + r.stderr).trim().split('\n').pop().slice(0, 200)})`);
 const all = []; const walk = d => { if (fs.existsSync(d)) for (const e of fs.readdirSync(d, {withFileTypes: true})) { const p = path.join(d, e.name); e.isDirectory() ? walk(p) : all.push(path.relative(D, p)); } }; walk(D);
@@ -14,7 +16,7 @@ const keys = JSON.parse(fs.readFileSync(path.join(ROOT, 'app/src/app/03-persiste
 const dataOk = keys.filter(k => { try { JSON.parse(fs.readFileSync(path.join(D, 'data', k + '.json'), 'utf8')); return true; } catch (e) { return false; } });
 ok(dataOk.length === keys.length, `every document the page asks for is a readable file (${dataOk.length} of ${keys.length})`);
 const filled = keys.filter(k => { try { const v = JSON.parse(fs.readFileSync(path.join(D, 'data', k + '.json'), 'utf8')); return v && typeof v === 'object'; } catch (e) { return false; } });
-ok(['model', 'perf', 'teams', 'results', 'events', 'doubles_tour'].every(k => filled.includes(k)), `the main documents have data (${filled.length} filled)`);
+ok(['model', 'perf', 'teams', 'results', 'events', 'doubles_tour', 'info'].every(k => filled.includes(k)), `the main documents have data (${filled.length} filled)`);
 const art = all.filter(f => f.startsWith('art/')).length; ok(art > 300, `the pictures are there (${art})`);
 const v = all.includes('v2.html') ? fs.readFileSync(path.join(D, 'v2.html'), 'utf8') : '';
 ok(/NP_ART\s*=\s*["']\/?art\//.test(v) || v.includes('"art/"') || v.includes("'art/'"), 'the page looks for pictures in /art/');

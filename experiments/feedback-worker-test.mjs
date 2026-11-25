@@ -71,6 +71,25 @@ check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page:
     const allowed = await worker.fetch(post(), {...env, FEEDBACK_RL: {limit: async () => ({success: true})}});
     check('W16-rate-limit-pass-saves-no-ip', allowed.status === 201 && bound.length === n0 + 1 && !JSON.stringify(bound[bound.length - 1].args).includes('203.0.113.9'), `status=${allowed.status}`);
 
+    // W17-W21 (Kip job 34, Nov 25): @handles scrubbed on the server; counts rate-limited; a failing D1, Turnstile or body never crashes
+    const before17 = bound.length;
+    await worker.fetch(new Request('https://nastyplot.org/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json', 'CF-Turnstile-Response': 'tok'}, body: JSON.stringify({text: 'add me on discord @kidplayer123 (or @kid.two)', page: 'home', kind: 'idea'})}), env);
+    const saved17 = bound[before17] && bound[before17].args[3];
+    check('W17-handles-scrubbed-on-server', bound.length === before17 + 1 && !/@kid/.test(saved17) && /\[handle removed\]/.test(saved17), JSON.stringify(saved17));
+    const cnt = (e2) => worker.fetch(new Request('https://nastyplot.org/api/count', {method: 'POST', headers: {'Content-Type': 'application/json', 'CF-Connecting-IP': '203.0.113.9'}, body: '{"k":"teamcheck"}'}), e2);
+    const nc = bound.length, ck = []; const lim = await cnt({...env, COUNT_RL: {limit: async o => { ck.push(o.key); return {success: false}; }}});
+    check('W18-count-rate-limit-429', lim.status === 429 && bound.length === nc && ck[0] === 'cnt:203.0.113.9', `status=${lim.status}`);
+    const badDb = {...env, DB: {prepare: () => ({bind: () => ({run: async () => { throw new Error('D1_ERROR: secret internals'); }})})}};
+    const r19 = await worker.fetch(post(), badDb), t19 = await r19.text();
+    check('W19-d1-failure-503-no-details', r19.status === 503 && !/D1_ERROR|internals/.test(t19), `status=${r19.status} body=${t19}`);
+    globalThis.fetch = async () => { throw new Error('network down'); };
+    const r20 = await worker.fetch(post(), env);
+    check('W20-turnstile-unreachable-403', r20.status === 403, `status=${r20.status}`);
+    globalThis.fetch = async () => new Response(JSON.stringify({success: true, hostname: 'nastyplot.org', action: 'feedback'}), {status: 200});
+    const broken = new ReadableStream({pull(c) { c.error(new Error('client went away')); }});
+    const r21 = await worker.fetch(new Request('https://nastyplot.org/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json'}, body: broken, duplex: 'half'}), env);
+    check('W21-cut-off-body-no-crash', r21.status === 503 || r21.status === 400, `status=${r21.status}`);
+
     const data404 = await worker.fetch(new Request('https://nastyplot.org/data/missing.json'), env);
     check('W9-data-missing-404', data404.status === 404, `status=${data404.status}`);
   } finally {

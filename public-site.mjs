@@ -17,7 +17,7 @@ if (!DIR.startsWith(ROOT + path.sep) && !process.env.PUBLIC_SITE_ANYWHERE) fail(
 if (DIR === ROOT || DIR === DIST) fail('refusing to write over ' + DIR);
 
 // 1. the public build, from a clean app/dist (nothing left over from other builds)
-for (const f of fs.readdirSync(DIST, {withFileTypes: true})) fs.rmSync(path.join(DIST, f.name), {recursive: true, force: true});
+if (fs.existsSync(DIST)) for (const f of fs.readdirSync(DIST, {withFileTypes: true})) fs.rmSync(path.join(DIST, f.name), {recursive: true, force: true});
 /* Web Analytics (Sim's token, once he adds the site in Cloudflare): set CF_ANALYTICS_TOKEN; without it the page loads no analytics */
 const cfa = (process.env.CF_ANALYTICS_TOKEN || '').trim();
 const b = spawnSync(process.execPath, ['app/build.mjs', '--v2', '--split', '--one-art-size', '--art=art/', '--public', ...(cfa ? ['--cf-analytics=' + cfa] : [])], {encoding: 'utf8'});

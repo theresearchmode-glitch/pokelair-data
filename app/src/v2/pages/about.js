@@ -31,7 +31,10 @@ V2.ABT_SAVED_PUB = [
   ['Your teams', 'On this device only', "Your team, saved teams, box, the opponent team you're testing and your battle log stay in this browser. Nothing about your teams is sent to us. Clearing your browser data removes them. To move a team to another device, use a team code."],
   ['Team codes', "Only what's in the team", 'A team code holds the six Pokémon and their sets, nothing else: no name, no device, no date. Anyone you give it to can open the team.'],
   ['Feedback', 'Only what you send', "The message you send, its kind (bug, idea...), the page you were on and the date (not the time). There's no field for contact details, and any email address, phone number or @handle typed into a message is removed before it's saved. Only the owner reads feedback, and it's never shown on the site."],
-  ['Visit counts', 'Not yet', "We don't count visits yet."],
+  /* Nov 25 (Kip job 34 #1; Sim OK'd the launch words): the team-check counter and Turnstile are built, so these two rows are true now.
+     Visits: only team checks are counted until Web Analytics has its token; then row 4 becomes V2.ABT_PUB_LATER.visitCounts. */
+  ['Visit counts', 'Totals only', 'We count team checks as plain totals (for example "1,200 team checks today"): no cookies, no ads, no tracking across other sites, nothing that identifies you.'],
+  V2.ABT_PUB_LATER.turnstile,
   ['No accounts, no ads', 'Nothing to sign up for', "There are no accounts, no logins, no ads and no third-party trackers. The site's fonts and pictures come from NastyPlot itself."],
   ['Kids', 'Built for all ages', 'Lots of young players use NastyPlot, so we never ask for names, emails or anything personal. If you sent something personal by mistake, a parent can ask us to delete it: tap "Show email" below.'],
   ['Contact', '', 'Questions, deletion requests or a mistake on the site.', '<span class="abtmail"><button type="button" class="np-link" data-abtmail="show">Show email</button></span>'],

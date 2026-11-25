@@ -46,12 +46,16 @@ const EMAIL_PLAIN_RE = /[a-z0-9._%+-]+@[a-z0-9-]+(?:\.[a-z0-9-]+)+/gi;
 // than keeping a phone number.
 const PHONE_RE = /(?:\+\s?)?(?:\(\s?\d+\s?\)[\s.-]?)?\d(?:[\s.()-]{0,3}\d){9,14}(?!\d)/g;
 const PHONE7_RE = /(?<![\d.,/])\b\d{3}[-.]\d{4}\b(?![\d.,/%])/g;
+// @handles (Kip job 34 #2): the same rule as the page's fbScrub (53-feedback-data.js), so the promise on the Privacy page holds
+// even for a message that didn't come through our page. Runs after the email rules (an email's @ is gone by then).
+const HANDLE_RE = /(^|[\s(\[{"'])@[A-Za-z0-9_.]{2,}/g;
 export function scrubContact(text) {
   let t = String(text || ''), emails = 0, phones = 0;
   t = t.replace(EMAIL_RE, () => { emails++; return '[email removed]'; }).replace(EMAIL_PLAIN_RE, () => { emails++; return '[email removed]'; });
   t = t.replace(PHONE_RE, m => { const d = m.replace(/\D/g, '').length; if (d < 10 || d > 15) return m; phones++; return '[phone removed]'; });
   t = t.replace(PHONE7_RE, () => { phones++; return '[phone removed]'; });
-  return {text: t, emails, phones};
+  let handles = 0; t = t.replace(HANDLE_RE, (m, a) => { handles++; return a + '[handle removed]'; });
+  return {text: t, emails, phones, handles};
 }
 
 // Turnstile (launch review S1/S2, Nov 25): a token only counts if Cloudflare says it is good AND it was made on our own site for
@@ -65,6 +69,7 @@ export function turnstileOk(j, env = {}) {
 }
 export async function verifyTurnstile(token, secret, fetchImpl = fetch, env = {}) {
   if (!token || typeof token !== 'string' || token.length > 2048 || !secret) return false;
+  try { /* Kip job 34 #5: a network error or a non-JSON answer from Cloudflare counts as "not verified" (403), never a crash */
   const r = await fetchImpl('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -73,6 +78,7 @@ export async function verifyTurnstile(token, secret, fetchImpl = fetch, env = {}
   if (!r.ok) return false;
   const j = await r.json();
   return turnstileOk(j, env);
+  } catch (e) { return false; }
 }
 
 export function validateFeedback(body) {

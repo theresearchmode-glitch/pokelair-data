@@ -29,6 +29,15 @@ namespace_id = "1001"
   limit = 5
   period = 60
 
+# Team-check counts (Kip job 34 #4): 30 per 60 s per sender, so a script can't inflate them or burn the daily Worker quota
+[[ratelimits]]
+name = "COUNT_RL"
+namespace_id = "1002"
+
+  [ratelimits.simple]
+  limit = 30
+  period = 60
+
 [[d1_databases]]
 binding = "DB"
 database_name = "nastyplot-feedback"
