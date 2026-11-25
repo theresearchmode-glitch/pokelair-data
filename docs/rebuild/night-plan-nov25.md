@@ -4,6 +4,11 @@ in order; every merge into claude/design6 or main goes through `REPORT_OK=1 bash
 (helper report read, GitHub green on the source, every test); every visual change gets before/after pictures saved for Sim's
 morning look (design authority to 10 PM Sun, Sim Nov 25) and is logged with its time. Morning report to Sim at 7:55 AM.
 
+QUALITY FIRST (Sim, Nov 25 3:28 PM: "EXTRA THOROUGH ... quality and polish are the top priority"): speed never beats checks.
+Every item: read before changing; a test that fails first; the merge gate; pictures at 390/768/1440 light+dark for anything visible,
+looked at by HH before it's called done; design and code review skills on real changes (CLAUDE.md rule 26). If unsure, stop that
+item, write down why, and move to the next.
+
 Never overnight without Sim: anything on the live site artifact (5VBfLTR5sM4JU5NswJYyGk) or the switch itself; publishing to
 nastyplot.org; Cloudflare/GitHub settings; rewriting git history; rotating keys; deleting anything. These are listed for the morning.
 
