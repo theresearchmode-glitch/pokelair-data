@@ -540,9 +540,10 @@ const OHKO_MOVES=new Set(['Fissure','Horn Drill','Sheer Cold','Guillotine']);
 function moveAcc(mv,ab,weather,def,item,userTypes,moved){if(!mv)return 100;if(ab==='No Guard'||(def&&def.ability==='No Guard'))return 100;
   if(SURE_HIT.has(mv.name))return 100;if(OHKO_MOVES.has(mv.name)||mv.ohko){const base=(typeof MOVE_ACC==='object'&&MOVE_ACC[mv.name])||30;return mv.name==='Sheer Cold'&&userTypes?(userTypes.includes('Ice')?30:20):base}
   let a=mv.acc||(typeof MOVE_ACC==='object'&&MOVE_ACC[mv.name])||100;
-  if(['Hurricane','Thunder'].includes(mv.name)){if(weather==='rain')return 100;if(weather==='sun')a=50}if(mv.name==='Blizzard'&&weather==='snow')return 100;
+  const effW=ab==='Mega Sol'?'sun':weather;
+  if(['Hurricane','Thunder'].includes(mv.name)){if(effW==='rain')return 100;if(effW==='sun')a=50}if(mv.name==='Blizzard'&&effW==='snow')return 100;
   if(ab==='Compound Eyes')a*=1.3;if(item==='Wide Lens')a*=1.1;if(item==='Zoom Lens'&&moved)a=a*4915/4096;if(ab==='Hustle'&&mv.cat===1)a*=.8;
-  if(def&&((def.ability==='Sand Veil'&&weather==='sand')||(def.ability==='Snow Cloak'&&weather==='snow')))a*=.8;if(def&&def.item==='Bright Powder')a*=.9;
+  if(ab!=='Mega Sol'&&def&&((def.ability==='Sand Veil'&&weather==='sand')||(def.ability==='Snow Cloak'&&weather==='snow')))a*=.8;if(def&&def.item==='Bright Powder')a*=.9;
   return Math.min(100,Math.round(a))}
 function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{/* 30 (Nov 13): today the shared cache always handed this table the 30-list; kept so the live table does not change */thr=metaThreats(30).map(x=>x.p||x).filter(p=>p&&p.st)}catch(e){}if(!thr.length)return '';
   const cell=b=>{if(!b)return '<td class="dcz">–</td>';const p=100*b.r.max/b.r.hp,lo=100*b.r.min/b.r.hp,c=lo>=100?'k1':p>=100?'k1m':lo>=50?'k2':p>=50?'k2m':'k3';const nt=hitNote(b),ks=koShort(b.r);return `<td class="${c}" data-ko="${esc(ks)}" title="${esc(b.mv.name)}: ${dmgRange(b.r)} · ${esc(koText(b.r))}${nt?' ('+nt+')':''}">${dmgP(p)}%<span>${esc(b.mv.name)}${nt?' *':''}</span></td>`};
