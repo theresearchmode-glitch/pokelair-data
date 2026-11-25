@@ -2,7 +2,7 @@
 // Runs at the start of the daily job, before anything else reads the files: the first run converts what was saved before
 // the switch; after that it finds nothing to change (safe to run any number of times). Needs NP_PID_KEY, like the downloads.
 //   data/t, data/t2, data/p    Limitless standings, team sheets and pairings: the account becomes pid(account)
-//   data/official, data/rk9    official events: the full name becomes an ID plus keyed name words (pk); country dropped;
+//   data/official    official events: the full name becomes an ID plus keyed name words (pk); country dropped;
 //                              Liquipedia's page text replaced by its placements with keyed names
 //   out/*.json                 any value that is a known name becomes that player's ID (teams, events, weekly, official)
 // Prints counts only, never a name. `node scrub-names.mjs --check` changes nothing and exits 1 if anything is left.
@@ -34,15 +34,10 @@ for (const f of list('data/p')) { const d = J(f); if (!Array.isArray(d)) continu
     if (r[3] != null && !isPid(r[3]) && !RESULT.has(String(r[3]))) { r[3] = pid(r[3]); n++; } }
   save(f, d, n); }
 
-// official events (Victory Road cache, frozen RK9 files)
-for (const f of [...list('data/official'), ...list('data/rk9')]) { const d = J(f); if (!d) continue; let n = 0;
+// official events (Victory Road cache; the RK9 files were removed Nov 25: RK9's terms)
+for (const f of list('data/official')) { const d = J(f); if (!d) continue; let n = 0;
   if (Array.isArray(d.teams)) for (const t of d.teams) { if (t.player && !isPid(t.player)) { t.pk = okeys(t.player); t.player = O(t.player); n++; } if ('country' in t) { delete t.country; n++; } }
   if (f.endsWith('liquipedia.json')) for (const k of Object.keys(d)) { const e = d[k]; if (e && e.wt) { const Q = parseLiquipedia(e.wt); e.q = {players: Q.players, sdate: Q.sdate, place: [...Q.place].map(([nm, r]) => [okeys(nm), r])}; delete e.wt; n++; } }
-  save(f, d, n); }
-// whole-field files: every map keyed by "name [cc]" (teams, records)
-for (const f of list('data/rk9/field')) { const d = J(f); if (!d) continue; let n = 0;
-  for (const key of Object.keys(d)) { const m = d[key]; if (!m || typeof m !== 'object' || Array.isArray(m)) continue; const ks = Object.keys(m); if (!ks.some(k => /\s\[[a-z]{2}\]$/i.test(k))) continue;
-    const T = {}; for (const k of ks) { if (isPid(k)) { T[k] = m[k]; continue; } T[O(k.replace(/\s*\[[a-z]{2}\]\s*$/i, ''))] = m[k]; n++; } d[key] = T; }
   save(f, d, n); }
 
 // out/: values equal to a converted name; an unknown name in a player field still becomes an ID (never left as text)
