@@ -18,7 +18,7 @@ const CH = {};
    lands in the 50s. Same ranking as the old grade (scoreboard Nov 9: identical picks); each 10-point band won more than the one
    below on later games. The rank among real teams is kept as G.rk (small print). Letters: one per 10 points (A 90+, B 80s, C 70s,
    D 60s, F under 60) until the band words replace them (Step B). */
-CH.SS_MID = 80; CH.SS_K = 122;
+CH.SS_MID = 73.33; CH.SS_K = 166.67; /* Nov 25, bands option C (Kip job 37, Sim yes): 60% win chance vs the field = 90, 54% = 80, 48% = 70, 42% = 60; was 80 + 122 x (e - 50%), which put 76% of played team-games at 80+ */
 CH.ssOfE = e => e == null || !isFinite(e) ? null : Math.max(0, Math.min(100, CH.SS_MID + CH.SS_K * (e - .5)));
 CH.WORDS = [[90, 'Top tier'], [80, 'Tournament ready'], [70, 'Solid'], [60, 'Needs work'], [-1, 'Missing a basic']];
 CH.wordOf = s => s == null || !isFinite(s) ? '' : CH.WORDS.find(w => s >= w[0])[1];
