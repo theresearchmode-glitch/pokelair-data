@@ -39,11 +39,18 @@ const ITERS = Math.max(20, Number(arg('iters', process.env.ITERS || '250')) || 2
 const RUN_MD_SIM = process.argv.includes('--md-sim');
 const VERIFY_BASELINE = process.argv.includes('--verify-baseline');
 const SENSITIVITY = process.argv.includes('--sensitivity');
+const ROUND3 = process.argv.includes('--round3');
+const FALSIFY_ALL = process.argv.includes('--falsify-all');
+const FALSIFY_SHUFFLE = FALSIFY_ALL || process.argv.includes('--falsify-shuffle');
+const FALSIFY_REVERSE = FALSIFY_ALL || process.argv.includes('--falsify-reverse');
+const FALSIFY_LOEO = FALSIFY_ALL || process.argv.includes('--falsify-loeo');
 const JSON_OUT = arg('json', '');
 const CORE_IDEAS = ['fm', 'matchup', 'glicko', 'no-evid-hier', 'mega-cap', 'combo'];
 const SENS_IDEAS = ['matchup-d2', 'matchup-d4', 'matchup-d8', 'no-evid-hier', 'combo-d2', 'combo-d4', 'combo-d8'];
-const ALL_IDEAS = [...new Set([...CORE_IDEAS, ...SENS_IDEAS])];
+const ROUND3_IDEAS = ['combo', 'combo-skillhalf', 'combo-archetype', 'combo-hier-sets', 'combo-seg-cal'];
+const ALL_IDEAS = [...new Set([...CORE_IDEAS, ...SENS_IDEAS, ...ROUND3_IDEAS])];
 const IDEAS = (() => {
+  if (ROUND3) return ROUND3_IDEAS;
   if (SENSITIVITY) return SENS_IDEAS;
   const raw = arg('ideas', 'all');
   if (raw === 'none' || raw === '') return [];
@@ -160,11 +167,31 @@ function buildContext(data, trainGames, opts = {}) {
     deckF = M.decks.map(fs_ => (fs_ || []).map(f => keep.get(f)).filter(j => j != null));
     freq = new Float64Array(setNames.length);
     const spDecks = new Map(), fd = new Float64Array(setNames.length);
-    for (const d of used) {
-      if (!M.decks[d]) continue;
-      for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1);
-      for (const j of deckF[d]) fd[j]++;
+    if (opts.recencySetFreq) {
+      let lastD = -Infinity;
+      for (const g of trainGames) lastD = Math.max(lastD, dayNum(data.evDates[g[3]]));
+      const half = data.S.half ?? 14;
+      const deckW = new Map();
+      for (const g of trainGames) {
+        const w = half ? Math.pow(0.5, (lastD - dayNum(data.evDates[g[3]])) / half) : 1;
+        if (g[7] != null) deckW.set(g[7], (deckW.get(g[7]) || 0) + w);
+        if (g[8] != null) deckW.set(g[8], (deckW.get(g[8]) || 0) + w);
+      }
+      for (const d of used) {
+        if (!M.decks[d]) continue;
+        const w = deckW.get(d) || 1;
+        for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + w);
+        for (const j of deckF[d]) fd[j] += w;
+      }
+    } else {
+      for (const d of used) {
+        if (!M.decks[d]) continue;
+        for (const sp of new Set(M.decks[d].map(f => M.feats[f].split(/[@:#]/)[0]))) spDecks.set(sp, (spDecks.get(sp) || 0) + 1);
+        for (const j of deckF[d]) fd[j]++;
+      }
     }
+    const spCounts = [...spDecks.values()].sort((a, b) => a - b);
+    const medSp = spCounts.length ? spCounts[Math.floor(spCounts.length / 2)] : 1;
     setNames.forEach((f, j) => {
       const sp = f.split(/[@:#]/)[0];
       featSp.push(sp);
@@ -172,7 +199,27 @@ function buildContext(data, trainGames, opts = {}) {
       if (!spFeats.has(sp)) spFeats.set(sp, []);
       spFeats.get(sp).push(j);
     });
+    var featLcMult = Float64Array.from(featSp, sp => {
+      const ratio = Math.sqrt(medSp / Math.max(1, spDecks.get(sp) || 1));
+      return Math.max(0.5, Math.min(2.5, ratio));
+    });
   }
+  // Archetype / speed-control 6-dim vector per deck (TR, TW, Sun, Rain, Sand, Snow) from M.feats (zero leakage)
+  const ARCH_DIM = 6;
+  const deckArch = hasSets ? M.decks.map(fs_ => {
+    const v = new Float64Array(ARCH_DIM);
+    if (!fs_) return v;
+    for (const f of fs_) {
+      const s = M.feats[f] || '';
+      if (/:Trick Room$/i.test(s)) v[0] = 1;
+      else if (/:Tailwind$/i.test(s)) v[1] = 1;
+      else if (/#(Drought|Mega Sol)$|:Sunny Day$/i.test(s)) v[2] = 1;
+      else if (/#Drizzle$|:Rain Dance$/i.test(s)) v[3] = 1;
+      else if (/#Sand Stream$|:Sandstorm$/i.test(s)) v[4] = 1;
+      else if (/#Snow Warning$|:Snowscape$/i.test(s)) v[5] = 1;
+    }
+    return v;
+  }) : [];
 
   const teamFeatNames = opts.teamFeats || ['noMega', 'protectLow'];
   const tvCache = new Map();
@@ -189,7 +236,7 @@ function buildContext(data, trainGames, opts = {}) {
     return v;
   };
 
-  return {monIx, mons, pairIx, pairs, tf, setNames, deckF, featSp, spFeats, freq, teamFeatNames, teamVec, nP: M.players};
+  return {monIx, mons, pairIx, pairs, tf, setNames, deckF, featSp, spFeats, freq, featLcMult: typeof featLcMult !== 'undefined' ? featLcMult : null, deckArch, ARCH_DIM, teamFeatNames, teamVec, nP: M.players};
 }
 
 // ============================================================================
@@ -202,6 +249,8 @@ function fitBaseline(data, ctx, games, opt = {}) {
   const K = opt.shrink ?? data.S.shrink ?? 3;
   const half = opt.half ?? data.S.half ?? 14;
   const teamHalf = opt.teamHalf ?? (data.S.teamHalf != null ? data.S.teamHalf : half);
+  const skillHalf = opt.skillHalf ?? half;
+  const hierSets = !!opt.hierSets;
   const skillMult = opt.skill ?? data.S.skill ?? 1;
   const useSkill = opt.useSkill ?? (skillMult > 0);
   const usePairs = opt.usePairs ?? true;
@@ -234,6 +283,8 @@ function fitBaseline(data, ctx, games, opt = {}) {
   const Wn = games.length / (W.reduce((a, x) => a + x, 0) || 1);
   const WT = teamHalf === half ? W : games.map(g => teamHalf ? Math.pow(0.5, (last - dayNum(evDates[g[3]])) / teamHalf) : 1);
   const WTn = games.length / (WT.reduce((a, x) => a + x, 0) || 1);
+  const WS = skillHalf === half ? W : games.map(g => skillHalf ? Math.pow(0.5, (last - dayNum(evDates[g[3]])) / skillHalf) : 1);
+  const WSn = games.length / (WS.reduce((a, x) => a + x, 0) || 1);
 
   const dv = new Map();
   const deckVec = (t, d) => {
@@ -264,14 +315,14 @@ function fitBaseline(data, ctx, games, opt = {}) {
       const sk = (useSkill ? s[pa] - s[pb] : 0) + (skillOffset ? skillOffset[gi] : 0);
       const eta = x(A, dA) - x(B, dB) + sk;
       const e0 = sig(eta) - r;
-      const d = e0 * W[gi] * Wn, dT = e0 * WT[gi] * WTn;
+      const d = e0 * W[gi] * Wn, dT = e0 * WT[gi] * WTn, dS = e0 * WS[gi] * WSn;
       for (const j of tf[A].f) Gr[0][j] += d;
       for (const j of tf[B].f) Gr[0][j] -= d;
       if (usePairs) {
         for (const j of tf[A].p) Gr[1][j] += d;
         for (const j of tf[B].p) Gr[1][j] -= d;
       }
-      if (useSkill) { Gr[2][pa] += d; Gr[2][pb] -= d; }
+      if (useSkill) { Gr[2][pa] += dS; Gr[2][pb] -= dS; }
       for (const [j, w] of deckVec(A, dA)) Gr[3][j] += d * w;
       for (const [j, w] of deckVec(B, dB)) Gr[3][j] -= d * w;
       if (teamFeatNames.length) {
@@ -283,7 +334,7 @@ function fitBaseline(data, ctx, games, opt = {}) {
     for (let k = 0; k < P.length; k++) {
       const a = P[k], g = Gr[k], m = Mm[k], v = V[k];
       for (let j = 0; j < a.length; j++) {
-        let reg = 2 * L[k] * a[j];
+        let reg = 2 * L[k] * (k === 3 && hierSets && ctx.featLcMult ? ctx.featLcMult[j] : 1) * a[j];
         if (k === 0 && priorB && priorLam > 0) reg = 2 * L[k] * a[j] + 2 * priorLam * (a[j] - (priorB[j] || 0));
         const gg = g[j] + reg;
         m[j] = 0.9 * m[j] + 0.1 * gg;
@@ -326,8 +377,33 @@ function fitCalib(model, games) {
   return Math.max(0.05, Math.min(10, w));
 }
 
+// Regularized segment calibration (shrunk toward global slope w0) strictly inside innerCal (zero leakage).
+function fitSegCalib(model, calGames, innerTeamCnt, evPlayers, w0, lamSeg = 15) {
+  const segOf = g => {
+    const big = (evPlayers[g[3]] || 0) >= 64 ? 1 : 0;
+    const com = innerTeamCnt[g[0]] >= 30 && innerTeamCnt[g[1]] >= 30 ? 1 : 0;
+    return com * 2 + big; // 0=rare_small, 1=rare_big, 2=common_small, 3=common_big
+  };
+  const buckets = [[], [], [], []];
+  for (const g of calGames) buckets[segOf(g)].push([model.predictLogit(g[0], g[1], g[7], g[8]), g[2] === 1 ? 1 : 0]);
+  const slopes = [w0, w0, w0, w0];
+  for (let b = 0; b < 4; b++) {
+    const pts = buckets[b];
+    if (pts.length < 30) continue;
+    let w = w0;
+    for (let k = 0; k < 25; k++) {
+      let gr = 2 * lamSeg * (w - w0), h = 2 * lamSeg;
+      for (const [e, r] of pts) { const p = sig(w * e); gr += (p - r) * e; h += p * (1 - p) * e * e; }
+      w -= gr / (h || 1);
+      if (!Number.isFinite(w) || Math.abs(w) > 20) { w = w0; break; }
+    }
+    slopes[b] = Math.max(0.05, Math.min(10, w));
+  }
+  return slopes;
+}
+
 // Fit model + calibration strictly inside trainGames (last 20% of train events for calib, matching production).
-function fitWithCalib(data, trainGames, fitFn, ctxOpts = {}) {
+function fitWithCalib(data, trainGames, fitFn, ctxOpts = {}, {segCal = false} = {}) {
   const ctx = buildContext(data, trainGames, ctxOpts);
   const trEv = [...new Set(trainGames.map(g => g[3]))].filter(i => !data.isSD(i)).sort((a, b) => data.evDates[a] < data.evDates[b] ? -1 : 1);
   const splitAt = Math.max(1, Math.floor(trEv.length * 0.8));
@@ -336,11 +412,26 @@ function fitWithCalib(data, trainGames, fitFn, ctxOpts = {}) {
   const innerCal = trainGames.filter(g => calEv.has(g[3]));
   const calModel = innerTrain.length >= 100 && innerCal.length >= 50 ? fitFn(data, ctx, innerTrain) : null;
   const calib = calModel ? fitCalib(calModel, innerCal) : 1;
+  let segSlopes = null;
+  const fullTeamCnt = new Int32Array(data.M.teams.length);
+  for (const g of trainGames) { fullTeamCnt[g[0]]++; fullTeamCnt[g[1]]++; }
+  if (segCal && calModel) {
+    const innerTeamCnt = new Int32Array(data.M.teams.length);
+    for (const g of innerTrain) { innerTeamCnt[g[0]]++; innerTeamCnt[g[1]]++; }
+    segSlopes = fitSegCalib(calModel, innerCal, innerTeamCnt, data.evPlayers, calib);
+  }
   const full = fitFn(data, ctx, trainGames);
   return {
     model: full,
     calib,
-    predictProb: g => sig(calib * full.predictLogit(g[0], g[1], g[7], g[8])),
+    segSlopes,
+    predictProb: g => {
+      const logit = full.predictLogit(g[0], g[1], g[7], g[8]);
+      if (!segSlopes) return sig(calib * logit);
+      const big = (data.evPlayers[g[3]] || 0) >= 64 ? 1 : 0;
+      const com = fullTeamCnt[g[0]] >= 30 && fullTeamCnt[g[1]] >= 30 ? 1 : 0;
+      return sig(segSlopes[com * 2 + big] * logit);
+    },
   };
 }
 
@@ -492,8 +583,66 @@ function fitMatchup(data, ctx, games, D = 4, lbc = 15) {
 }
 
 // Combined winner candidate: clean ridge + fixed six delta (no-evid-hier) + Blade-Chest rank-D matchup term.
-function fitCombo(data, ctx, games, D = 4, lbc = 15) {
-  return fitBladeChestOn(fitNoEvidHier(data, ctx, games), data, ctx, games, D, lbc);
+function fitCombo(data, ctx, games, D = 4, lbc = 15, baseOpt = {}) {
+  return fitBladeChestOn(fitNoEvidHier(data, ctx, games, baseOpt), data, ctx, games, D, lbc);
+}
+
+// ROUND 3 IDEA 1 (--ideas=combo-skillhalf): Decoupled player-skill half-life (60d vs 14d meta half-life) on top of combo.
+function fitComboSkillHalf(data, ctx, games) {
+  return fitCombo(data, ctx, games, 4, 15, {skillHalf: 60});
+}
+
+// ROUND 3 IDEA 2 (--ideas=combo-archetype): Explicit antisymmetric archetype/speed-control matchup matrix on top of combo.
+function fitComboArchetype(data, ctx, games, lArch = 20) {
+  const base = fitCombo(data, ctx, games, 4, 15);
+  const {deckArch, ARCH_DIM} = ctx;
+  if (!deckArch || !deckArch.length) return base;
+  const K = ARCH_DIM;
+  // Upper-triangular antisymmetric matrix W (15 free parameters for K=6)
+  const pairs = [];
+  for (let i = 0; i < K; i++) for (let j = i + 1; j < K; j++) pairs.push([i, j]);
+  const w = new Float64Array(pairs.length), mw = new Float64Array(pairs.length), vw = new Float64Array(pairs.length);
+  const half = data.S.half ?? 14;
+  let last = -Infinity; for (const g of games) last = Math.max(last, dayNum(data.evDates[g[3]]));
+  const Wt = games.map(g => half ? Math.pow(0.5, (last - dayNum(data.evDates[g[3]])) / half) : 1);
+  const Wn = games.length / (Wt.reduce((a, x) => a + x, 0) || 1);
+  const baseEta = games.map(([A, B, , , pa, pb, , dA, dB]) => base.predictLogit(A, B, dA, dB) + base.s[pa] - base.s[pb]);
+  const archDot = (dA, dB) => {
+    if (dA == null || dB == null || !deckArch[dA] || !deckArch[dB]) return 0;
+    const a = deckArch[dA], b = deckArch[dB];
+    let val = 0;
+    for (let p = 0; p < pairs.length; p++) {
+      const [i, j] = pairs[p];
+      val += w[p] * (a[i] * b[j] - a[j] * b[i]);
+    }
+    return val;
+  };
+  for (let it = 1; it <= Math.min(100, ITERS); it++) {
+    const gr = new Float64Array(pairs.length);
+    for (let gi = 0; gi < games.length; gi++) {
+      const [, , r, , , , , dA, dB] = games[gi];
+      if (dA == null || dB == null || !deckArch[dA] || !deckArch[dB]) continue;
+      const e = (sig(baseEta[gi] + archDot(dA, dB)) - r) * Wt[gi] * Wn;
+      const a = deckArch[dA], b = deckArch[dB];
+      for (let p = 0; p < pairs.length; p++) {
+        const [i, j] = pairs[p];
+        const diff = a[i] * b[j] - a[j] * b[i];
+        if (diff) gr[p] += e * diff;
+      }
+    }
+    const c1 = 1 - 0.9 ** it, c2 = 1 - 0.999 ** it;
+    for (let p = 0; p < pairs.length; p++) {
+      const gg = gr[p] + 2 * lArch * w[p];
+      mw[p] = 0.9 * mw[p] + 0.1 * gg; vw[p] = 0.999 * vw[p] + 0.001 * gg * gg;
+      w[p] -= 0.02 * (mw[p] / c1) / (Math.sqrt(vw[p] / c2) + 1e-8);
+    }
+  }
+  return {...base, wArch: w, predictLogit: (A, B, dA, dB) => base.predictLogit(A, B, dA, dB) + archDot(dA, dB)};
+}
+
+// ROUND 3 IDEA 3 (--ideas=combo-hier-sets): Recency-weighted set centering + species-volume hierarchical set shrinkage on top of combo.
+function fitComboHierSets(data, ctx, games) {
+  return fitCombo(data, ctx, games, 4, 15, {hierSets: true});
 }
 
 // IDEA 3 (--idea=glicko): Strictly Causal Pre-Match Glicko-2 Player Skill Offset (Glickman 2013).
@@ -546,13 +695,14 @@ function fitGlicko(data, ctx, games) {
 // IDEA 4 (--idea=no-evid-hier): Remove Post-Hoc EVID_K Double Shrinkage + Recency-Aligned Team-Aware Six Deviation.
 // Replaces post-hoc b *= n/(n+1000) with clean in-objective ridge (lb * 2.5, lp * 2, evidK=0, evidKp=0),
 // and adds a recency-weighted, team-basics-aware exact-six residual delta (fixing six.mjs Part E #2).
-function fitNoEvidHier(data, ctx, games) {
+function fitNoEvidHier(data, ctx, games, baseOpt = {}) {
   const K = data.S.shrink ?? 3;
   const base = fitBaseline(data, ctx, games, {
     lb: 4 * K * 2.5,
     lp: 15 * K * (data.S.pairShrink ?? 4) * 1.5,
     evidK: 0,
     evidKp: 0,
+    ...baseOpt,
   });
   // Recency-weighted exact-six deviation delta (tau = 0.1) with FULL base.x (including team basics!).
   const {evDates, M} = data;
@@ -689,6 +839,10 @@ function runWalkForward(data) {
     ...(IDEAS.includes('combo-d2') ? [{id: 'combo-d2', label: 'COMBO: no-evid-hier + Blade-Chest (d=2)', fn: (d, c, gs) => fitCombo(d, c, gs, 2), ctxOpts: {}}] : []),
     ...(IDEAS.includes('combo-d4') ? [{id: 'combo-d4', label: 'COMBO: no-evid-hier + Blade-Chest (d=4)', fn: (d, c, gs) => fitCombo(d, c, gs, 4), ctxOpts: {}}] : []),
     ...(IDEAS.includes('combo-d8') ? [{id: 'combo-d8', label: 'COMBO: no-evid-hier + Blade-Chest (d=8)', fn: (d, c, gs) => fitCombo(d, c, gs, 8), ctxOpts: {}}] : []),
+    ...(IDEAS.includes('combo-skillhalf') ? [{id: 'combo-skillhalf', label: 'R3-1: combo + decoupled player skillHalf=60d', fn: (d, c, gs) => fitComboSkillHalf(d, c, gs), ctxOpts: {}}] : []),
+    ...(IDEAS.includes('combo-archetype') ? [{id: 'combo-archetype', label: 'R3-2: combo + explicit archetype matchup matrix', fn: (d, c, gs) => fitComboArchetype(d, c, gs), ctxOpts: {}}] : []),
+    ...(IDEAS.includes('combo-hier-sets') ? [{id: 'combo-hier-sets', label: 'R3-3: combo + recency-centered hierarchical sets', fn: (d, c, gs) => fitComboHierSets(d, c, gs), ctxOpts: {recencySetFreq: true}}] : []),
+    ...(IDEAS.includes('combo-seg-cal') ? [{id: 'combo-seg-cal', label: 'R3-4: combo + segment-aware calibration', fn: (d, c, gs) => fitCombo(d, c, gs, 4), ctxOpts: {}, segCal: true}] : []),
   ];
 
   const pooled = Object.fromEntries(variants.map(v => [v.id, {probs: [], ys: [], evs: [], perCut: []}]));
@@ -714,7 +868,7 @@ function runWalkForward(data) {
     const rowLine = [`  cut ${cut}->${to} (n=${test.length}${test.length < 500 ? ' UNKNOWN' : ''}):`];
 
     for (const v of variants) {
-      const fitted = fitWithCalib(data, train, v.fn, v.ctxOpts);
+      const fitted = fitWithCalib(data, train, v.fn, v.ctxOpts, {segCal: !!v.segCal});
       const probs = test.map(fitted.predictProb);
       const m = metricsOf(probs, ys);
       pooled[v.id].probs.push(...probs);
@@ -748,6 +902,15 @@ function runWalkForward(data) {
     if (ci && ci.dLlCI) {
       const bm = metricsOf(baseP.probs, baseP.ys);
       console.log(`  delta vs baseline: dAcc=${((m.acc - bm.acc) * 100 >= 0 ? '+' : '')}${((m.acc - bm.acc) * 100).toFixed(2)} pts ${fPctCI(ci.dAccCI)} | dLL=${(m.ll - bm.ll >= 0 ? '+' : '')}${(m.ll - bm.ll).toFixed(5)} ${fCI(ci.dLlCI)} | dBrier=${(m.brier - bm.brier >= 0 ? '+' : '')}${(m.brier - bm.brier).toFixed(5)} ${fCI(ci.dBrierCI)}`);
+    }
+    if (v.id.startsWith('combo-') && pooled.combo && pooled.combo.probs.length === p.probs.length) {
+      const cm = metricsOf(pooled.combo.probs, pooled.combo.ys);
+      const ciC = bootstrapCI(p.probs, p.ys, p.evs, pooled.combo.probs);
+      const vCombo = m.unknown ? 'UNKNOWN' : (ciC && ciC.dLlCI[1] < 0 ? 'BEATS COMBO' : ciC && ciC.dLlCI[0] > 0 ? 'WORSE THAN COMBO' : 'NO ADDED VALUE');
+      summary[v.id].vsCombo = {dAcc: m.acc - cm.acc, dLL: m.ll - cm.ll, ci: ciC, verdict: vCombo};
+      if (ciC && ciC.dLlCI) {
+        console.log(`  delta vs combo   : [${vCombo}] dAcc=${((m.acc - cm.acc) * 100 >= 0 ? '+' : '')}${((m.acc - cm.acc) * 100).toFixed(2)} pts ${fPctCI(ciC.dAccCI)} | dLL=${(m.ll - cm.ll >= 0 ? '+' : '')}${(m.ll - cm.ll).toFixed(5)} ${fCI(ciC.dLlCI)}`);
+      }
     }
   }
   // Robustness splits (Rule 21: "too few teams = unknown" under 500 games)
@@ -788,7 +951,7 @@ function runWalkForward(data) {
       }
     }
   }
-  return {summary, robustness};
+  return {summary, robustness, pooled};
 }
 
 // ============================================================================
@@ -943,6 +1106,137 @@ function verifyBaselineRepro(data) {
   if (!ok) process.exit(1);
 }
 
+
+// ============================================================================
+// 8. PART D (JOB 26): FALSIFICATION SUITE FOR COMBO
+//    --falsify-shuffle : Permute team/deck labels within each event; combo gain must vanish.
+//    --falsify-reverse : Time-reversed split (train later, test earlier; diagnostic ONLY, not primary evidence).
+//    --falsify-loeo    : Leave-one-event-out influence on pooled combo vs baseline predictions.
+// ============================================================================
+function runFalsifyShuffle(data) {
+  const {evDates, isSD, G} = data;
+  const rng = makeRng(4242);
+  // Group games by event, collect all (team, deck) appearances within each event, shuffle them, and reassign
+  const byEv = new Map();
+  for (let i = 0; i < G.length; i++) {
+    const e = G[i][3];
+    if (!byEv.has(e)) byEv.set(e, []);
+    byEv.get(e).push(i);
+  }
+  const shufG = G.map(g => g.slice());
+  for (const idxs of byEv.values()) {
+    const pool = [];
+    for (const i of idxs) { pool.push([G[i][0], G[i][7]]); pool.push([G[i][1], G[i][8]]); }
+    for (let k = pool.length - 1; k > 0; k--) {
+      const j = Math.floor(rng() * (k + 1));
+      const tmp = pool[k]; pool[k] = pool[j]; pool[j] = tmp;
+    }
+    let p = 0;
+    for (const i of idxs) {
+      shufG[i][0] = pool[p][0]; shufG[i][7] = pool[p][1]; p++;
+      shufG[i][1] = pool[p][0]; shufG[i][8] = pool[p][1]; p++;
+    }
+  }
+  const shufData = {...data, G: shufG.filter(g => g[0] !== g[1])};
+  const tourDates = data.M.events.map((e, i) => isSD(i) ? null : e[1]).filter(Boolean).sort();
+  const maxDate = tourDates[tourDates.length - 1];
+  const cuts = [];
+  for (let k = WEEKS; k >= 1; k--) cuts.push(addDays(maxDate, -7 * k));
+  const pBase = [], pCombo = [], ys = [], evs = [];
+  for (const cut of cuts) {
+    const to = addDays(cut, 7);
+    const tr = shufData.G.filter(g => evDates[g[3]] <= cut);
+    const te = shufData.G.filter(g => evDates[g[3]] > cut && evDates[g[3]] <= to && !isSD(g[3]));
+    if (!tr.length || !te.length) continue;
+    const fB = fitWithCalib(shufData, tr, (d, c, gs) => fitBaseline(d, c, gs));
+    const fC = fitWithCalib(shufData, tr, (d, c, gs) => fitCombo(d, c, gs, 4));
+    for (const g of te) {
+      pBase.push(fB.predictProb(g)); pCombo.push(fC.predictProb(g));
+      ys.push(g[2] === 1 ? 1 : 0); evs.push(`${cut}:${g[3]}`);
+    }
+  }
+  const mb = metricsOf(pBase, ys), mc = metricsOf(pCombo, ys);
+  const ci = bootstrapCI(pCombo, ys, evs, pBase);
+  const dLL = mc.ll - mb.ll, dAcc = (mc.acc - mb.acc) * 100;
+  const vanished = mb.unknown || (ci && ci.dLlCI[1] >= 0) || Math.abs(dLL) <= 0.0003;
+  console.log('\n=== FALSIFICATION 1: WITHIN-EVENT TEAM-LABEL SHUFFLE ===');
+  console.log(`  games=${mb.n}${mb.unknown ? ' (UNKNOWN)' : ''} | baseline ll=${mb.ll.toFixed(5)} acc=${(mb.acc * 100).toFixed(2)}% | combo ll=${mc.ll.toFixed(5)} acc=${(mc.acc * 100).toFixed(2)}%`);
+  console.log(`  combo - baseline: dAcc=${(dAcc >= 0 ? '+' : '')}${dAcc.toFixed(2)} pts | dLL=${(dLL >= 0 ? '+' : '')}${dLL.toFixed(5)} ${ci ? `[${ci.dLlCI[0].toFixed(4)}, ${ci.dLlCI[1].toFixed(4)}]` : ''}`);
+  console.log(`  VERDICT: ${vanished ? 'PASS (combo gain vanished under shuffled team labels)' : 'FAIL (spurious combo gain persisted under shuffle!)'}`);
+  return {games: mb.n, baseline: mb, combo: mc, dLL, dAcc, ci, pass: vanished};
+}
+
+function runFalsifyReverse(data) {
+  const {evDates, isSD, G} = data;
+  const tourDates = data.M.events.map((e, i) => isSD(i) ? null : e[1]).filter(Boolean).sort();
+  const minDate = tourDates[0];
+  const cuts = [];
+  for (let k = 1; k <= WEEKS; k++) cuts.push(addDays(minDate, 7 * k));
+  const pBase = [], pCombo = [], ys = [], evs = [];
+  for (const cut of cuts) {
+    const from = addDays(cut, -7);
+    // Time-reversed: train strictly AFTER cut, test strictly BEFORE/ON cut in (from, cut]
+    const tr = G.filter(g => evDates[g[3]] > cut);
+    const te = G.filter(g => evDates[g[3]] > from && evDates[g[3]] <= cut && !isSD(g[3]));
+    if (tr.length < 100 || !te.length) continue;
+    const fB = fitWithCalib(data, tr, (d, c, gs) => fitBaseline(d, c, gs));
+    const fC = fitWithCalib(data, tr, (d, c, gs) => fitCombo(d, c, gs, 4));
+    for (const g of te) {
+      pBase.push(fB.predictProb(g)); pCombo.push(fC.predictProb(g));
+      ys.push(g[2] === 1 ? 1 : 0); evs.push(`${cut}:${g[3]}`);
+    }
+  }
+  const mb = metricsOf(pBase, ys), mc = metricsOf(pCombo, ys);
+  const ci = bootstrapCI(pCombo, ys, evs, pBase);
+  const dLL = mc.ll - mb.ll, dAcc = (mc.acc - mb.acc) * 100;
+  console.log('\n=== FALSIFICATION 2: TIME-REVERSED SPLIT (DIAGNOSTIC ONLY — NOT PRIMARY EVIDENCE) ===');
+  console.log(`  games=${mb.n}${mb.unknown ? ' (UNKNOWN)' : ''} | baseline ll=${mb.ll.toFixed(5)} acc=${(mb.acc * 100).toFixed(2)}% | combo ll=${mc.ll.toFixed(5)} acc=${(mc.acc * 100).toFixed(2)}%`);
+  console.log(`  combo - baseline: dAcc=${(dAcc >= 0 ? '+' : '')}${dAcc.toFixed(2)} pts | dLL=${(dLL >= 0 ? '+' : '')}${dLL.toFixed(5)} ${ci ? `[${ci.dLlCI[0].toFixed(4)}, ${ci.dLlCI[1].toFixed(4)}]` : ''}`);
+  return {games: mb.n, baseline: mb, combo: mc, dLL, dAcc, ci};
+}
+
+function runFalsifyLOEO(data, pooled) {
+  if (!pooled || !pooled.baseline || !pooled.combo || !pooled.combo.probs.length) {
+    console.log('\n=== FALSIFICATION 3: LEAVE-ONE-EVENT-OUT INFLUENCE ===');
+    console.log('  Skipped: include `combo` in --ideas to run leave-one-event-out influence.');
+    return null;
+  }
+  const bP = pooled.baseline.probs, cP = pooled.combo.probs, ys = pooled.baseline.ys, evs = pooled.baseline.evs;
+  const N = ys.length;
+  const byEv = new Map();
+  let totBaseLL = 0, totComboLL = 0;
+  for (let i = 0; i < N; i++) {
+    const y = ys[i];
+    const pb = Math.min(1 - 1e-9, Math.max(1e-9, bP[i]));
+    const pc = Math.min(1 - 1e-9, Math.max(1e-9, cP[i]));
+    const lb = -(y ? Math.log(pb) : Math.log(1 - pb));
+    const lc = -(y ? Math.log(pc) : Math.log(1 - pc));
+    totBaseLL += lb; totComboLL += lc;
+    const evId = evs[i].split(':')[1];
+    let o = byEv.get(evId); if (!o) byEv.set(evId, o = {evIdx: +evId, id: (data.M.events[+evId] || ['?'])[0], date: (data.M.events[+evId] || ['', ''])[1], n: 0, sumBaseLL: 0, sumComboLL: 0});
+    o.n++; o.sumBaseLL += lb; o.sumComboLL += lc;
+  }
+  const totalDeltaLL = (totComboLL - totBaseLL) / N;
+  const rows = [...byEv.values()].map(o => {
+    const loeoDeltaLL = ((totComboLL - o.sumComboLL) - (totBaseLL - o.sumBaseLL)) / Math.max(1, N - o.n);
+    const contrib = (o.sumComboLL - o.sumBaseLL) / N;
+    return {...o, contrib, loeoDeltaLL, shareOfGain: totalDeltaLL < 0 ? (contrib / totalDeltaLL) : 0};
+  }).sort((a, b) => a.contrib - b.contrib); // most negative = most favorable to combo
+  const topFav = rows[0];
+  const broad = !(totalDeltaLL < 0 && topFav && topFav.shareOfGain > 0.25);
+  console.log('\n=== FALSIFICATION 3: LEAVE-ONE-EVENT-OUT INFLUENCE (COMBO VS BASELINE) ===');
+  console.log(`  events=${rows.length}, games=${N}, pooled dLL=${totalDeltaLL.toFixed(5)}`);
+  if (topFav) {
+    console.log(`  Most favorable single event: ${topFav.id} (${topFav.date}, n=${topFav.n}) contrib=${topFav.contrib.toFixed(5)} (${(topFav.shareOfGain * 100).toFixed(1)}% of total gain) | dLL without it=${topFav.loeoDeltaLL.toFixed(5)}`);
+  }
+  console.log('  Top 5 most favorable events to combo:');
+  for (const r of rows.slice(0, 5)) console.log(`    ${r.id} (${r.date}, n=${r.n}): contrib=${r.contrib.toFixed(5)} (${(r.shareOfGain * 100).toFixed(1)}%), loeo_dLL=${r.loeoDeltaLL.toFixed(5)}`);
+  console.log('  Top 5 least favorable events to combo:');
+  for (const r of rows.slice(-5).reverse()) console.log(`    ${r.id} (${r.date}, n=${r.n}): contrib=${r.contrib.toFixed(5)}, loeo_dLL=${r.loeoDeltaLL.toFixed(5)}`);
+  console.log(`  VERDICT: ${broad ? 'PASS (no single event drives >25% of combo gain)' : 'WARN (single event drives >25% of combo gain!)'}`);
+  return {events: rows.length, games: N, totalDeltaLL, maxShare: topFav ? topFav.shareOfGain : 0, loeoWorstDrop: topFav ? topFav.loeoDeltaLL : totalDeltaLL, pass: broad, top5Fav: rows.slice(0, 5), top5Unfav: rows.slice(-5).reverse()};
+}
+
 // ============================================================================
 // MAIN
 // ============================================================================
@@ -964,7 +1258,12 @@ if (!data.bo3Info.available) {
 
 const mdSummary = RUN_MD_SIM ? runMdDayOneSim(data) : null;
 
+const falsify = {};
+if (FALSIFY_SHUFFLE) falsify.shuffle = runFalsifyShuffle(data);
+if (FALSIFY_REVERSE) falsify.reverse = runFalsifyReverse(data);
+if (FALSIFY_LOEO) falsify.loeo = runFalsifyLOEO(data, wfOut.pooled);
+
 if (JSON_OUT) {
-  fs.writeFileSync(JSON_OUT, JSON.stringify({wfSummary: wfOut.summary, robustness: wfOut.robustness, mdSummary, bo3Info: data.bo3Info}, null, 2));
+  fs.writeFileSync(JSON_OUT, JSON.stringify({wfSummary: wfOut.summary, robustness: wfOut.robustness, mdSummary, falsify, bo3Info: data.bo3Info}, null, 2));
   console.log(`\nWrote ${JSON_OUT}`);
 }
