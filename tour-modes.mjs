@@ -24,3 +24,36 @@ export async function updateModes(index, get, {modes = {}, max = 40, now = Date.
   }
   return {modes, added, tried: need.length};
 }
+
+const normMode = m => { const s = String(m || '').toUpperCase(); return /^BO\d+$/.test(s) ? s.toLowerCase() : 'unknown'; };
+
+// Tag a single pairing row with its round format ('bo1' | 'bo3' | 'bo5' | 'unknown') from data/tour-modes.json phases.
+// Uses explicit 1-based `phase` from Limitless pairings when present; falls back to cumulative round ranges for cached 4-field rows.
+export function roundMode(phases, round, phase = null) {
+  if (!Array.isArray(phases) || !phases.length) return 'unknown';
+  const modes = phases.map(p => normMode(p && p[2]));
+  if (phase != null && Number.isInteger(+phase) && +phase >= 1 && +phase <= phases.length) return modes[+phase - 1];
+  const uniq = new Set(modes.filter(m => m !== 'unknown'));
+  if (uniq.size === 1 && modes.every(m => m !== 'unknown')) return modes[0];
+  if (round == null || !Number.isFinite(+round) || +round < 1) return 'unknown';
+  const r = +round;
+  let acc = 0;
+  for (let i = 0; i < phases.length; i++) {
+    const [type, rounds] = phases[i];
+    const isBracket = /BRACKET/i.test(String(type || ''));
+    if (isBracket && i === phases.length - 1) return modes[i];
+    acc += (+rounds || 0);
+    if (r <= acc) return modes[i];
+  }
+  const last = phases[phases.length - 1];
+  return /BRACKET/i.test(String((last && last[0]) || '')) ? modes[modes.length - 1] : 'unknown';
+}
+
+// Event-level summary for out/matches.json events[i][3]: 'bo1' | 'bo3' | 'bo5' | 'mixed' | 'unknown'.
+export function eventMode(phases) {
+  if (!Array.isArray(phases) || !phases.length) return 'unknown';
+  const modes = phases.map(p => normMode(p && p[2])).filter(m => m !== 'unknown');
+  if (!modes.length) return 'unknown';
+  const uniq = new Set(modes);
+  return uniq.size === 1 ? modes[0] : 'mixed';
+}

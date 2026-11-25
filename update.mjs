@@ -7,7 +7,7 @@
 // (daily usage ranks for trends) and out/matches.json (game-level results for the team model).
 // PokéLair's daily refresh copies these files into the page's data. Run: node update.mjs
 import {pid, hasKey} from './pid.mjs';
-import {updateModes} from './tour-modes.mjs';
+import {updateModes, roundMode, eventMode} from './tour-modes.mjs';
 import fs from 'node:fs';
 import {topcut} from './topcut.mjs';
 import {offFormat, oddEvents, activeReg, sameReg, REG_END, nextRegIds} from './formats.mjs';
@@ -74,7 +74,7 @@ for (const t of todo) {
       if (!logged && P[0]) console.log('sample pairing fields:', Object.keys(P[0]).join(', '));
       // winner is an account (becomes its ID; accounts can be short numbers) or a result code ('0' a draw, '-1' no result), kept as is
       const W = w => w == null ? null : String(w) === '0' || String(w) === '-1' ? String(w) : pid(w);
-      pr = (Array.isArray(P) ? P : []).map(x => [x.round ?? null, pid(x.player1 ?? ''), pid(x.player2 ?? ''), W(x.winner)]); } catch (err) { console.log('no pairings', t.id, err.message); }
+      pr = (Array.isArray(P) ? P : []).map(x => x.phase != null ? [x.round ?? null, pid(x.player1 ?? ''), pid(x.player2 ?? ''), W(x.winner), +x.phase || null] : [x.round ?? null, pid(x.player1 ?? ''), pid(x.player2 ?? ''), W(x.winner)]); } catch (err) { console.log('no pairings', t.id, err.message); }
     // a failed or shorter pairings fetch never overwrites the pairings already saved
     { const old = readJSON(`data/p/${t.id}.json`, null); if (!(Array.isArray(old) && old.length > pr.length)) fs.writeFileSync(`data/p/${t.id}.json`, JSON.stringify(pr)); }
     logged = true;
@@ -239,11 +239,13 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
   const dix = (ns, dk) => { const f = []; dk.forEach((m, i) => { if (m.i) f.push(fix(ns[i] + '@' + m.i)); if (m.a) f.push(fix(ns[i] + '#' + m.a.replace(/\b\w/g, c => c.toUpperCase()))); for (const x of new Set(m.mv)) f.push(fix(ns[i] + ':' + x)); }); const k = f.sort((a, b) => a - b).join(','); if (!deckIx.has(k)) { deckIx.set(k, decks.length); decks.push(f); } return deckIx.get(k); };
   const tix = ns => { const k = [...ns].sort().join('|'); if (!teamIx.has(k)) { teamIx.set(k, teams.length); teams.push(k); } return teamIx.get(k); };
   const pix = k => { if (!players.has(k)) { players.set(k, plist.length); plist.push(k); } return players.get(k); };
+  const MODES = readJSON('data/tour-modes.json', {});
   V2T.forEach((T, ti) => { const P = readJSON(`data/p/${T.id}.json`, []); if (!P.length) return; const by = new Map();
+    const ph = MODES[T.id] || null;
     for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(nameOf); if (ns.some(n => !n) || new Set(ns).size !== 6) continue; /* data audit Nov 8: a sheet listed a Pokémon twice */ by.set(p.id, {t: tix(ns), pl: pix(p.id ? 'id:' + String(p.id).toLowerCase() : p.nm.toLowerCase().trim()) /* the Limitless account, not the display name (sweep, Oct 31: 517 accounts showed under 2+ names) */, d: dix(ns, p.dk)}); }
     const seenG = new Set(); /* data audit Nov 8: skip repeated pairings (same round, same two players) and self-pairings */
-    for (const [r, a, b, win] of P) { const A = by.get(a), B = by.get(b); if (!A || !B || a === b || A.pl === B.pl) continue; const gk = r + ':' + [a, b].sort().join(':'); if (seenG.has(gk)) continue; seenG.add(gk); const res = win === a ? 1 : win === b ? 0 : .5; M.push([A.t, B.t, res, ti, A.pl, B.pl, r, A.d, B.d]); } });
-  fs.writeFileSync('out/matches.json', JSON.stringify(stampReg({updated: new Date().toISOString(), events: V2T.map(T => [T.id, T.d.slice(0, 10), T.p]), teams, players: plist.length, feats, decks, m: M}, FORMAT)));
+    for (const row of P) { const [r, a, b, win, phase = null] = row; const A = by.get(a), B = by.get(b); if (!A || !B || a === b || A.pl === B.pl) continue; const gk = r + ':' + [a, b].sort().join(':'); if (seenG.has(gk)) continue; seenG.add(gk); const res = win === a ? 1 : win === b ? 0 : .5; M.push([A.t, B.t, res, ti, A.pl, B.pl, r, A.d, B.d, roundMode(ph, r, phase)]); } });
+  fs.writeFileSync('out/matches.json', JSON.stringify(stampReg({updated: new Date().toISOString(), events: V2T.map(T => [T.id, T.d.slice(0, 10), T.p, eventMode(MODES[T.id])]), teams, players: plist.length, feats, decks, m: M}, FORMAT)));
   console.log(`matches: ${M.length} games, ${teams.length} distinct teams, ${plist.length} players`); }
 // 5) top-cut evidence for the ratings (top-cut share, conversion, win rate, rating-weighted usage, bring/lead rates
 // from replays), into results.tc of out/limitless.json. Runs last so it reads today's matches.json.
