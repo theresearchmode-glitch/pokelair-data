@@ -1,10 +1,10 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 4:41 AM (4:41:56)  date: Tue Nov 24, 2026
-NOW: HH: v2-minors main1/main2 + A-team on HEAD (hNR merged). Helper: hNR2 (Pokemon page taps on tablets).
-NEXT: GitHub run for the 4:13 AM push; then push hTR/hTR2/hNR
-NEXT: Preview v257
-NEXT: 9 AM summary: finish by 8:45 AM (docs/rebuild/summary-nov24-9am.md + pictures)
-NEXT: waiting on Sim: Mega Ability counting rule (A recommended)
+Updated: time: 4:01 PM (4:01:43)  date: Wed Nov 25, 2026
+NOW: HH: public-repo safety check, second half (background scans running: user paths, names, ids, npm audit, action pins).
+NOW (helper): anonymous team-check counter + Web Analytics prep (alt/gemini-counter).
+NEXT: queue docs/rebuild/night-plan-nov25.md in order: 1 M-D start line + Dec 2 patch batch; 1b remove data/rk9 safely; 2 merge
+      alt/gemini-routes + alt/gemini-seo2 (gate); 3 safety fixes; 4 counter (helper); 5 Turnstile; 6 deploy workflow (off); 7 privacy
+      page (approved words); 8 /pokemon list + light 404 (pictures); 9 phone speed; 10 iPhone/iPad fixes; 11 Game Plan/Preview.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
