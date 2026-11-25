@@ -214,7 +214,12 @@ if (process.argv.includes('--v2')) {
     fs.writeFileSync(dir + 'dist/robots.txt', 'User-agent: *\nAllow: /\nSitemap: https://nastyplot.org/sitemap.xml\n');
     const urls = seoRows.map(r => `  <url><loc>https://nastyplot.org${r.path}</loc></url>`).join('\n');
     fs.writeFileSync(dir + 'dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
-    fs.writeFileSync(dir + 'dist/_redirects', '/data/* /data/:splat 200\n/art/* /art/:splat 200\n/art-s/* /art-s/:splat 200\n/fonts/* /fonts/:splat 200\n/routes/* /routes/:splat 200\n/* /v2.html 200\n');
+    /* soft 404s (Nov 25, SEO): no '/* /v2.html 200' catch-all any more (every wrong address answered 200). Each tool address has its own
+       rule, read from V2.PUB_PATHS (shell.js) so a new page can't be missed; anything else gets dist/404.html with status 404 (written below). */
+    const pubM = rd('src/v2/shell.js').match(/^V2\.PUB_PATHS = (\{[^\n]*\});/m); if (!pubM) throw new Error('public build: V2.PUB_PATHS not found in shell.js');
+    const pubPaths = [...new Set(Object.values(new Function('return ' + pubM[1])()))].filter(p => p !== '/');
+    if (pubPaths.length < 15 || pubPaths.some(p => !/^\/[a-z0-9-]+$/.test(p))) throw new Error('public build: odd V2.PUB_PATHS: ' + pubPaths.join(' '));
+    fs.writeFileSync(dir + 'dist/_redirects', '/data/* /data/:splat 200\n/art/* /art/:splat 200\n/art-s/* /art-s/:splat 200\n/fonts/* /fonts/:splat 200\n/routes/* /routes/:splat 200\n' + pubPaths.map(p => `${p} /v2.html 200\n`).join(''));
     const cacheHeaders = '/v2.js\n  Cache-Control: public, max-age=31536000, immutable\n/v2.css\n  Cache-Control: public, max-age=31536000, immutable\n/routes/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/art/*\n  Cache-Control: public, max-age=2592000\n/art-s/*\n  Cache-Control: public, max-age=2592000\n/data/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=3600\n';
     writeHeaders = html => fs.writeFileSync(dir + 'dist/_headers', securityHeaders(html) + cacheHeaders);
     writeHeaders(page);
@@ -261,8 +266,11 @@ if (process.argv.includes('--v2')) {
     }
     const urls = [...seen.keys()].map(s => `  <url><loc>https://nastyplot.org/pokemon/${s}</loc></url>`).join('\n');
     fs.writeFileSync(dir + 'dist/sitemap.xml', fs.readFileSync(dir + 'dist/sitemap.xml', 'utf8').replace('</urlset>', urls + '\n</urlset>'));
-    /* if Cloudflare's catch-all were applied before the static files (its docs don't say; not checked), this keeps each Pokémon page */
-    fs.writeFileSync(dir + 'dist/_redirects', fs.readFileSync(dir + 'dist/_redirects', 'utf8').replace('/* /v2.html 200', '/pokemon/:name /pokemon/:name.html 200\n/* /v2.html 200'));
+    /* No /pokemon/:name rule (Nov 25): Pages serves dist/pokemon/<slug>.html at /pokemon/<slug> by itself (docs: Serving Pages, route
+       matching), and a rule would also catch unknown names. An unknown Pokémon has no file, so it gets 404.html with status 404.
+       "/" is index.html, the same page; 404.html is the same page with noindex, so the site's own not-found view draws there. */
+    fs.writeFileSync(dir + 'dist/index.html', h);
+    if (!/<meta name="robots"/.test(h)) fs.writeFileSync(dir + 'dist/404.html', h.replace(/<title>/, '<meta name="robots" content="noindex"><title>')); else throw new Error('public build: the page already has a robots tag');
     /* the brand kit's icons at the site root (search engines look for /favicon.ico and a real icon URL; never redrawn, copied as is) */
     const icoDir = dir + '../docs/brand/nastyplot-brand-assets/3-website-icons/';
     for (const f of ['favicon.ico', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png']) if (fs.existsSync(icoDir + f)) fs.copyFileSync(icoDir + f, dir + 'dist/' + f);
