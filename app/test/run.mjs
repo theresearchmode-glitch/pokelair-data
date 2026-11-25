@@ -143,10 +143,10 @@ for (const width of [1280, 390]) {
       taunt: (() => { const W = {n: 'Whimsicott', ability: 'Prankster', moves: ['Taunt', 'Tailwind', 'Moonblast', 'Protect']}, tv = (t) => { const r = T.THR.teamVs([W], t); return [...r.solid, ...r.soft].some(x => /Taunt/.test(x)); };
         return [tv({n: 'Farigiraf', ability: 'Armor Tail', moves: ['Trick Room', 'Psychic', 'Helping Hand', 'Protect']}), tv({n: 'Farigiraf', ability: 'Cud Chew', moves: ['Trick Room', 'Psychic', 'Helping Hand', 'Protect']}),
           tv({n: 'Grimmsnarl', ability: 'Prankster', moves: ['Reflect', 'Light Screen', 'Spirit Break', 'Thunder Wave']})]; })(),
-      hustle: T.moveAcc(M('Rock Slide'), 'Hustle', '', null, ''), ohko: M('Sheer Cold') ? T.moveAcc(M('Sheer Cold'), 'Compound Eyes', '', null, 'Wide Lens', ['Ice']) : 30 }; });
+      hustle: T.moveAcc(M('Rock Slide'), 'Hustle', '', null, ''), rsAcc: typeof MOVE_ACC === 'object' ? MOVE_ACC['Rock Slide'] : 0, ohko: M('Sheer Cold') ? T.moveAcc(M('Sheer Cold'), 'Compound Eyes', '', null, 'Wide Lens', ['Ice']) : 30 }; });
   ok(r.ironFly > 0 && r.ironLev > 0 && r.fly === 0, `Iron Ball grounds the holder: Earthquake hits Flying and Levitate holders (${r.ironFly}, ${r.ironLev}; without it ${r.fly})`);
   ok(r.spdBad === 0, `speed tiers apply a −1 stage before Scarf/Tailwind and paralysis after, as the game does (${r.spdBad} off)`);
-  ok(r.sure.every(x => x === 100) && r.hustle === 72, `sure-hit moves can't be made to miss; Hustle still cuts others (${r.sure.join('/')}, Rock Slide ${r.hustle})`);
+  ok(r.sure.every(x => x === 100) && r.rsAcc > 0 && r.hustle === Math.floor(r.rsAcc * 0.8), `sure-hit moves can't be made to miss; Hustle still cuts others (${r.sure.join('/')}, Rock Slide ${r.hustle} = 0.8 × ${r.rsAcc}; 76 after the Dec 2 patch)`);
   ok(r.ohko === 30, `one-hit KO moves ignore Compound Eyes and Wide Lens (${r.ohko})`);
   ok(r.taunt[0] === false && r.taunt[1] === true && r.taunt[2] === false, `Prankster Taunt isn't an answer into Armor Tail or a Dark type (${r.taunt.join('/')})`);
   ok(r.ripen[0] > 0 && Math.abs(r.ripen[0] * 2 - r.ripen[1]) <= 2, `Ripen doubles a resist berry (${r.ripen.join(' vs ')})`);
