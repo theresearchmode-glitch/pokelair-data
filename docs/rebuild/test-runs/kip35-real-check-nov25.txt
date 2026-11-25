@@ -1,0 +1,87 @@
+KIP JOB 35 CHECK: is Kip's baseline a fair stand-in for the real model.mjs, and does his variant beat the REAL model?
+Run: Wed Nov 25 2026, about 6:45 PM Eastern (clock: date). Data: out/matches.json of origin/main, updated 2026-11-25T10:41:02.976Z, 49,250 games.
+Helper of HH. Code + statistics only.
+
+HOW (all checked by running):
+- experiments/kip35-model-variant.mjs = a COPY of model.mjs (imports pointed at ../). MODEL_VARIANT unset = the real model:
+  checked by training both on the 2026-10-28 cut file; the two model files are identical except the "updated" stamp.
+  MODEL_VARIANT=kip = Kip's change on top of the real settings: lb x2.5 (40 -> 100), lp x1.5 (600 -> 900), evidK = evidKp = 0,
+  then Pokemon numbers shifted so their appearance-weighted mean is 0. model.mjs itself is not edited.
+- experiments/kip35-real-check.mjs: for each of Kip's 4 windows, cuts matches.json to events before the cut (as walk-forward.mjs),
+  trains model.mjs and the variant copy (MATCHES=, MODEL_OUT=), scores the window's games from the written model file the way the
+  page does (P = sig(calib*(x(A)-x(B))), shipped pairs, sets clamped to setRange, team basics), Kip's log-loss clamp,
+  event-clustered bootstrap (1000, seed 42), Kip's unseen-team and week-1 tests.
+  Command: WORK=<dir> node experiments/kip35-real-check.mjs   (exit 0; about 15 minutes; 8 fits of 80-115 s each)
+- Kip's own script re-run unchanged in the same checkout: node experiments/kip35-zero-center-eb.mjs (exit 0); its numbers match
+  HH's re-run (docs/rebuild/test-runs/kip35-eb-rerun-nov25.txt) digit for digit.
+
+DIFFERENCES, Kip's baseline (experiments/kip35-zero-center-eb.mjs) vs model.mjs:
+ 1. Training steps: Kip 160 (kip:28 ITERS default) vs model.mjs 250 (model.mjs:95). Biggest suspect.
+ 2. protectLow: Kip counts Pokemon with any Protect-family move (Protect, Detect, Spiky Shield, King's Shield, Baneful Bunker, Silk Trap,
+    Burning Bulwark, Obstruct; kip:44-66). Real team-basics.mjs:22 counts only ":Protect". On the 12,823 sheets in games:
+    protectLow = 1 on 749 sheets (Kip) vs 1,246 (real); 497 sheets differ.
+ 3. Scoring: Kip scores raw in-memory x (kip:305). The page and this check use the shipped model: sets clamped to setRange
+    (model.mjs:204-210, 221-222), pairs shipped only if |q| >= .005 (model.mjs:236), numbers rounded to 4 places.
+ 4. Calibration: Kip fits a bounded Newton (step +-0.5, slope 0.1..2.5; kip:238-252) on the newest 20% of events that have games,
+    with a model trained on the other 80%. model.mjs fits unbounded Newton (model.mjs:198-199) on the newest 20% of ALL events in the
+    file (model.mjs:67-74), with `full` trained on the older 80%. Calib values came out close (e.g. last window .759 Kip vs .770 real).
+ 5. Ship gate: model.mjs ships only if it beats raw win rates (model.mjs:189); Kip has none. All 4 windows shipped, so no effect there;
+    it matters in the week-1 test (below).
+ 6. Same in both (checked by reading): pairs >= 30 teams (model.mjs:27-30 vs kip:72-86; teams are stored sorted, 0 of 7,583 unsorted,
+    so Kip's sorted key = the real key), sets >= 40 decks (model.mjs:36-39 vs kip:101-106), centering within species
+    (model.mjs:41-44 vs kip:108-123), noMega (model.mjs:65 vs kip:171), lb 40 / lp 150*pairShrink 4 = 600 / ls 15 / lc 60
+    (model-settings.json shrink 10, sets 60, pairShrink 4; model.mjs:150-161, 100), half 14, teamHalf 0 (model-settings.json),
+    evidK 1000 / evidKp 300 (model.mjs:85, 129-132 vs kip:225-226), Adam .9/.999/lr .03 (model.mjs:119-121 vs kip:206-213),
+    player skill on, sets always on (with locked FAST settings `species` is null, so useSets is always true: model.mjs:164-175).
+
+PER WINDOW, held-out log-loss / accuracy (lower log-loss is better):
+ window                 games   REAL model.mjs     Kip's baseline     real - Kip   VARIANT (real start)   variant - real
+ 2026-10-28..11-04      3283    .67889  57.02%     .67778  57.66%     +.00111      .67855  57.17%         -.00033
+ 2026-11-04..11-11      4302    .68595  54.77%     .68648  54.51%     -.00053      .68524  54.72%         -.00071
+ 2026-11-11..11-18      4932    .68141  55.98%     .68163  55.88%     -.00022      .68095  56.06%         -.00046
+ 2026-11-18..11-26      4703    .67788  56.73%     .67764  56.69%     +.00024      .67765  56.54%         -.00022
+ pooled                17220    .68110  56.08%     .68101  56.10%     +.00009      .68066  56.07%         -.00043
+
+FAIR STAND-IN? Pooled, yes within .0001 (a fifth of the effect being tested). Per window, no: gaps of -.0005 to +.0011, as big as
+or bigger than the effect. So Kip's comparison was not strictly fair, and the re-run against the real model was needed.
+
+VERDICT, variant vs the REAL model (same 4 windows, same bootstrap):
+  delta -0.00043  [95% event-clustered CI -0.00071 to -0.00017]  -> KEEP by the rule (CI strictly below 0). Better in all 4 windows.
+  Accuracy unchanged: 56.07% vs 56.08%. The gain is in log-loss only.
+  WARNING: experiments/sealed.json says events on/after 2026-11-09 are the sealed test set (end-of-phase checks only). Kip's windows
+  2-4 score them. Dev-only part (events before 11-09): 6,521 games, 88 events, delta -0.00053 [95% CI -0.00108 to -0.00006], also below 0.
+
+UNSEEN 6-POKEMON TEAM (last window model):
+  Kip's formula 80+122*(sig(calib*(0-meanX))-.5): real 70.6 (meanX .4021) vs variant 78.4 (meanX .0684).
+  Page formula (fieldWin over dist.q): real 72.2 vs variant 79.8. Team basics and the player-skill nudge left out, as Kip does.
+
+WEEK-1 STRESS TEST (Kip's split: first 5 events train, 404 games; events 6-7 test, 353 games):
+  (a) As production would run on day 5 (file cut to 5 events): NEITHER real nor variant ships (its own gate: 4 train events, 1 check
+      event, not better than raw win rates). The site would show the fallback, so x = 0, ll .69315 for both.
+  (b) The real fit on events 1-5 scored on 6-7, no calib (Kip's metric; model.mjs TEST_FROM=.72 on the 7-event file):
+      real ll .6833 acc 51.84% vs variant ll .6798 acc 56.09%. Raw win rates: ll .6845 acc 58.36% (best accuracy of the three).
+      Caveat: in (b) model.mjs picks pairs/sets and set centering from all 7 events' sheets (not results).
+  Kip's numbers for comparison: baseline .68548 / 51.84%, variant .68171 / 56.37%.
+
+FULL OUTPUT OF experiments/kip35-real-check.mjs:
+=== kip35-real-check (matches=49250, updated=2026-11-25T10:41:02.976Z) ===
+  2026-10-28..2026-11-04 (3283g): real ll=0.67889 acc=57.02% (cal=0.965, ships=true, sets=770, meanX=0.3978) | variant ll=0.67855 acc=57.17% (cal=0.917, ships=true, sets=770, meanX=0.0534) | delta=-0.00033
+  2026-11-04..2026-11-11 (4302g): real ll=0.68595 acc=54.77% (cal=0.931, ships=true, sets=818, meanX=0.4065) | variant ll=0.68524 acc=54.72% (cal=0.905, ships=true, sets=818, meanX=0.057) | delta=-0.00071
+  2026-11-11..2026-11-18 (4932g): real ll=0.68141 acc=55.98% (cal=0.79, ships=true, sets=865, meanX=0.3919) | variant ll=0.68095 acc=56.06% (cal=0.785, ships=true, sets=865, meanX=0.0596) | delta=-0.00046
+  2026-11-18..2026-11-26 (4703g): real ll=0.67788 acc=56.73% (cal=0.77, ships=true, sets=907, meanX=0.4021) | variant ll=0.67765 acc=56.54% (cal=0.779, ships=true, sets=907, meanX=0.0684) | delta=-0.00022
+
+--- Pooled ---
+  Games: 17220 across 217 events
+  real: ll=0.68110 acc=56.08%
+  variant: ll=0.68066 acc=56.07%
+  Dev-only part (events before the sealed date 2026-11-09): 6521 games, 88 events, delta -0.00053 [95% CI -0.00108 to -0.00006]
+  Delta (variant - real): -0.00043  [95% event-clustered CI: -0.00071 to -0.00017]
+  Rule 21 verdict: KEEP (95% CI strictly below 0)
+  Unseen 6-mon team score, last window, Kip's formula 80+122*(sig(calib*(0-meanX))-.5): real=70.6 (meanX=0.4021, calib=0.77) vs variant=78.4 (meanX=0.0684, calib=0.779)
+  Same team, page formula (fieldWin over dist.q, x = 0, team basics and player-skill nudge left out as Kip does): real=72.2 vs variant=79.8
+
+--- Week-1 stress test (404 train -> 353 test games) ---
+  real (a) as production on day 5: ships=false -> ll=0.69315 acc=51.84%
+  real (b) real fit on events 1-5, scored on 6-7 (353g): no calib ll=0.6833 acc=51.84% | raw win rates ll=0.6845 acc=58.36%
+  variant (a) as production on day 5: ships=false -> ll=0.69315 acc=51.84%
+  variant (b) real fit on events 1-5, scored on 6-7 (353g): no calib ll=0.6798 acc=56.09% | raw win rates ll=0.6845 acc=58.36%
