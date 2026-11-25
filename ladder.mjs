@@ -1,6 +1,6 @@
 // Monthly Showdown ladder stats (step 5): Smogon's usage stats for Champions VGC Reg M-C, 1630+ ladder.
 // Builds out/meta_ladder.json in the same shape as meta_tour.json (plus checks & counters), only when a new month is out.
-import fs from 'node:fs'; import vm from 'node:vm'; import {politeFetch as fetch} from './http.mjs';
+import fs from 'node:fs'; import {politeFetch as fetch} from './http.mjs';
 import {activeReg} from './formats.mjs';
 import {stampReg} from './reg-stamp.mjs';
 const FMT = activeReg().sd, CUT = 1630, BASE = 'https://www.smogon.com/stats/';
@@ -15,8 +15,11 @@ if (!month) { console.log('ladder: no stats found');
   process.exit(0); }
 if (!data) { console.log(`ladder: ${month} already built`); process.exit(0); }
 // Showdown ids -> names
-const sd = async (f, key) => { const t = await (await fetch('https://play.pokemonshowdown.com/data/' + f)).text(); const ctx = {exports: {}}; vm.runInNewContext(t, ctx); return ctx.exports[key]; };
-const MOVES = await (await fetch('https://play.pokemonshowdown.com/data/moves.json')).json(), ITEMS = await sd('items.js', 'BattleItems'), ABIL = await sd('abilities.js', 'BattleAbilities');
+/* item and Ability names from our own lists (Kip job 36 A #2, Nov 25): this job used to RUN Showdown's downloaded items.js and
+   abilities.js (node:vm is no sandbox), so a hacked file would have run inside the data job. Ids not on our lists stay as ids. */
+const toID = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, ''), byId = names => Object.fromEntries(names.map(n => [toID(n), {name: n}]));
+const DATA_JS = fs.readFileSync('app/src/data/data.js', 'utf8'), ITEMS_JS = fs.readFileSync('app/src/data/items-list.js', 'utf8');
+const MOVES = await (await fetch('https://play.pokemonshowdown.com/data/moves.json')).json(), ITEMS = byId(JSON.parse(ITEMS_JS.match(/const REGMC_ITEMS=(\[[^\]]*\])/)[1])), ABIL = byId(Object.keys(JSON.parse(DATA_JS.split('\n').find(l => l.startsWith('const ABIL=')).slice(11).replace(/;\s*$/, ''))));
 const nm = (tab, id) => (tab[id] && tab[id].name) || id;
 const ROSTER = new Set(readJSON('roster.json', []));
 const mapMon = n => { n = n.replace(/'/g, '’'); if (ROSTER.has(n)) return n; for (const c of [n.replace(/-F$/, '-F'), n.replace(/-(Mega.*)$/, '-$1'), n.split('-')[0]]) if (ROSTER.has(c)) return c; return null; };
