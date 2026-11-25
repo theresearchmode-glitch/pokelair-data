@@ -2544,3 +2544,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:47 AM: Design (HH authority): switch fix d's 4-boxes-in-a-row view chooser removed (broke 'stand-outs' mid-word at 390, touched edge). My Team at 390 on live data 4.38 screens vs 4.3 goal: small overage, to show Sim; GitHub's frozen-data limit (4.78) being rechecked.
 - 10:50 AM: Sim sent Dos the switch-candidate baseline job (alt/gemini-switch, frozen data, junctions).
 - 10:58 AM: j19 (public site for nastyplot.org) merged into claude/design6 at 98dcaaf4 after GitHub green on 8802521b; local build/run/commander/score-src/unrated pass.
+- 11:22 AM: Sim (usage 92%): 2 helpers until 4 PM. j18 BR-C1 GitHub failure = timing (4/4 pass locally, tops steady 521); failed job re-run requested.
