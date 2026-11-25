@@ -86,7 +86,8 @@ export function runShadowScoreboard({
   shadowPath = process.env.MODEL_SHADOW_OUT || 'out/model_shadow.json',
   outPath = process.env.SHADOW_SCOREBOARD_OUT || 'out/shadow_scoreboard.json',
   today = process.env.SHADOW_TODAY || new Date().toISOString().slice(0, 10),
-  targetDate = process.env.SHADOW_DATE || null
+  targetDate = process.env.SHADOW_DATE || null,
+  prevMatchesPath = process.env.PREV_MATCHES || null
 } = {}) {
   const MM = rd(matchesPath), live = rd(livePath), shadow = rd(shadowPath);
   if (!MM || !live || !shadow) {
@@ -110,7 +111,15 @@ export function runShadowScoreboard({
     console.log('shadow-scoreboard: no completed prior-day games found; skipping');
     return null;
   }
-  const dayGames = decided.filter(g => evDates[g[3]] === gradeDate);
+  /* Kip job 35 #1 (Nov 25): grade only games the models have never seen. The workflow runs this BEFORE model.mjs, with
+     yesterday's committed models, and PREV_MATCHES = yesterday's committed out/matches.json (the games those models learned
+     from): only events that weren't in it are graded. Without PREV_MATCHES it grades nothing rather than grade in-sample. */
+  const prevM = prevMatchesPath ? rd(prevMatchesPath) : null;
+  if (!prevM && !targetDate) { console.log('shadow-scoreboard: no PREV_MATCHES (the games the models learned from); skipping rather than grading in-sample'); return null; }
+  const seenEv = new Set(((prevM && prevM.events) || []).map(e => e[0]));
+  const fresh = decided.filter(g => MM.events[g[3]] && !seenEv.has(MM.events[g[3]][0]));
+  if (!targetDate) { const ds = [...new Set(fresh.map(g => evDates[g[3]]))].sort(); gradeDate = ds[ds.length - 1] || null; if (!gradeDate) { console.log('shadow-scoreboard: no new events since the models were trained; skipping'); return null; } }
+  const dayGames = targetDate ? decided.filter(g => evDates[g[3]] === gradeDate) : fresh;
   if (!dayGames.length) {
     console.log(`shadow-scoreboard: 0 decided games on ${gradeDate}; skipping`);
     return null;
@@ -120,6 +129,7 @@ export function runShadowScoreboard({
   const row = {
     date: gradeDate,
     scoredAt: today,
+    unseen: !targetDate, /* true = every graded game is new to both models (Nov 25 fix); older rows were graded in-sample */
     reg,
     games: liveScore.games,
     live: {acc: liveScore.acc, logloss: liveScore.logloss},
