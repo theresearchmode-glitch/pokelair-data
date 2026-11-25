@@ -1,4 +1,4 @@
-# Night plan: Wed Nov 25, 10 PM → Thu Nov 26, 8 AM (Sim asleep; constant work, Sim's rule)
+# Work queue: from Wed Nov 25, 4:01 PM (after the usage reset) through the night to Thu Nov 26, 8 AM (Sim: nonstop; nothing waits for him except the Cloudflare job with Dos)
 How it runs: the hourly work check (trig_01Vq2hj3TiUjVrcP9obYbRva, :35 each hour) wakes HH; HH + ONE helper work down this list
 in order; every merge into claude/design6 or main goes through `REPORT_OK=1 bash docs/rebuild/merge-check.sh origin/<branch>`
 (helper report read, GitHub green on the source, every test); every visual change gets before/after pictures saved for Sim's
