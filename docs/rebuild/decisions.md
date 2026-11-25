@@ -2613,3 +2613,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:31 PM: Sim sent Kip job 35 (Strength Score audit, 3 files). Kip job 34 findings: all 8 real (checked against the code), fixed on alt/kip34-fixes.
 - 5:36 PM: Hourly check: disk 3.8 GB -> 6.4 GB (removed bt, nr, livedata scratch worktrees, all pushed); privacy helper marked ended; Game Plan v83.
 - 5:39 PM: Sim sent Scout's job (Dec 2 patch independent check).
+- 5:40 PM: Sim: Scout's last day is probably Friday Nov 27.
