@@ -2611,3 +2611,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:11 PM: Mistake caught (HH): the disk filled up while making a batch worktree; the cd failed and 2 branch merges (deploy-wf, md-started) ran in the main checkout's local t1rules. Nothing was pushed. Freed 11 GB (removed 4 scratch worktrees whose branches are on GitHub); main checkout now on local branch t1clean at 84102b9c (= design6); t1rules (with the 2 stray merges) is never pushed again.
 - 5:17 PM: Sim: privacy wording all good (helper's picks: 'Not yet', 'Unofficial', closing line dropped on public; launch rows 4 + 5 as HH proposed).
 - 5:31 PM: Sim sent Kip job 35 (Strength Score audit, 3 files). Kip job 34 findings: all 8 real (checked against the code), fixed on alt/kip34-fixes.
+- 5:36 PM: Hourly check: disk 3.8 GB -> 6.4 GB (removed bt, nr, livedata scratch worktrees, all pushed); privacy helper marked ended; Game Plan v83.
