@@ -247,6 +247,8 @@ jobs:
       - run: PAGE=app/dist/v2.html node app/test/v2-pbppair.mjs
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q21.mjs
+      # Commander (Reg M-D, Nov 25): Tatsugiri into Dondozo in Turn One (+2 every stat, untargetable); fails on the build before it
+      - run: PAGE=app/dist/v2.html node experiments/commander-test.mjs
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q25.mjs
         if: ${{ !cancelled() }}

@@ -2503,3 +2503,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:55 AM: Sim: back to regular work with 1 helper (ends the usage-saving mode early; was until 4 PM Wed).
 - 6:03 AM: Design (HH authority): Meta's line under the tabs becomes 'Day N of Reg M-D · X events · N teams' for a new regulation's first 28 days (UTC days; replaces 'Reg M-D doubles · N tournament teams'); same line, 0px added at 320/360/390/768/1100/1440 (measured). Pictures: docs/rebuild/pictures/dayn-*-nov25.png
 - 6:07 AM: Official Reg M-D news (news.pokemon-home.com/en/page/878.html, Sim shared): Dec 2 2026 02:00 UTC to Mar 3 2027 01:59 UTC; new Heatran, Dondozo, Tatsugiri; Megas Heatran + Tatsugiri. regulation.json M-D end set (dec2 branch 'announced' block). Kip's Mar 4 guess was 1 day off.
+- 6:08 AM: Sim: yes to HH's rec: build Commander (Tatsugiri + Dondozo) before Dec 2 in the calc and team checks.
+- 6:15 AM: Commander built (Turn One + hit helper): commanding Tatsugiri goes first (priority 0), can't be targeted, Dondozo +2 all stats; spread/redirect skip it. 170/170 Battle states identical; golden 10/10; commander-test 8/8 (6/8 FAIL on old code).
