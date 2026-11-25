@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 6:09 PM (6:09:07)  date: Wed Nov 25, 2026
-NOW: HH: full local tests of alt/fb-retention (180-day delete, real links, Meta list links; pid in .main-running).
-NOW (helper): phone speed (night plan 9).
-NEXT: alt/shadow-order -> main (fast-forward) when GitHub is green, before the 09:07 UTC data run (Kip 35 #1).
-NEXT: alt/kip34-fixes -> design6 through the gate when GitHub is green (local: 16/16 passed); then fb-retention; no-rk9 -> main.
-NEXT: Kip 35's scripts (asked from Sim) re-run here; the score fixes after launch unless Sim asks for the new-Pokémon fix first.
-NEXT: Preview + Game Plan after the merges; iPhone/iPad look fixes (night plan 10).
+Updated: time: 6:55 PM (6:55:17)  date: Wed Nov 25, 2026
+NOW: HH: local tests of alt/kip36a (launch batch + Kip 34/36 fixes; pid in .main-running), then alt/bands-c tests (queued).
+NOW (helper): score fix into the real model.mjs (alt/score-ebfix) + before/after scores of real teams.
+NEXT: alt/kip36a -> design6 through the gate when GitHub is green (run on 814ad8a1).
+NEXT: bands option C (Sim yes): wording for Sim's OK (4 places), final numbers from the real-model test, accuracy baseline re-record (Sim OK).
+NEXT: phone-speed branch onto design6 after kip36a; Pokemon page iPad landscape gap (#4), Home iPad numbers (#6), News gift row (#3).
+NEXT: Preview + Game Plan after merges; 7:55 AM morning report.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
