@@ -5,7 +5,9 @@ compatibility_date = "2026-11-24"
 [assets]
 directory = "./app/dist"
 binding = "ASSETS"
-not_found_handling = "single-page-application"
+# "404-page" (Nov 25, SEO): an unknown address gets dist/404.html with status 404, not the page with 200 (a soft 404);
+# each tool address has its own rule in dist/_redirects; .html files are served without .html (html_handling default)
+not_found_handling = "404-page"
 run_worker_first = ["/api/feedback", "/data/*"]
 
 [[d1_databases]]
