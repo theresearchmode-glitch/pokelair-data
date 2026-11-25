@@ -103,13 +103,13 @@ for (const id of KEEP) { const T = readJSON(`data/t/${id}.json`, null); if (!T) 
   first = !first || T.d < first ? T.d : first; last = !last || T.d > last ? T.d : last;
   for (const [pl, w, l, ks] of T.e) { const m = [...new Set(ks)]; if (m.length === 6 && w + l >= 3) E.push({m, w, l}); } }
 const keys = [...new Set(E.flatMap(e => e.m))], ki = new Map(keys.map((k, i) => [k, i])); E.forEach(e => e.ix = e.m.map(k => ki.get(k)));
-let W = 0, G = 0; for (const e of E) { W += e.w; G += e.w + e.l; } const base = W / G;
+let W = 0, G = 0; for (const e of E) { W += e.w; G += e.w + e.l; } const base = G ? W / G : .5;
 // Fail-safe: never write outputs built from far less data than yesterday's (or with a nonsense win rate). Exiting here
 // stops the daily job before its commit, so the page keeps yesterday's data and the failed run emails a warning.
 { const prev = readJSON('out/limitless.json', null);
   // (a regulation switch starts over from the new regulation's teams, so yesterday's count doesn't apply then)
   const sameAsPrev = !prev || (prev.reg || 'M-C') === FORMAT;
-  if (!(base > .4 && base < .6) || (sameAsPrev && prev && prev.teams >= 100 && E.length < prev.teams * .8)) {
+  if ((G >= 100 && !(base > .4 && base < .6)) || (sameAsPrev && prev && prev.teams >= 100 && E.length < prev.teams * .8)) {
     console.log(`::error::update: only ${E.length} teams (yesterday ${prev ? prev.teams : '?'}), base ${base}; outputs left unchanged`); process.exit(1); } }
 
 // 3) teammate-adjusted share of the win: logistic model over every team, ridge-shrunk (fit with Adam)
@@ -138,16 +138,17 @@ for (const e of E) { const m = [...new Set(e.ix.map(j => nm[j]).filter(Boolean))
   for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = m[i] + '|' + m[j], o = P.get(k) || {n: 0, w: 0, g: 0}; o.n++; o.w += e.w; o.g += g; P.set(k, o);
     for (let l = j + 1; l < 6; l++) { const k3 = k + '|' + m[l], q = C3.get(k3) || {n: 0, w: 0, g: 0}; q.n++; q.w += e.w; q.g += g; C3.set(k3, q); } } }
 const day = d => new Date(d).toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
-const src = `${E.length.toLocaleString('en-US')} ${RG.name} tournament teams, ${G.toLocaleString('en-US')} games (Limitless, ${KEEP.length} events, ${day(first)} – ${day(last)})`;
+const span = first ? `${day(first)} – ${day(last)}` : 'no events yet', nTeams = E.length || 1;
+const src = `${E.length.toLocaleString('en-US')} ${RG.name} tournament teams, ${G.toLocaleString('en-US')} games (Limitless, ${KEEP.length} events, ${span})`;
 const out = {updated: new Date().toISOString(), reg: FORMAT, tournaments: KEEP.length, teams: E.length, games: G, base: Math.round(base * 1e4) / 1e4,
-  adj: {label: `Limitless · ${KEEP.length} ${RG.name} tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams, ${G.toLocaleString('en-US')} games · each Pokémon's own share of the win (teammates accounted for)`,
+  adj: {label: `Limitless · ${KEEP.length} ${RG.name} tournaments (${span}), ${E.length.toLocaleString('en-US')} teams, ${G.toLocaleString('en-US')} games · each Pokémon's own share of the win (teammates accounted for)`,
     rows: [...mon].map(([n, o]) => [n, Math.round(1000 * o.bs / (o.g || 1)) / 1000, o.g, o.t, Math.round(1000 * o.w / (o.g || 1)) / 10])},
   // the ratings' tournament input, rebuilt every day from these same teams (it used to be a hand-made Pokémon Zone snapshot):
   // [name, % of teams, game win %, games]. Megas are already their own rows (split: the page doesn't subtract them again).
-  tour: {label: `Limitless · ${KEEP.length} ${RG.name} tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams · usage and game win rate`, split: true,
+  tour: {label: `Limitless · ${KEEP.length} ${RG.name} tournaments (${span}), ${E.length.toLocaleString('en-US')} teams · usage and game win rate`, split: true,
     updated: new Date().toISOString().slice(0, 10),
-    rows: [...mon].filter(([n]) => !/-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1]),
-    megas: [...mon].filter(([n]) => /-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1])},
+    rows: [...mon].filter(([n]) => !/-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / nTeams) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1]),
+    megas: [...mon].filter(([n]) => /-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / nTeams) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1])},
   results: {source: src, teams: E.length, base: Math.round(base * 1e4) / 1e4, minCore: 40,
     mons: Object.fromEntries([...mon].map(([n, o]) => [n, [o.t, shrink(o.w, o.g, 40)]])),
     pairs: Object.fromEntries([...P].filter(([, o]) => o.n >= 25).map(([k, o]) => [k, [o.n, shrink(o.w, o.g, 40)]])),

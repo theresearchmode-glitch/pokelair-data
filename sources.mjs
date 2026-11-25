@@ -73,7 +73,7 @@ await tryIt('pika', async () => { const F = SRC.pikalytics; if (!F) notYet('no P
 fs.writeFileSync('out/sources.json', JSON.stringify(stampReg(out, RG.id)));
 // Nov 9 (no silent failures): each source problem is recorded like a skipped step (skip.mjs -> out/skips.json), so the same
 // source failing two days in a row raises the 'Daily data problem' alarm in health.mjs instead of one warning line a day
-{ const {execFileSync} = await import('node:child_process'); for (const k of new Set(out.problems.map(p => p.split(':')[0]))) { try { execFileSync('node', ['skip.mjs', `source ${k} skipped (${out.problems.filter(p => p.startsWith(k + ':')).join(' | ').slice(0, 300)})`], {stdio: 'inherit'}); } catch (e) {} } }
+{ const {execFileSync} = await import('node:child_process'), real = out.problems.filter(p => !/not available yet/.test(p)); for (const k of new Set(real.map(p => p.split(':')[0]))) { try { execFileSync('node', ['skip.mjs', `source ${k} skipped (${real.filter(p => p.startsWith(k + ':')).join(' | ').slice(0, 300)})`], {stdio: 'inherit'}); } catch (e) {} } }
 for (const k of ['sdt', 'pika']) { const s = out[k];
   console.log(`sources: ${k} ${s ? `${s.rows.length} rows, dated ${s.date || s.dataDate || '?'}; top ${s.rows.slice(0, 3).map(r => `${r.n} ${r.u}%`).join(', ')}${s.miss && s.miss.length ? '; unmapped ' + s.miss.slice(0, 12).join(', ') : ''}` : 'missing'}`); }
 if (out.problems.length) console.log('::warning::sources: ' + out.problems.join(' | '));

@@ -44,7 +44,7 @@ const FILES = [
   ['model.json', 'Win model', 2, d => d.updated, [5e3, 2e6], d => !!(d.mons && typeof d.mons === 'object') || 'no Pokémon', [80, d => !!(d.mons && typeof d.mons === 'object')], 'daily model.mjs + 1d buffer'],
   ['replays.json', 'Showdown ladder replays', 3, d => d.updated, [1e3, 15e6], d => Array.isArray(d.games) || Array.isArray(d) || 'no games list', [20, d => Array.isArray(d.games) || Array.isArray(d)], 'daily replays.mjs (optional step, 2d+1d buffer)', {optional: true}],
   ['replays_bo3.json', 'Showdown Bo3 replays', 4, d => d.updated, [100, 60e6] /* Nov 25: the real file is 30.3 MB on main; 15 MB failed every daily run */, d => Array.isArray(d.games) || Array.isArray(d) || 'no games list', [20, d => Array.isArray(d.games) || Array.isArray(d)], 'daily Bo3 replays (optional, lower volume)', {optional: true}],
-  ['meta_ingame.json', 'op.gg in-game rankings (paused Nov 18: op.gg terms)', 9999, d => d.updated, [1e3, 1e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)], 'paused Nov 18 (op.gg terms)', {paused: true, skipRegCheck: true}],
+  ['meta_ingame.json', 'op.gg in-game rankings (paused Nov 18: op.gg terms)', 9999, d => d.updated, [20, 1e6], d => Array.isArray(d.top) || 'no top list', [20, d => Array.isArray(d.top)], 'paused Nov 18 (op.gg terms)', {paused: true, skipRegCheck: true}],
   ['meta_ladder.json', 'Smogon monthly ladder stats', 40, d => d.month || (inLaunch ? d.updated || (RG && RG.checked) || todayIso : ''), [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)], 'Smogon monthly dump (30d month + 10d publish lag)'],
   ['events.json', 'Events', 3, d => d.updated, [10e3, 5e6], d => arr(d.events, 5) || 'fewer than 5 events', [20, d => Array.isArray(d.events)], 'daily events.mjs (2d+1d buffer)'],
   ['official.json', 'Official events (Victory Road + VR Pastes, top 64)', 3, d => d.updated, [1e3, 5e6], d => Array.isArray(d.events) || 'no event list', [20, d => Array.isArray(d.events)], 'daily official.mjs (external Victory Road + Liquipedia)'],
@@ -86,7 +86,7 @@ for (const [file, label, days, dateOf, [lo, hi], shape, thinRule, basis, opts = 
 // every part of the ratings inputs, by the date of its own data
 const PF = rd('perf.json');
 if (PF) { const want = {tour: ['Limitless table', 2], adj: ['Limitless win shares', 2], ingame: ['op.gg order (paused Nov 18)', 9999], official: ['Official events table (frozen)', 28], smogon: ['Smogon 1760+ usage', 40], ladder: ['Showdowntier ladder', 3]};
-  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official' || inLaunch) {} /* retired Nov 1, or thin in first 14 days */ else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
+  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official' || k === 'ingame' || inLaunch) {} /* retired Nov 1, paused Nov 18, or thin in first 14 days */ else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
     if (k === 'official' && PF[k].frozen) { const a = age(PF[k].asOf || PF[k].updated); if (a > 21) console.log(`::warning::Ratings inputs: the frozen official-events table (newest event ${PF[k].asOf}) leaves the page in ${Math.max(0, Math.ceil(28 - a))} days; no permitted whole-field source yet`); continue; }
     old(`Ratings inputs, ${label}`, PF[k].updated, days); }
   for (const L of (PF.outside && PF.outside.lists) || []) old(`Outside tier list ${L.name}`, L.date, 3);

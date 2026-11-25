@@ -9,7 +9,8 @@
 //    hold only one of a species, so the plain form and its Megas add up exactly), except checks marked per form.
 import fs from 'node:fs';
 import {stampReg} from './reg-stamp.mjs';
-import {activeReg} from './formats.mjs';
+import {activeReg, regSources} from './formats.mjs';
+const RG = activeReg(), SRC = regSources(RG.id);
 const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
 const S = rd('sources.json') || {}, P = rd('perf.json') || {}, MT = rd('meta_tour.json'), ML = rd('meta_ladder.json'), OF = rd('official.json');
 // species key: Megas fold into their species; Floette's plain entry is Floette-Eternal
@@ -30,8 +31,8 @@ const lc = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
 const checks = [];
 /* infoOnly (Nov 9): two sources that measure different player groups can't agree by design; reported as information, never as a
    daily warning (a warning that always fires teaches everyone to ignore warnings) */
-function compare({id, ours, theirs, oursName, theirsName, known, tolU = [3, .25], tolW = null, sets = null, top = 40, form = false, infoOnly = false}) {
-  if (!ours || !theirs || !Object.keys(ours).length || !Object.keys(theirs).length) { checks.push({id, skipped: !theirs ? `${theirsName}: not fetched today` : `${oursName}: missing`}); return; }
+function compare({id, ours, theirs, oursName, theirsName, known, tolU = [3, .25], tolW = null, sets = null, top = 40, form = false, infoOnly = false, expected = false}) {
+  if (!ours || !theirs || !Object.keys(ours).length || !Object.keys(theirs).length) { checks.push({id, skipped: !theirs ? `${theirsName}: not fetched today` : `${oursName}: missing`, ...(expected ? {expected: true} : {})}); return; }
   // win rates are compared as the gap to each source's own average over these rows (some sites count finishers' match
   // records, which average well above 50%; game records of every player average about 50%)
   const avg = (D, ks) => { let a = 0, b = 0; for (const k of ks) { const o = D[k]; if (o && o.w != null && o.g) { a += o.w * o.g; b += o.g; } } return b ? a / b : null; };
@@ -58,21 +59,21 @@ const bestForm = (sets, rows) => { const U = Object.fromEntries((rows || []).map
   for (const [k, v] of Object.entries(sets || {})) { const s = spec(k), u = U[k] != null ? U[k] : 0; if (!D[s] || u > best[s]) { D[s] = v; best[s] = u; } } return D; };
 const mtSp = MT ? bySpecies(metaRows(MT).map(r => [r.n, r.u, r.w, r.teams])) : null;
 // 2. Recent tournaments + sets: our last-4-weeks team sheets vs Pikalytics (tournaments, about the last 2 weeks)
-compare({id: 'tour-vs-pikalytics', ours: mtSp, theirs: S.pika && fromSrc(S.pika.rows), oursName: MT && MT.source, theirsName: S.pika && `Pikalytics ${activeReg().name} (${S.pika.scope || 'recent tournaments'})`,
+compare({id: 'tour-vs-pikalytics', ours: mtSp, theirs: S.pika && fromSrc(S.pika.rows), oursName: MT && MT.source, theirsName: S.pika && `Pikalytics ${RG.name} (${S.pika.scope || 'recent tournaments'})`, expected: !SRC.pikalytics || !(mtSp && Object.keys(mtSp).length),
   known: 'Same population: both are Limitless tournament team sheets (Pikalytics championstournaments since Nov 8; before that this compared against its Showdown ladder stats by mistake). Checked Nov 8 on the top 39: top item agrees 39/39, top Ability 39/39, the same top-4 moves 37/39 (Indeedee: Pikalytics merges both forms; Annihilape: its 2nd-4th moves are near-tied). Small gaps come from different time windows. Its usage table names species while its core lists name Megas, so Mega species are not comparable',
   tolU: [6, .45], tolW: 4, sets: S.pika && {ours: setsOf(MT), theirs: bestForm(S.pika.sets, S.pika.rows)}});
 // 3. (Removed Nov 9) Limitless vs the official events' whole field: it read RK9 data, retired Nov 1 (RK9 terms), and was
 //    skipped every day after that without anyone noticing. Check 5 (official top-64 team sheets, Victory Road) covers official events.
 // 4. Ladder usage: Smogon 1760+ (monthly) vs Showdowntier (14 days)
 const smSp = P.smogon ? bySpecies(P.smogon.rows) : null;
-compare({id: 'smogon1760-vs-showdowntier', ours: smSp, theirs: S.sdt && fromSrc(S.sdt.rows), oursName: P.smogon && P.smogon.label, theirsName: S.sdt && `Showdowntier (${S.sdt.from} – ${S.sdt.to}, all ratings)`,
+compare({id: 'smogon1760-vs-showdowntier', ours: smSp, theirs: S.sdt && fromSrc(S.sdt.rows), oursName: P.smogon && P.smogon.label, theirsName: S.sdt && `Showdowntier (${S.sdt.from} – ${S.sdt.to}, all ratings)`, expected: !SRC.showdowntier || !smSp,
   known: 'Showdowntier counts every rated battle (average player about 1290); Smogon 1760+ is the strong end of the ladder for a past month. Large gaps are expected for Pokémon strong players favour or avoid.', tolU: [5, .4], infoOnly: true});
 // 5. Our own two set sources against each other: Limitless sheets vs the official events' top 64 open team sheets
 //    (Victory Road + VR Pastes; top item and moves)
 if (MT && OF) { const T = {}; for (const e of OF.events || []) for (const t of e.teams || []) for (const m of t.mons || []) { const k = spec(m.n), o = T[k] = T[k] || {c: 0, it: {}, mv: {}}; o.c++; if (m.i) o.it[m.i] = (o.it[m.i] || 0) + 1; for (const v of m.mv || []) o.mv[v] = (o.mv[v] || 0) + 1; }
   const N = (OF.events || []).reduce((a, e) => a + (e.teams || []).length, 0) || 1, top = o => Object.entries(o).sort((a, b) => b[1] - a[1]);
   const theirs = Object.fromEntries(Object.entries(T).map(([k, o]) => [k, {u: +(100 * o.c / N).toFixed(1)}])), sets = Object.fromEntries(Object.entries(T).filter(([, o]) => o.c >= 15).map(([k, o]) => [k, {it: top(o.it).slice(0, 3).map(([a, b]) => [a, +(100 * b / o.c).toFixed(1)]), mv: top(o.mv).slice(0, 6).map(([a, b]) => [a, +(100 * b / o.c).toFixed(1)])}]));
-  compare({id: 'tour-sets-vs-official-top64', ours: mtSp, theirs, oursName: MT.source, theirsName: `${OF.source || 'Official events'} (${N} teams)`,
+  compare({id: 'tour-sets-vs-official-top64', ours: mtSp, theirs, oursName: MT.source, theirsName: `${OF.source || 'Official events'} (${N} teams)`, expected: !SRC.official || !(mtSp && Object.keys(mtSp).length) || !(OF.events && OF.events.length),
     known: 'Usage is not comparable (top 64 of big events vs every Limitless team), so only sets are judged: the top item and top move should agree for staples. Both sides count every form of a species together (Mega and plain), as the team sheets do.', tolU: [100, 1], sets: {ours: setsOfAll(MT), theirs: sets}}); }
 // 6. Official events: Victory Road's standings and team sheets against Liquipedia (placements, player count, start date)
 //    and against Victory Road's own event page (the six Pokémon on the page vs the team sheet). official.mjs does the
@@ -85,5 +86,5 @@ fs.writeFileSync('out/crosscheck.json', JSON.stringify(stampReg(out)));
 // Nov 9 (no silent failures): a cross-check that couldn't run is recorded like a skipped daily step (skip.mjs -> out/skips.json),
 // so health.mjs raises the "Daily data problem" alarm when the same one is skipped two days in a row. (The RK9-based check
 // was skipped every day for 8+ days and only ever printed one quiet line.)
-{ const {execFileSync} = await import('node:child_process'); for (const c of checks) if (c.skipped) { try { execFileSync('node', ['skip.mjs', `cross-check ${c.id} skipped (${c.skipped})`], {stdio: 'inherit'}); } catch (e) {} } }
+{ const {execFileSync} = await import('node:child_process'); for (const c of checks) if (c.skipped && !c.expected) { try { execFileSync('node', ['skip.mjs', `cross-check ${c.id} skipped (${c.skipped})`], {stdio: 'inherit'}); } catch (e) {} } }
 for (const c of checks) console.log(c.skipped ? `crosscheck ${c.id}: skipped (${c.skipped})` : `crosscheck ${c.id}: ${c.flagged}/${c.rows.length} differ beyond tolerance${c.staplesFlagged.length ? '; staples: ' + c.staplesFlagged.join(', ') : ''}`);

@@ -19,7 +19,7 @@ import fs from 'node:fs'; import crypto from 'node:crypto';
 import {readJSON, dec, ROSTER, mapMon, validItem, bad} from './names.mjs';
 import {opid, okeys, keyScore} from './pid.mjs';
 import {stampReg} from './reg-stamp.mjs';
-import {activeReg, regProfile} from './formats.mjs';
+import {activeReg, regProfile, inRegWindow} from './formats.mjs';
 export const UA = 'NastyPlot data job (github.com/theresearchmode-glitch/pokelair-data; simran.jsbagga@gmail.com)';
 // gap G1 (Nov 24): the regulation and its first day come from the regulation profile (regulation.json, the regulation our numbers
 // are built from). With no official id listed for it, every event is skipped as not this regulation's, never read as another one's.
@@ -151,7 +151,7 @@ async function run() {
     } catch (e) { console.log(`official: ${p.slug} skipped: ${e.message}`); } }
   fs.writeFileSync(`${DIR}/index.json`, JSON.stringify(index));
   // 2) Liquipedia check, one batched API query for the events not yet confirmed (an event is re-checked for 14 days)
-  const evSlugs = Object.keys(index.events).filter(s => index.events[s].teams && !index.events[s].skip);
+  const evSlugs = RG_ID ? Object.keys(index.events).filter(s => index.events[s].teams && !index.events[s].skip && inRegWindow(index.events[s].date, ACT)) : [];
   const lq = readJSON(`${DIR}/liquipedia.json`, {});
   const want = evSlugs.filter(s => { const L = lq[s]; return !L || (!L.missing && (Date.now() - Date.parse(index.events[s].date + 'T12:00:00Z')) / 864e5 < 14 && L.fetched !== now.toISOString().slice(0, 10)); });
   const titles = new Map(want.map(s => [lqTitle(index.events[s].title), s]).filter(x => x[0]));
@@ -188,7 +188,7 @@ async function run() {
   fs.writeFileSync('out/official_compare.json', JSON.stringify(stampReg(cmp, STAMP_REG)));
   console.log(`official: vs previous file (${cmp.previous}): ${cmp.summary}`);
   const prevTeams = prev ? (prev.events || []).reduce((a, e) => a + (e.teams || []).length, 0) : 0, newTeams = out.events.reduce((a, e) => a + e.teams.length, 0);
-  if (!out.events.length) { console.log('::warning::official: no events read; kept the previous out/official.json'); return; }
+  if (!out.events.length) { if (!RG_ID || (prev && (prev.reg || 'M-C') !== STAMP_REG)) { fs.writeFileSync('out/official.json', JSON.stringify(stampReg(out, STAMP_REG))); console.log(`official: 0 events for ${ACT.name}; wrote empty stamped out/official.json`); return; } console.log('::warning::official: no events read; kept the previous out/official.json'); return; }
   if (prevTeams && newTeams < prevTeams * .8) { console.log(`::warning::official: only ${newTeams} teams (had ${prevTeams}); kept the previous out/official.json`); return; }
   if (!cmp.pass) { console.log(`::warning::official: the new sheets disagree with the previous file beyond the gate (${cmp.summary}); kept the previous out/official.json`); return; }
   fs.writeFileSync('out/official.json', JSON.stringify(stampReg(out, STAMP_REG)));
