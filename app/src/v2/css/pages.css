@@ -4609,3 +4609,5 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 /* Team Sheet: under 360 "Build Around It" (138px at 15px) was wider than its 130px button; 13px as the kit's chips use under 360, and the
    pair takes 8px more of the row (4px sides, 8px gap) so the slanted border clears the letters */
 @media (max-width:359.98px){.ms-left .ms-go{padding:0 var(--s1);gap:var(--s2)}.ms-left .ms-go .k-btn{padding:0 var(--s2);font-size:var(--t13)}}
+/* Not rated yet, day one (Nov 25): the underdog card in the Meta spotlight's place; its art rises above the card, so it gets room to clear the line above */
+.ra-spotw>.nf2-dog{margin-top:var(--s16)}

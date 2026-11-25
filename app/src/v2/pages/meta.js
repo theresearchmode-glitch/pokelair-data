@@ -122,6 +122,12 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
      page and tab order too; the chips wrap into even rows (pages.css .ra-ctlt). 700+ keeps them under the hero; the page redraws when the width crosses 700 */
   const ph = innerWidth < 700, ctl = `<div class="gs-ctl${ph ? ' ra-ctlt' : ''}">${filt}</div>`;
   const stairs = stairsOn ? V2.raStairs(sRows, !!f.mega && !V2.raFiltered2()) : ''; /* phones: right under the headline (approved mock); 700+: under the top band */
+  /* Not rated yet, day one (Sim's choice, Nov 25; HH's design call): with no Pokémon rated there is nothing to rank, so no stairs,
+     filters or Grandstand. The spotlight's place holds today's underdog (the 404 page's card and scribble, rule 23) and the lede
+     says plainly when ratings start. Never shown while any Pokémon is rated (today's page is unchanged) */
+  if (V2.noRatings && V2.noRatings()) { const ud = V2.underdog ? V2.underdog() : 'Flapple', ud2 = V2.disp(ud), rn = typeof regName === 'function' ? regName().replace(/ /g, '\u00a0').replace(/-/g, '\u2011') : 'this regulation';
+    const head0 = head.replace(/<p class="ra-lede">[\s\S]*?<\/p>/, `<p class="ra-lede">Ratings start with the first ${E(rn)} tournament results. Until a Pokémon has played, it isn't rated: no guesses.</p>`);
+    return `<div class="ra gsp rs-on"><div class="gs-top">${head0}<div class="ra-spotw"><aside class="nf-dog nf2-dog" aria-label="Today's underdog">${V2.kCard(ud, {size: 'hero', form: "Today's underdog", fact: "Nobody's rated yet. Everybody's a contender.", attrs: {'data-v2mon': ud, 'aria-label': `${ud2}: open its info`}})}</aside></div>${tabs}</div></div>`; }
   return `<div class="ra gsp rs-on"><div class="gs-top">${head}${ph ? stairs + ctl : ''}<div class="ra-spotw" data-raspotw>${V2.raSpot(U.spot)}</div>${tabs}</div>${ph ? '' : stairs}<div class="gs-body">${ph ? '' : ctl}${body}${legend}${about}${ph && stairsOn ? `<p class="ra-links ra-lph"><a class="np-link" href="#method=rating">How Ratings Work ›</a><a class="np-link" href="#track">Track Record ›</a></p>` : ''}</div></div>`; }};
 
 // search, filters, see all, tiers
