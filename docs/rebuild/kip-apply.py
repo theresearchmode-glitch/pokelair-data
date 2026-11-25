@@ -8,7 +8,7 @@ prints one line per file: applied / new / FAILED (why). Never touches main or cl
 import re, subprocess, sys, html, os, pathlib
 ans, base, br = sys.argv[1], sys.argv[2], sys.argv[3]; push = '--push' in sys.argv
 assert br.startswith('alt/gemini-'), 'branch must be alt/gemini-*'
-t = open(ans, encoding='utf8').read().replace('https://www.google.com/search?q=', '')
+t = open(ans, encoding='utf8').read().replace('https://www.google.com/search?q=', '').replace('%7B', '{').replace('%7D', '}')  # the copy link-ified '{}' as %7B%7D
 def git(*a, check=True): return subprocess.run(['git', *a], capture_output=True, text=True, check=check)
 git('fetch', '-q', 'origin', base, check=False); git('checkout', '-q', '-f', '-B', br, base)
 out = []
@@ -32,13 +32,33 @@ def fuzzy(f, p):
         k = src.count(o)
         if k != 1:
             o2 = '\n'.join(x.rstrip() for x in old); src2 = '\n'.join(x.rstrip() for x in src.split('\n'))
-            if src2.count(o2) == 1: src, o = src2, o2
-            else: return 'FAILED   ', f'  (hunk {n}: old text found {k} times)'
+            if src2.count(o2) == 1: src = src2.replace(o2, w, 1); continue
+            # last resort: the copy can damage context lines (e.g. lost < >): match each run of changed lines on its own
+            rows = [(l[:1], l[1:]) if l[:1] in ' +-' else (' ', l) for l in h.rstrip('\n').split('\n') if not l.startswith('\\')]
+            groups, cur, prev = [], None, None
+            for c, body in rows:
+                if c == ' ':
+                    if cur: groups.append(cur); cur = None
+                    prev = body
+                else:
+                    if not cur: cur = {'anchor': prev, 'minus': [], 'plus': []}
+                    (cur['minus'] if c == '-' else cur['plus']).append(body)
+            if cur: groups.append(cur)
+            for g in groups:
+                if g['minus']:
+                    m = '\n'.join(g['minus'])
+                    if src.count(m) != 1: return 'FAILED   ', f'  (hunk {n}: changed lines found {src.count(m)} times)'
+                    src = src.replace(m, '\n'.join(g['plus']), 1)
+                else:
+                    an = g['anchor']
+                    if an is None or src.count(an) != 1: return 'FAILED   ', f'  (hunk {n}: no unique line to add after)'
+                    src = src.replace(an, an + '\n' + '\n'.join(g['plus']), 1)
+            continue
         src = src.replace(o, w, 1)
-    open(f, 'w', encoding='utf8').write(src); return 'matched  ', '  (hand-written diff: every hunk matched exactly once)'
+    open(f, 'w', encoding='utf8').write(src); return 'matched  ', '  (matched by text; damaged context tolerated)'
 # real git diffs (diff --git ... , incl. new files from /dev/null): applied as written, one file at a time
 for blk in re.findall(r'^diff --git a/(\S+) b/\S+\n(.*?)(?=^diff --git |^```|^-{5,} ?(?:END|BEGIN)|\Z)', t, re.S | re.M):
-    f, body = blk; pf = f'/tmp/kip-{os.getpid()}-g.patch'; open(pf, 'w', encoding='utf8').write(f'diff --git a/{f} b/{f}\n' + body.rstrip('\n') + '\n')
+    f, body = blk; body = html.unescape(body) if ('&quot;' in body or '&lt;' in body or '&#39;' in body) else body; pf = f'/tmp/kip-{os.getpid()}-g.patch'; open(pf, 'w', encoding='utf8').write(f'diff --git a/{f} b/{f}\n' + body.rstrip('\n') + '\n')
     r = git('apply', '--3way', '--recount', '--whitespace=nowarn', pf, check=False)
     how, why = ('applied  ', '') if r.returncode == 0 else fuzzy(f, body)
     out.append(how + f + why)
