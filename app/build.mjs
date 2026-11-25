@@ -29,6 +29,14 @@ if (process.argv.includes('--v2')) {
   const PUBLIC = process.argv.includes('--public'); if (PUBLIC && process.argv.includes('--preview-data')) { console.error('--public and --preview-data do not mix'); process.exit(1); }
   const SPLIT_CSS = PUBLIC && process.argv.includes('--split-css');
   const SPLIT_ROUTES = PUBLIC && process.argv.includes('--split-routes');
+  /* --cf-analytics=<site token> (Nov 25, queue item 4): Cloudflare's cookieless Web Analytics on the public site. Off unless given (Sim
+     switches it on in the Cloudflare dashboard, which gives the token). With it, every public page gets Cloudflare's beacon script before
+     </body> and the CSP allows exactly its script (script-src) and the address it reports to (connect-src); without it, no outside host
+     at all (experiments/security-csp-test.mjs). Public builds only; the token must be letters and digits (it goes into the HTML). */
+  const cfArg = process.argv.find(x => x.startsWith('--cf-analytics')), CF_TOKEN = cfArg ? cfArg.replace(/^--cf-analytics=?/, '') : '';
+  if (cfArg && !PUBLIC) { console.error('--cf-analytics is for the public build only (add --public)'); process.exit(1); }
+  if (cfArg && !/^[A-Za-z0-9]{16,64}$/.test(CF_TOKEN)) { console.error('--cf-analytics=<token>: the Web Analytics site token is 16 to 64 letters and digits'); process.exit(1); }
+  const CF_SCRIPT = 'https://static.cloudflareinsights.com/beacon.min.js', CF_CONNECT = 'https://cloudflareinsights.com';
   // guard rails first: the build stops if the new CSS breaks the design rules (app/test/v2-guard.mjs)
   { const {spawnSync} = await import('node:child_process'); const g = spawnSync(process.execPath, [dir + 'test/v2-guard.mjs'], {stdio: 'inherit'}); if (g.status !== 0) process.exit(1); }
   const P = JSON.parse(fs.readFileSync(dir + 'parts-v2.json', 'utf8')), rd = f => fs.readFileSync(dir + f, 'utf8').replace(/\n$/, '');
@@ -203,8 +211,8 @@ if (process.argv.includes('--v2')) {
       const h = `'sha256-${crypto.createHash('sha256').update(m[2], 'utf8').digest('base64')}'`;
       if (!hashes.includes(h)) hashes.push(h);
     }
-    const csp = ["default-src 'none'", `script-src 'self' ${hashes.join(' ')}`.trim(), "style-src 'self' 'unsafe-inline'", "img-src 'self' data:", "font-src 'self'",
-      "connect-src 'self'", "manifest-src 'self'", "base-uri 'none'", "form-action 'none'", "object-src 'none'", "frame-ancestors 'none'", 'upgrade-insecure-requests'].join('; ');
+    const csp = ["default-src 'none'", `script-src 'self' ${hashes.join(' ')}${CF_TOKEN ? ' ' + CF_SCRIPT : ''}`.trim(), "style-src 'self' 'unsafe-inline'", "img-src 'self' data:", "font-src 'self'",
+      `connect-src 'self'${CF_TOKEN ? ' ' + CF_CONNECT : ''}`, "manifest-src 'self'", "base-uri 'none'", "form-action 'none'", "object-src 'none'", "frame-ancestors 'none'", 'upgrade-insecure-requests'].join('; ');
     return ['/*', `  Content-Security-Policy: ${csp}`, '  X-Content-Type-Options: nosniff', '  Referrer-Policy: no-referrer',
       '  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()', '  Cross-Origin-Opener-Policy: same-origin',
       '  X-Frame-Options: DENY', ''].join('\n');
@@ -241,6 +249,10 @@ if (process.argv.includes('--v2')) {
     h = h.replace(/<link rel="icon" type="image\/svg\+xml" href="data:[^"]*">/, '<link rel="icon" type="image/svg+xml" href="/favicon.svg">')
       .replace(/<link rel="icon" type="image\/png" sizes="32x32" href="data:[^"]*">/, '<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">')
       .replace(/<link rel="apple-touch-icon" sizes="180x180" href="data:[^"]*">/, '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">');
+    /* Web Analytics (--cf-analytics, above): Cloudflare's own snippet, added here so the Pokémon pages (made from h below) carry it too and the
+       static first screen (opened from file:// above) never loads it */
+    if (CF_TOKEN) { const at = h.lastIndexOf('</body>'); if (at < 0) throw new Error('public build: no </body> for the Web Analytics snippet');
+      h = h.slice(0, at) + `<script defer src="${CF_SCRIPT}" data-cf-beacon='{"token": "${CF_TOKEN}"}'></script>\n` + h.slice(at); }
     fs.writeFileSync(dir + 'dist/v2.html', h);
     const line = fs.readFileSync(dir + 'src/data/data.js', 'utf8').split('\n')[0], roster = JSON.parse(line.slice(line.indexOf('['), line.lastIndexOf(']') + 1));
     const mainSrc = fs.readFileSync(dir + 'src/app/00-main.js', 'utf8'), regLine = mainSrc.match(/^const REG=.*$/m)[0], dispSrc = mainSrc.match(/^function disp\(n\)\{[\s\S]*?\n\}/m)[0];
