@@ -52,7 +52,10 @@ const build = (args, name) => { const r = spawnSync(process.execPath, [path.join
 
 // a plain static server over app/ (the page at /dist/v2.html, its art at /src/v2/art/, fonts at /dist/fonts/)
 const TYPES = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.json': 'application/json', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml', '.woff2': 'font/woff2', '.css': 'text/css'};
-const srv = http.createServer((q, s) => { const f = path.join(APP, decodeURIComponent(q.url.split('?')[0]));
+/* Nov 25: the public page loads its files from the site root (/v2.js, /fonts/, /routes/), as nastyplot.org serves dist/ at the
+   root; a path not found under app/ is looked up in app/dist/ */
+const srv = http.createServer((q, s) => { const u = decodeURIComponent(q.url.split('?')[0]); let f = path.join(APP, u);
+  if (!fs.existsSync(f) && fs.existsSync(path.join(APP, 'dist', u))) f = path.join(APP, 'dist', u);
   if (!f.startsWith(APP + path.sep)) { s.writeHead(403); s.end(); return; }
   fs.readFile(f, (e, buf) => { if (e) { s.writeHead(404); s.end(); return; } s.writeHead(200, {'content-type': TYPES[path.extname(f)] || 'application/octet-stream'}); s.end(buf); }); });
 await new Promise(r => srv.listen(0, '127.0.0.1', r)); const BASE = `http://127.0.0.1:${srv.address().port}/dist/v2.html`;
