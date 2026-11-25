@@ -65,7 +65,7 @@ const PROBE_EXPR = `(() => {
     if (chargesFirst(sbl, 'rain', '', 'Mega Sol') !== false) return 'Solar Blade still charges in rain for Mega Sol';
     if (chargesFirst(sb, '', '', 'Overgrow') !== true) return 'Solar Beam stopped charging for Overgrow';
   });
-  check('2b. Mega Sol moveAcc ignores Sand Veil/Snow Cloak and treats weather as sun for Thunder/Hurricane/Blizzard', () => {
+  check('2b. Mega Sol: Thunder/Hurricane as in sun; Sand Veil, Snow Cloak and Blizzard follow field weather (Showdown)', () => {
     const ep = {name: 'Earth Power', acc: 100, cat: 2};
     const th = {name: 'Thunder', acc: 70, cat: 2};
     const hu = {name: 'Hurricane', acc: 70, cat: 2};
@@ -75,11 +75,13 @@ const PROBE_EXPR = `(() => {
     const a3 = moveAcc(th, 'Mega Sol', '', {});
     const a4 = moveAcc(hu, 'Mega Sol', 'rain', {});
     const a5 = moveAcc(bl, 'Mega Sol', 'snow', {});
-    if (a1 !== 100) return 'vs Sand Veil in sand: expected 100, got ' + a1;
-    if (a2 !== 100) return 'vs Snow Cloak in snow: expected 100, got ' + a2;
+    /* Scout's review (Nov 24), Showdown data/abilities.ts sandveil/snowcloak check FIELD weather: Mega Sol does not cancel them */
+    if (a1 !== 80) return 'vs Sand Veil in sand: expected 80, got ' + a1;
+    if (a2 !== 80) return 'vs Snow Cloak in snow: expected 80, got ' + a2;
     if (a3 !== 50) return 'Thunder in clear: expected 50, got ' + a3;
     if (a4 !== 50) return 'Hurricane in rain: expected 50, got ' + a4;
-    if (a5 !== 70) return 'Blizzard in snow: expected 70, got ' + a5;
+    /* Showdown blizzard: field weather snow = never misses, whoever uses it */
+    if (a5 !== 100) return 'Blizzard in snow: expected 100, got ' + a5;
   });
 
   // 3. Eelevate & Iron Ball grounding in allyHit
@@ -105,7 +107,8 @@ const PROBE_EXPR = `(() => {
     if (sTw !== 103) return 'base 103 + Tailwind + Iron Ball: expected 103, got ' + sTw;
     const fakeMon = {n: '__Test103', st: [80, 80, 80, 80, 80, 83], a: ['Swift Swim']};
     const ls = likelySpeed(fakeMon, {item: 'Iron Ball', spread: {nat: 'Hardy', hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0, mine: true}});
-    if (ls.v !== 103 || ls.iron !== true) return 'likelySpeed pre-halved or missing iron flag: ' + JSON.stringify(ls);
+    /* Scout's review: v stays halved for direct readers (Battle, Compare...); v0 is the unhalved stat spdCalc callers use with iron */
+    if (ls.v !== 51 || ls.v0 !== 103 || ls.iron !== true) return 'likelySpeed: expected v 51 (halved), v0 103, iron true: ' + JSON.stringify(ls);
     if (typeof speedMul === 'function') {
       const ds = dcSpeed({p: fakeMon, item: 'Iron Ball', ability: 'Swift Swim'}, 'rain');
       if (ds !== 135) return 'dcSpeed 135 (32 SP) Swift Swim in rain + Iron Ball: expected 135, got ' + ds;

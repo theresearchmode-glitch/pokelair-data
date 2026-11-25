@@ -21,7 +21,7 @@ function commonSpread(p){const d=META.doubles;if(!d)return null;const row=[...(d
 const spreadText=s=>`${s.nat} ${s.hp}/${s.atk}/${s.def}/${s.spa}/${s.spd}/${s.spe}`;
 // mem: your own team member, so its real item and (if you set one) its own spread are used instead of the usual ones
 // Iron Ball halves the holder's Speed (applied on top of the stat; Scarf is handled by each caller)
-function likelySpeed(p,mem){const r=likelySpeed0(p,mem);if(mem&&mem.item==='Iron Ball')return {...r,iron:true,label:r.label+', Iron Ball halves it'};
+function likelySpeed(p,mem){const r=likelySpeed0(p,mem);if(mem&&mem.item==='Iron Ball')return {...r,v:Math.floor(r.v/2),v0:r.v,iron:true,label:r.label+', Iron Ball halves it'}; /* v stays halved for the callers that read it directly (Battle, Compare, turn-1, matchups: Scout's review); spdCalc callers pass v0 + iron, so the halving lands after stat stages like Showdown */
   if(mem&&mem.item==='Quick Claw')return {...r,label:r.label+', Quick Claw: 20% chance to move first in its bracket'};return r}
 function likelySpeed0(p,mem){const it=topItem(p),cs=(mem&&mem.spread)||commonSpread(p);const scarf=mem?mem.item==='Choice Scarf':it&&it[0]==='Choice Scarf'&&(it[1]==null||it[1]>=25);
   if(cs){const v=calcStat(p,'Spe',cs.spe,natMul(cs.nat,'Spe'));return {v,scarf,label:`${cs.spe} Speed points, ${cs.nat}${cs.assumed?' (your nature, most common spread)':cs.mine?' (your spread)':' (most common spread)'}`,nat:cs.nat,real:true}}
@@ -64,9 +64,9 @@ function speedData(){const ms=members(),mine=ms.map(m=>m.p),mineSet=new Set(mine
   const autoW=typeof sideField==='function'?sideField(ms).weather:'',W=spdUi.wx==='auto'?autoW:spdUi.wx;
   const rows=[...mine.map(p=>({p,me:true})),...thr.map(p=>({p,me:false}))].map(r=>{const mem=r.me?myMem.get(r.p.n):null,s={...likelySpeed(r.p,mem)};
     const ab=mem?mem.ability:abilityOf({p:r.p}),o={tw:r.me?spdUi.tw:spdUi.twOpp,icy:!r.me&&spdUi.icy,par:!r.me&&spdUi.par,up:r.me&&spdUi.up,iron:!!s.iron};
-    const v=spdCalc(s.v,s.scarf,ab,W,o),wxUp=typeof speedMul==='function'&&speedMul(ab,W)>1;
+    const v=spdCalc(s.iron?s.v0:s.v,s.scarf,ab,W,o),wxUp=typeof speedMul==='function'&&speedMul(ab,W)>1;
     // Unburden: doubled once its item is used (Sneasler's seed or herb), unless Scarf/no item
-    const unb=ab==='Unburden'&&!s.scarf?spdCalc(s.v,s.scarf,ab,W,{...o,unb:true}):null;return {...r,s,v,ab,wxUp,unb}});
+    const unb=ab==='Unburden'&&!s.scarf?spdCalc(s.iron?s.v0:s.v,s.scarf,ab,W,{...o,unb:true}):null;return {...r,s,v,ab,wxUp,unb}});
   rows.sort((a,b)=>spdUi.tr?a.v-b.v:b.v-a.v);
   const sums=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&((r.ab==='Stall')!==(me.ab==='Stall')?r.ab==='Stall':spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
     let tip=null;if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy&&!spdUi.par&&!spdUi.up&&!me.wxUp){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:myItem.get(p.n)==='Iron Ball'?.5:1;
@@ -541,9 +541,9 @@ function moveAcc(mv,ab,weather,def,item,userTypes,moved){if(!mv)return 100;if(ab
   if(SURE_HIT.has(mv.name))return 100;if(OHKO_MOVES.has(mv.name)||mv.ohko){const base=(typeof MOVE_ACC==='object'&&MOVE_ACC[mv.name])||30;return mv.name==='Sheer Cold'&&userTypes?(userTypes.includes('Ice')?30:20):base}
   let a=mv.acc||(typeof MOVE_ACC==='object'&&MOVE_ACC[mv.name])||100;
   const effW=ab==='Mega Sol'?'sun':weather;
-  if(['Hurricane','Thunder'].includes(mv.name)){if(effW==='rain')return 100;if(effW==='sun')a=50}if(mv.name==='Blizzard'&&effW==='snow')return 100;
+  if(['Hurricane','Thunder'].includes(mv.name)){if(effW==='rain')return 100;if(effW==='sun')a=50}if(mv.name==='Blizzard'&&weather==='snow')return 100; /* Blizzard checks FIELD weather in Showdown, not Mega Sol (Scout's review) */
   if(ab==='Compound Eyes')a*=1.3;if(item==='Wide Lens')a*=1.1;if(item==='Zoom Lens'&&moved)a=a*4915/4096;if(ab==='Hustle'&&mv.cat===1)a*=.8;
-  if(ab!=='Mega Sol'&&def&&((def.ability==='Sand Veil'&&weather==='sand')||(def.ability==='Snow Cloak'&&weather==='snow')))a*=.8;if(def&&def.item==='Bright Powder')a*=.9;
+  if(def&&((def.ability==='Sand Veil'&&weather==='sand')||(def.ability==='Snow Cloak'&&weather==='snow')))a*=.8;if(def&&def.item==='Bright Powder')a*=.9;
   return Math.min(100,Math.round(a))}
 function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{/* 30 (Nov 13): today the shared cache always handed this table the 30-list; kept so the live table does not change */thr=metaThreats(30).map(x=>x.p||x).filter(p=>p&&p.st)}catch(e){}if(!thr.length)return '';
   const cell=b=>{if(!b)return '<td class="dcz">–</td>';const p=100*b.r.max/b.r.hp,lo=100*b.r.min/b.r.hp,c=lo>=100?'k1':p>=100?'k1m':lo>=50?'k2':p>=50?'k2m':'k3';const nt=hitNote(b),ks=koShort(b.r);return `<td class="${c}" data-ko="${esc(ks)}" title="${esc(b.mv.name)}: ${dmgRange(b.r)} · ${esc(koText(b.r))}${nt?' ('+nt+')':''}">${dmgP(p)}%<span>${esc(b.mv.name)}${nt?' *':''}</span></td>`};
