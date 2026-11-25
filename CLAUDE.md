@@ -14,7 +14,8 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
 - **"Other chat"** = Sim's PC Claude Code chat, SAME account (long runs, GPU image work). **"Other acc"** = second account, Pro plan,
   much less usage: report-only, patch jobs, and (Sim, Nov 24) merging + testing Gemini's jobs; pushes ONLY to alt/other-* branches,
   never publishes; HH reviews and merges. HH may push alt/gemini-* branches so GitHub tests Gemini's work (Sim, Nov 24).
-- **Gemini (Sim, Nov 24):** Sim's Google Gemini subscription is a third helper for when Claude usage is low: code reviews and
+- **The squad (Sim, Nov 24):** Sim, HH, **Kip** (= Gemini) and **Scout** (= the other acc helper).
+- **Gemini / Kip (Sim, Nov 24):** Sim's Google Gemini subscription is a third helper for when Claude usage is low: code reviews and
   non-design tasks ONLY (absolutely no design work). HH writes its prompts in the same package style (template:
   docs/rebuild/gemini-prompt-template.md); it works on its own alt/gemini-* branch or delivers patches, never main or claude/design6,
   never publishes; HH double-checks everything it does before merging.
