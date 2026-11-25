@@ -12,7 +12,7 @@ const ROOT = path.resolve(HERE, '..');
 const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'np-md-day1-'));
 
 // Copy patched scripts into TMP and add minimal stubs for unseen helper imports (pilot.mjs, team-basics.mjs)
-for (const f of ['formats.mjs', 'model.mjs', 'model-guard.mjs', 'six.mjs', 'ctr.mjs', 'leads.mjs', 'scoreboard.mjs', 'track.mjs', 'health.mjs', 'regstate.mjs']) {
+for (const f of ['regulation.json', 'formats.mjs', 'model.mjs', 'model-guard.mjs', 'six.mjs', 'ctr.mjs', 'leads.mjs', 'scoreboard.mjs', 'track.mjs', 'health.mjs', 'regstate.mjs']) {
   fs.copyFileSync(path.join(ROOT, f), path.join(TMP, f));
 }
 fs.writeFileSync(path.join(TMP, 'pilot.mjs'), 'export const pilotTest = () => ({});\n');
