@@ -660,9 +660,12 @@ document.addEventListener('click', e => { const now = Date.now(), kb = !e.detail
 // ---------- ↑/↓ through a name box's suggestions (audit JUMP-04 / X-09; today's search and name boxes have it) ----------
 // One rule for every box: ↓ from the box moves focus to the first suggestion, ↑/↓ move between them, ↑ from the first goes back to
 // the box. Focus shows the site's usual focus ring, Enter/Space picks (they are buttons and links). The add box (six.js) keeps its own.
-V2.ARROW_LISTS = [['[data-v2q]', () => '[data-v2hits] .np-hit'], ['[data-bxq]', () => '[data-bxhits] .np-hit:not([aria-disabled])'],
+V2.ARROW_LISTS = [['[data-v2q]', () => '[data-v2hits] .np-hit:not(.np-hitx)'], ['[data-bxq]', () => '[data-bxhits] .np-hit:not([aria-disabled])'],
   ['[data-bdfind]', () => '[data-bdhits] [data-bdpick]'], ['[data-bdcfind]', () => '[data-bdchits] [data-bdcpick]'],
-  ['[data-btfind]', i => `[data-bthits="${i.dataset.btfind}"] [data-btpick]`]];
+  ['[data-btfind]', i => `[data-bthits="${i.dataset.btfind}"] [data-btpick]`],
+  ['[data-arnq]', () => '[data-arnhits] .np-hit'], ['[data-arnmq]', () => '[data-arnmhits] .np-hit'],
+  ['[data-ygq]', () => '[data-yghits] .np-hit'], ['[data-exq]', () => '[data-exhits] .np-hit'],
+  ['[data-tcfind]', () => '[data-tchits] [data-tcpick]'], ['[data-stq]', () => '.st-hits [data-v2setmon]']];
 document.addEventListener('keydown', e => { if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' || e.altKey || e.ctrlKey || e.metaKey || !e.target.closest) return;
   for (const [sel, list] of V2.ARROW_LISTS) {
     const inp = e.target.matches(sel) ? e.target : null, items = inp ? [...document.querySelectorAll(list(inp))].filter(x => x.getClientRects().length) : null;
