@@ -33,7 +33,9 @@ build team has to finish before this text can ship.
 ## Must be true first (build team, before this ships) — each checked on the day
 - Row 3 "deleted after 180 days": a scheduled delete in the feedback Worker/D1 (not built yet).
 - Row 4: the anonymous counter + Cloudflare Web Analytics (queue item 4; not built yet). Until then, row 4 says "We don't count visits yet."
-- Row 5: Turnstile on the page (queue item 5; needs tonight's site key). Not checked: whether Turnstile sets any cookie — check Cloudflare's docs; if it does, say so.
+- Row 5: Turnstile on the page (queue item 5; needs tonight's site key). Cookies: UNSURE (checked Nov 25: Cloudflare's Turnstile blog says it
+  uses no cookies; a Cloudflare community post, Feb 2023, says it set one anyway). Row 5 makes no cookie claim; on the hidden preview deploy,
+  open the feedback form and list document.cookie + the browser's cookie store for every domain; if Turnstile sets one, add a line saying so.
 - Row 8: hello@nastyplot.org works (Email Routing, tonight with Dos).
 - Row 1 "Export": the Export/Import feature is planned (Dec); until it ships, drop "or Export".
 - No cookies anywhere in our code (checked Nov 15 for the Claude version; re-check the public build: security-csp-test reports 0 cookies).
