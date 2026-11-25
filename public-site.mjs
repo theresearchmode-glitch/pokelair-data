@@ -2,9 +2,9 @@
 // Night plan item 6 (launch review H4/H5/H6/S7/S8). Used by .github/workflows/deploy.yml; safe to run locally (writes only <dir>).
 //   node public-site.mjs [dir]      default dir: site
 // What goes in:
-//   - the public build (node app/build.mjs --v2 --split --one-art-size --art=art/ --public), run here, every file it writes to app/dist
+//   - the public build (node app/build.mjs --v2 --split --one-art-size --item-files --art=art/ --public), run here, every file it writes to app/dist
 //     EXCEPT the source map (v2.js.map), preview.json and any file type not on the list below
-//   - art/: the Pokémon pictures from app/src/v2/art
+//   - art/: the Pokémon pictures from app/src/v2/art, and art/items/: the item pictures
 //   - data/<doc>.json: the same daily documents the morning refresh stores (split-docs.mjs DOC_SOURCES + meta/perf from data-docs.mjs),
 //     whole (static files have no size limit like the old store), each checked for player names (app/test/no-names.mjs)
 // Stops with exit 1 (and deploys nothing) on any missing document, a name, a file over 25 MiB or more than 20,000 files (Cloudflare's limits).
@@ -20,7 +20,7 @@ if (DIR === ROOT || DIR === DIST) fail('refusing to write over ' + DIR);
 for (const f of fs.readdirSync(DIST, {withFileTypes: true})) fs.rmSync(path.join(DIST, f.name), {recursive: true, force: true});
 /* Web Analytics (Sim's token, once he adds the site in Cloudflare): set CF_ANALYTICS_TOKEN; without it the page loads no analytics */
 const cfa = (process.env.CF_ANALYTICS_TOKEN || '').trim();
-const b = spawnSync(process.execPath, ['app/build.mjs', '--v2', '--split', '--one-art-size', '--art=art/', '--public', ...(cfa ? ['--cf-analytics=' + cfa] : [])], {encoding: 'utf8'});
+const b = spawnSync(process.execPath, ['app/build.mjs', '--v2', '--split', '--one-art-size', '--item-files', '--art=art/', '--public', ...(cfa ? ['--cf-analytics=' + cfa] : [])], {encoding: 'utf8'});
 if (b.status !== 0) { console.error((b.stdout || '') + (b.stderr || '')); fail('the public build failed'); }
 
 // 2. copy it, only the kinds of files a page needs
@@ -35,6 +35,9 @@ copy(DIST, DIR);
 // 3. the pictures
 const ART = path.join(ROOT, 'app/src/v2/art'); fs.mkdirSync(path.join(DIR, 'art'), {recursive: true});
 for (const f of fs.readdirSync(ART)) if (/\.(webp|png)$/.test(f)) { fs.copyFileSync(path.join(ART, f), path.join(DIR, 'art', f)); files++; }
+/* the item pictures (art/items/, 166 files): the build names them as files (--item-files), not data: URIs inside v2.js (phone speed, Nov 25) */
+if (fs.existsSync(path.join(ART, 'items'))) { fs.mkdirSync(path.join(DIR, 'art/items'), {recursive: true});
+  for (const f of fs.readdirSync(path.join(ART, 'items'))) if (/\.webp$/.test(f)) { fs.copyFileSync(path.join(ART, 'items', f), path.join(DIR, 'art/items', f)); files++; } }
 // 4. the data
 fs.mkdirSync(path.join(DIR, 'data'), {recursive: true});
 const rd = f => { try { return JSON.parse(fs.readFileSync(path.join('out', f), 'utf8')); } catch (e) { return null; } };
