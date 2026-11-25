@@ -345,7 +345,7 @@ index 5ebe465..40c32e7 100644
  import {opid, okeys, keyScore} from './pid.mjs';
  import {stampReg} from './reg-stamp.mjs';
 +import {activeReg, regProfile} from './formats.mjs';
- export const UA = 'NastyPlot data job (github.com/theresearchmode-glitch/pokelair-data; simran.jsbagga@gmail.com)';
+ export const UA = 'NastyPlot data job (github.com/theresearchmode-glitch/pokelair-data; hello@nastyplot.org)';
 -const TOP = +(process.env.OFFICIAL_TOP || 64), REG = process.env.OFFICIAL_REG || 'M-C', REG_START = '2026-09-01', CACHE = process.env.OFFICIAL_CACHE || '';
 +// gap G1 (Nov 24): the regulation and its first day come from the regulation profile (regulation.json, the regulation our numbers
 +// are built from). With no official id listed for it, every event is skipped as not this regulation's, never read as another one's.

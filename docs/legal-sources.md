@@ -8,7 +8,7 @@ Keep this file and that list in step.
 ## How the daily job behaves (all sources)
 
 - **Identifies itself.** Every request made through `http.mjs` sends
-  `User-Agent: NastyPlot-data/1.0 (+https://github.com/theresearchmode-glitch/pokelair-data; simran.jsbagga@gmail.com)`.
+  `User-Agent: NastyPlot-data/1.0 (+https://github.com/theresearchmode-glitch/pokelair-data; hello@nastyplot.org)`.
   The op.gg step (a headless browser) appends the same string to its browser User-Agent.
   This is the one User-Agent for every source (Sim, Nov 18, 9a): the one-off Nov 17 read of the official news feed sent
   "NastyPlot/1.0 (fan site)"; from now on the feed is read only through `http.mjs`, with the string above.
@@ -16,7 +16,7 @@ Keep this file and that list in step.
   longer pauses keep them (Limitless 6.5 s, outside sources 1.5 s).
 - **Once a day.** `.github/workflows/update.yml` runs once a day; Smogon stats are only downloaded when a new month is out.
 - **Credit.** Every source is named in the page footer and on the About & legal page, with a link.
-- **Removal.** Anyone can ask for anything to be changed or removed at simran.jsbagga@gmail.com (shown on the About page).
+- **Removal.** Anyone can ask for anything to be changed or removed at hello@nastyplot.org (shown on the About page).
 
 ## Sources
 

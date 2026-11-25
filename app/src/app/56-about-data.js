@@ -34,7 +34,7 @@ IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
 CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.`;
 const LEGAL_P1 = 'NastyPlot is an unofficial, fan-made tool. It is not affiliated with, endorsed, sponsored or approved by Nintendo, Game Freak, Creatures Inc. or The Pokémon Company, or by any of the data sources below. Pokémon and all related names, characters and images are trademarks and © of their respective owners, used here for identification only.';
 /* the contact address is only put together when someone taps "Show email", so it never sits in the page as text */
-const legalMail = () => ['moc.liamg', 'aggabsj.narmis'].map(s => s.split('').reverse().join('')).reverse().join('@');
+const legalMail = () => ['gro.tolpytsan', 'olleh'].map(s => s.split('').reverse().join('')).reverse().join('@'); /* Nov 25 (Sim): hello@nastyplot.org, not a personal address */
 /* the small "check the official rules" caption shown once wherever the page says something is legal or not */
 const srcNames = () => { const n = DATA_SOURCES.map(s => esc(s.name) + (s.note ? ` (${esc(s.note)})` : '')); return n.slice(0, -1).join(', ') + ' and ' + n[n.length - 1]; };
 const ABT_ICON = {

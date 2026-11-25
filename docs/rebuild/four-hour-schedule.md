@@ -141,7 +141,7 @@ Validation (checked, commands run in a scratch copy of b19b8044):
 +  extra runs read only Limitless (same 6.5 s spacing and per-run cap) and Pokémon Showdown (same pacing and cap). Every other
 +  site is still read once a day.
  - **Credit.** Every source is named in the page footer and on the About & legal page, with a link.
- - **Removal.** Anyone can ask for anything to be changed or removed at simran.jsbagga@gmail.com (shown on the About page).
+ - **Removal.** Anyone can ask for anything to be changed or removed at hello@nastyplot.org (shown on the About page).
  
 ```
 
