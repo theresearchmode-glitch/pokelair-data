@@ -153,7 +153,7 @@ footer{margin-top:56px;color:var(--mute);font-size:13px}
 <script>
 /* ===== PLAN: edit only this to update the page. s = done | doing | next | later | sim ===== */
 const PLAN = {
-  updated: 'Tue Nov 24, 9:52 PM',
+  updated: 'Wed Nov 25, 6:36 AM',
   road: [
     {when: 'Sat Nov 28', what: 'The switch', date: '2026-11-28'},
     {when: 'Wed Dec 2', what: 'Reg M-D + patch', date: '2026-12-02'},
@@ -161,10 +161,11 @@ const PLAN = {
     {when: 'About Dec 18', what: 'The announcement', date: '2026-12-18'}
   ],
   now: [
-    {who: 'HH (this chat)', t: 'Overnight watchdog every 30 min: GitHub results, Kip\'s fixes. Wed 4:01 PM: back to full work mode; merge the Dec 2 branch after the practice switch.'},
-    {who: 'Kip (Gemini)', t: 'Code + research only, never design. Done tonight: jobs 1-24. Working on job 25: fixing its own 3 test failures.'},
+    {who: 'HH (this chat)', t: 'Back to regular work (Sim, 5:55 AM), 1 helper. Reg M-D prep: Commander built, official dates in; next the practice switch and merging the Dec 2 branch.'},
+    {who: 'Helper', t: 'Adding the security test to GitHub\'s checks for the public site.'},
+    {who: 'Kip (Gemini)', t: 'Code + research only, never design. Jobs 1-26 done; overnight HH fixed 4 of its mistakes (a fake M-D end date, a crash on the public page, square pictures, a missing weight).'},
     {who: 'Scout (helper account)', t: 'Small reviews when it has usage. Tonight it caught a history-wiping guard bug and 3 wrong damage rules.'},
-    {who: 'PC chat', t: 'Free. Next: full test run as the switch baseline (Wed).'}
+    {who: 'PC chat', t: 'Done this morning: 10 new pictures (Reg M-D Pokémon + Meowstic-F). Next: full test run as the switch baseline.'}
   ],
   sim: [
     {s: 'sim', t: 'Go / no-go for the switch', d: 'After using the Preview for real.', tag: 'Fri Nov 27'},
@@ -177,7 +178,12 @@ const PLAN = {
     {s: 'sim', t: 'Say yes: the announcement', d: 'Moved up from January (Sim, Nov 24): winter break, M-D two weeks old.', tag: 'about Dec 18'}
   ],
   week: [
-    {h: 'Wed Nov 25 (from 4:01 PM)', items: [
+    {h: 'Wed Nov 25', items: [
+      {s: 'done', t: 'Reg M-D is official', d: 'Dec 2 to Mar 3. 24 new Pokémon and 4 Megas; named so far: Heatran, Dondozo, Tatsugiri, Mega Heatran, Mega Tatsugiri. Saved with sources.', tag: 'Nov 25'},
+      {s: 'done', t: 'Commander (Tatsugiri into Dondozo)', d: 'Turn One: Tatsugiri can\'t be hit, Dondozo +2 every stat. Team checks: a Commander row. Test 9/9; nothing else changed (170 Battle states identical).', tag: 'Nov 25'},
+      {s: 'done', t: 'Pictures for the new Pokémon', d: '9 Reg M-D pictures + Meowstic-F, upscaled on Sim\'s PC, checked and merged.', tag: 'Nov 25'},
+      {s: 'done', t: '"Day 3 of Reg M-D · 4 events" on Meta', d: 'A new regulation\'s first 4 weeks say how young the data is. Same line, 0px added.', tag: 'Nov 25'},
+      {s: 'next', t: 'The full list of 24 new Pokémon', d: 'Checked every morning until it\'s out; then one picture job and one data command.', tag: 'HH, daily'},
       {s: 'doing', t: 'One place for the regulation', d: 'Built (Scout) and ported to the data job (Kip); tests pass. Waiting to merge.', tag: 'HH'},
       {s: 'done', t: 'Sprite script for new Pokémon', d: 'Done early by the other account; rebuilds existing pictures byte for byte.', tag: 'Nov 24'},
       {s: 'next', t: 'Last switch blockers', d: 'Saved teams carry over, "What\'s new", underdog screens.', tag: 'Helper'},
@@ -261,6 +267,9 @@ const PLAN = {
     {t: 'Speed Tiers controls at 1280', d: 'A two-row layout, after the switch (pictures first).'}
   ],
   done: [
+    {when: 'Nov 25', t: 'Reg M-D official dates and roster counts saved; Commander built and tested; 10 new pictures merged'},
+    {when: 'Nov 25', t: 'Night fixes: every test branch green except one waiting on a picture (now merged)'},
+    {when: 'Nov 25', t: 'Strength Score round 3: one new idea (archetype matchups) is promising, not proven; being re-checked'},
     {when: 'Nov 24', t: 'Strength Score lab: Kip\'s copy of today\'s model proven identical; the combo upgrade wins on 38,477 later games'},
     {when: 'Nov 24', t: 'Redesign batch pushed (all tests green): countdown, freshness stamp, coach line, Kip\'s rain fix and review fixes'},
     {when: 'Nov 24', t: 'Dec 2 safety on main: watcher catches "Regulation Set M-D"; M-C\'s end date can\'t slip; old teams and replays never cross regulations'},
