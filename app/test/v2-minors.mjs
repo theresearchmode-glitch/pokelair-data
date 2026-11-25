@@ -612,10 +612,17 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
     if (RS(a.r.total) === RS(b.r.total) ? ka !== kb : kb !== i + 1) bad.push(a.p.d + ' ' + RS(a.r.total) + ' #' + ka + ' / ' + b.p.d + ' ' + RS(b.r.total) + ' #' + kb); } return {n: xs.length, bad: bad.slice(0, 4), nb: bad.length}; })()`));
   ok(t.nb === 0, `Player review 3b (Nov 17): Pokémon showing the same rating share a rank, and the next one skips ahead (${t.n} rated; ${t.nb} wrong: ${t.bad.join(', ')})`); }
 { await p.evaluate(() => { try { localStorage.clear(); } catch (e) {} }); await p.goto('file://' + PAGE + '#team'); await p.reload(); await p.waitForTimeout(3500);
-  const m = await p.evaluate(() => { const team = new Set(JSON.parse(window.__ev('JSON.stringify(members().map(x => x.p.n))'))), rows = [...document.querySelectorAll('#main .tm-mus [data-muthr]')].filter(b => b.querySelector('.mu-dis, .nm'));
+  /* switch fix a (Nov 25): read the Stand-Outs (the view the page opens on) AND Top 10. A mirror row shows only when one of your six is
+     among the threats the view lists; with Nov 25's data none of the sample team is a stand-out (3 Unfavoured + 4 Favoured, all others),
+     so Stand-Outs alone had 0 mirror rows and the check could not test anything. Top 10 lists the most common threats, where the sample
+     team's own Pokémon are (5 of them on Nov 25). Each view must label every mirror row and no other; at least one mirror row in all. */
+  const read = () => p.evaluate(() => { const team = new Set(JSON.parse(window.__ev('JSON.stringify(members().map(x => x.p.n))'))), rows = [...document.querySelectorAll('#main .tm-mus [data-muthr]')].filter(b => b.querySelector('.mu-dis, .nm'));
     const mir = rows.filter(b => team.has(b.dataset.muthr)), other = rows.filter(b => !team.has(b.dataset.muthr));
-    return {n: rows.length, mir: mir.map(b => b.dataset.muthr + ':' + /Mirror\b/.test(b.innerText)), wrong: other.filter(b => /Mirror\b/.test(b.innerText)).length}; }); /* Sim's Q20 A (Nov 19): the cards say 'Mirror' (the list rows 'Mirror match') */
-  ok(m.mir.length > 0 && m.mir.every(x => /:true$/.test(x)) && m.wrong === 0, `Player review 3e (Nov 17): a threat that is also on your team says "Mirror" ("Mirror match" in the list, Q20), no other row does (${m.mir.join(', ')}; ${m.wrong} wrong of ${m.n})`); }
+    return {n: rows.length, mir: mir.map(b => b.dataset.muthr + ':' + /Mirror\b/.test(b.innerText)), wrong: other.filter(b => /Mirror\b/.test(b.innerText)).length}; });
+  const m0 = await read(); await p.click('#main [data-v2slide="thr"] button[data-v="top"]'); await p.waitForTimeout(1200); const m1 = await read();
+  await p.evaluate(() => { try { localStorage.removeItem('cc2.seg.thr'); } catch (e) {} });
+  const m = {n: m0.n + m1.n, mir: [...m0.mir.map(x => 'stand-outs ' + x), ...m1.mir.map(x => 'top 10 ' + x)], wrong: m0.wrong + m1.wrong}; /* Sim's Q20 A (Nov 19): the cards say 'Mirror' (the list rows 'Mirror match') */
+  ok(m.mir.length > 0 && m.mir.every(x => /:true$/.test(x)) && m.wrong === 0, `Player review 3e (Nov 17): a threat that is also on your team says "Mirror" ("Mirror match" in the list, Q20), no other row does, in Stand-Outs and Top 10 (${m.mir.join(', ')}; ${m.wrong} wrong of ${m.n})`); }
 { await p.evaluate(() => { try { localStorage.clear(); } catch (e) {} }); await p.goto('file://' + PAGE + '#team'); await p.reload(); await p.waitForTimeout(5000);
   const s2 = await p.evaluate(() => { const d = document.querySelector('[data-v2fix] summary'); return d ? d.innerText.replace(/\s+/g, ' ').trim() : ''; });
   ok(/^Things to Know \d+ (minor )?weak spots?, type chart, (legal|not legal yet)$|^Things to Know No weak spots, type chart/.test(s2), `Player review 3f (Nov 17): Things to Know names what it holds ("${s2}")`); }
