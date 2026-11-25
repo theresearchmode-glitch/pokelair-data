@@ -89,17 +89,24 @@ const day = s => new Date(s + 'T00:00:00Z').getTime() / 864e5;
 // log-loss 0.6828 vs 0.6830 without it, the same separation of top-8 teams from the rest (AUC 0.60), and a six of rare
 // high-number Pokémon (Annihilape, Kommo-o, Scrafty, Mega Venusaur, Hydreigon, Mega Charizard Y) fell from 68 to 28.
 // EVID_K / EVID_KP env vars override (0 = off).
-const EVID_K = +(process.env.EVID_K ?? 1000), EVID_KP = +(process.env.EVID_KP ?? 300);
+// v8 (Nov 25, Kip job 35, Sim approved): the shrink is off (model-settings.json evidK 0, evidKp 0); the stronger ridge (lb, lp) and
+// zero-centering (zeroCenter) below do its job. Each env var still overrides the locked setting.
+const SETTINGS = (() => { try { return JSON.parse(fs.readFileSync('model-settings.json', 'utf8')); } catch (e) { return {}; } })();
+const envNum = (k, locked, dflt) => process.env[k] != null ? +process.env[k] : (locked != null ? +locked : dflt);
+const EVID_K = envNum('EVID_K', SETTINGS.evidK, 1000), EVID_KP = envNum('EVID_KP', SETTINGS.evidKp, 300);
+// v8 zero-centering: after the fit, the Pokémon numbers are shifted so their appearance-weighted mean (team appearances in the games
+// fitted) is 0. Every team in the games has 6 Pokémon, so this moves every real team's x by the same amount: odds between two real teams
+// do not change, but a Pokémon with no games (number 0) now sits at the field average instead of below it. ZERO_CENTER=0/1 overrides.
+const ZERO_CENTER = process.env.ZERO_CENTER != null && process.env.ZERO_CENTER !== '' ? process.env.ZERO_CENTER === '1' : SETTINGS.zeroCenter === true;
 // v7 (Nov 18): steady team-wide basics. 'noMega' is learned from only about 200 no-Mega-vs-Mega games; with the 14-day recency of
 // the rest of the model a handful of new games moved it from -0.62 to -0.49 in a day (Nov 17 to 18), and the weakest six crossed 60.
 // TEAM_HALF = the recency half-life (days) used for the team-wide basics only (players, Pokémon, pairs and sets keep `half`):
 // unset = the same as the rest (the model before Nov 18), 0 = every game counts the same. Locked in model-settings.json (teamHalf).
 // TEAM_PRIOR = K (experiments): keep the recency fit for the basics but pull them toward their no-recency value with the weight of
 // K games (a minimum amount of evidence). Each env var overrides the locked setting.
-const SETTINGS = (() => { try { return JSON.parse(fs.readFileSync('model-settings.json', 'utf8')); } catch (e) { return {}; } })();
 const TEAM_HALF = process.env.TEAM_HALF != null && process.env.TEAM_HALF !== '' ? +process.env.TEAM_HALF : (SETTINGS.teamHalf != null ? +SETTINGS.teamHalf : null);
 const TEAM_PRIOR = +(process.env.TEAM_PRIOR || 0);
-function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0, teamHalf, teamPrior, evidK = EVID_K, evidKp = EVID_KP} = opt || {};
+function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0, teamHalf, teamPrior, evidK = EVID_K, evidKp = EVID_KP, zeroCenter = ZERO_CENTER} = opt || {};
   if (teamHalf == null) teamHalf = TEAM_HALF != null ? TEAM_HALF : half;
   // TEAM_PRIOR: the long-run (no-recency) value of the basics first, then the recency fit is pulled toward it
   if (TEAM_PRIOR > 0 && TEAMF.length && teamPrior == null && teamHalf > 0) teamPrior = {T0: Array.from(fit(games, {...opt, teamHalf: 0, teamPrior: false}).T), lam: TEAM_PRIOR * .1};
@@ -137,6 +144,9 @@ function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = fals
     for (const [A, B] of games) for (const t of [A, B]) { for (const j of tf[t].f) nb[j]++; for (const j of tf[t].p) nq[j]++; }
     if (evidK > 0) for (let j = 0; j < b.length; j++) b[j] *= nb[j] / (nb[j] + evidK);
     if (evidKp > 0) for (let j = 0; j < q.length; j++) q[j] *= nq[j] / (nq[j] + evidKp); }
+  // v8 zero-centering (see ZERO_CENTER): Pokémon with no team appearances in these games stay 0
+  if (zeroCenter) { const nb = new Float64Array(mons.length); for (const [A, B] of games) for (const t of [A, B]) for (const j of tf[t].f) nb[j]++;
+    let sw = 0, sb = 0; for (let j = 0; j < b.length; j++) { sw += nb[j]; sb += nb[j] * b[j]; } const mu = sb / (sw || 1); for (let j = 0; j < b.length; j++) if (nb[j] > 0) b[j] -= mu; }
   return {b, q, s, c, T, x, useSets, vb, vq}; }
 function score(model, games, skillToo) { let ll = 0, acc = 0;
   for (const [A, B, r, , pa, pb, , dA, dB] of games) { const eta = model.x(A, dA) - model.x(B, dB) + (skillToo ? model.s[pa] - model.s[pb] : 0), p = 1 / (1 + Math.exp(-eta));
@@ -165,7 +175,10 @@ let bestH = {half: FAST ? FAST[1] : 0, sc: bestL.sc}; if (!FAST) for (const half
 // setting is clearly better (by 0.002 log-loss): tested Oct 27, a 10x lighter one gained only 0.0009 (noise) while letting
 // rare Pokémon that strong players brought rate higher (an odd six rose from below 90 to 92), so it was not shipped.
 let bestS = {sm: FAST ? FAST[2] : 1, sc: bestH.sc}; if (!FAST) for (const sm of [.3, 3, 10, 0]) { const m = fit(fitPart, {lb: 4 * bestL.k, lp: 15 * bestL.k, ls: 1.5 * bestL.k * sm, useSkill: sm > 0, half: bestH.half}); const sc = score(m, val, false).logloss; console.log('player-skill shrink', sm, sc); if (sc < bestH.sc - .002 && sc < bestS.sc) bestS = {sm, sc}; }
-const K = bestL.k, HALF = bestH.half, LAM = {lb: 4 * K, lp: 15 * K, ls: 1.5 * K * (bestS.sm || 1), useSkill: bestS.sm > 0, half: HALF};
+// v8 (Nov 25): with the locked settings, the Pokémon and pair ridge come from model-settings.json (lb, lp) when set; lp is the value
+// before pairShrink (fit multiplies it by pairShrink, so lp 225 x 4 = 900). RETUNE / K_GRID / FAST keep the 4K / 15K ladder. LB / LP env override.
+const LOCKED = !process.env.FAST && LOCK != null;
+const K = bestL.k, HALF = bestH.half, LAM = {lb: envNum('LB', LOCKED ? SETTINGS.lb : null, 4 * K), lp: envNum('LP', LOCKED ? SETTINGS.lp : null, 15 * K), ls: 1.5 * K * (bestS.sm || 1), useSkill: bestS.sm > 0, half: HALF};
 bestH.sc = bestS.sc;
 let LC = FAST && FAST[3] ? {lc: FAST[3], sc: 0} : null; if (!FAST && hasSets && setNames.length) for (const lc of [20, 60, 200]) { const m = fit(fitPart, {...LAM, useSets: true, lc}); const sc = score(m, val, false).logloss; console.log('sets shrink', lc, sc); if (sc < bestH.sc && (!LC || sc < LC.sc)) LC = {lc, sc}; }
 const species = FAST && LC ? null : fit(train, LAM), withSets = LC ? fit(train, {...LAM, useSets: true, lc: LC.lc}) : null;
@@ -270,7 +283,7 @@ if (process.env.MODEL_SHADOW === '1' && ships && F) {
   const sig = z => 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, z))));
   const makeRng = (seed = 99) => { let st = seed >>> 0; return () => { st = (st * 1664525 + 1013904223) >>> 0; return st / 4294967296; }; };
   const fitCombo = (games, D = 4, lbc = 15) => {
-    const base = fit(games, {...LAM, lb: LAM.lb * 2.5, lp: LAM.lp * 1.5, useSets, lc: LC ? LC.lc : 40, evidK: 0, evidKp: 0});
+    const base = fit(games, {...LAM, lb: 4 * K * 2.5, lp: 15 * K * 1.5, useSets, lc: LC ? LC.lc : 40, evidK: 0, evidKp: 0}); // the combo's base = the v8 ridge (same as LAM.lb * 2.5 before Nov 25)
     let last = -Infinity; for (const g of games) last = Math.max(last, day(evDates[g[3]]));
     const W = games.map(g => HALF ? Math.pow(.5, (last - day(evDates[g[3]])) / HALF) : 1), Wn = games.length / (W.reduce((a, x) => a + x, 0) || 1);
     const dl = new Float64Array(teams.length), md = new Float64Array(teams.length), vd = new Float64Array(teams.length), tau2 = .01;
