@@ -77,14 +77,6 @@ function canon(kind, s, count = true) { if (s == null) return ''; const t = Stri
   const k = fold(t); if (NONE[kind].has(k)) return ''; if (kind === 'i' && STONE_TYPO[k] && LIST.i.has(fold(STONE_TYPO[k]))) return STONE_TYPO[k]; if (kind === 'i' && ITEM_TYPO[k] && LIST.i.has(fold(ITEM_TYPO[k]))) return ITEM_TYPO[k];
   const c = LIST[kind].get(k); if (c) return c; if (count && LIST[kind].size) CANON_UNKNOWN[kind].set(t, (CANON_UNKNOWN[kind].get(t) || 0) + 1); return t; }
 export const canonItem = (s, count) => canon('i', s, count), canonAbility = (s, count) => canon('a', s, count), canonMove = (s, count) => canon('mv', s, count);
-// Natures (Dossier step 3, Nov 23): the 25 names from data.js SETS.NAT, matched case-, space- and punctuation-free. Misspellings seen on
-// Limitless sheets (data/t2 check, Nov 23: "Adament" x16, "Modeste", "Quieto"...) where only one nature fits are mapped; anything else
-// ("mid", "ve") is not a nature we can read: '' (left out of the counts, never guessed).
-const NAT_LIST = (() => { try { const m = DATA_JS.match(/"NAT":(\[[^\]]*\])/); return m ? JSON.parse(m[1]) : []; } catch (e) { return []; } })();
-const NAT_MAP = new Map(NAT_LIST.map(x => [fold(x), x]));
-const NAT_TYPO = {adament: 'Adamant', adaman: 'Adamant', ademant: 'Adamant', admant: 'Adamant', adamnt: 'Adamant', asamant: 'Adamant', admanant: 'Adamant', adamat: 'Adamant',
-  modeste: 'Modest', modesto: 'Modest', quieto: 'Quiet', quite: 'Quiet', jelly: 'Jolly', sasay: 'Sassy'};
-export const canonNature = s => { const k = fold(s || ''); return !k ? '' : NAT_MAP.get(k) || (NAT_TYPO[k] && NAT_MAP.has(fold(NAT_TYPO[k])) ? NAT_TYPO[k] : ''); };
 // one Pokémon of a data/t2 sheet ({n, i, a, mv, t, nt}) with its item, Ability and moves in the list spelling
 export const canonSet = m => ({...m, i: canonItem(m.i), a: canonAbility(m.a), mv: Array.isArray(m.mv) ? m.mv.map(x => canonMove(x)) : []});
 export function canonReport(step, log = console.log) { const part = (k, w) => { const m = CANON_UNKNOWN[k], n = [...m.values()].reduce((a, b) => a + b, 0);

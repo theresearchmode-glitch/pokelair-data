@@ -17,11 +17,12 @@ import fs from 'node:fs'; import {activeReg, SITE_REG} from './formats.mjs';
 const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
 const reg = activeReg().id, L = rd('ratings_log.json'), E = rd('events.json'), SB = rd('scoreboard.json'), prev = rd('track.json') || {};
 const prevReg = prev.reg || SITE_REG.id;
+const BANDS = [80, 70, 60]; // before the empty-file branch below, which writes them too (merge fix: it read BANDS before it was set)
 if (prev && (Array.isArray(prev.ev) || Array.isArray(prev.mons)) && prevReg !== reg) fs.writeFileSync(`out/track_${prevReg}.json`, JSON.stringify(prev));
 const rawDays = L ? (L.byReg ? (L.byReg[reg] || []) : ((!L.reg || L.reg === reg) ? (L.days || []) : [])) : [];
 if (!rawDays.length) { const empty = {v: 1, reg, bands: BANDS, updated: new Date().toISOString(), since: null, snaps: 0, last: null, top: 8, ev: [], mons: [], mb: [[0, 0], [0, 0], [0, 0], [0, 0]], fw: [], mv: null};
   fs.writeFileSync('out/track.json', JSON.stringify(empty)); console.log(`track (${reg}): no ratings snapshots yet, wrote empty stamped track.json`); process.exit(0); }
-const CAP = 240 * 1024, TOP = 8, BANDS = [80, 70, 60], band = r => r >= BANDS[0] ? 0 : r >= BANDS[1] ? 1 : r >= BANDS[2] ? 2 : 3;
+const CAP = 240 * 1024, TOP = 8, band = r => r >= BANDS[0] ? 0 : r >= BANDS[1] ? 1 : r >= BANDS[2] ? 2 : 3;
 const snaps = rawDays.filter(s => s && s.d && s.r).sort((a, b) => a.d < b.d ? -1 : 1), sByD = new Map(snaps.map(s => [s.d, s]));
 const snapFor = d => { let s = null; for (const x of snaps) if (x.d < d) s = x; return s; };
 const samePrev = prevReg === reg;
