@@ -1,7 +1,7 @@
 /* ---------- About & legal (Nov 1 2026): who we are, the disclaimer, data sources, privacy, contact ---------- */
 /* One list of data sources for the footer and the About page (docs/legal-sources.md has the full record: each site's
    terms or robots rules, quoted, the date checked and how the daily job complies). Edit sources here only. */
-/* REG_NAME and regNote() live in 24-sheet-data.js (shared with the new build, R4 Nov 11) */
+/* regName() and regNote() live in 24-sheet-data.js (shared with the new build, R4 Nov 11) */
 const DATA_SOURCES = [
   {name: 'Limitless', url: 'https://play.limitlesstcg.com', use: 'Results, standings and team lists from online tournaments', terms: 'Read through its public API, within its rate limits'},
   {name: 'Victory Road', url: 'https://victoryroad.pro', use: 'Official event results and team lists', terms: 'Read once a day; its robots rules allow it'},
@@ -52,7 +52,7 @@ const ABT_PARTS = priv => {
   const src = DATA_SOURCES.map(s => `<li class="abtsrc"><div class="abtsn"><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.name)}</a>${s.note ? ` <span class="abtlic">${esc(s.note)}</span>` : ''}</div><div class="abtuse">${esc(s.use)}</div><div class="abtterm"><span aria-hidden="true">✓</span> ${esc(s.terms)}</div></li>`).join('');
   return [
     ['what', 'b', 'What NastyPlot is', 'A free fan tool for Champions VGC doubles',
-      `<p>NastyPlot helps you build and check teams for Pokémon Champions VGC doubles (${esc(REG_NAME)}): what to bring, which threats you're ready for, damage, speed and the current meta from real tournament results.</p>
+      `<p>NastyPlot helps you build and check teams for Pokémon Champions VGC doubles (${esc(regName())}): what to bring, which threats you're ready for, damage, speed and the current meta from real tournament results.</p>
       <p>It's made by fans in their spare time. It is not affiliated with Nintendo, Game Freak, Creatures Inc. or The Pokémon Company.</p>`],
     ['disc', 'v', 'Disclaimer &amp; trademarks', 'Unofficial · not linked to Nintendo or The Pokémon Company',
       `<p>${esc(LEGAL_P1)}</p>

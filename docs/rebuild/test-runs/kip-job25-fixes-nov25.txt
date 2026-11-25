@@ -1,0 +1,231 @@
+KIP JOB 25 — FIX YOUR OWN THREE ANSWER
+Date: 2026-11-24
+Scope: Code + test harness fixes only (ZERO design changes, ZERO weakened tests).
+Delivery: Three independent sections (=== FIX 1 === through === FIX 3 ===), each naming its BASE commit,
+starting with a 5-line summary, explaining whether the code or test harness was fixed and why, and ending
+with git-apply-verified unified diffs.
+
+================================================================================
+=== FIX 1 ===
+================================================================================
+BASE: e6d02c9e (alt/gemini-j16)
+
+5-LINE SUMMARY:
+1. Root cause: in `experiments/rules-fixes-test.mjs`, the `--src` Node VM harness (`runSourceVm()`) only stubbed `EFF.Ground` and omitted `ABILITY_MODS` completely, causing the 3 new `damage()` Mega Sol checks (2c, 2d, 2e) to throw (`3 !== 0`).
+2. Fixed the test HARNESS (`experiments/rules-fixes-test.mjs` `runSourceVm()`) — NOT the test assertions and NOT `39-damage-calc-speed.js` (whose `damage()` math is already correct).
+3. Added the complete 18x18 Pokémon type effectiveness table (`EFF`) and `ABILITY_MODS` map to `runSourceVm()`'s sandbox so `damage()` executes cleanly in `--src` mode.
+4. Verified all 8 `39-damage-calc-speed.js` checks (2a, 2b, 2c, 2d, 2e, 2f, 3, 4) execute and PASS in Node VM (8/8 PASS, 0 thrown).
+5. Documented the rules checked by 2c, 2d, 2e with official / Showdown / Bulbapedia citations below.
+
+1. WHAT WAS FIXED AND WHY (HARNESS, NOT CODE OR ASSERTIONS)
+- `app/src/app/39-damage-calc-speed.js` already computes `aw = ab === 'Mega Sol' ? 'sun' : fw` (L214), Weather Ball (`type = Fire, bp *= 2` under `aw === 'sun'`, L219), Solar Beam / Solar Blade half-power (`['rain','sand','snow'].includes(aw)`, L261), and Hydro Steam 1.5x sun boost (`nm === 'Hydro Steam' && aIt !== 'Utility Umbrella'`, L284).
+- In `experiments/rules-fixes-test.mjs`, `runSourceVm()` only stubbed `EFF: { Ground: {...} }` (for check 3's Earthquake `allyHit`), so `moveEff()` threw `TypeError: Cannot read properties of undefined` on Fire/Grass/Water/Normal moves in 2c/2d/2e, and line 230 (`ABILITY_MODS[dab]`) threw `ReferenceError: ABILITY_MODS is not defined`.
+- Providing the full 18x18 `EFF` matrix and `ABILITY_MODS` in `runSourceVm()` fixes the harness without changing a single assertion.
+
+2. RULE VERIFICATION & SOURCES FOR 2c, 2d, 2e (LINK + DATE + TIER)
+- **2c (Mega Sol + Weather Ball = 100 BP Fire, acts as harsh sunlight regardless of field weather)**:
+  - Official Pokémon Champions guide (`https://www.pokemon.com/uk/features/pokemon-champions-how-to-build-a-mega-meganium-team`, May 13, 2026, Tier 1 Official):
+    "Weather Ball. This move's type changes depending on the weather, but with the Mega Sol Ability, it will act as if it's in harsh sunlight. This means Weather Ball will be a Fire-type attack, which you generally don't get to click in the rain"
+  - Note on sun boost: `39-damage-calc-speed.js:214,284` models `aw = ab === 'Mega Sol' ? 'sun' : fw`, applying sun's 1.5x Fire modifier consistently with `weather: 'sun'`. (Showdown's `data/abilities.ts` `megasol` file could not be fetched raw over GitHub in search; verified against `39-damage-calc-speed.js` and the official Champions guide above.)
+- **2d (Solar Beam & Solar Blade halved in rain/sand/snow; full power under Mega Sol)**:
+  - Bulbapedia (`https://bulbapedia.bulbagarden.net/wiki/Rain`, Nov 15, 2026, Tier 3; `https://bulbapedia.bulbagarden.net/wiki/Sandstorm_(weather_condition)`, Tier 3):
+    "Halves the power of Solar Beam and Solar Blade." (in Rain, Sandstorm, Snow/Hail).
+  - Official Pokémon Champions guide (`https://www.pokemon.com/uk/features/pokemon-champions-how-to-build-a-mega-meganium-team`, May 13, 2026, Tier 1 Official):
+    "In harsh sunlight, however, this move charges up instantly, which means Mega Sol allows Solar Beam to fire off right away."
+- **2e (Hydro Steam 1.5x in sun / Mega Sol vs Surf 0.5x in sun)**:
+  - Smogon Battle Mechanics Research (`https://www.smogon.com/forums/threads/scarlet-violet-battle-mechanics-research.3709545/page-29`, Tier 2/Showdown mechanics): Hydro Steam is explicitly boosted 1.5x (6144/4096) in harsh sunlight instead of halved (2048/4096) like other Water moves (Surf), unless the user holds Utility Umbrella (`39-damage-calc-speed.js:284`).
+
+3. VERIFICATION OUTPUT
+- Ran checks 2a–2f, 3, 4 directly against `app/src/app/39-damage-calc-speed.js` using the patched `runSourceVm()` `EFF` + `ABILITY_MODS`:
+  `FIX 1 VERIFIED: 8/8 calc/Mega Sol checks PASS in --src VM!`
+
+--- FIX 1 UNIFIED DIFF (BASE: e6d02c9e) ---
+diff --git a/experiments/rules-fixes-test.mjs b/experiments/rules-fixes-test.mjs
+index 67b0c0a..6511d78 100644
+--- a/experiments/rules-fixes-test.mjs
++++ b/experiments/rules-fixes-test.mjs
+@@ -260,8 +260,36 @@ function runSourceVm() {
+     fixTeams() {},
+     blank: () => ({n: '', a: null, lock: false}),
+     esc: s => String(s),
+-    EFF: {
+-      Ground: {Normal: 1, Fire: 2, Water: 1, Electric: 2, Grass: 0.5, Ice: 1, Fighting: 1, Poison: 2, Ground: 1, Flying: 0, Psychic: 1, Bug: 0.5, Rock: 2, Ghost: 1, Dragon: 1, Dark: 1, Steel: 2, Fairy: 1},
++    EFF: (() => {
++      const T = ['Normal','Fire','Water','Electric','Grass','Ice','Fighting','Poison','Ground','Flying','Psychic','Bug','Rock','Ghost','Dragon','Dark','Steel','Fairy'];
++      const E = Object.fromEntries(T.map(a => [a, Object.fromEntries(T.map(d => [d, 1]))]));
++      const set = (a, list, v) => { for (const d of list) E[a][d] = v; };
++      set('Normal', ['Rock','Steel'], 0.5); set('Normal', ['Ghost'], 0);
++      set('Fire', ['Grass','Ice','Bug','Steel'], 2); set('Fire', ['Fire','Water','Rock','Dragon'], 0.5);
++      set('Water', ['Fire','Ground','Rock'], 2); set('Water', ['Water','Grass','Dragon'], 0.5);
++      set('Electric', ['Water','Flying'], 2); set('Electric', ['Electric','Grass','Dragon'], 0.5); set('Electric', ['Ground'], 0);
++      set('Grass', ['Water','Ground','Rock'], 2); set('Grass', ['Fire','Grass','Poison','Flying','Bug','Dragon','Steel'], 0.5);
++      set('Ice', ['Grass','Ground','Flying','Dragon'], 2); set('Ice', ['Fire','Water','Ice','Steel'], 0.5);
++      set('Fighting', ['Normal','Ice','Rock','Dark','Steel'], 2); set('Fighting', ['Poison','Flying','Psychic','Bug','Fairy'], 0.5); set('Fighting', ['Ghost'], 0);
++      set('Poison', ['Grass','Fairy'], 2); set('Poison', ['Poison','Ground','Rock','Ghost'], 0.5); set('Poison', ['Steel'], 0);
++      set('Ground', ['Fire','Electric','Poison','Rock','Steel'], 2); set('Ground', ['Grass','Bug'], 0.5); set('Ground', ['Flying'], 0);
++      set('Flying', ['Grass','Fighting','Bug'], 2); set('Flying', ['Electric','Rock','Steel'], 0.5);
++      set('Psychic', ['Fighting','Poison'], 2); set('Psychic', ['Psychic','Steel'], 0.5); set('Psychic', ['Dark'], 0);
++      set('Bug', ['Grass','Psychic','Dark'], 2); set('Bug', ['Fire','Fighting','Poison','Flying','Ghost','Steel','Fairy'], 0.5);
++      set('Rock', ['Fire','Ice','Flying','Bug'], 2); set('Rock', ['Fighting','Ground','Steel'], 0.5);
++      set('Ghost', ['Psychic','Ghost'], 2); set('Ghost', ['Dark'], 0.5); set('Ghost', ['Normal'], 0);
++      set('Dragon', ['Dragon'], 2); set('Dragon', ['Steel'], 0.5); set('Dragon', ['Fairy'], 0);
++      set('Dark', ['Psychic','Ghost'], 2); set('Dark', ['Fighting','Dark','Fairy'], 0.5);
++      set('Steel', ['Ice','Rock','Fairy'], 2); set('Steel', ['Fire','Water','Electric','Steel'], 0.5);
++      set('Fairy', ['Fighting','Dragon','Dark'], 2); set('Fairy', ['Fire','Poison','Steel'], 0.5);
++      return E;
++    })(),
++    ABILITY_MODS: {
++      Levitate: {Ground: 0}, Eelevate: {Ground: 0}, 'Earth Eater': {Ground: 0},
++      'Flash Fire': {Fire: 0}, 'Well-Baked Body': {Fire: 0},
++      'Water Absorb': {Water: 0}, 'Storm Drain': {Water: 0}, 'Dry Skin': {Water: 0},
++      'Volt Absorb': {Electric: 0}, 'Lightning Rod': {Electric: 0}, 'Motor Drive': {Electric: 0},
++      'Sap Sipper': {Grass: 0},
+     },
+     speedMul: (ab, w) => (ab === 'Swift Swim' && w === 'rain') || (ab === 'Chlorophyll' && w === 'sun') || (ab === 'Sand Rush' && w === 'sand') || (ab === 'Slush Rush' && w === 'snow') ? 2 : 1,
+     members: () => [],
+
+
+================================================================================
+=== FIX 2 ===
+================================================================================
+BASE: 839219cd (alt/gemini-j19)
+
+5-LINE SUMMARY:
+1. Verdict: `app/public-jsonld.mjs` is 100% CORRECT; the TEST (`experiments/jsonld-test.mjs:49`) is WRONG.
+2. Line 49 of `experiments/jsonld-test.mjs` contained a Gmail-mangled Google redirect URL (`https://www.google.com/url?sa=E\&source=gmail\&q=https://nastyplot.org/meta`) instead of `https://nastyplot.org/meta`.
+3. Verified `app/public-jsonld.mjs` against Google's official BreadcrumbList structured data guidelines (2+ ListItems, 1-based `position`, required `name`, valid canonical `item` URLs; `item` on the final ListItem is optional and valid when included).
+4. Fixed `experiments/jsonld-test.mjs:49` back to `'https://nastyplot.org/meta'` (no change to `app/public-jsonld.mjs`).
+5. Ran `node experiments/jsonld-test.mjs` -> `ALL PASSED` (LD-1 through LD-6 all PASS).
+
+1. GOOGLE BREADCRUMBLIST RULES (OFFICIAL DOCUMENTATION QUOTE)
+- Source (Tier 1 Official): Google Search Central — "How To Add Breadcrumb (BreadcrumbList) Markup" (`https://developers.google.com/search/docs/appearance/structured-data/breadcrumb`):
+  - "To specify breadcrumbs, define a BreadcrumbList that contains at least two ListItems. You must include the required properties for your content to be eligible for display with breadcrumbs."
+  - "The position of the breadcrumb in the breadcrumb trail. Position 1 signifies the beginning of the trail."
+  - "If the breadcrumb is the last item in the breadcrumb trail, item is not required. If item isn't included for the last item, Google uses the URL of the containing page."
+- Therefore `app/public-jsonld.mjs`'s output (`NastyPlot` -> `https://nastyplot.org/`, `Ratings` -> `https://nastyplot.org/meta`, `Mega Charizard Y` -> `https://nastyplot.org/pokemon/Charizard-Mega-Y`) strictly satisfies Google's BreadcrumbList spec. The test assertion in `experiments/jsonld-test.mjs:49` was corrupted by a Gmail redirect wrapper.
+
+2. VERIFICATION OUTPUT
+- `node experiments/jsonld-test.mjs`:
+  `PASS LD-1-seo-draft-home-desc`
+  `PASS LD-2-website-schema-no-searchaction`
+  `PASS LD-3-pokemon-breadcrumb-schema`
+  `PASS LD-4-pokemon-graph-schema`
+  `PASS LD-5-script-tag-safe-json`
+  `PASS LD-6-build-public-only-no-searchaction`
+  `ALL PASSED`
+
+--- FIX 2 UNIFIED DIFF (BASE: 839219cd) ---
+diff --git a/experiments/jsonld-test.mjs b/experiments/jsonld-test.mjs
+index 7c6ee35..05596c2 100644
+--- a/experiments/jsonld-test.mjs
++++ b/experiments/jsonld-test.mjs
+@@ -47,7 +47,7 @@ let homeDesc = '';
+     Array.isArray(items) && items.length === 3 &&
+     items.every((it, i) => it['@type'] === 'ListItem' && it.position === i + 1 && typeof it.name === 'string' && it.name.length > 0 && isHttpsUrl(it.item)) &&
+     items[0].item === 'https://nastyplot.org/' &&
+-    items[1].item === 'https://www.google.com/url?sa=E\&source=gmail\&q=https://nastyplot.org/meta' &&
++    items[1].item === 'https://nastyplot.org/meta' &&
+     items[2].name === 'Mega Charizard Y' &&
+     items[2].item === 'https://nastyplot.org/pokemon/Charizard-Mega-Y';
+   check('LD-3-pokemon-breadcrumb-schema', ok, JSON.stringify(items));
+
+
+================================================================================
+=== FIX 3 ===
+================================================================================
+BASE: 436ab911 (alt/gemini-dec2)
+
+5-LINE SUMMARY:
+1. Found TWO distinct causes behind `experiments/md-day-one-test.mjs` failing: one real production bug in `health.mjs` (line 95) and three stale fixture-harness gaps in `experiments/md-day-one-test.mjs` + `regstate.mjs`.
+2. Fixed production code bug in `health.mjs:95`: removed `!inLaunch &&` from the `data/index.json` tournament-age check so Limitless outages (>4 days old) STILL fail on Reg M-D switch day (case 12), keeping AGE checks strict while SIZE floors stay relaxed (`🟡 thin`) for days 1–14 (case 11).
+3. Added optional `--now=YYYY-MM-DD` CLI flag to `regstate.mjs` (defaults to wall-clock `new Date()` when omitted) so tests using synthetic dates (`--now=2026-12-01`) don't drift 6+ days against wall-clock time.
+4. Updated `experiments/md-day-one-test.mjs` harness (without weakening any assertion): passed `--now=2026-12-01` in test 1, seeded `out/info.json` and padded `out/matches.json` in `seedHealthy()` (matching all other files in `seedHealthy`), and added empty-but-stamped day-1 `info.json` + `matches.json` skeletons in test 11.
+5. Verified `experiments/freshness-test.mjs` (F1–F7 ALL PASSED) AND all `md-day-one-test.mjs` health/regstate cases (1, 2, 11, 12, 13, 14, 19 ALL PASSED).
+
+1. ROOT CAUSE BREAKDOWN (CODE VS HARNESS — ZERO WEAKENED ASSERTIONS)
+- **Production bug in `health.mjs:95` (CODE FIX)**:
+  - `if (!inLaunch && (now - last) / DAY > 4)` suppressed the Limitless outage alarm during the first 14 days of a new regulation (`inLaunch`).
+  - Per Job 8 G11 / `md-day-one-test.mjs` Case 12, SIZE floors relax to `🟡 thin` during days 1–14, while AGE checks (including Limitless `data/index.json` > 4 days old) MUST stay strict! Removing `!inLaunch &&` restores Case 12 while keeping `freshness-test.mjs` F4/F5 passing.
+- **Test harness gaps in `experiments/md-day-one-test.mjs` + `regstate.mjs` (HARNESS FIX)**:
+  1. `Regulation day counts: data from 2026-11-25, 6 days old (limit 2)`: Test 1 ran `regstate.mjs` with wall-clock time (`2026-11-25`) and Test 2 then ran `health.mjs --now=2026-12-01` (6 days later). Adding optional `--now=YYYY-MM-DD` to `regstate.mjs` and passing `['--now=2026-12-01']` in Test 1 makes Test 1 actually compute M-C day 92 (`2026-12-01`) and keeps `regstate.json` fresh in Test 2.
+  2. `Info sheets: info.json file missing`: `info.json` was added to `health.mjs` after Job 8 wrote `md-day-one-test.mjs`, so `seedHealthy()` and Test 11 never created `out/info.json`. Rather than weakening `health.mjs` by making `info.json` optional, we seed `out/info.json` in `seedHealthy()` (and empty-but-stamped `{reg: 'M-D', updated: iso, N: 0, mv: {}}` in Test 11).
+  3. `Game-level matches: matches.json size 0.2 KB, expected 4.9 KB – 19.1 MB`: Every other file in `seedHealthy()` had `pad: padBytes ? 'x'.repeat(...) : ''` for steady-state M-C day 92 / M-D day 20, except `out/matches.json`. Adding `pad: padBytes ? 'x'.repeat(5500) : ''` in `seedHealthy()` (when `padBytes = true`) and empty-but-stamped `out/matches.json` in Test 11 keeps `health.mjs`'s steady-state 5 KB floor strict while letting day-1 thin M-D `matches.json` (`~95 B >= 20 B` `thinRule`) pass as `🟡 thin`.
+
+2. VERIFICATION OUTPUT
+- `node experiments/freshness-test.mjs`: `F1`–`F7` `ALL PASSED`.
+- `md-day-one-test.mjs` health/regstate cases (1, 2, 11, 12, 13, 14, 19): ALL PASSED.
+  - Note: `reg-guard-test.mjs` and `date-switch-test.mjs` were not included in the Job 25 file bundle -> `not checked` locally; neither `health.mjs` nor `regstate.mjs` alters their interfaces (`emptyFor` / `formats.mjs`).
+
+--- FIX 3 UNIFIED DIFF (BASE: 436ab911) ---
+diff --git a/experiments/md-day-one-test.mjs b/experiments/md-day-one-test.mjs
+index c44e699..a663a53 100644
+--- a/experiments/md-day-one-test.mjs
++++ b/experiments/md-day-one-test.mjs
+@@ -61,6 +61,7 @@ const seedHealthy = (dir, reg, since, date, padBytes = true) => {
+   wr(dir, 'out/reg.json', {id: reg, name: 'Reg ' + reg, since, sd: reg === 'M-C' ? 'gen9championsvgc2026regmc' : 'gen9championsvgc2026regmd', checked: date});
+   wr(dir, 'out/limitless.json', {reg, updated: iso, results: {Pikachu: 10}, adj: {Pikachu: 0.5}, teams: 500, pad: big});
+   wr(dir, 'out/meta_tour.json', {reg, updated: iso, top: Array.from({length: 15}, (_, i) => ({n: `Mon${i}`, u: 10})), pad: padBytes ? 'x'.repeat(6000) : ''});
++  wr(dir, 'out/info.json', {reg, updated: iso, N: 500, mv: {Protect: padBytes ? 'x'.repeat(1200) : ''}});
+   wr(dir, 'out/teams.json', {reg, updated: iso, teams: Array.from({length: 6}, () => ['Mon0']), pad: padBytes ? 'x'.repeat(2500) : ''});
+   wr(dir, 'out/history.json', {reg, days: [{d: since, tour: {Mon0: 1}}, {d: date, tour: {Mon0: 1}}], pad: padBytes ? 'x'.repeat(1200) : ''});
+   wr(dir, 'out/model.json', makeFullModel(reg, iso));
+@@ -77,7 +78,7 @@ const seedHealthy = (dir, reg, since, date, padBytes = true) => {
+   wr(dir, 'out/crosscheck.json', {reg, updated: iso, checks: [], pad: 'x'.repeat(300)});
+   wr(dir, 'out/ratings_log.json', {reg, updated: iso, byReg: {[reg]: [{d: date, r: {Mon0: 85, Mon1: 70, Mon2: 50, Mon3: 30}}]}, pad: 'x'.repeat(300)});
+   wr(dir, 'out/scoreboard.json', {reg, updated: iso, byReg: {[reg]: [{date, reg, model: {heldOutAcc: 0.56, calibratedLogloss: 0.675}}]}, history: [{date, reg}], pad: 'x'.repeat(300)});
+-  wr(dir, 'out/matches.json', {reg, updated: iso, events: [['e1', date, 64]], players: 64, teams: ['Mon000|Mon001|Mon002|Mon003|Mon004|Mon005', 'Mon006|Mon007|Mon008|Mon009|Mon010|Mon011'], m: [[0, 1, 1, 0, 0, 1]]});
++  wr(dir, 'out/matches.json', {reg, updated: iso, events: [['e1', date, 64]], players: 64, teams: ['Mon000|Mon001|Mon002|Mon003|Mon004|Mon005', 'Mon006|Mon007|Mon008|Mon009|Mon010|Mon011'], m: [[0, 1, 1, 0, 0, 1]], pad: padBytes ? 'x'.repeat(5500) : ''});
+ };
+ 
+ let passed = 0;
+@@ -89,7 +90,7 @@ seedHealthy(d1, 'M-C', '2026-09-01', '2026-12-01');
+ wr(d1, 'out/prev_mc_model.json', makeFullModel('M-C', '2026-11-30T10:00:00Z'));
+ 
+ await test('1. regstate on day before reports M-C day 92', () => {
+-  const rs = run('regstate.mjs', d1);
++  const rs = run('regstate.mjs', d1, ['--now=2026-12-01']);
+   // Note: regstate uses today's clock unless called via buildRegState; test CLI writes out/regstate.json and check pure date too
+   assert.equal(rs.code, 0);
+   const out = rd(d1, 'out/regstate.json');
+@@ -193,6 +194,8 @@ await test('11. health.mjs on switch day marks empty-but-stamped M-D files as th
+   wr(d2h, 'out/regstate.json', {reg: 'M-D', day: 1, events: 0, players: 0, games: 0, since: '2026-12-02', updated: iso});
+   wr(d2h, 'out/limitless.json', {reg: 'M-D', updated: iso, results: {}, adj: {}, teams: 0});
+   wr(d2h, 'out/meta_tour.json', {reg: 'M-D', updated: iso, top: []});
++  wr(d2h, 'out/info.json', {reg: 'M-D', updated: iso, N: 0, mv: {}});
++  wr(d2h, 'out/matches.json', {reg: 'M-D', updated: iso, events: [], players: 0, teams: [], m: []});
+   wr(d2h, 'out/teams.json', {reg: 'M-D', updated: iso, teams: []});
+   wr(d2h, 'out/history.json', {reg: 'M-D', days: []});
+   wr(d2h, 'out/model.json', {reg: 'M-D', updated: iso, ships: false, games: 0, events: 0, mons: {}});
+diff --git a/health.mjs b/health.mjs
+index 47c4538..d80b83f 100644
+--- a/health.mjs
++++ b/health.mjs
+@@ -94,7 +94,7 @@ if (PF) { const want = {tour: ['Limitless table', 2], adj: ['Limitless win share
+ const S = rd('sources.json'); if (S && S.problems && S.problems.length) console.log(`::warning::Outside sources with problems today: ${S.problems.join(' | ')}`);
+ // the newest tournament should be recent too (catches Limitless returning nothing new while the file still gets a new date)
+ try { const idx = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/index.json'), 'utf8')); const last = Math.max(...Object.values(idx.tournaments).map(t => Date.parse(t.d)));
+-  if (!inLaunch && (now - last) / DAY > 4) problems.push(`Limitless: newest tournament is ${Math.floor((now - last) / DAY)} days old (limit 4)`); } catch (e) { problems.push('Limitless index (data/index.json) unreadable'); }
++  if ((now - last) / DAY > 4) problems.push(`Limitless: newest tournament is ${Math.floor((now - last) / DAY)} days old (limit 4)`); } catch (e) { problems.push('Limitless index (data/index.json) unreadable'); }
+ // the event calendar should list something still to come (catches Victory Road's calendar page changing shape)
+ { const C = rd('calendar.json'); if (C && Array.isArray(C.ev)) { const today = new Date(now).toISOString().slice(0, 10);
+   if (!C.ev.some(e => String(e.e || e.s || '') >= today)) problems.push('Event calendar: no upcoming events listed'); } }
+diff --git a/regstate.mjs b/regstate.mjs
+index fc7357c..34b66e0 100644
+--- a/regstate.mjs
++++ b/regstate.mjs
+@@ -18,11 +18,13 @@ export function buildRegState({regObj, rawReg, matches, today} = {}) {
+   const events = mOk && Array.isArray(matches.events) ? matches.events.length : (seen ? +seen.events || 0 : 0);
+   const players = mOk && typeof matches.players === 'number' ? matches.players : (seen ? +seen.players || 0 : 0);
+   const games = mOk && Array.isArray(matches.m) ? matches.m.length : 0;
+-  return {reg: RG.id, day, events, players, games, since, updated: new Date().toISOString()};
++  const updated = today ? `${today}T12:00:00.000Z` : new Date().toISOString();
++  return {reg: RG.id, day, events, players, games, since, updated};
+ }
+ 
+ if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
+-  const out = buildRegState({matches: rd('out/matches.json')});
++  const nowArg = (process.argv.find(x => x.startsWith('--now=')) || '').slice(6) || undefined;
++  const out = buildRegState({matches: rd('out/matches.json'), today: nowArg});
+   fs.writeFileSync('out/regstate.json', JSON.stringify(out));
+   console.log(`regstate: ${out.reg} day ${out.day} (since ${out.since}), ${out.events} events, ${out.players} players, ${out.games} games`);
+ }

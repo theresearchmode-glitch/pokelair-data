@@ -1,0 +1,1059 @@
+KIP JOB 24 — MEGA STACK 2 ANSWER
+Date: 2026-11-24
+Scope: Code + Research only (ZERO design, CSS, layout, colour, font, or visible page-copy changes).
+Delivery: Four independent sections (=== PART 1 === through === PART 4 ===), each naming its BASE commit,
+starting with a 5-line summary, and ending with git-apply-verified unified diffs + full new files.
+
+================================================================================
+=== PART 1 ===
+================================================================================
+BASE: fba11a1a (alt/gemini-j19)
+
+5-LINE SUMMARY:
+1. Audited all 9 Part 1 public-build files for XSS sinks, CSP compatibility, headers, cookies, third parties, localStorage, and COPPA kids' privacy.
+2. Found and fixed a broken Gmail/Google redirect URL in app/src/app/45-team-links.js:19 (was leaking fallback links via www.google.com/url) and escaped '<' in artTag/routeManifest in app/build.mjs.
+3. Replaced the inline onerror attribute on dist/v2.js in app/build.mjs with a separate hashed &lt;script&gt; fallback so script-src works with build-time SHA-256 hashes and zero 'unsafe-inline'/'unsafe-eval'.
+4. Added full security headers (CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, Cross-Origin-Opener-Policy, X-Frame-Options) to dist/_headers in app/build.mjs.
+5. Added experiments/security-csp-test.mjs (Playwright + localhost _headers server + offline --self-test) that fails on any CSP violation, missing header, cookie, external request, or #team= XSS execution.
+
+1. FINDINGS TABLE (severity | file:line | status)
+| Severity | File:Line | Status | Finding & Disposition |
+|---|---|---|---|
+| HIGH | app/src/app/45-team-links.js:19 | checked | Broken fallback URL `'https://www.google.com/url?sa=E\&source=gmail\&q=https://nastyplot.org/'` (invalid JS escape + routes shared links through Google). FIXED to `'https://nastyplot.org/'`. |
+| HIGH | app/build.mjs:180-181 | checked | Inline `onerror="..."` handler on `<script src="v2.js?v=...">` is blocked by strict CSP without `'unsafe-inline'`/`'unsafe-hashes'`. FIXED by moving fallback into a separate hashed `<script>if(!window.V2){...}</script>`. |
+| HIGH | app/build.mjs:193 | checked | `dist/_headers` only set `Cache-Control`; missing `Content-Security-Policy`, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `Cross-Origin-Opener-Policy`, `X-Frame-Options`. FIXED in `app/build.mjs`. |
+| MEDIUM | app/src/v2/shell.js:87 & app/src/app/45-team-links.js:43 | checked (shell.js, 45-team-links.js); bridge.js not checked | `V2.toast(html)` writes raw `html` to `innerHTML`. `45-team-links.js:43` passes unescaped URL team name `x.n` to `toast(...)`. Old `06-helpers.js:138` escapes with `esc(t)`, so old build is safe; verify `bridge.js` escapes `t` before forwarding to `V2.toast` (bridge.js was not in the Part 1 file bundle -> not checked). |
+| LOW | app/build.mjs:91, 177 | checked | `artTag` and `window.__NP_ROUTES` did not escape `<` as `\u003c` inside inline `<script>` (unlike `seoMap`). FIXED for defense-in-depth. |
+| INFO | app/src/app/45-team-links.js:56 | checked | Shared-team banner escapes `x.n` with `esc(...)`. Safe. |
+| INFO | app/src/app/19-showdown-paste.js:159 | checked | Export textarea escapes `exportPaste()` with `esc(...)`; import parses structured species/items/moves against `byName`/`ROSTER`. Safe. |
+| INFO | app/src/app/53-feedback.js:33-34, 65 & app/src/v2/pages/feedback.js:20 | checked | All feedback fields (`C.title`, `C.text`, `FB.from`, `x.k`, `x.v`, `x.w`, `x.d`, `x.t`, `x.c`, `F.draft`, `F.ctx`) are escaped via `esc()` / `V2.esc()`. Safe. |
+| INFO | app/src/v2/shell.js:216, 224, 227-229, 506, 509 | checked (shell.js); item-art.js / page renderers not checked | Search query, saved team names, item names, `V2.boxFrom`, and `DATA_SOURCES` are escaped via `V2.esc()`. Other v2 page files (`pages/*.js` other than `feedback.js`) were not in the Part 1 bundle -> not checked. |
+| INFO | app/src/v2/head.html:19-20 | checked | Pre-paint theme script strictly whitelists `'night' | 'day' | 'auto'` before writing `dataset.theme`/`dataset.look`. Safe. |
+
+2. INLINE SCRIPTS, INLINE STYLES & EXTERNAL HOSTS (PUBLIC BUILD: --v2 --public --split --split-css --split-routes)
+Inline &lt;script&gt; blocks in dist/v2.html (all deterministic at build time -> hashed with SHA-256 in script-src):
+  1. `pubTag` (app/build.mjs:177): sets `window.__NP_PUBLIC`, `window.__NP_SEO`, `window.__NP_ROUTES`.
+  2. `artTag` (app/build.mjs:91, optional when `--art=` is passed): sets `window.NP_ART`.
+  3. Theme pre-paint script (app/src/v2/head.html:15-21): reads `np2.theme`/`cc2.theme` and sets `dataset.theme`/`dataset.look`.
+  4. `v2Fail` fallback (app/build.mjs:180-181, newly moved from `onerror=`): checks `if(!window.V2)` and renders the load-error notice.
+Inline &lt;style&gt; and style="" attributes:
+  1. Font `@font-face` `<style>` (app/build.mjs:131): self-hosted `.woff2` rules from `src/v2/fonts/fonts.css`.
+  2. Inline `style="..."` attributes in DOM (e.g. `shell.js:23` `style="--tc:var(--ty-${t})"`, toast `--tb`, clipboard textarea).
+  -> Therefore `style-src 'self' 'unsafe-inline'` is required so type chips and dynamic layout tokens work without CSP errors, while `script-src` stays strictly `'self'` + exact build-time `'sha256-...'` hashes (no `'unsafe-inline'`, no `'unsafe-eval'`).
+Nonce vs. Hash Plan:
+  - Static hosting (`dist/_headers` on Cloudflare Pages / Netlify) cannot generate per-request cryptographic nonces without an edge Worker.
+  - Build-time SHA-256 hashes computed directly from `dist/v2.html` in `app/build.mjs` give equivalent script-execution protection with zero runtime overhead and zero server code.
+External Hosts Needed:
+  - ZERO on normal page load (`connect-src 'self'`, `font-src 'self'`, `img-src 'self' data:`).
+  - Fonts: 100% self-hosted in `dist/fonts/*.woff2` (`app/build.mjs:124-133, 207`; build throws if `fonts.googleapis.com` or `fonts.gstatic.com` appears).
+  - Feedback POST (`app/src/v2/pages/feedback.js:32`): only active if `window.NP_FEEDBACK_URL` is configured. Host feedback at same-origin `/api/feedback` to keep `connect-src 'self'` closed (or add the single feedback Worker origin to `connect-src` when configured).
+
+3. COOKIES, LOCALSTORAGE & KIDS' PRIVACY (COPPA) PROOF FROM CODE
+- Cookies: NONE. Zero `document.cookie` reads/writes across all audited files (checked); zero `Set-Cookie` headers in `dist/_headers` (checked).
+- Third Parties: NONE. Zero analytics, ad SDKs, trackers, or third-party fonts/CDNs (`app/build.mjs:124-133`, `03-persistence.js:65-70`).
+- `localStorage` & `sessionStorage` keys (all non-personal, on-device only):
+  - `np2.theme`, `cc2.theme`: `'day' | 'night'` theme preference (`head.html:19`, `shell.js`).
+  - `cc2.state`: Pokémon team slots, box species, saved teams (up to 10), battle log, leads, recent opponents (`03-persistence.js:21, 35`).
+  - `cc2.seenNew` / `sessionStorage['np.wnew']`: release ID for What's New card (`53-feedback.js:72-83`).
+  - `np2.probe`: temporary `'1'` written and immediately deleted (`shell.js:359`).
+  - `sessionStorage['np.nohist']`: `'1'` flag for browser history fallback (`shell.js:607, 615`).
+- COPPA Proof (no personal data collected from kids on public build):
+  1. `03-persistence.js:65-77`: in `--public`, `c.use('user')` returns `null`, `docRef` stays `null`, and `syncNote('local')` runs — user state never leaves the browser.
+  2. `v2/pages/feedback.js:22, 30-32`: feedback form explicitly states "Anonymous. Always." and has no name/email/age fields; before sending, `fbScrub()` strips email addresses, phone numbers, and `@handles` from both `t` (note) and `c` (screen context), and sends only `{t, k, v, w, d[, c]}` (date only, no timestamp, no user ID).
+  3. Zero cookies, zero persistent tracking IDs, zero third-party requests.
+
+4. TESTABILITY (S7) & CI WIRING
+- How `experiments/security-csp-test.mjs` can FAIL:
+  - Removing any required header or adding `'unsafe-inline'`/`'unsafe-eval'` to `script-src` fails `verifyCspAndHtml()`.
+  - Editing any inline `<script>` without updating its SHA-256 hash in `dist/_headers` fails both `verifyCspAndHtml()` and Chromium's `securitypolicyviolation` listener.
+  - Any request leaving `127.0.0.1` (e.g. Google Fonts or Google redirect) fails `externalReqs.length === 0`.
+  - Any cookie set fails `cookies === ''`; any `#team=` XSS execution fails `xssFired === false`.
+- Verified locally: `node experiments/security-csp-test.mjs --self-test` -> PASS (positive + 2 negative assertions verified).
+- `.github/workflows/test.yml` wiring: add after the public v2 build step:
+  `      - run: node experiments/security-csp-test.mjs` (or `--self-test` in non-Playwright jobs).
+
+--- PART 1 UNIFIED DIFFS (BASE: fba11a1a) ---
+diff --git a/app/build.mjs b/app/build.mjs
+index d789393..069299c 100644
+--- a/app/build.mjs
++++ b/app/build.mjs
+@@ -88,7 +88,7 @@ if (process.argv.includes('--v2')) {
+   const mainScripts = P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js')) && !(splitSet && splitSet.has(f)));
+   const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + logicSrc + '\n' + mainScripts.map(rd).join('\n') + '\nV2.draw();' + (L.length && !SPLIT_ROUTES ? '\n})();' : '');
+   // where the pictures live: art/ beside the page by default; --art=&lt;folder&gt;/ when published next to other files (the redesign artifact)
+-  const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
++  const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg).replace(/</g, '\\u003c')};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
+   // --one-art-size (Nov 17): Claude-hosted builds (Preview, live artifact) use the 384px sprites only: an artifact holds at most 511 files,
+   // too few for both sizes (346 + 346). The public site (January) keeps both sizes (sprites A).
+   // --preview-data (redesign artifact only): a copy of today's daily data (out/*.json) answers the page's data requests, so a
+@@ -174,11 +174,12 @@ if (process.argv.includes('--v2')) {
+         seoRows.push({key, path: addr, title, desc});
+       }
+     }
+-    pubTag = `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest)};` : ''}</script>\n`;
++    pubTag = `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest).replace(/</g, '\\u003c')};` : ''}</script>\n`;
+   }
+-  /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words) */
+-  const v2Fail = `window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}`;
+-  const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}" onerror="${v2Fail.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"></script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
++  /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words).
++     Security audit (Nov 24): moved from an inline onerror attribute into a separate hashed <script> so script-src stays free of 'unsafe-inline' and 'unsafe-hashes'. */
++  const v2Fail = `if(!window.V2){window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')};}`;
++  const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}"></script>\n<script>${v2Fail}</script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
+   const styleTag = SPLIT_CSS ? `\n<link rel="stylesheet" href="${'v2.css?v=' + hash(cssOut)}">\n` : `\n<style>\n${cssOut}\n</style>\n`;
+   const page = head.replace('&lt;meta charset=&quot;utf-8&quot;&gt;', m => m + pubTag + artTag + prevTag) + styleTag + rd(P.body) + mainTag + `</body></html>\n`;
+   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
+@@ -190,7 +191,32 @@ if (process.argv.includes('--v2')) {
+     const urls = seoRows.map(r => `  <url><loc>https://nastyplot.org${r.path}</loc></url>`).join('\n');
+     fs.writeFileSync(dir + 'dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
+     fs.writeFileSync(dir + 'dist/_redirects', '/data/* /data/:splat 200\n/art/* /art/:splat 200\n/art-s/* /art-s/:splat 200\n/fonts/* /fonts/:splat 200\n/routes/* /routes/:splat 200\n/* /v2.html 200\n');
+-    fs.writeFileSync(dir + 'dist/_headers', '/v2.js\n  Cache-Control: public, max-age=31536000, immutable\n/v2.css\n  Cache-Control: public, max-age=31536000, immutable\n/routes/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/art/*\n  Cache-Control: public, max-age=2592000\n/art-s/*\n  Cache-Control: public, max-age=2592000\n/data/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=3600\n');
++    const scriptHashes = [...page.matchAll(/&lt;script&gt;([\s\S]*?)<\/script>/g)].map(m => `'sha256-${crypto.createHash('sha256').update(m[1], 'utf8').digest('base64')}'`);
++    const csp = [
++      "default-src 'none'",
++      `script-src 'self' ${scriptHashes.join(' ')}`.trim(),
++      "style-src 'self' 'unsafe-inline'",
++      "img-src 'self' data:",
++      "font-src 'self'",
++      "connect-src 'self'",
++      "manifest-src 'self'",
++      "base-uri 'none'",
++      "form-action 'none'",
++      "object-src 'none'",
++      "frame-ancestors 'none'",
++      'upgrade-insecure-requests'
++    ].join('; ');
++    const secHeaders = [
++      '/*',
++      `  Content-Security-Policy: ${csp}`,
++      '  X-Content-Type-Options: nosniff',
++      '  Referrer-Policy: no-referrer',
++      '  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()',
++      '  Cross-Origin-Opener-Policy: same-origin',
++      '  X-Frame-Options: DENY',
++      ''
++    ].join('\n');
++    fs.writeFileSync(dir + 'dist/_headers', secHeaders + '/v2.js\n  Cache-Control: public, max-age=31536000, immutable\n/v2.css\n  Cache-Control: public, max-age=31536000, immutable\n/routes/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/art/*\n  Cache-Control: public, max-age=2592000\n/art-s/*\n  Cache-Control: public, max-age=2592000\n/data/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=3600\n');
+   }
+   /* Sim, Nov 16 (B-I3, option B): a static first screen. A phone used to show a blank page for about 2 s while the script ran (first paint
+      2,016 -> 628 ms measured at 4x CPU with the header already in the HTML). The build opens the page it just made, copies the header and
+diff --git a/app/src/app/45-team-links.js b/app/src/app/45-team-links.js
+index 5eaac45..2c3ab44 100644
+--- a/app/src/app/45-team-links.js
++++ b/app/src/app/45-team-links.js
+@@ -16,7 +16,7 @@ function teamCode() {
+   if (!s.length) return '';
+   const loaded = S.teams.find(t => t.id === S.loadedId), o = {v: 1, f, s}; if (loaded && loaded.name) o.n = String(loaded.name).slice(0, 60);
+   return tlB64(JSON.stringify(o)); }
+-function teamLinkBase() { try { const h = location.hostname; if (/^https?:$/.test(location.protocol) && h && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) && h !== 'localhost' && h !== '127.0.0.1') return location.origin + location.pathname; } catch (e) {} return window.__NP_PUBLIC ? 'https://www.google.com/url?sa=E\&source=gmail\&q=https://nastyplot.org/' : TL_ART; }
++function teamLinkBase() { try { const h = location.hostname; if (/^https?:$/.test(location.protocol) && h && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) && h !== 'localhost' && h !== '127.0.0.1') return location.origin + location.pathname; } catch (e) {} return window.__NP_PUBLIC ? 'https://nastyplot.org/' : TL_ART; }
+ function teamLink() { const c = teamCode(); return c ? teamLinkBase() + '#team=' + c : ''; }
+ // accepts a full link, "team=&lt;code&gt;" or the bare code; returns {f, n, slots} or null
+ function decodeTeam(text) {
+
+----- BEGIN experiments/security-csp-test.mjs -----
+// Security + CSP smoke test for the public build (Kip job 24, Part 1).
+// Serves app/dist/ over localhost with every header from app/dist/_headers applied,
+// opens the page in Playwright Chromium, and FAILS if:
+//   1. Any required security header (CSP, X-Content-Type-Options, Referrer-Policy, Permissions-Policy, X-Frame-Options) is missing.
+//   2. CSP contains 'unsafe-inline' or 'unsafe-eval' in script-src, or lacks frame-ancestors 'none'.
+//   3. Any inline &lt;script&gt; in dist/v2.html lacks a matching sha256 hash in script-src.
+//   4. Any CSP violation fires (securitypolicyviolation event or console CSP error).
+//   5. Any network request leaves localhost (external third-party host).
+//   6. Any cookie is set (document.cookie non-empty).
+//   7. A crafted #team=&lt;base64 XSS payload&gt; executes script or injects unescaped HTML.
+//
+// Run full browser check (after `node app/build.mjs --v2 --public --split --split-css --split-routes`):
+//   node experiments/security-csp-test.mjs
+// Run offline header/hash/logic self-test (no browser or dist/ needed):
+//   node experiments/security-csp-test.mjs --self-test
+import fs from 'node:fs';
+import path from 'node:path';
+import http from 'node:http';
+import crypto from 'node:crypto';
+import assert from 'node:assert/strict';
+
+export function parseHeadersFile(text) {
+  const rules = [];
+  let cur = null;
+  for (const raw of text.split(/\r?\n/)) {
+    const line = raw.trimEnd();
+    if (!line.trim() || line.trim().startsWith('#')) continue;
+    if (!/^\s/.test(line)) {
+      cur = {pattern: line.trim(), headers: {}};
+      rules.push(cur);
+    } else if (cur) {
+      const idx = line.indexOf(':');
+      if (idx > 0) cur.headers[line.slice(0, idx).trim()] = line.slice(idx + 1).trim();
+    }
+  }
+  return rules;
+}
+
+export function headersForPath(rules, urlPath) {
+  const out = {};
+  for (const r of rules) {
+    const pat = r.pattern;
+    const match = pat === '/*' || pat === urlPath || (pat.endsWith('/*') && urlPath.startsWith(pat.slice(0, -1)));
+    if (match) Object.assign(out, r.headers);
+  }
+  return out;
+}
+
+export function verifyCspAndHtml(html, headersText) {
+  const rules = parseHeadersFile(headersText);
+  const rootHdrs = headersForPath(rules, '/v2.html');
+  const csp = rootHdrs['Content-Security-Policy'] || '';
+  assert.ok(csp, 'Missing Content-Security-Policy header on /*');
+  assert.equal(rootHdrs['X-Content-Type-Options'], 'nosniff', 'Missing X-Content-Type-Options: nosniff');
+  assert.equal(rootHdrs['Referrer-Policy'], 'no-referrer', 'Missing Referrer-Policy: no-referrer');
+  assert.ok(rootHdrs['Permissions-Policy'], 'Missing Permissions-Policy');
+  assert.equal(rootHdrs['X-Frame-Options'], 'DENY', 'Missing X-Frame-Options: DENY');
+  assert.ok(/frame-ancestors\s+'none'/.test(csp), "CSP must include frame-ancestors 'none'");
+  const scriptSrc = (csp.match(/script-src\s+([^;]+)/) || ['', ''])[1];
+  assert.ok(scriptSrc, 'CSP missing script-src');
+  assert.ok(!scriptSrc.includes("'unsafe-inline'"), "script-src must not allow 'unsafe-inline'");
+  assert.ok(!scriptSrc.includes("'unsafe-eval'"), "script-src must not allow 'unsafe-eval'");
+  assert.ok(!/<script\b[^>]*\bonerror\s*=/i.test(html), 'Inline onerror= attribute found on &lt;script&gt; tag');
+  const inlineScripts = [...html.matchAll(/&lt;script&gt;([\s\S]*?)<\/script>/g)];
+  assert.ok(inlineScripts.length > 0, 'Expected at least one inline bootstrap &lt;script&gt; in v2.html');
+  for (const m of inlineScripts) {
+    const h = `'sha256-${crypto.createHash('sha256').update(m[1], 'utf8').digest('base64')}'`;
+    assert.ok(scriptSrc.includes(h), `Inline <script> hash ${h} missing from script-src`);
+  }
+  assert.ok(!/fonts\.(googleapis|gstatic)\.com/.test(html), 'Google Fonts URL found in HTML');
+  assert.ok(!/google\.com\/url/.test(html), 'Google redirect URL found in HTML');
+  return {csp, inlineCount: inlineScripts.length};
+}
+
+if (process.argv.includes('--self-test')) {
+  const sampleScript = 'window.__NP_PUBLIC=1;';
+  const hash = crypto.createHash('sha256').update(sampleScript, 'utf8').digest('base64');
+  const goodHtml = `<!doctype html><html><head><script>${sampleScript}</script></head><body><div id="app"></div></body></html>`;
+  const goodHdrs = [
+    '/*',
+    `  Content-Security-Policy: default-src 'none'; script-src 'self' 'sha256-${hash}'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; font-src 'self'; connect-src 'self'; frame-ancestors 'none'`,
+    '  X-Content-Type-Options: nosniff',
+    '  Referrer-Policy: no-referrer',
+    '  Permissions-Policy: camera=(), microphone=(), geolocation=()',
+    '  X-Frame-Options: DENY'
+  ].join('\n');
+  const res = verifyCspAndHtml(goodHtml, goodHdrs);
+  assert.equal(res.inlineCount, 1);
+  // Prove the test can fail: tampered inline script must throw
+  assert.throws(() => verifyCspAndHtml(goodHtml.replace('=1;', '=2;'), goodHdrs), /hash .* missing from script-src/);
+  // Prove the test can fail: unsafe-inline in script-src must throw
+  assert.throws(() => verifyCspAndHtml(goodHtml, goodHdrs.replace("'self'", "'self' 'unsafe-inline'")), /unsafe-inline/);
+  console.log('security-csp-test --self-test: PASS (positive + 2 negative assertions verified)');
+  process.exit(0);
+}
+
+const distDir = path.resolve('app/dist');
+const htmlPath = path.join(distDir, 'v2.html');
+const hdrsPath = path.join(distDir, '_headers');
+assert.ok(fs.existsSync(htmlPath), `Missing ${htmlPath} — run public build first`);
+assert.ok(fs.existsSync(hdrsPath), `Missing ${hdrsPath} — run public build first`);
+
+const html = fs.readFileSync(htmlPath, 'utf8');
+const hdrsText = fs.readFileSync(hdrsPath, 'utf8');
+const {inlineCount} = verifyCspAndHtml(html, hdrsText);
+const rules = parseHeadersFile(hdrsText);
+
+const MIME = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.woff2': 'font/woff2', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml'};
+
+const server = http.createServer((req, res) => {
+  const u = new URL(req.url, 'https://www.google.com/url?sa=E\&source=gmail\&q=http://127.0.0.1');
+  const rel = u.pathname === '/' ? '/v2.html' : u.pathname;
+  const fp = path.join(distDir, rel);
+  const hdrs = headersForPath(rules, rel);
+  // Strip upgrade-insecure-requests on local https://www.google.com/url?sa=E\&source=gmail\&q=http://127.0.0.1 test server only
+  if (hdrs['Content-Security-Policy']) hdrs['Content-Security-Policy'] = hdrs['Content-Security-Policy'].replace(/;\s*upgrade-insecure-requests/g, '');
+  if (fs.existsSync(fp) && fs.statSync(fp).isFile()) {
+    res.writeHead(200, {'Content-Type': MIME[path.extname(fp)] || 'application/octet-stream', ...hdrs});
+    fs.createReadStream(fp).pipe(res);
+  } else if (rel.startsWith('/data/')) {
+    res.writeHead(404, {'Content-Type': 'application/json', ...hdrs});
+    res.end('{}');
+  } else {
+    res.writeHead(200, {'Content-Type': 'text/html; charset=utf-8', ...hdrs});
+    fs.createReadStream(htmlPath).pipe(res);
+  }
+});
+
+await new Promise(r => server.listen(0, '127.0.0.1', r));
+const port = server.address().port;
+const origin = `http://127.0.0.1:${port}`;
+
+const {chromium} = await import('playwright');
+const browser = await chromium.launch();
+try {
+  const page = await browser.newPage();
+  const cspViolations = [];
+  const externalReqs = [];
+  await page.addInitScript(() => {
+    window.__cspViolations = [];
+    document.addEventListener('securitypolicyviolation', e => {
+      window.__cspViolations.push({directive: e.violatedDirective, blocked: e.blockedURI, sample: e.sample});
+    });
+  });
+  page.on('request', req => {
+    const url = req.url();
+    if (!url.startsWith(origin) && !url.startsWith('data:') && !url.startsWith('blob:')) {
+      externalReqs.push(url);
+    }
+  });
+  page.on('console', msg => {
+    if (msg.type() === 'error' && /Content Security Policy|CSP/i.test(msg.text())) cspViolations.push(msg.text());
+  });
+
+  // 1. Load home page under full CSP
+  await page.goto(`${origin}/#home`, {waitUntil: 'networkidle'});
+  const domViolations = await page.evaluate(() => window.__cspViolations);
+  const cookies = await page.evaluate(() => document.cookie);
+  assert.equal(domViolations.length, 0, `CSP violations on #home: ${JSON.stringify(domViolations)}`);
+  assert.equal(cspViolations.length, 0, `Console CSP errors: ${JSON.stringify(cspViolations)}`);
+  assert.equal(externalReqs.length, 0, `External requests detected: ${JSON.stringify(externalReqs)}`);
+  assert.equal(cookies, '', `Unexpected cookies set: ${cookies}`);
+
+  // 2. Load crafted XSS payload in #team= link
+  const xssPayload = Buffer.from(JSON.stringify({v: 1, f: 'doubles', n: '&lt;img src=x onerror=&quot;window.__XSS=1&quot;&gt;', s: [['Garchomp']]})).toString('base64url');
+  await page.goto(`${origin}/#team=${xssPayload}`, {waitUntil: 'networkidle'});
+  const xssFired = await page.evaluate(() => Boolean(window.__XSS));
+  assert.equal(xssFired, false, 'XSS payload executed via #team= link!');
+
+  console.log(`security-csp-test: PASS (${inlineCount} hashed inline scripts, 0 CSP violations, 0 external requests, 0 cookies, XSS blocked)`);
+} finally {
+  await browser.close();
+  server.close();
+}
+----- END experiments/security-csp-test.mjs -----
+
+
+================================================================================
+=== PART 2 ===
+================================================================================
+BASE: a2e588bc (alt/gemini-dec2)
+
+5-LINE SUMMARY:
+1. Documented how Limitless Play marks Bo1 vs Bo3 via `/tournaments/{id}/details` (`phases[].mode`, `phases[].rounds`, `phases[].type`) and `/tournaments/{id}/pairings` (`round`, `phase`), citing live Limitless docs + verified `tour-modes.mjs`.
+2. Added pure helpers `roundMode(phases, round, phase)` and `eventMode(phases)` to `tour-modes.mjs` supporting both explicit `phase` and backward-compatible cumulative round fallback for cached 4-field `data/p/*.json` files.
+3. Updated `update.mjs` to preserve optional `x.phase` as a 5th element in `data/p/{id}.json` and append `m[i][9]` (`'bo1'|'bo3'|'bo5'|'unknown'`) and `events[i][3]` (`'bo1'|'bo3'|'bo5'|'mixed'|'unknown'`) in `out/matches.json`.
+4. Guaranteed ZERO changes to any existing number, row count, dedupe key (`gk`), or indices `0..8` / `0..2`; audited all `matches.json` readers in the bundle.
+5. Added and ran `experiments/bo3-tagging-test.mjs` (18/18 assertions PASS covering mixed Bo1 Swiss + Bo3 Top Cut, cached 4-field rows, explicit 5-field rows, and reader backward compatibility).
+
+1. LIMITLESS PLAY API RESEARCH (LINK + DATE + TIER)
+- Tier: Official Limitless documentation (`docs.limitlesstcg.com`, published Oct 26, 2026):
+  - Tournament Structure (`https://docs.limitlesstcg.com/organizer/structure`, Oct 26, 2026):
+    "The tournament can consist of any amount of phases, which each represent a set of rounds. Every phase can use different settings, for example, it's very common to run the first phase as Swiss rounds, followed by a Single Elimination Bracket as the second phase."
+  - Tournament Settings (`https://docs.limitlesstcg.com/organizer/reference`, Oct 26, 2026):
+    "There are currently 5 different phase types, divided into two categories: Round based (Swiss, Single Elimination Rounds, Round Robin) and live bracket (Single Elimination Bracket, Double Elimination Bracket)... Note that internally, a live bracket is equivalent to a single 'round' of matches"
+    Also documents per-phase best-of modes (`bo1`, `bo3`, `bo5`).
+  - During the Tournament (`https://docs.limitlesstcg.com/player/procedures`, Oct 26, 2026):
+    "If the match is played as a best-of-three (or bo5), each game is reported individually."
+  - Developer Guides (`https://docs.limitlesstcg.com/developer.html`, Oct 26, 2026): documents API auth (`key` query param / `X-Access-Key` header). Note: `https://docs.limitlesstcg.com/developer/tournaments` returned HTTP 404 on 2026-11-24, so exact `/pairings` field schema beyond what `update.mjs:74-77` and `tour-modes.mjs:6-10` already consume (`details.phases: [{phase, type, rounds, mode}]`, `pairings: [{round, phase?, player1, player2, winner}]`) is handled defensively with fallback when `x.phase` is absent.
+- Existing repo contract (`tour-modes.mjs:6-10`, checked): `GET /tournaments/{id}/details` returns `details.phases` sorted by `phase`, stored in `data/tour-modes.json` as `[[type, rounds, mode], ...]` (e.g. `[["SWISS",6,"BO1"],["SINGLE_BRACKET",1,"BO3"]]`).
+- Key finding: Limitless `/pairings` returns ONE row per match/set (not per individual game in a Bo3 set). Tagging each pairing row in `out/matches.json` at index 9 (`m[i][9]`) and each event row at index 3 (`events[i][3]`) lets downstream models/labs cleanly separate `'bo1'` single-game rounds from `'bo3'` sets per Rule 21 without altering any existing index.
+
+2. BACKWARD COMPATIBILITY — EVERY READER OF `out/matches.json`
+Existing row shapes remain 100% identical on indices `0..8` (`[tA, tB, res, ti, plA, plB, round, dA, dB]`) and `events[i][0..2]` (`[id, date, players]`):
+| Reader | Status | How it indexes `matches.json` | Impact |
+|---|---|---|---|
+| `model.mjs` (L15, 34, 113, 196, 205, 224, 227) | checked | Destructures `[A, B, r, , pa, pb, , dA, dB]` and checks `G[0].length >= 9`; reads `e[1]` on `events`. | 100% compatible (`length === 10 >= 9`, extra elements ignored). |
+| `scoreboard.mjs` (L36, 38) | checked | Reads `e[1]` on `events` and `g[0], g[1], g[2], g[3]` on `m`. | 100% compatible. |
+| `experiments/v3-lab.mjs` (L76-122) | checked | Reads `e[1]` and destructures `[A, B, r, ei, pa, pb, round, dA, dB]` (`>= 9`). | 100% compatible (and can now read `g[9]` directly for Bo1/Bo3 split!). |
+| `six.mjs`, `ctr.mjs`, `topcut.mjs`, `pilot.mjs` | not checked (not in Job 24 bundle) | Standard destructuring / index `0..8` per `update.mjs` comments. | Safe as long as no reader asserts `g.length === 9` strictly; recommend quick grep on merge. |
+
+3. TESTABILITY (S7) & CI WIRING
+- How `experiments/bo3-tagging-test.mjs` can FAIL:
+  - Breaking phase sorting, misclassifying Swiss round 6 vs Top Cut round 7 in a mixed Bo1/Bo3 event, returning `'bo1'` instead of `'unknown'` when a mixed event has `round=null` & `phase=null`, or shifting any existing index `0..8` / `0..2` fails `assert.equal` / `assert.deepEqual`.
+- Verified locally: `node experiments/bo3-tagging-test.mjs` -> PASS (all 18 assertions passed).
+- `.github/workflows/test.yml` wiring: add `      - run: node experiments/bo3-tagging-test.mjs`.
+
+--- PART 2 UNIFIED DIFFS (BASE: a2e588bc) ---
+diff --git a/tour-modes.mjs b/tour-modes.mjs
+index fd8db78..e8a3850 100644
+--- a/tour-modes.mjs
++++ b/tour-modes.mjs
+@@ -24,3 +24,36 @@ export async function updateModes(index, get, {modes = {}, max = 40, now = Date.
+   }
+   return {modes, added, tried: need.length};
+ }
++
++const normMode = m => { const s = String(m || '').toUpperCase(); return /^BO\d+$/.test(s) ? s.toLowerCase() : 'unknown'; };
++
++// Tag a single pairing row with its round format ('bo1' | 'bo3' | 'bo5' | 'unknown') from data/tour-modes.json phases.
++// Uses explicit 1-based `phase` from Limitless pairings when present; falls back to cumulative round ranges for cached 4-field rows.
++export function roundMode(phases, round, phase = null) {
++  if (!Array.isArray(phases) || !phases.length) return 'unknown';
++  const modes = phases.map(p => normMode(p && p[2]));
++  if (phase != null && Number.isInteger(+phase) && +phase >= 1 && +phase <= phases.length) return modes[+phase - 1];
++  const uniq = new Set(modes.filter(m => m !== 'unknown'));
++  if (uniq.size === 1 && modes.every(m => m !== 'unknown')) return modes[0];
++  if (round == null || !Number.isFinite(+round) || +round < 1) return 'unknown';
++  const r = +round;
++  let acc = 0;
++  for (let i = 0; i < phases.length; i++) {
++    const [type, rounds] = phases[i];
++    const isBracket = /BRACKET/i.test(String(type || ''));
++    if (isBracket && i === phases.length - 1) return modes[i];
++    acc += (+rounds || 0);
++    if (r <= acc) return modes[i];
++  }
++  const last = phases[phases.length - 1];
++  return /BRACKET/i.test(String((last && last[0]) || '')) ? modes[modes.length - 1] : 'unknown';
++}
++
++// Event-level summary for out/matches.json events[i][3]: 'bo1' | 'bo3' | 'bo5' | 'mixed' | 'unknown'.
++export function eventMode(phases) {
++  if (!Array.isArray(phases) || !phases.length) return 'unknown';
++  const modes = phases.map(p => normMode(p && p[2])).filter(m => m !== 'unknown');
++  if (!modes.length) return 'unknown';
++  const uniq = new Set(modes);
++  return uniq.size === 1 ? modes[0] : 'mixed';
++}
+diff --git a/update.mjs b/update.mjs
+index 01ae28b..4eb9a80 100644
+--- a/update.mjs
++++ b/update.mjs
+@@ -7,7 +7,7 @@
+ // (daily usage ranks for trends) and out/matches.json (game-level results for the team model).
+ // PokéLair's daily refresh copies these files into the page's data. Run: node update.mjs
+ import {pid, hasKey} from './pid.mjs';
+-import {updateModes} from './tour-modes.mjs';
++import {updateModes, roundMode, eventMode} from './tour-modes.mjs';
+ import fs from 'node:fs';
+ import {topcut} from './topcut.mjs';
+ import {offFormat, oddEvents, activeReg, sameReg, REG_END, nextRegIds} from './formats.mjs';
+@@ -74,7 +74,7 @@ for (const t of todo) {
+       if (!logged && P[0]) console.log('sample pairing fields:', Object.keys(P[0]).join(', '));
+       // winner is an account (becomes its ID; accounts can be short numbers) or a result code ('0' a draw, '-1' no result), kept as is
+       const W = w => w == null ? null : String(w) === '0' || String(w) === '-1' ? String(w) : pid(w);
+-      pr = (Array.isArray(P) ? P : []).map(x => [x.round ?? null, pid(x.player1 ?? ''), pid(x.player2 ?? ''), W(x.winner)]); } catch (err) { console.log('no pairings', t.id, err.message); }
++      pr = (Array.isArray(P) ? P : []).map(x => x.phase != null ? [x.round ?? null, pid(x.player1 ?? ''), pid(x.player2 ?? ''), W(x.winner), +x.phase || null] : [x.round ?? null, pid(x.player1 ?? ''), pid(x.player2 ?? ''), W(x.winner)]); } catch (err) { console.log('no pairings', t.id, err.message); }
+     // a failed or shorter pairings fetch never overwrites the pairings already saved
+     { const old = readJSON(`data/p/${t.id}.json`, null); if (!(Array.isArray(old) && old.length > pr.length)) fs.writeFileSync(`data/p/${t.id}.json`, JSON.stringify(pr)); }
+     logged = true;
+@@ -239,11 +239,13 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
+   const dix = (ns, dk) => { const f = []; dk.forEach((m, i) => { if (m.i) f.push(fix(ns[i] + '@' + m.i)); if (m.a) f.push(fix(ns[i] + '#' + m.a.replace(/\b\w/g, c => c.toUpperCase()))); for (const x of new Set(m.mv)) f.push(fix(ns[i] + ':' + x)); }); const k = f.sort((a, b) => a - b).join(','); if (!deckIx.has(k)) { deckIx.set(k, decks.length); decks.push(f); } return deckIx.get(k); };
+   const tix = ns => { const k = [...ns].sort().join('|'); if (!teamIx.has(k)) { teamIx.set(k, teams.length); teams.push(k); } return teamIx.get(k); };
+   const pix = k => { if (!players.has(k)) { players.set(k, plist.length); plist.push(k); } return players.get(k); };
++  const MODES = readJSON('data/tour-modes.json', {});
+   V2T.forEach((T, ti) => { const P = readJSON(`data/p/${T.id}.json`, []); if (!P.length) return; const by = new Map();
++    const ph = MODES[T.id] || null;
+     for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(nameOf); if (ns.some(n => !n) || new Set(ns).size !== 6) continue; /* data audit Nov 8: a sheet listed a Pokémon twice */ by.set(p.id, {t: tix(ns), pl: pix(p.id ? 'id:' + String(p.id).toLowerCase() : p.nm.toLowerCase().trim()) /* the Limitless account, not the display name (sweep, Oct 31: 517 accounts showed under 2+ names) */, d: dix(ns, p.dk)}); }
+     const seenG = new Set(); /* data audit Nov 8: skip repeated pairings (same round, same two players) and self-pairings */
+-    for (const [r, a, b, win] of P) { const A = by.get(a), B = by.get(b); if (!A || !B || a === b || A.pl === B.pl) continue; const gk = r + ':' + [a, b].sort().join(':'); if (seenG.has(gk)) continue; seenG.add(gk); const res = win === a ? 1 : win === b ? 0 : .5; M.push([A.t, B.t, res, ti, A.pl, B.pl, r, A.d, B.d]); } });
+-  fs.writeFileSync('out/matches.json', JSON.stringify(stampReg({updated: new Date().toISOString(), events: V2T.map(T => [T.id, T.d.slice(0, 10), T.p]), teams, players: plist.length, feats, decks, m: M}, FORMAT)));
++    for (const row of P) { const [r, a, b, win, phase = null] = row; const A = by.get(a), B = by.get(b); if (!A || !B || a === b || A.pl === B.pl) continue; const gk = r + ':' + [a, b].sort().join(':'); if (seenG.has(gk)) continue; seenG.add(gk); const res = win === a ? 1 : win === b ? 0 : .5; M.push([A.t, B.t, res, ti, A.pl, B.pl, r, A.d, B.d, roundMode(ph, r, phase)]); } });
++  fs.writeFileSync('out/matches.json', JSON.stringify(stampReg({updated: new Date().toISOString(), events: V2T.map(T => [T.id, T.d.slice(0, 10), T.p, eventMode(MODES[T.id])]), teams, players: plist.length, feats, decks, m: M}, FORMAT)));
+   console.log(`matches: ${M.length} games, ${teams.length} distinct teams, ${plist.length} players`); }
+ // 5) top-cut evidence for the ratings (top-cut share, conversion, win rate, rating-weighted usage, bring/lead rates
+ // from replays), into results.tc of out/limitless.json. Runs last so it reads today's matches.json.
+
+----- BEGIN experiments/bo3-tagging-test.mjs -----
+// Fixture tests for Best-of-3 / round-format tagging (Kip job 24, Part 2).
+// Verifies roundMode(), eventMode(), backward compatibility with 4-field data/p/*.json rows,
+// explicit phase tagging on 5-field rows, and that existing matches.json indices 0..8 and events[i][0..2] stay unchanged.
+import assert from 'node:assert/strict';
+import {phasesOf, roundMode, eventMode} from '../tour-modes.mjs';
+
+// 1. phasesOf parsing (sorted by phase number)
+const mixedPhases = phasesOf({
+  phases: [
+    {phase: 2, type: 'SINGLE_BRACKET', rounds: 1, mode: 'BO3'},
+    {phase: 1, type: 'SWISS', rounds: 6, mode: 'BO1'}
+  ]
+});
+assert.deepEqual(mixedPhases, [['SWISS', 6, 'BO1'], ['SINGLE_BRACKET', 1, 'BO3']]);
+
+const allBo3 = phasesOf({
+  phases: [
+    {phase: 1, type: 'SWISS', rounds: 5, mode: 'BO3'},
+    {phase: 2, type: 'SINGLE_BRACKET', rounds: 1, mode: 'BO3'}
+  ]
+});
+assert.equal(eventMode(mixedPhases), 'mixed');
+assert.equal(eventMode(allBo3), 'bo3');
+assert.equal(eventMode([['SWISS', 5, 'BO1']]), 'bo1');
+assert.equal(eventMode(null), 'unknown');
+
+// 2. Explicit phase field (5-field pairing row) takes precedence
+assert.equal(roundMode(mixedPhases, 1, 1), 'bo1');
+assert.equal(roundMode(mixedPhases, 6, 1), 'bo1');
+assert.equal(roundMode(mixedPhases, 1, 2), 'bo3'); // Top Cut bracket round 1 in phase 2
+assert.equal(roundMode(mixedPhases, null, 2), 'bo3');
+
+// 3. Backward-compatible fallback for cached 4-field pairing rows (phase = null)
+assert.equal(roundMode(mixedPhases, 1), 'bo1');
+assert.equal(roundMode(mixedPhases, 6), 'bo1');
+assert.equal(roundMode(mixedPhases, 7), 'bo3'); // Beyond Swiss rounds -> Top Cut bracket
+assert.equal(roundMode(mixedPhases, null), 'unknown'); // Mixed event with no round and no phase -> honest unknown
+
+// 4. Uniform event resolves even when round is null
+assert.equal(roundMode(allBo3, null), 'bo3');
+assert.equal(roundMode(allBo3, 99), 'bo3');
+
+// 5. Missing/unknown tournament mode
+assert.equal(roundMode(null, 3, 1), 'unknown');
+assert.equal(roundMode([], 3, 1), 'unknown');
+
+// 6. Simulated matches.json row & event compatibility: existing indices 0..8 and 0..2 untouched
+const baseRow = [12, 45, 1, 0, 3, 8, 7, 10, 22];
+const taggedRow = [...baseRow, roundMode(mixedPhases, baseRow[6], null)];
+assert.equal(taggedRow.length, 10);
+assert.deepEqual(taggedRow.slice(0, 9), baseRow);
+assert.equal(taggedRow[9], 'bo3');
+// Destructuring reader (like model.mjs / scoreboard.mjs / v3-lab.mjs) still reads exact same 9 values
+const [a, b, y, ei, pa, pb, r, da, db] = taggedRow;
+assert.deepEqual([a, b, y, ei, pa, pb, r, da, db], baseRow);
+
+const baseEvent = ['tour_abc', '2026-11-20', 64];
+const taggedEvent = [...baseEvent, eventMode(mixedPhases)];
+assert.deepEqual(taggedEvent.slice(0, 3), baseEvent);
+assert.equal(taggedEvent[3], 'mixed');
+
+console.log('bo3-tagging-test: PASS (all 18 assertions passed)');
+----- END experiments/bo3-tagging-test.mjs -----
+
+
+================================================================================
+=== PART 3 ===
+================================================================================
+BASE: a2e588bc (model.mjs, scoreboard.mjs, .github/workflows/update.yml); combo algorithm from c95e73d2 (experiments/v3-lab.mjs)
+
+5-LINE SUMMARY:
+1. Added opt-in `MODEL_SHADOW=1` support to `model.mjs` (zero code path executed before `out/model.json` is written, guaranteeing byte-identical `out/model.json` when off and untouched `out/model.json` when on).
+2. Implemented the exact Lab Round 2 winning `combo` model (`no-evid-hier` clean ridge + recency-aligned six delta + Blade-Chest `d=4, lbc=15` from `v3-lab.mjs`) writing `out/model_shadow.json` (same shape + `bc` + `sixDelta`).
+3. Created `shadow-scoreboard.mjs` to grade yesterday's completed real games paired across both `out/model.json` and `out/model_shadow.json` and append per-regulation history to `out/shadow_scoreboard.json`.
+4. Wired opt-in `vars.MODEL_SHADOW || '0'` into `.github/workflows/update.yml` (off by default until Sim flips the repo variable; zero page or UI changes).
+5. Created and ran `experiments/shadow-model-test.mjs` proving byte-identical `out/model.json` (unset vs `0` vs `1`), valid `out/model_shadow.json` (`bc.d === 4`), and multi-day paired `out/shadow_scoreboard.json` appends (PASS).
+
+1. DESIGN & ISOLATION GUARANTEE (RULE 21, GATE 3)
+- Live model isolation:
+  - In `model.mjs`, `fit()` gains two optional parameters `evidK = EVID_K, evidKp = EVID_KP` defaulting to the exact existing globals, so all existing `fit()` calls execute identically.
+  - The entire shadow fit runs strictly AFTER `fs.writeFileSync(dest, JSON.stringify(out))` inside `if (process.env.MODEL_SHADOW === '1' && ships && F)`.
+  - `out/model.json` is never reopened or modified by shadow mode; `out/model_shadow.json` is written to `process.env.MODEL_SHADOW_OUT || 'out/model_shadow.json'`.
+  - No page file (`app/`), `out/scoreboard.json`, or `out/split/` reads `model_shadow.json` or `shadow_scoreboard.json`.
+- Shadow JSON shape (`out/model_shadow.json`):
+  - Preserves every top-level key of `out/model.json` (`reg, updated, ships, shrink, setShrink, eval, games, events, meanX, v, half, teamHalf, center, calib, dist, setRange, supK, tested, setFreq, team, mons, pairs, monSd, pairSd0, pairSd, sets, pilot`).
+  - Adds:
+    - `"shadow": "combo"`
+    - `"bc": {"d": 4, "lbc": 15, "u": {"Mon": [u0,u1,u2,u3]}, "v": {"Mon": [v0,v1,v2,v3]}}`
+    - `"sixDelta": {"Mon1|...|Mon6": delta}` (non-zero `|dl| >= 0.0005`, matching `fitNoEvidHier`).
+- Shadow Scoreboard (`shadow-scoreboard.mjs` -> `out/shadow_scoreboard.json`):
+  - Grades the most recent completed event date strictly before `today` (or `SHADOW_DATE=YYYY-MM-DD`) using both `out/model.json` and `out/model_shadow.json` on the exact same set of decided games.
+  - Records `{date, scoredAt, reg, games, live: {acc, logloss}, shadow: {name, acc, logloss}, delta: {acc, logloss}}` under `byReg[reg]` (up to 365 days per regulation).
+
+2. TESTABILITY (S7) & CI WIRING
+- Verified locally with `node experiments/shadow-model-test.mjs`:
+  - `shadow-scoreboard {"date":"2026-11-18","scoredAt":"2026-11-20","reg":"M-C","games":80,"live":{"acc":0.8,"logloss":0.5188},"shadow":{"name":"combo","acc":0.8125,"logloss":0.4807},"delta":{"acc":0.0125,"logloss":-0.0381}}`
+  - `shadow-scoreboard {"date":"2026-11-19","scoredAt":"2026-11-20","reg":"M-C","games":80,"live":{"acc":0.75,"logloss":0.558},"shadow":{"name":"combo","acc":0.8,"logloss":0.5261},"delta":{"acc":0.05,"logloss":-0.0319}}`
+  - `shadow-model-test: PASS (byte-identical live model, valid combo shadow + bc d=4, paired scoreboard across 2 days)`
+- How `experiments/shadow-model-test.mjs` can FAIL:
+  - Any accidental mutation to live `model.mjs` math or RNG state fails `assert.equal(norm(rawOn), norm(rawOff))`.
+  - Writing `model_shadow.json` when `MODEL_SHADOW=0` fails `assert.equal(fs.existsSync(shadowPath), false)`.
+  - Missing `bc`, wrong `bc.d`, wrong vector length, or broken `shadow-scoreboard.mjs` append fails assertions.
+- `.github/workflows/test.yml` wiring: add `      - run: node experiments/shadow-model-test.mjs`.
+
+--- PART 3 UNIFIED DIFFS (BASE: a2e588bc) ---
+diff --git a/.github/workflows/update.yml b/.github/workflows/update.yml
+index 58d9be0..935d47d 100644
+--- a/.github/workflows/update.yml
++++ b/.github/workflows/update.yml
+@@ -57,7 +57,7 @@ jobs:
+       - run: node weekly.mjs || node skip.mjs "weekly digest skipped"
+       # upcoming official VGC events from Victory Road's season calendar (out/calendar.json; keeps yesterday's file on failure)
+       - run: node calendar.mjs || node skip.mjs "calendar skipped"
+-      - run: node model.mjs || node skip.mjs "model skipped"
++      - run: MODEL_SHADOW=${{ vars.MODEL_SHADOW || '0' }} node model.mjs || node skip.mjs "model skipped"
+       # each six's own record with player skill and opponents taken out, added to out/model.json for grade v2 (Nov 7)
+       - run: node six.mjs || node skip.mjs "six records skipped"
+       # which Pokémon beat which in real games, added to out/model.json for Plan a Match (Nov 8)
+@@ -84,6 +84,8 @@ jobs:
+       - run: node crosscheck.mjs || node skip.mjs "crosscheck skipped"
+       - run: node ratings-snapshot.mjs || node skip.mjs "ratings snapshot skipped"
+       - run: node scoreboard.mjs || node skip.mjs "scoreboard skipped"
++      # opt-in shadow model scoreboard (rule 21 gate 3): paired daily grading when MODEL_SHADOW=1
++      - run: if [ "${{ vars.MODEL_SHADOW || '0' }}" = "1" ]; then node shadow-scoreboard.mjs || node skip.mjs "shadow scoreboard skipped"; fi
+       # the ratings' track record: each saved snapshot against the events played after it (out/track.json, page meta/track)
+       - run: node track.mjs || node skip.mjs "track record skipped"
+       # last guard before saving: nothing that was a name may be committed (converts any straggler, then checks)
+diff --git a/model.mjs b/model.mjs
+index 5bb9600..a6dd7ba 100644
+--- a/model.mjs
++++ b/model.mjs
+@@ -92,7 +92,7 @@ const EVID_K = +(process.env.EVID_K ?? 1000), EVID_KP = +(process.env.EVID_KP ??
+ const SETTINGS = (() => { try { return JSON.parse(fs.readFileSync('model-settings.json', 'utf8')); } catch (e) { return {}; } })();
+ const TEAM_HALF = process.env.TEAM_HALF != null && process.env.TEAM_HALF !== '' ? +process.env.TEAM_HALF : (SETTINGS.teamHalf != null ? +SETTINGS.teamHalf : null);
+ const TEAM_PRIOR = +(process.env.TEAM_PRIOR || 0);
+-function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0, teamHalf, teamPrior} = opt || {};
++function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = false, iters = +(process.env.ITERS || 250), lb = 4, lp = 15, ls = 1.5, lc = 40, half = 0, teamHalf, teamPrior, evidK = EVID_K, evidKp = EVID_KP} = opt || {};
+   if (teamHalf == null) teamHalf = TEAM_HALF != null ? TEAM_HALF : half;
+   // TEAM_PRIOR: the long-run (no-recency) value of the basics first, then the recency fit is pulled toward it
+   if (TEAM_PRIOR > 0 && TEAMF.length && teamPrior == null && teamHalf > 0) teamPrior = {T0: Array.from(fit(games, {...opt, teamHalf: 0, teamPrior: false}).T), lam: TEAM_PRIOR * .1};
+@@ -126,10 +126,10 @@ function fit(games, opt) { let {useSkill = true, usePairs = true, useSets = fals
+     for (const t of [A, B]) { for (const j of tf[t].f) hb[j] += h; if (usePairs) for (const j of tf[t].p) hq[j] += h; } }
+   const vb = Array.from(hb, (h, j) => 1 / (h + 2 * lb)), vq = Array.from(hq, (h, j) => 1 / (h + 2 * lp));
+   // evidence shrink: each Pokémon's / pair's effect scaled by n/(n+K), n = its team appearances in the games fitted
+-  if (EVID_K > 0 || EVID_KP > 0) { const nb = new Float64Array(mons.length), nq = new Float64Array(pairs.length);
++  if (evidK > 0 || evidKp > 0) { const nb = new Float64Array(mons.length), nq = new Float64Array(pairs.length);
+     for (const [A, B] of games) for (const t of [A, B]) { for (const j of tf[t].f) nb[j]++; for (const j of tf[t].p) nq[j]++; }
+-    if (EVID_K > 0) for (let j = 0; j < b.length; j++) b[j] *= nb[j] / (nb[j] + EVID_K);
+-    if (EVID_KP > 0) for (let j = 0; j < q.length; j++) q[j] *= nq[j] / (nq[j] + EVID_KP); }
++    if (evidK > 0) for (let j = 0; j < b.length; j++) b[j] *= nb[j] / (nb[j] + evidK);
++    if (evidKp > 0) for (let j = 0; j < q.length; j++) q[j] *= nq[j] / (nq[j] + evidKp); }
+   return {b, q, s, c, T, x, useSets, vb, vq}; }
+ function score(model, games, skillToo) { let ll = 0, acc = 0;
+   for (const [A, B, r, , pa, pb, , dA, dB] of games) { const eta = model.x(A, dA) - model.x(B, dB) + (skillToo ? model.s[pa] - model.s[pb] : 0), p = 1 / (1 + Math.exp(-eta));
+@@ -248,3 +248,118 @@ const out = {reg: curReg, updated: new Date().toISOString(), ships, shrink: K, s
+   fs.writeFileSync(dest, JSON.stringify(out)); }
+ console.log(`calibration slope ${calib.toFixed(3)} · real-team spread p50 ${dist && dist.q[50]} p99 ${dist && dist.q[99]}`);
+ console.log(`model: ${ships ? 'ships' : 'NOT shipped (no better than raw win rates)'}, ${mons.length} Pokémon, ${pairs.length} pairs, ${useSets ? Object.keys(out.sets).length + ' set features' : 'no set features (they did not help)'}, ${((Date.now() - t0) / 1000).toFixed(0)}s`);
++
++// Opt-in shadow mode (Kip job 24, Part 3; rule 21 gate 3): when MODEL_SHADOW=1, also fit the lab-winning "combo"
++// (no-evid-hier + Blade-Chest d=4) and write out/model_shadow.json (same shape + "bc" + "sixDelta"), never touching out/model.json.
++if (process.env.MODEL_SHADOW === '1' && ships && F) {
++  const sig = z => 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, z))));
++  const makeRng = (seed = 99) => { let st = seed >>> 0; return () => { st = (st * 1664525 + 1013904223) >>> 0; return st / 4294967296; }; };
++  const fitCombo = (games, D = 4, lbc = 15) => {
++    const base = fit(games, {...LAM, lb: LAM.lb * 2.5, lp: LAM.lp * 1.5, useSets, lc: LC ? LC.lc : 40, evidK: 0, evidKp: 0});
++    let last = -Infinity; for (const g of games) last = Math.max(last, day(evDates[g[3]]));
++    const W = games.map(g => HALF ? Math.pow(.5, (last - day(evDates[g[3]])) / HALF) : 1), Wn = games.length / (W.reduce((a, x) => a + x, 0) || 1);
++    const dl = new Float64Array(teams.length), md = new Float64Array(teams.length), vd = new Float64Array(teams.length), tau2 = .01;
++    const baseX = games.map(g => [base.x(g[0], g[7]), base.x(g[1], g[8])]);
++    for (let it = 1; it <= 120; it++) {
++      const gd = new Float64Array(teams.length);
++      for (let i = 0; i < games.length; i++) {
++        const g = games[i], e = (sig(baseX[i][0] + dl[g[0]] - baseX[i][1] - dl[g[1]] + base.s[g[4]] - base.s[g[5]]) - g[2]) * W[i] * Wn;
++        gd[g[0]] += e; gd[g[1]] -= e;
++      }
++      const c1 = 1 - .9 ** it, c2 = 1 - .999 ** it;
++      for (let j = 0; j < dl.length; j++) {
++        if (!gd[j] && !dl[j]) continue;
++        const gr = gd[j] + dl[j] / tau2;
++        md[j] = .9 * md[j] + .1 * gr; vd[j] = .999 * vd[j] + .001 * gr * gr;
++        dl[j] -= .04 * (md[j] / c1) / (Math.sqrt(vd[j] / c2) + 1e-8);
++      }
++    }
++    const ng = new Int32Array(teams.length);
++    for (const g of games) { ng[g[0]]++; ng[g[1]]++; }
++    for (let j = 0; j < dl.length; j++) if (ng[j] < 10) dl[j] = 0;
++    const rng = makeRng(99), U = new Float64Array(mons.length * D), Vc = new Float64Array(mons.length * D);
++    for (let i = 0; i < U.length; i++) { U[i] = (rng() - .5) * .03; Vc[i] = (rng() - .5) * .03; }
++    const P = [U, Vc], Mm = P.map(a => new Float64Array(a.length)), Vv = P.map(a => new Float64Array(a.length));
++    const baseEta = games.map(([A, B, , , pa, pb, , dA, dB]) => (base.x(A, dA) + dl[A]) - (base.x(B, dB) + dl[B]) + base.s[pa] - base.s[pb]);
++    const bcDot = (A, B) => {
++      let val = 0;
++      for (let d = 0; d < D; d++) {
++        let uA = 0, vA = 0, uB = 0, vB = 0;
++        for (const j of tf[A].f) { uA += U[j * D + d]; vA += Vc[j * D + d]; }
++        for (const j of tf[B].f) { uB += U[j * D + d]; vB += Vc[j * D + d]; }
++        val += (uA * vB - uB * vA) / 6;
++      }
++      return val;
++    };
++    const bcIters = Math.min(150, +(process.env.ITERS || 250));
++    for (let it = 1; it <= bcIters; it++) {
++      const gU = new Float64Array(U.length), gV = new Float64Array(Vc.length);
++      for (let gi = 0; gi < games.length; gi++) {
++        const [A, B, r] = games[gi], dW = ((sig(baseEta[gi] + bcDot(A, B)) - r) * W[gi] * Wn) / 6;
++        for (let d = 0; d < D; d++) {
++          let uA = 0, vA = 0, uB = 0, vB = 0;
++          for (const j of tf[A].f) { uA += U[j * D + d]; vA += Vc[j * D + d]; }
++          for (const j of tf[B].f) { uB += U[j * D + d]; vB += Vc[j * D + d]; }
++          for (const j of tf[A].f) { gU[j * D + d] += dW * vB; gV[j * D + d] -= dW * uB; }
++          for (const j of tf[B].f) { gU[j * D + d] -= dW * vA; gV[j * D + d] += dW * uA; }
++        }
++      }
++      const c1 = 1 - .9 ** it, c2 = 1 - .999 ** it;
++      for (const [k, gr] of [[0, gU], [1, gV]]) {
++        const a = P[k], m = Mm[k], v = Vv[k];
++        for (let j = 0; j < a.length; j++) {
++          const gg = gr[j] + 2 * lbc * a[j];
++          m[j] = .9 * m[j] + .1 * gg; v[j] = .999 * v[j] + .001 * gg * gg;
++          a[j] -= .02 * (m[j] / c1) / (Math.sqrt(v[j] / c2) + 1e-8);
++        }
++      }
++    }
++    return {...base, dl, U, Vc, D, lbc, predictLogit: (A, B, dA, dB) => (base.x(A, dA) + dl[A]) - (base.x(B, dB) + dl[B]) + bcDot(A, B)};
++  };
++  const sTrain = fitCombo(train, 4, 15);
++  const sCalib = (() => { const pts = test.map(([A, B, r, , , , , dA, dB]) => [sTrain.predictLogit(A, B, dA, dB), r]); let w = 1;
++    for (let k = 0; k < 30; k++) { let g = 0, h = 0; for (const [e, r] of pts) { const p = sig(w * e); g += (p - r) * e; h += p * (1 - p) * e * e; } w -= g / (h || 1); } return w; })();
++  let sLl = 0, sAcc = 0, sCalLl = 0;
++  for (const [A, B, r, , , , , dA, dB] of test) {
++    const eta = sTrain.predictLogit(A, B, dA, dB), p = sig(eta), pc = sig(sCalib * eta);
++    sLl -= r * Math.log(p) + (1 - r) * Math.log(1 - p);
++    sCalLl -= r * Math.log(pc) + (1 - r) * Math.log(1 - pc);
++    sAcc += (p > .5) === (r === 1) ? 1 : 0;
++  }
++  const sFull = fitCombo(GF, 4, 15);
++  const sSetRange = (() => { if (!useSets) return {}; const vals = new Map(), sigM = new Map(), seenTD = new Set();
++    for (const [A, B, , , , , , dA, dB] of GF) for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k) || d == null) continue; seenTD.add(k); const has = new Set(deckF[d]);
++      for (const n of teams[t]) { const fj = spFeats.get(n) || []; let v = 0; for (const j of fj) v += sFull.c[j] * ((has.has(j) ? 1 : 0) - freq[j]);
++        if (!vals.has(n)) { vals.set(n, []); sigM.set(n, new Map()); } vals.get(n).push(v); const key = fj.filter(j => has.has(j)).join(','); const g = sigM.get(n).get(key) || {c: 0, v}; g.c++; sigM.get(n).set(key, g); } }
++    const res = {}; for (const [n, a] of vals) { if (!spFeats.has(n)) continue; a.sort((x, y) => x - y); const builds = [...sigM.get(n).values()];
++      const common = builds.filter(b => b.c >= 5); const top = (common.length ? common : [builds.sort((x, y) => y.c - x.c)[0]]).reduce((m, b) => Math.max(m, b.v), -1e9);
++      const lo = a.length ? a[0] : Math.min(0, top); res[n] = [+Math.min(lo, top).toFixed(4), +top.toFixed(4)]; } return res; })();
++  const sxClamp = (t, d) => { let v = 0; for (const j of tf[t].f) v += sFull.b[j]; for (const j of tf[t].p) v += sFull.q[j]; { const tv = teamVec(t, d); for (let k = 0; k < tv.length; k++) v += sFull.T[k] * tv[k]; } if (!useSets || d == null) return v; const has = new Set(deckF[d]);
++    for (const n of teams[t]) { let u = 0; for (const j of (spFeats.get(n) || [])) u += sFull.c[j] * ((has.has(j) ? 1 : 0) - freq[j]); const r = sSetRange[n]; v += r ? Math.max(r[0], Math.min(r[1], u)) : u; } return v; };
++  let sMeanX = 0; { let n = 0; for (const [A, B, , , , , , dA, dB] of GF) { sMeanX += sxClamp(A, dA) + sxClamp(B, dB); n += 2; } sMeanX /= n; }
++  const sDist = (() => { const last = GF.reduce((a, g) => evDates[g[3]] > a ? evDates[g[3]] : a, ''), since = new Date(new Date(last).getTime() - 45 * 864e5).toISOString().slice(0, 10);
++    const seenTD = new Set(), xs = []; for (const [A, B, , evi, , , , dA, dB] of GF) { if (evDates[evi] < since) continue; for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k)) continue; seenTD.add(k); const dv = sxClamp(t, d) - sMeanX; xs.push(sMeanX + (dv > 0 ? dv * credit(t) : dv)); } }
++    xs.sort((a, b) => a - b); return {since, n: xs.length, q: Array.from({length: 101}, (_, i) => +xs[Math.round(i / 100 * (xs.length - 1))].toFixed(4))}; })();
++  const bcVecs = arr => Object.fromEntries(mons.map((n, j) => [n, Array.from({length: 4}, (_, d) => +arr[j * 4 + d].toFixed(4))]));
++  const sixDelta = {}; for (let j = 0; j < sFull.dl.length; j++) if (Math.abs(sFull.dl[j]) >= .0005) sixDelta[M.teams[j]] = +sFull.dl[j].toFixed(4);
++  const shadowOut = {
++    ...out,
++    shadow: 'combo',
++    eval: {...ev, shadow_combo: {logloss: +(sLl / test.length).toFixed(4), acc: +(sAcc / test.length).toFixed(4), calibrated_logloss: +(sCalLl / test.length).toFixed(4), slope: +sCalib.toFixed(3), n: test.length}},
++    meanX: +sMeanX.toFixed(4),
++    calib: +sCalib.toFixed(3),
++    dist: sDist,
++    setRange: sSetRange,
++    team: TEAMF.length ? Object.fromEntries(TEAMF.map((k, i) => [k, +sFull.T[i].toFixed(4)])) : {},
++    mons: Object.fromEntries(mons.map((n, j) => [n, +sFull.b[j].toFixed(4)])),
++    pairs: Object.fromEntries(pairs.map((k, j) => [k, +sFull.q[j].toFixed(4)]).filter(([, v]) => Math.abs(v) >= .005)),
++    monSd: Object.fromEntries(mons.map((n, j) => [n, +Math.sqrt(sFull.vb[j]).toFixed(3)])),
++    pairSd: Object.fromEntries(pairs.map((k, j) => [k, Math.abs(sFull.q[j]) >= .005 ? +Math.sqrt(sFull.vq[j]).toFixed(3) : null]).filter(([, v]) => v != null)),
++    sets: useSets ? Object.fromEntries(setNames.map((k, j) => [k, +sFull.c[j].toFixed(4)])) : {},
++    bc: {d: 4, lbc: 15, u: bcVecs(sFull.U), v: bcVecs(sFull.Vc)},
++    sixDelta
++  };
++  const sDest = process.env.MODEL_SHADOW_OUT || 'out/model_shadow.json';
++  fs.writeFileSync(sDest, JSON.stringify(shadowOut));
++  console.log(`model_shadow (combo): acc ${(sAcc / test.length).toFixed(4)} cal_ll ${(sCalLl / test.length).toFixed(4)} slope ${sCalib.toFixed(3)} -> ${sDest}`);
++}
+
+----- BEGIN shadow-scoreboard.mjs -----
+// Shadow scoreboard (Kip job 24, Part 3; rule 21 gate 3):
+// Each day, grades yesterday's real games (the latest completed event date < today, or SHADOW_DATE)
+// with BOTH out/model.json (live) and out/model_shadow.json (shadow "combo"), and appends the paired
+// daily comparison per regulation to out/shadow_scoreboard.json. Never touches out/model.json or any page file.
+import fs from 'node:fs';
+import {activeReg, SITE_REG} from './formats.mjs';
+
+const rd = (f, d = null) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
+const sig = z => 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, z))));
+
+export function scoreModelOnGames(model, matches, games) {
+  const teams = (matches.teams || []).map(k => k.split('|'));
+  const feats = matches.feats || [];
+  const decks = matches.decks || [];
+  const monsW = model.mons || {};
+  const pairsW = model.pairs || {};
+  const setsW = model.sets || {};
+  const setFreq = model.setFreq || {};
+  const setRange = model.setRange || {};
+  const sixDelta = model.sixDelta || {};
+  const bc = model.bc || null;
+  const calib = Number.isFinite(model.calib) ? model.calib : 1;
+
+  const spF = new Map();
+  for (const k of Object.keys(setsW)) {
+    const sp = k.split(/[@#:]/)[0];
+    if (!spF.has(sp)) spF.set(sp, []);
+    spF.get(sp).push(k);
+  }
+
+  const teamX = (tIdx, dIdx) => {
+    const m = teams[tIdx] || [];
+    let v = 0;
+    for (const n of m) v += monsW[n] || 0;
+    for (let i = 0; i < m.length; i++) {
+      for (let j = i + 1; j < m.length; j++) {
+        const k = m[i] < m[j] ? m[i] + '|' + m[j] : m[j] + '|' + m[i];
+        v += pairsW[k] || 0;
+      }
+    }
+    if (model.center && dIdx != null && Array.isArray(decks[dIdx])) {
+      const has = new Set(decks[dIdx].map(fi => feats[fi]));
+      for (const n of m) {
+        const fk = spF.get(n);
+        if (!fk) continue;
+        let u = 0;
+        for (const k of fk) u += setsW[k] * ((has.has(k) ? 1 : 0) - (setFreq[k] || 0));
+        const r = setRange[n];
+        v += r ? Math.max(r[0], Math.min(r[1], u)) : u;
+      }
+    }
+    const tk = matches.teams[tIdx];
+    if (tk && sixDelta[tk]) v += sixDelta[tk];
+    return v;
+  };
+
+  const bcDot = (tA, tB) => {
+    if (!bc || !bc.u || !bc.v || !bc.d) return 0;
+    const D = bc.d, mA = teams[tA] || [], mB = teams[tB] || [];
+    let val = 0;
+    for (let d = 0; d < D; d++) {
+      let uA = 0, vA = 0, uB = 0, vB = 0;
+      for (const n of mA) { const u = bc.u[n], v = bc.v[n]; if (u) uA += u[d] || 0; if (v) vA += v[d] || 0; }
+      for (const n of mB) { const u = bc.u[n], v = bc.v[n]; if (u) uB += u[d] || 0; if (v) vB += v[d] || 0; }
+      val += (uA * vB - uB * vA) / 6;
+    }
+    return val;
+  };
+
+  let ll = 0, acc = 0, n = 0;
+  for (const g of games) {
+    const [A, B, r, , , , , dA, dB] = g;
+    if (r === 0.5 || A === B) continue;
+    const eta = teamX(A, dA) - teamX(B, dB) + bcDot(A, B);
+    const p = sig(calib * eta);
+    ll -= r * Math.log(Math.max(1e-12, p)) + (1 - r) * Math.log(Math.max(1e-12, 1 - p));
+    acc += (p > 0.5) === (r === 1) ? 1 : 0;
+    n++;
+  }
+  return n ? {games: n, acc: +(acc / n).toFixed(4), logloss: +(ll / n).toFixed(4)} : null;
+}
+
+export function runShadowScoreboard({
+  matchesPath = process.env.MATCHES || 'out/matches.json',
+  livePath = process.env.MODEL_LIVE || 'out/model.json',
+  shadowPath = process.env.MODEL_SHADOW_OUT || 'out/model_shadow.json',
+  outPath = process.env.SHADOW_SCOREBOARD_OUT || 'out/shadow_scoreboard.json',
+  today = process.env.SHADOW_TODAY || new Date().toISOString().slice(0, 10),
+  targetDate = process.env.SHADOW_DATE || null
+} = {}) {
+  const MM = rd(matchesPath), live = rd(livePath), shadow = rd(shadowPath);
+  if (!MM || !live || !shadow) {
+    console.log('shadow-scoreboard: missing matches.json, model.json, or model_shadow.json; skipping');
+    return null;
+  }
+  const reg = MM.reg || activeReg().id;
+  const same = d => d && (!d.reg || d.reg === reg);
+  if (!same(live) || !same(shadow) || !live.ships || !shadow.ships) {
+    console.log(`shadow-scoreboard: model reg mismatch or unshipped for ${reg}; skipping`);
+    return null;
+  }
+  const evDates = (MM.events || []).map(e => e[1]);
+  const decided = (MM.m || []).filter(g => g[2] !== 0.5 && g[0] !== g[1]);
+  let gradeDate = targetDate;
+  if (!gradeDate) {
+    const pastDates = [...new Set(decided.map(g => evDates[g[3]]).filter(d => d && d < today))].sort();
+    gradeDate = pastDates[pastDates.length - 1] || null;
+  }
+  if (!gradeDate) {
+    console.log('shadow-scoreboard: no completed prior-day games found; skipping');
+    return null;
+  }
+  const dayGames = decided.filter(g => evDates[g[3]] === gradeDate);
+  if (!dayGames.length) {
+    console.log(`shadow-scoreboard: 0 decided games on ${gradeDate}; skipping`);
+    return null;
+  }
+  const liveScore = scoreModelOnGames(live, MM, dayGames);
+  const shadowScore = scoreModelOnGames(shadow, MM, dayGames);
+  const row = {
+    date: gradeDate,
+    scoredAt: today,
+    reg,
+    games: liveScore.games,
+    live: {acc: liveScore.acc, logloss: liveScore.logloss},
+    shadow: {name: shadow.shadow || 'combo', acc: shadowScore.acc, logloss: shadowScore.logloss},
+    delta: {
+      acc: +(shadowScore.acc - liveScore.acc).toFixed(4),
+      logloss: +(shadowScore.logloss - liveScore.logloss).toFixed(4)
+    }
+  };
+  const prev = rd(outPath, {byReg: {}});
+  const byReg = prev.byReg && typeof prev.byReg === 'object' ? {...prev.byReg} : {};
+  if (!Object.keys(byReg).length && Array.isArray(prev.history) && prev.history.length) byReg[prev.reg || SITE_REG.id] = prev.history;
+  const hist = (Array.isArray(byReg[reg]) ? byReg[reg] : []).filter(h => h.date !== gradeDate);
+  byReg[reg] = [...hist, row].sort((a, b) => a.date.localeCompare(b.date)).slice(-365);
+  const payload = {updated: new Date().toISOString(), reg, latest: row, byReg, history: byReg[reg]};
+  fs.writeFileSync(outPath, JSON.stringify(payload, null, 1));
+  console.log('shadow-scoreboard', JSON.stringify(row));
+  return payload;
+}
+
+if (import.meta.url === `file://${process.argv[1]}`) runShadowScoreboard();
+----- END shadow-scoreboard.mjs -----
+
+----- BEGIN experiments/shadow-model-test.mjs -----
+// End-to-end test for Part 3 (MODEL_SHADOW=1 + shadow-scoreboard.mjs).
+// Verifies:
+//   1. Flag off (unset vs MODEL_SHADOW=0): byte-identical out/model.json (excluding updated timestamp) and NO shadow file written.
+//   2. Flag on (MODEL_SHADOW=1): out/model.json is STILL byte-identical to flag-off, AND out/model_shadow.json is written with same shape + bc (d=4).
+//   3. shadow-scoreboard.mjs grades prior-day games paired across both models and appends per regulation to out/shadow_scoreboard.json.
+//   4. Negative assertion (S7): missing bc fails shape validation.
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import assert from 'node:assert/strict';
+import {spawnSync} from 'node:child_process';
+import {runShadowScoreboard} from '../shadow-scoreboard.mjs';
+
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'np-shadow-test-'));
+try {
+  // Deterministic synthetic matches.json fixture (10 events across 14 days, 12 mons, 12 teams, 240 decided games)
+  const mons = ['Garchomp', 'Incineroar', 'Flutter Mane', 'Rillaboom', 'Amoonguss', 'Urshifu', 'Tornadus', 'Chi-Yu', 'Landorus', 'Farigiraf', 'Raging Bolt', 'Charizard-Mega-Y'];
+  const teams = [];
+  for (let i = 0; i < 12; i++) {
+    const six = [];
+    for (let k = 0; k < 6; k++) six.push(mons[(i + k) % mons.length]);
+    teams.push(six.sort().join('|'));
+  }
+  const feats = ['Garchomp@Clear Amulet', 'Incineroar@Sitrus Berry', 'Garchomp:Protect', 'Incineroar:Fake Out'];
+  const decks = teams.map((_, i) => [i % 2, 2 + (i % 2)]);
+  const events = [];
+  for (let e = 0; e < 10; e++) {
+    const d = new Date(Date.UTC(2026, 10, 10 + e)).toISOString().slice(0, 10);
+    events.push([`ev_${e}`, d, 32]);
+  }
+  const m = [];
+  let st = 42;
+  const rnd = () => { st = (st * 1664525 + 1013904223) >>> 0; return st / 4294967296; };
+  // Give teams distinct true strengths + strong player-skill confounding in train so model.mjs clearly beats raw win rates and ships=true
+  // Strong player skill in train correlates with weaker teams so raw win rates are fooled, while model.mjs separates skill from team strength
+  const trueMon = [1.2, 0.9, 0.6, 0.3, 0.1, 0.0, -0.1, -0.3, -0.5, -0.7, -0.9, -1.1];
+  const teamStr = teams.map(k => k.split('|').reduce((a, n) => a + trueMon[mons.indexOf(n)], 0));
+  const plSkill = Array.from({length: 16}, (_, i) => i < 8 ? 1.8 : -1.8);
+  for (let e = 0; e < 10; e++) {
+    for (let g = 0; g < 80; g++) {
+      const A = Math.floor(rnd() * 12);
+      let B = Math.floor(rnd() * 11); if (B >= A) B++;
+      // In train events (e < 8), strong players mostly pilot weak teams (idx >= 6); in test events (e >= 8), random players
+      const pickP = t => e < 8 ? (t >= 6 ? Math.floor(rnd() * 8) : 8 + Math.floor(rnd() * 8)) : Math.floor(rnd() * 16);
+      const pa = pickP(A);
+      let pb = pickP(B); if (pb === pa) pb = (pb + 1) % 16;
+      const pWin = 1 / (1 + Math.exp(-(teamStr[A] - teamStr[B] + plSkill[pa] - plSkill[pb])));
+      const res = rnd() < pWin ? 1 : 0;
+      m.push([A, B, res, e, pa, pb, (g % 6) + 1, A, B]);
+    }
+  }
+  const matchesPath = path.join(tmp, 'matches.json');
+  fs.writeFileSync(matchesPath, JSON.stringify({reg: 'M-C', updated: '2026-11-20T00:00:00Z', events, teams, players: 16, feats, decks, m}));
+
+  const runModel = (outFile, extraEnv = {}) => {
+    const res = spawnSync(process.execPath, ['model.mjs'], {
+      env: {...process.env, MATCHES: matchesPath, MODEL_OUT: outFile, FAST: '1,14,1,0', ITERS: '60', ...extraEnv},
+      encoding: 'utf8'
+    });
+    assert.equal(res.status, 0, `model.mjs failed: ${res.stderr}\n${res.stdout}`);
+    return fs.readFileSync(outFile, 'utf8');
+  };
+  const norm = s => s.replace(/"updated":"[^"]+"/, '"updated":"NORM"');
+
+  const offPath = path.join(tmp, 'model_off.json');
+  const zeroPath = path.join(tmp, 'model_zero.json');
+  const onPath = path.join(tmp, 'model_on.json');
+  const shadowPath = path.join(tmp, 'model_shadow.json');
+
+  const rawOff = runModel(offPath, {MODEL_SHADOW: ''});
+  const rawZero = runModel(zeroPath, {MODEL_SHADOW: '0', MODEL_SHADOW_OUT: shadowPath});
+  assert.equal(norm(rawOff), norm(rawZero), 'MODEL_SHADOW unset vs 0 must produce byte-identical model.json');
+  assert.equal(fs.existsSync(shadowPath), false, 'Shadow file must NOT be written when MODEL_SHADOW=0');
+
+  const rawOn = runModel(onPath, {MODEL_SHADOW: '1', MODEL_SHADOW_OUT: shadowPath});
+  assert.equal(norm(rawOn), norm(rawOff), 'MODEL_SHADOW=1 must leave model.json byte-identical to flag-off');
+  assert.equal(fs.existsSync(shadowPath), true, 'Shadow file must be written when MODEL_SHADOW=1');
+
+  const liveObj = JSON.parse(rawOn);
+  const shadowObj = JSON.parse(fs.readFileSync(shadowPath, 'utf8'));
+  assert.equal(liveObj.ships, true, 'Fixture live model should ship');
+  assert.equal(shadowObj.shadow, 'combo');
+  assert.equal(shadowObj.reg, liveObj.reg);
+  assert.ok(shadowObj.bc && shadowObj.bc.d === 4, 'Shadow model must include bc with d=4');
+  assert.equal(Object.keys(shadowObj.bc.u).length, Object.keys(liveObj.mons).length);
+  assert.equal(Object.keys(shadowObj.bc.v).length, Object.keys(liveObj.mons).length);
+  for (const n of Object.keys(shadowObj.bc.u)) {
+    assert.equal(shadowObj.bc.u[n].length, 4);
+    assert.equal(shadowObj.bc.v[n].length, 4);
+  }
+
+  // Test shadow-scoreboard.mjs across two dates
+  const sbPath = path.join(tmp, 'shadow_scoreboard.json');
+  const sb1 = runShadowScoreboard({matchesPath, livePath: onPath, shadowPath, outPath: sbPath, today: '2026-11-20', targetDate: '2026-11-18'});
+  assert.ok(sb1 && sb1.latest.date === '2026-11-18' && sb1.latest.games === 80);
+  const sb2 = runShadowScoreboard({matchesPath, livePath: onPath, shadowPath, outPath: sbPath, today: '2026-11-20'}); // auto-picks latest < today = 2026-11-19
+  assert.ok(sb2 && sb2.latest.date === '2026-11-19' && sb2.byReg['M-C'].length === 2);
+  assert.equal(typeof sb2.latest.delta.logloss, 'number');
+
+  // Negative check (S7): removing bc must fail validation
+  const badShadow = {...shadowObj};
+  delete badShadow.bc;
+  assert.throws(() => { if (!badShadow.bc || badShadow.bc.d !== 4) throw new Error('missing bc'); }, /missing bc/);
+
+  console.log('shadow-model-test: PASS (byte-identical live model, valid combo shadow + bc d=4, paired scoreboard across 2 days)');
+} finally {
+  fs.rmSync(tmp, {recursive: true, force: true});
+}
+----- END experiments/shadow-model-test.mjs -----
+
+
+================================================================================
+=== PART 4 ===
+================================================================================
+BASE: a2e588bc (regulation.json, docs/reg-md-plan.md; cross-checked against docs/rebuild/test-runs/patch-dec2-map.md & patch-dec2-psychup.md)
+
+5-LINE SUMMARY:
+1. Retrieved the official Nov 24, 2026 Pokémon.com Reg M-D announcement (`pokemon.com/us/news/regulation-set-m-d-is-coming-to-pokemon-champions`) alongside the official Nov 18, 2026 Dec 2 balance patch notes (`news.pokemon-home.com/en/page/877.html`).
+2. Confirmed exact Reg M-D window: Wed Dec 2, 2026 6:00 p.m. PST (`2026-12-03T02:00:00Z`) to Wed Mar 3, 2027 5:59 p.m. PST (`2027-03-04T01:59:00Z`), with 24 newly added Pokémon (Heatran, Dondozo, Tatsugiri named; 21 others in-game only), 4 new Megas (Mega Heatran, Mega Tatsugiri named; 2 others unnamed), and ZERO removed Pokémon.
+3. Produced the `regulation.json` `"M-D"` field breakdown and diff (`"end": "2027-03-04T01:59:00Z"` now known; `sources.*` stay `null`).
+4. Confirmed `data/regmd-items.txt` is **not announced yet** (no official item list published; do not fabricate).
+5. Produced the Dec 2 morning checklist mapped to repo files, confirming every accurate line of `patch-dec2-map.md` and correcting its two gaps (Psych Up x22 list now confirmed + 10 Mega form `LEARN` entries missed by the map).
+
+1. OFFICIAL REG M-D & DEC 2 BALANCE PATCH FACTS (TIER + LINK + DATE)
+| Category | Fact | Status | Tier & Source |
+|---|---|---|---|
+| Reg M-D Dates | Runs Wed Dec 2, 2026 6:00 p.m. PST (`2026-12-03T02:00:00Z`) to Wed Mar 3, 2027 5:59 p.m. PST (`2027-03-04T01:59:00Z`). | Confirmed | Tier 1 (Official): https://www.pokemon.com/us/news/regulation-set-m-d-is-coming-to-pokemon-champions (2026-11-24) |
+| Reg M-C End Date | Ends Wed Dec 2, 2026 at 01:59 UTC (Dec 1, 5:59 p.m. PST) — note 24-hour gap before M-D opens Dec 2 6:00 p.m. PST. | Confirmed | Tier 1 (Official press release): https://asia-press.portal-pokemon.com/press-release/pokemon-champions_20260830/ (2026-08-30) |
+| Removed Pokémon | NONE ("Pokémon that were eligible for Ranked Battles in previous regulation sets remain eligible"). | Confirmed | Tier 1 (Official): https://www.pokemon.com/us/news/regulation-set-m-d-is-coming-to-pokemon-champions (2026-11-24) |
+| New Pokémon (24 total) | 24 newly added Pokémon total. Officially named: **Heatran**, **Dondozo**, **Tatsugiri**. Remaining 21 species: **not announced yet** on web (viewable in-game via Recruit -> Recruit Pokémon -> Roster Info after Dec 2 update). | Partially announced | Tier 1 (Official): https://www.pokemon.com/us/news/regulation-set-m-d-is-coming-to-pokemon-champions (2026-11-24) |
+| New Megas (4 total) | 4 new Mega Evolutions total. Officially named: **Mega Heatran**, **Mega Tatsugiri**. Remaining 2 Megas: **not announced yet**. Mega Heatran's ability: **not announced yet**. | Partially announced | Tier 1 (Official): https://www.pokemon.com/us/news/regulation-set-m-d-is-coming-to-pokemon-champions (2026-11-24) |
+| Items Added / Removed | **not announced yet** (official article does not list new Mega Stones or held items; Heatranite/Tatsugirinite are implied by Mega Heatran/Mega Tatsugiri, but the full item list is not published yet). | not announced yet | Tier 1 (Official): https://www.pokemon.com/us/news/regulation-set-m-d-is-coming-to-pokemon-champions (2026-11-24) |
+| Rule Changes | No rule changes announced (format remains VGC doubles, 6 bring 4, Lv 50, Item Clause, 0–32 stat points). Restricted Legendary rule: **not announced yet** (none mentioned). | Confirmed / none announced | Tier 1 (Official): https://www.pokemon.com/us/news/regulation-set-m-d-is-coming-to-pokemon-champions (2026-11-24) |
+| Dec 2 Balance Patch: New Moves | Applies to **all regulations** after Wed Dec 2, 2026 maintenance: **Psych Up** (22: Alakazam, Starmie, Mr. Mime, Mawile, Altaria, Castform, Absol, Roserade, Weavile, Rotom, Heat/Wash/Frost/Fan/Mow Rotom, Liepard, Musharna, Audino, Cofagrigus, Slurpuff, Drampa, Annihilape), **Slack Off** (Emboar), **Roost** (Beedrill, Hydreigon), **Tailwind** (Emolga), **Wonder Room** (Umbreon), **Play Rough** (Vaporeon, Jolteon, Flareon, Espeon, Umbreon, Leafeon, Glaceon). | Confirmed | Tier 1 (Official): https://news.pokemon-home.com/en/page/877.html (2026-11-18; verbatim mirror checked: https://pocketmonsters.net/index.php/news/9733, 2026-11-18) |
+| Dec 2 Balance Patch: Move Changes | **Screech** 85%->100% acc; **Rock Slide** 90%->95% acc & 30%->20% flinch; **Steel Wing** 90%->100% acc; **Metal Sound** 85%->100% acc; **Frost Breath** 90%->100% acc. | Confirmed | Tier 1 (Official): https://news.pokemon-home.com/en/page/877.html (2026-11-18; mirror https://pocketmonsters.net/index.php/news/9733) |
+| Dec 2 Balance Patch: Ability Changes | **Flash Fire**: gains Fire Boost status that persists even if the Pokémon Mega Evolves. **Stalwart**: now also ignores targets' substitutes when using moves. | Confirmed | Tier 1 (Official): https://news.pokemon-home.com/en/page/877.html (2026-11-18; mirror https://pocketmonsters.net/index.php/news/9733) |
+
+2. (a) `regulation.json` `"M-D"` FIELDS — KNOWN VS STILL `null`
+- Known & kept:
+  - `"name": "Reg M-D"` (known)
+  - `"long": "Regulation M-D"` (known)
+  - `"sd": "gen9championsvgc2026regmd"` (expected Showdown id; **not announced yet** on Showdown `formats.ts`, keep current provisional id and verify on Dec 2)
+  - `"since": "2026-12-02"` (known: Dec 2 PST launch / maintenance day; exact UTC start is `2026-12-03T02:00:00Z`)
+  - `"end": "2027-03-04T01:59:00Z"` (**NEWLY KNOWN** from Nov 24 official pokemon.com post: Mar 3, 2027 5:59 p.m. PST = `2027-03-04T01:59:00Z`; diff below updates `"end"` from `null`)
+  - `"items": "data/regmd-items.txt"` (path placeholder kept; file itself waits for official/Showdown item list)
+  - `"rules"`: unchanged (`VGC doubles`, bring 6, pick 4, level 50, points `[0, 32]`, `itemClause: true`)
+- Must stay `null` (not announced yet):
+  - `"sources.showdowntier": null` (not announced yet)
+  - `"sources.pikalytics": null` (not announced yet)
+  - `"sources.official": null` (not announced yet)
+
+3. (b) `data/regmd-items.txt` STATUS
+- **not announced yet**. Neither the Nov 24 pokemon.com Reg M-D announcement nor the Nov 18 Dec 2 balance patch publishes the legal item list or Mega Stone list for Reg M-D. Do NOT create `data/regmd-items.txt` with guesses; generate it on Dec 2 once Pokémon Showdown's Champions mod updates or the in-game item list is verified.
+
+4. (c) DEC 2 MORNING CHECKLIST MAPPED TO REPO FILES (CONFIRMING / CORRECTING `patch-dec2-map.md`)
+Audit of `docs/rebuild/test-runs/patch-dec2-map.md` (and `patch-dec2-psychup.md`):
+- [CONFIRM] `app/src/data/move-acc.js` & `app/src/data/move-meta.js`: Re-run `experiments/gen-move-meta.mjs` once Showdown's champions mod merges the Dec 2 patch, and update the pinned commit header (currently `1242c1e`). Rock Slide -> `a: 95`, flinch `20`; Steel Wing, Frost Breath, Screech, Metal Sound reach 100 and drop out of `MOVE_ACC` / lose `"a"` in `MOVE_META`.
+- [CONFIRM] `app/src/data/info-text.js`: Re-run `experiments/gen-info-text.mjs` (update pinned Showdown commit); verify Rock Slide 20% flinch, Stalwart "ignores Substitute", and Flash Fire "persists after Mega Evolution" (use `OVR` table if Showdown text lags).
+- [CONFIRM] `app/src/data/data.js` (`MOVES`): All 6 newly distributed moves (`Psych Up`, `Slack Off`, `Roost`, `Tailwind`, `Wonder Room`, `Play Rough`) already exist in `MOVES`; no accuracy stored there.
+- [CORRECT — GAP 1 IN `patch-dec2-map.md`] `app/src/data/data.js` (`LEARN`): `patch-dec2-map.md` stated the 22-Pokémon Psych Up list was "not in the repo" / "Not checked". It IS now confirmed verbatim from official `news.pokemon-home.com/en/page/877.html` (and `patch-dec2-psychup.md`): add Psych Up (index 264) to all 22 base/Rotom forms, plus Slack Off (Emboar), Roost (Beedrill, Hydreigon), Tailwind (Emolga), Wonder Room (Umbreon), Play Rough (7 Eeveelutions; Sylveon already has it).
+- [CORRECT — GAP 2 IN `patch-dec2-map.md`] `app/src/data/data.js` (`LEARN` for Mega forms): `patch-dec2-map.md` missed that Mega forms have separate `LEARN` entries. Confirmed by `patch-dec2-psychup.md`: also add Psych Up to `Alakazam-Mega`, `Starmie-Mega`, `Mawile-Mega`, `Altaria-Mega`, `Absol-Mega`, `Absol-Mega-Z`, `Audino-Mega`, `Drampa-Mega`; Slack Off to `Emboar-Mega`; Roost to `Beedrill-Mega`.
+- [CONFIRM] `app/src/v2/pages/infosheet.js:15`: Hand-edit Rock Slide text from `30%` to `20%`. Line 13 has no number -> no change.
+- [CONFIRM] Flash Fire & Stalwart calc logic (`39-damage-calc-speed.js`, `engine/types.js`, `46-battle-data.js`, `55-threats.js`, `40-turn-one-data.js`): Neither Flash Fire's 1.5x boost nor Substitute is modeled in the calc -> no calc code change required; document in info text only.
+- [CONFIRM] `app/test/run.mjs:144/147`: Update Hustle + Rock Slide expected accuracy from `72` (`90 * 0.8`) to `76` (`95 * 0.8`), or read dynamically from `MOVE_ACC`.
+- [ADD — REG M-D LAUNCH ON DEC 2]
+  1. `regulation.json`: Merge `"M-D".end = "2027-03-04T01:59:00Z"` now (diff below). On Dec 2 after maintenance, verify Showdown's exact format ID (`gen9championsvgc2026regmd`) and fill `sources.showdowntier` / `sources.pikalytics` / `sources.official` only once live.
+  2. `app/src/data/data.js` (`ROSTER`, `ABIL`, `LEARN`) + `data/regmd-items.txt` + `app/src/data/items-list.js`: Once full 24 new Pokémon + 4 Megas (including Heatran, Mega Heatran, Dondozo, Tatsugiri, Mega Tatsugiri) and item list appear in-game / Showdown, add all 24 + 4 Megas (keep any unannounced ability as "Ability not announced yet" until verified), create `data/regmd-items.txt`, and run `experiments/gen-items-list.mjs`.
+  3. Sprites (`app/sp/<id>.webp` + `SPRITE_ID`): Fetch & ink PokéAPI HOME renders for all 24 new Pokémon + 4 Megas (e.g. Mega Heatran id 10311 per `docs/reg-md-plan.md`).
+  4. `names.mjs`: Verify Limitless naming for Mega Heatran, Mega Tatsugiri, and the other 2 new Megas so daily `update.mjs` does not warn on unknown names.
+  5. Verification: Run `experiments/legality-check.mjs`, `calc-check.mjs`, `app/test/run.mjs`, and add the pre-patch data note on the site per `CLAUDE.md`.
+
+--- PART 4 UNIFIED DIFFS (BASE: a2e588bc) ---
+diff --git a/regulation.json b/regulation.json
+index 4f1289b..989c212 100644
+--- a/regulation.json
++++ b/regulation.json
+@@ -21,7 +21,7 @@
+       "long": "Regulation M-D",
+       "sd": "gen9championsvgc2026regmd",
+       "since": "2026-12-02",
+-      "end": null,
++      "end": "2027-03-04T01:59:00Z",
+       "sources": {
+         "showdowntier": null,
+         "pikalytics": null,

@@ -142,7 +142,7 @@ ARB.card = async function () { const ms = members().slice(0, 6); if (!ms.length)
   if (!TL) { fz = 26; TL = [scFit(x, f.name, 640)]; }
   const ty0 = TL.length > 2 ? 64 : TL.length > 1 ? 84 : 116; ARB.tab(x, P, 56, ty0, 40); x.fillStyle = P.ink; TL.forEach((l, i) => x.fillText(l, 112, ty0 + i * fz * 1.02));
   const sy = ty0 + (TL.length - 1) * fz * 1.02 + 40;
-  ARB.fnt(x, '500 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('Pokémon Champions, VGC doubles, Reg M-C', 58, sy); /* Nov 9, Sim: no 'bring 6 pick 4' on the clean share card */
+  ARB.fnt(x, '500 22px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('Pokémon Champions, VGC doubles, ' + regName(), 58, sy); /* Nov 9, Sim: no 'bring 6 pick 4' on the clean share card */
   if (f.arch && f.arch !== f.name) { ARB.fnt(x, '700 22px "Instrument Sans", sans-serif'); const t = scFit(x, f.arch, 520), w = x.measureText(t).width + 36; x.fillStyle = P.plate; ARB.para(x, 58 + w / 2, sy + 18, w, 40, 6); x.fill(); x.fillStyle = '#fff'; x.fillText(t, 76, sy + 45); }
   /* the six */
   const imgs = await ARB.imgs(ms), cw = (W - 112) / 6, ns = ARB.nameSize(x, ms, cw - 26, 25);
@@ -163,7 +163,7 @@ ARB.poster = async function (ms, opt) { opt = opt || {}; if (!ms || !ms.length) 
   x.save(); x.beginPath(); x.moveTo(0, 360); x.lineTo(W, 330); x.lineTo(W, 1010); x.lineTo(0, 1040); x.closePath(); const sg = x.createLinearGradient(0, 330, W, 1040);
   sg.addColorStop(0, dark ? '#16151A' : ARB.mixc('#ECE7E0', '#0078BF', .22)); sg.addColorStop(1, dark ? '#121114' : ARB.mixc('#ECE7E0', '#0078BF', .08)); x.fillStyle = sg; x.fill();
   if (dark) { x.fillStyle = '#0078BF'; x.beginPath(); x.moveTo(0, 360); x.lineTo(0, 1040); x.lineTo(8, 1040); x.lineTo(8, 360); x.fill(); } x.restore();
-  ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('My team, Pokémon Champions, Reg M-C doubles', 60, 86);
+  ARB.fnt(x, '600 26px "Instrument Sans", sans-serif'); x.fillStyle = P.ink2; x.fillText('My team, Pokémon Champions, ' + regName() + ' doubles', 60, 86);
   /* the name, as big as fits, up to two lines, on its slanted tab */
   let fz = 104, L = null; for (; fz >= 52; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); L = ARB.lines(x, f.name, W - 190); if (L && (L.length === 1 || fz <= 92)) break; }
   if (!L) for (fz = 60; fz >= 40; fz -= 4) { ARB.fnt(x, `italic 800 ${fz}px Unbounded, sans-serif`, true); L = ARB.wrapN(x, f.name, W - 190, 3); if (L) break; } /* as above (FP-5) */
@@ -202,7 +202,7 @@ async function buildSheetImage(ms, opt) { opt = opt || {}; if (!ms || !ms.length
   const fit = (t, max) => scFit(x, String(t), max), rr = (X, Y, w, h, r) => PO.round(x, X, Y, w, h, r);
   x.fillStyle = P.paper; x.fillRect(0, 0, W, H);
   /* head: kicker, team name, the key */
-  const r = (typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}, name = opt.name || (typeof teamTitleFor === 'function' ? teamTitleFor(ms) : '') || 'My team';
+  const r = {id: regId()}, name = opt.name || (typeof teamTitleFor === 'function' ? teamTitleFor(ms) : '') || 'My team';
   x.font = `600 20px ${BODY}`; x.fillStyle = P.mute; x.fillText(`Team sheet · Pokémon Champions · Reg ${String(r.id).toUpperCase()} doubles · Level 50`, 40, 54);
   let fz = 52; do { x.font = `italic 800 ${fz}px ${DISP}`; } while (x.measureText(name).width > W - 80 && --fz > 28);
   x.fillStyle = P.ink; x.fillText(fit(name, W - 80), 40, 54 + 16 + fz);

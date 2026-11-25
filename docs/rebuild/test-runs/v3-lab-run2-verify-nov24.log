@@ -1,0 +1,16 @@
+v3-lab loaded out/matches.json: 38513 decided games, 431 events, 6450 teams, 5504 players, hasSets=true
+
+=== BASELINE REPRODUCTION PROOF (v3-lab vs model.mjs on same 80/20 split; FAST=10,14,1,60) ===
+  Metric         | v3-lab   | model.mjs | |diff|   | limit
+  ---------------+----------+-----------+----------+-------
+  train / test   | 32562/5951 | 32562/5951   | exact    | exact
+  raw acc        | 0.5636   | 0.5636    | 0.00000  | <= 0.0001
+  raw log-loss   | 0.6803   | 0.6803    | 0.00000  | <= 0.0001
+  cal log-loss   | 0.6801   | 0.6801    | 0.00000  | <= 0.0001
+  cal slope      | 0.892    | 0.892     | 0.0000   | <= 0.001
+  VERDICT: PASS (baseline proven identical within 1e-4)
+
+=== BEST-OF-3 SECTION (SEPARATE PER CLAUDE.md RULE 21) ===
+  Not available: out/matches.json does not distinguish single games from best-of-3 sets (eventFormat=false, gameFlag=false, multiGameRounds=0).
+  Per CLAUDE.md Rule 21, Bo3 evaluation stays separate until update.mjs tags Bo3 sets.
+verify exit 0

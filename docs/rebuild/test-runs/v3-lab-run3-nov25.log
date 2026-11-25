@@ -1,0 +1,101 @@
+v3-lab loaded out/matches.json: 38513 decided games, 431 events, 6450 teams, 5504 players, hasSets=true
+=== WALK-FORWARD LAB (8 weekly cuts ending 2026-11-09; 200 tournament-clustered boots) ===
+  cut 2026-09-14->2026-09-21 (n=4000): | baseline acc=49.4% ll=0.6920 | combo acc=50.6% ll=0.6919 | combo-skillhalf acc=50.6% ll=0.6919 | combo-archetype acc=50.9% ll=0.6917 | combo-hier-sets acc=50.6% ll=0.6919 | combo-seg-cal acc=50.6% ll=0.6919
+  cut 2026-09-21->2026-09-28 (n=4703): | baseline acc=53.9% ll=0.6887 | combo acc=54.1% ll=0.6894 | combo-skillhalf acc=54.1% ll=0.6894 | combo-archetype acc=54.5% ll=0.6895 | combo-hier-sets acc=53.6% ll=0.6889 | combo-seg-cal acc=54.1% ll=0.6892
+  cut 2026-09-28->2026-10-05 (n=6514): | baseline acc=53.5% ll=0.6887 | combo acc=53.7% ll=0.6874 | combo-skillhalf acc=53.7% ll=0.6875 | combo-archetype acc=53.8% ll=0.6871 | combo-hier-sets acc=54.0% ll=0.6869 | combo-seg-cal acc=53.7% ll=0.6879
+  cut 2026-10-05->2026-10-12 (n=5421): | baseline acc=55.9% ll=0.6812 | combo acc=56.3% ll=0.6795 | combo-skillhalf acc=56.3% ll=0.6795 | combo-archetype acc=56.4% ll=0.6797 | combo-hier-sets acc=55.8% ll=0.6799 | combo-seg-cal acc=56.3% ll=0.6795
+  cut 2026-10-12->2026-10-19 (n=5327): | baseline acc=55.2% ll=0.6828 | combo acc=55.4% ll=0.6807 | combo-skillhalf acc=55.5% ll=0.6807 | combo-archetype acc=55.7% ll=0.6802 | combo-hier-sets acc=55.4% ll=0.6807 | combo-seg-cal acc=55.4% ll=0.6810
+  cut 2026-10-19->2026-10-26 (n=5412): | baseline acc=55.9% ll=0.6802 | combo acc=56.5% ll=0.6795 | combo-skillhalf acc=56.4% ll=0.6793 | combo-archetype acc=56.5% ll=0.6792 | combo-hier-sets acc=56.6% ll=0.6795 | combo-seg-cal acc=56.5% ll=0.6801
+  cut 2026-10-26->2026-11-02 (n=3626): | baseline acc=57.6% ll=0.6757 | combo acc=58.2% ll=0.6728 | combo-skillhalf acc=58.4% ll=0.6728 | combo-archetype acc=58.0% ll=0.6726 | combo-hier-sets acc=58.5% ll=0.6731 | combo-seg-cal acc=58.2% ll=0.6728
+  cut 2026-11-02->2026-11-09 (n=3474): | baseline acc=55.5% ll=0.6832 | combo acc=56.4% ll=0.6808 | combo-skillhalf acc=56.7% ll=0.6810 | combo-archetype acc=56.5% ll=0.6804 | combo-hier-sets acc=56.8% ll=0.6807 | combo-seg-cal acc=56.4% ll=0.6810
+
+=== POOLED WALK-FORWARD RESULTS (PAIRED ON EXACT SAME GAMES) ===
+
+Today's model (model.mjs) [baseline] -> BASELINE
+  games=38477 | acc=54.61% [54.04%, 55.17%] | ll=0.68425 [0.6827, 0.6856] | brier=0.24561 [0.2449, 0.2463] | calSlope=0.905
+
+COMBO: no-evid-hier + Blade-Chest (d=4) [combo] -> KEEP (95% CI strictly beats baseline log-loss)
+  games=38477 | acc=55.09% [54.50%, 55.71%] | ll=0.68300 [0.6813, 0.6847] | brier=0.24500 [0.2442, 0.2458] | calSlope=0.904
+  delta vs baseline: dAcc=+0.48 pts [0.16%, 0.80%] | dLL=-0.00125 [-0.0017, -0.0008] | dBrier=-0.00061 [-0.0008, -0.0004]
+
+R3-1: combo + decoupled player skillHalf=60d [combo-skillhalf] -> KEEP (95% CI strictly beats baseline log-loss)
+  games=38477 | acc=55.13% [54.57%, 55.77%] | ll=0.68299 [0.6813, 0.6846] | brier=0.24499 [0.2442, 0.2458] | calSlope=0.903
+  delta vs baseline: dAcc=+0.52 pts [0.18%, 0.84%] | dLL=-0.00125 [-0.0017, -0.0008] | dBrier=-0.00061 [-0.0008, -0.0004]
+  delta vs combo   : [NO ADDED VALUE] dAcc=+0.04 pts [-0.03%, 0.10%] | dLL=-0.00000 [-0.0000, 0.0000]
+
+R3-2: combo + explicit archetype matchup matrix [combo-archetype] -> KEEP (95% CI strictly beats baseline log-loss)
+  games=38477 | acc=55.24% [54.60%, 55.81%] | ll=0.68280 [0.6812, 0.6845] | brier=0.24490 [0.2441, 0.2457] | calSlope=0.908
+  delta vs baseline: dAcc=+0.63 pts [0.29%, 1.00%] | dLL=-0.00145 [-0.0020, -0.0009] | dBrier=-0.00071 [-0.0010, -0.0004]
+  delta vs combo   : [BEATS COMBO] dAcc=+0.15 pts [-0.05%, 0.33%] | dLL=-0.00020 [-0.0004, -0.0000]
+
+R3-3: combo + recency-centered hierarchical sets [combo-hier-sets] -> KEEP (95% CI strictly beats baseline log-loss)
+  games=38477 | acc=55.10% [54.52%, 55.69%] | ll=0.68293 [0.6812, 0.6847] | brier=0.24496 [0.2441, 0.2458] | calSlope=0.925
+  delta vs baseline: dAcc=+0.49 pts [0.18%, 0.79%] | dLL=-0.00132 [-0.0017, -0.0008] | dBrier=-0.00064 [-0.0009, -0.0004]
+  delta vs combo   : [NO ADDED VALUE] dAcc=+0.01 pts [-0.21%, 0.24%] | dLL=-0.00007 [-0.0003, 0.0002]
+
+R3-4: combo + segment-aware calibration [combo-seg-cal] -> KEEP (95% CI strictly beats baseline log-loss)
+  games=38477 | acc=55.09% [54.50%, 55.71%] | ll=0.68320 [0.6814, 0.6849] | brier=0.24509 [0.2442, 0.2459] | calSlope=0.883
+  delta vs baseline: dAcc=+0.48 pts [0.16%, 0.80%] | dLL=-0.00104 [-0.0015, -0.0006] | dBrier=-0.00051 [-0.0007, -0.0003]
+  delta vs combo   : [WORSE THAN COMBO] dAcc=+0.00 pts [0.00%, 0.00%] | dLL=+0.00020 [0.0000, 0.0004]
+
+=== ROBUSTNESS SPLITS (PAIRED 95% CI; <500 GAMES = UNKNOWN) ===
+
+  Slice: Event size: under 64 players (n=18407) | baseline acc=55.50% ll=0.68192
+    combo          -> KEEP                 | dAcc=+0.42 pts [-0.03%, 0.88%] | dLL=-0.00150 [-0.0022, -0.0008]
+    combo-skillhalf -> KEEP                 | dAcc=+0.40 pts [-0.04%, 0.88%] | dLL=-0.00151 [-0.0022, -0.0008]
+    combo-archetype -> KEEP                 | dAcc=+0.43 pts [-0.01%, 0.91%] | dLL=-0.00171 [-0.0024, -0.0010]
+    combo-hier-sets -> KEEP                 | dAcc=+0.24 pts [-0.20%, 0.76%] | dLL=-0.00148 [-0.0022, -0.0008]
+    combo-seg-cal  -> KEEP                 | dAcc=+0.42 pts [-0.03%, 0.88%] | dLL=-0.00116 [-0.0020, -0.0002]
+
+  Slice: Event size: 64+ players (n=20070) | baseline acc=53.79% ll=0.68638
+    combo          -> KEEP                 | dAcc=+0.54 pts [0.08%, 0.95%] | dLL=-0.00101 [-0.0016, -0.0003]
+    combo-skillhalf -> KEEP                 | dAcc=+0.63 pts [0.18%, 1.05%] | dLL=-0.00102 [-0.0016, -0.0003]
+    combo-archetype -> KEEP                 | dAcc=+0.81 pts [0.31%, 1.20%] | dLL=-0.00120 [-0.0019, -0.0005]
+    combo-hier-sets -> KEEP                 | dAcc=+0.72 pts [0.28%, 1.13%] | dLL=-0.00117 [-0.0018, -0.0005]
+    combo-seg-cal  -> KEEP                 | dAcc=+0.54 pts [0.08%, 0.95%] | dLL=-0.00094 [-0.0016, -0.0003]
+
+  Slice: Team familiarity: both teams 30+ train games (n=4547) | baseline acc=52.45% ll=0.69036
+    combo          -> KEEP                 | dAcc=+0.99 pts [0.24%, 2.08%] | dLL=-0.00219 [-0.0041, -0.0007]
+    combo-skillhalf -> KEEP                 | dAcc=+1.19 pts [0.45%, 2.36%] | dLL=-0.00227 [-0.0041, -0.0007]
+    combo-archetype -> KEEP                 | dAcc=+1.43 pts [0.47%, 2.52%] | dLL=-0.00266 [-0.0046, -0.0012]
+    combo-hier-sets -> KEEP                 | dAcc=+1.52 pts [0.73%, 2.47%] | dLL=-0.00214 [-0.0040, -0.0004]
+    combo-seg-cal  -> NO DIFFERENCE        | dAcc=+0.99 pts [0.24%, 2.08%] | dLL=-0.00167 [-0.0036, 0.0001]
+
+  Slice: Team familiarity: rarer team (<30 train games) (n=33930) | baseline acc=54.90% ll=0.68343
+    combo          -> KEEP                 | dAcc=+0.42 pts [0.07%, 0.77%] | dLL=-0.00112 [-0.0015, -0.0006]
+    combo-skillhalf -> KEEP                 | dAcc=+0.43 pts [0.06%, 0.81%] | dLL=-0.00112 [-0.0015, -0.0006]
+    combo-archetype -> KEEP                 | dAcc=+0.52 pts [0.13%, 0.85%] | dLL=-0.00129 [-0.0018, -0.0008]
+    combo-hier-sets -> KEEP                 | dAcc=+0.35 pts [-0.03%, 0.67%] | dLL=-0.00121 [-0.0016, -0.0007]
+    combo-seg-cal  -> KEEP                 | dAcc=+0.42 pts [0.07%, 0.77%] | dLL=-0.00096 [-0.0014, -0.0005]
+
+=== BEST-OF-3 SECTION (SEPARATE PER CLAUDE.md RULE 21) ===
+  Not available: out/matches.json does not distinguish single games from best-of-3 sets (eventFormat=false, gameFlag=false, multiGameRounds=0).
+  Per CLAUDE.md Rule 21, Bo3 evaluation stays separate until update.mjs tags Bo3 sets.
+
+=== FALSIFICATION 1: WITHIN-EVENT TEAM-LABEL SHUFFLE ===
+  games=37357 | baseline ll=0.69340 acc=50.28% | combo ll=0.69336 acc=49.99%
+  combo - baseline: dAcc=-0.29 pts | dLL=-0.00005 [-0.0001, 0.0000]
+  VERDICT: PASS (combo gain vanished under shuffled team labels)
+
+=== FALSIFICATION 2: TIME-REVERSED SPLIT (DIAGNOSTIC ONLY — NOT PRIMARY EVIDENCE) ===
+  games=37913 | baseline ll=0.68467 acc=55.03% | combo ll=0.68359 acc=55.52%
+  combo - baseline: dAcc=+0.49 pts | dLL=-0.00108 [-0.0014, -0.0007]
+
+=== FALSIFICATION 3: LEAVE-ONE-EVENT-OUT INFLUENCE (COMBO VS BASELINE) ===
+  events=417, games=38477, pooled dLL=-0.00125
+  Most favorable single event: 6ae9c340e94eae0f947464b0 (2026-11-06, n=94) contrib=-0.00006 (4.6% of total gain) | dLL without it=-0.00119
+  Top 5 most favorable events to combo:
+    6ae9c340e94eae0f947464b0 (2026-11-06, n=94): contrib=-0.00006 (4.6%), loeo_dLL=-0.00119
+    6ac965538a8383117e3e813d (2026-10-28, n=179): contrib=-0.00004 (3.5%), loeo_dLL=-0.00121
+    6a99564fa4272c53be64592f (2026-10-09, n=330): contrib=-0.00004 (3.3%), loeo_dLL=-0.00122
+    6adff5e180a8f79408d1f34d (2026-11-02, n=187): contrib=-0.00004 (3.1%), loeo_dLL=-0.00121
+    6ad313aa115c12b73a5a5e74 (2026-10-23, n=317): contrib=-0.00004 (2.8%), loeo_dLL=-0.00122
+  Top 5 least favorable events to combo:
+    6adad3b491617679e849eb19 (2026-10-24, n=164): contrib=0.00004, loeo_dLL=-0.00129
+    6aa17fe5ab080c8c957ff10d (2026-09-22, n=116): contrib=0.00003, loeo_dLL=-0.00128
+    6abb9694783097f8dcb73471 (2026-10-23, n=183): contrib=0.00003, loeo_dLL=-0.00128
+    6ab1e498e905c1db68747897 (2026-09-27, n=215): contrib=0.00003, loeo_dLL=-0.00128
+    6ac38c4f245696afb3516a07 (2026-10-08, n=114): contrib=0.00003, loeo_dLL=-0.00128
+  VERDICT: PASS (no single event drives >25% of combo gain)
+
+Wrote /tmp/claude-0/-home-user-pokelair-data/204a9d61-5900-570f-b954-256bbb6b60d7/scratchpad/lab3.json

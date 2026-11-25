@@ -8,7 +8,12 @@ prints one line per file: applied / new / FAILED (why). Never touches main or cl
 import re, subprocess, sys, html, os, pathlib
 ans, base, br = sys.argv[1], sys.argv[2], sys.argv[3]; push = '--push' in sys.argv
 assert br.startswith('alt/gemini-'), 'branch must be alt/gemini-*'
-t = open(ans, encoding='utf8').read().replace('https://www.google.com/search?q=', '')
+# never in the main checkout (Nov 24: a failed `cd` once ran this in the main repo and switched its branch)
+_top = subprocess.run(['git', 'rev-parse', '--show-toplevel'], capture_output=True, text=True).stdout.strip()
+_main = subprocess.run(['git', 'worktree', 'list', '--porcelain'], capture_output=True, text=True).stdout.split('\n')[0].replace('worktree ', '').strip()
+if os.path.realpath(_top) == os.path.realpath(_main): sys.exit('kip-apply.py: run it in a scratch worktree, never in the main checkout')
+t = open(ans, encoding='utf8').read().replace('https://www.google.com/search?q=', '').replace('%7B', '{').replace('%7D', '}')  # the copy link-ified '{}' as %7B%7D
+t = re.sub(r'https://www\.google\.com/url\?sa=E\\?&source=gmail\\?&q=', '', t)  # Gmail redirect wrappers around URLs (job 23)
 def git(*a, check=True): return subprocess.run(['git', *a], capture_output=True, text=True, check=check)
 git('fetch', '-q', 'origin', base, check=False); git('checkout', '-q', '-f', '-B', br, base)
 out = []
@@ -19,6 +24,7 @@ def fuzzy(f, p):
     """Fallback for hand-written diffs: each hunk's old lines (context + '-') must appear exactly once; replaced by context + '+'."""
     try: src = open(f, encoding='utf8').read()
     except Exception as e: return 'FAILED   ', f'  (cannot read: {e})'
+    p = re.sub(r'^-{3,} [A-Z][^\n]*\n?', '', p, flags=re.M)  # a section line like '--- PART 1 NEW FILES ---' is not a removal
     hunks = re.split(r'^@@[^\n]*@@[^\n]*\n', p, flags=re.M)[1:]
     if not hunks: return 'FAILED   ', '  (no hunks)'
     for n, h in enumerate(hunks, 1):
@@ -32,10 +38,38 @@ def fuzzy(f, p):
         k = src.count(o)
         if k != 1:
             o2 = '\n'.join(x.rstrip() for x in old); src2 = '\n'.join(x.rstrip() for x in src.split('\n'))
-            if src2.count(o2) == 1: src, o = src2, o2
-            else: return 'FAILED   ', f'  (hunk {n}: old text found {k} times)'
+            if src2.count(o2) == 1: src = src2.replace(o2, w, 1); continue
+            # last resort: the copy can damage context lines (e.g. lost < >): match each run of changed lines on its own
+            rows = [(l[:1], l[1:]) if l[:1] in ' +-' else (' ', l) for l in h.rstrip('\n').split('\n') if not l.startswith('\\')]
+            groups, cur, prev = [], None, None
+            for c, body in rows:
+                if c == ' ':
+                    if cur: groups.append(cur); cur = None
+                    prev = body
+                else:
+                    if not cur: cur = {'anchor': prev, 'minus': [], 'plus': []}
+                    (cur['minus'] if c == '-' else cur['plus']).append(body)
+            if cur: groups.append(cur)
+            for g in groups:
+                if g['minus']:
+                    m = '\n'.join(g['minus'])
+                    if src.count(m) != 1: return 'FAILED   ', f'  (hunk {n}: changed lines found {src.count(m)} times)'
+                    src = src.replace(m, '\n'.join(g['plus']), 1)
+                else:
+                    an = g['anchor']
+                    if an is None or src.count(an) != 1: return 'FAILED   ', f'  (hunk {n}: no unique line to add after)'
+                    src = src.replace(an, an + '\n' + '\n'.join(g['plus']), 1)
+            continue
         src = src.replace(o, w, 1)
-    open(f, 'w', encoding='utf8').write(src); return 'matched  ', '  (hand-written diff: every hunk matched exactly once)'
+    open(f, 'w', encoding='utf8').write(src); return 'matched  ', '  (matched by text; damaged context tolerated)'
+# real git diffs (diff --git ... , incl. new files from /dev/null): applied as written, one file at a time
+for blk in re.findall(r'^diff --git a/(\S+) b/\S+\n(.*?)(?=^diff --git |^```|^-{5,} ?(?:END|BEGIN)|\Z)', t, re.S | re.M):
+    f, body = blk; body = html.unescape(body) if ('&quot;' in body or '&lt;' in body or '&#39;' in body) else body; pf = f'/tmp/kip-{os.getpid()}-g.patch'; open(pf, 'w', encoding='utf8').write(f'diff --git a/{f} b/{f}\n' + body.rstrip('\n') + '\n')
+    r = git('apply', '--3way', '--recount', '--whitespace=nowarn', pf, check=False)
+    how, why = ('applied  ', '') if r.returncode == 0 else fuzzy(f, body)
+    out.append(how + f + why)
+    if how.strip() in ('applied', 'matched'): git('add', f)
+t = re.sub(r'^diff --git .*?(?=^diff --git |^```|^-{5,} ?(?:END|BEGIN)|\Z)', '', t, flags=re.S | re.M)
 lines = t.split('\n'); i = 0; patches = {}
 while i < len(lines):
     if lines[i].startswith('--- a/') and i + 1 < len(lines) and lines[i + 1].startswith('+++ b/'):

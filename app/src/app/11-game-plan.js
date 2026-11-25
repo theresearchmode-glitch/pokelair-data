@@ -198,6 +198,13 @@ function gamePlan(team) {
       const hit = team.filter(x => x !== m && typeof allyHit === 'function' && allyHit(mv, x)), safe = team.filter(x => x !== m && !hit.includes(x));
       notes.push(`${m.d}'s ${mv.name} also hits ${hit.length ? hit.map(x => x.d).join(', ') : 'no one on your team'} next to it${hit.length && safe.length ? ` (safe partners: ${safe.map(x => x.d).join(', ')})` : ''}`); }
     if (notes.length) rows.push({k: 'ally', label: 'Hits your own side', st: notes.some(n => !/no one/.test(n)) ? 'opt' : 'ok', who: '', note: notes.join('. ') + '.'}); } catch (e) {}
+  // Commander (Reg M-D, Nov 25): Tatsugiri's Commander only works beside its own Dondozo (it jumps in; Dondozo gets +2 to every
+  // stat and can't switch out). Shown only when the team has a Commander Tatsugiri; information only (no penalty): without
+  // Dondozo the Ability simply does nothing, and a team may run Tatsugiri for Storm Drain or its attacks
+  try { const abOf = m => m.ability || (typeof metaAbility === 'function' ? metaAbility(m.p) : '') || '';
+    const tg = team.filter(m => m && m.p && /^Tatsugiri/.test(String(m.p.n)) && abOf(m) === 'Commander'), dz = team.find(m => m && m.p && /^Dondozo(-|$)/.test(String(m.p.n)));
+    if (tg.length) rows.push(dz ? {k: 'commander', label: 'Commander', st: 'ok', who: `${tg[0].d} + ${dz.d}`, note: `Lead them together: ${tg[0].d} jumps into ${dz.d}, which gets +2 to every stat and can't switch out.`}
+      : {k: 'commander', label: 'Commander', st: 'miss', who: tg[0].d, note: `${tg[0].d}'s Commander does nothing without Dondozo on your team.`}); } catch (e) {}
   return {rows, penalty: pen, c};
 }
 
