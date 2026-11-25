@@ -54,8 +54,17 @@ export function scrubContact(text) {
   return {text: t, emails, phones};
 }
 
-export async function verifyTurnstile(token, secret, fetchImpl = fetch) {
-  if (!token || typeof token !== 'string' || !secret) return false;
+// Turnstile (launch review S1/S2, Nov 25): a token only counts if Cloudflare says it is good AND it was made on our own site for
+// the feedback form (hostname + action), so a token solved on another site that uses our public site key is refused.
+export const TS_ACTION = 'feedback';
+export const DEFAULT_TS_HOSTS = ['nastyplot.org', 'www.nastyplot.org'];
+export function turnstileOk(j, env = {}) {
+  const hosts = typeof env.TURNSTILE_HOSTNAMES === 'string' && env.TURNSTILE_HOSTNAMES.trim()
+    ? env.TURNSTILE_HOSTNAMES.split(',').map(s => s.trim()).filter(Boolean) : DEFAULT_TS_HOSTS;
+  return !!(j && j.success === true && hosts.includes(j.hostname) && j.action === TS_ACTION);
+}
+export async function verifyTurnstile(token, secret, fetchImpl = fetch, env = {}) {
+  if (!token || typeof token !== 'string' || token.length > 2048 || !secret) return false;
   const r = await fetchImpl('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
     method: 'POST',
     headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -63,7 +72,7 @@ export async function verifyTurnstile(token, secret, fetchImpl = fetch) {
   });
   if (!r.ok) return false;
   const j = await r.json();
-  return !!(j && j.success);
+  return turnstileOk(j, env);
 }
 
 export function validateFeedback(body) {

@@ -19,6 +19,16 @@ not_found_handling = "404-page"
 # Worker request per scored six, so it barely touches the 100,000 a day.
 run_worker_first = ["/api/feedback", "/api/count"]
 
+# Feedback rate limit inside the Worker (Nov 25): the free plan's one WAF rate-limit rule is Cloudflare's leaked-credential check
+# (Dos's Cloudflare setup), so /api/feedback is limited here: 5 messages per 60 s per sender, per Cloudflare location.
+[[ratelimits]]
+name = "FEEDBACK_RL"
+namespace_id = "1001"
+
+  [ratelimits.simple]
+  limit = 5
+  period = 60
+
 [[d1_databases]]
 binding = "DB"
 database_name = "nastyplot-feedback"

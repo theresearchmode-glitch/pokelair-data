@@ -37,7 +37,7 @@ check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page:
     }), env);
     check('W7-turnstile-fail-403', badTok.status === 403 && bound.length === 0, `status=${badTok.status}`);
 
-    globalThis.fetch = async () => new Response(JSON.stringify({success: true}), {status: 200});
+    globalThis.fetch = async () => new Response(JSON.stringify({success: true, hostname: 'nastyplot.org', action: 'feedback'}), {status: 200});
     const okReq = new Request('https://nastyplot.org/api/feedback', {
       method: 'POST',
       headers: {
@@ -54,6 +54,22 @@ check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page:
       /^\d{4}-\d{2}-\d{2}$/.test(bound[0].args[0]) &&
       bound[0].args[1] === 'team' && bound[0].args[2] === 'bug' && bound[0].args[3] === 'Broken button',
       JSON.stringify(bound[0] && bound[0].args));
+
+    // W13-W16 (Nov 25, launch review S1/S2 + Workers rate limit): a good token from another site or another form is refused;
+    // the rate limit answers 429 and saves nothing; its key never reaches D1
+    const post = (h = {}) => new Request('https://nastyplot.org/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json', 'CF-Turnstile-Response': 'tok', 'CF-Connecting-IP': '203.0.113.9', ...h}, body: JSON.stringify({text: 'Broken button', page: 'team', kind: 'bug'})});
+    const n0 = bound.length;
+    globalThis.fetch = async () => new Response(JSON.stringify({success: true, hostname: 'evil.example', action: 'feedback'}), {status: 200});
+    const wrongHost = await worker.fetch(post(), env);
+    check('W13-turnstile-other-site-403', wrongHost.status === 403 && bound.length === n0, `status=${wrongHost.status}`);
+    globalThis.fetch = async () => new Response(JSON.stringify({success: true, hostname: 'nastyplot.org', action: 'login'}), {status: 200});
+    const wrongAct = await worker.fetch(post(), env);
+    check('W14-turnstile-other-action-403', wrongAct.status === 403 && bound.length === n0, `status=${wrongAct.status}`);
+    globalThis.fetch = async () => new Response(JSON.stringify({success: true, hostname: 'nastyplot.org', action: 'feedback'}), {status: 200});
+    const keys = []; const limited = await worker.fetch(post(), {...env, FEEDBACK_RL: {limit: async o => { keys.push(o.key); return {success: false}; }}});
+    check('W15-rate-limit-429-nothing-saved', limited.status === 429 && bound.length === n0 && keys[0] === 'fb:203.0.113.9', `status=${limited.status} keys=${keys}`);
+    const allowed = await worker.fetch(post(), {...env, FEEDBACK_RL: {limit: async () => ({success: true})}});
+    check('W16-rate-limit-pass-saves-no-ip', allowed.status === 201 && bound.length === n0 + 1 && !JSON.stringify(bound[bound.length - 1].args).includes('203.0.113.9'), `status=${allowed.status}`);
 
     const data404 = await worker.fetch(new Request('https://nastyplot.org/data/missing.json'), env);
     check('W9-data-missing-404', data404.status === 404, `status=${data404.status}`);

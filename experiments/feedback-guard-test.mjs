@@ -61,7 +61,7 @@ function mockEnv(extra = {}) {
     DB: {prepare: sql => ({bind: (...a) => ({run: async () => { calls.push({sql, a}); return {success: true}; }})})},
     ASSETS: {fetch: async () => new Response('asset')}}};
 }
-globalThis.fetch = async () => new Response(JSON.stringify({success: true}), {status: 200});
+globalThis.fetch = async () => new Response(JSON.stringify({success: true, hostname: 'nastyplot.org', action: 'feedback'}) /* Nov 25: the Worker checks hostname + action too */, {status: 200});
 const post = (body, headers = {}) => new Request('https://nastyplot.org/api/feedback', {method: 'POST',
   headers: {'Content-Type': 'application/json', 'CF-Turnstile-Response': 'tok', ...headers}, body});
 const good = JSON.stringify({text: 'Great site, email me kid@gmail.com or call 555-123-4567', page: 'home', kind: 'like'});
