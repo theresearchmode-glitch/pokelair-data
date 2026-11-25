@@ -50,7 +50,8 @@ ok(!!homeRow && headOk(rdD('index.html'), homeRow), "index.html carries Home's t
 ok(toolRows.every(r => rdD(r.path.slice(1) + '.html').includes('<link rel="stylesheet" href="/v2.css?v=')), 'the tool pages share the one stylesheet file (/v2.css)');
 // SEO fix 6 (Nov 25): og:url = the page's canonical address on every built page (none on 404.html); og:image is a brand-kit file
 // (4-social/facebook/facebook-profile-720.png, copied as is, never redrawn) at /og-image.png
-const allPages = [...fs.readdirSync(D).filter(f => f.endsWith('.html') && f !== '404.html'), ...[...files].map(f => 'pokemon/' + f)];
+/* only the public build's own pages (they carry __NP_PUBLIC): a local old-page build leaves page.html/test.html in dist (Nov 25) */
+const allPages = [...fs.readdirSync(D).filter(f => f.endsWith('.html') && f !== '404.html' && fs.readFileSync(path.join(D, f), 'utf8').includes('__NP_PUBLIC=1')), ...[...files].map(f => 'pokemon/' + f)];
 const badOg = allPages.filter(f => { const h = rdD(f), c = (h.match(/<link rel="canonical" href="([^"]*)">/) || [])[1], u = h.match(/<meta property="og:url" content="[^"]*">/g) || [];
   return !(c && u.length === 1 && u[0] === `<meta property="og:url" content="${c}">`) || !h.includes('<meta property="og:image" content="https://nastyplot.org/og-image.png">'); });
 ok(allPages.length > 360 && !badOg.length, `og:url = the canonical address and og:image = /og-image.png on every page (${allPages.length - badOg.length} of ${allPages.length}; wrong: ${badOg.slice(0, 4).join(' ') || 'none'})`);
