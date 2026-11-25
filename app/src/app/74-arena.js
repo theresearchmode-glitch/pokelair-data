@@ -215,7 +215,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
       <div class="ar-trio">${cells.join('')}<span class="ar-muline">${muLine}</span></div>
       ${muBar || `<span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span>`}</div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
-    const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>Team checks ${ck.pass}/${ck.n}</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
+    const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(regName())} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>Team checks ${ck.pass}/${ck.n}</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
     stats = `<div class="ar-tstats ar-c${Math.max(3, cells.length)}">${rec}${chk}${leg}</div>`; }
   else stats = '';
   /* the stage: all six as equal art tiles (no roles on the art), the game plan line under them */

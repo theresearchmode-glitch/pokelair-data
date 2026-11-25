@@ -157,7 +157,7 @@ document.addEventListener('click', async e => { const t = e.target.closest && e.
   else if (d.bxlink === 'open') { V2.bx.linkOpen = !V2.bx.linkOpen; V2.bx.msg = ''; bxRe(); if (V2.bx.linkOpen) { const f = document.querySelector('[data-bxlinkin]'); if (f) f.focus(); } }
   else if (d.bxlink === 'add' || d.bxlink === 'replace') { const f = document.querySelector('[data-bxlinkin]'), x = decodeBox(f && f.value);
     if (!x || !x.names.length) { V2.bx.linkVal = f ? f.value : ''; V2.bx.msg = 'That doesn’t look like a box link. Copy it again with Copy Box Link, then paste the whole thing.'; bxRe(); return; }
-    V2.bx.linkVal = ''; V2.bx.msg = x.skipped ? `${x.skipped} Pokémon in that link aren’t in ${REG_NAME}, so they were left out.` : ''; if (!x.skipped) V2.bx.linkOpen = false;
+    V2.bx.linkVal = ''; V2.bx.msg = x.skipped ? `${x.skipped} Pokémon in that link aren’t in ${regName()}, so they were left out.` : ''; if (!x.skipped) V2.bx.linkOpen = false;
     applyBox(x, d.bxlink); V2.bx.page = 0; V2.bx.sel = null; bxRe(); } });
 document.addEventListener('input', e => { if (e.target.matches && e.target.matches('[data-bxlinkin]')) V2.bx.linkVal = e.target.value; });
 document.addEventListener('v2slide', e => { if (e.detail.key !== 'box-sort') return; setBoxSort(e.detail.value); V2.bx.page = 0; V2.bx.sel = null; bxRe(); });
