@@ -2609,3 +2609,10 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:50 PM: Merged alt/gemini-counter into design6 (13b986ab; gate ALL PASSED). Dos job 1 done: HH checked read-only via the Cloudflare API: HTTPS on, TLS 1.2, HSTS 6 mo, browser TTL respect headers, hello@ -> nastyplotgaming@gmail.com active, D1 6a292fdc (0 tables), Turnstile widget managed on nastyplot.org. Rate limit skipped (free plan 1/1). Sim OK: remove out/official_perf.json.
 - 5:09 PM: Design call (HH authority): Turnstile on public Send Feedback, interaction-only (0px moved; a 71px Cloudflare box only when it asks for a click). Pictures tspair-*. Branch alt/turnstile. Sim: hello@ test email arrived (Email Routing works).
 - 5:11 PM: Mistake caught (HH): the disk filled up while making a batch worktree; the cd failed and 2 branch merges (deploy-wf, md-started) ran in the main checkout's local t1rules. Nothing was pushed. Freed 11 GB (removed 4 scratch worktrees whose branches are on GitHub); main checkout now on local branch t1clean at 84102b9c (= design6); t1rules (with the 2 stray merges) is never pushed again.
+- 5:17 PM: Sim: privacy wording all good (helper's picks: 'Not yet', 'Unofficial', closing line dropped on public; launch rows 4 + 5 as HH proposed).
+- 5:31 PM: Sim sent Kip job 35 (Strength Score audit, 3 files). Kip job 34 findings: all 8 real (checked against the code), fixed on alt/kip34-fixes.
+- 5:36 PM: Hourly check: disk 3.8 GB -> 6.4 GB (removed bt, nr, livedata scratch worktrees, all pushed); privacy helper marked ended; Game Plan v83.
+- 5:39 PM: Sim sent Scout's job (Dec 2 patch independent check).
+- 5:40 PM: Sim: Scout's last day is probably Friday Nov 27.
+- 5:41 PM: Sim OK: Scout plan (now patch check; Thu launch-branch code review; Fri switch runbook walk-through).
+- 6:08 PM: Kip job 35 + Scout patch report received. Kip #1 (shadow scoreboard graded in-sample) checked real: fixed on alt/shadow-order (grades only unseen events), GitHub dispatched, for main before the 09:07 UTC data run. Score-changing findings (EB ridge, six double-count, band inflation 75.5% at 80+) wait for Sim (launch keeps today's score).

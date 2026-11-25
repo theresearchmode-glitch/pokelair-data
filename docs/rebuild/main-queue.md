@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 4:24 PM (4:24:49)  date: Wed Nov 25, 2026
-NOW: HH: full local test run of alt/patch-dec2 (the Dec 2 balance patch batch; pid in .main-running), GitHub run on the same tip.
-NOW (helper): anonymous team-check counter + Web Analytics prep (alt/gemini-counter).
-NEXT: "Reg M-D has started" line (alt/md-started): 390x844 adds 25px (start buttons 801 -> 826px): check the fold rule, pictures to Sim.
-NEXT: merge alt/gemini-seo2 (contains routes; 404 test fixed 4:15 PM) into design6 through the gate once GitHub is green.
-NEXT: 1a M-D sources note + pinning test (formats.mjs REG_END: HOME news 878); 1b remove data/rk9 safely.
-NEXT: rest of docs/rebuild/night-plan-nov25.md in order (3 safety, 4 counter, 5 Turnstile after Dos job 1, 6 deploy off, 7 privacy page, 8-11).
+Updated: time: 6:09 PM (6:09:07)  date: Wed Nov 25, 2026
+NOW: HH: full local tests of alt/fb-retention (180-day delete, real links, Meta list links; pid in .main-running).
+NOW (helper): phone speed (night plan 9).
+NEXT: alt/shadow-order -> main (fast-forward) when GitHub is green, before the 09:07 UTC data run (Kip 35 #1).
+NEXT: alt/kip34-fixes -> design6 through the gate when GitHub is green (local: 16/16 passed); then fb-retention; no-rk9 -> main.
+NEXT: Kip 35's scripts (asked from Sim) re-run here; the score fixes after launch unless Sim asks for the new-Pokémon fix first.
+NEXT: Preview + Game Plan after the merges; iPhone/iPad look fixes (night plan 10).
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
