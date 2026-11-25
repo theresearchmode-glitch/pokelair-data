@@ -31,7 +31,8 @@ const rules = r.split('\n').filter(l => l.trim() && !l.startsWith('#')).map(l =>
 ok(!rules.some(x => x[0] === '/*'), 'no catch-all rule (/* answered 200 for every wrong address: a soft 404)');
 ok(pubPaths.length > 15 && pubPaths.every(p => rules.some(x => x[0] === p && x[1] === '/v2.html' && x[2] === '200')), `every tool address has its own rule (${pubPaths.length} from V2.PUB_PATHS)`);
 const h404 = fs.existsSync(path.join(D, '404.html')) ? fs.readFileSync(path.join(D, '404.html'), 'utf8') : '';
-ok(/<meta name="robots" content="noindex">/.test(h404) && h404.includes('src="/v2.js'), '404.html is the page with a noindex tag');
+// the same page as v2.html with only a noindex tag added (split or inline build alike; CI's v2-public.mjs build is inline, Nov 25)
+ok(v.length > 0 && h404 === v.replace('<title>', '<meta name="robots" content="noindex"><title>'), '404.html is the page with a noindex tag');
 ok(fs.existsSync(path.join(D, 'index.html')) && fs.readFileSync(path.join(D, 'index.html'), 'utf8') === v, 'index.html is the same page as v2.html ("/" serves it)');
 // served like Cloudflare Pages (developers.cloudflare.com/pages/configuration/serving-pages): a file if it exists, /x -> x.html, then the
 // _redirects 200 rules; otherwise 404.html with status 404, or, with no top-level 404.html, the page with 200 (Pages' SPA mode)
