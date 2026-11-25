@@ -2624,3 +2624,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:34 PM: Sim: fix the score bands BEFORE launch too (more accurate). HH agrees: changing scores after launch would be worse. Kip job 37 written (percentile vs win-chance bands, measured on held-out games); Sim picks the meaning with Kip's numbers.
 - 6:36 PM: Main fast-forwarded to 7b567771 (shadow scoreboard grades only unseen games; GitHub green) before tonight's 09:07 UTC data run. Sim: Kip job 37 sent; Dos job 2 (night test run) running.
 - 6:45 PM: Design call (HH authority): Events ticket wall sprites shrink to fit instead of being cut (iPad #7); 0 px change where nothing was cut. Flag for Sim: at 1100-1279 they get small (26-31 px); alternative is 2 columns there.
+- 6:46 PM: Sim: events sprites fix looks fine (keep the shrink).
