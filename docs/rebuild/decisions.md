@@ -2540,3 +2540,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:45 AM: Sim (usage 91%): a second helper until 12 PM today on the most useful task. HH picks j19 (public site, Dec 7) brought up to date with the redesign and green on GitHub.
 - 9:58 AM: Fixed v2-saved SV-3 flake (test opened pages as file://; storage lost on some reloads; now served over http, 12/12 pass) and j18's A11Y-5 (CI step ran on a build without data). Both pushed; j18 re-merged with design6.
 - 10:36 AM: Hourly check 10:36: Game Plan v74 published; j18/j19/design6 GitHub runs in progress; switch helper pushing f457981c.
+- 10:45 AM: Sim: mascot (Kip's fox idea) parked until after the launch announcement; then a hand-drawn fox in our cut-paper slanted style, clearly not Zorua/Zoroark/Ninetales, never replacing Home's crowd hero. Rule 23 (no mascot for now) stands.
+- 10:47 AM: Design (HH authority): switch fix d's 4-boxes-in-a-row view chooser removed (broke 'stand-outs' mid-word at 390, touched edge). My Team at 390 on live data 4.38 screens vs 4.3 goal: small overage, to show Sim; GitHub's frozen-data limit (4.78) being rechecked.
