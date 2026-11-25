@@ -55,7 +55,9 @@ if (process.argv.includes('--v2')) {
   const itemImg = fs.existsSync(dir + 'src/v2/art/items.json') ? JSON.stringify(JSON.parse(rd('src/v2/art/items.json'))) : '{}';
   /* Claude-hosted builds (--one-art-size: the Preview / live artifact) hold at most 511 files and already carry ~443, so the 166 item
      pictures go inside the page as data: URIs (192px WebP, about 1.2 MB) instead of files; the public site keeps the files (Nov 23) */
-  const itemImgOut = !process.argv.includes('--one-art-size') ? itemImg : JSON.stringify(Object.fromEntries(Object.entries(JSON.parse(itemImg)).map(([n, f]) => { const fp = dir + 'src/v2/art/items/' + f + '.webp'; return fs.existsSync(fp) ? [n, 'data:image/webp;base64,' + fs.readFileSync(fp).toString('base64')] : null; }).filter(Boolean)));
+  /* --item-files (phone speed, Nov 25, night plan 9): the Cloudflare site (public-site.mjs) has no 511-file limit, so it keeps the item
+     pictures as files (art/items/) even with --one-art-size; inlined they were 1.56 MB of v2.js and phone LCP waited for them */
+  const itemImgOut = !process.argv.includes('--one-art-size') || process.argv.includes('--item-files') ? itemImg : JSON.stringify(Object.fromEntries(Object.entries(JSON.parse(itemImg)).map(([n, f]) => { const fp = dir + 'src/v2/art/items/' + f + '.webp'; return fs.existsSync(fp) ? [n, 'data:image/webp;base64,' + fs.readFileSync(fp).toString('base64')] : null; }).filter(Boolean)));
   // today's logic (P.logic, in today's order) is one closure: 00-main.js opens it, so the v2 shell and pages go inside it and it is
   // closed after the first draw. 15-visual-helpers.js brings SPRITE_ID itself when it is included.
   const L = P.logic || [], hasIds = L.some(f => f.endsWith('15-visual-helpers.js'));
