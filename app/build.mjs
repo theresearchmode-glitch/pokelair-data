@@ -174,7 +174,10 @@ if (process.argv.includes('--v2')) {
         seoRows.push({key, path: addr, title, desc});
       }
     }
-    pubTag = `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest)};` : ''}</script>\n`;
+    const {websiteJsonLd, jsonLdScriptTag} = await import('./public-jsonld.mjs');
+    const wsLd = websiteJsonLd(seoMap.home || null);
+    const ldRuntime = `(function(){var base=${JSON.stringify(wsLd).replace(/</g, '\\u003c')};function syncLd(){var el=document.getElementById('np-jsonld');if(!el)return;var p=String(location.pathname||'/').replace(/\/+$/,'')||'/';if(p.indexOf('/pokemon/')===0){var slug=decodeURIComponent(p.slice(9));var label=slug;try{var m=typeof byName==='object'&&byName&&byName.get(slug);if(m&&m.d)label=m.d}catch(e){}var ws=Object.assign({},base);delete ws['@context'];el.textContent=JSON.stringify({'@context':'https://schema.org','@graph':[ws,{'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'NastyPlot',item:'https://nastyplot.org/'},{'@type':'ListItem',position:2,name:'Ratings',item:'https://nastyplot.org/meta'},{'@type':'ListItem',position:3,name:label,item:'https://nastyplot.org/pokemon/'+encodeURIComponent(slug)}]}]})}else{el.textContent=JSON.stringify(base)}}window.__npSyncJsonLd=syncLd;addEventListener('popstate',syncLd);addEventListener('hashchange',syncLd);var ps=history.pushState,rs=history.replaceState;if(ps)history.pushState=function(){var r=ps.apply(this,arguments);syncLd();return r};if(rs)history.replaceState=function(){var r=rs.apply(this,arguments);syncLd();return r};syncLd()})();`;
+    pubTag = jsonLdScriptTag(wsLd) + '\n' + `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest)};` : ''}${ldRuntime}</script>\n`;
   }
   /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words) */
   const v2Fail = `window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}`;
