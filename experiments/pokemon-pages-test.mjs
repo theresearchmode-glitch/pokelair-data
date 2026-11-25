@@ -29,7 +29,7 @@ const shellSrc = fs.readFileSync(path.join(ROOT, 'app/src/v2/shell.js'), 'utf8')
 const pubPaths = pm ? [...new Set(Object.values(new Function('return ' + pm[1])()))].filter(p => p !== '/') : [];
 const rules = r.split('\n').filter(l => l.trim() && !l.startsWith('#')).map(l => l.trim().split(/\s+/));
 ok(!rules.some(x => x[0] === '/*'), 'no catch-all rule (/* answered 200 for every wrong address: a soft 404)');
-ok(pubPaths.length > 15 && pubPaths.every(p => fs.existsSync(path.join(D, p.slice(1) + '.html')) || rules.some(x => x[0] === p && x[1] === '/v2.html' && x[2] === '200')), `every tool address has its own file or rule (${pubPaths.length} from V2.PUB_PATHS)`);
+ok(pubPaths.length > 15 && pubPaths.every(p => fs.existsSync(path.join(D, p.slice(1) + '.html')) || rules.some(x => x[0] === p && x[1] === '/v2' && x[2] === '200')), `every tool address has its own file or rule (${pubPaths.length} from V2.PUB_PATHS)`);
 const h404 = fs.existsSync(path.join(D, '404.html')) ? fs.readFileSync(path.join(D, '404.html'), 'utf8') : '';
 ok(/<meta name="robots" content="noindex">/.test(h404) && h404.includes('src="/v2.js'), '404.html is the page with a noindex tag');
 ok(fs.existsSync(path.join(D, 'index.html')) && fs.readFileSync(path.join(D, 'index.html'), 'utf8') === v, 'index.html is the same page as v2.html ("/" serves it)');
@@ -73,6 +73,15 @@ ok(gl.n === 1 && gi.length === 3 && gi[0].item === 'https://nastyplot.org/' && g
   `garchomp.html carries its BreadcrumbList in the file (${gi.map(i => i.name).join(' > ') || 'none'})`);
 const noBc = [...files].filter(f => !ldOf(rdD('pokemon/' + f)).bc);
 ok(files.size > 300 && !noBc.length, `every Pokémon file has a BreadcrumbList (${files.size - noBc.length} of ${files.size})`);
+// Cloudflare audit (Nov 25, wrangler dev): a rule to /v2.html becomes a 307 to /v2 (html_handling), so a rule targets /v2; no
+// self-rewrites (/data/* /data/:splat ...); /<tool>/ answers 301 to /<tool>; specific lines before any splat; the app copies
+// (/v2, /404) say noindex in _headers, and only they do (a /* block would reach /team)
+ok(rules.length > 0 && !rules.some(x => x[1] === '/v2.html'), 'no _redirects rule targets /v2.html (Pages answers it with a 307 to /v2)');
+ok(!rules.some(x => x[0].endsWith('/*') && x[1] === x[0].slice(0, -1) + ':splat'), 'no self-rewrite rules (/data/* /data/:splat and the like)');
+ok(pubPaths.every(p => rules.some(x => x[0] === p + '/' && x[1] === p && x[2] === '301')), `every tool address with a trailing slash answers 301 to the address (${pubPaths.filter(p => rules.some(x => x[0] === p + '/' && x[1] === p && x[2] === '301')).length} of ${pubPaths.length})`);
+{ const fs1 = rules.findIndex(x => x[0].includes('*')); ok(fs1 < 0 || rules.slice(fs1).every(x => x[0].includes('*')), 'specific _redirects lines come before any splat'); }
+const hdr = rdD('_headers'), hdrBlock = p => { const L = hdr.split('\n'), i = L.indexOf(p); let o = ''; if (i >= 0) for (let j = i + 1; j < L.length && /^\s/.test(L[j]); j++) o += L[j] + '\n'; return o; };
+ok(['/v2', '/v2.html', '/404', '/404.html'].every(p => /X-Robots-Tag: noindex/.test(hdrBlock(p))) && (hdr.match(/X-Robots-Tag/g) || []).length === 4, '_headers: X-Robots-Tag noindex on /v2, /v2.html, /404, /404.html and nowhere else (/team does not inherit it)');
 // served like Cloudflare Pages (developers.cloudflare.com/pages/configuration/serving-pages): a file if it exists, /x -> x.html, then the
 // _redirects 200 rules; otherwise 404.html with status 404, or, with no top-level 404.html, the page with 200 (Pages' SPA mode)
 const T = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp'};
@@ -103,6 +112,7 @@ try { const q = await b.newPage({viewport: {width: 1280, height: 900}}), errs = 
   for (const [u, want, h1w] of [['/zzz', 404, 'Wrong turn'], ['/pokemon/not-a-pokemon', 404, 'No Pokémon'], ['/team', 200, ''], ['/this-week', 200, ''], ['/', 200, '']]) {
     const res = await q.goto(`http://127.0.0.1:${srv.address().port}${u}`); await q.waitForSelector('#main h1', {timeout: 15000}).catch(() => {}); await q.waitForTimeout(300);
     const st = res ? res.status() : 0, ni = await q.evaluate(() => !!document.querySelector('meta[name="robots"][content*="noindex"]')), h1 = await q.evaluate(() => ((document.querySelector('#main h1') || {}).innerText || '').replace(/\s+/g, ' '));
+    if (want === 404) { const ldt = await q.evaluate(() => (document.getElementById('np-jsonld') || {}).textContent || ''); ok(!/BreadcrumbList/.test(ldt), `${u}: no BreadcrumbList on the not-found page`); }
     ok(st === want && ni === (want === 404) && (!h1w || h1.includes(h1w)) && !/Wrong turn|No Pokémon here/.test(want === 200 ? h1 : '') && !errs.length,
       `${u}: status ${st} (want ${want}), noindex ${ni}, h1 "${h1.slice(0, 40)}"${errs.length ? '; errors: ' + errs.join(' | ') : ''}`); errs.length = 0; }
 } finally { await b.close(); srv.close(); }
