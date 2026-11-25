@@ -2578,3 +2578,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:45 PM: Sim sent Kip job 33 (public-site code review) and Scout's switch-runbook review. Dos baseline job waits until after tonight's Cloudflare job.
 - 2:51 PM: Kip job 33: 7 findings checked; F3-F6 fixed (og:description, canonical, stale pages, .html address, quoted fonts); F2 not real; F7 fine; F1 (Cloudflare redirect order) sent to the routing helper.
 - 2:54 PM: v2-today fixed for root paths (59 failed -> all passed); Scout's runbook review: #1 fixed (switch-plan on design6), #3 undo files durable on alt/switch-dryrun-1; rest for the runbook revision. Routing helper: no catch-all, 404.html, noindex, wrangler 404-page (alt/gemini-routes). Limitless: about 60 requests/day typical, credit linked on About.
+- 2:57 PM: Sim emailed Limitless (contact@limitlesstcg.com) asking if our use of their public API is OK (about 60 requests/day, credited and linked). Watch for a reply at hello@ / Sim's Gmail.
