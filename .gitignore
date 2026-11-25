@@ -82,3 +82,6 @@ app/sync-quiet.html
 app/trc.html
 app/tsaudit.html
 app/typing2.html
+/site/
+/site-test/
+/wrangler.deploy.toml

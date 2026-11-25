@@ -1,0 +1,68 @@
+name: Deploy nastyplot.org
+# Night plan item 6 (launch review H4/H5/H6/S7/S8), Nov 25. Puts the tested `live` commit on nastyplot.org (Cloudflare Workers
+# static assets + the feedback Worker). OFF until Sim's go: every run stops at the first step unless the repository variable
+# DEPLOY_ENABLED is "true" (Settings > Secrets and variables > Actions > Variables). Nothing else needs changing to switch it on.
+# Runs after "Promote to live" moves `live` (only ever to a commit whose full test run passed), or by hand (Run workflow).
+# Needs: secret CLOUDFLARE_API_TOKEN (scoped: Workers Scripts, D1, Workers Routes + DNS on nastyplot.org only), variables
+# CLOUDFLARE_ACCOUNT_ID and D1_DATABASE_ID. Rollback by hand: Actions > this workflow > Run workflow with rollback = true
+# (or locally: npx wrangler@4.45.0 rollback). After a deploy, the smoke test below rolls back by itself if the site answers wrong.
+on:
+  workflow_run:
+    workflows: ["Promote to live"]
+    types: [completed]
+  workflow_dispatch:
+    inputs:
+      rollback:
+        description: 'Roll back to the previous deploy instead of deploying'
+        type: boolean
+        default: false
+permissions:
+  contents: read
+concurrency:
+  group: deploy-nastyplot
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: ${{ vars.DEPLOY_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success') }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+      CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      SITE: https://nastyplot.org
+    steps:
+      - name: Roll back (by hand only)
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.rollback }}
+        run: npx --yes wrangler@4.45.0 rollback --name nastyplot --message "rollback by hand" -y && exit 0
+      - uses: actions/checkout@v5
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
+        with:
+          ref: live
+      - uses: actions/setup-node@v5
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
+        with:
+          node-version: 22
+      - name: Build the site folder (clean public build, art, today's data; no source map; names checked)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
+        run: |
+          npm ci && npx playwright install --with-deps chromium
+          node public-site.mjs site
+      - name: Deploy
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
+        run: |
+          test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::CLOUDFLARE_API_TOKEN secret is missing"; exit 1; }
+          test -n "${{ vars.D1_DATABASE_ID }}" || { echo "::error::D1_DATABASE_ID variable is missing"; exit 1; }
+          sed -e 's#^directory = .*#directory = "./site"#' -e 's#REPLACE_WITH_D1_DATABASE_ID#${{ vars.D1_DATABASE_ID }}#' wrangler.toml > wrangler.deploy.toml
+          npx --yes wrangler@4.45.0 deploy -c wrangler.deploy.toml --message "live $(git rev-parse --short HEAD)"
+      - name: Smoke test (rolls back by itself if the site answers wrong)
+        if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
+        run: |
+          sleep 20
+          bad=0
+          chk() { got=$(curl -s -o /tmp/body -w '%{http_code}' "$SITE$1"); if [ "$got" != "$2" ] || ! grep -q -- "$3" /tmp/body; then echo "::error::$1 answered $got (want $2 with '$3')"; bad=1; else echo "ok $1 $got"; fi; }
+          chk / 200 'NastyPlot'
+          chk /pokemon/garchomp 200 'Garchomp in Pokémon Champions'
+          chk /data/model.json 200 '{'
+          chk /this-page-does-not-exist 404 'noindex'
+          code=$(curl -s -o /dev/null -w '%{http_code}' "$SITE/v2.js.map"); [ "$code" = 404 ] || { echo "::error::source map is public ($code)"; bad=1; }
+          if [ $bad = 1 ]; then npx --yes wrangler@4.45.0 rollback --name nastyplot --message "smoke test failed" -y || true; exit 1; fi
