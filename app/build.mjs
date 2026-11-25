@@ -155,7 +155,7 @@ if (process.argv.includes('--v2')) {
       const code = esb ? esb.transformSync(raw, {loader: 'js', minify: true, charset: 'utf8', legalComments: 'none'}).code : raw;
       const fn = `${rk}.js`;
       fs.writeFileSync(dir + 'dist/routes/' + fn, code);
-      routeManifest[rk] = `routes/${fn}?v=${hash(code)}`;
+      routeManifest[rk] = `/routes/${fn}?v=${hash(code)}`; /* from the site root: /pokemon/x would look in /pokemon/routes/ (Nov 25) */
     }
   }
   let pubTag = '', seoRows = [];
@@ -230,6 +230,44 @@ if (process.argv.includes('--v2')) {
           return g('.np-skip') + g('.np-head') + '<main class="np-main" id="main">' + (window.V2 && V2.loadingHtml ? V2.loadingHtml() : '') + '</main>' + g('.np-bar'); }); /* pre-launch 2b (Nov 17): the loading panel from the first paint (slow 4G showed an empty page for ~3 s) */
         if (parts.includes('np-head') && page.includes('<div id="app"></div>')) { fs.writeFileSync(dir + 'dist/v2.html', page.replace('<div id="app"></div>', `<div id="app">${parts}</div>`)); console.log(`v2: static first screen ${(parts.length / 1024).toFixed(0)} KB`); }
       } catch (e) { console.log('v2: static first screen skipped (' + String(e.message).slice(0, 80) + ')'); } finally { await b.close(); } } }
+  /* Public site, Nov 25 (Sim: quiet launch Dec 2-3; Kip job 31: one page per Pokémon is the fastest Google win).
+     1. The page's own files load from the site root: on a two-level address (/pokemon/garchomp) a relative "v2.js" asked for
+        /pokemon/v2.js and got the page back ("This page didn't load"). Done after the static first screen, which opens the file locally.
+     2. One page per Pokémon, dist/pokemon/<slug>.html (Cloudflare Pages serves it at /pokemon/<slug>), with its own title, description
+        and canonical address, so search engines see the right words before any script runs. Same slug rule as V2.pubSlug (pokemon.js). */
+  if (PUBLIC) {
+    let h = fs.readFileSync(dir + 'dist/v2.html', 'utf8');
+    h = h.replace(/(src|href)="(v2\.(?:js|css)|fonts\/)/g, '$1="/$2').replace(/url\(fonts\//g, 'url(/fonts/');
+    h = h.replace(/<link rel="icon" type="image\/svg\+xml" href="data:[^"]*">/, '<link rel="icon" type="image/svg+xml" href="/favicon.svg">')
+      .replace(/<link rel="icon" type="image\/png" sizes="32x32" href="data:[^"]*">/, '<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">')
+      .replace(/<link rel="apple-touch-icon" sizes="180x180" href="data:[^"]*">/, '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">');
+    fs.writeFileSync(dir + 'dist/v2.html', h);
+    const line = fs.readFileSync(dir + 'src/data/data.js', 'utf8').split('\n')[0], roster = JSON.parse(line.slice(line.indexOf('['), line.lastIndexOf(']') + 1));
+    const mainSrc = fs.readFileSync(dir + 'src/app/00-main.js', 'utf8'), regLine = mainSrc.match(/^const REG=.*$/m)[0], dispSrc = mainSrc.match(/^function disp\(n\)\{[\s\S]*?\n\}/m)[0];
+    const disp = new Function(`${regLine}\n${dispSrc}\nreturn disp;`)();
+    const slug = n => String(n).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’'.]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+    const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    /* the 840 KB stylesheet goes in one shared file (/v2.css) for the Pokémon pages: 346 inline copies made 322 MB (checked Nov 25) */
+    let ph = h; const st = [...h.matchAll(/<style>\n?([\s\S]*?)\n?<\/style>/g)].sort((x, y) => y[1].length - x[1].length)[0];
+    if (st && st[1].length > 100000) { const css = st[1]; fs.writeFileSync(dir + 'dist/v2.css', css); ph = h.replace(st[0], `<link rel="stylesheet" href="/v2.css?v=${hash(css)}">`); }
+    const seen = new Map(); fs.mkdirSync(dir + 'dist/pokemon', {recursive: true});
+    for (const p of roster) {
+      const s = slug(p.n); if (!s) throw new Error('public build: empty address for ' + p.n);
+      if (seen.has(s)) throw new Error(`public build: ${p.n} and ${seen.get(s)} share the address /pokemon/${s}`); seen.set(s, p.n);
+      const name = disp(p.n), title = `${name}: rating, sets and partners · NastyPlot` /* the same words the page sets (pokemon.js) */, desc = `${name} in Pokémon Champions doubles: its rating, its most common tournament set and its best partners, from real tournament results.`;
+      const page = ph.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title><link rel="canonical" href="https://nastyplot.org/pokemon/${s}">`)
+        .replace(/(<meta name="description" content=")[^"]*"/, `$1${esc(desc)}"`).replace(/(<meta property="og:title" content=")[^"]*"/, `$1${esc(title)}"`);
+      fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
+    }
+    const urls = [...seen.keys()].map(s => `  <url><loc>https://nastyplot.org/pokemon/${s}</loc></url>`).join('\n');
+    fs.writeFileSync(dir + 'dist/sitemap.xml', fs.readFileSync(dir + 'dist/sitemap.xml', 'utf8').replace('</urlset>', urls + '\n</urlset>'));
+    /* if Cloudflare's catch-all were applied before the static files (its docs don't say; not checked), this keeps each Pokémon page */
+    fs.writeFileSync(dir + 'dist/_redirects', fs.readFileSync(dir + 'dist/_redirects', 'utf8').replace('/* /v2.html 200', '/pokemon/:name /pokemon/:name.html 200\n/* /v2.html 200'));
+    /* the brand kit's icons at the site root (search engines look for /favicon.ico and a real icon URL; never redrawn, copied as is) */
+    const icoDir = dir + '../docs/brand/nastyplot-brand-assets/3-website-icons/';
+    for (const f of ['favicon.ico', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png']) if (fs.existsSync(icoDir + f)) fs.copyFileSync(icoDir + f, dir + 'dist/' + f);
+    console.log(`public: ${seen.size} Pokémon pages + sitemap entries; page files load from the site root; brand icons at the root`);
+  }
   // the CSP hashes come from the page as finally written (the static first screen above rewrites it)
   if (writeHeaders) writeHeaders(fs.readFileSync(dir + 'dist/v2.html', 'utf8'));
   // the font files beside the built page (fonts/ is the default place the page reads them from)

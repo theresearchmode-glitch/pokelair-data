@@ -8,7 +8,13 @@ V2.bars = p => lairBars(p).map(([l, ...r]) => [l === 'Converts to top cut' ? 'To
 // Every number comes from the same shared helpers as before (rating, lairHead, rankTxt, SHT.*, lairBars, lairEvidence, bringLead,
 // pilotFor, defSet, bestHitOn, metaThreats, META.events); nothing is written per Pokémon by hand.
 V2.monSlug = n => encodeURIComponent(String(n).toLowerCase());
-V2.monFromHash = () => { let k = ''; try { k = decodeURIComponent((location.hash.split('=')[1] || '')).toLowerCase(); } catch (e) {} return k && typeof ROSTER === 'object' ? ROSTER.find(q => q.n.toLowerCase() === k) || null : null; };
+/* the address part for a Pokémon on the public site (nastyplot.org/pokemon/mr-mime): lower case, no accents or apostrophes, other
+   characters to '-' (V2.monSlug above stays for the site's own #pokemon= links). app/build.mjs writes one page per Pokémon with the same rule (checked by experiments/public-build-test.mjs) */
+V2.pubSlug = n => String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[’'.]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+V2.monFromHash = () => { let k = ''; try { k = decodeURIComponent((location.hash.split('=')[1] || '')).toLowerCase(); } catch (e) {}
+  /* Nov 25: on the public site the address carries it (/pokemon/garchomp); before, the page fell back to its default Pokémon */
+  if (!k && window.__NP_PUBLIC && /^\/pokemon\/./.test(location.pathname)) { try { k = decodeURIComponent(location.pathname.slice(9)).replace(/\/+$/, '').toLowerCase(); } catch (e) {} }
+  return k && typeof ROSTER === 'object' ? ROSTER.find(q => q.n.toLowerCase() === k || V2.pubSlug(q.n) === k) || null : null; };
 V2.STATS = [['HP', 'hp'], ['Attack', 'atk'], ['Defense', 'def'], ['Sp. Atk', 'spa'], ['Sp. Def', 'spd'], ['Speed', 'spe']];
 V2.pkTry = (f, d) => { try { const v = f(); return v == null ? d : v; } catch (e) { return d; } };
 V2.pkPct = v => { const x = +v; return !isFinite(x) ? '' : (x >= 10 || x === 0 ? Math.round(x) : Math.round(x * 10) / 10) + '%'; };

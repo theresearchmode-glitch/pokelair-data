@@ -1,7 +1,7 @@
 // ---------- NastyPlot v2 shell (R3, Nov 11): header, navigation, phone bar, footer, theme, routing ----------
 // Pages register themselves in V2.pages; the shell draws the frame and the current page from location.hash (#home, #team...).
 // Art: one place for every Pokémon picture (V2.art), so the art can be swapped in one line (ownership rule, Nov 11).
-const V2 = window.V2 = {pages: {}, ART_BASE: window.NP_ART || 'art/'};
+const V2 = window.V2 = {pages: {}, ART_BASE: (b => window.__NP_PUBLIC && /^[a-z]/i.test(b) ? '/' + b : b)(window.NP_ART || 'art/')}; /* public: from the site root, so /pokemon/x finds art/ (Nov 25) */
 V2.art = (id, big) => id == null || id === '' ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' : (big ? V2.ART_BASE : V2.ART_SMALL) + id + '.webp';
 // Sim (Nov 17, sprites A): every direct sprite image is drawn 80px or smaller (measured on every page, 320-1920), so it takes the 240px file
 // (art-s/, looks the same at iPhone 3x; all sprites 7.6 -> 4.7 MB); V2.mon keeps today's 384px file unless it is set to 80px or less.
