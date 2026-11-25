@@ -88,7 +88,7 @@ if (process.argv.includes('--v2')) {
   const mainScripts = P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js')) && !(splitSet && splitSet.has(f)));
   const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + logicSrc + '\n' + mainScripts.map(rd).join('\n') + '\nV2.draw();' + (L.length && !SPLIT_ROUTES ? '\n})();' : '');
   // where the pictures live: art/ beside the page by default; --art=<folder>/ when published next to other files (the redesign artifact)
-  const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
+  const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg).replace(/</g, '\\u003c')};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
   // --one-art-size (Nov 17): Claude-hosted builds (Preview, live artifact) use the 384px sprites only: an artifact holds at most 511 files,
   // too few for both sizes (346 + 346). The public site (January) keeps both sizes (sprites A).
   // --preview-data (redesign artifact only): a copy of today's daily data (out/*.json) answers the page's data requests, so a
@@ -177,23 +177,47 @@ if (process.argv.includes('--v2')) {
     const {websiteJsonLd, jsonLdScriptTag} = await import('./public-jsonld.mjs');
     const wsLd = websiteJsonLd(seoMap.home || null);
     const ldRuntime = `(function(){var base=${JSON.stringify(wsLd).replace(/</g, '\\u003c')};function syncLd(){var el=document.getElementById('np-jsonld');if(!el)return;var p=String(location.pathname||'/').replace(/\\/+$/,'')||'/';if(p.indexOf('/pokemon/')===0){var slug=decodeURIComponent(p.slice(9));var label=slug;try{var m=typeof byName==='object'&&byName&&byName.get(slug);if(m&&m.d)label=m.d}catch(e){}var ws=Object.assign({},base);delete ws['@context'];el.textContent=JSON.stringify({'@context':'https://schema.org','@graph':[ws,{'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'NastyPlot',item:'https://nastyplot.org/'},{'@type':'ListItem',position:2,name:'Ratings',item:'https://nastyplot.org/meta'},{'@type':'ListItem',position:3,name:label,item:'https://nastyplot.org/pokemon/'+encodeURIComponent(slug)}]}]})}else{el.textContent=JSON.stringify(base)}}window.__npSyncJsonLd=syncLd;addEventListener('popstate',syncLd);addEventListener('hashchange',syncLd);var ps=history.pushState,rs=history.replaceState;if(ps)history.pushState=function(){var r=ps.apply(this,arguments);syncLd();return r};if(rs)history.replaceState=function(){var r=rs.apply(this,arguments);syncLd();return r};syncLd()})();`;
-    pubTag = jsonLdScriptTag(wsLd) + '\n' + `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest)};` : ''}${ldRuntime}</script>\n`;
+    pubTag = jsonLdScriptTag(wsLd) + '\n' + `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest).replace(/</g, '\\u003c')};` : ''}${ldRuntime}</script>\n`;
   }
-  /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words) */
-  const v2Fail = `window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}`;
-  const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}" onerror="${v2Fail.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"></script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
+  /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words).
+     Security (Kip job 24, Nov 25): moved from an inline onerror attribute into a separate inline <script> right after it, which the
+     public CSP allows by its sha256 hash, so script-src needs no 'unsafe-inline' or 'unsafe-hashes'. A plain <script src> blocks the
+     parser, so this runs after v2.js has run or failed; !window.V2 means it never arrived. */
+  const v2Fail = `if(!window.V2){window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}}`;
+  const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}"></script>\n<script>${v2Fail}</script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
   const styleTag = SPLIT_CSS ? `\n<link rel="stylesheet" href="${'v2.css?v=' + hash(cssOut)}">\n` : `\n<style>\n${cssOut}\n</style>\n`;
   const page = head.replace('<meta charset="utf-8">', m => m + pubTag + artTag + prevTag) + styleTag + rd(P.body) + mainTag + `</body></html>\n`;
   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
   if (SPLIT_CSS) fs.writeFileSync(dir + 'dist/v2.css', cssOut);
   if (SPLIT) { fs.writeFileSync(dir + 'dist/v2.js', jsOut); if (jsMap) fs.writeFileSync(dir + 'dist/v2.js.map', jsMap); if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson);
     console.log(`v2 --split: dist/v2.js ${(jsOut.length / 1024).toFixed(0)} KB${SPLIT_CSS ? `, dist/v2.css ${(cssOut.length / 1024).toFixed(0)} KB` : ''}${previewJson ? `, dist/preview.json ${(previewJson.length / 1024).toFixed(0)} KB` : ''} (publish them beside the page)`); }
+  /* Security headers for the public site (Kip job 24 part 1, Nov 25). script-src is 'self' plus the exact sha256 of every inline script the
+     page carries (theme before paint, __NP_PUBLIC/__NP_SEO/JSON-LD runtime, NP_ART, the v2.js fallback), computed from the final HTML, so
+     no 'unsafe-inline'/'unsafe-eval'. Data blocks (type="application/ld+json") don't run and need no hash. style-src keeps 'unsafe-inline'
+     for style="" attributes (type chips, layout tokens). Checked by experiments/security-csp-test.mjs. */
+  const securityHeaders = html => {
+    const hashes = [];
+    for (const m of html.matchAll(/<script\b([^>]*)>([\s\S]*?)<\/script>/gi)) {
+      const attrs = m[1], type = (attrs.match(/\btype\s*=\s*["']?([^"'\s>]+)/i) || [])[1];
+      if (/\bsrc\s*=/i.test(attrs) || (type && !/^(text|application)\/(javascript|ecmascript)$|^module$/i.test(type))) continue;
+      const h = `'sha256-${crypto.createHash('sha256').update(m[2], 'utf8').digest('base64')}'`;
+      if (!hashes.includes(h)) hashes.push(h);
+    }
+    const csp = ["default-src 'none'", `script-src 'self' ${hashes.join(' ')}`.trim(), "style-src 'self' 'unsafe-inline'", "img-src 'self' data:", "font-src 'self'",
+      "connect-src 'self'", "manifest-src 'self'", "base-uri 'none'", "form-action 'none'", "object-src 'none'", "frame-ancestors 'none'", 'upgrade-insecure-requests'].join('; ');
+    return ['/*', `  Content-Security-Policy: ${csp}`, '  X-Content-Type-Options: nosniff', '  Referrer-Policy: no-referrer',
+      '  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()', '  Cross-Origin-Opener-Policy: same-origin',
+      '  X-Frame-Options: DENY', ''].join('\n');
+  };
+  let writeHeaders = null;
   if (PUBLIC) {
     fs.writeFileSync(dir + 'dist/robots.txt', 'User-agent: *\nAllow: /\nSitemap: https://nastyplot.org/sitemap.xml\n');
     const urls = seoRows.map(r => `  <url><loc>https://nastyplot.org${r.path}</loc></url>`).join('\n');
     fs.writeFileSync(dir + 'dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
     fs.writeFileSync(dir + 'dist/_redirects', '/data/* /data/:splat 200\n/art/* /art/:splat 200\n/art-s/* /art-s/:splat 200\n/fonts/* /fonts/:splat 200\n/routes/* /routes/:splat 200\n/* /v2.html 200\n');
-    fs.writeFileSync(dir + 'dist/_headers', '/v2.js\n  Cache-Control: public, max-age=31536000, immutable\n/v2.css\n  Cache-Control: public, max-age=31536000, immutable\n/routes/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/art/*\n  Cache-Control: public, max-age=2592000\n/art-s/*\n  Cache-Control: public, max-age=2592000\n/data/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=3600\n');
+    const cacheHeaders = '/v2.js\n  Cache-Control: public, max-age=31536000, immutable\n/v2.css\n  Cache-Control: public, max-age=31536000, immutable\n/routes/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/art/*\n  Cache-Control: public, max-age=2592000\n/art-s/*\n  Cache-Control: public, max-age=2592000\n/data/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=3600\n';
+    writeHeaders = html => fs.writeFileSync(dir + 'dist/_headers', securityHeaders(html) + cacheHeaders);
+    writeHeaders(page);
   }
   /* Sim, Nov 16 (B-I3, option B): a static first screen. A phone used to show a blank page for about 2 s while the script ran (first paint
      2,016 -> 628 ms measured at 4x CPU with the header already in the HTML). The build opens the page it just made, copies the header and
@@ -206,6 +230,8 @@ if (process.argv.includes('--v2')) {
           return g('.np-skip') + g('.np-head') + '<main class="np-main" id="main">' + (window.V2 && V2.loadingHtml ? V2.loadingHtml() : '') + '</main>' + g('.np-bar'); }); /* pre-launch 2b (Nov 17): the loading panel from the first paint (slow 4G showed an empty page for ~3 s) */
         if (parts.includes('np-head') && page.includes('<div id="app"></div>')) { fs.writeFileSync(dir + 'dist/v2.html', page.replace('<div id="app"></div>', `<div id="app">${parts}</div>`)); console.log(`v2: static first screen ${(parts.length / 1024).toFixed(0)} KB`); }
       } catch (e) { console.log('v2: static first screen skipped (' + String(e.message).slice(0, 80) + ')'); } finally { await b.close(); } } }
+  // the CSP hashes come from the page as finally written (the static first screen above rewrites it)
+  if (writeHeaders) writeHeaders(fs.readFileSync(dir + 'dist/v2.html', 'utf8'));
   // the font files beside the built page (fonts/ is the default place the page reads them from)
   fs.mkdirSync(dir + 'dist/fonts', {recursive: true}); for (const f of fs.readdirSync(dir + 'src/v2/fonts')) if (f.endsWith('.woff2')) fs.copyFileSync(dir + 'src/v2/fonts/' + f, dir + 'dist/fonts/' + f);
   console.log(`built dist/v2.html (${(page.length / 1024).toFixed(0)} KB; ${P.css.length} CSS layers, ${P.data.length} data files, ${P.scripts.length} scripts${(P.logic || []).length ? `, ${P.logic.length} shared logic files` : ''})`);
