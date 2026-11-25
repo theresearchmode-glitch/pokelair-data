@@ -16,7 +16,7 @@ V2.pubSlug = n => String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u03
 V2.pubTitle = name => { const t = `${name} in Pokémon Champions: best set, rating & partners`; return t.length <= 60 ? t : `${name}: Champions set, rating & partners`; };
 V2.monFromHash = () => { let k = ''; try { k = decodeURIComponent((location.hash.split('=')[1] || '')).toLowerCase(); } catch (e) {}
   /* Nov 25: on the public site the address carries it (/pokemon/garchomp); before, the page fell back to its default Pokémon */
-  if (!k && window.__NP_PUBLIC && /^\/pokemon\/./.test(location.pathname)) { try { k = decodeURIComponent(location.pathname.slice(9)).replace(/\/+$/, '').toLowerCase(); } catch (e) {} }
+  if (!k && window.__NP_PUBLIC && /^\/pokemon\/./.test(location.pathname)) { try { k = decodeURIComponent(location.pathname.slice(9)).replace(/\/+$/, '').replace(/\.html$/i, '').toLowerCase(); /* /pokemon/garchomp.html too (Kip job 33 F3) */ } catch (e) {} }
   return k && typeof ROSTER === 'object' ? ROSTER.find(q => q.n.toLowerCase() === k || V2.pubSlug(q.n) === k) || null : null; };
 V2.STATS = [['HP', 'hp'], ['Attack', 'atk'], ['Defense', 'def'], ['Sp. Atk', 'spa'], ['Sp. Def', 'spd'], ['Speed', 'spe']];
 V2.pkTry = (f, d) => { try { const v = f(); return v == null ? d : v; } catch (e) { return d; } };
