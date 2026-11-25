@@ -132,7 +132,7 @@ button.k-card{cursor:pointer;width:100%}
   .k-w{min-height:44px;padding:0 var(--s3)}
   .k-hint{margin-top:var(--s1)}
   .k-plan{padding:0 0 var(--s8)}
-  .k-plan::before{left:calc(-8px - 1.5px);top:12px} /* centred in the 16px page margin, from the first circle down */
+  .k-plan::before{left:-8px;top:12px} /* in the 16px page margin, from the first circle down; a whole pixel on the 4px grid: Safari drops a dashed border at -9.5px (Nov 25, iPhone check) */
   .k-n{left:0;width:28px;height:28px}
   .k-sec{margin:var(--s8) 0 var(--s3);padding-left:var(--s10)}
   .k-h2{text-wrap:balance}
