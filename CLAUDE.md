@@ -7,7 +7,7 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
   is told to Sim in chat with before/after pictures; every decision logged with its time; summary at 10 PM Sat.
 - **The switch** (redesign goes live): **Sat Nov 28, done together with Sim** (his yes on the day).
 - **Plan:** docs/rebuild/gameplan-nov25-dec2.md (Sim's simple version; HH's detail: gameplan-detail-nov25.md) (to Dec 2 and December → January launch). Public site: docs/rebuild/public-site-plan.md
-  (all on Cloudflare, nastyplot.org, bought by Sim; goes live QUIETLY about Dec 7, announced about Dec 18 — moved up from January, Sim Nov 24). Launch with today's score; after the design work, all focus on the Strength
+  (all on Cloudflare, nastyplot.org, bought by Sim; goes live QUIETLY Dec 2-3 (moved from Dec 7 to catch Reg M-D launch-week searches, Sim Nov 25), announced about Dec 18 — moved up from January, Sim Nov 24). Launch with today's score; after the design work, all focus on the Strength
   Score and analytics; best-of-3 data later (Sim, Nov 24).
   **Being found on Google (SEO) is "super duper important"** (Sim, Nov 24): real page addresses, search-ready pages, before launch.
 - **Work mode (Sim, Wed Nov 25, 5:55 AM):** back to regular work now (usage saving ended early); constant work as normal,

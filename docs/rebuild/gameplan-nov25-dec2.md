@@ -3,7 +3,7 @@
 **Big dates**
 - 🔁 **Sat Nov 28:** the switch (new site goes live). We do it together.
 - ⚔️ **Wed Dec 2:** Reg M-D + balance patch.
-- 🌐 **About Dec 7:** nastyplot.org live, quietly.
+- 🌐 **Dec 2–3:** nastyplot.org live, quietly (moved up from Dec 7, Sim Nov 25: catch the Reg M-D search week).
 - 🚀 **January:** the big announcement.
 
 **Who does what**
@@ -59,16 +59,17 @@
 **Plan (Sim + HH, Nov 24): nastyplot.org goes live QUIETLY in early December** (real site, not announced). Google starts finding
 us, and we get a month+ of fixing real issues before the January announcement.
 
-**Dec 3–7: get nastyplot.org up quietly**
+**Nov 29 – Dec 3: get nastyplot.org up quietly** (moved up, Sim Nov 25)
+- **HH:** one page per Pokémon (nastyplot.org/pokemon/garchomp) in the sitemap, ready before launch (Kip job 31: the fastest Google win).
 - **HH:** rules on one page (✅ done early).
 - **HH:** the site reads the tested data from Cloudflare (no Claude needed). Daily copy = our backup too.
 - **HH:** GitHub sends each tested day to Cloudflare automatically.
 - **HH:** privacy page + "not affiliated" line (needed the moment it's public).
 - **HH:** every test run against nastyplot.org itself.
 - 👉 **You:** 2–3 clicks I can't do (Cloudflare permission, Google "verify"). I'll walk you through each.
-- 🎯 **About Dec 7: nastyplot.org is live, quietly.**
+- 🎯 **Dec 2–3: nastyplot.org is live, quietly.**
 
-**Dec 7–20: make it findable and solid (on the live site)**
+**Dec 3–20: make it findable and solid (on the live site)**
 - 🔎 **HH: found on Google (Sim: "super duper important").** Real addresses like nastyplot.org/pokemon/garchomp, search-ready
   pages, titles and descriptions, sitemap, link previews, Google Search Console.
 - **HH:** feedback, page-view totals, hello@ email, your owner page.
