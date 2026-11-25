@@ -1,6 +1,6 @@
 # Morning note for Sim (Wed Nov 25) — HH. Updated by the night watchdog.
 ## NOW
-- Kip job 24 (mega stack 2) is with Kip. Lab round 2 (combo over 8 weeks) running.
+- Night watchdog: GitHub tests still running on dec2 / j19 / j16 / practice branches (design6 bcdf69f1 = success).
 ## JUST DONE (Tue night)
 - Redesign batch pushed to claude/design6 (bcdf69f1): all tests green; countdown short form; tagline sliver fixed.
 - Kip lab ROUND 2 (8 weeks, 38,477 later games, paired): the COMBO (clean ridge + matchup term) beats today's model:
@@ -18,5 +18,14 @@
   ONE build.mjs hunk (the CSP wiring) didn't apply: fix by hand.
 - Kip job 25 fixed all 3: j16 calc tests 14/14; j19 JSON-LD ALL PASSED (the 'bug' was a Gmail redirect the copy wrapped
   around a URL; 2 more removed in other tests); dec2 health now keeps outage alarms strict on M-D day one, all Dec 2 tests pass.
+- Kip job 26 lab ROUND 3 (same 38,477 games, 8 weeks, 200 boots). Logs: docs/rebuild/test-runs/v3-lab-run3-nov25.*
+  Four ideas stacked on the combo:
+  - archetype matchup matrix (Trick Room / Tailwind / weather): only one that adds anything. vs combo: log loss -0.00020
+    [-0.0004, -0.0000] (upper end touches zero = borderline), accuracy +0.15 pts [-0.05, +0.33] (could be zero).
+    vs today's model: +0.63 pts [0.29, 1.00]. HH: promising, NOT proven; needs its own shuffle test + shadow check.
+  - 60-day skill half-life: no added value. Recency-centred sets: no added value. Segment calibration: WORSE than combo.
+  - Fake-data checks (combo): shuffled team labels -> the gain vanishes (PASS, it's real signal); leave-one-event-out ->
+    no event drives more than 4.6% of the gain (PASS); time-reversed -> gain holds (+0.49), diagnostic only.
+  - Best-of-3: still not testable (games aren't tagged yet; dec2 branch adds the tagging).
 ## NEXT
-- Fix the 3 above; GitHub results for all branches; 7:41 AM Preview update; 4 PM: back to full work mode.
+- Archetype idea: run the shuffle check on it too, then shadow it next to the combo. Fix the 3 above (done by job 25); GitHub results for all branches; 7:41 AM Preview update; 4 PM: back to full work mode.
