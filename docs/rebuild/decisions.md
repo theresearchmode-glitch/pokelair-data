@@ -2539,3 +2539,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:51 AM: Sim: @nastyplot was taken; he claimed @NastyPlotHQ on X (Twitter) and YouTube. Use @NastyPlotHQ as the social name.
 - 9:45 AM: Sim (usage 91%): a second helper until 12 PM today on the most useful task. HH picks j19 (public site, Dec 7) brought up to date with the redesign and green on GitHub.
 - 9:58 AM: Fixed v2-saved SV-3 flake (test opened pages as file://; storage lost on some reloads; now served over http, 12/12 pass) and j18's A11Y-5 (CI step ran on a build without data). Both pushed; j18 re-merged with design6.
+- 10:36 AM: Hourly check 10:36: Game Plan v74 published; j18/j19/design6 GitHub runs in progress; switch helper pushing f457981c.
