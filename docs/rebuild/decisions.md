@@ -2543,3 +2543,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 10:45 AM: Sim: mascot (Kip's fox idea) parked until after the launch announcement; then a hand-drawn fox in our cut-paper slanted style, clearly not Zorua/Zoroark/Ninetales, never replacing Home's crowd hero. Rule 23 (no mascot for now) stands.
 - 10:47 AM: Design (HH authority): switch fix d's 4-boxes-in-a-row view chooser removed (broke 'stand-outs' mid-word at 390, touched edge). My Team at 390 on live data 4.38 screens vs 4.3 goal: small overage, to show Sim; GitHub's frozen-data limit (4.78) being rechecked.
 - 10:50 AM: Sim sent Dos the switch-candidate baseline job (alt/gemini-switch, frozen data, junctions).
+- 10:58 AM: j19 (public site for nastyplot.org) merged into claude/design6 at 98dcaaf4 after GitHub green on 8802521b; local build/run/commander/score-src/unrated pass.
