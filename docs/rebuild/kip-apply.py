@@ -40,8 +40,9 @@ def fuzzy(f, p):
 for blk in re.findall(r'^diff --git a/(\S+) b/\S+\n(.*?)(?=^diff --git |^```|^-{5,} ?(?:END|BEGIN)|\Z)', t, re.S | re.M):
     f, body = blk; pf = f'/tmp/kip-{os.getpid()}-g.patch'; open(pf, 'w', encoding='utf8').write(f'diff --git a/{f} b/{f}\n' + body.rstrip('\n') + '\n')
     r = git('apply', '--3way', '--recount', '--whitespace=nowarn', pf, check=False)
-    out.append(('applied  ' if r.returncode == 0 else 'FAILED   ') + f + ('' if r.returncode == 0 else '  (' + r.stderr.strip().split('\n')[-1][:140] + ')'))
-    if r.returncode == 0: git('add', f)
+    how, why = ('applied  ', '') if r.returncode == 0 else fuzzy(f, body)
+    out.append(how + f + why)
+    if how.strip() in ('applied', 'matched'): git('add', f)
 t = re.sub(r'^diff --git .*?(?=^diff --git |^```|^-{5,} ?(?:END|BEGIN)|\Z)', '', t, flags=re.S | re.M)
 lines = t.split('\n'); i = 0; patches = {}
 while i < len(lines):
