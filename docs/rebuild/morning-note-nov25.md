@@ -35,6 +35,10 @@
     a template string and became a // comment). Fixed (d12a39cb); v2-today now "all passed" here.
   - j16: Kip added Meowstic-F with no weight and no picture. Weight added (8.5 kg, Showdown's data; field check passes,
     rules 14/14). PICTURE NEEDS SIM'S PC (GPU upscale), see the PC job below. Until then j16 fails 2 picture checks.
+  - j19 also: Kip's speed tweak forced every Pokémon picture square (width/height 384/240); our art isn't square, so Home's
+    layout moved (the Pelipper covered "The post is in."). Removed; main2 now fails only the same 6 frozen-data checks
+    design6 fails locally (GitHub passes those on live data). Pushed as the newest j19; GitHub rerunning (also checks
+    HOME-07 Import from Showdown / HOME-08 Tools cards, which likely had the same cause: not proven yet).
 ## PC job for Sim (other chat, ~2 min): Meowstic-F picture
   On the PC: realesrgan-ncnn-vulkan.exe -i 10025.png -o 10025-x4.png -n realesrgan-x4plus-anime -s 4 -g 0
   (10025.png = PokeAPI HOME render; experiments/add-sprites.mjs 10025:Meowstic-F prints everything), then
