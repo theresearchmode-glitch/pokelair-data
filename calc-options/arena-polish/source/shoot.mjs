@@ -1,7 +1,7 @@
 // Shoots the real built Damage Calc's scene in every weather and terrain. With SCENE=path, the scene art (.arn-bg) is replaced by
 // that module's art (a look-only mock-up: nothing in the site changes). Usage: node shoot.mjs <outname> [scene.mjs]
 import fs from 'node:fs'; import path from 'node:path'; import { createRequire } from 'node:module'; import { pathToFileURL } from 'node:url';
-const REPO = 'C:/Users/simra/code/pl-mascot'; const { chromium } = createRequire(REPO + '/package.json')('playwright');
+const REPO = 'C:/Users/<you>/code/pl-mascot'; const { chromium } = createRequire(REPO + '/package.json')('playwright');
 const PAGE = path.resolve(REPO, 'app/dist/v2.html'), OUT = process.argv[2], ART = process.argv[3];
 const art = ART ? await import(pathToFileURL(path.resolve(ART)).href + '?' + Date.now()) : null;
 fs.mkdirSync(path.dirname(OUT), { recursive: true });

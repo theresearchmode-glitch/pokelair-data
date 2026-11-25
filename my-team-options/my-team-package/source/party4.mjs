@@ -1,7 +1,7 @@
 // MY TEAM · party + the one you tapped + Suggestions (picture mock-up only). No Box, no drag-and-drop, no Lead/Back/Bench.
 // Real words and numbers from today's My Team (sample team).
 import fs from 'node:fs'; import path from 'node:path'; import { createRequire } from 'node:module';
-const REPO = 'C:/Users/simra/code/pl-mascot'; const { chromium } = createRequire(REPO + '/package.json')('playwright');
+const REPO = 'C:/Users/<you>/code/pl-mascot'; const { chromium } = createRequire(REPO + '/package.json')('playwright');
 const OUT = REPO + '/my-team-options/my-team-package'; fs.mkdirSync(OUT, { recursive: true }); const PAGE = path.resolve(REPO, 'app/dist/v2.html');
 const HERE = path.dirname(new URL(import.meta.url).pathname.replace(/^\//, ''));
 const BASE = /const BASE = `([\s\S]*?)`;\n\/\/ =====/.exec(fs.readFileSync(path.join(HERE, 'pk.mjs'), 'utf8'))[1];

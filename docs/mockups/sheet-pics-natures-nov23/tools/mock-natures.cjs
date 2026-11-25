@@ -1,7 +1,7 @@
 // Nov 23 mock-up, round 2: the Nature sheet ("psych profile") and the Natures page (5x5 grid + the line-up).
 // Injects into the downloaded Preview (preview2) with real numbers from natures-28.json. Reference only, not code to paste in.
 // Usage: node mock-natures.cjs <outdir>
-const {chromium} = require('C:/Users/simra/code/pl-pcrun/node_modules/playwright'); const {open} = require('./pv-shot.cjs');
+const {chromium} = require('C:/Users/<you>/code/pl-pcrun/node_modules/playwright'); const {open} = require('./pv-shot.cjs');
 const DATA = require('./natures-28.json');
 // site names for the sheet names (the real build uses nameOf in update.mjs)
 const SITE = {'Eternal Flower Floette': 'Floette-Eternal', 'Indeedee ♀': 'Indeedee-F'};

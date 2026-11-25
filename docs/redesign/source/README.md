@@ -11,6 +11,6 @@ Saved on Nov 10 from the redesign chat's temporary scratchpad before Windows cou
 
 The Real-ESRGAN tool folder (`esrgan/`: the ncnn-vulkan binaries and models, 94 MB) is kept on Sim's PC outside Temp at:
 
-`C:\Users\simra\tools\realesrgan\`
+`C:\Users\<you>\tools\realesrgan\`
 
-The executable is `C:\Users\simra\tools\realesrgan\x\realesrgan-ncnn-vulkan.exe`, and the models are in `x\models\` (including `realesrgan-x4plus-anime`).
+The executable is `C:\Users\<you>\tools\realesrgan\x\realesrgan-ncnn-vulkan.exe`, and the models are in `x\models\` (including `realesrgan-x4plus-anime`).

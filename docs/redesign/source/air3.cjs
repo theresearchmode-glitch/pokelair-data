@@ -23,7 +23,7 @@ const VW = MOB ? 390 : 1440, NAME = 'nastyplot-home-concept-air-v2' + (MOB ? '-i
 const sb = {}; require('vm').createContext(sb); require('vm').runInContext(fs.readFileSync(path.join(REPO, 'app/src/data/logos.js'), 'utf8').replace(/\b(const|let)\s+NP_SVG/, 'NP_SVG'), sb); const LG = sb.NP_SVG[THEME === 'dark' ? 'hdrD' : 'hdrL'];
 const html = fs.readFileSync(path.join(__dirname, MOB ? 'air2m.tpl.html' : FLAIR ? 'air4.tpl.html' : 'air2.tpl.html'), 'utf8').replace('%LOGO%', LG).replace('%LOGO2%', LG.replace(/nphdr([DL])/g, 'nphdr$1x')).replace('/*DATA*/', 'const D=' + JSON.stringify(DATA) + ';').replace('<html lang="en">', '<html lang="en" data-theme="' + THEME + '">');
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   fs.mkdirSync(OUT, {recursive: true}); const f = path.join(OUT, NAME + '.html'); fs.writeFileSync(f, html);
   const pg = await (await b.newContext({viewport: {width: VW, height: MOB ? 844 : 900}, deviceScaleFactor: DSF})).newPage(); pg.on('pageerror', e => console.log('ERR', e.message));
   await pg.goto('file:///' + f.replace(/\\/g, '/')); await pg.evaluate(() => document.fonts.ready); await pg.waitForFunction(() => document.body.dataset.ready, null, {timeout: 20000}).catch(() => console.log('NOT READY'));

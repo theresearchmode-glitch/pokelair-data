@@ -1,6 +1,6 @@
 // Sweep of the published "NastyPlot Full Redesign" artifact's real build (foundation.html), My Team. Usage: node sweep.cjs <outDir>
 const fs = require('fs'), path = require('path'), {createRequire} = require('module');
-const OUT = process.argv[2], F = 'file:///C:/Users/simra/AppData/Local/Temp/claude/469e588db1a22171/bb823294-4095-4fd5-ba18-59326258ebc4/scratchpad/art-site/foundation.html';
+const OUT = process.argv[2], F = 'file:///C:/Users/<you>/AppData/Local/Temp/claude/469e588db1a22171/bb823294-4095-4fd5-ba18-59326258ebc4/scratchpad/art-site/foundation.html';
 const QA = () => { const r = {}; const imgs = [...document.images]; r.imgs = imgs.length; r.broken = imgs.filter(i => !i.complete || !i.naturalWidth).map(i => (i.getAttribute('src') || '').slice(0, 40)).slice(0, 6); r.noAlt = imgs.filter(i => !i.hasAttribute('alt')).length;
   r.h = document.documentElement.scrollHeight; r.sideways = document.documentElement.scrollWidth - innerWidth;
   const vis = e => { const b = e.getBoundingClientRect(); const s = getComputedStyle(e); return b.width > 0 && b.height > 0 && s.visibility !== 'hidden' && s.opacity !== '0'; };
@@ -26,7 +26,7 @@ const QA = () => { const r = {}; const imgs = [...document.images]; r.imgs = img
   r.contrast = [...new Set(leaf.map(e => { const s = getComputedStyle(e), f = lum(s.color), b = bgOf(e); if (b == null || f.a < .95) return null; const cr = (Math.max(f.l, b) + .05) / (Math.min(f.l, b) + .05); const big = parseFloat(s.fontSize) >= 24 || (parseFloat(s.fontSize) >= 18.6 && parseInt(s.fontWeight) >= 700); return cr < (big ? 3 : 4.5) ? cr.toFixed(1) + ' ' + lab(e) : null; }).filter(Boolean))].slice(0, 12);
   return r; };
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch(), res = {};
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch(), res = {};
   const open = async (vw, vh, theme, route) => { const cx = await b.newContext({viewport: {width: vw, height: vh}, deviceScaleFactor: 1, hasTouch: vw < 900}); const pg = await cx.newPage(); const errs = [];
     pg.on('pageerror', e => errs.push('JS: ' + e.message.slice(0, 140))); pg.on('console', m => { if (m.type() === 'error') errs.push('console: ' + m.text().slice(0, 140)); }); pg.on('requestfailed', q => errs.push('failed: ' + q.url().slice(-60)));
     await pg.goto(F + '#' + route); await pg.waitForTimeout(1200); await pg.evaluate(t => { if (window.V2 && V2.setTheme) V2.setTheme(t); }, theme); await pg.waitForTimeout(900); return {pg, cx, errs}; };

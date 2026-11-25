@@ -24,7 +24,7 @@ const DATA = {team, threats, name: 'Sun Tailwind', letter: 'A', score: 99, ready
 const NAME = 'nastyplot-myteam-iphone' + (THEME === 'dark' ? '-dark' : '');
 const html = fs.readFileSync(path.join(__dirname, 'myteam-m.tpl.html'), 'utf8').replace('/*DATA*/', 'const D=' + JSON.stringify(DATA) + ';').replace('<html lang="en">', '<html lang="en" data-theme="' + THEME + '">').replace('%LOGO%', LG).replace('%LOGO2%', LG.replace(/nphdr([DL])/g, 'nphdr$1x'));
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   fs.mkdirSync(OUT, {recursive: true}); const f = path.join(OUT, NAME + '.html'); fs.writeFileSync(f, html);
   const pg = await (await b.newContext({viewport: {width: 390, height: 844}, deviceScaleFactor: DSF})).newPage(); pg.on('pageerror', e => console.log('ERR', e.message));
   await pg.goto('file:///' + f.replace(/\\/g, '/')); await pg.evaluate(() => document.fonts.ready); await pg.waitForFunction(() => document.body.dataset.ready, null, {timeout: 20000}).catch(() => console.log('NOT READY'));

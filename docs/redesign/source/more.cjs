@@ -33,7 +33,7 @@ const HEADER = `<header><div class="logo">%LOGO%</div>
   <div class="find"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Find a Pokémon or tool<kbd>/</kbd></div></header>`;
 const BASE = fs.readFileSync(path.join(__dirname, 'base.css'), 'utf8');
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   fs.mkdirSync(OUT, {recursive: true});
   for (const [name, data, logo] of [['stage', stage, 'hdrD'], ['orrery', orrery, 'hdrL']]) {
     if (ONLY && ONLY !== name) continue;

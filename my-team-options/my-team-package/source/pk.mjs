@@ -2,7 +2,7 @@
 // 1 The Box (party + Box, drag in to try), 2 Team Preview (bring six, lead two, pick a threat to face), 3 The Check-Up (the Center's machine).
 // Real words and numbers from today's My Team (sample team). The Box's extra Pokemon are PLACEHOLDERS (only Mega Floette is a real suggestion).
 import fs from 'node:fs'; import path from 'node:path'; import { createRequire } from 'node:module';
-const REPO = 'C:/Users/simra/code/pl-mascot'; const { chromium } = createRequire(REPO + '/package.json')('playwright');
+const REPO = 'C:/Users/<you>/code/pl-mascot'; const { chromium } = createRequire(REPO + '/package.json')('playwright');
 const OUT = REPO + '/my-team-options/pokemon'; fs.mkdirSync(OUT, { recursive: true }); const PAGE = path.resolve(REPO, 'app/dist/v2.html'); const only = process.argv[2];
 const img = (id, c = '') => `<img class="${c}" src="../src/v2/art/${id}.webp" alt="">`;
 const TY = { Fire: '#D2411E', Flying: '#5B7FD6', Dragon: '#4F45C9', Ground: '#A8742A', Grass: '#28843C', Fairy: '#C2479A', Fighting: '#BE5718', Poison: '#8E3FC8', Water: '#2A73C9', Ghost: '#5B4A9E', Dark: '#4A3F46', Steel: '#5E7487', Normal: '#737571' };

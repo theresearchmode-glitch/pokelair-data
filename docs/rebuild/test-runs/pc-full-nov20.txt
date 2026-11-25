@@ -131,7 +131,7 @@ TIMINGS (minutes per job; start times Eastern)
 
 EVERY STEP (exit code, seconds, last line)
   001-test exit 0 1s | git fetch --depth=1 origin 0c992f6977bc1cecc4e03eb269969a82b99681cf && git checkout 0c992f => code tests run on the out/ data of 0c992f6
-  002-test exit 0 37s | npm ci && npx playwright install chromium => Removing unused browser at C:\Users\simra\AppData\Local\ms-playwright\webkit-2359
+  002-test exit 0 37s | npm ci && npx playwright install chromium => Removing unused browser at C:\Users\<you>\AppData\Local\ms-playwright\webkit-2359
   003-test exit 0 3s | cd node_modules/pokemon-showdown && node build => config.js does not exist. Creating one with default settings...
   004-test exit 0 187s | node app/test/run.mjs => ALL PASSED
   005-test exit 0 0s | node experiments/replays-test.mjs => ok   teams with an unknown Pokémon are skipped
@@ -280,12 +280,12 @@ EVERY STEP (exit code, seconds, last line)
   148-accuracy-gate exit 0 1s | node app/build.mjs => slim: 3492 KB -> 3037 KB (dead CSS 195 KB: 284 rules, 343 selectors; short prefix 173 KB; never-used old rules 0 = 0 KB)
   149-accuracy-gate exit 0 177s | node experiments/accuracy-gate.mjs => GATE PASSED
   150-behaviour-webkit exit 0 0s | git checkout HEAD -- out/ && echo "out/ is today's data (HEAD)" => out/ is today's data (HEAD)
-  151-behaviour-webkit exit 0 131s | npm ci && npm install --no-save playwright@1.63.0 && npx playwright install webkit chromiu => Chrome Headless Shell 153.0.8010.12 (playwright chromium-headless-shell v1243) downloaded to C:\Users\simra\AppData\Local\ms-playwright\chro
+  151-behaviour-webkit exit 0 131s | npm ci && npm install --no-save playwright@1.63.0 && npx playwright install webkit chromiu => Chrome Headless Shell 153.0.8010.12 (playwright chromium-headless-shell v1243) downloaded to C:\Users\<you>\AppData\Local\ms-playwright\chro
   152-behaviour-webkit exit 0 5s | node app/build.mjs --v2 --art=../src/v2/art/ => built dist/v2.html (2513 KB; 17 CSS layers, 7 data files, 48 scripts, 62 shared logic files)
   153-behaviour-webkit exit 1 1018s | BROWSER=webkit PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs A-team => behaviour: 138 pass, 1 FAIL, 4 known bugs, 0 fixed?, 2 skipped; 1018s  (webkit, adapter v2)
   154-behaviour-webkit exit 0 19s | BROWSER=webkit PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/tap-once.mjs => tap-once: all pass
   155-live-audits exit 0 0s | git checkout HEAD -- out/ && echo "out/ is today's data (HEAD)" => out/ is today's data (HEAD)
-  156-live-audits exit 0 60s | npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0. => Removing unused browser at C:\Users\simra\AppData\Local\ms-playwright\webkit-2359
+  156-live-audits exit 0 60s | npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0. => Removing unused browser at C:\Users\<you>\AppData\Local\ms-playwright\webkit-2359
   157-live-audits exit 0 3s | cd node_modules/pokemon-showdown && node build => config.js does not exist. Creating one with default settings...
   158-live-audits exit 0 1s | node app/build.mjs => slim: 3492 KB -> 3037 KB (dead CSS 195 KB: 284 rules, 343 selectors; short prefix 173 KB; never-used old rules 0 = 0 KB)
   159-live-audits exit 0 41s | node experiments/suggest-audit.mjs 30 5 => SUGGESTIONS AUDIT PASSED

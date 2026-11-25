@@ -16,7 +16,7 @@ const DATA = {box, sel: 'Garchomp', team: TEAM.map(t => ({d: t[0] === 'Charizard
 console.log(box.slice(0, 30).map(m => m.d).join(', '), '| sel', JSON.stringify({r: box.find(m => m.n === 'Garchomp').r, tier: box.find(m => m.n === 'Garchomp').tier}));
 const html = fs.readFileSync(path.join(__dirname, 'box.tpl.html'), 'utf8').replace('/*DATA*/', 'const D=' + JSON.stringify(DATA) + ';').replace('%LOGO%', LG).replace('%LOGO2%', LG.replace(/nphdrL/g, 'nphdrLx'));
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   fs.mkdirSync(OUT, {recursive: true}); const f = path.join(OUT, 'box.html'); fs.writeFileSync(f, html);
   const pg = await (await b.newContext({viewport: {width: 1440, height: 900}, deviceScaleFactor: DSF})).newPage(); pg.on('pageerror', e => console.log('ERR', e.message));
   await pg.goto('file:///' + f.replace(/\\/g, '/')); await pg.evaluate(() => document.fonts.ready); await pg.waitForFunction(() => document.body.dataset.ready, null, {timeout: 20000}).catch(() => console.log('NOT READY'));

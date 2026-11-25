@@ -18,7 +18,7 @@ const DATA = {hero: mon(rail[0].n), back: ['Rillaboom', 'Incineroar'].map(mon), 
 console.log('hero', DATA.hero.n, '| pair', pair.a, pair.b, pair.w, pair.n, '| rail', rail.map(m => m.n + ' ' + m.r).join(', '));
 const html = fs.readFileSync(path.join(__dirname, 'air.tpl.html'), 'utf8').replace('/*DATA*/', 'const D=' + JSON.stringify(DATA) + ';');
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   fs.mkdirSync(OUT, {recursive: true}); const f = path.join(OUT, 'air.html'); fs.writeFileSync(f, html);
   const pg = await (await b.newContext({viewport: {width: 1440, height: 900}, deviceScaleFactor: DSF})).newPage(); pg.on('pageerror', e => console.log('ERR', e.message));
   await pg.goto('file:///' + f.replace(/\\/g, '/')); await pg.evaluate(() => document.fonts.ready); await pg.waitForTimeout(900);

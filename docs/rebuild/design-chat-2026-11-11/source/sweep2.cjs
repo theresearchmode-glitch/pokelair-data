@@ -1,9 +1,9 @@
 // Second pass: behaviour probes + montages. Usage: node sweep2.cjs <outDir>
 const fs = require('fs'), path = require('path'), {createRequire} = require('module');
-const OUT = process.argv[2], F = 'file:///C:/Users/simra/AppData/Local/Temp/claude/469e588db1a22171/bb823294-4095-4fd5-ba18-59326258ebc4/scratchpad/art-site/foundation.html';
+const OUT = process.argv[2], F = 'file:///C:/Users/<you>/AppData/Local/Temp/claude/469e588db1a22171/bb823294-4095-4fd5-ba18-59326258ebc4/scratchpad/art-site/foundation.html';
 const log = (...a) => console.log(...a);
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   const open = async (vw, vh, route = 'team', theme) => { const cx = await b.newContext({viewport: {width: vw, height: vh}, hasTouch: vw < 900}); const pg = await cx.newPage(); pg.errs = []; pg.on('pageerror', e => pg.errs.push(e.message.slice(0, 140)));
     await pg.goto(F + '#' + route); await pg.waitForTimeout(1200); if (theme) { await pg.evaluate(t => V2.setTheme(t), theme); await pg.waitForTimeout(600); } return pg; };
   const byText = (pg, t) => pg.locator(`button:visible,a:visible,summary:visible`).filter({hasText: t}).first();

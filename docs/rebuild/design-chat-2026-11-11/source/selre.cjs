@@ -88,7 +88,7 @@ const SC = {stage: ['A. Centre stage', 'The selected Pokémon leaves the row and
   podium: ['B. Podium', 'The row stays. The selected Pokémon steps up onto a slanted slab, the same shape as the site\u2019s plates, and its controls sit under its name.'],
   beam: ['C. Light from above', 'The row stays. A cone of light in the Pokémon\u2019s own colour falls on the selected one and pools on the floor around it.']};
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch(), uri = f => 'data:image/png;base64,' + fs.readFileSync(path.join(OUT, f)).toString('base64'), jobs = [];
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch(), uri = f => 'data:image/png;base64,' + fs.readFileSync(path.join(OUT, f)).toString('base64'), jobs = [];
   for (const k of Object.keys(SC)) for (const [vw, theme] of [[1440, 'light'], [1440, 'dusk'], [390, 'light'], [390, 'dusk']]) jobs.push(async () => { const f = path.join(OUT, `selre-${k}-${vw}-${theme}.html`); fs.writeFileSync(f, page(theme, k));
     const pg = await (await b.newContext({viewport: {width: vw, height: 900}, deviceScaleFactor: 2})).newPage(); pg.on('pageerror', e => console.log('ERR', k, e.message.slice(0, 120)));
     await pg.goto('file:///' + f.replace(/\\/g, '/')); await pg.evaluate(() => document.fonts.ready); await pg.waitForFunction(() => document.body.dataset.ready, null, {timeout: 30000}).catch(() => console.log('NOT READY', k)); await pg.waitForTimeout(400);

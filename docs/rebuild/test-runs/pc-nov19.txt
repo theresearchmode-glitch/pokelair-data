@@ -56,7 +56,7 @@ SUMMARY LINES (first run, exactly as printed)
 
 Step 5
   PART=main1   v2-minors (main1):all passed  [141 pass]
-  PART=main2   no summary line: crashed after 63 pass with ENOENT 'C:\C:\Users\simra\code\pl-mascot\.github\workflows\test.yml' at app/test/v2-minors.mjs:1458
+  PART=main2   no summary line: crashed after 63 pass with ENOENT 'C:\C:\Users\<you>\code\pl-mascot\.github\workflows\test.yml' at app/test/v2-minors.mjs:1458
   PART=groups  v2-minors (groups):4 failed  [48 pass]
   qcheck-all   qcheck-all: 26 pages + 19 views x 5 widths x 2 themes, 189 findings, 24 new; 1547s
   v2-back      v2-back: all passed

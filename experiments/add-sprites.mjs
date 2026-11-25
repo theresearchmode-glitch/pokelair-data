@@ -56,7 +56,7 @@ if (lines.length && has('write')) { const keys = Object.keys(SPR), o = {};
   for (const [n, i] of lines) { const base = n.split('-')[0]; let at = -1; keys.forEach((k, j) => { if (k === base || k.startsWith(base + '-')) at = j; }); keys.splice(at < 0 ? keys.length : at + 1, 0, n); SPR[n] = i; added++; }
   keys.forEach(k => { o[k] = SPR[k]; }); fs.writeFileSync(HELP, helpSrc.replace(m[1], () => JSON.stringify(o))); console.log(`\nSPRITE_ID: added ${added} to app/src/app/15-visual-helpers.js`); }
 else if (lines.length) console.log(`\nSPRITE_ID: add with --write, or by hand: ${lines.map(([n, i]) => `"${n}":${i}`).join(',')}`);
-if (pending.length) { console.log(`\nON SIM'S PC (RTX 3080; Real-ESRGAN at C:\\Users\\simra\\tools\\realesrgan\\x\\, docs/redesign/source/README.md):`);
+if (pending.length) { console.log(`\nON SIM'S PC (RTX 3080; Real-ESRGAN at C:\\Users\\<you>\\tools\\realesrgan\\x\\, docs/redesign/source/README.md):`);
   for (const {id} of pending) console.log(`  realesrgan-ncnn-vulkan.exe -i ${id}.png -o ${id}-x4.png -n realesrgan-x4plus-anime -s 4 -g 0     (input: the HOME render, ${path.relative(ROOT, HOME)}/${id}.png)`);
   console.log(`then copy each <id>-x4.png here as ${path.relative(ROOT, X4)}/<id>.png and run this command again (the edge clean and the 384/240 files follow).`); }
 if (has('crowd')) { sh('python3', ['-I', 'experiments/v2-crowd-sheets.py']); console.log('\ncrowd sheets rebuilt (app/src/v2/art/crowd-*.webp, crowd.json)'); }

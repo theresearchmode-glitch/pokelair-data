@@ -12,7 +12,7 @@ h1{font-weight:700;font-size:28px;letter-spacing:-.02em}p{color:#48454F;margin-t
 <div class="g">${cols.map(c => `<div class="c"><b>${c[0]}</b><span>${c[1]}</span><div class="v"><i style="background-image:url(${uri(c[2])});background-size:460px 460px;background-position:center"></i></div></div>`).join('')}</div>
 <div class="g">${cols.map(c => `<div class="c"><div class="v"><i style="background-image:url(${uri(c[2])});background-size:1500px 1500px;background-position:-470px -250px"></i></div></div>`).join('')}</div>`;
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   const f = path.join(S, 'out', 'upcmp.html'); fs.writeFileSync(f, html);
   const pg = await (await b.newContext({viewport: {width: 1500, height: 900}, deviceScaleFactor: 2})).newPage();
   await pg.goto('file:///' + f.replace(/\\/g, '/')); await pg.evaluate(() => document.fonts.ready); await pg.waitForTimeout(400);

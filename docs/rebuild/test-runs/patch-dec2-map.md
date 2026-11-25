@@ -13,7 +13,7 @@ not re-read here). Searched at claude/design6 33ec968b: app/src, app/test, exper
 
 Both generators read Pokémon Showdown's champions mod **pinned at commit 1242c1e** (gen-move-meta.mjs lines 2-4). On Dec 2 they
 need a Showdown commit that has the patch, and the pin in both file headers moves to that commit. The default source path in
-gen-move-meta.mjs is `C:/Users/simra/code/pl-mech/sim`, so the scripts run on Sim's PC or with the path passed as an argument.
+gen-move-meta.mjs is `C:/Users/<you>/code/pl-mech/sim`, so the scripts run on Sim's PC or with the path passed as an argument.
 
 ## Hand-written (edit by hand)
 | File:line | Today | Change |

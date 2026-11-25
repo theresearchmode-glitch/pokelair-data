@@ -32,7 +32,7 @@ if (MOB) html = html.replace('<header><div class="wm">Nasty<span>Plot</span></di
 html = html.replace('</style></head>', here(MOB ? 'mob-over.css' : 'desk-over.css') + '</style></head>').replace('document.body.dataset.ready=1;', here(MOB ? 'mob-over.js' : 'desk-over.js') + '\ndocument.body.dataset.ready=1;')
   .replace('/*DATA*/', 'const D=' + JSON.stringify(DATA) + ';').replace('<html lang="en">', '<html lang="en" data-theme="' + THEME + '">').replace('%LOGO%', LG).replace('%LOGO2%', LG2);
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   fs.mkdirSync(OUT, {recursive: true}); const f = path.join(OUT, NAME + '.html'); fs.writeFileSync(f, html);
   const pg = await (await b.newContext({viewport: {width: VW, height: MOB ? 844 : 900}, deviceScaleFactor: DSF})).newPage(); pg.on('pageerror', e => console.log('ERR', e.message));
   await pg.goto('file:///' + f.replace(/\\/g, '/')); await pg.evaluate(() => document.fonts.ready); await pg.waitForFunction(() => document.body.dataset.ready, null, {timeout: 20000}).catch(() => console.log('NOT READY'));

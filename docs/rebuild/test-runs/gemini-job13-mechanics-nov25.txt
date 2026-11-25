@@ -599,7 +599,7 @@ S3 Proof (executed in Node):
 GENERATOR INPUTS (FOR GENERATED FILES — NEVER EDIT BY HAND)
 --------------------------------------------------------------------------------
 On Dec 2, 2026 (Reg M-D balance patch):
-  1. `experiments/gen-move-meta.mjs`: update pinned Pokémon Showdown repo at `C:/Users/simra/code/pl-mech/sim` to the post-Dec 2 Showdown commit (updating the commit hash comment in lines 2-3) and re-run `node experiments/gen-move-meta.mjs` to regenerate `app/src/data/move-meta.js` and `app/src/data/move-acc.js` (Rock Slide 95% acc / 20% flinch; Screech, Metal Sound, Steel Wing, Frost Breath drop out of `MOVE_ACC` at 100%).
+  1. `experiments/gen-move-meta.mjs`: update pinned Pokémon Showdown repo at `C:/Users/<you>/code/pl-mech/sim` to the post-Dec 2 Showdown commit (updating the commit hash comment in lines 2-3) and re-run `node experiments/gen-move-meta.mjs` to regenerate `app/src/data/move-meta.js` and `app/src/data/move-acc.js` (Rock Slide 95% acc / 20% flinch; Screech, Metal Sound, Steel Wing, Frost Breath drop out of `MOVE_ACC` at 100%).
   2. `experiments/gen-info-text.mjs`: update `COMMIT` (line 13) to the post-Dec 2 Showdown commit, check if Showdown updated `Flash Fire` and `Stalwart` text (if not, add them to `OVR.ab`), and re-run `PSDIR=... node experiments/gen-info-text.mjs` to regenerate `app/src/data/info-text.js`.
   3. Hand-written `app/src/data/data.js` `ABIL`: update `Healer` (50%), `Unseen Fist` (1/4 damage through Protect, remove Max Guard), and `Run Away` (always switches out) now; update `Flash Fire` and `Stalwart` on Dec 2.
 

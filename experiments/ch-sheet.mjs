@@ -1,7 +1,7 @@
 ﻿// Contact sheet for a batch of restyled pages: phone light + Warm charcoal per page. node experiments/ch-sheet.mjs <name> <view,...>
 import fs from 'node:fs'; import {createRequire} from 'node:module';
 const {chromium} = createRequire(import.meta.url)('playwright');
-const D = 'C:/Users/simra/OneDrive/Documents/NastyPlot/concept-h-built/pages/', name = process.argv[2], views = process.argv[3].split(','), L = JSON.parse(fs.readFileSync(D + 'lengths.json', 'utf8'));
+const D = 'C:/Users/<you>/OneDrive/Documents/NastyPlot/concept-h-built/pages/', name = process.argv[2], views = process.argv[3].split(','), L = JSON.parse(fs.readFileSync(D + 'lengths.json', 'utf8'));
 const NAMES = {auto: 'Build me a team', 'auto!': 'Build: a built team', matchup: 'Battle mode', ratings: 'Ratings', meta: 'Meta rankings', cores: 'Winning cores', calc: 'Damage calc', speed: 'Speed tiers', gauntlet: 'Gauntlet', top: 'Teams', events: 'Events', coverage: 'Best additions', types: 'Type chart', sets: 'Popular sets', teams: 'Saved teams', box: 'My box', arch: 'Archetypes', lair: 'Pokémon sheet'};
 const html = `<!doctype html><meta charset=utf-8><style>@import url('https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@500;700&display=swap')</style><body style="margin:0;background:#2a2826;color:#eee;font:14px Archivo;padding:30px">
 <div style="font:400 34px Anton;text-transform:uppercase">Concept H · ${name}</div><div style="opacity:.8;margin:4px 0 20px">Real built page, real data. Phone 390×844, light and Warm charcoal.</div>

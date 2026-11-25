@@ -3,7 +3,7 @@ const fs = require('fs'), path = require('path'), {createRequire} = require('mod
 const OUT = process.argv[2], uri = f => 'data:image/png;base64,' + fs.readFileSync(path.join(OUT, f)).toString('base64');
 const sheets = [['home', 'Home', 'current-home.png', 'nastyplot-home-v3.png'], ['myteam', 'My Team', 'current-myteam.png', 'nastyplot-myteam-concept.png']];
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   for (const [id, title, before, after] of sheets) {
     const html = `<!doctype html><meta charset="utf-8"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wght@400..700&display=swap">
 <style>*{box-sizing:border-box;margin:0}body{width:1640px;background:#E9E7E2;font:500 16px/1.4 "Instrument Sans",system-ui,sans-serif;color:#17161A;padding:36px 40px 44px}

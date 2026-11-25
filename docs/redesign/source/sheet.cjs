@@ -15,7 +15,7 @@ const DATA = {d: 'Garchomp', t: ['Dragon', 'Ground'], r: 92, tier: 'S tier', ran
     ['Trick Room build', 109, '0 points, Speed-lowering nature', 63, 'moves before 63% of the top 30 under Trick Room']],
   abil: [['Rough Skin', 'Most used, 98%', 'Pokémon making contact with this Pokémon lose 1/8 of their max HP.'], ['Sand Veil', '2.3%', 'If Sandstorm is active, this Pokémon\u2019s evasiveness is 1.25×; immunity to Sandstorm.']]};
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   for (const [mode, vw, dsf, behind] of [['desk', 1440, 1.5, 'nastyplot-myteam-concept.png'], ['mob', 390, 2.5, 'nastyplot-myteam-iphone-first-screen.png']]) {
     const html = fs.readFileSync(path.join(__dirname, 'sheet.tpl.html'), 'utf8').replace('%MODE%', mode).replace('%BEHIND%', png(path.join(OUT, behind))).replace('/*DATA*/', 'const D=' + JSON.stringify(DATA) + ';');
     const f = path.join(OUT, 'sheet-' + mode + '.html'); fs.writeFileSync(f, html);

@@ -10,7 +10,7 @@ the new design".
   about 2000 px. 15 and 16 are before/after sheets whose "before" side came from an OLD copy of the site on Sim's PC
   (old pink sprites, a player handle, "A 99" grade); do not show them to anyone as today's site.
 - **Concept sources and full-size images (only on Sim's PC, in a temp folder Windows may clear):**
-  `C:\Users\simra\AppData\Local\Temp\claude\469e588db1a22171\bb823294-4095-4fd5-ba18-59326258ebc4\scratchpad`
+  `C:\Users\<you>\AppData\Local\Temp\claude\469e588db1a22171\bb823294-4095-4fd5-ba18-59326258ebc4\scratchpad`
   - page templates and render scripts (air*.tpl.html, air2.cjs ... air5.cjs, upcmp.cjs, compare.cjs)
   - out/ (full-size renders: homepage, iPhone, My Team, info sheet, before/after sheets, sharper-art test)
   - up/ (the 30 upscaled Pokémon), esrgan/x (the Real-ESRGAN portable tool)

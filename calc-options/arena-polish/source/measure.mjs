@@ -1,7 +1,7 @@
 // Measures the mock-up scene at several widths: buttons under 44px, sideways scroll, words cut off inside the scene's controls,
 // plates/verdict overlapping each other. Also saves before/after pictures for Sim.
 import fs from 'node:fs'; import path from 'node:path'; import { createRequire } from 'node:module'; import { pathToFileURL } from 'node:url';
-const REPO = 'C:/Users/simra/code/pl-mascot'; const { chromium } = createRequire(REPO + '/package.json')('playwright');
+const REPO = 'C:/Users/<you>/code/pl-mascot'; const { chromium } = createRequire(REPO + '/package.json')('playwright');
 const PAGE = path.resolve(REPO, 'app/dist/v2.html'), art = await import(pathToFileURL(path.resolve(process.argv[2])).href);
 const b = await chromium.launch(); const out = [];
 for (const W of [320, 390, 820, 1100, 1440]) for (const [w, t] of [['sun', ''], ['rain', 'electric'], ['', 'psychic']]) {

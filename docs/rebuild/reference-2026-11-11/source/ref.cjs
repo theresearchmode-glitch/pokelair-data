@@ -23,7 +23,7 @@ const NORM = () => [...document.querySelectorAll('.band .mon')].map(m => { const
   m.style.setProperty('--cp', q.join(',')); return m.querySelector('.nm').textContent + ' ' + m.style.getPropertyValue('--c') + ' -> ' + q.join(','); });
 module.exports = {SEL, NIGHT2, NORM};
 if (require.main === module) (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   const run = async (theme, vw, vh, name) => {
     const pg = await (await b.newContext({viewport: {width: vw, height: vh}, deviceScaleFactor: 2})).newPage(); pg.on('pageerror', e => console.log('ERR', e.message));
     await pg.goto('file:///' + path.join(D6, 'myteam.html').replace(/\\/g, '/') + '#' + theme); await pg.evaluate(() => document.fonts.ready);

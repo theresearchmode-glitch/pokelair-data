@@ -21,7 +21,7 @@ const CSS = fs.readFileSync(path.join(__dirname, 'light.css'), 'utf8').replace(/
 const page = !LIGHT ? html : html.replace(/rgba\(255,255,255,/g, 'rgba(22,20,26,').replace(/rgba\(243,240,235,/g, 'rgba(22,20,26,').replace(/#FF5CBE/g, '#E6359B').replace(/#4AAEF5/g, '#0078BF').replace(/stroke="#F3F0EB"/g, 'stroke="#16141A"').replace('</style>', CSS + '</style>');
 fs.mkdirSync(OUT, {recursive: true}); fs.writeFileSync(path.join(OUT, 'mock.html'), page);
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright');
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright');
   const b = await chromium.launch(), pg = await (await b.newContext({viewport: {width: 1440, height: 900}, deviceScaleFactor: +(process.argv[4] || 2)})).newPage();
   pg.on('pageerror', e => console.log('ERR', e.message));
   await pg.goto('file:///' + path.join(OUT, 'mock.html').replace(/\\/g, '/')); await pg.evaluate(() => document.fonts.ready); await pg.waitForTimeout(600);

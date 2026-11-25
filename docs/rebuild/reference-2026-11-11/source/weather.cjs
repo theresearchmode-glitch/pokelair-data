@@ -27,7 +27,7 @@ const WX = {
       background:${[[30,10,30,2],[62,15,34,1.5],[40,23,22,1.5],[86,27,26,2],[52,34,36,2],[28,41,24,1.5],[74,47,30,1.5],[44,55,40,2],[90,61,22,1.5],[34,69,28,2],[64,76,34,1.5],[48,86,26,2]].map(s => `linear-gradient(90deg,transparent,var(--s) 35%,var(--s) 65%,transparent) ${s[0]}% ${s[1]}%/${s[2]}% ${s[3]}px no-repeat`).join(",")};filter:blur(.6px);
       -webkit-mask-image:linear-gradient(90deg,transparent 24%,#000 40%);mask-image:linear-gradient(90deg,transparent 24%,#000 40%)}`]};
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch(), jobs = [];
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch(), jobs = [];
   for (const k of Object.keys(WX)) for (const theme of ['light', 'dusk']) jobs.push((async () => {
     const pg = await (await b.newContext({viewport: {width: 1440, height: 900}, deviceScaleFactor: 2})).newPage(); pg.on('pageerror', e => console.log('ERR', e.message));
     await pg.goto('file:///' + path.join(D6, 'myteam.html').replace(/\\/g, '/') + '#' + theme); await pg.evaluate(() => document.fonts.ready);

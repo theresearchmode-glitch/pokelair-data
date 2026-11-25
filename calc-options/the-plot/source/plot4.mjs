@@ -2,7 +2,7 @@
 // a circle = chosen; moves are highlighter swipes in their type colour), STICKY NOTES (only the two sets). Bold PLOT-blue field.
 // Numbers are ROUGH stand-ins in real HP: Sneasler 155 HP, Heat Wave 137–161, faints 1 time in 4.
 import fs from 'node:fs'; import path from 'node:path'; import { createRequire } from 'node:module';
-const REPO = 'C:/Users/simra/code/pl-mascot'; const { chromium } = createRequire(REPO + '/package.json')('playwright');
+const REPO = 'C:/Users/<you>/code/pl-mascot'; const { chromium } = createRequire(REPO + '/package.json')('playwright');
 const OUT = REPO + '/calc-options/the-plot'; fs.mkdirSync(OUT, { recursive: true }); const PAGE = path.resolve(REPO, 'app/dist/v2.html');
 const img = (id, c = '') => `<img class="${c}" src="../src/v2/art/${id}.webp" alt="">`;
 const IC = { clear: '<circle cx="12" cy="12" r="7"/><path d="M7 17L17 7"/>', none: '<circle cx="12" cy="12" r="7"/><path d="M7 17L17 7"/>',

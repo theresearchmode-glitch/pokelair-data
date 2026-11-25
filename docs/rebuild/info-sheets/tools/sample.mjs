@@ -1,8 +1,8 @@
-// LOOK-ONLY: reads C:/Users/simra/code/pl-pcrun. Writes only into this scratch folder.
+// LOOK-ONLY: reads C:/Users/<you>/code/pl-pcrun. Writes only into this scratch folder.
 import fs from 'node:fs';
 import zlib from 'node:zlib';
-const R = 'C:/Users/simra/code/pl-pcrun/';
-const OUT = 'C:/Users/simra/code/pl-info/docs/rebuild/mocks/info-sheets-nov22/tools/';
+const R = 'C:/Users/<you>/code/pl-pcrun/';
+const OUT = 'C:/Users/<you>/code/pl-info/docs/rebuild/mocks/info-sheets-nov22/tools/';
 process.chdir(R);
 const {readJSON, canonSet} = await import('file:///' + R + 'names.mjs');
 const {offFormat, oddEvents, sameReg} = await import('file:///' + R + 'formats.mjs');

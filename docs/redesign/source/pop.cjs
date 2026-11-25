@@ -16,7 +16,7 @@ const DATA = {
   up: W.up.slice(0, 4).map(x => [disp(x[0]), x[3]]), down: W.down.slice(0, 4).map(x => [disp(x[0]), x[3]]), teams: L.teams, tours: L.tournaments};
 const html = fs.readFileSync(path.join(__dirname, 'pop.tpl.html'), 'utf8').replace('%LOGO%', sb.NP_SVG.hdrL).replace('%LOGO2%', sb.NP_SVG.hdrD).replace('/*DATA*/', 'const D=' + JSON.stringify(DATA) + ';');
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   fs.mkdirSync(OUT, {recursive: true}); const f = path.join(OUT, 'pop.html'); fs.writeFileSync(f, html);
   const pg = await (await b.newContext({viewport: {width: 1440, height: 900}, deviceScaleFactor: DSF})).newPage(); pg.on('pageerror', e => console.log('ERR', e.message));
   await pg.goto('file:///' + f.replace(/\\/g, '/')); await pg.evaluate(() => document.fonts.ready); await pg.waitForTimeout(600);

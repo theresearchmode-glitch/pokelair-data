@@ -24,7 +24,7 @@ ONE LINE PER ITEM
 
 FINDINGS
   1. Windows setup: v2-minors.mjs (lines 28-33) links art/ and art-s/ beside the page with fs.symlinkSync(from, to, 'dir'). Windows refuses without admin rights or Developer Mode:
-       (could not link art/: EPERM: operation not permitted, symlink 'C:\Users\simra\code\pl-mascot\app\src\v2\art' -> 'C:\Users\simra\code\pl-mascot\app\dist\art')
+       (could not link art/: EPERM: operation not permitted, symlink 'C:\Users\<you>\code\pl-mascot\app\src\v2\art' -> 'C:\Users\<you>\code\pl-mascot\app\dist\art')
      Without the links Home asked for 90 picture files and 0 loaded (51 in app/dist/art, 39 in app/dist/art-s; neither folder existed). That is last night's "14 hero pictures didn't load".
      Setup fix used (no code or test changed): mklink /J app\dist\art app\src\v2\art and the same for art-s (a junction needs no admin rights). Then Home asked for 59 files and all 59 loaded; Q13f and Q7a pass.
      A 'junction' type in that symlinkSync call would make this work on Windows without the hand step (suggestion only; not changed here).
@@ -114,8 +114,8 @@ EXACT SUMMARY LINES
 FAIL LINES
 
 3a as-is
-  (could not link art/: EPERM: operation not permitted, symlink 'C:\Users\simra\code\pl-mascot\app\src\v2\art' -> 'C:\Users\simra\code\pl-mascot\app\dist\art')
-  (could not link art-s/: EPERM: operation not permitted, symlink 'C:\Users\simra\code\pl-mascot\app\src\v2\art-s' -> 'C:\Users\simra\code\pl-mascot\app\dist\art-s')
+  (could not link art/: EPERM: operation not permitted, symlink 'C:\Users\<you>\code\pl-mascot\app\src\v2\art' -> 'C:\Users\<you>\code\pl-mascot\app\dist\art')
+  (could not link art-s/: EPERM: operation not permitted, symlink 'C:\Users\<you>\code\pl-mascot\app\src\v2\art-s' -> 'C:\Users\<you>\code\pl-mascot\app\dist\art-s')
   FAIL  HQ Q13f (Sim: B): the hero sprites never cover the tagline's words, 320-2560 (0.15% of its pixels at most: a head's edge touching the line): 320: 14 hero pictures didn't load | 320: 0.39% of 14558 tagline pixels covered | 360: 14 hero pictures didn't load | 360: 0.23% of 18761 tagline pixels covered | 390: 14 hero pictures didn't load | 390: 0.24% of 21812 tagline pixels covered | 412: 14 hero pictures didn't load | 412: 0.22% of 24154 tagline pixels covered | 600: 14 hero pictures didn't load | 820: 14 hero pictures didn't load | 1100: 14 hero pictures didn't load | 1280: 14 hero pictures didn't load | 1280: 0.16% of 111663 tagline pixels covered | 1440: 14 hero pictures didn't load | 1440: 0.18% of 140780 tagline pixels covered | 1920: 14 hero pictures didn't load | 2560: 14 hero pictures didn't load | 2560: 0.21% of 218413 tagline pixels covered
   FAIL  HQ Q7a (Sim: B): the hero crowd draws the 35 nearest from their own files and the rest from at most 4 sprite sheets (every Pokémon drawn, 80 picture files at most on Home): 1440: {"crowd":333,"herd":345,"sheet":298,"img":35,"near0":12,"nearN":46,"far":47,"sheets":4,"loaded":false,"bad":0,"files":90} | 390: {"crowd":333,"herd":345,"sheet":298,"img":35,"near0":12,"nearN":46,"far":47,"sheets":4,"loaded":false,"bad":0,"files":86}
   FAIL  WK-1 (WebKit pair): the stamps' perforated edge, read off the pixels on #gifts 390 / 1440 and Home's post band 1440: no paper outside the holes' line, holes along each edge, solid middle, bitten corners (home 1440 128x187: top: holes along the edge at 19,32,45,58,71,84,96,109, bottom: holes along the edge at 19,32,45,58,71,84,96,109, left: paper starts 0px in (want 6: nothing in the outer band), left: holes along the edge at none, left: not solid 6px inside the edge, paper off centre {"top":6,"bottom":6,"left":0,"right":5.5})

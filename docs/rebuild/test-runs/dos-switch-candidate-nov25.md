@@ -34,7 +34,7 @@
 ### #137 v2-checks-2: `node app/build.mjs && node app/build.mjs --v2 && node app/test/v2-saved.mjs`
 - Last line: `Node.js v22.23.4`
 - `page.goto: Protocol error (Page.navigate): Cannot navigate to invalid URL`
-- `[2m  - navigating to "http://127.0.0.1:56794C:\Users\simra\code\pl-mdsprites\app\dist\_saved-old-11844.html#team", waiting until "load"[22m`
+- `[2m  - navigating to "http://127.0.0.1:56794C:\Users\<you>\code\pl-mdsprites\app\dist\_saved-old-11844.html#team", waiting until "load"[22m`
 - **Fails on this morning's design6 run too?** no (passed: `v2-saved: all passed`)
 
 ### #143 v2-minors:groups: `PART=groups PAGE=app/dist/v2.html node app/test/v2-minors.mjs`
@@ -46,7 +46,7 @@
 
 - **Two of the five failures are Windows-only path bugs in test code changed or added on this branch, not site faults** (checked in the logs and the code):
   - **#31 `md-day-one-test`** (new test): checks 1-14 PASS, then a crash: `ERR_UNSUPPORTED_ESM_URL_SCHEME ... On Windows, absolute paths must be valid file:// URLs. Received protocol 'c:'`. Cause: `experiments/md-day-one-test.mjs:257` does `await import(path.join(TMP, 'regstate.mjs'))`; on Windows `import()` needs `pathToFileURL(...)`. The checks after #14 did not run here. Not checked: whether they pass on GitHub's Linux runner.
-  - **#137 `v2-saved`** (passed this morning): both builds fine, then `page.goto: ... Cannot navigate to invalid URL` to `http://127.0.0.1:56794C:\Users\simra\...\_saved-old-11844.html#team`. Cause: this branch changed the test to serve pages over http (`SRV + file`); on Windows `file` is `C:\...`, so the URL breaks (on Linux it starts with `/`). Not checked: whether it passes on GitHub's Linux runner.
+  - **#137 `v2-saved`** (passed this morning): both builds fine, then `page.goto: ... Cannot navigate to invalid URL` to `http://127.0.0.1:56794C:\Users\<you>\...\_saved-old-11844.html#team`. Cause: this branch changed the test to serve pages over http (`SRV + file`); on Windows `file` is `C:\...`, so the URL breaks (on Linux it starts with `/`). Not checked: whether it passes on GitHub's Linux runner.
 - **#23 qcheck-all (Home "/100" 36.1px at 1280), #80 v2-q33 (Events ticket 57px of 60 at 320) and #143 v2-minors groups (WK-1 stamps' edge):** the same failures, with the same numbers, as this morning's design6 run; see the notes in docs/rebuild/test-runs/dos-switch-baseline-nov25.md (branch alt/dos-baseline). So nothing here is new to the switch branch.
 - **Art links:** made as directory junctions before the run, so v2-minors main2 passed first time (this morning it needed a re-run) and groups failed only on WK-1.
 - **The 11 new tests on this branch** (reg-profile, reg-switch, date-switch, reg-guard, md-day-one, freshness, bo3-tagging, shadow-model, dec2-landing-fixes, score-src, unrated): 10 PASS, 1 FAIL (md-day-one, the Windows path bug above).

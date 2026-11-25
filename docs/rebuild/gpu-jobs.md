@@ -7,9 +7,9 @@ identifiers in commits.
 
 ## Job 1: save the redesign chat's files (do this first; Windows may clear the temp folder)
 Copy everything from
-`C:\Users\simra\AppData\Local\Temp\claude\469e588db1a22171\bb823294-4095-4fd5-ba18-59326258ebc4\scratchpad`
+`C:\Users\<you>\AppData\Local\Temp\claude\469e588db1a22171\bb823294-4095-4fd5-ba18-59326258ebc4\scratchpad`
 into `docs/redesign/source/` in the repo, EXCEPT the Real-ESRGAN tool folder `esrgan\` (binaries, keep it on the PC in a
-safe place outside Temp, e.g. `C:\Users\simra\tools\realesrgan\`, and note the path in docs/redesign/source/README.md).
+safe place outside Temp, e.g. `C:\Users\<you>\tools\realesrgan\`, and note the path in docs/redesign/source/README.md).
 Keep `out/` (full-size renders, incl. nastyplot-mybox-concept.png and nastyplot-mybox-iphone.png), `up/` and the templates
 and scripts. If the total is over ~150 MB, keep the PNGs in `out/` but convert `up/` and other big PNGs to WebP quality 92.
 

@@ -1,7 +1,7 @@
 // LOOK-ONLY: nature usage on Online tournament teams, last 28 days, same filter as info-sheets-nov22/tools/sample.mjs.
-// Reads C:/Users/simra/code/pl-pcrun, writes natures-28.json next to this file.
+// Reads C:/Users/<you>/code/pl-pcrun, writes natures-28.json next to this file.
 import fs from 'node:fs';
-const R = 'C:/Users/simra/code/pl-pcrun/', OUT = new URL('./natures-28.json', import.meta.url);
+const R = 'C:/Users/<you>/code/pl-pcrun/', OUT = new URL('./natures-28.json', import.meta.url);
 process.chdir(R);
 const {readJSON, canonSet} = await import('file:///' + R + 'names.mjs');
 const {offFormat, oddEvents, sameReg} = await import('file:///' + R + 'formats.mjs');

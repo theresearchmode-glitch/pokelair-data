@@ -117,7 +117,7 @@ const ty=t=>t.map(x=>'<span class="chip type" style="background:'+TY[x]+'">'+x+'
   document.getElementById('page').innerHTML=h;document.body.dataset.ready=1;})();
 </script></body></html>`;
 (async () => {
-  const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'), b = await chromium.launch();
+  const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'), b = await chromium.launch();
   const jobs = [['ratings', 'light', 1440, 1000], ['ratings', 'dusk', 1440, 1000], ['empty', 'light', 1440, 840], ['empty', 'dusk', 1440, 840], ['share', 'dusk', 1200, 630], ['share', 'light', 1200, 630]];
   await Promise.all(jobs.map(async ([scene, theme, w, h]) => { const f = path.join(OUT, `idea-${scene}-${theme}.html`); fs.writeFileSync(f, page(theme, scene));
     const pg = await (await b.newContext({viewport: {width: w, height: h}, deviceScaleFactor: 2})).newPage(); pg.on('pageerror', e => console.log('ERR', scene, e.message));

@@ -431,7 +431,7 @@ diff --git a/docs/rebuild/test-runs/patch-dec2-map.md b/docs/rebuild/test-runs/p
 index 63d575a..93ca152 100644
 --- a/docs/rebuild/test-runs/patch-dec2-map.md
 +++ b/docs/rebuild/test-runs/patch-dec2-map.md
-@@ -20,6 +20,7 @@ gen-move-meta.mjs is `C:/Users/simra/code/pl-mech/sim`, so the scripts run on Si
+@@ -20,6 +20,7 @@ gen-move-meta.mjs is `C:/Users/<you>/code/pl-mech/sim`, so the scripts run on Si
  |---|---|---|
  | app/src/data/data.js LEARN (learnsets, as indexes into MOVES) | none of the new pairings: Emolga Tailwind, Hydreigon Roost, Beedrill Roost, Emboar Slack Off, Umbreon Wonder Room, Play Rough on Vaporeon, Jolteon, Flareon, Espeon, Umbreon, Leafeon, Glaceon (checked: all false). Sylveon already has Play Rough. | Add each pairing. Psych Up goes to 22 Pokémon: **the list is not in the repo** (CLAUDE.md says only "x22"), so it must come from the official notes. Not checked. |
  | app/src/data/data.js MOVES | all the moves already exist as rows (Psych Up, Slack Off, Wonder Room, Roost, Tailwind, Play Rough) | no change (rows hold type, category, power; no accuracy) |

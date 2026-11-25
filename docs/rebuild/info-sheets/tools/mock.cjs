@@ -7,7 +7,7 @@
 // Numbers: Online tournaments, last 28 days (Oct 21 - Nov 18, 7,870 teams), measured by tools/sample.mjs -> tools/sample-28.json.
 // Text: Showdown (MIT) / our ABIL, plus hand-written doubles lines (each to be checked before build).
 // Run: node tools/mock.cjs <out folder> [sheet]
-const {chromium} = require('C:/Users/simra/code/pl-pcrun/node_modules/playwright');
+const {chromium} = require('C:/Users/<you>/code/pl-pcrun/node_modules/playwright');
 const {open} = require('./pv-shot.cjs');
 const S = require('./sample-28.json');
 const NAME = {'Hisuian Arcanine': 'Arcanine-Hisui', 'Basculegion ♀': 'Basculegion-F', 'Lycanroc Dusk': 'Lycanroc-Dusk', 'Indeedee ♀': 'Indeedee-F'};

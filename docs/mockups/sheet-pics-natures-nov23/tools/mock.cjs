@@ -1,7 +1,7 @@
 // Nov 23 mock-up: a picture on each info sheet (move type symbol, Ability ID photo / emblem, item picture).
 // Injects into the live sheets of the downloaded Preview (preview2). Reference only, not code to paste in.
 // Usage: node mock.cjs <outdir>
-const {chromium} = require('C:/Users/simra/code/pl-pcrun/node_modules/playwright'); const {open} = require('./pv-shot.cjs');
+const {chromium} = require('C:/Users/<you>/code/pl-pcrun/node_modules/playwright'); const {open} = require('./pv-shot.cjs');
 const CSS = `
 .pnrow{display:flex;align-items:center;gap:20px;position:relative;z-index:1}
 .pnrow .is-tn{min-width:0}

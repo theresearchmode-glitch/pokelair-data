@@ -1,6 +1,6 @@
 ﻿// Screenshots of the built page for a design review: node experiments/shots.mjs <outDir> <view,...> [width] [full]
-import fs from 'node:fs'; import {createRequire} from 'node:module'; const {chromium} = createRequire('C:/Users/simra/code/pl-ui/')('playwright'); import {fileURLToPath} from 'node:url';
-const APP = fileURLToPath(new URL('file:///C:/Users/simra/code/pl-mascot/app/')), OUT = APP + '../out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+import fs from 'node:fs'; import {createRequire} from 'node:module'; const {chromium} = createRequire('C:/Users/<you>/code/pl-ui/')('playwright'); import {fileURLToPath} from 'node:url';
+const APP = fileURLToPath(new URL('file:///C:/Users/<you>/code/pl-mascot/app/')), OUT = APP + '../out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json'), D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/history': rd('history.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json')};
 const dir = process.argv[2], W = +(process.argv[4] || 390), full = process.argv[5] === 'full', b = await chromium.launch();
 fs.mkdirSync(dir, {recursive: true});
