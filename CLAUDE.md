@@ -76,6 +76,9 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
 
 ## Working
 24. The main thread builds too and is never idle while there's approved work; long runs are TRACKED background tasks.
+    Helpers always send their report before stopping, never end a turn while their own background work runs (Sim, Nov 25);
+    a helper shown "completed" with no report is asked at once. Merge only what a helper reports as checked (Nov 25: a merge
+    went in before the helper's last check and carried a My Box bug).
 25. Changes land one at a time, each with its own test; GitHub runs the full check per batch. Before pushing to main, every check
     GitHub runs must pass. Push only to claude/design6 (main only with Sim's go). No model names in commits.
 26. Use the loaded skills on real changes: code review on diffs, design review on visual work (our rules win), accessibility on new controls.
