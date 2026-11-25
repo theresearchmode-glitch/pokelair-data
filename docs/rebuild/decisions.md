@@ -2536,3 +2536,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:27 AM: Design (HH authority, rule 23): empty data pages (Practice, Test Run, Events, Archetypes, This Week) keep their one plain line and add today's underdog hero card ('Keeping your seat warm till the results land.'), 320px, room above so the art never covers the line. Shown only when that page has no data. Picture: docs/rebuild/pictures/empty-pages-underdog-nov25.png
 - 8:34 AM: Sim: work normally with 1 helper, go as hard as needed (~1% usage/hour, 8 h left until the 4 PM reset).
 - 8:51 AM: Sim: keep the name NastyPlot (final, after Kip job 29 + RDAP check). nastyplot.net free to buy as redirect (Sim's purchase); watch nastyplot.com for a 2027 drop.
+- 8:51 AM: Sim: @nastyplot was taken; he claimed @NastyPlotHQ on X (Twitter) and YouTube. Use @NastyPlotHQ as the social name.

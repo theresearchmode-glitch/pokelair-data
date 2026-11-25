@@ -153,7 +153,7 @@ footer{margin-top:56px;color:var(--mute);font-size:13px}
 <script>
 /* ===== PLAN: edit only this to update the page. s = done | doing | next | later | sim ===== */
 const PLAN = {
-  updated: 'Wed Nov 25, 7:30 AM',
+  updated: 'Wed Nov 25, 8:52 AM',
   road: [
     {when: 'Sat Nov 28', what: 'The switch', date: '2026-11-28'},
     {when: 'Wed Dec 2', what: 'Reg M-D + patch', date: '2026-12-02'},
@@ -161,11 +161,11 @@ const PLAN = {
     {when: 'About Dec 18', what: 'The announcement', date: '2026-12-18'}
   ],
   now: [
-    {who: 'HH (this chat)', t: 'Landing the Dec 2 branch on main (Sim: "you\'re in charge"): Kip\'s review found 3 blockers, all fixed and tested; waiting for GitHub green. Then the day-one honest ratings.'},
-    {who: 'Helpers (2)', t: '"Not rated yet" for Pokémon with no M-D results; a rehearsal of Saturday\'s switch (main into the redesign).'},
+    {who: 'HH (this chat)', t: 'Dec 2 safety is on main and live. Now: merging j18 into the redesign once GitHub passes (379 real teams score the same), then j19 (public site), j16, j17.'},
+    {who: 'Helper (1, Sim\'s standing rule)', t: 'A rehearsal of Saturday\'s switch (main into the redesign).'},
     {who: 'Kip (Gemini)', t: 'Code + research only, never design. Jobs 1-26 done; overnight HH fixed 4 of its mistakes (a fake M-D end date, a crash on the public page, square pictures, a missing weight).'},
     {who: 'Scout (helper account)', t: 'Small reviews when it has usage. Tonight it caught a history-wiping guard bug and 3 wrong damage rules.'},
-    {who: 'PC chat', t: 'Done this morning: 10 new pictures (Reg M-D Pokémon + Meowstic-F). Next: full test run as the switch baseline.'}
+    {who: 'Dos (PC chat)', t: 'Done this morning: 10 new pictures (Reg M-D Pokémon + Meowstic-F). Now: full test run as the switch baseline.'}
   ],
   sim: [
     {s: 'sim', t: 'Go / no-go for the switch', d: 'After using the Preview for real.', tag: 'Fri Nov 27'},
@@ -174,7 +174,8 @@ const PLAN = {
     {s: 'sim', t: '2–3 clicks for nastyplot.org', d: 'A Cloudflare permission and Google\'s "verify". HH walks you through each.', tag: 'Dec 3–7'},
     {s: 'sim', t: 'Find 3–5 testers', d: 'For a few days on nastyplot.org.', tag: 'by Dec 9'},
     {s: 'sim', t: 'Launch outreach plan', d: 'Small YouTubers and communities. HH can draft a list and a message.', tag: 'by Dec 14'},
-    {s: 'sim', t: 'Name: NastyPlot stays unless a better idea comes', d: 'Swords Dance, Weakness Policy, Turn Zero looked at; Turn Zero dropped (clashes). Drop any idea in chat and HH checks it.', tag: 'by Dec 7'},
+    {s: 'sim', t: 'Optional: buy nastyplot.net', d: 'Free today (registry check Nov 25); about $12 a year, points to nastyplot.org. nastyplot.com expires Jan 3, 2027: watch, no broker.', tag: 'any time'},
+    {s: 'sim', t: 'Claim @NastyPlotHQ on the other sites', d: '@nastyplot was taken; Sim grabbed @NastyPlotHQ on X and YouTube (Nov 25). Same name on Instagram, TikTok, Bluesky, Reddit if wanted.', tag: 'by Dec 18'},
     {s: 'sim', t: 'Say yes: the announcement', d: 'Moved up from January (Sim, Nov 24): winter break, M-D two weeks old.', tag: 'about Dec 18'}
   ],
   week: [
@@ -185,8 +186,10 @@ const PLAN = {
       {s: 'done', t: '"Day 3 of Reg M-D · 4 events" on Meta', d: 'A new regulation\'s first 4 weeks say how young the data is. Same line, 0px added.', tag: 'Nov 25'},
       {s: 'done', t: 'Practice switch: every page on M-D day one', d: '58/58 automatic checks pass; the picture review found fake grades and "Reg M-C" text. Both being fixed (Sim chose: "Not rated yet"; Strength Score stays, labelled).', tag: 'Nov 25'},
       {s: 'done', t: 'Commander reviewed by Kip', d: '6 real bugs fixed (Neutralizing Gas, Quick Guard, Tatsugiri-only…), 14/14 checks.', tag: 'Nov 25'},
-      {s: 'doing', t: 'Dec 2 branch onto main', d: 'Kip found 3 blockers (Dec 2 would have stopped the daily data); fixed, tests fail-before/pass-after. Lands when GitHub is green.', tag: 'HH'},
-      {s: 'doing', t: 'Day-one honesty', d: '"Not rated yet" until a Pokémon has M-D results; Strength Score says "Graded against Reg M-C\'s teams until Reg M-D results arrive" (built).', tag: 'HH + helper'},
+      {s: 'done', t: 'Dec 2 branch onto main', d: 'Kip found 3 blockers (Dec 2 would have stopped the daily data); fixed, tests fail-before/pass-after. GitHub passed; live site promoted.', tag: 'Nov 25'},
+      {s: 'done', t: 'Day-one honesty', d: '"Not rated yet" until a Pokémon has M-D results; Strength Score says "Graded against Reg M-C\'s teams until Reg M-D results arrive". Sim loved the day-one look.', tag: 'Nov 25'},
+      {s: 'done', t: 'Name: NastyPlot, final', d: 'Kip job 29 + HH\'s registry check: no clashes, kid-safe Google results. Sim: "keep nastyplot. its a great name."', tag: 'Nov 25'},
+      {s: 'doing', t: 'j18 into the redesign', d: 'Merged with the redesign; 379 real teams score exactly the same; accessibility 6/6. Waiting for GitHub.', tag: 'HH'},
       {s: 'next', t: 'The full list of 24 new Pokémon', d: 'Checked every morning until it\'s out; then one picture job and one data command.', tag: 'HH, daily'},
       {s: 'doing', t: 'One place for the regulation', d: 'Built (Scout) and ported to the data job (Kip); tests pass. Waiting to merge.', tag: 'HH'},
       {s: 'done', t: 'Sprite script for new Pokémon', d: 'Done early by the other account; rebuilds existing pictures byte for byte.', tag: 'Nov 24'},
@@ -271,6 +274,9 @@ const PLAN = {
     {t: 'Speed Tiers controls at 1280', d: 'A two-row layout, after the switch (pictures first).'}
   ],
   done: [
+    {when: 'Nov 25', t: 'Name decided: NastyPlot stays (Kip job 29 + registry check)'},
+    {when: 'Nov 25', t: 'Sim claimed @NastyPlotHQ on X and YouTube'},
+    {when: 'Nov 25', t: 'Dec 2 safety landed on main a week early; live site promoted after GitHub passed'},
     {when: 'Nov 25', t: 'Kip job 28: Dec 2 landing review caught a crash that would have stopped Dec 2\'s data; fixed and tested'},
     {when: 'Nov 25', t: 'Regulation name now comes from the data (24 places); Build\'s day-one empty state has today\'s underdog'},
     {when: 'Nov 25', t: 'Reg M-D official dates and roster counts saved; Commander built and tested; 10 new pictures merged'},
