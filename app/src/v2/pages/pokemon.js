@@ -11,6 +11,9 @@ V2.monSlug = n => encodeURIComponent(String(n).toLowerCase());
 /* the address part for a Pokémon on the public site (nastyplot.org/pokemon/mr-mime): lower case, no accents or apostrophes, other
    characters to '-' (V2.monSlug above stays for the site's own #pokemon= links). app/build.mjs writes one page per Pokémon with the same rule (checked by experiments/public-build-test.mjs) */
 V2.pubSlug = n => String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[’'.]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+/* the Pokémon page title (Sim, Nov 25 2:07 PM: HH's wording): the words people search ("Pokémon Champions", "set"); 60 characters
+   at most, so long names take the short form. app/build.mjs writes the same title into each /pokemon/<slug> file */
+V2.pubTitle = name => { const t = `${name} in Pokémon Champions: best set, rating & partners`; return t.length <= 60 ? t : `${name}: Champions set, rating & partners`; };
 V2.monFromHash = () => { let k = ''; try { k = decodeURIComponent((location.hash.split('=')[1] || '')).toLowerCase(); } catch (e) {}
   /* Nov 25: on the public site the address carries it (/pokemon/garchomp); before, the page fell back to its default Pokémon */
   if (!k && window.__NP_PUBLIC && /^\/pokemon\/./.test(location.pathname)) { try { k = decodeURIComponent(location.pathname.slice(9)).replace(/\/+$/, '').toLowerCase(); } catch (e) {} }
@@ -194,7 +197,7 @@ V2.pages.pokemon = {place: 'meta', after() { V2.pkFocusName(); }, draw() { const
   if (!p) { try { document.title = 'No Pokémon here · NastyPlot'; } catch (e) {} } /* design review #20: the tab kept the previous Pokémon's title */
   /* Wave 2 part 5 (Sim chose A, Nov 22): the approved Page-not-found shape (V2.nfHtml): kit header, the pink way out, today's underdog card */
   if (!p) return `<div class="ra gsp nf-pg nf2" data-v2pknf><div class="nf2-two"><div class="k-head"><p class="k-kicker np-eyebrow">POKÉMON · NOT FOUND</p><h1 class="k-h1 u">No Pokémon <em>here.</em></h1><p class="k-lead">This address doesn't match a Pokémon in ${V2.esc(regName())}.</p>${V2.kGo('EVERY POKÉMON, BY TIER.', {href: '#meta', class: 'pk-404'})}</div>${V2.nfDog()}</div></div>`; /* scan S33: today's underdog; scan S3 A (Sim, Nov 20): the way out is the slanted outline button on its own line, so it never breaks inside its name */
-  try { document.title = `${V2.disp(p.n)}: rating, sets and partners · NastyPlot`; } catch (e) {} /* a real page title per Pokémon (brief section 10: being found from a search) */
+  try { document.title = V2.pubTitle(V2.disp(p.n)); } catch (e) {} /* a real page title per Pokémon (brief section 10: being found from a search) */
   const H = lairHead(p), dex = V2.pkDex(p);
   const lead = `Pokémon Champions · VGC doubles, ${regName().replace(/ /g, '\u00a0').replace(/-/g, '\u2011')}. ${H.tot ? `Rated from ${basisNum(H.tot, true)} real tournament teams.` : V2.unrated(p) ? 'No tournament teams yet: not rated yet.' : 'No tournament teams yet: rated from its stats, typing and tools.'}${H.thinR && !V2.unrated(p) ? ' Early read: few games so far.' : ''}`;
   const ty = V2.byName && V2.byName.get(p.n) && V2.byName.get(p.n).t || p.t || [], c1 = V2.TYPES.includes(ty[0]) ? ty[0] : 'Normal', c2 = V2.TYPES.includes(ty[1]) ? ty[1] : c1;

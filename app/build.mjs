@@ -254,7 +254,7 @@ if (process.argv.includes('--v2')) {
     for (const p of roster) {
       const s = slug(p.n); if (!s) throw new Error('public build: empty address for ' + p.n);
       if (seen.has(s)) throw new Error(`public build: ${p.n} and ${seen.get(s)} share the address /pokemon/${s}`); seen.set(s, p.n);
-      const name = disp(p.n), title = `${name}: rating, sets and partners · NastyPlot` /* the same words the page sets (pokemon.js) */, desc = `${name} in Pokémon Champions doubles: its rating, its most common tournament set and its best partners, from real tournament results.`;
+      const name = disp(p.n), title = (t => t.length <= 60 ? t : `${name}: Champions set, rating & partners`)(`${name} in Pokémon Champions: best set, rating & partners`) /* same as V2.pubTitle (pokemon.js) */, desc = `${name} in Pokémon Champions doubles: its best tournament set, its rating and its best partners, from real tournament results. Free, no account.`;
       const page = ph.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title><link rel="canonical" href="https://nastyplot.org/pokemon/${s}">`)
         .replace(/(<meta name="description" content=")[^"]*"/, `$1${esc(desc)}"`).replace(/(<meta property="og:title" content=")[^"]*"/, `$1${esc(title)}"`);
       fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
