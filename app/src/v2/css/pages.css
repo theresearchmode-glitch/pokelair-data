@@ -3578,7 +3578,10 @@ button.pp2-plate{cursor:pointer;width:100%}
 @media (max-width:399.98px){.nf-dog{column-gap:var(--s3)}.nf-dog .np-mon{--iw:88px}.nf-dog .np-mon.ft{padding-inline:var(--s1)}.nf-dogl{font-size:var(--t17)}} /* Nov 20: 'Corviknight's' ran out of the box at 320 with a scrollbar (GitHub, the day it became the underdog): the feature sprite's side padding is trimmed on phones so the line has room */
 
 /* Ratings' tier bar (Sim, Nov 21): the kit's sentence, a little smaller than a page's main sentence; tier sections clear the top bar when jumped to */
-.ra-tbar{margin:var(--s4) 0}.ra-tbar .k-sent{font-size:var(--t20)}.ra .gs-step,.ra .ra-tg{scroll-margin-top:calc(76px + var(--s4))}
+.ra-tbar{margin:var(--s4) 0}.ra-tbar .k-sent{font-size:var(--t20)}
+/* 700-999 (iPad check #5, Nov 25): the six tier chips wrapped with "F" alone on a second line; there they sit in a 3 x 2 grid
+   beside "Jump to" instead, every chip in place */
+@media (min-width:700px) and (max-width:999.98px){.ra-tbar .k-sent{display:grid;grid-template-columns:auto repeat(3,max-content);justify-content:start;align-items:center}.ra-tbar .k-sent>span:first-child{grid-row:span 2}}.ra .gs-step,.ra .ra-tg{scroll-margin-top:calc(76px + var(--s4))}
 @media (max-width:699.98px){.ra-tbar .k-sent{font-size:var(--t17);gap:var(--s2)}.ra .gs-step,.ra .ra-tg{scroll-margin-top:calc(60px + var(--s4))}}
 /* phones: the tier bar is six even boxes in two rows of three ("Jump to" is spoken, not shown) */
 @media (max-width:699.98px){.ra-tbar .k-sent{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}.ra-tbar .k-sent > span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}.ra-tbar .k-w{min-height:var(--tap);padding:0 var(--s2)}}
