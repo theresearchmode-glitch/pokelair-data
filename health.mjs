@@ -21,6 +21,10 @@ const RG = rd('reg.json'), RS = rd('regstate.json'), REG = (RG && RG.id) || 'M-C
 const regDay = (() => { if (RS && RS.reg === REG && typeof RS.day === 'number') return RS.day; const s = RG && RG.since; if (!s) return 999;
   const t0 = Date.parse(s + 'T12:00:00Z'); return isFinite(t0) ? Math.max(1, Math.floor((now - t0) / DAY) + 1) : 999; })();
 const inLaunch = regDay >= 1 && regDay <= 14, todayIso = new Date(now).toISOString().slice(0, 10);
+// Smogon publishes a month's stats only after the month ends (+ up to 10 days), so a new regulation has no Smogon month until
+// its first calendar month is over and published (M-D, since Dec 2: until Jan 11). Until then an empty meta_ladder.json and no
+// perf.smogon are expected, not an alarm (Kip job 28 #5). A regulation that started in an earlier month is checked as before.
+const smogonWait = (() => { const m = /^(\d{4})-(\d{2})-\d{2}$/.exec(String((RG && RG.since) || '')); return !!m && now < Date.UTC(+m[1], +m[2], 1) + 10 * DAY; })();
 const stampOf = d => d && (typeof d.reg === 'string' ? d.reg : (d.reg && typeof d.reg.id === 'string' ? d.reg.id : null));
 // a date ("2026-10-31", an ISO time) or a month ("2026-09", counted from the end of that month)
 const age = v => { const s = String(v || ''); if (/^\d{4}-\d{2}$/.test(s)) { const [y, m] = s.split('-').map(Number); return (now - Date.UTC(y, m, 1)) / DAY; } const t = Date.parse(s.length === 10 ? s + 'T12:00:00Z' : s); return isNaN(t) ? NaN : (now - t) / DAY; };
@@ -45,7 +49,7 @@ const FILES = [
   ['replays.json', 'Showdown ladder replays', 3, d => d.updated, [1e3, 15e6], d => Array.isArray(d.games) || Array.isArray(d) || 'no games list', [20, d => Array.isArray(d.games) || Array.isArray(d)], 'daily replays.mjs (optional step, 2d+1d buffer)', {optional: true}],
   ['replays_bo3.json', 'Showdown Bo3 replays', 4, d => d.updated, [100, 60e6] /* Nov 25: the real file is 30.3 MB on main; 15 MB failed every daily run */, d => Array.isArray(d.games) || Array.isArray(d) || 'no games list', [20, d => Array.isArray(d.games) || Array.isArray(d)], 'daily Bo3 replays (optional, lower volume)', {optional: true}],
   ['meta_ingame.json', 'op.gg in-game rankings (paused Nov 18: op.gg terms)', 9999, d => d.updated, [20, 1e6], d => Array.isArray(d.top) || 'no top list', [20, d => Array.isArray(d.top)], 'paused Nov 18 (op.gg terms)', {paused: true, skipRegCheck: true}],
-  ['meta_ladder.json', 'Smogon monthly ladder stats', 40, d => d.month || (inLaunch ? d.updated || (RG && RG.checked) || todayIso : ''), [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)], 'Smogon monthly dump (30d month + 10d publish lag)'],
+  ['meta_ladder.json', 'Smogon monthly ladder stats', 40, d => d.month || (inLaunch || smogonWait ? d.updated || (RG && RG.checked) || todayIso : ''), [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)], 'Smogon monthly dump (30d month + 10d publish lag)', {smogonWait}],
   ['events.json', 'Events', 3, d => d.updated, [10e3, 5e6], d => arr(d.events, 5) || 'fewer than 5 events', [20, d => Array.isArray(d.events)], 'daily events.mjs (2d+1d buffer)'],
   ['official.json', 'Official events (Victory Road + VR Pastes, top 64)', 3, d => d.updated, [1e3, 5e6], d => Array.isArray(d.events) || 'no event list', [20, d => Array.isArray(d.events)], 'daily official.mjs (external Victory Road + Liquipedia)'],
   ['official_compare.json', 'Official events compare', 3, (d, f) => d.updated || mtimeIso(f), [40, 2e6], d => typeof d.pass === 'boolean' || 'no pass flag', [20, d => typeof d.pass === 'boolean'], 'daily official.mjs check', {optional: true}],
@@ -73,7 +77,7 @@ for (const [file, label, days, dateOf, [lo, hi], shape, thinRule, basis, opts = 
     const st = stampOf(d);
     if (st && st !== REG && !opts.skipRegCheck) { status = 'broken'; why = `wrong regulation (${st}, expected ${REG})`; }
     else if (s === true && n >= lo && n <= hi) { /* ok */ }
-    else if (inLaunch && thinRule && n >= thinRule[0] && n <= hi && thinRule[1](d) === true) { status = 'thin'; why = `day ${regDay} of ${REG}, data building`; }
+    else if ((inLaunch || opts.smogonWait) && thinRule && n >= thinRule[0] && n <= hi && thinRule[1](d) === true) { status = 'thin'; why = inLaunch ? `day ${regDay} of ${REG}, data building` : `no Smogon month for ${REG} yet (published after its first month ends)`; }
     else if (s !== true) { status = 'broken'; why = s; }
     else { status = 'broken'; why = `size ${(n / 1024).toFixed(1)} KB, expected ${(lo / 1024).toFixed(1)} KB – ${(hi / 1048576).toFixed(1)} MB`; } }
   if (status !== 'ok' && status !== 'thin') problems.push(`${label}: ${file} ${why}`);
@@ -86,7 +90,7 @@ for (const [file, label, days, dateOf, [lo, hi], shape, thinRule, basis, opts = 
 // every part of the ratings inputs, by the date of its own data
 const PF = rd('perf.json');
 if (PF) { const want = {tour: ['Limitless table', 2], adj: ['Limitless win shares', 2], ingame: ['op.gg order (paused Nov 18)', 9999], official: ['Official events table (frozen)', 28], smogon: ['Smogon 1760+ usage', 40], ladder: ['Showdowntier ladder', 3]};
-  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official' || k === 'ingame' || inLaunch) {} /* retired Nov 1, paused Nov 18, or thin in first 14 days */ else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
+  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official' || k === 'ingame' || inLaunch || (k === 'smogon' && smogonWait)) {} /* retired Nov 1, paused Nov 18, thin in first 14 days, or no Smogon month yet */ else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
     if (k === 'official' && PF[k].frozen) { const a = age(PF[k].asOf || PF[k].updated); if (a > 21) console.log(`::warning::Ratings inputs: the frozen official-events table (newest event ${PF[k].asOf}) leaves the page in ${Math.max(0, Math.ceil(28 - a))} days; no permitted whole-field source yet`); continue; }
     old(`Ratings inputs, ${label}`, PF[k].updated, days); }
   for (const L of (PF.outside && PF.outside.lists) || []) old(`Outside tier list ${L.name}`, L.date, 3);

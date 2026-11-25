@@ -25,10 +25,13 @@ const mkEvents = (format, n, playersEach, date) => Array.from({length: n}, () =>
   check('day-before-still-mc', `${r.id}/${r.switched}/${r.now}`, 'M-C/null/null');
 }
 
-// 2) Launch day 2026-12-02T00:00:00Z -> switches to M-D by date, even with 0 events
+// 2) Launch day: 2026-12-02T01:07:00Z (before M-C's official end, 01:59 UTC) stays M-C; 02:00 UTC switches to M-D by
+// date, even with 0 events (Kip job 28 #6, Nov 25: the switch waits for the official start time, not just the date)
 {
-  const r = detectReg([], {}, prevMC, '2026-12-02T00:00:00Z');
-  check('dec2-0000z-switches-to-md',
+  const early = detectReg([], {}, prevMC, '2026-12-02T01:07:00Z');
+  check('dec2-0107z-before-official-start-still-mc', `${early.id}/${early.switched}`, 'M-C/null');
+  const r = detectReg([], {}, prevMC, '2026-12-02T02:00:00Z');
+  check('dec2-0200z-switches-to-md',
     `${r.id}/${r.since}/${r.sd}/${r.now}/${r.switched && r.switched.from}->${r.switched && r.switched.to}@${r.switched && r.switched.on}:${r.switched && r.switched.by}`,
     'M-D/2026-12-02/gen9championsvgc2026regmd/null/M-C->M-D@2026-12-02:date');
 }
@@ -39,7 +42,7 @@ const mkEvents = (format, n, playersEach, date) => Array.from({length: n}, () =>
   process.env.REG_AUTO_SWITCH = '0';
   const {detectReg: detectHeld} = await import('../formats.mjs?datehold=1');
   if (oldEnv === undefined) delete process.env.REG_AUTO_SWITCH; else process.env.REG_AUTO_SWITCH = oldEnv;
-  const r = detectHeld([], {}, prevMC, '2026-12-02T00:00:00Z');
+  const r = detectHeld([], {}, prevMC, '2026-12-02T02:00:00Z');
   check('reg-auto-switch-0-holds-date', `${r.id}/${r.switched}/${r.now && r.now.id}/${r.now && r.now.from}`, 'M-C/null/M-D/date');
 }
 
@@ -86,7 +89,7 @@ check('REG_END-mc', REG_END['M-C'], '2026-12-02T01:59:00Z');
   try {
     const outDir = path.join(tmp, 'out');
     fs.mkdirSync(outDir, {recursive: true});
-    const sw = detectReg([], {}, prevMC, '2026-12-02T00:00:00Z');
+    const sw = detectReg([], {}, prevMC, '2026-12-02T02:00:00Z');
     const regFile = path.join(outDir, 'reg.json');
     fs.writeFileSync(regFile, JSON.stringify(sw));
     fs.writeFileSync(path.join(outDir, 'limitless.json'), JSON.stringify({reg: 'M-C', tournaments: 100}));

@@ -81,6 +81,11 @@ export const regAt = (f, date) => { let id = f; for (let i = 0; i < 4; i++) { co
 export const LEGACY_REG = 'M-C';
 export const regOf = e => regAt((e && typeof e.f === 'string' && e.f) || LEGACY_REG, e && (e.d || e.date));
 export const sameReg = (e, id) => regOf(e) === id;
+// Is the next regulation due (Kip job 28 #6, Nov 25)? On or after its 'since' day AND, when `today` carries a clock time, at or
+// after the current one's official end (REG_END, M-C: 2026-12-02T01:59:00Z), so the FAST_DATA 01:07 UTC run on Dec 2 stays on M-C.
+// A date-only `today` keeps the plain date rule.
+export const regDue = (curId, nextProf, today) => { const s = String(today || new Date().toISOString()), end = REG_END[curId], t = s.length > 10 ? Date.parse(s) : NaN;
+  return !!(nextProf && nextProf.since && s.slice(0, 10) >= nextProf.since) && !(end && isFinite(t) && t < Date.parse(end)); };
 export const inRegWindow = (date, reg) => { const d = String(date || '').slice(0, 10); return !!d && d >= reg.since && (!reg.end || d < reg.end); };
 // list: Limitless tournaments of any format [{format, date, players}]; sd: {showdownFormat: {n, first}} from replay searches;
 // prev: yesterday's out/reg.json. Pure, so experiments/reg-test.mjs can feed it made-up data.
@@ -101,11 +106,11 @@ export function detectReg(list, sd, prev, today) {
   if (!now) for (const [f, x] of Object.entries(sd || {})) { const r = sdReg(f); if (r && r !== id && !seen[r] && x && +x.n >= 20 && x.first) now = {id: r, since: String(x.first).slice(0, 10), events: 0, players: 0, week: 0, ladder: +x.n, from: 'showdown'}; }
   let switched = prev && prev.switched || null;
   // Date-based switch (reg-md-plan.md 0.7 & section 5): when the next regulation has a profile entry with a 'since' date,
-  // switch on launch day (today UTC >= nextProf.since) rather than waiting for REG_SWITCH event counts; never switch early.
+  // switch on launch day (today UTC >= nextProf.since, and not before the current one's official end time: regDue) rather than waiting for REG_SWITCH event counts; never switch early.
   // REG_SWITCH (events/players) stays as the backstop only when the next regulation has no date entry; REG_AUTO_SWITCH=0 holds both.
   const nextId = nextRegIds(id)[0], nextProf = nextId ? regProfile(nextId) : null;
   if (nextProf && nextProf.since) {
-    if (todayDay >= nextProf.since) {
+    if (regDue(id, nextProf, today)) {
       if (REG_AUTO_SWITCH) {
         switched = {from: id, to: nextId, on: todayDay, by: 'date'};
         id = nextId; since = nextProf.since; sdId = nextProf.sd || sdFor(id); now = null;

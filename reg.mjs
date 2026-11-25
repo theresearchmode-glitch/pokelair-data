@@ -6,11 +6,11 @@
 // If both sources fail, yesterday's file stays (a ::warning:: in the log). REG_OFFLINE=1 builds it from the saved tournaments
 // in data/index.json only (no network; they are all one regulation, so it can't see a new one) for local previews.
 import fs from 'node:fs';
-import {detectReg, readReg, activeReg, nextRegIds, sdGuess, regName, regProfile, REG_AUTO_SWITCH, LEGACY_REG} from './formats.mjs';
+import {detectReg, regDue, readReg, activeReg, nextRegIds, sdGuess, regName, regProfile, REG_AUTO_SWITCH, LEGACY_REG} from './formats.mjs';
 const UA = {'User-Agent': 'pokelair-data (personal team-builder stats)'}, sleep = ms => new Promise(r => setTimeout(r, ms));
 async function getJSON(url) { const c = new AbortController(), to = setTimeout(() => c.abort(), 30000);
   try { const r = await fetch(url, {headers: UA, signal: c.signal}); if (!r.ok) throw new Error(url + ' ' + r.status); return await r.json(); } finally { clearTimeout(to); } }
-const prev = readReg(), act = activeReg(), today = new Date().toISOString().slice(0, 10);
+const prev = readReg(), act = activeReg(), nowIso = new Date().toISOString(), today = nowIso.slice(0, 10); /* nowIso: the switch waits for the official start time (regDue) */
 let list = null; const sd = {};
 if (process.env.REG_OFFLINE === '1') {
   let idx = {tournaments: {}}; try { idx = JSON.parse(fs.readFileSync('data/index.json', 'utf8')); } catch (e) {}
@@ -28,9 +28,9 @@ if (process.env.REG_OFFLINE === '1') {
     catch (e) { console.log(`reg: Showdown search for ${f} failed (${e.message})`); } }
 }
 const nextId = nextRegIds(act.id)[0], nextProf = nextId ? regProfile(nextId) : null;
-const dateDue = !!(nextProf && nextProf.since && today >= nextProf.since && REG_AUTO_SWITCH);
+const dateDue = regDue(act.id, nextProf, nowIso) && REG_AUTO_SWITCH;
 if (!list && !Object.keys(sd).length && !dateDue) { console.log('::warning::reg: no source answered; kept yesterday\'s out/reg.json'); process.exit(0); }
-const r = detectReg(list || [], sd, prev, today);
+const r = detectReg(list || [], sd, prev, nowIso);
 // a source that failed today doesn't erase what it showed yesterday (unless we just switched regulation)
 if (!list && prev) { if (prev.seen) r.seen = prev.seen; if (r.id === prev.id && !r.now && prev.now && prev.now.from === 'limitless') r.now = prev.now; } /* keeps yesterday's banner too (code review, Nov 24) */
 if (r.now) console.log(`::warning::reg: ${r.now.name} is being played since ${r.now.since} (${r.now.events} events, ${r.now.players} players${r.now.ladder ? ', ' + r.now.ladder + '+ Showdown replays' : ''}); numbers stay on ${r.name} until it has ${r.now.need.events} events and ${r.now.need.players} players`);

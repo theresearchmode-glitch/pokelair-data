@@ -2,7 +2,7 @@ name: Test NastyPlot page
 on:
   push:
     # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
-    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/plan-cache-test.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', '.github/workflows/test.yml', 'regulation.json', 'formats.mjs', 'reg.mjs', 'reg-guard.mjs', 'reg-stamp.mjs', 'regstate.mjs', 'sources.mjs', 'names.mjs', 'perf.mjs', 'practice.mjs', 'crosscheck.mjs', 'update.mjs', 'health.mjs', 'experiments/reg-*.mjs', 'experiments/date-switch-test.mjs', 'experiments/md-day-one-test.mjs']
+    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/plan-cache-test.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', '.github/workflows/test.yml', 'regulation.json', 'formats.mjs', 'reg.mjs', 'reg-guard.mjs', 'reg-stamp.mjs', 'regstate.mjs', 'sources.mjs', 'names.mjs', 'perf.mjs', 'practice.mjs', 'crosscheck.mjs', 'update.mjs', 'health.mjs', 'experiments/reg-*.mjs', 'experiments/date-switch-test.mjs', 'experiments/md-day-one-test.mjs', 'experiments/freshness-test.mjs', 'experiments/bo3-tagging-test.mjs', 'experiments/shadow-model-test.mjs', 'experiments/dec2-landing-fixes-test.mjs']
   workflow_dispatch:
   # Nov 9: commits made by GitHub's own jobs (the daily data, the weekly re-check, the monthly check) never trigger a push run
   # (GitHub rule for its built-in token), so fresh data was never tested and the live branch could not move. Start the tests
@@ -50,6 +50,15 @@ jobs:
       - run: node experiments/date-switch-test.mjs
       - run: node experiments/reg-guard-test.mjs
       - run: node experiments/md-day-one-test.mjs
+        if: ${{ !cancelled() }}
+      # Dec 2 landing (Nov 25): freshness limits per file, Bo3 round/event tags, the shadow model, Kip job 28 fixes (#1-#6)
+      - run: node experiments/freshness-test.mjs
+        if: ${{ !cancelled() }}
+      - run: node experiments/bo3-tagging-test.mjs
+        if: ${{ !cancelled() }}
+      - run: node experiments/shadow-model-test.mjs
+        if: ${{ !cancelled() }}
+      - run: node experiments/dec2-landing-fixes-test.mjs
         if: ${{ !cancelled() }}
       # mechanics vs Smogon's Champions engine: every stat exact, damage 98.5%+ exact on all 16 rolls
       - run: node experiments/speed-check.mjs
