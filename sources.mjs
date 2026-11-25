@@ -9,6 +9,12 @@ import fs from 'node:fs';
 import {mapMon, ROSTER, dec, text} from './names.mjs';
 import {UA as NP_UA, politeFetch} from './http.mjs';
 import {stampReg} from './reg-stamp.mjs';
+import {activeReg, regSources, sourcePageCheck} from './formats.mjs';
+// gap G1 (Nov 24): every outside source reads the regulation profile (regulation.json) for the regulation our numbers are built from.
+// A source with no page for it (id null or missing), or whose page turns out to be about another regulation, is reported as
+// "not available yet" and left out, never read as if it were this regulation's numbers.
+const RG = activeReg(), SRC = regSources(RG.id);
+const notYet = why => { throw new Error(`not available yet for ${RG.name}${why ? ': ' + why : ''}`); };
 const UA = {'User-Agent': NP_UA};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let calls = 0;
@@ -32,7 +38,9 @@ const tryIt = async (k, f) => { try { const v = await f(); if (v) out[k] = v; el
 // Pokémon Zone is not read: it answers automated requests with 403 (tested Oct 31 from the daily job's runner), and
 // that refusal is respected. Its tier list and the official-events data it shows are not part of the daily data.
 // Showdowntier: one table, every row carries data-name / data-tier / data-usage / data-win / data-rating
-await tryIt('sdt', async () => { const h = await get('https://showdowntier.com/formats/dmc/index.html'), rows = [], miss = [];
+await tryIt('sdt', async () => { if (!SRC.showdowntier) notYet('no Showdowntier page listed in regulation.json');
+  const h = await get(`https://showdowntier.com/formats/${SRC.showdowntier}/index.html`), rows = [], miss = [];
+  { const why = sourcePageCheck('showdowntier', h, RG.id); if (why) notYet(why); }
   for (const m of h.matchAll(/<tr[^>]*data-rank="(\d+)"[^>]*data-name="([^"]+)"[^>]*data-tier="([^"]*)"[^>]*data-usage="([\d.]+)"[^>]*data-win="([\d.]+)"[^>]*data-rating="([\d.]+)"/g)) {
     const n = norm(m[2]); if (!n) { miss.push(m[2]); continue; } rows.push({n, tier: m[3], u: +(+m[4]).toFixed(2), w: +(+m[5]).toFixed(2), r: Math.round(+m[6])}); }
   const rng = h.match(/(\d{1,2}\/\d{1,2}\/\d{4}) to (\d{1,2}\/\d{1,2}\/\d{4})/), up = h.match(/Last Updated: (\d{1,2})\/(\d{1,2})\/(\d{4})/), bat = h.match(/([\d,]+) Games analyzed|Analyzed ([\d,]+) competitive battles/);
@@ -43,7 +51,10 @@ await tryIt('sdt', async () => { const h = await get('https://showdowntier.com/f
 // Nov 8 (Sim: our popular sets must agree with established sites): Pikalytics' TOURNAMENT stats ('championstournaments',
 // built from Limitless events). The 'gen9championsvgc2026regmc' format we read before is its Showdown LADDER data, a different
 // population, which made 14 of 40 top items look like conflicts (Rillaboom: Life Orb there, Miracle Seed 75.5% in tournaments).
-await tryIt('pika', async () => { const F = 'championstournaments', h = await get(`https://www.pikalytics.com/ai/pokedex/${F}`), rows = [], miss = [];
+await tryIt('pika', async () => { const F = SRC.pikalytics; if (!F) notYet('no Pikalytics page listed in regulation.json');
+  const h = await get(`https://www.pikalytics.com/ai/pokedex/${F}`), rows = [], miss = [];
+  /* its tournament page has no regulation in its address: the sample events' names must be mostly this regulation's */
+  { const why = sourcePageCheck('pikalytics', h, RG.id); if (why) notYet(why); }
   // Nov 9: a row whose win rate or record is "N/A" (Mega Floette's) used to fail this pattern and vanish without a trace;
   // win rate and record are optional now, and every table row is counted so a row that still can't be read is reported
   const tableRows = (h.match(/^\| \d+ \| \*\*/gm) || []).length;
@@ -59,7 +70,7 @@ await tryIt('pika', async () => { const F = 'championstournaments', h = await ge
       const rec = t.match(/\*\*Record\*\* \| (\d+)-(\d+)/); date = date || (t.match(/\*\*Data Date\*\* \| ([\d-]+)/) || [])[1] || null;
       sets[r.n] = {it: sec('Items').slice(0, 4), mv: sec('Moves').slice(0, 6), g: rec ? +rec[1] + +rec[2] : null}; } catch (e) {} }
   return {date: new Date().toISOString().slice(0, 10), dataDate: date, scope, rows, sets, miss}; });
-fs.writeFileSync('out/sources.json', JSON.stringify(stampReg(out, 'M-C')));
+fs.writeFileSync('out/sources.json', JSON.stringify(stampReg(out, RG.id)));
 // Nov 9 (no silent failures): each source problem is recorded like a skipped step (skip.mjs -> out/skips.json), so the same
 // source failing two days in a row raises the 'Daily data problem' alarm in health.mjs instead of one warning line a day
 { const {execFileSync} = await import('node:child_process'); for (const k of new Set(out.problems.map(p => p.split(':')[0]))) { try { execFileSync('node', ['skip.mjs', `source ${k} skipped (${out.problems.filter(p => p.startsWith(k + ':')).join(' | ').slice(0, 300)})`], {stdio: 'inherit'}); } catch (e) {} } }

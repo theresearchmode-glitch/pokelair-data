@@ -1,0 +1,34 @@
+{
+  "_": "The regulation profile (reg-md-plan.md 0.1, gap G1). ONE source of truth for the regulation the site is built for. The daily data job reads it through formats.mjs (SITE_REG, REG_END, regProfile) and switches by date when today (UTC) >= the next regulation's 'since'. A regulation's 'end' stays here for good: events dated after it count for the next one. Source ids set to null mean the source has no page for that regulation yet: the job then says 'not available yet' instead of reading another regulation's numbers.",
+  "site": "M-C",
+  "regs": {
+    "M-C": {
+      "name": "Reg M-C",
+      "long": "Regulation M-C",
+      "sd": "gen9championsvgc2026regmc",
+      "since": "2026-09-01",
+      "end": "2026-12-02T01:59:00Z",
+      "sources": {
+        "showdowntier": "dmc",
+        "pikalytics": "championstournaments",
+        "official": "M-C"
+      },
+      "items": "data/regmc-items.txt",
+      "rules": {"format": "VGC doubles", "bring": 6, "pick": 4, "level": 50, "points": [0, 32], "itemClause": true}
+    },
+    "M-D": {
+      "name": "Reg M-D",
+      "long": "Regulation M-D",
+      "sd": "gen9championsvgc2026regmd",
+      "since": "2026-12-02",
+      "end": null,
+      "sources": {
+        "showdowntier": null,
+        "pikalytics": null,
+        "official": null
+      },
+      "items": "data/regmd-items.txt",
+      "rules": {"format": "VGC doubles", "bring": 6, "pick": 4, "level": 50, "points": [0, 32], "itemClause": true}
+    }
+  }
+}

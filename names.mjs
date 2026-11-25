@@ -1,6 +1,7 @@
 // Shared name and text helpers for the data scripts (official.mjs, sources.mjs): species text -> NastyPlot roster name,
 // held-item check, HTML to text. Paths are relative to the working folder, so a dry run can run from a scratch copy.
 import fs from 'node:fs';
+import {activeReg, regProfile, LEGACY_REG} from './formats.mjs';
 export const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 export const dec = s => s.replace(/&amp;/g, '&').replace(/&#0?39;|&apos;|&#8217;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n));
 export const text = h => dec(h.replace(/<!--[\s\S]*?-->|<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n')).split('\n').map(x => x.trim()).filter(Boolean);
@@ -26,7 +27,19 @@ export function mapMon(species, item) {
   if (ROSTER.has(n)) return n; const b = n.split('-')[0]; return ROSTER.has(b) ? b : null; }
 // An item must look like an item: not a field label, not empty, a sane length; checked against the Reg M-C item list
 // (data/regmc-items.txt) when that file exists. Bad parses become '' (unknown) and are counted.
-const ITEMS = new Set((() => { try { return fs.readFileSync('data/regmc-items.txt', 'utf8').split(/\r?\n/).map(x => x.trim()).filter(Boolean); } catch (e) { return []; } })());
+// the item list's file comes from the regulation profile (regulation.json "items"); if missing on disk, fall back to M-C's list and say so
+const _act = activeReg(), ITEMS_FILE = (regProfile(_act.id) || {}).items || null;
+const ITEMS = new Set((() => {
+  const readList = f => fs.readFileSync(f, 'utf8').split(/\r?\n/).map(x => x.trim()).filter(Boolean);
+  if (!ITEMS_FILE) return [];
+  try { return readList(ITEMS_FILE); } catch (e) {
+    const fb = (regProfile(LEGACY_REG) || {}).items;
+    if (fb && fb !== ITEMS_FILE) {
+      try { const xs = readList(fb); console.log(`names: ${ITEMS_FILE} not found for ${_act.name}; falling back to ${fb}`); return xs; } catch (e2) {}
+    }
+    return [];
+  }
+})());
 export const bad = {items: 0};
 export function validItem(it) { const s = String(it || '').trim(); if (!s) return '';
   if (/:\s*$/.test(s) || /Alignment|Ability|Held Item|Nature/i.test(s) || s.length > 30 || (ITEMS.size && !ITEMS.has(s))) { bad.items++; return ''; } return s; }
@@ -53,10 +66,15 @@ const LIST = {i: new Map([...ITEMS].map(x => [fold(x), x])), a: new Map(Object.k
   mv: new Map((grabJS('MOVES') || []).map(x => [fold(x[0]), x[0]]))};
 const STONE_TYPO = {staraptorite: 'Staraptite', dragonitite: 'Dragoninite', dragonitinite: 'Dragoninite', golisopodite: 'Golisopite', venosaurite: 'Venusaurite',
   raichuitex: 'Raichunite X', raichuitey: 'Raichunite Y', glimmorite: 'Glimmoranite', scovillanite: 'Scovillainite', garchompitite: 'Garchompite', sableyite: 'Sablenite', floetitte: 'Floettite'};
+// Item misspellings seen on Limitless sheets (Nov 19 check of data/t2; design review #15, 'Leftovers' / 'Left Over') where only one
+// legal item fits; unclear ones ('King', 'Dragon claw', 'Fairy plume', 'Gold Berry', 'Miracle Berry') stay as written.
+const ITEM_TYPO = {leftover: 'Leftovers', passchoberry: 'Passho Berry', choppleberry: 'Chople Berry', focusslash: 'Focus Sash', citrusberry: 'Sitrus Berry',
+  sitrisberry: 'Sitrus Berry', charcol: 'Charcoal', charlcoal: 'Charcoal', choicescraf: 'Choice Scarf', ejectbuttom: 'Eject Button', grassyseeds: 'Grassy Seed',
+  kassibberry: 'Kasib Berry', rindo: 'Rindo Berry', floettenite: 'Floettite', dragonitete: 'Dragoninite', garchompnitez: 'Garchompite Z', clefabite: 'Clefablite'};
 const NONE = {i: new Set(['m', 'f', 'noitem', 'nohelditem', 'none', 'nothing', 'withoutitem', 'noobject']), a: new Set(['noability', 'none']), mv: new Set()};
 export const CANON_UNKNOWN = {i: new Map(), a: new Map(), mv: new Map()};
 function canon(kind, s, count = true) { if (s == null) return ''; const t = String(s).replace(/\s+/g, ' ').trim(); if (!t) return '';
-  const k = fold(t); if (NONE[kind].has(k)) return ''; if (kind === 'i' && STONE_TYPO[k] && LIST.i.has(fold(STONE_TYPO[k]))) return STONE_TYPO[k];
+  const k = fold(t); if (NONE[kind].has(k)) return ''; if (kind === 'i' && STONE_TYPO[k] && LIST.i.has(fold(STONE_TYPO[k]))) return STONE_TYPO[k]; if (kind === 'i' && ITEM_TYPO[k] && LIST.i.has(fold(ITEM_TYPO[k]))) return ITEM_TYPO[k];
   const c = LIST[kind].get(k); if (c) return c; if (count && LIST[kind].size) CANON_UNKNOWN[kind].set(t, (CANON_UNKNOWN[kind].get(t) || 0) + 1); return t; }
 export const canonItem = (s, count) => canon('i', s, count), canonAbility = (s, count) => canon('a', s, count), canonMove = (s, count) => canon('mv', s, count);
 // one Pokémon of a data/t2 sheet ({n, i, a, mv, t, nt}) with its item, Ability and moves in the list spelling

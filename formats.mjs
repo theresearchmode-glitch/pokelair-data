@@ -44,7 +44,15 @@ export function oddEvents(ids, readT, log = console.log) {
 // (Limitless is fetched by format, Showdown by format id, RK9 events by date window). Once it has enough, the active
 // regulation switches to it and every step starts over from its own events only. REG_AUTO_SWITCH=0 holds the switch
 // (banner only) for a manual check.
-export const SITE_REG = {id: 'M-C', sd: 'gen9championsvgc2026regmc', since: '2026-09-01'};
+// The regulation profile (regulation.json, Nov 24): the one place the site's regulation is written. REG_PROFILE is the full entry
+// for the site's regulation (name, Showdown id, dates, outside sources' ids, rules); SITE_REG keeps its old shape for every caller.
+// REG_PROFILE_FILE=<path> reads another profile (a scratch copy for a dry run); the real site always uses regulation.json.
+const regFilePath = (typeof process !== 'undefined' && process.env && process.env.REG_PROFILE_FILE) || new URL('./regulation.json', import.meta.url);
+export const REG_FILE = JSON.parse(fs.readFileSync(regFilePath, 'utf8'));
+export const regProfile = (id = REG_FILE.site) => { const r = REG_FILE.regs[id]; return r ? {id, ...r} : null; };
+export const REG_PROFILE = regProfile();
+if (!REG_PROFILE || !REG_PROFILE.sd || !REG_PROFILE.since) throw new Error(`regulation.json: site "${REG_FILE.site}" needs an entry with sd and since`);
+export const SITE_REG = {id: REG_PROFILE.id, sd: REG_PROFILE.sd, since: REG_PROFILE.since};
 export const REG_SWITCH = {events: 20, players: 1200};
 export const REG_AUTO_SWITCH = (typeof process !== 'undefined' && process.env && process.env.REG_AUTO_SWITCH) !== '0';
 export const regName = id => 'Reg ' + id;
@@ -63,18 +71,21 @@ export function activeReg(file) { const r = readReg(file);
 // Official end of each regulation (Nov 17). Limitless can keep tagging events with the old regulation after it ends (checked
 // Nov 17: events listed from Dec 3 tagged "Regulation Set M-C"), so an event dated at or after the end never counts for it,
 // whatever its tag: it counts for the next regulation. M-C ends Dec 1, 5:59 PM PST (pokemon.com "Get Ready for Regulation Set
-// M-C"). Add each regulation's end here when it is official.
-export const REG_END = {'M-C': '2026-12-02T01:59:00Z'};
+// M-C"). Each regulation's end lives in regulation.json ("end"), added when it is official.
+export const REG_END = Object.fromEntries(Object.entries(REG_FILE.regs).filter(([, r]) => r.end).map(([id, r]) => [id, r.end])); /* from regulation.json */
 export const regAt = (f, date) => { let id = f; for (let i = 0; i < 4; i++) { const end = REG_END[id], t = Date.parse(String(date || ''));
   if (!end || !isFinite(t) || t < Date.parse(end)) break; const nx = nextRegIds(id)[0]; if (!nx) break; id = nx; } return id; };
 // an event's regulation: saved with it from Nov 1; older saved events are all Reg M-C (the only format the job ever fetched)
-export const regOf = e => regAt((e && typeof e.f === 'string' && e.f) || SITE_REG.id, e && (e.d || e.date));
+// history: the job saved no format before Nov 1, and every event it saved then was Reg M-C. This is a fact about old files, so it
+// stays 'M-C' when the site moves on (with SITE_REG.id here, old M-C events would count as the new regulation after a switch).
+export const LEGACY_REG = 'M-C';
+export const regOf = e => regAt((e && typeof e.f === 'string' && e.f) || LEGACY_REG, e && (e.d || e.date));
 export const sameReg = (e, id) => regOf(e) === id;
 export const inRegWindow = (date, reg) => { const d = String(date || '').slice(0, 10); return !!d && d >= reg.since && (!reg.end || d < reg.end); };
 // list: Limitless tournaments of any format [{format, date, players}]; sd: {showdownFormat: {n, first}} from replay searches;
 // prev: yesterday's out/reg.json. Pure, so experiments/reg-test.mjs can feed it made-up data.
 export function detectReg(list, sd, prev, today) {
-  today = today || new Date().toISOString().slice(0, 10);
+  const todayDay = String(today || new Date().toISOString()).slice(0, 10);
   let id = prev && REG_ID.test(prev.id) ? prev.id : SITE_REG.id, since = (prev && prev.since) || SITE_REG.since, sdId = (prev && prev.sd) || SITE_REG.sd;
   const fam = id.split('-')[0] + '-', seen = {}, rows = (Array.isArray(list) ? list : []).map(t => ({f: REG_ID.test(String(t && t.format || '')) ? regAt(String(t.format), t.date) : String(t && t.format || ''), d: String(t && t.date || '').slice(0, 10), p: +(t && t.players) || 0}))
     .filter(t => t.f.startsWith(fam) && REG_ID.test(t.f) && /^\d{4}-\d{2}-\d{2}$/.test(t.d));
@@ -83,11 +94,38 @@ export function detectReg(list, sd, prev, today) {
     s.events++; s.players += t.p; if (t.d < s.first) s.first = t.d; if (t.d > s.last) s.last = t.d; if (t.d >= cut) s.week++; }
   // the regulation being played now: most events in the newest week (a tie goes to the one that started later)
   const nowId = Object.keys(seen).sort((a, b) => seen[b].week - seen[a].week || (seen[b].first > seen[a].first ? 1 : -1))[0];
-  const sdFor = r => { const k = Object.keys(sd || {}).find(f => sdReg(f) === r && +sd[f].n > 0); return k || sdGuess(r, today.slice(0, 4)); };
+  const sdFor = r => { const k = Object.keys(sd || {}).find(f => sdReg(f) === r && +sd[f].n > 0); return k || sdGuess(r, todayDay.slice(0, 4)); };
   let now = null;
   if (nowId && nowId !== id && seen[nowId].first >= since) now = {id: nowId, since: seen[nowId].first, events: seen[nowId].events, players: seen[nowId].players, week: seen[nowId].week, from: 'limitless'};
   // no tournaments yet, but the next regulation's ladder has started on Showdown (20+ replays): say so too
   if (!now) for (const [f, x] of Object.entries(sd || {})) { const r = sdReg(f); if (r && r !== id && !seen[r] && x && +x.n >= 20 && x.first) now = {id: r, since: String(x.first).slice(0, 10), events: 0, players: 0, week: 0, ladder: +x.n, from: 'showdown'}; }
   let switched = prev && prev.switched || null;
-  if (now && REG_AUTO_SWITCH && now.events >= REG_SWITCH.events && now.players >= REG_SWITCH.players) { switched = {from: id, to: now.id, on: today}; id = now.id; since = now.since; sdId = sdFor(id); now = null; }
-  return {id, name: regName(id), since, sd: sdId, site: SITE_REG.id, now: now ? {...now, name: regName(now.id), need: REG_SWITCH} : null, switched, seen, checked: today}; }
+  // Date-based switch (reg-md-plan.md 0.7 & section 5): when the next regulation has a profile entry with a 'since' date,
+  // switch on launch day (today UTC >= nextProf.since) rather than waiting for REG_SWITCH event counts; never switch early.
+  // REG_SWITCH (events/players) stays as the backstop only when the next regulation has no date entry; REG_AUTO_SWITCH=0 holds both.
+  const nextId = nextRegIds(id)[0], nextProf = nextId ? regProfile(nextId) : null;
+  if (nextProf && nextProf.since) {
+    if (todayDay >= nextProf.since) {
+      if (REG_AUTO_SWITCH) {
+        switched = {from: id, to: nextId, on: todayDay, by: 'date'};
+        id = nextId; since = nextProf.since; sdId = nextProf.sd || sdFor(id); now = null;
+      } else if (!now) {
+        const s = seen[nextId];
+        now = {id: nextId, since: nextProf.since, events: s ? s.events : 0, players: s ? s.players : 0, week: s ? s.week : 0, from: 'date'};
+      }
+    }
+  } else if (now && REG_AUTO_SWITCH && now.events >= REG_SWITCH.events && now.players >= REG_SWITCH.players) {
+    switched = {from: id, to: now.id, on: todayDay, by: 'counts'}; id = now.id; since = now.since; sdId = sdFor(id); now = null;
+  }
+  return {id, name: regName(id), since, sd: sdId, site: SITE_REG.id, now: now ? {...now, name: regName(now.id), need: REG_SWITCH} : null, switched, seen, checked: todayDay}; }
+// ---------- outside sources and the regulation profile (gap G1, Nov 24) ----------
+// The ids each outside source uses for a regulation (regulation.json "sources"); {} when the profile has no entry for it.
+export const regSources = id => ((regProfile(id) || {}).sources) || {};
+// Is this fetched page really about regulation id? null when it is, else the reason (shown as "not available yet: <reason>").
+// Showdowntier names the regulation in its page; Pikalytics' tournament page has no regulation in its address, so the names of the
+// sample events it lists must mostly be this regulation's.
+export function sourcePageCheck(kind, html, id) { const h = String(html || '');
+  if (kind === 'showdowntier') return new RegExp(`Regulation ${id}\\b`).test(h) ? null : `its page does not say Regulation ${id}`;
+  if (kind === 'pikalytics') { const regs = [...h.matchAll(/\bReg(?:ulation)?(?: Set)? ?([A-Z])-([A-Z])\b/gi)].map(m => `${m[1]}-${m[2]}`.toUpperCase()), ours = regs.filter(r => r === id).length;
+    return !regs.length || ours * 2 >= regs.length ? null : `its sample events are mostly ${[...new Set(regs.filter(r => r !== id))].join('/')}`; }
+  return null; }

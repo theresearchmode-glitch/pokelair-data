@@ -39,35 +39,35 @@ try {
   try { fs.unlinkSync(tmpFile); } catch {}
 }
 
-// A3: detectReg & REG_SWITCH thresholds
-const prevMC = {id: 'M-C', since: SITE_REG.since, sd: SITE_REG.sd};
+// A3: detectReg & REG_SWITCH thresholds (backstop when the next regulation has no profile entry, e.g. M-D -> M-E)
+const prevBase = {id: 'M-D', since: '2026-12-02', sd: 'gen9championsvgc2026regmd'};
 
-const belowEv = detectReg(mkEvents('M-D', REG_SWITCH.events - 1, 100), {}, prevMC, '2026-12-05');
-check('switch-below-events', `${belowEv.id}/${belowEv.now && belowEv.now.id}`, 'M-C/M-D');
+const belowEv = detectReg(mkEvents('M-E', REG_SWITCH.events - 1, 100, '2027-03-05T12:00:00Z'), {}, prevBase, '2027-03-05');
+check('switch-below-events', `${belowEv.id}/${belowEv.now && belowEv.now.id}`, 'M-D/M-E');
 
 const belowPl = detectReg(
-  [...mkEvents('M-D', REG_SWITCH.events - 1, 60), {format: 'M-D', date: '2026-12-03T12:00:00Z', players: 59}],
-  {}, prevMC, '2026-12-05'
+  [...mkEvents('M-E', REG_SWITCH.events - 1, 60, '2027-03-03T12:00:00Z'), {format: 'M-E', date: '2027-03-03T12:00:00Z', players: 59}],
+  {}, prevBase, '2027-03-05'
 );
-check('switch-below-players', `${belowPl.id}/${belowPl.now && belowPl.now.id}`, 'M-C/M-D');
+check('switch-below-players', `${belowPl.id}/${belowPl.now && belowPl.now.id}`, 'M-D/M-E');
 
-const oneBig = detectReg(mkEvents('M-D', 1, 2000), {}, prevMC, '2026-12-03');
-check('switch-one-big-event', `${oneBig.id}/${oneBig.now && oneBig.now.id}`, 'M-C/M-D');
+const oneBig = detectReg(mkEvents('M-E', 1, 2000, '2027-03-03T12:00:00Z'), {}, prevBase, '2027-03-03');
+check('switch-one-big-event', `${oneBig.id}/${oneBig.now && oneBig.now.id}`, 'M-D/M-E');
 
-const atThresh = detectReg(mkEvents('M-D', REG_SWITCH.events, 60), {}, prevMC, '2026-12-10');
-check('switch-at-threshold', `${atThresh.id}/${atThresh.now}/${atThresh.switched && atThresh.switched.to}`, 'M-D/null/M-D');
+const atThresh = detectReg(mkEvents('M-E', REG_SWITCH.events, 60, '2027-03-10T12:00:00Z'), {}, prevBase, '2027-03-10');
+check('switch-at-threshold', `${atThresh.id}/${atThresh.now}/${atThresh.switched && atThresh.switched.to}`, 'M-E/null/M-E');
 
 // REG_AUTO_SWITCH=0 holds switch
 const oldEnv = process.env.REG_AUTO_SWITCH;
 process.env.REG_AUTO_SWITCH = '0';
 const {detectReg: detectRegNoAuto} = await import('../formats.mjs?noauto=1');
 if (oldEnv === undefined) delete process.env.REG_AUTO_SWITCH; else process.env.REG_AUTO_SWITCH = oldEnv;
-const held = detectRegNoAuto(mkEvents('M-D', REG_SWITCH.events, 60), {}, prevMC, '2026-12-10');
-check('switch-held-auto-0', `${held.id}/${held.now && held.now.id}/${held.switched}`, 'M-C/M-D/null');
+const held = detectRegNoAuto(mkEvents('M-E', REG_SWITCH.events, 60, '2027-03-10T12:00:00Z'), {}, prevBase, '2027-03-10');
+check('switch-held-auto-0', `${held.id}/${held.now && held.now.id}/${held.switched}`, 'M-D/M-E/null');
 
 // Showdown-only ladder data sets banner but never switches
-const sdOnly = detectReg([], {gen9championsvgc2026regmd: {n: 51, first: '2026-12-02'}}, prevMC, '2026-12-02');
-check('showdown-only-no-switch', `${sdOnly.id}/${sdOnly.now && sdOnly.now.id}/${sdOnly.now && sdOnly.now.from}`, 'M-C/M-D/showdown');
+const sdOnly = detectReg([], {gen9championsvgc2027regme: {n: 51, first: '2027-03-02'}}, prevBase, '2027-03-02');
+check('showdown-only-no-switch', `${sdOnly.id}/${sdOnly.now && sdOnly.now.id}/${sdOnly.now && sdOnly.now.from}`, 'M-D/M-E/showdown');
 
 // Never flips back from M-D to M-C
 const prevMD = {id: 'M-D', since: '2026-12-02', sd: 'gen9championsvgc2026regmd', switched: {from: 'M-C', to: 'M-D', on: '2026-12-10'}};

@@ -14,6 +14,7 @@
 //         similar opposing six: [games, mostCommonFour, itsCount, mostCommonLead, itsCount]
 import fs from 'node:fs';
 import {stampReg} from './reg-stamp.mjs';
+import {activeReg} from './formats.mjs';
 const MIN_R = 1300, ROUND_R = 1450, MAX_OPP = 160, PER_OPP = 3, LIMIT = 250 * 1024;
 const src = (() => { try { return JSON.parse(fs.readFileSync('out/replays.json', 'utf8')); } catch (e) { return null; } })();
 if (!src || !Array.isArray(src.games) || !src.games.length) { console.log('practice: no replays, out/practice.json left as it was'); process.exit(0); }
@@ -58,7 +59,7 @@ for (const six of picked) {
     rounds.push([oi, s.six.map(id), g.b[s.i].map(id), g.l[s.i].map(id), s.r, Array.isArray(g.r) ? +g.r[j] || 0 : 0, g.w === s.i ? 1 : 0, g.b[j].map(id), g.l[j].map(id),
       [sim.length, f[0].split('|').map(id), f[1], l[0].split('|').map(id), l[1]]]); }
 }
-const out = stampReg({updated: new Date().toISOString(), source: `Showdown ladder replays (${src.format || 'Reg M-C'}), ${games.length.toLocaleString('en-US')} recent games`, from: Math.min(...games.map(g => g.t || Infinity)), to: Math.max(...games.map(g => g.t || 0)), minR: MIN_R, roundR: ROUND_R, dict, opp, rounds}, src.reg);
+const out = stampReg({updated: new Date().toISOString(), source: `Showdown ladder replays (${src.format || activeReg().name}), ${games.length.toLocaleString('en-US')} recent games`, from: Math.min(...games.map(g => g.t || Infinity)), to: Math.max(...games.map(g => g.t || 0)), minR: MIN_R, roundR: ROUND_R, dict, opp, rounds}, src.reg);
 let txt = JSON.stringify(out);
 // keep under the size limit: drop the rarest Pokémon rows first
 while (txt.length > LIMIT) { for (const o of out.opp) o[2] = o[2].slice(0, Math.max(12, o[2].length - 4)); const t2 = JSON.stringify(out); if (t2.length === txt.length) { out.rounds = out.rounds.slice(0, out.rounds.length - 20); } txt = JSON.stringify(out); }
