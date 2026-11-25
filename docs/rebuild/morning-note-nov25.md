@@ -13,5 +13,8 @@
   2. alt/gemini-j19: JSON-LD breadcrumb test fails (1 case).
   3. alt/gemini-dec2: Kip's freshness change to health.mjs breaks M-D day one (it calls a near-empty matches.json "broken" on
      the thin first days) — conflicts with job 8's rule. Must fix before Dec 2.
+- Kip job 24 applied: alt/gemini-dec2 now has best-of-3 tagging (18/18), the SHADOW combo model + shadow scoreboard
+  (off = live model byte-identical; test passes), M-D research in regulation.json/docs. alt/gemini-j19: security test + headers;
+  ONE build.mjs hunk (the CSP wiring) didn't apply: fix by hand.
 ## NEXT
 - Fix the 3 above; GitHub results for all branches; 7:41 AM Preview update; 4 PM: back to full work mode.
