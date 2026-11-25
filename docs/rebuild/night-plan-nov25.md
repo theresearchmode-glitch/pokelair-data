@@ -23,6 +23,11 @@ nastyplot.org; Cloudflare/GitHub settings; rewriting git history; rotating keys;
    (patch-dec2-map.md + patch-dec2-psychup.md: move accuracies, Flash Fire/Stalwart, Psych Up list...). A red main blocks Promote and
    freezes the live data. Plan the patch landing as ONE tested batch, ready on a branch by Dec 1, landed right after the start
    (with the hand-run data job); the test's clock check stays as the safety net. Texts: kip-job16 quotes the official 877 page.
+1b. **Remove data/rk9** (Sim, Nov 25 3:44 PM; RK9 terms §5.3(3) forbid automated extraction): first make every reader work without it
+   (origin/main: official.mjs, perf.mjs, weekly.mjs, health.mjs, update.yml, app/src/app/63-method.js, scrub-names.mjs,
+   experiments/ts-signals.mjs — git grep rk9), keep official-event data from Victory Road/PokePaste/Liquipedia only, tests that fail
+   first (no file under data/rk9 read; data job + health pass without it), test branch -> GitHub green -> main fast-forward, then design6.
+   Current files only (history keeps it). Also check the site's words (Method/sources text) don't still name RK9 as a source.
 2. **Merge alt/gemini-routes, then alt/gemini-seo2** into design6 (gate; wrangler.toml: keep workers_dev=false, preview_urls=false,
    run_worker_first=["/api/feedback"] from design6 AND not_found_handling="404-page" from routes).
 3. **Public-repo safety check** (started 4:05 PM): fix what is safe (remove a secret/personal detail from current files, tighten a
