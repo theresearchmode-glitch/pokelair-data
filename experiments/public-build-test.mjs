@@ -81,7 +81,7 @@ const check = (id, ok, detail) => results.push({id, ok: !!ok, detail: String(det
       gifts && gifts.r === 'gifts' &&
       mon && mon.r === 'pokemon' && mon.sub === 'Incineroar';
   }
-  const tlOk = tl.includes("window.__NP_PUBLIC ? 'https://www.google.com/url?sa=E\&source=gmail\&q=https://nastyplot.org/' : TL_ART");
+  const tlOk = tl.includes("window.__NP_PUBLIC ? 'https://nastyplot.org/' : TL_ART");
   check('PUB-4', routeOk && tlOk, JSON.stringify({routeOk, tlOk}));
 }
 

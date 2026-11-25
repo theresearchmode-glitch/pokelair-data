@@ -108,11 +108,11 @@ const rules = parseHeadersFile(hdrsText);
 const MIME = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8', '.json': 'application/json; charset=utf-8', '.woff2': 'font/woff2', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml'};
 
 const server = http.createServer((req, res) => {
-  const u = new URL(req.url, 'https://www.google.com/url?sa=E\&source=gmail\&q=http://127.0.0.1');
+  const u = new URL(req.url, 'http://127.0.0.1');
   const rel = u.pathname === '/' ? '/v2.html' : u.pathname;
   const fp = path.join(distDir, rel);
   const hdrs = headersForPath(rules, rel);
-  // Strip upgrade-insecure-requests on local https://www.google.com/url?sa=E\&source=gmail\&q=http://127.0.0.1 test server only
+  // Strip upgrade-insecure-requests on local http://127.0.0.1 test server only
   if (hdrs['Content-Security-Policy']) hdrs['Content-Security-Policy'] = hdrs['Content-Security-Policy'].replace(/;\s*upgrade-insecure-requests/g, '');
   if (fs.existsSync(fp) && fs.statSync(fp).isFile()) {
     res.writeHead(200, {'Content-Type': MIME[path.extname(fp)] || 'application/octet-stream', ...hdrs});
