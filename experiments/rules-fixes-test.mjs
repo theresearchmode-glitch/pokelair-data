@@ -260,8 +260,36 @@ function runSourceVm() {
     fixTeams() {},
     blank: () => ({n: '', a: null, lock: false}),
     esc: s => String(s),
-    EFF: {
-      Ground: {Normal: 1, Fire: 2, Water: 1, Electric: 2, Grass: 0.5, Ice: 1, Fighting: 1, Poison: 2, Ground: 1, Flying: 0, Psychic: 1, Bug: 0.5, Rock: 2, Ghost: 1, Dragon: 1, Dark: 1, Steel: 2, Fairy: 1},
+    EFF: (() => {
+      const T = ['Normal','Fire','Water','Electric','Grass','Ice','Fighting','Poison','Ground','Flying','Psychic','Bug','Rock','Ghost','Dragon','Dark','Steel','Fairy'];
+      const E = Object.fromEntries(T.map(a => [a, Object.fromEntries(T.map(d => [d, 1]))]));
+      const set = (a, list, v) => { for (const d of list) E[a][d] = v; };
+      set('Normal', ['Rock','Steel'], 0.5); set('Normal', ['Ghost'], 0);
+      set('Fire', ['Grass','Ice','Bug','Steel'], 2); set('Fire', ['Fire','Water','Rock','Dragon'], 0.5);
+      set('Water', ['Fire','Ground','Rock'], 2); set('Water', ['Water','Grass','Dragon'], 0.5);
+      set('Electric', ['Water','Flying'], 2); set('Electric', ['Electric','Grass','Dragon'], 0.5); set('Electric', ['Ground'], 0);
+      set('Grass', ['Water','Ground','Rock'], 2); set('Grass', ['Fire','Grass','Poison','Flying','Bug','Dragon','Steel'], 0.5);
+      set('Ice', ['Grass','Ground','Flying','Dragon'], 2); set('Ice', ['Fire','Water','Ice','Steel'], 0.5);
+      set('Fighting', ['Normal','Ice','Rock','Dark','Steel'], 2); set('Fighting', ['Poison','Flying','Psychic','Bug','Fairy'], 0.5); set('Fighting', ['Ghost'], 0);
+      set('Poison', ['Grass','Fairy'], 2); set('Poison', ['Poison','Ground','Rock','Ghost'], 0.5); set('Poison', ['Steel'], 0);
+      set('Ground', ['Fire','Electric','Poison','Rock','Steel'], 2); set('Ground', ['Grass','Bug'], 0.5); set('Ground', ['Flying'], 0);
+      set('Flying', ['Grass','Fighting','Bug'], 2); set('Flying', ['Electric','Rock','Steel'], 0.5);
+      set('Psychic', ['Fighting','Poison'], 2); set('Psychic', ['Psychic','Steel'], 0.5); set('Psychic', ['Dark'], 0);
+      set('Bug', ['Grass','Psychic','Dark'], 2); set('Bug', ['Fire','Fighting','Poison','Flying','Ghost','Steel','Fairy'], 0.5);
+      set('Rock', ['Fire','Ice','Flying','Bug'], 2); set('Rock', ['Fighting','Ground','Steel'], 0.5);
+      set('Ghost', ['Psychic','Ghost'], 2); set('Ghost', ['Dark'], 0.5); set('Ghost', ['Normal'], 0);
+      set('Dragon', ['Dragon'], 2); set('Dragon', ['Steel'], 0.5); set('Dragon', ['Fairy'], 0);
+      set('Dark', ['Psychic','Ghost'], 2); set('Dark', ['Fighting','Dark','Fairy'], 0.5);
+      set('Steel', ['Ice','Rock','Fairy'], 2); set('Steel', ['Fire','Water','Electric','Steel'], 0.5);
+      set('Fairy', ['Fighting','Dragon','Dark'], 2); set('Fairy', ['Fire','Poison','Steel'], 0.5);
+      return E;
+    })(),
+    ABILITY_MODS: {
+      Levitate: {Ground: 0}, Eelevate: {Ground: 0}, 'Earth Eater': {Ground: 0},
+      'Flash Fire': {Fire: 0}, 'Well-Baked Body': {Fire: 0},
+      'Water Absorb': {Water: 0}, 'Storm Drain': {Water: 0}, 'Dry Skin': {Water: 0},
+      'Volt Absorb': {Electric: 0}, 'Lightning Rod': {Electric: 0}, 'Motor Drive': {Electric: 0},
+      'Sap Sipper': {Grass: 0},
     },
     speedMul: (ab, w) => (ab === 'Swift Swim' && w === 'rain') || (ab === 'Chlorophyll' && w === 'sun') || (ab === 'Sand Rush' && w === 'sand') || (ab === 'Slush Rush' && w === 'snow') ? 2 : 1,
     members: () => [],
