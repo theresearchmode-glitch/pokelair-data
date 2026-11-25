@@ -1,0 +1,17 @@
+name = "nastyplot"
+main = "worker/feedback.mjs"
+compatibility_date = "2026-11-24"
+
+[assets]
+directory = "./app/dist"
+binding = "ASSETS"
+not_found_handling = "single-page-application"
+run_worker_first = ["/api/feedback", "/data/*"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "nastyplot-feedback"
+database_id = "REPLACE_WITH_D1_DATABASE_ID"
+
+# Rate limiting: configure Cloudflare WAF / Rate Limiting rule on POST /api/feedback (e.g. 5 req / min)
+# in the Cloudflare dashboard (Cloudflare enforces it at the edge without our Worker storing IPs).
