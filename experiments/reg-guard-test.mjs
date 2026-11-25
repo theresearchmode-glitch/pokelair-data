@@ -121,7 +121,7 @@ try {
   {
     const {res} = runCase(mdReg, {'model.json': {reg: 'M-C', ships: true, mons: {Incineroar: 0.5}}});
     const dir = path.dirname(res.lines.length ? tmp : tmp);
-    const found = fs.readdirSync(tmp).some(c => { const a = path.join(tmp, c, 'out', 'archive', 'M-C', 'model.json'); return fs.existsSync(a) && JSON.parse(fs.readFileSync(a, 'utf8')).mons.Incineroar === 0.5; });
+    const found = fs.readdirSync(tmp).some(c => { const a = path.join(tmp, c, 'out', 'archive', 'M-C', 'model.json'); return fs.existsSync(a) && (JSON.parse(fs.readFileSync(a, 'utf8')).mons || {}).Incineroar === 0.5; });
     check('emptied-file-archived-first', found, true);
   }
 } finally {
