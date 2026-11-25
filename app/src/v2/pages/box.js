@@ -34,7 +34,7 @@ V2.bxRange = (so, here) => { if (!here.length) return ''; const a = here[0], z =
 V2.bxChv = () => (V2.sdhChv ? V2.sdhChv() : '').replace(/^<span[^>]*>/, '').replace(/<\/span>$/, '').replace('<svg ', '<svg class="mb-cur" aria-hidden="true" ');
 // one slot: the sprite on its floor, the name (hidden where the slot is too narrow: phones), the on-your-team corner flag, the cursor
 V2.bxTile = (n, d, on, sel, shown, k) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null;
-  return `<button type="button" class="bx-t mb-t${sel ? ' sel' : ''}${shown ? ' mb-cur-on' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}, slot ${k}${on ? ', on your team' : ''}">${on ? '<i class="mb-flag" aria-hidden="true"></i>' : ''}${shown ? V2.bxChv() : ''}<i class="mb-fl" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" width="240" height="240" loading="lazy" decoding="async">` : ''}<b>${V2.tileName(d)}</b></button>`; };
+  return `<button type="button" class="bx-t mb-t${sel ? ' sel' : ''}${shown ? ' mb-cur-on' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}, slot ${k}${on ? ', on your team' : ''}">${on ? '<i class="mb-flag" aria-hidden="true"></i>' : ''}${shown ? V2.bxChv() : ''}<i class="mb-fl" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy" decoding="async">` : ''}<b>${V2.tileName(d)}</b></button>`; };
 const bxTierC = k => `var(--tier-${String(k || 'f').toLowerCase()})`;
 const bxTierChip = k => `<span class="mb-tier u" style="--tc:${bxTierC(k)}">${V2.esc(k)}&nbsp;tier</span>`;
 // Your Six: the team in its order, each row tinted with its first type, its real item · Ability (the team's set) and its rating
