@@ -1,0 +1,14 @@
+# Morning note for Sim (Wed Nov 25) — HH. Updated by the night watchdog.
+## NOW
+- Kip job 24 (mega stack 2) is with Kip. Lab round 2 (combo over 8 weeks) running.
+## JUST DONE (Tue night)
+- Redesign batch pushed to claude/design6 (bcdf69f1): all tests green; countdown short form; tagline sliver fixed.
+- Kip lab: its copy of today's model is proven IDENTICAL to model.mjs on the real games (0.00000 difference).
+- Kip job 23 (6 parts) applied on 4 branches and pushed. Working: feedback Worker (test passes), freshness test, data-pipeline docs,
+  practice-switch script, Mega Sol calc changes. NEEDS FIXING (3, found by running the tests here):
+  1. alt/gemini-j16: Kip's new Mega Sol tests crash in --src mode ("reading 'Fire'": the test's harness lacks the type chart).
+  2. alt/gemini-j19: JSON-LD breadcrumb test fails (1 case).
+  3. alt/gemini-dec2: Kip's freshness change to health.mjs breaks M-D day one (it calls a near-empty matches.json "broken" on
+     the thin first days) — conflicts with job 8's rule. Must fix before Dec 2.
+## NEXT
+- Fix the 3 above; GitHub results for all branches; 7:41 AM Preview update; 4 PM: back to full work mode.
