@@ -2500,3 +2500,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 9:03 PM: Sim: Kip's design trial (job 20) looked bad; Kip stays code + research only, no design (rule unchanged). HH keeps the one useful idea: the Day N note replaces the existing data line under the Meta tabs (0px added)
 - 9:07 PM: Sim approved tonight's design calls: M-D countdown short form at every width ('Reg M-D in 7 days.'), it gives way on short phone windows; pushed to claude/design6 at bcdf69f1
 - 2:26 AM: SEO Home title shortened to 56 chars: 'NastyPlot · Pokémon Champions team builder & damage calc' (was 62 with ', damage calc & meta'; Kip's PUB-1 caps titles at 60, Google truncates near there). On alt/gemini-j19 only, not live.
+- 5:55 AM: Sim: back to regular work with 1 helper (ends the usage-saving mode early; was until 4 PM Wed).
