@@ -153,7 +153,7 @@ footer{margin-top:56px;color:var(--mute);font-size:13px}
 <script>
 /* ===== PLAN: edit only this to update the page. s = done | doing | next | later | sim ===== */
 const PLAN = {
-  updated: 'Wed Nov 25, 6:36 AM',
+  updated: 'Wed Nov 25, 7:30 AM',
   road: [
     {when: 'Sat Nov 28', what: 'The switch', date: '2026-11-28'},
     {when: 'Wed Dec 2', what: 'Reg M-D + patch', date: '2026-12-02'},
@@ -161,8 +161,8 @@ const PLAN = {
     {when: 'About Dec 18', what: 'The announcement', date: '2026-12-18'}
   ],
   now: [
-    {who: 'HH (this chat)', t: 'Back to regular work (Sim, 5:55 AM), 1 helper. Reg M-D prep: Commander built, official dates in; next the practice switch and merging the Dec 2 branch.'},
-    {who: 'Helper', t: 'Adding the security test to GitHub\'s checks for the public site.'},
+    {who: 'HH (this chat)', t: 'Landing the Dec 2 branch on main (Sim: "you\'re in charge"): Kip\'s review found 3 blockers, all fixed and tested; waiting for GitHub green. Then the day-one honest ratings.'},
+    {who: 'Helpers (2)', t: '"Not rated yet" for Pokémon with no M-D results; a rehearsal of Saturday\'s switch (main into the redesign).'},
     {who: 'Kip (Gemini)', t: 'Code + research only, never design. Jobs 1-26 done; overnight HH fixed 4 of its mistakes (a fake M-D end date, a crash on the public page, square pictures, a missing weight).'},
     {who: 'Scout (helper account)', t: 'Small reviews when it has usage. Tonight it caught a history-wiping guard bug and 3 wrong damage rules.'},
     {who: 'PC chat', t: 'Done this morning: 10 new pictures (Reg M-D Pokémon + Meowstic-F). Next: full test run as the switch baseline.'}
@@ -183,6 +183,10 @@ const PLAN = {
       {s: 'done', t: 'Commander (Tatsugiri into Dondozo)', d: 'Turn One: Tatsugiri can\'t be hit, Dondozo +2 every stat. Team checks: a Commander row. Test 9/9; nothing else changed (170 Battle states identical).', tag: 'Nov 25'},
       {s: 'done', t: 'Pictures for the new Pokémon', d: '9 Reg M-D pictures + Meowstic-F, upscaled on Sim\'s PC, checked and merged.', tag: 'Nov 25'},
       {s: 'done', t: '"Day 3 of Reg M-D · 4 events" on Meta', d: 'A new regulation\'s first 4 weeks say how young the data is. Same line, 0px added.', tag: 'Nov 25'},
+      {s: 'done', t: 'Practice switch: every page on M-D day one', d: '58/58 automatic checks pass; the picture review found fake grades and "Reg M-C" text. Both being fixed (Sim chose: "Not rated yet"; Strength Score stays, labelled).', tag: 'Nov 25'},
+      {s: 'done', t: 'Commander reviewed by Kip', d: '6 real bugs fixed (Neutralizing Gas, Quick Guard, Tatsugiri-only…), 14/14 checks.', tag: 'Nov 25'},
+      {s: 'doing', t: 'Dec 2 branch onto main', d: 'Kip found 3 blockers (Dec 2 would have stopped the daily data); fixed, tests fail-before/pass-after. Lands when GitHub is green.', tag: 'HH'},
+      {s: 'doing', t: 'Day-one honesty', d: '"Not rated yet" until a Pokémon has M-D results; Strength Score says "Graded against Reg M-C\'s teams until Reg M-D results arrive" (built).', tag: 'HH + helper'},
       {s: 'next', t: 'The full list of 24 new Pokémon', d: 'Checked every morning until it\'s out; then one picture job and one data command.', tag: 'HH, daily'},
       {s: 'doing', t: 'One place for the regulation', d: 'Built (Scout) and ported to the data job (Kip); tests pass. Waiting to merge.', tag: 'HH'},
       {s: 'done', t: 'Sprite script for new Pokémon', d: 'Done early by the other account; rebuilds existing pictures byte for byte.', tag: 'Nov 24'},
@@ -267,6 +271,8 @@ const PLAN = {
     {t: 'Speed Tiers controls at 1280', d: 'A two-row layout, after the switch (pictures first).'}
   ],
   done: [
+    {when: 'Nov 25', t: 'Kip job 28: Dec 2 landing review caught a crash that would have stopped Dec 2\'s data; fixed and tested'},
+    {when: 'Nov 25', t: 'Regulation name now comes from the data (24 places); Build\'s day-one empty state has today\'s underdog'},
     {when: 'Nov 25', t: 'Reg M-D official dates and roster counts saved; Commander built and tested; 10 new pictures merged'},
     {when: 'Nov 25', t: 'Night fixes: every test branch green except one waiting on a picture (now merged)'},
     {when: 'Nov 25', t: 'Strength Score round 3: one new idea (archetype matchups) is promising, not proven; being re-checked'},
