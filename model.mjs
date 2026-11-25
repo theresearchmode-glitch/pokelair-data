@@ -9,10 +9,18 @@
 // rarely used Pokémon with one fixed set could pile up credit across 5 set features (Mega Camerupt rated as the best
 // Pokémon in the game). Also ships the held-out calibration slope and the spread of real teams, so the page can score a
 // team against real tournament teams instead of a fixed range that any odd team could max out.
-import fs from 'node:fs'; import {pilotTest} from './pilot.mjs'; import {deckBasics} from './team-basics.mjs';
-import {stampReg} from './reg-stamp.mjs';
+import fs from 'node:fs'; import {pilotTest} from './pilot.mjs'; import {deckBasics} from './team-basics.mjs'; import {activeReg, SITE_REG} from './formats.mjs';
 const M = JSON.parse(fs.readFileSync(process.env.MATCHES || 'out/matches.json', 'utf8')); // MATCHES=file: experiments (e.g. out/matches_ab.json)
-const teams = M.teams.map(k => k.split('|')), G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1]);
+const curReg = M.reg || activeReg().id;
+const teams = (M.teams || []).map(k => k.split('|')), G = (M.m || []).filter(g => g[2] !== .5 && g[0] !== g[1]);
+// On early days of a new regulation (0 games or too few events to split/fit), write a stamped not-ready model instead of keeping an old regulation's model
+{ const dest = process.env.MODEL_OUT || (process.env.TRAIN_ONLY === '1' ? 'out/model_train.json' : 'out/model.json');
+  let prev = null; try { prev = JSON.parse(fs.readFileSync(dest, 'utf8')); } catch (e) {}
+  const prevReg = prev && (prev.reg || SITE_REG.id);
+  if (G.length === 0 || (M.events || []).length < 5) {
+    if (prev && prev.ships && prev.mons && prevReg === curReg) { console.log(`model: NOT shipped today (${G.length} games), so ${dest} keeps the previous ${curReg} model`); process.exit(1); }
+    fs.writeFileSync(dest, JSON.stringify({reg: curReg, updated: new Date().toISOString(), ships: false, games: G.length, events: (M.events || []).length, v: 3, mons: {}, pairs: {}, sets: {}, note: 'too few games to fit model yet'}));
+    console.log(`model: ${curReg} not ready (${G.length} games, ${(M.events || []).length} events); wrote stamped not-ready model`); process.exit(0); } }
 const monIx = new Map(), mons = [];
 teams.flat().forEach(n => { if (!monIx.has(n)) { monIx.set(n, mons.length); mons.push(n); } });
 // pair features: pairs on 30+ distinct teams in games
@@ -218,7 +226,7 @@ if (F) { let n = 0; meanX = 0; for (const [A, B, , , , , , dA, dB] of GF) { mean
 const dist = (() => { if (!F) return null; const last = GF.reduce((a, g) => evDates[g[3]] > a ? evDates[g[3]] : a, ''), since = new Date(new Date(last).getTime() - 45 * 864e5).toISOString().slice(0, 10);
   const seenTD = new Set(), xs = []; for (const [A, B, , ev, , , , dA, dB] of GF) { if (evDates[ev] < since) continue; for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k)) continue; seenTD.add(k); { const dv = xClamp(t, d) - meanX; xs.push(meanX + (dv > 0 ? dv * credit(t) : dv)); } } }
   xs.sort((a, b) => a - b); return {since, n: xs.length, q: Array.from({length: 101}, (_, i) => +xs[Math.round(i / 100 * (xs.length - 1))].toFixed(4))}; })();
-const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: useSets ? LC.lc : null, eval: ev, games: G.length, events: M.events.length,
+const out = {reg: curReg, updated: new Date().toISOString(), ships, shrink: K, setShrink: useSets ? LC.lc : null, eval: ev, games: G.length, events: M.events.length,
   note: 'x(team) = sum of mons + sum of pairs + sum over each member\'s set features of coef * (has − setFreq) ("Mon@Item", "Mon:Move"); P(A beats B) = 1/(1+exp(-calib*(x(A)-x(B)))). Player skill removed. meanX = average tournament team; dist = percentiles of x over real teams in the last 45 days.',
   meanX: +meanX.toFixed(4), v: 3, half: HALF || null, teamHalf: TEAM_HALF != null ? TEAM_HALF : (HALF || null), ...(TEAM_PRIOR ? {teamPrior: TEAM_PRIOR} : {}), center: !!useSets, calib: +calib.toFixed(3), dist, setRange, supK: SUP_K, tested: [...tested].sort(),
   setFreq: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +freq[j].toFixed(3)])) : {},
@@ -235,7 +243,8 @@ const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: use
   pilot: TRAIN_ONLY ? {} : pilotTest(M)};
 // never replace a working model with an unshipped one (the daily job keeps yesterday's; update.yml reports the skip)
 { const dest = process.env.MODEL_OUT || (TRAIN_ONLY ? 'out/model_train.json' : 'out/model.json'); let prev = null; try { prev = JSON.parse(fs.readFileSync(dest, 'utf8')); } catch (e) {}
-  if (!ships && prev && prev.ships && prev.mons) { console.log(`model: NOT shipped today, so ${dest} keeps the previous model (from ${String(prev.updated || '').slice(0, 10)})`); process.exit(1); }
-  fs.writeFileSync(dest, JSON.stringify(stampReg(out, M.reg))); }
+  const prevReg = prev && (prev.reg || SITE_REG.id);
+  if (!ships && prev && prev.ships && prev.mons && prevReg === curReg) { console.log(`model: NOT shipped today, so ${dest} keeps the previous ${curReg} model (from ${String(prev.updated || '').slice(0, 10)})`); process.exit(1); }
+  fs.writeFileSync(dest, JSON.stringify(out)); }
 console.log(`calibration slope ${calib.toFixed(3)} · real-team spread p50 ${dist && dist.q[50]} p99 ${dist && dist.q[99]}`);
 console.log(`model: ${ships ? 'ships' : 'NOT shipped (no better than raw win rates)'}, ${mons.length} Pokémon, ${pairs.length} pairs, ${useSets ? Object.keys(out.sets).length + ' set features' : 'no set features (they did not help)'}, ${((Date.now() - t0) / 1000).toFixed(0)}s`);

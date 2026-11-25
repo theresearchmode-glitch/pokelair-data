@@ -6,15 +6,15 @@
 //  - Showdown replays: how many games we hold, and how many from 1300+ rated players.
 // Writes out/scoreboard.json (today + up to a year of daily history) and warns when a number falls clearly below its
 // recent level. Never fails the job: it only reports.
-import fs from 'node:fs';
-import {stampReg} from './reg-stamp.mjs';
+import fs from 'node:fs'; import {activeReg, sdReg, SITE_REG} from './formats.mjs';
 const rd = (f, d = null) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
-const M = rd('out/model.json'), E = rd('out/events.json'), R = rd('out/replays.json'), today = new Date().toISOString().slice(0, 10), row = {date: today};
-if (M && M.eval) { const e = M.eval;
+const reg = activeReg().id, same = d => d && (!d.reg || d.reg === reg);
+const M = rd('out/model.json'), E = rd('out/events.json'), R = rd('out/replays.json'), today = new Date().toISOString().slice(0, 10), row = {date: today, reg};
+if (M && M.eval && same(M)) { const e = M.eval;
   row.model = {heldOutAcc: e.model_teams_only.acc, calibratedLogloss: e.calibrated_logloss && (e.calibrated_logloss.with_sets ?? e.calibrated_logloss.species_only),
     eventsBeatCoinFlip: e.events_beating_coin_flip ? `${e.events_beating_coin_flip.beat_coin_flip}/${e.events_beating_coin_flip.events}` : null, rawWinRateAcc: e.raw_win_rates.acc, games: M.games}; }
 // team strength x the way the page computes it (species + pairs + clamped set effects, two strongest Megas, untried-mix cut)
-if (M && M.ships && E && E.events) { const D = E.dict, sets = M.sets || {}, fq = M.setFreq || {}, tested = new Set(M.tested || []), spF = new Map();
+if (M && M.ships && same(M) && E && E.events && same(E)) { const D = E.dict, sets = M.sets || {}, fq = M.setFreq || {}, tested = new Set(M.tested || []), spF = new Map();
   for (const k of Object.keys(sets)) { const sp = k.split(/[@:]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(k); }
   const setOne = (n, item, moves) => { if (!M.center) return 0; let u = 0; const mv = new Set(moves);
     for (const k of spF.get(n) || []) { const it = k.indexOf('@') === n.length, has = it ? k.slice(n.length + 1) === item : mv.has(k.slice(n.length + 1)); u += sets[k] * ((has ? 1 : 0) - (fq[k] || 0)); }
@@ -32,13 +32,17 @@ if (M && M.ships && E && E.events) { const D = E.dict, sets = M.sets || {}, fq =
 // Ratings, forward test: each saved snapshot 14+ days old, judged on the Limitless games played after it was taken
 // (team with the higher total rating should win). The oldest such snapshot gives the longest look ahead.
 { const RL = rd('out/ratings_log.json'), MM = rd('out/matches.json');
-  if (RL && MM && RL.days.length) { const teams = MM.teams.map(k => k.split('|')), evD = MM.events.map(e => e[1]), now = Date.now(), outs = [];
-    for (const snap of RL.days) { if ((now - Date.parse(snap.d)) / 864e5 < 14) continue; let right = 0, n = 0;
+  const rlDays = RL ? (RL.byReg ? (RL.byReg[reg] || []) : (same(RL) ? (RL.days || []) : [])) : [];
+  if (rlDays.length && MM && same(MM)) { const teams = MM.teams.map(k => k.split('|')), evD = MM.events.map(e => e[1]), now = Date.now(), outs = [];
+    for (const snap of rlDays) { if ((now - Date.parse(snap.d)) / 864e5 < 14) continue; let right = 0, n = 0;
       for (const g of MM.m) { if (g[2] === .5 || evD[g[3]] <= snap.d) continue; const s = t => teams[t].reduce((a, m) => a + (snap.r[m] || 0), 0), a = s(g[0]), b = s(g[1]); if (a === b) continue; n++; if ((a > b) === (g[2] === 1)) right++; }
       if (n >= 300) outs.push({d: snap.d, acc: +(right / n).toFixed(4), games: n}); }
     if (outs.length) row.ratingsForward = {snapshot: outs[0].d, acc: outs[0].acc, games: outs[0].games, snapshots: outs.length, avgAcc: +(outs.reduce((a, x) => a + x.acc, 0) / outs.length).toFixed(4)}; } }
-if (R && Array.isArray(R.games)) row.replays = {games: R.games.length, rated1300: R.games.filter(g => Math.min(g.r[0] || 0, g.r[1] || 0) >= 1300).length};
-const board = rd('out/scoreboard.json', {history: []}), hist = board.history.filter(h => h.date !== today);
+const rReg = R && (R.reg || sdReg(R.format) || SITE_REG.id);
+if (R && Array.isArray(R.games) && rReg === reg) row.replays = {games: R.games.length, rated1300: R.games.filter(g => Math.min(g.r[0] || 0, g.r[1] || 0) >= 1300).length};
+const board = rd('out/scoreboard.json', {history: []}), byReg = board.byReg && typeof board.byReg === 'object' ? {...board.byReg} : {};
+if (!Object.keys(byReg).length && Array.isArray(board.history) && board.history.length) byReg[board.reg || SITE_REG.id] = board.history;
+const hist = (Array.isArray(byReg[reg]) ? byReg[reg] : []).filter(h => h.date !== today);
 // warn when today is clearly below the median of the last 14 days
 const med = a => { const s = a.filter(v => v != null).sort((p, q) => p - q); return s.length ? s[Math.floor(s.length / 2)] : null; }, recent = hist.slice(-14), warns = [];
 const cmp = (label, now, past, worseIfLower, tol) => { const m = med(past); if (now == null || m == null) return; if (worseIfLower ? now < m - tol : now > m + tol) warns.push(`${label}: ${now} vs ${m} recently`); };
@@ -46,5 +50,6 @@ cmp('Win model held-out accuracy', row.model && row.model.heldOutAcc, recent.map
 cmp('Win model calibrated log-loss', row.model && row.model.calibratedLogloss, recent.map(h => h.model && h.model.calibratedLogloss), false, .003);
 cmp('Team strength on real events', row.teamStrengthOnEvents && row.teamStrengthOnEvents.acc, recent.map(h => h.teamStrengthOnEvents && h.teamStrengthOnEvents.acc), true, .015);
 row.warnings = warns;
-fs.writeFileSync('out/scoreboard.json', JSON.stringify(stampReg({updated: new Date().toISOString(), today: row, history: [...hist, row].slice(-365)}), null, 1));
+byReg[reg] = [...hist, row].slice(-365);
+fs.writeFileSync('out/scoreboard.json', JSON.stringify({updated: new Date().toISOString(), reg, today: row, byReg, history: byReg[reg]}, null, 1));
 console.log('scoreboard', JSON.stringify(row)); for (const w of warns) console.log(`::warning::${w}`);

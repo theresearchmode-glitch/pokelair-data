@@ -4,10 +4,12 @@
 // zero until there are many games (n / (n + 300)), is that Pokémon's lead value. Battle mode adds it to its lead pick.
 // Adds to out/model.json: leads = {"Pokémon": value in win-chance points / 100} for Pokémon brought in 150+ games.
 // REPLAYS_UNTIL=<unix seconds> (experiments): learn only from games before then; MODEL_FILE: which model file to write into.
-import fs from 'node:fs';
+import fs from 'node:fs'; import {activeReg, sdReg, SITE_REG} from './formats.mjs';
 const MF = process.env.MODEL_FILE || 'out/model.json', UNTIL = +(process.env.REPLAYS_UNTIL || Infinity);
-let R; try { R = JSON.parse(fs.readFileSync('out/replays.json', 'utf8')).games; } catch (e) { console.log('leads: no replays, nothing added'); process.exit(0); }
-const MD = JSON.parse(fs.readFileSync(MF, 'utf8')), elo = d => 1 / (1 + Math.pow(10, -d / 400)), base = n => n.replace(/-Mega.*$/, '');
+let R0, R; try { R0 = JSON.parse(fs.readFileSync('out/replays.json', 'utf8')); R = R0.games; } catch (e) { console.log('leads: no replays, nothing added'); process.exit(0); }
+const MD = JSON.parse(fs.readFileSync(MF, 'utf8')), curReg = activeReg().id, rReg = R0.reg || sdReg(R0.format) || SITE_REG.id, mdReg = MD.reg || SITE_REG.id;
+if (rReg !== mdReg || rReg !== curReg) { console.log(`leads: reg mismatch (replays ${rReg}, model ${mdReg}, active ${curReg}), skipped`); process.exit(0); }
+const elo = d => 1 / (1 + Math.pow(10, -d / 400)), base = n => n.replace(/-Mega.*$/, '');
 const st = new Map(); // species → {ln, lr, bn, br}: led games and their summed residual, back games and theirs
 for (const g of R) { if (g.t >= UNTIL || !Array.isArray(g.r) || (g.w !== 0 && g.w !== 1) || !g.b || !g.l) continue;
   for (const s of [0, 1]) { if (!g.b[s] || g.b[s].length !== 4 || !g.l[s] || g.l[s].length !== 2) continue; const res = (g.w === s ? 1 : 0) - elo(g.r[s] - g.r[1 - s]), led = new Set(g.l[s].map(base));

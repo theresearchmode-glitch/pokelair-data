@@ -17,38 +17,48 @@ const ROOT = arg('root') || '.', now = arg('now') ? Date.parse(arg('now') + 'T12
 const problems = [], rows = [];
 const size = f => { try { return fs.statSync(path.join(ROOT, 'out', f)).size; } catch (e) { return -1; } };
 const rd = f => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'out', f), 'utf8')); } catch (e) { return null; } };
+const RG = rd('reg.json'), RS = rd('regstate.json'), REG = (RG && RG.id) || 'M-C';
+const regDay = (() => { if (RS && RS.reg === REG && typeof RS.day === 'number') return RS.day; const s = RG && RG.since; if (!s) return 999;
+  const t0 = Date.parse(s + 'T12:00:00Z'); return isFinite(t0) ? Math.max(1, Math.floor((now - t0) / DAY) + 1) : 999; })();
+const inLaunch = regDay >= 1 && regDay <= 14, todayIso = new Date(now).toISOString().slice(0, 10);
+const stampOf = d => d && (typeof d.reg === 'string' ? d.reg : (d.reg && typeof d.reg.id === 'string' ? d.reg.id : null));
 // a date ("2026-10-31", an ISO time) or a month ("2026-09", counted from the end of that month)
 const age = v => { const s = String(v || ''); if (/^\d{4}-\d{2}$/.test(s)) { const [y, m] = s.split('-').map(Number); return (now - Date.UTC(y, m, 1)) / DAY; } const t = Date.parse(s.length === 10 ? s + 'T12:00:00Z' : s); return isNaN(t) ? NaN : (now - t) / DAY; };
 const old = (label, v, days) => { const a = age(v); if (!(a <= days)) { problems.push(`${label}: ${isNaN(a) ? 'no date' : `data from ${String(v).slice(0, 10)}, ${Math.floor(a)} days old (limit ${days})`}`); return false; } return true; };
 const arr = (x, min = 1) => Array.isArray(x) && x.length >= min;
 // file, label, max age in days, where its data date is, size bounds (bytes), and a shape test (true = fine, or a reason)
+const rlDays = d => d && (d.byReg ? d.byReg[REG] : d.days);
 const FILES = [
-  ['limitless.json', 'Limitless tournaments', 2, d => d.updated, [50e3, 5e6], d => !!(d.results && typeof d.results === 'object' && d.adj && +d.teams > 0) || 'no results, win shares or team count'],
-  ['meta_tour.json', 'Tournament sets', 2, d => d.updated, [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon'],
-  ['teams.json', 'Top teams', 2, d => d.updated, [2e3, 2e6], d => arr(d.teams, 5) || 'fewer than 5 teams'],
-  ['history.json', 'Usage history', 2, d => arr(d.days) && d.days[d.days.length - 1].d, [1e3, 2e6], d => arr(d.days, 2) || 'fewer than 2 days'],
-  ['model.json', 'Win model', 2, d => d.updated, [5e3, 2e6], d => !!(d.mons && typeof d.mons === 'object') || 'no Pokémon'],
+  ['limitless.json', 'Limitless tournaments', 2, d => d.updated, [50e3, 5e6], d => !!(d.results && typeof d.results === 'object' && d.adj && +d.teams > 0) || 'no results, win shares or team count', [20, d => !!(d.results && typeof d.results === 'object' && d.adj)]],
+  ['meta_tour.json', 'Tournament sets', 2, d => d.updated, [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)]],
+  ['teams.json', 'Top teams', 2, d => d.updated, [2e3, 2e6], d => arr(d.teams, 5) || 'fewer than 5 teams', [20, d => Array.isArray(d.teams)]],
+  ['history.json', 'Usage history', 2, d => (arr(d.days) && d.days[d.days.length - 1].d) || (inLaunch ? d.updated || (RG && RG.checked) || todayIso : ''), [1e3, 2e6], d => arr(d.days, 2) || 'fewer than 2 days', [20, d => Array.isArray(d.days)]],
+  ['model.json', 'Win model', 2, d => d.updated, [5e3, 2e6], d => !!(d.mons && typeof d.mons === 'object') || 'no Pokémon', [80, d => !!(d.mons && typeof d.mons === 'object')]],
   ['meta_ingame.json', 'op.gg in-game rankings (paused Nov 18: op.gg terms)', 9999, d => d.updated, [1e3, 1e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon'],
-  ['meta_ladder.json', 'Smogon monthly ladder stats', 40, d => d.month, [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon'],
-  ['events.json', 'Events', 3, d => d.updated, [10e3, 5e6], d => arr(d.events, 5) || 'fewer than 5 events'],
-  ['official.json', 'Official events (Victory Road + VR Pastes, top 64)', 3, d => d.updated, [1e3, 5e6], d => Array.isArray(d.events) || 'no event list'],
-  ['perf.json', 'Ratings inputs', 2, d => d.updated, [5e3, 2e6], d => !!(d.tour && d.adj) || 'no Limitless table'],
-  ['practice.json', 'Team preview practice', 4, d => d.updated, [5e3, 2e6], d => arr(d.rounds, 20) || 'fewer than 20 games'],
-  ['weekly.json', 'This week vs last week', 2, d => d.updated, [200, 1e6], d => d.v === 1 || 'unknown version'],
+  ['meta_ladder.json', 'Smogon monthly ladder stats', 40, d => d.month || (inLaunch ? d.updated || (RG && RG.checked) || todayIso : ''), [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)]],
+  ['events.json', 'Events', 3, d => d.updated, [10e3, 5e6], d => arr(d.events, 5) || 'fewer than 5 events', [20, d => Array.isArray(d.events)]],
+  ['official.json', 'Official events (Victory Road + VR Pastes, top 64)', 3, d => d.updated, [1e3, 5e6], d => Array.isArray(d.events) || 'no event list', [20, d => Array.isArray(d.events)]],
+  ['perf.json', 'Ratings inputs', 2, d => d.updated, [5e3, 2e6], d => !!(d.tour && d.adj) || 'no Limitless table', [20, d => !!(d.reg && d.reg.id === REG)]],
+  ['practice.json', 'Team preview practice', 4, d => d.updated, [5e3, 2e6], d => arr(d.rounds, 20) || 'fewer than 20 games', [20, d => Array.isArray(d.rounds)]],
+  ['weekly.json', 'This week vs last week', 2, d => d.updated, [200, 1e6], d => d.v === 1 || 'unknown version', [20, d => d.v === 1]],
   ['calendar.json', 'Event calendar', 3, d => d.checked || d.updated, [200, 1e6], d => Array.isArray(d.ev) || 'no event list'],
-  ['track.json', 'Ratings track record', 2, d => d.updated, [200, 1e6], d => d.v === 1 || 'unknown version'],
-  ['sources.json', 'Outside sources', 2, d => d.updated, [200, 2e6], () => true],
-  ['crosscheck.json', 'Cross-check', 2, d => d.updated, [200, 2e6], d => Array.isArray(d.checks) || 'no checks'],
-  ['ratings_log.json', 'Ratings snapshots', 2, d => d.updated, [200, 5e6], d => arr(d.days) || 'no snapshots'],
-  ['scoreboard.json', 'Ratings scoreboard', 3, d => d.updated, [200, 2e6], () => true]];
-for (const [file, label, days, dateOf, [lo, hi], shape] of FILES) {
+  ['track.json', 'Ratings track record', 2, d => d.updated, [200, 1e6], d => d.v === 1 || 'unknown version', [20, d => d.v === 1]],
+  ['sources.json', 'Outside sources', 2, d => d.updated, [200, 2e6], () => true, [20, () => true]],
+  ['crosscheck.json', 'Cross-check', 2, d => d.updated, [200, 2e6], d => Array.isArray(d.checks) || 'no checks', [20, d => Array.isArray(d.checks)]],
+  ['ratings_log.json', 'Ratings snapshots', 2, d => d.updated, [200, 5e6], d => arr(rlDays(d)) || 'no snapshots', [20, d => Array.isArray(rlDays(d))]],
+  ['scoreboard.json', 'Ratings scoreboard', 3, d => d.updated, [200, 2e6], () => true, [20, () => true]]];
+for (const [file, label, days, dateOf, [lo, hi], shape, thinRule] of FILES) {
   const n = size(file), d = n < 0 ? null : rd(file); let date = '', status = 'ok', why = '';
   if (n < 0) { status = 'missing'; why = 'file missing'; }
   else if (!d) { status = 'broken'; why = 'does not parse as JSON'; }
   else { try { date = String(dateOf(d) || ''); } catch (e) {} let s; try { s = shape(d); } catch (e) { s = 'unexpected shape'; }
-    if (s !== true) { status = 'broken'; why = s; }
-    else if (n < lo || n > hi) { status = 'broken'; why = `size ${(n / 1024).toFixed(1)} KB, expected ${(lo / 1024).toFixed(1)} KB – ${(hi / 1048576).toFixed(1)} MB`; } }
-  if (status !== 'ok') problems.push(`${label}: ${file} ${why}`);
+    const st = stampOf(d);
+    if (st && st !== REG && file !== 'meta_ingame.json') { status = 'broken'; why = `wrong regulation (${st}, expected ${REG})`; }
+    else if (s === true && n >= lo && n <= hi) { /* ok */ }
+    else if (inLaunch && thinRule && n >= thinRule[0] && n <= hi && thinRule[1](d) === true) { status = 'thin'; why = `day ${regDay} of ${REG}, data building`; }
+    else if (s !== true) { status = 'broken'; why = s; }
+    else { status = 'broken'; why = `size ${(n / 1024).toFixed(1)} KB, expected ${(lo / 1024).toFixed(1)} KB – ${(hi / 1048576).toFixed(1)} MB`; } }
+  if (status !== 'ok' && status !== 'thin') problems.push(`${label}: ${file} ${why}`);
   else if (!old(label, date, days)) status = 'stale';
   const a = age(date); rows.push({label, file, date: date.slice(0, 10), age: isNaN(a) ? '' : Math.max(0, Math.floor(a)), days, status, why}); }
 // official_perf.json (every team and match of the official events) is frozen since RK9 reads stopped on Nov 1: not checked
@@ -56,11 +66,11 @@ for (const [file, label, days, dateOf, [lo, hi], shape] of FILES) {
 // every part of the ratings inputs, by the date of its own data
 const PF = rd('perf.json');
 if (PF) { const want = {tour: ['Limitless table', 2], adj: ['Limitless win shares', 2], ingame: ['op.gg order (paused Nov 18)', 9999], official: ['Official events table (frozen)', 28], smogon: ['Smogon 1760+ usage', 40], ladder: ['Showdowntier ladder', 3]};
-  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official') {} /* retired Nov 1 (RK9 terms): expected to be absent, no warning (Nov 7) */ else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
+  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official' || inLaunch) {} /* retired Nov 1, or thin in first 14 days */ else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
     if (k === 'official' && PF[k].frozen) { const a = age(PF[k].asOf || PF[k].updated); if (a > 21) console.log(`::warning::Ratings inputs: the frozen official-events table (newest event ${PF[k].asOf}) leaves the page in ${Math.max(0, Math.ceil(28 - a))} days; no permitted whole-field source yet`); continue; }
     old(`Ratings inputs, ${label}`, PF[k].updated, days); }
   for (const L of (PF.outside && PF.outside.lists) || []) old(`Outside tier list ${L.name}`, L.date, 3);
-  if (!PF.outside) problems.push('Ratings inputs: no outside tier lists'); }
+  if (!PF.outside && !inLaunch) problems.push('Ratings inputs: no outside tier lists'); }
 const S = rd('sources.json'); if (S && S.problems && S.problems.length) console.log(`::warning::Outside sources with problems today: ${S.problems.join(' | ')}`);
 // the newest tournament should be recent too (catches Limitless returning nothing new while the file still gets a new date)
 try { const idx = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/index.json'), 'utf8')); const last = Math.max(...Object.values(idx.tournaments).map(t => Date.parse(t.d)));
@@ -91,7 +101,7 @@ if (X) for (const c of X.checks || []) { if (c.skipped) { console.log(`cross-che
   const on = d => new Set(((SK && SK.runs) || []).filter(r => r.day === d).flatMap(r => r.steps || []));
   const t = on(today), y = on(yday); for (const st of t) if (y.has(st)) problems.push(`Daily job: the "${st}" step was skipped two days in a row (${yday} and ${today}); see the run log for why`); }
 // the report: what's wrong first, then every file with its data date
-const day = new Date(now).toISOString().slice(0, 10), ICON = {ok: '✅', stale: '🟠 stale', missing: '❌ missing', broken: '❌ broken'};
+const day = new Date(now).toISOString().slice(0, 10), ICON = {ok: '✅', thin: '🟡 thin', stale: '🟠 stale', missing: '❌ missing', broken: '❌ broken'};
 const md = [problems.length ? `## ❌ Daily data problem (${day})\n\nThe page keeps showing the last good data and says so on Home and Meta, but these need a look:\n\n${problems.map(p => `- ${p}`).join('\n')}\n`
   : `## ✅ Daily data healthy (${day})\n`,
   '| Source | File | Data date | Days old | Limit | Status |', '|---|---|---|---|---|---|',

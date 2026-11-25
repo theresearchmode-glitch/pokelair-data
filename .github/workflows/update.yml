@@ -76,6 +76,8 @@ jobs:
       - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium) || node skip.mjs "browser install skipped"
       # the ratings' daily inputs (all of out/perf.json) for the morning refresh; checked by health.mjs
       - run: node perf.mjs || node skip.mjs "perf skipped"
+      # thin-data counts for the active regulation (out/regstate.json)
+      - run: node regstate.mjs || node skip.mjs "regstate skipped"
       # our numbers against the outside sources (out/crosscheck.json; summary and warnings in the Data health step)
       - run: node crosscheck.mjs || node skip.mjs "crosscheck skipped"
       - run: node ratings-snapshot.mjs || node skip.mjs "ratings snapshot skipped"
