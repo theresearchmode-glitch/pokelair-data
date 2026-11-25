@@ -14,9 +14,12 @@ import {offFormat, oddEvents, activeReg, sameReg, REG_END, nextRegIds} from './f
 import {stampReg} from './reg-stamp.mjs';
 import {politeFetch} from './http.mjs';
 import {lkey, lmap, reportUnknown, canonSet, canonReport, canonNature} from './names.mjs';
+import {primaryStatus, fetchBackupEvents} from './sources/fallback.mjs';
+import {victoryRoadAdapter} from './sources/victoryroad.mjs';
+import {showdownOtsAdapter} from './sources/showdown-ots.mjs';
 // the regulation every number is built from (out/reg.json from reg.mjs; Reg M-C until a newer one has enough data)
 const RG = activeReg();
-const API = 'https://play.limitlesstcg.com/api', FORMAT = RG.id, MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500);
+const API = 'https://play.limitlesstcg.com/api', FORMAT = RG.id, MAX_FETCH = +(process.env.MAX_FETCH || 40), GAP_MS = +(process.env.GAP||6500), USE_BACKUPS = process.env.BACKUP_SOURCES === '1';
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 fs.mkdirSync('data/t', {recursive: true}); fs.mkdirSync('data/t2', {recursive: true}); fs.mkdirSync('data/p', {recursive: true}); fs.mkdirSync('out', {recursive: true});
@@ -43,13 +46,20 @@ const key = lkey; // shared with weekly.mjs and events.mjs (names.mjs)
 
 // 1) tournament list, then standings for new ones and for anything from the last 3 days (results can still change)
 const list = [];
-for (let page = 1; page < 30; page++) { const r = await get(`/tournaments?game=VGC&format=${FORMAT}&limit=100&page=${page}`); if (!r.length) break; list.push(...r); }
-const prevF = Object.keys(REG_END).find(k => nextRegIds(k)[0] === FORMAT);
-if (prevF) { const seenIds = new Set(list.map(t => t.id)), cut = Date.parse(REG_END[prevF]);
-  for (let page = 1; page <= 3; page++) { const r = await get(`/tournaments?game=VGC&format=${prevF}&limit=100&page=${page}`); if (!r.length) break;
-    const kept = r.filter(t => !seenIds.has(t.id) && Date.parse(t.date) >= cut && sameReg({f: t.format || prevF, d: t.date}, FORMAT));
-    for (const t of kept) { seenIds.add(t.id); list.push(t); }
-    if (!r.some(t => Date.parse(t.date) >= cut)) break; } }
+let primaryFailed = false;
+try {
+  for (let page = 1; page < 30; page++) { const r = await get(`/tournaments?game=VGC&format=${FORMAT}&limit=100&page=${page}`); if (!r.length) break; list.push(...r); }
+  const prevF = Object.keys(REG_END).find(k => nextRegIds(k)[0] === FORMAT);
+  if (prevF) { const seenIds = new Set(list.map(t => t.id)), cut = Date.parse(REG_END[prevF]);
+    for (let page = 1; page <= 3; page++) { const r = await get(`/tournaments?game=VGC&format=${prevF}&limit=100&page=${page}`); if (!r.length) break;
+      const kept = r.filter(t => !seenIds.has(t.id) && Date.parse(t.date) >= cut && sameReg({f: t.format || prevF, d: t.date}, FORMAT));
+      for (const t of kept) { seenIds.add(t.id); list.push(t); }
+      if (!r.some(t => Date.parse(t.date) >= cut)) break; } }
+} catch (err) {
+  if (!USE_BACKUPS) throw err;
+  primaryFailed = true;
+  console.log(`::warning::update: Limitless list failed (${err.message}); checking backup sources`);
+}
 // v2 files (full sheets + pairings) are backfilled for older tournaments too, newest first, within MAX_FETCH.
 const now = Date.now(), hasP = id => fs.existsSync(`data/p/${id}.json`);
 const has2 = id => { const T = readJSON(`data/t2/${id}.json`, null); return !!(T && T.v === 3) && hasP(id); };
@@ -80,6 +90,26 @@ for (const t of todo) {
     logged = true;
     index.tournaments[t.id] = {d: t.date, p: t.players, name: t.name, f: t.format || FORMAT}; fetched++;
   } catch (err) { console.log('skip', t.id, err.message); }
+}
+if (USE_BACKUPS) {
+  const st = primaryStatus({list: primaryFailed ? null : list, index, format: FORMAT});
+  if (!st.ok) {
+    console.log(`::warning::update: primary source ${st.reason} (newest ${st.newest || 'none'}); running backup adapters`);
+    const bk = await fetchBackupEvents({format: FORMAT, sdFormat: RG.sd, index, adapters: [victoryRoadAdapter, showdownOtsAdapter], maxFetch: Math.max(1, MAX_FETCH - fetched)});
+    const W = w => w == null ? null : String(w) === '0' || String(w) === '-1' ? String(w) : pid(w);
+    for (const t of bk.tournaments) {
+      const s = bk.standingsById.get(t.id) || [], P = bk.pairingsById.get(t.id) || [];
+      if (!s.length) continue;
+      const e = s.map(x => [pid(x.player || x.name || ''), x.record ? x.record.wins : 0, x.record ? x.record.losses : 0, (x.decklist || []).map(key)]);
+      fs.writeFileSync(`data/t/${t.id}.json`, JSON.stringify({d: t.date, p: t.players, e, f: t.format || FORMAT}));
+      const e2 = s.map(x => ({id: pid(x.player || ''), nm: pid(x.player || x.name || ''), pl: x.placing ?? null, w: x.record ? x.record.wins : 0, l: x.record ? x.record.losses : 0, ti: x.record ? (x.record.ties || 0) : 0, dk: (x.decklist || []).map(mv)}));
+      fs.writeFileSync(`data/t2/${t.id}.json`, JSON.stringify({v: 3, d: t.date, p: t.players, name: t.name, f: t.format || FORMAT, e: e2}));
+      const pr = P.map(x => [x.round ?? null, pid(x.player1 ?? ''), pid(x.player2 ?? ''), W(x.winner)]);
+      fs.writeFileSync(`data/p/${t.id}.json`, JSON.stringify(pr));
+      index.tournaments[t.id] = {d: t.date, p: t.players, name: t.name, f: t.format || FORMAT}; fetched++;
+    }
+    if (bk.used.length) console.log(`backup sources added: ${bk.used.join(', ')}`);
+  }
 }
 fs.writeFileSync('data/index.json', JSON.stringify(index));
 console.log(`list ${list.length} tournaments, fetched ${fetched}, cached ${Object.keys(index.tournaments).length}`);

@@ -1,0 +1,100 @@
+{
+  "vrPagesList": [
+    {
+      "id": 1001,
+      "slug": "2027-sample-city-regional",
+      "modified": "2026-11-22T18:00:00",
+      "title": {"rendered": "2027 Sample City Regional Championships"}
+    },
+    {
+      "id": 1002,
+      "slug": "2027-future-regmd-regional",
+      "modified": "2026-12-06T18:00:00",
+      "title": {"rendered": "2027 Future City Regional Championships"}
+    },
+    {
+      "id": 1003,
+      "slug": "2027-already-indexed-regional",
+      "modified": "2026-11-15T18:00:00",
+      "title": {"rendered": "2027 Harbor Town Regional Championships"}
+    }
+  ],
+  "vrPagesBySlug": {
+    "2027-sample-city-regional": [
+      {
+        "id": 1001,
+        "slug": "2027-sample-city-regional",
+        "modified": "2026-11-22T18:00:00",
+        "title": {"rendered": "2027 Sample City Regional Championships"},
+        "content": {
+          "rendered": "<table><tr><th>Date</th><th>21-22 November 2026</th></tr><tr><th>Attendance</th><th>512 players (MA)</th></tr><tr><th>Videogame</th><th>Pokemon Champions</th></tr><tr><th>Season</th><th>2027 Regulation Set M-C</th></tr></table><table class=\"infobox2\"><thead><tr><th>#</th><th>Record</th><th>Country</th><th>Player</th><th>CP</th><th>Team</th><th>OTS</th></tr></thead><tbody><tr><td>1</td><td>14-2</td><td>US</td><td>TrainerAlpha</td><td>200</td><td>team</td><td><a href=\"https://www.vrpastes.com/fakePaste1\">OTS</a></td></tr><tr><td>2</td><td>13-3</td><td>CA</td><td>TrainerBeta</td><td>160</td><td>team</td><td><a href=\"https://www.vrpastes.com/fakePaste2\">OTS</a></td></tr></tbody></table>"
+        }
+      }
+    ],
+    "2027-future-regmd-regional": [
+      {
+        "id": 1002,
+        "slug": "2027-future-regmd-regional",
+        "modified": "2026-12-06T18:00:00",
+        "title": {"rendered": "2027 Future City Regional Championships"},
+        "content": {
+          "rendered": "<table><tr><th>Date</th><th>5-6 December 2026</th></tr><tr><th>Attendance</th><th>480 players (MA)</th></tr><tr><th>Videogame</th><th>Pokemon Champions</th></tr><tr><th>Season</th><th>2027 Regulation Set M-D</th></tr></table><table class=\"infobox2\"><thead><tr><th>#</th><th>Record</th><th>Country</th><th>Player</th><th>CP</th><th>Team</th><th>OTS</th></tr></thead><tbody><tr><td>1</td><td>14-1</td><td>US</td><td>TrainerGamma</td><td>200</td><td>team</td><td><a href=\"https://www.vrpastes.com/fakePaste1\">OTS</a></td></tr></tbody></table>"
+        }
+      }
+    ],
+    "2027-already-indexed-regional": [
+      {
+        "id": 1003,
+        "slug": "2027-already-indexed-regional",
+        "modified": "2026-11-15T18:00:00",
+        "title": {"rendered": "2027 Harbor Town Regional Championships"},
+        "content": {
+          "rendered": "<table><tr><th>Date</th><th>14-15 November 2026</th></tr><tr><th>Attendance</th><th>600 players (MA)</th></tr><tr><th>Videogame</th><th>Pokemon Champions</th></tr><tr><th>Season</th><th>2027 Regulation Set M-C</th></tr></table><table class=\"infobox2\"><thead><tr><th>#</th><th>Record</th><th>Country</th><th>Player</th><th>CP</th><th>Team</th><th>OTS</th></tr></thead><tbody><tr><td>1</td><td>15-1</td><td>JP</td><td>TrainerDelta</td><td>200</td><td>team</td><td><a href=\"https://www.vrpastes.com/fakePaste1\">OTS</a></td></tr></tbody></table>"
+        }
+      }
+    ]
+  },
+  "vrPastes": {
+    "fakePaste1": {
+      "title": "Sample Team 1",
+      "is_encrypted": false,
+      "teams": [
+        {"species": "Sneasler", "item": "Focus Sash", "ability": "Unburden", "nature": "Jolly", "moves": ["Close Combat", "Dire Claw", "Fake Out", "Protect"]},
+        {"species": "Incineroar", "item": "Sitrus Berry", "ability": "Intimidate", "nature": "Careful", "moves": ["Fake Out", "Flare Blitz", "Parting Shot", "Helping Hand"]},
+        {"species": "Gholdengo", "item": "Life Orb", "ability": "Good as Gold", "nature": "Modest", "moves": ["Make It Rain", "Shadow Ball", "Nasty Plot", "Protect"]},
+        {"species": "Rillaboom", "item": "Miracle Seed", "ability": "Grassy Surge", "nature": "Adamant", "moves": ["Grassy Glide", "Wood Hammer", "Fake Out", "U-turn"]},
+        {"species": "Garchomp", "item": "Garchompite", "ability": "Rough Skin", "nature": "Jolly", "moves": ["Earthquake", "Dragon Claw", "Stomping Tantrum", "Protect"]},
+        {"species": "Whimsicott", "item": "Mental Herb", "ability": "Prankster", "nature": "Timid", "moves": ["Tailwind", "Moonblast", "Encore", "Protect"]}
+      ]
+    },
+    "fakePaste2": {
+      "title": "Sample Team 2",
+      "is_encrypted": false,
+      "teams": [
+        {"species": "Kingambit", "item": "Black Glasses", "ability": "Defiant", "nature": "Adamant", "moves": ["Kowtow Cleave", "Sucker Punch", "Iron Head", "Protect"]},
+        {"species": "Charizard", "item": "Charizardite Y", "ability": "Blaze", "nature": "Timid", "moves": ["Heat Wave", "Solar Beam", "Overheat", "Protect"]},
+        {"species": "Indeedee-F", "item": "Psychic Seed", "ability": "Psychic Surge", "nature": "Bold", "moves": ["Follow Me", "Helping Hand", "Psychic", "Trick Room"]},
+        {"species": "Archaludon", "item": "Leftovers", "ability": "Stamina", "nature": "Modest", "moves": ["Electro Shot", "Flash Cannon", "Dragon Pulse", "Protect"]},
+        {"species": "Pelipper", "item": "Focus Sash", "ability": "Drizzle", "nature": "Modest", "moves": ["Weather Ball", "Hurricane", "Tailwind", "Protect"]},
+        {"species": "Basculegion", "item": "Choice Scarf", "ability": "Adaptability", "nature": "Adamant", "moves": ["Wave Crash", "Last Respects", "Aqua Jet", "Flip Turn"]}
+      ]
+    }
+  },
+  "sdSearch": [
+    {"id": "gen9championsvgc2026regmcbo3-100001", "formatid": "gen9championsvgc2026regmcbo3", "uploadtime": 1795350000, "players": ["PlayerOne", "PlayerTwo"]},
+    {"id": "gen9championsvgc2026regmcbo3-100002", "formatid": "gen9championsvgc2026regmcbo3", "uploadtime": 1795353600, "players": ["PlayerTwo", "PlayerThree"]},
+    {"id": "gen9championsvgc2026regmdbo3-999999", "formatid": "gen9championsvgc2026regmdbo3", "uploadtime": 1796550000, "players": ["PlayerFour", "PlayerFive"]}
+  ],
+  "sdReplays": {
+    "gen9championsvgc2026regmcbo3-100001": {
+      "id": "gen9championsvgc2026regmcbo3-100001",
+      "players": ["PlayerOne", "PlayerTwo"],
+      "log": "|player|p1|PlayerOne|1|\n|player|p2|PlayerTwo|2|\n|showteam|p1|Sneasler||FocusSash|Unburden|CloseCombat,DireClaw,FakeOut,Protect|Jolly|||||50|,,,,,]Incineroar||SitrusBerry|Intimidate|FakeOut,FlareBlitz,PartingShot,HelpingHand|Careful|||||50|,,,,,]Gholdengo||LifeOrb|GoodasGold|MakeItRain,ShadowBall,NastyPlot,Protect|Modest|||||50|,,,,,]Rillaboom||MiracleSeed|GrassySurge|GrassyGlide,WoodHammer,FakeOut,Uturn|Adamant|||||50|,,,,,]Garchomp||Garchompite|RoughSkin|Earthquake,DragonClaw,StompingTantrum,Protect|Jolly|||||50|,,,,,]Whimsicott||MentalHerb|Prankster|Tailwind,Moonblast,Encore,Protect|Timid|||||50|,,,,,|\n|showteam|p2|Kingambit||BlackGlasses|Defiant|KowtowCleave,SuckerPunch,IronHead,Protect|Adamant|||||50|,,,,,]Charizard||CharizarditeY|Blaze|HeatWave,SolarBeam,Overheat,Protect|Timid|||||50|,,,,,]Indeedee-F||PsychicSeed|PsychicSurge|FollowMe,HelpingHand,Psychic,TrickRoom|Bold|||||50|,,,,,]Archaludon||Leftovers|Stamina|ElectroShot,FlashCannon,DragonPulse,Protect|Modest|||||50|,,,,,]Pelipper||FocusSash|Drizzle|WeatherBall,Hurricane,Tailwind,Protect|Modest|||||50|,,,,,]Basculegion||ChoiceScarf|Adaptability|WaveCrash,LastRespects,AquaJet,FlipTurn|Adamant|||||50|,,,,,|\n|win|PlayerOne"
+    },
+    "gen9championsvgc2026regmcbo3-100002": {
+      "id": "gen9championsvgc2026regmcbo3-100002",
+      "players": ["PlayerTwo", "PlayerThree"],
+      "log": "|player|p1|PlayerTwo|2|\n|player|p2|PlayerThree|3|\n|showteam|p1|Kingambit||BlackGlasses|Defiant|KowtowCleave,SuckerPunch,IronHead,Protect|Adamant|||||50|,,,,,]Charizard||CharizarditeY|Blaze|HeatWave,SolarBeam,Overheat,Protect|Timid|||||50|,,,,,]Indeedee-F||PsychicSeed|PsychicSurge|FollowMe,HelpingHand,Psychic,TrickRoom|Bold|||||50|,,,,,]Archaludon||Leftovers|Stamina|ElectroShot,FlashCannon,DragonPulse,Protect|Modest|||||50|,,,,,]Pelipper||FocusSash|Drizzle|WeatherBall,Hurricane,Tailwind,Protect|Modest|||||50|,,,,,]Basculegion||ChoiceScarf|Adaptability|WaveCrash,LastRespects,AquaJet,FlipTurn|Adamant|||||50|,,,,,|\n|showteam|p2|Sneasler||FocusSash|Unburden|CloseCombat,DireClaw,FakeOut,Protect|Jolly|||||50|,,,,,]Incineroar||SitrusBerry|Intimidate|FakeOut,FlareBlitz,PartingShot,HelpingHand|Careful|||||50|,,,,,]Gholdengo||LifeOrb|GoodasGold|MakeItRain,ShadowBall,NastyPlot,Protect|Modest|||||50|,,,,,]Rillaboom||MiracleSeed|GrassySurge|GrassyGlide,WoodHammer,FakeOut,U-turn|Adamant|||||50|,,,,,]Garchomp||Garchompite|RoughSkin|Earthquake,DragonClaw,StompingTantrum,Protect|Jolly|||||50|,,,,,]Whimsicott||MentalHerb|Prankster|Tailwind,Moonblast,Encore,Protect|Timid|||||50|,,,,,|\n|win|PlayerTwo"
+    }
+  }
+}
