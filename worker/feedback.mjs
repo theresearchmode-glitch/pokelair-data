@@ -17,8 +17,15 @@ export default {
       try { body = JSON.parse(raw.text); } catch (e) { return Response.json({error: 'Invalid JSON'}, {status: 400}); }
       const v = validateFeedback(body);
       if (v.error) return Response.json({error: v.error}, {status: 400});
+      /* Workers rate limit (Nov 25: the free plan's one WAF rule is Cloudflare's leaked-credential check, so the limit lives here).
+         The key is the sender's IP, held only by Cloudflare's limiter for its 60 s window; we never store or log it. No binding = no limit. */
+      if (env.FEEDBACK_RL && typeof env.FEEDBACK_RL.limit === 'function') {
+        const ip = request.headers.get('CF-Connecting-IP') || 'unknown';
+        const {success} = await env.FEEDBACK_RL.limit({key: 'fb:' + ip});
+        if (!success) return Response.json({error: 'Too many messages; try again in a minute'}, {status: 429});
+      }
       const token = request.headers.get('CF-Turnstile-Response') || request.headers.get('X-Turnstile-Token') || '';
-      const human = await verifyTurnstile(token, env.TURNSTILE_SECRET);
+      const human = await verifyTurnstile(token, env.TURNSTILE_SECRET, fetch, env);
       if (!human) return Response.json({error: 'Verification failed'}, {status: 403});
       const at = new Date().toISOString().slice(0, 10);
       await env.DB.prepare('INSERT INTO feedback (at, page, kind, text) VALUES (?, ?, ?, ?)')
