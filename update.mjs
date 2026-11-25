@@ -10,7 +10,7 @@ import {pid, hasKey} from './pid.mjs';
 import {updateModes} from './tour-modes.mjs';
 import fs from 'node:fs';
 import {topcut} from './topcut.mjs';
-import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
+import {offFormat, oddEvents, activeReg, sameReg, REG_END, nextRegIds} from './formats.mjs';
 import {stampReg} from './reg-stamp.mjs';
 import {politeFetch} from './http.mjs';
 import {lkey, lmap, reportUnknown, canonSet, canonReport, canonNature} from './names.mjs';
@@ -44,6 +44,12 @@ const key = lkey; // shared with weekly.mjs and events.mjs (names.mjs)
 // 1) tournament list, then standings for new ones and for anything from the last 3 days (results can still change)
 const list = [];
 for (let page = 1; page < 30; page++) { const r = await get(`/tournaments?game=VGC&format=${FORMAT}&limit=100&page=${page}`); if (!r.length) break; list.push(...r); }
+const prevF = Object.keys(REG_END).find(k => nextRegIds(k)[0] === FORMAT);
+if (prevF) { const seenIds = new Set(list.map(t => t.id)), cut = Date.parse(REG_END[prevF]);
+  for (let page = 1; page <= 3; page++) { const r = await get(`/tournaments?game=VGC&format=${prevF}&limit=100&page=${page}`); if (!r.length) break;
+    const kept = r.filter(t => !seenIds.has(t.id) && Date.parse(t.date) >= cut && sameReg({f: t.format || prevF, d: t.date}, FORMAT));
+    for (const t of kept) { seenIds.add(t.id); list.push(t); }
+    if (!r.some(t => Date.parse(t.date) >= cut)) break; } }
 // v2 files (full sheets + pairings) are backfilled for older tournaments too, newest first, within MAX_FETCH.
 const now = Date.now(), hasP = id => fs.existsSync(`data/p/${id}.json`);
 const has2 = id => { const T = readJSON(`data/t2/${id}.json`, null); return !!(T && T.v === 3) && hasP(id); };

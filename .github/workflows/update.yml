@@ -89,6 +89,11 @@ jobs:
           NP_PID_KEY: ${{ secrets.NP_PID_KEY || secrets.THE_NP_PID_KEY }}
       # page storage limit (Nov 10; after the name guard, so the parts are made from files with IDs only): any document the morning refresh writes that is over 200 KB is split into two parts in
       # out/split/ (nothing dropped; the page joins them back). The refresh writes those parts instead of the whole file.
+      # switch-day regulation guard (Nov 24, HH): any out/ file stamped with another regulation (or unstamped after a switch) is
+      # replaced by its empty state, so Commit never ships two regulations side by side. Never fails the run. Runs BEFORE
+      # split-docs.mjs, so out/split/ is built from the guarded files.
+      - name: Regulation guard
+        run: node reg-guard.mjs
       - run: node split-docs.mjs || node skip.mjs "page-size split skipped (a document too big even in two parts)"
       - name: Commit
         run: |
