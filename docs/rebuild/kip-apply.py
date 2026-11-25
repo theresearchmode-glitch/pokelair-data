@@ -13,6 +13,7 @@ _top = subprocess.run(['git', 'rev-parse', '--show-toplevel'], capture_output=Tr
 _main = subprocess.run(['git', 'worktree', 'list', '--porcelain'], capture_output=True, text=True).stdout.split('\n')[0].replace('worktree ', '').strip()
 if os.path.realpath(_top) == os.path.realpath(_main): sys.exit('kip-apply.py: run it in a scratch worktree, never in the main checkout')
 t = open(ans, encoding='utf8').read().replace('https://www.google.com/search?q=', '').replace('%7B', '{').replace('%7D', '}')  # the copy link-ified '{}' as %7B%7D
+t = re.sub(r'https://www\.google\.com/url\?sa=E\\?&source=gmail\\?&q=', '', t)  # Gmail redirect wrappers around URLs (job 23)
 def git(*a, check=True): return subprocess.run(['git', *a], capture_output=True, text=True, check=check)
 git('fetch', '-q', 'origin', base, check=False); git('checkout', '-q', '-f', '-B', br, base)
 out = []

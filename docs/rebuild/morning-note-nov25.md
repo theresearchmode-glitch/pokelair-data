@@ -16,5 +16,7 @@
 - Kip job 24 applied: alt/gemini-dec2 now has best-of-3 tagging (18/18), the SHADOW combo model + shadow scoreboard
   (off = live model byte-identical; test passes), M-D research in regulation.json/docs. alt/gemini-j19: security test + headers;
   ONE build.mjs hunk (the CSP wiring) didn't apply: fix by hand.
+- Kip job 25 fixed all 3: j16 calc tests 14/14; j19 JSON-LD ALL PASSED (the 'bug' was a Gmail redirect the copy wrapped
+  around a URL; 2 more removed in other tests); dec2 health now keeps outage alarms strict on M-D day one, all Dec 2 tests pass.
 ## NEXT
 - Fix the 3 above; GitHub results for all branches; 7:41 AM Preview update; 4 PM: back to full work mode.
