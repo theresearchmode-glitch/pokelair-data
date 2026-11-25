@@ -2626,3 +2626,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:45 PM: Design call (HH authority): Events ticket wall sprites shrink to fit instead of being cut (iPad #7); 0 px change where nothing was cut. Flag for Sim: at 1100-1279 they get small (26-31 px); alternative is 2 columns there.
 - 6:46 PM: Sim: events sprites fix looks fine (keep the shrink).
 - 6:47 PM: Helper checked Kip 35 against the REAL model.mjs: variant still better, delta -0.00043 [CI -0.00071, -0.00017], all 4 windows; before the sealed date alone -0.00053 [-0.00108, -0.00006]; accuracy unchanged (log-loss gain only); unseen team 72.2 -> 79.8 with the page formula. Note: windows 2-4 use the sealed set (events >= Nov 9). Next helper: build it into model.mjs (locked settings) + before/after scores.
+- 6:49 PM: Design call (HH authority): Meta 'Jump to' tier chips 3 + 3 at 700-999 (iPad #5); unchanged from 1000 up.
