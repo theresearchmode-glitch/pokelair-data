@@ -25,8 +25,10 @@ for (const [what, re] of ENGINE_USES) if (!uses(re)) fail('engine does not use '
 const bad = {meta: [], acc: [], prio: [], target: [], flags: [], sec: [], self: [], mh: [], ohko: [], fixed: [], varRule: []};
 const VAR_OK = new Set(['wt', 'wtr', 'lowhp', 'gyro', 'eball', 'half', 'fullhp', 'userhp', 'hex', 'respects', 'punish', 'ragefist', 'fling', 'beatup', 'gambit']), VAR_NOTE = new Set(['counter', 'endeavor']);
 const RARE_VAR = new Set(['psywave', 'gift', 'trump', 'magnitude', 'present', 'stockpile']);
+// Dec 2, 2026 patch (official news 877): accuracies the reference may not have yet (Showdown hadn't on Nov 25); same values once it does
+const PATCH_DEC2_ACC = {'Rock Slide': 95, 'Screech': 100, 'Steel Wing': 100, 'Metal Sound': 100, 'Frost Breath': 100};
 for (const [n, , cat] of MOVES) { const ch = CH.moves.get(n), d = ch && ch.exists ? ch : Dex.moves.get(n), c = ch && ch.exists ? null : G0.moves.get(toID(n)), m = META[n]; if (!d || !d.exists) continue; if (!m) { bad.meta.push(n); continue; }
-  const a = d.accuracy === true ? 100 : d.accuracy; if ((m.a || 100) !== a || (a < 100 && ACC[n] !== a)) bad.acc.push(`${n} ${a} (ours ${m.a || 100}/${ACC[n] || 100})`);
+  const a = PATCH_DEC2_ACC[n] ?? (d.accuracy === true ? 100 : d.accuracy); if ((m.a || 100) !== a || (a < 100 && ACC[n] !== a)) bad.acc.push(`${n} ${a} (ours ${m.a || 100}/${ACC[n] || 100})`);
   const pr = c && c.priority != null ? c.priority : d.priority; if ((m.p || 0) !== pr) bad.prio.push(`${n} ${pr} (ours ${m.p || 0})`);
   const tg = (c && c.target) || d.target; if (m.t !== tg) bad.target.push(`${n} ${tg} (ours ${m.t})`);
   const F = (c && c.flags) || d.flags || {}, D = d.flags || {}, want = (F.contact ? 'c' : '') + ((F.sound ?? D.sound) ? 's' : '') + ((F.punch ?? D.punch) ? 'p' : '') + ((F.bite ?? D.bite) ? 'b' : '') + ((F.slicing ?? D.slicing) ? 'k' : '') + ((F.pulse ?? D.pulse) ? 'u' : '') + ((F.bullet ?? D.bullet) ? 'l' : '') + (D.wind ? 'w' : '') + (D.charge ? 'C' : '') + (D.recharge ? 'R' : '') + (D.heal ? 'h' : '');
