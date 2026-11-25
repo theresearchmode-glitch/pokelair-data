@@ -16,7 +16,7 @@ function teamCode() {
   if (!s.length) return '';
   const loaded = S.teams.find(t => t.id === S.loadedId), o = {v: 1, f, s}; if (loaded && loaded.name) o.n = String(loaded.name).slice(0, 60);
   return tlB64(JSON.stringify(o)); }
-function teamLinkBase() { try { const h = location.hostname; if (/^https?:$/.test(location.protocol) && h && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) && h !== 'localhost' && h !== '127.0.0.1') return location.origin + location.pathname; } catch (e) {} return window.__NP_PUBLIC ? 'https://www.google.com/url?sa=E\&source=gmail\&q=https://nastyplot.org/' : TL_ART; }
+function teamLinkBase() { try { const h = location.hostname; if (/^https?:$/.test(location.protocol) && h && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) && h !== 'localhost' && h !== '127.0.0.1') return location.origin + location.pathname; } catch (e) {} return window.__NP_PUBLIC ? 'https://nastyplot.org/' : TL_ART; }
 function teamLink() { const c = teamCode(); return c ? teamLinkBase() + '#team=' + c : ''; }
 // accepts a full link, "team=<code>" or the bare code; returns {f, n, slots} or null
 function decodeTeam(text) {
