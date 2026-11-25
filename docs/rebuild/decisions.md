@@ -2576,3 +2576,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:42 PM: Main: 44ea888e fast-forwarded (hello@nastyplot.org in the data jobs' User-Agent and legal-sources); GitHub green first.
 - 2:43 PM: Sim: Scout's subscription ends in 3-4 days (about Nov 28-29). Squad jobs drafted: Kip 33 (review of today's public-site code), Scout (review of the switch-day runbook), Dos (full run on design6 after tonight's Cloudflare job).
 - 2:45 PM: Sim sent Kip job 33 (public-site code review) and Scout's switch-runbook review. Dos baseline job waits until after tonight's Cloudflare job.
+- 2:51 PM: Kip job 33: 7 findings checked; F3-F6 fixed (og:description, canonical, stale pages, .html address, quoted fonts); F2 not real; F7 fine; F1 (Cloudflare redirect order) sent to the routing helper.
