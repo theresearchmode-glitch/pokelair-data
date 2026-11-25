@@ -31,11 +31,24 @@ const R = await p.evaluate(() => window.__ev(`(() => {
     const gp = ms => { try { const r = gamePlan(ms).rows.find(x => x.k === 'commander'); return r ? r.st + ' | ' + r.who + ' | ' + r.note : 'none'; } catch (e) { return 'error: ' + String(e.message).slice(0, 80); } };
     const tgC = () => mon(TG, 'Commander', ['Draco Meteor', 'Muddy Water', 'Protect']);
     const checks = {both: gp([dz(), tgC(), foe('Kingambit'), foe('Clefable')]), noDz: gp([tgC(), foe('Garchomp'), foe('Kingambit'), foe('Clefable')]), storm: gp([dz(), mon(TG, 'Storm Drain', ['Draco Meteor']), foe('Kingambit')]), none: gp([foe('Garchomp'), foe('Kingambit'), foe('Clefable')])};
-    return JSON.stringify({withC, noC, theirsC, taken, checks}); }
+    /* Neutralizing Gas blocks Commander on entry (Bulbapedia / Showdown) */
+    const WZ = mk('Weezing', ['Poison'], ['Neutralizing Gas', 'Levitate'], [65, 90, 120, 85, 70, 60]);
+    const ngas = run([dz(), mon(TG, 'Commander', ['Draco Meteor', 'Muddy Water', 'Protect']), foe('Kingambit'), foe('Clefable')], [mon(WZ, 'Neutralizing Gas', ['Sludge Bomb', 'Protect']), mon(byName.get('Garchomp'), 'Rough Skin', ['Earthquake', 'Dragon Claw', 'Protect']), foe('Rillaboom'), foe('Sneasler')]);
+    /* Non-Tatsugiri with Commander must NOT trigger Commander (Showdown data/abilities.ts:619) */
+    const fakeCmd = run([dz(), mon(byName.get('Clefable'), 'Commander', ['Moonblast', 'Protect']), foe('Kingambit'), foe('Garchomp')], th());
+    /* Unaware attacker ignores Dondozo's +2 Def / SpD */
+    const CL = byName.get('Clefable'), uHit = st => { const h = bestHitOn(CL, MV(['Moonblast']), DZ, {ability: 'Unaware', item: ''}, null, st ? {dStage: {def: 2, spd: 2}} : {}); return h ? h.r.max : null; };
+    const unaware = [uHit(0), uHit(1)];
+    /* Commanded Dondozo Body Press reports 'at +2 Defense' in stageNote */
+    const bpRun = run([mon(DZ, 'Unaware', ['Body Press'], 'Leftovers'), mon(TG, 'Commander', ['Protect']), foe('Kingambit'), foe('Clefable')], th());
+    /* Commanding Tatsugiri carrying Quick Guard must NOT block our Fake Out into Dondozo (act(opp) filters it) */
+    const qgRun = run([mon(byName.get('Incineroar'), 'Blaze', ['Fake Out', 'Flare Blitz']), mon(byName.get('Garchomp'), 'Rough Skin', ['Dragon Claw']), foe('Rillaboom'), foe('Sneasler')],
+      [mon(DZ, 'Unaware', ['Wave Crash']), mon(TG, 'Commander', ['Quick Guard', 'Wide Guard']), foe('Kingambit'), foe('Clefable')]);
+    return JSON.stringify({withC, noC, theirsC, taken, checks, ngas, fakeCmd, unaware, bpRun, qgRun}); }
   finally { had[0] ? byName.set('Dondozo', had[0]) : byName.delete('Dondozo'); had[1] ? byName.set('Tatsugiri', had[1]) : byName.delete('Tatsugiri'); } })()`));
 let fails = 0; const ok = (c, m) => { console.log((c ? '  pass  ' : '  FAIL  ') + m); if (!c) fails++; };
 let r; try { r = JSON.parse(R); } catch (e) { ok(false, 'turn one ran: ' + String(R).slice(0, 300)); await b.close(); process.exit(1); }
-const {withC, noC, theirsC, taken, checks} = r, j = x => JSON.stringify(x).slice(0, 400);
+const {withC, noC, theirsC, taken, checks, ngas, fakeCmd, unaware, bpRun, qgRun} = r, j = x => JSON.stringify(x).slice(0, 400);
 const pct = (bs, who, me) => { const x = bs && bs.find(y => y.who === who && y.me === me); const m = x && /up to (\d+(?:\.\d+)?)%/i.exec(x.why); return m ? +m[1] : (x && /^KOs/.test(x.why) ? 999 : null); };
 ok(!!withC && withC[0].who === 'Tatsugiri' && /^Commander: into your Dondozo/.test(withC[0].act) && withC[0].prio === 0, `your Tatsugiri's Commander comes first, priority 0 (${j(withC && withC[0])})`);
 ok(!!withC && !withC.some(x => /Tatsugiri/.test(x.act) && !x.me), `their leads never aim at your commanding Tatsugiri (${j(withC && withC.filter(x => !x.me).map(x => x.act))})`);
@@ -48,4 +61,9 @@ ok(!!noC && noC.some(x => !x.me && / into Tatsugiri/.test(x.act)), 'without Comm
 ok(!!noC && !noC.some(x => /^Commander/.test(x.act)), 'no Commander without the Ability (Storm Drain Tatsugiri)');
 ok(!!theirsC && theirsC[0].who === 'Tatsugiri' && !theirsC[0].me && /^Commander: into their Dondozo/.test(theirsC[0].act) && !theirsC.some(x => x.me && /Tatsugiri/.test(x.act)), `their Commander: first, and your leads never aim at it (${j(theirsC && theirsC.map(x => x.act))})`);
 ok(!!checks && /^ok \| Tatsugiri \+ Dondozo \| Lead them together/.test(checks.both) && /^miss \| Tatsugiri \| .*does nothing without Dondozo/.test(checks.noDz) && checks.storm === 'none' && checks.none === 'none', `team checks: Commander row Covered with Dondozo, Missing without, none for Storm Drain or no Tatsugiri (${j(checks)})`);
+ok(!!ngas && !ngas.some(x => /^Commander/.test(x.act)) && ngas.find(x => x.who === 'Dondozo').speed === dzN.speed, `Neutralizing Gas blocks Commander on entry (${j(ngas && ngas.map(x => [x.who, x.act, x.speed]))})`);
+ok(!!fakeCmd && !fakeCmd.some(x => /^Commander/.test(x.act)), `non-Tatsugiri with Commander never triggers Commander (${j(fakeCmd && fakeCmd.map(x => x.act))})`);
+ok(Array.isArray(unaware) && unaware[0] != null && unaware[0] === unaware[1], `Unaware attacker ignores Dondozo +2 Def/SpD (${j(unaware)})`);
+ok(!!bpRun && /at \+2 Defense/.test((bpRun.find(x => x.who === 'Dondozo') || {}).why || ''), `commanded Dondozo Body Press notes at +2 Defense (${j(bpRun && bpRun.find(x => x.who === 'Dondozo'))})`);
+ok(!!qgRun && (qgRun.find(x => x.who === 'Dondozo') || {}).act === 'Flinches', `commanding Tatsugiri Quick Guard does not block Fake Out into Dondozo (${j(qgRun && qgRun.find(x => x.who === 'Dondozo'))})`);
 await b.close(); console.log(fails ? `commander-test: ${fails} FAILED` : 'commander-test: all passed'); process.exit(fails ? 1 : 0);

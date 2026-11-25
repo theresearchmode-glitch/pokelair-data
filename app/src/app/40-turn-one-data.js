@@ -53,8 +53,9 @@ function turnOneData(mine, theirs, r) {
   // own side's Dondozo jumps into it as the leads come out, before any move. Until Dondozo faints it can't move, be hit or be
   // targeted (semi-invulnerable; spread moves skip it), and Dondozo gets +2 Attack, Defense, Sp. Atk, Sp. Def and Speed and can't
   // switch out. Only one Tatsugiri commands a Dondozo. cmd: the commanding Tatsugiri; dozoUp: its Dondozo.
-  const isDozo = x => !!(x && x.p && /^Dondozo(-|$)/.test(String(x.p.n || ''))), cmd = new Map(), dozoUp = new Set();
-  for (const S of [L, opp]) { const tt = S.find(x => entryAb(x) === 'Commander' || abilityOf(x) === 'Commander'), z = tt && S.find(x => x !== tt && isDozo(x));
+  const isDozo = x => !!(x && x.p && /^Dondozo(-|$)/.test(String(x.p.n || ''))), isTatsu = x => !!(x && x.p && /^Tatsugiri(-|$)/.test(String(x.p.n || ''))), cmd = new Map(), dozoUp = new Set();
+  const nGas = [...L, ...opp].some(x => entryAb(x) === 'Neutralizing Gas');
+  if (!nGas) for (const S of [L, opp]) { const tt = S.find(x => isTatsu(x) && (entryAb(x) === 'Commander' || abilityOf(x) === 'Commander')), z = tt && S.find(x => x !== tt && isDozo(x));
     if (tt && z) { cmd.set(tt, z); dozoUp.add(z); } }
   const act = arr => arr.filter(x => !cmd.has(x));
   const stage = new Map([...L, ...opp].map(x => { const n = foesOf(x).filter(y => intimOf(y) && !cmd.has(y)).length, ab = entryAb(x), it = sideDefaults(x.p, 'atk', calcM(x)).item; let atk = 0, spa = 0, spe = 0, def = 0, spd = 0;
@@ -71,7 +72,7 @@ function turnOneData(mine, theirs, r) {
   // the stage a move hits with, in plain words for its line: 'at −1 Attack', 'at +2 Sp. Atk' (Body Press: Defense, untouched; Foul Play: the target's Attack)
   /* d: the target; Unaware (the target's) ignores the stage, as the calc does, so no note then (Nov 19 review); unless the attacker
      has Mold Breaker, Teravolt or Turboblaze, which ignore Unaware (the calc clears the target's Ability then; independent review) */
-  const stageNote = (x, mv, d) => { if (!mv || ['Body Press', 'Foul Play'].includes(mv.name) || !mv.cat || (d && abilityOf(d) === 'Unaware' && !MOLD.includes(abilityOf(x)))) return ''; const s = stOf(x), v = mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
+  const stageNote = (x, mv, d) => { if (!mv || mv.name === 'Foul Play' || !mv.cat || (d && abilityOf(d) === 'Unaware' && !MOLD.includes(abilityOf(x)))) return ''; const s = stOf(x), bp = mv.name === 'Body Press', v = bp ? s.def : mv.cat === 1 ? s.atk : s.spa; return v ? `at ${v > 0 ? '+' : '−'}${Math.abs(v)} ${bp ? 'Defense' : mv.cat === 1 ? 'Attack' : 'Sp. Atk'}` : ''; };
   const hitNotes = (x, h, d) => [hitNote(h), stageNote(x, h && h.mv, d)].filter(Boolean).join(', ');
   const hitOn = (a, moves, d) => bestHitOn(a.p, prioBlocked(a, d) ? (moves || []).filter(mv => !mv || movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) <= 0) : moves, d.p, calcM(a), calcM(d), {...F, aStage: stOf(a), dAtkStage: stOf(d).atk, dStage: stOf(d)});
   // speed in that field: Chlorophyll / Swift Swim / Sand Rush / Slush Rush double in their weather
@@ -110,7 +111,7 @@ function turnOneData(mine, theirs, r) {
   const pr = (m, n) => movePrio(mvOf(m, n), m.ability, {terrain: F.terrain, grounded: grounded(m)});
   const planLines = () => { lines = []; used = new Set();
   for (const m of L) { const mv = names(m), partner = L.find(x => x !== m);
-    if (cmd.has(m)) { lines.push([m, `Commander: into your ${partner.d}`, `can't move or be hit while your ${partner.d} is in; it gets +2 Attack, Defense, Sp. Atk, Sp. Def and Speed`, 0]); continue; }
+    if (cmd.has(m)) { const z = cmd.get(m); lines.push([m, `Commander: into your ${z.d}`, `can't move or be hit while your ${z.d} is in; it gets +2 Attack, Defense, Sp. Atk, Sp. Def and Speed`, 0]); continue; }
     /* aim only where it flinches, and never at a faster Fake Out user that will already have moved (second review, Nov 19) */
     const fd = mv.has('Fake Out') && !used.has('fake') ? danger.find(d => foFx(m, d.o, opp) === 'ok' && !(theirFOT.has(d.o) && speF(d.o) > speF(m))) : null;
     if (fd) { used.add('fake'); lines.push([m, `Fake Out ${fd.o.d}`, fd.worst ? `stops its ${fd.worst.h.mv.name}, up to ${dmgP(100 * fd.worst.pct)}% of your ${fd.worst.on.d}'s HP` /* 'its': the target, named above it on the card */ : fd === danger[0] ? 'their biggest threat' : 'it can be flinched', pr(m, 'Fake Out'), fd.o]); continue; }
@@ -124,7 +125,7 @@ function turnOneData(mine, theirs, r) {
     for (let tries = 0; tries < 6; tries++) { best = null;
       for (const o of act(opp)) { const h = hitOn(m, pool, o); if (!h) continue; const pct = h.r.max / h.r.hp, ko = h.r.min >= h.r.hp && !h.charge && !h.r.sash;
         const hitsAlly = h.mv.ally && !cmd.has(partner) && allyHit(h.mv, partner);
-        const val = (ko ? 2 : 0) + pct * (h.charge ? .3 : 1) * (h.acc / 100) + (h.mv.spread ? .3 : 0) - (hitsAlly ? .4 : 0); if (!best || val > best.val) best = {o, h, pct, ko, val, hitsAlly}; }
+        const val = (ko ? 2 : 0) + pct * (h.charge ? .3 : 1) * (h.acc / 100) + (h.mv.spread && act(opp).length > 1 ? .3 : 0) - (hitsAlly ? .4 : 0); if (!best || val > best.val) best = {o, h, pct, ko, val, hitsAlly}; }
       if (best && best.hitsAlly) { const r2 = hitOn(m, [best.h.mv], partner); if (r2 && r2.r.max >= r2.r.hp) { const bad = best.h.mv.name; pool = pool.filter(x => x && x.name !== bad); best = null; continue; } }
       break; }
     // [4] is a Fake Out's target; [5] the attack itself (target, hit, partner hit), read by the KO pass after the turn order
@@ -141,7 +142,7 @@ function turnOneData(mine, theirs, r) {
   // their Fake Out targets again, now skipping your leads that move before each user, and letting a user your faster Fake Out
   // surely flinches choose last (it takes no target from its partner); re-plan if that changed them (at most 3 rounds)
   const myPr = t => { const ln = lines.find(l => l[0] === t); return ln ? ln[3] || 0 : 0; }, fotKey = () => [...theirFOT].map(([o, t]) => opp.indexOf(o) + ':' + L.indexOf(t)).join();
-  for (let k = 0; k < 3; k++) { const was = fotKey(); pickFOT((t, o) => myPr(t) > 3 || (myPr(t) === 3 && speF(t) > speF(o)), o => +lines.some(l => l[4] === o && speF(l[0]) > speF(o) && !opp.some(u => u !== o && (u.moves || []).some(x => x && x.name === 'Fake Out') && speF(u) >= speF(l[0])))); if (fotKey() === was) break; planLines(); }
+  for (let k = 0; k < 3; k++) { const was = fotKey(); pickFOT((t, o) => myPr(t) > 3 || (myPr(t) === 3 && speF(t) > speF(o)), o => +lines.some(l => l[4] === o && speF(l[0]) > speF(o) && !act(opp).some(u => u !== o && (u.moves || []).some(x => x && x.name === 'Fake Out') && speF(u) >= speF(l[0])))); if (fotKey() === was) break; planLines(); }
   // turn order: priority bracket first (your planned move; theirs: Fake Out if they carry it), then Speed inside a bracket
   // (Stall always moves last inside its bracket)
   // Tailwind re-orders the rest of the turn (review, Nov 19): from Gen 8 on (Showdown too), the queue is re-sorted by current Speed
@@ -212,8 +213,8 @@ function turnOneData(mine, theirs, r) {
     return !!((d && d.u && first(d.u, d.p)) || (f && f.sure && first(f.u, 3))); };
   const guardOf = (o, a, mv) => { const g = [], pm = movesOf(o).find(n => PROTECT.includes(n)); if (pm) g.push(pm);
     /* Quick Guard blocks a priority move (Nov 19 review) */
-    if (movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) > 0 && opp.some(y => !gone3(y) && movesOf(y).includes('Quick Guard'))) g.push('Quick Guard');
-    if (mv.spread) { if (opp.some(y => !gone3(y) && movesOf(y).includes('Wide Guard'))) g.push('Wide Guard'); }
+    if (movePrio(mv, abilityOf(a), {terrain: F.terrain, grounded: grounded(a)}) > 0 && act(opp).some(y => !gone3(y) && movesOf(y).includes('Quick Guard'))) g.push('Quick Guard');
+    if (mv.spread) { if (act(opp).some(y => !gone3(y) && movesOf(y).includes('Wide Guard'))) g.push('Wide Guard'); }
     else if (!['Stalwart', 'Propeller Tail'].includes(abilityOf(a)) && mv.name !== 'Snipe Shot') {
       const rp = !(a.types || a.p.t || []).includes('Grass') && abilityOf(a) !== 'Overcoat';
       const rd = act(opp).find(y => y !== o && !down.has(y) && !(flinched.get(y) || {}).sure && movesOf(y).some(n => n === 'Follow Me' || (n === 'Rage Powder' && rp)));
@@ -267,7 +268,7 @@ function turnOneData(mine, theirs, r) {
       if (!b.me && t) b.act = `Fake Out ${t.d}`;
       const fx = t ? foFx(b.x, t, side) : 'none', tb = t ? beats.find(y => y.x === t) : null, tie = tieOf(tb, b);
       if (t && fx === 'ok' && (!done.has(t) || tie)) {
-        const f = {u: b.x, sure: b.me && !tie && b.flinch !== 'likely' && ![...theirFOT].some(([o, u]) => u === b.x && speF(o) >= speF(b.x)) && !opp.some(y => movesOf(y).includes('Quick Guard') && speF(y) >= speF(b.x)), tie}; /* nor when a Quick Guard of theirs may go first: it blocks Fake Out (+3) (review, Nov 19) */ /* not sure when your Fake Out user may be flinched first (their Fake Out at it is faster or tied) */ if (done.has(t)) mayNote(tb, f); else flinched.set(t, f);
+        const f = {u: b.x, sure: b.me && !tie && b.flinch !== 'likely' && ![...theirFOT].some(([o, u]) => u === b.x && speF(o) >= speF(b.x)) && !act(opp).some(y => movesOf(y).includes('Quick Guard') && speF(y) >= speF(b.x)), tie}; /* nor when a Quick Guard of theirs may go first: it blocks Fake Out (+3) (review, Nov 19) */ /* not sure when your Fake Out user may be flinched first (their Fake Out at it is faster or tied) */ if (done.has(t)) mayNote(tb, f); else flinched.set(t, f);
         /* theirs is a guess (if they carry it, at their likely target); a risk to it (your faster Fake Out) stays as its note */
         if (!b.me) b.why = 'if they have it: a flinch. Protect blocks it'; /* its target is on the line above (act 'Fake Out X') */
         if (tie) note(b, {r: 1, k: 'fotie', t, s: `speed tie: works only if ${b.me ? 'yours' : 'theirs'} goes first`, tag: 'Speed tie'}); }
