@@ -312,6 +312,13 @@ V2.mdCountdown = (now = Date.now(), short = false) => { try { const r = typeof r
     when = end.toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'});
   const lt = d <= 0 ? 'today' : d === 1 ? 'tomorrow' : `in ${d} days`; /* short form for phones: the long one pushed the start buttons off the first screen at 390x844 (Stampede hero 3b, Nov 24) */
   return short ? `Reg M-D ${d <= 0 ? 'arrives today' : d === 1 ? 'arrives tomorrow' : `in ${d} days`}.` : `Reg M-D is coming: M-C ends ${when} (${lt}), with the Dec 2 balance patch.`; } catch (e) { return ''; } };
+/* Day N note (Nov 25; runbook day-one states; HH's design call under authority): for a new regulation's first 4 weeks, the Meta
+   line under the tabs says how young the data is, "Day 3 of Reg M-D · 4 events · 212 teams", in place of "Reg M-D doubles · 212
+   tournament teams" (same line and length: 0px added at 320-2560, measured). Days count in UTC because a regulation starts 02:00 UTC (Dec 2), still Dec 1 evening in the Americas. */
+V2.regDay = (now = Date.now()) => { try { const r = typeof regInfo === 'function' && regInfo(); if (!r || r.now || !r.since || !isFinite(now)) return '';
+  const d = Math.floor((now - Date.parse(r.since + 'T00:00:00Z')) / 864e5) + 1; if (!(d >= 1 && d <= 28)) return ''; const today = new Date(now).toISOString().slice(0, 10);
+  const ev = (typeof META === 'object' && META.events && Array.isArray(META.events.events)) ? META.events.events.filter(e => { const x = String((e && e.date) || ''); return x >= r.since && x <= today; }).length : 0;
+  return `Day ${d} of Reg ${String(r.id).replace('-', '\u2011')} · ${ev} event${ev === 1 ? '' : 's'}`; } catch (e) { return ''; } };
 V2.dataNote = () => { const E = V2.esc, out = [];
   /* review Nov 18 (C5): a --split Preview whose preview.json couldn't be read (missing, 404, offline) says so, on every page (V2.shell),
      rather than showing the built-in numbers as if they were today's */

@@ -8,7 +8,12 @@ prints one line per file: applied / new / FAILED (why). Never touches main or cl
 import re, subprocess, sys, html, os, pathlib
 ans, base, br = sys.argv[1], sys.argv[2], sys.argv[3]; push = '--push' in sys.argv
 assert br.startswith('alt/gemini-'), 'branch must be alt/gemini-*'
+# never in the main checkout (Nov 24: a failed `cd` once ran this in the main repo and switched its branch)
+_top = subprocess.run(['git', 'rev-parse', '--show-toplevel'], capture_output=True, text=True).stdout.strip()
+_main = subprocess.run(['git', 'worktree', 'list', '--porcelain'], capture_output=True, text=True).stdout.split('\n')[0].replace('worktree ', '').strip()
+if os.path.realpath(_top) == os.path.realpath(_main): sys.exit('kip-apply.py: run it in a scratch worktree, never in the main checkout')
 t = open(ans, encoding='utf8').read().replace('https://www.google.com/search?q=', '').replace('%7B', '{').replace('%7D', '}')  # the copy link-ified '{}' as %7B%7D
+t = re.sub(r'https://www\.google\.com/url\?sa=E\\?&source=gmail\\?&q=', '', t)  # Gmail redirect wrappers around URLs (job 23)
 def git(*a, check=True): return subprocess.run(['git', *a], capture_output=True, text=True, check=check)
 git('fetch', '-q', 'origin', base, check=False); git('checkout', '-q', '-f', '-B', br, base)
 out = []
@@ -19,6 +24,7 @@ def fuzzy(f, p):
     """Fallback for hand-written diffs: each hunk's old lines (context + '-') must appear exactly once; replaced by context + '+'."""
     try: src = open(f, encoding='utf8').read()
     except Exception as e: return 'FAILED   ', f'  (cannot read: {e})'
+    p = re.sub(r'^-{3,} [A-Z][^\n]*\n?', '', p, flags=re.M)  # a section line like '--- PART 1 NEW FILES ---' is not a removal
     hunks = re.split(r'^@@[^\n]*@@[^\n]*\n', p, flags=re.M)[1:]
     if not hunks: return 'FAILED   ', '  (no hunks)'
     for n, h in enumerate(hunks, 1):
