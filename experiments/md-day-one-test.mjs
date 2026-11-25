@@ -27,7 +27,7 @@ const rd = (dir, rel) => JSON.parse(fs.readFileSync(path.join(dir, rel), 'utf8')
 const run = (script, cwd, args = [], env = {}) => {
   try {
     const stdout = execFileSync(process.execPath, [path.join(TMP, script), ...args], {
-      cwd, env: {...process.env, ...env}, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']
+      cwd, env: {...process.env, GITHUB_STEP_SUMMARY: '', HEALTH_REPORT: '', ...env}, encoding /* the same output here and on GitHub (Nov 24: health.mjs prints its table only when there's no job summary) */: 'utf8', stdio: ['ignore', 'pipe', 'pipe']
     });
     return {code: 0, stdout, stderr: ''};
   } catch (e) {
