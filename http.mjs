@@ -1,7 +1,7 @@
 // Polite outbound requests for the daily data job (Nov 1 2026, legal pass; see docs/legal-sources.md).
 // Every request names NastyPlot, links the repo and gives a contact address, so a site owner can see who we are and
 // reach us. Requests to the same host are spaced at least 1 second apart (a script's own longer pause still applies).
-export const CONTACT = 'simran.jsbagga@gmail.com';
+export const CONTACT = 'hello@nastyplot.org';
 export const REPO = 'https://github.com/theresearchmode-glitch/pokelair-data';
 export const UA = `NastyPlot-data/1.0 (+${REPO}; ${CONTACT})`;
 export const MIN_GAP_MS = 1100; /* 1 s, plus slack for timer and network jitter */
