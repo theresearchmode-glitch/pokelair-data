@@ -30,7 +30,7 @@ V2.ppEvenSoon = () => requestAnimationFrame(() => requestAnimationFrame(() => { 
 addEventListener('resize', V2.ppEvenSoon);
 try { document.fonts.addEventListener('loadingdone', V2.ppEvenSoon); } catch (e) {}
 V2.pages.practice = {place: 'battle', draw() { V2.ppEvenSoon(); const E = V2.esc, P = META.practice, s = prScore(), tools = V2.battleToolsBar('practice');
-  if (!P) return `<div class="pp2">${tools}${V2.ppHead('Pick your <em>four.</em>')}<p class="pp2-lede">Practice games appear after the next data refresh.</p></div>`;
+  if (!P) return `<div class="pp2">${tools}${V2.ppHead('Pick your <em>four.</em>')}<p class="pp2-lede">Practice games appear after the next data refresh.</p>${V2.dayDog()}</div>`;
   const ms = members();
   // start: use my team (needs exactly six) or a real team from the ladder; the board's other half shows the pairs strong players bring together
   if (pr.step === 'start' || !P.opp[pr.oi]) { const can = ms.length === 6, mode = pr.mode || (can ? 'mine' : 'real');

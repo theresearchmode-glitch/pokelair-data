@@ -57,7 +57,7 @@ V2.gsStand = (rows, megas) => { const U = V2.raUi, wk = V2.gsWeek(), mr = new Ma
       <div class="gs-main">${ph ? '' : `<p class="gs-wd"><span aria-hidden="true">${E2(T.d)}</span>${all}</p>`}<div class="gs-rows">${out.join('')}</div></div></section>`; }).join('')}</div>`; };
 V2.gsLowNote = open => open ? 'Fold the D and F tiers away' : `The D and F tiers, rated under ${LTIERS.find(T => T.k === 'C').show}`;
 // the spotlight: #1 (or the top Mega in the Megas view) by default; on a mouse screen the Pokémon under the pointer steps up here
-V2.raSpot = n => { const E = V2.esc, U = V2.raUi, megas = !!U.f.mega && !V2.raFiltered2(), all = lairRows(), pool = megas ? all.filter(y => y.p.m) : all, x = pool.find(y => y.p.n === n) || all.find(y => y.p.n === n) || pool[0]; if (!x) return '';
+V2.raSpot = n => { const E = V2.esc, U = V2.raUi, megas = !!U.f.mega && !V2.raFiltered2(), all = V2.ratedRows() /* Not rated yet (Nov 25): no spotlight for an unrated Pokémon */, pool = megas ? all.filter(y => y.p.m) : all, x = pool.find(y => y.p.n === n) || all.find(y => y.p.n === n) || pool[0]; if (!x) return '';
   const p = x.p, r = x.r, T = lTier(r.total), k = lairRank(p), N = V2.raNums(p), mine = V2.raOnTeam(p), top = x === pool[0];
   const tag = top ? (megas ? 'The top Mega right now' : '#1 right now') : k ? `#${k.rank} of ${k.of}` : 'Rated';
   return `<div class="gs-spot ra-spot" style="--ta:var(--ty-${p.t[0]});--tb:var(--ty-${p.t[1] || p.t[0]})"><div class="gs-plate">${V2.mon(p.n, {bare: true})}</div>
@@ -79,13 +79,13 @@ V2.raStairs = (rows, megas) => { const E = V2.esc, wk = V2.gsWeek(), n = rows.le
 V2.pkTabs = on => `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
     <nav class="ra-seg" aria-label="Pokémon views">${[['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['natures', 'Natures']].map(([h, t]) => `<a href="#${h}"${h === on ? ' class="on" aria-current="page"' : ''}>${t}</a>`).join('')}</nav></div>`;
 V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoad();
-  const all = lairRows(), rows = V2.raFilter(all), filtered = V2.raFiltered(), listy = V2.raFiltered2() || U.view === 'list', pf = activePerf(), reg = ((typeof regInfo === 'function' && regInfo()) || {id: 'M-C'}).id.replace('-', '‑');
+  const all = V2.ratedRows() /* Not rated yet (Sim, Nov 25): an unrated Pokémon is left out of the stairs, tiers and list (shell.js) */, rows = V2.raFilter(all), filtered = V2.raFiltered(), listy = V2.raFiltered2() || U.view === 'list', pf = activePerf(), reg = regId().replace('-', '‑');
   let d = pf && pf.updated ? String(pf.updated).slice(0, 10) : ''; try { if (d) d = new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) {}
   const teams = RES && +RES.teams > 0 ? +RES.teams : 0;
   const tabs = V2.pkTabs('meta'); /* Natures page (Nov 23): the four Pokémon views in one place */
   const head = `<section class="ra-h"><p class="k-kicker np-eyebrow ra-kk">META · THE LINE-UP</p><h1 class="k-h1 u"><span>Who wins</span> <span class="pl">right now.</span></h1>
     <p class="ra-lede">Every Pokémon rated 0–100 from real tournament results, not opinion.${V2.freshAgo() ? ` ${V2.freshAgo().replace(/^u/, 'U')}.` : ''}</p>${tabs}
-    <p class="ra-kick">Reg ${E(reg)} doubles${teams ? ` · ${E(basisNum(teams))} tournament teams` : ''}${typeof V2.tip === 'function' ? `<span class="ra-nw">${V2.tip('numbers')}</span>` : ''}</p>
+    <p class="ra-kick">${(dn => dn ? `${E(dn)}${teams ? ` · ${E(basisNum(teams))} teams` : ''}` : `Reg ${E(reg)} doubles${teams ? ` · ${E(basisNum(teams))} tournament teams` : ''}`)(V2.regDay ? V2.regDay() : '')}${typeof V2.tip === 'function' ? `<span class="ra-nw">${V2.tip('numbers')}</span>` : ''}</p>
     <p class="ra-links"><a class="np-link" href="#method=rating">How Ratings Work ›</a><a class="np-link" href="#track">Track Record ›</a></p></section>`;
   const gems = all.filter(x => isGem(x.p)).length, f = U.f, chip = (k, l) => V2.kChip('', {html: l, on: !!f[k], attrs: {'data-raflag': k}}) /* Wave 2 part 2 (Sim chose A, Nov 22): the kit filter chip (was the grey ra-chip) */;
   const filt = `<div class="ra-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-raq value="${E(U.q)}" placeholder="Find a Pokémon or type" aria-label="Find a Pokémon or type" autocomplete="off">${V2.CLR}</label><p class="ra-count" role="status"><b class="u">${filtered ? rows.length : all.length}</b> ${filtered ? `of ${all.length} match` : 'rated'}</p></div>
@@ -122,6 +122,12 @@ V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoa
      page and tab order too; the chips wrap into even rows (pages.css .ra-ctlt). 700+ keeps them under the hero; the page redraws when the width crosses 700 */
   const ph = innerWidth < 700, ctl = `<div class="gs-ctl${ph ? ' ra-ctlt' : ''}">${filt}</div>`;
   const stairs = stairsOn ? V2.raStairs(sRows, !!f.mega && !V2.raFiltered2()) : ''; /* phones: right under the headline (approved mock); 700+: under the top band */
+  /* Not rated yet, day one (Sim's choice, Nov 25; HH's design call): with no Pokémon rated there is nothing to rank, so no stairs,
+     filters or Grandstand. The spotlight's place holds today's underdog (the 404 page's card and scribble, rule 23) and the lede
+     says plainly when ratings start. Never shown while any Pokémon is rated (today's page is unchanged) */
+  if (V2.noRatings && V2.noRatings()) { const ud = V2.underdog ? V2.underdog() : 'Flapple', ud2 = V2.disp(ud), rn = typeof regName === 'function' ? regName().replace(/ /g, '\u00a0').replace(/-/g, '\u2011') : 'this regulation';
+    const head0 = head.replace(/<p class="ra-lede">[\s\S]*?<\/p>/, `<p class="ra-lede">Ratings start with the first ${E(rn)} tournament results. Until a Pokémon has played, it isn't rated: no guesses.</p>`);
+    return `<div class="ra gsp rs-on"><div class="gs-top">${head0}<div class="ra-spotw"><aside class="nf-dog nf2-dog" aria-label="Today's underdog">${V2.kCard(ud, {size: 'hero', form: "Today's underdog", fact: "Nobody's rated yet. Everybody's a contender.", attrs: {'data-v2mon': ud, 'aria-label': `${ud2}: open its info`}})}</aside></div>${tabs}</div></div>`; }
   return `<div class="ra gsp rs-on"><div class="gs-top">${head}${ph ? stairs + ctl : ''}<div class="ra-spotw" data-raspotw>${V2.raSpot(U.spot)}</div>${tabs}</div>${ph ? '' : stairs}<div class="gs-body">${ph ? '' : ctl}${body}${legend}${about}${ph && stairsOn ? `<p class="ra-links ra-lph"><a class="np-link" href="#method=rating">How Ratings Work ›</a><a class="np-link" href="#track">Track Record ›</a></p>` : ''}</div></div>`; }};
 
 // search, filters, see all, tiers

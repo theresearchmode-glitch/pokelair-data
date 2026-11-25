@@ -35,7 +35,7 @@ V2.trHead = n => `<section class="tr-h"><p class="np-eyebrow"><span>Battle · Te
 V2.pages.gauntlet = {place: 'battle', draw() { const E = V2.esc, ms = members(), tools = V2.battleToolsBar('gauntlet');
   if (ms.length < 4) return `<div class="tr">${tools}${V2.trHead(0)}<p class="tm-sub">Add at least four Pokémon on My Team to start a Test Run.${ms.length ? ` You have ${ms.length}.` : ''}</p><div class="tr-btns"><a class="np-btn" href="#team"><span>Go to My Team</span></a></div></div>`;
   let rows = []; try { rows = V2.trRows(ms); } catch (e) { rows = []; }
-  if (!rows.length) return `<div class="tr">${tools}${V2.trHead(0)}<p class="tm-sub">Top tournament teams load with the daily data. Check back after the next refresh.</p></div>`;
+  if (!rows.length) return `<div class="tr">${tools}${V2.trHead(0)}<p class="tm-sub">Top tournament teams load with the daily data. Check back after the next refresh.</p>${V2.dayDog()}</div>`;
   const all = V2.trUi.more, more = rows.filter(x => x.e >= 2).length, less = rows.filter(x => x.e <= -2).length, cls = e => e >= 2 ? 'up' : e <= -2 ? 'dn' : 'ev';
   const verdict = e => e >= 2 ? "You're better prepared" : e <= -2 ? "They're better prepared" : 'About even', nm = i => E(ms[i].d);
   const cell = r => { const p = byName.get(r.t.n); return `<div class="tr-cell l${r.level}">${p ? V2.mon(p.n, {iw: 48, bare: true}) : '<span></span>'}<div><b>${E(r.t.d)}</b><i class="u">${E(r.label)}</i><small>${E(THR.evidence(r))}</small></div></div>`; };

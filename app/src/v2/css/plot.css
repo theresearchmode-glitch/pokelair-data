@@ -458,3 +458,6 @@ button.pl-mv{width:100%;border:0;color:inherit;cursor:pointer}button.pl-mv .pl-t
   .pl-cores{column-gap:var(--s8)}.pl-core .pl-cadd{padding:0 var(--s3)}
   .pl-low > .pl-step{padding-top:var(--s4)}
 }
+/* Partners in crime with no tournament teams yet (a new regulation's day one, Nov 25): the underdog aside sits in the dark cores band,
+   so its words take the band's own text colours (the plot's ink was dark on dark), picture first and words to its right */
+.bd-cores .pl-dog{flex-direction:row-reverse;justify-content:flex-end;max-width:none}.bd-cores .pl-dog p{text-align:left;color:inherit}.bd-cores .pl-dog b{color:inherit}

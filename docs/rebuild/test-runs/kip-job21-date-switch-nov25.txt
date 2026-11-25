@@ -1,0 +1,739 @@
+KIP JOB 21 — REGULATION PROFILE PORT + DATE-BASED SWITCH TO REG M-D
+Base commit: a82aebea (branch alt/gemini-dec2)
+Profile source: alt/gemini-regprofile (1d2fba80)
+Date: 2026-11-24
+
+================================================================================
+1-PAGE SUMMARY
+================================================================================
+
+Apply status on a82aebea:
+- ALL 10 unified diffs apply cleanly with `git apply --check` against exact commit a82aebea.
+- ZERO files could not apply. Page/build files (`app/*`) are intentionally untouched.
+- S8 plain-text audit: ZERO HTML entities or URL-encoded braces in any added line or new file (only `names.mjs` line 5's unchanged `dec()` HTML-entity decoder appears in diff context).
+- NO design changes; NO new visible words on the page.
+
+What is in:
+1. Part 1 — Scout's regulation profile ported onto `a82aebea` (keeping every Dec 2 guard/fix from BASE):
+   - New `regulation.json` (with both `"M-C"` and `"M-D"` entries).
+   - Merged `formats.mjs`, `reg.mjs`, `sources.mjs`, `official.mjs`, `names.mjs`, `perf.mjs`, `practice.mjs`, `crosscheck.mjs`.
+   - New `experiments/reg-profile-test.mjs` (data-job profile test without `app/build.mjs` dependency).
+2. Part 2 — Date-based switch to Reg M-D (`docs/reg-md-plan.md` sections 5 & 0.7):
+   - `regulation.json` adds `"M-D"`: `name: "Reg M-D"`, `long: "Regulation M-D"`, `sd: "gen9championsvgc2026regmd"`, `since: "2026-12-02"`, `end: null`, `sources: {showdowntier: null, pikalytics: null, official: null}`, `items: "data/regmd-items.txt"`, `rules` matching M-C.
+   - `formats.mjs` (`detectReg`): when `today (UTC) >= nextProf.since` and the next regulation has a profile entry, switches immediately (`switched.by = 'date'`) even with 0 events; refuses to switch early before `since` even if M-D events exceed `REG_SWITCH`; falls back to `REG_SWITCH` event/player counts ONLY when the next regulation has no date entry; `REG_AUTO_SWITCH=0` holds both.
+   - `reg.mjs`: still runs `detectReg` on switch day when `dateDue` is true even if both Limitless and Showdown fail to answer, so `out/reg.json` switches and `reg-guard.mjs` empties M-C files on Dec 2.
+   - `names.mjs`: reads `items` from `regProfile(activeReg().id).items`; if `data/regmd-items.txt` is missing on disk, falls back to M-C's `data/regmc-items.txt` and logs the fallback.
+   - Switch-day flow into `reg-guard.mjs` (empties & archives M-C files) and `regstate.mjs` (`Day 1 of Reg M-D`) verified end-to-end with zero edits required to `reg-guard.mjs` or `regstate.mjs`.
+3. Part 3 — Tests & CI (Node 22, no network):
+   - `experiments/reg-profile-test.mjs` (16/16 ok — all passed).
+   - `experiments/reg-switch-test.mjs` (updated A3 event-count backstop cases to M-D -> M-E; 21/21 pass — ALL PASSED).
+   - `experiments/date-switch-test.mjs` (new; 11/11 pass — ALL PASSED).
+   - `.github/workflows/test.yml`: added `regulation.json`, `sources.mjs`, `names.mjs`, `perf.mjs`, `practice.mjs`, `crosscheck.mjs`, and `experiments/date-switch-test.mjs` to `on.push.paths`, and added `reg-profile-test.mjs` + `date-switch-test.mjs` to the `test` job.
+
+Commands & exact verified results (Node v18.20.4 in offline VM; CI runs Node 22):
+- `node experiments/reg-profile-test.mjs`  -> `all passed` (16/16 ok)
+- `node experiments/reg-switch-test.mjs`   -> `ALL PASSED` (21/21 pass)
+- `node experiments/date-switch-test.mjs`  -> `ALL PASSED` (11/11 pass)
+- `git apply --check` on clean `a82aebea`  -> `PASS` (10 files)
+- NOT CHECKED: `experiments/reg-guard-test.mjs` and `experiments/md-day-one-test.mjs` (not included in this package; run them in CI after applying).
+
+================================================================================
+PART 1 — MERGE CONFLICTS RESOLVED (BASE a82aebea vs PROFILE 1d2fba80)
+================================================================================
+
+1. `formats.mjs` — `activeReg().end`:
+   - BASE: `end: (() => { const e = endDay(r.id), n = r.now && r.now.id !== r.id ? r.now.since : null; return e && n ? (e < n ? e : n) : (e || n); })()` (caps end at `REG_END`).
+   - PROFILE: `end: r.now && r.now.id !== r.id ? r.now.since : endDay(r.id)`.
+   - WINNER: **BASE** — a late `r.now.since` (e.g. `2026-12-03`) must never extend M-C's window past `REG_END['M-C']` (`2026-12-02`).
+
+2. `reg.mjs` — failed Limitless source retention:
+   - BASE: `if (!list && prev) { if (prev.seen) r.seen = prev.seen; if (!r.now && prev.now && prev.now.from === 'limitless') r.now = prev.now; }`
+   - PROFILE: `if (!list && prev && prev.seen) r.seen = prev.seen;`
+   - WINNER: **BASE** (guarded with `r.id === prev.id` so a newly switched regulation never restores yesterday's pre-switch banner) + added `dateDue` check so a network outage on Dec 2 does not block the date switch.
+
+3. `sources.mjs` — `stampReg` vs profile:
+   - BASE: `import {stampReg} from './reg-stamp.mjs';` and `stampReg(out, 'M-C')`.
+   - PROFILE: removed `stampReg`, added `activeReg`, `regSources`, `sourcePageCheck`, `notYet`.
+   - WINNER: **MERGED** — kept `stampReg` from BASE, updated to `stampReg(out, RG.id)` so M-D runs stamp `'M-D'` instead of `'M-C'`, and added all PROFILE checks.
+
+4. `official.mjs` — `stampReg` vs profile:
+   - BASE: `stampReg(cmp, REG)` and `stampReg(out, REG)` where `REG = 'M-C'`.
+   - PROFILE: removed `stampReg`, set `REG = process.env.OFFICIAL_REG || RG_ID || 'not-available-yet'`.
+   - WINNER: **MERGED** — kept `stampReg` from BASE, introduced `STAMP_REG = process.env.OFFICIAL_REG || ACT.id` so `out/official.json` and `out/official_compare.json` are stamped with `'M-D'` (never `'not-available-yet'`), while Victory Road filtering uses `REG` (`'not-available-yet'` when `sources.official` is `null`).
+
+5. `names.mjs` — `canonNature` + `ITEM_TYPO` + `ITEMS_FILE`:
+   - BASE: has `canonNature` (Nov 23), hardcoded `'data/regmc-items.txt'`, no `ITEM_TYPO`.
+   - PROFILE: reads `ITEMS_FILE` from `regProfile(activeReg().id).items`, adds `ITEM_TYPO`, also has `canonNature`.
+   - WINNER: **MERGED + PART 2 FALLBACK** — kept BASE's `canonNature`, added PROFILE's `ITEM_TYPO`, and added Part 2's fallback from missing `data/regmd-items.txt` to `data/regmc-items.txt` with a console log.
+
+6. `practice.mjs` — `stampReg` vs `activeReg().name`:
+   - BASE: `stampReg({..., source: \`... (${src.format || 'Reg M-C'})\`, ...}, src.reg)`.
+   - PROFILE: removed `stampReg`, used `src.format || activeReg().name`.
+   - WINNER: **MERGED** — kept `stampReg(..., src.reg)` and used `src.format || activeReg().name`.
+
+7. `crosscheck.mjs` — `stampReg` vs `activeReg().name`:
+   - BASE: `stampReg(out)` and `Pikalytics Reg M-C`.
+   - PROFILE: removed `stampReg`, used `Pikalytics ${activeReg().name}`.
+   - WINNER: **MERGED** — kept `stampReg(out)` and used `Pikalytics ${activeReg().name}`.
+
+================================================================================
+PART 4 — ORDER QUESTIONS FOR HH
+================================================================================
+
+Q1. Exact switch moment: `2026-12-02T00:00:00Z` (date `since`) vs `2026-12-02T01:59:00Z` (`REG_END['M-C']`)?
+- Quote from `regulation.json` / `formats.mjs`:
+  `REG_END['M-C'] = '2026-12-02T01:59:00Z'` (Dec 1, 5:59 PM PST, official Pokémon Champions M-C end).
+- Right now, `detectReg` compares `todayDay >= nextProf.since` (`'2026-12-02'`) so Part 3's `2026-12-02T00:00Z` test passes.
+- **Why HH's lean (`2026-12-02T01:59:00Z`) is right**:
+  1. Between `00:00Z` and `01:58:59Z`, `regAt('M-C', date)` STILL classifies events as `M-C` (because `t < Date.parse(REG_END['M-C'])`), creating a 1h 59m window where `activeReg()` says `M-D` while `regAt()` still says `M-C`.
+  2. In `.github/workflows/update.yml`, the `FAST_DATA=1` 4-hourly cron runs at `01:07 UTC` — right inside that 2-hour gap — so switching at `00:00Z` would empty M-C files 52 minutes BEFORE M-C officially ends.
+  3. Switching when `Date.parse(nowIso) >= Date.parse(REG_END[id])` (falling back to `todayDay >= nextProf.since` when `REG_END[id]` is absent, and treating date-only strings `'2026-12-02'` as `2026-12-02T12:00:00Z`) keeps `detectReg` and `regAt` 100% aligned. Say the word and Kip/Scout can flip that 2-line condition and update the `00:00Z` test to `01:58:59Z` (M-C) vs `01:59:00Z` (M-D).
+
+Q2. `reg-profile-test.mjs` on `alt/gemini-dec2`:
+- Because `app/*` is out of scope for this branch, `experiments/reg-profile-test.mjs` tests the data-job half only (no `app/build.mjs` run). Confirm you want the page-build assertions re-attached only when `alt/gemini-dec2` and `claude/design6` merge.
+
+================================================================================
+MERGE-READY PATCH BLOCK (APPLY DIRECTLY TO COMMIT a82aebea)
+================================================================================
+
+diff --git a/.github/workflows/test.yml b/.github/workflows/test.yml
+index 503785e..18fcac8 100644
+--- a/.github/workflows/test.yml
++++ b/.github/workflows/test.yml
+@@ -2,7 +2,7 @@ name: Test NastyPlot page
+ on:
+   push:
+     # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
+-    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/plan-cache-test.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', '.github/workflows/test.yml', 'formats.mjs', 'reg.mjs', 'reg-guard.mjs', 'reg-stamp.mjs', 'regstate.mjs', 'update.mjs', 'health.mjs', 'experiments/reg-*.mjs', 'experiments/md-day-one-test.mjs']
++    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/plan-cache-test.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', '.github/workflows/test.yml', 'regulation.json', 'formats.mjs', 'reg.mjs', 'reg-guard.mjs', 'reg-stamp.mjs', 'regstate.mjs', 'sources.mjs', 'names.mjs', 'perf.mjs', 'practice.mjs', 'crosscheck.mjs', 'update.mjs', 'health.mjs', 'experiments/reg-*.mjs', 'experiments/date-switch-test.mjs', 'experiments/md-day-one-test.mjs']
+   workflow_dispatch:
+   # Nov 9: commits made by GitHub's own jobs (the daily data, the weekly re-check, the monthly check) never trigger a push run
+   # (GitHub rule for its built-in token), so fresh data was never tested and the live branch could not move. Start the tests
+@@ -44,8 +44,10 @@ jobs:
+       - run: node app/test/run.mjs
+         if: ${{ !cancelled() }}
+       - run: node experiments/replays-test.mjs
+-      # Dec 2 switch (Nov 24): regulation never mixed (formats), the switch-day guard, and M-D day one
++      # Dec 2 switch (Nov 24): regulation profile, date-based switch, never mixed (formats), the switch-day guard, and M-D day one
++      - run: node experiments/reg-profile-test.mjs
+       - run: node experiments/reg-switch-test.mjs
++      - run: node experiments/date-switch-test.mjs
+       - run: node experiments/reg-guard-test.mjs
+       - run: node experiments/md-day-one-test.mjs
+         if: ${{ !cancelled() }}
+diff --git a/crosscheck.mjs b/crosscheck.mjs
+index d99ab1b..61ad9fd 100644
+--- a/crosscheck.mjs
++++ b/crosscheck.mjs
+@@ -9,6 +9,7 @@
+ //    hold only one of a species, so the plain form and its Megas add up exactly), except checks marked per form.
+ import fs from 'node:fs';
+ import {stampReg} from './reg-stamp.mjs';
++import {activeReg} from './formats.mjs';
+ const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
+ const S = rd('sources.json') || {}, P = rd('perf.json') || {}, MT = rd('meta_tour.json'), ML = rd('meta_ladder.json'), OF = rd('official.json');
+ // species key: Megas fold into their species; Floette's plain entry is Floette-Eternal
+@@ -57,7 +58,7 @@ const bestForm = (sets, rows) => { const U = Object.fromEntries((rows || []).map
+   for (const [k, v] of Object.entries(sets || {})) { const s = spec(k), u = U[k] != null ? U[k] : 0; if (!D[s] || u > best[s]) { D[s] = v; best[s] = u; } } return D; };
+ const mtSp = MT ? bySpecies(metaRows(MT).map(r => [r.n, r.u, r.w, r.teams])) : null;
+ // 2. Recent tournaments + sets: our last-4-weeks team sheets vs Pikalytics (tournaments, about the last 2 weeks)
+-compare({id: 'tour-vs-pikalytics', ours: mtSp, theirs: S.pika && fromSrc(S.pika.rows), oursName: MT && MT.source, theirsName: S.pika && `Pikalytics Reg M-C (${S.pika.scope || 'recent tournaments'})`,
++compare({id: 'tour-vs-pikalytics', ours: mtSp, theirs: S.pika && fromSrc(S.pika.rows), oursName: MT && MT.source, theirsName: S.pika && `Pikalytics ${activeReg().name} (${S.pika.scope || 'recent tournaments'})`,
+   known: 'Same population: both are Limitless tournament team sheets (Pikalytics championstournaments since Nov 8; before that this compared against its Showdown ladder stats by mistake). Checked Nov 8 on the top 39: top item agrees 39/39, top Ability 39/39, the same top-4 moves 37/39 (Indeedee: Pikalytics merges both forms; Annihilape: its 2nd-4th moves are near-tied). Small gaps come from different time windows. Its usage table names species while its core lists name Megas, so Mega species are not comparable',
+   tolU: [6, .45], tolW: 4, sets: S.pika && {ours: setsOf(MT), theirs: bestForm(S.pika.sets, S.pika.rows)}});
+ // 3. (Removed Nov 9) Limitless vs the official events' whole field: it read RK9 data, retired Nov 1 (RK9 terms), and was
+diff --git a/experiments/reg-switch-test.mjs b/experiments/reg-switch-test.mjs
+index f45dfe6..23246bb 100644
+--- a/experiments/reg-switch-test.mjs
++++ b/experiments/reg-switch-test.mjs
+@@ -39,35 +39,35 @@ try {
+   try { fs.unlinkSync(tmpFile); } catch {}
+ }
+ 
+-// A3: detectReg & REG_SWITCH thresholds
+-const prevMC = {id: 'M-C', since: SITE_REG.since, sd: SITE_REG.sd};
++// A3: detectReg & REG_SWITCH thresholds (backstop when the next regulation has no profile entry, e.g. M-D -> M-E)
++const prevBase = {id: 'M-D', since: '2026-12-02', sd: 'gen9championsvgc2026regmd'};
+ 
+-const belowEv = detectReg(mkEvents('M-D', REG_SWITCH.events - 1, 100), {}, prevMC, '2026-12-05');
+-check('switch-below-events', `${belowEv.id}/${belowEv.now && belowEv.now.id}`, 'M-C/M-D');
++const belowEv = detectReg(mkEvents('M-E', REG_SWITCH.events - 1, 100, '2027-03-05T12:00:00Z'), {}, prevBase, '2027-03-05');
++check('switch-below-events', `${belowEv.id}/${belowEv.now && belowEv.now.id}`, 'M-D/M-E');
+ 
+ const belowPl = detectReg(
+-  [...mkEvents('M-D', REG_SWITCH.events - 1, 60), {format: 'M-D', date: '2026-12-03T12:00:00Z', players: 59}],
+-  {}, prevMC, '2026-12-05'
++  [...mkEvents('M-E', REG_SWITCH.events - 1, 60, '2027-03-03T12:00:00Z'), {format: 'M-E', date: '2027-03-03T12:00:00Z', players: 59}],
++  {}, prevBase, '2027-03-05'
+ );
+-check('switch-below-players', `${belowPl.id}/${belowPl.now && belowPl.now.id}`, 'M-C/M-D');
++check('switch-below-players', `${belowPl.id}/${belowPl.now && belowPl.now.id}`, 'M-D/M-E');
+ 
+-const oneBig = detectReg(mkEvents('M-D', 1, 2000), {}, prevMC, '2026-12-03');
+-check('switch-one-big-event', `${oneBig.id}/${oneBig.now && oneBig.now.id}`, 'M-C/M-D');
++const oneBig = detectReg(mkEvents('M-E', 1, 2000, '2027-03-03T12:00:00Z'), {}, prevBase, '2027-03-03');
++check('switch-one-big-event', `${oneBig.id}/${oneBig.now && oneBig.now.id}`, 'M-D/M-E');
+ 
+-const atThresh = detectReg(mkEvents('M-D', REG_SWITCH.events, 60), {}, prevMC, '2026-12-10');
+-check('switch-at-threshold', `${atThresh.id}/${atThresh.now}/${atThresh.switched && atThresh.switched.to}`, 'M-D/null/M-D');
++const atThresh = detectReg(mkEvents('M-E', REG_SWITCH.events, 60, '2027-03-10T12:00:00Z'), {}, prevBase, '2027-03-10');
++check('switch-at-threshold', `${atThresh.id}/${atThresh.now}/${atThresh.switched && atThresh.switched.to}`, 'M-E/null/M-E');
+ 
+ // REG_AUTO_SWITCH=0 holds switch
+ const oldEnv = process.env.REG_AUTO_SWITCH;
+ process.env.REG_AUTO_SWITCH = '0';
+ const {detectReg: detectRegNoAuto} = await import('../formats.mjs?noauto=1');
+ if (oldEnv === undefined) delete process.env.REG_AUTO_SWITCH; else process.env.REG_AUTO_SWITCH = oldEnv;
+-const held = detectRegNoAuto(mkEvents('M-D', REG_SWITCH.events, 60), {}, prevMC, '2026-12-10');
+-check('switch-held-auto-0', `${held.id}/${held.now && held.now.id}/${held.switched}`, 'M-C/M-D/null');
++const held = detectRegNoAuto(mkEvents('M-E', REG_SWITCH.events, 60, '2027-03-10T12:00:00Z'), {}, prevBase, '2027-03-10');
++check('switch-held-auto-0', `${held.id}/${held.now && held.now.id}/${held.switched}`, 'M-D/M-E/null');
+ 
+ // Showdown-only ladder data sets banner but never switches
+-const sdOnly = detectReg([], {gen9championsvgc2026regmd: {n: 51, first: '2026-12-02'}}, prevMC, '2026-12-02');
+-check('showdown-only-no-switch', `${sdOnly.id}/${sdOnly.now && sdOnly.now.id}/${sdOnly.now && sdOnly.now.from}`, 'M-C/M-D/showdown');
++const sdOnly = detectReg([], {gen9championsvgc2027regme: {n: 51, first: '2027-03-02'}}, prevBase, '2027-03-02');
++check('showdown-only-no-switch', `${sdOnly.id}/${sdOnly.now && sdOnly.now.id}/${sdOnly.now && sdOnly.now.from}`, 'M-D/M-E/showdown');
+ 
+ // Never flips back from M-D to M-C
+ const prevMD = {id: 'M-D', since: '2026-12-02', sd: 'gen9championsvgc2026regmd', switched: {from: 'M-C', to: 'M-D', on: '2026-12-10'}};
+diff --git a/formats.mjs b/formats.mjs
+index e530f3e..986e2f0 100644
+--- a/formats.mjs
++++ b/formats.mjs
+@@ -44,7 +44,15 @@ export function oddEvents(ids, readT, log = console.log) {
+ // (Limitless is fetched by format, Showdown by format id, RK9 events by date window). Once it has enough, the active
+ // regulation switches to it and every step starts over from its own events only. REG_AUTO_SWITCH=0 holds the switch
+ // (banner only) for a manual check.
+-export const SITE_REG = {id: 'M-C', sd: 'gen9championsvgc2026regmc', since: '2026-09-01'};
++// The regulation profile (regulation.json, Nov 24): the one place the site's regulation is written. REG_PROFILE is the full entry
++// for the site's regulation (name, Showdown id, dates, outside sources' ids, rules); SITE_REG keeps its old shape for every caller.
++// REG_PROFILE_FILE=&lt;path&gt; reads another profile (a scratch copy for a dry run); the real site always uses regulation.json.
++const regFilePath = (typeof process !== 'undefined' && process.env && process.env.REG_PROFILE_FILE) || new URL('./regulation.json', import.meta.url);
++export const REG_FILE = JSON.parse(fs.readFileSync(regFilePath, 'utf8'));
++export const regProfile = (id = REG_FILE.site) => { const r = REG_FILE.regs[id]; return r ? {id, ...r} : null; };
++export const REG_PROFILE = regProfile();
++if (!REG_PROFILE || !REG_PROFILE.sd || !REG_PROFILE.since) throw new Error(`regulation.json: site "${REG_FILE.site}" needs an entry with sd and since`);
++export const SITE_REG = {id: REG_PROFILE.id, sd: REG_PROFILE.sd, since: REG_PROFILE.since};
+ export const REG_SWITCH = {events: 20, players: 1200};
+ export const REG_AUTO_SWITCH = (typeof process !== 'undefined' && process.env && process.env.REG_AUTO_SWITCH) !== '0';
+ export const regName = id => 'Reg ' + id;
+@@ -63,18 +71,21 @@ export function activeReg(file) { const r = readReg(file);
+ // Official end of each regulation (Nov 17). Limitless can keep tagging events with the old regulation after it ends (checked
+ // Nov 17: events listed from Dec 3 tagged "Regulation Set M-C"), so an event dated at or after the end never counts for it,
+ // whatever its tag: it counts for the next regulation. M-C ends Dec 1, 5:59 PM PST (pokemon.com "Get Ready for Regulation Set
+-// M-C"). Add each regulation's end here when it is official.
+-export const REG_END = {'M-C': '2026-12-02T01:59:00Z'};
++// M-C"). Each regulation's end lives in regulation.json ("end"), added when it is official.
++export const REG_END = Object.fromEntries(Object.entries(REG_FILE.regs).filter(([, r]) => r.end).map(([id, r]) => [id, r.end])); /* from regulation.json */
+ export const regAt = (f, date) => { let id = f; for (let i = 0; i < 4; i++) { const end = REG_END[id], t = Date.parse(String(date || ''));
+   if (!end || !isFinite(t) || t < Date.parse(end)) break; const nx = nextRegIds(id)[0]; if (!nx) break; id = nx; } return id; };
+ // an event's regulation: saved with it from Nov 1; older saved events are all Reg M-C (the only format the job ever fetched)
+-export const regOf = e => regAt((e && typeof e.f === 'string' && e.f) || SITE_REG.id, e && (e.d || e.date));
++// history: the job saved no format before Nov 1, and every event it saved then was Reg M-C. This is a fact about old files, so it
++// stays 'M-C' when the site moves on (with SITE_REG.id here, old M-C events would count as the new regulation after a switch).
++export const LEGACY_REG = 'M-C';
++export const regOf = e => regAt((e && typeof e.f === 'string' && e.f) || LEGACY_REG, e && (e.d || e.date));
+ export const sameReg = (e, id) => regOf(e) === id;
+ export const inRegWindow = (date, reg) => { const d = String(date || '').slice(0, 10); return !!d && d >= reg.since && (!reg.end || d < reg.end); };
+ // list: Limitless tournaments of any format [{format, date, players}]; sd: {showdownFormat: {n, first}} from replay searches;
+ // prev: yesterday's out/reg.json. Pure, so experiments/reg-test.mjs can feed it made-up data.
+ export function detectReg(list, sd, prev, today) {
+-  today = today || new Date().toISOString().slice(0, 10);
++  const todayDay = String(today || new Date().toISOString()).slice(0, 10);
+   let id = prev && REG_ID.test(prev.id) ? prev.id : SITE_REG.id, since = (prev && prev.since) || SITE_REG.since, sdId = (prev && prev.sd) || SITE_REG.sd;
+   const fam = id.split('-')[0] + '-', seen = {}, rows = (Array.isArray(list) ? list : []).map(t => ({f: REG_ID.test(String(t && t.format || '')) ? regAt(String(t.format), t.date) : String(t && t.format || ''), d: String(t && t.date || '').slice(0, 10), p: +(t && t.players) || 0}))
+     .filter(t => t.f.startsWith(fam) && REG_ID.test(t.f) && /^\d{4}-\d{2}-\d{2}$/.test(t.d));
+@@ -83,11 +94,38 @@ export function detectReg(list, sd, prev, today) {
+     s.events++; s.players += t.p; if (t.d < s.first) s.first = t.d; if (t.d > s.last) s.last = t.d; if (t.d >= cut) s.week++; }
+   // the regulation being played now: most events in the newest week (a tie goes to the one that started later)
+   const nowId = Object.keys(seen).sort((a, b) => seen[b].week - seen[a].week || (seen[b].first > seen[a].first ? 1 : -1))[0];
+-  const sdFor = r => { const k = Object.keys(sd || {}).find(f => sdReg(f) === r && +sd[f].n > 0); return k || sdGuess(r, today.slice(0, 4)); };
++  const sdFor = r => { const k = Object.keys(sd || {}).find(f => sdReg(f) === r && +sd[f].n > 0); return k || sdGuess(r, todayDay.slice(0, 4)); };
+   let now = null;
+   if (nowId && nowId !== id && seen[nowId].first >= since) now = {id: nowId, since: seen[nowId].first, events: seen[nowId].events, players: seen[nowId].players, week: seen[nowId].week, from: 'limitless'};
+   // no tournaments yet, but the next regulation's ladder has started on Showdown (20+ replays): say so too
+   if (!now) for (const [f, x] of Object.entries(sd || {})) { const r = sdReg(f); if (r && r !== id && !seen[r] && x && +x.n >= 20 && x.first) now = {id: r, since: String(x.first).slice(0, 10), events: 0, players: 0, week: 0, ladder: +x.n, from: 'showdown'}; }
+   let switched = prev && prev.switched || null;
+-  if (now && REG_AUTO_SWITCH && now.events >= REG_SWITCH.events && now.players >= REG_SWITCH.players) { switched = {from: id, to: now.id, on: today}; id = now.id; since = now.since; sdId = sdFor(id); now = null; }
+-  return {id, name: regName(id), since, sd: sdId, site: SITE_REG.id, now: now ? {...now, name: regName(now.id), need: REG_SWITCH} : null, switched, seen, checked: today}; }
++  // Date-based switch (reg-md-plan.md 0.7 & section 5): when the next regulation has a profile entry with a 'since' date,
++  // switch on launch day (today UTC >= nextProf.since) rather than waiting for REG_SWITCH event counts; never switch early.
++  // REG_SWITCH (events/players) stays as the backstop only when the next regulation has no date entry; REG_AUTO_SWITCH=0 holds both.
++  const nextId = nextRegIds(id)[0], nextProf = nextId ? regProfile(nextId) : null;
++  if (nextProf && nextProf.since) {
++    if (todayDay >= nextProf.since) {
++      if (REG_AUTO_SWITCH) {
++        switched = {from: id, to: nextId, on: todayDay, by: 'date'};
++        id = nextId; since = nextProf.since; sdId = nextProf.sd || sdFor(id); now = null;
++      } else if (!now) {
++        const s = seen[nextId];
++        now = {id: nextId, since: nextProf.since, events: s ? s.events : 0, players: s ? s.players : 0, week: s ? s.week : 0, from: 'date'};
++      }
++    }
++  } else if (now && REG_AUTO_SWITCH && now.events >= REG_SWITCH.events && now.players >= REG_SWITCH.players) {
++    switched = {from: id, to: now.id, on: todayDay, by: 'counts'}; id = now.id; since = now.since; sdId = sdFor(id); now = null;
++  }
++  return {id, name: regName(id), since, sd: sdId, site: SITE_REG.id, now: now ? {...now, name: regName(now.id), need: REG_SWITCH} : null, switched, seen, checked: todayDay}; }
++// ---------- outside sources and the regulation profile (gap G1, Nov 24) ----------
++// The ids each outside source uses for a regulation (regulation.json "sources"); {} when the profile has no entry for it.
++export const regSources = id => ((regProfile(id) || {}).sources) || {};
++// Is this fetched page really about regulation id? null when it is, else the reason (shown as "not available yet: &lt;reason&gt;").
++// Showdowntier names the regulation in its page; Pikalytics' tournament page has no regulation in its address, so the names of the
++// sample events it lists must mostly be this regulation's.
++export function sourcePageCheck(kind, html, id) { const h = String(html || '');
++  if (kind === 'showdowntier') return new RegExp(`Regulation ${id}\\b`).test(h) ? null : `its page does not say Regulation ${id}`;
++  if (kind === 'pikalytics') { const regs = [...h.matchAll(/\bReg(?:ulation)?(?: Set)? ?([A-Z])-([A-Z])\b/gi)].map(m => `${m[1]}-${m[2]}`.toUpperCase()), ours = regs.filter(r => r === id).length;
++    return !regs.length || ours * 2 >= regs.length ? null : `its sample events are mostly ${[...new Set(regs.filter(r => r !== id))].join('/')}`; }
++  return null; }
+diff --git a/names.mjs b/names.mjs
+index 9639eaf..38cda86 100644
+--- a/names.mjs
++++ b/names.mjs
+@@ -1,6 +1,7 @@
+ // Shared name and text helpers for the data scripts (official.mjs, sources.mjs): species text -> NastyPlot roster name,
+ // held-item check, HTML to text. Paths are relative to the working folder, so a dry run can run from a scratch copy.
+ import fs from 'node:fs';
++import {activeReg, regProfile, LEGACY_REG} from './formats.mjs';
+ export const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
+ export const dec = s => s.replace(/&amp;/g, '&').replace(/&#0?39;|&apos;|&#8217;/g, "'").replace(/&quot;/g, '"').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&nbsp;/g, ' ').replace(/&#(\d+);/g, (_, n) => String.fromCodePoint(+n));
+ export const text = h => dec(h.replace(/&lt;!--[\s\S]*?--&gt;|<script[\s\S]*?<\/script>|<style[\s\S]*?<\/style>/g, '').replace(/<[^>]+>/g, '\n')).split('\n').map(x => x.trim()).filter(Boolean);
+@@ -26,7 +27,19 @@ export function mapMon(species, item) {
+   if (ROSTER.has(n)) return n; const b = n.split('-')[0]; return ROSTER.has(b) ? b : null; }
+ // An item must look like an item: not a field label, not empty, a sane length; checked against the Reg M-C item list
+ // (data/regmc-items.txt) when that file exists. Bad parses become '' (unknown) and are counted.
+-const ITEMS = new Set((() => { try { return fs.readFileSync('data/regmc-items.txt', 'utf8').split(/\r?\n/).map(x => x.trim()).filter(Boolean); } catch (e) { return []; } })());
++// the item list's file comes from the regulation profile (regulation.json "items"); if missing on disk, fall back to M-C's list and say so
++const _act = activeReg(), ITEMS_FILE = (regProfile(_act.id) || {}).items || null;
++const ITEMS = new Set((() => {
++  const readList = f => fs.readFileSync(f, 'utf8').split(/\r?\n/).map(x => x.trim()).filter(Boolean);
++  if (!ITEMS_FILE) return [];
++  try { return readList(ITEMS_FILE); } catch (e) {
++    const fb = (regProfile(LEGACY_REG) || {}).items;
++    if (fb && fb !== ITEMS_FILE) {
++      try { const xs = readList(fb); console.log(`names: ${ITEMS_FILE} not found for ${_act.name}; falling back to ${fb}`); return xs; } catch (e2) {}
++    }
++    return [];
++  }
++})());
+ export const bad = {items: 0};
+ export function validItem(it) { const s = String(it || '').trim(); if (!s) return '';
+   if (/:\s*$/.test(s) || /Alignment|Ability|Held Item|Nature/i.test(s) || s.length > 30 || (ITEMS.size && !ITEMS.has(s))) { bad.items++; return ''; } return s; }
+@@ -53,10 +66,15 @@ const LIST = {i: new Map([...ITEMS].map(x => [fold(x), x])), a: new Map(Object.k
+   mv: new Map((grabJS('MOVES') || []).map(x => [fold(x[0]), x[0]]))};
+ const STONE_TYPO = {staraptorite: 'Staraptite', dragonitite: 'Dragoninite', dragonitinite: 'Dragoninite', golisopodite: 'Golisopite', venosaurite: 'Venusaurite',
+   raichuitex: 'Raichunite X', raichuitey: 'Raichunite Y', glimmorite: 'Glimmoranite', scovillanite: 'Scovillainite', garchompitite: 'Garchompite', sableyite: 'Sablenite', floetitte: 'Floettite'};
++// Item misspellings seen on Limitless sheets (Nov 19 check of data/t2; design review #15, 'Leftovers' / 'Left Over') where only one
++// legal item fits; unclear ones ('King', 'Dragon claw', 'Fairy plume', 'Gold Berry', 'Miracle Berry') stay as written.
++const ITEM_TYPO = {leftover: 'Leftovers', passchoberry: 'Passho Berry', choppleberry: 'Chople Berry', focusslash: 'Focus Sash', citrusberry: 'Sitrus Berry',
++  sitrisberry: 'Sitrus Berry', charcol: 'Charcoal', charlcoal: 'Charcoal', choicescraf: 'Choice Scarf', ejectbuttom: 'Eject Button', grassyseeds: 'Grassy Seed',
++  kassibberry: 'Kasib Berry', rindo: 'Rindo Berry', floettenite: 'Floettite', dragonitete: 'Dragoninite', garchompnitez: 'Garchompite Z', clefabite: 'Clefablite'};
+ const NONE = {i: new Set(['m', 'f', 'noitem', 'nohelditem', 'none', 'nothing', 'withoutitem', 'noobject']), a: new Set(['noability', 'none']), mv: new Set()};
+ export const CANON_UNKNOWN = {i: new Map(), a: new Map(), mv: new Map()};
+ function canon(kind, s, count = true) { if (s == null) return ''; const t = String(s).replace(/\s+/g, ' ').trim(); if (!t) return '';
+-  const k = fold(t); if (NONE[kind].has(k)) return ''; if (kind === 'i' && STONE_TYPO[k] && LIST.i.has(fold(STONE_TYPO[k]))) return STONE_TYPO[k];
++  const k = fold(t); if (NONE[kind].has(k)) return ''; if (kind === 'i' && STONE_TYPO[k] && LIST.i.has(fold(STONE_TYPO[k]))) return STONE_TYPO[k]; if (kind === 'i' && ITEM_TYPO[k] && LIST.i.has(fold(ITEM_TYPO[k]))) return ITEM_TYPO[k];
+   const c = LIST[kind].get(k); if (c) return c; if (count && LIST[kind].size) CANON_UNKNOWN[kind].set(t, (CANON_UNKNOWN[kind].get(t) || 0) + 1); return t; }
+ export const canonItem = (s, count) => canon('i', s, count), canonAbility = (s, count) => canon('a', s, count), canonMove = (s, count) => canon('mv', s, count);
+ // one Pokémon of a data/t2 sheet ({n, i, a, mv, t, nt}) with its item, Ability and moves in the list spelling
+diff --git a/official.mjs b/official.mjs
+index 5ebe465..40c32e7 100644
+--- a/official.mjs
++++ b/official.mjs
+@@ -19,8 +19,13 @@ import fs from 'node:fs'; import crypto from 'node:crypto';
+ import {readJSON, dec, ROSTER, mapMon, validItem, bad} from './names.mjs';
+ import {opid, okeys, keyScore} from './pid.mjs';
+ import {stampReg} from './reg-stamp.mjs';
++import {activeReg, regProfile} from './formats.mjs';
+ export const UA = 'NastyPlot data job (github.com/theresearchmode-glitch/pokelair-data; simran.jsbagga@gmail.com)';
+-const TOP = +(process.env.OFFICIAL_TOP || 64), REG = process.env.OFFICIAL_REG || 'M-C', REG_START = '2026-09-01', CACHE = process.env.OFFICIAL_CACHE || '';
++// gap G1 (Nov 24): the regulation and its first day come from the regulation profile (regulation.json, the regulation our numbers
++// are built from). With no official id listed for it, every event is skipped as not this regulation's, never read as another one's.
++const ACT = activeReg(), RGP = regProfile(ACT.id) || {}, RG_ID = (RGP.sources || {}).official || null;
++const STAMP_REG = process.env.OFFICIAL_REG || ACT.id;
++const TOP = +(process.env.OFFICIAL_TOP || 64), REG = process.env.OFFICIAL_REG || RG_ID || 'not-available-yet', REG_START = RGP.since || ACT.since, CACHE = process.env.OFFICIAL_CACHE || '';
+ const DIR = 'data/official', VR = 'https://victoryroad.pro/wp-json/wp/v2/pages', LQ = 'https://liquipedia.net/pokemon/api.php';
+ const GAP = {'victoryroad.pro': 1100, 'www.vrpastes.com': 1100, 'vrpaste-backend.vercel.app': 1100, 'liquipedia.net': 2100}, GAP0 = process.env.GAP != null ? +process.env.GAP : null;  /* GAP=0 only for the offline stress test */
+ const sleep = ms => new Promise(r => setTimeout(r, ms));
+@@ -180,13 +185,13 @@ async function run() {
+     checks};
+   // 4) gate: the new file against the previous out/official.json, team by team (same event date and placement)
+   const prev = readJSON('out/official.json', null), cmp = compare(prev, out);
+-  fs.writeFileSync('out/official_compare.json', JSON.stringify(stampReg(cmp, REG)));
++  fs.writeFileSync('out/official_compare.json', JSON.stringify(stampReg(cmp, STAMP_REG)));
+   console.log(`official: vs previous file (${cmp.previous}): ${cmp.summary}`);
+   const prevTeams = prev ? (prev.events || []).reduce((a, e) => a + (e.teams || []).length, 0) : 0, newTeams = out.events.reduce((a, e) => a + e.teams.length, 0);
+   if (!out.events.length) { console.log('::warning::official: no events read; kept the previous out/official.json'); return; }
+   if (prevTeams && newTeams < prevTeams * .8) { console.log(`::warning::official: only ${newTeams} teams (had ${prevTeams}); kept the previous out/official.json`); return; }
+   if (!cmp.pass) { console.log(`::warning::official: the new sheets disagree with the previous file beyond the gate (${cmp.summary}); kept the previous out/official.json`); return; }
+-  fs.writeFileSync('out/official.json', JSON.stringify(stampReg(out, REG)));
++  fs.writeFileSync('out/official.json', JSON.stringify(stampReg(out, STAMP_REG)));
+   // each event's top 8 at the front of out/teams.json (as rk9.mjs did)
+   const T = readJSON('out/teams.json', {teams: []}), off = [];
+   for (const e of out.events.slice(0, 4)) for (const t of e.teams.filter(t => t.st <= 8 && t.mons.every(m => ROSTER.has(m.n)))) off.push({player: t.player, event: `${e.name} · ${e.players} players`, record: `#${t.st} · official`, section: 'Official events', mons: t.mons.map(m => m.n)});
+diff --git a/perf.mjs b/perf.mjs
+index 2161283..7dc31c3 100644
+--- a/perf.mjs
++++ b/perf.mjs
+@@ -15,6 +15,7 @@
+ // can show the date and leave out anything older than its cadence. A part whose source failed today is left out.
+ // Usage: node perf.mjs   (after update.mjs, ladder.mjs, opgg.mjs and sources.mjs)
+ import fs from 'node:fs';
++import {activeReg, regProfile} from './formats.mjs';
+ const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
+ const day = t => String(t || '').slice(0, 10), today = new Date().toISOString().slice(0, 10);
+ const L = rd('limitless.json'), G = rd('meta_ingame.json'), O = rd('official_perf.json'), Lad = rd('meta_ladder.json'), S = rd('sources.json') || {}, out = {updated: today};
+@@ -46,7 +47,7 @@ function tierList(k, name, how, url, note, src, megaSrc) { if (!src) return null
+   for (const r of src.rows) { if (!r.tier) continue; const fam = famOf(r.n), best = fam.slice().sort((a, b) => (tourU[b] || 0) - (tourU[a] || 0))[0];
+     const key = data[best] == null ? best : r.n; if (data[key] == null) data[key] = idx(r.tier); }
+   return {list: {k, name, how, url, note, date: src.date || today, tiers: Object.fromEntries(order.map(t => [idx(t), t]))}, data}; }
+-const T = [tierList('showdowntier', 'Showdowntier', 'Showdown ladder usage + win rate', 'https://showdowntier.com/formats/dmc/index.html', 'lists Pokémon with 1%+ ladder usage', S.sdt)].filter(Boolean);
++const T = [tierList('showdowntier', 'Showdowntier', 'Showdown ladder usage + win rate', `https://showdowntier.com/formats/${((regProfile(activeReg().id) || {}).sources || {}).showdowntier || ''}/index.html` /* regulation.json */, 'lists Pokémon with 1%+ ladder usage', S.sdt)].filter(Boolean);
+ if (T.length) out.outside = {updated: today, lists: T.map(t => t.list), data: Object.fromEntries(T.map(t => [t.list.k, t.data]))};
+ // the regulation every number here is built from, and a newer one being played (reg.mjs, formats.mjs): the page's banner
+ { const R = rd('reg.json'); if (R && typeof R.id === 'string') out.reg = {id: R.id, name: R.name, since: R.since, site: R.site, now: R.now || null, switched: R.switched || null, seen: R.seen || {}, checked: R.checked}; }
+diff --git a/practice.mjs b/practice.mjs
+index b55d59d..a17985b 100644
+--- a/practice.mjs
++++ b/practice.mjs
+@@ -14,6 +14,7 @@
+ //         similar opposing six: [games, mostCommonFour, itsCount, mostCommonLead, itsCount]
+ import fs from 'node:fs';
+ import {stampReg} from './reg-stamp.mjs';
++import {activeReg} from './formats.mjs';
+ const MIN_R = 1300, ROUND_R = 1450, MAX_OPP = 160, PER_OPP = 3, LIMIT = 250 * 1024;
+ const src = (() => { try { return JSON.parse(fs.readFileSync('out/replays.json', 'utf8')); } catch (e) { return null; } })();
+ if (!src || !Array.isArray(src.games) || !src.games.length) { console.log('practice: no replays, out/practice.json left as it was'); process.exit(0); }
+@@ -58,7 +59,7 @@ for (const six of picked) {
+     rounds.push([oi, s.six.map(id), g.b[s.i].map(id), g.l[s.i].map(id), s.r, Array.isArray(g.r) ? +g.r[j] || 0 : 0, g.w === s.i ? 1 : 0, g.b[j].map(id), g.l[j].map(id),
+       [sim.length, f[0].split('|').map(id), f[1], l[0].split('|').map(id), l[1]]]); }
+ }
+-const out = stampReg({updated: new Date().toISOString(), source: `Showdown ladder replays (${src.format || 'Reg M-C'}), ${games.length.toLocaleString('en-US')} recent games`, from: Math.min(...games.map(g => g.t || Infinity)), to: Math.max(...games.map(g => g.t || 0)), minR: MIN_R, roundR: ROUND_R, dict, opp, rounds}, src.reg);
++const out = stampReg({updated: new Date().toISOString(), source: `Showdown ladder replays (${src.format || activeReg().name}), ${games.length.toLocaleString('en-US')} recent games`, from: Math.min(...games.map(g => g.t || Infinity)), to: Math.max(...games.map(g => g.t || 0)), minR: MIN_R, roundR: ROUND_R, dict, opp, rounds}, src.reg);
+ let txt = JSON.stringify(out);
+ // keep under the size limit: drop the rarest Pokémon rows first
+ while (txt.length > LIMIT) { for (const o of out.opp) o[2] = o[2].slice(0, Math.max(12, o[2].length - 4)); const t2 = JSON.stringify(out); if (t2.length === txt.length) { out.rounds = out.rounds.slice(0, out.rounds.length - 20); } txt = JSON.stringify(out); }
+diff --git a/reg.mjs b/reg.mjs
+index e1c29e4..ebe5f89 100644
+--- a/reg.mjs
++++ b/reg.mjs
+@@ -6,7 +6,7 @@
+ // If both sources fail, yesterday's file stays (a ::warning:: in the log). REG_OFFLINE=1 builds it from the saved tournaments
+ // in data/index.json only (no network; they are all one regulation, so it can't see a new one) for local previews.
+ import fs from 'node:fs';
+-import {detectReg, readReg, activeReg, nextRegIds, sdGuess, regName, SITE_REG} from './formats.mjs';
++import {detectReg, readReg, activeReg, nextRegIds, sdGuess, regName, regProfile, REG_AUTO_SWITCH, LEGACY_REG} from './formats.mjs';
+ const UA = {'User-Agent': 'pokelair-data (personal team-builder stats)'}, sleep = ms => new Promise(r => setTimeout(r, ms));
+ async function getJSON(url) { const c = new AbortController(), to = setTimeout(() => c.abort(), 30000);
+   try { const r = await fetch(url, {headers: UA, signal: c.signal}); if (!r.ok) throw new Error(url + ' ' + r.status); return await r.json(); } finally { clearTimeout(to); } }
+@@ -14,7 +14,7 @@ const prev = readReg(), act = activeReg(), today = new Date().toISOString().slic
+ let list = null; const sd = {};
+ if (process.env.REG_OFFLINE === '1') {
+   let idx = {tournaments: {}}; try { idx = JSON.parse(fs.readFileSync('data/index.json', 'utf8')); } catch (e) {}
+-  list = Object.values(idx.tournaments || {}).map(t => ({format: t.f || SITE_REG.id, date: t.d, players: t.p}));
++  list = Object.values(idx.tournaments || {}).map(t => ({format: t.f || LEGACY_REG, date: t.d, players: t.p}));
+ } else {
+   try { list = []; for (let page = 1; page <= 3; page++) { if (page > 1) await sleep(6500);
+       const r = await getJSON(`https://play.limitlesstcg.com/api/tournaments?game=VGC&limit=100&page=${page}`); if (!Array.isArray(r) || !r.length) break; list.push(...r); }
+@@ -27,10 +27,12 @@ if (process.env.REG_OFFLINE === '1') {
+       if (Array.isArray(r) && r.length) { const t = Math.min(...r.map(x => +x.uploadtime || Infinity)); sd[f] = {n: r.length, first: isFinite(t) ? new Date(t * 1000).toISOString().slice(0, 10) : null}; } }
+     catch (e) { console.log(`reg: Showdown search for ${f} failed (${e.message})`); } }
+ }
+-if (!list && !Object.keys(sd).length) { console.log('::warning::reg: no source answered; kept yesterday\'s out/reg.json'); process.exit(0); }
++const nextId = nextRegIds(act.id)[0], nextProf = nextId ? regProfile(nextId) : null;
++const dateDue = !!(nextProf && nextProf.since && today >= nextProf.since && REG_AUTO_SWITCH);
++if (!list && !Object.keys(sd).length && !dateDue) { console.log('::warning::reg: no source answered; kept yesterday\'s out/reg.json'); process.exit(0); }
+ const r = detectReg(list || [], sd, prev, today);
+-// a source that failed today doesn't erase what it showed yesterday
+-if (!list && prev) { if (prev.seen) r.seen = prev.seen; if (!r.now && prev.now && prev.now.from === 'limitless') r.now = prev.now; } /* keeps yesterday's banner too (code review, Nov 24) */
++// a source that failed today doesn't erase what it showed yesterday (unless we just switched regulation)
++if (!list && prev) { if (prev.seen) r.seen = prev.seen; if (r.id === prev.id && !r.now && prev.now && prev.now.from === 'limitless') r.now = prev.now; } /* keeps yesterday's banner too (code review, Nov 24) */
+ if (r.now) console.log(`::warning::reg: ${r.now.name} is being played since ${r.now.since} (${r.now.events} events, ${r.now.players} players${r.now.ladder ? ', ' + r.now.ladder + '+ Showdown replays' : ''}); numbers stay on ${r.name} until it has ${r.now.need.events} events and ${r.now.need.players} players`);
+ if (r.switched && r.switched.on === today) console.log(`::warning::reg: switched from ${regName(r.switched.from)} to ${r.name} (started ${r.since}); every step now counts ${r.name} events only`);
+ fs.writeFileSync('out/reg.json', JSON.stringify(r));
+diff --git a/sources.mjs b/sources.mjs
+index 36142c0..bc0bf33 100644
+--- a/sources.mjs
++++ b/sources.mjs
+@@ -9,6 +9,12 @@ import fs from 'node:fs';
+ import {mapMon, ROSTER, dec, text} from './names.mjs';
+ import {UA as NP_UA, politeFetch} from './http.mjs';
+ import {stampReg} from './reg-stamp.mjs';
++import {activeReg, regSources, sourcePageCheck} from './formats.mjs';
++// gap G1 (Nov 24): every outside source reads the regulation profile (regulation.json) for the regulation our numbers are built from.
++// A source with no page for it (id null or missing), or whose page turns out to be about another regulation, is reported as
++// "not available yet" and left out, never read as if it were this regulation's numbers.
++const RG = activeReg(), SRC = regSources(RG.id);
++const notYet = why => { throw new Error(`not available yet for ${RG.name}${why ? ': ' + why : ''}`); };
+ const UA = {'User-Agent': NP_UA};
+ const sleep = ms => new Promise(r => setTimeout(r, ms));
+ let calls = 0;
+@@ -32,7 +38,9 @@ const tryIt = async (k, f) => { try { const v = await f(); if (v) out[k] = v; el
+ // Pokémon Zone is not read: it answers automated requests with 403 (tested Oct 31 from the daily job's runner), and
+ // that refusal is respected. Its tier list and the official-events data it shows are not part of the daily data.
+ // Showdowntier: one table, every row carries data-name / data-tier / data-usage / data-win / data-rating
+-await tryIt('sdt', async () => { const h = await get('https://showdowntier.com/formats/dmc/index.html'), rows = [], miss = [];
++await tryIt('sdt', async () => { if (!SRC.showdowntier) notYet('no Showdowntier page listed in regulation.json');
++  const h = await get(`https://showdowntier.com/formats/${SRC.showdowntier}/index.html`), rows = [], miss = [];
++  { const why = sourcePageCheck('showdowntier', h, RG.id); if (why) notYet(why); }
+   for (const m of h.matchAll(/<tr[^>]*data-rank="(\d+)"[^>]*data-name="([^"]+)"[^>]*data-tier="([^"]*)"[^>]*data-usage="([\d.]+)"[^>]*data-win="([\d.]+)"[^>]*data-rating="([\d.]+)"/g)) {
+     const n = norm(m[2]); if (!n) { miss.push(m[2]); continue; } rows.push({n, tier: m[3], u: +(+m[4]).toFixed(2), w: +(+m[5]).toFixed(2), r: Math.round(+m[6])}); }
+   const rng = h.match(/(\d{1,2}\/\d{1,2}\/\d{4}) to (\d{1,2}\/\d{1,2}\/\d{4})/), up = h.match(/Last Updated: (\d{1,2})\/(\d{1,2})\/(\d{4})/), bat = h.match(/([\d,]+) Games analyzed|Analyzed ([\d,]+) competitive battles/);
+@@ -43,7 +51,10 @@ await tryIt('sdt', async () => { const h = await get('https://showdowntier.com/f
+ // Nov 8 (Sim: our popular sets must agree with established sites): Pikalytics' TOURNAMENT stats ('championstournaments',
+ // built from Limitless events). The 'gen9championsvgc2026regmc' format we read before is its Showdown LADDER data, a different
+ // population, which made 14 of 40 top items look like conflicts (Rillaboom: Life Orb there, Miracle Seed 75.5% in tournaments).
+-await tryIt('pika', async () => { const F = 'championstournaments', h = await get(`https://www.pikalytics.com/ai/pokedex/${F}`), rows = [], miss = [];
++await tryIt('pika', async () => { const F = SRC.pikalytics; if (!F) notYet('no Pikalytics page listed in regulation.json');
++  const h = await get(`https://www.pikalytics.com/ai/pokedex/${F}`), rows = [], miss = [];
++  /* its tournament page has no regulation in its address: the sample events' names must be mostly this regulation's */
++  { const why = sourcePageCheck('pikalytics', h, RG.id); if (why) notYet(why); }
+   // Nov 9: a row whose win rate or record is "N/A" (Mega Floette's) used to fail this pattern and vanish without a trace;
+   // win rate and record are optional now, and every table row is counted so a row that still can't be read is reported
+   const tableRows = (h.match(/^\| \d+ \| \*\*/gm) || []).length;
+@@ -59,7 +70,7 @@ await tryIt('pika', async () => { const F = 'championstournaments', h = await ge
+       const rec = t.match(/\*\*Record\*\* \| (\d+)-(\d+)/); date = date || (t.match(/\*\*Data Date\*\* \| ([\d-]+)/) || [])[1] || null;
+       sets[r.n] = {it: sec('Items').slice(0, 4), mv: sec('Moves').slice(0, 6), g: rec ? +rec[1] + +rec[2] : null}; } catch (e) {} }
+   return {date: new Date().toISOString().slice(0, 10), dataDate: date, scope, rows, sets, miss}; });
+-fs.writeFileSync('out/sources.json', JSON.stringify(stampReg(out, 'M-C')));
++fs.writeFileSync('out/sources.json', JSON.stringify(stampReg(out, RG.id)));
+ // Nov 9 (no silent failures): each source problem is recorded like a skipped step (skip.mjs -> out/skips.json), so the same
+ // source failing two days in a row raises the 'Daily data problem' alarm in health.mjs instead of one warning line a day
+ { const {execFileSync} = await import('node:child_process'); for (const k of new Set(out.problems.map(p => p.split(':')[0]))) { try { execFileSync('node', ['skip.mjs', `source ${k} skipped (${out.problems.filter(p => p.startsWith(k + ':')).join(' | ').slice(0, 300)})`], {stdio: 'inherit'}); } catch (e) {} } }
+
+----- BEGIN regulation.json -----
+{
+  "_": "The regulation profile (reg-md-plan.md 0.1, gap G1). ONE source of truth for the regulation the site is built for. The daily data job reads it through formats.mjs (SITE_REG, REG_END, regProfile) and switches by date when today (UTC) >= the next regulation's 'since'. A regulation's 'end' stays here for good: events dated after it count for the next one. Source ids set to null mean the source has no page for that regulation yet: the job then says 'not available yet' instead of reading another regulation's numbers.",
+  "site": "M-C",
+  "regs": {
+    "M-C": {
+      "name": "Reg M-C",
+      "long": "Regulation M-C",
+      "sd": "gen9championsvgc2026regmc",
+      "since": "2026-09-01",
+      "end": "2026-12-02T01:59:00Z",
+      "sources": {
+        "showdowntier": "dmc",
+        "pikalytics": "championstournaments",
+        "official": "M-C"
+      },
+      "items": "data/regmc-items.txt",
+      "rules": {"format": "VGC doubles", "bring": 6, "pick": 4, "level": 50, "points": [0, 32], "itemClause": true}
+    },
+    "M-D": {
+      "name": "Reg M-D",
+      "long": "Regulation M-D",
+      "sd": "gen9championsvgc2026regmd",
+      "since": "2026-12-02",
+      "end": null,
+      "sources": {
+        "showdowntier": null,
+        "pikalytics": null,
+        "official": null
+      },
+      "items": "data/regmd-items.txt",
+      "rules": {"format": "VGC doubles", "bring": 6, "pick": 4, "level": 50, "points": [0, 32], "itemClause": true}
+    }
+  }
+}
+----- END regulation.json -----
+
+----- BEGIN experiments/reg-profile-test.mjs -----
+// The regulation profile (regulation.json; reg-md-plan.md 0.1 and gap G1; data-job port for alt/gemini-dec2).
+// Exits 1 on any failure. Usage: node experiments/reg-profile-test.mjs
+// 1) the profile: the site's entry and M-D entry have every required field; SITE_REG and REG_END come from it
+// 2) old saved events with no format stay Reg M-C after a switch (history), and dates after M-C's end count for M-D
+// 3) outside sources: a page about another regulation, or no page listed, is "not available yet" (sourcePageCheck, regSources)
+// 4) a scratch Reg M-D profile (REG_PROFILE_FILE) exposes SITE_REG M-D while keeping LEGACY_REG M-C
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {REG_FILE, REG_PROFILE, SITE_REG, REG_END, LEGACY_REG, regOf, regProfile, regSources, sourcePageCheck} from '../formats.mjs';
+
+let fails = 0;
+const ok = (c, m) => { if (!c) { fails++; console.log('  FAIL', m); } else console.log('  ok  ', m); };
+const ROOT = path.dirname(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')));
+
+// 1) the profile
+const need = ['name', 'long', 'sd', 'since', 'sources', 'rules'];
+ok(REG_PROFILE && REG_PROFILE.id === REG_FILE.site, `the site's regulation (${REG_FILE.site}) has an entry in regulation.json`);
+ok(need.every(k => REG_PROFILE[k] != null), `its entry has ${need.join(', ')}`);
+ok(REG_PROFILE.name === 'Reg ' + REG_PROFILE.id && REG_PROFILE.long === 'Regulation ' + REG_PROFILE.id, 'name and long name match its id');
+ok(SITE_REG.id === REG_PROFILE.id && SITE_REG.sd === REG_PROFILE.sd && SITE_REG.since === REG_PROFILE.since, 'SITE_REG is read from the profile');
+ok(Object.entries(REG_FILE.regs).every(([id, r]) => !r.end || REG_END[id] === r.end) && REG_END['M-C'] === '2026-12-02T01:59:00Z', 'REG_END is read from the profile (M-C ends 2026-12-02 01:59 UTC)');
+ok(Object.entries(REG_FILE.regs).every(([id, r]) => /^[A-Z]-[A-Z]$/.test(id) && /^gen9championsvgc\d{4}reg[a-z]{2}$/.test(r.sd) && /^\d{4}-\d{2}-\d{2}$/.test(r.since)), 'every regulation listed has a valid id, Showdown id and first day');
+
+const mdProf = regProfile('M-D');
+ok(mdProf && mdProf.since === '2026-12-02' && mdProf.end === null && mdProf.sd === 'gen9championsvgc2026regmd' && mdProf.items === 'data/regmd-items.txt', 'M-D entry exists with expected since, end, sd, and items');
+ok(mdProf && mdProf.sources && mdProf.sources.showdowntier === null && mdProf.sources.pikalytics === null && mdProf.sources.official === null, 'M-D outside sources are null until their pages exist');
+
+// 2) history stays history
+ok(LEGACY_REG === 'M-C' && regOf({d: '2026-10-01'}) === 'M-C', 'an old saved event with no format counts as Reg M-C');
+ok(regOf({f: 'M-C', d: '2026-12-05'}) === 'M-D', 'an event dated after M-C ends counts for M-D, whatever its tag');
+
+// 3) outside sources (G1)
+const SDT_MC = '&lt;title&gt;VGC 2026 Regulation M-C (Pokemon Champions) Competitive Viability Tier List - Showdown Tier&lt;/title&gt;';
+const PIKA_MC = '| 1 | a | 9-0 | Intimidators Champions Challenge #52 REG M-C |\n| 2 | b | 12-2 | Maddo\'s Cup #13 | Reg M-C |\n| 3 | c | 11-1 | Alpensee Tour (Reg M-C) #80 |\n| 4 | d | 10-0 | 2026 Worlds Reg M-B rerun |';
+ok(sourcePageCheck('showdowntier', SDT_MC, 'M-C') === null, "Showdowntier's M-C page is accepted for Reg M-C");
+ok(/not say Regulation M-D/.test(sourcePageCheck('showdowntier', SDT_MC, 'M-D') || ''), "Showdowntier's M-C page is refused for Reg M-D");
+ok(sourcePageCheck('pikalytics', PIKA_MC, 'M-C') === null, "Pikalytics' tournament page (3 of 4 named events M-C) is accepted for Reg M-C");
+ok(/mostly M-C/.test(sourcePageCheck('pikalytics', PIKA_MC, 'M-D') || ''), 'the same page is refused for Reg M-D (its events are M-C)');
+ok(Object.keys(regSources('Z-Z')).length === 0 && regProfile('Z-Z') === null, 'a regulation with no entry has no source ids (so every source says "not available yet")');
+
+// 4) a scratch Reg M-D profile (data-job checks)
+const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'regmd-'));
+const md = JSON.parse(JSON.stringify(REG_FILE));
+md.site = 'M-D';
+fs.writeFileSync(path.join(tmp, 'regulation.json'), JSON.stringify(md));
+const env = {...process.env, REG_PROFILE_FILE: path.join(tmp, 'regulation.json')};
+try {
+  const sw = execFileSync(
+    process.execPath,
+    ['-e', "import('./formats.mjs').then(m=>console.log(JSON.stringify([m.SITE_REG,m.regOf({d:'2026-10-01'}),Object.keys(m.regSources('M-D')).length])))"],
+    {cwd: ROOT, env}
+  ).toString().trim();
+  ok(sw === '[{"id":"M-D","sd":"gen9championsvgc2026regmd","since":"2026-12-02"},"M-C",3]', 'with the M-D profile, the data job sees SITE_REG M-D and old events stay M-C: ' + sw);
+} finally {
+  fs.rmSync(tmp, {recursive: true, force: true});
+}
+
+console.log(fails ? `${fails} FAILED` : 'all passed');
+process.exit(fails ? 1 : 0);
+----- END experiments/reg-profile-test.mjs -----
+
+----- BEGIN experiments/date-switch-test.mjs -----
+// Date-based regulation switch tests (job 21, Node 22, no network).
+// Usage: node experiments/date-switch-test.mjs     (exits 1 on any failure)
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {REG_END, REG_FILE, REG_SWITCH, SITE_REG, regAt, detectReg, activeReg, readReg} from '../formats.mjs';
+import {guardOut, stampOf} from '../reg-guard.mjs';
+import {buildRegState} from '../regstate.mjs';
+
+let failed = 0;
+function check(name, actual, expected) {
+  const ok = actual === expected;
+  if (ok) console.log(`pass ${name}`);
+  else { failed++; console.log(`FAIL ${name}: expected ${JSON.stringify(expected)}, got ${JSON.stringify(actual)}`); }
+}
+
+const ROOT = path.dirname(path.dirname(new URL(import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1')));
+const prevMC = {id: 'M-C', since: SITE_REG.since, sd: SITE_REG.sd};
+const mkEvents = (format, n, playersEach, date) => Array.from({length: n}, () => ({format, date, players: playersEach}));
+
+// 1) Day before launch (2026-12-01) -> still M-C
+{
+  const r = detectReg([], {}, prevMC, '2026-12-01T23:59:00Z');
+  check('day-before-still-mc', `${r.id}/${r.switched}/${r.now}`, 'M-C/null/null');
+}
+
+// 2) Launch day 2026-12-02T00:00:00Z -> switches to M-D by date, even with 0 events
+{
+  const r = detectReg([], {}, prevMC, '2026-12-02T00:00:00Z');
+  check('dec2-0000z-switches-to-md',
+    `${r.id}/${r.since}/${r.sd}/${r.now}/${r.switched && r.switched.from}->${r.switched && r.switched.to}@${r.switched && r.switched.on}:${r.switched && r.switched.by}`,
+    'M-D/2026-12-02/gen9championsvgc2026regmd/null/M-C->M-D@2026-12-02:date');
+}
+
+// 3) REG_AUTO_SWITCH=0 holds the date switch on Dec 2
+{
+  const oldEnv = process.env.REG_AUTO_SWITCH;
+  process.env.REG_AUTO_SWITCH = '0';
+  const {detectReg: detectHeld} = await import('../formats.mjs?datehold=1');
+  if (oldEnv === undefined) delete process.env.REG_AUTO_SWITCH; else process.env.REG_AUTO_SWITCH = oldEnv;
+  const r = detectHeld([], {}, prevMC, '2026-12-02T00:00:00Z');
+  check('reg-auto-switch-0-holds-date', `${r.id}/${r.switched}/${r.now && r.now.id}/${r.now && r.now.from}`, 'M-C/null/M-D/date');
+}
+
+// 4) M-D events before Dec 2 do NOT switch early (even above REG_SWITCH thresholds)
+{
+  const early = detectReg(mkEvents('M-D', REG_SWITCH.events + 5, 100, '2026-11-30T12:00:00Z'), {}, prevMC, '2026-12-01');
+  check('md-events-before-dec2-no-early-switch', `${early.id}/${early.switched}/${early.now && early.now.id}`, 'M-C/null/M-D');
+}
+
+// 5) No M-D entry in regulation.json -> falls back to REG_SWITCH event/player counts
+{
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'reg-nomd-'));
+  try {
+    const prof = JSON.parse(JSON.stringify(REG_FILE));
+    delete prof.regs['M-D'];
+    const pf = path.join(tmp, 'regulation.json');
+    fs.writeFileSync(pf, JSON.stringify(prof));
+    const out = execFileSync(
+      process.execPath,
+      ['--input-type=module', '-e', `
+        import {detectReg, REG_SWITCH, SITE_REG} from './formats.mjs';
+        const prev = {id: 'M-C', since: SITE_REG.since, sd: SITE_REG.sd};
+        const mk = (n, p) => Array.from({length: n}, () => ({format: 'M-D', date: '2026-12-05T12:00:00Z', players: p}));
+        const a = detectReg(mk(REG_SWITCH.events - 1, 100), {}, prev, '2026-12-05');
+        const b = detectReg(mk(REG_SWITCH.events, 60), {}, prev, '2026-12-05');
+        console.log(JSON.stringify([a.id, a.now && a.now.id, b.id, b.switched && b.switched.by]));
+      `],
+      {cwd: ROOT, env: {...process.env, REG_PROFILE_FILE: pf}}
+    ).toString().trim();
+    check('no-md-entry-falls-back-to-counts', out, '["M-C","M-D","M-D","counts"]');
+  } finally {
+    fs.rmSync(tmp, {recursive: true, force: true});
+  }
+}
+
+// 6) regAt / REG_END rules still hold
+check('regAt-before-end', regAt('M-C', '2026-12-02T01:58:59Z'), 'M-C');
+check('regAt-at-end', regAt('M-C', '2026-12-02T01:59:00Z'), 'M-D');
+check('REG_END-mc', REG_END['M-C'], '2026-12-02T01:59:00Z');
+
+// 7) Switch day flows into reg-guard.mjs (empties M-C files) and regstate.mjs (Day 1 of Reg M-D)
+{
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'reg-flow-'));
+  try {
+    const outDir = path.join(tmp, 'out');
+    fs.mkdirSync(outDir, {recursive: true});
+    const sw = detectReg([], {}, prevMC, '2026-12-02T00:00:00Z');
+    const regFile = path.join(outDir, 'reg.json');
+    fs.writeFileSync(regFile, JSON.stringify(sw));
+    fs.writeFileSync(path.join(outDir, 'limitless.json'), JSON.stringify({reg: 'M-C', tournaments: 100}));
+    fs.writeFileSync(path.join(outDir, 'sources.json'), JSON.stringify({reg: 'M-C', sdt: {rows: [1]}}));
+
+    const g = guardOut({outDir, regFile, log: () => {}});
+    const limAfter = JSON.parse(fs.readFileSync(path.join(outDir, 'limitless.json'), 'utf8'));
+    const srcAfter = JSON.parse(fs.readFileSync(path.join(outDir, 'sources.json'), 'utf8'));
+    const archived = fs.existsSync(path.join(outDir, 'archive', 'M-C', 'limitless.json'));
+    check('reg-guard-empties-mc-on-switch-day',
+      `${g.reg}/${g.emptied.sort().join(',')}/${stampOf(limAfter)}/${limAfter.tournaments}/${stampOf(srcAfter)}/${archived}`,
+      'M-D/limitless.json,sources.json/M-D/0/M-D/true');
+
+    const rs = buildRegState({regObj: activeReg(regFile), rawReg: readReg(regFile), matches: null, today: '2026-12-02'});
+    check('regstate-day1-of-md', `${rs.reg}/day${rs.day}/${rs.events}/${rs.players}/${rs.since}`, 'M-D/day1/0/0/2026-12-02');
+  } finally {
+    fs.rmSync(tmp, {recursive: true, force: true});
+  }
+}
+
+// 8) names.mjs falls back to M-C items list when data/regmd-items.txt is missing
+{
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), 'reg-items-'));
+  try {
+    fs.mkdirSync(path.join(tmp, 'data'), {recursive: true});
+    fs.mkdirSync(path.join(tmp, 'out'), {recursive: true});
+    fs.writeFileSync(path.join(tmp, 'data', 'regmc-items.txt'), 'Leftovers\nSitrus Berry\n');
+    fs.writeFileSync(path.join(tmp, 'out', 'reg.json'), JSON.stringify({id: 'M-D', since: '2026-12-02', sd: 'gen9championsvgc2026regmd'}));
+    fs.writeFileSync(path.join(tmp, 'roster.json'), '["Garchomp"]');
+    const out = execFileSync(
+      process.execPath,
+      ['-e', `import(${JSON.stringify(new URL('../names.mjs', import.meta.url).href)}).then(m => console.log('ITEM=' + m.canonItem('leftover')))`],
+      {cwd: tmp, env: {...process.env, REG_PROFILE_FILE: path.join(ROOT, 'regulation.json')}}
+    ).toString().trim();
+    check('names-md-items-fallback-to-mc',
+      out.includes('data/regmd-items.txt not found') && out.includes('falling back to data/regmc-items.txt') && out.includes('ITEM=Leftovers'),
+      true);
+  } finally {
+    fs.rmSync(tmp, {recursive: true, force: true});
+  }
+}
+
+console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
+process.exit(failed ? 1 : 0);
+----- END experiments/date-switch-test.mjs -----

@@ -1,0 +1,12 @@
+Kip job 29: site name research (answer pasted by Sim, Wed Nov 25, 2026, ~8:45 AM ET)
+Kip's verdict: KEEP "NastyPlot". Optional: buy nastyplot.net as a redirect. Watch nastyplot.com instead of paying a broker.
+Kip's best 3 challengers: ChoiceCalc, ScopeLens, SashCheck. Kip eliminated these for clashes: ChampCalc, CalcRoom,
+StatSpread, StatRoom, MegaPlot, RollCheck, QuickGuard, WideGuard, MetaPlot, ShowSix.
+Kip could NOT check: RDAP, social handles, official trademark registries, live school-filter consoles.
+
+HH's RDAP re-check, 8:47 AM ET Nov 25 (rdap.verisign.com for .com/.net, rdap.publicinterestregistry.org for .org;
+200 = registered, 404 = not registered):
+  nastyplot.com 200 (registered 2021-01-03, expires 2027-01-03)   nastyplot.net 404   nastyplot.org 200 (ours)
+  choicecalc.com 200   choicecalc.net 404   choicecalc.org 404
+  scopelens.com 200    scopelens.net 200    scopelens.org 404
+  sashcheck.com 404    sashcheck.net 404    sashcheck.org 404

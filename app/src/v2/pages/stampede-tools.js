@@ -34,7 +34,7 @@ V2.sdtData = () => { const D = V2.sdData(), day = typeof CAL !== 'undefined' ? C
   const rows = D.rows || [], top = rows.slice(0, 9), out = {D, rows}; V2._sdt = {D, day, ver, cal: META.calendar, out};
   out.race = top.map((x, i) => ({...x, k: i + 1})).filter(x => x.spe != null).sort((a, b) => a.spe - b.spe || a.k - b.k);
   out.types = V2.SDT_TYPES.map(t => ({t, x: rows.find(y => y.types.includes(t)) || null})); // the true highest rated: a two-type Pokémon stands under both flags (lead, Nov 18)
-  try { out.all = lairRows().length; } catch (e) { out.all = D.rated; }
+  try { out.all = V2.ratedRows().length; /* Not rated yet (Nov 25): only the rated count */ } catch (e) { out.all = D.rated; }
   try { const keep = Object.assign({}, coreUi); Object.assign(coreUi, {kind: 'pairs', sort: 'win', mon: null}); try { out.core = coreRows()[0] || null; } finally { Object.assign(coreUi, keep); } } catch (e) { out.core = null; }
   try { const A = V2.arData(); out.arch = A ? A.rows.filter(x => x.c > 0).slice(0, 2).map(x => ({...x, ty: V2.SDT_WXTY[x.k] || 'Normal', mon: (guideKeyMons(x.k) || [])[0] || null})) : []; } catch (e) { out.arch = []; }
   try { const x = rows.find(y => !y.mega), st = x && setFor(x.p, 'doubles', 'ingame'); out.set = x && st && st.it && st.it[0] ? {x, item: st.it[0][0]} : null; } catch (e) { out.set = null; }
@@ -64,7 +64,9 @@ V2.sdTools = () => { const E = V2.esc, X = V2.sdtData(), R = X.rows, num = n => 
   const types = V2.sdtPlate('Type Chart', 'sdt-tc', 'What your six resists, and what hits it.', 'What your six resists.', tc);
   // Ratings: the podium (#2, #1, #3)
   const pod = R.length >= 3 ? `<div class="sdt-pod">${[[R[1], V2.sdtRank(R, 1)], [R[0], 1], [R[2], V2.sdtRank(R, 2)]].map(([x, k]) => `<button type="button" class="sdt-m sdt-step s${k}" data-v2mon="${E(x.n)}" aria-label="${E(V2.disp(x.n))}, rated ${x.r}, number ${k}: open its info">${V2.mon(x.n, {bare: true})}<span class="sdt-blk"><b class="u">${x.r}</b><span>${nm(x.n)}</span></span></button>`).join('')}</div>` : '';
-  const ratings = V2.sdtPlate('Ratings', 'sdt-ra sdt-ink', `All ${num(X.all)} Pokémon, rated out of 100.`, `All ${num(X.all)}, out of 100.`, pod);
+  /* Not rated yet, day one (Nov 25): with no Pokémon rated, the plate says when ratings start instead of 'All 0 Pokémon' */
+  const r0 = !X.all && V2.noRatings && V2.noRatings();
+  const ratings = V2.sdtPlate('Ratings', 'sdt-ra sdt-ink', r0 ? 'Ratings start with the first tournament results.' : `All ${num(X.all)} Pokémon, rated out of 100.`, r0 ? 'From the first results.' : `All ${num(X.all)}, out of 100.`, pod);
   // Winning Teams: the latest winner's six, with today's Load Team (asks first when you have a team) and Copy for Showdown
   const C = X.D.champ; let wins = '';
   if (C) { const ev = C.ev, t = C.t, key = ev.id + '#' + ev.top.indexOf(t), wl = (String(t.record || '').match(/\b(\d+-\d+(?:-\d+)?)\b/) || [])[1] || '', title = V2.evTitle(ev.name), sure = V2.hmUi && V2.hmUi.sure === key;

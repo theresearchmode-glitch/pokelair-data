@@ -45,7 +45,7 @@ async function buildWeeklyCard() { const W = META.weekly; if (!W) return null;
   const txt = (s, font, col, X, Y, max, al) => { x.font = font; x.fillStyle = col; x.textAlign = al || 'left'; let t = String(s); while (max && t.length > 3 && x.measureText(t).width > max) t = t.slice(0, -2) + '…'; x.fillText(t, X, Y); x.textAlign = 'left'; };
   const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
   await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 44, 34, npLogoW(logo, 250), 250 * 196 / 761.34); } catch (e) {}
-  txt('Pokémon Champions, VGC doubles, Reg M-C', '700 20px "Instrument Sans", monospace', P.mute, 1156, 66, 0, 'right');
+  txt('Pokémon Champions, VGC doubles, ' + regName(), '700 20px "Instrument Sans", monospace', P.mute, 1156, 66, 0, 'right');
   txt('This week', 'italic 800 96px Unbounded, sans-serif', P.ink, 56, 232);
   txt(`${WK.range(W.a)} vs ${WK.range(W.b)}`, '700 22px "Instrument Sans", monospace', P.mute, 60, 272, 1080);
   txt(`${CH.n(W.a.n)} tournament teams from ${W.a.ev} events, against ${CH.n(W.b.n)} the week before`, '500 22px "Instrument Sans", sans-serif', P.mute, 60, 304, 1080);

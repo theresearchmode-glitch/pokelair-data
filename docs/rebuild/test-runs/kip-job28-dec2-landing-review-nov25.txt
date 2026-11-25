@@ -1,0 +1,472 @@
+KIP JOB 28 — Pre-landing review of the Dec 2 branch (alt/gemini-dec2, BASE 03ff6914)
+Code review only, NO design. Checked by Kip, Wed Nov 25, 2026.
+
+================================================================================
+VERDICT & EXECUTIVE SUMMARY
+================================================================================
+Verdict: DO NOT LAND 03ff6914 AS-IS -> READY TO LAND AFTER THE 4 BLOCKER/HIGH FIXES BELOW.
+
+Why:
+- On a NORMAL M-C day (today, Nov 25), 03ff6914 runs cleanly with zero breaking changes to live numbers (only adding `reg` stamps, Bo3 round/event mode tags at appended indices, and migrating `ratings_log.json` / `scoreboard.json` to `byReg`).
+- However, on **Dec 2 09:07 UTC** (and Dec 3 / Dec 16), 03ff6914 has **3 landing BLOCKERs and 1 HIGH bug** that WILL crash the daily job, leak M-C official events stamped as M-D, or turn `health.mjs` red every day starting Dec 3 and Dec 16:
+  1. [BLOCKER] `update.mjs:106-113` crashes with `process.exit(1)` on Dec 2 with 0 M-D events (`base = 0/0 = NaN` fails `!(base > .4 && base < .6)`). Because `update.yml:44` has NO `|| node skip.mjs`, this **aborts the entire daily workflow before Commit**, so `main` never switches to M-D and `health.mjs` fails every file.
+  2. [BLOCKER] `official.mjs:154,191-194` never filters cached `data/official/index.json` entries by active regulation or `inRegWindow()`. On Dec 2, every cached M-C Regional/International (`done: true, !skip`) is written into `out/official.json` **stamped `reg: "M-D"`** (bypassing `reg-guard.mjs`!) AND its top 8 M-C teams are prepended into `out/teams.json`.
+  3. [BLOCKER] `sources.mjs:76` and `crosscheck.mjs:88` still log expected `"not available yet"` M-D sources (`showdowntier: null`, `pikalytics: null`, `official: null`) into `out/skips.json` via `skip.mjs` (5 entries on Dec 2). On **Dec 3 (Day 2)**, the exact same 5 entries repeat, causing `health.mjs:124` (`skipped two days in a row`) to exit 1 every single day until all 3 external sources exist for M-D.
+  4. [HIGH] `health.mjs:47,89` fails `exit 1` every day starting **Day 15 (Dec 16, `inLaunch = false`)** because `reg-guard.mjs` emptied paused `meta_ingame.json` (op.gg) on Dec 2, leaving it at 0 Pokémon (~110 B) and absent from `perf.json`.
+
+All 4 BLOCKER/HIGH fixes + S7 regression test (`experiments/dec2-landing-fixes-test.mjs`) are in the single `git apply` block at the end of this file. Every test was verified to FAIL on unpatched `03ff6914` and PASS after applying the patch (`git apply --check` exit 0).
+
+================================================================================
+FINDINGS TABLE
+================================================================================
+| # | Severity | File:Line (at 03ff6914) | Finding | Proof (input -> old -> new) | Status |
+|---|---|---|---|---|---|
+| 1 | BLOCKER | `update.mjs:106-113,140-151` (`update.yml:44`) | `update.mjs` aborts entire daily workflow on Dec 2 (0 M-D events): `base = W / G = 0 / 0 = NaN` trips `!(base > .4 && base < .6)` -> `process.exit(1)` with no `skip.mjs` fallback in `update.yml`; also `day(null)` renders `"Jan 1"`. | `FORMAT='M-D', prev={reg:'M-C',teams:1000}, KEEP=[], G=0 -> old: base=NaN, exit(1) (aborts Commit) -> new: base=0.5, gate bypassed for G<100, writes empty stamped M-D files, span='no events yet'` | Checked (Node) + Fixed in diff |
+| 2 | BLOCKER | `official.mjs:22,154,191-194` | Cached M-C official events in `data/official/index.json` (`done:true, !skip`) bypass Loop 1 and pass `evSlugs` unfiltered, writing M-C Regionals into `out/official.json` stamped `reg:"M-D"` (bypassing `reg-guard.mjs`) and prepending M-C top 8 into `out/teams.json`. | `ACT={id:'M-D',since:'2026-12-02'}, RG_ID=null, index.events={'2026-laic':{teams:64,done:true,date:'2026-11-20'}} -> old: evSlugs=['2026-laic'], out/official.json gets M-C event stamped M-D -> new: evSlugs=[], writes empty stamped M-D out/official.json` | Checked (Node) + Fixed in diff |
+| 3 | BLOCKER | `sources.mjs:76`, `crosscheck.mjs:11-12,61,68,75,88` | Expected `"not available yet"` M-D sources (`null` in `regulation.json`) still call `skip.mjs`, writing 5 entries to `out/skips.json` on Dec 2 and again on Dec 3 -> `health.mjs:124` fails `exit 1` every day starting Dec 3 ("skipped two days in a row"). | `out/reg.json={id:'M-D'}, M-D sources=null -> old: out/skips.json gets ["source sdt","source pika","cross-check tour-vs-pikalytics","cross-check smogon1760-vs-showdowntier","cross-check tour-sets-vs-official-top64"] -> new: [] (0 skips logged; still recorded in sources.json/crosscheck.json)` | Checked (Node) + Fixed in diff |
+| 4 | HIGH | `health.mjs:47,89` | After `reg-guard.mjs` empties paused `meta_ingame.json` (op.gg) on Dec 2, `health.mjs` passes on Days 1-14 (`inLaunch`) then fails `exit 1` forever starting Day 15 (Dec 16) on `meta_ingame.json fewer than 10 Pokémon` and `Ratings inputs: no op.gg order (ingame)`. | `now='2026-12-16' (day 15), meta_ingame={reg:'M-D',top:[]}, perf.ingame=undefined -> old: exit 1 (2 errors) -> new: exit 0 (meta_ingame paused, perf.ingame exempt like official)` | Checked (Node) + Fixed in diff |
+| 5 | MEDIUM | `health.mjs:48,89` | Smogon publishes monthly stats only after the month ends (~Jan 1-3, 2027). On Day 15-31 of Reg M-D (Dec 16-31), `meta_ladder.json` still has `month:null, top:[]` and `perf.smogon` is absent -> `health.mjs` will alert until Jan's Smogon dump arrives. | `now='2026-12-16' (day 15), meta_ladder={reg:'M-D',month:null,top:[]} -> old: exit 1 (fewer than 10 Pokémon + no smogon) -> report only (consider 40-day launch grace for monthly Smogon)` | Checked (code read) / Report only |
+| 6 | MEDIUM | `formats.mjs:108`, `reg.mjs:31` | Date switch checks `todayDay >= nextProf.since` (`'2026-12-02'`, date-only). Daily `09:07 UTC` run is safe (after `02:00 UTC` official start), but if `FAST_DATA=1` is enabled before Dec 2, the `01:07 UTC` run switches 52 min before `REG_END['M-C']` (`01:59 UTC`). | `today='2026-12-02T01:07:00Z' -> old: switches to M-D 52 min early -> report only (safe while FAST_DATA!=1 on Dec 2 01:07 UTC)` | Checked (code read) / Report only |
+| 7 | LOW | `update.yml:79,89`, `track.mjs:18` | Step 20 (`reg-guard.mjs` before `perf.mjs`) archives `out/track.json` to `out/archive/M-C/track.json` and overwrites `out/track.json` with `reg:'M-D'` BEFORE `track.mjs` runs at step 26. So `track.mjs:18` (`out/track_M-C.json`) never fires in `update.yml`. M-C history is still safe in `out/archive/M-C/track.json`. | `update.yml step 20 -> out/track.json becomes M-D -> step 26 track.mjs sees prevReg==='M-D' -> out/track_M-C.json never written (archive/M-C/track.json has it)` | Checked (code read) / Report only |
+| 8 | LOW | `.github/workflows/test.yml:47-53` | Only `md-day-one-test.mjs` has `if: ${{ !cancelled() }}` (not the 4 steps above it); `freshness-test.mjs`, `bo3-tagging-test.mjs`, `shadow-model-test.mjs` are not wired into `test.yml` steps yet (no CI failure risk). | `test.yml diff -> valid YAML, runs 5 new tests; 3 other new tests only run manually` | Checked (code read) / Report only |
+
+================================================================================
+Q1 — NORMAL M-C DAY WALKTHROUGH (TODAY, NOV 25, 2026)
+================================================================================
+Checked by tracing every step of `.github/workflows/update.yml` at `03ff6914` with `out/reg.json` on `M-C` (`switched: null`, `today = '2026-11-25'`):
+
+1. `scrub-names.mjs`: Unchanged from main.
+2. `reg.mjs`: `act.id = 'M-C'`, `nextId = 'M-D'`, `nextProf.since = '2026-12-02'`. `today ('2026-11-25') >= '2026-12-02'` is `false`, so `dateDue = false`. `detectReg()` sees `nextProf && nextProf.since` and `todayDay < '2026-12-02'`, so it stays on `M-C` even if early M-D events appeared. Same output as main.
+3. `replays.mjs` (normal & `REPLAY_FMT=bo3`): Adds `reg: "M-C"` via `stampReg()`. Same games, same format `gen9championsvgc2026regmc`.
+4. `practice.mjs`: Uses `src.format || activeReg().name` (unchanged for M-C) and stamps `reg: "M-C"`. Identical rounds/opp.
+5. `update.mjs`:
+   - `FORMAT = 'M-C'`. `prevF = Object.keys(REG_END).find(k => nextRegIds(k)[0] === 'M-C')` -> `undefined` (no extra API calls).
+   - Newly fetched `data/p/<id>.json` rows gain optional 5th element (`+x.phase || null`) when Limitless includes `phase`. Existing 4-field rows still work.
+   - `out/matches.json`: `m` rows gain 10th element (`roundMode`: `'bo1'|'bo3'|'unknown'`), `events` rows gain 4th element (`eventMode`: `'bo1'|'bo3'|'mixed'|'unknown'`), and top-level `reg: "M-C"`. All consumers (`model.mjs`, `six.mjs`, `ctr.mjs`, `scoreboard.mjs`, `topcut.mjs`) destructure only `0..8` / `0..2`, so zero number changes.
+   - `out/meta_tour.json`, `out/info.json`, `out/history.json`: identical numbers, stamped `reg: "M-C"`.
+   - `names.mjs`: adds `ITEM_TYPO` (17 unambiguous typos like `leftover -> Leftovers`, `focusslash -> Focus Sash`). Only affects `V2` display/sets (`meta_tour.json`, `info.json`, `events.json`), NOT `V2T` (`matches.json` / `model.json`).
+6. `official.mjs`: `ACT.id = 'M-C'`, `RG_ID = 'M-C'`, `REG = 'M-C'`, `REG_START = '2026-09-01'`. Same events, stamps `out/official.json` and `out/official_compare.json` with `reg: "M-C"`.
+7. `events.mjs` & `weekly.mjs`: Identical M-C filtering and numbers, stamped `reg: "M-C"`. (`weekly.mjs` adds `inRegWindow` check on `official.json` — all M-C official events pass.)
+8. `calendar.mjs`: Unchanged from main.
+9. `model.mjs`: `MODEL_SHADOW` defaults to `'0'` (shadow block skipped). `fit()` defaults `evidK = EVID_K, evidKp = EVID_KP`. Adds `reg: "M-C"` to `out/model.json`; all weights/metrics byte-identical to main.
+10. `six.mjs`, `ctr.mjs`, `model-guard.mjs`, `leads.mjs`: All check `mReg === mdReg === curReg` (all `'M-C'`). Identical output to main.
+11. `ladder.mjs` & `sources.mjs`: `SRC.showdowntier = 'dmc'`, `SRC.pikalytics = 'championstournaments'`. `sourcePageCheck()` accepts both M-C pages. Stamps `reg: "M-C"`.
+12. `reg-guard.mjs` (before `perf.mjs`): `switched = false`, all files either stamped `M-C` or unstamped legacy -> `ok` on every file, touches nothing.
+13. `perf.mjs`: Identical output to main (Showdowntier URL resolves to `dmc`).
+14. `regstate.mjs` (NEW): Writes `out/regstate.json` (`{reg:'M-C', day:86, events, players, games, since:'2026-09-01', updated}`).
+15. `crosscheck.mjs`: Identical checks, stamps `reg: "M-C"`.
+16. `ratings-snapshot.mjs`: Migrates `out/ratings_log.json` from `{days:[...]}` to `{reg:'M-C', updated, byReg:{'M-C':[...]}}` (preserves all 120 M-C days; top-level `days` removed, all readers updated to support `byReg`).
+17. `scoreboard.mjs`: Migrates `out/scoreboard.json` to include `reg:'M-C'` and `byReg:{'M-C':[...]}` while keeping `history: byReg['M-C']` for backward compatibility.
+18. `shadow-scoreboard.mjs`: Skipped (`vars.MODEL_SHADOW || '0'` is `'0'`).
+19. `track.mjs`: Reads `ratings_log.json` `byReg['M-C']` and `scoreboard.json` `byReg['M-C']`; writes `out/track.json` stamped `reg: "M-C"`. Same numbers.
+20. `scrub-names.mjs --check`, `reg-guard.mjs` (second pass: no-op), `split-docs.mjs`, `Commit`: Clean.
+21. `health.mjs`: Passes exit 0 on Nov 25 (`replays_bo3` 60 MB cap and `post.json` `noAgeCheck` already fixed in `03ff6914`).
+
+Summary for Q1: No step fails or changes live ratings/model numbers on a normal M-C day. Only structural additions: `reg` stamps, `out/regstate.json`, Bo3 mode tags in `matches.json`, and `byReg` schema in `ratings_log.json`/`scoreboard.json`.
+
+================================================================================
+Q2 — DEC 2 09:07 UTC WALKTHROUGH (SWITCH DAY, 0-3 M-D EVENTS)
+================================================================================
+Tracing exact step order in `.github/workflows/update.yml` on `2026-12-02T09:07:00Z` with 0-3 M-D events:
+
+1. `reg.mjs`: `today = '2026-12-02' >= nextProf.since ('2026-12-02')` -> `dateDue = true`. Switches `out/reg.json` to `{id:'M-D', since:'2026-12-02', sd:'gen9championsvgc2026regmd', switched:{from:'M-C', to:'M-D', on:'2026-12-02', by:'date'}}`, even if Limitless/Showdown are unreachable.
+2. `replays.mjs` & `REPLAY_FMT=bo3`: `prev.format !== FMT` -> clears `prev.games = []` and writes empty/fresh M-D stamped `replays.json` & `replays_bo3.json`.
+3. `practice.mjs`: If 0 M-D replays, exits 0 leaving M-C `practice.json` on disk (later archived & emptied by `reg-guard.mjs`).
+4. `update.mjs`:
+   - **ON 03ff6914 (BLOCKER #1)**: With 0 M-D events (or 1 event with 0 teams having 3+ games), `G = 0`, `base = NaN` -> `process.exit(1)` -> **ENTIRE JOB ABORTS BEFORE COMMIT**.
+   - **AFTER FIX #1**: `base = 0.5`, gate only checks `base` when `G >= 100`, writes clean stamped empty M-D `limitless.json`, `meta_tour.json`, `info.json`, `teams.json`, `history.json`, `matches.json` (and `topcut` returns `null` cleanly). With 1-3 small M-D events, writes those M-D events only (`prevF = 'M-C'` also catches mis-tagged post-01:59 UTC events). Raw `data/` is untouched.
+5. `official.mjs`:
+   - **ON 03ff6914 (BLOCKER #2)**: `RG_ID = null`, `REG = 'not-available-yet'`, Loop 1 skips unchanged M-C pages, then `evSlugs` reads ALL cached M-C events from `data/official/index.json` -> writes M-C Regionals into `out/official.json` stamped `reg: "M-D"` and prepends M-C top 8 into `out/teams.json`!
+   - **AFTER FIX #2**: `evSlugs = []` when `!RG_ID` (and filtered by `inRegWindow(date, ACT)` once `RG_ID` is set), writes empty stamped `out/official.json` (`events: []`), leaves `out/teams.json` clean.
+6. `events.mjs`: `prev.reg === 'M-C' !== 'M-D'` bypasses the drop fail-safe; writes empty (or 1-3 event) M-D `out/events.json`.
+7. `weekly.mjs`: With 0 M-D events, exits 0 leaving M-C `weekly.json` (later archived & emptied by `reg-guard.mjs`). With 1-3 events, writes M-D `weekly.json` with `enough: false`.
+8. `model.mjs` -> `six.mjs` -> `ctr.mjs` -> `model-guard.mjs` -> `leads.mjs`:
+   - `model.mjs`: `< 5` events -> writes stamped not-ready M-D `out/model.json` (`ships: false, games: 0, mons: {}`) and exits 0.
+   - `six.mjs` & `ctr.mjs`: `!MD.ships` -> exit 0 cleanly.
+   - `model-guard.mjs`: ignores M-C `HEAD:out/model.json`, accepts `!now.ships` with no prior M-D model -> exit 0.
+   - `leads.mjs`: `rReg === mdReg === 'M-D'`, 0 games -> adds empty `leads: {}` or skips cleanly.
+9. `ladder.mjs`: No `regmd` stats on Smogon -> clears `out/meta_ladder.json` to stamped M-D empty (`month: null, top: []`).
+10. `sources.mjs`:
+    - `SRC.showdowntier = null`, `SRC.pikalytics = null` -> both throw `"not available yet"`, writes stamped M-D `out/sources.json` (`problems: [...]`).
+    - **ON 03ff6914 (BLOCKER #3)**: Calls `skip.mjs` for `source sdt` and `source pika` -> poisons `out/skips.json` -> fails `health.mjs` on Dec 3!
+    - **AFTER FIX #3**: Does NOT call `skip.mjs` for `"not available yet"` problems.
+11. `reg-guard.mjs` (Step 20, BEFORE `perf.mjs`):
+    - `switched = true`. Archives any remaining M-C/unstamped files (`practice.json`, `weekly.json`, `meta_ingame.json`, `track.json`) to `out/archive/M-C/<file>` (never overwrites existing archive, never touches `data/`), then replaces them with M-D `emptyFor()` shapes.
+    - Leaves `EXEMPT` files (`reg.json`, `calendar.json`, `skips.json`, `official_perf.json`, `ratings_log.json`, `scoreboard.json`) intact — **zero M-C history deleted**.
+12. `perf.mjs`: Reads guarded M-D files only -> writes `{updated: '2026-12-02', reg: {id: 'M-D', ...}}` (no M-C data leaked).
+13. `regstate.mjs`: Reads M-D `matches.json` -> writes `{reg: 'M-D', day: 1, events: 0..3, players, games, since: '2026-12-02', updated}`.
+14. `crosscheck.mjs`:
+    - **ON 03ff6914 (BLOCKER #3)**: Calls `skip.mjs` for 3 skipped checks -> poisons `out/skips.json` -> fails `health.mjs` on Dec 3!
+    - **AFTER FIX #3**: Marks checks with `null` profile sources or empty M-D tables as `expected: true`, does NOT call `skip.mjs`.
+15. `ratings-snapshot.mjs` -> `scoreboard.mjs` -> `track.mjs`:
+    - `ratings-snapshot.mjs`: Appends Dec 2 M-D snapshot into `byReg['M-D']`, preserving all 120 days in `byReg['M-C']`.
+    - `scoreboard.mjs`: Appends Dec 2 M-D row into `byReg['M-D']`, preserving all M-C rows in `byReg['M-C']`, no cross-reg warnings.
+    - `track.mjs`: Sees `out/track.json` already emptied to M-D by step 20 `reg-guard.mjs` (so `out/track_M-C.json` is skipped; M-C track is already in `out/archive/M-C/track.json`). Grades M-D snapshots only.
+16. `scrub-names.mjs --check` -> `reg-guard.mjs` (Step 28, confirms all `out/*.json` are M-D or exempt) -> `split-docs.mjs` -> `Commit`: Clean.
+17. `health.mjs`: `regDay = 1`, `inLaunch = true`. Empty-but-stamped M-D files pass as `thin`, exits 0. On **Day 15 (Dec 16)**, Fix #4 keeps paused `meta_ingame.json` / `perf.ingame` green (see Finding #5 for monthly Smogon `meta_ladder.json` on Dec 16-31).
+
+================================================================================
+Q3 — MAR 3, 2027 WALKTHROUGH (M-D END SET, NEXT REG 'M-E' UNKNOWN)
+================================================================================
+Live-verified in Node against `03ff6914` `formats.mjs` + `regulation.json`:
+- `REG_END['M-D']` = `'2027-03-03T01:59:00Z'`.
+- `nextRegIds('M-D')` = `['M-E']`.
+- `regProfile('M-E')` = `null`; `regSources('M-E')` = `{}`.
+- `regAt('M-D', '2027-03-03T01:58:59Z')` = `'M-D'`; `regAt('M-D', '2027-03-03T01:59:00Z')` = `'M-E'`; `regAt('M-C', '2027-03-05T12:00:00Z')` = `'M-E'`.
+- `detectReg(5 M-D-tagged events on 2027-03-03T12:00Z, {}, prevMD, '2027-03-03')`:
+  - `nextProf` is `null` -> gracefully falls back to `REG_SWITCH` count thresholds (20 events, 1200 players).
+  - Returns `{id: 'M-D', now: {id: 'M-E', events: 5, from: 'limitless'}}` (shows banner, stays on M-D, never mixes M-E events into M-D).
+- `detectReg(20 M-D-tagged events of 60 players on 2027-03-05T12:00Z, {}, prevMD, '2027-03-05')`:
+  - Auto-switches by counts: `{id: 'M-E', sd: 'gen9championsvgc2027regme', now: null, switched: {from: 'M-D', to: 'M-E', on: '2027-03-05', by: 'counts'}}`.
+- Downstream when `M-E` is active with no `regulation.json` entry:
+  - `names.mjs`: `ITEMS_FILE = null` -> `ITEMS = Set()` (no crash).
+  - `sources.mjs`: `SRC = {}` -> both sources `"not available yet"` (no crash, and with Fix #3 no `skips.json` poisoning).
+  - `official.mjs`: `RG_ID = null` -> with Fix #2, `evSlugs = []` and writes empty stamped `M-E` `official.json` (no M-D leakage).
+  - `update.mjs`: `prevF = 'M-D'` -> fetches mis-tagged post-Mar-3 events cleanly.
+  - Only caveat: if Limitless switches to tagging events `M-E` immediately on Mar 3 while `regulation.json` still has no `M-E` entry (so site stays on `M-D` waiting for 20 events), `history.json` / `data/index.json` will age out after 2-4 days and `health.mjs` will fire a reminder to add `M-E` to `regulation.json`. Nothing crashes or mixes regulations.
+
+================================================================================
+Q4 — SHADOW MODEL & BO3 TAGGING
+================================================================================
+- **Shadow model OFF by default**: Confirmed (`checked` by code inspection of `update.yml:60,88` and `model.mjs:254`).
+  - `update.yml:60`: `MODEL_SHADOW=${{ vars.MODEL_SHADOW || '0' }} node model.mjs ...`
+  - `update.yml:88`: `if [ "${{ vars.MODEL_SHADOW || '0' }}" = "1" ]; then node shadow-scoreboard.mjs ...; fi`
+  - `model.mjs:254`: `if (process.env.MODEL_SHADOW === '1' && ships && F)` — strict `'1'` check.
+  - When `vars.MODEL_SHADOW` is unset or `'0'`, `out/model_shadow.json` is never written and `shadow-scoreboard.mjs` never runs.
+- **Live model output byte-identical**: Confirmed (`checked` by code inspection of `model.mjs` diff).
+  - `fit()` adds optional `evidK = EVID_K, evidKp = EVID_KP` with identical defaults.
+  - `out/model.json` is written at line 248 BEFORE the shadow block at line 254, so `MODEL_SHADOW` unset vs `'0'` vs `'1'` produces byte-identical `out/model.json` (modulo `updated`).
+  - Vs `origin/main`, the only difference in `out/model.json` is the intentional `"reg":"M-C"` stamp at the top of `out`.
+- **Bo3 tagging**: `update.mjs:77,242-248` and `tour-modes.mjs` append `phase` (index 4 of `data/p/*.json`), `roundMode` (index 9 of `matches.json` `m`), and `eventMode` (index 3 of `matches.json` `events`). Existing indices `0..8` / `0..2` are completely unchanged; no live model/rating number changes.
+
+================================================================================
+Q5 — test.yml & md-watch.yml CHANGES
+================================================================================
+- `md-watch.yml`: **No changes** in `03ff6914` (`git diff origin/main...03ff6914` does not touch `md-watch.yml` or `md-watch.mjs`).
+- `test.yml`:
+  - Adds Dec 2 files to `on.push.paths` and runs 5 self-contained Node tests (`reg-profile-test.mjs`, `reg-switch-test.mjs`, `date-switch-test.mjs`, `reg-guard-test.mjs`, `md-day-one-test.mjs`) inside the `test` (`code tests (frozen data)`) job.
+  - None of the 5 tests require network or live `out/` data, and none can fail on `main` today or on frozen `TEST_DATA` (`0c992f69`).
+  - Minor note (Finding #8): `if: ${{ !cancelled() }}` is only on `md-day-one-test.mjs` (valid YAML, no failure risk), and `freshness-test.mjs` / `bo3-tagging-test.mjs` / `shadow-model-test.mjs` are not yet added to `test.yml`.
+  - Operational reminder (not a diff bug): `test.yml`'s `data-checks` job runs `threat-check.mjs`, `lead-logic.mjs`, `golden.mjs` against live `out/`; HH should confirm those pass on empty M-D `out/` before Dec 2 so `Promote` isn't blocked on Dec 2.
+
+================================================================================
+VERIFICATION LOG (checked / not checked)
+================================================================================
+- Reconstructed exact `03ff6914` versions of `update.mjs`, `official.mjs`, `sources.mjs`, `crosscheck.mjs`, `health.mjs`, `formats.mjs`, `reg-stamp.mjs`, `reg-guard.mjs`, `regstate.mjs`, `regulation.json` by applying `kip-job28-dec2-landing-review.txt` diff (`exit=0` on all 10 files): **checked**.
+- Ran `node experiments/dec2-landing-fixes-test.mjs` on **unpatched `03ff6914`**: **checked** — all 4 tests FAILED with exact predicted errors (`base=NaN`, `evSlugs` missing `inRegWindow`, `skips.json` poisoned with 5 entries, `health.mjs` exit 1 on day 15 with paused empty `meta_ingame.json`).
+- Applied patch, ran `node --check` on all 6 files + `node experiments/dec2-landing-fixes-test.mjs`: **checked** — `ALL PASSED` (4/4).
+- Ran Mar 3, 2027 Node probe on `formats.mjs` + `regulation.json`: **checked** — `M-D` end `2027-03-03T01:59:00Z`, `M-E` fallback to `REG_SWITCH` counts verified.
+- Verified `git apply --check` on fresh clean checkout of `03ff6914`: **checked** — `exit=0`.
+- Full `update.yml` live network run & `test.yml` Playwright/Smogon suite: **not checked** (no network / no full repo `data/` or `app/` in sandbox).
+
+================================================================================
+GIT-APPLY DIFF BLOCK (BASE 03ff6914)
+================================================================================
+diff --git a/crosscheck.mjs b/crosscheck.mjs
+index 61ad9fd..460071e 100644
+--- a/crosscheck.mjs
++++ b/crosscheck.mjs
+@@ -9,7 +9,8 @@
+ //    hold only one of a species, so the plain form and its Megas add up exactly), except checks marked per form.
+ import fs from 'node:fs';
+ import {stampReg} from './reg-stamp.mjs';
+-import {activeReg} from './formats.mjs';
++import {activeReg, regSources} from './formats.mjs';
++const RG = activeReg(), SRC = regSources(RG.id);
+ const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
+ const S = rd('sources.json') || {}, P = rd('perf.json') || {}, MT = rd('meta_tour.json'), ML = rd('meta_ladder.json'), OF = rd('official.json');
+ // species key: Megas fold into their species; Floette's plain entry is Floette-Eternal
+@@ -30,8 +31,8 @@ const lc = s => String(s || '').toLowerCase().replace(/[^a-z0-9]/g, '');
+ const checks = [];
+ /* infoOnly (Nov 9): two sources that measure different player groups can't agree by design; reported as information, never as a
+    daily warning (a warning that always fires teaches everyone to ignore warnings) */
+-function compare({id, ours, theirs, oursName, theirsName, known, tolU = [3, .25], tolW = null, sets = null, top = 40, form = false, infoOnly = false}) {
+-  if (!ours || !theirs || !Object.keys(ours).length || !Object.keys(theirs).length) { checks.push({id, skipped: !theirs ? `${theirsName}: not fetched today` : `${oursName}: missing`}); return; }
++function compare({id, ours, theirs, oursName, theirsName, known, tolU = [3, .25], tolW = null, sets = null, top = 40, form = false, infoOnly = false, expected = false}) {
++  if (!ours || !theirs || !Object.keys(ours).length || !Object.keys(theirs).length) { checks.push({id, skipped: !theirs ? `${theirsName}: not fetched today` : `${oursName}: missing`, ...(expected ? {expected: true} : {})}); return; }
+   // win rates are compared as the gap to each source's own average over these rows (some sites count finishers' match
+   // records, which average well above 50%; game records of every player average about 50%)
+   const avg = (D, ks) => { let a = 0, b = 0; for (const k of ks) { const o = D[k]; if (o && o.w != null && o.g) { a += o.w * o.g; b += o.g; } } return b ? a / b : null; };
+@@ -58,21 +59,21 @@ const bestForm = (sets, rows) => { const U = Object.fromEntries((rows || []).map
+   for (const [k, v] of Object.entries(sets || {})) { const s = spec(k), u = U[k] != null ? U[k] : 0; if (!D[s] || u > best[s]) { D[s] = v; best[s] = u; } } return D; };
+ const mtSp = MT ? bySpecies(metaRows(MT).map(r => [r.n, r.u, r.w, r.teams])) : null;
+ // 2. Recent tournaments + sets: our last-4-weeks team sheets vs Pikalytics (tournaments, about the last 2 weeks)
+-compare({id: 'tour-vs-pikalytics', ours: mtSp, theirs: S.pika && fromSrc(S.pika.rows), oursName: MT && MT.source, theirsName: S.pika && `Pikalytics ${activeReg().name} (${S.pika.scope || 'recent tournaments'})`,
++compare({id: 'tour-vs-pikalytics', ours: mtSp, theirs: S.pika && fromSrc(S.pika.rows), oursName: MT && MT.source, theirsName: S.pika && `Pikalytics ${RG.name} (${S.pika.scope || 'recent tournaments'})`, expected: !SRC.pikalytics || !(mtSp && Object.keys(mtSp).length),
+   known: 'Same population: both are Limitless tournament team sheets (Pikalytics championstournaments since Nov 8; before that this compared against its Showdown ladder stats by mistake). Checked Nov 8 on the top 39: top item agrees 39/39, top Ability 39/39, the same top-4 moves 37/39 (Indeedee: Pikalytics merges both forms; Annihilape: its 2nd-4th moves are near-tied). Small gaps come from different time windows. Its usage table names species while its core lists name Megas, so Mega species are not comparable',
+   tolU: [6, .45], tolW: 4, sets: S.pika && {ours: setsOf(MT), theirs: bestForm(S.pika.sets, S.pika.rows)}});
+ // 3. (Removed Nov 9) Limitless vs the official events' whole field: it read RK9 data, retired Nov 1 (RK9 terms), and was
+ //    skipped every day after that without anyone noticing. Check 5 (official top-64 team sheets, Victory Road) covers official events.
+ // 4. Ladder usage: Smogon 1760+ (monthly) vs Showdowntier (14 days)
+ const smSp = P.smogon ? bySpecies(P.smogon.rows) : null;
+-compare({id: 'smogon1760-vs-showdowntier', ours: smSp, theirs: S.sdt && fromSrc(S.sdt.rows), oursName: P.smogon && P.smogon.label, theirsName: S.sdt && `Showdowntier (${S.sdt.from} – ${S.sdt.to}, all ratings)`,
++compare({id: 'smogon1760-vs-showdowntier', ours: smSp, theirs: S.sdt && fromSrc(S.sdt.rows), oursName: P.smogon && P.smogon.label, theirsName: S.sdt && `Showdowntier (${S.sdt.from} – ${S.sdt.to}, all ratings)`, expected: !SRC.showdowntier || !smSp,
+   known: 'Showdowntier counts every rated battle (average player about 1290); Smogon 1760+ is the strong end of the ladder for a past month. Large gaps are expected for Pokémon strong players favour or avoid.', tolU: [5, .4], infoOnly: true});
+ // 5. Our own two set sources against each other: Limitless sheets vs the official events' top 64 open team sheets
+ //    (Victory Road + VR Pastes; top item and moves)
+ if (MT && OF) { const T = {}; for (const e of OF.events || []) for (const t of e.teams || []) for (const m of t.mons || []) { const k = spec(m.n), o = T[k] = T[k] || {c: 0, it: {}, mv: {}}; o.c++; if (m.i) o.it[m.i] = (o.it[m.i] || 0) + 1; for (const v of m.mv || []) o.mv[v] = (o.mv[v] || 0) + 1; }
+   const N = (OF.events || []).reduce((a, e) => a + (e.teams || []).length, 0) || 1, top = o => Object.entries(o).sort((a, b) => b[1] - a[1]);
+   const theirs = Object.fromEntries(Object.entries(T).map(([k, o]) => [k, {u: +(100 * o.c / N).toFixed(1)}])), sets = Object.fromEntries(Object.entries(T).filter(([, o]) => o.c >= 15).map(([k, o]) => [k, {it: top(o.it).slice(0, 3).map(([a, b]) => [a, +(100 * b / o.c).toFixed(1)]), mv: top(o.mv).slice(0, 6).map(([a, b]) => [a, +(100 * b / o.c).toFixed(1)])}]));
+-  compare({id: 'tour-sets-vs-official-top64', ours: mtSp, theirs, oursName: MT.source, theirsName: `${OF.source || 'Official events'} (${N} teams)`,
++  compare({id: 'tour-sets-vs-official-top64', ours: mtSp, theirs, oursName: MT.source, theirsName: `${OF.source || 'Official events'} (${N} teams)`, expected: !SRC.official || !(mtSp && Object.keys(mtSp).length) || !(OF.events && OF.events.length),
+     known: 'Usage is not comparable (top 64 of big events vs every Limitless team), so only sets are judged: the top item and top move should agree for staples. Both sides count every form of a species together (Mega and plain), as the team sheets do.', tolU: [100, 1], sets: {ours: setsOfAll(MT), theirs: sets}}); }
+ // 6. Official events: Victory Road's standings and team sheets against Liquipedia (placements, player count, start date)
+ //    and against Victory Road's own event page (the six Pokémon on the page vs the team sheet). official.mjs does the
+@@ -85,5 +86,5 @@ fs.writeFileSync('out/crosscheck.json', JSON.stringify(stampReg(out)));
+ // Nov 9 (no silent failures): a cross-check that couldn't run is recorded like a skipped daily step (skip.mjs -> out/skips.json),
+ // so health.mjs raises the "Daily data problem" alarm when the same one is skipped two days in a row. (The RK9-based check
+ // was skipped every day for 8+ days and only ever printed one quiet line.)
+-{ const {execFileSync} = await import('node:child_process'); for (const c of checks) if (c.skipped) { try { execFileSync('node', ['skip.mjs', `cross-check ${c.id} skipped (${c.skipped})`], {stdio: 'inherit'}); } catch (e) {} } }
++{ const {execFileSync} = await import('node:child_process'); for (const c of checks) if (c.skipped && !c.expected) { try { execFileSync('node', ['skip.mjs', `cross-check ${c.id} skipped (${c.skipped})`], {stdio: 'inherit'}); } catch (e) {} } }
+ for (const c of checks) console.log(c.skipped ? `crosscheck ${c.id}: skipped (${c.skipped})` : `crosscheck ${c.id}: ${c.flagged}/${c.rows.length} differ beyond tolerance${c.staplesFlagged.length ? '; staples: ' + c.staplesFlagged.join(', ') : ''}`);
+diff --git a/experiments/dec2-landing-fixes-test.mjs b/experiments/dec2-landing-fixes-test.mjs
+new file mode 100644
+index 0000000..f01d6b5
+--- /dev/null
++++ b/experiments/dec2-landing-fixes-test.mjs
+@@ -0,0 +1,136 @@
++// S7 tests for Job 28 pre-landing BLOCKER/HIGH fixes (Node 22, no network).
++// Each test fails on unpatched 03ff6914 and passes with the fixes applied.
++import assert from 'node:assert/strict';
++import fs from 'node:fs';
++import os from 'node:os';
++import path from 'node:path';
++import {spawnSync} from 'node:child_process';
++import {fileURLToPath} from 'node:url';
++
++const HERE = path.dirname(fileURLToPath(import.meta.url));
++const ROOT = path.resolve(HERE, '..');
++const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'np-j28-'));
++
++const wr = (dir, rel, obj) => {
++  const p = path.join(dir, rel);
++  fs.mkdirSync(path.dirname(p), {recursive: true});
++  fs.writeFileSync(p, typeof obj === 'string' ? obj : JSON.stringify(obj));
++};
++const rd = (dir, rel) => JSON.parse(fs.readFileSync(path.join(dir, rel), 'utf8'));
++
++let failed = 0;
++function check(name, fn) {
++  try {
++    fn();
++    console.log(`PASS ${name}`);
++  } catch (e) {
++    failed++;
++    console.log(`FAIL ${name}: ${e.message}`);
++  }
++}
++
++try {
++  // 1) BLOCKER #1: update.mjs fail-safe & empty-day guard on Dec 2 (0 M-D teams -> base=0.5, no exit(1), no "Jan 1")
++  check('1-update-dec2-zero-teams-does-not-abort', () => {
++    const src = fs.readFileSync(path.join(ROOT, 'update.mjs'), 'utf8');
++    // Check base computation when G === 0
++    const mBase = src.match(/const base = ([^;]+);/);
++    assert.ok(mBase, 'base declaration not found');
++    const baseVal = Function('W', 'G', `return ${mBase[1]};`)(0, 0);
++    assert.equal(baseVal, 0.5, `expected base=0.5 when G=0, got ${baseVal}`);
++    // Check fail-safe does not trigger when G=0 on a new regulation (prev M-C, FORMAT M-D)
++    const mGate = src.match(/if \((.+?)\) \{\s*\n\s*console\.log\(`::error::update:/);
++    assert.ok(mGate, 'update fail-safe gate not found');
++    const gateFn = Function('base', 'G', 'sameAsPrev', 'prev', 'E', `return (${mGate[1]});`);
++    assert.equal(gateFn(0.5, 0, false, {reg: 'M-C', teams: 1000}, []), false, 'gate must not abort on Dec 2 switch with 0 M-D teams');
++    assert.equal(gateFn(0.5, 0, true, {reg: 'M-D', teams: 0}, []), false, 'gate must not abort on Dec 3 with 0 M-D teams');
++    assert.equal(gateFn(0.3, 500, true, {reg: 'M-C', teams: 1000}, new Array(1000)), true, 'gate must STILL abort on bogus win rate with G>=100');
++    assert.equal(gateFn(0.5, 500, true, {reg: 'M-C', teams: 1000}, new Array(500)), true, 'gate must STILL abort on >20% team drop on same reg');
++    assert.ok(!/day\(first\)\s*–\s*\$\{day\(last\)\}/.test(src) || /first\s*\?/.test(src), 'first/last null guard needed to avoid Jan 1');
++  });
++
++  // 2) BLOCKER #2: official.mjs must NOT emit cached M-C events stamped as M-D on Dec 2
++  check('2-official-dec2-does-not-leak-mc-events-as-md', () => {
++    const src = fs.readFileSync(path.join(ROOT, 'official.mjs'), 'utf8');
++    assert.match(src, /inRegWindow/, 'official.mjs must filter cached evSlugs by inRegWindow');
++    const mSlugs = src.match(/const evSlugs = ([^;]+);/);
++    assert.ok(mSlugs, 'evSlugs not found');
++    const fn = Function('RG_ID', 'index', 'inRegWindow', 'ACT', `return ${mSlugs[1]};`);
++    const fakeIndex = {events: {'2026-laic': {teams: 64, done: true, date: '2026-11-20'}}};
++    const fakeInWin = (d, reg) => d >= reg.since && (!reg.end || d < reg.end);
++    // On Dec 2, RG_ID is null -> must return []
++    assert.deepEqual(fn(null, fakeIndex, fakeInWin, {id: 'M-D', since: '2026-12-02', end: '2027-03-03'}), [], 'RG_ID=null must yield 0 evSlugs');
++    // Even if RG_ID is set to 'M-D', cached M-C event dated 2026-11-20 must be excluded
++    assert.deepEqual(fn('M-D', fakeIndex, fakeInWin, {id: 'M-D', since: '2026-12-02', end: '2027-03-03'}), [], 'cached M-C event must be excluded from M-D evSlugs');
++    // Normal M-C day: RG_ID='M-C', date 2026-11-20 -> included
++    assert.deepEqual(fn('M-C', fakeIndex, fakeInWin, {id: 'M-C', since: '2026-09-01', end: '2026-12-02'}), ['2026-laic'], 'normal M-C event must still be included');
++  });
++
++  // 3) BLOCKER #3: sources.mjs + crosscheck.mjs must NOT record expected "not available yet" sources into out/skips.json
++  check('3-sources-and-crosscheck-do-not-poison-skips-on-md', () => {
++    const dir = path.join(TMP, 's3');
++    fs.mkdirSync(dir, {recursive: true});
++    for (const f of ['regulation.json', 'formats.mjs', 'reg-stamp.mjs', 'skip.mjs', 'crosscheck.mjs', 'sources.mjs']) {
++      fs.copyFileSync(path.join(ROOT, f), path.join(dir, f));
++    }
++    // Stub names.mjs and http.mjs for sources.mjs (no network needed since M-D sources are null!)
++    wr(dir, 'names.mjs', 'export const mapMon = x => x; export const ROSTER = new Set(); export const dec = x => x; export const text = x => [];\n');
++    wr(dir, 'http.mjs', 'export const UA = "test"; export const politeFetch = async () => { throw new Error("no net"); };\n');
++    wr(dir, 'out/reg.json', {id: 'M-D', name: 'Reg M-D', since: '2026-12-02', sd: 'gen9championsvgc2026regmd', switched: {from: 'M-C', to: 'M-D', on: '2026-12-02', by: 'date'}, checked: '2026-12-02'});
++    wr(dir, 'out/meta_tour.json', {reg: 'M-D', updated: '2026-12-02T10:00:00Z', top: [], more: []});
++    wr(dir, 'out/official.json', {reg: 'M-D', updated: '2026-12-02T10:00:00Z', events: [], checks: []});
++    wr(dir, 'out/perf.json', {updated: '2026-12-02', reg: {id: 'M-D', name: 'Reg M-D', since: '2026-12-02'}});
++
++    const r1 = spawnSync(process.execPath, ['sources.mjs'], {cwd: dir, encoding: 'utf8'});
++    assert.equal(r1.status, 0, r1.stderr);
++    const r2 = spawnSync(process.execPath, ['crosscheck.mjs'], {cwd: dir, encoding: 'utf8'});
++    assert.equal(r2.status, 0, r2.stderr);
++
++    const skipsPath = path.join(dir, 'out/skips.json');
++    const skips = fs.existsSync(skipsPath) ? rd(dir, 'out/skips.json') : {runs: []};
++    const steps = skips.runs.flatMap(r => r.steps || []);
++    assert.deepEqual(steps, [], `expected 0 skips.json entries on M-D day 1, got: ${JSON.stringify(steps)}`);
++  });
++
++  // 4) HIGH #4: health.mjs on Day 15 (Dec 16, inLaunch=false) with paused empty meta_ingame.json must pass exit 0
++  check('4-health-day15-paused-empty-meta-ingame-passes', () => {
++    const dir = path.join(TMP, 's4');
++    const now = '2026-12-16', iso = now + 'T10:00:00Z', pad = n => 'x'.repeat(n);
++    wr(dir, 'data/index.json', {tournaments: {t1: {d: now}}});
++    wr(dir, 'out/split/index.json', {made: iso, sizes: {results: 50000}, split: {}});
++    wr(dir, 'out/reg.json', {id: 'M-D', name: 'Reg M-D', since: '2026-12-02', sd: 'gen9championsvgc2026regmd', checked: now});
++    wr(dir, 'out/regstate.json', {reg: 'M-D', day: 15, events: 30, players: 2000, games: 5000, since: '2026-12-02', updated: iso});
++    wr(dir, 'out/limitless.json', {reg: 'M-D', updated: iso, teams: 500, results: {pad: pad(55000)}, adj: {rows: []}});
++    wr(dir, 'out/meta_tour.json', {reg: 'M-D', updated: iso, top: Array.from({length: 12}, (_, i) => ({n: 'M' + i, p: pad(500)}))});
++    wr(dir, 'out/info.json', {reg: 'M-D', updated: iso, N: 500, mv: {Protect: pad(1200)}});
++    wr(dir, 'out/teams.json', {reg: 'M-D', updated: iso, teams: Array.from({length: 6}, (_, i) => ({id: i, p: pad(400)}))});
++    wr(dir, 'out/history.json', {reg: 'M-D', days: [{d: '2026-12-15', p: pad(600)}, {d: now, p: pad(600)}]});
++    wr(dir, 'out/matches.json', {reg: 'M-D', updated: iso, m: Array.from({length: 50}, () => [0, 1, 1]), pad: pad(5500)});
++    wr(dir, 'out/model.json', {reg: 'M-D', updated: iso, mons: {Incineroar: pad(5500)}});
++    // Paused op.gg meta_ingame.json after reg-guard emptied it on Dec 2 (0 mons, ~110 bytes)
++    wr(dir, 'out/meta_ingame.json', {reg: 'M-D', format: 'doubles', kind: 'ingame', source: '', period: '', updated: '2026-12-02T09:15:00Z', top: [], more: []});
++    wr(dir, 'out/meta_ladder.json', {reg: 'M-D', month: '2026-12', updated: iso, top: Array.from({length: 12}, (_, i) => ({n: 'M' + i, p: pad(500)}))});
++    wr(dir, 'out/events.json', {reg: 'M-D', updated: iso, events: Array.from({length: 6}, (_, i) => ({id: i, p: pad(2000)}))});
++    wr(dir, 'out/official.json', {reg: 'M-D', updated: iso, events: [{id: 1, p: pad(1200)}]});
++    // perf.json has NO ingame key because meta_ingame.json is empty/paused
++    wr(dir, 'out/perf.json', {reg: {id: 'M-D'}, updated: iso, pad: pad(5500), tour: {updated: iso}, adj: {updated: iso}, smogon: {updated: '2026-12'}, ladder: {updated: iso}, outside: {lists: [{name: 'sdt', date: now}]}});
++    wr(dir, 'out/practice.json', {reg: 'M-D', updated: iso, rounds: Array.from({length: 25}, (_, i) => ({i, p: pad(250)}))});
++    wr(dir, 'out/weekly.json', {reg: 'M-D', v: 1, updated: iso, pad: pad(300)});
++    wr(dir, 'out/calendar.json', {checked: now, ev: [{n: 'Future', s: '2027-01-10', e: '2027-01-12'}], pad: pad(250)});
++    wr(dir, 'out/track.json', {reg: 'M-D', v: 1, updated: iso, pad: pad(300)});
++    wr(dir, 'out/sources.json', {reg: 'M-D', updated: iso, problems: [], pad: pad(300)});
++    wr(dir, 'out/crosscheck.json', {reg: 'M-D', updated: iso, checks: [], pad: pad(300)});
++    wr(dir, 'out/ratings_log.json', {updated: iso, byReg: {'M-D': [{d: now, p: pad(300)}]}});
++    wr(dir, 'out/scoreboard.json', {updated: iso, pad: pad(300)});
++
++    const r = spawnSync(process.execPath, [path.join(ROOT, 'health.mjs'), `--root=${dir}`, `--now=${now}`], {
++      env: {...process.env, GITHUB_STEP_SUMMARY: '', HEALTH_REPORT: ''}, encoding: 'utf8'
++    });
++    assert.equal(r.status, 0, `expected health exit 0 on day 15 with paused empty meta_ingame, got ${r.status}:\n${r.stdout}`);
++  });
++} finally {
++  fs.rmSync(TMP, {recursive: true, force: true});
++}
++
++console.log(failed ? `${failed} FAILED` : 'ALL PASSED');
++process.exit(failed ? 1 : 0);
+diff --git a/health.mjs b/health.mjs
+index 75089e7..edd2050 100644
+--- a/health.mjs
++++ b/health.mjs
+@@ -44,7 +44,7 @@ const FILES = [
+   ['model.json', 'Win model', 2, d => d.updated, [5e3, 2e6], d => !!(d.mons && typeof d.mons === 'object') || 'no Pokémon', [80, d => !!(d.mons && typeof d.mons === 'object')], 'daily model.mjs + 1d buffer'],
+   ['replays.json', 'Showdown ladder replays', 3, d => d.updated, [1e3, 15e6], d => Array.isArray(d.games) || Array.isArray(d) || 'no games list', [20, d => Array.isArray(d.games) || Array.isArray(d)], 'daily replays.mjs (optional step, 2d+1d buffer)', {optional: true}],
+   ['replays_bo3.json', 'Showdown Bo3 replays', 4, d => d.updated, [100, 60e6] /* Nov 25: the real file is 30.3 MB on main; 15 MB failed every daily run */, d => Array.isArray(d.games) || Array.isArray(d) || 'no games list', [20, d => Array.isArray(d.games) || Array.isArray(d)], 'daily Bo3 replays (optional, lower volume)', {optional: true}],
+-  ['meta_ingame.json', 'op.gg in-game rankings (paused Nov 18: op.gg terms)', 9999, d => d.updated, [1e3, 1e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)], 'paused Nov 18 (op.gg terms)', {paused: true, skipRegCheck: true}],
++  ['meta_ingame.json', 'op.gg in-game rankings (paused Nov 18: op.gg terms)', 9999, d => d.updated, [20, 1e6], d => Array.isArray(d.top) || 'no top list', [20, d => Array.isArray(d.top)], 'paused Nov 18 (op.gg terms)', {paused: true, skipRegCheck: true}],
+   ['meta_ladder.json', 'Smogon monthly ladder stats', 40, d => d.month || (inLaunch ? d.updated || (RG && RG.checked) || todayIso : ''), [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)], 'Smogon monthly dump (30d month + 10d publish lag)'],
+   ['events.json', 'Events', 3, d => d.updated, [10e3, 5e6], d => arr(d.events, 5) || 'fewer than 5 events', [20, d => Array.isArray(d.events)], 'daily events.mjs (2d+1d buffer)'],
+   ['official.json', 'Official events (Victory Road + VR Pastes, top 64)', 3, d => d.updated, [1e3, 5e6], d => Array.isArray(d.events) || 'no event list', [20, d => Array.isArray(d.events)], 'daily official.mjs (external Victory Road + Liquipedia)'],
+@@ -86,7 +86,7 @@ for (const [file, label, days, dateOf, [lo, hi], shape, thinRule, basis, opts =
+ // every part of the ratings inputs, by the date of its own data
+ const PF = rd('perf.json');
+ if (PF) { const want = {tour: ['Limitless table', 2], adj: ['Limitless win shares', 2], ingame: ['op.gg order (paused Nov 18)', 9999], official: ['Official events table (frozen)', 28], smogon: ['Smogon 1760+ usage', 40], ladder: ['Showdowntier ladder', 3]};
+-  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official' || inLaunch) {} /* retired Nov 1, or thin in first 14 days */ else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
++  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official' || k === 'ingame' || inLaunch) {} /* retired Nov 1, paused Nov 18, or thin in first 14 days */ else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
+     if (k === 'official' && PF[k].frozen) { const a = age(PF[k].asOf || PF[k].updated); if (a > 21) console.log(`::warning::Ratings inputs: the frozen official-events table (newest event ${PF[k].asOf}) leaves the page in ${Math.max(0, Math.ceil(28 - a))} days; no permitted whole-field source yet`); continue; }
+     old(`Ratings inputs, ${label}`, PF[k].updated, days); }
+   for (const L of (PF.outside && PF.outside.lists) || []) old(`Outside tier list ${L.name}`, L.date, 3);
+diff --git a/official.mjs b/official.mjs
+index 40c32e7..168a3d1 100644
+--- a/official.mjs
++++ b/official.mjs
+@@ -19,7 +19,7 @@ import fs from 'node:fs'; import crypto from 'node:crypto';
+ import {readJSON, dec, ROSTER, mapMon, validItem, bad} from './names.mjs';
+ import {opid, okeys, keyScore} from './pid.mjs';
+ import {stampReg} from './reg-stamp.mjs';
+-import {activeReg, regProfile} from './formats.mjs';
++import {activeReg, regProfile, inRegWindow} from './formats.mjs';
+ export const UA = 'NastyPlot data job (github.com/theresearchmode-glitch/pokelair-data; simran.jsbagga@gmail.com)';
+ // gap G1 (Nov 24): the regulation and its first day come from the regulation profile (regulation.json, the regulation our numbers
+ // are built from). With no official id listed for it, every event is skipped as not this regulation's, never read as another one's.
+@@ -151,7 +151,7 @@ async function run() {
+     } catch (e) { console.log(`official: ${p.slug} skipped: ${e.message}`); } }
+   fs.writeFileSync(`${DIR}/index.json`, JSON.stringify(index));
+   // 2) Liquipedia check, one batched API query for the events not yet confirmed (an event is re-checked for 14 days)
+-  const evSlugs = Object.keys(index.events).filter(s => index.events[s].teams && !index.events[s].skip);
++  const evSlugs = RG_ID ? Object.keys(index.events).filter(s => index.events[s].teams && !index.events[s].skip && inRegWindow(index.events[s].date, ACT)) : [];
+   const lq = readJSON(`${DIR}/liquipedia.json`, {});
+   const want = evSlugs.filter(s => { const L = lq[s]; return !L || (!L.missing && (Date.now() - Date.parse(index.events[s].date + 'T12:00:00Z')) / 864e5 < 14 && L.fetched !== now.toISOString().slice(0, 10)); });
+   const titles = new Map(want.map(s => [lqTitle(index.events[s].title), s]).filter(x => x[0]));
+@@ -188,7 +188,7 @@ async function run() {
+   fs.writeFileSync('out/official_compare.json', JSON.stringify(stampReg(cmp, STAMP_REG)));
+   console.log(`official: vs previous file (${cmp.previous}): ${cmp.summary}`);
+   const prevTeams = prev ? (prev.events || []).reduce((a, e) => a + (e.teams || []).length, 0) : 0, newTeams = out.events.reduce((a, e) => a + e.teams.length, 0);
+-  if (!out.events.length) { console.log('::warning::official: no events read; kept the previous out/official.json'); return; }
++  if (!out.events.length) { if (!RG_ID || (prev && (prev.reg || 'M-C') !== STAMP_REG)) { fs.writeFileSync('out/official.json', JSON.stringify(stampReg(out, STAMP_REG))); console.log(`official: 0 events for ${ACT.name}; wrote empty stamped out/official.json`); return; } console.log('::warning::official: no events read; kept the previous out/official.json'); return; }
+   if (prevTeams && newTeams < prevTeams * .8) { console.log(`::warning::official: only ${newTeams} teams (had ${prevTeams}); kept the previous out/official.json`); return; }
+   if (!cmp.pass) { console.log(`::warning::official: the new sheets disagree with the previous file beyond the gate (${cmp.summary}); kept the previous out/official.json`); return; }
+   fs.writeFileSync('out/official.json', JSON.stringify(stampReg(out, STAMP_REG)));
+diff --git a/sources.mjs b/sources.mjs
+index bc0bf33..d0d0677 100644
+--- a/sources.mjs
++++ b/sources.mjs
+@@ -73,7 +73,7 @@ await tryIt('pika', async () => { const F = SRC.pikalytics; if (!F) notYet('no P
+ fs.writeFileSync('out/sources.json', JSON.stringify(stampReg(out, RG.id)));
+ // Nov 9 (no silent failures): each source problem is recorded like a skipped step (skip.mjs -> out/skips.json), so the same
+ // source failing two days in a row raises the 'Daily data problem' alarm in health.mjs instead of one warning line a day
+-{ const {execFileSync} = await import('node:child_process'); for (const k of new Set(out.problems.map(p => p.split(':')[0]))) { try { execFileSync('node', ['skip.mjs', `source ${k} skipped (${out.problems.filter(p => p.startsWith(k + ':')).join(' | ').slice(0, 300)})`], {stdio: 'inherit'}); } catch (e) {} } }
++{ const {execFileSync} = await import('node:child_process'), real = out.problems.filter(p => !/not available yet/.test(p)); for (const k of new Set(real.map(p => p.split(':')[0]))) { try { execFileSync('node', ['skip.mjs', `source ${k} skipped (${real.filter(p => p.startsWith(k + ':')).join(' | ').slice(0, 300)})`], {stdio: 'inherit'}); } catch (e) {} } }
+ for (const k of ['sdt', 'pika']) { const s = out[k];
+   console.log(`sources: ${k} ${s ? `${s.rows.length} rows, dated ${s.date || s.dataDate || '?'}; top ${s.rows.slice(0, 3).map(r => `${r.n} ${r.u}%`).join(', ')}${s.miss && s.miss.length ? '; unmapped ' + s.miss.slice(0, 12).join(', ') : ''}` : 'missing'}`); }
+ if (out.problems.length) console.log('::warning::sources: ' + out.problems.join(' | '));
+diff --git a/update.mjs b/update.mjs
+index 4eb9a80..e048a55 100644
+--- a/update.mjs
++++ b/update.mjs
+@@ -103,13 +103,13 @@ for (const id of KEEP) { const T = readJSON(`data/t/${id}.json`, null); if (!T)
+   first = !first || T.d < first ? T.d : first; last = !last || T.d > last ? T.d : last;
+   for (const [pl, w, l, ks] of T.e) { const m = [...new Set(ks)]; if (m.length === 6 && w + l >= 3) E.push({m, w, l}); } }
+ const keys = [...new Set(E.flatMap(e => e.m))], ki = new Map(keys.map((k, i) => [k, i])); E.forEach(e => e.ix = e.m.map(k => ki.get(k)));
+-let W = 0, G = 0; for (const e of E) { W += e.w; G += e.w + e.l; } const base = W / G;
++let W = 0, G = 0; for (const e of E) { W += e.w; G += e.w + e.l; } const base = G ? W / G : .5;
+ // Fail-safe: never write outputs built from far less data than yesterday's (or with a nonsense win rate). Exiting here
+ // stops the daily job before its commit, so the page keeps yesterday's data and the failed run emails a warning.
+ { const prev = readJSON('out/limitless.json', null);
+   // (a regulation switch starts over from the new regulation's teams, so yesterday's count doesn't apply then)
+   const sameAsPrev = !prev || (prev.reg || 'M-C') === FORMAT;
+-  if (!(base > .4 && base < .6) || (sameAsPrev && prev && prev.teams >= 100 && E.length < prev.teams * .8)) {
++  if ((G >= 100 && !(base > .4 && base < .6)) || (sameAsPrev && prev && prev.teams >= 100 && E.length < prev.teams * .8)) {
+     console.log(`::error::update: only ${E.length} teams (yesterday ${prev ? prev.teams : '?'}), base ${base}; outputs left unchanged`); process.exit(1); } }
+ 
+ // 3) teammate-adjusted share of the win: logistic model over every team, ridge-shrunk (fit with Adam)
+@@ -138,16 +138,17 @@ for (const e of E) { const m = [...new Set(e.ix.map(j => nm[j]).filter(Boolean))
+   for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = m[i] + '|' + m[j], o = P.get(k) || {n: 0, w: 0, g: 0}; o.n++; o.w += e.w; o.g += g; P.set(k, o);
+     for (let l = j + 1; l < 6; l++) { const k3 = k + '|' + m[l], q = C3.get(k3) || {n: 0, w: 0, g: 0}; q.n++; q.w += e.w; q.g += g; C3.set(k3, q); } } }
+ const day = d => new Date(d).toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
+-const src = `${E.length.toLocaleString('en-US')} ${RG.name} tournament teams, ${G.toLocaleString('en-US')} games (Limitless, ${KEEP.length} events, ${day(first)} – ${day(last)})`;
++const span = first ? `${day(first)} – ${day(last)}` : 'no events yet', nTeams = E.length || 1;
++const src = `${E.length.toLocaleString('en-US')} ${RG.name} tournament teams, ${G.toLocaleString('en-US')} games (Limitless, ${KEEP.length} events, ${span})`;
+ const out = {updated: new Date().toISOString(), reg: FORMAT, tournaments: KEEP.length, teams: E.length, games: G, base: Math.round(base * 1e4) / 1e4,
+-  adj: {label: `Limitless · ${KEEP.length} ${RG.name} tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams, ${G.toLocaleString('en-US')} games · each Pokémon's own share of the win (teammates accounted for)`,
++  adj: {label: `Limitless · ${KEEP.length} ${RG.name} tournaments (${span}), ${E.length.toLocaleString('en-US')} teams, ${G.toLocaleString('en-US')} games · each Pokémon's own share of the win (teammates accounted for)`,
+     rows: [...mon].map(([n, o]) => [n, Math.round(1000 * o.bs / (o.g || 1)) / 1000, o.g, o.t, Math.round(1000 * o.w / (o.g || 1)) / 10])},
+   // the ratings' tournament input, rebuilt every day from these same teams (it used to be a hand-made Pokémon Zone snapshot):
+   // [name, % of teams, game win %, games]. Megas are already their own rows (split: the page doesn't subtract them again).
+-  tour: {label: `Limitless · ${KEEP.length} ${RG.name} tournaments (${day(first)} – ${day(last)}), ${E.length.toLocaleString('en-US')} teams · usage and game win rate`, split: true,
++  tour: {label: `Limitless · ${KEEP.length} ${RG.name} tournaments (${span}), ${E.length.toLocaleString('en-US')} teams · usage and game win rate`, split: true,
+     updated: new Date().toISOString().slice(0, 10),
+-    rows: [...mon].filter(([n]) => !/-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1]),
+-    megas: [...mon].filter(([n]) => /-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1])},
++    rows: [...mon].filter(([n]) => !/-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / nTeams) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1]),
++    megas: [...mon].filter(([n]) => /-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / nTeams) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1])},
+   results: {source: src, teams: E.length, base: Math.round(base * 1e4) / 1e4, minCore: 40,
+     mons: Object.fromEntries([...mon].map(([n, o]) => [n, [o.t, shrink(o.w, o.g, 40)]])),
+     pairs: Object.fromEntries([...P].filter(([, o]) => o.n >= 25).map(([k, o]) => [k, [o.n, shrink(o.w, o.g, 40)]])),

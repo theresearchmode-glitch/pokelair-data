@@ -1,0 +1,39 @@
+diff --git a/app/src/app/08-render-all.js b/app/src/app/08-render-all.js
+index 65f32969..7fa05c7c 100644
+--- a/app/src/app/08-render-all.js
++++ b/app/src/app/08-render-all.js
+@@ -159,7 +159,7 @@ function render(){
+   else if(!ms.length){ui.plansStale=false;ui.planMore=0;planCache={key:planKey,plans};planKeep(planKey,plans)}
+   else{ui.plansStale=false;if(!planJob||planJob.key!==planKey)ui.planMore=0;planJobStart(planKey,ms,pool,useA,a);plans=[];plans.pending=true}
+   ui.plans=plans;ui.planCtx={key:planKey,ms,a,tRows,useA,covered};plansDraw(ui.planCtx,plans);
+-  if(ckWinNeeded())safe('checklist claims',ckWinRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);lazy('auto-build','abOut',()=>renderAutoBuild());safe('pool',renderPoolCtl);fixMetaSrc();lazy('meta','metaList',()=>renderMeta());{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
++  if(ckWinNeeded())safe('checklist claims',ckWinRefresh);safe('saved teams',renderSaved);safe('box',renderBox);safe('exclude',renderExcl);lazy('auto-build','abOut',()=>renderAutoBuild());safe('pool',renderPoolCtl);fixMetaSrc();if(!META[SRC[ui.metaView]]){const alt=['tour','ladder','ingame'].find(k=>META[SRC[k]]);if(alt)ui.metaView=alt}lazy('meta','metaList',()=>renderMeta());{const lp=document.querySelector('[data-pane="ratings"]');if(lp&&lp.hidden===false)safe('ratings',renderLair)}
+   lazy('threats','threats',()=>renderThreats(members(),$('useAbil').checked));if(typeof view!=='undefined'){if(view==='speed')safe('speed tiers',renderSpeed);if(view==='calc')safe('damage calc',renderCalc);if(view==='gauntlet')safe('gauntlet',renderGauntlet);if(view==='battle')safe('battle',renderBattle);if(view==='cores')safe('cores',renderCores);if(view==='events')safe('events',renderEvents);if(view==='top')safe('team search',renderTeamSearch);if(view==='practice'&&typeof renderPractice==='function'&&(!META.practice||pr.step==='start'))safe('practice',renderPractice);if(view==='compare')safe('compare',renderCompare)}{const cv=document.querySelector('[data-pane="coverage"]');if(cv&&cv.hidden===false)setTimeout(()=>safe('additions',renderRecs),0)}safe('types',renderTypes);safe('matchup',renderMatchup);lazy('top teams','ttList',()=>renderTopTeams());safe('battle log',renderLog);lazy('sets','sets',()=>renderSets());safe('paste',renderPastePanel);safe('home',renderHome);
+ }
+ // The scouting report's header: legal and items first, then how ready the team is for the top threats, the checklist, and
+diff --git a/app/src/app/18-archetypes.js b/app/src/app/18-archetypes.js
+index 15301453..64f891f6 100644
+--- a/app/src/app/18-archetypes.js
++++ b/app/src/app/18-archetypes.js
+@@ -202,7 +202,7 @@ function loadTopTeam(k) { const t = META.teams && META.teams.teams[k]; if (!t) r
+ function cleanHistory(d) { if (!d || !Array.isArray(d.days)) return null;
+   const obj = o => { const out = {}; if (o && typeof o === 'object') for (const k of Object.keys(o).slice(0, 80)) { const v = num(o[k]); if (v != null && typeof k === 'string') out[k] = v; } return out; };
+   return {days: d.days.slice(-40).filter(x => x && typeof x.d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(x.d.slice(0, 10)) && !isNaN(Date.parse(x.d.slice(0, 10) + 'T12:00:00Z'))).map(x => ({d: x.d.slice(0, 10), ing: obj(x.ing), tour: obj(x.tour), lad: obj(x.lad)}))}; } /* code review B10: a malformed day is dropped (trendFor's toISOString threw on it), as cleanWeekly does */
+-function trendKey() { return {ingame: 'ing', tour: 'tour', ladder: 'lad'}[ui.metaSrc]; }
++function trendKey() { return {ingame: 'ing', tour: 'tour', ladder: 'lad'}[ui.metaView]; }
+ function trendFor(name, rank) {
+   const h = META.history; if (!h || h.days.length < 2) return null;
+   const k = trendKey(); const latest = h.days[h.days.length - 1];
+diff --git a/app/src/v2/pages/usage.js b/app/src/v2/pages/usage.js
+index 38ba2e52..b5563979 100644
+--- a/app/src/v2/pages/usage.js
++++ b/app/src/v2/pages/usage.js
+@@ -8,7 +8,7 @@
+ V2.usUi = {q: '', pick: null, all: false, src: 'tour', open: {}};
+ V2.usDoc = () => META[SRC[V2.usUi.src]];
+ // shared helpers that read ui.metaSrc (trendFor's badges) see Usage's own source while they run, then it is put back
+-V2.usAs = f => { const g = ui.metaSrc; ui.metaSrc = V2.usUi.src; try { return f(); } finally { ui.metaSrc = g; } };
++V2.usAs = f => { const g = ui.metaSrc, gv = ui.metaView; ui.metaSrc = ui.metaView = V2.usUi.src; try { return f(); } finally { ui.metaSrc = g; ui.metaView = gv; } }; /* merge with main (Nov 28): main's trendKey reads ui.metaView, so both are swapped */
+ V2.usSrcs = [['ingame', 'Ranked ladder'], ['tour', 'Online tournaments'], ['ladder', 'Showdown ladder']]; // today's order (parity, Nov 15)
+ V2.usLine = d => { const per = d.period && !String(d.source).includes(d.period) ? ' · ' + (/^\d{4}-\d{2}$/.test(d.period) ? new Date(d.period + '-15T12:00:00').toLocaleDateString('en-US', {month: 'short', year: 'numeric'}) : d.period) : '';
+   return `${d.source || ''}${per}${d.battles ? ` · ${(+d.battles).toLocaleString('en-US')} battles` : ''}`; };

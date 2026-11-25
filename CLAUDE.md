@@ -10,13 +10,15 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
   (all on Cloudflare, nastyplot.org, bought by Sim; goes live QUIETLY about Dec 7, announced about Dec 18 — moved up from January, Sim Nov 24). Launch with today's score; after the design work, all focus on the Strength
   Score and analytics; best-of-3 data later (Sim, Nov 24).
   **Being found on Google (SEO) is "super duper important"** (Sim, Nov 24): real page addresses, search-ready pages, before launch.
-- **Work mode (Sim, Nov 24):** usage saved until 4:00 PM Wed (night watchdog only); from then on, constant work through the
-  night as normal (hourly work check + night check re-enabled at the 4:01 PM resume).
-- **Helpers:** 1 until 4:00 PM Wed Nov 25, then 2 as standard. Above that, ask Sim.
+- **Work mode (Sim, Wed Nov 25, 5:55 AM):** back to regular work now (usage saving ended early); constant work as normal,
+  hourly work check + night check on.
+- **Helpers:** ONE, as the standing rule (Sim, Wed Nov 25, 7:33 AM). A second only when Sim gives a specific task for another helper.
 - **"Other chat"** = Sim's PC Claude Code chat, SAME account (long runs, GPU image work). **"Other acc"** = second account, Pro plan,
   much less usage: report-only, patch jobs, and (Sim, Nov 24) merging + testing Gemini's jobs; pushes ONLY to alt/other-* branches,
   never publishes; HH reviews and merges. HH may push alt/gemini-* branches so GitHub tests Gemini's work (Sim, Nov 24).
-- **The squad (Sim, Nov 24):** Sim, HH, **Kip** (= Gemini) and **Scout** (= the other acc helper).
+- **The squad (Sim, Nov 24):** Sim, HH, **Kip** (= Gemini), **Scout** (= the other acc helper) and **Dos** ("Dossier" = the PC chat, Sim, Nov 25).
+- **Squad tasks (Sim, Nov 25):** every task that can/should go to **Dos, Kip or Scout** is written in **bold** in chat, and HH reminds Sim
+  of it in each update until Sim says he has sent it. Efficiency first: 1 helper + the main thread always busy.
 - **Gemini / Kip (Sim, Nov 24):** Sim's Google Gemini subscription is a third helper for when Claude usage is low: code reviews and
   non-design tasks ONLY (absolutely no design work). HH writes its prompts in the same package style (template:
   docs/rebuild/gemini-prompt-template.md); it works on its own alt/gemini-* branch or delivers patches, never main or claude/design6,

@@ -39,16 +39,20 @@ V2.sdHero = () => {
   const go = has ? `<a class="sdh-b1" data-sdgo href="#team">Score My Team</a><a class="sdh-b2" data-sdgo href="#build"><span>Build Me a Team</span></a>`
     : `<a class="sdh-b1" data-sdgo href="#build">Build Me a Team</a><a class="sdh-b2" data-sdgo href="#team"><span>Score My Team</span></a>`;
   const say = R.length ? `Every one of the ${num(R.length)} Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating${D.teams ? `, worked out from ${num(D.teams)} real tournament teams${V2.freshAgo() ? ` (${V2.freshAgo()})` : ''}` : ''}.`
+    : V2.noRatings && V2.noRatings() ? `No Pokémon is rated yet in ${typeof regName === 'function' ? regName() : 'this regulation'}: the charge starts with the first tournament results.`
     : 'Every Pokémon NastyPlot rates is in this charge. The bigger it stands, the higher its rating.';
+  /* Not rated yet, day one (Nov 25, HH's design call): an empty herd would leave a bare blue band, so today's underdog waits at the gate (rule 23) */
+  const gate = !R.length && V2.noRatings && V2.noRatings() ? (() => { const ud = V2.underdog ? V2.underdog() : 'Flapple', ud2 = V2.disp(ud);
+    return `<aside class="sdh-gate" aria-label="Today's underdog">${V2.kCard(ud, {form: "Today's underdog", fact: 'At the gate. Everyone starts level.', attrs: {'data-v2mon': ud, 'aria-label': `${ud2}: open its info`}})}</aside>`; })() : '';
   return `<section class="sd-band sd-hero sdh${V2.sdhUi.surged || !V2.sdMotion() ? '' : ' sdh-surge'}" aria-labelledby="sdh-h">
     <div class="sdh-fold"><div class="sdh-scene">
       <svg class="sdh-lines" aria-hidden="true" focusable="false"></svg>
       <div class="sdh-crowd" aria-hidden="true"></div><i class="sdh-haze" aria-hidden="true"></i>
       <h1 class="u sdh-h" id="sdh-h"><span class="k-kicker sdh-k"><span class="sdh-ka">The </span>Pokémon Champions coach</span><span class="l1">Sharply raise</span> <span class="l2">your win rate.</span></h1>${V2.sdhChv()}
-      <div class="sdh-herd">${herd}</div>
+      <div class="sdh-herd">${herd}</div>${gate}
       <div class="sdh-front">${front}</div>
     </div>
-    <div class="sdh-ledge"><ul class="sdh-plates" aria-label="The four highest rated">${plates}</ul>
+    <div class="sdh-ledge">${plates ? `<ul class="sdh-plates" aria-label="The four highest rated">${plates}</ul>` : '' /* Not rated yet (Nov 25): no plates, no list */}
       <p class="sdh-say">${E(say)}${V2.mdCountdown() ? ` <b class="sdh-cd"><span class="sdh-cds">${E(V2.mdCountdown(Date.now(), true))}</span></b>` : ''} <a class="sdh-all" href="#meta">All Ratings ›</a></p>
       <div class="sdh-go hm-go">${go}</div></div></div>
     ${tick ? `<div class="sdh-tick"><ul aria-label="Next in the ratings">${tick}</ul></div>` : ''}

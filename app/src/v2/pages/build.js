@@ -12,7 +12,7 @@ V2.bdBoxUntouched = () => { try { const d = new Set(DEFAULT_BOX.map(b => b === '
   return bx.length === d.size && bx.every(b => d.has(b)); } catch (e) { return false; } };
 V2.bdSrcDefault = () => { if (ui.abSrc !== 'all' && LS.get('cc2.absrc', null) == null && V2.bdBoxUntouched()) ui.abSrc = 'all'; };
 V2.buildHead = () => { V2.bdSrcDefault(); const E = V2.esc, nBox = (S.box || []).length, lk = ui.abLock && byName.get(ui.abLock);
-  const head = `<div class="bd-head"><div><p class="np-eyebrow"><span>Build ·<span class="bd-rw"> real winning teams ·</span> ${E(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} doubles</span></p><h1 class="u">Build me <span class="pl">a team.</span></h1></div>
+  const head = `<div class="bd-head"><div><p class="np-eyebrow"><span>Build ·<span class="bd-rw"> real winning teams ·</span> ${E(regName())} doubles</span></p><h1 class="u">Build me <span class="pl">a team.</span></h1></div>
     <div class="bd-side"><p>Winning tournament teams you can field from your box or the whole roster.</p><button type="button" class="np-link" data-bdhow>How It Works ›</button></div></div>`;
   const src = V2.slide('bdsrc', [['box', 'My Box'], ['all', 'Whole Roster']], ui.abSrc === 'all' ? 'all' : 'box', 'Build from');
   const meg = V2.slide('sgmega', [['0', '0'], ['1', '1'], ['2', '2']], String(megaGoal()), 'Megas on team');
@@ -77,7 +77,7 @@ V2.buildAnswer0 = () => { const E = V2.esc, r = ui.ab;
   const acts = `<div class="row bd-acts"><button type="button" class="np-btn" data-bduse>Load Team</button><button type="button" class="np-btn2 k-btn" data-bdsave${S.teams.length >= 10 ? ' disabled title="10 saved teams already"' : ''}><span>Save</span></button><button type="button" class="np-btn2 k-btn" data-bdcopy><span>Copy for Showdown</span></button>
     <span class="bd-catch">${nCatch === 6 ? 'All six to catch: none is in your box yet' : nCatch ? `${nCatch} to catch` : 'All six are in your box'}</span></div>`;
   return `<section class="bd-ans" style="--band:var(--band-${band})"><div class="bd-lock"><p class="np-eyebrow">${n > 1 ? `Option ${k + 1} of ${n} · ` : ''}${kind}</p><h2 class="u">${V2.dotWrap(E(t.label))}</h2>
-    <div class="np-score bd-score"><b>${s}</b><div class="w"><span>${E(word)}</span><small>Strength Score</small></div></div>${G ? `${CH.pctTxt(G) ? `<p class="bd-rank">${E(CH.pctTxt(G))}</p>` : ''}${V2.buildBrk(G)}` : ''}${t.fresh ? '<p class="bd-fresh">A fresh take: built on raw power and fit instead of popularity, with at most 2 meta staples. Fewer people will have prepared for it.</p>' : ''}
+    <div class="np-score bd-score"><b>${s}</b><div class="w"><span>${E(word)}</span><small>Strength Score</small></div></div>${G ? `${CH.pctTxt(G) ? `<p class="bd-rank">${E(CH.pctTxt(G))}</p>` : V2.scoreSrc && V2.scoreSrc(G) ? `<p class="bd-rank">${E(V2.scoreSrc(G))}.</p>` : ''}${V2.buildBrk(G)}` : ''}${t.fresh ? '<p class="bd-fresh">A fresh take: built on raw power and fit instead of popularity, with at most 2 meta staples. Fewer people will have prepared for it.</p>' : ''}
     ${chips.length ? `<div class="bd-chips">${chips.map(c => `<span class="np-chip">${E(c)}</span>`).join('')}</div>` : ''}</div><div class="bd-six" style="background:${V2.buildLight(t.mons)}">${six}</div></section>${why}${acts}`; };
 // (code review C2: an earlier Build draw stood here; the one in use is set below)
 document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-bduse],[data-bdsave],[data-bdcopy]'); if (!b) return; const t = abTeam('doubles'); if (!t) return;
