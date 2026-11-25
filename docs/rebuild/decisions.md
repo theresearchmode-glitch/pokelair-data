@@ -2574,3 +2574,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:36 PM: Hourly 2:35: helper on public 404 routing (SEO fix 4) + Limitless request/credit facts.
 - 2:41 PM: Dos switch-candidate run: 126/131, no site problem (3 same as this morning: Windows fonts/rendering; 2 Windows-only test path bugs, both now fixed: v2-saved by Kip job 30 F6, md-day-one-test by pathToFileURL). Results saved to design6.
 - 2:42 PM: Main: 44ea888e fast-forwarded (hello@nastyplot.org in the data jobs' User-Agent and legal-sources); GitHub green first.
+- 2:43 PM: Sim: Scout's subscription ends in 3-4 days (about Nov 28-29). Squad jobs drafted: Kip 33 (review of today's public-site code), Scout (review of the switch-day runbook), Dos (full run on design6 after tonight's Cloudflare job).
