@@ -25,7 +25,7 @@ function setCard(title, sub, t, extra, foot) {
 function setSources(st, fmt, p) {
   const label = {mv: 'moves', it: 'items', ab: 'abilities', na: 'natures', tm: 'teammates'}, by = {};
   const mega = st.src.it === 'mega';
-  for (const f in label) { const s = st.src[f]; if (!s || s === 'mega') continue; const w = s === 'live' ? 'official in-game stats (live)' : s === 'game' ? `official in-game stats (${SETS.meta.pulled} snapshot)` : s === 'sd' ? `Showdown 1630+${mega ? ' (Mega-specific)' : st.sd && st.sd.cut === 0 ? ' (all ratings)' : ''}` : srcWord(s, fmt) + ' data'; (by[w] = by[w] || []).push(label[f]); }
+  for (const f in label) { const s = st.src[f]; if (!s || s === 'mega') continue; const w = s === 'live' ? 'official in-game stats, paused since Nov 17 (op.gg)' : s === 'game' ? `official in-game stats (${SETS.meta.pulled} snapshot)` : s === 'sd' ? `Showdown 1630+${mega ? ' (Mega-specific)' : st.sd && st.sd.cut === 0 ? ' (all ratings)' : ''}` : srcWord(s, fmt) + ' data'; (by[w] = by[w] || []).push(label[f]); }
   const k = Object.keys(by); if (!k.length) return '';
   let txt = k.length === 1 ? 'From ' + k[0] : k.map(w => `${by[w].join(', ').replace(/^./, c => c.toUpperCase())}: ${w}`).join(' · ');
   if (mega) txt += ' · Its stone and ability are fixed';
@@ -37,7 +37,7 @@ function setSources(st, fmt, p) {
   return esc(txt);
 }
 // One line naming where the moves came from, for the card subtitle.
-function mainSource(st) { const s = st.src.mv; return s === 'sd' ? (st.src.it === 'mega' ? 'Showdown ladder, 1630+ rating (this Mega)' : 'Showdown ladder') : s === 'tour' ? 'Tournament teams' : s === 'ladder' ? 'Showdown ladder' : 'Official in-game ranked battles'; }
+function mainSource(st) { const s = st.src.mv; return s === 'sd' ? (st.src.it === 'mega' ? 'Showdown ladder, 1630+ rating (this Mega)' : 'Showdown ladder') : s === 'tour' ? 'Tournament teams' : s === 'ladder' ? 'Showdown ladder' : 'Official in-game ranked battles, paused since Nov 17 (op.gg)'; }
 function rankLine(d, t) {
   if (!d || !t) return '';
   const bits = ['#' + t.r];

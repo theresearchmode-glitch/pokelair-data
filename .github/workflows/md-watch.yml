@@ -21,6 +21,9 @@ on:
       fake_limitless:
         description: 'Pretend Limitless is down or stale (down | stale), for testing'
         default: ''
+concurrency:
+  group: md-watch   # a manual run and the daily run never overlap, so an issue can't open twice (code review, Nov 24)
+  cancel-in-progress: false
 permissions:
   contents: read
   issues: write
@@ -41,7 +44,7 @@ jobs:
           WATCH_FAKE_LIMITLESS: ${{ inputs.fake_limitless }}
         run: node md-watch.mjs
       - name: Issues
-        if: ${{ !inputs.dry }}
+        if: ${{ !inputs.dry && !inputs.fake_found && !inputs.fake_limitless }}   # a faked run never opens a real issue (code review, Nov 24)
         uses: actions/github-script@v8
         env:
           WATCH_REPORT: ${{ runner.temp }}/watch.json
@@ -54,6 +57,7 @@ jobs:
             for (const s of R.spotted || []) { if (all.some(i => i.title === s.title)) continue;
               await github.rest.issues.create({...context.repo, title: s.title, body: `${s.body}\n\nRun: ${run}`}); }
             // 2. the Limitless alarm: one open issue at most
+            if (!R.next) return;   // the watcher stopped early: it never checked Limitless, so it must not close the alarm
             const open = all.filter(i => i.state === 'open' && i.title.startsWith('Limitless data paused since '));
             if (!R.paused) { for (const i of open) { await github.rest.issues.createComment({...context.repo, issue_number: i.number, body: `Data flows again. ${run}`});
                 await github.rest.issues.update({...context.repo, issue_number: i.number, state: 'closed', state_reason: 'completed'}); } return; }

@@ -6,6 +6,7 @@
 import fs from 'node:fs';
 import {politeFetch} from './http.mjs';
 import {activeReg} from './formats.mjs';
+import {stampReg} from './reg-stamp.mjs';
 // the active regulation's Showdown format (formats.mjs); Reg M-C is gen9championsvgc2026regmc
 // REPLAY_FMT=bo3 collects Showdown's best-of-3 Champions format instead (forced open team sheets; each game is still ONE
 // game, Sim Nov 8: single games first) into out/replays_bo3.json, with each side's full sets from the team sheet.
@@ -64,7 +65,7 @@ const BACKFILL = process.env.BACKFILL === '1', MAX_PAGES = BACKFILL ? 100000 : 6
 function save(prev, fresh) {
   const byId = new Map(); for (const g of [...fresh, ...prev.games]) if (!byId.has(g.id)) byId.set(g.id, g);
   const games = [...byId.values()].sort((a, b) => (b.t || 0) - (a.t || 0)).slice(0, KEEP);
-  fs.writeFileSync(FILE, JSON.stringify({updated: new Date().toISOString(), format: FMT, source: 'Showdown replays (replay.pokemonshowdown.com)', games}));
+  fs.writeFileSync(FILE, JSON.stringify(stampReg({updated: new Date().toISOString(), format: FMT, source: 'Showdown replays (replay.pokemonshowdown.com)', games})));
   return games.length; }
 async function main() {
   const prev = readJSON(FILE, {games: []});

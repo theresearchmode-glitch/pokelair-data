@@ -41,6 +41,14 @@ export function validItem(it) { const s = String(it || '').trim(); if (!s) retur
 const fold = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
 const DATA_JS = (() => { try { return fs.readFileSync('app/src/data/data.js', 'utf8'); } catch (e) { return ''; } })();
 const grabJS = k => { try { const m = DATA_JS.match(new RegExp('const ' + k + '=([\\s\\S]*?);\\n')); return m ? JSON.parse(m[1]) : null; } catch (e) { return null; } };
+// Natures (Dossier step 3, Nov 23): the 25 names from data.js SETS.NAT, matched case-, space- and punctuation-free. Misspellings seen on
+// Limitless sheets (data/t2 check, Nov 23: "Adament" x16, "Modeste", "Quieto"...) where only one nature fits are mapped; anything else
+// ("mid", "ve") is not a nature we can read: '' (left out of the counts, never guessed).
+const NAT_LIST = (() => { try { const m = DATA_JS.match(/"NAT":(\[[^\]]*\])/); return m ? JSON.parse(m[1]) : []; } catch (e) { return []; } })();
+const NAT_MAP = new Map(NAT_LIST.map(x => [fold(x), x]));
+const NAT_TYPO = {adament: 'Adamant', adaman: 'Adamant', ademant: 'Adamant', admant: 'Adamant', adamnt: 'Adamant', asamant: 'Adamant', admanant: 'Adamant', adamat: 'Adamant',
+  modeste: 'Modest', modesto: 'Modest', quieto: 'Quiet', quite: 'Quiet', jelly: 'Jolly', sasay: 'Sassy'};
+export const canonNature = s => { const k = fold(s || ''); return !k ? '' : NAT_MAP.get(k) || (NAT_TYPO[k] && NAT_MAP.has(fold(NAT_TYPO[k])) ? NAT_TYPO[k] : ''); };
 const LIST = {i: new Map([...ITEMS].map(x => [fold(x), x])), a: new Map(Object.keys(grabJS('ABIL') || {}).map(x => [fold(x), x])),
   mv: new Map((grabJS('MOVES') || []).map(x => [fold(x[0]), x[0]]))};
 const STONE_TYPO = {staraptorite: 'Staraptite', dragonitite: 'Dragoninite', dragonitinite: 'Dragoninite', golisopodite: 'Golisopite', venosaurite: 'Venusaurite',

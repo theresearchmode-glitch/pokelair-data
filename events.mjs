@@ -3,6 +3,7 @@
 // VR Pastes via official.mjs). Compact on purpose: the page keeps it in one document (256 KiB cap). Run after update.mjs and official.mjs.
 import fs from 'node:fs';
 import {offFormat, oddEvents, activeReg, sameReg, inRegWindow} from './formats.mjs';
+import {stampReg} from './reg-stamp.mjs';
 import {lkey, lmap, reportUnknown} from './names.mjs';
 const RG = activeReg(); // one regulation only (formats.mjs)
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
@@ -65,8 +66,8 @@ while (Buffer.byteLength(JSON.stringify(doc)) > CAP && doc.events.length > 10) {
   if (days < DAYS) doc.source = doc.source.replace(`last ${DAYS} days`, `last ${days} days`); } }
 // fail-safe (stress test, Oct 28): never replace yesterday's events with far fewer (a broken index or a bad day of data)
 { const prev = readJSON('out/events.json', null), n0 = prev && Array.isArray(prev.events) ? prev.events.length : 0;
-  if (n0 >= 10 && doc.events.length < n0 * .5) { console.log(`::error::events: only ${doc.events.length} events (had ${n0}); kept the existing file`); process.exit(1); } }
-fs.writeFileSync('out/events.json', JSON.stringify(doc));
+  if ((!prev || (prev.reg || 'M-C') === RG.id) && n0 >= 10 && doc.events.length < n0 * .5) { console.log(`::error::events: only ${doc.events.length} events (had ${n0}); kept the existing file`); process.exit(1); } }
+fs.writeFileSync('out/events.json', JSON.stringify(stampReg(doc, RG.id)));
 console.log(`events: ${doc.events.length} (${doc.events.filter(e => e.src === 'official').length} official), ${Math.round(Buffer.byteLength(JSON.stringify(doc)) / 1024)} KiB`);
 
 reportUnknown('events');

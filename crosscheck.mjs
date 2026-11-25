@@ -8,6 +8,7 @@
 //  - names: sites list a species ("Charizard"); we split Megas out. Everything here is compared per species (a team can
 //    hold only one of a species, so the plain form and its Megas add up exactly), except checks marked per form.
 import fs from 'node:fs';
+import {stampReg} from './reg-stamp.mjs';
 const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
 const S = rd('sources.json') || {}, P = rd('perf.json') || {}, MT = rd('meta_tour.json'), ML = rd('meta_ladder.json'), OF = rd('official.json');
 // species key: Megas fold into their species; Floette's plain entry is Floette-Eternal
@@ -79,7 +80,7 @@ if (OF && Array.isArray(OF.checks)) { const rows = OF.checks.map(c => ({n: c.eve
   checks.push({id: 'official-vs-liquipedia', ours: OF.source, theirs: 'Liquipedia (MediaWiki API; CC-BY-SA 3.0) and Victory Road event pages', known: 'Liquipedia lists placements in ranges (9-16, 17-32 ...) and only top cut by bracket; names are matched loosely (Victory Road prints first name + one surname). Player counts differ by a few between sites (late drops).', per: 'event',
     rows, missingHere: [], flagged: rows.filter(r => r.flags.length).length, staplesFlagged: rows.filter(r => r.flags.some(f => /Liquipedia places|start date/.test(f))).map(r => `${r.n} (${r.flags.filter(f => /Liquipedia places|start date/.test(f)).length} placement/date)`)}); }
 const out = {updated: new Date().toISOString(), checks};
-fs.writeFileSync('out/crosscheck.json', JSON.stringify(out));
+fs.writeFileSync('out/crosscheck.json', JSON.stringify(stampReg(out)));
 // Nov 9 (no silent failures): a cross-check that couldn't run is recorded like a skipped daily step (skip.mjs -> out/skips.json),
 // so health.mjs raises the "Daily data problem" alarm when the same one is skipped two days in a row. (The RK9-based check
 // was skipped every day for 8+ days and only ever printed one quiet line.)

@@ -2,6 +2,7 @@
 // Builds out/meta_ladder.json in the same shape as meta_tour.json (plus checks & counters), only when a new month is out.
 import fs from 'node:fs'; import vm from 'node:vm'; import {politeFetch as fetch} from './http.mjs';
 import {activeReg} from './formats.mjs';
+import {stampReg} from './reg-stamp.mjs';
 const FMT = activeReg().sd, CUT = 1630, BASE = 'https://www.smogon.com/stats/';
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const prev = readJSON('out/meta_ladder.json', null);
@@ -10,7 +11,7 @@ let month = null, data = null;
 for (const m of months.slice(0, 3)) { const r = await fetch(`${BASE}${m}/chaos/${FMT}-${CUT}.json`); if (r.ok) { month = m; if (prev && prev.month === m && prev.usage1760 && String(prev.source || '').includes(FMT) && !process.env.FORCE) break; data = await r.json(); break; } }
 if (!month) { console.log('ladder: no stats found');
   // last regulation's ladder stats are never shown as this one's (formats.mjs): an empty list until Smogon has the new format
-  if (prev && !String(prev.source || '').includes(FMT)) { fs.writeFileSync('out/meta_ladder.json', JSON.stringify({format: 'doubles', kind: 'ladder', month: null, source: `Showdown ladder (no ${FMT} stats yet)`, period: '', battles: 0, updated: new Date().toISOString(), note: 'Smogon publishes monthly; the new regulation shows here after its first month.', top: [], more: []})); console.log('ladder: regulation changed; cleared the old ladder stats'); }
+  if (prev && !String(prev.source || '').includes(FMT)) { fs.writeFileSync('out/meta_ladder.json', JSON.stringify(stampReg({format: 'doubles', kind: 'ladder', month: null, source: `Showdown ladder (no ${FMT} stats yet)`, period: '', battles: 0, updated: new Date().toISOString(), note: 'Smogon publishes monthly; the new regulation shows here after its first month.', top: [], more: []}))); console.log('ladder: regulation changed; cleared the old ladder stats'); }
   process.exit(0); }
 if (!data) { console.log(`ladder: ${month} already built`); process.exit(0); }
 // Showdown ids -> names
@@ -35,5 +36,5 @@ try { const r = await fetch(`${BASE}${month}/chaos/${FMT}-1760.json`); if (r.ok)
 catch (e) { console.log('ladder: 1760 stats unavailable: ' + e.message); }
 const out = {format: 'doubles', kind: 'ladder', month, source: `Showdown ladder ${CUT}+ (Smogon usage stats, ${FMT})`, period: month, battles: N, updated: new Date().toISOString(),
   note: 'Usage among teams on the 1630+ ladder. Checks & counters: how often the listed Pokémon KOs or forces this one out.', top: rows.slice(0, 60), more: rows.slice(60), usage1760};
-fs.writeFileSync('out/meta_ladder.json', JSON.stringify(out));
+fs.writeFileSync('out/meta_ladder.json', JSON.stringify(stampReg(out)));
 console.log(`ladder: ${month}, ${N} battles, 1760+ ${usage1760 ? usage1760.rows.length + ' Pokémon' : 'missing'}, ${rows.length} Pokémon${miss.length ? ', not in roster: ' + miss.join(', ') : ''}`);
