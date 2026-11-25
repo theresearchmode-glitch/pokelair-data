@@ -1,7 +1,7 @@
 // Tests for the anonymous feedback Worker, D1 schema, wrangler.toml, and public feedback POST (Node 22, no network).
 // Usage: node experiments/feedback-worker-test.mjs
 import fs from 'node:fs';
-import worker, {validateFeedback, verifyTurnstile} from '../worker/feedback.mjs';
+import worker from '../worker/feedback.mjs'; import {validateFeedback, verifyTurnstile} from '../worker/feedback-lib.mjs';
 
 let failed = 0;
 const check = (id, ok, detail = '') => {

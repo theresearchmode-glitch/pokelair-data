@@ -1,6 +1,6 @@
 // Tests for the server-side guards in worker/feedback.mjs: contact clean-up, body size cap, origin check.
 // Run: node experiments/feedback-guard-test.mjs   (Node 22, no network: D1 and Turnstile are mocked)
-import worker, {scrubContact, originAllowed, readCapped, MAX_BODY_BYTES} from '../worker/feedback.mjs';
+import worker from '../worker/feedback.mjs'; import {scrubContact, originAllowed, readCapped, MAX_BODY_BYTES} from '../worker/feedback-lib.mjs';
 
 let fails = 0, n = 0;
 const ok = (cond, name) => { n++; if (cond) console.log('PASS', name); else { fails++; console.log('FAIL', name); } };
@@ -131,6 +131,12 @@ const good = JSON.stringify({text: 'Great site, email me kid@gmail.com or call 5
   globalThis.fetch = saved;
   ok(called === 0, `G8 Turnstile not called for refused origin / oversize body (calls: ${called})`);
 }
+
+// G9 (Nov 25, SEO audit under wrangler dev): Cloudflare refuses a Worker main file with named exports that aren't entry points
+// ("Incorrect type for map entry 'MAX_BODY_BYTES'"); the main file may only `export default`
+{ const fsm = await import('node:fs'); const src = fsm.readFileSync(new URL('../worker/feedback.mjs', import.meta.url), 'utf8');
+  const named = src.split('\n').filter(l => /^export\s+(?!default\b)/.test(l));
+  ok(!named.length, `G9 worker/feedback.mjs has only \`export default\` (named exports: ${named.map(l => l.slice(0, 40)).join(' | ') || 'none'})`); }
 
 console.log(fails ? `${fails} of ${n} FAILED` : `ALL PASSED (${n})`);
 process.exit(fails ? 1 : 0);
