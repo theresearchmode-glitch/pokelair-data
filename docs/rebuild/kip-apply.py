@@ -36,6 +36,13 @@ def fuzzy(f, p):
             else: return 'FAILED   ', f'  (hunk {n}: old text found {k} times)'
         src = src.replace(o, w, 1)
     open(f, 'w', encoding='utf8').write(src); return 'matched  ', '  (hand-written diff: every hunk matched exactly once)'
+# real git diffs (diff --git ... , incl. new files from /dev/null): applied as written, one file at a time
+for blk in re.findall(r'^diff --git a/(\S+) b/\S+\n(.*?)(?=^diff --git |^```|^-{5,} ?(?:END|BEGIN)|\Z)', t, re.S | re.M):
+    f, body = blk; pf = f'/tmp/kip-{os.getpid()}-g.patch'; open(pf, 'w', encoding='utf8').write(f'diff --git a/{f} b/{f}\n' + body.rstrip('\n') + '\n')
+    r = git('apply', '--3way', '--recount', '--whitespace=nowarn', pf, check=False)
+    out.append(('applied  ' if r.returncode == 0 else 'FAILED   ') + f + ('' if r.returncode == 0 else '  (' + r.stderr.strip().split('\n')[-1][:140] + ')'))
+    if r.returncode == 0: git('add', f)
+t = re.sub(r'^diff --git .*?(?=^diff --git |^```|^-{5,} ?(?:END|BEGIN)|\Z)', '', t, flags=re.S | re.M)
 lines = t.split('\n'); i = 0; patches = {}
 while i < len(lines):
     if lines[i].startswith('--- a/') and i + 1 < len(lines) and lines[i + 1].startswith('+++ b/'):
