@@ -58,7 +58,7 @@ const check = (id, ok, detail) => results.push({id, ok: !!ok, detail: String(det
     const ok = robots.includes('Sitemap: https://nastyplot.org/sitemap.xml') &&
       sitemap.includes('<loc>https://nastyplot.org/gifts</loc>') &&
       sitemap.includes('<loc>https://nastyplot.org/privacy</loc>') &&
-      /^\/team \/v2\.html 200$/m.test(redirects) && /^\/privacy \/v2\.html 200$/m.test(redirects) && !/^\/\* /m.test(redirects) && /* each tool address, no catch-all (Nov 25: soft 404s) */
+      ['team', 'privacy'].every(p => fs.existsSync(ROOT + `app/dist/${p}.html`) || new RegExp(`^/${p} /v2\\.html 200$`, 'm').test(redirects)) && !/^\/\* /m.test(redirects) && /* each tool address: its own file (SEO fix 2) or a rule; no catch-all (Nov 25: soft 404s) */
       fs.existsSync(ROOT + 'app/dist/404.html') &&
       headers.includes('Cache-Control:');
     check('PUB-3', ok, JSON.stringify({robots: robots.length, sitemap: sitemap.length, redirects: redirects.length, headers: headers.length}));

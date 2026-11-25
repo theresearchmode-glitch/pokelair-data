@@ -209,7 +209,7 @@ if (process.argv.includes('--v2')) {
       '  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()', '  Cross-Origin-Opener-Policy: same-origin',
       '  X-Frame-Options: DENY', ''].join('\n');
   };
-  let writeHeaders = null;
+  let writeHeaders = null, ownFileRows = [];
   if (PUBLIC) {
     fs.writeFileSync(dir + 'dist/robots.txt', 'User-agent: *\nAllow: /\nSitemap: https://nastyplot.org/sitemap.xml\n');
     const urls = seoRows.map(r => `  <url><loc>https://nastyplot.org${r.path}</loc></url>`).join('\n');
@@ -219,7 +219,10 @@ if (process.argv.includes('--v2')) {
     const pubM = rd('src/v2/shell.js').match(/^V2\.PUB_PATHS = (\{[^\n]*\});/m); if (!pubM) throw new Error('public build: V2.PUB_PATHS not found in shell.js');
     const pubPaths = [...new Set(Object.values(new Function('return ' + pubM[1])()))].filter(p => p !== '/');
     if (pubPaths.length < 15 || pubPaths.some(p => !/^\/[a-z0-9-]+$/.test(p))) throw new Error('public build: odd V2.PUB_PATHS: ' + pubPaths.join(' '));
-    fs.writeFileSync(dir + 'dist/_redirects', '/data/* /data/:splat 200\n/art/* /art/:splat 200\n/art-s/* /art-s/:splat 200\n/fonts/* /fonts/:splat 200\n/routes/* /routes/:splat 200\n' + pubPaths.map(p => `${p} /v2.html 200\n`).join(''));
+    /* SEO fix 2 (Nov 25): a tool address with a row in the SEO map gets its own file (dist/team.html, written below; Pages serves it at
+       /team), so it needs no rule; a rule stays only for an address without a file */
+    ownFileRows = seoRows.filter(r => pubPaths.includes(r.path)); const ownFile = new Set(ownFileRows.map(r => r.path));
+    fs.writeFileSync(dir + 'dist/_redirects', '/data/* /data/:splat 200\n/art/* /art/:splat 200\n/art-s/* /art-s/:splat 200\n/fonts/* /fonts/:splat 200\n/routes/* /routes/:splat 200\n' + pubPaths.filter(p => !ownFile.has(p)).map(p => `${p} /v2.html 200\n`).join(''));
     const cacheHeaders = '/v2.js\n  Cache-Control: public, max-age=31536000, immutable\n/v2.css\n  Cache-Control: public, max-age=31536000, immutable\n/routes/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/art/*\n  Cache-Control: public, max-age=2592000\n/art-s/*\n  Cache-Control: public, max-age=2592000\n/data/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=3600\n';
     writeHeaders = html => fs.writeFileSync(dir + 'dist/_headers', securityHeaders(html) + cacheHeaders);
     writeHeaders(page);
@@ -246,12 +249,17 @@ if (process.argv.includes('--v2')) {
     h = h.replace(/<link rel="icon" type="image\/svg\+xml" href="data:[^"]*">/, '<link rel="icon" type="image/svg+xml" href="/favicon.svg">')
       .replace(/<link rel="icon" type="image\/png" sizes="32x32" href="data:[^"]*">/, '<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">')
       .replace(/<link rel="apple-touch-icon" sizes="180x180" href="data:[^"]*">/, '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">');
+    const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+    /* a page's own head: title + canonical, description, og:title, og:description (callbacks, so a '$' in a value is never a pattern) */
+    const ownHead = (html, title, desc, url) => html.replace(/<link rel="canonical"[^>]*>/g, '').replace(/<title>[^<]*<\/title>/, () => `<title>${esc(title)}</title><link rel="canonical" href="${url}">`)
+      .replace(/(<meta name="description" content=")[^"]*"/, (m, a) => `${a}${esc(desc)}"`).replace(/(<meta property="og:title" content=")[^"]*"/, (m, a) => `${a}${esc(title)}"`)
+      .replace(/(<meta property="og:description" content=")[^"]*"/, (m, a) => `${a}${esc(desc)}"`);
+    const homeRow = seoRows.find(r => r.path === '/'); if (homeRow) h = ownHead(h, homeRow.title, homeRow.desc, 'https://nastyplot.org/'); /* "/" (index.html) is Home */
     fs.writeFileSync(dir + 'dist/v2.html', h);
     const line = fs.readFileSync(dir + 'src/data/data.js', 'utf8').split('\n')[0], roster = JSON.parse(line.slice(line.indexOf('['), line.lastIndexOf(']') + 1));
     const mainSrc = fs.readFileSync(dir + 'src/app/00-main.js', 'utf8'), regLine = mainSrc.match(/^const REG=.*$/m)[0], dispSrc = mainSrc.match(/^function disp\(n\)\{[\s\S]*?\n\}/m)[0];
     const disp = new Function(`${regLine}\n${dispSrc}\nreturn disp;`)();
     const slug = n => String(n).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’'.]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
-    const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
     /* the 840 KB stylesheet goes in one shared file (/v2.css) for the Pokémon pages: 346 inline copies made 322 MB (checked Nov 25) */
     let ph = h; const st = [...h.matchAll(/<style>\n?([\s\S]*?)\n?<\/style>/g)].sort((x, y) => y[1].length - x[1].length)[0];
     if (st && st[1].length > 100000) { const css = st[1]; fs.writeFileSync(dir + 'dist/v2.css', css); ph = h.replace(st[0], `<link rel="stylesheet" href="/v2.css?v=${hash(css)}">`); }
@@ -261,22 +269,22 @@ if (process.argv.includes('--v2')) {
       if (seen.has(s)) throw new Error(`public build: ${p.n} and ${seen.get(s)} share the address /pokemon/${s}`); seen.set(s, p.n);
       const name = disp(p.n), title = (t => t.length <= 60 ? t : `${name}: Champions set, rating & partners`)(`${name} in Pokémon Champions: best set, rating & partners`) /* same as V2.pubTitle (pokemon.js) */, desc = `${name} in Pokémon Champions doubles: its best tournament set, its rating and its best partners, from real tournament results. Free, no account.`;
       /* one canonical (the page carries its own), og:description too, and callbacks so a '$' in a name is never a pattern (Kip job 33 F6) */
-      const page = ph.replace(/<link rel="canonical"[^>]*>/g, '').replace(/<title>[^<]*<\/title>/, () => `<title>${esc(title)}</title><link rel="canonical" href="https://nastyplot.org/pokemon/${s}">`)
-        .replace(/(<meta name="description" content=")[^"]*"/, (m, a) => `${a}${esc(desc)}"`).replace(/(<meta property="og:title" content=")[^"]*"/, (m, a) => `${a}${esc(title)}"`)
-        .replace(/(<meta property="og:description" content=")[^"]*"/, (m, a) => `${a}${esc(desc)}"`);
+      const page = ownHead(ph, title, desc, `https://nastyplot.org/pokemon/${s}`);
       fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
     }
+    /* SEO fix 2 (Nov 25): one file per tool page (dist/team.html at /team) with its own words from the SEO map, on the shared stylesheet */
+    for (const r of ownFileRows) fs.writeFileSync(dir + `dist${r.path}.html`, ownHead(ph, r.title, r.desc, `https://nastyplot.org${r.path}`));
     const urls = [...seen.keys()].map(s => `  <url><loc>https://nastyplot.org/pokemon/${s}</loc></url>`).join('\n');
     fs.writeFileSync(dir + 'dist/sitemap.xml', fs.readFileSync(dir + 'dist/sitemap.xml', 'utf8').replace('</urlset>', urls + '\n</urlset>'));
     /* No /pokemon/:name rule (Nov 25): Pages serves dist/pokemon/<slug>.html at /pokemon/<slug> by itself (docs: Serving Pages, route
        matching), and a rule would also catch unknown names. An unknown Pokémon has no file, so it gets 404.html with status 404.
        "/" is index.html, the same page; 404.html is the same page with noindex, so the site's own not-found view draws there. */
     fs.writeFileSync(dir + 'dist/index.html', h);
-    if (!/<meta name="robots"/.test(h)) fs.writeFileSync(dir + 'dist/404.html', h.replace(/<title>/, '<meta name="robots" content="noindex"><title>')); else throw new Error('public build: the page already has a robots tag');
+    if (!/<meta name="robots"/.test(h)) fs.writeFileSync(dir + 'dist/404.html', h.replace(/<link rel="canonical"[^>]*>/g, '').replace(/<title>/, '<meta name="robots" content="noindex"><title>')); else throw new Error('public build: the page already has a robots tag');
     /* the brand kit's icons at the site root (search engines look for /favicon.ico and a real icon URL; never redrawn, copied as is) */
     const icoDir = dir + '../docs/brand/nastyplot-brand-assets/3-website-icons/';
     for (const f of ['favicon.ico', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png']) if (fs.existsSync(icoDir + f)) fs.copyFileSync(icoDir + f, dir + 'dist/' + f);
-    console.log(`public: ${seen.size} Pokémon pages + sitemap entries; page files load from the site root; brand icons at the root`);
+    console.log(`public: ${seen.size} Pokémon pages + sitemap entries, ${ownFileRows.length} tool pages; page files load from the site root; brand icons at the root`);
   }
   // the CSP hashes come from the page as finally written (the static first screen above rewrites it)
   if (writeHeaders) writeHeaders(fs.readFileSync(dir + 'dist/v2.html', 'utf8'));

@@ -29,10 +29,24 @@ const shellSrc = fs.readFileSync(path.join(ROOT, 'app/src/v2/shell.js'), 'utf8')
 const pubPaths = pm ? [...new Set(Object.values(new Function('return ' + pm[1])()))].filter(p => p !== '/') : [];
 const rules = r.split('\n').filter(l => l.trim() && !l.startsWith('#')).map(l => l.trim().split(/\s+/));
 ok(!rules.some(x => x[0] === '/*'), 'no catch-all rule (/* answered 200 for every wrong address: a soft 404)');
-ok(pubPaths.length > 15 && pubPaths.every(p => rules.some(x => x[0] === p && x[1] === '/v2.html' && x[2] === '200')), `every tool address has its own rule (${pubPaths.length} from V2.PUB_PATHS)`);
+ok(pubPaths.length > 15 && pubPaths.every(p => fs.existsSync(path.join(D, p.slice(1) + '.html')) || rules.some(x => x[0] === p && x[1] === '/v2.html' && x[2] === '200')), `every tool address has its own file or rule (${pubPaths.length} from V2.PUB_PATHS)`);
 const h404 = fs.existsSync(path.join(D, '404.html')) ? fs.readFileSync(path.join(D, '404.html'), 'utf8') : '';
 ok(/<meta name="robots" content="noindex">/.test(h404) && h404.includes('src="/v2.js'), '404.html is the page with a noindex tag');
 ok(fs.existsSync(path.join(D, 'index.html')) && fs.readFileSync(path.join(D, 'index.html'), 'utf8') === v, 'index.html is the same page as v2.html ("/" serves it)');
+// SEO fix 2 (Nov 25): each tool page has its own file (dist/team.html, served at /team) with its own title, description, og tags and
+// canonical from docs/rebuild/seo-titles-draft.md, so search engines read the right words before any script runs
+const seoRows = []; { const sp = path.join(ROOT, 'docs/rebuild/seo-titles-draft.md');
+  for (const l of (fs.existsSync(sp) ? fs.readFileSync(sp, 'utf8') : '').split('\n')) { if (!l.startsWith('|')) continue; const c = l.split('|').slice(1, -1).map(x => x.trim());
+    if (c.length !== 4 || c[0] === 'Page (code)' || c[0].startsWith('---') || c[1].includes('{')) continue; seoRows.push({path: c[1], title: c[2], desc: c[3]}); } }
+const escH = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+const rdD = f => fs.existsSync(path.join(D, f)) ? fs.readFileSync(path.join(D, f), 'utf8') : '';
+const headOk = (html, r) => html.includes(`<title>${escH(r.title)}</title>`) && html.includes(`<meta name="description" content="${escH(r.desc)}"`) && html.includes(`<meta property="og:title" content="${escH(r.title)}"`)
+  && html.includes(`<meta property="og:description" content="${escH(r.desc)}"`) && (html.match(/<link rel="canonical"/g) || []).length === 1 && html.includes(`<link rel="canonical" href="https://nastyplot.org${r.path}">`);
+const toolRows = seoRows.filter(r => pubPaths.includes(r.path)), badTool = toolRows.filter(r => !headOk(rdD(r.path.slice(1) + '.html'), r) || rules.some(x => x[0] === r.path)).map(r => r.path);
+ok(toolRows.length >= 20 && !badTool.length, `every tool page has its own file with its title, description, og tags and canonical, and no _redirects rule (${toolRows.length - badTool.length} of ${toolRows.length}; wrong: ${badTool.slice(0, 4).join(' ') || 'none'})`);
+const homeRow = seoRows.find(r => r.path === '/');
+ok(!!homeRow && headOk(rdD('index.html'), homeRow), "index.html carries Home's title, description and canonical");
+ok(toolRows.every(r => rdD(r.path.slice(1) + '.html').includes('<link rel="stylesheet" href="/v2.css?v=')), 'the tool pages share the one stylesheet file (/v2.css)');
 // served like Cloudflare Pages (developers.cloudflare.com/pages/configuration/serving-pages): a file if it exists, /x -> x.html, then the
 // _redirects 200 rules; otherwise 404.html with status 404, or, with no top-level 404.html, the page with 200 (Pages' SPA mode)
 const T = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp'};
