@@ -690,3 +690,17 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 
 // the skip link (code review A1, Nov 15): moves keyboard focus to the page instead of changing the address (#main sent it to Home)
 document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2skip]'); if (!a) return; e.preventDefault(); const m = document.getElementById('main'); if (m) { m.setAttribute('tabindex', '-1'); m.focus({preventScroll: false}); m.addEventListener('blur', () => m.removeAttribute('tabindex'), {once: true}); } }); /* tabindex only while focused: a lasting one made <main> read as one big control (6 Meta tests tapped it) */
+/* Real links on the public site (SEO audit Nov 25 #9: 0 real "/..." links on any page, so search engines could only find pages
+   through the sitemap). On nastyplot.org every in-site link that has its own address gets it as href (/meta, /pokemon/garchomp,
+   /privacy...), with the old #hash kept in data-h. A plain click still goes by the hash, exactly as before (same page, no reload);
+   a new tab, a copied link or a search engine gets the real address. The Claude version is untouched. */
+V2.pubPath = h => { const m = /^#([a-z-]+)(?:=(.*))?$/.exec(String(h || '')); if (!m) return null; const [, r, sub] = m;
+  if (r === 'pokemon' && sub && typeof V2.pubSlug === 'function') { let n; try { n = decodeURIComponent(sub); } catch (e) { return null; } const s = V2.pubSlug(n); return s ? '/pokemon/' + s : null; }
+  if (r === 'about' && sub === 'priv') return '/privacy';
+  return sub == null && Object.prototype.hasOwnProperty.call(V2.PUB_PATHS, r) ? V2.PUB_PATHS[r] : null; };
+V2.pubLinks = html => String(html).replace(/href="(#[^"]*)"/g, (m, h) => { const p = V2.pubPath(h.replace(/&amp;/g, '&')); return p ? `href="${p}" data-h="${h}"` : m; });
+if (window.__NP_PUBLIC) {
+  const sh = V2.shell; V2.shell = (...a) => { const o = sh(...a); if (o && typeof o.html === 'string') o.html = V2.pubLinks(o.html); return o; };
+  document.addEventListener('click', e => { if (e.button || e.metaKey || e.ctrlKey || e.shiftKey || e.altKey) return;
+    const a = e.target && e.target.closest && e.target.closest('a[data-h]'); if (!a || a.target) return;
+    e.preventDefault(); const h = a.getAttribute('data-h'); if (location.hash !== h) location.hash = h; }, true); }
