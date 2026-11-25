@@ -20,6 +20,7 @@ gen-move-meta.mjs is `C:/Users/simra/code/pl-mech/sim`, so the scripts run on Si
 |---|---|---|
 | app/src/data/data.js LEARN (learnsets, as indexes into MOVES) | none of the new pairings: Emolga Tailwind, Hydreigon Roost, Beedrill Roost, Emboar Slack Off, Umbreon Wonder Room, Play Rough on Vaporeon, Jolteon, Flareon, Espeon, Umbreon, Leafeon, Glaceon (checked: all false). Sylveon already has Play Rough. | Add each pairing. Psych Up goes to 22 Pokémon: **the list is not in the repo** (CLAUDE.md says only "x22"), so it must come from the official notes. Not checked. |
 | app/src/data/data.js MOVES | all the moves already exist as rows (Psych Up, Slack Off, Wonder Room, Roost, Tailwind, Play Rough) | no change (rows hold type, category, power; no accuracy) |
+| app/src/data/data.js ABIL | Flash Fire "This Pokemon's Fire attacks do 1.5× damage if hit by one Fire move; Fire immunity."; Stalwart "This Pokemon's moves cannot be redirected to a different target by any effect." | Update Flash Fire (Fire Boost status persists after Mega Evolution) and Stalwart (ignores targets' substitutes) to match official Dec 2 wording |
 | app/src/v2/pages/infosheet.js:15 | Rock Slide: `'Hits both foes. Each one hit has a 30% chance to flinch.'` | 20% |
 | app/src/v2/pages/infosheet.js:13 | Rock Slide notes (spread 0.75×, Wide Guard…); no number | no change |
 

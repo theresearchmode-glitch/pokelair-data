@@ -73,7 +73,7 @@ const pasteProse = lines => lines.length && !lines.some(l => /^(-|Ability:|EVs:|
 function speciesFromPaste(name) {
   const k = pnorm(name); if (!k) return null;
   for (const p of ROSTER) if (pnorm(p.n) === k) return p;
-  const alias = {meowsticf: 'Meowstic', meowsticm: 'Meowstic', meowsticmale: 'Meowstic', indeedeefemale: 'Indeedee-F', basculegionfemale: 'Basculegion-F', meowsticfemale: 'Meowstic', floette: 'Floette-Eternal', floetteeternalflower: 'Floette-Eternal', aegislashshield: 'Aegislash'};
+  const alias = {meowsticf: 'Meowstic-F', meowsticm: 'Meowstic', meowsticmale: 'Meowstic', indeedeefemale: 'Indeedee-F', basculegionfemale: 'Basculegion-F', meowsticfemale: 'Meowstic-F', floette: 'Floette-Eternal', floetteeternalflower: 'Floette-Eternal', aegislashshield: 'Aegislash'};
   if (alias[k]) return byName.get(alias[k]) || null;
   for (const p of ROSTER) if (pnorm(p.d) === k) return p;
   return null;
@@ -94,13 +94,14 @@ function parsePaste(text) {
     const female = /\(F\)\s*$/.test(head); head = head.replace(/\s*\((M|F)\)\s*$/, '');
     const paren = head.match(/\(([^()]+)\)\s*$/); const speciesName = paren ? paren[1] : head;
     let p = speciesFromPaste(speciesName);
+    if (p && female && p.n === 'Meowstic' && byName.get('Meowstic-F')) p = byName.get('Meowstic-F');
     if (!p) { if (pasteProse(lines)) { notes.push(`Skipped "${lines[0].slice(0, 30)}${lines[0].length > 30 ? '…' : ''}": not a team`); continue; }
       const sug = pasteSuggest(speciesName); notes.push(sug ? `Skipped "${speciesName}": did you mean ${sug}?` : `Skipped "${speciesName}": not on the M-C roster`); continue; }
     /* code review A2-M2: "Charizard-Mega-Y @ Charizardite X" kept Mega Y without a word; the form named wins, and the paste is told */
     if (item && p.m && STONE_RE.test(item) && byName.get(p.b)) { const mf = megaFormFor(byName.get(p.b), {it: [[item, 100]]}); if (mf && mf.m && mf.n !== p.n) notes.push(`${p.d}: kept as named (${item} is for ${mf.d})`); }
     if (item && !p.m && STONE_RE.test(item)) { const mf = megaFormFor(p, {it: [[item, 100]]}); if (mf !== p) p = mf;
       // Meowstic has a Mega for each gender: Showdown writes the female as "Meowstic-F" (stress test, Oct 28)
-      if (p.n === 'Meowstic-M-Mega' && (female || pnorm(speciesName) === 'meowsticf') && byName.get('Meowstic-F-Mega')) p = byName.get('Meowstic-F-Mega'); }
+      if (p.n === 'Meowstic-M-Mega' && (female || pnorm(speciesName) === 'meowsticf' || pnorm(speciesName) === 'meowsticfemale') && byName.get('Meowstic-F-Mega')) p = byName.get('Meowstic-F-Mega'); }
     const abl = (lines.find(l => /^Ability:/i.test(l)) || '').replace(/^Ability:\s*/i, '').trim();
     // a Mega's ability is fixed by its form (Showdown pastes write the base form's), so it is filled in on import
     const ability = p.m ? (p.a[0] || null) : p.a.includes(abl) ? abl : null;
