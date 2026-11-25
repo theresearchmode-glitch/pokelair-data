@@ -17,6 +17,8 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
   much less usage: report-only, patch jobs, and (Sim, Nov 24) merging + testing Gemini's jobs; pushes ONLY to alt/other-* branches,
   never publishes; HH reviews and merges. HH may push alt/gemini-* branches so GitHub tests Gemini's work (Sim, Nov 24).
 - **The squad (Sim, Nov 24):** Sim, HH, **Kip** (= Gemini), **Scout** (= the other acc helper) and **Dos** ("Dossier" = the PC chat, Sim, Nov 25).
+- **Squad tasks (Sim, Nov 25):** every task that can/should go to **Dos, Kip or Scout** is written in **bold** in chat, and HH reminds Sim
+  of it in each update until Sim says he has sent it. Efficiency first: 2 helpers + the main thread always busy.
 - **Gemini / Kip (Sim, Nov 24):** Sim's Google Gemini subscription is a third helper for when Claude usage is low: code reviews and
   non-design tasks ONLY (absolutely no design work). HH writes its prompts in the same package style (template:
   docs/rebuild/gemini-prompt-template.md); it works on its own alt/gemini-* branch or delivers patches, never main or claude/design6,
