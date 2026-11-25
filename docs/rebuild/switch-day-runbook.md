@@ -1,7 +1,7 @@
 # Switch day runbook (Sat Nov 28, HH with Sim)
 
 The new site becomes what players see at the same link. Copy-paste, top to bottom.
-Dry run: Wed Nov 25, 1:14-@@END@@ PM Eastern (now.sh), by HH's helper, in a scratch worktree. Branch: alt/switch-dryrun-1.
+Dry run: Wed Nov 25, 1:14 PM - 2:03 PM Eastern (now.sh), by HH's helper, in a scratch worktree. Branch: alt/switch-dryrun-1.
 Every time below was measured in that dry run unless it says "not measured".
 "Checked" = I ran it or read it (how is said). "Not checked" = I could not.
 
@@ -96,7 +96,7 @@ git push origin HEAD:claude/design6
 ```
 Worked when: the pre-push hook says nothing and the push prints `-> claude/design6`.
 Go/no-go: test.yml on that exact commit = `completed success` (every job; Safari's job may be red, it is alert-only).
-GitHub times on Nov 25 (gh api runs on alt/gemini-switch): 41 min (b9262e64), 70 min (d48525a7). Dry run 1: @@GH@@.
+GitHub times on Nov 25 (gh api runs on alt/gemini-switch): 41 min (b9262e64), 70 min (d48525a7). Dry run 1: 41 min (run 45674280356, 18:21:17-19:02:15 UTC).
 
 ```
 # G6 (HH, Sim's yes: "main") merge design6 into MAIN, main first   < 1 s + gate ~6 min (dry run: 0.6 s checks + 5 min 22 s tests)
@@ -238,6 +238,6 @@ Worktree: $S/swdry (sparse, 417 MB), started from origin/alt/gemini-switch d4852
 | switch-plan.py (after fix) | R1 152/511, R2 248/469, R3 206/473, R4 106/369, `final 369 files, 0 sp/.` | < 1 s |
 | undo page: switch-mixed-page.py on the live index.html (read Nov 25, sha cb649884..., inner page c64ed33bd9e7a39d) with all 345 ids | `replaced 8 sprite paths; ids on v2art: 345`; local load with v2art/ only: `requests sp/: 0 v2art/: 12 failed: 0 \| imgs 154 broken 0 \| page errors 0` | 0.07 s |
 | pre-push hook simulated (stdin lines, nothing pushed) | to main from the design6 line: 120 REFUSED lines (117+ old unstamped merges); to design6 from this branch: 6 REFUSED; to alt/switch-dryrun-1: exit 0; a merge made on main: 1 merge in range | < 1 s |
-| GitHub on alt/switch-dryrun-1 | @@GH@@ | |
+| GitHub on alt/switch-dryrun-1 (b1673c79, run 45674280356) | `completed success`: all 15 jobs success (behaviour x4, Safari, quality, code tests, new-site code checks x2, v2-minors x3, data checks, accuracy-gate, live-data audits) | 41 min |
 
 Not run here: v2-minors (3 parts, ~27 min, in GitHub), the behaviour and quality jobs (GitHub runs them), any publish, any push to main or design6.
