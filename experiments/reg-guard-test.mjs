@@ -112,6 +112,18 @@ try {
     const e = emptyFor('replays.json', 'M-D', 'gen9championsvgc2026regmd');
     check('replays-empty-carries-sd', `${e.reg}/${e.format}/${e.games.length}`, 'M-D/gen9championsvgc2026regmd/0');
   }
+  // 15. Scout's review (Nov 24): files holding every regulation's history are never emptied after a switch
+  {
+    const {res, read} = runCase(mdReg, {'scoreboard.json': {reg: 'M-C', byReg: {'M-C': [1, 2, 3]}}, 'ratings_log.json': {reg: 'M-C', days: [{d: '2026-11-30'}]}});
+    check('history-files-kept-after-switch', res.lines.includes('ok scoreboard.json') && res.lines.includes('ok ratings_log.json') && read('scoreboard.json').byReg['M-C'].length === 3 && read('ratings_log.json').days.length === 1, true);
+  }
+  // 16. an emptied file is archived first (out/archive/<regulation>/), so nothing is ever lost
+  {
+    const {res} = runCase(mdReg, {'model.json': {reg: 'M-C', ships: true, mons: {Incineroar: 0.5}}});
+    const dir = path.dirname(res.lines.length ? tmp : tmp);
+    const found = fs.readdirSync(tmp).some(c => { const a = path.join(tmp, c, 'out', 'archive', 'M-C', 'model.json'); return fs.existsSync(a) && JSON.parse(fs.readFileSync(a, 'utf8')).mons.Incineroar === 0.5; });
+    check('emptied-file-archived-first', found, true);
+  }
 } finally {
   fs.rmSync(tmp, {recursive: true, force: true});
 }

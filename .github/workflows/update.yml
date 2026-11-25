@@ -75,6 +75,8 @@ jobs:
       # because the ratings and win snapshots below use it. To resume: put "&& node opgg.mjs" back once op.gg agrees in writing.
       - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium) || node skip.mjs "browser install skipped"
       # the ratings' daily inputs (all of out/perf.json) for the morning refresh; checked by health.mjs
+      # perf.mjs copies other files into perf.json: guard them first, so it never copies the last regulation's (Scout's review, Nov 24)
+      - run: node reg-guard.mjs || node skip.mjs "regulation guard (before perf) failed"
       - run: node perf.mjs || node skip.mjs "perf skipped"
       # thin-data counts for the active regulation (out/regstate.json)
       - run: node regstate.mjs || node skip.mjs "regstate skipped"
@@ -95,7 +97,7 @@ jobs:
       # replaced by its empty state, so Commit never ships two regulations side by side. Never fails the run. Runs BEFORE
       # split-docs.mjs, so out/split/ is built from the guarded files.
       - name: Regulation guard
-        run: node reg-guard.mjs
+        run: node reg-guard.mjs || node skip.mjs "regulation guard failed"
       - run: node split-docs.mjs || node skip.mjs "page-size split skipped (a document too big even in two parts)"
       - name: Commit
         run: |

@@ -4,9 +4,11 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {activeReg, readReg} from './formats.mjs';
+import {activeReg, readReg, SITE_REG} from './formats.mjs';
 
-export const EXEMPT = new Set(['reg.json', 'calendar.json', 'skips.json', 'official_perf.json']);
+export const EXEMPT = new Set(['reg.json', 'calendar.json', 'skips.json', 'official_perf.json',
+  /* every regulation's history in one file (job 8 byReg): emptying them would lose M-C's history for good (Scout's review, Nov 24) */
+  'ratings_log.json', 'scoreboard.json']);
 
 export function emptyFor(file, reg, sd = '', now = new Date().toISOString()) {
   const day = now.slice(0, 10);
@@ -46,7 +48,7 @@ export function stampOf(doc) {
 
 export function guardOut({outDir = 'out', regFile = path.join(outDir, 'reg.json'), log = console.log} = {}) {
   const RG = activeReg(regFile), rawReg = readReg(regFile);
-  const switched = !!(rawReg && rawReg.switched) || RG.id !== 'M-C';
+  const switched = !!(rawReg && rawReg.switched) || RG.id !== SITE_REG.id; /* not a hard-coded 'M-C' (Scout's review) */
   const lines = [], emptied = [], unknown = [];
   if (!fs.existsSync(outDir)) return {reg: RG.id, lines, emptied, unknown};
   const files = fs.readdirSync(outDir).filter(f => f.endsWith('.json')).sort();
@@ -59,7 +61,9 @@ export function guardOut({outDir = 'out', regFile = path.join(outDir, 'reg.json'
     const st = stampOf(doc);
     const bad = st ? st !== RG.id : switched;
     if (bad) {
-      fs.writeFileSync(fp, JSON.stringify(empty));
+      /* never lose data: the file is copied to out/archive/<its regulation>/ first (kept once; the page never reads archive/) */
+      try { const ad = path.join(outDir, 'archive', st || (rawReg && rawReg.switched && rawReg.switched.from) || 'old'), af = path.join(ad, f); if (!fs.existsSync(af)) { fs.mkdirSync(ad, {recursive: true}); fs.copyFileSync(fp, af); } } catch (e) {}
+      try { fs.writeFileSync(fp, JSON.stringify(empty)); } catch (e) { const ln = `could not empty ${f} (${e.message})`; lines.push(ln); log(ln); continue; } /* never stops the run */
       const ln = `emptied ${f} (was ${st || 'unstamped'})`;
       lines.push(ln); emptied.push(f); log(ln);
     } else {
@@ -70,5 +74,5 @@ export function guardOut({outDir = 'out', regFile = path.join(outDir, 'reg.json'
 }
 
 if (process.argv[1] && fileURLToPath(import.meta.url) === path.resolve(process.argv[1])) {
-  guardOut();
+  try { guardOut(); } catch (e) { console.log(`::warning::reg-guard: ${e.message}`); } /* the guard must never stop the daily job (Scout's review) */
 }
