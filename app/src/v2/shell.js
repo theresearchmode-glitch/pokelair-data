@@ -541,7 +541,12 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
 <nav class="np-bar" aria-label="Main">${nav}</nav>`}; };
 /* audit Nov 16 (WCAG 2.4.2): each page has its own browser title, its name as the menu and search show it ("Meta · NastyPlot"); Home keeps "NastyPlot";
    Pokémon pages set their own fuller title (pages/pokemon.js) */
-V2.setTitle = () => { try { const r = V2.route(); if (r === 'pokemon') return; const h = document.querySelector('#main h1'); if (document.querySelector('#main [data-v2nf]')) { if (document.title !== 'Page not found · NastyPlot') document.title = 'Page not found · NastyPlot'; return; } /* Q24: the not-found page, #owner for visitors included */
+/* public site (Nov 25, SEO): a not-found screen (a wrong address, or /pokemon/<unknown>) tells search engines not to index it. Cloudflare
+   already answers 404 there (dist/404.html); this covers a not-found view drawn on a page that answered 200. Removed again on a real page. */
+V2.noindex = on => { try { if (!window.__NP_PUBLIC) return; let m = document.querySelector('meta[name="robots"]');
+  if (on && !m) { m = document.createElement('meta'); m.name = 'robots'; m.content = 'noindex'; m.setAttribute('data-np-nf', ''); document.head.appendChild(m); }
+  else if (!on && m && m.hasAttribute('data-np-nf')) m.remove(); } catch (e) {} };
+V2.setTitle = () => { try { V2.noindex(!!document.querySelector('#main [data-v2nf], #main [data-v2pknf]')); const r = V2.route(); if (r === 'pokemon') return; const h = document.querySelector('#main h1'); if (document.querySelector('#main [data-v2nf]')) { if (document.title !== 'Page not found · NastyPlot') document.title = 'Page not found · NastyPlot'; return; } /* Q24: the not-found page, #owner for visitors included */
   if (window.__NP_PUBLIC && window.__NP_SEO) {
     const sk = location.hash === '#about=priv' || location.pathname === '/privacy' ? 'privacy' : r;
     const seo = window.__NP_SEO[sk];
