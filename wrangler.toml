@@ -13,12 +13,14 @@ not_found_handling = "single-page-application"
 # Only the feedback API runs the Worker. /data/* are plain static files: on the Free plan every Worker request counts toward
 # 100,000 a day and a visit loads about 17 data files, so routing /data/* through the Worker capped us near 5,800 visits a day
 # (launch review Nov 25, C). A missing data file is a 404 from the assets setting; the page treats any non-OK answer as "not found".
-run_worker_first = ["/api/feedback"]
+# /api/count (Nov 25): the anonymous Team check counter (a daily total in D1 table counts; worker/feedback-lib.mjs). About one
+# Worker request per scored six, so it barely touches the 100,000 a day.
+run_worker_first = ["/api/feedback", "/api/count"]
 
 [[d1_databases]]
 binding = "DB"
 database_name = "nastyplot-feedback"
 database_id = "REPLACE_WITH_D1_DATABASE_ID"
 
-# Rate limiting: configure Cloudflare WAF / Rate Limiting rule on POST /api/feedback (e.g. 5 req / min)
+# Rate limiting: configure Cloudflare WAF / Rate Limiting rule on POST /api/feedback (e.g. 5 req / min) and POST /api/count (e.g. 30 req / min)
 # in the Cloudflare dashboard (Cloudflare enforces it at the edge without our Worker storing IPs).
