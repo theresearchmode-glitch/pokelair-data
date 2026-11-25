@@ -21,7 +21,8 @@
       "long": "Regulation M-D",
       "sd": "gen9championsvgc2026regmd",
       "since": "2026-12-02",
-      "end": null,
+      "end": "2027-03-03T01:59:00Z",
+      "announced": {"url": "https://news.pokemon-home.com/en/page/878.html", "date": "2026-11-25", "new": ["Heatran", "Dondozo", "Tatsugiri"], "newMegas": ["Heatran-Mega", "Tatsugiri-Mega"], "note": "Official: Dec 2 2026 02:00 UTC to Mar 3 2027 01:59 UTC; full details later."},
       "sources": {
         "showdowntier": null,
         "pikalytics": null,

@@ -24,7 +24,7 @@ ok(Object.entries(REG_FILE.regs).every(([id, r]) => !r.end || REG_END[id] === r.
 ok(Object.entries(REG_FILE.regs).every(([id, r]) => /^[A-Z]-[A-Z]$/.test(id) && /^gen9championsvgc\d{4}reg[a-z]{2}$/.test(r.sd) && /^\d{4}-\d{2}-\d{2}$/.test(r.since)), 'every regulation listed has a valid id, Showdown id and first day');
 
 const mdProf = regProfile('M-D');
-ok(mdProf && mdProf.since === '2026-12-02' && mdProf.end === null && mdProf.sd === 'gen9championsvgc2026regmd' && mdProf.items === 'data/regmd-items.txt', 'M-D entry exists with expected since, end, sd, and items');
+ok(mdProf && mdProf.since === '2026-12-02' && mdProf.end === '2027-03-03T01:59:00Z' && mdProf.sd === 'gen9championsvgc2026regmd' && mdProf.items === 'data/regmd-items.txt', 'M-D entry exists with expected since, official end (Mar 3 2027 01:59 UTC, Pokémon HOME news Nov 25), sd, and items');
 ok(mdProf && mdProf.sources && mdProf.sources.showdowntier === null && mdProf.sources.pikalytics === null && mdProf.sources.official === null, 'M-D outside sources are null until their pages exist');
 
 // 2) history stays history
