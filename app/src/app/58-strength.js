@@ -14,7 +14,7 @@ const CH = {};
    the grade (it predicted wins far less well). A team of fewer than six keeps the old check, marked "so far". */
 /* STRENGTH SCORE (Sim, Nov 9; docs/strength-score.md). The 0-100 number says how strong the team is altogether, not where it ranks:
    80 + 122 × (chance to beat today's tournament teams − 50%), the chance being CH.fieldWin (player skill taken out, recomputed daily
-   from real teams). A team that beats today's tournament teams half the time scores 80; the best 2% of real sheets about 92; no Mega
+   from real teams). (Nov 25, option C: 54% vs today's tournament teams scores 80, 60% scores 90, an average team about 73); no Mega
    lands in the 50s. Same ranking as the old grade (scoreboard Nov 9: identical picks); each 10-point band won more than the one
    below on later games. The rank among real teams is kept as G.rk (small print). Letters: one per 10 points (A 90+, B 80s, C 70s,
    D 60s, F under 60) until the band words replace them (Step B). */
@@ -220,8 +220,8 @@ CH.n = n => n.toLocaleString ? n.toLocaleString('en-US') : String(n);
 // "Why this score?" as data (R4, Nov 11; today's CH.gradeWhy and the new build both draw it): the Strength Score's three parts,
 // which add up to it, and what the number means in real games
 // the band key under every "Why this score?" (moved from 60-concept-h.js, Nov 11, shared with the new build)
-CH.LETTERS = 'Strength Score: 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic. A team that beats today\u2019s tournament teams half the time scores 80.';
-CH.WHY_TEST = 'Tested on 6,270 later tournament games: teams scoring 90+ won 58.5%, the 80s 53-54%, the 70s 46-50%, the 60s 38-41%. Every 10 points really means more wins.';
+CH.LETTERS = 'Strength Score: 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic. 80 means your team beats today\u2019s tournament teams 54% of the time; 90 means 60%.';
+CH.WHY_TEST = 'Tested on 17,220 later tournament games: teams scoring 90+ won 57%, the 80s 53%, the 70s 49%, the 60s 41%. Every 10 points really means more wins.'; /* Kip job 37, bands C (Nov 25); re-checked on the real model before launch */
 CH.whyData = G => { if (!G || G.v !== 2) return null; const t = Math.round(G.s), a = Math.round(G.pct0), b = Math.round(G.pMu);
   return {s: t, letter: G.letter, word: CH.wordOfL(G.letter), e: Math.round(G.e), rank: CH.pctTxt(G), partial: !!G.partial, k: G.partial ? (G.st && G.st.partialN || 0) : null,
     base: a, mu: b - a, own: t - b, hasSix: !!G.six, ownGames: G.six ? G.six.g : null, ready: G.h ? G.h.x + '/' + G.h.n : '', sure: (G.st && G.st.su) || null, illegal: !!G.illegal}; };
