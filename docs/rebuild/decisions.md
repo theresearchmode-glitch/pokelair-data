@@ -2557,3 +2557,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:47 PM: Dos baseline 'maybe real' #69 (Events 320 big ticket): passes on Linux frozen data (top 753 vs Windows 787): Windows font width, not a page bug. iPhone not checked.
 - 12:55 PM: Main queue fix landed: main fast-forwarded 744d582f -> 6671555b (test.yml skips test jobs after a skipped/cancelled data run). GitHub green on 6671555b (all 4 jobs).
 - 1:04 PM: Sim sent Kip job 30 (review of merge-check.sh, pre-push hook, main test.yml skip fix, v2-saved http server).
+- 1:12 PM: Kip job 30: 7 findings, all checked as real (F5 rare); all fixed: merge-check (HEAD is the merge, clean tree, test.yml run on exact sha), hook (first-parent, refuse on error), merge.ff=false, v2-saved server (Windows, outside-ROOT PAGE, 400, fail fast), main test.yml cancelled-runs still test (alt/main-skipfix2 on GitHub, lands when green). Switch branch green on GitHub at d48525a7 with j18+j19+My Box fix.
