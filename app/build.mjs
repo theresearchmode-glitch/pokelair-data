@@ -308,7 +308,8 @@ if (process.argv.includes('--v2')) {
          keeps the file's when it is for the same address: it runs before the roster loads and used to write the address, "mr-mime", as the name) */
       /* phone speed (Nov 25, night plan 9): the page's LCP on a phone is this Pokémon's big picture (kit.js k-art, V2.art(id, true)),
          drawn lazily by the script after v2.js has run; preloading the same file lets it arrive while v2.js downloads (placed last in
-         <head>, after the stylesheet and font preloads: first paint is not held back; measured 6.2 -> 5.8 s LCP on a mid phone). Same address
+         <head>, after the stylesheet and font preloads; measured on a mid phone: LCP 6.2 -> 5.7 s, first paint 2.43 -> 2.57 s, the picture's
+         27 KB sharing the throttled line with the CSS and fonts). Same address
          as V2.art: ART_BASE from shell.js line 4 (the public build serves a bare folder name from the site root) */
       const sid = spriteIds[p.n], pre = sid == null || sid === '' ? '' : `<link rel="preload" as="image" href="${esc(artBase + sid + '.webp')}">`;
       const page = ownHead(ph, title, desc, `https://nastyplot.org/pokemon/${s}`).replace(/<script type="application\/ld\+json" id="np-jsonld">[\s\S]*?<\/script>/, () => pokemonLd(s, name)).replace('</head>', () => pre + '</head>');
