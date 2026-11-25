@@ -2614,3 +2614,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:36 PM: Hourly check: disk 3.8 GB -> 6.4 GB (removed bt, nr, livedata scratch worktrees, all pushed); privacy helper marked ended; Game Plan v83.
 - 5:39 PM: Sim sent Scout's job (Dec 2 patch independent check).
 - 5:40 PM: Sim: Scout's last day is probably Friday Nov 27.
+- 5:41 PM: Sim OK: Scout plan (now patch check; Thu launch-branch code review; Fri switch runbook walk-through).
