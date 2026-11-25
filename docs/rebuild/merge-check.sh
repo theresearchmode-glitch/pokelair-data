@@ -14,7 +14,9 @@
 set -u
 SRC="${1:-}"; ROOT="$(git rev-parse --show-toplevel)"; cd "$ROOT"
 [ -n "$SRC" ] || { echo "usage: REPORT_OK=1 bash docs/rebuild/merge-check.sh origin/<branch merged>"; exit 2; }
-export PLAYWRIGHT_BROWSERS_PATH="${PLAYWRIGHT_BROWSERS_PATH:-/tmp/claude-0/-home-user-pokelair-data/204a9d61-5900-570f-b954-256bbb6b60d7/scratchpad/pw1148}"
+# the repo's playwright wants chromium_headless_shell-1148; this machine's default folder (/opt/pw-browsers) may not have it
+PW_SCRATCH=/tmp/claude-0/-home-user-pokelair-data/204a9d61-5900-570f-b954-256bbb6b60d7/scratchpad/pw1148
+if [ ! -d "${PLAYWRIGHT_BROWSERS_PATH:-/nonexistent}/chromium_headless_shell-1148" ] && [ -d "$PW_SCRATCH/chromium_headless_shell-1148" ]; then export PLAYWRIGHT_BROWSERS_PATH="$PW_SCRATCH"; fi
 FAILS=0; LOG="$(mktemp -d)"
 step() { local name="$1"; shift; if bash -c "$*" >"$LOG/$name.txt" 2>&1; then echo "  PASS  $name   ($(grep -v '^\s*$' "$LOG/$name.txt" | tail -1 | cut -c1-110))"; else echo "  FAIL  $name   ($(grep -v '^\s*$' "$LOG/$name.txt" | tail -1 | cut -c1-110))"; grep -E 'FAIL' "$LOG/$name.txt" | head -5 | sed 's/^/          /' | cut -c1-200; FAILS=$((FAILS+1)); fi; }
 
