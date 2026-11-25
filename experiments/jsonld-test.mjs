@@ -47,7 +47,7 @@ let homeDesc = '';
     Array.isArray(items) && items.length === 3 &&
     items.every((it, i) => it['@type'] === 'ListItem' && it.position === i + 1 && typeof it.name === 'string' && it.name.length > 0 && isHttpsUrl(it.item)) &&
     items[0].item === 'https://nastyplot.org/' &&
-    items[1].item === 'https://www.google.com/url?sa=E\&source=gmail\&q=https://nastyplot.org/meta' &&
+    items[1].item === 'https://nastyplot.org/meta' &&
     items[2].name === 'Mega Charizard Y' &&
     items[2].item === 'https://nastyplot.org/pokemon/Charizard-Mega-Y';
   check('LD-3-pokemon-breadcrumb-schema', ok, JSON.stringify(items));
