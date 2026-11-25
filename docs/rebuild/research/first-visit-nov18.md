@@ -1,0 +1,424 @@
+# Lighter first visit (Plans pl-2a): where the bytes and seconds go, and what gets closest to 2.5 s
+
+Look-only. Written Wed Nov 18, 2026, 12:48 AM EST (clock, docs/rebuild/now.sh). No site source changed. Prototypes are test copies
+in the scratchpad; one lean build edited `app/parts-v2.json` in this worktree for a moment and put it back (git status clean).
+
+## How it was measured
+
+- Build: `node build.mjs --v2 --art=v2art/ --preview-data --one-art-size` at d6e5084f (claude/design6). Page 3,804,757 bytes.
+- Served by a local Node server: gzip -9 for text, no-store, HTTP/1.1. Sprites from `app/src/v2/art` (384 px, the one-size build).
+- Headless Chromium (Playwright). Phone 412x823 at DPR 1.75. Fresh context, cache off, every run.
+- Throttling through CDP: CPU 4x.
+  - Slow 4G: 1.44 Mbps down, 0.675 up, 562 ms latency.
+  - 4G: 9 Mbps, 1.5 Mbps, 165 ms.
+- 3 runs per case, interleaved across variants. Numbers are medians with [min-max].
+- What the columns mean:
+  - **buttons**: the first screen's buttons are on screen and painted.
+    - Home: the first `.sdh-go` link (Build Me a Team).
+    - My Team: the first link or button in `#main`.
+    - It is the same moment as "main", 10-25 ms later, in every run.
+  - **main**: the loading panel in `#main` is replaced by the page.
+  - **longest task**: the Long Tasks API.
+  - **bytes**: encoded bytes on the wire (CDP loadingFinished).
+- Machine: shared with other helpers.
+  - Load average 3.7 at the start (04:38 UTC). It ranged 1.9-7.9 during the runs and was 4.2 at the end, on 4 cores.
+  - So run-to-run noise on "main" is about 300 ms.
+  - This CPU is faster than the outside review's. The review's 3.8 s for My Team is our 3.0 s, a ratio of about 1.27.
+- Tools: `scratchpad/agent-a0c1-firstvisit/tools/`.
+  - `fv.cjs`: one run.
+  - `batch.sh` and `st.cjs`: interleaved runs and medians.
+  - `tap.cjs`: Home, then tap to My Team.
+  - `variants.mjs`, `crowdvar.mjs` and `lean2.mjs`: test copies.
+  - `crowdart.py`: small crowd files and sheets.
+  - `sizes.cjs`: the crowd's drawn sizes.
+- Raw data: `scratchpad/agent-a0c1-firstvisit/out/*.jsonl`.
+
+## 1. Where the bytes and seconds go (measured)
+
+### Baseline, today's build
+
+| Case | First paint | Buttons / main | Longest task | Bytes |
+|---|---|---|---|---|
+| Home, 4G | 916 ms [832-928] | 3,343 / 3,326 [3,126-3,486] | 644 [595-738] | 8,746 KB (crowd 7,423) |
+| Home, slow 4G | 2,764 [2,756-2,784] | 8,625 / 8,600 [8,460-8,631] | 549 [547-559] | 8,746 KB (crowd 7,423) |
+| My Team, 4G | 884 [760-944] | 2,968 / 2,956 [2,923-3,544] | 510 [447-820] | 1,218 KB |
+| My Team, slow 4G | 2,768 [2,768-2,968] | 8,360 / 8,350 [8,322-8,720] | 447 [442-476] | 1,364 KB |
+
+Later interleaved sets measured base again: My Team 4G main 2,997 and 3,012; Home 4G 3,121-3,181. They match.
+
+### What the bytes are (gzip -9, measured from the built file and the CDP byte counts)
+
+| Part | Raw | gzip | Note |
+|---|---|---|---|
+| HTML in total | 3,716 KB | **948 KB** | brotli 720 KB |
+| preview daily data | 1,222 | 250 | Preview only. Largest: results 47, events 48, model 47, practice 35 gz |
+| main script | 1,840 | 573 | |
+| – of which data tables | 353 | 68 | RESULTS 25, NP_LOGO 17, LEARN 15, ROSTER 12 gz |
+| – of which code not used at Home/My Team start | 381 | 121 | The 40 files dropped in the lean prototype |
+| CSS | 526 | 92 | The `pages` layer alone is 369 raw / 61 gz |
+| static first screen | 99 | 20 | |
+| head (font CSS, icons) | 28 | 16 | |
+| Fonts | | 106 | Unbounded latin 50, Instrument Sans latin 56 |
+| Sprites, Home first screen | | 269 | 12 files at 384 px |
+| Sprites, My Team | | 163 on 4G, 310 on slow 4G | More of the lower ones load in time |
+| **Herd crowd (Home only)** | | **7,423** | 333 files at 384 px, drawn 17-58 px on a phone |
+
+### Totals
+
+| Page | Total | Without the crowd |
+|---|---|---|
+| Home | 8.75 MB | 1.34 MB |
+| My Team | 1.22-1.36 MB | – |
+
+### What the seconds are
+
+**Slow 4G is bandwidth-bound.** My Team: 1,364 KB at 1.44 Mbps is about 7.8 s of transfer. Main content comes at 8.35 s.
+Only fewer bytes before the first draw helps there.
+
+**4G is mostly CPU.** The HTML takes about 1.0-1.2 s to arrive. The other 1.8-2.0 s before main content is the CPU:
+- decoding and tokenizing the HTML;
+- compiling the 1.8 MB inline script on the main thread;
+- the work when the data arrives (see speed-report-nov17.md for the split).
+
+**The crowd does not slow the first screen.** It loads after `load` and after the 14 first-screen pictures.
+- Measured, Home, crowd on vs off:
+  - 4G: main 3,121 vs 3,082.
+  - Slow 4G: main 8,559 vs 8,588.
+- That is within the noise.
+- Its main-thread cost after main content is 120-260 ms of long tasks in total.
+
+**What the crowd costs:**
+- 7.4 MB of data. That matters on phone plans.
+- It finishes late:
+  - 4G: 15.5 s [15.3-15.7].
+  - Slow 4G: 53-60 s.
+- Tapping Score My Team 1 s after Home's buttons appear:
+  - My Team drew in 429 ms with the crowd loading and 313 ms with no crowd (4G).
+  - On slow 4G: 381 vs 290 ms.
+  - Small, and in a noisy test.
+
+**It is the number of files, not only the bytes.**
+- Making the crowd files 3.4x smaller (384 → 128 px) cut its finish time only from 15.5 s to 13.6 s on 4G.
+- Putting the same pictures in 4 sheets cut it to 5.6 s (see change 4).
+- Caveat: the local server is HTTP/1.1, 6 connections, so this overstates the cost of each file compared with HTTP/2.
+  Which protocol the Claude artifact host uses: not checked.
+
+## 2. The changes that get closest to 2.5 s, within the 511-file cap
+
+The goal is My Team main content 2.5 s on 4G. That is the outside review's measure (3.8 s there; 3.0 s on this machine).
+
+| # | Change | My Team 4G main (measured) | Other measured effect | Files added | Visible? |
+|---|---|---|---|---|---|
+| 1 | Main script in its own file | 3,012 → 2,748 (−260) | Longest task 545 → 352. Slow 4G 8,519 → 7,871 | +1 | No |
+| 2 | Preview data as a .json fetched beside the page (Preview only) | with 1: 2,669 | First paint 0.9 → 0.54 s on 4G, 2.8 → 1.5 s on slow 4G | +1 | No (the loading panel shows sooner) |
+| 3 | Load the 40 not-needed-at-start files later | with 1+2: 2,487 (−525 from base) | Slow 4G 8,519 → 7,321 (−1.2 s). −121 KB gz | +1 or more | No, if done right |
+| 4 | Crowd from 4 sprite sheets at 128 px | No change (the crowd is after the first screen) | Home 8.75 → 3.3 MB. Crowd done 15.5 → 5.6 s on 4G, 53 → 23 s on slow 4G | +4 (sheets), 333 crowd requests → 4 | **Yes**: crowd sharpness. Needs Sim's yes |
+| 5 | Brotli where the host allows | About −0.27 s (Nov 17, noisy) | HTML 948 → 720 KB; slow 4G about −1.3 s | 0 | No |
+
+### Change 1: main script in its own file
+
+- What: `app/build.mjs` writes `v2.js`. The page loads it with a plain `<script src>` at the same spot.
+- **No `<link rel=preload>`.**
+  - Measured with a preload: slow 4G first paint got worse, 2.8 → 4.8 s. The 584 KB script competed with the HTML and the fonts.
+  - The preload scanner finds the tag anyway.
+- Saving, measured in two interleaved sets:
+  - main −260 and −390 ms on My Team 4G;
+  - longest task 508-545 → 334-352 ms;
+  - total blocking time −300 to −540 ms;
+  - slow 4G −650 ms in the set without a preload.
+- The cause: Chrome compiles an external script off the main thread while it streams in.
+- Risk: low.
+  - The Preview and live publish must carry `v2.js` (file count 354 → 355).
+  - The build's static-first-screen step must still work.
+  - Repeat visits gain only if the host lets the browser cache `v2.js`. Not checked for the Claude host.
+- Visible: no.
+
+### Change 2: Preview data out of the HTML
+
+- What: Preview builds put the 1.17 MB data in `preview.json`, fetched from `<head>`.
+- Saving, measured:
+  - First paint (the static header and loading panel) 856-904 → 532-556 ms on 4G, and 2.7-2.8 → 1.5 s on slow 4G.
+  - Main: −100 to −230 ms on 4G (noise-sized alone). With change 1: −340 to −415 ms.
+- It is only a Preview change.
+  - The live site does not embed this data. It reads the artifact database instead.
+  - So on live, 1+3 are what count. The live store's timing was not measured (no store here).
+- Risk: low. Note the `__NP_CLAUDE` hand-over for the iPhone app (build.mjs comment, Nov 12) must keep working.
+- Visible: no, except the loading panel appears sooner.
+
+### Change 3: load the code that start does not need later
+
+- The prototype drops 40 files from the build:
+  - battle, pokemon, calc, meta, box, winning, events, compare, usage, types, practice, thisweek, track, sets, speed, guide, owner,
+    gauntlet, share-slab/tape;
+  - 22-auto-build, 44-share-images, 23-coverage, 21-sets, 31-set-edits;
+  - the data files for those pages.
+  - The full list is in `tools/lean-final.txt`.
+- Checked:
+  - Home and My Team draw with no errors.
+  - My Team's text is identical (hash).
+  - Home is missing two move names (Solar Beam, Rock Slide), so one of the dropped files feeds a Home band and must stay.
+- It only measures what start would cost without them. A real change has to load them after the first draw, or on the first visit
+  to a route.
+- Saving, measured, on top of 1+2:
+  - −121 KB gzip;
+  - My Team 4G 2,669 → 2,487 ms, and 2,582 → 2,636 in the other set (noise-sized there);
+  - slow 4G 8,118 → 7,321 and 8,005 → 7,361 (−0.65 to −0.8 s).
+- Risk: medium.
+  - Routes, search, deep links (#calc...), and `V2.pages` registration.
+  - Globals used across files (the prototype found `teamTitleFor`, `evDate` and the core data).
+  - It needs a tested loader and a "loading" state per page.
+- Visible: no, if done right. A first tap on a lazy page may wait a moment on a slow connection; that wait needs its loading state.
+
+### 1 + 2 + 3 together
+
+**My Team 4G main 2,487 ms [2,451-2,574]** against 3,012 [2,758-3,156] in the same interleaved set: −525 ms. It meets 2.5 s on
+this machine. On the outside review's slower machine it would be about 3.2 s: my estimate from the 1.27 ratio, not tested.
+
+Home 4G with 1+2: 2,731-2,785 against 3,149-3,181 base. The lean set was 2,872 and 3,114. It is noisy; the second lean set ran at
+load average 7.9.
+
+Reaching 2.5 s on the review's machine as well needs the remaining work cut too: the data-arrival draw and the CSS parse
+(estimated from speed-report-nov17.md, not re-traced here).
+
+### Change 4: the herd crowd (Sim chose to keep all 345: every option keeps them)
+
+**4a. Small crowd files in sprite sheets (recommended).**
+- The crowd is drawn at 17-58 css px on phones. Measured, `sizes.cjs`:
+  - 390@3: max 171 device px, median 81.
+  - iPad 820@2: max 248, median 116.
+  - 2560@1: max 186.
+- Packing the 333 at 128 px tall into 4 webp sheets (q80), measured:
+  - 1,996 KB on the wire, against 7,423 KB today;
+  - crowd done 5.6 s on 4G (was 13.6 s with the same 128 px files one by one, and 15.5 s today); 23 s on slow 4G (was 45 / 53-60);
+  - no long tasks after main (0-71 ms, against 226 with 333 files).
+- Files: +4 sheets and 1 small JSON of positions (or put the positions in the script). The total stays near 360 of 511.
+- Work:
+  - Each crowd member becomes an element showing its part of the sheet (CSS background-position, or a cropped `<canvas>`/`<img>` in
+    an `overflow:hidden` box).
+  - `V2.sdhPut` must keep feet-at-bottom placement and the same aspect ratio.
+- Risk: low to medium. The layout code changes, not the data.
+- Visible: **yes**.
+  - At 128 px, the nearest crowd members on iPad (up to 248 device px) and big desktop screens would look softer.
+  - A middle option: the nearest 30-40 crowd members keep their 384 px file (already on the artifact), the rest come from the sheets.
+  - Sim's eye is needed on the sharpness: pictures at 390@3, 820@2 and 1920 before and after.
+- Sizes for other choices, measured:
+  - 96 px: 1,390 KB in 4 sheets;
+  - 192 px one by one: about 3.5 MB (estimate from 102 of 333 files done = 1,087 KB).
+
+**4b. Smaller crowd files, one by one (no sheet).**
+- 128 px: 2,164 KB. 96 px: 1,558 KB.
+- But 333 more files breaks the 511 cap on the Claude host (346 + 333 = 679). Public host only.
+- Crowd finish is little faster on HTTP/1.1 (13.6 / 13.5 s on 4G) because the time is in the file count.
+
+**4c. Policies that keep all 345 but load the crowd later or less often.** Not measured; they decide when the 7.4 MB (or 2 MB with
+4a) is spent, not how much.
+- Skip or delay the crowd when `navigator.connection.saveData` is on, or `effectiveType` is 2g/3g.
+  - Chrome and Android only. iOS Safari has no `navigator.connection`, so iPhones would still load it. My knowledge of browser support,
+    not re-checked today.
+- Load it when idle (`requestIdleCallback`; Safari needs a timer fallback), or when the hero has been on screen for a moment.
+- Visible: yes on those connections; the crowd appears later or not at all there. Needs Sim's yes.
+
+**4d. A cap on the crowd.** Ruled out by Sim's choice (all 345 stay). With 4a it is not needed.
+
+### Change 5: Brotli
+
+Measured Nov 17: HTML 922 → 700 KB, My Team slow 4G −1.3 s. Today 948 → 720 KB. It depends on the host. Whether the Claude
+artifact host sends brotli or gzip: not checked.
+
+## 3. Now, or on the public host
+
+| Change | Claude host (Preview / live) now | Public host |
+|---|---|---|
+| 1 Script in its own file | Yes (+1 file). Repeat-visit caching depends on the host's headers (unsure) | Yes, with a hashed name cached for good (docs/website-performance.md) |
+| 2 Preview data as .json | Yes, Preview only | Becomes the dated data files plus the manifest (docs/website-performance.md section 1) |
+| 3 Lazy code | Yes, as 1-3 extra files | Yes. Chunks with hashed names |
+| 4a Crowd sheets | Yes: the only crowd fix that fits the 511 cap | Yes. Or 4b (individual small files) since there's no cap |
+| 4c Crowd policy | Yes (code only) | Yes |
+| 5 Brotli | Up to the host, not in our hands (unsure what it does) | Yes (Vercel does it automatically) |
+
+### Not measured here
+
+- The live artifact database's timing (data docs on live).
+- HTTP/2 on the real host.
+- Real phones.
+- Repeat visits.
+
+## Notes
+
+- The earlier speed fixes are already in (each document once, the data-arrival split, the planner steps). The long task is now
+  450-650 ms, not the 1 s freeze of Nov 17.
+- The hero notes in `stampede-hero.js` say the crowd adds "4.6 MB (7.5 MB with one sprite size)". Measured here: 7,423 KB on the
+  one-size build. That matches.
+- Housekeeping: an older helper's scratch folders (`scratchpad/fv`, `scratchpad/fv18`, from 01:00-02:30 AM) were briefly
+  written into before this helper moved to its own folder. `fv18/site/v2.html` was overwritten with today's build. Its tools
+  folder was restored, and nothing in the repo was touched.
+
+## Built: changes 1 and 2 (Wed Nov 18, 1:11 AM by the clock)
+
+What was built (`app/build.mjs`, flag `--split`):
+- `node app/build.mjs --v2 ... --split` writes the main script to `dist/v2.js`. The page loads it with a plain
+  `<script src="v2.js?v=<hash>">` at the same spot. No preload tag.
+- With `--preview-data --split`, the data goes in `dist/preview.json`. A small script in `<head>` fetches it as the page starts
+  (no preload tag). Each data answer waits for the file. If it can't be read, every doc answers "not there", as an empty store would.
+- `?v=` is a content hash, so a new page never runs with an old cached file.
+- Without `--split` the page is one file, byte for byte as before (checked with `cmp`). All tests and CI use that.
+  Reason: the tests open the page from file://, where a fetch of preview.json is blocked.
+- The Preview script (`docs/rebuild/preview-kit/rebuild-preview.sh`) now builds with `--split`. It copies `v2.js` and `preview.json`
+  beside foundation.html and runs the privacy check on preview.json. The kit README's publish step lists the two files.
+  Artifact files: +2 (about 399-402 of 511).
+- `app/test/no-names.mjs` reads the preview.json beside a split page (before, it would have printed "no embedded data" and passed).
+- The live artifact build (at the switch) can add `--split` too (+1 file, v2.js). It has no Preview data.
+
+Measured (same method as above: Playwright, phone 412x823, 4x CPU, CDP 4G / slow 4G, 3 interleaved runs, local gzip server; load
+average 2.7-6.9 on 4 cores). Base = today's one-file Preview build, split = the same build with `--split`. Medians [min-max], ms:
+
+| Case | First paint | Main content | Longest task | Total blocking |
+|---|---|---|---|---|
+| My Team 4G | 824 → 564 | 2,906 [2,823-3,021] → 2,697 [2,680-2,773] | 508 → 349 | 1,265 → 1,078 |
+| My Team slow 4G | 2,772 → 1,508 | 8,322 [8,190-8,688] → 8,068 [8,023-8,082] | 603 → 335 | 1,229 → 1,031 |
+| Home 4G | 864 → 544 | 3,109 [3,009-3,182] → 3,051 [2,671-3,080] | 518 → 446 | 1,597 → 1,305 |
+| Home slow 4G | 2,796 → 1,512 | 8,348 [8,273-8,451] → 8,218 [8,053-8,365] | 516 → 470 | 1,274 → 1,180 |
+
+- In plain words: the header and loading panel show 0.3 s sooner on 4G and 1.3 s sooner on slow 4G. My Team's content comes about
+  0.2 s sooner on 4G. The longest freeze is shorter. Home's main content is within the noise (the Home 4G set ran at load 6-7).
+- Smaller than the prototype's −340 to −415 ms for 1+2 on My Team 4G. Same direction. Change 3 (lazy code) is still needed for 2.5 s.
+- Same results: page text (innerText) identical on Home, My Team, Meta, Battle at 1280 and 390, 0 page errors. A control with the data
+  file missing differed on every view, so the check could fail.
+- Not measured: the Claude host's own caching and compression of v2.js and preview.json; real phones.
+
+Checks (Wed Nov 18, 2:02 AM by the clock):
+- `node app/build.mjs --v2 --preview-data` with and without this change: `cmp` finds the files identical. The same for
+  `--art=v2art/ --preview-data --one-art-size`. So every test that reads the one-file page sees exactly what it saw before.
+- `PAGE=app/dist/v2.html node app/test/v2-minors.mjs`: 185 pass, 1 FAIL (SDP-3, the Pelipper over "The post is in." at 390).
+  The page is byte-identical to the one before the change, so SDP-3 fails there too. Not caused by this change; not looked into.
+- `node app/test/run.mjs`: ALL PASSED (339 ok). Today's site; the change does not touch its build.
+- B-build on frozen data (out/ at 0c992f69, `--art=../src/v2/art/`): one-file build 64 pass, 0 FAIL, 27 known bugs. `--split`
+  build: 64 pass, 0 FAIL, 27 known bugs, the same 91 test ids in the same states. The first split run failed everything: the
+  harness copies the page into app/test/behaviour/ and v2.js was not beside it. Fixed in the harness (it copies v2.js too).
+- `--public --one-art-size --split` builds (the switch's live build): v2.js is the same code as the one-file public build's script.
+- `node app/test/no-names.mjs` on the split Preview: 2,166 player fields checked, 0 not an ID or stand-in (the same count as the
+  one-file build).
+
+## Built: change 3, the late code (Wed Nov 18, 3:42 AM by the clock)
+
+What was built (`--split` only; the one-file build is unchanged):
+- `app/parts-v2.json` "late": 26 files go in `dist/v2-late.js` (242 KB, 77 KB gzip). They are the code of Battle, Calc, Speed,
+  Meta, Usage, Sets, Types, Practice, Test run, Guide, Compare, Events, This Week, Track and the two share images, plus their data
+  (21-sets, 41-replay-data, 33-move-edits, 38-gauntlet-data, 63-practice-data, 63-weekly-data, 20-types-data).
+- Kept in the main script, because the start reads them (found by blocking v2-late.js and comparing every main page):
+  - `archetypes.js`: Home's Archetypes band calls `V2.arData`. This was the prototype's missing move names on Home.
+  - `box.js`: the Pokémon sheet calls `V2.shareTxt`.
+  - `31-box-data.js` and `winning.js`: the My Box and Archetypes pages, which draw from the main script.
+- `app/split-late.mjs`: esbuild does the scope work between the main closure and the late file (nothing guessed from the text).
+- `app/src/v2/late.js` (the loader):
+  - a late page shows the site's loading panel, asks for the file, then draws;
+  - a tap that needs late code before it arrives is held, then made again;
+  - otherwise the file is asked for when the page is idle after today's numbers, or at the first tap or key;
+  - if the file can't be loaded, a late page says "This page didn't load"; the rest of the site works.
+- Fixed while checking: the loader asked for the file during Home's start (V2.route() named the first page, a late one, before
+  Home was registered). Now the stand-in page's first draw asks.
+- Artifact files: +1 (v2-late.js). The Preview kit copies it and its README lists it.
+- Main script: 586 → 515 KB gzip (−71 KB). Smaller than the prototype's −121 KB: it dropped more files (Pokémon page, owner, auto-build,
+  share images, coverage), which the start needs or which feed main pages.
+
+Measured (fv.cjs: phone 412x823, 4x CPU, CDP 4G / slow 4G, 3 interleaved runs, local gzip server). Before = today's split Preview
+build (changes 1+2), after = the same with change 3. Load average 6.1-7.3 (4G sets) and 3.0-6.6 (slow 4G). Medians [min-max], ms:
+
+| Case | First paint | Main content | Longest task | Total blocking |
+|---|---|---|---|---|
+| My Team 4G | 580 → 536 | 2,706 [2,637-2,808] → 2,681 [2,579-2,795] | 332 → 776 | 1,104 → 1,808 |
+| My Team slow 4G | 1,476 → 1,484 | 8,266 [8,122-8,301] → 7,832 [7,775-7,851] | 383 → 355 | 1,302 → 1,160 |
+| Home 4G | 564 → 536 | 3,207 [2,831-3,616] → 2,697 [2,652-2,798] | 596 → 763 | 1,615 → 2,029 |
+| Home slow 4G | 1,480 → 1,480 | 8,175 [8,142-8,569] → 7,801 [7,764-7,896] | 577 → 540 | 1,334 → 1,340 |
+
+- In plain words: on slow 4G the first screen's content comes about 0.4 s sooner on both pages. On 4G Home is about 0.5 s sooner
+  (its "before" runs spread widely at load 6-7, so part of that is noise); My Team 4G is within the noise.
+- **New cost, measured:** when v2-late.js runs, the phone freezes once for about 750-850 ms at 4x CPU (a long task). On 4G it lands
+  about 0.6-1 s after the first screen; on slow 4G it falls after the 3 s the runs watched. Timed per file, it grows with each
+  file's size (battle.js 145 ms, calc.js 119 ms...), so it is the browser preparing the code, not the code's own work. The
+  one-file and before builds prepare the same code while the script downloads, off the main thread, so they don't show it.
+  Tried: the function in parentheses (Chrome's hint to prepare it early). The freeze stayed (a single 2-run set, noisy), so it was
+  not kept. Taps made during the freeze are not lost (held taps are made again), but they wait.
+  Options for Sim, not tried: ask for the file only at the first visit to a late page (no freeze on Home or My Team, but that first
+  visit waits for download plus about 0.8 s); or split the late code into 2-3 files (more files, smaller freezes).
+- Not measured: real phones, HTTP/2 on the Claude host, repeat visits.
+
+Checks (all on the build rebased onto d7a476bc):
+- One-file build byte-identical: `cmp` of the one-file page built at d7a476bc and with this change, for `--v2`, `--v2 --preview-data`,
+  `--v2 --art=v2art/ --preview-data --one-art-size` and `--v2 --public --one-art-size`: "cmp: identical" all four. So the tests and CI
+  see exactly what they saw before.
+- `PAGE=app/dist/v2.html node app/test/v2-minors.mjs` (the `--v2 --preview-data` page): "v2-minors:all passed", 205 pass, 0 FAIL.
+  The page is byte-identical to the one before the change, so the result is the same as before by construction.
+- Same text, all 29 pages at 1280 and 390, over http, late file arriving normally (same-all.cjs): 58 views, same innerText, 0 page or
+  console errors, 0 synchronous late loads. One run first showed My Team 1280 different: the one-file page was still "Working out
+  the best changes" when read. With 8 s to settle, My Team and Home matched at both widths. A control with v2-late.js missing
+  differed on every view checked (4 of 4), so the check can fail.
+- Start needs no late code (blocked.cjs: v2-late.js never answers): all 15 pages drawn from the main script give the same text and the
+  same page HTML as the one-file page, 30 views, 0 early loads, 0 errors.
+- Navigating before the file arrives, and cold deep links (nav.cjs, file held back 5 s): Home → Meta, Home → My Box, Home's Prep for
+  this team, News → an event's placings, My Team → Battle, cold `#calc`, `#speed`, `#pokemon=garchomp`, `#method=rating`: "all 9 cases:
+  same end state as the one-file page, 0 sync loads, 0 errors". Late pages showed the loading panel while held. With the file
+  answering 404: cold `#calc` says "This page didn't load."; Home draws as normal; no errors.
+- Not run: the behaviour harness (B-build) on the split build with `HTTP=1`.
+
+## Change 3 again: 4 late files, loaded one at a time (Wed Nov 18, 4:35 AM by the clock)
+
+Why: the one late file froze the phone for about 800 ms when it ran (above). The coordinator held the change back until that was cut.
+
+What changed:
+- `parts-v2.json` "late" is now 4 groups by page, one file each:
+  1. Battle, Test run, their replay and Test run data (`v2-late-1.js`, 57 KB);
+  2. Meta, Usage, Sets, Guide, set and weekly data (`v2-late-2.js`, 62 KB);
+  3. Calc, Types, Practice, Speed, their data (`v2-late-3.js`, 55 KB; needs file 1);
+  4. Events, This Week, Track, Compare, the share images (`v2-late-4.js`, 67 KB; needs files 1 and 2).
+- `app/split-late.mjs`: names shared between late files go through `V2.lateReg`. A file that uses another file's names or V2 names
+  lists it as a dependency. The build refuses loops and names defined in two places.
+- `app/src/v2/late.js`:
+  - when the page is idle after today's numbers, the files load one at a time, with a 400 ms gap; each runs in its own task;
+  - a late page opened early asks for its own file and the ones it needs at once (fetched together, run one per task);
+  - a held tap waits only for the files it needs;
+  - `fetchPriority = 'high'`. Without it, Home's crowd of sprites held files 2-4 back about 12 s on 4G (one run: file 1 at 3.8 s,
+    file 2 at 15.6 s). With it, all four ran between 3.3 and 6.1 s.
+- Artifact files: +4 (v2-late-1.js to v2-late-4.js), not +1. The Preview kit copies them and its README lists them.
+
+Measured (fv.cjs, phone 412x823, 4x CPU, CDP 4G / slow 4G, 3 interleaved runs, local gzip server, 12 s watched after load so every
+late file is counted; load average 1.2-3.9). Before = today's split build (changes 1+2), after = with the 4 late files. Medians
+[min-max], ms:
+
+| Case | Main content | Longest task after main content | Longest task overall | Total blocking |
+|---|---|---|---|---|
+| My Team 4G | 2,799 → 2,771 | 131 → 301 [264-324] | 380 → 338 | 1,346 → 2,140 |
+| My Team slow 4G | 8,371 → 7,988 | 92 → 320 [303-349] | 403 → 388 | 1,403 → 2,466 |
+| Home 4G | 3,140 → 3,258 [2,878-3,285] | 178 → 339 [285-343] | 615 → 611 | 1,627 → 2,690 |
+| Home slow 4G | 8,413 → 8,013 | 279 → 354 [278-360] | 528 → 507 | 1,624 → 2,390 |
+
+Each late file's run, all 12 split runs (the longest a tap can wait if it lands as that file starts): file 1 293 [255-345],
+file 2 210 [179-252], file 3 301 [263-360], file 4 238 [217-339].
+
+- In plain words: the freeze after the first screen went from about 800 ms to about 300 ms, in four short pieces instead of one.
+  Medians are 210-301 ms per file; the worst single run was 360 ms. That is "about 300", not under it.
+- The work itself did not shrink: total blocking is up about 0.8-1.1 s against the build without change 3, as four tasks after the
+  first screen. The one-file and before builds prepare this code while the script downloads, off the main thread.
+- Main content: about 0.4 s sooner on slow 4G (My Team and Home). On 4G within the noise (My Team −28 ms; Home +118 ms, its after
+  runs spread 2,878-3,285).
+- A tap time was not measured directly: the "tap waits" numbers are the length of the task the tap would wait behind.
+- Files 1 and 3 are the biggest freezes. battle.js alone (43 KB) is about 145 ms of file 1. Getting both under 300 would take a fifth
+  file, or splitting battle.js.
+
+Checks (on the build rebased onto aae071b3):
+- `cmp` of the one-file page built at aae071b3 and with this change, for `--v2`, `--v2 --preview-data`,
+  `--v2 --art=v2art/ --preview-data --one-art-size` and `--v2 --public --one-art-size`: "cmp: identical" all four.
+- blocked.cjs (no late file ever answers): "all 30 views: same text and HTML with the late file blocked; 0 early loads; 0 errors".
+- nav.cjs (each late file held back 5 s): "all 12 cases: same end state as the one-file page, 0 sync loads, 0 errors". New cases:
+  cold `#events` (files 1, 2 and 4), `#sets` (file 2), `#practice` (files 1 and 3). With the files answering 404, cold `#calc` and
+  `#events` say "This page didn't load."; Home draws as normal.
+  - Home's Prep for this team showed different text once: the 4 s "Opponent set" toast had gone when the page was read. Read 1.5 s after
+    the move to Battle, the text matched the one-file page (prep.cjs, same hash 0a26470a).
+- same-all.cjs (all 29 pages at 1280 and 390, over http, 10 s to settle): "all 58 views: same text; 0 page errors or console
+  errors/warnings; 0 early (synchronous) late loads in B".
+- `DIR=app/dist node app/test/v2-split.mjs` on a `--v2 --preview-data --split` build: "v2-split:all passed" (SPL-1 to SPL-4).
+- `PAGE=app/dist/v2.html node app/test/v2-minors.mjs` (one-file `--v2 --preview-data`): "v2-minors:all passed", 220 pass, 0 FAIL.
+- Not run: the behaviour harness (B-build) on the split build.
+
+## Decision (Nov 18, main thread)
+Not adopted. The late files save about 0.4 s of main content on slow 4G only (none on 4G), but add 0.8-1.1 s of total blocking after the first screen, as 4 tasks of 210-301 ms, plus 4 more artifact files. The one-file `--split` build stays. The code is kept as patches in docs/rebuild/research/late-split/ (apply with `git am`) if we revisit it, e.g. for the public site with HTTP/2.

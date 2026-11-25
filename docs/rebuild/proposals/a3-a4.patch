@@ -1,0 +1,67 @@
+From 350ed4a7490f66c4fad8e466357de7066cf30c44 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Thu, 12 Nov 2026 05:29:48 +0000
+Subject: [PATCH] Proposal A3+A4 (not approved; for Sim's review)
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_01YGeTVQdFPaKNkn33jSEpxs
+---
+ app/src/v2/pages/matchups.js | 9 ++++++---
+ app/src/v2/pages/sugs.js     | 5 +++++
+ 2 files changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/app/src/v2/pages/matchups.js b/app/src/v2/pages/matchups.js
+index 88bef5d..31950ad 100644
+--- a/app/src/v2/pages/matchups.js
++++ b/app/src/v2/pages/matchups.js
+@@ -17,17 +17,20 @@ V2.muLv = l => `<span class="mu-lv l${l}"><i aria-hidden="true">${V2.MUG[l]}</i>
+ V2.muSplit = D => { const tot = D.mu.fav + D.mu.even + D.mu.unf, pc = n => tot ? Math.round(n / tot * 1000) / 10 : 0;
+   return `<div class="mu-split" aria-hidden="true"><i class="sf" style="flex-grow:${pc(D.mu.fav)}"></i><i class="se" style="flex-grow:${pc(D.mu.even)}"></i><i class="su" style="flex-grow:${pc(D.mu.unf)}"></i></div>`; };
+ V2.muSec = D => { if (!D.rows.length) return ''; const RD = D.RD, ms = D.ms, view = V2.muView();
+-  const head = `<h2 class="u">Matchups</h2><p class="tm-sub">Against the top ${D.rows.length} threats.${D.mu.any ? ' Verdicts from real tournament games: how teams with your Pokémon did against teams with each threat. The damage calc reading is underneath.' : ''}</p>
++  const head = `<h2 class="u">Matchups</h2><p class="tm-sub">Against the top ${D.rows.length} threats.${D.mu.any ? ' Verdicts from real tournament games: how teams with your Pokémon did against teams with each threat. A row notes when the calc disagrees.' : ''}</p>
+     ${D.mu.any ? `<div class="tm-legend"><span class="lf"><b>${D.mu.fav}</b> Favoured</span><span class="le"><b>${D.mu.even}</b> Even match</span><span class="lu"><b>${D.mu.unf}</b> Unfavoured</span></div>
+     ${V2.muSplit(D)}` : ''}
+     <p class="fine">Damage calc: ${CH.LV[0]} ${D.calc.none}, ${CH.LV[1]} ${D.calc.shaky}, ${CH.LV[2]} ${D.calc.handles}, ${CH.LV[3]} ${D.calc.beats}</p>
+     <div class="mu-pick">${V2.slide('thr', V2.MUV, view, 'Matchups view')}</div>`;
+   return `<section class="tm-sec tm-mus" id="tm-mu">${head}<div class="mu-pane">${view === 'grid' ? V2.muGrid(RD, ms) : view === 'all' ? V2.muAll(RD, ms) : view === 'top' ? V2.muTop(RD) : V2.muOut(RD)}</div></section>`; };
+ 
++// A4 proposal (Sim's fix plan, Nov 12: "your recommendation"): one verdict per row. The real-games word leads; the calc reading
++// shows only when it points the other way ("Calc disagrees: Beats it"); with no real-games verdict the calc is the row's verdict.
++V2.calcNote = (R, lv) => R && ((R.w === 'Unfavoured' && lv >= 2) || (R.w === 'Favoured' && lv <= 1)) ? `<small class="mu-dis">Calc disagrees: ${CH.LV[lv]}</small>` : '';
+ // Stand-outs (Sim, Nov 11): only the threats real games call Unfavoured (worst first) or Favoured; the even ones are one line
+ V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).filter(x => x.R && x.R.w !== 'Even match');
+   const unf = rows.filter(x => x.R.w === 'Unfavoured'), fav = rows.filter(x => x.R.w === 'Favoured'), even = RD.rows.length - unf.length - fav.length;
+-  const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}<small>Calc: ${CH.LV[r.level]}</small></span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span></button></li>`;
++  const row = ({r, R}) => `<li><button type="button" class="mu-row mu-nk" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(R.w)}, calc ${CH.LV[r.level]}">${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}${V2.calcNote(R, r.level)}</span><span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span></button></li>`;
+   const grp = (t, a) => a.length ? `<h3 class="tm-h3 mu-h3">${t} <small>${a.length}</small></h3><ol class="tm-rows mu-out">${a.map(row).join('')}</ol>` : '';
+   return `${grp('Unfavoured', unf)}${grp('Favoured', fav)}${!unf.length && !fav.length ? '<p class="tm-sub">Real games call every top threat an even match for this team.</p>' : ''}
+     <p class="mu-rest">${even ? `The other ${even} ${even === 1 ? 'is an even match' : 'are even matches'}.` : ''} <button type="button" class="np-link" data-muall30>See all ${RD.rows.length}</button></p>`; };
+@@ -35,7 +38,7 @@ V2.muOut = RD => { const rows = RD.rows.map(r => ({r, R: CH.realVs(r.t.n)})).fil
+ // Top 10 (by top-cut share), numbered; phones and tablets show 5 and "Show 5 more"; then the next 20 as tiles, worst first
+ V2.muTop = RD => { const {top, rest, RV} = CH.top10(RD), more = !!ui.tlMore;
+   const row = (r, i) => { const R = CH.realVs(r.t.n), vw = R ? `${R.w}, calc ${CH.LV[r.level]}` : CH.LV[r.level];
+-    return `<li><button type="button" class="mu-row" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(vw)}"><span class="k">${i + 1}</span>${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}<small>Calc: ${CH.LV[r.level]}</small></span>${R ? `<span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span>` : V2.muLv(r.level)}</button></li>`; };
++    return `<li><button type="button" class="mu-row" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(vw)}"><span class="k">${i + 1}</span>${V2.muImg(r.t.n)}<span class="nm">${V2.nameHtml(r.t.d)}${V2.calcNote(R, r.level)}</span>${R ? `<span class="tm-v ${V2.VCLS[R.w]}"><i aria-hidden="true"></i>${R.w}</span>` : V2.muLv(r.level)}</button></li>`; };
+   const tile = r => { const R = RV.get(r), w = R ? `${R.w}, calc ${CH.LV[r.level]}` : CH.LV[r.level];
+     return `<button type="button" class="mu-tile${R ? ' ' + V2.VCLS[R.w] : ''}" data-muthr="${V2.esc(r.t.n)}" aria-label="${V2.esc(r.t.d)}: ${V2.esc(w)}" title="${V2.esc(r.t.d)}: ${V2.esc(w)}">${V2.muImg(r.t.n)}</button>`; };
+   return `<ol class="tm-rows mu-rows${more ? ' is-more' : ''}">${top.map(row).join('')}</ol>
+diff --git a/app/src/v2/pages/sugs.js b/app/src/v2/pages/sugs.js
+index 3805d62..9e1c3b9 100644
+--- a/app/src/v2/pages/sugs.js
++++ b/app/src/v2/pages/sugs.js
+@@ -50,6 +50,11 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
+     // above the cards, as today: a Protect fix (a set change, not a swap), then a game-plan gap no swap in this pool can close
+     const pre = V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap">${V2.esc(P.gapNote)}</p>` : '');
+     const all = '<button type="button" class="np-link sg2-all" data-v2sgall>See all suggestions ›</button>';
++    // A3 proposal (Sim's fix plan, Nov 12: "your recommendation"): a best swap that doesn't raise the score (±0 or lower) gets no
++    // card and no Apply: the quiet line stays and the swaps wait behind See all suggestions (same rule as Matchups' Best fix)
++    const up = top.length && g0 != null ? Math.round(planGrade(top[0].pl)) - Math.round(g0) : null;
++    if (top.length && up != null && up <= 0) { body = `${gap || `<p class="tm-sub">Nothing raises this team’s Strength Score right now.</p>`}${all}`; V2._sgLast = body;
++      return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.sgCtl()}${V2.undoBar()}${body}</section>`; }
+     body = !top.length ? (side ? `<p class="tm-sub">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p>${all}`
+         : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool above, or see Matchups for what to watch.</p>')
+       : `${gap}<p class="tm-sub">${P.nothing ? 'Optional swaps:' : side ? 'Nothing raises this team’s Strength Score right now. These swaps keep every check and about the same score, with a different look:' : 'What to change, best first.'}</p>
+-- 
+2.43.0
+

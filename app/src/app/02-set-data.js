@@ -21,7 +21,7 @@ function sdRow(p,fmt){if(!builtinOk())return null;const k='M'+FK(fmt)+'|'+p.n;if
   const r=typeof SETS==='object'&&SETS['M'+FK(fmt)][p.n];let o=null;
   if(r)o={n:p.n,mv:pairsOf(r[0],i=>MV[i]?MV[i].name:null),na:r[1].map(i=>[SETS.NAT[i],null]),tm:r[2].map(i=>ROSTER[i]?[ROSTER[i].n,null]:null).filter(Boolean),it:[],ab:[],u:r[3],raw:r[4],cut:r[5]};
   gameCache.set(k,o);return o}
-const STONE_RE=/ite( [XYZ])?$|inite$/;
+const STONE_RE=/^(?!Eviolite$).*(?:ite( [XYZ])?|inite)$/; // Nov 15 (code review A4): Eviolite ends in 'ite' but is no Mega Stone; paste, team links and the Calc dropped it
 // Moves under 80% accuracy. Only worth running with No Guard (or the weather that makes them sure-hit).
 const LOW_ACC=new Set(['Zap Cannon','Inferno','Dynamic Punch','Grass Whistle','Sing','Supersonic','Hypnosis','Lovely Kiss','Sleep Powder','Stun Spore','Poison Powder','Focus Blast','Iron Tail','Mega Kick','Thunder','Blizzard','Hurricane','Fissure','Guillotine','Horn Drill','Sheer Cold','Sweet Kiss','Dark Void','Magma Storm','Smog','Slam','Submission']);
 // Moves a plain form shouldn't inherit from its Mega's set: species-level rows (the in-game data, tournament and
@@ -101,14 +101,22 @@ function natOK(n){try{return NATURES.includes(n)}catch(e){return true}}
 function normMv(mv){if(!mv||typeof mv!=='object'||Array.isArray(mv))return null;const o={};
   for(const f of ['doubles','singles']){const a=mv[f];if(!Array.isArray(a))continue;const c=a.slice(0,4).map(x=>typeof x==='string'&&mvByName.has(x)?x:'');while(c.length<4)c.push('');if(c.some(Boolean))o[f]=c}
   return Object.keys(o).length?o:null}
-function normSlots(arr){const out=(Array.isArray(arr)?arr:[]).slice(0,6).map(s=>s&&typeof s==='object'?s:{}).map(s=>{const o={n:byName.has(s.n)?s.n:'',a:typeof s.a==='string'?s.a:null,lock:!!s.lock};const mv=o.n&&normMv(s.mv);if(mv)o.mv=mv;
+// Nov 15 (code review A2): a Pokémon this regulation doesn't have keeps its name in `gone` (and its set in `gset`), so goneNote's
+// promise holds: it stays saved and comes back, set and all, if a later regulation has it. Every page still sees an empty slot (n:'').
+const goneId=x=>typeof x==='string'&&/^[\w-]{1,40}$/.test(x)?x:'';
+function goneBack(s){const g=!byName.has(s.n)&&goneId(s.gone);return g&&byName.has(g)?Object.assign({},s.gset&&typeof s.gset==='object'?s.gset:{},{n:g,a:s.a,lock:s.lock}):s}
+function normSlots(arr){const out=(Array.isArray(arr)?arr:[]).slice(0,6).map(s=>s&&typeof s==='object'?goneBack(s):{}).map(s=>{const o={n:byName.has(s.n)?s.n:'',a:typeof s.a==='string'?s.a:null,lock:!!s.lock};
+    if(!o.n){const g=goneId(s.n)||goneId(s.gone);if(g){o.gone=g;const gs=s.gone===g&&s.gset?s.gset:{mv:s.mv,it:s.it,sp:s.sp};try{if(JSON.stringify(gs).length<=2000)o.gset=JSON.parse(JSON.stringify(gs))}catch(e){}}}const mv=o.n&&normMv(s.mv);if(mv)o.mv=mv;
     // held items per format ({doubles:'Sitrus Berry'}), kept only as short plain strings
     if(o.n&&s.it&&typeof s.it==='object'){const it={};for(const f of ['doubles','singles'])if(typeof s.it[f]==='string'&&s.it[f]&&s.it[f].length<=40)it[f]=s.it[f];if(Object.keys(it).length)o.it=it}
     // your nature and stat points per format ({doubles:{nat:'Jolly',v:[hp,atk,def,spa,spd,spe]}}), from a paste or team link
     if(o.n&&s.sp&&typeof s.sp==='object'){const sp={};for(const f of ['doubles','singles']){const x=s.sp[f];if(x&&x.assumed===true)sp[f]={nat:typeof x.nat==='string'&&x.nat.length<=12&&natOK(x.nat)?x.nat:null,assumed:true};else if(x&&Array.isArray(x.v)&&x.v.length===6&&x.v.every(n=>Number.isInteger(n)&&n>=0&&n<=32)&&x.v.reduce((a,b)=>a+b,0)<=SP_TOTAL)sp[f]={nat:typeof x.nat==='string'&&x.nat.length<=12&&natOK(x.nat)?x.nat:null,v:x.v.slice()}}if(Object.keys(sp).length)o.sp=sp}return o});
   while(out.length<6)out.push(blank());return out}
 // Battle log entries: {t: time, r: 'W'|'L', b: the 4 brought (leads first), tm: the team's 6, o: opponent's Pokémon}
-function fixLog(){S.log=(Array.isArray(S.log)?S.log:[]).filter(e=>e&&(e.r==='W'||e.r==='L')&&Array.isArray(e.b)).slice(-400).map(e=>({t:+e.t||0,r:e.r,b:e.b.filter(n=>typeof n==='string'&&byName.has(n)).slice(0,4),tm:(Array.isArray(e.tm)?e.tm:[]).filter(n=>typeof n==='string'&&byName.has(n)).slice(0,6),o:(Array.isArray(e.o)?e.o:[]).filter(n=>typeof n==='string'&&byName.has(n)).slice(0,6)}))}
+// Nov 15 (code review A2): names this regulation doesn't have are kept per list in gx, and rejoin their list if they come back
+function fixLog(){const arr=x=>Array.isArray(x)?x:[];S.log=arr(S.log).filter(e=>e&&(e.r==='W'||e.r==='L')&&Array.isArray(e.b)).slice(-400).map(e=>{const gx=e.gx&&typeof e.gx==='object'?e.gx:{},out={t:+e.t||0,r:e.r},keep={};
+  for(const [k,max] of [['b',4],['tm',6],['o',6]]){const all=arr(e[k]).concat(arr(gx[k])).filter(n=>typeof n==='string');out[k]=all.filter(n=>byName.has(n)).slice(0,max);const g=all.filter(n=>!byName.has(n)&&goneId(n)).slice(0,max);if(g.length)keep[k]=g}
+  if(Object.keys(keep).length)out.gx=keep;if(typeof e.rp==='string'&&e.rp.length<24)out.rp=e.rp;/* a logged replay's fingerprint, so the same replay isn't logged twice (Nov 16) */return out})}
 function fixSlots(){S.slots=normSlots(S.slots);S.opp=(Array.isArray(S.opp)?S.opp:[]).slice(0,6).map(n=>typeof n==='string'&&byName.has(n)?n:'');while(S.opp.length<6)S.opp.push('')}
 fixSlots();fixTeams();fixLog();
 for(const k of ['doubles','doubles_ingame','doubles_tour','singles'])META[k]=cleanMeta(META[k]);
@@ -121,8 +129,13 @@ let ui={recSrc:LS.get('cc2.recsrc','box')==='all'?'all':'box',abSrc:LS.get('cc2.
 // "Data as of …" in the header: the newest date any data document carries (pre-launch, Nov 2: "as of" reads as a date stamp).
 const DATA_AT={};
 function noteDataDate(k,v){try{const t=v&&(v.updated||v.pulled||v.date);const ms=t?Date.parse(String(t).length===10?t+'T12:00:00':t):NaN;if(!isNaN(ms))DATA_AT[k]=ms;showDataDate()}catch(e){}}
-function dataDateText(){const ts=Object.values(DATA_AT);if(!ts.length)return '';const last=Math.max(...ts),days=Math.floor((Date.now()-last)/864e5);
+// days are counted as calendar days, as Events counts them (stress test Nov 16: the footer said "5 days old" while Events said "6 days ago" for the same date)
+const calDays=(a,b)=>{const x=new Date(a),y=new Date(b);return Math.round((Date.UTC(y.getFullYear(),y.getMonth(),y.getDate())-Date.UTC(x.getFullYear(),x.getMonth(),x.getDate()))/864e5)};
+/* code review A2-M8: the date of the data the scores stand on (results, teams, events, model: the oldest of those that arrived), so one fresher
+   side part can never make it read newer than the scores; the newest of everything only when none of those has arrived */
+const DATA_CORE=['results','teams','events','model'];
+function dataDateText(){const ts=Object.values(DATA_AT);if(!ts.length)return '';const core=DATA_CORE.filter(k=>DATA_AT[k]!=null).map(k=>DATA_AT[k]);const last=core.length?Math.min(...core):Math.max(...ts),days=calDays(last,Date.now());
   return 'Data as of '+new Date(last).toLocaleDateString('en-US',{month:'short',day:'numeric'})+(days>2?' ('+days+' days old)':'')}
 function showDataDate(){try{if(typeof renderHealth==='function')renderHealth()}catch(e){}const t=dataDateText();if(!t)return;const el=document.getElementById('eyebrow');
   if(el&&!el.querySelector('.datadate')){const sp=document.createElement('span');sp.className='datadate';el.append(' · ',sp)}
-  if(el)el.querySelector('.datadate').textContent=t;const sf=document.getElementById('sideFoot');if(sf)sf.textContent='Pokémon Champions, Reg M-C, '+t}
+  if(el)el.querySelector('.datadate').textContent=t;const sf=document.getElementById('sideFoot');if(sf)sf.textContent='Pokémon Champions, '+regName()+', '+t}

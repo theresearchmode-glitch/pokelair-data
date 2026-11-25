@@ -3,22 +3,15 @@
 // theme/ARENA.md). Every number, name and control comes from the app's own data and functions; nothing new is computed except
 // colours. Controls keep the attributes the app's handlers listen for (data-lt, data-view, data-chset, data-chgrade,
 // data-chedit, data-evload, data-evvs, data-sdcopy), and the moved nodes (#rzSet, #chGwhy, #chActs) keep their handlers.
-const AR = {};
+/* AR is created in 44-share-images.js with its palette helpers (TC_FIX, TC, dark, isMega; Nov 11); this file adds the rest */
 /* arena type palette: the app's type colours, except two. Dark (#5F4536) reads brown and Normal (#ABA88A) reads khaki on a field
    (Sim: no brown, olive or khaki fills). Dark becomes a slate violet and Normal a cool lilac-grey. The app's own TC is changed
    too, before anything renders, so every older page part (Home's rating rows, the Type chart, tables, the share card) draws
    the same two colours as the arena components. */
-AR.TC_FIX = {Dark: '#5E5068', Normal: '#A6A2AE'};
 try { Object.assign(TC, AR.TC_FIX); } catch (e) {}
-AR.TC = Object.assign({}, TC, AR.TC_FIX);
 /* dark-mode field colours (true black): every type at the same vivid chroma, cool and red hues at a mid lightness, the
    orange-to-yellow hues (Fire, Electric, Ground, Rock, Normal...) lighter, because a dark orange or yellow reads brown (Sim:
    no brown fills). --on is the text colour that reads on the first type's dark field (white or ink, whichever is 4.5:1+). */
-AR._d = new Map(); AR._k = new Map();
-AR.dark = t => { if (AR._d.has(t)) return AR._d.get(t); let v = TC.Normal;
-  try { const [C, H] = MG.ok(AR.TC[t] || TC.Normal), h = (H + 360) % 360, L = C < .03 ? .7 : h >= 70 && h < 130 ? .76 : h >= 38 && h < 70 ? .64 : .5, c = Math.max(Math.min(C, .17), Math.min(C, .05));
-    v = MG.hex(L, c, H); AR._k.set(t, {L, c, h}); } catch (e) {}
-  AR._d.set(t, v); return v; };
 /* the middle stop of a dark dual-type field. It always lies between the two types' hues, the short way round the hue circle,
    so a field never shows a colour that belongs to neither type (Indeedee was crimson, blue, then khaki). Three guards keep it
    off brown, olive and khaki:
@@ -52,7 +45,6 @@ AR.tag = t => `<span class="ar-ty" style="--t:${AR.TC[t] || TC.Normal};color:${A
 /* move name -> type (the moves table: [name, type index, ...]) */
 AR.mt = null;
 AR.moveType = n => { if (!AR.mt) { AR.mt = new Map(); try { for (const r of MOVES) AR.mt.set(r[0], TYPES[r[1]]); } catch (e) {} } return AR.mt.get(n) || 'Normal'; };
-AR.isMega = p => !!(p && (p.m || /-Mega/.test(p.n || '')));
 AR.spr = (p, cls) => sprite(p, 'ar-spr' + (cls ? ' ' + cls : '')) || '';
 /* one art tile; o: {tag, size, below, name, sub, attrs, sel} */
 AR.art = (p, o = {}) => { const tag = o.tag || 'button', cls = `ar-art ar-${o.size || 'm'}${o.below ? ' ar-below' : ''}${AR.isMega(p) ? ' is-mega' : ''}${o.sel ? ' is-sel' : ''}`;
@@ -86,7 +78,7 @@ AR.nm = n => escName(AR.mega(n)).replace(/ \(([FMfm])\)/g, '\u00a0($1)');
 /* This week in the ratings (Sim, Nov 5): the week's biggest real rating moves from the daily snapshots (track.mjs mv), each a
    tap into its info sheet; nothing shows until the data has them */
 AR.week = () => { const M = META.track && META.track.mv; if (!M || !M.list || !M.list.length) return '';
-  const it = M.list.map(m => { const p = byName.get(m.n); if (!p) return ''; const up = m.d > 0;
+  const it = M.list.slice(0, 4).map(m => { const p = byName.get(m.n); if (!p) return ''; const up = m.d > 0;
     return `<button type="button" class="ar-mv" data-lt="${esc(m.n)}" aria-label="${esc(p.d)}, rating ${m.r}, ${up ? 'up' : 'down'} ${Math.abs(m.d)} this week"><b>${AR.nm(p.d)}</b><span class="ar-mvd ${up ? 'up' : 'dn'}" aria-hidden="true">${up ? '▲' : '▼'} ${Math.abs(m.d)}</span></button>`; }).join('');
   return it ? `<div class="ar-week"><span class="ar-weekk">This week in the ratings</span><div class="ar-mvs">${it}</div></div>` : ''; };
 /* Quick team switch (Sim, Nov 5): a "Switch team" fold under the My team title lists your other saved teams; each opens with
@@ -112,9 +104,7 @@ AR.sampleNote = () => `<div class="ar-sample"><p>This is a sample team, here to 
 AR.pair = L => L.map(m => AR.nm(m.d)).join(' + ');
 AR.plan = (lead, back, bench, vs) => lead.length ? `<p class="ar-gameplan">Game plan${/^vs /.test(vs) ? ' ' + vs : ', ' + vs}: lead <b>${AR.pair(lead)}</b>${back.length ? `, back ${AR.pair(back)}` : ''}${bench.length ? `, bench ${AR.pair(bench)}` : ''}.</p>` : '';
 /* the latest event winner with a full, known six (the same pick as Home's old champion card) */
-AR.champ = () => { const E = META.events; if (!E || !Array.isArray(E.events)) return null;
-  for (const e of E.events) { const t = (e.top || []).find(x => x && x.place === 1 && x.mons && x.mons.length === 6 && x.mons.every(m => byName.get(m.n))); if (t) return {ev: e, t, n: E.events.length, six: t.mons.map(m => ({p: byName.get(m.n), it: m.i || '', ab: m.a || ''}))}; }
-  return null; };
+AR.champ = homeChamp; /* shared (05-home-data.js, Nov 12) */
 
 /* ======================= Home ======================= */
 /* the Top of the meta rows: one naming everywhere ("Mega Charizard Y", not "M-Charizard Y"), the Mega contour on the small
@@ -172,19 +162,13 @@ CH.wrap('renderHome', () => AR.home());
 /* the lineup the stage and the set card use: the planner's four vs the meta's six (CH.four), the rest on the bench */
 /* your lead pick (Sim, Nov 5): S.leads holds two names you chose with "Set as lead"; it wins over NastyPlot's pick while both
    are on the team. "Use NastyPlot's pick" clears it. */
-AR.userLeads = ms => { const U = (S.leads || []).map(n => ms.find(m => m.p.n === n)).filter(Boolean); return U.length === 2 && U[0] !== U[1] ? U : null; };
-AR.lineup = ms => { const L = MG.lineup(ms), U = AR.userLeads(ms);
-  if (U) { const rest = [...L.lead, ...L.back, ...L.home].filter(m => !U.includes(m)); return {lead: U, back: rest.slice(0, 2), bench: rest.slice(2), by: 'you'}; }
-  return {lead: L.lead, back: L.back, bench: L.home, by: L.by}; };
+AR.userLeads = userLeads; AR.lineup = teamLineup; /* shared (05-six-data.js) */
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-arlead]'); if (!b) return;
-  const ms = members(), n = b.dataset.arlead;
-  if (n === '') S.leads = null;
-  else { const L = AR.lineup(ms), base = L.lead.map(m => m.p.n); if (base.includes(n)) return; S.leads = [n, base[0]]; }
+  const pk = setLeadPick(b.dataset.arlead); if (pk === false) return; /* shared (05-six-data.js) */
   persist(); safe('my team', chTeamRender); safe('home', () => typeof render === 'function' && render());
-  const pk = n && ms.find(m => m.p.n === n); toast(pk ? `${pk.d} now leads` : "Back to NastyPlot's lead pick"); });
-AR.roleOf = (m, L) => { const has = g => g.some(x => x.i === m.i), other = g => g.filter(x => x.i !== m.i).map(x => escName(x.d)).join(' + ');
-  if (has(L.lead)) return `Leads with ${other(L.lead) || 'its partner'}`; if (has(L.back)) return `In the back with ${other(L.back) || 'its partner'}`; return 'On the bench'; };
-AR.VS_META = "vs the meta's top six";
+  toast(leadMsg(pk)); });
+AR.roleOf = (m, L) => roleText(m, L, x => escName(x.d)); /* shared (05-six-data.js) */
+AR.VS_META = PLAN_VS.meta;
 AR.cell = (v, u, extra) => `<div class="ar-stat"><span class="ar-num">${v}</span><span class="ar-unit">${u}${extra || ''}</span></div>`;
 AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.querySelector(':scope > .chthead'); if (!th) return;
   /* the all-sets fold lives in the old team section between draws: put it back in its part first, or the redraw throws it away */
@@ -231,7 +215,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
       <div class="ar-trio">${cells.join('')}<span class="ar-muline">${muLine}</span></div>
       ${muBar || `<span class="ar-bar" aria-hidden="true"><i style="--v:${Math.max(0, Math.min(100, RD.score))}%;--c:var(--ar-green)"></i></span>`}</div>`;
     const ck = v.CK, legal = v.legal === false ? 'Not legal yet' : 'Legal';
-    const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>Team checks ${ck.pass}/${ck.n}</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
+    const leg = `<div class="ar-legal${v.legal === false ? ' is-bad' : ''}" title="Based on our reading of the ${esc(regName())} rules. Check the official rules before an event."><b>${legal}</b>${ck ? `<span>Team checks ${ck.pass}/${ck.n}</span><span class="ar-pips" aria-hidden="true">${Array.from({length: ck.n}, (_, i) => `<i${i < ck.pass ? '' : ' class="off"'}></i>`).join('')}</span>` : ''}</div>`;
     stats = `<div class="ar-tstats ar-c${Math.max(3, cells.length)}">${rec}${chk}${leg}</div>`; }
   else stats = '';
   /* the stage: all six as equal art tiles (no roles on the art), the game plan line under them */
@@ -241,7 +225,7 @@ AR.team = () => { const head = $('chTeam'); if (!head) return; const th = head.q
     /* each one has a small X to take it off the team in one tap (Sim, Nov 7); it uses the same remove as the editor, with Undo */
     const tiles = ord.map(m => `<div class="ar-slot${sel === m.i ? ' is-sel' : ''}">${AR.art(m.p, {size: 'l', name: m.d, sel: sel === m.i, attrs: `data-chset="${m.i}" aria-pressed="${sel === m.i}" aria-controls="rzSet" aria-label="${esc(m.d)}: show its set"`})}<button type="button" class="ar-lockx${S.slots[m.i] && S.slots[m.i].lock ? ' on' : ''}" data-lock="${m.i}" aria-pressed="${!!(S.slots[m.i] && S.slots[m.i].lock)}" aria-label="${S.slots[m.i] && S.slots[m.i].lock ? 'Unlock' : 'Lock'} ${esc(m.d)}: suggestions never swap out a locked Pokémon" title="${S.slots[m.i] && S.slots[m.i].lock ? 'Locked: suggestions keep it' : 'Lock it so suggestions keep it'}"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${S.slots[m.i] && S.slots[m.i].lock ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg></button><button type="button" class="ar-rmx" data-chrm="${m.i}" aria-label="Remove ${esc(m.d)} from your team"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 7l10 10M17 7 7 17"/></svg></button></div>`).join('')
       + open.map(i => AR.emptyArt('l', {attrs: `data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"`})).join('');
-    const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, L.by === 'meta' ? AR.VS_META : L.by === 'you' ? 'your pick' : 'in team order')
+    const plan = L.lead.length >= 2 ? AR.plan(L.lead, L.back, L.bench, PLAN_VS[L.by])
       + (L.by === 'you' ? `<button type="button" class="ar-link ar-leadreset" data-arlead="">Use NastyPlot's pick</button>` : '') : '';
     stage = `<section class="ar-stage" aria-labelledby="arSix"><div class="ar-shead"><span class="ar-tab" aria-hidden="true"></span><h2 class="ar-h2" id="arSix">Your six</h2></div>
       <div class="ar-six ar-two" role="group" aria-label="Your six: tap one to see its set">${tiles}</div><p class="ar-taphint">Tap a Pokémon to see its set</p>${plan}<div class="ar-sheetwrap ar-setwrap"></div></section>`; }
@@ -286,23 +270,17 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
    rating, item and ability, the four moves as battle-menu strips with a move-type edge, Edit set and the info sheet */
 /* Nature and stat points on the set card (Sim, Nov 6: "its nature is so important and we just dont have that"): yours when
    set (paste, link or Edit set), else what most players run; stat points read as words, biggest first */
-AR.natCells = m => { let sp = m.spread, own = !!(sp && sp.nat && !sp.assumed), nat = sp && sp.nat, note = own ? 'yours' : '';
-  if (!nat) { try { const st = setFor(m.p); if (st.na && st.na.length) nat = st.na[0][0]; } catch (e) {} }
-  let cs = null; try { cs = commonSpread(m.p); } catch (e) {}
-  if (!nat && cs) nat = cs.nat; if (nat && !own) note = sp && sp.assumed ? 'yours' : 'most run';
-  const pts = sp && !sp.assumed ? sp : cs, ptsNote = sp && !sp.assumed ? 'yours' : pts ? 'most run' : '';
-  const L = ['HP', 'Atk', 'Def', 'SpA', 'SpD', 'Spe'], K = ['hp', 'atk', 'def', 'spa', 'spd', 'spe'];
-  const words = pts ? K.map((k, j) => [pts[k], L[j]]).filter(x => x[0] > 0).sort((a, b) => b[0] - a[0]).map(x => `${x[0]}\u00a0${x[1]}`).join(', ') : '';
+AR.natCells = m => { const N = natInfo(m); /* shared (05-six-data.js) */
   const cell = (lab, val, n) => `<div class="ar-setnat"><span>${lab}</span><b>${esc(val)}</b>${n ? `<i>${n}</i>` : ''}</div>`;
-  return (nat ? cell('Nature', nat, note) : '') + (words ? cell('Stat points', words, ptsNote) : ''); };
+  return (N.nat ? cell('Nature', N.nat, N.natNote) : '') + (N.words ? cell('Stat points', N.words, N.ptsNote) : ''); };
 rzSetHtml = function (m, i) {
-  let r = null, tier = ''; try { r = rating(m.p).total; tier = lTier(r).k; } catch (e) {}
+  const R = monRating(m.p); /* shared (05-six-data.js) */
   const ms = members(), L = ms.length >= 4 ? AR.lineup(ms) : null, t = m.p.t || ['Normal'];
   const role = L && L.lead.length ? `<p class="ar-role">${AR.roleOf(m, L)}${L.by === 'meta' ? ` ${AR.VS_META}` : ''}</p>` : '';
   const mv = (m.moves || []).filter(Boolean).map(x => `<li class="ar-strip" style="--m:${AR.TC[AR.moveType(x.name)] || TC.Normal}"><span>${esc(x.name)}</span></li>`).join('');
   return `<div class="ar-sethd"><span class="ar-av" style="${AR.tv(m.p)}" aria-hidden="true"><span class="ar-av-f ar-field"></span>${sprite(m.p, 'rzsetspr') || ''}</span>
       <div class="ar-setti"><h3 class="ar-h2 ar-setname">${AR.nm(m.d)}</h3><div class="ar-tys" aria-label="${esc(t.join(' and '))} type">${t.map(AR.tag).join('')}</div>${role}</div></div>
-    <div class="ar-setia">${r != null ? `<div class="ar-setr"><span class="ar-num ar-mp">${RS(r)}</span><small>${AR.ICON.star}${tier ? esc(tier) + ' tier rating' : 'Rating'}</small></div>` : ''}<div><span>Item</span><b>${esc(m.item || 'No item')}</b></div><div><span>Ability</span><b>${esc(m.ability || 'None')}</b></div>${AR.natCells(m)}</div>
+    <div class="ar-setia">${R ? `<div class="ar-setr"><span class="ar-num ar-mp">${R.n}</span><small>${AR.ICON.star}${R.tier ? esc(R.tier) + ' tier rating' : 'Rating'}</small></div>` : ''}<div><span>Item</span><b>${esc(m.item || 'No item')}</b></div><div><span>Ability</span><b>${esc(m.ability || 'None')}</b></div>${AR.natCells(m)}</div>
     ${mv ? `<ul class="ar-strips" aria-label="Moves">${mv}</ul>` : ''}
     <div class="ar-setacts"><button type="button" class="ar-btn" data-chedit="${i}">Edit set</button>${L && L.lead.length && !L.lead.some(x => x.i === m.i) ? `<button type="button" class="ar-btn" data-arlead="${esc(m.p.n)}">Set as lead</button>` : ''}<button type="button" class="ar-link" data-lt="${esc(m.p.n)}">Info sheet ›</button></div>`; };
 MG.team = () => {}; /* the manga stage is replaced by the arena stage */

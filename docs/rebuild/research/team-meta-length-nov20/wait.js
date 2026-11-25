@@ -1,0 +1,1 @@
+new Promise(r=>{const t0=Date.now();const f=()=>{const busy=/Working out/.test(document.body.textContent)||document.querySelector('.sg2-wait');if(!busy||Date.now()-t0>90000)setTimeout(r,800);else setTimeout(f,500);};f();});

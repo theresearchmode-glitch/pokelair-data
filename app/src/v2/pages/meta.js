@@ -1,0 +1,162 @@
+// ---------- Meta > Pokémon > Rating (Nov 14): "Who wins right now." ----------
+// The approved mock-up (Preview gallery ratings.html; source docs/rebuild/mocks/ratings.tpl.html). Every feature of today's Ratings page
+// (D-meta-shell RATE-01..09; inventory docs/rebuild/meta-features.md) is here: the kicker with teams and the data date, How ratings
+// work, Track Record, search by name or type with a match count, filters (two types at most, Megas / No Megas, hidden gems, in my box,
+// Clear), the top of the ratings, every Pokémon by tier with "+N more" / "Show fewer" (remembered), About the ratings (track record,
+// the four numbers, sources). The numbers are today's shared logic: lairRows, lairRank, lairHead, lTier, isGem, ratingTrack.
+V2.raUi = {q: '', ty: [], f: {}, types: false, all: null, open: null, spot: null, low: false};
+V2.raLoad = () => { const U = V2.raUi; if (U.all == null) { let o = {}; try { o = JSON.parse(localStorage.getItem('np2.ra.board') || '{}') || {}; } catch (e) {} U.all = !!o.all; U.open = o.open || {}; U.view = o.view === 'list' ? 'list' : 'stand'; } };
+V2.raSave = () => { try { localStorage.setItem('np2.ra.board', JSON.stringify({all: V2.raUi.all, open: V2.raUi.open, view: V2.raUi.view})); } catch (e) {} };
+V2.raFilter = rows => { const U = V2.raUi, q = U.q.trim().toLowerCase(), f = U.f;
+  return rows.filter(({p}) => (!q || p.d.toLowerCase().includes(q) || p.t.some(t => t.toLowerCase() === q)) && (!U.ty.length || U.ty.every(t => p.t.includes(t)))
+    && (!f.mega || p.m) && (!f.nomega || !p.m) && (!f.gem || isGem(p)) && (!f.box || inBox(p))); };
+V2.raFiltered = () => { const U = V2.raUi; return !!(U.q.trim() || U.ty.length || Object.values(U.f).some(Boolean)); };
+V2.raOnTeam = p => members().some(m => m.p.n === p.n);
+V2.raNums = p => { const H = lairHead(p); return {u: H.hU, w: H.hG != null && H.hG >= 30 ? H.hW : null, g: H.hG, tot: H.tot}; };
+V2.raGames = g => g == null ? '' : (g >= 1000 ? (g / 1000).toFixed(1) + 'k' : String(Math.round(g))) + ' games';
+const E2 = s => V2.esc(String(s));
+V2.raTierHead = (T, rows) => { const n = rows.filter(y => lTier(y.r.total).k === T.k).length, of = lairRankCache.of || (lairRank(lairRows()[0] && lairRows()[0].p) || {}).of;
+  return `<div class="ra-tier" data-tier="${T.k}"><b class="ra-tk" style="--tc:${T.c}">${T.k} tier</b><span>${E2(tierBand(T))} · ${E2(T.d)} · ${n} Pokémon${T.k === 'S' && of ? `, ranked among ${of} with results` : ''}</span></div>`; };
+V2.raRow = x => { const E = V2.esc, p = x.p, r = x.r, k = lairRank(p), N = V2.raNums(p), unsure = r.band >= 10, gem = isGem(p), mine = V2.raOnTeam(p);
+  const tag = mine ? '<span class="ra-mine"><i aria-hidden="true"></i>On your team</span>' : '';
+  return `<button type="button" class="ra-row" data-v2mon="${E(p.n)}" data-raspot="${E(p.n)}" aria-label="${E(p.d)}, rated ${RS(r.total)}${k ? ', number ' + k.rank : ''}${N.u != null ? ', on ' + E(V2.raPct(N.u)) + ' of teams' : ''}${N.w != null ? ', ' + E(winFmt(N.w)) + ' wins in ' + Math.round(N.g).toLocaleString('en-US') + ' games' : ''}${mine ? ', on your team' : ''}: open its page">
+    <span class="ra-rk u">${k ? k.rank : '–'}</span>${V2.mon(p.n, {bare: true})}
+    <span class="ra-nm"><span class="ra-nl"><b>${gem ? '<span class="ra-gem" title="Hidden gem">◆</span> ' : ''}${V2.nameHtml(p.d)}</b>${tag}</span><span class="ra-ty">${p.t.map(V2.typeWord).join('')}</span>
+      <span class="ra-ph">${N.u != null ? `<b>${E(V2.raPct(N.u))}</b> of tournament teams` : ''}${N.w != null ? ` · <b>${E(winFmt(N.w))}</b> win rate` : ''}</span></span>
+    <span class="ra-bar" aria-hidden="true"><i style="width:${RS(r.total)}%"></i></span><span class="ra-sc u"${bandAt(r.total)}>${RS(r.total)}${unsure ? '<small title="Few games: an estimate">?</small>' : ''}</span>
+    <span class="ra-ut">${N.u != null ? `${E(V2.raPct(N.u))}` : '–'}</span><span class="ra-wr">${N.w != null ? `<b>${E(winFmt(N.w))}</b><small>${E(V2.raGames(N.g))}</small>` : '<b>–</b><small>too few games</small>'}</span></button>`; };
+V2.raPct = v => (+v).toFixed(1) + '%';
+// audit v199 #14 (Sim chose A, Nov 17): the heroes' share fact reads "Of teams", so the three labels keep one line on phones;
+// the spoken label stays complete ("On 37.7% of tournament teams"); the page still names its base (Ratings kicker, Usage chips)
+V2.gsShare = (v, base) => { const E = V2.esc; return `<p><span class="vh">${v != null ? `On ${E(v)} of ${E(base)} teams` : `Share of ${E(base)} teams: no data yet`}</span><span aria-hidden="true">Of teams</span><b class="u" aria-hidden="true">${v != null ? E(v) : '–'}</b></p>`; };
+// The Grandstand (Sim's pick, Nov 14; brief docs/rebuild/mocks/meta-grandstand/BRIEF.md): every Pokémon stands on a bench in its tier,
+// bigger in higher tiers. Rows per width (brief section 2): desktop up to 12 across (two rows at most, F one), iPad 6 (three rows at most), phone 4 (5 when that
+// leaves no lone slot), two rows at most (Sim, Nov 14, Q1 B; D two, F one); a shorter last row is centred; more than fits = "See all N ›" (remembered).
+V2.gsWeek = () => { const M = META.track && META.track.mv, o = new Map(); if (M && M.list) for (const m of M.list) { const d = RS(m.r) - RS(m.r - m.d); if (d) o.set(m.n, d); } return o; };
+V2.gsLay = (n, k, open) => { const W = innerWidth, desk = W >= 1100, tab = W >= 700; let C = desk ? 12 : tab ? 6 : 4; if (!tab && [5, 9, 10].includes(n)) C = 5;
+  const R = k === 'F' ? 1 : k === 'D' || !tab ? 2 : desk ? 2 : 3, /* Sim, Nov 14 (Q1 B): phones show 2 rows per tier + See all */ shown = open ? n : Math.min(n, C * R), rows = Math.max(1, Math.ceil(shown / C)); return {shown, c: Math.ceil(shown / rows)}; };
+V2.gsMon = (x, wk, mrank) => { const E = V2.esc, p = x.p, r = x.r, k = lairRank(p), N = V2.raNums(p), gem = isGem(p), mine = V2.raOnTeam(p), mv = wk.get(p.n) || 0, sc = RS(r.total), T = lTier(r.total);
+  const one = k && k.rank === 1 && !mrank, d = p.d.startsWith('Mega ') ? p.d.slice(5) : p.d;
+  const top = mrank ? `<span class="gs-mg u">#${mrank}</span>` : p.m ? '<span class="gs-mg u">Mega</span>' : '<span class="gs-mg" aria-hidden="true">&nbsp;</span>';
+  return `<button type="button" class="gs-mon${one ? ' one' : ''}" data-v2mon="${E(p.n)}" data-raspot="${E(p.n)}" style="--b1:var(--ty-${p.t[0]});--b2:var(--ty-${p.t[1] || p.t[0]})" aria-label="${E(p.d)} ${sc}: rated${k ? ' number ' + k.rank : ''}, ${T.k} tier${mrank ? ', Mega number ' + mrank : ''}${N.u != null ? ', on ' + E(V2.raPct(N.u)) + ' of teams' : ''}${N.w != null ? ', ' + E(winFmt(N.w)) + ' win rate' : ''}${mv ? (mv > 0 ? ', up ' : ', down ') + Math.abs(mv) + ' points this week' : ''}${gem ? ', hidden gem' : ''}${mine ? ', on your team' : ''}: open its page">
+    <span class="gs-fig" aria-hidden="true">${one ? '<span class="gs-one u" aria-hidden="true"></span>' : ''}<i class="gs-base" aria-hidden="true"></i>${V2.mon(p.n, {bare: true})}</span>
+    <span class="gs-tx" aria-hidden="true">${top}<b>${gem ? '<span class="ra-gem">◆</span> ' : ''}${E(d)}</b><span class="gs-sc"><span class="u">${sc}</span>${mv ? `<small class="${mv > 0 ? 'up' : 'dn'}">${mv > 0 ? '▲' : '▼'}${Math.abs(mv)}</small>` : ''}</span>${mine ? '<i class="gs-mine"></i>' : ''}</span></button>`; };
+/* phones (Sim, Nov 20, option C of docs/rebuild/research/team-meta-length-nov20.md): (A) each tier's words sit under its "90+" inside the colour band and
+   See All moves onto the band (no separate line per tier); (B) the D and F tiers fold behind one real button that opens them in place (V2.raUi.low;
+   a class, no redraw, focus stays). 700+ is unchanged; the page redraws when the width crosses 700 */
+V2.gsStand = (rows, megas) => { const U = V2.raUi, wk = V2.gsWeek(), mr = new Map(), ph = innerWidth < 700; if (megas) rows.forEach((x, i) => mr.set(x.p.n, i + 1));
+  const low = ph ? LTIERS.filter(T => (T.k === 'D' || T.k === 'F') && rows.some(x => lTier(x.r.total).k === T.k)) : [], nLow = rows.filter(x => low.some(T => lTier(x.r.total).k === T.k)).length;
+  const lowBtn = low.length ? V2.kMore(nLow, {open: !!U.low, note: V2.gsLowNote(!!U.low), attrs: {class: 'gs-foldbtn', 'data-ralow': nLow, 'aria-controls': low.map(T => 'ra-t-' + T.k).join(' ')}}) /* Wave 2 (Sim chose A, Nov 22): the kit show-more, its second line kept as the small note */ : '';
+  return `<div class="gs">${LTIERS.map(T => { const inT = rows.filter(x => lTier(x.r.total).k === T.k); if (!inT.length) return ''; const open = !!U.open[T.k], L = V2.gsLay(inT.length, T.k, open), shown = inT.slice(0, L.shown), out = [];
+    for (let i = 0; i < shown.length; i += L.c) out.push(`<div class="gs-row" style="--c:${L.c}">${shown.slice(i, i + L.c).map(x => V2.gsMon(x, wk, megas ? mr.get(x.p.n) : 0)).join('')}</div>`);
+    const more = inT.length > L.shown || open && inT.length > V2.gsLay(inT.length, T.k, false).shown;
+    const nMore = inT.length - L.shown, all = !more ? '' : ph /* phones: the link stays on the tier's colour band (Sim's Q60 option C, for length); only its words follow the kit pattern */
+      ? `<button type="button" class="np-link gs-ball" data-ratier="${T.k}" aria-expanded="${open}" aria-label="${open ? 'Show fewer' : `Show ${nMore} more`}, ${E2(T.k)} tier">${open ? 'Show fewer' : `Show ${nMore} more ›`}</button>`
+      : V2.kMore(nMore, {open, attrs: {class: 'gs-more', 'data-ratier': T.k, 'aria-label': `${open ? 'Show fewer' : `Show ${nMore} more`}, ${T.k} tier`}}) /* Wave 2: the kit show-more on the tier's word line */, fold = low.some(L => L.k === T.k);
+    return `${fold && T.k === low[0].k ? lowBtn : ''}<section class="gs-step ra-tg${fold ? ' gs-fold' + (U.low ? ' on' : '') : ''}" id="ra-t-${T.k}" data-tier="${T.k}" style="--tc:var(--tier-${T.k.toLowerCase()})"><div class="gs-blk ra-tier${ph ? ' gs-bnd' : ''}" data-tier="${T.k}"><span class="vh">${T.k} tier, ${E2(tierBand(T))} · ${E2(T.d)} · ${inT.length} Pokémon${T.k === 'S' ? `, ranked among ${(lairRank(lairRows()[0] && lairRows()[0].p) || {}).of || 0} with results` : ''}</span><b class="u" aria-hidden="true">${T.k}</b>${ph ? `<span class="gs-bw" aria-hidden="true"><span>${E2(tierBand(T))}</span><span class="gs-bd">${E2(T.d)}</span></span>${all || `<small aria-hidden="true">${inT.length} Pokémon</small>`}` : `<span aria-hidden="true">${E2(tierBand(T))}</span><small aria-hidden="true">${inT.length} Pokémon</small>`}</div>
+      <div class="gs-main">${ph ? '' : `<p class="gs-wd"><span aria-hidden="true">${E2(T.d)}</span>${all}</p>`}<div class="gs-rows">${out.join('')}</div></div></section>`; }).join('')}</div>`; };
+V2.gsLowNote = open => open ? 'Fold the D and F tiers away' : `The D and F tiers, rated under ${LTIERS.find(T => T.k === 'C').show}`;
+// the spotlight: #1 (or the top Mega in the Megas view) by default; on a mouse screen the Pokémon under the pointer steps up here
+V2.raSpot = n => { const E = V2.esc, U = V2.raUi, megas = !!U.f.mega && !V2.raFiltered2(), all = V2.ratedRows() /* Not rated yet (Nov 25): no spotlight for an unrated Pokémon */, pool = megas ? all.filter(y => y.p.m) : all, x = pool.find(y => y.p.n === n) || all.find(y => y.p.n === n) || pool[0]; if (!x) return '';
+  const p = x.p, r = x.r, T = lTier(r.total), k = lairRank(p), N = V2.raNums(p), mine = V2.raOnTeam(p), top = x === pool[0];
+  const tag = top ? (megas ? 'The top Mega right now' : '#1 right now') : k ? `#${k.rank} of ${k.of}` : 'Rated';
+  return `<div class="gs-spot ra-spot" style="--ta:var(--ty-${p.t[0]});--tb:var(--ty-${p.t[1] || p.t[0]})"><div class="gs-plate">${V2.mon(p.n, {bare: true})}</div>
+    <div class="gs-sinfo"><p class="gs-tag u">${E(tag)}</p><h2 class="u">${V2.nameHtml(p.d)}</h2><div class="ra-ty">${p.t.map(V2.typeChip).join('')}</div>
+      <p class="gs-big"><b class="u">${RS(r.total)}</b><span><i class="u">${T.k} tier</i><small>${E2(T.d)}</small></span></p>
+      <div class="gs-facts">${V2.gsShare(N.u != null ? V2.raPct(N.u) : null, 'tournament')}<p><span>Win rate</span><b class="u">${N.w != null ? E(winFmt(N.w)) : '–'}</b></p><p><span>Base Speed</span><b class="u">${p.st[5]}</b></p></div>
+      <div class="ra-acts"><button type="button" class="np-btn" data-v2mon="${E(p.n)}"><span>Pokémon Page</span></button><button type="button" class="np-btn2 k-btn" data-hmaround="${E(p.n)}"><span>Build Around It</span></button></div>
+      ${mine ? '<p class="ra-mine"><i aria-hidden="true"></i>On your team</p>' : ''}</div></div>`; };
+// the stand shows everyone, the Megas view and No Megas; search, types, hidden gems and the box keep the list until Sim has seen them (brief section 7)
+V2.raFiltered2 = () => { const U = V2.raUi; return !!(U.q.trim() || U.ty.length || U.f.gem || U.f.box); };
+
+// one step of the stairs: the Pokémon stands on a slanted bar in its type colours, taller for a higher rank (by rank, so the heights never
+// fake the rating gaps); its #rank chip (#1 pink), big rating and ▲/▼ this week on the bar; the tier colour at its foot; tap opens its page
+V2.raStairs = (rows, megas) => { const E = V2.esc, wk = V2.gsWeek(), n = rows.length;
+  const step = (x, i) => { const p = x.p, k = lairRank(p), N = V2.raNums(p), sc = RS(x.r.total), mv = wk.get(p.n) || 0, rank = megas ? i + 1 : k ? k.rank : i + 1, nm = V2.kName(p.n), lvl = Math.min(i, 10);
+    return `<li><button type="button" class="rs-b${rank === 1 ? ' one' : ''}" data-v2mon="${E(p.n)}" data-raspot="${E(p.n)}" style="--b1:var(--ty-${p.t[0]});--b2:var(--ty-${p.t[1] || p.t[0]});--lv:${lvl}" aria-label="${E(p.d)} ${sc}: rated number ${rank}, S tier${N.u != null ? ', on ' + E(V2.raPct(N.u)) + ' of teams' : ''}${mv ? (mv > 0 ? ', up ' : ', down ') + Math.abs(mv) + ' points this week' : ''}: open its page">${V2.mon(p.n, {bare: true, iw: 104})}<span class="rs-col" aria-hidden="true"><b class="rs-rk u">#${rank}</b>${mv ? `<i class="rs-mv ${mv > 0 ? 'up' : 'dn'}">${mv > 0 ? '▲' : '▼'}${Math.abs(mv)}</i>` : ''}<b class="rs-sc u">${sc}</b></span><span class="rs-nm" aria-hidden="true">${nm.form ? `<small>${E(nm.form)}</small>` : ''}${E(nm.name)}</span></button></li>`; };
+  return `<section class="rs-wrap" id="ra-t-S" aria-labelledby="rs-h"><h2 class="vh" id="rs-h">${(T => `S tier, ${E2(tierBand(T))} · ${E2(T.d)} · ${n} Pokémon, ranked among ${(lairRank(lairRows()[0] && lairRows()[0].p) || {}).of || 0} with results`)(lTier(rows[0].r.total))}</h2><ol class="rs-st" style="--n:${n}">${rows.map(step).join('')}</ol><p class="rs-cap"><span>S tier · ${n} Pokémon · rank, rating 0–100 · tap one for its page</span><span>Taller = higher rank</span></p></section>`; };
+// the Meta > Pokémon tab row (Ratings, Usage, Popular Sets, Natures), shared by the four pages (Natures added Nov 23)
+V2.pkTabs = on => `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
+    <nav class="ra-seg" aria-label="Pokémon views">${[['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['natures', 'Natures']].map(([h, t]) => `<a href="#${h}"${h === on ? ' class="on" aria-current="page"' : ''}>${t}</a>`).join('')}</nav></div>`;
+V2.pages.meta = {place: 'meta', draw() { const E = V2.esc, U = V2.raUi; V2.raLoad();
+  const all = V2.ratedRows() /* Not rated yet (Sim, Nov 25): an unrated Pokémon is left out of the stairs, tiers and list (shell.js) */, rows = V2.raFilter(all), filtered = V2.raFiltered(), listy = V2.raFiltered2() || U.view === 'list', pf = activePerf(), reg = regId().replace('-', '‑');
+  let d = pf && pf.updated ? String(pf.updated).slice(0, 10) : ''; try { if (d) d = new Date(d + 'T12:00:00Z').toLocaleDateString('en-US', {month: 'short', day: 'numeric'}); } catch (e) {}
+  const teams = RES && +RES.teams > 0 ? +RES.teams : 0;
+  const tabs = V2.pkTabs('meta'); /* Natures page (Nov 23): the four Pokémon views in one place */
+  const head = `<section class="ra-h"><p class="k-kicker np-eyebrow ra-kk">META · THE LINE-UP</p><h1 class="k-h1 u"><span>Who wins</span> <span class="pl">right now.</span></h1>
+    <p class="ra-lede">Every Pokémon rated 0–100 from real tournament results, not opinion.${V2.freshAgo() ? ` ${V2.freshAgo().replace(/^u/, 'U')}.` : ''}</p>${tabs}
+    <p class="ra-kick">${(dn => dn ? `${E(dn)}${teams ? ` · ${E(basisNum(teams))} teams` : ''}` : `Reg ${E(reg)} doubles${teams ? ` · ${E(basisNum(teams))} tournament teams` : ''}`)(V2.regDay ? V2.regDay() : '')}${typeof V2.tip === 'function' ? `<span class="ra-nw">${V2.tip('numbers')}</span>` : ''}</p>
+    <p class="ra-links"><a class="np-link" href="#method=rating">How Ratings Work ›</a><a class="np-link" href="#track">Track Record ›</a></p></section>`;
+  const gems = all.filter(x => isGem(x.p)).length, f = U.f, chip = (k, l) => V2.kChip('', {html: l, on: !!f[k], attrs: {'data-raflag': k}}) /* Wave 2 part 2 (Sim chose A, Nov 22): the kit filter chip (was the grey ra-chip) */;
+  const filt = `<div class="ra-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" data-raq value="${E(U.q)}" placeholder="Find a Pokémon or type" aria-label="Find a Pokémon or type" autocomplete="off">${V2.CLR}</label><p class="ra-count" role="status"><b class="u">${filtered ? rows.length : all.length}</b> ${filtered ? `of ${all.length} match` : 'rated'}</p></div>
+    <div class="ra-filt" role="group" aria-label="Filter">${V2.kChip('All', {on: !filtered, attrs: {'data-raflag': 'all'}})}${chip('mega', 'Megas')}${chip('nomega', 'No Megas')}${gems ? chip('gem', `◆ Hidden Gems <small>${gems}</small>`) : ''}${chip('box', 'In my box')}
+      ${V2.kChip('Types', {on: U.ty.length > 0, count: U.ty.length || TYPES.length, attrs: {'data-ratypes': '', 'aria-expanded': String(!!U.types)}})}${filtered ? V2.kChip('Clear', {attrs: {class: 'ra-clear', 'data-raflag': 'clear'}}) : ''}</div>
+    ${U.types ? `<div class="ra-types" role="group" aria-label="Types, two at most">${TYPES.map(t => `<button type="button" class="tc-tp${U.ty.includes(t) ? ' on' : ''}" data-raty="${t}" aria-pressed="${U.ty.includes(t)}" style="--tc:var(--ty-${t})">${t}</button>`).join('')}</div>` : ''}`;
+  const colh = `<div class="ra-colh" aria-hidden="true"><span>Pokémon</span><span>Rating</span><span>On teams</span><span>Win rate</span></div>`;
+  const grouped = list => { let out = '', prev = null; for (const x of list) { const T = lTier(x.r.total); if (!prev || prev.k !== T.k) out += V2.raTierHead(T, filtered ? list : all); prev = T; out += V2.raRow(x); } return out; };
+  const viewSw = V2.raFiltered2() ? '' : `<nav class="gs-view" aria-label="View">${V2.kChip('Grandstand', {on: !listy, attrs: {'data-raview': 'stand'}})}${V2.kChip('', {html: 'List<span class="gs-vx"> with win rates</span>', on: listy, attrs: {'data-raview': 'list', 'aria-label': 'List with win rates'}})}</nav>`;
+  // the advisor (Nov 15, Meta): the legend line moves into a '?' beside the title, same words
+  TIPS.gskey = TIPS.gskey || ['How to read the Grandstand', 'The big number is each Pokémon\'s rating, 0–100. "Mega" marks a Mega. ▲ or ▼ means it moved up or down this week. ◆ marks a hidden gem: rarely used, but wins more than its use predicts. A short blue bar under a name means it is on your team.'];
+  const key = V2.tip('gskey');
+  /* the stairs (Sim approved Nov 22, 12:26 PM: Ratings round 2 A; 'the stairs ARE the S tier'): every S-tier Pokémon of what's shown, as a plot
+     bar stepping down by rank; the Grandstand below starts at A, so no Pokémon shows twice. The list view keeps every tier as before. */
+  const sRows = rows.filter(x => lTier(x.r.total).k === 'S'), stairsOn = !listy && sRows.length > 0;
+  let body;
+  /* the tier bar (Sim, Nov 21: "see what's S tier, A tier, B tier and so on easily and look through everything"): every tier with its count,
+     one tap jumps to it (opening it, and on phones the folded D and F tiers too); the kit's sentence with boxed words */
+  const tierN = T => (filtered ? rows : all).filter(x => lTier(x.r.total).k === T.k).length;
+  const tierBar = V2.kSent ? `<nav class="ra-tbar" aria-label="Jump to a tier">${V2.kSent(['Jump to', ...LTIERS.filter(T => tierN(T)).map(T => ({w: `${T.k} · ${tierN(T)}`, attrs: {'data-rajump': T.k, 'aria-label': `${T.k} tier, ${tierN(T)} Pokémon: jump to it`}}))], {hint: false})}</nav>` : '';
+  if (!listy) body = tierBar + `<div class="gs-title"><h2 class="u">The <span class="nw">${f.mega ? 'Megas' : 'Grandstand'}${key}</span></h2>${viewSw}</div>${rows.length ? V2.gsStand(stairsOn ? rows.filter(x => lTier(x.r.total).k !== 'S') : rows, !!f.mega) : '<p class="ra-none k-none">No Pokémon match. Try clearing a filter.</p>'}`;
+  else if (filtered) body = (viewSw ? `<div class="gs-title"><h2 class="u">Every match</h2>${viewSw}</div>` : '') + (rows.length ? `<div class="ra-list">${colh}${grouped(rows)}</div>` : `<p class="ra-none k-none">${f.box && !(S.box || []).length ? 'Your box is empty. Add the Pokémon you own on My box.' : 'No Pokémon match. Try clearing a filter.'}</p>`);
+  else body = tierBar + `<div class="gs-title"><h2 class="u">Every Pokémon, by tier</h2>${viewSw}</div><div class="ra-list ra-board">${colh}${LTIERS.map(T => { const inT = all.filter(x => lTier(x.r.total).k === T.k); if (!inT.length) return '';
+      const cap = 12, open = U.open[T.k] || inT.length <= cap + 1, shown = open ? inT : inT.slice(0, cap);
+      return `<section class="ra-tg" id="ra-t-${T.k}">${V2.raTierHead(T, all)}${shown.map(V2.raRow).join('')}${inT.length > cap + 1 ? V2.kMore(inT.length - cap, {open: !!U.open[T.k], attrs: {class: 'ra-more', 'data-ratier': T.k}}) /* Wave 2: the kit show-more (was "+N more ›") */ : ''}</section>`; }).join('')}</div>`;
+  const legend = `<p class="fine ra-legend">${!listy ? `${rows.length} rated` : filtered ? `${rows.length} of ${all.length} shown` : `All ${all.length} shown`}, ranked among ${(lairRank(all[0] && all[0].p) || {}).of || 0} with tournament results · ◆ hidden gem: rarely used, wins more than its use predicts${listy ? ' · ? few games, an estimate' : ''}</p>`;
+  const tr = ratingTrack(), src = pf && pf.sources ? Object.entries(pf.sources).filter(([k, v]) => v && !(k === 'adj' && pf.sources.tour)).map(([, v]) => String(v)) : [];
+  const about = `<details class="ra-about" data-raabout${(() => { try { return localStorage.getItem('cc2.chf.raabout') === '1' ? ' open' : ''; } catch (e) { return ''; } })()}><summary><span><b>About the ratings</b><small>How they are made, the ${src.length} data sources and their track record</small></span><i aria-hidden="true">›</i></summary>
+    ${tr ? `<p class="ra-track">Track record: in ${tr.events} recent events, the team with the higher average rating finished higher in ${E(pctFmt(tr.acc * 100))} of ${tr.pairs.toLocaleString('en-US')} head-to-head pairs (50% would be a coin flip). Ratings rank single Pokémon: use them to find candidates, and Matchups on My Team to check a team.</p>` : ''}
+    <div class="ra-cells"><p><b class="u">${all.length}</b><span>Pokémon rated</span></p><p><b class="u">${src.length}</b><span>data source${src.length === 1 ? '' : 's'}</span></p><p><b class="u">${all.filter(x => x.r.total >= 80).length}</b><span>in S tier</span></p><p><b class="u">${gems}</b><span>hidden gems</span></p></div>
+    <p class="ra-lbl">Doubles sources${d ? ' · data from ' + E(d) : ''}</p><ul class="ra-src">${src.map(v => `<li>${E(v)}</li>`).join('')}</ul>
+    <p class="ra-how">A rating says how strong a Pokémon is in the current format, proven by results. Four ingredients, each shown on every Pokémon's sheet: how often it's on teams that reach top cut at tournaments (counts most; recent and bigger events weigh more), how often strong players pick it (usage weighted by each player's skill), whether it makes top cut more or less often than its usage predicts, and its win rate. The last two are pulled toward average until there are enough games. Ratings read like school grades: S 90+, A 80s, B 70s, C 60s, D 50s, F under 50, and the best Pokémon shows as ${RS(RATE_V3.top)}. Halving a Pokémon's presence costs about 10 points (about 5 inside S, where the top is squeezed). This mix was chosen on Oct 27 by testing ten candidate measures on later events and against five outside tier lists; only the ones that helped are in. Rarely used Pokémon that overperform get the ◆ hidden gem tag instead of jumping the tier list. Ratings are saved every day and checked later against the tournaments that came after.</p></details>`;
+  /* phones (Sim's Q21 A, Nov 19; review #12 + #19): search and filters come first, above the featured #1 (they sat ~850-950px down), in the
+     page and tab order too; the chips wrap into even rows (pages.css .ra-ctlt). 700+ keeps them under the hero; the page redraws when the width crosses 700 */
+  const ph = innerWidth < 700, ctl = `<div class="gs-ctl${ph ? ' ra-ctlt' : ''}">${filt}</div>`;
+  const stairs = stairsOn ? V2.raStairs(sRows, !!f.mega && !V2.raFiltered2()) : ''; /* phones: right under the headline (approved mock); 700+: under the top band */
+  /* Not rated yet, day one (Sim's choice, Nov 25; HH's design call): with no Pokémon rated there is nothing to rank, so no stairs,
+     filters or Grandstand. The spotlight's place holds today's underdog (the 404 page's card and scribble, rule 23) and the lede
+     says plainly when ratings start. Never shown while any Pokémon is rated (today's page is unchanged) */
+  if (V2.noRatings && V2.noRatings()) { const ud = V2.underdog ? V2.underdog() : 'Flapple', ud2 = V2.disp(ud), rn = typeof regName === 'function' ? regName().replace(/ /g, '\u00a0').replace(/-/g, '\u2011') : 'this regulation';
+    const head0 = head.replace(/<p class="ra-lede">[\s\S]*?<\/p>/, `<p class="ra-lede">Ratings start with the first ${E(rn)} tournament results. Until a Pokémon has played, it isn't rated: no guesses.</p>`);
+    return `<div class="ra gsp rs-on"><div class="gs-top">${head0}<div class="ra-spotw"><aside class="nf-dog nf2-dog" aria-label="Today's underdog">${V2.kCard(ud, {size: 'hero', form: "Today's underdog", fact: "Nobody's rated yet. Everybody's a contender.", attrs: {'data-v2mon': ud, 'aria-label': `${ud2}: open its info`}})}</aside></div>${tabs}</div></div>`; }
+  return `<div class="ra gsp rs-on"><div class="gs-top">${head}${ph ? stairs + ctl : ''}<div class="ra-spotw" data-raspotw>${V2.raSpot(U.spot)}</div>${tabs}</div>${ph ? '' : stairs}<div class="gs-body">${ph ? '' : ctl}${body}${legend}${about}${ph && stairsOn ? `<p class="ra-links ra-lph"><a class="np-link" href="#method=rating">How Ratings Work ›</a><a class="np-link" href="#track">Track Record ›</a></p>` : ''}</div></div>`; }};
+
+// search, filters, see all, tiers
+/* speed audit Nov 16 (4x CPU: 360 ms per keystroke, every key redrew the whole page): the redraw waits 250 ms after the last key (normal typing speed), so a
+   typed name redraws once; the box keeps its text, focus and cursor */
+document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-raq]'); if (!i) return; V2.raUi.q = i.value; clearTimeout(V2._raqT);
+  V2._raqT = setTimeout(() => { const cur = document.querySelector('[data-raq]'), had = cur && document.activeElement === cur, at = cur ? cur.selectionStart : null; V2.redraw();
+    const n = document.querySelector('[data-raq]'); if (n && had) { n.focus(); try { n.setSelectionRange(at, at); } catch (x) {} } }, 250); });
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-raflag],[data-ratypes],[data-raty],[data-raall],[data-ratier],[data-rajump],[data-raview]'); if (!b) return; const U = V2.raUi, d = b.dataset;
+  if (d.raflag === 'all' || d.raflag === 'clear') { U.q = ''; U.ty = []; U.f = {}; U.types = false; }
+  else if (d.raflag) { const k = d.raflag; U.f = {...U.f, [k]: !U.f[k]}; if (k === 'mega' && U.f.mega) U.f.nomega = false; if (k === 'nomega' && U.f.nomega) U.f.mega = false; }
+  else if (d.raview) { U.view = d.raview; V2.raSave(); }
+  else if (d.ratypes != null) U.types = !U.types;
+  else if (d.raty) { const t = d.raty; U.ty = U.ty.includes(t) ? U.ty.filter(x => x !== t) : U.ty.length >= 2 ? [U.ty[1], t] : [...U.ty, t]; }
+  else if (d.raall != null) { U.all = !U.all; V2.raSave(); if (!U.all) { V2.redraw(); const l = document.querySelector('.ra-list'); if (l) l.scrollIntoView({block: 'start'}); return; } }
+  else if (d.ratier) { U.open = {...U.open, [d.ratier]: !U.open[d.ratier]}; V2.raSave(); }
+  else if (d.rajump) { U.all = true; U.open = {...U.open, [d.rajump]: true}; if (d.rajump === 'D' || d.rajump === 'F') U.low = true; V2.raSave(); V2.redraw(); const t = document.getElementById('ra-t-' + d.rajump); if (t) { t.scrollIntoView({behavior: V2.smooth(), block: 'start'}); const h = t.querySelector('.ra-tier, .gs-blk'); if (h) { h.tabIndex = -1; h.focus({preventScroll: true}); } } return; }
+  /* keep your place (Nov 15, SHELL-31): the tapped chip stays under the finger; the list above it may change height on a redraw */
+  const key = Object.keys(d).filter(k => /^ra/.test(k)).map(k => `[data-${k.replace(/[A-Z]/g, c => '-' + c.toLowerCase())}="${d[k]}"]`).join(''), y0 = b.getBoundingClientRect().top;
+  V2.redraw(); try { const nb = key && document.querySelector(key); if (nb) { const dy = nb.getBoundingClientRect().top - y0; if (Math.abs(dy) > 1) scrollBy(0, dy); } } catch (x) {} });
+// phones: 'Show D and F tiers' opens / folds them in place (a class, no redraw), so focus stays on the button; V2.raUi.low keeps it across redraws (See All, filters)
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-ralow]'); if (!b) return; const open = V2.raUi.low = b.getAttribute('aria-expanded') !== 'true';
+  (b.getAttribute('aria-controls') || '').split(' ').forEach(id => { const s = id && document.getElementById(id); if (s) s.classList.toggle('on', open); });
+  b.setAttribute('aria-expanded', open); b.innerHTML = V2.kMoreIn(+b.dataset.ralow || 0, {open, note: V2.gsLowNote(open)}); });
+// the spotlight follows the pointer on mouse screens only (touch taps open the sheet)
+document.addEventListener('pointerover', e => { if (e.pointerType !== 'mouse') return; const r = e.target.closest && e.target.closest('[data-raspot]'); if (!r) return; const n = r.dataset.raspot; if (V2.raUi.spot === n) return;
+  V2.raUi.spot = n; const w = document.querySelector('[data-raspotw]'); if (w) w.innerHTML = V2.raSpot(n); });
+// the stand's rows follow the window width (desktop / iPad / phone counts), and on phones the search moves above the featured #1 (Q21): redraw when the width crosses one of them
+(() => { const band = () => innerWidth >= 1100 ? 2 : innerWidth >= 700 ? 1 : 0; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (document.querySelector('.gs, [data-raspotw]')) V2.redraw(); }, 150); }); })();
+
+// 'About the ratings' keeps open / closed across a reload, as How We Calculate's parts do (Nov 15, SHELL-14)
+document.addEventListener('toggle', e => { const d = e.target; if (!d.matches || !d.matches('[data-raabout]')) return; try { localStorage.setItem('cc2.chf.raabout', d.open ? '1' : '0'); } catch (x) {} }, true);

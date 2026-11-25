@@ -1,0 +1,181 @@
+/* ===== Info sheets (Sim approved the design Nov 22, 11:29 AM; docs/rebuild/info-sheets/, approved pictures 1-APPROVED-round3/).
+   Step 2: the MOVE sheet, "the case file": a slanted ticket in the move's type colour (the move tickets' shape) with faint speed lines,
+   the name in the logo font with its giant outline behind, a calm talking volume (Sim, round 1: "not as huge"). Kit tokens only. */
+.np-sheet:has(.is2){width:min(880px,calc(100% - 64px))}
+.np-sheet:has(.is2)>.x{float:none;display:block;margin-left:auto}
+.is2{--c:var(--k-plot);display:grid;gap:var(--s6);margin-top:calc(-1 * var(--tap));padding:var(--s6) var(--s8) var(--s8);color:var(--k-ink)}
+/* the tab: the white text keeps its day colour at night (the type colours are the same in both themes) */
+.is-tab{position:relative;overflow:hidden;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:var(--s4);margin-right:var(--s10);padding:var(--s5) var(--s6);color:var(--on-type);background:var(--c);clip-path:polygon(0 0,calc(100% - 22px) 0,100% 22px,100% 100%,22px 100%,0 calc(100% - 22px))}
+.is-tab.kd-move{background:repeating-linear-gradient(115deg,transparent 0 18px,var(--is-speed) 18px 21px),var(--c)}
+.is-tab .gh{position:absolute;right:-8px;top:-12px;font-size:var(--d96);font-weight:900;line-height:1;color:transparent;-webkit-text-stroke:1.5px var(--is-ghost);white-space:nowrap;pointer-events:none}
+.is-tn{position:relative;min-width:0}
+.is-kk{display:inline-block;margin-bottom:var(--s2);padding:2px var(--s2);background:var(--plate);color:var(--on-plate);font-size:var(--t13);font-weight:800;line-height:1.4;letter-spacing:.04em;transform:skewX(-8deg)}
+.is-nw{white-space:nowrap}.is-tab h2{margin:0;font-size:var(--t34);font-weight:800;line-height:1.05;color:var(--on-type);overflow-wrap:anywhere}
+.is-sub{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2);margin-top:var(--s2);font:600 var(--t15)/1.3 var(--b)}
+.is-tab .np-type{box-shadow:0 0 0 2px var(--is-rim)}
+.is-sh{position:relative;text-align:right}
+.is-sh b{display:block;font-size:var(--t34);font-weight:800;line-height:1}
+.is-sh span{font:600 var(--t13)/1.3 var(--b)}
+.is-sh0 span{font-size:var(--t15)}
+.is-lead{margin:0;max-width:640px;font:500 var(--t17)/1.5 var(--b);color:var(--k-ink)}
+/* the stat strip: small labels, slanted numbers, thin dividers */
+.is-stats{display:flex;flex-wrap:wrap;margin:0;padding:0}
+.is-stats div{margin-right:var(--s5);padding:var(--s1) var(--s5) var(--s1) 0;border-right:1px solid var(--k-rule)}
+.is-stats div:last-child{margin:0;border:0}
+.is-stats dt{font:600 var(--t13)/1.3 var(--b);color:var(--k-ink2)}
+.is-stats dd{margin:0;font-size:var(--t20);font-weight:800;line-height:1.2;color:var(--k-ink)}
+/* section heads: the crime-file voice at talking size, a short slanted bar in the sheet's colour */
+.is-sec{padding-top:var(--s5);border-top:1px solid var(--k-rule)}
+.is-h{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s3);margin:0 0 var(--s3)}
+.is-h h3{position:relative;margin:0;padding-left:var(--s6);font-size:var(--t20);font-weight:800;line-height:1.2;color:var(--k-ink)}
+.is-h h3::before{content:'';position:absolute;left:0;top:6px;width:14px;height:12px;background:var(--c);transform:skewX(var(--slant))}
+.is-h span{font:500 var(--t13)/1.3 var(--b);color:var(--k-ink2)}
+.is-dbl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2) var(--s6);margin:0;padding:0;list-style:none}
+.is-dbl li{position:relative;padding-left:var(--s4);font:500 var(--t15)/1.5 var(--b);color:var(--k-ink)}
+.is-dbl li::before{content:'';position:absolute;left:0;top:8px;width:8px;height:4px;background:var(--k-plot);transform:skewX(var(--slant))}
+.is-users{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s1) var(--s3)}
+.is-u{display:grid;grid-template-columns:48px minmax(0,1fr) auto;align-items:center;column-gap:var(--s2);min-height:var(--tap);padding:var(--s1) var(--s2);border:0;border-radius:var(--r-m);background:none;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.is-u:hover{background:var(--wash)}
+.is-u .np-mon{grid-row:1/3}
+.is-u b{min-width:0;font:700 var(--t15)/1.2 var(--b)}
+.is-u em{font-size:var(--t17);font-weight:800;line-height:1;color:var(--k-plot-text)}
+.is-u small{grid-column:2/4;font:500 var(--t13)/1.3 var(--b);color:var(--k-ink2)}
+.is-learn{display:flex;flex-wrap:wrap;gap:2px}
+.is-l{min-width:var(--tap);min-height:var(--tap);padding:0;border:0;border-radius:var(--r-m);background:none;cursor:pointer}
+.is-l:hover{background:var(--wash)}
+.is-all{margin-top:var(--s2)} /* Wave 2: the kit show-more (kit.css .k-more) */
+.is-src{margin:var(--s2) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
+.is-links{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6)}
+.is-credit{margin:0;font:500 var(--t13)/1.5 var(--b);color:var(--k-ink2)}
+@media (max-width:699.98px){
+  .np-sheet:has(.is2){width:100%}
+  .is2{gap:var(--s5);padding:var(--s4) var(--s4) var(--s6)}
+  .is-tab{grid-template-columns:1fr;padding:var(--s4)}
+  .is-tab h2{font-size:var(--t28)}
+  /* a long name steps down only as far as it must so no word breaks in the middle (V2.isFit, measured at open); a picture moves above the name past 24 */
+  .is-tab h2[data-fs="26"]{font-size:var(--t26)}.is-tab h2[data-fs="24"]{font-size:var(--t24)}.is-tab h2[data-fs="22"]{font-size:var(--t22)}
+  .is-tab h2[data-fs="20"]{font-size:var(--t20)}.is-tab h2[data-fs="17"]{font-size:var(--t17)}.is-tab h2[data-fs="16"]{font-size:var(--t16)}
+  .is-pn.is-stk{flex-direction:column;align-items:flex-start;gap:var(--s2)}
+  .is-tab .gh{font-size:var(--d64)}
+  .is-sh{display:flex;align-items:baseline;gap:var(--s2);text-align:left}
+  .is-sh b{font-size:var(--t26)}
+  .is-sh span{white-space:nowrap}
+  .is-dbl,.is-users{grid-template-columns:1fr}
+  .is-stats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s3);column-gap:var(--s3)}
+  .is-stats div{margin:0;padding:0 var(--s2) 0 0;border:0}
+  .is-stats dd{font-size:var(--t17)}
+  .is-links{gap:var(--s2) var(--s5)}
+}
+/* ABILITY = the ID card (approved round 3): a dark rounded card (--plate), a 12px logo-blue strip down the left, a big faint
+   fingerprint, a TRAIT ON FILE stamp; its section heads mark with a ring. The card is dark in both themes, like the plate. */
+.is-tab.kd-ability{clip-path:none;border-radius:var(--r-l);background:var(--plate);color:var(--on-plate);padding-left:calc(var(--s6) + 12px);box-shadow:var(--shadow-lift)}
+.is-tab.kd-ability::before{content:'';position:absolute;left:0;top:0;bottom:0;width:12px;background:var(--c)}
+.is-tab.kd-ability h2,.is-tab.kd-ability .is-sh{color:var(--on-plate)}
+.is-tab.kd-ability .is-kk{background:var(--c);color:var(--on-type)}
+.is-tab .fp{position:absolute;right:152px;top:50%;width:152px;height:180px;translate:0 -50%;color:var(--is-print);pointer-events:none}
+.is-tof{display:inline-block;margin-left:var(--s2);padding:0 var(--s2);border:2px solid var(--is-stamp-rim);font-size:var(--t13);font-weight:800;line-height:1.4;letter-spacing:.06em;transform:rotate(-3deg)}
+.is2.kd-ability .is-h h3::before{top:4px;width:12px;height:12px;border-radius:50%;transform:none;background:none;box-shadow:inset 0 0 0 3px var(--c)}
+/* a name that opens its sheet, inline wherever it shows: the site's blue word (blue words are buttons) */
+.is-w{display:inline;padding:var(--s3) 0;margin:calc(var(--s3) * -1) 0;border:0;background:none;font:inherit;color:var(--k-plot-text);text-align:inherit;cursor:pointer;text-decoration:underline;text-decoration-thickness:1px;text-underline-offset:3px}
+.is-w:hover{text-decoration-thickness:2px}
+@media (max-width:699.98px){.is-tab .fp{right:-12px;width:120px;height:152px}}
+.is2.kd-ability{--c:var(--is-ability)}
+/* ITEM = the evidence tag (approved round 3): a manila tag, punched hole, string, dashed tear line, a red EVIDENCE stamp (hidden under
+   700 wide). Manila with dark ink in both themes (focus-sash-1440-night.png); its section heads mark with a small tag. */
+.is2.kd-item{--c:var(--is-stamp)}
+.is-tagw{position:relative;margin-right:var(--s10);padding-left:var(--s6)}
+.is-tagw .str{position:absolute;left:0;top:-12px;z-index:1;width:72px;height:80px;color:var(--k-ink2);pointer-events:none}
+.is-tab.kd-item{margin-right:0;padding-left:76px;background:var(--is-manila);color:var(--is-tag-ink);clip-path:polygon(40px 0,100% 0,100% 100%,40px 100%,0 50%)}
+.is-tab.kd-item::before{content:'';position:absolute;left:24px;top:50%;width:16px;height:16px;margin-top:-8px;border-radius:50%;background:var(--surface);box-shadow:inset 0 0 0 3px var(--is-manila-ring)}
+.is-tab.kd-item::after{content:'';position:absolute;left:56px;top:12px;bottom:12px;border-left:2px dashed var(--is-tear)}
+.is-tab.kd-item h2,.is-tab.kd-item .is-sh{color:var(--is-tag-ink)}
+.is-tab.kd-item .gh{-webkit-text-stroke-color:var(--is-tag-ghost)}
+.is-tab.kd-item .is-kk{background:var(--is-tag-ink);color:var(--is-manila)}
+.is-tab .ev{position:absolute;right:212px;top:16px;padding:2px var(--s2);border:3px solid var(--is-stamp);color:var(--is-stamp);font-size:var(--t20);font-weight:900;line-height:1.2;letter-spacing:.08em;transform:rotate(-8deg);opacity:.85}
+.is2.kd-item .is-h h3::before{top:8px;width:16px;height:12px;transform:none;clip-path:polygon(4px 0,100% 0,100% 100%,4px 100%,0 50%)}
+/* phones (hL, Nov 24): the tag takes the X's column too, its top-right corner cut away under the X (the tab's own cut corner, 48px), and the
+   string and hole sit 8-12px tighter, so the name has 40-60px more room (Houndoominite: 17px at 320 wide before, 20 now; 24 at 360) */
+@media (max-width:699.98px){.is-tab .ev{display:none}
+  .is-tagw{margin-right:0;padding-left:var(--s3)}.is-tagw .str{left:-12px}
+  .is-tab.kd-item{padding-left:56px;clip-path:polygon(32px 0,calc(100% - 48px) 0,100% 48px,100% 100%,32px 100%,0 50%)}
+  .is-tab.kd-item::before{left:16px}.is-tab.kd-item::after{left:44px}}
+/* on the dark loadout panel (Popular Sets): the name keeps the panel's ink and big slanted type; the underline marks it as a button */
+/* the main pick and its "or" line sit right on top of each other: each word's tap area grows away from its neighbour only (Nov 23: Jolly's grown area covered Adamant, so tapping Adamant opened Jolly) */
+/* a short word that opens a sheet (Hardy, Calm in the Calc's set line) still gets a 44px-wide tap target (GitHub run 1504: Hardy 42x47) */
+.dc2-set .is-w{display:inline-block;padding-inline:var(--s3);margin-inline:calc(var(--s3) * -1)} /* 24px wider tap box (Lax 25px -> 49px) with the text where it was: no gap before the comma (review Nov 23) */
+/* Nov 24 (qcheck, Option A checks): short words in the Pokémon page basics (Blaze 33px, Timid 35px wide) reach 44px+ wide by growing to the right only, text where it was */
+.pk-kv .is-w{padding-inline-end:var(--s5);margin-inline-end:calc(var(--s5) * -1)}
+.pk-kv dd b:has(+ small) .is-w{padding-bottom:0;margin-bottom:0}.pk-kv dd b + small .is-w{padding-top:0;margin-top:0}
+.lo-v .is-w{color:inherit;text-decoration-color:var(--plate-link)}
+/* phone sweep (hPS, Nov 24): the same pairs grow their tap areas away from each other to 44px, text where it was. Popular Sets: Timid's
+   area covered the top of Modest's (Modest 42px; Modest is positioned so the note line under it doesn't take its lower half); Pokémon page: Item and Ability (the first row, nothing tappable above) reach up over
+   their label. The second row (Nature) can't: the "or" word above it (Life Orb) needs that room, and two 44px areas don't fit in its 65px */
+.lo-v>b:has(+ .lo-vr) .is-w{padding:var(--s6) 0 0;margin:calc(var(--s6) * -1) 0 0}.lo-v>b + .lo-vr .is-w{position:relative;padding:0 0 var(--s8);margin:0 0 calc(var(--s8) * -1)}
+.pk-kv>div:nth-child(-n+2) dd>b .is-w{padding-top:var(--s6);margin-top:calc(var(--s6) * -1)}
+/* phones (hNR, Nov 24): every word in the basics list gets a 44px tap area with no two overlapping: each main pick reaches 28px up over
+   its label (24px measured 43.5px: the "or" line under it takes its last pixel), each "or" word 26px down; pages.css gives the rows the
+   room (row gap 38px, 28px before the moves) so neighbouring areas stay 2px apart. Tablets too (hNR2, Nov 24): 700-1099 has the same
+   two-column list (Life Orb 27px, Adamant 33px, Modest 32px before), so the rule runs to 1099.98; desktop 1100+ (four columns) unchanged */
+@media (max-width:1099.98px){.pk-kv dd>b .is-w,.pk-kv>div:nth-child(-n+2) dd>b .is-w{padding-top:calc(var(--s6) + var(--s1));margin-top:calc((var(--s6) + var(--s1)) * -1)}
+  .pk-kv dd b + small .is-w{padding-bottom:calc(var(--s6) + 2px);margin-bottom:calc((var(--s6) + 2px) * -1)}}
+
+/* pictures on the sheets (Sim approved Nov 23, 4:33 PM; docs/mockups/sheet-pics-natures-nov23): the picture sits left of the name */
+.is-pn{position:relative;z-index:1;display:flex;align-items:center;gap:var(--s5);min-width:0}.is-pn .is-tn{min-width:0}
+/* the move's type seal: a slanted tile, a deeper shade of the type colour, the white type symbol */
+.is-seal{flex:none;display:grid;place-items:center;width:84px;height:84px;border-radius:var(--r-l);transform:skewX(-10deg);
+  background:color-mix(in srgb,var(--c) 62%,var(--sd-ink));box-shadow:inset 0 0 0 2px var(--sd-speed),0 6px 14px -6px var(--sd-shade)}
+.is-seal svg{width:52px;height:52px;fill:var(--sd-on-band);transform:skewX(10deg)}
+@media (max-width:699.98px){.is-pn{gap:var(--s3)}.is-seal{width:64px;height:64px}.is-seal svg{width:40px;height:40px}}
+/* the Ability's ID photo: a light photo card, rotated a little, with a staple, the Pokémon on a pale blue backdrop (same colours day and night) */
+.is-photo{position:relative;flex:none;width:96px;padding:var(--s1) var(--s1) var(--s1);background:var(--id-card);border-radius:var(--r-s);transform:rotate(-3deg);box-shadow:0 6px 14px -6px var(--sd-shade)}
+.is-photo::before{content:"";position:absolute;top:calc(var(--s1) * -1);inset-inline:0;width:28px;height:6px;margin-inline:auto;border-radius:2px;background:var(--id-staple)}
+.is-ph{display:grid;place-items:center;height:84px;overflow:hidden;background:linear-gradient(180deg,var(--id-bg),var(--id-bg2));border-radius:2px}
+.is-ph .np-mon{width:84px}.is-ph .np-mon .st{width:84px}
+.is-photo small{display:block;margin-top:var(--s1);font:700 var(--t13)/1.2 var(--b);color:var(--id-ink2);text-align:center;text-transform:uppercase;letter-spacing:.04em}
+.is-photo small b{display:block;font:700 var(--t13)/1.2 var(--b);color:var(--id-ink);letter-spacing:0;text-transform:none;overflow-wrap:anywhere}
+@media (max-width:699.98px){.is-photo{width:80px}.is-photo small{letter-spacing:0;font-stretch:88%}.is-ph{height:68px}.is-ph .np-mon,.is-ph .np-mon .st{width:68px}}
+
+/* the item's evidence bag (item drawings v2, Sim OK Nov 23): a clear bag with a dashed seal, tilted, the drawing inside; 48px drawing on phones */
+.evbag{--sz:62px;flex:none;position:relative;width:calc(var(--sz) * 1.48);height:calc(var(--sz) * 1.55);display:grid;place-items:center;transform:rotate(3deg);
+  border-radius:var(--r-m);background:var(--ev-bag);border:1.5px solid var(--ev-bag-line);box-shadow:inset 0 8px 0 -4px var(--ev-bag-sheen)}
+.evbag::before{content:'';position:absolute;inset-inline:calc(var(--sz) * .1);top:calc(var(--sz) * .145);border-top:2px dashed var(--ev-bag-line)}
+.evbag .ia{width:var(--sz);height:var(--sz);margin-top:calc(var(--sz) * .16)}
+/* the real item picture (Sim, Nov 23): the same box as the drawing, the whole picture shown (object-fit), never slanted */
+.evbag .ia-img{display:block;object-fit:contain}
+.is-pn .evbag{margin:0 var(--s1)}
+/* phones: the item tag is narrow (string, hole, share line), so the bag sits above the name and the name keeps the full width */
+@media (max-width:699.98px){.kd-item .is-pn{flex-direction:column;align-items:flex-start;gap:var(--s2)}.is-pn .evbag{--sz:40px}}
+/* NATURE = the psych profile, a clipboard (Sim approved Nov 23, 4:38 PM; HANDOFF section 2): cream paper with faint ruled lines every 28px, a 2px
+   margin line and a pencil underline in the raised stat's colour (--sc), a metal clip on top; the picture is the raised stat over the lowered
+   one. Paper, ink and stat colours are the same in day and night (--nt-*). A small stamp, hidden under 700 wide. */
+.is-tab.kd-nature{margin-right:var(--s10);padding:var(--s8) var(--s6) var(--s5) calc(var(--s10) + var(--s1));clip-path:none;border-radius:var(--r-l);color:var(--nt-ink);
+  background:repeating-linear-gradient(180deg,transparent 0 27px,var(--nt-rule) 27px 28px),var(--nt-paper);box-shadow:var(--shadow-lift)}
+.is-tab.kd-nature::before{content:'';position:absolute;left:var(--s6);top:0;bottom:0;width:2px;background:var(--sc)}
+.is-tab.kd-nature .gh{-webkit-text-stroke-color:var(--nt-ghost)}
+.is-tab.kd-nature h2,.is-tab.kd-nature .is-sh{color:var(--nt-ink)}
+.is-tab.kd-nature h2::after{content:'';display:block;width:70%;height:6px;margin-top:2px;border-radius:3px;background:var(--sc);transform:skewX(var(--slant)) rotate(-1.2deg)}
+.is-tab.kd-nature .is-kk{background:var(--nt-ink);color:var(--nt-paper)}
+.is-tab.kd-nature .is-sub{color:var(--nt-ink2)}
+.nt-clip{position:absolute;top:0;left:50%;width:120px;height:22px;margin-left:-60px;border-radius:0 0 var(--r-m) var(--r-m);background:linear-gradient(180deg,var(--nt-clip-hi),var(--nt-clip))}
+.nt-clip::after{content:'';position:absolute;left:50%;top:6px;width:24px;height:8px;margin-left:-12px;border-radius:var(--r-s);background:var(--nt-clip-slot)}
+.nt-stamp{position:absolute;right:192px;top:var(--s4);padding:var(--s1) var(--s2);border:2px solid var(--sc);color:var(--sc);font-size:var(--t15);font-weight:800;line-height:1.2;letter-spacing:.04em;transform:rotate(-8deg)}
+/* the picture: the raised stat (filled) over the lowered stat (outlined); a neutral nature gets one flat tile */
+.nt-pic{flex:none;display:grid;gap:var(--s2);width:96px;transform:rotate(-2deg)}
+.nt-pic div{display:flex;align-items:center;justify-content:center;gap:var(--s1);height:40px;border-radius:var(--r-m);font-size:var(--t17);font-weight:800;line-height:1;white-space:nowrap}
+.nt-pic .up{background:var(--sc);color:var(--on-nt)}
+.nt-pic .dn{background:var(--nt-card);color:var(--sd);box-shadow:inset 0 0 0 2px var(--sd)}
+.nt-pic .nn{flex-direction:column;gap:2px;height:88px;background:var(--nt-flat);color:var(--nt-flat-ink);font-size:var(--t15);white-space:normal;text-align:center}
+.nt-pic .nn small{font:600 var(--t13)/1.2 var(--b)}
+.nt-lead{display:grid;gap:var(--s1)}.nt-lead .is-src{margin:0}
+@media (max-width:699.98px){.is-tab.kd-nature{margin-right:var(--s10);padding:var(--s8) var(--s4) var(--s4) var(--s8)}.is-tab.kd-nature::before{left:var(--s4)}
+  .is-sh0 span{white-space:normal} /* a long 'Not run on any ...' line wraps inside the tab instead of running out of it */
+  .nt-stamp{display:none}.nt-pic{width:80px;gap:var(--s1)}.nt-pic div{height:36px;font-size:var(--t15)}.nt-pic .nn{height:76px}}
+/* narrow phones (under 380; measured: at 360 and 375 "Adamant" broke onto two lines beside the picture): the picture goes above the name, its two tiles side by side, so the name keeps the tab's full width; the share line wraps */
+@media (max-width:379.98px){.kd-nature .is-pn{flex-wrap:wrap;row-gap:var(--s3)}.kd-nature .is-pn .is-tn{flex-basis:100%}
+  .nt-pic{grid-auto-flow:column;grid-auto-columns:80px;width:auto}.nt-pic .nn{height:56px}
+  .kd-nature .is-sh{flex-wrap:wrap;column-gap:var(--s2);row-gap:0}.kd-nature .is-sh span{white-space:normal}}
+/* 700-899 wide (measured Nov 23: beside the share, "Adamant" broke onto two lines at 700 and "Bashful" at 820): the share goes under the name, as on
+   phones, and the stamp is left out (it would sit on the kicker); a long "Not run on any ..." share never takes the name's room */
+.kd-nature .is-sh0{max-width:240px}
+@media (min-width:700px) and (max-width:899.98px){.is-tab.kd-nature{grid-template-columns:minmax(0,1fr)}.nt-stamp{display:none}
+  .kd-nature .is-sh{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--s2);max-width:none;text-align:left}}

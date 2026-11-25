@@ -1,0 +1,26 @@
+diff --git a/app/src/v2/css/pages.css b/app/src/v2/css/pages.css
+index 33f95b3c..85a70109 100644
+--- a/app/src/v2/css/pages.css
++++ b/app/src/v2/css/pages.css
+@@ -4528,3 +4528,21 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
+   .dr .k-plan>.k-step>.k-sec{margin-top:var(--s10)}
+   .dr .tp-piles{gap:var(--s6)}
+ }
++/* Events option A at 1280-1439 (alt/len1280b, Nov 24): the ticket wall runs four across (was three) and each ticket puts its date on top
++   as a dark strip (day and month on one line) instead of a stub at its left, so the event name (15px, as on phones) and its six get the
++   ticket's full width. Twelve tickets: three rows of four. The page ends 16px under the wall's Show more (was 96px), 32px over the wall. Nothing is hidden; 1440 and up, 1100-1279 and phones unchanged */
++@media (min-width:1280px) and (max-width:1439.98px){
++  .ev2-wall{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s4)}
++  .ev2-wall>.ev2-tk,.ev2-wall.m3-2>.ev2-tk:nth-last-child(-n+2),.ev2-wall.m3-1>.ev2-tk:last-child{grid-column:auto}
++  .ev2-wall .ev2-tk{grid-template-columns:minmax(0,1fr);grid-template-rows:auto 1fr}
++  .ev2-wall .ev2-stub{display:flex;align-items:baseline;justify-content:flex-start;gap:var(--s2);padding:var(--s2) var(--s4);border-right:0;border-bottom:3px dashed var(--k-paper)}
++  .ev2-wall .ev2-stub b{font-size:var(--t24)}
++  .ev2-wall .ev2-body{padding:var(--s3) var(--s4) var(--s4)}
++  .ev2-wall .ev2-six{justify-content:space-between;gap:0}
++  .ev2-wall .ev2-six .np-mon{--iw:36px}
++  .ev2-wall .ev2-stub{padding-block:var(--s1)}.ev2-wall .ev2-stub b{font-size:var(--t22)}
++  .ev2-wall .ev2-body{padding-top:var(--s2)}
++  .ev2-wall .ev2-name{font-size:var(--t15)}
++  .ev2.gsp{padding-bottom:var(--s4)}.ev2 .k-plan{padding-bottom:var(--s2)}
++  .ev2 .k-plan>.k-step:last-child>.k-sec{margin-top:var(--s8)}
++}

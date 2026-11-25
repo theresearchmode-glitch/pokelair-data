@@ -2,6 +2,9 @@
 let db=null,uid=null,docRef=null,saveTimer=null;
 // when the last data document arrived (load speed, Nov 1): background work waits until the pieces stop arriving
 var META_AT=0;
+/* pre-launch check 1 (Nov 17): which daily documents have answered at least once, and whether there is no data store at all; the
+   rebuild waits for all of them before drawing numbers (bridge.js V2.dataReady), so a page never shows the built-in numbers and then swaps */
+var META_SEEN=new Set(),META_NODB=false,META_KEYS=['doubles','doubles_ingame','doubles_tour','singles','status','teams','history','perf','results','model','events','track','practice','weekly','calendar','post','info'];
 let writing=null,pending=false,lastJson='';
 // Multi-device safety (Nov 7, Sim): each part of your data (box, saved teams, current team, …) is saved on its own, and only
 // when it changed, so a phone or tab that was open with older data can't overwrite what you did on another device. The page
@@ -9,7 +12,7 @@ let writing=null,pending=false,lastJson='';
 // that same part (then this device's newer change wins when it saves).
 let saved={},docExists=false;
 // this page's own saves come back from the account as updates too, sometimes late and out of order; each save is stamped with
-// this page's id so they are recognised and left alone (Sim, Nov 7: an old echo of her own save redrew the editor while she
+// this page's id so they are recognised and left alone (Sim, Nov 7: an old echo of his own save redrew the editor while he
 // typed in Add a Pokémon, clearing the box again and again)
 const DEV=Math.random().toString(36).slice(2,10)+Date.now().toString(36);let pendingRemote=[];
 // every value of each part this page has loaded or saved: an older one coming back is this page's own past save, not news
@@ -42,21 +45,35 @@ function takeRemote(v){if(v&&v._dev===DEV)return;
   if(got.some(k=>k==='slots'||k==='loadedId')&&typeof ui==='object'){ui.undoStack=[];ui.undo=null}
   render();toast(got.includes('box')&&got.length===1?'Your box was updated from your other device':'Updated from your other device');syncNote('saved')}
 // the line under Saved teams and My box that says where your data lives
-function syncNote(st){const t=st==='local'?'Saved in this browser only: this device isn’t connected to your Claude account.':'Saved to your Claude account and kept in step across your devices.';
+function syncText(st){return st==='local'?'Saved in this browser only: this device isn’t connected to your Claude account.':'Saved to your Claude account and kept in step across your devices.'}
+function syncNote(st){ui.syncSt=st;const t=syncText(st);
   ['saveWhere','boxSync'].forEach(id=>{const el=$(id);if(el)el.textContent=id==='saveWhere'?'Up to 10 teams. '+t:t})}
 // A daily data document can be stored in two parts (meta/<k> and meta/<k>_2) when it grows past the per-document size limit
 // (Nov 10: meta/results reached 263,734 bytes and the morning refresh was refused). split-docs.mjs moves whole keys or the tail
 // of an array to part 2 and stamps both parts with the same id; here they are joined back in order. Part 2 is used only when
 // its stamp matches part 1, so a refresh caught halfway never mixes two days; with no part 2 the document is used as it is.
 function joinParts(a,b){const o=Object.assign({},a);for(const k in b){if(k==='_part')continue;const x=o[k],y=b[k];o[k]=Array.isArray(x)&&Array.isArray(y)?x.concat(y):x&&y&&typeof x==='object'&&typeof y==='object'&&!Array.isArray(x)?Object.assign({},x,y):y}delete o._part;return o}
-function metaJoin(d,k,cb){let p1=null,p2=null,got1=false;const emit=()=>{if(!got1)return;const a=p1&&p1.exists?p1.data():null,b=p2&&p2.exists?p2.data():null;
-    const v=a&&b&&a._part&&b._part&&a._part.id===b._part.id?joinParts(a,b):a&&a._part?(()=>{const o=Object.assign({},a);delete o._part;return o})():a;cb({exists:!!v,data:()=>v})};
+// speed (Nov 17, helper report): an empty or unmatched second part used to send the same document again (cleaning, ratings, a full
+// redraw and a planner restart, twice); now a document goes on only when its first part or a matching second part is new
+var META_EMITS={};
+function metaJoin(d,k,cb){let p1=null,p2=null,got1=false,sent=null;const emit=()=>{if(!got1)return;const a=p1&&p1.exists?p1.data():null,b=p2&&p2.exists?p2.data():null;
+    const two=!!(a&&b&&a._part&&b._part&&a._part.id===b._part.id);if(sent&&sent[0]===p1&&sent[1]===(two?p2:null))return;sent=[p1,two?p2:null];META_EMITS[k]=(META_EMITS[k]||0)+1;
+    const v=two?joinParts(a,b):a&&a._part?(()=>{const o=Object.assign({},a);delete o._part;return o})():a;cb({exists:!!v,data:()=>v})};
   d.doc('meta/'+k).onSnapshot(s=>{p1=s;got1=true;emit()});try{d.doc('meta/'+k+'_2').onSnapshot(s=>{p2=s;emit()},()=>{})}catch(e){}}
 (async()=>{try{
-  const c=window.claude;if(!c||!c.use)return;
+  let c=window.__NP_CLAUDE||window.claude;
+  if((!c||!c.use)&&window.__NP_PUBLIC){
+    const base=String(window.NP_DATA||'/data/').replace(/\/?$/,'/');
+    const cache=new Map();
+    const load=k=>{if(!cache.has(k))cache.set(k,fetch(base+k+'.json').then(r=>r.ok?r.json():null).catch(()=>null));return cache.get(k)};
+    c={use:async n=>n==='db'?{doc:p=>({onSnapshot:cb=>{if(!p.startsWith('meta/')||p.endsWith('_2')){setTimeout(()=>cb({exists:false,data:()=>null}),0);return()=>{}}load(p.slice(5)).then(v=>cb({exists:v!=null,data:()=>v}));return()=>{}},get:async()=>({exists:false}),set:async()=>{},update:async()=>{}})}:null};
+  }
+  if(!c||!c.use)return;/* __NP_CLAUDE: the Preview build's data (Nov 12: inside the Claude app window.claude can't be replaced) */
   const [d,u]=await Promise.all([c.use('db'),c.use('user')]);
-  if(d){['doubles','doubles_ingame','doubles_tour','singles','status','teams','history','perf','results','model','events','track','practice','weekly','calendar'].forEach(k=>{try{metaJoin(d,k,s=>{META_AT=performance.now();const v=s.exists?s.data():null;/* weekly digest and event calendar (Nov): their own cleaners, kept out of the data-date line (a fresh calendar must not hide stale results) */
-    if(k==='weekly'||k==='calendar'){try{META[k]=k==='weekly'?cleanWeekly(v):cleanCalendar(v)}catch(e){META[k]=null}metaVersion++;scheduleRender();return}noteDataDate(k,v);if(k==='perf')META.reg=v&&typeof v==='object'&&v.reg&&typeof v.reg==='object'&&/^[A-Z]-[A-Z]$/.test(v.reg.id)?v.reg:null;if(k==='perf')setTimeout(()=>{if(typeof RESULTS==='object'&&RES===RESULTS&&!builtinOk()){RES=META.results||null;planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender()}},0);if(k==='practice'){META.practice=typeof cleanPractice==='function'?cleanPractice(v):null;/* only the practice page uses it: no full redraw (Nov) */if(typeof view!=='undefined'&&view==='practice'&&typeof renderPractice==='function'&&(!META.practice||pr.step==='start'))safe('practice',renderPractice);return}if(k==='model'){META.model=v&&typeof v==='object'&&v.mons?v:null;metaVersion++;scheduleRender();return}if(k==='track'){META.track=typeof cleanTrack==='function'?cleanTrack(v):null;if(typeof view!=='undefined'&&view==='track'&&typeof renderTrack==='function')safe('track record',renderTrack);if(typeof view!=='undefined'&&view==='home')scheduleRender();return}if(k==='results'){META.results=cleanResults(v);RES=META.results||(typeof RESULTS==='object'&&builtinOk()?RESULTS:null);planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender();return}META[k]=k==='status'?cleanStatus(v):k==='teams'?cleanTeams(v):k==='history'?cleanHistory(v):k==='perf'?cleanPerf(v):k==='events'?cleanEvents(v):cleanMeta(v);usageCache={};metaVersion++;scheduleRender()},()=>{})}catch(e){}})}
+  if(!d){META_NODB=true;if(typeof scheduleRender==='function')scheduleRender()}
+  if(d){META_KEYS.forEach(k=>{try{metaJoin(d,k,s=>{META_AT=performance.now();META_SEEN.add(k);const v=s.exists?s.data():null;/* weekly digest and event calendar (Nov): their own cleaners, kept out of the data-date line (a fresh calendar must not hide stale results) */
+    /* meta/post (Nov 18): the Mystery Gifts and news list, read by the new site only (post-data.js V2.postTake); the old page has no V2 */if(k==='post'){try{if(typeof V2==='object'&&V2&&typeof V2.postTake==='function')V2.postTake(v)}catch(e){}metaVersion++;scheduleRender();return}
+    if(k==='weekly'||k==='calendar'){try{META[k]=k==='weekly'?cleanWeekly(v):cleanCalendar(v)}catch(e){META[k]=null}metaVersion++;scheduleRender();return}noteDataDate(k,v);if(k==='perf')META.reg=v&&typeof v==='object'&&v.reg&&typeof v.reg==='object'&&/^[A-Z]-[A-Z]$/.test(v.reg.id)?v.reg:null;if(k==='perf')setTimeout(()=>{if(typeof RESULTS==='object'&&RES===RESULTS&&!builtinOk()){RES=META.results||null;planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender()}},0);if(k==='practice'){META.practice=typeof cleanPractice==='function'?cleanPractice(v):null;/* only the practice page uses it: no full redraw (Nov) */if(typeof view!=='undefined'&&view==='practice'&&typeof renderPractice==='function'&&(!META.practice||pr.step==='start'))safe('practice',renderPractice);return}if(k==='info'){META.info=v&&typeof v==='object'&&v.mv&&typeof v.N==='number'&&v.N>0?v:null;metaVersion++;scheduleRender();return}/* info sheets (Nov 22): who runs each move, item and Ability (out/info.json); read when a sheet opens, no redraw */if(k==='model'){META.model=v&&typeof v==='object'&&v.mons?v:null;metaVersion++;scheduleRender();return}if(k==='track'){META.track=typeof cleanTrack==='function'?cleanTrack(v):null;if(typeof view!=='undefined'&&view==='track'&&typeof renderTrack==='function')safe('track record',renderTrack);if(typeof view!=='undefined'&&view==='home')scheduleRender();return}if(k==='results'){META.results=cleanResults(v);RES=META.results||(typeof RESULTS==='object'&&builtinOk()?RESULTS:null);planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender();return}META[k]=k==='status'?cleanStatus(v):k==='teams'?cleanTeams(v):k==='history'?cleanHistory(v):k==='perf'?cleanPerf(v):k==='events'?cleanEvents(v):cleanMeta(v);usageCache={};metaVersion++;scheduleRender()},()=>{})}catch(e){}})}
   if(!d||!u){syncNote('local');return}
   const id=await u.id();if(!id){syncNote('local');return}db=d;uid=id;
   // the account's copy is read first; only then can this device save (a change made in the first moment can't overwrite it)

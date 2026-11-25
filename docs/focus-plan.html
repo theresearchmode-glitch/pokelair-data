@@ -117,7 +117,8 @@ const PLANS = [
   ["f1-small","Small site fixes (one batch)","Capital letters; word-list terms (\"Grade my team\", \"Showdown ladder\"); Home banner off the edge at 1100px; small tap targets; Sneasler's sprite over its name in Damage calc; lock and remove buttons over sprites; tablet name spacing; \"Legal 3/4\"; Matchups tab names. Each checked first, then Preview."]]},
  {id:"fb", name:"Alongside · Data in the background", goal:"Computer time running on its own; it doesn't touch the site.", steps:[
   ["fb-logs","Collect battle logs from ladder replays","Sim, Nov 10: yes. Save a few facts per game (Tailwind or Trick Room went up, Fake Out used, who moved first) so speed control and Fake Out can be measured inside games, with ratings for skill. Public game data only."],
-  ["fb-sheets","Grow the open-sheet game data","5,750 single games with full sets and ratings today."]]},
+  ["fb-sheets","Grow the open-sheet game data","5,750 single games with full sets and ratings today."],
+  ["fb-size","Daily data fits the page's storage (Nov 10)","Sim: make sure all our data flows. meta/results passed the 262,144-byte limit per stored document and the morning refresh was refused."]]},
  {id:"f2", name:"Part 2 · The big check (Nov 16–23)", goal:"The one judge we never tune on: tournaments from Nov 9 on.", steps:[
   ["f2-sealed","Sealed-set check","Does the Strength Score hold up on unseen results? Judged only by the pass rules written in Part 1."],
   ["f2-four","Re-test the Battle four-pick on more games","Nov 9: +2.0 (±1.8) with real-game matchups vs +0.8 (±1.8) today. Too close to call on 4,031 games."],
@@ -133,6 +134,21 @@ const PLANS = [
   ["f4-match","Matchups: one clear verdict","Today a row can say \"Real games: Unfavoured\" and \"Calc: Handles it\" at once. Pick the main one, show the other clearly as secondary."],
   ["f4-short","My Team: shorter, no repeats","About 6 screens; Your Six appears twice and each set up to three times."],
   ["f4-heads","Shorter page headers","Ratings, Battle and Damage calc push the content off the first screen."]]},
+ {id:"f6", name:"Part 4b · Player names out of the data (Sim, Nov 10)", goal:"Sim: no real names stored anywhere; each player gets a generated ID number. One change, Preview first.", done:"Same teams matched before and after, Strength Score unchanged, none of the real names in any saved or published file.", steps:[
+  ["f6-find","Find every place a name is stored","Look-only: daily data files, raw downloads in the GitHub repo, the page's daily data, battle replays (Showdown usernames), Test run and Practice."],
+  ["f6-ids","Names become ID numbers at download","A keyed number (\"Player 48213\") from a secret kept in GitHub's locked settings: same player, same number every day; no name list saved; can't be turned back into a name without the key."],
+  ["f6-test","Pass the checks","Same team matches before and after, score unchanged (same-grade, golden), a scan finds 0 real names in every saved or published file."],
+  ["f6-live","Preview, Sim's OK, live",""]]},
+ {id:"f7", name:"Part 4c · Polish (Sim's outside review, Nov 10)", goal:"Batches, one at a time, each to the Preview, Sim's OK, then live. Every reviewer number is re-measured before it is fixed; 'measured only' items are looked at first.", done:"The polish check passes at every width, light and dark, and Sim's review on iPhone, iPad and Windows.", steps:[
+  ["f7-check","The polish check (automatic)","Every page at widths 320-2560, light and dark: text spilling or wrapping unevenly in boxes (\"Tier board\"), lone tiles and half-filled rows, empty halves on desktop, sizes off the type scale, spacing off the 4px grid, half-slanted headlines, line height, boxes in boxes, \"?\" sizes. First run = the full list (re-checks the review); then it joins the tests so these can't come back."],
+  ["f7-type","Batch 1 · Text and type","Half-slanted headlines (\"your win rate.\", \"Tools.\", %, \"Grade my team\"); team name re-capitalised on My Team; sizes off the scale (Meta sub-tabs 19, team name 29, tagline 32, 17.4, 27.3); headline-size text in the body font; line height 1.5 in threat tables; one \"?\" size; labels that wrap unevenly (\"Tier board\"). Sim, Nov 10: the Meta page's tab text falling out of its box (must not be forgotten)."],
+  ["f7-home","Batch 2 · Home and footer","Winning Cores: icon above the text when it sits alone, and no lone tile (11 tools); footer's empty right side on desktop."],
+  ["f7-space","Batch 3 · Desktop space on tool pages","Ratings: empty half beside #1 and the lone last row; Damage calc result card and three moves in two columns; Battle fields and Practice strip stopping short; Winning teams search at half width; half-filled rows (Ratings stats 5 in 4, My Team checks 7, About sources 9, My Box on iPad)."],
+  ["f7-dark","Batch 4 · Dark mode and spacing","Their six inputs in three shades (boxes in boxes); the text glow on My Team; spacing off the 4px grid (about 96 spots, checked one by one: 1, 2 and 6 are allowed)."],
+  ["f7-share","Share images (Sim, Nov 10: they can attract players)","Card, poster, team sheet and weekly image in the site's design language: logo readable on dark images, Unbounded slanted headlines and numbers (were Archivo / Anton), no misprint shadow, two-tone tagline, the card leads with the Strength Score, sentence case, nothing colliding."],
+  ["f7-words","Word list on screen","Visible text still using retired words: 'Ready for the top threats' (Matchups), 'Checklist' (Team checks), 'Readiness', 'fix plans' (Suggestions), 'conversion', 'vs the Field', 'the grade' (Strength Score), 'Game plan'. One small pass after Batches 1-2."],
+  ["f7-gaps","Batch 5 · What the review didn't cover","Pop-up sheets and dialogs, hover, iPad landscape, a truly empty first visit, contrast on coloured tiles; then Sim on real Safari."],
+  ["f7-ideas","Claude's open recommendations (for the Batch 5 talk)","Sim, Nov 10: with an open mind and no limits, what Claude would change to make NastyPlot the best it can be, based on everything seen in this polish work. Notes only: nothing is built until we discuss and plan it together."]]},
  {id:"f5", name:"Part 5 · The score itself (later)", goal:"Grade changes, one at a time, only after the sealed-set check.", done:"The same three checks as Part 3, and 90+ stays reachable.", steps:[
   ["f5-tiers","Pokémon values from the tiers","One value per Pokémon, so the score and the Ratings page agree."],
   ["f5-parts","Fewer, bigger, proven parts","Tier, Mega, Protect, Matchups and sets. Pair bonuses and the six's own record stay on the page as information (needs Sim's OK)."],
@@ -146,7 +162,9 @@ const PLANS = [
   ["q4-fail","If the lucky-pick test fails, back to the drawing board?","Rather than build two kinds of suggestions on a theory that didn't hold."],
   ["q5-verdict","Matchups: real games or the calc as the main verdict?",""],
   ["q6-batch","Small fixes as one batch?",""],
-  ["q7-names","Real player names: decide now or at launch?","The winning-teams data shows real players' names; kids use the site."]]}
+  ["q7-names","Real player names: decide now or at launch?","The winning-teams data shows real players' names; kids use the site."],
+  ["q8-repo","Old names in the GitHub repo's history: make the repo private, or rewrite the history?","Suggested: private (simplest; nothing on the site needs it public). Decide at Part 4b's last step."],
+  ["q9-polish","Polish Batches 1-4: who decides?","Sim, Nov 10: Claude has executive authority for Batches 1-4 (decides and ships, following every rule); Sim takes it back for Batch 5."]]}
 ]},
 {id:"later", short:"Later", name:"Later, not scheduled", about:"Worth doing, not now.", phases:[
  {id:"l", name:"Parking lot", steps:[

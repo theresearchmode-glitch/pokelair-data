@@ -1,0 +1,418 @@
+/* ---------- My Team: the war room (reskin page 1; Sim approved mock-up B, Nov 21, 12:15 PM; the kit, 12:48 PM) ----------
+   The kit header (kicker, the team name as the headline, the Strength Score, one row of links, the plot sentence), then the plan line
+   with four steps: 1 the crew (the Night frame holding the six as the kit's roster cards and the chosen one's detail), 2 the upgrade and
+   the plan (Suggestions, the page's one pink move), 3 who we're up against (Matchups), 4 checks and record. The kit's own parts are in
+   kit.css; this file places them and dresses today's sections (sugs.js, matchups.js, record.js) in the kit's look.
+   Replaces the frame's header and three-column frame (Nov 21 morning); its Night colours stay (--mtf-night, tokens.css). */
+
+/* ===== the header ===== */
+.tm-hero.tmk{display:block;padding:var(--s4) var(--gut) 0}
+.tmk-head{position:relative;max-width:1180px}
+.tmk-head .mtf-k{margin:var(--s4) 0 0;font-size:var(--t15);font-weight:600;line-height:1.4;color:var(--k-ink2)}
+.tmk-head .k-kicker{margin:var(--s3) 0 var(--s3)}
+.tmk-head .tm-name{margin:0;font-size:var(--d-khead);line-height:1.05;color:var(--k-ink)}
+.tmk-head .tm-name[data-long]{font-size:var(--d-tmlong)}
+.tmk-head .tm-name em{color:var(--k-plot-text);font-style:inherit}
+.tmk-head .mtf-smp{font-size:var(--t28);color:var(--k-ink2);white-space:nowrap}
+.tmk-head .tm-sample,.tmk-head .tm-gone{max-width:640px;margin:var(--s3) 0 0;font-size:var(--t17);line-height:1.5;color:var(--k-ink2)}
+.tmk-head .tm-wait{margin:var(--s4) 0 0;font-size:var(--t17);line-height:1.5;color:var(--k-ink2)}
+.tmk-head .mtf-score{display:flex;align-items:center;gap:var(--s2) var(--s5);margin:var(--s4) 0 0}
+.tmk-head .mtf-score .n{flex:none;margin:0 0 0 -6px;padding-right:var(--s2);font-size:var(--d-tmscore);line-height:.9;letter-spacing:-.02em;color:var(--band)}
+.tmk-head .mtf-sw{min-width:0;max-width:440px}
+.tmk-head .mtf-score .band{margin:0;font-size:var(--t34);line-height:1.1;color:var(--band)}
+.tmk-head .mtf-score .lab{margin:var(--s1) 0 0;font-size:var(--t15);font-weight:700;line-height:1.4;color:var(--k-ink)}
+.tmk-head .mtf-score .win,.tmk-head .mtf-score .tm-low{margin:var(--s1) 0 0;font-size:var(--t15);line-height:1.5;color:var(--k-ink2)}
+.tmk-head .mtf-score .win b{font-weight:700;color:var(--k-ink)}
+/* ONE row of header links (quiet blue, "›"); an unsaved team's Save Team is the one ink slab in it */
+.tmk-head .mtf-acts{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s6);margin:var(--s3) 0 0}
+.tmk-head .mtf-acts .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;font-size:var(--t15);font-weight:700;color:var(--k-plot-text)}
+.tmk-head .mtf-acts .mtf-saved{color:var(--k-ink2);font-weight:600}
+.tmk-head .mtf-btn{display:inline-grid;place-items:center;min-height:var(--tap);padding:0 var(--s5);border:0;border-radius:0;background:var(--k-chip);color:var(--k-on-chip);font-size:var(--t15);line-height:1;cursor:pointer;transform:skewX(-8deg)}
+.tmk-head .mtf-btn:focus-visible,.tmk-head .np-link:focus-visible,.tmk-head .k-w:focus-visible,.tmk-jump a:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
+/* the plot sentence and the jump links (one line: "Blue words are buttons. Jump to: Matchups Suggestions Team Checks") */
+.tmk-head .k-sent{margin:var(--s8) 0 0}
+.tmk-head a.k-w{text-decoration:none}
+.tm-jump.tmk-jump{position:static;display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s4);margin:var(--s1) 0 0;padding:0;background:none;border:0;box-shadow:none}
+.tmk-jump .k-hint{margin:0;font-size:var(--t13)}
+.tmk-jump a{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;font-size:var(--t15);font-weight:700;color:var(--k-plot-text);text-decoration:none}
+.tmk-jump a::after{display:none}
+
+/* ===== the plan line ===== */
+.tm-work.tmk-work{display:block;padding:0 var(--gut) var(--s8)}
+.tmk-work .k-plan{max-width:1180px;padding-bottom:var(--s8)}
+.tmk-work .k-plan::before{top:var(--s12);bottom:var(--s8)}
+.tmk-work .k-step:first-child .k-sec{margin-top:var(--s12)}
+.tmk-work .tm-sec{margin:0;padding:0;scroll-margin-top:calc(76px + var(--s4))}
+.tmk-work .tm-sec > h2{margin:var(--s6) 0 var(--s2);font-size:var(--t20);line-height:1.2;color:var(--k-ink)}
+.tmk-work .tm-sub{color:var(--k-ink2)}
+
+/* ===== step 1: the Night frame (the crew) ===== */
+.tmk-work .mtf{display:block;margin:0 var(--s4) 0 calc(var(--s4) * -1);padding:var(--s2) var(--s6) var(--s8);background:var(--mtf-night);box-shadow:0 0 0 1px var(--wr-rule),14px 14px 0 var(--mtf-drop);color:var(--wr-ink);
+  --k-card:var(--mtf-n-surf);--k-ink:var(--wr-ink);--k-ink2:var(--wr-ink2);--k-plot:var(--wr-plot);--k-plot-text:var(--wr-plot);--k-on-plot:var(--wr-on-plot);--k-card-shadow:var(--wr-shadow);--k-art-shadow:var(--wr-shadow)}
+.tmk-work .mtf-party{min-width:0}
+.tmk-work .mtf .k-roster{padding-top:var(--s16)}
+.tmk-work .mtf-row.k-card{min-height:0;box-shadow:none}
+.mtf-row .lkm{position:absolute;right:var(--s2);top:var(--s2);z-index:2;width:20px;height:20px;fill:none;stroke:var(--wr-ink);stroke-width:2}
+/* an empty spot: the card's shape as a dashed outline with + */
+.tmk-work .mtf-add .k-plate{min-height:200px;border:2px dashed var(--mtf-n-add);align-content:end}
+.tmk-work .mtf-add .k-plate::before{display:none}
+.tmk-work .mtf-add .plus{position:absolute;left:50%;top:var(--s8);transform:translateX(-50%);font-size:var(--d64);font-weight:300;line-height:1;color:var(--wr-ink2)}
+/* the chosen one's detail */
+.tmk-work .mtf-sum{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s4) var(--s12);margin:var(--s8) 0 0;padding:var(--s6) 0 0;background:none;border-top:3px solid var(--wr-plot);box-shadow:none}
+.tmk-work .mtf-sl,.tmk-work .mtf-inf{display:grid;align-content:start;gap:var(--s4);min-width:0;margin:0;padding:0;background:none}
+.tmk-work .mtf-nav{display:flex;align-items:center;gap:var(--s2);min-height:var(--tap);margin:0;padding:0;background:none}
+.tmk-work .mtf-nav h2{flex:0 1 auto;min-width:0;margin:0;font-size:var(--t24);line-height:1.15;color:var(--wr-ink);white-space:normal;overflow:visible;overflow-wrap:normal}
+.tmk-work .mtf-nav > span{flex:none;font-size:var(--t15);font-weight:600;color:var(--wr-ink2);white-space:nowrap}
+.tmk-work .mtf-nav .mtf-step:last-child{margin-left:auto}
+.tmk-work .mtf-step{flex:none;display:grid;place-items:center;width:var(--tap);height:var(--tap);padding:0;border:0;background:none;color:var(--wr-plot);font-size:var(--t34);font-weight:900;line-height:1;cursor:pointer}
+.tmk-work .mtf-step[disabled]{opacity:.4;cursor:default}
+.tmk-work .mtf-step:focus-visible,.tmk-work .mtf-do .np-link:focus-visible{outline:3px solid var(--wr-plot);outline-offset:2px}
+.tmk-work .mtf-tr{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4)}
+.tmk-work .mtf-ty{display:flex;gap:var(--s1);margin:0}
+.tmk-work .mtf-tr .rate{display:flex;align-items:baseline;gap:var(--s2);margin:0;color:var(--wr-plot)}
+.tmk-work .mtf-tr .rate b{font-size:var(--t34);line-height:1}
+.tmk-work .mtf-tr .rate span{font-size:var(--t15);color:var(--wr-ink2)}
+.tmk-work .mtf-ia{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);margin:0}
+.tmk-work .mtf-ia div{display:grid;align-content:start;padding:var(--s2) 0 0;background:none;border:0;border-top:1px solid var(--wr-rule)}
+.tmk-work .mtf-ia > div:first-child:nth-last-child(3){grid-column:1 / -1} /* Nov 23 (hP, polish): with three facts (no Nature or Stat points data) the Item leads on its own row, then two, instead of a lone fact at the end */
+.tmk-work .mtf-ia dt{font-size:var(--t13);font-weight:600;line-height:1.3;color:var(--wr-ink2)}
+.tmk-work .mtf-ia dd{margin:0;font-size:var(--t17);font-weight:700;line-height:1.3;color:var(--wr-ink)}
+.tmk-work .mtf-ia dd small{display:inline;font-size:var(--t13);font-weight:500;color:var(--wr-ink2)}
+.tmk-work .mtf-mv{margin:0}
+.tmk-work .mtf-do{display:flex;flex-wrap:wrap;gap:0 var(--s5);margin:0}
+.tmk-work .mtf-do .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;font-size:var(--t15);font-weight:700;color:var(--wr-plot)}
+.tmk-work .mtf-do .sx-a.on{color:var(--wr-ink)}
+/* the quiet links' "›" is drawn, so each button keeps its own name ("Edit Set", as the focus checks read it) */
+.tmk-work .mtf-do .np-link:not(.sx-info)::after{content:"\00a0›" / ""}
+
+/* ===== step 2: Suggestions, then the plan foot ===== */
+.tmk-work .tm-sgs{max-width:880px}
+.tmk-work .tm-sgs > h2{margin-top:0}
+.tmk-work .tm-sgs .np-btn{display:inline-grid;place-items:center;min-height:var(--tap);padding:0 var(--s6);border:0;border-radius:0;background:var(--k-chip);color:var(--k-on-chip);box-shadow:none;transform:skewX(-8deg)}
+.tmk-work .mtf-lead{display:grid;justify-items:start;gap:0;margin:var(--s8) 0 0;font-size:var(--t17);line-height:1.5;color:var(--k-ink2)}
+.tmk-work .mtf-lead p{margin:0}
+.tmk-work .mtf-lead .k-go{margin-top:var(--s4)}
+.tmk-work .mtf-links{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s6);margin:var(--s4) 0 0}
+.tmk-work .mtf-links .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;font-size:var(--t15);font-weight:700;color:var(--k-plot-text)}
+.tmk-work .mtf-links .tm-legal{margin:0;display:inline-flex;align-items:center;gap:var(--s2);min-height:var(--tap);font-size:var(--t15);font-weight:600;color:var(--k-ink2)}
+
+/* each section's own heading (Suggestions, Matchups, Team Checks, Your Games): the step's title and note already say them, so they are read out but not shown twice */
+.tmk-work .tm-sec > h2{position:absolute;width:1px;height:1px;margin:0;padding:0;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.tmk-work .tm-sec{position:relative}
+/* ===== step 3: Matchups ===== */
+.tmk-work .tm-mus > h2{margin-top:0}
+.tmk-work .tm-legend{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s8);margin:var(--s4) 0 var(--s2)}
+.tmk-work .tm-legend span{display:grid;font-size:var(--t15);font-weight:600;color:var(--k-ink2)}
+.tmk-work .tm-legend b{font-family:var(--u);font-size:var(--t34);font-style:italic;font-weight:800;line-height:1.1;color:var(--k-ink)}
+.tmk-work .tm-legend .lf b{color:var(--k-plot-text)}
+.tmk-work .tm-legend .lu b{color:var(--k-nasty-text)}
+.tmk-work .mu-sent{margin:var(--s6) 0 var(--s4);font-size:var(--t26)} /* four words on one line on desktop (the kit's 34px put 'all 30' alone on a second line) */
+.tmk-work .mu-sg{display:contents}
+.tmk-work .mu-out{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s12);margin:0;padding:0;list-style:none}
+.tmk-work .mu-out > li{min-width:0;border-top:1px solid var(--k-rule)}
+.tmk-work .mu-out .mu-row{display:grid;grid-template-columns:56px minmax(0,1fr) auto;grid-template-areas:"pic nm v" "pic dis v";align-items:center;column-gap:var(--s4);width:100%;min-height:64px;padding:var(--s1) 0;border:0;background:none;box-shadow:none;text-align:left;color:var(--k-ink)}
+.tmk-work .mu-out .mu-row > img{grid-area:pic;width:56px;height:56px;object-fit:contain}
+.tmk-work .mu-out .mu-row .nm{grid-area:nm;align-self:end;font-size:var(--t17);font-weight:700;line-height:1.3}
+.tmk-work .mu-out .mu-row .mu-dis{grid-area:dis;align-self:start;font-size:var(--t13);color:var(--k-ink2)}
+.tmk-work .mu-out .mu-row .tm-v{grid-area:v}
+.tmk-work .mu-out .mu-row .nm:only-of-type{grid-row:1 / span 2;align-self:center}
+.tmk-work .tm-v.k-tag{padding:2px var(--s3);border:0;font-family:var(--u);font-size:var(--t15);font-style:italic;font-weight:800;line-height:1.4;white-space:nowrap;box-shadow:none}
+.tmk-work .tm-v.k-good{background:var(--k-plot);color:var(--k-on-plot)}
+.tmk-work .tm-v.k-bad{background:var(--k-go);color:var(--k-on-go)}
+.tmk-work .tm-v.k-neutral{padding:0 var(--s3);background:none;border:2px solid var(--k-neutral);color:var(--k-ink)}
+.tmk-work .mu-row .nm .mg{display:inline;margin-right:var(--s1)}
+.tmk-work .mu-out .mu-row .nm{display:block}
+.tmk-work .mtf-nav h2 .mg{display:inline;margin-right:var(--s2);color:var(--wr-plot)}
+.tmk-work .mtf-nav h2 .mg.none{display:none}
+.tmk-work .tm-v.k-tag i{display:none}
+.tmk-work .mu-outmore{margin:var(--s3) 0 0}
+
+/* ===== step 4: checks and record, as rows ===== */
+.tmk-work .tm-cks,.tmk-work .tm-yg{max-width:880px}
+.tmk-work .tm-yg-hd{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4)}
+.tmk-work .tm-yg-n{flex:1 1 auto;min-width:0;margin:0}
+.tmk-work .tm-yg{margin-top:var(--s4);padding-top:var(--s3);border-top:1px solid var(--k-rule)}
+.tmk-work .tm-ckok,.tmk-work .sg2-fold{border-top:1px solid var(--k-rule)}
+/* the folds (Adjust Suggestions, Things to Know): one quiet row, title 17px */
+.tmk-work .sg2-fold{margin-top:var(--s4)}
+.tmk-work .sg2-fold > summary{padding:var(--s3) 0}
+.tmk-work .sg2-fold > summary .t{font-size:var(--t17)}
+
+/* ===== narrower desktops and tablets: the detail stacks ===== */
+@media (max-width:999.98px){
+  .tmk-work .mtf-sum{grid-template-columns:minmax(0,1fr);gap:var(--s4)}
+  /* stand-outs: two across, each a 40px picture beside its name with the verdict tag under it (HYBRID 4: dense rows on phones; tablets too: a name and tag side by side didn't fit the 820 columns) */
+  .tmk-work .mu-out{column-gap:var(--s3)}
+  .tmk-work .mu-out .mu-row{grid-template-columns:40px minmax(0,1fr);grid-template-areas:"pic nm" "v v" "dis dis";justify-items:start;align-items:center;row-gap:var(--s1);column-gap:var(--s2);min-height:0;padding:var(--s2) 0}
+  .tmk-work .mu-out .mu-row > img{width:40px;height:40px}
+  .tmk-work .mu-out .mu-row .nm{align-self:center;min-height:2.5em;font-size:var(--t15);line-height:1.25} /* two lines held, so the tags of a row sit level */
+  .tmk-work .mu-out .mu-row .mu-dis{font-size:var(--t13);line-height:1.3}
+  .tmk-work .mu-out .mu-row .nm:only-of-type{grid-row:auto}
+  .tmk-work .tm-v.k-tag{padding:0 var(--s2);font-size:var(--t15)}
+  .tmk-work .tm-mus .tm-sub{display:none} /* phones: the step note says it (top 30, verdicts from real games); Sim: no longer than today */
+}
+/* ===== phones ===== */
+@media (max-width:699.98px){
+  .tm-hero.tmk{padding-top:0}
+  /* the plan line is tighter on phones: titles a size down so most fit one line, less air above each step */
+  .tmk-work .k-sec{margin:var(--s4) 0 var(--s3);row-gap:2px}
+  .tmk-work .k-h2{font-size:var(--t24)}
+  .tmk-work .k-step:first-child .k-sec{margin-top:var(--s6)}
+  .tmk-head .mtf-k{margin-top:var(--s3);font-size:var(--t13);font-stretch:80%} /* q84 S5 (Sim, Nov 20): the status line stays one line at 390 and 360, also for a long weather name (Grassy Terrain) */
+  .tmk-head .mtf-smp{font-size:var(--t20)}
+  .tmk-head .tm-sample{margin-top:var(--s2);font-size:var(--t15)}
+  .tmk-head .mtf-score{gap:var(--s3);margin-top:var(--s2)}
+  .tmk-head .mtf-score .band{font-size:var(--t24)}
+  .tmk-head .mtf-score .lab,.tmk-head .mtf-score .win,.tmk-head .mtf-score .tm-low{font-size:var(--t13)}
+  .tmk-head .mtf-acts{display:grid;grid-template-columns:repeat(2,max-content);gap:0 var(--s6);margin-top:var(--s2)}
+  .tmk-head .k-sent{gap:var(--s2) var(--s2);margin-top:var(--s3);font-size:var(--t17)}
+  .tmk-head .k-sent .k-w{min-height:var(--tap);padding:0 var(--s3);border-width:2px}
+  .tm-jump.tmk-jump{column-gap:var(--s3);margin-top:var(--s1)}
+  .tmk-head .k-kicker{margin:var(--s2) 0}
+  .tmk-jump .tmk-bw{display:none} /* phones: "Jump to:" and the three links share one line */
+  .tmk-jump a{font-size:var(--t15)}
+  .tmk-work .mtf{margin:0;padding:0 var(--s2) var(--s3);box-shadow:0 0 0 1px var(--wr-rule),8px 8px 0 var(--mtf-drop)}
+  .tmk-work .mtf .k-roster{padding-top:var(--s10);row-gap:var(--s10)}
+  /* the kit's phone roster sets every name to 17px after its fit levels, so levels 2-5 never shrank a long name (kit.css; flagged):
+     here the levels apply again on phones (Squawkabilly, Crabominable at 320) */
+  .tmk-work .mtf .k-name[data-kf="2"]{font-size:var(--t15)}
+  .tmk-work .mtf .k-name[data-kf="3"],.tmk-work .mtf .k-name[data-kf="4"],.tmk-work .mtf .k-name[data-kf="5"]{font-family:var(--b);font-weight:700;letter-spacing:0;font-size:var(--t15)}
+  .tmk-work .mtf .k-name[data-kf="4"]{font-stretch:80%}
+  .tmk-work .mtf .k-name[data-kf="5"]{font-size:var(--t13);font-stretch:75%;letter-spacing:-.02em;padding-right:0;white-space:normal}
+  .tmk-work .mtf-add .k-plate{min-height:112px}
+  .tmk-work .mtf-add .plus{top:var(--s3);font-size:var(--t34)}
+  .tmk-work .mtf-sum{gap:var(--s3);margin-top:var(--s4);padding-top:var(--s2)}
+  .tmk-work .mtf-sl,.tmk-work .mtf-inf{gap:var(--s3)}
+  /* phones: the card above already shows the name and score, so the detail's name is read out but not shown again, and
+     ‹ 1 of 6 › shares its row with the types (mock B phone) */
+  .tmk-work .mtf-sl{grid-template-columns:auto minmax(0,1fr);align-items:center}
+  .tmk-work .mtf-sl > .mtf-ia{grid-column:1 / -1}
+  .tmk-work .mtf-nav h2{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+  .tmk-work .mtf-sum{position:relative}
+  .tmk-work .mtf-tr{justify-content:flex-end}
+  .tmk-work .mtf-tr .rate{display:none}
+  .tmk-work .mtf-ia{gap:var(--s1) var(--s4)}
+  .tmk-work .mtf-ia dd{font-size:var(--t15)}
+  .tmk-work .mtf-links{gap:0 var(--s4)}
+  .tmk-work .tm-sgs .sg2-links .sg2-all{font-size:var(--t13)} /* 15px put "See All Suggestions ›" on three lines in its column */
+  .tmk-work .mtf-links .tm-legal{display:none} /* phones: the status line at the top already says Legal for Reg M-C ✓ */
+  /* a suggestion: its number beside the gain, Apply beside Why? */
+  .tmk-work .tm-sug > li:not([hidden]){display:grid;grid-template-columns:auto minmax(0,1fr);grid-template-areas:"k mv" "sw sw" "ln ln" "ap wy";align-items:center;column-gap:var(--s4)}
+  .tmk-work .tm-sug > li > .np-eyebrow{grid-area:k}
+  .tmk-work .tm-sug > li > .tm-mv{grid-area:mv;margin:0}
+  .tmk-work .tm-sug > li > .tm-swaps{grid-area:sw}
+  .tmk-work .tm-sug > li > .sg2-ln{grid-area:ln}
+  .tmk-work .tm-sug > li > .np-btn,.tmk-work .tm-sug > li > .np-btn2{grid-area:ap;margin:0}
+  .tmk-work .tm-sug > li > .sg2-why{grid-area:wy;align-self:start}
+  .tmk-work .tm-sug > li > .sg2-why[open]{grid-column:1 / -1;grid-row:auto}
+  .tmk-work .mtf-do{gap:0 var(--s4)}
+  .tmk-work .tm-sec > h2{font-size:var(--t17)}
+  .tmk-work .mtf-lead{margin-top:var(--s4);font-size:var(--t15)}
+  .tmk-work .mtf-links{margin-top:var(--s2)}
+  .tmk-work .tm-legend{gap:var(--s2) var(--s6)}
+  .tmk-work .tm-legend b{font-size:var(--t28)}
+  .tmk-work .mu-sent{gap:var(--s2) var(--s2);margin:var(--s4) 0 var(--s3);font-size:var(--t15)}
+  .tmk-work .mu-sent .k-w{min-height:var(--tap);padding:0 var(--s2);border-width:2px}
+  .tmk-work .tm-mus .tm-sub{margin-top:0}
+}
+/* 380 and up: the six header links fit three to a row (two even rows, no lone link) */
+@media (min-width:380px) and (max-width:699.98px){.tmk-head .mtf-acts{grid-template-columns:repeat(3,max-content);column-gap:var(--s3)}}
+@media (max-width:359.98px){
+  .tmk-head .mtf-acts{gap:0 var(--s4)}
+  .tmk-head .k-sent{font-size:var(--t17)}
+  .tmk-work .mtf{margin-left:0}
+}
+/* 700-1023 (Nov 22, v2-rmjump: Remove must not move the page, Sim Nov 18): after Remove, "Saved ✓" becomes the wider Save Team pill, which
+   wrapped the one-line link row at 820-917 and pushed the six down 44px. Here the six links always sit three to a row (two even rows, as
+   on phones 380-699), so the row is the same height saved or not. 1024 and up keep one line (both states fit, measured). */
+@media (min-width:700px) and (max-width:1023.98px){.tmk-head .mtf-acts{display:grid;grid-template-columns:repeat(3,max-content);gap:0 var(--s6)}}
+
+/* ===== My Team "The Party" (Sim chose it 7:53 PM Nov 22; built on the kit). The six move into the blue party band at the top: the chosen
+   one is the big white card (its whole set and buttons), the six are party rows beside it (types, item and Ability, moves, rating bar).
+   The chosen card reuses the frame detail rules below (copied from .tmk-work with its colours set for the white card). ===== */
+.pty2 .mtf-sum{--wr-ink:var(--pty-ink);--wr-ink2:var(--pty-ink2);--wr-plot:var(--pty-band);--wr-rule:var(--sd-paper-rule)}
+.pty2 .mtf-sum{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:var(--s4) var(--s12);margin:var(--s8) 0 0;padding:var(--s6) 0 0;background:none;border-top:3px solid var(--wr-plot);box-shadow:none}
+.pty2 .mtf-sl,.pty2 .mtf-inf{display:grid;align-content:start;gap:var(--s4);min-width:0;margin:0;padding:0;background:none}
+.pty2 .mtf-nav{display:flex;align-items:center;gap:var(--s2);min-height:var(--tap);margin:0;padding:0;background:none}
+.pty2 .mtf-nav h2{flex:0 1 auto;min-width:0;margin:0;font-size:var(--t24);line-height:1.15;color:var(--wr-ink);white-space:normal;overflow:visible;overflow-wrap:normal}
+.pty2 .mtf-nav > span{flex:none;font-size:var(--t15);font-weight:600;color:var(--wr-ink2);white-space:nowrap}
+.pty2 .mtf-nav .mtf-step:last-child{margin-left:auto}
+.pty2 .mtf-step{flex:none;display:grid;place-items:center;width:var(--tap);height:var(--tap);padding:0;border:0;background:none;color:var(--wr-plot);font-size:var(--t34);font-weight:900;line-height:1;cursor:pointer}
+.pty2 .mtf-step[disabled]{opacity:.4;cursor:default}
+.pty2 .mtf-step:focus-visible,.pty2 .mtf-do .np-link:focus-visible{outline:3px solid var(--wr-plot);outline-offset:2px}
+.pty2 .mtf-tr{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s4)}
+.pty2 .mtf-ty{display:flex;gap:var(--s1);margin:0}
+.pty2 .mtf-tr .rate{display:flex;align-items:baseline;gap:var(--s2);margin:0;color:var(--wr-plot)}
+.pty2 .mtf-tr .rate b{font-size:var(--t34);line-height:1}
+.pty2 .mtf-tr .rate span{font-size:var(--t15);color:var(--wr-ink2)}
+.pty2 .mtf-ia{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3) var(--s6);margin:0}
+.pty2 .mtf-ia div{display:grid;align-content:start;padding:var(--s2) 0 0;background:none;border:0;border-top:1px solid var(--wr-rule)}
+.pty2 .mtf-ia > div:first-child:nth-last-child(3){grid-column:1 / -1}
+.pty2 .mtf-ia dt{font-size:var(--t13);font-weight:600;line-height:1.3;color:var(--wr-ink2)}
+.pty2 .mtf-ia dd{margin:0;font-size:var(--t17);font-weight:700;line-height:1.3;color:var(--wr-ink)}
+.pty2 .mtf-ia dd small{display:inline;font-size:var(--t13);font-weight:500;color:var(--wr-ink2)}
+.pty2 .mtf-mv{margin:0}
+.pty2 .mtf-do{display:flex;flex-wrap:wrap;gap:0 var(--s5);margin:0}
+.pty2 .mtf-do .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;font-size:var(--t15);font-weight:700;color:var(--wr-plot)}
+.pty2 .mtf-do .sx-a.on{color:var(--wr-ink)}
+/* the quiet links' "›" is drawn, so each button keeps its own name ("Edit Set", as the focus checks read it) */
+.pty2 .mtf-do .np-link:not(.sx-info)::after{content:"\00a0›" / ""}
+/* the band */
+.tm-hero.pty2{display:grid;grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s6);align-items:end;padding:var(--s8) max(var(--s6),calc((100% - 1240px) / 2)) var(--s8);background:var(--pty-band);background-image:repeating-linear-gradient(-60deg,var(--pty-stripe) 0 14px,transparent 14px 40px);color:var(--pty-on)}
+.pty2 .mtf-head{display:contents}
+.pty2 .mtf-head>*{grid-column:1;margin-left:0;margin-right:0;max-width:none}
+.pty2 .mtf-k{margin:0 0 var(--s2);color:var(--pty-on);font-weight:700}
+.pty2 .k-kicker{justify-self:start;margin:0 0 var(--s2);background:var(--pty-ink);color:var(--pty-on)}
+.pty2 .tm-name{color:var(--pty-on);-webkit-text-stroke:.08em var(--pty-ink);paint-order:stroke fill;filter:drop-shadow(.05em .05em 0 var(--pty-ink))}
+.pty2 .tm-name em{color:var(--pty-gold)}
+.pty2 .tm-name .mtf-smp{color:var(--pty-sky);-webkit-text-stroke:0;filter:none}
+.pty2 .tm-sample,.pty2 .tm-gone,.pty2 .mtf-wait{margin:var(--s2) 0 0;color:var(--pty-on)}
+.pty2 .mtf-score{grid-column:2;grid-row:1/6;align-self:center;display:grid;grid-template-columns:auto auto;align-items:center;column-gap:var(--s4);margin:0;padding:var(--s3) var(--s6) var(--s3) var(--s5);background:var(--pty-ink);transform:skewX(-10deg);box-shadow:8px 8px 0 var(--pty-hot)}
+.pty2 .mtf-score>*{transform:skewX(10deg)}
+.pty2 .mtf-score .n{margin:0;color:var(--pty-on)}
+.pty2 .mtf-score .band{color:var(--pty-sky)}
+.pty2 .mtf-score .lab,.pty2 .mtf-score .win,.pty2 .mtf-score p:not(.n):not(.band){color:var(--pty-sub)}
+.pty2 .mtf{grid-column:1/-1;order:1;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);gap:var(--s5);align-items:stretch;margin:var(--s6) 0 0;padding:0;background:none;box-shadow:none;color:var(--pty-on)}
+.pty2 .mtf-acts{grid-column:1/-1;order:2;display:flex;flex-wrap:wrap;gap:var(--s3);margin:var(--s6) 0 0}
+.pty2 .mtf-acts .np-link{min-height:var(--tap);padding:0 var(--s4);background:var(--pty-card);color:var(--pty-ink);font-weight:800;transform:skewX(-10deg);box-shadow:4px 4px 0 var(--pty-ink)}
+.pty2 .mtf-acts .mtf-saved{background:var(--pty-chip);color:var(--pty-on);box-shadow:none}
+.pty2 .tmk-new{grid-column:1/-1;order:3;margin:var(--s4) 0 0;color:var(--pty-on)}
+.pty2 .tmk-new .k-w{border-color:var(--pty-on);color:var(--pty-on)}
+.pty2 .tm-jump{grid-column:1/-1;order:4;margin:var(--s2) 0 0;color:var(--pty-sub)}
+.pty2 .tm-jump a{color:var(--pty-on)}.pty2 .tm-jump .k-hint{color:var(--pty-sub)}
+/* the chosen one: the big white card */
+.pty2 .mtf-sum{grid-column:1;grid-row:1;align-self:start;position:relative;grid-template-columns:minmax(0,1.15fr) minmax(0,.85fr);grid-template-rows:auto auto auto auto;gap:var(--s3) var(--s3);margin:0;padding:var(--s5) var(--s6) var(--s5) var(--s6);background:var(--pty-card);border:4px solid var(--pty-ink);box-shadow:10px 10px 0 var(--pty-hot);color:var(--pty-ink)}
+.pty2 .mtf-sum .pty2-art{grid-column:2;grid-row:2/4;justify-self:center;align-self:center;width:120%;height:200px;margin-top:0;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 12px 8px var(--pty-drop))}
+.pty2 .mtf-sl{display:contents}.pty2 .mtf-sum .mtf-nav{grid-column:1/-1;grid-row:1}.pty2 .mtf-sum .mtf-tr{grid-column:1;grid-row:2;flex-direction:column;align-items:flex-start}.pty2 .mtf-sum .mtf-ia{grid-column:1;grid-row:3}
+.pty2 .mtf-inf{grid-column:1/-1;grid-row:4}
+.pty2 .mtf-mv{grid-template-columns:repeat(2,minmax(0,1fr))}
+/* the six: party rows */
+.pty2 .mtf-party{grid-column:2;grid-row:1;min-width:0}
+.pty2 .mtf .k-roster{display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s2);margin:0;padding:0}
+.pty2 .mtf-row.k-card{display:grid;grid-template-columns:84px minmax(0,1fr) minmax(0,1.1fr) 132px;grid-template-rows:auto auto auto;align-items:center;column-gap:var(--s3);width:100%;min-height:0;padding:var(--s1) var(--s4) var(--s1) var(--s2);background:var(--pty-ink);border-left:10px solid var(--kc);color:var(--pty-on);filter:none;box-shadow:5px 5px 0 var(--pty-drop);cursor:pointer}
+.pty2 .mtf-row .k-plate,.pty2 .mtf-row .k-nm,.pty2 .mtf-row .pty2-x{display:contents}
+.pty2 .mtf-row .k-plate::before,.pty2 .mtf-row .k-plate::after{display:none}
+.pty2 .mtf-row .k-art{position:static;grid-column:1;grid-row:1/4;width:84px;height:72px;transform:none;object-fit:contain;object-position:50% 100%}
+.pty2 .mtf-row .k-id{grid-column:2;grid-row:1;color:var(--pty-on)}
+.pty2 .mtf-row .k-form{color:var(--pty-sky)}
+.pty2 .mtf-row .k-name{color:var(--pty-on)}
+.pty2 .mtf-row .k-sc{grid-column:4;grid-row:1/3;align-self:end;display:flex;align-items:baseline;justify-content:flex-end;gap:var(--s2)}
+.pty2 .mtf-row .k-score{color:var(--pty-on)}
+.pty2 .mtf-row .k-tier{color:var(--pty-sub)}
+.pty2-ty{grid-column:2;grid-row:2;display:flex;flex-wrap:wrap;gap:var(--s1)}
+.pty2-ty i{padding:0 var(--s2);background:var(--c);color:var(--pty-on);font-size:var(--t13);font-style:normal;font-weight:800;line-height:1.5;text-transform:uppercase;transform:skewX(-10deg)}
+.pty2-set{grid-column:2;grid-row:3;font-size:var(--t13);line-height:1.5;color:var(--pty-sub)}
+.pty2-mv{grid-column:3;grid-row:1/4;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s1)}
+.pty2-mv i{overflow:hidden;padding:0 var(--s2);background:color-mix(in srgb,var(--mc) 65%,var(--pty-ink));border-left:4px solid var(--mc);font-size:var(--t13);font-style:normal;font-weight:700;line-height:1.5;white-space:nowrap;text-overflow:ellipsis;color:var(--pty-on)}
+.pty2-bar{grid-column:4;grid-row:3;display:block;height:12px;background:var(--pty-row2);transform:skewX(-14deg);overflow:hidden}
+.pty2-bar i{display:block;width:var(--w);height:100%;background:var(--pty-sky)}
+.pty2 .mtf-row.on{outline:3px solid var(--pty-gold);outline-offset:2px}
+.pty2 .mtf-row:focus-visible{outline:3px solid var(--pty-gold);outline-offset:3px}
+.pty2 .mtf-add.k-card{display:grid;place-items:center;min-height:72px;background:transparent;border:3px dashed var(--pty-chip-rim);color:var(--pty-on)}
+.pty2 .mtf-add .k-plate{display:block;min-height:0;padding:0}
+/* the plan underneath, two up from 1100 */
+@media (min-width:1100px){.pty2-work .k-plan{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,.9fr);column-gap:var(--s12);align-items:start}
+  .pty2-work .k-plan>.k-step:nth-child(1){grid-column:1;grid-row:1/3}.pty2-work .k-plan>.k-step:nth-child(2){grid-column:2;grid-row:1}.pty2-work .k-plan>.k-step:nth-child(3){grid-column:2;grid-row:2}
+  .pty2-work .tm-sgs,.pty2-work .tm-cks,.pty2-work .tm-yg,.pty2-work .tm-mus{max-width:none}
+  .pty2-work .k-plan>.k-step:nth-child(2) .mu-out{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:1279.98px){.pty2 .mtf-row.k-card{grid-template-columns:72px minmax(0,1fr) 120px}.pty2-mv{display:none}.pty2 .mtf-row .k-sc{grid-column:3}.pty2-bar{grid-column:3}.pty2 .mtf-row .k-art{width:72px;height:64px}}
+@media (max-width:899.98px){.pty2 .mtf{grid-template-columns:minmax(0,1fr)}.pty2 .mtf-sum,.pty2 .mtf-party{grid-column:1;grid-row:auto}.tm-hero.pty2{grid-template-columns:minmax(0,1fr)}.pty2 .mtf-score{grid-column:1;grid-row:auto;justify-self:start;margin-top:var(--s4)}}
+/* Sim, Nov 23 (a ~905px window): at 900-1099 the team name sat beside the big score in a 125px column, so 'Tailwind' broke as 'Tailwin / d'.
+   The name takes the full width there and the score goes under it, as under 900 */
+/* the same overlap ('Charizardite Y' into 'Drought') at 1100-1379, where the card is 424-500px: the words get the room, the art less */
+@media (min-width:1100px) and (max-width:1379.98px){.pty2 .mtf-sum{grid-template-columns:minmax(0,1.5fr) minmax(0,.6fr)}}
+@media (min-width:900px) and (max-width:1099.98px){.tm-hero.pty2{grid-template-columns:minmax(0,1fr)}.pty2 .mtf-score{grid-column:1;grid-row:auto;justify-self:start;margin-top:var(--s4)}
+  /* the picked Pokémon's card was 340px there: item ran into Ability, the name into '1 of 6'. Card and six side by side get a wider card */
+  .pty2 .mtf{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}.pty2 .mtf .k-roster{align-content:start}.pty2 .mtf-sum{grid-template-columns:minmax(0,1.5fr) minmax(0,.6fr)}}
+@media (max-width:699.98px){.tm-hero.pty2{padding:var(--s5) var(--s4) var(--s6)}
+  .pty2 .mtf-sum{padding:var(--s3) var(--s4);box-shadow:6px 6px 0 var(--pty-hot)}.pty2 .mtf-sum{grid-template-columns:minmax(0,1fr) 110px;gap:var(--s2) var(--s3)}.pty2 .mtf-sum .pty2-art{grid-row:2;width:120px;height:96px}.pty2 .mtf-sum .mtf-ia{grid-column:1/-1;grid-row:3;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2) var(--s4)}.pty2 .mtf-sum .mtf-nav>span{display:none}
+  .pty2 .mtf-acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2)}
+  .pty2 .mtf .k-roster{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+  .pty2 .mtf-row.k-card{grid-template-columns:44px minmax(0,1fr) auto;grid-template-rows:auto;column-gap:var(--s2);padding:var(--s1) var(--s2) var(--s1) var(--s1);border-left-width:6px}
+  .pty2 .mtf-row .k-art{grid-row:1;width:44px;height:44px}.pty2 .mtf-row .k-sc{grid-row:1}.pty2-ty{display:none}
+  .pty2 .mtf-row.k-card{grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto auto}.pty2 .mtf-row .k-art{grid-row:1/3}.pty2 .mtf-row .k-id{grid-row:1;min-width:0}.pty2 .mtf-row .k-sc{grid-column:2;grid-row:2;justify-content:flex-start;align-self:start}
+  .pty2 .mtf-row .k-name{display:block;font-size:var(--t13);white-space:normal;overflow-wrap:normal}.pty2 .mtf-row .k-score{font-size:var(--t20)}
+  .pty2 .tm-jump .k-hint{display:none}
+  .pty2 .mtf-sum .pty2-art{display:none}.pty2 .mtf-sum{grid-template-columns:minmax(0,1fr)}.pty2 .mtf-sum .mtf-tr{flex-direction:row;align-items:center}
+  .pty2 .mtf-score{padding:var(--s2) var(--s4)}.pty2 .mtf-score .n{font-size:var(--d64)}.pty2 .mtf-acts .np-link{justify-content:center;padding:0 var(--s1);font-size:var(--t13)}
+  .pty2 .mtf-row.k-card{grid-template-columns:56px minmax(0,1fr) auto;padding-right:var(--s3)}.pty2 .mtf-row .k-art{width:56px;height:52px}
+  .pty2-set,.pty2-bar{display:none}.pty2 .mtf-row .k-sc{grid-column:3;grid-row:1/3;align-self:center}.pty2 .mtf-row .k-tier{display:none}}
+/* phones, last word: each party cell is the sprite, then the name on its own line and the score under it (names never squeezed) */
+@media (max-width:699.98px){.pty2 .mtf .mtf-row.k-card{grid-template-columns:44px minmax(0,1fr);grid-template-rows:auto auto;align-items:center}
+  .pty2 .mtf .mtf-row.k-card .k-art{grid-column:1;grid-row:1/3}.pty2 .mtf .mtf-row.k-card .k-id{grid-column:2;grid-row:1;align-self:end}
+  .pty2 .mtf .mtf-row.k-card .k-sc{grid-column:2;grid-row:2;justify-content:flex-start;align-self:start}}
+/* phones: the sprite stays in its 44px column (the Mega line beside it is never covered); the white card's "Mega" is PLOT blue (4.5:1 on white) */
+@media (max-width:699.98px){.pty2 .mtf .mtf-row.k-card .k-art{width:44px;height:44px}
+  .pty2 .mtf-sum .mtf-nav{padding-top:var(--s1)}}
+.pty2 .mtf-sum .mtf-nav h2 .mg{color:var(--pty-band)}
+/* every party row is the same height, the Add spot too, so Remove never moves the rows below (v2-rmjump) */
+.pty2 .mtf .k-roster{grid-auto-rows:1fr}
+/* phones: the slanted score plate keeps clear of the screen edge; at 399 and under the white card's name steps down so it never runs into its › */
+@media (max-width:699.98px){.pty2 .mtf-score{justify-self:stretch;margin-left:var(--s4);margin-right:var(--s4)}}
+@media (max-width:399.98px){.pty2 .mtf-nav h2{font-size:var(--t20)}}
+@media (max-width:399.98px){.pty2 .mtf-score{grid-template-columns:auto minmax(0,1fr);row-gap:0}.pty2 .mtf-score .mtf-sw{display:contents}
+  .pty2 .mtf-score .n{grid-column:1;grid-row:1/3}.pty2 .mtf-score .band{grid-column:2;grid-row:1;align-self:end}.pty2 .mtf-score .lab{grid-column:2;grid-row:2;align-self:start}.pty2 .mtf-score .win{grid-column:1/-1;grid-row:3;margin-top:var(--s2)}}
+/* phones: tighter steps between the band's groups (the page must not be longer than before) */
+@media (max-width:699.98px){.pty2 .mtf{margin-top:var(--s4);gap:var(--s4)}.pty2 .mtf-acts{margin-top:var(--s4)}.pty2 .tmk-new{margin-top:var(--s3)}.tm-hero.pty2{padding-bottom:var(--s5)}.pty2 .mtf-score{margin-top:var(--s3)}}
+.pty2 .mtf-score .win b{color:var(--pty-on)}
+/* the six's hint (Sim, Nov 22: kept from the old page, 'Your six · tap one to see it'): white on the band, never link blue */
+.pty2-tap{margin:0 0 var(--s2);font-size:var(--t13);font-weight:600;line-height:1.5;color:var(--pty-on)}
+/* My Team at 1100+ (HH, design authority for the empty-space fixes, Sim 8:48 PM Nov 22): the plan fills the same width as the party band
+   above it (no empty right side at 1920), and the checks sit under the upgrade on the left while the matchups run down the right, so
+   neither column ends early */
+@media (min-width:1100px){.pty2-work.tm-work{padding-inline:max(var(--gut),calc((100% - 1240px) / 2))}.pty2-work .k-plan{max-width:none}
+  .pty2-work .k-plan>.k-step:nth-child(1){grid-row:1}.pty2-work .k-plan>.k-step:nth-child(2){grid-column:2;grid-row:1/3}.pty2-work .k-plan>.k-step:nth-child(3){grid-column:1;grid-row:2}}
+/* phones (HH, design authority to 9 AM Mon, Sim 9:12 PM): the tapped one's buttons (Edit Set, Replace, Remove, Lock, Pokémon Page) sit right under
+   its name, so they're next to the six you just tapped instead of under the whole set (v2-minors: Remove within 650px of the tapped Card) */
+@media (max-width:699.98px){.pty2 .mtf-sum .mtf-inf{display:contents}.pty2 .mtf-sum .mtf-do{grid-column:1/-1;grid-row:2;margin:0}
+  .pty2 .mtf-sum .mtf-tr{grid-row:3}.pty2 .mtf-sum .mtf-ia{grid-row:4}.pty2 .mtf-sum .mtf-mv{grid-column:1/-1;grid-row:5}}
+/* phones: a little air between each party row's name and its score (qcheck: the slanted score's glyphs reached 3-4px into the name line) */
+@media (max-width:699.98px){.pty2 .mtf .mtf-row.k-card .k-sc{margin-top:var(--s1)}}
+/* phones: the hint and "New crew?" one step closer (pays back the 12px the name/score air added; v2-q59 limit 4,010) */
+@media (max-width:699.98px){.pty2-tap{margin-bottom:var(--s1)}.pty2 .tmk-new{margin-top:var(--s2)}}
+/* My Team at 1100+ (HH, design authority to 9 AM Mon): the team's name runs the band's full width on one line (with "(sample)" beside it), and the
+   Strength Score plate sits beside the line under it, instead of squeezing the name into three lines next to the plate (1440: -59px) */
+@media (min-width:1100px){.pty2 .mtf-k{grid-row:1}.pty2 .k-kicker{grid-row:2}.pty2 .tm-name{grid-column:1/-1;grid-row:3}.pty2 .tm-name .mtf-smp{display:inline;margin-left:.3em}
+  .pty2 .tm-sample,.pty2 .tm-gone,.pty2 .mtf-wait{grid-row:4;align-self:center}.pty2 .mtf-score{grid-row:4;align-self:start}
+  .pty2 .mtf{grid-row:5}.pty2 .mtf-acts{grid-row:6}.pty2 .tmk-new{grid-row:7}.pty2 .tm-jump{grid-row:8}}
+/* My Team length at 1440 (Nov 23, hV; desktop length rule: tool pages at most 3 screens, it was 3.4). Two moves, nothing hidden:
+   1) 1280+: the empty strip left of the Strength Score plate now holds the header's buttons and the jump links (they were two rows
+      under the six), and the status line sits on the kicker's row, at the band's right end;
+   2) 1100+: step 3 opens up: its heading under the upgrade, then Team Checks on the left and Your Games on the right, side by side
+      under the matchups, so neither column runs long on its own */
+@media (min-width:1280px){.tm-hero.pty2{row-gap:0}
+  .pty2 .k-kicker{grid-column:1/-1;grid-row:1;align-self:center;margin:0}
+  .pty2 .mtf-k{grid-column:1/-1;grid-row:1;justify-self:end;align-self:center;margin:0}
+  .pty2 .tm-name{grid-row:2;margin-top:var(--s5)}.pty2 .tm-sample,.pty2 .mtf-wait{grid-row:3;align-self:start;margin-top:var(--s5)}.pty2 .tm-gone{grid-row:4;align-self:start;margin-top:var(--s2)}
+  .pty2 .mtf-acts{grid-column:1;grid-row:5;align-self:start;margin:var(--s4) 0 0}.pty2 .tm-jump{grid-column:1;grid-row:6;align-self:start;margin:var(--s2) 0 0}
+  .pty2 .mtf-score{grid-row:3/7;align-self:end;margin-top:var(--s5)}.pty2 .mtf-score .mtf-sw{max-width:300px}
+  .pty2 .mtf{grid-row:7;margin-top:var(--s10)}.pty2 .tmk-new{grid-row:8;margin-top:var(--s10)}}
+@media (min-width:1100px){.pty2-work .k-plan{padding-bottom:var(--s2)}.pty2-work .k-plan::before{bottom:var(--s2)}
+  /* only with Your Games (a full six): a team still being built has no record, so step 3 stays whole under the upgrade */
+  .pty2-work .k-plan:has(>.k-step>.tm-yg){grid-template-rows:1fr auto auto} /* 1fr: when the matchups run longer, the extra space goes under the upgrade, never between step 3's heading and its checks */
+  .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3){display:contents}
+  .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3)>.k-n{position:relative;left:-52px;grid-column:1;grid-row:2;align-self:start;justify-self:start}
+  .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3)>.k-sec{grid-column:1;grid-row:2}
+  .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3)>.tm-cks{grid-column:1;grid-row:3}
+  .pty2-work .k-plan:has(>.k-step>.tm-yg)>.k-step:nth-child(3)>.tm-yg{grid-column:2;grid-row:3}}
+/* hP3 polish (Nov 24, polish-check on My Team / Team Sheet): rows that split into a lone last item get even splits instead */
+/* the six head buttons: phones under 360, 2 x 3 (every label on one line); 360-699, three columns sized to their labels, so no
+   label breaks (Why This Score? broke at 390); 360-399 a little narrower type (font-stretch, the 320 cards' precedent), never smaller */
+@media (max-width:359.98px){.pty2 .mtf-acts{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (min-width:360px) and (max-width:699.98px){.pty2 .mtf-acts{grid-template-columns:repeat(3,auto)}}
+@media (min-width:360px) and (max-width:399.98px){.pty2 .mtf-acts .np-link{font-stretch:87.5%}}
+/* 700-889: the six ran 4+2 and 5+1; now two rows of three that fill the row, as on phones */
+@media (min-width:700px) and (max-width:889.98px){.pty2 .mtf-acts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}.pty2 .mtf-acts .np-link{justify-content:center}}
+/* the card's five links: where one line can't hold them, three then two (was four and a lone Pokémon Page); 'Lock ›' lost its
+   extra gap (the lock button's own flex gap sat before the arrow) */
+.pty2 .mtf-do .sx-a{gap:0}
+@media (max-width:539.98px),(min-width:900px) and (max-width:1299.98px){.pty2 .mtf-do::after{content:"";flex-basis:100%;order:1}.pty2 .mtf-do>:nth-child(n+4){order:2}}
+@media (max-width:359.98px){.pty2 .mtf-do{column-gap:var(--s3)}}
+/* 'New crew? build me a team or import a team': where it can't take one line (under 590, 700-769) it broke as '... or' / 'import a
+   team' (3+1); it now breaks after 'build me a team', so 'or' starts the next line (2+2; 1+1+2 under 380). Same number of lines; the second line
+   takes back the row gap of the break's own (empty) line */
+@media (max-width:589.98px),(min-width:700px) and (max-width:769.98px){.pty2 .tmk-new::after{content:"";flex-basis:100%;order:1}.pty2 .tmk-new>:nth-child(n+3){order:2;margin-top:calc(var(--s2) * -1)}}
+/* matchup counts on phones: three even columns (the kit's flex row put Unfavoured alone on a second line at 320) */
+@media (max-width:519.98px){.tmk-work .tm-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s3)}}
+/* stand-out rows under 360: a 36px picture (the 320 precedent), so 'Charizard Y' fits beside it (ran 3px past at 320) */
+@media (max-width:359.98px){.tmk-work .mu-out .mu-row{grid-template-columns:36px minmax(0,1fr)}.tmk-work .mu-out .mu-row > img{width:36px;height:36px}}

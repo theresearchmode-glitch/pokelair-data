@@ -37,8 +37,8 @@ function slotMoves(s,p){const learn=new Set((LEARN[p.n]||[]).map(k=>MV[k].name))
   const pm=popularMoves(p).slice(0,4);const names=pm.map(m=>m.name);while(names.length<4)names.push('');return {names,moves:pm,custom:false}}
 // Nov 7: a team member the current regulation doesn't have (after a regulation change) is kept in storage, in case it comes
 // back, but left out of every page. goneNote() says so instead of letting it vanish silently.
-const goneOf=slots=>(slots||[]).filter(s=>s&&s.n&&!byName.get(s.n)).map(s=>String(s.n).replace(/-/g,' '));
-const goneNote=slots=>{const g=goneOf(slots);if(!g.length)return '';const one=g.length===1,reg=typeof REG_NAME==='string'?REG_NAME:'this regulation';
+const goneOf=slots=>(slots||[]).filter(s=>s&&!byName.get(s.n)&&(s.n||s.gone)).map(s=>String(s.n||s.gone).replace(/-/g,' '));
+const goneNote=slots=>{const g=goneOf(slots);if(!g.length)return '';const one=g.length===1,reg=typeof regName==='function'?regName():'this regulation';
   return `${esc(g.join(', '))} ${one?"isn't":"aren't"} legal in ${esc(reg)}, so ${one?'it is':'they are'} left out of this team. ${one?'It stays':'They stay'} saved in case ${one?'it comes':'they come'} back.`};
 const members=()=>{const ms=S.slots.map(memberOf).filter(Boolean);return typeof assignItems==='function'?assignItems(ms):ms};
 // The team as it can actually play for the type chart: only one Mega Evolves per battle, so with 2+ Megas every Mega but the
@@ -125,7 +125,10 @@ function proChecks(ms,useA,opts){if(!ms.length)return null;const PG=proGrades(ms
   {let ip=[];try{ip=typeof itemProblems==='function'?itemProblems(ms):[]}catch(e){}if(ip.length)out.push({k:'items',ok:false,label:'Items work',have:'',miss:ip.map(x=>x.why).join(' '),pro:'VGC rule: each item once per team'})}
   // partly there (Trick Room with too few slow attackers, priority instead of speed control…) shows as ~ and doesn't count as passed
   const cnt=out.filter(x=>!x.skip&&!x.note);return {items:out,pass:cnt.filter(x=>x.ok).length,n:cnt.length,full:ms.length===6,PG}}
-const ckIcon=x=>x.skip?'<span class="ck unk" aria-label="unknown">?</span>':x.soft?'<span class="ck part" aria-label="partly">~</span>':x.note&&!x.ok?'<span class="ck note" aria-label="note">i</span>':x.ok?'<span class="ck ok" aria-label="yes">✓</span>':x.part?'<span class="ck part" aria-label="partly">~</span>':'<span class="ck no" aria-label="no">✗</span>';
+// a team check's state (shared with the rebuild, R4 Nov 11): unk / part / note / ok / no, with its mark and spoken word
+const CK_MARK={unk:['?','unknown'],part:['~','partly'],note:['i','note'],ok:['✓','yes'],no:['✗','no']};
+const ckState=x=>x.skip?'unk':x.soft?'part':x.note&&!x.ok?'note':x.ok?'ok':x.part?'part':'no';
+const ckIcon=x=>{const k=ckState(x);return `<span class="ck ${k}" aria-label="${CK_MARK[k][1]}">${CK_MARK[k][0]}</span>`};
 // same item assignment as the open team (members()), so a saved team shows the same checks as when it's open
 function teamRating(slots){const m0=slots.map(memberOf).filter(Boolean),ms=typeof assignItems==='function'?assignItems(m0):m0;return {ms,a:analyze(ms,true)}}
 // toast(text, true) adds an Undo button (and stays up longer) for changes that replace team members
@@ -145,7 +148,9 @@ function undoBarHtml(){const t=undoTop();return t?`<div class="chundo" role="sta
 function undoBarSync(){document.querySelectorAll('.chundohost').forEach(h=>{const x=undoBarHtml();if(h.innerHTML!==x)h.innerHTML=x})}
 document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('[data-undobar]');if(!b)return;const t=undoTop();if(!t)return;ui.undoStack.pop();
   S.slots=JSON.parse(JSON.stringify(t.slots));fixSlots();S.loadedId=t.loadedId;ui.undo=null;keepScroll(()=>render());toast(`Undone: ${t.label}`)});
-document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#toastUndo');if(!b||!ui.undo)return;const u=ui.undo;ui.undo=null;
+document.addEventListener('click',e=>{const b=e.target&&e.target.closest&&e.target.closest('#toastUndo');if(!b||!ui.undo)return;
+  /* code review A2-M7: an Undo toast undoes only its own change; if the team was changed again since, nothing is rolled back */
+  if(ui.undoAfter&&ui.undoAfter!==JSON.stringify(S.slots)){ui.undo=null;ui.undoAfter=null;toast('The team changed since then, so nothing was undone');return}const u=ui.undo;ui.undo=null;ui.undoAfter=null;
   S.slots=u.slots;fixSlots();S.loadedId=u.loadedId;keepScroll(()=>render());toast('Change undone')});
 
 // How often recent event winners pass each check, measured live from the Events data (each winner's real team and moves),
@@ -181,19 +186,27 @@ function ckWinRefresh(){const E=META.events;if(!E)return;
   // instead of the ~120-team pass (load speed, Nov 1). New data has new dates, so it's measured again.
   const skey=JSON.stringify([Object.keys(DATA_AT).sort().map(k=>k+DATA_AT[k]),E.events.length,(E.events[0]||{}).id||'',(E.events[E.events.length-1]||{}).id||'',megaGoal(),modelOK()]);
   {const c=LS.get('np.ckwin',null);if(c&&c.k===skey&&c.v&&c.v.rates){ckWin=Object.assign({},c.v,{key,busy:false,track:ckWin.track||null});safe('checklist claims',()=>bgRender());return}}
+  // code review B-C1 (Nov 16): the daily data job works these numbers out once (ckwin-snapshot.mjs) and stores them with the events, stamped
+  // with the events' and the model's dates and the Mega setting; when all match, the visitor's phone skips the ~120-team pass
+  {const P=E.ckwin,Md=META.model;if(P&&P.v&&P.v.rates&&P.ev===E.updated&&P.n===E.events.length&&Md&&P.model===Md.updated&&P.mega===megaGoal()&&modelOK()){ckWin=Object.assign({},P.v,{key,busy:false,track:ckWin.track||null});try{LS.set('np.ckwin',{k:skey,v:P.v})}catch(e){}safe('checklist claims',()=>bgRender());return}}
   const list=E.events.map(ev=>ev.top[0]).filter(t=>t&&t.place===1&&t.mons.length===6&&t.mons.every(m=>byName.get(m.n)));if(list.length<20)return;
-  ckWin.busy=true;const acc={},wts=[],se2s=[];let i=0,two=0,n=0;
+  ckWin.busy=true;const acc={},wts=[],se2s=[];let i=0,two=0,n=0,pend=null;
   // runs only while the browser is idle, in short slices, so it never competes with scrolling (Nov 5)
   const later=f=>typeof requestIdleCallback==='function'?requestIdleCallback(f,{timeout:1500}):setTimeout(f,30);
   // and waits while the page is being scrolled
-  if(!ckWin.scrollHook){ckWin.scrollHook=1;addEventListener('scroll',()=>{ckWin.lastScroll=Date.now()},{passive:true})}
-  const step=dl=>{if(Date.now()-(ckWin.lastScroll||0)<500){setTimeout(()=>later(step),300);return}const t0=Date.now(),budget=dl&&dl.timeRemaining?Math.max(3,Math.min(8,dl.timeRemaining()-1)):6;try{while(i<list.length&&Date.now()-t0<budget){const t=list[i++];
+  if(!ckWin.scrollHook){ckWin.scrollHook=1;const busy=()=>{ckWin.lastScroll=Date.now()};addEventListener('scroll',busy,{passive:true});
+    /* speed audit Nov 16: also waits while the visitor taps or types, so a tap never queues behind a team calc */for(const ev of ['pointerdown','keydown','input'])addEventListener(ev,busy,{passive:true,capture:true})}
+  const step=dl=>{if(Date.now()-(ckWin.lastScroll||0)<500){setTimeout(()=>later(step),300);return}const t0=Date.now(),budget=dl&&dl.timeRemaining?Math.max(3,Math.min(8,dl.timeRemaining()-1)):6;try{while((i<list.length||pend)&&Date.now()-t0<budget){
+      /* speed audit Nov 16 (4x CPU: 72 long tasks, longest 378 ms): one team's two calcs used to run back to back in one slice; now its
+         checklist runs in the next slice (same order, same numbers), so no slice holds the page for two calcs */
+      if(pend){const ms=pend;pend=null;const CK=proChecks(ms,true);if(!CK)continue;n++;if(CK.PG&&isFinite(CK.PG.se2))se2s.push(CK.PG.se2);for(const x of CK.items){if(x.skip)continue;const a=acc[x.k]||(acc[x.k]=[0,0]);a[1]++;if(x.ok)a[0]++}if(ms.filter(m=>m.p.m).length===2)two++;continue}
+      const t=list[i++];
       // each winner read with its own moves and held item, as registered
       const ms=assignItems(t.mons.map(m=>{const p=byName.get(m.n);const mv=m.mv.map(x=>mvByName.get(x)).filter(Boolean);const it=!p.m&&m.i&&typeof m.i==='string'?m.i:null;return {...memberFrom(p,p.a.includes(m.a)?m.a:undefined),i:-1,p,d:p.d,moves:mv,_mv:mv,custom:true,heldItem:it,item:it||defaultItem(p),mega:p.m,base:p.b,types:p.t}}));
       if(typeof tsOf==='function'){const t=tsOf(ms);if(t!=null)wts.push(t)}
-      const CK=proChecks(ms,true);if(!CK)continue;n++;if(CK.PG&&isFinite(CK.PG.se2))se2s.push(CK.PG.se2);for(const x of CK.items){if(x.skip)continue;const a=acc[x.k]||(acc[x.k]=[0,0]);a[1]++;if(x.ok)a[0]++}if(ms.filter(m=>m.p.m).length===2)two++}}
+      pend=ms}}
     catch(e){ckWin.busy=false;return}
-    if(i<list.length){later(step);return}
+    if(i<list.length||pend){later(step);return}
     wts.sort((a,b)=>a-b);se2s.sort((a,b)=>a-b);ckWin={key,rates:acc,two,busy:false,wmed:wts.length>=20?wts[wts.length>>1]:null,wq75:wts.length>=20?wts[Math.floor(wts.length*.75)]:null,se2med:se2s.length>=20?se2s[se2s.length>>1]:null,track:ckWin.track||null};try{LS.set('np.ckwin',{k:skey,v:{rates:ckWin.rates,two:ckWin.two,wmed:ckWin.wmed,wq75:ckWin.wq75,se2med:ckWin.se2med}})}catch(e){}safe('checklist claims',()=>bgRender())};
   setTimeout(()=>later(step),400)}
 /* One rounding rule for every printed percentage (Nov 2, "numbers read like school grades"): 10 or more → whole number,
@@ -214,3 +227,7 @@ function teamWho(t) { if (!t) return 'Challenger'; const r = String(t.record || 
 /* a short event name for tight lists ("2027 Gdańsk Pokémon Regional Championships · 758 players" -> "Gdańsk Regional") */
 function evShort(s) { s = String(s || '').split(' · ')[0].replace(/^\d{4}\s+/, '').replace(/\s*Pokémon\s+/, ' ').replace(/Regional Championships?/i, 'Regional').replace(/International Championships?/i, 'Internationals').replace(/World Championships?/i, 'Worlds').replace(/\s+/g, ' ').trim();
   return s.length > 28 ? s.slice(0, 27).trim() + '…' : s; }
+// copy text to the clipboard (moved unchanged from 45-team-links.js, R4 Nov 11)
+async function copyText(t) { let ok = false; try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {}
+  if (!ok) { try { const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e) {} }
+  return ok; }

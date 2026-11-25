@@ -2,16 +2,18 @@
 // Threats are the most-used Pokémon in this format, each with its real ability and most-used moves.
 // A threat is answered when one of yours hits it super effectively and isn't hit super effectively back
 // (matchup score from headToHead: +1 or better), and covered twice when a second Pokémon can do it too.
-let threatCache = {key: null, list: null};
+// cached per length (Nov 13, checklist i31): the cache used to ignore n, so whichever page asked first set the length for everyone
+let threatCache = {key: null, by: {}};
 function metaThreats(n = 30) {
   const key = S.format + '|' + metaVersion + '|' + ui.metaSrc;
-  if (threatCache.key === key) return threatCache.list;
+  if (threatCache.key !== key) threatCache = {key, by: {}};
+  if (threatCache.by[n]) return threatCache.by[n];
   const ranked = ROSTER.map(p => ({p, u: U(p)})).filter(x => x.u > 0).sort((a, b) => b.u - a.u).slice(0, n);
   const tot = ranked.reduce((a, x) => a + x.u, 0) || 1;
   const list = ranked.map(x => ({...oppMember(x.p), w: x.u * ranked.length / tot}));  // average weight 1
   const ctx = teamContext([]);
   list.forEach(o => { o._en = attackEntries(o, o.moves.some(isCoverage) ? o.moves : [], ctx); });
-  threatCache = {key, list}; return list;
+  threatCache.by[n] = list; return list;
 }
 // One member against every threat, cached: the same Pokémon with the same moves and field gives the same answer.
 let vsCache = new Map();

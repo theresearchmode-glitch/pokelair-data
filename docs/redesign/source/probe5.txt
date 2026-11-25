@@ -1,0 +1,1 @@
+(() => { let n = 0; const w = document.createTreeWalker(document.body, NodeFilter.SHOW_TEXT); const hits = []; while (w.nextNode()) if (/Robin_VGC/.test(w.currentNode.nodeValue)) hits.push(w.currentNode); for (const t of hits) { t.nodeValue = t.nodeValue.replace(/Robin_VGC/g, '[player]'); n++; } return 'masked ' + n; })()

@@ -1,0 +1,26 @@
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;background:var(--bg);color:var(--ink);font:500 16px/1.5 var(--b);-webkit-font-smoothing:antialiased;font-synthesis:style}
+:root{--d:"Unbounded",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif}
+.dsp{font-family:var(--d);font-style:italic;font-weight:900;letter-spacing:-.03em}
+.eyebrow{font:600 13px/1 var(--b);letter-spacing:.14em;text-transform:uppercase;color:var(--ink3)}
+header{position:absolute;z-index:6;left:0;right:0;top:0;height:76px;display:flex;align-items:center;padding:0 64px;border-bottom:1px solid var(--rule)}
+header .logo svg{height:38px;display:block}
+nav{display:flex;gap:40px;margin-left:72px}
+nav a{font:600 15px/1 var(--b);color:var(--ink2);display:flex;align-items:center;gap:10px}
+nav a i{width:14px;height:4px;transform:skewX(-24deg);background:var(--c)}
+.find{margin-left:auto;white-space:nowrap;display:flex;align-items:center;gap:12px;width:300px;height:42px;padding:0 14px;border:1px solid var(--rule2);border-radius:6px;color:var(--ink3);font-size:15px}
+.find kbd{margin-left:auto;font:600 13px/1 var(--b);padding:4px 7px;border:1px solid var(--rule2);border-radius:4px}
+h1{font-size:52px;line-height:1.04;white-space:nowrap}
+h1 em{font-style:inherit;color:var(--blue)}
+.btn{height:52px;padding:0 24px;border-radius:6px;display:inline-flex;align-items:center;gap:10px;font:800 15px/1 var(--d);font-style:italic;letter-spacing:-.01em;white-space:nowrap}
+.btn.p{background:var(--ink);color:var(--bg)}.btn.g{border:1px solid var(--rule2);color:var(--ink)}
+.doors{display:grid;grid-template-columns:repeat(4,1fr);padding:64px 64px 72px;border-top:1px solid var(--rule)}
+.door{padding:0 32px;border-left:1px solid var(--rule)}.door:first-child{padding-left:0;border-left:0}.door:last-child{padding-right:0}
+.door .n{font-size:15px;color:var(--ct,var(--c));display:flex;align-items:center;gap:12px}
+.door .n::after{content:"";height:4px;width:44px;background:var(--c);transform:skewX(-24deg)}
+.door h2{font-size:34px;line-height:1.1;margin:18px 0 12px}
+.door p{font-size:16px;color:var(--ink2);min-height:72px}
+.door a{display:flex;justify-content:space-between;align-items:center;height:48px;margin-top:16px;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font-size:16px;font-weight:600;color:var(--ct,var(--c))}
+.door a span{color:var(--ink3)}
+footer{display:flex;align-items:center;gap:40px;padding:0 64px;height:104px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink2)}
+footer svg{height:30px;display:block}footer .r{margin-left:auto;display:flex;gap:32px}

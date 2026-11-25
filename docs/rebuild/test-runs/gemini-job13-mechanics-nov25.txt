@@ -1,0 +1,734 @@
+GEMINI JOB 13 — POKEMON CHAMPIONS MECHANICS TRUTH AUDIT (REPORT + FIXES)
+Reviewed at: claude/design6 (d49f6cc5) | Date read & audited: 2026-11-24 | Reviewer: Kip
+Scope: Mechanics, data, and calculation truth audit ONLY. Zero design, visual, CSS, or page-copy changes.
+Generated files (move-acc.js, move-meta.js, info-text.js) are NEVER edited by hand; fixes point to generator inputs.
+
+================================================================================
+SOURCE TIER KEY (T1 > T2 > T3 > T4)
+================================================================================
+T1: Official (pokemon.com, news.pokemon-home.com/en/page/877.html, official game text)
+T2: Pokemon Showdown source code (github.com/smogon/pokemon-showdown: data/mods/champions/, sim/)
+T3: Bulbapedia / Serebii / Smogon articles
+T4: Reddit / YouTube / third-party fan databases (ChampionsDex, GameWith, OP.GG — T4 alone = unconfirmed)
+
+================================================================================
+PART A — THE RULES TABLE (ALL 8 AREAS)
+================================================================================
+
+Format:
+Rule | Champions Rule | SV Rule (if different) | Source + Quote + Tier + Date | Our Code/Data (file:line or key) | Status
+
+--------------------------------------------------------------------------------
+AREA 1: STATS
+--------------------------------------------------------------------------------
+1.1 Battle level
+  Champions: Level is not displayed; all stats calculated as Level 50.
+  SV: Auto-leveled to 50 in Ranked/VGC; level displayed.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+    Quote: "A Pokémon's level is not displayed, and its stats are calculated as if it was level 50."
+  Our code: app/src/app/39-damage-calc-speed.js:1,12,92,246,310 (level 50 constants: +75 HP, +20 other, 22 = floor(2*50/5)+2, fixed level = 50).
+  Status: MATCH
+
+1.2 IVs (Individual Values)
+  Champions: Fixed at 31 in all 6 stats; cannot be modified in-game (no 0 Spe / 0 Atk IVs).
+  SV: 0-31 per stat (0 Atk / 0 Spe common).
+  Source: https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+    Quote: "Individual values cannot be modified in-game, with the Pokémon stats being calculated as if they had 31 IVs in all stats."
+  Our code: app/src/app/39-damage-calc-speed.js:1,12,92 (assumes 31 IVs in all stats).
+  Status: MATCH
+
+1.3 Stat Points (per-stat cap & total cap)
+  Champions: Replaces EVs. Max 32 stat points per stat; max 66 stat points total across all 6 stats.
+  SV: EVs 0-252 per stat, 510 total (at Lv 50 with 31 IV, yields max 32 points per stat, 65 points in 3-4 stats or 66 in 5-6 stats).
+  Source: https://bulbapedia.bulbagarden.net/wiki/Stat_point (T3, 2026-11-24)
+    Quote: "Pokémon are limited to a total of 32 stat points per stat, and 66 stat points in total."
+  Our code: app/src/app/02-set-data.js:98 (`const SP_TOTAL=66;`), 02-set-data.js:113 (`n>=0&&n<=32` and `<=SP_TOTAL`), 39-damage-calc-speed.js:19,338-339,564-567.
+  Status: MATCH
+
+1.4 Stat formula & rounding
+  Champions:
+    HP = Base + StatPoints + 75
+    Other = floor((Base + StatPoints + 20) * Alignment)
+    where Alignment is 1.1 (+), 0.9 (-), or 1.0 (neutral).
+  SV: floor((2*Base + IV + floor(EV/4)) * 50 / 100) + 60 (HP) or floor((floor((2*Base + IV + floor(EV/4)) * 50 / 100) + 5) * Nature). With IV=31 and EV->SP, algebraically identical.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Stat_point (T3, 2026-11-24)
+    Quote: "HP = Base + StatPoints + 75; Other Stat = floor((Base + StatPoints + 20) * Alignment) where Alignment is 0.9 if the Pokémon's stat alignment lowers that stat, 1.1 if it raises that stat, and 1 otherwise."
+  Our code: app/src/app/39-damage-calc-speed.js:12:
+    `function calcStat(p,stat,sp,mul){const b=p.st[STAT_IX[stat]];if(stat==='HP')return b+75+sp;return Math.floor((b+20+sp)*mul)}`
+  Status: MATCH
+
+1.5 Natures / Stat Alignments (all 25 incl. 5 neutral)
+  Champions: 25 natures (20 stat-modifying + 5 neutral: Hardy, Docile, Serious, Bashful, Quirky; in Champions represented as stat alignment).
+  SV: Same 25 natures.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Stat_point (T3, 2026-11-24) & https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+    Quote: "stat alignment (from either its Nature or Mint)... Alignment is 0.9 if the Pokémon's stat alignment lowers that stat, 1.1 if it raises that stat, and 1 otherwise."
+  Our code:
+    - app/src/data/data.js SETS.NAT has all 25 natures (including Hardy, Docile, Serious, Bashful, Quirky).
+    - app/src/app/39-damage-calc-speed.js:379 `NATURES` has ONLY 21 natures (Hardy only; MISSING Docile, Serious, Bashful, Quirky).
+    - app/src/app/02-set-data.js:100 `natOK(n)` checks `NATURES.includes(n)`, so pasting/loading any spread with Docile, Serious, Bashful, or Quirky sets `nat: null`!
+  Status: MISMATCH (WRONG-LEGAL / dropped nature on paste/load)
+
+--------------------------------------------------------------------------------
+AREA 2: BATTLE FORMAT
+--------------------------------------------------------------------------------
+2.1 Doubles, Bring 6 Pick 4
+  Champions: VGC Double Battles, 6-Pokemon Battle Team, pick 4 per game.
+  SV: Same.
+  Source: https://www.pokemon.com/us/pokemon-trainer-club/play-pokemon-tournaments/26-10-000498 (T1, 2026-11-24) & https://www.pokemon.com/us/features/pokemon-champions-regulation-m-c-overview (T1, 2026-11-24)
+    Quote: "Battles will be using VGC Double Battles in Regulation M-C."
+  Our code: app/src/app/02-set-data.js:108,115 (`slice(0,6)` team, `b: the 4 brought`), 39-damage-calc-speed.js:295 ("bring 4 in doubles, so at most 3" fainted).
+  Status: MATCH
+
+2.2 Mega Evolution rules (per battle / per team)
+  Champions: A player may hold multiple Mega Stones on a 6-Pokemon team (subject to Item Clause — no duplicate stones), but may only Mega Evolve ONCE per battle.
+  SV: Mega Evolution absent.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Regulation_Set_M-C (T3, 2026-11-24)
+    Quote: "Mega Evolution is enabled for select Pokémon (see list below), however a player may only Mega Evolve once per battle."
+  Our code: app/src/app/02-set-data.js:81,90,92 (`megaGoal` allows 0, 1, or 2 Megas on the 6-Pokemon team, default 2; no team legality cap of 1 Mega per team, which is legal in Champions). Battle-level once-per-battle limit is not simulated in team builder.
+  Status: MATCH (team builder); we don't model in-battle Mega usage.
+
+2.3 Tera / Z-Moves / Dynamax
+  Champions: Currently ABSENT (Omni Ring only activates Mega Evolution in Reg M-A / M-B / M-C; future support teased).
+  SV: Terastallization active; Megas/Z/Dynamax absent.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+    Quote: "Players can Mega Evolve their Pokémon through the use of a new item called the Omni Ring. Artwork of this item and the Pokémon Champions website suggest that other techniques, such as Z-Moves, Dynamax/Gigantamax, and Terastallization, will also be supported in the future."
+  Our code: app/src/app/39-damage-calc-speed.js (no Tera/Z/Dynamax logic). However, app/src/data/data.js ABIL['Unseen Fist'] still mentions "except Max Guard" (Gen 8 Dynamax move).
+  Status: MATCH in calc; MINOR/WRONG-TEXT in ABIL['Unseen Fist'].
+
+2.4 Timers (Reg M-C)
+  Champions: Total time limit 20 min; Player timer (Your Time) 7 min; Turn time 45 sec; Team Preview 90 sec.
+  SV: Same (20 min / 7 min / 45 sec / 90 sec).
+  Source: https://bulbapedia.bulbagarden.net/wiki/Regulation_Set_M-C (T3, 2026-11-24)
+    Quote: "Timers are set as follows: Total time limit per game: 20 minutes. Player timer per game: 7 minutes. Turn time: 45 seconds. Preview time: 90 seconds."
+  Our code: Not modeled in provided files.
+  Status: we don't model it
+
+2.5 Species Clause & Item Clause
+  Champions: No duplicate species (National Dex number) and no duplicate held items on a Battle Team.
+  SV: Same.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Regulation_Set_M-C (T3, 2026-11-24) & https://bulbapedia.bulbagarden.net/wiki/Rule_variants (T3, 2026-11-24)
+    Quote: "Pokémon may hold held items, however duplicate held items are not allowed." / "Item Clause. Species Clause."
+  Our code: Enforced outside the provided files (not in 02-set-data.js / 39-damage-calc-speed.js; legality-check.mjs not included in Job 13).
+  Status: not checked (validator file not in Job 13 bundle)
+
+2.6 Regulation M-C legal/banned list & Regulation M-D
+  Champions Reg M-C (Sep 9, 2026 02:00 UTC - Dec 2, 2026 01:59 UTC):
+    - Whitelist of 231 species (no Legendaries, no Mythicals, no Paradox Pokemon; only Regular Pikachu and Regular Greninja — no Cap Pikachu or Battle Bond Greninja; Eternal Flower Floette legal via HOME transfer; 81 Mega Evolutions legal).
+    - Note: Bulbapedia's Regulation_Set_M-C page accidentally omits Kingambit from its table, whereas Bulbapedia's List_of_Pokemon_in_Pokemon_Champions AND T1 Pokemon.com Reg M-C Overview explicitly confirm Kingambit is legal and common in Reg M-C (T1 > T3).
+  Source (Reg M-C):
+    - https://www.pokemon.com/us/features/pokemon-champions-regulation-m-c-overview (T1, 2026-11-24)
+      Quote: "It seems that its primary issue is the frequency of Sneasler, Kingambit, Gholdengo, and Incineroar on competitive teams"
+    - https://bulbapedia.bulbagarden.net/wiki/Regulation_Set_M-C (T3, 2026-11-24)
+    - https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_in_Pok%C3%A9mon_Champions (T3, 2026-11-24)
+      Quote: "No Legendary or Mythical Pokémon are present in the game." / "Pikachu in a cap and Greninja with Battle Bond cannot be sent to Pokémon Champions."
+  Champions Reg M-D (starts Dec 2, 2026):
+    - Official T1 balance patch notes confirm maintenance & balance patch on Wed Dec 2, 2026 applying to all regulations:
+      https://www.pokemon.com/us/news/pokemon-champions-balance-patch-update-december-2026 (T1, 2026-11-24)
+    - Full official Reg M-D roster/banlist: NOT YET CONFIRMED by T1/T2/T3 as of 2026-11-24 (T4 YouTube/Reddit rumor mentions Mega Heatran -> UNCONFIRMED).
+  Our code: app/src/data/data.js ROSTER (345 entries: 263 non-Megas + 82 Megas) matches all 231 species EXCEPT Meowstic-F is missing (see Area 8). Also 39-damage-calc-speed.js:187 lists "Battle Bond" in NOT_COUNTED even though Battle Bond Greninja cannot enter Champions (harmless dead entry).
+  Status: MISMATCH (Meowstic-F missing from ROSTER & LEARN -> WRONG-LEGAL)
+
+--------------------------------------------------------------------------------
+AREA 3: DAMAGE FORMULA
+--------------------------------------------------------------------------------
+3.1 Base formula & rounding order (pokeRound / chain4096)
+  Champions: Same core series Gen 5+/Gen 9 formula:
+    base = floor(floor(floor(2*Level/5 + 2) * BP * A / D) / 50) + 2
+    -> Spread (3072/4096, pokeRound) -> Parental Bond 2nd hit (1024/4096, pokeRound) -> Weather (6144 or 2048/4096, pokeRound) -> Crit (1.5x, pokeRound = floor for 1.5) -> Random (floor(d * (85..100) / 100)) -> STAB (6144 or 8192/4096, pokeRound) -> Type eff (floor(d * eff)) -> Burn (2048/4096, pokeRound = floor(d/2)) -> Final modifiers (chained in 4096ths, pokeRound) -> min 1.
+  SV: Same.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+    Quote: "It allows players to battle using the same mechanics as the core series games, including types, Abilities, and moves." (No damage formula change listed under Changes from Scarlet and Violet.)
+    Also https://github.com/smogon/damage-calc (T2, 2026-11-24): @smogon/calc Champions mode inherits Gen 9 damage formula with Champions data overrides.
+  Our code: app/src/app/39-damage-calc-speed.js:160,310-311,328.
+  Status: MATCH
+
+3.2 Random roll range
+  Champions: 16 uniform integer rolls, 85 to 100 (85% to 100%).
+  SV: Same.
+  Source: Core series Gen 5-9 standard (no Champions change noted on Bulbapedia https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions, T3, 2026-11-24).
+  Our code: app/src/app/39-damage-calc-speed.js:331 (`const R=[...Array(16)].map((_,i)=>85+i)`).
+  Status: MATCH
+
+3.3 Spread move multiplier
+  Champions: 0.75x (3072/4096) when hitting 2+ targets; 1.0x when only 1 target remains.
+  SV: Same.
+  Source: Core series Doubles standard (no Champions change noted on Bulbapedia T3, 2026-11-24).
+  Our code: app/src/app/39-damage-calc-speed.js:304,311 (`!o.oneFoe`, `pokeRound(x*3072/4096)`).
+  Status: MATCH
+
+3.4 Critical hit multiplier & stages
+  Champions: 1.5x damage; ignores attacker's negative stat stages, defender's positive stat stages, and Reflect/Light Screen/Aurora Veil. Crit stages: +0 = 1/24, +1 = 1/8, +2 = 1/2, +3+ = 100% (always).
+  SV: Same.
+  Source: Core series Gen 7-9 standard (no Champions change noted on Bulbapedia T3, 2026-11-24).
+  Our code: app/src/app/39-damage-calc-speed.js:191-193,206,257,311,316.
+  Status: MATCH
+
+3.5 STAB (and Adaptability / Protean / Libero)
+  Champions: 1.5x (6144/4096), 2.0x (8192/4096) with Adaptability. No Tera STAB (Tera absent).
+  SV: Same + Tera 2.0x/2.25x.
+  Source: Core series standard (no Champions STAB change noted on Bulbapedia T3, 2026-11-24).
+  Our code: app/src/app/39-damage-calc-speed.js:313.
+  Status: MATCH
+
+3.6 Weather & Terrain multipliers and durations
+  Champions:
+    - Sun: Fire 1.5x (6144/4096), Water 0.5x (2048/4096). Rain: Water 1.5x, Fire 0.5x. Sand: Rock SpD 1.5x. Snow: Ice Def 1.5x.
+    - Weather duration: 5 turns (8 turns with Heat/Damp/Smooth/Icy Rock — all 4 rocks legal in Champions).
+    - Terrain: 1.3x (5325/4096) for grounded attacker matching type (Electric/Grassy/Psychic); Grassy halves Earthquake/Bulldoze; Misty halves Dragon into grounded target; Psychic blocks priority into grounded target.
+    - Terrain duration: 5 turns (8 turns with Terrain Extender — legal in Champions).
+    - Mega Sol (Mega Meganium): treats user's moves as if Sun is active (Solar Beam/Blade 1-turn & no weather penalty, Fire 1.5x, Water 0.5x, Weather Ball 100 BP Fire, ignores Sand Rock SpD & Snow Ice Def, ignores Sand Veil/Snow Cloak, Thunder/Hurricane 50% acc; unaffected by Cloud Nine).
+  SV: Same (except Mega Sol is Champions-new).
+  Source:
+    - https://bulbapedia.bulbagarden.net/wiki/Mega_Sol_(Ability) (T3, 2026-11-24)
+      Quote: "Solar Beam and Solar Blade are executed in a single turn, instead of requiring a turn to charge, and do not have their power halved when used under rain, sandstorm, or snow... All moves ignore the Special Defense boost granted to Rock-type Pokémon during a sandstorm and the Defense boost granted to Ice-type Pokémon during snow. All moves ignore any accuracy-reduction effects caused by Pokémon with the Abilities Sand Veil and Snow Cloak. Because Mega Sol does not alter the weather itself, it is unaffected by the weather-negating effect of Cloud Nine."
+    - https://bulbapedia.bulbagarden.net/wiki/Shop_(Champions) (T3, 2026-11-24): Heat/Damp/Smooth/Icy Rock & Terrain Extender all in Frontier Shop.
+  Our code:
+    - 39-damage-calc-speed.js:201,273,281,284-285,309: damage multipliers MATCH.
+    - MISMATCH 1: 39-damage-calc-speed.js:133-134 `chargesFirst(mv,weather,item)` does NOT accept/check `Mega Sol`, so Mega Meganium's Solar Beam / Solar Blade is falsely flagged as a 2-turn charge move when Sun isn't up (wrong note in calc line 475 AND halves its move-selection score in `bestHitOn` line 528!).
+    - MISMATCH 2: 39-damage-calc-speed.js:539-545 `moveAcc()` does NOT check `Mega Sol` ignoring Sand Veil / Snow Cloak or setting Thunder/Hurricane to 50% acc.
+    - Weather/Terrain turn durations: we don't model turn counts in calc.
+  Status: MISMATCH on Mega Sol in `chargesFirst()` and `moveAcc()`; MATCH on damage multipliers.
+
+3.7 Screens in Doubles (Reflect, Light Screen, Aurora Veil)
+  Champions: Reduces damage by 1/3 (2732/4096 multiplier) in Double Battles (halves in Singles). Lasts 5 turns (8 with Light Clay). Ignored by crits, Infiltrator, Brick Break, Psychic Fangs, Raging Bull.
+  SV: Same.
+  Source: https://op.gg/pokemon-champions/pokedex/meowstic-female (T4 quoting in-game Champions text, 2026-11-24) & core series Gen 5-9 standard.
+    Quote: "Light Screen: Halves the damage taken from special moves. In Double Battles, this damage is reduced by 1/3 instead."
+  Our code: app/src/app/39-damage-calc-speed.js:316-317 (`2732`, ignored by crit/Infiltrator/Brick Break/Psychic Fangs/Raging Bull).
+  Status: MATCH
+
+3.8 Helping Hand & Friend Guard
+  Champions: Helping Hand = 1.5x power (6144/4096); Friend Guard = 0.75x final damage (3072/4096, ignored by Mold Breaker).
+  SV: Same.
+  Source: https://www.pokemon.com/us/features/pokemon-champions-regulation-m-c-overview (T1, 2026-11-24) & core series Gen 5-9 standard.
+  Our code: app/src/app/39-damage-calc-speed.js:282 (`6144`), 322 (`3072`, Mold Breaker ignores it).
+  Status: MATCH
+
+3.9 Burn
+  Champions: Halves physical damage (except Guts & Facade); deals 1/16 max HP end-of-turn chip.
+  SV: Same.
+  Source: Core series Gen 7-9 standard (no Champions burn change on Bulbapedia https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions, T3, 2026-11-24).
+  Our code: app/src/app/39-damage-calc-speed.js:264,280,327-328 (`burn` halves physical except Guts/Facade; Facade doubles BP when burned). Note: UI in renderCalc (lines 492-508) has no "Burned" toggle for attacker, though `damage()` supports `A.burn`.
+  Status: MATCH in `damage()`; UI burn toggle not modeled.
+
+3.10 Type chart & immunities
+  Champions: Standard 18-type Gen 6-9 chart. UI adds "extremely effective" (4x) and "mostly ineffective" (0.25x) labels. New ability Eelevate grants Ground immunity (ungrounded, bypassed by Mold Breaker/Iron Ball/Gravity/Smack Down/Thousand Arrows).
+  SV: Same 18-type chart (Eelevate is Champions-new).
+  Source:
+    - https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+      Quote: "Moves that the target Pokémon is vulnerable to (4x) or heavily resists (1/4x) are now listed as 'extremely effective' and 'mostly ineffective', respectively"
+    - https://bulbapedia.bulbagarden.net/wiki/Eelevate_(Ability) (T3, 2026-11-24)
+      Quote: "Eelevate makes the Pokémon with this Ability ungrounded, rendering it immune to damaging Ground-type moves (except Thousand Arrows)"
+  Our code:
+    - `damage()` (39-damage-calc-speed.js:204) checks `x!=='Eelevate'` for grounding. (Note: `EFF` and `ABILITY_MODS` live in another file not in Job 13's bundle -> `ABILITY_MODS['Eelevate']` not checked!)
+    - MISMATCH: `allyHit()` (39-damage-calc-speed.js:138) checks `ab==='Levitate'` and omits `ab==='Eelevate'` (and doesn't check `Iron Ball` grounding a partner). So Mega Eelektross is falsely treated as hit by an ally's Earthquake/Bulldoze!
+  Status: MISMATCH in `allyHit()`; `EFF`/`ABILITY_MODS` definition file not in Job 13 bundle (not checked).
+
+--------------------------------------------------------------------------------
+AREA 4: SPEED
+--------------------------------------------------------------------------------
+4.1 Priority brackets
+  Champions: Standard Gen 7-9 brackets (+5 Helping Hand, +4 Protect/Detect/etc., +3 Fake Out, +2 Extreme Speed/Feint/Follow Me/First Impression, +1 Aqua Jet/Bullet Punch/etc., 0 normal, -3 Beak Blast/Focus Punch, -4 Avalanche/Revenge, -5 Counter/Mirror Coat, -6 Whirlwind/Roar/Dragon Tail, -7 Trick Room).
+  CHAMPIONS DIFFERENCE (Encore): If forced into a different move by Encore, the Pokemon executes that move at the Encored move's priority (not the originally selected move's priority).
+  SV: Encored move used the originally selected move's priority on the turn Encore hit.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+    Quote: "If a Pokémon is forced to use a different move than selected due to Encore, it will now perform that move at its usual priority, rather than of the move that was selected."
+  Our code: app/src/app/39-damage-calc-speed.js:128-131 (`movePrio()` reads `MOVE_META[n].p` + Prankster/Gale Wings/Triage/Grassy Glide). Encore turn-order override is not modeled in calc, and `gen-info-text.mjs:35` already has custom Champions text for Encore.
+  Status: MATCH (Encore mid-turn priority swap not modeled in calc).
+
+4.2 Trick Room & Tailwind turns
+  Champions: Trick Room reverses Speed order within each priority bracket for 5 turns (-7 priority). Tailwind doubles side Speed for 4 turns.
+  SV: Same.
+  Source: Core series Gen 5-9 standard (no Champions change noted on Bulbapedia https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions, T3, 2026-11-24).
+  Our code: app/src/app/39-damage-calc-speed.js:39,70 (`o.tw ? 8192 : 4096`, `spdUi.tr ? a.v-b.v : b.v-a.v`). Turn counts not modeled.
+  Status: MATCH
+
+4.3 Paralysis speed cut
+  Champions: Halves Speed (0.5x / 2048/4096). (Note: full-paralysis chance dropped to 12.5%, see Area 5, but Speed cut remains 50%.)
+  SV: Same (0.5x Speed).
+  Source: https://github.com/smogon/pokemon-showdown/blob/master/data/mods/champions/conditions.ts (T2, 2026-11-24)
+    Quote: `par: { inherit: true, onBeforeMove(pokemon) { if (this.randomChance(1, 8)) { ... } } }` (inherits Gen 9 `onModifySpe` 50% speed cut unchanged).
+  Our code: app/src/app/39-damage-calc-speed.js:41 (`if(o.par)v=Math.floor(v*.5)`).
+  Status: MATCH
+
+4.4 Speed ties
+  Champions: 50/50 random tiebreaker between Pokemon with equal effective Speed in the same priority bracket.
+  SV: Same.
+  Source: Core series standard.
+  Our code: app/src/app/39-damage-calc-speed.js:53,90,400 (ties counted as 0.5 in `outspeedOf()`, tagged `TIE` in speed list, `tie` in `dcOrder()`).
+  Status: MATCH
+
+4.5 Choice Scarf, Iron Ball & Weather Speed Abilities
+  Champions: Choice Scarf = 1.5x (6144/4096); Iron Ball = 0.5x (2048/4096); Chlorophyll / Swift Swim / Sand Rush / Slush Rush / Unburden = 2x (8192/4096). All chained in 4096ths AFTER stat stages.
+  SV: Same.
+  Source: Core series Gen 5-9 standard (Showdown `sim/pokemon.ts` `getActionSpeed` — stages first, then 4096-chained modifiers).
+  Our code:
+    - 39-damage-calc-speed.js:37-41 `spdCalc()`: stages first, then chains Scarf (6144), weather speed (8192), Tailwind (8192), Unburden (8192) -> MATCH.
+    - MISMATCH: `likelySpeed()` (39-damage-calc-speed.js:24) and `dcSpeed()` (39-damage-calc-speed.js:396) apply Iron Ball `Math.floor(v/2)` BEFORE `spdCalc()` applies stat stages (`+1`/`-1`) and 4096-chained modifiers (Tailwind/weather). Example: base Spe 103 with Iron Ball + +1 stage gives `floor(floor(103/2)*1.5) = 76` instead of `floor(floor(103*1.5)*0.5) = 77` (off by 1).
+  Status: MISMATCH on Iron Ball order in `likelySpeed()` / `spdCalc()` (MINOR / WRONG-NUMBER by 1 when Iron Ball + stage/modifier combine).
+
+--------------------------------------------------------------------------------
+AREA 5: STATUS & FIELD
+--------------------------------------------------------------------------------
+5.1 Sleep turns
+  Champions: Lasts 2-3 turns (1/3 chance for 2 turns, 2/3 chance for 3 turns; i.e. 1-2 turns asleep before waking).
+  SV: Lasts 2-4 turns (1-3 turns asleep).
+  Source:
+    - https://github.com/smogon/pokemon-showdown/blob/master/data/mods/champions/conditions.ts (T2, 2026-11-24)
+      Quote: `// 1/3 chance for a Pokemon to wake up on turn 2` / `this.effectState.startTime = this.sample([2, 3, 3]);`
+    - https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+      Quote: "Sleep now lasts 2-3 turns instead of 2-4, with a ~66.7% chance to last three turns and a ~33.3% chance to last two turns."
+  Our code: Not modeled in calc/speed files.
+  Status: we don't model it
+
+5.2 Freeze (NO Frostbite)
+  Champions: Uses Freeze (NOT Legends: Arceus Frostbite), buffed thaw: 25% (1/4) chance to thaw each turn AND guaranteed thaw after 3 turns.
+  SV: 20% (1/5) chance to thaw each turn, no guaranteed turn limit.
+  Source:
+    - https://github.com/smogon/pokemon-showdown/blob/master/data/mods/champions/conditions.ts (T2, 2026-11-24)
+      Quote: `this.effectState.startTime = 3; ... pokemon.statusState.time--; if (pokemon.statusState.time <= 0 || this.randomChance(1, 4)) { pokemon.cureStatus(); return; }`
+    - https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+      Quote: "Frozen Pokémon now have a 25% chance to naturally thaw out each turn instead of 20%, and will always thaw out after three turns."
+  Our code: Not modeled in calc/speed files. (Freeze-Dry correctly has no freeze secondary in `move-meta.js`.)
+  Status: we don't model it
+
+5.3 Paralysis full-paralysis chance
+  Champions: 12.5% (1/8) chance to be unable to move (halved from SV).
+  SV: 25% (1/4) chance.
+  Source:
+    - https://github.com/smogon/pokemon-showdown/blob/master/data/mods/champions/conditions.ts (T2, 2026-11-24)
+      Quote: `par: { inherit: true, onBeforeMove(pokemon) { if (this.randomChance(1, 8)) { this.add('cant', pokemon, 'par'); return false; } }, },`
+    - https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+      Quote: "Paralysis now has only a 12.5% chance to prevent affected Pokémon from acting, rather than 25%."
+  Our code: Not modeled in calc/speed files (only 0.5x Speed cut is modeled).
+  Status: we don't model it
+
+5.4 Confusion
+  Champions: Same as SV (33% self-hit chance, 40 BP typeless physical, 2-5 turns). No Champions change documented.
+  SV: Same.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24) — not listed among modified status conditions.
+  Our code: Not modeled.
+  Status: we don't model it
+
+5.5 Protect consecutive-use & PP
+  Champions: Consecutive Protect success rate unchanged (1/3^n in Gen 6-9); HOWEVER Protect, Baneful Bunker, King's Shield, Spiky Shield all have 8 PP (reduced from 10 base / 12 in Champions formula, matching Detect).
+  SV: Protect/Spiky Shield/Baneful Bunker/King's Shield had 10 base PP (16 max with PP Ups).
+  Source: https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+    Quote: "Baneful Bunker, King's Shield, Protect, and Spiky Shield have 8 PP instead of 12, matching Detect."
+  Our code: `experiments/gen-info-text.mjs:10,49` explicitly checks `Protect 8` from Showdown's champions mod PP overrides. Consecutive Protect probability not modeled in calc.
+  Status: MATCH on PP; consecutive-use probability not modeled.
+
+5.6 Fake Out & First Impression
+  Champions: Fake Out (+3 priority, 40 BP, 100% flinch) and First Impression (+2 priority, buffed to 100 BP from 90 BP). CHAMPIONS DIFFERENCE: Cannot be selected/used after the first turn on the field; if forced via Encore, the user uses Struggle instead of failing.
+  SV: First Impression 90 BP; Encored Fake Out/First Impression simply failed instead of using Struggle.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+    Quote: "First Impression had its base power increased from 90 to 100." / "Fake Out and First Impression can no longer be used after the turn the user switches into the battle; if the user is forced to use them when ineligible via effects such as Encore, it will instead use Struggle."
+  Our code: `data.js` MOVES has `First Impression` at 100 BP, `Fake Out` at 40 BP; `move-meta.js` has `p: 2` / `p: 3`. Encore->Struggle not modeled.
+  Status: MATCH on BP & priority; Encore->Struggle not modeled.
+
+5.7 Follow Me & Intimidate
+  Champions: Follow Me (+2 priority, redirects single-target opposing moves). Intimidate (-1 Atk to both foes on switch-in; CHAMPIONS UI/resolution: resolves on both opposing Pokemon simultaneously unless one has a different outcome like Contrary).
+  SV: Intimidate resolved sequentially one by one.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+    Quote: "Stat alterations (such as Intimidate's Attack reduction) are now resolved on both opposing Pokémon at once, rather than one by one."
+  Our code: `move-meta.js` has Follow Me `p: 2`; calc handles Intimidate via `-1` Atk stage (`39-damage-calc-speed.js:498`).
+  Status: MATCH
+
+5.8 Weather/Terrain setter abilities & extender items (Light Clay, Terrain Extender, 4 Weather Rocks)
+  Champions: Drought, Drizzle, Sand Stream, Snow Warning, Electric Surge, Grassy Surge, Psychic Surge, Misty Surge all set 5 turns (8 turns with Heat Rock, Damp Rock, Smooth Rock, Icy Rock, Terrain Extender). Light Clay extends Reflect/Light Screen/Aurora Veil from 5 to 8 turns. ALL 6 extender items are LEGAL in Champions Reg M-C.
+  SV: Same.
+  Source: https://bulbapedia.bulbagarden.net/wiki/Shop_(Champions) (T3, 2026-11-24)
+    Quote: "Added in Ver. 1.2.0: Terrain Extender 700 VP ... Added in Ver. 1.1.0: Light Clay 1,000 VP, Heat Rock 700 VP, Icy Rock 700 VP, Smooth Rock 700 VP, Damp Rock 700 VP."
+  Our code: ALL 6 items are present in `app/src/data/items-list.js` `REGMC_ITEMS`.
+  Status: MATCH
+
+--------------------------------------------------------------------------------
+AREA 6: ITEMS
+--------------------------------------------------------------------------------
+6.1 Full Champions Reg M-C item list (166 items)
+  Champions: 166 total legal held items in Reg M-C:
+    - 85 non-Mega-Stone held items (10 Owned from Start: Bright Powder, Choice Scarf, Focus Band, Focus Sash, King's Rock, Leftovers, Lum Berry, Quick Claw, Sitrus Berry, White Herb + 75 Frontier Shop items across Ver. 1.0.2 / 1.1.0 / 1.2.0).
+    - 81 Mega Stones (matching all 81 unique Mega Evolutions in Reg M-C: 72 Frontier Shop/Campaign + 8 Mega Evolution Tutorial [Abomasite, Aggronite, Beedrillite, Garchompite, Gyaradosite, Heracronite, Manectite, Steelixite] + 1 HOME-transfer Campaign [Floettite]).
+    - NOT in Champions Reg M-C: Choice Band, Choice Specs, Assault Vest, Clear Amulet, Covert Cloak, Booster Energy, Loaded Dice, Power Herb, Float Stone, Eviolite, Heavy-Duty Boots, Safety Goggles, Weakness Policy, Throat Spray, Room Service, Flame/Toxic Orb, etc.
+  Source:
+    - https://bulbapedia.bulbagarden.net/wiki/Shop_(Champions) (T3, 2026-11-24) — confirms all 75 VP-shop held items + 72 VP-shop Mega Stones.
+    - https://www.championsdex.app/items (T4, 2026-11-24) & https://gamewith.ai/pokemon-champions/en/items (T4, 2026-11-24) — both independently list the exact same 166 items (including the 10 starter items, 8 tutorial Mega Stones, and Floettite).
+  Our code:
+    - `app/src/data/items-list.js` `REGMC_ITEMS`: 166 items. 0 extra items, 0 missing items! Exact 166/166 match.
+    - `app/src/data/data.js` `SETS.IT`: 158 items (0 illegal items; omits 8 legal items that had 0% usage in the snapshot: Aspear Berry, Cheri Berry, Chilan Berry, Misty Seed, Pecha Berry, Rawst Berry, Shed Shell, Tanga Berry — normal for a usage-index table).
+    - `app/src/app/39-damage-calc-speed.js:378` `CALC_ITEMS`: Only offers 43 items in the calc dropdown; MISSING 15 legal Champions items whose math/notes ARE already coded in `39-damage-calc-speed.js`: Muscle Band, Wise Glasses, Normal Gem, Light Ball, Electric Seed, Grassy Seed, Psychic Seed, Misty Seed, Air Balloon, Iron Ball, Scope Lens, Leek, Wide Lens, Zoom Lens, Bright Powder, Rocky Helmet, Focus Band, King's Rock (18 legal battle items missing from dropdown).
+    - `app/src/app/39-damage-calc-speed.js:133,475`: Explicitly mentions **Power Herb** in user-facing calc note ("charges a turn first unless the sun is out (or Power Herb)") even though Power Herb is NOT in Pokémon Champions!
+  Status: MATCH on `REGMC_ITEMS` (166/166) and all 81 Mega Stones; MISMATCH (WRONG-TEXT) on Power Herb in `39-damage-calc-speed.js:475`; MISSING 18 legal battle items from `CALC_ITEMS` dropdown.
+
+--------------------------------------------------------------------------------
+AREA 7: MOVES & ABILITIES (INCLUDING DEC 2, 2026 BALANCE PATCH)
+--------------------------------------------------------------------------------
+7.1 Champions launch / Ver. 1.0.2 - 1.2.0 Move Differences from SV
+  Source: https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24)
+  Every move diff checked against `data.js` `MOVES`, `move-meta.js` `MOVE_META`, and `move-acc.js` `MOVE_ACC`:
+    - Snap Trap: Grass -> Steel | MOVES=['Snap Trap',16,1,35,0,0] (16=Steel) -> MATCH
+    - Toxic Thread: -1 Spe -> -2 Spe | MOVE_META tb:{spe:-2} -> MATCH
+    - Slash: 70 -> 80 BP | MOVES=80 -> MATCH
+    - Trop Kick: 70 -> 85 BP | MOVES=85 -> MATCH
+    - Psyshield Bash: 70 -> 90 BP | MOVES=90 -> MATCH
+    - Apple Acid, Fire Lash, Grav Apple, Spirit Shackle: 80 -> 90 BP | MOVES=90 for all 4 -> MATCH
+    - First Impression: 90 -> 100 BP | MOVES=100 -> MATCH
+    - Beak Blast, Mountain Gale: 100 -> 120 BP | MOVES=120 for both -> MATCH
+    - Meteor Assault: 150 -> 170 BP | MOVES=170 -> MATCH
+    - Bone Rush (25->30), Infernal Parade (60->65), Snipe Shot (80->85), Night Daze (85->90) | MOVES=30, 65, 85, 90 -> MATCH
+    - Crabhammer (90->95 acc), Syrup Bomb (85->90 acc) | MOVE_ACC=95, 90 -> MATCH
+    - Make It Rain: 100->95 acc, -1->-2 SpA | MOVE_ACC=95, MOVE_META sb:{spa:-2} -> MATCH
+    - Iron Head (30->20% flinch), Moonblast (30->10% SpA) | MOVE_META s:[[20,...,1]], s:[[10,{spa:-1},...]] -> MATCH
+    - Dire Claw: 50->30% status, now slicing | MOVE_META f:'ck', sf:1 -> MATCH
+    - Crush Claw, Dragon Claw, Shadow Claw: now slicing | MOVE_META f:'ck' for all 3 -> MATCH
+    - Dragon Cheer: now sound-based | MOVES sound=1, MOVE_META f:'s' -> MATCH
+    - Double Shock: now punching | MOVE_META f:'cp' -> MATCH
+    - Freeze-Dry: can no longer freeze | MOVE_META={'t':'normal'} (no secondary, no sf) -> MATCH
+    - Milk Drink: can target ally | MOVE_META t:'adjacentAllyOrSelf' -> MATCH
+    - Salt Cure: passive chip halved (1/16 normal, 1/8 Water/Steel) | we don't model passive chip
+    - Rage Fist: resets BP on switch-out | calc assumes base 50 BP (not modeled)
+    - Ver. 1.2.0 learnset removals (Politoed Pound, Archaludon Mirror Coat / Metal Burst) & Incineroar Knock Off: verified ABSENT from `data.js` `LEARN` -> MATCH
+    - PP formula: fixed 8/12/16/20 from SV base 5/10/15/20+, with Champions overrides (Protect/Baneful Bunker/King's Shield/Spiky Shield/Beak Blast/Sandstorm/Snowscape/Wish/Strength Sap = 8 PP; Night Slash = 20 PP). `gen-info-text.mjs:10,20` implements `(Math.min(b,20)/5+1)*4` + reads Champions mod overrides -> MATCH.
+
+7.2 Champions launch / Ver. 1.0.2 - 1.2.0 Ability Differences from SV
+  Source: https://bulbapedia.bulbagarden.net/wiki/Pok%C3%A9mon_Champions (T3, 2026-11-24) & https://bulbapedia.bulbagarden.net/wiki/Flame_Body_(Ability) (T3, 2026-11-24)
+    - Healer: 30% -> 50% cure chance.
+      Our data: `gen-info-text.mjs:29` OVR has 50% (MATCH for info-text.js), BUT `app/src/data/data.js` `ABIL['Healer']` STILL says "30% chance this Pokemon's ally has its status cured at the end of each turn." -> MISMATCH (WRONG-TEXT)
+    - Unseen Fist: 100% -> 25% (1/4) damage through Protect.
+      Our data: `gen-info-text.mjs:28` OVR has 1/4 (MATCH for info-text.js), BUT `app/src/data/data.js` `ABIL['Unseen Fist']` STILL says "This Pokemon's contact moves ignore the target's protection, except Max Guard." -> MISMATCH (WRONG-TEXT)
+    - Run Away: activates when switching out (escapes trapping moves/Abilities).
+      Our data: `gen-info-text.mjs:30` OVR has Champions text (MATCH for info-text.js), BUT `app/src/data/data.js` `ABIL['Run Away']` STILL says "No competitive use." -> MISMATCH (WRONG-TEXT)
+    - Flame Body: can still activate even if the user faints from the contact move.
+      Our data: `ABIL['Flame Body']` does not mention fainting edge case (minor omission; not modeled in calc).
+    - 7 Champions-new Mega Abilities: Dragonize, Mega Sol, Piercing Drill, Spicy Spray, Eelevate, Fire Mane, Aura Guard.
+      Verified against Bulbapedia ability pages (T3, 2026-11-24):
+        - Dragonize (Normal -> Dragon + 1.2x): `ABIL` & `39-damage-calc-speed.js:96,211,293` -> MATCH
+        - Mega Sol (moves act as Sun): `ABIL` & `39-damage-calc-speed.js:201,273` -> MATCH in `damage()`, MISMATCH in `chargesFirst()` & `moveAcc()`
+        - Piercing Drill (contact hits through Protect for 1/4 damage): `ABIL` -> MATCH (Protect bypass not modeled in calc)
+        - Spicy Spray (burns attacker when hit by damaging move): `ABIL` -> MATCH (not modeled in calc)
+        - Eelevate (ungrounded Ground immunity + Beast Boost on KO): `ABIL` & `damage()` -> MATCH, MISMATCH in `allyHit()`
+        - Fire Mane (1.5x Atk/SpA on Fire moves): `ABIL` & `39-damage-calc-speed.js:265` -> MATCH
+        - Aura Guard (0.5x damage from contact moves): `ABIL` & `39-damage-calc-speed.js:319` -> MATCH
+
+7.3 Dec 2, 2026 Balance Patch Verification (Official T1 vs `patch-dec2-map.md` & `patch-dec2-psychup.md`)
+  Official T1 Source: https://www.pokemon.com/us/news/pokemon-champions-balance-patch-update-december-2026 (T1, published Nov 18, 2026, read 2026-11-24; mirrors https://news.pokemon-home.com/en/page/877.html).
+  Line-by-line confirmation against official T1 text:
+    - Maintenance date: "Wednesday, December 2, 2026" | Map & Psych Up file: CONFIRMED MATCH.
+    - Scope: "all the above changes will be applied to battles in all regulations." | Both files: CONFIRMED MATCH.
+    - New Moves — Psych Up (22 Pokemon):
+      Official T1 quote: "Psych Up: Alakazam, Starmie, Mr. Mime, Mawile, Altaria, Castform, Absol, Roserade, Weavile, Rotom, Rotom (Heat Rotom), Rotom (Wash Rotom), Rotom (Frost Rotom), Rotom (Fan Rotom), Rotom (Mow Rotom), Liepard, Musharna, Audino, Cofagrigus, Slurpuff, Drampa, Annihilape"
+      `patch-dec2-psychup.md`: All 22 Pokemon match 100% verbatim in exact order, AND correctly flags the 8 Mega forms (`Alakazam-Mega`, `Starmie-Mega`, `Mawile-Mega`, `Altaria-Mega`, `Absol-Mega`, `Absol-Mega-Z`, `Audino-Mega`, `Drampa-Mega`) that also need Psych Up in `LEARN`.
+      `patch-dec2-map.md`: Noted Psych Up list was missing from repo (subsequently filled in by `patch-dec2-psychup.md`). CONFIRMED.
+    - New Moves — Others:
+      Official T1 quote: "Slack Off: Emboar | Roost: Beedrill, Hydreigon | Tailwind: Emolga | Wonder Room: Umbreon | Play Rough: Vaporeon, Jolteon, Flareon, Espeon, Umbreon, Leafeon, Glaceon"
+      `patch-dec2-map.md` & `patch-dec2-psychup.md`: 100% EXACT MATCH (including Mega forms `Emboar-Mega` Slack Off and `Beedrill-Mega` Roost).
+    - Move Adjustments:
+      Official T1 quote: "Screech: 85% -> 100% accuracy | Rock Slide: 90% -> 95% accuracy, 30% -> 20% chance to make targets flinch | Steel Wing: 90% -> 100% accuracy | Metal Sound: 85% -> 100% accuracy | Frost Breath: 90% -> 100% accuracy"
+      `patch-dec2-map.md` & `patch-dec2-psychup.md`: 100% EXACT MATCH.
+      NOTE FOR DEC 2: `move-acc.js` and `move-meta.js` currently still hold PRE-PATCH values (expected until Dec 2 maintenance; must regenerate from updated Showdown commit on Dec 2).
+    - Ability Adjustments:
+      Official T1 quote:
+        - Flash Fire: "Fire-type moves do not work on the Pokémon. Instead, they give the Pokémon the Fire Boost status. The Fire Boost status persists even after the Pokémon Mega Evolves."
+        - Stalwart: "The Pokémon ignores the effects of Abilities and moves that draw in moves. When using its moves, the Pokémon ignores the effects of targets' substitutes."
+      `patch-dec2-map.md` & `patch-dec2-psychup.md`: 100% EXACT MATCH.
+      MISSED BY `patch-dec2-map.md`: `app/src/data/data.js` `ABIL['Flash Fire']` and `ABIL['Stalwart']` (hand-written in `data.js`) are NOT listed in the map's "Hand-written" table — they also need updating on Dec 2 alongside `gen-info-text.mjs`!
+
+--------------------------------------------------------------------------------
+AREA 8: THE ROSTER (REG M-C)
+--------------------------------------------------------------------------------
+8.1 Legal species & forms in Reg M-C (`data.js` `ROSTER`)
+  Sources:
+    - https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_in_Pok%C3%A9mon_Champions (T3, 2026-11-24)
+    - https://bulbapedia.bulbagarden.net/wiki/Regulation_Set_M-C (T3, 2026-11-24)
+    - https://www.pokemon.com/us/features/pokemon-champions-regulation-m-c-overview (T1, 2026-11-24)
+  Our data: `data.js` `ROSTER` has 345 entries (263 non-Megas + 82 Megas; 231 unique base species).
+  MISMATCHES FOUND:
+    1. MISSING FORM (`WRONG-LEGAL`): **Meowstic-F** (Female Meowstic, Psychic, `[74,48,76,83,81,104]`, abilities `['Keen Eye','Infiltrator','Competitive']`) is COMPLETELY MISSING from `ROSTER` and `LEARN`, even though:
+       - It is legal in Reg M-C (Bulbapedia Regulation_Set_M-C lists `Meowstic (Male)` and `Meowstic (Female)` separately; OP.GG & GameWith track Female Meowstic separately with Competitive 87.3% usage and a distinct offensive learnset).
+       - `data.js` `SETS.D` ALREADY has a `'Meowstic-F'` key!
+       - `02-set-data.js:9` ALREADY references `'Meowstic-F'` (`if(p.n==='Meowstic-F-Mega')return 'Meowstic-F'`).
+       - `ROSTER` ALREADY has `Meowstic-F-Mega`!
+    2. `Palafin` in `ROSTER`: Stores Zero Form stats `[100, 70, 72, 53, 62, 100]` (`s: 457`). `39-damage-calc-speed.js:514` checks `A.p.formNote||D.p.formNote?'Palafin in Hero Form':''`, but `ROSTER` has no `formNote` and `atkForm()` (line 167) only swaps `Aegislash` to Blade Forme, NOT `Palafin` to Hero Form (`[100, 160, 97, 106, 87, 100]`). Whether another boot file (not in Job 13 bundle) mutates `Palafin` at startup is **not checked**.
+    3. Curly apostrophes in `ROSTER`/`LEARN`/`SPECIES_WT`: `Farfetch’d` and `Sirfetch’d` use Unicode U+2019 (`’`) instead of ASCII `'`. `39-damage-calc-speed.js:192` uses `/^(Farfetch|Sirfetch)/` so Leek works, but any external paste using ASCII `Farfetch'd` / `Sirfetch'd` relies on name normalization (not in Job 13 bundle -> not checked).
+  ZERO OTHER SPECIES MISMATCHES: All 231 species, regional forms, Floette-Eternal (only Eternal, no regular Floette), and all 81 Mega Evolutions (82 entries with Meowstic-M-Mega / Meowstic-F-Mega) are legal in Reg M-C.
+
+8.2 Base stats & typings of all 82 Mega forms (incl. all 39 Legends Z-A / Champions-new Megas)
+  Source: https://bulbapedia.bulbagarden.net/wiki/List_of_Pok%C3%A9mon_by_base_stats_in_Generation_IX (T3, 2026-11-24) & https://bulbapedia.bulbagarden.net/wiki/Starmie_(Pok%C3%A9mon) (T3, 2026-11-24) & https://bulbapedia.bulbagarden.net/wiki/Mega_Evolution (T3, 2026-11-24).
+  Checked programmatically across ALL 82 Mega entries in `ROSTER`: **0 mismatches** in base stats or typings!
+  Notably verified:
+    - `Starmie-Mega`: `[60, 100, 105, 130, 105, 120]` (BST 620, Huge Power) — CORRECT for Champions (Legends: Z-A had 140 Atk only because Z-A lacks Abilities).
+    - `Garchomp-Mega-Z`: `[108, 130, 85, 141, 85, 151]` (Dragon, Levitate) — MATCH.
+    - `Lucario-Mega-Z`: `[70, 100, 70, 164, 70, 151]` (Fighting/Steel, Aura Guard) — MATCH.
+    - `Absol-Mega-Z`: `[65, 154, 60, 75, 60, 151]` (Dark/Ghost, Sharpness) — MATCH.
+    - `Baxcalibur-Mega`: `[115, 175, 117, 105, 101, 87]` (Dragon/Ice, Thermal Exchange) — MATCH.
+    - `Golisopod-Mega`: `[75, 150, 175, 70, 120, 40]` (Bug/Steel, Tough Claws) — MATCH.
+    - `Mega Heatran`: NOT in Reg M-C (no Legendaries in Reg M-C; Bulbapedia lists Mega Heatran stats `[91, 120, 106, 175, 141, 67]` if added in a future regulation).
+
+================================================================================
+PART B — FINDINGS TABLE
+================================================================================
+
+#  | What's wrong | Severity | Where in our code/data | Sources (tiers) | Confidence
+---|--------------|----------|------------------------|-----------------|-----------
+1  | `Meowstic-F` (Female Meowstic, Competitive + distinct offensive learnset) is missing from `ROSTER` and `LEARN`, even though it is legal in Reg M-C and already exists in `SETS.D` and `02-set-data.js:9`. | WRONG-LEGAL | `app/src/data/data.js` (`ROSTER`, `LEARN`) | Bulbapedia Reg M-C (T3), Bulbapedia List of Pokemon in Champions (T3), OP.GG/GameWith (T4) | medium (T3 + repo's own `SETS.D`)
+2  | `NATURES` list in calc has only 21 natures — missing 4 legal neutral natures (`Docile`, `Serious`, `Bashful`, `Quirky`). `02-set-data.js:100` `natOK(n)` calls `NATURES.includes(n)`, silently dropping those 4 natures to `null` on paste/save/load! | WRONG-LEGAL | `app/src/app/39-damage-calc-speed.js:379` (consumed by `app/src/app/02-set-data.js:100,113`) | Bulbapedia Stat point (T3) + `data.js` `SETS.NAT` (25 natures) | high
+3  | `chargesFirst()` does not check `Mega Sol`, so Mega Meganium's Solar Beam / Solar Blade without Sun is falsely flagged as a 2-turn charge move and its `bestHitOn()` score is falsely halved (`* 0.5`). | WRONG-NUMBER | `app/src/app/39-damage-calc-speed.js:133-134,475,528` | Bulbapedia Mega Sol (T3) | medium (T3)
+4  | `allyHit()` checks `ab==='Levitate'` but omits `ab==='Eelevate'` (and `Iron Ball` grounding), falsely marking Mega Eelektross as hit by ally Earthquake/Bulldoze. | WRONG-NUMBER | `app/src/app/39-damage-calc-speed.js:138` | Bulbapedia Eelevate (T3) | medium (T3)
+5  | `moveAcc()` does not implement `Mega Sol` ignoring defender's Sand Veil / Snow Cloak (returns 80% instead of 100%) or lowering Thunder/Hurricane to 50% accuracy in clear weather. | WRONG-NUMBER | `app/src/app/39-damage-calc-speed.js:539-545` | Bulbapedia Mega Sol (T3) | medium (T3)
+6  | Iron Ball Speed halving is applied in `likelySpeed()` / `dcSpeed()` BEFORE `spdCalc()` applies stat stages (`+1`/`-1`) and 4096-chained modifiers, causing off-by-1 Speed when combined with stat stages (e.g. base 103 + Iron Ball + +1 stage = 76 instead of 77). | WRONG-NUMBER | `app/src/app/39-damage-calc-speed.js:24,37-41,396` | Core series / Showdown Speed modifier order (T2/T3) | high
+7  | `data.js` `ABIL` has stale SV/Gen 8 descriptions for 3 Champions-changed abilities: `Healer` ("30%" -> 50%), `Unseen Fist` ("ignore... except Max Guard" -> 1/4 damage through Protect), `Run Away` ("No competitive use." -> always switches out). (`gen-info-text.mjs` fixed them in `info-text.js`, but `data.js` `ABIL` was not updated.) | WRONG-TEXT | `app/src/data/data.js` (`ABIL`) | Bulbapedia Pokemon Champions (T3) + `experiments/gen-info-text.mjs:27-30` (citing Showdown champions mod T2) | high
+8  | `39-damage-calc-speed.js:475` tells users `"charges a turn first ... (or Power Herb)"` even though Power Herb is NOT a legal item in Pokémon Champions. | WRONG-TEXT | `app/src/app/39-damage-calc-speed.js:133,475` | Bulbapedia Shop (Champions) (T3), ChampionsDex/GameWith 166-item list (T4) | medium
+9  | `CALC_ITEMS` dropdown omits 18 legal Champions battle items whose math/notes are already coded in `39-damage-calc-speed.js` (Muscle Band, Wise Glasses, Normal Gem, Light Ball, 4 Terrain Seeds, Air Balloon, Iron Ball, Scope Lens, Leek, Wide Lens, Zoom Lens, Bright Powder, Rocky Helmet, Focus Band, King's Rock). | MISSING | `app/src/app/39-damage-calc-speed.js:378` | Bulbapedia Shop (Champions) (T3), `items-list.js` `REGMC_ITEMS` | high
+10 | `patch-dec2-map.md` omits `app/src/data/data.js` `ABIL['Flash Fire']` and `ABIL['Stalwart']` from its Dec 2 hand-written update checklist (those strings live in hand-written `data.js`, separate from generated `info-text.js`). | MISSING | `docs/rebuild/test-runs/patch-dec2-map.md` (and `app/src/data/data.js` `ABIL` on Dec 2) | Official Pokemon.com Dec 2 patch notes (T1) | high
+11 | `Palafin` in `ROSTER` stores Zero Form stats (`[100,70,72,53,62,100]`) with no `formNote` and no swap in `atkForm()`. (Status depends on whether another boot file not in Job 13 mutates it — see Part E.) | MINOR (unconfirmed pending boot file) | `app/src/data/data.js` (`ROSTER`) & `app/src/app/39-damage-calc-speed.js:167,514` | Bulbapedia Gen IX Base Stats (T3) | low (boot file not checked)
+
+================================================================================
+PART C — FIXES FOR EVERY WRONG-NUMBER AND WRONG-LEGAL (WITH S3 PROOFS)
+================================================================================
+
+How we know which files are hand-written vs generated:
+- `app/src/app/39-damage-calc-speed.js` and `app/src/app/02-set-data.js`: hand-written app logic (no generator header).
+- `app/src/data/data.js`: hand-written (`ROSTER`, `ABIL`, `MOVES`, `LEARN` documented in `patch-dec2-map.md` as "hand-built in October, no generator").
+- `app/src/data/move-acc.js`, `app/src/data/move-meta.js`, `app/src/data/info-text.js`: GENERATED (headers explicitly say "Do not edit by hand").
+
+--------------------------------------------------------------------------------
+FIX #1 (WRONG-LEGAL): Add `Meowstic-F` to hand-written `app/src/data/data.js` (`ROSTER` & `LEARN`)
+--------------------------------------------------------------------------------
+File: `app/src/data/data.js`
+Change:
+  1. In `ROSTER`, immediately after the `Meowstic` (Male) entry, insert:
+     {"n":"Meowstic-F","t":["Psychic"],"a":["Keen Eye","Infiltrator","Competitive"],"m":0,"u":0,"s":466,"us":0,"b":"Meowstic","sp":104,"st":[74,48,76,83,81,104]}
+  2. In `LEARN`, add `"Meowstic-F":[...]` populated from Pokémon Showdown's `champions` mod learnset for `meowsticf` (note: do NOT copy Male Meowstic's learnset — Female Meowstic gets offensive moves like Alluring Voice, Thunderbolt, Energy Ball, Shadow Ball, Nasty Plot, Future Sight instead of Male's Prankster support moves like Fake Out, Helping Hand, Thunder Wave, Trick Room).
+S3 Proof:
+  - Input: lookup `byName.get('Meowstic-F')` and `LEARN['Meowstic-F']`
+  - Old: `undefined` / `undefined` (Female Meowstic cannot be added to a team or calculated)
+  - New: `{"n":"Meowstic-F","t":["Psychic"],"a":["Keen Eye","Infiltrator","Competitive"],...}` and legal move index array.
+
+--------------------------------------------------------------------------------
+FIX #2 (WRONG-LEGAL): Add the 4 missing neutral natures to `NATURES`
+--------------------------------------------------------------------------------
+File: `app/src/app/39-damage-calc-speed.js:379`
+Diff:
+```diff
+-const NATURES=['Hardy','Adamant','Jolly','Modest','Timid','Brave','Quiet','Bold','Impish','Calm','Careful','Relaxed','Sassy','Lonely','Naughty','Mild','Rash','Hasty','Naive','Gentle','Lax'];
++const NATURES=['Hardy','Docile','Serious','Bashful','Quirky','Adamant','Jolly','Modest','Timid','Brave','Quiet','Bold','Impish','Calm','Careful','Relaxed','Sassy','Lonely','Naughty','Mild','Rash','Hasty','Naive','Gentle','Lax'];
+```
+S3 Proof (executed in Node against `39-damage-calc-speed.js`):
+  - Input: `nat = 'Docile' | 'Serious' | 'Bashful' | 'Quirky'` passed to `natOK(nat)` (`NATURES.includes(nat)`)
+  - Old: `false` (all 4 dropped to `nat: null` in `02-set-data.js:113`)
+  - New: `true` (all 4 preserved; `natMul(nat, stat)` returns `1` for every stat)
+
+--------------------------------------------------------------------------------
+FIX #3 (WRONG-NUMBER): Teach `chargesFirst()` about `Mega Sol` (and remove non-Champions Power Herb note)
+--------------------------------------------------------------------------------
+File: `app/src/app/39-damage-calc-speed.js:133-134,475,528`
+Diff:
+```diff
+-function chargesFirst(mv,weather,item){if(!mv||!mv.charge)return false;if(item==='Power Herb')return false;
+-  if(mv.name==='Electro Shot'&&weather==='rain')return false;if((mv.name==='Solar Beam'||mv.name==='Solar Blade')&&weather==='sun')return false;return true}
++function chargesFirst(mv,weather,item,ab){if(!mv||!mv.charge)return false;if(item==='Power Herb')return false;
++  if(mv.name==='Electro Shot'&&weather==='rain')return false;if((mv.name==='Solar Beam'||mv.name==='Solar Blade')&&(weather==='sun'||ab==='Mega Sol'))return false;return true}
+```
+And pass `A.ability` at both callers:
+```diff
+-        if(acc<100)t.push(`${acc}% to hit`);if(chargesFirst(mv,dc.weather,A.item))t.push(mv.name==='Electro Shot'?'charges a turn first unless it\'s raining (or Power Herb)':mv.name==='Solar Beam'||mv.name==='Solar Blade'?'charges a turn first unless the sun is out (or Power Herb)':'charges a turn first (Power Herb skips it)');
++        if(acc<100)t.push(`${acc}% to hit`);if(chargesFirst(mv,dc.weather,A.item,A.ability))t.push(mv.name==='Electro Shot'?'charges a turn first unless it\'s raining':mv.name==='Solar Beam'||mv.name==='Solar Blade'?'charges a turn first unless the sun is out':'charges a turn first');
+```
+```diff
+-    const ch=chargesFirst(mv,F.weather,A.item),acc=moveAcc(mv,A.ability,F.weather,D,A.item),val=r.max*acc/100*(ch?.5:1)*(mv.recharge?.7:1);
++    const ch=chargesFirst(mv,F.weather,A.item,A.ability),acc=moveAcc(mv,A.ability,F.weather,D,A.item),val=r.max*acc/100*(ch?.5:1)*(mv.recharge?.7:1);
+```
+S3 Proof (executed in Node):
+  - Input: `mv = Solar Beam`, `weather = ''`, `item = ''`, `ab = 'Mega Sol'` (Mega Meganium)
+  - Old: `chargesFirst(sb, '', '')` -> `true` (falsely prints charge warning and halves `bestHitOn` score by `0.5x`)
+  - New: `chargesFirst(sb, '', '', 'Mega Sol')` -> `false` (1-turn move, full `bestHitOn` score)
+
+--------------------------------------------------------------------------------
+FIX #4 (WRONG-NUMBER): Teach `allyHit()` about `Eelevate` (and `Iron Ball` grounding)
+--------------------------------------------------------------------------------
+File: `app/src/app/39-damage-calc-speed.js:138`
+Diff:
+```diff
+-  if(ty==='Ground'&&(t.includes('Flying')||ab==='Levitate'||it==='Air Balloon'))return false;
++  if(ty==='Ground'&&it!=='Iron Ball'&&(t.includes('Flying')||ab==='Levitate'||ab==='Eelevate'||it==='Air Balloon'))return false;
+```
+S3 Proof (executed in Node):
+  - Input: `mv = Earthquake`, `partner = {p: Eelektross-Mega, ability: 'Eelevate', item: 'Eelektrossite'}`
+  - Old: `allyHit(eq, mEel)` -> `true` (falsely warns ally Earthquake hits Mega Eelektross)
+  - New: `allyHit(eq, mEel)` -> `false`
+
+--------------------------------------------------------------------------------
+FIX #5 (WRONG-NUMBER): Teach `moveAcc()` about `Mega Sol` (ignores Sand Veil/Snow Cloak; Thunder/Hurricane 50%)
+--------------------------------------------------------------------------------
+File: `app/src/app/39-damage-calc-speed.js:542,544`
+Diff:
+```diff
+-  if(['Hurricane','Thunder'].includes(mv.name)){if(weather==='rain')return 100;if(weather==='sun')a=50}if(mv.name==='Blizzard'&&weather==='snow')return 100;
++  const effW=ab==='Mega Sol'?'sun':weather;
++  if(['Hurricane','Thunder'].includes(mv.name)){if(effW==='rain')return 100;if(effW==='sun')a=50}if(mv.name==='Blizzard'&&effW==='snow')return 100;
+   if(ab==='Compound Eyes')a*=1.3;if(item==='Wide Lens')a*=1.1;if(item==='Zoom Lens'&&moved)a=a*4915/4096;if(ab==='Hustle'&&mv.cat===1)a*=.8;
+-  if(def&&((def.ability==='Sand Veil'&&weather==='sand')||(def.ability==='Snow Cloak'&&weather==='snow')))a*=.8;if(def&&def.item==='Bright Powder')a*=.9;
++  if(ab!=='Mega Sol'&&def&&((def.ability==='Sand Veil'&&weather==='sand')||(def.ability==='Snow Cloak'&&weather==='snow')))a*=.8;if(def&&def.item==='Bright Powder')a*=.9;
+```
+S3 Proof (executed in Node):
+  - Input 1: `Mega Sol` user using `Earth Power` vs `Sand Veil` Garchomp in `sand`:
+    Old: `moveAcc` -> `80` | New: `100`
+  - Input 2: `Mega Sol` user using `Thunder` in clear weather (`''`):
+    Old: `moveAcc` -> `70` | New: `50`
+
+--------------------------------------------------------------------------------
+FIX #6 (WRONG-NUMBER): Apply Iron Ball inside `spdCalc()`'s 4096 modifier chain (after stat stages)
+--------------------------------------------------------------------------------
+File: `app/src/app/39-damage-calc-speed.js:24,37-41,66-67,396-397`
+Diff:
+```diff
+-function likelySpeed(p,mem){const r=likelySpeed0(p,mem);if(mem&&mem.item==='Iron Ball')return {...r,v:Math.floor(r.v/2),label:r.label+', Iron Ball halves it'};
++function likelySpeed(p,mem){const r=likelySpeed0(p,mem);if(mem&&mem.item==='Iron Ball')return {...r,iron:true,label:r.label+', Iron Ball halves it'};
+```
+```diff
+-  const wm=typeof speedMul==='function'?speedMul(ability,weather):1,mods=[scarf?6144:4096,wm>1?8192:4096,o.tw?8192:4096,o.unb?8192:4096];
++  const wm=typeof speedMul==='function'?speedMul(ability,weather):1,mods=[scarf?6144:4096,o.iron?2048:4096,wm>1?8192:4096,o.tw?8192:4096,o.unb?8192:4096];
+```
+And pass `iron: !!s.iron` in `speedData()` line 66 and `iron: X.item==='Iron Ball'` in `dcSpeed()` line 397 (removing `if(X.item==='Iron Ball')v=Math.floor(v/2);` on line 396).
+S3 Proof (executed in Node):
+  - Input: Base Speed 103, Iron Ball, +1 Speed stage (`o.up = true`)
+  - Old: `spdCalc(Math.floor(103/2), false, '', '', {up:true})` -> `76`
+  - New: `spdCalc(103, false, '', '', {up:true, iron:true})` -> `77` (exact Gen 5+/Champions order)
+
+--------------------------------------------------------------------------------
+GENERATOR INPUTS (FOR GENERATED FILES — NEVER EDIT BY HAND)
+--------------------------------------------------------------------------------
+On Dec 2, 2026 (Reg M-D balance patch):
+  1. `experiments/gen-move-meta.mjs`: update pinned Pokémon Showdown repo at `C:/Users/simra/code/pl-mech/sim` to the post-Dec 2 Showdown commit (updating the commit hash comment in lines 2-3) and re-run `node experiments/gen-move-meta.mjs` to regenerate `app/src/data/move-meta.js` and `app/src/data/move-acc.js` (Rock Slide 95% acc / 20% flinch; Screech, Metal Sound, Steel Wing, Frost Breath drop out of `MOVE_ACC` at 100%).
+  2. `experiments/gen-info-text.mjs`: update `COMMIT` (line 13) to the post-Dec 2 Showdown commit, check if Showdown updated `Flash Fire` and `Stalwart` text (if not, add them to `OVR.ab`), and re-run `PSDIR=... node experiments/gen-info-text.mjs` to regenerate `app/src/data/info-text.js`.
+  3. Hand-written `app/src/data/data.js` `ABIL`: update `Healer` (50%), `Unseen Fist` (1/4 damage through Protect, remove Max Guard), and `Run Away` (always switches out) now; update `Flash Fire` and `Stalwart` on Dec 2.
+
+================================================================================
+PART D — 15 KNOWN-ANSWER CALC CASES (FOR AUTOMATED REGRESSION TESTS)
+================================================================================
+
+Verification note (honesty rule): Because the sandbox VM has no live internet access to run the browser UI at https://calc.pokemonshowdown.com, every case below was computed from the exact Gen 5+/Gen 9/Champions damage formula (Showdown `sim/battle-actions.ts` / `@smogon/calc` Gen 0 Champions mode: Lv 50, 31 IVs, Stat Points 0-32, Doubles) AND cross-checked directly against `app/src/app/39-damage-calc-speed.js` in Node.
+To verify live on https://calc.pokemonshowdown.com: select **Champions** mode, **Doubles**, **Level 50**, **31 IVs** on all stats, and enter the Stat Points (SP), Nature, Item, Ability, Move, and Field toggles below.
+
+Case 1 — Baseline STAB single-target (Stat Points check)
+  Attacker: Garchomp | 32 Atk SP, Jolly (Atk 182) | No Item | Rough Skin
+  Defender: Incineroar | 32 HP SP / 0 Def SP, Careful (HP 202, Def 110) | No Item | Intimidate (stage 0)
+  Move / Field: Earthquake (single target) | Clear, No Terrain
+  Expected: 186-222 HP (92.1-109.9%)
+  Rolls: [186,188,192,194,194,198,200,204,204,206,210,212,212,216,218,222]
+
+Case 2 — Spread 0.75x + Intimidate (-1 Atk)
+  Attacker: Garchomp | 32 Atk SP, Jolly, -1 Atk | No Item | Rough Skin
+  Defender: Incineroar | 32 HP SP / 0 Def SP, Careful (HP 202, Def 110) | No Item | Intimidate
+  Move / Field: Earthquake (spread) | Clear, No Terrain
+  Expected: 92-110 HP (45.5-54.5%)
+  Rolls: [92,92,96,96,96,98,98,102,102,102,104,104,104,108,108,110]
+
+Case 3 — Sun 1.5x + Spread 0.75x (Mega Charizard Y)
+  Attacker: Mega Charizard Y | 32 SpA SP, Timid (SpA 211) | Charizardite Y | Drought
+  Defender: Rillaboom | 32 HP SP / 4 SpD SP, Adamant (HP 207, SpD 94) | No Item | Grassy Surge
+  Move / Field: Heat Wave (spread) | Sun, Grassy Terrain
+  Expected: 270-318 HP (130.4-153.6%)
+  Rolls: [270,272,276,278,282,284,288,290,294,296,300,302,306,308,312,318]
+
+Case 4 — Champions Base 100 Atk (NOT Z-A 140) + Huge Power (Mega Starmie)
+  Attacker: Mega Starmie | 32 Atk SP, Jolly (Atk 152, x2 Huge Power) | Starminite | Huge Power
+  Defender: Incineroar | 32 HP SP / 12 Def SP, Impish (HP 202, Def 134) | No Item | Intimidate (stage 0)
+  Move / Field: Liquidation | Clear, No Terrain
+  Expected: 218-258 HP (107.9-127.7%)
+  Rolls: [218,218,222,224,228,230,234,236,236,240,242,246,248,252,254,258]
+
+Case 5 — Champions-new Mega Sol ignores Sand Rock SpD & Solar Beam penalty
+  Attacker: Mega Meganium | 32 SpA SP, Modest (SpA 214) | Meganiumite | Mega Sol
+  Defender: Tyranitar | 32 HP SP / 0 SpD SP, Adamant (HP 207, SpD 120) | No Item | Sand Stream
+  Move / Field: Solar Beam | Sand, No Terrain
+  Expected: 242-288 HP (116.9-139.1%)
+  Rolls: [242,246,248,252,254,258,260,264,266,270,272,276,278,282,284,288]
+
+Case 6 — Champions-new Dragonize (Normal -> Dragon + 1.2x + STAB)
+  Attacker: Mega Feraligatr | 32 Atk SP, Adamant (Atk 233) | Feraligite | Dragonize
+  Defender: Garchomp | 0 HP SP / 0 Def SP, Jolly (HP 183, Def 115) | No Item | Rough Skin
+  Move / Field: Body Slam (becomes Dragon, 1.2x, STAB) | Clear, No Terrain
+  Expected: 234-276 HP (127.9-150.8%)
+  Rolls: [234,236,240,240,242,246,248,252,254,258,260,264,266,270,272,276]
+
+Case 7 — Champions-new Fire Mane (1.5x SpA on Fire moves)
+  Attacker: Mega Pyroar | 32 SpA SP, Timid (SpA 181, x1.5 Fire Mane) | Pyroarite | Fire Mane
+  Defender: Gholdengo | 32 HP SP / 0 SpD SP, Modest (HP 194, SpD 111) | No Item | Good as Gold
+  Move / Field: Flamethrower | Clear, No Terrain
+  Expected: 248-294 HP (127.8-151.5%)
+  Rolls: [248,252,254,258,260,264,266,270,272,276,278,282,284,288,290,294]
+
+Case 8 — Champions-new Aura Guard (0.5x damage from contact moves)
+  Attacker: Sneasler | 32 Atk SP, Jolly (Atk 182) | Focus Sash | Unburden
+  Defender: Mega Lucario Z | 0 HP SP / 0 Def SP, Timid (HP 145, Def 90) | Lucarionite Z | Aura Guard
+  Move / Field: Close Combat (contact) | Clear, No Terrain
+  Expected: 136-162 HP (93.8-111.7%)
+  Rolls: [136,138,139,142,144,145,147,148,150,151,153,154,156,157,159,162]
+
+Case 9 — Fairy Aura (5448/4096) on Mega Floette
+  Attacker: Mega Floette | 32 SpA SP, Timid (SpA 207) | Floettite | Fairy Aura
+  Defender: Mega Garchomp Z | 0 HP SP / 0 SpD SP, Timid (HP 183, SpD 105) | Garchompite Z | Levitate
+  Move / Field: Light of Ruin (140 BP Fairy) | Clear, No Terrain
+  Expected: 414-488 HP (226.2-266.7%)
+  Rolls: [414,420,422,428,434,438,444,446,452,458,462,468,474,476,482,488]
+
+Case 10 — Psychic Terrain Expanding Force (1.5x BP + 1.3x Terrain + 0.75x spread)
+  Attacker: Indeedee-M | 32 SpA SP, Timid (SpA 157) | Choice Scarf | Psychic Surge
+  Defender: Sneasler | 0 HP SP / 0 SpD SP, Jolly (HP 155, SpD 100) | Focus Sash | Unburden
+  Move / Field: Expanding Force (spread) | Clear, Psychic Terrain
+  Expected: 412-492 HP (265.8-317.4%)
+  Rolls: [412,420,424,432,432,436,444,448,456,460,460,468,472,480,484,492]
+
+Case 11 — Doubles Light Screen (2732/4096) + Friend Guard (3072/4096) + Helping Hand (6144/4096) + Life Orb (5324/4096)
+  Attacker: Gholdengo | 32 SpA SP, Modest (SpA 203) | Life Orb | Good as Gold
+  Defender: Clefable | 32 HP SP / 32 SpD SP, Calm (HP 202, SpD 156) | No Item | Magic Guard
+  Move / Field: Make It Rain (spread) | Light Screen, Helping Hand, Friend Guard
+  Expected: 130-153 HP (64.4-75.7%)
+  Rolls: [130,130,133,134,137,138,138,140,142,144,146,146,148,150,152,153]
+
+Case 12 — Supreme Overlord (2 fainted = 4915/4096) + Black Glasses (4915/4096) + Burn (0.5x)
+  Attacker: Kingambit | 32 Atk SP, Adamant (Atk 205), Burned | Black Glasses | Supreme Overlord (2 fainted)
+  Defender: Indeedee-F | 32 HP SP / 32 Def SP, Bold (HP 177, Def 128) | No Item | Psychic Surge
+  Move / Field: Kowtow Cleave | Clear, Psychic Terrain
+  Expected: 109-130 HP (61.6-73.4%)
+  Rolls: [109,111,112,114,115,117,118,120,120,121,123,124,126,127,129,130]
+
+Case 13 — Always-Crit (Frost Breath) ignores -1 SpA, +1 SpD, Light Screen + Yache Berry (0.5x)
+  Attacker: Glaceon | 32 SpA SP, Modest (SpA 200), -1 SpA | Never-Melt Ice | Snow Cloak
+  Defender: Garchomp | 0 HP SP / 0 SpD SP, Jolly (HP 183, SpD 105), +1 SpD | Yache Berry | Rough Skin
+  Move / Field: Frost Breath (always crit) | Snow, Light Screen
+  Expected: 236-278 HP (129.0-151.9%)
+  Rolls: [236,236,240,242,246,248,252,254,258,260,264,266,270,272,276,278]
+
+Case 14 — Weight-based Grass Knot (Tyranitar 202.0 kg -> 120 BP) + Grassy Terrain (1.3x) + Miracle Seed (1.2x)
+  Attacker: Rillaboom | 0 SpA SP, Adamant (SpA 72) | Miracle Seed | Grassy Surge
+  Defender: Tyranitar | 32 HP SP / 0 SpD SP, Adamant (HP 207, SpD 120) | No Item | Sand Stream
+  Move / Field: Grass Knot | Clear, Grassy Terrain
+  Expected: 128-152 HP (61.8-73.4%)
+  Rolls: [128,128,132,132,134,134,138,138,140,140,144,144,146,146,150,152]
+
+Case 15 — Champions slicing flag on Shadow Claw + Sharpness (1.5x) on Mega Absol Z
+  Attacker: Mega Absol Z | 32 Atk SP, Jolly (Atk 206) | Absolite Z | Sharpness
+  Defender: Armarouge | 32 HP SP / 0 Def SP, Modest (HP 192, Def 120) | No Item | Flash Fire
+  Move / Field: Shadow Claw (slicing in Champions!) | Clear, No Terrain
+  Expected: 204-242 HP (106.3-126.0%)
+  Rolls: [204,206,210,212,216,216,218,222,224,228,228,230,234,236,240,242]
+
+================================================================================
+PART E — WHAT I COULDN'T CONFIRM + TOP 5 PLACES OUR DATA IS MOST LIKELY WRONG
+================================================================================
+
+WHAT I COULDN'T CONFIRM ("I'm unsure" / "not checked"):
+1. Files outside the Job 13 bundle: `EFF` (type chart), `ABILITY_MODS` (specifically whether `Eelevate: {Ground:0}` is present), `MEGA_STONE` map, `MV` hydration (how 0-BP damaging moves like Grass Knot/Seismic Toss/Fissure get past `if(!mv.bp)return null` at `39-damage-calc-speed.js:194`), `Palafin` Hero Form boot mutation, `experiments/legality-check.mjs`, and `app/src/v2/pages/infosheet.js`.
+2. Direct GitHub reads of `data/mods/champions/{abilities,moves,items,pokedex,rulesets}.ts` (only `conditions.ts` was indexed by web search; the other `.ts` files could not be browsed without search hits).
+3. Official Regulation M-D (Dec 2, 2026) new Pokemon / Mega roster & banlist (not yet announced by T1/T2/T3 as of 2026-11-24; Mega Heatran rumor is T4-only -> unconfirmed).
+4. Live UI cross-check of Part D's 15 cases on `calc.pokemonshowdown.com` (no outbound browser/curl from sandbox VM; verified against the exact formula + `39-damage-calc-speed.js`).
+5. Complete learnset audit of all 345 Pokemon x 510 moves in `data.js` `LEARN` (only spot-checked Dec 2 moves and Ver. 1.2.0 removals).
+
+TOP 5 PLACES OUR DATA IS MOST LIKELY WRONG THAT NOBODY CHECKED YET:
+1. **`data.js` `LEARN` (349 hand-built learnsets from October):** Because `LEARN` was hand-built in October with no generator, any move removed or restricted in Champions (like Incineroar losing Knock Off or Politoed losing Pound) or form-specific learnset difference (like `Meowstic-F`, regional forms, or Mega forms inheriting base moves) is prime territory for silent `WRONG-LEGAL` errors. Diffing `LEARN` programmatically against Showdown's `data/mods/champions/learnsets.ts` will likely catch multiple illegal or missing moves.
+2. **`ABILITY_MODS` & `WEATHER_OF`/`TERRAIN_OF` in the unbundled core file:** `39-damage-calc-speed.js` relies on external `ABILITY_MODS` for Ground immunity (`Eelevate`), `WEATHER_OF`, and `TERRAIN_OF`. If `Eelevate: {Ground: 0}` was missed in `ABILITY_MODS` the same way it was missed in `allyHit()` (`39-damage-calc-speed.js:138`), then Mega Eelektross takes full Ground damage in `damage()` AND on the type chart!
+3. **`Palafin` Zero vs Hero Form stats across Calc, Speed Tiers, and Strength Score:** `ROSTER` stores Palafin's Zero Form (`[100,70,72,53,62,100]`). If the boot script doesn't swap it to Hero Form (`[100,160,97,106,87,100]`) cleanly everywhere, every Palafin calc and threat matchup is off by 90 base Attack.
+4. **Curly apostrophes (`Farfetch’d` / `Sirfetch’d` using U+2019) vs Showdown ASCII pastes (`Farfetch'd` / `Sirfetch'd`):** Any Pokepaste import, team link, or external usage sync that doesn't normalize U+2019 <-> U+0027 will fail `byName.has()` and silently drop Farfetch'd or Sirfetch'd into `gone`.
+5. **Pre-patch `info-text.js` & `infosheet.js` vs Champions edge-case moves:** Beyond the Dec 2 patch, Champions changed `Salt Cure` passive chip (halved to 1/16 and 1/8), `Rage Fist` (resets on switch-out), `Fake Out`/`First Impression` (Encore forces Struggle), `Flame Body` (activates even when fainting), and `Eject Button` (no longer blocks U-turn/Volt Switch/Flip Turn). Any hand-written copy in `infosheet.js` or `OVR` in `gen-info-text.mjs` that still quotes SV behavior for those 5 mechanics will be wrong on the site.

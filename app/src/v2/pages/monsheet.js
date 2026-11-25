@@ -1,0 +1,180 @@
+// ---------- the Pokémon info sheet (R4, Nov 11; replaces the placeholder in shell.js) ----------
+// Mock-up docs/rebuild/mocks/sheet.html (Sim approved): the header (rating and tier, name, types, share of teams, win rate,
+// Speed at level 50, the action), the forms strip (tap one to open it), then Info / Meta / Rating. Every number comes from
+// today's shared functions (24-sheet-data.js and the rating, set and speed code), proved identical with experiments/same-info.mjs.
+V2.msTab = (() => { try { const v = localStorage.getItem('np2.montab'); return ['info', 'meta', 'rating', 'forms'].includes(v) ? v : 'info'; } catch (e) { return 'info'; } })();
+V2.txt = h => String(h == null ? '' : h).replace(/<[^>]*>/g, ''); // shared rows may carry today's small markup (win colours): text only here
+// The Card (Sim's brief Nov 13, 10:08 PM, docs/rebuild/info-sheet/BRIEF-CARD.md; replaces the stadium stage): only the Pokémon, its name
+// (the sheet's heading) and its type chips, on a card with two cut corners and a thin edge in its type colours and its own colour.
+// Behind the Pokémon: a face tinted by its types, a soft glow in its own colour, its name as giant outlined letters (decoration),
+// two orbit lines, a faint hairline texture and one sheen band. Decorations are aria-hidden; the real name is the h2.
+V2.msCard = (p, n, nameH, tyH, iw = 284) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
+  const ty = (p.t || []).filter(t => V2.TYPES.includes(t)), t1 = ty[0] ? `var(--ty-${ty[0]})` : 'var(--type-none)', t2 = ty[1] ? `var(--ty-${ty[1]})` : t1;
+  const giant = V2.esc(V2.disp(n).replace(/^Mega /, '').toUpperCase());
+  return `<div class="ms-card" style="--cp:${m[0]},${m[1]},${m[2]};--t1:${t1};--t2:${t2}">
+    <div class="mc-bg" aria-hidden="true"><div class="mc-in"><i class="mc-glow"></i><span class="mc-giant">${giant}</span><span class="mc-giant two">${giant}</span><i class="mc-orbit a"></i><i class="mc-orbit b"></i><i class="mc-sheen"></i></div></div>
+    <div class="mc-mon">${V2.mon(n, {iw, sel: true, bare: true})}</div>
+    <div class="mc-id">${nameH}${tyH}</div></div>`; };
+V2.monHtml = n => { const p = byName.get(n); if (!p) return ''; const E = V2.esc, r = rating(p), un = V2.unrated(p) /* Not rated yet (Sim, Nov 25) */, rs = RS(r.total), T = lTier(r.total), H = lairHead(p), st = (() => { try { return setFor(p) || {}; } catch (e) { return {}; } })();
+  const sp = SHT.speeds(p), run = sp.find(x => x.main) || sp.find(x => x.k === 'max'), rank = rankTxt(p, 'cap').replace(/ with results$/, ' with tournament results') /* Sim's Q15 A (Nov 19): says why it is 322, not 345 */;
+  // header
+  const num = (b, l, s, w) => `<div class="ms-n${w ? ' few' : ''}"><b>${b}</b><span>${l}${s ? `<small>${s}</small>` : ''}</span></div>`;
+  const nums = `<div class="ms-nums">${H.hU != null ? num(E(V2.shareTxt(H)), 'of teams', H.tot ? 'of ' + E(basisNum(H.tot, true)) : '') : num('None yet', 'of teams', 'no tournament games yet', true) /* Sim, Nov 13 (Info Q3 B): words, never a lone dash (as 'Too few') */}${H.hW != null ? (H.hG >= 30 ? num(E(pctFmt(H.hW)), 'win rate', Math.round(H.hG).toLocaleString('en-US') + '\u00a0games') : num('Too few', 'win rate', H.hG ? Math.round(H.hG) + ' games' : 'no tournament games yet', true)) : ''}${run ? num(run.v, 'Speed <span class="lv">at level 50</span>', '') : ''}</div>`;
+  const rate = un ? `<div class="ms-rate"><span>${V2.NOT_RATED}<small>Rating · no results yet</small></span></div>` : `<div class="ms-rate"><b>${rs}</b><span>${E(T.k)} tier<small>Rating${rank ? ' · ' + E(rank) : ' · no results yet'}${H.thinR ? ' · early read' : ''}</small></span></div>`;
+  const add = V2.addBtn ? V2.addBtn(n) : '';
+  const card = V2.msCard(p, n, `<h2 class="u">${V2.nameHtml(V2.disp(n))}</h2>`, `<div class="ms-ty">${(p.t || []).map(V2.typeChip).join('')}</div>`);
+  const head = `<div class="ms-left">${card}<div class="ms-acts">${add}<div class="row ms-go"><button type="button" class="np-btn2 k-btn" data-hmaround="${E(n)}"><span>Build Around It</span></button><button type="button" class="np-btn2 k-btn" data-mssets="${E(n)}"><span>Popular Sets</span></button></div></div></div><div class="ms-top">${rate}${nums}</div>`;
+  // forms: every form of the species with its rating; tap one to open it
+  const forms = ROSTER.filter(q => q.b === p.b), fstrip = forms.length > 1 ? `<div class="ms-forms"><div class="ms-fh"><div class="np-eyebrow">Forms · tap one to open it</div><button type="button" class="np-link" data-mstabgo="forms">Compare all ${forms.length} ›</button></div><div class="ms-fr" role="group" aria-label="Forms of ${E(V2.disp(p.b))}">${forms.map(q => { const rq = rating(q);
+    return `<button type="button" class="ms-f" data-v2mon="${E(q.n)}" aria-pressed="${q.n === p.n}">${V2.mon(q.n, {iw: 64, bare: true, sel: q.n === p.n})}<span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${V2.unrated(q) ? V2.NOT_RATED : `${RS(rq.total)} · ${E(lTier(rq.total).k)}\u00a0tier`}</small></span></button>`; }).join('')}</div></div>` : '';
+  // Info: usually, base stats, Abilities, type matchups, Speed
+  const ti = (() => { try { return topItems(p); } catch (e) { return null; } })(), SB = lairSetBits(p), pm = (() => { try { return (popularMoves(p) || []).slice(0, 4).map(m => m.name); } catch (e) { return []; } })();
+  const usual = [ti && ti.it && ti.it[0] ? V2.kItem(ti.it[0][0]) : null, SB.na ? E(SB.na[0]) : null, SB.w ? E(SB.w) : null].filter(Boolean); /* info sheets (Nov 22): the item opens its sheet */
+  const quick = usual.length || pm.length ? `<section class="ms-sec ms-usual"><h3 class="ms-h">Usually</h3><p class="ms-ub">${usual.join(' · ')}</p>${pm.length ? V2.kMoves(pm) : ''}</section>` : '';
+  const bf = SHT.baseForm(p), SL = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed'], tot = p.st.reduce((a, b) => a + b, 0), btot = bf ? bf.st.reduce((a, b) => a + b, 0) : 0;
+  const dif = (a, b) => { const d = a - b; return d ? `<em class="${d < 0 ? 'dn' : 'up'}">${d > 0 ? '+' : '−'}${Math.abs(d)}</em>` : '<em></em>'; };
+  const stats = `<section class="ms-sec"><h3 class="ms-h">Base Stats</h3><dl class="ms-bs">${p.st.map((v, i) => `<div><dt>${SL[i]}</dt><dd>${v}</dd><i style="--v:${Math.min(200, v)}" aria-hidden="true"></i>${bf ? dif(v, bf.st[i]) : ''}</div>`).join('')}<div class="tot"><dt>Total</dt><dd>${tot}</dd><i aria-hidden="true"></i>${bf ? dif(tot, btot) : ''}</div></dl>${bf ? `<p class="fine">Mega Evolved stats; the small numbers are the change from ${E(bf.d)}.</p>` : ''}</section>`;
+  const abSh = new Map((st.ab || []).map(([a, v]) => [a, v])), abTop = (st.ab || [])[0];
+  const abl = [...new Set(p.a)].sort((x, y) => (+(abSh.get(y) ?? -1)) - (+(abSh.get(x) ?? -1))).map(a => { const v = abSh.get(a), top = abTop && abTop[0] === a && p.a.length > 1;
+    return `<div class="ms-ab${top ? ' top' : ''}"><b>${V2.kAbil(a)}</b>${top ? `<span class="ms-tag">most used${v != null ? ', ' + E(pctFmt(+v)) : ''}</span>` : v != null && p.a.length > 1 ? `<span class="ms-tag">${E(pctFmt(+v))}</span>` : ''}<p>${E(SHT.abDesc(a))}</p></div>`; }).join('');
+  const abNote = p.m && bf ? `Its Mega's Ability. Before Mega Evolving, ${E(bf.d)} has ${[...new Set(bf.a)].map(V2.kAbil).join(' or ')}.` : p.a.length === 1 ? 'Its only Ability.' : abTop ? "Share of players' sets with each Ability." : '';
+  const abs = `<section class="ms-sec"><h3 class="ms-h">${p.a.length > 1 ? 'Abilities' : 'Ability'}</h3>${abl}${abNote ? `<p class="fine">${abNote}</p>` : ''}</section>`;
+  const M = SHT.matchups(p), line = (l, arr) => arr.length ? `<div class="ms-tyr"><span>${l}</span><div>${arr.map(V2.typeChip).join('')}</div></div>` : '';
+  const ty = `<section class="ms-sec"><h3 class="ms-h">Type Matchups</h3>${line('4× weak', M.g.q)}${line('2× weak', M.g.d)}${M.g.q.length + M.g.d.length ? '' : '<div class="ms-tyr"><span>Weak to</span><div class="fine">Nothing</div></div>'}${line('Resists ½', M.g.h)}${line('Resists ¼', M.g.qr)}${line('Immune', M.g.z)}
+    ${M.ab.map(o => `<p class="fine">With ${V2.kAbil(o.a)}${M.only ? ' (its only Ability, already counted)' : ''}: ${o.ch.map(c => `${E(c.t)} ${E(SHT.word(c.raw))} → ${E(SHT.word(c.x))}`).join(', ')}.</p>`).join('')}
+    <p class="fine">${M.only ? `Its typing${p.t.length > 1 ? ` (${p.t.join(' / ')})` : ''} with ${E(M.only)}` : `For its typing${p.t.length > 1 ? ` (${p.t.join(' / ')})` : ''} alone`}. Every other type hits it for normal damage.</p></section>`;
+  const spd = `<section class="ms-sec"><h3 class="ms-h">Speed at Level 50</h3><div class="ms-sp">${sp.map(x => `<div class="${x.main ? 'main' : ''}"><span>${E(x.l)}<small>${E(x.note)}</small></span><b>${x.v}</b><em>${x.os ? (x.tr ? `moves before ${x.os.pct}% of the top 30 under Trick Room` : `outspeeds ${x.os.pct}% of the top 30`) : ''}</em></div>`).join('')}</div>
+    <p class="fine">Level 50, as in Pokémon Champions: base Speed ${p.st[5]}, Speed points 0–32 add 1 each, a Speed nature adds 10%. "Top 30" = the 30 biggest threats at their usual Speed.</p></section>`;
+  // Meta: moves, items, partners and the typical set
+  const bars = (arr, k, nmH = E) => (arr || []).slice(0, k).map(([nm, v]) => `<div class="ms-br"><span>${nmH(nm)}</span><i style="--v:${Math.max(2, Math.min(100, +v || 0))}" aria-hidden="true"></i><b>${v == null ? '' : E(pctFmt(+v))}</b></div>`).join('');
+  const sbM = (() => { try { return setBasis(p, st, 'mv'); } catch (e) { return null; } })(), stn = lairStones(p, st);
+  const mvs = st.mv && st.mv.length ? `<section class="ms-sec"><h3 class="ms-h">Moves</h3>${bars(st.mv, 5)}${sbM ? `<p class="fine">${E(V2.txt(sbM.html))}</p>` : ''}</section>` : '';
+  const items = stn.mg && stn.stn >= 50 ? `<section class="ms-sec"><h3 class="ms-h">Items</h3><p>${Math.round(stn.stn)}% hold ${stn.megas.length > 1 ? 'a Mega Stone' : (x => x ? V2.kItem(x) : 'its Mega Stone')(stoneFor(stn.mg))} to Mega Evolve${stn.megas.length > 1 && stn.top ? `, most often ${V2.kItem(stn.top[0])}` : ''}.${stn.rest >= 5 && st.it && st.it[0] ? ' The rest mostly run ' + V2.kItem(st.it[0][0]) + '.' : ''}</p><button type="button" class="np-link" data-v2mon="${E(stn.mg.n)}">See ${E(stn.mg.d)} ›</button></section>`
+    : p.m ? `<section class="ms-sec"><h3 class="ms-h">Items</h3><p>Always holds ${(x => x ? V2.kItem(x) : 'its Mega Stone')(stoneFor(p))}.</p></section>` : st.it && st.it.length ? `<section class="ms-sec"><h3 class="ms-h">Items</h3>${bars(st.it, 3, V2.kItem)}</section>` : '';
+  const bw = RES && RES.tc && RES.tc.bw ? RES.tc.bw[brKeyOf(p)] : null;
+  const with_ = bw && bw.length ? `<section class="ms-sec ms-wide"><h3 class="ms-h">Brought with</h3><div class="ms-bw">${bw.filter(x => byName.get(x[0])).slice(0, 4).map(x => `<button type="button" class="ms-bwi" data-v2mon="${E(x[0])}">${V2.mon(x[0], {iw: 72, bare: true})}<span><b>${V2.nameHtml(V2.disp(x[0]))}</b><small>${E(pctFmt(x[1]))} · ${(+x[2]).toLocaleString('en-US')} games</small></span></button>`).join('')}</div><p class="fine">% = brought together when both are on the team, from Showdown replays.</p></section>` : '';
+  const typ = `<section class="ms-sec"><h3 class="ms-h">Typical set</h3><dl class="ms-set"><div><dt>Ability</dt><dd>${(() => { const ab = metaAbility(p) || bestAbility(p); let v = null; try { v = ab && abilityPct(p, ab); } catch (e) {} /* how often it's run, as today's sheet shows (PKMN-06) */ return (ab ? V2.kAbil(ab) : '–') + (v != null ? ` <span class="ms-pct">${E(pctFmt(+v))}</span>` : ''); })()}</dd></div>${ti ? `<div><dt>Item</dt><dd>${ti.it.map(x => V2.kItem(x[0])).join(' / ')}</dd></div>` : ''}${SB.na ? `<div><dt>Nature</dt><dd>${SB.na.map(V2.kNat).join(' / ')}</dd></div>` : ''}${SB.w ? `<div><dt>Stat points</dt><dd>${E(SB.w)}</dd></div>` : ''}</dl></section>`;
+  const noSets = !(st.mv && st.mv.length) && !(st.it && st.it.length) && !(bw && bw.length);
+  const meta = noSets ? `<p class="ms-empty"><b>No tournament or ladder sets yet.</b> Nobody has brought ${E(V2.disp(n))} to the events and ladders we read, so there are no popular moves or items to show.</p>${typ}` : typ + mvs + items + with_;
+  // Rating: why it rates N, what the data says, other tier lists
+  const B = V2.bars(p), bar = ([l, v, note]) => `<div class="ms-rb"><span>${E(l)}</span><i style="--v:${Math.max(2, Math.min(100, v || 0))}" aria-hidden="true"></i><b>${v == null ? '–' : v}</b><small>${v == null ? '' : `Top ${Math.max(1, 100 - v)}% of Pokémon`}${note ? (v == null ? '' : ' · ') + E(V2.txt(note)) : ''}</small></div>`;
+  const of = (lairRank(p) || {of: lairRows().length}).of;
+  const why = `<section class="ms-sec ms-wide"><h3 class="ms-h">${un ? V2.NOT_RATED : `Why it rates ${rs}`}</h3>${un ? '<p>No tournament results yet, so it has no rating. It gets one once it shows up at events.</p>' : B.length ? `<p class="fine">Each bar ranks it against the ${of} Pokémon with tournament results: 94 means better than 94% of them. Its rating is ${E(rRange(r))}${r.band >= 10 ? '; few games so far, so treat it as an estimate' : ''}.</p>${B.map(bar).join('')}`
+    : `<p>No tournament results yet, so this is a rough placeholder from its stats, typing and tools (never above ${RS(30)}). It moves up once it shows up at events.</p>`}</section>`;
+  const ev = lairEvidence(p), data = `<section class="ms-sec ms-wide"><h3 class="ms-h">What the data says</h3>${ev.length ? `<div class="ms-ev">${ev.map(e => `<div><span>${E(e[0])}</span><b>${E(V2.txt(e[1]))}</b><small>${E(V2.txt(e[2]))}</small></div>`).join('')}</div>` : `<p>No tournament or ladder games yet${un ? '.' : ': this rating comes from stats, typing and tools.'}</p>`}</section>`;
+  const O = (() => { const pf = activePerf(); return pf && pf.outside && pf.outside.lists && pf.outside.lists.length ? pf.outside : null; })();
+  const outs = O ? `<section class="ms-sec ms-wide"><h3 class="ms-h">Other tier lists</h3><div class="ms-out">${O.lists.map(L => { const v = O.data[L.k] && O.data[L.k][p.n]; return `<a href="${E(L.url)}" target="_blank" rel="noopener"><b>${v ? E(L.tiers[v]) : '–'}</b><span>${E(L.name)}<small>${v ? E(L.how) : 'not listed · ' + E(L.note)} · ${E(perfDateText(L.date))}</small></span></a>`; }).join('')}</div><p class="fine">Shown for comparison, not counted in the score.</p></section>` : '';
+  // Forms: every form side by side, the best in each row marked (mock sheet-forms.html)
+  const fcmp = forms.length > 1 ? (() => { const D = forms.map(q => { const rq = rating(q), hq = lairHead(q), un = V2.unrated(q); return {q, un, rs: un ? null : RS(rq.total), tk: lTier(rq.total).k, u: hq.hU, w: hq.hW, tot: q.st.reduce((a, b) => a + b, 0)}; });
+    const best = vals => { const ok = vals.filter(v => v != null); if (ok.length < 2) return () => false; const mx = Math.max(...ok); return v => v != null && v === mx && ok.some(x => x !== mx); };
+    const row = (lab, f, txt) => { const vs = D.map(f), b = best(vs); return `<div class="ms-ftr"><span class="ms-ftl">${lab}</span>${D.map((d, i) => `<span${b(vs[i]) ? ' class="best"' : ''}>${txt ? txt(d, vs[i]) : vs[i] == null ? '–' : vs[i]}</span>`).join('')}</div>`; };
+    const SL = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed'];
+    return `<section class="ms-sec ms-wide"><h3 class="ms-h">Forms side by side</h3><p class="fine">The best in each row is marked. Mega forms need their Mega Stone held; a team runs one Mega.</p>
+      <div class="ms-ft" role="table" aria-label="Forms of ${E(V2.disp(p.b))} side by side" style="--n:${D.length}">
+      <div class="ms-ftr ms-fth"><span class="ms-ftl"></span>${D.map(d => `<span>${d.q.n === p.n ? `<b>${V2.nameHtml(V2.disp(d.q.n))}</b><small>open now</small>` : `<button type="button" class="np-link" data-v2mon="${E(d.q.n)}">${V2.nameHtml(V2.disp(d.q.n))}</button>`}</span>`).join('')}</div>
+      ${row('Rating', d => d.rs, d => d.un ? V2.NOT_RATED : `${d.rs} · ${E(d.tk)} tier`)}${row('On teams', d => d.u, (d, v) => v == null ? '–' : E(pctFmt(v)))}${row('Win rate', d => d.w, (d, v) => v == null ? '–' : E(pctFmt(v)))}
+      <div class="ms-ftr"><span class="ms-ftl">Type</span>${D.map(d => `<span>${E(d.q.t.join(' / '))}</span>`).join('')}</div>
+      <div class="ms-ftr"><span class="ms-ftl">Ability</span>${D.map(d => `<span>${[...new Set(d.q.a)].map(V2.kAbil).join(' or ')}</span>`).join('')}</div>
+      ${SL.map((l, j) => row(l, d => d.q.st[j])).join('')}${row('Total', d => d.tot)}</div>
+      <p class="fine">On teams, win rate and rating: tournament teams. Base stats: game data.</p></section>`; })() : '';
+  const tabs = [['info', 'Info', 'stats, types'], ['meta', 'Meta', 'moves, items, partners'], ['rating', 'Rating', un ? 'not rated yet' : `why ${rs}, the data`], ...(fcmp ? [['forms', 'Forms', `${forms.length}, side by side`]] : [])], cur = tabs.some(t => t[0] === V2.msTab) ? V2.msTab : 'info';
+  const tb = `<div class="ms-tabs" role="tablist" aria-label="${E(V2.disp(n))}: info, meta or rating">${tabs.map(([k, l, s]) => `<button type="button" role="tab" id="mst-${k}" data-mstab="${k}" aria-controls="msp-${k}" aria-selected="${k === cur}" tabindex="${k === cur ? 0 : -1}"><span class="ms-tl"><b>${l}</b></span></button>`).join('')}</div>`;
+  const pan = (k, h) => `<div class="ms-pan" role="tabpanel" id="msp-${k}" aria-labelledby="mst-${k}" data-mspan="${k}"${k === cur ? '' : ' hidden'}>${h}</div>`;
+  return `<div class="ms2">${head}${fstrip}${tb}${pan('info', `<div class="ms-cols">${quick}${stats}${abs}${ty}${spd}</div>`)}${pan('meta', `<div class="ms-cols">${meta}</div>`)}${pan('rating', `<div class="ms-cols">${why}${data}${outs}</div>`)}${fcmp ? pan('forms', `<div class="ms-cols">${fcmp}</div>`) : ''}</div>`; };
+// opening: a sheet; another Pokémon from inside it (a form, a partner) replaces it in place and keeps the tab
+V2.openMonSheet = n => { const p = byName.get(n); if (!p) return; const cur = document.querySelector('.ms2');
+  if (cur) { cur.outerHTML = V2.monHtml(n); const sh = document.querySelector('.np-sheet'); if (sh) { sh.scrollTop = 0; sh.setAttribute('aria-label', V2.disp(n)); sh.focus(); } V2.fitMsName(); return; }
+  V2.sheet(V2.monHtml(n), {label: V2.disp(n)}); V2.fitMsName(); };
+/* The switch (Sim, Nov 15: the Pokémon page replaces the info sheet): a Pokémon picked anywhere opens its own page. An open sheet closes
+   first (its leftover history step is skipped by Back, shell.js); Back returns to where you were, at the same scroll. Keyboard focus moves to
+   the page's name on arrival. The sheet's code stays (V2.openMonSheet) but nothing opens it. */
+V2.openMon = n => { const p = byName.get(n); if (!p) return; if (V2.closeSheet) V2.closeSheet(true); const h = '#pokemon=' + V2.monSlug(n); V2.pkFocus = 1;
+  if (location.hash === h) { scrollTo(0, 0); V2.pkFocusName(); return; } location.hash = h; };
+// the name on the card fits its line (The Card brief, Nov 13): a name wider than the card
+// ("Squawkabilly (Yellow)", "Mega Crabominable") steps the name down the type scale until every line fits; names that fit keep 28 px
+V2.fitMsName = (sel) => { const h = document.querySelector(typeof sel === 'string' ? sel : '.ms2 .ms-card .mc-id>h2'); /* never a frame timestamp as a selector */ if (!h) return; h.style.fontSize = ''; /* Nov 15: also the Pokémon page's Card (sel) */
+  /* on the card the name stays on ONE line (a second line would climb into the Pokémon): step down the scale until it does */
+  const over = () => { const box = h.getBoundingClientRect(), rg = document.createRange(); rg.selectNodeContents(h); const rs = [...rg.getClientRects()].filter(r => r.width); return rs.some(r => r.right > box.right + 0.5) || new Set(rs.map(r => Math.round(r.top / 8))).size > 1; };
+  for (const s of ['--t26', '--t24', '--t22', '--t20', '--t17', '--t15']) { if (!over()) return; h.style.fontSize = `var(${s})`; } };
+addEventListener('resize', () => requestAnimationFrame(() => V2.fitMsName()));
+/* Nov 15 (audit): words never break in the middle ('Flamethrowe|r', 'Earthqua|ke'). A move name on the Pokémon page and a long Pokémon
+   name step down the type scale until each word fits; the Hand's move chips go one per row when two across can't fit a word. Only if a
+   word still can't fit at the smallest size may it break (np-brk). Runs after every page draw (shell.js), on resize and once the fonts load */
+V2.fitWords = () => { const ow = e => e.clientWidth > 1 && e.scrollWidth > e.clientWidth + 1;
+  const fit = b => { b.style.fontSize = ''; b.classList.remove('np-brk'); if (b.clientWidth < 2) return true;
+    for (const s of b.tagName === 'H1' ? ['--t34', '--t28', '--t24'] : ['--t17', '--t15']) { if (!ow(b)) break; b.style.fontSize = `var(${s})`; } return !ow(b); };
+  document.querySelectorAll('.pk-is h1').forEach(b => { if (!fit(b)) b.classList.add('np-brk'); });
+  const pn = [...document.querySelectorAll('.pk-pc .mc-nm')]; pn.forEach(b => { if (!fit(b)) b.classList.add('np-brk'); }); /* partner names: one size for the row (the smallest any of them needed), so the four read even */
+  const px = Math.min(...pn.map(b => parseFloat(getComputedStyle(b).fontSize))); if (pn.length && isFinite(px)) pn.forEach(b => { if (parseFloat(getComputedStyle(b).fontSize) > px) b.style.fontSize = px + 'px'; });
+  /* Team Preview Practice cards on phones (Q25 A, Nov 19): a name word never breaks mid-word ('Charizar|d' at 320); a word too wide for its
+     card is set a little tighter, then condensed sideways (laid out wider, drawn narrower with scaleX, centred), as the Hand's names are */
+  document.querySelectorAll('.pp2-plate .nm').forEach(b => { const st = b.style; st.overflowWrap = 'normal'; st.hyphens = 'manual'; st.letterSpacing = st.width = st.transform = st.marginInline = '';
+    /* a word drawn on two lines (also at its hyphen: 'Kommo-|o', CI frozen data Nov 19) counts as not fitting */
+    const split = () => { const tw = document.createTreeWalker(b, NodeFilter.SHOW_TEXT); let t; while ((t = tw.nextNode())) { const re = /\S+/g; let m; while ((m = re.exec(t.data))) { const rg = document.createRange(); rg.setStart(t, m.index); rg.setEnd(t, m.index + m[0].length);
+      if (new Set([...rg.getClientRects()].filter(x => x.width).map(x => Math.round(x.top))).size > 1) return true; } } return false; }, bad = () => ow(b) || split();
+    const W = b.clientWidth; if (W < 2 || !bad()) return; st.letterSpacing = '-.03em';
+    for (const k of [.94, .88, .82, .76, .7, .64, .58]) { if (!bad()) return; /* Nov 20: 'Meowscarada' at 320 (5 practice rounds, measured) still split at .7 */ st.width = W / k + 'px'; st.marginInline = (W - W / k) / 2 + 'px'; st.transform = `scaleX(${k})`; }
+    if (ow(b)) st.overflowWrap = st.hyphens = ''; });
+  /* Damage Calc moves (the Arena's move buttons since Nov 19; Nov 16 audit on the old hand: 'Thunderbol', 'Flamethrowe', 'Horsepow' cut on 15-108 attackers at 1100-1600): a one-word move too wide for its
+     card steps down the scale (17 -> 15 -> 13); the four names then share the smallest size so the hand reads even */
+  const hn = [...document.querySelectorAll('.arn-mv .nm')]; hn.forEach(b => { b.style.fontSize = ''; b.style.letterSpacing = ''; for (const s of ['--t15', '--t13']) { if (!ow(b)) break; b.style.fontSize = `var(${s})`; } for (const l of ['-.03em', '-.05em']) { if (!ow(b)) break; b.style.letterSpacing = l; } /* last steps, as on phones (Flamethrower at 320, 1100) */ });
+  const hx = Math.min(...hn.map(b => parseFloat(getComputedStyle(b).fontSize))); if (hn.length && isFinite(hx)) hn.forEach(b => { if (parseFloat(getComputedStyle(b).fontSize) > hx) b.style.fontSize = hx + 'px'; });
+  document.querySelectorAll('.pk-slots').forEach(u => { u.classList.remove('pk-slots1'); const bs = [...u.querySelectorAll('b')]; if (bs.map(fit).every(Boolean)) return;
+    u.classList.add('pk-slots1'); /* a move can't fit two across even at 15 px (320 wide): one per row, then fit again */ bs.forEach(b => { if (!fit(b)) b.classList.add('np-brk'); }); });
+  /* Sim, Nov 18 (C): the Hand's Card names on narrow Cards (three across on phones). The size stays (never under 13px); a name too wide for
+     its Card, or one taking more than two lines over the sprite, is first set a little tighter and lighter, then condensed sideways: it is
+     laid out wider and drawn narrower (scaleX), so the words wrap as on a wider Card and the shape stays centred on the Card */
+  document.querySelectorAll('.mh .mc-id h3').forEach(h => { const st = h.style; st.letterSpacing = st.fontWeight = st.width = st.transform = st.marginInline = ''; h.classList.remove('np-brk');
+    const W = h.parentElement.clientWidth; if (W < 2) return; const cs = getComputedStyle(h), lh = parseFloat(cs.lineHeight) || 16, mg = cs.display === 'grid' && h.querySelector('.mg:not(.none)');
+    const plate = mg ? mg.offsetHeight + (parseFloat(cs.rowGap) || 0) - lh : 0; /* Sim's Q17 A (phones): "Mega" on its own plate counts as one line, not as a taller name */
+    const P = h.parentElement.getBoundingClientRect(), drawn = () => { const rg = document.createRange(); rg.selectNodeContents(h); return [...rg.getClientRects()].every(r => !r.width || (r.left >= P.left - 1 && r.right <= P.right + 1)); };
+    /* Nov 19 (v2-minors main2): with Q17's grid the heading box is always Card-wide while a long word ('Crabominable') spills out of its
+       track, so the fit measures where the letters are drawn (after any scaleX), not the box */
+    const good = () => (mg ? drawn() : st.width ? !ow(h) : h.offsetWidth <= W + 1) && h.offsetHeight <= 2 * lh + 2 + plate;
+    for (const [w, l] of [['', '-.02em'], ['800', '-.02em'], ['700', '-.03em']]) { if (good()) return; st.fontWeight = w; st.letterSpacing = l; }
+    for (const k of [.94, .88, .82, .76, .7]) { if (good()) return; st.width = W / k + 'px'; st.marginInline = (W - W / k) / 2 + 'px'; st.transform = `scaleX(${k})`; }
+    if (ow(h)) h.classList.add('np-brk'); });
+  const groups = new Map(); document.querySelectorAll('.mh-mv').forEach(u => { u.classList.remove('mh-mv1', 'mh-mv2'); u.querySelectorAll('li').forEach(li => li.classList.remove('np-brk')); const g = u.closest('.mh') || u.parentElement; groups.set(g, [...(groups.get(g) || []), u]); });
+  groups.forEach(us => { if (!us.some(u => [...u.children].some(ow))) { /* nuclear stress test (Nov 16): a two-word move wrapping ("Stomping Tantrum") made the Hand's move grids uneven; every chip in the Hand then takes the two-line height */
+      const lis = us.flatMap(u => [...u.children]).filter(li => li.offsetHeight > 0), hs = lis.map(li => li.offsetHeight), lo = Math.min(...hs);
+      if (lis.length && hs.some(h => h > lo + 4)) us.forEach(u => u.classList.add('mh-mv2')); return; } /* one Card needs it, so the whole Hand goes one per row (even Cards, Sim's eye for symmetry) */
+    us.forEach(u => u.classList.add('mh-mv1')); us.forEach(u => u.querySelectorAll('li').forEach(li => { if (ow(li)) li.classList.add('np-brk'); })); });
+  /* review Nov 18 (C7): the fit is remembered, and the Hand's move lists are drawn with it (six.js, V2.mvFitOf), as the belt's mt-wide is
+     (team.js): the draw no longer puts a list two across for this to set one per row again (at 1100-1439 every redraw moved My Team 24px) */
+  if (V2._mvFit.size > 40) V2._mvFit.clear(); groups.forEach(us => { const lis = us.flatMap(u => [...u.children]);
+    V2._mvFit.set(V2.mvKey(lis.map(li => li.textContent)), {c: ['mh-mv1', 'mh-mv2'].find(c => us[0].classList.contains(c)) || '', b: [...new Set(lis.filter(li => li.classList.contains('np-brk')).map(li => li.textContent))]}); }); };
+// the last fit of a Hand's move lists, by page, window width and the moves in it: {c: 'mh-mv1' | 'mh-mv2' | '', b: moves that may break}
+V2._mvFit = new Map(); V2.mvKey = names => V2.route() + '|' + innerWidth + '|' + [...new Set(names)].sort().join('/');
+V2.mvFitOf = ms => V2._mvFit.get(V2.mvKey(ms.flatMap(m => m.moves.filter(Boolean).map(v => v.name)))) || {c: '', b: []};
+addEventListener('resize', () => requestAnimationFrame(() => V2.fitWords()));
+try { document.fonts.ready.then(() => V2.fitWords()); document.fonts.addEventListener('loadingdone', () => requestAnimationFrame(() => V2.fitWords())); } catch (e) {} /* again when a font arrives: measured with a stand-in font the fit is wrong */
+V2.msShow = (k, focus) => { V2.msTab = k; try { localStorage.setItem('np2.montab', k); } catch (e) {}
+  document.querySelectorAll('.ms2 [data-mstab]').forEach(b => { const on = b.dataset.mstab === k; b.setAttribute('aria-selected', on); b.tabIndex = on ? 0 : -1; if (on && focus) b.focus(); });
+  document.querySelectorAll('.ms2 [data-mspan]').forEach(x => { x.hidden = x.dataset.mspan !== k; }); };
+document.addEventListener('click', e => { const b = e.target.closest('.ms2 [data-mstab]'); if (b) V2.msShow(b.dataset.mstab);
+  const g = e.target.closest('.ms2 [data-mstabgo]'); if (g) { V2.msShow(g.dataset.mstabgo, true); const t = document.querySelector('.ms2 .ms-tabs'); if (t) t.scrollIntoView({block: 'start', behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}); } });
+document.addEventListener('keydown', e => { const b = e.target.closest && e.target.closest('.ms2 [data-mstab]'); if (!b || !/^(Arrow(Left|Right)|Home|End)$/.test(e.key)) return; e.preventDefault();
+  // Home / End jump to the first / last tab (today's tabs do; the tab pattern's keys, PKMN-04)
+  const ks = [...document.querySelectorAll('.ms2 [data-mstab]')].map(x => x.dataset.mstab), i = ks.indexOf(b.dataset.mstab), j = e.key === 'Home' ? 0 : e.key === 'End' ? ks.length - 1 : (i + (e.key === 'ArrowRight' ? 1 : ks.length - 1)) % ks.length; V2.msShow(ks[j], true); });
+// the redesign preview links here: My Team with Garchomp's sheet open (changes nothing)
+if (window.__NP_PREVIEW) V2.pages['sheet'] = {place: 'team', draw: () => V2.pages.team.draw(), after() { V2.pages.team.after(); if (V2._sheetDemoAt === location.href) return; V2._sheetDemoAt = location.href; setTimeout(() => V2.openMonSheet('Garchomp'), 60); }}; /* code review B9c: opens once per visit, not on every redraw; a Preview-only demo (A1-M5) */
+addEventListener('hashchange', () => { if (V2.route() !== 'sheet') V2._sheetDemoAt = null; });
+
+// today's "Popular sets" on the sheet (PKMN-03; 25-ratings-page.js data-lsets): remembers the Pokémon for the sets page, which today's
+// site files under Meta (Popular Sets is rebuilt with Meta); "Build Around It" uses Home's handler (ui.abLock, then Build)
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-mssets]'); if (!b) return; ui.setMon = b.dataset.mssets; try { LS.set('cc2.setMon', b.dataset.mssets); } catch (x) {} if (V2.closeSheet) V2.closeSheet(true); location.hash = '#sets'; }); /* Nov 15: it went to #meta (Ratings), not Popular Sets */
+// touch swipe between the tabs (audit PKMN-04): today's rule (67-sheet-tabs.js, Sim, Nov 2), unchanged: a clear sideways swipe on
+// the panels moves to the neighbouring tab; passive listeners; not from a form field or something that scrolls sideways, not with two
+// fingers or while text is selected; vertical scrolls never count; touch only, so a mouse never swipes
+V2.msSw = null;
+document.addEventListener('touchstart', e => { V2.msSw = null; const w = e.target && e.target.closest && e.target.closest('.ms2 [data-mspan]'); if (!w || e.touches.length !== 1) return;
+  if (e.target.closest('input,select,textarea,[contenteditable]')) return;
+  for (let x = e.target; x && x !== w.parentElement; x = x.parentElement) if (x.scrollWidth > x.clientWidth + 2 && /auto|scroll/.test(getComputedStyle(x).overflowX)) return;
+  const t = e.touches[0]; V2.msSw = {x: t.clientX, y: t.clientY, t: Date.now()}; }, {passive: true});
+document.addEventListener('touchmove', e => { if (V2.msSw && e.touches.length !== 1) V2.msSw = null; }, {passive: true});
+document.addEventListener('touchend', e => { const s = V2.msSw; V2.msSw = null; if (!s || !e.changedTouches.length) return; const t = e.changedTouches[0], dx = t.clientX - s.x, dy = t.clientY - s.y;
+  if (Math.abs(dx) <= 50 || Math.abs(dx) <= 1.5 * Math.abs(dy) || Date.now() - s.t > 900) return;
+  try { const sel = getSelection(); if (sel && String(sel).trim()) return; } catch (x) {}
+  const tabs = [...document.querySelectorAll('.ms2 [data-mstab]')], ks = tabs.map(x => x.dataset.mstab), i = tabs.findIndex(x => x.getAttribute('aria-selected') === 'true'), j = dx < 0 ? i + 1 : i - 1;
+  if (i < 0 || j < 0 || j >= ks.length) return; V2.msShow(ks[j], false); }, {passive: true});
+document.addEventListener('touchcancel', () => { V2.msSw = null; }, {passive: true});

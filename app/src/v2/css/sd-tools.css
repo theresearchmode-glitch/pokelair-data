@@ -1,0 +1,439 @@
+/* Home, The Stampede: the tools band (classes sdt-*; shared .sd-* in sd-shared.css). Brief section 3: "Same herd. Twelve tools."
+   Twelve slanted plates of different sizes on the beige band, every row full; colours from the --sd- tokens (tokens.css, day and night).
+   A plate's shape (and its offset shade) is drawn behind it, so pictures can break out of the top without being cut. No motion. */
+.sd-tools.sdt{background:var(--sd-beige);color:var(--ink)}
+.sdt-h{font-size:var(--d-hero);line-height:1;margin:0 0 var(--s3);color:var(--sd-card-ink)}
+:root[data-theme="night"] .sdt-h{color:var(--ink)}
+.sdt-h span{color:var(--plot-text)}
+/* one plain line under the playful heading (Sim's Q23 A, Nov 19): the gap the heading had above the plates now sits under this line */
+.sdt-desc{max-width:72ch;margin:0 0 var(--s8);font:500 var(--t17)/1.5 var(--b);color:var(--sd-card-ink)}
+:root[data-theme="night"] .sdt-desc{color:var(--ink)}
+.sdt-grid{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:var(--s6)}
+
+/* a plate: a "/"-slanted shape (--k is the slant) with its shade; the title's link covers the whole plate */
+.sdt-p{--k:16px;position:relative;isolation:isolate;min-width:0;padding:var(--s6) calc(var(--s6) + var(--k));color:var(--sd-card-ink);grid-column:span 3}
+.sdt-p::before,.sdt-p::after{content:"";position:absolute;inset:0;clip-path:polygon(var(--k) 0,100% 0,calc(100% - var(--k)) 100%,0 100%)}
+.sdt-p::before{z-index:-1;background:var(--sd-card)}
+.sdt-p::after{z-index:-2;background:var(--sd-card-shade);translate:var(--s2) var(--s2)}
+.sdt-ink{color:var(--sd-on-feat)}.sdt-ink::before{background:var(--sd-feat)}
+:root[data-theme="night"] .sdt-ink::after{background:var(--sd-feat-rim);inset:-1px;translate:none}
+.sdt-t{font-size:var(--t24);line-height:1.1;margin:0 0 var(--s1)}
+.sdt-go{color:inherit;text-decoration:none}
+.sdt-go::after{content:"";position:absolute;inset:0;z-index:1}
+.sdt-go:focus-visible{outline:none}.sdt-go:focus-visible::after{outline:3px solid var(--plot);outline-offset:var(--s1);border-radius:var(--r-s)}
+@media (hover:hover){.sdt-p:hover .sdt-go{text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:var(--s1)}}
+.sdt-d{font:400 var(--t15)/1.5 var(--b);color:var(--sd-card-ink2);max-width:60ch;text-wrap:balance} /* polish triage #4 (Nov 24): even lines, no "1 plan." left alone (pretty only stops one-word last lines) */
+.sdt-ink .sdt-d{color:var(--sd-feat-ink2)}
+.sdt-s{display:none}
+
+/* a named Pokémon: its own button above the plate's link */
+.sdt-m{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;min-width:var(--tap);min-height:var(--tap);margin:0;padding:0;border:0;background:none;color:inherit;font:inherit;text-align:center;cursor:pointer}
+.sdt-m .np-mon{width:100%}.sdt-m .np-mon .st{width:var(--iw);max-width:100%}
+.sdt-mn{display:block;margin-top:var(--s1);font:700 var(--t13)/1.25 var(--b)}
+.sdt-m:focus-visible{outline:3px solid var(--plot);outline-offset:2px;border-radius:var(--r-s)}
+.sdt-art{display:block}.sdt-art .np-mon .st{width:var(--iw);max-width:100%}
+
+/* Speed Tiers: the race on the blue band, runners breaking out of its top (over the heading's foot) */
+.sdt-speed{--k:24px;grid-column:1/-1;display:grid;grid-template-columns:minmax(200px,280px) minmax(0,1fr);align-items:end;gap:var(--s6);color:var(--sd-on-race);margin-top:var(--s12)}
+.sdt-speed::before{background:var(--sd-race)}
+.sdt-speed .sdt-d{color:var(--sd-on-race)}
+.sdt-speed .sdt-tx{padding-bottom:var(--s4)}
+.sdt-race{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:var(--s2);align-items:end;margin-top:calc(var(--s24) * -1);
+  background:linear-gradient(var(--sd-streak) 0 0) 3% 34%/48px 4px no-repeat,linear-gradient(var(--sd-streak) 0 0) 22% 52%/64px 4px no-repeat,linear-gradient(var(--sd-streak) 0 0) 47% 30%/40px 4px no-repeat,
+    linear-gradient(var(--sd-streak) 0 0) 63% 48%/56px 4px no-repeat,linear-gradient(var(--sd-streak) 0 0) 86% 36%/48px 4px no-repeat}
+.sdt-run .np-mon{--iw:132px}
+.sdt-run .np-mon .st{max-width:none;margin-left:calc(50% - var(--iw) / 2)} /* wider than its lane: runners overlap, as a herd */
+.sdt-run .sdt-mn{min-height:2.5em}
+.sdt-spe{display:block;margin-top:var(--s2);font-size:var(--t34);line-height:1;color:var(--sd-on-race)}
+.sdt-run .sdt-mn{color:var(--sd-on-race)}
+
+/* Type Chart: the 18 flags in their type colours, 3 by 6, on a plate as wide as Ratings (Sim, Nov 18: A) */
+.sdt-tc{grid-column:span 4}
+.sdt-types{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s2);margin-top:var(--s4)}
+.sdt-tc{display:flex;flex-direction:column}.sdt-types{flex:1;align-content:space-between} /* the six rows of flags fill the plate's height (its row is as tall as Ratings) */
+.sdt-tc .sdt-flag>span{padding-block:var(--s2)}
+.sdt-types li{display:flex;flex-direction:column;align-items:center;min-width:0}
+.sdt-flag{display:block;width:100%}
+.sdt-flag>span{display:block;padding:var(--s1) var(--s2);background:var(--ty);color:var(--on-type);font:700 var(--t13)/1.3 var(--b);text-align:center;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+:root[data-theme="night"] .sdt-flag{filter:drop-shadow(0 0 1px var(--sd-flag-rim)) drop-shadow(0 0 0.5px var(--sd-flag-rim))} /* audit C6: the dark flags (Dark, Dragon) on the night plate get a light rim */
+.sdt-types .sdt-m{margin-top:var(--s1);width:100%}
+.sdt-types .np-mon{--iw:64px}
+.sdt-none{display:block;height:var(--s16)}
+
+/* Ratings: the podium of the top three */
+.sdt-ra{grid-column:span 4;display:flex;flex-direction:column}
+.sdt-pod{flex:1;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));align-items:end;gap:var(--s2);margin-top:var(--s4)}
+.sdt-step .np-mon{--iw:136px}
+.sdt-step.s1 .np-mon{--iw:160px}
+.sdt-step .np-mon .st,.sdt-six .np-mon .st{max-width:none;margin-left:calc(50% - var(--iw) / 2)}
+.sdt-blk{display:flex;flex-direction:column;justify-content:center;align-items:center;width:100%;min-height:var(--s24);padding:var(--s2) var(--s1);background:var(--sd-pod);color:var(--sd-on-feat)}
+.sdt-step.s1 .sdt-blk{min-height:calc(var(--s24) + var(--s10));background:var(--sd-pod-top);color:var(--sd-on-race)}
+.sdt-step.s2 .sdt-blk,.sdt-step.s3 .sdt-blk{min-height:calc(var(--s24) - var(--s4))} /* ranks 1 share the top step (ties share a rank, as on Ratings) */
+.sdt-blk b{font-size:var(--t34)}
+.sdt-blk span{font:700 var(--t13)/1.25 var(--b)}
+
+/* Winning Teams: the latest winner's six in a row, Load Team / Copy for Showdown */
+.sdt-wt{grid-column:span 5;display:flex;flex-direction:column}
+.sdt-wt .sdt-pic{margin-top:auto;padding-top:var(--s4)}
+.sdt-six{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s1);align-items:end}
+.sdt-six .np-mon{--iw:88px}
+.sdt-cap{display:none;margin-top:var(--s2);font:700 var(--t13)/1.3 var(--b);text-align:center}
+.sdt-acts,.sdt-wt .wt-sure{position:relative;z-index:2}
+.sdt-acts{display:flex;flex-wrap:wrap;gap:0 var(--s5);margin-top:var(--s1)}
+.sdt-acts .np-link{display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;cursor:pointer}
+
+/* Battle: two facing two across a VS. The VS has its own 64px column and no sprite enters it (polish Nov 18 night: Whimsicott's white
+   fluff hid the white VS). Each pair stays inside its half: the sprites are as big as the half allows (up to --cap), and where the two
+   overlap, the outer one stands raised behind the inner one, as a herd (a half is 50cqi less half the VS column and the gaps) */
+.sdt-bt{grid-column:span 4;display:flex;flex-direction:column}
+.sdt-vs{container-type:inline-size;margin-top:auto;padding-top:var(--s4);display:grid;grid-template-columns:minmax(0,1fr) 64px minmax(0,1fr);align-items:end;gap:var(--s1)}
+.sdt-side{--cap:96px;--bw:min(var(--cap),calc((50cqi - 36px) * .8));display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:end;padding-top:calc(var(--bw) * .28)}
+.sdt-side .np-mon{--iw:var(--bw)}
+.sdt-side .np-mon .st{max-width:none;margin-left:min(calc(50% - var(--iw) / 2),calc(100% - var(--iw)))}
+.sdt-side .sdt-m:first-child .np-mon .st{margin-left:max(0px,calc(50% - var(--iw) / 2))}
+/* the outer two stand raised and behind (the side's top padding keeps room for them); their names stay on the line with the others.
+   The side is one layer above the plate's link; inside it the sprites stack (outer 1, inner 2) and every name sits on top (3), so the
+   inner sprite never covers its neighbour's name (1440: Pelipper's wing hid "Mega" of Mega Venusaur) */
+.sdt-side{position:relative;z-index:2}.sdt-side .sdt-m{z-index:auto}.sdt-side .np-mon .st{z-index:2}
+.sdt-side.you .sdt-m:first-child .st,.sdt-side.them .sdt-m:last-child .st{z-index:1;translate:0 calc(var(--iw) * -.28)}
+.sdt-side .sdt-mn{position:relative;z-index:3}
+/* under 1440 the names are hidden: each button is as wide as its sprite (at least the 44px tap size) and stands at its side's outer
+   edge, so a track narrower than 44px can't push a sprite past the side's edge */
+@media (max-width:1439.98px){.sdt-side .sdt-m{width:max(var(--tap),var(--bw))}.sdt-side .sdt-m:first-child{justify-self:start}.sdt-side .sdt-m:last-child{justify-self:end}
+  .sdt-side .sdt-m .np-mon .st,.sdt-side .sdt-m:first-child .np-mon .st{margin-left:calc(50% - var(--iw) / 2)}}
+.sdt-vsw{position:relative;z-index:3;align-self:center;font-size:var(--t34);text-align:center}
+.sdt-side.you .sdt-mn{color:var(--sd-you)}.sdt-side.them .sdt-mn{color:var(--sd-them)}
+
+/* Damage Calc: the site's calc as a health bar over the target */
+/* the picture sits in the middle of any spare height (polish Nov 18 night: beside the taller Ratings plate, all of it gathered above the
+   picture, a 120px band at 820); 16px apart from the words at least */
+.sdt-dc{grid-column:span 3;display:flex;flex-direction:column;row-gap:var(--s4)}
+.sdt-hit{margin-block:auto;display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s1)}
+.sdt-hp{display:flex;justify-self:end;width:60%;height:var(--s3);background:var(--sd-hp-lost);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.sdt-hp i{display:block;height:100%}
+.sdt-hp .left{background:var(--hp-left)}
+.sdt-hp .roll{background:repeating-linear-gradient(-45deg,var(--sd-hp-roll) 0 4px,var(--sd-hp-roll2) 4px 8px)}
+.sdt-hpw{justify-self:end;font:400 var(--t13)/1.3 var(--b);color:var(--sd-card-ink2)}
+.sdt-hpw b{font-weight:700;color:var(--sd-card-ink)}
+.sdt-duel{display:grid;grid-template-columns:minmax(0,1fr) var(--s6) minmax(0,1fr);align-items:end}
+.sdt-duel .np-mon{--iw:104px}
+.sdt-strike{align-self:center;height:var(--s1);background:var(--sd-card-ink2);clip-path:polygon(0 0,100% 50%,0 100%)}
+
+/* the four small plates: the picture first, breaking out of the plate's top */
+.sdt-sm{display:flex;flex-direction:column;margin-top:var(--s12)}
+.sdt-sm>:last-child{order:-1;margin-top:calc(var(--s12) * -1);margin-bottom:var(--s3)}
+.sdt-sm .sdt-tx{margin-top:auto}
+.sdt-core{display:grid;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:end;gap:var(--s1)}
+.sdt-core .np-mon,.sdt-set .np-mon{--iw:104px}
+.sdt-plus{align-self:center;font-size:var(--t34)}
+.sdt-wx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3);align-items:end}
+.sdt-wxi{display:flex;flex-direction:column;align-items:center;gap:var(--s1)}
+.sdt-wxi .np-mon{--iw:96px}
+.sdt-chip{display:inline-block;padding:var(--s1) var(--s3);background:var(--ty);color:var(--on-type);font:700 var(--t13)/1.3 var(--b)}
+/* Test Run: one Pokémon facing three top-team Pokémon (polish Nov 18 night: they were squeezed to 20-40px over an empty middle).
+   The picture takes the plate's spare height (flex-grow) and is a size container, so the sprites grow with its width AND its height
+   (cqi, cqh) and fill the plate; its least height is a share of the plate's width (the plate is the width container).
+   A wide, low picture: the one beside the three, who stand as a pyramid. A narrow or tall one (8:5 or taller): the one above the
+   three, who stand in an overlapping row */
+.sdt-sm:has(.sdt-tr){container-type:inline-size}
+.sdt-sm .sdt-tr{flex:1 0 auto;min-height:34cqi;container-type:size;display:flex;flex-wrap:wrap;justify-content:center;align-items:flex-end;align-content:flex-end}
+.sdt-tr>*{--s3w:min(29cqi,64cqh,120px)}
+.sdt-tr .one{flex:0 0 42cqi;display:flex;justify-content:center}.sdt-tr .one .np-mon{--iw:min(42cqi,100cqh,150px)}
+.sdt-three{flex:0 0 58cqi;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));align-items:end}
+.sdt-three .np-mon{--iw:var(--s3w)}
+.sdt-three .sdt-art{grid-row:2;grid-column:span 2}.sdt-three .sdt-art:first-child{grid-row:1;grid-column:2/4;margin-bottom:calc(var(--s3w) * -.42)}
+@container (max-width:199.98px) or (max-aspect-ratio:8/5){
+  .sdt-tr>*{--s3w:min(42cqi,38cqh,104px)}
+  .sdt-tr .one{flex-basis:100cqi}.sdt-tr .one .np-mon{--iw:min(80cqi,calc(100cqh - var(--s3w) * .7),132px)}
+  .sdt-three{flex-basis:100cqi;display:flex;justify-content:center;margin-top:calc(var(--s3w) * -.3)}
+  .sdt-three .sdt-art{flex:0 0 auto}.sdt-three .sdt-art .np-mon .st{max-width:none}
+  .sdt-three .sdt-art+.sdt-art{margin-left:min(0px,calc((100cqi - var(--s3w) * 3) / 2))}
+  .sdt-three .sdt-art:first-child{margin-bottom:0}}
+@media (min-width:380px) and (max-width:699.98px){.sdt-sm .sdt-tr{min-height:60cqi}} /* two small plates to a row: the plate is narrow */
+/* Team Preview Practice (Sim, Nov 18): a team preview, two rows of three on the ink plate, and a "Pick 4" chip. The picture takes the
+   plate's spare height (as Test Run's did) and its sprites grow with its width, 44px at least */
+.sdt-sm:has(.sdt-pp){container-type:inline-size}
+.sdt-pp{position:relative;flex:1 0 auto;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:var(--s2)}
+.sdt-pp6{display:grid;grid-template-columns:repeat(3,max-content);justify-content:center;align-items:end;column-gap:var(--s3);row-gap:0}
+.sdt-pp6 .np-mon{--iw:max(44px,min(21cqi,68px))} /* two clean rows of three, as a team preview; small enough that the plate is no taller than its neighbours */
+@media (min-width:700px) and (max-width:1099.98px){.sdt-pp6 .np-mon{--iw:max(44px,min(17cqi,56px))}} /* beside Popular Sets on tablets */
+.sdt-pick{position:relative;z-index:1;padding:var(--s1) var(--s3);background:var(--sd-race);color:var(--sd-on-race);font-size:var(--t15);line-height:1.3;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.sdt-set .sdt-m{flex-direction:row;align-items:flex-end;justify-content:flex-start;gap:var(--s3);text-align:left}
+.sdt-set .np-mon{flex:0 0 auto;width:auto}
+.sdt-si{display:flex;flex-direction:column;align-items:flex-start;gap:var(--s1);padding-bottom:var(--s2)}
+.sdt-item{display:inline-block;padding:var(--s1) var(--s2);border:2px solid currentColor;font:700 var(--t13)/1.3 var(--b);white-space:nowrap}
+
+/* Events and How We Calculate: mirrored blocks, the big numbers at the outer edges */
+.sdt-end{grid-column:auto}
+.sdt-ends{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));margin-top:var(--s10)}
+.sdt-end{display:flex;align-items:center;gap:var(--s5);padding:var(--s2) var(--s6);color:var(--ink)}
+.sdt-end::before,.sdt-end::after{display:none}
+.sdt-end.hw{flex-direction:row-reverse;text-align:right;border-left:1px solid var(--rule)}
+.sdt-end .sdt-d{color:var(--ink-2)}
+.sdt-big{flex:0 0 auto;display:flex;flex-direction:column}
+.sdt-big b{font-size:var(--d64);line-height:1;color:var(--plot-text)}
+.sdt-big small{font:700 var(--t15)/1.3 var(--b);color:var(--ink)}
+.sdt-end.hw .sdt-big{align-items:flex-end}
+
+/* desktop order: Winning Teams, Battle, then Damage Calc (it follows Ratings in the page, as phones show them side by side) */
+/* desktop (Sim, Nov 18: A): Speed Tiers; Type Chart | Ratings | Damage Calc; Winning Teams | Battle as halves; the small plates */
+@media (min-width:1100px){.sdt-speed{order:-4}.sdt-tc{order:-3}.sdt-ra{order:-2}.sdt-dc{order:-1;grid-column:span 4}.sdt-wt,.sdt-bt{grid-column:span 6}.sdt-sm{order:2}}
+@media (min-width:1100px) and (max-width:1379.98px){.sdt-speed{grid-template-columns:minmax(180px,220px) minmax(0,1fr)}.sdt-race{gap:0}.sdt-run .np-mon{--iw:112px}}
+
+/* tablets: Type Chart full width, Ratings beside Damage Calc, Winning Teams beside Battle; seven runners, the words above them */
+@media (max-width:1099.98px){
+  .sdt-speed{grid-template-columns:minmax(0,1fr)}.sdt-speed .sdt-tx{order:2;padding-bottom:0}.sdt-race{margin-top:calc(var(--s16) * -1)}
+  .sdt-run[data-k="8"],.sdt-run[data-k="9"]{display:none}.sdt-run .np-mon{--iw:104px}
+  .sdt-tc{grid-column:1/-1}.sdt-ra,.sdt-dc{grid-column:span 6}
+  .sdt-side .sdt-mn{display:none}.sdt-duel .np-mon{--iw:144px}
+  .sdt-big b{font-size:var(--t34)}
+  .sdt-ends{grid-template-columns:minmax(0,1fr);gap:var(--s4);margin-top:var(--s8)}
+  .sdt-end,.sdt-end.hw{flex-direction:row;text-align:left;border-left:0;padding:0;align-items:flex-end}.sdt-end.hw .sdt-big{align-items:flex-start}
+  .sdt-big{width:min(42%,280px)}}
+@media (max-width:1099.98px){.sdt-sm{grid-column:span 6}}
+
+/* phones (brief): four runners; the Type Chart 6 by 3 without names; Ratings beside Damage Calc; Winning Teams and Battle as
+   short full-width strips; the small plates 2 by 2; Events and How We Calculate as two matching rows; short descriptions */
+@media (max-width:699.98px){
+  .sdt-grid{gap:var(--s4)}.sdt-p{--k:12px;padding:var(--s4) calc(var(--s3) + var(--k))}
+  .sdt-t{font-size:var(--t22)}.sdt-d{font-size:var(--t15)}.sdt-l{display:none}.sdt-s{display:inline}
+  .sdt-h{margin-bottom:var(--s6)}.sdt-desc{font-size:var(--t15)}
+  .sdt-speed{--k:16px;margin-top:var(--s10)}.sdt-speed .sdt-tx{display:flex;flex-wrap:wrap;align-items:baseline;gap:0 var(--s3)}
+  .sdt-race{margin-top:calc(var(--s12) * -1);gap:var(--s1)}.sdt-run[data-k="5"],.sdt-run[data-k="6"],.sdt-run[data-k="7"]{display:none}
+  .sdt-run .np-mon{--iw:88px}.sdt-spe{font-size:var(--t28)}
+  .sdt-types{grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2) var(--s1)}.sdt-flag>span{padding:var(--s1) 0;font-stretch:75%;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+  .sdt-six .sdt-mn,.sdt-side .sdt-mn{display:none}.sdt-types .sdt-mn{display:none}.sdt-types .np-mon{--iw:48px}
+  .sdt-ra,.sdt-dc{grid-column:span 6}
+  .sdt-pod{gap:var(--s1)}.sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:72px}.sdt-blk{min-height:var(--s12)}.sdt-step.s1 .sdt-blk{min-height:var(--s16)}.sdt-step.s2 .sdt-blk,.sdt-step.s3 .sdt-blk{min-height:var(--s10)}
+  .sdt-blk b{font-size:var(--t24)}.sdt-blk span{display:none}
+  .sdt-hp{width:80%}.sdt-duel{grid-template-columns:minmax(0,1fr) var(--s2) minmax(0,1fr)}.sdt-duel .np-mon{--iw:72px}
+  .sdt-wt,.sdt-bt{grid-column:1/-1}
+  .sdt-cap{display:block}
+  .sdt-sm{grid-column:span 6;margin-top:var(--s10)}.sdt-sm .sdt-t{font-size:var(--t20)}.sdt-sm>:last-child{margin-top:calc(var(--s10) * -1)}
+  .sdt-core .np-mon,.sdt-set .np-mon{--iw:72px}.sdt-wxi .np-mon{--iw:64px}.sdt-plus{font-size:var(--t24)}
+  .sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}
+  .sdt-ends{grid-template-columns:minmax(0,1fr);gap:var(--s4);margin-top:var(--s8)}
+  .sdt-end,.sdt-end.hw{flex-direction:row;text-align:left;border-left:0;padding:0;align-items:flex-end}.sdt-end.hw .sdt-big{align-items:flex-start}
+  .sdt-big{width:42%}.sdt-big b{font-size:var(--t34)}.sdt-big small{font-size:var(--t13)}.sdt-end .sdt-t{font-size:var(--t20)}}
+/* the strips side by side where there is room for both halves; on tablets too (polish Nov 18 night: beside Winning Teams, Battle's
+   five-twelfths left its four sprites under 50px, too small to read) */
+@media (min-width:700px) and (max-width:1099.98px){.sdt-wt,.sdt-bt{grid-column:1/-1}}
+@media (min-width:520px) and (max-width:1099.98px){
+  .sdt-wt,.sdt-bt{flex-direction:row;align-items:center;gap:var(--s4)}.sdt-wt>.sdt-tx,.sdt-bt>.sdt-tx{flex:0 0 38%}
+  .sdt-wt .sdt-pic,.sdt-bt .sdt-vs{flex:1;margin:0;padding:0}.sdt-wt .sdt-acts,.sdt-wt .wt-sure{flex-basis:100%}}
+@media (max-width:519.98px){.sdt-side{--cap:64px}.sdt-six .np-mon{--iw:56px}.sdt-blk b{font-size:var(--t20)}}
+@media (max-width:419.98px){.sdt-sm .sdt-t{font-size:var(--t17)}}
+@media (max-width:379.98px){.sdt-spe{font-size:var(--t20)}.sdt-run .sdt-mn{font-size:var(--t13)}.sdt-big{width:46%}}
+
+/* More tools (lead, Nov 18): the six tools without a plate, one quiet row of links */
+.sdt-more{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s5);margin-top:var(--s8);padding-top:var(--s4);border-top:1px solid var(--rule)}
+.sdt-mh{font:700 var(--t15)/1.3 var(--b);color:var(--ink)}
+.sdt-of{display:none}
+.sdt-more ul{display:flex;flex-wrap:wrap;gap:0 var(--s5)}
+.sdt-more .np-link{display:inline-block;min-height:var(--tap);padding-top:var(--s3)}
+
+/* a names line for pictures too narrow to name each Pokémon (the buttons keep their spoken names) */
+.sdt-cc{display:none;margin-top:var(--s1);font:700 var(--t13)/1.3 var(--b);text-align:center}
+/* below 1380 the plates are too narrow for a name under each of the six and the Battle four: the six's caption and the description name them */
+@media (max-width:1379.98px){.sdt-six .sdt-mn{display:none}.sdt-spe{font-size:var(--t28)}}
+@media (max-width:1439.98px){.sdt-side .sdt-mn{display:none}}
+@media (min-width:700px) and (max-width:899.98px){.sdt-types{grid-template-columns:repeat(6,minmax(0,1fr))}}
+@media (max-width:699.98px){.sdt-core .sdt-mn{display:none}.sdt-core~.sdt-cc{display:block}}
+@media (max-width:419.98px){.sdt-duel .sdt-mn{display:none}.sdt-duel~.sdt-cc{display:block}}
+/* the narrowest phones: Ratings, Damage Calc and the small plates one to a row (their titles don't fit a half) */
+@media (max-width:379.98px){.sdt-spe{font-size:var(--t20)}.sdt-ra,.sdt-dc,.sdt-sm{grid-column:1/-1}.sdt-sm .sdt-t{font-size:var(--t22)}.sdt-pod{max-width:280px;margin-inline:auto;width:100%}}
+@media (max-width:379.98px){.sdt-tc{padding-inline:calc(var(--s2) + var(--k))}.sdt-types{column-gap:2px}.sdt-flag>span{letter-spacing:-.02em}}
+/* More tools in even rows: one row on desktop, 3 by 2 on tablets, 2 by 3 on phones (no lone link) */
+@media (max-width:1099.98px){.sdt-more{display:block}.sdt-more ul{display:grid;grid-template-columns:repeat(3,max-content);gap:0 var(--s6)}}
+@media (max-width:519.98px){.sdt-more ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s4)}}
+
+/* ---- Shorter phone Home, Tools B (Sim, Nov 18; docs/rebuild/short-home-options.md, toolsA/toolsB as built there): under 700, six big
+   plates (Speed Tiers a full-width strip; Ratings | Damage Calc; Battle | Team Preview Practice; Winning Teams a full-width strip) and
+   six picture chips (Type Chart, Winning Cores, Archetypes, Popular Sets, Events, How We Calculate), then More tools ---- */
+.sdt-chips{display:none}
+/* iPads too (Sim, Nov 18: A): twelve plates made Home on an iPad (8,180px at 820) longer than on a phone, so under 1100 Tools B */
+@media (max-width:1099.98px){
+  .sd-tools.sd-band{padding-top:calc(var(--s10) + var(--sd-cut))}
+  .sdt-h{margin-bottom:var(--s2)}.sdt-desc{margin-bottom:var(--s3)}
+  .sdt-grid{gap:var(--s3)}
+  .sdt-p{padding:var(--s3) calc(var(--s3) + var(--k))}
+  .sdt-t{font-size:var(--t17);line-height:1.2}
+  .sdt-ra .sdt-t,.sdt-dc .sdt-t{font-size:var(--t15)}
+  .sdt-d{font-size:var(--t13);line-height:1.5}
+  /* the six that become chips leave the grid on phones */
+  .sdt-tc,.sdt-grid>.sdt-sm:not(.sdt-pr),.sdt-ends{display:none}
+  /* order: Speed, Ratings, Damage Calc, Battle, Practice, then Winning Teams */
+  .sdt-pr{order:8}.sdt-wt{order:9}
+  /* the race: four runners, shorter, still breaking out of the blue strip */
+  .sdt-speed{margin-top:var(--s8);padding-block:var(--s2) var(--s3)}
+  .sdt-speed .sdt-t{font-size:var(--t20)}
+  .sdt-race{margin-top:calc(var(--s8) * -1)}
+  .sdt-run .np-mon .st{--iw:60px}.sdt-spe{font-size:var(--t22);margin-top:0}.sdt-run .sdt-mn{min-height:0;margin-top:0}
+  .sdt-speed .sdt-tx{padding-bottom:0}
+  /* Ratings | Damage Calc: half tiles, the picture on top (64px), the name, one short line */
+  .sdt-ra,.sdt-dc{grid-column:span 6;margin-top:0;display:flex;flex-direction:column;row-gap:var(--s2)}
+  .sdt-ra>:last-child,.sdt-dc>:last-child{order:-1;flex:0 0 64px;height:64px;margin:0;padding:0;align-self:stretch}
+  .sdt-ra .sdt-tx,.sdt-dc .sdt-tx{margin-top:auto}
+  /* Battle and Practice: full-width strips (as Winning Teams), so their sprites keep the size they need (polish: as half tiles Battle's
+     four were 40-52px and crossed the VS, Practice's six 25-35px) */
+  .sdt-bt,.sdt-pr{grid-column:1/-1;margin-top:0}
+  /* Ratings: the podium, small */
+  .sdt-pod{margin:0;align-items:end}.sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:40px}
+  .sdt-blk{min-height:var(--s4);padding:0}.sdt-step.s1 .sdt-blk{min-height:var(--s6)}.sdt-step.s2 .sdt-blk,.sdt-step.s3 .sdt-blk{min-height:var(--s4)}.sdt-blk b{font-size:var(--t13)}
+  /* Damage Calc: the health bar over the duel */
+  .sdt-hit{margin:0;gap:var(--s1);align-content:end}.sdt-hpw,.sdt-hit .sdt-cc{display:none}.sdt-hp{justify-self:stretch;width:100%;height:var(--s2)}.sdt-duel .np-mon{--iw:52px}.sdt-duel .sdt-m{min-height:0}
+  /* Practice: the words left, the team preview right (three by two, 48px), as Battle's strip */
+  .sdt-pr{display:flex;flex-direction:row;align-items:center;gap:var(--s4)}.sdt-pr>.sdt-tx{flex:1 1 0;min-width:0;margin:0}.sdt-pr>.sdt-pp{order:2;flex:0 0 auto;margin:0}
+  .sdt-pp{gap:var(--s1)}.sdt-pp6{row-gap:0;column-gap:var(--s1)}.sdt-pp6 .np-mon{--iw:48px}.sdt-pick{font-size:var(--t13);padding:0 var(--s2)}
+  /* Winning Teams: a full-width strip, the six in one row, the two buttons on one line */
+  .sdt-wt{grid-column:1/-1;margin-top:0;display:flex;flex-direction:column}
+  .sdt-wt .sdt-pic{order:-1;padding:0 0 var(--s2)}.sdt-six{grid-template-columns:repeat(6,minmax(0,1fr))}.sdt-six .np-mon{--iw:52px}.sdt-cap{display:none}
+  .sdt-wt .sdt-tx{order:1}.sdt-acts{order:2;flex-direction:row;gap:0 var(--s5)}
+  /* the six chips, two by three, each the same size */
+  .sdt-chips{display:block;margin-top:var(--s5)}
+  .sdt-chips ul{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-auto-rows:1fr;gap:var(--s2) var(--s3);margin:0;padding:0;list-style:none}
+  .sdt-chp{display:flex;align-items:center;gap:var(--s2);min-height:52px;height:100%;padding:var(--s1) var(--s3) var(--s1) var(--s4);background:var(--sd-card);color:var(--sd-card-ink);text-decoration:none;
+    clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+  .sdt-chp:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+  .sdt-chp>b{min-width:0;font:700 var(--t15)/1.25 var(--b)}
+  .sdt-cpic{flex:0 0 40px;display:flex;align-items:center;justify-content:center;min-height:40px}
+  .sdt-cpic .np-mon{--iw:40px;width:40px}.sdt-cpic .np-mon .st{width:40px}
+  .sdt-cpic>b{font-size:var(--t13);color:var(--plot-text);white-space:nowrap}
+  .sdt-cty{display:grid;grid-template-columns:repeat(3,12px);gap:2px}.sdt-cty i{display:block;height:12px;background:var(--ty)}
+  :root[data-theme="night"] .sdt-cty i{box-shadow:0 0 0 1px var(--sd-flag-rim)}
+  .sdt-more{margin-top:var(--s4);padding-top:var(--s1)}
+}
+@media (max-width:379.98px){.sdt-ra,.sdt-dc{grid-column:span 6}.sdt-pod{max-width:none}.sdt-pp6 .np-mon{--iw:44px}.sdt-chp>b{font-size:var(--t13)}
+  .sdt-chp{gap:var(--s1);padding-inline:var(--s3) var(--s2)}.sdt-cpic{flex-basis:32px}.sdt-cpic .np-mon,.sdt-cpic .np-mon .st{--iw:32px;width:32px}}
+/* Q29 A (Sim, Nov 19): under 360 the longer 'Damage Calculator' doesn't fit a half tile; Ratings and Damage Calculator one per row,
+   and Team Preview Practice puts its title above its six (as Battle does), so every title and the Ratings numbers show whole */
+@media (max-width:359.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-dc{grid-column:1/-1}}
+/* Nov 23 (hJ, HH's design authority): on phones the Ratings podium's sprites stood flush on their plates, so a sprite whose art ends in a
+   flat cut (Kingambit's rock) and its glow read as cropped by the plate. Each sprite is lifted 4px clear of its plate and the top plates go
+   24 -> 20px, so the podium keeps its 64px picture row: 40 sprite + 4 + 20 plate (the 16px #3 plate stays lower, still a podium) */
+@media (max-width:699.98px){.sdt-step .np-mon{margin-bottom:var(--s1)}.sdt-step.s1 .sdt-blk{min-height:var(--s5)}}
+/* Practice's 22px title (under 380) didn't fit beside its six at 360-379 either ('Preview' under the sprites): title above, the same A look */
+@media (max-width:379.98px){.sdt-grid>.sdt-pr{flex-direction:column;align-items:stretch}.sdt-grid>.sdt-pr>.sdt-pp{order:2;align-self:center}}
+/* iPads (700-1099), Sim Nov 18 ('the iPad loadout is too plain', took the recommendation): the six big plates of the phone layout, then
+   no chips: the Type Chart as a strip (words left, the 18 flags 6 by 3), Winning Cores | Archetypes | Popular Sets as three picture
+   plates, and Events and How We Calculate as their two number rows. Ratings and Damage Calc pictures 96px tall (the half tiles are wide) */
+@media (min-width:700px) and (max-width:1099.98px){.sdt-chips{display:none}
+  .sdt-tc{display:flex;flex-direction:row;align-items:center;gap:var(--s6);grid-column:1/-1;order:10}
+  .sdt-tc>.sdt-tx{flex:0 0 30%}.sdt-tc .sdt-types{flex:1;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2);margin:0}
+  .sdt-grid>.sdt-sm:not(.sdt-pr){display:flex;grid-column:span 4;order:11;margin-top:var(--s10)}
+  .sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}
+  .sdt-ends{display:grid}
+  .sdt-ra>:last-child,.sdt-dc>:last-child{flex-basis:96px;height:96px}.sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:60px}.sdt-duel .np-mon{--iw:76px}}
+/* 700-899: the Type Chart strip's words above its flags (beside them, the flag names were cut: "Norma", "Fightin") */
+@media (min-width:700px) and (max-width:899.98px){.sdt-tc{flex-direction:column;align-items:stretch;gap:var(--s3)}.sdt-tc>.sdt-tx{flex:none}}
+@media (max-width:1099.98px){.sdt-cpic>b:only-child{flex:none}.sdt-chp:has(.sdt-cpic>b){padding-left:var(--s3)}.sdt-chp:has(.sdt-cpic>b) .sdt-cpic{flex:0 0 auto;min-width:40px}}
+
+/* 1100-1379: Popular Sets stacks its item under the name (the plate is narrow) */
+@media (min-width:1100px) and (max-width:1379.98px){.sdt-set .sdt-m{flex-direction:column;align-items:center;text-align:center;gap:var(--s1)}.sdt-si{align-items:center;padding:0}}
+
+/* ---- Q72 C (Sim chose the recommended option, Nov 20, 8:17 AM; docs/rebuild/research/audit-nov20-options.md section C): Home on
+   iPads and small laptops. 700-1099: the Events row loses its card padding and both big numbers get one 280px column, so the Events
+   and How We Calculate titles share one left edge; the six More tools links in one row spread across the full width. 700-1279: the
+   headline breaks after "herd." ("Twelve tools." whole on line 2, as phones), not "Same herd. Twelve / tools." ---- */
+@media (min-width:700px) and (max-width:1099.98px){.sdt-end.ev{padding-left:0}.sdt-big{width:280px}
+  .sdt-more ul{display:flex;justify-content:space-between;gap:0 var(--s4)}}
+@media (min-width:700px) and (max-width:1279.98px){.sdt-h span{display:block}}
+/* Team Preview Practice's chip shows only on the desktop rack below (under 1100 Practice keeps its own plate) */
+.sdt-chips li.sdt-chd,.sdt-chips li.sdt-chs,.sdt-chips li.sdt-chw{display:none}
+/* ---- Home length (Nov 23, direction for Sim): the desktop rack, 1100 and wider. Tools B (the phone and iPad layout Sim chose, Nov 18)
+   laid out for a wide screen: the Speed Tiers race, then Ratings, Damage Calc, Winning Teams and Battle in one row with their short lines,
+   then the other seven tools as picture chips in one row (Practice joins them here), then More tools ---- */
+@media (min-width:1100px){
+  .sdt-tc,.sdt-grid>.sdt-sm,.sdt-ends{display:none}
+  .sdt-grid{gap:var(--s5)}
+  .sdt-ra,.sdt-dc,.sdt-wt,.sdt-bt{grid-column:span 3;display:flex;flex-direction:column;row-gap:var(--s3)}.sdt-dc{grid-column:span 2}.sdt-wt{grid-column:span 4}
+  /* each of the four: its picture on top in one 96px stage, then the name and its short line (as the iPad tiles) */
+  .sdt-ra>:last-child,.sdt-dc>:last-child,.sdt-wt>.sdt-pic,.sdt-bt>.sdt-vs{order:-1;flex:0 0 96px;height:96px;margin:0;padding:0;align-self:stretch}
+  .sdt-wt>.sdt-tx{margin-top:0}.sdt-acts{flex-direction:row;flex-wrap:wrap;gap:0 var(--s5)}
+  .sdt-ra .sdt-t,.sdt-dc .sdt-t,.sdt-wt .sdt-t,.sdt-bt .sdt-t{font-size:var(--t22);line-height:1.2}
+  .sdt-pod{align-items:end}.sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:56px}
+  .sdt-blk{min-height:var(--s5);padding:0}.sdt-step.s1 .sdt-blk{min-height:var(--s8)}.sdt-blk b{font-size:var(--t15)}.sdt-blk small,.sdt-step .sdt-mn{display:none}
+  .sdt-hit{margin:0;gap:var(--s1);align-content:end}.sdt-hpw,.sdt-hit .sdt-cc{display:none}.sdt-hp{justify-self:stretch;width:100%;height:var(--s2)}.sdt-duel .np-mon{--iw:64px}.sdt-duel .sdt-m{min-height:0}
+  .sdt-wt .sdt-pic{display:flex;align-items:flex-end}.sdt-six{width:100%}.sdt-six .np-mon{--iw:40px}.sdt-six .sdt-mn,.sdt-cap{display:none}
+  .sdt-vs{grid-template-columns:minmax(0,1fr) 40px minmax(0,1fr)}.sdt-side{--cap:56px;padding-top:0}.sdt-side .sdt-mn{display:none}
+  .sdt-ra .sdt-l,.sdt-dc .sdt-l,.sdt-bt .sdt-l{display:none}.sdt-ra .sdt-s,.sdt-dc .sdt-s,.sdt-bt .sdt-s{display:inline}
+  /* Winning Teams keeps its long line on desktop: which event the six won, when, players and record (HOME-09; Home B hid it, Nov 23) */
+  .sdt-chips{display:block;margin-top:var(--s5)}
+  .sdt-chips ul{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));grid-auto-rows:1fr;gap:var(--s3);margin:0;padding:0;list-style:none}
+  .sdt-chips li.sdt-chs,.sdt-chips li.sdt-chw{display:block}.sdt-chips li.sdt-chd,.sdt-chips li.sdt-cha{display:none}
+  .sdt-chp{display:flex;align-items:center;gap:var(--s2);min-height:56px;height:100%;padding:var(--s1) var(--s3) var(--s1) var(--s4);background:var(--sd-card);color:var(--sd-card-ink);text-decoration:none;
+    clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+  .sdt-chp:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+  .sdt-chp>b{min-width:0;font:700 var(--t15)/1.25 var(--b)}
+  .sdt-cpic{flex:0 0 40px;display:flex;align-items:center;justify-content:center;min-height:40px}
+  .sdt-cpic .np-mon{--iw:40px;width:40px}.sdt-cpic .np-mon .st{width:40px}
+  .sdt-cpic>b{font-size:var(--t13);color:var(--plot-text);white-space:nowrap}
+  .sdt-cty{display:grid;grid-template-columns:repeat(3,12px);gap:2px}.sdt-cty i{display:block;height:12px;background:var(--ty)}
+  .sdt-more{margin-top:var(--s3)}
+  .sdt-speed{margin-top:var(--s10)}.sdt-chips{margin-top:var(--s3)}.sdt-more{margin-top:var(--s2)}
+}
+
+/* ---- Home tools (Sim, Nov 23: "speed tiers is cool but not cool enough to be the biggest box"; he chose A and asked for more WOW on the
+   calc). 1100 and wider: the Damage Calculator is the band, a real hit landing (the site's own calc of the #1 rated into the #2 rated):
+   the attacker in speed streaks, the brand chevron as the strike, the defender in the flash, the damage as a huge slanted number over
+   the HP bar. Then four big white cards (Ratings, Battle, Archetypes, Team Preview Practice), each Pokémon picture standing on a
+   slanted ground in its tool's colour (no black cards: Sim, "it looks like its missing its background"). Speed Tiers and Winning
+   Teams join the chips ---- */
+@media (min-width:1100px){
+  .sdt-grid>.sdt-speed{display:none}
+  .sdt-grid>.sdt-dc{--k:24px;order:-5;grid-column:1/-1;display:grid;grid-template-columns:minmax(200px,260px) minmax(0,1fr);align-items:end;column-gap:var(--s10);
+    margin-top:var(--s4);padding:var(--s4) calc(var(--s10) + var(--k)) var(--s4) calc(var(--s12) + var(--k));color:var(--sd-on-band)}
+  .sdt-desc{margin-bottom:var(--s3)}
+  .sdt-grid>.sdt-dc::before{background:var(--sd-flag)}
+  .sdt-grid>.sdt-dc .sdt-tx{align-self:center}
+  .sdt-grid>.sdt-dc .sdt-t{font-size:var(--t34);line-height:1.05}
+  .sdt-grid>.sdt-dc .sdt-d{color:var(--sd-on-band)}
+  .sdt-grid>.sdt-dc>.sdt-hit{order:0;flex:none;height:auto;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.2fr);grid-template-areas:"duel words" "duel bar";
+    align-items:end;column-gap:var(--s8);row-gap:var(--s3);margin:0}
+  /* the duel: sprites break out of the band's top; the attacker runs in streaks, the chevron strikes, the defender stands in the flash */
+  .sdt-grid>.sdt-dc .sdt-duel{position:relative;grid-area:duel;grid-template-columns:minmax(0,1fr) var(--s16) minmax(0,1fr);align-items:end;margin-top:calc(var(--s24) * -1)}
+  .sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:152px}
+  .sdt-grid>.sdt-dc .sdt-duel::before{content:"";position:absolute;left:-12%;width:58%;bottom:var(--s8);height:56%;z-index:0;
+    background:repeating-linear-gradient(180deg,var(--sd-streak) 0 2px,transparent 2px var(--s4));clip-path:polygon(16% 0,100% 0,84% 100%,0 100%)}
+  .sdt-grid>.sdt-dc .sdt-m{z-index:2}
+  .sdt-grid>.sdt-dc .def::before{content:"";position:absolute;inset:8% -14% 18%;z-index:-1;background:var(--sd-speed);clip-path:polygon(30% 0,100% 12%,72% 100%,0 86%)}
+  .sdt-grid>.sdt-dc .sdt-strike{align-self:center;width:var(--s16);height:var(--s12);background:var(--sd-on-band);clip-path:polygon(0 0,40% 0,100% 50%,40% 100%,0 100%,60% 50%)}
+  .sdt-grid>.sdt-dc .sdt-mn{display:block;margin-top:var(--s2);color:var(--sd-on-band);font-size:var(--t15)}
+  .sdt-grid>.sdt-dc .sdt-hpw{display:block;grid-area:words;justify-self:start;color:var(--sd-on-band);font:400 var(--t17)/1.3 var(--b)}
+  .sdt-grid>.sdt-dc .sdt-hpw b{display:inline-block;margin-bottom:var(--s2);padding:var(--s1) var(--s3);background:var(--sd-ink);color:var(--sd-on-band);font:700 var(--t15)/1.3 var(--b);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+  .sdt-grid>.sdt-dc .sdt-pct{display:block;font:800 var(--d-calc)/1 var(--u);font-style:italic;font-synthesis:style;letter-spacing:-.02em;white-space:nowrap}
+  .sdt-grid>.sdt-dc .sdt-hp{grid-area:bar;justify-self:stretch;width:100%;height:var(--s8);margin-bottom:var(--s3);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+  .sdt-grid>.sdt-dc .sdt-cc,.sdt-grid>.sdt-dc .sdt-s{display:none}.sdt-grid>.sdt-dc .sdt-l{display:inline}
+  /* the four big cards, white, each picture on its ground */
+  .sdt-grid>.sdt-wt{display:none}
+  .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{grid-column:span 3;display:flex;flex-direction:column;row-gap:var(--s3);margin-top:var(--s5)}
+  .sdt-grid>.sdt-ink{color:var(--sd-card-ink)}.sdt-grid>.sdt-ink::before{background:var(--sd-card)}.sdt-grid>.sdt-ink .sdt-d{color:var(--sd-card-ink2)}
+  :root[data-theme="night"] .sdt-grid>.sdt-ink::after{background:var(--sd-card-shade);inset:0;translate:var(--s2) var(--s2)}
+  .sdt-ra>.sdt-pod,.sdt-bt>.sdt-vs,.sdt-pr>.sdt-pp,.sdt-ar>.sdt-wx{order:-1;position:relative;isolation:isolate;flex:0 0 128px;height:128px;margin:calc(var(--s12) * -1) 0 var(--s1);padding:0 var(--s2) var(--s3);align-self:stretch;align-items:end;flex-basis:116px;height:116px}
+  .sdt-ra>.sdt-pod::before,.sdt-bt>.sdt-vs::before,.sdt-pr>.sdt-pp::before,.sdt-ar>.sdt-wx::before{content:"";position:absolute;left:calc(var(--s2) * -1);right:calc(var(--s2) * -1);bottom:0;height:52px;z-index:-1;
+    background:var(--stage);clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+  .sdt-ra{--stage:var(--sd-race)}.sdt-bt{--stage:var(--sd-them)}.sdt-pr{--stage:var(--sd-flag)}.sdt-ar{--stage:var(--ty-Flying)}
+  .sdt-step .np-mon,.sdt-step.s1 .np-mon{--iw:60px}.sdt-blk small,.sdt-step .sdt-mn{display:none}
+  /* design critique (Nov 23, recognition over recall): the podium keeps each Pokémon's name under its number, narrow letters to fit */
+  .sdt-ra .sdt-blk>span{display:block;font:700 var(--t13)/1.2 var(--b);font-stretch:75%;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+  /* and the big damage number says whose HP it is */
+  .sdt-grid>.sdt-dc .sdt-of{display:block;margin-top:var(--s1);font:700 var(--t17)/1.3 var(--b)}
+  /* Battle on desktop: one of yours against one of theirs, big (four sprites in a quarter-width card came out 26-50px) */
+  .sdt-bt .sdt-side{--cap:88px;--bw:min(var(--cap),calc((100cqi - var(--s10)) / 2));grid-template-columns:minmax(0,1fr);padding-top:0}.sdt-bt .sdt-side .sdt-m+.sdt-m{display:none}.sdt-bt .sdt-side .np-mon .st{margin-left:auto;margin-right:auto;translate:none}.sdt-bt .sdt-vs{grid-template-columns:minmax(0,1fr) var(--s8) minmax(0,1fr)}.sdt-bt .sdt-side .sdt-mn{display:none}
+  .sdt-pr .sdt-pp{flex:0 0 116px;justify-content:flex-end;gap:0}
+  /* Team Preview Practice as a real team preview (Sim, Nov 23: 'looks rough'): the six in one row standing on the red ground, 'Pick 4' above */
+  .sdt-pr .sdt-pp{align-items:stretch}.sdt-pr .sdt-pp6{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:0;row-gap:0;width:auto;margin-inline:calc(var(--s3) * -1)}.sdt-pr .sdt-pp6 .np-mon{--iw:72px}
+  .sdt-pr .sdt-pp6>.sdt-art:nth-child(-n+3){margin-bottom:calc(var(--s8) * -1);translate:var(--s4) 0}.sdt-pr .sdt-pp6{margin-inline:calc(var(--s3) * -1) var(--s2)}
+  .sdt-pr .sdt-pick{position:absolute;bottom:var(--s3);right:var(--s1);z-index:2;font-size:var(--t15)}
+  /* Load Team and Copy for Showdown leave Home on desktop (Sim, Nov 23: Winning Teams is a chip there; they stay on the Winning Teams
+     page, and phones and iPads keep the Winning Teams plate with both) */
+
+  .sdt-ar .sdt-wx{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.sdt-ar .sdt-wxi{display:flex;flex-direction:column;align-items:center;gap:var(--s1)}.sdt-ar .sdt-art .np-mon{--iw:88px}
+  .sdt-grid>.sdt-ar .sdt-tx,.sdt-grid>.sdt-pr .sdt-tx{margin-top:0}
+  .sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t24);line-height:1.1}
+  .sdt-ra .sdt-l,.sdt-bt .sdt-l,.sdt-pr .sdt-l,.sdt-ar .sdt-l{display:none}.sdt-ra .sdt-s,.sdt-bt .sdt-s,.sdt-pr .sdt-s,.sdt-ar .sdt-s{display:inline}
+  .sdt-chips ul{grid-template-columns:repeat(7,minmax(0,1fr))}.sdt-chips{margin-top:var(--s4)}
+}
+/* hP4 Nov 24: 1100-1279 keeps the seven chips in one row (was 4 + 3, one empty slot): picture over name, so each fits a seventh */
+@media (min-width:1100px) and (max-width:1279.98px){.sdt-chp{flex-direction:column;justify-content:center;gap:var(--s1);padding:var(--s2) var(--s3);text-align:center}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:136px}.sdt-grid>.sdt-dc{column-gap:var(--s6)}}
+@media (min-width:1100px) and (max-width:1365.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{padding-inline:calc(var(--s3) + var(--k))}.sdt-grid{column-gap:var(--s4)}} /* narrower card padding so Battle's two stand 56px+ */

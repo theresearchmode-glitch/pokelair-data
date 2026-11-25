@@ -1,0 +1,120 @@
+{
+ "ran": "2026-11-11T04:39:26.494Z",
+ "out": {
+  "home": {
+   "phone": 3732,
+   "ipad": 5099,
+   "desktop": 3980
+  },
+  "report": {
+   "phone": 4458,
+   "ipad": 4644,
+   "desktop": 3445
+  },
+  "auto": {
+   "phone": 3178,
+   "ipad": 2270,
+   "desktop": 1947
+  },
+  "coverage": {
+   "phone": 1769,
+   "ipad": 1553,
+   "desktop": 1550
+  },
+  "teams": {
+   "phone": 1344,
+   "ipad": 1180,
+   "desktop": 1129
+  },
+  "compare": {
+   "phone": 2464,
+   "ipad": 1898,
+   "desktop": 1798
+  },
+  "box": {
+   "phone": 1407,
+   "ipad": 1257,
+   "desktop": 1203
+  },
+  "matchup": {
+   "phone": 2743,
+   "ipad": 2418,
+   "desktop": 1926
+  },
+  "practice": {
+   "phone": 1418,
+   "ipad": 1180,
+   "desktop": 1118
+  },
+  "gauntlet": {
+   "phone": 3034,
+   "ipad": 2436,
+   "desktop": 2474
+  },
+  "speed": {
+   "phone": 2321,
+   "ipad": 1972,
+   "desktop": 1922
+  },
+  "calc": {
+   "phone": 3170,
+   "ipad": 2733,
+   "desktop": 2261
+  },
+  "types": {
+   "phone": 3105,
+   "ipad": 2391,
+   "desktop": 1856
+  },
+  "weekly": {
+   "phone": 4724,
+   "ipad": 3647,
+   "desktop": 3361
+  },
+  "ratings": {
+   "phone": 3064,
+   "ipad": 2441,
+   "desktop": 2379
+  },
+  "meta": {
+   "phone": 2136,
+   "ipad": 2017,
+   "desktop": 2086
+  },
+  "sets": {
+   "phone": 2877,
+   "ipad": 2204,
+   "desktop": 2224
+  },
+  "top": {
+   "phone": 3755,
+   "ipad": 2846,
+   "desktop": 2790
+  },
+  "events": {
+   "phone": 3982,
+   "ipad": 3508,
+   "desktop": 2607
+  },
+  "arch": {
+   "phone": 2360,
+   "ipad": 2280,
+   "desktop": 2259
+  },
+  "track": {
+   "phone": 3159,
+   "ipad": 2622,
+   "desktop": 2744
+  },
+  "method": {
+   "phone": 2997,
+   "ipad": 2270,
+   "desktop": 2238
+  },
+  "about": {
+   "phone": 1955,
+   "ipad": 1603,
+   "desktop": 1611
+  }
+ }
+}

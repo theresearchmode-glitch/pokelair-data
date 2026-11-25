@@ -16,7 +16,7 @@ function teamCode() {
   if (!s.length) return '';
   const loaded = S.teams.find(t => t.id === S.loadedId), o = {v: 1, f, s}; if (loaded && loaded.name) o.n = String(loaded.name).slice(0, 60);
   return tlB64(JSON.stringify(o)); }
-function teamLinkBase() { try { const h = location.hostname; if (/^https?:$/.test(location.protocol) && h && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) && h !== 'localhost' && h !== '127.0.0.1') return location.origin + location.pathname; } catch (e) {} return TL_ART; }
+function teamLinkBase() { try { const h = location.hostname; if (/^https?:$/.test(location.protocol) && h && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) && h !== 'localhost' && h !== '127.0.0.1') return location.origin + location.pathname; } catch (e) {} return window.__NP_PUBLIC ? 'https://nastyplot.org/' : TL_ART; }
 function teamLink() { const c = teamCode(); return c ? teamLinkBase() + '#team=' + c : ''; }
 // accepts a full link, "team=<code>" or the bare code; returns {f, n, slots} or null
 function decodeTeam(text) {
@@ -37,13 +37,18 @@ function decodeTeam(text) {
       ...(it ? {it: {[f]: it}} : {}), ...(spOf(r[4]) ? {sp: {[f]: spOf(r[4])}} : {})}; }).filter(Boolean);
   if (!slots.length) return null;
   return {f, n: typeof o.n === 'string' ? o.n.slice(0, 60) : '', slots}; }
-function applyShared(x) { keepUndo(); S.slots = normSlots(x.slots); S.loadedId = null; ui.paste = null; render(); setView('build');
+// the data step of opening a shared team (the new build calls it too; R4 Nov 11)
+function loadShared(x) { keepUndo(); S.slots = normSlots(x.slots); S.loadedId = null; ui.paste = null; }
+function applyShared(x) { loadShared(x); render(); setView('build');
   toast(`Loaded ${x.n ? '“' + x.n + '”' : 'a shared team'} (${x.slots.length} Pokémon)`, true); }
 async function copyTeamLink(btn) { const l = teamLink(); if (!l) { toast('Add some Pokémon first'); return; }
   let ok = false; try { await navigator.clipboard.writeText(l); ok = true; } catch (e) {}
   if (!ok) { try { const ta = document.createElement('textarea'); ta.value = l; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e) {} }
   if (ok) toast('Team link copied'); else { const msg = $('shareMsg'); if (msg) msg.textContent = l; toast('Copy the link shown below'); }
-  if (btn) { const t = btn.textContent; btn.textContent = ok ? 'Copied' : t; setTimeout(() => { btn.textContent = t; }, 1600); } }
+  // code review B5: the label is kept once (a second tap inside 1.6 s no longer saves 'Copied' as the label), and only the text
+  // inside the button's <span> changes, so its markup survives
+  if (btn && ok) { const el = btn.querySelector('span') || btn; if (btn.dataset.lbl == null) btn.dataset.lbl = el.textContent; el.textContent = 'Copied';
+    clearTimeout(btn._cpT); btn._cpT = setTimeout(() => { el.textContent = btn.dataset.lbl; delete btn.dataset.lbl; }, 1600); } }
 // a link opened directly: ask before replacing the current team
 function checkSharedLink() { let raw = ''; try { raw = (location.hash || '') + ' ' + (location.search || ''); } catch (e) {}
   const x = decodeTeam(raw); if (!x) return;
@@ -61,11 +66,11 @@ function boxLink() { const c = boxCode(); return c ? teamLinkBase() + '#box=' + 
 function decodeBox(text) { const t = String(text || '').trim(); if (!t) return null;
   const m = t.match(/box=([A-Za-z0-9_-]{8,})/) || (/^[A-Za-z0-9_-]{12,}$/.test(t) ? [0, t] : null); if (!m) return null;
   let o; try { o = JSON.parse(tlUnB64(m[1])); } catch (e) { return null; } if (!o || o.v !== 1 || !Array.isArray(o.b)) return null;
-  const seen = new Set(), out = []; for (const n of o.b.slice(0, 400)) { const p = typeof n === 'string' && byName.get(n); if (!p || p.m || seen.has(p.n)) continue; seen.add(p.n); out.push(p.n); }
-  return {names: out, skipped: o.b.length - out.length}; }
-async function copyText(t) { let ok = false; try { await navigator.clipboard.writeText(t); ok = true; } catch (e) {}
-  if (!ok) { try { const ta = document.createElement('textarea'); ta.value = t; ta.style.position = 'fixed'; ta.style.opacity = '0'; document.body.appendChild(ta); ta.select(); ok = document.execCommand('copy'); ta.remove(); } catch (e) {} }
-  return ok; }
+  // code review C8: 'skipped' counts only Pokémon this regulation doesn't have (it counted duplicates and Megas too, which aren't
+  // left out: a Mega is owned as its base form, and a repeat is the same Pokémon)
+  const seen = new Set(), out = []; let gone = 0; for (const n of o.b.slice(0, 400)) { const p = typeof n === 'string' && byName.get(n); if (!p) { gone++; continue; } const q = p.m ? (byName.get(p.b) || p) : p; if (q.m || seen.has(q.n)) continue; seen.add(q.n); out.push(q.n); }
+  return {names: out, skipped: gone}; }
+// copyText: moved to 06-helpers.js (R4, Nov 11; shared with the rebuild)
 function applyBox(x, mode) { ui.boxUndo = S.box.slice(); const before = S.box.length;
   if (mode === 'replace') S.box = x.names.slice(); else { const have = new Set(S.box); for (const n of x.names) if (!have.has(n)) S.box.push(n); }
   render(); const added = mode === 'replace' ? S.box.length : S.box.length - before;
@@ -77,7 +82,7 @@ document.addEventListener('click', async e => { const b = e.target && e.target.c
   if (b.id === 'boxLinkOpen') { const p = $('boxLinkIn'); if (!p) return; p.hidden = !p.hidden; b.setAttribute('aria-expanded', String(!p.hidden)); if (!p.hidden) { const f = $('boxLinkField'); if (f) f.focus(); } return; }
   const f = $('boxLinkField'), x = decodeBox(f && f.value);
   if (!x || !x.names.length) { if (msg) msg.textContent = 'That doesn’t look like a box link. Copy it again with Copy box link, then paste the whole thing.'; return; }
-  applyBox(x, b.id === 'boxLinkReplace' ? 'replace' : 'add'); if (f) f.value = ''; if (msg) msg.textContent = x.skipped ? `${x.skipped} Pokémon in that link aren’t in ${typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C'}, so they were left out.` : '';
+  applyBox(x, b.id === 'boxLinkReplace' ? 'replace' : 'add'); if (f) f.value = ''; if (msg) msg.textContent = x.skipped ? `${x.skipped} Pokémon in that link aren’t in ${regName()}, so they were left out.` : '';
   const p = $('boxLinkIn'); if (p && !x.skipped) p.hidden = true; const o = $('boxLinkOpen'); if (o && !x.skipped) o.setAttribute('aria-expanded', 'false'); });
 // a box link opened directly (outside Claude): offer it in the paste box, never applied silently
 function checkBoxLink() { let raw = ''; try { raw = location.hash || ''; } catch (e) {} if (!/box=/.test(raw)) return; const x = decodeBox(raw); if (!x || !x.names.length) return;

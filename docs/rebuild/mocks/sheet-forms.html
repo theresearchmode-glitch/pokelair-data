@@ -1,0 +1,114 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Unbounded:wght@800;900&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<style>
+/* Pokémon info sheet (R2). Every feature of today's sheet (inventory D-meta-shell SHEET-01..07) is here or one tap away.
+   Glass rule (reference set): the sheet is a SOLID surface over the lit page, which is softly blurred, not dimmed dark.
+   Floor rule: Garchomp stands on a pool of its normalised colour. Real numbers from today's site, Nov 11 (Garchomp). */
+html,body{min-height:100%}
+.back{position:fixed;inset:0;background:var(--bg) url("myteam-desktop-light.png") top center/1440px auto no-repeat;filter:blur(14px) saturate(1.1);transform:scale(1.04)}
+:root[data-theme="dusk"] .back{background-image:url("myteam-desktop-dusk.png")}
+.veil{position:fixed;inset:0;background:color-mix(in srgb,var(--bg) 30%,transparent)}
+.sheet{position:relative;z-index:1;margin:48px auto;width:min(1120px,calc(100% - 64px));background:var(--surface);border-radius:var(--r-xl);box-shadow:var(--shadow-lift);
+  display:grid;grid-template-columns:360px minmax(0,1fr);overflow:hidden}
+:root[data-theme="dusk"] .sheet{box-shadow:0 0 0 1px rgba(228,224,236,.08),var(--shadow-lift)}
+.x{position:absolute;top:16px;right:16px;width:44px;height:44px;display:grid;place-items:center;font:600 20px/1 var(--b);color:var(--ink-2);z-index:2}
+/* left: who it is */
+.who{padding:32px;border-right:1px solid var(--rule);display:flex;flex-direction:column}
+.stage{position:relative;height:250px;margin:0 -8px}
+.stage .pool{position:absolute;left:50%;bottom:6px;width:260px;height:48px;transform:translate(-50%,50%);border-radius:50%;
+  background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp),.62),rgba(var(--cp),.28) 55%,transparent)}
+:root[data-theme="dusk"] .stage .pool{background:radial-gradient(closest-side,rgba(var(--cp),.9),rgba(var(--cp),.32) 45%,transparent);filter:blur(1.5px)}
+.stage img{position:relative;display:block;width:250px;height:250px;margin:0 auto;object-fit:contain;object-position:50% 100%;filter:drop-shadow(4px 8px 8px rgba(30,20,50,.18))}
+:root[data-theme="dusk"] .stage img{filter:drop-shadow(0 0 .8px rgba(255,255,255,.6)) drop-shadow(0 -1px 6px rgba(var(--cp),.35))}
+.rate{display:flex;align-items:flex-end;gap:12px;margin-top:16px}.rate b{font:900 64px/.86 var(--u);font-style:italic;letter-spacing:-.04em}
+:root[data-theme="dusk"] .rate b{color:#D6D1CA}
+.rate span{padding-bottom:4px;font:900 20px/1 var(--u);font-style:italic;color:var(--plot-text)}.rate small{display:block;margin-top:4px;font:600 13px/1.3 var(--b);font-style:normal;color:var(--ink-2)}
+.who h1{font-size:34px;margin:16px 0 8px}.types{display:flex;gap:4px}.chip.type{color:#fff}
+.tags{display:flex;gap:8px;margin-top:12px;font:600 13px/1 var(--b);color:var(--good-text)}.tags span::before{content:"✓ ";}
+.nums{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:24px;padding-top:16px;border-top:1px solid var(--rule)}
+.nums b{display:block;font:900 22px/1 var(--u);font-style:italic}.nums b .unit{font-family:var(--b);font-style:normal;font-weight:600}
+.nums small{display:block;margin-top:6px;font:500 13px/1.35 var(--b);color:var(--ink-2)}
+.acts{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:24px}.acts .btn2{white-space:nowrap;padding:0 12px}.acts .btn{grid-column:1/-1;height:48px}.acts .btn2{height:44px}
+.acts .done{color:var(--good-text);border-color:color-mix(in srgb,var(--good-text) 50%,transparent)}
+.acts a{grid-column:1/-1;text-align:center;font:500 13px/1.5 var(--b);color:var(--ink-3);text-decoration:underline}
+/* right: tabs + content */
+.body{padding:24px 32px 32px;min-width:0}
+.tabs{display:flex;gap:32px;border-bottom:1px solid var(--rule);margin-right:48px}
+.tabs a{padding:8px 0 14px;font:700 15px/1.2 var(--b);color:var(--ink-2);position:relative}.tabs a small{display:block;font:500 13px/1.3 var(--b);color:var(--ink-3)}
+.tabs a.on{color:var(--ink)}.tabs a.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
+.cols{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px 40px;margin-top:24px}
+h3{font:900 17px/1.2 var(--u);font-style:italic;margin-bottom:12px}
+.usually p{font-size:15px}.usually .mv{margin-top:8px;display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.usually .mv span{white-space:nowrap;font-stretch:90%;height:36px;display:flex;align-items:center;padding:0 12px 0 14px;font:600 15px/1 var(--b);background:color-mix(in srgb,var(--tc) 16%,var(--wash));border-left:4px solid var(--tc);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.usually a{display:inline-block;margin-top:8px;font:600 15px/1 var(--b);color:var(--plot-text)}
+.bs{display:grid;grid-template-columns:64px 36px minmax(0,1fr);gap:6px 10px;align-items:center;font-size:13px}.bs dt{color:var(--ink-2)}.bs dd{font:700 15px/1 var(--b);text-align:right}
+.bs i{height:10px;background:var(--plot);transform:skewX(var(--slant));width:calc(var(--v)/200*100%)}.bs .tot{font-weight:700;color:var(--ink)}
+.ab p{font-size:13px;color:var(--ink-2);margin:2px 0 10px}.ab b{font:700 15px/1.3 var(--b)}.ab b small{font-weight:500;color:var(--ink-2);margin-left:6px;font-size:13px}
+.note{font:400 13px/1.5 var(--b);color:var(--ink-3)}
+.tm{display:grid;grid-template-columns:96px minmax(0,1fr);gap:8px;align-items:center;font-size:13px;color:var(--ink-2)}.tm div{display:flex;flex-wrap:wrap;gap:4px}
+.sp{margin-top:24px}.sp.band{grid-column:1/-1;margin:0;padding:24px 32px 32px;border-top:1px solid var(--rule)}.sp table{width:100%;border-collapse:collapse}.sp td{padding:10px 0;border-top:1px solid var(--rule);font-size:15px;vertical-align:top}
+.sp td:first-child{font-weight:700;width:34%}.sp td:first-child small{display:block;font:400 13px/1.4 var(--b);color:var(--ink-2)}
+.sp td.n{font:900 20px/1 var(--u);font-style:italic;width:72px}.sp td.o{color:var(--ink-2);text-align:right}
+.sp tr.you td{background:color-mix(in srgb,var(--plot) 8%,transparent)}.sp tr.you td:first-child{box-shadow:inset 4px 0 0 var(--plot);padding-left:12px}
+.foot{display:flex;justify-content:space-between;margin-top:16px;font:600 15px/1 var(--b)}.foot a{color:var(--plot-text)}
+@media (max-width:1023px){.sheet{grid-template-columns:minmax(0,1fr);width:calc(100% - 48px);margin:32px auto}.who{border-right:0;border-bottom:1px solid var(--rule);display:grid;grid-template-columns:240px minmax(0,1fr);column-gap:32px}
+  .who .stage{grid-row:1/span 6;height:240px}.stage img{width:240px;height:240px}.acts{margin-top:24px}.tabs{margin-right:0}}
+@media (max-width:699px){.sp.band{padding:16px}.stage .pool{bottom:44px;width:220px;height:40px}.back,.veil{display:none}body{background:var(--surface)}.sheet{width:100%;margin:0;border-radius:0;box-shadow:none}
+  .who{display:flex;padding:16px}.stage{height:200px}.stage img{width:200px;height:200px}.who h1{font-size:28px}.rate b{font-size:54px}
+  .body{padding:0 16px 32px}.tabs{position:sticky;top:0;background:var(--surface);z-index:2;gap:24px;padding-top:8px}
+  .cols{grid-template-columns:minmax(0,1fr);gap:28px}.sp td.o{text-align:left}.sp table,.sp tbody,.sp tr,.sp td{display:block}.sp tr{display:grid;grid-template-columns:minmax(0,1fr) 64px;padding:10px 0;border-top:1px solid var(--rule)}
+  .sp td{border:0;padding:0}.sp td.o{grid-column:1/-1;font-size:13px;margin-top:4px}.sp td:first-child{width:auto}.sp td.n{width:auto;text-align:right}.x{top:8px;right:8px}}
+/* Forms (Sim, Nov 11): any Pokémon with a Mega can flip between its forms right in the sheet. One tab per form, each with its art
+   on a small floor, its name and its rating; the open form stands on the tilted panel in its own colour (the selection rule).
+   Tapping a form swaps the whole sheet to it (same tab, same scroll). Keyboard: arrow keys move between forms (role=tablist). */
+.forms{margin:0 48px 24px 0;max-width:560px}.fk{display:flex;justify-content:space-between;align-items:baseline}.fk .cmp{font:600 15px/1 var(--b);color:var(--plot-text);letter-spacing:0}@media (max-width:699px){.forms{margin:16px 0 24px;max-width:none}}.fk{font:600 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-2);margin-bottom:8px}
+.fr{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,160px);gap:8px}@media (max-width:699px){.fr{grid-auto-columns:minmax(0,1fr)}}
+.f{position:relative;display:block;text-align:center;padding:6px 2px 8px;border-radius:var(--r-m);min-height:44px}
+.f::before{content:"";position:absolute;left:4px;right:4px;top:8px;height:78px;border-radius:var(--r-m);transform:skewY(-7deg);opacity:0}
+.f.on::before{opacity:1;background:linear-gradient(150deg,rgba(var(--cp),.9),rgba(var(--cp),.55));box-shadow:inset 0 1px 0 rgba(255,255,255,.6),0 8px 14px -6px rgba(30,20,50,.22)}
+:root[data-theme="dusk"] .f.on::before{background:linear-gradient(150deg,rgba(var(--cp),.78),rgba(var(--cp),.34));box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 0 0 1px rgba(var(--cp),.25)}
+.f .fp{position:absolute;left:50%;top:78px;width:64px;height:12px;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,var(--contact),transparent)}
+:root[data-theme="dusk"] .f .fp{background:radial-gradient(closest-side,rgba(214,218,255,.35),transparent)}
+.f img{position:relative;display:block;width:80px;height:80px;margin:0 auto;object-fit:contain;object-position:50% 100%}
+
+.f b{position:relative;display:block;margin-top:6px;font:700 13px/1.25 var(--b);font-stretch:90%}.f b .mg{display:block;font:700 13px/1 var(--b);font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--plot-text)}
+.f small{display:block;margin-top:2px;font:600 13px/1.3 var(--b);color:var(--ink-2)}
+.f.on b{font-weight:800}.f:not(.on) img{opacity:.85}
+.fr .f:first-child b{padding-top:13px}
+.cmpw{margin-top:24px}.cmpt{width:100%;border-collapse:collapse;margin-top:12px;table-layout:fixed}
+.cmpt thead th{vertical-align:bottom;padding:0 8px 12px;text-align:center;font-weight:400}.cmpt thead th:first-child{width:22%}
+.cmpt thead .pk{position:relative;height:96px}.cmpt thead img{position:relative;display:block;width:96px;height:96px;margin:0 auto;object-fit:contain;object-position:50% 100%}
+.cmpt thead .fp{position:absolute;left:50%;bottom:0;width:90px;height:14px;transform:translate(-50%,50%);border-radius:50%;background:radial-gradient(closest-side,var(--contact),transparent)}
+:root[data-theme="dusk"] .cmpt thead .fp{background:radial-gradient(closest-side,rgba(214,218,255,.35),transparent)}
+.cmpt thead b{display:block;margin-top:8px;font:700 15px/1.25 var(--b)}.cmpt thead b .mg{display:block;font:700 13px/1 var(--b);font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--plot-text)}.cmpt .mg0{visibility:hidden}
+.cmpt thead small,.cmpt thead a{display:block;margin-top:4px;font:600 13px/1.3 var(--b);color:var(--plot-text)}.cmpt thead small{color:var(--ink-3)}
+.cmpt tbody th{text-align:left;font:500 13px/1.3 var(--b);color:var(--ink-2);padding:10px 0;border-top:1px solid var(--rule)}
+.cmpt td{text-align:center;padding:10px 8px;border-top:1px solid var(--rule);font:600 15px/1.3 var(--b)}
+.cmpt td.best{color:var(--good-text);font-weight:800}.cmpt td.best::after{content:" ▲";font-size:13px}
+.cmpt thead th.on{background:linear-gradient(180deg,transparent 30%,color-mix(in srgb,var(--plot) 8%,transparent))}
+@media (max-width:699px){.cmpt thead b,.cmpt td{font-stretch:85%}.cmpt thead th:first-child{width:24%}.cmpt thead img{width:72px;height:72px}.cmpt thead .pk{height:72px}.cmpt td{font-size:13px;padding:10px 4px}}
+</style></head><body>
+<script>document.documentElement.dataset.theme=location.hash.slice(1)||'light'</script>
+<div class="back"></div><div class="veil"></div>
+<div class="sheet" role="dialog" aria-label="Garchomp info sheet" style="--cp:246,67,40"><a class="x" aria-label="Close">✕</a>
+ <div class="who">
+  <div class="stage"><i class="pool"></i><img src="../art/up1024/445.webp" alt="Garchomp"></div>
+  <div class="rate"><b>92</b><span>S tier<small>Rating · #7 of 321 with results</small></span></div>
+  <h1 class="u">Garchomp</h1>
+  <div class="types"><span class="chip type" style="background:#5060E1">Dragon</span><span class="chip type" style="background:#9A6230">Ground</span></div>
+  <div class="nums"><div><b>13<span class="unit">%</span></b><small>of teams<br>(of 13.8k)</small></div><div><b>53.1<span class="unit">%</span></b><small>win rate<br>8,878 games</small></div><div><b>231</b><small>Speed<br>at level 50</small></div></div>
+  <div class="acts"><div class="btn main">Build around it</div><div class="btn2"><span>Popular Sets</span></div><div class="btn2 done"><span>On your team ✓</span></div><a>Report a mistake</a></div>
+ </div>
+ <div class="body">
+  <div class="forms" role="tablist" aria-label="Garchomp forms"><div class="fk"><span>Forms · tap one to open it</span><a class="cmp">Compare all 3 ›</a></div><div class="fr">
+   <a class="f on" role="tab" aria-selected="true" style="--cp:246,67,40"><i class="fp"></i><img src="../art/up1024/445.webp" alt="" style="transform:translateY(0.3%)"><b>Garchomp</b><small>92 · S tier</small></a>
+   <a class="f" role="tab" aria-selected="false"><i class="fp"></i><img src="../art/up1024/10058.webp" alt="" style="transform:translateY(0.1%)"><b><span class="mg">Mega</span>Garchomp</b><small>59 · D tier</small></a>
+   <a class="f" role="tab" aria-selected="false"><i class="fp"></i><img src="../art/up1024/10309.webp" alt="" style="transform:translateY(0.1%)"><b><span class="mg">Mega</span>Garchomp Z</b><small>87 · A tier</small></a></div></div>
+  <div class="tabs"><a>Info<small>stats, types</small></a><a>Meta<small>moves, items, partners</small></a><a>Rating<small>why 92, the data</small></a><a class="on">Forms<small>3, side by side</small></a></div>
+  <div class="cmpw"><h3>Forms side by side</h3><p class="note">The best of the three in each row is marked. Mega forms need their Mega Stone held; a team runs one Mega.</p>
+   <table class="cmpt"><thead><tr><th></th><th class="on"><div class="pk"><i class="fp"></i><img src="../art/up1024/445.webp" alt="" style="transform:translateY(0.3%)"></div><b><span class="mg mg0">&nbsp;</span>Garchomp</b><small>open now</small></th><th class=""><div class="pk"><i class="fp"></i><img src="../art/up1024/10058.webp" alt="" style="transform:translateY(0.1%)"></div><b><span class="mg">Mega</span>Garchomp</b><a>Open ›</a></th><th class=""><div class="pk"><i class="fp"></i><img src="../art/up1024/10309.webp" alt="" style="transform:translateY(0.1%)"></div><b><span class="mg">Mega</span>Garchomp Z</b><a>Open ›</a></th></tr></thead><tbody><tr><th scope="row">Rating</th><td class="best">92 · S tier</td><td>59 · D tier</td><td>87 · A tier</td></tr><tr><th scope="row">On teams</th><td>12.6%</td><td>0.6%</td><td class="best">17.6%</td></tr><tr><th scope="row">Win rate</th><td>53.1%</td><td>60.6%</td><td>50.4%</td></tr><tr><th scope="row">Type</th><td>Dragon / Ground</td><td>Dragon / Ground</td><td>Dragon</td></tr><tr><th scope="row">Ability</th><td>Rough Skin<br><small style="font-weight:500;color:var(--ink-2)">or Sand Veil</small></td><td>Sand Force</td><td>Levitate</td></tr><tr><th scope="row">HP</th><td>108</td><td>108</td><td>108</td></tr><tr><th scope="row">Attack</th><td>130</td><td class="best">170</td><td>130</td></tr><tr><th scope="row">Defense</th><td>95</td><td class="best">115</td><td>85</td></tr><tr><th scope="row">Sp. Atk</th><td>80</td><td>120</td><td class="best">141</td></tr><tr><th scope="row">Sp. Def</th><td>85</td><td class="best">95</td><td>85</td></tr><tr><th scope="row">Speed</th><td>102</td><td>92</td><td class="best">151</td></tr><tr><th scope="row">Total</th><td>600</td><td class="best">700</td><td class="best">700</td></tr></tbody></table>
+   <p class="note" style="margin-top:12px">Win rate, on teams and rating: tournament teams, data as of Nov 1. Base stats: game data.</p></div>
+</div>
+<script>document.fonts.ready.then(()=>document.body.dataset.ready=1)</script>
+</body></html>

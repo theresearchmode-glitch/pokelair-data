@@ -1,0 +1,115 @@
+/* ===== Ratings: the stairs (Sim approved Nov 22, 12:26 PM: Ratings round 2, A "the stairs"; mock docs/rebuild/mocks/reskin-nov22/meta2-mock).
+   The S tier as slanted plot bars in each Pokémon's type colours, stepping down by rank (taller = higher rank); each Pokémon stands on its
+   bar with its #rank chip (#1 pink), its big rating and the tier colour at its foot. Desktop: one row; tablet: rows of 6; phone: a swipe
+   strip with the Grandstand's fade (#1-#4 at once). The Grandstand below starts at A. */
+.rs-wrap{margin:var(--s2) 0 0}
+.rs-st{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:var(--s2);align-items:end;margin:0;padding:calc(var(--s12) + var(--s2)) 0 0;list-style:none}
+.rs-st li{min-width:0}
+.rs-b{position:relative;display:grid;justify-items:center;width:100%;padding:0;border:0;background:none;color:var(--k-ink);font:inherit;cursor:pointer}
+.rs-b .np-mon{--iw:88px;position:relative;z-index:1;margin-bottom:calc(var(--s3) * -1);filter:drop-shadow(0 6px 6px var(--k-art-shadow))}
+.rs-col{position:relative;display:grid;align-content:space-between;width:100%;height:calc(176px - var(--lv) * 8px);padding:var(--s4) var(--s2) var(--s2);background:linear-gradient(170deg,color-mix(in srgb,var(--b1) 62%,var(--k-card)),color-mix(in srgb,var(--b2) 34%,var(--k-card)));clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);box-shadow:inset 0 -6px 0 var(--tier-s)}
+.rs-rk{position:relative;z-index:2;justify-self:start;padding:0 var(--s1);background:var(--k-chip);color:var(--k-on-chip);font-size:var(--t20);line-height:1.3;transform:skewX(-10deg)}
+.rs-b.one .rs-rk{background:var(--k-nasty);color:var(--k-on-go)}
+.rs-sc{justify-self:end;padding-right:var(--s2);font-size:var(--t34);line-height:1;color:var(--k-ink)}
+.rs-mv{position:absolute;right:var(--s2);top:var(--s1);font-size:var(--t13);font-weight:800;font-style:normal}.rs-mv.up{color:var(--k-plot-text)}.rs-mv.dn{color:var(--k-nasty-text)}
+.rs-nm{display:block;min-height:2.6em;margin-top:var(--s2);font-size:var(--t15);font-weight:700;line-height:1.25;text-align:center;color:var(--k-ink)}
+.rs-nm small{display:block;font-size:var(--t13);font-weight:800;color:var(--k-plot-text)}
+.rs-b:hover .rs-col,.rs-b:focus-visible .rs-col{filter:brightness(1.06)}
+.rs-cap{display:flex;flex-wrap:wrap;justify-content:space-between;gap:var(--s1) var(--s3);margin:var(--s1) 0 0;font-size:var(--t13);font-weight:600;color:var(--k-ink2)}
+.ra-kk{display:table;width:max-content}
+.ra-h .ra-kk{margin-bottom:0} /* the Meta head is a grid with a 12px row gap (Review Nov 17 #4); the kit kicker adds no extra */
+@media (max-width:1099.98px){.rs-st{grid-template-columns:repeat(6,minmax(0,1fr));row-gap:var(--s6)}}
+@media (max-width:699.98px){
+  .rs-st{display:flex;gap:var(--s2);margin:0 calc(var(--s4) * -1);padding:var(--s6) var(--s4) var(--s1);overflow-x:auto;scroll-snap-type:x proximity;-webkit-mask-image:linear-gradient(90deg,var(--k-mask) 86%,transparent);mask-image:linear-gradient(90deg,var(--k-mask) 86%,transparent)}
+  .rs-st li{flex:0 0 76px;scroll-snap-align:start}
+  .rs-b .np-mon{--iw:64px;margin-bottom:calc(var(--s4) * -1)}
+  .rs-col{height:calc(94px - var(--lv) * 2px);padding:var(--s4) var(--s1) var(--s3)} /* the rating clears the 6px tier stripe and the rank tag the sprite's feet (16px); Sim, Nov 23 (iPhone): from #7 on the 4px steps left too little room and the number sank into the stripe, so 2px steps from 94px (the lowest 74px holds tag + number) */
+  .rs-sc{padding-right:var(--s4);font-size:var(--t24)} /* clears the 12px slant of the bar's right edge */.rs-rk{font-size:var(--t15)}.rs-nm{height:2.5em;min-height:0;margin-top:var(--s1);overflow:hidden;font-size:var(--t13)} /* one height in every view (Megas view: q21), room for the Mega line + one name line */.rs-nm small{font-size:var(--t13)}.rs-cap{display:none}
+  /* the #1 card under the stairs: compact on phones (the stairs already show the ranking; approved mock: 72px picture) */
+  .rs-on .gs-spot{grid-template-columns:96px minmax(0,1fr);gap:var(--s3)}.rs-on .gs-plate{min-height:0}.rs-on .gs-plate .np-mon{--iw:88px}
+  .rs-on .gs-spot h2{font-size:var(--t24)}.rs-on .gs-big b{font-size:var(--t34)}.rs-on .gs-big small{display:none}.rs-on .gs-spot .ra-ty{display:none}
+  .rs-on .gs-spot .ra-acts{display:flex;flex-wrap:wrap;gap:var(--s2)}.rs-on .gs-spot .ra-acts>*{min-height:var(--tap);padding-block:0}
+  /* phone length (Nov 23; no longer than before the reskin, 2,930 px at 390): the #1 card's two buttons sit side by side across the
+     whole card (they stacked in the narrow right column), "On your team" under them; the tag, name, rating and facts stay beside the picture */
+  .rs-on .gs-spot{row-gap:var(--s2);align-items:start;justify-items:start}
+  .rs-on .gs-spot>.gs-plate{grid-row:1/span 4;align-self:center;justify-self:stretch}
+  .rs-on .gs-spot>.gs-sinfo{display:contents}.rs-on .gs-spot>.gs-sinfo>*{grid-column:2}
+  .rs-on .gs-spot>.gs-sinfo>.ra-acts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));grid-column:1/-1;justify-self:stretch}
+  .rs-on .gs-spot>.gs-sinfo>.ra-mine{grid-column:1/-1}
+  @media (max-width:389.98px){.rs-on .gs-spot>.gs-sinfo>.ra-acts{grid-template-columns:minmax(0,1fr)}} /* under 390 the two names don't fit side by side: one under the other, full width */
+  /* one 16px step between the page's parts (around the tier bar, the Grandstand title and the links at the foot it was 32-48px) */
+  .ra.rs-on.gsp{gap:var(--s4)}.rs-on .rs-wrap{margin-top:0}.rs-on .ra-tbar{margin:0}.rs-on .ra-tbar .k-sent{margin-top:0}.rs-on .gs-body>.gs-title{margin-top:0}
+}
+/* Home: the top 10 right now (under the hero): rank, sprite, name, rating, each a tap to its page; SEE ALL RATINGS to the Ratings page */
+.sd-top{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:center;gap:var(--s3) var(--s6);padding:var(--s8) max(var(--s6),calc((100% - 1240px) / 2));background:var(--k-paper);border-bottom:1px solid var(--k-rule)}
+.sd-top h2{margin:0;font-size:var(--t34);line-height:1.1;color:var(--k-ink)}.sd-top h2 em{font-style:inherit;color:var(--k-plot-text)}
+.sd-top ol{grid-column:1/-1;grid-row:2;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s1) var(--s4);margin:0;padding:0;list-style:none}
+.sd-top li button{display:grid;grid-template-columns:24px 40px minmax(0,1fr) auto;align-items:center;gap:var(--s2);width:100%;min-height:52px;padding:0;border:0;border-top:1px solid var(--k-rule);background:none;color:var(--k-ink);font:inherit;text-align:left;cursor:pointer}
+.sd-top li button:hover{background:var(--wash)}
+.sd-top .np-mon{--iw:40px}.sd-top .r{font-size:var(--t20);text-align:right}.sd-top .n{min-width:0;font-size:var(--t15);font-weight:700;line-height:1.2}.sd-top .s{font-size:var(--t20);color:var(--k-plot-text)}
+.sd-top .k-go{margin:0}
+@media (max-width:1099.98px){.sd-top{grid-template-columns:minmax(0,1fr);padding-block:var(--s6)}.sd-top li button{min-height:48px}.sd-top ol{grid-template-columns:repeat(2,minmax(0,1fr))}.sd-top .k-go{grid-row:3;justify-self:start}}
+@media (max-width:699.98px){.sd-top{padding:var(--s6) var(--s4)}.sd-top h2{font-size:var(--t26)}.sd-top ol{column-gap:var(--s3)}.sd-top li button{grid-template-columns:20px 32px minmax(0,1fr) auto;gap:var(--s1)}.sd-top .np-mon{--iw:32px}.sd-top .r,.sd-top .s{font-size:var(--t17)}.sd-top .n{font-size:var(--t13)}}
+/* ===== Page not found on the kit (Sim approved Nov 22, 12:40 PM): the headline and GO TO HOME beside today's underdog as a hero card,
+   its one line a margin scribble; phones: a 140px card beside the line, so the page stays about one screen */
+.nf2.nf-pg{display:block;max-width:none;width:auto}
+.nf2 .k-h1{max-width:none}.nf2 .k-head .k-kicker{display:table;max-width:100%}
+.nf2-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,576px);align-items:end;gap:var(--s6) var(--s16);padding-bottom:var(--s12)}
+.nf2 .k-go{margin-top:var(--s6)}
+.nf2 .nf-dog{display:grid;grid-template-columns:minmax(0,200px) minmax(0,360px);align-items:center;gap:0 var(--s4);margin-top:120px}
+.nf2 .nf-dog .k-scrib{margin-inline:var(--s1);font-size:var(--t20);line-height:1.2;text-align:right} /* tilted 3°: its corners stay inside */
+@media (max-width:1439.98px){.nf2-two{grid-template-columns:minmax(0,1fr)}.nf2 .nf-dog{justify-self:start;margin-top:var(--s16)}}
+@media (max-width:699.98px){
+  .nf2-two{grid-template-columns:minmax(0,1fr);gap:var(--s2);padding-bottom:var(--s6)}
+  .nf2 .nf-dog{grid-template-columns:140px minmax(0,1fr);align-items:end;gap:var(--s3);margin:var(--s16) 0 0}
+  .nf2 .nf-dog .k-scrib{order:2;align-self:center;text-align:left;overflow-wrap:anywhere}
+  .nf2 .nf-dog .k-plate{min-height:0;padding:88px var(--s2) var(--s2)}.nf2 .nf-dog .k-art{top:-52px;height:140px}.nf2 .nf-dog .k-name{font-size:var(--t20)}.nf2 .nf-dog .k-name[data-kf="1"]{font-size:var(--t17)}.nf2 .nf-dog .k-name[data-kf="2"],.nf2 .nf-dog .k-name[data-kf="3"],.nf2 .nf-dog .k-name[data-kf="4"],.nf2 .nf-dog .k-name[data-kf="5"]{font-size:var(--t15)} /* Nov 23 (hP, polish): the phone name size kept the kit's fit levels from stepping down (this layer wins), so a long underdog ("Annihilape") jumped to level 3, the body font, at 20px; now levels 1-2 step 17 / 15 in Unbounded and 3-5 keep the kit's 15 */
+  .nf2 .k-go{margin-top:var(--s3)}.nf2 .k-lead{margin-top:var(--s3);font-size:var(--t15)}.nf2 .k-kicker{margin-top:var(--s2)}
+}
+/* ===== Owner page on the kit (Sim approved Nov 22, 12:42 PM): kept plain, the counts and the notes as two boxes */
+.ow2{display:block}.ow2 .k-head .k-kicker{display:table;max-width:100%}
+.ow2-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:var(--s6) var(--s12)}
+.ow2-box{min-width:0;min-height:160px;padding:var(--s5) var(--s6);background:var(--k-card);box-shadow:inset 4px 0 0 var(--k-plot),0 6px 18px var(--k-card-shadow)}
+.ow2-box h2{margin:0 0 var(--s3);font-size:var(--t28);line-height:1.1;color:var(--k-ink)}
+.ow2-box .fine{font-size:var(--t15);color:var(--k-ink2)}
+.ow2-box .own-tab{width:100%}
+@media (max-width:959.98px){.ow2-two{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:699.98px){.ow2-box{min-height:0;padding:var(--s4)}.ow2-box h2{font-size:var(--t22)}}
+/* phones with the stairs: How Ratings Work and Track Record move to the page's foot (approved mock), so the search starts on the first screen (Q21) */
+@media (max-width:699.98px){.rs-on .ra-h .ra-links{display:none}.rs-on .ra-lph{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s6);margin-top:0}}
+/* ===== Send Feedback on the kit (Sim approved Nov 22, 12:37 PM): the form as a plot sentence, the box, the pink SEND IT., "Anonymous. Always." beside it */
+.fb2{display:block}.fb2 .k-head .k-kicker{display:table;max-width:100%}
+.fb2-two{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,340px);align-items:start;gap:var(--s6) var(--s12)}
+.fb2 .k-sent{margin-top:0;font-size:var(--t28)}
+.fb2-box{display:block;margin:var(--s4) 0 0}
+.fb2-box textarea{display:block;width:100%;min-height:132px;padding:var(--s3) var(--s4);border:3px solid var(--k-plot);border-radius:0;background:var(--k-card);color:var(--k-ink);font:500 var(--t17)/1.5 var(--b);resize:vertical}
+.fb2-row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s2) var(--s5);margin-top:var(--s1)}.fb2-row .k-go{margin-top:var(--s4)}
+.fb2-row .fine:not(.np-errmsg){font-size:var(--t13);font-weight:600;color:var(--k-ink2)}
+.fb2-box textarea[aria-invalid="true"]{border-color:var(--bad-text)} /* Sim's W3b A error look on the new box (v2-formerr) */
+.fb2-anon{padding:var(--s5) var(--s6);background:var(--k-card);box-shadow:inset 4px 0 0 var(--k-plot),0 6px 18px var(--k-card-shadow)}
+.fb2-anon h2{margin:0 0 var(--s2);font-size:var(--t28);line-height:1.1;color:var(--k-ink)}.fb2-anon p{margin:0 0 var(--s2);font-size:var(--t15);line-height:1.5;color:var(--k-ink2)}
+.fb2-mail{min-height:var(--tap);padding:0;border:0;background:none;cursor:pointer}
+@media (max-width:959.98px){.fb2-two{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:699.98px){.fb2 .k-sent{gap:6px;font-size:var(--t15)}.fb2 .k-w{padding:0 var(--s2)}.fb2 .k-sec,.fb2 .k-n{display:none}.fb2 .inf-fb{padding-top:var(--s5)}.fb2-box textarea{min-height:104px}.fb2-row .k-go{margin-top:var(--s3)}.fb2-anon{padding:var(--s4)}.fb2-anon h2{margin-bottom:var(--s1);font-size:var(--t22)}.fb2-anon p{font-size:var(--t13)}}
+@media (min-width:1100px){.fb2-br{display:none}} /* one line on desktop, as in the approved mock */
+@media (max-width:359.98px){.nf2 .nf-dog .k-scrib{font-size:var(--t15);overflow-wrap:normal}} /* "Corviknight's" stays whole at 320 */
+/* not found / owner at 1100-1439 (HH, design authority for the empty-space fixes, Sim 8:48 PM Nov 22): the underdog stays beside the headline
+   (its line under its card) instead of dropping under it and leaving the right side empty */
+@media (min-width:1100px) and (max-width:1439.98px){.nf2-two{grid-template-columns:minmax(0,1fr) minmax(0,340px);column-gap:var(--s10)}
+  .nf2 .nf-dog{grid-template-columns:minmax(0,1fr);justify-self:stretch;gap:var(--s3) 0;margin-top:120px}.nf2 .nf-dog .k-scrib{grid-column:1;grid-row:2;text-align:left}}
+/* Wave 2 part 5 (Nov 23): the Pokémon page's "No Pokémon here." uses this shape; on phones its underdog sits 32px closer so the page is no longer than before (943px at 390) */
+@media (max-width:699.98px){.nf2[data-v2pknf] .nf-dog{margin-top:var(--s8)}}
+.nf2-two>*{min-width:0} /* Wave 2 part 5: a long k-go ("EVERY POKÉMON, BY TIER.") must not widen the grid column; kFit then steps its size down */
+/* Home length (Nov 23, direction for Sim): at 1100+ the top 10 rides the hero's red flag. The strip turns ink like the hero's ledge and the ten
+   sit on the tilted red flag where the herd ticker ran (sd-hero.css hides the ticker there: these ten name the same Pokémon, each a tap to
+   its page, and SEE ALL RATINGS has the rest) */
+@media (min-width:1100px){
+  .sd-top{--tp:max(var(--s6),calc((100vw - 1240px) / 2));position:relative;z-index:1;padding-top:var(--s2);padding-bottom:var(--s6);background:var(--sd-ink);border-bottom:0}
+  .sd-top h2{color:var(--sd-on-band)}.sd-top h2 em{color:var(--sd-chev)}
+  .sd-top ol{margin:var(--s2) calc(var(--tp) * -1 - var(--s8)) 0;padding:var(--s2) calc(var(--tp) + var(--s8)) var(--s3);background:var(--sd-flag);rotate:var(--sd-tilt);column-gap:var(--s6)}
+  .sd-top li button{border-top-color:color-mix(in srgb,var(--sd-on-band) 28%,transparent);color:var(--sd-on-band)}
+  .sd-top li button:hover{background:color-mix(in srgb,var(--sd-ink) 18%,transparent)}
+  .sd-top .r,.sd-top .s{color:var(--sd-flag-num)}
+}
+/* Home length, option B (Nov 23): 8px less under the flag */
+@media (min-width:1100px){.sd-top{padding-bottom:var(--s4)}}

@@ -3,6 +3,12 @@ const NAT_UP={Atk:['Adamant','Lonely','Naughty','Brave'],Def:['Bold','Impish','L
 const NAT_DN={Atk:['Bold','Timid','Modest','Calm'],Def:['Lonely','Hasty','Mild','Gentle'],SpA:['Adamant','Impish','Jolly','Careful'],SpD:['Naughty','Lax','Rash','Naive'],Spe:['Brave','Relaxed','Quiet','Sassy']};
 const STAT_IX={HP:0,Atk:1,Def:2,SpA:3,SpD:4,Spe:5};
 function natMul(nat,stat){if(!nat)return 1;if((NAT_UP[stat]||[]).includes(nat))return 1.1;if((NAT_DN[stat]||[]).includes(nat))return .9;return 1}
+// Team Sheet data (R4, Nov 11; shared by today's Team Sheet and the rebuild): which stat the nature raises and lowers, and each of the
+// six stats at level 50 with its stat points; the spread is the player's own, their nature on the common points, or the common spread
+function natBits(nat){const up=Object.keys(NAT_UP).find(k=>NAT_UP[k].includes(nat)),dn=Object.keys(NAT_DN).find(k=>NAT_DN[k].includes(nat));return {up,dn}}
+const SHEET_STATS=[['HP','hp'],['Atk','atk'],['Def','def'],['SpA','spa'],['SpD','spd'],['Spe','spe']];
+function sheetData(m){const p=m.p,{sp,nat,src}=memberSpread(m),nb=nat?natBits(nat):{};
+  return {nat,src,up:nb.up,dn:nb.dn,stats:SHEET_STATS.map(([S_,k])=>{const pts=sp?+sp[k]||0:null;return {S:S_,pts,val:sp?calcStat(p,S_,pts,natMul(nat,S_)):null,mark:nb.up===S_?'up':nb.dn===S_?'dn':''}})}}
 function calcStat(p,stat,sp,mul){const b=p.st[STAT_IX[stat]];if(stat==='HP')return b+75+sp;return Math.floor((b+20+sp)*mul)}
 function topNature(p){try{const st=setFor(p,'doubles');return st.na&&st.na.length?st.na[0][0]:null}catch(e){return null}}
 function topItem(p){try{const st=setFor(p,'doubles','tour');return st.it&&st.it.length?st.it[0]:null}catch(e){return null}}
@@ -24,11 +30,11 @@ function likelySpeed0(p,mem){const it=topItem(p),cs=(mem&&mem.spread)||commonSpr
   const v=calcStat(p,'Spe',sp,mul);return {v,scarf,label:(dn?'0 Speed points, Speed-lowering nature':up?'32 Speed points, Speed-boosting nature':sp?'32 Speed points':'0 Speed points')+(nat?`, ${nat} (estimated)`:' (estimated)'),nat}}
 // ---- speed tiers ----
 // wx: the weather in play ('auto' = the one your team sets, if exactly one); par: they're paralyzed (×0.5)
-let spdUi={tw:false,twOpp:false,tr:false,icy:false,par:false,wx:'auto'},spdLast=null;
+let spdUi={tw:false,twOpp:false,tr:false,icy:false,par:false,up:false,wx:'auto'} /* up: your six at +1 Speed (player review 4b, Nov 17) */,spdLast=null;
 // One row's speed under the conditions: item (Scarf ×1.5), weather speed ability ×2, Tailwind ×2, −1 stage, paralysis ×0.5.
 // Unburden: also the speed once its item is used (×2), shown as a second number.
 // The game's order: the stat stage first, then the modifiers chained in 4096ths (rounded once), then paralysis halves it.
-function spdCalc(base,scarf,ability,weather,o){let v=base;if(o.icy)v=Math.floor(v*BOOST(-1));
+function spdCalc(base,scarf,ability,weather,o){let v=base;if(o.icy)v=Math.floor(v*BOOST(-1));if(o.up)v=Math.floor(v*BOOST(1));
   // o.unb: Unburden active (its item is used), ×2 in the same chain
   const wm=typeof speedMul==='function'?speedMul(ability,weather):1,mods=[scarf?6144:4096,wm>1?8192:4096,o.tw?8192:4096,o.unb?8192:4096];
   let m=4096;for(const x of mods)if(x!==4096)m=(m*x+2048)>>12;if(m!==4096){const y=v*m/4096;v=Math.max(1,y%1>.5?Math.ceil(y):Math.floor(y))}
@@ -47,29 +53,38 @@ function topThreatSpeeds(W,o){o=o||{};const key=metaVersion+'|'+W+'|'+!!o.tw+!!o
 function outspeedOf(v,W,o){o=o||{};const L=topThreatSpeeds(W,o);if(!L.length||!(v>0))return null;let x=0;for(const t of L)x+=t.v===v?.5:(o.tr?v<t.v:v>t.v)?1:0;
   return {pct:Math.round(100*x/L.length),n:L.length,x}}
 function outspeedTxt(r,o){if(!r)return '';o=o||{};return `${o.tr?'moves before':'outspeeds'} ${r.pct}% of the top ${r.n}`}
-function renderSpeed(){const el=$('spdOut');if(!el)return;
-  const ms=members(),mine=ms.map(m=>m.p),mineSet=new Set(mine.map(p=>p.n));
-  const thr=metaThreats(24).map(x=>x.p||x).filter(p=>p&&p.st&&!mineSet.has(p.n)).slice(0,20);
+// The speed tiers' numbers (shared with the new site's Speed Tiers page, Nov 13): your six and the 20 most-used others, each at its
+// likely Speed under spdUi's conditions, sorted in move order, and one summary per member of yours (outspeed share of the top 30,
+// what it moves before, and the Speed points it takes to pass the nearest threat above it when no condition is on).
+function speedData(){const ms=members(),mine=ms.map(m=>m.p),mineSet=new Set(mine.map(p=>p.n));
+  // 30, not 24 (Nov 13): today the cache handed every caller the 30-list, so the field was always 20 others; with the cache
+  // now per length, 24 would leave fewer than 20 when your six are among the most used
+  const thr=metaThreats(30).map(x=>x.p||x).filter(p=>p&&p.st&&!mineSet.has(p.n)).slice(0,20);
   const myMem=new Map(ms.map(m=>[m.p.n,m])),myItem=new Map([...myMem].map(([n,m])=>[n,m.item]));
   const autoW=typeof sideField==='function'?sideField(ms).weather:'',W=spdUi.wx==='auto'?autoW:spdUi.wx;
   const rows=[...mine.map(p=>({p,me:true})),...thr.map(p=>({p,me:false}))].map(r=>{const mem=r.me?myMem.get(r.p.n):null,s={...likelySpeed(r.p,mem)};
-    const ab=mem?mem.ability:abilityOf({p:r.p}),o={tw:r.me?spdUi.tw:spdUi.twOpp,icy:!r.me&&spdUi.icy,par:!r.me&&spdUi.par};
+    const ab=mem?mem.ability:abilityOf({p:r.p}),o={tw:r.me?spdUi.tw:spdUi.twOpp,icy:!r.me&&spdUi.icy,par:!r.me&&spdUi.par,up:r.me&&spdUi.up};
     const v=spdCalc(s.v,s.scarf,ab,W,o),wxUp=typeof speedMul==='function'&&speedMul(ab,W)>1;
     // Unburden: doubled once its item is used (Sneasler's seed or herb), unless Scarf/no item
     const unb=ab==='Unburden'&&!s.scarf?spdCalc(s.v,s.scarf,ab,W,{...o,unb:true}):null;return {...r,s,v,ab,wxUp,unb}});
   rows.sort((a,b)=>spdUi.tr?a.v-b.v:b.v-a.v);
+  const sums=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&((r.ab==='Stall')!==(me.ab==='Stall')?r.ab==='Stall':spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
+    let tip=null;if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy&&!spdUi.par&&!spdUi.up&&!me.wxUp){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
+      const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
+      if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
+        tip={above,need,cur}}}
+    const os=outspeedOf(me.v,W,{tr:spdUi.tr,tw:spdUi.twOpp,icy:spdUi.icy,par:spdUi.par}),cond=[spdUi.tw?'your Tailwind':'',spdUi.up?'you at +1':'',spdUi.twOpp?'their Tailwind':'',spdUi.tr?'Trick Room':''].filter(Boolean).join(', ');
+    return {p,me,beat,tip,os,cond}});
+  return {mine,thr,rows,W,autoW,sums}}
+function renderSpeed(){const el=$('spdOut');if(!el)return;
+  const {mine,thr,rows,W,autoW,sums}=speedData();
   const tog=(k,t)=>`<button type="button" data-spd="${k}" aria-pressed="${!!spdUi[k]}">${t}</button>`;
   const wxb=(k,t)=>`<button type="button" data-spdwx="${k}" aria-pressed="${spdUi.wx===k}">${t}</button>`;
   $('spdCtl').innerHTML=`<div class="seg segwrap" role="group" aria-label="Speed conditions">${tog('tw','Your Tailwind')}${tog('twOpp','Their Tailwind')}${tog('icy','Their −1 Speed')}${tog('par','They\'re paralyzed')}${tog('tr','Trick Room')}</div>
     <div class="seg segwrap" role="group" aria-label="Weather" style="margin-top:6px">${wxb('auto',autoW?`Your weather (${autoW})`:'Your weather (none)')}${wxb('','No weather')}${wxb('sun','Sun')}${wxb('rain','Rain')}${wxb('sand','Sand')}${wxb('snow','Snow')}</div>`;
   if(!mine.length){el.innerHTML='<div class="empty-note">Add Pokémon on My team to place them against the top threats.<div style="margin-top:12px"><button type="button" class="chghost" data-view="build">Go to My team</button></div></div>';return}
-  const sum=mine.map(p=>{const me=rows.find(r=>r.me&&r.p.n===p.n);const beat=rows.filter(r=>!r.me&&((r.ab==='Stall')!==(me.ab==='Stall')?r.ab==='Stall':spdUi.tr?r.v>me.v:r.v<me.v)).length;// speed target: the nearest threat just above you, and the Speed points (same nature) it takes to pass it
-    let tip='';if(!spdUi.tr&&!spdUi.tw&&!spdUi.twOpp&&!spdUi.icy&&!spdUi.par&&!me.wxUp){const ls=likelySpeed(p,myMem.get(p.n)),cs=(myMem.get(p.n)||{}).spread||commonSpread(p),nat=(cs&&cs.nat)||ls.nat,cur=cs?cs.spe:(ls.label.startsWith('32')?32:0),mult=myItem.get(p.n)==='Choice Scarf'?1.5:1;
-      const above=rows.filter(r=>!r.me&&r.v>me.v).sort((a,b)=>a.v-b.v)[0];
-      if(above){let need=null;for(let sp=cur;sp<=32;sp++){if(Math.floor(calcStat(p,'Spe',sp,natMul(nat,'Spe'))*mult)>above.v){need=sp;break}}
-        tip=need!=null?`<span class="spdtip">${need-cur} more Speed points (${need} total) outspeeds ${esc(above.p.d||above.p.n)}</span>`:`<span class="spdtip">can't outspeed ${esc(above.p.d||above.p.n)} with this nature</span>`}}
-    const os=outspeedOf(me.v,W,{tr:spdUi.tr,tw:spdUi.twOpp,icy:spdUi.icy,par:spdUi.par}),cond=[spdUi.tw?'your Tailwind':'',spdUi.twOpp?'their Tailwind':'',spdUi.tr?'Trick Room':''].filter(Boolean).join(', ');
-    return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> ${os?`${outspeedTxt(os,{tr:spdUi.tr})} threats${cond?` (${cond})`:''}`:`moves first against ${beat} of the ${thr.length} below`}${tip}</span>`}).join('');
+  const sum=sums.map(({p,beat,tip,os,cond})=>{const t=!tip?'':tip.need!=null?`<span class="spdtip">${tip.need-tip.cur} more Speed points (${tip.need} total) outspeeds ${esc(tip.above.p.d||tip.above.p.n)}</span>`:`<span class="spdtip">can't outspeed ${esc(tip.above.p.d||tip.above.p.n)} with this nature</span>`;
+    return `<span class="spdsum"><b>${esc(p.d||p.n)}</b> ${os?`${outspeedTxt(os,{tr:spdUi.tr})} threats${cond?` (${cond})`:''}`:`moves first against ${beat} of the ${thr.length} below`}${t}</span>`}).join('');
   /* the race track (65-design-c.js) draws from the same rows as the list */
   spdLast={rows,W};
   el.innerHTML=`<div class="spdsums">${sum}</div><div class="spdlist">${rows.map((r,i)=>{const tie=rows.some((o,j)=>j!==i&&o.v===r.v&&o.me!==r.me);
@@ -218,7 +233,10 @@ function damage(o){let A=atkForm(o.atk),D=o.def;const mv=o.move;if(!mv||!mv.bp||
   if(eff===0||abMul===0||(dab==='Bulletproof'&&mFlag(nm,'l',BULLET))||(dab==='Soundproof'&&mv.sound)||(pri&&(['Queenly Majesty','Armor Tail','Dazzling'].includes(dab)||(T==='psychic'&&gD)))
     ||(type==='Ground'&&dIt==='Air Balloon'&&nm!=='Thousand Arrows')
     // (a Mega always holds its Mega Stone, which callers leave out of the item slot)
-    ||(nm==='Poltergeist'&&!D.item&&!(D.p&&D.p.m))||(nm==='Steel Roller'&&!T))return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0}};
+    ||(nm==='Poltergeist'&&!D.item&&!(D.p&&D.p.m))||(nm==='Steel Roller'&&!T)){
+    // the real reason when it isn't a type or Ability immunity, so the page never says 'immune to Water' for a terrain block (Nov 16 audit)
+    const why=eff===0||abMul===0?undefined:(dab==='Bulletproof'&&mFlag(nm,'l',BULLET))||(dab==='Soundproof'&&mv.sound)?`${dab} blocks ${nm}`:pri&&['Queenly Majesty','Armor Tail','Dazzling'].includes(dab)?`${dab} blocks priority moves`:pri&&T==='psychic'&&gD?'Psychic Terrain blocks priority moves into grounded Pokémon':(type==='Ground'&&dIt==='Air Balloon')?'Air Balloon keeps it off the ground':nm==='Poltergeist'?'Poltergeist fails: the target holds no item':nm==='Steel Roller'?'Steel Roller fails without a terrain':undefined;
+    return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0},...(why?{fail:why}:{})};}
   if(mv.vbp==='fling'&&!bp)return {min:0,max:0,hp,eff:0,type,rolls:[0],next:{min:0,max:0},fail:'Fling fails: it needs a held item it can throw'};
   // fixed damage: Seismic Toss / Night Shade = the user's level (50); Super Fang / Ruination / Nature's Madness = half the
   // target's current HP (full, then a quarter); one-hit KO moves KO when they land (Sturdy and Ice types vs Sheer Cold are immune)
@@ -227,7 +245,7 @@ function damage(o){let A=atkForm(o.atk),D=o.def;const mv=o.move;if(!mv||!mv.bp||
     // (move data stores fixed: 0 for "no fixed damage", so only a positive number is a fixed amount)
     const v=mv.vbp==='gambit'?calcStat(A.p,'HP',A.hpSp??0,1):mv.ohko?((dab==='Sturdy'||(mv.ohko==='Ice'&&D.p.t.includes('Ice')))?0:hp):mv.fixed==='level'?50:typeof mv.fixed==='number'&&mv.fixed>0?mv.fixed:Math.max(1,Math.floor(hp/2));
     const v2=mv.vbp==='half'?Math.max(1,Math.floor((hp-v)/2)):v,rr=Array(16).fill(v),r2=Array(16).fill(v2);
-    return {min:v,max:v,rolls:rr,hp,eff:v?1:0,type,hits:1,fixed:true,ohko:!!mv.ohko,next:{min:v2,max:v2,rolls:r2},sash:dIt==='Focus Sash'&&!mv.ohko&&mv.vbp!=='half'&&o.fullHp!==false,band:dIt==='Focus Band'&&!mv.ohko}}
+    return {min:v,max:v,rolls:rr,hp,eff:v?1:0,type,hits:1,fixed:true,ohko:!!mv.ohko,next:{min:v2,max:v2,rolls:r2},sash:(dIt==='Focus Sash'||dab==='Sturdy')&&!mv.ohko&&mv.vbp!=='half'&&o.fullHp!==false,sashBy:dab==='Sturdy'?'Sturdy':'Focus Sash',band:dIt==='Focus Band'&&!mv.ohko}}
   // Attack and Defense. Foul Play uses the target's own Attack (its points, nature and stage); Body Press the user's Defense.
   const aStat=nm==='Body Press'?'Def':phys?'Atk':'SpA',dStat=(phys||['Psyshock','Psystrike','Secret Sword'].includes(nm))?'Def':'SpD',foul=nm==='Foul Play',S=foul?D:A;
   const aPts=foul?(D.atkSp??0):aStat==='Atk'?(A.spA??A.sp):aStat==='SpA'?(A.spS??A.sp):(A.spDef??0);
@@ -238,16 +256,17 @@ function damage(o){let A=atkForm(o.atk),D=o.def;const mv=o.move;if(!mv||!mv.bp||
   // Unaware ignores the other side's stat stages; a crit ignores the attacker's drops and the defender's boosts
   if(dab==='Unaware')aB=0;if(ab==='Unaware'||['Sacred Sword','Darkest Lariat','Chip Away'].includes(nm))dB=0;if(crit){aB=Math.max(0,aB);dB=Math.min(0,dB)}
   let a=statStage(calcStat(S.p,aStat,aPts,natMul(S.nat,aStat)),aB),d=statStage(calcStat(D.p,dStat,dStat==='Def'?D.defSp:D.spdSp,natMul(D.nat,dStat)),dB);
-  if(phys&&ab==='Hustle')a=Math.floor(a*1.5);
+  // Nov 15 (code review A5f): Body Press hits with Defense, so Attack boosters (Hustle, Guts, Huge/Pure Power, Choice Band) skip it
+  const physAtk=phys&&nm!=='Body Press';if(physAtk&&ab==='Hustle')a=Math.floor(a*1.5);
   const burned=!!A.burn,am=[];
   if(ab==='Solar Power'&&!phys&&fw==='sun')am.push(6144);
   // Plus / Minus: 1.5× Sp. Atk when an ally on the field has Plus or Minus (o.plusAlly)
-  else if((ab==='Guts'&&burned&&phys)||(o.pinch&&type==={Blaze:'Fire',Torrent:'Water',Overgrow:'Grass',Swarm:'Bug'}[ab])||(o.plusAlly&&!phys&&(ab==='Plus'||ab==='Minus')))am.push(6144);
+  else if((ab==='Guts'&&burned&&physAtk)||(o.pinch&&type==={Blaze:'Fire',Torrent:'Water',Overgrow:'Grass',Swarm:'Bug'}[ab])||(o.plusAlly&&!phys&&(ab==='Plus'||ab==='Minus')))am.push(6144);
   else if((ab==='Fire Mane'&&type==='Fire')||(ab==='Steelworker'&&type==='Steel')||(ab==="Dragon's Maw"&&type==='Dragon')||(ab==='Rocky Payload'&&type==='Rock'))am.push(6144);
   else if(ab==='Transistor'&&type==='Electric')am.push(5325);
-  else if((ab==='Water Bubble'&&type==='Water')||(phys&&(ab==='Huge Power'||ab==='Pure Power')))am.push(8192);
+  else if((ab==='Water Bubble'&&type==='Water')||(physAtk&&(ab==='Huge Power'||ab==='Pure Power')))am.push(8192);
   if((dab==='Thick Fat'&&(type==='Fire'||type==='Ice'))||(dab==='Water Bubble'&&type==='Fire')||(dab==='Purifying Salt'&&type==='Ghost')||(dab==='Heatproof'&&type==='Fire'))am.push(2048);
-  if((aIt==='Choice Band'&&phys)||(aIt==='Choice Specs'&&!phys))am.push(6144);
+  if((aIt==='Choice Band'&&physAtk)||(aIt==='Choice Specs'&&!phys))am.push(6144);
   // Light Ball doubles Pikachu's Attack and Sp. Atk (any Pikachu form)
   if(aIt==='Light Ball'&&(A.p.b||A.p.n||'').startsWith('Pikachu'))am.push(8192);
   a=applyMods(a,am);
@@ -310,7 +329,7 @@ function damage(o){let A=atkForm(o.atk),D=o.def;const mv=o.move;if(!mv||!mv.bp||
   // Disguise (Mimikyu): the first hit only breaks the disguise and costs it 1/8 of its HP
   const disg=dab==='Disguise'&&o.fullHp!==false,dg=Math.floor(hp/8);
   const R=[...Array(16)].map((_,i)=>85+i),rolls=R.map(r=>H.reduce((s,b,h)=>s+(disg&&h===0?dg:one(b,r,h?FB:FA)),0)),later=R.map(r=>H.reduce((s,b)=>s+one(b,r,FB),0));
-  return {min:rolls[0],max:rolls[15],rolls,hp,eff:eff*abMul,type,hits,next:{min:later[0],max:later[15],rolls:later},sash:dIt==='Focus Sash'&&hits===1&&o.fullHp!==false,
+  return {min:rolls[0],max:rolls[15],rolls,hp,eff:eff*abMul,type,hits,next:{min:later[0],max:later[15],rolls:later},sash:(dIt==='Focus Sash'||dab==='Sturdy')&&hits===1&&o.fullHp!==false,sashBy:dab==='Sturdy'?'Sturdy':'Focus Sash', /* Nov 15 (code review A5): Sturdy holds at 1 HP from full like a Sash (dab is empty under Mold Breaker) */
     band:dIt==='Focus Band',contact,beatUp,bp,crit,critStage:critStage(A,mv),aTypes:ta,dTypes:td}}
 // Fewest bulk points (HP + the defense the move hits) that survive every roll, keeping the defender's nature.
 function bulkToSurvive(o){const mv=o.move;if(!mv||!mv.bp||mv.cat===0||mv.fixed||mv.ohko||mv.vbp==='half')return null;const special=mv.cat===2&&!['Psyshock','Psystrike','Secret Sword'].includes(mv.name);
@@ -327,15 +346,17 @@ function koText(r){const t=koText0(r);return r&&r.band&&r.max>0&&r.max+(r.next||
 function ko2Odds(r){const a=r&&r.rolls,b=r&&r.next&&r.next.rolls||a;if(!Array.isArray(a)||!Array.isArray(b)||!a.length||!b.length)return null;let c=0;for(const x of a)for(const y of b)if(x+y>=r.hp)c++;return c/(a.length*b.length)}
 const koPc=k=>Math.min(99,Math.max(1,Math.round(100*k)));
 function koShort(r){if(!r||!r.hp)return '';if(r.max===0)return 'no effect';const rolls=r.rolls||[r.min,r.max],nx=r.next||r,k1=rolls.filter(v=>v>=r.hp).length/rolls.length;
-  if(r.sash&&k1>0)return 'Sash holds';if(k1>=1)return 'OHKO';if(k1>0)return `OHKO ${koPc(k1)}%`;if(r.min+nx.min>=r.hp)return '2HKO';
+  if(r.sash&&k1>0)return r.sashBy==='Sturdy'?'Sturdy holds':'Sash holds';if(k1>=1)return 'OHKO';if(k1>0)return `OHKO ${koPc(k1)}%`;if(r.min+nx.min>=r.hp)return '2HKO';
   if(r.max+nx.max>=r.hp){const k2=ko2Odds(r);return k2!=null?`2HKO ${koPc(k2)}%`:'2HKO?'}if(r.min+2*nx.min>=r.hp)return '3HKO';const n=1+Math.ceil((r.hp-r.max)/Math.max(1,nx.max));return `${n}HKO+`}
+/* the short form under another name, for pages that word it their own way (Turn One, Sim's W11) */
+const koShortCalc=r=>koShort(r);
 /* a damage percentage under the shared rounding rule, never showing 100 for a hit that can't reach 100% */
 const dmgP=v=>{const t=ptsTxt(v);return v<100&&+t>=100?'99':t};
 // the range as words for a damage result: "62–74% of HP"
 const dmgRange=r=>r&&r.hp?`${dmgP(100*r.min/r.hp)}–${dmgP(100*r.max/r.hp)}% of HP`:'';
 function koText0(r){if(!r)return '';if(r.max===0)return 'No effect';const rolls=r.rolls||[r.min,r.max],nx=r.next||r;
   const k1=rolls.filter(v=>v>=r.hp).length/rolls.length;
-  if(r.sash&&k1>0)return k1>=1?'Focus Sash holds at 1 HP, then any hit KOs':`${Math.round(k1*100)}% to OHKO without its Focus Sash; the Sash holds at 1 HP`;
+  if(r.sash&&k1>0){const st=r.sashBy==='Sturdy';return k1>=1?(st?'Sturdy holds at 1 HP from full, then any hit KOs':'Focus Sash holds at 1 HP, then any hit KOs'):st?`${Math.round(k1*100)}% to OHKO without Sturdy; Sturdy holds at 1 HP from full`:`${Math.round(k1*100)}% to OHKO without its Focus Sash; the Sash holds at 1 HP`}
   if(k1>=1)return 'Guaranteed OHKO';if(k1>0)return `${Math.round(k1*100)}% chance to OHKO`;
   if(r.min+nx.min>=r.hp)return 'Guaranteed 2HKO';if(r.max+nx.max>=r.hp){const k2=ko2Odds(r);return k2!=null?`${koPc(k2)}% chance to 2HKO`:'Possible 2HKO'}if(r.min+2*nx.min>=r.hp)return 'Guaranteed 3HKO';
   return `${1+Math.ceil((r.hp-r.max)/Math.max(1,nx.max))}HKO or worse`}
@@ -345,8 +366,8 @@ function sideDefaults(p,role,mem){const nat=topNature(p),it=topItem(p);let ab;tr
   if(mem&&mem.ability&&p.a.includes(mem.ability))ab=mem.ability;
   // your own member: your spread if you set one (paste/link), and its item (your pick, or the team-aware default)
   const st=p.st,phys=st[1]>=st[3],cs=(mem&&mem.spread)||commonSpread(p),item=mem&&mem.item&&!STONE_RE.test(mem.item)?mem.item:mem&&mem.heldItem?mem.heldItem:it&&!STONE_RE.test(it[0])?it[0]:'';
-  if(cs)return role==='atk'?{nat:cs.nat,sp:phys?cs.atk:cs.spa,spA:cs.atk,spS:cs.spa,spDef:cs.def,hpSp:cs.hp,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'}
-    :{nat:cs.nat,hpSp:cs.hp,defSp:cs.def,spdSp:cs.spd,atkSp:cs.atk,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'};
+  if(cs)return role==='atk'?{nat:cs.nat,sp:phys?cs.atk:cs.spa,spA:cs.atk,spS:cs.spa,spDef:cs.def,hpSp:cs.hp,speSp:cs.spe,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'}
+    :{nat:cs.nat,hpSp:cs.hp,defSp:cs.def,spdSp:cs.spd,atkSp:cs.atk,speSp:cs.spe,item,ability:ab,boost:0,real:true,src:cs.mine&&!cs.assumed?'yours':'assumed'}; /* Nov 15 (code review A5): speSp, read by Gyro Ball and Electro Ball, was never set (always 0 Speed points) */
   // no spread data: assume full Defense for Body Press on Pokémon built around their Defense (base 100+);
   // a defender's Attack points (for Foul Play) are full on physical attackers
   return role==='atk'?{nat:nat||(phys?'Adamant':'Modest'),sp:32,spDef:st[2]>=100?32:0,item,ability:ab,boost:0,src:'estimated'}
@@ -356,7 +377,12 @@ let dc={dir:'mine',a:null,d:null,mv:null,weather:'',terrain:'',screen:false,hh:f
 // player in any of our usage data runs them), so the calc doesn't offer them; their math stays in damage().
 const CALC_ITEMS=['','Life Orb','Choice Scarf','Expert Belt','Focus Sash','Sitrus Berry','Leftovers',...Object.keys(TYPE_ITEM),...Object.keys(RESIST_BERRY)];
 const NATURES=['Hardy','Adamant','Jolly','Modest','Timid','Brave','Quiet','Bold','Impish','Calm','Careful','Relaxed','Sassy','Lonely','Naughty','Mild','Rash','Hasty','Naive','Gentle','Lax'];
-function dcSide(role,n){const p=byName.get(n);if(!p)return null;const key=role+':'+n;if(!dc.inv[key]){let mem=null;try{mem=members().find(m=>m.p.n===n)}catch(e){}dc.inv[key]=sideDefaults(p,role,mem)}return {p,...dc.inv[key]}}
+// Nov 15 (code review A5): the cached side is rebuilt when that team member's set changes (item, ability, spread); it went stale before
+function dcSide(role,n){const p=byName.get(n);if(!p)return null;const key=role+':'+n;let mem=null;try{mem=members().find(m=>m.p.n===n)}catch(e){}
+  /* Nov 16 (stress test B5): the side was cached before the usage data arrived (commonSpread null -> 'estimated', most-run nature) and kept,
+     so a calc opened first showed a different set than My Team; the data source and whether it has loaded are part of the key now */
+  let sig='';try{sig=JSON.stringify([mem?mem.item||'':'',mem?mem.heldItem||'':'',mem?mem.ability||'':'',mem?mem.spread||null:null,typeof ui==='object'?ui.metaSrc||'':'',!!(META.doubles&&(META.doubles.top||[]).length)])}catch(e){}
+  if(!dc.inv[key]||dc.inv[key]._sig!==sig){dc.inv[key]=sideDefaults(p,role,mem);dc.inv[key]._sig=sig}const {_sig,...side}=dc.inv[key];return {p,...side}}
 function dcMoves(p){const learn=(LEARN[p.n]||[]).map(k=>MV[k]).filter(m=>m.bp>0);let pop=[];try{const mem=members().find(m=>m.p.n===p.n);pop=(mem?mem.moves:popularMoves(p)).filter(m=>m&&m.bp>0)}catch(e){}
   const seen=new Set(pop.map(m=>m.name));return {pop,rest:learn.filter(m=>!seen.has(m.name)).sort((a,b)=>a.name.localeCompare(b.name))}}
 function monOptions(sel){const mine=members().map(m=>m.p);let thr=[];try{thr=metaThreats(30).map(x=>x.p||x)}catch(e){}
@@ -412,7 +438,9 @@ function notCounted(A,D,mv,r){const out=[],seen=new Set(),add=(k,side)=>{const x
   const pinchT={Blaze:'Fire',Torrent:'Water',Overgrow:'Grass',Swarm:'Bug'};
   if(!(pinchT[A.ability]&&r&&r.type!==pinchT[A.ability]))add(A.ability,'a');if(A.ability!=='Klutz')add(A.item,'a');add(mv&&mv.name,'a');
   if(!(D.ability==='Marvel Scale'&&mv&&mv.cat!==1))add(D.ability,'d');return out}
-function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
+// The calc's state and numbers (shared with the new site's Damage Calc, Nov 14): sets the defaults (attacker, defender, weather,
+// terrain, move) the way today's calc always has, then works out both sides, the move, the order and the result.
+function calcData(){const ms=members();
   if(!dc.a||!byName.get(dc.a))dc.a=(ms[0]&&ms[0].p.n)||'Garchomp';
   if(!dc.d||!byName.get(dc.d)){let t=[];try{t=metaThreats(5).map(x=>x.p||x)}catch(e){}dc.d=(t.find(p=>p.n!==dc.a)||byName.get('Incineroar')||ROSTER[1]).n}
   const A=dcSide('atk',dc.a),D=dcSide('def',dc.d);const mvs=dcMoves(A.p);
@@ -421,7 +449,7 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   if(!dc.wSet){const mine=ms.some(m=>m.p.n===A.p.n);dc.weather=(typeof WEATHER_OF==='object'&&(WEATHER_OF[A.ability]||WEATHER_OF[D.ability]))||(mine&&typeof sideField==='function'?sideField(ms).weather:'')||''}
   if(!dc.tSet){const mine=ms.some(m=>m.p.n===A.p.n),tk=typeof TERRAIN_OF==='object'?(TERRAIN_OF[A.ability]||TERRAIN_OF[D.ability]):'';dc.terrain=(tk&&typeof TERR_DC==='function'?TERR_DC(tk):'')||(mine&&typeof sideField==='function'?sideField(ms).terrain:'')||''}if(!dc.mv||![...mvs.pop,...mvs.rest].some(m=>m.name===dc.mv)){const dmg=mvs.pop.filter(m=>m&&(+m.bp||0)>0&&m.name!=='Fake Out');dc.mv=(dmg[0]||mvs.pop[0]||mvs.rest[0]||{}).name}
   const mv=mvByName.get(dc.mv);const spread=dc.spread==null?!!(mv&&mv.spread):dc.spread;
-  const sel=(id,opts,v)=>`<select class="field" id="${id}">${opts.map(o=>Array.isArray(o)?`<option value="${esc(o[0])}"${o[0]===v?' selected':''}>${esc(o[1])}</option>`:`<option${o===v?' selected':''}>${esc(o)}</option>`).join('')}</select>`;
+  /*ui*/const sel=(id,opts,v)=>`<select class="field" id="${id}">${opts.map(o=>Array.isArray(o)?`<option value="${esc(o[0])}"${o[0]===v?' selected':''}>${esc(o[1])}</option>`:`<option${o===v?' selected':''}>${esc(o)}</option>`).join('')}</select>`;
   const PTS=v=>[...new Set([32,28,24,20,16,12,8,4,0,+v])].sort((a,b)=>b-a).map(x=>[String(x),x===32?'32 (max)':String(x)]);
   // Body Press hits with the attacker's Defense, so the points box (and the stat stage) switch to Defense for it
   const mvC=mvByName.get(dc.mv),bp_=mvC&&mvC.name==='Body Press',aShown=bp_?(A.spDef??0):mvC&&mvC.cat===2?(A.spS??A.sp):(A.spA??A.sp);
@@ -432,6 +460,24 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
   const ord=mv?dcOrder(A,D,mv,dc.weather,dc.terrain):null,ctx=dcContext(A,ms);
   const opt={atk:A,def:D,move:mv,spread,weather:dc.weather,terrain:dc.terrain,fainted:dc.fainted||0,screen:dc.screen,hh:dc.hh,fg:dc.fg,crit:dc.crit,atkLast:!!(ord&&ord.last),plusAlly:ctx.plusAlly,party:ctx.party};
   const r=damage(opt);
+  return {ms,A,D,mvs,mv,spread,mvC,bp_,aShown,ord,ctx,opt,r,sel,PTS,boosts,itemSel}}
+// The notes under a result (power from weight or HP, accuracy, charging, recharge, the mechanics notes) and what's not counted;
+// shared with the new site's Damage Calc (Nov 14)
+// Why a move has no number (counter moves, Endeavor, Spit Up, battle-dependent, status moves); shared with the new site (Nov 14)
+const calcNoResultText=mv=>mv.vbp==='counter'?`${esc(mv.name)} hits back with ${mv.name==='Metal Burst'||mv.name==='Comeuppance'?'1.5×':'2×'} the damage it takes that turn, so it depends on the hit it receives and isn't calculated here.`:mv.vbp==='endeavor'?'Endeavor cuts the target down to your own HP, so it depends on how much HP you have left.':mv.vbp==='stockpile'?'Not counted: Spit Up needs Stockpile first (its power depends on how many).':mv.cat>0?'This move\'s damage depends on the battle and isn\'t calculated.':'This move does no direct damage.';
+function calcResultNotes(A,D,mv,r,ord,ctx){const t=[],acc=moveAcc(mv,A.ability,dc.weather,D,A.item,A.p.t,!!(ord&&ord.last));
+        if(mv.vbp==='wt')t.push(`power from ${esc(D.p.d||D.p.n)}'s weight (${wtOf(D.p)} kg)`);if(mv.vbp==='wtr')t.push(`power from the weight ratio (${wtOf(A.p)} kg vs ${wtOf(D.p)} kg)`);
+        if(mv.vbp==='lowhp')t.push('assumes full HP (20 power; more as HP drops)');if(mv.vbp==='userhp')t.push('assumes the user is at full HP (power drops with its HP)');
+        {const CN={'Stomping Tantrum':'doubles if the user\'s last move failed','Temper Flare':'doubles if the user\'s last move failed',Payback:'doubles if the user moves after the target',Round:'doubles if an ally used Round first this turn',
+          Avalanche:'doubles if the user was hit first this turn',Revenge:'doubles if the user was hit first this turn',Retaliate:'doubles if an ally fainted last turn','Fishious Rend':'doubles if the user moves first','Bolt Beak':'doubles if the user moves first',
+          Assurance:'doubles if the target was already hit this turn','Lash Out':'doubles if the user\'s stats were lowered this turn'};if(CN[mv.name])t.push(`listed power; ${CN[mv.name]}`)}if(mv.vbp==='hex')t.push('assumes no status on the target (130 power if it has one)');
+        if(mv.fixed==='level')t.push('fixed damage: the user\'s level (50)');if(mv.vbp==='half')t.push('half the target\'s current HP');if(r.ohko)t.push('one-hit KO move: KOs only if it lands');
+        if(acc<100)t.push(`${acc}% to hit`);if(chargesFirst(mv,dc.weather,A.item))t.push(mv.name==='Electro Shot'?'charges a turn first unless it\'s raining (or Power Herb)':mv.name==='Solar Beam'||mv.name==='Solar Blade'?'charges a turn first unless the sun is out (or Power Herb)':'charges a turn first (Power Herb skips it)');
+        if(mv.recharge)t.push('the user must recharge next turn');if(mv.name==='Dragon Darts')t.push('one dart per foe in doubles (both darts hit one target only if the other foe is protected or gone)');if(D.ability==='Disguise')t.push('Disguise takes the first hit (only 1/8 of its HP)');
+        t.push(...calcNotes(A,D,mv,r,ord,ctx,dc.weather,dc.terrain));
+        const nc=notCounted(A,D,mv,r);
+        return {t,nc}}
+function renderCalc(){const el=$('dcOut');if(!el)return;const {ms,A,D,mvs,mv,spread,mvC,bp_,aShown,ord,ctx,opt,r,sel,PTS,boosts,itemSel}=calcData();
   /* what the result shows, for "Report a mistake" (trust pass): attacker, defender, move, field and the numbers */
   try{const W={sun:'Sun',rain:'Rain',sand:'Sand',snow:'Snow'},tg=[spread&&'hits both foes',dc.screen&&'screen up',dc.hh&&'Helping Hand',dc.fg&&'Friend Guard',dc.crit&&'critical hit'].filter(Boolean),pc0=r&&r.hp?[100*r.min/r.hp,100*r.max/r.hp]:null;
     dc.lastCtx=[`Attacker: ${A.p.d||A.p.n} · ${A.nat} · ${A.item||'no item'} · ${A.ability} · stage ${A.boost>0?'+':''}${A.boost}${A.real?' · ladder spread':''}`,`Defender: ${D.p.d||D.p.n} · ${D.hpSp} HP / ${D.defSp} Def / ${D.spdSp} SpD ${D.nat} · ${D.item||'no item'} · ${D.ability} · stage ${D.boost>0?'+':''}${D.boost}${D.real?' · ladder spread':''}`,
@@ -460,19 +506,9 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
     <div class="dcfield"><div class="seg" role="group" aria-label="Weather">${[['','No weather'],['sun','Sun'],['rain','Rain'],['sand','Sand'],['snow','Snow']].map(([k,t])=>`<button type="button" data-dcw="${k}" aria-pressed="${dc.weather===k}">${t}</button>`).join('')}</div>
       <div class="seg" role="group" aria-label="Terrain" style="margin-top:6px">${[['','No terrain'],['grassy','Grassy'],['electric','Electric'],['psychic','Psychic'],['misty','Misty']].map(([k,t])=>`<button type="button" data-dcterr="${k}" aria-pressed="${dc.terrain===k}">${t}</button>`).join('')}</div>
       <div class="seg segwrap" role="group" aria-label="Field">${[['spread','Hits both foes'],['screen','Screen up'],['hh','Helping Hand'],['fg','Friend Guard'],['crit','Critical hit']].map(([k,t])=>`<button type="button" data-dct="${k}" aria-pressed="${k==='spread'?spread:!!dc[k]}">${t}</button>`).join('')}</div></div>
-    <div class="dcres">${!mv?'<div class="empty-note">Pick a damaging move.</div>':!r?`<div class="empty-note">${mv.vbp==='counter'?`${esc(mv.name)} hits back with ${mv.name==='Metal Burst'||mv.name==='Comeuppance'?'1.5×':'2×'} the damage it takes that turn, so it depends on the hit it receives and isn't calculated here.`:mv.vbp==='endeavor'?'Endeavor cuts the target down to your own HP, so it depends on how much HP you have left.':mv.vbp==='stockpile'?'Not counted: Spit Up needs Stockpile first (its power depends on how many).':mv.cat>0?'This move\'s damage depends on the battle and isn\'t calculated.':'This move does no direct damage.'}</div>`:r.max===0?r.fail?`<b>No effect.</b> ${esc(r.fail)}.`:`<b>No effect.</b> ${esc(D.p.d||D.p.n)} is immune to ${esc(r.type)}.`:
+    <div class="dcres">${!mv?'<div class="empty-note">Pick a damaging move.</div>':!r?`<div class="empty-note">${calcNoResultText(mv)}</div>`:r.max===0?r.fail?`<b>No effect.</b> ${esc(r.fail)}.`:`<b>No effect.</b> ${esc(D.p.d||D.p.n)} is immune to ${esc(r.type)}.`:
       `<div class="dcbig">${dmgP(pct[0])}–${dmgP(pct[1])}%<small> of HP</small></div>${bar}<div><b>${koText(r)}</b> · ${r.min}–${r.max} of ${r.hp} HP${r.hits>1?` · ${r.hits} hits${MULTI_HIT[dc.mv]===3&&r.hits===3?' (2–5)':''}`:''}${r.eff!==1?` · ${esc(r.type)} is ${r.eff>=4?'super effective twice over':r.eff>=2?'super effective':r.eff<=.25?'resisted twice over':'resisted'}`:''}</div>
-      ${(()=>{const t=[],acc=moveAcc(mv,A.ability,dc.weather,D,A.item,A.p.t,!!(ord&&ord.last));
-        if(mv.vbp==='wt')t.push(`power from ${esc(D.p.d||D.p.n)}'s weight (${wtOf(D.p)} kg)`);if(mv.vbp==='wtr')t.push(`power from the weight ratio (${wtOf(A.p)} kg vs ${wtOf(D.p)} kg)`);
-        if(mv.vbp==='lowhp')t.push('assumes full HP (20 power; more as HP drops)');if(mv.vbp==='userhp')t.push('assumes the user is at full HP (power drops with its HP)');
-        {const CN={'Stomping Tantrum':'doubles if the user\'s last move failed','Temper Flare':'doubles if the user\'s last move failed',Payback:'doubles if the user moves after the target',Round:'doubles if an ally used Round first this turn',
-          Avalanche:'doubles if the user was hit first this turn',Revenge:'doubles if the user was hit first this turn',Retaliate:'doubles if an ally fainted last turn','Fishious Rend':'doubles if the user moves first','Bolt Beak':'doubles if the user moves first',
-          Assurance:'doubles if the target was already hit this turn','Lash Out':'doubles if the user\'s stats were lowered this turn'};if(CN[mv.name])t.push(`listed power; ${CN[mv.name]}`)}if(mv.vbp==='hex')t.push('assumes no status on the target (130 power if it has one)');
-        if(mv.fixed==='level')t.push('fixed damage: the user\'s level (50)');if(mv.vbp==='half')t.push('half the target\'s current HP');if(r.ohko)t.push('one-hit KO move: KOs only if it lands');
-        if(acc<100)t.push(`${acc}% to hit`);if(chargesFirst(mv,dc.weather,A.item))t.push(mv.name==='Electro Shot'?'charges a turn first unless it\'s raining (or Power Herb)':mv.name==='Solar Beam'||mv.name==='Solar Blade'?'charges a turn first unless the sun is out (or Power Herb)':'charges a turn first (Power Herb skips it)');
-        if(mv.recharge)t.push('the user must recharge next turn');if(mv.name==='Dragon Darts')t.push('one dart per foe in doubles (both darts hit one target only if the other foe is protected or gone)');if(D.ability==='Disguise')t.push('Disguise takes the first hit (only 1/8 of its HP)');
-        t.push(...calcNotes(A,D,mv,r,ord,ctx,dc.weather,dc.terrain));
-        const nc=notCounted(A,D,mv,r);
+      ${(()=>{const {t,nc}=calcResultNotes(A,D,mv,r,ord,ctx);
         return (t.length?`<p class="t2">${t.join(' · ')}</p>`:'')+(nc.length?`<p class="t2">Not counted: ${nc.join('; ')}.</p>`:'')})()}
       ${(()=>{if(!r||r.max===0)return '';const bs=bulkToSurvive(opt);if(!bs)return '';if(bs.none)return `<p class="dcbulk">${esc(D.p.d||D.p.n)} can't survive this hit with any spread.</p>`;return `<p class="dcbulk">Fewest points to always survive: <b>${bs.hp} HP / ${bs.df} ${bs.stat}</b> (${bs.tot} total). ${r.max<r.hp?'This spread already survives.':'This spread does not.'}</p>`})()}
       ${(()=>{const nt=[A.real||D.real?'spreads: most common on the Showdown ladder':'',A.p.n==='Aegislash'?'Aegislash attacks in Blade Forme (Atk/SpA 140)':'',D.p.n==='Aegislash'?'Aegislash takes hits in Shield Forme':'',A.p.formNote||D.p.formNote?'Palafin in Hero Form':'',dc.wSet||dc.tSet||!(dc.weather||dc.terrain)?'':'field set by the Pokémon selected (change it above)'].filter(Boolean);
@@ -481,11 +517,18 @@ function renderCalc(){const el=$('dcOut');if(!el)return;const ms=members();
     ${renderHitTable(ms)}`;dcStickWatch()}
 // Your team's best hit on each top threat (each side's usual set).
 // field: {weather, terrain} in play (sun from Drought, etc.), so a lead's weather boost is counted
-function bestHitOn(atkP,atkMoves,defP,aMem,dMem,field){let best=null;const A={p:atkP,...sideDefaults(atkP,'atk',aMem)},D={p:defP,...sideDefaults(defP,'def',dMem)};const F=field||{};
+// field.aStage {atk,spa}: the attacker's stat stages (turn one: Intimidate, Defiant, Competitive), used by a physical move
+// (Attack; not Body Press, which hits with Defense) or a special one (Sp. Atk); field.dAtkStage: the target's Attack stage (Foul Play)
+function bestHitOn(atkP,atkMoves,defP,aMem,dMem,field){let best=null;const A0={p:atkP,...sideDefaults(atkP,'atk',aMem)},D={p:defP,...sideDefaults(defP,'def',dMem)};const F=field||{};
+  if(F.dAtkStage)D.atkBoost=F.dAtkStage;
   // best by what you can count on: a move's damage is weighed by its accuracy, a two-turn move that charges first or a move
   // that must recharge counts for less, so a coin-flip OHKO move or Hyper Beam doesn't outrank a reliable attack
-  for(const mv of atkMoves){if(!mv||!mv.bp)continue;const r=damage({atk:A,def:D,move:mv,spread:!!mv.spread,weather:F.weather||'',terrain:F.terrain||'',auras:F.auras});if(!r||!r.hp)continue;
-    const ch=chargesFirst(mv,F.weather,A.item),acc=moveAcc(mv,A.ability,F.weather,D,A.item),val=r.max*acc/100*(ch?.5:1)*(mv.recharge?.7:1);
+  // field.dStage {def,spd} (Commander, Nov 25): the target's Defense / Sp. Def stage, by the stat the move hits (Psyshock,
+  // Psystrike and Secret Sword hit Defense); Body Press hits with the user's own Defense stage (aStage.def)
+  for(const mv of atkMoves){if(!mv||!mv.bp)continue;const A=F.aStage?{...A0,boost:mv.name==='Body Press'?F.aStage.def||0:mv.cat===1?F.aStage.atk||0:F.aStage.spa||0}:A0;
+    const Dm=F.dStage?{...D,boost:(mv.cat===1||['Psyshock','Psystrike','Secret Sword'].includes(mv.name))?F.dStage.def||0:F.dStage.spd||0}:D;
+    const r=damage({atk:A,def:Dm,move:mv,spread:!!mv.spread,weather:F.weather||'',terrain:F.terrain||'',auras:F.auras});if(!r||!r.hp)continue;
+    const ch=chargesFirst(mv,F.weather,A.item),acc=moveAcc(mv,A.ability,F.weather,Dm,A.item),val=r.max*acc/100*(ch?.5:1)*(mv.recharge?.7:1);
     if(!best||val>best.val)best={mv,r,val,charge:ch,acc,recharge:!!mv.recharge}}return best}
 // plain words for what a best hit depends on: "charges first", "70% to hit", "must recharge", "one-hit KO move"
 function hitNote(b){if(!b)return '';const t=[];if(b.charge)t.push('charges first');if(b.acc!=null&&b.acc<100)t.push(b.acc+'% to hit');if(b.recharge)t.push('must recharge');if(b.r&&b.r.ohko)t.push('one-hit KO move');return t.join(', ')}
@@ -503,7 +546,7 @@ function moveAcc(mv,ab,weather,def,item,userTypes,moved){if(!mv)return 100;if(ab
   if(ab==='Compound Eyes')a*=1.3;if(item==='Wide Lens')a*=1.1;if(item==='Zoom Lens'&&moved)a=a*4915/4096;if(ab==='Hustle'&&mv.cat===1)a*=.8;
   if(def&&((def.ability==='Sand Veil'&&weather==='sand')||(def.ability==='Snow Cloak'&&weather==='snow')))a*=.8;if(def&&def.item==='Bright Powder')a*=.9;
   return Math.min(100,Math.round(a))}
-function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{thr=metaThreats(12).map(x=>x.p||x).filter(p=>p&&p.st)}catch(e){}if(!thr.length)return '';
+function renderHitTable(ms){if(!ms.length)return '';let thr=[];try{/* 30 (Nov 13): today the shared cache always handed this table the 30-list; kept so the live table does not change */thr=metaThreats(30).map(x=>x.p||x).filter(p=>p&&p.st)}catch(e){}if(!thr.length)return '';
   const cell=b=>{if(!b)return '<td class="dcz">–</td>';const p=100*b.r.max/b.r.hp,lo=100*b.r.min/b.r.hp,c=lo>=100?'k1':p>=100?'k1m':lo>=50?'k2':p>=50?'k2m':'k3';const nt=hitNote(b),ks=koShort(b.r);return `<td class="${c}" data-ko="${esc(ks)}" title="${esc(b.mv.name)}: ${dmgRange(b.r)} · ${esc(koText(b.r))}${nt?' ('+nt+')':''}">${dmgP(p)}%<span>${esc(b.mv.name)}${nt?' *':''}</span></td>`};
   const thH=p=>`<th title="${esc(p.d||p.n)}">${sprite(p,'dcth')}<span>${esc((p.d||p.n).replace(/^Mega /,'M-'))}</span></th>`,rowH=(p,d)=>`<th>${sprite(p,'dcth')}<span>${esc(d||p.d||p.n)}</span></th>`;
   const theirs=dc.dir==='theirs';
@@ -529,7 +572,7 @@ document.addEventListener('change',e=>{const t=e.target;if(!t.id||!/^dc/.test(t.
   if(t.id)dcRerender(t);else renderCalc()});
 // A field button redraws the whole calculator; the button you tapped stays at the same spot on screen (Sim, Oct 30: the page
 // jumped about 77px and the numbers seemed to flicker). Runs before the screen paints.
-function dcPin(b,fn){const at=['data-dcw','data-dct','data-dcdir','data-dcterr'].find(a=>b.hasAttribute(a)),sel=at?`[${at}="${CSS.escape(b.getAttribute(at))}"]`:(b.id?'#'+b.id:null),top=b.getBoundingClientRect().top,y=scrollY;
+function dcPin(b,fn){if(typeof V2==='object'&&V2&&V2.redraw){fn();return} /* code review B13: the rebuild keeps its own scroll on redraw; this pinning's late scrollTo calls fought it */const at=['data-dcw','data-dct','data-dcdir','data-dcterr'].find(a=>b.hasAttribute(a)),sel=at?`[${at}="${CSS.escape(b.getAttribute(at))}"]`:(b.id?'#'+b.id:null),top=b.getBoundingClientRect().top,y=scrollY;
   fn();const fix=()=>{const n=sel&&document.querySelector('#dcOut '+sel);if(n){const d=n.getBoundingClientRect().top-top;if(Math.abs(d)>1)scrollBy(0,d)}else if(Math.abs(scrollY-y)>1)scrollTo(0,y)};fix();
   /* again after the next frame (Nov 4 sweep): at 1280 the layout right after the redraw is briefly 60px off, so the first fix overshot */
   try{requestAnimationFrame(()=>{fix();setTimeout(fix,120)})}catch(e){}}

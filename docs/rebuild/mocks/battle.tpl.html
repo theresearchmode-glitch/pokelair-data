@@ -1,0 +1,267 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NastyPlot Battle mock-up</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Instrument+Sans:wdth,wght@75..100,400..700&family=Unbounded:wght@800;900&display=swap">
+<link rel="stylesheet" href="tokens.css">
+<style>
+/* Battle a team (R2 mock-up). Job: "how do I play this match". The answer (bring these four, lead these two, turn 1) is on the
+   first screen at every size; detail is one tap away behind labelled tabs. Every C-battle feature (docs/rebuild/inventory/C-battle.md)
+   is here or one tap away. Rules: design-system.md (2b floors and normalised colour, filled main action, section 9 length);
+   words: CLAUDE.md word list. Real data from today's site, Nov 11 (experiments/make-battle.mjs). */
+:root{--gut:max(96px,calc((100vw - 1640px)/2))}
+.page{position:relative;overflow:hidden}
+header{position:relative;z-index:1;height:76px;display:flex;align-items:center;padding:0 var(--gut)}header .logo svg{height:36px;display:block}
+nav.main{display:flex;gap:36px;margin:0 auto}nav.main a{font:500 15px/1 var(--b);color:var(--ink-2)}
+nav.main a.on{color:var(--ink);font-weight:700;position:relative}nav.main a.on::after{content:"";position:absolute;left:0;right:0;bottom:-10px;height:5px;background:var(--plot);transform:skewX(var(--slant))}
+header .s{font:500 15px/1 var(--b);color:var(--ink-2)}
+main{position:relative;z-index:1;display:flex;flex-direction:column}
+.atmos{position:absolute;left:0;right:0;top:0;height:0;z-index:-1;pointer-events:none}
+/* Battle's own tools: one row, each with what is inside */
+.tools{display:flex;gap:28px;padding:0 var(--gut);height:52px;align-items:center;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);font:600 15px/1 var(--b);color:var(--ink-2)}
+.tools a{white-space:nowrap;display:flex;align-items:center;height:100%;position:relative}.tools a small{font:600 13px/1 var(--b);color:var(--ink-3);margin-left:6px}
+.tools a.on{color:var(--ink)}.tools a.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
+.tools .r{margin-left:auto}
+/* head: the answer as the headline, the real-games verdict beside it */
+.head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:48px;align-items:end;padding:24px var(--gut) 0}
+.head h1{font-size:56px;line-height:1.04;margin:12px 0 0}.head h1 span{display:block}.head h1 .pl{color:var(--plot)}
+.head .vs{margin-top:12px;font:500 17px/1.5 var(--b);color:var(--ink-2)}.head .vs b{color:var(--ink);font-weight:700}
+.verdict{text-align:right;padding-bottom:4px}.verdict .k{font:600 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}
+.verdict b{display:block;font:900 34px/1.05 var(--u);font-style:italic;margin-top:8px}.verdict b.vf{color:var(--good-text)}.verdict b.ve{color:var(--ink-2)}.verdict b.vu{color:var(--mid-text)}
+.verdict small{display:block;margin-top:8px;font:500 13px/1.5 var(--b);color:var(--ink-2)}
+:root[data-theme="dusk"] .u{font-weight:800}
+/* the two sixes, each on its own floor */
+.body{display:grid;grid-template-columns:minmax(0,1fr) 400px;gap:56px;padding:24px var(--gut) 8px;align-items:start}.sixes{display:grid;gap:24px}
+.side .lab2{display:flex;align-items:baseline;gap:12px;font:900 20px/1.1 var(--u);font-style:italic}.side .lab2 span{font:500 15px/1 var(--b);font-style:normal;color:var(--ink-2)}
+.row6{position:relative;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:4px;margin-top:8px;--art:96px;--lab:0px}
+.row6::before{content:"";position:absolute;left:-24px;right:-24px;top:calc(var(--lab) + var(--art) - 1px);height:90px;pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(23,22,26,.13) 12%,rgba(23,22,26,.13) 88%,transparent) top/100% 1px no-repeat,radial-gradient(52% 100% at 50% 0,rgba(60,40,110,.05),transparent)}
+:root[data-theme="dusk"] .row6::before{background:linear-gradient(90deg,transparent,rgba(214,218,255,.3) 12%,rgba(214,218,255,.3) 88%,transparent) top/100% 1px no-repeat,radial-gradient(52% 100% at 50% 0,rgba(150,160,255,.16),transparent)}
+.pk{position:relative;text-align:center;min-width:0}
+.pk .st{position:relative;height:var(--art)}
+.pk .sh{position:absolute;left:50%;bottom:0;width:calc(var(--art)*1.05);height:calc(var(--art)*.2);transform:translate(-50%,50%);border-radius:50%;
+  background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp),.6),rgba(var(--cp),.28) 55%,transparent)}
+:root[data-theme="dusk"] .pk .sh{background:radial-gradient(closest-side,rgba(var(--cp),.88),rgba(var(--cp),.3) 45%,transparent);filter:blur(1.5px)}
+.pk img{position:relative;display:block;margin:0 auto;width:var(--art);max-width:100%;height:100%;object-fit:contain;object-position:50% 100%;filter:drop-shadow(4px 7px 7px rgba(30,20,50,.16))}
+:root[data-theme="dusk"] .pk img{filter:drop-shadow(0 0 .6px rgba(255,255,255,.55)) drop-shadow(0 -1px 5px rgba(var(--cp),.3))}
+.pk b{display:block;font:700 15px/1.25 var(--b);margin-top:12px}.pk b .mg{display:block;font:700 13px/1 var(--b);font-style:italic;letter-spacing:.04em;text-transform:uppercase;color:var(--plot-text)}
+.pk small{display:block;font:500 13px/1.35 var(--b);color:var(--ink-2)}
+.pk .ll{display:inline-flex;align-items:center;gap:6px;margin-top:4px;font:700 13px/1 var(--b);color:var(--plot-text)}.pk .ll::before{content:"";width:12px;height:6px;background:var(--plot);transform:skewX(var(--slant))}
+/* your six: Lead / Back / Leave home, like My Team's groups; Leave home a touch smaller, full colour */
+.grps{grid-template-columns:repeat(3,minmax(0,1fr));gap:4px 16px;--lab:28px}
+.grp .gl{display:flex;align-items:center;gap:8px;height:20px;margin-bottom:8px;font:900 15px/1 var(--u);font-style:italic}
+.grp .gl i{width:14px;height:7px;transform:skewX(var(--slant));background:var(--ink-3)}.grp.lead .gl i{background:var(--plot)}.grp.home .gl{color:var(--ink-2)}
+.grp .pair{display:grid;grid-template-columns:1fr 1fr;gap:4px}
+.grp.home .pk img{transform:scale(.8);transform-origin:50% 100%}.grp.home .pk .sh{width:calc(var(--art)*.85)}.grp.home .pk b{color:var(--ink-2)}
+.side .acts{display:flex;align-items:center;gap:12px;margin-top:16px;flex-wrap:wrap}.side .acts .btn{height:48px}.side .acts .btn2{height:44px}
+.side .acts a{font:600 15px/1 var(--b);color:var(--plot-text);display:inline-flex;align-items:center;min-height:44px;padding:0 4px}
+.side .fine{margin-top:8px}
+.mine .fine{margin-top:16px}
+.side .acts+.fine{margin-top:4px}
+/* plan: turn one, the read, watch out */
+.plan{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto 1fr;column-gap:56px;row-gap:32px;padding:40px var(--gut) 40px}.plan .read{grid-column:1;grid-row:1}.plan .real{grid-column:1;grid-row:2}.plan .watch{grid-column:2;grid-row:1/span 2}
+.plan h2,.detail h2{font-size:24px}.plan .sub,.detail .sub{font-size:15px;color:var(--ink-2);margin-top:4px}
+.steps{list-style:none;margin-top:16px;border-top:1px solid var(--rule)}
+.steps li{display:grid;grid-template-columns:28px 52px minmax(0,1fr);gap:12px;align-items:center;padding:10px 0;border-bottom:1px solid var(--rule)}
+.steps .n{font:900 22px/1 var(--u);font-style:italic;color:var(--ink-3)}
+.steps img,.rows img{width:52px;height:52px;object-fit:contain}
+:root[data-theme="dusk"] .steps img,:root[data-theme="dusk"] .rows img,:root[data-theme="dusk"] .spd img,:root[data-theme="dusk"] .dg img{filter:drop-shadow(0 0 .6px rgba(255,255,255,.4))}
+.steps .who{font:600 13px/1.3 var(--b);color:var(--ink-2)}.steps .who .sd{font-weight:700;margin-right:6px}.steps .who .you{color:var(--plot-text)}.steps .who .them{color:var(--mid-text)}
+.steps .mv{font:700 16px/1.3 var(--b)}.steps .why{font:400 13px/1.5 var(--b);color:var(--ink-2)}
+.warn{margin-top:16px;font:600 15px/1.5 var(--b)}.warn i{font-style:normal;color:var(--mid-text);margin-right:6px}
+.fieldl{margin-top:8px;font:400 15px/1.5 var(--b);color:var(--ink-2)}.fieldl b{color:var(--ink);font-weight:600}
+.more-link{display:inline-flex;align-items:center;min-height:44px;font:600 15px/1 var(--b);color:var(--plot-text)}
+.big{display:grid;grid-template-columns:96px minmax(0,1fr);gap:16px;align-items:center;margin-top:16px}
+.big .pk{--art:96px}.big .k{font:600 13px/1 var(--b);letter-spacing:.04em;color:var(--ink-2)}.big h3{font-size:22px;margin-top:8px}.big p{font-size:15px;color:var(--ink-2)}
+.fo{display:flex;align-items:center;gap:16px;margin-top:20px;padding:12px 0;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}
+.fo b{font:900 34px/1 var(--u);font-style:italic}.fo span{font:600 15px/1.4 var(--b)}.fo small{display:block;font:400 13px/1.5 var(--b);color:var(--ink-2)}
+.rg ul{margin-top:12px!important;border-top:1px solid var(--rule)}
+.rg ul{list-style:none;margin-top:8px}.rg li{display:flex;align-items:baseline;gap:10px;padding:12px 0;border-bottom:1px solid var(--rule);font:500 15px/1.4 var(--b)}
+.rg li i{font-style:normal;font:700 13px/1 var(--b);white-space:nowrap}.rg li i.hu{color:var(--mid-text)}.rg li i.he{color:var(--good-text)}
+.rows{margin-top:16px;border-top:1px solid var(--rule)}
+.rows .r{display:grid;grid-template-columns:52px minmax(0,1fr);gap:12px;padding:10px 0;border-bottom:1px solid var(--rule)}
+.rows .r b{font:700 15px/1.3 var(--b)}.rows .tg{font:400 13px/1.5 var(--b);color:var(--ink-2);margin-top:2px}
+.rows .tg em{font-style:normal;font-weight:700;margin-right:6px}.rows .tg em.mid{color:var(--mid-text)}.rows .tg em.lo{color:var(--ink)}
+/* the tabs: detail one tap away, each with what is inside and how much */
+.jump{position:sticky;top:0;z-index:5;display:flex;gap:32px;padding:0 var(--gut);height:56px;align-items:stretch;border-top:1px solid var(--rule);border-bottom:1px solid var(--rule);background:color-mix(in srgb,var(--bg) 94%,transparent);font:600 15px/1 var(--b);color:var(--ink-2)}
+.jump a{display:flex;align-items:center;white-space:nowrap;position:relative}.jump a small{font:600 13px/1 var(--b);color:var(--ink-3);margin-left:6px}.jump a small+small{margin-left:4px}
+.jump a.on{color:var(--ink)}.jump a.on::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:4px;background:var(--plot);transform:skewX(var(--slant))}
+.jump .ph{display:none}.jump .sl{display:none}@media (max-width:699px){.jump .sl{display:inline}}.jump .hint{margin-left:auto;display:flex;align-items:center;font:500 13px/1 var(--b);color:var(--ink-3)}
+.detail{padding:32px var(--gut) 40px}.detail:not(:has(.pane.on)){display:none}.pane{display:none}.pane.on{display:block}
+.dlegend{display:flex;flex-wrap:wrap;gap:8px 24px;margin-top:12px;font:500 13px/1.5 var(--b);color:var(--ink-2)}.dlegend b{font-weight:700;color:var(--ink)}
+.dg{width:100%;border-collapse:collapse;margin-top:16px;table-layout:fixed}
+.dg th{font:600 13px/1.3 var(--b);color:var(--ink-2);padding:0 8px 10px;text-align:left;vertical-align:bottom;border-bottom:1px solid var(--rule)}
+.dg th img{display:block;width:48px;height:48px;object-fit:contain;margin-bottom:4px}.dg th b{display:block;font:700 15px/1.25 var(--b);color:var(--ink)}
+.dg th:first-child{width:200px}
+.dg td{padding:10px 8px;border-bottom:1px solid var(--rule);vertical-align:top}
+.dg td.me{vertical-align:middle}.dg td.me div{display:flex;align-items:center;gap:10px;font:700 15px/1.25 var(--b)}
+.hx{display:flex;align-items:baseline;gap:6px;white-space:nowrap}.hx .s{font:600 13px/1 var(--b);color:var(--ink-3);width:40px}
+.hx b{font:900 17px/1.2 var(--u);font-style:italic}.hx b .unit,.spd .v .unit{font-size:13px;font-family:var(--b);font-style:normal}
+.hx i{font:700 13px/1 var(--b);font-style:normal}.hx.y i.k1,.hx.y i.k2{color:var(--good-text)}.hx.t i.k1{color:var(--mid-text)}.hx i.k3,.hx i.k9{color:var(--ink-3)}
+.mvn{font:400 13px/1.4 var(--b);color:var(--ink-2);padding-left:46px;margin-bottom:6px}.vsn{display:none}
+.calcpick{display:flex;flex-wrap:wrap;align-items:center;gap:12px;margin-top:24px;padding-top:20px;border-top:1px solid var(--rule)}
+.calcpick .t{font:600 15px/1.4 var(--b);margin-right:8px}.calcpick .t small{display:block;font:400 13px/1.5 var(--b);color:var(--ink-2)}
+.calcpick .chip{height:44px}
+/* speed */
+.togs{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+.spd{list-style:none;columns:2;column-gap:48px;margin-top:16px}
+.spd li{break-inside:avoid;display:grid;grid-template-columns:52px minmax(0,1fr) auto;gap:12px;align-items:center;padding:6px 0;border-bottom:1px solid var(--rule)}
+.spd img{width:44px;height:44px;object-fit:contain}.spd .nm{font:600 15px/1.25 var(--b)}.spd .nm small{display:block;font:500 13px/1.3 var(--b);color:var(--ink-2)}
+.spd .nm .me{color:var(--plot-text);font-weight:700}.spd .v{font:900 20px/1 var(--u);font-style:italic;text-align:right}.spd .v .unit{font-family:var(--b);font-style:normal}
+.prio{margin-top:16px;font:400 13px/1.5 var(--b);color:var(--ink-2);max-width:1100px}
+/* deeper read */
+.deep{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:48px}
+.av{display:flex;flex-wrap:wrap;align-items:center;gap:8px;margin-top:12px;font:600 15px/1 var(--b)}.av .vsx{color:var(--ink-3);margin:0 4px}
+.note{padding:10px 0;border-bottom:1px solid var(--rule);font-size:15px}.note b{font-weight:700}.note em{font-style:normal;font:700 13px/1 var(--b);color:var(--ink-2);margin-right:8px}
+.mg6{width:100%;border-collapse:collapse;margin-top:12px;font:600 15px/1 var(--b)}
+.mg6{table-layout:fixed}.mg6 th{font:600 13px/1.25 var(--b);color:var(--ink-2);padding:6px 2px;text-align:center;border-bottom:1px solid var(--rule)}.mg6 th img{width:40px;height:40px;object-fit:contain}.mg6 th:first-child{width:34%}.mg6 td:first-child{overflow-wrap:anywhere}.mg6 th:first-child{text-align:left}
+.mg6 td{padding:8px 6px;text-align:center;border-bottom:1px solid var(--rule)}.mg6 td:first-child{text-align:left;font-weight:700}
+.mg6 .p{color:var(--good-text)}.mg6 .m{color:var(--mid-text)}
+/* battle log and the other tools */
+.log{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:24px 48px;align-items:center;padding:28px var(--gut);border-top:1px solid var(--rule)}
+.log h2{font-size:22px}.log p{font-size:15px;color:var(--ink-2);margin-top:4px}.log p b{color:var(--ink);font-weight:600}
+.log .acts{display:flex;align-items:center;gap:12px}.log .btn2{height:44px;min-width:104px}.log a{font:600 15px/1 var(--b);color:var(--plot-text);display:inline-flex;align-items:center;min-height:44px;margin-left:8px}
+.moretools{display:none;padding:24px var(--gut) 8px}
+.moretools h2{font-size:22px}.moretools a{display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:56px;padding:8px 0;border-bottom:1px solid var(--rule);font:700 15px/1.3 var(--b)}
+.moretools a small{display:block;font:400 13px/1.4 var(--b);color:var(--ink-2)}.moretools a i{font-style:normal;color:var(--ink-3)}
+footer{display:flex;align-items:center;gap:40px;padding:0 var(--gut);height:96px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink-2)}footer svg{height:24px;display:block}footer .r{margin-left:auto;display:flex;gap:32px}
+
+@media (min-width:1180px) and (max-width:1439px){:root{--gut:64px}.body{grid-template-columns:minmax(0,1fr) 360px;gap:40px}.plan{column-gap:40px}}
+/* ---------- iPad and other mid widths ---------- */
+@media (max-width:1179px){:root{--gut:48px}
+  nav.main{gap:24px}.tools{gap:20px}.tools .lg{display:none}
+  .head{gap:32px}.head h1{font-size:48px}
+  .body{grid-template-columns:minmax(0,1fr);gap:32px}.row6{--art:84px}.grps{gap:4px 12px}
+  .head{grid-template-columns:minmax(0,1fr);gap:12px}
+  .verdict{text-align:left;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 12px;padding:0}.verdict .k{order:2}.verdict b{font-size:26px;margin:0;order:1}.verdict small{margin:0;order:3}
+  .pk b{font-size:15px;margin-top:8px}.side .lab2{font-size:20px}
+  .plan{grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:40px}.plan .read{grid-column:1;grid-row:1}.plan .real{grid-column:2;grid-row:1}.plan .watch{grid-column:1/-1;grid-row:2}
+  .plan .watch .rows{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:40px}
+  .jump{gap:24px}.jump .hint{display:none}
+  .dg th:first-child{width:140px}.dg td.me div img{display:none}.mvn{padding-left:0}.hx .s{display:none}.hx{gap:4px}.hx b{font-size:16px}
+  .spd{column-gap:32px}.deep{gap:32px}
+  footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0}}
+@media (min-width:700px) and (max-width:899px){
+  .tools{gap:16px}.pk b{font-size:13px;font-stretch:90%}.pk small{font-stretch:90%}.tools a small{display:none}
+  .deep{grid-template-columns:minmax(0,1fr)}.spd{columns:1}.deep{grid-template-columns:minmax(0,1fr);gap:24px}.dg th b{font-size:13px}}
+/* ---------- phone: the answer first, then theirs, then one tab open at a time ---------- */
+@media (max-width:699px){:root{--gut:16px}
+  header{height:60px;justify-content:space-between}nav.main{display:none}
+  .tools{display:none}
+  main>.body,.sixes,main>.plan{display:contents}
+  .head{order:1}.mine{order:2}.turn{order:3}.theirs{order:4}.jump{order:5}.read{order:6}.real{order:7}.watch{order:8}.detail{order:9}.moretools{order:10}.log{order:11}
+  .head{grid-template-columns:minmax(0,1fr);gap:8px;padding:16px var(--gut) 0}.head h1{font-size:34px;margin-top:12px}.plan .watch .rows{display:block}
+  .head .vs{margin-top:8px;font-size:15px}
+  .verdict{text-align:left;display:flex;align-items:baseline;flex-wrap:wrap;gap:4px 10px;padding:0}.verdict .k{order:2}.verdict b{font-size:22px;margin:0;order:1}.verdict small{display:none}
+  .side{padding:20px var(--gut) 0}.mine .fine{display:none}.turn>.sub{display:none}.side .lab2{font-size:17px}.side .lab2 span{font-size:13px}
+  .row6{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px 8px;--art:76px}.row6::before{display:none}
+  .side .pk .st::after{content:"";position:absolute;left:-12px;right:-12px;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(23,22,26,.13) 20%,rgba(23,22,26,.13) 80%,transparent)}
+  :root[data-theme="dusk"] .side .pk .st::after{background:linear-gradient(90deg,transparent,rgba(214,218,255,.3) 20%,rgba(214,218,255,.3) 80%,transparent)}
+  .grps{--art:68px;gap:8px}.grp .pair{grid-template-columns:1fr;gap:12px}
+  .grp .gl{font-size:13px;margin-bottom:4px;gap:6px;white-space:nowrap}.grp .gl i{width:10px}.grps{gap:8px 4px}
+  .pk b{font-size:13px;font-stretch:85%;margin-top:8px}.pk small{font-stretch:90%}
+  .grps .pk small{display:none}
+  .mine .fine{margin-top:12px}
+  .plan>div{padding:0 var(--gut)}.turn{padding:24px var(--gut) 0}.real>.sub{display:none}.big{grid-template-columns:72px minmax(0,1fr)}.big .pk{--art:72px}.jump{margin-top:16px!important}.read,.real,.watch{padding-top:24px!important;padding-bottom:8px!important}
+  .plan h2,.detail h2{font-size:20px}.plan .sub{font-size:13px}
+  .steps{margin-top:8px}.steps li{grid-template-columns:20px 44px minmax(0,1fr);gap:8px;padding:8px 0}.steps img{width:44px;height:44px}.steps .n{font-size:17px}
+  .steps .mv{font-size:15px}.warn{font-size:13px;margin-top:8px}.fieldl{font-size:13px;margin-top:4px}
+  .side .acts{gap:8px}.side .acts .btn{flex:1 0 100%}.side .acts .btn2{flex:1;padding:0 8px;white-space:nowrap}
+  .jump{margin-top:24px;gap:0;padding:0;justify-content:stretch}.jump a{flex:1 1 0;justify-content:center;font-size:15px}.jump a small{margin-left:4px}.jump .lt{display:none}
+  .jump .ph{display:flex}.jump a.dt.on{color:var(--ink-2)}.jump a.dt.on::after{display:none}
+  .detail .pane.on{display:none}.detail{padding:0}
+  .moretools{display:block}
+  .log{grid-template-columns:minmax(0,1fr);gap:12px;padding:24px var(--gut)}.log .acts{flex-wrap:wrap}.log .btn2{flex:1}.log a{margin-left:0;flex-basis:100%}
+  footer{display:block;height:auto;padding:24px var(--gut)}footer .r{margin:12px 0 0;gap:16px;flex-wrap:wrap}}
+@media (max-width:1439px){.dg,.dg tbody,.dg tr,.dg td{display:block;width:100%}.dg thead{display:none}
+  .dg tr{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:24px;padding:12px 0;border-bottom:1px solid var(--rule)}
+  .dg td{border:0;padding:8px 0}.dg td.me{grid-column:1/-1;padding:0 0 4px}.dg td.me div img{display:block!important}.vsn{display:block;font:700 13px/1.3 var(--b);margin-bottom:4px}
+  .hx .s{display:inline;width:36px}.hx b{font-size:17px}.mvn{padding-left:42px}}
+@media (max-width:699px){.dg tr{grid-template-columns:minmax(0,1fr) minmax(0,1fr);column-gap:16px}.spd{columns:1}.deep{grid-template-columns:minmax(0,1fr);gap:24px}
+  .mg6 td{padding:8px 1px;font-stretch:85%}.mg6 th:first-child{width:28%}.togs .chip{height:44px}.mg6 th img{width:32px;height:32px}.mg6{font-size:13px}.dlegend span{flex-basis:100%}}
+@media (max-width:379px){.dg tr{grid-template-columns:minmax(0,1fr)}.head h1{font-size:28px}.grps{--art:60px}.row6{--art:68px}.jump a{font-size:13px}.jump a small{display:none}.pk b{font-stretch:80%}}
+</style></head><body><div class="page" id="page"></div>
+<script>
+document.documentElement.dataset.theme=(location.hash.slice(1).split('-')[0])||'light';
+/*DATA*/
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'})[m]);
+const nm=d=>d.startsWith('Mega ')?`<span class="mg">Mega</span>${esc(d.slice(5))}`:esc(d);
+function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx==r?((g-b)/d)%6:mx==g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}return[h,s,l];}
+// borrowed colour is always normalised (design-system 2b): keep the hue, saturation at least 72%, lightness 56%
+function norm(c){const[h,s0]=hsl(...c),s=Math.max(s0,.72),l=.56,C=(1-Math.abs(2*l-1))*s,X=C*(1-Math.abs((h/60)%2-1)),m=l-C/2,k=Math.floor(h/60)%6;return[[C,X,0],[X,C,0],[0,C,X],[0,X,C],[X,0,C],[C,0,X]][k].map(v=>Math.round((v+m)*255));}
+async function hue(src){const im=new Image();im.src=src;await im.decode();const S=64,c=document.createElement('canvas');c.width=c.height=S;const x=c.getContext('2d');x.drawImage(im,0,0,S,S);const d=x.getImageData(0,0,S,S).data,B=Array.from({length:18},()=>[0,0,0,0]);
+  for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const[h,s,l]=hsl(d[i],d[i+1],d[i+2]);if(s<.28||l<.2||l>.86)continue;const b=B[Math.floor(h/20)%18],w=s*s;b[0]+=d[i]*w;b[1]+=d[i+1]*w;b[2]+=d[i+2]*w;b[3]+=w;}
+  const o=B.map(b=>({c:b[3]?b.slice(0,3).map(v=>Math.round(v/b[3])):[150,150,165],w:b[3]})).sort((a,b)=>b.w-a.w);return o[0].c;}
+(async()=>{
+  const DK=document.documentElement.dataset.theme==='dusk',CP={},RAW={};
+  await Promise.all([...D.theirs,...D.mine].map(async m=>{if(!CP[m.img]){RAW[m.img]=await hue(m.img);CP[m.img]=norm(RAW[m.img]).join(',');}}));
+  const pk=(m,inner)=>`<div class="pk" style="--cp:${CP[m.img]}" data-c="${RAW[m.img].join(',')}"><div class="st"><i class="sh"></i><img src="${m.img}" alt=""></div><b>${nm(m.d)}</b>${inner||''}</div>`;
+  const img=d=>([...D.theirs,...D.mine].find(m=>m.d===d)||{}).img;
+  const header=`<header><div class="logo">${DK?D.logoD:D.logo}</div><nav class="main"><a>Home</a><a>Build</a><a>My Team</a><a class="on">Battle</a><a>Meta</a></nav><div class="s">Search</div></header>`;
+  const tools=`<div class="tools"><a class="on">Battle a team</a><a>Team preview practice</a><a>Test run<small>${D.test.n} teams</small></a><a>Speed tiers<small>top ${D.speedN}</small></a><a>Damage calc</a><a>Type chart<small>18 types</small></a><a class="lg r">Battle log<small>${D.log} games</small></a></div>`;
+  const vcls={'Favoured':'vf','Even match':'ve','Unfavoured':'vu'}[D.real.word];
+  const head=`<section class="head"><div><div class="eyebrow">Battle a team · ${esc(D.sheetKicker)}</div>
+      <h1 class="u"><span>Bring these four.</span><span class="pl">Lead the pair.</span></h1>
+      <p class="vs">Vs the Champion's six: <b>${esc(D.record)}</b> at ${esc(D.event)}, ${esc(D.date)}, ${D.players} players</p></div>
+    <div class="verdict"><div class="k">From real games</div><b class="${vcls}">${esc(D.real.word)}${D.real.sofar?' so far':''}</b><small>${D.real.games} tournament games · ${esc(D.styleMine)} vs ${esc(D.styleTheirs)}</small></div></section>`;
+  const theirs=`<div class="side theirs"><div class="lab2">Their six<span>${esc(D.styleTheirs)}</span></div>
+      <div class="row6">${D.theirs.map(m=>pk(m,`<small>${esc(m.item)}</small>${m.lead?'<span class="ll">Likely lead</span>':''}`)).join('')}</div>
+      <div class="acts"><div class="btn main">Change their six</div><div class="btn2"><span>Copy for Showdown</span></div><a>Clear</a></div>
+      <p class="fine">Type them as you see them at team preview, pick one of ${D.nTeams} top tournament teams, or a recent opponent (${D.recent||'none yet'}).</p></div>`;
+  const by=r=>D.mine.filter(m=>m.role===r);
+  const grp=(cls,lab,ms)=>`<div class="grp ${cls}"><div class="gl"><i></i>${lab}</div><div class="pair">${ms.map(m=>pk(m,`<small>${esc(m.item)}</small>`)).join('')}</div></div>`;
+  const mine=`<div class="side mine"><div class="lab2">Your six<span>${esc(D.styleMine)}</span></div>
+      <div class="row6 grps">${grp('lead','Lead',by('Lead'))}${grp('back','Back',by('Back'))}${grp('home','Leave home',by('Leave home'))}</div>
+      <p class="fine">${esc(D.leadNote.replace('Tested on','Lead pair tested on'))}</p></div>`;
+  const T=D.turn;
+  const turn=`<div class="turn"><h2 class="u">Turn one, in move order</h2><p class="sub">Your ${esc(T.me.join(' + '))} vs their likely ${esc(T.them.join(' + '))}</p>
+      <ol class="steps">${T.steps.map((s,i)=>`<li><i class="n">${i+1}</i><img src="${s.img}" alt=""><div><div class="who"><span class="sd ${s.side==='You'?'you':'them'}">${s.side}</span>${esc(s.d)} · ${s.spe} Speed${s.prio?`, ${esc(s.prio)} priority`:''}</div><div class="mv">${esc(s.move)}</div><div class="why">${esc(s.why)}</div></div></li>`).join('')}</ol>
+      <p class="warn"><i>Watch</i>${esc(T.watch)}</p><p class="fieldl">Field on turn 1: <b>${esc(T.field)}</b></p><a class="more-link">How turn one is worked out ›</a></div>`;
+  const thr=D.theirs.find(m=>m.d===D.threat.d);
+  const read=`<div class="read"><h2 class="u">The read</h2><p class="sub">What decides this match</p>
+      <div class="big">${pk(thr).replace(/<b>.*?<\/b>/,"")}<div><div class="k">Biggest threat</div><h3 class="u">${esc(D.threat.d)}</h3><p>${esc(D.threat.why)} for their side</p></div></div>
+      <div class="fo"><b>${D.threat.fake}</b><span>Fake Out on their side<small>${esc(D.watch.filter(w=>w.tags.some(t=>t.t==='Fake Out')).map(w=>w.n).join(', '))||'Nobody'} can flinch one of your leads on turn 1</small></span></div>
+</div><div class="real rg"><h2 class="u">From real games</h2><p class="sub">${D.real.games} tournament games: ${esc(D.real.word)}${D.real.sofar?' so far':''}. The pairings that stand out:</p><ul>${D.real.pairs.map(p=>`<li><i class="${p.kind==='Hurts you'?'hu':'he'}">${esc(p.kind)}</i><span>Your ${esc(p.mine)} vs their ${esc(p.theirs)}</span></li>`).join('')}</ul></div>`;
+  const watch=`<div class="watch"><h2 class="u">Watch out</h2><p class="sub">${esc(D.watchSub)}</p>
+      <div class="rows">${D.watch.map(w=>`<div class="r"><img src="${w.img}" alt=""><div><b>${esc(w.n)}</b>${w.tags.map(t=>`<div class="tg"><em class="${t.sev}">${esc(t.t)}</em>${esc(t.d)}</div>`).join('')}</div></div>`).join('')}</div></div>`;
+  const nP=D.grid.length*D.grid[0].length;
+  const jump=`<nav class="jump"><a class="ph on">Plan</a><a class="dt"><span class="lt">Damage both ways</span><span class="sl">Damage</span><small>${nP}</small><small class="lt">pairs ›</small></a><a class="dt"><span class="lt">Who moves first</span><span class="sl">Speed</span><small>${D.speed.length}</small><small class="lt">Pokémon ›</small></a><a class="dt"><span class="lt">Deeper read</span><span class="sl">Deeper</span><small>36</small><small class="lt">pair grid ›</small></a><span class="hint">Open one for the detail</span></nav>`;
+  const kc=k=>'k'+(k.lv>3?9:k.lv);
+  const hx=(c,s)=>`<div class="hx ${s==='You'?'y':'t'}"><span class="s">${s}</span><b>${c.pct}<span class="unit">%</span></b><i class="${kc(c)}">${esc(c.k)}</i></div><div class="mvn">${esc(c.move)}</div>`;
+  const dmg=`<div class="pane"><h2 class="u">Damage both ways</h2><p class="sub">Your four against their six: your best hit on them, and their best hit on you</p>
+      <div class="dlegend"><span><b>%</b> top roll, as % of HP</span><span><b>OHKO / 2HKO / 3HKO</b> hits to knock out (a % = that share of rolls)</span><span><b>Field</b> sun, from the likely leads</span><span>Each side's usual set</span></div>
+      <table class="dg"><thead><tr><th>Your four ↓ · their six →</th>${D.theirs.map(o=>`<th><img src="${o.img}" alt="">${nm(o.d).replace('<span class="mg">Mega</span>','<span class="mg">Mega </span>')}</th>`).join('')}</tr></thead>
+      <tbody>${D.grid.map((row,i)=>`<tr><td class="me"><div><img src="${D.four[i].img}" alt="" style="width:40px;height:40px;object-fit:contain">${esc(D.four[i].d)}</div></td>${row.map((c,j)=>`<td><div class="vsn">vs ${esc(D.theirs[j].d)}</div>${hx(c.you,'You')}${hx(c.them,'Them')}</td>`).join('')}</tr>`).join('')}</tbody></table>
+      <div class="calcpick"><div class="t">Damage calc: pick an attacker to hit their ${esc(D.theirs[0].d)}<small>Opens the full calc with that pair, sets and field filled in</small></div>${D.mine.map(m=>`<span class="chip">${esc(m.d)}</span>`).join('')}</div></div>`;
+  const speed=`<div class="pane"><h2 class="u">Who moves first</h2><p class="sub">Fastest first · your four and their six</p>
+      <div class="togs">${['Your Tailwind','Their Tailwind','Them −1','They’re paralyzed','Trick Room'].map(t=>`<span class="chip">${t}</span>`).join('')}</div>
+      <ol class="spd">${D.speed.map(s=>`<li><img src="${s.img}" alt=""><div class="nm"><span class="${s.me?'me':''}">${s.me?'You':'Them'}</span> ${esc(s.d)}<small>${[s.scarf?'Choice Scarf':'',s.tie?'Speed tie':'',s.after?`${s.after} after its item`:''].filter(Boolean).join(' · ')||'&nbsp;'}</small></div><div class="v">${s.spe}<span class="unit"> Speed</span></div></li>`).join('')}</ol>
+      <p class="prio">${esc(D.prio)}</p></div>`;
+  const sg=v=>(v>0?'+':'')+v;
+  const deep=`<div class="pane"><h2 class="u">Deeper read</h2><p class="sub">Archetypes, their threats, the full matchup grid</p><div class="deep"><div>
+      <div class="av"><span>You: ${esc(D.styleMine)}</span><span class="vsx">vs</span><span>Them: ${esc(D.styleTheirs)}</span></div>
+      ${D.notes.map(n=>`<div class="note"><em>${n.tone==='good'?'Edge':n.tone==='bad'?'Watch':'Note'}</em><b>${esc(n.t)}</b>: ${esc(n.d)}</div>`).join('')}
+      ${D.threats.map(t=>`<div class="note"><em>Watch</em><b>${esc(t.o)}</b>: ${esc(t.move)} hits ${esc(t.hit.join(', '))} super effectively. ${t.ans.length?'Answer: '+esc(t.ans.join(', '))+'.':'No clean answer in your 4.'}</div>`).join('')}</div>
+      <div><table class="mg6"><tr><th>You ↓ · them →</th>${D.theirs.map(o=>`<th title="${esc(o.d)}"><img src="${o.img}" alt="${esc(o.d)}"></th>`).join('')}</tr>${D.mine.map((m,i)=>`<tr><td>${esc(m.d)}</td>${D.M[i].map(v=>`<td class="${v>=.75?'p':v<=-.75?'m':''}">${sg(v)}</td>`).join('')}</tr>`).join('')}</table>
+      <p class="fine" style="margin-top:8px">Columns, left to right: ${esc(D.theirs.map(o=>o.d).join(', '))}. Plus means you hit them harder than they hit you, with each side's most common moves and abilities. Speed breaks ties.</p></div></div></div>`;
+  const detail=`<section class="detail">${dmg}${speed}${deep}</section>`;
+  const four=D.four.map(m=>m.d);
+  const log=`<section class="log"><div><h2 class="u">Battle log</h2><p>No games logged yet. After the match, log the result with the plan's four: <b>lead ${esc(four[0])} + ${esc(four[1])}, back ${esc(four[2])} + ${esc(four[3])}</b> (tap to change).</p></div>
+      <div class="acts"><div class="btn2"><span>Win</span></div><div class="btn2"><span>Loss</span></div><a>Log from a Showdown replay ›</a></div></section>`;
+  const more=`<section class="moretools"><h2 class="u">More ways to prep</h2>
+      ${[['Team preview practice',`Pick four and two leads against real ladder teams (${D.practice})`],['Test run',`Your team into the latest ${D.test.n} top teams`],['Speed tiers',`Your six against the ${D.speedN} most-used Pokémon`],['Damage calc','Any attacker into any defender'],['Type chart','18 types, or look up a Pokémon']].map(([a,b])=>`<a><span>${a}<small>${esc(b)}</small></span><i>›</i></a>`).join('')}</section>`;
+  const footer=`<footer>${DK?D.logoD:D.logo}<span>NastyPlot is an unofficial, fan-made tool.</span><div class="r"><span>How We Calculate</span><span>About</span><span>Send Feedback</span></div></footer>`;
+  document.getElementById('page').innerHTML='<i class="grain"></i>'+header+tools+`<main><div class="atmos"></div>${head}<section class="body"><div class="sixes">${theirs}${mine}</div>${turn}</section><section class="plan">${read}${watch}</section>${jump}${detail}${more}${log}</main>`+footer;
+  // debug hooks for checking the closed tabs: #light-speed, #light-deep, #light-dmg (phone shows the tab instead of the plan)
+  const tab=location.hash.slice(1).split('-')[1];if(tab){const ix={dmg:0,speed:1,deep:2}[tab];document.querySelectorAll('.pane').forEach((p,i)=>p.classList.toggle('on',i===ix));
+    document.querySelectorAll('.jump a.dt').forEach((a,i)=>a.classList.toggle('on',i===ix));document.documentElement.dataset.tab=tab;}
+  await document.fonts.ready;
+  // team light (Sim kept it, design-system 2b): a small low pool of each Pokémon's own colour at its feet, measured from the page
+  const mn=document.querySelector('main'),mr=mn.getBoundingClientRect(),a2=DK?.22:.16,P=x=>Math.round(x);let bottom=0;
+  const L=[...document.querySelectorAll('.sixes .pk')].map(p=>{const r=p.querySelector('img').getBoundingClientRect();bottom=Math.max(bottom,r.bottom-mr.top);
+    return `radial-gradient(${P(r.width*1.1)}px ${P(r.height*.6)}px at ${P(r.left-mr.left+r.width/2)}px ${P(r.bottom-mr.top-r.height*.25)}px,rgba(${p.dataset.c},${a2}),transparent)`;});
+  const at=document.querySelector('.atmos');at.style.height=P(bottom+120)+'px';at.style.background=L.join(',');
+  document.body.dataset.ready=1;})();
+</script>
+<style>:root[data-tab] .jump a.ph.on{color:var(--ink-2)}:root[data-tab] .jump a.ph.on::after{display:none}
+@media (max-width:699px){:root[data-tab] .read,:root[data-tab] .real,:root[data-tab] .watch{display:none}:root[data-tab] .detail .pane.on{display:block;padding:24px var(--gut)}
+  :root[data-tab] .jump a.dt.on{color:var(--ink)}:root[data-tab] .jump a.dt.on::after{display:block}}</style>
+</body></html>

@@ -3,14 +3,17 @@
 // Run: node app/test/run.mjs   (exit code 1 on any failure)
 import fs from 'node:fs'; import {execFileSync} from 'node:child_process'; import {chromium} from 'playwright'; import {fileURLToPath} from 'node:url';
 // fileURLToPath works on Windows too (URL.pathname gives "/C:/..." there)
+import {perfDoc} from '../data-docs.mjs';
+import {withFixtures} from '../../experiments/md-fixtures.mjs';
 const APP = fileURLToPath(new URL('..', import.meta.url)), OUT = APP + '../out/';
 execFileSync('node', [APP + 'build.mjs'], {stdio: 'inherit'});
 const page = APP + 'dist/test.html';
 fs.writeFileSync(page, '<!doctype html><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">' + fs.readFileSync(APP + 'dist/page.html', 'utf8'));
 const rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json');
-const DOCS = {'meta/results': L && L.results, 'meta/perf': L && {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'),
+const DOCS = {'meta/results': L && L.results, 'meta/perf': perfDoc(L, rd('perf.json')), 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'),
   'meta/history': rd('history.json'), 'meta/model': rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json')};
+withFixtures(DOCS); /* Reg M-D day (gap G11): no real teams yet -> the fixture teams, with a "fixture teams" line (experiments/md-fixtures.mjs) */
 const VIEWS = ['home', 'report', 'auto', 'matchup', 'speed', 'calc', 'gauntlet', 'arch', 'coverage', 'types', 'ratings', 'meta', 'top', 'events', 'sets', 'teams', 'box'];
 let fails = 0; const ok = (c, msg) => { if (!c) { fails++; console.log('  FAIL', msg); } else console.log('  ok  ', msg); };
 const browser = await chromium.launch();

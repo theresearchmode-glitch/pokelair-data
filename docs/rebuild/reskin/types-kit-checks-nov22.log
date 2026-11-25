@@ -1,0 +1,81 @@
+# hY1 Type Chart on the kit: checks (Nov 22)
+## BEFORE (untouched copy e62e97d6)
+== kitpage 12:00:57
+   exit 0 : kit-page: all 14 views passed (7 widths x day and night) 
+== overlap 12:01:22
+   exit 0 : v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 45s) 
+== qcheck 12:02:07
+   exit 0 :   (1 known findings no longer seen: remove them with KNOWN=write after a look) qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 5 findings, 0 new; 31s 
+== tapsize 12:02:38
+   exit 0 : tap-size: all passed 
+== unbounded 12:04:11
+   exit 0 : v2-unbounded: none outside the named exception across 28 pages 
+== folds 12:05:13
+   exit 0 : v2-folds: all passed 
+== tokens 12:05:28
+   exit 0 : tokens-doc: up to date (571 tokens) 
+== cbattle 12:05:28
+   exit 0 : behaviour: 83 pass, 0 FAIL, 0 known bugs, 0 fixed?, 4 skipped; 454s  (adapter v2) 
+== minors-main1 12:13:02
+   exit 0 : v2-minors (main1):all passed 
+(the first baseline run was stopped by its time limit inside minors main2; main2 and groups rerun:)
+== minors-main2 12:40:31
+   exit 0 : v2-minors (main2):all passed 
+== minors-groups 12:46:47
+   exit 0 : v2-minors (groups):all passed 
+== done 12:54:44
+
+[exited with code 0]
+## AFTER (final code)
+== kitpage 13:25:47
+   exit 0 : kit-page: all 14 views passed (7 widths x day and night) 
+== overlap 13:26:17
+   exit 0 : v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 46s) 
+== qcheck 13:27:04
+   exit 0 :   (6 known findings no longer seen: remove them with KNOWN=write after a look) qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 32s 
+== tapsize 13:27:36
+   exit 0 : tap-size: all passed 
+== unbounded 13:29:12
+   exit 0 : v2-unbounded: none outside the named exception across 28 pages 
+== folds 13:30:14
+   exit 0 : v2-folds: all passed 
+== tokens 13:30:30
+   exit 0 : tokens-doc: up to date (571 tokens) 
+== cbattle 13:30:30
+   exit 0 : behaviour: 83 pass, 0 FAIL, 0 known bugs, 0 fixed?, 4 skipped; 458s  (adapter v2) 
+== minors-main1 13:38:08
+   exit 0 : v2-minors (main1):all passed 
+== minors-main2 13:50:05
+   exit 0 : v2-minors (main2):all passed 
+== minors-groups 13:56:32
+   exit 0 : v2-minors (groups):all passed 
+== done 14:04:38
+## heights (390 day; 1440) same builds
+## before-pd
+day team 2798 (What hits Mega Charizard Y hard.)
+day emptyteam 2870 (What hits Sneasler hard.)
+day clear 1355 (What hits what.)
+day types 2425 (What hits Water and Ground hard.)
+day rotom 2818 (What hits Heat Rotom hard.)
+1440 team 1937
+## new-pd
+day team 2720 (What hits Mega Charizard Y hard.)
+day emptyteam 2774 (What hits Sneasler hard.)
+day clear 1593 (What hits what.)
+day types 2581 (What hits Water and Ground hard.)
+day rotom 2837 (What hits Heat Rotom hard.)
+1440 team 2985
+## before-plain
+day team 2798 (What hits Mega Charizard Y hard.)
+day emptyteam 2424 (What hits Rillaboom hard.)
+day clear 1355 (What hits what.)
+day types 2425 (What hits Water and Ground hard.)
+day rotom 2818 (What hits Heat Rotom hard.)
+1440 team 1937
+## new-plain
+day team 2740 (What hits Mega Charizard Y hard.)
+day emptyteam 2456 (What hits Rillaboom hard.)
+day clear 1593 (What hits what.)
+day types 2581 (What hits Water and Ground hard.)
+day rotom 2837 (What hits Heat Rotom hard.)
+1440 team 2985

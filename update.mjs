@@ -162,8 +162,8 @@ const shrink = (w, g, K) => Math.round(1000 * (w + K * base) / (g + K)) / 1000;
 const mon = new Map();
 keys.forEach((k, j) => { const n = nm[j]; if (!n) return; let w = 0, g = 0, t = 0; for (const e of E) if (e.ix.includes(j)) { w += e.w; g += e.w + e.l; t++; }
   const o = mon.get(n) || {w: 0, g: 0, t: 0, bs: 0}; o.w += w; o.g += g; o.t += t; o.bs += B[j] * g; mon.set(n, o); });
-const P = new Map(), C3 = new Map(), comp = new Map();
-for (const e of E) { const m = [...new Set(e.ix.map(j => nm[j]).filter(Boolean))].sort(); if (m.length < 6) continue; const g = e.w + e.l;
+const P = new Map(), C3 = new Map(), comp = new Map(), MG = [0, 0, 0, 0]; // MG: full sixes with 0 / 1 / 2 / 3+ Mega options (Build's Megas tip, Q13d Nov 18; experiments/mega-share.mjs re-counts it)
+for (const e of E) { const m = [...new Set(e.ix.map(j => nm[j]).filter(Boolean))].sort(); if (m.length < 6) continue; const g = e.w + e.l; MG[Math.min(3, m.filter(x => /-Mega/.test(x)).length)]++;
   const ck = m.join('|'), co = comp.get(ck) || {n: 0, w: 0, g: 0}; co.n++; co.w += e.w; co.g += g; comp.set(ck, co);
   for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = m[i] + '|' + m[j], o = P.get(k) || {n: 0, w: 0, g: 0}; o.n++; o.w += e.w; o.g += g; P.set(k, o);
     for (let l = j + 1; l < 6; l++) { const k3 = k + '|' + m[l], q = C3.get(k3) || {n: 0, w: 0, g: 0}; q.n++; q.w += e.w; q.g += g; C3.set(k3, q); } } }
@@ -178,7 +178,7 @@ const out = {updated: new Date().toISOString(), reg: FORMAT, tournaments: KEEP.l
     updated: new Date().toISOString().slice(0, 10),
     rows: [...mon].filter(([n]) => !/-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1]),
     megas: [...mon].filter(([n]) => /-Mega/.test(n)).map(([n, o]) => [n, Math.round(1000 * o.t / E.length) / 10, Math.round(1000 * o.w / (o.g || 1)) / 10, o.g]).sort((x, y) => y[1] - x[1])},
-  results: {source: src, teams: E.length, base: Math.round(base * 1e4) / 1e4, minCore: 40,
+  results: {source: src, teams: E.length, base: Math.round(base * 1e4) / 1e4, minCore: 40, megaN: MG,
     mons: Object.fromEntries([...mon].map(([n, o]) => [n, [o.t, shrink(o.w, o.g, 40)]])),
     pairs: Object.fromEntries([...P].filter(([, o]) => o.n >= 25).map(([k, o]) => [k, [o.n, shrink(o.w, o.g, 40)]])),
     cores: [...C3].filter(([, o]) => o.n >= 40).map(([k, o]) => [...k.split('|'), o.n, shrink(o.w, o.g, 40)]).sort((a, b) => b[4] - a[4]),

@@ -1,0 +1,21 @@
+/* iPhone, with NastyPlot's voice and the v3 fixes */
+:root{--plot:#0078BF;--u:"Unbounded",system-ui,sans-serif;--ink2:#48454F;--ink3:#66636E}html[data-theme=dark]{--plot:#4AAEF5;--ink2:#CBC7D2;--ink3:#A9A5B1}
+h1,h2,.giant,.num,.facts b,.srow .sp,.week .v,.trow h3{font-family:var(--u);font-style:italic;font-synthesis:style;font-variation-settings:normal}
+h1{font-size:35px;line-height:1.1;font-weight:900;letter-spacing:-.02em}h1 b{font-weight:900;color:var(--plot)!important}
+h2{font-size:27px;line-height:1.16;font-weight:900;letter-spacing:-.02em}h2 b{font-weight:900;color:var(--plot)}
+.giant{font-weight:900;letter-spacing:-.07em}.grade .giant{font-size:206px!important}
+.specs .num{font-size:28px;font-weight:500;letter-spacing:-.04em}.specs .num small{font-size:16px}
+.specs span,.cap small,.cap i,.eyebrow,.facts div,.role{color:var(--ink2)}
+.facts b{font-size:26px;font-weight:500;letter-spacing:-.04em;margin-bottom:3px}.srow .sp{font-size:26px;font-weight:500;letter-spacing:-.04em;top:10px;color:var(--ink)!important}.week .v{font-size:22px;font-weight:500;letter-spacing:-.04em}
+.trow h3{font-size:19px;font-weight:900;letter-spacing:-.03em}
+.eyebrow{display:flex;align-items:center;gap:9px}.grade .eyebrow{justify-content:center}.eyebrow::before{content:"";width:18px;height:6px;background:var(--sec,var(--plot));transform:skewX(-24deg)}
+.pill{border-radius:0;font:800 14px/1 var(--u);font-style:italic;clip-path:polygon(13px 0,100% 0,calc(100% - 13px) 100%,0 100%)}
+.badge{border-radius:0;width:72px;height:60px;clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%);font:900 32px/1 var(--u);font-style:italic}
+header .logo svg{height:34px;display:block}footer .logo svg{height:26px;display:block;margin-bottom:10px}
+.hero .note{display:none}
+.cap small.lead{color:var(--plot);font-weight:700}
+.lean{position:absolute;z-index:0;border-radius:6px}
+.duo{margin-top:16px}.duo div{position:relative;display:grid;grid-template-columns:92px 1fr;align-items:baseline;gap:6px 10px;padding:12px 0 14px;border-top:1px solid var(--rule)}
+.duo b{font:900 24px/1 var(--u);font-style:italic;letter-spacing:-.03em}.duo span{font-size:14px;color:var(--ink2)}.duo i{grid-column:1/-1;height:6px;transform:skewX(-24deg);transform-origin:left}
+.pairs{height:792px}.prev{height:900px}
+.brk{position:absolute;z-index:5;height:10px;border:1.5px solid var(--ink2);border-bottom:0}.brk span{position:absolute;left:0;right:0;top:-24px;text-align:center;font:600 13px/1 var(--b);color:var(--ink2)}

@@ -2,7 +2,7 @@ name: Test NastyPlot page
 on:
   push:
     # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
-    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/plan-cache-test.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', '.github/workflows/test.yml', 'formats.mjs', 'reg.mjs', 'reg-guard.mjs', 'reg-stamp.mjs', 'regstate.mjs', 'update.mjs', 'health.mjs', 'experiments/reg-*.mjs', 'experiments/md-day-one-test.mjs', 'experiments/backup-sources-test.mjs', 'sources/**']
+    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/post-data-test.mjs', 'experiments/post-news-test.mjs', 'post-news.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', 'experiments/plan-cache-test.mjs', 'experiments/public-build-test.mjs', 'experiments/security-csp-test.mjs', '.github/workflows/test.yml', 'formats.mjs', 'reg.mjs', 'reg-guard.mjs', 'reg-stamp.mjs', 'regstate.mjs', 'update.mjs', 'health.mjs', 'experiments/reg-*.mjs', 'experiments/md-day-one-test.mjs', 'experiments/backup-sources-test.mjs', 'sources/**', 'package.json', 'package-lock.json']
   workflow_dispatch:
   # Nov 9: commits made by GitHub's own jobs (the daily data, the weekly re-check, the monthly check) never trigger a push run
   # (GitHub rule for its built-in token), so fresh data was never tested and the live branch could not move. Start the tests
@@ -17,9 +17,94 @@ concurrency:
   group: test-${{ github.ref }}
   cancel-in-progress: true
 jobs:
+  # The new site's behaviour tests (code review C-C1, Nov 17): one job per group, since a full run is ~40 min, over one job's limit.
+  # Each runs on the test fixture; a failure on known-v2.json (each with its reason) is reported as "known"; any other failure fails.
+  behaviour-v2:
+    name: new site behaviour (${{ matrix.group }})
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        group: [A-team, B-build, C-battle, D-meta-shell]
+    steps:
+      - name: Wait for the rest of a multi-commit change
+        run: sleep 120
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm ci && npx playwright install --with-deps chromium
+      - run: node app/build.mjs --v2 --art=../src/v2/art/
+      - run: PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs ${{ matrix.group }}
+      # phone overlap and edge check (hybrid rule 9, Nov 21): text on text / pictures, covered, clipped, mid-word breaks
+      - if: ${{ !cancelled() && matrix.group == 'A-team' }}
+        run: PAGE=app/dist/v2.html node app/test/v2-overlap.mjs
+      # the kit's taps tap once, also when the page is slow to answer (Nov 19, EDIT-03 on a loaded machine)
+      - if: ${{ !cancelled() && matrix.group == 'A-team' }}
+        run: PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/tap-once.mjs
+  # Safari's engine (code review C-I8, Nov 17: Sim tests on iPhone and iPad; the suites ran in Chromium only). The My Team group
+  # on WebKit. Reported, not blocking yet. SUG-05 (Nov 18): failed 4 of 5 here; the test read the 4 s toast after a settle
+  # that ran past it in WebKit; it now reads the Undo while the toast is up (5 of 5 in both engines).
+  behaviour-webkit:
+    name: new site behaviour in Safari's engine (A-team)
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
+    # ubuntu-24.04, not -latest: Playwright 1.49.1's WebKit needs libicu74, libvpx9, libxml2, libx264-164, which the newer
+    # image doesn't have (first CI run, Nov 17: 'Package libicu74 has no installation candidate')
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60   # Nov 18: installing WebKit took 20 of the 35 minutes in run 1372, so the test was cut off; alert-only job
+    continue-on-error: true
+    steps:
+      - name: Wait for the rest of a multi-commit change
+        run: sleep 120
+      - uses: actions/checkout@v5
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      # Playwright 1.63 (WebKit 26.6, close to current iPhones) for this job only: the pinned 1.49.1 brings WebKit 18.2, whose Linux
+      # build crashed on plain style changes and lost the scroll range after a redraw (Nov 17: X-05, SUG-08, MU-04 failed there,
+      # pass on 26.6). chromium too: the build snapshots the static first screen.
+      - run: npm ci && npm install --no-save playwright@1.63.0 && npx playwright install --with-deps webkit chromium
+      - run: node app/build.mjs --v2 --art=../src/v2/art/
+      - run: BROWSER=webkit PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs A-team
+      - run: BROWSER=webkit PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/tap-once.mjs
+        if: ${{ !cancelled() }}
+  # The full quality check of RULES.md 00q on every page (code review C-I8, Nov 17: it only ran by hand): contained, no text on
+  # text, sizes on the scale, tap targets, no code as text; 5 widths, day and night, on the frozen data. Findings already judged
+  # are in app/test/qcheck-known.json; any new one fails.
+  quality-v2:
+    name: new site full quality check (every page and view)
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 55   # every view added Nov 17: measured 1,693 s here
+    steps:
+      - name: Wait for the rest of a multi-commit change
+        run: sleep 120
+      - uses: actions/checkout@v5
+      - name: Use the frozen test data
+        env:
+          TEST_DATA: 0c992f6977bc1cecc4e03eb269969a82b99681cf
+        run: |
+          git fetch --depth=1 origin $TEST_DATA
+          git checkout $TEST_DATA -- out/
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm ci && npx playwright install --with-deps chromium
+      - run: node app/build.mjs --v2 --preview-data
+      - run: PAGE=app/dist/v2.html node app/test/qcheck-all.mjs
   # Code tests (Sim, Nov 9, "split the tests"): every check runs on a FROZEN copy of the data (the out/ folder of commit
   # TEST_DATA below: the last data on which everything passed), so red here means the CODE broke, not that today's data
   # changed a result. Change TEST_DATA only on purpose (e.g. a new regulation), to a commit whose data passes every check.
+  # Nov 18: the new site's checks moved to their own jobs below (with them this job ran 34-35+ min and was cancelled at its
+  # limit in runs 1331-1351, so golden, same-grade and the logic checks never ran). Nothing was dropped: every step still runs.
   test:
     name: code tests (frozen data)
     runs-on: ubuntu-latest
@@ -38,7 +123,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0.10.11 github:smogon/pokemon-showdown#1242c1e2d9763ba5b85d33f13aecb89bae19ae3d && npx playwright install --with-deps chromium
+      - run: npm ci && npx playwright install --with-deps chromium
       # Showdown's Champions mod with Reg M-C data (pinned GitHub commit; npm 0.11.11 stops at Reg M-B): build it once
       - run: cd node_modules/pokemon-showdown && node build
       - run: node app/test/run.mjs
@@ -49,6 +134,14 @@ jobs:
       - run: node experiments/reg-guard-test.mjs
       - run: node experiments/md-day-one-test.mjs
       - run: node experiments/backup-sources-test.mjs
+        if: ${{ !cancelled() }}
+      - run: node experiments/tour-modes-test.mjs
+        if: ${{ !cancelled() }}
+      # Mystery Gifts and news (app/src/data/post.js): every gift sourced, codes cited, dates parse, start before end, every link https
+      - run: node experiments/post-data-test.mjs
+        if: ${{ !cancelled() }}
+      # the daily news read (post-news.mjs) and its document out/post.json (meta/post): fail safe, https only, no article text, size limit
+      - run: node experiments/post-news-test.mjs
         if: ${{ !cancelled() }}
       # mechanics vs Smogon's Champions engine: every stat exact, damage 98.5%+ exact on all 16 rolls
       - run: node experiments/speed-check.mjs
@@ -100,6 +193,272 @@ jobs:
         with:
           name: page
           path: app/dist/page.html
+  # The new site's code checks (frozen data), split out of "code tests" on Nov 18 (see there). Same steps, same order.
+  v2-checks:
+    name: new site code checks (frozen data)
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120  # Nov 20: run 44804692099 ran past 53 minutes at step 48 of 84 (the day added many tests); Nov 19: run 44667948297 was cut off at 35 minutes after every test up to v2-split passed (more Q tests keep coming)
+    steps:
+      - name: Wait for the rest of a multi-commit change
+        run: sleep 120
+      - uses: actions/checkout@v5
+      - name: Use the frozen test data
+        env:
+          TEST_DATA: 0c992f6977bc1cecc4e03eb269969a82b99681cf
+        run: |
+          git fetch --depth=1 origin $TEST_DATA
+          git checkout $TEST_DATA -- out/
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm ci && npx playwright install --with-deps chromium
+      # the rebuild's guard rails (R3): no !important, no id selectors, type/spacing on the scale, colours only in tokens.css
+      - run: node app/test/v2-guard.mjs
+        if: ${{ !cancelled() }}
+      # privacy (code review C-C2, Nov 17): no real player name in the committed test data or the built Preview page
+      - run: node app/test/no-names.mjs && node app/build.mjs --v2 --preview-data && node app/test/no-names.mjs app/dist/v2.html
+        if: ${{ !cancelled() }}
+      # caches follow nature and stat points (code review A2-I4 + A1-I2): the suggestion baseline and Test Run (needs the --preview-data build above)
+      - run: PAGE=app/dist/v2.html node app/test/v2-caches.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-folds.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-partial.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-redraws.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-trwarm.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-back.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-toast.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-rmjump.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-clear.mjs
+        if: ${{ !cancelled() }}
+      # form errors reach the field (design review Nov 19 #6): aria-invalid, aria-describedby, focus on Import, Edit Set, Send Feedback
+      - run: PAGE=app/dist/v2.html node app/test/v2-formerr.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-pksrc.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-trkfit.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-usagepicks.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-pbppair.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q21.mjs
+      # Commander (Reg M-D, Nov 25): Tatsugiri into Dondozo in Turn One (+2 every stat, untargetable); fails on the build before it
+      - run: PAGE=app/dist/v2.html node experiments/commander-test.mjs
+      # Strength Score source line (Sim, Nov 25): 'Graded against Reg M-C's teams...' only before Reg M-D has results
+      - run: PAGE=app/dist/v2.html node experiments/score-src-test.mjs
+      # Not rated yet (Sim, Nov 25): no number/tier/rank for a Pokémon without results in a new regulation's early days
+      - run: PAGE=app/dist/v2.html node experiments/unrated-test.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q25.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q26.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q24.mjs
+        if: ${{ !cancelled() }}
+      # W5 (Sim, Nov 19): News dates are the official pages' (UTC) dates, the same for every reader's time zone
+      - run: PAGE=app/dist/v2.html node app/test/v2-w5.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q31.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q32.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q33.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-arena.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q41.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q45.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q44.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q42.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q43.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q46.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q47.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-kob.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q52.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q59.mjs
+        if: ${{ !cancelled() }}
+
+  v2-checks-2:
+    name: new site code checks, part 2 (frozen data)
+    # Nov 20 (Claude, under authority): split from v2-checks, which ran past 60 minutes; same setup and build, second half of the tests
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 120  # Nov 20: run 44804692099 ran past 53 minutes at step 48 of 84 (the day added many tests); Nov 19: run 44667948297 was cut off at 35 minutes after every test up to v2-split passed (more Q tests keep coming)
+    steps:
+      - name: Wait for the rest of a multi-commit change
+        run: sleep 120
+      - uses: actions/checkout@v5
+      - name: Use the frozen test data
+        env:
+          TEST_DATA: 0c992f6977bc1cecc4e03eb269969a82b99681cf
+        run: |
+          git fetch --depth=1 origin $TEST_DATA
+          git checkout $TEST_DATA -- out/
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm ci && npx playwright install --with-deps chromium
+      # the rebuild's guard rails (R3): no !important, no id selectors, type/spacing on the scale, colours only in tokens.css
+      - run: node app/test/v2-guard.mjs
+        if: ${{ !cancelled() }}
+      # privacy (code review C-C2, Nov 17): no real player name in the committed test data or the built Preview page
+      - run: node app/test/no-names.mjs && node app/build.mjs --v2 --preview-data && node app/test/no-names.mjs app/dist/v2.html
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q60.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-swapname.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q68.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-s1.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-s26.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-s17.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-s13.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q69.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q78.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q72.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-s16.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-s2.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-s33.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-wnew.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q83.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q84.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q16.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q17.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q22.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q19.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q18.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q14.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-q23.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-t1rules.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-cxev.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-oddaddr.mjs
+        if: ${{ !cancelled() }}
+      - run: LT_ALERT=1 PAGE=app/dist/v2.html node app/test/v2-longtask.mjs   # the build-then-draw order blocks; the timing part only alerts (shared runners)
+        if: ${{ !cancelled() }}
+      # News and Mystery Gifts read the daily document meta/post (Nov 18): a headline only in it shows, none or a broken one falls back to post.js
+      - run: PAGE=app/dist/v2.html node app/test/v2-post-doc.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-unbounded.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-sixof.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-shown-score.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-ckwin.mjs
+        if: ${{ !cancelled() }}
+      - run: PAGE=app/dist/v2.html node app/test/v2-paste.mjs
+        if: ${{ !cancelled() }}
+      # Team Card / Poster: a long name's lines are spaced by the size they are drawn at (review FP-5)
+      - run: PAGE=app/dist/v2.html node app/test/share-fz.mjs
+        if: ${{ !cancelled() }}
+      # pre-launch check 1 (Nov 17): no page draws the built-in numbers and then swaps to today's (data store answers 1.2 s late)
+      - run: PAGE=app/dist/v2.html node app/test/data-swap.mjs
+        if: ${{ !cancelled() }}
+      # pre-launch check 5c (Nov 17): forms-strip labels read at 4.5:1 or more, day and night
+      - run: PAGE=app/dist/v2.html node app/test/forms-contrast.mjs
+        if: ${{ !cancelled() }}
+      # pre-launch check 5a (Nov 17): standalone text links at least 24px tall
+      - run: PAGE=app/dist/v2.html node app/test/tap-size.mjs
+        if: ${{ !cancelled() }}
+      - run: node app/test/tokens-doc.mjs
+        if: ${{ !cancelled() }}
+      - run: node app/test/perf-docs.mjs
+        if: ${{ !cancelled() }}
+      - run: node app/test/test-ids.mjs
+        if: ${{ !cancelled() }}
+      # the --split Preview's loaders over http (review Nov 18 C5, C6): a missing preview.json or v2.js says so (builds its own; the steps after rebuild)
+      - run: node app/build.mjs --v2 --preview-data --split && node app/test/v2-split.mjs
+        if: ${{ !cancelled() }}
+      - run: node app/test/v2-public.mjs   # last of the v2 steps: it leaves dist/v2.html as the public build
+        if: ${{ !cancelled() }}
+      # Public site build invariants (job 19: SEO draft titles <=60, clean routes, robots/sitemap/_redirects/_headers, Claude build untouched)
+      - run: node experiments/public-build-test.mjs
+        if: ${{ !cancelled() }}
+      # Security headers + CSP on the public build (Kip job 24 part 1): the offline self-test (headers parser, hashes, policy rules), then
+      # the browser check on the build as it goes live (_headers served, every inline script hashed, no CSP violation, no outside host,
+      # no cookie, a crafted #team= link can't run script)
+      - run: node experiments/security-csp-test.mjs --self-test
+        if: ${{ !cancelled() }}
+      - run: node app/build.mjs --v2 --split --one-art-size --art=../src/v2/art/ --public && node experiments/security-csp-test.mjs
+        if: ${{ !cancelled() }}
+      # the new site never says "Ready for" / "N% ready" (word list: Matchups; Sim, Nov 12): reads every built page, fold, sheet and "?"
+      - run: node app/build.mjs --v2 && node experiments/v2-words.mjs
+        if: ${{ !cancelled() }}
+      # players' saved teams, box and settings carry over both ways between today's page and the new site (saved-data contract, Nov 23)
+      - run: node app/build.mjs && node app/build.mjs --v2 && node app/test/v2-saved.mjs
+        if: ${{ !cancelled() }}
+  # v2-minors (the small fixes' checks, 18-21 min in one go) as three parallel parts; each runs its share once (PART in the file's header).
+  v2-minors:
+    name: new site small checks (v2-minors ${{ matrix.part }})
+    # Sim, Nov 18 (Q6 A): the daily data run (workflow_run) skips this frozen-data new-site job, so a flake here can't hold back the
+    # day's data; every code push still runs it and it still blocks there. Today's data on the new site is checked by v2-today (data-checks).
+    if: github.event_name != 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        part: [main1, main2, groups]
+    steps:
+      - name: Wait for the rest of a multi-commit change
+        run: sleep 120
+      - uses: actions/checkout@v5
+      - name: Use the frozen test data
+        env:
+          TEST_DATA: 0c992f6977bc1cecc4e03eb269969a82b99681cf
+        run: |
+          git fetch --depth=1 origin $TEST_DATA
+          git checkout $TEST_DATA -- out/
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+      - run: npm ci && npx playwright install --with-deps chromium
+      - run: node app/build.mjs --v2 --preview-data
+      - run: PART=${{ matrix.part }} PAGE=app/dist/v2.html node app/test/v2-minors.mjs
   # Data checks (Sim, Nov 9): the checks that judge results, run on TODAY's data. Red here means today's data changed a
   # result (Nov 9: complete sets flipped a Pelipper verdict, a lead and the grade checks). Still blocks the live branch.
   data-checks:
@@ -113,7 +472,7 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0.10.11 github:smogon/pokemon-showdown#1242c1e2d9763ba5b85d33f13aecb89bae19ae3d && npx playwright install --with-deps chromium
+      - run: npm ci && npx playwright install --with-deps chromium
       - run: cd node_modules/pokemon-showdown && node build
       - run: node app/build.mjs
       - run: node app/test/run.mjs
@@ -123,6 +482,11 @@ jobs:
       - run: node experiments/lead-logic.mjs
         if: ${{ !cancelled() }}
       - run: node experiments/golden.mjs
+        if: ${{ !cancelled() }}
+      # the new site on today's data (switch readiness Tests 3, Nov 18): built as it goes live (--v2 --public --split), its data store
+      # answered with today's documents stored as the refresh stores them; every main route opened: no errors, no empty or no-data
+      # page, no NaN text, Strength Score 0-100, ratings filled, every picture loads. About 30 s.
+      - run: node app/test/v2-today.mjs
         if: ${{ !cancelled() }}
   # Live-data audits (Sim, Nov 18: "make sure we have holes like this in our rules and logic covered well and dont need to wait till
   # later to be uncovered"). The code tests run these audits on frozen Nov 9 data only, so holes that only today's teams show stayed
@@ -186,6 +550,6 @@ jobs:
       - uses: actions/setup-node@v5
         with:
           node-version: '22'
-      - run: npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium
+      - run: npm ci && npx playwright install --with-deps chromium
       - run: node app/build.mjs
       - run: node experiments/accuracy-gate.mjs

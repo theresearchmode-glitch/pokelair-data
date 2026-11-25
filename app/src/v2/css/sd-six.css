@@ -1,0 +1,190 @@
+/* Home, The Stampede: the six band (classes sds-*; shared .sd-* in sd-shared.css). Band 2 "Call six out of the herd" (ink):
+   the line-up (six rings), the receipt (Strength Score) and the plan board, joined by chevrons on desktop and ending on one baseline;
+   on phones they stack (the receipt a short wide ticket, the board wide and short). Colours: --sd-* tokens (tokens.css), day and night. */
+.sds{overflow:hidden}
+.sds::before{content:"";position:absolute;inset:0;pointer-events:none;background:repeating-linear-gradient(-62deg,transparent 0 56px,var(--sd-lines) 56px 62px)} /* the band's faint speed lines (mock-up) */
+.sds-in{position:relative;display:grid;grid-template-columns:minmax(0,1.6fr) var(--s8) minmax(0,1fr) var(--s8) minmax(0,.92fr);column-gap:var(--s3);align-items:end;max-width:1760px;margin:0 auto}
+.sds-part{min-width:0}
+.sds-chev{align-self:center;display:flex;justify-content:center;color:var(--sd-chev)}
+.sds-chev svg{width:32px;height:40px;fill:none;stroke:currentColor;stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.sds .np-btn{background:var(--sd-btn);color:var(--sd-btn-ink);box-shadow:none}
+.sds .sds-lk{position:relative;display:inline-flex;align-items:center;min-height:var(--tap);padding:0;border:0;background:none;text-decoration:underline 2px var(--sd-chev);text-underline-offset:6px;color:var(--on-plate);font:600 var(--t15)/1.3 var(--b);cursor:pointer}
+@media (hover:hover){.sds .sds-lk:hover{text-decoration-color:var(--on-plate)}}
+
+/* ---- 1. the line-up ---- */
+.sds-line{container-type:inline-size}
+.sds-k{position:relative;z-index:3;margin:0;font:600 var(--t13)/1.5 var(--b);letter-spacing:.04em;color:color-mix(in srgb,var(--on-plate) 74%,transparent)}
+.sds-wx{color:var(--plate-link)}
+.sds-h{position:relative;z-index:3;margin:var(--s2) 0 0;font-size:var(--d-sdsix);line-height:1;color:var(--on-plate)}
+.sds-h span{display:block}
+/* one plain line under the playful heading, saying what the band does (Sim's Q23 A, Nov 19): 17px, 15px on phones */
+.sds-desc{position:relative;z-index:3;margin:var(--s3) 0 0;font:500 var(--t17)/1.5 var(--b);color:var(--on-plate)}
+@media (max-width:699.98px){.sds-desc{font-size:var(--t15)}}
+.sds-note{position:relative;z-index:3;margin:var(--s3) 0 0;font:500 var(--t15)/1.5 var(--b);color:color-mix(in srgb,var(--on-plate) 74%,transparent)}
+/* the first-visit welcome (Sim Q4c A): a blue rule at its left, no box (ink band + words only) */
+.sds-wl{position:relative;z-index:3;margin:var(--s6) 0 var(--s2);padding:var(--s4) 0 var(--s4) var(--s5);border-left:4px solid var(--plot);color:var(--on-plate)}
+.sds-wlh{margin:0 0 var(--s3);font-size:var(--t20);line-height:1.2}
+.sds-wl ol{margin:0;padding:0;list-style:none;counter-reset:sdw;display:grid;gap:var(--s3);max-width:60ch}
+.sds-wl li{counter-increment:sdw;display:grid;grid-template-columns:var(--s8) minmax(0,1fr);column-gap:var(--s2);font:400 var(--t15)/1.5 var(--b);color:color-mix(in srgb,var(--on-plate) 80%,transparent)}
+.sds-wl li::before{content:counter(sdw);grid-row:span 2;font:800 var(--t20)/1.2 var(--u);font-style:italic;font-synthesis:style;color:var(--plate-link)}
+.sds-wl li b{font:700 var(--t16)/1.5 var(--b);color:var(--on-plate)}
+.sds-wla{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s6);margin:var(--s5) 0 0}
+.sds-wla .sds-lk{min-width:var(--tap);justify-content:center} /* "Got It" is 39px wide in its words: the tap area is 44 by 44 (qcheck TAP, C8) */
+.sds-rings{list-style:none;margin:var(--s4) 0 0;padding:0;display:grid;grid-template-columns:repeat(6,minmax(0,1fr));container-type:inline-size;
+  --cw:16.66cqi;--sw:33cqi;--sh:38cqi;--rw:14cqi}
+.sds-rings[data-named="4"],.sds-rings[data-named="5"],.sds-rings[data-named="6"]{--sw:25cqi;--sh:33cqi} /* a full six stands closer, as a group photo */
+.sds-slot{position:relative;z-index:1;display:flex;flex-direction:column;align-items:center;min-width:0;--ry:calc(var(--rw)*.2)}
+.sds-slot:nth-child(odd){z-index:2} /* all six rings one size on one line (audit L4); 1, 3, 5 stand in front where sprites overlap */
+.sds-st{position:relative;width:100%;height:var(--sh)}
+.sds-ring{position:absolute;left:50%;bottom:var(--ry);width:var(--rw);height:calc(var(--rw)*.3);border:3px solid var(--sd-ring);border-radius:50%;box-shadow:0 0 14px var(--sd-ring-glow),inset 0 0 8px var(--sd-ring-glow);transform:translate(-50%,50%)}
+.sds-beam{position:absolute;left:50%;bottom:var(--ry);width:calc(var(--sw)*.9);height:calc(100% - var(--ry) + var(--s12));transform:translateX(-50%);clip-path:polygon(34% 0,66% 0,100% 100%,0 100%);background:linear-gradient(180deg,transparent,var(--sd-beam) 45%);pointer-events:none}
+.sds-slot:nth-child(odd) .sds-beam{display:none} /* light on 2, 4 and 6 only, so a full six isn't lost in haze */
+/* the sprite is a square var(--sw) wide; where the line-up stands beside a taller receipt and board (1280 and wider) its stage grows to their
+   height (seam polish, Nov 18) and the sprite grows with it, up to 1.4 times, the rest of the room lit by the beams (the mock-up's light) */
+.sds-mon{position:absolute;left:50%;bottom:var(--ry);width:auto;aspect-ratio:1;height:clamp(var(--sw),var(--sw) + 100% - var(--sh),var(--sw) * 1.4);transform:translateX(-50%);cursor:pointer}
+.sds-mon .np-mon,.sds-mon .np-mon .st{width:100%;--iw:100%}
+.sds-mon .pool{display:none}
+.sds-add{position:absolute;left:50%;bottom:0;width:max(var(--tap),var(--cw));height:max(var(--tap),calc(var(--ry) + var(--rw)*.3 + var(--s4)));transform:translateX(-50%);padding:0;border:0;background:none;color:var(--on-plate);cursor:pointer}
+.sds-add .sds-ring{border:2px dashed var(--sd-ring-open);box-shadow:none}
+.sds-slot.on .sds-ring{display:none} /* Sim, Nov 19: no ring under a chosen Pokémon, so the six read as one crowded herd; the dashed ring stays on an empty spot (where to add) */
+.sds-plus{position:absolute;left:50%;bottom:var(--ry);transform:translate(-50%,50%);font:900 var(--t17)/1 var(--u);font-style:normal}
+@media (hover:hover){.sds-add:hover .sds-ring{border-color:var(--sd-ring)}}
+.sds-cap{position:relative;z-index:3;width:100%;min-width:0;margin-top:var(--s3);padding:0 2px;text-align:center}
+.sds-nm{position:relative;display:block;width:100%;min-height:var(--tap);margin:0;padding:0;border:0;background:none;color:var(--on-plate);font:700 var(--t15)/1.25 var(--b);text-align:center;cursor:pointer}
+button.sds-nm::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
+.sds-mg{display:block;font:600 var(--t13)/1.25 var(--b);color:var(--plate-link)}
+.sds-rings .sds-mg{position:absolute;left:0;right:0;bottom:calc(50% + .625em)} /* Sim, Nov 19: every name on one line; 'Mega' sits just above its name instead of pushing it down */
+.sds-sub{display:block;margin-top:2px;font:500 var(--t13)/1.35 var(--b);color:color-mix(in srgb,var(--on-plate) 74%,transparent)}
+.sds-u b{color:var(--plate-link);font-weight:700}
+.sds-of{display:inline}
+.sds-ld{display:block;font-style:normal;font-weight:700;color:var(--plate-link)}
+.sds-cap1{display:none;margin:var(--s2) 0 0;text-align:center;font:500 var(--t15)/1.5 var(--b);color:var(--plate-link)}
+.sds-say{max-width:60ch;margin:var(--s5) 0 0;font:400 var(--t17)/1.5 var(--b);color:var(--on-plate)}
+.sds-gp{margin:var(--s3) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--on-plate)}
+.sds-gp strong{font-size:var(--t15);margin-right:var(--s1)}
+.sds-acts{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s6);margin-top:var(--s5)}
+
+/* ---- 2. the receipt (paper; a torn bottom edge) ---- */
+.sds-rcw{align-self:end;transform:rotate(2deg);filter:drop-shadow(0 12px 16px var(--sd-paper-shadow))}
+.sds-rc{container-type:inline-size;padding:var(--s5) var(--s5) var(--s10);background:var(--sd-paper);color:var(--sd-paper-ink);
+  -webkit-mask:conic-gradient(from -45deg at bottom,transparent,var(--sd-mask) 1deg 89deg,transparent 90deg) 50%/12px 100%;mask:conic-gradient(from -45deg at bottom,transparent,var(--sd-mask) 1deg 89deg,transparent 90deg) 50%/12px 100%}
+.sds-rh{display:flex;justify-content:space-between;gap:var(--s3);margin:0;padding-bottom:var(--s2);border-bottom:3px solid var(--sd-paper-ink);font:600 var(--t13)/1.5 var(--b)}
+.sds-smp{padding:0 var(--s2);background:var(--sd-paper-ink);color:var(--sd-paper);border-radius:var(--r-s)}
+.sds-rt{margin:var(--s5) 0 0;font-size:var(--t26);line-height:1.05}
+.sds-sc{display:flex;align-items:flex-end;gap:var(--s2);margin:var(--s3) 0 0;line-height:.9}
+.sds-n{font-size:var(--d-sdn);line-height:.9;color:var(--sd-q);letter-spacing:-.04em}
+.sds-n.sds-q{font-size:var(--d-sdq);line-height:.85}
+.sds-of100{font-size:var(--d-sdof);line-height:1;color:var(--sd-paper-ink)}
+.sds-w{display:flex;align-items:center;gap:var(--s2);margin:var(--s3) 0 0;font-size:var(--t20)}
+.sds-w i{flex:0 0 auto;width:16px;height:16px;border-radius:var(--r-s);background:var(--bd)}
+.sds-w small{font:500 var(--t13)/1.5 var(--b);color:var(--sd-paper-ink2)}
+.sds-rk{margin:var(--s1) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--sd-paper-ink2)}
+/* the five bands: five equal bars, 4px apart, so they read as one strip (polish Nov 18 night: "Tournament" no longer widens its column);
+   each name keeps 4px clear on its right, so two names are always 8px or more apart; where the columns get narrow the names take the
+   approved narrower letters (88%, then 75%: "Tournament" in bold is 77px, 67px, 57px at 13px) */
+.sds-bands{list-style:none;display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s1);margin:var(--s5) 0 0;padding:0}
+.sds-b{min-width:0}
+.sds-b i{display:block;height:12px;background:var(--bd);transform:skewX(-14deg)}
+/* names sit 12px under the bars: the chosen band grows 1.5x with a 4px ring, which covered "Top" at 4px (polish Nov 18) */
+.sds-b span{display:block;margin-top:var(--s3);padding-right:var(--s1);font:500 var(--t13)/1.25 var(--b);color:var(--sd-paper-ink)}
+.sds-b:last-child span{padding-right:0}
+.sds-b.on i{transform:skewX(-14deg) scaleY(1.5);box-shadow:0 0 0 2px var(--sd-paper),0 0 0 4px var(--sd-paper-ink)}
+.sds-b.on span{font-weight:700}
+.sds-rl{margin:var(--s5) 0 0;border-top:1px dashed var(--sd-paper-rule)}
+.sds-rl div{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s3);padding:var(--s2) 0;border-bottom:1px dashed var(--sd-paper-rule)}
+.sds-rl dt{font-size:var(--t17);white-space:nowrap}
+.sds-rl dd{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--sd-paper-ink2);text-align:right}
+.sds-rl2{display:none;margin:var(--s3) 0 0;padding-top:var(--s3);border-top:1px dashed var(--sd-paper-rule);font:400 var(--t15)/1.5 var(--b)}
+.sds .sds-rb{margin-top:var(--s6);background:var(--sd-paper-btn);color:var(--sd-on-paper-btn)}
+
+/* ---- 3. the plan board (graph paper, folded corner) ---- */
+.sds-ph{margin:0 0 var(--s4);font-size:var(--t28);line-height:1.05;color:var(--on-plate)}
+.sds-ph span{display:block}
+.sds-board{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);row-gap:var(--s2);padding:var(--s3) var(--s3) var(--s4);
+  background-color:var(--sd-board);background-image:linear-gradient(var(--sd-grid) 1px,transparent 1px),linear-gradient(90deg,var(--sd-grid) 1px,transparent 1px);background-size:24px 24px;
+  color:var(--sd-paper-ink);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,0 100%)}
+.sds-arw{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible;z-index:1}
+.sds-arw .ln{fill:none;stroke:var(--sd-paper-ink);stroke-width:3;stroke-linecap:round}
+.sds-arw .hd{fill:var(--sd-paper-ink)}
+.sds-bl{grid-column:1/-1;margin:0;font-size:var(--t15)}
+.sds-bl.them{text-align:right;padding-right:var(--s6)}
+.sds-mid{grid-column:1/-1;height:0;margin:var(--s1) 0;border-top:2px dashed var(--sd-paper-rule)}
+.sds-tk{position:relative;z-index:2;display:flex;flex-direction:column;align-items:center;gap:var(--s1);min-width:0;padding:0;border:0;background:none;color:inherit;cursor:pointer;--side:var(--sd-board-you)}
+.sds-tk.them{--side:var(--sd-board-them)}
+.sds-tk.k1{margin-top:var(--s8)}
+.sds-dot2{display:grid;place-items:center;width:76px;height:76px;border:4px solid var(--side);border-radius:50%;background:var(--sd-board);overflow:hidden}
+.sds-dot2 .np-mon{--iw:64px}
+.sds-dot2 .np-mon .pool{display:none}
+.sds-dot2 .np-mon img{filter:none;translate:none}
+.sds-tg{order:-1;white-space:nowrap;padding:2px var(--s2);background:var(--side);color:var(--sd-on-tag);font-size:var(--t13);line-height:1.25;text-align:center;clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
+.sds-tk.you .sds-tg{order:0}
+.sds-tg.nar{font-family:var(--b);font-weight:700;font-style:normal;letter-spacing:0}
+.sds-mv{font:600 var(--t13)/1.25 var(--b);color:var(--sd-paper-ink2);text-align:center}
+.sds-who{margin:var(--s3) 0 0;font:400 var(--t13)/1.5 var(--b);color:color-mix(in srgb,var(--on-plate) 74%,transparent)}
+.sds-pt{margin:var(--s3) 0 0;font:400 var(--t15)/1.5 var(--b);color:var(--on-plate)}
+.sds-bt{margin-top:var(--s4)}
+
+/* ---- 1280 and wider, three parts side by side: they end on one baseline AND start together (seam polish, Nov 18): the line-up stretches
+   to the row's height (set by the receipt or the board), its eyebrow and headline at the top, its stage taking the extra room; the six
+   stage cells share one row (subgrid) so all six rings stay on one line whatever the names below them ---- */
+@media (min-width:1280px){
+  .sds-line{align-self:stretch;display:flex;flex-direction:column}
+  .sds-rings{flex:1 1 auto;grid-template-rows:minmax(var(--sh),1fr) auto}
+  .sds-slot{display:grid;grid-row:span 2;grid-template-rows:subgrid;justify-items:center;align-items:stretch}
+  .sds-st{height:auto}
+  .sds-rc{padding-left:var(--s4);padding-right:var(--s4)} /* 8px more room inside the receipt, so its five band names keep one row at 1440 */
+}
+/* the seam under the hero (900 and wider; both bands are ink there): the line-up starts a short step under the pink ticker, not a band's
+   full top padding under it (sd-hero.css trims the hero's bottom to match) */
+@media (min-width:900px){.sdh+.sds{padding-top:calc(var(--sd-cut) + var(--s8))}}
+/* ---- in between: the line-up on top, receipt and board side by side ---- */
+@media (max-width:1279.98px){ /* under 1280 the line-up needs the full width for six names */
+  .sds-in{grid-template-columns:minmax(0,1fr) var(--s10) minmax(0,1fr);row-gap:var(--s10)}
+  .sds-line{grid-column:1/-1}
+  .sds-in>.sds-chev:nth-of-type(1){display:none}
+}
+/* ---- phones: stacked; the receipt a short wide ticket, the board wide and short, Battle full width ---- */
+@media (max-width:699.98px){
+  .sds-in{grid-template-columns:minmax(0,1fr);row-gap:var(--s10)}
+  .sds-chev{display:none}
+  .sds-of{display:none}
+  .sds-cap1{display:block}
+  .sds-nm{font-size:var(--t13)}
+  .sds-rcw{transform:rotate(-1deg)}
+  .sds-rc{display:grid;grid-template-columns:auto minmax(0,1fr);column-gap:var(--s5);row-gap:var(--s2);padding:var(--s5) var(--s5) var(--s8)}
+  .sds-rc>*{grid-column:1/-1}
+  .sds-rh,.sds-rl{display:none}
+  .sds-rt{grid-row:1;margin:0;font-size:var(--t22)}
+  .sds-sc{grid-column:1;grid-row:2/span 2;align-self:center;margin:0}
+  .sds-w{grid-column:2;grid-row:2;align-self:end;margin:0}
+  .sds-rk{grid-column:2;grid-row:3;align-self:start;margin:0}
+  .sds .sds-rb{justify-self:start;margin-top:var(--s3)}
+  .sds-n,.sds-n.sds-q{font-size:var(--d-sdnp)}
+  .sds-of100{font-size:var(--t24)}
+  .sds-bands{margin-top:var(--s3)}
+  .sds-rl2{display:block}
+  .sds-tk.k1{margin-top:var(--s4)}
+  .sds-bt{display:flex;width:100%}
+}
+@media (max-width:599.98px){
+  .sds-rings[data-named="4"],.sds-rings[data-named="5"],.sds-rings[data-named="6"]{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:var(--s5);--cw:33.3cqi;--sw:36cqi;--sh:40cqi;--rw:22cqi} /* four or more names: two rows of three (six names don't fit one row at 390, audit 10) */
+}
+/* a narrow receipt (phones under 400, tablets): the score, its band word and rank stack; the band names list under short bars */
+@container (max-width:339.98px){
+  .sds-rc .sds-sc,.sds-rc .sds-w,.sds-rc .sds-rk{grid-column:1/-1;grid-row:auto}
+}
+@container (max-width:423.98px){.sds-b span{font-stretch:88%}}
+@container (max-width:373.98px){.sds-b span{font-stretch:75%}}
+@container (max-width:323.98px){ /* five equal columns need 324px for "Tournament" (57px at 75%) plus its 4px; narrower, the names list as a key (Nov 18 night) */
+  .sds-bands{grid-template-columns:minmax(0,1fr);gap:var(--s2)} /* 8px rows: the chosen bar (1.5x tall, 4px ring) stays clear of the next */
+  .sds-b{display:flex;align-items:center;gap:var(--s2)}
+  .sds-b i{flex:0 0 32px;height:12px}
+  .sds-b span{margin-top:0;padding-right:0;font-stretch:100%}
+}
+/* Home length (Nov 23, direction for Sim): at 1280+ the line-up's column is a little wider and "New here?" reads across in three steps,
+   so the line-up ends level with the receipt instead of running a third of a screen past it */
+@media (min-width:1280px){
+  .sds-wl{margin-top:var(--s5)}
+  .sds-wl ol{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s5);max-width:none}
+  .sds-wl li{grid-template-columns:minmax(0,1fr)}.sds-wl li::before{grid-row:auto}
+}

@@ -10,6 +10,8 @@ Keep this file and that list in step.
 - **Identifies itself.** Every request made through `http.mjs` sends
   `User-Agent: NastyPlot-data/1.0 (+https://github.com/theresearchmode-glitch/pokelair-data; simran.jsbagga@gmail.com)`.
   The op.gg step (a headless browser) appends the same string to its browser User-Agent.
+  This is the one User-Agent for every source (Sim, Nov 18, 9a): the one-off Nov 17 read of the official news feed sent
+  "NastyPlot/1.0 (fan site)"; from now on the feed is read only through `http.mjs`, with the string above.
 - **Paced.** `http.mjs` spaces requests to the same host at least 1 second apart (1.1 s, with slack); scripts with their own
   longer pauses keep them (Limitless 6.5 s, outside sources 1.5 s).
 - **Once a day.** `.github/workflows/update.yml` runs once a day; Smogon stats are only downloaded when a new month is out.
@@ -29,6 +31,7 @@ Keep this file and that list in step.
 | **op.gg** (op.gg/pokemon-champions) | In-game ranked doubles usage order (`opgg.mjs`) | Help center: "In general, OP.GG does not prohibit data crawling or web scraping. However, if there is any commercial use without citing the source or if excessive requests affect our service operation, access to the service may be restricted." | One page load a day (headless browser), no commercial use, source cited in footer + About page; browser UA carries the NastyPlot string. |
 | **Pikalytics** (pikalytics.com) | Ladder usage, items, moves (`sources.mjs`, `/ai/pokedex/...`) | robots.txt allows all crawlers, including the `/ai/` endpoints. | ≤41 requests a day, 1.5 s apart; NastyPlot UA; credited. |
 | **Showdown Tier** (showdowntier.com) | Ladder tier list, usage, win rates (`sources.mjs`) | No stated terms found. robots.txt (checked today): `User-agent: * / Allow: /` (crawl-delay commented out). | One page a day; NastyPlot UA; credited. |
+| **Official in-game news feed** (champions-news.pokemon-home.com) | Added Nov 18 (Sim, morning questions 9a). News headlines, dates, categories and links for The Champions Dispatch (#news) and Home's post band; the official pages behind event gifts and the series rounds (`app/src/data/post.js`; daily read: `post-news.mjs`) | Official: The Pokémon Company's own game news (the official Japanese site's script loads it). Undocumented JSON (`/en/json/list.json`), no published terms found; robots.txt returns 404 (checked Nov 17). | One request a day for the list, through `http.mjs` (the NastyPlot-data User-Agent below, paced); a page is opened only when a person checks a gift. Headline, date, category and link only: no article text, no banner images (no licence found for either). Every headline links to the full story at its source. Never the code redemption site or its API. |
 
 ## Removed sources
 
@@ -37,6 +40,40 @@ Keep this file and that list in step.
 | **RK9** (rk9.gg) | Terms §5.3(3) forbid automated extraction "for commercial or non-commercial purposes". Being replaced by Victory Road + PokePaste + Liquipedia; `rk9*.mjs` are not to be run. |
 | **project-red-data** (GitHub) | No license, so no permission to reuse. Dropped. |
 | **Pokémon Zone** | Answers automated requests with 403 (Oct 31); that refusal is respected and it is not read. |
+
+## Gifts and news (app/src/data/post.js; Sim, Nov 18, morning questions 9a-9e)
+
+The Post Room (#gifts), The Champions Dispatch (#news) and Home's post band read only `app/src/data/post.js`.
+`experiments/post-data-test.mjs` checks every rule below that a script can check.
+
+### Codes: the 2-outlet rule (9b)
+- A shared Mystery Gift code goes into post.js only when it is on an official channel (pokemon.com, pokemon-home.com,
+  pokemonchampions.jp), **or** printed by **2 or more reputable outlets on different sites**, each linked in the gift's `src`.
+  Codes are never in the official news feed, so in practice the outlet rule applies.
+- Outlets that count: Nintendo Life, Nintendo Everything, LevelUp, Critical Hits, Vice, Insider Gaming.
+  Analytics Insight is the weakest: it may add a detail (an end time) but never counts as one of the two.
+- Not sources at all: op.gg and Serebii (their terms forbid copying), Champdex (copies Serebii), Bulbapedia (ShareAlike),
+  guide farms. An outlet is read by a person, for the code and its dates only; nothing else is copied.
+- A code with only one outlet stays out (the gift may still be listed, with `note: "Code not verified"`).
+- The page says when the list was last checked ("Gift list checked ...") and that a code can stop early.
+
+### Who updates what (9c)
+- **News: automatic.** `post-news.mjs` reads the official feed's list once a day (one request, through `http.mjs`) and adds new
+  stories to `POST.news` as headline, date, type and link. If the feed can't be read or its shape changed, post.js is kept as it
+  is and the step fails (yesterday's list stays). Tested by `experiments/post-news-test.mjs` (no network).
+- **Gifts: suggested only.** A new Campaign or Championships item is written to `out/post-suggest.json`; a person reads the
+  official page and adds a gift to post.js only if it is a Mystery Gift (Serial Code or Event Gift; Sim, Nov 18). The script
+  never writes a gift.
+- **Codes: manual.** A person adds each code by the 2-outlet rule above.
+- Status (Nov 18): the script and its test exist; it is **not yet a step of the daily job** (`.github/workflows/update.yml`).
+
+### Past codes and the redemption site (9d, 9e)
+- **Past codes are dropped** (9d): once a gift has ended, its code is taken out of post.js (stamps never show it). post-data-test
+  fails on a gift that had ended at the list's check time and still has a code.
+- **In-game steps only** (9e): the site explains how to collect a gift in the game (Submenu > Mystery Gift > enter the code >
+  Mailbox) and never links the official code redemption site (it needs a Nintendo / Google / Apple login) or the rewards site.
+  No page and no `src` may point at serial-web-front.app.pokemonchampions.jp, its API, rewards.pokemon.com or a login page;
+  post-data-test fails if one does, and the code redemption API is never called.
 
 ## Player names (privacy)
 

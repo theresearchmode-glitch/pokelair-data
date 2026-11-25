@@ -15,16 +15,7 @@ function pairSyn_(a,b){let s=0;const ta=setFor(a.p).tm,tb=setFor(b.p).tm;
 let RES=typeof RESULTS==='object'?RESULTS:null;
 // Today's Limitless results (meta/results, written by the daily refresh from the pokelair-data job): used only if it
 // looks complete; otherwise the snapshot built into the page stays.
-function cleanResults(v){try{if(!v||typeof v!=='object')return null;const ok=Array.isArray(v.proven)&&v.proven.length>=100&&Array.isArray(v.cores)&&v.cores.length>=100&&v.pairs&&typeof v.pairs==='object'&&v.mons&&typeof v.mons==='object'&&+v.base>.4&&+v.base<.6;
-  if(!ok)return null;const proven=v.proven.filter(x=>Array.isArray(x)&&Array.isArray(x[0])&&x[0].length===6&&x[0].every(n=>byName.has(n))&&isFinite(+x[2]));
-  const fin=x=>typeof x==='number'&&Number.isFinite(x);
-  const cores=v.cores.filter(c=>Array.isArray(c)&&c.length===5&&c.slice(0,3).every(n=>byName.has(n))&&fin(c[3])&&fin(c[4]));
-  // per-Pokémon and per-pair [games, win rate]: a bad row is dropped, never shown as NaN (stress test, Oct 28)
-  const rows=o=>{const r={};if(o&&typeof o==='object'&&!Array.isArray(o))for(const k of Object.keys(o)){const x=o[k];if(Array.isArray(x)&&fin(x[0])&&x[0]>=0&&fin(x[1])&&x[1]>=0&&x[1]<=1)r[k]=x}return r};
-  const out={...v,proven:proven.filter(x=>fin(x[1])&&fin(x[2])),cores,base:+v.base,minCore:+v.minCore||40,mons:rows(v.mons),pairs:rows(v.pairs)};
-  if(!(fin(v.teams)&&v.teams>0))delete out.teams;
-  if(v.tc&&typeof v.tc==='object'&&v.tc.rows&&typeof v.tc.rows==='object')out.tc={...v.tc,base:fin(v.tc.base)?v.tc.base:.5,rows:Object.fromEntries(Object.entries(v.tc.rows).filter(([,x])=>Array.isArray(x)&&x.length>=5&&x.every(fin)))};else delete out.tc;
-  return out.proven.length>=100?out:null}catch(e){return null}}
+// cleanResults: moved to 05-data-clean.js (R4, Nov 11; shared with the rebuild)
 function pairRes(a,b){if(!RES)return null;const k=[a.p.n,b.p.n].sort().join('|');return RES.pairs[k]||null}
 // pair counts are put on the old 377-team scale so a common pair scores the same as before, whatever the data size
 function tourSyn(a,b){const r=pairRes(a,b);if(!r)return 0;return Math.min(14,3*Math.log2(1+r[0]*377/(RES.teams||377)))+(r[1]-RES.base)*60}
@@ -157,9 +148,14 @@ function gapTarget(gp0,top){const order=['weather','trfit','terrain','support'],
 // frozen page per edit on a mid-range phone before, Oct 31). Both run exactly the same code, so the plans are identical.
 // Pokémon that Apply just swapped out (Nov 7 audit: suggestion loops, Sylveon for Primarina then Primarina for Sylveon). They stay
 // out of the suggestions while the team is the one Apply left; any other change to the team (an edit, a loaded team) clears them.
-function swOutNow(){if(!ui.swOut||!ui.swOut.size)return null;if(ui.swKey!==S.slots.map(x=>x.n||'').join()){ui.swOut=null;return null}return ui.swOut}
+/* review FP-4 (Nov 16): the key covers each set (moves, item, nature, stat points), so any edit clears the list, as the comment above says */
+const swKeyOf=()=>S.slots.map(x=>[x.n||'',JSON.stringify(x.mv||null),JSON.stringify(x.it||null),JSON.stringify(x.sp||null)].join('~')).join('|');
+/* the key is taken the first time it is asked for after Apply (the sets are filled in by then), so only a later edit clears the list */
+function swOutNow(){if(!ui.swOut||!ui.swOut.size)return null;if(ui.swKey==null)ui.swKey=swKeyOf();if(ui.swKey!==swKeyOf()){ui.swOut=null;return null}return ui.swOut}
 function planFixes(ms,pool,useA,opts){const g=planFixesG(ms,pool,useA,opts);let r;do r=g.next();while(!r.done);return r.value}
 function* planFixesG(ms,pool,useA,opts){
+  // speed (Nov 17, pre-launch 2d): every loop below pauses once about 25 ms have passed (a phone's scroll frame budget), same order, same results
+  let t0=performance.now();const due=()=>performance.now()-t0>25,rs=()=>{t0=performance.now()};
   const maxMega=megaGoal();const full=ms.length===6;
   const emptyIdx=S.slots.map((s,i)=>byName.get(s.n)?-1:i).filter(i=>i>=0);
   const base=stateScore(ms,useA);
@@ -169,8 +165,9 @@ function* planFixesG(ms,pool,useA,opts){
   // evidence floor (Oct 28 audit): suggestions come from Pokémon real players actually run, unless you ask for off-meta.
   // Best of ladder/tournament usage and the share of Limitless teams: 2%+, or 0.5%+ for Pokémon in your box, whichever pool is
   // picked (sweep, Oct 31: Box + catch dropped your own box Pokémon that My box offered, so the bigger pool gave worse plans).
-  const swo=swOutNow(),cands=pool.filter(p=>!ms.some(m=>m.base===p.b)&&!(swo&&swo.has(p.b))&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)?.5:2))).map(p=>{const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
-    return {p,mem:{...mm,i:-1,p,d:p.d,moves:pm,_mv:pm.some(isCoverage)?pm:[]}}});
+  // speed (Nov 17, pre-launch 2d): built in pieces (the whole pool at once was a 200 ms step on a phone); same list, same order
+  const swo=swOutNow(),cands=[];{let k=0;for(const p of pool){if(!(!ms.some(m=>m.base===p.b)&&!(swo&&swo.has(p.b))&&(inBox(p)||poolOK(p,25))&&(OFFMETA||evidPct(p)>=(inBox(p)?.5:2))))continue;const mm=memberFrom(p,metaAbility(p)||undefined);const pm=runMoves(p);
+    cands.push({p,mem:{...mm,i:-1,p,d:p.d,moves:pm,_mv:pm.some(isCoverage)?pm:[]}});if(due()){yield;rs()}}}
   // never more Megas than the goal, or (when the team is already over it: Megas on team 0 with a Mega in) than it has now
   const mega0=ms.filter(m=>m.mega).length,legal=(team)=>{const n=team.filter(m=>m.mega).length;return n<=maxMega||n<=mega0};
   const singles=[];
@@ -178,7 +175,7 @@ function* planFixesG(ms,pool,useA,opts){
   for(const c of cands){
     if(!full&&emptyIdx.length){const t=[...ms,c.mem];if(legal(t))singles.push({ch:[{out:null,slot:emptyIdx[0],c}],team:t})}
     if(full)for(const m of ms){if(!canOut(m))continue;if(m.mega&&!c.p.m&&!swapMega)continue;
-      const t=ms.map(x=>x===m?{...c.mem,i:m.i}:x);if(legal(t))singles.push({ch:[{out:m,slot:m.i,c}],team:t})}}
+      const t=ms.map(x=>x===m?{...c.mem,i:m.i}:x);if(legal(t))singles.push({ch:[{out:m,slot:m.i,c}],team:t})}if(due()){yield;rs()}}
   // Lower is better: the team's model score (teamValue), plus the type-balance emphasis (typeEmphasis),
   // a cost for losing an active archetype, and a small cost per change so plans stay minimal.
   // Mega goal: every Mega the finished team would still be short of costs a lot, so plans that bring one in rise to the top
@@ -198,9 +195,9 @@ function* planFixesG(ms,pool,useA,opts){
   const ip0=typeof itemProblemCount==='function'?itemProblemCount(ms):0;
   const ipOf=pl=>{if(pl._ip===undefined)pl._ip=typeof itemProblemCount==='function'?itemProblemCount(pl.team):0;return pl._ip};
   const keepOK=pl=>ipOf(pl)<=ip0&&(OFFMETA||pl.ch.every(x=>!x.out||U(x.out.p)<15||evidPct(x.c.p)>=5));
-  {const keep=singles.filter(keepOK);singles.length=0;singles.push(...keep)}
+  {const keep=[];for(const pl of singles){if(keepOK(pl))keep.push(pl);if(due()){yield;rs()}}singles.length=0;singles.push(...keep)}
   const basePl=evalPlan({ch:[],team:ms});
-  for(const pl of singles){evalPlan(pl);yield}singles.sort((x,y)=>x.score-y.score);
+  for(const pl of singles){evalPlan(pl);yield;rs()}singles.sort((x,y)=>x.score-y.score);
   if(opts&&opts.singlesOnly)return {singles,basePl,base,full};
   // two changes, built from the strongest single changes
   // best 8 single changes per slot, so two-change plans can combine fixes for different slots
@@ -210,8 +207,8 @@ function* planFixesG(ms,pool,useA,opts){
     if(A.c.p.b===B.c.p.b)continue;
     if(A.out&&B.out){if(A.out===B.out)continue;const t=ms.map(x=>x===A.out?{...A.c.mem,i:x.i}:x===B.out?{...B.c.mem,i:x.i}:x);if(legal(t))doubles.push({ch:[{...A},{...B}],team:t})}
     else if(!A.out&&!B.out&&emptyIdx.length>=2){const t=[...ms,A.c.mem,B.c.mem];if(legal(t))doubles.push({ch:[{...A,slot:emptyIdx[0]},{...B,slot:emptyIdx[1]}],team:t})}}
-  {const keep=doubles.filter(keepOK);doubles.length=0;doubles.push(...keep)}
-  for(const pl of doubles){evalPlan(pl);yield}
+  yield;rs();{const keep=[];for(const pl of doubles){if(keepOK(pl))keep.push(pl);if(due()){yield;rs()}}doubles.length=0;doubles.push(...keep)} /* speed (Nov 17): pauses inside, same plans kept */
+  for(const pl of doubles){evalPlan(pl);yield;rs()}
   const clean=base.a.excess===0&&!base.a.unresisted.length;
   // a plan must never make the type rating worse, and must beat the current team by a clear margin
   // and must never take away the team's speed control or start a weather clash
@@ -227,7 +224,7 @@ function* planFixesG(ms,pool,useA,opts){
   // Item problems come first; then a plan must raise readiness by 2+, the highest leads, and an extra change has to earn 2 more.
   // The planner's own score only shortlists (the 70 most promising) and breaks ties; the type rules relax to "at most one more
   // weakness, no new stack".
-  const tsBase=useTSPick()&&full?tsOf(ms):null;let tsOn=false;const gBase=useTSPick()&&full?gradeTeam(ms):null,gOK=pl=>gBase==null||planGrade(pl)==null||pl._g>=gBase||(ipOf(pl)<ip0&&pl._g>=gBase-3);/* a suggestion never lowers the grade (Sim, Nov 7: a red 'Win rate 59.9% → 59.1%' card); only fixing an illegal item may cost a little */
+  const tsBase=useTSPick()&&full?(yield* tsOfG(ms)):null;let tsOn=false;const gBase=useTSPick()&&full?gradeTeam(ms):null,gOK=pl=>gBase==null||planGrade(pl)==null||pl._g>=gBase||(ipOf(pl)<ip0&&pl._g>=gBase-3);/* a suggestion never lowers the grade (Sim, Nov 7: a red 'Win rate 59.9% → 59.1%' card); only fixing an illegal item may cost a little */
   if(useTSPick()){const sh0=typeShape(base.a).maxStack;
     /* Phase 3 (Nov 8): the type-chart rules "at most one more weakness" and "at most one more unresisted type" blocked the best swap
        on 9 of 30 real teams and predict nothing beyond the grade (experiments/type-check.mjs, 6,270 later games: +0.1, −0.1 and 0.0 pts,
@@ -237,6 +234,9 @@ function* planFixesG(ms,pool,useA,opts){
     /* Phase 3 (Nov 8): ideas from grade gains. The shortlist above ranks by the planner's own score, so the grade never saw some of
        the best swaps (on 30 real teams the best single swap beat the planner's best idea by 3+ points for 15, and 6 got no idea at
        all). The 20 candidates the grade's fast strength rates highest join the shortlist; every rule below still applies. */
+    /* speed (Nov 18, pre-launch 2d): the fast strengths are worked out first in a loop that pauses (abY keeps them), so the line below
+       finds them ready; same values, same order */
+    if(full&&typeof abY==='function')for(const pl of short0){if(pl.team.length===6&&!short.includes(pl))abY(pl.team);if(due()){yield;rs()}}
     if(full&&typeof abY==='function'){const gy=short0.filter(pl=>pl.team.length===6&&!short.includes(pl)).map(pl=>[abY(pl.team),pl]).filter(x=>x[0]!=null).sort((a,b)=>b[0]-a[0]).slice(0,20);for(const [,pl] of gy)short.push(pl)}
     // plans that fix an item problem are always checked, and qualify without the usual readiness gain (they may not lower it by more than 3)
     if(ip0>0)for(const pl of short0.filter(pl=>ipOf(pl)<ip0).slice(0,12))if(!short.includes(pl))short.push(pl);
@@ -245,7 +245,9 @@ function* planFixesG(ms,pool,useA,opts){
     // (Nov 7, Sim) plans are judged by the grade, the big number on My team, not readiness alone: a plan must raise the grade by
     // 2+, or fix a real problem (an item problem, a game-plan gap) for at most 3 grade points, and may never cost more than 3
     // readiness points. Extra changes cost 2 grade points each in the ranking, as they did for readiness.
-    for(const pl of short){if(pl._ts===undefined){pl._ts=tsOf(pl.team);yield}if(gBase!=null&&pl._g===undefined){planGrade(pl);yield}}
+    for(const pl of short){if(pl._ts===undefined){pl._ts=yield* tsOfG(pl.team);yield}/* speed (Nov 18, 2d): a pause after each threat */if(gBase!=null&&pl._g===undefined){planGrade(pl);yield}}
+    // speed (Nov 18, 2d): how sure each swap is, worked out here with pauses for exactly the plans qual() below asks about (same numbers)
+    if(tsBase!=null&&gBase!=null)for(const pl of short){if(pl._ts!=null&&pl._g!=null&&pl._sure===undefined){pl._sure=swapSure(ms,pl.team);if(due()){yield;rs()}}}
     if(short.some(pl=>pl._ts!=null)){tsOn=true;
       const fixOf=pl=>ipOf(pl)<ip0||pl.gap.fix.length,gKey=pl=>pl._g!=null?pl._g-(pl.ch.length-1)*2:-1e9;
       const qual=pl=>{if(pl._ts==null)return false;if(tsBase==null)return true;
@@ -253,13 +255,16 @@ function* planFixesG(ms,pool,useA,opts){
           /* matchups are already inside the grade, so readiness is only a guard against a collapse (was −3, Phase 3 Nov 8) */
           return pl._ts>=tsBase-8&&((pl._g>=gBase+TS_GAIN&&(pl._sure==null||pl._sure>=SWAP_MIN))||(fixOf(pl)&&pl._g>=gBase)||(ipOf(pl)<ip0&&pl._g>=gBase-3));}
         return pl._ts>=tsBase+TS_GAIN||(fixOf(pl)&&pl._ts>=tsBase-3)};
-      let ranked=short.filter(qual).sort((x,y)=>(ipOf(x)-ipOf(y))||gKey(y)-gKey(x)||tsKey(y)-tsKey(x)||x.score-y.score);
+      /* Nov 24: a plan that sets the weather a teammate's Ability needs (rain for Swift Swim Mega Swampert) ranks first: on Nov 24's data
+         the rain setter had slipped to the 3rd plan (suggest-gaps failed on live data, passed on frozen data) */
+      const wxKey=pl=>pl.gap&&pl.gap.fix.includes('weather')&&pl.gap.why.some(w=>/^Sets [a-z ]+ for /.test(w))?1:0;
+      let ranked=short.filter(qual).sort((x,y)=>(ipOf(x)-ipOf(y))||(wxKey(y)-wxKey(x))||gKey(y)-gKey(x)||tsKey(y)-tsKey(x)||x.score-y.score); /* item fixes (an illegal team) still come first (code review, Nov 24) */
       /* Variety (Sim, Nov 9: "it keeps suggesting the same pokemon"; Step D). On 400 real teams, Kingambit, Basculegion and Farigiraf
          were 48% of every Suggestion 1, because many strong Pokémon are tied within the score's margin of error and the engine always
          took the one a hair ahead (real one-swap pairs among viable Pokémon: 52.4%, a coin flip). Options within SUGG_TIE score points
          of the best count as ties; among ties the order is a fixed shuffle per team (the same team always shows the same order), so
          every tied Pokémon, rarely used ones included, gets a fair place. Real problems (item fixes) still come first. */
-      if(ranked.length>1){const T=PLAN_TIE,top=gKey(ranked[0]),ip=ipOf(ranked[0]),tied=ranked.filter(pl=>ipOf(pl)===ip&&gKey(pl)>=top-T),rest=ranked.filter(pl=>!tied.includes(pl));
+      if(ranked.length>1){const T=PLAN_TIE,top=gKey(ranked[0]),ip=ipOf(ranked[0]),wx=wxKey(ranked[0]),tied=ranked.filter(pl=>ipOf(pl)===ip&&wxKey(pl)===wx&&gKey(pl)>=top-T),rest=ranked.filter(pl=>!tied.includes(pl));
         const key=ms.map(m=>m.p.n).sort().join('|'),h=str=>{let x=2166136261;for(let i=0;i<str.length;i++){x^=str.charCodeAt(i);x=Math.imul(x,16777619)}return x>>>0};
         const hk=pl=>h(key+'#'+pl.ch.map(x=>x.c.p.b).sort().join(','));tied.sort((x,y)=>hk(x)-hk(y));ranked=[...tied,...rest]}
       all=[...ranked,...all.filter(pl=>pl.team.length<6)]}}
@@ -291,7 +296,7 @@ function* planFixesG(ms,pool,useA,opts){
       else{out.gapNone=gk;const r=gp0.rows.find(x=>x.k===gk[0])||{};
         out.gapNote=`${r.note?r.note+' ':''}Nothing in ${ui.pool==='box'?'your box':ui.pool==='boxfill'?'your box or the usual picks to catch':'the whole roster'} fixes it without weakening the team${ui.pool==='box'?': try "Box + catch" or "Whole roster"':ui.pool==='boxfill'?': try "Whole roster"':''}.`}}}
   // over the Mega goal (Megas on team 0 with a Mega in, audit Oct 30): say so, and say why no plan drops it
-  if(mega0>maxMega&&!out.some(pl=>pl.team.filter(m=>m.mega).length<mega0)){const t=`Your team has ${mega0} Mega${mega0===1?'':'s'} and Megas on team is set to ${maxMega}. ${$('swapMega').checked?'No swap without '+(mega0===1?'it':'them')+' keeps your game plan, so these plans keep '+(mega0===1?'it':'them')+'.':'Turn on "Let plans swap my Mega" to see swaps without '+(mega0===1?'it':'them')+'.'}`;out.gapNote=(out.gapNote?out.gapNote+' ':'')+t}
+  if(mega0>maxMega&&!out.some(pl=>pl.team.filter(m=>m.mega).length<mega0)){const t=`Your team has ${mega0} Mega${mega0===1?'':'s'} and Megas on team is set to ${maxMega}. ${$('swapMega').checked?'No swap without '+(mega0===1?'it':'them')+' keeps your game plan, so these plans keep '+(mega0===1?'it':'them')+'.':(typeof V2==='object'&&V2&&V2.redraw?'Set "Swap my Mega?" to Yes':'Turn on "Let plans swap my Mega"')+' to see swaps without '+(mega0===1?'it':'them')+'.'}`;out.gapNote=(out.gapNote?out.gapNote+' ':'')+t}
   // More ideas: further plans with new incoming Pokémon, then (for a full team) side-grades that keep the type rating and speed control
   /* Phase 3 (Nov 8): an idea in More ideas never lowers the grade (a strong team had 37 of 39 ideas there that made it worse:
      side-grades were picked by type rating alone). Every idea is checked against the grade; rounding allows half a point. */
@@ -337,6 +342,47 @@ function gpDiff(a,b){if(!a||!b)return [];const out=[];
     if(d>0)out.push(`<b>${r.st==='ok'?'Covers':'Improves'} ${esc(word)}</b>${r.who?': '+esc(r.who):''}`);
     else if(d<0)out.push(`<span class="warnline">Weakens ${esc(GP_WORD[r.k]||r.label)}</span>${r.note?': '+esc(r.note):''}`)}
   return out}
+// Apply a suggestion to the team (R4, Nov 11; shared with the rebuild): keeps Undo, remembers what it swapped out, writes the
+// new Pokémon into the slots. The caller redraws and shows the toast.
+function applyPlan(pl){keepUndo();
+    // what Apply swapped out: no suggestion offers it straight back while you keep applying suggestions (swOutNow, 29-fix-planner.js) (Nov 7 audit: Sylveon for Primarina, then Primarina for Sylveon)
+    if(!ui.swOut)ui.swOut=new Set();pl.ch.forEach(x=>{if(x.out)ui.swOut.add(x.out.p.b)});
+    // Nov 9: the card graded the newcomer as a typical build (its Ability not "chosen", 35-win-model.js SET_UNKNOWN_AVG); writing that
+    // Ability as chosen made Apply grade it exactly, so the result missed the card by a rank point. Same Ability shown either way.
+    pl.ch.forEach(x=>{S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.abChosen?x.c.mem.ability:null,lock:false}});
+    ui.swKey=null;
+    undoMark(pl.ch.map(x=>x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`).join(', '));}
+// A one-change quick add (Quick add under a problem, or an addition on Build), R4 Nov 11, shared with the rebuild: keeps Undo and
+// the Undo bar, puts the newcomer in its spot; returns the toast. The caller redraws.
+function applyQuick(pl){const x=pl.ch[0];keepUndo();S.slots[x.slot]={n:x.c.p.n,a:x.c.mem.abChosen?x.c.mem.ability:null,lock:false}; /* as Apply writes it, so the same swap gets the same score (review FP-1, Nov 16) */undoMark(x.out?`${x.c.p.d} for ${x.out.d}`:`${x.c.p.d} added`);
+  return `${x.out?x.out.d+' → ':'Added '}${x.c.p.d}`}
+// Which suggestions show, in order (R4, Nov 11; shared with the rebuild): plans that would lower readiness by 5+ go after the
+// ones that keep or raise it (the plans array is reordered in place, as before), then the extra ones "More suggestions" opened.
+function planListOf(plans,baseTS,shown){const planTS=pl=>{if(!baseTS||pl.team.length!==6)return null;if(pl._ts===undefined)pl._ts=tsOf(pl.team);return pl._ts};
+  const rank=x=>{const t=planTS(x);return t!=null&&t<=baseTS.score-5?1:0};
+  const ordered=[...plans].map((pl,i)=>({pl,i})).sort((x,y)=>rank(x.pl)-rank(y.pl)||x.i-y.i).map(x=>x.pl);plans.splice(0,plans.length,...ordered);
+  return [...plans,...(shown||[])]}
+// A suggestion's reasons, the ones its Why? lists (R4, Nov 11: moved unchanged out of renderPlans, shared with the rebuild).
+// X = {ms, a: analyze(playForm(ms)), plans, covered: offenseRows(...).covered, baseTS: {score} or null}; k = its place in the list
+// (threat lines are worked out for the first plans.length+6). keep=false works the reasons out without storing them on the plan.
+function planWhy(pl,k,X,keep=true){const {ms,plans,covered,baseTS}=X;const st=pl.st;
+    /* review FP-2 (Nov 16): the before side is the planner's own read of the team (plans.baseA), made the same way as each plan's st.a;
+       X.a turned a second Mega back to its base form, so on two-Mega teams Why? listed type changes the swap didn't make */
+    const a=plans&&plans.baseA||X.a;
+    const ts=!baseTS||pl.team.length!==6?null:pl._ts===undefined?(pl._ts=tsOf(pl.team)):pl._ts,dT=ts!=null?ts-baseTS.score:null;
+    const fixed=a.rows.filter((t,j)=>t.w>t.r&&!(st.a.rows[j].w>st.a.rows[j].r)).map(t=>t.atk);
+    const nowRes=a.rows.filter((t,j)=>t.r===0&&st.a.rows[j].r>0).map(t=>t.atk);
+    const newWeak=st.a.rows.filter((t,j)=>t.w>t.r&&!(a.rows[j].w>a.rows[j].r)).map(t=>t.atk);
+    const syn=pl.ch.map(x=>{const t=metaEntry(x.c.p);const mates=(t&&t.tm||[]).map(([n])=>byName.get(n)).filter(q=>q&&pl.team.some(m=>m.base===q.b&&m.p!==x.c.p)).map(q=>q.d);return mates.length?`${esc(x.c.p.d)} is often paired with ${esc(mates.slice(0,2).join(' and '))}`:''}).filter(Boolean);
+    const roleLines=gpDiff(plans.gp,pl.gp),thrLines=pl.team.length===6&&ms.length===6&&k<plans.length+6?threatDiff(ms,pl.team,3).map(x=>x.html):[];
+    const archLines=pl.ch.flatMap(x=>(x.why||[]).map(w=>`${esc(x.c.p.d)}: ${w}`));
+    const cw=[...thrLines,...roleLines].some(l=>String(l).includes('Covers weather')),lines=[...(pl.gap?pl.gap.why:[]).filter(w=>!(cw&&/^Gives your /.test(w))).map(w=>`<b>${esc(w)}</b>`),...thrLines.filter(l=>l.startsWith('<b>')),plans.ip0&&pl._ip!==undefined&&pl._ip<plans.ip0?(()=>{const A=ipWords(ms),B=new Set(ipWords(assignItems(pl.team))),fx=A.filter(w=>!B.has(w));return fx.length?`<b>Fixes ${esc(fx.join('; '))}</b>`:`<b>Fixes ${plans.ip0-pl._ip===1?'an item problem':plans.ip0-pl._ip+' item problems'}</b>`})():'',fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
+      dT!=null&&plans.gBase!=null?(()=>{const h0=CH.hand(baseTS),h1=CH.hand(prepOf(pl.team));return h0&&h1?`Ready for top threats: ${h0.x}/${h0.n} → ${h1.x}/${h1.n}`:''})():'',newWeak.length?`New weak spot: ${newWeak.join(', ')}`:'No new weak spots',
+      st.off!==covered?`Offense: ${covered} → ${st.off} of 18 types hit super effectively`:`Offense stays at ${covered} of 18 types`,...thrLines.filter(l=>!l.startsWith('<b>')),...syn];
+    // kept on the plan so the My team suggestion cards can show the same reasons behind a Why? button
+    const wk=a.excess===st.a.excess?null:[wsTxt(a),wsTxt(st.a)];if(keep){pl._why=lines.filter(Boolean);pl._wk=wk}return {lines,dT,ts,wk}}
+// the plans renderPlans adds after the list when nothing improves the team (their reasons are worked out too)
+function planExtra(plans,list){return !plans.length?(plans.more||[]).slice(0,3).filter(x=>!list.includes(x)):[]}
 function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.length===6;if(el&&!(el.previousElementSibling&&el.previousElementSibling.classList.contains('chundohost'))){const u=document.createElement('div');u.className='chundohost';el.before(u)}undoBarSync();
   $('sugTitle').textContent='Suggestions';
   if(!ms.length){el.innerHTML='<div class="empty-note">Add at least one Pokémon to get plans.</div>';return}
@@ -349,23 +395,10 @@ function renderPlans(ms,a,plans,useA,covered){const el=$('sugs');const full=ms.l
   // each plan's readiness next to the current one, so a plan never hides that it leaves the team less prepared
   const baseTS=(ui.vsum&&ui.vsum.RD)||null,planTS=pl=>{if(!baseTS||pl.team.length!==6)return null;if(pl._ts===undefined)pl._ts=tsOf(pl.team);return pl._ts};
   // plans that would lower readiness by 5+ go after the ones that keep or raise it
-  const rank=x=>{const t=planTS(x);return t!=null&&t<=baseTS.score-5?1:0};
-  const ordered=[...plans].map((pl,i)=>({pl,i})).sort((x,y)=>rank(x.pl)-rank(y.pl)||x.i-y.i).map(x=>x.pl);plans.splice(0,plans.length,...ordered);
-  const list=[...plans,...shown];
+  const list=planListOf(plans,baseTS,shown);
   // nothing improves the team: the top side-grades still get their reasons worked out (My team shows them behind Why?)
-  const extra=!plans.length?more.slice(0,3).filter(x=>!list.includes(x)):[];
-  const htmls=[...list,...extra].map((pl,k)=>{const st=pl.st;const ts=planTS(pl),dT=ts!=null?ts-baseTS.score:null;const tA=typeof assignItems==='function'?assignItems(pl.team):pl.team;
-    const fixed=a.rows.filter((t,j)=>t.w>t.r&&!(st.a.rows[j].w>st.a.rows[j].r)).map(t=>t.atk);
-    const nowRes=a.rows.filter((t,j)=>t.r===0&&st.a.rows[j].r>0).map(t=>t.atk);
-    const newWeak=st.a.rows.filter((t,j)=>t.w>t.r&&!(a.rows[j].w>a.rows[j].r)).map(t=>t.atk);
-    const syn=pl.ch.map(x=>{const t=metaEntry(x.c.p);const mates=(t&&t.tm||[]).map(([n])=>byName.get(n)).filter(q=>q&&pl.team.some(m=>m.base===q.b&&m.p!==x.c.p)).map(q=>q.d);return mates.length?`${esc(x.c.p.d)} is often paired with ${esc(mates.slice(0,2).join(' and '))}`:''}).filter(Boolean);
-    const roleLines=gpDiff(plans.gp,pl.gp),thrLines=pl.team.length===6&&ms.length===6&&k<plans.length+6?threatDiff(ms,pl.team,3).map(x=>x.html):[];
-    const archLines=pl.ch.flatMap(x=>(x.why||[]).map(w=>`${esc(x.c.p.d)}: ${w}`));
-    const cw=[...thrLines,...roleLines].some(l=>String(l).includes('Covers weather')),lines=[...(pl.gap?pl.gap.why:[]).filter(w=>!(cw&&/^Gives your /.test(w))).map(w=>`<b>${esc(w)}</b>`),...thrLines.filter(l=>l.startsWith('<b>')),plans.ip0&&pl._ip!==undefined&&pl._ip<plans.ip0?(()=>{const A=ipWords(ms),B=new Set(ipWords(assignItems(pl.team))),fx=A.filter(w=>!B.has(w));return fx.length?`<b>Fixes ${esc(fx.join('; '))}</b>`:`<b>Fixes ${plans.ip0-pl._ip===1?'an item problem':plans.ip0-pl._ip+' item problems'}</b>`})():'',fixed.length?`Fixes the ${fixed.join(', ')} weakness${fixed.length>1?'es':''}`:'',nowRes.length?`Adds a resist to ${nowRes.join(', ')}`:'',...roleLines,...archLines,
-      dT!=null&&plans.gBase!=null?(()=>{const h0=CH.hand(baseTS),h1=CH.hand(prepOf(pl.team));return h0&&h1?`Ready for top threats: ${h0.x}/${h0.n} → ${h1.x}/${h1.n}`:''})():'',newWeak.length?`New weak spot: ${newWeak.join(', ')}`:'No new weak spots',
-      st.off!==covered?`Offense: ${covered} → ${st.off} of 18 types hit super effectively`:`Offense stays at ${covered} of 18 types`,...thrLines.filter(l=>!l.startsWith('<b>')),...syn];
-    // kept on the plan so the My team suggestion cards can show the same reasons behind a Why? button
-    pl._why=lines.filter(Boolean);pl._wk=a.excess===st.a.excess?null:[wsTxt(a),wsTxt(st.a)];
+  const extra=planExtra(plans,list);
+  const htmls=[...list,...extra].map((pl,k)=>{const {lines,dT,ts}=planWhy(pl,k,{ms,a,plans,covered,baseTS});const tA=typeof assignItems==='function'?assignItems(pl.team):pl.team;
     return `<div class="plan${k>=plans.length?' idea':''}"><div class="ph"><span class="pt">Suggestion ${k+1} · ${pl.ch.length} change${pl.ch.length>1?'s':''}</span>${(()=>{const g0=plans.gBase,g1=planGrade(pl);return g0!=null&&g1!=null?gradeChip(g0,g1,null,pl.team):dT!=null?`<span class="tsd ${dT>0?'up':dT<0?'dn':''}" title="${esc(tsTitle(baseTS,{score:ts}))}">${readyDelta(dT)}</span>`:''})()}</div>${(()=>{try{return LANE.line(pl)}catch(e){return ''}})()/* Part 3 (Nov 10): the honest kind-and-size line replaces the model's sureness word, which measured no better than a coin flip (51.4% when "sure") */}
       ${pl.ch.map(x=>`<div class="swap">${x.out?`<span class="out">${esc(x.out.d)}</span> →`:'Add'} ${sprite(x.c.p,'mini')}<span class="in">${esc(x.c.p.d)}</span>${confChip(x.c.p)}<span class="chips">${x.c.p.t.map(t=>chip(t)).join('')}</span>${x.c.p.m?'<span class="tag mega ico" title="Mega Evolution">Mega</span>':''}${inBox(x.c.p)?'<span class="tag box ico" title="In your box">Box</span>':ui.pool!=='all'?'<span class="tag catch ico" title="Not in your box yet">TO CATCH</span>':''}${ratingTag(x.c.p)}${isGem(x.c.p)?'<span class="tag offmeta">HIDDEN GEM</span>':ideaTag(x.c.p)}<span class="vsub">${esc(x.c.mem.ability)}${(t=>t&&t.item?' @ '+esc(t.item):'')(tA.find(m=>m.p===x.c.p))}${U(x.c.p)?` · <span title="${esc(windowWords('tour'))}">${U(x.c.p).toFixed(1)}% usage</span>`:''}</span></div>`).join('')}
       ${(()=>{const L=lines.filter(Boolean),ul=`<ul>${L.map(l=>`<li>${l}</li>`).join('')}</ul>`;if(L.length<=2)return ul;/* Phase 3: the grade is the headline; the first two reasons show, the rest (readiness, offense, weak spots) behind one tap */return `<ul>${L.slice(0,2).map(l=>`<li>${l}</li>`).join('')}</ul><details class="planwhy"><summary>${L.length-2} more reason${L.length-2===1?'':'s'}</summary><ul>${L.slice(2).map(l=>`<li>${l}</li>`).join('')}</ul></details>`})()}
@@ -395,13 +428,13 @@ function renderMeta(){
     return `<details class="mrow${t.r<=3?' medal md'+t.r:''}"><summary${p?` class="tyacc" style="${tyv(p)}"`:''}><span class="rk">${t.r}</span>${(p&&sprite(p,'mini'))||'<span class="spr mini"></span>'}<span class="nm">${esc(p?p.d:t.n)}${(()=>{const tr=trendFor(t.n,t.r);return tr?`<span class="trend ${tr.cls}" title="${esc(tr.long?`${tr.long}. Daily ranks, ${META.history?META.history.days.length:0} days kept.`:`New in the usage ranks this week`)}">${tr.txt}${tr.cls!=='new'?rankSpark(t.n):''}</span>`:''})()} <span class="chips" style="display:inline-flex;vertical-align:middle">${p?p.t.map(x=>chip(x)).join(''):''}</span></span><span class="pc">${t.teams?`${t.u!=null?(+t.u).toFixed(1)+'%'+ubar(t.u,umx):''}${basis(t.teams,'team','teams',{cls:'blk'})}`:u?u.toFixed(1)+'%'+ubar(u,umx):''}</span></summary><div class="mbody">${sets||'<div class="none">No set details for this one yet.</div>'}${add?`<div>${add}</div>`:''}</div></details>`}).join('')+(d.more&&d.more.length?`<div class="t2" style="padding:4px 2px">Also ranked ${d.more[0].r}–${d.more[d.more.length-1].r}: ${d.more.slice(0,40).map(m=>{const q=byName.get(m.n);return esc(q?q.d:m.n)}).join(', ')}${d.more.length>40?` and ${d.more.length-40} more`:''}</div>`:'')+(d.note?`<div class="t2" style="padding:0 2px">${esc(d.note)}</div>`:'')||'<div class="empty-note">No Pokémon in this list.</div>';
 }
 // Ability picker: says plainly which ability most players run and whether you changed it.
-function abilBlock(s,i,m){const p=m.p,meta=metaAbility(p),rec=meta||bestAbility(p),st=defSet(p);
-  const mine=s.a&&p.a.includes(s.a)&&s.a!==rec;
+function abilBlock(s,i,m){const p=m.p,A=abilChoices(s,m),meta=A.meta,rec=A.rec,st=A.st;
+  const mine=A.mine;
   const tag=mine?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-abreset="${i}">Use ${esc(rec)}</button>`
     :p.a.length===1?`<span class="tag rec soft">${p.m?'MEGA ABILITY':'ONLY ABILITY'}</span>`
     :meta?`<span class="tag rec" title="Most used in ${esc(srcWord(st.src.ab))} ${S.format}">MOST USED</span>`:`<span class="tag rec soft">SUGGESTED</span><span class="vsub">no usage data</span>`;
   return `<div class="abil"><div class="lblrow"><span class="lbl">Ability</span>${tag}</div>
-    <select class="field" id="ab${i}" data-i="${i}" aria-label="Ability for ${esc(p.d)}">${p.a.map(a=>{const pc=abilityPct(p,a);return `<option value="${esc(a)}"${a===m.ability?' selected':''}>${esc(a)}${pc!=null?` (${(+pc).toFixed(pc<1?1:0)}%)`:''}${a===rec?' ★':''}</option>`}).join('')}</select></div>`}
+    <select class="field" id="ab${i}" data-i="${i}" aria-label="Ability for ${esc(p.d)}">${A.list.map(({name:a,pct:pc})=>{return `<option value="${esc(a)}"${a===m.ability?' selected':''}>${esc(a)}${pc!=null?` (${(+pc).toFixed(pc<1?1:0)}%)`:''}${a===rec?' ★':''}</option>`}).join('')}</select></div>`}
 // Every held item players actually run in Champions (from all the usage data loaded), so the picker never offers one the game lacks.
 var itemPoolCache;function notStone(n){return n==='Eviolite'||!STONE_RE.test(n)}
 function itemPool(){if(!itemPoolCache)itemPoolCache={v:-1,list:[]};if(itemPoolCache.v===metaVersion&&itemPoolCache.list.length)return itemPoolCache.list;const seen=new Map();
@@ -412,23 +445,16 @@ function itemPool(){if(!itemPoolCache)itemPoolCache={v:-1,list:[]};if(itemPoolCa
 function itemBlock(s,i,m,clash){const p=m.p;
   const same=x=>x.p.n===p.n;
   const warn=clash&&clash.sc.some(same)?`<div class="itwarn" role="note"><b>Clashes with Trick Room.</b> ${clash.tr.length===1&&same(clash.tr[0])?'It sets Trick Room itself':'Your team sets Trick Room'}, and under it the Scarf makes ${esc(m.d)} move later.</div>`:'';
-  if(p.m)return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span><span class="tag rec soft">MEGA STONE</span></div><div class="itfixed">${esc(m.item||'Mega Stone')}</div></div>`;
-  const pop=(defSet(p).it||[]).filter(([n])=>n&&notStone(n)).slice(0,8),popN=new Set(pop.map(([n])=>n)),def=defaultItem(p);
-  const rest=itemPool().filter(n=>!popN.has(n));if(m.item&&!popN.has(m.item)&&!rest.includes(m.item))rest.unshift(m.item);
-  // with no item picked, show the item it actually holds: Item Clause can move the usual item to a teammate (Oct 30 audit)
-  let shown=m.item;if(!m.heldItem){try{const k=JSON.stringify(S.slots)+'|'+metaVersion;if(itemBlock._k!==k){itemBlock._k=k;itemBlock._a=new Map((typeof assignItems==='function'?assignItems(members()):[]).map(x=>[x.i,x.item]))}const a=itemBlock._a.get(m.i);if(a)shown=a}catch(e){}}
-  const moved=!m.heldItem&&def&&shown&&shown!==def;
+  const C=itemChoices(s,i,m);
+  if(C.fixed!=null)return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span><span class="tag rec soft">MEGA STONE</span></div><div class="itfixed">${esc(C.fixed)}</div></div>`;
+  const {pop,def,rest,shown,moved}=C;
   const tag=moved?`<span class="tag rec soft" title="Item Clause: one of each item per team">${esc(def)} is on a teammate</span>`:m.heldItem&&m.heldItem!==def?`<span class="tag mine">YOUR PICK</span><button class="linkbtn" type="button" data-itreset="${i}">Use ${esc(def||'the usual item')}</button>`
     :pop.length?`<span class="tag rec">MOST USED</span>`:`<span class="tag rec soft">NO USAGE DATA</span>`;
-  if(shown&&!popN.has(shown)&&!rest.includes(shown))rest.unshift(shown);const o=(n,pc)=>`<option value="${esc(n)}"${n===shown?' selected':''}>${esc(n)}${pc!=null?` (${(+pc).toFixed(+pc<1?1:0)}%)`:''}${n===def?' ★':''}</option>`;
+  const o=(n,pc)=>`<option value="${esc(n)}"${n===shown?' selected':''}>${esc(n)}${pc!=null?` (${(+pc).toFixed(+pc<1?1:0)}%)`:''}${n===def?' ★':''}</option>`;
   return `<div class="abil"><div class="lblrow"><span class="lbl">Item</span>${tag}</div>
     <select class="field" id="it${i}" data-iti="${i}" aria-label="Held item for ${esc(p.d)}">${m.item?'':'<option value="" selected>(no item)</option>'}${pop.length?`<optgroup label="Most used in ${S.format}">${pop.map(([n,v])=>o(n,v)).join('')}</optgroup>`:''}${rest.length?`<optgroup label="Other items">${rest.map(n=>o(n,null)).join('')}</optgroup>`:''}</select>${warn}</div>`}
 // Moves: four tiles, each a dropdown. Popular moves for this format come first with their usage %.
-function movesBlock(s,i,m){const p=m.p,sm=slotMoves(s,p),pm=popularMoves(p);
-  const pct=pm.pct||new Map();
-  const learn=(LEARN[p.n]||[]).map(k=>MV[k]).filter(Boolean);const popNames=new Set(pm.map(x=>x.name));
-  const rest=learn.filter(x=>!popNames.has(x.name)).sort((a,b)=>a.name.localeCompare(b.name));
-  const src=pm.src==='other'?`popular ${OTHER()} set`:pm.src==='guess'?'likely moves (no usage data)':pm.src==='sd'?(p.m?'Mega set · Showdown':`${S.format} set · Showdown`):pm.src==='tour'?'tournament set':pm.src==='ladder'?'Showdown set':`popular ${S.format} set`;
+function movesBlock(s,i,m){const p=m.p,M=moveChoices(s,p),sm=M.sm,pm=M.pm,pct=M.pct,rest=M.rest,src=M.src;
   const label=sm.custom?`<span class="tag mine">YOUR SET</span><button class="linkbtn" type="button" data-mvreset="${i}">Reset to popular</button>`:`<span class="tag rec">${src.toUpperCase()}</span>`;
   const opt=(x,cur)=>`<option value="${esc(x.name)}"${x.name===cur?' selected':''}${x.name!==cur&&sm.names.includes(x.name)?' disabled':''}>${esc(x.name)} · ${x.type}${x.cat?' '+(x.bp||'var'):''}${pct.has(x.name)?' · '+(+pct.get(x.name)).toFixed(0)+'%':''}</option>`;
   const tiles=sm.names.map((nm,j)=>{const mv=mvByName.get(nm);

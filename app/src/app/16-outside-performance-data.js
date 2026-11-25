@@ -34,6 +34,9 @@ function opggNames(list) { const seen = new Set(), out = [];
     if (!reg && !form && ['Arcanine', 'Zoroark', 'Typhlosion', 'Samurott', 'Goodra', 'Decidueye', 'Avalugg'].includes(base) && !seen.has(base)) { seen.add(base); n = base + '-Hisui'; }
     out.push(srcName(n) || srcName(x0)); }
   return out; }
+// code review B14: another site's list is shown only with an https:// link and a plain key; the name is trimmed
+function outsideClean(o) { const lists = o.lists.filter(L => L && typeof L === 'object' && typeof L.url === 'string' && /^https:\/\/[^\s"'<>]+$/.test(L.url) && L.url.length <= 300 && typeof L.k === 'string' && /^[\w-]{1,40}$/.test(L.k))
+  .map(L => Object.assign({}, L, {name: String(L.name || '').slice(0, 60)})); return lists.length ? Object.assign({}, o, {lists}) : null; }
 function perfFromRaw(raw) {
   if (!raw || typeof raw !== 'object') return null;
   const num = v => (typeof v === 'number' && isFinite(v)) ? v : +v;
@@ -77,7 +80,7 @@ function perfFromRaw(raw) {
     // the date of each source's data, for the sheet ("Oct 30", "Sep 2026"), and the in-game season
     frozenOfficial: !!(raw.official && raw.official.frozen),
     dates: Object.fromEntries(PERF_KEYS.map(k => [k, perfDate(raw, k)]).filter(x => x[1])), season: (raw.ingame && (raw.ingame.season || ((raw.ingame.label || '').match(/season ([A-Z]-?\d+)/) || [])[1])) || '',
-    outside: raw.outside && Array.isArray(raw.outside.lists) && raw.outside.data && typeof raw.outside.data === 'object' ? raw.outside : null};
+    outside: raw.outside && Array.isArray(raw.outside.lists) && raw.outside.data && typeof raw.outside.data === 'object' ? outsideClean(raw.outside) : null};
   return Object.keys(out.doubles).length >= 20 ? out : null;
 }
 // Outdated numbers are wrong numbers: every part of the outside data carries the date of its data, and a part older than its
@@ -101,13 +104,18 @@ function perfAgeDays(d) { const s = String(d || ''); let t;
 /* Nov 7: frozen parts (the RK9 official-events table, read before Nov 1) are never used. RK9's terms forbid automated
    extraction, so since Nov 1 the data job leaves it out; the page's built-in snapshot still had it, and topped the ratings up
    with it until 28 days after its newest event. Now it's left out everywhere. */
-function perfFreshParts(raw) { const o = {}; if (!raw) return o; for (const k of PERF_KEYS) if (raw[k] && !raw[k].frozen && perfAgeDays(perfDate(raw, k)) <= (raw[k].frozen ? PERF_FROZEN_MAXAGE : PERF_MAXAGE[k])) o[k] = raw[k]; return o; }
+function perfFreshParts(raw) { const o = {}; if (!raw) return o; for (const k of PERF_KEYS) if (raw[k] && !raw[k].frozen && perfAgeDays(perfDate(raw, k)) <= PERF_MAXAGE[k]) o[k] = raw[k]; return o; } /* frozen parts are left out above, so their age limit never applied (code review A2-M5) */
 // The performance data in use: today's refresh (meta/perf), each part only while it is current, topped up with the
 // snapshot built into the page (PERF_RAW) where that part of the snapshot is still current. Without the refresh at all
 // (no database), the built-in snapshot is used as it is, and its dates are shown.
 let perfCache = {key: null, val: null};
-function activePerf() { const key = metaVersion; if (perfCache.key === key) return perfCache.val;
+function activePerf() { const key = metaVersion + '|' + Math.floor(Date.now() / 864e5); /* the day too: a tab left open keeps no part past its age limit (code review A2-M5) */ if (perfCache.key === key) return perfCache.val;
   let v = null; try { const raw = META.perf; if (raw) { const fresh = Object.assign({}, typeof PERF_RAW === 'object' && builtinOk() ? perfFreshParts(PERF_RAW) : {}, perfFreshParts(raw));
-      if (fresh.tour) { for (const k of PERF_KEYS) if (fresh[k] && !fresh[k].updated) fresh[k] = Object.assign({}, fresh[k], {updated: perfDate(raw[k] ? raw : PERF_RAW, k)}); v = perfFromRaw(Object.assign({updated: raw.updated}, fresh)); } } } catch (e) { v = null; }
+      if (fresh.tour) { for (const k of PERF_KEYS) if (fresh[k] && !fresh[k].updated) fresh[k] = Object.assign({}, fresh[k], {updated: perfDate(raw[k] ? raw : PERF_RAW, k)}); v = perfFromRaw(Object.assign({updated: raw.updated}, fresh)); }
+      /* Sim, Nov 15 (Q16): when the refresh is past its age limit but still newer than the built-in snapshot, keep the newest we have
+         (its own parts and dates, shown plainly) instead of falling back to older ratings; frozen parts stay out (Nov 7 rule) */
+      else if (raw.tour && !raw.tour.frozen && !(typeof PERF_RAW === 'object' && builtinOk() && perfDate(PERF_RAW, 'tour') > perfDate(raw, 'tour'))) {
+        const own = {}; for (const k of PERF_KEYS) if (raw[k] && !raw[k].frozen) own[k] = Object.assign({}, raw[k], {updated: raw[k].updated || perfDate(raw, k)});
+        v = perfFromRaw(Object.assign({updated: raw.updated}, own)); } } } catch (e) { v = null; }
   if (!v) { try { v = typeof PERF_RAW === 'object' && builtinOk() ? perfFromRaw(PERF_RAW) : null; } catch (e) { v = null; } }
   perfCache = {key, val: v}; return v; }

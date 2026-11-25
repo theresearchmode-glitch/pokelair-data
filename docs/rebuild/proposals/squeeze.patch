@@ -1,0 +1,32 @@
+diff --git a/app/src/v2/css/pages.css b/app/src/v2/css/pages.css
+index ec4ebc1..eefc7e9 100644
+--- a/app/src/v2/css/pages.css
++++ b/app/src/v2/css/pages.css
+@@ -68,8 +68,10 @@
+ .tm-ar{font:700 var(--t20)/1 var(--b);color:var(--ink-3)}
+ .tm-sug .np-btn{align-self:flex-start;margin-top:auto}
+ /* wide: one row per suggestion: the change | the swaps | Apply */
+-@media (min-width:900px){.tm-sug li{display:grid;grid-template-columns:minmax(150px,auto) minmax(0,1fr) auto;grid-template-areas:"k sw ap" "mv sw ap";align-items:center;column-gap:var(--s8)}
+-  .tm-sug li>.np-eyebrow{grid-area:k;align-self:end}.tm-sug .tm-mv{grid-area:mv;align-self:start;flex-direction:column;gap:var(--s1)}.tm-sug .tm-swaps{display:grid;gap:var(--s2);grid-area:sw;display:grid;gap:var(--s2)}.tm-sug li>.np-btn{grid-area:ap;align-self:center;margin:0}}
++/* squeezed-row proposal (Sim's screenshot, ~1180px): three columns only when the window is 900+ AND the card itself is 560px+ (from 1180 the page splits in two and the card is ~470) */
++.tm-sgs{container-type:inline-size}
++@media (min-width:900px){@container (min-width:560px){.tm-sug li{display:grid;grid-template-columns:minmax(150px,auto) minmax(0,1fr) auto;grid-template-areas:"k sw ap" "mv sw ap";align-items:center;column-gap:var(--s8)}
++  .tm-sug li>.np-eyebrow{grid-area:k;align-self:end}.tm-sug .tm-mv{grid-area:mv;align-self:start;flex-direction:column;gap:var(--s1)}.tm-sug .tm-swaps{display:grid;gap:var(--s2);grid-area:sw;display:grid;gap:var(--s2)}.tm-sug li>.np-btn{grid-area:ap;align-self:center;margin:0}}}
+ @media (max-width:379px){.tm-sw img{width:36px;height:36px}.tm-sw{font-size:var(--t13)}}
+ @media (max-width:459px){.tm-hero .np-score{flex-wrap:wrap;row-gap:0}.tm-hero .np-score .w{padding-bottom:0}}
+ @media (max-width:439px){.tm-jump{gap:var(--s3)}.tm-jump small{display:none}}
+diff --git a/app/src/v2/css/sugs.css b/app/src/v2/css/sugs.css
+index f1de424..e080ea9 100644
+--- a/app/src/v2/css/sugs.css
++++ b/app/src/v2/css/sugs.css
+@@ -30,8 +30,8 @@
+ .tm-sug .sg2-why li::before{content:"";position:absolute;left:0;top:.6em;width:6px;height:6px;background:var(--plot);transform:skewX(var(--slant))}
+ .sg2-why b{color:var(--ink)}.sg2-why .warnline{color:var(--mid-text)}
+ .sg2-why .thcalc{display:block;font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+-@media (min-width:900px){.tm-sug li{grid-template-areas:"k sw ap" "mv sw ap" "ln ln ln" "wy wy wy"}
+-  .tm-sug li>.sg2-ln{grid-area:ln;margin-top:var(--s2)}.tm-sug li>.sg2-why{grid-area:wy}.tm-sug li>.np-btn2{grid-area:ap;align-self:center}}
++@media (min-width:900px){@container (min-width:560px){.tm-sug li{grid-template-areas:"k sw ap" "mv sw ap" "ln ln ln" "wy wy wy"}
++  .tm-sug li>.sg2-ln{grid-area:ln;margin-top:var(--s2)}.tm-sug li>.sg2-why{grid-area:wy}.tm-sug li>.np-btn2{grid-area:ap;align-self:center}}}
+ .tm-sug .np-btn2{align-self:flex-start}
+ .sg2-all{display:inline-flex;align-items:center;min-height:var(--tap);margin-top:var(--s2)}
+ .sg2-gap{margin-top:var(--s4);padding:var(--s3) var(--s4);font:400 var(--t15)/1.5 var(--b);color:var(--ink);background:var(--wash)}

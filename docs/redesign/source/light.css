@@ -1,0 +1,9 @@
+﻿:root{--bg:#F5F1EA;--ink:#16141A;--ink2:#4A4550;--ink3:#6B6570;--rule:rgba(22,20,26,.12);--rule2:rgba(22,20,26,.22);
+  --pink:#E6359B;--gold:#E9A800;--blue:#0078BF;--orange:#C8401A;--purple:#5B2FB5;--rise:#14633A;--fall:#2F3FC8}
+.hero::before{background:radial-gradient(900px 620px at 72% 38%,rgba(0,120,191,.10),transparent 62%),radial-gradient(520px 420px at 96% 96%,rgba(230,53,155,.07),transparent 70%),linear-gradient(112deg,transparent 46%,rgba(255,255,255,.7) 50%,transparent 54%)}
+.hero::after{background:radial-gradient(ellipse at 58% 46%,transparent 60%,rgba(120,100,80,.12) 100%)}
+.grain{mix-blend-mode:multiply;opacity:.05;filter:invert(1)}
+.btn.p,.chips span.on{color:#FBF8F4}
+.card{background:rgba(255,253,250,.9);box-shadow:0 30px 60px -24px rgba(40,20,40,.45)}
+.mon img{filter:drop-shadow(0 12px 10px rgba(40,20,40,.28))}
+.door:first-child .n,.door:first-child li.lead{color:var(--ink)}

@@ -87,9 +87,6 @@ function rzDots() { const w = document.createTreeWalker(document.body, NodeFilte
     /* a label in front of a list ("Build · real winning teams") takes a colon; a missing value ("— · 61%") is said in words */
     const lead = p.matches('h2,h3,h4,.chk,.eyebrow,.sgl,.ltd,.npk,.rzbwho,.thk') && !/:/.test(p.textContent.split('·')[0]) ? ': ' : ', ';
     (window.__RZdots = window.__RZdots || new Set()).add(p.textContent.trim().slice(0, 80) + '  @' + String(p.className || p.tagName).slice(0, 30));
-    let v = t.nodeValue.replace(/—\s*·\s*/g, 'no power, ');
-    /* "Whimsicott · Tailwind; Basculegion · Aqua Jet": who with what */
-    if (/;/.test(p.textContent) || p.closest('.gpwho')) v = v.replace(/([A-Za-zé'’-]+(?: [A-Z][A-Za-zé'’-]+)*) · ([A-Z][A-Za-z'’ -]+?)(?=;|,|$| ·)/g, '$1 with $2'); if (/^\s*·\s*$/.test(v)) { t.nodeValue = lead; continue; }
-    let first = true; v = v.replace(/\s*·\s*/g, () => { const r = first ? lead : ', '; first = false; return r; }).replace(/^,\s*/, ', ').replace(/,\s*,/g, ',').replace(/:\s*,/g, ':'); t.nodeValue = v; } }
+    t.nodeValue = undotText(t.nodeValue, lead, /;/.test(p.textContent) || !!p.closest('.gpwho')); } }
 { let q = false; const run = () => { q = false; try { rzDots(); } catch (e) {} }; run();
   new MutationObserver(() => { if (!q) { q = true; requestAnimationFrame(run); } }).observe(document.body, {childList: true, subtree: true}); }

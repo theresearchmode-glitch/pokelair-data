@@ -1,0 +1,128 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>NastyPlot home concept: Plot City</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500..900&family=Instrument+Sans:wght@400..700&display=swap">
+<style>
+:root{--bg:#07060E;--ink:#F6F3EE;--ink2:#CFCAD6;--ink3:#9A95A6;--rule:rgba(255,255,255,.13);--rule2:rgba(255,255,255,.26);
+  --gold:#FFC233;--blue:#4AAEF5;--orange:#FF7A45;--purple:#B391FF;--rise:#4BE38F;--fall:#A8B4FF;
+  --d:"Unbounded",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;overflow-x:hidden;background:var(--bg);color:var(--ink);font:500 16px/1.5 var(--b);-webkit-font-smoothing:antialiased;font-synthesis:style}
+.dsp{font-family:var(--d);font-style:italic;font-weight:900;letter-spacing:-.03em}
+.eyebrow{font:600 13px/1 var(--b);letter-spacing:.14em;text-transform:uppercase;color:var(--ink2)}
+.hero{position:relative;height:1000px;overflow:hidden;background:
+  radial-gradient(900px 520px at 68% 62%,rgba(92,70,220,.34),transparent 70%),
+  radial-gradient(700px 420px at 92% 30%,rgba(255,70,150,.16),transparent 70%),
+  radial-gradient(600px 400px at 40% 96%,rgba(40,140,255,.2),transparent 70%),
+  linear-gradient(180deg,#05050B,#0B0920 70%,#0A0818)}
+#city{position:absolute;left:0;top:0;z-index:2}
+.fog{position:absolute;inset:0;z-index:3;pointer-events:none;background:linear-gradient(90deg,rgba(7,6,14,.92) 0,rgba(7,6,14,.5) 30%,transparent 44%),linear-gradient(0deg,rgba(7,6,14,.9),transparent 16%)}
+.grain{position:absolute;inset:0;opacity:.14;mix-blend-mode:overlay;pointer-events:none;z-index:7}
+header{position:absolute;z-index:8;left:0;right:0;top:0;height:76px;display:flex;align-items:center;padding:0 64px}
+header .logo svg{height:38px;display:block}
+nav{display:flex;gap:40px;margin-left:72px}
+nav a{font:600 15px/1 var(--b);color:var(--ink);display:flex;align-items:center;gap:10px}
+nav a i{width:10px;height:10px;border-radius:50%;background:var(--c);box-shadow:0 0 14px var(--c)}
+.find{margin-left:auto;white-space:nowrap;display:flex;align-items:center;gap:12px;width:300px;height:44px;padding:0 16px;border-radius:999px;background:rgba(255,255,255,.1);color:var(--ink2);font-size:15px}
+.pitch{position:absolute;z-index:6;left:64px;top:160px;width:520px}
+h1{font-size:58px;line-height:1.03;margin:22px 0;white-space:nowrap}
+h1 em{font-style:inherit;color:var(--blue)}
+.pitch p{font-size:18px;color:var(--ink2);max-width:440px}.pitch p b{color:var(--ink);font-weight:700}
+.acts{display:flex;gap:12px;margin-top:30px}
+.btn{height:54px;padding:0 26px;border-radius:999px;display:inline-flex;align-items:center;gap:10px;font:800 15px/1 var(--d);font-style:italic;letter-spacing:-.01em;white-space:nowrap}
+.btn.p{background:var(--ink);color:#0B0B0D}.btn.g{background:rgba(255,255,255,.13);color:var(--ink)}
+.key{position:absolute;z-index:6;left:64px;top:596px;display:grid;gap:12px;width:400px}
+.key div{display:grid;grid-template-columns:40px 1fr;align-items:center;gap:14px;font-size:15px;color:var(--ink2)}
+.key b{color:var(--ink);font-weight:700}.key svg{display:block}
+.nums{position:absolute;z-index:6;left:64px;bottom:60px;display:flex;gap:44px}
+.nums b{display:block;font-size:26px;line-height:1.1}.nums span{font-size:13px;color:var(--ink2)}
+.tag{position:absolute;z-index:5;transform:translate(-50%,-100%);font:700 13px/1.15 var(--b);white-space:nowrap;text-align:center;color:#fff;text-shadow:0 1px 6px #000,0 0 14px rgba(0,0,0,.9)}
+.tag b{font:900 13px/1.1 var(--d);font-style:italic;color:var(--tc);margin-left:3px}
+.card{position:absolute;z-index:6;left:1124px;top:88px;width:284px;padding:18px 20px;border-radius:18px;background:rgba(14,13,26,.7);border:1px solid var(--rule2);backdrop-filter:blur(26px) saturate(1.4);box-shadow:0 30px 60px -20px #000}
+.card h3{font-size:20px}.card .ty{display:flex;gap:6px;margin-top:8px}.card .ty span{font:700 13px/1 var(--b);padding:5px 10px;border-radius:999px;color:#0B0B0D}
+.card .g{display:grid;grid-template-columns:repeat(3,1fr);margin-top:14px;padding-top:12px;border-top:1px solid var(--rule)}
+.card .g b{display:block;font-size:22px;line-height:1.15}.card .g span{font-size:13px;color:var(--ink2)}
+.card .up{margin-top:12px;font-size:13px;color:var(--rise);font-weight:700}.card .go{float:right;font-weight:700}
+.src{position:absolute;z-index:6;right:56px;bottom:28px;font-size:13px;color:var(--ink2)}
+.week{display:grid;grid-template-columns:232px 1fr 1fr;align-items:center;padding:0 64px;height:156px;border-bottom:1px solid var(--rule)}
+.week h2{font-size:20px;line-height:1.15}.week .eyebrow{margin-bottom:10px}
+.mv{display:grid;grid-template-columns:repeat(3,auto);justify-content:space-between;gap:10px 16px;padding:0 28px;border-left:1px solid var(--rule)}.mv.d{padding-right:0}
+.mv>b{grid-column:1/-1;font:700 13px/1 var(--b);letter-spacing:.14em;text-transform:uppercase}
+.mv div{display:grid;grid-template-columns:56px 1fr;align-items:center;column-gap:10px;font-size:15px;font-weight:700;line-height:1.25;white-space:nowrap}
+.mv .im{grid-row:1/3;width:56px;height:56px;border-radius:50%;display:grid;place-items:center;background:radial-gradient(closest-side,var(--tc),transparent)}
+.mv img{width:48px;height:48px}.mv em{font-family:var(--d);font-weight:800;font-size:15px}
+.mv.u>b,.mv.u em{color:var(--rise)}.mv.d>b,.mv.d em{color:var(--fall)}
+.doors{display:grid;grid-template-columns:repeat(4,1fr)}
+.door{position:relative;height:440px;padding:56px 36px 0;overflow:hidden;border-left:1px solid var(--rule)}.door:first-child{border-left:0;padding-left:64px}.door:last-child{padding-right:64px}
+.door::before{content:"";position:absolute;left:-20%;right:-20%;bottom:-55%;height:110%;border-radius:50%;background:radial-gradient(closest-side,var(--c),transparent);opacity:.6;filter:blur(30px)}
+.door>*{position:relative}.door .n{font-size:15px;color:var(--c)}
+.door h2{font-size:38px;line-height:1.1;margin:16px 0 12px}.door p{font-size:17px;color:var(--ink2);max-width:270px}
+.door a{position:absolute;left:36px;bottom:44px;height:50px;padding:0 22px;border-radius:999px;background:rgba(255,255,255,.14);display:inline-flex;align-items:center;gap:10px;font:800 15px/1 var(--d);font-style:italic;color:#fff}
+.door:first-child a{left:64px}
+footer{display:flex;align-items:center;gap:40px;padding:0 64px;height:104px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink2)}
+footer svg{height:30px;display:block}footer .r{margin-left:auto;display:flex;gap:32px}
+</style></head><body>
+<section class="hero">
+  <svg id="city" width="1440" height="1000"></svg><div class="fog"></div>
+  <svg class="grain" width="1440" height="1000"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/><feColorMatrix type="saturate" values="0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+  <header><div class="logo"><!--LOGO--></div>
+    <nav><a style="--c:var(--gold)"><i></i>Build</a><a style="--c:var(--blue)"><i></i>My team</a><a style="--c:var(--orange)"><i></i>Battle</a><a style="--c:var(--purple)"><i></i>Meta</a></nav>
+    <div class="find"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg>Find a Pokémon or tool</div></header>
+  <div class="pitch"><div class="eyebrow">Pokémon Champions · Reg M-C doubles</div>
+    <h1 class="dsp">Sharply raise<br><em>your win rate.</em></h1>
+    <p>Welcome to the meta, built as a city from <b id="nt"></b>. Every tower is a Pokémon. Fly through it, land on one, or light up your own six.</p>
+    <div class="acts"><span class="btn p">Build me a team ➜</span><span class="btn g">Light up my six</span></div></div>
+  <div class="key"><div><svg width="40" height="26"><path d="M8 24V8M4 12l4-5 4 5" fill="none" stroke="#fff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="22" y="4" width="12" height="20" rx="2" fill="#fff"/></svg><span><b>Taller</b> is a higher NastyPlot rating.</span></div>
+    <div><svg width="40" height="26"><rect x="2" y="14" width="10" height="10" rx="2" fill="#fff" opacity=".6"/><rect x="18" y="6" width="20" height="18" rx="2" fill="#fff"/></svg><span><b>Wider</b> is on more teams.</span></div>
+    <div><svg width="40" height="26"><rect x="3" y="4" width="16" height="20" rx="2" fill="#FF4A1C"/><rect x="21" y="4" width="16" height="20" rx="2" fill="#2A86FF"/></svg><span><b>Colour</b> is its two types.</span></div></div>
+  <div class="nums" id="nums"></div>
+  <div id="tags"></div><div id="card"></div>
+  <div class="src">Limitless team sheets and official events · data as of Nov 8</div>
+</section>
+<section class="week"><div><div class="eyebrow" id="wkd"></div><h2 class="dsp">What changed<br>this week</h2></div><div class="mv u" id="up"><b>▲ Rising</b></div><div class="mv d" id="dn"><b>▼ Falling</b></div></section>
+<section class="doors">
+  <div class="door" style="--c:#FFB000"><div class="n dsp">01</div><h2 class="dsp">Build</h2><p>A full six drafted from real winning teams, or built your own way.</p><a>Build me a team ➜</a></div>
+  <div class="door" style="--c:#1E8FFF"><div class="n dsp">02</div><h2 class="dsp">My team</h2><p>Your six graded out of 100, with the reasons and the fixes.</p><a>Check my team ➜</a></div>
+  <div class="door" style="--c:#FF5A1F"><div class="n dsp">03</div><h2 class="dsp">Battle</h2><p>Their six in. Your four, the leads and turn 1 out.</p><a>Battle mode ➜</a></div>
+  <div class="door" style="--c:#8A4DFF"><div class="n dsp">04</div><h2 class="dsp">Meta</h2><p>Every recent tournament, every winning team, every Pokémon rated.</p><a>Ratings ➜</a></div>
+</section>
+<footer><!--LOGO2--><span>Team building for Pokémon Champions, from real tournament results.</span><div class="r"><span>How the ratings work</span><span>About</span><span>Send feedback</span></div></footer>
+<script>
+/*DATA*/
+const TC={Grass:'#35D461',Fire:'#FF4A1C',Water:'#2A86FF',Electric:'#FFD400',Psychic:'#FF3F97',Ice:'#4FE3F5',Dragon:'#6A55FF',Dark:'#8A63C9',Fairy:'#FF86E4',Fighting:'#FF8A00',Flying:'#7FBFFF',Poison:'#B44DF2',Ground:'#E0A040',Rock:'#CDB060',Bug:'#A6CC1A',Ghost:'#7C54E0',Steel:'#6FC3D9',Normal:'#C9C6BC'};
+const N=n=>n.toLocaleString('en-US'),$=id=>document.getElementById(id);
+$('nt').textContent=N(D.teams)+' real tournament teams';
+$('nums').innerHTML=[[D.teams,'teams'],[D.tours,'tournaments'],[D.games,'games']].map(x=>`<div><b class="dsp">${N(x[0])}</b><span>${x[1]}</span></div>`).join('');
+const fd=s=>new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+$('wkd').textContent=fd(D.wk.from)+' – '+fd(D.wk.to).replace('Nov ','')+' · '+N(D.wk.n)+' teams';
+const mv=(id,a)=>$(id).insertAdjacentHTML('beforeend',a.map(x=>`<div><span class="im" style="--tc:${TC[x.t[0]]}99"><img src="${x.img}"></span><span>${x.d}</span><em>${x.v>0?'+':'−'}${Math.abs(x.v)}</em></div>`).join(''));mv('up',D.up);mv('dn',D.down);
+// ---- the city: 4 rows of 6, the highest rated at the back so nothing hides ----
+const mix=(h,k,to)=>{const a=[1,3,5].map(i=>parseInt(h.slice(i,i+2),16)),b=to||[7,6,14];return 'rgb('+a.map((v,i)=>Math.round(v*k+b[i]*(1-k))).join(',')+')';};
+const OX=842,OY=334,DX=104,DY=60,SEL='Kingambit';
+const cells=D.top.map((m,i)=>{const r=Math.floor(i/6),c=i%6,f=Math.max(.5,Math.min(1,Math.sqrt(m.u)/Math.sqrt(40)));return {m,i,r,c,sx:OX+(c-r)*DX,sy:OY+(c+r)*DY,h:Math.round((m.r-62)*4.3),hx:f*36,hy:f*20.8,c1:TC[m.t[0]],c2:TC[m.t[1]||m.t[0]]};});
+let defs='',floor='',body='',tags='';
+// floor grid
+for(let k=-1;k<=6;k++){const a=[OX+(k-(-1))*DX-DX/2,OY+(k-1)*DY-DY/2],b=[OX+(k-4)*DX-DX/2,OY+(k+4)*DY-DY/2];floor+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="rgba(180,170,255,.16)"/>`;}
+for(let k=-1;k<=4;k++){const a=[OX+(-1-k)*DX+DX/2,OY+(-1+k)*DY-DY/2],b=[OX+(6-k)*DX+DX/2,OY+(6+k)*DY-DY/2];floor+=`<line x1="${a[0]}" y1="${a[1]}" x2="${b[0]}" y2="${b[1]}" stroke="rgba(180,170,255,.16)"/>`;}
+for(const t of cells){const{sx,sy,h,hx,hy,c1,c2,i}=t,sel=t.m.n===SEL;
+  defs+=`<linearGradient id="t${i}" x1="0" y1="0" x2="1" y2="1"><stop stop-color="${mix(c1,.55,[255,255,255])}"/><stop offset="1" stop-color="${mix(c2,.8,[255,255,255])}"/></linearGradient>
+  <linearGradient id="l${i}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${mix(c1,.9)}"/><stop offset="1" stop-color="${mix(c1,.16)}"/></linearGradient>
+  <linearGradient id="r${i}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${mix(c2,.62)}"/><stop offset="1" stop-color="${mix(c2,.08)}"/></linearGradient>
+  <radialGradient id="g${i}"><stop stop-color="${c1}" stop-opacity=".75"/><stop offset="1" stop-color="${c2}" stop-opacity="0"/></radialGradient>
+  <linearGradient id="m${i}" x1="0" y1="0" x2="0" y2="1"><stop stop-color="${c1}" stop-opacity=".3"/><stop offset="1" stop-color="${c1}" stop-opacity="0"/></linearGradient>`;
+  // glow pool and reflection on the glossy floor
+  floor+=`<ellipse cx="${sx}" cy="${sy+hy*.4}" rx="${hx*2.7}" ry="${hy*2.7}" fill="url(#g${i})"/>`;
+  const rh=Math.min(h*.55,90);floor+=`<polygon points="${sx-hx},${sy} ${sx},${sy+hy} ${sx+hx},${sy} ${sx+hx},${sy+rh} ${sx},${sy+hy+rh} ${sx-hx},${sy+rh}" fill="url(#m${i})"/>`;
+  let g=`<polygon points="${sx-hx},${sy-h} ${sx},${sy-h+hy} ${sx},${sy+hy} ${sx-hx},${sy}" fill="url(#l${i})"/><polygon points="${sx},${sy-h+hy} ${sx+hx},${sy-h} ${sx+hx},${sy} ${sx},${sy+hy}" fill="url(#r${i})"/>`;
+  for(let k=16;k<h;k+=16)g+=`<path d="M${sx-hx},${sy-h+k}L${sx},${sy-h+hy+k}L${sx+hx},${sy-h+k}" fill="none" stroke="rgba(255,255,255,.1)"/>`;
+  g+=`<line x1="${sx}" y1="${sy-h+hy}" x2="${sx}" y2="${sy+hy}" stroke="rgba(255,255,255,.28)"/>`;
+  g+=`<polygon points="${sx},${sy-h-hy} ${sx+hx},${sy-h} ${sx},${sy-h+hy} ${sx-hx},${sy-h}" fill="url(#t${i})" stroke="rgba(255,255,255,${sel?1:.75})" stroke-width="${sel?2.5:1}"/>`;
+  const z=[80,70,62,56][t.r],top=sy-h-z+hy*.35;
+  if(sel)g+=`<rect x="${sx-hx}" y="${top-250}" width="${hx*2}" height="${250+z}" fill="url(#beam)"/>`;
+  g+=`<ellipse cx="${sx}" cy="${sy-h+2}" rx="${z*.3}" ry="${z*.1}" fill="rgba(0,0,0,.35)"/><image href="${t.m.img}" x="${sx-z/2}" y="${top}" width="${z}" height="${z}"/>`;
+  body+=g;
+  tags+=`<div class="tag" style="left:${sx}px;top:${top-2}px;--tc:${mix(c1,.7,[255,255,255])}">${t.m.d} <b>${t.m.r}</b></div>`;}
+defs+=`<linearGradient id="beam" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff" stop-opacity=".34"/></linearGradient>`;
+$('city').innerHTML=`<defs>${defs}</defs>${floor}${body}`;$('tags').innerHTML=tags;
+const k=D.top.find(m=>m.n===SEL);
+$('card').innerHTML=`<div class="card"><span class="go">Open ›</span><h3 class="dsp">${k.d}</h3><div class="ty">${k.t.map(t=>`<span style="background:${TC[t]}">${t}</span>`).join('')}</div>
+  <div class="g"><div><b class="dsp">${k.r}</b><span>rating</span></div><div><b class="dsp">${k.u}%</b><span>of teams</span></div><div><b class="dsp">${k.w}%</b><span>wins</span></div></div></div>`;
+</script></body></html>

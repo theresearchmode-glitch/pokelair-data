@@ -1,14 +1,21 @@
 // ---------- state ----------
 const LS={get(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+/* pre-launch check 6e (Nov 17): saved data that can't be read used to fall back to the sample team without a word, and the next save
+   overwrote it. Now it is copied to cc2.state.unreadable first (never overwritten by a save) and the page says so once (V2 shell). */
+var STATE_UNREADABLE=false;(()=>{try{const v=localStorage.getItem('cc2.state');if(!v)return;let ok=false;try{const o=JSON.parse(v);ok=!!o&&typeof o==='object'&&!Array.isArray(o)}catch(e){}
+  if(!ok){STATE_UNREADABLE=true;localStorage.setItem('cc2.state.unreadable',v)}}catch(e){}})();
 let S=LS.get('cc2.state',null);
-if(S&&(!Array.isArray(S.teams)||!Array.isArray(S.box)||!Array.isArray(S.slots)))S=null;
+// Nov 15 (code review A3): a damaged field is repaired on its own; the rest of a player's saved state (teams, log, choices) is kept.
+// Only something that isn't a saved state at all starts fresh. fixSlots/fixTeams/fixLog then check each entry.
+if(S&&(typeof S!=='object'||Array.isArray(S)))S=null;
+if(S){if(!Array.isArray(S.teams))S.teams=[];if(!Array.isArray(S.box))S.box=DEFAULT_BOX.slice();if(!Array.isArray(S.slots))S.slots=[]}
 if(!S){S={slots:DEFAULT_TEAM.slots.map(s=>({...s})),box:DEFAULT_BOX.slice(),teams:[{id:'t'+Date.now(),name:DEFAULT_TEAM.name,slots:DEFAULT_TEAM.slots,format:'doubles',saved:Date.now()}],loadedId:null,format:'doubles'};S.loadedId=S.teams[0].id}
 S.format='doubles'; // NastyPlot is doubles only. Teams saved under the retired singles mode stay stored but aren't shown.
 // Off-meta search: when true, the planner and auto-build score power and fit over popularity. Only the hidden-gem and
 // "fresh take" searches turn it on, through withOffMeta(); it is never a user setting.
 let OFFMETA=false;
 // META.singles stays: popular-set lookups fall back to singles data when doubles has none (setFor(p,OTHER())).
-const META={doubles:null,doubles_ingame:null,doubles_tour:null,singles:null,status:null,teams:null,history:null,perf:null,results:null,events:null,weekly:null,calendar:null};
+const META={doubles:null,doubles_ingame:null,doubles_tour:null,singles:null,status:null,teams:null,history:null,perf:null,results:null,events:null,weekly:null,calendar:null,info:null};
 // meta/perf: raw outside performance tables from the daily refresh; anything malformed is dropped and the built-in snapshot is used
 function cleanPerf(v){if(!v||typeof v!=='object')return null;const okRows=x=>Array.isArray(x)&&x.length<=600;const t=v.tour;if(!t||!okRows(t.rows)||t.rows.length<20)return null;return v}
 const SRC={ingame:'doubles_ingame',tour:'doubles_tour',ladder:'doubles'};

@@ -1,0 +1,151 @@
+/* Battle, "The target" (Sim's pick, Nov 22; battle-target.js). The kit header, then the target's HP as a plot bar on the war-room night
+   panel (pink offset like the kit's big move), turn one in move order under it, then who to bring and their six. Colours are tokens:
+   the panel --btg-panel (tokens.css), its words the war room's --wr-*, hits in their type's night colour (--tyn-*), pink = the target. */
+
+/* ===== header: the kit's kicker, slanted headline (the target's name in Nasty pink), lead (the real-games verdict sits beside who to bring) ===== */
+.btg-top{min-width:0}
+.btg-top .k-h1 em{color:var(--k-nasty-text);font-style:inherit}
+.btg-top .k-lead{max-width:760px}
+.btg-vs{margin:var(--s2) 0 0;font:500 var(--t15)/1.5 var(--b);color:var(--k-ink2)}.btg-vs b{color:var(--k-ink);font-weight:700}
+
+/* ===== the hero: the night panel ===== */
+.btg-hero{display:grid;grid-template-columns:280px minmax(0,1fr);gap:var(--s8) var(--s10);margin:var(--s8) var(--s3) 0 0;padding:var(--s8);background:var(--btg-panel);color:var(--wr-ink);box-shadow:12px 12px 0 var(--k-nasty)}
+.btg-mark{position:relative;display:grid;justify-items:center;align-content:start;text-align:center;min-width:0}
+.btg-tg{position:absolute;left:0;top:0;z-index:2;padding:2px var(--s3);background:var(--k-go);color:var(--k-on-go);font-size:var(--t15);font-style:italic;line-height:1.4;transform:skewX(-10deg)}
+.btg-art{display:block;width:100%;margin:0;padding:var(--s6) 0 0;border:0;background:none;cursor:pointer;color:inherit}
+.btg-art img{display:block;width:100%;max-width:240px;height:200px;margin:0 auto;object-fit:contain;object-position:50% 100%;filter:drop-shadow(0 14px 10px var(--wr-shadow))}
+.btg-art:focus-visible{outline:3px solid var(--wr-plot);outline-offset:4px}
+.btg-id{min-width:0;justify-self:stretch}
+/* a long name steps down a size before a word could stick out (kit.js V2.kFit sets data-kf) */
+.btg-id b[data-kf="1"]{font-size:var(--t22)}.btg-id b[data-kf="2"]{font-size:var(--t20)}.btg-id b[data-kf="3"]{font-size:var(--t17)}
+.btg-id small{display:block;margin-top:var(--s3);font:700 var(--t13)/1.3 var(--b);letter-spacing:.04em;text-transform:uppercase;color:var(--wr-ink2)}
+.btg-id b{display:block;margin-top:var(--s1);font-size:var(--t34);font-style:italic;line-height:1.1;color:var(--k-nasty);overflow-wrap:normal}
+.btg-id p{margin:var(--s2) 0 0;font:600 var(--t15)/1.5 var(--b);color:var(--wr-ink2)}
+.btg-plan{min-width:0;align-self:center}
+.btg-risk{margin:0 0 var(--s6);padding:var(--s3) var(--s4);border-left:6px solid var(--k-nasty);background:color-mix(in srgb,var(--k-nasty) 18%,transparent);font:500 var(--t15)/1.5 var(--b)}
+.btg-risk span{display:inline-block;margin-right:var(--s3);padding:0 var(--s2);background:var(--k-go);color:var(--k-on-go);font-size:var(--t15);font-style:italic;transform:skewX(-10deg)}
+.btg-bk{margin:0 0 var(--s8);font-size:var(--t20);font-style:italic;line-height:1.2}
+.btg-bki{display:none} /* phones say 'Its HP': the name is right above it */
+
+/* the plot bar: slanted ends like the site's bars; the frame is 100% of its HP, the KO point a hard pink line */
+.btg-track{position:relative;height:64px;margin:0 var(--s4) var(--s10) var(--s2)}
+.btg-track::before{content:"";position:absolute;left:0;top:4px;bottom:4px;width:var(--fw,100%);background:var(--wr-rule);transform:skewX(-14deg)}
+.btg-frame{position:absolute;left:0;top:0;bottom:0;z-index:2;border:3px solid var(--wr-ink);transform:skewX(-14deg);pointer-events:none}
+.btg-seg{position:absolute;top:4px;bottom:4px;background:var(--tc);transform:skewX(-14deg)}
+.btg-seg.lt{opacity:.45}
+.btg-pin{position:absolute;left:6px;top:50%;display:grid;place-items:center;min-width:28px;height:28px;padding:0 var(--s1);background:var(--wr-ink);color:var(--wr-on-plot);font-size:var(--t15);font-style:italic;line-height:1;transform:translateY(-50%) skewX(14deg)}
+.btg-ko{position:absolute;top:-12px;bottom:-12px;z-index:3;width:0;border-left:4px solid var(--k-nasty)}
+.btg-ko b{position:absolute;right:var(--s2);top:-20px;font-size:var(--t15);font-style:italic;line-height:1;color:var(--wr-ink2);white-space:nowrap}
+.btg-ko.on b{right:auto;left:50%;top:50%;padding:var(--s1) var(--s3);background:var(--k-go);color:var(--k-on-go);font-size:var(--t20);transform:translate(-50%,-50%) skewX(-10deg)}
+.btg-over{position:absolute;top:100%;margin-top:var(--s3);padding:var(--s1) 0 0 var(--s3);border-top:2px dashed var(--wr-ink2);font:600 var(--t13)/1.2 var(--b);color:var(--wr-ink2);white-space:nowrap;overflow:hidden}
+.btg-left{position:absolute;top:50%;z-index:1;display:grid;place-items:center;font-size:var(--t15);font-style:italic;color:var(--wr-ink2);white-space:nowrap;transform:translateY(-50%)}
+.btg-sum{display:flex;align-items:baseline;flex-wrap:wrap;gap:var(--s1) var(--s4);margin:0}
+.btg-sum b{font-size:var(--t26);font-style:italic;line-height:1.15;color:var(--wr-ink)}.btg-sum.ok b{color:var(--wr-plot)}
+.btg-sum span{font:600 var(--t15)/1.5 var(--b);color:var(--wr-ink2)}
+
+/* the hits when the target waits in the back (Damage Both Ways' numbers): one line each, its type word, the move, whose, the numbers */
+.btg-hits{margin:var(--s5) 0 0;padding:0;list-style:none;border-top:1px solid var(--wr-rule)}
+.btg-hits li{padding:var(--s2) 0;border-bottom:1px solid var(--wr-rule);font:600 var(--t15)/1.7 var(--b);color:var(--wr-ink2)}
+.btg-hits .btg-mv{display:inline}
+.btg-hn{margin-left:var(--s1);padding-bottom:2px;border-bottom:4px solid var(--tc);font-size:var(--t20);font-style:italic;line-height:1.2;color:var(--wr-ink);white-space:nowrap}
+.btg-src{margin:var(--s2) 0 0;font:500 var(--t13)/1.5 var(--b);color:var(--wr-ink2)}
+
+/* the damage on the target: big slanted number, its type colour as the plot bar's underline; a sure KO gets the pink stamp */
+.btg-dmg{display:flex;align-items:center;flex-wrap:wrap;gap:var(--s2) var(--s3);margin:0}
+.btg-dmg b{padding-bottom:2px;border-bottom:4px solid var(--tc,var(--wr-ink));font-size:var(--t26);font-style:italic;line-height:1.1;white-space:nowrap}
+.btg-dmg small{font:600 var(--t13)/1.3 var(--b);color:var(--wr-ink2)}
+.btg-ko1{display:inline-block;padding:2px var(--s3);background:var(--k-go);color:var(--k-on-go);font-size:var(--t17);font-style:italic;line-height:1.2;transform:skewX(-10deg)}
+
+/* turn one, in move order: under both columns, two moves per row on wide screens (1 2 / 3 4), one per row below */
+.btg-t1{grid-column:1/-1;padding-top:var(--s6);border-top:1px solid var(--wr-rule)}
+.btg-h3{margin:0;font-size:var(--t22);font-style:italic;line-height:1.2}
+.btg-sub{margin:var(--s1) 0 0;font:500 var(--t15)/1.5 var(--b);color:var(--wr-ink2)}
+.btg-steps{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 var(--s8);margin:var(--s2) 0 0;padding:0;list-style:none}
+.btg-b{display:grid;grid-template-columns:32px 56px minmax(0,1fr);gap:var(--s4);align-items:start;padding:var(--s4) 0;border-bottom:1px solid var(--wr-rule)}
+.btg-b .np-mon{--iw:48px}
+.btg-n{display:grid;place-items:center;width:32px;height:32px;background:var(--wr-plot);color:var(--wr-on-plot);font-size:var(--t16);font-style:italic;line-height:1;transform:skewX(-10deg)}
+.btg-b.them .btg-n{background:var(--k-go);color:var(--k-on-go)}
+.btg-tx{min-width:0;display:grid;gap:var(--s1)}
+.btg-who{margin:0;font:700 var(--t15)/1.3 var(--b)}.btg-who .btg-sd{color:var(--wr-plot)}.btg-b.them .btg-who .btg-sd{color:var(--mtf-hot)}.btg-who small{font-weight:500;font-size:var(--t13);color:var(--wr-ink2)}
+.btg-mv{margin:0;font:500 var(--t15)/1.6 var(--b);color:var(--wr-ink2)}
+.btg-mt{display:inline-flex;align-items:center;gap:4px;margin-right:var(--s2);padding:0 var(--s2) 0 6px;background:var(--mc);color:var(--on-type);font:800 var(--t13)/1.6 var(--b);letter-spacing:.04em;text-transform:uppercase;vertical-align:1px;clip-path:polygon(0 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+.btg-mt .k-tyi{width:14px;height:14px}
+.btg-mvn{font-family:var(--u);font-size:var(--t17);font-style:italic;font-weight:800;color:var(--wr-ink)}
+.btg-into{white-space:nowrap}
+.btg-why{margin:0;font:500 var(--t15)/1.5 var(--b);color:var(--wr-ink2)}
+.btg-warn{margin:var(--s5) 0 0;font:600 var(--t15)/1.5 var(--b)}.btg-warn i{margin-right:var(--s2);font-size:var(--t20);font-style:italic;color:var(--mtf-hot)}
+.btg-field{margin:var(--s2) 0 0;font:500 var(--t15)/1.5 var(--b);color:var(--wr-ink2)}.btg-field b{color:var(--wr-ink)}
+
+/* ===== who to bring, their six, the real-games verdict (on the page paper) ===== */
+.btg-cast{display:grid;grid-template-columns:minmax(0,4fr) minmax(0,6fr) minmax(0,2.4fr);gap:var(--s8);align-items:start;margin-top:var(--s12)}
+.btg .btg-cast .bt-verdict{align-self:start;padding:var(--s4) var(--s6) var(--s4) var(--s5);text-align:left;clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.btg .btg-cast .bt-verdict b,.btg .btg-cast .bt-verdict b.vf,.btg .btg-cast .bt-verdict b.ve,.btg .btg-cast .bt-verdict b.vu{margin-top:var(--s1);font-size:var(--t28);line-height:1.1;white-space:normal}
+.btg .btg-cast .bt-verdict small.bt-vrisk{width:auto;min-width:0}
+.btg-h{margin:0 0 var(--s3);padding-top:var(--s3);border-top:2px solid var(--k-ink);font-size:var(--t20);font-style:italic;line-height:1.2}
+.btg-grp{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:var(--s4)}
+.btg-them .btg-grp{grid-template-columns:minmax(0,2fr) minmax(0,4fr);grid-auto-flow:row}
+.btg-them .btg-grp>.btg-g:only-child{grid-column:1/-1}
+.btg-g{min-width:0}
+.btg-gl{margin:0 0 var(--s2);font-size:var(--t15);font-style:italic;line-height:1.3;color:var(--k-ink)}
+.btg-g.lead .btg-gl{color:var(--k-plot-text)}.btg-g.ll .btg-gl{color:var(--k-nasty-text)}
+.btg-row{display:grid;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr);gap:var(--s1)}
+.btg-pk{display:grid;justify-items:center;align-content:start;min-width:0;margin:0;padding:0 0 var(--s1);border:0;background:none;color:var(--k-ink);font:inherit;text-align:center;cursor:pointer}
+.btg-pk .np-mon{--iw:72px}
+.btg-pk b{display:block;max-width:100%;margin-top:var(--s2);font:700 var(--t15)/1.25 var(--b)}
+.btg-pk small{display:block;max-width:100%;font:500 var(--t13)/1.3 var(--b);color:var(--k-ink2)}
+.btg-pk em{display:inline-block;margin-top:var(--s1);padding:0 var(--s2);background:var(--k-go);color:var(--k-on-go);font-size:var(--t15);font-style:italic;line-height:1.4;transform:skewX(-10deg)}
+.btg-g.lead .btg-pk b{color:var(--k-plot-text)}.btg-pk.tgt b{color:var(--k-nasty-text)}
+.btg-pk:focus-visible{outline:3px solid var(--k-plot);outline-offset:2px}
+.btg-home{display:flex;flex-wrap:wrap;align-items:center;gap:0 var(--s4);margin:var(--s3) 0 0}.btg-home .btg-gl{margin:0;color:var(--k-ink2)}
+.btg-home .np-link{min-height:var(--tap);display:inline-flex;align-items:center}
+.btg-acts{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s3) var(--s6);margin-top:var(--s6);padding-top:var(--s4);border-top:1px solid var(--rule)}.btg-acts .fine{flex:1 1 280px;margin:0;max-width:60ch} /* Wave 2 finish (Nov 23): the line gives way to the wider kit buttons, so they stay on its row (1100-1280) */
+.btg-acts .row{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s4)}
+.btg-acts .np-link{min-height:var(--tap);min-width:var(--tap);display:inline-flex;align-items:center;justify-content:center}
+
+/* small laptops: six names of their side need the room, so the verdict takes its own row under the two groups */
+@media (min-width:1100px) and (max-width:1365.98px){.btg-cast{grid-template-columns:minmax(0,4fr) minmax(0,6fr)}.btg .btg-cast .bt-verdict{grid-column:1/-1;justify-self:start;min-width:320px}}
+/* ===== tablets and small laptops: the hero's mark sits on a row above the bar; turn one one move per row ===== */
+@media (max-width:1099.98px){
+  .btg-hero{grid-template-columns:minmax(0,1fr)}
+  .btg-mark{grid-template-columns:160px minmax(0,1fr);justify-items:start;align-items:center;column-gap:var(--s4);text-align:left}
+  .btg-art{padding:var(--s4) 0 0}.btg-art img{height:160px}.btg-id small{margin-top:0}
+  .btg-steps{grid-template-columns:minmax(0,1fr)}
+  .btg-cast{grid-template-columns:minmax(0,1fr);gap:var(--s8)}.btg .btg-cast .bt-verdict{justify-self:start}
+}
+/* ===== phones ===== */
+@media (max-width:699.98px){
+  .btg-hero{gap:var(--s3);margin:var(--s5) var(--s2) 0 0;padding:var(--s4) var(--s3);box-shadow:6px 6px 0 var(--k-nasty)}
+  .btg-mark{grid-template-columns:104px minmax(0,1fr);column-gap:var(--s3)}
+  .btg-art{padding:var(--s5) 0 0}.btg-art img{height:96px}
+  .btg-bkn{display:none}.btg-bki{display:inline}
+  .btg-id b{font-size:var(--t24)}.btg-id p{margin-top:var(--s1);font-size:var(--t13)}
+  .btg-risk{margin-bottom:var(--s4);padding:var(--s2) var(--s3);font-size:var(--t13)}
+  .btg-bk{margin-bottom:var(--s4);font-size:var(--t17)}
+  .btg-plan:has(.btg-ko:not(.on)) .btg-bk{margin-bottom:var(--s8)} /* room for the '100%' mark above the line */
+  .btg-track{height:44px;margin:0 var(--s3) var(--s8) var(--s1)}.btg-warn{margin-top:var(--s3)}
+  .btg-pin{min-width:24px;height:24px;left:4px}
+  .btg-ko.on b{font-size:var(--t15)}
+  .btg-sum b{font-size:var(--t20)}.btg-sum span{font-size:var(--t13)}
+  .btg-hits li{font-size:var(--t13)}.btg-hn{font-size:var(--t17)}
+  .btg-t1{padding-top:var(--s3)}.btg-h3{font-size:var(--t20)}.btg-sub{font-size:var(--t13)}
+  /* a move on a phone: the number with its Pokémon under it in a narrow first column, so the words get the width */
+  .btg-b{grid-template-columns:36px minmax(0,1fr);gap:2px var(--s2);padding:var(--s2) 0 var(--s3)}
+  .btg-b .btg-n{grid-row:1;grid-column:1;justify-self:center}.btg-b .np-mon{--iw:36px;grid-row:2/4;grid-column:1;align-self:start}
+  .btg-tx{display:contents}.btg-into{white-space:normal}
+  .btg-b .btg-who{grid-row:1;grid-column:2;align-self:center}.btg-b .btg-mv,.btg-b .btg-dmg,.btg-b .btg-why{grid-column:2}.btg-b .btg-dmg{margin-top:var(--s1)}
+  .btg-dmg b{font-size:var(--t22)}.btg-mvn{font-size:var(--t15)}.btg-why{font-size:var(--t13)}
+  .btg-warn,.btg-field{font-size:var(--t13)}.btg-warn i{font-size:var(--t17)}
+  .btg-cast{gap:var(--s5);margin-top:var(--s8)}.btg-h{margin-bottom:var(--s2)}.btg-home{margin-top:0}
+  .btg .btg-cast .bt-verdict{padding:var(--s2) var(--s6) var(--s3) var(--s4)}.btg .btg-cast .bt-verdict small{margin-top:var(--s1)}
+  .btg .btg-cast .bt-verdict b,.btg .btg-cast .bt-verdict b.vf,.btg .btg-cast .bt-verdict b.ve,.btg .btg-cast .bt-verdict b.vu{font-size:var(--t22)}
+  /* their six in four columns: 'Likely lead' beside its two, then 'The other four' over its four (no half rows) */
+  .btg-them .btg-grp{grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s1)}.btg-them .btg-g,.btg-them .btg-row{display:contents}
+  .btg-them .btg-g.ll .btg-gl{grid-column:1/3;align-self:center;margin:0}.btg-them .btg-g.rest .btg-gl{grid-column:1/-1;margin:var(--s2) 0 0}
+  .btg-them .btg-grp:has(>.btg-g:only-child){grid-template-columns:repeat(3,minmax(0,1fr))}.btg-them .btg-g:only-child .btg-gl{margin-top:0}
+  .btg-pk .np-mon{--iw:48px}.btg-pk b{margin-top:var(--s1);font-size:var(--t13)}
+  .btg-acts{display:grid;justify-content:stretch}
+}
+/* the narrowest phones: a smaller picture beside the target's name, so a long name keeps a readable size */
+@media (max-width:359.98px){.btg-mark{grid-template-columns:80px minmax(0,1fr)}.btg-art img{height:80px}
+  .btg-pk b,.btg-pk small{font-stretch:80%} /* four names across 288px: narrower letters, never a broken word */
+  .btg-them .btg-grp{grid-template-columns:repeat(2,minmax(0,1fr))}.btg-them .btg-g.ll .btg-gl{grid-column:1/-1}} /* their six two across: 'Dragonite' can't fit a quarter of 288px */

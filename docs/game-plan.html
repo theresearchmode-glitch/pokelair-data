@@ -1,0 +1,330 @@
+<title>NastyPlot Game Plan</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@600;800&family=Instrument+Sans:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: one reading column. Top: the road (a dashed pink plan line with the four big dates), then "right now", then each phase
+   as a checklist. Everything is drawn from the PLAN data in the script at the bottom: HH edits only that to keep the page current. */
+:root{
+  --paper:#F7F5F0; --card:#FFFFFF; --ink:#17161A; --mute:#5D5964; --rule:rgba(23,22,26,.12);
+  --plot:#0078BF; --plot-ink:#005E96; --nasty:#E8364F; --nasty-ink:#C21F3A;
+  --done:#16794A; --done-bg:#E3F3EA; --doing-bg:#E2F0F9; --sim-bg:#FDE7EA; --todo-bg:#EDEBE6;
+  --head:"Unbounded",system-ui,sans-serif; --body:"Instrument Sans",system-ui,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#14131C; --card:#1D1C26; --ink:#ECE8E2; --mute:#A9A4AE; --rule:rgba(236,232,226,.13);
+  --plot:#4FB2F0; --plot-ink:#6CC0F4; --nasty:#F2566C; --nasty-ink:#FF8193;
+  --done:#5FD08F; --done-bg:#183326; --doing-bg:#14293A; --sim-bg:#3A1C24; --todo-bg:#26252E; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#14131C; --card:#1D1C26; --ink:#ECE8E2; --mute:#A9A4AE; --rule:rgba(236,232,226,.13);
+  --plot:#4FB2F0; --plot-ink:#6CC0F4; --nasty:#F2566C; --nasty-ink:#FF8193;
+  --done:#5FD08F; --done-bg:#183326; --doing-bg:#14293A; --sim-bg:#3A1C24; --todo-bg:#26252E; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font:400 16px/1.5 var(--body);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.wrap{max-width:860px;margin:0 auto;padding-block:32px 64px}
+h1,h2,.big{font-family:var(--head);font-style:italic;font-synthesis:style;letter-spacing:-.01em;text-wrap:balance}
+h1{font-size:34px;line-height:1.1;margin:0;font-weight:800}
+h1 em{font-style:inherit;color:var(--nasty)}
+.sub{margin:8px 0 0;color:var(--mute);font-size:15px}
+.sub b{color:var(--ink);font-weight:600}
+h2{font-size:22px;line-height:1.2;margin:0;font-weight:800;scroll-margin-top:72px}
+h2 small{display:block;font:500 15px/1.4 var(--body);font-style:normal;color:var(--mute);margin-top:4px;letter-spacing:0}
+/* sticky section chips */
+nav{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);margin:24px 0 8px;padding-block:8px;
+  border-bottom:1px solid var(--rule);display:flex;gap:8px;overflow-x:auto;scrollbar-width:none}
+nav::-webkit-scrollbar{display:none}
+nav a{flex:none;font:600 15px/1 var(--body);color:var(--ink);text-decoration:none;padding:10px 14px;border-radius:999px;
+  background:var(--todo-bg);min-height:40px;display:flex;align-items:center;gap:6px}
+nav a:hover{background:var(--doing-bg)}
+nav a:focus-visible,button:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+nav .n{font:700 13px/1 var(--body);background:var(--nasty);color:#fff;border-radius:999px;padding:3px 7px}
+section{margin-top:48px}
+/* the road: dashed plan line with stops */
+.road{position:relative;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-top:28px}
+.road::before{content:"";position:absolute;left:12px;right:12px;top:11px;border-top:3px dashed var(--nasty);opacity:.7}
+.stop{position:relative;padding-top:34px;min-width:0}
+.stop::before{content:"";position:absolute;left:4px;top:2px;width:18px;height:18px;border-radius:50%;background:var(--paper);
+  border:3px solid var(--nasty)}
+.stop.past::before{background:var(--nasty)}
+.stop .when{font:700 13px/1.3 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--nasty-ink)}
+.stop .what{font-family:var(--head);font-style:italic;font-synthesis:style;font-weight:800;font-size:17px;line-height:1.2;margin-top:4px}
+.stop .left{font-size:13px;color:var(--mute);margin-top:4px;font-variant-numeric:tabular-nums}
+@media (max-width:640px){.road{grid-template-columns:1fr;gap:0}.road::before{left:12px;right:auto;top:12px;bottom:12px;border-top:0;border-left:3px dashed var(--nasty)}
+  .stop{padding:0 0 18px 36px}.stop::before{top:2px}}
+/* right now */
+.now{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.who{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0}
+.who h3{margin:0;font:700 13px/1.3 var(--body);text-transform:uppercase;letter-spacing:.06em;color:var(--plot-ink)}
+.who p{margin:6px 0 0;font-size:15px}
+.who.sim{background:var(--sim-bg);border-color:transparent}
+.who.sim h3{color:var(--nasty-ink)}
+@media (max-width:640px){.now{grid-template-columns:1fr}}
+/* checklists */
+.phase{margin-top:20px}
+.phase h3{margin:0 0 4px;font:700 17px/1.3 var(--body)}
+.phase .ph-note{margin:0 0 8px;color:var(--mute);font-size:15px}
+ul.items{list-style:none;margin:0;padding:0;border-top:1px solid var(--rule)}
+ul.items li{display:grid;grid-template-columns:92px minmax(0,1fr) auto;gap:12px;align-items:start;padding:12px 0;border-bottom:1px solid var(--rule)}
+.pill{font:700 13px/1 var(--body);border-radius:999px;padding:6px 10px;text-align:center;white-space:nowrap}
+.s-done{background:var(--done-bg);color:var(--done)}
+.s-doing{background:var(--doing-bg);color:var(--plot-ink)}
+.s-next,.s-later{background:var(--todo-bg);color:var(--mute)}
+.s-sim{background:var(--sim-bg);color:var(--nasty-ink)}
+.it b{font-weight:600}
+.it .d{display:block;color:var(--mute);font-size:15px;margin-top:2px}
+.tag{font:600 13px/1.4 var(--body);color:var(--mute);white-space:nowrap;text-align:right}
+li.is-done .it b{color:var(--mute)}
+@media (max-width:520px){ul.items li{grid-template-columns:minmax(0,1fr);gap:6px}.pill{justify-self:start}.tag{text-align:left}}
+.bar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-top:12px}
+.count{font-size:15px;color:var(--mute);font-variant-numeric:tabular-nums}
+button.toggle{font:600 15px/1 var(--body);color:var(--ink);background:var(--card);border:1px solid var(--rule);border-radius:999px;
+  padding:10px 14px;min-height:40px;cursor:pointer}
+body.hide-done li.is-done{display:none}
+/* ideas and long term */
+.cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-top:16px}
+.card{background:var(--card);border:1px solid var(--rule);border-radius:10px;padding:16px;min-width:0}
+.card b{display:block;font-weight:700}
+.card span{display:block;color:var(--mute);font-size:15px;margin-top:4px}
+@media (max-width:640px){.cards{grid-template-columns:1fr}}
+.log{margin-top:16px;border-left:3px solid var(--plot);padding-left:16px;display:grid;gap:10px}
+.log div{font-size:15px}.log time{font-weight:700;color:var(--plot-ink);margin-right:6px}
+footer{margin-top:56px;color:var(--mute);font-size:13px}
+@media (prefers-reduced-motion:no-preference){html{scroll-behavior:smooth}}
+</style>
+
+<div class="wrap">
+  <header>
+    <h1>Game <em>Plan.</em></h1>
+    <p class="sub" id="stamp"></p>
+    <div class="road" id="road"></div>
+  </header>
+
+  <nav aria-label="Sections">
+    <a href="#now">Right now</a>
+    <a href="#you">For Sim <span class="n" id="simN"></span></a>
+    <a href="#week">This week</a>
+    <a href="#december">December</a>
+    <a href="#later">After launch</a>
+    <a href="#ideas">Ideas</a>
+    <a href="#done">Done</a>
+  </nav>
+
+  <section id="now">
+    <h2>Right now<small>Who is doing what at this moment.</small></h2>
+    <div class="now" id="nowGrid"></div>
+  </section>
+
+  <section id="you">
+    <h2>For Sim<small>The only things that need you. Everything else is HH's job.</small></h2>
+    <ul class="items" id="simList" style="margin-top:16px"></ul>
+  </section>
+
+  <section id="week">
+    <h2>This week<small>Wed Nov 25 to Wed Dec 2: the switch, then Reg M-D and the balance patch.</small></h2>
+    <div class="bar"><span class="count" id="weekCount"></span><button class="toggle" id="hideDone" type="button" aria-pressed="false">Hide done</button></div>
+    <div id="weekPhases"></div>
+  </section>
+
+  <section id="december">
+    <h2>December<small>nastyplot.org goes live quietly about Dec 7; the announcement is about Dec 18 (moved up from January).</small></h2>
+    <div id="decPhases"></div>
+  </section>
+
+  <section id="later">
+    <h2>After launch<small>The long game, in order.</small></h2>
+    <div class="cards" id="laterCards"></div>
+  </section>
+
+  <section id="ideas">
+    <h2>Ideas<small>Not scheduled. Nothing gets lost.</small></h2>
+    <div class="cards" id="ideaCards"></div>
+  </section>
+
+  <section id="done">
+    <h2>Done<small>Newest first.</small></h2>
+    <div class="log" id="doneLog"></div>
+  </section>
+
+  <footer>Kept current by HH after each finished item. Source: docs/game-plan.html (the PLAN data at the bottom). Detail for HH: docs/rebuild/gameplan-detail-nov25.md.</footer>
+</div>
+
+<script>
+/* ===== PLAN: edit only this to update the page. s = done | doing | next | later | sim ===== */
+const PLAN = {
+  updated: 'Wed Nov 25, 10:36 AM',
+  road: [
+    {when: 'Sat Nov 28', what: 'The switch', date: '2026-11-28'},
+    {when: 'Wed Dec 2', what: 'Reg M-D + patch', date: '2026-12-02'},
+    {when: 'About Dec 7', what: 'nastyplot.org, quietly', date: '2026-12-07'},
+    {when: 'About Dec 18', what: 'The announcement', date: '2026-12-18'}
+  ],
+  now: [
+    {who: 'HH (this chat)', t: 'Fixed two false alarms in the tests (saved teams on reload; an accessibility check run on the wrong build). Now: j18 and j19 into the redesign once GitHub passes, then j16, j17.'},
+    {who: 'Helpers (2 until 12 PM, Sim)', t: '1: the real switch merge, fixing the 6 checks main\'s newer data breaks (pictures to Sim). 2: j19 (public site) caught up with the redesign; checking its search-row picture.'},
+    {who: 'Kip (Gemini)', t: 'Code + research only, never design. Jobs 1-26 done; overnight HH fixed 4 of its mistakes (a fake M-D end date, a crash on the public page, square pictures, a missing weight).'},
+    {who: 'Scout (helper account)', t: 'Small reviews when it has usage. Tonight it caught a history-wiping guard bug and 3 wrong damage rules.'},
+    {who: 'Dos (PC chat)', t: 'Done this morning: 10 new pictures (Reg M-D Pokémon + Meowstic-F). Now: full test run as the switch baseline.'}
+  ],
+  sim: [
+    {s: 'sim', t: 'Go / no-go for the switch', d: 'After using the Preview for real.', tag: 'Fri Nov 27'},
+    {s: 'sim', t: 'Say yes: the switch', d: 'We do it together. Same link; old site kept 2 weeks as a backup.', tag: 'Sat Nov 28'},
+    {s: 'sim', t: 'OK the M-D change list', d: 'What\'s new, removed or changed in the roster.', tag: 'Dec 2'},
+    {s: 'sim', t: '2–3 clicks for nastyplot.org', d: 'A Cloudflare permission and Google\'s "verify". HH walks you through each.', tag: 'Dec 3–7'},
+    {s: 'sim', t: 'Find 3–5 testers', d: 'For a few days on nastyplot.org.', tag: 'by Dec 9'},
+    {s: 'sim', t: 'Launch outreach plan', d: 'Small YouTubers and communities. HH can draft a list and a message.', tag: 'by Dec 14'},
+    {s: 'sim', t: 'Optional: buy nastyplot.net', d: 'Free today (registry check Nov 25); about $12 a year, points to nastyplot.org. nastyplot.com expires Jan 3, 2027: watch, no broker.', tag: 'any time'},
+    {s: 'sim', t: 'Claim @NastyPlotHQ on the other sites', d: '@nastyplot was taken; Sim grabbed @NastyPlotHQ on X and YouTube (Nov 25). Same name on Instagram, TikTok, Bluesky, Reddit if wanted.', tag: 'by Dec 18'},
+    {s: 'sim', t: 'Say yes: the announcement', d: 'Moved up from January (Sim, Nov 24): winter break, M-D two weeks old.', tag: 'about Dec 18'}
+  ],
+  week: [
+    {h: 'Wed Nov 25', items: [
+      {s: 'done', t: 'Reg M-D is official', d: 'Dec 2 to Mar 3. 24 new Pokémon and 4 Megas; named so far: Heatran, Dondozo, Tatsugiri, Mega Heatran, Mega Tatsugiri. Saved with sources.', tag: 'Nov 25'},
+      {s: 'done', t: 'Commander (Tatsugiri into Dondozo)', d: 'Turn One: Tatsugiri can\'t be hit, Dondozo +2 every stat. Team checks: a Commander row. Test 9/9; nothing else changed (170 Battle states identical).', tag: 'Nov 25'},
+      {s: 'done', t: 'Pictures for the new Pokémon', d: '9 Reg M-D pictures + Meowstic-F, upscaled on Sim\'s PC, checked and merged.', tag: 'Nov 25'},
+      {s: 'done', t: '"Day 3 of Reg M-D · 4 events" on Meta', d: 'A new regulation\'s first 4 weeks say how young the data is. Same line, 0px added.', tag: 'Nov 25'},
+      {s: 'done', t: 'Practice switch: every page on M-D day one', d: '58/58 automatic checks pass; the picture review found fake grades and "Reg M-C" text. Both being fixed (Sim chose: "Not rated yet"; Strength Score stays, labelled).', tag: 'Nov 25'},
+      {s: 'done', t: 'Commander reviewed by Kip', d: '6 real bugs fixed (Neutralizing Gas, Quick Guard, Tatsugiri-only…), 14/14 checks.', tag: 'Nov 25'},
+      {s: 'done', t: 'Dec 2 branch onto main', d: 'Kip found 3 blockers (Dec 2 would have stopped the daily data); fixed, tests fail-before/pass-after. GitHub passed; live site promoted.', tag: 'Nov 25'},
+      {s: 'done', t: 'Day-one honesty', d: '"Not rated yet" until a Pokémon has M-D results; Strength Score says "Graded against Reg M-C\'s teams until Reg M-D results arrive". Sim loved the day-one look.', tag: 'Nov 25'},
+      {s: 'done', t: 'Name: NastyPlot, final', d: 'Kip job 29 + HH\'s registry check: no clashes, kid-safe Google results. Sim: "keep nastyplot. its a great name."', tag: 'Nov 25'},
+      {s: 'done', t: 'Switch rehearsal', d: 'Main merges into the redesign (33 conflicts, all resolved). Found 6 checks that main\'s newer data breaks: 4 are real look problems. Being fixed now, on Wednesday, not Saturday.', tag: 'Nov 25'},
+      {s: 'done', t: 'Saved-teams test fixed', d: 'It failed at random (2 in 5) because it opened pages as files; served like the real site, 12 of 12 pass. Players never lost data.', tag: 'Nov 25'},
+      {s: 'doing', t: 'Switch fixes', d: 'Stand-Outs rows, the Damage Calc band on wide screens, Home\'s sprites on one phone size, My Team\'s length on phones, one data case.', tag: 'helper'},
+      {s: 'doing', t: 'j18 into the redesign', d: 'Merged with the redesign; 379 real teams score exactly the same; accessibility 6/6. Waiting for GitHub.', tag: 'HH'},
+      {s: 'next', t: 'The full list of 24 new Pokémon', d: 'Checked every morning until it\'s out; then one picture job and one data command.', tag: 'HH, daily'},
+      {s: 'doing', t: 'One place for the regulation', d: 'Built (Scout) and ported to the data job (Kip); tests pass. Waiting to merge.', tag: 'HH'},
+      {s: 'done', t: 'Sprite script for new Pokémon', d: 'Done early by the other account; rebuilds existing pictures byte for byte.', tag: 'Nov 24'},
+      {s: 'next', t: 'Last switch blockers', d: 'Saved teams carry over, "What\'s new", underdog screens.', tag: 'Helper'},
+      {s: 'next', t: 'Full test run (switch baseline)', d: '', tag: 'PC chat'}
+    ]},
+    {h: 'Thu Nov 26 (Thanksgiving: Sim off)', items: [
+      {s: 'doing', t: 'M-C and M-D numbers never mixed', d: 'Built: regulation stamp + guard (empties and archives old files), M-D day-one model, history kept per regulation. Tests pass; merge after the practice switch.', tag: 'HH'},
+      {s: 'doing', t: 'Practice switch on made-up M-D data', d: 'Now one command (Kip built the script): every page on M-D day one\'s empty files, phone and desktop.', tag: 'HH'},
+      {s: 'next', t: 'Roster-day dry run, start to finish', d: '', tag: 'Helper'},
+      {s: 'next', t: 'Check every page of the practice switch', d: '', tag: 'PC chat'},
+      {s: 'next', t: 'Smaller Home hero (the herd) on every format', d: 'About half its height, keeping the WOW: faster phones (our main picture is 3.2–3.6 s vs rivals 0.7–2.4 s) and a shorter Home (8.2 screens on phones today). Pictures to Sim.', tag: 'Helper'},
+      {s: 'next', t: 'Short picture summary for Sim', d: '', tag: 'HH, night'}
+    ]},
+    {h: 'Fri Nov 27', items: [
+      {s: 'next', t: 'Fix what the practice switch found', d: '', tag: 'HH'},
+      {s: 'doing', t: 'Alarms to Sim\'s phone', d: 'Limitless down, M-D spotted, tests failed. Being built by the other account.', tag: 'HH'},
+      {s: 'doing', t: 'Live data includes info-sheet counts and Gifts/news', d: 'The new site needs them. Being built by the other account.', tag: 'HH'},
+      {s: 'next', t: 'Data every 4 hours, ready to switch on', d: '', tag: 'HH'},
+      {s: 'done', t: 'Reg M-D countdown on the site', d: '"Reg M-D in 7 days." on Home; Sim OK\'d the design calls.', tag: 'Nov 24'},
+      {s: 'done', t: 'Test teams for M-D day', d: 'Done early by the other account; no check passes on nothing any more.', tag: 'Nov 24'},
+      {s: 'next', t: 'Final checks on the switch version', d: '', tag: 'Helper + PC'}
+    ]},
+    {h: 'Sat Nov 28: the switch', items: [
+      {s: 'next', t: 'New site goes live, undo plan ready, watched all day', d: '', tag: 'HH + Sim'},
+      {s: 'next', t: 'Summary of every decision', d: 'HH\'s authority ends 10 PM.', tag: 'HH, 10 PM'}
+    ]},
+    {h: 'Sun Nov 29 – Tue Dec 1', items: [
+      {s: 'done', t: 'Balance patch mapped', d: 'Every place in our code, the Psych Up list from the official page, Mega forms included.', tag: 'Nov 24'},
+      {s: 'next', t: 'Patch ready and waiting', d: 'New moves, Rock Slide, accuracy changes, the tests that change.', tag: 'HH'}
+    ]},
+    {h: 'Wed Dec 2: Reg M-D + balance patch', items: [
+      {s: 'next', t: 'Apply the patch, run every check', d: '', tag: 'HH'},
+      {s: 'done', t: 'Roster generator', d: 'One command rebuilds every Pokémon, move and Ability, and lists what changed (proved identical on M-C).', tag: 'Nov 24'},
+      {s: 'next', t: 'Run it on the M-D roster → change list for Sim', d: '', tag: 'HH'},
+      {s: 'doing', t: 'Switch to M-D by date (Sim, Nov 7)', d: 'Built: the site switches on Dec 2 by itself, even with 0 M-D events. Tests pass; waiting to merge.', tag: 'HH'},
+      {s: 'next', t: 'Data every 4 hours for 2 weeks; "Reg M-D is here" note', d: '', tag: 'HH'}
+    ]}
+  ],
+  december: [
+    {h: 'Dec 3–7: nastyplot.org up, quietly', note: 'The parts that make it safe to be public come first.', items: [
+      {s: 'done', t: 'Rules on one page', d: 'Done early, Nov 24.', tag: 'Nov 24'},
+      {s: 'next', t: 'The site reads tested data from Cloudflare', d: 'No Claude needed; the daily copy is also our backup.', tag: 'HH'},
+      {s: 'next', t: 'GitHub sends each tested day to Cloudflare', d: '', tag: 'HH'},
+      {s: 'next', t: 'Privacy page', d: 'Nothing stored about anyone except on their own device.', tag: 'HH'},
+      {s: 'next', t: 'Every test run against nastyplot.org itself', d: '', tag: 'HH'}
+    ]},
+    {h: 'Dec 7–20: findable and solid', items: [
+      {s: 'doing', t: 'Found on Google', d: 'Real addresses (nastyplot.org/pokemon/garchomp), search-ready pages, sitemap, link previews, Search Console. Sim: "super duper important".', tag: 'HH'},
+      {s: 'next', t: 'Feedback, page-view totals, hello@ email, owner page', d: 'Anonymous, on Cloudflare.', tag: 'HH'},
+      {s: 'next', t: 'Export / Import my teams', d: 'No accounts: teams live on your device.', tag: 'HH'},
+      {s: 'doing', t: 'Backup data sources', d: 'Showdown numbers when Limitless is down; official events as a second source.', tag: 'HH'},
+      {s: 'doing', t: 'Speed: main picture under 2 s on a phone', d: 'Competitor scan: we\'re 3.2–3.6 s, most rivals 0.7–2.4 s. Split the page so each page loads only its own code.', tag: 'HH, first'},
+      {s: 'done', t: '"Updated 3 h ago" stamp on Home and Meta', d: 'Freshness is our specialty.', tag: 'Nov 24'},
+      {s: 'next', t: 'One-screen result after a paste', d: 'Score, top 3 fixes, worst 3 threats, turn-1 plan, then the deep pages.', tag: 'HH'},
+      {s: 'next', t: 'Strength Score share card + Track Record on Home', d: 'The two things only we have, front and centre.', tag: 'HH'},
+      {s: 'next', t: 'Rental codes on winning teams (where sources have them)', d: 'Four rivals have them: one tap into the game.', tag: 'HH'},
+      {s: 'next', t: 'Installable (home-screen icon, works offline for calc + speed)', d: 'Closes most of the "app" gap without an app store.', tag: 'HH'},
+      {s: 'doing', t: 'Accessibility check + a test so it stays fixed', d: 'Kip\'s audit done; fixes and the test waiting to merge.', tag: 'HH'},
+      {s: 'next', t: 'Error and uptime alarms', d: '', tag: 'HH'}
+    ]},
+    {h: 'Dec 9–18: real people, real fixes, then the announcement', items: [
+      {s: 'sim', t: 'Testers use the site', d: 'Plus a "first 60 seconds" fresh-eyes test.', tag: 'Dec 9–15'},
+      {s: 'next', t: 'Fix what testers and alarms find', d: '', tag: 'HH'},
+      {s: 'next', t: 'Read Limitless\'s terms', d: '', tag: 'HH'},
+      {s: 'done', t: 'Competitor scan', d: '16 tools checked: only we have a whole-team score and a track record; we\'re slower on phones and less fresh. Report: docs/rebuild/research/competitors-nov24.md.', tag: 'Nov 24'}
+    ]}
+  ],
+  later: [
+    {t: 'Strength Score and analytics, the best they can be', d: 'First win measured (Nov 24): the "combo" beats today\'s score on 38,477 later games, +0.48 pts accuracy, better in every slice. Next: shadow check on new games, then Sim decides.'},
+    {t: 'Team Preview Coach', d: 'Their 6 → which 4 to bring and which 2 to lead, from real games.'},
+    {t: 'Best-of-3 data', d: 'For real tournaments (Regionals, Worlds), kept separate from single games.'},
+    {t: 'Updates within the hour', d: 'Once the site runs on Cloudflare, fresh data costs almost nothing. Rivals: Pikalytics live, ChampDex every 6 h.'},
+    {t: 'Spanish and Portuguese', d: 'Statmie has 7 languages; LAIC São Paulo had 652 players.'}
+  ],
+  ideas: [
+    {t: 'Daily KO puzzle', d: 'A shareable damage puzzle a day. Brings people back.'},
+    {t: '"What went wrong?" from a replay', d: 'Paste a Showdown replay, see the 2–3 turning points.'},
+    {t: 'Weekly meta forecast', d: 'With a public record of how often we were right.'},
+    {t: 'Tournament day mode', d: 'Top-cut teams live as big events happen.'},
+    {t: 'three.js for the launch', d: 'One "wow" moment, loaded on one page only.'},
+    {t: 'Speed Tiers controls at 1280', d: 'A two-row layout, after the switch (pictures first).'}
+  ],
+  done: [
+    {when: 'Nov 25', t: 'Name decided: NastyPlot stays (Kip job 29 + registry check)'},
+    {when: 'Nov 25', t: 'Sim claimed @NastyPlotHQ on X and YouTube'},
+    {when: 'Nov 25', t: 'Dec 2 safety landed on main a week early; live site promoted after GitHub passed'},
+    {when: 'Nov 25', t: 'Kip job 28: Dec 2 landing review caught a crash that would have stopped Dec 2\'s data; fixed and tested'},
+    {when: 'Nov 25', t: 'Regulation name now comes from the data (24 places); Build\'s day-one empty state has today\'s underdog'},
+    {when: 'Nov 25', t: 'Reg M-D official dates and roster counts saved; Commander built and tested; 10 new pictures merged'},
+    {when: 'Nov 25', t: 'Night fixes: every test branch green except one waiting on a picture (now merged)'},
+    {when: 'Nov 25', t: 'Strength Score round 3: one new idea (archetype matchups) is promising, not proven; being re-checked'},
+    {when: 'Nov 24', t: 'Strength Score lab: Kip\'s copy of today\'s model proven identical; the combo upgrade wins on 38,477 later games'},
+    {when: 'Nov 24', t: 'Redesign batch pushed (all tests green): countdown, freshness stamp, coach line, Kip\'s rain fix and review fixes'},
+    {when: 'Nov 24', t: 'Dec 2 safety on main: watcher catches "Regulation Set M-D"; M-C\'s end date can\'t slip; old teams and replays never cross regulations'},
+    {when: 'Nov 24', t: 'The squad: Kip (Gemini) for code + research, Scout for reviews; GitHub runs the tests for free'},
+    {when: 'Nov 24', t: 'Live site unstuck after 3 days on old data; the redesign now gets data every morning at 7:41'},
+    {when: 'Nov 24', t: 'Roster generator, sprite script and M-D test teams (other account), checked and merged'},
+    {when: 'Nov 24', t: 'Mega Heatran pictures upscaled on Sim\'s PC'},
+    {when: 'Nov 24', t: 'Info-sheet tips fact-checked; 2 misleading lines fixed'},
+    {when: 'Nov 24', t: 'Pokémon page on tablets: the four facts fill the empty strip'},
+    {when: 'Nov 24', t: 'Polish fixes: Damage Calc sentence, Build cores, Home tiles'},
+    {when: 'Nov 24', t: 'Rules on one page; game plan, public-site plan and honest review written'},
+    {when: 'Nov 24', t: 'Competitor scan (16 tools); switch checklist, privacy page and SEO titles drafted; announcement moved to about Dec 18'}
+  ]
+};
+
+/* ===== drawing (no need to touch) ===== */
+const $ = id => document.getElementById(id);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;'}[c]));
+const LABEL = {done: 'Done', doing: 'Doing', next: 'Next', later: 'Later', sim: 'Sim'};
+const li = i => `<li class="${i.s === 'done' ? 'is-done' : ''}"><span class="pill s-${i.s}">${LABEL[i.s]}</span>
+  <span class="it"><b>${esc(i.t)}</b>${i.d ? `<span class="d">${esc(i.d)}</span>` : ''}</span><span class="tag">${esc(i.tag || '')}</span></li>`;
+const phases = list => list.map(p => `<div class="phase"><h3>${esc(p.h)}</h3>${p.note ? `<p class="ph-note">${esc(p.note)}</p>` : ''}<ul class="items">${p.items.map(li).join('')}</ul></div>`).join('');
+const today = new Date(); today.setHours(0, 0, 0, 0);
+$('stamp').innerHTML = `Everything we're doing, in one place. Updated <b>${esc(PLAN.updated)}</b>.`;
+$('road').innerHTML = PLAN.road.map(r => { const d = new Date(r.date + 'T00:00:00'), n = Math.round((d - today) / 864e5);
+  const left = n > 1 ? `in ${n} days` : n === 1 ? 'tomorrow' : n === 0 ? 'today' : 'done';
+  return `<div class="stop${n < 0 ? ' past' : ''}"><div class="when">${esc(r.when)}</div><div class="what">${esc(r.what)}</div><div class="left">${left}</div></div>`; }).join('');
+$('nowGrid').innerHTML = PLAN.now.map(w => `<div class="who"><h3>${esc(w.who)}</h3><p>${esc(w.t)}</p></div>`).join('');
+const openSim = PLAN.sim.filter(i => i.s !== 'done');
+$('simN').textContent = openSim.length;
+$('simList').innerHTML = PLAN.sim.map(li).join('');
+$('weekPhases').innerHTML = phases(PLAN.week);
+$('decPhases').innerHTML = phases(PLAN.december);
+const all = [...PLAN.week, ...PLAN.december].flatMap(p => p.items), nd = all.filter(i => i.s === 'done').length;
+$('weekCount').textContent = `${nd} of ${all.length} done to launch`;
+$('laterCards').innerHTML = PLAN.later.map(c => `<div class="card"><b>${esc(c.t)}</b><span>${esc(c.d)}</span></div>`).join('');
+$('ideaCards').innerHTML = PLAN.ideas.map(c => `<div class="card"><b>${esc(c.t)}</b><span>${esc(c.d)}</span></div>`).join('');
+$('doneLog').innerHTML = PLAN.done.map(d => `<div><time>${esc(d.when)}</time>${esc(d.t)}</div>`).join('');
+const btn = $('hideDone'), setHide = on => { document.body.classList.toggle('hide-done', on); btn.setAttribute('aria-pressed', on); btn.textContent = on ? 'Show done' : 'Hide done'; };
+let hide = false; try { hide = localStorage.getItem('gp-hide') === '1'; } catch (e) {}
+setHide(hide);
+btn.addEventListener('click', () => { hide = !hide; setHide(hide); try { localStorage.setItem('gp-hide', hide ? '1' : '0'); } catch (e) {} });
+</script>

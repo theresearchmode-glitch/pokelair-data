@@ -12,7 +12,8 @@ const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); 
 // the page document <- the file the morning refresh reads (same list as the refresh's step 3; results = limitless.json "results")
 const DOCS = {results: () => (rd('limitless.json') || {}).results, doubles_tour: () => rd('meta_tour.json'), teams: () => rd('teams.json'), history: () => rd('history.json'),
   model: () => rd('model.json'), doubles: () => rd('meta_ladder.json'), doubles_ingame: () => rd('meta_ingame.json'), events: () => rd('events.json'), track: () => rd('track.json'),
-  practice: () => rd('practice.json'), weekly: () => rd('weekly.json'), calendar: () => rd('calendar.json')};
+  practice: () => rd('practice.json'), weekly: () => rd('weekly.json'), calendar: () => rd('calendar.json'),
+  post: () => rd('post.json') /* Nov 18: Mystery Gifts and news (post-news.mjs); about 22 KB, far under the limit */};
 export function split(doc, limit = LIMIT) {
   const a = {...doc}, b = {}; let guard = 0;
   while (B(a) > limit && guard++ < 200) {

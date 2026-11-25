@@ -1,0 +1,53 @@
+/* Type Chart round 2 (Nov 14, 'more flair'): tokens only, type scale, 4px grid */
+.t2{padding:0 var(--gut) var(--s16);display:grid;grid-template-columns:minmax(0,1fr);gap:var(--s5);overflow-x:clip}
+.t2-h{display:grid;gap:var(--s2)}.t2-h .np-eyebrow{margin:0}.t2-h h1{font-size:var(--t34);margin:0}.t2-h h1 .pl{color:var(--plot-text)}
+.t2-ctl{display:flex;flex-wrap:wrap;align-items:center;gap:var(--s3) var(--s5)}.t2-find{flex:0 1 320px}.t2-find input{border:0;background:none;font:500 var(--t16)/1 var(--b);color:var(--ink);width:100%;transform:skewX(10deg)}
+.t2-team{display:flex;flex-wrap:wrap;gap:var(--s2)}.t2-tm{display:flex;align-items:center;gap:var(--s1);min-height:var(--tap);padding:var(--s1) var(--s3) var(--s1) var(--s1);border:1.5px solid var(--rule);font:600 var(--t13)/1 var(--b);color:var(--ink-2)}.t2-tm.on{border-color:var(--plot);color:var(--plot-text)}
+.t2-show{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.t2-show b{color:var(--ink)}
+.t2-lbl{display:flex;align-items:center;gap:var(--s2);flex-wrap:wrap;justify-content:space-between;margin:0;font:700 var(--t13)/1.3 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--ink-2)}.t2-lbl .sub{margin-left:auto;text-transform:none;letter-spacing:0;font-weight:500}
+.t2-picks{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:var(--s1)}.t2-tp{min-height:var(--tap);font:700 var(--t13)/1 var(--b);color:var(--ink-2);border:1.5px solid color-mix(in srgb,var(--tc) 55%,transparent);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}.t2-tp.on{background:var(--tc);color:var(--on-type);border-color:var(--tc)}
+.t2-ab{margin:0;font:600 var(--t15)/1.5 var(--b);color:var(--plot-text)}.t2 .fine{margin:0}
+/* type tile: the type's colour with its pattern (the calc's cards: burst, drops, rings, shards) in the corner */
+.t2-tile{position:relative;overflow:hidden;display:inline-grid;place-items:center;min-height:40px;padding:0 var(--s4);background:var(--tc);color:var(--on-type);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.t2-tile b{position:relative;z-index:1;font-size:var(--t15);font-style:italic;font-synthesis:style}.t2-tile::after{content:"";position:absolute;inset:0;opacity:.28;mask:linear-gradient(225deg,#000,transparent 70%)}
+.t2-tile.big{min-height:64px;padding:0 var(--s6)}.t2-tile.big b{font-size:var(--t22)}
+.pat-burst::after{background:repeating-conic-gradient(from 0deg at 100% 0,var(--on-type) 0 4deg,transparent 4deg 12deg)}.pat-drops::after{background:radial-gradient(circle,var(--on-type) 2px,transparent 3px) 0 0/var(--s3) var(--s3)}
+.pat-rings::after{background:repeating-radial-gradient(circle at 100% 0,transparent 0 6px,var(--on-type) 6px 7px)}.pat-shards::after{background:repeating-linear-gradient(60deg,transparent 0 8px,var(--on-type) 8px 9px)}
+.t2-main{display:grid;grid-template-columns:320px minmax(0,1fr);gap:var(--s8);align-items:start}.t2-cardw .ms-card{--ch:440px}.t2-right{display:grid;gap:var(--s4)}
+.t2-offs{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:var(--s3)}.t2-off{display:grid;gap:var(--s2);padding:var(--s4);background:var(--wash)}.t2-off .h{display:flex;align-items:center;gap:var(--s2);font:700 var(--t15)/1 var(--b)}
+.t2-off .r{display:grid;grid-template-columns:72px minmax(0,1fr);gap:var(--s2);align-items:center}.t2-off .k{font:700 var(--t13)/1.3 var(--b)}.t2-off .k.up{color:var(--good-text)}.t2-off .k.dn{color:var(--mid-text)}.t2-off .k.no{color:var(--bad-text)}.t2-off .c{display:flex;flex-wrap:wrap;gap:var(--s1)}.t2-off i{font-style:normal;color:var(--ink-3)}
+.t2-own{display:grid;gap:var(--s3)}
+.t2-fold{border-top:1px solid var(--rule);border-bottom:1px solid var(--rule)}.t2-fold summary{display:flex;align-items:center;justify-content:space-between;min-height:var(--s16);list-style:none}.t2-fold summary span{display:grid}.t2-fold summary b{font:700 var(--t15)/1.4 var(--b)}.t2-fold summary small{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}.t2-fold summary i{font-style:normal;font-size:var(--t20);color:var(--ink-3)}
+
+/* 1. Spotlight+: tall bands with giant outlined numerals behind */
+.t2-spec{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:var(--s2)}
+.t2-band{position:relative;overflow:hidden;display:grid;align-content:start;gap:var(--s4);min-height:300px;padding:var(--s5) var(--s3);clip-path:polygon(16px 0,100% 0,calc(100% - 16px) 100%,0 100%)}
+.t2-band .ghost{position:absolute;right:calc(var(--s3)*-1);bottom:calc(var(--s6)*-1);font-size:var(--d168);line-height:1;font-style:italic;font-synthesis:style;color:transparent;-webkit-text-stroke:2px currentColor;opacity:.22;pointer-events:none}
+.t2-band .m{position:relative;display:grid}.t2-band .m b{font-size:var(--t34);line-height:1;font-style:italic;font-synthesis:style}.t2-band .m small{font:700 var(--t13)/1.3 var(--b);letter-spacing:.06em;text-transform:uppercase}
+.t2-band .ts{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:var(--s2)}.t2-band i{font-style:normal;opacity:.7}
+.t2-band.b4{background:var(--bad);color:var(--on-mark)}.t2-band.b2{background:color-mix(in srgb,var(--bad) 24%,var(--surface))}.t2-band.bh{background:color-mix(in srgb,var(--good) 18%,var(--surface))}.t2-band.bq{background:color-mix(in srgb,var(--good) 30%,var(--surface))}.t2-band.b0{background:var(--plot);color:var(--on-mark)}.t2-band.none{background:var(--wash);color:var(--ink-3)}
+
+/* 2. Pressure ring: the Card in the centre, the 18 types around it, sized and lit by how hard they hit */
+.t2-main.ring{grid-template-columns:600px minmax(0,1fr)}
+.t2-ring{position:relative;height:600px}.t2-core{position:absolute;left:50%;top:50%;translate:-50% -50%;width:248px}.t2-core .ms-card{--ch:330px}
+.t2-rt{position:absolute;left:50%;top:50%;display:grid;justify-items:center;gap:2px;min-width:72px;padding:var(--s1) var(--s2);background:var(--tc);color:var(--on-type);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);overflow:hidden}
+.t2-rt b{position:relative;z-index:1;font-size:var(--t13);font-style:italic;font-synthesis:style}.t2-rt i{position:relative;z-index:1;font-size:var(--t15);font-style:italic;font-synthesis:style}.t2-rt::after{content:"";position:absolute;inset:0;opacity:.25}
+.t2-rt.b1{opacity:.45;min-width:64px}.t2-rt.bh,.t2-rt.bq{opacity:.65}.t2-rt.b0{background:none;color:var(--ink-3);outline:1.5px dashed var(--rule)}.t2-rt.b0 b{text-decoration:line-through}
+.t2-rt.b2{min-width:96px;padding:var(--s2) var(--s3);filter:drop-shadow(0 6px 12px color-mix(in srgb,var(--bad) 45%,transparent))}.t2-rt.b2 i{font-size:var(--t20)}
+.t2-rt.b4{min-width:120px;padding:var(--s3) var(--s4);outline:3px solid var(--bad);filter:drop-shadow(0 8px 20px color-mix(in srgb,var(--bad) 60%,transparent))}.t2-rt.b4 b{font-size:var(--t17)}.t2-rt.b4 i{font-size:var(--t28)}
+.t2-key{display:grid;gap:var(--s4);align-content:start}.t2-key ul{display:flex;flex-wrap:wrap;gap:var(--s2) var(--s4);margin:0;padding:0;list-style:none;font:600 var(--t13)/1 var(--b);color:var(--ink-2)}.t2-key li{display:flex;align-items:center;gap:var(--s1)}.t2-key li i{width:16px;height:12px;transform:skewX(-15deg);background:var(--ink-3)}
+.t2-key li.b4 i{background:var(--bad)}.t2-key li.b2 i{background:color-mix(in srgb,var(--bad) 50%,var(--surface))}.t2-key li.bh i,.t2-key li.bq i{background:var(--good)}.t2-key li.b0 i{background:none;outline:1.5px dashed var(--rule)}.t2-key li.b1 i{opacity:.45}
+.t2-key .t2-offs{grid-template-columns:minmax(0,1fr)}
+
+/* 3. Hit lanes: a scoreboard, hardest first */
+.t2-ls{display:grid;gap:var(--s1)}.t2-lane{display:grid;grid-template-columns:128px minmax(0,1fr) 56px;align-items:center;gap:var(--s3)}.t2-lane .t2-tile{min-height:36px;justify-content:start}
+.t2-lane .bar{height:20px;background:color-mix(in srgb,var(--ink) 8%,transparent);transform:skewX(-20deg)}.t2-lane .bar i{display:block;height:100%;background:var(--ink-3)}
+.t2-lane .v{font-size:var(--t20);font-style:italic;font-synthesis:style;text-align:right}
+.t2-lane.b4 .bar i{background:var(--bad)}.t2-lane.b4 .v{color:var(--bad-text);font-size:var(--t28)}.t2-lane.b2 .bar i{background:color-mix(in srgb,var(--bad) 60%,var(--surface))}.t2-lane.b2 .v{color:var(--bad-text)}
+.t2-lane.bh .bar i{background:var(--good)}.t2-lane.bh .v{color:var(--good-text)}.t2-lane.b0 .v{color:var(--plot-text)}.t2-lane.b0 .t2-tile{opacity:.6}.t2-lane.b1 .t2-tile{opacity:.75}
+
+@media (max-width:699px){.t2-h h1{font-size:var(--t28)}.t2-picks{grid-template-columns:repeat(6,minmax(0,1fr))}.t2-tp{font-stretch:85%}.t2-find{flex-basis:100%;margin-inline:var(--s2)}.t2-team{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));width:100%}.t2-tm{justify-content:center;padding:var(--s1)}.t2-tm span{display:none}
+ .t2-main,.t2-main.ring,.t2-main.lanes{grid-template-columns:minmax(0,1fr)}.t2-cardw .ms-card{--ch:300px}.t2-spec{grid-template-columns:minmax(0,1fr)}.t2-band{min-height:0;grid-template-columns:72px minmax(0,1fr);align-items:center}.t2-band .ts{flex-direction:row;flex-wrap:wrap}.t2-band .ghost{font-size:var(--d120)}
+ .t2-ring{height:400px;scale:.66;transform-origin:50% 50%;margin:calc(var(--s16)*-1) calc(var(--s16)*-1)}.t2-lane{grid-template-columns:104px minmax(0,1fr) 48px}}
+.t2-right .t2-lbl,.t2-key .t2-lbl,.t2-own .t2-lbl{justify-content:flex-start}.t2-band .ghost{opacity:.4;-webkit-text-stroke-width:3px}
+@media (max-width:699px){.t2-ring{width:600px;height:600px;scale:.58;transform-origin:0 0;margin:0 0 calc(600px*-.42) calc((100% - 348px)/2)}}

@@ -1,0 +1,35 @@
+v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+== C-battle
+behaviour: 83 pass, 0 FAIL, 0 known bugs, 0 fixed?, 4 skipped; 445s  (adapter v2)
+== tap-once
+tap-once: all pass
+== kit-page
+kit-page: all 14 views passed (7 widths x day and night)
+== overlap practice
+v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 44s)
+== v2-q25
+  FAIL  phones: each of your cards is as wide as theirs, same sprite and frame, within 2px (324 off, e.g. light 320 #0 'Basculegion': 114px wide, sprite 72x72, frame 84 vs theirs 83, 72x72, 84)
+  FAIL  700 and 1440: your six unchanged, one column of plates as wide as theirs with sprite, name and types (9, e.g. light 700 #0: 1 columns x 6 rows, width ratio 1.01, sprite left true, types true, 120px)
+v2-q25: 2 failed
+== v2-sync
+  FAIL  live page (dist/page.html) not built: /tmp/claude-0/-home-user-pokelair-data/204a9d61-5900-570f-b954-256bbb6b60d7/scratchpad/base/app/dist/page.html
+== v2-unbounded
+== tap-size
+  pass  320 wide, archetypes (guide): tap area at least 44px tall on every line of .ar-none .np-link (Go to My Team › 48/48)
+  pass  390 wide, archetypes (guide): tap area at least 44px tall on every line of .ar-none .np-link (Go to My Team › 48)
+  pass  1440 wide, archetypes (guide): tap area at least 44px tall on every line of .ar-none .np-link (Go to My Team › 48)
+tap-size: all passed
+== v2-folds
+v2-folds: all passed
+== qcheck practice
+qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 32s
+== minors main1
+v2-minors (main1):all passed
+== minors main2
+  pass  NPR-4: a gift with no start shows at the counter while its end hasn't passed ({"live":1,"shown":true})
+v2-minors (main2):all passed
+== minors groups
+v2-minors (groups):all passed
+== v2-today
+v2-today: all passed (27 s)
+ALL DONE

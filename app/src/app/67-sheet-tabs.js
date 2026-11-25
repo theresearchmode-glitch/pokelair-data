@@ -10,38 +10,7 @@
 const LST = {tabs: [['info', 'Info', 'stats · types'], ['meta', 'Meta', 'moves · items'], ['rating', 'Rating', 'why · data']]};
 LST.ok = k => LST.tabs.some(t => t[0] === k);
 LST.cur = (() => { const v = LS.get('cc2.lstab', null); return LST.ok(v) ? v : 'info'; })();
-/* stat bar colours by value: cool for low, green for high, magenta for exceptional (never red: red is for opponents) */
-LST.stCol = v => v >= 150 ? '#E048C8' : v >= 120 ? '#3FB618' : v >= 100 ? '#12B5A4' : v >= 80 ? '#2F9BFF' : v >= 50 ? '#5B6BF5' : '#9B6CFF';
-LST.baseForm = p => { if (!p || !p.m) return null; const b = byName.get(p.b); return b && !b.m ? b : ROSTER.find(q => q.b === p.b && !q.m) || null; };
-LST.abDesc = a => (typeof ABIL === 'object' && ABIL[a] ? String(ABIL[a]).replace(/Pokemon/g, 'Pokémon') : '');
-/* type effectiveness in words (the Type chart page uses the same groups) */
-LST.word = x => x === 0 ? 'no damage' : x === .25 ? '¼ damage' : x === .5 ? '½ damage' : x === 1 ? 'normal damage' : x === 1.25 ? 'a quarter more damage' : x === 2 ? '2× damage' : x === 4 ? '4× damage' : x + '× damage';
-/* the matchups of p's typing, and what each ability it can have changes (ABILITY_MODS in engine/types.js, the same table
-   the team checks and the Type chart use) */
-LST.matchups = p => { const g = {q: [], d: [], h: [], qr: [], z: []}, abs = [...new Set(p.a)], only = abs.length === 1 && ABILITY_MODS[abs[0]] ? abs[0] : null;
-  /* with only one possible ability (every Mega, Rotom's Levitate ...) the lists already count it; otherwise they are for the typing alone */
-  for (const atk of TYPES) { const x = mult(atk, p.t, only, !!only); (x === 0 ? g.z : x >= 4 ? g.q : x >= 2 ? g.d : x <= .25 ? g.qr : x <= .5 ? g.h : []).push(atk); }
-  const ab = [...new Set(p.a)].filter(a => ABILITY_MODS[a]).map(a => ({a, ch: TYPES.filter(t => mult(t, p.t, a, true) !== mult(t, p.t, null, false)).map(t => ({t, raw: mult(t, p.t, null, false), x: mult(t, p.t, a, true)}))})).filter(o => o.ch.length);
-  return {g, ab, only}; };
-/* Speed at level 50 from the app's own Champions maths (39-damage-calc-speed.js): calcStat = floor((base + 20 + points) × nature),
-   spdCalc for Scarf / Tailwind / weather abilities, likelySpeed for what players run, outspeedOf for "outspeeds X% of the top 30" */
-LST.speeds = p => { const rows = [], os = (v, tr) => { try { return outspeedOf(v, '', {tr: !!tr}); } catch (e) { return null; } };
-  const maxN = calcStat(p, 'Spe', 32, 1.1);
-  try { const s = likelySpeed(p, null), ab = abilityOf({p}), v = spdCalc(s.v, s.scarf, ab, '', {});
-    rows.push({k: 'run', l: 'What players run', v, note: s.label.replace(/^./, c => c.toUpperCase()) + (s.scarf ? ', Choice Scarf' : ''), os: os(v), main: true}); } catch (e) {}
-  rows.push({k: 'none', l: 'No Speed points', v: calcStat(p, 'Spe', 0, 1), note: 'neutral nature'});
-  rows.push({k: 'max', l: 'Max Speed points', v: calcStat(p, 'Spe', 32, 1), note: '32 points, neutral nature'});
-  rows.push({k: 'maxn', l: 'Max + Speed nature', v: maxN, note: '32 points, Speed-boosting nature (Timid, Jolly…)'});
-  if (!p.m) rows.push({k: 'scarf', l: 'Choice Scarf', v: spdCalc(maxN, true, '', '', {}), note: 'max + Speed nature'});
-  rows.push({k: 'tw', l: 'In Tailwind', v: spdCalc(maxN, false, '', '', {tw: true}), note: 'max + Speed nature, Speed doubled'});
-  const WX = {sun: 'sun', rain: 'rain', sand: 'sand', snow: 'snow'};
-  for (const a of [...new Set(p.a)]) { const w = typeof WEATHER_SPD_AB === 'object' && WEATHER_SPD_AB[a]; if (w) rows.push({k: 'wx', l: `${a} in ${WX[w] || w}`, v: spdCalc(maxN, false, a, w, {}), note: 'max + Speed nature, Speed doubled'}); }
-  rows.push({k: 'tr', l: 'Trick Room build', v: calcStat(p, 'Spe', 0, .9), note: '0 points, Speed-lowering nature', tr: true});
-  /* no repeated numbers (Sim, Nov 2): when what players run equals a standard row, that row is folded into it */
-  const run = rows.find(r => r.k === 'run'), dup = run && rows.find(r => r !== run && !r.tr && r.k !== 'wx' && r.k !== 'tw' && r.v === run.v);
-  if (dup) { run.note += ` · same as ${dup.l.replace(/^./, c => c.toLowerCase())}`; rows.splice(rows.indexOf(dup), 1); }
-  for (const r of rows) if (r.os === undefined) r.os = os(r.v, r.tr);
-  return rows; };
+Object.assign(LST, SHT); /* the pure helpers (stat colours, Mega base form, Ability text, type matchups, Speed rows) live in 24-sheet-data.js (Nov 11) */
 LST.info = p => { const st = (() => { try { return setFor(p) || {}; } catch (e) { return {}; } })(), bf = LST.baseForm(p);
   const L = ['HP', 'Attack', 'Defense', 'Sp. Atk', 'Sp. Def', 'Speed'], tot = p.st.reduce((a, b) => a + b, 0), btot = bf ? bf.st.reduce((a, b) => a + b, 0) : 0;
   const dif = (a, b) => { const d = a - b; return d ? `<em class="lstd${d < 0 ? ' dn' : ''}">${d > 0 ? '+' : '−'}${Math.abs(d)}</em>` : ''; };

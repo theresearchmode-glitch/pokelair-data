@@ -1,0 +1,104 @@
+# Questions held for Sim's morning (Nov 19, about 5:30 AM Eastern)
+Sim, Nov 18, 9:56 PM: "any design questions, hold on to them... ask me them all at once". Each goes with its labelled pictures.
+
+1. Q13 · Usage source (design review #14): pictures docs/rebuild/pics/nov19/Q13-usage-source-*.png
+   A RECOMMENDED: open on Online tournaments (updates daily); Ranked ladder stays one tap away with 'Last updated Nov 17 · updates paused'.
+   B: keep opening on Ranked ladder, add the paused label. C: no change.
+2. Q14 · Battle 'Favoured' vs a risky turn one (review #9): pictures docs/rebuild/pics/nov19/Q14-battle-favoured-*.png
+   A RECOMMENDED: one plain line under the verdict, only when turn one has a risk: 'How six-vs-six matchups like this went. It
+   doesn't see turn one: yours has a risk (see Watch).' B: a short 'Risky start' tag. C: no change.
+   Also to show (not a question): review #1 before/after, docs/rebuild/pics/nov19/review1-battle-turn-one-*.png.
+3. Earlier, still open: Usage at 1440 options (overs Qc), Meta row-based limit (Qd), switch runbook questions.
+4. My Team suggestions (helper, built, wording questions; the sheet now opens with My Team's own 'Nothing to fix.' sentence):
+   a. A plan that fills an empty spot (team of 5) has no line now (the old 'small change' line was untrue). Wording? Proposal: tag
+      'Add' with 'fills your empty spot'.
+   b. The sheet's eyebrow still says '1 suggestion' beside 'Nothing to fix'. Keep, or '1 optional swap' (Sim's Nov 11 words)?
+   c. Visual: a ±0 card in the sheet still has the big black Apply. Quieter button? (pictures needed)
+   d. Last audit #15: 'Nothing to fix' beside 'N weak spots': 'Nothing to swap', or 'N minor weak spots'?
+   e. Visual: the fill card's left half is empty (layout).
+5. Sim's PC run (docs/rebuild/test-runs/pc-nov19.txt): Windows-only findings: News at 1280/1920 'CAMPAIGN · NOV 24' overlaps 'A New
+   Mystery Gift' (not seen on Linux/GitHub); Home '/100' measured 36.1px; WebKit 26.6 TEAM-07, EDIT-01b. A follow-up PC check is proposed.
+6. News dates (found from Sim's PC run): an item timed 2026-11-25T03:00:00Z (noon in Japan) shows 'Nov 25' on a UTC machine and
+   'Nov 24' in Eastern time, because the page shows each reader's own local date. Keep the reader's local date (true for when it
+   happens where you are), or show the official page's date? Not yet checked: which date the official page itself prints.
+   The News 'overlap' flagged on Windows is box-based: on Linux the kicker and headline ink are about 20px apart (news-k-now.png).
+7. Q15 · Pokémon count (review #18): pictures docs/rebuild/pics/nov19/Q15-pokemon-count-*.png
+   A RECOMMENDED: '#1 of 322 with tournament results' (says why it's 322, not 345; short enough for the badge).
+   B: adds '(322 of 345 rated have them)'. C: no change.
+8. Q16 · Edit Set Close X on phones (review #21): pictures docs/rebuild/pics/nov19/Q16-editset-close-*.png
+   A RECOMMENDED: a solid strip at the top holds the X, content scrolls under it. B: no change (X overlaps a dropdown's corner).
+9. Q17 · 'Mega' on My Team cards on phones (review #11): pictures docs/rebuild/pics/nov19/Q17-mega-label-*.png
+   A RECOMMENDED: 'Mega' on the same dark slanted plate as the score (readable on any art). B: no change. Dark mode not yet pictured.
+10. Q18 · Log a Game's Win/Loss (review #7): pictures docs/rebuild/pics/nov19/Q18-log-a-game-*.png
+   A RECOMMENDED: two equal buttons 'Log a Win' / 'Log a Loss' (one tap still logs it). B: no change.
+11. Q19 · Home headline contrast (review #10): pictures docs/rebuild/pics/nov19/Q19-hero-contrast-*.png
+   Measured: line 2 (#9BDCFF) on the band blue is 3.17:1 even with no crowd; the crowd behind makes it worse in spots.
+   A RECOMMENDED: same colours, a band-blue glow behind the words (keeps the look; meets the 3:1 big-text rule).
+   B: glow + paler line 2 (3.79:1). C: line 2 white (4.73:1, loses the two tones). D: no change.
+12. Q20 · Matchups cards: real-games verdict vs 'Calc disagrees' (review #8): pictures docs/rebuild/pics/nov19/Q20-matchups-calc-note-*.png
+   A RECOMMENDED: one verdict per card + one short grey line 'Calc: beats it' (keeps the info where it belongs, equal heights).
+   B: verdict only on cards, one sentence under the grid. C: no change.
+13. Damage Calc / Usage (helper, built; wording for Sim):
+   a. KO Board: each half's caption now counts its own tiles; next to other groups it says 'KO' (the tiles' own stamp) so it fits
+      on one line at 1100-1280, and 'The KO Board' name drops when the left half holds all three groups. OK, or split the halves at
+      the group boundary (18/12), which changes the layout?
+   b. Usage: the hero's numbers come from Online tournaments even on the Ranked ladder chip (38.3% / 51.9% there vs 39.2% / 49.5% on
+      the tournaments chip: different date windows). The key line now says so. Should the hero use one source?
+   c. Home/empty My Team '% of ladder teams' is the Showdown ladder; say 'Showdown ladder teams' (Word list) instead of Nov 12's choice?
+   d. Look options for the source: a line under the hero stats, or the hero follows the chosen chip.
+14. Q21 · Meta on phones (review #12 + #19): pictures docs/rebuild/pics/nov19/Q21-meta-phone-*.png
+   Measured at 390x844: search starts at 842px; the filter row is 582px wide in a 390px screen (sideways scroll, no cue).
+   A RECOMMENDED: search + filters above the featured #1 on phones, filters wrap into even rows. B: no change.
+15. Q22 · KO Board names (review #3): pictures docs/rebuild/pics/nov19/Q22-ko-board-*.png
+   A RECOMMENDED: name + damage on hover/keyboard focus on desktop; a short name under each tile on phones.
+   B: short names under every tile everywhere (long names cut). C: no change.
+16. Form errors (review #6): the part nobody sees is built (helper): the field in error is marked for screen readers (aria-invalid,
+   linked to the existing message) and gets the focus (v2-formerr: 26 checks failed before, all 48 pass after). One thing you'd
+   notice: on a phone, focus going back to the box also brings the keyboard up. OK, or keep focus where it was on phones?
+   The visible part (an error look for the message and the box, where it sits, when it clears) needs your pictures: Import a Team,
+   Edit Set's stat points (and what happens when you close it with a bad box), Send Feedback. Note: all three already show a small
+   grey line explaining the error; it's just easy to miss.
+17. Q25 · Team Preview Practice on phones (review #13): pictures docs/rebuild/pics/nov19/Q25-practice-phone-*.png
+   A RECOMMENDED: your six as the same 3 x 2 cards as theirs (356px instead of 649px), so both sixes nearly fit one phone screen.
+   B: no change. Also from the review, no visible change: code order = screen order (theirs first), which I can do with A.
+18. Q26 · 'Restore Last Team' after Clear Team (review #2): pictures docs/rebuild/pics/nov19/Q26-restore-last-team-*.png
+   A RECOMMENDED: a 'Restore Last Team' button on the empty My Team (with the team's name), until you add a Pokémon. B: no change.
+19. Q23 · Home copy (review #17): pictures docs/rebuild/pics/nov19/Q23-home-copy-*.png
+   A RECOMMENDED: keep every playful headline, add one plain line under the unclear ones ('Call six out of the herd.' -> 'Build
+   your six, see its Strength Score, and plan each match.'; 'Same herd. Twelve tools.' -> 'Every tool uses the same 345 rated
+   Pokémon: speed, types, damage, top teams and more.'; phones also get the Post band's line, hidden there today).
+   B: plain headlines instead (loses the voice). C: no change.
+20. Q24 · Odd addresses (review #20): pictures docs/rebuild/pics/nov19/Q24-*.png
+   Unknown address: A RECOMMENDED: a not-found page in the 'No Pokémon here.' style ('Nothing here.' + Go to Home). B: Home with a
+   message strip. C: no change. Found: in the Preview an unknown address goes to My Team (a Preview-only file); the real site
+   goes to Home. #owner for visitors: A RECOMMENDED: the same not-found page. B: no change ('Only for the site's owner.').
+21. Gallery (review #16, internal page, built by a helper): at iPad widths (2 columns) its 27 cards leave one lone card. OK as an
+   internal page, or even it up?
+22. Meta and Usage heroes at 375-390 wide (found tonight; today's data): the third fact ('Base Speed 120' on Meta, 'Win rate 51.9%'
+   on Usage) ends 1-3px past the hero's right edge (measured: 362 vs 359 at 375; 375 vs 374 at 390). The frozen test data fits.
+   Recommended: 4px less gap between the three facts at 360-420 (keeps the sizes; one small check covers it). OK to do?
+23. Found by tonight's visual check, not caused tonight (pictures in the scratchpad, will be labelled if you want them done):
+   a. Battle poster at 320: 'The other four' row runs past its card (Gholdengo cut off) and names touch ('Grimmsnarl|Archaludon').
+   b. The damage calc gives an opponent its most common item, not the item on its open team sheet (e.g. Armarouge calculated with
+      Focus Sash while its sheet says Life Orb), and the plan can say 'KOs' through a Sash. Logic; I'd fix it as its own step.
+      Update (night): fixed by a helper; an opponent with an open team sheet is now calculated with its sheet item, and no 'KOs'
+      through Focus Sash or Sturdy (checked: v2-t1rules, 1000 real matchups).
+24. Turn One cards (built tonight, for your look): pictures docs/rebuild/pics/nov19/review1-turn-one-words-*.png. Notes are now one
+   main fact + one short note (longest 115 characters, was 229). Cards at 1440 are 104-148px (were 104-124 before tonight's rules,
+   up to 187 at worst tonight). Going shorter needs a wider text column on the card (the note column is about 200px at 390): a layout
+   change. Keep as is, or try a wider note column (pictures first)?
+25. Battle Turn One cards, layout (found by the night visual check of cb1506aa, noted here at 3:22 AM; design, so yours). Q27 on the
+   Morning Questions page (pictures docs/rebuild/pics/nov19/Q27-card-pairs-*.png); b and c are W11 there:
+   a. At 1366 wide and up, the two cards in a row are different heights and each is centred in its slot, so the shorter card sits
+      lower than its neighbour (picture: 1440, card 2 sits lower than card 1). My recommendation: top-align both cards in a row
+      (reason: the eye reads across a row from the top; a ragged top edge looks like a mistake).
+   b. (now Q28, with pictures) A card with no target (Tailwind, Flinches, Protect) leaves an empty strip where the target sprite would be. My recommendation:
+      let the text use that strip (reason: no empty strips beside text, your space rule).
+   c. Phone cards at 320 are tall (about 10 lines with a note). Linked to item 24 (wider note column).
+26. Turn One wording (no picture needed, plain words):
+   a. 'OHKO 6%' is cryptic. Recommended: '6% chance to KO in one hit' (reason: says what the number means).
+   b. Fake Out's 'Stops its Hurricane, up to 150% to your Sneasler' doesn't say 150% of what. Recommended: 'up to 150% of your
+      Sneasler's HP' (reason: same words as every other damage line).
+   c. The Watch line repeats ('their Pelipper's Hurricane can KO your Sneasler from turn 2; their Mega Charizard Y's Weather Ball can
+      KO your Sneasler'). Recommended: 'your Sneasler can be KO'd by their Pelipper's Hurricane (from turn 2) or their Mega Charizard
+      Y's Weather Ball' (reason: one subject, shorter, easier to scan).

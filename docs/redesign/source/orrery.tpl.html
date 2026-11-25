@@ -1,0 +1,77 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>NastyPlot home concept: the pairs dial</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500..900&family=Instrument+Sans:wght@400..700&display=swap">
+<style>
+:root{--bg:#F5F1EA;--ink:#16141A;--ink2:#4A4550;--ink3:#6B6570;--rule:rgba(22,20,26,.12);--rule2:rgba(22,20,26,.24);
+  --pink:#E6359B;--gold:#E9A800;--blue:#0078BF;--orange:#C8401A;--purple:#5B2FB5}
+/*BASE*/
+.door:first-child{--ct:var(--ink)}
+.hero{position:relative;height:980px;overflow:hidden;background:
+  radial-gradient(620px 620px at 950px 520px,#FFFDF9 0,rgba(255,253,249,0) 70%),
+  linear-gradient(112deg,transparent 44%,rgba(255,255,255,.75) 50%,transparent 56%),var(--bg)}
+.grain{position:absolute;inset:0;opacity:.05;mix-blend-mode:multiply;pointer-events:none;z-index:5}
+.pitch{position:absolute;z-index:4;left:64px;top:168px;width:420px}
+.pitch h1{margin:22px 0}
+.pitch p{font-size:17px;color:var(--ink2);max-width:390px}.pitch p b{color:var(--ink);font-weight:600}
+.acts{display:flex;gap:12px;margin-top:30px}
+.key{margin-top:44px;padding-top:22px;border-top:1px solid var(--rule);display:grid;gap:14px;max-width:390px}
+.key div{display:grid;grid-template-columns:44px 1fr;align-items:center;gap:14px;font-size:15px;color:var(--ink2)}
+.key b{color:var(--ink);font-weight:600}
+.key i{display:block;border-radius:9px}
+.nums{position:absolute;z-index:4;left:64px;bottom:56px;display:flex;gap:44px}
+.nums b{display:block;font-size:26px;line-height:1.1}.nums span{font-size:13px;color:var(--ink3)}
+#dial{position:absolute;left:0;top:0;z-index:2}
+.mon{position:absolute;z-index:3;transform:translate(-50%,-50%)}
+.mon img{display:block;filter:drop-shadow(0 8px 8px rgba(40,20,40,.22))}
+.lab{position:absolute;z-index:3;font:600 13px/1.2 var(--b);white-space:nowrap}.lab i{font-style:normal;color:var(--ink3);margin-left:5px}
+.lab.sel{font-weight:700}.lab small{display:block;font:500 13px/1.3 var(--b);color:var(--ink3)}
+.hub{position:absolute;z-index:4;left:950px;top:520px;width:216px;height:216px;margin:-108px 0 0 -108px;border-radius:50%;background:#FFFDF9;border:1px solid var(--rule2);
+  box-shadow:0 24px 48px -24px rgba(40,20,40,.4),inset 0 0 0 7px #FFFDF9,inset 0 0 0 8px var(--rule);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
+.hub .eyebrow{font-size:13px;letter-spacing:.12em}
+.hub b{font-size:36px;line-height:1.1;margin:8px 0 2px;color:var(--blue)}
+.hub span{font-size:13px;color:var(--ink3)}.hub strong{display:block;font:700 13px/1.3 var(--b);margin-top:8px}
+.src{position:absolute;z-index:4;right:64px;bottom:44px;font-size:13px;color:var(--ink3)}
+</style></head><body>
+<section class="hero">
+  <svg class="grain" width="1440" height="980"><filter id="n"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" stitchTiles="stitch"/><feColorMatrix values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 .6 0"/></filter><rect width="100%" height="100%" filter="url(#n)"/></svg>
+  <!--HEADER-->
+  <div class="pitch"><div class="eyebrow">Pokémon Champions · Reg M-C doubles</div>
+    <h1 class="dsp">Sharply raise<br><em>your win rate.</em></h1>
+    <p>Doubles is played in pairs. This dial holds the 16 most-used Pokémon and <b id="np"></b> between them. Turn it to any Pokémon to see who it wins with.</p>
+    <div class="acts"><span class="btn p">Build me a team ➜</span><span class="btn g">Add my six</span></div>
+    <div class="key"><div><i style="height:9px;background:var(--ink);opacity:.5"></i><span><b>Thicker line:</b> more teams run both.</span></div>
+      <div><i style="height:4px;width:28px;background:var(--ink)"></i><span><b>Black arc:</b> how many teams use that Pokémon.</span></div>
+      <div><i style="height:4px;background:var(--blue)"></i><span><b>Blue line:</b> the pair wins more than the average team (<span id="base"></span>%).</span></div></div></div>
+  <div class="nums" id="nums"></div>
+  <svg id="dial" width="1440" height="980"></svg>
+  <div class="hub" id="hub"></div>
+  <div class="src">Limitless team sheets · Sep 12 – Nov 7 · data as of Nov 8</div>
+</section>
+<!--DOORS-->
+<script>
+/*DATA*/
+const N=n=>n.toLocaleString('en-US'),CX=950,CY=520,R=292,RI=236,H=document.querySelector('.hero'),n=D.ring.length;
+document.getElementById('np').textContent='every real partnership';document.getElementById('base').textContent=D.base;
+document.getElementById('nums').innerHTML=[[D.teams,'teams'],[D.tours,'tournaments'],[D.games,'games']].map(x=>`<div><b class="dsp">${N(x[0])}</b><span>${x[1]}</span></div>`).join('');
+const ang=i=>(-90+i*360/n)*Math.PI/180,pt=(i,r)=>[CX+r*Math.cos(ang(i)),CY+r*Math.sin(ang(i))],ix=Object.fromEntries(D.ring.map((m,i)=>[m.n,i]));
+let s='';
+// engraved rings and ticks
+for(const r of[RI,RI-8,150])s+=`<circle cx="${CX}" cy="${CY}" r="${r}" fill="none" stroke="rgba(22,20,26,${r==RI?.5:.14})" stroke-width="1"/>`;
+for(let k=0;k<160;k++){const a=k*2.25*Math.PI/180-Math.PI/2,big=k%10==0,r1=RI,r2=RI+(big?12:6);s+=`<line x1="${CX+r1*Math.cos(a)}" y1="${CY+r1*Math.sin(a)}" x2="${CX+r2*Math.cos(a)}" y2="${CY+r2*Math.sin(a)}" stroke="rgba(22,20,26,${big?.7:.3})" stroke-width="${big?1.5:1}"/>`;}
+s+=`<circle cx="${CX}" cy="${CY}" r="${R+118}" fill="none" stroke="rgba(22,20,26,.1)"/><circle cx="${CX}" cy="${CY}" r="${R+124}" fill="none" stroke="rgba(22,20,26,.1)" stroke-dasharray="1 9"/>`;
+// chords: every pairing, then the selected Pokemon's on top
+const chord=(p,st)=>{const[a,b]=[pt(ix[p.a],RI-10),pt(ix[p.b],RI-10)];return `<path d="M${a[0]},${a[1]}Q${CX},${CY} ${b[0]},${b[1]}" fill="none" ${st}/>`;};
+const mine=p=>p.a===D.sel||p.b===D.sel;
+for(const p of D.pairs)if(!mine(p))s+=chord(p,`stroke="rgba(22,20,26,.13)" stroke-width="${(.5+p.n/500).toFixed(2)}"`);
+for(const p of D.pairs.filter(mine).sort((a,b)=>a.w-b.w)){const up=p.w>D.base+1;s+=chord(p,`stroke="${up?'#0078BF':'rgba(22,20,26,.55)'}" stroke-opacity="${up?Math.min(1,.45+(p.w-D.base)/8):1}" stroke-width="${(1.5+p.n/260).toFixed(2)}" stroke-linecap="round"`);}
+// usage arcs just outside the tick ring, one per Pokemon
+D.ring.forEach((m,i)=>{const w=Math.min(9.5,m.u/5)*Math.PI/180,a0=ang(i)-w,a1=ang(i)+w,r=RI+22;s+=`<path d="M${CX+r*Math.cos(a0)},${CY+r*Math.sin(a0)}A${r},${r} 0 0 1 ${CX+r*Math.cos(a1)},${CY+r*Math.sin(a1)}" fill="none" stroke="${m.n===D.sel?'#0078BF':'#16141A'}" stroke-width="4" stroke-linecap="round"/>`;});
+const bp=D.best.a===D.sel?D.best.b:D.best.a;
+for(const[nm,c,w]of[[D.sel,'#0078BF',2],[bp,'#0078BF',1.2]]){const p=pt(ix[nm],R+6);s+=`<circle cx="${p[0]}" cy="${p[1]}" r="46" fill="rgba(0,120,191,.08)" stroke="${c}" stroke-width="${w}"/>`;}
+document.getElementById('dial').innerHTML=s;
+D.ring.forEach((m,i)=>{const z=m.n===D.sel?82:Math.round(52+Math.min(22,m.u/2)),p=pt(i,R+6),c=Math.cos(ang(i)),sn=Math.sin(ang(i)),hot=m.n===D.sel||m.n===bp,q=pt(i,R+(hot?72:60));
+  H.insertAdjacentHTML('beforeend',`<div class="mon" style="left:${p[0]}px;top:${p[1]}px"><img src="${m.img}" width="${z}" height="${z}"></div>`);
+  const side=Math.abs(c)<.2?'c':c>0?'l':'r',tx=side=='c'?'translate(-50%,'+(sn<0?'-100%':'0')+')':side=='l'?'translate(0,-50%)':'translate(-100%,-50%)';
+  H.insertAdjacentHTML('beforeend',`<div class="lab ${m.n===D.sel?'sel':''}" style="left:${q[0]}px;top:${q[1]}px;transform:${tx};text-align:${side=='c'?'center':side=='l'?'left':'right'}">${m.d}<i>${m.r}</i><small>${m.u}% of teams</small></div>`);});
+const dn=x=>D.ring.find(m=>m.n===x).d;
+document.getElementById('hub').innerHTML=`<div class="eyebrow">Best partner</div><b class="dsp">${D.best.w}%</b><span>wins together · ${N(D.best.n)} teams</span><strong>${dn(D.sel)} + ${dn(bp)}</strong>`;
+</script></body></html>

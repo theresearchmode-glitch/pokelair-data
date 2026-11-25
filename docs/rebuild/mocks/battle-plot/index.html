@@ -1,0 +1,80 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1">
+<title>The plot · Battle · NastyPlot (mock-up)</title>
+<style>
+/* Battle mock 2, "The plot" (Nov 21): turn one written on NastyPlot's own plot line (the kit's dashed pink rail with numbered steps), each step a
+   scheming sentence with boxed words like Build's. Real plan for the sample team. Mock-up only. */
+@font-face{font-family:U;src:url(../../../../app/src/v2/fonts/unbounded-latin.woff2) format('woff2');font-weight:200 900}
+@font-face{font-family:I;src:url(../../../../app/src/v2/fonts/instrument-sans-latin.woff2) format('woff2');font-weight:400 700}
+:root{--paper:#FBFAF7;--ink:#17161A;--ink2:#5E5A66;--rule:rgba(23,22,26,.13);--plot:#0078BF;--plot-t:#0066A3;--nasty:#E8364F;--nasty-t:#C21F3A;--go:#DA2C48;--card:#fff;--wash:#F1EDE6;--chip:#17161A;--on-chip:#fff;--you:#0B4F80;--them:#6B1E4A;--Fire:#D2411E;--Ground:#9A6230;--Normal:#737571}
+.night{--paper:#14131C;--ink:#ECE8E2;--ink2:#B0AAB8;--rule:rgba(236,232,226,.14);--plot:#4FB2F0;--plot-t:#62BEF7;--nasty:#F2566C;--nasty-t:#FF8193;--card:#1D1C26;--wash:#23222C;--chip:#E4E0DA;--on-chip:#12121B}
+*{box-sizing:border-box}body{margin:0;background:var(--paper);color:var(--ink);font:400 16px/1.5 I,system-ui,sans-serif;overflow-x:hidden}
+.u{font-family:U;font-style:italic;font-synthesis:style;font-weight:800;letter-spacing:-.01em}
+.wrap{max-width:1240px;margin:0 auto;padding:24px}
+.kick{display:inline-block;padding:4px 12px;background:var(--chip);color:var(--on-chip);font:800 15px/1.3 U;font-style:italic;letter-spacing:.04em;transform:skewX(-10deg)}
+h1{margin:12px 0 0;font-size:clamp(34px,5.2vw,64px);line-height:1}h1 em{font-style:inherit;color:var(--plot)}
+.lead{margin:12px 0 0;max-width:640px;font-size:17px;color:var(--ink2)}
+/* the crew line-up: your lead + their likely lead as two small plates */
+.sides{display:flex;flex-wrap:wrap;gap:12px 24px;margin:24px 0 0}
+.sd{display:flex;align-items:flex-end;gap:4px;padding:0 16px 6px 8px;color:#fff;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.sd.you{background:var(--you)}.sd.them{background:var(--them)}
+.sd img{width:64px;height:64px;object-fit:contain;margin-top:-8px}.sd span{padding-bottom:2px}.sd small{display:block;font:600 13px/1.2 I;opacity:.85}.sd b{font:800 16px/1.2 U;font-style:italic}
+/* the plot line */
+.plan{position:relative;margin:44px 0 0;padding-left:64px}
+.plan::before{content:"";position:absolute;left:18px;top:8px;bottom:8px;border-left:3px dashed var(--nasty)}
+.plan h2{margin:0 0 24px;font-size:clamp(26px,3.4vw,40px);line-height:1.05}
+.st{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px 32px;align-items:center;padding:20px 0;border-top:1px solid var(--rule)}
+.st .n{position:absolute;left:-60px;top:20px;width:36px;height:36px;display:grid;place-items:center;border-radius:50%;background:var(--paper);border:3px solid var(--c);color:var(--c);font:800 17px/1 U;font-style:italic}
+.st.them{--c:var(--nasty)}.st.you{--c:var(--plot)}
+.sent{margin:0;font-size:clamp(20px,2.4vw,30px);line-height:1.35}
+.w{display:inline-block;padding:0 10px;border:3px solid var(--c);transform:skewX(-8deg);line-height:1.2;white-space:nowrap}
+.w.mv{border-color:var(--t);background:var(--t);color:#fff}
+.w.foe{border-color:var(--nasty);color:var(--nasty-t)}.w.mine{border-color:var(--plot);color:var(--plot-t)}
+.st .res{grid-column:1;margin:0;font:600 16px/1.4 I;color:var(--ink2)}.st .res b{color:var(--ink)}
+.st .pic{grid-row:1 / span 2;grid-column:2;display:flex;align-items:center;gap:4px}
+.st .pic img{width:72px;height:72px;object-fit:contain}
+.st .pic i{font:800 20px/1 U;font-style:italic;color:var(--c)}
+.pri{display:inline-block;margin-right:8px;padding:2px 8px;background:var(--nasty);color:#fff;font:800 12px/1.5 I;letter-spacing:.06em;vertical-align:4px}
+.end{position:relative;margin-top:8px;padding:20px 0 0;border-top:3px solid var(--ink)}
+.end .n{position:absolute;left:-60px;top:16px;width:36px;height:36px;display:grid;place-items:center;background:var(--ink);color:var(--paper);font:800 17px/1 U;font-style:italic;transform:skewX(-10deg)}
+.end p{margin:0;font-size:clamp(24px,3vw,40px);line-height:1.1}.end p em{font-style:inherit;color:var(--plot)}
+.end small{display:block;margin-top:6px;font:600 15px/1.4 I;color:var(--ink2)}
+.watch{margin:24px 0 0;padding:12px 16px;border-left:6px solid var(--nasty);background:var(--card)}.watch b{color:var(--nasty-t)}
+.go{display:inline-block;margin:28px 0 0;padding:12px 28px;background:var(--go);color:#fff;font-size:clamp(17px,2.6vw,34px);transform:skewX(-8deg);box-shadow:6px 6px 0 var(--ink);text-decoration:none}
+.foot{margin:12px 0 0;font-size:13px;color:var(--ink2)}
+@media (max-width:699.98px){.wrap{padding:16px}.plan{padding-left:44px}.plan::before{left:14px}.st .n,.end .n{left:-44px;width:30px;height:30px;font-size:15px}
+ .st{grid-template-columns:minmax(0,1fr)}.st .pic{grid-row:auto;grid-column:1}.st .pic img{width:52px;height:52px}.sent{font-size:20px}.w{white-space:normal}}
+</style></head><body>
+<div class="wrap">
+  <span class="kick">BATTLE A TEAM · TEAM PREVIEW</span>
+  <h1 class="u">Bring these four. <em>Lead the pair.</em></h1>
+  <p class="lead">The plot for turn one, in the order the game runs it.</p>
+  <div class="sides">
+    <div class="sd you"><img src="../../../../app/src/v2/art/10035.webp" alt=""><img src="../../../../app/src/v2/art/445.webp" alt=""><span><small>Your lead</small><b>Mega Charizard Y + Garchomp</b></span></div>
+    <div class="sd them"><img src="../../../../app/src/v2/art/903.webp" alt=""><img src="../../../../app/src/v2/art/727.webp" alt=""><span><small>Their likely lead</small><b>Sneasler + Incineroar</b></span></div>
+  </div>
+  <section class="plan">
+    <h2 class="u">The plot, turn one.</h2>
+    <div class="st them"><span class="n">1</span>
+      <p class="sent u"><span class="pri">+3</span>Their <span class="w foe">Sneasler</span> opens with <span class="w mv" style="--t:var(--Normal)">Fake Out</span> on your <span class="w mine">Mega Charizard Y</span>.</p>
+      <p class="res"><b>A flinch, if they have it.</b> Protect blocks it. 172 Speed, but +3 priority goes first anyway.</p>
+      <span class="pic"><img src="../../../../app/src/v2/art/903.webp" alt=""><i>→</i><img src="../../../../app/src/v2/art/10035.webp" alt=""></span></div>
+    <div class="st them"><span class="n">2</span>
+      <p class="sent u"><span class="pri">+3</span>Their <span class="w foe">Incineroar</span> hits your <span class="w mine">Garchomp</span> with <span class="w mv" style="--t:var(--Normal)">Fake Out</span>.</p>
+      <p class="res"><b>A flinch, if they have it.</b> 80 Speed: second of the two Fake Outs.</p>
+      <span class="pic"><img src="../../../../app/src/v2/art/727.webp" alt=""><i>→</i><img src="../../../../app/src/v2/art/445.webp" alt=""></span></div>
+    <div class="st you"><span class="n">3</span>
+      <p class="sent u">Your <span class="w mine">Garchomp</span> answers with <span class="w mv" style="--t:var(--Ground)">Earthquake</span>, hitting both.</p>
+      <p class="res"><b>Up to 90% of Sneasler's HP</b>, 2HKO. 231 Speed. It may not move if Fake Out landed.</p>
+      <span class="pic"><img src="../../../../app/src/v2/art/445.webp" alt=""><i>→</i><img src="../../../../app/src/v2/art/903.webp" alt=""><img src="../../../../app/src/v2/art/727.webp" alt=""></span></div>
+    <div class="st you"><span class="n">4</span>
+      <p class="sent u">Your <span class="w mine">Mega Charizard Y</span> finishes <span class="w foe">Sneasler</span> with <span class="w mv" style="--t:var(--Fire)">Weather Ball</span> in sun.</p>
+      <p class="res"><b>75% chance to KO in one hit.</b> 167 Speed. Up to 113% of its HP.</p>
+      <span class="pic"><img src="../../../../app/src/v2/art/10035.webp" alt=""><i>→</i><img src="../../../../app/src/v2/art/903.webp" alt=""></span></div>
+    <div class="end"><span class="n">✓</span><p class="u">The plot holds. <em>Favoured.</em></p><small>Real games: 13,000 ladder battles. This lead won more than its players' rating predicted.</small></div>
+  </section>
+  <p class="watch"><b>Watch:</b> their Sneasler's Rock Slide can KO your Mega Charizard Y from turn 2.</p>
+  <a class="go u" href="#">CHANGE THEIR SIX.</a>
+  <p class="foot">Mock-up with the real plan the Battle page computes for the sample team; nothing here is built yet.</p>
+</div>
+<script>if (/night/.test(location.hash)) document.documentElement.classList.add('night')</script>
+</body></html>

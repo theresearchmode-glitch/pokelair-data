@@ -1,0 +1,87 @@
+From 2b8d017806cfe390993f5a3999597ae0618cb1a2 Mon Sep 17 00:00:00 2001
+From: Claude <noreply@anthropic.com>
+Date: Wed, 18 Nov 2026 08:43:17 +0000
+Subject: [PATCH 2/4] First visit: measured result of the late code (change 3)
+ in first-visit-nov18.md
+
+Slow 4G main content about 0.4 s sooner on Home and My Team; a new freeze of about 0.8 s at 4x CPU when v2-late.js runs.
+One-file build byte-identical (cmp, four build kinds); same text on all 29 pages; deep links and early taps checked.
+
+Claude-Session: https://claude.ai/code/session_01YGeTVQdFPaKNkn33jSEpxs
+---
+ docs/rebuild/research/first-visit-nov18.md | 62 ++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
+
+diff --git a/docs/rebuild/research/first-visit-nov18.md b/docs/rebuild/research/first-visit-nov18.md
+index 6f5cef30..6fe3359b 100644
+--- a/docs/rebuild/research/first-visit-nov18.md
++++ b/docs/rebuild/research/first-visit-nov18.md
+@@ -298,3 +298,65 @@ Checks (Wed Nov 18, 2:02 AM by the clock):
+ - `--public --one-art-size --split` builds (the switch's live build): v2.js is the same code as the one-file public build's script.
+ - `node app/test/no-names.mjs` on the split Preview: 2,166 player fields checked, 0 not an ID or stand-in (the same count as the
+   one-file build).
++
++## Built: change 3, the late code (Wed Nov 18, 3:42 AM by the clock)
++
++What was built (`--split` only; the one-file build is unchanged):
++- `app/parts-v2.json` "late": 26 files go in `dist/v2-late.js` (242 KB, 77 KB gzip). They are the code of Battle, Calc, Speed,
++  Meta, Usage, Sets, Types, Practice, Test run, Guide, Compare, Events, This Week, Track and the two share images, plus their data
++  (21-sets, 41-replay-data, 33-move-edits, 38-gauntlet-data, 63-practice-data, 63-weekly-data, 20-types-data).
++- Kept in the main script, because the start reads them (found by blocking v2-late.js and comparing every main page):
++  - `archetypes.js`: Home's Archetypes band calls `V2.arData`. This was the prototype's missing move names on Home.
++  - `box.js`: the Pokémon sheet calls `V2.shareTxt`.
++  - `31-box-data.js` and `winning.js`: the My Box and Archetypes pages, which draw from the main script.
++- `app/split-late.mjs`: esbuild does the scope work between the main closure and the late file (nothing guessed from the text).
++- `app/src/v2/late.js` (the loader):
++  - a late page shows the site's loading panel, asks for the file, then draws;
++  - a tap that needs late code before it arrives is held, then made again;
++  - otherwise the file is asked for when the page is idle after today's numbers, or at the first tap or key;
++  - if the file can't be loaded, a late page says "This page didn't load"; the rest of the site works.
++- Fixed while checking: the loader asked for the file during Home's start (V2.route() named the first page, a late one, before
++  Home was registered). Now the stand-in page's first draw asks.
++- Artifact files: +1 (v2-late.js). The Preview kit copies it and its README lists it.
++- Main script: 586 → 515 KB gzip (−71 KB). Smaller than the prototype's −121 KB: it dropped more files (Pokémon page, owner, auto-build,
++  share images, coverage), which the start needs or which feed main pages.
++
++Measured (fv.cjs: phone 412x823, 4x CPU, CDP 4G / slow 4G, 3 interleaved runs, local gzip server). Before = today's split Preview
++build (changes 1+2), after = the same with change 3. Load average 6.1-7.3 (4G sets) and 3.0-6.6 (slow 4G). Medians [min-max], ms:
++
++| Case | First paint | Main content | Longest task | Total blocking |
++|---|---|---|---|---|
++| My Team 4G | 580 → 536 | 2,706 [2,637-2,808] → 2,681 [2,579-2,795] | 332 → 776 | 1,104 → 1,808 |
++| My Team slow 4G | 1,476 → 1,484 | 8,266 [8,122-8,301] → 7,832 [7,775-7,851] | 383 → 355 | 1,302 → 1,160 |
++| Home 4G | 564 → 536 | 3,207 [2,831-3,616] → 2,697 [2,652-2,798] | 596 → 763 | 1,615 → 2,029 |
++| Home slow 4G | 1,480 → 1,480 | 8,175 [8,142-8,569] → 7,801 [7,764-7,896] | 577 → 540 | 1,334 → 1,340 |
++
++- In plain words: on slow 4G the first screen's content comes about 0.4 s sooner on both pages. On 4G Home is about 0.5 s sooner
++  (its "before" runs spread widely at load 6-7, so part of that is noise); My Team 4G is within the noise.
++- **New cost, measured:** when v2-late.js runs, the phone freezes once for about 750-850 ms at 4x CPU (a long task). On 4G it lands
++  about 0.6-1 s after the first screen; on slow 4G it falls after the 3 s the runs watched. Timed per file, it grows with each
++  file's size (battle.js 145 ms, calc.js 119 ms...), so it is the browser preparing the code, not the code's own work. The
++  one-file and before builds prepare the same code while the script downloads, off the main thread, so they don't show it.
++  Tried: the function in parentheses (Chrome's hint to prepare it early). The freeze stayed (a single 2-run set, noisy), so it was
++  not kept. Taps made during the freeze are not lost (held taps are made again), but they wait.
++  Options for Sim, not tried: ask for the file only at the first visit to a late page (no freeze on Home or My Team, but that first
++  visit waits for download plus about 0.8 s); or split the late code into 2-3 files (more files, smaller freezes).
++- Not measured: real phones, HTTP/2 on the Claude host, repeat visits.
++
++Checks (all on the build rebased onto d7a476bc):
++- One-file build byte-identical: `cmp` of the one-file page built at d7a476bc and with this change, for `--v2`, `--v2 --preview-data`,
++  `--v2 --art=v2art/ --preview-data --one-art-size` and `--v2 --public --one-art-size`: "cmp: identical" all four. So the tests and CI
++  see exactly what they saw before.
++- `PAGE=app/dist/v2.html node app/test/v2-minors.mjs` (the `--v2 --preview-data` page): "v2-minors:all passed", 205 pass, 0 FAIL.
++  The page is byte-identical to the one before the change, so the result is the same as before by construction.
++- Same text, all 29 pages at 1280 and 390, over http, late file arriving normally (same-all.cjs): 58 views, same innerText, 0 page or
++  console errors, 0 synchronous late loads. One run first showed My Team 1280 different: the one-file page was still "Working out
++  the best changes" when read. With 8 s to settle, My Team and Home matched at both widths. A control with v2-late.js missing
++  differed on every view checked (4 of 4), so the check can fail.
++- Start needs no late code (blocked.cjs: v2-late.js never answers): all 15 pages drawn from the main script give the same text and the
++  same page HTML as the one-file page, 30 views, 0 early loads, 0 errors.
++- Navigating before the file arrives, and cold deep links (nav.cjs, file held back 5 s): Home → Meta, Home → My Box, Home's Prep for
++  this team, News → an event's placings, My Team → Battle, cold `#calc`, `#speed`, `#pokemon=garchomp`, `#method=rating`: "all 9 cases:
++  same end state as the one-file page, 0 sync loads, 0 errors". Late pages showed the loading panel while held. With the file
++  answering 404: cold `#calc` says "This page didn't load."; Home draws as normal; no errors.
++- Not run: the behaviour harness (B-build) on the split build with `HTTP=1`.
+-- 
+2.43.0
+

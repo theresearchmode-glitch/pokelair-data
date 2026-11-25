@@ -1,0 +1,21 @@
+/* Base: the page, text and the few element defaults. No component looks here. */
+*,*::before,*::after{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+/* Sim, Nov 13: on desktop the page shifted when a page was short enough to need no scrollbar (My Box on a tall window): mouse screens
+   always keep the scrollbar's room. Touch screens (phones, iPad) have floating scrollbars, so they keep their layout untouched */
+@media (hover:hover) and (pointer:fine){html{scrollbar-gutter:stable}}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 var(--t16)/1.5 var(--b);-webkit-font-smoothing:antialiased;font-synthesis:style;font-variant-numeric:tabular-nums}
+body{background:var(--page-wash) fixed,var(--bg)}
+h1,h2,h3,h4,p,ul,ol,figure{margin:0}ul,ol{padding:0;list-style:none}
+img{display:block;max-width:100%}button{font:inherit;color:inherit;background:none;border:0;padding:0;cursor:pointer}
+a{color:inherit;text-decoration:none}
+:focus-visible{outline:3px solid var(--plot);outline-offset:3px}
+.u{font-family:var(--u);font-style:italic;font-weight:900;letter-spacing:-.02em;line-height:1.05}
+:root[data-theme="night"] .u{font-weight:800}
+.unit{font-size:var(--unit);color:var(--ink-2);letter-spacing:0;margin-left:2px;font-family:var(--b);font-style:normal;font-weight:600}
+.fine{font:400 var(--t13)/1.5 var(--b);color:var(--ink-3)}
+.nw{white-space:nowrap} /* a bracketed range like (0–100) never breaks after its dash */
+.vh{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+@media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+.np-skip:focus-visible{position:fixed;top:var(--s2);left:var(--s2);z-index:1000;width:auto;height:auto;clip:auto;overflow:visible;padding:var(--s3) var(--s4);background:var(--surface);color:var(--ink);font:700 var(--t15)/1.3 var(--b)} /* visible when a keyboard user lands on it (code review A1) */
+.np-main:focus,[data-pgfocus]:focus{outline:none}

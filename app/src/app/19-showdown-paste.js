@@ -33,15 +33,19 @@ function exportPaste() {
 }
 // Nature and stat points from a paste: 'EVs: 2 HP / 32 Atk / 32 Spe' (Champions stat points, 0-32 each) and 'Jolly Nature'.
 // Classic EVs (any value over 32) are converted at 8 EVs per stat point. Returns {nat, v: [hp, atk, def, spa, spd, spe]} or null.
+const okNat0 = nat => nat && typeof NATURES !== 'undefined' ? (NATURES.includes(nat) ? nat : ['Docile', 'Serious', 'Bashful', 'Quirky'].includes(nat) && NATURES.includes('Hardy') ? 'Hardy' : null) : null;
 function pasteSpread(lines) { const ev = (lines.find(l => /^EVs:/i.test(l)) || '').replace(/^EVs:\s*/i, ''), natL = lines.find(l => /^\w+\s+Nature\s*$/i.test(l));
   const nat = natL ? natL.replace(/\s+Nature\s*$/i, '').trim() : null, K = {hp: 0, atk: 1, def: 2, spa: 3, spd: 4, spe: 5}, v = [0, 0, 0, 0, 0, 0]; let any = false;
   for (const part of ev.split('/')) { const m = part.trim().match(/^(\d+)\s+(HP|Atk|Def|SpA|SpD|Spe)$/i); if (!m) continue; v[K[m[2].toLowerCase()]] = +m[1]; any = true; }
   // classic EVs (0-252) → stat points: 252 → 32, 4 → 1 (round to nearest), never over the total (Oct 30 audit: 252 became 31)
+  /* code review A2-M3: one stat over 32 used to make the whole line read as classic EVs ("EVs: 33 HP" -> 4 HP points); classic EVs only
+     when the total is also over what stat points allow; otherwise the line is stat points with a value too big, and it is skipped */
+  const capSP = typeof SP_TOTAL === 'number' ? SP_TOTAL : 66; if (v.some(x => x > 32) && v.reduce((a, b) => a + b, 0) <= capSP) return {nat: okNat0(nat), v, ev: true, over32: true};
   if (v.some(x => x > 32)) { for (let i = 0; i < 6; i++) v[i] = Math.min(32, Math.floor((v[i] + 4) / 8));
     const cap = typeof SP_TOTAL === 'number' ? SP_TOTAL : 66; let over = v.reduce((a, b) => a + b, 0) - cap;
     while (over > 0) { let k = -1; for (let i = 0; i < 6; i++) if (v[i] > 0 && v[i] < 32 && (k < 0 || v[i] < v[k])) k = i; if (k < 0) k = v.indexOf(Math.max(...v)); v[k]--; over--; } }
   /* the four other neutral natures (Docile, Serious, Bashful, Quirky) read as Hardy: the same stats, and the calc's list has Hardy (Nov) */
-  const okNat = nat && typeof NATURES !== 'undefined' ? (NATURES.includes(nat) ? nat : ['Docile', 'Serious', 'Bashful', 'Quirky'].includes(nat) && NATURES.includes('Hardy') ? 'Hardy' : null) : null;
+  const okNat = okNat0(nat);
   // ev: false when the paste has no readable EVs line (none at all, as on tournament team sheets, or one with nothing
   // parseable in it): the stat points are then assumed, not 0. "EVs: 0 HP" is a readable line, so it means 0.
   return any || okNat ? {nat: okNat, v, ev: any} : null; }
@@ -55,6 +59,17 @@ function pasteItemOK(it) { const NOT = ['Choice Band', 'Choice Specs', 'Assault 
   const known = new Set([...pool, ...legal, ...(typeof CALC_ITEMS !== 'undefined' ? CALC_ITEMS : []), ...extra]);
   return known.has(it); }
 const pnorm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+/* pre-launch check 6a (Nov 17): a typo ("Garchmp") was reported as "not on the M-C roster"; the closest roster name is offered instead,
+   when it is close enough (edit distance at most 2, or 3 for long names) and only one name is that close */
+function pasteSuggest(name) { const k = pnorm(name); if (k.length < 4) return null; const lim = k.length >= 9 ? 3 : 2; let best = null, bd = 99, tie = false;
+  const ed = (a, b) => { if (Math.abs(a.length - b.length) > lim) return 99; let prev = Array.from({length: b.length + 1}, (_, j) => j);
+    for (let i = 1; i <= a.length; i++) { const cur = [i]; for (let j = 1; j <= b.length; j++) cur[j] = Math.min(prev[j] + 1, cur[j - 1] + 1, prev[j - 1] + (a[i - 1] === b[j - 1] ? 0 : 1)); prev = cur; } return prev[b.length]; };
+  const seen = new Set(); for (const p of ROSTER) { if (p.m) continue; const d = p.d; if (seen.has(d)) continue; seen.add(d); const x = ed(k, pnorm(d));
+    if (x < bd) { bd = x; best = d; tie = false; } else if (x === bd && d !== best) tie = true; }
+  return bd <= lim && !tie ? best : null; }
+/* pre-launch check 6b: a block that reads like a sentence (no "@", no Ability or move lines, and a first line of 5+ words or over 30
+   characters) is not a Pokémon at all */
+const pasteProse = lines => lines.length && !lines.some(l => /^(-|Ability:|EVs:|IVs:|Level:|Tera Type:)/i.test(l) || / @ /.test(l)) && (lines[0].split(/\s+/).length >= 5 || lines[0].length > 30);
 function speciesFromPaste(name) {
   const k = pnorm(name); if (!k) return null;
   for (const p of ROSTER) if (pnorm(p.n) === k) return p;
@@ -67,25 +82,34 @@ function speciesFromPaste(name) {
 // Moves from the paste become that Pokémon's moves for the current format.
 function parsePaste(text) {
   const notes = [], slots = [], assumed = [];
-  const blocks = String(text || '').replace(/\r/g, '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean).slice(0, 6);
-  for (const b of blocks) {
+  const all = String(text || '').replace(/\r/g, '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+  // more than six in the paste (Sim, Nov 12: say so): the names of the ones left out, read from each extra block's first line
+  const nameOf = b => { const h = b.split('\n')[0].split(' @ ')[0].trim().replace(/\s*\([MF]\)\s*$/, ''), m = h.match(/\(([^()]{2,})\)\s*$/); return m ? m[1].trim() : h; };
+  /* stress test (Nov 16): blocks are read until six different Pokémon are in (a repeat no longer uses up one of the six), then the rest are "over" */
+  const over = [];
+  for (const b of all) { if (slots.length >= 6) { const n = nameOf(b); if (n) over.push(n); continue; }
     const lines = b.split('\n').map(l => l.trim()).filter(Boolean); if (!lines.length) continue;
     let head = lines[0], item = '';
     const at = head.lastIndexOf(' @ '); if (at >= 0) { item = head.slice(at + 3).trim(); head = head.slice(0, at).trim(); if (typeof canonItem === 'function') item = canonItem(item); }
     const female = /\(F\)\s*$/.test(head); head = head.replace(/\s*\((M|F)\)\s*$/, '');
     const paren = head.match(/\(([^()]+)\)\s*$/); const speciesName = paren ? paren[1] : head;
     let p = speciesFromPaste(speciesName);
-    if (!p) { notes.push(`Skipped "${speciesName}": not on the M-C roster`); continue; }
-    if (item && !p.m && /ite( [XYZ])?$|inite/.test(item)) { const mf = megaFormFor(p, {it: [[item, 100]]}); if (mf !== p) p = mf;
+    if (!p) { if (pasteProse(lines)) { notes.push(`Skipped "${lines[0].slice(0, 30)}${lines[0].length > 30 ? '…' : ''}": not a team`); continue; }
+      const sug = pasteSuggest(speciesName); notes.push(sug ? `Skipped "${speciesName}": did you mean ${sug}?` : `Skipped "${speciesName}": not on the ${regId()} roster`); continue; }
+    /* code review A2-M2: "Charizard-Mega-Y @ Charizardite X" kept Mega Y without a word; the form named wins, and the paste is told */
+    if (item && p.m && STONE_RE.test(item) && byName.get(p.b)) { const mf = megaFormFor(byName.get(p.b), {it: [[item, 100]]}); if (mf && mf.m && mf.n !== p.n) notes.push(`${p.d}: kept as named (${item} is for ${mf.d})`); }
+    if (item && !p.m && STONE_RE.test(item)) { const mf = megaFormFor(p, {it: [[item, 100]]}); if (mf !== p) p = mf;
       // Meowstic has a Mega for each gender: Showdown writes the female as "Meowstic-F" (stress test, Oct 28)
       if (p.n === 'Meowstic-M-Mega' && (female || pnorm(speciesName) === 'meowsticf') && byName.get('Meowstic-F-Mega')) p = byName.get('Meowstic-F-Mega'); }
     const abl = (lines.find(l => /^Ability:/i.test(l)) || '').replace(/^Ability:\s*/i, '').trim();
     // a Mega's ability is fixed by its form (Showdown pastes write the base form's), so it is filled in on import
     const ability = p.m ? (p.a[0] || null) : p.a.includes(abl) ? abl : null;
+    if (abl && !p.m && !ability) notes.push(`${p.d}: skipped ability "${abl}"`); /* stress test (Nov 16): a wrong Ability was dropped without a word; listed like a bad item or move */
     const learn = new Set((LEARN[p.n] || []).map(k => MV[k].name)), mv = [];
     for (const l of lines.filter(l => l.startsWith('-'))) { const name = l.replace(/^-\s*/, '').replace(/\s*\[.*\]$/, '').trim();
       const m = [...mvByName.values()].find(x => pnorm(x.name) === pnorm(name));
-      if (m && learn.has(m.name)) mv.push(m.name); else notes.push(`${p.d}: skipped move "${name}"`); }
+      if (m && learn.has(m.name) && mv.includes(m.name)) notes.push(`${p.d}: a second "${m.name}" left out`); /* code review A2-M1 */
+      else if (m && learn.has(m.name)) mv.push(m.name); else notes.push(`${p.d}: skipped move "${name}"`); }
     if (slots.some(s => byName.get(s.n).b === p.b)) { notes.push(`Skipped a second ${p.b} (one per species)`); continue; }
     const slot = {n: p.n, a: ability, lock: false};
     if (mv.length) { const c = mv.slice(0, 4); while (c.length < 4) c.push(''); slot.mv = {doubles: c}; }
@@ -94,12 +118,39 @@ function parsePaste(text) {
     const sp = pasteSpread(lines), spSum = sp ? sp.v.reduce((a, x) => a + x, 0) : 0;
     // a nature with no EVs line (team sheets list none): your nature with the most common stat points, marked as assumed (stress test, Oct 28)
     if (sp && !sp.ev) { slot.sp = {doubles: {nat: sp.nat, assumed: true}}; assumed.push(p.d); }
+    else if (sp && sp.over32) notes.push(`${p.d}: skipped stat points (one stat over 32)`);
     else if (sp && spSum > SP_TOTAL) notes.push(`${p.d}: skipped stat points (${spSum} in total; Champions allows ${SP_TOTAL})`); else if (sp) slot.sp = {doubles: {nat: sp.nat, v: sp.v}};
     slots.push(slot);
   }
   if (assumed.length) notes.push(`No stat points in the paste for ${assumed.join(', ')}: using the most common spread with your nature`);
-  return {slots, notes};
+  return {slots, notes, over};
 }
+// Import (paste), the data step shared by today's page and the new build (R4, Nov 11): {shared} for a NastyPlot team link (not loaded
+// yet), {error} when nothing could be read, or {msg} once the team was replaced (Undo kept).
+function importPaste(raw) { const sh = typeof decodeTeam === 'function' ? decodeTeam(raw) : null; if (sh) return {shared: sh};
+  const r = parsePaste(raw);
+  if (!r.slots.length) return {error: r.notes.length && r.notes.every(n => /: not a team$/.test(n)) ? "This doesn't look like a team. Paste the team text from Showdown or a team sheet, one Pokémon per block." /* 6b */
+    : r.notes.length ? (r.notes.join('. ') + '.').replace(/\?\./g, '?') : 'No Pokémon found. Paste the team text, one Pokémon per block.'};
+  keepUndo(); S.slots = normSlots(r.slots); S.loadedId = null; ui.paste = null;
+  const sk = r.notes.map(n => { const x = n.match(/^(.+?): skipped (item|move|ability) "(.+?)"/); return x ? `${x[3]} (${x[1]})` : null; }).filter(Boolean);
+  const skm = r.notes.map(n => { const x = n.match(/^Skipped "(.+?)": not on the [A-Z]-[A-Z] roster/); return x ? x[1] : null; }).filter(Boolean);
+  const typo = r.notes.map(n => { const x = n.match(/^Skipped "(.+?)": did you mean (.+?)\?$/); return x ? `${x[1]} (did you mean ${x[2]}?)` : null; }).filter(Boolean); /* 6a */
+  /* 6c (Nov 17): Item Clause: the same held item on two or more Pokémon is said at import (Team Checks also catches it later) */
+  const itc = {}; r.slots.forEach(sl => { const it = sl.it && sl.it.doubles; if (it) (itc[it] = itc[it] || []).push(byName.get(sl.n).d); });
+  const clash = Object.entries(itc).filter(([, a]) => a.length > 1);
+  /* stress test (Nov 16): a repeated Pokémon was dropped without a word (6 Incineroar: "Imported 1 Pokémon"), and a repeat past the sixth
+     block was blamed on "Only 6 fit"; repeats are now named as repeats, and "Only 6 fit" lists only the different Pokémon left out */
+  const got = new Set(r.slots.map(s => byName.get(s.n).b)), sp = n => { const p = speciesFromPaste(n); return p ? p.b : null; };
+  const dup = r.notes.map(n => { const x = n.match(/^Skipped a second (.+?) \(one per species\)/); return x ? ((byName.get(x[1]) || {}).d || x[1]) : null; }).filter(Boolean).concat((r.over || []).filter(n => got.has(sp(n))).map(n => (byName.get(sp(n)) || {}).d || n));
+  const over = (r.over || []).filter(n => !got.has(sp(n))), dupN = [...new Set(dup)];
+  const misc = r.notes.filter(n => /: a second "|: kept as named \(|: skipped stat points \(one stat over 32\)/.test(n)), megas = r.slots.filter(s => (byName.get(s.n) || {}).m).length;
+  return {msg: `Imported ${r.slots.length} Pokémon` + (typo.length ? `. Not found: ${typo.slice(0, 3).join(', ')}${typo.length > 3 ? ` and ${typo.length - 3} more` : ''}` : '') + (clash.length ? `. Item Clause: ${clash.map(([it, a]) => `${a.length} hold ${it} (${a.join(', ')})`).join('; ')}; only one of each item per team` : '') + (skm.length ? `. Not in ${regName()}, left out: ${skm.slice(0, 3).join(', ')}${skm.length > 3 ? ` and ${skm.length - 3} more` : ''}` : '')
+    + (sk.length ? `. Not in Champions, skipped: ${sk.slice(0, 3).join(', ')}${sk.length > 3 ? ` and ${sk.length - 3} more` : ''}` : '')
+    + (dup.length ? `. One of each Pokémon per team: left out ${dup.length} more ${dupN.slice(0, 3).join(', ')}${dupN.length > 3 ? ` and ${dupN.length - 3} others` : ''}` : '')
+    + (over.length ? `. Only 6 fit: left out ${over.slice(0, 3).join(', ')}${over.length > 3 ? ` and ${over.length - 3} more` : ''}` : '')
+    /* code review A2-M1..M4: a repeated move, a stone for another form, a stat over 32, more than one Mega: said, never silent */
+    + (misc.length ? `. ${misc.slice(0, 3).join('; ')}${misc.length > 3 ? ` and ${misc.length - 3} more` : ''}` : '')
+    + (megas > 1 ? `. ${megas} Megas: you can only Mega one per game` : '')}; }
 function renderPastePanel() {
   const el = $('pastePanel'); if (!ui.paste) { el.hidden = true; el.innerHTML = ''; return; }
   el.hidden = false;
@@ -114,4 +165,38 @@ function renderPastePanel() {
       <div id="pasteNotes" class="t2"></div>${typeof regNote === 'function' ? regNote() : ''}</div>`;
   }
 }
+// any list of slots (a saved team, a built team, six names): exported exactly as if it were your team, then put back
+function slotsPaste(slots) { const keep = S.slots, kf = S.format;
+  try { S.slots = normSlots(slots); S.format = 'doubles'; return exportPaste(); } finally { S.slots = keep; S.format = kf; } }
 
+// ---------- team sheets as Showdown text (moved unchanged from 56-showdown-copy.js, Nov 12: shared with the new build's Home) ----------
+const SD_NOTE_TOUR = "Some details weren't published — filled with the most common set";
+const SD_NOTE_BUILT = 'Moves, items and natures are the most common sets from real play';
+// one Pokémon block in Showdown's text format
+function sdBlock(x) { return [`${x.species}${x.item ? ' @ ' + x.item : ''}`, x.ability ? 'Ability: ' + x.ability : '', 'Level: 50', x.ev ? 'EVs: ' + x.ev : '', x.nature ? x.nature + ' Nature' : '', ...x.moves.filter(Boolean).map(m => '- ' + m)].filter(Boolean).join('\n'); }
+// the name Showdown wants: a Mega as its base form (Meowstic-F's Mega as Meowstic-F)
+function sdSpecies(p) { if (p.n === 'Meowstic-F-Mega') return 'Meowstic-F'; if (!p.m) return p.n; const base = byName.get(p.b); if (base && !base.m) return base.n;
+  /* a Mega whose base has another name on the roster (Mega Floette comes from Floette-Eternal): the form that turns into it with its stone */
+  const st = stoneFor(p), q = ROSTER.find(x => !x.m && megaFormFor(x, {it: [[st, 100]]}).n === p.n); return q ? q.n : p.n; }
+// a team sheet (from meta/events: {n, i, a, nt, mv}) as Showdown text; filled = a missing move or item came from common sets
+function sheetPaste(mons) { let filled = false;
+  const text = mons.map(m => { const p = byName.get(m.n); if (!p) return ''; const base = byName.get(p.b) || p;
+    let item = m.i || '';
+    // a Mega's stone is fixed by its form, so it is known even when the sheet left the item blank
+    if (!item && p.m) item = stoneFor(p);
+    if (!item) { const ti = topItems(p); if (ti && ti.it[0]) { item = ti.it[0][0]; filled = true; } }
+    // a Mega's paste carries the base form's ability (some sheets write the Mega's own; Showdown would reject that)
+    /* an ability the Pokémon can't have (a typo on the sheet) is treated as missing */
+    let ability = m.a && (p.m || p.a.includes(m.a)) ? m.a : '';
+    if (p.m && !base.a.includes(ability)) ability = metaAbility(base) || bestAbility(base);
+    if (!ability) { ability = metaAbility(p) || bestAbility(p); filled = true; }
+    /* a move the Pokémon can't learn in Champions (a typo on the sheet) is treated as missing, so Showdown accepts the team */
+    const learn = new Set((LEARN[p.n] || []).map(k => MV[k].name)), moves = (m.mv || []).filter(x => x && (!learn.size || learn.has(x))).slice(0, 4);
+    if (moves.length < 4) { for (const x of slotMoves({}, p).names.filter(Boolean)) if (moves.length < 4 && !moves.includes(x)) { moves.push(x); filled = true; } }
+    return sdBlock({species: sdSpecies(p), item, ability, nature: String(m.nt || '').normalize('NFD').replace(/[\u0300-\u036f]/g, ''), moves}); }).filter(Boolean).join('\n\n');
+  return {text, filled}; }
+function sdSheetFor(names, player) { const E = META.events && META.events.events || [], key = names.filter(Boolean).slice().sort().join('|'); let any = null;
+  for (const ev of E) for (const t of ev.top || []) if (t.mons.map(m => m.n).sort().join('|') === key) { if (!player || t.player === player) return t; any = any || t; }
+  return player ? null : any; }
+function sdNames(names, player) { const t = sdSheetFor(names, player); if (t) { const r = sheetPaste(t.mons); return {text: r.text, note: r.filled ? SD_NOTE_TOUR : ''}; }
+  return {text: slotsPaste(names.filter(n => byName.get(n)).map(n => ({n, a: null, lock: false}))), note: SD_NOTE_TOUR}; }

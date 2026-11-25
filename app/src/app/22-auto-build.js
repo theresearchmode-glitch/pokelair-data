@@ -105,7 +105,7 @@ function* provenBuildGen() {
     const src = `${c.n} players brought this exact team at Limitless events${c.g ? ` (${c.g.toLocaleString('en-US')} games)` : ''}, winning about ${Math.round(c.wr * 100)}% of them`;
     d.why.unshift(c.missing ? `${src}, with ${c.missing.d} where you have ${(t.find(m => !c.ps.some(p => p.b === m.p.b)) || {d: '?'}).d}` : src);
     { const ws = wxSetsOf(t); if (ws.length > 1) d.why.push(`Sets both ${ws.map(w => ARCH[w].name.toLowerCase()).join(' and ')}: each cancels the other, so lead with the one you want up`); }
-    d.proven = {n: c.n, wr: c.wr, g: c.g, swapped: !!c.missing}; return d; })};
+    d.proven = {n: c.n, wr: c.wr, g: c.g, swapped: !!c.missing, theirs: c.missing ? c.missing.d : null, ours: c.missing ? (t.find(m => !c.ps.some(p => p.b === m.p.b)) || {d: null}).d : null}; return d; })};
 }
 // The build runs as a generator so the page can draw between steps (audit, Oct 30: it froze phones for up to 17 s);
 // buildBest() runs it straight through for callers that need the result at once.
@@ -124,8 +124,8 @@ function* boxCatchGen(res) { const d = res.teams && res.teams[0]; if (!d || !d.m
   sw.sort((a, b) => b[0] - a[0]); let best = null;
   for (const [, i, p] of sw.slice(0, 12)) { yield; const nt = [...t.slice(0, i), abMember(p), ...t.slice(i + 1)]; if (megaCount(nt) !== megaCount(t) || wxConflict(nt) || wxUnmet(nt).length) continue; const g = gradeTeam(nt); if (g != null && (!best || g > best.g)) best = {g, p, out: t[i].p}; }
   if (!best || best.g < g0 + 3) return;
-  d.why = d.why || []; d.why.push(best.g >= 90 ? `To reach 90+ (Top tier): catch ${best.p.d} for ${best.out.d}. With it this team is ${CH.rankShort(CH.rankOfS(best.g)).toLowerCase()} of tournament teams`
-    : `Best single catch: ${best.p.d} for ${best.out.d}, which takes this team from ${Math.round(g0)} to ${Math.round(best.g)} (${CH.rankShort(CH.rankOfS(best.g)).toLowerCase()} of tournament teams)`);
+  d.why = d.why || []; d.why.push(best.g >= 90 ? `To reach 90+ (Top tier): catch ${best.p.d} for ${best.out.d}.${CH.rankShort(CH.rankOfS(best.g)) ? ` With it this team is ${CH.rankShort(CH.rankOfS(best.g)).toLowerCase()} of tournament teams` : ''}`
+    : `Best single catch: ${best.p.d} for ${best.out.d}, which takes this team from ${Math.round(g0)} to ${Math.round(best.g)}${CH.rankShort(CH.rankOfS(best.g)) ? ` (${CH.rankShort(CH.rankOfS(best.g)).toLowerCase()} of tournament teams)` : ''}`);
   d.boxCatch = {p: best.p.n, out: best.out.n, g0, g: best.g}; }
 function* buildBestGen0() {
   // "Build around it": proven teams that ran the Pokémon come first, but only those that score 50+; the search below
@@ -237,7 +237,7 @@ function* buildBestGen_() {
       for (const [, nt, i, p] of sw.slice(0, 12)) { yield; const G = abGradeC(nt); if (G && G.g >= 90 && (!best || G.g > best.g)) best = {g: G.g, p, out: t[i].p}; }
       if (best) teamsOut[0].why.push(`To reach 90+ (Top tier): catch ${best.p.d} for ${best.out.d}. With it this team scores ${Math.round(best.g)}`); } }
     return {fmt, teams: teamsOut};
-  } finally { abMemo = null; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); threatCache = {key: null, list: null}; }
+  } finally { abMemo = null; vCache = new Map(); pmCache = new Map(); setCache = new Map(); pairCache = new Map(); relCache = new Map(); threatCache = {key: null, by: {}}; }
 }
 // Everything the card shows about one built team.
 function abDescribe(t) {
@@ -306,15 +306,19 @@ function runAutoBuild() {
     try { res = await abDrive(buildBestGen(), id); } catch (e) { fail(e); return; }
     if (id !== abRunId || res === undefined) return;
     if (abKey() !== key) { runAutoBuild(); return; }
+    if (res && res.teams && res.teams.length && !OFFMETA && !ui.abLock) res.freshPending = true; /* set before the first draw (Nov 15) */
     ui.ab = {doubles: res}; render();
     if (!res || !res.teams || !res.teams.length || OFFMETA || ui.abLock) return;
     const n0 = res.teams.length, copy = {...res, teams: res.teams.slice()}; let withFresh;
-    try { withFresh = await abDrive(addFreshTakeGen(copy), id); } catch (e) { return; }
-    if (id !== abRunId || !withFresh || abKey() !== key || withFresh.teams.length === n0 || !ui.ab || ui.ab.doubles !== res) return;
-    const fresh = withFresh.teams.find(t => t.fresh); if (!fresh) return;
+    // Nov 15 (new site): freshPending lets the page hold a row for the fresh take, so nothing jumps when it slots in; cleared on every way out
+    const done = () => { res.freshPending = false; if (id === abRunId && typeof V2 === 'object' && V2.redraw && typeof view === 'undefined') V2.redraw(); };
+    try { withFresh = await abDrive(addFreshTakeGen(copy), id); } catch (e) { done(); return; }
+    if (id !== abRunId || !withFresh || abKey() !== key || withFresh.teams.length === n0 || !ui.ab || ui.ab.doubles !== res) { done(); return; }
+    const fresh = withFresh.teams.find(t => t.fresh); if (!fresh) { done(); return; } res.freshPending = false;
     // option 2 if you're still on option 1; otherwise it joins the end so the one you're looking at doesn't move
     if (((ui.abIdx && ui.abIdx.doubles) || 0) === 0) res.teams.splice(1, 0, fresh); else res.teams.push(fresh);
-    if (view === 'auto') renderAutoBuild(); }, 30);
+    // today's page redraws its Build view; the new build (no `view`) redraws its page (Nov 12: it threw "view is not defined")
+    if (typeof view !== 'undefined') { if (view === 'auto') renderAutoBuild(); } else if (typeof V2 === 'object' && V2.redraw) V2.redraw(); }, 30);
 }
 // Add a "fresh take" as option 2: a team built with off-meta scoring, on power and fit (at most 2 meta staples),
 // kept only if it passes nearly as many winning-team checks as the proven build and isn't the same team.
@@ -322,7 +326,8 @@ function addFreshTake(res) { return genRun(addFreshTakeGen(res)); }
 function* addFreshTakeGen(res) {
   if (OFFMETA || ui.abLock || !res || !res.teams || !res.teams.length) return res;
   // the off-meta search runs with off-meta scoring switched on only while each of its steps runs (never while the page draws)
-  let alt = null; try { const g = buildBestGen(); while (true) { const keep = OFFMETA; OFFMETA = true; let r; try { r = g.next(); } finally { OFFMETA = keep; } if (r.done) { alt = r.value; break; } yield; } } catch (e) { alt = null; }
+  // code review B4: when the build is cancelled mid-way, close the inner search too so its own clean-up (tsMemoB, abMemo) runs
+  let alt = null; const g = buildBestGen(); try { while (true) { const keep = OFFMETA; OFFMETA = true; let r; try { r = g.next(); } finally { OFFMETA = keep; } if (r.done) { alt = r.value; break; } yield; } } catch (e) { alt = null; } finally { try { g.return(); } catch (e) {} }
   if (!alt || !alt.teams || !alt.teams.length) return res;
   const best = res.teams[0], names = new Set(best.mons.map(m => m.n));
   // a fresh take must still be a good team (Oct 28 audit: one scored 15): ready for 60%+ of the top threats and within 10 of the best option

@@ -1,8 +1,7 @@
 // ---------- Team page: lineup banner (Option B) ----------
 // The whole six at a glance, the verdict as a badge, and the numbers that matter. Tap a sprite to jump to its card.
 const shortHead = h => !h ? 'Keep building' : /keep building/i.test(h) ? 'Keep building' : h;
-function teamTitleFor(ms) { const loaded = S.teams.find(t => t.id === S.loadedId); if (loaded) return loaded.name;
-  let lb = ''; try { const a = teamArchetype(ms); lb = a && a.label ? a.label : ''; } catch (e) {} return lb || 'Your team'; }
+/* teamTitleFor lives in 30-saved-data.js (Nov 11) */
 function renderTeamHero(ms) { const el = $('teamHero'); if (!el) return; if (!ms.length) { el.hidden = true; el.innerHTML = ''; return; }
   const v = ui.vsum || {}, lvl = v.lvl || 'mid', stats = [];
   if (v.RD) stats.push([v.RD.score + '%', 'ready for top threats', '']);

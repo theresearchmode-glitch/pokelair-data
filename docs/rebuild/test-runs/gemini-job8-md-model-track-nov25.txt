@@ -1,0 +1,961 @@
+GEMINI JOB 8 — Reg M-D day one for the model, ratings history and Track Record (G3, G4, G11, 0.8)
+Repo: theresearchmode-glitch/pokelair-data (main at 25c3464b)
+Reviewer: Neon (Gemini) | Date: 2026-11-24
+
+====================================================================
+1. VERDICT
+====================================================================
+needs fixes before switch day (2026-12-02T01:59:00Z / 2026-12-01 8:59 PM Eastern) — all four gaps (G3, G4, G11, 0.8) would otherwise mix M-C and M-D data or raise false alarms on switch day:
+- G3: model.mjs exits 1 on !ships and keeps M-C out/model.json; model-guard.mjs rejects day-1 M-D and restores M-C from git HEAD; six.mjs, ctr.mjs, and leads.mjs do not verify matching regulations before mutating out/model.json.
+- G4: ratings-snapshot.mjs, scoreboard.mjs, and track.mjs store flat unpartitioned history, grading M-C snapshots on M-D games and comparing M-D metrics against M-C's 14-day median.
+- G11: health.mjs enforces mature-meta size/count floors on day 1 of M-D and alerts on missing perf sub-tables, failing the run on the switch itself.
+- 0.8: out/regstate.json is not produced anywhere in the pipeline.
+
+All fixes below are minimal, preserve M-C history, never mix regulations, and pass all 22 Node tests in experiments/md-day-one-test.mjs (checked by running Node on temp out/ trees; Playwright browser execution in ratings-snapshot.mjs and unseen page readers in app/ were not run/not checked).
+
+====================================================================
+2. GAP TABLES (file:line | today | after)
+====================================================================
+
+--- Gap G3: Model & Guards ---
+file:line | today | after
+model.mjs:12-14,220,236-238 | Reads matches.json without reg; crashes or exits 1 on !ships if M-C model.json exists on disk, leaving M-C model in out/model.json | Reads curReg = M.reg || activeReg().id; when G.length===0 or events<5 (or !ships with no same-reg prev), writes stamped not-ready {reg, ships:false, games, events, mons:{}} and exits 0; only keeps prev on !ships when prevReg === curReg
+model-guard.mjs:9-33 | Compares out/model.json against git HEAD (M-C on switch day); requires 250+ mons, team factors, calib 0.6-1.2, dist, l1<0.693, rho>=0.85; restores M-C model on failure | Ignores prev from a different reg; accepts !now.ships when no same-reg shipped prev exists (exits 0); never restores M-C prev over an M-D model
+six.mjs:10-13 | Checks only !MD.ships || !MD.mons; fits M-D matches onto M-C model if model.mjs was skipped | Checks mReg === mdReg === activeReg().id before fitting; skips cleanly (exit 0) on mismatch
+ctr.mjs:8-11 | Checks only !MD.ships || !MD.mons; fits M-D matchups onto M-C model if model.mjs was skipped | Checks mReg === mdReg === activeReg().id before fitting; skips cleanly (exit 0) on mismatch
+leads.mjs:7-10 | Reads replays.json without checking format/reg or model reg; writes M-C leads into M-D model.json | Checks (R0.reg || sdReg(R0.format)) === (MD.reg || SITE_REG.id) === activeReg().id; skips cleanly (exit 0) on mismatch
+
+How META.model is read (checked in files shown vs unseen page reader):
+- six.mjs:13 & ctr.mjs:11: check `if (!MD.ships || !MD.mons)` -> both treat `{reg, ships:false, games, events, mons:{}}` as "not shipped" and exit 0 cleanly.
+- scoreboard.mjs:12,16: checks `M && M.eval` and `M && M.ships` -> skips model and teamStrengthOnEvents cleanly when `!ships`.
+- ratings-snapshot.mjs:13: passes `rd('model.json')` as `'meta/model'` into `app/dist/page.html`.
+- Page reader (`app/...` / `13-rating.js` / team grader): NOT CHECKED (no `app/` files were included in Job 8). HH should confirm the page treats `META.model.ships === false` as "no model" (same as `null`).
+
+--- Gap G4: Ratings History, Scoreboard & Track Record ---
+file:line | today | after
+ratings-snapshot.mjs:18-20 | Appends {d, r} into flat out/ratings_log.json `days[]`, mixing M-C and M-D snapshots | Migrates legacy `days` to `byReg[SITE_REG.id]`, appends {d, r} only to `byReg[reg]`, writes `{reg, updated, byReg}`
+scoreboard.mjs:11-49 | Grades flat ratings_log.days against matches.json without reg check; compares M-D against M-C 14-day median in `history[]` | Gates M, E, MM, R by reg; grades only `byReg[reg]`; stores `byReg[reg]` in scoreboard.json so 14-day median only compares same-reg days
+track.mjs:16-50 | Carries prev.ev (M-C) into M-D; grades M-C snapshots against M-D events; exits 0 leaving M-C track.json if no snapshots | Archives previous reg's track.json to `out/track_<prevReg>.json`; reads only `byReg[reg]` snapshots, same-reg E.events, and `SB.byReg[reg]`; writes empty stamped track.json when 0 snapshots exist
+
+What the page needs to read G4 outputs (app/ not checked):
+- `out/ratings_log.json`: if the page reads this directly, read `data.byReg[reg]` (falling back to `data.days` for legacy).
+- `out/scoreboard.json`: still exposes `today` and `history` for the active regulation `reg`, plus `byReg[reg]` for history.
+- `out/track.json` (`meta/track`): stays single-regulation for the active reg (`{v:1, reg, ...}`), keeping it under the 240 KB Firestore cap; M-C's frozen Track Record is preserved in `out/track_M-C.json` (if the page ever links to M-C history, wire a reader for `track_M-C.json`).
+
+--- Gap G11: Health Floors (First 14 Days of New Regulation) ---
+file:line | today | after
+health.mjs:19-53 | Fixed steady-state byte/count floors (limitless >=50KB & teams>0, meta_tour >=10, teams >=5, history >=2d, model >=5KB, events >=5, perf requires tour+adj, practice >=20) | Computes `regDay` (from `regstate.json` or `reg.json.since`, Day 1 = `since`). For `regDay <= 14` (`inLaunch`), stamped same-reg valid JSON >=20B (80B for model.json) passing relaxed array/object shape is marked `🟡 thin` (exit 0); missing/corrupt JSON, wrong `reg`, stale date, `data/index.json` >4d, or 2-day skip still exit 1
+health.mjs:57-63 | Alarms if perf.json lacks `tour`, `adj`, `smogon`, `ladder`, or `outside` | During `inLaunch` (days 1-14), missing perf sub-tables are allowed (thin); if present, their `updated` date is still checked for staleness
+
+Exact G11 numbers & why:
+- Launch window: `regDay >= 1 && regDay <= 14` (matches prompt & `docs/reg-md-plan.md` 0.9; M-C -> M-B switch took ~12 days to reach 20 events / 1,200 players).
+- Thin byte floors during days 1-14: `20` bytes for JSON objects/arrays (`limitless.json`, `meta_tour.json`, `teams.json`, `history.json`, `meta_ladder.json`, `events.json`, `official.json`, `perf.json`, `practice.json`, `weekly.json`, `track.json`, `sources.json`, `crosscheck.json`, `ratings_log.json`, `scoreboard.json`) and `80` bytes for `model.json` (`{reg, updated, ships:false, games, events, mons:{}}`). This catches truncated/empty files (0 bytes or invalid JSON) while allowing empty-but-stamped day-1 skeletons.
+- Unchanged outage alarms (active on Day 1-14):
+  - `age(date) > days` (e.g. `limitless.json` > 2 days old -> Limitless/update.mjs stalled).
+  - `data/index.json` newest tournament > 4 days old (Limitless down globally).
+  - `skips.json` same step skipped 2 days in a row (step crashing repeatedly).
+  - `stampOf(d) !== REG` (old regulation file leaked into `out/`).
+  - `split/index.json` missing or any part > 240,000 bytes.
+
+--- Phase 0.8: Thin-Data Counts (out/regstate.json) ---
+file:line | today | after
+regstate.mjs (new) | No `out/regstate.json` exists | Writes `{reg, day, events, players, games, since, updated}` using activeReg() and same-reg matches.json (fallback to reg.json `seen[reg]` for events/players)
+.github/workflows/update.yml:78 | Runs perf.mjs then crosscheck.mjs | Runs `node regstate.mjs || node skip.mjs "regstate skipped"` right after perf.mjs (after matches.json is built, before Commit and health.mjs)
+
+====================================================================
+3. FINDINGS TABLE
+====================================================================
+# | finding | severity | file:line | checked/not checked | fix?
+1 | model.mjs exits 1 on !ships when M-C model.json exists on disk, leaving M-C model in out/model.json on switch day (G3) | MIXES-REGS | model.mjs:14,236-238 | checked (code inspection + md-day-one-test.mjs #4,#16) | Diff 1
+2 | model-guard.mjs compares day-1 M-D model against git HEAD M-C model and restores M-C model on failure (G3) | MIXES-REGS | model-guard.mjs:11-32 | checked (code inspection + md-day-one-test.mjs #5,#17,#22) | Diff 2
+3 | six.mjs & ctr.mjs do not verify matches.json and model.json share the active reg before mutating model.json (G3) | MIXES-REGS | six.mjs:12-13, ctr.mjs:10-11 | checked (code inspection + md-day-one-test.mjs #6,#7) | Diffs 3, 4
+4 | leads.mjs does not verify replays.json format/reg matches model.json reg before writing MD.leads (G3) | MIXES-REGS | leads.mjs:9-10 | checked (code inspection + md-day-one-test.mjs #8) | Diff 5
+5 | ratings-snapshot.mjs stores flat days[] without reg, mixing M-C and M-D snapshots (G4) | MIXES-REGS | ratings-snapshot.mjs:18-20 | checked (code inspection; Playwright run not run) | Diff 6
+6 | scoreboard.mjs grades M-C snapshots on M-D games and compares M-D metrics against M-C 14-day median (G4) | MIXES-REGS | scoreboard.mjs:11-49 | checked (code inspection + md-day-one-test.mjs #10,#18,#21) | Diff 7
+7 | track.mjs carries M-C prev.ev into M-D, grades M-C snapshots on M-D events, and leaves M-C track.json if 0 M-D snapshots (G4) | MIXES-REGS | track.mjs:16-49 | checked (code inspection + md-day-one-test.mjs #9,#20) | Diff 8
+8 | health.mjs enforces mature-meta size/count floors and perf sub-table presence during first 14 days of a new reg (G11) | BLOCKS-LIVE | health.mjs:25-63 | checked (code inspection + md-day-one-test.mjs #2,#11-14,#19) | Diff 9
+9 | No step writes out/regstate.json for thin-data counts (0.8) | WRONG-TEXT | .github/workflows/update.yml:78 | checked (code inspection + md-day-one-test.mjs #1,#15) | New file regstate.mjs + Diff 10
+10 | crosscheck.mjs:59 hardcodes "Pikalytics Reg M-C" in theirsName (already noted in Job 4 / G1; out of scope for G3/G4/G11) | WRONG-TEXT | crosscheck.mjs:59 | checked (code inspection) | report only (G1)
+
+====================================================================
+4. NEW FILES & DIFFS (each with S3 proof)
+====================================================================
+
+--- New File: regstate.mjs (0.8) ---
+S3 Proof (checked via md-day-one-test.mjs cases 1 & 15):
+  input: regObj={id:'M-D', since:'2026-12-02'}, matches={reg:'M-D', events:[5], players:220, m:[40 games]}, today='2026-12-04' (UTC)
+  -> old: no out/regstate.json written
+  -> new: {reg:'M-D', day:3, events:5, players:220, games:40, since:'2026-12-02', updated:'...'}
+
+----- BEGIN regstate.mjs -----
+// Thin-data counts for the active regulation (Phase 0.8, Nov 24): writes out/regstate.json
+// ({reg, day, events, players, games, since, updated}) so pages can show "Day N of Reg M-D: X events so far".
+import fs from 'node:fs';
+import {pathToFileURL} from 'node:url';
+import {activeReg, readReg} from './formats.mjs';
+
+const rd = f => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return null; } };
+
+export function buildRegState({regObj, rawReg, matches, today} = {}) {
+  const RG = regObj || activeReg();
+  const R = rawReg !== undefined ? rawReg : readReg();
+  const d = today || new Date().toISOString().slice(0, 10);
+  const since = (RG && RG.since) || d;
+  const t0 = Date.parse(since + 'T12:00:00Z'), t1 = Date.parse(d + 'T12:00:00Z');
+  const day = isFinite(t0) && isFinite(t1) ? Math.max(1, Math.floor((t1 - t0) / 864e5) + 1) : 1;
+  const mOk = matches && (!matches.reg || matches.reg === RG.id);
+  const seen = R && R.seen && R.seen[RG.id];
+  const events = mOk && Array.isArray(matches.events) ? matches.events.length : (seen ? +seen.events || 0 : 0);
+  const players = mOk && typeof matches.players === 'number' ? matches.players : (seen ? +seen.players || 0 : 0);
+  const games = mOk && Array.isArray(matches.m) ? matches.m.length : 0;
+  return {reg: RG.id, day, events, players, games, since, updated: new Date().toISOString()};
+}
+
+if (import.meta.url === pathToFileURL(process.argv[1] || '').href) {
+  const out = buildRegState({matches: rd('out/matches.json')});
+  fs.writeFileSync('out/regstate.json', JSON.stringify(out));
+  console.log(`regstate: ${out.reg} day ${out.day} (since ${out.since}), ${out.events} events, ${out.players} players, ${out.games} games`);
+}
+----- END regstate.mjs -----
+
+--- Diff 1: model.mjs (G3) ---
+S3 Proof:
+  input: out/matches.json {reg:"M-D", events:[], m:[]} with yesterday's out/model.json {reg:"M-C", ships:true, mons:{...}}
+  -> old: model.mjs:237 sees !ships && prev.ships, exits 1 without writing, leaving M-C model in out/model.json
+  -> new: model.mjs writes {reg:"M-D", ships:false, games:0, events:0, mons:{}, ...} and exits 0 (verified in md-day-one-test.mjs cases 4 & 16)
+
+--- a/model.mjs
++++ b/model.mjs
+@@ -9,9 +9,18 @@
+ // rarely used Pokémon with one fixed set could pile up credit across 5 set features (Mega Camerupt rated as the best
+ // Pokémon in the game). Also ships the held-out calibration slope and the spread of real teams, so the page can score a
+ // team against real tournament teams instead of a fixed range that any odd team could max out.
+-import fs from 'node:fs'; import {pilotTest} from './pilot.mjs'; import {deckBasics} from './team-basics.mjs';
++import fs from 'node:fs'; import {pilotTest} from './pilot.mjs'; import {deckBasics} from './team-basics.mjs'; import {activeReg, SITE_REG} from './formats.mjs';
+ const M = JSON.parse(fs.readFileSync(process.env.MATCHES || 'out/matches.json', 'utf8')); // MATCHES=file: experiments (e.g. out/matches_ab.json)
+-const teams = M.teams.map(k => k.split('|')), G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1]);
++const curReg = M.reg || activeReg().id;
++const teams = (M.teams || []).map(k => k.split('|')), G = (M.m || []).filter(g => g[2] !== .5 && g[0] !== g[1]);
++// On early days of a new regulation (0 games or too few events to split/fit), write a stamped not-ready model instead of keeping an old regulation's model
++{ const dest = process.env.MODEL_OUT || (process.env.TRAIN_ONLY === '1' ? 'out/model_train.json' : 'out/model.json');
++  let prev = null; try { prev = JSON.parse(fs.readFileSync(dest, 'utf8')); } catch (e) {}
++  const prevReg = prev && (prev.reg || SITE_REG.id);
++  if (G.length === 0 || (M.events || []).length < 5) {
++    if (prev && prev.ships && prev.mons && prevReg === curReg) { console.log(`model: NOT shipped today (${G.length} games), so ${dest} keeps the previous ${curReg} model`); process.exit(1); }
++    fs.writeFileSync(dest, JSON.stringify({reg: curReg, updated: new Date().toISOString(), ships: false, games: G.length, events: (M.events || []).length, v: 3, mons: {}, pairs: {}, sets: {}, note: 'too few games to fit model yet'}));
++    console.log(`model: ${curReg} not ready (${G.length} games, ${(M.events || []).length} events); wrote stamped not-ready model`); process.exit(0); } }
+ const monIx = new Map(), mons = [];
+ teams.flat().forEach(n => { if (!monIx.has(n)) { monIx.set(n, mons.length); mons.push(n); } });
+ // pair features: pairs on 30+ distinct teams in games
+@@ -217,7 +226,7 @@
+ const dist = (() => { if (!F) return null; const last = GF.reduce((a, g) => evDates[g[3]] > a ? evDates[g[3]] : a, ''), since = new Date(new Date(last).getTime() - 45 * 864e5).toISOString().slice(0, 10);
+   const seenTD = new Set(), xs = []; for (const [A, B, , ev, , , , dA, dB] of GF) { if (evDates[ev] < since) continue; for (const [t, d] of [[A, dA], [B, dB]]) { const k = t + ',' + d; if (seenTD.has(k)) continue; seenTD.add(k); { const dv = xClamp(t, d) - meanX; xs.push(meanX + (dv > 0 ? dv * credit(t) : dv)); } } }
+   xs.sort((a, b) => a - b); return {since, n: xs.length, q: Array.from({length: 101}, (_, i) => +xs[Math.round(i / 100 * (xs.length - 1))].toFixed(4))}; })();
+-const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: useSets ? LC.lc : null, eval: ev, games: G.length, events: M.events.length,
++const out = {reg: curReg, updated: new Date().toISOString(), ships, shrink: K, setShrink: useSets ? LC.lc : null, eval: ev, games: G.length, events: M.events.length,
+   note: 'x(team) = sum of mons + sum of pairs + sum over each member\'s set features of coef * (has − setFreq) ("Mon@Item", "Mon:Move"); P(A beats B) = 1/(1+exp(-calib*(x(A)-x(B)))). Player skill removed. meanX = average tournament team; dist = percentiles of x over real teams in the last 45 days.',
+   meanX: +meanX.toFixed(4), v: 3, half: HALF || null, teamHalf: TEAM_HALF != null ? TEAM_HALF : (HALF || null), ...(TEAM_PRIOR ? {teamPrior: TEAM_PRIOR} : {}), center: !!useSets, calib: +calib.toFixed(3), dist, setRange, supK: SUP_K, tested: [...tested].sort(),
+   setFreq: F && useSets ? Object.fromEntries(setNames.map((k, j) => [k, +freq[j].toFixed(3)])) : {},
+@@ -234,7 +243,8 @@
+   pilot: TRAIN_ONLY ? {} : pilotTest(M)};
+ // never replace a working model with an unshipped one (the daily job keeps yesterday's; update.yml reports the skip)
+ { const dest = process.env.MODEL_OUT || (TRAIN_ONLY ? 'out/model_train.json' : 'out/model.json'); let prev = null; try { prev = JSON.parse(fs.readFileSync(dest, 'utf8')); } catch (e) {}
+-  if (!ships && prev && prev.ships && prev.mons) { console.log(`model: NOT shipped today, so ${dest} keeps the previous model (from ${String(prev.updated || '').slice(0, 10)})`); process.exit(1); }
++  const prevReg = prev && (prev.reg || SITE_REG.id);
++  if (!ships && prev && prev.ships && prev.mons && prevReg === curReg) { console.log(`model: NOT shipped today, so ${dest} keeps the previous ${curReg} model (from ${String(prev.updated || '').slice(0, 10)})`); process.exit(1); }
+   fs.writeFileSync(dest, JSON.stringify(out)); }
+ console.log(`calibration slope ${calib.toFixed(3)} · real-team spread p50 ${dist && dist.q[50]} p99 ${dist && dist.q[99]}`);
+ console.log(`model: ${ships ? 'ships' : 'NOT shipped (no better than raw win rates)'}, ${mons.length} Pokémon, ${pairs.length} pairs, ${useSets ? Object.keys(out.sets).length + ' set features' : 'no set features (they did not help)'}, ${((Date.now() - t0) / 1000).toFixed(0)}s`);
+
+--- Diff 2: model-guard.mjs (G3) ---
+S3 Proof:
+  input: out/model.json {reg:"M-D", ships:false, games:0} + GUARD_PREV=M-C model
+  -> old: model-guard.mjs:14-32 fails (<250 mons, no team/calib/dist/eval), restores M-C model over out/model.json, exits 1
+  -> new: ignores M-C prev (reg mismatch), accepts not-ready M-D model (exits 0); if a shipped M-D model is broken (<250 mons), exits 1 without restoring M-C (cases 5, 17, 22)
+
+--- a/model-guard.mjs
++++ b/model-guard.mjs
+@@ -6,10 +6,14 @@
+ //   2. accuracy: held-out calibrated log-loss not worse than yesterday's by more than 0.005, and better than a coin flip (0.693)
+ //   3. stability: the 200 most-played real sixes keep their order (rank correlation 0.85+ between yesterday's and today's strength)
+ // GUARD_PREV=&lt;file&gt; compares with that file instead of git's committed copy (for tests).
+-import fs from 'node:fs'; import {execSync} from 'node:child_process';
++import fs from 'node:fs'; import {execSync} from 'node:child_process'; import {activeReg, SITE_REG} from './formats.mjs';
+ const F = 'out/model.json', now = JSON.parse(fs.readFileSync(F, 'utf8'));
+ let prevTxt = null; try { prevTxt = process.env.GUARD_PREV ? fs.readFileSync(process.env.GUARD_PREV, 'utf8') : execSync('git show HEAD:' + F, {encoding: 'utf8', maxBuffer: 64e6}); } catch (e) {}
+-const prev = prevTxt ? JSON.parse(prevTxt) : null, bad = [];
++const rawPrev = prevTxt ? JSON.parse(prevTxt) : null, curReg = now.reg || activeReg().id, prevReg = rawPrev && (rawPrev.reg || SITE_REG.id);
++const prev = rawPrev && prevReg === curReg ? rawPrev : null, bad = [];
++if (rawPrev && !prev) console.log(`model guard: ignoring previous ${prevReg} model (active ${curReg})`);
++if (!now.ships) { if (prev && prev.ships) { console.log(`::warning::model guard: ${curReg} model did not ship -> kept previous ${curReg} model`); fs.writeFileSync(F, prevTxt); process.exit(1); }
++  console.log(`model guard: ${curReg} not ready (${now.games || 0} games, ${now.events || 0} events); no previous ${curReg} model, accepted`); process.exit(0); }
+ // 1. complete
+ if (Object.keys(now.mons || {}).length < 250) bad.push(`only ${Object.keys(now.mons || {}).length} Pokémon`);
+ for (const k of ['noMega', 'protectLow']) if (!(now.team && now.team[k] < 0)) bad.push(`team factor ${k} missing or not negative (${now.team && now.team[k]})`);
+
+--- Diff 3: six.mjs (G3) ---
+S3 Proof:
+  input: out/matches.json {reg:"M-D"} + out/model.json {reg:"M-C", ships:true}
+  -> old: six.mjs:12-34 fits M-D games against M-C model and writes M-D sixes into M-C model.json
+  -> new: logs "six: reg mismatch (matches M-D, model M-C, active M-D), skipped" and exits 0 without mutating model.json (case 6)
+
+--- a/six.mjs
++++ b/six.mjs
+@@ -7,9 +7,11 @@
+ // good on log-loss as no record at all and a little better at picking winners, at all three date cut-offs), so a few games barely move a six and hundreds of games move it a lot.
+ // Adds to out/model.json: sixes = {"Mon1|Mon2|…" (sorted): [δ, games]} for sixes with 10+ games. The page adds δ to its own
+ // team strength for that exact six; every other team is graded on the model alone.
+-import fs from 'node:fs';
++import fs from 'node:fs'; import {activeReg, SITE_REG} from './formats.mjs';
+ const MF = process.env.MODEL_FILE || 'out/model.json'; // MATCHES / MODEL_FILE: experiments
+ const M = JSON.parse(fs.readFileSync(process.env.MATCHES || 'out/matches.json', 'utf8')), MD = JSON.parse(fs.readFileSync(MF, 'utf8'));
++const curReg = activeReg().id, mReg = M.reg || SITE_REG.id, mdReg = MD.reg || SITE_REG.id;
++if (mReg !== mdReg || mReg !== curReg) { console.log(`six: reg mismatch (matches ${mReg}, model ${mdReg}, active ${curReg}), skipped`); process.exit(0); }
+ if (!MD.ships || !MD.mons) { console.log('six: model not shipped, nothing added'); process.exit(0); }
+ const TAU = .1, SIG_S = .6, ITERS = 300, MIN_G = 10, calib = MD.calib; // 10+ games: keeps meta/model under the 256 KB the page database takes per write
+ const teams = M.teams.map(k => k.split('|'));
+
+--- Diff 4: ctr.mjs (G3) ---
+S3 Proof:
+  input: out/matches.json {reg:"M-D"} + out/model.json {reg:"M-C", ships:true}
+  -> old: ctr.mjs:10-41 fits M-D matchups against M-C model and writes M-D ctr into M-C model.json
+  -> new: logs "ctr: reg mismatch (matches M-D, model M-C, active M-D), skipped" and exits 0 without mutating model.json (case 7)
+
+--- a/ctr.mjs
++++ b/ctr.mjs
+@@ -5,9 +5,11 @@
+ // point better (56.3% → 56.8%) with better-calibrated chances; averaged over the whole field it added nothing, so the page
+ // uses it only when the opponent is known (Battle: Plan a Match), never in the team grade.
+ // Adds to out/model.json: ctr = {sp: [Pokémon on 1%+ of teams], v: [c for each pair a<b, in thousandths, row by row]}.
+-import fs from 'node:fs';
++import fs from 'node:fs'; import {activeReg, SITE_REG} from './formats.mjs';
+ const MF = process.env.MODEL_FILE || 'out/model.json';
+ const M = JSON.parse(fs.readFileSync(process.env.MATCHES || 'out/matches.json', 'utf8')), MD = JSON.parse(fs.readFileSync(MF, 'utf8'));
++const curReg = activeReg().id, mReg = M.reg || SITE_REG.id, mdReg = MD.reg || SITE_REG.id;
++if (mReg !== mdReg || mReg !== curReg) { console.log(`ctr: reg mismatch (matches ${mReg}, model ${mdReg}, active ${curReg}), skipped`); process.exit(0); }
+ if (!MD.ships || !MD.mons) { console.log('ctr: model not shipped, nothing added'); process.exit(0); }
+ const LAM = 300, ITERS = 250, calib = MD.calib, sig = z => 1 / (1 + Math.exp(-z)), teams = M.teams.map(k => k.split('|'));
+ const spF = new Map(); for (const f of Object.keys(MD.sets || {})) { const sp = f.split(/[@:#]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(f); }
+
+--- Diff 5: leads.mjs (G3) ---
+S3 Proof:
+  input: out/replays.json {format:"gen9championsvgc2026regmc"} + out/model.json {reg:"M-D"}
+  -> old: leads.mjs:9-17 writes M-C lead values into M-D out/model.json
+  -> new: logs "leads: reg mismatch (replays M-C, model M-D, active M-D), skipped" and exits 0 without mutating model.json (case 8)
+
+--- a/leads.mjs
++++ b/leads.mjs
+@@ -4,10 +4,12 @@
+ // zero until there are many games (n / (n + 300)), is that Pokémon's lead value. Battle mode adds it to its lead pick.
+ // Adds to out/model.json: leads = {"Pokémon": value in win-chance points / 100} for Pokémon brought in 150+ games.
+ // REPLAYS_UNTIL=&lt;unix seconds&gt; (experiments): learn only from games before then; MODEL_FILE: which model file to write into.
+-import fs from 'node:fs';
++import fs from 'node:fs'; import {activeReg, sdReg, SITE_REG} from './formats.mjs';
+ const MF = process.env.MODEL_FILE || 'out/model.json', UNTIL = +(process.env.REPLAYS_UNTIL || Infinity);
+-let R; try { R = JSON.parse(fs.readFileSync('out/replays.json', 'utf8')).games; } catch (e) { console.log('leads: no replays, nothing added'); process.exit(0); }
+-const MD = JSON.parse(fs.readFileSync(MF, 'utf8')), elo = d => 1 / (1 + Math.pow(10, -d / 400)), base = n => n.replace(/-Mega.*$/, '');
++let R0, R; try { R0 = JSON.parse(fs.readFileSync('out/replays.json', 'utf8')); R = R0.games; } catch (e) { console.log('leads: no replays, nothing added'); process.exit(0); }
++const MD = JSON.parse(fs.readFileSync(MF, 'utf8')), curReg = activeReg().id, rReg = R0.reg || sdReg(R0.format) || SITE_REG.id, mdReg = MD.reg || SITE_REG.id;
++if (rReg !== mdReg || rReg !== curReg) { console.log(`leads: reg mismatch (replays ${rReg}, model ${mdReg}, active ${curReg}), skipped`); process.exit(0); }
++const elo = d => 1 / (1 + Math.pow(10, -d / 400)), base = n => n.replace(/-Mega.*$/, '');
+ const st = new Map(); // species → {ln, lr, bn, br}: led games and their summed residual, back games and theirs
+ for (const g of R) { if (g.t >= UNTIL || !Array.isArray(g.r) || (g.w !== 0 && g.w !== 1) || !g.b || !g.l) continue;
+   for (const s of [0, 1]) { if (!g.b[s] || g.b[s].length !== 4 || !g.l[s] || g.l[s].length !== 2) continue; const res = (g.w === s ? 1 : 0) - elo(g.r[s] - g.r[1 - s]), led = new Set(g.l[s].map(base));
+
+--- Diff 6: ratings-snapshot.mjs (G4) ---
+S3 Proof:
+  input: out/ratings_log.json {days:[{d:"2026-12-01", r:{...}}]} on active reg "M-D" on 2026-12-02 UTC
+  -> old: appends M-D snapshot into flat log.days alongside M-C snapshots
+  -> new: migrates legacy log.days into byReg["M-C"] and writes M-D snapshot only into byReg["M-D"] ({reg:"M-D", updated, byReg}) (not run end-to-end because Playwright browser run was not executed; checked by code inspection + consumed by scoreboard/track/health in cases 10, 11, 20, 21)
+
+--- a/ratings-snapshot.mjs
++++ b/ratings-snapshot.mjs
+@@ -2,7 +2,7 @@
+ // today, kept for 120 days in out/ratings_log.json. scoreboard.mjs later checks each snapshot against the tournament
+ // games played AFTER it was taken, which the ratings could not have seen: the fairest test of whether they're right.
+ // Needs Playwright (installed by the op.gg step); if it's missing the step just skips.
+-import fs from 'node:fs'; import {execFileSync} from 'node:child_process';
++import fs from 'node:fs'; import {execFileSync} from 'node:child_process'; import {activeReg, SITE_REG} from './formats.mjs';
+ const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
+ let chromium; try { ({chromium} = await import('playwright')); } catch (e) { console.log('ratings snapshot: playwright not installed, skipped'); process.exit(0); }
+ execFileSync('node', ['app/build.mjs'], {stdio: 'ignore'});
+@@ -15,6 +15,10 @@
+ await pg.addInitScript(D => { window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}})} : null}; }, D);
+ await pg.goto('file://' + process.cwd() + '/' + page); await pg.waitForTimeout(4000);
+ const r = await pg.evaluate(() => window.__ev('Object.fromEntries(ROSTER.map(p => [p.n, rating(p).total]))')); await b.close(); fs.unlinkSync(page);
+-const log = rd('ratings_log.json') || {days: []}, d = new Date().toISOString().slice(0, 10);
+-log.days = [...log.days.filter(x => x.d !== d), {d, r}].slice(-120); log.updated = new Date().toISOString();
+-fs.writeFileSync('out/ratings_log.json', JSON.stringify(log)); console.log(`ratings snapshot: ${Object.keys(r).length} Pokémon saved for ${d} (${log.days.length} days kept)`);
++const reg = activeReg().id, log = rd('ratings_log.json') || {}, d = new Date().toISOString().slice(0, 10);
++const byReg = log.byReg && typeof log.byReg === 'object' ? {...log.byReg} : {};
++if (!Object.keys(byReg).length && Array.isArray(log.days) && log.days.length) byReg[log.reg || SITE_REG.id] = log.days;
++const prevDays = Array.isArray(byReg[reg]) ? byReg[reg] : [];
++byReg[reg] = [...prevDays.filter(x => x.d !== d), {d, r}].slice(-120);
++fs.writeFileSync('out/ratings_log.json', JSON.stringify({reg, updated: new Date().toISOString(), byReg}));
++console.log(`ratings snapshot (${reg}): ${Object.keys(r).length} Pokémon saved for ${d} (${byReg[reg].length} days kept)`);
+
+--- Diff 7: scoreboard.mjs (G4) ---
+S3 Proof:
+  input: out/ratings_log.json with 2026-11-01 M-C snapshot + out/matches.json {reg:"M-D"} + out/scoreboard.json with 14 days of M-C history
+  -> old: grades M-C snapshot against M-D games (ratingsForward) and compares M-D metrics against M-C 14-day median
+  -> new: reads/writes byReg["M-D"] only, preserves byReg["M-C"], never grades M-C snapshots on M-D games, and skips cross-reg median warnings (cases 10, 18, 21)
+
+--- a/scoreboard.mjs
++++ b/scoreboard.mjs
+@@ -6,14 +6,15 @@
+ //  - Showdown replays: how many games we hold, and how many from 1300+ rated players.
+ // Writes out/scoreboard.json (today + up to a year of daily history) and warns when a number falls clearly below its
+ // recent level. Never fails the job: it only reports.
+-import fs from 'node:fs';
++import fs from 'node:fs'; import {activeReg, sdReg, SITE_REG} from './formats.mjs';
+ const rd = (f, d = null) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
+-const M = rd('out/model.json'), E = rd('out/events.json'), R = rd('out/replays.json'), today = new Date().toISOString().slice(0, 10), row = {date: today};
+-if (M && M.eval) { const e = M.eval;
++const reg = activeReg().id, same = d => d && (!d.reg || d.reg === reg);
++const M = rd('out/model.json'), E = rd('out/events.json'), R = rd('out/replays.json'), today = new Date().toISOString().slice(0, 10), row = {date: today, reg};
++if (M && M.eval && same(M)) { const e = M.eval;
+   row.model = {heldOutAcc: e.model_teams_only.acc, calibratedLogloss: e.calibrated_logloss && (e.calibrated_logloss.with_sets ?? e.calibrated_logloss.species_only),
+     eventsBeatCoinFlip: e.events_beating_coin_flip ? `${e.events_beating_coin_flip.beat_coin_flip}/${e.events_beating_coin_flip.events}` : null, rawWinRateAcc: e.raw_win_rates.acc, games: M.games}; }
+ // team strength x the way the page computes it (species + pairs + clamped set effects, two strongest Megas, untried-mix cut)
+-if (M && M.ships && E && E.events) { const D = E.dict, sets = M.sets || {}, fq = M.setFreq || {}, tested = new Set(M.tested || []), spF = new Map();
++if (M && M.ships && same(M) && E && E.events && same(E)) { const D = E.dict, sets = M.sets || {}, fq = M.setFreq || {}, tested = new Set(M.tested || []), spF = new Map();
+   for (const k of Object.keys(sets)) { const sp = k.split(/[@:]/)[0]; if (!spF.has(sp)) spF.set(sp, []); spF.get(sp).push(k); }
+   const setOne = (n, item, moves) => { if (!M.center) return 0; let u = 0; const mv = new Set(moves);
+     for (const k of spF.get(n) || []) { const it = k.indexOf('@') === n.length, has = it ? k.slice(n.length + 1) === item : mv.has(k.slice(n.length + 1)); u += sets[k] * ((has ? 1 : 0) - (fq[k] || 0)); }
+@@ -31,13 +32,17 @@
+ // Ratings, forward test: each saved snapshot 14+ days old, judged on the Limitless games played after it was taken
+ // (team with the higher total rating should win). The oldest such snapshot gives the longest look ahead.
+ { const RL = rd('out/ratings_log.json'), MM = rd('out/matches.json');
+-  if (RL && MM && RL.days.length) { const teams = MM.teams.map(k => k.split('|')), evD = MM.events.map(e => e[1]), now = Date.now(), outs = [];
+-    for (const snap of RL.days) { if ((now - Date.parse(snap.d)) / 864e5 < 14) continue; let right = 0, n = 0;
++  const rlDays = RL ? (RL.byReg ? (RL.byReg[reg] || []) : (same(RL) ? (RL.days || []) : [])) : [];
++  if (rlDays.length && MM && same(MM)) { const teams = MM.teams.map(k => k.split('|')), evD = MM.events.map(e => e[1]), now = Date.now(), outs = [];
++    for (const snap of rlDays) { if ((now - Date.parse(snap.d)) / 864e5 < 14) continue; let right = 0, n = 0;
+       for (const g of MM.m) { if (g[2] === .5 || evD[g[3]] <= snap.d) continue; const s = t => teams[t].reduce((a, m) => a + (snap.r[m] || 0), 0), a = s(g[0]), b = s(g[1]); if (a === b) continue; n++; if ((a > b) === (g[2] === 1)) right++; }
+       if (n >= 300) outs.push({d: snap.d, acc: +(right / n).toFixed(4), games: n}); }
+     if (outs.length) row.ratingsForward = {snapshot: outs[0].d, acc: outs[0].acc, games: outs[0].games, snapshots: outs.length, avgAcc: +(outs.reduce((a, x) => a + x.acc, 0) / outs.length).toFixed(4)}; } }
+-if (R && Array.isArray(R.games)) row.replays = {games: R.games.length, rated1300: R.games.filter(g => Math.min(g.r[0] || 0, g.r[1] || 0) >= 1300).length};
+-const board = rd('out/scoreboard.json', {history: []}), hist = board.history.filter(h => h.date !== today);
++const rReg = R && (R.reg || sdReg(R.format) || SITE_REG.id);
++if (R && Array.isArray(R.games) && rReg === reg) row.replays = {games: R.games.length, rated1300: R.games.filter(g => Math.min(g.r[0] || 0, g.r[1] || 0) >= 1300).length};
++const board = rd('out/scoreboard.json', {history: []}), byReg = board.byReg && typeof board.byReg === 'object' ? {...board.byReg} : {};
++if (!Object.keys(byReg).length && Array.isArray(board.history) && board.history.length) byReg[board.reg || SITE_REG.id] = board.history;
++const hist = (Array.isArray(byReg[reg]) ? byReg[reg] : []).filter(h => h.date !== today);
+ // warn when today is clearly below the median of the last 14 days
+ const med = a => { const s = a.filter(v => v != null).sort((p, q) => p - q); return s.length ? s[Math.floor(s.length / 2)] : null; }, recent = hist.slice(-14), warns = [];
+ const cmp = (label, now, past, worseIfLower, tol) => { const m = med(past); if (now == null || m == null) return; if (worseIfLower ? now < m - tol : now > m + tol) warns.push(`${label}: ${now} vs ${m} recently`); };
+@@ -45,5 +50,6 @@
+ cmp('Win model calibrated log-loss', row.model && row.model.calibratedLogloss, recent.map(h => h.model && h.model.calibratedLogloss), false, .003);
+ cmp('Team strength on real events', row.teamStrengthOnEvents && row.teamStrengthOnEvents.acc, recent.map(h => h.teamStrengthOnEvents && h.teamStrengthOnEvents.acc), true, .015);
+ row.warnings = warns;
+-fs.writeFileSync('out/scoreboard.json', JSON.stringify({updated: new Date().toISOString(), today: row, history: [...hist, row].slice(-365)}, null, 1));
++byReg[reg] = [...hist, row].slice(-365);
++fs.writeFileSync('out/scoreboard.json', JSON.stringify({updated: new Date().toISOString(), reg, today: row, byReg, history: byReg[reg]}, null, 1));
+ console.log('scoreboard', JSON.stringify(row)); for (const w of warns) console.log(`::warning::${w}`);
+
+--- Diff 8: track.mjs (G4) ---
+S3 Proof:
+  input: yesterday's M-C out/track.json + active reg "M-D" with 0 M-D snapshots (or day-20 M-D + M-C snapshots in ratings_log.json)
+  -> old: exits 0 leaving M-C track.json on disk (0 snapshots), or carries prev.ev M-C events and grades M-C snapshots on M-D events
+  -> new: archives M-C track to out/track_M-C.json, writes empty stamped M-D track.json when 0 snapshots exist, and grades M-D events only against byReg["M-D"] snapshots (cases 9 & 20)
+
+--- a/track.mjs
++++ b/track.mjs
+@@ -11,16 +11,21 @@
+ //   mb   per band: [Pokémon whose average rating is in the band, of them seen in a top 8]
+ //   fw   scoreboard.mjs's games check (snapshot 14+ days old, 300+ later games): [date, accuracy, games]
+ // Bands: 80+, 60-79, 40-59, under 40 (index 0..3).
+-import fs from 'node:fs';
++import fs from 'node:fs'; import {activeReg, SITE_REG} from './formats.mjs';
+ const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
+-const L = rd('ratings_log.json'), E = rd('events.json'), SB = rd('scoreboard.json'), prev = rd('track.json') || {};
+-if (!L || !Array.isArray(L.days) || !L.days.length) { console.log('track: no ratings snapshots yet, skipped'); process.exit(0); }
++const reg = activeReg().id, L = rd('ratings_log.json'), E = rd('events.json'), SB = rd('scoreboard.json'), prev = rd('track.json') || {};
++const prevReg = prev.reg || SITE_REG.id;
++if (prev && (Array.isArray(prev.ev) || Array.isArray(prev.mons)) && prevReg !== reg) fs.writeFileSync(`out/track_${prevReg}.json`, JSON.stringify(prev));
++const rawDays = L ? (L.byReg ? (L.byReg[reg] || []) : ((!L.reg || L.reg === reg) ? (L.days || []) : [])) : [];
++if (!rawDays.length) { const empty = {v: 1, reg, updated: new Date().toISOString(), since: null, snaps: 0, last: null, top: 8, ev: [], mons: [], mb: [[0, 0], [0, 0], [0, 0], [0, 0]], fw: [], mv: null};
++  fs.writeFileSync('out/track.json', JSON.stringify(empty)); console.log(`track (${reg}): no ratings snapshots yet, wrote empty stamped track.json`); process.exit(0); }
+ const CAP = 240 * 1024, TOP = 8, band = r => r >= 80 ? 0 : r >= 60 ? 1 : r >= 40 ? 2 : 3;
+-const snaps = L.days.filter(s => s && s.d && s.r).sort((a, b) => a.d < b.d ? -1 : 1), sByD = new Map(snaps.map(s => [s.d, s]));
++const snaps = rawDays.filter(s => s && s.d && s.r).sort((a, b) => a.d < b.d ? -1 : 1), sByD = new Map(snaps.map(s => [s.d, s]));
+ const snapFor = d => { let s = null; for (const x of snaps) if (x.d < d) s = x; return s; };
+-const ev = new Map((Array.isArray(prev.ev) ? prev.ev : []).filter(e => Array.isArray(e) && e[0]).map(e => [e[0], e]));
++const samePrev = prevReg === reg;
++const ev = new Map((samePrev && Array.isArray(prev.ev) ? prev.ev : []).filter(e => Array.isArray(e) && e[0]).map(e => [e[0], e]));
+ // events still in events.json are (re)checked: results of the last few days can still change
+-if (E && Array.isArray(E.events) && Array.isArray(E.dict)) for (const e of E.events) {
++if (E && (!E.reg || E.reg === reg) && Array.isArray(E.events) && Array.isArray(E.dict)) for (const e of E.events) {
+   const s = snapFor(e.date); if (!s || e.date < snaps[0].d) continue;
+   const top = (e.top || []).filter(t => t[1] >= 1 && t[1] <= TOP && Array.isArray(t[3]) && t[3].length === 6); if (top.length < 4) continue;
+   const c = new Map(); for (const t of top) for (const n of new Set(t[3].map(m => E.dict[m[0]]))) { const o = c.get(n) || {c: 0, p: 99}; o.c++; o.p = Math.min(o.p, t[1]); c.set(n, o); }
+@@ -35,7 +40,8 @@
+     if (h) { o.c += h[2]; if (h[3] === 1) { o.w++; o.best = e[2]; } else if (!o.best) o.best = e[2]; } M.set(n, o); } }
+ const mb = [[0, 0], [0, 0], [0, 0], [0, 0]], mons = [];
+ for (const [n, o] of M) { const r = o.r / o.n, b = band(Math.round(r)); mb[b][0]++; if (o.c) mb[b][1]++; if (r >= 70 || o.c) mons.push([n, o.n, Math.round(r), o.c, o.w, o.best]); }
+-const fw = (SB && Array.isArray(SB.history) ? SB.history : []).filter(h => h && h.ratingsForward).map(h => [h.date, h.ratingsForward.acc, h.ratingsForward.games]);
++const sbHist = SB ? (SB.byReg ? (SB.byReg[reg] || []) : ((!SB.reg || SB.reg === reg) ? (SB.history || []) : [])) : [];
++const fw = (Array.isArray(sbHist) ? sbHist : []).filter(h => h && h.ratingsForward).map(h => [h.date, h.ratingsForward.acc, h.ratingsForward.games]);
+ // mv (Sim, Nov 5): the week's biggest rating moves for Home's "This week" line. Newest snapshot against the oldest one from the
+ // last 7 days; only Pokémon rated 60+ now that moved 2+ points. [from date, to date, [[name, rating now, change], ...]]
+ const mv = (() => { const z = snaps[snaps.length - 1], from = new Date(Date.parse(z.d + 'T12:00:00Z') - 7 * 864e5).toISOString().slice(0, 10);
+@@ -43,7 +49,7 @@
+   const ch = Object.keys(z.r).filter(n => n in a.r && z.r[n] >= 60 && Math.abs(z.r[n] - a.r[n]) >= 2).map(n => [n, z.r[n], z.r[n] - a.r[n]])
+     .sort((x, y) => Math.abs(y[2]) - Math.abs(x[2]) || y[1] - x[1]).slice(0, 4);
+   return ch.length ? [a.d, z.d, ch] : null; })();
+-const out = {v: 1, updated: new Date().toISOString(), since: snaps[0].d, snaps: snaps.length, last: snaps[snaps.length - 1].d, top: TOP, ev: evs, mons, mb, fw, mv};
++const out = {v: 1, reg, updated: new Date().toISOString(), since: snaps[0].d, snaps: snaps.length, last: snaps[snaps.length - 1].d, top: TOP, ev: evs, mons, mb, fw, mv};
+ // under the cap: the oldest events lose their per-Pokémon lists first (their band totals stay)
+ for (let i = 0; Buffer.byteLength(JSON.stringify(out)) > CAP && i < evs.length - 20; i++) evs[i][9] = null;
+ fs.writeFileSync('out/track.json', JSON.stringify(out));
+
+--- Diff 9: health.mjs (G11) ---
+S3 Proof:
+  input: day 1 of M-D (2026-12-02 UTC) with empty-but-stamped M-D files vs Limitless down (>4d) vs step skipped 2 days vs M-C file leak
+  -> old: fails (exit 1) on day-1 M-D files (limitless teams>0 / <50KB, meta_tour <10, teams <5, history <2d, model <5KB, events <5, perf no tour/adj, practice <20)
+  -> new: marks empty-but-stamped day 1-14 files as "thin" (exit 0), while still exiting 1 on missing/broken JSON, wrong reg, stale file, data/index.json >4d, or 2-day skip (cases 2, 11-14, 19)
+
+--- a/health.mjs
++++ b/health.mjs
+@@ -17,38 +17,48 @@
+ const problems = [], rows = [];
+ const size = f => { try { return fs.statSync(path.join(ROOT, 'out', f)).size; } catch (e) { return -1; } };
+ const rd = f => { try { return JSON.parse(fs.readFileSync(path.join(ROOT, 'out', f), 'utf8')); } catch (e) { return null; } };
++const RG = rd('reg.json'), RS = rd('regstate.json'), REG = (RG && RG.id) || 'M-C';
++const regDay = (() => { if (RS && RS.reg === REG && typeof RS.day === 'number') return RS.day; const s = RG && RG.since; if (!s) return 999;
++  const t0 = Date.parse(s + 'T12:00:00Z'); return isFinite(t0) ? Math.max(1, Math.floor((now - t0) / DAY) + 1) : 999; })();
++const inLaunch = regDay >= 1 && regDay <= 14, todayIso = new Date(now).toISOString().slice(0, 10);
++const stampOf = d => d && (typeof d.reg === 'string' ? d.reg : (d.reg && typeof d.reg.id === 'string' ? d.reg.id : null));
+ // a date ("2026-10-31", an ISO time) or a month ("2026-09", counted from the end of that month)
+ const age = v => { const s = String(v || ''); if (/^\d{4}-\d{2}$/.test(s)) { const [y, m] = s.split('-').map(Number); return (now - Date.UTC(y, m, 1)) / DAY; } const t = Date.parse(s.length === 10 ? s + 'T12:00:00Z' : s); return isNaN(t) ? NaN : (now - t) / DAY; };
+ const old = (label, v, days) => { const a = age(v); if (!(a <= days)) { problems.push(`${label}: ${isNaN(a) ? 'no date' : `data from ${String(v).slice(0, 10)}, ${Math.floor(a)} days old (limit ${days})`}`); return false; } return true; };
+ const arr = (x, min = 1) => Array.isArray(x) && x.length >= min;
+ // file, label, max age in days, where its data date is, size bounds (bytes), and a shape test (true = fine, or a reason)
++const rlDays = d => d && (d.byReg ? d.byReg[REG] : d.days);
+ const FILES = [
+-  ['limitless.json', 'Limitless tournaments', 2, d => d.updated, [50e3, 5e6], d => !!(d.results && typeof d.results === 'object' && d.adj && +d.teams > 0) || 'no results, win shares or team count'],
+-  ['meta_tour.json', 'Tournament sets', 2, d => d.updated, [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon'],
+-  ['teams.json', 'Top teams', 2, d => d.updated, [2e3, 2e6], d => arr(d.teams, 5) || 'fewer than 5 teams'],
+-  ['history.json', 'Usage history', 2, d => arr(d.days) && d.days[d.days.length - 1].d, [1e3, 2e6], d => arr(d.days, 2) || 'fewer than 2 days'],
+-  ['model.json', 'Win model', 2, d => d.updated, [5e3, 2e6], d => !!(d.mons && typeof d.mons === 'object') || 'no Pokémon'],
++  ['limitless.json', 'Limitless tournaments', 2, d => d.updated, [50e3, 5e6], d => !!(d.results && typeof d.results === 'object' && d.adj && +d.teams > 0) || 'no results, win shares or team count', [20, d => !!(d.results && typeof d.results === 'object' && d.adj)]],
++  ['meta_tour.json', 'Tournament sets', 2, d => d.updated, [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)]],
++  ['teams.json', 'Top teams', 2, d => d.updated, [2e3, 2e6], d => arr(d.teams, 5) || 'fewer than 5 teams', [20, d => Array.isArray(d.teams)]],
++  ['history.json', 'Usage history', 2, d => (arr(d.days) && d.days[d.days.length - 1].d) || (inLaunch ? d.updated || (RG && RG.checked) || todayIso : ''), [1e3, 2e6], d => arr(d.days, 2) || 'fewer than 2 days', [20, d => Array.isArray(d.days)]],
++  ['model.json', 'Win model', 2, d => d.updated, [5e3, 2e6], d => !!(d.mons && typeof d.mons === 'object') || 'no Pokémon', [80, d => !!(d.mons && typeof d.mons === 'object')]],
+   ['meta_ingame.json', 'op.gg in-game rankings (paused Nov 18: op.gg terms)', 9999, d => d.updated, [1e3, 1e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon'],
+-  ['meta_ladder.json', 'Smogon monthly ladder stats', 40, d => d.month, [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon'],
+-  ['events.json', 'Events', 3, d => d.updated, [10e3, 5e6], d => arr(d.events, 5) || 'fewer than 5 events'],
+-  ['official.json', 'Official events (Victory Road + VR Pastes, top 64)', 3, d => d.updated, [1e3, 5e6], d => Array.isArray(d.events) || 'no event list'],
+-  ['perf.json', 'Ratings inputs', 2, d => d.updated, [5e3, 2e6], d => !!(d.tour && d.adj) || 'no Limitless table'],
+-  ['practice.json', 'Team preview practice', 4, d => d.updated, [5e3, 2e6], d => arr(d.rounds, 20) || 'fewer than 20 games'],
+-  ['weekly.json', 'This week vs last week', 2, d => d.updated, [200, 1e6], d => d.v === 1 || 'unknown version'],
++  ['meta_ladder.json', 'Smogon monthly ladder stats', 40, d => d.month || (inLaunch ? d.updated || (RG && RG.checked) || todayIso : ''), [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)]],
++  ['events.json', 'Events', 3, d => d.updated, [10e3, 5e6], d => arr(d.events, 5) || 'fewer than 5 events', [20, d => Array.isArray(d.events)]],
++  ['official.json', 'Official events (Victory Road + VR Pastes, top 64)', 3, d => d.updated, [1e3, 5e6], d => Array.isArray(d.events) || 'no event list', [20, d => Array.isArray(d.events)]],
++  ['perf.json', 'Ratings inputs', 2, d => d.updated, [5e3, 2e6], d => !!(d.tour && d.adj) || 'no Limitless table', [20, d => !!(d.reg && d.reg.id === REG)]],
++  ['practice.json', 'Team preview practice', 4, d => d.updated, [5e3, 2e6], d => arr(d.rounds, 20) || 'fewer than 20 games', [20, d => Array.isArray(d.rounds)]],
++  ['weekly.json', 'This week vs last week', 2, d => d.updated, [200, 1e6], d => d.v === 1 || 'unknown version', [20, d => d.v === 1]],
+   ['calendar.json', 'Event calendar', 3, d => d.checked || d.updated, [200, 1e6], d => Array.isArray(d.ev) || 'no event list'],
+-  ['track.json', 'Ratings track record', 2, d => d.updated, [200, 1e6], d => d.v === 1 || 'unknown version'],
+-  ['sources.json', 'Outside sources', 2, d => d.updated, [200, 2e6], () => true],
+-  ['crosscheck.json', 'Cross-check', 2, d => d.updated, [200, 2e6], d => Array.isArray(d.checks) || 'no checks'],
+-  ['ratings_log.json', 'Ratings snapshots', 2, d => d.updated, [200, 5e6], d => arr(d.days) || 'no snapshots'],
+-  ['scoreboard.json', 'Ratings scoreboard', 3, d => d.updated, [200, 2e6], () => true]];
+-for (const [file, label, days, dateOf, [lo, hi], shape] of FILES) {
++  ['track.json', 'Ratings track record', 2, d => d.updated, [200, 1e6], d => d.v === 1 || 'unknown version', [20, d => d.v === 1]],
++  ['sources.json', 'Outside sources', 2, d => d.updated, [200, 2e6], () => true, [20, () => true]],
++  ['crosscheck.json', 'Cross-check', 2, d => d.updated, [200, 2e6], d => Array.isArray(d.checks) || 'no checks', [20, d => Array.isArray(d.checks)]],
++  ['ratings_log.json', 'Ratings snapshots', 2, d => d.updated, [200, 5e6], d => arr(rlDays(d)) || 'no snapshots', [20, d => Array.isArray(rlDays(d))]],
++  ['scoreboard.json', 'Ratings scoreboard', 3, d => d.updated, [200, 2e6], () => true, [20, () => true]]];
++for (const [file, label, days, dateOf, [lo, hi], shape, thinRule] of FILES) {
+   const n = size(file), d = n < 0 ? null : rd(file); let date = '', status = 'ok', why = '';
+   if (n < 0) { status = 'missing'; why = 'file missing'; }
+   else if (!d) { status = 'broken'; why = 'does not parse as JSON'; }
+   else { try { date = String(dateOf(d) || ''); } catch (e) {} let s; try { s = shape(d); } catch (e) { s = 'unexpected shape'; }
+-    if (s !== true) { status = 'broken'; why = s; }
+-    else if (n < lo || n > hi) { status = 'broken'; why = `size ${(n / 1024).toFixed(1)} KB, expected ${(lo / 1024).toFixed(1)} KB – ${(hi / 1048576).toFixed(1)} MB`; } }
+-  if (status !== 'ok') problems.push(`${label}: ${file} ${why}`);
++    const st = stampOf(d);
++    if (st && st !== REG && file !== 'meta_ingame.json') { status = 'broken'; why = `wrong regulation (${st}, expected ${REG})`; }
++    else if (s === true && n >= lo && n <= hi) { /* ok */ }
++    else if (inLaunch && thinRule && n >= thinRule[0] && n <= hi && thinRule[1](d) === true) { status = 'thin'; why = `day ${regDay} of ${REG}, data building`; }
++    else if (s !== true) { status = 'broken'; why = s; }
++    else { status = 'broken'; why = `size ${(n / 1024).toFixed(1)} KB, expected ${(lo / 1024).toFixed(1)} KB – ${(hi / 1048576).toFixed(1)} MB`; } }
++  if (status !== 'ok' && status !== 'thin') problems.push(`${label}: ${file} ${why}`);
+   else if (!old(label, date, days)) status = 'stale';
+   const a = age(date); rows.push({label, file, date: date.slice(0, 10), age: isNaN(a) ? '' : Math.max(0, Math.floor(a)), days, status, why}); }
+ // official_perf.json (every team and match of the official events) is frozen since RK9 reads stopped on Nov 1: not checked
+@@ -56,11 +66,11 @@
+ // every part of the ratings inputs, by the date of its own data
+ const PF = rd('perf.json');
+ if (PF) { const want = {tour: ['Limitless table', 2], adj: ['Limitless win shares', 2], ingame: ['op.gg order (paused Nov 18)', 9999], official: ['Official events table (frozen)', 28], smogon: ['Smogon 1760+ usage', 40], ladder: ['Showdowntier ladder', 3]};
+-  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official') {} /* retired Nov 1 (RK9 terms): expected to be absent, no warning (Nov 7) */ else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
++  for (const [k, [label, days]] of Object.entries(want)) { if (!PF[k]) { if (k === 'official' || inLaunch) {} /* retired Nov 1, or thin in first 14 days */ else problems.push(`Ratings inputs: no ${label} (${k})`); continue; }
+     if (k === 'official' && PF[k].frozen) { const a = age(PF[k].asOf || PF[k].updated); if (a > 21) console.log(`::warning::Ratings inputs: the frozen official-events table (newest event ${PF[k].asOf}) leaves the page in ${Math.max(0, Math.ceil(28 - a))} days; no permitted whole-field source yet`); continue; }
+     old(`Ratings inputs, ${label}`, PF[k].updated, days); }
+   for (const L of (PF.outside && PF.outside.lists) || []) old(`Outside tier list ${L.name}`, L.date, 3);
+-  if (!PF.outside) problems.push('Ratings inputs: no outside tier lists'); }
++  if (!PF.outside && !inLaunch) problems.push('Ratings inputs: no outside tier lists'); }
+ const S = rd('sources.json'); if (S && S.problems && S.problems.length) console.log(`::warning::Outside sources with problems today: ${S.problems.join(' | ')}`);
+ // the newest tournament should be recent too (catches Limitless returning nothing new while the file still gets a new date)
+ try { const idx = JSON.parse(fs.readFileSync(path.join(ROOT, 'data/index.json'), 'utf8')); const last = Math.max(...Object.values(idx.tournaments).map(t => Date.parse(t.d)));
+@@ -91,7 +101,7 @@
+   const on = d => new Set(((SK && SK.runs) || []).filter(r => r.day === d).flatMap(r => r.steps || []));
+   const t = on(today), y = on(yday); for (const st of t) if (y.has(st)) problems.push(`Daily job: the "${st}" step was skipped two days in a row (${yday} and ${today}); see the run log for why`); }
+ // the report: what's wrong first, then every file with its data date
+-const day = new Date(now).toISOString().slice(0, 10), ICON = {ok: '✅', stale: '🟠 stale', missing: '❌ missing', broken: '❌ broken'};
++const day = new Date(now).toISOString().slice(0, 10), ICON = {ok: '✅', thin: '🟡 thin', stale: '🟠 stale', missing: '❌ missing', broken: '❌ broken'};
+ const md = [problems.length ? `## ❌ Daily data problem (${day})\n\nThe page keeps showing the last good data and says so on Home and Meta, but these need a look:\n\n${problems.map(p => `- ${p}`).join('\n')}\n`
+   : `## ✅ Daily data healthy (${day})\n`,
+   '| Source | File | Data date | Days old | Limit | Status |', '|---|---|---|---|---|---|',
+
+--- Diff 10: .github/workflows/update.yml (0.8) ---
+S3 Proof:
+  input: daily/4-hourly workflow run after perf.mjs
+  -> old: out/regstate.json is never written
+  -> new: runs `node regstate.mjs || node skip.mjs "regstate skipped"` after perf.mjs before Commit and health.mjs
+
+--- a/.github/workflows/update.yml
++++ b/.github/workflows/update.yml
+@@ -76,6 +76,8 @@
+       - run: (npm install --no-save --no-package-lock playwright@1.49.1 && npx playwright install --with-deps chromium) || node skip.mjs "browser install skipped"
+       # the ratings' daily inputs (all of out/perf.json) for the morning refresh; checked by health.mjs
+       - run: node perf.mjs || node skip.mjs "perf skipped"
++      # thin-data counts for the active regulation (out/regstate.json)
++      - run: node regstate.mjs || node skip.mjs "regstate skipped"
+       # our numbers against the outside sources (out/crosscheck.json; summary and warnings in the Data health step)
+       - run: node crosscheck.mjs || node skip.mjs "crosscheck skipped"
+       - run: node ratings-snapshot.mjs || node skip.mjs "ratings snapshot skipped"
+
+
+====================================================================
+5. TEST FILE & CASE TABLE: experiments/md-day-one-test.mjs
+====================================================================
+Run command (in patched directory with minimal stubs for unseen pilot.mjs & team-basics.mjs):
+  node experiments/md-day-one-test.mjs
+Result:
+  ALL 22 TESTS PASSED (exit code 0)
+
+Case Table (every case has S7 — what bug would make it fail):
+# | Scenario | Assertion | S7: What bug makes it fail
+1 | Day before (M-C) | regstate.mjs writes reg=M-C, since=2026-09-01, events=1, games=1 | regstate fails to read M-C matches.json or drops reg/since
+2 | Day before (M-C) | health.mjs exits 0 with Daily data healthy | health.mjs regression breaks mature M-C files
+3 | Day before (M-C) | model-guard.mjs accepts valid M-C model vs prev M-C | model-guard rejects valid same-reg model
+4 | Switch day (0 M-D games) | model.mjs overwrites M-C model.json with {reg:'M-D', ships:false, games:0, mons:{}} | model.mjs exits 1 keeping M-C model.json on disk
+5 | Switch day (0 M-D games) | model-guard.mjs ignores M-C GUARD_PREV and exits 0 on not-ready M-D model | model-guard compares M-D against M-C or restores M-C model
+6 | Switch day (0 M-D games) | six.mjs skips when matches=M-D and model=M-C | six.mjs mutates M-C model.json with M-D games
+7 | Switch day (0 M-D games) | ctr.mjs skips when matches=M-D and model=M-C | ctr.mjs mutates M-C model.json with M-D games
+8 | Switch day (0 M-D games) | leads.mjs skips when replays=M-C and model=M-D | leads.mjs writes M-C leads into M-D model.json
+9 | Switch day (0 M-D games) | track.mjs archives M-C to track_M-C.json and writes empty stamped M-D track.json | track.mjs leaves M-C track.json on disk when 0 M-D snapshots exist
+10 | Switch day (0 M-D games) | scoreboard.mjs keeps byReg['M-C'] and leaves ratingsForward undefined | scoreboard.mjs grades M-C snapshot against M-D games or drops M-C history
+11 | Switch day (0 M-D games) | health.mjs marks empty-but-stamped day-1 M-D files as thin and exits 0 | health.mjs still enforces mature floors on day 1-14
+12 | Switch day (0 M-D games) | health.mjs exits 1 when data/index.json newest event is >4 days old | health.mjs disables Limitless outage check during launch window
+13 | Switch day (0 M-D games) | health.mjs exits 1 when skips.json shows same step skipped 2 days in a row | health.mjs disables 2-day skip alarm during launch window
+14 | Switch day (0 M-D games) | health.mjs exits 1 when an out/ file is stamped M-C while active reg is M-D | health.mjs ignores regulation stamp mismatch during launch window
+15 | Day 3 (5 events, 40 games) | buildRegState reports reg=M-D, day=3, events=5, players=220, games=40 | wrong day math (0-indexed vs 1-indexed) or wrong regstate counts
+16 | Day 3 (5 events, 40 games) | model.mjs writes M-D stamped not-ready model when !ships (does not keep M-C) | model.mjs keeps M-C prev on !ships when prevReg !== curReg
+17 | Day 3 (5 events) | model-guard.mjs exits 1 on broken M-D model (<250 mons) without restoring M-C prev | model-guard restores M-C prev over broken M-D model
+18 | Day 3 (5 events) | scoreboard.mjs produces 0 warnings despite M-C having 14 days of higher acc | scoreboard.mjs mixes M-C history into M-D 14-day median
+19 | Day 20 (enough games) | health.mjs exits 1 on empty events.json on day 20 (inLaunch === false) | health.mjs leaves launch-window relaxation on past day 14
+20 | Day 20 (enough games) | track.mjs grades M-D events only against byReg['M-D'] snapshots | track.mjs grades M-D events against M-C snapshot
+21 | Day 20 (enough games) | scoreboard.mjs grades 14+ day-old M-D snapshot on M-D games, ignoring M-C | scoreboard.mjs grades M-C snapshot or fails to read byReg['M-D']
+22 | Day 20 (enough games) | model-guard.mjs catches rho < 0.85 vs prev M-D model and restores M-D prev | model-guard skips same-reg stability check or fails to restore M-D prev
+
+----- BEGIN experiments/md-day-one-test.mjs -----
+// Node 22 (no network) test suite for Reg M-D day-one model, history split, health floors, and regstate (Job 8).
+// Usage: node experiments/md-day-one-test.mjs
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import os from 'node:os';
+import path from 'node:path';
+import {execFileSync} from 'node:child_process';
+import {fileURLToPath} from 'node:url';
+
+const HERE = path.dirname(fileURLToPath(import.meta.url));
+const ROOT = path.resolve(HERE, '..');
+const TMP = fs.mkdtempSync(path.join(os.tmpdir(), 'np-md-day1-'));
+
+// Copy patched scripts into TMP and add minimal stubs for unseen helper imports (pilot.mjs, team-basics.mjs)
+for (const f of ['formats.mjs', 'model.mjs', 'model-guard.mjs', 'six.mjs', 'ctr.mjs', 'leads.mjs', 'scoreboard.mjs', 'track.mjs', 'health.mjs', 'regstate.mjs']) {
+  fs.copyFileSync(path.join(ROOT, f), path.join(TMP, f));
+}
+fs.writeFileSync(path.join(TMP, 'pilot.mjs'), 'export const pilotTest = () => ({});\n');
+fs.writeFileSync(path.join(TMP, 'team-basics.mjs'), 'export const deckBasics = () => ({noMega: 0, protectLow: 0});\n');
+
+const wr = (dir, rel, obj) => {
+  const p = path.join(dir, rel);
+  fs.mkdirSync(path.dirname(p), {recursive: true});
+  fs.writeFileSync(p, typeof obj === 'string' ? obj : JSON.stringify(obj));
+};
+const rd = (dir, rel) => JSON.parse(fs.readFileSync(path.join(dir, rel), 'utf8'));
+const run = (script, cwd, args = [], env = {}) => {
+  try {
+    const stdout = execFileSync(process.execPath, [path.join(TMP, script), ...args], {
+      cwd, env: {...process.env, ...env}, encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe']
+    });
+    return {code: 0, stdout, stderr: ''};
+  } catch (e) {
+    return {code: e.status ?? 1, stdout: String(e.stdout || ''), stderr: String(e.stderr || '')};
+  }
+};
+
+// Build a valid full-size (>=250 mons) model object for tests
+const makeFullModel = (reg, updated, seed = 0) => {
+  const mons = {}, monSd = {};
+  for (let i = 0; i < 260; i++) {
+    const n = `Mon${String(i).padStart(3, '0')}`;
+    mons[n] = +(((i % 50) - 25) * 0.02 + seed * 0.001).toFixed(4);
+    monSd[n] = 0.05;
+  }
+  return {
+    reg, updated, ships: true, shrink: 10, setShrink: null, games: 5000, events: 40, v: 3,
+    meanX: 0, calib: 0.9, dist: {since: updated.slice(0, 10), n: 100, q: Array.from({length: 101}, (_, i) => +(i * 0.02 - 1).toFixed(3))},
+    setRange: {}, supK: 6, tested: [], setFreq: {}, team: {noMega: -0.5, protectLow: -0.4},
+    mons, pairs: {}, monSd, pairSd0: 0.06, pairSd: {}, sets: {}, pilot: {},
+    eval: {model_teams_only: {acc: 0.56, logloss: 0.68}, calibrated_logloss: {species_only: 0.68, with_sets: 0.675}, raw_win_rates: {acc: 0.54, logloss: 0.689}, events_beating_coin_flip: {beat_coin_flip: 8, events: 10}}
+  };
+};
+
+// Build healthy mature out/ + data/ for a given reg and date
+const seedHealthy = (dir, reg, since, date, padBytes = true) => {
+  const iso = date + 'T10:00:00Z';
+  const big = padBytes ? 'x'.repeat(60000) : '';
+  wr(dir, 'data/index.json', {tournaments: {t1: {d: date}}});
+  wr(dir, 'out/split/index.json', {made: iso, sizes: {'meta/model': 50000}, split: {}});
+  wr(dir, 'out/reg.json', {id: reg, name: 'Reg ' + reg, since, sd: reg === 'M-C' ? 'gen9championsvgc2026regmc' : 'gen9championsvgc2026regmd', checked: date});
+  wr(dir, 'out/limitless.json', {reg, updated: iso, results: {Pikachu: 10}, adj: {Pikachu: 0.5}, teams: 500, pad: big});
+  wr(dir, 'out/meta_tour.json', {reg, updated: iso, top: Array.from({length: 15}, (_, i) => ({n: `Mon${i}`, u: 10})), pad: padBytes ? 'x'.repeat(6000) : ''});
+  wr(dir, 'out/teams.json', {reg, updated: iso, teams: Array.from({length: 6}, () => ['Mon0']), pad: padBytes ? 'x'.repeat(2500) : ''});
+  wr(dir, 'out/history.json', {reg, days: [{d: since, tour: {Mon0: 1}}, {d: date, tour: {Mon0: 1}}], pad: padBytes ? 'x'.repeat(1200) : ''});
+  wr(dir, 'out/model.json', makeFullModel(reg, iso));
+  wr(dir, 'out/meta_ingame.json', {updated: '2026-11-18T10:00:00Z', top: Array.from({length: 12}, (_, i) => ({n: `Mon${i}`, r: i + 1})), pad: 'x'.repeat(1200)});
+  wr(dir, 'out/meta_ladder.json', {reg, month: date.slice(0, 7), updated: iso, top: Array.from({length: 12}, (_, i) => ({n: `Mon${i}`, u: 5})), pad: padBytes ? 'x'.repeat(6000) : ''});
+  wr(dir, 'out/events.json', {reg, updated: iso, dict: ['Mon0', 'Mon1', 'Mon2', 'Mon3', 'Mon4', 'Mon5'], events: Array.from({length: 6}, (_, i) => ({id: `ev${reg}${i}`, date, name: `Ev ${i}`, players: 64, top: [[0, 1, 0, [[0], [1], [2], [3], [4], [5]]], [0, 2, 0, [[0], [1], [2], [3], [4], [5]]], [0, 3, 0, [[0], [1], [2], [3], [4], [5]]], [0, 4, 0, [[0], [1], [2], [3], [4], [5]]]]})), pad: padBytes ? 'x'.repeat(11000) : ''});
+  wr(dir, 'out/official.json', {reg, updated: iso, events: [], pad: padBytes ? 'x'.repeat(1200) : ''});
+  wr(dir, 'out/perf.json', {reg: {id: reg, name: 'Reg ' + reg, since}, updated: date, tour: {updated: date, rows: []}, adj: {updated: date, rows: []}, ingame: {updated: '2026-11-18', names: []}, smogon: {updated: date.slice(0, 7), rows: []}, ladder: {updated: date, rows: []}, outside: {lists: [{name: 'Showdowntier', date}]}, pad: padBytes ? 'x'.repeat(6000) : ''});
+  wr(dir, 'out/practice.json', {reg, updated: iso, rounds: Array.from({length: 25}, () => [0]), pad: padBytes ? 'x'.repeat(5500) : ''});
+  wr(dir, 'out/weekly.json', {reg, v: 1, updated: iso, pad: 'x'.repeat(300)});
+  wr(dir, 'out/calendar.json', {updated: iso, ev: [{s: date, e: '2027-01-10'}], pad: 'x'.repeat(250)});
+  wr(dir, 'out/track.json', {reg, v: 1, updated: iso, since, snaps: 1, last: date, top: 8, ev: [], mons: [], mb: [[0, 0], [0, 0], [0, 0], [0, 0]], fw: [], mv: null, pad: 'x'.repeat(250)});
+  wr(dir, 'out/sources.json', {reg, updated: iso, pad: 'x'.repeat(300)});
+  wr(dir, 'out/crosscheck.json', {reg, updated: iso, checks: [], pad: 'x'.repeat(300)});
+  wr(dir, 'out/ratings_log.json', {reg, updated: iso, byReg: {[reg]: [{d: date, r: {Mon0: 85, Mon1: 70, Mon2: 50, Mon3: 30}}]}, pad: 'x'.repeat(300)});
+  wr(dir, 'out/scoreboard.json', {reg, updated: iso, byReg: {[reg]: [{date, reg, model: {heldOutAcc: 0.56, calibratedLogloss: 0.675}}]}, history: [{date, reg}], pad: 'x'.repeat(300)});
+  wr(dir, 'out/matches.json', {reg, updated: iso, events: [['e1', date, 64]], players: 64, teams: ['Mon000|Mon001|Mon002|Mon003|Mon004|Mon005', 'Mon006|Mon007|Mon008|Mon009|Mon010|Mon011'], m: [[0, 1, 1, 0, 0, 1]]});
+};
+
+let passed = 0;
+const test = async (name, fn) => { await fn(); passed++; console.log(`PASS: ${name}`); };
+
+// --- Scenario 1: Day before switch (2026-12-01, M-C active) ---
+const d1 = path.join(TMP, 's1-day-before');
+seedHealthy(d1, 'M-C', '2026-09-01', '2026-12-01');
+wr(d1, 'out/prev_mc_model.json', makeFullModel('M-C', '2026-11-30T10:00:00Z'));
+
+await test('1. regstate on day before reports M-C day 92', () => {
+  const rs = run('regstate.mjs', d1);
+  // Note: regstate uses today's clock unless called via buildRegState; test CLI writes out/regstate.json and check pure date too
+  assert.equal(rs.code, 0);
+  const out = rd(d1, 'out/regstate.json');
+  assert.equal(out.reg, 'M-C');
+  assert.equal(out.since, '2026-09-01');
+  assert.equal(out.events, 1);
+  assert.equal(out.games, 1);
+});
+
+await test('2. health on day before passes with 0 problems', () => {
+  const r = run('health.mjs', d1, ['--root=' + d1, '--now=2026-12-01']);
+  assert.equal(r.code, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /Daily data healthy/);
+});
+
+await test('3. model-guard on day before accepts valid M-C model vs prev M-C', () => {
+  const r = run('model-guard.mjs', d1, [], {GUARD_PREV: path.join(d1, 'out/prev_mc_model.json')});
+  assert.equal(r.code, 0, r.stdout);
+  assert.match(r.stdout, /model guard: ok/);
+});
+
+// --- Scenario 2: Switch day with 0 M-D games (2026-12-02, M-D active) ---
+const d2 = path.join(TMP, 's2-switch-day-0-games');
+seedHealthy(d2, 'M-C', '2026-09-01', '2026-12-01'); // yesterday's M-C files on disk
+// Switch reg.json to M-D on 2026-12-02 and empty M-D matches.json
+wr(d2, 'out/reg.json', {id: 'M-D', name: 'Reg M-D', since: '2026-12-02', sd: 'gen9championsvgc2026regmd', switched: {from: 'M-C', to: 'M-D', on: '2026-12-02'}, checked: '2026-12-02'});
+wr(d2, 'out/matches.json', {reg: 'M-D', updated: '2026-12-02T10:00:00Z', events: [], players: 0, teams: [], m: []});
+wr(d2, 'out/prev_mc_model.json', makeFullModel('M-C', '2026-12-01T10:00:00Z'));
+
+await test('4. model.mjs on switch day with 0 M-D games overwrites M-C model with stamped not-ready M-D model', () => {
+  const r = run('model.mjs', d2);
+  assert.equal(r.code, 0, r.stdout + r.stderr);
+  const m = rd(d2, 'out/model.json');
+  assert.equal(m.reg, 'M-D');
+  assert.equal(m.ships, false);
+  assert.equal(m.games, 0);
+  assert.deepEqual(m.mons, {});
+});
+
+await test('5. model-guard.mjs on switch day ignores M-C prev and accepts not-ready M-D model', () => {
+  const r = run('model-guard.mjs', d2, [], {GUARD_PREV: path.join(d2, 'out/prev_mc_model.json')});
+  assert.equal(r.code, 0, r.stdout + r.stderr);
+  const m = rd(d2, 'out/model.json');
+  assert.equal(m.reg, 'M-D');
+  assert.equal(m.ships, false);
+});
+
+await test('6. six.mjs refuses to mix M-D matches into an M-C model', () => {
+  wr(d2, 'out/model_mc_tmp.json', makeFullModel('M-C', '2026-12-01T10:00:00Z'));
+  const r = run('six.mjs', d2, [], {MODEL_FILE: path.join(d2, 'out/model_mc_tmp.json')});
+  assert.equal(r.code, 0);
+  assert.match(r.stdout, /reg mismatch/);
+  assert.equal(rd(d2, 'out/model_mc_tmp.json').sixes, undefined);
+});
+
+await test('7. ctr.mjs refuses to mix M-D matches into an M-C model', () => {
+  const r = run('ctr.mjs', d2, [], {MODEL_FILE: path.join(d2, 'out/model_mc_tmp.json')});
+  assert.equal(r.code, 0);
+  assert.match(r.stdout, /reg mismatch/);
+  assert.equal(rd(d2, 'out/model_mc_tmp.json').ctr, undefined);
+});
+
+await test('8. leads.mjs refuses to mix M-C replays into M-D model', () => {
+  wr(d2, 'out/replays.json', {format: 'gen9championsvgc2026regmc', games: [{t: 1, r: [1500, 1500], w: 0, b: [['A', 'B', 'C', 'D'], ['E', 'F', 'G', 'H']], l: [['A', 'B'], ['E', 'F']]}]});
+  const r = run('leads.mjs', d2);
+  assert.equal(r.code, 0);
+  assert.match(r.stdout, /reg mismatch/);
+  assert.equal(rd(d2, 'out/model.json').leads, undefined);
+});
+
+await test('9. track.mjs on switch day archives M-C track.json and writes empty stamped M-D track.json', () => {
+  const r = run('track.mjs', d2);
+  assert.equal(r.code, 0, r.stdout + r.stderr);
+  const arch = rd(d2, 'out/track_M-C.json');
+  assert.equal(arch.reg, 'M-C');
+  const cur = rd(d2, 'out/track.json');
+  assert.equal(cur.reg, 'M-D');
+  assert.equal(cur.snaps, 0);
+  assert.deepEqual(cur.ev, []);
+});
+
+await test('10. scoreboard.mjs on switch day preserves M-C history in byReg and does not grade M-C snapshots', () => {
+  wr(d2, 'out/events.json', {reg: 'M-D', updated: '2026-12-02T10:00:00Z', dict: [], events: []});
+  wr(d2, 'out/replays.json', {reg: 'M-D', format: 'gen9championsvgc2026regmd', games: []});
+  // Make M-C snapshot 20 days old so it would trigger ratingsForward if not isolated
+  wr(d2, 'out/ratings_log.json', {reg: 'M-C', updated: '2026-12-01T10:00:00Z', byReg: {'M-C': [{d: '2026-11-01', r: {Mon000: 90}}]}});
+  const r = run('scoreboard.mjs', d2);
+  assert.equal(r.code, 0, r.stdout + r.stderr);
+  const sb = rd(d2, 'out/scoreboard.json');
+  assert.equal(sb.reg, 'M-D');
+  assert.equal(sb.byReg['M-C'].length, 1);
+  assert.equal(sb.today.ratingsForward, undefined);
+});
+
+await test('11. health.mjs on switch day marks empty-but-stamped M-D files as thin and exits 0', () => {
+  const d2h = path.join(TMP, 's2-health');
+  seedHealthy(d2h, 'M-D', '2026-12-02', '2026-12-02', false);
+  // Make all M-D files empty-but-stamped day-1 skeletons
+  const iso = '2026-12-02T10:00:00Z';
+  wr(d2h, 'data/index.json', {tournaments: {t1: {d: '2026-12-01'}}}); // yesterday's M-C event (1 day old, not >4)
+  wr(d2h, 'out/regstate.json', {reg: 'M-D', day: 1, events: 0, players: 0, games: 0, since: '2026-12-02', updated: iso});
+  wr(d2h, 'out/limitless.json', {reg: 'M-D', updated: iso, results: {}, adj: {}, teams: 0});
+  wr(d2h, 'out/meta_tour.json', {reg: 'M-D', updated: iso, top: []});
+  wr(d2h, 'out/teams.json', {reg: 'M-D', updated: iso, teams: []});
+  wr(d2h, 'out/history.json', {reg: 'M-D', days: []});
+  wr(d2h, 'out/model.json', {reg: 'M-D', updated: iso, ships: false, games: 0, events: 0, mons: {}});
+  wr(d2h, 'out/meta_ladder.json', {reg: 'M-D', month: '', updated: iso, top: []});
+  wr(d2h, 'out/events.json', {reg: 'M-D', updated: iso, events: []});
+  wr(d2h, 'out/official.json', {reg: 'M-D', updated: iso, events: []});
+  wr(d2h, 'out/perf.json', {reg: {id: 'M-D', name: 'Reg M-D', since: '2026-12-02'}, updated: '2026-12-02'});
+  wr(d2h, 'out/practice.json', {reg: 'M-D', updated: iso, rounds: []});
+  wr(d2h, 'out/weekly.json', {reg: 'M-D', v: 1, updated: iso});
+  wr(d2h, 'out/track.json', {reg: 'M-D', v: 1, updated: iso, ev: []});
+  wr(d2h, 'out/sources.json', {reg: 'M-D', updated: iso});
+  wr(d2h, 'out/crosscheck.json', {reg: 'M-D', updated: iso, checks: []});
+  wr(d2h, 'out/ratings_log.json', {reg: 'M-D', updated: iso, byReg: {'M-D': []}});
+  wr(d2h, 'out/scoreboard.json', {reg: 'M-D', updated: iso, byReg: {'M-D': []}});
+  const r = run('health.mjs', d2h, ['--root=' + d2h, '--now=2026-12-02']);
+  assert.equal(r.code, 0, r.stdout + r.stderr);
+  assert.match(r.stdout, /🟡 thin/);
+});
+
+await test('12. health.mjs on switch day STILL fails when Limitless is down (data/index.json > 4 days old)', () => {
+  const d2l = path.join(TMP, 's2-limitless-down');
+  fs.cpSync(path.join(TMP, 's2-health'), d2l, {recursive: true});
+  wr(d2l, 'data/index.json', {tournaments: {t1: {d: '2026-11-26'}}});
+  const r = run('health.mjs', d2l, ['--root=' + d2l, '--now=2026-12-02']);
+  assert.equal(r.code, 1);
+  assert.match(r.stdout, /newest tournament is 6 days old/);
+});
+
+await test('13. health.mjs on switch day STILL fails when a step crashed 2 days in a row', () => {
+  const d2s = path.join(TMP, 's2-skip-2days');
+  fs.cpSync(path.join(TMP, 's2-health'), d2s, {recursive: true});
+  wr(d2s, 'out/skips.json', {runs: [{day: '2026-12-01', steps: ['replays skipped']}, {day: '2026-12-02', steps: ['replays skipped']}]});
+  const r = run('health.mjs', d2s, ['--root=' + d2s, '--now=2026-12-02']);
+  assert.equal(r.code, 1);
+  assert.match(r.stdout, /replays skipped.*two days in a row/);
+});
+
+await test('14. health.mjs on switch day STILL fails if an M-C file leaked into out/', () => {
+  const d2m = path.join(TMP, 's2-wrong-reg');
+  fs.cpSync(path.join(TMP, 's2-health'), d2m, {recursive: true});
+  wr(d2m, 'out/events.json', {reg: 'M-C', updated: '2026-12-02T10:00:00Z', events: []});
+  const r = run('health.mjs', d2m, ['--root=' + d2m, '--now=2026-12-02']);
+  assert.equal(r.code, 1);
+  assert.match(r.stdout, /wrong regulation \(M-C, expected M-D\)/);
+});
+
+// --- Scenario 3: Day 3 with 5 events (2026-12-04, M-D active) ---
+const d3 = path.join(TMP, 's3-day3-5events');
+seedHealthy(d3, 'M-D', '2026-12-02', '2026-12-04', false);
+wr(d3, 'out/matches.json', {
+  reg: 'M-D', updated: '2026-12-04T10:00:00Z',
+  events: [['e1', '2026-12-02', 32], ['e2', '2026-12-02', 40], ['e3', '2026-12-03', 48], ['e4', '2026-12-03', 36], ['e5', '2026-12-04', 64]],
+  players: 220,
+  teams: ['Mon000|Mon001|Mon002|Mon003|Mon004|Mon005', 'Mon006|Mon007|Mon008|Mon009|Mon010|Mon011'],
+  m: Array.from({length: 40}, (_, i) => [i % 2, (i + 1) % 2, 1, i % 5, 0, 1]) // constant win for team 0 -> model >= raw or tied -> !ships
+});
+
+await test('15. regstate buildRegState on day 3 with 5 events reports day=3, events=5, players=220, games=40', async () => {
+  const {buildRegState} = await import(path.join(TMP, 'regstate.mjs'));
+  const rs = buildRegState({regObj: {id: 'M-D', since: '2026-12-02'}, rawReg: null, matches: rd(d3, 'out/matches.json'), today: '2026-12-04'});
+  assert.equal(rs.reg, 'M-D');
+  assert.equal(rs.day, 3);
+  assert.equal(rs.events, 5);
+  assert.equal(rs.players, 220);
+  assert.equal(rs.games, 40);
+  assert.equal(rs.since, '2026-12-02');
+});
+
+await test('16. model.mjs on day 3 with 5 events writes M-D stamped not-ready model when !ships (does not restore M-C)', () => {
+  wr(d3, 'out/model.json', makeFullModel('M-C', '2026-12-01T10:00:00Z'));
+  const r = run('model.mjs', d3, [], {FAST: '10,0,1,0'});
+  assert.equal(r.code, 0, r.stdout + r.stderr);
+  const m = rd(d3, 'out/model.json');
+  assert.equal(m.reg, 'M-D');
+  assert.equal(m.ships, false);
+  assert.equal(m.games, 40);
+});
+
+await test('17. model-guard.mjs rejects a broken shipped M-D model (<250 mons) without restoring M-C prev', () => {
+  const broken = makeFullModel('M-D', '2026-12-04T10:00:00Z');
+  broken.mons = {Mon000: 0.1};
+  wr(d3, 'out/model.json', broken);
+  wr(d3, 'out/prev_mc.json', makeFullModel('M-C', '2026-12-01T10:00:00Z'));
+  const r = run('model-guard.mjs', d3, [], {GUARD_PREV: path.join(d3, 'out/prev_mc.json')});
+  assert.equal(r.code, 1);
+  assert.match(r.stdout, /only 1 Pokémon/);
+  assert.equal(rd(d3, 'out/model.json').reg, 'M-D'); // did NOT overwrite with M-C
+});
+
+await test('18. scoreboard.mjs on day 3 does not warn on M-D against M-C 14-day median', () => {
+  wr(d3, 'out/scoreboard.json', {
+    reg: 'M-C', updated: '2026-12-01T10:00:00Z',
+    byReg: {'M-C': Array.from({length: 14}, (_, i) => ({date: `2026-11-${17 + i}`, model: {heldOutAcc: 0.65, calibratedLogloss: 0.62}}))},
+    history: []
+  });
+  const m = makeFullModel('M-D', '2026-12-04T10:00:00Z');
+  m.eval.model_teams_only.acc = 0.52; m.eval.calibrated_logloss.with_sets = 0.69;
+  wr(d3, 'out/model.json', m);
+  const r = run('scoreboard.mjs', d3);
+  assert.equal(r.code, 0);
+  const sb = rd(d3, 'out/scoreboard.json');
+  assert.deepEqual(sb.today.warnings, []);
+  assert.equal(sb.byReg['M-C'].length, 14);
+});
+
+// --- Scenario 4: Day 20 with enough games (2026-12-21, M-D active) ---
+const d4 = path.join(TMP, 's4-day20');
+seedHealthy(d4, 'M-D', '2026-12-02', '2026-12-21', true);
+wr(d4, 'out/regstate.json', {reg: 'M-D', day: 20, events: 35, players: 2400, games: 6000, since: '2026-12-02', updated: '2026-12-21T10:00:00Z'});
+
+await test('19. health.mjs on day 20 enforces steady-state floors (empty file fails as broken)', () => {
+  const d4b = path.join(TMP, 's4-day20-broken');
+  fs.cpSync(d4, d4b, {recursive: true});
+  wr(d4b, 'out/events.json', {reg: 'M-D', updated: '2026-12-21T10:00:00Z', events: []});
+  const r = run('health.mjs', d4b, ['--root=' + d4b, '--now=2026-12-21']);
+  assert.equal(r.code, 1);
+  assert.match(r.stdout, /fewer than 5 events/);
+});
+
+await test('20. track.mjs on day 20 grades M-D events only against M-D snapshots (ignores M-C snapshots)', () => {
+  wr(d4, 'out/ratings_log.json', {
+    reg: 'M-D', updated: '2026-12-21T10:00:00Z',
+    byReg: {
+      'M-C': [{d: '2026-11-20', r: {Mon0: 95}}],
+      'M-D': [{d: '2026-12-10', r: {Mon0: 82, Mon1: 75, Mon2: 65, Mon3: 55, Mon4: 45, Mon5: 35}}]
+    }
+  });
+  const r = run('track.mjs', d4);
+  assert.equal(r.code, 0, r.stdout + r.stderr);
+  const tr = rd(d4, 'out/track.json');
+  assert.equal(tr.reg, 'M-D');
+  assert.equal(tr.since, '2026-12-10');
+  assert.equal(tr.snaps, 1);
+  assert.ok(tr.ev.length > 0 && tr.ev.every(e => e[5] === '2026-12-10'));
+});
+
+await test('21. scoreboard.mjs on day 20 grades 14+ day-old M-D snapshot on M-D games and ignores M-C snapshots', () => {
+  const mdSnap = new Date(Date.now() - 20 * 864e5).toISOString().slice(0, 10);
+  const mcSnap = new Date(Date.now() - 40 * 864e5).toISOString().slice(0, 10);
+  const evDay = new Date(Date.now() - 1 * 864e5).toISOString().slice(0, 10);
+  wr(d4, 'out/ratings_log.json', {
+    reg: 'M-D', updated: new Date().toISOString(),
+    byReg: {
+      'M-C': [{d: mcSnap, r: {Mon000: 99}}],
+      'M-D': [{d: mdSnap, r: {Mon000: 90, Mon001: 80, Mon002: 70, Mon003: 60, Mon004: 50, Mon005: 40}}]
+    }
+  });
+  wr(d4, 'out/matches.json', {
+    reg: 'M-D', updated: new Date().toISOString(), events: [['e1', evDay, 64]], players: 64,
+    teams: ['Mon000|Mon001|Mon002|Mon003|Mon004|Mon005', 'Mon006|Mon007|Mon008|Mon009|Mon010|Mon011'],
+    m: Array.from({length: 310}, () => [0, 1, 1, 0, 0, 1])
+  });
+  const r = run('scoreboard.mjs', d4);
+  assert.equal(r.code, 0, r.stdout + r.stderr);
+  const sb = rd(d4, 'out/scoreboard.json');
+  assert.equal(sb.today.ratingsForward.snapshot, mdSnap);
+  assert.equal(sb.today.ratingsForward.acc, 1);
+});
+
+await test('22. model-guard.mjs on day 20 catches rank reordering against prev M-D model and restores M-D prev', () => {
+  const prevMD = makeFullModel('M-D', '2026-12-20T10:00:00Z', 0);
+  const badMD = makeFullModel('M-D', '2026-12-21T10:00:00Z', 0);
+  for (const k of Object.keys(badMD.mons)) badMD.mons[k] = -badMD.mons[k]; // invert all strengths -> rho ~ -1
+  const teams = [];
+  for (let i = 0; i < 205; i++) teams.push([0, 1, 2, 3, 4, 5].map(o => `Mon${String((i + o) % 260).padStart(3, '0')}`).join('|'));
+  wr(d4, 'out/matches.json', {reg: 'M-D', updated: '2026-12-21T10:00:00Z', events: [['e1', '2026-12-21', 64]], players: 64, teams, m: teams.map((_, i) => [i, (i + 1) % teams.length, 1, 0, 0, 1])});
+  wr(d4, 'out/model.json', badMD);
+  wr(d4, 'out/prev_md.json', prevMD);
+  const r = run('model-guard.mjs', d4, [], {GUARD_PREV: path.join(d4, 'out/prev_md.json')});
+  assert.equal(r.code, 1);
+  assert.match(r.stdout, /rank correlation/);
+  assert.equal(rd(d4, 'out/model.json').updated, '2026-12-20T10:00:00Z');
+});
+
+fs.rmSync(TMP, {recursive: true, force: true});
+console.log(`\nALL ${passed} TESTS PASSED`);
+----- END experiments/md-day-one-test.mjs -----
+
+====================================================================
+6. ORDER QUESTIONS, "I'M UNSURE", AND WHAT WAS NOT LOOKED AT
+====================================================================
+
+--- Order questions for HH (S1) ---
+1. `regstate.mjs` day numbering: `day: 1` on `since` (e.g., 2026-12-02 UTC = Day 1, 2026-12-04 UTC = Day 3) vs `day: 0` on `since`.
+   - Option A (used here): 1-indexed (`Day 1 of Reg M-D` on launch day, matching `inLaunch: day 1..14`).
+   - Option B: 0-indexed (`day: 0` on launch day).
+2. `leads.mjs` when `MD.ships === false` (early M-D):
+   - Option A (used here): still runs if `replays.json` is M-D (`rReg === mdReg === curReg`), writing M-D `leads` (or `{}` if <150 games) into `model.json`.
+   - Option B: skip `leads.mjs` whenever `!MD.ships` so `leads` only ships alongside a shipped model.
+3. `track.json` M-C archive location:
+   - Option A (used here): `out/track.json` holds only active reg (staying under the 240 KB Firestore cap) and archives M-C to `out/track_M-C.json`.
+   - Option B: store `{byReg: {"M-C": ..., "M-D": ...}}` inside `out/track.json` (risks hitting the 240 KB / 262,144-byte Firestore cap sooner).
+
+--- "I'm unsure" (S6) ---
+- I'm unsure whether `app/`'s `META.model` reader (`13-rating.js` / team grader) checks `META.model && META.model.ships` or only `META.model && META.model.mons && Object.keys(META.model.mons).length`, because `app/` files were not included in Job 8. Including `ships: false, mons: {}` in the not-ready `model.json` is safe for `six.mjs` and `ctr.mjs`, and should be checked against `app/` before merge.
+- I'm unsure whether `pilot.mjs` (`pilotTest(M)`) or `team-basics.mjs` (`deckBasics`) handle small non-empty `matches.json` (e.g. 5 events, 40 games) without throwing if `model.mjs` reaches line 243, because neither file was included in Job 8.
+
+--- What was not looked at (not in Job 8's file bundle) ---
+- `app/` page readers (`META.model`, `ratings_log.json`, `scoreboard.json`, `track.json`, `regstate.json`) — NOT CHECKED.
+- `reg.mjs`, `update.mjs`, `events.mjs`, `ladder.mjs`, `sources.mjs`, `official.mjs`, `weekly.mjs`, `split-docs.mjs`, `skip.mjs`, `pilot.mjs`, `team-basics.mjs` — NOT CHECKED.
+- Live Playwright execution of `ratings-snapshot.mjs` — NOT RUN (Playwright browser step was not executed; `ratings-snapshot.mjs` diff was checked by code inspection).

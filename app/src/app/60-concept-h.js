@@ -3,7 +3,7 @@
 // engine, the bring-four planner from Battle mode, events, Showdown replays); nothing is invented. Older pages keep their
 // layout and pick up the palette through the shared tokens (concept-h.css). Every feature stays reachable: older Home
 // sections and the full scouting report sit in folds that open with the logo's chevron pair (up = closed, down = open).
-const CH = {};
+// CH is created in 58-strength.js (the Strength Score logic, shared with the rebuild)
 /* the data behind a number, one shared helper (36-confidence.js) */
 CH.basis = basis; CH.thin = thinFor; CH.basisText = basisText;
 CH.chev = (x, y, c) => { const p = (dy, col) => `<path d="M${x + 2} ${y + 22 + dy} L${x + 18} ${y + 8 + dy} L${x + 34} ${y + 22 + dy}" fill="none" stroke="${col}" stroke-width="7" stroke-linecap="round" stroke-linejoin="round"/>`; return p(3, '#FFE800') + p(0, c) + p(13, '#FFE800') + p(10, c); };
@@ -15,185 +15,14 @@ CH.tog = () => `<span class="chtog" aria-hidden="true">${CH.chev2()}</span>`;
 // the logo: full lockup (Home), compact header lockup (top bar, menu, footer); light and Warm charcoal
 // each copy gets its own mask ids: a hidden copy (the closed menu) would otherwise break the mask for every other copy
 CH._lk = 0; CH.uniq = svg => { const n = ++CH._lk; return svg.replace(/id="(np[^"]+)"/g, (m, id) => `id="${id}-${n}"`).replace(/url\(#(np[^)]+)\)/g, (m, id) => `url(#${id}-${n})`); };
-/* Share images draw the stored logo SVG as a picture, where the site's colour overrides (blue PLOT circle, no yellow shadow)
-   never reach it. This fills each var(--x, fallback) in it with the value the live header logo uses, so every share card
-   matches the logo on the site in both looks (Sim, Nov 5: "our share card still uses our old logo"). */
-function npLogoSvg(dark) { const raw = NP_SVG[dark ? 'hdrD' : 'hdrL'];
-  /* Polish (Nov 10): a share image in the other mode than the page uses that logo's own colours (a dark image made from the light
-     page drew NASTY in the light page's dark ink: invisible on black) */
-  if (!!dark !== (document.documentElement.dataset.look === 'dark')) return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => fb);
-  const el = [...document.querySelectorAll('.nplk')].find(e => e.getClientRects().length) || document.querySelector('.nplk'); if (!el) return raw;
-  const cs = getComputedStyle(el); return raw.replace(/var\((--[\w-]+)\s*,\s*([^)]*)\)/g, (m, v, fb) => { const x = cs.getPropertyValue(v).trim(); return x || fb; }); }
+/* npLogoSvg (the logo for share images) lives in 44-share-images.js (Nov 11) */
 CH.lockup = k => `<span class="nplk ${k}" role="img" aria-label="NastyPlot"><span class="lt">${CH.uniq(NP_SVG[k + 'L'])}</span><span class="dk">${CH.uniq(NP_SVG[k + 'D'])}</span></span>`;
 // readiness grade: preparation for the top 30 threats, never a win chance
-/* GRADE v2 (Nov 7, Sim: "more reflective of the actual team and not have our stats contradicting each other").
-   The grade answers one question: how often should this six win? Its strength is the real-games team model (Pokémon, pairs and
-   sets, player skill taken out) plus this exact six's own tournament record, also with its players' skill and its opponents'
-   strength taken out, and trusted more the more games it has (six.mjs, daily). Tested on later games it had not seen
-   (experiments/grade-v2.mjs): it picked the winner in 56.1% of games, against 53.6% for the grade it replaces.
-   Shown as the expected win rate against today's tournament field; the number behind the letter is where the six ranks among
-   real tournament teams (0-100), and the letter comes from that rank: A top 10%, B next 20%, C middle 40%, D next 20%, F bottom
-   10%. How the six handles the top threats is shown on its own, as Matchups: it explains what beats the team, it isn't part of
-   the grade (it predicted wins far less well). A team of fewer than six keeps the old check, marked "so far". */
-/* STRENGTH SCORE (Sim, Nov 9; docs/strength-score.md). The 0-100 number says how strong the team is altogether, not where it ranks:
-   80 + 122 × (chance to beat today's tournament teams − 50%), the chance being CH.fieldWin (player skill taken out, recomputed daily
-   from real teams). A team that beats today's tournament teams half the time scores 80; the best 2% of real sheets about 92; no Mega
-   lands in the 50s. Same ranking as the old grade (scoreboard Nov 9: identical picks); each 10-point band won more than the one
-   below on later games. The rank among real teams is kept as G.rk (small print). Letters: one per 10 points (A 90+, B 80s, C 70s,
-   D 60s, F under 60) until the band words replace them (Step B). */
-CH.SS_MID = 80; CH.SS_K = 122;
-CH.ssOfE = e => e == null || !isFinite(e) ? null : Math.max(0, Math.min(100, CH.SS_MID + CH.SS_K * (e - .5)));
-CH.WORDS = [[90, 'Top tier'], [80, 'Tournament ready'], [70, 'Solid'], [60, 'Needs work'], [-1, 'Missing a basic']];
-CH.wordOf = s => s == null ? '' : CH.WORDS.find(w => s >= w[0])[1];
-CH.wordOfL = L => ({A: 'Top tier', B: 'Tournament ready', C: 'Solid', D: 'Needs work', F: 'Missing a basic'})[String(L || '')[0]] || '';
-CH.grade = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F'; // the band (colours, data-band)
-// Nov 9 (Sim chose: plus/minus on every letter, so players feel the difference inside a band): same ranking, finer labels.
-// Tested on later games: the top and bottom bands differ clearly; neighbouring steps differ by ~1-2 wins per 100 games, too small to
-// confirm with today's data, so a step is a rank (where the team sits), not a promise of more wins. F stays plain.
-CH.gradeFull = s => CH.grade(s);
-CH.gradeOld = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F';
-// this exact six's own record (δ in team-strength units, and its games), from model.sixes
-CH.sixOf = ms => { const S = META.model && META.model.sixes; if (!S || !ms || ms.length !== 6) return null; const v = S[ms.map(m => (m.p || m).n).sort().join('|')]; if (!Array.isArray(v)) return null;
-  // Deep Check, Nov 8: the record was earned with the sets real players ran, so it only counts for Pokémon on a set like
-  // theirs. A Pokémon counts as changed when you gave it a move outside its 6 most-run moves, or an item outside its 3
-  // most-run items (an imported real team sheet keeps its record); a six with every set changed keeps none of it.
-  const off = m => { try { const pm = new Set((typeof popularMoves === 'function' ? popularMoves(m.p) : []).map(x => x && (x.name || x)));
-      const mv = (m.custom ? (m.moves || []) : []).map(x => x && (x.name || x)).filter(Boolean);
-      const ti = typeof topItems === 'function' ? (topItems(m.p) || []).slice(0, 3).map(x => Array.isArray(x) ? x[0] : x) : [];
-      return (pm.size && mv.some(x => !pm.has(x))) || (m.heldItem && !m.itemDefault && !m.p.m && ti.length && !ti.includes(m.heldItem)); } catch (e) { return false; } };
-  const mine = ms.filter(m => m && m.p && off(m)).length, share = (6 - mine) / 6;
-  return {d: (+v[0] || 0) * share, g: +v[1] || 0, share}; };
-// how sure the rating is (Nov 8, step 5): the spread of the team's strength from how much real evidence stands behind each of
-// its Pokémon and pairs (model.monSd / pairSd), widened by CH.SD_K, the factor that made those spreads match later results
-// (experiments/unsure.mjs); a six's own record narrows it. Shown as an 80% range on the 0-100 rating.
-CH.SD_K = .7; // experiments/unsure.mjs (Nov 8): the raw spreads were about 30% wider than later results showed
-/* Sim, Nov 8: one word instead of a range (an honest range is wide and makes the grade feel vague): High when the team's
-   parts are backed by lots of real games (spread ≤ .12, about a well-known six), Medium up to .2, Low beyond. A six with
-   100+ games of its own is at least Medium. */
-CH.sureOf = (ms, six) => { const sd = CH.sdOf(ms); if (sd == null) return null; let k = sd <= .12 ? 2 : sd <= .2 ? 1 : 0; if (six && six.g >= 100) k = Math.max(k, 1);
-  return [{w: 'Low', t: 'few real games back this exact mix, so it could move a lot as results come in'}, {w: 'Medium', t: 'its Pokémon are well known, but this mix of them less so'}, {w: 'High', t: 'its Pokémon and pairings are backed by lots of real games'}][k]; };
-CH.sdOf = ms => { const M = META.model; if (!(CH.SD_K > 0) || !M || !M.monSd || !ms || ms.length !== 6) return null; const ns = ms.map(m => (m.p || m).n), mx = Math.max(...Object.values(M.monSd)), p0 = +M.pairSd0 || .05;
-  let v = 0; for (const n of ns) v += (M.monSd[n] ?? mx) ** 2;
-  for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = ns[i] < ns[j] ? ns[i] + '|' + ns[j] : ns[j] + '|' + ns[i]; v += ((M.pairSd || {})[k] ?? p0) ** 2; }
-  return Math.sqrt(v) * CH.SD_K; };
-CH.rangeOf = (ms, y) => { const sd = CH.sdOf(ms); if (sd == null || y == null) return null; const a = CH.ssOfE(CH.fieldWin(y - 1.2816 * sd)), b = CH.ssOfE(CH.fieldWin(y + 1.2816 * sd));
-  return a == null || b == null ? null : [Math.round(a), Math.round(b)]; };
-// win chance against today's field: the average over real tournament teams (the shipped percentiles)
-CH.fieldWin = y => { const q = META.model && META.model.dist && META.model.dist.q; if (!Array.isArray(q) || q.length !== 101) return null; const c = calibK(); let t = 0; for (const v of q) t += sig(c * (y - v)); return t / q.length; };
-// strength, rank among real teams (0-100) and expected win rate, with and without the six's own record
-/* Sim, Nov 7: "I don't want it to be the case just because the team isn't a tournament team it gets discredited too much if the
-   six Pokémon are all strong picks and cover the meta". Tested on later games (experiments/grade-v2.mjs):
-   - matchups (readiness against the top 30: offense and defense calcs) help a little on top of strength, at a small weight
-     (more makes predictions worse): CH.MU_K per point of readiness above or below the average real team (79%), about ±0.7 of
-     expected win rate between a team that covers the meta like the top tenth and one with the holes of the bottom tenth;
-   - the 7 team checks added nothing, so they are checklist advice only, no longer a discount on strength;
-   - the caution for sixes whose pairs are rarely seen together made no measurable difference, so it is eased: at most a quarter
-     of above-average strength is held back for a never-seen combination (it was half). */
-CH.MU_K = .003; CH.MU_AVG = 79;
-CH.strengthOf = (ms, ready) => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = ms.map(m => m.p.n);
-  if (new Set(names.map(n => (byName.get(n) || {}).b || n)).size < 6) return null; const xs = strengthX(names, ms); if (!xs || !isFinite(xs.x0)) return null;
-  const M = META.model, mx = M.meanX || 0, k = typeof testedPairs === 'function' ? testedPairs(names) : null, cr = k == null || !M.supK ? 1 : .75 + .25 * Math.min(1, k / M.supK);
-  const dv = xs.x0 - mx, x = mx + (dv > 0 ? dv * cr : dv), mu = ready == null ? 0 : CH.MU_K * (ready - CH.MU_AVG);
-  const six = CH.sixOf(ms), y0 = x + mu, y = y0 + (six ? six.d : 0), pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
-  const e0 = CH.fieldWin(x), eMu = CH.fieldWin(y0); return {x, y, six, mu, pct, ss: CH.ssOfE(e), ss0: CH.ssOfE(e0), ssMu: CH.ssOfE(eMu), pct0: strengthPct(x), pMu: strengthPct(y0), e, e0, eMu, rg: CH.rangeOf(ms, y), su: CH.sureOf(ms, six)}; } catch (e) { return null; } };
-/* Partial teams on the same scale (Nov 8, foundation plan Phase 1): a team of 1-5 is rated as if each empty slot were an
-   average tournament pick, so the number means the same thing as for a full six and each Pokémon you add moves it in a way
-   you can follow. Known Pokémon, their pairs and their sets count as for a full team; an empty slot counts 1/6 of an average
-   team's strength; matchups and the six's own record wait for all six. Marked "so far" everywhere. CH.PARTIAL_V2=false: old check. */
-CH.PARTIAL_V2 = true;
-CH.partialOf = ms => { try { if (!ms || !ms.length || ms.length >= 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = ms.map(m => m.p.n);
-  if (new Set(names.map(n => (byName.get(n) || {}).b || n)).size < names.length) return null; const M = META.model, mx = M.meanX || 0;
-  const xk = strengthX(names, ms).x0; if (!isFinite(xk)) return null; const y = xk + (6 - names.length) / 6 * mx, pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
-  const ss = CH.ssOfE(e); return {x: y, y, six: null, mu: 0, pct, ss, ss0: ss, ssMu: ss, pct0: pct, pMu: pct, e, e0: e, eMu: e, rg: null, su: null, partialN: names.length}; } catch (e) { return null; } };
-// The letter (Sim, Oct 30): readiness for the top 30 threats, minus 6 points for each of the team checklist's checks it misses.
-// Measured on 904 tournament teams with records: each missed check cost about 1% of games won, and 6 points per miss put the
-// letters in the same order as the teams' finishes most often. Weather and Taunt/Encore aren't checks: teams without them won
-// just as often.
-CH.GMISS = 6;
-// Real results first (Sim, Oct 30): when these exact six have 30+ tournament games, the letter comes from how often they won.
-// On 339 real teams, our own grade didn't line up with their records (higher grades didn't win more), so a real record wins.
-// 50% is an average team; each letter is 5 points of win rate. The win rate is already pulled toward the field for small samples.
-CH.REC_MIN = 30;
-CH.recLetter = wr => wr >= .6 ? 'A' : wr >= .55 ? 'B' : wr >= .5 ? 'C' : wr >= .45 ? 'D' : 'F';
-CH._recMap = null; CH._recSrc = null;
-// every six with 30+ games (results.records, winners and losers alike); older data only has the winning ones (results.proven)
-CH.recList = () => RES && (Array.isArray(RES.records) ? RES.records : Array.isArray(RES.proven) ? RES.proven : null);
-CH.recOf = ms => { const L = CH.recList(); if (!ms || ms.length !== 6 || !L) return null;
-  if (CH._recSrc !== L) { CH._recSrc = L; CH._recMap = new Map(); for (const [ns, n, wr, g] of L) if (Array.isArray(ns) && ns.length === 6 && g != null && +g >= CH.REC_MIN) CH._recMap.set(ns.slice().sort().join('|'), {n: +n, wr: +wr, g: +g}); }
-  return CH._recMap.get(ms.map(m => (m.p || m).n).sort().join('|')) || null; };
-// Teams with no record of their own (Sim, Oct 30: "accuracy on point"): the grade adds what the team-strength model (trained on
-// 35k real games, player skill taken out) says about these Pokémon and sets. Tested on events neither had seen
-// (experiments/grade-eval.mjs): newest 20% of Limitless games, who won: readiness alone 52.5%, model alone 54.8%, grade + 0.75×model
-// 55.1%; official RK9 events, top 8 vs the rest: grade 0.586, model 0.515, blend 0.586. So the blend is the best on both. The model
-// part is 0.75 × the grade's spread (15 points) per standard deviation of real teams' model strength, centred on the median team.
-// Re-tested Oct 31 on cleaned data (themed events removed; 'ready for the top threats' no longer charged twice): blend 55.3% of
-// held-out games, 0.576 at official events; the grade's spread is now 12.1 points, so 0.75 of it is 9.1 per model SD.
-CH.GMODEL = 9.1;
-CH.modelPts = ms => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const q = META.model.dist && META.model.dist.q; if (!Array.isArray(q) || q.length !== 101) return null;
-  const sd = (q[84] - q[16]) / 2; if (!(sd > 0)) return null; const x = strengthX(ms.map(m => m.p.n), ms).x0; return isFinite(x) ? Math.max(-25, Math.min(25, CH.GMODEL * (x - q[50]) / sd)) : null; } catch (e) { return null; } };
-// 'Ready for the top threats' is itself the readiness score, so it isn't charged again as a missed check (sweep, Oct 31: it
-// made a 7-point cliff between 74% and 75% ready). The letter comes from the score as shown, rounded.
-/* ONE GRADE (Nov 7, Sim: "why are we not able to make this simple?"). Every team has one grade out of 100, always 0-100, and
-   its letter comes only from that number (A 90+, B 80+, C 70+, D 60+, F). It blends our own check with how this exact six did
-   in real tournaments, gradually: the more real games, the more they count (151 games: 60% real results, 40% our check; no
-   games: our check alone). A real win rate is put on the same scale: 60% wins = 90, 55% = 80, 50% = 70, 45% = 60.
-   The real win rate itself is shown as its own line under the grade, never as a second grade. */
-CH.REC_K = 100;
-CH.recScore = wr => Math.min(100, Math.max(0, Math.round(70 + (wr - .5) * 200)));
-/* Letter buffer (Nov 9, Sim asked): the daily data update moves an unchanged team's grade by ~1-2 points, which with plus/minus
-   letters would flip a team sitting on a line (B / B+) with nothing changed. For the player's own teams (My Team and saved teams),
-   the letter they last saw is kept until the grade clearly crosses into another letter (by 1.5 points). Editing the team makes a new
-   key, so a real change shows at once. Kept in this browser only (a per-viewer convenience); without storage it just shows the plain letter. */
-CH.STICKY = 1.5;
-CH.letterBounds = L => { const T = [[90, 101, 'A'], [80, 90, 'B'], [70, 80, 'C'], [60, 70, 'D'], [-1, 60, 'F']].find(t => t[2] === L); return T ? [T[0], T[1]] : null; };
-CH.teamKey = ms => (ms || []).map(m => [m.p && m.p.n, m.heldItem || '', m.ability || '', (m.moves || []).map(x => x && x.name).join(',')].join('|')).sort().join(';');
-CH.ownKeys = () => { const sig = JSON.stringify(S.slots) + '#' + JSON.stringify((S.teams || []).map(t => t.slots)); if (CH._okC && CH._okC.sig === sig) return CH._okC.ks; const ks = new Set(); CH._okC = {sig, ks}; try { const cur = typeof members === 'function' ? members() : []; if (cur.length) ks.add(CH.teamKey(cur));
-  for (const t of S.teams || []) { const r = typeof teamRating === 'function' ? teamRating(t.slots) : null; if (r && r.ms && r.ms.length) ks.add(CH.teamKey(r.ms)); } } catch (e) {} return ks; };
-CH.sticky = (ms, s) => { const now = CH.gradeFull(s); let map; try { map = JSON.parse(localStorage.getItem('np.gl') || '{}') || {}; } catch (e) { return now; }
-  const k = CH.teamKey(ms); if (!k) return now; const prev = map[k]; let out = now;
-  if (prev && prev !== now) { const b = CH.letterBounds(prev); if (b && s >= b[0] - CH.STICKY && s < b[1] + CH.STICKY) out = prev; }
-  if (map[k] !== out && !CH._ownBusy) { CH._ownBusy = true; let own; try { own = CH.ownKeys(); } finally { CH._ownBusy = false; }
-    if (own.has(k)) { map[k] = out; const ks = Object.keys(map); if (ks.length > 60) delete map[ks[0]]; try { localStorage.setItem('np.gl', JSON.stringify(map)); } catch (e) {} } }
-  return out; };
-CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && !x.note && x.k !== 'reach') : [], mp = CH.modelPts(ms), rec = CH.recOf(ms);
-  const illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
-  if (st) { const s = Math.round(st.ss * 10) / 10; const L = CH._ownBusy ? CH.gradeFull(s) : CH.sticky(ms, s); return {v: 2, s, letter: L, band: L[0] === 'F' ? 'F' : L[0], word: CH.wordOf(s), rk: st.pct, e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.ss0, pMu: st.ssMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
-  // fewer than six (or the model not loaded yet): the old check, marked so far
-  const raw = RD.score - CH.GMISS * miss.length + (mp || 0), clamp = v => Math.min(100, Math.max(0, Math.round(v))), chk = clamp(raw);
-  let s = chk, w = 0, real = null; if (rec) { w = rec.g / (rec.g + CH.REC_K); real = CH.recScore(rec.wr); s = clamp((1 - w) * raw + w * real); }
-  return {v: 1, s, letter: CH.gradeOld(s), chk, real, w, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; };
-// the third line under every grade: the real win rate, or that there is none yet
-const pct1 = x => Math.round(x * 1000) / 10 + '%';
-// v2: where the six ranks among real teams, and what the grade rests on (its own games, or our estimate)
-CH.rkOf = G => G.rk != null ? G.rk : CH.rankOfS(G.s);
-CH.pctTxt = G => CH.rankShort(CH.rkOf(G)) + ' of tournament teams';
-CH.pctShort = G => CH.rankShort(CH.rkOf(G));
-// a grade number (a rank among real teams) as its expected win rate, for explanations
-// a Strength Score as its chance to beat today's tournament teams (%), and as a rank among real teams (0-100)
-CH.eOfS = s => s == null || !(META.model && META.model.dist) ? null : Math.round((.5 + (s - CH.SS_MID) / CH.SS_K) * 1000) / 10;
-CH.rankOfS = s => { const q = META.model && META.model.dist && META.model.dist.q; if (s == null || !Array.isArray(q) || q.length !== 101) return null; const e = .5 + (s - CH.SS_MID) / CH.SS_K;
-  let lo = q[0] - 3, hi = q[100] + 3; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2, f = CH.fieldWin(m); if (f == null) return null; if (f < e) lo = m; else hi = m; } return strengthPct((lo + hi) / 2); };
-/* a change, on suggestion cards and after Apply (Sim, Nov 7: "giving win percentage is so weird… seems arbitrary"): the grade
-   letter and the team rating, the 0-100 rank among real tournament teams the letter comes from: "Grade C → B · rating 41 → 58",
-   or "Grade C · rating 41 → 46" when the letter stays. A tiny win-rate change ("−0.6%") claimed more precision than there is. */
-/* Shown as a rank (Sim, Nov 8: "77 for a 9-1 team seems so low"): the 0-100 number is where the six ranks among real tournament
-   teams, but "77 / 100" reads like a test score (a C+), so the page says "Top 23%" instead. */
-CH.rankShort = s => { const p = Math.round(s); return p >= 99 ? 'Top 1%' : p >= 50 ? `Top ${100 - p}%` : `Bottom ${Math.max(1, p)}%`; };
-/* Strength Score (Nov 9): a change shows in score points, "+7 (76 → 83)", and the band word when it changes */
-CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(g0), w1 = CH.wordOf(g1);
-  return `${d > 0 ? '+' + d : d < 0 ? '\u2212' + Math.abs(d) : '\u00b10'} (${r0} \u2192 ${r1})${w0 !== w1 ? ', ' + w1 : ''}`; };
-CH.gradeNum = G => !G ? '' : G.v === 2 ? `${Math.round(G.s)} \u00b7 ${CH.wordOfL(G.letter)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
-CH.recLine = (G, short) => !G ? '' : G.v === 2 ? (G.six ? (short ? `${CH.n(G.six.g)} real games` : `Based on ${G.six.g.toLocaleString('en-US')} real games`) : (short ? 'Our estimate' : 'Our estimate, not played in tournaments yet')) : G.rec ? (short ? `${pct1(G.rec.wr)} wins in ${CH.n(G.rec.g)} games` : `Real win rate: ${pct1(G.rec.wr)} in ${G.rec.g.toLocaleString("en-US")} games`) : (short ? 'Our estimate · no tournament games yet' : 'Our estimate · not played in tournaments yet');
+/* CH.gradeNum lives in 58-strength.js (Nov 11) */
+/* CH.recLine lives in 58-strength.js (Nov 11) */
 // What's behind the grade, as parts that add up to it: readiness, team strength (the remainder, so the sum is exact), missed
 // checks, and real results (how far the real win rate moved it).
-CH.gradeParts = (G, RD) => { const nm = G.miss ? G.miss.length : 0, chk = G.chk != null ? G.chk : G.s; return {nm, ts: chk - RD.score + CH.GMISS * nm, ra: G.s - chk}; };
-CH.gradeSum = (G, RD) => { const sg = v => v < 0 ? '−' : '+';
-  /* the parts in rating points (Sim, Nov 7: no tiny win-rate pieces): where its Pokémon, pairs and sets alone would rank it, what
-     its matchups move, what its own games move */
-  if (G.v === 2) { const a = Math.round(G.pct0), b = Math.round(G.pMu), t = Math.round(G.s), m = b - a, r = t - b;
-    return `<b>Strength Score <span data-band="${G.band || String(G.letter)[0]}">${t}</span></b> = ${a} from its Pokémon, pairs and sets${m ? ` ${sg(m)} ${Math.abs(m)} for its matchups (ready for ${G.h ? G.h.x + '/' + G.h.n : ''} top threats)` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from this six's own ${G.six.g.toLocaleString('en-US')} real games (players' skill taken out)` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; }
-  const {nm, ts, ra} = CH.gradeParts(G, RD);
-  return `<b>Grade <span data-band="${G.band || String(G.letter)[0]}">${G.s}</span></b> = ${RD.score} ready${ts ? ` ${sg(ts)} ${Math.abs(ts)} team strength` : ''}${nm ? ` − ${CH.GMISS * nm} (${nm} missed check${nm === 1 ? '' : 's'})` : ''}${G.rec && ra ? ` ${sg(ra)} ${Math.abs(ra)} real results` : ''}${typeof tip === 'function' ? tip('numbers') : ''}`; };
+/* CH.gradeParts and CH.gradeSum live in 59-matchup-data.js (Nov 11: the threat sheet on the new build shows the same sum) */
 /* the same sum, short, for cards and table cells: "92 = 85 ready + 7 strength − 6 checks" */
 CH.gradeSumS = (G, RD) => { const sg = v => v < 0 ? '−' : '+';
   if (G.v === 2) { const a = Math.round(G.pct0), b = Math.round(G.pMu), t = Math.round(G.s), m = b - a, r = t - b; return `Rating ${t} = ${a} from its Pokémon and sets${m ? ` ${sg(m)} ${Math.abs(m)} matchups` : ''}${G.six && r ? ` ${sg(r)} ${Math.abs(r)} from its own games` : ''}`; }
@@ -205,18 +34,15 @@ CH.gradeSumS = (G, RD) => { const sg = v => v < 0 ? '−' : '+';
    the light and dark page (large text). */
 CH.GCOL = {A: '#0078BF', B: '#8b4fe0', C: '#77808f', D: '#b8740a', F: '#8d7b68'};
 CH.gcol = L => CH.GCOL[String(L || '')[0]] || '#8a90a6';
-/* how many of the top threats the team handles (Handled or Well handled), from the same rows the readiness uses */
-CH.hand = RD => RD && Array.isArray(RD.rows) && RD.rows.length ? {x: RD.rows.filter(r => r.level >= 2).length, n: RD.rows.length} : null;
 /* Sim, Nov 9: "a team getting a 90 then seeing 85% ready ... is contradictory". Readiness shows as a count everywhere: "Ready for
    24/30 top threats" (Handles it or Beats it); the weighted % stays inside the calculations only. */
-CH.readyN = RD => { const h = CH.hand(RD); return h ? `${h.x}/${h.n}` : ''; };
-CH.readyTxt = RD => { const h = CH.hand(RD); return h ? `Ready for ${h.x}/${h.n} top threats` : ''; };
-CH.handTxt = (RD, short) => { const h = CH.hand(RD); return !h ? '' : short ? `handles ${h.x} of ${h.n}` : `handles ${h.x} of the top ${h.n} threats`; };
+/* CH.readyN lives in 58-strength.js (Nov 11) */
+/* CH.readyTxt and CH.handTxt live in 59-matchup-data.js (Nov 11) */
 /* a team's grade as a badge (Build me a team, Saved teams): the letter in its band colour, the grade number, and the sum
    underneath so "% ready" always reads as one part of the grade. A team with 30+ real games shows its record instead. */
 CH.gradeBadge = (G, RD) => { if (!G || !RD) return '';
   /* the same three lines as My team: the letter, the grade out of 100, the real win rate (or none yet); the sum is the tooltip */
-  const tt = G.v === 2 ? `Strength Score ${Math.round(G.s)}, ${CH.wordOfL(G.letter)}: ${CH.gradeSumS(G, RD)}. ${CH.pctTxt(G)}. ${CH.recLine(G)}.` : `Grade ${G.s} (${G.letter}) = ${CH.gradeSumS(G, RD)}. ${CH.recLine(G)}.`;
+  const tt = G.v === 2 ? `Strength Score ${Math.round(G.s)}, ${CH.wordOfL(G.letter)}: ${CH.gradeSumS(G, RD)}. ${CH.pctTxt(G) ? CH.pctTxt(G) + '. ' : ''}${CH.recLine(G)}.` : `Grade ${G.s} (${G.letter}) = ${CH.gradeSumS(G, RD)}. ${CH.recLine(G)}.`;
   /* plain words (Nov 9, Sim: no extra numbers next to the letter): the letter only; the rank and the record are in the hover text */
   return `<span class="npgb" style="--gc:${CH.gcol(G.letter)}" title="${esc(G.v === 2 ? tt : `${CH.gradeNum(G)}. ${tt}`)}"><b class="npgl">${G.v === 2 ? Math.round(G.s) : G.letter}</b></span>`; };
 /* round words (Sim, Nov 4): the record and readiness as labelled number cells instead of a sentence, each figure once.
@@ -228,19 +54,18 @@ CH.recStats = (G, RD, hd, c) => { const cell = (v, l, t) => `<span class="wdc"><
   const ready = sum ? '' : cell(CH.readyN(RD), 'ready', tp('readiness'));
   const chk = `<div class="wdrow" role="group" aria-label="Our check against the top ${hd ? hd.n : 30} threats"><span class="wdl">Our check, top ${hd ? hd.n : 30} threats${G && G.partial ? tp('numbers') : ''}</span>${ready}${hd ? cell(hd.x, 'handled') : ''}${c[1] ? cell(c[1], 'shaky') : ''}${c[0] ? cell(c[0], 'no answer') : ''}</div>`;
   return `<div class="rd wdstats">${sum}${rec}${chk}</div>`; };
-CH.LETTERS = 'Strength Score: 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic. A team that beats today\u2019s tournament teams half the time scores 80.';
+// CH.LETTERS moved to 58-strength.js (R4, Nov 11) so the new build shares it
 CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
-  if (G.v === 2) { const L2 = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${Math.round(G.s)} \u00b7 ${CH.wordOfL(G.letter)}</b>`, t = Math.round(G.s), a = Math.round(G.pct0), b = Math.round(G.pMu), m = b - a, r = t - b, pts = v => `${Math.abs(v)} point${Math.abs(v) === 1 ? '' : 's'}`;
-    const own = G.six ? ` This exact six has ${G.six.g.toLocaleString('en-US')} real tournament games. With its players' skill and its opponents' strength taken out, those results ${r > 0 ? `add ${pts(r)}` : r < 0 ? `take off ${pts(r)}` : 'change it by less than a point'}; the more games, the more they count.` : ' This exact six hasn’t been played in tournaments yet, so this is our estimate from how its Pokémon, pairs and sets do in real games.';
-    const su = G.st && G.st.su, rk = Math.round(CH.rkOf(G)), top = `${L2}. Teams scoring like this win about ${Math.round(G.e)}% against today\u2019s tournament teams (${CH.pctTxt(G).replace(/^Top/, 'top').replace(/^Bottom/, 'bottom')} by rank).`;
+  if (G.v === 2) { const W = CH.whyData(G), L2 = `<b class="npgw" style="color:${CH.gcol(W.letter)}">${W.s} \u00b7 ${W.word}</b>`, a = W.base, m = W.mu, r = W.own;
+    const su = W.sure, top = `${L2}. Teams scoring like this win about ${W.e}% against today\u2019s tournament teams (${W.rank.replace(/^Top/, 'top').replace(/^Bottom/, 'bottom')} by rank).`;
     /* short (Sim, Nov 7: "just what they should and need to"): what the number means, the three things it's made of, the letters */
     const sg = v => (v > 0 ? '+' : v < 0 ? '−' : '±') + Math.abs(v);
-    if (G.partial) { const k = G.st && G.st.partialN || 0, e = 6 - k;
-      return `<div class="chgwhy" id="chGwhy">${L2} so far, with ${k} of 6 picked.<ul class="chgwl"><li>From how your ${k} Pokémon, their pairs and their sets do in real tournament games</li><li>Each of the ${e} empty slot${e === 1 ? '' : 's'} counts as an average tournament pick, so a strong pick raises it and a weak one lowers it</li><li>Matchups and real results join once all six are in</li></ul>${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span></div>`; }
+    if (W.partial) { const k = W.k, e = 6 - k;
+      return `<div class="chgwhy" id="chGwhy">${L2} so far, with ${k} of 6 picked.<ul class="chgwl"><li>From how your ${k} Pokémon, their pairs and their sets do in real tournament games</li><li>Each of the ${e} empty slot${e === 1 ? '' : 's'} counts as an average tournament pick, so a strong pick raises it and a weak one lowers it</li><li>Matchups and real results join once all six are in</li></ul>${W.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span></div>`; }
     return `<div class="chgwhy" id="chGwhy">${top}<ul class="chgwl"><li><b>${a}</b> from how its Pokémon, pairs and sets do in real tournament games</li>`
-      + `<li><b>${sg(m)}</b> for its matchups (ready for ${G.h ? G.h.x + '/' + G.h.n : ''} top threats). They count a little, since players often play around a shaky matchup</li>`
-      + (G.six ? `<li><b>${sg(r)}</b> from this exact six's own ${G.six.g.toLocaleString('en-US')} real games, with its players' skill taken out</li>` : `<li>This exact six hasn’t been played in tournaments yet, so the rest is our estimate</li>`)
-      + `</ul><p class="chsure">Tested on 6,270 later tournament games: teams scoring 90+ won 58.5%, the 80s 53-54%, the 70s 46-50%, the 60s 38-41%. Every 10 points really means more wins.</p>${su ? `<p class="chsure">How sure: <b>${su.w}</b>. ${su.t[0].toUpperCase() + su.t.slice(1)}.</p>` : ''}${G.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
+      + `<li><b>${sg(m)}</b> for its matchups (ready for ${W.ready} top threats). They count a little, since players often play around a shaky matchup</li>`
+      + (W.hasSix ? `<li><b>${sg(r)}</b> from this exact six's own ${W.ownGames.toLocaleString('en-US')} real games, with its players' skill taken out</li>` : `<li>This exact six hasn’t been played in tournaments yet, so the rest is our estimate</li>`)
+      + `</ul><p class="chsure">${CH.WHY_TEST}</p>${su ? `<p class="chsure">How sure: <b>${su.w}</b>. ${su.t[0].toUpperCase() + su.t.slice(1)}.</p>` : ''}${W.illegal ? 'Not legal yet: fix the items first. ' : ''}<span class="t2">${CH.LETTERS}</span>${W.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; }
   const L = `<b class="npgw" style="color:${CH.gcol(G.letter)}">${G.letter}</b>`, hd = G.h ? ` (handles ${G.h.x} of ${G.h.n})` : '', mp = G.mp != null ? Math.round(G.mp) : null;
   const realTxt = G.rec ? ` These exact six also won ${pct1(G.rec.wr)} of ${G.rec.g.toLocaleString('en-US')} real tournament games (${G.rec.n} player${G.rec.n === 1 ? '' : 's'}), which counts as ${G.real}; with that many games, real results make up ${Math.round(G.w * 100)}% of the grade (more games, more weight).` : ' This exact six hasn\u2019t been played in tournaments yet, so the grade is our own check alone.';
   if (o && o.short) return `<div class="chgwhy" id="chGwhy">${L} · ${G.s} out of 100.${realTxt}<br><span class="t2">A 90+, B 80+, C 70+, D 60+.</span></div>`;
@@ -249,8 +74,7 @@ CH.gradeWhy = (G, o) => { if (!G) return ''; const n = G.CK ? G.CK.n : 0;
     + (mp != null ? ` ${mp === 0 ? 'Teams with these Pokémon and sets do about average in real games (±0).' : `Teams with these Pokémon and sets do ${mp > 0 ? 'better' : 'worse'} than average in real games (${mp > 0 ? '+' : '−'}${Math.abs(mp)}).`}` : '')
     + realTxt + ` A 90+, B 80+, C 70+, D 60+.${G.partial ? ' The grade settles once all six are in.' : ''}${G.illegal ? ' Not legal yet: fix the items first.' : ''}<br><span class="t2">Weather and Taunt or Encore aren't counted: many event winners run neither, and teams without them win just as often.</span>${G.illegal && typeof regNote === 'function' ? regNote() : ''}</div>`; };
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chgrade]'); if (!b) return; ui.gwhy = !ui.gwhy; const w = $('chGwhy'); if (w) w.hidden = !ui.gwhy; b.setAttribute('aria-expanded', ui.gwhy ? 'true' : 'false'); });
-CH.LEGEND = 'Strength Score = how strong the team is altogether, from how its Pokémon, pairs and sets do in real games, its matchups against the top threats, and its own record (players\' skill taken out). 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic.';
-CH.LV = ['No answer', 'Shaky', 'Handles it', 'Beats it'];
+/* CH.LEGEND lives in 59-matchup-data.js (Nov 11) */
 // Motion (Nov 1): when the grade first shows or changes, the ring pops in and the "% ready" counts up from the last number,
 // 200 ms, transform/opacity only for the ring; the number is tabular so nothing moves. Off with reduced motion, and only on
 // the page that's showing (redraws with the same grade do nothing).
@@ -266,44 +90,15 @@ CH.gradeMotion = (head, G, RD) => { const b = head.querySelector('.rd > b'), m =
   b.classList.add('np-num'); const put = v => { b.textContent = m[1] + v + m[3]; if (smOn) sm.textContent = String(v); };
   const t0 = performance.now(), tick = t => { const k = Math.min(1, (t - t0) / 200), v = Math.round(from + (to - from) * (1 - Math.pow(1 - k, 3)));
     if (!b.isConnected) return; put(v); if (k < 1) requestAnimationFrame(tick); }; put(from); requestAnimationFrame(tick); };
-CH.n = n => n.toLocaleString ? n.toLocaleString('en-US') : String(n);
+/* CH.n lives in 58-strength.js (Nov 11) */
 // a fold: remembers open/closed per device
 CH.fold = (key, title, sub, body, open) => { const o = LS.get('cc2.chf.' + key, null); const isOpen = o == null ? !!open : !!o;
   return `<details class="chsec chfold" data-chf="${key}"${isOpen ? ' open' : ''}><summary>${CH.tog()}<div style="flex:1;min-width:0"><div class="cht">${title}</div>${sub ? `<div class="chs">${sub}</div>` : ''}</div></summary><div class="chbody">${body}</div></details>`; };
 document.addEventListener('toggle', e => { const d = e.target; if (d && d.dataset && d.dataset.chf) LS.set('cc2.chf.' + d.dataset.chf, d.open ? 1 : 0); }, true);
-// the meta's six: the most-used Pokémon at tournaments, one per species
-CH.metaSix = () => { const seen = new Set(), out = []; for (const p of ROSTER.slice().sort((a, b) => U(b) - U(a))) { if (!(U(p) > 0) || seen.has(p.b)) continue; seen.add(p.b); out.push(p); if (out.length === 6) break; } return out; };
-// your four vs the meta's six: the Battle mode planner (same as Gauntlet), cached per team
-CH._four = {key: null, v: null};
-CH.four = ms => { if (!ms || ms.length < 4) return null; const six = CH.metaSix(); if (six.length < 4) return null;
-  const key = metaVersion + '|' + six.map(p => p.n).join() + '|' + ms.map(m => m.p.n + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',')).join('|');
-  if (CH._four.key === key) return CH._four.v; let v = null;
-  try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, six.map(oppMember), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
-  CH._four = {key, v}; return v; };
-// your four against any six (the Battle mode planner), cached
-CH._fv = {key: null, v: null};
-CH.fourVs = (ms, names) => { const key = metaVersion + '|' + names.join() + '|' + ms.map(m => m.p.n + '@' + (m.item || '') + ':' + m.moves.map(x => x.name).join(',')).join('|'); if (CH._fv.key === key) return CH._fv.v; let v = null;
-  try { const useA = $('useAbil') ? $('useAbil').checked : true, r = planMatchup(ms, withSheet(names.map(n => oppMember(byName.get(n))), realSheetFor(names, null)), useA); v = {lead: r.lead.map(i => ms[i].p.n), back: r.back.map(i => ms[i].p.n)}; } catch (e) { v = null; }
-  CH._fv = {key, v}; return v; };
-CH.leadWhy = m => { const mv = new Set(m.moves.map(x => x.name)); if (mv.has('Tailwind')) return 'Tailwind turn 1'; if (mv.has('Trick Room')) return 'Trick Room turn 1'; if (mv.has('Fake Out')) return 'Fake Out pressure';
-  if (m.ability === 'Intimidate') return 'Intimidate on entry'; if (mv.has('Follow Me') || mv.has('Rage Powder')) return 'redirects attacks'; return ''; };
-// one real KO for a red-pen note: the most-used top threat one of yours OHKOs as its solid answer
-CH.koNote = RD => { if (!RD) return null; let best = null;
-  for (const r of RD.rows) for (const x of r.solid || []) { const du = x.du; if (du && du.win && du.nM === 1 && du.o && x.m && (!best || r.t.w > best.w)) best = {w: r.t.w, n: x.m.n, txt: `${du.o.name || String(du.o.mv).replace(/ \(.*\)$/, '')} OHKOs ${r.t.d}`}; }
-  return best; };
-CH.lvCount = RD => [0, 1, 2, 3].map(l => RD ? RD.rows.filter(r => r.level === l).length : 0);
-CH.order = RD => RD ? RD.rows.slice().sort((a, b) => a.level - b.level || b.t.w - a.t.w) : [];
 CH.tiles = (RD, attr) => `<div class="chtiles" role="group" aria-label="Top 30 threats, worst first">${CH.order(RD).map(r => { const p = byName.get(r.t.n); return `<button type="button" class="chtile l${r.level}" ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}" title="${esc(r.t.d)}: ${CH.LV[r.level]}">${sprite(p) || `<span class="chk">${esc(r.t.d.slice(0, 3))}</span>`}</button>`; }).join('')}</div>`;
 // the 10 most common threats by name (sprite, name, how ready you are), then the other 20 as a small strip, worst first
-/* Threats from real results first (Nov 8 readiness test: the damage-calc verdicts didn't predict who wins, −0.2 ±1.4 pts over
-   11,800 tournament games; the matchups learned from real games did). For each threat: how teams with your Pokémon have done
-   against teams with it (ctrVal, skill and team strength taken out), summed over your six. The calc reading stays underneath. */
-CH.realVs = (t, ms) => { try { if (typeof ctrVal !== 'function') return null; const ns = (ms || members()).map(m => m.p.n); let v = 0, k = 0;
-  for (const a of ns) { const c = ctrVal(a, t); if (c != null) { v += c; k++; } } if (!k) return null; const pts = (sig(v) - .5) * 100;
-  return pts >= 1.5 ? {w: 'Favoured', c: 'ok', pts} : pts <= -1.5 ? {w: 'Unfavoured', c: 'bad', pts} : {w: 'Even match', c: 'mid', pts}; } catch (e) { return null; } };
-CH.threats10 = (RD, attr) => { const top = RD.rows.slice().sort((a, b) => b.t.w - a.t.w).slice(0, 10), set = new Set(top); let rest = CH.order(RD).filter(r => !set.has(r));
-  /* Nov 10 (Sim picked option 1): the real-games verdict leads, so "worst first" means least favoured in real games (calc breaks ties) */
-  const RV = new Map(rest.map(r => [r, CH.realVs(r.t.n)])); if (rest.some(r => RV.get(r))) rest = rest.slice().sort((a, b) => ((RV.get(a) || {pts: 0}).pts - (RV.get(b) || {pts: 0}).pts) || (a.level - b.level));
+/* which 10, and the order of the other 20, are worked out in 59-matchup-data.js (CH.top10), shared with the new build */
+CH.threats10 = (RD, attr) => { const {top, rest, RV} = CH.top10(RD);
   const rvWord = r => { const R = RV.get(r); return R ? `${R.w}, calc ${CH.LV[r.level]}` : CH.LV[r.level]; };
   const lv = ['bad', 'shaky', 'mid', 'ok'];
   return `${typeof ctrVal === 'function' && META.model && META.model.ctr ? '<p class="t2 chthrsrc">Verdicts from real tournament games: how teams with your Pokémon did against teams with each threat. Calc readings are underneath.</p>' : ''}<div class="chtl10${ui.tlMore ? ' is-more' : ''}">${top.map((r, i) => { const p = byName.get(r.t.n); return `<button type="button" class="chtr l${r.level}${p ? ' tyx' : ''}"${p ? ` style="${tyVars(p)}"` : ''} ${attr}="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}"><span class="rk">${i + 1}</span>${sprite(p) || ''}<span class="tx"><b>${escName(r.t.d)}</b>${(() => { const R = CH.realVs(r.t.n); return R ? `<span class="st ${R.c}" title="From real tournament games: how teams with your Pokémon did against teams with ${esc(r.t.d)}">${R.w}</span><span class="st chcalcv">Calc: ${CH.LV[r.level]}</span>` : `<span class="st ${lv[r.level]}">${CH.LV[r.level]}</span>`; })()}</span></button>`; }).join('')}</div>
@@ -318,9 +113,7 @@ CH.sugs = () => { let L = ui.planList || [], side = false; const base = ui.vsum 
   // (Nov 7 audit) only ones about as ready as now (at most 2 points less) and never a Pokémon you just swapped out with Apply,
   // so following them can't go round in circles or drift downhill
   if (ui.plans && !ui.plans.length && Array.isArray(ui.plans.more) && ui.plans.more.length) { side = true;
-    const ok = []; for (const pl of ui.plans.more) { if (ok.length >= 3) break; if (pl.ch.some(x => (swOutNow() || new Set()).has(x.c.p.b))) continue;
-      if (pl._ts === undefined && pl.team && pl.team.length === 6) { try { pl._ts = tsOf(pl.team); } catch (e) { pl._ts = null; } }
-      const gg = g0 != null ? planGrade(pl) : null; if ((gg != null && gg < g0 - 2) || (base != null && pl._ts != null && pl._ts < base - 2)) continue; ok.push(pl); }
+    const ok = CH.sideGrades(ui.plans.more, g0, base);
     L = ui.planList = ok;
     if (!ok.length) return `<section class="chsugs" aria-label="Suggestions"><p class="t2 chsidek">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p><button type="button" class="linkbtn chseeall" data-view="coverage">See all suggestions ›</button></section>`; }
   const top = L.slice(0, 3); let tk = ''; try { tk = members().map(m => m.p.n).join(','); } catch (e) {} const open = ui.sugMore === tk, hid = top.length - 1; const gapN = ui.plans && ui.plans.gapNote ? `<p class="chgapnote">${esc(ui.plans.gapNote)}</p>` : ''; // a game-plan gap nothing in this pool can fix
@@ -349,7 +142,7 @@ CH.legendRow = RD => { const c = CH.lvCount(RD); let rv = null; try { rv = RD.ro
   if (rv && rv.length) { const k = w => rv.filter(x => x.c === w).length; return `<div class="chleg chlegrv"><span><i class="rv-bad" aria-hidden="true"></i>Unfavoured ${k('bad')}</span><span><i class="rv-mid" aria-hidden="true"></i>Even match ${k('mid')}</span><span><i class="rv-ok" aria-hidden="true"></i>Favoured ${k('ok')}</span></div><p class="t2 chlegcalc">Damage calc: ${CH.LV[0]} ${c[0]} · ${CH.LV[1]} ${c[1]} · ${CH.LV[2]} ${c[2]} · ${CH.LV[3]} ${c[3]}</p>`; }
   return `<div class="chleg">${[[0, 'var(--chbad)', '✗', 'bad'], [1, 'var(--chshaky)', '~', 'part'], [2, 'var(--chmid)', '✓', 'mid'], [3, 'var(--chok)', '✓✓', 'ok']].map(([l, col, g, k]) => `<span><i class="g-${k}" style="background:${col}" aria-hidden="true">${g}</i>${CH.LV[l]} ${c[l]}</span>`).join('')}</div>`; };
 // event names without a trailing prize-pool note, e.g. "($40 USD prize pool)" (Oct 30 audit)
-const evName = n => String(n || '').replace(/\s*\((?:[^()]*?(?:prize|USD|\$)[^()]*)\)\s*$/i, '').trim();
+/* evName moved to 05-home-data.js (Nov 12, shared with the new build's Home) */
 // ---------- Home ----------
 const chHomeOld = renderHome;
 renderHome = function () { const el = $('homeOut'); if (!el) return; const pane = document.querySelector('[data-pane="home"]'); if (pane && pane.hidden && el.innerHTML) return;
@@ -384,7 +177,7 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
     <button type="button" class="chghost" data-view="build" style="margin-top:10px">Start from scratch</button></div>`;
   // 03 doubles is played in pairs: Showdown replays, how often the first brings the second
   const bw = RES && RES.tc && RES.tc.bw, games = RES && RES.tc && RES.tc.games;
-  let pairs = []; if (bw) { const used = new Set(); for (const p of six) { const k = brKeyOf(p), L = bw[k]; if (!L) continue; const x = L.find(y => !used.has(k + '|' + y[0]) && byName.get(y[0])); if (!x) continue; used.add(x[0] + '|' + k); pairs.push({a: p, b: byName.get(x[0]), pct: x[1], g: x[2]}); if (pairs.length === (PHONE() ? 2 : 4)) break; } }
+  let pairs = homePairs(six, PHONE() ? 2 : 4); // data: homePairs (05-home-data.js, shared with the new build, Nov 12)
   const pr = pairs.length >= 2 ? `<div class="chblock"><div class="chk">Team preview · Showdown replays${games ? ` · ${CH.n(games)} games` : ''}</div><h3>Doubles is played in <span class="hl">pairs.</span></h3>
     <div class="chpair4">${pairs.map(x => `<button type="button" data-lt="${esc(x.b.n)}" aria-label="${esc(x.a.d)} and ${esc(x.b.d)}: brought together ${x.pct}%"><div class="sp">${sprite(x.a) || ''}${sprite(x.b) || ''}</div><div><div class="pct">${x.pct}<i>%</i></div><div class="nm">${esc(x.a.d)} + ${esc(x.b.d)}</div><div class="t2">${CH.n(x.g)} games</div></div></button>`).join('')}</div><div class="t2" style="margin-top:6px">% = how often the pair is brought together when both are on the team.</div></div>` : '';
   // the older Home sections, folded (nothing removed)
@@ -455,7 +248,7 @@ renderHome = function () { const el = $('homeOut'); if (!el) return; const pane 
       ${typeof FB !== 'undefined' && FB.ok ? '<div class="hfb"><span>Something off or missing?</span><button type="button" class="btn sm fbbtn" data-fbopen="1">Send feedback</button></div>' : ''}
 </div>`; };
 // replay keys fold Megas into their species (same as the ratings sheet)
-function brKeyOf(p) { return p.n === 'Floette-Mega' ? 'Floette-Eternal' : p.n.replace(/-Mega(-[XYZ])?$/, ''); }
+/* brKeyOf (a Mega's key in the replay data) lives in 24-sheet-data.js (Nov 11) */
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chhthr]'); if (!b) return; const n = b.dataset.chhthr; if (view !== 'report') setView('report'); setTimeout(() => chScoutOpen(n), 50); });
 // ---------- My team: one page in four parts (Fix it · Threats · How your team plays · Your six) ----------
 // Every original card and table is moved in whole, so its renderer, ids and handlers keep working. Editing a set happens
@@ -541,7 +334,7 @@ function chTeamRender() { const head = $('chTeam'); if (!head) return;
   const row = ({m, i}) => m ? `<div role="button" tabindex="0" class="chrow tyx" style="${tyVars(m.p)}" data-chedit="${i}" aria-label="Edit ${esc(m.d)}"><button type="button" class="chrm" data-chrm="${i}" aria-label="Remove ${esc(m.d)} from the team">−</button><span class="ix">${i + 1}</span>${sprite(m.p) || ''}<div class="chbd"><div class="nm">${esc(m.d)}${m.spread && m.spread.assumed ? ' <span class="chtag ass" title="No stat points on the sheet: your nature on the most common spread">spread assumed</span>' : ''}</div><div class="mono">${esc(m.item || 'No item')} · ${esc(m.ability || '')}${memberSpread(m).nat ? ' · ' + esc(memberSpread(m).nat) + ' nature' : ''}</div><div class="mono mv">${m.moves.map(x => esc(x.name)).join(' · ')}</div>${note(m)}</div><span class="chedi" aria-hidden="true">Edit</span></div>`
     : `<button type="button" class="chrow empty" data-chedit="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="ix">${i + 1}</span><span class="chadd">+</span><div class="chbd"><div class="nm">Add a Pokémon</div></div></button>`;
   const ck = v.CK ? `<span class="chpill ${v.CK.pass === v.CK.n ? 'ok' : ''}">${v.CK.pass} of ${v.CK.n} team checks</span>` : '';
-  const legal = ms.length ? `<span class="chpill ${v.legal === false ? 'bad' : 'ok'}" title="Based on our reading of the ${esc(typeof REG_NAME === 'string' ? REG_NAME : 'Reg M-C')} rules. Check the official rules before an event.">${v.legal === false ? 'Not legal yet' : 'Legal'}</span>` : '';
+  const legal = ms.length ? `<span class="chpill ${v.legal === false ? 'bad' : 'ok'}" title="Based on our reading of the ${esc(regName())} rules. Check the official rules before an event.">${v.legal === false ? 'Not legal yet' : 'Legal'}</span>` : '';
   head.innerHTML = `<div class="chthead"><div style="flex:1;min-width:0"><div class="chk">My team · ${ms.length} of 6</div><div class="nm" role="heading" aria-level="1">${esc(ms.length ? teamTitleFor(ms) : 'No team yet')}</div>
       ${G ? `<div class="rzgrade" data-band="${G.band || String(G.letter)[0]}"><span class="rzgn">${G.v === 2 ? Math.round(G.s) : esc(G.letter)}</span><span class="rzgl">${G.v === 2 ? esc(CH.wordOfL(G.letter)) + (G.partial ? ' so far' : '') : CH.gradeNum(G)}</span><button type="button" class="rzwhy" data-chgrade="1" aria-expanded="${ui.gwhy ? 'true' : 'false'}" aria-controls="chGwhy">${G.v === 2 ? 'Why this score?' : `Why ${G.letter}?`}</button></div>` : ''}
       ${RD ? CH.recStats(G, RD, hd, c) : `<div class="rd">Add your six and NastyPlot scouts the top 30 threats for you.</div>`}
@@ -588,12 +381,11 @@ function chScoutOpen(sel) { const sh = $('chScout'); if (!sh) return; CH.sel = s
 function chScoutClose() { const sh = $('chScout'); if (!sh || sh.hidden) return; sh.hidden = true; $('chScrim').hidden = true; try { if (CH.last && CH.last.focus) CH.last.focus(); } catch (e) {} }
 function chScoutRender() { const sh = $('chScout'); if (!sh) return; const ms = members(), RD = ms.length ? prepOf(ms) : null, v = ui.vsum || {};
   if (!RD) { sh.innerHTML = '<div class="grab"></div><button type="button" class="x" data-chclose aria-label="Close">×</button><div class="chh" role="heading" aria-level="2">Scouting report</div><p class="t2">Add Pokémon to your team to see how ready it is for the top threats.</p>'; return; }
-  const c = CH.lvCount(RD), need = c[0] + c[1], ord = CH.order(RD), G = CH.gradeOf(RD, v.CK, ms), sel = CH.sel && RD.rows.find(r => r.t.n === CH.sel);
-  const dot = (r, m) => { const n = m.p.n, has = a => (a || []).some(x => x.m && x.m.n === n);
-    const k = CH.LVC[CH.cellOf(r, m)];
+  const need = CH.needN(RD), G = CH.gradeOf(RD, v.CK, ms), sel = CH.sel && RD.rows.find(r => r.t.n === CH.sel);
+  const dot = (r, m) => { const k = CH.LVC[CH.cellOf(r, m)];
     return `<span title="${esc(m.d)}: ${k[1]}">${sprite(m.p) || ''}<i class="g-${k[3]}" style="background:${k[0]}" aria-hidden="true">${k[2]}</i>${k[1]}</span>`; };
   const det = sel ? `<div class="chdet" aria-live="polite"><div class="top">${sprite(byName.get(sel.t.n)) || ''}<div style="flex:1"><div class="nm" style="font:800 15px var(--body);text-transform:uppercase">${esc(sel.t.d)} <span class="chk">${pctTxt(+sel.t.w)} of top cuts</span></div><div class="t2">${esc(THR.evidence(sel))}</div></div><span class="chlv l${sel.level}">${CH.LV[sel.level].toUpperCase()}</span></div><div class="chdots">${ms.map(m => dot(sel, m)).join('')}</div></div>` : '';
-  const list = ord.filter(r => r.level <= 1).slice(0, 5).map(r => `<div class="it">${sprite(byName.get(r.t.n)) || ''}<div style="flex:1;min-width:0"><div class="nm">${esc(r.t.d)} <span class="chk" style="font-weight:400">${pctTxt(+r.t.w)} of top cuts</span></div><div class="t2">${esc(THR.evidence(r))}</div></div><span class="chlv l${r.level}">${CH.LV[r.level].toUpperCase()}</span></div>`).join('');
+  const list = CH.worst5(RD).map(r => `<div class="it">${sprite(byName.get(r.t.n)) || ''}<div style="flex:1;min-width:0"><div class="nm">${esc(r.t.d)} <span class="chk" style="font-weight:400">${pctTxt(+r.t.w)} of top cuts</span></div><div class="t2">${esc(THR.evidence(r))}</div></div><span class="chlv l${r.level}">${CH.LV[r.level].toUpperCase()}</span></div>`).join('');
   const ck = v.CK ? `<div class="chk" style="margin-top:14px">Team checks · ${v.CK.pass}/${v.CK.n}</div><div class="chleg">${v.CK.items.filter(x => !x.skip && !x.note).map(x => `<span><i class="g-${x.ok ? 'ok' : 'bad'}" style="background:${x.ok ? 'var(--chok)' : 'var(--chbad)'}" role="img" aria-label="${x.ok ? 'yes' : 'no'}">${x.ok ? '✓' : '✗'}</i>${esc(x.label)}</span>`).join('')}</div>` : '';
   const b = chBestPlan();
   const best = b ? `<div class="chbest"><div class="chk">Best fix${b.g0 != null && b.g1 != null ? ` · ${CH.gradeMove(b.g0, b.g1)}` : b.d != null ? ` · ${readyDelta(b.d)}` : ''}</div><div class="sw">${b.pl.ch.map(x => `${x.out ? `${sprite(x.out.p, 'out') || ''}<span aria-hidden="true" style="color:var(--chyel);font-size:22px">→</span>` : '+'}${sprite(x.c.p) || ''}`).join(' ')}<span>${esc(b.txt)}</span></div><button type="button" class="chprimary" data-plan="0">Apply this fix <span aria-hidden="true">➜</span></button></div>` : '';
@@ -630,11 +422,10 @@ document.addEventListener('click', e => { const b = e.target && e.target.closest
   sw.checked = on; sw.dispatchEvent(new Event('change', {bubbles: true})); });
 // Suggest from (My team): the same setting as Plan settings › Pick from
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chpool]'); if (!b) return; const v = b.dataset.chpool; if (v === ui.pool) return;
-  ui.pool = v; LS.set('cc2.pool', v); const sel = $('poolSel'); if (sel) sel.value = v; render();
-  toast({box: 'Suggestions only use your box', boxfill: 'Your box first, then the best Pokémon to catch', all: 'Suggestions use the full roster'}[v]); });
+  const say = setPool(v); const sel = $('poolSel'); if (sel) sel.value = v; render(); toast(say); });
 // − on a Your six card (or Remove in the edit panel): take that Pokémon off the team, with Undo. Runs before the card's own tap.
 document.addEventListener('click', e => { const b = e.target && e.target.closest && e.target.closest('[data-chrm]'); if (!b) return; e.stopPropagation(); e.preventDefault();
-  const i = +b.dataset.chrm, was = byName.get((S.slots[i] || {}).n); keepUndo(); S.slots[i] = blank(); render(); if (was) toast(`Removed ${was.d}`, true);
+  const i = +b.dataset.chrm, was = clearSlot(i); render(); if (was) toast(`Removed ${was.d}`, true); /* clearSlot: shared (31-set-edits.js) */
   const ed = $('chEdit'); if (ed && !ed.hidden && b.closest('#chEdit')) chEditOpen(i); }, true);
 // a Your six card opens with Enter or Space too
 document.addEventListener('keydown', e => { const r = e.target; if (!r || !r.matches || !r.matches('div.chrow[data-chedit]') || (e.key !== 'Enter' && e.key !== ' ')) return; e.preventDefault(); r.click(); });

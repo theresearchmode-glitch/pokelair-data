@@ -1,0 +1,56 @@
+v3-lab loaded out/matches.json: 38513 decided games, 431 events, 6450 teams, 5504 players, hasSets=true
+=== WALK-FORWARD LAB (8 weekly cuts ending 2026-11-09; 200 tournament-clustered boots) ===
+  cut 2026-09-14->2026-09-21 (n=4000): | baseline acc=49.4% ll=0.6920 | matchup acc=49.5% ll=0.6920 | no-evid-hier acc=50.6% ll=0.6919 | combo acc=50.6% ll=0.6919
+  cut 2026-09-21->2026-09-28 (n=4703): | baseline acc=53.9% ll=0.6887 | matchup acc=53.9% ll=0.6887 | no-evid-hier acc=54.1% ll=0.6894 | combo acc=54.1% ll=0.6894
+  cut 2026-09-28->2026-10-05 (n=6514): | baseline acc=53.5% ll=0.6887 | matchup acc=53.5% ll=0.6886 | no-evid-hier acc=53.7% ll=0.6875 | combo acc=53.7% ll=0.6874
+  cut 2026-10-05->2026-10-12 (n=5421): | baseline acc=55.9% ll=0.6812 | matchup acc=56.5% ll=0.6801 | no-evid-hier acc=56.1% ll=0.6802 | combo acc=56.3% ll=0.6795
+  cut 2026-10-12->2026-10-19 (n=5327): | baseline acc=55.2% ll=0.6828 | matchup acc=55.2% ll=0.6819 | no-evid-hier acc=55.0% ll=0.6813 | combo acc=55.4% ll=0.6807
+  cut 2026-10-19->2026-10-26 (n=5412): | baseline acc=55.9% ll=0.6802 | matchup acc=55.8% ll=0.6794 | no-evid-hier acc=56.5% ll=0.6805 | combo acc=56.5% ll=0.6795
+  cut 2026-10-26->2026-11-02 (n=3626): | baseline acc=57.6% ll=0.6757 | matchup acc=58.2% ll=0.6734 | no-evid-hier acc=57.6% ll=0.6751 | combo acc=58.2% ll=0.6728
+  cut 2026-11-02->2026-11-09 (n=3474): | baseline acc=55.5% ll=0.6832 | matchup acc=56.5% ll=0.6818 | no-evid-hier acc=56.0% ll=0.6820 | combo acc=56.4% ll=0.6808
+
+=== POOLED WALK-FORWARD RESULTS (PAIRED ON EXACT SAME GAMES) ===
+
+Today's model (model.mjs) [baseline] -> BASELINE
+  games=38477 | acc=54.61% [54.04%, 55.17%] | ll=0.68425 [0.6827, 0.6856] | brier=0.24561 [0.2449, 0.2463] | calSlope=0.905
+
+C2: Blade-Chest matchup term (d=4) [matchup] -> KEEP (95% CI strictly beats baseline log-loss)
+  games=38477 | acc=54.82% [54.17%, 55.42%] | ll=0.68350 [0.6818, 0.6851] | brier=0.24524 [0.2444, 0.2460] | calSlope=0.903
+  delta vs baseline: dAcc=+0.22 pts [-0.02%, 0.48%] | dLL=-0.00075 [-0.0011, -0.0005] | dBrier=-0.00037 [-0.0005, -0.0002]
+
+C4: Clean ridge + fixed six delta [no-evid-hier] -> KEEP (95% CI strictly beats baseline log-loss)
+  games=38477 | acc=54.91% [54.32%, 55.49%] | ll=0.68367 [0.6820, 0.6851] | brier=0.24532 [0.2445, 0.2460] | calSlope=0.900
+  delta vs baseline: dAcc=+0.30 pts [0.02%, 0.58%] | dLL=-0.00058 [-0.0008, -0.0003] | dBrier=-0.00028 [-0.0004, -0.0001]
+
+COMBO: no-evid-hier + Blade-Chest (d=4) [combo] -> KEEP (95% CI strictly beats baseline log-loss)
+  games=38477 | acc=55.09% [54.50%, 55.71%] | ll=0.68300 [0.6813, 0.6847] | brier=0.24500 [0.2442, 0.2458] | calSlope=0.904
+  delta vs baseline: dAcc=+0.48 pts [0.16%, 0.80%] | dLL=-0.00125 [-0.0017, -0.0008] | dBrier=-0.00061 [-0.0008, -0.0004]
+
+=== ROBUSTNESS SPLITS (PAIRED 95% CI; <500 GAMES = UNKNOWN) ===
+
+  Slice: Event size: under 64 players (n=18407) | baseline acc=55.50% ll=0.68192
+    matchup        -> KEEP                 | dAcc=+0.21 pts [-0.14%, 0.54%] | dLL=-0.00085 [-0.0014, -0.0003]
+    no-evid-hier   -> KEEP                 | dAcc=+0.09 pts [-0.25%, 0.47%] | dLL=-0.00072 [-0.0011, -0.0003]
+    combo          -> KEEP                 | dAcc=+0.42 pts [-0.03%, 0.88%] | dLL=-0.00150 [-0.0022, -0.0008]
+
+  Slice: Event size: 64+ players (n=20070) | baseline acc=53.79% ll=0.68638
+    matchup        -> KEEP                 | dAcc=+0.22 pts [-0.08%, 0.49%] | dLL=-0.00066 [-0.0011, -0.0002]
+    no-evid-hier   -> KEEP                 | dAcc=+0.50 pts [0.10%, 0.90%] | dLL=-0.00045 [-0.0008, -0.0000]
+    combo          -> KEEP                 | dAcc=+0.54 pts [0.08%, 0.95%] | dLL=-0.00101 [-0.0016, -0.0003]
+
+  Slice: Team familiarity: both teams 30+ train games (n=4547) | baseline acc=52.45% ll=0.69036
+    matchup        -> KEEP                 | dAcc=+0.81 pts [0.02%, 1.82%] | dLL=-0.00160 [-0.0032, -0.0002]
+    no-evid-hier   -> NO DIFFERENCE        | dAcc=+0.77 pts [-0.02%, 1.68%] | dLL=-0.00042 [-0.0016, 0.0008]
+    combo          -> KEEP                 | dAcc=+0.99 pts [0.24%, 2.08%] | dLL=-0.00219 [-0.0041, -0.0007]
+
+  Slice: Team familiarity: rarer team (<30 train games) (n=33930) | baseline acc=54.90% ll=0.68343
+    matchup        -> KEEP                 | dAcc=+0.14 pts [-0.08%, 0.39%] | dLL=-0.00063 [-0.0009, -0.0004]
+    no-evid-hier   -> KEEP                 | dAcc=+0.24 pts [-0.07%, 0.58%] | dLL=-0.00060 [-0.0009, -0.0003]
+    combo          -> KEEP                 | dAcc=+0.42 pts [0.07%, 0.77%] | dLL=-0.00112 [-0.0015, -0.0006]
+
+=== BEST-OF-3 SECTION (SEPARATE PER CLAUDE.md RULE 21) ===
+  Not available: out/matches.json does not distinguish single games from best-of-3 sets (eventFormat=false, gameFlag=false, multiGameRounds=0).
+  Per CLAUDE.md Rule 21, Bo3 evaluation stays separate until update.mjs tags Bo3 sets.
+
+Wrote /tmp/claude-0/-home-user-pokelair-data/204a9d61-5900-570f-b954-256bbb6b60d7/scratchpad/lab2.json
+round2 exit 0

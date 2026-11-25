@@ -1,0 +1,37 @@
+diff --git a/app/src/v2/css/components.css b/app/src/v2/css/components.css
+index 8ee452e..65b256a 100644
+--- a/app/src/v2/css/components.css
++++ b/app/src/v2/css/components.css
+@@ -47,7 +47,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
+ /* the selected Pokémon: stands on the tilted panel in its own colour, a step forward */
+ /* the selected Pokémon stands on a floor ring in its own colour, with a brighter pool (Sim, Nov 11: idea 2 "Floor ring";
+    replaces the tilted colour panel, so nothing sits behind the Pokémon) */
+-.np-mon.sel .st::before,.np-mon.ft .st::before{content:"";position:absolute;z-index:0;left:50%;bottom:0;width:118%;height:calc(var(--iw)*.3);transform:translate(-50%,34%);border-radius:50%;
++.np-mon.sel .st::before,.np-mon.ft .st::before{content:"";position:absolute;z-index:0;left:50%;bottom:0;width:104%;height:calc(var(--iw)*.22);transform:translate(-50%,58%);border-radius:50%;
+   border:2.5px solid rgba(var(--cp),.9);background:radial-gradient(closest-side,rgba(var(--cp),.2),rgba(var(--cp),.08) 70%,transparent);box-shadow:0 0 12px rgba(var(--cp),.4)}
+ :root[data-theme="night"] .np-mon.sel .st::before,:root[data-theme="night"] .np-mon.ft .st::before{border-color:rgba(var(--cp),.95);background:radial-gradient(closest-side,rgba(var(--cp),.14),transparent 75%);box-shadow:0 0 16px rgba(var(--cp),.55),inset 0 0 12px rgba(var(--cp),.3)}
+ .np-mon.sel .pool,.np-mon.ft .pool{background:radial-gradient(closest-side,var(--contact),transparent 60%) center/46% 50% no-repeat,radial-gradient(closest-side,rgba(var(--cp,150,150,165),.85),rgba(var(--cp,150,150,165),.4) 55%,transparent)}
+@@ -155,3 +155,7 @@ button.np-chip{min-height:var(--tap)}.np-chip[aria-pressed="true"],.np-chip.on{b
+    8px apart, so a bigger area would cover the next marker (needs a spacing change: visual, for Sim). */
+ .np-tabs a,.np-tabs button,.np-nav a,.np-foot nav a,.sg2-nact a,.sg2-undo .np-btn2{position:relative}
+ .np-tabs a::before,.np-tabs button::before,.np-nav a::before,.np-foot nav a::before,.sg2-nact a::before,.sg2-undo .np-btn2::before{content:"";position:absolute;left:50%;top:50%;width:max(100%,var(--tap));height:max(100%,var(--tap));transform:translate(-50%,-50%)}
++/* A9 (Sim, Nov 12): the selected Pokémon's floor ring sits lower and flatter, under the feet, so it no longer crosses the picture
++   (was 118% wide, 30% tall, 34% down); on phones the selected picture stays inside its tile (it was 120px in a 111px tile) */
++@media (max-width:699px){.np-mon.sel img{scale:1}}
++.np-megatag{position:absolute;z-index:2;left:0;top:0;padding:var(--s1) var(--s2);font:800 var(--t13)/1 var(--u);font-style:italic;font-synthesis:style;color:var(--on-main);background:var(--plot);transform:skewX(var(--slant))}
+diff --git a/app/src/v2/shell.js b/app/src/v2/shell.js
+index b5cf0c5..8e603bd 100644
+--- a/app/src/v2/shell.js
++++ b/app/src/v2/shell.js
+@@ -15,8 +15,10 @@ V2.disp = n => { const p = V2.byName.get(n); return p && p.d ? p.d : n.replace(/
+ V2.nameHtml = d => d.startsWith('Mega ') ? `<span class="mg">Mega</span> ${V2.esc(d.slice(5))}` : `<span class="mg none" aria-hidden="true">&nbsp;</span>${V2.esc(d)}`;
+ // a Pokémon's own colour (already normalised: hue kept, saturation 72%+, lightness 56%) as an r,g,b triplet for rgba()
+ V2.cp = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165]; return m[0] + ',' + m[1] + ',' + m[2]; };
++// A9 (Sim, Nov 12: "fix pls"): on a Pokémon tile "Mega" is a small slanted tag on the picture's corner, so every name block is the
++// same shape (no reserved blank line above every name); elsewhere (rows, sentences) Mega stays inline before the name (nameHtml)
+ V2.mon = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
+-  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''}</div>${o.bare ? '' : `<b>${V2.nameHtml(V2.disp(n))}</b>`}${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
++  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id)}" alt="" loading="lazy">` : ''}${V2.disp(n).startsWith('Mega ') && !o.bare ? '<span class="np-megatag">Mega</span>' : ''}</div>${o.bare ? '' : `<b>${V2.esc(V2.disp(n).replace(/^Mega /, ''))}</b>`}${o.sub ? `<small>${V2.esc(o.sub)}</small>` : ''}</div>`; };
+ // drawn icons (the ⌕ glyph renders tiny in Instrument Sans)
+ V2.ICON = {search: '<svg class="np-ic" viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M15.5 15.5 21 21" stroke="currentColor" stroke-width="2.6" stroke-linecap="round"/></svg>',
+   // My Box: a storage box (lid, body, handle slot), drawn like the search glass

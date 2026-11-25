@@ -1,0 +1,164 @@
+/* Mystery Gifts, The Post Room (classes pr-*; Nov 18). Brief: docs/rebuild/postroom/BRIEF.md. Colours: --pr-* in tokens.css.
+   Paper stays paper in night ("Dim Paper"): labels and stamps are dimmed cream with dark ink in both themes. */
+.pr{gap:var(--s12);overflow-x:clip}
+/* top: headline left, the live plate and three numbers right (under it below 1100) */
+.pr-top{display:grid;grid-template-columns:minmax(0,7fr) minmax(0,5fr);gap:var(--s6) var(--s8);align-items:center;padding-top:var(--s4)}
+.pr-stats{display:grid;gap:var(--s4);justify-items:start}
+.pr-stats .ev-pk{margin:0}.pr-pk-off{background:var(--plate);color:var(--on-plate)}
+.pr-nums{display:grid;grid-template-columns:repeat(3,auto);justify-content:start;gap:var(--s4) var(--s10)}
+.pr-nums p{display:grid;align-content:start;gap:var(--s1);margin:0;max-width:16ch}.pr-nums b{font-size:var(--t34);line-height:1}.pr-nums span{font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+@media (max-width:1099.98px){.pr-top{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:479.98px){.pr-nums{grid-template-columns:repeat(3,auto);justify-content:space-between;column-gap:var(--s4)}.pr-nums b.pr-w{font-size:var(--t24);line-height:1.4}}
+/* section heads */
+.pr-sh{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;gap:var(--s3) var(--s6);margin:0 0 var(--s6)}
+.pr-sh h2{margin:0;font-size:var(--t34);line-height:1.2}
+.pr-sh>p{margin:0;max-width:60ch;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pr-stamps .pr-sh{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:end}
+@media (max-width:1099.98px){.pr-stamps .pr-sh{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:479.98px){.pr-sh h2{font-size:var(--t28)}}
+.pr-key{display:flex;align-items:baseline;gap:var(--s3);margin:0;font:400 var(--t13)/1.5 var(--b);color:var(--ink-2)}
+.pr-key .pr-cv{font:800 var(--t15)/1 var(--u);font-style:normal;white-space:nowrap}.pr-key .pr-d{color:var(--plot-text)}
+/* the counter: parcels two across from 1100, one below; How to collect fills the odd cell, or runs under an even row */
+.pr-parcels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s10) var(--s8);align-items:stretch}
+.pr-parcels:not(.odd) .pr-howto{grid-column:1/-1;grid-template-columns:auto minmax(0,1.4fr) minmax(0,1fr);align-items:start;column-gap:var(--s8)}
+@media (max-width:1099.98px){.pr-parcels{grid-template-columns:minmax(0,1fr)}.pr-parcels .pr-howto,.pr-parcels:not(.odd) .pr-howto{grid-template-columns:minmax(0,1fr)}}
+.pr-parcel{position:relative;container:prp/inline-size;display:grid;align-content:center;padding:var(--s12) var(--s8) var(--s10);border-radius:var(--r-s);
+  background:repeating-linear-gradient(90deg,var(--pr-kraft-line) 0 2px,transparent 2px 8px),linear-gradient(180deg,var(--pr-kraft-hi),var(--pr-kraft));box-shadow:var(--shadow-lift)}
+@media (max-width:479.98px){.pr-parcel{padding:var(--s10) var(--s3) var(--s8)}.pr-parcel .pr-label{padding:var(--s4) var(--s4) var(--s3)}}
+.pr-tape{position:absolute;left:0;right:0;top:var(--s4);height:28px;background:var(--pr-tape)}
+.pr-label{position:relative;padding:var(--s5) var(--s6) var(--s4);background:var(--pr-paper);color:var(--pr-ink);transform:rotate(-1deg);box-shadow:0 1px 2px var(--pr-shadow),0 8px 16px -8px var(--pr-shadow)}
+.pr-label :focus-visible{outline-color:var(--pr-num)}
+.pr-lt{margin:0;padding-bottom:var(--s2);border-bottom:4px solid var(--pr-ink);font-size:var(--t20)}
+.pr-meta{display:grid;grid-template-columns:minmax(0,1.5fr) minmax(0,1fr) minmax(0,1fr);gap:var(--s3) var(--s4);margin:var(--s3) 0 0;padding-bottom:var(--s3);border-bottom:1px solid var(--pr-rule)}
+.pr-meta>div{min-width:0}.pr-meta dd{margin:0;font:500 var(--t15)/1.5 var(--b)}.pr-meta dd small{display:block;font-size:var(--t13);color:var(--pr-ink2)}
+.pr-meta dt,.pr-k{margin:0;font:600 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--pr-ink2)}
+.pr-what dd{font:900 var(--t22)/1.2 var(--u);font-style:italic;overflow-wrap:anywhere}
+/* The Copy Code row (Nov 18). The code's cell asks for the code's width at 22px (--prw: its width in em, from postroom.js; on the Post Room
+   the widest code of the row, so both parcels in a row decide alike): Copy Code sits beside the code when that fits and drops under it
+   when it doesn't, the same in Chromium and Safari. The cell is a size container, so the code is sized to it: the largest of 20/22/24/26px
+   that fits (never above this place's own size, --pr-cvs), so it never breaks or overflows; overflow-wrap stays as the last resort. */
+.pr-crow{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:var(--s3) var(--s4);margin-top:var(--s3)}
+.pr-cbox{flex:1 1 calc(var(--prw-row,var(--prw,10)) * var(--t22));min-width:0;container-type:inline-size}
+.pr-code{display:block}.pr-cv{--pr-cvs:var(--t26);display:block;font:800 var(--pr-cvs)/1.2 var(--u);letter-spacing:.04em;overflow-wrap:anywhere}
+@supports (width:round(down,10px,2px)){.pr-cbox .pr-cv{font:800 min(var(--pr-cvs),max(var(--t20),round(down,calc(100cqi / var(--prw-row,var(--prw,10))),2px)))/1.2 var(--u)}}
+.pr-d{font-weight:inherit;color:var(--pr-num)}
+.pr-spell{user-select:none}
+.pr-label .np-btn.pr-copy{flex:none;background:var(--pr-ink);color:var(--pr-paper);box-shadow:none}
+.pr-none{margin:var(--s3) 0 0;font:500 var(--t15)/1.5 var(--b)}
+.pr-meta dd.pr-also,.pr-meta dd.pr-via{margin-top:var(--s1);font:400 var(--t13)/1.5 var(--b);color:var(--pr-ink2)}
+.pr-bars{display:block;width:100%;height:32px;margin-top:var(--s3);fill:var(--pr-ink)}
+.pr-src{margin:var(--s2) 0 0;font:400 var(--t13)/1.5 var(--b);color:var(--pr-ink2)}.pr-src a{color:var(--pr-num);text-decoration:underline}
+/* design review Nov 19 #5 + PC test run Nov 19: a 44px tap area for each source link, with no change to how it looks: vertical padding on
+   an inline link never moves a line and shows nothing (no background). Two links can sit on lines right above each other (narrow screens),
+   so the first grows upward and any later one downward: the areas never cover each other; the nearest other control (Copy Code) is about
+   47px away. 17-19px + 28 = 45-47px. Test: app/test/tap-size.mjs */
+.pr-src a{position:relative;padding-top:calc(var(--s6) + var(--s1))}.pr-src a~a{padding:0 0 calc(var(--s6) + var(--s1))}
+@container prp (max-width:519.98px){.pr-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.pr-what{grid-column:1/-1}.pr-crow>*{flex:1 1 100%}.pr-label .np-btn.pr-copy{width:100%}.pr-cv{--pr-cvs:var(--t22)}}
+@container prp (max-width:399.98px){.pr-cv{--pr-cvs:var(--t20);letter-spacing:0}}@container prp (max-width:299.98px){.pr-cv{--pr-cvs:var(--t17)}}
+/* the rubber stamp across the parcel's top right corner */
+.pr-rub{position:absolute;z-index:1;top:var(--s1);right:var(--s4);display:flex;align-items:baseline;gap:var(--s2);margin:0;padding:var(--s1) var(--s3);border:3px solid currentColor;border-radius:var(--r-m);
+  background:var(--pr-rub-bg);font-size:var(--t17);line-height:1.2;text-transform:uppercase;transform:rotate(6deg)}
+.pr-rub b{font-size:var(--t28);line-height:1}.pr-soon{color:var(--pr-soon)}.pr-plenty{color:var(--pr-plenty)}
+@container (max-width:519.98px){.pr-rub{right:var(--s2);font-size:var(--t15)}.pr-rub b{font-size:var(--t24)}}
+/* compact parcel (Home's post band, the Dispatch coupon) */
+.pr-parcel.pr-cpt{padding:var(--s10) var(--s5) var(--s6)}.pr-cpt .pr-meta{grid-template-columns:repeat(2,minmax(0,1fr))}.pr-cpt .pr-what{grid-column:1/-1}.pr-cpt .pr-cv{--pr-cvs:var(--t22)}
+/* How to collect: the one card colour on the page */
+.pr-howto{display:grid;gap:var(--s3);align-content:center;padding:var(--s6) var(--s8);background:var(--wash);clip-path:polygon(0 0,calc(100% - 24px) 0,100% 24px,100% 100%,0 100%)}
+.pr-howto h3{margin:0;font-size:var(--t22)}
+.pr-howto ol{display:grid;gap:var(--s2);margin:0;padding:0 0 0 var(--s6);list-style:decimal;font:400 var(--t15)/1.5 var(--b)}
+.pr-howto p{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+/* the empty counter: an empty shelf, one line */
+.pr-shelf{display:grid;justify-items:center;gap:var(--s2);padding:var(--s10) var(--s6) var(--s8);border-bottom:8px solid var(--pr-kraft);text-align:center;color:var(--ink-2)}
+.pr-shelf p{margin:0;font:400 var(--t15)/1.5 var(--b)}.pr-shelf p.u{font:900 var(--t22)/1.3 var(--u);font-style:italic;color:var(--ink)}
+.pr-box0{width:120px;height:72px;margin-bottom:var(--s2);color:var(--pr-kraft)}
+/* the stamp sheet: six across from 1100, four from 700, three on phones (two under 380); blank spaces finish the last row */
+.pr-f{margin:0 0 var(--s6)}
+.pr-sheet{--c:var(--pc8,6);--cg:var(--s5);display:flex;flex-wrap:wrap;justify-content:center;gap:var(--s6) var(--cg);margin:0;padding:0}
+.pr-sheet>li{flex:0 0 calc((100% - (var(--c) - 1) * var(--cg)) / var(--c));min-width:0;max-width:220px}
+/* Sim, Nov 18: rows spread evenly (postroom.js picks --pcN per width); no blank spaces, a short last row sits centred */
+@media (min-width:700px) and (max-width:1099.98px){.pr-sheet{--c:var(--pc6,4)}}
+@media (min-width:380px) and (max-width:699.98px){.pr-sheet{--c:var(--pc3,3);--cg:var(--s3);row-gap:var(--s4)}}
+@media (max-width:379.98px){.pr-sheet{--c:var(--pc3,3);--cg:var(--s3);row-gap:var(--s4)}}
+.pr-sw{position:relative;display:grid;filter:drop-shadow(0 1px 1px var(--pr-shadow)) drop-shadow(0 4px 6px var(--pr-shadow-2))}
+.pr-sw:has(.pr-st:focus-visible){outline:3px solid var(--plot);outline-offset:2px}
+.pr-event{--pc:var(--pr-ev);--pc2:var(--pr-ev-2);--pci:var(--pr-ev-ink)}.pr-serial{--pc:var(--pr-se);--pc2:var(--pr-se-2);--pci:var(--pr-se-ink)}
+/* perforated edge: paper minus a row of 8px holes on each side ('space' spreads them evenly, a hole on each corner), then clip-path stops the
+   paper on the holes' centre line, 6px in, so each corner hole bites a quarter out of its corner.
+   Safari fix (Nov 18): the paper layer used to be a rectangle 12px smaller than the box. Safari (WebKit) applies 'subtract' only inside the
+   subtracting layer's own box, so the holes outside it stayed and it drew a plain rectangle in a ring of loose dots. Now the paper layer
+   covers the whole box (nothing lies outside it) and clip-path does the 6px inset, so both engines draw the same edge. */
+.pr-st{--hole:radial-gradient(circle 4px,var(--ink) 3.5px,transparent 4px);display:flex;flex-direction:column;align-items:center;width:100%;height:100%;padding:var(--s4) var(--s4) var(--s5);
+  background:var(--pr-paper);color:var(--pr-ink);text-align:center;clip-path:inset(6px);
+  mask:linear-gradient(var(--ink) 0 0),var(--hole) 0 0/12px 12px space no-repeat,var(--hole) 0 100%/12px 12px space no-repeat,var(--hole) 0 0/12px 12px no-repeat space,var(--hole) 100% 0/12px 12px no-repeat space;
+  mask-composite:subtract,add,add,add}
+.pr-st:focus-visible{outline:none}
+.pr-pic{position:relative;display:grid;grid-template-columns:minmax(0,1fr);place-items:center;width:100%;min-width:0;min-height:0;aspect-ratio:1;overflow:hidden;padding:var(--s6) var(--s2) var(--s2);border:2px solid var(--pci);background:repeating-linear-gradient(135deg,var(--pc) 0 6px,var(--pc2) 6px 12px);color:var(--pci)}
+.pr-my{position:absolute;top:var(--s1);left:var(--s2);font-size:var(--t15);line-height:1.5;white-space:nowrap}
+.pr-mon{display:block;width:78%;min-width:0}.pr-mon .np-mon .st{width:100%}.pr-mon img,.pr-item svg{filter:var(--pr-art)}
+.pr-mon .np-mon .pool{display:none}
+.pr-item{display:grid;justify-items:center;gap:var(--s1);width:100%}.pr-item svg{width:62%;height:auto}.pr-amt{font-size:var(--t24);line-height:1}
+.pr-nm{margin-top:var(--s3);font:900 var(--t15)/1.3 var(--u);font-style:italic;overflow-wrap:break-word;hyphens:auto}
+.pr-how{margin-top:var(--s1);font:700 var(--t13)/1.5 var(--b);letter-spacing:.06em;text-transform:uppercase;color:var(--pci)}
+.pr-pm{position:absolute;z-index:1;top:calc(var(--s3) * -1);right:calc(var(--s3) * -1);display:grid;place-items:center;width:72px;height:72px;border:2px solid var(--pr-post);border-radius:50%;
+  background:var(--pr-post-bg);color:var(--pr-post);transform:rotate(-12deg);pointer-events:none}
+.pr-pm>span{position:relative;font:700 var(--t13)/1.1 var(--b);text-transform:uppercase;text-align:center}
+.pr-pm svg{position:absolute;left:80%;top:16px;width:40px;height:16px}
+@media (max-width:699.98px){.pr-st{padding:var(--s3) var(--s3) var(--s4)}.pr-pic{padding-top:var(--s6)}.pr-my{font:700 var(--t13)/1.5 var(--b);font-style:normal}.pr-nm{margin-top:var(--s2);font:700 var(--t13)/1.5 var(--b)}
+  .pr-how{letter-spacing:0;text-transform:none}.pr-amt{font-size:var(--t17)}.pr-pm{width:52px;height:52px;top:calc(var(--s2) * -1);right:calc(var(--s2) * -1)}.pr-pm>span{width:min-content;line-height:1.05}.pr-pm .pr-pmw{display:none}.pr-pm svg{display:none}}
+.pr-nost{margin:0;font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}
+.pr-stamps{display:grid;grid-template-columns:minmax(0,1fr)}.pr-more{margin-top:var(--s5)} /* Wave 2: the kit show-more (kit.css .k-more) */
+.pr-note{margin:var(--s5) 0 0}
+/* Q43 A (Sim chose it, Nov 19): phones show the first 6 stamps (two full rows of 3) and "Show All N Stamps ›" opens the rest in place;
+   700+ unchanged (12, then its button past 12; pr-mph is the phones-only button) */
+@media (max-width:699.98px){.pr-sheet:not(.on)>li:nth-child(n+7){display:none}.pr-more{margin-top:var(--s2)}} /* 8px over its 44px tap, as Q32's buttons */
+@media (min-width:700px){.pr-mph{display:none}}
+/* a Pokémon gift's set (sheet) */
+.pr-setsh{display:grid;gap:var(--s3);justify-items:start}.pr-setsh h2{font-size:var(--t28)}.pr-setsh .np-mon{--iw:160px;margin:0}
+.pr-setdl{display:grid;gap:var(--s2);margin:0}.pr-setdl>div{display:grid;grid-template-columns:7em minmax(0,1fr);gap:var(--s3)}.pr-setdl dt{font:600 var(--t13)/1.5 var(--b);color:var(--ink-2);text-transform:uppercase;letter-spacing:.06em}.pr-setdl dd{margin:0;font:500 var(--t15)/1.5 var(--b)}
+.pr-setsh .pr-src{color:var(--ink-2)}.pr-setsh .pr-src a{color:var(--plot-text)}
+/* Sim Q56 A (Nov 19, 10:42 PM): at 700-819 a sheet of 9+ stamps sits 5 across and a long name ("Incineroar") ran past its stamp; one size
+   smaller there with a little less side padding (still the slanted logo font) */
+@media (min-width:700px) and (max-width:819.98px){.pr-st{padding-inline:var(--s3)}.pr-nm{font-size:var(--t13)}}
+/* ---------- Mystery Gifts (#gifts) on the kit (Nov 22, Sim approved "as drawn (fix the code wrap)", 12:27 PM; mock
+   docs/rebuild/mocks/reskin-nov22/gifts-mock.inject.js). Page classes gr2-*; the parcel's kraft and white label stay the same by day and
+   night, as drawn (tokens --gr-*). At the end of this file so they follow the Post Room's pr-* rules (Home's band keeps those). ---------- */
+.gr2 .k-head .k-kicker{display:table;width:max-content}
+.gr2-crumb{display:inline-flex;align-items:center;min-height:44px;font-size:var(--t15);font-weight:700;color:var(--k-plot-text);text-decoration:none}
+.gr2-top{display:grid;gap:var(--s2)}.gr2 .k-kicker{margin-top:var(--s2)}.gr2 .k-facts{margin-top:var(--s3)}.gr2 .k-step:first-child .k-sec{margin-top:var(--s10)}.gr2 .gr2-parcels{margin-top:28px}
+.gr2 .k-facts b{font-size:var(--t34)}.gr2 .k-facts li:first-child b{color:var(--k-nasty-text)}
+.gr2-parcels{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));gap:var(--s6);align-items:start}
+.gr2 .gr2-box{position:relative;padding:28px var(--s4) var(--s4);background:linear-gradient(90deg,transparent 46%,var(--gr-tape) 46% 54%,transparent 54%) top/100% 28px no-repeat,var(--gr-kraft)}
+.gr2-lab{position:relative;display:grid;gap:var(--s2);padding:var(--s4);background:var(--gr-label);color:var(--gr-ink);box-shadow:0 2px 6px var(--gr-shadow)}
+.gr2-k{margin:0;font-size:var(--t13);font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--gr-stamp)}
+.gr2-lab h3{margin:0;font-size:var(--t24);line-height:1.15;color:var(--gr-ink)}
+.gr2-when{margin:0;font-size:var(--t13);line-height:1.4;color:var(--gr-ink2)}
+.gr2-code{container-type:inline-size;padding:var(--s2) var(--s3);border:2px dashed var(--gr-ink)}
+.gr2-code .pr-code{display:block;white-space:nowrap;font-family:var(--u);font-style:italic;font-weight:800;font-synthesis:style;line-height:1.1;letter-spacing:.02em;--d-grcode:min(var(--t28),calc(100cqw / var(--prw)));font-size:var(--d-grcode);color:var(--gr-ink)}
+.gr2-code .pr-code *{font:inherit}.gr2-code .pr-d{color:var(--gr-link)}
+.gr2-lab .k-go{margin:var(--s1) 0 0;justify-self:start;font-size:var(--t22);padding:var(--s3) var(--s5)}
+.gr2-cp2{justify-self:start;min-height:44px;padding:0 var(--s4);border:3px solid var(--gr-edge);background:var(--gr-label);color:var(--gr-link);font-family:var(--u);font-size:var(--t17);font-weight:800;font-style:italic;line-height:1;font-synthesis:style;transform:skewX(-8deg);cursor:pointer}
+.gr2-none{margin:0;font-size:var(--t15);line-height:1.5;color:var(--gr-ink)}
+.gr2-src{margin:0;font-size:var(--t13);line-height:1.4;color:var(--gr-ink2)}.gr2-src a{color:var(--gr-link)}
+.gr2-st{position:absolute;right:var(--s3);top:-20px;z-index:1;display:grid;justify-items:center;min-width:88px;padding:var(--s1) var(--s2);border:3px solid var(--gr-stamp);background:var(--gr-label);color:var(--gr-stamp);font-family:var(--u);font-size:var(--t13);font-weight:800;font-style:italic;line-height:1.1;font-synthesis:style;text-transform:uppercase;transform:rotate(4deg)}
+.gr2-st b{font-size:var(--t26);line-height:1}
+.gr2-how{list-style:none;margin:0;padding:0;counter-reset:h}
+.gr2-how li{display:grid;grid-template-columns:40px minmax(0,1fr);align-items:center;gap:var(--s4);min-height:52px;border-top:1px solid var(--k-rule);font-size:var(--t17);font-weight:600;color:var(--k-ink)}
+.gr2-how li::before{counter-increment:h;content:counter(h);display:grid;place-items:center;width:32px;height:28px;background:var(--k-plot);color:var(--k-on-plot);font-family:var(--u);font-size:var(--t15);font-weight:800;font-style:italic;line-height:1;font-synthesis:style;transform:skewX(-10deg)}
+.gr2-fine{margin:var(--s3) 0 0;font-size:var(--t13);font-weight:600;line-height:1.5;color:var(--k-ink2)}
+.gr2 .pr-sheet{margin-top:var(--s4)}
+@media (max-width:1099.98px){.gr2-parcels{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:699.98px){.gr2 .k-facts b{font-size:var(--t22)}.gr2-parcels{grid-template-columns:minmax(0,1fr);gap:var(--s8)}.gr2 .gr2-box{padding:var(--s6) var(--s3) var(--s3)}.gr2-lab{padding:var(--s3)}.gr2-lab h3{font-size:var(--t20)}.gr2-how li{font-size:var(--t15)}}
+.gr2-src a{position:relative;padding-top:calc(var(--s6) + var(--s1))}.gr2-src a~a{padding:0 0 calc(var(--s6) + var(--s1))} /* C8: each source link's tap area reaches 44px tall, as the old label's */
+@media (min-width:700px) and (max-width:899.98px){.gr2 .pr-sheet{--c:var(--pc4,4)}} /* the kit's step is narrower than the old full-width sheet: four stamps a row here keep long names ("Incineroar") inside (v2-q43) */
+@media (max-width:359.98px){.gr2 .k-facts b{font-size:var(--t17)}} /* the kit's own under-360 size again, so "Today" fits beside the other facts at 320 (NPR-5c) */
+/* Gifts at 1800+ (HH, design authority for the empty-space fixes, Sim 8:48 PM Nov 22): the three counts, big, beside the headline (the hero's
+   right half was empty) */
+@media (min-width:1800px){.gr2-top{grid-template-columns:minmax(0,1fr) auto;column-gap:var(--s16);align-items:end}
+  .gr2 .gr2-top>.k-facts{gap:var(--s12);margin:0 0 var(--s4)}.gr2 .gr2-top>.k-facts b{font-size:var(--d64);line-height:1}}
+/* qcheck (Nov 22 night): the slanted gift name's glyphs reached 4px up into "CONTENTS" above it on the Home parcel; a little air between */
+.pr-what dd{margin-top:var(--s1)}
+/* Nov 23 (hJ, HH's design authority): on phones the three stamp chips share one row. With "Show" beside them they need 434px even at 17px,
+   so "items · 4" fell alone onto a second row under 480. As the Ratings tier bar on phones: "Show" is spoken, not shown (the group is
+   "Which stamps"), and the three chips grow to fill the row edge to edge at 15px with 8px sides (331px at 375). Under 360 the three can't share a row at 15px (13 would fit, but Unbounded stays 15+), so 320-359 keeps today's sentence */
+@media (min-width:360px) and (max-width:479.98px){.gr2-stamps .k-sent{font-size:var(--t15)}.gr2-stamps .k-sent > span{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%)}
+  .gr2-stamps .k-w{flex:1 1 auto;padding:0 var(--s2)}}

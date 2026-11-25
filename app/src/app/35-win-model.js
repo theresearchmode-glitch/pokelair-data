@@ -1,5 +1,10 @@
 // ---------- win model (trained on real tournament games, player skill removed) + your own battle log ----------
-function modelOK(){const m=META.model;return !!(m&&m.ships&&m.mons&&Object.keys(m.mons).length)}
+// code review C8: the model is used only when its fields have the right shape (a missing or mistyped table threw deep in a page);
+// otherwise the site falls back to the check-based score, as before the model arrives. Checked once per model object.
+function modelOK(){const m=META.model;if(!(m&&m.ships&&m.mons&&typeof m.mons==='object'&&Object.keys(m.mons).length))return false;if(modelOK._m===m)return modelOK._ok;
+  const obj=x=>x&&typeof x==='object'&&!Array.isArray(x),opt=(k,f)=>m[k]==null||f(m[k]),fin=x=>typeof x==='number'&&isFinite(x);
+  const ok=!!obj(m.pairs)&&['monSd','pairSd','sets','team','ctr','dist','setRange','setFreq','eval'].every(k=>opt(k,obj))&&opt('tested',Array.isArray)&&['meanX','supK','calib','half','pairSd0'].every(k=>opt(k,fin));
+  modelOK._m=m;modelOK._ok=ok;return ok}
 function modelX(names){const m=META.model;let x=0;for(const n of names)x+=m.mons[n]||0;
   for(let i=0;i<names.length;i++)for(let j=i+1;j<names.length;j++){const a=names[i]<names[j]?names[i]+'|'+names[j]:names[j]+'|'+names[i];x+=m.pairs[a]||0}return x}
 // Set features (item, Ability and moves per Pokémon; Abilities as "Sneasler#Unburden" once the model ships them, Nov 8), when the model kept them: each member's usual item (or Mega Stone) and its 4 moves.
@@ -46,7 +51,9 @@ function teamX(names,ms){let x=modelX(names);const M=META.model,byN=new Map((ms|
 // lacks it. Sim, Nov 8: a no-Mega team graded 98 while real no-Mega teams win 34%. Move-based ones need the sets (ms).
 function teamBasicsOf(names,ms){if(names.length!==6)return null;const o={noMega:names.some(n=>(byName.get(n)||{}).m)?0:1};
   if(ms&&ms.length===6){const mv=ms.map(m=>((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(z=>z&&(z.name||z)).filter(Boolean)),has=n=>mv.some(L=>L.includes(n));
-    o.protectLow=mv.filter(L=>L.includes('Protect')).length<=2?1:0;
+    /* Sim, Nov 16 (batch 2B): the whole Protect family counts (Detect, Spiky Shield, King's Shield...), as the suggestions count it; measured on
+       18,642 later games: as accurate as Protect alone (log-loss 0.68084 vs 0.68088), and the score now agrees with the advice */
+    {const PF=typeof LANE==='object'&&LANE.PROT?LANE.PROT:new Set(['Protect','Detect','Spiky Shield',"King's Shield",'Baneful Bunker','Silk Trap','Burning Bulwark','Obstruct']);o.protectLow=mv.filter(L=>L.some(n=>PF.has(n))).length<=2?1:0}
     {const trU=mv.map((L,i)=>L.includes('Trick Room')?i:-1).filter(i=>i>=0);o.trNoSlow=trU.length&&names.filter((n,i)=>!trU.includes(i)&&((byName.get(n)||{}).sp??100)<=60).length<2?1:0}
     // Nov 18 (rule-holes sweep, hole 10): the game plan's speed tools (Tailwind, Trick Room, every ROLE.drop move, weather speed
     // with its setter) plus Choice Scarf; the trainer's copy is team-basics.mjs, and suggest-gaps.mjs checks they agree on real sheets
@@ -108,10 +115,17 @@ function modelLine(){const m=META.model;if(!m||!m.eval)return '';const e=m.eval,
 // supports (held-out: the model told top 8 from the rest only 59% of the time, 50% at regionals). Teams are judged by facts
 // instead: the share of the top-30 threats they're ready for (55-threats.js), and 0 when the Item Clause makes them illegal.
 // tsOf keeps its old name so every caller (Fix plans, Quick add, Best additions, Build for me, saved teams) switches at once.
+/* code review A2-M9 (documented, Nov 16): an Item Clause clash makes tsOf 0 on purpose (an illegal team is never counted as strong in the
+   background numbers: track record, winners' medians); the Strength Score itself (CH.gradeOf) keeps its number and flags the team
+   'Not legal yet', so a player sees the score their six would get once the items are fixed */
 function tsOf(team){if(!team||team.length!==6)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;
   if(typeof itemClash==='function'&&itemClash(ms).length)return 0;const r=THR.teamReport(ms);return r?r.score:null}catch(e){return null}}
 // the full report for any six (or fewer), with the items each member would really hold
 function prepOf(team){if(!team||!team.length)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;return THR.teamReport(ms)}catch(e){return null}}
+// speed (Nov 18, pre-launch 2d): tsOf and prepOf for the background planner (yield* them): a pause after each threat, same numbers, same cache
+function* tsOfG(team){if(!team||team.length!==6)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;
+  if(typeof itemClash==='function'&&itemClash(ms).length)return 0;const r=yield* THR.teamReportG(ms);return r?r.score:null}catch(e){return null}}
+function* prepOfG(team){if(!team||!team.length)return null;try{const ms=typeof assignItems==='function'?assignItems(team):team;return yield* THR.teamReportG(ms)}catch(e){return null}}
 // Which plans get a full readiness check: the planner's own best n (the readiness check is the slow part)
 function tsShortlist(pls,n){return pls.slice(0,n)}
 // Fix plans, Best additions and Build for me choose by readiness (off-meta searches keep their own picks)
@@ -125,9 +139,12 @@ function tsInfo(team){const s=tsOf(team);return s==null?null:{score:s}}
 function tsTitle(base,t,team){const a=CH.hand(base),b=CH.hand(t&&t.rows?t:team?prepOf(team):null);return a&&b?`Ready for ${a.x}/${a.n} → ${b.x}/${b.n} top threats`:`${base.score}% → ${t.score}% ready for the top 30 threats`}
 // A team's grade, the big number on My team (readiness + team strength − missed checks), for any six (Nov 7, Sim: "it says +2
 // ready but my score went from 93 to 91"). Suggestions are judged and labelled by it, so the card matches what Apply does.
+// a member's nature and stat points as a cache-key part (code review A2-I4 + A1-I2, Nov 17: the grade memo and Test Run's cache
+// ignored them, so a spread edit kept the old number); 'c' = the common spread
+function spreadKey(m){const c=m&&m.spread;return c?(c.nat||'')+'/'+[c.hp,c.atk,c.def,c.spa,c.spd,c.spe].join('.'):'c'}
 const gradeMemo=new Map();
 function gradeTeam(team){if(!team||team.length<6||typeof CH!=='object'||!CH.gradeOf)return null;
-  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')).sort().join('|');
+  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')+'~'+spreadKey(m)).sort().join('|');
   if(gradeMemo.has(k))return gradeMemo.get(k);let g=null;
   try{const ms=typeof assignItems==='function'?assignItems(team):team,RD=THR.teamReport(ms),G=CH.gradeOf(RD,proChecks(ms,true),ms);g=G?G.s:null;
     // a six that real players ran and lost with more than the field average is never an upgrade, whatever its grade

@@ -1,0 +1,470 @@
+GEMINI JOB 11 — STRENGTH SCORE PART 2 (CODE AUDIT, NO DESIGN)
+Target branch/commit: claude/design6 @ 18a525cb
+Reviewed files: app/src/app/54-items.js, app/src/app/06-helpers.js, app/src/app/55-threats.js,
+app/src/app/11-game-plan.js, app/src/app/44-share-images.js, app/src/app/58-strength.js,
+app/src/app/35-win-model.js, app/src/app/36-lanes.js, CLAUDE.md, Job 10 answer.
+Execution status: Static code audit + Node v18.20.4 VM harness verification for S3 proofs;
+Playwright browser run against app/dist/page.html: not run (no dist build or browser in VM).
+
+================================================================================
+1. VERDICT
+================================================================================
+
+MOSTLY CLEAN — TWO REAL SURGICAL FIXES, ONE EXPLICIT WITHDRAWAL, FIVE ORDER QUESTIONS FOR HH.
+
+- Invariant 1 (order independence): HOLDS for Strength Score v2 end-to-end.
+  `assignItems` (54-items.js:78) breaks ties deterministically by (top usage desc, species name asc).
+  `THR.teamReport` (55-threats.js:256-356) produces order-independent `score` and `level`.
+  `gamePlan` (11-game-plan.js:79-202) produces order-independent `penalty` and row `st`.
+  Two narrow non-v2-score slot-order quirks exist: `playForm(ms)` on 2-Mega teams (06-helpers.js:46,
+  documented "else the first" -> Order Question 4) and `THR.fieldFor` in `THR.one` on 2-weather teams
+  (55-threats.js:90-95, MINOR).
+- Invariant 5 (illegal teams): MIXED.
+  - Item Clause breaks ARE flagged (`itemClash` -> `itemProblems` -> `proChecks` -> `G.illegal = true`).
+  - Dead items & Choice Scarf under Trick Room ALSO set `G.illegal = true` via `58-strength.js:142`,
+    even though those teams are tournament-legal and `35-win-model.js:122` (`tsOf`) only checks `itemClash`.
+    (Diff B + Order Question 2.)
+  - Non-Champions held items (e.g., Choice Band, Assault Vest) are NOT checked by `54-items.js` or
+    `06-helpers.js` (Order Question 3).
+- Invariant 9 (share images): CONFIRMED for full 6-Pokémon teams (`44-share-images.js:65-66, 107-108,
+  135, 179` call `CH.gradeOf` and `CH.gradeNum` / `Math.round(G.s)`), with two caveats: partial teams
+  (1-5 Pokémon) intentionally get `G: null` ("The grade comes with a full six"), and `ARB.score` does
+  not check `G.illegal` (Order Question 5).
+- Speed idea from Job 10 (memoize member x threat): ALREADY IMPLEMENTED as `duelCache` in
+  `55-threats.js:160-167` (capped at 50,000 entries, verified against `THR.noCache`). No new cache needed.
+- NaN path in `55-threats.js:332, 341-342`: REAL BUG (`WRONG-SCORE`). A single non-finite threat weight
+  `w` poisons `reportSidesG().score` to `NaN`, which cascades into `CH.strengthOf`. Fixed in Diff A.
+- Job 10 Diff 1 part 4 (`89.6 -> "90 · Tournament ready"`): Moved to Order Question 1 with options (a),
+  (b), (c) and rule mappings.
+- Job 10 Diff 3 (`LANE.of` `reach` gating): WITHDRAWN unconditionally against `36-lanes.js:1-14`.
+
+================================================================================
+2. UPDATED INVARIANT TABLE (INVARIANTS 1-10, INCLUDING JOB 11 FILES)
+================================================================================
+
+#  Invariant                                  Status (checked / not checked)
+-- ------------------------------------------ ----------------------------------------------------------
+1  Order independence (same 6 in any order    PASS for Strength Score v2 — checked (code + Node VM):
+   gives same Strength Score & band)          - `assignItems` (54-items.js:78) sorts unchosen members by
+                                                `b.top - a.top || String(a.m.p.n).localeCompare(b.m.p.n)`.
+                                                Distinct-species teams are strictly order-independent.
+                                              - `THR.teamReport` (55-threats.js:256-356) `score` and
+                                                per-threat `level` are order-independent.
+                                              - `gamePlan` (11-game-plan.js) `penalty` & row `st` are
+                                                order-independent.
+                                              - Caveat (outside v2 score): `playForm(ms)` (06-helpers.js:46)
+                                                picks `megas[0]` when `ui.megaPick` is unset (affects
+                                                `proChecks` `stack`/`w3` and v1 fallback; documented on
+                                                line 45 -> Order Question 4). `THR.fieldFor` (55-threats.js:91)
+                                                picks first weather setter in slot order (only affects
+                                                `THR.one`, not `THR.teamReport`).
+
+2  Monotonicity / direction checks            PASS — checked (Job 10 code review of 58-strength.js &
+   (higher win chance -> higher score)        35-win-model.js; no changes in Job 11 files).
+
+3  Finite / no NaN or Infinity propagation    FAIL (1 bug found) — checked (code + Node VM):
+                                              - `55-threats.js:341-342` (`reportSidesG`): if any threat
+                                                has non-finite `w` (e.g. missing/NaN `r[1]` in `RES.tc.rows`
+                                                or custom `THR.report` spec), `W` falls back to `1` via
+                                                `NaN || 1`, while `rows.reduce(...)` evaluates to `NaN`,
+                                                making `RD.score === NaN` and poisoning `CH.strengthOf`.
+                                                Fixed by Diff A.
+                                              - `11-game-plan.js` (`gamePlan`) & `06-helpers.js` (`trPlan`):
+                                                checked (code + Node VM), no unguarded NaN paths found.
+
+4  Bounds (0-100 clamp, band thresholds)      OPEN ORDER QUESTION — checked (Job 10 + 58-strength.js:22-26,
+                                              143, 214, 221). Score is clamped [0, 100], but band-edge
+                                              values like `89.6` render `"90 · Tournament ready"` against
+                                              `CH.LETTERS` ("90+ Top tier"). See Order Question 1.
+
+5  Illegal teams flagged                      PARTIAL FAIL — checked (code + Node VM):
+   (Species Clause, Item Clause,              - Duplicate species: caught in `CH.strengthOf` / `CH.partialOf`
+    dead items, non-Champions items)            (58-strength.js:77, 88, Job 10 Diff 1).
+                                              - Item Clause: caught (`54-items.js:52-53` `itemClash` ->
+                                                `itemProblems` -> `06-helpers.js:125` -> `58-strength.js:142`
+                                                `G.illegal = true`, and `35-win-model.js:122` `tsOf = 0`).
+                                              - Dead items & Scarf+TR: ALSO set `G.illegal = true` via
+                                                `58-strength.js:142`, contradicting `54-items.js:59` and
+                                                `35-win-model.js:118-122` (Diff B / Order Question 2).
+                                              - Non-Champions items (Choice Band, Assault Vest, etc.):
+                                                NOT checked in `54-items.js` or `06-helpers.js`
+                                                (Order Question 3; `45-team-links.js` not in bundle).
+
+6  Partial teams (1-5 Pokémon) on same        PASS on page — checked (58-strength.js:86-90, Job 10).
+   scale, marked "so far"                     Share images intentionally omit score for 1-5 Pokémon
+                                              (`44-share-images.js:66, 181`: `G: null`).
+
+7  Suggestion ranking & lanes                 PASS — checked (36-lanes.js:1-40). Job 10 Diff 3
+                                              WITHDRAWN: `LANE.PTS.reach = 3.5` is measured on
+                                              10,575 sheets / 38,513 games (S1).
+
+8  Own-record (`CH.sixOf`) & edit credit      PASS — checked (Job 10 + 58-strength.js:33-48).
+
+9  Share images match page number             CONFIRMED for full 6-Pokémon teams — checked (code +
+                                              Node VM on `44-share-images.js:65-67, 104-109, 135-138,
+                                              179-181`). Same `CH.gradeOf` and `Math.round(G.s)`.
+                                              Two caveats: partial teams get `G: null` (intentional);
+                                              `ARB.score` ignores `G.illegal` (Order Question 5).
+
+10 Performance / caching parity               PASS — checked (code + Node VM):
+                                              - `55-threats.js:160-167` already implements `duelCache`
+                                                (50k cap, `THR.noCache` parity toggle).
+                                              - `55-threats.js:347-356` has `repCache` (600 cap) and
+                                                generator `teamReportG` to avoid phone scroll hitches.
+                                              - `11-game-plan.js:60-64` has `relCache`.
+                                              - Minor: `44-share-images.js:65` `ms === members()` is
+                                                always false (new array each call), harmless.
+
+================================================================================
+3. DETAILED ANSWERS (ITEMS 1-5) + FINDINGS & DIFFS (WITH S3 PROOFS)
+================================================================================
+
+--- ITEM 1: 54-items.js (`assignItems` / `resolveItems`, Item Clause, dead & non-Champions items) ---
+
+- Order independence (`assignItems`, 54-items.js:69-80) — checked (code + Node VM):
+  1. Mega Stones and user-chosen `heldItem`s are locked first (lines 73-76).
+  2. Remaining unchosen non-Mega members `rest` are sorted by:
+     `b.top - a.top || String(a.m.p.n).localeCompare(b.m.p.n)` (line 78).
+  3. Node VM proof: Incineroar and Amoonguss both tied at 45% for Sitrus Berry produce
+     `["Amoonguss:Sitrus Berry", "Incineroar:Safety Goggles"]` in both `[Incineroar, Amoonguss]`
+     and `[Amoonguss, Incineroar]` orders.
+  4. `resolveItems(ms)` (`06-helpers.js:53`) immediately delegates to `assignItems(ms)` whenever
+     `54-items.js` is loaded. (Only the fallback on lines 53-57 iterates in input order.)
+  5. Edge case: duplicate-species teams (`a.m.p.n === b.m.p.n`, already illegal under Species Clause)
+     preserve slot order via stable sort; not a bug for legal teams.
+
+- Illegal / dead / non-Champions items (`54-items.js:42-60`) — checked (code + Node VM):
+  - Item Clause (`itemClash`, lines 52-53): flagged as `{k: 'clause', ...}`.
+  - Dead items (`deadItems` / `itemDeadWhy`, lines 42-50, 55-57): flags Terrain Seeds without terrain,
+    Weather Rocks on non-setter, Light Clay without screens, Mega Stone on non-Mega, Terrain Extender
+    without terrain (`k: 'dead'`), and Choice Scarf under main-mode Trick Room (`k: 'scarftr'`).
+  - Non-Champions items (e.g., `Choice Band`, `Assault Vest`): NOT flagged (`itemProblems` returns `[]`).
+    `54-items.js` has no Champions-item allowlist check (`itemPool` on line 66 is only used as a last-resort
+    fallback for default assignment, and its definition is outside the Job 11 file bundle).
+
+--- ITEM 2: 06-helpers.js `proChecks` ---
+
+- Items check (`06-helpers.js:125`) — checked (code + Node VM):
+  `proChecks` calls `itemProblems(ms)` and adds `{k: 'items', ok: false, label: 'Items work', ...,
+  pro: 'VGC rule: each item once per team'}` whenever `itemProblems(ms).length > 0`.
+  Same coverage as `54-items.js`: catches `clause`, `dead`, and `scarftr`; does NOT catch non-Champions items.
+
+- Which checks feed the score (`58-strength.js:141-147`, `35-win-model.js:76-97, 121-127`) — checked (code):
+  - v2 Strength Score (`CH.strengthOf` / `CH.partialOf`):
+    - `mega`, `stack`, `w3`, `speed`, `spread`, `fake`: DO NOT feed `G.s` (documented at `58-strength.js:72`:
+      "the 7 team checks added nothing, so they are checklist advice only, no longer a discount on strength").
+    - `reach`: `RD.score` feeds `CH.strengthOf(ms, RD.score)` directly via `mu = CH.MU_K * (ready - CH.MU_AVG)`
+      (not via `proChecks`'s `pc >= 75` boolean).
+    - `items`: feeds `G.illegal` (`58-strength.js:142`), NOT `G.s`.
+    - `structCredit` (`35-win-model.js:76-97`) reads `proChecks`, `gamePlan`, `trPlan`, and `deadItems`,
+      but only multiplies `xRaw`, whereas `CH.strengthOf` uses `xs.x0` (`58-strength.js:77-79`).
+  - v1 fallback (`58-strength.js:145-147`, when model isn't loaded or `CH.PARTIAL_V2 = false`):
+    - `mega`, `stack`, `w3`, and `items` each subtract `CH.GMISS` (6 points) from `RD.score`.
+    - `speed`, `spread`, `fake` have `note: true` and never feed any score.
+
+- Slot-order quirk in `playForm(ms)` (`06-helpers.js:44-47`) — Severity: WRONG-ADVICE (v2) / WRONG-SCORE (v1 fallback):
+  - Line 46: `const keep = megas.find(m => m.p.n === ui.megaPick) || megas[0];`
+  - Node VM proof: `[Charizard-Mega-Y, Kangaskhan-Mega]` keeps `Charizard-Mega-Y`; reversed keeps
+    `Kangaskhan-Mega`. Because `proChecks` (line 107) runs `analyze(playForm(ms), useA)`, swapping two
+    Megas' slots when `ui.megaPick` is unset can flip `stack` and `w3` (and v1 fallback score by +/-6).
+  - Because line 45 explicitly documents `(ui.megaPick, else the first)`, no diff is proposed here
+    (per S1); raised as Order Question 4.
+
+--- ITEM 3: 55-threats.js `THR.teamReport` ---
+
+- Speed idea from Job 10 (memoize per member x threat) — checked (code):
+  ALREADY IMPLEMENTED at `55-threats.js:157-167` (`duelCache = new Map()`, capped at 50,000 entries,
+  keyed on `sigOf(m)`, `m._fv`, `sigOf(t)`, `t._fv`, `modes.tr`, `modes.tw`, `field.weather`,
+  `field.terrain`, sorted `field.auras`, and tested against `THR.noCache` in `app/test/run.mjs`).
+  Do NOT add a second cache.
+  - Note on `repCache` (`55-threats.js:350`): `team.map(...)` is unsorted, so reordering a team misses
+    `repCache` (falling back to `duelCache`, so still fast). Keeping it unsorted is actually safer
+    because `rep.team`, `r.solid`, `r.soft`, `r.losers`, and `r.rows` preserve slot order for UI display.
+
+- Order independence (`55-threats.js:143-146, 236-291, 340-342`) — checked (code + Node VM):
+  - `teamModes`, `m._fv`, `duel`, `vsIn`, `vsThreat` (`solid.length`, `softR.length`, `losers.length`,
+    `holders`, `overloaded`, `level`), and `reportSidesG` (`score`) are ALL order-independent.
+  - Node VM proof on a 2-weather team (`Pelipper` + `Charizard-Mega-Y` vs reversed): `repWxA.score === repWxB.score`
+    (`true`), while only the display field `r.field.weather` (`dShow = R[R.length - 1]`, line 258) swaps
+    between `'sun'` and `'rain'`.
+  - MINOR quirk outside `teamReport`: `THR.fieldFor(team, t)` (line 90-95, used only by `THR.one` on
+    line 367-368) uses `.find(Boolean)` in slot order, so `THR.one` on a 2-weather team shows `'rain'`
+    vs `'sun'` depending on slot order. Does not affect `THR.teamReport` or Strength Score.
+
+- NaN path (`55-threats.js:332, 341-342`) — Severity: WRONG-SCORE — checked (code + Node VM):
+  See Diff A below.
+
+--- ITEM 4: 11-game-plan.js `gamePlan` & 06-helpers.js `trPlan` ---
+
+(Note: `trPlan` lives in `06-helpers.js:70-72`, not `11-game-plan.js`.)
+- Score feeding — checked (code): Neither `gamePlan` nor `trPlan` feeds Strength Score v2 (`CH.strengthOf`).
+  They feed `proChecks` `speed` (which is `note: true`), UI game-plan rows, and `structCredit` (`xRaw` only).
+- Order independence — checked (code + Node VM):
+  - `gamePlan(team)` `penalty` and every row's `st` (`ok`/`part`/`miss`/`opt`) are strictly order-independent
+    (Node VM proof: `sixDead` vs reversed -> `gpPenaltySame: true`, `gpStatusesSame: true`).
+  - Only display strings (`who`, `note`, e.g., `deadSeed[0]` on line 182, `off[0]` on line 161, `bad` on
+    line 168) follow input slot order on ties.
+  - `trPlan(ms)` (`06-helpers.js:71-72`): counts (`set.length`, `slow.length`, `scarf.length`) and `tw`
+    boolean are order-independent.
+- NaN paths — checked (code): None found. `relMove_` skips non-numeric `v` via `r > best[0]`; `opts` in
+  `gamePlan:106` are all finite numbers in `[0, 1]`.
+- Speed — checked (code): `relCache` (`11-game-plan.js:60-64`) caches unedited moveless members; edited/full
+  members do an O(4) `.find()` over 4 moves. Negligible cost.
+
+--- ITEM 5: 44-share-images.js (Invariant 9) ---
+
+- CONFIRMED for full 6-Pokémon teams — checked (code + Node VM):
+  - `44-share-images.js:65-66` (`posterFacts`):
+    `const G = RD && ms.length === 6 ? CH.gradeOf(RD, ck, ms) : null;`
+  - `44-share-images.js:107-108` (`ARB.score`):
+    `const n = CH.gradeNum(G);`
+    `if (G.v === 2) { const w = CH.wordOfL(G.letter); return {num: String(Math.round(G.s)), ...}; }`
+  - `44-share-images.js:135-136` (`ARB.card`) and `179-180` (`ARB.poster`) draw `sc.num` (`Math.round(G.s)`)
+    and `CH.wordOfL(G.letter)` — matching `CH.gradeNum(G)` (`58-strength.js:214`) and `CH.whyData(G)`
+    (`58-strength.js:223-224`).
+- Three exact caveats:
+  1. Partial teams (1-5 Pokémon): `posterFacts` line 66 returns `G: null`, so `ARB.poster` (line 181)
+     draws `"The grade comes with a full six"` and `ARB.card` (line 138) falls back to `RD.score + '%'`,
+     whereas the page shows a partial Strength Score (`"so far"`). Intentional per line 181 copy.
+  2. `G.illegal === true` (WRONG-ADVICE / Order Question 5): `ARB.score` (line 108), `ARB.card` (line 135),
+     and `ARB.poster` (line 179) never check `G.illegal`, so an Item-Clause-illegal 6-Pokémon team still
+     prints its Strength Score on share images with no illegal indicator.
+  3. Dead cache check (MINOR, `44-share-images.js:65`): `ms === members()` is always `false` because
+     `members()` (`06-helpers.js:43`) returns a fresh array each call, so `posterFacts` always recomputes
+     `proChecks(ms, true)`. Harmless to numbers.
+
+--- DIFF A (WRONG-SCORE): Guard non-finite threat weights `w` in 55-threats.js ---
+
+File: app/src/app/55-threats.js (lines 332, 341-342)
+Rule (S1): CLAUDE.md #19 ("Every number shown is honest"; Strength Score must never turn into NaN).
+
+```diff
+--- a/app/src/app/55-threats.js
++++ b/app/src/app/55-threats.js
+@@ -329,7 +329,7 @@
+   let thCache = {key: null, list: null};
+   function threatList(n = 30) { let res = null; try { res = RES; } catch (e) {} const tc = res && res.tc && res.tc.rows && Object.keys(res.tc.rows).length >= 50 ? res.tc.rows : null;
+     const key = metaVersion + '|' + (tc ? 'tc' : 'u') + '|' + n; if (thCache.key === key) return thCache.list;
+-    let list = tc ? Object.entries(tc).filter(([k, r]) => byName.has(k) && Array.isArray(r)).sort((a, b) => b[1][1] - a[1][1]).slice(0, n).map(([k, r]) => ({n: k, w: +r[1], src: 'top cut'}))
++    let list = tc ? Object.entries(tc).filter(([k, r]) => byName.has(k) && Array.isArray(r) && isFinite(+r[1]) && +r[1] > 0).sort((a, b) => b[1][1] - a[1][1]).slice(0, n).map(([k, r]) => ({n: k, w: +r[1], src: 'top cut'}))
+       : ROSTER.map(p => ({n: p.n, w: U(p)})).filter(x => x.w > 0).sort((a, b) => b.w - a.w).slice(0, n).map(x => ({...x, src: 'usage'}));
+     const sides = []; for (const x of list) { try { const s = side({n: x.n, top: true}); sides.push({...s, w: x.w, src: x.src, setSrc: s.spec && s.spec.sets ? `top-cut sets (${s.spec.sets})` : 'all tournament teams'}); } catch (e) {} }
+     thCache = {key, list: sides}; return sides; }
+@@ -338,8 +338,8 @@
+      report (150-300 ms at 4x CPU, the scroll hitch on My Team) in one step. */
+   function* reportSidesG(team, ths) { const modes = teamModes(team), rows = []; for (const t of ths) { rows.push(vsThreat(team, t, modes)); yield; }
+-    const W = ths.reduce((a, t) => a + t.w, 0) || 1;
+-    return {score: Math.round(100 * rows.reduce((a, r) => a + r.t.w * PTS[r.level], 0) / W), modes, rows, team, W}; }
++    const wOf = t => (t && isFinite(+t.w) && +t.w > 0 ? +t.w : 0), W = ths.reduce((a, t) => a + wOf(t), 0) || 1;
++    return {score: Math.round(100 * rows.reduce((a, r) => a + wOf(r.t) * PTS[r.level], 0) / W), modes, rows, team, W}; }
+   function reportSides(team, ths) { const g = reportSidesG(team, ths); let r; do r = g.next(); while (!r.done); return r.value; }
+```
+
+S3 Proof (Node v18.20.4 VM harness against app/src/app/55-threats.js):
+- Input: `THR.report([{n:'Incineroar', moves:['Flare Blitz']}, {n:'Rillaboom', moves:['Grassy Glide']}], [{n:'Amoonguss', moves:['Spore'], w:10}, {n:'Pelipper', moves:['Hurricane'], w:NaN}])`
+- OLD: `{ score: NaN, W: 1 }` (`NaN` cascades into `CH.strengthOf(ms, RD.score)`)
+- NEW: `{ score: 0, W: 10 }` (finite integer computed from the valid threat weight `10`)
+
+--- DIFF B (WRONG-ADVICE / OPTIONAL PER ORDER QUESTION 2): `G.illegal` checks Item Clause only ---
+
+File: app/src/app/58-strength.js (line 142)
+Rule (S1): `54-items.js:59` ("VGC's Item Clause allows each item only once per team, so this team can't
+be registered" — only `k: 'clause'` is illegal), `35-win-model.js:118-122` (`tsOf` checks `itemClash(ms).length`
+only), `36-lanes.js:5-6` ("Choice Scarf on a Trick Room team: no measurable harm").
+Apply ONLY if HH confirms `G.illegal` means VGC registration legality (see Order Question 2).
+
+```diff
+--- a/app/src/app/58-strength.js
++++ b/app/src/app/58-strength.js
+@@ -139,7 +139,7 @@
+   return out; };
+ CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && !x.note && x.k !== 'reach') : [], mp = CH.modelPts(ms), rec = CH.recOf(ms);
+-  const illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
++  const illegal = typeof itemClash === 'function' ? itemClash(ms).length > 0 : !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
+   if (st) { const s = Math.round(st.ss * 10) / 10; const L = CH._ownBusy ? CH.gradeFull(s) : CH.sticky(ms, s); return {v: 2, s, letter: L, band: L[0] === 'F' ? 'F' : L[0], word: CH.wordOf(s), rk: st.pct, e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.ss0, pMu: st.ssMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
+```
+
+S3 Proof (Node v18.20.4 VM harness against 54-items.js + 06-helpers.js + 58-strength.js):
+- Input 1 (legal team, dead Psychic Seed with no Psychic Terrain):
+  OLD: `G.illegal === true`
+  NEW: `G.illegal === false`
+- Input 2 (illegal team, two Sitrus Berries breaking Item Clause):
+  OLD: `G.illegal === true`
+  NEW: `G.illegal === true`
+
+================================================================================
+4. TESTS ADDED TO experiments/strength-invariants.mjs (EACH WITH S7)
+================================================================================
+
+Syntax-checked via `node --check` (passed). Playwright execution against `app/dist/page.html`: not run.
+
+```js
+// Additional cases to append inside experiments/strength-invariants.mjs (Job 11)
+
+export async function runJob11Invariants(page, assert) {
+  // Case J11-1 (Invariant 1): assignItems order-independence when two Pokémon share a #1 default item
+  // S7 fails if: assignItems() iterates in input slot order instead of sorting by (top usage desc, name asc).
+  await page.evaluate(() => {
+    const mk = n => {
+      const p = byName.get(n);
+      return { i: 0, p, n: p.n, d: p.d, types: p.t, ability: p.a[0], mega: p.m, base: p.b, moves: popularMoves(p).slice(0, 4), heldItem: null, item: '' };
+    };
+    const byTop = new Map();
+    let pair = null;
+    for (const p of ROSTER) {
+      if (p.m) continue;
+      const opt = itemOptions(p);
+      if (!opt.length) continue;
+      const topItemName = opt[0][0];
+      if (byTop.has(topItemName)) { pair = [byTop.get(topItemName), p.n]; break; }
+      byTop.set(topItemName, p.n);
+    }
+    if (!pair) throw new Error('J11-1: no roster pair shares a default item');
+    const a = assignItems([mk(pair[0]), mk(pair[1])]).map(m => m.p.n + ':' + m.item).sort().join('|');
+    const b = assignItems([mk(pair[1]), mk(pair[0])]).map(m => m.p.n + ':' + m.item).sort().join('|');
+    if (a !== b) throw new Error(`J11-1: assignItems order-dependent for ${pair.join(' vs ')}: ${a} !== ${b}`);
+  });
+
+  // Case J11-2 (Invariant 5): Item Clause clash sets G.illegal = true; dead item alone does not (with Diff B)
+  // S7 fails if: Item Clause stops setting G.illegal = true, or (with Diff B) a legal dead-item team sets G.illegal = true.
+  await page.evaluate(() => {
+    const nonMegas = ROSTER.filter(p => !p.m).slice(0, 5);
+    const mega = ROSTER.find(p => p.m);
+    const mk = (p, it) => ({ i: 0, p, n: p.n, d: p.d, types: p.t, ability: p.a[0], mega: p.m, base: p.b, moves: popularMoves(p).slice(0, 4), heldItem: p.m ? null : it, item: p.m ? stoneFor(p) : it });
+    const clashTeam = [mk(mega, null), mk(nonMegas[0], 'Sitrus Berry'), mk(nonMegas[1], 'Sitrus Berry'), mk(nonMegas[2], 'Leftovers'), mk(nonMegas[3], 'Focus Sash'), mk(nonMegas[4], 'Rocky Helmet')];
+    const RD = THR.teamReport(clashTeam);
+    const G = CH.gradeOf(RD, proChecks(clashTeam, true), clashTeam);
+    if (!G || !G.illegal) throw new Error('J11-2: Item Clause clash did not set G.illegal = true');
+    const deadTeam = [mk(mega, null), mk(nonMegas[0], 'Psychic Seed'), mk(nonMegas[1], 'Sitrus Berry'), mk(nonMegas[2], 'Leftovers'), mk(nonMegas[3], 'Focus Sash'), mk(nonMegas[4], 'Rocky Helmet')];
+    const hasPsy = deadTeam.some(m => TERRAIN_OF[m.ability] === 'psy');
+    if (!hasPsy) {
+      const GD = CH.gradeOf(THR.teamReport(deadTeam), proChecks(deadTeam, true), deadTeam);
+      if (GD && GD.illegal && itemClash(deadTeam).length === 0) {
+        throw new Error('J11-2b: legal team with dead Psychic Seed was flagged G.illegal = true');
+      }
+    }
+  });
+
+  // Case J11-3 (Invariant 1 + Speed): THR.teamReport is order-independent and duelCache matches THR.noCache(true)
+  // S7 fails if: reordering a 6-Pokémon team changes THR.teamReport().score, or duelCache diverges from uncached.
+  await page.evaluate(() => {
+    const six = ROSTER.slice(0, 6).map(p => ({ i: 0, p, n: p.n, d: p.d, types: p.t, ability: p.a[0], mega: p.m, base: p.b, moves: popularMoves(p).slice(0, 4), heldItem: null, item: '' }));
+    const msA = assignItems(six);
+    const msB = assignItems(six.slice().reverse());
+    const rA = THR.teamReport(msA);
+    const rB = THR.teamReport(msB);
+    if (rA.score !== rB.score) throw new Error(`J11-3a: THR.teamReport order-dependent: ${rA.score} !== ${rB.score}`);
+    THR.noCache(true);
+    const rUncached = THR.teamReport(msA);
+    THR.noCache(false);
+    if (rA.score !== rUncached.score) throw new Error(`J11-3b: duelCache mismatch: cached ${rA.score} !== uncached ${rUncached.score}`);
+  });
+
+  // Case J11-4 (Invariant 3 / NaN guard): THR.report stays finite if a threat weight is non-finite (with Diff A)
+  // S7 fails if: a single NaN/missing threat weight poisons reportSidesG().score to NaN.
+  await page.evaluate(() => {
+    const a = ROSTER[0].n, b = ROSTER[1].n, t1 = ROSTER[2].n, t2 = ROSTER[3].n;
+    const rep = THR.report([{ n: a }, { n: b }], [{ n: t1, w: 10 }, { n: t2, w: NaN }]);
+    if (!Number.isFinite(rep.score)) throw new Error(`J11-4: THR.report returned non-finite score ${rep.score} on NaN threat weight`);
+  });
+
+  // Case J11-5 (Invariant 9): Share image ARB.score matches CH.gradeNum / Math.round(G.s) for full 6-Pokémon teams
+  // S7 fails if: ARB.score(G).num diverges from Math.round(G.s) on a full 6-Pokémon team.
+  await page.evaluate(() => {
+    const six = assignItems(ROSTER.slice(0, 6).map(p => ({ i: 0, p, n: p.n, d: p.d, types: p.t, ability: p.a[0], mega: p.m, base: p.b, moves: popularMoves(p).slice(0, 4), heldItem: null, item: '' })));
+    const f = ARB.facts(six, 'Parity Test');
+    const sc = ARB.score(f.G);
+    if (!f.G || !sc) throw new Error('J11-5: ARB.facts/ARB.score returned null for a 6-Pokémon team');
+    if (f.G.v === 2 && sc.num !== String(Math.round(f.G.s))) {
+      throw new Error(`J11-5: share image score ${sc.num} !== page score ${Math.round(f.G.s)}`);
+    }
+  });
+}
+```
+
+================================================================================
+5. ORDER QUESTIONS FOR HH + WITHDRAWAL OF JOB 10 DIFF 3
+================================================================================
+
+--- ORDER QUESTION 1 (Job 11 #6): The `89.6 -> "90 · Tournament ready"` band-edge case ---
+
+Currently (`58-strength.js:143, 214, 223`), `s = Math.round(st.ss * 10) / 10` (e.g., `89.6`), while
+`CH.gradeFull(s)` and `CH.wordOf(s)` read `89.6` ('B' / 'Tournament ready') and the UI/share card print
+`Math.round(G.s)` (`90`). That puts `"90 · Tournament ready"` right above `CH.LETTERS` (`58-strength.js:221`:
+`"90+ Top tier · 80s Tournament ready..."`).
+
+Options:
+(a) Letter and word from the rounded number (`Math.round(s)`) — what the player sees.
+    - Matches: `58-strength.js:118` ("The letter comes from the score as shown, rounded"), `58-strength.js:221`
+      (`CH.LETTERS`), and `CLAUDE.md` #19 ("Every number shown is honest").
+    - Trade-off: effective band edge shifts down 0.5 pts (`89.5 -> 90 · Top tier`); `CH.sticky` should
+      also evaluate against `Math.round(s)` so sticky doesn't re-create a mismatch.
+(b) Show one decimal at the band edge (e.g., `89.6 · Tournament ready`).
+    - Matches: `58-strength.js:23-26` (exact `>= 90` thresholds) and `58-strength.js:143` (1-decimal `s`).
+    - Trade-off: breaks integer-only school-grade formatting (`06-helpers.js:2, 212`: "10 or more -> whole
+      number") and mixes `89.6` with `89` / `90` across teams.
+(c) Floor (`Math.floor(G.s)`) instead of `Math.round(G.s)` (`89.6 -> "89 · Tournament ready"`).
+    - Matches: `58-strength.js:23-26` (strict `>= 90` for `90+`) AND integer-only display (`06-helpers.js:212`)
+      with zero contradiction against `CH.LETTERS`.
+    - Trade-off: displays ~0.5 pts lower on average (`89.9 -> 89`); `CH.whyData` (`base + mu + own = t`)
+      and `CH.gradeMove` would need to use `Math.floor` consistently so parts still add up.
+
+Recommendation: Option (a) matches the existing comment at `58-strength.js:118` and requires the smallest
+change; Option (c) is cleanest if `>= 90.0` must stay strict.
+
+--- ORDER QUESTION 2: Should `G.illegal` fire ONLY on Item Clause (`itemClash`), or also on dead items / Scarf+TR? ---
+
+`58-strength.js:142` sets `illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok))`, which fires
+on `dead` items (e.g., Psychic Seed with no terrain) and `scarftr` (Choice Scarf + Trick Room), even though
+those teams are VGC-legal, `54-items.js:59` reserves "can't be registered" for `k: 'clause'`, `35-win-model.js:122`
+(`tsOf`) only checks `itemClash(ms).length`, and `36-lanes.js:5-6` notes Scarf+TR has no measurable harm.
+If `G.illegal` should mean VGC registration legality only, apply Diff B.
+
+--- ORDER QUESTION 3: Non-Champions held items in `54-items.js` / `06-helpers.js` ---
+
+Neither `54-items.js` nor `06-helpers.js` checks whether a chosen `heldItem` is legal in Pokémon Champions
+(e.g., `Choice Band`, `Assault Vest`). Should `itemDeadWhy` / `itemProblems` flag non-Champions items
+against the Champions item allowlist, or is import-time filtering (`45-team-links.js`) the intended gate?
+
+--- ORDER QUESTION 4: `playForm(ms)` 2-Mega slot-order fallback (`06-helpers.js:46`) ---
+
+`06-helpers.js:44-46` documents `(ui.megaPick, else the first)` so swapping two Megas' slots when
+`ui.megaPick` is unset flips which Mega is read in base form for `proChecks` (`stack`, `w3`) and v1
+fallback. Should it stay `megas[0]` as documented, or use a slot-order-independent fallback (e.g.
+highest usage `U(m.p)`, tie-broken by `m.p.n`)?
+
+--- ORDER QUESTION 5: Share images (`44-share-images.js`) when `G.illegal === true` ---
+
+`ARB.score(G)` (line 108), `ARB.card` (line 135), and `ARB.poster` (line 179) do not check `G.illegal`,
+so an Item-Clause-illegal 6-Pokémon team still gets a Strength Score printed on share cards/posters.
+Should share images suppress the score or add an illegal label when `G.illegal` is true?
+
+--- JOB 11 #7: EXPLICIT WITHDRAWAL OF JOB 10 DIFF 3 (`LANE.of` `reach`) ---
+
+WITHDRAWN.
+Documented rule quoted from `app/src/app/36-lanes.js:3-14`:
+  "On 10,575 real team sheets and 38,513 games, player skill taken out (experiments/lane-fixes.mjs):
+   no Mega -23 win-chance points (-37 to -16); Protect on 0-1 of the six -15 (-21 to -10), on 2 -4
+   (-8 to -2), vs the usual 3. Ready for the top threats +3.5 (2.4 to 4.7, checks-real.mjs)."
+  "So: a FIX repairs a real problem and says what that problem costs in real games; a SWAP is shown
+   only when the model's gain is 4+ win-chance points..."
+  `PTS: {mega: 23, prot1: 15, prot2: 4, reach: 3.5}`
+Per S1, ranking a real missing-basic fix (`reach`) by measured real-game win-rate impact (+3.5 pts)
+rather than the swap model is intentional. Job 10's Diff 3 was wrong and is withdrawn.
+
+================================================================================
+6. "I'M UNSURE" (S6) & WHAT WAS NOT LOOKED AT
+================================================================================
+
+I'm unsure (S6):
+- Whether `45-team-links.js` or the item picker already makes it impossible for a non-Champions item
+  (e.g., Choice Band, Assault Vest) to enter `S.slots`, or whether old `localStorage` teams / hand-crafted
+  URLs can still carry one into `54-items.js` (`45-team-links.js` and `itemPool()` were not in Job 11's bundle).
+- Whether `V2.slab` / `V2.tapeImage` (outside this bundle) read `CH.wordOf(G.s)` vs `CH.wordOfL(G.letter)`
+  when sticky letters are active, which could briefly differ from `ARB.score` (`44-share-images.js:108`).
+
+Not looked at (not included in Job 11 file bundle):
+- `app/src/app/45-team-links.js` (paste/link item filtering)
+- `app/src/app/60-concept-h.js` & `app/src/v2/*` (UI rendering of `G.illegal` and sticky letters)
+- `app/test/run.mjs` (existing `THR.noCache` parity tests)
+- `app/dist/page.html` (Playwright browser run: not run)

@@ -1,0 +1,23 @@
+diff --git a/app/src/v2/css/pages.css b/app/src/v2/css/pages.css
+index 33f95b3c..163147b0 100644
+--- a/app/src/v2/css/pages.css
++++ b/app/src/v2/css/pages.css
+@@ -4528,3 +4528,18 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
+   .dr .k-plan>.k-step>.k-sec{margin-top:var(--s10)}
+   .dr .tp-piles{gap:var(--s6)}
+ }
++/* Test Run option A at 1280-1439 (alt/len1280b, Nov 24): the lede and "How it works" sit to the right of the headline (its second line
++   leaves ~330px free there) instead of under it; in the piles, a team you answer all six of reads on one line (place, event, "You
++   answer all six.", counts), so those rows drop to the 44px tap height; the page ends 16px under its note (was 64px). Nothing is
++   hidden; 1440 and up, 1100-1279 and phones unchanged */
++@media (min-width:1280px) and (max-width:1439.98px){
++  .tr.dr{grid-template-columns:minmax(0,1fr) 320px;column-gap:var(--s8);padding-bottom:var(--s4)}
++  .tr.dr>*{grid-column:1/-1}
++  .tr.dr>.dr-h{grid-column:1;grid-row:span 2}
++  .tr.dr>.tr-lede,.tr.dr>.tr-how{grid-column:2;align-self:end}
++  .tr.dr>.tr-how{align-self:start}
++  .dr .tp-cards .dr-row:not(:has(.dr-tn)){min-height:var(--tap)}
++  .dr .tp-cards .dr-row:not(:has(.dr-tn)) .dr-id{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--s2)}
++  .dr .tp-cards .dr-row:not(:has(.dr-tn)) .dr-id b{white-space:nowrap}
++  .dr .tp-cards .dr-row:not(:has(.dr-tn)){grid-template-columns:minmax(0,1fr) auto auto}
++}

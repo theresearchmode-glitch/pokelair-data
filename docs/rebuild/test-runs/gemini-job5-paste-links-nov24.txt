@@ -1,0 +1,567 @@
+1. OVERALL VERDICT
+mostly solid, with 8 real edge-case bugs (accented names, lowercase natures/abilities, hand-edited team-link stat/move validation, and exportPaste inventing defaults for blank slots) — all fixable with small diffs; zero privacy or XSS leaks found in the 3 files shown.
+
+====================================================================
+2. PART A — PER-FUNCTION SUMMARY
+====================================================================
+app/src/app/19-showdown-paste.js:
+- stoneFor(p): accepts roster Pokémon `p`; returns Mega Stone string from META docs -> SETS -> MEGA_STONE -> fallback `p.b + 'ite'`. Can fail if `STONE_RE`/`megaFormFor`/`byName` are missing or a new Mega isn't in META/SETS/MEGA_STONE.
+- exportPaste(): no args (reads `members()`, `S.slots`); returns Showdown text. Fills missing `m.item` with `topItems(p).it[0][0]` and missing `m.spread` with `commonSpread(p)`, so re-importing a team with blank item/spread invents defaults the player never chose (Finding #5). Also writes `Ability: undefined` if `ability` is null/undefined.
+- okNat0(nat): accepts nature string; returns canonical nature in `NATURES` (mapping Docile/Serious/Bashful/Quirky -> Hardy) or `null`. Case-sensitive (`'jolly'` -> `null`, Finding #2).
+- pasteSpread(lines): accepts trimmed line array; returns `{nat, v, ev}` or `{..., over32: true}` or `null`. Handles `\r\n`, tabs, classic EVs > 32 (if total > SP_TOTAL), and `EVs: 0 HP`; ignores `IVs:`/`Level:`/`Shiny: Yes`/`Tera Type:` cleanly. Drops lowercase natures via `okNat0`.
+- pasteItemOK(it): accepts item string; returns boolean. Blocks Choice Band/Specs/Assault Vest; checks `itemPool()` + `REGMC_ITEMS` + `CALC_ITEMS` + `extra`. Case-sensitive unless `canonItem` normalizes it (unseen).
+- pnorm(s): accepts string; strips non-`[a-z0-9]`. Strips accented chars like `é` instead of NFD-folding (Finding #1).
+- pasteSuggest(name): accepts species string; returns closest `ROSTER` display name within edit distance <= 2 (or 3 if len >= 9) if unique. O(1) length-diff guard prevents 100 KB hangs.
+- pasteProse(lines): accepts line array; returns true if no Showdown markers and first line has >= 5 words or > 30 chars.
+- speciesFromPaste(name): accepts species string; returns `ROSTER` entry via `pnorm(p.n)`, hardcoded `alias`, or `pnorm(p.d)`, else `null`.
+- parsePaste(text): accepts raw paste; returns `{slots, notes, over}`. Handles `\r\n`, tabs, empty lines, `Shiny: Yes`, `IVs:`, `Level:`, `Tera Type:`, `(M)`/`(F)`, `>6` Pokémon, duplicates, unknown species/moves/items, and 100 KB pastes without hanging. Bugs: `nameOf` splits on first `' @ '` instead of `lastIndexOf(' @ ')` (Finding #4); `p.a.includes(abl)` is case-sensitive (Finding #3); direct `SP_TOTAL` reference on line 122 throws if `SP_TOTAL` is undefined; non-Mega holding a Mega Stone for another species or unrelated Mega Stone is silently ignored without a note (Finding #9).
+- importPaste(raw): accepts raw text/link; returns `{shared}`, `{error}`, or `{msg}`. Calls `decodeTeam` first; mutates `S.slots` via `normSlots`.
+- renderPastePanel(): renders `#pastePanel`, escaping `exportPaste()` with `esc()`.
+- slotsPaste(slots): temporarily swaps `S.slots`/`S.format`, calls `exportPaste()`, restores in `finally`.
+- sdBlock(x), sdSpecies(p), sheetPaste(mons), sdSheetFor(names, player), sdNames(names, player): formats event team sheets into Showdown text; `sheetPaste` NFD-folds `m.nt` and fills missing items/abilities/moves from common sets.
+
+app/src/app/45-team-links.js:
+- tlB64(str) / tlUnB64(code): UTF-8 safe URL-safe base64 (`-`/`_`, no padding) encode/decode.
+- teamCode() / teamLinkBase() / teamLink(): packs up to `S.slots` (`{v: 1, f: 'doubles', s, n?}`) into base64url; `n` capped at 60 chars.
+- decodeTeam(text): accepts full URL, `team=<code>`, or bare code; returns `{f, n, slots}` or `null`. Catches malformed/truncated base64 and rejects `v !== 1`. Bugs: `spOf` accepts any `\w*` nature and out-of-range stat points > 32 or sum > 66 (Finding #6); `r[2]` moves are not validated against `LEARN`/`MV` (Finding #7); standard base64 (`+`/`/`/`=`) is rejected (Finding #8).
+- loadShared(x) / applyShared(x) / copyTeamLink(btn) / checkSharedLink(): `checkSharedLink` escapes `x.n` with `esc()` in `bar.innerHTML`; `applyShared` passes `x.n` to unseen `toast()`.
+- boxCode() / boxLink() / decodeBox(text) / applyBox(x, mode) / checkBoxLink(): packs/decodes up to 400 box Pokémon (base forms). Same standard-base64 regex limit on line 67.
+
+app/src/app/41-replay-import.js:
+- addReplay(text): calls unseen `parseReplay(text)`, pushes `{t, r, b, tm, o}` (max 400) to `S.log`, calls `persist()`, updates `#replayOut.textContent` (XSS-safe).
+- renderReplayBox() & listeners: `#replayFile` reads file via `FileReader` and extracts `<script type="text/plain" class="battle-log-data">...</script>`. If HTML attributes are reordered/single-quoted, passes full HTML to `parseReplay` (Finding #10).
+
+====================================================================
+3. FINDINGS TABLE
+====================================================================
+# | finding | severity | file:line | checked/not checked | fix?
+1 | pnorm() strips accented characters (e.g. "Flabébé" -> "flabb") instead of NFD-folding ("flabebe"), failing to match accented species/moves | WRONG-TEAM | 19-showdown-paste.js:61 | checked (Node proof) | Diff 1
+2 | okNat0() is case-sensitive: "jolly Nature" (lowercase) returns null and silently drops the nature | WRONG-TEAM | 19-showdown-paste.js:36 | checked (Node proof) | Diff 2
+3 | parsePaste() ability check `p.a.includes(abl)` is case-sensitive: "Ability: intimidate" silently drops the ability | WRONG-TEAM | 19-showdown-paste.js:106 | checked (Node proof) | Diff 3
+4 | parsePaste() `nameOf` splits on first `' @ '` (`split(' @ ')[0]`) while line 93 uses `lastIndexOf(' @ ')`, misreporting nicknames containing `' @ '` in `over` | WRONG-TEXT | 19-showdown-paste.js:87 | checked (Node proof) | Diff 4
+5 | exportPaste() fills blank `m.item` with `topItems(p)` and blank `m.spread` with `commonSpread(p)`, so `paste -> team -> exportPaste -> paste` invents items/spreads the player never chose (and writes `Ability: undefined` if ability is null) | WRONG-TEAM | 19-showdown-paste.js:23-27 | checked (code inspection) | report only (see S1)
+6 | decodeTeam() `spOf` accepts unvalidated nature strings (`\w*`) and out-of-range stat points (`>32` or sum `>66`) from hand-edited team links | WRONG-TEAM | 45-team-links.js:28-29 | checked (Node proof) | Diff 5
+7 | decodeTeam() does not validate `r[2]` moves against `LEARN[p.n]` / `MV` (unlike `parsePaste`); unsure if `normSlots` validates them | WRONG-TEAM | 45-team-links.js:36 | not checked (`normSlots` unseen) | report only
+8 | decodeTeam() / decodeBox() regexes `[A-Za-z0-9_-]` reject standard base64 (`+`, `/`, `=`) if a link/code is re-encoded by another tool | MINOR | 45-team-links.js:24,67 | checked (code inspection) | report only
+9 | parsePaste() line 117 skips Mega Stones (`!STONE_RE.test(item)`) without a note if a Pokémon has no Mega evolution (e.g. `Pikachu @ Charizardite X`), and line 122 uses `SP_TOTAL` without `typeof` guard | MINOR / CRASH | 19-showdown-paste.js:117,122 | checked (code inspection) | Diff 6 (SP_TOTAL guard)
+10 | replayFile regex only matches exact `<script type="text/plain" class="battle-log-data">`; reordered attributes/single quotes pass full HTML to unseen `parseReplay` | MINOR | 41-replay-import.js:21 | checked (code inspection) | report only
+
+====================================================================
+4. DIFFS (each with S3 proof)
+====================================================================
+
+--- Diff 1 (Finding #1: NFD-fold accents in pnorm) ---
+Proof (checked in Node):
+  input: pnorm('Flabébé') === pnorm('Flabebe')
+  -> old: 'flabb' === 'flabebe' (false)
+  -> new: 'flabebe' === 'flabebe' (true)
+
+--- a/app/src/app/19-showdown-paste.js
++++ b/app/src/app/19-showdown-paste.js
+@@ -58,7 +58,7 @@
+   let pool = []; try { pool = itemPool(); } catch (e) {} if (!pool.length) return legal.includes(it) || extra.includes(it);
+   const known = new Set([...pool, ...legal, ...(typeof CALC_ITEMS !== 'undefined' ? CALC_ITEMS : []), ...extra]);
+   return known.has(it); }
+-const pnorm = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
++const pnorm = s => String(s).normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase().replace(/[^a-z0-9]/g, '');
+ /* pre-launch check 6a (Nov 17): a typo ("Garchmp") was reported as "not on the M-C roster"; the closest roster name is offered instead,
+
+--- Diff 2 (Finding #2: case-insensitive nature lookup in okNat0) ---
+Proof (checked in Node):
+  input: okNat0('jolly') with NATURES = ['Hardy', 'Jolly', 'Adamant']
+  -> old: null
+  -> new: 'Jolly'
+
+--- a/app/src/app/19-showdown-paste.js
++++ b/app/src/app/19-showdown-paste.js
+@@ -33,7 +33,7 @@
+ }
+ // Nature and stat points from a paste: 'EVs: 2 HP / 32 Atk / 32 Spe' (Champions stat points, 0-32 each) and 'Jolly Nature'.
+ // Classic EVs (any value over 32) are converted at 8 EVs per stat point. Returns {nat, v: [hp, atk, def, spa, spd, spe]} or null.
+-const okNat0 = nat => nat && typeof NATURES !== 'undefined' ? (NATURES.includes(nat) ? nat : ['Docile', 'Serious', 'Bashful', 'Quirky'].includes(nat) && NATURES.includes('Hardy') ? 'Hardy' : null) : null;
++const okNat0 = nat => { if (!nat || typeof NATURES === 'undefined') return null; const s = String(nat).trim(), c = s ? s[0].toUpperCase() + s.slice(1).toLowerCase() : ''; return NATURES.includes(c) ? c : ['Docile', 'Serious', 'Bashful', 'Quirky'].includes(c) && NATURES.includes('Hardy') ? 'Hardy' : null; };
+ function pasteSpread(lines) { const ev = (lines.find(l => /^EVs:/i.test(l)) || '').replace(/^EVs:\s*/i, ''), natL = lines.find(l => /^\w+\s+Nature\s*$/i.test(l));
+
+--- Diff 3 (Finding #3: case-insensitive ability match in parsePaste) ---
+Proof (checked in Node):
+  input: p.a = ['Intimidate', 'Blaze'], abl = 'intimidate'
+  -> old: ability = null (skipped)
+  -> new: ability = 'Intimidate'
+
+--- a/app/src/app/19-showdown-paste.js
++++ b/app/src/app/19-showdown-paste.js
+@@ -103,7 +103,7 @@
+       if (p.n === 'Meowstic-M-Mega' && (female || pnorm(speciesName) === 'meowsticf') && byName.get('Meowstic-F-Mega')) p = byName.get('Meowstic-F-Mega'); }
+     const abl = (lines.find(l => /^Ability:/i.test(l)) || '').replace(/^Ability:\s*/i, '').trim();
+     // a Mega's ability is fixed by its form (Showdown pastes write the base form's), so it is filled in on import
+-    const ability = p.m ? (p.a[0] || null) : p.a.includes(abl) ? abl : null;
++    const ability = p.m ? (p.a[0] || null) : (p.a.find(x => x.toLowerCase() === abl.toLowerCase()) || null);
+     if (abl && !p.m && !ability) notes.push(`${p.d}: skipped ability "${abl}"`); /* stress test (Nov 16): a wrong Ability was dropped without a word; listed like a bad item or move */
+
+--- Diff 4 (Finding #4: nameOf uses lastIndexOf(' @ ') matching line 93) ---
+Proof (checked in Node):
+  input: 'Pika @ Ace (Pikachu) @ Light Ball'
+  -> old: 'Pika'
+  -> new: 'Pikachu'
+
+--- a/app/src/app/19-showdown-paste.js
++++ b/app/src/app/19-showdown-paste.js
+@@ -84,7 +84,7 @@
+   const notes = [], slots = [], assumed = [];
+   const all = String(text || '').replace(/\r/g, '').split(/\n\s*\n/).map(b => b.trim()).filter(Boolean);
+   // more than six in the paste (Sim, Nov 12: say so): the names of the ones left out, read from each extra block's first line
+-  const nameOf = b => { const h = b.split('\n')[0].split(' @ ')[0].trim().replace(/\s*\([MF]\)\s*$/, ''), m = h.match(/\(([^()]{2,})\)\s*$/); return m ? m[1].trim() : h; };
++  const nameOf = b => { const l = b.split('\n')[0], at = l.lastIndexOf(' @ '), h = (at >= 0 ? l.slice(0, at) : l).trim().replace(/\s*\([MF]\)\s*$/, ''), m = h.match(/\(([^()]{2,})\)\s*$/); return m ? m[1].trim() : h; };
+   /* stress test (Nov 16): blocks are read until six different Pokémon are in (a repeat no longer uses up one of the six), then the rest are "over" */
+
+--- Diff 5 (Finding #6: validate nature and stat-point bounds in decodeTeam spOf) ---
+Proof (checked in Node):
+  input: spOf('Fake:99/0/0/0/0/0')
+  -> old: {nat: 'Fake', v: [99, 0, 0, 0, 0, 0]}
+  -> new: null
+
+--- a/app/src/app/45-team-links.js
++++ b/app/src/app/45-team-links.js
+@@ -25,8 +25,9 @@
+   let o; try { o = JSON.parse(tlUnB64(m[1])); } catch (e) { return null; }
+   if (!o || o.v !== 1 || !Array.isArray(o.s)) return null;
+   const f = 'doubles';  // the format field is ignored: every link opens as a doubles team
+-  const spOf = v => { const a = typeof v === 'string' && v.match(/^(\w*):a$/); if (a) return {nat: a[1] || null, assumed: true};
+-    const m = typeof v === 'string' && v.match(/^(\w*):(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)$/); return m ? {nat: m[1] || null, v: m.slice(2).map(Number)} : null; };
++  const natOf = s => typeof okNat0 === 'function' ? okNat0(s) : (s || null), cap = typeof SP_TOTAL === 'number' ? SP_TOTAL : 66;
++  const spOf = v => { const a = typeof v === 'string' && v.match(/^(\w*):a$/); if (a) return {nat: natOf(a[1]), assumed: true};
++    const m = typeof v === 'string' && v.match(/^(\w*):(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)\/(\d+)$/); if (!m) return null;
++    const nums = m.slice(2).map(Number); return nums.every(x => x <= 32) && nums.reduce((s, x) => s + x, 0) <= cap ? {nat: natOf(m[1]), v: nums} : null; };
+
+--- Diff 6 (Finding #9: guard SP_TOTAL in parsePaste line 122) ---
+Proof (code inspection):
+  input: paste with valid spread when SP_TOTAL is undefined
+  -> old: ReferenceError: SP_TOTAL is not defined
+  -> new: uses fallback 66 (matching pasteSpread line 43)
+
+--- a/app/src/app/19-showdown-paste.js
++++ b/app/src/app/19-showdown-paste.js
+@@ -119,7 +119,7 @@
+     // a nature with no EVs line (team sheets list none): your nature with the most common stat points, marked as assumed (stress test, Oct 28)
+     if (sp && !sp.ev) { slot.sp = {doubles: {nat: sp.nat, assumed: true}}; assumed.push(p.d); }
+     else if (sp && sp.over32) notes.push(`${p.d}: skipped stat points (one stat over 32)`);
+-    else if (sp && spSum > SP_TOTAL) notes.push(`${p.d}: skipped stat points (${spSum} in total; Champions allows ${SP_TOTAL})`); else if (sp) slot.sp = {doubles: {nat: sp.nat, v: sp.v}};
++    else if (sp && spSum > (typeof SP_TOTAL === 'number' ? SP_TOTAL : 66)) notes.push(`${p.d}: skipped stat points (${spSum} in total; Champions allows ${typeof SP_TOTAL === 'number' ? SP_TOTAL : 66})`); else if (sp) slot.sp = {doubles: {nat: sp.nat, v: sp.v}};
+
+====================================================================
+5. TEST FIXTURE: experiments/fixtures/paste-cases.json (34 cases; valid JSON checked in Node)
+====================================================================
+----- BEGIN experiments/fixtures/paste-cases.json -----
+[
+  {
+    "name": "paste-standard-single-mon",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\nLevel: 50\nEVs: 28 HP / 4 Atk / 12 Def / 20 SpD / 2 Spe\nCareful Nature\n- Fake Out\n- Flare Blitz\n- Knock Off\n- Parting Shot",
+    "expect": {
+      "slotsLength": 1,
+      "slot0": {"n": "Incineroar", "a": "Intimidate", "it": {"doubles": "Sitrus Berry"}, "sp": {"doubles": {"nat": "Careful", "v": [28, 4, 12, 0, 20, 2]}}},
+      "notesLength": 0
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName", "NATURES", "SP_TOTAL", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Breaking EVs parsing, species lookup, or item/ability/move matching on a standard Champions paste"
+  },
+  {
+    "name": "paste-crlf-and-tabs",
+    "kind": "paste",
+    "input": "\tIncineroar @ Sitrus Berry  \r\n\tAbility: Intimidate\t\r\nLevel: 50\r\nEVs: 4 HP / 32 Atk / 30 Spe\r\nJolly Nature\t\r\n- Fake Out\r\n- Flare Blitz\r\n- Knock Off\r\n- Protect\r\n\r\n  Rillaboom @ Miracle Seed  \r\nAbility: Grassy Surge\r\n- Grassy Glide\r\n- Wood Hammer\r\n- Fake Out\r\n- Protect",
+    "expect": {
+      "slotsLength": 2,
+      "slot0Sp": {"nat": "Jolly", "v": [4, 32, 0, 0, 0, 30]},
+      "slot1Assumed": true
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName", "NATURES", "SP_TOTAL", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Failing to strip \\r or trim tabs/trailing spaces before splitting blocks or parsing lines"
+  },
+  {
+    "name": "paste-empty-and-whitespace-only",
+    "kind": "paste",
+    "input": "   \r\n\n\t  \n",
+    "expect": {
+      "slotsLength": 0,
+      "importResult": {"error": "No Pokémon found. Paste the team text, one Pokémon per block."}
+    },
+    "needs": [],
+    "s7": "Crashing on empty input or returning a non-error result when 0 Pokémon are pasted"
+  },
+  {
+    "name": "paste-nickname-with-parens-and-gender",
+    "kind": "paste",
+    "input": "Boss (Cat) (Incineroar) (M) @ Sitrus Berry\nAbility: Intimidate\n- Fake Out\n- Knock Off",
+    "expect": {
+      "slotsLength": 1,
+      "slot0N": "Incineroar",
+      "slot0Item": "Sitrus Berry"
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Greedy paren regex matching '(Cat)' instead of '(Incineroar)', or failing to strip '(M)' before matching species"
+  },
+  {
+    "name": "paste-nickname-with-at-sign-over-6",
+    "kind": "paste",
+    "input": "A1\nAbility: Intimidate\n\nA2\nAbility: Intimidate\n\nA3\nAbility: Intimidate\n\nA4\nAbility: Intimidate\n\nA5\nAbility: Intimidate\n\nA6\nAbility: Intimidate\n\nPika @ Ace (Pikachu) @ Light Ball\nAbility: Static\n- Thunderbolt",
+    "expect": {
+      "slotsLength": 6,
+      "overContains": "Pikachu"
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName"],
+    "s7": "nameOf() splitting on first ' @ ' instead of lastIndexOf(' @ '), reporting 'Pika' instead of 'Pikachu' in over"
+  },
+  {
+    "name": "paste-gender-female-meowstic-mega",
+    "kind": "paste",
+    "input": "Kitty (Meowstic) (F) @ Meowsticite\nAbility: Keen Eye\n- Psychic\n- Fake Out",
+    "expect": {
+      "slotsLength": 1,
+      "slot0N": "Meowstic-F-Mega",
+      "slot0Item": null
+    },
+    "needs": ["ROSTER", "byName", "megaFormFor", "STONE_RE", "LEARN", "MV", "mvByName"],
+    "s7": "Picking Meowstic-M-Mega when (F) gender tag is present"
+  },
+  {
+    "name": "paste-shiny-yes-and-ivs-ignored",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\nLevel: 50\nShiny: Yes\nIVs: 0 Spe\nEVs: 32 HP / 32 Def / 2 SpD\nRelaxed Nature\n- Fake Out\n- Flare Blitz\n- Knock Off\n- Parting Shot",
+    "expect": {
+      "slotsLength": 1,
+      "slot0N": "Incineroar",
+      "slot0Sp": {"nat": "Relaxed", "v": [32, 0, 32, 0, 2, 0]}
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName", "NATURES", "SP_TOTAL", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Treating 'Shiny: Yes' or 'IVs: 0 Spe' as an error or prose, or misreading IVs as EVs"
+  },
+  {
+    "name": "paste-tera-type-ignored-cleanly",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\nTera Type: Ghost\n- Fake Out\n- Knock Off",
+    "expect": {
+      "slotsLength": 1,
+      "slot0N": "Incineroar",
+      "notesExcludes": "Tera"
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Crashing on 'Tera Type:' line or flagging the block as prose"
+  },
+  {
+    "name": "paste-lowercase-nature",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\nEVs: 4 HP / 32 Atk / 30 Spe\njolly Nature\n- Fake Out\n- Knock Off",
+    "expect": {
+      "slotsLength": 1,
+      "slot0Sp": {"nat": "Jolly", "v": [4, 32, 0, 0, 0, 30]}
+    },
+    "needs": ["ROSTER", "byName", "NATURES", "SP_TOTAL", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Case-sensitive NATURES.includes() dropping 'jolly' to null"
+  },
+  {
+    "name": "paste-neutral-nature-quirky-to-hardy",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\nEVs: 32 HP / 32 Atk / 2 Spe\nQuirky Nature\n- Fake Out",
+    "expect": {
+      "slotsLength": 1,
+      "slot0Sp": {"nat": "Hardy", "v": [32, 32, 0, 0, 0, 2]}
+    },
+    "needs": ["ROSTER", "byName", "NATURES", "SP_TOTAL", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Dropping neutral natures Docile/Serious/Bashful/Quirky instead of mapping to Hardy"
+  },
+  {
+    "name": "paste-lowercase-ability",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: intimidate\n- Fake Out",
+    "expect": {
+      "slotsLength": 1,
+      "slot0A": "Intimidate"
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Case-sensitive p.a.includes(abl) dropping 'intimidate' to null"
+  },
+  {
+    "name": "paste-accented-species-name",
+    "kind": "paste",
+    "input": "Flabébé @ Eviolite\nAbility: Flower Veil\n- Moonblast",
+    "expect": {
+      "slotsLength": 1,
+      "pnormFolded": "flabebe"
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName"],
+    "s7": "pnorm() stripping accented 'é' instead of NFD-normalizing 'é' -> 'e'"
+  },
+  {
+    "name": "paste-moves-odd-spacing-and-capitals",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\n-   fake   out  \n- KNOCKOFF\n- flare-blitz\n- Protect [Bug]",
+    "expect": {
+      "slotsLength": 1,
+      "slot0MvCount": 4
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Failing pnorm matching on moves with extra spaces, uppercase, or '[Type]' suffix"
+  },
+  {
+    "name": "paste-classic-evs-converted-to-sp",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\nEVs: 252 HP / 252 Atk / 4 Spe\nAdamant Nature\n- Fake Out",
+    "expect": {
+      "slotsLength": 1,
+      "slot0Sp": {"nat": "Adamant", "v": [32, 32, 0, 0, 0, 1]}
+    },
+    "needs": ["ROSTER", "byName", "NATURES", "SP_TOTAL", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Converting 252 EVs to 31 instead of 32, or failing to convert classic EVs > 32 when total > SP_TOTAL"
+  },
+  {
+    "name": "paste-sp-one-stat-over-32-total-under-cap",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\nEVs: 33 HP / 4 Atk\nAdamant Nature\n- Fake Out",
+    "expect": {
+      "slotsLength": 1,
+      "slot0SpUndefined": true,
+      "notesMatches": "skipped stat points \\(one stat over 32\\)"
+    },
+    "needs": ["ROSTER", "byName", "NATURES", "SP_TOTAL", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Treating '33 HP / 4 Atk' as classic EVs (4 HP) instead of rejecting stat > 32"
+  },
+  {
+    "name": "paste-sp-total-over-66-rejected",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\nEVs: 32 HP / 32 Atk / 32 Spe\nAdamant Nature\n- Fake Out",
+    "expect": {
+      "slotsLength": 1,
+      "slot0SpUndefined": true,
+      "notesMatches": "skipped stat points \\(96 in total"
+    },
+    "needs": ["ROSTER", "byName", "NATURES", "SP_TOTAL", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Accepting 96 stat points (32/32/32) when SP_TOTAL is 66"
+  },
+  {
+    "name": "paste-zero-ev-line-explicit-not-assumed",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\nEVs: 0 HP\nAdamant Nature\n- Fake Out",
+    "expect": {
+      "slotsLength": 1,
+      "slot0Sp": {"nat": "Adamant", "v": [0, 0, 0, 0, 0, 0]}
+    },
+    "needs": ["ROSTER", "byName", "NATURES", "SP_TOTAL", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Treating 'EVs: 0 HP' as assumed:true instead of explicit all-zero spread"
+  },
+  {
+    "name": "paste-no-evs-line-assumed-true",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\nAdamant Nature\n- Fake Out",
+    "expect": {
+      "slotsLength": 1,
+      "slot0Sp": {"nat": "Adamant", "assumed": true},
+      "notesMatches": "No stat points in the paste"
+    },
+    "needs": ["ROSTER", "byName", "NATURES", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Setting v: [0,0,0,0,0,0] instead of assumed:true when EVs line is absent"
+  },
+  {
+    "name": "paste-non-champions-item-choice-band-skipped",
+    "kind": "paste",
+    "input": "Incineroar @ Choice Band\nAbility: Intimidate\n- Fake Out",
+    "expect": {
+      "slotsLength": 1,
+      "slot0ItemUndefined": true,
+      "notesMatches": "skipped item \"Choice Band\" \\(not in Champions\\)"
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName", "STONE_RE"],
+    "s7": "Keeping Choice Band (not in Champions) on the imported slot"
+  },
+  {
+    "name": "paste-mega-stone-mismatch-reported",
+    "kind": "paste",
+    "input": "Charizard-Mega-Y @ Charizardite X\nAbility: Drought\n- Heat Wave",
+    "expect": {
+      "slotsLength": 1,
+      "slot0N": "Charizard-Mega-Y",
+      "notesMatches": "kept as named \\(Charizardite X is for"
+    },
+    "needs": ["ROSTER", "byName", "megaFormFor", "STONE_RE", "LEARN", "MV", "mvByName"],
+    "s7": "Silently overwriting Charizard-Mega-Y to X or omitting the mismatch warning"
+  },
+  {
+    "name": "paste-unknown-species-typo-suggestion",
+    "kind": "paste",
+    "input": "Garchmp @ Focus Sash\nAbility: Rough Skin\n- Earthquake",
+    "expect": {
+      "slotsLength": 0,
+      "notesMatches": "did you mean Garchomp\\?"
+    },
+    "needs": ["ROSTER", "byName"],
+    "s7": "Failing to suggest 'Garchomp' for 1-edit typo 'Garchmp'"
+  },
+  {
+    "name": "paste-unknown-move-skipped-and-reported",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\n- Fake Out\n- TotallyFakeMove",
+    "expect": {
+      "slotsLength": 1,
+      "notesMatches": "skipped move \"TotallyFakeMove\""
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Guessing or keeping an unknown move instead of skipping and reporting it"
+  },
+  {
+    "name": "paste-duplicate-species-skipped",
+    "kind": "paste",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\n- Fake Out\n\nIncineroar @ Rocky Helmet\nAbility: Intimidate\n- Knock Off",
+    "expect": {
+      "slotsLength": 1,
+      "notesMatches": "Skipped a second Incineroar \\(one per species\\)"
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Allowing two of the same base species on one imported team"
+  },
+  {
+    "name": "paste-more-than-6-pokemon",
+    "kind": "paste",
+    "input": "Mon1\n- Protect\n\nMon2\n- Protect\n\nMon3\n- Protect\n\nMon4\n- Protect\n\nMon5\n- Protect\n\nMon6\n- Protect\n\nMon7\n- Protect",
+    "expect": {
+      "slotsMax": 6,
+      "overLength": 1
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName"],
+    "s7": "Importing 7 slots or dropping the 7th without listing it in over"
+  },
+  {
+    "name": "paste-prose-rejected-as-not-a-team",
+    "kind": "paste",
+    "input": "This is just a long sentence about my favorite pokemon team from last week",
+    "expect": {
+      "slotsLength": 0,
+      "importError": "This doesn't look like a team. Paste the team text from Showdown or a team sheet, one Pokémon per block."
+    },
+    "needs": ["ROSTER", "byName"],
+    "s7": "Reporting 'not on the M-C roster' instead of 'not a team' for prose"
+  },
+  {
+    "name": "paste-html-script-in-nickname-escaped",
+    "kind": "paste",
+    "input": "&lt;script&gt;alert(1)&lt;/script&gt; (Incineroar) @ Sitrus Berry\nAbility: Intimidate\n- Fake Out",
+    "expect": {
+      "slotsLength": 1,
+      "slot0N": "Incineroar",
+      "noRawScriptInSlot": true
+    },
+    "needs": ["ROSTER", "byName", "LEARN", "MV", "mvByName", "REGMC_ITEMS", "itemPool", "STONE_RE"],
+    "s7": "Storing or rendering the nickname '&lt;script&gt;alert(1)&lt;/script&gt;' as raw HTML"
+  },
+  {
+    "name": "paste-huge-100kb-garbage-fast",
+    "kind": "paste",
+    "input": "Repeat this block 100KB (generate 6 blocks x 18000 chars 'x' in runner)",
+    "expect": {
+      "slotsLength": 0,
+      "completesWithoutHang": true
+    },
+    "needs": ["ROSTER", "byName"],
+    "s7": "Running quadratic edit distance without length-diff guard on 18KB strings"
+  },
+  {
+    "name": "link-truncated-code-returns-null",
+    "kind": "link",
+    "input": "https://nastyplot.org/%23team%3DeyJ2IjoxLCJmIjoiZG91",
+    "expect": {
+      "decoded": null
+    },
+    "needs": [],
+    "s7": "Throwing uncaught SyntaxError or InvalidCharacterError on truncated base64"
+  },
+  {
+    "name": "link-wrong-version-v2-returns-null",
+    "kind": "link",
+    "input": "team=eyJ2IjoyLCJmIjoiZG91YmxlcyIsInMiOltbIkluY2luZXJvYXIiXV19",
+    "expect": {
+      "decoded": null
+    },
+    "needs": ["byName"],
+    "s7": "Accepting o.v !== 1 instead of returning null for unsupported link versions"
+  },
+  {
+    "name": "link-hand-edited-bad-sp-rejected",
+    "kind": "link",
+    "input": "eyJ2IjoxLCJmIjoiZG91YmxlcyIsInMiOltbIkluY2luZXJvYXIiLCIiLDAsIiIsIkZha2U6OTkvMC8wLzAvMC8wIl1dfQ",
+    "expect": {
+      "slotsLength": 1,
+      "slot0SpUndefined": true
+    },
+    "needs": ["byName", "NATURES", "SP_TOTAL"],
+    "s7": "Accepting out-of-range stat points (99 > 32) and unknown nature ('Fake') from a hand-edited link"
+  },
+  {
+    "name": "link-standard-base64-alphabet",
+    "kind": "link",
+    "input": "team=eyJ2IjoxLCJmIjoiZG91YmxlcyIsInMiOltbIkluY2luZXJvYXIiXV19==",
+    "expect": {
+      "decodedNotNull": true
+    },
+    "needs": ["byName"],
+    "s7": "Regex rejecting '=' padding or '+'/'/' characters from standard base64"
+  },
+  {
+    "name": "link-html-in-team-name-escaped-in-banner",
+    "kind": "link",
+    "input": "team=eyJ2IjoxLCJmIjoiZG91YmxlcyIsIm4iOiI8aW1nIHNyYz14IG9uZXJyb3I9YWxlcnQoMSk-IiwicyI6W1siSW5jaW5lcm9hciJdXX0",
+    "expect": {
+      "decodedName": "&lt;img src=x onerror=alert(1)&gt;",
+      "sharedBarNoImgTag": true
+    },
+    "needs": ["byName", "esc"],
+    "s7": "Interpolating x.n into bar.innerHTML without esc()"
+  },
+  {
+    "name": "roundtrip-paste-export-paste-no-item-stays-empty",
+    "kind": "roundtrip",
+    "input": "Incineroar\nAbility: Intimidate\nLevel: 50\nEVs: 32 HP / 32 Def / 2 SpD\nCareful Nature\n- Fake Out\n- Flare Blitz\n- Knock Off\n- Parting Shot",
+    "expect": {
+      "reimportedItemUndefined": true
+    },
+    "needs": ["ROSTER", "byName", "S", "members", "normSlots", "topItems", "slotMoves", "commonSpread", "setFor", "LEARN", "MV", "mvByName", "NATURES", "SP_TOTAL"],
+    "s7": "exportPaste() inventing a default topItems(p) item for a slot whose item was intentionally blank"
+  },
+  {
+    "name": "roundtrip-team-code-decode-preserves-team",
+    "kind": "roundtrip",
+    "input": "Incineroar @ Sitrus Berry\nAbility: Intimidate\nEVs: 28 HP / 4 Atk / 12 Def / 20 SpD / 2 Spe\nCareful Nature\n- Fake Out\n- Flare Blitz\n- Knock Off\n- Parting Shot",
+    "expect": {
+      "decodedSlotsLength": 1,
+      "decodedSlot0N": "Incineroar",
+      "decodedSlot0It": "Sitrus Berry",
+      "decodedSlot0Sp": {"nat": "Careful", "v": [28, 4, 12, 0, 20, 2]}
+    },
+    "needs": ["ROSTER", "byName", "S", "normSlots", "memberOf", "metaAbility", "bestAbility", "REGMC_ITEMS", "itemPool", "STONE_RE", "NATURES", "SP_TOTAL"],
+    "s7": "teamCode() -> decodeTeam() dropping item, ability, moves, or stat points"
+  }
+]
+----- END experiments/fixtures/paste-cases.json -----
+
+====================================================================
+6. PRIVACY CHECK
+====================================================================
+Does any of this code send, log, or keep anything a player typed beyond their own device?
+- **No** (checked by reading all 3 files).
+- `19-showdown-paste.js`: Zero network calls (`fetch`/`XMLHttpRequest`/`beacon`); pure in-memory parsing and DOM rendering (`renderPastePanel`).
+- `45-team-links.js`: Zero network calls. Encodes the user's team/box into a URL hash (`#team=` / `#box=`) only when the user clicks Copy; `checkSharedLink` clears the hash via `history.replaceState` on line 57.
+- `41-replay-import.js`: Line 4 states `// Everything runs in the page; nothing is fetched.` Line 9 stores only `{t: Date.now(), r: x.r, b: x.b, tm: members().map(m => m.p.n), o: x.o}` in `S.log` (saved on-device via `persist()`); replay player names `x.me` and `x.them` are shown transiently in `#replayOut.textContent` on line 11 and never saved.
+
+====================================================================
+7. ORDER QUESTIONS FOR HH (S1), "I'M UNSURE" (S6) & UNSEEN FILES
+====================================================================
+Order questions for HH (S1):
+1. `exportPaste()` filling blank items/spreads (Finding #5, 19-showdown-paste.js:23,27):
+   `exportPaste()` intentionally fills empty `m.item` with `topItems(p)` and empty `m.spread` with `commonSpread(p)` (per `renderPastePanel` line 160: "otherwise the most common ones from real play"), which breaks `paste -> exportPaste -> paste` round-trip fidelity for blank slots.
+   - Option (a) Keep as-is (convenient Showdown export, non-lossy for user-set items/spreads).
+   - Option (b) Export only `m.item` / `m.spread` when explicitly set so round-trip is exact.
+
+I'm unsure (S6):
+- Whether `toast()` and `#pasteNotes` callers escape HTML or use `.textContent` when rendering `{error}` / `{msg}` / `x.n` (so I cannot confirm whether `<script>` in an unknown species name or `x.n` in `applyShared` is safe in the caller).
+- Whether `normSlots()` validates `mv` in `decodeTeam()` (Finding #7).
+- Whether `parseReplay()` in `41-replay-data.js` handles an unstripped full `.html` replay file safely (Finding #10).
+
+What I did not look at:
+- `app/src/app/41-replay-data.js` (`parseReplay`), `app/src/app/03-persistence.js` (`persist`, `normSlots`, `S`), `app/src/app/06-helpers.js` (`esc`, `toast`, `canonItem`, `members`), `app/src/data/data.js` (`ROSTER`, `MV`, `LEARN`, `NATURES`, `REGMC_ITEMS`, `CALC_ITEMS`, `SP_TOTAL`, `STONE_RE`), and the paste-panel caller wiring.

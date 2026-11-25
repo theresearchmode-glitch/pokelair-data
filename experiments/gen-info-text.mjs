@@ -1,0 +1,55 @@
+// Info sheets text (Sim approved the design Nov 22, 11:29 AM; docs/rebuild/info-sheets/HANDOFF.md, RESEARCH.md section 2).
+// Writes app/src/data/info-text.js: for every move, Ability and item the site lists, one plain sentence, and for moves the in-battle PP.
+// SOURCE: Pokémon Showdown at the pinned commit (the same one move-meta.js uses), "champions" text where it exists, else mainline.
+//   PSDIR=<folder with the files fetched from raw.githubusercontent.com/smogon/pokemon-showdown/<commit>/, '/' written as '_'>
+//   node experiments/gen-info-text.mjs
+// Text is MIT: "Move, Ability and item text adapted from Pokémon Showdown (MIT License), © Guangcong Luo and contributors." (shown on the sheet)
+// PP in battle (RESEARCH 2): (base/5 + 1) x 4 with base capped at 20 (5 -> 8, 10 -> 12, 15 -> 16, 20 -> 20); the champions mod's pp
+// overrides (Protect, Wish, Sandstorm, Snowscape, Strength Sap 5; Night Slash 20) are read from its file, not typed here.
+// Our own text (OVR) only where the design chat measured that Showdown's text is wrong or missing for Champions; each line says why.
+import fs from 'node:fs';
+const COMMIT = '1242c1e2d9763ba5b85d33f13aecb89bae19ae3d', PSDIR = process.env.PSDIR; if (!PSDIR) { console.error('set PSDIR'); process.exit(2); }
+const rd = f => fs.readFileSync(PSDIR + '/' + f.replace(/\//g, '_'), 'utf8');
+const toID = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+// the text files are plain data: drop the type annotation on the first line and evaluate
+const table = f => { const src = rd(f).replace(/^export const \w+:[^=]*=\s*/m, 'return '); return new Function(src)(); };
+const MT = table('data/text/moves.ts'), AT = table('data/text/abilities.ts'), IT = table('data/text/items.ts');
+// base PP per move id: the 2-tab "pp: N," inside each 1-tab entry (moves.ts holds functions, so it is read, not evaluated)
+const ppOf = f => { const o = {}; let id = null; for (const ln of rd(f).split('\n')) { const m = /^\t"?([a-z0-9]+)"?: \{/.exec(ln); if (m) { id = m[1]; continue; } const p = id && /^\t\tpp: (\d+),/.exec(ln); if (p) o[id] = +p[1]; } return o; };
+const PP0 = ppOf('data/moves.ts'), PPC = ppOf('data/mods/champions/moves.ts');
+const inBattle = b => (Math.min(b, 20) / 5 + 1) * 4;
+const DATA = fs.readFileSync('app/src/data/data.js', 'utf8'), grab = k => JSON.parse(DATA.match(new RegExp('const ' + k + '=([\\s\\S]*?);\\n'))[1]);
+const MOVES = grab('MOVES').map(x => x[0]), ABIL = Object.keys(grab('ABIL'));
+const ITEMS = JSON.parse(fs.readFileSync('app/src/data/items-list.js', 'utf8').match(/const REGMC_ITEMS=(\[[\s\S]*?\]);/)[1]);
+const pick = e => (e && ((e.champions && e.champions.shortDesc) || e.shortDesc || (e.champions && e.champions.desc) || e.desc) || '').replace(/Pokemon/g, 'Pokémon'); // the site's spelling
+// our text, with the reason (RESEARCH.md section 2, measured by the design chat against the champions mod)
+const OVR = {
+  ab: {
+    'Unseen Fist': 'Contact moves hit through protection, for 1/4 of their damage.', // RESEARCH 2: Champions = contact only, 1/4 damage through protection (Showdown/ABIL text says otherwise)
+    'Healer': 'Each turn, 50% chance to cure an adjacent ally\'s status.', // RESEARCH 2: 50% in Champions (ours said 30%)
+    'Run Away': 'This Pokémon can always switch out: moves and Abilities that trap don\'t hold it.', // champions mod: onTrapPokemon/onMaybeTrapPokemon clear trapped (Showdown text said 'No competitive use')
+    'Regenerator': 'This Pokémon restores 1/3 of its max HP when it switches out.' // champions mod heals baseMaxhp/3; 'rounded down' dropped (not checked)
+  },
+  mv: {
+    'Milk Drink': 'Heals the user or an adjacent ally by 50% of its max HP.', // champions mod: target adjacentAllyOrSelf
+    'Curse': 'Ghost-type user: loses 1/2 of its max HP to curse a foe, which then loses 1/4 of its max HP every turn. Any other user: -1 Speed, +1 Attack and Defense.', // champions mod onHit; same outcome, plain words
+    'Encore': 'For 3 turns the target can only use the last move it used. If it hasn\'t moved yet this turn, it switches to that move now.', // champions mod: changeAction at once (unless Mental Herb), no onOverrideAction
+    'No Retreat': 'Raises the user\'s Attack, Defense, Sp. Atk, Sp. Def and Speed by 1; the user can\'t switch out. It can be used again for more boosts.' // champions mod drops the 'fails if already used' onTry
+  },
+  it: {}
+};
+// moves the design chat found behave differently in Champions with no Champions text; text kept from Showdown until ours is checked
+const TODO = {mv: [], ab: [], it: []}; // Nov 22: Curse, Encore, No Retreat, Run Away, Regenerator now ours (above); Anger Shell and Wimp Out are not in our Ability list (not in Champions); Disable, Berserk, Emergency Exit: Showdown's text still holds for the champions mod (checked: only edge cases differ)
+const out = {mv: {}, ab: {}, it: {}}, miss = {mv: [], ab: [], it: []}, notes = [];
+for (const n of MOVES) { const id = toID(n), e = MT[id]; const t = OVR.mv[n] || pick(e); if (!t) miss.mv.push(n);
+  const b = PPC[id] ?? PP0[id]; if (b == null) notes.push('no PP: ' + n); out.mv[n] = [t, b == null ? null : inBattle(b)]; }
+for (const n of ABIL) { const t = OVR.ab[n] || pick(AT[toID(n)]); if (!t) miss.ab.push(n); out.ab[n] = t; }
+for (const n of ITEMS) { const t = OVR.it[n] || pick(IT[toID(n)]); if (!t) miss.it.push(n); out.it[n] = t; }
+const head = `// GENERATED by experiments/gen-info-text.mjs from Pokémon Showdown ${COMMIT.slice(0, 7)} (MIT License, © Guangcong Luo and contributors).\n// Do not edit by hand: change OVR in the generator. mv: [sentence, PP in battle]; ab and it: sentence.\n`;
+fs.writeFileSync('app/src/data/info-text.js', head + 'const INFO_TEXT=' + JSON.stringify(out) + ';\n');
+console.log(`moves ${MOVES.length} (no text ${miss.mv.length}), Abilities ${ABIL.length} (no text ${miss.ab.length}), items ${ITEMS.length} (no text ${miss.it.length})`);
+for (const k of ['mv', 'ab', 'it']) if (miss[k].length) console.log(`  no text ${k}: ${miss[k].join(', ')}`);
+if (notes.length) console.log('  ' + notes.join('; '));
+console.log(`  our text: ${Object.values(OVR).reduce((s, o) => s + Object.keys(o).length, 0)}; still Showdown's, to check: ${[...TODO.mv, ...TODO.ab].join(', ')}`);
+const pp = ['Rock Slide', 'Protect', 'Fake Out', 'Heat Wave', 'Tailwind', 'Trick Room', 'Spore', 'Follow Me'].map(n => `${n} ${out.mv[n] ? out.mv[n][1] : '?'}`);
+console.log('  PP check (Serebii: Rock Slide 12, Protect 8, Fake Out 12, Heat Wave 12, Tailwind 16, Trick Room 8, Spore 16, Follow Me 20): ' + pp.join(', '));

@@ -1,0 +1,262 @@
+/* Tokens: the only place colours, type, space, corners and shadows are defined (docs/rebuild/design-system.md).
+   Day is the default; night is the reference set's night mode (Sim, Nov 11). Every other file uses these names only. */
+:root{
+  /* My Box rays over the box wallpaper and the picked Pokémon's panel (R4, Nov 11) */
+  --ray:rgba(255,255,255,.34);--ray-art:rgba(255,255,255,.4);
+  --logo-pink:#E8364F;--logo-blue:#0078BF;--logo-ink:#17161A;--logo-white:#FFFFFF;--sd-shade:rgba(0,0,0,.3);--sd-edge:var(--logo-white); /* the Sly Devil logo's colours (Nov 16): the same in day and night (the logo carries its own white sticker edge) */
+  --bg:#FBFAF7;--surface:#FFFFFF;--wash:#F4F0EA;--ink:#17161A;--ink-2:#48454F;--ink-3:#66636E;--rule:rgba(23,22,26,.11);
+  --plot:#0078BF;--plot-text:#0068AD;--pick:#E8364F;--them:#B4238F;--them-text:#9A1A7B;--pick-text:#C41E35;
+  --plate:#17161A;--on-plate:#FBFAF7;--is-speed:rgba(255,255,255,.08);--is-ghost:rgba(255,255,255,.22);--is-rim:rgba(255,255,255,.6);--is-print:rgba(255,255,255,.17);--is-stamp-rim:rgba(255,255,255,.55);--is-ability:var(--logo-blue);--is-manila:#E9D5A1;--is-manila-ring:#C9B27A;--is-tag-ink:#17161A;--is-tag-ghost:rgba(23,22,26,.10);--is-tear:rgba(23,22,26,.25);--is-stamp:#C41E35;--dur-1:.15s;--dur-2:.2s;--dur-3:.25s;--ease-snap:cubic-bezier(.2,.8,.2,1);--ease-glide:cubic-bezier(.16,1,.3,1);--ease-swing:cubic-bezier(.65,0,.35,1);--cpn-num:#0A5291;--pty-band:var(--logo-blue);--pty-stripe:rgba(255,255,255,.07);--pty-gold:#FFD84D;--pty-ink:#17161A;--pty-on:#FFFFFF;--pty-row2:#34323F;--pty-sub:#C9C4D6;--pty-card:#FFFFFF;--pty-ink2:#5A5663;--pty-drop:rgba(0,0,0,.35);--pty-hot:#E8364F;--pty-sky:#62BEF7;--pty-chip:rgba(23,22,26,.55);--pty-chip-rim:rgba(255,255,255,.5);--cpn-fine:#4A4338; /* the evidence tag: manila with dark ink, the stamp red (day --pick-text), the same in both themes (HANDOFF) */ /* info sheets (Nov 22): speed lines, giant outline letters, type chip rim on the type-colour tab, both themes */--plate-link:#62BEF7; /* a link on the dark plate (toast Undo): 8.77:1; --plot was 3.81:1 (Nov 16 audit) */
+ --main:#17161A;--on-main:#FBFAF7;
+ --sd-on-band:#FFFFFF; /* Home, The Stampede (Nov 18): text on the blue hero and red post bands, white in both modes */
+  /* The Stampede post band (Nov 18): the Pelipper's white speed lines on the red, the shadow under the code slip, the heading size */
+  --sd-post-line:rgba(255,255,255,.62);--sd-post-shadow:rgba(60,10,20,.42);--d-sdpost:clamp(40px,5.2vw,88px);
+  /* Mystery Gifts, The Post Room (Nov 18): kraft parcels, tape, the paper of labels and stamps and its ink; code digits blue; the rubber
+     stamp red when a gift ends within 7 days, blue otherwise; stamp fills by how a gift is given (pink event gift, blue serial code; Sim, Nov 18: the page shows only
+     these two kinds of Mystery Gift) with their ink; the grey postmark. Night is "Dim Paper": the page goes dark, paper stays paper (dimmed cream, deeper kraft) */
+  --pr-kraft:#C99C60;--pr-kraft-hi:#D4AA70;--pr-kraft-line:rgba(110,70,20,.07);--pr-tape:rgba(242,229,200,.78);--pr-paper:#FFFFFF;--pr-ink:#17161A;--pr-ink2:#55515C;--pr-rule:rgba(23,22,26,.16);
+  --pr-num:#0068AD;--pr-soon:#C41E2B;--pr-plenty:#0068AD;--pr-rub-bg:rgba(255,255,255,.9);--pr-shadow:rgba(30,20,50,.18);--pr-shadow-2:rgba(30,20,50,.10);
+  --pr-ev:#F4CDEB;--pr-ev-2:#EDB9E1;--pr-ev-ink:#8E1A74;--pr-se:#C9E4F6;--pr-se-2:#B2D7F1;--pr-se-ink:#035C97;
+  --pr-post:rgba(60,57,66,.92);--pr-post-bg:rgba(255,255,255,.62);--pr-blank:rgba(23,22,26,.2);--pr-art:none;
+  /* Mystery Gifts on the kit (Nov 22, Sim approved the mock 12:27 PM): the parcel's kraft, tape and white label with its ink, the same by day
+     and by night (as drawn; not redefined in the night block). Label ink 17.7:1, ink-2 8.6:1, stamp 5.9:1 and link 6.9:1 on the white label */
+  --gr-kraft:#C8A26B;--gr-tape:rgba(0,0,0,.1);--gr-label:#FFFFFF;--gr-ink:#17161A;--gr-ink2:#4A4850;--gr-stamp:#C41E35;--gr-link:#005D94;--gr-edge:#0078BF;--gr-shadow:rgba(0,0,0,.15);
+ /* Home, The Stampede, tools band (Nov 18; brief section 3): the beige band, its white plates and their offset shade, the ink feature
+    plates (Ratings, Battle, Test Run), the blue Speed race, the podium blocks, your / their names on ink, the health bar's lost part */
+ --sd-beige:#EFEAE0;--sd-card:#FFFFFF;--sd-card-ink:#17161A;--sd-card-ink2:#48454F;--sd-card-shade:#DBD3C5;
+ --sd-feat:#17161A;--sd-on-feat:#FBFAF7;--sd-feat-ink2:#CFCBD4;--sd-feat-rim:transparent;
+ --sd-race:#0078BF;--sd-on-race:#FFFFFF;--sd-streak:rgba(255,255,255,.34);--sd-pod:#3A3940;--sd-pod-top:#0078BF;
+ --sd-you:#62BEF7;--sd-them:#F08AD8;--sd-hp-lost:#E4DED3;--sd-hp-roll:#D93A3A;--sd-hp-roll2:#F2A7A7;--sd-flag-rim:transparent;
+  /* News, The Champions Dispatch (Nov 18): one sheet of cream paper printed in ink with spot blue and red. The paper keeps dark ink in
+     both modes (night is "Lamplight": a warmer cream under a lamp, never black). Measured on --dp-paper: ink 17.7:1, ink-2 9.8:1,
+     ink-3 7.3:1, blue 5.8:1, red 5.8:1 */
+  --dp-paper:#FFFDF7;--dp-glow:#FFFDF7;--dp-ink:#17161A;--dp-ink2:#45423F;--dp-ink3:#5A554D;--dp-rule:rgba(23,22,26,.16);--dp-fold:rgba(23,22,26,.05);
+  --dp-plot:#0068AD;--dp-plot-rule:#0078BF;--dp-pick:#C41E35;--dp-pick-rule:#E8364F;--dp-bar:#17161A;--dp-on-bar:#FFFFFF;
+  --dp-dot:rgba(23,22,26,.13);--dp-frame:#F3F0E6;--dp-cur:rgba(0,120,191,.10);--dp-shadow:0 1px 2px rgba(30,20,50,.10),0 24px 48px -24px rgba(30,20,50,.32);
+  --d-paper:clamp(24px,6.2cqi,120px);--d-papertwo:clamp(24px,10cqi,72px);--d-lead:clamp(34px,5.6cqi,68px);--d-mini:clamp(24px,9cqi,48px);--d-brief:clamp(24px,6.4cqi,34px); /* display sizes: the newspaper's name and the lead headline, scaled to the paper's width (cqi: the paper is a size container); mini and brief: the small paper on Home */
+ /* The Stampede bands (hero builder, Nov 18; colours sampled from Sim's mock-ups, contrast measured by token maths):
+    hero blue (white text 4.73:1; the tagline's light-blue second line 3.17:1, display size, passes as large text), the ink of the ledge
+    and the six band, the beige tools band, the red of the ticker and the post band (white 4.88:1; ink numbers 3.68:1 at 24px+ bold) */
+ --sd-hero:#0078BF;--sd-ink:#17161B;--sd-tools-bg:#EFEAE0;--sd-flag:#D62C45;--sd-flag-num:#17161A;
+ --sd-line2:#9BDCFF;--sd-plate:#FFFFFF;--sd-plate-ink:#17161A;--sd-plate-num:#0068AD;--sd-tag:#17161A;--sd-tag-num:#9BDCFF;
+ --sd-speed:rgba(255,255,255,.22);--sd-haze:rgba(0,120,191,.46);--sd-link:#62BEF7;
+  --good:var(--plot);--good-text:var(--plot-text);--on-mark:#FFFFFF;--mid:#E9A800;--mid-text:#8A5A00;--low:#8A7C6E;--low-text:#6E6153;--bad:#D93A3A;--bad-text:#B3261E;
+  /* the six rating tiers (LTIERS colours; Grandstand, Nov 14): dark text on every tier colour passes 4.5:1; lit and shade faces of the 3D blocks */
+  --tier-s:#ffb400;--tier-a:#ff6a3d;--tier-b:#b45cff;--tier-c:#2f9bff;--tier-d:#22b58a;--tier-f:#8a90a6;--tier-ink:#14110f;--tier-lit:#ffffff;--tier-shade:#14110f;
+  /* the Usage podium (Grandstand brief: new colours, dark text passes on all three) */
+  /* Build: The Blueprint (Nov 14): drafting-sheet paper, its grid (a heavier line every fifth square) and blue ink */
+  --bp-paper:#fbfcfe;--bp-grid:#0078bf0d;--bp-grid5:#0078bf1a;--bp-ink:#0a68a8; /* Q82 A light touch (Sim, Nov 20): the grid fainter (was 17 / 2e) */
+  /* Q83 item 9 (Sim, Nov 20): the score sticker is filled with its band's colour; its words in these inks (light: white 4.7:1+, dark ink on the amber)
+     and a white rim so the Top tier blue still stands off the blue score plate */
+  --on-band-top:#FFFFFF;--on-band-ready:#FFFFFF;--on-band-solid:#FFFFFF;--on-band-work:#17161A;--on-band-miss:#FFFFFF;--bp-rim:#FFFFFF;
+  --podium-1:#f2b705;--podium-2:#b9c0cc;--podium-3:#d08a4e;
+  /* the six base-stat colours (Pokémon page, Nov 15; brief: HP green, Attack orange, Defense yellow, Sp. Atk blue, Sp. Def purple, Speed pink).
+     Measured: text on each plate 4.94:1+ (white; Defense dark ink, as yellow with white was 2.2:1), each streak 3.24:1+ on the page */
+  --x4:#8E1B1B;--pk-main:var(--plate);--on-pk-main:var(--on-plate);--on-x4:#FFFFFF;--st-hp:#21804A;--st-atk:#C2470F;--st-def:#B58300;--st-spa:#2B66D6;--st-spd:#7E45D1;--st-spe:#C8346A;--on-st:#FFFFFF;--on-st-def:#17161A;
+  --band-top:#0078BF;--band-ready:#7B4BD6;--band-solid:#6B6570;--band-work:#E9A800;--band-miss:var(--bad-text); /* Sim, Nov 13 (My Team Q3 B): "Missing a basic" in the site's red, now that red is allowed */
+  --band-work-text:var(--mid-text); /* Nov 16 (a11y): "Needs work" as text; the bright amber is for fills */
+  --plot-text-deep:#035C97; /* Nov 16 audit: blue text on tinted Team Cards / panels (4.2-4.47:1 with --plot-text); 5.07:1+ on every measured tint */
+  --contact:rgba(30,20,50,.42);--shadow-lift:0 1px 2px rgba(30,20,50,.10),0 8px 16px -6px rgba(30,20,50,.18),0 24px 40px -18px rgba(30,20,50,.30);
+  --lit-edge:inset 0 1px 0 rgba(255,255,255,.55),inset 0 -1px 0 rgba(0,0,0,.08);
+  --grain:.035;--score-ink:var(--ink);
+  --plate-hi:var(--plate);--plate-lo:var(--plate);--main-hi:var(--main);--main-lo:var(--main);--band-glow:none;--floor-line:rgba(23,22,26,.13);--on-type:#FFFFFF;--type-none:#8E908C;--page-wash:none;--scrim:rgba(23,22,26,.28);--scrim-deep:rgba(23,22,26,.55);
+  /* type: Unbounded (slanted) for headlines and big numbers at 15px and up; Instrument Sans for the rest */
+  --u:"Unbounded","Instrument Sans",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif;
+  /* display sizes: the score number and the tagline (design scale "+ display") */
+  --d-trkbig:clamp(40px,(100cqi - 96px) / 6.8,64px);--d-trkgo:clamp(17px,(100cqi - 72px) / 12.6,36px); /* Track Record 1100+: the stamp and its button fit their column (cqi: .trk-say2 is the size container there); full 64px / 36px from about 1340 wide */
+  --d64:64px;--d96:96px;--d-calc:clamp(56px,5.6vw,88px);--id-card:#F4F0EA;--id-bg:#DCE7F0;--id-bg2:#C9D6E2;--id-staple:#9AA3AD;--id-ink:#17161A;--id-ink2:#48454F;--d120:120px;--d168:168px;--d-hero:clamp(34px,6vw,68px);
+  --nt-paper:#FBF8F0;--nt-rule:rgba(0,104,173,.14);--nt-ink:#17161A;--nt-ink2:#48454F;--nt-ghost:rgba(23,22,26,.08);--nt-clip:#8F98A3;--nt-clip-hi:#B9C0C8;--nt-clip-slot:#6D7580;--nt-card:#FFFFFF;--nt-flat:#E7E3DA;--nt-flat-ink:#66636E;--nt-atk:#C2470F;--nt-def:#8A6400;--nt-spa:#2B66D6;--nt-spd:#7E45D1;--nt-spe:#C8346A;--nt-none:#8E908C;--on-nt:#FFFFFF; /* the Nature sheet's clipboard (Dossier step 3, Nov 23): cream ruled paper with dark ink, the same in day and night; the stat colours are the day stat colours (Defense a step darker), so on the paper and the white chip each reads 4.7:1+ and white words on each 5.0:1+; ink-2 8.8:1 on the paper, the neutral tile's words 4.6:1 */
+  --ntp-atk:var(--nt-atk);--ntp-def:var(--nt-def);--ntp-spa:var(--nt-spa);--ntp-spd:var(--nt-spd);--ntp-spe:var(--nt-spe);--on-ntp:#FFFFFF; /* the Natures page (Nov 23): each stat's colour for its chips and grid squares; by day the Nature sheet's stat colours (white words 5.0:1+, as words on white 4.7:1+) */
+  --plot-seal:#C41E35;--on-plot-seal:#FFFFFF; /* The Plot (Nov 20): the seal, "N to catch", Hatch another: the logo red deepened so white words read (6:1), the same in day and night */
+  --pl-band:#17161A;--on-pl-band:#FBFAF7;--pl-band-2:#C4BFCB;--pl-band-rule:rgba(251,250,247,.22);--pl-band-edge:rgba(251,250,247,.5);--pl-band-plate:#FFFFFF;--on-pl-band-plate:#17161A; /* The Plot piece 5 (Nov 20; spec section 1): the ink band under steps 5-6 and the end: band, its text, quiet text (10.9:1), soft row rule, column rule, the white record plate; night below */
+  --pt-Dragon:#5B479F;--pt-Ground:#8E5C2F;--pt-Fighting:#955732;--pt-Poison:#8940BF;--pt-Dark:#5C4A3E;--pt-Steel:#3D6E80;--pt-Fire:#9C6421;--pt-Water:#1F6672;--pt-Grass:#3F7F38;--pt-Fairy:#A2477F;--pt-Flying:#4E6184;--pt-Ghost:#6848B7;--pt-Psychic:#B43C69;--pt-Ice:#2B7182;--pt-Rock:#706843;--pt-Electric:#7A6629;--pt-Normal:#666864;--pt-Bug:#616F25;--on-pt:#FFFFFF;--on-pt-it:#17161A; /* The Plot (Nov 20): the six's plate colours, one calm family per type, white words 5.5:1+ (Fire 5.0); Water and Flying kept clear of PLOT blue, Fire of the logo red; the same in day and night. --on-pt-it (piece 6): the words on the white Item chip, ink in day AND night (night ink is light: 1.3:1 on white before) */
+  --d-plot:clamp(24px,4.7vw,68px); /* The Plot (Build, Nov 20): the plot sentence, fitted to the page width (one display size, like --d-hero) */
+  /* The Stampede hero (Nov 18): the tagline (row layout by width and height so the buttons stay on the first screen; phone 3 lines),
+     the plate numbers (row and pair layouts) */
+  --d-sdhero:clamp(48px,min(9.6vw,16svh),240px);--d-sdphone:clamp(40px,min(13.6vw,8svh),120px);--d-sdnum:clamp(30px,3.2vw,84px);--d-sdpair:clamp(28px,8vw,80px);--d-sdshort:clamp(36px,min(13.6vw,7svh),120px);
+ --unit:.62em;
+  /* shadow ink and rim light as rgb triplets, for rgba(var(--shade),a) */
+  --shade:30,20,50;--rim:255,255,255;
+  /* type colours for chips with white text: each measured 4.6:1 or better (Sim, Nov 11: darkened, hue kept) */
+  --ty-Dragon:#5060E1;--ty-Ground:#9A6230;--ty-Fighting:#BE5718;--ty-Poison:#8E3FC8;--ty-Dark:#5A4A56;--ty-Steel:#447C90;--ty-Fire:#D2411E;--ty-Water:#2774D4;--ty-Grass:#28843C;--ty-Fairy:#BF3CB7;--ty-Flying:#3076C7;--ty-Ghost:#6A4BB8;--ty-Psychic:#D6316F;--ty-Ice:#187E97;--ty-Rock:#7D754B;--ty-Electric:#946F00;--ty-Normal:#737571;--ty-Bug:#677C0F;
+  /* tickets (Events, This Week winners; Nov 15): fine lines, the tear line and the stub's shade over a type colour, the same in both themes */
+  --tk-line:rgba(255,255,255,.09);--tk-tear:rgba(255,255,255,.55);--tk-shade:rgba(10,8,20,.22);--tk-ink:#1A1408;
+  --tk-scrim:rgba(26,20,8,.15); /* Nov 16 audit: under white text on type-coloured tickets (3.6-4.2:1 -> 4.6:1+) */
+  /* weather scenes (Archetypes, This Week; Nov 15): light marks over a type colour, the same in both themes */
+  --wx-lo:rgba(255,255,255,.10);--wx-mid:rgba(255,255,255,.2);--wx-hi:rgba(255,255,255,.34);--wx-dk:rgba(10,8,20,.28);
+  --ar-stripe:rgba(255,255,255,.06); /* Archetypes books (Nov 22): the faint diagonal lines, light enough that white words keep about 4.2:1 or better where a line runs under them */
+  /* paper (Track Record's receipt, slips and chart sheet; Nov 15): white with dark words in both themes, waiting on Sim's yes; stamps use
+     the day-theme good and bad text colours, which pass on white */
+  --rc-paper:#FFFFFF;--rc-ink:#17161A;--rc-ink2:#48454F;--rc-rule:rgba(23,22,26,.28);--rc-shadow:rgba(10,8,20,.28);--rc-tape:rgba(0,120,191,.32);--rc-good:#0068AD;--rc-bad:#B3261E;
+  /* Home, The Stampede, band 2 "Call six out of the herd" (Nov 18; sd-six.css): the receipt and the plan board are paper (white receipt, warm
+     graph paper by day; dim paper at night, as the mock-up), dark words on them in both themes; your side blue, theirs magenta (Battle's
+     colours, day values: they sit on paper in both themes); white buttons and light-blue rings, beams and chevrons on the ink band */
+  --sd-paper:#FFFFFF;--sd-board:#F3F0EA;--sd-paper-ink:#17161A;--sd-paper-ink2:#48454F;--sd-paper-rule:rgba(23,22,26,.3);--sd-grid:rgba(23,22,26,.07);--sd-grid5:rgba(23,22,26,.12);
+  --sd-paper-shadow:rgba(0,0,0,.5);--sd-paper-btn:#17161A;--sd-on-paper-btn:#FFFFFF;--sd-q:#0068AD;--sd-board-you:#0068AD;--sd-board-them:#B4238F; /* the six band board (paper): its own pair; --sd-you/--sd-them are the tools band ink plates */--sd-on-tag:#FFFFFF;
+  --sd-btn:#FFFFFF;--sd-btn-ink:#17161A;--sd-ring:#62BEF7;--sd-ring-glow:rgba(98,190,247,.5);--sd-ring-open:rgba(255,255,255,.62);--sd-beam:rgba(255,255,255,.075);--sd-lines:rgba(255,255,255,.035);
+  --sd-chev:#62BEF7;--sd-mask:#000000; /* --sd-mask: an opaque mask layer (the receipt's torn edge), not a colour anyone sees */
+  --d-sdsix:clamp(34px,10.4cqi,64px);--d-sdq:clamp(64px,46cqi,168px);--d-sdn:clamp(56px,30cqi,120px);--d-sdof:clamp(28px,15cqi,56px);--d-sdnp:clamp(48px,20cqi,72px); /* band 2's headline (fills the line-up's width, 34 to 64), the receipt's "?", its score and its "/100" (fill the receipt) */
+  /* type colours borrowed as tints (move rows, move picker, box wallpaper): hue kept, saturation 72%+, lightness 56%; near-grey types
+     (Normal, Dark) stay neutral grey (Sim, Nov 11, review item 12) */
+  --tyn-Dragon:#3E50E0;--tyn-Ground:#E08A3E;--tyn-Fighting:#E67A37;--tyn-Poison:#9B3EE0;--tyn-Dark:#8F8F8F;--tyn-Steel:#3EB5E0;--tyn-Fire:#E35B3B;--tyn-Water:#3E86E0;--tyn-Grass:#3EE062;--tyn-Fairy:#E03ED6;--tyn-Flying:#3E89E0;--tyn-Ghost:#6C3EE0;--tyn-Psychic:#E03E7A;--tyn-Ice:#3DC0E1;--tyn-Rock:#E0C33E;--tyn-Electric:#FFC71F;--tyn-Normal:#8F8F8F;--tyn-Bug:#C4E836;
+  --t13:13px;--t15:15px;--t16:16px;--t17:17px;--t20:20px;--t22:22px;--t24:24px;--t26:26px;--t28:28px;--t34:34px;
+  /* space on a 4px grid; corners; the brand slant */
+  --s1:4px;--s2:8px;--s3:12px;--s4:16px;--s5:20px;--s6:24px;--s8:32px;--s10:40px;--s12:48px;--s16:64px;--s24:96px;
+  --r-s:4px;--r-m:6px;--r-l:10px;--r-xl:18px;--slant:-24deg;--tilt:-7deg;
+  --gut:96px;--tap:44px;
+  /* info sheet card (Sim's 'The Card' brief, Nov 13): a real light card by day (night values below) */
+  /* Damage Calc 'Their Side' (Nov 14): the lit Sun field card, ink on lit field cards, the table surface and its grid, the move card face, the KO tint */
+  --wx-sun:#E3A51C;--wx-sun-hi:#F2C44D;--tr-electric:#F4DC3C;--on-wx:#1C1708;--table:rgba(23,22,26,.035);--table-line:rgba(23,22,26,.06);--table-edge:rgba(23,22,26,.12);--mvc-face:#FFFFFF;--mvc-ink:#17161A;--mvc-sub:#5E5A66;--ko-tint:rgba(217,58,58,.10);--hp-left:#2DA84A;
+  --card-face-1:#FFFFFF;--card-face-2:#ECEAF2;--card-ink:#17161A;--card-giant:rgba(23,22,26,.11);--card-line:rgba(23,22,26,.035);--card-sheen:rgba(255,255,255,.55);--card-edge-mid:#FFFFFF;--card-glow:.16;--card-shade:rgba(30,20,50,.18);
+  /* Damage Calc 'The Arena' (Nov 19; mock-ups docs/redesign/arena/). The scene (skies, hills, grounds, weather and terrain marks, the dark name
+     plates, the white pills and verdict, the pads, the tilted damage tag) is one picture in day and night alike: a scene, not page chrome.
+     Text: white on the plates and rows, ink on the white pills and verdict (17:1); the HP-left text on the plate 10.8:1 */
+  --arn-plate:rgba(18,17,24,.86);--arn-on-plate:#FFFFFF;--arn-pill:#FFFFFF;--arn-on-pill:#17161A;--arn-arw:#62BEF7;
+  --arn-hp-left:#2FB55A;--arn-hp-dmg:#E8364F;--arn-hp-txt:#8EE6A6;
+  --arn-pad:#2A2638;--arn-pad-hi:#4A4560;--arn-pad-a:#2E9BF0;--arn-pad-d:#E8364F;--arn-glow-a:rgba(46,155,240,.55);--arn-glow-d:rgba(232,54,79,.55);
+  --arn-verdict:#FFFFFF;--arn-verdict-ink:#17161A;--arn-verdict-ink2:#55515C;--arn-verdict-em:#C41E35;
+  --arn-tag:#121118;--arn-on-tag:#FFFFFF;--arn-tag-mv:#F2C44D;--arn-shadow:rgba(10,8,20,.35);
+  --arn-clear-1:#2F7FD6;--arn-clear-2:#9CCBF2;--arn-clear-h1:#4F79B0;--arn-clear-h2:#86A9D3;--arn-cloud:rgba(255,255,255,.82);--arn-row-clear:rgba(12,32,70,.72);
+  --arn-sun-1:#E9661A;--arn-sun-2:#F5962C;--arn-sun-3:#FFD08A;--arn-sun-disc:rgba(255,244,214,.96);--arn-sun-glow:rgba(255,214,140,.55);--arn-sun-h1:#D9772D;--arn-sun-h2:#EC9A4C;--arn-row-sun:rgba(70,32,10,.66);
+  --arn-rain-1:#1C2433;--arn-rain-2:#4A556B;--arn-rain-h1:#2B3343;--arn-rain-h2:#3A4558;--arn-rain-line:rgba(220,230,255,.3);--arn-row-rain:rgba(8,10,18,.66);
+  --arn-sand-1:#9A6A33;--arn-sand-2:#DDB880;--arn-sand-h1:#A47437;--arn-sand-h2:#C29556;--arn-dust:rgba(255,236,200,.3);--arn-sand-disc:rgba(255,238,200,.42);--arn-row-sand:rgba(60,34,10,.66);
+  --arn-snow-1:#7C98B7;--arn-snow-2:#DCE6EF;--arn-snow-h1:#F4F7FA;--arn-snow-h2:#CBD8E6;--arn-flake:rgba(255,255,255,.95);--arn-row-snow:rgba(26,44,72,.74);
+  --arn-none-1:#2E2C3E;--arn-none-2:#15141D;--arn-grid:rgba(214,218,255,.18);
+  --arn-grassy-1:#3F9C48;--arn-grassy-2:#1B5824;--arn-blade:rgba(220,255,200,.18);
+  --arn-electric-1:#6E5813;--arn-electric-2:#2C2208;--arn-spark:#F4DC3C;
+  --arn-psychic-1:#A2318F;--arn-psychic-2:#4A1446;--arn-ring:rgba(255,200,240,.2);
+  --arn-misty-1:#D9A0C8;--arn-misty-2:#9A6290;--arn-fog:rgba(255,242,250,.5);
+  --arn-row-tr:rgba(14,12,20,.66);--arn-dot-grassy:#3FCB5A;--arn-dot-electric:#F4C93C;--arn-dot-psychic:#E0509A;--arn-dot-misty:#F2A6C8;
+  /* under the scene (these follow the theme): the filled state (chosen move, switch on, the KO Board bar) is the page's ink; the chosen
+     move's damage in pink on it (day 6.9:1 on ink, night 5.0:1 on the light fill); field and pill outlines; the KO bar's parts */
+  --arn-fill:var(--ink);--arn-on-fill:var(--bg);--arn-hit:var(--plot-text);--arn-hit-on:#F58DA1;--arn-line:rgba(23,22,26,.2);--arn-dash:rgba(23,22,26,.36);
+  --arn-kb-ko:#E8364F;--arn-kb-sv:#2FB55A;--arn-edge-a:var(--logo-blue);--arn-edge-d:var(--logo-pink);
+  /* the Arena polish (Sim, Nov 21): each weather/terrain's own colour (icons, the chosen foot), the rows' dark band, plates, the HP track, calm bands, the contact shadow */
+  --arn-k-none:#FFFFFF;--arn-k-sun:#FFB23F;--arn-k-rain:#7FB4FF;--arn-k-sand:#E2B66E;--arn-k-snow:#BFE6FF;--arn-k-grassy:#5FD068;--arn-k-electric:#FFD21F;--arn-k-psychic:#FF5FBF;--arn-k-misty:#FFA9DA;
+  --arn-rowbg:rgba(12,11,18,.74);--arn-rim:rgba(255,255,255,.12);--arn-ic-shadow:rgba(0,0,0,.45);--arn-ic-edge:#17161A;
+  --arn-plate-hi:rgba(30,28,42,.95);--arn-plate-lo:rgba(14,13,22,.95);--arn-plate-rim:rgba(255,255,255,.14);
+  --arn-track:#0A0910;--arn-tick:rgba(10,9,16,.75);--arn-hp-hi:#7DF2AE;--arn-hp-dmg-hi:#FF5C74;--arn-hpl:#FFFFFF;--arn-on-hpl:#17161A;--arn-hp-sub:#C9C5D0;
+  /* My Team's frame (Sim, Nov 21): black frame, pink drop shadow, light panels; the chosen row black with a pink edge, pink accents (Sim, Nov 21, 7:13 AM: no yellow, 'more nasty plot'). Contrast (measured below in the build notes) */
+  --mtf-frame:#17161A;--mtf-drop:#E8364F;--mtf-panel:#F4F1EC;--mtf-ink:#17161A;--mtf-ink2:#5E5A66;--mtf-chosen:#E8364F;--mtf-on-frame:#FFFFFF;--mtf-bar-sub:#C9C5D0;--mtf-rate:#0068AD;
+  --mtf-night:#14131C;--mtf-n-surf:#1D1C26;--mtf-n-surf2:#272631;--mtf-n-sub:#B9B5C4;--mtf-n-link:#9BDCFF;--mtf-n-rule:rgba(255,255,255,.1);--mtf-n-add:rgba(255,255,255,.32);--mtf-n-glow:rgba(232,54,79,.4);--mtf-hot:#FF5C74;
+  --mtf-cell:#FFFFFF;--mtf-link:#0068AD;--mtf-wash:#ECE8DF;--mtf-rule:rgba(23,22,26,.13);--mtf-ink3:#5E5A66;--mtf-card-warn:#FFB866;--mtf-ink2b:#48454F;--mtf-card-sub:#D9D5E0;--mtf-card-tile:rgba(255,255,255,.1);--mtf-card-link:#9BDCFF;--mtf-card-new:rgba(255,225,77,.22);--mtf-shadow-floor:rgba(23,22,26,.14);--mtf-stop:#C41E35;--mtf-add:rgba(23,22,26,.4);
+  /* the Damage Calc board, 'Plot the hit' (Sim, Nov 21): graph paper, marker, photos, sticky notes; the same board in day and night until Sim picks a dark design.
+     Contrast on the paper #FCFAF3 (measured, Nov 21): ink 17.2:1, ink-2 6.4:1, off switch words 5.2:1, blue marker 5.6:1, red marker words 5.6:1; weather/terrain icons 3.9-6.4:1 (icons need 3:1); the big damage in type colours 4.4:1+ (large text needs 3:1) */
+  --pc-paper:#FCFAF3;--pc-grid:rgba(0,120,191,.22);--pc-grid2:rgba(0,120,191,.1);--pc-ink:#17161A;--pc-ink2:#5E5A66;--pc-off:#6B6873;--pc-mark:#E8364F;--pc-mark-text:#C41E35;--pc-mark-edge:#FFFFFF;
+  --pc-line:#0068AD;--pc-photo:#FFFFFF;--pc-photo-rim:rgba(23,22,26,.1);--pc-drop:rgba(0,0,0,.5);--pc-tint-a:#CFE6F7;--pc-tint-d:#F9D0D7;--pc-note-a:#D9EDFB;--pc-note-d:#FBD3DA;
+  --pc-note-top:rgba(0,0,0,.1);--pc-dots:rgba(23,22,26,.35);--pc-note-label:rgba(23,22,26,.7);--pc-key:rgba(255,255,255,.6);--pc-dash:rgba(23,22,26,.5);--pc-on-swipe:#FFFFFF;--pc-swipe-sub:rgba(255,255,255,.92);
+  --pc-k-none:#5E5A66;--pc-k-sun:#B56E00;--pc-k-rain:#2A73C9;--pc-k-sand:#A8742A;--pc-k-snow:#2F7DA4;--pc-k-grassy:#28843C;--pc-k-electric:#946F00;--pc-k-psychic:#C2479A;--pc-k-misty:#B4508C;
+  --pc-on-paper:#17161A;--pc-on-paper2:#5E5A66;--d-pcbig:clamp(48px,17cqi,112px);--d-pcpct:clamp(26px,8.5cqi,56px);--d-pcbigp:clamp(40px,14cqi,100px);--d-pctitle:clamp(24px,3vw,44px);
+  --arn-shade-t:rgba(0,0,0,.3);--arn-shade-b:rgba(0,0,0,.45);--arn-contact-1:rgba(0,0,0,.6);--arn-contact-2:rgba(0,0,0,.3);--arn-contact-3:rgba(40,36,60,.6);--d-arntag:clamp(34px,6.4cqi,64px);
+  /* The shared kit (site-wide reskin, Sim approved approach A, Nov 21; docs/rebuild/mocks/cohesion-nov21/THEME.md + HYBRID.md; kit.css).
+     Reused where the meaning is the same: paper = the page (--bg), ink, quiet ink (--ink-3, 5.6:1), rule, Plot blue (--plot for lines and
+     fills under white words 4.7:1; --plot-text for blue words on paper 5.6:1). Nasty pink: --k-nasty for lines and rings (4.0:1 on paper,
+     graphics need 3:1);--k-mask:#000; --k-go is the pink a step deeper so white words read (4.7:1) and stays the same saturated pink at night (HYBRID 8).
+     The "yours" marker and the kicker are ink chips (inverted at night). Headline, sentence, section and go sizes are display sizes. */
+  --k-paper:var(--bg);--k-card:var(--surface);--k-ink:var(--ink);--k-ink2:var(--ink-3);--k-rule:var(--rule);
+  --k-plot:var(--plot);--k-plot-text:var(--plot-text);--k-on-plot:#FFFFFF;--k-nasty:#E8364F;--k-nasty-text:var(--pick-text);--k-go:#DA2C48;--k-on-go:#FFFFFF;--k-go-shadow:#17161A;
+  --k-chip:#17161A;--k-on-chip:#FFFFFF;--k-art-shadow:rgba(23,22,26,.25);--k-card-shadow:rgba(23,22,26,.16);--k-neutral:rgba(23,22,26,.5);
+  --d-khead:clamp(34px,min(10.4vw,4vw + 32px),84px);--d-ksent:clamp(22px,2.8vw,34px);--d-ksec:40px;--d-kgo:clamp(17px,min(5.2vw,2.6vw + 12px),36px);
+  --d-kscore:clamp(48px,6vw,72px);
+  /* My Team, the war room (reskin page 1, Nov 21): the Strength Score number, a long team name's headline, the Night frame's own words
+     (measured on --mtf-night #14131C, Nov 21: ink 15.8:1, quiet 9.4:1, Plot 10.4:1; on the card #1D1C26 14.4 / 8.6 / 9.5) and the frame's card shadow */
+  --d-tmscore:clamp(80px,9vw + 40px,168px);--d-tmlong:clamp(28px,3vw + 20px,60px);
+  --wr-ink:#F1EDE7;--wr-ink2:#BDB7C6;--wr-plot:#7CCBFF;--wr-on-plot:#14131C;--wr-shadow:rgba(0,0,0,.5);--wr-rule:rgba(241,237,231,.16);
+  /* Battle, the target (Nov 22): the war-room night panel (--mtf-night by day; a step lighter than the page at night so it still reads as a panel) */
+  --btg-panel:var(--mtf-night);
+  /* Item drawings in the evidence bag (Dossier step 4, Nov 23; item-art.js): our own flat symbols, no game art. The same in day and night
+     (the bag keeps its own colours): the 2px outline, the one highlight, the few fills no type token covers; the bag's film, edge and sheen */
+  --ia-line:#17161A;--ia-hi:rgba(255,255,255,.78);--ia-white:#FFFFFF;--ia-sitrus:#F2C230;--ia-orb:#6B3FB0;--ia-core:#F7EDCF;--ia-apple:#D7372E;
+  --ev-bag:rgba(255,255,255,.55);--ev-bag-line:rgba(60,50,20,.35);--ev-bag-sheen:rgba(255,255,255,.7);
+  color-scheme:light}
+:root[data-theme="night"]{
+  /* the Damage Calc board at night (Sim, Q105 B, Nov 21): night blueprint paper; photos, sticky notes and move colours stay the same.
+     Contrast on #1B2433 (measured, Nov 21): words 14.0:1, ink-2 8.6:1, off switch words 6.4:1, blue marker 8.6:1, red marker 5.8:1 */
+  --pc-paper:#1B2433;--pc-grid:rgba(98,190,247,.22);--pc-grid2:rgba(98,190,247,.09);--pc-ink:#EEF3F8;--pc-ink2:#B5C2D1;--pc-off:#9AA8B8;--pc-line:#7CC8FF;--pc-mark-text:#FF6F86;--pc-dash:rgba(238,243,248,.5);--pc-mark-edge:#1B2433;
+  /* the big damage number at night takes the night type colours (--tyn-*); three are too dark on this paper (Dragon 2.6:1, Ghost 2.5:1,
+     Poison 3.1:1), so the board lifts them: 5.9, 5.7, 5.5:1 */
+  --pcn-Dragon:#8A97FF;--pcn-Ghost:#A88BF2;--pcn-Poison:#C17BF0;
+  --bp-paper:transparent;--bp-grid:#62bef70a;--bp-grid5:#62bef714;--bp-ink:#62bef7; /* Q82 A: fainter (was 12 / 24) */
+  --on-band-top:#12121B;--on-band-ready:#12121B;--on-band-solid:#12121B;--on-band-work:#12121B;--on-band-miss:#12121B; /* Q83: the night bands are light; dark ink on each */
+  --sd-paper:#DDD5C5;--sd-board-you:#0068AD;--sd-board-them:#B4238F;--sd-board:#D6CEBF;--sd-grid:rgba(23,22,26,.08);--sd-grid5:rgba(23,22,26,.14);--sd-beam:rgba(255,255,255,.05);--sd-lines:rgba(255,255,255,.025);--sd-paper-shadow:rgba(0,0,0,.6); /* band 2 at night: dim paper (the mock-up's), the rest as by day */
+  --wx-sun:#D99A1B;--wx-sun-hi:#F0C25A;--tr-electric:#E9D23A;--on-wx:#1C1708;--table:rgba(255,255,255,.025);--table-line:rgba(255,255,255,.045);--table-edge:rgba(255,255,255,.10);--mvc-face:#15141E;--mvc-ink:#F4F2EE;--mvc-sub:#B0AAB8;--ko-tint:rgba(255,122,112,.14);--hp-left:#3FC060;
+  --card-face-1:#1A1924;--card-face-2:#0C0C13;--card-ink:#F4F2EE;--card-giant:rgba(255,255,255,.10);--card-line:rgba(255,255,255,.03);--card-sheen:rgba(255,255,255,.07);--card-glow:.30;--card-shade:transparent;
+  --ray:rgba(255,255,255,.045);--ray-art:rgba(255,255,255,.05);
+  --bg:#12121B;--surface:#1D1C29;--wash:#201F2D;--ink:#E4E0DA;--ink-2:#C4BFCB;--ink-3:#B0AAB8;--rule:rgba(228,224,236,.10);
+  --plot:#62BEF7;--plot-text:#62BEF7;--pick:#F0708A;--them:#E57FD3;--them-text:#EC9BDF;--pick-text:#F58DA1;
+  --plate:#343348;--on-plate:#F1EDE7;--plate-link:#62BEF7; /* 5.97:1 on the night plate */
+  --pl-band:#1D1C29;--pl-band-plate:#E9E5DE; /* The Plot piece 5, night (spec section 1): the band a step lighter than the page, the plate warm grey; its text stays #FBFAF7 (15.6:1), quiet #C4BFCB (9.9:1) */
+ --main:#3FA2E2;--on-main:#08131E;
+ --sd-on-band:#FFFFFF;
+  --sd-post-line:rgba(255,255,255,.4);--sd-post-shadow:rgba(0,0,0,.55); /* post band at night: softer lines on the deep red, a darker shadow */
+  --pr-kraft:#6B4E2E;--pr-kraft-hi:#76583A;--pr-kraft-line:rgba(0,0,0,.12);--pr-tape:rgba(160,134,94,.7);--pr-paper:#E6DFCF;--pr-ink:#1E1B18;--pr-ink2:#4E4942;--pr-rule:rgba(30,27,24,.2);
+  --pr-num:#0A5A92;--pr-soon:#A61F28;--pr-plenty:#0A5A92;--pr-rub-bg:rgba(230,223,207,.94);--pr-shadow:rgba(0,0,0,.45);--pr-shadow-2:rgba(0,0,0,.3);
+  --pr-ev:#DDBAD3;--pr-ev-2:#D3A8C9;--pr-ev-ink:#74155E;--pr-se:#B7CEDF;--pr-se-2:#A5C1D6;--pr-se-ink:#0A4A78;
+  --pr-post:rgba(46,43,50,.92);--pr-post-bg:rgba(230,223,207,.62);--pr-blank:rgba(228,224,236,.24);--pr-art:saturate(.82) brightness(.94);
+ /* tools band, night (brief: one card colour clearly lighter than the band, near-black feature plates with a soft light rim) */
+ --sd-beige:#181826;--sd-card:#36355A;--sd-card-ink:#F1EDE7;--sd-card-ink2:#D3CEDD;--sd-card-shade:#0E0E18;
+ --sd-feat:#0A0A10;--sd-on-feat:#F1EDE7;--sd-feat-ink2:#C4BFCB;--sd-feat-rim:rgba(228,224,236,.2);
+ --sd-race:#0078BF;--sd-on-race:#FFFFFF;--sd-streak:rgba(255,255,255,.3);--sd-pod:#2E2D38;--sd-pod-top:#0078BF;
+ --sd-you:#62BEF7;--sd-them:#F08AD8;--sd-hp-lost:#25243B;--sd-hp-roll:#FF7A70;--sd-hp-roll2:#7A3A3A;--sd-flag-rim:rgba(241,237,231,.85);
+  /* Lamplight (Nov 18): the paper stays cream, warmer and lit from above; ink stays dark. Measured on --dp-paper: ink 13.6:1, ink-2 7.5:1,
+     ink-3 5.6:1, blue 5.5:1, red 5.8:1 (the day blue and red were 4.4:1 here, so both are a step deeper) */
+  --dp-paper:#E9DFC7;--dp-glow:#F4ECD8;--dp-ink:#17161A;--dp-ink2:#45423F;--dp-ink3:#57524A;--dp-rule:rgba(23,22,26,.2);--dp-fold:rgba(23,22,26,.07);
+  --dp-plot:#005996;--dp-plot-rule:#0068AD;--dp-pick:#A3172B;--dp-pick-rule:#C41E35;--dp-bar:#17161A;--dp-on-bar:#FFFFFF;
+  --dp-dot:rgba(23,22,26,.16);--dp-frame:#DED3B9;--dp-cur:rgba(0,89,150,.13);--dp-shadow:0 0 0 1px rgba(0,0,0,.4),0 -12px 60px -20px rgba(244,236,216,.22),0 40px 80px -24px rgba(0,0,0,.85);
+ /* The Stampede, night: deeper hero blue (white 8.0:1, light blue 5.7:1), the mock-up's lifted ink, the dark tools band, the deep red
+    (white 6.37:1, pink numbers 4.0:1) */
+ --sd-hero:#0A4C83;--sd-ink:#232330;--sd-tools-bg:#181826;--sd-flag:#B91E39;--sd-flag-num:#F2C1C9;
+ --sd-line2:#9BDCFF;--sd-plate:#FFFFFF;--sd-plate-ink:#17161A;--sd-plate-num:#0068AD;--sd-tag:#17161A;--sd-tag-num:#9BDCFF;
+ --sd-speed:rgba(255,255,255,.14);--sd-haze:rgba(10,76,131,.52);--sd-link:#62BEF7;
+  --good:var(--plot);--good-text:var(--plot-text);--on-mark:#12121B;--mid:#F0C768;--mid-text:#F0C768;--low:#B8AA9C;--low-text:#B8AA9C;--bad:#FF7A70;--bad-text:#FF8A80;
+  /* night: brighter stat colours with dark text (5.20:1+ on the plates, 4.75:1+ on the night panel) */
+  --x4:#B71C1C;--pk-main:var(--plot);--on-pk-main:var(--on-mark);--on-x4:#FFFFFF;--st-hp:#2E9E5B;--st-atk:#E0601F;--st-def:#D9A21A;--st-spa:#5B8DF0;--st-spd:#A27BEA;--st-spe:#E5578A;--on-st:#12121B;--on-st-def:#12121B;
+  --ntp-atk:var(--st-atk);--ntp-def:var(--st-def);--ntp-spa:var(--st-spa);--ntp-spd:var(--st-spd);--ntp-spe:var(--st-spe);--on-ntp:#12121B; /* Natures page at night: the brighter stat colours, dark words on the filled ones */
+  --band-top:#62BEF7;--band-ready:#C9B0FF;--band-solid:#B0AAB8;--band-work:#F0C768;--band-miss:var(--bad-text);
+  --band-work-text:var(--band-work); /* Nov 16 (a11y): "Needs work" as text; the bright amber is for fills */
+  --plot-text-deep:#81CBF9; /* night (Nov 16 audit): the light blue was 4.45:1 on the tinted Team Cards; 20% lighter, 5.15:1 */
+  --contact:transparent;--shadow-lift:0 1px 2px rgba(0,0,0,.35),0 8px 16px -6px rgba(0,0,0,.45),0 24px 40px -16px rgba(0,0,0,.6);
+  --lit-edge:inset 0 1px 0 rgba(255,255,255,.28),inset 0 -1px 0 rgba(0,0,0,.35);
+  --grain:.05;--score-ink:#D6D1CA;
+  --plate-hi:#3E3D56;--plate-lo:#2C2B3D;--main-hi:#63C0F8;--main-lo:#3FA2E2;--band-glow:0 0 22px rgba(79,178,240,.4);--floor-line:rgba(214,218,255,.3);--page-wash:linear-gradient(180deg,#0C0C14 0,#12121C 280px,#191928 450px,#14141F 620px,#12121B 100%);--scrim:rgba(6,6,12,.45);--scrim-deep:rgba(8,8,14,.82);
+  --arn-hit-on:#C41E35;--arn-line:rgba(228,224,236,.2);--arn-dash:rgba(228,224,236,.36); /* the Arena under the scene, night */
+  /* the kit at night: blue fills turn light with dark words (9.1:1), pink stays the saturated --k-go with white words (4.7:1), its offset
+     shadow and the ink chips turn light (13.7:1) so they still read on the dark page */
+  --btg-panel:var(--surface);--k-on-plot:#12121B;--k-go-shadow:#E4E0DA;--k-chip:#E4E0DA;--k-on-chip:#12121B;--k-art-shadow:rgba(0,0,0,.5);--k-card-shadow:rgba(0,0,0,.45);--k-neutral:rgba(228,224,236,.55);
+  color-scheme:dark}
+/* ultra-wide screens (HH, design authority to 9 AM Mon; second empty-space sweep: at 2560 eight pages left half their width empty): the page
+   frame stops growing at 1,920px of content and centres, so lines and layouts keep the shape they were designed at */
+@media (min-width:2112px){:root{--gut:max(96px,calc((100vw - 1920px) / 2))}}
+@media (max-width:1179.98px){:root{--gut:48px}}
+@media (max-width:699.98px){:root{--gut:16px}}
+/* Nov 22 (qcheck): the kit headline held 34px up to 384 wide; between 341 and 384, 10.4vw gave 35.5-39.9px, off the type scale */
+@media (max-width:384.98px){:root{--d-khead:34px}}
+/* Nov 23 (hP, polish): the go button's fluid size ran off the type scale on phones (20.3px at 390, 18.7 at 360, 23 at 460); under 470 wide,
+   where it is still under the display floor of 24, it steps on the scale instead: 17 / 20 / 22 (at 390 a hair smaller than before, so no page grows) */
+@media (max-width:469.98px){:root{--d-kgo:var(--t22)}}
+@media (max-width:419.98px){:root{--d-kgo:var(--t20)}}
+@media (max-width:359.98px){:root{--d-kgo:var(--t17)}}
+/* the same for the kit sentence: 2.8vw gave 22-24px (23px at 820) between 786 and 856 wide; it holds 22 there (phones set their own 20) */
+@media (min-width:700px) and (max-width:856.98px){:root{--d-ksent:var(--t22)}}
+/* Nov 23 (hK, qcheck at 1100): the plan-step title (.k-h2) ran 3.4vw between 765 and 1176 wide, so most of that band sat between scale
+   steps (37.4px at 1100). It now steps on the site's own breakpoints, each band keeping the size it already hit there: 40 from 1100
+   (was 37.4-40), 34 from 900 (was 30.6-37.4; exactly 34 at 1000), 28 from 700 (was 26-30.6; 28 at 820), 26 on phones (as before) */
+@media (max-width:1099.98px){:root{--d-ksec:var(--t34)}}
+@media (max-width:899.98px){:root{--d-ksec:var(--t28)}}
+@media (max-width:699.98px){:root{--d-ksec:var(--t26)}}
+/* Sim Q1 (Nov 15): 'them' / Team B is magenta (--them), clearly apart from red (--bad); measured: day fill #B4238F white text 5.87:1, text #9A1A7B 7.17:1 on the page; night fill #E57FD3 dark text 7.36:1, text #EC9BDF 9.15:1 */
+/* My Box, "The PC" (Sim approved the design, Nov 23; mock-up docs/mockups/mybox-pc/): the blue box wallpaper, the selected slot and its
+   yellow ring, the box bar, Your Six's dark rows and the foil edge of the card. The wallpaper is the same blue in day and night (the stage). */
+:root{
+  --mb-stage-1:#0B78C2;--mb-stage-2:#04508A;--mb-wall-hi:rgba(255,255,255,.2);--mb-wall-lo:rgba(0,20,60,.35);--mb-stripe:rgba(255,255,255,.05);--mb-dot:rgba(255,255,255,.2);
+  --mb-slot-line:rgba(255,255,255,.24);--mb-floor:rgba(4,30,60,.55);--mb-on-wall:#FFFFFF;--mb-slot-hover:rgba(255,255,255,.12);
+  --mb-sel:#FFFFFF;--mb-on-sel:#17161A;--mb-ring:#FFC71F;--mb-sel-glow:rgba(0,120,191,.5);--mb-sel-shadow:rgba(0,10,30,.5);--mb-flag:#FFFFFF;--mb-flag-key:#0B78C2;
+  --mb-bar:#17161A;--mb-on-bar:#FFFFFF;--mb-arrow:#E8364F;--mb-dot-off:rgba(255,255,255,.3);
+  --mb-pm:#17161A;--mb-on-pm:#FFFFFF;--mb-pm-sub:rgba(255,255,255,.72);--mb-pm-drop:rgba(0,0,0,.4);--mb-pm-empty:rgba(23,22,26,.22);
+  --mb-foil:linear-gradient(135deg,#FFE27A,#FFC71F 16%,#E8364F 40%,#7B4BD6 56%,#0078BF 72%,#62BEF7 88%,#FFE27A);
+  --mb-card-line:rgba(127,127,150,.06);--mb-art-floor:rgba(0,120,191,.38);--mb-art-drop:rgba(0,0,0,.25);--mb-on-strip:#FFFFFF;--mb-cur-drop:rgba(0,0,0,.28);
+  --mb-chip:#17161A;--mb-on-chip:#FFFFFF}
+:root[data-theme="night"]{
+  --mb-bar:#FFFFFF;--mb-on-bar:#17161A;--mb-dot-off:rgba(23,22,26,.3);--mb-pm:#1C1B28;--mb-pm-empty:rgba(228,224,236,.2);
+  --mb-art-drop:rgba(0,0,0,.45);--mb-chip:#FFFFFF;--mb-on-chip:#17161A}
+:root{--d-mbrate:56px;--d-mbscore:52px;--d-mbgh:128px}

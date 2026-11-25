@@ -1,0 +1,299 @@
+NastyPlot PC full check (Plans step gp5-full) on Sim's Windows PC, Nov 20 2026
+Started 11/20/2026, 6:05:12 PM ET, report written 11/20/2026, 9:36:44 PM ET.
+
+COMMIT TESTED
+8c51ab3027fe185d7c489e1b56d081ebe2e8f988 (claude/design6, newest at 6:03 PM ET; tested detached in the pl-mascot worktree)
+
+MACHINE
+Windows 11 Home build 26300, 16 threads, NVIDIA RTX 3080. Node 22.23.4, npm 10.9.9.
+Chromium for the tests: Playwright 1.49.1, build 1148 (131.0.6778.33). Safari's engine: Playwright 1.63.0, WebKit 26.6 (build 2359).
+Look-through screenshots: installed Google Chrome 158.0.8127.36.
+
+ONE LINE PER JOB
+  test (code tests, frozen data)       passed: all 23 steps exit 0
+  v2-checks                            passed: all 37 steps exit 0
+  v2-checks-2                          failed (steady, 2 steps): v2-q69: 1 failed; tap-size: 1 failed. Both: My Team at 820, "Build Me a Team ›" / "Import a Team ›"
+  v2-minors main1                      passed: v2-minors (main1):all passed
+  v2-minors main2                      passed: v2-minors (main2):all passed
+  v2-minors groups                     failed (steady, Windows only? same as Nov 19): v2-minors (groups):1 failed (WK-1)
+  quality-v2                           failed (2 new findings, same as Nov 19): qcheck-all: 27 pages + 18 views x 5 widths x 2 themes, 59 findings, 2 new; 1532s
+  behaviour A-team                     passed: behaviour: 139 pass, 0 FAIL, 4 known bugs, 0 fixed?, 2 skipped; 835s  (adapter v2) + tap-once: all pass
+  behaviour B-build                    passed: behaviour: 77 pass, 0 FAIL, 14 known bugs, 0 fixed?, 0 skipped; 525s  (adapter v2)
+  behaviour C-battle                   passed: behaviour: 83 pass, 0 FAIL, 0 known bugs, 0 fixed?, 4 skipped; 426s  (adapter v2)
+  behaviour D-meta-shell               passed: behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 455s  (adapter v2)
+  behaviour-webkit (alert-only job)    failed (steady, WebKit only): behaviour: 138 pass, 1 FAIL, 4 known bugs, 0 fixed?, 2 skipped; 1018s  (webkit, adapter v2) (EDIT-01b) + tap-once: all pass
+  data-checks (today's data)           passed: run.mjs ALL PASSED; threat-check PASS; lead-logic ALL PASSED; golden 10 of 10 known-answer cases pass; v2-today: all passed (24 s)
+  accuracy-gate                        passed: GATE PASSED
+  live-audits (alert only)             clean: SUGGESTIONS AUDIT PASSED; fields-audit PASS: every VGC-relevant field is in the data and used by the engine; suggest-gaps ALL PASSED
+
+EVERY FAIL LINE
+v2-checks-2 / v2-q69 (main run and rerun alone, identical):
+  FAIL  A1 820 light: 38/60 points inside "Build Me a Team ›" hit something else (stacked: true, pitch 19px)
+v2-q69: 1 failed
+v2-checks-2 / tap-size (main run and rerun alone, identical):
+  FAIL  C8 tap areas, 820 My Team: 21px left, right, above and below the centre is still the control (Build Me a Team › (122x20) MISSES left (on Import a Team ›)/right (on Import a Team ›)/below (on Import a Team ›), Import a Team › (110x20), Why This Score? › (126x44), Team Sheet ↗ (99x44), Team Sheet ↗ (98x44))
+tap-size: 1 failed
+v2-minors groups / WK-1 (main run, rerun of the groups part, and run alone: identical):
+  FAIL  WK-1 (WebKit pair): the stamps' perforated edge, read off the pixels on #gifts 390 / 1440 and Home's post band 1440: no paper outside the holes' line, holes along each edge, solid middle, bitten corners (home 1440 128x187: top: holes along the edge at 19,32,45,58,71,84,96,109, bottom: holes along the edge at 19,32,45,58,71,84,96,109, left: paper starts 0px in (want 6: nothing in the outer band), left: holes along the edge at none, left: not solid 6px inside the edge, paper off centre {"top":6,"bottom":6,"left":0,"right":5.5})
+v2-minors (groups):1 failed
+behaviour-webkit / EDIT-01b (main run and rerun alone in WebKit, identical; passes in Chromium):
+  FAIL  EDIT-01b  Closing the edit panel puts focus back on "Edit set"  -> focus is on ""
+behaviour: 0 pass, 1 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 8s  (webkit, adapter v2)
+  control, same test in Chromium: behaviour: 1 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 6s  (adapter v2)
+quality-v2, the new findings:
+  NEW   home | day 1280 | SIZE 36.1px "/100"
+  NEW   home | night 1280 | SIZE 36.1px "/100"
+  (134 known findings no longer seen: remove them with KNOWN=write after a look)
+
+WHAT EACH FAILURE LOOKS LIKE
+  1. v2-q69 + tap-size (one spot, steady): on My Team at 820 wide (sample team), "Build Me a Team ›" (122x20) and "Import a Team ›" (110x20) are two 20px text links stacked 19px apart, so each tap area lands on the other. Pictures: fail-my-team-820-light.png / -dark.png (crop, links outlined in red) and -full.png. Probably not Windows-specific (a layout measure); please check GitHub's run.
+  2. WK-1 (steady, Windows only? It failed the same way on this PC on Nov 19 in 4 of 4 Chromium runs and passed in WebKit 26.6): the second stamp on Home at 1440 reads "paper starts 0px in" on its left edge. Every stamp picture the test read is saved in wk1-stamps/ (wk1-stamp-chromium-home-1440-6.png is the failing one; on Nov 19 it showed a 1px coloured strip along the left edge of the clip).
+  3. EDIT-01b (steady, WebKit only; job is alert-only): closing the edit panel leaves focus nowhere ("") instead of on "Edit set". Same in WebKit on Nov 19 (4 of 4). Passes in Chromium. FAILSHOT picture and page text: edit-01b-webkit/EDIT-01b.png and .txt. Note: in that WebKit picture the Pokémon card art and the site fonts did not load (file://), so the picture shows layout only.
+  4. quality-v2 Home "/100" at 36.1px (1280, day and night): same as Nov 19 (measured then 36.07px in Chromium 131, 36.15px in Chrome 157). Nov 19's News "CAMPAIGN · NOV 24" overlap is gone. 134 known findings are no longer seen.
+  Nov 19's TEAM-07 (WebKit) now passes. MQ-9c, main2 and the hero picture checks pass (the latter with the folder junctions, see below).
+
+LOOK-THROUGH (step 5): Home, My Team, Build (after Build Me a Team), Battle, Damage Calc, Meta at 1920 and 1280, light and dark, 100% zoom, art build on today's data, Chrome 158
+  home-1920-light.png: 5.4 screens, theme attr day, 0 broken pictures, 0 page errors
+  my-team-1920-light.png: 2.1 screens, theme attr day, 0 broken pictures, 0 page errors
+  build-1920-light.png: 3.0 screens, theme attr day, 0 broken pictures, 0 page errors
+  battle-1920-light.png: 1.3 screens, theme attr day, 0 broken pictures, 0 page errors
+  damage-calc-1920-light.png: 1.1 screens, theme attr day, 0 broken pictures, 0 page errors
+  meta-1920-light.png: 3.0 screens, theme attr day, 0 broken pictures, 0 page errors
+  home-1920-dark.png: 5.4 screens, theme attr night, 0 broken pictures, 0 page errors
+  my-team-1920-dark.png: 2.1 screens, theme attr night, 0 broken pictures, 0 page errors
+  build-1920-dark.png: 3.0 screens, theme attr night, 0 broken pictures, 0 page errors
+  battle-1920-dark.png: 1.3 screens, theme attr night, 0 broken pictures, 0 page errors
+  damage-calc-1920-dark.png: 1.1 screens, theme attr night, 0 broken pictures, 0 page errors
+  meta-1920-dark.png: 3.0 screens, theme attr night, 0 broken pictures, 0 page errors
+  home-1280-light.png: 5.9 screens, theme attr day, 0 broken pictures, 0 page errors
+  my-team-1280-light.png: 2.3 screens, theme attr day, 0 broken pictures, 0 page errors
+  build-1280-light.png: 3.3 screens, theme attr day, 0 broken pictures, 0 page errors
+  battle-1280-light.png: 1.3 screens, theme attr day, 0 broken pictures, 0 page errors
+  damage-calc-1280-light.png: 1.1 screens, theme attr day, 0 broken pictures, 0 page errors
+  meta-1280-light.png: 3.2 screens, theme attr day, 0 broken pictures, 0 page errors
+  home-1280-dark.png: 5.9 screens, theme attr night, 0 broken pictures, 0 page errors
+  my-team-1280-dark.png: 2.3 screens, theme attr night, 0 broken pictures, 0 page errors
+  build-1280-dark.png: 3.3 screens, theme attr night, 0 broken pictures, 0 page errors
+  battle-1280-dark.png: 1.3 screens, theme attr night, 0 broken pictures, 0 page errors
+  damage-calc-1280-dark.png: 1.1 screens, theme attr night, 0 broken pictures, 0 page errors
+  meta-1280-dark.png: 3.2 screens, theme attr night, 0 broken pictures, 0 page errors
+  Build Me a Team was clicked on Build in all four; every page set the theme asked for; no sideways scroll, no broken pictures, no page errors.
+  Looked at with my own eyes: both contact sheets (contact-sheet-1920.png, contact-sheet-1280.png; scaled down, so layout only) and the My Team 820 crop. Nothing else stood out at that scale. Not looked at full-size one by one.
+
+HOW THIS RUN DIFFERS FROM GITHUB
+  - Every job ran one at a time, every run: step in order in Git Bash from the repo root, carrying on after a failure (as if: !cancelled() does).
+  - Left out: the 2-minute waits, checkout / setup-node actions, artifact uploads, and live-audits' "Live-data audit" issue step (it would post to GitHub; reported here instead).
+  - npm ci ran at the start, before behaviour-webkit and at the end; playwright install without --with-deps (not available on Windows).
+  - Frozen data (out/ of 0c992f69) for test, v2-checks, v2-checks-2, v2-minors, quality-v2; today's data (HEAD) for behaviour, behaviour-webkit, data-checks, accuracy-gate, live-audits, as test.yml.
+  - v2-minors: app/dist/art and app/dist/art-s were linked with Windows junctions (mklink /J) before each part. The test's own fs.symlinkSync(..., 'dir') is refused on Windows without admin rights (Nov 19 finding 1); GitHub creates the same two links. No code or test changed.
+  - Reruns (step 4) ran each failing step once more on its own after the main run.
+
+BUILD USED FOR EACH JOB (as test.yml)
+  test, data-checks, accuracy-gate, live-audits: node app/build.mjs (test and data-checks also build pokemon-showdown)
+  v2-checks, v2-checks-2, v2-minors, quality-v2: node app/build.mjs --v2 --preview-data (v2-checks-2 also --split, the public build, then plain --v2, as its last steps)
+  behaviour A-D, behaviour-webkit, look-through screenshots: node app/build.mjs --v2 --art=../src/v2/art/
+
+TIMINGS (minutes per job; start times Eastern)
+  test                         9 min  (23 steps, started 6:05:12 PM)
+  v2-checks                   35 min  (37 steps, started 6:14:41 PM)
+  v2-checks-2                 31 min  (47 steps, started 6:49:50 PM)
+  v2-minors-main1             12 min  (5 steps, started 7:20:55 PM)
+  v2-minors-main2              6 min  (5 steps, started 7:32:36 PM)
+  v2-minors-groups             8 min  (5 steps, started 7:38:43 PM)
+  quality-v2                  26 min  (3 steps, started 7:46:18 PM)
+  behaviour-A-team            14 min  (4 steps, started 8:11:58 PM)
+  behaviour-B-build            9 min  (3 steps, started 8:26:14 PM)
+  behaviour-C-battle           7 min  (3 steps, started 8:35:05 PM)
+  behaviour-D-meta-shell       8 min  (3 steps, started 8:42:15 PM)
+  data-checks                  5 min  (8 steps, started 8:49:56 PM)
+  accuracy-gate                3 min  (3 steps, started 8:54:54 PM)
+  behaviour-webkit            20 min  (5 steps, started 8:57:52 PM)
+  live-audits                  2 min  (7 steps, started 9:17:26 PM)
+  restore                      1 min  (4 steps, started 9:19:25 PM)
+  reruns + screenshots:
+    frozen                          0s  exit 0
+    build-preview                   4s  exit 0
+    v2-q69                        113s  exit 1
+    tap-size                       90s  exit 1
+    my-team-820-pictures            8s  exit 0
+    link                            0s  exit 0
+    v2-minors-groups              450s  exit 1
+    wk1-alone-chromium             27s  exit 0
+    unlink                          0s  exit 0
+    today                           0s  exit 0
+    webkit-install                 18s  exit 0
+    build-art                       5s  exit 0
+    edit-01b-webkit                 8s  exit 1
+    edit-01b-chromium-control      33s  exit 0
+    build-art-2                     5s  exit 0
+    screenshots                   151s  exit 0
+    playwright-version              2s  exit 0
+
+EVERY STEP (exit code, seconds, last line)
+  001-test exit 0 1s | git fetch --depth=1 origin 0c992f6977bc1cecc4e03eb269969a82b99681cf && git checkout 0c992f => code tests run on the out/ data of 0c992f6
+  002-test exit 0 37s | npm ci && npx playwright install chromium => Removing unused browser at C:\Users\simra\AppData\Local\ms-playwright\webkit-2359
+  003-test exit 0 3s | cd node_modules/pokemon-showdown && node build => config.js does not exist. Creating one with default settings...
+  004-test exit 0 187s | node app/test/run.mjs => ALL PASSED
+  005-test exit 0 0s | node experiments/replays-test.mjs => ok   teams with an unknown Pokémon are skipped
+  006-test exit 0 0s | node experiments/tour-modes-test.mjs => tour-modes: all passed
+  007-test exit 0 0s | node experiments/post-data-test.mjs => ALL PASS
+  008-test exit 0 1s | node experiments/post-news-test.mjs => ALL PASS
+  009-test exit 0 6s | node experiments/speed-check.mjs => reference: Sneasler Jolly 32 Spe = 189; with Unburden in item consumed = 378
+  010-test exit 0 10s | node experiments/calc-check.mjs 2000 => exact or explained: 99.99%
+  011-test exit 0 5s | node experiments/legality-check.mjs => Mega stones per official team: {"1":110,"2":402}
+  012-test exit 0 6s | node experiments/threat-check.mjs => PASS
+  013-test exit 0 1s | node experiments/fields-audit.mjs => PASS: every VGC-relevant field is in the data and used by the engine
+  014-test exit 0 12s | node experiments/suggest-gaps.mjs => ALL PASSED
+  015-test exit 0 39s | node experiments/suggest-audit.mjs 30 5 => SUGGESTIONS AUDIT PASSED
+  016-test exit 0 20s | node experiments/build-logic.mjs => ALL PASSED
+  017-test exit 0 5s | node experiments/lead-logic.mjs => ALL PASSED
+  018-test exit 0 26s | node experiments/sync-logic.mjs => ALL PASSED
+  019-test exit 0 14s | node experiments/typing-sync.mjs => PASS
+  020-test exit 0 29s | node experiments/sync-quiet.mjs => ALL PASSED
+  021-test exit 0 67s | node experiments/golden.mjs => 10 of 10 known-answer cases pass
+  022-test exit 0 82s | node experiments/same-grade.mjs => ALL PASSED
+  023-test exit 0 18s | node experiments/plan-cache-test.mjs => ALL PASSED
+  024-v2-checks exit 0 1s | git fetch --depth=1 origin 0c992f6977bc1cecc4e03eb269969a82b99681cf && git checkout 0c992f => code tests run on the out/ data of 0c992f6
+  025-v2-checks exit 0 2s | npx playwright install chromium => (no output)
+  026-v2-checks exit 0 3s | node app/test/v2-guard.mjs => v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+  027-v2-checks exit 0 4s | node app/test/no-names.mjs && node app/build.mjs --v2 --preview-data && node app/test/no-n => no-names: 2182 player fields checked, 0 not an ID or stand-in
+  028-v2-checks exit 0 4s | PAGE=app/dist/v2.html node app/test/v2-caches.mjs => v2-caches: grade before 93.6, cached after 93.4, fresh after 93.4 -> ok; Test Run rows ok (spread change did change them)
+  029-v2-checks exit 0 15s | PAGE=app/dist/v2.html node app/test/v2-folds.mjs => v2-folds: all passed
+  030-v2-checks exit 0 7s | PAGE=app/dist/v2.html node app/test/v2-partial.mjs => v2-partial: all passed
+  031-v2-checks exit 0 8s | PAGE=app/dist/v2.html node app/test/v2-redraws.mjs => v2-redraws: all passed
+  032-v2-checks exit 0 21s | PAGE=app/dist/v2.html node app/test/v2-trwarm.mjs => v2-trwarm: all passed
+  033-v2-checks exit 0 22s | PAGE=app/dist/v2.html node app/test/v2-back.mjs => v2-back: all passed
+  034-v2-checks exit 0 43s | PAGE=app/dist/v2.html node app/test/v2-toast.mjs => v2-toast: all passed
+  035-v2-checks exit 0 40s | PAGE=app/dist/v2.html node app/test/v2-rmjump.mjs => v2-rmjump: all passed
+  036-v2-checks exit 0 32s | PAGE=app/dist/v2.html node app/test/v2-clear.mjs => v2-clear: all passed
+  037-v2-checks exit 0 28s | PAGE=app/dist/v2.html node app/test/v2-formerr.mjs => v2-formerr: all passed
+  038-v2-checks exit 0 16s | PAGE=app/dist/v2.html node app/test/v2-pksrc.mjs => v2-pksrc: all passed
+  039-v2-checks exit 0 66s | PAGE=app/dist/v2.html node app/test/v2-trkfit.mjs => v2-trkfit: all passed
+  040-v2-checks exit 0 51s | PAGE=app/dist/v2.html node app/test/v2-usagepicks.mjs => v2-usagepicks: all passed
+  041-v2-checks exit 0 120s | PAGE=app/dist/v2.html node app/test/v2-pbppair.mjs => v2-pbppair: all passed
+  042-v2-checks exit 0 38s | PAGE=app/dist/v2.html node app/test/v2-q21.mjs => v2-q21: ALL PASSED
+  043-v2-checks exit 0 58s | PAGE=app/dist/v2.html node app/test/v2-q25.mjs => v2-q25: all passed
+  044-v2-checks exit 0 67s | PAGE=app/dist/v2.html node app/test/v2-q26.mjs => v2-q26: all passed
+  045-v2-checks exit 0 45s | PAGE=app/dist/v2.html node app/test/v2-q24.mjs => v2-q24: all passed
+  046-v2-checks exit 0 9s | PAGE=app/dist/v2.html node app/test/v2-w5.mjs => v2-w5: all passed
+  047-v2-checks exit 0 70s | PAGE=app/dist/v2.html node app/test/v2-q31.mjs => v2-q31: all passed
+  048-v2-checks exit 0 65s | PAGE=app/dist/v2.html node app/test/v2-q32.mjs => v2-q32: all passed
+  049-v2-checks exit 0 127s | PAGE=app/dist/v2.html node app/test/v2-q33.mjs => v2-q33: all passed
+  050-v2-checks exit 0 293s | PAGE=app/dist/v2.html node app/test/v2-arena.mjs => all Arena checks pass
+  051-v2-checks exit 0 59s | PAGE=app/dist/v2.html node app/test/v2-q41.mjs => v2-q41: all passed
+  052-v2-checks exit 0 57s | PAGE=app/dist/v2.html node app/test/v2-q45.mjs => v2-q45: all passed
+  053-v2-checks exit 0 63s | PAGE=app/dist/v2.html node app/test/v2-q44.mjs => v2-q44: all passed
+  054-v2-checks exit 0 66s | PAGE=app/dist/v2.html node app/test/v2-q42.mjs => v2-q42: all passed
+  055-v2-checks exit 0 91s | PAGE=app/dist/v2.html node app/test/v2-q43.mjs => v2-q43: all passed
+  056-v2-checks exit 0 46s | PAGE=app/dist/v2.html node app/test/v2-q46.mjs => v2-q46: all passed
+  057-v2-checks exit 0 146s | PAGE=app/dist/v2.html node app/test/v2-q47.mjs => v2-q47: all passed
+  058-v2-checks exit 0 77s | PAGE=app/dist/v2.html node app/test/v2-kob.mjs => v2-kob: all passed
+  059-v2-checks exit 0 68s | PAGE=app/dist/v2.html node app/test/v2-q52.mjs => v2-q52: all passed
+  060-v2-checks exit 0 181s | PAGE=app/dist/v2.html node app/test/v2-q59.mjs => v2-q59: all passed
+  061-v2-checks-2 exit 0 1s | git fetch --depth=1 origin 0c992f6977bc1cecc4e03eb269969a82b99681cf && git checkout 0c992f => code tests run on the out/ data of 0c992f6
+  062-v2-checks-2 exit 0 2s | npx playwright install chromium => (no output)
+  063-v2-checks-2 exit 0 3s | node app/test/v2-guard.mjs => v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+  064-v2-checks-2 exit 0 5s | node app/test/no-names.mjs && node app/build.mjs --v2 --preview-data && node app/test/no-n => no-names: 2182 player fields checked, 0 not an ID or stand-in
+  065-v2-checks-2 exit 0 120s | PAGE=app/dist/v2.html node app/test/v2-q60.mjs => v2-q60: all passed
+  066-v2-checks-2 exit 0 32s | PAGE=app/dist/v2.html node app/test/v2-swapname.mjs => v2-swapname: all passed
+  067-v2-checks-2 exit 0 44s | PAGE=app/dist/v2.html node app/test/v2-q68.mjs => v2-q68: all passed
+  068-v2-checks-2 exit 0 41s | PAGE=app/dist/v2.html node app/test/v2-s1.mjs => v2-s1: all passed
+  069-v2-checks-2 exit 0 9s | PAGE=app/dist/v2.html node app/test/v2-s26.mjs => v2-s26: all passed
+  070-v2-checks-2 exit 0 40s | PAGE=app/dist/v2.html node app/test/v2-s17.mjs => v2-s17: all passed
+  071-v2-checks-2 exit 0 20s | PAGE=app/dist/v2.html node app/test/v2-s13.mjs => v2-s13: all passed
+  072-v2-checks-2 exit 1 113s | PAGE=app/dist/v2.html node app/test/v2-q69.mjs => v2-q69: 1 failed
+  073-v2-checks-2 exit 0 48s | PAGE=app/dist/v2.html node app/test/v2-q78.mjs => v2-q78: all passed
+  074-v2-checks-2 exit 0 269s | PAGE=app/dist/v2.html node app/test/v2-q72.mjs => v2-q72: all passed
+  075-v2-checks-2 exit 0 17s | PAGE=app/dist/v2.html node app/test/v2-s16.mjs => v2-s16: all passed
+  076-v2-checks-2 exit 0 32s | PAGE=app/dist/v2.html node app/test/v2-s2.mjs => v2-s2: all passed
+  077-v2-checks-2 exit 0 71s | PAGE=app/dist/v2.html node app/test/v2-s33.mjs => v2-s33: all passed
+  078-v2-checks-2 exit 0 26s | PAGE=app/dist/v2.html node app/test/v2-wnew.mjs => v2-wnew: all passed
+  079-v2-checks-2 exit 0 79s | PAGE=app/dist/v2.html node app/test/v2-q83.mjs => v2-q83: all passed
+  080-v2-checks-2 exit 0 177s | PAGE=app/dist/v2.html node app/test/v2-q84.mjs => v2-q84: all passed
+  081-v2-checks-2 exit 0 24s | PAGE=app/dist/v2.html node app/test/v2-q16.mjs => v2-q16: all passed
+  082-v2-checks-2 exit 0 43s | PAGE=app/dist/v2.html node app/test/v2-q17.mjs => v2-q17: all passed
+  083-v2-checks-2 exit 0 44s | PAGE=app/dist/v2.html node app/test/v2-q22.mjs => v2-q22: all passed
+  084-v2-checks-2 exit 0 48s | PAGE=app/dist/v2.html node app/test/v2-q19.mjs => v2-q19: all passed
+  085-v2-checks-2 exit 0 85s | PAGE=app/dist/v2.html node app/test/v2-q18.mjs => v2-q18: all passed
+  086-v2-checks-2 exit 0 44s | PAGE=app/dist/v2.html node app/test/v2-q14.mjs => v2-q14: all passed
+  087-v2-checks-2 exit 0 30s | PAGE=app/dist/v2.html node app/test/v2-q23.mjs => v2-q23: all passed
+  088-v2-checks-2 exit 0 6s | PAGE=app/dist/v2.html node app/test/v2-t1rules.mjs => v2-t1rules: all passed
+  089-v2-checks-2 exit 0 18s | PAGE=app/dist/v2.html node app/test/v2-cxev.mjs => v2-cxev: all passed
+  090-v2-checks-2 exit 0 6s | PAGE=app/dist/v2.html node app/test/v2-oddaddr.mjs => v2-oddaddr: all passed
+  091-v2-checks-2 exit 0 24s | LT_ALERT=1 PAGE=app/dist/v2.html node app/test/v2-longtask.mjs => v2-longtask: all passed
+  092-v2-checks-2 exit 0 29s | PAGE=app/dist/v2.html node app/test/v2-post-doc.mjs => ALL PASS
+  093-v2-checks-2 exit 0 61s | PAGE=app/dist/v2.html node app/test/v2-unbounded.mjs => v2-unbounded: none outside the named exception across 28 pages
+  094-v2-checks-2 exit 0 4s | PAGE=app/dist/v2.html node app/test/v2-sixof.mjs => v2-sixof: all passed
+  095-v2-checks-2 exit 0 4s | PAGE=app/dist/v2.html node app/test/v2-shown-score.mjs => v2-shown-score: all passed
+  096-v2-checks-2 exit 0 8s | PAGE=app/dist/v2.html node app/test/v2-ckwin.mjs => v2-ckwin: all passed
+  097-v2-checks-2 exit 0 3s | PAGE=app/dist/v2.html node app/test/v2-paste.mjs => v2-paste: all passed
+  098-v2-checks-2 exit 0 4s | PAGE=app/dist/v2.html node app/test/share-fz.mjs => share-fz: all passed
+  099-v2-checks-2 exit 0 15s | PAGE=app/dist/v2.html node app/test/data-swap.mjs => data-swap: all passed
+  100-v2-checks-2 exit 0 30s | PAGE=app/dist/v2.html node app/test/forms-contrast.mjs => forms-contrast: all passed
+  101-v2-checks-2 exit 1 90s | PAGE=app/dist/v2.html node app/test/tap-size.mjs => tap-size: 1 failed
+  102-v2-checks-2 exit 0 0s | node app/test/tokens-doc.mjs => tokens-doc: up to date (408 tokens)
+  103-v2-checks-2 exit 0 1s | node app/test/perf-docs.mjs => perf-docs: behaviour fixture "meta/perf" has 7 of 7 perf.json parts; built doc has 7
+  104-v2-checks-2 exit 0 1s | node app/test/test-ids.mjs => test-ids: 487 tests, every ID unique inside its group
+  105-v2-checks-2 exit 0 28s | node app/build.mjs --v2 --preview-data --split && node app/test/v2-split.mjs => v2-split:all passed
+  106-v2-checks-2 exit 0 11s | node app/test/v2-public.mjs => v2-public: all passed
+  107-v2-checks-2 exit 0 55s | node app/build.mjs --v2 && node experiments/v2-words.mjs => v2 words: 31 screens read; 0 places with "Ready for" or "% ready" (none)
+  108-v2-minors-main1 exit 0 1s | git fetch --depth=1 origin 0c992f6977bc1cecc4e03eb269969a82b99681cf && git checkout 0c992f => code tests run on the out/ data of 0c992f6
+  109-v2-minors-main1 exit 0 4s | node app/build.mjs --v2 --preview-data => built dist/v2.html (3752 KB; 17 CSS layers, 7 data files, 48 scripts, 62 shared logic files)
+  110-v2-minors-main1 exit 0 0s | cmd //c "mklink /J app\\dist\\art app\\src\\v2\\art" && cmd //c "mklink /J app\\dist\\art- => Junction created for app\dist\art-s <<===>> app\src\v2\art-s
+  111-v2-minors-main1 exit 0 696s | PART=main1 PAGE=app/dist/v2.html node app/test/v2-minors.mjs => v2-minors (main1):all passed
+  112-v2-minors-main1 exit 0 0s | cmd //c "rmdir app\\dist\\art" ; cmd //c "rmdir app\\dist\\art-s" ; echo unlinked => unlinked
+  113-v2-minors-main2 exit 0 1s | git fetch --depth=1 origin 0c992f6977bc1cecc4e03eb269969a82b99681cf && git checkout 0c992f => code tests run on the out/ data of 0c992f6
+  114-v2-minors-main2 exit 0 4s | node app/build.mjs --v2 --preview-data => built dist/v2.html (3752 KB; 17 CSS layers, 7 data files, 48 scripts, 62 shared logic files)
+  115-v2-minors-main2 exit 0 0s | cmd //c "mklink /J app\\dist\\art app\\src\\v2\\art" && cmd //c "mklink /J app\\dist\\art- => Junction created for app\dist\art-s <<===>> app\src\v2\art-s
+  116-v2-minors-main2 exit 0 362s | PART=main2 PAGE=app/dist/v2.html node app/test/v2-minors.mjs => v2-minors (main2):all passed
+  117-v2-minors-main2 exit 0 0s | cmd //c "rmdir app\\dist\\art" ; cmd //c "rmdir app\\dist\\art-s" ; echo unlinked => unlinked
+  118-v2-minors-groups exit 0 1s | git fetch --depth=1 origin 0c992f6977bc1cecc4e03eb269969a82b99681cf && git checkout 0c992f => code tests run on the out/ data of 0c992f6
+  119-v2-minors-groups exit 0 4s | node app/build.mjs --v2 --preview-data => built dist/v2.html (3752 KB; 17 CSS layers, 7 data files, 48 scripts, 62 shared logic files)
+  120-v2-minors-groups exit 0 0s | cmd //c "mklink /J app\\dist\\art app\\src\\v2\\art" && cmd //c "mklink /J app\\dist\\art- => Junction created for app\dist\art-s <<===>> app\src\v2\art-s
+  121-v2-minors-groups exit 1 450s | PART=groups PAGE=app/dist/v2.html node app/test/v2-minors.mjs => v2-minors (groups):1 failed
+  122-v2-minors-groups exit 0 0s | cmd //c "rmdir app\\dist\\art" ; cmd //c "rmdir app\\dist\\art-s" ; echo unlinked => unlinked
+  123-quality-v2 exit 0 1s | git fetch --depth=1 origin 0c992f6977bc1cecc4e03eb269969a82b99681cf && git checkout 0c992f => code tests run on the out/ data of 0c992f6
+  124-quality-v2 exit 0 4s | node app/build.mjs --v2 --preview-data => built dist/v2.html (3752 KB; 17 CSS layers, 7 data files, 48 scripts, 62 shared logic files)
+  125-quality-v2 exit 1 1535s | PAGE=app/dist/v2.html node app/test/qcheck-all.mjs => qcheck-all: 27 pages + 18 views x 5 widths x 2 themes, 59 findings, 2 new; 1532s
+  126-behaviour-A-team exit 0 0s | git checkout HEAD -- out/ && echo "out/ is today's data (HEAD)" => out/ is today's data (HEAD)
+  127-behaviour-A-team exit 0 5s | node app/build.mjs --v2 --art=../src/v2/art/ => built dist/v2.html (2513 KB; 17 CSS layers, 7 data files, 48 scripts, 62 shared logic files)
+  128-behaviour-A-team exit 0 835s | PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs A-team => behaviour: 139 pass, 0 FAIL, 4 known bugs, 0 fixed?, 2 skipped; 835s  (adapter v2)
+  129-behaviour-A-team exit 0 16s | PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/tap-once.mjs => tap-once: all pass
+  130-behaviour-B-build exit 0 0s | git checkout HEAD -- out/ && echo "out/ is today's data (HEAD)" => out/ is today's data (HEAD)
+  131-behaviour-B-build exit 0 4s | node app/build.mjs --v2 --art=../src/v2/art/ => built dist/v2.html (2513 KB; 17 CSS layers, 7 data files, 48 scripts, 62 shared logic files)
+  132-behaviour-B-build exit 0 526s | PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs B-build => behaviour: 77 pass, 0 FAIL, 14 known bugs, 0 fixed?, 0 skipped; 525s  (adapter v2)
+  133-behaviour-C-battle exit 0 0s | git checkout HEAD -- out/ && echo "out/ is today's data (HEAD)" => out/ is today's data (HEAD)
+  134-behaviour-C-battle exit 0 5s | node app/build.mjs --v2 --art=../src/v2/art/ => built dist/v2.html (2513 KB; 17 CSS layers, 7 data files, 48 scripts, 62 shared logic files)
+  135-behaviour-C-battle exit 0 426s | PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs C-battle => behaviour: 83 pass, 0 FAIL, 0 known bugs, 0 fixed?, 4 skipped; 426s  (adapter v2)
+  136-behaviour-D-meta-shell exit 0 0s | git checkout HEAD -- out/ && echo "out/ is today's data (HEAD)" => out/ is today's data (HEAD)
+  137-behaviour-D-meta-shell exit 0 4s | node app/build.mjs --v2 --art=../src/v2/art/ => built dist/v2.html (2513 KB; 17 CSS layers, 7 data files, 48 scripts, 62 shared logic files)
+  138-behaviour-D-meta-shell exit 0 456s | PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs D-meta-shell => behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 455s  (adapter v2)
+  139-data-checks exit 0 0s | git checkout HEAD -- out/ && echo "out/ is today's data (HEAD)" => out/ is today's data (HEAD)
+  140-data-checks exit 0 3s | cd node_modules/pokemon-showdown && node build => (no output)
+  141-data-checks exit 0 1s | node app/build.mjs => slim: 3492 KB -> 3037 KB (dead CSS 195 KB: 284 rules, 343 selectors; short prefix 173 KB; never-used old rules 0 = 0 KB)
+  142-data-checks exit 0 189s | node app/test/run.mjs => ALL PASSED
+  143-data-checks exit 0 6s | node experiments/threat-check.mjs => PASS
+  144-data-checks exit 0 6s | node experiments/lead-logic.mjs => ALL PASSED
+  145-data-checks exit 0 68s | node experiments/golden.mjs => 10 of 10 known-answer cases pass
+  146-data-checks exit 0 25s | node app/test/v2-today.mjs => v2-today: all passed (24 s)
+  147-accuracy-gate exit 0 0s | git checkout HEAD -- out/ && echo "out/ is today's data (HEAD)" => out/ is today's data (HEAD)
+  148-accuracy-gate exit 0 1s | node app/build.mjs => slim: 3492 KB -> 3037 KB (dead CSS 195 KB: 284 rules, 343 selectors; short prefix 173 KB; never-used old rules 0 = 0 KB)
+  149-accuracy-gate exit 0 177s | node experiments/accuracy-gate.mjs => GATE PASSED
+  150-behaviour-webkit exit 0 0s | git checkout HEAD -- out/ && echo "out/ is today's data (HEAD)" => out/ is today's data (HEAD)
+  151-behaviour-webkit exit 0 131s | npm ci && npm install --no-save playwright@1.63.0 && npx playwright install webkit chromiu => Chrome Headless Shell 153.0.8010.12 (playwright chromium-headless-shell v1243) downloaded to C:\Users\simra\AppData\Local\ms-playwright\chro
+  152-behaviour-webkit exit 0 5s | node app/build.mjs --v2 --art=../src/v2/art/ => built dist/v2.html (2513 KB; 17 CSS layers, 7 data files, 48 scripts, 62 shared logic files)
+  153-behaviour-webkit exit 1 1018s | BROWSER=webkit PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/run.mjs A-team => behaviour: 138 pass, 1 FAIL, 4 known bugs, 0 fixed?, 2 skipped; 1018s  (webkit, adapter v2)
+  154-behaviour-webkit exit 0 19s | BROWSER=webkit PAGE=app/dist/v2.html ADAPTER=v2 node app/test/behaviour/tap-once.mjs => tap-once: all pass
+  155-live-audits exit 0 0s | git checkout HEAD -- out/ && echo "out/ is today's data (HEAD)" => out/ is today's data (HEAD)
+  156-live-audits exit 0 60s | npm install --no-save --no-package-lock playwright@1.49.1 @smogon/calc@0.12.0 @pkmn/dex@0. => Removing unused browser at C:\Users\simra\AppData\Local\ms-playwright\webkit-2359
+  157-live-audits exit 0 3s | cd node_modules/pokemon-showdown && node build => config.js does not exist. Creating one with default settings...
+  158-live-audits exit 0 1s | node app/build.mjs => slim: 3492 KB -> 3037 KB (dead CSS 195 KB: 284 rules, 343 selectors; short prefix 173 KB; never-used old rules 0 = 0 KB)
+  159-live-audits exit 0 41s | node experiments/suggest-audit.mjs 30 5 => SUGGESTIONS AUDIT PASSED
+  160-live-audits exit 0 1s | node experiments/fields-audit.mjs => PASS: every VGC-relevant field is in the data and used by the engine
+  161-live-audits exit 0 12s | node experiments/suggest-gaps.mjs => ALL PASSED
+  162-restore exit 0 0s | git checkout HEAD -- out/ && echo "out/ is today's data (HEAD)" => out/ is today's data (HEAD)
+  163-restore exit 0 26s | npm ci && npx playwright install chromium => Run `npm audit` for details.
+  164-restore exit 0 3s | cd node_modules/pokemon-showdown && node build => config.js does not exist. Creating one with default settings...
+  165-restore exit 0 2s | npx playwright --version => Version 1.49.1
+
+PICTURES: docs/rebuild/test-runs/pc-full-nov20/ (24 look-through pages, 2 contact sheets, look-notes.txt, fail-my-team-820-*, wk1-stamps/, edit-01b-webkit/)

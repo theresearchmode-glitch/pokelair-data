@@ -1,0 +1,12 @@
+/* Q82 light touch: the drawing-sheet world stays (frame, corner marks, labels, dimension line); grid fainter, blue hairline frame -> soft rule,
+   outlined numbers -> solid slanted, score on one bold slanted blue plate with a solid sticker */
+.bp2 .bp{--bp-grid:#0078bf0d;--bp-grid5:#0078bf1a;border-color:var(--rule)}
+:root[data-theme="night"] .bp2 .bp{--bp-grid:#62bef70a;--bp-grid5:#62bef714}
+.bp2 .bp-no{color:var(--plot-text);-webkit-text-stroke:0}
+.bp2 .bp-meas{--k:16px;position:relative;isolation:isolate;padding:var(--s4) calc(var(--s4) + var(--k));color:var(--sd-on-band)}
+.bp2 .bp-meas::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--sd-hero);clip-path:polygon(var(--k) 0,100% 0,calc(100% - var(--k)) 100%,0 100%)}
+.bp2 .bp .bp-meas .bp-score>b{color:var(--sd-on-band)}
+.bp2 .bp .bp-meas .bp-score small,.bp2 .bp .bp-meas .bd-brk{color:var(--sd-on-band)}
+.bp2 .bp .bp-meas .np-link,.bp2 .bp .bp-meas a{color:var(--sd-on-band);text-decoration:underline;text-underline-offset:var(--s1)}
+.bp2 .bp-stamp{border:0;padding:var(--s1) var(--s5);background:var(--sd-card);color:var(--sd-card-ink);box-shadow:inset var(--s2) 0 0 var(--band);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);rotate:-4deg}
+.bp2 .bp-tb{border-color:var(--rule)}.bp2 .bp-right{border-left-color:var(--rule)}
