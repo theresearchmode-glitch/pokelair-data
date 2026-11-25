@@ -4611,3 +4611,5 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 @media (max-width:359.98px){.ms-left .ms-go{padding:0 var(--s1);gap:var(--s2)}.ms-left .ms-go .k-btn{padding:0 var(--s2);font-size:var(--t13)}}
 /* Not rated yet, day one (Nov 25): the underdog card in the Meta spotlight's place; its art rises above the card, so it gets room to clear the line above */
 .ra-spotw>.nf2-dog{margin-top:var(--s16)}
+/* empty data pages (Nov 25): today's underdog card under the page's one line (V2.dayDog); room above for the art that rises over the card */
+.dd-dog{max-width:320px;margin:var(--s24) 0 var(--s8)}

@@ -30,7 +30,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
 V2.pages.weekly = {place: 'meta', draw() { const E = V2.esc, W = META.weekly, tabs = V2.tourTabs('weekly');
   const shell = (top, body) => `<div class="ra gsp wk wk2"><div class="gs-top">${top}</div><div class="gs-body">${body}</div></div>`;
   const head = lead => `<section class="ra-h"><p class="k-kicker np-eyebrow">META · THE BRIEFING</p><h1 class="k-h1 u">This week, <em>who moved.</em></h1>${lead ? `<p class="k-lead ra-lede">${lead}</p>` : ''}${tabs}</section>`;
-  if (!W) return shell(head('') + tabs, `<p class="k-lead wk-none">This week's changes appear after the next data refresh.</p>`);
+  if (!W) return shell(head('') + tabs, `<p class="k-lead wk-none">This week's changes appear after the next data refresh.</p>${V2.dayDog()}`);
   const A = W.a, B = W.b, nA = A.n, nB = B.n, T = W.th, pc = WK.pc1;
   // 1 Who's on the move: the slope (the scale's 100% is the biggest share any mover has in either week, plus a little room)
   const sh = (x, n) => 100 * x / n, top = Math.max(1, ...[...W.up, ...W.down].slice(0, 99).map(r => Math.max(sh(r.xa, nA), sh(r.xb, nB)))) * 1.08;

@@ -322,6 +322,10 @@ V2.regDay = (now = Date.now()) => { try { const r = typeof regInfo === 'function
 /* Strength Score source (Sim, Wed Nov 25, 6:52 AM): before a new regulation has results, the score falls back to the old check
    (CH.gradeOf v1) against the built-in usage snapshot (app/src/data/data.js, built on Reg M-C). It stays, with one line saying so.
    V2.SNAP_REG: the regulation that snapshot was built on (update it when data.js is regenerated). '' when the score uses live data. */
+/* empty data pages (Nov 25, HH design call; rule 23): under the page's one plain line, today's underdog as the 404 page's hero card,
+   so a day-one or not-yet-loaded page isn't a heading, a line and a blank screen. Never beside a grade. */
+V2.dayDog = () => { const ud = V2.underdog ? V2.underdog() : 'Flapple', ud2 = V2.disp(ud);
+  return `<aside class="nf-dog nf2-dog dd-dog" aria-label="Today's underdog">${V2.kCard(ud, {size: 'hero', form: "Today's underdog", fact: 'Keeping your seat warm till the results land.', attrs: {'data-v2mon': ud, 'aria-label': `${ud2}: open its info`}})}</aside>`; };
 V2.SNAP_REG = 'M-C';
 V2.scoreSrc = G => { try { if (!G || G.v !== 1) return ''; const id = ((typeof regInfo === 'function' && regInfo()) || {}).id; if (!id || id === V2.SNAP_REG) return '';
   if (typeof RES === 'object' && RES && RES.tc) return ''; if (typeof liveUsage === 'function' && typeof S === 'object' && liveUsage(S.format)) return '';

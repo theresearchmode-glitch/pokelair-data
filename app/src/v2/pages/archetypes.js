@@ -48,7 +48,7 @@ V2.pages.archetypes = {place: 'meta', draw() { const D = V2.arData(), U = V2.arU
   const tabs = `${V2.tourTabs('archetypes')}`;
   const head = `<section class="ra-h ar-h"><p class="k-kicker np-eyebrow">META · THE PLAYBOOKS</p><h1 class="k-h1 u">What you'll face, <em>style by style.</em></h1>
     <p class="k-lead ra-lede">The team styles you'll face most, how they win, and how to play into them.${D && D.n ? ` From the latest <b>${D.n}</b> top tournament teams` : ''}</p>${tabs}</section>`;
-  if (!D || !D.n) return `<div class="ra gsp ar"><div class="gs-top">${head}${tabs}</div><div class="gs-body"><p class="k-lead">Usage numbers appear once top teams load.</p></div></div>`;
+  if (!D || !D.n) return `<div class="ra gsp ar"><div class="gs-top">${head}${tabs}</div><div class="gs-body"><p class="k-lead">Usage numbers appear once top teams load.</p>${V2.dayDog()}</div></div>`;
   const mine = V2.arMine(), x = U.open && D.rows.find(r => r.k === U.open), L = mine.map(k => D.rows.find(r => r.k === k)).filter(Boolean);
   const body = x ? V2.arGuide(x, D, mine) : V2.kPlan(V2.kStep(1, "Your team's style", L.length ? L.map(r => r.name).join(' + ') : '', V2.arYours(D, mine))
     + V2.kStep(2, 'The playbooks', `Most played first. Tap a playbook for its guide.`, V2.arBooks(D, mine)));
