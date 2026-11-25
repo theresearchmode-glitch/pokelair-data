@@ -2572,3 +2572,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:30 PM: Sim: hello@nastyplot.org receive-only for now (Cloudflare Email Routing to his Gmail, tonight with Dos). Sending as hello@ not needed yet.
 - 2:33 PM: Design (HH authority): phone timeline line at a whole pixel (-8px, on the 4px grid) so Safari draws it (it dropped the dashed border at -9.5px: 292 vs 7,312 red px in WebKit iPhone). Line 1.5px off the margin's exact centre. Picture sent to Sim.
 - 2:36 PM: Hourly 2:35: helper on public 404 routing (SEO fix 4) + Limitless request/credit facts.
+- 2:41 PM: Dos switch-candidate run: 126/131, no site problem (3 same as this morning: Windows fonts/rendering; 2 Windows-only test path bugs, both now fixed: v2-saved by Kip job 30 F6, md-day-one-test by pathToFileURL). Results saved to design6.
