@@ -14,7 +14,7 @@ const serve = () => new Promise(res => { const s = http.createServer((q, r) => {
   if (!fs.existsSync(f) && fs.existsSync(f + '.html')) f += '.html'; if (!fs.existsSync(f) || fs.statSync(f).isDirectory()) f = path.join(D, 'v2.html');
   r.writeHead(200, {'Content-Type': T[path.extname(f)] || 'application/octet-stream'}); fs.createReadStream(f).pipe(r); });
   s.listen(0, '127.0.0.1', () => res({s, origin: `http://127.0.0.1:${s.address().port}`})); });
-const links = p => p.evaluate(() => [...document.querySelectorAll('#app a[href]')].map(a => ({href: a.getAttribute('href'), h: a.getAttribute('data-h') || ''})));
+const links = p => p.evaluate(() => [...document.querySelectorAll('#app a[href]')].map(a => ({href: a.getAttribute('href'), h: a.getAttribute('data-h') || '', mon: a.hasAttribute('data-v2mon')})));
 build(['--public']);
 const pub = new Set(['/', ...fs.readdirSync(D).filter(f => f.endsWith('.html') && !['v2.html', 'index.html', '404.html'].includes(f)).map(f => '/' + f.slice(0, -5)), '/privacy']);
 const mons = new Set(fs.readdirSync(path.join(D, 'pokemon')).map(f => '/pokemon/' + f.slice(0, -5)));
@@ -26,7 +26,11 @@ const mons = new Set(fs.readdirSync(path.join(D, 'pokemon')).map(f => '/pokemon/
   ok(monL.length >= 10, `public: Pokémon links point at /pokemon/<name> (${monL.length})`);
   const unknown = [...new Set(real.map(l => l.href).filter(h => !pub.has(h) && !mons.has(h)))];
   ok(!unknown.length, `public: every real address is a page the site serves (${unknown.slice(0, 5).join(' ') || 'all known'})`);
-  ok(real.every(l => /^#/.test(l.h)), 'public: each one keeps its hash in data-h');
+  ok(real.every(l => l.mon || /^#/.test(l.h)), 'public: each one keeps its hash in data-h (Meta list rows open by data-v2mon)');
+  // the Meta list (the hub of all rated Pokémon) links each one (Nov 25)
+  await p.goto(origin + '/meta', {waitUntil: 'networkidle'}); await p.waitForTimeout(1500);
+  const metaMons = await p.evaluate(() => new Set([...document.querySelectorAll('#app a[href^="/pokemon/"]')].map(a => a.getAttribute('href'))).size);
+  ok(metaMons >= 60, `public: the Meta list links each rated Pokémon to its page (${metaMons})`);
   // a plain click moves by the hash, no reload
   await p.goto(origin + '/pokemon/garchomp', {waitUntil: 'networkidle'}); await p.waitForTimeout(1200); /* its partners are links (the Meta list uses buttons) */
   await p.evaluate(() => { window.__noReload = 1; });

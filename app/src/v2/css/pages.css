@@ -1705,6 +1705,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .ra-tk{flex:none;padding:var(--s1) var(--s3);font:800 var(--t13)/1.4 var(--b);background:var(--plate);color:var(--on-plate);clip-path:polygon(6px 0,100% 0,calc(100% - 6px) 100%,0 100%)}
 .ra-row{display:grid;grid-template-columns:40px 64px minmax(0,1fr) 120px 64px 88px 96px;column-gap:var(--s3);align-items:center;width:100%;min-height:72px;padding:var(--s2) 0;text-align:left;border-bottom:1px solid var(--rule)}
 .ra-row:hover,.ra-row:focus-visible{background:var(--wash)}
+a.ra-row,a.gs-mon{color:inherit;text-decoration:none} /* the public site's links look exactly like the buttons (Nov 25, SEO #9) */
 .ra-rk{font-size:var(--t20);color:var(--ink-2)}
 .ra-nm{display:grid;gap:var(--s1);min-width:0}.ra-nm>b{font:700 var(--t17)/1.2 var(--b)}.ra-nm .ra-mine{font-size:var(--t13)}.ra-gem{color:var(--plot-text)}
 .ra-ph{display:none;font:400 var(--t13)/1.4 var(--b);color:var(--ink-2)}.ra-ph b{color:var(--ink)}

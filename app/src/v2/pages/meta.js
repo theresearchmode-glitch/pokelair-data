@@ -17,14 +17,19 @@ V2.raGames = g => g == null ? '' : (g >= 1000 ? (g / 1000).toFixed(1) + 'k' : St
 const E2 = s => V2.esc(String(s));
 V2.raTierHead = (T, rows) => { const n = rows.filter(y => lTier(y.r.total).k === T.k).length, of = lairRankCache.of || (lairRank(lairRows()[0] && lairRows()[0].p) || {}).of;
   return `<div class="ra-tier" data-tier="${T.k}"><b class="ra-tk" style="--tc:${T.c}">${T.k} tier</b><span>${E2(tierBand(T))} · ${E2(T.d)} · ${n} Pokémon${T.k === 'S' && of ? `, ranked among ${of} with results` : ''}</span></div>`; };
+/* Real links for search engines (SEO audit #9, Nov 25): on the public site each rated Pokémon in the Meta list is an <a> to its own
+   page (/pokemon/<name>), so the 346 pages are reachable by links, not only the sitemap. A click still opens it in place (shell.js's
+   [data-v2mon] handler stops the link). Same classes and look (pages.css: a.ra-row / a.gs-mon). The Claude version keeps <button>. */
+V2.monTagOpen = (cls, n) => window.__NP_PUBLIC && typeof V2.pubSlug === 'function' && V2.pubSlug(n) ? `<a class="${cls}" href="/pokemon/${V2.pubSlug(n)}"` : `<button type="button" class="${cls}"`;
+V2.monTagClose = () => window.__NP_PUBLIC && typeof V2.pubSlug === 'function' ? '</a>' : '</button>';
 V2.raRow = x => { const E = V2.esc, p = x.p, r = x.r, k = lairRank(p), N = V2.raNums(p), unsure = r.band >= 10, gem = isGem(p), mine = V2.raOnTeam(p);
   const tag = mine ? '<span class="ra-mine"><i aria-hidden="true"></i>On your team</span>' : '';
-  return `<button type="button" class="ra-row" data-v2mon="${E(p.n)}" data-raspot="${E(p.n)}" aria-label="${E(p.d)}, rated ${RS(r.total)}${k ? ', number ' + k.rank : ''}${N.u != null ? ', on ' + E(V2.raPct(N.u)) + ' of teams' : ''}${N.w != null ? ', ' + E(winFmt(N.w)) + ' wins in ' + Math.round(N.g).toLocaleString('en-US') + ' games' : ''}${mine ? ', on your team' : ''}: open its page">
+  return `${V2.monTagOpen('ra-row', p.n)} data-v2mon="${E(p.n)}" data-raspot="${E(p.n)}" aria-label="${E(p.d)}, rated ${RS(r.total)}${k ? ', number ' + k.rank : ''}${N.u != null ? ', on ' + E(V2.raPct(N.u)) + ' of teams' : ''}${N.w != null ? ', ' + E(winFmt(N.w)) + ' wins in ' + Math.round(N.g).toLocaleString('en-US') + ' games' : ''}${mine ? ', on your team' : ''}: open its page">
     <span class="ra-rk u">${k ? k.rank : '–'}</span>${V2.mon(p.n, {bare: true})}
     <span class="ra-nm"><span class="ra-nl"><b>${gem ? '<span class="ra-gem" title="Hidden gem">◆</span> ' : ''}${V2.nameHtml(p.d)}</b>${tag}</span><span class="ra-ty">${p.t.map(V2.typeWord).join('')}</span>
       <span class="ra-ph">${N.u != null ? `<b>${E(V2.raPct(N.u))}</b> of tournament teams` : ''}${N.w != null ? ` · <b>${E(winFmt(N.w))}</b> win rate` : ''}</span></span>
     <span class="ra-bar" aria-hidden="true"><i style="width:${RS(r.total)}%"></i></span><span class="ra-sc u"${bandAt(r.total)}>${RS(r.total)}${unsure ? '<small title="Few games: an estimate">?</small>' : ''}</span>
-    <span class="ra-ut">${N.u != null ? `${E(V2.raPct(N.u))}` : '–'}</span><span class="ra-wr">${N.w != null ? `<b>${E(winFmt(N.w))}</b><small>${E(V2.raGames(N.g))}</small>` : '<b>–</b><small>too few games</small>'}</span></button>`; };
+    <span class="ra-ut">${N.u != null ? `${E(V2.raPct(N.u))}` : '–'}</span><span class="ra-wr">${N.w != null ? `<b>${E(winFmt(N.w))}</b><small>${E(V2.raGames(N.g))}</small>` : '<b>–</b><small>too few games</small>'}</span>${V2.monTagClose()}`; };
 V2.raPct = v => (+v).toFixed(1) + '%';
 // audit v199 #14 (Sim chose A, Nov 17): the heroes' share fact reads "Of teams", so the three labels keep one line on phones;
 // the spoken label stays complete ("On 37.7% of tournament teams"); the page still names its base (Ratings kicker, Usage chips)
@@ -38,9 +43,9 @@ V2.gsLay = (n, k, open) => { const W = innerWidth, desk = W >= 1100, tab = W >= 
 V2.gsMon = (x, wk, mrank) => { const E = V2.esc, p = x.p, r = x.r, k = lairRank(p), N = V2.raNums(p), gem = isGem(p), mine = V2.raOnTeam(p), mv = wk.get(p.n) || 0, sc = RS(r.total), T = lTier(r.total);
   const one = k && k.rank === 1 && !mrank, d = p.d.startsWith('Mega ') ? p.d.slice(5) : p.d;
   const top = mrank ? `<span class="gs-mg u">#${mrank}</span>` : p.m ? '<span class="gs-mg u">Mega</span>' : '<span class="gs-mg" aria-hidden="true">&nbsp;</span>';
-  return `<button type="button" class="gs-mon${one ? ' one' : ''}" data-v2mon="${E(p.n)}" data-raspot="${E(p.n)}" style="--b1:var(--ty-${p.t[0]});--b2:var(--ty-${p.t[1] || p.t[0]})" aria-label="${E(p.d)} ${sc}: rated${k ? ' number ' + k.rank : ''}, ${T.k} tier${mrank ? ', Mega number ' + mrank : ''}${N.u != null ? ', on ' + E(V2.raPct(N.u)) + ' of teams' : ''}${N.w != null ? ', ' + E(winFmt(N.w)) + ' win rate' : ''}${mv ? (mv > 0 ? ', up ' : ', down ') + Math.abs(mv) + ' points this week' : ''}${gem ? ', hidden gem' : ''}${mine ? ', on your team' : ''}: open its page">
+  return `${V2.monTagOpen('gs-mon' + (one ? ' one' : ''), p.n)} data-v2mon="${E(p.n)}" data-raspot="${E(p.n)}" style="--b1:var(--ty-${p.t[0]});--b2:var(--ty-${p.t[1] || p.t[0]})" aria-label="${E(p.d)} ${sc}: rated${k ? ' number ' + k.rank : ''}, ${T.k} tier${mrank ? ', Mega number ' + mrank : ''}${N.u != null ? ', on ' + E(V2.raPct(N.u)) + ' of teams' : ''}${N.w != null ? ', ' + E(winFmt(N.w)) + ' win rate' : ''}${mv ? (mv > 0 ? ', up ' : ', down ') + Math.abs(mv) + ' points this week' : ''}${gem ? ', hidden gem' : ''}${mine ? ', on your team' : ''}: open its page">
     <span class="gs-fig" aria-hidden="true">${one ? '<span class="gs-one u" aria-hidden="true"></span>' : ''}<i class="gs-base" aria-hidden="true"></i>${V2.mon(p.n, {bare: true})}</span>
-    <span class="gs-tx" aria-hidden="true">${top}<b>${gem ? '<span class="ra-gem">◆</span> ' : ''}${E(d)}</b><span class="gs-sc"><span class="u">${sc}</span>${mv ? `<small class="${mv > 0 ? 'up' : 'dn'}">${mv > 0 ? '▲' : '▼'}${Math.abs(mv)}</small>` : ''}</span>${mine ? '<i class="gs-mine"></i>' : ''}</span></button>`; };
+    <span class="gs-tx" aria-hidden="true">${top}<b>${gem ? '<span class="ra-gem">◆</span> ' : ''}${E(d)}</b><span class="gs-sc"><span class="u">${sc}</span>${mv ? `<small class="${mv > 0 ? 'up' : 'dn'}">${mv > 0 ? '▲' : '▼'}${Math.abs(mv)}</small>` : ''}</span>${mine ? '<i class="gs-mine"></i>' : ''}</span>${V2.monTagClose()}`; };
 /* phones (Sim, Nov 20, option C of docs/rebuild/research/team-meta-length-nov20.md): (A) each tier's words sit under its "90+" inside the colour band and
    See All moves onto the band (no separate line per tier); (B) the D and F tiers fold behind one real button that opens them in place (V2.raUi.low;
    a class, no redraw, focus stays). 700+ is unchanged; the page redraws when the width crosses 700 */
