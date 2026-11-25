@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 5:12 PM (5:12:39)  date: Wed Nov 25, 2026
-NOW: HH: local tests of alt/batch-nov25 (seo2 + deploy workflow + M-D line + public privacy + Turnstile; pid in .main-running); GitHub runs: patch-dec2, design6, no-rk9, batch.
-NOW (helper): phone speed (night plan 9, LCP) on its own branch.
-NEXT: merge alt/batch-nov25 into design6 through the gate when GitHub is green; Preview + Game Plan after.
-NEXT: alt/no-rk9 -> main by fast-forward when green, then into design6.
-NEXT: privacy rows 4 + 5 words for Sim (counter + Turnstile now built); /pokemon list page + light 404 (pictures).
-NEXT: alt/patch-dec2 stays waiting for Dec 1 night (md-start-night-plan.md).
+Updated: time: 6:09 PM (6:09:07)  date: Wed Nov 25, 2026
+NOW: HH: full local tests of alt/fb-retention (180-day delete, real links, Meta list links; pid in .main-running).
+NOW (helper): phone speed (night plan 9).
+NEXT: alt/shadow-order -> main (fast-forward) when GitHub is green, before the 09:07 UTC data run (Kip 35 #1).
+NEXT: alt/kip34-fixes -> design6 through the gate when GitHub is green (local: 16/16 passed); then fb-retention; no-rk9 -> main.
+NEXT: Kip 35's scripts (asked from Sim) re-run here; the score fixes after launch unless Sim asks for the new-Pokémon fix first.
+NEXT: Preview + Game Plan after the merges; iPhone/iPad look fixes (night plan 10).
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
