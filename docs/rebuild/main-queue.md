@@ -1,10 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 4:01 PM (4:01:43)  date: Wed Nov 25, 2026
-NOW: HH: public-repo safety check, second half (background scans running: user paths, names, ids, npm audit, action pins).
+Updated: time: 4:24 PM (4:24:49)  date: Wed Nov 25, 2026
+NOW: HH: full local test run of alt/patch-dec2 (the Dec 2 balance patch batch; pid in .main-running), GitHub run on the same tip.
 NOW (helper): anonymous team-check counter + Web Analytics prep (alt/gemini-counter).
-NEXT: queue docs/rebuild/night-plan-nov25.md in order: 1 M-D start line + Dec 2 patch batch; 1b remove data/rk9 safely; 2 merge
-      alt/gemini-routes + alt/gemini-seo2 (gate); 3 safety fixes; 4 counter (helper); 5 Turnstile; 6 deploy workflow (off); 7 privacy
-      page (approved words); 8 /pokemon list + light 404 (pictures); 9 phone speed; 10 iPhone/iPad fixes; 11 Game Plan/Preview.
+NEXT: "Reg M-D has started" line (alt/md-started): 390x844 adds 25px (start buttons 801 -> 826px): check the fold rule, pictures to Sim.
+NEXT: merge alt/gemini-seo2 (contains routes; 404 test fixed 4:15 PM) into design6 through the gate once GitHub is green.
+NEXT: 1a M-D sources note + pinning test (formats.mjs REG_END: HOME news 878); 1b remove data/rk9 safely.
+NEXT: rest of docs/rebuild/night-plan-nov25.md in order (3 safety, 4 counter, 5 Turnstile after Dos job 1, 6 deploy off, 7 privacy page, 8-11).
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
