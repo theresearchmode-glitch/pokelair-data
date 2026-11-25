@@ -2561,3 +2561,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:21 PM: j16 merged into claude/design6 (d54daac2) through the merge gate: ALL PASSED (5 gate checks + 13 tests, 5 min). Gate fix: browser folder. Dos report expected about 3 PM (Sim).
 - 1:27 PM: j17 merged into claude/design6 (1df93566) through the merge gate: ALL PASSED. All Kip branches (j16-j19) now in the redesign.
 - 1:28 PM: Main: dd976b24 fast-forwarded (cancelled data runs still run the tests; Kip job 30 F5). GitHub green on dd976b24 first.
+- 1:36 PM: Hourly 1:36: Game Plan v77; second helper (until 4 PM, Sim) on an iPhone/iPad WebKit look check of the redesign (report only).
