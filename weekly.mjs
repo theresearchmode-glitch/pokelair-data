@@ -1,13 +1,13 @@
 // Weekly digest (step 5b): out/weekly.json, "What changed this week" — the last 7 days of tournament teams against the 7 before.
 // Reads the raw team sheets update.mjs already keeps (data/t2: every player's six with items, moves and abilities) and the
-// official events rk9.mjs keeps (data/rk9). Writes only changes the sample supports:
+// official events (data/official). Writes only changes the sample supports:
 //  - usage: % of full teams at standard Reg M-C Limitless events (whole fields), each week
 //  - tech: an item, move or ability's share among one Pokémon's teams
 //  - styles: % of teams with a Trick Room or Tailwind user, or a weather or terrain setter (from the real sheets)
 //  - new in top cut: Pokémon and Pokémon + item pairs in an event's top 8 for the first time this regulation
 // A change is reported only when (1) both weeks have enough teams, (2) it is big (points), (3) a two-proportion z-test puts it
 // at 3+ standard errors, and (4) it survives dropping the single event that pushes it most (one big event can't make a trend).
-// The page shows the counts with every line, and its footnote reads the thresholds from TH below. Run after update.mjs and rk9.mjs.
+// The page shows the counts with every line, and its footnote reads the thresholds from TH below. Run after update.mjs.
 import fs from 'node:fs';
 import {offFormat, oddEvents, activeReg, sameReg, inRegWindow} from './formats.mjs';
 import {stampReg} from './reg-stamp.mjs';
