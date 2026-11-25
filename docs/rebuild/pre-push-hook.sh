@@ -7,7 +7,10 @@ while read -r lref lsha rref rsha; do
   case "$rref" in refs/heads/claude/design6|refs/heads/main) ;; *) continue;; esac
   [ "$lsha" = "0000000000000000000000000000000000000000" ] && continue
   range="$lsha"; [ "$rsha" != "0000000000000000000000000000000000000000" ] && range="$rsha..$lsha"
-  for m in $(git rev-list --merges "$range"); do
+  # Kip job 30 F2: only merges on the branch's own line (first parent), not old merges inside a merged branch's history;
+  # F3b: if the range can't be listed (remote moved, not fetched), refuse instead of passing silently
+  merges=$(git rev-list --merges --first-parent "$range") || { echo "pre-push REFUSED: cannot list commits in $range (git fetch first)"; exit 1; }
+  for m in $merges; do
     [ -f "$D/$m" ] || { echo "pre-push REFUSED: merge $(git log --oneline -1 "$m" | cut -c1-80) has no merge-check stamp. Run: REPORT_OK=1 bash docs/rebuild/merge-check.sh origin/<branch>"; bad=1; }
   done
 done

@@ -23,8 +23,12 @@ echo "merge-check for $(git log --oneline -1 | cut -c1-90)  (merging $SRC)"
 if [ "${REPORT_OK:-}" = "1" ]; then echo "  PASS  helper report received and read (REPORT_OK=1, set by HH)"; else echo "  FAIL  REPORT_OK=1 not set: the helper's final report for $SRC must be in and read first"; FAILS=$((FAILS+1)); fi
 # 2. GitHub on the source tip
 TIP=$(git rev-parse "$SRC" 2>/dev/null); BR="${SRC#origin/}"
-RUN=$(gh api "repos/theresearchmode-glitch/pokelair-data/actions/runs?branch=$BR&per_page=5" --jq "[.workflow_runs[]|select(.head_sha==\"$TIP\")][0]|[.status,.conclusion]|@tsv" 2>/dev/null)
+# Kip job 30 F4: the test workflow only (test.yml), on exactly this commit; newest attempt first
+RUN=$(gh api "repos/theresearchmode-glitch/pokelair-data/actions/workflows/test.yml/runs?branch=$BR&head_sha=$TIP&per_page=5" --jq "[.workflow_runs[]][0]|[.status,.conclusion]|@tsv" 2>/dev/null)
 if [ "$RUN" = "$(printf 'completed\tsuccess')" ]; then echo "  PASS  GitHub passed $BR at ${TIP:0:8}"; else echo "  FAIL  GitHub has not passed $BR at ${TIP:0:8} (latest run on it: ${RUN:-none})"; FAILS=$((FAILS+1)); fi
+# Kip job 30 F1: HEAD must be the merge of exactly $SRC (its 2nd parent), and nothing uncommitted may help the tests pass
+if [ "$(git rev-parse -q --verify HEAD^2 2>/dev/null)" = "$TIP" ]; then echo "  PASS  HEAD is the merge of $SRC"; else echo "  FAIL  HEAD is not a merge of $SRC (HEAD^2 $(git rev-parse --short -q --verify HEAD^2 2>/dev/null || echo none), $SRC ${TIP:0:8})"; FAILS=$((FAILS+1)); fi
+if git diff --quiet && git diff --cached --quiet; then echo "  PASS  no uncommitted changes in tracked files"; else echo "  FAIL  uncommitted changes in tracked files (the stamp is for the commit, not the working copy)"; FAILS=$((FAILS+1)); fi
 # 3. no half-merge
 U=$(git diff --name-only --diff-filter=U); M=$(git grep -l -E '^(<<<<<<< |>>>>>>> )' -- ':!*.png' ':!*.jpg' ':!*.webp' 2>/dev/null | head -5)
 if [ -z "$U$M" ]; then echo "  PASS  no unmerged files or conflict markers"; else echo "  FAIL  unmerged / conflict markers: $U $M"; FAILS=$((FAILS+1)); fi
