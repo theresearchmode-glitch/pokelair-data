@@ -153,7 +153,7 @@ footer{margin-top:56px;color:var(--mute);font-size:13px}
 <script>
 /* ===== PLAN: edit only this to update the page. s = done | doing | next | later | sim ===== */
 const PLAN = {
-  updated: 'Wed Nov 25, 3:30 PM',
+  updated: 'Wed Nov 25, 4:38 PM',
   road: [
     {when: 'Sat Nov 28', what: 'The switch', date: '2026-11-28'},
     {when: 'Wed Dec 2', what: 'Reg M-D + patch', date: '2026-12-02'},
@@ -207,6 +207,9 @@ const PLAN = {
       {s: 'done', t: 'M-D dates confirmed right', d: 'Pokémon HOME\'s in-game news: Dec 2 02:00 UTC (Tue Dec 1, 6 PM PT). pokemon.com\'s "Wed Dec 2" is a slip. No change needed.', tag: 'Nov 25'},
       {s: 'done', t: 'Marketing plan "What\'s Your Score?"', d: 'NP - Marketing\'s brief: quiet launch Dec 2-5, public launch Dec 18. Team-check counter + privacy-safe analytics by the quiet launch.', tag: 'Nov 25'},
       {s: 'doing', t: 'Nonstop queue (from 4 PM, through the night)', d: '11 jobs in order: M-D start line + the Dec 2 patch batch, merges, repo safety check, counter + analytics, anti-spam, deploy workflow (off until Sim\'s go), privacy page, /pokemon list, phone speed, iPhone/iPad fixes. Morning report 7:55 AM.', tag: 'HH'},
+      {s: 'done', t: 'Public-repo safety check', d: 'No secrets in files or history; your PC username and full name out of current files; Worker and security headers fine.', tag: 'Nov 25'},
+      {s: 'doing', t: 'RK9 data removed', d: 'Their terms forbid automated reading. Removed on a test branch with a test that keeps it out; lands when GitHub passes.', tag: 'HH'},
+      {s: 'doing', t: '"Reg M-D has started" line', d: 'Fills the few hours after M-D starts before our numbers switch. Same spot as the countdown, nothing moves. Pictures sent.', tag: 'HH'},
       {s: 'sim', t: 'Tonight 5 PM: Cloudflare setup with Dos', d: 'HTTPS, security settings, hello@ email (verify link in Gmail), anti-spam widget, database, deploy key. You watch.', tag: 'tonight'},
       {s: 'done', t: 'Saturday switch runbook', d: 'Written and dry-run (GitHub green): exact steps, who does what, rollback in under 5 minutes. Found 3 blockers, all handled.', tag: 'Nov 25'},
       {s: 'done', t: 'Preview v261', d: 'j18 + j19 + the My Box fix + the day-one screens.', tag: 'Nov 25'},
@@ -241,7 +244,7 @@ const PLAN = {
     ]},
     {h: 'Sun Nov 29 – Tue Dec 1', items: [
       {s: 'done', t: 'Balance patch mapped', d: 'Every place in our code, the Psych Up list from the official page, Mega forms included.', tag: 'Nov 24'},
-      {s: 'next', t: 'Patch ready and waiting', d: 'New moves, Rock Slide, accuracy changes, the tests that change.', tag: 'HH'}
+      {s: 'doing', t: 'Patch ready and waiting', d: 'Built and tested on its own branch, word for word from the official page: 44 new move pairings (Mega forms too), 5 accuracies, Rock Slide flinch 20%, Flash Fire + Stalwart. 103 checks pass. Lands right after M-D starts.', tag: 'HH, Nov 25'}
     ]},
     {h: 'Wed Dec 2: Reg M-D + balance patch', items: [
       {s: 'next', t: 'Apply the patch, run every check', d: '', tag: 'HH'},
