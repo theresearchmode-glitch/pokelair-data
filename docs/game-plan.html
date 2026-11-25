@@ -153,7 +153,7 @@ footer{margin-top:56px;color:var(--mute);font-size:13px}
 <script>
 /* ===== PLAN: edit only this to update the page. s = done | doing | next | later | sim ===== */
 const PLAN = {
-  updated: 'Wed Nov 25, 8:52 AM',
+  updated: 'Wed Nov 25, 10:36 AM',
   road: [
     {when: 'Sat Nov 28', what: 'The switch', date: '2026-11-28'},
     {when: 'Wed Dec 2', what: 'Reg M-D + patch', date: '2026-12-02'},
@@ -161,8 +161,8 @@ const PLAN = {
     {when: 'About Dec 18', what: 'The announcement', date: '2026-12-18'}
   ],
   now: [
-    {who: 'HH (this chat)', t: 'Dec 2 safety is on main and live. Now: merging j18 into the redesign once GitHub passes (379 real teams score the same), then j19 (public site), j16, j17.'},
-    {who: 'Helper (1, Sim\'s standing rule)', t: 'A rehearsal of Saturday\'s switch (main into the redesign).'},
+    {who: 'HH (this chat)', t: 'Fixed two false alarms in the tests (saved teams on reload; an accessibility check run on the wrong build). Now: j18 and j19 into the redesign once GitHub passes, then j16, j17.'},
+    {who: 'Helpers (2 until 12 PM, Sim)', t: '1: the real switch merge, fixing the 6 checks main\'s newer data breaks (pictures to Sim). 2: j19 (public site) caught up with the redesign; checking its search-row picture.'},
     {who: 'Kip (Gemini)', t: 'Code + research only, never design. Jobs 1-26 done; overnight HH fixed 4 of its mistakes (a fake M-D end date, a crash on the public page, square pictures, a missing weight).'},
     {who: 'Scout (helper account)', t: 'Small reviews when it has usage. Tonight it caught a history-wiping guard bug and 3 wrong damage rules.'},
     {who: 'Dos (PC chat)', t: 'Done this morning: 10 new pictures (Reg M-D Pokémon + Meowstic-F). Now: full test run as the switch baseline.'}
@@ -189,6 +189,9 @@ const PLAN = {
       {s: 'done', t: 'Dec 2 branch onto main', d: 'Kip found 3 blockers (Dec 2 would have stopped the daily data); fixed, tests fail-before/pass-after. GitHub passed; live site promoted.', tag: 'Nov 25'},
       {s: 'done', t: 'Day-one honesty', d: '"Not rated yet" until a Pokémon has M-D results; Strength Score says "Graded against Reg M-C\'s teams until Reg M-D results arrive". Sim loved the day-one look.', tag: 'Nov 25'},
       {s: 'done', t: 'Name: NastyPlot, final', d: 'Kip job 29 + HH\'s registry check: no clashes, kid-safe Google results. Sim: "keep nastyplot. its a great name."', tag: 'Nov 25'},
+      {s: 'done', t: 'Switch rehearsal', d: 'Main merges into the redesign (33 conflicts, all resolved). Found 6 checks that main\'s newer data breaks: 4 are real look problems. Being fixed now, on Wednesday, not Saturday.', tag: 'Nov 25'},
+      {s: 'done', t: 'Saved-teams test fixed', d: 'It failed at random (2 in 5) because it opened pages as files; served like the real site, 12 of 12 pass. Players never lost data.', tag: 'Nov 25'},
+      {s: 'doing', t: 'Switch fixes', d: 'Stand-Outs rows, the Damage Calc band on wide screens, Home\'s sprites on one phone size, My Team\'s length on phones, one data case.', tag: 'helper'},
       {s: 'doing', t: 'j18 into the redesign', d: 'Merged with the redesign; 379 real teams score exactly the same; accessibility 6/6. Waiting for GitHub.', tag: 'HH'},
       {s: 'next', t: 'The full list of 24 new Pokémon', d: 'Checked every morning until it\'s out; then one picture job and one data command.', tag: 'HH, daily'},
       {s: 'doing', t: 'One place for the regulation', d: 'Built (Scout) and ported to the data job (Kip); tests pass. Waiting to merge.', tag: 'HH'},
