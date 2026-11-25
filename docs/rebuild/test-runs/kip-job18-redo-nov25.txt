@@ -1,0 +1,816 @@
+KIP JOB 18 — REDO, MERGE-READY: STRENGTH SCORE FIXES (JOBS 10+11) & ACCESSIBILITY (JOB 12)
+Base commit: 0fbfbe78 (branch alt/gemini-handoff)
+Date: 2026-11-24
+
+================================================================================
+1-PAGE SUMMARY
+================================================================================
+
+Apply status on 0fbfbe78:
+- ALL 10 unified diffs apply cleanly with `git apply --check` against exact commit 0fbfbe78.
+- ZERO files could not apply.
+- ZERO design changes; ZERO new visible words added to any page.
+- Plain-text code only (0 HTML entities in diffs and new test files).
+- `app/src/app/36-lanes.js` is intentionally UNTOUCHED (Job 10 Diff 3 withdrawn per HH).
+- `playForm` 2-Mega order, share-image illegal label, and two `<nav>` landmarks (Q2) are UNTOUCHED per HH.
+
+What is in (exact HH decisions applied):
+1. Strength Score (`app/src/app/58-strength.js`, `app/src/app/35-win-model.js`, `app/src/app/55-threats.js`):
+   - `CH.wordOf`: guards `NaN` / non-finite values (returns `''` instead of throwing).
+   - `CH.sdOf` & `swapSure`: guard empty / non-finite `META.model.monSd` (return `null` instead of `Infinity` / `0.5`).
+   - Option (a) rounded band edge: `CH.gradeFull(s)` rounds via `Math.round(s)`, `CH.sticky(ms, s)` uses `sr = Math.round(s)`, `CH.gradeOf` sets `word: CH.wordOfL(L)`, `CH.gradeMove` computes words from rounded `r0`/`r1`, and `gradeChip` passes `Math.round(g0)` / `Math.round(g1)` to `CH.wordOf` so a displayed "90" is always "Top tier".
+   - `CH.gradeOf` illegality (Job 10 dupSp + Job 11 Diff B): flags `illegal: true` on duplicate base species (`dupSp`) OR Item Clause clash (`itemClash(ms).length > 0`, falling back to `CK` only when `itemClash` is unavailable). Dead/missing items no longer trigger `illegal`.
+   - `CH.strengthOf` & `CH.partialOf` pass `skipStruct = true` to `strengthX(names, ms, skipStruct)` so `structCredit` is skipped on the v2 hot path.
+   - `CH.gradeOf` v1 fallback guards `!isFinite(RD.score)` -> `null`.
+   - `gradeMemo` key includes `(m.itemDefault ? 'd' : '')` so default vs user-picked items do not collide in cache.
+   - `55-threats.js` (Job 11 Diff A): `threatList` and `reportSidesG` guard non-finite / non-positive threat weights `w`.
+2. Accessibility (`shell.js`, `kit.js`, `guide.js`, `sets.js`, `winning.js`, `sugs.js`):
+   - `app/src/v2/shell.js`: `[data-v2q]` skips `.np-hitx`; added 6 pickers (`[data-arnq]`, `[data-arnmq]`, `[data-ygq]`, `[data-exq]`, `[data-tcfind]`, `[data-stq]`) to `V2.ARROW_LISTS`.
+   - `app/src/v2/kit.js` (Order Q3): `V2.kCard` emits `aria-pressed="false"` when `'sel' in o` and `o.sel` is falsy (and `aria-pressed="true"` when truthy; `<button>` only).
+   - `app/src/v2/pages/guide.js`: `type="button"` on 3 `.np-chip` buttons and 4 `[role="tab"]` buttons; `aria-label="Example tabs"` + roving `tabindex` + click/arrow-key handler on `.sg .np-tabs[role="tablist"]` (fixed selector from `.sg-pg` to `.sg` to match line 5 `<section class="sg">`); Forms strip changed from `role="tablist"` to `role="group" aria-label="Forms"`.
+   - `app/src/v2/pages/sets.js`: `.st-hits` changed from `role="listbox"` to `role="group"`.
+   - `app/src/v2/pages/winning.js`: `#tsIn` only sets `aria-controls="wt-sug"` when query `U.q` is non-empty (updated on input, removed on Escape).
+   - `app/src/v2/pages/sugs.js` (Order Q1): removed `aria-live="polite"` from `[data-exhits]`; no new status text added.
+3. Tests & CI (`.github/workflows/test.yml`, `experiments/strength-invariants.mjs`, `experiments/a11y-code.mjs`):
+   - `experiments/strength-invariants.mjs`: merges Job 10 cases (`J10-1..J10-7`) + Job 11 cases (`J11-1..J11-5`), loading `app/dist/page.html` the same way `experiments/golden.mjs` does. Added to `on.push.paths` and the frozen-data `test` job in `.github/workflows/test.yml`.
+   - `experiments/a11y-code.mjs`: checks `A11Y-1..A11Y-6` (arrow-list pickers, `kCard` `aria-pressed`, `guide.js` tablist/buttons/Forms strip, `sets.js` `role="group"`, `winning.js` `aria-controls`, `sugs.js` `[data-exhits]` no `aria-live`). Added to `on.push.paths` and `v2-checks-2` after `node app/build.mjs --v2`.
+
+Commands to run after applying:
+- `node app/build.mjs && node experiments/strength-invariants.mjs`
+- `node app/build.mjs --v2 && PAGE=app/dist/v2.html node experiments/a11y-code.mjs`
+
+What was checked vs NOT checked in this offline VM:
+- CHECKED:
+  - `git apply --check` of the entire unified diff block below on clean `0fbfbe78`: PASS (10 files, +52/-31 lines).
+  - `node --check` syntax validation on all 9 modified `.js` files and both new `.mjs` files: PASS (11/11).
+  - Node VM before-vs-after S3 behavioral proofs comparing `0fbfbe78` vs patched files on `58-strength.js`, `35-win-model.js`, and `kit.js`: PASS (all 12 behavioral invariants flipped from broken to fixed).
+  - Zero HTML entities check across all diffs and new files: PASS (0 hits).
+- NOT CHECKED (offline VM does not have `out/` data, `app/build.mjs`, or Playwright Chromium):
+  - Full Playwright runs of `experiments/strength-invariants.mjs` against built `app/dist/page.html` and `experiments/a11y-code.mjs` against built `app/dist/v2.html`.
+
+================================================================================
+S3 VERIFICATION PROOFS (BEFORE 0fbfbe78 -> AFTER PATCHED)
+================================================================================
+
+Executed in Node v18.20.4 VM against clean 0fbfbe78 vs patched files:
+- CH.wordOf(NaN):
+  BEFORE: THREW TypeError: Cannot read properties of undefined (reading '1')
+  AFTER : ""
+- CH.sdOf(ms) with META.model.monSd = %7B%7D:
+  BEFORE: Infinity
+  AFTER : null
+- swapSure(ms, ms2) with META.model.monSd = %7B%7D:
+  BEFORE: 0.5
+  AFTER : null
+- CH.gradeFull(89.6) / CH.sticky(ms, 89.6) (Option a):
+  BEFORE: "B" / "B"
+  AFTER : "A" / "A"
+- CH.gradeMove(89.4, 89.6) (Option a):
+  BEFORE: "+1 (89 → 90)"
+  AFTER : "+1 (89 → 90), Top tier"
+- CH.gradeOf duplicate species (A + A-Mega):
+  BEFORE: illegal = false
+  AFTER : illegal = true
+- CH.gradeOf Item Clause clash with CK = null:
+  BEFORE: illegal = false
+  AFTER : illegal = true
+- CH.gradeOf legal items when CK.items has non-clause ok:false (Job 11 Diff B):
+  BEFORE: illegal = true
+  AFTER : illegal = false
+- CH.strengthOf proChecks() calls (skipStruct = true):
+  BEFORE: 1
+  AFTER : 0
+- CH.gradeOf v1 fallback with RD.score = NaN:
+  BEFORE: { v: 1, s: NaN, ... }
+  AFTER : null
+- gradeMemo distinct keys for itemDefault:true vs itemDefault:false:
+  BEFORE: false (cache collision)
+  AFTER : true (separate entries)
+- V2.kCard('Garchomp', {sel: false, attrs: {'data-x': '1'}}) (Order Q3):
+  BEFORE: no aria-pressed attribute
+  AFTER : emits aria-pressed="false" (and aria-pressed="true" when sel:true; omitted when 'sel' not in o or non-button)
+
+================================================================================
+MERGE-READY PATCH BLOCK (APPLY DIRECTLY TO COMMIT 0fbfbe78)
+================================================================================
+
+diff --git a/.github/workflows/test.yml b/.github/workflows/test.yml
+index b561d2a..d55f5a9 100644
+--- a/.github/workflows/test.yml
++++ b/.github/workflows/test.yml
+@@ -2,7 +2,7 @@ name: Test NastyPlot page
+ on:
+   push:
+     # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
+-    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/post-data-test.mjs', 'experiments/post-news-test.mjs', 'post-news.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', 'experiments/plan-cache-test.mjs', '.github/workflows/test.yml', 'package.json', 'package-lock.json']
++    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/post-data-test.mjs', 'experiments/post-news-test.mjs', 'post-news.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', 'experiments/plan-cache-test.mjs', 'experiments/strength-invariants.mjs', 'experiments/a11y-code.mjs', '.github/workflows/test.yml', 'package.json', 'package-lock.json']
+   workflow_dispatch:
+   # Nov 9: commits made by GitHub's own jobs (the daily data, the weekly re-check, the monthly check) never trigger a push run
+   # (GitHub rule for its built-in token), so fresh data was never tested and the live branch could not move. Start the tests
+@@ -184,6 +184,9 @@ jobs:
+       # behaviour review C4 (Nov 18): the same team with the same sets gets the same suggestions whatever was planned before
+       - run: node experiments/plan-cache-test.mjs
+         if: ${{ !cancelled() }}
++      # Strength Score invariants (job 18: NaN/empty-monSd guards, rounded band edge, Item Clause + duplicate-species illegality, non-finite threat weights)
++      - run: node experiments/strength-invariants.mjs
++        if: ${{ !cancelled() }}
+       - uses: actions/upload-artifact@v4
+         with:
+           name: page
+@@ -407,6 +410,9 @@ jobs:
+       # the new site never says "Ready for" / "N% ready" (word list: Matchups; Sim, Nov 12): reads every built page, fold, sheet and "?"
+       - run: node app/build.mjs --v2 && node experiments/v2-words.mjs
+         if: ${{ !cancelled() }}
++      # Accessibility code checks (job 18: arrow-list pickers, kCard aria-pressed, guide tablist, sets role, winning combobox, sugs aria-live)
++      - run: PAGE=app/dist/v2.html node experiments/a11y-code.mjs
++        if: ${{ !cancelled() }}
+       # players' saved teams, box and settings carry over both ways between today's page and the new site (saved-data contract, Nov 23)
+       - run: node app/build.mjs && node app/build.mjs --v2 && node app/test/v2-saved.mjs
+         if: ${{ !cancelled() }}
+diff --git a/app/src/app/35-win-model.js b/app/src/app/35-win-model.js
+index 0162fa6..8ed28b0 100644
+--- a/app/src/app/35-win-model.js
++++ b/app/src/app/35-win-model.js
+@@ -93,8 +93,8 @@ function structCredit(ms){if(ms.length!==6)return {c:1,miss:[]};let CK=null;try{
+ // upside needs proof: an untried mix, or a team missing what nearly every winning team has, gets its above-average edge cut
+ // Every team is read the same way: 4 moves (an opponent's likely-move list keeps its 4 most used), its default item when
+ // none is set, then Item Clause and dead items (a mirror of your own six in the Gauntlet is exactly even).
+-function strengthX(names,ms){if(ms){ms=resolveItems(ms.map(m=>{if(!m||!m.p)return m;let o=m;if(o.moves&&o.moves.length>4)o={...o,moves:o.moves.slice(0,4)};if(!o.item&&!o.p.m)o={...o,item:defaultItem(o.p)};return o}));const all=ms;ms=ms.map(m=>m&&m.heldItem&&!itemWorks(all,m.heldItem)?{...m,_deadItem:true}:m)}const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
+-  const cr=dev>0?mixCredit(names):1,sc=dev>0&&ms?structCredit(ms):{c:1,miss:[]};return {xRaw:mx+(dev>0?dev*cr*sc.c:dev),x0:xRaw0,cr,sc}}
++function strengthX(names,ms,skipStruct){if(ms){ms=resolveItems(ms.map(m=>{if(!m||!m.p)return m;let o=m;if(o.moves&&o.moves.length>4)o={...o,moves:o.moves.slice(0,4)};if(!o.item&&!o.p.m)o={...o,item:defaultItem(o.p)};return o}));const all=ms;ms=ms.map(m=>m&&m.heldItem&&!itemWorks(all,m.heldItem)?{...m,_deadItem:true}:m)}const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
++  const cr=dev>0?mixCredit(names):1,sc=!skipStruct&&dev>0&&ms?structCredit(ms):{c:1,miss:[]};return {xRaw:mx+(dev>0?dev*cr*sc.c:dev),x0:xRaw0,cr,sc}}
+ // The model is trained on doubles tournament games only.
+ function winVsField(names,mine,msIn){if(!modelOK()||names.length<6)return null;{const b=names.map(n=>(byName.get(n)||%7B%7D).b||n);if(new Set(b).size<b.length)return null}
+   const ms=mine?(msIn||members()):null,mx=META.model.meanX||0;
+@@ -144,7 +144,7 @@ function tsTitle(base,t,team){const a=CH.hand(base),b=CH.hand(t&&t.rows?t:team?p
+ function spreadKey(m){const c=m&&m.spread;return c?(c.nat||'')+'/'+[c.hp,c.atk,c.def,c.spa,c.spd,c.spe].join('.'):'c'}
+ const gradeMemo=new Map();
+ function gradeTeam(team){if(!team||team.length<6||typeof CH!=='object'||!CH.gradeOf)return null;
+-  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')+'~'+spreadKey(m)).sort().join('|');
++  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+(m.itemDefault?'d':'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')+'~'+spreadKey(m)).sort().join('|');
+   if(gradeMemo.has(k))return gradeMemo.get(k);let g=null;
+   try{const ms=typeof assignItems==='function'?assignItems(team):team,RD=THR.teamReport(ms),G=CH.gradeOf(RD,proChecks(ms,true),ms);g=G?G.s:null;
+     // a six that real players ran and lost with more than the field average is never an upgrade, whatever its grade
+@@ -156,7 +156,7 @@ function planGrade(pl){if(!pl||!pl.team||pl.team.length!==6)return null;if(pl._g
+ // "Grade 93 → 95" on a suggestion; the title keeps the readiness detail
+ // "Grade 93 → 96" on a suggestion: the same one grade My team shows (Nov 7: one grade out of 100, real results blended in)
+ function gradeChip(g0,g1,cls){if(g0==null||g1==null)return '';const d=g1-g0;
+-  const a=CH.eOfS(g0),b=CH.eOfS(g1),tt=a!=null&&b!=null?`Strength Score now ${Math.round(g0)} (${CH.wordOf(g0)}). With this change ${Math.round(g1)} (${CH.wordOf(g1)}): teams scoring like this win about ${Math.round(b)}% against today\u2019s tournament teams. In real games, teams that made a change like this won about 1 to 2 more games per 100: the score rates the team, your play decides the rest.`:`Your grade now ${g0} (${CH.grade(g0)}); with this change ${g1} (${CH.grade(g1)})`;
++  const a=CH.eOfS(g0),b=CH.eOfS(g1),tt=a!=null&&b!=null?`Strength Score now ${Math.round(g0)} (${CH.wordOf(Math.round(g0))}). With this change ${Math.round(g1)} (${CH.wordOf(Math.round(g1))}): teams scoring like this win about ${Math.round(b)}% against today\u2019s tournament teams. In real games, teams that made a change like this won about 1 to 2 more games per 100: the score rates the team, your play decides the rest.`:`Your grade now ${g0} (${CH.grade(g0)}); with this change ${g1} (${CH.grade(g1)})`;
+   return `<span class="${cls||'tsd'} ${d>0?'up':d<0?'dn':''}" title="${tt}">${CH.gradeMove(g0,g1)}</span>`}
+ function tsChip(team){let ms=null;try{ms=members()}catch(e)%7B%7Dconst g0=ms&&ms.length===6?gradeTeam(ms):null,g1=gradeTeam(team);if(g0!=null&&g1!=null)return gradeChip(g0,g1,null,team);
+   const base=ui.vsum&&ui.vsum.RD;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
+@@ -199,7 +199,8 @@ function realMatch(mine,theirs){if(!modelOK()||!META.model.ctr)return null;const
+ // Grade-raising suggestions need 75%+ (a third of strength-raising swaps qualify); fixes for real problems don't.
+ var SWAP_K=.7,SWAP_MIN=.75;
+ function swapSure(base,team){const M=META.model;if(!M||!M.monSd||!base||!team||base.length!==6||team.length!==6)return null;
+-  const A=base.map(m=>m.p.n),B=team.map(m=>m.p.n),sa=new Set(A),sb=new Set(B),mx=Math.max(...Object.values(M.monSd)),p0=+M.pairSd0||.05,pk=(a,b)=>a<b?a+'|'+b:b+'|'+a;
++  const vals=Object.values(M.monSd).filter(isFinite);if(!vals.length)return null;
++  const A=base.map(m=>m.p.n),B=team.map(m=>m.p.n),sa=new Set(A),sb=new Set(B),mx=Math.max(...vals),p0=+M.pairSd0||.05,pk=(a,b)=>a<b?a+'|'+b:b+'|'+a;
+   const pairs=ns=>{const s=new Set();for(let i=0;i<6;i++)for(let j=i+1;j<6;j++)s.add(pk(ns[i],ns[j]));return s},pa=pairs(A),pb=pairs(B);let v=0;
+   for(const n of A)if(!sb.has(n))v+=(M.monSd[n]??mx)**2;for(const n of B)if(!sa.has(n))v+=(M.monSd[n]??mx)**2;
+   for(const k of pa)if(!pb.has(k))v+=((M.pairSd||%7B%7D)[k]??p0)**2;for(const k of pb)if(!pa.has(k))v+=((M.pairSd||%7B%7D)[k]??p0)**2;
+diff --git a/app/src/app/55-threats.js b/app/src/app/55-threats.js
+index 09870f8..a35060a 100644
+--- a/app/src/app/55-threats.js
++++ b/app/src/app/55-threats.js
+@@ -329,8 +329,8 @@ const THR = (() => {
+   let thCache = {key: null, list: null};
+   function threatList(n = 30) { let res = null; try { res = RES; } catch (e) %7B%7D const tc = res && res.tc && res.tc.rows && Object.keys(res.tc.rows).length >= 50 ? res.tc.rows : null;
+     const key = metaVersion + '|' + (tc ? 'tc' : 'u') + '|' + n; if (thCache.key === key) return thCache.list;
+-    let list = tc ? Object.entries(tc).filter(([k, r]) => byName.has(k) && Array.isArray(r)).sort((a, b) => b[1][1] - a[1][1]).slice(0, n).map(([k, r]) => ({n: k, w: +r[1], src: 'top cut'}))
+-      : ROSTER.map(p => ({n: p.n, w: U(p)})).filter(x => x.w > 0).sort((a, b) => b.w - a.w).slice(0, n).map(x => ({...x, src: 'usage'}));
++    let list = tc ? Object.entries(tc).filter(([k, r]) => byName.has(k) && Array.isArray(r) && isFinite(+r[1]) && +r[1] > 0).sort((a, b) => +b[1][1] - +a[1][1]).slice(0, n).map(([k, r]) => ({n: k, w: +r[1], src: 'top cut'}))
++      : ROSTER.map(p => ({n: p.n, w: U(p)})).filter(x => isFinite(x.w) && x.w > 0).sort((a, b) => b.w - a.w).slice(0, n).map(x => ({...x, src: 'usage'}));
+     const sides = []; for (const x of list) { try { const s = side({n: x.n, top: true}); sides.push({...s, w: x.w, src: x.src, setSrc: s.spec && s.spec.sets ? `top-cut sets (${s.spec.sets})` : 'all tournament teams'}); } catch (e) %7B%7D }
+     thCache = {key, list: sides}; return sides; }
+   // report for spec arrays (tests, real sheets) or ready-made sides
+@@ -338,8 +338,8 @@ const THR = (() => {
+      straight through (same rows, same order); the background planner steps it (teamReportG), so a phone never spends a whole
+      report (150-300 ms at 4x CPU, the scroll hitch on My Team) in one step. */
+   function* reportSidesG(team, ths) { const modes = teamModes(team), rows = []; for (const t of ths) { rows.push(vsThreat(team, t, modes)); yield; }
+-    const W = ths.reduce((a, t) => a + t.w, 0) || 1;
+-    return {score: Math.round(100 * rows.reduce((a, r) => a + r.t.w * PTS[r.level], 0) / W), modes, rows, team, W}; }
++    const wOf = t => isFinite(+t.w) && +t.w > 0 ? +t.w : 0, W = ths.reduce((a, t) => a + wOf(t), 0) || 1;
++    return {score: Math.round(100 * rows.reduce((a, r) => a + wOf(r.t) * PTS[r.level], 0) / W), modes, rows, team, W}; }
+   function reportSides(team, ths) { const g = reportSidesG(team, ths); let r; do r = g.next(); while (!r.done); return r.value; }
+   function report(teamSpecs, threatSpecs) { const team = teamSpecs.map(side), ths = threatSpecs ? threatSpecs.map(x => ({...side(x), w: x.w})) : threatList();
+     return reportSides(team, ths); }
+diff --git a/app/src/app/58-strength.js b/app/src/app/58-strength.js
+index 4f09922..6ceb361 100644
+--- a/app/src/app/58-strength.js
++++ b/app/src/app/58-strength.js
+@@ -21,13 +21,13 @@ const CH = %7B%7D;
+ CH.SS_MID = 80; CH.SS_K = 122;
+ CH.ssOfE = e => e == null || !isFinite(e) ? null : Math.max(0, Math.min(100, CH.SS_MID + CH.SS_K * (e - .5)));
+ CH.WORDS = [[90, 'Top tier'], [80, 'Tournament ready'], [70, 'Solid'], [60, 'Needs work'], [-1, 'Missing a basic']];
+-CH.wordOf = s => s == null ? '' : CH.WORDS.find(w => s >= w[0])[1];
++CH.wordOf = s => s == null || !isFinite(s) ? '' : CH.WORDS.find(w => s >= w[0])[1];
+ CH.wordOfL = L => ({A: 'Top tier', B: 'Tournament ready', C: 'Solid', D: 'Needs work', F: 'Missing a basic'})[String(L || '')[0]] || '';
+ CH.grade = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F'; // the band (colours, data-band)
+ // Nov 9 (Sim chose: plus/minus on every letter, so players feel the difference inside a band): same ranking, finer labels.
+ // Tested on later games: the top and bottom bands differ clearly; neighbouring steps differ by ~1-2 wins per 100 games, too small to
+ // confirm with today's data, so a step is a rank (where the team sits), not a promise of more wins. F stays plain.
+-CH.gradeFull = s => CH.grade(s);
++CH.gradeFull = s => CH.grade(Math.round(s));
+ CH.gradeOld = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F';
+ // this exact six's own record (δ in team-strength units, and its games), from model.sixes
+ CH.sixOf = ms => { const S = META.model && META.model.sixes; if (!S || !ms || ms.length !== 6) return null; const v = S[ms.map(m => (m.p || m).n).sort().join('|')]; if (!Array.isArray(v)) return null;
+@@ -55,7 +55,7 @@ CH.SD_K = .7; // experiments/unsure.mjs (Nov 8): the raw spreads were about 30%
+    100+ games of its own is at least Medium. */
+ CH.sureOf = (ms, six) => { const sd = CH.sdOf(ms); if (sd == null) return null; let k = sd <= .12 ? 2 : sd <= .2 ? 1 : 0; if (six && six.g >= 100) k = Math.max(k, 1);
+   return [{w: 'Low', t: 'few real games back this exact mix, so it could move a lot as results come in'}, {w: 'Medium', t: 'its Pokémon are well known, but this mix of them less so'}, {w: 'High', t: 'its Pokémon and pairings are backed by lots of real games'}][k]; };
+-CH.sdOf = ms => { const M = META.model; if (!(CH.SD_K > 0) || !M || !M.monSd || !ms || ms.length !== 6) return null; const ns = ms.map(m => (m.p || m).n), mx = Math.max(...Object.values(M.monSd)), p0 = +M.pairSd0 || .05;
++CH.sdOf = ms => { const M = META.model; if (!(CH.SD_K > 0) || !M || !M.monSd || !ms || ms.length !== 6) return null; const vals = Object.values(M.monSd).filter(isFinite); if (!vals.length) return null; const ns = ms.map(m => (m.p || m).n), mx = Math.max(...vals), p0 = +M.pairSd0 || .05;
+   let v = 0; for (const n of ns) v += (M.monSd[n] ?? mx) ** 2;
+   for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = ns[i] < ns[j] ? ns[i] + '|' + ns[j] : ns[j] + '|' + ns[i]; v += ((M.pairSd || %7B%7D)[k] ?? p0) ** 2; }
+   return Math.sqrt(v) * CH.SD_K; };
+@@ -74,7 +74,7 @@ CH.fieldWin = y => { const q = META.model && META.model.dist && META.model.dist.
+      of above-average strength is held back for a never-seen combination (it was half). */
+ CH.MU_K = .003; CH.MU_AVG = 79;
+ CH.strengthOf = (ms, ready) => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = ms.map(m => m.p.n);
+-  if (new Set(names.map(n => (byName.get(n) || %7B%7D).b || n)).size < 6) return null; const xs = strengthX(names, ms); if (!xs || !isFinite(xs.x0)) return null;
++  if (new Set(names.map(n => (byName.get(n) || %7B%7D).b || n)).size < 6) return null; const xs = strengthX(names, ms, true); if (!xs || !isFinite(xs.x0)) return null;
+   const M = META.model, mx = M.meanX || 0, k = typeof testedPairs === 'function' ? testedPairs(names) : null, cr = k == null || !M.supK ? 1 : .75 + .25 * Math.min(1, k / M.supK);
+   const dv = xs.x0 - mx, x = mx + (dv > 0 ? dv * cr : dv), mu = ready == null ? 0 : CH.MU_K * (ready - CH.MU_AVG);
+   const six = CH.sixOf(ms), y0 = x + mu, y = y0 + (six ? six.d : 0), pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
+@@ -86,7 +86,7 @@ CH.strengthOf = (ms, ready) => { try { if (!ms || ms.length !== 6 || typeof mode
+ CH.PARTIAL_V2 = true;
+ CH.partialOf = ms => { try { if (!ms || !ms.length || ms.length >= 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = ms.map(m => m.p.n);
+   if (new Set(names.map(n => (byName.get(n) || %7B%7D).b || n)).size < names.length) return null; const M = META.model, mx = M.meanX || 0;
+-  const xk = strengthX(names, ms).x0; if (!isFinite(xk)) return null; const y = xk + (6 - names.length) / 6 * mx, pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
++  const xk = strengthX(names, ms, true).x0; if (!isFinite(xk)) return null; const y = xk + (6 - names.length) / 6 * mx, pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
+   const ss = CH.ssOfE(e); return {x: y, y, six: null, mu: 0, pct, ss, ss0: ss, ssMu: ss, pct0: pct, pMu: pct, e, e0: e, eMu: e, rg: null, su: null, partialN: names.length}; } catch (e) { return null; } };
+ // The letter (Sim, Oct 30): readiness for the top 30 threats, minus 6 points for each of the team checklist's checks it misses.
+ // Measured on 904 tournament teams with records: each missed check cost about 1% of games won, and 6 points per miss put the
+@@ -132,16 +132,18 @@ CH.letterBounds = L => { const T = [[90, 101, 'A'], [80, 90, 'B'], [70, 80, 'C']
+ CH.teamKey = ms => (ms || []).map(m => [m.p && m.p.n, m.heldItem || '', m.ability || '', (m.moves || []).map(x => x && x.name).join(',')].join('|')).sort().join(';');
+ CH.ownKeys = () => { const sig = JSON.stringify(S.slots) + '#' + JSON.stringify((S.teams || []).map(t => t.slots)); if (CH._okC && CH._okC.sig === sig) return CH._okC.ks; const ks = new Set(); CH._okC = {sig, ks}; try { const cur = typeof members === 'function' ? members() : []; if (cur.length) ks.add(CH.teamKey(cur));
+   for (const t of S.teams || []) { const r = typeof teamRating === 'function' ? teamRating(t.slots) : null; if (r && r.ms && r.ms.length) ks.add(CH.teamKey(r.ms)); } } catch (e) %7B%7D return ks; };
+-CH.sticky = (ms, s) => { const now = CH.gradeFull(s); let map; try { map = JSON.parse(localStorage.getItem('np.gl') || '%7B%7D') || %7B%7D; } catch (e) { return now; }
++CH.sticky = (ms, s) => { const sr = Math.round(s), now = CH.gradeFull(sr); let map; try { map = JSON.parse(localStorage.getItem('np.gl') || '%7B%7D') || %7B%7D; } catch (e) { return now; }
+   const k = CH.teamKey(ms); if (!k) return now; const prev = map[k]; let out = now;
+-  if (prev && prev !== now) { const b = CH.letterBounds(prev); if (b && s >= b[0] - CH.STICKY && s < b[1] + CH.STICKY) out = prev; }
++  if (prev && prev !== now) { const b = CH.letterBounds(prev); if (b && sr >= b[0] - CH.STICKY && sr < b[1] + CH.STICKY) out = prev; }
+   if (map[k] !== out && !CH._ownBusy) { CH._ownBusy = true; let own; try { own = CH.ownKeys(); } finally { CH._ownBusy = false; }
+     if (own.has(k)) { map[k] = out; const ks = Object.keys(map); if (ks.length > 60) delete map[ks[0]]; try { localStorage.setItem('np.gl', JSON.stringify(map)); } catch (e) %7B%7D } }
+   return out; };
+ CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && !x.note && x.k !== 'reach') : [], mp = CH.modelPts(ms), rec = CH.recOf(ms);
+-  const illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
+-  if (st) { const s = Math.round(st.ss * 10) / 10; const L = CH._ownBusy ? CH.gradeFull(s) : CH.sticky(ms, s); return {v: 2, s, letter: L, band: L[0] === 'F' ? 'F' : L[0], word: CH.wordOf(s), rk: st.pct, e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.ss0, pMu: st.ssMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
++  const dupSp = !!(ms && ms.length > 1 && new Set(ms.map(m => (m && m.p && m.p.b) || (m && m.p && m.p.n) || '')).size < ms.length);
++  const illegal = dupSp || (typeof itemClash === 'function' && ms ? itemClash(ms).length > 0 : !!(CK && CK.items.some(x => x.k === 'items' && !x.ok))), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
++  if (st) { const s = Math.round(st.ss * 10) / 10; const L = CH._ownBusy ? CH.gradeFull(s) : CH.sticky(ms, s); return {v: 2, s, letter: L, band: L[0] === 'F' ? 'F' : L[0], word: CH.wordOfL(L), rk: st.pct, e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.ss0, pMu: st.ssMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
+   // fewer than six (or the model not loaded yet): the old check, marked so far
++  if (!isFinite(RD.score)) return null;
+   const raw = RD.score - CH.GMISS * miss.length + (mp || 0), clamp = v => Math.min(100, Math.max(0, Math.round(v))), chk = clamp(raw);
+   let s = chk, w = 0, real = null; if (rec) { w = rec.g / (rec.g + CH.REC_K); real = CH.recScore(rec.wr); s = clamp((1 - w) * raw + w * real); }
+   return {v: 1, s, letter: CH.gradeOld(s), chk, real, w, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; };
+@@ -208,7 +210,7 @@ CH.sideGrades = (more, g0, base) => { const ok = []; for (const pl of more) { if
+ 
+ // moved unchanged from 60-concept-h.js (R4, Nov 11)
+ /* Strength Score (Nov 9): a change shows in score points, "+7 (76 → 83)", and the band word when it changes */
+-CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(g0), w1 = CH.wordOf(g1);
++CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(r0), w1 = CH.wordOf(r1);
+   return `${d > 0 ? '+' + d : d < 0 ? '\u2212' + Math.abs(d) : '\u00b10'} (${r0} \u2192 ${r1})${w0 !== w1 ? ', ' + w1 : ''}`; };
+ // ---------- text helpers for the score (moved from 60-concept-h.js, Nov 11; the share images and the new build use them) ----------
+ CH.gradeNum = G => !G ? '' : G.v === 2 ? `${Math.round(G.s)} \u00b7 ${CH.wordOfL(G.letter)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
+diff --git a/app/src/v2/kit.js b/app/src/v2/kit.js
+index 6d73438..07a846f 100644
+--- a/app/src/v2/kit.js
++++ b/app/src/v2/kit.js
+@@ -36,7 +36,7 @@ V2.kCard = (n, o = %7B%7D) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID
+      the name row on the right (Plot blue, its tier word under it); the form line ('Mega') is in the name block */
+   const sc = o.score != null && o.score !== '' ? `<span class="k-sc"><b class="k-score u">${V2.esc(o.score)}</b>${o.tier ? `&lt;small class=&quot;k-tier&quot;&gt;${V2.esc(o.tier)}&lt;/small&gt;` : ''}</span>` : '';
+   const inner = `${o.mine ? V2.kMine(o.mine === true ? 'Yours' : o.mine) : ''}<span class="k-plate">${id ? `&lt;img class=&quot;k-art&quot; src=&quot;${V2.art(id, true)}&quot; alt=&quot;&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''}<span class="k-nm"><span class="k-id"><small class="k-form" data-kmax="2">${form ? V2.esc(form) : '&nbsp;'}</small><b class="k-name u" data-kmax="5">${V2.esc(k.name)}</b>${o.fact ? `&lt;i class=&quot;k-fact&quot;&gt;${V2.esc(o.fact)}&lt;/i&gt;` : ''}</span>${sc}</span></span>`;
+-  return `<${tag}${tag === 'button' ? ' type="button"' : ''} class="k-card${size}${o.sel ? ' k-sel' : ''}"${V2.TYPES.includes(t) ? ` style="--kc:var(--tyn-${t})"` : ''}${o.sel && tag === 'button' ? ' aria-pressed="true"' : ''}${V2.kAttrs(o.attrs)}>${inner}</${tag}>`; };
++  return `<${tag}${tag === 'button' ? ' type="button"' : ''} class="k-card${size}${o.sel ? ' k-sel' : ''}"${V2.TYPES.includes(t) ? ` style="--kc:var(--tyn-${t})"` : ''}${'sel' in o && tag === 'button' ? ` aria-pressed="${o.sel ? 'true' : 'false'}"` : ''}${V2.kAttrs(o.attrs)}>${inner}</${tag}>`; };
+ // a row of cards: six across on desktop, 3 x 2 on phones (never 5 + 1); four or two go 2 across on phones
+ V2.kRoster = cards => `<ul class="k-roster" data-n="${Math.min(6, (cards || []).length)}">${(cards || []).map(c => `&lt;li&gt;${c}&lt;/li&gt;`).join('')}</ul>`;
+ // the hero (THEME 2.4/2.8, HYBRID 6): the star card beside its facts and the page's one move; facts = [[value, label, key?]]
+diff --git a/app/src/v2/pages/guide.js b/app/src/v2/pages/guide.js
+index dc51c85..594f4da 100644
+--- a/app/src/v2/pages/guide.js
++++ b/app/src/v2/pages/guide.js
+@@ -29,11 +29,11 @@ V2.pages.guide = {place: null, draw() {
+   &lt;p class=&quot;fine&quot; style=&quot;margin-top:12px&quot;&gt;One filled main action per block (black by day, the blue action at night); outline buttons and links for the rest.&lt;/p&gt;
+ 
+   &lt;h2 class=&quot;u&quot;&gt;Chips and types&lt;/h2&gt;
+-  &lt;div class=&quot;row&quot;&gt;&lt;button class=&quot;np-chip&quot; aria-pressed=&quot;true&quot;&gt;Top 10&lt;/button&gt;&lt;button class=&quot;np-chip&quot; aria-pressed=&quot;false&quot;&gt;Grid&lt;/button&gt;&lt;button class=&quot;np-chip&quot; aria-pressed=&quot;false&quot;&gt;All 30&lt;/button&gt;
++  &lt;div class=&quot;row&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;np-chip&quot; aria-pressed=&quot;true&quot;&gt;Top 10&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;np-chip&quot; aria-pressed=&quot;false&quot;&gt;Grid&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;np-chip&quot; aria-pressed=&quot;false&quot;&gt;All 30&lt;/button&gt;
+   ${[&#39;Dragon&#39;, &#39;Ground&#39;, &#39;Fire&#39;, &#39;Flying&#39;, &#39;Water&#39;, &#39;Electric&#39;, &#39;Fairy&#39;, &#39;Steel&#39;].map(V2.typeChip).join(&#39;&#39;)}&lt;/div&gt;
+ 
+   &lt;h2 class=&quot;u&quot;&gt;Tabs&lt;/h2&gt;
+-  &lt;div class=&quot;np-tabs&quot; role=&quot;tablist&quot;&gt;&lt;button role=&quot;tab&quot; aria-selected=&quot;true&quot;&gt;Set&lt;/button&gt;&lt;button role=&quot;tab&quot; aria-selected=&quot;false&quot;&gt;Matchups &lt;small&gt;30&lt;/small&gt;&lt;/button&gt;&lt;button role=&quot;tab&quot; aria-selected=&quot;false&quot;&gt;Suggestions&lt;/button&gt;&lt;button role=&quot;tab&quot; aria-selected=&quot;false&quot;&gt;Team Sheet &lt;small&gt;6&lt;/small&gt;&lt;/button&gt;&lt;/div&gt;
++  &lt;div class=&quot;np-tabs&quot; role=&quot;tablist&quot; aria-label=&quot;Example tabs&quot;&gt;&lt;button type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;true&quot; tabindex=&quot;0&quot;&gt;Set&lt;/button&gt;&lt;button type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;Matchups &lt;small&gt;30&lt;/small&gt;&lt;/button&gt;&lt;button type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;Suggestions&lt;/button&gt;&lt;button type=&quot;button&quot; role=&quot;tab&quot; aria-selected=&quot;false&quot; tabindex=&quot;-1&quot;&gt;Team Sheet &lt;small&gt;6&lt;/small&gt;&lt;/button&gt;&lt;/div&gt;
+ 
+   &lt;h2 class=&quot;u&quot;&gt;Score&lt;/h2&gt;
+   &lt;div class=&quot;row&quot; style=&quot;gap:48px&quot;&gt;&lt;div class=&quot;np-score&quot; style=&quot;--band:var(--band-top)&quot;&gt;&lt;b&gt;91&lt;/b&gt;&lt;div class=&quot;w&quot;&gt;&lt;span&gt;Top tier&lt;/span&gt;&lt;small&gt;Strength Score&lt;/small&gt;&lt;/div&gt;&lt;/div&gt;
+@@ -52,7 +52,7 @@ V2.pages.guide = {place: null, draw() {
+ 
+   &lt;h2 class=&quot;u&quot;&gt;Forms strip&lt;/h2&gt;
+   &lt;div class=&quot;np-forms&quot; style=&quot;max-width:560px&quot;&gt;&lt;div class=&quot;k&quot;&gt;&lt;span&gt;Forms · tap one to open it&lt;/span&gt;&lt;a class=&quot;np-link&quot; href=&quot;#guide&quot;&gt;Compare all 3 ›&lt;/a&gt;&lt;/div&gt;
+-  &lt;div class=&quot;r&quot; role=&quot;tablist&quot;&gt;${V2.mon(&#39;Garchomp&#39;, {sel: true, sub: &#39;S tier&#39;})}${V2.mon(&#39;Garchomp-Mega&#39;, {sub: &#39;D tier&#39;})}${V2.mon(&#39;Garchomp-Mega-Z&#39;, {sub: &#39;A tier&#39;})}&lt;/div&gt;&lt;/div&gt;
++  &lt;div class=&quot;r&quot; role=&quot;group&quot; aria-label=&quot;Forms&quot;&gt;${V2.mon(&#39;Garchomp&#39;, {sel: true, sub: &#39;S tier&#39;})}${V2.mon(&#39;Garchomp-Mega&#39;, {sub: &#39;D tier&#39;})}${V2.mon(&#39;Garchomp-Mega-Z&#39;, {sub: &#39;A tier&#39;})}&lt;/div&gt;&lt;/div&gt;
+ 
+   &lt;h2 class=&quot;u&quot;&gt;Sheet and toast&lt;/h2&gt;
+   &lt;div class=&quot;row&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;np-btn2&quot; data-v2sheet&gt;&lt;span&gt;Open a sheet&lt;/span&gt;&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;np-btn2&quot; data-v2toast&gt;&lt;span&gt;Show a toast&lt;/span&gt;&lt;/button&gt;&lt;/div&gt;
+@@ -69,6 +69,15 @@ V2.pages.guide = {place: null, draw() {
+ document.addEventListener(&#39;click&#39;, e =&gt; {
+   if (e.target.closest(&#39;[data-v2sheet]&#39;)) V2.sheet(`&lt;div style=&quot;padding:var(--s8)&quot;&gt;&lt;h2 class=&quot;u&quot; style=&quot;font-size:var(--t28)&quot;&gt;A sheet&lt;/h2&gt;&lt;p style=&quot;margin-top:var(--s3);color:var(--ink-2)&quot;&gt;A solid surface over the page. Close it with ✕, Escape or a tap outside; the keyboard returns to the button that opened it.&lt;/p&gt;&lt;/div&gt;`, {label: &#39;Example sheet&#39;});
+   if (e.target.closest(&#39;[data-v2toast]&#39;)) V2.toast(&#39;Garchomp added to your team &lt;button type=&quot;button&quot;&gt;Undo&lt;/button&gt;&#39;);
++  const tab = e.target.closest(&#39;.sg .np-tabs[role=&quot;tablist&quot;] [role=&quot;tab&quot;]&#39;);
++  if (tab) { const ts = [...tab.parentElement.querySelectorAll(&#39;[role=&quot;tab&quot;]&#39;)]; ts.forEach(t =&gt; { t.setAttribute(&#39;aria-selected&#39;, String(t === tab)); t.tabIndex = t === tab ? 0 : -1; }); }
++});
++document.addEventListener(&#39;keydown&#39;, e =&gt; {
++  const tab = e.target.closest &amp;&amp; e.target.closest(&#39;.sg .np-tabs[role=&quot;tablist&quot;] [role=&quot;tab&quot;]&#39;); if (!tab) return;
++  const k = e.key; if (![&#39;ArrowRight&#39;, &#39;ArrowLeft&#39;, &#39;Home&#39;, &#39;End&#39;].includes(k)) return;
++  e.preventDefault(); const ts = [...tab.parentElement.querySelectorAll(&#39;[role=&quot;tab&quot;]&#39;)], i = ts.indexOf(tab);
++  const next = ts[k === &#39;Home&#39; ? 0 : k === &#39;End&#39; ? ts.length - 1 : (i + (k === &#39;ArrowRight&#39; ? 1 : -1) + ts.length) % ts.length];
++  if (next) { ts.forEach(t =&gt; { t.setAttribute(&#39;aria-selected&#39;, String(t === next)); t.tabIndex = t === next ? 0 : -1; }); next.focus(); }
+ });
+ // the style guide is a Preview-only page (code review A1-M5; Sim, Nov 16: hide it at launch): its dock and Undo are demos, not real data
+ if (!window.__NP_PREVIEW) delete V2.pages.guide;
+diff --git a/app/src/v2/pages/sets.js b/app/src/v2/pages/sets.js
+index 3237750..75e4216 100644
+--- a/app/src/v2/pages/sets.js
++++ b/app/src/v2/pages/sets.js
+@@ -53,7 +53,7 @@ V2.pages.sets = {place: &#39;meta&#39;, draw() { const E = V2.esc, U = V2.stUi, team = m
+   const sent = `&lt;div class=&quot;k-sent u lo-sent&quot;&gt;&lt;span&gt;Show me&lt;/span&gt; ${p ? `&lt;button type=&quot;button&quot; class=&quot;k-w k-menu&quot; data-stfind aria-controls=&quot;st-q&quot; aria-label=&quot;${E(p.d)}: look up another Pokémon&quot;&gt;&lt;span&gt;${E(p.d)}${V2.K_CHEV}&lt;/span&gt;&lt;/button&gt; ` : &#39;&#39;}&lt;span&gt;from&lt;/span&gt; &lt;span class=&quot;us-srcs lo-srcs&quot; role=&quot;group&quot; aria-label=&quot;Doubles data source&quot;&gt;${Object.keys(SET_SRC).map(k =&gt; `&lt;button type=&quot;button&quot; class=&quot;k-w&quot; data-v2setsrc=&quot;${k}&quot; aria-pressed=&quot;${src === k}&quot;&gt;&lt;span&gt;${V2.setSrcName[k] || SET_SRC[k]}&lt;/span&gt;&lt;/button&gt;`).join(&#39;&#39;)}&lt;/span&gt;&lt;/div&gt;
+     ${S2 ? `&lt;p class=&quot;fine us-src&quot;&gt;${S2.line}&lt;/p&gt;` : &#39;&#39;}`;
+   const find = `&lt;div class=&quot;ra-find st-find&quot;&gt;&lt;label class=&quot;np-field ra-q&quot;&gt;${V2.ICON.search}&lt;input type=&quot;search&quot; id=&quot;st-q&quot; data-stq value=&quot;${E(U.q)}&quot; placeholder=&quot;Look up a Pokémon&quot; aria-label=&quot;Look up a Pokémon&quot; autocomplete=&quot;off&quot;&gt;${V2.CLR}&lt;/label&gt;
+-      ${q ? `&lt;div class=&quot;st-hits&quot; role=&quot;listbox&quot; aria-label=&quot;Matches&quot;&gt;${hits.length ? hits.map(x =&gt; V2.kChip(x.d, {attrs: {&#39;data-v2setmon&#39;: x.n}}) /* Wave 2 part 2: the kit chip (was the grey ra-chip) */).join(&#39;&#39;) : &#39;&lt;p class=&quot;k-none&quot;&gt;No Pokémon matches that.&lt;/p&gt;&#39;}&lt;/div&gt;` : &#39;&#39;}&lt;/div&gt;`;
++      ${q ? `&lt;div class=&quot;st-hits&quot; role=&quot;group&quot; aria-label=&quot;Matches&quot;&gt;${hits.length ? hits.map(x =&gt; V2.kChip(x.d, {attrs: {&#39;data-v2setmon&#39;: x.n}}) /* Wave 2 part 2: the kit chip (was the grey ra-chip) */).join(&#39;&#39;) : &#39;&lt;p class=&quot;k-none&quot;&gt;No Pokémon matches that.&lt;/p&gt;&#39;}&lt;/div&gt;` : &#39;&#39;}&lt;/div&gt;`;
+   const yours = p &amp;&amp; team.length ? `&lt;section class=&quot;st-team&quot;&gt;&lt;h2 class=&quot;lo-lab&quot;&gt;&lt;span class=&quot;u&quot;&gt;Your team&lt;/span&gt; &lt;small&gt;tap one to see its loadout&lt;/small&gt;&lt;/h2&gt;${(innerWidth &lt; 700 &amp;&amp; team.length &gt; 3 ? [team.slice(0, 3), team.slice(3)] : [team]).map(r =&gt; V2.stBench(r.map(m =&gt; V2.stFig(m.p, &#39;&#39;, m.p.n === p.n)), &#39;st-six&#39;)).join(&#39;&#39;)}&lt;/section&gt;` : &#39;&#39;;
+   const ctl = `&lt;div class=&quot;lo-ctl&quot;&gt;${sent}&lt;div class=&quot;lo-pick&quot;&gt;${find}${yours}&lt;/div&gt;&lt;/div&gt;`;
+   const top = `&lt;div class=&quot;gs-top&quot;&gt;${head}${tabs}&lt;/div&gt;`;
+diff --git a/app/src/v2/pages/sugs.js b/app/src/v2/pages/sugs.js
+index 71b7225..e6b0787 100644
+--- a/app/src/v2/pages/sugs.js
++++ b/app/src/v2/pages/sugs.js
+@@ -341,7 +341,7 @@ V2.exclLine = () =&gt; { const L = V2.exclNames(), E = V2.esc;
+ V2.exclSheet = () =&gt; { const E = V2.esc, L = V2.exclNames();
+   return `&lt;div class=&quot;ex2&quot;&gt;&lt;div class=&quot;np-eyebrow&quot;&gt;Suggestions&lt;/div&gt;&lt;h2 class=&quot;u&quot;&gt;Never Suggest&lt;/h2&gt;&lt;p class=&quot;fine&quot;&gt;These never appear in suggestions or Build Me a Team${L.length ? &#39;&#39; : &#39;. Nothing here yet&#39;}.&lt;/p&gt;
+     ${L.length ? `&lt;ul class=&quot;ex2-list&quot;&gt;${L.map(([n, d]) =&gt; `&lt;li&gt;&lt;b&gt;${E(d)}&lt;/b&gt;&lt;button type=&quot;button&quot; class=&quot;np-btn2 k-btn&quot; data-exallow=&quot;${E(n)}&quot;&gt;&lt;span&gt;Allow Again&lt;/span&gt;&lt;/button&gt;&lt;/li&gt;`).join(&#39;&#39;)}&lt;/ul&gt;` : &#39;&#39;}
+-    &lt;label class=&quot;np-field ex2-add&quot;&gt;${V2.ICON.search}&lt;input type=&quot;search&quot; data-exq placeholder=&quot;Add a Pokémon&quot; aria-label=&quot;Add a Pokémon never to suggest&quot; autocomplete=&quot;off&quot;&gt;${V2.CLR}&lt;/label&gt;&lt;div class=&quot;hits&quot; data-exhits aria-live=&quot;polite&quot;&gt;&lt;/div&gt;&lt;/div&gt;`; };
++    &lt;label class=&quot;np-field ex2-add&quot;&gt;${V2.ICON.search}&lt;input type=&quot;search&quot; data-exq placeholder=&quot;Add a Pokémon&quot; aria-label=&quot;Add a Pokémon never to suggest&quot; autocomplete=&quot;off&quot;&gt;${V2.CLR}&lt;/label&gt;&lt;div class=&quot;hits&quot; data-exhits&gt;&lt;/div&gt;&lt;/div&gt;`; };
+ V2.exclOpen = (focus) =&gt; { V2.sheet(V2.exclSheet(), {label: &#39;Never suggest&#39;, small: true, focus: focus || &#39;[data-exq]&#39;}); };
+ document.addEventListener(&#39;click&#39;, e =&gt; { const t = e.target.closest &amp;&amp; e.target.closest(&#39;[data-v2excl],[data-exallow],[data-exadd]&#39;); if (!t) return; const d = t.dataset;
+   if (d.v2excl != null) { V2.exclOpen(); return; }
+diff --git a/app/src/v2/pages/winning.js b/app/src/v2/pages/winning.js
+index e9b17dc..22a5c76 100644
+--- a/app/src/v2/pages/winning.js
++++ b/app/src/v2/pages/winning.js
+@@ -60,7 +60,7 @@ V2.wtYours = () =&gt; { const E = V2.esc, mine = members();
+ // team search (today&#39;s TOP-02 / TOP-03): suggestions by kind and count, chips, &quot;Often with&quot;, matching teams
+ V2.wtSearch = () =&gt; { const E = V2.esc, U = V2.wtUi, label = f =&gt; f.k === &#39;mon&#39; ? (byName.get(f.v) || {}).d || f.v : f.v;
+   const chips = U.f.length ? `&lt;div class=&quot;wt-chipsrow&quot;&gt;${U.f.map((f, i) =&gt; `&lt;span class=&quot;k-chip k-on wt-f&quot;&gt;&lt;span&gt;${f.k === &#39;mon&#39; ? &#39;&#39; : `&lt;i&gt;${TS_KIND[f.k]}&lt;/i&gt; `}${E(label(f))}&lt;button type=&quot;button&quot; data-tsx=&quot;${i}&quot; aria-label=&quot;Remove ${E(label(f))}&quot;&gt;×&lt;/button&gt;&lt;/span&gt;&lt;/span&gt;` /* Wave 2 part 2: a chosen filter is the kit chip, filled */).join(&#39;&#39;)}&lt;button type=&quot;button&quot; class=&quot;np-link&quot; data-tsx=&quot;*&quot;&gt;Clear&lt;/button&gt;&lt;/div&gt;` : &#39;&#39;;
+-  return `&lt;div class=&quot;wt-find&quot;&gt;&lt;label class=&quot;np-field wt-q&quot;&gt;${V2.ICON.search}&lt;input type=&quot;search&quot; id=&quot;tsIn&quot; data-wtq value=&quot;${E(U.q)}&quot; placeholder=&quot;Search winning teams&quot; aria-label=&quot;Search winning teams by Pokémon, item, move or ability&quot; autocomplete=&quot;off&quot; role=&quot;combobox&quot; aria-expanded=&quot;${!!U.q}&quot; aria-controls=&quot;wt-sug&quot;&gt;${V2.CLR}&lt;/label&gt;${V2.wtSug()}&lt;/div&gt;${chips}`; };
++  return `&lt;div class=&quot;wt-find&quot;&gt;&lt;label class=&quot;np-field wt-q&quot;&gt;${V2.ICON.search}&lt;input type=&quot;search&quot; id=&quot;tsIn&quot; data-wtq value=&quot;${E(U.q)}&quot; placeholder=&quot;Search winning teams&quot; aria-label=&quot;Search winning teams by Pokémon, item, move or ability&quot; autocomplete=&quot;off&quot; role=&quot;combobox&quot; aria-expanded=&quot;${!!U.q}&quot;${U.q ? &#39; aria-controls=&quot;wt-sug&quot;&#39; : &#39;&#39;}&gt;${V2.CLR}&lt;/label&gt;${V2.wtSug()}&lt;/div&gt;${chips}`; };
+ V2.wtSug = () =&gt; { const E = V2.esc, U = V2.wtUi, q = norm(U.q || &#39;&#39;); if (!q) return &#39;&#39;;
+   const have = new Set(U.f.map(f =&gt; f.k + &#39;:&#39; + f.v)), r = tsTerms().filter(x =&gt; !have.has(x.k + &#39;:&#39; + x.v) &amp;&amp; norm(x.label).includes(q)).sort((a, b) =&gt; (norm(b.label).startsWith(q) ? 1 : 0) - (norm(a.label).startsWith(q) ? 1 : 0) || b.c - a.c).slice(0, 8);
+   return `&lt;div class=&quot;wt-sug&quot; id=&quot;wt-sug&quot; role=&quot;listbox&quot; aria-label=&quot;Matches&quot;&gt;${r.length ? r.map((x, i) =&gt; `&lt;button type=&quot;button&quot; role=&quot;option&quot; id=&quot;wt-o${i}&quot; tabindex=&quot;-1&quot; aria-selected=&quot;${i === 0}&quot; class=&quot;wt-opt&quot; data-tsk=&quot;${x.k}&quot; data-tsv=&quot;${E(x.v)}&quot;&gt;&lt;span class=&quot;on&quot;&gt;${E(x.label)}&lt;/span&gt;&lt;span class=&quot;np-chip&quot;&gt;${TS_KIND[x.k]}&lt;/span&gt;&lt;small&gt;${x.c} team${x.c === 1 ? &#39;&#39; : &#39;s&#39;}&lt;/small&gt;&lt;/button&gt;`).join(&#39;&#39;) : &#39;&lt;p class=&quot;k-none&quot;&gt;Nothing in the winning teams matches that.&lt;/p&gt;&#39;}&lt;/div&gt;`; };
+@@ -129,7 +129,7 @@ document.addEventListener(&#39;click&#39;, async e =&gt; { const b = e.target.closest &amp;&amp; e.
+   else if (d.tsmore != null) U.fmore++;
+   V2.redraw(); });
+ document.addEventListener(&#39;input&#39;, e =&gt; { const i = e.target.closest &amp;&amp; e.target.closest(&#39;[data-wtq]&#39;); if (!i) return; V2.wtUi.q = i.value; const s = document.querySelector(&#39;.wt-sug&#39;), w = i.closest(&#39;.wt-find&#39;);
+-  if (s) s.remove(); if (w) w.insertAdjacentHTML(&#39;beforeend&#39;, V2.wtSug()); V2.wtK = 0; i.setAttribute(&#39;aria-expanded&#39;, String(!!i.value)); V2.wtMark(i); });
++  if (s) s.remove(); if (w) w.insertAdjacentHTML(&#39;beforeend&#39;, V2.wtSug()); V2.wtK = 0; i.setAttribute(&#39;aria-expanded&#39;, String(!!i.value)); if (i.value) i.setAttribute(&#39;aria-controls&#39;, &#39;wt-sug&#39;); else i.removeAttribute(&#39;aria-controls&#39;); V2.wtMark(i); });
+ /* audit Nov 16 (keyboard): a real combobox: Up/Down move the highlighted match (screen readers follow it), Enter picks it, Escape closes;
+    the matches are not Tab stops */
+ V2.wtMark = i =&gt; { const os = [...document.querySelectorAll(&#39;.wt-sug .wt-opt&#39;)]; os.forEach((o, k) =&gt; o.setAttribute(&#39;aria-selected&#39;, String(k === (V2.wtK || 0))));
+@@ -138,5 +138,5 @@ document.addEventListener(&#39;keydown&#39;, e =&gt; { const i = e.target.closest &amp;&amp; e.targ
+   const os = [...document.querySelectorAll(&#39;.wt-sug .wt-opt&#39;)];
+   if ((e.key === &#39;ArrowDown&#39; || e.key === &#39;ArrowUp&#39;) &amp;&amp; os.length) { e.preventDefault(); i.setAttribute(&#39;aria-expanded&#39;, &#39;true&#39;); V2.wtK = ((V2.wtK || 0) + (e.key === &#39;ArrowDown&#39; ? 1 : -1) + os.length) % os.length; V2.wtMark(i); }
+   else if (e.key === &#39;Enter&#39;) { const o = os[V2.wtK || 0] || os[0]; if (o) { e.preventDefault(); o.click(); } }
+-  else if (e.key === &#39;Escape&#39;) { V2.wtUi.q = &#39;&#39;; i.value = &#39;&#39;; V2.wtK = 0; const s = document.querySelector(&#39;.wt-sug&#39;); if (s) s.remove(); i.setAttribute(&#39;aria-expanded&#39;, &#39;false&#39;); i.removeAttribute(&#39;aria-activedescendant&#39;); } });
++  else if (e.key === &#39;Escape&#39;) { V2.wtUi.q = &#39;&#39;; i.value = &#39;&#39;; V2.wtK = 0; const s = document.querySelector(&#39;.wt-sug&#39;); if (s) s.remove(); i.setAttribute(&#39;aria-expanded&#39;, &#39;false&#39;); i.removeAttribute(&#39;aria-controls&#39;); i.removeAttribute(&#39;aria-activedescendant&#39;); } });
+ 
+diff --git a/app/src/v2/shell.js b/app/src/v2/shell.js
+index 3e17b7d..0462dc3 100644
+--- a/app/src/v2/shell.js
++++ b/app/src/v2/shell.js
+@@ -597,9 +597,12 @@ document.addEventListener('click', e => { const now = Date.now(), kb = !e.detail
+ // ---------- ↑/↓ through a name box's suggestions (audit JUMP-04 / X-09; today's search and name boxes have it) ----------
+ // One rule for every box: ↓ from the box moves focus to the first suggestion, ↑/↓ move between them, ↑ from the first goes back to
+ // the box. Focus shows the site's usual focus ring, Enter/Space picks (they are buttons and links). The add box (six.js) keeps its own.
+-V2.ARROW_LISTS = [['[data-v2q]', () => '[data-v2hits] .np-hit'], ['[data-bxq]', () => '[data-bxhits] .np-hit:not([aria-disabled])'],
++V2.ARROW_LISTS = [['[data-v2q]', () => '[data-v2hits] .np-hit:not(.np-hitx)'], ['[data-bxq]', () => '[data-bxhits] .np-hit:not([aria-disabled])'],
+   ['[data-bdfind]', () => '[data-bdhits] [data-bdpick]'], ['[data-bdcfind]', () => '[data-bdchits] [data-bdcpick]'],
+-  ['[data-btfind]', i => `[data-bthits="${i.dataset.btfind}"] [data-btpick]`]];
++  ['[data-btfind]', i => `[data-bthits="${i.dataset.btfind}"] [data-btpick]`],
++  ['[data-arnq]', () => '[data-arnhits] .np-hit'], ['[data-arnmq]', () => '[data-arnmhits] .np-hit'],
++  ['[data-ygq]', () => '[data-yghits] .np-hit'], ['[data-exq]', () => '[data-exhits] .np-hit'],
++  ['[data-tcfind]', () => '[data-tchits] [data-tcpick]'], ['[data-stq]', () => '.st-hits [data-v2setmon]']];
+ document.addEventListener('keydown', e => { if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' || e.altKey || e.ctrlKey || e.metaKey || !e.target.closest) return;
+   for (const [sel, list] of V2.ARROW_LISTS) {
+     const inp = e.target.matches(sel) ? e.target : null, items = inp ? [...document.querySelectorAll(list(inp))].filter(x => x.getClientRects().length) : null;
+
+----- BEGIN experiments/strength-invariants.mjs -----
+// Strength Score invariants (job 18: merges job 10 cases + job 11 J11-1..J11-5, plus HH's Option (a) rounded band edge).
+// Loads app/dist/page.html the same way experiments/golden.mjs does.
+// Usage: node experiments/strength-invariants.mjs     (exit code 1 if any case fails; build app/dist/page.html first)
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+import {withFixtures} from './md-fixtures.mjs';
+
+const {chromium} = createRequire(import.meta.url)('playwright');
+const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+const OUT = process.env.GOLDEN_OUT || ROOT + 'out/';
+const rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+
+const L = rd('limitless.json') || {results: %7B%7D, adj: %7B%7D, updated: '2026-01-01'};
+const D = {
+  'meta/results': L.results,
+  'meta/perf': {adj: L.adj, updated: String(L.updated || '').slice(0, 10)},
+  'meta/doubles_tour': rd('meta_tour.json'),
+  'meta/teams': rd('teams.json'),
+  'meta/model': process.env.GOLDEN_MODEL ? JSON.parse(fs.readFileSync(process.env.GOLDEN_MODEL, 'utf8')) : rd('model.json'),
+  'meta/doubles': rd('meta_ladder.json'),
+  'meta/doubles_ingame': rd('meta_ingame.json'),
+  'meta/events': rd('events.json'),
+  'meta/history': rd('history.json')
+};
+withFixtures(D);
+
+const pageFile = ROOT + `app/strength-inv-${process.pid}.html`;
+const srcHtml = fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8');
+if (!srcHtml.includes('render();setView(view,false);')) {
+  throw new Error('app/dist/page.html missing expected boot hook');
+}
+fs.writeFileSync(
+  pageFile,
+  '&lt;!doctype html&gt;&lt;meta charset=&quot;utf-8&quot;&gt;' +
+    srcHtml.replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);')
+);
+
+let browser;
+try {
+  browser = await chromium.launch();
+  const ctx = await browser.newContext();
+  const pg = await ctx.newPage();
+  const errs = [];
+  pg.on('pageerror', e => errs.push(e.message));
+
+  await pg.addInitScript(data => {
+    localStorage.setItem('cc2.welcomed', '"1"');
+    localStorage.removeItem('np.gl');
+    window.__PL_TEST = 1;
+    window.claude = {
+      use: async n => n === 'db' ? {
+        doc: p => ({
+          onSnapshot: cb => { setTimeout(() => cb({exists: !!data[p], data: () => data[p]}), 5); return () => %7B%7D; },
+          get: async () => ({exists: false}),
+          set: async () => %7B%7D,
+          update: async () => %7B%7D
+        })
+      } : null
+    };
+  }, D);
+
+  await pg.goto('file://' + pageFile);
+  await pg.waitForTimeout(4000);
+
+  const run = code => pg.evaluate(c => window.__ev(c), code).then(s => JSON.parse(s));
+
+  const res = await run(`(() => {
+    const out = [];
+    const check = (id, ok, detail) => out.push({id, ok: !!ok, detail: String(detail || '')});
+    const mk = ns => ns.map(n => abMember(byName.get(n)));
+    const legalSix = ['Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott'];
+
+    // J10-1: CH.wordOf guards NaN / non-finite / null
+    check('J10-1',
+      CH.wordOf(NaN) === '' && CH.wordOf(Infinity) === '' && CH.wordOf(-Infinity) === '' && CH.wordOf(null) === '' &&
+      CH.wordOf(89.6) === 'Tournament ready' && CH.wordOf(90) === 'Top tier',
+      JSON.stringify([CH.wordOf(NaN), CH.wordOf(Infinity), CH.wordOf(null), CH.wordOf(89.6), CH.wordOf(90)])
+    );
+
+    // J10-2: CH.sdOf and swapSure return null when monSd is empty or non-finite
+    {
+      const saved = META.model && META.model.monSd;
+      const ms = mk(legalSix), ms2 = mk(['Garchomp', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott']);
+      try {
+        META.model.monSd = {};
+        const sdEmpty = CH.sdOf(ms), swEmpty = swapSure(ms, ms2);
+        META.model.monSd = {Incineroar: NaN};
+        const sdNaN = CH.sdOf(ms), swNaN = swapSure(ms, ms2);
+        check('J10-2', sdEmpty === null && swEmpty === null && sdNaN === null && swNaN === null,
+          JSON.stringify({sdEmpty, swEmpty, sdNaN, swNaN}));
+      } finally {
+        if (META.model) META.model.monSd = saved;
+      }
+    }
+
+    // J10-3: Option (a) rounded band edge (89.6 -> 90 -> 'A' / 'Top tier')
+    {
+      localStorage.removeItem('np.gl');
+      const ms = mk(legalSix);
+      const gf = [CH.gradeFull(89.6), CH.gradeFull(79.6), CH.gradeFull(69.6), CH.gradeFull(59.6)];
+      const st = CH.sticky(ms, 89.6);
+      const gm = CH.gradeMove(89.4, 89.6);
+      const chip = gradeChip(89.6, 90.0);
+      check('J10-3',
+        gf.join(',') === 'A,B,C,D' && st === 'A' && gm.includes('Top tier') && chip.includes('Strength Score now 90 (Top tier)'),
+        JSON.stringify({gf, st, gm, chip})
+      );
+    }
+
+    // J10-4: Duplicate species flagged illegal in CH.gradeOf
+    {
+      const dup = mk(['Garchomp', 'Garchomp-Mega', 'Incineroar', 'Rillaboom', 'Sneasler', 'Whimsicott']);
+      const RD = THR.teamReport(dup);
+      const G = CH.gradeOf(RD, proChecks(dup, true), dup);
+      check('J10-4', G && G.illegal === true && CH.strengthOf(dup, RD.score) === null,
+        JSON.stringify({v: G && G.v, illegal: G && G.illegal}));
+    }
+
+    // J10-5: strengthX skipStruct=true skips structCredit
+    {
+      const ms = mk(legalSix);
+      const xs = strengthX(legalSix, ms, true);
+      check('J10-5', xs && xs.sc && xs.sc.c === 1 && xs.sc.miss.length === 0,
+        JSON.stringify(xs && xs.sc));
+    }
+
+    // J10-6: gradeMemo key includes itemDefault flag
+    {
+      gradeMemo.clear();
+      const base = mk(legalSix);
+      const a = base.map((m, i) => i === 0 ? {...m, heldItem: 'Sitrus Berry', itemDefault: true} : m);
+      const b = base.map((m, i) => i === 0 ? {...m, heldItem: 'Sitrus Berry', itemDefault: false} : m);
+      gradeTeam(a);
+      const sz1 = gradeMemo.size;
+      gradeTeam(b);
+      const sz2 = gradeMemo.size;
+      check('J10-6', sz2 === sz1 + 1, JSON.stringify({sz1, sz2}));
+    }
+
+    // J10-7: v1 fallback guards non-finite RD.score -> null
+    {
+      const ms = mk(legalSix.slice(0, 3));
+      const savedP = CH.PARTIAL_V2;
+      try {
+        CH.PARTIAL_V2 = false;
+        const G = CH.gradeOf({score: NaN, rows: []}, null, ms);
+        check('J10-7', G === null, JSON.stringify(G));
+      } finally {
+        CH.PARTIAL_V2 = savedP;
+      }
+    }
+
+    // J11-1: Item Clause clash marks G.illegal === true even if CK is null
+    {
+      const ill = mk(legalSix);
+      ill[0] = {...ill[0], item: 'Sitrus Berry', heldItem: 'Sitrus Berry'};
+      ill[1] = {...ill[1], item: 'Sitrus Berry', heldItem: 'Sitrus Berry'};
+      const RD = THR.teamReport(ill);
+      const G = CH.gradeOf(RD, null, ill);
+      check('J11-1', G && G.illegal === true, JSON.stringify({illegal: G && G.illegal}));
+    }
+
+    // J11-2: Dead/missing item without Item Clause or Species Clause clash does NOT mark G.illegal
+    {
+      // Replace Rillaboom so Grassy Terrain is not set (Grassy Seed is dead, but legal)
+      const noGrass = mk(['Incineroar', 'Garchomp', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott']);
+      noGrass[0] = {...noGrass[0], item: 'Grassy Seed', heldItem: 'Grassy Seed'};
+      const RD = THR.teamReport(noGrass);
+      const CK = proChecks(noGrass, true);
+      const G = CH.gradeOf(RD, CK, noGrass);
+      check('J11-2', G && G.illegal === false, JSON.stringify({illegal: G && G.illegal}));
+    }
+
+    // J11-3: Legal 6-Pokemon team has illegal === false and G.word === CH.wordOfL(G.letter)
+    {
+      const ms = mk(legalSix);
+      const RD = THR.teamReport(ms);
+      const G = CH.gradeOf(RD, proChecks(ms, true), ms);
+      check('J11-3', G && G.illegal === false && G.word === CH.wordOfL(G.letter),
+        JSON.stringify({s: G && G.s, letter: G && G.letter, word: G && G.word, illegal: G && G.illegal}));
+    }
+
+    // J11-4: THR.reportSides ignores non-finite / non-positive threat weights
+    {
+      const team = legalSix.map(n => THR.side({n}));
+      const ths = [
+        {...THR.side({n: 'Garchomp'}), w: 10},
+        {...THR.side({n: 'Incineroar'}), w: NaN},
+        {...THR.side({n: 'Whimsicott'}), w: Infinity},
+        {...THR.side({n: 'Sneasler'}), w: -5}
+      ];
+      const rep = THR.reportSides(team, ths);
+      check('J11-4', isFinite(rep.score) && rep.score >= 0 && rep.score <= 100 && rep.W === 10,
+        JSON.stringify({score: rep.score, W: rep.W}));
+    }
+
+    // J11-5: THR.threatList filters out non-finite / non-positive weights from RES.tc.rows
+    {
+      const savedTc = RES && RES.tc;
+      try {
+        if (RES && RES.tc && RES.tc.rows) {
+          const rowsCopy = {...RES.tc.rows};
+          rowsCopy.Garchomp = [1, NaN];
+          rowsCopy.Incineroar = [1, -3];
+          RES.tc = {...RES.tc, rows: rowsCopy};
+          metaVersion++;
+          const list = THR.threatList(30);
+          const bad = list.filter(x => !isFinite(x.w) || !(x.w > 0));
+          check('J11-5', list.length > 0 && bad.length === 0, JSON.stringify({n: list.length, bad: bad.length}));
+        } else {
+          const list = THR.threatList(30);
+          check('J11-5', list.every(x => isFinite(x.w) && x.w > 0), JSON.stringify({n: list.length}));
+        }
+      } finally {
+        if (RES) RES.tc = savedTc;
+        metaVersion++;
+      }
+    }
+
+    return JSON.stringify(out);
+  })()`);
+
+  let failed = 0;
+  for (const r of res) {
+    console.log(`${r.ok ? 'PASS' : 'FAIL'} ${r.id}: ${r.detail}`);
+    if (!r.ok) failed++;
+  }
+  if (errs.length) {
+    console.error('Page errors:', errs);
+    failed++;
+  }
+  if (failed) process.exitCode = 1;
+} finally {
+  if (browser) await browser.close();
+  try { fs.unlinkSync(pageFile); } catch (e) %7B%7D
+}
+----- END experiments/strength-invariants.mjs -----
+
+----- BEGIN experiments/a11y-code.mjs -----
+// Accessibility code checks (job 18: job 12 diffs 1-4 + Q1 sugs.js aria-live + Q3 kit.js kCard aria-pressed).
+// Usage: PAGE=app/dist/v2.html node experiments/a11y-code.mjs     (build with: node app/build.mjs --v2)
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+
+const {chromium} = createRequire(import.meta.url)('playwright');
+const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+const PAGE = process.env.PAGE ? (process.env.PAGE.startsWith('/') ? process.env.PAGE : ROOT + process.env.PAGE) : ROOT + 'app/dist/v2.html';
+
+if (!fs.existsSync(PAGE)) {
+  throw new Error(`Built v2 page not found at ${PAGE}. Run: node app/build.mjs --v2`);
+}
+
+let browser;
+try {
+  browser = await chromium.launch();
+  const ctx = await browser.newContext({viewport: {width: 1280, height: 800}});
+  const pg = await ctx.newPage();
+  const errs = [];
+  pg.on('pageerror', e => errs.push(e.message));
+
+  await pg.addInitScript(() => {
+    localStorage.setItem('cc2.welcomed', '"1"');
+    window.__NP_PREVIEW = 1;
+  });
+
+  await pg.goto('file://' + PAGE + '#home');
+  await pg.waitForTimeout(1500);
+
+  const results = [];
+  const check = (id, ok, detail) => results.push({id, ok: !!ok, detail: String(detail || '')});
+
+  // A11Y-1: V2.ARROW_LISTS skips .np-hitx and includes all 6 added pickers
+  {
+    const info = await pg.evaluate(() => {
+      const sels = (V2.ARROW_LISTS || []).map(([s]) => s);
+      const v2q = (V2.ARROW_LISTS || []).find(([s]) => s === '[data-v2q]');
+      const v2qTarget = v2q ? v2q[1](%7B%7D) : '';
+      const needed = ['[data-arnq]', '[data-arnmq]', '[data-ygq]', '[data-exq]', '[data-tcfind]', '[data-stq]'];
+      return {
+        v2qTarget,
+        hasAll: needed.every(s => sels.includes(s)),
+        missing: needed.filter(s => !sels.includes(s))
+      };
+    });
+    check('A11Y-1', info.v2qTarget.includes(':not(.np-hitx)') && info.hasAll, JSON.stringify(info));
+  }
+
+  // A11Y-2: V2.kCard emits aria-pressed="false" when 'sel' in o and o.sel is falsy (Order Q3)
+  {
+    const info = await pg.evaluate(() => {
+      const btnOff = V2.kCard('Garchomp', {sel: false, attrs: {'data-test': '1'}});
+      const btnOn = V2.kCard('Garchomp', {sel: true, attrs: {'data-test': '1'}});
+      const btnPlain = V2.kCard('Garchomp', {attrs: {'data-test': '1'}});
+      const divOff = V2.kCard('Garchomp', {sel: false});
+      return {
+        btnOffHasFalse: btnOff.includes('aria-pressed="false"'),
+        btnOnHasTrue: btnOn.includes('aria-pressed="true"'),
+        btnPlainNoPressed: !btnPlain.includes('aria-pressed'),
+        divOffNoPressed: !divOff.includes('aria-pressed')
+      };
+    });
+    check('A11Y-2',
+      info.btnOffHasFalse && info.btnOnHasTrue && info.btnPlainNoPressed && info.divOffNoPressed,
+      JSON.stringify(info)
+    );
+  }
+
+  // A11Y-3: guide.js (preview page) buttons have type="button", tablist has aria-label + roving tabindex + arrow keys, Forms strip is role="group"
+  {
+    const hasGuide = await pg.evaluate(() => !!(V2.pages && V2.pages.guide));
+    if (hasGuide) {
+      await pg.evaluate(() => { location.hash = '#guide'; V2.redraw(); });
+      await pg.waitForTimeout(300);
+      const info = await pg.evaluate(() => {
+        const chips = [...document.querySelectorAll('.sg .np-chip')];
+        const tablist = document.querySelector('.sg .np-tabs[role="tablist"]');
+        const tabs = tablist ? [...tablist.querySelectorAll('[role="tab"]')] : [];
+        const forms = document.querySelector('.sg .np-forms .r');
+        const initOk = chips.length === 3 && chips.every(b => b.getAttribute('type') === 'button') &&
+          tablist && tablist.getAttribute('aria-label') === 'Example tabs' &&
+          tabs.length === 4 && tabs.every(t => t.getAttribute('type') === 'button') &&
+          tabs[0].getAttribute('tabindex') === '0' && tabs.slice(1).every(t => t.getAttribute('tabindex') === '-1') &&
+          forms && forms.getAttribute('role') === 'group' && forms.getAttribute('aria-label') === 'Forms';
+        if (!initOk) return {initOk, arrowOk: false};
+        tabs[0].focus();
+        tabs[0].dispatchEvent(new KeyboardEvent('keydown', {key: 'ArrowRight', bubbles: true, cancelable: true}));
+        const arrowOk = document.activeElement === tabs[1] &&
+          tabs[1].getAttribute('aria-selected') === 'true' && tabs[1].getAttribute('tabindex') === '0' &&
+          tabs[0].getAttribute('aria-selected') === 'false' && tabs[0].getAttribute('tabindex') === '-1';
+        return {initOk, arrowOk};
+      });
+      check('A11Y-3', info.initOk && info.arrowOk, JSON.stringify(info));
+    } else {
+      check('A11Y-3', true, 'skipped (guide page stripped from non-preview build)');
+    }
+  }
+
+  // A11Y-4: sets.js .st-hits uses role="group" instead of role="listbox"
+  {
+    await pg.evaluate(() => { location.hash = '#sets'; V2.redraw(); });
+    await pg.waitForTimeout(300);
+    await pg.fill('[data-stq]', 'Gar');
+    await pg.waitForTimeout(200);
+    const info = await pg.evaluate(() => {
+      const el = document.querySelector('.st-hits');
+      return {exists: !!el, role: el ? el.getAttribute('role') : null};
+    });
+    check('A11Y-4', info.exists && info.role === 'group', JSON.stringify(info));
+  }
+
+  // A11Y-5: winning.js #tsIn only sets aria-controls="wt-sug" when query is non-empty, removes on Escape
+  {
+    await pg.evaluate(() => { location.hash = '#tournaments'; V2.redraw(); });
+    await pg.waitForTimeout(300);
+    const before = await pg.evaluate(() => {
+      const inp = document.getElementById('tsIn');
+      return {exists: !!inp, hasControls: inp ? inp.hasAttribute('aria-controls') : null};
+    });
+    let during = null, afterEsc = null;
+    if (before.exists) {
+      await pg.fill('#tsIn', 'Gar');
+      await pg.waitForTimeout(200);
+      during = await pg.evaluate(() => {
+        const inp = document.getElementById('tsIn');
+        return {controls: inp && inp.getAttribute('aria-controls'), sugExists: !!document.getElementById('wt-sug')};
+      });
+      await pg.press('#tsIn', 'Escape');
+      await pg.waitForTimeout(150);
+      afterEsc = await pg.evaluate(() => {
+        const inp = document.getElementById('tsIn');
+        return {hasControls: inp && inp.hasAttribute('aria-controls'), expanded: inp && inp.getAttribute('aria-expanded')};
+      });
+    }
+    check('A11Y-5',
+      before.exists && !before.hasControls &&
+      during && during.controls === 'wt-sug' && during.sugExists &&
+      afterEsc && !afterEsc.hasControls && afterEsc.expanded === 'false',
+      JSON.stringify({before, during, afterEsc})
+    );
+  }
+
+  // A11Y-6: sugs.js exclSheet [data-exhits] has no aria-live attribute (Order Q1)
+  {
+    const info = await pg.evaluate(() => {
+      const html = typeof V2.exclSheet === 'function' ? V2.exclSheet() : '';
+      const d = document.createElement('div');
+      d.innerHTML = html;
+      const hits = d.querySelector('[data-exhits]');
+      return {exists: !!hits, ariaLive: hits ? hits.getAttribute('aria-live') : 'missing'};
+    });
+    check('A11Y-6', info.exists && info.ariaLive === null, JSON.stringify(info));
+  }
+
+  let failed = 0;
+  for (const r of results) {
+    console.log(`${r.ok ? 'PASS' : 'FAIL'} ${r.id}: ${r.detail}`);
+    if (!r.ok) failed++;
+  }
+  if (errs.length) {
+    console.error('Page errors:', errs);
+    failed++;
+  }
+  if (failed) process.exitCode = 1;
+} finally {
+  if (browser) await browser.close();
+}
+----- END experiments/a11y-code.mjs -----
