@@ -23,6 +23,7 @@ def fuzzy(f, p):
     """Fallback for hand-written diffs: each hunk's old lines (context + '-') must appear exactly once; replaced by context + '+'."""
     try: src = open(f, encoding='utf8').read()
     except Exception as e: return 'FAILED   ', f'  (cannot read: {e})'
+    p = re.sub(r'^-{3,} [A-Z][^\n]*\n?', '', p, flags=re.M)  # a section line like '--- PART 1 NEW FILES ---' is not a removal
     hunks = re.split(r'^@@[^\n]*@@[^\n]*\n', p, flags=re.M)[1:]
     if not hunks: return 'FAILED   ', '  (no hunks)'
     for n, h in enumerate(hunks, 1):
