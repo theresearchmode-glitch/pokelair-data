@@ -27,11 +27,15 @@ const R = await p.evaluate(() => window.__ev(`(() => {
     /* what Dondozo takes, straight from the hit helper: Garchomp's Earthquake (physical) and Draco Meteor (special), at 0 and at +2 Def / Sp. Def */
     const G = byName.get('Garchomp'), tk = (mv, st) => { const h = bestHitOn(G, MV([mv]), DZ, null, null, st ? {dStage: {def: 2, spd: 2}} : {}); return h ? h.r.max : null; };
     const taken = {phys: [tk('Earthquake'), tk('Earthquake', 1)], spec: [tk('Draco Meteor'), tk('Draco Meteor', 1)]};
-    return JSON.stringify({withC, noC, theirsC, taken}); }
+    /* team checks (11-game-plan.js): a Commander row only with a Commander Tatsugiri; Covered with Dondozo, Missing without */
+    const gp = ms => { try { const r = gamePlan(ms).rows.find(x => x.k === 'commander'); return r ? r.st + ' | ' + r.who + ' | ' + r.note : 'none'; } catch (e) { return 'error: ' + String(e.message).slice(0, 80); } };
+    const tgC = () => mon(TG, 'Commander', ['Draco Meteor', 'Muddy Water', 'Protect']);
+    const checks = {both: gp([dz(), tgC(), foe('Kingambit'), foe('Clefable')]), noDz: gp([tgC(), foe('Garchomp'), foe('Kingambit'), foe('Clefable')]), storm: gp([dz(), mon(TG, 'Storm Drain', ['Draco Meteor']), foe('Kingambit')]), none: gp([foe('Garchomp'), foe('Kingambit'), foe('Clefable')])};
+    return JSON.stringify({withC, noC, theirsC, taken, checks}); }
   finally { had[0] ? byName.set('Dondozo', had[0]) : byName.delete('Dondozo'); had[1] ? byName.set('Tatsugiri', had[1]) : byName.delete('Tatsugiri'); } })()`));
 let fails = 0; const ok = (c, m) => { console.log((c ? '  pass  ' : '  FAIL  ') + m); if (!c) fails++; };
 let r; try { r = JSON.parse(R); } catch (e) { ok(false, 'turn one ran: ' + String(R).slice(0, 300)); await b.close(); process.exit(1); }
-const {withC, noC, theirsC, taken} = r, j = x => JSON.stringify(x).slice(0, 400);
+const {withC, noC, theirsC, taken, checks} = r, j = x => JSON.stringify(x).slice(0, 400);
 const pct = (bs, who, me) => { const x = bs && bs.find(y => y.who === who && y.me === me); const m = x && /up to (\d+(?:\.\d+)?)%/i.exec(x.why); return m ? +m[1] : (x && /^KOs/.test(x.why) ? 999 : null); };
 ok(!!withC && withC[0].who === 'Tatsugiri' && /^Commander: into your Dondozo/.test(withC[0].act) && withC[0].prio === 0, `your Tatsugiri's Commander comes first, priority 0 (${j(withC && withC[0])})`);
 ok(!!withC && !withC.some(x => /Tatsugiri/.test(x.act) && !x.me), `their leads never aim at your commanding Tatsugiri (${j(withC && withC.filter(x => !x.me).map(x => x.act))})`);
@@ -43,4 +47,5 @@ ok(taken && taken.phys[1] < taken.phys[0] && taken.spec[1] < taken.spec[0], `Don
 ok(!!noC && noC.some(x => !x.me && / into Tatsugiri/.test(x.act)), 'without Commander their leads can aim at Tatsugiri (so the check above can fail)');
 ok(!!noC && !noC.some(x => /^Commander/.test(x.act)), 'no Commander without the Ability (Storm Drain Tatsugiri)');
 ok(!!theirsC && theirsC[0].who === 'Tatsugiri' && !theirsC[0].me && /^Commander: into their Dondozo/.test(theirsC[0].act) && !theirsC.some(x => x.me && /Tatsugiri/.test(x.act)), `their Commander: first, and your leads never aim at it (${j(theirsC && theirsC.map(x => x.act))})`);
+ok(!!checks && /^ok \| Tatsugiri \+ Dondozo \| Lead them together/.test(checks.both) && /^miss \| Tatsugiri \| .*does nothing without Dondozo/.test(checks.noDz) && checks.storm === 'none' && checks.none === 'none', `team checks: Commander row Covered with Dondozo, Missing without, none for Storm Drain or no Tatsugiri (${j(checks)})`);
 await b.close(); console.log(fails ? `commander-test: ${fails} FAILED` : 'commander-test: all passed'); process.exit(fails ? 1 : 0);
