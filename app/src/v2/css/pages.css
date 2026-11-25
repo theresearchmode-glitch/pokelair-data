@@ -4251,8 +4251,9 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .ev2-body{display:grid;align-content:start;gap:var(--s1);min-width:0;padding:var(--s3) var(--s4) var(--s4)}
 .ev2-k b{font-weight:800;color:var(--k-ink)}
 .ev2-name{font-size:var(--t17);line-height:1.3;color:var(--k-ink);overflow-wrap:normal;hyphens:none;text-wrap:balance}
-.ev2-six{display:flex;flex-wrap:nowrap;gap:var(--s1);margin-top:var(--s1);min-width:0}
-.ev2-six .np-mon{--iw:40px}
+.ev2-six{display:flex;flex-wrap:nowrap;gap:var(--s1);margin-top:var(--s1);min-width:0;container-type:inline-size}
+/* six sprites always fit their ticket (Nov 25, iPad check #7: at 800-940 and 1100-1279 the 6th was cut by the card's edge): each is at most its usual size, smaller only when the row is too narrow */
+.ev2-six .np-mon{--iw:min(40px,calc((100cqw - 20px) / 6))}
 @media (min-width:800px) and (max-width:1099.98px){
   .ev2-wall{grid-template-columns:repeat(2,minmax(0,1fr))}
   .ev2-wall>.ev2-tk,.ev2-wall.m3-2>.ev2-tk:nth-last-child(-n+2),.ev2-wall.m3-1>.ev2-tk:last-child{grid-column:auto}
@@ -4279,6 +4280,7 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
   .ev2-body{padding:var(--s2) var(--s3) var(--s3)}
   .ev2-name{font-size:var(--t15)}
   .ev2-six{justify-content:space-between;gap:0;max-width:calc(6 * 44px)}
+  .ev2-six .np-mon{--iw:min(40px,calc(100cqw / 6))} /* no gaps here (space-between) */
   .ev2-go{gap:0}
   .ev2 .ev-call{margin-left:0}
   .ev2 .ev-cpast{display:grid;gap:0}
