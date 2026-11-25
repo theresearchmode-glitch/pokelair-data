@@ -1,0 +1,63 @@
+v3-lab loaded out/matches.json: 38513 decided games, 431 events, 6450 teams, 5504 players, hasSets=true
+
+=== BASELINE REPRODUCTION CHECK (same 80/20 split as model.mjs) ===
+  train=32562 test=5951 | raw: acc=56.36% ll=0.6803 | calibrated (slope=0.892): ll=0.6801
+  Compare directly against: FAST=10,14,1,60 node model.mjs
+=== WALK-FORWARD LAB (4 weekly cuts ending 2026-11-09; 100 tournament-clustered boots) ===
+  cut 2026-10-12->2026-10-19 (n=5327): | baseline acc=55.2% ll=0.6828 | fm acc=55.1% ll=0.6810 | matchup acc=55.2% ll=0.6819 | glicko acc=54.3% ll=0.6839 | no-evid-hier acc=55.0% ll=0.6813 | mega-cap acc=54.8% ll=0.6827
+  cut 2026-10-19->2026-10-26 (n=5412): | baseline acc=55.9% ll=0.6802 | fm acc=55.9% ll=0.6802 | matchup acc=55.8% ll=0.6794 | glicko acc=55.8% ll=0.6816 | no-evid-hier acc=56.5% ll=0.6805 | mega-cap acc=56.0% ll=0.6802
+  cut 2026-10-26->2026-11-02 (n=3626): | baseline acc=57.6% ll=0.6757 | fm acc=58.2% ll=0.6773 | matchup acc=58.2% ll=0.6734 | glicko acc=57.9% ll=0.6771 | no-evid-hier acc=57.6% ll=0.6751 | mega-cap acc=57.9% ll=0.6755
+  cut 2026-11-02->2026-11-09 (n=3474): | baseline acc=55.5% ll=0.6832 | fm acc=55.4% ll=0.6833 | matchup acc=56.5% ll=0.6818 | glicko acc=55.8% ll=0.6848 | no-evid-hier acc=56.0% ll=0.6820 | mega-cap acc=55.7% ll=0.6828
+
+=== POOLED WALK-FORWARD RESULTS (PAIRED ON EXACT SAME GAMES) ===
+
+Today's model (model.mjs) [baseline] -> BASELINE
+  games=17839 | acc=55.98% [55.10%, 56.75%] | ll=0.68064 [0.6783, 0.6830] | brier=0.24384 [0.2427, 0.2450] | calSlope=0.956
+
+C1: Factorization Machine pairs (d=4) [fm] -> NO DIFFERENCE / REJECT (95% CI crosses 0)
+  games=17839 | acc=56.02% [55.10%, 56.85%] | ll=0.68045 [0.6779, 0.6829] | brier=0.24373 [0.2425, 0.2449] | calSlope=0.919
+  delta vs baseline: dAcc=+0.04 pts [-0.42%, 0.56%] | dLL=-0.00020 [-0.0014, 0.0007] | dBrier=-0.00011 [-0.0007, 0.0003]
+
+C2: Blade-Chest matchup term (d=4) [matchup] -> KEEP (95% CI strictly beats baseline log-loss)
+  games=17839 | acc=56.24% [55.32%, 57.06%] | ll=0.67941 [0.6771, 0.6820] | brier=0.24324 [0.2421, 0.2445] | calSlope=0.948
+  delta vs baseline: dAcc=+0.26 pts [-0.14%, 0.83%] | dLL=-0.00124 [-0.0017, -0.0006] | dBrier=-0.00061 [-0.0008, -0.0003]
+
+C3: Causal Glicko-2 player skill [glicko] -> REJECT (95% CI strictly worse than baseline)
+  games=17839 | acc=55.78% [54.93%, 56.52%] | ll=0.68203 [0.6797, 0.6842] | brier=0.24452 [0.2434, 0.2456] | calSlope=0.952
+  delta vs baseline: dAcc=-0.20 pts [-0.57%, 0.18%] | dLL=+0.00139 [0.0010, 0.0019] | dBrier=+0.00068 [0.0005, 0.0009]
+
+C4: Clean ridge + fixed six delta [no-evid-hier] -> KEEP (95% CI strictly beats baseline log-loss)
+  games=17839 | acc=56.20% [55.25%, 56.96%] | ll=0.67996 [0.6774, 0.6825] | brier=0.24350 [0.2422, 0.2448] | calSlope=0.936
+  delta vs baseline: dAcc=+0.22 pts [-0.02%, 0.46%] | dLL=-0.00068 [-0.0010, -0.0002] | dBrier=-0.00034 [-0.0005, -0.0001]
+
+C5: Mega diminishing returns [mega-cap] -> NO DIFFERENCE / REJECT (95% CI crosses 0)
+  games=17839 | acc=55.97% [55.22%, 56.65%] | ll=0.68047 [0.6782, 0.6829] | brier=0.24376 [0.2427, 0.2450] | calSlope=0.964
+  delta vs baseline: dAcc=-0.01 pts [-0.24%, 0.27%] | dLL=-0.00017 [-0.0004, 0.0000] | dBrier=-0.00008 [-0.0002, 0.0000]
+
+=== BEST-OF-3 SECTION (SEPARATE PER CLAUDE.md RULE 21) ===
+  Not available: out/matches.json does not distinguish single games from best-of-3 sets (eventFormat=false, gameFlag=false, multiGameRounds=0).
+  Per CLAUDE.md Rule 21, Bo3 evaluation stays separate until update.mjs tags Bo3 sets.
+
+=== PART D: M-D DAY-ONE SMALL-DATA SIMULATION (start=2026-09-12, test > 2026-10-10, testGames=19522) ===
+  Week 1 (train=2456 games <= 2026-09-19):
+    cold-start : acc=52.40% ll=0.69179 brier=0.24932 cal=2.948
+    heavy-ridge: acc=52.11% ll=0.69242 dLL=0.00063 [0.00041, 0.00086]
+    usage-prior: acc=52.19% ll=0.69197 dLL=0.00018 [-0.00009, 0.00049]
+    l2-sp-decay: acc=52.12% ll=0.69242 dLL=0.00063 [0.00042, 0.00085]
+  Week 2 (train=7352 games <= 2026-09-26):
+    cold-start : acc=53.44% ll=0.68971 brier=0.24828 cal=0.670
+    heavy-ridge: acc=52.58% ll=0.69154 dLL=0.00183 [0.00055, 0.00313]
+    usage-prior: acc=52.41% ll=0.69147 dLL=0.00176 [0.00057, 0.00307]
+    l2-sp-decay: acc=53.20% ll=0.68973 dLL=0.00002 [-0.00033, 0.00035]
+  Week 3 (train=13697 games <= 2026-10-03):
+    cold-start : acc=53.98% ll=0.68681 brier=0.24686 cal=0.873
+    heavy-ridge: acc=53.64% ll=0.68868 dLL=0.00188 [0.00016, 0.00377]
+    usage-prior: acc=53.53% ll=0.68882 dLL=0.00202 [0.00027, 0.00393]
+    l2-sp-decay: acc=54.43% ll=0.68612 dLL=-0.00069 [-0.00097, -0.00040]
+  Week 4 (train=18991 games <= 2026-10-10):
+    cold-start : acc=54.95% ll=0.68432 brier=0.24564 cal=0.843
+    heavy-ridge: acc=54.65% ll=0.68604 dLL=0.00172 [-0.00026, 0.00407]
+    usage-prior: acc=54.59% ll=0.68602 dLL=0.00170 [-0.00031, 0.00406]
+    l2-sp-decay: acc=55.17% ll=0.68379 dLL=-0.00053 [-0.00078, -0.00025]
+
+Wrote /tmp/claude-0/-home-user-pokelair-data/204a9d61-5900-570f-b954-256bbb6b60d7/scratchpad/v3-lab-results.json
