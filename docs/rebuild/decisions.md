@@ -2616,3 +2616,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:40 PM: Sim: Scout's last day is probably Friday Nov 27.
 - 5:41 PM: Sim OK: Scout plan (now patch check; Thu launch-branch code review; Fri switch runbook walk-through).
 - 6:08 PM: Kip job 35 + Scout patch report received. Kip #1 (shadow scoreboard graded in-sample) checked real: fixed on alt/shadow-order (grades only unseen events), GitHub dispatched, for main before the 09:07 UTC data run. Score-changing findings (EB ridge, six double-count, band inflation 75.5% at 80+) wait for Sim (launch keeps today's score).
+- 6:12 PM: Kip 36 A #1 checked real and fixed on design6 (names.mjs did not parse since merge 82f0b43e; data job would have crashed after the switch). syntax-check.mjs added to CI.
+- 6:20 PM: Kip 36 A: all 9 findings checked real; fixed on alt/kip36a (one batch = kip34 + fb-retention + design6 + Kip 36 A). CI on kip34 failed only because design6 has no out/info.json; public-site now treats info as optional with a warning. Superseded fb-retention run cancelled; batch = alt/kip36a.
