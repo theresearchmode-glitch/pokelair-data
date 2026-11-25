@@ -211,7 +211,10 @@ if (process.argv.includes('--v2')) {
       const h = `'sha256-${crypto.createHash('sha256').update(m[2], 'utf8').digest('base64')}'`;
       if (!hashes.includes(h)) hashes.push(h);
     }
-    const csp = ["default-src 'none'", `script-src 'self' ${hashes.join(' ')}${CF_TOKEN ? ' ' + CF_SCRIPT : ''}`.trim(), "style-src 'self' 'unsafe-inline'", "img-src 'self' data:", "font-src 'self'",
+    /* Turnstile (Nov 25, night plan 5): Cloudflare's script and its challenge frame, per developers.cloudflare.com/turnstile/reference/content-security-policy;
+       the page loads them only on Send Feedback (feedback.js V2.tsLoad) */
+    const TS = 'https://challenges.cloudflare.com';
+    const csp = ["default-src 'none'", `script-src 'self' ${hashes.join(' ')} ${TS}${CF_TOKEN ? ' ' + CF_SCRIPT : ''}`.trim(), `frame-src ${TS}`, "style-src 'self' 'unsafe-inline'", "img-src 'self' data:", "font-src 'self'",
       `connect-src 'self'${CF_TOKEN ? ' ' + CF_CONNECT : ''}`, "manifest-src 'self'", "base-uri 'none'", "form-action 'none'", "object-src 'none'", "frame-ancestors 'none'", 'upgrade-insecure-requests'].join('; ');
     return ['/*', `  Content-Security-Policy: ${csp}`, '  X-Content-Type-Options: nosniff', '  Referrer-Policy: no-referrer',
       '  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()', '  Cross-Origin-Opener-Policy: same-origin',
