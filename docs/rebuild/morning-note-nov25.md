@@ -1,6 +1,9 @@
 # Morning note for Sim (Wed Nov 25) — HH. Updated by the night watchdog.
 ## NOW
-- Night watchdog: GitHub tests still running on dec2 / j19 / j16 / practice branches (design6 bcdf69f1 = success).
+- Night chain finished (Wed 8:45 UTC). GitHub: design6 SUCCESS, dec2 de2e4d57 SUCCESS, practice-switch 1a9fd47a SUCCESS,
+  j19 3f66ab29 SUCCESS (all jobs). j16 457ace44: only the 2 Meowstic-F picture checks fail (PC job below).
+- Decision (HH, 2:26 AM ET, logged): SEO Home title shortened to 56 chars, "NastyPlot · Pokémon Champions team builder &
+  damage calc" (was 62; Kip's PUB-1 caps at 60, Google cuts near 60). Test branch only; easy to reword.
 ## JUST DONE (Tue night)
 - Redesign batch pushed to claude/design6 (bcdf69f1): all tests green; countdown short form; tagline sliver fixed.
 - Kip lab ROUND 2 (8 weeks, 38,477 later games, paired): the COMBO (clean ridge + matchup term) beats today's model:
