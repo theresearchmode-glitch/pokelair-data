@@ -16,7 +16,7 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
 - **"Other chat"** = Sim's PC Claude Code chat, SAME account (long runs, GPU image work). **"Other acc"** = second account, Pro plan,
   much less usage: report-only, patch jobs, and (Sim, Nov 24) merging + testing Gemini's jobs; pushes ONLY to alt/other-* branches,
   never publishes; HH reviews and merges. HH may push alt/gemini-* branches so GitHub tests Gemini's work (Sim, Nov 24).
-- **The squad (Sim, Nov 24):** Sim, HH, **Kip** (= Gemini), **Scout** (= the other acc helper) and **Dos** ("Dossier" = the PC chat, Sim, Nov 25). Scout's subscription ends about Nov 28-29 (Sim, Nov 25): use him for the highest-value reviews first.
+- **The squad (Sim, Nov 24):** Sim, HH, **Kip** (= Gemini), **Scout** (= the other acc helper) and **Dos** ("Dossier" = the PC chat, Sim, Nov 25). Scout's subscription ends about Nov 28-29 (Sim, Nov 25): use him for the highest-value reviews first. **NP - Marketing** (a cloud session on this account, Nov 25) talks to HH directly about the launch campaign; Sim approves anything public.
 - **Squad tasks (Sim, Nov 25):** every task that can/should go to **Dos, Kip or Scout** is written in **bold** in chat, and HH reminds Sim
   of it in each update until Sim says he has sent it. Efficiency first: 1 helper + the main thread always busy.
 - **Gemini / Kip (Sim, Nov 24):** Sim's Google Gemini subscription is a third helper for when Claude usage is low: code reviews and
