@@ -3314,6 +3314,7 @@ button.pp2-plate{cursor:pointer;width:100%}
 .abt-d{margin:0;font-size:var(--t13);line-height:1.5;color:var(--rc-ink2)}
 .abt-tot{display:flex;justify-content:space-between;align-items:baseline;gap:var(--s4);margin:var(--s4) 0 0;font:800 var(--t17)/1.3 var(--b);color:var(--rc-ink)}.abt-tot b{font-size:var(--t26);color:var(--rc-bad);text-transform:uppercase}
 .abt-end{margin:var(--s3) 0 0;font-size:var(--t13);line-height:1.5;color:var(--rc-ink2)}
+.abt .abt-rc .abtmail{justify-content:flex-end;gap:var(--s2)}.abt .abt-rc .np-link{font:inherit;font-weight:600;color:var(--rc-good);text-decoration:underline;text-underline-offset:3px} /* the public receipt's Contact row: "Show email" (then the address and Copy) in the receipt's blue ink, white paper in both themes */
 .abt-fine .k-h2{margin:0 0 var(--s3)} /* Wave 3: the kit step size, 40 */
 @media (min-width:960px) and (max-width:979.98px){.abt-fine .k-h2{font-size:var(--t28)}} /* the side column is 169px here: at 34px "The fine print." broke into 3 lines (Nov 23) */
 @media (max-width:959.98px){.abt-two{grid-template-columns:minmax(0,1fr)}}
