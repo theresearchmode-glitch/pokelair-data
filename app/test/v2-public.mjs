@@ -22,6 +22,12 @@ ok(s.h1, 'Home draws');
 for (const r of ['guide', 'sheet', 'team-empty']) { await p.goto('file://' + OUT + '#' + r); await p.waitForTimeout(800);
   /* Sim's Q24 A (Nov 19): an unknown address shows the not-found page ('Nothing here.'), no longer Home */
   const t = await p.evaluate(() => document.title); ok(t === 'Page not found · NastyPlot', `#${r} is not a page here: it shows the not-found page like any unknown address (tab title: ${t})`); }
+/* Pokémon pictures with width/height attributes (public-site job 19, Nov 25) keep the box their CSS gives them: My Box's tiles were
+   49 wide and 240 tall at 390 (the height attribute beat aspect-ratio:1), the Box page ~900px longer. Square and inside the tile. */
+for (const w of [390, 1440]) { const q = await b.newPage({viewport: {width: w, height: 900}}); await q.goto('file://' + OUT + '#box'); await q.waitForTimeout(2500);
+  const m = await q.evaluate(() => [...document.querySelectorAll('.mb-t img')].map(i => { const r = i.getBoundingClientRect(), t = i.closest('.mb-t').getBoundingClientRect(); return [+r.width.toFixed(1), +r.height.toFixed(1), +t.height.toFixed(1)]; }));
+  const bad = m.filter(([iw, ih, th]) => Math.abs(iw - ih) > 1 || ih > th + 1);
+  ok(m.length > 0 && !bad.length, `#box at ${w}: every tile picture is square and inside its tile (${m.length} pictures${bad.length ? '; wrong [w, h, tile h]: ' + JSON.stringify(bad.slice(0, 3)) : ''})`); await q.close(); }
 ok(!errs.length, 'no page errors' + (errs.length ? ': ' + errs[0].slice(0, 120) : ''));
 await b.close();
 console.log(`v2-public: ${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

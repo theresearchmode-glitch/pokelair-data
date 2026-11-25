@@ -33,7 +33,7 @@ function exportPaste() {
 }
 // Nature and stat points from a paste: 'EVs: 2 HP / 32 Atk / 32 Spe' (Champions stat points, 0-32 each) and 'Jolly Nature'.
 // Classic EVs (any value over 32) are converted at 8 EVs per stat point. Returns {nat, v: [hp, atk, def, spa, spd, spe]} or null.
-const okNat0 = nat => nat && typeof NATURES !== 'undefined' ? (NATURES.includes(nat) ? nat : ['Docile', 'Serious', 'Bashful', 'Quirky'].includes(nat) && NATURES.includes('Hardy') ? 'Hardy' : null) : null;
+const okNat0 = nat => { if (!nat || typeof NATURES === 'undefined') return null; const s = String(nat).trim(), c = s ? s[0].toUpperCase() + s.slice(1).toLowerCase() : ''; return NATURES.includes(c) ? c : ['Docile', 'Serious', 'Bashful', 'Quirky'].includes(c) && NATURES.includes('Hardy') ? 'Hardy' : null; }; /* 'jolly Nature' works too (Kip job 5) */
 function pasteSpread(lines) { const ev = (lines.find(l => /^EVs:/i.test(l)) || '').replace(/^EVs:\s*/i, ''), natL = lines.find(l => /^\w+\s+Nature\s*$/i.test(l));
   const nat = natL ? natL.replace(/\s+Nature\s*$/i, '').trim() : null, K = {hp: 0, atk: 1, def: 2, spa: 3, spd: 4, spe: 5}, v = [0, 0, 0, 0, 0, 0]; let any = false;
   for (const part of ev.split('/')) { const m = part.trim().match(/^(\d+)\s+(HP|Atk|Def|SpA|SpD|Spe)$/i); if (!m) continue; v[K[m[2].toLowerCase()]] = +m[1]; any = true; }
@@ -103,7 +103,7 @@ function parsePaste(text) {
       if (p.n === 'Meowstic-M-Mega' && (female || pnorm(speciesName) === 'meowsticf') && byName.get('Meowstic-F-Mega')) p = byName.get('Meowstic-F-Mega'); }
     const abl = (lines.find(l => /^Ability:/i.test(l)) || '').replace(/^Ability:\s*/i, '').trim();
     // a Mega's ability is fixed by its form (Showdown pastes write the base form's), so it is filled in on import
-    const ability = p.m ? (p.a[0] || null) : p.a.includes(abl) ? abl : null;
+    const ability = p.m ? (p.a[0] || null) : (p.a.find(x => x.toLowerCase() === abl.toLowerCase()) || null); /* 'Ability: intimidate' works too (Kip job 5) */
     if (abl && !p.m && !ability) notes.push(`${p.d}: skipped ability "${abl}"`); /* stress test (Nov 16): a wrong Ability was dropped without a word; listed like a bad item or move */
     const learn = new Set((LEARN[p.n] || []).map(k => MV[k].name)), mv = [];
     for (const l of lines.filter(l => l.startsWith('-'))) { const name = l.replace(/^-\s*/, '').replace(/\s*\[.*\]$/, '').trim();

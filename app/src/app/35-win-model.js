@@ -93,8 +93,8 @@ function structCredit(ms){if(ms.length!==6)return {c:1,miss:[]};let CK=null;try{
 // upside needs proof: an untried mix, or a team missing what nearly every winning team has, gets its above-average edge cut
 // Every team is read the same way: 4 moves (an opponent's likely-move list keeps its 4 most used), its default item when
 // none is set, then Item Clause and dead items (a mirror of your own six in the Gauntlet is exactly even).
-function strengthX(names,ms){if(ms){ms=resolveItems(ms.map(m=>{if(!m||!m.p)return m;let o=m;if(o.moves&&o.moves.length>4)o={...o,moves:o.moves.slice(0,4)};if(!o.item&&!o.p.m)o={...o,item:defaultItem(o.p)};return o}));const all=ms;ms=ms.map(m=>m&&m.heldItem&&!itemWorks(all,m.heldItem)?{...m,_deadItem:true}:m)}const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
-  const cr=dev>0?mixCredit(names):1,sc=dev>0&&ms?structCredit(ms):{c:1,miss:[]};return {xRaw:mx+(dev>0?dev*cr*sc.c:dev),x0:xRaw0,cr,sc}}
+function strengthX(names,ms,skipStruct){if(ms){ms=resolveItems(ms.map(m=>{if(!m||!m.p)return m;let o=m;if(o.moves&&o.moves.length>4)o={...o,moves:o.moves.slice(0,4)};if(!o.item&&!o.p.m)o={...o,item:defaultItem(o.p)};return o}));const all=ms;ms=ms.map(m=>m&&m.heldItem&&!itemWorks(all,m.heldItem)?{...m,_deadItem:true}:m)}const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
+  const cr=dev>0?mixCredit(names):1,sc=!skipStruct&&dev>0&&ms?structCredit(ms):{c:1,miss:[]};return {xRaw:mx+(dev>0?dev*cr*sc.c:dev),x0:xRaw0,cr,sc}}
 // The model is trained on doubles tournament games only.
 function winVsField(names,mine,msIn){if(!modelOK()||names.length<6)return null;{const b=names.map(n=>(byName.get(n)||{}).b||n);if(new Set(b).size<b.length)return null}
   const ms=mine?(msIn||members()):null,mx=META.model.meanX||0;
@@ -144,7 +144,7 @@ function tsTitle(base,t,team){const a=CH.hand(base),b=CH.hand(t&&t.rows?t:team?p
 function spreadKey(m){const c=m&&m.spread;return c?(c.nat||'')+'/'+[c.hp,c.atk,c.def,c.spa,c.spd,c.spe].join('.'):'c'}
 const gradeMemo=new Map();
 function gradeTeam(team){if(!team||team.length<6||typeof CH!=='object'||!CH.gradeOf)return null;
-  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')+'~'+spreadKey(m)).sort().join('|');
+  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+(m.itemDefault?'d':'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')+'~'+spreadKey(m)).sort().join('|');
   if(gradeMemo.has(k))return gradeMemo.get(k);let g=null;
   try{const ms=typeof assignItems==='function'?assignItems(team):team,RD=THR.teamReport(ms),G=CH.gradeOf(RD,proChecks(ms,true),ms);g=G?G.s:null;
     // a six that real players ran and lost with more than the field average is never an upgrade, whatever its grade
@@ -156,7 +156,7 @@ function planGrade(pl){if(!pl||!pl.team||pl.team.length!==6)return null;if(pl._g
 // "Grade 93 → 95" on a suggestion; the title keeps the readiness detail
 // "Grade 93 → 96" on a suggestion: the same one grade My team shows (Nov 7: one grade out of 100, real results blended in)
 function gradeChip(g0,g1,cls){if(g0==null||g1==null)return '';const d=g1-g0;
-  const a=CH.eOfS(g0),b=CH.eOfS(g1),tt=a!=null&&b!=null?`Strength Score now ${Math.round(g0)} (${CH.wordOf(g0)}). With this change ${Math.round(g1)} (${CH.wordOf(g1)}): teams scoring like this win about ${Math.round(b)}% against today\u2019s tournament teams. In real games, teams that made a change like this won about 1 to 2 more games per 100: the score rates the team, your play decides the rest.`:`Your grade now ${g0} (${CH.grade(g0)}); with this change ${g1} (${CH.grade(g1)})`;
+  const a=CH.eOfS(g0),b=CH.eOfS(g1),tt=a!=null&&b!=null?`Strength Score now ${Math.round(g0)} (${CH.wordOf(Math.round(g0))}). With this change ${Math.round(g1)} (${CH.wordOf(Math.round(g1))}): teams scoring like this win about ${Math.round(b)}% against today\u2019s tournament teams. In real games, teams that made a change like this won about 1 to 2 more games per 100: the score rates the team, your play decides the rest.`:`Your grade now ${g0} (${CH.grade(g0)}); with this change ${g1} (${CH.grade(g1)})`;
   return `<span class="${cls||'tsd'} ${d>0?'up':d<0?'dn':''}" title="${tt}">${CH.gradeMove(g0,g1)}</span>`}
 function tsChip(team){let ms=null;try{ms=members()}catch(e){}const g0=ms&&ms.length===6?gradeTeam(ms):null,g1=gradeTeam(team);if(g0!=null&&g1!=null)return gradeChip(g0,g1,null,team);
   const base=ui.vsum&&ui.vsum.RD;const t=tsInfo(team);if(!t||!base)return '';const d=t.score-base.score;
@@ -199,7 +199,8 @@ function realMatch(mine,theirs){if(!modelOK()||!META.model.ctr)return null;const
 // Grade-raising suggestions need 75%+ (a third of strength-raising swaps qualify); fixes for real problems don't.
 var SWAP_K=.7,SWAP_MIN=.75;
 function swapSure(base,team){const M=META.model;if(!M||!M.monSd||!base||!team||base.length!==6||team.length!==6)return null;
-  const A=base.map(m=>m.p.n),B=team.map(m=>m.p.n),sa=new Set(A),sb=new Set(B),mx=Math.max(...Object.values(M.monSd)),p0=+M.pairSd0||.05,pk=(a,b)=>a<b?a+'|'+b:b+'|'+a;
+  const vals=Object.values(M.monSd).filter(isFinite);if(!vals.length)return null;
+  const A=base.map(m=>m.p.n),B=team.map(m=>m.p.n),sa=new Set(A),sb=new Set(B),mx=Math.max(...vals),p0=+M.pairSd0||.05,pk=(a,b)=>a<b?a+'|'+b:b+'|'+a;
   const pairs=ns=>{const s=new Set();for(let i=0;i<6;i++)for(let j=i+1;j<6;j++)s.add(pk(ns[i],ns[j]));return s},pa=pairs(A),pb=pairs(B);let v=0;
   for(const n of A)if(!sb.has(n))v+=(M.monSd[n]??mx)**2;for(const n of B)if(!sa.has(n))v+=(M.monSd[n]??mx)**2;
   for(const k of pa)if(!pb.has(k))v+=((M.pairSd||{})[k]??p0)**2;for(const k of pb)if(!pa.has(k))v+=((M.pairSd||{})[k]??p0)**2;

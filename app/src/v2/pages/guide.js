@@ -29,11 +29,11 @@ V2.pages.guide = {place: null, draw() {
   <p class="fine" style="margin-top:12px">One filled main action per block (black by day, the blue action at night); outline buttons and links for the rest.</p>
 
   <h2 class="u">Chips and types</h2>
-  <div class="row"><button class="np-chip" aria-pressed="true">Top 10</button><button class="np-chip" aria-pressed="false">Grid</button><button class="np-chip" aria-pressed="false">All 30</button>
+  <div class="row"><button type="button" class="np-chip" aria-pressed="true">Top 10</button><button type="button" class="np-chip" aria-pressed="false">Grid</button><button type="button" class="np-chip" aria-pressed="false">All 30</button>
   ${['Dragon', 'Ground', 'Fire', 'Flying', 'Water', 'Electric', 'Fairy', 'Steel'].map(V2.typeChip).join('')}</div>
 
   <h2 class="u">Tabs</h2>
-  <div class="np-tabs" role="tablist"><button role="tab" aria-selected="true">Set</button><button role="tab" aria-selected="false">Matchups <small>30</small></button><button role="tab" aria-selected="false">Suggestions</button><button role="tab" aria-selected="false">Team Sheet <small>6</small></button></div>
+  <div class="np-tabs" role="tablist" aria-label="Example tabs"><button type="button" role="tab" aria-selected="true" tabindex="0">Set</button><button type="button" role="tab" aria-selected="false" tabindex="-1">Matchups <small>30</small></button><button type="button" role="tab" aria-selected="false" tabindex="-1">Suggestions</button><button type="button" role="tab" aria-selected="false" tabindex="-1">Team Sheet <small>6</small></button></div>
 
   <h2 class="u">Score</h2>
   <div class="row" style="gap:48px"><div class="np-score" style="--band:var(--band-top)"><b>91</b><div class="w"><span>Top tier</span><small>Strength Score</small></div></div>
@@ -52,7 +52,7 @@ V2.pages.guide = {place: null, draw() {
 
   <h2 class="u">Forms strip</h2>
   <div class="np-forms" style="max-width:560px"><div class="k"><span>Forms · tap one to open it</span><a class="np-link" href="#guide">Compare all 3 ›</a></div>
-  <div class="r" role="tablist">${V2.mon('Garchomp', {sel: true, sub: 'S tier'})}${V2.mon('Garchomp-Mega', {sub: 'D tier'})}${V2.mon('Garchomp-Mega-Z', {sub: 'A tier'})}</div></div>
+  <div class="r" role="group" aria-label="Forms">${V2.mon('Garchomp', {sel: true, sub: 'S tier'})}${V2.mon('Garchomp-Mega', {sub: 'D tier'})}${V2.mon('Garchomp-Mega-Z', {sub: 'A tier'})}</div></div>
 
   <h2 class="u">Sheet and toast</h2>
   <div class="row"><button type="button" class="np-btn2" data-v2sheet><span>Open a sheet</span></button><button type="button" class="np-btn2" data-v2toast><span>Show a toast</span></button></div>
@@ -69,6 +69,15 @@ V2.pages.guide = {place: null, draw() {
 document.addEventListener('click', e => {
   if (e.target.closest('[data-v2sheet]')) V2.sheet(`<div style="padding:var(--s8)"><h2 class="u" style="font-size:var(--t28)">A sheet</h2><p style="margin-top:var(--s3);color:var(--ink-2)">A solid surface over the page. Close it with ✕, Escape or a tap outside; the keyboard returns to the button that opened it.</p></div>`, {label: 'Example sheet'});
   if (e.target.closest('[data-v2toast]')) V2.toast('Garchomp added to your team <button type="button">Undo</button>');
+  const tab = e.target.closest('.sg .np-tabs[role="tablist"] [role="tab"]');
+  if (tab) { const ts = [...tab.parentElement.querySelectorAll('[role="tab"]')]; ts.forEach(t => { t.setAttribute('aria-selected', String(t === tab)); t.tabIndex = t === tab ? 0 : -1; }); }
+});
+document.addEventListener('keydown', e => {
+  const tab = e.target.closest && e.target.closest('.sg .np-tabs[role="tablist"] [role="tab"]'); if (!tab) return;
+  const k = e.key; if (!['ArrowRight', 'ArrowLeft', 'Home', 'End'].includes(k)) return;
+  e.preventDefault(); const ts = [...tab.parentElement.querySelectorAll('[role="tab"]')], i = ts.indexOf(tab);
+  const next = ts[k === 'Home' ? 0 : k === 'End' ? ts.length - 1 : (i + (k === 'ArrowRight' ? 1 : -1) + ts.length) % ts.length];
+  if (next) { ts.forEach(t => { t.setAttribute('aria-selected', String(t === next)); t.tabIndex = t === next ? 0 : -1; }); next.focus(); }
 });
 // the style guide is a Preview-only page (code review A1-M5; Sim, Nov 16: hide it at launch): its dock and Undo are demos, not real data
 if (!window.__NP_PREVIEW) delete V2.pages.guide;
