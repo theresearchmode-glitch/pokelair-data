@@ -2560,3 +2560,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:12 PM: Kip job 30: 7 findings, all checked as real (F5 rare); all fixed: merge-check (HEAD is the merge, clean tree, test.yml run on exact sha), hook (first-parent, refuse on error), merge.ff=false, v2-saved server (Windows, outside-ROOT PAGE, 400, fail fast), main test.yml cancelled-runs still test (alt/main-skipfix2 on GitHub, lands when green). Switch branch green on GitHub at d48525a7 with j18+j19+My Box fix.
 - 1:21 PM: j16 merged into claude/design6 (d54daac2) through the merge gate: ALL PASSED (5 gate checks + 13 tests, 5 min). Gate fix: browser folder. Dos report expected about 3 PM (Sim).
 - 1:27 PM: j17 merged into claude/design6 (1df93566) through the merge gate: ALL PASSED. All Kip branches (j16-j19) now in the redesign.
+- 1:28 PM: Main: dd976b24 fast-forwarded (cancelled data runs still run the tests; Kip job 30 F5). GitHub green on dd976b24 first.
