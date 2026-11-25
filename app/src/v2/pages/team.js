@@ -595,7 +595,7 @@ document.addEventListener('keydown', e => { const t = e.target.closest && e.targ
   const j = e.key === 'ArrowRight' ? (i + 1) % as.length : e.key === 'ArrowLeft' ? (i - 1 + as.length) % as.length : e.key === 'Home' ? 0 : e.key === 'End' ? as.length - 1 : -1; if (j < 0) return;
   e.preventDefault(); as[j].focus(); V2.tmShow(as[j].dataset.tmjump); });
 // crossing 700 redraws, so phones get the tabs and wider windows the sections side by side, with no reload
-matchMedia('(max-width:699.98px)').addEventListener('change', () => { if (V2.route() === 'team' && V2.redraw) V2.redraw(); });
+{ const mq = window.matchMedia && matchMedia('(max-width:699.98px)'), f = () => { if (V2.route() === 'team' && V2.redraw) V2.redraw(); }; if (mq) { if (mq.addEventListener) mq.addEventListener('change', f); else if (mq.addListener) mq.addListener(f); } } /* iOS 13 has only addListener (Kip job 36 C #5) */
 addEventListener('hashchange', () => { if (V2.route() === 'team' && /^#team=/.test(location.hash) && V2.redraw) V2.redraw(); });
 let jumpRaf = 0; addEventListener('scroll', () => { if (jumpRaf) return; jumpRaf = requestAnimationFrame(() => { jumpRaf = 0; if (V2.route() === 'team') V2.jumpSync(); }); }, {passive: true});
 addEventListener('resize', () => { if (V2.route() === 'team') V2.jumpSync(); });

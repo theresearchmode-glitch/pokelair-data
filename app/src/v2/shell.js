@@ -390,7 +390,7 @@ V2.logo = (foot) => { const L = typeof NP_LOGO === 'object' ? NP_LOGO : null; if
   return foot ? `<img class="np-lg" src="${u.small}" alt="NastyPlot" width="183" height="32" decoding="async">`
     : `<picture class="np-lg"><source media="(max-width:413.98px)" srcset="${u.mark}"><source media="(max-width:999.98px)" srcset="${u.small}"><img src="${u.full}" alt="" width="241" height="44" decoding="async"></picture>`; };
 // say it once (Nov 16): a page's own data date shows only when it differs from the footer's 'Data as of' (V2.otherDay('Nov 10') -> '' when the same)
-V2.otherDay = d => { const a = V2.asOf && V2.asOf(); return d && a && new RegExp('\\b' + d.replace(/\s+/g, '\\s') + '\\b').test(a) ? '' : (d || ''); };
+V2.otherDay = d => { const a = V2.asOf && V2.asOf(); return d && a && new RegExp('\\b' + String(d).replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s') + '\\b').test(a) ? '' : (d || ''); }; /* Kip job 36 C #7: a date with ( or . can't break it */
 // the data's date (Sim's review item 18): "Data as of Nov 11", plus "(N days old)" when stale; shared with today's site
 /* functions stress test (Nov 16): with storage blocked, Save still said "Saved" and nothing survived a reload; one check, and the save words say so */
 V2.canStore = (() => { try { localStorage.setItem('np2.probe', '1'); localStorage.removeItem('np2.probe'); return true; } catch (e) { return false; } })();
@@ -425,7 +425,7 @@ V2.PUB_PATHS = {home: '/', team: '/team', build: '/build', battle: '/battle', ca
 V2.PUB_FROM_PATH = p => { const c = String(p || '/').replace(/\/+$/, '') || '/';
   if (c === '/privacy') return {r: 'about', sub: 'priv'};
   if (c === '/gifts') return {r: V2.pages.gifts ? 'gifts' : (V2.pages.news ? 'news' : 'home'), sub: ''};
-  if (c.startsWith('/pokemon/')) return {r: 'pokemon', sub: decodeURIComponent(c.slice(9))};
+  if (c.startsWith('/pokemon/')) { try { return {r: 'pokemon', sub: decodeURIComponent(c.slice(9))}; } catch (e) { return {r: 'pokemon', sub: ''}; } } /* a bad %-address shows the not-found Pokémon, not a blank page (Kip job 36 C #1) */
   for (const [k, v] of Object.entries(V2.PUB_PATHS)) if (v === c && !k.includes('=')) return {r: k, sub: ''};
   return null; };
 V2.route = () => { let h = (location.hash || '').slice(1).split('=')[0];

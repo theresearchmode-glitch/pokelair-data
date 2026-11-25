@@ -5,7 +5,7 @@
 // Clear), the top of the ratings, every Pokémon by tier with "+N more" / "Show fewer" (remembered), About the ratings (track record,
 // the four numbers, sources). The numbers are today's shared logic: lairRows, lairRank, lairHead, lTier, isGem, ratingTrack.
 V2.raUi = {q: '', ty: [], f: {}, types: false, all: null, open: null, spot: null, low: false};
-V2.raLoad = () => { const U = V2.raUi; if (U.all == null) { let o = {}; try { o = JSON.parse(localStorage.getItem('np2.ra.board') || '{}') || {}; } catch (e) {} U.all = !!o.all; U.open = o.open || {}; U.view = o.view === 'list' ? 'list' : 'stand'; } };
+V2.raLoad = () => { const U = V2.raUi; if (U.all == null) { let o = {}; try { o = JSON.parse(localStorage.getItem('np2.ra.board') || '{}') || {}; } catch (e) {} U.all = !!o.all; U.open = o.open && typeof o.open === 'object' && !Array.isArray(o.open) ? o.open : {}; U.view = o.view === 'list' ? 'list' : 'stand'; } };
 V2.raSave = () => { try { localStorage.setItem('np2.ra.board', JSON.stringify({all: V2.raUi.all, open: V2.raUi.open, view: V2.raUi.view})); } catch (e) {} };
 V2.raFilter = rows => { const U = V2.raUi, q = U.q.trim().toLowerCase(), f = U.f;
   return rows.filter(({p}) => (!q || p.d.toLowerCase().includes(q) || p.t.some(t => t.toLowerCase() === q)) && (!U.ty.length || U.ty.every(t => p.t.includes(t)))
