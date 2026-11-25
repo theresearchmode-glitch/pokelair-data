@@ -2606,3 +2606,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:32 PM: data/rk9 removed on alt/no-rk9 (a6c614c4; 11 files, current files only; new no-rk9-test). Lands on main by fast-forward after GitHub is green, then design6. out/official_perf.json (frozen RK9-derived table, unused by the page since Nov 7) kept: Sim's call.
 - 4:32 PM: M-D source note + pinning test on design6 (017aec48). Safety check finished (b16263c1).
 - 4:32 PM: Sim: 'sim is good' (full name removed from current docs, Sim only); Preview link stays anyone-with-the-link.
+- 4:50 PM: Merged alt/gemini-counter into design6 (13b986ab; gate ALL PASSED). Dos job 1 done: HH checked read-only via the Cloudflare API: HTTPS on, TLS 1.2, HSTS 6 mo, browser TTL respect headers, hello@ -> nastyplotgaming@gmail.com active, D1 6a292fdc (0 tables), Turnstile widget managed on nastyplot.org. Rate limit skipped (free plan 1/1). Sim OK: remove out/official_perf.json.

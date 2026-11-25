@@ -431,9 +431,21 @@ V2.mtBeltFit = () => { const h = document.querySelector('.tm-hero.mt'); if (!h) 
   const longest = Math.max(...sp.textContent.trim().split(/\s+/).map(wd => { const r = document.createElement('span'); r.style.cssText = 'position:absolute;visibility:hidden;white-space:nowrap'; const cs = getComputedStyle(sp); r.style.font = cs.font; r.style.fontStyle = cs.fontStyle; r.textContent = wd; document.body.append(r); const w = r.getBoundingClientRect().width; r.remove(); return w; }));
   const cs = getComputedStyle(belt), room = belt.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight); if (longest > room) { h.classList.add('mt-wide'); V2._mtWide = true; } };
 { let t = 0; addEventListener('resize', () => { clearTimeout(t); t = setTimeout(() => { if (V2.mtBeltFit) V2.mtBeltFit(); }, 120); }); }
+/* Team checks counted anonymously (public site only, Nov 25; queue item 4: marketing's baseline from the quiet launch). A Team check is
+   My Team drawing a full six's Strength Score (six Pokémon, a score, not "so far"). Counted once per distinct six per page load: the
+   key (the six names, sorted) stays in this page's memory and is never sent or saved. The body is only {"k":"teamcheck"}; the Worker
+   (worker/feedback.mjs, /api/count) adds 1 to that day's total. Nothing is sent in the Claude-hosted builds (no window.__NP_PUBLIC),
+   from file:// or when sendBeacon is missing; a missing endpoint (preview, local) is ignored. Checked by experiments/teamcheck-count-test.mjs. */
+V2.countSeen = new Set();
+V2.countTeamCheck = (ms, G) => { try {
+  if (!window.__NP_PUBLIC || !G || G.partial || !ms || ms.length !== 6 || !/^https?:$/.test(location.protocol)) return;
+  const key = ms.map(m => m.p.n).sort().join('|'); if (V2.countSeen.has(key)) return; V2.countSeen.add(key);
+  if (navigator.sendBeacon) navigator.sendBeacon('/api/count', '{"k":"teamcheck"}');
+} catch (e) {} };
 V2.pages.team = {place: 'team', draw() {
   const D = V2.teamData();
   if (D.empty) return V2.emptyHtml();
+  V2.countTeamCheck(D.ms, D.G);
   const {ms, G} = D, sel = ms[Math.min(V2.ui.sel, ms.length - 1)], s = G ? Math.round(G.s) : null;
   const word = G ? CH.wordOf(G.s) + (G.partial ? ' so far' : '') : '';
   const rank = G && !G.partial && G.rk != null ? CH.rankShort(G.rk) + ' of tournament teams' : G && G.partial ? `${ms.length} of 6 picked` : '';
