@@ -1,6 +1,6 @@
 # NastyPlot launch campaign brief v2 — "What's Your Score?" (NP - Marketing session, Wed Nov 25, 3:13 PM; Sim approves anything public)
 Kept here for the build team. Full text arrived in HH's chat (session NPD - Cloud); summary of what the build team owns:
-- Thu Nov 26: fix M-D dates (Dec 3 02:00 UTC to Mar 4 01:59 UTC; M-C end Dec 2 01:59 UTC is right), with tests. (HH)
+- M-D dates (CORRECTED 3:29 PM): our data is right: Pokémon HOME news 878 = Dec 2 02:00 UTC (Tue Dec 1, 6 PM PT / 9 PM ET) to Mar 3 2027 01:59 UTC; pokemon.com's "Wed Dec 2 6 PM PST" is a slip. Thu Nov 26: a "Reg M-D has started" line + a hand-run data job right after the start. (HH)
 - Sat Nov 28: the switch; Preview link to NP - Marketing; Nov 29-30 they review final titles and copy.
 - Tue Dec 1: feedback-form anti-spam (Turnstile) on; mobile check.
 - By the quiet launch (Wed Dec 2 after 6 PM PT, latest Dec 5): anonymous Team-check counter (a number only, no IDs) + Cloudflare
