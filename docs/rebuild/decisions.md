@@ -2564,3 +2564,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:36 PM: Hourly 1:36: Game Plan v77; second helper (until 4 PM, Sim) on an iPhone/iPad WebKit look check of the redesign (report only).
 - 1:38 PM: Sim sent Kip job 31 (SEO research: search phrases, competitors, titles/descriptions per page type, Reg M-D launch-week searches, Search Console steps).
 - 1:49 PM: Sim: quiet public launch of nastyplot.org moves from about Dec 7 to Dec 2-3 (after Saturday's switch), with one page per Pokémon + sitemap ready, to catch the Reg M-D launch-week searches (Kip job 31). Sim's Cloudflare/Google clicks move to about Dec 1-2.
+- 2:05 PM: Public site: one page per Pokémon built (346, sitemap, own titles, canonical), nested-address bug fixed (v2.js/routes/art relative). SEO helper report (10 fixes) and switch runbook (alt/switch-dryrun-1, GitHub green) received.
