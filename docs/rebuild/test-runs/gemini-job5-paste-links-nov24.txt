@@ -465,7 +465,7 @@ Proof (code inspection):
   {
     "name": "link-truncated-code-returns-null",
     "kind": "link",
-    "input": "https://www.google.com/search?q=https://nastyplot.org/%23team%3DeyJ2IjoxLCJmIjoiZG91",
+    "input": "https://nastyplot.org/%23team%3DeyJ2IjoxLCJmIjoiZG91",
     "expect": {
       "decoded": null
     },

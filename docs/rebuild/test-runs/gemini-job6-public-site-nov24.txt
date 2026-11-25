@@ -155,7 +155,7 @@ export function writePublicStaticPages({baseHtml, outDir, mons = [], origin = SI
 
 --- New File (C1-C2): app/src/v2/public-seo.js (bundled ONLY when --public is passed) ---
 Proof (code trace; not run in browser):
-  input: visitor opens https://www.google.com/search?q=https://nastyplot.org/%23calc
+  input: visitor opens https://nastyplot.org/%23calc
   -> old: stays at /#calc with generic &lt;title&gt;
   -> new: history.replaceState rewrites to /calc, V2.route() returns 'calc', V2.setTitle() sets &lt;title&gt;, description, canonical, og:title, og:description
 
@@ -547,7 +547,7 @@ check('worker-accepts-valid-body', !!validateFeedback({text: 'Calc looks off on 
   const origFetch = globalThis.fetch;
   globalThis.fetch = async () => new Response(JSON.stringify({success: true}), {status: 200});
   try {
-    const req = new Request('https://www.google.com/search?q=https://nastyplot.org/api/feedback', {
+    const req = new Request('https://nastyplot.org/api/feedback', {
       method: 'POST',
       headers: {'Content-Type': 'application/json', 'CF-Turnstile-Response': 'tok', 'CF-Connecting-IP': '9.9.9.9', 'User-Agent': 'EvilUA'},
       body: JSON.stringify({text: 'Broken button', page: 'team', kind: 'bug'}),
@@ -556,7 +556,7 @@ check('worker-accepts-valid-body', !!validateFeedback({text: 'Calc looks off on 
     check('worker-d1-stores-4-cols-no-pii',
       res.status === 201 && bound.length === 1 && bound[0].args.length === 4 &&
       bound[0].args[1] === 'team' && bound[0].args[2] === 'bug' && bound[0].args[3] === 'Broken button');
-    const data404 = await worker.fetch(new Request('https://www.google.com/search?q=https://nastyplot.org/data/missing.json'), fakeEnv);
+    const data404 = await worker.fetch(new Request('https://nastyplot.org/data/missing.json'), fakeEnv);
     check('worker-data-404-not-spa', data404.status === 404);
   } finally {
     globalThis.fetch = origFetch;
