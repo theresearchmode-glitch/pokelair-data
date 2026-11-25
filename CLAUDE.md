@@ -10,6 +10,8 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
   (all on Cloudflare, nastyplot.org, bought by Sim; goes live QUIETLY about Dec 7, announced about Dec 18 — moved up from January, Sim Nov 24). Launch with today's score; after the design work, all focus on the Strength
   Score and analytics; best-of-3 data later (Sim, Nov 24).
   **Being found on Google (SEO) is "super duper important"** (Sim, Nov 24): real page addresses, search-ready pages, before launch.
+- **Work mode (Sim, Nov 24):** usage saved until 4:00 PM Wed (night watchdog only); from then on, constant work through the
+  night as normal (hourly work check + night check re-enabled at the 4:01 PM resume).
 - **Helpers:** 1 until 4:00 PM Wed Nov 25, then 2 as standard. Above that, ask Sim.
 - **"Other chat"** = Sim's PC Claude Code chat, SAME account (long runs, GPU image work). **"Other acc"** = second account, Pro plan,
   much less usage: report-only, patch jobs, and (Sim, Nov 24) merging + testing Gemini's jobs; pushes ONLY to alt/other-* branches,
