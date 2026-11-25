@@ -2569,3 +2569,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:17 PM: Sim (recs OK): Q1 keep repo public, remove his personal email from every tracked file today, switch to hello@nastyplot.org (Email Routing, Sim's click). Q2 public launch target Dec 2-3, Dec 5 latest. Kip job 32 (Limitless ToS + COPPA) and Scout (worker scrub/size/Origin checks) sent. Sim offers to do the Cloudflare setup tonight after work.
 - 2:26 PM: Sim: Cloudflare setup with Dos about 5 PM (he watches); reminder set 4:50 PM. Main contact fix on alt/main-contact (lands when green).
 - 2:28 PM: Scout's feedback guard (origin, 16 KB cap, emails/phones removed before storing) reviewed and in claude/design6 (e8cc0bde); both worker tests now in GitHub's checks (31036f1b). Checked: ALL PASSED + ALL PASSED (43); scrub keeps 252/4/0, 13,631, 44.5%.
+- 2:30 PM: Sim: hello@nastyplot.org receive-only for now (Cloudflare Email Routing to his Gmail, tonight with Dos). Sending as hello@ not needed yet.
