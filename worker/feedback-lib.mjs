@@ -94,7 +94,8 @@ export function validateFeedback(body) {
   const page = typeof body.page === 'string' ? body.page.trim() : '';
   const kind = typeof body.kind === 'string' ? body.kind.trim() : '';
   if (text.length < 3 || text.length > 2000) return {error: 'text must be 3..2000 chars'};
-  if (!page || page.length > 40) return {error: 'page must be 1..40 chars'};
+  /* the page you came from: a route or a Pokémon name ("meta", "pokemon=Mr.%20Mime"), so no email, phone or @handle fits in it (Kip job 36 A #4) */
+  if (!/^[A-Za-z0-9=._%\/-]{1,40}$/.test(page)) return {error: 'invalid page'};
   if (!kind || kind.length > 20 || !ALLOWED_KINDS.has(kind)) return {error: 'invalid kind'};
   return {ok: {text, page, kind}};
 }

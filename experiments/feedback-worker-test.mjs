@@ -14,6 +14,7 @@ check('W1-reject-extra-field', !!validateFeedback({text: 'Calc off', page: 'calc
 check('W2-reject-legacy-fields', !!validateFeedback({text: 'Calc off', page: 'calc', kind: 'bug', w: 'phone', d: '2026-11-24'}).error);
 check('W3-reject-long-text', !!validateFeedback({text: 'x'.repeat(2001), page: 'calc', kind: 'idea'}).error);
 check('W4-reject-bad-kind', !!validateFeedback({text: 'Calc off', page: 'calc', kind: 'spam'}).error);
+check('W24-page-is-a-route-only', !!validateFeedback({text: 'great site', page: 'kid@gmail.com', kind: 'like'}).error && !!validateFeedback({text: 'great site', page: '555 123 4567', kind: 'like'}).error && !!validateFeedback({text: 'x y z', page: 'pokemon=Mr.%20Mime', kind: 'like'}).ok); /* Kip job 36 A #4 */
 check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page: 'calc', kind: 'mistake'}).ok);
 
 // W6-W10: Worker fetch behavior, Turnstile verification, D1 4-column privacy, /data/ 404

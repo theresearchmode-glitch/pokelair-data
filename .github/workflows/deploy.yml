@@ -32,11 +32,14 @@ jobs:
       CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
       SITE: https://nastyplot.org
     steps:
+      # wrangler is installed in a step WITHOUT the Cloudflare key (Kip job 36 A #7): an npm package run during install never sees it
+      - name: Install wrangler (no key in this step)
+        run: npm i --no-save --no-package-lock --prefix "$RUNNER_TEMP/wr" wrangler@4.45.0 && echo "WR=$RUNNER_TEMP/wr/node_modules/.bin/wrangler" >> "$GITHUB_ENV"
       - name: Roll back (by hand only)
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.rollback }}
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
-        run: npx --yes wrangler@4.45.0 rollback --name nastyplot --message "rollback by hand" -y && exit 0
+        run: $WR rollback --name nastyplot --message "rollback by hand" -y && exit 0
       - uses: actions/checkout@v5
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
         with:
@@ -60,8 +63,8 @@ jobs:
           test -n "$CLOUDFLARE_API_TOKEN" || { echo "::error::CLOUDFLARE_API_TOKEN secret is missing"; exit 1; }
           sed -e 's#^directory = .*#directory = "./site"#' wrangler.toml > wrangler.deploy.toml
           # the feedback and counts tables (CREATE TABLE IF NOT EXISTS: a no-op once they exist)
-          npx --yes wrangler@4.45.0 d1 execute nastyplot-feedback --remote --file worker/schema.sql -c wrangler.deploy.toml -y
-          npx --yes wrangler@4.45.0 deploy -c wrangler.deploy.toml --message "live $(git rev-parse --short HEAD)"
+          "$WR" d1 execute nastyplot-feedback --remote --file worker/schema.sql -c wrangler.deploy.toml -y
+          "$WR" deploy -c wrangler.deploy.toml --message "live $(git rev-parse --short HEAD)"
       - name: Smoke test (rolls back by itself if the site answers wrong)
         if: ${{ !(github.event_name == 'workflow_dispatch' && inputs.rollback) }}
         env:
@@ -75,4 +78,4 @@ jobs:
           chk /data/model.json 200 '{'
           chk /this-page-does-not-exist 404 'noindex'
           code=$(curl -s -o /dev/null -w '%{http_code}' "$SITE/v2.js.map"); [ "$code" = 404 ] || { echo "::error::source map is public ($code)"; bad=1; }
-          if [ $bad = 1 ]; then npx --yes wrangler@4.45.0 rollback --name nastyplot --message "smoke test failed" -y || true; exit 1; fi
+          if [ $bad = 1 ]; then "$WR" rollback --name nastyplot --message "smoke test failed" -y || true; exit 1; fi
