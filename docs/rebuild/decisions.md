@@ -2562,3 +2562,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:27 PM: j17 merged into claude/design6 (1df93566) through the merge gate: ALL PASSED. All Kip branches (j16-j19) now in the redesign.
 - 1:28 PM: Main: dd976b24 fast-forwarded (cancelled data runs still run the tests; Kip job 30 F5). GitHub green on dd976b24 first.
 - 1:36 PM: Hourly 1:36: Game Plan v77; second helper (until 4 PM, Sim) on an iPhone/iPad WebKit look check of the redesign (report only).
+- 1:38 PM: Sim sent Kip job 31 (SEO research: search phrases, competitors, titles/descriptions per page type, Reg M-D launch-week searches, Search Console steps).
