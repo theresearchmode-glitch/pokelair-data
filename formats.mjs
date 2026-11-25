@@ -62,8 +62,9 @@ export function activeReg(file) { const r = readReg(file);
   return {id: r.id, name: regName(r.id), sd: r.sd || (r.id === SITE_REG.id ? SITE_REG.sd : sdGuess(r.id, String(r.since || '').slice(0, 4))), since: r.since || SITE_REG.since, end: (() => { const e = endDay(r.id), n = r.now && r.now.id !== r.id ? r.now.since : null; return e && n ? (e < n ? e : n) : (e || n); })()} /* never past the official end (code review, Nov 24) */; }
 // Official end of each regulation (Nov 17). Limitless can keep tagging events with the old regulation after it ends (checked
 // Nov 17: events listed from Dec 3 tagged "Regulation Set M-C"), so an event dated at or after the end never counts for it,
-// whatever its tag: it counts for the next regulation. M-C ends Dec 1, 5:59 PM PST (pokemon.com "Get Ready for Regulation Set
-// M-C"). Add each regulation's end here when it is official.
+// whatever its tag: it counts for the next regulation. M-C ends Dec 1, 5:59 PM PST = Dec 2 01:59 UTC; M-D runs Dec 2
+// 02:00 UTC to Mar 3 2027 01:59 UTC (source of truth: Pokémon HOME news 878, checked Nov 25; pokemon.com's "Wed Dec 2 6 PM PST" is a
+// slip). experiments/reg-switch-test.mjs pins this and the page's copy (V2.REG_END_MC). Add each regulation's end here when it is official.
 export const REG_END = {'M-C': '2026-12-02T01:59:00Z'};
 export const regAt = (f, date) => { let id = f; for (let i = 0; i < 4; i++) { const end = REG_END[id], t = Date.parse(String(date || ''));
   if (!end || !isFinite(t) || t < Date.parse(end)) break; const nx = nextRegIds(id)[0]; if (!nx) break; id = nx; } return id; };
