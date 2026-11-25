@@ -55,6 +55,9 @@ const TYPES = {'.html': 'text/html; charset=utf-8', '.js': 'text/javascript; cha
 /* Nov 25: the public page loads its files from the site root (/v2.js, /fonts/, /routes/), as nastyplot.org serves dist/ at the
    root; a path not found under app/ is looked up in app/dist/ */
 const srv = http.createServer((q, s) => { const u = decodeURIComponent(q.url.split('?')[0]); let f = path.join(APP, u);
+  /* Nov 25: the public page sends an anonymous Team check count (POST /api/count) when #team shows a scored six; the live Worker answers
+     204 (worker/feedback.mjs; tested in experiments/count-worker-test.mjs + teamcheck-count-test.mjs), so this server does too */
+  if (u === '/api/count' && q.method === 'POST') { q.resume(); q.on('end', () => { s.writeHead(204); s.end(); }); return; }
   if (!fs.existsSync(f) && fs.existsSync(path.join(APP, 'dist', u))) f = path.join(APP, 'dist', u);
   if (!f.startsWith(APP + path.sep)) { s.writeHead(403); s.end(); return; }
   fs.readFile(f, (e, buf) => { if (e) { s.writeHead(404); s.end(); return; } s.writeHead(200, {'content-type': TYPES[path.extname(f)] || 'application/octet-stream'}); s.end(buf); }); });

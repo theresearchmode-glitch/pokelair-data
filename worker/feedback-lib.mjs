@@ -79,3 +79,19 @@ export function validateFeedback(body) {
   return {ok: {text, page, kind}};
 }
 
+
+// ---------- anonymous counts (/api/count, Nov 25; queue item 4: marketing's baseline from the quiet launch) ----------
+// The page sends {"k":"teamcheck"} when a full team gets its Strength Score (once per distinct six per page load, decided in the
+// browser). Only a daily total is kept: one row per (day, event name) with n = n + 1. No IP, user agent, headers, cookies, referrer,
+// time of day or any id is read or stored. Event names come from this allow-list; anything else is refused.
+export const COUNT_KEYS = new Set(['teamcheck']);
+// the largest valid body is 17 bytes ({"k":"teamcheck"}); 256 leaves room for spaces and a longer future name, nothing more
+export const COUNT_MAX_BYTES = 256;
+export function validateCount(body) {
+  if (!body || typeof body !== 'object' || Array.isArray(body)) return {error: 'Invalid JSON body'};
+  const keys = Object.keys(body);
+  if (keys.length !== 1 || keys[0] !== 'k') return {error: 'Unexpected fields'};
+  if (typeof body.k !== 'string' || !COUNT_KEYS.has(body.k)) return {error: 'invalid k'};
+  return {ok: {k: body.k}};
+}
+export const COUNT_SQL = 'INSERT INTO counts (day, k, n) VALUES (?, ?, 1) ON CONFLICT(day, k) DO UPDATE SET n = n + 1';

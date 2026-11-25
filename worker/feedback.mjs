@@ -1,8 +1,9 @@
 // Cloudflare Worker: anonymous feedback endpoint (/api/feedback) for nastyplot.org.
+// Also /api/count: POST {"k":"teamcheck"} adds 1 to that day's total (D1 table counts); see feedback-lib.mjs.
 // Accepts ONLY POST JSON {text <= 2000, page <= 40, kind <= 20} + Turnstile token in header `CF-Turnstile-Response` (or `X-Turnstile-Token`).
 // Stores ONLY (at, page, kind, text) in D1 — NEVER IP, user-agent, headers, cookies, or viewer IDs.
 // Only `export default` here: the helpers live in feedback-lib.mjs (Cloudflare accepts only entry points as named exports).
-import {originAllowed, readCapped, scrubContact, verifyTurnstile, validateFeedback} from './feedback-lib.mjs';
+import {originAllowed, readCapped, scrubContact, verifyTurnstile, validateFeedback, validateCount, COUNT_MAX_BYTES, COUNT_SQL} from './feedback-lib.mjs';
 
 export default {
   async fetch(request, env) {
@@ -24,6 +25,20 @@ export default {
         .bind(at, v.ok.page, v.ok.kind, scrubContact(v.ok.text).text)
         .run();
       return Response.json({ok: true}, {status: 201});
+    }
+    // anonymous daily totals (Nov 25): POST {"k":"teamcheck"} only; stores (day, k) and n + 1, nothing else. No GET: no public stats.
+    if (url.pathname === '/api/count') {
+      if (request.method !== 'POST') return new Response('Method Not Allowed', {status: 405, headers: {Allow: 'POST'}});
+      if (!originAllowed(request, env)) return Response.json({error: 'Forbidden origin'}, {status: 403});
+      const raw = await readCapped(request, COUNT_MAX_BYTES);
+      if (raw.tooBig) return Response.json({error: 'Body too large'}, {status: 413});
+      let body;
+      try { body = JSON.parse(raw.text); } catch (e) { return Response.json({error: 'Invalid JSON'}, {status: 400}); }
+      const v = validateCount(body);
+      if (v.error) return Response.json({error: v.error}, {status: 400});
+      const day = new Date().toISOString().slice(0, 10);
+      await env.DB.prepare(COUNT_SQL).bind(day, v.ok.k).run();
+      return new Response(null, {status: 204});
     }
     if (url.pathname.startsWith('/data/')) {
       const res = await env.ASSETS.fetch(request);

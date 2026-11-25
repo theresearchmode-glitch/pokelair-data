@@ -65,14 +65,15 @@ check('W5-accept-valid', !!validateFeedback({text: 'Calc off on Mega Sol', page:
 // W10-W12: schema.sql, wrangler.toml (Job 19 app/dist), and client __NP_PUBLIC gating
 {
   const schema = fs.readFileSync('worker/schema.sql', 'utf8');
-  const cols = [...schema.matchAll(/^\s+(\w+)\s+(?:INTEGER|TEXT)/gm)].map(m => m[1]);
+  const fbTable = (schema.match(/CREATE TABLE IF NOT EXISTS feedback \(([\s\S]*?)\n\);/) || ['', ''])[1]; /* Nov 25: the file also holds the counts table */
+  const cols = [...fbTable.matchAll(/^\s+(\w+)\s+(?:INTEGER|TEXT)/gm)].map(m => m[1]);
   check('W10-schema-4-data-cols', cols.join(',') === 'id,at,page,kind,text', cols.join(','));
 
   const toml = fs.readFileSync('wrangler.toml', 'utf8');
   check('W11-wrangler-app-dist',
     toml.includes('directory = "./app/dist"') &&
     toml.includes('main = "worker/feedback.mjs"') &&
-    toml.includes('run_worker_first = ["/api/feedback"]') /* Nov 25: /data/* are plain static files (Free plan: Worker requests count toward 100,000 a day) */ &&
+    toml.includes('run_worker_first = ["/api/feedback", "/api/count"]') /* Nov 25: /data/* are plain static files (Free plan: Worker requests count toward 100,000 a day) */ &&
     /workers_dev = false/.test(toml) && /preview_urls = false/.test(toml) /* no duplicate site on workers.dev or preview addresses (SEO audit #4) */);
 
   const fb2 = fs.readFileSync('app/src/v2/pages/feedback.js', 'utf8');
