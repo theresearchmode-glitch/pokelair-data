@@ -16,7 +16,20 @@ Repo theresearchmode-glitch/pokelair-data is PUBLIC (checked: GitHub API private
 - data/rk9/ (official-event team lists gathered Nov 10-17; 9 files) vs Sim's rule "no RK9 scraping" (rule 22). Pseudonymous, but it is
   RK9 data in a public repo. Keep, or remove from current files (history keeps it)? Removing = a deletion: needs Sim's OK.
 
-## Still to check (continues after 4 PM)
+## Second half (4:01-4:10 PM, checked by scripts: scratchpad safety2.sh)
+5. Windows username "simra" in file paths: 62 tool scripts/docs -> replaced with C:/Users/<you> (commit after 4 PM; all scripts still
+   parse). Old commits keep it.
+6. First name: "Sim (Simran)" in docs/rebuild/START-HERE.md:13, :325 and the Nov 24 archive. FOR SIM: keep or cut. "Raj" appears too.
+7. Test fixtures contain FAKE emails/phones (experiments/feedback-guard-test.mjs: kid.player99@gmail.com, 555-...). Fine (fake, tests).
+8. Ids in docs: claude.ai artifact links, trigger and session ids (about 80 mentions). An id alone needs the owner's login, EXCEPT the
+   Preview artifact, shared as "anyone with the link": its link is public in this repo, so anyone can view the Preview. FOR SIM: fine
+   (it's going public anyway) or re-share it "only me" until the switch.
+9. npm audit: 0 vulnerabilities in production dependencies (what the site ships). 13 in dev/test tools (critical: tar; high: playwright
+   1.49.1, pokemon-showdown, node-gyp, sqlite3, nodemailer...) - CI only, never in the site. Upgrade after launch (tests pin 1.49.1).
+10. Actions pinned by tag (actions/checkout@v5, setup-node@v5, github-script@v8, upload-artifact@v4), not by commit: low risk;
+    pin by commit hash later.
+
+## Still to check
 - Other personal details in docs: names, Windows user paths (e.g. C:\Users\<name> in pasted reports), locations, school/age info.
 - IDs that could be misused: artifact ids, trigger ids, session ids in docs (an artifact id alone doesn't grant access; check sharing).
 - worker/ + public build: CSP, CORS, input handling (feedback guard reviewed today), source map in the deploy (launch review E).
