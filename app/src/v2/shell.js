@@ -307,7 +307,13 @@ V2.THEME_WORD = {day: 'Day mode', night: 'Night mode', auto: 'Auto: follows your
 V2.REG_END_MC = '2026-12-02T01:59:00Z';
 /* Nov 24 (competitor scan: rivals already mention Reg M-D; we said nothing): until M-C ends, a countdown line, shown in the Home hero's
    text under the herd (as a note above the hero it pushed the start buttons off the first screen: Stampede hero 3b; on Meta, the tabs) */
-V2.mdCountdown = (now = Date.now(), short = false) => { try { const r = typeof regInfo === 'function' && regInfo(), endMs = Date.parse(V2.REG_END_MC); if (!r || r.now || r.id !== 'M-C' || !(now < endMs)) return '';
+V2.REG_START_MD = '2026-12-02T02:00:00Z';
+/* Nov 25 (night plan 1b): M-D starts 02:00 UTC, but our numbers switch only at the next data run (a hand run about 02:05 UTC, else the 09:07 one).
+   In that gap the data still says M-C with nothing about M-D, so the same line says so, for up to 2 days (then the data note's
+   staleness line takes over). It hides as soon as the data knows M-D (r.now or r.id M-D). */
+V2.mdCountdown = (now = Date.now(), short = false) => { try { const r = typeof regInfo === 'function' && regInfo(), endMs = Date.parse(V2.REG_END_MC), stMs = Date.parse(V2.REG_START_MD);
+  if (r && !r.now && r.id === 'M-C' && now >= stMs && now < stMs + 2 * 864e5) return short ? 'Reg M-D has started.' : 'Reg M-D has started: our numbers switch to it at the next data update.';
+  if (!r || r.now || r.id !== 'M-C' || !(now < endMs)) return '';
   /* calendar days in the viewer's own time zone, so the last day says "today" (code review, Nov 24: it said "tomorrow" 59 min before the end) */
   const end = new Date(endMs), day = x => Date.UTC(x.getFullYear(), x.getMonth(), x.getDate()), d = Math.round((day(end) - day(new Date(now))) / 864e5),
     when = end.toLocaleString('en-US', {month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit'});
