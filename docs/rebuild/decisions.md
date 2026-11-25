@@ -2588,3 +2588,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:17 PM: Sim: from 4:01 PM back to normal operating: HH + ONE helper; Dos (local PC) and Kip (Gemini) for help; Scout until about Nov 28-29; NP - Marketing for the campaign. Sim adds helpers for specific things.
 - 3:17 PM: Sim: HH's design AND executive authority extended from 10 PM Sat Nov 28 to 10 PM Sun Nov 29 (same terms: each visual decision told to Sim with before/after pictures, logged with its time; summary at the end).
 - 3:20 PM: Sim: an extra helper until 4 PM. HH picked: a read-only plan for tomorrow's M-D date fix (every place the dates are used, the 24 h gap behaviour, Day N, tests that fail first, landing order).
+- 3:23 PM: Sim: tonight, a full check of the public repo for anything bad to be public (secrets incl. git history, personal data incl. player names in data files, internal ids, workflow security). Scheduled to start 4:05 PM (after the usage reset) with one helper, report only.
