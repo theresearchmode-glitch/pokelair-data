@@ -31,8 +31,8 @@ const rules = r.split('\n').filter(l => l.trim() && !l.startsWith('#')).map(l =>
 ok(!rules.some(x => x[0] === '/*'), 'no catch-all rule (/* answered 200 for every wrong address: a soft 404)');
 ok(pubPaths.length > 15 && pubPaths.every(p => fs.existsSync(path.join(D, p.slice(1) + '.html')) || rules.some(x => x[0] === p && x[1] === '/v2' && x[2] === '200')), `every tool address has its own file or rule (${pubPaths.length} from V2.PUB_PATHS)`);
 const h404 = fs.existsSync(path.join(D, '404.html')) ? fs.readFileSync(path.join(D, '404.html'), 'utf8') : '';
-// the same page as v2.html with only a noindex tag added (split or inline build alike; CI's v2-public.mjs build is inline, Nov 25)
-ok(v.length > 0 && h404 === v.replace('<title>', '<meta name="robots" content="noindex"><title>'), '404.html is the page with a noindex tag');
+// the same page as v2.html with a noindex tag and without its canonical/og:url tags (split or inline build alike; CI's v2-public.mjs build is inline, Nov 25)
+ok(v.length > 0 && h404 === v.replace(/<link rel="canonical"[^>]*>|<meta property="og:url"[^>]*>/g, '').replace('<title>', '<meta name="robots" content="noindex"><title>'), '404.html is the page with a noindex tag');
 ok(fs.existsSync(path.join(D, 'index.html')) && fs.readFileSync(path.join(D, 'index.html'), 'utf8') === v, 'index.html is the same page as v2.html ("/" serves it)');
 // SEO fix 2 (Nov 25): each tool page has its own file (dist/team.html, served at /team) with its own title, description, og tags and
 // canonical from docs/rebuild/seo-titles-draft.md, so search engines read the right words before any script runs
@@ -54,7 +54,7 @@ const allPages = [...fs.readdirSync(D).filter(f => f.endsWith('.html') && f !== 
 const badOg = allPages.filter(f => { const h = rdD(f), c = (h.match(/<link rel="canonical" href="([^"]*)">/) || [])[1], u = h.match(/<meta property="og:url" content="[^"]*">/g) || [];
   return !(c && u.length === 1 && u[0] === `<meta property="og:url" content="${c}">`) || !h.includes('<meta property="og:image" content="https://nastyplot.org/og-image.png">'); });
 ok(allPages.length > 360 && !badOg.length, `og:url = the canonical address and og:image = /og-image.png on every page (${allPages.length - badOg.length} of ${allPages.length}; wrong: ${badOg.slice(0, 4).join(' ') || 'none'})`);
-ok(!!h404 && !/og:url|rel="canonical"/.test(h404), '404.html has no canonical and no og:url');
+ok(!!h404 && !/<meta property="og:url"|<link rel="canonical"/.test(h404), '404.html has no canonical and no og:url tag');
 const brandOg = path.join(ROOT, 'docs/brand/nastyplot-brand-assets/4-social/facebook/facebook-profile-720.png');
 ok(fs.existsSync(path.join(D, 'og-image.png')) && fs.readFileSync(path.join(D, 'og-image.png')).equals(fs.readFileSync(brandOg)), 'dist/og-image.png is the brand-kit file, byte for byte');
 // SEO fix 10 (Nov 25): every sitemap address has <lastmod> = the data date (the oldest of the core parts the page's "Data as of" line
