@@ -72,6 +72,8 @@ const ldOf = h => { let bc = null, n = 0; for (const x of h.matchAll(/<script ty
 const gl = ldOf(g), gi = gl.bc ? gl.bc.itemListElement : [];
 ok(gl.n === 1 && gi.length === 3 && gi[0].item === 'https://nastyplot.org/' && gi[1].item === 'https://nastyplot.org/meta' && gi[2].name === 'Garchomp' && gi[2].item === 'https://nastyplot.org/pokemon/garchomp',
   `garchomp.html carries its BreadcrumbList in the file (${gi.map(i => i.name).join(' > ') || 'none'})`);
+const noPre = [...files].filter(f => (rdD('pokemon/' + f).match(/<link rel="preload" as="image" href="[^"]+\.webp">/g) || []).length !== 1);
+ok(files.size > 300 && !noPre.length, `every Pokémon file preloads its picture (${files.size - noPre.length} of ${files.size}; without: ${noPre.slice(0, 5).join(', ') || 'none'})`);
 const noBc = [...files].filter(f => !ldOf(rdD('pokemon/' + f)).bc);
 ok(files.size > 300 && !noBc.length, `every Pokémon file has a BreadcrumbList (${files.size - noBc.length} of ${files.size})`);
 // Cloudflare audit (Nov 25, wrangler dev): a rule to /v2.html becomes a 307 to /v2 (html_handling), so a rule targets /v2; no
@@ -108,6 +110,11 @@ try { const q = await b.newPage({viewport: {width: 1280, height: 900}}), errs = 
     const fileBc = ldOf(fs.readFileSync(path.join(D, 'pokemon', u.slice(9).replace(/\.html$/, '') + '.html'), 'utf8')).bc, liveLd = await q.evaluate(() => (document.getElementById('np-jsonld') || {}).textContent || '');
     let liveBc = null; try { const j = JSON.parse(liveLd); for (const o of (j['@graph'] || [j])) if (o['@type'] === 'BreadcrumbList') liveBc = o; } catch (e) {}
     ok(!!fileBc && JSON.stringify(liveBc) === JSON.stringify(fileBc), `${u}: the breadcrumb the page's script writes matches the file's`);
+    /* phone speed (Nov 25, night plan 9): the file preloads its Pokémon's big picture, the page's LCP element on a phone (it is drawn
+       with loading="lazy" by the script, so without the preload it starts only after v2.js has run: about 0.5 s later on a mid phone) */
+    const pre = await q.evaluate(() => { const l = document.querySelector('link[rel="preload"][as="image"]'), arts = [...document.querySelectorAll('#main img.k-art')].map(i => i.src);
+      return {href: l ? l.href : '', n: document.querySelectorAll('link[rel="preload"][as="image"]').length, used: !!l && arts.includes(l.href), arts: arts.length}; });
+    ok(pre.n === 1 && pre.used, `${u}: the file preloads one picture and the page draws it (${pre.href.replace(/^https?:\/\/[^/]+/, '') || 'no preload'}; ${pre.arts} k-art pictures; used ${pre.used})`);
     ok(h1.includes(want) && !errs.length, `${u} shows ${want} (h1 "${h1.slice(0, 40)}"${errs.length ? '; errors: ' + errs.join(' | ') : ''})`); errs.length = 0; }
   // wrong addresses answer 404 and say noindex; real tool addresses answer 200 and show their page (Nov 25, SEO)
   for (const [u, want, h1w] of [['/zzz', 404, 'Wrong turn'], ['/pokemon/not-a-pokemon', 404, 'No Pokémon'], ['/team', 200, ''], ['/this-week', 200, ''], ['/', 200, '']]) {
