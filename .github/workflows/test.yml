@@ -107,6 +107,9 @@ jobs:
   # limit in runs 1331-1351, so golden, same-grade and the logic checks never ran). Nothing was dropped: every step still runs.
   test:
     name: code tests (frozen data)
+    # not after a data run that did nothing (Nov 25, Sim's go): a 4-hourly time with FAST_DATA off ends "skipped", a cancelled
+    # run committed nothing; before this, each of those started the full test run (and Promote), filling GitHub's queue
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion != 'skipped' && github.event.workflow_run.conclusion != 'cancelled')
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -479,6 +482,9 @@ jobs:
   # result (Nov 9: complete sets flipped a Pelipper verdict, a lead and the grade checks). Still blocks the live branch.
   data-checks:
     name: data checks (today's data)
+    # not after a data run that did nothing (Nov 25, Sim's go): a 4-hourly time with FAST_DATA off ends "skipped", a cancelled
+    # run committed nothing; before this, each of those started the full test run (and Promote), filling GitHub's queue
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion != 'skipped' && github.event.workflow_run.conclusion != 'cancelled')
     runs-on: ubuntu-latest
     timeout-minutes: 35
     steps:
@@ -510,6 +516,9 @@ jobs:
   # fails the workflow (so it never holds back the live site); it opens or refreshes one "Live-data audit" issue, closed when clean.
   live-audits:
     name: live-data audits (alert only)
+    # not after a data run that did nothing (Nov 25, Sim's go): a 4-hourly time with FAST_DATA off ends "skipped", a cancelled
+    # run committed nothing; before this, each of those started the full test run (and Promote), filling GitHub's queue
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion != 'skipped' && github.event.workflow_run.conclusion != 'cancelled')
     runs-on: ubuntu-latest
     timeout-minutes: 30
     continue-on-error: true
@@ -557,6 +566,9 @@ jobs:
   # by a model trained only on earlier events, against the approved baseline (experiments/accuracy-baseline.json). Its own job,
   # so training the two models can't push the main test job past its time limit.
   accuracy-gate:
+    # not after a data run that did nothing (Nov 25, Sim's go): a 4-hourly time with FAST_DATA off ends "skipped", a cancelled
+    # run committed nothing; before this, each of those started the full test run (and Promote), filling GitHub's queue
+    if: github.event_name != 'workflow_run' || (github.event.workflow_run.conclusion != 'skipped' && github.event.workflow_run.conclusion != 'cancelled')
     runs-on: ubuntu-latest
     timeout-minutes: 40
     steps:
