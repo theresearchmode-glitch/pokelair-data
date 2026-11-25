@@ -113,12 +113,13 @@ const PROBE_EXPR = `(() => {
   });
 
   // 5. data.js ABIL text
-  check('5. data.js ABIL updated for Healer, Unseen Fist, Run Away, Flash Fire, Stalwart', () => {
+  check('5. data.js ABIL updated for Healer, Unseen Fist, Run Away (Flash Fire, Stalwart from Dec 2)', () => {
     if (ABIL['Healer'] !== "Each turn, 50% chance to cure an adjacent ally's status.") return 'Healer text: ' + ABIL['Healer'];
     if (ABIL['Unseen Fist'] !== 'Contact moves hit through protection, for 1/4 of their damage.') return 'Unseen Fist text: ' + ABIL['Unseen Fist'];
     if (ABIL['Run Away'] !== "This Pokémon can always switch out: moves and Abilities that trap don't hold it.") return 'Run Away text: ' + ABIL['Run Away'];
-    if (!/Fire Boost/.test(ABIL['Flash Fire']) || !/Mega Evolves/.test(ABIL['Flash Fire'])) return 'Flash Fire text: ' + ABIL['Flash Fire'];
-    if (!/substitutes/i.test(ABIL['Stalwart'])) return 'Stalwart text: ' + ABIL['Stalwart'];
+    /* HH, Nov 24: Flash Fire and Stalwart change with the Dec 2 patch; until then the old text stays live. On/after Dec 2 (UTC) these two lines must have the new text. */
+    if (Date.now() >= Date.parse('2026-12-02T01:59:00Z')) { if (!/Fire Boost/.test(ABIL['Flash Fire']) || !/Mega Evolves/.test(ABIL['Flash Fire'])) return 'Flash Fire text: ' + ABIL['Flash Fire'];
+    if (!/substitutes/i.test(ABIL['Stalwart'])) return 'Stalwart text: ' + ABIL['Stalwart']; }
   });
 
   // 6. CALC_ITEMS has the 18 legal Champions items, all in REGMC_ITEMS
