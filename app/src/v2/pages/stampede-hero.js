@@ -129,7 +129,10 @@ V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) r
   const row = V2.sdhRow(), n = V2.sdhRows().length, sr = sc.getBoundingClientRect();
   const cx = [...S.querySelectorAll('.sdh-plates li')].filter(l => l.getClientRects().length).map(l => { const b = l.getBoundingClientRect(); return {o: +getComputedStyle(l).gridColumnStart || 0, x: b.left + b.width / 2 - sr.left}; }).sort((a, b) => a.o - b.o).map(c => c.x);
   const hb = S.querySelector('.sdh-h').getBoundingClientRect().bottom - sr.top, P = V2.sdhLay(n, w, h, row, cx.length >= (row ? 4 : 2) ? cx : [w * .125, w * .375, w * .625, w * .875], hb);
-  for (const el of S.querySelectorAll('.sdh-m')) { const i = +el.dataset.sdhi; V2.sdhPut(el, P[i]); }
+  /* switch fix f (Nov 25): on phones the herd's two picture crowd members (the rest of the crowd is drawn behind them) stood with their
+     heads behind the tagline's last line (Nov 25's data: behind 'rate' at 320, 0.24% of its letters' pixels, Q13f allows 0.15%); like the
+     mid-sized, their heads now stop at the tagline, so its words never sit on a herd picture */
+  for (const el of S.querySelectorAll('.sdh-m')) { const i = +el.dataset.sdhi, p = P[i]; if (p && !row && p.z === 'c' && p.y - p.s < hb) p.y = hb + p.s; V2.sdhPut(el, p); }
   // the front row stops under the tagline's last line (Q13f B, Sim Nov 18: sprites never cover its words at any width)
   const fr = S.querySelector('.sdh-front'), fs = parseFloat(getComputedStyle(S.querySelector('.sdh-h')).fontSize) || 0;
   if (fr) { fr.style.removeProperty('--fcap'); const room = Math.round(fr.getBoundingClientRect().bottom - sr.top - hb - V2.SDH_SLOPE * w * (row ? .375 : .25)), fd = S.querySelector('.sdh-fold');
