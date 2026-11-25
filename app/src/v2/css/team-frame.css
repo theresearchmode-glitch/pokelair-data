@@ -416,3 +416,5 @@
 @media (max-width:519.98px){.tmk-work .tm-legend{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s3)}}
 /* stand-out rows under 360: a 36px picture (the 320 precedent), so 'Charizard Y' fits beside it (ran 3px past at 320) */
 @media (max-width:359.98px){.tmk-work .mu-out .mu-row{grid-template-columns:36px minmax(0,1fr)}.tmk-work .mu-out .mu-row > img{width:36px;height:36px}}
+/* Sim, Nov 25 12:39 PM (took 4.35 screens): phones: step 1's heading gets the same space above it as steps 2 and 3 */
+@media (max-width:699.98px){.tmk-work .k-step:first-child .k-sec{margin-top:var(--s4)}}
