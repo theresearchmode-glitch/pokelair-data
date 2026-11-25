@@ -1,11 +1,13 @@
 # Switch day (runbook 3d, rehearsed Nov 19): writes the 4 publish lists R1..R4 and the 2 mixed-page id lists, and checks
-# every step (entries <= 255, files <= 511, every picture the page asks for exists, final 359 files with 0 sp/).
-# usage: python3 docs/rebuild/switch-plan.py OUT_DIR   (run from the repo root; art from app/src/v2/art, sprites from app/sp)
-import os,sys,json
+# every step (entries <= 255, files <= 511, every picture the page asks for exists, final files = page + v2.js + 7 fonts + every v2art file, 0 sp/).
+# usage: python3 docs/rebuild/switch-plan.py OUT_DIR   (run from the repo root; art from app/src/v2/art; the live page's 345 sprites = app/sp at cb49701)
+# Nov 25 (switch dry run 1): art grew to 360 (Reg M-D pictures) and app/sp to 355 (10 new, not on live), so the counts are read, not fixed.
+import os,sys,json,subprocess
 out=sys.argv[1]; os.makedirs(out,exist_ok=True)
 art=sorted(f for f in os.listdir('app/src/v2/art') if f.endswith('.webp'))
-SP=sorted(f[:-5] for f in os.listdir('app/sp') if f.endswith('.webp')); sps=set(SP)
-assert len(art)==350 and len(SP)==345 and sps<={a[:-5] for a in art}, (len(art),len(SP))
+SP=sorted(os.path.basename(f)[:-5] for f in subprocess.check_output(['git','ls-tree','--name-only','cb49701','app/sp/'],text=True).split() if f.endswith('.webp')); sps=set(SP)
+assert len(SP)==345 and sps<={a[:-5] for a in art}, (len(art),len(SP))
+FINAL=2+7+len(art)  # page, v2.js, 7 fonts, every v2art file
 old='archivo-italic-latin archivo-italic-latin-ext archivo-italic-vietnamese dela-gothic-one-latin instrument-sans-italic-latin instrument-sans-italic-latin-ext'.split()
 keep='instrument-sans-latin-ext instrument-sans-latin unbounded-cyrillic-ext unbounded-cyrillic unbounded-latin-ext unbounded-latin unbounded-vietnamese'.split()
 ids=lambda lst:[a[:-5] for a in lst if a[:-5] in sps]
@@ -25,6 +27,6 @@ for name,H,ch in steps:
   json.dump(ch,open(os.path.join(out,name+'.json'),'w'),separators=(',',':'))
   if H not in (None,'NEW'): open(os.path.join(out,'ids_'+name+'.txt'),'w').write('\n'.join(H))
   print(name,'entries',len(ch),'files after',len(files),'missing',len(miss))
-assert len(files)==359 and not any(f.startswith('sp/') for f in files)
-print('final 359 files, 0 sp/. Page per step: R1 old page as is; R2/R3 switch-mixed-page.py OLD ids_R2/ids_R3; R4 app/dist/v2.html.')
+assert len(files)==FINAL and not any(f.startswith('sp/') for f in files)
+print('final',FINAL,'files, 0 sp/. Page per step: R1 old page as is; R2/R3 switch-mixed-page.py OLD ids_R2/ids_R3; R4 app/dist/v2.html.')
 print('Publish v2art with root app/src/v2/art (keys v2art/x.webp -> x.webp); v2.js from app/dist. On live: omit capabilities and contract.')
