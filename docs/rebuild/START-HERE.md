@@ -10,7 +10,7 @@ the newer file wins, and you tell Sim about the difference.
 
 0. **Sim is he/him** (Sim, Nov 19, 10:13 AM; said many times). Never 'she' or 'her' for Sim.
 0b. **Brand kit:** docs/brand/nastyplot-brand-assets/ (README.txt first). Use these files; never redraw a logo.
-1. You are talking to **Sim (Simran)**. NastyPlot (once called PokeLair) is his project. The claude.ai account is shared by Raj and
+1. You are talking to **Sim**. NastyPlot (once called PokeLair) is his project. The claude.ai account is shared by Raj and
    Sim; in a NEW chat, the account preference says to confirm who you are talking to first. Ask once: "Am I speaking with Sim?"
 2. Run, from the repo root `/home/user/pokelair-data`:
    ```
@@ -322,7 +322,7 @@ Then delete the old chat's three (delete_trigger), **after** yours exist, and te
 
 # NastyPlot (Sim's project)
 
-This repo is Sim's (Simran's). These are his standing preferences for any session working on it.
+This repo is Sim's. These are his standing preferences for any session working on it.
 
 ## READ FIRST (Sim, Nov 11 night): docs/rebuild/RULES.md and docs/rebuild/HANDOVER.md
 - docs/rebuild/RULES.md: the rules that win over anything older below. In short: NO design or visual decision without Sim's

@@ -2605,3 +2605,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 4:29 PM: Design call (HH authority): 'Reg M-D has started.' line in the Home hero during the gap after M-D starts (Dec 2 02:00 UTC) until the data run switches; same slot and size as the countdown, 0px moved; pictures to Sim (mdpair-390-light, mdpair-1440-dark). Branch alt/md-started, not merged yet.
 - 4:32 PM: data/rk9 removed on alt/no-rk9 (a6c614c4; 11 files, current files only; new no-rk9-test). Lands on main by fast-forward after GitHub is green, then design6. out/official_perf.json (frozen RK9-derived table, unused by the page since Nov 7) kept: Sim's call.
 - 4:32 PM: M-D source note + pinning test on design6 (017aec48). Safety check finished (b16263c1).
+- 4:32 PM: Sim: 'sim is good' (full name removed from current docs, Sim only); Preview link stays anyone-with-the-link.

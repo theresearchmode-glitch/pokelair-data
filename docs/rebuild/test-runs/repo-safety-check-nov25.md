@@ -37,4 +37,4 @@ Repo theresearchmode-glitch/pokelair-data is PUBLIC (checked: GitHub API private
 13. CSP: the public build writes one Content-Security-Policy plus nosniff and no-referrer for every path (app/build.mjs:208). OK.
 14. Source map: a split build writes dist/v2.js.map (app/build.mjs:192). Low risk (the source is public in this repo anyway); the
     deploy workflow (queue item 6) leaves it out of the deployed folder, as launch review E asks.
-Nothing left on this check except Sim's two calls (item 6: "Sim (Simran)" in START-HERE; item 8: Preview link sharing).
+Nothing left on this check except Sim's two calls (settled Nov 25 by Sim: "Sim" only (full name removed from current files; history keeps it); Preview stays "anyone with the link".

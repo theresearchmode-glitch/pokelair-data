@@ -1,6 +1,6 @@
 # NastyPlot (Sim's project)
 
-This repo is Sim's (Simran's). These are his standing preferences for any session working on it.
+This repo is Sim's. These are his standing preferences for any session working on it.
 
 **Sim is he/him (Sim, Nov 19, 10:13 AM; said many times).** Never 'she' or 'her' for Sim, in chat, docs, commits or helper briefs.
 
