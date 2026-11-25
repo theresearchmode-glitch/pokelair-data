@@ -46,7 +46,6 @@ function makeFixture({reg = 'M-C', launch = false, overrides = {}} = {}) {
     w('meta_ladder.json', {reg, month: '2026-10', updated: nowIso, top: Array.from({length: 12}, (_, i) => ({n: 'M' + i, p: pad(500)}))});
     w('events.json', {reg, updated: nowIso, events: Array.from({length: 6}, (_, i) => ({id: i, p: pad(2000)}))});
     w('official.json', {reg, updated: nowIso, events: [{id: 1, p: pad(1200)}]});
-    w('official_perf.json', {updated: isoDaysAgo(120), asOf: '2026-10-15', pad: pad(200)});
     w('perf.json', {
       reg: {id: reg}, updated: nowIso, pad: pad(5500),
       tour: {updated: nowIso}, adj: {updated: nowIso}, ingame: {updated: isoDaysAgo(120)},
@@ -89,14 +88,14 @@ const check = (id, ok, detail = '') => {
   if (!ok) failed++;
 };
 
-// F1: All sources fresh (including paused meta_ingame 120d old & frozen official_perf 120d old) -> exit 0 + age summary line
+// F1: All sources fresh (including paused meta_ingame 120d old; official_perf.json was removed Nov 25) -> exit 0 + age summary line
 {
   const d = makeFixture();
   try {
     const r = runHealth(d);
     check('F1-all-fresh-and-age-line',
       r.status === 0 && r.md.includes('Source ages (days):') && r.md.includes('limitless=0d/2d') &&
-      r.md.includes('meta_ingame=120d(paused)') && r.md.includes('official_perf=120d(frozen)'),
+      r.md.includes('meta_ingame=120d(paused)') && !r.md.includes('official_perf'),
       `status=${r.status}`);
   } finally { fs.rmSync(d, {recursive: true, force: true}); }
 }
