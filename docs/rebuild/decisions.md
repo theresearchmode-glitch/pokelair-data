@@ -2530,3 +2530,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 8:04 AM: Sim: 'Wow. I LOVE THIS' — approves the day-one design (Meta + Home underdog, Not rated yet, score source line).
 - 8:05 AM: Day one: Home Tools 'Ratings' plate says 'Ratings start with the first tournament results.' / short 'From the first results.' instead of 'All 0 Pokémon'. Today unchanged (checked: 'All 345, out of 100.').
 - 8:06 AM: Design fix (HH authority): Compare at 380-599px: '← My Team' was absolutely placed over 'Teams.' and the kicker; now on its own line above the kicker (~28px taller, no overlap). Picture docs/rebuild/pictures/compare-390-fix-nov25.png
+- 8:09 AM: Fix: Pokémon page tier word under the score was near-black on the night card (rgb 20,17,15; the .pkf inherit rule lost to sugs.css's layer); night now inherits the card's ink (176,170,184); day unchanged. Today's bug, found in the practice-switch review.

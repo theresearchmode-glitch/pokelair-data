@@ -389,3 +389,6 @@ p,li,small{text-wrap-style:pretty}
 /* iPads too (HH, design authority; phone/tablet empty-space scan Nov 23): at 700-899 the Items list runs long on the left while Abilities (2 rows)
    leave the right half empty; Items span two rows so Natures sits under Abilities on the right, as at 900-1279 */
 @media (min-width:700px) and (max-width:899.98px){.us-groups{grid-auto-flow:row dense}.us-groups>.us-bars:not(.us-half):not(.us-mvs){grid-row:span 2}}
+/* Nov 25 (practice-switch review): on the Pokémon page the tier word under the score is plain text on the card, but kept --tier-ink
+   (near-black, made for coloured tier chips), unreadable on the night card. Night takes the card's own second ink; day is unchanged */
+:root[data-theme="night"] .pk-rate .tier-tag{color:inherit} /* in sugs.css, after .tier-tag above: CSS layers order before specificity (pages.css .pkf rule lost to it) */
