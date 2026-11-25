@@ -103,8 +103,7 @@
 @media (min-width:1100px){.sdh{padding-bottom:0}}
 
 /* M-D countdown: the short form on phones (the long one pushed the start buttons below the fold at 390x844; Nov 24) */
-.sdh-cds{display:none}
-@media (max-width:699.98px){.sdh-cdl{display:none}.sdh-cds{display:inline}}
+/* Nov 24: the short form at every width (the long one moved the herd onto the tagline, HQ Q13f) */
 /* short phone windows (390x664, 375x667): no room for the countdown line without pushing the start buttons past Sim's 80px limit
    (Nov 24: +23px, 746 -> 770); it's a 7-day note, so there it gives way to the buttons */
 @media (max-width:699.98px) and (max-height:699.98px){.sdh-cd{display:none}}
