@@ -43,7 +43,7 @@ const FILES = [
   ['matches.json', 'Game-level matches', 2, d => d.updated, [5e3, 20e6], d => Array.isArray(d.m) || 'no match array', [20, d => Array.isArray(d.m)], 'daily update.mjs + 1d buffer'],
   ['model.json', 'Win model', 2, d => d.updated, [5e3, 2e6], d => !!(d.mons && typeof d.mons === 'object') || 'no Pokémon', [80, d => !!(d.mons && typeof d.mons === 'object')], 'daily model.mjs + 1d buffer'],
   ['replays.json', 'Showdown ladder replays', 3, d => d.updated, [1e3, 15e6], d => Array.isArray(d.games) || Array.isArray(d) || 'no games list', [20, d => Array.isArray(d.games) || Array.isArray(d)], 'daily replays.mjs (optional step, 2d+1d buffer)', {optional: true}],
-  ['replays_bo3.json', 'Showdown Bo3 replays', 4, d => d.updated, [100, 15e6], d => Array.isArray(d.games) || Array.isArray(d) || 'no games list', [20, d => Array.isArray(d.games) || Array.isArray(d)], 'daily Bo3 replays (optional, lower volume)', {optional: true}],
+  ['replays_bo3.json', 'Showdown Bo3 replays', 4, d => d.updated, [100, 60e6] /* Nov 25: the real file is 30.3 MB on main; 15 MB failed every daily run */, d => Array.isArray(d.games) || Array.isArray(d) || 'no games list', [20, d => Array.isArray(d.games) || Array.isArray(d)], 'daily Bo3 replays (optional, lower volume)', {optional: true}],
   ['meta_ingame.json', 'op.gg in-game rankings (paused Nov 18: op.gg terms)', 9999, d => d.updated, [1e3, 1e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)], 'paused Nov 18 (op.gg terms)', {paused: true, skipRegCheck: true}],
   ['meta_ladder.json', 'Smogon monthly ladder stats', 40, d => d.month || (inLaunch ? d.updated || (RG && RG.checked) || todayIso : ''), [5e3, 2e6], d => arr(d.top, 10) || 'fewer than 10 Pokémon', [20, d => Array.isArray(d.top)], 'Smogon monthly dump (30d month + 10d publish lag)'],
   ['events.json', 'Events', 3, d => d.updated, [10e3, 5e6], d => arr(d.events, 5) || 'fewer than 5 events', [20, d => Array.isArray(d.events)], 'daily events.mjs (2d+1d buffer)'],
@@ -59,7 +59,7 @@ const FILES = [
   ['crosscheck.json', 'Cross-check', 2, d => d.updated, [200, 2e6], d => Array.isArray(d.checks) || 'no checks', [20, d => Array.isArray(d.checks)], 'daily crosscheck.mjs + 1d buffer'],
   ['ratings_log.json', 'Ratings snapshots', 2, d => d.updated, [200, 5e6], d => arr(rlDays(d)) || 'no snapshots', [20, d => Array.isArray(rlDays(d))], 'daily ratings-snapshot.mjs + 1d buffer', {skipRegCheck: true}],
   ['scoreboard.json', 'Ratings scoreboard', 3, d => d.updated, [200, 2e6], () => true, [20, () => true], 'daily scoreboard.mjs (2d+1d buffer)', {skipRegCheck: true}],
-  ['post.json', 'News & Mystery Gifts', 3, d => d.checked || d.updated, [40, 1e6], d => typeof d === 'object' || 'unreadable', [40, d => typeof d === 'object'], 'daily post-news.mjs (on branches with post-news)', {optional: true, skipRegCheck: true}],
+  ['post.json', 'News & Mystery Gifts', 3, d => d.checked || d.updated, [40, 1e6], d => typeof d === 'object' || 'unreadable', [40, d => typeof d === 'object'], 'daily post-news.mjs (on branches with post-news)', {optional: true, skipRegCheck: true, noAgeCheck: !fs.existsSync(new URL('./post-news.mjs', import.meta.url))} /* Nov 25: no job writes post.json on main yet, so its age can't fail the daily run until post-news.mjs is in this job */],
   ['skips.json', 'Skipped-step log', 9999, (d, f) => d.updated || mtimeIso(f), [2, 1e6], d => Array.isArray(d.runs) || 'no runs list', null, 'written only when a step skips', {optional: true, noAgeCheck: true, skipRegCheck: true}],
 ];
 
