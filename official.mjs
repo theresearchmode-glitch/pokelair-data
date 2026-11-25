@@ -18,6 +18,7 @@
 import fs from 'node:fs'; import crypto from 'node:crypto';
 import {readJSON, dec, ROSTER, mapMon, validItem, bad} from './names.mjs';
 import {opid, okeys, keyScore} from './pid.mjs';
+import {stampReg} from './reg-stamp.mjs';
 export const UA = 'NastyPlot data job (github.com/theresearchmode-glitch/pokelair-data; simran.jsbagga@gmail.com)';
 const TOP = +(process.env.OFFICIAL_TOP || 64), REG = process.env.OFFICIAL_REG || 'M-C', REG_START = '2026-09-01', CACHE = process.env.OFFICIAL_CACHE || '';
 const DIR = 'data/official', VR = 'https://victoryroad.pro/wp-json/wp/v2/pages', LQ = 'https://liquipedia.net/pokemon/api.php';
@@ -179,13 +180,13 @@ async function run() {
     checks};
   // 4) gate: the new file against the previous out/official.json, team by team (same event date and placement)
   const prev = readJSON('out/official.json', null), cmp = compare(prev, out);
-  fs.writeFileSync('out/official_compare.json', JSON.stringify(cmp));
+  fs.writeFileSync('out/official_compare.json', JSON.stringify(stampReg(cmp, REG)));
   console.log(`official: vs previous file (${cmp.previous}): ${cmp.summary}`);
   const prevTeams = prev ? (prev.events || []).reduce((a, e) => a + (e.teams || []).length, 0) : 0, newTeams = out.events.reduce((a, e) => a + e.teams.length, 0);
   if (!out.events.length) { console.log('::warning::official: no events read; kept the previous out/official.json'); return; }
   if (prevTeams && newTeams < prevTeams * .8) { console.log(`::warning::official: only ${newTeams} teams (had ${prevTeams}); kept the previous out/official.json`); return; }
   if (!cmp.pass) { console.log(`::warning::official: the new sheets disagree with the previous file beyond the gate (${cmp.summary}); kept the previous out/official.json`); return; }
-  fs.writeFileSync('out/official.json', JSON.stringify(out));
+  fs.writeFileSync('out/official.json', JSON.stringify(stampReg(out, REG)));
   // each event's top 8 at the front of out/teams.json (as rk9.mjs did)
   const T = readJSON('out/teams.json', {teams: []}), off = [];
   for (const e of out.events.slice(0, 4)) for (const t of e.teams.filter(t => t.st <= 8 && t.mons.every(m => ROSTER.has(m.n)))) off.push({player: t.player, event: `${e.name} · ${e.players} players`, record: `#${t.st} · official`, section: 'Official events', mons: t.mons.map(m => m.n)});

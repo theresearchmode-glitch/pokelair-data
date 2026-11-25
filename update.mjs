@@ -11,6 +11,7 @@ import {updateModes} from './tour-modes.mjs';
 import fs from 'node:fs';
 import {topcut} from './topcut.mjs';
 import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
+import {stampReg} from './reg-stamp.mjs';
 import {politeFetch} from './http.mjs';
 import {lkey, lmap, reportUnknown, canonSet, canonReport, canonNature} from './names.mjs';
 // the regulation every number is built from (out/reg.json from reg.mjs; Reg M-C until a newer one has enough data)
@@ -182,9 +183,9 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
     mv: pct(o.mv, o.t, 12), it: pct(o.it, o.t, 6), ab: pct(o.ab, o.t, 4), na: pct(o.na, o.t, 4), tm: pct(o.tm, o.t, 10),
     cs: (() => { const b = [...o.cs].sort((x, y) => y[1] - x[1])[0]; if (!b) return undefined; const [it, ab, mv] = JSON.parse(b[0]); return {it, ab, mv, pct: Math.round(1000 * b[1] / o.t) / 10}; })()}));
   const recent = V2.filter(T => lastD - new Date(T.d) <= 28 * DAY);
-  fs.writeFileSync('out/meta_tour.json', JSON.stringify({format: 'doubles', kind: 'tour', source: `Limitless team sheets · ${nT.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
+  fs.writeFileSync('out/meta_tour.json', JSON.stringify(stampReg({format: 'doubles', kind: 'tour', source: `Limitless team sheets · ${nT.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
     period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', updated: new Date().toISOString(), note: 'Moves, items, abilities and natures as players registered them.',
-    top: rows.slice(0, 60), more: rows.slice(60, 100)}));
+    top: rows.slice(0, 60), more: rows.slice(60, 100)}, FORMAT)));
   console.log(`meta_tour: ${nT} teams, ${rows.length} Pokémon`); }
 // 1b) info sheets (Sim approved the design Nov 22, 11:29 AM; docs/rebuild/info-sheets/HANDOFF.md): for every move, item and Ability, how many
 //     of the last 28 days' full team sheets run it and who runs it. Counted straight from the raw sheets, not from the top-12 lists above
@@ -202,8 +203,8 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
         for (const x of new Set(m.mv)) add('mv', x); add('it', m.i); add('ab', m.a); const nt = canonNature(m.nt); if (nt) { ntN++; add('nt', nt); } }); } }
   const pack = (M, mons) => Object.fromEntries([...M].sort((a, b) => b[1].t - a[1].t).map(([x, o]) => [x, [o.t, [...o.u].sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0])).slice(0, 8).map(([n, c]) => [n, c, per.get(n)]), o.u.size, ...(mons ? [o.m] : [])]]));
   const recent = V2.filter(T => lastD - new Date(T.d) <= 28 * DAY);
-  fs.writeFileSync('out/info.json', JSON.stringify({N, source: `Limitless team sheets · ${N.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
-    period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', mv: pack(K.mv), it: pack(K.it), ab: pack(K.ab), ntN, nt: pack(K.nt, true)}));
+  fs.writeFileSync('out/info.json', JSON.stringify(stampReg({N, source: `Limitless team sheets · ${N.toLocaleString('en-US')} teams from ${recent.length} ${RG.name} tournaments`,
+    period: recent.length ? `${day(recent[0].d)} – ${day(recent[recent.length - 1].d)}` : '', mv: pack(K.mv), it: pack(K.it), ab: pack(K.ab), ntN, nt: pack(K.nt, true)}, FORMAT)));
   console.log(`info: ${N} teams, ${K.mv.size} moves, ${K.it.size} items, ${K.ab.size} Abilities, ${K.nt.size} natures (${ntN} of ${6 * N} Pokémon with a readable nature)`); }
 // 2) recent top finishes (events with 32+ players, last 14 days): top 4 of each, newest first, up to 60 teams
 { const out = [];
@@ -222,7 +223,7 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
     for (const id of KEEP) { const T = readJSON(`data/t/${id}.json`, null); if (!T) continue; const t = new Date(T.d).getTime(); if (t > end || t <= end - 14 * DAY) continue;
       for (const [, w, l, ks] of T.e) { const ms = [...new Set(ks.map(lmap).filter(Boolean))]; if (ms.length !== 6) continue; n++; for (const m of ms) c.set(m, (c.get(m) || 0) + 1); } }
     if (!n) continue; days.push({d: new Date(end).toISOString().slice(0, 10), tour: Object.fromEntries([...c].sort((a, b) => b[1] - a[1]).slice(0, 80).map(([m], i) => [m, i + 1]))}); }
-  fs.writeFileSync('out/history.json', JSON.stringify({days})); console.log(`history: ${days.length} days`); }
+  fs.writeFileSync('out/history.json', JSON.stringify(stampReg({days}, FORMAT))); console.log(`history: ${days.length} days`); }
 // 4) game-level results: every pairing with both teams known (for the team model and player skill). Sheets AS TYPED (V2T):
 // the grade's set features keep the players' own spellings (split of the one-spelling fix, Nov 18; see V2T above)
 { const teamIx = new Map(), teams = [], players = new Map(), plist = [], M = [], featIx = new Map(), feats = [], deckIx = new Map(), decks = [];
@@ -236,7 +237,7 @@ const DAY = 864e5, lastD = V2.length ? new Date(V2[V2.length - 1].d).getTime() :
     for (const p of T.e) { if (p.dk.length !== 6) continue; const ns = p.dk.map(nameOf); if (ns.some(n => !n) || new Set(ns).size !== 6) continue; /* data audit Nov 8: a sheet listed a Pokémon twice */ by.set(p.id, {t: tix(ns), pl: pix(p.id ? 'id:' + String(p.id).toLowerCase() : p.nm.toLowerCase().trim()) /* the Limitless account, not the display name (sweep, Oct 31: 517 accounts showed under 2+ names) */, d: dix(ns, p.dk)}); }
     const seenG = new Set(); /* data audit Nov 8: skip repeated pairings (same round, same two players) and self-pairings */
     for (const [r, a, b, win] of P) { const A = by.get(a), B = by.get(b); if (!A || !B || a === b || A.pl === B.pl) continue; const gk = r + ':' + [a, b].sort().join(':'); if (seenG.has(gk)) continue; seenG.add(gk); const res = win === a ? 1 : win === b ? 0 : .5; M.push([A.t, B.t, res, ti, A.pl, B.pl, r, A.d, B.d]); } });
-  fs.writeFileSync('out/matches.json', JSON.stringify({updated: new Date().toISOString(), events: V2T.map(T => [T.id, T.d.slice(0, 10), T.p]), teams, players: plist.length, feats, decks, m: M}));
+  fs.writeFileSync('out/matches.json', JSON.stringify(stampReg({updated: new Date().toISOString(), events: V2T.map(T => [T.id, T.d.slice(0, 10), T.p]), teams, players: plist.length, feats, decks, m: M}, FORMAT)));
   console.log(`matches: ${M.length} games, ${teams.length} distinct teams, ${plist.length} players`); }
 // 5) top-cut evidence for the ratings (top-cut share, conversion, win rate, rating-weighted usage, bring/lead rates
 // from replays), into results.tc of out/limitless.json. Runs last so it reads today's matches.json.

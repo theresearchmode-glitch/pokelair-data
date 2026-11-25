@@ -7,6 +7,7 @@
 // Writes out/scoreboard.json (today + up to a year of daily history) and warns when a number falls clearly below its
 // recent level. Never fails the job: it only reports.
 import fs from 'node:fs';
+import {stampReg} from './reg-stamp.mjs';
 const rd = (f, d = null) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const M = rd('out/model.json'), E = rd('out/events.json'), R = rd('out/replays.json'), today = new Date().toISOString().slice(0, 10), row = {date: today};
 if (M && M.eval) { const e = M.eval;
@@ -45,5 +46,5 @@ cmp('Win model held-out accuracy', row.model && row.model.heldOutAcc, recent.map
 cmp('Win model calibrated log-loss', row.model && row.model.calibratedLogloss, recent.map(h => h.model && h.model.calibratedLogloss), false, .003);
 cmp('Team strength on real events', row.teamStrengthOnEvents && row.teamStrengthOnEvents.acc, recent.map(h => h.teamStrengthOnEvents && h.teamStrengthOnEvents.acc), true, .015);
 row.warnings = warns;
-fs.writeFileSync('out/scoreboard.json', JSON.stringify({updated: new Date().toISOString(), today: row, history: [...hist, row].slice(-365)}, null, 1));
+fs.writeFileSync('out/scoreboard.json', JSON.stringify(stampReg({updated: new Date().toISOString(), today: row, history: [...hist, row].slice(-365)}), null, 1));
 console.log('scoreboard', JSON.stringify(row)); for (const w of warns) console.log(`::warning::${w}`);

@@ -9,7 +9,8 @@
 // at 3+ standard errors, and (4) it survives dropping the single event that pushes it most (one big event can't make a trend).
 // The page shows the counts with every line, and its footnote reads the thresholds from TH below. Run after update.mjs and rk9.mjs.
 import fs from 'node:fs';
-import {offFormat, oddEvents, activeReg, sameReg} from './formats.mjs';
+import {offFormat, oddEvents, activeReg, sameReg, inRegWindow} from './formats.mjs';
+import {stampReg} from './reg-stamp.mjs';
 import {lkey, lmap, reportUnknown} from './names.mjs';
 const readJSON = (f, d) => { try { return JSON.parse(fs.readFileSync(f, 'utf8')); } catch (e) { return d; } };
 const DAY = 864e5, CAP = 250 * 1024;
@@ -92,7 +93,7 @@ const cut = [];
 for (const T of EV) { if (T.p < TH.cutPlayers) continue; for (const p of T.e) { if (p.pl == null || p.pl > TH.cut || !Array.isArray(p.dk) || p.dk.length !== 6) continue;
   const ns = p.dk.map(lname); if (ns.some(n => !n)) continue; cut.push({day: dayN(T.day), ev: T.name, p: T.p, who: p.nm || '', pl: p.pl, mons: p.dk.map((m, i) => ({n: ns[i], i: m.i || ''}))}); } }
 // official events: the existing out/official.json (this step makes no new requests anywhere)
-for (const R of (readJSON('out/official.json', {events: []}).events || [])) { if (!R || !R.date) continue;
+for (const R of (readJSON('out/official.json', {events: []}).events || [])) { if (!R || !R.date || !inRegWindow(R.date, RGW)) continue;
   for (const t of R.teams || []) { if (!(t.st <= TH.cut) || !t.mons || t.mons.length !== 6 || t.mons.some(m => !m.n || !ROSTER.has(m.n))) continue;
     cut.push({day: dayN(R.date), ev: R.name, p: R.players || 0, who: t.player || '', pl: t.st, off: 1, mons: t.mons.map(m => ({n: m.n, i: m.i || ''}))}); } }
 cut.sort((a, b) => a.day - b.day || (b.off || 0) - (a.off || 0) || b.p - a.p || a.pl - b.pl);
@@ -105,9 +106,9 @@ for (const c of cut) { const isA = inA(c.day); if (isA) cutA++;
 const freshOut = [...fresh.values()].filter(f => f.kind === 'p' || !fresh.has(f.n)).sort((a, b) => (a.kind === 'p' ? 0 : 1) - (b.kind === 'p' ? 0 : 1) || b.k - a.k || b.first.p - a.first.p).slice(0, 10)
   .map(f => [f.kind, f.n, f.i, f.k, String(f.first.ev).slice(0, 90), String(f.first.who).slice(0, 40), f.first.pl, dayS(f.first.day), f.first.p]);
 const wk = (w, lo, hi) => ({from: dayS(lo), to: dayS(hi), ev: w.ev.size, n: w.n});
-const doc = {v: 1, updated: new Date().toISOString(), src: 'Limitless team sheets · standard Reg M-C events (whole fields) + official events (top 8, for new in top cut)', th: TH,
+const doc = stampReg({v: 1, updated: new Date().toISOString(), src: `Limitless team sheets · standard ${RGW.name} events (whole fields) + official events (top 8, for new in top cut)`, th: TH,
   a: wk(W.a, end - 6, end), b: wk(W.b, end - 13, end - 7), enough, cutA, up: up.slice(0, 8), down: down.slice(0, 8),
-  top: [...W.a.mon].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([n, x]) => [n, x, W.b.mon.get(n) || 0]), tech: techOut.slice(0, 10), sty, styAll, fresh: freshOut};
+  top: [...W.a.mon].sort((a, b) => b[1] - a[1]).slice(0, 10).map(([n, x]) => [n, x, W.b.mon.get(n) || 0]), tech: techOut.slice(0, 10), sty, styAll, fresh: freshOut}, RGW.id);
 // fail-safe: a week that suddenly has far fewer teams than the week before is a data problem, not a trend
 if (enough && (nA < nB * .35 || nB < nA * .35)) { doc.enough = false; doc.up = []; doc.down = []; doc.top = []; doc.tech = []; doc.sty = {up: [], down: []}; console.log(`::warning::weekly: ${nA} teams this week vs ${nB} the week before, too uneven to compare; changes left out`); }
 const s = JSON.stringify(doc); if (Buffer.byteLength(s) > CAP) { console.log('::error::weekly: out/weekly.json over 250 KB; left unchanged'); process.exit(1); }

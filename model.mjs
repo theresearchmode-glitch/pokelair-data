@@ -10,6 +10,7 @@
 // Pokémon in the game). Also ships the held-out calibration slope and the spread of real teams, so the page can score a
 // team against real tournament teams instead of a fixed range that any odd team could max out.
 import fs from 'node:fs'; import {pilotTest} from './pilot.mjs'; import {deckBasics} from './team-basics.mjs';
+import {stampReg} from './reg-stamp.mjs';
 const M = JSON.parse(fs.readFileSync(process.env.MATCHES || 'out/matches.json', 'utf8')); // MATCHES=file: experiments (e.g. out/matches_ab.json)
 const teams = M.teams.map(k => k.split('|')), G = M.m.filter(g => g[2] !== .5 && g[0] !== g[1]);
 const monIx = new Map(), mons = [];
@@ -235,6 +236,6 @@ const out = {updated: new Date().toISOString(), ships, shrink: K, setShrink: use
 // never replace a working model with an unshipped one (the daily job keeps yesterday's; update.yml reports the skip)
 { const dest = process.env.MODEL_OUT || (TRAIN_ONLY ? 'out/model_train.json' : 'out/model.json'); let prev = null; try { prev = JSON.parse(fs.readFileSync(dest, 'utf8')); } catch (e) {}
   if (!ships && prev && prev.ships && prev.mons) { console.log(`model: NOT shipped today, so ${dest} keeps the previous model (from ${String(prev.updated || '').slice(0, 10)})`); process.exit(1); }
-  fs.writeFileSync(dest, JSON.stringify(out)); }
+  fs.writeFileSync(dest, JSON.stringify(stampReg(out, M.reg))); }
 console.log(`calibration slope ${calib.toFixed(3)} · real-team spread p50 ${dist && dist.q[50]} p99 ${dist && dist.q[99]}`);
 console.log(`model: ${ships ? 'ships' : 'NOT shipped (no better than raw win rates)'}, ${mons.length} Pokémon, ${pairs.length} pairs, ${useSets ? Object.keys(out.sets).length + ' set features' : 'no set features (they did not help)'}, ${((Date.now() - t0) / 1000).toFixed(0)}s`);

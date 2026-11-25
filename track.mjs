@@ -12,6 +12,7 @@
 //   fw   scoreboard.mjs's games check (snapshot 14+ days old, 300+ later games): [date, accuracy, games]
 // Bands: 80+, 60-79, 40-59, under 40 (index 0..3).
 import fs from 'node:fs';
+import {stampReg} from './reg-stamp.mjs';
 const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('ratings_log.json'), E = rd('events.json'), SB = rd('scoreboard.json'), prev = rd('track.json') || {};
 if (!L || !Array.isArray(L.days) || !L.days.length) { console.log('track: no ratings snapshots yet, skipped'); process.exit(0); }
@@ -46,5 +47,5 @@ const mv = (() => { const z = snaps[snaps.length - 1], from = new Date(Date.pars
 const out = {v: 1, updated: new Date().toISOString(), since: snaps[0].d, snaps: snaps.length, last: snaps[snaps.length - 1].d, top: TOP, ev: evs, mons, mb, fw, mv};
 // under the cap: the oldest events lose their per-Pokémon lists first (their band totals stay)
 for (let i = 0; Buffer.byteLength(JSON.stringify(out)) > CAP && i < evs.length - 20; i++) evs[i][9] = null;
-fs.writeFileSync('out/track.json', JSON.stringify(out));
+fs.writeFileSync('out/track.json', JSON.stringify(stampReg(out)));
 console.log(`track: since ${out.since}, ${out.snaps} snapshots, ${evs.length} events checked, ${Math.round(Buffer.byteLength(JSON.stringify(out)) / 1024)} KiB`);

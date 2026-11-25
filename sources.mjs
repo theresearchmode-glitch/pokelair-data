@@ -8,6 +8,7 @@
 import fs from 'node:fs';
 import {mapMon, ROSTER, dec, text} from './names.mjs';
 import {UA as NP_UA, politeFetch} from './http.mjs';
+import {stampReg} from './reg-stamp.mjs';
 const UA = {'User-Agent': NP_UA};
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 let calls = 0;
@@ -58,7 +59,7 @@ await tryIt('pika', async () => { const F = 'championstournaments', h = await ge
       const rec = t.match(/\*\*Record\*\* \| (\d+)-(\d+)/); date = date || (t.match(/\*\*Data Date\*\* \| ([\d-]+)/) || [])[1] || null;
       sets[r.n] = {it: sec('Items').slice(0, 4), mv: sec('Moves').slice(0, 6), g: rec ? +rec[1] + +rec[2] : null}; } catch (e) {} }
   return {date: new Date().toISOString().slice(0, 10), dataDate: date, scope, rows, sets, miss}; });
-fs.writeFileSync('out/sources.json', JSON.stringify(out));
+fs.writeFileSync('out/sources.json', JSON.stringify(stampReg(out, 'M-C')));
 // Nov 9 (no silent failures): each source problem is recorded like a skipped step (skip.mjs -> out/skips.json), so the same
 // source failing two days in a row raises the 'Daily data problem' alarm in health.mjs instead of one warning line a day
 { const {execFileSync} = await import('node:child_process'); for (const k of new Set(out.problems.map(p => p.split(':')[0]))) { try { execFileSync('node', ['skip.mjs', `source ${k} skipped (${out.problems.filter(p => p.startsWith(k + ':')).join(' | ').slice(0, 300)})`], {stdio: 'inherit'}); } catch (e) {} } }

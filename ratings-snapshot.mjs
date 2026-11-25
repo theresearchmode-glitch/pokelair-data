@@ -3,6 +3,7 @@
 // games played AFTER it was taken, which the ratings could not have seen: the fairest test of whether they're right.
 // Needs Playwright (installed by the op.gg step); if it's missing the step just skips.
 import fs from 'node:fs'; import {execFileSync} from 'node:child_process';
+import {stampReg} from './reg-stamp.mjs';
 const rd = f => { try { return JSON.parse(fs.readFileSync('out/' + f, 'utf8')); } catch (e) { return null; } };
 let chromium; try { ({chromium} = await import('playwright')); } catch (e) { console.log('ratings snapshot: playwright not installed, skipped'); process.exit(0); }
 execFileSync('node', ['app/build.mjs'], {stdio: 'ignore'});
@@ -17,4 +18,4 @@ await pg.goto('file://' + process.cwd() + '/' + page); await pg.waitForTimeout(4
 const r = await pg.evaluate(() => window.__ev('Object.fromEntries(ROSTER.map(p => [p.n, rating(p).total]))')); await b.close(); fs.unlinkSync(page);
 const log = rd('ratings_log.json') || {days: []}, d = new Date().toISOString().slice(0, 10);
 log.days = [...log.days.filter(x => x.d !== d), {d, r}].slice(-120); log.updated = new Date().toISOString();
-fs.writeFileSync('out/ratings_log.json', JSON.stringify(log)); console.log(`ratings snapshot: ${Object.keys(r).length} Pokémon saved for ${d} (${log.days.length} days kept)`);
+fs.writeFileSync('out/ratings_log.json', JSON.stringify(stampReg(log))); console.log(`ratings snapshot: ${Object.keys(r).length} Pokémon saved for ${d} (${log.days.length} days kept)`);
