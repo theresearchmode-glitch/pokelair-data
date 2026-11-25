@@ -2551,3 +2551,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:59 AM: Sim set GitHub variable MODEL_SHADOW=1 (hidden test run of the new Strength Score starts with the next daily data run).
 - 12:01 PM: Shadow check passed locally on main 744d582f: shadow-model-test PASS (live model byte-identical with shadow on), combo shadow written, paired scoreboard 2 days. Sim: use all remaining usage before 4 PM: keep 2 helpers + main busy.
 - 12:02 PM: Preview v261 published (j18 + j19 merged, My Box fix, day-one honesty); v2.js 3785682 and preview.json 1182753 bytes match the local copies (checked by reading them back).
+- 12:29 PM: Sim: 'do the fixes you think are best' for the GitHub queue: (1) batch helper branches, test once when ready; (2) fix main's wasted test runs after skipped data runs (through the merge gate); (3) long local checks to Dos.
+- 12:30 PM: Queue fix 2: alt/main-skipfix (6671555b) = main + test.yml 'if' on 4 jobs: skip after a skipped/cancelled data run. Pushed for GitHub to test; lands on main (fast-forward) only when green. Fixes 1 (batch helper pushes) and 3 (Dos long runs) in effect.
