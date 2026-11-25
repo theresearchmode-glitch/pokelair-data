@@ -27,5 +27,17 @@
   - Fake-data checks (combo): shuffled team labels -> the gain vanishes (PASS, it's real signal); leave-one-event-out ->
     no event drives more than 4.6% of the gain (PASS); time-reversed -> gain holds (+0.49), diagnostic only.
   - Best-of-3: still not testable (games aren't tagged yet; dec2 branch adds the tagging).
+- Night fixes (watchdog, Wed 3:30-6:30 AM ET):
+  - dec2: Kip's research put an END date on Reg M-D (Mar 4 2027). No official source says that (only Game8's guess), so
+    it's back to "no end yet". GitHub: dec2 de2e4d57 = SUCCESS. practice-switch 1a9fd47a = SUCCESS.
+  - j19 + j16 were built on an old redesign copy (13 commits behind); design6 merged into both.
+  - j19: Kip's SEO code broke the PUBLIC page on every view ("Unexpected end of input": a regex lost its backslash inside
+    a template string and became a // comment). Fixed (d12a39cb); v2-today now "all passed" here.
+  - j16: Kip added Meowstic-F with no weight and no picture. Weight added (8.5 kg, Showdown's data; field check passes,
+    rules 14/14). PICTURE NEEDS SIM'S PC (GPU upscale), see the PC job below. Until then j16 fails 2 picture checks.
+## PC job for Sim (other chat, ~2 min): Meowstic-F picture
+  On the PC: realesrgan-ncnn-vulkan.exe -i 10025.png -o 10025-x4.png -n realesrgan-x4plus-anime -s 4 -g 0
+  (10025.png = PokeAPI HOME render; experiments/add-sprites.mjs 10025:Meowstic-F prints everything), then
+  experiments/out/sprites/x4/10025.png -> run add-sprites.mjs again with --write --crowd. HH will paste a ready prompt.
 ## NEXT
 - Archetype idea: run the shuffle check on it too, then shadow it next to the combo. Fix the 3 above (done by job 25); GitHub results for all branches; 7:41 AM Preview update; 4 PM: back to full work mode.
