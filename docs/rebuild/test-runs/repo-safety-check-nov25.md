@@ -19,7 +19,7 @@ Repo theresearchmode-glitch/pokelair-data is PUBLIC (checked: GitHub API private
 ## Second half (4:01-4:10 PM, checked by scripts: scratchpad safety2.sh)
 5. Windows username "simra" in file paths: 62 tool scripts/docs -> replaced with C:/Users/<you> (commit after 4 PM; all scripts still
    parse). Old commits keep it.
-6. First name: "Sim (Simran)" in docs/rebuild/START-HERE.md:13, :325 and the Nov 24 archive. FOR SIM: keep or cut. "Raj" appears too.
+6. First name: the full first name in docs/rebuild/START-HERE.md:13, :325 and the Nov 24 archive. FOR SIM: keep or cut. "Raj" appears too.
 7. Test fixtures contain FAKE emails/phones (experiments/feedback-guard-test.mjs: kid.player99@gmail.com, 555-...). Fine (fake, tests).
 8. Ids in docs: claude.ai artifact links, trigger and session ids (about 80 mentions). An id alone needs the owner's login, EXCEPT the
    Preview artifact, shared as "anyone with the link": its link is public in this repo, so anyone can view the Preview. FOR SIM: fine
