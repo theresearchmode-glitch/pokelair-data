@@ -523,7 +523,7 @@ const HQ = async () => {
     ok(!rm.length, `HQ Q4b (Sim: B): This Week shows its rating moves ("Our ratings moved too.", kit, Nov 22) under the movers: every rating mover as a button (name, rating, arrow + points; up/down spoken), nothing spills 320-1440${rm.length ? ': ' + rm.join(' | ') : ''}`); }
   // Q7a B: the hero crowd comes from 4 sprite sheets at 128px, except the 35 nearest (highest rated), which keep their own 384px file; every
   // Pokémon is still drawn, and Home asks for far fewer picture files (before: 345-359 at 1440, after: about 60)
-  { const sh = []; for (const [w, h] of [[1440, 900], [390, 844]]) { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  { const sh = []; for (const [w, h] of [[1440, 900], [390, 844]]) { const ctx = await b.newContext({viewport: {width: w, height: h}, isMobile: w < 700, hasTouch: w < 700}); const q = await ctx.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; window.__NP_SDHERO = 1; /* the Stampede hero's own crowd (Job DD) */ });
       const seen = new Set(); q.on('request', r => { if (/\.webp/.test(r.url())) seen.add(r.url()); }); await q.goto('file://' + PAGE + '#home');
       await q.waitForFunction(() => document.querySelectorAll('#main .sdh-c').length > 0, null, {timeout: 20000}).catch(() => {}); await q.waitForTimeout(1500);
       const r = await q.evaluate(async () => { const C = [...document.querySelectorAll('#main .sdh-c')], cs = C.filter(e => e.classList.contains('sdh-cs')), im = C.filter(e => e.tagName === 'IMG');
