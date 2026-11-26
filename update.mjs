@@ -140,7 +140,7 @@ for (const e of E) { const m = [...new Set(e.ix.map(j => nm[j]).filter(Boolean))
 const day = d => new Date(d).toLocaleDateString('en-US', {month: 'short', day: 'numeric'});
 const span = first ? `${day(first)} – ${day(last)}` : 'no events yet', nTeams = E.length || 1;
 const src = `${E.length.toLocaleString('en-US')} ${RG.name} tournament teams, ${G.toLocaleString('en-US')} games (Limitless, ${KEEP.length} events, ${span})`;
-const out = {updated: new Date().toISOString(), reg: FORMAT, tournaments: KEEP.length, teams: E.length, games: G, base: Math.round(base * 1e4) / 1e4,
+const out = {updated: new Date().toISOString(), apiOk: true, reg: FORMAT, tournaments: KEEP.length, teams: E.length, games: G, base: Math.round(base * 1e4) / 1e4,
   adj: {label: `Limitless · ${KEEP.length} ${RG.name} tournaments (${span}), ${E.length.toLocaleString('en-US')} teams, ${G.toLocaleString('en-US')} games · each Pokémon's own share of the win (teammates accounted for)`,
     rows: [...mon].map(([n, o]) => [n, Math.round(1000 * o.bs / (o.g || 1)) / 1000, o.g, o.t, Math.round(1000 * o.w / (o.g || 1)) / 10])},
   // the ratings' tournament input, rebuilt every day from these same teams (it used to be a hand-made Pokémon Zone snapshot):

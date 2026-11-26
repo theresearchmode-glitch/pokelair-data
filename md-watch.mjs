@@ -15,7 +15,7 @@
 //   WATCH_FAKE_FOUND=showdown,limitless,news   pretend each place shows the next regulation
 //   WATCH_FAKE_LIMITLESS=down | stale           pretend Limitless doesn't answer | its newest event is 5 days old
 import fs from 'node:fs';
-import {activeReg, nextRegIds, sdGuess, regName} from './formats.mjs';
+import {activeReg, nextRegIds, sdGuess, regName, regAt} from './formats.mjs';
 const FEED = 'https://champions-news.pokemon-home.com/en/json/list.json'; // the same feed as post-news.mjs FEED (main has no post-news.mjs; Nov 24)
 const UA = {'User-Agent': 'pokelair-data (personal team-builder stats)'}, out = process.env.WATCH_REPORT || 'watch-report.json';
 const fake = new Set(String(process.env.WATCH_FAKE_FOUND || '').split(',').filter(Boolean)), fakeL = process.env.WATCH_FAKE_LIMITLESS || '';
@@ -42,7 +42,7 @@ else try { const L = 'https://play.limitlesstcg.com/api/tournaments?game=VGC&lim
   try { list = await get(L); } catch (e) { R.notes.push(`Limitless first try failed (${e.message}); retrying once`); await new Promise(r => setTimeout(r, 10000)); list = await get(L); } if (!Array.isArray(list)) throw new Error('not a list'); }
   catch (e) { R.notes.push(`Limitless not reached (${e.message})`); list = null; }
 if (fake.has('limitless')) spot('Limitless', `FAKE (dry run): 3 Limitless VGC tournaments are marked ${next}.`, 'https://play.limitlesstcg.com/tournaments?game=VGC');
-else if (list) { const md = list.filter(t => String(t && t.format || '').toUpperCase() === next);
+else if (list) { const md = list.filter(t => regAt(String(t && t.format || '').toUpperCase(), t && t.date) === next);
   if (md.length) spot('Limitless', `${md.length} Limitless VGC tournament${md.length === 1 ? ' is' : 's are'} marked ${next}: ${md.slice(0, 5).map(t => `${t.name} (${String(t.date).slice(0, 10)}, ${t.players} players)`).join('; ')}`, 'https://play.limitlesstcg.com/tournaments?game=VGC');
   else R.notes.push(`Limitless: none of the newest ${list.length} tournaments is marked ${next}`); }
 // 1c. the official news lists (two requests: the Champions in-game news feed post-news.mjs reads, and news.pokemon-home.com, where
@@ -55,16 +55,24 @@ else { const hit = []; let n = 0;
     catch (e) { R.notes.push(`official news ${u} not read (${e.message})`); }
   if (hit.length) spot('official news', `The official news names ${nextName}: ${hit.slice(0, 3).map(h => `"${h.t}"`).join(' | ')}`, hit[0].link);
   else R.notes.push(`official news: ${n} posts in ${NEWS.length} lists, no title names ${nextName}`); }
-// 2. Limitless alarm: no answer, or the newest saved tournament is 2+ days old
+// 2. Limitless alarm: no answer, unreadable index, or Limitless has newer active/next-reg events that went unsaved for 2+ days
 /* data/index.json is written by the daily job on main (the branch scheduled workflows run on); WATCH_INDEX reads another copy (tests) */
 const IDX = process.env.WATCH_INDEX || 'data/index.json';
-let newest = null; try { newest = Object.values(JSON.parse(fs.readFileSync(IDX, 'utf8')).tournaments || {}).map(t => String(t.d || '').slice(0, 10)).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort().pop() || null; } catch (e) {}
+let newest = null, idxOk = false;
+try { const j = JSON.parse(fs.readFileSync(IDX, 'utf8')); idxOk = !!(j && typeof j.tournaments === 'object');
+  newest = Object.values(j.tournaments || {}).map(t => String(t.d || '').slice(0, 10)).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort().pop() || null; } catch (e) {}
 if (fakeL === 'stale') newest = new Date(Date.now() - 5 * 864e5).toISOString().slice(0, 10);
 const age = newest ? Math.floor((Date.parse(today) - Date.parse(newest)) / 864e5) : null, down = fakeL === 'down' || !list;
-if (down || age === null || age >= 2) { const since = newest || 'unknown';
-  R.paused = {title: `Limitless data paused since ${since}`, body: `${down ? 'Limitless did not answer today (two tries, 10 s apart, to its tournaments API).' : age === null ? `No saved Limitless tournaments found in ${IDX}.` : `No new Limitless event since ${since} (${age} days; the alarm starts at 2).`}` +
+// newest event the API itself reports for the active (or next) regulation: if the API answered fine and has nothing newer than
+// data/index.json, it is a quiet day with zero new events, not an outage (Kip job 44)
+const apiNewest = list ? list.filter(t => { const r = regAt(String(t && t.format || '').toUpperCase(), t && t.date); return r === act.id || r === next; })
+  .map(t => String(t && t.date || '').slice(0, 10)).filter(d => /^\d{4}-\d{2}-\d{2}$/.test(d)).sort().pop() || null : null;
+const missed = !!(apiNewest && (!newest || apiNewest > newest));
+if (down || !idxOk || fakeL === 'stale' || (missed && (age === null || age >= 2))) { const since = newest || 'unknown';
+  R.paused = {title: `Limitless data paused since ${since}`, body: `${down ? 'Limitless did not answer today (two tries, 10 s apart, to its tournaments API).' : !idxOk ? `No saved Limitless tournaments found in ${IDX}.` : `No new Limitless event since ${since} (${age ?? 'unknown'} days; the alarm starts at 2${apiNewest ? `; API has ${apiNewest}` : ''}).`}` +
     `\n\nNewest saved tournament: ${since} (${IDX}). Checked ${today} by md-watch.mjs; this issue closes by itself when data flows again.` +
     `\nBackup plan: docs/rebuild/gameplan-detail-nov25.md (Limitless backup).`}; }
+else if (age === null || age >= 2) R.notes.push(`Limitless: API answered ok, no new ${act.id}/${next} event since ${newest || 'none'} (${age === null ? 'none saved yet' : `${age} days`}; quiet day, not an outage)`);
 else R.notes.push(`Limitless: newest saved tournament ${newest} (${age} day${age === 1 ? '' : 's'} old)`);
 fs.writeFileSync(out, JSON.stringify(R, null, 1));
 console.log(`md-watch: next ${next}; spotted ${R.spotted.map(s => s.where).join(', ') || 'nothing'}; Limitless ${R.paused ? 'PAUSED' : 'ok'}`); R.notes.forEach(n => console.log('  ' + n));
