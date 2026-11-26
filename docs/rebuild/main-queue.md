@@ -1,12 +1,12 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 1:10 PM (1:10:48)  date: Thu Nov 26, 2026
-NOW: HH: gate.sh alt/day-batch4 1f8eeeee (pid in .main-running): waits for GitHub's full run, merge-check, push design6.
-NOW (helper): Job Z, 3 colour-flooded receipt front pages (Sim: "needs more color", Pokémon-driven). Y (public dataready bug) and W
-  (prerender Home) paused as WIP.
-NOW (Kip): job 57 (item pictures out of v2.js, shared css on /), then 58.
-NEXT: after day-batch4 lands: Preview republish (daily-data.sh), Game Plan, pictures to Sim.
-NEXT: next batch: Kip 53/54/56 + helper Y/W when done; Friday switch if Sim's go tonight.
-NEXT: resume Job Y then W after Sim picks the front page.
+Updated: time: 4:25 PM (4:25:27)  date: Thu Nov 26, 2026
+NOW: HH: gate.sh alt/batch6 074c0f36 (pid in .main-running): GitHub full run in progress, then merge-check into design6.
+  batch7 candidate (Kip 61 + 62) ready locally: v2-minors all passed (BR-C1 flaky once), WebKit static pages OK. Friday conflicts unchanged (5).
+NOW (helper): Job CC local rerun of batch6 (report -> alt/batch6-report); found + fixed .f3 leak and a test double-count.
+NOW (Kip): job 64 since 3:07 PM, no push for 78 min (flag to Sim if no change at 4:56 PM).
+NEXT: after batch6 lands: Preview republish (Final 3 in the Preview is public-build only; the Preview = Claude build), Game Plan, pictures.
+NEXT: merge batch6 into batch7, push, gate.
+NEXT: Friday switch if Sim OKs the Preview tonight.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
