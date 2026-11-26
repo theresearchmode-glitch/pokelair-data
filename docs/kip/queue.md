@@ -245,3 +245,26 @@ team that shows items), an item sheet, Build, Gifts at 390 + 1440 light + dark, 
 ## JOB 58 (after 57): --split-routes on --public (your fix 2) - proposal + measurement first
 Turn on route splitting for --public on a branch, measure LCP/bytes per page with speed-check, and run the full public test list
 (same as job 57). Report what breaks before fixing anything; fix only code paths with no visible change. HH decides whether it ships.
+
+---
+## HH notes (time: 1:27 PM (1:27:51)  date: Thu Nov 26, 2026): 53-58 received. 53, 54, 56 are in HH's next batch (56's files only: your branch was cut from main, which would
+bring the whole switch merge). 57 + 58 are being reviewed by HH's helper. The day batch (with your 45, 48, 50) is in claude/design6.
+Rule reminder for branches: page/test work branches from origin/claude/design6 (58137089 now), data-pipeline work from origin/main.
+Order now: 59, then 60. Same rules (no design; own alt/gemini-* branch; fail-before/pass-after; status lines).
+
+## JOB 59: Friday switch rehearsal 4 on today's tips (branch alt/gemini-rehearsal4; the switch may move to FRIDAY morning)
+Follow docs/rebuild/switch-runbook-nov28.md (on origin/alt/t3-pending) step 2 exactly: scratch branch from origin/main, merge
+origin/claude/design6 (58137089), resolve the 5 known conflicts as written; report anything new. Then:
+- 0 conflict markers, node --check on every .mjs, both YAML files load.
+- `REPORT_OK=1 bash docs/rebuild/merge-check.sh <scratch> main` must run BOTH lists by itself (your job 48); record every step + exit.
+- Run your experiments/switch-smoke.mjs (job 54) on the merged build with today's data (origin/main out/).
+- Push the merge ONLY to alt/gemini-rehearsal4 so GitHub runs the full test.yml; report the run id and result, and every failure
+  with its cause. Never push main. Report docs/rebuild/test-runs/kip-job59-rehearsal4.md.
+
+## JOB 60 (after 59): speed fixes 4 + 5 from your job 55 (branch alt/gemini-speed-fix2 from origin/claude/design6)
+4. Trim what static pages (/pokemon, the 23 tool pages, 404) load from /v2.css: give static pages only the CSS they use (measure:
+   bytes before/after, and 0 changed pixels on /pokemon, /pokemon/garchomp, 404 at 390/1440 light/dark).
+5. Load only the /data/*.json a route needs for its first paint (03-persistence.js:68-74); the rest after first paint. No page may
+   show a different number or a loading panel longer than today (prove on Home, My Team, Meta, News, Gifts, /pokemon/garchomp).
+Proof as in job 57: speed-check.mjs before/after, the public test list in GitHub's order, no visible change. Report
+docs/rebuild/test-runs/kip-job60-speed2.md.
