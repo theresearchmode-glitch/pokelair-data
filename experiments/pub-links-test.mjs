@@ -26,7 +26,10 @@ const mons = new Set(fs.readdirSync(path.join(D, 'pokemon')).map(f => '/pokemon/
   ok(monL.length >= 10, `public: Pokémon links point at /pokemon/<name> (${monL.length})`);
   const unknown = [...new Set(real.map(l => l.href).filter(h => !pub.has(h) && !mons.has(h)))];
   ok(!unknown.length, `public: every real address is a page the site serves (${unknown.slice(0, 5).join(' ') || 'all known'})`);
-  ok(real.every(l => l.mon || /^#/.test(l.h)), 'public: each one keeps its hash in data-h (Meta list rows open by data-v2mon)');
+  /* /pokemon is a static page outside the app (app/static-pages.mjs): its link is plain navigation, with no in-app hash (Sim, Nov 25: the
+     Pokémon page's trail goes through it). Every other in-site link must still carry its hash. */
+  const STATIC = new Set(['/pokemon']);
+  ok(real.every(l => l.mon || /^#/.test(l.h) || STATIC.has(l.href)), 'public: each in-app link keeps its hash in data-h (Meta list rows open by data-v2mon; /pokemon is a static page)');
   // the Meta list (the hub of all rated Pokémon) links each one (Nov 25)
   await p.goto(origin + '/meta', {waitUntil: 'networkidle'}); await p.waitForTimeout(1500);
   const metaMons = await p.evaluate(() => new Set([...document.querySelectorAll('#app a[href^="/pokemon/"]')].map(a => a.getAttribute('href'))).size);
