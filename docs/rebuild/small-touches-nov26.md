@@ -21,5 +21,13 @@ measuring pass (sideways overflow, clipped text, page height in screens). Script
 1440x900: Home 4, Meta 3.8, My Team 3, Pokémon 3.2, Speed 2.9, This Week 1.2, Track 1.1, News 2.4 (all within caps).
 1280x720: Meta 5, Home 4.8, Pokémon 4.2 (rule is set at 1440x900; noted only). Phone: Home 7.6 (tablet/phone Home is Job C).
 
-## Not yet looked at (next pass)
-Dark mode, 768/1024 tablets, Build, Battle, Calc, Practice, Events, Gifts, Search results.
+## Pass 2 (dark, 1440x900 + 820x1180; Home, Meta, My Team, Pokémon, News, Build, Calc, Events, Gifts)
+- No sideways scroll anywhere, no visible clipping; dark mode looks clean in the shots (checked: d-*.png in scratchpad/touch).
+- FIXED on local branch touch-moves (not merged yet): My Team move pills, item 2 above. All 510 moves fit at 1280; new v2-minors check.
+- UNSURE: Build, the winning-teams block: each big team row holds a .bd-sets grid (the full sets as text, e.g. "Pelipper @ Sitrus
+  Berry") 56px wide whose six boxes sit at x 1273-1473 in a 1440 window. Nothing is painted there (picture build-set.png), so users
+  don't see it; how it is hidden is not checked. Look before launch: if it's a screen-reader copy, it should be .vh, not off-edge.
+- Heights at 820x1180 (dark): Home 6.4 (Job C proposal takes it to 4.8), Pokémon 4.2, Meta 3.9, others under 3.5.
+
+## Not yet looked at
+Battle, Practice, Search results, 1024x1366, odd widths (1100, 1180).
