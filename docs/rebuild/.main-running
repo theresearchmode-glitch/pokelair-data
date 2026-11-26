@@ -1,2 +1,2 @@
-8062
-batch7: ONLY=BR x3 (BR-C1 control failed once)
+13665
+batch7: WebKit pass of the public static pages (Kip 61 trimmed their CSS)
