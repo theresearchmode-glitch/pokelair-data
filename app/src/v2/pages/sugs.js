@@ -8,8 +8,8 @@
 V2.sgAdj = () => {
   // Sim, Nov 18 (C, phone length): on phones Adjust Suggestions is a fold; its closed line says the current settings
   const mg = megaGoal(), ex = (S.excl || []).length, sum = [{box: 'My Box', boxfill: 'Box + Catch', all: 'Whole Roster'}[ui.pool] || '', `${mg} Mega${+mg === 1 ? '' : 's'}`,
-    `Swap Mega: ${$('swapMega').checked ? 'Yes' : 'No'}`, `Abilities: ${$('useAbil').checked ? 'Yes' : 'No'}`, ex ? `${ex} never suggested` : ''].filter(Boolean).join(' · ');
-  return `<details class="sg2-fold sg2-adjf" data-v2adj${V2.adjOpen ? ' open' : ''}><summary><span class="t">Adjust Suggestions</span><span class="s">${V2.esc(sum)}</span></summary><div class="sg2-adj">${V2.sgCtl()}</div></details>`; };
+    `Swap Mega: ${$('swapMega').checked ? 'Yes' : 'No'}`, `Abilities: ${$('useAbil').checked ? 'Yes' : 'No'}`, ex ? `${ex} never suggested` : '', ui.spicy ? 'Spicy picks: On' : ''].filter(Boolean).join(' · ');
+  return `<details class="sg2-fold sg2-adjf" data-v2adj${V2.adjOpen ? ' open' : ''}><summary><span class="t">Adjust Suggestions</span><span class="s">${V2.esc(sum)}</span></summary><div class="sg2-adj">${V2.sgCtl()}${V2.sgSpOff()}</div></details>`; };
 document.addEventListener('toggle', e => { const d = e.target; if (d && d.matches && d.matches('[data-v2adj]')) V2.adjOpen = d.open; }, true); /* open stays open through redraws (a new setting redraws the page) */
 V2.sgCtl = () => `<div class="sg2-ctl" role="group" aria-label="Suggestion settings">
   <div class="sg2-c sg2-pool"><span class="sg2-k">Suggest from</span>${V2.slide('sgpool', [['box', 'My Box'], ['boxfill', 'Box + Catch'], ['all', 'Whole Roster']], ui.pool, 'Suggest from')}</div>
@@ -29,6 +29,66 @@ document.addEventListener('v2slide', e => { const {key, value} = e.detail;
 /* Refresh Suggestions (today's 'Refresh plans', Sim Q6): work the suggestions out again from scratch */
 document.addEventListener('click', e => { if (!(e.target.closest && e.target.closest('[data-v2replan]'))) return; if (typeof clearCaches === 'function') clearCaches(); V2.plan = {key: null, plans: null, job: null}; render(); toast('Suggestions refreshed'); });
 
+// ---------- Spicy picks (Job E, Nov 26; rebuilt to Sim's choices, Job L; research: docs/rebuild/research/spicy-picks-nov26.md) ----------
+// An extra on top of the normal suggestions, off by default (its toggle sits in Adjust Suggestions while off). Off: Suggestions is exactly
+// as before, rare picks included. On: a separate group of swaps that bring in a Pokémon fewer than 5% of tournament teams use, each card
+// saying how much data is behind it: "Rare pick, plenty of games (N)" when the research's PROVEN rule holds, else "Spicy: too few games to
+// tell" (rule 21). No claim that a rare pick wins as often as the usual one. The changed six is graded as chosen (planGrade).
+V2.SP_U = 5; V2.SP_G = 300; /* the research's MAXU and MING */
+ui.spicy = V2.LS.get('np2.spicy') === '1';
+// usage, wins and games from the tournament numbers in use (activePerf: today's refresh or the built-in snapshot); else live usage, no games
+V2.spUse = p => { let r = null; try { const d = (activePerf() || {}).doubles; r = d && d[p.n]; } catch (e) {} return r ? {u: r[0], w: r[1], g: r[2]} : {u: U(p), w: null, g: 0}; };
+// Wilson bound at 95% (s = -1 lower, +1 upper), n = games / 3 because games from one team aren't independent (the research's DEFL)
+V2.spWil = (w, n, s) => { const z = 1.96, d = 1 + z * z / n; return ((w + z * z / (2 * n)) + s * z * Math.sqrt(w * (1 - w) / n + z * z / (4 * n * n))) / d; };
+V2.spRare = p => V2.spUse(p).u < V2.SP_U;
+V2.spRarePl = pl => !!pl && pl.ch.some(x => V2.spRare(x.c.p));
+V2.spSure = p => { const s = V2.spUse(p); return s.w != null && s.g >= V2.SP_G && V2.spWil(s.w / 100, s.g / 3, -1) > .5; }; /* PROVEN: 300+ games and over 50% at the 95% lower bound */
+V2.spLoser = p => { const s = V2.spUse(p); return s.w != null && s.g >= V2.SP_G && V2.spWil(s.w / 100, s.g / 3, 1) < .5; }; /* clearly under even: never offered */
+// each rare Pokémon coming in: the label (with its games when there are plenty), then its share of teams (no raw win rate: mostly player skill)
+V2.spFacts = pl => `<div class="sg2-spf">${pl.ch.filter(x => V2.spRare(x.c.p)).map(x => { const p = x.c.p, s = V2.spUse(p), sure = V2.spSure(p);
+  return `<p class="sg2-spl">${V2.kTag(sure ? 'good' : 'neutral', sure ? `Rare pick, plenty of games (${s.g.toLocaleString('en-US')})` : 'Spicy: too few games to tell')}<span class="sg2-spr">${pl.ch.length > 1 ? `${V2.esc(p.d)}: ` : ''}${s.u < .1 ? 'under 0.1' : s.u.toFixed(1)}% of teams${s.g ? '' : ' · no tournament games yet'}</span></p>`; }).join('')}</div>`;
+// the spicy search: today's planner over the rare Pokémon in the pool, with the off-meta scoring (as the hidden gems), single swaps; the best
+// 12 distinct Pokémon are graded (planGrade), a slice at a time between frames, like V2.planStart
+V2.spicy = {key: null, list: null, job: null};
+V2.spKey = () => V2.planKey() + '|spicy';
+V2.spStart = ms => { const key = V2.spKey(); if (V2.spicy.key === key || (V2.spicy.job && V2.spicy.job.key === key)) return;
+  const pool = suggestPool().filter(p => V2.spRare(p) && !V2.spLoser(p)), job = {key};
+  job.g = (function* () { const gen = withOffMeta(() => planFixesG(ms, pool, true, {singlesOnly: true})); let r; for (;;) { r = withOffMeta(() => gen.next()); if (r.done) break; yield; }
+    const out = [], seen = new Set(); for (const pl of (r.value && r.value.singles) || []) { const n = pl.ch[0].c.p.n; if (seen.has(n) || (pl.gap && pl.gap.clash)) continue; seen.add(n); planGrade(pl); out.push(pl); yield; if (out.length >= 12) break; }
+    return out; })();
+  V2.spicy = {key: null, list: null, job};
+  const step = () => { if (V2.spicy.job !== job) return; if (performance.now() - (V2.lastScroll || -1e9) < 250) { setTimeout(step, 150); return; } const t = performance.now(); let r;
+    try { for (;;) { r = job.g.next(); if (r.done) break; if (performance.now() - t > 30) { setTimeout(step, 0); return; } } } catch (e) { console.error(e); r = {value: []}; }
+    V2.spicy = {key, list: r.value || [], job: null}; setTimeout(() => { if (V2.spicy.key === key && V2.route() === 'team') V2.redraw(); }, 0); };
+  setTimeout(step, 0); };
+// the group: the spicy search's swaps, best Strength Score first, leaving out any the normal list already shows (Sim: the normal list
+// is unchanged, rare picks included) and any that lowers the score (with no score, the 1-5 Pokémon team, the planner's order)
+V2.spPlans = (ms, g0) => { const seen = new Set(), shown = new Set(((ui.planList || []).slice(0, 3)).map(pl => pl.ch.map(x => x.c.p.n).sort().join('+'))), all = (V2.spicy.list || []).filter(pl => { const k = pl.ch.map(x => x.c.p.n).sort().join('+'); if (seen.has(k) || shown.has(k)) return false; seen.add(k); return true; });
+  if (g0 == null) return all.slice(0, 3);
+  const ok = all.filter(pl => { const g1 = planGrade(pl); return g1 != null && Math.round(g1) >= Math.round(g0); }).sort((a, b) => planGrade(b) - planGrade(a)), out = [], used = new Set();
+  for (const pl of ok) { const k = pl.ch.filter(x => V2.spRare(x.c.p)).map(x => x.c.p.n).sort().join('+'); if (used.has(k)) continue; /* one card per rare Pokémon: its best plan */ used.add(k); out.push(pl); if (out.length >= 3) break; } return out; };
+// the toggle: off, it sits in Adjust Suggestions with the other settings (folded, so Suggestions is no longer: Sim's 4.35-screen cap at 390);
+// on, it heads the Spicy picks group it turned on, so the state and the way back are in view
+V2.spChip = () => V2.kChip('Spicy picks', {on: !!ui.spicy, attrs: {'data-v2spicy': ''}});
+V2.sgSpOff = () => ui.spicy ? '' : `<div class="sg2-sp sg2-spin"><div class="sg2-sph">${V2.spChip()}<p class="sg2-spc">Add rare Pokémon (under 5% of teams) to the suggestions, each labelled.</p></div></div>`;
+V2.sgSpicy = (ms, g0) => { const on = !!ui.spicy;
+  if (!on || !ms.length) return '';
+  const head = `<div class="sg2-sp"><div class="sg2-sph">${V2.spChip()}<p class="sg2-spc">Pokémon fewer than 5% of teams use. Each card says how much data is behind it.</p></div>`;
+  if (g0 == null && ms.length === 6) { try { g0 = gradeTeam(ms); } catch (e) {} } V2.spStart(ms); const ready = V2.spicy.key === V2.spKey();
+  if (!ready) return `${head}<p class="sg2-wait sg2-spwait" role="status">Looking for rare picks…</p></div>`;
+  const L = V2.spPlans(ms, g0); V2.spShown = L;
+  if (!L.length) return `${head}<p class="tm-sub">No rare pick keeps this team’s Strength Score right now.</p></div>`;
+  let X = null; try { X = V2.sgX(ms); } catch (e) {}
+  const why = (pl, k) => { if ((pl._why && pl._why.length) || !X) return null; try { const r = planWhy(pl, k, X, false); return {lines: r.lines, wk: r.wk}; } catch (e) { return null; } }; /* the search's own swaps: their reasons, as All Suggestions works them out */
+  return `${head}<ol class="tm-sug sg2-spo">${L.map((pl, k) => V2.sgCard({pl, k, g0, attr: 'data-v2spl', eb: `Spicy pick ${k + 1}`, why: why(pl, k), facts: V2.spFacts(pl)})).join('')}</ol></div>`; };
+// from Search: Spicy picks on, Suggestions shown (its tab on phones), the toggle row in view and focused
+V2.spicyOpen = () => { if (!ui.spicy) { ui.spicy = true; V2.LS.set('np2.spicy', '1'); render(); } const t = document.querySelector('.tm-tabs [data-tmjump="tm-sg"]'); if (t && t.getAttribute('aria-selected') !== 'true') t.click();
+  setTimeout(() => { const e = document.querySelector('#main .sg2-sp'), f = e && e.querySelector('[data-v2spicy]'); if (e) e.scrollIntoView({block: 'center'}); if (f) f.focus({preventScroll: true}); }, 120); };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2spicy]'); if (!b) return; ui.spicy = !ui.spicy; V2.LS.set('np2.spicy', ui.spicy ? '1' : '0');
+  toast(ui.spicy ? 'Spicy picks on: rare Pokémon, each labelled' : 'Spicy picks off'); render();
+  // the focus follows the toggle (on: the group's head; off: back in Adjust Suggestions, or that fold's line when it is shut)
+  const f = document.querySelector('#main [data-v2spicy]'), d = f && f.closest('details'); if (f && (!d || d.open)) f.focus({preventScroll: true}); else { const sm = document.querySelector('#main [data-v2adj] > summary'); if (sm) sm.focus({preventScroll: true}); } });
+
 // ---------- the cards' reasons: today's planWhy over the same plans renderPlans works them out for ----------
 // (the plans, then up to 3 side options when nothing improves the team), so Why? lists today's reasons word for word
 V2.sgX = ms => { const useA = $('useAbil').checked, RD = prepOf(ms), P = V2.plan.plans || [];
@@ -42,12 +102,12 @@ V2.undotHtml = h => { h = String(h); const list = /;/.test(h.replace(/<[^>]*>/g,
 V2.sgOwn = P => { try { return inBox(P) ? 'In your box' : ui.pool !== 'all' ? 'To catch' : ''; } catch (e) { return ''; } };
 V2.sgSide = (m, cls) => { const P = m.p || m, own = cls === ' in' ? V2.sgOwn(P) : ''; return `<span class="tm-sw${cls}"><img src="${V2.art(SPRITE_ID[P.n])}" alt=""><span>${V2.nameHtml(m.d || V2.disp(P.n))}${own ? `<small class="tm-own">${own}</small>` : ''}</span></span>`; };
 V2.sgSwap = x => `<div class="tm-chg" aria-label="${x.out ? V2.esc(x.out.d) + ' out, ' : 'Add '}${V2.esc(x.c.p.d)}${x.out ? ' in' : ''}${V2.sgOwn(x.c.p) ? ', ' + V2.sgOwn(x.c.p).toLowerCase() : ''}">${x.out ? V2.sgSide(x.out, '') : '<span class="tm-sw"></span>'}<span class="tm-ar" aria-hidden="true">${x.out ? '→' : '+'}</span>${V2.sgSide(x.c.p, ' in')}</div>`;
-V2.sgCard = ({pl, k, g0, attr, side, hidden, why, main, facts}) => { const g1 = g0 != null ? planGrade(pl) : null, ok = g0 != null && g1 != null, r0 = ok ? Math.round(g0) : null, r1 = ok ? Math.round(g1) : null, d = ok ? r1 - r0 : null;
+V2.sgCard = ({pl, k, g0, attr, side, hidden, why, main, facts, eb}) => { const g1 = g0 != null ? planGrade(pl) : null, ok = g0 != null && g1 != null, r0 = ok ? Math.round(g0) : null, r1 = ok ? Math.round(g1) : null, d = ok ? r1 - r0 : null;
   const word = ok && CH.wordOf(g0) !== CH.wordOf(g1) ? CH.wordOf(g1) : '', ln = (() => { try { if (!pl._lane) LANE.of(pl, members(), g0); } catch (e) {} return LANE.lineParts(pl); })(); // plans from the planner's extra list have no lane yet: work it out, as today's 23-coverage.js does (Nov 10 fix; audit SUGG-06)
   // Why?: the plan's own reasons (else, for a side option, what keeps it level), the weak-spot change first (as today)
   const W = why || {lines: pl._why && pl._why.length ? pl._why : side ? ['Keeps every check and your speed control', 'About the same Strength Score as now, with a different look'] : [], wk: pl._wk};
   const wk = W.wk ? `<li>Weak spots: <b>${V2.esc(W.wk[0])}</b> → <b>${V2.esc(W.wk[1])}</b></li>` : '', L = W.lines.filter(Boolean), nr = L.length + (wk ? 1 : 0);
-  return `<li${hidden ? ' hidden' : ''}><span class="np-eyebrow">Suggestion ${k + 1}</span>${d != null ? `<div class="tm-mv"><b>${d > 0 ? '+' + d : d < 0 ? '−' + Math.abs(d) : '±0'}</b><span>${r0} → ${r1}</span>${word ? `<em class="sg2-band">${V2.esc(word)}</em>` : ''}</div>` : ''}<div class="tm-swaps">${pl.ch.map(V2.sgSwap).join('')}</div>${facts || ''}
+  return `<li${hidden ? ' hidden' : ''}><span class="np-eyebrow">${eb ? V2.esc(eb) : `Suggestion ${k + 1}`}</span>${d != null ? `<div class="tm-mv"><b>${d > 0 ? '+' + d : d < 0 ? '−' + Math.abs(d) : '±0'}</b><span>${r0} → ${r1}</span>${word ? `<em class="sg2-band">${V2.esc(word)}</em>` : ''}</div>` : ''}<div class="tm-swaps">${pl.ch.map(V2.sgSwap).join('')}</div>${facts || ''}
     ${ln ? `<p class="sg2-ln ${ln.k}"><b>${ln.tag}</b> ${ln.text}</p>` : ''}${main ? `<button type="button" class="np-btn" ${attr}="${k}">Apply</button>` : `<button type="button" class="np-btn2 k-btn" ${attr}="${k}"><span>Apply</span></button>`}
     ${nr ? `<details class="sg2-why"><summary><span class="q">Why?</span><span class="n">${nr} reason${nr === 1 ? '' : 's'}</span></summary><ul>${wk}${L.map(l => `<li>${V2.undotHtml(V2.wl(l))}</li>`).join('')}</ul></details>` : ''}</li>`; };
 
@@ -79,7 +139,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
   if (S2.pending) { const last = V2._sgLast;
     // while the next suggestions are worked out the ones on screen stay, faded and not tappable (as today), so nothing jumps
     body = V2.sgWait(last); }
-  else { V2.sgReasons(ms); const side = !P.length && Array.isArray(P.more) && P.more.length > 0, top = S2.top, g0 = top.length ? top[0].g0 : null;
+  else { V2.sgReasons(ms); const side = !P.length && Array.isArray(P.more) && P.more.length > 0, top = S2.top, g0 = top.length ? top[0].g0 : null; V2._spG0 = g0 != null ? g0 : P.gBase != null ? P.gBase : null;
     const open = ui.sugMore === ms.map(m => m.p.n).join(','), hid = top.length - 1;
     // above the cards, as today: a Protect fix (a set change, not a swap), then a game-plan gap no swap in this pool can close
     const pre = V2.itemFixCard(ms) + V2.setTipsCard() + V2.protCard(ms) + (P.nothing ? V2.noneCard() : ''), gap = pre + (P.gapNote ? `<p class="sg2-gap"><b>Note:</b> ${V2.esc(P.gapNote)}</p>` : '') /* a note is advice, as in Team Checks: it can't read as contradicting "Nothing to fix" (Sim, Nov 12) */;
@@ -88,7 +148,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
     // card and no Apply: the quiet line stays and the swaps wait behind See all suggestions (same rule as Matchups' Best fix)
     const up = top.length && g0 != null ? Math.round(planGrade(top[0].pl)) - Math.round(g0) : null;
     if (top.length && up != null && up <= 0) { body = `${gap || `<p class="tm-sub">Nothing raises this team’s Strength Score right now.</p>`}${all}`; V2._sgLast = body;
-      return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${S2.pending ? body : V2.sgNbox(body, P)}${V2.sgAdj()}</section>`; }
+      return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${S2.pending ? body : V2.sgNbox(body, P)}${S2.pending ? '' : V2.sgSpicy(ms, V2._spG0)}${V2.sgAdj()}</section>`; }
     body = !top.length ? (side ? `${gap}<p class="tm-sub">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p>${all}` /* Nov 15: the fix cards (items, Protect) showed in every branch but this one */
         : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool below, or see Matchups for what to watch.</p>')
       : `${gap}<p class="tm-sub">${P.nothing ? 'Optional swaps:' : side ? 'Nothing raises this team’s Strength Score right now. These swaps keep every check and about the same score, with a different look:' : 'What to change, best first.'}</p>
@@ -97,7 +157,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
     V2._sgLast = body; }
   V2.sgAllSync(); /* an open All Suggestions sheet follows the planner (Suggest from in the sheet re-plans) */
   if (!S2.pending && !(S.excl || []).length && !/data-v2excl/.test(body)) body += '<p class="sg2-links"><button type="button" class="np-link sg2-all" data-v2excl>Never<span class="sg2-l2"> Suggest ›</span></button></p>'; /* always reachable */
-  return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${S2.pending ? body : V2.sgNbox(body, P)}${V2.sgAdj()}</section>`; };
+  return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${S2.pending ? body : V2.sgNbox(body, P)}${S2.pending ? '' : V2.sgSpicy(ms, V2._spG0)}${V2.sgAdj()}</section>`; };
 // the Protect fix: only 0-2 of the six run Protect while their usual sets do; Add Protect puts it in those sets (today's
 // LANE.protFix / protApply and its [data-protfix] handler, 36-lanes.js; the words from LANE.protWords)
 // today's "Fix your items first" (54-items.js itemFixHtml): an Item Clause clash or an item that does nothing, with a one-tap "Give X Y"
@@ -193,8 +253,8 @@ document.addEventListener('click', e => { if (!e.target.closest) return;
 
 // ---------- Apply (today's applyPlan: Undo kept, what it swapped out isn't offered straight back) ----------
 // a second tap within half a second is ignored, as on today's page (a double tap can't apply two suggestions)
-document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2plan],[data-v2plana]'); if (!b) return; const now = Date.now(); if (now - (V2._sgTap || 0) < 450) return; V2._sgTap = now;
-  const fromAll = b.dataset.v2plana != null, pl = fromAll ? V2.sgAll.list[+b.dataset.v2plana] : (ui.planList || [])[+b.dataset.v2plan]; if (!pl) return;
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2plan],[data-v2plana],[data-v2spl]'); if (!b) return; const now = Date.now(); if (now - (V2._sgTap || 0) < 450) return; V2._sgTap = now;
+  const fromAll = b.dataset.v2plana != null, pl = fromAll ? V2.sgAll.list[+b.dataset.v2plana] : b.dataset.v2spl != null ? (V2.spShown || [])[+b.dataset.v2spl] /* a Spicy pick */ : (ui.planList || [])[+b.dataset.v2plan]; if (!pl) return;
   // known-bug SUGG-09 (Nov 17): the parts above Suggestions change height on the redraw, so Suggestions jumped about 120px; keep it where it was
   const sec = !fromAll && b.closest('section'), id = sec && sec.id, y0 = sec ? sec.getBoundingClientRect().top : null, k = b.dataset.v2plan, a0 = b.getBoundingClientRect().top;
   if (fromAll) V2.closeSheet(true); applyPlan(pl); render();
