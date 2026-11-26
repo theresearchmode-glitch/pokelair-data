@@ -15,3 +15,5 @@
 48 | started | - | merge-check.sh target main runs both test lists when test.yml has v2 steps | Thu Nov 26, 7:44 AM
 48 | done | alt/gemini-merge-both 51cf6b51 | merge-check.sh target main automatically runs tests_main + tests_design6 when test.yml has app/test/v2-public.mjs; merge-gate-test 2 FAILED before, 29/29 after | Thu Nov 26, 7:47 AM
 49 | started | - | Dec 2 balance patch hand-written half + patch-dec2-test.mjs | Thu Nov 26, 9:43 AM
+49 | done | alt/gemini-patch-dec2 99b5cd54 | Dec 2 hand-written half (47 LEARN pairings incl. Megas + Castform weather forms, Flash Fire + Stalwart ABIL, infosheet 20%, run.mjs 76); generated files untouched; patch-dec2-test 52 FAILED before, 57/57 after; legality-check exit 0 | Thu Nov 26, 9:47 AM
+50 | started | - | search-ready public pages test (app/test/seo-check.mjs) | Thu Nov 26, 9:47 AM
