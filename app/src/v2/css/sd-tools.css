@@ -485,5 +485,5 @@
   .sdt-grid>.sdt-dc .sdt-duel{grid-template-columns:minmax(0,1fr) var(--s12) minmax(0,1fr)}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:96px}}
 /* Nov 26 (WebKit check, today's data "94-100%"): a 3-digit damage range ran past the band's slant at 390 and 1100-1440 (the % was
    cut). Such a range (.sdt-pct3, set in stampede-tools.js) takes the smaller fluid display size where the band is tight; iPads keep 64px */
-@media (max-width:699.98px),(min-width:1100px){.sdt-grid>.sdt-dc .sdt-pct.sdt-pct3{font-size:var(--d-calctight)}}
-@media (max-width:379.98px){.sdt-grid>.sdt-dc .sdt-pct.sdt-pct3{font-size:var(--t34)}} /* 320-379: the 34px step, as for two digits */
+@media (max-width:699.98px),(min-width:1100px){.sdt-grid>.sdt-dc .sdt-pct.sdt-pct3{font-size:var(--d-calctight)}.sdt-grid>.sdt-dc .sdt-pct.sdt-pct2{font-size:var(--d-calcmid)}} /* Kip's review: a wide 2-digit range ("88–99%") ran past the slant at 380-390 and 1180-1280 */
+@media (max-width:379.98px){.sdt-grid>.sdt-dc .sdt-pct.sdt-pct3,.sdt-grid>.sdt-dc .sdt-pct.sdt-pct2{font-size:var(--t34)}} /* 320-379: the 34px step, as for two digits */

@@ -1334,10 +1334,14 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
             if (out(N, P) || !L.length || L.some(r => r.left < N.left - 1.5 || r.right > N.right + 1.5 /* across only: at line-height 1 the glyph box is taller than the line by design */ || out(r, P)) || pc.scrollWidth > pc.clientWidth + 1) bad.push(`number cut off (${Math.round(N.left - P.left)}-${Math.round(P.right - N.right)}px in, ${pc.scrollWidth}/${pc.clientWidth} wide)`);
             /* Nov 26 (WebKit run: "94–100%" lost its "%" at 390 and 1100-1279): the widest number the calc can show, a 3-digit range, is put in
                the same way the page draws it (class sdt-pct3) and must fit whole too; then the real number goes back */
-            if (!bad.length) { const t0 = pc.textContent, c0 = pc.className; pc.textContent = '94–100%'; pc.classList.add('sdt-pct3'); const N3 = R(pc), r3 = document.createRange(); r3.selectNodeContents(pc); const L3 = [...r3.getClientRects()].filter(r => r.width);
-              /* the band's colour is a slanted ::before (clip-path to calc(100% - Npx) at the bottom), so its right edge at the middle of the line is used, not its box */
-              const bc = getComputedStyle(p, '::before'), ins = +((bc.clipPath.match(/calc\(100% - ([\d.]+)px\) 100%/) || [])[1] || 0), room = L3.map(r => Math.round(P.right - ins * (r.top + r.height / 2 - P.top) / P.height - r.right));
-              if (out(N3, P) || L3.length !== 1 || L3.some(r => r.left < N3.left - 1.5 || r.right > N3.right + 1.5 || out(r, P)) || room.some(v => v < 0) || pc.scrollWidth > pc.clientWidth + 1) bad.push(`3-digit number "94–100%" cut off or wrapped (${L3.length} line(s), ${room.join('/')}px from the slanted edge, ${pc.scrollWidth}/${pc.clientWidth} wide)`);
+            /* Kip's review (Nov 26): every shape of number the calc can show is put in the way the page draws it (V2.sdtPctTxt/sdtPctCls:
+               a sure KO "100%", wide 2-digit "88–99%", 3-digit "94–100%", decimals "8.5–9.9%", short "5–9%") and must fit whole, on one line,
+               left of the band's slanted right edge at the BOTTOM of the line (the slant leans in toward the bottom); then the real number goes back */
+            if (!bad.length) { const t0 = pc.textContent, c0 = pc.className, bc = getComputedStyle(p, '::before'), ins = +((bc.clipPath.match(/calc\(100% - ([\d.]+)px\) 100%/) || [])[1] || 0);
+              if (!(ins > 0)) bad.push(`the band's slant was not read (clip-path "${bc.clipPath}")`);
+              else for (const [lo, hi] of [['100', '100'], ['88', '99'], ['94', '100'], ['8.5', '9.9'], ['5', '9']]) { const t = V2.sdtPctTxt(lo, hi); pc.textContent = t; pc.className = 'sdt-pct' + V2.sdtPctCls(t);
+                const N3 = R(pc), r3 = document.createRange(); r3.selectNodeContents(pc); const L3 = [...r3.getClientRects()].filter(r => r.width), room = L3.map(r => Math.round(P.right - ins * (r.bottom - P.top) / P.height - r.right));
+                if (L3.length !== 1 || L3.some(r => r.left < N3.left - 1.5 || r.right > N3.right + 1.5 || out(r, P)) || room.some(v => v < 0) || pc.scrollWidth > pc.clientWidth + 1) bad.push(`"${t}" cut off or wrapped (${L3.length} line(s), ${room.join('/')}px from the slanted edge)`); }
               pc.textContent = t0; pc.className = c0; } }
           if (!vis(of)) bad.push('no "of X\'s HP" line'); else { if (!/^of .+['’]s HP$/.test(of.textContent.trim())) bad.push(`line "${of.textContent}"`); if (out(R(of), P)) bad.push('the HP line is out of the band'); }
           const S = [...p.querySelectorAll('.sdt-duel .np-mon .st')].filter(vis).map(R), W = vis(hw) ? R(hw) : null;
@@ -1354,7 +1358,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     for (const [k, a] of [['bt', bt], ['tr', tr], ['dc', dc], ['bars', bars], ['tags', tags]]) if (m[k]) a.push(w + ': ' + m[k]); }
   ok(!bt.length, `Stampede tiles 2 (Nov 18 night): Battle, at 320-2560 every sprite stays inside its side, clear of the VS, and is 56px or more; no name under a sprite${bt.length ? ': ' + bt.slice(0, 4).join(' | ') : ''}`);
   ok(!tr.length, `Stampede tiles 3: Test Run, at 320-2560 the sprites fill the plate (32px or less left empty between its top and its words) and none is under 44px${tr.length ? ': ' + tr.slice(0, 4).join(' | ') : ''}`);
-  ok(!dc.length, `Stampede tiles 4: Damage Calc band, at 320-2560 (Nov 26: phones and iPads have the band too) the damage number and "of X's HP" line show inside the band, the number not cut off (a 3-digit range "94–100%" too), both sprites (64px+) inside the band and clear of the words${dc.length ? ': ' + dc.slice(0, 4).join(' | ') : ''}`);
+  ok(!dc.length, `Stampede tiles 4: Damage Calc band, at 320-2560 (Nov 26: phones and iPads have the band too) the damage number and "of X's HP" line show inside the band, the number not cut off (every shape: "100%", "88–99%", "94–100%", "8.5–9.9%", "5–9%"), both sprites (64px+) inside the band and clear of the words${dc.length ? ': ' + dc.slice(0, 4).join(' | ') : ''}`);
   ok(!bars.length, `Stampede tiles 5: the receipt's five band bars are one width at 320-2560${bars.length ? ': ' + bars.slice(0, 4).join(' | ') : ''}`);
   ok(!tags.length, `Stampede tags (qcheck triage Nov 18, defect 2): every plan-board name tag ("Mega Charizard Y") fits whole inside the board, clear of its folded corner, at 13px or more, 320-2560${tags.length ? ': ' + tags.slice(0, 4).join(' | ') : ''}`);
   await q.close(); }
