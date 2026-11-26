@@ -5,8 +5,7 @@ Paste the box into Kip (Antigravity). Big job: it may take a few hours. One repo
 Kip, job 40. Same rules as before (kip-onboarding.md + CLAUDE.md; your branches only, alt/gemini-*; never main or claude/design6;
 never merge, force-push or delete; never commit out/; the commit guard on). Job 39 was graded A: thank you. Two notes from it:
 - HH fixed both things you found (21st/22nd/23rd in rankEdge; syntax-check on Windows), now on alt/t2-pending.
-- The repo is public, so commits should not carry a personal name: unless Sim tells you otherwise, run
-  `git config user.name "Kip (Antigravity)"` in the repo first.
+- Your git name (go.masrin) is fine as it is: Sim's OK, Nov 25.
 
 THE MOMENT: the game's new ruleset, Reg M-D, starts Dec 2 02:00 UTC (Tue Dec 1, 9 PM Eastern), and a balance patch lands with it.
 NastyPlot goes public the same days. Rule: Reg M-C and Reg M-D numbers are NEVER mixed. Until there's enough M-D data, the site keeps
