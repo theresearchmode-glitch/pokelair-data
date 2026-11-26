@@ -2788,3 +2788,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:44 PM: MY MISTAKE: in the typefix worktree 'git stash pop' with nothing stashed popped the top entry of the repo's SHARED stash list (an old 'hKA Nov 24' pages.css +4 change). Content saved to scratch popped-stash-pages.patch and pushed back as stash@{0} (new message; content identical). Nothing committed. Rule for me: no git stash in worktrees (the list is shared); use separate build copies.
 - 2:47 PM: Sim: Track Record cap 3 -> 3.05 at 1440 for the footer (c) line. Committed on alt/typerows e92c613c; helper merges into batch6.
 - 2:47 PM: ONLY=TF on alt/typerows e92c613c (fresh frozen build): TF-1 pass 2.632, TF-2 pass 2.629 at 1440 (well under even the old 3.0; the earlier 3.013 came from a stale build in that worktree).
+- 2:49 PM: Sim away 1-2 h from now: HH in charge, best judgement; check Kip's git status every so often (Sim queued his tasks).
