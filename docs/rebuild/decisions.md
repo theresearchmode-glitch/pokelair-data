@@ -2754,3 +2754,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:20 PM: Sim told Kip (job 57 start).
 - 12:36 PM: Hourly check: Game Plan v99 published; disk 9 GB; helper on Job X; day-batch4 gate waiting on GitHub.
 - 1:01 PM: Helper Job X: a1 It prints (helper rec), a2 Your turn, a3 Long receipt on alt/public-home-v2 e445a51a; HH viewed: a3 strongest still picture, a1 the motion; stamp collides with text in a1 (NOV 25) and a3 (players); HH rec to Sim: mix a3 look + a1 print + a2 later. Job W paused WIP alt/prerender-home c853295e. Found: public site draws Nov 1 built-in numbers first (V2.dataReady ignores public /data loader).
+- 1:10 PM: Sim: none of a1-a3 ('no flair... no character'); likes the receipt but wants much more colour, Pokémon-driven (site is coloured by Pokémon). Helper Job Z: 3 colour-flooded receipts (crew behind the counter / type ink / receipt pile), first-screen pictures fast. Job Y paused.
