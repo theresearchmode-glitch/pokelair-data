@@ -472,6 +472,9 @@ V2.focusKey = el => { if (!el || el === document.body || !el.closest || !el.clos
 V2.dataSig = e => [...e.attributes].filter(a => a.name.startsWith('data-')).map(a => a.name + '=' + a.value).sort().join('&');
 V2.morph = (o, n) => { if (o.nodeType !== n.nodeType || o.nodeName !== n.nodeName || (o.nodeType === 1 && (o.id !== n.id || V2.dataSig(o) !== V2.dataSig(n)))) { o.replaceWith(n); return; }
   if (o.nodeType !== 1) { if (o.nodeValue !== n.nodeValue) o.nodeValue = n.nodeValue; return; }
+  /* a node a script owns (data-v2own: the Turnstile widget on Send Feedback) is kept exactly as it is, with what the script put in it;
+     before (Kip job 41, HH job I, Nov 26) every redraw swapped it for an empty one and the widget was drawn again, its token thrown away */
+  if (o.hasAttribute('data-v2own')) return;
   /* code review A1-I3 (Nov 17): a redraw used to close every fold the visitor had opened (the fresh HTML has no "open"). A fold keeps
      the visitor's choice while the page's own wish for it is unchanged; when the page changes its mind, the page wins. */
   const fold = o.nodeName === 'DETAILS', want = fold && n.hasAttribute('open'), keep = fold && o._pg === want ? o.open : null; if (fold) o._pg = want;

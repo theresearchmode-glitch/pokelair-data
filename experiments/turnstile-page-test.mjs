@@ -8,7 +8,7 @@ import {chromium} from 'playwright';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..'), D = path.join(ROOT, 'app/dist');
 let bad = 0; const ok = (c, m) => { console.log(`  ${c ? 'pass' : 'FAIL'}  ${m}`); if (!c) bad++; };
 const build = args => { const r = spawnSync(process.execPath, ['app/build.mjs', '--v2', '--split', '--one-art-size', '--art=../src/v2/art/', ...args], {cwd: ROOT, encoding: 'utf8'}); if (r.status !== 0) { console.log(r.stdout, r.stderr); process.exit(1); } };
-const FAKE = `window.__tsCalls={render:[],reset:0,remove:0};window.turnstile={render:(el,o)=>{window.__tsCalls.render.push({sitekey:o.sitekey,action:o.action,appearance:o.appearance});setTimeout(()=>o.callback('tok-'+window.__tsCalls.render.length+'-'+(window.__tsCalls.reset)),30);return 'w'+window.__tsCalls.render.length},reset:()=>{window.__tsCalls.reset++;},remove:()=>{window.__tsCalls.remove++;}};`;
+const FAKE = `window.__tsCalls={render:[],reset:0,remove:0};window.turnstile={render:(el,o)=>{window.__tsCalls.render.push({sitekey:o.sitekey,action:o.action,appearance:o.appearance});const w=document.createElement('div');w.className='ts-fake-widget';w.dataset.w='w'+window.__tsCalls.render.length;el.appendChild(w);setTimeout(()=>o.callback('tok-'+window.__tsCalls.render.length+'-'+(window.__tsCalls.reset)),30);return 'w'+window.__tsCalls.render.length},reset:()=>{window.__tsCalls.reset++;},remove:(id)=>{window.__tsCalls.remove++;document.querySelectorAll('.ts-fake-widget[data-w="'+id+'"]').forEach(x=>x.remove());}};`; /* the stand-in draws one box per render (removed by remove), so the checks can count widgets on the page */
 const TYPES = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.webp': 'image/webp', '.png': 'image/png', '.svg': 'image/svg+xml'};
 const serve = csp => new Promise(res => { const posts = []; const s = http.createServer((q, r) => {
   const u = decodeURIComponent(q.url.split('?')[0]);
@@ -34,6 +34,11 @@ const run = async (pub) => {
   ok(ts.length === 1 && /turnstile\/v0\/api\.js\?render=explicit/.test(ts[0] || ''), `public: Send Feedback loads api.js once (${ts.join(' ')})`);
   const c1 = await p.evaluate(() => window.__tsCalls);
   ok(c1 && c1.render.length === 1 && c1.render[0].sitekey === '0x4AAAAAAGTHK0MAePecas7f' && c1.render[0].action === 'feedback' && c1.render[0].appearance === 'interaction-only', `widget drawn with our site key, action feedback, interaction-only (${JSON.stringify(c1 && c1.render)})`);
+  // Kip job 41 / HH job I (Nov 26): a redraw of the page (data arriving, a theme switch) drew the widget a second time and threw the
+  // first token away. Now: one widget per form; a redraw keeps it and its token; leaving and reopening Send Feedback draws a fresh one
+  const count = () => p.evaluate(() => ({render: window.__tsCalls.render.length, onPage: document.querySelectorAll('.ts-fake-widget').length, inForm: document.querySelectorAll('#fbTs .ts-fake-widget').length, tok: window.__npTurnstileToken}));
+  const w0 = await count(); await p.evaluate(() => V2.redraw()); await p.waitForTimeout(300); await p.click('[data-v2theme]'); await p.waitForTimeout(600); const w1 = await count();
+  ok(w0.render === 1 && w0.inForm === 1 && w1.render === 1 && w1.onPage === 1 && w1.inForm === 1 && w1.tok === 'tok-1-0', `a redraw and a theme switch keep the one widget and its token (before ${JSON.stringify(w0)}, after ${JSON.stringify(w1)})`);
   await p.fill('#fbText2', 'The calc page is great'); await p.click('[data-fbsend2]'); await p.waitForTimeout(600);
   ok(posts.length === 1 && posts[0].tok === 'tok-1-0', `the message carries the widget's token (${JSON.stringify(posts.map(x => x.tok))})`);
   const c2 = await p.evaluate(() => ({reset: window.__tsCalls.reset, tok: window.__npTurnstileToken}));
@@ -41,6 +46,9 @@ const run = async (pub) => {
   await p.fill('#fbText2', 'Second note right away'); await p.click('[data-fbsend2]'); await p.waitForTimeout(300);
   const say = await p.textContent('[data-fbmsg2]');
   ok(posts.length === 1 && /checking you're a person/.test(say), `no token yet: nothing sent, the visitor is told to wait (${say})`);
+  await p.goto(origin + '/#home', {waitUntil: 'networkidle'}); await p.waitForTimeout(500); await p.goto(origin + '/#feedback', {waitUntil: 'networkidle'}); await p.waitForTimeout(900);
+  const w2 = await count(), loads = ts.length;
+  ok(w2.render === 2 && w2.onPage === 1 && w2.inForm === 1 && loads === 1, `reopening Send Feedback draws one fresh widget, the old one removed, api.js not fetched again (${JSON.stringify(w2)}, ${loads} api.js request)`);
   ok(!viol.length, `no CSP violations (${viol.join(' | ')})`);
   await b.close(); s.close(); };
 await run(true); await run(false);
