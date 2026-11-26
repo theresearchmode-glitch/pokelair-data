@@ -279,7 +279,7 @@ V2.findPlaces = [...V2.places, ['box', 'My Box'], ['compare', 'Compare Teams'], 
   /* Sim, Nov 18 (morning questions 1f): the Post Room and the Dispatch are found by Search; the top bar keeps its five places and Home's post band stays the main way in */
   ['gifts', 'Mystery Gifts'], ['news', 'Champions News'], ['about', 'About & Legal'], ['feedback', 'Send Feedback'],
   /* known-bug BROKEN-10 (Nov 17): Build's two tools by name, the core section reached straight from search */
-  ['build', 'Build Me a Team'], ['build', 'Build Around a Core', () => { V2.bdUi.jtab = 'cores'; V2.bdUi.toCores = true; V2.redraw(); }]]; /* the same way Home's core cards open Build at the cores (CORES-13) */
+  ['build', 'Build Me a Team'], ['build', 'Build Around a Core', () => V2.needRoute('build', () => { V2.bdUi.jtab = 'cores'; V2.bdUi.toCores = true; V2.redraw(); })]]; /* the same way Home's core cards open Build at the cores (CORES-13) */
 // today's site's menu names and plurals still find the new page (returning players), shown under the new name
 V2.placeAlias = {'Damage Calculator': ['damage calc', 'calc', 'calculator'], 'Build Me a Team': ['build for me'], 'Build Around a Core': ['cores', 'winning cores'], Battle: ['battle a team'], Ratings: ['pokémon ratings', 'pokemon ratings', 'meta rankings'],
   Natures: ['stat alignment', 'stat alignments', 'nature chart', 'all natures'] /* Pokémon Champions' own word (Natures page, Nov 23) */, 'Mystery Gifts': ['gifts', 'codes', 'gift codes', 'serial codes', 'post room'], 'Champions News': ['news', 'dispatch', 'champions dispatch'], 'Spicy Picks': ['rare picks', 'off-meta', 'off meta']};
@@ -582,13 +582,33 @@ V2.setTitle = () => { try { V2.noindex(!!document.querySelector('#main [data-v2n
 // pre-launch check 6e (Nov 17): say once, after the first draw, when this device's saved data couldn't be read (01-state.js)
 setTimeout(() => { try { if (STATE_UNREADABLE && !V2._unrSaid) { V2._unrSaid = 1; V2.toast("Your saved teams on this device couldn't be read, so the sample team is showing. A copy of the old data was kept.", 10000); } } catch (e) {} }, 1500);
 V2._routeLoad = {};
-V2.loadRoute = r => { const src = window.__NP_ROUTES && window.__NP_ROUTES[r]; if (!src || V2.pages[r] || V2._routeLoad[r]) return;
-  V2._routeLoad[r] = true; const s = document.createElement('script'); s.src = src;
-  s.onload = () => { V2._routeLoad[r] = false; V2.draw(); };
-  s.onerror = () => { V2._routeLoad[r] = false; V2.pages[r] = {place: '', draw: () => V2.safeDraw({draw(){throw new Error('Route chunk failed: ' + r)}})}; V2.draw(); };
-  document.head.appendChild(s); };
+/* speed review (Nov 26): a page's file comes with the other page files it calls into (window.__NP_RDEPS, worked out by the build), and it
+   is drawn only when all of them have run. Each file is fetched once (V2._routeJs); after the first page is drawn, the rest are fetched
+   in the background (V2.warmRoutes), so a click on Home ("Set as Opponent", a saved team's Compare) finds its helper already there. */
+V2._routeJs = {};
+V2.routeJs = r => { const src = window.__NP_ROUTES && window.__NP_ROUTES[r]; if (!src) return Promise.resolve(); if (V2._routeJs[r]) return V2._routeJs[r];
+  return (V2._routeJs[r] = new Promise((ok, no) => { const s = document.createElement('script'); s.src = src; s.onload = ok; s.onerror = () => { V2._routeJs[r] = null; no(new Error('Route chunk failed: ' + r)); }; document.head.appendChild(s); })); };
+V2.routeSet = r => { const out = new Set(), go = k => { if (out.has(k)) return; out.add(k); for (const d of ((window.__NP_RDEPS || {})[k] || [])) go(d); }; go(r); return [...out]; };
+V2.loadRoute = r => { const src = window.__NP_ROUTES && window.__NP_ROUTES[r]; if (!src || V2._routeLoad[r]) return;
+  const set = V2.routeSet(r); if (V2.pages[r] && set.every(k => !window.__NP_ROUTES[k] || V2.pages[k] || (V2._routeJs[k] && V2._routeJs[k].done))) return;
+  V2._routeLoad[r] = true;
+  Promise.all(set.map(k => V2.routeJs(k).then(() => { if (V2._routeJs[k]) V2._routeJs[k].done = true; })))
+    .then(() => { V2._routeLoad[r] = false; V2.draw(); })
+    .catch(() => { V2._routeLoad[r] = false; V2.pages[r] = {place: '', draw: () => V2.safeDraw({draw(){throw new Error('Route chunk failed: ' + r)}})}; V2.draw(); }); };
+/* a click in the main script that needs a helper from a page's file (Compare, Set as Opponent, the box toast, the events calendar,
+   Search's Build Around a Core): runs at once when that file is here (always, on builds without --split-routes), else after it arrives */
+V2.needRoute = (rk, fn) => { if (!window.__NP_ROUTES || !window.__NP_ROUTES[rk] || V2.routeSet(rk).every(k => V2._routeJs[k] && V2._routeJs[k].done)) return fn();
+  Promise.all(V2.routeSet(rk).map(k => V2.routeJs(k).then(() => { if (V2._routeJs[k]) V2._routeJs[k].done = true; }))).then(fn, fn); };
+V2.warmRoutes = () => { if (V2._warm || !window.__NP_ROUTES) return; V2._warm = true; const go = () => { for (const k of Object.keys(window.__NP_ROUTES)) V2.routeJs(k).then(() => { if (V2._routeJs[k]) V2._routeJs[k].done = true; }).catch(() => {}); };
+  /* after the page has loaded and its big picture has had 4 s alone on the line (warming at once cost Pokémon pages 0.9 s of LCP on Fast 3G) */
+  const later = () => setTimeout(() => { if (typeof requestIdleCallback === 'function') requestIdleCallback(go, {timeout: 3000}); else go(); }, 4000);
+  if (document.readyState === 'complete') later(); else addEventListener('load', later, {once: true}); };
+/* Send Feedback and "Report a Mistake" ask V2.FB.ok while drawing; on the public site it is always on (feedback.js), so it is known before
+   feedback.js's own file has arrived (--split-routes); feedback.js replaces this object when it runs */
+V2.FB = V2.FB || {ok: !!window.__NP_PUBLIC};
 V2.draw = () => { const app = document.getElementById('app'); if (!app) return;
-  const r0 = V2.route(); if (window.__NP_ROUTES && !V2.pages[r0] && window.__NP_ROUTES[r0]) { V2.loadRoute(r0); const m = document.getElementById('main'); if (m) m.innerHTML = V2.loadingHtml(); return; }
+  const r0 = V2.route(); if (window.__NP_ROUTES && window.__NP_ROUTES[r0] && (!V2.pages[r0] || V2._routeLoad[r0] || V2.routeSet(r0).some(k => window.__NP_ROUTES[k] && !(V2._routeJs[k] && V2._routeJs[k].done)))) { V2.loadRoute(r0); if (V2._routeLoad[r0]) { const m = document.getElementById('main'); if (m) m.innerHTML = V2.loadingHtml(); return; } }
+  if (window.__NP_ROUTES && V2._dataOk) V2.warmRoutes(); /* after the first real draw, the other page files in the background */
   V2.drawN = (V2.drawN || 0) + 1; const {P, html} = V2.shell();
   // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the
   // pictures already on screen and put them back in place of their identical new copies (same src), so nothing re-decodes.

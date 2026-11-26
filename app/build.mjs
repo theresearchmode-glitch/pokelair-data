@@ -157,7 +157,7 @@ if (process.argv.includes('--v2')) {
       jsOut = esb.transformSync(js, {loader: 'js', minifyWhitespace: true, charset: 'utf8', legalComments: 'none'}).code;
     }
   }
-  const routeManifest = {};
+  const routeManifest = {}, routeDeps = {};
   if (SPLIT_ROUTES) {
     fs.mkdirSync(dir + 'dist/routes', {recursive: true});
     for (const [rk, files] of Object.entries(ROUTE_CHUNKS)) {
@@ -168,6 +168,17 @@ if (process.argv.includes('--v2')) {
       fs.writeFileSync(dir + 'dist/routes/' + fn, code);
       routeManifest[rk] = `/routes/${fn}?v=${hash(code)}`; /* from the site root: /pokemon/x would look in /pokemon/routes/ (Nov 25) */
     }
+    /* speed review (Nov 26): a page's file can call helpers that live in another page's file (Events draws Winning Teams' cards, This
+       Week draws Events' tickets, "Set as Opponent" needs Battle's, Build's "Compare" needs Compare's: 9 crashes when a page was opened
+       cold, experiments/split-routes-cross-test.mjs). Worked out here from the code itself, never by hand: for each page file, the other
+       page files whose V2.<name> it uses and the main script doesn't define. The page loads them with it (shell.js V2.loadRoute). */
+    const defs = s => new Set([...s.matchAll(/\bV2\.([A-Za-z_$][\w$]*)\s*=(?!=)/g)].map(m => m[1])), uses = s => new Set([...s.matchAll(/\bV2\.([A-Za-z_$][\w$]*)/g)].map(m => m[1]));
+    const mainDefs = defs(jsOut), chunkSrc = Object.fromEntries(Object.keys(routeManifest).map(rk => [rk, fs.readFileSync(dir + 'dist/routes/' + rk + '.js', 'utf8')]));
+    const owner = {}; for (const [rk, s] of Object.entries(chunkSrc)) for (const n of defs(s)) if (!mainDefs.has(n)) (owner[n] = owner[n] || new Set()).add(rk);
+    for (const [rk, s] of Object.entries(chunkSrc)) { const own = defs(s), need = new Set();
+      const soft = n => s.includes('V2.' + n + '&&') || s.includes('V2.' + n + '?'); /* only checked for (V2.FB && …, V2.buildHits ? …): optional, not a reason to load another page's file first */
+      for (const n of uses(s)) if (!mainDefs.has(n) && !own.has(n) && owner[n] && !soft(n)) for (const o of owner[n]) if (o !== rk) need.add(o);
+      if (need.size) routeDeps[rk] = [...need].sort(); }
   }
   let pubTag = '', seoRows = [], pokemonLd = null;
   if (PUBLIC) {
@@ -188,7 +199,7 @@ if (process.argv.includes('--v2')) {
     const {websiteJsonLd, jsonLdScriptTag, pokemonPageGraphJsonLd} = await import('./public-jsonld.mjs'); pokemonLd = (s, name) => jsonLdScriptTag(pokemonPageGraphJsonLd(s, name, seoMap.home || null));
     const wsLd = websiteJsonLd(seoMap.home || null);
     const ldRuntime = `(function(){var base=${JSON.stringify(wsLd).replace(/</g, '\\u003c')};function syncLd(){var el=document.getElementById('np-jsonld');if(!el)return;var p=String(location.pathname||'/').replace(/\\/+$/,'')||'/';if(p.indexOf('/pokemon/')===0){var slug='';try{slug=decodeURIComponent(p.slice(9)).replace(/\\.html$/,'')}catch(e){el.textContent=JSON.stringify(base);return}if(el.textContent.indexOf('"item":"https://nastyplot.org/pokemon/'+encodeURIComponent(slug)+'"')>=0)return;var label=null;try{var m=typeof byName==='object'&&byName&&byName.get(slug);if(m&&m.d)label=m.d;else if(typeof ROSTER==='object'&&window.V2&&V2.pubSlug){for(var i=0;i<ROSTER.length;i++)if(V2.pubSlug(ROSTER[i].n)===slug){label=typeof disp==='function'?disp(ROSTER[i].n):ROSTER[i].n;break}}}catch(e){}if(!label||document.querySelector('meta[name="robots"][content*="noindex"]')){el.textContent=JSON.stringify(base);return}var ws=Object.assign({},base);delete ws['@context'];el.textContent=JSON.stringify({'@context':'https://schema.org','@graph':[ws,{'@type':'BreadcrumbList',itemListElement:[{'@type':'ListItem',position:1,name:'NastyPlot',item:'https://nastyplot.org/'},{'@type':'ListItem',position:2,name:'Pokémon A to Z',item:'https://nastyplot.org/pokemon'},{'@type':'ListItem',position:3,name:label,item:'https://nastyplot.org/pokemon/'+encodeURIComponent(slug)}]}]})}else{el.textContent=JSON.stringify(base)}}window.__npSyncJsonLd=syncLd;addEventListener('popstate',syncLd);addEventListener('hashchange',syncLd);var ps=history.pushState,rs=history.replaceState;if(ps)history.pushState=function(){var r=ps.apply(this,arguments);syncLd();return r};if(rs)history.replaceState=function(){var r=rs.apply(this,arguments);syncLd();return r};syncLd()})();`;
-    pubTag = jsonLdScriptTag(wsLd) + '\n' + `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest).replace(/</g, '\\u003c')};` : ''}${ldRuntime}</script>\n`;
+    pubTag = jsonLdScriptTag(wsLd) + '\n' + `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest).replace(/</g, '\\u003c')};window.__NP_RDEPS=${JSON.stringify(routeDeps).replace(/</g, '\\u003c')};` : ''}${ldRuntime}</script>\n`;
   }
   /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words).
      Security (Kip job 24, Nov 25): moved from an inline onerror attribute into a separate inline <script> right after it, which the
