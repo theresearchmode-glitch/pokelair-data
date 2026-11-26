@@ -422,7 +422,7 @@ const TF = async () => {
   const t1 = await hgt('gauntlet', 1440, 900), t1d = await hgt('gauntlet', 1440, 900, true), t2 = await hgt('gauntlet', 1180, 820);
   ok(t1.scr <= 3 && t1d.scr <= 3 && t2.scr <= 4.5 && t1.rows === 20 && t2.rows === 20 && !t1.sw && !t2.sw, `TF-1: Test Run is at most 3 screens at 1440x900 (light ${t1.scr}, dark ${t1d.scr}) and well under 5 at 1180x820 (${t2.scr}, at most 4.5), all ${t1.rows} rows kept, no sideways scroll`);
   const k = await hgt('track', 1440, 900);
-  ok(k.scr <= 3 && !k.sw, `TF-2: Track Record is at most 3 screens at 1440x900 (${k.scr}, ${k.H}px), no sideways scroll`); };
+  ok(k.scr <= 3.05 && !k.sw, `TF-2: Track Record is at most 3.05 screens at 1440x900 (${k.scr}, ${k.H}px; Nov 26, Sim: +0.05 for the footer's copyright line), no sideways scroll`); };
 if (process.env.ONLY === 'TF') { await TF(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- AS end
 // ---- MQ end ----
