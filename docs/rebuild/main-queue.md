@@ -1,7 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 4:39 AM (4:39:55)  date: Thu Nov 26, 2026
-NOW: HH: morning batch local pre-check (mbrun.sh, pid in .main-running): design6 + alt/test-no-out + alt/touches-pass3; helper Job G
-  (alt/testrun-fit) joins before the one push. DONE: Saturday rehearsal 2 green on GitHub (run 45785844537).
+Updated: time: 5:23 AM (5:23:41)  date: Thu Nov 26, 2026
+NOW: HH: gate.sh alt/morning-batch 7369b676 (pid in .main-running): test-no-out + touches-pass3 + testrun-fit; local pre-check passed.
 NOW (helper): Job I, Turnstile renders once (Kip job 47, Saturday item 3; alt/turnstile-once). Jobs C-H done.
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
