@@ -55,9 +55,10 @@ if (process.argv.includes('--v2')) {
   const itemImg = fs.existsSync(dir + 'src/v2/art/items.json') ? JSON.stringify(JSON.parse(rd('src/v2/art/items.json'))) : '{}';
   /* Claude-hosted builds (--one-art-size: the Preview / live artifact) hold at most 511 files and already carry ~443, so the 166 item
      pictures go inside the page as data: URIs (192px WebP, about 1.2 MB) instead of files; the public site keeps the files (Nov 23) */
-  /* --item-files (phone speed, Nov 25, night plan 9): the Cloudflare site (public-site.mjs) has no 511-file limit, so it keeps the item
-     pictures as files (art/items/) even with --one-art-size; inlined they were 1.56 MB of v2.js and phone LCP waited for them */
-  const itemImgOut = !process.argv.includes('--one-art-size') || process.argv.includes('--item-files') ? itemImg : JSON.stringify(Object.fromEntries(Object.entries(JSON.parse(itemImg)).map(([n, f]) => { const fp = dir + 'src/v2/art/items/' + f + '.webp'; return fs.existsSync(fp) ? [n, 'data:image/webp;base64,' + fs.readFileSync(fp).toString('base64')] : null; }).filter(Boolean)));
+  /* --item-files / --public (phone speed, Nov 25-26): the public site has no 511-file limit, so --public always keeps the item
+     pictures as files (art/items/) even with --one-art-size; inlined they were 1.56 MB of v2.js and phone LCP waited for them.
+     Claude-hosted builds (--one-art-size without --public/--item-files) keep them inlined. */
+  const itemImgOut = PUBLIC || !process.argv.includes('--one-art-size') || process.argv.includes('--item-files') ? itemImg : JSON.stringify(Object.fromEntries(Object.entries(JSON.parse(itemImg)).map(([n, f]) => { const fp = dir + 'src/v2/art/items/' + f + '.webp'; return fs.existsSync(fp) ? [n, 'data:image/webp;base64,' + fs.readFileSync(fp).toString('base64')] : null; }).filter(Boolean)));
   // today's logic (P.logic, in today's order) is one closure: 00-main.js opens it, so the v2 shell and pages go inside it and it is
   // closed after the first draw. 15-visual-helpers.js brings SPRITE_ID itself when it is included.
   const L = P.logic || [], hasIds = L.some(f => f.endsWith('15-visual-helpers.js'));
@@ -297,6 +298,7 @@ if (process.argv.includes('--v2')) {
     /* the 840 KB stylesheet goes in one shared file (/v2.css) for the Pokémon pages: 346 inline copies made 322 MB (checked Nov 25) */
     let ph = h; const st = [...h.matchAll(/<style>\n?([\s\S]*?)\n?<\/style>/g)].sort((x, y) => y[1].length - x[1].length)[0];
     if (st && st[1].length > 100000) { const css = st[1]; fs.writeFileSync(dir + 'dist/v2.css', css); ph = h.replace(st[0], `<link rel="stylesheet" href="/v2.css?v=${hash(css)}">`); }
+    if (SPLIT) { h = ph; fs.writeFileSync(dir + 'dist/v2.html', h); }
     const spriteIds = JSON.parse(sprite), artBase = (b => /^[a-z]/i.test(b) ? '/' + b : b)(artArg || 'art/');
     const seen = new Map(); fs.rmSync(dir + 'dist/pokemon', {recursive: true, force: true}); fs.mkdirSync(dir + 'dist/pokemon', {recursive: true}); /* only this build's pages (Kip job 33 F4) */
     for (const p of roster) {
@@ -322,6 +324,8 @@ if (process.argv.includes('--v2')) {
     /* No /pokemon/:name rule (Nov 25): Pages serves dist/pokemon/<slug>.html at /pokemon/<slug> by itself (docs: Serving Pages, route
        matching), and a rule would also catch unknown names. An unknown Pokémon has no file, so it gets 404.html with status 404.
        "/" is index.html, the same page; 404.html is the same page with noindex, so the site's own not-found view draws there. */
+    /* "/" (index.html) matches v2.html: on --split both use the shared /v2.css (Job 57); on non-split (--public without --split,
+       e.g. v2-public.mjs file:// test) both stay self-contained. */
     fs.writeFileSync(dir + 'dist/index.html', h);
     /* night queue 8 (Nov 26; SEO audit #9, #10): /pokemon, the A-to-Z page of every Pokémon page (plain links, in the sitemap), and a light
        static 404 with today's underdog; a wrong /pokemon/<name> keeps the app's own "No Pokémon here." view (dist/pokemon/404.html:
@@ -331,6 +335,10 @@ if (process.argv.includes('--v2')) {
       fs.writeFileSync(dir + 'dist/sitemap.xml', fs.readFileSync(dir + 'dist/sitemap.xml', 'utf8').replace('</urlset>', sp.sitemap + '\n</urlset>'));
       fs.appendFileSync(dir + 'dist/_redirects', '/pokemon/ /pokemon 301\n');
       console.log(`public: /pokemon (${(sp.sizeIndex / 1024).toFixed(0)} KB, ${seen.size} links) and a light 404 (${(sp.size404 / 1024).toFixed(1)} KB, underdog ${sp.underdog}; ${sp.asOf || 'no data date'})`); }
+    /* the item pictures as external files beside the public build (art/items/*.webp, loaded only when an item picture is shown) */
+    const itemArtDir = dir + 'src/v2/art/items/';
+    if (fs.existsSync(itemArtDir)) { fs.mkdirSync(dir + 'dist/art/items', {recursive: true});
+      for (const f of fs.readdirSync(itemArtDir)) if (f.endsWith('.webp')) fs.copyFileSync(itemArtDir + f, dir + 'dist/art/items/' + f); }
     /* the brand kit's icons at the site root (search engines look for /favicon.ico and a real icon URL; never redrawn, copied as is) */
     const icoDir = dir + '../docs/brand/nastyplot-brand-assets/3-website-icons/';
     for (const f of ['favicon.ico', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png']) if (fs.existsSync(icoDir + f)) fs.copyFileSync(icoDir + f, dir + 'dist/' + f);
