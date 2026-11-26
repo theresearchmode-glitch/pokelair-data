@@ -1,12 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 1:10 PM (1:10:48)  date: Thu Nov 26, 2026
-NOW: HH: gate.sh alt/day-batch4 1f8eeeee (pid in .main-running): waits for GitHub's full run, merge-check, push design6.
-NOW (helper): Job Z, 3 colour-flooded receipt front pages (Sim: "needs more color", Pokémon-driven). Y (public dataready bug) and W
-  (prerender Home) paused as WIP.
-NOW (Kip): job 57 (item pictures out of v2.js, shared css on /), then 58.
-NEXT: after day-batch4 lands: Preview republish (daily-data.sh), Game Plan, pictures to Sim.
-NEXT: next batch: Kip 53/54/56 + helper Y/W when done; Friday switch if Sim's go tonight.
-NEXT: resume Job Y then W after Sim picks the front page.
+Updated: time: 1:59 PM (1:59:55)  date: Thu Nov 26, 2026
+NOW: HH: gate.sh alt/batch5 f62b2d56 (pid in .main-running): public dataready fix (helper Y), Kip 53 seo-check, Kip 54 switch smoke.
+NOW (helper): Job BB, build Sim's pick "Final 3 Plot Receipt" as the public Home (alt/public-home-f3). Job AA done (speed-review eb9b0e2c).
+NOW (Kip): job 59 (rehearsal 4 on today's tips), then 60 (speed 4+5, from alt/speed-review). Kip 2 gone (Sim).
+NEXT: after batch5: gate alt/speed-review (Kip 57+58 fixed by helper), then Preview republish + Game Plan.
+NEXT: Friday switch if Sim OKs the Preview tonight: runbook nov28 (steps 2-8 + Job T fixes), rehearsal 4 result first.
+NEXT: review Kip 59/60; resume Job W (prerender) inside Job BB.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
