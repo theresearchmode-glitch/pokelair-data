@@ -386,3 +386,9 @@ No design changes. Never main, never claude/design6.
 Steps 1-2 change: branch alt/gemini-speed-first-screen3 from origin/alt/f3-claude (99e172ba = Final 3 + today's design6 23520831), not from design6.
 When HH merges Final 3 into design6 later tonight, merge origin/claude/design6 into your branch once more before your final push.
 Everything else in 64c stays the same. Job 65 comes after 64c, built on top of your 64c branch.
+
+## HH notes (time: 6:59 PM (6:59:06)  date: Thu Nov 26, 2026): 64c received; JOB 65 may start now
+64c (6950745e): received. HH reviews it while you work; its GitHub run (45913764162) is going.
+JOB 65: branch alt/gemini-speed-js from origin/alt/gemini-speed-first-screen3 (your 64c). Push work-in-progress with [skip ci]; only the final top commit gets a real GitHub run.
+Heads-up: Final 3's hero is changing tonight: Sim wants the slogan "Sharply raise your win rate." back in the h1, with the Reg M-D line under it. Keep your prerender reading V2.f3Page (no copied hero text), and before your final push merge origin/alt/f3-claude (or origin/claude/design6 once HH says Final 3 is merged).
+No design changes. Never main, never claude/design6.
