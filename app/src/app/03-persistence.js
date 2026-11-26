@@ -67,6 +67,7 @@ function metaJoin(d,k,cb){let p1=null,p2=null,got1=false,sent=null;const emit=()
     const cache=new Map();
     const load=k=>{if(!cache.has(k))cache.set(k,fetch(base+k+'.json').then(r=>r.ok?r.json():null).catch(()=>null));return cache.get(k)};
     c={use:async n=>n==='db'?{doc:p=>({onSnapshot:cb=>{if(!p.startsWith('meta/')||p.endsWith('_2')){setTimeout(()=>cb({exists:false,data:()=>null}),0);return()=>{}}load(p.slice(5)).then(v=>cb({exists:v!=null,data:()=>v}));return()=>{}},get:async()=>({exists:false}),set:async()=>{},update:async()=>{}})}:null};
+    window.__NP_PUBDB=c;/* Job Y (Nov 26): the public site's data source, so V2.dataReady (shell.js) waits for today's /data/ instead of drawing the built-in numbers first */
   }
   if(!c||!c.use)return;/* __NP_CLAUDE: the Preview build's data (Nov 12: inside the Claude app window.claude can't be replaced) */
   const [d,u]=await Promise.all([c.use('db'),c.use('user')]);
