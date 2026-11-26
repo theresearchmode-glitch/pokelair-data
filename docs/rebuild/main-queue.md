@@ -2,7 +2,7 @@
 Updated: time: 4:39 AM (4:39:55)  date: Thu Nov 26, 2026
 NOW: HH: morning batch local pre-check (mbrun.sh, pid in .main-running): design6 + alt/test-no-out + alt/touches-pass3; helper Job G
   (alt/testrun-fit) joins before the one push. DONE: Saturday rehearsal 2 green on GitHub (run 45785844537).
-NOW (helper): Job G, Test Run fit at 1100-1440 + Track Record under 3 screens (alt/testrun-fit). Jobs C-F done.
+NOW (helper): Job H, WebKit (Safari engine) check of tonight's visuals at iPhone/iPad sizes (alt/webkit-nov26). Jobs C-G done (G approved: Test Run/Track Record fit).
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
   small touches v1; bands-c2 updated + J-REC proven; Game Plan v89.
