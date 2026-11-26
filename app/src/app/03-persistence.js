@@ -66,7 +66,31 @@ function metaJoin(d,k,cb){let p1=null,p2=null,got1=false,sent=null;const emit=()
     const base=String(window.NP_DATA||'/data/').replace(/\/?$/,'/');
     const cache=new Map();
     const load=k=>{if(!cache.has(k))cache.set(k,fetch(base+k+'.json').then(r=>r.ok?r.json():null).catch(()=>null));return cache.get(k)};
-    c={use:async n=>n==='db'?{doc:p=>({onSnapshot:cb=>{if(!p.startsWith('meta/')||p.endsWith('_2')){setTimeout(()=>cb({exists:false,data:()=>null}),0);return()=>{}}load(p.slice(5)).then(v=>cb({exists:v!=null,data:()=>v}));return()=>{}},get:async()=>({exists:false}),set:async()=>{},update:async()=>{}})}:null};
+    // Fix 5 (Job 60): load only the /data/*.json documents this route needs for first paint immediately; defer the rest until
+    // after first paint so non-critical files (e.g. practice.json, track.json) don't contend on slow connections.
+    const routeNeed=(()=>{
+      const p=String(location.pathname||'/').replace(/\/+$/,'')||'/';
+      const core=['perf','results','teams','events','model'];
+      if(p==='/')return new Set([...core,'post','weekly','calendar','track','doubles_tour','doubles_ingame']);
+      if(p==='/team'||p==='/build'||p==='/compare'||p==='/test-run')return new Set([...core,'doubles','doubles_tour','doubles_ingame']);
+      if(p==='/battle'||p==='/calc'||p==='/speed-tiers'||p==='/types')return new Set(['perf','results','model','doubles','doubles_tour','doubles_ingame']);
+      if(p==='/practice')return new Set(['practice','perf','results','doubles','doubles_tour']);
+      if(p==='/meta'||p==='/usage'||p==='/sets')return new Set([...core,'doubles','doubles_tour','doubles_ingame','history']);
+      if(p.startsWith('/pokemon/'))return new Set([...core,'doubles','doubles_tour','doubles_ingame','history']);
+      if(p==='/gifts'||p==='/news')return new Set(['post','calendar','perf','results']);
+      if(p==='/events'||p==='/tournaments'||p==='/archetypes')return new Set([...core,'calendar']);
+      if(p==='/this-week')return new Set(['weekly',...core]);
+      if(p==='/track-record')return new Set(['track',...core]);
+      if(p==='/natures'||p==='/about'||p==='/how-we-calculate'||p==='/feedback'||p==='/box')return new Set(['perf','results']);
+      return new Set(core);
+    })();
+    let deferQ=[],deferRun=false;
+    const flushDefer=()=>{if(deferRun)return;deferRun=true;const q=deferQ;deferQ=[];for(const fn of q)fn()};
+    const afterPaint=fn=>{if(deferRun)return fn();deferQ.push(fn)};
+    const kick=()=>{if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>setTimeout(flushDefer,0));else setTimeout(flushDefer,50)};
+    if(document.readyState==='complete')kick();else addEventListener('load',kick,{once:true});
+    setTimeout(flushDefer,2500);
+    c={use:async n=>n==='db'?{doc:p=>({onSnapshot:cb=>{if(!p.startsWith('meta/')||p.endsWith('_2')){setTimeout(()=>cb({exists:false,data:()=>null}),0);return()=>{}}const k=p.slice(5),go=()=>load(k).then(v=>cb({exists:v!=null,data:()=>v}));if(routeNeed.has(k))go();else afterPaint(go);return()=>{}},get:async()=>({exists:false}),set:async()=>{},update:async()=>{}})}:null};
   }
   if(!c||!c.use)return;/* __NP_CLAUDE: the Preview build's data (Nov 12: inside the Claude app window.claude can't be replaced) */
   const [d,u]=await Promise.all([c.use('db'),c.use('user')]);
