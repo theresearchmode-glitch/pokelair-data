@@ -4,9 +4,11 @@ NOW: HH: gate.sh alt/batch7 (Kip 61 static-page CSS + route-first data, Kip 62 p
   batch6 MERGED (design6 52fa60e6); Preview v267 published.
 NOW (helper): Job DD part 2: Final 3 hero for the Claude build (behind V2.F3_CLAUDE, waits for Sim's yes) + shorter phone hero
   (public phone Home 9.30 screens -> target <= 7.85) + bar labels start with the number (pl-5d). Part 1 alt/f3-public-rest in GitHub.
-NOW (Kip): idle since 4:44 PM after job 64 (wrong base); 64b queued; needs Sim's go.
+NOW (Kip): working (Sim, 5:33 PM); last push job 64 (wrong base) at 4:44 PM; 64b queued.
 NEXT: gate alt/f3-public-rest after batch7; then part 2 when Sim says yes; Preview republish.
 NEXT: Friday switch if Sim OKs the Preview tonight; Kip 62 preflight on the morning.
+NEXT: verify Kip 64b when it lands (LCP claim 0.4-1.5 s) and merge it.
+NEXT: Sim's answers: Final 3 on the Claude build (helper's alt/f3-claude), Friday go/no-go.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
