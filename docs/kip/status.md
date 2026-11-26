@@ -23,3 +23,5 @@
 52 | started | - | independent code review of origin/alt/day-batch | Thu Nov 26, 10:07 AM
 52 | done | alt/gemini-review-daybatch 5e41e3a9 | code review of origin/alt/day-batch (report only): found wide 2-digit '88–99%' slant overflow at 380-390/1200-1280px uncaught by v2-minors, '100–100%' -2px bottom slant at 1200px (mid vs bottom + only '94–100%' injected), silent ins=0 fallback on clipPath parse | Thu Nov 26, 10:13 AM
 53 | started | - | seo-check.mjs robustness (never crash on broken pages) | Thu Nov 26, 10:39 AM
+53 | done | alt/gemini-seo-test2 a176b544 | seo-check.mjs wraps launch/server/per-route checks in try/catch + waits for .np-load clear; two-page break shows BOTH failures (2 FAILED, exit 1), bad browser shows clean FAIL (no stack trace), real build ALL PASSED | Thu Nov 26, 10:42 AM
+54 | started | - | switch-day smoke test (experiments/switch-smoke.mjs) + runbook step 8 | Thu Nov 26, 10:42 AM
