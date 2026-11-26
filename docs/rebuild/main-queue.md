@@ -5,7 +5,7 @@ NEXT: gate alt/f3-claude into claude/design6 when GitHub green + helper report r
 NEXT: Preview republish after the merge (Final 3 for Sim's iPhone check); send Sim before/after pictures.
 NEXT: tell Kip 64c may start once Final 3 is in design6 (64b lands after Friday's switch).
 NEXT: Fri 7:30 AM switch prep (trig_01HzJ1ckLPN7LMVpiJ4eUh83).
-NOW (Kip): working (Sim, 5:33 PM); last push job 64 (wrong base) at 4:44 PM; 64b queued.
+NOW: (Kip) working (Sim, 5:33 PM); last push job 64 (wrong base) at 4:44 PM; 64b queued.
 NEXT: gate alt/f3-public-rest after batch7; then part 2 when Sim says yes; Preview republish.
 NEXT: Friday switch if Sim OKs the Preview tonight; Kip 62 preflight on the morning.
 NEXT: verify Kip 64b when it lands (LCP claim 0.4-1.5 s) and merge it.
