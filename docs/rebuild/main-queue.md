@@ -1,15 +1,16 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 2:28 AM (2:28:54)  date: Thu Nov 26, 2026
-NOW: HH: gate.sh alt/night-batch eda5ffb9 (pid in .main-running): run 1 fixed (Showdown build), qcheck known list (92), Kip md-roster
-  test copy step, + alt/speed-1280. Waits for GitHub green, then merge-check into design6.
+Updated: time: 3:20 AM (3:20:32)  date: Thu Nov 26, 2026
+NOW: HH: Saturday rehearsal 2 (swrun.sh, pid in .main-running): main + design6 b96f3a5e merged on scratch branch switch-rehearsal2
+  (5 runbook conflicts resolved), then main's list (frozen + today) and design6's list, 48 steps by exit code. DONE before it: night batch
+  merged into design6 (b96f3a5e), new pre-push hook installed, Preview v263.
 NOW (helper): Job E, Spicy picks proposal (alt/spicy-picks, pictures only). Jobs C (tablet Home) and D (Speed Tiers, approved) done.
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
   small touches v1; bands-c2 updated + J-REC proven; Game Plan v89.
 WAITING ON SIM: main push of Kip 46 data half (alt/gemini-news-ran-data c78d15e2, green); reg-test change (Kip's "Better" option);
   tablet Home proposal; lone "Saved" button proposal.
-NEXT: Preview republish after the chain's merges land (pubprep.sh), then Game Plan.
-NEXT: reinstall the pre-push hook from docs/rebuild/pre-push-hook.sh after Kip 43 merges.
+NEXT: Kip at 3 AM: review jobs 44, 45, 47, 48 as they land (run + failure proofs), batch them.
+NEXT: helper Job E (Spicy picks proposal): review pictures, log, show Sim.
 NEXT: 6:15 AM: check the first daily data run on main (scheduled task), shadow model numbers to Sim.
 NEXT: 7:55 AM morning report (merges with checks, pictures, Sim's decisions, research write-ups).
 
