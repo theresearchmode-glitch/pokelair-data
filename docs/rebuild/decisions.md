@@ -2751,3 +2751,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 11:44 AM: Helper Job V: public front page proposals A (Receipt, rec) and B (Tier Wall) on alt/public-home-v1 63fd71fc, behind --home=a|b only; seo-check ALL PASSED; 13 widths failing 0. Pictures (HH viewed) sent to Sim for a pick. Found: public '/' static HTML has no h1 (pre-render idea).
 - 12:17 PM: Sim: likes the Receipt but 'no wow factor'; wants more creative receipt mockups. Helper Job X (3 variants: It prints / Your turn / The long receipt); Job W paused. Kip 53-56 done; 55 found public LCP ~11 s on slow phone (1.56 MB base64 item pics in v2.js). Kip queued 57 (items out of v2.js + shared css on /) and 58 (split routes, measure).
 - 12:19 PM: Sim: raise phone Home cap 7.8 -> 7.85 for the footer copyright line (one line, 23 px; GitHub had 7.82).
+- 12:20 PM: Sim told Kip (job 57 start).
