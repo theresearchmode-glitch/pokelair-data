@@ -3,8 +3,8 @@ Source: design6 c062acf1 built with real data, first-screen shots of 8 pages at 
 measuring pass (sideways overflow, clipped text, page height in screens). Script: scratchpad touch-shots.mjs. Pictures in pics/touch/.
 
 ## To fix (each small, each needs before/after pictures under HH's design authority)
-1. **My Team, 1440: "Saved ✓" sits alone on a second row** under five buttons (rule 13: no lone tiles). Checked: team-1440 picture.
-   Idea: show Saved as a state on the Saved Teams button ("Saved Teams 1 ✓") instead of its own button, so the row is one line.
+1. ~~My Team, 1440: "Saved ✓" alone on a second row~~ NOT A PROBLEM: that was a build without data. With real data the six
+   buttons sit 3 + 3 at every width 1280-1920 (checked: sv.mjs, measured rows and widths). No change.
 2. **My Team, 1440: "Kowtow Cle..." is cut in its move pill** (Kingambit). Checked: same picture. Idea: long move names drop one type
    step in the pill (fit, not ellipsis), as the name plates already do.
 3. **Speed Tiers, 1280x720: the controls fill the first screen**; the track starts at the bottom edge. Already planned ("Speed Tiers
