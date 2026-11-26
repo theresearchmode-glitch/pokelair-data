@@ -28,5 +28,12 @@ measuring pass (sideways overflow, clipped text, page height in screens). Script
   not painted. Opened, it fits at 1440/1280/820/390 (right edges 1329/1169/757/359). Not a problem (checked: ov5.mjs).
 - Heights at 820x1180 (dark): Home 6.4 (Job C proposal takes it to 4.8), Pokémon 4.2, Meta 3.9, others under 3.5.
 
+## iPad check leftovers (night plan item 10)
+- Items 1-5 and 7 of the WebKit look check are already fixed in design6 (checked: commits c90b0465, 0d4b341c, c9190fd3, b25ebdbc, f55fd3e1).
+- Item 6 (Home iPad landscape, top-10 numbers "press the band's right edge"): in Chromium at 1100-1280 the scores sit 38-41px from the
+  window edge inside the full-bleed red flag (picture i6-band-exact.png); not pressing. Reported in WebKit; unsure whether Safari still
+  draws it tight. Ask Sim to look on his iPad (landscape, Home, the red top-10 band). Side note: from 1100 to 1365 the band uses a 24px
+  side gutter while the page column uses 96px (headline starts at 24px, "Call six" at about 96px); a possible alignment touch, not a bug.
+
 ## Not yet looked at
 Battle, Practice, Search results, 1024x1366, odd widths (1100, 1180).
