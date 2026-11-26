@@ -14,11 +14,12 @@ const L = rd('limitless.json'), P = rd('perf.json'), D = {'meta/results': L && L
 const b = await chromium.launch(), pg = await (await b.newContext()).newPage();
 await pg.addInitScript(D => { window.claude = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { setTimeout(() => cb({exists: !!D[p], data: () => D[p]}), 5); return () => {}; }, get: async () => ({exists: false}), set: async () => {}})} : null}; }, D);
 await pg.goto('file://' + process.cwd() + '/' + page); await pg.waitForTimeout(4000);
-const r = await pg.evaluate(() => window.__ev('Object.fromEntries(ROSTER.map(p => [p.n, rating(p).total]))')); await b.close(); fs.unlinkSync(page);
+const r = await pg.evaluate(() => window.__ev('Object.fromEntries(ROSTER.filter(p => rating(p).tc != null).map(p => [p.n, rating(p).total]))')); await b.close(); fs.unlinkSync(page);
 const reg = activeReg().id, log = rd('ratings_log.json') || {}, d = new Date().toISOString().slice(0, 10);
 const byReg = log.byReg && typeof log.byReg === 'object' ? {...log.byReg} : {};
 if (!Object.keys(byReg).length && Array.isArray(log.days) && log.days.length) byReg[log.reg || SITE_REG.id] = log.days;
 const prevDays = Array.isArray(byReg[reg]) ? byReg[reg] : [];
-byReg[reg] = [...prevDays.filter(x => x.d !== d), {d, r}].slice(-120);
+const ratedCount = Object.keys(r).length;
+byReg[reg] = ratedCount > 0 ? [...prevDays.filter(x => x.d !== d), {d, r}].slice(-120) : prevDays;
 fs.writeFileSync('out/ratings_log.json', JSON.stringify({reg, updated: new Date().toISOString(), byReg}));
-console.log(`ratings snapshot (${reg}): ${Object.keys(r).length} Pokémon saved for ${d} (${byReg[reg].length} days kept)`);
+console.log(ratedCount > 0 ? `ratings snapshot (${reg}): ${ratedCount} Pokémon saved for ${d} (${byReg[reg].length} days kept)` : `ratings snapshot (${reg}): 0 rated Pokémon yet for ${d}; kept ${byReg[reg].length} days`);
