@@ -1,7 +1,5 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 5:29 PM (5:29:22)  date: Thu Nov 26, 2026
-NOW: HH: gate.sh alt/batch7 (Kip 61 static-page CSS + route-first data, Kip 62 preflight; local 10/10), pid in .main-running.
-  batch6 MERGED (design6 52fa60e6); Preview v267 published.
+Updated: time: 6:01 PM (6:01:39)  date: Thu Nov 26, 2026
 NOW (time: 6:01 PM (6:01:32)  date: Thu Nov 26, 2026): watching alt/f3-claude GitHub run 45907429763 (99e172ba, Final 3 on both builds); helper running local suite + pictures.
 NEXT: gate alt/f3-claude into claude/design6 when GitHub green + helper report read.
 NEXT: Preview republish after the merge (Final 3 for Sim's iPhone check); send Sim before/after pictures.
