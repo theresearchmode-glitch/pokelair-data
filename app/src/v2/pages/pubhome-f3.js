@@ -23,7 +23,9 @@ V2.f3Data = () => { const key = typeof metaVersion !== 'undefined' ? metaVersion
     if (six) { let ms = six.map((m, i) => memberOf({n: m.p.n, a: m.ab || null, it: m.it ? {[S.format]: m.it} : null}, i)).filter(Boolean);
       let G = null; try { const RD = prepOf(ms); G = RD ? CH.gradeOf(RD, proChecks(ms, true), ms) : null; } catch (e) { G = null; }
       const evReg = (String(ev.name).match(/\(Reg ([A-Z]-[A-Z])\)/) || [])[1] || '';
-      v = {reg, ev, old: !!(evReg && reg && evReg !== reg), evReg, G, rows: ms.map(m => ({p: m.p, n: m.p.n, d: V2.disp(m.p.n), item: m.heldItem || m.item || '', t: V2.f3Ty(m.p.t[0]), r: V2.f3Rate(m.p.n)}))}; }
+      /* the regulation the site is in: the data's, or Reg M-D from Dec 2 even while the data still says M-C (its first day has no winner yet) */
+      const mdAt = Date.parse(V2.REG_START_MD || ''), cur = isFinite(mdAt) && Date.now() >= mdAt && (!reg || reg === 'M-C') ? 'M-D' : reg;
+      v = {reg: cur, ev, old: !!(evReg && cur && evReg !== cur), evReg, G, rows: ms.map(m => ({p: m.p, n: m.p.n, d: V2.disp(m.p.n), item: m.heldItem || m.item || '', t: V2.f3Ty(m.p.t[0]), r: V2.f3Rate(m.p.n)}))}; }
   } catch (e) { v = null; }
   V2._f3 = {key, v}; return v; };
 V2.f3Band = G => G ? ({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[CH.grade(G.s)] || 'solid' : '';
