@@ -1,7 +1,7 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 6:27 AM (6:27:48)  date: Thu Nov 26, 2026
-NOW: HH: gate.sh alt/turnstile-once (pid in .main-running); mainff.sh alt/news-ran-main b6fafa71 (Kip 46 data half -> main, Sim's OK
-  in chat before 6:27 AM: "yes okay to push"; fast-forward on GitHub green). DONE: morning batch merged dcefa24f; daily data run dispatched by hand (45809169795).
+Updated: time: 6:42 AM (6:42:45)  date: Thu Nov 26, 2026
+NOW: HH: regland.sh (pid in .main-running): reg-test change -> main (alt/reg-test-main, green then fast-forward); then kipland.sh (Kip 44).
+  DONE this morning: morning batch dcefa24f + Turnstile 9bab576f in design6; Kip 46 data half on main b6fafa71.
 NOW (helper): Job K (My Team 390 fit), then L (Spicy rebuild to Sim's yes), then M (tablet Home in, checks updated).
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
