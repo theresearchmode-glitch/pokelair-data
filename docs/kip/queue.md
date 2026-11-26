@@ -63,3 +63,28 @@ on a merge of alt/phone-speed2 into design6, then passed on a rerun of the same 
 
 After job 45, write one line per job (branch, SHA, done/blocked) at the end of the job-45 report, then stop.
 ```
+
+---
+## HH notes, Wed Nov 25 night
+- Job 40: merged. Page fixes are in claude/design6 (a2c7f240, with md-switch-page-gaps-test wired in); data fixes are on main
+  (f4017535, with md-switch-data-gaps-test wired in). Grade A.
+- Job 41: read. Thank you: the health.mjs post.json blocker is a real catch. HH takes the runbook corrections. reg-test change: HH and
+  Sim decide. turnstile-page-test double render: see job 47.
+
+## JOB 46 (DO THIS NEXT, right after job 42, before 43): the news freshness blocker you found in job 41.
+After Saturday's merge, main's health.mjs (the post.json line, about line 65) dates the news file by `checked || updated`. `checked` is
+when a PERSON last checked the gift list (the Post Room's note), so it goes stale, and every daily run would fail ("8 days old,
+limit 3"), freezing live data from the first day.
+- Fix it so freshness means "the news job ran recently": post-news.mjs writes a `ran` ISO timestamp into out/post.json on every
+  successful run (leave `checked` exactly as it is: the page uses it), and health.mjs dates post.json by `ran` (falling back to
+  `updated`, never to `checked`). A run that failed to fetch news must NOT refresh `ran`.
+- post-news.mjs exists only on claude/design6; health.mjs's post.json line is newest on main. Make the two changes on TWO branches:
+  alt/gemini-news-ran-page from origin/claude/design6 (post-news.mjs) and alt/gemini-news-ran-data from origin/main (health.mjs).
+  Each must be safe alone (main today has no post-news.mjs; design6's health.mjs is older), and right together after the merge:
+  prove that on a local merge of the two, like your job 41 picture, and say so in the report.
+- Tests that fail first: health on a post.json with old `checked` but fresh `ran` passes; with old `ran` fails; a failed fetch leaves
+  `ran` alone. Wire them into test.yml next to the other health/freshness tests.
+
+## JOB 47 (after 45): experiments/turnstile-page-test.mjs fails on plain design6 (widget drawn twice, your job 41 item 3).
+- Find why Send Feedback renders the Turnstile widget twice on a redraw, fix the cause in the page (smallest change), and show the test
+  failing before and passing after. This is page code but not design: no visual change beyond one widget instead of two.
