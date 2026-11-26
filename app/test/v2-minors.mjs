@@ -609,8 +609,15 @@ ok(dd.app === 'none' && dd.arrow, `Sim Q1 (Nov 17): Edit Set dropdowns draw our 
   ok(g && !/right now/i.test(g), `Player review 3a: the Usage spotlight tag doesn't say "right now" ("${g}")`); }
 { await p.goto('file://' + PAGE + '#meta'); await p.waitForTimeout(2000);
   const t = await p.evaluate(() => window.__ev(`(() => { const xs = lairRows().filter(x => x.r.tc), bad = []; for (let i = 1; i < xs.length; i++) { const a = xs[i - 1], b = xs[i], ka = lairRank(a.p).rank, kb = lairRank(b.p).rank;
-    if (RS(a.r.total) === RS(b.r.total) ? ka !== kb : kb !== i + 1) bad.push(a.p.d + ' ' + RS(a.r.total) + ' #' + ka + ' / ' + b.p.d + ' ' + RS(b.r.total) + ' #' + kb); } return {n: xs.length, bad: bad.slice(0, 4), nb: bad.length}; })()`));
-  ok(t.nb === 0, `Player review 3b (Nov 17): Pokémon showing the same rating share a rank, and the next one skips ahead (${t.n} rated; ${t.nb} wrong: ${t.bad.join(', ')})`); }
+    const ex = r => r.exact != null ? r.exact : r.total, lvl = a.r.total === b.r.total && ex(a.r) === ex(b.r);
+    if ((lvl ? ka !== kb : kb !== i + 1) || RS(a.r.total) < RS(b.r.total) || (a.r.total === b.r.total && ex(a.r) < ex(b.r))) bad.push(a.p.d + ' ' + RS(a.r.total) + ' #' + ka + ' / ' + b.p.d + ' ' + RS(b.r.total) + ' #' + kb);
+    if (RS(a.r.total) === RS(b.r.total) && !(rankEdge(a.p) && rankEdge(b.p))) bad.push('no Tiebreak line: ' + a.p.d + ' / ' + b.p.d); }
+    const shared = xs.filter((x, i) => i && lairRank(x.p).rank === lairRank(xs[i - 1].p).rank).length, first = xs.slice(0, 10).map(x => lairRank(x.p).rank).join();
+    return {n: xs.length, bad: bad.slice(0, 4), nb: bad.length, shared, first}; })()`));
+  /* Sim, Nov 25 ("no 2 #1 and 3 #7 in our top 10s"): every Pokémon gets its own rank; a tie on the shown rating is broken by our
+     full rating before rounding (r.exact), and only an exactly equal full rating shares a rank. Replaces player review 3b (Nov 17,
+     shared ranks); the Pokémon page's Tiebreak line says why. Would fail on the Nov 17 rule (it shared 250 of 321 ranks). */
+  ok(t.nb === 0, `Ranks (Sim, Nov 25): one rank each, ties broken by the full rating, a Tiebreak line on every tied Pokémon (${t.n} rated; top 10 ranks ${t.first}; ${t.shared} shared; ${t.nb} wrong: ${t.bad.join(', ')})`); }
 { await p.evaluate(() => { try { localStorage.clear(); } catch (e) {} }); await p.goto('file://' + PAGE + '#team'); await p.reload(); await p.waitForTimeout(3500);
   const m = await p.evaluate(() => { const team = new Set(JSON.parse(window.__ev('JSON.stringify(members().map(x => x.p.n))'))), rows = [...document.querySelectorAll('#main .tm-mus [data-muthr]')].filter(b => b.querySelector('.mu-dis, .nm'));
     const mir = rows.filter(b => team.has(b.dataset.muthr)), other = rows.filter(b => !team.has(b.dataset.muthr));
@@ -1133,8 +1140,10 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
     const race = [...s.querySelectorAll('.sdt-run')].map(e => e.dataset.v2mon);
     const TY = [...s.querySelectorAll('.sdt-types li')].map(li => [li.querySelector('.sdt-flag').textContent.trim(), (li.querySelector('[data-v2mon]') || {}).dataset ? li.querySelector('[data-v2mon]').dataset.v2mon : '']);
     const tyOk = TY.length === 18 && TY.every(([t, n]) => !n) && !/Under each flag/.test(s.querySelector('.sdt-tc').textContent);
-    const pod = [...s.querySelectorAll('.sdt-step')].map(e => [e.className.match(/s(\\d)/)[1], e.querySelector('.sdt-blk b').textContent]);
-    const tieOk = pod.length === 3 && pod.every(a => pod.every(b => (a[1] === b[1]) === (a[0] === b[0])));
+    /* Sim, Nov 25: the podium's steps follow the Ratings rank (one rank each, ties broken by the full rating), and #1 stands tallest
+       (before, the 80px base step made #2/#3 taller than #1 on desktop). Would fail on the Nov 17 shared steps (97/97 both s1). */
+    const pod = [...s.querySelectorAll('.sdt-step')].map(e => [e.className.match(/s(\\d)/)[1], String((lairRank(byName.get(e.dataset.v2mon)) || {}).rank), e.querySelector('.sdt-blk b').textContent, Math.round(e.querySelector('.sdt-blk').getBoundingClientRect().height)]);
+    const tieOk = pod.length === 3 && pod.every(a => a[0] === a[1]) && pod[1][0] === '1' && (pod[0][0] === '1' || pod[1][3] > pod[0][3]) && (pod[2][0] === '1' || pod[1][3] > pod[2][3]);
     const big = [...s.querySelectorAll('.sdt-big b')].map(e => e.textContent.replace(/,/g, ''));
     return JSON.stringify({plates: go.length, toolsOk: want === got, raceOk: race.length === 9 && race.join() === top9.join(), tyOk, tieOk, pod, nums: big.join('/') === META.events.events.length + '/' + RES.teams, big}); })()`));
   const m = JSON.parse(d);
@@ -1156,7 +1165,7 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
       else if (got === 'chip' && r.href !== '#types') tyl.push(`${w}: chip goes to ${r.href}`); }
     ok(!tyl.length, `Stampede tools: the Type Chart shows at every width: on iPads (820, 1024) its plate is a full-width strip of 18 flags, 6 across in 3 rows, all inside; on phones (390) and desktop (1100, 1440) the plate hides and the Type Chart chip (to #types) shows instead${tyl.length ? ': ' + tyl.join(' | ') : ''}`);
     await q.setViewportSize({width: 1440, height: 900}); await q.waitForTimeout(300); }
-  ok(m.tieOk && m.nums, `Stampede tools: tied ratings share a podium step; Events and How We Calculate show the Events page's count and RES.teams (${JSON.stringify(m.pod)}, ${JSON.stringify(m.big)})`);
+  ok(m.tieOk && m.nums, `Stampede tools: the podium's steps follow the Ratings rank and #1 stands tallest (Sim, Nov 25); Events and How We Calculate show the Events page's count and RES.teams (${JSON.stringify(m.pod)}, ${JSON.stringify(m.big)})`);
   const lay = []; for (const [w, th] of [[320, 'day'], [390, 'night'], [820, 'day'], [1100, 'night'], [1440, 'day']]) { await q.evaluate(t => { try { localStorage.setItem('np2.theme', t); } catch (e) {} }, th); await q.setViewportSize({width: w, height: 900}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(1800);
     await q.evaluate(() => document.fonts.ready.then(() => 1)); await q.waitForTimeout(200); /* measure in the real fonts: a fallback font is wider (a name 'spilling' under load, Nov 18) */
     lay.push(w + ': ' + await q.evaluate(() => { const s = document.querySelector('#main .sdt'); if (!s) return 'no band'; const out = []; if (document.documentElement.scrollWidth > innerWidth) out.push('sideways');
@@ -1981,6 +1990,27 @@ if (part('main2')) { // Sim, Nov 18: Base Stats calm and compact, on theme (no b
       return {h: Math.round(R.height), fs: c.fontSize, st: c.fontStyle, sh: c.textShadow, cols: edges.size, over}; });
     if (r.none || r.fs !== '16px' || r.st !== 'italic' || r.sh !== 'none' || r.cols > 2 || r.over || (w < 700 && m === 'garchomp' && r.h > 260)) bad.push(`${m} ${w}: ${JSON.stringify(r)}`); }
   await ctx.close(); ok(!bad.length, `Pokémon page Base Stats (Sim, Nov 18): compact (260px or less on a phone), 16px slanted numbers with no shadow, numbers lined up, nothing out (${bad.join(' | ') || 'all as planned'})`); }
+if (part('main2')) { /* iPhone review Nov 25. #2: Home's two hero buttons come before the line in the page, so on an iPhone 15 (393 x 659 with
+     Safari's bars) they sit above the bottom bar on the first screen (they were 35px under it); from 900 up the line stays left and the buttons
+     right, side by side as before. #3: News' latest gift round uses the same picture-over-month layout as the others, so every month name in
+     its row lines up (it sat sideways, its month 40px off). Both fail on the old code. The data note is hidden here: this build's saved-data
+     note is Preview-only. */
+  const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();
+  for (const [w, h] of [[393, 659], [430, 739], [1100, 900], [1440, 900]]) {
+    await q.setViewportSize({width: w, height: h}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2200);
+    await q.addStyleTag({content: '.np-dnote{display:none}'}); await q.waitForTimeout(300); await q.evaluate(() => scrollTo(0, 0));
+    const r = await q.evaluate(() => { const go = document.querySelector('.sdh-go'), say = document.querySelector('.sdh-say'), bar = document.querySelector('.np-bar');
+      if (!go || !say) return {none: 1}; const G = go.getBoundingClientRect(), S = say.getBoundingClientRect(), B = bar && bar.getClientRects().length ? bar.getBoundingClientRect().top : innerHeight;
+      return {first: !!(go.compareDocumentPosition(say) & Node.DOCUMENT_POSITION_FOLLOWING), gb: Math.round(G.bottom), bar: Math.round(B), above: G.bottom <= S.top + 1, side: G.left >= S.right - 1, same: Math.abs(G.top + G.height / 2 - (S.top + S.height / 2)) < 60}; });
+    if (r.none || !r.first || (w < 900 ? !(r.above && r.gb <= r.bar) : !(r.side && r.same))) bad.push(`home ${w}: ${JSON.stringify(r)}`); }
+  for (const w of [320, 393, 430]) {
+    await q.setViewportSize({width: w, height: 844}); await q.goto('file://' + PAGE + '#news'); await q.waitForTimeout(2200);
+    const r = await q.evaluate(() => { const o = document.querySelector('.nw2-ser'); if (!o) return {none: 1}; const li = [...o.children], last = o.querySelector('.nw2-last');
+      if (!last) return {nolast: 1, n: li.length}; const top = e => Math.round(e.querySelector('b').getBoundingClientRect().top), row = li.filter(x => Math.abs(x.getBoundingClientRect().top - last.getBoundingClientRect().top) < 4);
+      const L = last.getBoundingClientRect(), O = o.getBoundingClientRect(), M = last.querySelector('.np-mon').getBoundingClientRect();
+      return {tops: row.map(top), right: Math.round(O.right - L.right), mon: Math.round(M.top - L.top)}; });
+    if (r.none || (!r.nolast && (new Set(r.tops).size !== 1 || r.right > 1 || r.mon > 4))) bad.push(`news ${w}: ${JSON.stringify(r)}`); }
+  await ctx.close(); ok(!bad.length, `iPhone review #2/#3 (Nov 25): Home's buttons before the line and clear of the bottom bar on phones, beside it from 900; News' latest gift round lines up with its row (${bad.join(' | ') || 'all as planned'})`); }
 if (part('groups')) { await HQ(); await wkPair(b, 'file://' + PAGE, ok); }
 await b.close();
 console.log(`v2-minors${PART === 'all' ? '' : ' (' + PART + ')'}:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

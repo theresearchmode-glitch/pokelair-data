@@ -64,6 +64,9 @@
 .sdh-all::after{content:"";position:absolute;inset-inline:calc(var(--s1) * -1);top:50%;height:var(--tap);translate:0 -50%}
 @media (hover:hover){.sdh-all:hover{text-decoration:underline}}
 .sdh-go{display:flex;gap:var(--s4);rotate:var(--sd-tilt)}
+/* iPhone review #2 (Nov 25): the two buttons come before the line in the page (so on phones they sit above it, clear of the bottom bar on
+   an iPhone 15); from 900 up the line keeps the left column and the buttons the right, as before */
+@media (min-width:900px){.sdh-say{grid-column:1;grid-row:2}.sdh-go{grid-column:2;grid-row:2}}
 .sdh-b1,.sdh-b2{display:inline-flex;align-items:center;justify-content:center;min-height:52px;padding:0 var(--s8);font:900 var(--t17)/1.1 var(--u);font-style:italic;text-align:center}
 .sdh-b1{background:var(--sd-plate);color:var(--sd-plate-ink);clip-path:polygon(14px 0,100% 0,calc(100% - 14px) 100%,0 100%)}
 .sdh-b2{border:2px solid var(--sd-on-band);color:var(--sd-on-band);transform:skewX(-12deg)}.sdh-b2>span{transform:skewX(12deg)}
