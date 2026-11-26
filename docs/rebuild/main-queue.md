@@ -1,12 +1,12 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 10:22 PM (10:22:48)  date: Wed Nov 25, 2026
-NOW: HH: merge-check of alt/phone-speed2 into design6 (worktree mgps, merge 37d4d67a; GitHub green on 0c897a0d); push when ALL PASSED.
-NOW (helper): score batch prep: alt/score-ebfix2 onto main + alt/bands-c2 onto design6, tests + pictures. NOW (Kip): job 40 switch audit.
-IN GITHUB: design6 603be872 (tonight's push); alt/no-rk9-2 156129e0 (then main fast-forward; same tree as green d53d3932).
-NEXT: main fast-forward to alt/no-rk9-2 when green (no merge commit, no stamp needed).
-NEXT: score batch: score fix to main (+ accuracy baseline only with Sim's OK), bands C to design6 with pictures.
-NEXT: /pokemon + 404 (alt/pokemon-index f6afa25a): waiting for Sim (screens A/B/C, breadcrumb); then its GitHub run + gate.
-NEXT: Kip job 40 report -> review + merge its checked fixes; Game Plan; Preview after merges; 7:55 AM morning report.
+Updated: time: 12:20 PM (12:20:04)  date: Thu Nov 26, 2026
+NOW: HH: day-batch3 GitHub run 45860745371: only failure so far = phone Home 7.82 > 7.8 (the footer (c) line); Sim chose cap 7.85
+  (e99f1388, not pushed yet). Watching the run to collect every failure, then push day-batch4 + gate.
+NOW (helper): Job X, 3 Receipt variants with WOW (It prints / Your turn / The long receipt) for Sim. Job W (prerender) paused.
+NOW (Kip): job 57 (item pictures out of v2.js, shared css on /), then 58. 53-56 done (56 verified: 72/72 legal).
+NEXT: gate day-batch4 into design6, Preview republish, Game Plan; Friday switch if Sim's go tonight.
+NEXT: review Kip 53/54/55 branches; merge 53 + 54 + 56 in the next batch.
+NEXT: resume Job W (prerender Home) after Sim picks the front page.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.

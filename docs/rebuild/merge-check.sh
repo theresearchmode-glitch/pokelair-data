@@ -3,9 +3,10 @@
 # these mistakes"). Usage, after `git merge` and before `git push`:
 #   REPORT_OK=1 bash docs/rebuild/merge-check.sh origin/alt/gemini-XX [main|claude/design6]
 # The target (the branch the merge goes into) is the 2nd argument, or else the branch you are on (main or claude/design6);
-# anything else is refused. Kip job 43: each target runs its own test list (see TESTS below): claude/design6 the redesign's list,
-# main the checks .github/workflows/test.yml runs for main's code (code tests on its frozen out/, then data checks on today's).
-# After Sat Nov 28 (design6 merged into main) main runs design6's code: point main at tests_design6 then.
+# anything else is refused. Kip job 43 + 48: each target runs its own test list (see TESTS below): claude/design6 the redesign's
+# list, main the checks .github/workflows/test.yml runs for main's code (code tests on its frozen out/, then data checks on today's)
+# — plus tests_design6 automatically when the merge's own .github/workflows/test.yml has design6's v2 step (app/test/v2-public.mjs),
+# so it works today (main only) and on Sat Nov 28's switch (both lists) with no edit in between.
 # It blocks each mistake made on Nov 25:
 #   1. a merge pushed before the helper's last check came back (j19 -> My Box pictures 240px tall): REPORT_OK=1 must be set by HH
 #      only after the helper's final report for that branch has been received AND read.
@@ -110,7 +111,16 @@ step a-build        "node app/build.mjs"
 step a-accuracy     "node experiments/accuracy-gate.mjs"
 }
 echo "  tests for $TARGET:"
-case "$TARGET" in main) tests_main;; claude/design6) tests_design6;; esac
+case "$TARGET" in
+  main)
+    tests_main
+    if grep -q "app/test/v2-public.mjs" .github/workflows/test.yml 2>/dev/null; then
+      echo "  design6 tests (.github/workflows/test.yml includes app/test/v2-public.mjs):"
+      tests_design6
+    fi
+    ;;
+  claude/design6) tests_design6;;
+esac
 rm -rf "$LOG"
 if [ "$FAILS" -eq 0 ]; then D="$(git rev-parse --git-common-dir)/merge-ok"; mkdir -p "$D"; echo "$(git rev-parse HEAD) $TARGET" > "$D/$(git rev-parse HEAD)"; echo "merge-check: ALL PASSED for $TARGET. Stamp written; the push to $TARGET may go."; exit 0
 else echo "merge-check: $FAILS FAILED. Do not push; fix or report."; exit 1; fi
