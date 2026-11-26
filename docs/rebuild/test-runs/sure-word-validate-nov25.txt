@@ -1,0 +1,151 @@
+DOES THE 'HOW SURE' WORD (Low / Medium / High) MEAN ANYTHING? Measurement only: nothing on the page or in the model changed.
+Run: Wed Nov 25 2026, 7:40 to 7:43 PM Eastern (clock: date). Branch alt/score-ebfix. Data: out/matches.json of origin/main 7b567771.
+Command: NEW_WORK=<whytest-recheck WORK> WORK=<dir> node experiments/sure-word-validate.mjs   (exit 0)
+
+HOW: same 4 windows and training as whytest-recheck (new = branch model.mjs locked settings + six.mjs; old = EVID_K=1000 EVID_KP=300
+ LB=40 LP=150 ZERO_CENTER=0 + six.mjs, i.e. the live model before the fix). Each team sheet graded by main's built page (assignItems,
+ THR.teamReport, CH.gradeOf on its own sheet). e = the page's win chance against the field (st.e). 'game P' = sig(calib*(y_team - y_opponent)),
+ the score's chance against the real opponent. Word = the page's rule (sd <= .12 High, <= .2 Medium, else Low; six with 100+ own games at
+ least Medium); it matched CH.sureOf on every sheet (0 mismatches). gap = mean e minus real win rate. CIs: 95% event-clustered bootstrap.
+ Under 300 results = unknown. Best-of-1 (single games) and best-of-3 rounds (match results) kept separate.
+
+  [old 2026-10-28] 140s: ridge lb 40 lp 150 (x pairShrink 4 in the fit), locked in model-settings.json | model: ships, 319 Pokémon, 524 pairs, 770 set features, 137s
+  [old 2026-11-04] 158s: ridge lb 40 lp 150 (x pairShrink 4 in the fit), locked in model-settings.json | model: ships, 319 Pokémon, 567 pairs, 818 set features, 155s
+  [old 2026-11-11] 167s: ridge lb 40 lp 150 (x pairShrink 4 in the fit), locked in model-settings.json | model: ships, 319 Pokémon, 608 pairs, 865 set features, 165s
+  [old 2026-11-18] 179s: ridge lb 40 lp 150 (x pairShrink 4 in the fit), locked in model-settings.json | model: ships, 319 Pokémon, 659 pairs, 907 set features, 177s
+  [2026-10-28..2026-11-04] 3283 games, 1045 sheets; old pairSd0 0.058, new 0.047
+  [2026-11-04..2026-11-11] 4302 games, 1255 sheets; old pairSd0 0.058, new 0.047
+  [2026-11-11..2026-11-18] 4932 games, 1314 sheets; old pairSd0 0.058, new 0.047
+  [2026-11-18..2026-11-26] 4703 games, 1318 sheets; old pairSd0 0.058, new 0.047
+  team results 34430; not scorable 10; word rule vs CH.sureOf mismatches 0; page errors 0
+
+=== SINGLE GAMES (best-of-1), all windows: 3160 team results, 20 events ===
+  (a) old model, its pairSd0
+    High    n= 1023  said 55.1% won 50.0%  gap 5.2 pts [95% CI 2.4 to 7.7]  Brier(e) 0.2502  Brier(game P) 0.2458
+    Medium  n= 2096  said 51.4% won 50.3%  gap 1.0 pts [95% CI -0.3 to 2.2]  Brier(e) 0.2492  Brier(game P) 0.2471
+    Low     n=   41  unknown (under 300)  [said 40.8% won 34.1%]
+    High minus Medium: Brier(e) 0.0010 [-0.0060 to 0.0078] no difference shown · Brier(game P) -0.0013 [-0.0085 to 0.0057] no difference shown · |gap| 0.0417 [0.0047 to 0.0744] HIGH WORSE
+  (b) new model, pairSd0 .058
+    High    n= 1127  said 55.6% won 50.0%  gap 5.6 pts [95% CI 3.3 to 8.0]  Brier(e) 0.2519  Brier(game P) 0.2473
+    Medium  n= 2033  said 50.8% won 50.0%  gap 0.8 pts [95% CI -0.4 to 1.9]  Brier(e) 0.2477  Brier(game P) 0.2460
+    Low     n=    0
+    High minus Medium: Brier(e) 0.0042 [-0.0006 to 0.0089] no difference shown · Brier(game P) 0.0013 [-0.0051 to 0.0069] no difference shown · |gap| 0.0485 [0.0164 to 0.0769] HIGH WORSE
+  (c) new model, pairSd0 .047
+    High    n= 2106  said 54.8% won 50.1%  gap 4.6 pts [95% CI 3.5 to 5.8]  Brier(e) 0.2510  Brier(game P) 0.2472
+    Medium  n= 1054  said 47.9% won 49.7%  gap -1.8 pts [95% CI -4.1 to 0.7]  Brier(e) 0.2455  Brier(game P) 0.2450
+    Low     n=    0
+    High minus Medium: Brier(e) 0.0054 [0.0027 to 0.0086] HIGH WORSE · Brier(game P) 0.0022 [-0.0019 to 0.0068] no difference shown · |gap| 0.0286 [0.0124 to 0.0417] HIGH WORSE
+
+=== SINGLE GAMES (best-of-1), dev only (before 2026-11-09): 1516 team results, 11 events ===
+  (a) old model, its pairSd0
+    High    n=  464  said 55.3% won 52.4%  gap 2.9 pts [95% CI -1.9 to 7.7]  Brier(e) 0.2473  Brier(game P) 0.2469
+    Medium  n= 1020  said 50.8% won 49.5%  gap 1.3 pts [95% CI -1.3 to 3.4]  Brier(e) 0.2539  Brier(game P) 0.2530
+    Low     n=   32  unknown (under 300)  [said 39.8% won 31.3%]
+    High minus Medium: Brier(e) -0.0066 [-0.0182 to 0.0034] no difference shown · Brier(game P) -0.0061 [-0.0189 to 0.0048] no difference shown · |gap| 0.0163 [-0.0272 to 0.0698] no difference shown
+  (b) new model, pairSd0 .058
+    High    n=  578  said 56.1% won 52.4%  gap 3.7 pts [95% CI 0.6 to 6.9]  Brier(e) 0.2504  Brier(game P) 0.2491
+    Medium  n=  938  said 49.5% won 48.5%  gap 1.0 pts [95% CI -1.0 to 3.4]  Brier(e) 0.2516  Brier(game P) 0.2515
+    Low     n=    0
+    High minus Medium: Brier(e) -0.0013 [-0.0090 to 0.0042] no difference shown · Brier(game P) -0.0024 [-0.0146 to 0.0050] no difference shown · |gap| 0.0268 [-0.0255 to 0.0614] no difference shown
+  (c) new model, pairSd0 .047
+    High    n=  978  said 55.0% won 50.1%  gap 4.9 pts [95% CI 3.1 to 7.2]  Brier(e) 0.2530  Brier(game P) 0.2521
+    Medium  n=  538  said 46.5% won 49.8%  gap -3.3 pts [95% CI -7.2 to -0.3]  Brier(e) 0.2478  Brier(game P) 0.2478
+    Low     n=    0
+    High minus Medium: Brier(e) 0.0052 [0.0014 to 0.0112] HIGH WORSE · Brier(game P) 0.0043 [-0.0034 to 0.0107] no difference shown · |gap| 0.0163 [-0.0044 to 0.0333] no difference shown
+
+=== SINGLE GAMES (best-of-1), sealed only: 1644 team results, 9 events ===
+  (a) old model, its pairSd0
+    High    n=  559  said 55.0% won 47.9%  gap 7.1 pts [95% CI 5.0 to 9.1]  Brier(e) 0.2526  Brier(game P) 0.2450
+    Medium  n= 1076  said 51.9% won 51.1%  gap 0.8 pts [95% CI -0.5 to 1.9]  Brier(e) 0.2447  Brier(game P) 0.2415
+    Low     n=    9  unknown (under 300)  [said 44.3% won 44.4%]
+    High minus Medium: Brier(e) 0.0079 [0.0025 to 0.0146] HIGH WORSE · Brier(game P) 0.0034 [-0.0031 to 0.0106] no difference shown · |gap| 0.0631 [0.0384 to 0.0857] HIGH WORSE
+  (b) new model, pairSd0 .058
+    High    n=  549  said 55.0% won 47.4%  gap 7.7 pts [95% CI 4.7 to 10.2]  Brier(e) 0.2535  Brier(game P) 0.2454
+    Medium  n= 1095  said 51.9% won 51.3%  gap 0.6 pts [95% CI -0.9 to 1.9]  Brier(e) 0.2443  Brier(game P) 0.2412
+    Low     n=    0
+    High minus Medium: Brier(e) 0.0092 [0.0031 to 0.0159] HIGH WORSE · Brier(game P) 0.0041 [-0.0035 to 0.0130] no difference shown · |gap| 0.0709 [0.0306 to 0.0977] HIGH WORSE
+  (c) new model, pairSd0 .047
+    High    n= 1128  said 54.6% won 50.2%  gap 4.4 pts [95% CI 2.8 to 5.8]  Brier(e) 0.2492  Brier(game P) 0.2429
+    Medium  n=  516  said 49.4% won 49.6%  gap -0.2 pts [95% CI -3.1 to 4.3]  Brier(e) 0.2432  Brier(game P) 0.2420
+    Low     n=    0
+    High minus Medium: Brier(e) 0.0060 [0.0032 to 0.0090] HIGH WORSE · Brier(game P) 0.0009 [-0.0046 to 0.0082] no difference shown · |gap| 0.0420 [-0.0111 to 0.0470] no difference shown
+
+=== BEST-OF-3 ROUNDS (match results), all windows: 31270 team results, 213 events ===
+  (a) old model, its pairSd0
+    High    n=11789  said 55.9% won 52.9%  gap 3.0 pts [95% CI 2.2 to 3.7]  Brier(e) 0.2493  Brier(game P) 0.2444
+    Medium  n=19186  said 52.2% won 48.5%  gap 3.7 pts [95% CI 3.2 to 4.2]  Brier(e) 0.2483  Brier(game P) 0.2438
+    Low     n=  295  unknown (under 300)  [said 40.8% won 31.9%]
+    High minus Medium: Brier(e) 0.0011 [-0.0005 to 0.0027] no difference shown · Brier(game P) 0.0006 [-0.0011 to 0.0023] no difference shown · |gap| -0.0075 [-0.0188 to 0.0046] no difference shown
+  (b) new model, pairSd0 .058
+    High    n=13106  said 56.1% won 52.4%  gap 3.7 pts [95% CI 3.0 to 4.5]  Brier(e) 0.2501  Brier(game P) 0.2447
+    Medium  n=18164  said 51.7% won 48.3%  gap 3.4 pts [95% CI 2.9 to 3.9]  Brier(e) 0.2471  Brier(game P) 0.2429
+    Low     n=    0
+    High minus Medium: Brier(e) 0.0030 [0.0015 to 0.0046] HIGH WORSE · Brier(game P) 0.0018 [0.0003 to 0.0034] HIGH WORSE · |gap| 0.0030 [-0.0082 to 0.0143] no difference shown
+  (c) new model, pairSd0 .047
+    High    n=23157  said 55.3% won 51.8%  gap 3.5 pts [95% CI 3.1 to 3.9]  Brier(e) 0.2497  Brier(game P) 0.2449
+    Medium  n= 8113  said 48.7% won 45.0%  gap 3.8 pts [95% CI 2.7 to 4.8]  Brier(e) 0.2444  Brier(game P) 0.2400
+    Low     n=    0
+    High minus Medium: Brier(e) 0.0053 [0.0038 to 0.0068] HIGH WORSE · Brier(game P) 0.0050 [0.0029 to 0.0070] HIGH WORSE · |gap| -0.0029 [-0.0173 to 0.0110] no difference shown
+
+=== BEST-OF-3 ROUNDS (match results), dev only (before 2026-11-09): 11526 team results, 86 events ===
+  (a) old model, its pairSd0
+    High    n= 3485  said 56.3% won 52.2%  gap 4.2 pts [95% CI 2.6 to 5.7]  Brier(e) 0.2501  Brier(game P) 0.2426
+    Medium  n= 7915  said 52.9% won 49.3%  gap 3.6 pts [95% CI 2.8 to 4.3]  Brier(e) 0.2481  Brier(game P) 0.2439
+    Low     n=  126  unknown (under 300)  [said 40.9% won 33.3%]
+    High minus Medium: Brier(e) 0.0019 [-0.0016 to 0.0051] no difference shown · Brier(game P) -0.0013 [-0.0046 to 0.0024] no difference shown · |gap| 0.0060 [-0.0156 to 0.0270] no difference shown
+  (b) new model, pairSd0 .058
+    High    n= 4371  said 56.9% won 52.5%  gap 4.4 pts [95% CI 3.2 to 5.7]  Brier(e) 0.2496  Brier(game P) 0.2431
+    Medium  n= 7155  said 52.0% won 48.5%  gap 3.5 pts [95% CI 2.7 to 4.4]  Brier(e) 0.2475  Brier(game P) 0.2430
+    Low     n=    0
+    High minus Medium: Brier(e) 0.0021 [-0.0010 to 0.0049] no difference shown · Brier(game P) 0.0001 [-0.0027 to 0.0028] no difference shown · |gap| 0.0086 [-0.0116 to 0.0285] no difference shown
+  (c) new model, pairSd0 .047
+    High    n= 8326  said 55.8% won 51.5%  gap 4.2 pts [95% CI 3.5 to 4.8]  Brier(e) 0.2499  Brier(game P) 0.2443
+    Medium  n= 3200  said 48.9% won 46.0%  gap 2.9 pts [95% CI 1.3 to 4.6]  Brier(e) 0.2442  Brier(game P) 0.2398
+    Low     n=    0
+    High minus Medium: Brier(e) 0.0056 [0.0033 to 0.0078] HIGH WORSE · Brier(game P) 0.0045 [0.0011 to 0.0077] HIGH WORSE · |gap| 0.0135 [-0.0072 to 0.0328] no difference shown
+
+=== BEST-OF-3 ROUNDS (match results), sealed only: 19744 team results, 127 events ===
+  (a) old model, its pairSd0
+    High    n= 8304  said 55.7% won 53.2%  gap 2.5 pts [95% CI 1.6 to 3.3]  Brier(e) 0.2490  Brier(game P) 0.2452
+    Medium  n=11271  said 51.7% won 47.9%  gap 3.8 pts [95% CI 3.1 to 4.5]  Brier(e) 0.2483  Brier(game P) 0.2438
+    Low     n=  169  unknown (under 300)  [said 40.7% won 30.8%]
+    High minus Medium: Brier(e) 0.0007 [-0.0011 to 0.0024] no difference shown · Brier(game P) 0.0014 [-0.0004 to 0.0034] no difference shown · |gap| -0.0135 [-0.0280 to 0.0005] no difference shown
+  (b) new model, pairSd0 .058
+    High    n= 8735  said 55.7% won 52.3%  gap 3.4 pts [95% CI 2.6 to 4.2]  Brier(e) 0.2503  Brier(game P) 0.2455
+    Medium  n=11009  said 51.6% won 48.2%  gap 3.4 pts [95% CI 2.7 to 4.1]  Brier(e) 0.2468  Brier(game P) 0.2428
+    Low     n=    0
+    High minus Medium: Brier(e) 0.0035 [0.0018 to 0.0053] HIGH WORSE · Brier(game P) 0.0027 [0.0010 to 0.0045] HIGH WORSE · |gap| 0.0004 [-0.0145 to 0.0141] no difference shown
+  (c) new model, pairSd0 .047
+    High    n=14831  said 55.0% won 51.9%  gap 3.1 pts [95% CI 2.5 to 3.6]  Brier(e) 0.2497  Brier(game P) 0.2453
+    Medium  n= 4913  said 48.6% won 44.3%  gap 4.4 pts [95% CI 2.9 to 5.9]  Brier(e) 0.2445  Brier(game P) 0.2401
+    Low     n=    0
+    High minus Medium: Brier(e) 0.0052 [0.0030 to 0.0072] HIGH WORSE · Brier(game P) 0.0052 [0.0029 to 0.0076] HIGH WORSE · |gap| -0.0129 [-0.0337 to 0.0068] no difference shown
+
+=== The test: is High better than Medium with a CI that excludes 0? (all windows) ===
+  SINGLE GAMES (best-of-1) · old model, its pairSd0: Brier(e) no difference, Brier(game P) no difference, |gap| HIGH WORSE
+  SINGLE GAMES (best-of-1) · new model, pairSd0 .058: Brier(e) no difference, Brier(game P) no difference, |gap| HIGH WORSE
+  SINGLE GAMES (best-of-1) · new model, pairSd0 .047: Brier(e) HIGH WORSE, Brier(game P) no difference, |gap| HIGH WORSE
+  BEST-OF-3 ROUNDS (match results) · old model, its pairSd0: Brier(e) no difference, Brier(game P) no difference, |gap| no difference
+  BEST-OF-3 ROUNDS (match results) · new model, pairSd0 .058: Brier(e) HIGH WORSE, Brier(game P) HIGH WORSE, |gap| no difference
+  BEST-OF-3 ROUNDS (match results) · new model, pairSd0 .047: Brier(e) HIGH WORSE, Brier(game P) HIGH WORSE, |gap| no difference
+
+=== Proposed cut-off (setting c: new model, pairSd0 .047; one cut: High if sd <= c, else Medium; six 100+ games stays as the page has it) ===
+  single games, dev (1516 results): Brier(game P) High minus Medium by cut-off (objective: the most negative upper CI bound):
+    0.093: 0.0017 [-0.0065, 0.0081] · 0.096: -0.0000 [-0.0082, 0.0091] · 0.097: -0.0011 [-0.0131, 0.0080] · 0.102: -0.0020 [-0.0141, 0.0056] · 0.104: 0.0019 [-0.0074, 0.0091] · 0.105: 0.0027 [-0.0046, 0.0101] · 0.109: 0.0013 [-0.0076, 0.0114] · 0.112: -0.0017 [-0.0109, 0.0069] · 0.115: 0.0022 [-0.0068, 0.0090] · 0.121: 0.0020 [-0.0081, 0.0105] · 0.123: 0.0049 [-0.0052, 0.0145] · 0.127: 0.0050 [-0.0061, 0.0156] · 0.131: -0.0019 [-0.0089, 0.0062]
+    proposed cut-off 0.102 (dev: High minus Medium -0.0020 [-0.0141, 0.0056]; today's page cut-offs are .12 / .2)
+    sealed check ONCE (1644 results; High 543, Medium 1101): Brier(game P) High 0.2450 vs Medium 0.2414, difference 0.0036 [95% CI -0.0042 to 0.0128] -> no difference shown
+  best-of-3 rounds, dev (11526 results): Brier(game P) High minus Medium by cut-off (objective: the most negative upper CI bound):
+    0.084: -0.0080 [-0.0153, -0.0020] · 0.086: -0.0050 [-0.0111, -0.0003] · 0.09: -0.0020 [-0.0067, 0.0016] · 0.094: -0.0020 [-0.0057, 0.0016] · 0.096: -0.0023 [-0.0056, 0.0009] · 0.097: -0.0011 [-0.0044, 0.0018] · 0.102: -0.0002 [-0.0031, 0.0023] · 0.103: 0.0004 [-0.0031, 0.0028] · 0.105: 0.0010 [-0.0020, 0.0034] · 0.108: 0.0022 [-0.0007, 0.0044] · 0.11: 0.0018 [-0.0013, 0.0041] · 0.112: 0.0023 [-0.0007, 0.0048] · 0.115: 0.0030 [-0.0002, 0.0059] · 0.119: 0.0047 [0.0018, 0.0074] · 0.122: 0.0047 [0.0013, 0.0080] · 0.126: 0.0070 [0.0029, 0.0109] · 0.13: 0.0105 [0.0057, 0.0155] · 0.135: 0.0144 [0.0104, 0.0195] · 0.142: 0.0187 [0.0112, 0.0279]
+    proposed cut-off 0.084 (dev: High minus Medium -0.0080 [-0.0153, -0.0020]; today's page cut-offs are .12 / .2)
+    sealed check ONCE (19744 results; High 2928, Medium 16816): Brier(game P) High 0.2443 vs Medium 0.2439, difference 0.0004 [95% CI -0.0021 to 0.0029] -> no difference shown
+
+WHAT IT MEANS:
+ - No setting shows High better than Medium on any measure (Brier of e, Brier of game P, |gap|) with a CI that excludes 0.
+ - Where a difference is shown, High is WORSE: new model .047 single games Brier(e) and |gap|; best-of-3 Brier(e) and Brier(game P) with the new model.
+ - High teams are said to win about 55% against the field and really win about 50-52%: the word 'High' marks well-known teams the score over-rates.
+ - Low is too rare to judge (under 300 results everywhere; 0 with the new model).
+ - Cut-off tuning on dev: single games found nothing (best 0.102, CI crosses 0). Best-of-3 found 0.084 on dev (CI below 0), and the ONE
+   sealed check did not confirm it (difference +0.0004, CI -0.0021 to +0.0029). So no thresholds can be proposed that make the word honest.
+ - The honest move on this evidence: drop the word (or show it only after a new measure of 'sure' passes this test). HH and Sim decide.
+ - Caveats: e is the chance against the whole field, while Swiss pairs winners with winners, so gap can come from who a team meets;
+   game P avoids that and still shows no High advantage. The page's other data (usage, teams) is today's in every window.
