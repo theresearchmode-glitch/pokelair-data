@@ -157,48 +157,58 @@ const routesToRender = [...topRoutes, ...samplePoke.map(f => '/' + f.replace(/\.
 
 const mime = {'.html': 'text/html; charset=utf-8', '.js': 'application/javascript', '.css': 'text/css', '.json': 'application/json', '.png': 'image/png', '.svg': 'image/svg+xml', '.webp': 'image/webp', '.woff2': 'font/woff2'};
 const srv = http.createServer((req, res) => {
-  let u = (req.url || '/').split('?')[0];
-  if (u === '/') u = '/index.html';
-  let f = path.join(DIST, u);
-  if (!fs.existsSync(f) || fs.statSync(f).isDirectory()) f = f + '.html';
-  if (!fs.existsSync(f)) { res.writeHead(404); res.end('404'); return; }
-  res.writeHead(200, {'Content-Type': mime[path.extname(f)] || 'application/octet-stream'});
-  fs.createReadStream(f).pipe(res);
+  try {
+    let u = (req.url || '/').split('?')[0];
+    if (u === '/') u = '/index.html';
+    let f = path.join(DIST, u);
+    if (!fs.existsSync(f) || fs.statSync(f).isDirectory()) f = f + '.html';
+    if (!fs.existsSync(f)) { res.writeHead(404); res.end('404'); return; }
+    res.writeHead(200, {'Content-Type': mime[path.extname(f)] || 'application/octet-stream'});
+    fs.createReadStream(f).pipe(res);
+  } catch (e) { res.writeHead(500); res.end('500'); }
 });
-await new Promise(r => srv.listen(0, '127.0.0.1', r));
-const port = srv.address().port;
-const b = await chromium.launch();
-const h1Issues = [], imgDomIssues = [], ldDomIssues = [];
+const h1Issues = [], imgDomIssues = [], ldDomIssues = [], renderErrors = [];
+let b = null;
 try {
+  await new Promise((resolve, reject) => { srv.once('error', reject); srv.listen(0, '127.0.0.1', resolve); });
+  const port = srv.address().port;
+  b = await chromium.launch();
   const pg = await b.newPage({viewport: {width: 1280, height: 900}});
   for (const r of routesToRender) {
-    await pg.goto(`http://127.0.0.1:${port}${r}`, {waitUntil: 'domcontentloaded', timeout: 20000});
-    await pg.waitForFunction(() => document.querySelectorAll('h1').length > 0, null, {timeout: 8000}).catch(() => {});
-    const res = await pg.evaluate(() => {
-      const h1Count = document.querySelectorAll('h1').length;
-      const imgsNoAlt = [...document.querySelectorAll('img')].filter(e => !e.hasAttribute('alt')).length;
-      const lds = [...document.querySelectorAll('script[type="application/ld+json"]')].map(e => e.textContent || '');
-      return {h1Count, imgsNoAlt, lds};
-    });
-    if (res.h1Count !== 1) h1Issues.push(`${r}: ${res.h1Count} <h1>`);
-    if (res.imgsNoAlt > 0) imgDomIssues.push(`${r}: ${res.imgsNoAlt} <img> without alt`);
-    for (const txt of res.lds) {
-      try {
-        const obj = JSON.parse(txt);
-        const hasCtx = Boolean(obj && obj['@context']);
-        const hasType = Boolean(obj && (obj['@type'] || (Array.isArray(obj['@graph']) && obj['@graph'].length > 0 && obj['@graph'].every(n => n && n['@type']))));
-        if (!hasCtx || !hasType) ldDomIssues.push(`${r}: rendered JSON-LD missing @context/@type`);
-      } catch (e) { ldDomIssues.push(`${r}: rendered JSON-LD invalid (${e.message})`); }
+    try {
+      await pg.goto(`http://127.0.0.1:${port}${r}`, {waitUntil: 'domcontentloaded', timeout: 20000});
+      await pg.waitForFunction(() => document.querySelectorAll('h1').length > 0 && !document.querySelector('.np-load'), null, {timeout: 8000}).catch(() => {});
+      const res = await pg.evaluate(() => {
+        const h1Count = document.querySelectorAll('h1').length;
+        const imgsNoAlt = [...document.querySelectorAll('img')].filter(e => !e.hasAttribute('alt')).length;
+        const lds = [...document.querySelectorAll('script[type="application/ld+json"]')].map(e => e.textContent || '');
+        return {h1Count, imgsNoAlt, lds};
+      });
+      if (res.h1Count !== 1) h1Issues.push(`${r}: ${res.h1Count} <h1>`);
+      if (res.imgsNoAlt > 0) imgDomIssues.push(`${r}: ${res.imgsNoAlt} <img> without alt`);
+      for (const txt of res.lds) {
+        try {
+          const obj = JSON.parse(txt);
+          const hasCtx = Boolean(obj && obj['@context']);
+          const hasType = Boolean(obj && (obj['@type'] || (Array.isArray(obj['@graph']) && obj['@graph'].length > 0 && obj['@graph'].every(n => n && n['@type']))));
+          if (!hasCtx || !hasType) ldDomIssues.push(`${r}: rendered JSON-LD missing @context/@type`);
+        } catch (e) { ldDomIssues.push(`${r}: rendered JSON-LD invalid (${e.message})`); }
+      }
+    } catch (e) {
+      renderErrors.push(`${r}: ${String(e && e.message || e).split('\n')[0]}`);
     }
   }
+} catch (e) {
+  renderErrors.push(`browser/server error: ${String(e && e.message || e).split('\n')[0]}`);
 } finally {
-  await b.close();
-  srv.close();
+  if (b) await b.close().catch(() => {});
+  try { srv.close(); } catch (e) {}
 }
 
-ok(h1Issues.length === 0, `3c. exactly one <h1> on all ${routesToRender.length} rendered routes (${fmt(h1Issues)})`);
-ok(imgDomIssues.length === 0, `3d. every rendered <img> has alt on all ${routesToRender.length} routes (${fmt(imgDomIssues)})`);
-ok(ldDomIssues.length === 0, `4b. every rendered JSON-LD parses with @context and @type (${fmt(ldDomIssues)})`);
+if (renderErrors.length) ok(false, `3-render. rendered checks ran cleanly (${fmt(renderErrors)})`);
+ok(renderErrors.length === 0 && h1Issues.length === 0, `3c. exactly one <h1> on all ${routesToRender.length} rendered routes (${fmt(h1Issues.length ? h1Issues : renderErrors)})`);
+ok(renderErrors.length === 0 && imgDomIssues.length === 0, `3d. every rendered <img> has alt on all ${routesToRender.length} routes (${fmt(imgDomIssues.length ? imgDomIssues : renderErrors)})`);
+ok(renderErrors.length === 0 && ldDomIssues.length === 0, `4b. every rendered JSON-LD parses with @context and @type (${fmt(ldDomIssues.length ? ldDomIssues : renderErrors)})`);
 
 console.log(fails ? `seo-check: ${fails} FAILED` : 'seo-check: ALL PASSED');
 process.exit(fails ? 1 : 0);
