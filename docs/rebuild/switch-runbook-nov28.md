@@ -43,7 +43,12 @@ Report: docs/rebuild/test-runs/switch-rehearsal2-nov26.md. On Saturday, redo the
    CHECK out/post.json has a `ran` field after this run (`node -e "console.log(require('./out/post.json').ran)"`). If the news feed
    failed on this first run, post.json has no `ran`, health.mjs says "News & Mystery Gifts: no date" and the run fails (HH, Thu Nov 26,
    reading health.mjs:31 + update.yml:63/130). Fix: dispatch the data run again once the feed answers.
-6. **Publish the redesign to the live artifact:** switch-plan.py with today's art count (360 art files, not the 350 in the old doc),
+5b. **Step 7 BEFORE step 6** (helper Job T, Thu Nov 26, F4): update the refresh task's prompt first (text ready in
+   docs/rebuild/refresh-prompt-switch.md on alt/switch-dryrun67; save today's prompt first) and fire one refresh, so News, Gifts and
+   the info-sheet counts have data the moment the new page is up. Safe early: the old page has no post/info META keys (checked).
+6. **Publish the redesign to the live artifact:** BUILD WITH `cd app && node build.mjs --v2 --art=v2art/ --one-art-size --split`
+   (NOT the nov19 doc's `--public`: since Nov 25 `--public` builds the Cloudflare site with root paths that break on the artifact;
+   Job T F1). Dry run Thu Nov 26: 369 files, 360 art, 0 sp/, 15.05 MB, fonts identical to live's 7, every page loads at 390/1440. switch-plan.py with today's art count (360 art files, not the 350 in the old doc),
    R1 -> R4 as in switch-runbook-nov19.md (omit capabilities and contract); check the file count and zero sp/ files.
 7. **Refresh task:** save its prompt first, then add out/post.json -> meta/post AND out/info.json -> meta/info (17 META_KEYS now,
    not 16), plus the split/cleanup lists; one refresh with Sim's go.
