@@ -1,6 +1,6 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 6:32 PM (6:32:51)  date: Thu Nov 26, 2026
-NOW: (6:10 PM Thu Nov 26) watching alt/f3-claude GitHub run 45910019991 (3948dbc0: Q7a test hook fix), watcher pid in .main-running; old run 45907429763 was already cancelled (GitHub shows completed/cancelled).
+NOW: (6:45 PM) f3-claude run 45910019991 has 1 failure (WebKit A-team HOME-01, HOME-06); helper reproducing + fixing; watcher pid in .main-running.
 NEXT: gate alt/f3-claude into claude/design6 when GitHub green + helper report read.
 NEXT: Preview republish after the merge (Final 3 for Sim's iPhone check); send Sim before/after pictures.
 NEXT: tell Sim when Final 3 is in design6 so Kip re-merges design6 into 64c before his final push.
