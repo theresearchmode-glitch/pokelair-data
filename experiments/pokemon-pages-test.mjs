@@ -11,7 +11,8 @@ const line = fs.readFileSync(path.join(ROOT, 'app/src/data/data.js'), 'utf8').sp
 const src = fs.readFileSync(path.join(ROOT, 'app/src/v2/pages/pokemon.js'), 'utf8'), m = src.match(/V2\.pubSlug = (n => [^\n]*);/);
 ok(!!m, 'pokemon.js defines V2.pubSlug');
 const slug = m ? new Function('return ' + m[1])() : () => '';
-const files = fs.existsSync(path.join(D, 'pokemon')) ? new Set(fs.readdirSync(path.join(D, 'pokemon'))) : new Set();
+/* pokemon/404.html (Nov 26) is the app's not-found copy for a wrong /pokemon/<name>, not a Pokémon page */
+const files = fs.existsSync(path.join(D, 'pokemon')) ? new Set(fs.readdirSync(path.join(D, 'pokemon')).filter(f => f !== '404.html')) : new Set();
 const missing = roster.filter(p => !files.has(slug(p.n) + '.html')).map(p => p.n);
 ok(roster.length > 300 && !missing.length, `every Pokémon has its page, by the page's own address rule (${roster.length - missing.length} of ${roster.length}; missing: ${missing.slice(0, 5).join(', ') || 'none'})`);
 const sm = fs.existsSync(path.join(D, 'sitemap.xml')) ? fs.readFileSync(path.join(D, 'sitemap.xml'), 'utf8') : '';
@@ -30,9 +31,11 @@ const pubPaths = pm ? [...new Set(Object.values(new Function('return ' + pm[1])(
 const rules = r.split('\n').filter(l => l.trim() && !l.startsWith('#')).map(l => l.trim().split(/\s+/));
 ok(!rules.some(x => x[0] === '/*'), 'no catch-all rule (/* answered 200 for every wrong address: a soft 404)');
 ok(pubPaths.length > 15 && pubPaths.every(p => fs.existsSync(path.join(D, p.slice(1) + '.html')) || rules.some(x => x[0] === p && x[1] === '/v2' && x[2] === '200')), `every tool address has its own file or rule (${pubPaths.length} from V2.PUB_PATHS)`);
-const h404 = fs.existsSync(path.join(D, '404.html')) ? fs.readFileSync(path.join(D, '404.html'), 'utf8') : '';
+const h404 = fs.existsSync(path.join(D, '404.html')) ? fs.readFileSync(path.join(D, '404.html'), 'utf8') : '', h404p = fs.existsSync(path.join(D, 'pokemon/404.html')) ? fs.readFileSync(path.join(D, 'pokemon/404.html'), 'utf8') : '';
 // the same page as v2.html with a noindex tag and without its canonical/og:url tags (split or inline build alike; CI's v2-public.mjs build is inline, Nov 25)
-ok(v.length > 0 && h404 === v.replace(/<link rel="canonical"[^>]*>|<meta property="og:url"[^>]*>/g, '').replace('<title>', '<meta name="robots" content="noindex"><title>'), '404.html is the page with a noindex tag');
+/* Nov 26 (night queue 8): 404.html is the light static page (experiments/static-pages-test.mjs); the app copy moved to pokemon/404.html, which
+   Cloudflare serves for a wrong /pokemon/<name> (the nearest 404.html), so that address keeps the app's own "No Pokémon here." */
+ok(v.length > 0 && h404p === v.replace(/<link rel="canonical"[^>]*>|<meta property="og:url"[^>]*>/g, '').replace('<title>', '<meta name="robots" content="noindex"><title>'), 'pokemon/404.html is the page with a noindex tag');
 ok(fs.existsSync(path.join(D, 'index.html')) && fs.readFileSync(path.join(D, 'index.html'), 'utf8') === v, 'index.html is the same page as v2.html ("/" serves it)');
 // SEO fix 2 (Nov 25): each tool page has its own file (dist/team.html, served at /team) with its own title, description, og tags and
 // canonical from docs/rebuild/seo-titles-draft.md, so search engines read the right words before any script runs
@@ -83,7 +86,7 @@ ok(!rules.some(x => x[0].endsWith('/*') && x[1] === x[0].slice(0, -1) + ':splat'
 ok(pubPaths.every(p => rules.some(x => x[0] === p + '/' && x[1] === p && x[2] === '301')), `every tool address with a trailing slash answers 301 to the address (${pubPaths.filter(p => rules.some(x => x[0] === p + '/' && x[1] === p && x[2] === '301')).length} of ${pubPaths.length})`);
 { const fs1 = rules.findIndex(x => x[0].includes('*')); ok(fs1 < 0 || rules.slice(fs1).every(x => x[0].includes('*')), 'specific _redirects lines come before any splat'); }
 const hdr = rdD('_headers'), hdrBlock = p => { const L = hdr.split('\n'), i = L.indexOf(p); let o = ''; if (i >= 0) for (let j = i + 1; j < L.length && /^\s/.test(L[j]); j++) o += L[j] + '\n'; return o; };
-ok(['/v2', '/v2.html', '/404', '/404.html'].every(p => /X-Robots-Tag: noindex/.test(hdrBlock(p))) && (hdr.match(/X-Robots-Tag/g) || []).length === 4, '_headers: X-Robots-Tag noindex on /v2, /v2.html, /404, /404.html and nowhere else (/team does not inherit it)');
+ok(['/v2', '/v2.html', '/404', '/404.html', '/pokemon/404', '/pokemon/404.html'].every(p => /X-Robots-Tag: noindex/.test(hdrBlock(p))) && (hdr.match(/X-Robots-Tag/g) || []).length === 6, '_headers: X-Robots-Tag noindex on /v2, /v2.html, /404, /404.html, /pokemon/404, /pokemon/404.html and nowhere else (/team does not inherit it)');
 // served like Cloudflare Pages (developers.cloudflare.com/pages/configuration/serving-pages): a file if it exists, /x -> x.html, then the
 // _redirects 200 rules; otherwise 404.html with status 404, or, with no top-level 404.html, the page with 200 (Pages' SPA mode)
 const T = {'.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.json': 'application/json', '.woff2': 'font/woff2', '.svg': 'image/svg+xml', '.png': 'image/png', '.webp': 'image/webp'};
@@ -96,7 +99,9 @@ const viaRule = p => { for (const [from, to, code] of rules) { if (code !== '200
   if (m) return asset(to.replace(/:([a-z]+)/g, (_, k) => m[k] || '')); } return null; };
 const srv = http.createServer((q, s) => { const p = decodeURIComponent(q.url.split('?')[0]).replace(/(.)\/+$/, '$1');
   let f = asset(p === '/' ? '/index' : p) || viaRule(p), st = 200;
-  if (!f) { if (isFile(path.join(D, '404.html'))) { f = path.join(D, '404.html'); st = 404; } else f = path.join(D, 'v2.html'); }
+  /* not found: the NEAREST 404.html with status 404 (Workers static assets, not_found_handling "404-page"; checked on wrangler dev, Nov 26) */
+  if (!f) { let d = path.dirname(path.join(D, p)); while (d.startsWith(D) && !isFile(path.join(d, '404.html'))) d = path.dirname(d); const n4 = path.join(d.startsWith(D) ? d : D, '404.html');
+    if (isFile(n4)) { f = n4; st = 404; } else f = path.join(D, 'v2.html'); }
   s.writeHead(st, {'content-type': T[path.extname(f)] || 'application/octet-stream'}); fs.createReadStream(f).pipe(s); });
 await new Promise(res => srv.listen(0, '127.0.0.1', res));
 const {chromium} = await import('playwright'); const b = await chromium.launch();

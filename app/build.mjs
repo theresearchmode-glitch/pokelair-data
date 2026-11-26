@@ -216,8 +216,8 @@ if (process.argv.includes('--v2')) {
     const TS = 'https://challenges.cloudflare.com';
     const csp = ["default-src 'none'", `script-src 'self' ${hashes.join(' ')} ${TS}${CF_TOKEN ? ' ' + CF_SCRIPT : ''}`.trim(), `frame-src ${TS}`, "style-src 'self' 'unsafe-inline'", "img-src 'self' data:", "font-src 'self'",
       `connect-src 'self'${CF_TOKEN ? ' ' + CF_CONNECT : ''}`, "manifest-src 'self'", "base-uri 'none'", "form-action 'none'", "object-src 'none'", "frame-ancestors 'none'", 'upgrade-insecure-requests'].join('; ');
-    /* the app copies (/v2, /404: the same page, 200 when asked for directly) say noindex; only they do, so /team doesn't inherit it */
-    const noindex = ['/v2', '/v2.html', '/404', '/404.html'].map(p => `${p}\n  X-Robots-Tag: noindex\n`).join('');
+    /* the app copies (/v2, /pokemon/404: the same page, 200 when asked for directly) and the light /404 say noindex; only they do, so /team doesn't inherit it */
+    const noindex = ['/v2', '/v2.html', '/404', '/404.html', '/pokemon/404', '/pokemon/404.html'].map(p => `${p}\n  X-Robots-Tag: noindex\n`).join('');
     return noindex + ['/*', `  Content-Security-Policy: ${csp}`, '  X-Content-Type-Options: nosniff', '  Referrer-Policy: no-referrer',
       '  Permissions-Policy: camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()', '  Cross-Origin-Opener-Policy: same-origin',
       '  X-Frame-Options: DENY', ''].join('\n');
@@ -314,7 +314,14 @@ if (process.argv.includes('--v2')) {
        matching), and a rule would also catch unknown names. An unknown Pokémon has no file, so it gets 404.html with status 404.
        "/" is index.html, the same page; 404.html is the same page with noindex, so the site's own not-found view draws there. */
     fs.writeFileSync(dir + 'dist/index.html', h);
-    if (!/<meta name="robots"/.test(h)) fs.writeFileSync(dir + 'dist/404.html', h.replace(/<link rel="canonical"[^>]*>|<meta property="og:url"[^>]*>/g, '').replace(/<title>/, '<meta name="robots" content="noindex"><title>')); else throw new Error('public build: the page already has a robots tag');
+    /* night queue 8 (Nov 26; SEO audit #9, #10): /pokemon, the A-to-Z page of every Pokémon page (plain links, in the sitemap), and a light
+       static 404 with today's underdog; a wrong /pokemon/<name> keeps the app's own "No Pokémon here." view (dist/pokemon/404.html:
+       Cloudflare serves the nearest 404.html). app/static-pages.mjs; checked by experiments/static-pages-test.mjs */
+    { const {staticPages} = await import('./static-pages.mjs');
+      const sp = await staticPages({dir, h, ph, ownHead, esc, pages: [...seen].map(([s, n]) => ({s, n})), lastmod});
+      fs.writeFileSync(dir + 'dist/sitemap.xml', fs.readFileSync(dir + 'dist/sitemap.xml', 'utf8').replace('</urlset>', sp.sitemap + '\n</urlset>'));
+      fs.appendFileSync(dir + 'dist/_redirects', '/pokemon/ /pokemon 301\n');
+      console.log(`public: /pokemon (${(sp.sizeIndex / 1024).toFixed(0)} KB, ${seen.size} links) and a light 404 (${(sp.size404 / 1024).toFixed(1)} KB, underdog ${sp.underdog}; ${sp.asOf || 'no data date'})`); }
     /* the brand kit's icons at the site root (search engines look for /favicon.ico and a real icon URL; never redrawn, copied as is) */
     const icoDir = dir + '../docs/brand/nastyplot-brand-assets/3-website-icons/';
     for (const f of ['favicon.ico', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png']) if (fs.existsSync(icoDir + f)) fs.copyFileSync(icoDir + f, dir + 'dist/' + f);
