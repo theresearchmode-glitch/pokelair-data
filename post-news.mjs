@@ -64,17 +64,18 @@ export function writeNews(src, add) { if (!add.length) return src;
 export const load = src => { const c = {}; vm.runInNewContext(src + ';this.POST = POST;', c); return c.POST; };
 // the daily document meta/post: POST's own keys, news links https only (a non-https one is dropped; the page checks again with V2.safeUrl)
 export const DOC_LIMIT = 200000;
-export function postDoc(P) { const https = u => { try { return new URL(String(u)).protocol === 'https:'; } catch (e) { return false; } };
-  return {checked: P.checked || null, gifts: P.gifts || [], series: P.series || [], held: P.held || [], news: (P.news || []).filter(n => n && https(n.url))}; }
-function writeDoc(P, file) { const j = JSON.stringify(postDoc(P)), n = Buffer.byteLength(j);
+export function postDoc(P, ran = null) { const https = u => { try { return new URL(String(u)).protocol === 'https:'; } catch (e) { return false; } };
+  return {checked: P.checked || null, ...(ran ? {ran} : {}), gifts: P.gifts || [], series: P.series || [], held: P.held || [], news: (P.news || []).filter(n => n && https(n.url))}; }
+function writeDoc(P, file, ran = null) { const j = JSON.stringify(postDoc(P, ran)), n = Buffer.byteLength(j);
   if (n > DOC_LIMIT) { console.error(`post-news: out/post.json would be ${n} bytes (limit ${DOC_LIMIT}); yesterday's file kept`); return false; }
   fs.mkdirSync(path.dirname(file), {recursive: true}); fs.writeFileSync(file, j); console.log(`post-news: ${path.basename(file)} written (${n} bytes, ${postDoc(P).news.length} stories, ${(P.gifts || []).length} gifts)`); return true; }
 
 async function main() { const root = path.dirname(fileURLToPath(import.meta.url)), dry = process.argv.includes('--dry');
   const postFile = process.env.POST_FILE || path.join(root, 'app/src/data/post.js'), sugFile = process.env.SUGGEST_FILE || path.join(root, 'out/post-suggest.json'),
     docFile = process.env.POST_OUT || path.join(root, 'out/post.json');
-  /* the feed failed or changed shape: post.js is kept, and the daily document is still written from it (yesterday's list) */
-  const keep = why => { console.error(`post-news: ${why}; post.js kept as it is`); if (!dry) { try { writeDoc(load(fs.readFileSync(postFile, 'utf8')), docFile); } catch (e) { console.error(`post-news: out/post.json not written (${e.message})`); } } process.exit(1); };
+  const prevRan = (() => { try { const d = JSON.parse(fs.readFileSync(docFile, 'utf8')); return typeof d.ran === 'string' && d.ran ? d.ran : null; } catch (e) { return null; } })();
+  /* the feed failed or changed shape: post.js is kept, and the daily document is still written from it (yesterday's list); ran is NOT refreshed */
+  const keep = why => { console.error(`post-news: ${why}; post.js kept as it is`); if (!dry) { try { writeDoc(load(fs.readFileSync(postFile, 'utf8')), docFile, prevRan); } catch (e) { console.error(`post-news: out/post.json not written (${e.message})`); } } process.exit(1); };
   let feed; try { feed = process.env.FEED_FILE ? JSON.parse(fs.readFileSync(process.env.FEED_FILE, 'utf8'))
     : await politeFetch(FEED, {headers: {Accept: 'application/json'}}).then(r => { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); }); }
   catch (e) { keep(`the feed could not be read (${e.message})`); }
@@ -86,7 +87,7 @@ async function main() { const root = path.dirname(fileURLToPath(import.meta.url)
   for (const n of p.add) console.log(`  + ${n.date.slice(0, 10)} ${n.type}: ${n.title}`);
   for (const x of p.problems) console.log(`  ? ${x}`);
   if (dry) return;
-  if (p.add.length) fs.writeFileSync(postFile, out); writeDoc(after, docFile); /* POST.checked is left alone: it is when a person last checked the gift list (the Post Room's note) */
+  if (p.add.length) fs.writeFileSync(postFile, out); writeDoc(after, docFile, new Date().toISOString()); /* POST.checked is left alone: it is when a person last checked the gift list (the Post Room's note) */
   if (p.suggest.length) { fs.mkdirSync(path.dirname(sugFile), {recursive: true}); let old = []; try { old = JSON.parse(fs.readFileSync(sugFile, 'utf8')); } catch (e) {}
     const ids = new Set(old.map(x => x.id)); fs.writeFileSync(sugFile, JSON.stringify(old.concat(p.suggest.filter(x => !ids.has(x.id))), null, 1)); } }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await main();

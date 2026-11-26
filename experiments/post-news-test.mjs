@@ -23,7 +23,7 @@ const run = (feed, extra = {}, post = src0, oldDoc = null) => { const pf = path.
   catch (e) { code = e.status; out = String(e.stdout) + String(e.stderr); }
   return {code, out, src: fs.readFileSync(pf, 'utf8'), sug: fs.existsSync(sf) ? JSON.parse(fs.readFileSync(sf, 'utf8')) : null, doc: fs.existsSync(df) ? fs.readFileSync(df, 'utf8') : null}; };
 // the daily document holds POST's keys, the same as the post.js it came from
-const docOk = (doc, P) => { try { const d = JSON.parse(doc); return Object.keys(d).join() === 'checked,gifts,series,held,news' && JSON.stringify(d.news) === JSON.stringify(P.news) && JSON.stringify(d.gifts) === JSON.stringify(P.gifts)
+const docOk = (doc, P) => { try { const d = JSON.parse(doc), ks = Object.keys(d).filter(k => k !== 'ran').join(); return ks === 'checked,gifts,series,held,news' && (!('ran' in d) || !Number.isNaN(Date.parse(d.ran))) && JSON.stringify(d.news) === JSON.stringify(P.news) && JSON.stringify(d.gifts) === JSON.stringify(P.gifts)
   && JSON.stringify(d.series) === JSON.stringify(P.series) && d.checked === P.checked; } catch (e) { return false; } };
 const dataTest = pf => { try { execFileSync('node', [path.join(root, 'experiments/post-data-test.mjs')], {env: {...process.env, POST_FILE: pf}, stdio: 'pipe'}); return true; } catch (e) { return false; } };
 

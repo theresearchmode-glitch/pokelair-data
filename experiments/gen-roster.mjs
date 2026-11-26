@@ -44,8 +44,8 @@ const OLD = {ROSTER: val('ROSTER'), ABIL: val('ABIL'), MOVES: val('MOVES'), LEAR
 
 // ---- the roster from Showdown
 const same = (s, b) => JSON.stringify(s.types) === JSON.stringify(b.types) && JSON.stringify(s.baseStats) === JSON.stringify(b.baseStats) && JSON.stringify(s.abilities) === JSON.stringify(b.abilities);
-/* HAND DECISIONS carried over (each with its reason; printed in the report): forms Showdown lists that the site keeps out on purpose */
-const HAND_OMIT = {'Meowstic-F': 'the site folds it into Meowstic: the paste importer maps "Meowstic-F" to Meowstic (app/src/app/19-showdown-paste.js:76); only its Mega is separate'};
+/* HAND DECISIONS carried over (each with its reason; printed in the report): Meowstic-F was added to ROSTER in rules-fixes (rules-fixes-test.mjs 1a-1b), so it is no longer omitted here */
+const HAND_OMIT = {};
 const dropped = [], species = [];
 for (const s of D.species.all()) {
   if (!s.exists || s.isNonstandard || RT.isBannedSpecies(s)) continue;

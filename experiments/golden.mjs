@@ -59,12 +59,14 @@ Object.assign(R, await run(`(()=>{ const mk = ns => ns.map(n => abMember(byName.
   // illegal: a strong six with two Sitrus Berries
   const ill = mk(['Incineroar', 'Rillaboom', 'Sneasler', 'Kingambit', 'Charizard-Mega-Y', 'Whimsicott']); ill[0] = {...ill[0], item: 'Sitrus Berry', heldItem: 'Sitrus Berry'}; ill[1] = {...ill[1], item: 'Sitrus Berry', heldItem: 'Sitrus Berry'};
   const clause = itemClause(ill), RD = THR.teamReport(ill), G = CH.gradeOf(RD, proChecks(ill, true), ill);
-  return JSON.stringify({top: tg, weak: {mons: weak, g: g(weak)}, illegal: {clause: clause.length, flagged: !!(G && G.illegal) || clause.length > 0}}); })()`));
+  return JSON.stringify({top: tg, weak: {mons: weak, g: g(weak)}, illegal: {clause: clause.length, flagged: !!(G && G.illegal) || clause.length > 0}, even: typeof CH === 'object' && typeof CH.ssOfE === 'function' ? CH.ssOfE(.5) : 80}); })()`));
 // GOLDEN_DUMP=<file>: write each top-cut team's grade (sheet and default sets) and event, for looking into failures
 if (process.env.GOLDEN_DUMP) fs.writeFileSync(process.env.GOLDEN_DUMP, JSON.stringify(R.top));
 // GOLDEN_TOPCUT_ONLY=1 (walk-forward): print the top-cut tally as one JSON line and stop
-if (process.env.GOLDEN_TOPCUT_ONLY === '1') { const T = R.top.filter(t => !offFormat(t.ev)), n = T.length, good = T.filter(t => t.g >= 80).length;
-  console.log('TOPCUT ' + JSON.stringify({n, good, share: n ? +(good / n).toFixed(4) : null, median: n ? T.map(t => t.g).sort((a, c) => a - c)[n >> 1] : null}));
+/* the accuracy gate's check: top-4 teams the score calls FAVOURED, i.e. at or above the score that means a 50% win chance against the field,
+   read from the page's own formula (CH.ssOfE(.5): 80 before bands C, 73.33 under C; Nov 25, so the check means the same on either scale) */
+if (process.env.GOLDEN_TOPCUT_ONLY === '1') { const E = Number.isFinite(R.even) ? R.even : 80, T = R.top.filter(t => !offFormat(t.ev)), n = T.length, good = T.filter(t => t.g >= E - 1e-9).length;
+  console.log('TOPCUT ' + JSON.stringify({n, good, even: +E.toFixed(2), share: n ? +(good / n).toFixed(4) : null, median: n ? T.map(t => t.g).sort((a, c) => a - c)[n >> 1] : null}));
   await b.close(); fs.unlinkSync(page); process.exit(0); }
 // 4: suggestions on strong real teams
 R.sugg = await run(`(()=>{ const out = []; const A = ${JSON.stringify(R.top.filter(t => t.g >= 90).slice(0, 8).map(t => t.mons))};

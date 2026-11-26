@@ -14,11 +14,11 @@ const CH = {};
    the grade (it predicted wins far less well). A team of fewer than six keeps the old check, marked "so far". */
 /* STRENGTH SCORE (Sim, Nov 9; docs/strength-score.md). The 0-100 number says how strong the team is altogether, not where it ranks:
    80 + 122 × (chance to beat today's tournament teams − 50%), the chance being CH.fieldWin (player skill taken out, recomputed daily
-   from real teams). A team that beats today's tournament teams half the time scores 80; the best 2% of real sheets about 92; no Mega
+   from real teams). (Nov 25, option C: 54% vs today's tournament teams scores 80, 60% scores 90, an average team about 73); no Mega
    lands in the 50s. Same ranking as the old grade (scoreboard Nov 9: identical picks); each 10-point band won more than the one
    below on later games. The rank among real teams is kept as G.rk (small print). Letters: one per 10 points (A 90+, B 80s, C 70s,
    D 60s, F under 60) until the band words replace them (Step B). */
-CH.SS_MID = 80; CH.SS_K = 122;
+CH.SS_MID = 73.33; CH.SS_K = 166.67; /* Nov 25, bands option C (Kip job 37, Sim yes): 60% win chance vs the field = 90, 54% = 80, 48% = 70, 42% = 60; was 80 + 122 x (e - 50%), which put 76% of played team-games at 80+ */
 CH.ssOfE = e => e == null || !isFinite(e) ? null : Math.max(0, Math.min(100, CH.SS_MID + CH.SS_K * (e - .5)));
 CH.WORDS = [[90, 'Top tier'], [80, 'Tournament ready'], [70, 'Solid'], [60, 'Needs work'], [-1, 'Missing a basic']];
 CH.wordOf = s => s == null || !isFinite(s) ? '' : CH.WORDS.find(w => s >= w[0])[1];
@@ -119,10 +119,13 @@ CH.modelPts = ms => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'fu
 /* ONE GRADE (Nov 7, Sim: "why are we not able to make this simple?"). Every team has one grade out of 100, always 0-100, and
    its letter comes only from that number (A 90+, B 80+, C 70+, D 60+, F). It blends our own check with how this exact six did
    in real tournaments, gradually: the more real games, the more they count (151 games: 60% real results, 40% our check; no
-   games: our check alone). A real win rate is put on the same scale: 60% wins = 90, 55% = 80, 50% = 70, 45% = 60.
+   games: our check alone). A real win rate is put on the same scale as the Strength Score (CH.recScore = CH.ssOfE: 60% wins = 90, 54% = 80).
    The real win rate itself is shown as its own line under the grade, never as a second grade. */
 CH.REC_K = 100;
-CH.recScore = wr => Math.min(100, Math.max(0, Math.round(70 + (wr - .5) * 200)));
+/* Nov 26 (bands C): one scale. A real win rate goes through the same formula as the Strength Score's win chance (CH.ssOfE:
+   CH.SS_MID + CH.SS_K x (win rate - 50%)), so 54% real wins = 80 and 60% = 90 here too; it was 70 + 200 x (win rate - 50%): 55% = 80.
+   Checked by experiments/strength-invariants.mjs (J-REC) */
+CH.recScore = wr => { const s = CH.ssOfE(wr); return s == null ? NaN : Math.round(s); };
 /* Letter buffer (Nov 9, Sim asked): the daily data update moves an unchanged team's grade by ~1-2 points, which with plus/minus
    letters would flip a team sitting on a line (B / B+) with nothing changed. For the player's own teams (My Team and saved teams),
    the letter they last saw is kept until the grade clearly crosses into another letter (by 1.5 points). Editing the team makes a new
@@ -220,8 +223,8 @@ CH.n = n => n.toLocaleString ? n.toLocaleString('en-US') : String(n);
 // "Why this score?" as data (R4, Nov 11; today's CH.gradeWhy and the new build both draw it): the Strength Score's three parts,
 // which add up to it, and what the number means in real games
 // the band key under every "Why this score?" (moved from 60-concept-h.js, Nov 11, shared with the new build)
-CH.LETTERS = 'Strength Score: 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic. A team that beats today\u2019s tournament teams half the time scores 80.';
-CH.WHY_TEST = 'Tested on 6,270 later tournament games: teams scoring 90+ won 58.5%, the 80s 53-54%, the 70s 46-50%, the 60s 38-41%. Every 10 points really means more wins.';
+CH.LETTERS = 'Strength Score: 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic. 80 means your team beats today\u2019s tournament teams 54% of the time; 90 means 60%.';
+CH.WHY_TEST = 'Tested on 1,580 later single games: teams scoring 90+ won 56%, the 80s 53%, the 70s 49%, the 60s 46%.'; /* re-checked Nov 25 on the real model with the score fix (alt/score-ebfix) and bands C: single games only (best-of-3 is reported separately, CLAUDE.md rule 21); no step between neighbouring bands is proven on its own, so the old 'Every 10 points really means more wins' is dropped. docs/rebuild/test-runs/whytest-recheck-nov25.txt on alt/score-ebfix. Lands only together with the score fix. */
 CH.whyData = G => { if (!G || G.v !== 2) return null; const t = Math.round(G.s), a = Math.round(G.pct0), b = Math.round(G.pMu);
   return {s: t, letter: G.letter, word: CH.wordOfL(G.letter), e: Math.round(G.e), rank: CH.pctTxt(G), partial: !!G.partial, k: G.partial ? (G.st && G.st.partialN || 0) : null,
     base: a, mu: b - a, own: t - b, hasSix: !!G.six, ownGames: G.six ? G.six.g : null, ready: G.h ? G.h.x + '/' + G.h.n : '', sure: (G.st && G.st.su) || null, illegal: !!G.illegal}; };

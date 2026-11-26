@@ -247,6 +247,8 @@ V2.openMon = n => { const p = V2.byName.get(n); if (!p) return;
   V2.sheet(`<div class="np-monsheet">${V2.mon(n, {iw: 220, bare: true})}<div><h2 class="u">${V2.esc(V2.disp(n))}</h2><div class="ty">${(p.t || []).map(V2.typeChip).join('')}</div><p class="fine">Abilities: ${(p.a || []).map(V2.esc).join(', ')}</p>${V2.addBtn ? V2.addBtn(n) : ''}</div></div>`, {label: V2.disp(n), small: true}); };
 document.addEventListener('click', e => { const m = e.target.closest('[data-v2mon]'); if (m && !e.target.closest('[data-v2info]')) { e.preventDefault(); V2.openMon(m.dataset.v2mon); } /* an info word inside a Pokémon's card opens only its own sheet (Nov 22) */
   if (e.target.closest('[data-v2search]')) V2.openSearch(); });
+/* /?search (Nov 26): the static pages (/pokemon and the light 404 carry no app script) link Search here; it opens on arrival and the ?search goes */
+if (window.__NP_PUBLIC && /^\?search$/.test(location.search)) addEventListener('DOMContentLoaded', () => setTimeout(() => { try { history.replaceState(history.state, '', location.pathname + location.hash); } catch (e) {} if (!V2._sheet) V2.openSearch(); }, 0), {once: true});
 document.addEventListener('keydown', e => { if ((e.key === 'k' || e.key === 'K') && (e.ctrlKey || e.metaKey) && !e.altKey) { e.preventDefault(); if (!V2._sheet) V2.openSearch(); else if (document.querySelector('.np-sheet .np-find')) V2.closeSheet(); return; } /* a second Ctrl+K closes Search, as today (JUMP-01) */ if (e.key === '/' && !V2._sheet && !/^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement.tagName) && !document.activeElement.isContentEditable) { e.preventDefault(); V2.openSearch(); } });
 // ---------- the Apple-style slider (Sim's favourite, kept from today's site; design-system.md "Slider") ----------
 // 2-4 choices, each an icon beside its name; the dark plate slides to the chosen one. Same icons as today's sliders (SLIDE_P /
@@ -324,7 +326,8 @@ V2.mdCountdown = (now = Date.now(), short = false) => { try { const r = typeof r
    tournament teams" (same line and length: 0px added at 320-2560, measured). Days count in UTC because a regulation starts 02:00 UTC (Dec 2), still Dec 1 evening in the Americas. */
 V2.regDay = (now = Date.now()) => { try { const r = typeof regInfo === 'function' && regInfo(); if (!r || r.now || !r.since || !isFinite(now)) return '';
   const d = Math.floor((now - Date.parse(r.since + 'T00:00:00Z')) / 864e5) + 1; if (!(d >= 1 && d <= 28)) return ''; const today = new Date(now).toISOString().slice(0, 10);
-  const ev = (typeof META === 'object' && META.events && Array.isArray(META.events.events)) ? META.events.events.filter(e => { const x = String((e && e.date) || ''); return x >= r.since && x <= today; }).length : 0;
+  const prevDay = new Date(Date.parse(r.since + 'T00:00:00Z') - 864e5).toISOString().slice(0, 10);
+  const ev = (typeof META === 'object' && META.events && Array.isArray(META.events.events)) ? META.events.events.filter(e => { const x = String((e && e.date) || ''); return x >= prevDay && x <= today; }).length : 0;
   return `Day ${d} of Reg ${String(r.id).replace('-', '\u2011')} · ${ev} event${ev === 1 ? '' : 's'}`; } catch (e) { return ''; } };
 /* Strength Score source (Sim, Wed Nov 25, 6:52 AM): before a new regulation has results, the score falls back to the old check
    (CH.gradeOf v1) against the built-in usage snapshot (app/src/data/data.js, built on Reg M-C). It stays, with one line saying so.

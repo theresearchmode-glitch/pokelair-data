@@ -29,13 +29,15 @@ const pairs=(a,max=10)=>{if(!Array.isArray(a))return[];const M=new Map();for(con
   return [...M.values()].sort((x,y)=>(y[1]||0)-(x[1]||0)).slice(0,max)};
 function cleanMeta(d){if(!d||typeof d!=='object')return null;
   const row=t=>t&&typeof t.n==='string'?{r:Math.max(1,Math.round(num(t.r)||0)),n:t.n.slice(0,60),u:num(t.u),teams:num(t.teams),w:num(t.w),ab:pairs(t.ab),it:pairs(t.it),mv:pairs(t.mv,12),na:pairs(t.na),tm:pairs(t.tm),cc:pairs(t.cc,6),sp:pairs(t.sp,3).filter(([k])=>/^[A-Z][a-z]+:\d+(\/\d+){5}$/.test(k)),cs:t.cs&&typeof t.cs==='object'&&Array.isArray(t.cs.mv)?{it:str(t.cs.it,60),ab:str(t.cs.ab,60),mv:t.cs.mv.slice(0,4).map(x=>str(x,40)).filter(Boolean),pct:num(t.cs.pct)}:undefined}:null;
-  const out={format:str(d.format,20),kind:str(d.kind,20),source:str(d.source),period:str(d.period),note:str(d.note,300),battles:num(d.battles),updated:str(d.updated,40),
+  const out={reg:str(d.reg,10),format:str(d.format,20),kind:str(d.kind,20),source:str(d.source),period:str(d.period),note:str(d.note,300),battles:num(d.battles),updated:str(d.updated,40),
     top:(Array.isArray(d.top)?d.top:[]).slice(0,60).map(row).filter(Boolean),more:(Array.isArray(d.more)?d.more:[]).slice(0,300).map(row).filter(Boolean)};
   if(d.smogon&&typeof d.smogon==='object')out.smogon={source:str(d.smogon.source),period:str(d.smogon.period),battles:num(d.smogon.battles),usage:pairs(d.smogon.usage,80)};
   return out}
 function cleanStatus(d){if(!d||typeof d!=='object')return null;return {lastRun:str(d.lastRun,40),ok:d.ok!==false,note:str(d.note,300),schedule:str(d.schedule,80)}}
-function liveUsage(fmt){const d=META[fmt];if(!d)return null;const m=new Map();
-  (d.top||[]).forEach(t=>{if(typeof t.u==='number')m.set(t.n,t.u)});
+function liveUsage(fmt){const d=META[fmt],m=new Map();
+  if(d)(d.top||[]).forEach(t=>{if(typeof t.u==='number')m.set(t.n,t.u)});
+  if(!m.size&&fmt==='doubles'&&META.doubles_tour){const r=typeof regInfo==='function'&&regInfo();
+    if(!r||!r.id||META.doubles_tour.reg===r.id)[...(META.doubles_tour.top||[]),...(META.doubles_tour.more||[])].forEach(t=>{if(typeof t.u==='number')m.set(t.n,t.u)})}
   return m.size?m:null}
 let usageCache={};
 function U(p){const f=S.format;if(!(f in usageCache))usageCache[f]=liveUsage(f);const m=usageCache[f];if(m)return m.get(p.n)||0;return p.u||0}
