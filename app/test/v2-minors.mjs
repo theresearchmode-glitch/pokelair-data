@@ -1335,7 +1335,9 @@ for (const [nm, T] of [['next suggestion', ['Flapple', 'Pikachu', 'Garchomp', 'I
             /* Nov 26 (WebKit run: "94–100%" lost its "%" at 390 and 1100-1279): the widest number the calc can show, a 3-digit range, is put in
                the same way the page draws it (class sdt-pct3) and must fit whole too; then the real number goes back */
             if (!bad.length) { const t0 = pc.textContent, c0 = pc.className; pc.textContent = '94–100%'; pc.classList.add('sdt-pct3'); const N3 = R(pc), r3 = document.createRange(); r3.selectNodeContents(pc); const L3 = [...r3.getClientRects()].filter(r => r.width);
-              if (out(N3, P) || L3.length !== 1 || L3.some(r => r.left < N3.left - 1.5 || r.right > N3.right + 1.5 || out(r, P)) || pc.scrollWidth > pc.clientWidth + 1) bad.push(`3-digit number "94–100%" cut off or wrapped (${L3.length} line(s), ${Math.round(N3.left - P.left)}-${Math.round(P.right - N3.right)}px in, ${pc.scrollWidth}/${pc.clientWidth} wide)`);
+              /* the band's colour is a slanted ::before (clip-path to calc(100% - Npx) at the bottom), so its right edge at the middle of the line is used, not its box */
+              const bc = getComputedStyle(p, '::before'), ins = +((bc.clipPath.match(/calc\(100% - ([\d.]+)px\) 100%/) || [])[1] || 0), room = L3.map(r => Math.round(P.right - ins * (r.top + r.height / 2 - P.top) / P.height - r.right));
+              if (out(N3, P) || L3.length !== 1 || L3.some(r => r.left < N3.left - 1.5 || r.right > N3.right + 1.5 || out(r, P)) || room.some(v => v < 0) || pc.scrollWidth > pc.clientWidth + 1) bad.push(`3-digit number "94–100%" cut off or wrapped (${L3.length} line(s), ${room.join('/')}px from the slanted edge, ${pc.scrollWidth}/${pc.clientWidth} wide)`);
               pc.textContent = t0; pc.className = c0; } }
           if (!vis(of)) bad.push('no "of X\'s HP" line'); else { if (!/^of .+['’]s HP$/.test(of.textContent.trim())) bad.push(`line "${of.textContent}"`); if (out(R(of), P)) bad.push('the HP line is out of the band'); }
           const S = [...p.querySelectorAll('.sdt-duel .np-mon .st')].filter(vis).map(R), W = vis(hw) ? R(hw) : null;

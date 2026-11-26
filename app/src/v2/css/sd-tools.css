@@ -417,7 +417,7 @@
   /* Team Preview Practice as a real team preview (Sim, Nov 23: 'looks rough'): the six in one row standing on the red ground, 'Pick 4' above */
   .sdt-pr .sdt-pp{align-items:stretch}.sdt-pr .sdt-pp6{grid-template-columns:repeat(3,minmax(0,1fr));column-gap:0;row-gap:0;width:auto;margin-inline:calc(var(--s3) * -1)}.sdt-pr .sdt-pp6 .np-mon{--iw:72px}
   .sdt-pr .sdt-pp6>.sdt-art:nth-child(-n+3){margin-bottom:calc(var(--s8) * -1);translate:var(--s4) 0}.sdt-pr .sdt-pp6{margin-inline:calc(var(--s3) * -1) var(--s2)}
-  .sdt-pr .sdt-pick{position:absolute;bottom:var(--s3);right:var(--s1);z-index:2;font-size:var(--t15)}
+  .sdt-pr .sdt-pick{position:absolute;bottom:0;right:var(--s1);z-index:2;font-size:var(--t15)} /* on the band's bottom edge (WebKit run Nov 26: higher, it covered the sprites' feet) */
   /* Load Team and Copy for Showdown leave Home on desktop (Sim, Nov 23: Winning Teams is a chip there; they stay on the Winning Teams
      page, and phones and iPads keep the Winning Teams plate with both) */
 
@@ -478,7 +478,8 @@
 @media (max-width:699.98px){ /* Battle and Practice in half-width phone cards (Nov 26): one 56px sprite per side, clear of the VS; Practice's sprites 44px+ */
   .sdt-grid>.sdt-bt>.sdt-vs{margin-inline:calc((var(--s2) + var(--k) / 2) * -1);padding-inline:0;column-gap:0;grid-template-columns:minmax(0,1fr) var(--s4) minmax(0,1fr)}.sdt-bt .sdt-side{--cap:56px}.sdt-bt .sdt-side .np-mon{--iw:56px}
   .sdt-grid>.sdt-pr>.sdt-pp{margin-inline:calc((var(--s2) + var(--k) / 2) * -1)}.sdt-pr .sdt-pp6{column-gap:0}.sdt-pr .sdt-pp6 .np-mon{--iw:44px}
-  .sdt-pr .sdt-pick{bottom:0;font-size:var(--t13)} /* WebKit run Nov 26: at 390 the tag covered half a sprite; it sits on the band's bottom edge, one step smaller */}
+  .sdt-pr .sdt-pick{font-size:var(--t13)} /* one step smaller in the half-width card */
+  .sdt-bt .sdt-vsw{translate:0 calc(var(--s2) * -1)} /* WebKit run Nov 26: at 390 the VS touched the right sprite's head; lifted 8px */}
 @media (min-width:700px) and (max-width:899.98px){ /* small iPads (700-899, e.g. iPad mini 744): beside the words the duel's column left the sprites under 64px; the hit stacks as on phones */
   .sdt-grid>.sdt-dc>.sdt-hit{grid-template-columns:minmax(0,1fr);grid-template-areas:"duel" "words" "bar";row-gap:var(--s2);column-gap:0}
   .sdt-grid>.sdt-dc .sdt-duel{grid-template-columns:minmax(0,1fr) var(--s12) minmax(0,1fr)}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:96px}}
