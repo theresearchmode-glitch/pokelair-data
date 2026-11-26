@@ -1996,9 +1996,9 @@ if (part('main2')) { // Sim, Nov 18: Base Stats calm and compact, on theme (no b
       return {h: Math.round(R.height), fs: c.fontSize, st: c.fontStyle, sh: c.textShadow, cols: edges.size, over}; });
     if (r.none || r.fs !== '16px' || r.st !== 'italic' || r.sh !== 'none' || r.cols > 2 || r.over || (w < 700 && m === 'garchomp' && r.h > 260)) bad.push(`${m} ${w}: ${JSON.stringify(r)}`); }
   await ctx.close(); ok(!bad.length, `Pokémon page Base Stats (Sim, Nov 18): compact (260px or less on a phone), 16px slanted numbers with no shadow, numbers lined up, nothing out (${bad.join(' | ') || 'all as planned'})`); }
-if (part('main2')) { /* iPhone review Nov 25. #2: Home's two hero buttons come before the line in the page, so on an iPhone 15 (393 x 659 with
-     Safari's bars) they sit above the bottom bar on the first screen (they were 35px under it); from 900 up the line stays left and the buttons
-     right, side by side as before. #3: News' latest gift round uses the same picture-over-month layout as the others, so every month name in
+if (part('main2')) { /* iPhone review Nov 25. #2: under 900 Home's two hero buttons sit above the line, so on an iPhone 15 (393 x 659 with Safari's bars)
+     they are above the bottom bar on the first screen (they were 35px under it); the page order stays line then buttons (keyboard order
+     on desktop, where the line is left and the buttons right). #3: News' latest gift round uses the same picture-over-month layout as the others, so every month name in
      its row lines up (it sat sideways, its month 40px off). Both fail on the old code. The data note is hidden here: this build's saved-data
      note is Preview-only. */
   const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();
@@ -2008,7 +2008,7 @@ if (part('main2')) { /* iPhone review Nov 25. #2: Home's two hero buttons come b
     const r = await q.evaluate(() => { const go = document.querySelector('.sdh-go'), say = document.querySelector('.sdh-say'), bar = document.querySelector('.np-bar');
       if (!go || !say) return {none: 1}; const G = go.getBoundingClientRect(), S = say.getBoundingClientRect(), B = bar && bar.getClientRects().length ? bar.getBoundingClientRect().top : innerHeight;
       return {first: !!(go.compareDocumentPosition(say) & Node.DOCUMENT_POSITION_FOLLOWING), gb: Math.round(G.bottom), bar: Math.round(B), above: G.bottom <= S.top + 1, side: G.left >= S.right - 1, same: Math.abs(G.top + G.height / 2 - (S.top + S.height / 2)) < 60}; });
-    if (r.none || !r.first || (w < 900 ? !(r.above && r.gb <= r.bar) : !(r.side && r.same))) bad.push(`home ${w}: ${JSON.stringify(r)}`); }
+    if (r.none || r.first || (w < 900 ? !(r.above && r.gb <= r.bar) : !(r.side && r.same))) bad.push(`home ${w}: ${JSON.stringify(r)}`); }
   for (const w of [320, 393, 430]) {
     await q.setViewportSize({width: w, height: 844}); await q.goto('file://' + PAGE + '#news'); await q.waitForTimeout(2200);
     const r = await q.evaluate(() => { const o = document.querySelector('.nw2-ser'); if (!o) return {none: 1}; const li = [...o.children], last = o.querySelector('.nw2-last');
@@ -2016,7 +2016,7 @@ if (part('main2')) { /* iPhone review Nov 25. #2: Home's two hero buttons come b
       const L = last.getBoundingClientRect(), O = o.getBoundingClientRect(), M = last.querySelector('.np-mon').getBoundingClientRect();
       return {tops: row.map(top), right: Math.round(O.right - L.right), mon: Math.round(M.top - L.top)}; });
     if (r.none || (!r.nolast && (new Set(r.tops).size !== 1 || r.right > 1 || r.mon > 4))) bad.push(`news ${w}: ${JSON.stringify(r)}`); }
-  await ctx.close(); ok(!bad.length, `iPhone review #2/#3 (Nov 25): Home's buttons before the line and clear of the bottom bar on phones, beside it from 900; News' latest gift round lines up with its row (${bad.join(' | ') || 'all as planned'})`); }
+  await ctx.close(); ok(!bad.length, `iPhone review #2/#3 (Nov 25): Home's buttons above the line and clear of the bottom bar on phones, beside it from 900 (page order line first); News' latest gift round lines up with its row (${bad.join(' | ') || 'all as planned'})`); }
 if (part('main2')) { /* Sim, Nov 25 (MacBook, Claude app, about 1000x650): on a short desktop window the hero's tagline ate the scene: the front
      four were 80px, the crowd was gone, and #1/#2's plates covered 60-70% of them. Now, from 900 up: the crowd shows, the front four are at
      least 88px, the middle plates cover 45% of their Pokémon at most, and 1440x900 / 1920x1080 keep the full tagline (no override). Fails on the old code (crowd 0). */

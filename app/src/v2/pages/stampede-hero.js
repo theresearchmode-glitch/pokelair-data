@@ -53,8 +53,8 @@ V2.sdHero = () => {
       <div class="sdh-front">${front}</div>
     </div>
     <div class="sdh-ledge">${plates ? `<ul class="sdh-plates" aria-label="The four highest rated">${plates}</ul>` : '' /* Not rated yet (Nov 25): no plates, no list */}
-      <div class="sdh-go hm-go">${go}</div>
-      <p class="sdh-say">${E(say)}${V2.mdCountdown() ? ` <b class="sdh-cd"><span class="sdh-cds">${E(V2.mdCountdown(Date.now(), true))}</span></b>` : ''} <a class="sdh-all" href="#meta">All Ratings ›</a></p></div></div>
+      <p class="sdh-say">${E(say)}${V2.mdCountdown() ? ` <b class="sdh-cd"><span class="sdh-cds">${E(V2.mdCountdown(Date.now(), true))}</span></b>` : ''} <a class="sdh-all" href="#meta">All Ratings ›</a></p>
+      <div class="sdh-go hm-go">${go}</div></div></div>
     ${tick ? `<div class="sdh-tick"><ul aria-label="Next in the ratings">${tick}</ul></div>` : ''}
   </section>`; };
 
