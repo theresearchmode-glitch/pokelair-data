@@ -60,5 +60,11 @@ try {
   { const q = await b.newPage({viewport: {width: 1280, height: 900}}); await q.goto(U + '/?search');
     const open = await q.waitForSelector('.np-find input[type="search"]', {timeout: 15000}).then(() => true, () => false);
     ok(open && (await q.evaluate(() => location.search)) === '', `/?search opens Search on Home and drops the ?search (open ${open})`); await q.close(); }
+  /* Sim, Nov 25 (option A): no 'Top rated today' cards on /pokemon; the letter tabs fill even rows at every width (rule 13) */
+  ok(!/Top rated today|pd-top/.test(idx), '/pokemon has no "Top rated today" cards (Sim, Nov 25: A)');
+  { const bad = []; for (const w of [320, 390, 768, 1024, 1440]) { const q = await b.newPage({viewport: {width: w, height: 900}}); await q.goto(U + '/pokemon');
+      const rows = await q.evaluate(() => { const m = {}; for (const a of document.querySelectorAll('.pd-jump a')) { const t = Math.round(a.getBoundingClientRect().top); m[t] = (m[t] || 0) + 1; } return Object.values(m); });
+      const full = rows.length && rows.slice(0, -1).every(n => n === rows[0]) && rows[rows.length - 1] >= rows[0] - (rows.length > 1 ? 1 : 0); if (!full) bad.push(`${w}: ${rows.join('+')}`); await q.close(); }
+    ok(!bad.length, `/pokemon's letter tabs fill even rows at 320-1440 (${bad.join(' | ') || 'all even'})`); }
 } finally { await b.close(); srv.close(); }
 console.log(fails ? `static-pages-test: ${fails} failed` : 'static-pages-test: all passed'); process.exit(fails ? 1 : 0);

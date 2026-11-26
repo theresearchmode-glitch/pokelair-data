@@ -1,15 +1,13 @@
 /* The public site's static pages (night queue item 8, Nov 26; built by app/static-pages.mjs, no script but the kit's name fitting).
-   /pokemon, "Every Pokémon. One page each.": the kit header, a row of slanted letter tabs to jump with, today's six highest-rated as kit
-   cards, then the A-to-Z board: each letter a slanted Plot blue tab, each Pokémon one line, its forms (Mega, regional, other) as slanted
+   /pokemon, "Every Pokémon. One page each.": the kit header, a row of slanted letter tabs to jump with (no top-rated cards: Sim, Nov 25, A),
+   then the A-to-Z board: each letter a slanted Plot blue tab, each Pokémon one line, its forms (Mega, regional, other) as slanted
    chips on the same line. Every name and chip is a link to its page. Plus the light 404's two extra ways on (Search, Every Pokémon). */
 .pd{padding-bottom:var(--s16)}
 .pd .k-h1{max-width:none}
 .pd-jump{display:flex;flex-wrap:wrap;gap:var(--s1);margin:var(--s8) 0 0;padding:0 var(--s1)}
 .pd-jump a{display:grid;place-items:center;min-width:var(--tap);min-height:var(--tap);background:var(--k-chip);color:var(--k-on-chip);font-size:var(--t17);line-height:1;text-decoration:none;transform:skewX(-10deg)}
 .pd-jump a:hover,.pd-jump a:focus-visible{background:var(--k-plot);color:var(--k-on-plot)}
-.pd-top{margin-top:var(--s12)}
-.pd-top .k-roster{padding-top:var(--s12)}
-.pd-azh{margin-top:var(--s16)}
+.pd-azh{margin-top:var(--s10)}
 .pd-board{columns:7 152px;column-gap:var(--s8);margin-top:var(--s6)}
 .pd-l{break-inside:avoid;margin:0 0 var(--s8);scroll-margin-top:var(--s24)}
 .pd-letter{display:inline-block;min-width:var(--tap);margin:0 0 var(--s2);padding:var(--s1) var(--s3);background:var(--k-plot);color:var(--k-on-plot);font-size:var(--t28);line-height:1.05;text-align:center;transform:skewX(-10deg)}
@@ -21,6 +19,9 @@ a.pd-nm:hover,a.pd-nm:focus-visible{color:var(--k-plot-text);text-decoration:und
 .pd-form>span{transform:skewX(10deg)}
 .pd-form:hover,.pd-form:focus-visible{background:var(--k-plot);color:var(--k-on-plot)}
 .st-ways{display:flex;flex-wrap:wrap;gap:0 var(--s6);margin:var(--s4) 0 0}
+/* the letter tabs: one row from 1200, else even rows (Sim's rule 13: no half-filled row): 2 rows at 700-1199, 4 on phones */
+@media (max-width:1199.98px){.pd-jump{display:grid;grid-template-columns:repeat(var(--jc2,12),minmax(0,1fr))}}
+@media (max-width:699.98px){.pd-jump{grid-template-columns:repeat(var(--jc4,6),minmax(0,1fr))}}
 /* a mouse needs no 44px rows: the board stays near three screens at 1440 x 900 (rule 15); touch keeps the 44px targets */
 @media (pointer:fine) and (min-width:700px){.pd-list li,.pd-nm{min-height:32px}}
-@media (max-width:699.98px){.pd-board{columns:2 128px;column-gap:var(--s4)}.pd-jump{margin-top:var(--s6)}.pd-top{margin-top:var(--s8)}.pd-azh{margin-top:var(--s12)}.pd-letter{font-size:var(--t24)}}
+@media (max-width:699.98px){.pd-board{columns:2 128px;column-gap:var(--s4)}.pd-jump{margin-top:var(--s6)}.pd-azh{margin-top:var(--s8)}.pd-letter{font-size:var(--t24)}}
