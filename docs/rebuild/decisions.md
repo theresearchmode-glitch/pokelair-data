@@ -2781,3 +2781,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:29 PM: Sim told Kip to start job 61.
 - 2:37 PM: MY MISTAKE: batch5's removal of Kip 56 files also deleted design6's own experiments/fixtures/md-teams.json; GitHub run 45876892192 failed 3 jobs. Restored (alt/batch5 fd6a4eb7); strength-invariants + accuracy-gate pass locally. batch5 now ships inside helper's batch6 (one GitHub cycle). Helper: F3 night panel #232233 in dark (1.20:1 vs page), pictures ready; tokens-doc regenerated.
 - 2:38 PM: switch-smoke (Kip 54) on batch5 build with today's main data: ALL PASSED (346 rated, 17,676 teams, 114 events, Data as of Nov 26). Game Plan v101.
+- 2:39 PM: Local full v2-minors on a design6 58137089 build: 3 FAILs (My Team 390 4.83>4.78, MT390-1 4.423>4.35, TF-2 Track Record 3.013>3) that GitHub's design6 run did not show; flagged to helper's batch6 run; caps are Sim's.
