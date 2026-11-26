@@ -221,7 +221,7 @@ CH.n = n => n.toLocaleString ? n.toLocaleString('en-US') : String(n);
 // which add up to it, and what the number means in real games
 // the band key under every "Why this score?" (moved from 60-concept-h.js, Nov 11, shared with the new build)
 CH.LETTERS = 'Strength Score: 90+ Top tier · 80s Tournament ready · 70s Solid · 60s Needs work · under 60 Missing a basic. 80 means your team beats today\u2019s tournament teams 54% of the time; 90 means 60%.';
-CH.WHY_TEST = 'Tested on 17,220 later tournament games: teams scoring 90+ won 57%, the 80s 53%, the 70s 49%, the 60s 41%. Every 10 points really means more wins.'; /* Kip job 37, bands C (Nov 25); re-checked on the real model before launch */
+CH.WHY_TEST = 'Tested on 1,580 later single games: teams scoring 90+ won 56%, the 80s 53%, the 70s 49%, the 60s 46%.'; /* re-checked Nov 25 on the real model with the score fix (alt/score-ebfix) and bands C: single games only (best-of-3 is reported separately, CLAUDE.md rule 21); no step between neighbouring bands is proven on its own, so the old 'Every 10 points really means more wins' is dropped. docs/rebuild/test-runs/whytest-recheck-nov25.txt on alt/score-ebfix. Lands only together with the score fix. */
 CH.whyData = G => { if (!G || G.v !== 2) return null; const t = Math.round(G.s), a = Math.round(G.pct0), b = Math.round(G.pMu);
   return {s: t, letter: G.letter, word: CH.wordOfL(G.letter), e: Math.round(G.e), rank: CH.pctTxt(G), partial: !!G.partial, k: G.partial ? (G.st && G.st.partialN || 0) : null,
     base: a, mu: b - a, own: t - b, hasSix: !!G.six, ownGames: G.six ? G.six.g : null, ready: G.h ? G.h.x + '/' + G.h.n : '', sure: (G.st && G.st.su) || null, illegal: !!G.illegal}; };
