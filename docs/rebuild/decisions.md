@@ -2758,3 +2758,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:12 PM: Sim: one-time exception, a separate Gemini session does a receipt front-page design too (Kip's design ban lifted for this one job only). HH writes the prompt.
 - 1:16 PM: Herald: Sim turned on GitHub email privacy (Settings > Emails). Repo-privacy work complete.
 - 1:16 PM: Sim sent the receipt design prompt to the separate Gemini session, now called 'Kip 2' (designer Kip; one-time design job; delivers to alt/gemini-receipt-design).
+- 1:18 PM: Sim: HH also designs 3 receipt mock-ups of his own (not the same as Kip 2's), in addition to Kip 2.
+- 1:21 PM: HH's own 3 colour receipt mock-ups (HH-1 Team Banner rec, HH-2 Sticker Bomb, HH-3 Burst; standalone HTML with real art + today's data) + helper c1 Crew / c2 Type ink sent to Sim. Helper Job Y done (public dataready fix, alt/public-dataready 2cd79bb9: built-in Nov 1 numbers never drawn, CLS 0.0658 -> 0). Kip 57/58 done (58: split-routes on public, LCP 4.5-4.9 s, all public tests pass).
