@@ -1,0 +1,70 @@
+{
+ "updated": "2026-11-26T19:22:45.773Z",
+ "reg": "M-C",
+ "latest": {
+  "date": "2026-11-25",
+  "scoredAt": "2026-11-26",
+  "unseen": true,
+  "reg": "M-C",
+  "games": 181,
+  "live": {
+   "acc": 0.5193,
+   "logloss": 0.6973
+  },
+  "shadow": {
+   "name": "combo",
+   "acc": 0.5028,
+   "logloss": 0.6988
+  },
+  "delta": {
+   "acc": -0.0165,
+   "logloss": 0.0015
+  }
+ },
+ "byReg": {
+  "M-C": [
+   {
+    "date": "2026-11-25",
+    "scoredAt": "2026-11-26",
+    "unseen": true,
+    "reg": "M-C",
+    "games": 181,
+    "live": {
+     "acc": 0.5193,
+     "logloss": 0.6973
+    },
+    "shadow": {
+     "name": "combo",
+     "acc": 0.5028,
+     "logloss": 0.6988
+    },
+    "delta": {
+     "acc": -0.0165,
+     "logloss": 0.0015
+    }
+   }
+  ]
+ },
+ "history": [
+  {
+   "date": "2026-11-25",
+   "scoredAt": "2026-11-26",
+   "unseen": true,
+   "reg": "M-C",
+   "games": 181,
+   "live": {
+    "acc": 0.5193,
+    "logloss": 0.6973
+   },
+   "shadow": {
+    "name": "combo",
+    "acc": 0.5028,
+    "logloss": 0.6988
+   },
+   "delta": {
+    "acc": -0.0165,
+    "logloss": 0.0015
+   }
+  }
+ ]
+}
