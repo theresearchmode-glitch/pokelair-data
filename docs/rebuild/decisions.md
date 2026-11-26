@@ -2790,3 +2790,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:47 PM: ONLY=TF on alt/typerows e92c613c (fresh frozen build): TF-1 pass 2.632, TF-2 pass 2.629 at 1440 (well under even the old 3.0; the earlier 3.013 came from a stale build in that worktree).
 - 2:49 PM: Sim away 1-2 h from now: HH in charge, best judgement; check Kip's git status every so often (Sim queued his tasks).
 - 3:16 PM: Full v2-minors on a FRESH alt/typerows e92c613c build (frozen out/): all passed. The 3 earlier FAILs (My Team 390 x2, TF-2) came from a stale build in that worktree; corrected. Told helper.
+- 3:17 PM: Kip check: 61 (speed-fix3: static.css 824->42 KB, /pokemon LCP 1756->1054 ms), 62 (preflight script), 63 (trace: sync v2.js 540 KB gz blocks LCP 4.5-4.8 s; v2.css 145 KB gz blocks FCP) done; 64 in progress. Told Kip: build 64 on the helper's prerender-home + public-home-f3, don't fork a second prerender.
