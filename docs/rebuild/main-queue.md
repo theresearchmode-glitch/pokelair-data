@@ -1,11 +1,12 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 1:59 PM (1:59:55)  date: Thu Nov 26, 2026
-NOW: HH: gate.sh alt/batch5 f62b2d56 (pid in .main-running): public dataready fix (helper Y), Kip 53 seo-check, Kip 54 switch smoke.
-NOW (helper): Job BB, build Sim's pick "Final 3 Plot Receipt" as the public Home (alt/public-home-f3). Job AA done (speed-review eb9b0e2c).
-NOW (Kip): job 59 (rehearsal 4 on today's tips), then 60 (speed 4+5, from alt/speed-review). Kip 2 gone (Sim).
-NEXT: after batch5: gate alt/speed-review (Kip 57+58 fixed by helper), then Preview republish + Game Plan.
-NEXT: Friday switch if Sim OKs the Preview tonight: runbook nov28 (steps 2-8 + Job T fixes), rehearsal 4 result first.
-NEXT: review Kip 59/60; resume Job W (prerender) inside Job BB.
+Updated: time: 2:47 PM (2:47:28)  date: Thu Nov 26, 2026
+NOW: HH: ONLY=TF on alt/typerows e92c613c (Sim: Track cap 3.05), pid in .main-running. Earlier today: switch-smoke ALL PASSED on
+  today's data; type rows WebKit 60/60; batch5 md-teams restore.
+NOW (helper): Job CC, alt/batch6 = batch5 + speed-review + typerows + public-home-f3 (+ lighter night panel) + prerender-home, full local list.
+NOW (Kip): job 61 (speed on the fixed base, real deploy), then 62 (preflight), then SPEED PROGRAM 63-66 (Sim: big deal).
+NEXT: gate alt/batch6 when its GitHub run is green; Preview republish; pictures of the lighter panel to Sim.
+NEXT: Friday switch if Sim OKs the Preview tonight (runbook nov28 + Friday evidence section).
+NEXT: review Kip 61/62 and the speed program as they land.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
