@@ -1,0 +1,137 @@
+WHY ARE WELL-KNOWN SIXES 'SAID 55%, WON 50%'? Measurement only: nothing live, on the page or in the model changed.
+Run: Wed Nov 25 2026, started 7:45 PM (clock: date at 19:45:58), finished by 7:50 PM Eastern. Branch alt/score-ebfix. Data: out/matches.json of origin/main 7b567771.
+Commands (all exit 0):
+  NEW_WORK=<whytest-recheck WORK> WORK=<dir> node experiments/known-six-capture.mjs    (page pieces of every sheet's score, 4 windows)
+  NEW_WORK=<same> WORK=<same> node experiments/known-six-bias.mjs                    (bins, causes, dev pick, sealed check)
+  NEW_WORK=<same> WORK=<same> node experiments/known-six-opponents.mjs               (how strong each bin's opponents were)
+Models: the branch model.mjs (locked settings) + six.mjs per window, as whytest-recheck. 'said' = the page's win chance against the
+ field (e); 'game P' = sig(calib*(y - y_opponent)), the chance against the real opponent. Prior games = games of that exact six in the
+ window's training file. CIs: 95% event-clustered bootstrap (1000, seed 42). Under 300 results = unknown.
+
+== capture ==
+  [2026-10-28..2026-11-04] 3283 games, 1045 sheets, 0 not scorable, page errors 0
+  [2026-11-04..2026-11-11] 4302 games, 1255 sheets, 0 not scorable, page errors 0
+  [2026-11-11..2026-11-18] 4932 games, 1314 sheets, 0 not scorable, page errors 0
+  [2026-11-18..2026-11-26] 4703 games, 1318 sheets, 1 not scorable, page errors 0
+
+== known-six-bias ==
+  [2026-10-28] 3283 games; record re-fit vs shipped: 1043 sixes
+  [2026-11-04] 4302 games; record re-fit vs shipped: 1135 sixes
+  [2026-11-11] 4932 games; record re-fit vs shipped: 1237 sixes
+  [2026-11-18] 4703 games; record re-fit vs shipped: 1371 sixes
+checks: max |x + mu + d - page y| = 0.00e+0; base re-fit vs shipped six records: max |diff| 0.0000 over 4786 sixes
+
+=== 1. BIAS BY THE SIX'S OWN PRIOR GAMES (the page as it is: base record, τ .1) ===
+  single games (best-of-1), dev: 1516 team results
+    0        n=  574  said 48.3% won 49.0%  field gap -0.6 [-3.1, 1.8]  |  game P said 47.1%  game gap -1.8 [-4.4, 0.2]
+    1-29     n=  245  unknown (under 300)  [said 49.2% won 49.4%]
+    30-99    n=  174  unknown (under 300)  [said 54.3% won 51.1%]
+    100-299  n=  229  unknown (under 300)  [said 56.1% won 48.5%]
+    300+     n=  294  unknown (under 300)  [said 57.0% won 53.1%]
+  single games (best-of-1), sealed: 1644 team results
+    0        n=  573  said 50.4% won 47.6%  field gap 2.7 [-0.1, 5.8]  |  game P said 47.8%  game gap 0.2 [-2.2, 2.6]
+    1-29     n=  248  unknown (under 300)  [said 50.9% won 47.2%]
+    30-99    n=  124  unknown (under 300)  [said 52.2% won 55.6%]
+    100-299  n=  204  unknown (under 300)  [said 54.0% won 51.0%]
+    300+     n=  495  said 56.7% won 52.3%  field gap 4.4 [3.0, 6.3]  |  game P said 53.4%  game gap 1.0 [-0.6, 3.4]
+  best-of-3 rounds, dev: 11526 team results
+    0        n= 4045  said 50.0% won 45.3%  field gap 4.7 [3.1, 6.3]  |  game P said 46.5%  game gap 1.1 [-0.1, 2.6]
+    1-29     n= 1875  said 53.1% won 51.4%  field gap 1.7 [-0.5, 4.0]  |  game P said 49.2%  game gap -2.2 [-4.4, 0.2]
+    30-99    n= 1377  said 56.1% won 52.7%  field gap 3.5 [0.6, 6.3]  |  game P said 52.0%  game gap -0.6 [-3.8, 2.5]
+    100-299  n= 1434  said 56.2% won 52.8%  field gap 3.4 [0.9, 5.9]  |  game P said 52.2%  game gap -0.6 [-3.0, 1.9]
+    300+     n= 2795  said 57.6% won 53.1%  field gap 4.5 [2.9, 6.3]  |  game P said 53.5%  game gap 0.4 [-0.9, 2.1]
+  best-of-3 rounds, sealed: 19744 team results
+    0        n= 6135  said 49.9% won 44.8%  field gap 5.1 [4.0, 6.1]  |  game P said 46.8%  game gap 1.9 [0.9, 2.9]
+    1-29     n= 3287  said 52.0% won 50.4%  field gap 1.6 [0.3, 2.8]  |  game P said 48.5%  game gap -1.9 [-3.2, -0.6]
+    30-99    n= 1794  said 54.7% won 52.5%  field gap 2.2 [-0.5, 4.9]  |  game P said 50.9%  game gap -1.6 [-4.3, 1.1]
+    100-299  n= 2100  said 54.9% won 52.9%  field gap 2.1 [0.1, 4.0]  |  game P said 51.5%  game gap -1.3 [-3.4, 0.7]
+    300+     n= 6428  said 56.6% won 53.1%  field gap 3.5 [2.4, 4.6]  |  game P said 53.1%  game gap 0.0 [-1.1, 1.1]
+
+=== 2b. SELECTION: sixes with 30+ prior games, by the win rate of their first 20 games (base) ===
+  single games (best-of-1), dev: 697 team results
+    first20 <50% n=  203  unknown (under 300)  [said 55.4% won 49.3%]
+    50-59%   n=  184  unknown (under 300)  [said 57.2% won 57.1%]
+    60%+     n=  310  said 55.8% won 48.7%  field gap 7.1 [0.1, 15.7]  |  game P said 53.0%  game gap 4.3 [-2.7, 13.0]
+  single games (best-of-1), sealed: 823 team results
+    first20 <50% n=  192  unknown (under 300)  [said 54.4% won 54.2%]
+    50-59%   n=  301  said 56.2% won 54.8%  field gap 1.4 [-1.9, 4.9]  |  game P said 52.8%  game gap -2.0 [-5.0, 1.1]
+    60%+     n=  330  said 55.1% won 49.4%  field gap 5.7 [2.1, 10.0]  |  game P said 51.8%  game gap 2.4 [-1.7, 7.2]
+  best-of-3 rounds, dev: 5606 team results
+    first20 <50% n= 1434  said 55.3% won 50.4%  field gap 4.9 [3.1, 6.9]  |  game P said 51.3%  game gap 0.8 [-1.0, 2.8]
+    50-59%   n= 1424  said 57.5% won 51.9%  field gap 5.6 [3.2, 7.8]  |  game P said 53.7%  game gap 1.8 [-0.5, 4.1]
+    60%+     n= 2748  said 57.3% won 54.7%  field gap 2.6 [1.0, 4.2]  |  game P said 53.2%  game gap -1.5 [-3.2, 0.2]
+  best-of-3 rounds, sealed: 10322 team results
+    first20 <50% n= 2825  said 55.4% won 51.4%  field gap 4.0 [2.1, 5.8]  |  game P said 52.1%  game gap 0.7 [-1.2, 2.6]
+    50-59%   n= 3462  said 56.3% won 53.2%  field gap 3.2 [1.7, 4.8]  |  game P said 52.7%  game gap -0.5 [-1.9, 1.2]
+    60%+     n= 4035  said 56.0% won 53.9%  field gap 2.2 [0.6, 3.7]  |  game P said 52.3%  game gap -1.5 [-3.1, 0.1]
+
+=== 2a/2d. RE-FITTED RECORDS: gap for sixes with 100+ prior games, and game log-loss on all results (lower is better) ===
+  single games (best-of-1), dev: 523 results of 100+ sixes, 1516 results in all
+    base                   100+ field gap 5.6  game gap 2.9 [-1.0, 7.6]  ·  game log-loss 0.69455
+    no record              100+ field gap 4.9  game gap 2.5 [-1.4, 7.1]  ·  game log-loss 0.69279 (minus base -0.00175 [-0.00315, -0.00026])
+    tau .05                100+ field gap 5.2  game gap 2.6 [-1.3, 7.3]  ·  game log-loss 0.69341 (minus base -0.00114 [-0.00200, -0.00024])
+    tau .03                100+ field gap 5.0  game gap 2.5 [-1.4, 7.2]  ·  game log-loss 0.69305 (minus base -0.00150 [-0.00268, -0.00026])
+    recency 14d            100+ field gap 5.8  game gap 3.0 [-0.9, 7.7]  ·  game log-loss 0.69460 (minus base 0.00005 [-0.00040, 0.00075])
+    recency 30d            100+ field gap 5.7  game gap 3.0 [-0.9, 7.7]  ·  game log-loss 0.69457 (minus base 0.00002 [-0.00020, 0.00036])
+    tau .05 + recency 30d  100+ field gap 5.2  game gap 2.7 [-1.3, 7.3]  ·  game log-loss 0.69340 (minus base -0.00115 [-0.00197, -0.00031])
+  single games (best-of-1), sealed: 699 results of 100+ sixes, 1644 results in all
+    base                   100+ field gap 4.0  game gap 0.7 [-0.7, 2.9]  ·  game log-loss 0.67802
+    no record              100+ field gap 3.3  game gap 0.3 [-1.1, 2.5]  ·  game log-loss 0.67706 (minus base -0.00096 [-0.00279, 0.00071])
+    tau .05                100+ field gap 3.5  game gap 0.5 [-0.9, 2.6]  ·  game log-loss 0.67741 (minus base -0.00061 [-0.00180, 0.00050])
+    tau .03                100+ field gap 3.4  game gap 0.4 [-1.0, 2.6]  ·  game log-loss 0.67720 (minus base -0.00082 [-0.00238, 0.00063])
+    recency 14d            100+ field gap 4.1  game gap 0.8 [-0.6, 2.9]  ·  game log-loss 0.67772 (minus base -0.00029 [-0.00116, 0.00087])
+    recency 30d            100+ field gap 4.1  game gap 0.7 [-0.6, 2.9]  ·  game log-loss 0.67790 (minus base -0.00011 [-0.00053, 0.00043])
+    tau .05 + recency 30d  100+ field gap 3.6  game gap 0.5 [-0.9, 2.6]  ·  game log-loss 0.67740 (minus base -0.00062 [-0.00164, 0.00033])
+  best-of-3 rounds, dev: 4229 results of 100+ sixes, 11526 results in all
+    base                   100+ field gap 4.1  game gap 0.1 [-1.0, 1.2]  ·  game log-loss 0.67900
+    no record              100+ field gap 3.5  game gap -0.3 [-1.4, 0.8]  ·  game log-loss 0.67905 (minus base 0.00004 [-0.00035, 0.00047])
+    tau .05                100+ field gap 3.7  game gap -0.2 [-1.2, 0.9]  ·  game log-loss 0.67901 (minus base 0.00000 [-0.00026, 0.00026])
+    tau .03                100+ field gap 3.5  game gap -0.3 [-1.3, 0.9]  ·  game log-loss 0.67903 (minus base 0.00002 [-0.00032, 0.00037])
+    recency 14d            100+ field gap 4.3  game gap 0.2 [-0.9, 1.3]  ·  game log-loss 0.67900 (minus base 0.00000 [-0.00028, 0.00029])
+    recency 30d            100+ field gap 4.2  game gap 0.1 [-0.9, 1.2]  ·  game log-loss 0.67900 (minus base -0.00001 [-0.00014, 0.00012])
+    tau .05 + recency 30d  100+ field gap 3.7  game gap -0.2 [-1.2, 1.0]  ·  game log-loss 0.67900 (minus base -0.00001 [-0.00025, 0.00025])
+  best-of-3 rounds, sealed: 8528 results of 100+ sixes, 19744 results in all
+    base                   100+ field gap 3.2  game gap -0.3 [-1.2, 0.6]  ·  game log-loss 0.68096
+    no record              100+ field gap 2.4  game gap -0.7 [-1.6, 0.2]  ·  game log-loss 0.68066 (minus base -0.00030 [-0.00072, 0.00008])
+    tau .05                100+ field gap 2.7  game gap -0.6 [-1.4, 0.3]  ·  game log-loss 0.68075 (minus base -0.00021 [-0.00046, 0.00004])
+    tau .03                100+ field gap 2.5  game gap -0.7 [-1.5, 0.2]  ·  game log-loss 0.68069 (minus base -0.00027 [-0.00062, 0.00006])
+    recency 14d            100+ field gap 3.4  game gap -0.2 [-1.0, 0.7]  ·  game log-loss 0.68107 (minus base 0.00011 [-0.00015, 0.00034])
+    recency 30d            100+ field gap 3.3  game gap -0.3 [-1.1, 0.6]  ·  game log-loss 0.68101 (minus base 0.00005 [-0.00007, 0.00016])
+    tau .05 + recency 30d  100+ field gap 2.7  game gap -0.5 [-1.4, 0.3]  ·  game log-loss 0.68077 (minus base -0.00019 [-0.00044, 0.00004])
+
+=== 3. PICKED ON DEV, CHECKED ONCE ON SEALED ===
+  dev candidates (log-loss not worse than base, CI upper bound <= 0): none; base 100+ |game gap| 0.4
+  nothing picked: no variant narrows the dev 100+ gap without a worse dev log-loss
+
+== known-six-opponents ==
+all team results: 34430; mean said (e) 53.5%, mean won 50.0%
+  bo1 0        n= 1147  said 49.3%  won 48.3%  opponents' own e 51.9%
+  bo1 1-29     n=  493  said 50.1%  won 48.3%  opponents' own e 52.3%
+  bo1 30-99    n=  298  said 53.4%  won 53.0%  opponents' own e 53.0%
+  bo1 100-299  n=  433  said 55.1%  won 49.7%  opponents' own e 53.3%
+  bo1 300+     n=  789  said 56.8%  won 52.6%  opponents' own e 52.9%
+  bo3 0        n=10180  said 49.9%  won 45.0%  opponents' own e 53.3%
+  bo3 1-29     n= 5162  said 52.4%  won 50.8%  opponents' own e 53.6%
+  bo3 30-99    n= 3171  said 55.3%  won 52.6%  opponents' own e 53.9%
+  bo3 100-299  n= 3534  said 55.4%  won 52.8%  opponents' own e 53.7%
+  bo3 300+     n= 9223  said 56.9%  won 53.1%  opponents' own e 53.7%
+
+WHAT THE DATA SUPPORTS:
+ (c) WHO THEY MEET: yes, this is the cause. Over all 34,430 team results the page says 53.5% and teams win 50.0%: the average opponent in a
+     real game is itself a 53-54% team (strong sixes play more rounds), while e is the chance against a random sheet of the last 45 days.
+     Against the real opponent (game P) the gap for well-known sixes is about 0: best-of-3 300+ +0.4 [-0.9, 2.1] dev, 0.0 [-1.1, 1.1] sealed;
+     single games 300+ sealed +1.0 [-0.6, 3.4]. So well-known sixes are not over-rated; 'said vs won' compares them with a weaker field than they meet.
+ (a) STALE RECORDS: not supported. Recency-weighted records (14 / 30 days) leave the gap the same or slightly larger and do not change log-loss.
+ (b) SELECTION (winner's curse): not supported. In best-of-3, sixes with a hot first 20 games (60%+) have the SMALLEST gap (game gap -1.5 both
+     dev and sealed); single-game bins are mostly under 300 results, and their game-P CIs all cross 0.
+ (d) TOO LITTLE SHRINK: it narrows the field gap of 100+ sixes by 0.4-0.8 pts only, because the record is a small part of their score.
+     A lead, not a fix: on single games dev a weaker record lowers log-loss (no record -0.00175 [-0.00315, -0.00026]; tau .05 -0.00114
+     [-0.00200, -0.00024]), sealed same direction with CIs crossing 0; best-of-3 shows no change. Not picked by the agreed rule (below).
+ Smaller real biases against the real opponent: sixes with 0 prior games are a little over-rated in best-of-3 (game gap +1.1 dev, +1.9 sealed
+     [0.9, 2.9]); sixes with 1-29 prior games a little under-rated (-2.2 dev, -1.9 sealed [-3.2, -0.6]).
+
+FIX CHECK (step 3): picked on dev only, by the smallest 100+ game gap among variants whose dev log-loss is not worse (CI upper bound <= 0).
+ Result: nothing picked (base 100+ |game gap| on dev is 0.4 pts; nothing to narrow). So no sealed check was spent and no accuracy-gate run was
+ needed. If the page wants 'said' to match 'won', the honest change is in what 'said' means (chance against the teams actually met, e.g. the
+ field weighted by games), not the six's record. That is a design / wording decision for HH and Sim; not tested here.
+ Unsure: the page's other data (usage, teams) is today's in every window; e uses the model's dist.q (sheets, not weighted by games).
