@@ -438,6 +438,9 @@ jobs:
       # Search-ready public pages (Kip job 50): titles, descriptions, canonicals, noindex, lang, img alt, h1, JSON-LD, sitemap.xml, robots.txt
       - run: node app/test/seo-check.mjs
         if: ${{ !cancelled() }}
+      # Job W (Nov 26): what a crawler that runs no script reads on /, /team and /meta: one h1 with real words, an intro, real links, the top 10
+      - run: node app/test/prerender-test.mjs
+        if: ${{ !cancelled() }}
       # Public site build invariants (job 19: SEO draft titles <=60, clean routes, robots/sitemap/_redirects/_headers, Claude build untouched)
       - run: node experiments/public-build-test.mjs
         if: ${{ !cancelled() }}
@@ -467,6 +470,9 @@ jobs:
       - run: node experiments/security-csp-test.mjs --self-test
         if: ${{ !cancelled() }}
       - run: node app/build.mjs --v2 --split --one-art-size --art=../src/v2/art/ --public && node experiments/security-csp-test.mjs
+        if: ${{ !cancelled() }}
+      # Job Y (Nov 26): the public site waits for today's /data/ (never draws the built-in Nov 1 numbers first); /data/ 1 s late, CLS under 0.02
+      - run: node experiments/public-dataready-test.mjs
         if: ${{ !cancelled() }}
       # the public site as deployed splits 22 pages into their own files (--split-routes, public-site.mjs): each page opened cold, with real
       # clicks into helpers that live in another page's file (speed review, Nov 26: 9 crashes before the build's route deps)

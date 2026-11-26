@@ -1,0 +1,78 @@
+/* nastyplot.org Home: Final 3, "Plot Receipt on the night panel" (Sim picked Nov 26). pages/pubhome-f3.js; the mock-up it follows:
+   docs/rebuild/mockups/hh-receipt-nov26/index.html?v=11 (alt/t3-pending). Drawn only by the public build. Tokens only (--f3-*, kit);
+   type on the scale; 4px grid. Wide (1280+): words left, the panel right with the receipt and its bars running out across it. Narrow:
+   the words, then the panel as a slanted block with the receipt inside and each bar under its name (F3p). */
+.f3-home{display:block;overflow-x:clip} /* f3-home, not .f3: the Stampede's plates are li.f1-f6 (batch6 overlap check) */
+.f3-hero{position:relative;display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.05fr);align-items:center;gap:var(--s6);min-height:calc(100svh - 76px);padding:0 var(--gut) var(--s10);overflow:hidden}
+.f3-panel{position:absolute;z-index:0;top:0;right:0;bottom:0;left:44%;overflow:hidden;background:var(--f3-panel);clip-path:polygon(12% 0,100% 0,100% 100%,0 100%)}
+.f3-rays{position:absolute;left:54%;top:52%;width:2400px;height:2400px;background:repeating-conic-gradient(from 2deg,var(--f3-ray-b) 0 1.5deg,transparent 1.5deg 9deg,var(--f3-ray-p) 9deg 10.5deg,transparent 10.5deg 18deg);transform:translate(-50%,-50%);
+  -webkit-mask:radial-gradient(circle,var(--sd-mask) 0 15%,transparent 40%);mask:radial-gradient(circle,var(--sd-mask) 0 15%,transparent 40%)}
+.f3-dots{position:absolute;top:0;right:0;bottom:0;left:0;background-image:radial-gradient(var(--f3-dot) 1.4px,transparent 1.8px);background-size:14px 14px;
+  -webkit-mask:radial-gradient(circle at 60% 50%,var(--sd-mask) 0 22%,transparent 46%);mask:radial-gradient(circle at 60% 50%,var(--sd-mask) 0 22%,transparent 46%)}
+.f3-words{position:relative;z-index:4;max-width:640px}
+.f3-h1{margin:var(--s4) 0;font-size:var(--d-fhead)}
+.f3-lead{max-width:min(520px,calc(44vw - var(--gut) - 16px));margin:0 0 var(--s6)} /* the words stop before the panel's slanted edge at every width */
+.f3-acts{max-width:min(640px,calc(44vw - var(--gut) - 16px));display:flex;flex-wrap:wrap;align-items:center;gap:var(--s4)}
+.f3-acts .k-go{margin:0}
+.f3-md{max-width:min(520px,calc(44vw - var(--gut) - 16px));margin:var(--s6) 0 0;padding-left:var(--s3);border-left:5px solid var(--k-nasty);font-size:var(--t15);font-weight:600;line-height:1.5}
+.f3-md-s{display:none}
+.f3-leg{max-width:min(520px,calc(44vw - var(--gut) - 16px));display:flex;flex-wrap:wrap;gap:var(--s2);margin:var(--s4) 0 0}
+.f3-chip,.f3-t{display:inline-block;padding:var(--s1) var(--s2);background:var(--c);color:var(--on);font-size:var(--t13);font-weight:700;line-height:1;transform:skewX(-10deg)}
+/* the receipt and its plot */
+.f3-pr{position:relative;z-index:3;justify-self:end;width:100%;max-width:800px;margin:var(--s6) 0}
+.f3-paper{position:absolute;top:0;bottom:0;left:0;width:330px;background:var(--f3-paper);box-shadow:0 0 0 3px var(--f3-edge),14px 16px 0 var(--f3-shadow);clip-path:polygon(0% 12px,4% 0,10% 12px,16% 0,22% 12px,28% 0,34% 12px,40% 0,46% 12px,52% 0,58% 12px,64% 0,70% 12px,76% 0,82% 12px,88% 0,94% 12px,100% 0,100% calc(100% - 12px),94% 100%,88% calc(100% - 12px),82% 100%,76% calc(100% - 12px),70% 100%,64% calc(100% - 12px),58% 100%,52% calc(100% - 12px),46% 100%,40% calc(100% - 12px),34% 100%,28% calc(100% - 12px),22% 100%,16% calc(100% - 12px),10% 100%,4% calc(100% - 12px),0% 100%)}
+.f3-hd{position:relative;width:330px;padding:28px var(--s5) var(--s2);color:var(--f3-ink)}
+.f3-top{display:flex;justify-content:space-between;align-items:baseline;margin:0}
+.f3-top .u{font-size:var(--t22)}
+.f3-top span+span{font-size:var(--t13);font-weight:700;letter-spacing:.06em;text-transform:uppercase}
+.f3-meta{margin:var(--s2) 0 0;padding-top:6px;border-top:2px dashed var(--f3-rule);font-size:var(--t13);font-weight:400;line-height:1.5;color:var(--f3-ink2)}
+.f3-rows{margin:0;padding:0;list-style:none}
+.f3-pl{position:relative;display:grid;grid-template-columns:330px minmax(0,1fr);align-items:center;height:72px}
+.f3-lab{display:flex;align-items:center;gap:var(--s3);height:100%;padding:0 var(--s5);border-bottom:1px dotted var(--f3-rule);color:var(--f3-ink)}
+.f3-sp{flex:none;display:block;width:36px;height:36px}
+.f3-n{min-width:0}
+.f3-n b{display:block;font-size:var(--t15);font-weight:700;line-height:1.2}
+.f3-n small{display:block;font-size:var(--t13);line-height:1.3;color:var(--f3-ink2)}
+.f3-t{margin-left:auto;flex:none}
+.f3-bar{position:relative;display:block;height:44px;width:max(130px,calc(var(--len) * 1% - 110px));margin-left:var(--s4);background:var(--c);color:var(--num);text-decoration:none;transform:skewX(-14deg);
+  box-shadow:0 0 24px color-mix(in srgb,var(--c) 70%,transparent),6px 6px 0 var(--f3-bar-shade)}
+.f3-bar:focus-visible{outline:3px solid var(--f3-sticker);outline-offset:4px}
+.f3-r{position:absolute;right:var(--s4);top:50%;font-size:var(--t28);line-height:1;text-shadow:2px 2px 0 var(--f3-bar-shade);transform:translateY(-50%) skewX(14deg)}
+.f3-art{position:absolute;left:calc(100% + 8px);bottom:-20px;width:auto;height:80px;max-width:100px;object-fit:contain;transform:skewX(14deg);
+  filter:drop-shadow(3px 0 0 var(--f3-sticker)) drop-shadow(-3px 0 0 var(--f3-sticker)) drop-shadow(0 3px 0 var(--f3-sticker)) drop-shadow(0 -3px 0 var(--f3-sticker)) drop-shadow(0 0 14px var(--c))}
+.f3-ft{position:relative;display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;width:330px;padding:var(--s3) var(--s5) 44px;color:var(--f3-ink)}
+.f3-band{margin:0;font-size:var(--t17);line-height:1.2}
+.f3-band span{color:var(--f3-plot)}
+.f3-big{margin:0;font-size:var(--d-fbig);line-height:.85;color:var(--f3-nasty)}
+.f3-big small{font-size:var(--t22);color:var(--f3-ink)}
+.f3-stamp{position:absolute;right:-260px;bottom:52px;margin:0;padding:var(--s1) var(--s3);border:4px solid var(--f3-nasty);background:var(--f3-panel);color:var(--f3-nasty);font-size:var(--t20);transform:rotate(-12deg)}
+.f3-scale{position:absolute;left:348px;right:0;bottom:6px;display:flex;justify-content:space-between;margin:0;font-size:var(--t13);font-weight:700;color:var(--f3-scale)}
+.f3-empty{max-width:330px}
+@media (prefers-reduced-motion:no-preference){
+  @keyframes f3Up{from{transform:translateY(60px) rotate(-10deg);opacity:0}}
+  @keyframes f3Slam{from{transform:scale(2.4) rotate(-30deg);opacity:0}}
+  @keyframes f3Pop{from{transform:scale(.2) skewX(14deg) rotate(-40deg);opacity:0}}
+  @keyframes f3Grow{from{transform:skewX(-14deg) scaleX(0)}}
+  .f3-anim .f3-pr{animation:f3Up .7s cubic-bezier(.2,1.4,.4,1) both}
+  .f3-anim .f3-stamp{animation:f3Slam .35s 1.1s cubic-bezier(.3,1.6,.5,1) both}
+  .f3-anim .f3-bar{transform-origin:left;animation:f3Grow .5s cubic-bezier(.2,.8,.3,1) both;animation-delay:calc(.35s + var(--d,0s))}
+  .f3-anim .f3-art{animation:f3Pop .45s cubic-bezier(.2,1.6,.4,1) both;animation-delay:calc(.7s + var(--d,0s))}
+}
+@media (max-width:1279.98px){
+  .f3-lead,.f3-acts,.f3-md,.f3-leg{max-width:none}
+  .f3-hero{grid-template-columns:minmax(0,1fr);min-height:0;padding:var(--s2) var(--gut) var(--s10)}
+  .f3-panel{display:none}
+  .f3-pr{justify-self:stretch;width:calc(100% + 2 * var(--gut));max-width:none;margin:var(--s6) calc(-1 * var(--gut)) 0;padding:40px var(--s4) 48px;background:var(--f3-panel);clip-path:polygon(0 24px,100% 0,100% 100%,0 100%)}
+  .f3-paper{top:40px;right:var(--s4);bottom:48px;left:var(--s4);width:auto}
+  .f3-hd,.f3-ft{width:auto;margin:0 var(--s4)}
+  .f3-pl{grid-template-columns:minmax(0,1fr);height:auto;margin:0 var(--s4);padding:var(--s2) 0}
+  .f3-lab{height:auto;padding:0 var(--s4);border:0}
+  .f3-sp{display:none}
+  .f3-bar{width:calc(var(--len) * (100% - 80px) / 100);min-width:72px;height:34px;margin:6px 72px 6px var(--s4)}
+  .f3-r{font-size:var(--t22)}
+  .f3-art{height:48px;bottom:-12px}
+  .f3-stamp{position:static;display:inline-block;grid-column:1/-1;justify-self:start;margin-top:var(--s6)}
+  .f3-scale{display:none}
+}
+@media (min-width:700px) and (max-width:1279.98px){.f3-pr{max-width:none}.f3-paper{left:calc(var(--s4) + 8%);right:calc(var(--s4) + 8%)}.f3-hd,.f3-ft,.f3-pl{margin:0 calc(var(--s4) + 8%)}}
+@media (max-width:699.98px){.f3-md-l{display:none}.f3-md-s{display:inline}}
