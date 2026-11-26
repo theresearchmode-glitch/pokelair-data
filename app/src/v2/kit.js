@@ -119,3 +119,27 @@ try { new MutationObserver(ms => { const roots = new Set(); for (const m of ms) 
   for (const rt of roots) if (rt.isConnected) V2.kFit(rt); }).observe(document.documentElement, {childList: true, subtree: true}); } catch (e) {}
 addEventListener('resize', () => { cancelAnimationFrame(V2._kfR); V2._kfR = requestAnimationFrame(() => { if (document.querySelector('[data-kmax]')) V2.kFit(); }); });
 try { document.fonts.addEventListener('loadingdone', () => { if (document.querySelector('[data-kmax]')) V2.kFit(); }); } catch (e) {}
+
+// Shared cross-route helpers (Job 58: --split-routes): kept in kit.js (always in v2.js) so split route chunks can load in isolation
+// without depending on another route's chunk having run first. Identical definitions, zero visible change.
+V2.BT_TOOLS = V2.BT_TOOLS || (() => { let n = 0; try { n = gauntletTeams().length; } catch (e) {}
+  return [['calc', 'Damage Calculator', '', 'Any attacker into any defender'], ['practice', 'Team Preview Practice', '', 'Pick four and two leads against real ladder teams'], ['gauntlet', 'Test Run', '', `Your team into the latest ${n || ''} top teams`.replace('  ', ' ')],
+    ['speed', 'Speed Tiers', '', 'Your six against the 20 most-used Pokémon'], ['types', 'Type Chart', '', '18 types, or look up a Pokémon']]; });
+V2.battleToolsBar = V2.battleToolsBar || ((cur = 'battle') => { const on = k => k === cur ? ' aria-current="page" class="on"' : '';
+  return `<nav class="bt-tools" aria-label="Battle tools">${[['battle', 'Battle', ''], ...V2.BT_TOOLS()].map(([h, t, s]) => `<a href="#${h}"${on(h)}>${t}${s ? `<small>${s}</small>` : ''}</a>`).join('')}</nav>`; });
+V2.battleMoreTools = V2.battleMoreTools || (() => `<section class="bt-more"><h2 class="u">More Ways to Prep</h2><ul>${[...V2.BT_TOOLS().filter(t => t[0] === 'practice'), ...V2.BT_TOOLS().filter(t => t[0] !== 'practice')].map(([h, t, s, d]) => `<li><a href="#${h}"><span>${t}<small>${V2.esc(d)}</small></span><i aria-hidden="true">›</i></a></li>`).join('')}</ul></section>`);
+V2.tourTabs = V2.tourTabs || (on => { const T = [['tournaments', 'Winning Teams'], ['events', 'Events'], ['archetypes', 'Archetypes'], ['weekly', 'This Week']];
+  return `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta">Pokémon</a><a href="#tournaments" class="on" aria-current="page">Tournaments</a></nav>
+    <nav class="ra-seg" aria-label="Tournament views">${T.map(([h, t]) => `<a href="#${h}"${h === on ? ' class="on" aria-current="page"' : ''}>${t}</a>`).join('')}</nav></div>`; });
+V2.pkTabs = V2.pkTabs || (on => `<div class="ra-sub"><nav class="ra-tabs" aria-label="Meta"><a href="#meta" class="on" aria-current="page">Pokémon</a><a href="#tournaments">Tournaments</a></nav>
+    <nav class="ra-seg" aria-label="Pokémon views">${[['meta', 'Ratings'], ['usage', 'Usage'], ['sets', 'Popular Sets'], ['natures', 'Natures']].map(([h, t]) => `<a href="#${h}"${h === on ? ' class="on" aria-current="page"' : ''}>${t}</a>`).join('')}</nav></div>`);
+V2.raNums = V2.raNums || (p => { const H = lairHead(p); return {u: H.hU, w: H.hG != null && H.hG >= 30 ? H.hW : null, g: H.hG, tot: H.tot}; });
+V2.raPct = V2.raPct || (v => (+v).toFixed(1) + '%');
+V2.gsShare = V2.gsShare || ((v, base) => { const E = V2.esc; return `<p><span class="vh">${v != null ? `On ${E(v)} of ${E(base)} teams` : `Share of ${E(base)} teams: no data yet`}</span><span aria-hidden="true">Of teams</span><b class="u" aria-hidden="true">${v != null ? E(v) : '–'}</b></p>`; });
+V2.wkTip = V2.wkTip || ((k, t, b) => { try { TIPS[k] = [t, b]; } catch (e) {} return V2.tip(k); });
+V2.shareTxt = V2.shareTxt || (H => H.hU == null ? '–' : +H.hU === 0 && H.hG > 0 ? '<0.1%' : pctFmt(H.hU));
+V2.bars = V2.bars || (p => lairBars(p).map(([l, ...r]) => [l === 'Converts to top cut' ? 'Top cut beyond its use' : l, ...r]));
+V2.monSlug = V2.monSlug || (n => encodeURIComponent(String(n).toLowerCase()));
+V2.pubSlug = V2.pubSlug || (n => String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[’'.]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, ''));
+V2.pkFocusName = V2.pkFocusName || (() => { if (!V2.pkFocus) return; V2.pkFocus = 0; const h = document.querySelector('#pk-name'); if (h) { h.setAttribute('tabindex', '-1'); h.setAttribute('data-pgfocus', ''); h.focus({preventScroll: true}); h.addEventListener('blur', () => { h.removeAttribute('tabindex'); h.removeAttribute('data-pgfocus'); }, {once: true}); } });
+

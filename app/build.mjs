@@ -313,12 +313,16 @@ if (process.argv.includes('--v2')) {
          <head>, after the stylesheet and font preloads; measured on a mid phone: LCP 6.2 -> 5.7 s, first paint 2.43 -> 2.57 s, the picture's
          27 KB sharing the throttled line with the CSS and fonts). Same address
          as V2.art: ART_BASE from shell.js line 4 (the public build serves a bare folder name from the site root) */
-      const sid = spriteIds[p.n], pre = sid == null || sid === '' ? '' : `<link rel="preload" as="image" href="${esc(artBase + sid + '.webp')}">`;
+      const sid = spriteIds[p.n], pre = (SPLIT_ROUTES && routeManifest.pokemon ? `<link rel="preload" as="script" href="${routeManifest.pokemon}">` : '') + (sid == null || sid === '' ? '' : `<link rel="preload" as="image" href="${esc(artBase + sid + '.webp')}">`);
       const page = ownHead(ph, title, desc, `https://nastyplot.org/pokemon/${s}`).replace(/<script type="application\/ld\+json" id="np-jsonld">[\s\S]*?<\/script>/, () => pokemonLd(s, name)).replace('</head>', () => pre + '</head>');
       fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
     }
     /* SEO fix 2 (Nov 25): one file per tool page (dist/team.html at /team) with its own words from the SEO map, on the shared stylesheet */
-    for (const r of ownFileRows) fs.writeFileSync(dir + `dist${r.path}.html`, ownHead(ph, r.title, r.desc, `https://nastyplot.org${r.path}`));
+    for (const r of ownFileRows) {
+      let tp = ownHead(ph, r.title, r.desc, `https://nastyplot.org${r.path}`);
+      if (SPLIT_ROUTES && routeManifest[r.key]) tp = tp.replace('</head>', () => `<link rel="preload" as="script" href="${routeManifest[r.key]}"></head>`);
+      fs.writeFileSync(dir + `dist${r.path}.html`, tp);
+    }
     const urls = [...seen.keys()].map(s => `  <url><loc>https://nastyplot.org/pokemon/${s}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n');
     fs.writeFileSync(dir + 'dist/sitemap.xml', fs.readFileSync(dir + 'dist/sitemap.xml', 'utf8').replace('</urlset>', urls + '\n</urlset>'));
     /* No /pokemon/:name rule (Nov 25): Pages serves dist/pokemon/<slug>.html at /pokemon/<slug> by itself (docs: Serving Pages, route
