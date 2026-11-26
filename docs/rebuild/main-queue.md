@@ -1,12 +1,12 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 12:20 PM (12:20:04)  date: Thu Nov 26, 2026
-NOW: HH: day-batch3 GitHub run 45860745371: only failure so far = phone Home 7.82 > 7.8 (the footer (c) line); Sim chose cap 7.85
-  (e99f1388, not pushed yet). Watching the run to collect every failure, then push day-batch4 + gate.
-NOW (helper): Job X, 3 Receipt variants with WOW (It prints / Your turn / The long receipt) for Sim. Job W (prerender) paused.
-NOW (Kip): job 57 (item pictures out of v2.js, shared css on /), then 58. 53-56 done (56 verified: 72/72 legal).
-NEXT: gate day-batch4 into design6, Preview republish, Game Plan; Friday switch if Sim's go tonight.
-NEXT: review Kip 53/54/55 branches; merge 53 + 54 + 56 in the next batch.
-NEXT: resume Job W (prerender Home) after Sim picks the front page.
+Updated: time: 1:10 PM (1:10:48)  date: Thu Nov 26, 2026
+NOW: HH: gate.sh alt/day-batch4 1f8eeeee (pid in .main-running): waits for GitHub's full run, merge-check, push design6.
+NOW (helper): Job Z, 3 colour-flooded receipt front pages (Sim: "needs more color", Pokémon-driven). Y (public dataready bug) and W
+  (prerender Home) paused as WIP.
+NOW (Kip): job 57 (item pictures out of v2.js, shared css on /), then 58.
+NEXT: after day-batch4 lands: Preview republish (daily-data.sh), Game Plan, pictures to Sim.
+NEXT: next batch: Kip 53/54/56 + helper Y/W when done; Friday switch if Sim's go tonight.
+NEXT: resume Job Y then W after Sim picks the front page.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
