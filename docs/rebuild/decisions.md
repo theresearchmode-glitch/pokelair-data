@@ -2811,3 +2811,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 5:36 PM: Sim: FRIDAY SWITCH YES (Fri Nov 27, done together). Sim: YES to Final 3 as the Claude-hosted site's Home too (helper's alt/f3-claude, with the rest of the Home below).
 - 5:40 PM: Sim: phone Home cap 7.85 -> 7.95 (Final 3 phone hero 1627 -> 894 px; real site 7.839 at 390, Preview build 7.94 because of its own data note). Helper DD: pl-5d labels done ('94, Mega Charizard Y's Rating'); new checks F3-1..3 fail on design6, pass after.
 - 5:40 PM: Sim: switch Friday Nov 27, 8:30-9:00 AM Eastern, together. HH preflight + Friday merge from ~7:30 AM.
+- 5:51 PM: MERGED: alt/batch7 into claude/design6 23520831 (Kip 61 static-page CSS 824->42 KB + route-first data; Kip 62 preflight).
