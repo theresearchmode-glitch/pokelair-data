@@ -2768,3 +2768,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:34 PM: Sim: Burst C has the right colour feeling (not too much); Burst A needs Burst C's treatment; loves HH's Plot Receipt but the receipt's edge is unclear and it lacks colour. Wants 3 final mock-ups to pick the homepage from.
 - 1:37 PM: Sim: 'no the glow was fine sorry' - glow restored on the finals.
 - 1:38 PM: 3 final front-page mock-ups sent (glow kept): F1 Night Burst, F2 Plot-blue Burst with C treatment, F3 Plot Receipt on night panel (HH rec); phone + dark shown.
+- 1:39 PM: Hourly check: disk 1 GB -> 8.2 GB (removed finished worktrees kip3, b5, pt, livedata; helper's sr-* left alone). Game Plan v100 published.
