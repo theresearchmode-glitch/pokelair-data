@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 7:46 PM (7:46:50)  date: Wed Nov 25, 2026
-NOW: HH: local tests of the ties + podium change (ttrun.sh), then build + test iPhone #2/#3 fixes (written, not built), commit on t1clean.
-NOW (helper): why well-known sixes are over-rated (alt/score-ebfix, measurement only).
-NEXT: alt/kip36a -> design6 through the gate when GitHub is green (run on 814ad8a1; 13/15 green at 7:33 PM), then push t1clean.
-NEXT: Sim's call on the "How sure" word (A: games count, B: drop, C: keep). Bands option C + new "Tested on 1,580 single games" sentence with it.
-NEXT: Dec 2 data note is 90px on iPhone 15: pushes Home's buttons 23px under the bar in launch week. Options for Sim (shorter phone wording / note under the hero on Home).
-NEXT: phone-speed onto design6 after kip36a; bands-c re-run; alt/no-rk9 to main; Preview after merges; 7:55 AM morning report.
+Updated: time: 8:49 PM (8:49:59)  date: Wed Nov 25, 2026
+NOW: HH: full local suite on t2 (= design6 f90cd2ce + ranks/podium, iPhone #2/#3, short-window hero fix, tests), ttrun.sh; then push t2 -> claude/design6.
+NOW (helper): alt/phone-speed2 = phone-speed onto design6, tests + LCP re-measure.
+DONE tonight: alt/kip36a merged into design6 (f90cd2ce, gate ALL PASSED). Sim OK: ranks, podium, gift row, hero fix.
+NEXT: Sim's call on the "How sure" word (A games count recommended). Bands option C + "Tested on 1,580 later single games" sentence + "(against an average team)" wording idea.
+NEXT: Dec 2 data note 90px on iPhone 15 pushes Home's buttons 23px under the bar in launch week: options for Sim.
+NEXT: Dos's v2-q33 (320px Events ticket 57 vs 60px) Windows-only: mark known. bands-c re-run; alt/no-rk9 to main; Preview after the design6 push; 7:55 AM morning report.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
