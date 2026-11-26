@@ -1,0 +1,106 @@
+SCORE FIX FOLLOW-UP (alt/score-ebfix): re-tune lock, the 'how sure' word, and the WHY_TEST sentence re-checked on the real model
+Run: Wed Nov 25 2026, 7:20 to 7:33 PM Eastern (clock: date). Data: out/matches.json of origin/main 7b567771 (updated 2026-11-25T10:41:02.976Z).
+
+PART 1. lb / lp locked in the re-tune (commit df27d620)
+ model.mjs: RETUNE=1, K_GRID=... and FAST=... all fit with lb 100 / lp 225 from model-settings.json; LB / LP env still win.
+ FAST is locked too: weekly-recheck.mjs and walk-forward.mjs build 'today's settings' with FAST, so without it they would score the old ridge.
+ node experiments/score-ebfix-lock-test.mjs -> exit 0:
+     ok   daily (locked settings): lb 100 lp 225, pairSd0 0.047
+     ok   RETUNE=1: lb 100 lp 225, pairSd0 0.047
+     ok   K_GRID=1,3,100: lb 100 lp 225, pairSd0 0.047
+     ok   FAST=1,14,1,0 (weekly re-check / walk-forward): lb 100 lp 225, pairSd0 0.047
+     ok   RETUNE=1 with LB=50 LP=300 (env wins): lb 50 lp 300, pairSd0 0.041
+   score-ebfix-lock-test: PASS (lb and lp stay locked in the daily run and the re-tune; LB/LP env still override)
+ Same test on the lock as it was in 8208907b (daily run only; LOCK_TEST_MODEL=<that copy>) -> exit 1:
+   AssertionError [ERR_ASSERTION]: FAST=1,14,1,0 (weekly re-check / walk-forward): pairSd0 0.183 means lp 15; expected lp 225 (pairSd0 0.047)
+ Daily output on today's data with the lock: model.mjs -> "ridge lb 100 lp 225 (x pairShrink 4 in the fit), locked in model-settings.json";
+   the model file equals the earlier new-settings file except 'updated' (1 differing leaf).
+ Also exit 0 after the change: shadow-model-test.mjs (PASS), md-day-one-test.mjs (ALL 22 TESTS PASSED), dec2-landing-fixes-test.mjs (ALL PASSED),
+   syntax-check.mjs from origin/claude/design6 run on this branch: "syntax-check: all 227 scripts parse".
+
+PART 2. The 'how sure' word (node experiments/sure-word-check.mjs, built page, today's out/, new model file; exit 0)
+ === sure-word-check: 7639 distinct real team sheets since 2026-10-11; new model /tmp/claude-0/-home-user-pokelair-data/204a9d61-5900-570f-b954-256bbb6b60d7/scratchpad/runs/new-full.json (shipped pairSd0 0.047) ===
+   pairSd0 .058 (as the verified variant)   Low 0 (0.0%) · Medium 4392 (57.5%) · High 3247 (42.5%) · no word 0
+   pairSd0 .047 (new, from lp 225)          Low 0 (0.0%) · Medium 2144 (28.1%) · High 5495 (71.9%) · no word 0
+   old model as live (pairSd0 0.058)        Low 117 (1.5%) · Medium 4609 (60.3%) · High 2913 (38.1%) · no word 0
+   sheets that change word .058 -> .047: 2248 of 7639 (29.4%) {"Medium -> High":2248}
+   sheets that change word, old live model -> new model (.047): 2699 of 7639 (35.3%)
+   page errors: 0
+ MORE THAN 5% CHANGE WORD (29.4%, all Medium -> High). Stopped here as asked: nothing changed; HH decides with Sim.
+
+PART 3. WHY_TEST re-check (WORK=<dir> node experiments/whytest-recheck.mjs; exit 0)
+ Model: the branch's model.mjs with the locked settings, trained per window on events before the cut, six.mjs on the same cut file.
+ Score: the built page (main's code) with CH.SS_MID 73.33 / CH.SS_K 166.67 set (option C, as on alt/bands-c), gradeTeam on each team's
+ own sheet, band = CH.wordOf. Windows as alt/kip35-check. Single games = best-of-1 rounds (data/tour-modes.json, tour-modes.mjs roundMode).
+ Sealed set = events on/after 2026-11-09: window 1 is all before it, window 2 is split, windows 3 and 4 are all sealed.
+ Caveat: the page's other data (usage, teams, events) is today's, so the matchup part of the score can see later usage.
+
+  [2026-10-28] 159s: ridge lb 100 lp 225 (x pairShrink 4 in the fit), locked in model-settings.json | model: ships, 319 Pokémon, 524 pairs, 770 set features, 155s | six: 1043 sixes with 10+ games added to out/model.json (most
+  [2026-11-04] 190s: ridge lb 100 lp 225 (x pairShrink 4 in the fit), locked in model-settings.json | model: ships, 319 Pokémon, 567 pairs, 818 set features, 187s | six: 1135 sixes with 10+ games added to out/model.json (most
+  [2026-11-11] 205s: ridge lb 100 lp 225 (x pairShrink 4 in the fit), locked in model-settings.json | model: ships, 319 Pokémon, 608 pairs, 865 set features, 202s | six: 1237 sixes with 10+ games added to out/model.json (most
+  [2026-11-18] 215s: ridge lb 100 lp 225 (x pairShrink 4 in the fit), locked in model-settings.json | model: ships, 319 Pokémon, 659 pairs, 907 set features, 213s | six: 1371 sixes with 10+ games added to out/model.json (most
+  [2026-10-28..2026-11-04] 3283 games, 1045 distinct team sheets, 0 results not scorable, calib 0.917, meanX 0.0534
+  [2026-11-04..2026-11-11] 4302 games, 1255 distinct team sheets, 0 results not scorable, calib 0.905, meanX 0.057
+  [2026-11-11..2026-11-18] 4932 games, 1314 distinct team sheets, 0 results not scorable, calib 0.785, meanX 0.0596
+  [2026-11-18..2026-11-26] 4703 games, 1318 distinct team sheets, 0 results not scorable, calib 0.779, meanX 0.0684
+
+=== win % per band on later games (bands option C, the page score with the EB-fix model) ===
+SINGLE GAMES (best-of-1 rounds), all 4 windows: 1580 games (3160 team results), 20 events
+  90+ Top tier               n=  326 (10.3%)  won 55.5%  95% CI 51.7-59.3%
+  80s Tournament ready       n= 1081 (34.2%)  won 52.7%  95% CI 50.3-55.1%
+  70s Solid                  n= 1076 (34.1%)  won 49.4%  95% CI 46.1-52.7%
+  60s Needs work             n=  483 (15.3%)  won 46.0%  95% CI 41.8-50.2%
+  under 60 Missing a basic   n=  194 ( 6.1%)  unknown (under 300)  [won 38.7%]
+
+SINGLE GAMES, without the sealed set (events before 2026-11-09): 758 games (1516 team results), 11 events
+  90+ Top tier               n=  209 (13.8%)  unknown (under 300)  [won 56.5%]
+  80s Tournament ready       n=  428 (28.2%)  won 50.9%  95% CI 48.2-54.5%
+  70s Solid                  n=  472 (31.1%)  won 48.3%  95% CI 44.9-52.2%
+  60s Needs work             n=  277 (18.3%)  unknown (under 300)  [won 51.3%]
+  under 60 Missing a basic   n=  130 ( 8.6%)  unknown (under 300)  [won 40.0%]
+
+SINGLE GAMES, sealed set only (events on/after 2026-11-09): 822 games (1644 team results), 9 events
+  90+ Top tier               n=  117 ( 7.1%)  unknown (under 300)  [won 53.8%]
+  80s Tournament ready       n=  653 (39.7%)  won 53.9%  95% CI 50.5-56.6%
+  70s Solid                  n=  604 (36.7%)  won 50.3%  95% CI 44.2-54.6%
+  60s Needs work             n=  206 (12.5%)  unknown (under 300)  [won 38.8%]
+  under 60 Missing a basic   n=   64 ( 3.9%)  unknown (under 300)  [won 35.9%]
+
+BEST-OF-3 ROUNDS (each row is a match result; kept separate), all 4 windows: 15640 games (31280 team results), 213 events
+  90+ Top tier               n= 3378 (10.8%)  won 55.5%  95% CI 53.9-56.9%
+  80s Tournament ready       n=13746 (43.9%)  won 53.5%  95% CI 52.9-54.1%
+  70s Solid                  n= 8892 (28.4%)  won 48.6%  95% CI 47.8-49.5%
+  60s Needs work             n= 4124 (13.2%)  won 41.2%  95% CI 39.8-42.7%
+  under 60 Missing a basic   n= 1140 ( 3.6%)  won 34.1%  95% CI 31.0-37.4%
+
+BEST-OF-3 ROUNDS, without the sealed set: 5763 games (11526 team results), 86 events
+  90+ Top tier               n= 1876 (16.3%)  won 56.5%  95% CI 54.5-58.7%
+  80s Tournament ready       n= 4465 (38.7%)  won 53.1%  95% CI 51.9-54.1%
+  70s Solid                  n= 3084 (26.8%)  won 48.0%  95% CI 46.3-49.7%
+  60s Needs work             n= 1626 (14.1%)  won 42.0%  95% CI 39.6-44.3%
+  under 60 Missing a basic   n=  475 ( 4.1%)  won 36.2%  95% CI 31.4-40.1%
+
+ALL ROWS as Kip job 37 counted them (best-of-1 + best-of-3 mixed), all 4 windows: 17220 games (34440 team results), 217 events
+  90+ Top tier               n= 3704 (10.8%)  won 55.5%  95% CI 54.1-56.9%
+  80s Tournament ready       n=14827 (43.1%)  won 53.4%  95% CI 52.9-54.0%
+  70s Solid                  n= 9968 (28.9%)  won 48.7%  95% CI 47.8-49.6%
+  60s Needs work             n= 4607 (13.4%)  won 41.7%  95% CI 40.3-43.1%
+  under 60 Missing a basic   n= 1334 ( 3.9%)  won 34.8%  95% CI 31.8-37.9%
+
+ALL ROWS, Kip job 37 scoring (x only, rounded), for comparison: 17220 games (34440 team results), 217 events
+  90+ Top tier               n= 3128 ( 9.1%)  won 56.5%  95% CI 55.0-58.0%
+  80s Tournament ready       n=14974 (43.5%)  won 53.2%  95% CI 52.6-53.8%
+  70s Solid                  n=10573 (30.7%)  won 49.2%  95% CI 48.4-50.0%
+  60s Needs work             n= 4588 (13.3%)  won 40.9%  95% CI 39.5-42.3%
+  under 60 Missing a basic   n= 1177 ( 3.4%)  won 34.5%  95% CI 31.5-37.5%
+
+rows with another or unknown round format: 0
+Exact single-game win % (all 4 windows): 90+ 55.52, 80s 52.73, 70s 49.44, 60s 45.96, under 60 38.66 (194 results: unknown).
+Adjacent gaps, single games, 95% event-clustered CI: 90+ minus 80s -1.0 to +6.4; 80s minus 70s -1.6 to +8.5; 70s minus 60s -2.5 to +9.4
+  (none clearly above 0: with 1,580 single games the order is right but each step is not proven).
+
+REPLACEMENT SENTENCE (single games, as asked):
+  Tested on 1,580 later single games: teams scoring 90+ won 56%, the 80s 53%, the 70s 49%, the 60s 46%.
+  (Under 60: too few single games to say yet. 'Every 10 points really means more wins' is not proven on single games and is left out.)
+If HH prefers all tournament results (most are best-of-3 match results, the count Kip used):
+  Tested on 17,220 later tournament results, most of them best-of-3 matches: teams scoring 90+ won 55%, the 80s 53%, the 70s 49%, the 60s 42%.
