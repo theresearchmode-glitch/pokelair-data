@@ -56,7 +56,9 @@ for (const rel of files) {
   fileByUrl.set(expectedUrl, rel);
 
   // 1a. <title>
-  const tM = [...html.matchAll(/<title\b[^>]*>([\s\S]*?)<\/title>/gi)];
+  // only the page's own <title> in <head>: an inline SVG's <title> (an accessibility label in the body) is not a page title (GitHub run 45852023139: 6 per page)
+  const hEnd = html.search(/<\/head>/i), head = hEnd > 0 ? html.slice(0, hEnd) : html;
+  const tM = [...head.matchAll(/<title\b[^>]*>([\s\S]*?)<\/title>/gi)];
   if (tM.length !== 1) titleIssues.push(`${rel}: ${tM.length} <title> tags`);
   else {
     const t = decode(tM[0][1].trim());
