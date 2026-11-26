@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 6:55 PM (6:55:17)  date: Wed Nov 25, 2026
-NOW: HH: local tests of alt/kip36a (launch batch + Kip 34/36 fixes; pid in .main-running), then alt/bands-c tests (queued).
-NOW (helper): score fix into the real model.mjs (alt/score-ebfix) + before/after scores of real teams.
-NEXT: alt/kip36a -> design6 through the gate when GitHub is green (run on 814ad8a1).
-NEXT: bands option C (Sim yes): wording for Sim's OK (4 places), final numbers from the real-model test, accuracy baseline re-record (Sim OK).
-NEXT: phone-speed branch onto design6 after kip36a; Pokemon page iPad landscape gap (#4), Home iPad numbers (#6), News gift row (#3).
-NEXT: Preview + Game Plan after merges; 7:55 AM morning report.
+Updated: time: 7:46 PM (7:46:50)  date: Wed Nov 25, 2026
+NOW: HH: local tests of the ties + podium change (ttrun.sh), then build + test iPhone #2/#3 fixes (written, not built), commit on t1clean.
+NOW (helper): why well-known sixes are over-rated (alt/score-ebfix, measurement only).
+NEXT: alt/kip36a -> design6 through the gate when GitHub is green (run on 814ad8a1; 13/15 green at 7:33 PM), then push t1clean.
+NEXT: Sim's call on the "How sure" word (A: games count, B: drop, C: keep). Bands option C + new "Tested on 1,580 single games" sentence with it.
+NEXT: Dec 2 data note is 90px on iPhone 15: pushes Home's buttons 23px under the bar in launch week. Options for Sim (shorter phone wording / note under the hero on Home).
+NEXT: phone-speed onto design6 after kip36a; bands-c re-run; alt/no-rk9 to main; Preview after merges; 7:55 AM morning report.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
