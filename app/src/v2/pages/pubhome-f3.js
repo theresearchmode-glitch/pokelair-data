@@ -57,5 +57,10 @@ V2.f3Page = () => { const E = V2.esc, D = V2.f3Data(), W = V2.f3Words(D);
       <p class="f3-scale" aria-hidden="true"><span>Rating 40</span><span>70</span><span>100</span></p></figure>`; }
   else pr = `<figure class="f3-pr f3-empty"><div class="f3-paper" aria-hidden="true"></div><div class="f3-hd"><p class="f3-top"><span class="u">NastyPlot</span><span>Receipt</span></p><p class="f3-meta">No winning team in today's data yet. The receipt prints after the next event.</p></div></figure>`;
   return `<div class="f3-home"><section class="f3-hero f3-anim" aria-labelledby="f3-h1"><div class="f3-panel" aria-hidden="true"><i class="f3-rays"></i><i class="f3-dots"></i></div>${W.html}${pr}</section></div>`; };
+/* Home (Job DD, Nov 26; Sim: Final 3 is the FIRST SCREEN, nothing else removed, rule 18): F3's hero replaces only the Stampede's hero; the
+   Top 10, your six, tools rack and post band stay below in today's order. nastyplot.org always; the Claude build when V2.F3_CLAUDE. */
+V2.F3_CLAUDE = false;
+V2.f3On = () => !!(window.__NP_PUBLIC || V2.F3_CLAUDE);
+V2.f3Home = () => `${V2.f3Page()}<div class="sd">${V2.sdTop()}${V2.sdSix()}${V2.sdTools()}${V2.sdPost()}</div>`;
 // the static words (Job W, alt/prerender-home): this Home's h1 and line, when that build step is there
 V2.f3Seo = () => { const D = V2.f3Data(), W = V2.f3Words(D); return {h1: `Rate your Pokémon Champions team ${W.before ? 'before' : 'for'} Reg M-D.`, intro: (document.querySelector('#main .f3-lead') || {}).textContent || ''}; };
