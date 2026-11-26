@@ -2729,3 +2729,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 7:42 AM: Preview daily data: v265 published (DATA-DATE 2026-11-26T11:44Z, live aea648c1; no-names 0; COPY-OK; meta/info N=7618). Live moved to today's data at 12:18 UTC after the hand-started data run.
 - 7:48 AM: MAIN: Kip job 44 (quiet launch-day alarms) fast-forwarded to main 03cd5e41 (GitHub green; Sim's OK). Main this morning: b6fafa71 Kip 46, aea648c1 today's data, 35fb5314 reg-test, 03cd5e41 Kip 44.
 - 7:55 AM: Home rack: full v2-minors on frozen out/ found 1 more real issue (small iPads 700-899: calc sprites 49-61px) -> hit stacks there, 96px at 700-1099 (checked). Committed 0778b6f9 (fixes + test updates). Running the proof both ways: old layout + new tests must fail the updated checks; new layout must pass all.
+- 7:56 AM: Morning report sent to Sim (7:55 AM scheduled report): merges with checks, the 5 design pictures under authority, open items. Game Plan current (v95, 7:36 AM).
