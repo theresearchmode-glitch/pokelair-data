@@ -17,3 +17,4 @@
 49 | started | - | Dec 2 balance patch hand-written half + patch-dec2-test.mjs | Thu Nov 26, 9:43 AM
 49 | done | alt/gemini-patch-dec2 99b5cd54 | Dec 2 hand-written half (47 LEARN pairings incl. Megas + Castform weather forms, Flash Fire + Stalwart ABIL, infosheet 20%, run.mjs 76); generated files untouched; patch-dec2-test 52 FAILED before, 57/57 after; legality-check exit 0 | Thu Nov 26, 9:47 AM
 50 | started | - | search-ready public pages test (app/test/seo-check.mjs) | Thu Nov 26, 9:47 AM
+50 | done | alt/gemini-seo-test 3707f22c | app/test/seo-check.mjs checks all 371 public HTML pages + 28 rendered routes + sitemap.xml + robots.txt, wired into test.yml; real build 13/13 PASS, broken copy 7 FAILED | Thu Nov 26, 9:54 AM
