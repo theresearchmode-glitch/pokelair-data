@@ -55,7 +55,9 @@ if (process.argv.includes('--v2')) {
   const itemImg = fs.existsSync(dir + 'src/v2/art/items.json') ? JSON.stringify(JSON.parse(rd('src/v2/art/items.json'))) : '{}';
   /* Claude-hosted builds (--one-art-size: the Preview / live artifact) hold at most 511 files and already carry ~443, so the 166 item
      pictures go inside the page as data: URIs (192px WebP, about 1.2 MB) instead of files; the public site keeps the files (Nov 23) */
-  const itemImgOut = !process.argv.includes('--one-art-size') ? itemImg : JSON.stringify(Object.fromEntries(Object.entries(JSON.parse(itemImg)).map(([n, f]) => { const fp = dir + 'src/v2/art/items/' + f + '.webp'; return fs.existsSync(fp) ? [n, 'data:image/webp;base64,' + fs.readFileSync(fp).toString('base64')] : null; }).filter(Boolean)));
+  /* --item-files (phone speed, Nov 25, night plan 9): the Cloudflare site (public-site.mjs) has no 511-file limit, so it keeps the item
+     pictures as files (art/items/) even with --one-art-size; inlined they were 1.56 MB of v2.js and phone LCP waited for them */
+  const itemImgOut = !process.argv.includes('--one-art-size') || process.argv.includes('--item-files') ? itemImg : JSON.stringify(Object.fromEntries(Object.entries(JSON.parse(itemImg)).map(([n, f]) => { const fp = dir + 'src/v2/art/items/' + f + '.webp'; return fs.existsSync(fp) ? [n, 'data:image/webp;base64,' + fs.readFileSync(fp).toString('base64')] : null; }).filter(Boolean)));
   // today's logic (P.logic, in today's order) is one closure: 00-main.js opens it, so the v2 shell and pages go inside it and it is
   // closed after the first draw. 15-visual-helpers.js brings SPRITE_ID itself when it is included.
   const L = P.logic || [], hasIds = L.some(f => f.endsWith('15-visual-helpers.js'));
@@ -295,6 +297,7 @@ if (process.argv.includes('--v2')) {
     /* the 840 KB stylesheet goes in one shared file (/v2.css) for the Pokémon pages: 346 inline copies made 322 MB (checked Nov 25) */
     let ph = h; const st = [...h.matchAll(/<style>\n?([\s\S]*?)\n?<\/style>/g)].sort((x, y) => y[1].length - x[1].length)[0];
     if (st && st[1].length > 100000) { const css = st[1]; fs.writeFileSync(dir + 'dist/v2.css', css); ph = h.replace(st[0], `<link rel="stylesheet" href="/v2.css?v=${hash(css)}">`); }
+    const spriteIds = JSON.parse(sprite), artBase = (b => /^[a-z]/i.test(b) ? '/' + b : b)(artArg || 'art/');
     const seen = new Map(); fs.rmSync(dir + 'dist/pokemon', {recursive: true, force: true}); fs.mkdirSync(dir + 'dist/pokemon', {recursive: true}); /* only this build's pages (Kip job 33 F4) */
     for (const p of roster) {
       const s = slug(p.n); if (!s) throw new Error('public build: empty address for ' + p.n);
@@ -303,7 +306,13 @@ if (process.argv.includes('--v2')) {
       /* one canonical (the page carries its own), og:description too, and callbacks so a '$' in a name is never a pattern (Kip job 33 F6) */
       /* SEO fix 7 (Nov 25): the page's BreadcrumbList is in the file (the same @graph the page's script writes into #np-jsonld; the script
          keeps the file's when it is for the same address: it runs before the roster loads and used to write the address, "mr-mime", as the name) */
-      const page = ownHead(ph, title, desc, `https://nastyplot.org/pokemon/${s}`).replace(/<script type="application\/ld\+json" id="np-jsonld">[\s\S]*?<\/script>/, () => pokemonLd(s, name));
+      /* phone speed (Nov 25, night plan 9): the page's LCP on a phone is this Pokémon's big picture (kit.js k-art, V2.art(id, true)),
+         drawn lazily by the script after v2.js has run; preloading the same file lets it arrive while v2.js downloads (placed last in
+         <head>, after the stylesheet and font preloads; measured on a mid phone: LCP 6.2 -> 5.7 s, first paint 2.43 -> 2.57 s, the picture's
+         27 KB sharing the throttled line with the CSS and fonts). Same address
+         as V2.art: ART_BASE from shell.js line 4 (the public build serves a bare folder name from the site root) */
+      const sid = spriteIds[p.n], pre = sid == null || sid === '' ? '' : `<link rel="preload" as="image" href="${esc(artBase + sid + '.webp')}">`;
+      const page = ownHead(ph, title, desc, `https://nastyplot.org/pokemon/${s}`).replace(/<script type="application\/ld\+json" id="np-jsonld">[\s\S]*?<\/script>/, () => pokemonLd(s, name)).replace('</head>', () => pre + '</head>');
       fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
     }
     /* SEO fix 2 (Nov 25): one file per tool page (dist/team.html at /team) with its own words from the SEO map, on the shared stylesheet */
