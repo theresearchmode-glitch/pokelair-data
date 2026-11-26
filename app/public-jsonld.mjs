@@ -32,8 +32,8 @@ export function pokemonBreadcrumbJsonLd(name, displayName = '') {
       {
         '@type': 'ListItem',
         position: 2,
-        name: 'Ratings',
-        item: SITE_ORIGIN + '/meta',
+        name: 'Pokémon A to Z', /* Sim, Nov 25: the A-to-Z page lists every Pokémon page; the visible trail says the same */
+        item: SITE_ORIGIN + '/pokemon',
       },
       {
         '@type': 'ListItem',
