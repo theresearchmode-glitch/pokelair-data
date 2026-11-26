@@ -182,3 +182,41 @@ app/src/v2/css/tokens.css (--d-calctight), app/src/v2/pages/stampede-tools.js li
 - Look for: correctness bugs (wrong condition for 3 digits, e.g. "100–100%", ".5" decimals, a range shown as one number), a check that
   can pass when it should fail, CSS rules that can't match. Write each finding with file:line, the failing case, and how you checked.
 - Deliver docs/rebuild/test-runs/kip-job52-review.md on branch alt/gemini-review-daybatch. No other files.
+
+---
+## HH notes, Thu Nov 26 (time: 10:17 AM (10:17:32)  date: Thu Nov 26, 2026)
+- Job 49 verified: LEARN diff = exactly the official list, ABIL two texts, nothing else; patch-dec2-test ALL PASSED / 52 FAILED on
+  design6 files. Stays unmerged until Dec 2. Job 50 verified: ALL PASSED on frozen public build; canonical removed -> FAIL. One flaw
+  (job 53 below). Job 52: thank you, findings 1 and 2 are real; HH is fixing them now. Job 51: HH reviewing next.
+- Sim's plan: the switch may move to FRIDAY Nov 27 morning. Jobs 53-56 clear the bottlenecks for that and for the public launch.
+  Order: 53, 54, 55, 56. Same rules (no design; own alt/gemini-* branch; fail-before/pass-after; status lines).
+
+## JOB 53 (small): seo-check.mjs robustness (branch alt/gemini-seo-test2, from origin/alt/gemini-seo-test)
+HH broke two pages on purpose (natures.html canonical removed, battle.html given a second <h1>): the test printed the canonical FAIL,
+then crashed with a stack trace at seo-check.mjs:168 instead of listing the h1 failure. Make every check collect and report its
+failures and the run end with one summary + exit 1 (never a crash). Proof: the same two-page break shows BOTH failures, exit 1.
+
+## JOB 54: switch-day smoke test (branch alt/gemini-switch-smoke, from origin/claude/design6)
+Runbook step 8 ("verify on phone and desktop") is by eye today. Make it a script: experiments/switch-smoke.mjs <built v2.html>
+- Loads the build (served over http, like prelaunch.mjs does) at 390x844 and 1440x900 and visits: Home, My Team, Meta, News, Gifts,
+  Track Record, This Week, a Pokémon page (#pokemon/Garchomp), Speed Tiers, and a saved team (put one in storage first, the way the
+  saved-teams test does). For each: no page errors, no console errors, main content not empty, no sideways scroll, the data date shown
+  is the build's own data date, and the counts that must not be zero are not zero (Ratings count, events, teams).
+- Exit 1 with a clear list on any problem. Prove it fails: (a) a build with out/post.json removed, (b) a page error injected.
+- Also run it with today's data (origin/main's out/) and report the numbers. Add a line to docs/rebuild/switch-runbook-nov28.md step 8
+  telling HH to run it (doc only, no other doc changes).
+
+## JOB 55: page speed for Google (branch alt/gemini-speed-check, from origin/claude/design6) - report + test, no design
+Google ranks on Core Web Vitals. Build the PUBLIC site (as in job 50). For the 10 most important public pages (home, pokemon index,
+3 pokemon pages, natures, items, meta/ratings, news, team), at 390x844 with CPU 4x slowdown and "Fast 3G"-like network (Playwright CDP):
+- measure LCP, CLS, total transfer bytes, number of requests, largest resources. New test app/test/speed-check.mjs with budgets:
+  LCP < 2.5 s, CLS < 0.1, first-load transfer < 1.5 MB (report the real numbers; if a budget fails on today's build the test FAILS
+  and you report it, don't loosen the budget). List the top 5 fixes by size of win (e.g. an image that should be lazy, a font that
+  blocks), with file:line. Do NOT change page code; HH decides.
+
+## JOB 56: Reg M-D fixture teams for tests (branch alt/gemini-md-fixtures, from origin/main)
+Our tests use M-C teams. Make experiments/fixtures/md-teams.json: 12 realistic M-D teams (6 Pokémon each, full sets: item, ability,
+4 moves, nature, points) built ONLY from the M-D roster in main's regulation data and Showdown's champions mod legality (use the existing
+legality check script). Include: Mega Heatran, Dondozo + Tatsugiri (Commander), Trick Room, Tailwind, Sun, Rain, and 2 using the Dec 2
+patch moves (Psych Up, Roost on Hydreigon). A test experiments/md-fixtures-test.mjs proves every set is legal and every team scores
+with the current model without errors (print each Strength Score). No changes to any page or model code.
