@@ -226,3 +226,22 @@ GitHub run 45852023139 failed seo-check 1a: "6 <title> tags" on every page. The 
 inline script carries SVG <title> labels as text. HH changed 1a to count only the <title> inside <head> (commit on alt/day-batch3,
 app/test/seo-check.mjs lines 58-61). For job 53: start from origin/alt/day-batch3's seo-check.mjs (not alt/gemini-seo-test), and
 in general run your public-build tests BOTH after a --split build and after `node app/test/v2-public.mjs` (GitHub's order).
+
+---
+## HH notes (time: 12:17 PM (12:17:34)  date: Thu Nov 26, 2026): 53-56 received; HH verifying. Job 55's finding is the launch's biggest speed problem: thank you.
+Order now: 57, then 58. Same rules (no design, no visible change; your own alt/gemini-* branch from origin/alt/day-batch3 until it is in
+claude/design6, then from design6; fail-before/pass-after; status lines; run public tests after BOTH a --split public build and
+`node app/test/v2-public.mjs`, GitHub's order).
+
+## JOB 57: public speed fixes 1 + 3 from your job 55 (branch alt/gemini-speed-fix1)
+1. Stop inlining the 174 base64 item pictures (ITEM_IMG, 1.56 MB) into v2.js on --public: ship them as files (/items/<id>.webp, the way
+   --item-files does) and load them only when an item picture is shown. Keep the Claude-artifact build exactly as today (it needs inline).
+2. index.html ("/") uses the shared /v2.css like the sub-pages, instead of 844 KB inline <style>; keep the static first screen's critical
+   CSS inline only if it is needed to avoid a flash (measure).
+Proof: speed-check.mjs before/after on the same pages (LCP, bytes, requests), plus visual parity: screenshots of Home, My Team (with a
+team that shows items), an item sheet, Build, Gifts at 390 + 1440 light + dark, 0 changed pixels after load. CSP test passes
+(no new inline script/style hashes broken), v2-public, seo-check, pokemon-pages-test, static-pages-test, pub-links-test all pass.
+
+## JOB 58 (after 57): --split-routes on --public (your fix 2) - proposal + measurement first
+Turn on route splitting for --public on a branch, measure LCP/bytes per page with speed-check, and run the full public test list
+(same as job 57). Report what breaks before fixing anything; fix only code paths with no visible change. HH decides whether it ships.
