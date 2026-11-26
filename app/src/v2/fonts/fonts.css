@@ -112,3 +112,26 @@
   src: url(FONTS/unbounded-latin.woff2) format('woff2');
   unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
 }
+/* Metric-matched fallbacks (Job 64): keep first-paint line widths and heights close to Unbounded and Instrument Sans so font swap causes minimal CLS */
+@font-face {
+  font-family: 'Unbounded Fallback';
+  font-style: normal;
+  font-weight: 100 900;
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans'), local('DejaVu Sans');
+  size-adjust: 144%;
+  ascent-override: 84%;
+  descent-override: 22%;
+  line-gap-override: 0%;
+  unicode-range: U+0020-007E, U+00A0-00FF;
+}
+@font-face {
+  font-family: 'Instrument Sans Fallback';
+  font-style: normal;
+  font-weight: 100 900;
+  src: local('Arial'), local('Helvetica'), local('Liberation Sans'), local('DejaVu Sans');
+  size-adjust: 102%;
+  ascent-override: 95%;
+  descent-override: 23%;
+  line-gap-override: 0%;
+  unicode-range: U+0020-007E, U+00A0-00FF;
+}
