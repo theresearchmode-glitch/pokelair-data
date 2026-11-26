@@ -107,3 +107,9 @@ redesign's tests (v2, public build, CSP, pokemon pages...) would not run under t
 - Test: in merge-gate-test.mjs, a scratch merge whose test.yml has a v2 step runs both lists; a failing design6-list test blocks the
   stamp for main. Show the new check failing before your change.
 - Branch from origin/alt/gemini-merge-gate if it is not yet in claude/design6, else from origin/claude/design6. One push.
+
+## HH note, Thu Nov 26, 1:37 AM: ignore one GitHub failure on your branches
+Every GitHub run on a branch made from claude/design6 c062acf1 fails at "md-switch-page-gaps-test" with "FAIL 3a pokemon-showdown dist
+missing". That is HH's mistake (the test was wired into a job that doesn't build Showdown), not yours. The fix plus your jobs 42, 43 and
+46 (page half) are in alt/night-batch, which HH is merging. Keep branching from origin/claude/design6; if the fix hasn't landed yet when
+you push, that one failure is expected. Every other failure still counts.
