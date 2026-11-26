@@ -31,3 +31,5 @@
 56 | started | - | 12 Reg M-D fixture teams + experiments/md-fixtures-test.mjs | Thu Nov 26, 11:15 AM
 56 | done | alt/gemini-md-fixtures 6af5a0b6 | 12 Reg M-D fixture teams + md-fixtures-test.mjs (72/72 legal, all scored 73.5-88.9; broken fixture 13 FAILED exit 1) | Thu Nov 26, 11:24 AM
 57 | started | - | public speed fixes 1+3 (external item webp files + shared v2.css on index.html) | Thu Nov 26, 12:20 PM
+57 | done | alt/gemini-speed-fix1 c540120c | public external item webp files + shared /v2.css on index.html (LCP 11.6->5.6s, v2.js gz 1797->662 KB; all public tests pass in both build orders; 17/20 byte-identical + 3/20 1px subpixel) | Thu Nov 26, 12:52 PM
+58 | started | - | --split-routes on --public: measure LCP/bytes + full public test list, report what breaks before fixing | Thu Nov 26, 12:52 PM
