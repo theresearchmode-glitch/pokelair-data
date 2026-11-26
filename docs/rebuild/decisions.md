@@ -2776,3 +2776,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 2:08 PM: Sim (iPhone): Pokémon page type section - 2x weak / Resists / Immune run together with no separation; clean it up.
 - 2:10 PM: Design decision (HH authority, Sim asked): Pokémon page type matchups as one labelled row per kind with a coloured slanted mark (bad/good/ink); alt/typerows 0e65348d; pictures sent; full v2-minors running.
 - 2:10 PM: Sim OK on the Pokémon page type rows ('recommended is good').
+- 2:18 PM: Helper Job BB: Final 3 built as the public Home (alt/public-home-f3 bd810e84; real latest winner; edge cases; every width 320-2560 failing 0; WebKit; CLS 0/0.012; keyboard + labels; GitHub-order public tests pass). Pictures sent. Open for Sim: dark mode panel nearly matches page bg. Job CC: alt/batch6 = batch5 + speed-review + typerows + public-home-f3 + prerender-home, full local test list.
