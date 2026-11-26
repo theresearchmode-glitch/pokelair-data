@@ -1,7 +1,7 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 3:45 AM (3:45:41)  date: Thu Nov 26, 2026
-NOW: HH: watching GitHub's full run on alt/switch-rehearsal2 1039d5ea (main + design6 b96f3a5e + Kip 46 data; pid in .main-running).
-  Local: 48 of 48 steps passed (docs/rebuild/test-runs/switch-rehearsal2-nov26.md).
+Updated: time: 4:39 AM (4:39:55)  date: Thu Nov 26, 2026
+NOW: HH: morning batch local pre-check (mbrun.sh, pid in .main-running): design6 + alt/test-no-out + alt/touches-pass3; helper Job G
+  (alt/testrun-fit) joins before the one push. DONE: Saturday rehearsal 2 green on GitHub (run 45785844537).
 NOW (helper): Job G, Test Run fit at 1100-1440 + Track Record under 3 screens (alt/testrun-fit). Jobs C-F done.
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
