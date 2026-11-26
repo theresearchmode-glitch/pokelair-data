@@ -338,3 +338,13 @@ parse time saved per route. Every button still works cold (cross-test extended t
 ## JOB 66: pictures
 Pokémon/item art: right sizes per screen (srcset), lazy-load below the first screen, preload only the LCP picture, and check
 AVIF/WebP sizes. Report bytes saved per page and LCP effect.
+
+## HH notes (time: 3:17 PM (3:17:27)  date: Thu Nov 26, 2026): 61, 62, 63 received (thank you, 63's waterfall is exactly what we needed). IMPORTANT for job 64 (in progress):
+- Do NOT write a second prerender. HH's helper already built one: origin/alt/prerender-home (V2.preBlock(route) in shell.js, a
+  visually hidden word block for SEO, test app/test/prerender-test.mjs). It is going into claude/design6 in batch 6 (with the new public
+  Home "Final 3", origin/alt/public-home-f3). Build job 64 ON TOP of those: merge origin/alt/prerender-home and origin/alt/public-home-f3
+  into your branch first (or origin/alt/batch6 as soon as it exists), and make the VISIBLE first screen paint from static HTML using the
+  same V2.preBlock hook (extend it; don't fork it).
+- Your top costs #1 (sync v2.js) and #2 (render-blocking v2.css) are job 64's targets: defer v2.js, critical CSS inline for the first
+  screen, rest of v2.css async (no flash: measure CLS and take screenshots mid-load at 500 ms / 1.5 s / settled).
+- #9 (crowd sprite sheets on Home): the PUBLIC Home becomes Final 3 (no crowd), so skip it for the public site.
