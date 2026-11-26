@@ -16,6 +16,7 @@
 //   AS-1..9 (Nov 18): the All Suggestions sheet, option C (Sim's Q5): Suggest from, sections, card facts, Show 6 More, notes, height (ONLY=AS)
 //   TP3-1 (Nov 26): long event names are cut at a whole word, never mid-word (ONLY=TP3 runs it alone)
 //   TF-1, TF-2 (Nov 26): Test Run and Track Record at most 3 screens at 1440x900 (ONLY=TF runs them alone)
+//   MT390-1 (Nov 26): My Team at 390 with no optional swap is at most 4.35 screens, its links in one row (ONLY=MT390 runs it alone)
 //   BR-C1..C7 (Nov 18): behaviour review: the Apply and Remove holds end on any scroll they didn't make and on leaving My Team,
 //              redraws at 1100-1439 don't move My Team, keyboard Apply keeps the focus (ONLY=BR runs these alone)
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
@@ -288,6 +289,22 @@ const AS = async () => {
     const bad = all.filter(t => /tell it apart|no clear edge/.test(t) || !/^(Add fills your empty spot|Fix )/.test(t)); /* W1a (Sim, Nov 19): 'Add · fills your empty spot' (a Fix line stays) */
     ok(mtL.length >= 1 && shL.length >= 1 && !bad.length, `AS-11 (audit Nov 19 #3): with 5 of 6, ${mtL.length} My Team and ${shL.length} sheet card(s) fill the empty spot; none says it's a small change real games can't tell apart (${[...new Set(bad.length ? bad : all)].slice(0, 3).join(' | ')})`); await c.close(); } };
 if (process.env.ONLY === 'AS') { await AS(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// MT390-1 (Sim, Nov 26 "fix it"; HH's Job K): My Team at 390 with NO optional swap is at most 4.35 screens (Sim's "Take 4.35", Nov 25).
+// On the frozen data the sample team shows an optional swap (Mega Floette from Box + Catch), so the 4.35 state was never measured here.
+// The no-swap state, built the same way every run: the sample team and its box (as the page makes them) with Suggest from set to My Box,
+// where no swap helps; Suggestions then says "Nothing to fix" with its links. Failed on design6 dcefa24f (3716px, 4.40 screens).
+const MT390 = async () => { const SL = ['Charizard-Mega-Y:Drought', 'Whimsicott:Prankster', 'Basculegion:Adaptability', 'Kingambit:Defiant', 'Garchomp:Rough Skin', 'Sneasler:Unburden'].map(x => ({n: x.split(':')[0], a: x.split(':')[1], lock: false}));
+  const BOX = ['Rotom-Wash', 'Glimmora', 'Tyranitar', 'Absol', 'Incineroar', 'Corviknight', 'Archaludon', 'Blastoise', 'Staraptor', 'Rillaboom', 'Pelipper', 'Meowscarada', 'Sylveon', 'Primarina', 'Salamence', 'Lucario', 'Hydreigon', 'Gardevoir', 'Kingambit', 'Dragonite', 'Mimikyu', 'Dragalge', 'Serperior', 'Swampert', 'Tinkaton', 'Greninja', 'Empoleon', 'Drampa', 'Whimsicott', 'Steelix', 'Azumarill', 'Gengar', 'Charizard', 'Basculegion', 'Garchomp', 'Sneasler'];
+  const st = {slots: SL, box: BOX, teams: [{id: 't1795692527298', name: 'Sun Tailwind (sample)', slots: SL, format: 'doubles', saved: 1795692527298}], loadedId: 't1795692527298', format: 'doubles', opp: ['', '', '', '', '', ''], boxV: 2, maxMega: 2, megaV: 1, megaGoal: 2, excl: [], log: []};
+  const c = await b.newContext({viewport: {width: 390, height: 844}, hasTouch: true}), q = await c.newPage();
+  await q.addInitScript(([S]) => { window.__PL_TEST = 1; if (sessionStorage.getItem('mt390')) return; sessionStorage.setItem('mt390', 1); localStorage.setItem('cc2.state', JSON.stringify(S)); localStorage.setItem('cc2.pool', '"box"'); }, [st]);
+  await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2000); await q.waitForTimeout(600); await q.waitForFunction(() => !document.querySelector('.sg2-wait'), null, {timeout: 90000}).catch(() => {}); await q.waitForTimeout(1200);
+  const r = await q.evaluate(() => { const L = [...document.querySelectorAll('#tm-sg .sg2-nact a, #tm-sg .sg2-all')].filter(e => e.getClientRects().length);
+    return {H: document.documentElement.scrollHeight, scr: +(document.documentElement.scrollHeight / 844).toFixed(3), opt: /Optional swaps:/.test(document.body.innerText), none: !!document.querySelector('#tm-sg .sg2-none'),
+      links: L.map(e => e.textContent.replace(/\s+/g, ' ').trim()), rows: new Set(L.map(e => Math.round(e.getBoundingClientRect().top))).size, sw: document.documentElement.scrollWidth}; });
+  ok(r.none && !r.opt && r.scr <= 4.35 && r.links.length >= 3 && r.rows === 1 && r.sw <= 390, `MT390-1: My Team at 390 with no optional swap ("Nothing to fix", Suggest from My Box) is at most 4.35 screens (${r.scr}, ${r.H}px); its ${r.links.length} links (${r.links.join(' | ')}) on ${r.rows} row(s)`);
+  await c.close(); };
+if (process.env.ONLY === 'MT390') { await MT390(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 const TP3 = async () => { /* TP3-1 (small touches pass 3, Nov 26): a long event name is cut at a whole word. evShort cut every name over 28 letters at
   letter 27, so Test Run's rows read "Buenos Aires Special Champi…" (and 13 more names mid-word, in the rows' screen-reader labels too, and in
   Battle's opponent line). Checked over every event in the tournament data and on Test Run's rows at 1100x800. Failed on design6 b96f3a5e. */
@@ -1552,6 +1569,7 @@ if (part('main2')) {
   { const {q, c} = await mtOpen(390); const r = await q.evaluate(() => ({H: document.documentElement.scrollHeight, scr: +(document.documentElement.scrollHeight / 844).toFixed(2), opt: /Optional swaps:/.test(document.body.innerText)}));
     const lim = r.opt ? 4.78 : 4.35; /* Nov 25 12:39 PM (Sim chose 'Take 4.35'): a team with no optional swaps on today's data measured 4.35 after the step-note and step-1 spacing trims (4.38 before) */ /* Nov 23 (HH, design authority to 9 AM): Wave 2's kit show-more (44px, Sim chose A) adds about 16px to the frozen data's sample team with optional swaps (4.75 -> 4.77); flagged in the 9 AM summary */
     ok(r.scr <= lim, `Sim, Nov 18 (C): My Team at 390 is at most ${lim} screens long${r.opt ? ' (with optional swaps)' : ''} (${r.scr} screens, ${r.H}px)`);
+    await MT390(); /* the no-swap state too (Job K, Nov 26), defined above; ONLY=MT390 runs it alone */
     // 2. the Hand three across; the editing panel shut until a Card is tapped, with the hint; tapped, it opens under the whole Hand with Replace, Edit Set, Remove and Lock
     /* Nov 20 (Sim: no Lead / Back / Bench on My Team; leads are Battle's call): was three groups side by side (Lead | Back | Bench); now ONE
        group (no "Your Six" heading on a full team, approved mock-up Nov 11; its line points to Battle) whose six Cards sit three across in

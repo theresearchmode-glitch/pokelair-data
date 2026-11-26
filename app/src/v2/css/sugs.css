@@ -392,3 +392,19 @@ p,li,small{text-wrap-style:pretty}
 /* Nov 25 (practice-switch review): on the Pokémon page the tier word under the score is plain text on the card, but kept --tier-ink
    (near-black, made for coloured tier chips), unreadable on the night card. Night takes the card's own second ink; day is unchanged */
 :root[data-theme="night"] .pk-rate .tier-tag{color:inherit} /* in sugs.css, after .tier-tag above: CSS layers order before specificity (pages.css .pkf rule lost to it) */
+/* My Team at 390, Nothing to fix (Sim, Nov 26: "fix it"; HH's Job K): under the note, "Battle › Popular Sets ›" and "See All Suggestions ›
+   Never Suggest › Refresh Suggestions" were two rows of links (44 + 52px and a gap). On phones they are one wrapping row, in the same
+   order, each link its own two-line stack as See All already was; nothing hidden. 700 and up unchanged. */
+@media (max-width:699.98px){
+  .sg2-nbox{display:flex;flex-wrap:wrap;align-items:stretch;justify-content:space-between;column-gap:var(--s1)}
+  .sg2-nbox>*{flex-basis:100%}
+  .sg2-nbox>.sg2-nwrap,.sg2-nbox .sg2-nact,.sg2-nbox>.sg2-links{display:contents}
+  .sg2-nbox .sg2-none{flex-basis:100%;margin-top:var(--s2)} /* 3b: 8px over the note (was 16) */
+  .sg2-nbox .sg2-nact .np-link,.sg2-nbox .sg2-links .sg2-all{display:flex;flex:0 1 auto;flex-direction:column;justify-content:center;align-items:flex-start;min-height:var(--tap);margin:var(--s1) 0 0;font-size:var(--t13);line-height:1.25;white-space:nowrap;text-align:left}
+  .sg2-nbox .sg2-l2{display:block} /* each link two short lines (first words, then the last word and its arrow), so the five fit one row at 390 */
+}
+/* 520-699: the five sit from the left with a steady gap (spread across the row they drifted far apart); under 360 they can't share one
+   row: three, then two, in even thirds (never one link alone on a second row, rule 13) */
+@media (min-width:520px) and (max-width:699.98px){.sg2-nbox{justify-content:flex-start;column-gap:var(--s8)}}
+@media (max-width:359.98px){.sg2-nbox{justify-content:flex-start;column-gap:var(--s2)}
+  .sg2-nbox .sg2-nact .np-link,.sg2-nbox .sg2-links .sg2-all{flex:0 0 calc((100% - 2 * var(--s2)) / 3)}}

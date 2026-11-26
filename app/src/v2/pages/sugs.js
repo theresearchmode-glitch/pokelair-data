@@ -68,6 +68,9 @@ V2.ckWinSoon = () => { if (V2._ckGo) { safe('checklist claims', ckWinRefresh); r
 /* scan S35 A (Sim, Nov 20): while the planner works, a moving slanted PLOT-blue bar, "Plotting your best changes…" and (with no list to fade)
    two ghost rows that hold the space, so the section looks alive and jumps less; reduced motion: the bar stands still */
 V2.sgWait = last => `<p class="sg2-wait" role="status">Plotting your best changes…</p>${last ? `<div class="sg2-stale" inert aria-busy="true">${last}</div>` : `<div class="sg-ghosts" aria-hidden="true">${'<div class="sg-ghost"><i></i><i></i><i></i></div>'.repeat(2)}</div>`}`;
+// Sim (Nov 26, "fix it", HH's Job K): with Nothing to fix and no swap card, the note, its links (Battle, Popular Sets) and the
+// Suggestions links (See All, Never Suggest, Refresh) sit in one box, so on phones the links read as one row (sugs.css .sg2-nbox)
+V2.sgNbox = (body, P) => P && P.nothing && /sg2-nwrap/.test(body) && !/class="tm-sug/.test(body) ? `<div class="sg2-nbox">${body}</div>` : body;
 V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.plan.plans || [];
   // the winner rates some reasons and the team checks quote ("75% of 113 recent event winners…"): today's measurement, started
   // as today's render() starts it (once per data version; it redraws the page when it has the numbers)
@@ -85,7 +88,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
     // card and no Apply: the quiet line stays and the swaps wait behind See all suggestions (same rule as Matchups' Best fix)
     const up = top.length && g0 != null ? Math.round(planGrade(top[0].pl)) - Math.round(g0) : null;
     if (top.length && up != null && up <= 0) { body = `${gap || `<p class="tm-sub">Nothing raises this team’s Strength Score right now.</p>`}${all}`; V2._sgLast = body;
-      return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${body}${V2.sgAdj()}</section>`; }
+      return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${S2.pending ? body : V2.sgNbox(body, P)}${V2.sgAdj()}</section>`; }
     body = !top.length ? (side ? `${gap}<p class="tm-sub">Nothing raises this team’s Strength Score right now, and every other swap would lower it.</p>${all}` /* Nov 15: the fix cards (items, Protect) showed in every branch but this one */
         : gap || '<p class="tm-sub">No single change from this pool raises the team’s Strength Score. Try another pool below, or see Matchups for what to watch.</p>')
       : `${gap}<p class="tm-sub">${P.nothing ? 'Optional swaps:' : side ? 'Nothing raises this team’s Strength Score right now. These swaps keep every check and about the same score, with a different look:' : 'What to change, best first.'}</p>
@@ -94,7 +97,7 @@ V2.sgSec = D => { const S2 = D.sug; if (!S2) return ''; const ms = D.ms, P = V2.
     V2._sgLast = body; }
   V2.sgAllSync(); /* an open All Suggestions sheet follows the planner (Suggest from in the sheet re-plans) */
   if (!S2.pending && !(S.excl || []).length && !/data-v2excl/.test(body)) body += '<p class="sg2-links"><button type="button" class="np-link sg2-all" data-v2excl>Never<span class="sg2-l2"> Suggest ›</span></button></p>'; /* always reachable */
-  return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${body}${V2.sgAdj()}</section>`; };
+  return `<section class="tm-sec tm-sgs" id="tm-sg"><h2 class="u">Suggestions</h2>${V2.undoBar()}${S2.pending ? body : V2.sgNbox(body, P)}${V2.sgAdj()}</section>`; };
 // the Protect fix: only 0-2 of the six run Protect while their usual sets do; Add Protect puts it in those sets (today's
 // LANE.protFix / protApply and its [data-protfix] handler, 36-lanes.js; the words from LANE.protWords)
 // today's "Fix your items first" (54-items.js itemFixHtml): an Item Clause clash or an item that does nothing, with a one-tap "Give X Y"
@@ -113,7 +116,7 @@ V2.protCard = ms => { let f = null; try { f = LANE.protFix(ms); } catch (e) {} i
 // play: Battle, and the sets (words from LANE.NONE)
 V2.noneCard = () => { const N = LANE.NONE;
   // Sim, Nov 11 (#5): one quiet paragraph, not a headline (beside optional swaps a big "Nothing to fix." read as a contradiction)
-  return `<div class="sg2-nwrap"><p class="sg2-none k-none"><b>${N.head}</b> ${N.body} ${N.edge}</p><p class="sg2-nact"><a class="np-link" href="#battle">Battle ›</a><a class="np-link" href="#sets">Popular Sets ›</a></p></div>`; };
+  return `<div class="sg2-nwrap"><p class="sg2-none k-none"><b>${N.head}</b> ${N.body} ${N.edge}</p><p class="sg2-nact"><a class="np-link" href="#battle">Battle ›</a><a class="np-link" href="#sets">Popular<span class="sg2-l2"> Sets ›</span></a></p></div>`; };
 // the Undo bar: the last suggestion (or Quick add) applied, until the team is changed some other way; Undo steps back one at a
 // time, up to 8 (today's undo stack and its [data-undobar] handler, 06-helpers.js)
 // A6 proposal (Sim's fix plan: one message per action, one Undo): after an Apply, the "Applied … Undo" bar in Suggestions is the
