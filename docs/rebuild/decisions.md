@@ -2757,3 +2757,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:10 PM: Sim: none of a1-a3 ('no flair... no character'); likes the receipt but wants much more colour, Pokémon-driven (site is coloured by Pokémon). Helper Job Z: 3 colour-flooded receipts (crew behind the counter / type ink / receipt pile), first-screen pictures fast. Job Y paused.
 - 1:12 PM: Sim: one-time exception, a separate Gemini session does a receipt front-page design too (Kip's design ban lifted for this one job only). HH writes the prompt.
 - 1:16 PM: Herald: Sim turned on GitHub email privacy (Settings > Emails). Repo-privacy work complete.
+- 1:16 PM: Sim sent the receipt design prompt to the separate Gemini session, now called 'Kip 2' (designer Kip; one-time design job; delivers to alt/gemini-receipt-design).
