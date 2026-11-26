@@ -2752,3 +2752,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:17 PM: Sim: likes the Receipt but 'no wow factor'; wants more creative receipt mockups. Helper Job X (3 variants: It prints / Your turn / The long receipt); Job W paused. Kip 53-56 done; 55 found public LCP ~11 s on slow phone (1.56 MB base64 item pics in v2.js). Kip queued 57 (items out of v2.js + shared css on /) and 58 (split routes, measure).
 - 12:19 PM: Sim: raise phone Home cap 7.8 -> 7.85 for the footer copyright line (one line, 23 px; GitHub had 7.82).
 - 12:20 PM: Sim told Kip (job 57 start).
+- 12:36 PM: Hourly check: Game Plan v99 published; disk 9 GB; helper on Job X; day-batch4 gate waiting on GitHub.
