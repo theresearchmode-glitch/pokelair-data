@@ -1488,8 +1488,8 @@ if (part('main2')) {
       const bars = [...document.querySelectorAll('#main .f3-bar')];
       return {seq: ['.f3-hero', '.sd-top', '.sd-six', '.sd-tools', '.sd-post'].map(at), old: at('.sdh'), h1: [...document.querySelectorAll('#main h1')].map(h => h.textContent.trim()),
         bars: bars.length, barsOk: bars.every(a => a.tagName === 'A' && (/^(\d+), .+'s Rating$/.test(a.getAttribute('aria-label') || '') && (a.getAttribute('aria-label') || '').startsWith(a.textContent.trim()) || /, not rated$/.test(a.getAttribute('aria-label') || '')))}; });
-    ok(r.seq.every((x, i) => x >= 0 && (!i || x > r.seq[i - 1])) && r.old < 0 && r.h1.length === 1 && /^Rate your Pokémon Champions team/.test(r.h1[0]) && r.bars === 6 && r.barsOk && !r.errs,
-      `F3-1 (Job DD): Home is Final 3's hero, then Top 10, your six, tools rack, post band; no Stampede hero; one h1 (F3's); 6 receipt bars, each a link whose spoken name starts with its number: "<n>, <name>'s Rating" (${JSON.stringify(r)})`); }
+    ok(r.seq.every((x, i) => x >= 0 && (!i || x > r.seq[i - 1])) && r.old < 0 && r.h1.length === 1 && /^Sharply raise your win rate\. Rate your Pokémon Champions team (before|for) Reg M-D\.$/.test(r.h1[0].replace(/\s+/g, ' ')) && r.bars === 6 && r.barsOk && !r.errs,
+      `F3-1 (Job DD): Home is Final 3's hero, then Top 10, your six, tools rack, post band; no Stampede hero; one h1, the slogan then the Reg M-D line (Sim, option A); 6 receipt bars, each a link whose spoken name starts with its number: "<n>, <name>'s Rating" (${JSON.stringify(r)})`); }
   // F3-2: the first screen. At 1440x900 the hero ends at the window's bottom even under the Preview's data note, and Home stays within its
   // 4 screens; Score My Team is on the first screen (above the phone tab bar) at the sizes Sim checks
   { const bad = []; for (const [w, h] of [[390, 844], [1280, 800], [1366, 768], [1440, 900], [1920, 1080]]) {

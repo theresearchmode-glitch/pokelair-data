@@ -30,15 +30,16 @@ V2.f3Data = () => { const key = typeof metaVersion !== 'undefined' ? metaVersion
   V2._f3 = {key, v}; return v; };
 V2.f3Band = G => G ? ({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[CH.grade(G.s)] || 'solid' : '';
 V2.f3Link = n => { const s = typeof V2.pubSlug === 'function' ? V2.pubSlug(n) : ''; return s ? `/pokemon/${s}` : `#pokemon=${encodeURIComponent(n)}`; };
-// the words: the h1 changes with the calendar (before Dec 2: "before Reg M-D."; from Dec 2: "for Reg M-D."), and later names the regulation
+// the words (Sim, Nov 26: option A): ONE h1 with the slogan drawn like the brand lockup ("Sharply raise" ink, "your win rate." PLOT blue)
+// and, smaller inside the same h1, the line Google reads for the regulation; that line changes with the calendar (before Dec 2: "before Reg M-D."; from Dec 2: "for Reg M-D."), and later names the regulation
 V2.f3Words = D => { const E = V2.esc, now = Date.now(), mdAt = Date.parse(V2.REG_START_MD || ''), before = isFinite(mdAt) && now < mdAt;
   const reg = D && D.reg ? D.reg : '', em = before ? 'before Reg M-D.' : reg && reg !== 'M-C' ? `for Reg ${E(reg)}.` : 'for Reg M-D.';
   const teams = (typeof RES === 'object' && RES && RES.teams) || 0, md = V2.mdCountdown(now) || V2.regDay(now) || '', mdS = V2.mdCountdown(now, true) || V2.regDay(now) || '';
   const tys = D ? [...new Set(D.rows.map(x => x.t))] : [];
   return {before, html: `<div class="f3-words"><p class="k-kicker">Team builder · Strength Score</p>
-    <h1 class="k-h1 u f3-h1" id="f3-h1">Rate your Pokémon Champions team <em>${em}</em></h1>
-    <p class="k-lead f3-lead">Add your six. NastyPlot rings it up out of 100 against ${E(Number(teams).toLocaleString('en-US'))} real tournament teams, then shows its Matchups and exactly what to change.</p>
-    <div class="f3-acts">${V2.kGo('Score My Team', {href: '#team'})}${V2.kBtn('Build Me a Team', {href: '#build'})}</div>
+    <h1 class="k-h1 u f3-h1" id="f3-h1"><span class="f3-sl">Sharply raise <em>your win rate.</em></span> <span class="f3-h1s">Rate your Pokémon Champions team ${em}</span></h1>
+    <p class="k-lead f3-lead"><span class="f3-l0">Add your six. </span>NastyPlot rings it up out of 100 against ${E(Number(teams).toLocaleString('en-US'))} real tournament teams, then shows its Matchups and exactly what to change.</p>
+    <div class="f3-acts">${V2.kGo('Score My Team', {href: '#team', 'data-sdgo': true})}${V2.kBtn('Build Me a Team', {href: '#build', 'data-sdgo': true})}</div>
     ${md ? `<p class="f3-md"><span class="f3-md-l">${E(md)}</span><span class="f3-md-s">${E(mdS)}</span></p>` : ''}
     ${tys.length ? `<p class="f3-leg"><span class="vh">The bar colours are the types of the winning six: </span>${tys.map(t => `<span class="f3-chip" style="--c:var(--f3-${t});--on:var(--f3-on-${t})">${E(t)}</span>`).join('')}</p>` : ''}</div>`}; };
 V2.f3Page = () => { const E = V2.esc, D = V2.f3Data(), W = V2.f3Words(D);
@@ -67,11 +68,12 @@ V2.f3Home = () => `${V2.f3Page()}<div class="sd">${V2.sdTop()}${V2.sdSix()}${V2.
    Stampede's hero did (V2.sdhLayout --sdh-top); 76px (the header alone) until measured */
 V2.f3After = () => { const S = document.querySelector('#main .f3-hero'); if (!S) return; V2.f3Watch(); const t = Math.round(S.getBoundingClientRect().top + scrollY);
   if (S.style.getPropertyValue('--f3-top') !== t + 'px') S.style.setProperty('--f3-top', t + 'px');
-  const w = S.querySelector('.f3-words'); const tight = !!w && innerWidth >= 1280 && w.offsetHeight + 40 > innerHeight - t; /* a style property, not a class: a redraw's patch keeps it */
+  const w = S.querySelector('.f3-words'), pr = S.querySelector('.f3-pr'); const need = Math.max(w ? w.offsetHeight : 0, pr ? pr.offsetHeight + 48 : 0) + 40; /* the taller column: the words, or the receipt with its 24px margins */
+  const tight = !!w && innerWidth >= 1280 && need > innerHeight - t; /* a style property, not a class: a redraw's patch keeps it */
   if (S.style.getPropertyValue('--f3-pb') !== (tight ? 'var(--s4)' : '')) { if (tight) S.style.setProperty('--f3-pb', 'var(--s4)'); else S.style.removeProperty('--f3-pb'); } };
 /* again whenever the words change size (fonts arriving, today's data drawn into the same element) and when the window changes size */
 V2.f3Watch = () => { const w = document.querySelector('#main .f3-words'); if (!w || !window.ResizeObserver || V2._f3w === w) return; if (V2._f3ro) V2._f3ro.disconnect();
   V2._f3w = w; V2._f3ro = new ResizeObserver(() => requestAnimationFrame(V2.f3After)); V2._f3ro.observe(w); };
 addEventListener('resize', () => { if (V2.f3After) requestAnimationFrame(V2.f3After); });
 // the static words (Job W, alt/prerender-home): this Home's h1 and line, when that build step is there
-V2.f3Seo = () => { const D = V2.f3Data(), W = V2.f3Words(D); return {h1: `Rate your Pokémon Champions team ${W.before ? 'before' : 'for'} Reg M-D.`, intro: (document.querySelector('#main .f3-lead') || {}).textContent || ''}; };
+V2.f3Seo = () => { const D = V2.f3Data(), W = V2.f3Words(D); return {h1: `Sharply raise your win rate. Rate your Pokémon Champions team ${W.before ? 'before' : 'for'} Reg M-D.`, intro: (document.querySelector('#main .f3-lead') || {}).textContent || ''}; };
