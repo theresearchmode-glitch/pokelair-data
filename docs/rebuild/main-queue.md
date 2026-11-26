@@ -1,14 +1,14 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 5:23 AM (5:23:41)  date: Thu Nov 26, 2026
 NOW: HH: gate.sh alt/morning-batch 7369b676 (pid in .main-running): test-no-out + touches-pass3 + testrun-fit; local pre-check passed.
-NOW (helper): Job I, Turnstile renders once (Kip job 47, Saturday item 3; alt/turnstile-once). Jobs C-H done.
+NOW (helper): Job J, My Team at 390 height (4.81 vs cap 4.78 locally, GitHub passes): why, and is the real page over (alt/myteam-390). Jobs C-I done (I = Turnstile once, approved).
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
   small touches v1; bands-c2 updated + J-REC proven; Game Plan v89.
 WAITING ON SIM: main push of Kip 46 data half (alt/gemini-news-ran-data c78d15e2, green); reg-test change (Kip's "Better" option);
   tablet Home proposal; lone "Saved" button proposal.
 NEXT: Kip at 3 AM: review jobs 44, 45, 47, 48 as they land (run + failure proofs), batch them.
-NEXT: morning batch: alt/test-no-out (post-news-test leak fix) + alt/touches-pass3 (event names) + alt/testrun-fit (helper Job G) -> one GitHub run -> gate.
+NEXT: batch 3 after the morning batch merges: alt/turnstile-once (Saturday item 3).
 NEXT: 6:15 AM: check the first daily data run on main (scheduled task), shadow model numbers to Sim.
 NEXT: 7:55 AM morning report (merges with checks, pictures, Sim's decisions, research write-ups).
 
