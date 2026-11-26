@@ -2039,6 +2039,17 @@ if (part('groups')) { const bad = []; for (const W of [1280, 1440]) { const c = 
       return {n: all.length, cut: all.filter(i => i.scrollWidth > i.clientWidth + 1).map(i => i.textContent)}; });
     if (!r.n || r.cut.length) bad.push(`${W}: ${JSON.stringify(r)}`); await c.close(); }
   ok(!bad.length, `My Team move pills: the longest move names narrow to fit, none cut with "..." at 1280/1440 (${bad.join(' | ') || 'all fit'})`); }
+// Speed Tiers on short laptop windows (Nov 26, pre-launch list; rule 15: the main thing on the first screen): at 1280x720, 1366x768 and 1440x900
+// the track's first row ends inside the first screen, with every condition chip still there (12) and each group's label before its chips.
+// On design6 c062acf1 the first row ended at 728 in a 720 window (the conditions filled the screen).
+if (part('groups')) { const bad = [];
+  for (const [w, h] of [[1280, 720], [1366, 768], [1440, 900]]) { const ctx = await b.newContext({viewport: {width: w, height: h}}), q = await ctx.newPage();
+    await q.goto('file://' + PAGE + '#speed'); await q.waitForTimeout(2500); await q.evaluate(() => document.fonts.ready);
+    const r = await q.evaluate(() => { const li = [...document.querySelectorAll('#main .sp2-lad li')].find(e => e.getClientRects().length), ch = [...document.querySelectorAll('#main .sp2-ctl button')].filter(e => e.getClientRects().length);
+      const lab = [...document.querySelectorAll('#main .sp2-g')].every(g => { const l = g.querySelector('.sp2-gl'), c = g.querySelector('button'); return l && c && (l.compareDocumentPosition(c) & Node.DOCUMENT_POSITION_FOLLOWING); });
+      return {end: li ? Math.round(li.getBoundingClientRect().bottom) : null, scrollY: Math.round(scrollY), chips: ch.length, lab}; });
+    if (r.end == null || r.end > h || r.scrollY !== 0 || r.chips !== 12 || !r.lab) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); await ctx.close(); }
+  ok(!bad.length, `Speed Tiers on short laptop windows (Nov 26): the track's first row is on the first screen at 1280x720, 1366x768 and 1440x900, all 12 condition chips kept (${bad.join(' | ') || 'all three'})`); }
 if (part('groups')) { await HQ(); await wkPair(b, 'file://' + PAGE, ok); }
 await b.close();
 console.log(`v2-minors${PART === 'all' ? '' : ' (' + PART + ')'}:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
