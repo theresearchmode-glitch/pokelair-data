@@ -11,3 +11,5 @@
 44 | started | - | quiet launch-day alarms (md-watch regAt + health/md-watch 0-event days) | Wed Nov 25, 11:59 PM
 44 | done | alt/gemini-quiet-alarms 91911b8d | md-watch uses regAt and skips paused on quiet API-200 days; update stamps apiOk:true and health warns instead of failing on quiet launch days; quiet-launch-alarms-test 5 FAILED before, 13/13 after; md-day-one 22/22 | Thu Nov 26, 6:29 AM
 45 | started | - | flaky app/test/prelaunch.mjs (run.mjs) diagnosis & fix | Thu Nov 26, 6:29 AM
+45 | done | alt/gemini-flaky-prelaunch efb7aaa6 | replaced blind sleeps in prelaunch.mjs with readiness/DOM/store condition waits (all 27 assertions untouched); 3.2s delay fails OLD and passes NEW; 20/20 idle + 3/3 load-6 pass after | Thu Nov 26, 7:44 AM
+48 | started | - | merge-check.sh target main runs both test lists when test.yml has v2 steps | Thu Nov 26, 7:44 AM
