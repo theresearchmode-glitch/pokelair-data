@@ -4635,3 +4635,27 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 .ra-spotw>.nf2-dog{margin-top:var(--s16)}
 /* empty data pages (Nov 25): today's underdog card under the page's one line (V2.dayDog); room above for the art that rises over the card */
 .dd-dog{max-width:320px;margin:var(--s24) 0 var(--s8)}
+/* Test Run fit (HH's Job G, Nov 26; rule 15: 3 screens at 1440x900, was 3.23; rule 13: use the space).
+   Beside the open team (a column of 440-599px, 1100-1279): a row gave its event name 160px, so the name ran to three lines and every row
+   was about 124px with half of its right side bare. The left part now takes a bit more than half the row, so the name sits on one line,
+   and the row's padding is 8px over and under (was 16/12): about 76px a row. Same parts, same order (place, event, counts, then who gets through); phones (under 440) unchanged. */
+@container (min-width:440px) and (max-width:599.98px){
+  .dr .tp-cards .dr-row{grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);padding-top:var(--s2);padding-bottom:var(--s2)}
+}
+/* 1440 and up: the 1280-1439 spacing and the one-line "You answer all six." rows (alt/len1280, alt/len1280b, Nov 23-24) carry on, so
+   the page is under 3 screens at 1440x900. Nothing is hidden; the headline keeps its own layout. */
+@media (min-width:1440px){
+  .dr .k-plan{padding-bottom:var(--s4)}
+  .dr .k-plan>.k-step>.k-sec{margin-top:var(--s10)}
+  .dr .tp-piles{gap:var(--s6)}
+  .tr.dr{padding-bottom:var(--s4)}
+  .dr .tp-cards .dr-row:not(:has(.dr-tn)){min-height:var(--tap);grid-template-columns:minmax(0,1fr) auto auto}
+  .dr .tp-cards .dr-row:not(:has(.dr-tn)) .dr-id{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--s2)}
+  .dr .tp-cards .dr-row:not(:has(.dr-tn)) .dr-id b{white-space:nowrap}
+}
+/* Track Record fit (HH's Job G, Nov 26; rule 15: 3 screens at 1440x900, was 3.08): the page ended 128px under its last link (64 under the
+   plan, 64 under the page). Now 48 (16 + 32), as the other desktop pages end. Nothing else moves; phones unchanged. */
+@media (min-width:1100px){
+  .ra.trk.trk2{padding-bottom:var(--s8)}
+  .trk.trk2>.k-plan{padding-bottom:var(--s4)}
+}
