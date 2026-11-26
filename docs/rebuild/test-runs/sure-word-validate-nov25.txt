@@ -1,5 +1,5 @@
 DOES THE 'HOW SURE' WORD (Low / Medium / High) MEAN ANYTHING? Measurement only: nothing on the page or in the model changed.
-Run: Wed Nov 25 2026, 7:40 to 7:43 PM Eastern (clock: date). Branch alt/score-ebfix. Data: out/matches.json of origin/main 7b567771.
+Run: Wed Nov 25 2026, started after 7:33 PM (start not clocked), finished by 7:43 PM Eastern (clock: date). Branch alt/score-ebfix. Data: out/matches.json of origin/main 7b567771.
 Command: NEW_WORK=<whytest-recheck WORK> WORK=<dir> node experiments/sure-word-validate.mjs   (exit 0)
 
 HOW: same 4 windows and training as whytest-recheck (new = branch model.mjs locked settings + six.mjs; old = EVID_K=1000 EVID_KP=300
