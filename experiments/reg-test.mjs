@@ -21,10 +21,16 @@ ok(r.seen['M-C'] && r.seen['M-D'] && !r.seen.SVI, 'counts per regulation kept ap
 const mixedWeek = detectReg([...mc, ...md(2)], {}, null, '2026-11-03');
 ok(mixedWeek.id === 'M-C' && !mixedWeek.now, 'two new-format events in a week still mostly Reg M-C: no banner');
 const big = md(REG_SWITCH.events + 4);
+/* Nov 26 (Sim's yes to Kip job 41's "Better" option): regulation.json now gives M-D its real start (since 2026-12-02), so plenty of
+   M-D events on Nov 9 must NOT switch early (it was a count-based switch before the date existed); on Dec 2 it switches by date. */
 r = detectReg([...mc.filter(t => t.date < '2026-10-28'), ...big], {}, r, '2026-11-09');
-ok(r.id === 'M-D' && !r.now && r.since === '2026-11-02' && r.switched && r.switched.from === 'M-C', `enough Reg M-D data (${big.length} events, ${big.length * 70} players): switches, since Nov 2`);
+ok(r.id === 'M-C' && r.now && r.now.id === 'M-D' && !r.switched, `enough Reg M-D data before its start date (${big.length} events, ${big.length * 70} players): stays on Reg M-C, banner only (never early)`);
+ok(/regmc$/.test(r.sd), 'Showdown format stays on Reg M-C before the date (' + r.sd + ')');
+const bigD = Array.from({length: big.length}, (_, i) => ({format: 'M-D', date: day('2026-12-02', Math.floor(i / 4)), players: 70}));
+r = detectReg([...mc, ...bigD], {}, r, '2026-12-02');
+ok(r.id === 'M-D' && r.since === '2026-12-02' && r.switched && r.switched.from === 'M-C' && r.switched.by === 'date', `on its start date (Dec 2) it switches to Reg M-D, by date (${JSON.stringify(r.switched)})`);
 ok(/regmd$/.test(r.sd), 'Showdown format follows the switch (' + r.sd + ')');
-const back = detectReg([...mc], {}, r, '2026-11-10');
+const back = detectReg([...mc], {}, r, '2026-12-03');
 ok(back.id === 'M-D', 'once switched it never falls back to the old regulation');
 r = detectReg(mc, {gen9championsvgc2026regmd: {n: 51, first: '2026-11-02'}}, null, '2026-11-03');
 ok(r.id === 'M-C' && r.now && r.now.id === 'M-D' && r.now.from === 'showdown', 'Showdown replays of the next format alone: banner, numbers unchanged');
