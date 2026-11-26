@@ -366,3 +366,18 @@ merged and green). Merging your branch into design6 conflicts in app/build.mjs.
   split-routes-cross-test, prerender-test, seo-check, security-csp (no unhashed inline script), the public list in GitHub's order,
   and a mid-load screenshot at 500 ms and 1.5 s on / and /pokemon/garchomp (no flash of a different layout).
 - One real GitHub run on the branch. Then 65, 66 also branch from origin/claude/design6.
+
+## HH review of job 64b (time: 6:01 PM (6:01:05)  date: Thu Nov 26, 2026)
+Received: alt/gemini-speed-first-screen-b6 c617c3bd. Thank you: V2.preBlock reused, no second prerenderer, numbers look strong (Home LCP 419 ms).
+Decision (HH, executive authority): 64b lands AFTER Friday's switch (Fri afternoon), not before. Reason: it changes shell.js draw paths and fonts on both builds; the switch must carry only what's been green all day.
+Found by HH (checked with git merge-tree): 64b conflicts with alt/f3-claude in app/static-pages.mjs (batch7's 42 KB static.css path vs 64b's /pokemon inline CSS).
+
+## JOB 64c (next, before 65): 64b on the newest design6
+1. Wait until origin/claude/design6 contains alt/f3-claude (HH merges it tonight; check with: git merge-base --is-ancestor origin/alt/f3-claude origin/claude/design6).
+2. Branch alt/gemini-speed-first-screen3 from origin/claude/design6; bring in c617c3bd (cherry-pick or merge).
+3. static-pages.mjs: keep BOTH: batch7's trimmed /static.css for the static pages AND 64b's inline crit CSS on /pokemon. 404.html must stay under its 30 KB cap.
+4. V2.preScreen('home') must use Final 3 as it is now (V2.f3Page / .f3-home); no other Home.
+5. Fallback fonts: send before/after first-paint pictures (390 + 1440, light + dark) of Home and one Pokémon page at 0 ms font (block the woff2s). Headline widths must not jump more than a few px when the real font arrives; report CLS from the font swap alone.
+6. Rerun: speed-check 10/10, prerender-test, split-routes-cross-test, all 9 public test groups, v2-minors x3, and node experiments/switch-smoke.mjs. Each one by exit code.
+7. Push with a real GitHub run (no [skip ci]) on the top commit; report in alt/gemini-status.
+No design changes. Never main, never claude/design6.
