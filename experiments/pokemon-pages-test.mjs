@@ -36,7 +36,10 @@ const h404 = fs.existsSync(path.join(D, '404.html')) ? fs.readFileSync(path.join
 /* Nov 26 (night queue 8): 404.html is the light static page (experiments/static-pages-test.mjs); the app copy moved to pokemon/404.html, which
    Cloudflare serves for a wrong /pokemon/<name> (the nearest 404.html), so that address keeps the app's own "No Pokémon here." */
 ok(v.length > 0 && h404p === v.replace(/<link rel="canonical"[^>]*>|<meta property="og:url"[^>]*>/g, '').replace('<title>', '<meta name="robots" content="noindex"><title>'), 'pokemon/404.html is the page with a noindex tag');
-ok(fs.existsSync(path.join(D, 'index.html')) && fs.readFileSync(path.join(D, 'index.html'), 'utf8') === v, 'index.html is the same page as v2.html ("/" serves it)');
+/* Job W (Nov 26; changed with HH's yes pending): index.html is v2.html plus Home's static words (one visually hidden block in #main,
+   app/build.mjs V2.preBlock), so it is compared with that block taken out, and the block must be there exactly once */
+{ const ix = fs.existsSync(path.join(D, 'index.html')) ? fs.readFileSync(path.join(D, 'index.html'), 'utf8') : '', blocks = ix.match(/<section class="vh" data-v2pre>[\s\S]*?<\/section>/g) || [];
+  ok(blocks.length === 1 && ix.replace(blocks[0], '') === v, `index.html is the same page as v2.html plus Home's static words ("/" serves it; ${blocks.length} word block)`); }
 // SEO fix 2 (Nov 25): each tool page has its own file (dist/team.html, served at /team) with its own title, description, og tags and
 // canonical from docs/rebuild/seo-titles-draft.md, so search engines read the right words before any script runs
 const seoRows = []; { const sp = path.join(ROOT, 'docs/rebuild/seo-titles-draft.md');
