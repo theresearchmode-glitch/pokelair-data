@@ -2795,3 +2795,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:22 PM: Review of Kip 62 (switch-preflight.mjs): real run works: 4 PASS, FAST_DATA 'CHECK BY HAND' (API 403 via proxy), 1 correct FAIL (design6's latest test.yml run was cancelled by me to free the queue; batch6's merge run will make it green), regstate absent + post.json without 'ran' as the runbook expects. Main now at e7e2ad16 (today's data). OK to merge with batch7.
 - 3:36 PM: Hourly check: disk 4 GB -> 8.3 GB (removed b5 + tm worktrees, both pushed). Game Plan v102.
 - 3:52 PM: batch7 candidate full v2-minors: 1 FAIL 'BR-C1 control ... tops 401, 488, 402...' (timing); rerunning ONLY=BR x3.
+- 3:56 PM: batch7 BR-C1 control: 3 of 3 reruns pass (one earlier fail = timing under load while 3 test runs shared the machine). batch7 candidate = clean; waits for batch6 to merge it in before its one GitHub run.
