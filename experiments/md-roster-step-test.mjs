@@ -33,10 +33,14 @@ cpDir(path.join(ROOT, 'app/src'), path.join(scratch, 'app/src'));
 fs.mkdirSync(path.join(scratch, 'app/dist'), {recursive: true});
 fs.symlinkSync(path.join(ROOT, 'app/test'), path.join(scratch, 'app/test'));
 fs.symlinkSync(path.join(ROOT, 'docs'), path.join(scratch, 'docs'));
-for (const f of ['build.mjs', 'slim.mjs', 'preview-mascot.mjs', 'data-docs.mjs', 'public-jsonld.mjs', 'parts.json', 'parts-v2.json']) {
-  if (fs.existsSync(path.join(ROOT, 'app', f))) fs.copyFileSync(path.join(ROOT, 'app', f), path.join(scratch, 'app', f));
+/* every top-level build file in app/ (Nov 26, HH: a fixed list missed app/static-pages.mjs once /pokemon landed, so the scratch
+   public build failed and 5c reported it as a roster problem) */
+for (const f of fs.readdirSync(path.join(ROOT, 'app')).filter(f => /\.(mjs|json)$/.test(f))) {
+  if (fs.statSync(path.join(ROOT, 'app', f)).isFile()) fs.copyFileSync(path.join(ROOT, 'app', f), path.join(scratch, 'app', f));
 }
 fs.copyFileSync(path.join(ROOT, 'roster.json'), path.join(scratch, 'roster.json'));
+/* the repo-root modules the build imports (static-pages.mjs reads ../split-docs.mjs); only read, never changed by the roster step */
+for (const f of fs.readdirSync(ROOT).filter(f => /\.mjs$/.test(f))) if (!fs.existsSync(path.join(scratch, f))) fs.copyFileSync(path.join(ROOT, f), path.join(scratch, f));
 fs.mkdirSync(path.join(scratch, 'experiments'), {recursive: true});
 for (const f of ['gen-roster.mjs', 'md-roster-step.mjs', 'rules-fixes-test.mjs', 'unrated-test.mjs', 'pokemon-pages-test.mjs', 'add-sprites.mjs']) {
   if (fs.existsSync(path.join(ROOT, 'experiments', f))) fs.copyFileSync(path.join(ROOT, 'experiments', f), path.join(scratch, 'experiments', f));
@@ -150,7 +154,7 @@ const snapHashes = () => TARGETS.map(sha);
 
   const b3 = spawnSync(process.execPath, ['app/build.mjs', '--v2', '--split', '--one-art-size', '--art=../src/v2/art/', '--public'], {cwd: scratch, encoding: 'utf8'});
   const t3 = spawnSync(process.execPath, ['experiments/pokemon-pages-test.mjs'], {cwd: scratch, encoding: 'utf8'});
-  ok(b3.status === 0 && t3.status === 0, `5c pokemon-pages-test passes after roster update (build=${b3.status}, test=${t3.status}: ${(t3.stdout || '').trim().split('\n').pop()})`);
+  ok(b3.status === 0 && t3.status === 0, `5c pokemon-pages-test passes after roster update (build=${b3.status}, test=${t3.status}: ${(t3.stdout || '').trim().split('\n').pop()}${b3.status ? '; build said: ' + ((b3.stderr || '') + (b3.stdout || '')).trim().split('\n').filter(l => /error|Error|throw|cannot|not found/i.test(l)).slice(-2).join(' | ').slice(0, 300) : ''}${t3.status ? '; ' + (t3.stdout || '').split('\n').filter(l => /FAIL/.test(l)).slice(0, 3).join(' | ').slice(0, 400) : ''})`);
 }
 
 fs.rmSync(scratch, {recursive: true, force: true});
