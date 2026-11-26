@@ -2765,3 +2765,6 @@ Sim's own decisions are marked "Sim". Newest first.
 - 1:27 PM: Sim: queue Kip's next jobs. Design: The Burst is best but colours clash with the Pokémon; wants more Burst options (better execution, not overbearing), a refined Sticker Bomb, and one HH concept with no Sim rules ('100% how you would do it').
 - 1:31 PM: HH receipt round 2 sent: Burst A Plot blue (rec burst), B Sunrise, C Night; Sticker Bomb refined; HH's own Plot Receipt (rec overall). Kip queued 59 (rehearsal 4) + 60 (speed 4+5).
 - 1:33 PM: batch5 local checks: v2-public, seo-check, security-csp, public-dataready-test, v2-minors main2, v2-longtask all passed; Kip 56 taken out (needs main's regulation.json). alt/batch5 f62b2d56 pushed; gate running.
+- 1:34 PM: Sim: Burst C has the right colour feeling (not too much); Burst A needs Burst C's treatment; loves HH's Plot Receipt but the receipt's edge is unclear and it lacks colour. Wants 3 final mock-ups to pick the homepage from.
+- 1:37 PM: Sim: 'no the glow was fine sorry' - glow restored on the finals.
+- 1:38 PM: 3 final front-page mock-ups sent (glow kept): F1 Night Burst, F2 Plot-blue Burst with C treatment, F3 Plot Receipt on night panel (HH rec); phone + dark shown.
