@@ -1,11 +1,16 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 11:36 PM (11:36:33)  date: Wed Nov 25, 2026
-NOW: HH: bc2run.sh = full local suite on alt/bands-c2 1f80e8f6 (option C + TEAM-03 + gate threshold fix). Also running: gate.sh alt/pokemon-index, mainff.sh alt/score-ebfix4.
-NOW (helper): Job B (old check on C's scale, alt/bands-c3) then Job C (tablet Home proposal). NOW (Kip): jobs 41-45 via alt/kip-jobs.
-DONE: Kip data fixes on main (f4017535, Sim OK); accuracy gate fixed for option C (passes, no re-record).
-NEXT: option C to design6 via gate after score fix is on main (mainff) + bands-c2 green.
-NEXT: Sim: three.js side-chat prompt (if he wants it); 'fun mode' = ? (asked); flavor shortlist (pictures first); Speed Tiers 1280 two-row (helper after Job C).
-NEXT: meta forecast: research + honest 'Week 1 of our record' plan for Dec 18; Preview after merges; Game Plan; 7:55 AM report.
+Updated: time: 12:55 AM (12:55:06)  date: Thu Nov 26, 2026
+NOW: HH: chain.sh (pid in .main-running) gates into design6 one at a time: alt/pokemon-index (conflict fixed, fdc829b5), alt/gemini-news-ran-page
+  (Kip 46), alt/gemini-merge-gate (Kip 43), alt/gemini-md-roster (Kip 42); then chain2.sh: alt/bands-c2 3d5a5801 (option C + recScore + J-REC).
+NOW: HH: proving the new My Team move-pill check fails on old pills (local branch touch-moves in scratchpad/st); then push alt/touch-moves.
+NOW (helper): Job D, Speed Tiers at 1280x720 (alt/speed-1280). Job C (tablet Home) done: pictures for Sim.
+NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
+DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
+  small touches v1; bands-c2 updated + J-REC proven; Game Plan v89.
+WAITING ON SIM: main push of Kip 46 data half (alt/gemini-news-ran-data c78d15e2, green); reg-test change (Kip's "Better" option);
+  tablet Home proposal; lone "Saved" button proposal.
+NEXT: Preview republish after merges; reinstall pre-push hook after Kip 43 merges; small touches pass 2 (dark, tablets, other pages);
+  7:55 AM morning report.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
