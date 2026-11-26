@@ -1,11 +1,11 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 11:20 PM (11:20:28)  date: Wed Nov 25, 2026
-NOW: HH: gate.sh alt/pokemon-index (wait green -> merge into design6 -> merge-check -> push if ALL PASSED and design6 unmoved); log in scratchpad gate-pidx.out.
-NOW (helper): score batch prep (score-ebfix2 + bands-c2). NOW (Kip via alt/kip-jobs): job 41.
-DONE: Kip job-40 page fixes in design6 (a2c7f240) + their test wired (c062acf1); phone speed in design6; RK9 removal on main.
-NEXT: alt/gemini-md-data2 (Kip data fixes) -> main when green, only with Sim's OK.
-NEXT: score batch merges (design6 + main) after the helper's report; accuracy baseline only with Sim's OK.
-NEXT: helper: tablet Home proposal (pictures, no merge). Preview after merges; Game Plan; Kip reviews; 7:55 AM report.
+Updated: time: 11:36 PM (11:36:33)  date: Wed Nov 25, 2026
+NOW: HH: bc2run.sh = full local suite on alt/bands-c2 1f80e8f6 (option C + TEAM-03 + gate threshold fix). Also running: gate.sh alt/pokemon-index, mainff.sh alt/score-ebfix4.
+NOW (helper): Job B (old check on C's scale, alt/bands-c3) then Job C (tablet Home proposal). NOW (Kip): jobs 41-45 via alt/kip-jobs.
+DONE: Kip data fixes on main (f4017535, Sim OK); accuracy gate fixed for option C (passes, no re-record).
+NEXT: option C to design6 via gate after score fix is on main (mainff) + bands-c2 green.
+NEXT: Sim: three.js side-chat prompt (if he wants it); 'fun mode' = ? (asked); flavor shortlist (pictures first); Speed Tiers 1280 two-row (helper after Job C).
+NEXT: meta forecast: research + honest 'Week 1 of our record' plan for Dec 18; Preview after merges; Game Plan; 7:55 AM report.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
