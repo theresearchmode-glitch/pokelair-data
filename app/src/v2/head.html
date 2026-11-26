@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NastyPlot</title>
+<meta name="description" content="NastyPlot, the Pokémon Champions coach: Strength Score, team builder, ratings, matchups and damage calc built from real tournament results. Sharply raise your win rate.">
+<!--link previews (audit Nov 22): title, words and the brand icon when the site is shared; og:image must be an absolute address, so it
+    points at the public site (nastyplot.org/og-icon.png = docs/brand/nastyplot-brand-assets/4-social/facebook/facebook-profile-720.png,
+    published at the switch); theme-color tints the phone's browser bar to the page colour, day and night-->
+<meta property="og:type" content="website"><meta property="og:site_name" content="NastyPlot"><meta property="og:title" content="NastyPlot · The Pokémon Champions coach">
+<meta property="og:description" content="Ratings, matchups and a damage calc built from real tournament results. Sharply raise your win rate.">
+<meta property="og:image" content="https://nastyplot.org/og-icon.png"><meta property="og:image:width" content="720"><meta property="og:image:height" content="720"><meta property="og:image:alt" content="The NastyPlot devil logo">
+<meta name="twitter:card" content="summary">
+<meta name="theme-color" content="#FBFAF7" media="(prefers-color-scheme: light)"><meta name="theme-color" content="#12121B" media="(prefers-color-scheme: dark)">
+<!--NP-ICONS: the build puts src/v2/icons.html here (the "Sly Devil" browser-tab and home-screen icons, Nov 16; the old three are in git history)-->
+<!--NP-FONTS: the build puts src/v2/fonts/fonts.css here (fonts hosted by NastyPlot itself, Sim, Nov 11)-->
+<script>/* theme before first paint: the saved choice (or today's site's cc2.theme), else the device's. Code review B11: the device's
+   setting is read even when storage is blocked, and with no saved choice the page follows the device when it switches.
+   Q10 (Sim, Nov 18, answer A): the button also has Auto (nothing saved, follows the device). __npThMode holds the mode in memory
+   ('auto' | 'day' | 'night'), so the device watcher below is always on and follows the device only while the mode is Auto,
+   even after a tap back to Auto in the same visit or when storage is blocked */(function(){var t=null,d=document.documentElement,m=null;try{t=localStorage.getItem('np2.theme');if(!t){var o=localStorage.getItem('cc2.theme');t=o==='"dark"'?'night':o==='"light"'?'day':null}}catch(e){}
+try{m=matchMedia('(prefers-color-scheme: dark)')}catch(e){}var dev=function(){return m&&m.matches?'night':'day'};window.__npThMode=t==='night'||t==='day'?t:'auto';d.dataset.theme=window.__npThMode==='auto'?dev():t;d.dataset.look=d.dataset.theme==='night'?'dark':'light';
+if(m&&m.addEventListener)m.addEventListener('change',function(){if(window.__npThMode!=='auto')return;d.dataset.theme=dev();d.dataset.look=d.dataset.theme==='night'?'dark':'light'})})()</script>

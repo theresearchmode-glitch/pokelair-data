@@ -1,0 +1,62 @@
+# hP4 checks on the final practice code (Nov 22 6:56 AM)
+== cbattle 11:11:21
+   exit 0 : behaviour: 83 pass, 0 FAIL, 0 known bugs, 0 fixed?, 4 skipped; 433s  (adapter v2) 
+== taponce 11:18:34
+   exit 0 : tap-once: all pass 
+== kitpage 11:18:51
+   exit 0 : kit-page: all 14 views passed (7 widths x day and night) 
+== overlap 11:19:12
+   exit 0 : v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 43s) 
+== qcheck 11:19:59
+   exit 0 : qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 30s 
+== q25 11:20:29
+   exit 0 : v2-q25: all passed 
+== tapsize 11:21:53
+   exit 0 : tap-size: all passed 
+== unbounded 11:23:25
+   exit 0 : 
+== folds 11:24:26
+   exit 0 : v2-folds: all passed 
+== qcheck-noart 11:24:44
+   exit 0 : qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 31s 
+== minors-main1 11:25:15
+   exit 0 : v2-minors (main1):all passed 
+== minors-main2 11:37:07
+   exit 0 : v2-minors (main2):all passed 
+== minors-groups 11:43:16
+   exit 0 : v2-minors (groups):all passed 
+== tokens 11:50:51
+   exit 0 : tokens-doc: up to date (571 tokens) 
+== sync 11:50:56
+   exit 0 : v2-sync: all passed 
+== today 11:51:29
+   exit 0 : v2-today: all passed (25 s) 
+== done 11:51:54
+== v2-unbounded line
+v2-unbounded: none outside the named exception across 28 pages
+== v2-q25
+  pass  the 5 practice rounds with the longest name (Meowscarada) are checked at every width and theme (70 views, 70 show it)
+  pass  phones 320-699: your six sit 3 columns x 2 rows while picking (126 views, 0 not)
+  pass  phones: each of your cards is as wide as theirs, same sprite and frame, within 2px (0 off)
+  pass  at 390 your six take at most 400px (tallest 307px)
+  pass  phones: no name runs out of a card (yours or theirs); nothing scrolls sideways, 320-1440 (0)
+  pass  phones and desktop: every name keeps each word whole on one line (0)
+  pass  phones: every card of your six is a 44px+ tap target and not faded below 0.8 (0)
+  pass  700 and 1440: your six unchanged, one column of plates as wide as theirs with sprite, name and types (0)
+  pass  picking four and two leads by tap/click still works, and the reveal keeps one plate per row on phones (0)
+v2-q25: all passed
+== phone heights at 390 (today 399ebe1b vs new, same --v2 --preview-data --art build)
+ "390 day start": 1672,	 "390 day start": 1658,
+ "390 day pick-empty": 1717,	 "390 day pick-empty": 1665,
+ "390 day pick": 1793,	 "390 day pick": 1772,
+ "390 day reveal": 2935,	 "390 day reveal": 2886,
+ "390 day real-pick": 1747,	 "390 day real-pick": 1705,
+ "390 day real-reveal": 3275,	 "390 day real-reveal": 3207,
+ "390 night start": 1672,	 "390 night start": 1636,
+ "390 night pick-empty": 1717,	 "390 night pick-empty": 1665,
+ "390 night pick": 1793,	 "390 night pick": 1754,
+ "390 night reveal": 2906,	 "390 night reveal": 2886,
+ "390 night real-pick": 1747,	 "390 night real-pick": 1705,
+ "390 night real-reveal": 3246	 "390 night real-reveal": 3207
+== own sweep: 9 widths (320-2560) x day/night x start/pick/reveal/no-score/empty: sideways scroll, text out of box, plates overlapping
+sweep: 90 views, 0 findings

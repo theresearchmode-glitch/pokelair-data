@@ -1,0 +1,155 @@
+=== COMMIT 145ffd1d: Public site: one page per Pokémon (/pokemon/<slug>) with its own title, description and canonical; in the sitemap; file
+diff --git a/app/build.mjs b/app/build.mjs
+index a51dbc47..65cf1eb9 100644
+--- a/app/build.mjs
++++ b/app/build.mjs
+@@ -155,7 +155,7 @@ if (process.argv.includes('--v2')) {
+       const code = esb ? esb.transformSync(raw, {loader: 'js', minify: true, charset: 'utf8', legalComments: 'none'}).code : raw;
+       const fn = `${rk}.js`;
+       fs.writeFileSync(dir + 'dist/routes/' + fn, code);
+-      routeManifest[rk] = `routes/${fn}?v=${hash(code)}`;
++      routeManifest[rk] = `/routes/${fn}?v=${hash(code)}`; /* from the site root: /pokemon/x would look in /pokemon/routes/ (Nov 25) */
+     }
+   }
+   let pubTag = '', seoRows = [];
+@@ -230,6 +230,44 @@ if (process.argv.includes('--v2')) {
+           return g('.np-skip') + g('.np-head') + '<main class="np-main" id="main">' + (window.V2 && V2.loadingHtml ? V2.loadingHtml() : '') + '</main>' + g('.np-bar'); }); /* pre-launch 2b (Nov 17): the loading panel from the first paint (slow 4G showed an empty page for ~3 s) */
+         if (parts.includes('np-head') && page.includes('<div id="app"></div>')) { fs.writeFileSync(dir + 'dist/v2.html', page.replace('<div id="app"></div>', `<div id="app">${parts}</div>`)); console.log(`v2: static first screen ${(parts.length / 1024).toFixed(0)} KB`); }
+       } catch (e) { console.log('v2: static first screen skipped (' + String(e.message).slice(0, 80) + ')'); } finally { await b.close(); } } }
++  /* Public site, Nov 25 (Sim: quiet launch Dec 2-3; Kip job 31: one page per Pokémon is the fastest Google win).
++     1. The page's own files load from the site root: on a two-level address (/pokemon/garchomp) a relative "v2.js" asked for
++        /pokemon/v2.js and got the page back ("This page didn't load"). Done after the static first screen, which opens the file locally.
++     2. One page per Pokémon, dist/pokemon/<slug>.html (Cloudflare Pages serves it at /pokemon/<slug>), with its own title, description
++        and canonical address, so search engines see the right words before any script runs. Same slug rule as V2.pubSlug (pokemon.js). */
++  if (PUBLIC) {
++    let h = fs.readFileSync(dir + 'dist/v2.html', 'utf8');
++    h = h.replace(/(src|href)="(v2\.(?:js|css)|fonts\/)/g, '$1="/$2').replace(/url\(fonts\//g, 'url(/fonts/');
++    h = h.replace(/<link rel="icon" type="image\/svg\+xml" href="data:[^"]*">/, '<link rel="icon" type="image/svg+xml" href="/favicon.svg">')
++      .replace(/<link rel="icon" type="image\/png" sizes="32x32" href="data:[^"]*">/, '<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48.png">')
++      .replace(/<link rel="apple-touch-icon" sizes="180x180" href="data:[^"]*">/, '<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">');
++    fs.writeFileSync(dir + 'dist/v2.html', h);
++    const line = fs.readFileSync(dir + 'src/data/data.js', 'utf8').split('\n')[0], roster = JSON.parse(line.slice(line.indexOf('['), line.lastIndexOf(']') + 1));
++    const mainSrc = fs.readFileSync(dir + 'src/app/00-main.js', 'utf8'), regLine = mainSrc.match(/^const REG=.*$/m)[0], dispSrc = mainSrc.match(/^function disp\(n\)\{[\s\S]*?\n\}/m)[0];
++    const disp = new Function(`${regLine}\n${dispSrc}\nreturn disp;`)();
++    const slug = n => String(n).toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[’'.]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
++    const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
++    /* the 840 KB stylesheet goes in one shared file (/v2.css) for the Pokémon pages: 346 inline copies made 322 MB (checked Nov 25) */
++    let ph = h; const st = [...h.matchAll(/<style>\n?([\s\S]*?)\n?<\/style>/g)].sort((x, y) => y[1].length - x[1].length)[0];
++    if (st && st[1].length > 100000) { const css = st[1]; fs.writeFileSync(dir + 'dist/v2.css', css); ph = h.replace(st[0], `<link rel="stylesheet" href="/v2.css?v=${hash(css)}">`); }
++    const seen = new Map(); fs.mkdirSync(dir + 'dist/pokemon', {recursive: true});
++    for (const p of roster) {
++      const s = slug(p.n); if (!s) throw new Error('public build: empty address for ' + p.n);
++      if (seen.has(s)) throw new Error(`public build: ${p.n} and ${seen.get(s)} share the address /pokemon/${s}`); seen.set(s, p.n);
++      const name = disp(p.n), title = `${name}: rating, sets and partners · NastyPlot` /* the same words the page sets (pokemon.js) */, desc = `${name} in Pokémon Champions doubles: its rating, its most common tournament set and its best partners, from real tournament results.`;
++      const page = ph.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title><link rel="canonical" href="https://nastyplot.org/pokemon/${s}">`)
++        .replace(/(<meta name="description" content=")[^"]*"/, `$1${esc(desc)}"`).replace(/(<meta property="og:title" content=")[^"]*"/, `$1${esc(title)}"`);
++      fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
++    }
++    const urls = [...seen.keys()].map(s => `  <url><loc>https://nastyplot.org/pokemon/${s}</loc></url>`).join('\n');
++    fs.writeFileSync(dir + 'dist/sitemap.xml', fs.readFileSync(dir + 'dist/sitemap.xml', 'utf8').replace('</urlset>', urls + '\n</urlset>'));
++    /* if Cloudflare's catch-all were applied before the static files (its docs don't say; not checked), this keeps each Pokémon page */
++    fs.writeFileSync(dir + 'dist/_redirects', fs.readFileSync(dir + 'dist/_redirects', 'utf8').replace('/* /v2.html 200', '/pokemon/:name /pokemon/:name.html 200\n/* /v2.html 200'));
++    /* the brand kit's icons at the site root (search engines look for /favicon.ico and a real icon URL; never redrawn, copied as is) */
++    const icoDir = dir + '../docs/brand/nastyplot-brand-assets/3-website-icons/';
++    for (const f of ['favicon.ico', 'favicon.svg', 'favicon-48.png', 'apple-touch-icon.png', 'icon-192.png', 'icon-512.png']) if (fs.existsSync(icoDir + f)) fs.copyFileSync(icoDir + f, dir + 'dist/' + f);
++    console.log(`public: ${seen.size} Pokémon pages + sitemap entries; page files load from the site root; brand icons at the root`);
++  }
+   // the CSP hashes come from the page as finally written (the static first screen above rewrites it)
+   if (writeHeaders) writeHeaders(fs.readFileSync(dir + 'dist/v2.html', 'utf8'));
+   // the font files beside the built page (fonts/ is the default place the page reads them from)
+diff --git a/app/src/v2/pages/pokemon.js b/app/src/v2/pages/pokemon.js
+index f7281ee9..ed2efb19 100644
+--- a/app/src/v2/pages/pokemon.js
++++ b/app/src/v2/pages/pokemon.js
+@@ -8,7 +8,13 @@ V2.bars = p => lairBars(p).map(([l, ...r]) => [l === 'Converts to top cut' ? 'To
+ // Every number comes from the same shared helpers as before (rating, lairHead, rankTxt, SHT.*, lairBars, lairEvidence, bringLead,
+ // pilotFor, defSet, bestHitOn, metaThreats, META.events); nothing is written per Pokémon by hand.
+ V2.monSlug = n => encodeURIComponent(String(n).toLowerCase());
+-V2.monFromHash = () => { let k = ''; try { k = decodeURIComponent((location.hash.split('=')[1] || '')).toLowerCase(); } catch (e) {} return k && typeof ROSTER === 'object' ? ROSTER.find(q => q.n.toLowerCase() === k) || null : null; };
++/* the address part for a Pokémon on the public site (nastyplot.org/pokemon/mr-mime): lower case, no accents or apostrophes, other
++   characters to '-' (V2.monSlug above stays for the site's own #pokemon= links). app/build.mjs writes one page per Pokémon with the same rule (checked by experiments/public-build-test.mjs) */
++V2.pubSlug = n => String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[’'.]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
++V2.monFromHash = () => { let k = ''; try { k = decodeURIComponent((location.hash.split('=')[1] || '')).toLowerCase(); } catch (e) {}
++  /* Nov 25: on the public site the address carries it (/pokemon/garchomp); before, the page fell back to its default Pokémon */
++  if (!k && window.__NP_PUBLIC && /^\/pokemon\/./.test(location.pathname)) { try { k = decodeURIComponent(location.pathname.slice(9)).replace(/\/+$/, '').toLowerCase(); } catch (e) {} }
++  return k && typeof ROSTER === 'object' ? ROSTER.find(q => q.n.toLowerCase() === k || V2.pubSlug(q.n) === k) || null : null; };
+ V2.STATS = [['HP', 'hp'], ['Attack', 'atk'], ['Defense', 'def'], ['Sp. Atk', 'spa'], ['Sp. Def', 'spd'], ['Speed', 'spe']];
+ V2.pkTry = (f, d) => { try { const v = f(); return v == null ? d : v; } catch (e) { return d; } };
+ V2.pkPct = v => { const x = +v; return !isFinite(x) ? '' : (x >= 10 || x === 0 ? Math.round(x) : Math.round(x * 10) / 10) + '%'; };
+diff --git a/app/src/v2/shell.js b/app/src/v2/shell.js
+index 65d5043d..5f5e9cec 100644
+--- a/app/src/v2/shell.js
++++ b/app/src/v2/shell.js
+@@ -1,7 +1,7 @@
+ // ---------- NastyPlot v2 shell (R3, Nov 11): header, navigation, phone bar, footer, theme, routing ----------
+ // Pages register themselves in V2.pages; the shell draws the frame and the current page from location.hash (#home, #team...).
+ // Art: one place for every Pokémon picture (V2.art), so the art can be swapped in one line (ownership rule, Nov 11).
+-const V2 = window.V2 = {pages: {}, ART_BASE: window.NP_ART || 'art/'};
++const V2 = window.V2 = {pages: {}, ART_BASE: (b => window.__NP_PUBLIC && /^[a-z]/i.test(b) ? '/' + b : b)(window.NP_ART || 'art/')}; /* public: from the site root, so /pokemon/x finds art/ (Nov 25) */
+ V2.art = (id, big) => id == null || id === '' ? 'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7' : (big ? V2.ART_BASE : V2.ART_SMALL) + id + '.webp';
+ // Sim (Nov 17, sprites A): every direct sprite image is drawn 80px or smaller (measured on every page, 320-1920), so it takes the 240px file
+ // (art-s/, looks the same at iPhone 3x; all sprites 7.6 -> 4.7 MB); V2.mon keeps today's 384px file unless it is set to 80px or less.
+=== COMMIT 0aaecf83: Pokémon page title (Sim OK'd HH's wording): '<Name> in Pokémon Champions: best set, rating & partners' (60 chars max; 
+diff --git a/app/build.mjs b/app/build.mjs
+index 65cf1eb9..017a5ba8 100644
+--- a/app/build.mjs
++++ b/app/build.mjs
+@@ -254,7 +254,7 @@ if (process.argv.includes('--v2')) {
+     for (const p of roster) {
+       const s = slug(p.n); if (!s) throw new Error('public build: empty address for ' + p.n);
+       if (seen.has(s)) throw new Error(`public build: ${p.n} and ${seen.get(s)} share the address /pokemon/${s}`); seen.set(s, p.n);
+-      const name = disp(p.n), title = `${name}: rating, sets and partners · NastyPlot` /* the same words the page sets (pokemon.js) */, desc = `${name} in Pokémon Champions doubles: its rating, its most common tournament set and its best partners, from real tournament results.`;
++      const name = disp(p.n), title = (t => t.length <= 60 ? t : `${name}: Champions set, rating & partners`)(`${name} in Pokémon Champions: best set, rating & partners`) /* same as V2.pubTitle (pokemon.js) */, desc = `${name} in Pokémon Champions doubles: its best tournament set, its rating and its best partners, from real tournament results. Free, no account.`;
+       const page = ph.replace(/<title>[^<]*<\/title>/, `<title>${esc(title)}</title><link rel="canonical" href="https://nastyplot.org/pokemon/${s}">`)
+         .replace(/(<meta name="description" content=")[^"]*"/, `$1${esc(desc)}"`).replace(/(<meta property="og:title" content=")[^"]*"/, `$1${esc(title)}"`);
+       fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
+diff --git a/app/src/v2/pages/pokemon.js b/app/src/v2/pages/pokemon.js
+index ed2efb19..42046534 100644
+--- a/app/src/v2/pages/pokemon.js
++++ b/app/src/v2/pages/pokemon.js
+@@ -11,6 +11,9 @@ V2.monSlug = n => encodeURIComponent(String(n).toLowerCase());
+ /* the address part for a Pokémon on the public site (nastyplot.org/pokemon/mr-mime): lower case, no accents or apostrophes, other
+    characters to '-' (V2.monSlug above stays for the site's own #pokemon= links). app/build.mjs writes one page per Pokémon with the same rule (checked by experiments/public-build-test.mjs) */
+ V2.pubSlug = n => String(n).toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[’'.]/g, '').replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
++/* the Pokémon page title (Sim, Nov 25 2:07 PM: HH's wording): the words people search ("Pokémon Champions", "set"); 60 characters
++   at most, so long names take the short form. app/build.mjs writes the same title into each /pokemon/<slug> file */
++V2.pubTitle = name => { const t = `${name} in Pokémon Champions: best set, rating & partners`; return t.length <= 60 ? t : `${name}: Champions set, rating & partners`; };
+ V2.monFromHash = () => { let k = ''; try { k = decodeURIComponent((location.hash.split('=')[1] || '')).toLowerCase(); } catch (e) {}
+   /* Nov 25: on the public site the address carries it (/pokemon/garchomp); before, the page fell back to its default Pokémon */
+   if (!k && window.__NP_PUBLIC && /^\/pokemon\/./.test(location.pathname)) { try { k = decodeURIComponent(location.pathname.slice(9)).replace(/\/+$/, '').toLowerCase(); } catch (e) {} }
+@@ -194,7 +197,7 @@ V2.pages.pokemon = {place: 'meta', after() { V2.pkFocusName(); }, draw() { const
+   if (!p) { try { document.title = 'No Pokémon here · NastyPlot'; } catch (e) {} } /* design review #20: the tab kept the previous Pokémon's title */
+   /* Wave 2 part 5 (Sim chose A, Nov 22): the approved Page-not-found shape (V2.nfHtml): kit header, the pink way out, today's underdog card */
+   if (!p) return `<div class="ra gsp nf-pg nf2" data-v2pknf><div class="nf2-two"><div class="k-head"><p class="k-kicker np-eyebrow">POKÉMON · NOT FOUND</p><h1 class="k-h1 u">No Pokémon <em>here.</em></h1><p class="k-lead">This address doesn't match a Pokémon in ${V2.esc(regName())}.</p>${V2.kGo('EVERY POKÉMON, BY TIER.', {href: '#meta', class: 'pk-404'})}</div>${V2.nfDog()}</div></div>`; /* scan S33: today's underdog; scan S3 A (Sim, Nov 20): the way out is the slanted outline button on its own line, so it never breaks inside its name */
+-  try { document.title = `${V2.disp(p.n)}: rating, sets and partners · NastyPlot`; } catch (e) {} /* a real page title per Pokémon (brief section 10: being found from a search) */
++  try { document.title = V2.pubTitle(V2.disp(p.n)); } catch (e) {} /* a real page title per Pokémon (brief section 10: being found from a search) */
+   const H = lairHead(p), dex = V2.pkDex(p);
+   const lead = `Pokémon Champions · VGC doubles, ${regName().replace(/ /g, '\u00a0').replace(/-/g, '\u2011')}. ${H.tot ? `Rated from ${basisNum(H.tot, true)} real tournament teams.` : V2.unrated(p) ? 'No tournament teams yet: not rated yet.' : 'No tournament teams yet: rated from its stats, typing and tools.'}${H.thinR && !V2.unrated(p) ? ' Early read: few games so far.' : ''}`;
+   const ty = V2.byName && V2.byName.get(p.n) && V2.byName.get(p.n).t || p.t || [], c1 = V2.TYPES.includes(ty[0]) ? ty[0] : 'Normal', c2 = V2.TYPES.includes(ty[1]) ? ty[1] : c1;
+=== COMMIT 2c3ba934: Pokémon page: the main picture carries the Pokémon's name and loads at once (SEO review #9; Google Images). Every othe
+diff --git a/app/src/v2/kit.js b/app/src/v2/kit.js
+index 01937709..1e146697 100644
+--- a/app/src/v2/kit.js
++++ b/app/src/v2/kit.js
+@@ -35,7 +35,7 @@ V2.kCard = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID
+   /* Sim, Nov 21 (~12:25 PM, "the numbers are on top of the pokemon sprites it looks terrible"): nothing is drawn over the art. The score sits in
+      the name row on the right (Plot blue, its tier word under it); the form line ('Mega') is in the name block */
+   const sc = o.score != null && o.score !== '' ? `<span class="k-sc"><b class="k-score u">${V2.esc(o.score)}</b>${o.tier ? `<small class="k-tier">${V2.esc(o.tier)}</small>` : ''}</span>` : '';
+-  const inner = `${o.mine ? V2.kMine(o.mine === true ? 'Yours' : o.mine) : ''}<span class="k-plate">${id ? `<img class="k-art" src="${V2.art(id, true)}" alt="" loading="lazy" decoding="async">` : ''}<span class="k-nm"><span class="k-id"><small class="k-form" data-kmax="2">${form ? V2.esc(form) : '&nbsp;'}</small><b class="k-name u" data-kmax="5">${V2.esc(k.name)}</b>${o.fact ? `<i class="k-fact">${V2.esc(o.fact)}</i>` : ''}</span>${sc}</span></span>`;
++  const inner = `${o.mine ? V2.kMine(o.mine === true ? 'Yours' : o.mine) : ''}<span class="k-plate">${id ? `<img class="k-art" src="${V2.art(id, true)}" alt="${o.alt ? V2.esc(o.alt) : ''}"${o.alt ? '' : ' loading="lazy"'} decoding="async">` : ''}<span class="k-nm"><span class="k-id"><small class="k-form" data-kmax="2">${form ? V2.esc(form) : '&nbsp;'}</small><b class="k-name u" data-kmax="5">${V2.esc(k.name)}</b>${o.fact ? `<i class="k-fact">${V2.esc(o.fact)}</i>` : ''}</span>${sc}</span></span>`;
+   return `<${tag}${tag === 'button' ? ' type="button"' : ''} class="k-card${size}${o.sel ? ' k-sel' : ''}"${V2.TYPES.includes(t) ? ` style="--kc:var(--tyn-${t})"` : ''}${'sel' in o && tag === 'button' ? ` aria-pressed="${o.sel ? 'true' : 'false'}"` : ''}${V2.kAttrs(o.attrs)}>${inner}</${tag}>`; };
+ // a row of cards: six across on desktop, 3 x 2 on phones (never 5 + 1); four or two go 2 across on phones
+ V2.kRoster = cards => `<ul class="k-roster" data-n="${Math.min(6, (cards || []).length)}">${(cards || []).map(c => `<li>${c}</li>`).join('')}</ul>`;
+diff --git a/app/src/v2/pages/pokemon.js b/app/src/v2/pages/pokemon.js
+index 42046534..064ce9cd 100644
+--- a/app/src/v2/pages/pokemon.js
++++ b/app/src/v2/pages/pokemon.js
+@@ -44,7 +44,7 @@ V2.pkTop = p => { const E = V2.esc, n = p.n, r = rating(p), rs = RS(r.total), T
+   const rk = rankTxt(p, 'cap') || '', /* Sim, Nov 19 (Q15 A): the rank says '#N of M with results' (the card's shorter 'rated' put back to the approved wording, Nov 21) */ W = V2.pkWeeks(p), ok = W.length >= 2;
+   const top = ok ? Math.max(10, ...W.map(w => w.v)) * 1.08 : 0;
+   const plot = ok ? `<span class="pk-plot" aria-hidden="true">${W.map(w => `<i style="--h:${(100 * w.v / top).toFixed(1)}"></i>`).join('')}</span>` : '';
+-  const un = V2.unrated(p) /* Not rated yet (Sim, Nov 25): the words in the rank line, no number and no tier */, card = V2.kCard(n, {size: 'hero', score: un ? '' : rs, tier: un ? '' : T.k + ' tier', form: [k.form, un ? V2.NOT_RATED : rk || 'No results yet'].filter(Boolean).join(' · ')})
++  const un = V2.unrated(p) /* Not rated yet (Sim, Nov 25): the words in the rank line, no number and no tier */, card = V2.kCard(n, {size: 'hero', alt: V2.disp(n) /* SEO review Nov 25 #9: the page's main picture has its name (Google Images); loads at once */, score: un ? '' : rs, tier: un ? '' : T.k + ' tier', form: [k.form, un ? V2.NOT_RATED : rk || 'No results yet'].filter(Boolean).join(' · ')})
+     .replace('<span class="k-plate">', `<span class="k-plate">${plot}`).replace('<span class="k-sc">', '<span class="k-sc pk-rate">')
+     .replace(/<small class="k-tier">([^<]*)<\/small>/, '<small class="k-tier"><span class="tier-tag">$1</span></small>')
+     .replace(/(<b class="k-name u"[^>]*>[^<]*<\/b>)/, `$1<span class="pk-types">${(p.t || []).map(V2.typeChip).join('')}</span>`);

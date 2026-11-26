@@ -1,0 +1,133 @@
+# Page heights: today's site vs the rebuild
+
+This table records the rule in design-system.md section 9. Heights are full page height in pixels, in the default state (nothing expanded), in day mode, with the sample team (Garchomp, Sneasler, Mega Charizard Y, Whimsicott, Basculegion, Kingambit).
+
+- **Today's site:** measured Nov 11 with `node experiments/page-heights.mjs` (raw: test-runs/page-heights-today.json).
+- **Rebuild:** measured with `node experiments/mock-heights.mjs`. **These are MOCK-UP heights, not the built page** (correction,
+  Nov 11 night, Sim's sweep). Only a row marked "BUILT" was measured on the real built page. See the correction below.
+
+> **CORRECTION, Nov 11 night (Sim's sweep, rule C1 in docs/rebuild/RULES.md).** The My Team figures that were here
+> (1,737 / 2,587 / 1,699) are the mock-up's. The real built page (Preview foundation.html, sample team, default state) is
+> over the limit at every size:
+> - Sim's sweep (Chromium): phone 390: 4,309; phone 320: 4,818; iPad 820: 3,775; desktop 1440: 2,223. In use: 2,500 on desktop
+>   after removing one Pokémon, 2,536 after an Apply, 4,108 with every section open.
+> - Height helper (Nov 11 ~10:20 PM, built page foundation.html as published in Preview v50/v51, WebKit iPhone 13 for phone,
+>   Chromium for iPad/desktop; report: test-runs/nov11-night/helper-height-report.md): phone 4,308; iPad 3,775; desktop 2,223.
+>   Plain words: the built My Team is about 900px too long on phone, 275px on iPad and 420px on desktop.
+> No other rebuilt page has been measured on the built page yet. Every other "Rebuild" number below is a mock-up number.
+
+> **BUILT PAGES, re-measured Nov 12-13 (runs finished 11:55 PM Nov 12 and 12:04 AM Nov 13, file times; replaces the Nov 12 1:05 AM tables, which were out of date).**
+> Check: `node experiments/c13-check.mjs app/dist/v2-c13.html <pages> <state>`; My Team rows on claude/design6 at 252994d; Home, Build
+> and Battle rows on the 11:47 PM build (before AUTO-06 and the jump-bar tap fix, neither changes a height); sample team,
+> daily data as the live page gets it, day mode, Chromium and WebKit (they agree within 24px; the larger is shown).
+> Home, Build and Battle don't change with the team states, so their row is the default state.
+>
+> | Built page, state | 320 | 390 | 820 | 1440 |
+> |---|---|---|---|---|
+> | My Team (default) | 3,875 ok (3,900) | 3,743 ok (3,750) | 3,009 ok | 1,786 ok (1,800) |
+> | My Team, 5 of 6 (own limits, Sim Nov 13 Height Q1 A: 4,250 / 4,100 / 3,500 / 1,950; re-measured 5:42 AM after the SUGG-06 line came back on the suggestion card, +59) | 4,227 ok | 4,099 ok | 3,334 ok | 1,917 ok |
+> | My Team, six longest names (imported) | 3,944 **over** | 3,842 **over** (limit 3,700: not the sample team) | 3,091 ok | 1,863 **over** |
+> | My Team, after Suggestion 1's Apply | unknown: today's data gives the sample team no suggestion that raises its score, so there was nothing to apply | | | |
+> | My Team, every fold open (no limit set) | 6,530 | 6,217 | 5,026 | 4,017 |
+> | Home | 4,203 ok | 3,799 ok | 3,437 ok | 2,910 ok (2,950) |
+> | Build (before tapping Build; the check doesn't build a team. CORRECTION 12:53 AM: I first labelled this row "after building", wrongly) | 2,973 ok | 2,390 ok | 1,761 ok | 1,342 ok |
+> | Build after building (re-measured 5:47 AM, full data, Chromium; phones with Sim's tabs, Look Q4 B) | | 3,167 ok (one section at a time; 2,469 / 3,148 for the others) | 3,490 ok (3,500) | 2,121 **over** (1,800) |
+> | Battle | 4,620 ok (4,650) | 4,097 ok (4,100) | 3,142 ok | 1,928 ok (1,950) |
+>
+> Where 5 of 6 grows (390, section heights): Matchups +168, Suggestions +107, Team Checks +105, the top +47, Your Games -89
+> (gone). A missing Pokémon means more threats without an answer and more checks failing, so those sections list more.
+> Nothing cut off, nothing sideways, 0 errors in any state. My Box and Compare were not re-measured this time.
+> Check limit found: the "open" state is measured before the ~120-team winner-rate pass finishes, so the checks read
+> "most recent event winners" (today's fallback) instead of the measured numbers; real pages fill them in within 10 s.
+
+**Limits.** "over" marks a page past its limit.
+
+| Size | Tool page | Home |
+|---|---|---|
+| Phone 390 x 844 | 3,700 (was 3,400; Sim, Nov 12: raised rather than fold content away or shrink the six); the first-visit sample team with its sample note 3,750 (Sim, Nov 12, option A) | 4,400 (was 4,200; Sim, Nov 12, option A: raised rather than shrink the sixes or move the underdog; plus the two-line event name) |
+| iPad 820 x 1180 | 3,500 | 3,500 |
+| Desktop 1440 x 900 | 1,800 | 2,700 (2,950 on a first visit: the welcome card is allowed over, Sim, Nov 12; raised from 2,900 at 8:18 PM because the Meta grows with the daily data) |
+
+| Page | Today: phone | Today: iPad | Today: desktop | Rebuild (phone / iPad / desktop) |
+|---|---|---|---|---|
+| Home | 3,732 | 5,099 **over** | 3,980 **over** | 4,191 / 2,828 / 2,595 (Nov 11) |
+| My Team | 4,458 **over** | 4,644 **over** | 3,445 **over** | BUILT (Nov 13): 3,743 ok / 3,009 ok / 1,786 ok in the default state; over with 5 of 6 and with long names (see the table above). Mock-up was 1,737 / 2,587 / 1,699 |
+| My Team, no team yet (first visit) | (old empty state not measured) | | | 1,804 / 1,316 / 1,039 |
+| Build for Me | 3,178 | 2,270 | 1,947 **over** | 2,298 / 2,943 / 1,796 (Nov 11) |
+| All Suggestions | 1,769 | 1,553 | 1,550 | built (a sheet over My Team, Claude's design under authority; not measured as a page) |
+| Saved Teams | 1,344 | 1,180 | 1,129 | built (a sheet; not measured as a page) |
+| Compare Teams | 2,464 | 1,898 | 1,798 | built (Nov 12 table: 974 at 390 with no teams picked; not re-measured) |
+| My Box | 1,407 | 1,257 | 1,203 | 2,180 / 2,589 / 1,239 (Nov 11: iPad stacked, tilted-panel selection, floor) |
+| Battle a Team | 2,743 | 2,418 | 1,926 **over** | 3,378 / 2,545 / 1,789 (Nov 11) |
+
+Battle limits (Sim, Nov 12, 10:15 PM, Q5 = A, the Battle log always shown): 320 4,250 · 390 3,750 · 1440 1,850 (were 3,900 / 3,700 / 1,800). Then Q6 = A (Sim, Nov 12, the Battle tools): 320 4,650 · 390 4,100 · 1440 1,950.
+Battle 390 limit raised to 4,200 (Sim, Nov 15, Q2: 'recommended'; measured 4,179 with the Play-by-Play). At 1366+ Your Games now sits beside the headline before their six is in (Q14): 1,545 at 1366/1440 (was 1,595), 1,479 at 1920 (was 1,569). Logged time: 7:29 AM (7:29:23)  date: Sun Nov 15, 2026.
+| Team Preview Practice | 1,418 | 1,180 | 1,118 | not drawn yet |
+| Test Run | 3,034 | 2,436 | 2,474 **over** | not drawn yet |
+| Speed Tiers | 2,321 | 1,972 | 1,922 **over** | not drawn yet |
+| Damage Calc | 3,170 | 2,733 | 2,261 **over** | not drawn yet |
+| Type Chart | 3,105 | 2,391 | 1,856 **over** | not drawn yet |
+| This Week | 4,724 **over** | 3,647 **over** | 3,361 **over** | not drawn yet |
+| Pokémon Ratings | 3,064 | 2,441 | 2,379 **over** | 2,949 / 2,308 / 1,790 (Nov 11) |
+| Usage | 2,136 | 2,017 | 2,086 **over** | not drawn yet |
+| Popular Sets | 2,877 | 2,204 | 2,224 **over** | not drawn yet |
+| Winning Teams | 3,755 **over** | 2,846 | 2,790 **over** | not drawn yet |
+| Events | 3,982 **over** | 3,508 **over** | 2,607 **over** | not drawn yet |
+| Archetypes | 2,360 | 2,280 | 2,259 **over** | not drawn yet |
+| Track Record | 3,159 | 2,622 | 2,744 **over** | not drawn yet |
+| How We Calculate | 2,997 | 2,270 | 2,238 **over** | not drawn yet |
+| About & Legal | 1,955 | 1,603 | 1,611 | not drawn yet |
+
+## Notes
+
+- **My Team, today:** I measured 3,445px on desktop. Sim's figure was about 4,270px. I don't know which setup gave his (a different width, or a section left open, perhaps), so both are noted here.
+- **My Team, rebuild (Nov 11):** the page is over its limit at all three sizes. On desktop the Team Sheet adds 612px at the bottom. On phone the stacked Set, Matchups and Suggestions take 2,558px and the Team Sheet another 1,378px. On iPad the six overflow the screen edge, because the mock-up has no iPad layout yet. Under 9.2 this goes to Sim with options before any change.
+
+- **Home, rebuild (Nov 11): REVERSED by Sim ("38px is barely anything, find a way").** The tool descriptions are back on phone. The space came from smaller Pokémon art on phone (hero, the two sixes, the underdog), never from text or spacing. The first version of this note, kept for the record: The phone page first measured 4,238px, over the 4,200 limit. Instead of shrinking anything, the "Everything NastyPlot does" tiles show only the tool names on phone, without their one-line descriptions. Each tool is still one tap away, and the descriptions still show on iPad and desktop. Sim can reverse this.
+- **Home also changed:** the "This week in the ratings" chips moved from under the hero into the empty half beside the underdog, as a labelled list ("up 5 points": rating points, checked in AR.week). The old Welcome card, What's New and the sample-team note are not drawn. Each appears only in a special state (first visit, after an update, or while the sample team is loaded), never in the default page.
+- **Pokémon info sheet, rebuild (Nov 11):** measured as a page, the sheet is 2,431px on phone, 1,744 on iPad and 1,417 on desktop. The page-length limits are for pages and the sheet scrolls by itself, so these are recorded for reference. It shows the Info tab, which is the default for a first visit (today's site remembers the last tab chosen).
+- **Ratings, rebuild (Nov 11):** drawn by a helper agent, then checked and adjusted. Desktop is 10px under its limit. It shows 12 rows plus "See all 345 Pokémon", so no exception is needed. On phone the filter chips wrap so none is cut off at the edge.
+- **All mock-up scripts now read the morning refresh (out/perf.json) the way the live site does** (fix found by the Ratings helper). The test harness's frozen data makes On teams and Win rate fall back to Nov 1; the scripts now show the live Nov 10 numbers. Ratings and their order did not change.
+- **Build, rebuild (Nov 11):** drawn by a helper agent from a real build (Build around Garchomp, whole roster, 2 Megas: Sun, Tailwind, 91 Top tier), then checked. On phone, Other options, Cores and Recent winners are tabs, one tap each; today they are reached by scrolling.
+- **Battle, rebuild (Nov 11):** drawn by a helper agent against the latest winner's open team sheet, then checked. The damage grid sits behind a tab. Opened, it takes the page to 2,570 on desktop and 4,699 on phone, so the proposed limit for that open state is 3 screens on desktop and 6 on phone (Sim to confirm).
+Battle 1440 limit raised to 2,150 (Sim, Nov 15, time: 8:23 AM (8:23:06)  date: Sun Nov 15, 2026, recommended): at 1366+ the Play-by-Play is 2x2 and the three blocks below are even columns; measured 2,102 at 1440 with an opponent (was 2,331).
+My Team limits for 'The Hand' (time: 8:51 AM (8:51:06)  date: Sun Nov 15, 2026, Claude under Sim's authority and standing 'recommended'; Sim can say B): measured heights rounded up to the next 50, as for Build / Meta / Battle. Normal: 320 4,600 (measured 4,571), 390 4,150 (4,133), iPad 3,500 unchanged (3,191), 1440 2,350 (2,328). 5 of 6: 320 4,500 (4,492), 390 4,200 (4,188), 1440 2,100 (2,068). The older limits were set Nov 11-13, before The Hand.
+
+## Pokémon page (#pokemon=<name>), Nov 15 (set under Claude's authority, for Sim's review)
+Measured on six Pokémon (Kingambit, Rotom-Wash, Mega Charizard Y, Persian, Gholdengo, Flapple), real data; the longest is Rotom-Wash
+(the forms table). Limits = longest rounded up to 50 (Sim's rule for Build / Meta / Battle): 320 9,550 · 390 9,050 · 820 7,700 · 1440 5,800.
+Measured: 320 7,332-9,535 · 390 7,043-9,002 · 820 5,760-7,697 · 1440 4,247-5,754. Long by design (seven parts replacing the sheet's
+three tabs); shortening it on phones is a design question for Sim (summary, Nov 16).
+
+### Pokémon page after folding (Sim, Nov 15 Q1 A; written time: 4:50 PM (4:50:55)  date: Sun Nov 15, 2026)
+Parts 3-6 (and Forms side by side) fold on every width with a one-line summary; wide screens pair folded parts two across; on phones the
+partners and jump links are swipe rows, the typical set is two by two and the full Moves and Items lists sit behind one tap.
+Longest (Rotom-Wash): 320 9,535 -> 4,752 · 390 9,002 -> 4,506 · 820 7,697 -> 4,505 · 1440 5,754 -> 3,222. Kingambit: 4,207 / 4,151 / 4,195 / 2,920.
+Limits now 320 4,800 · 390 4,550 · 820 4,550 · 1440 3,250 (measured + 50).
+
+## Footer restored (Sim, Nov 15 Q2 A; written time: 5:29 PM (5:29:56)  date: Sun Nov 15, 2026)
+The footer's tagline, Privacy, Contact and Sources and Credits (a button in the link row, list below on tap) add, measured on Home:
+320 +88 · 390 +62 · 820 +64 · 1440 +9 px (phones: the tagline line and a second row of links). Every page's limit gets +90 / +70 / +70 / +10
+(rounded up to 10) in c13-check.mjs; nothing else may grow. Before the change Home 390 was 4,431 vs 4,400, Meta 820 3,987 vs 3,950,
+Battle 390 4,251 vs 4,200, Rotom-Wash 320 4,840 vs 4,800: each within its old limit + the footer. For Sim's review.
+
+## The Stampede Home, Gifts and News (written time: 2:06 PM (2:06:43)  date: Wed Nov 18, 2026)
+Built page `node app/build.mjs --v2 --art=../src/v2/art/` at 5f63de08, daily data from out/ plus meta/post (out/post.json), default
+state, day mode. `node experiments/c13-check.mjs app/dist/v2.html home,gifts,news`. Chromium / WebKit, footer included, data note not counted:
+
+| Page | 320 | 390 | 820 | 1440 |
+|---|---|---|---|---|
+| Home (The Stampede) | 6,664 / 6,443 | 6,240 / 6,168 | 7,819 / 7,743 | 5,117 |
+| Gifts | 4,108 / 4,014 | 3,748 / 3,737 | 3,194 / 3,167 | 2,006 |
+| News | 4,654 / 4,440 | 4,129 / 4,061 | 3,939 / 3,898 | 2,116 |
+
+Limits added to c13-check.mjs at 390 and 1440 only: the taller engine + about 100 px (daily news and Meta growth), rounded up to the next 50,
+footer included: Home 6,350 / 5,250; Gifts 3,850 / 2,150; News 4,250 / 2,250. They exist so a change that bloats these pages fails
+(checked: with 300 px added to each page, all 9 runs at 390/1440 report OVER; without, all 9 are ok). **Not agreed by Sim** (C1: limits
+are his). The old Home limits (4,400 phone, 2,950 desktop) were for the Home the Stampede replaced. 320 and 820 keep the old limits and
+report OVER until Sim picks. Note: Home at 820 (iPad) is taller than at 390 (7,819 vs 6,240).
+
+## Nov 18 evening: My Team with optional swaps (Sim: recommended)
+A team whose Suggestions show "Optional swaps:" is its own state with its own limits, as 5 of 6 has: My Team at 390 at most 4.75
+screens (CI's frozen data measured 4.47: one optional swap adds 363px), and the All Suggestions sheet at 390 at most 5.75 screens
+(measured 5.49). Without optional swaps the limits stay 4.3 and 5. Checks: app/test/v2-minors.mjs (My Team C, AS-9).

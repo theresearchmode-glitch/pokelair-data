@@ -77,7 +77,7 @@ async function main() {
   outer: while (fresh.length < MAX_NEW && pages < MAX_PAGES) {
     let list; try { list = await getRetry(`${BASE}/search.json?format=${FMT}${before ? '&before=' + before : ''}`); } catch (e) { console.log('replays: list page failed (' + e.message + '), saving what we have'); break; } pages++;
     if (!Array.isArray(list) || !list.length) break;
-    for (const s of list) { if (seen.has(s.id)) { if (pages > 1 && !BACKFILL) break outer; continue; }
+    for (const s of list) { if (!/^[a-z0-9-]{1,100}$/i.test(String(s && s.id || ''))) { skipped++; continue; } /* the id becomes a URL part (Kip job 36 A #8) */ if (seen.has(s.id)) { if (pages > 1 && !BACKFILL) break outer; continue; }
       await sleep(PAUSE); let j; try { j = await get(`${BASE}/${s.id}.json`); } catch (e) { skipped++; continue; }
       const g = parseLog(j.log); if (!g) { skipped++; continue; }
       seen.add(s.id); fresh.push({id: s.id, t: j.uploadtime || s.uploadtime || null, ...g}); if (fresh.length >= MAX_NEW) break;

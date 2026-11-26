@@ -1,0 +1,416 @@
+  layout 320px · 16s
+  layout 400px · 32s
+  layout 480px · 48s
+  layout 560px · 64s
+  layout 640px · 80s
+  layout 720px · 96s
+  layout 800px · 112s
+  layout 880px · 128s
+  layout 960px · 144s
+  layout 1040px · 160s
+  layout 1120px · 176s
+  layout 1200px · 192s
+  layout 1280px · 208s
+  layout 1360px · 224s
+  layout 1440px · 240s
+  layout 1520px · 256s
+  layout 1600px · 272s
+  layout 1680px · 288s
+  layout 1760px · 304s
+  layout 1840px · 320s
+  layout 1920px · 336s
+  layout 2000px · 351s
+  layout 2080px · 367s
+  layout 2160px · 384s
+  layout 2240px · 400s
+  layout 2320px · 417s
+  layout 2400px · 433s
+  layout 2480px · 449s
+  layout 2560px · 465s
+  style light 390px · 482s
+  style light 820px · 498s
+  style light 1440px · 514s
+  style dark 390px · 530s
+  style dark 820px · 545s
+  style dark 1440px · 561s
+spill    pokemon=Garchomp li > a.pk-pc "Charizard 65%" +12px  @ 320
+spill    pokemon=Garchomp li > a.pk-pc "Kingambit 56%" +12px  @ 320
+spill    pokemon=Garchomp li > a.pk-pc "Incineroar 66%" +12px  @ 320
+spill    pokemon=Garchomp li > a.pk-pc "Whimsicott 59%" +12px  @ 320
+spill    sheet     div.row.ms-go > button.np-btn2.k-btn "Build Around It" +4px  @ 320
+spill    sheet     div.row.ms-go > button.np-btn2.k-btn "Build Around It" +5px  @ 720
+spill    sheet     div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +5px  @ 880
+spill    sheet     div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +8px  @ 960
+spill    sheet     div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +9px  @ 1040
+spill    sheet     div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +10px  @ 1120
+spill    sheet     div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +11px  @ 1200
+spill    sheet     div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +13px  @ 1280
+spill    sheet     div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +14px  @ 1360
+spill    sheet     div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +15px  @ 1440-2560
+spill    team      div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +5px  @ 880
+spill    team      div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +8px  @ 960
+spill    team      div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +9px  @ 1040
+spill    team      div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +10px  @ 1120
+spill    team      div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +11px  @ 1200
+spill    team      div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +13px  @ 1280
+spill    team      div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +14px  @ 1360
+spill    team      div.mtf-head.tmk-head > div.mtf-score "94 Top tier Strength Sco" +15px  @ 1440-2560
+spill    track     section.trk-rc > p.trk-tot "TOTAL 230×" +9px  @ 320-640,800
+spill    track     section.trk-rc > p.trk-tot "TOTAL 230×" +10px  @ 720
+spill    track     section.trk-rc > p.trk-tot "TOTAL 230×" +8px  @ 880,1120-2560
+spill    track     section.trk-rc > p.trk-tot "TOTAL 230×" +7px  @ 960
+spill    track     section.trk-rc > p.trk-tot "TOTAL 230×" +6px  @ 1040
+uneven   archetypes div.ra-sub > nav.ra-seg: "Winning Teams"×2 "Events"×1 "Archetypes"×1 "This Week"×2  @ 320
+uneven   calc      div.pc-blk.pc-turn > div.pc-sws.arn-sw: "Hits both foes"×2 "Screen up"×1 "Helping Hand"×1  @ 400
+uneven   calc      div.pc-blk.pc-turn > div.pc-sws.arn-sw: "Helping Hand"×2 "Friend Guard"×2 "Critical hit"×1  @ 720
+uneven   events    div.ra-sub > nav.ra-seg: "Winning Teams"×2 "Events"×1 "Archetypes"×1 "This Week"×2  @ 320
+uneven   meta      div.gs-rows > div.gs-row: "MEGA Salamence 87 "×1 "MEGA Staraptor 86"×1 "Sinistcha 86"×1 "Hisuian Arcanine 8"×2  @ 320-640
+uneven   meta      div.gs-rows > div.gs-row: "MEGA Gengar 77"×1 "Basculegion (F) 76"×2 "Annihilape 75"×1 "Indeedee 75"×1  @ 320-640
+uneven   meta      div.gs-rows > div.gs-row: "Sinistcha 86"×1 "Hisuian Arcanine 8"×2 "Volcarona 85"×1 "Sylveon 84"×1 "MEGA Delphox 83"×1 "MEGA Tyranitar 83"×1  @ 720-800
+uneven   meta      div.gs-rows > div.gs-row: "Indeedee (F) 79"×1 "MEGA Dragonite 79"×1 "MEGA Froslass 78 ▲"×1 "MEGA Raichu X 78"×1 "MEGA Gengar 77"×1 "Basculegion (F) 76"×2  @ 720
+uneven   meta      div.gs-rows > div.gs-row: "Dragapult 59"×1 "MEGA ◆ Garchomp 59"×1 "MEGA Blastoise 58"×1 "Espathra 57"×1 "Alolan Ninetales 5"×2 "MEGA Lucario Z 56"×1  @ 720-800
+uneven   meta      div.gs-rows > div.gs-row: "MEGA Altaria 49"×1 "Gallade 47"×1 "Lycanroc (Dusk) 47"×2 "MEGA Meowstic (F) "×1 "MEGA Drampa 46"×1 "Blaziken 44"×1  @ 720-800
+uneven   meta      div.gs-rows > div.gs-row: "Farigiraf 89"×1 "Pelipper 89"×1 "Whimsicott 88 ▲5"×1 "MEGA Garchomp Z 87"×1 "MEGA Salamence 87 "×1 "MEGA Staraptor 86"×1 "Sinistcha 86"×1 "Hisuian Arcanine 8"×2 "Volcarona 85"×1  @ 1120-1280
+uneven   meta      div.gs-rows > div.gs-row: "Indeedee (F) 79"×1 "MEGA Dragonite 79"×1 "MEGA Froslass 78 ▲"×1 "MEGA Raichu X 78"×1 "MEGA Gengar 77"×1 "Basculegion (F) 76"×2 "Annihilape 75"×1 "Indeedee 75"×1 "Kommo-o 73"×1 "MEGA Gardevoir 71"×1 "Politoed 71"×1  @ 1120-1440
+uneven   meta      div.gs-rows > div.gs-row: "Dragapult 59"×1 "MEGA ◆ Garchomp 59"×1 "MEGA Blastoise 58"×1 "Espathra 57"×1 "Alolan Ninetales 5"×2 "MEGA Lucario Z 56"×1 "Toxapex 56"×1 "Ceruledge 55"×1 "MEGA Venusaur 55"×1 "Hippowdon 54"×1  @ 1120-1360
+uneven   meta      div.gs-rows > div.gs-row: "MEGA Altaria 49"×1 "Gallade 47"×1 "Lycanroc (Dusk) 47"×2 "MEGA Meowstic (F) "×1 "MEGA Drampa 46"×1 "Blaziken 44"×1 "Dragonite 44"×1 "Hatterene 43"×1 "MEGA Hawlucha 43"×1 "MEGA Kangaskhan 43"×1 "MEGA Slowbro 43"×1 "Swampert 43"×1  @ 1120-1600
+uneven   sets      div.k-sent.u > span.us-srcs.lo-srcs: "Best data"×1 "Online tournaments"×2 "Showdown ladder"×2  @ 320-480
+uneven   speed     div.sp2-g.sp2-gme > span.sp2-chs: "Your Tailwind Tail"×1 "You +1 Speed +1 Sp"×2  @ 320
+uneven   speed     div.sp2-g.sp2-gth > span.sp2-chs: "Their Tailwind Tai"×1 "Them −1 Speed −1 S"×2 "They're Paralyzed "×1  @ 320
+uneven   tournaments div.ra-sub > nav.ra-seg: "Winning Teams"×2 "Events"×1 "Archetypes"×1 "This Week"×2  @ 320
+uneven   tournaments div.wt2-go > p.wt2-links: "Copy for Showdown"×2 "Set as Opponent ›"×2 "Compare ›"×1  @ 320
+uneven   tournaments article.wt2-run > p.wt2-links: "Copy for Showdown"×2 "Set as Opponent ›"×2 "Compare ›"×1  @ 320,480
+uneven   tournaments div.wt2-go > p.wt2-links: "Copy for Showdown"×2 "Set as Opponent ›"×1 "Compare ›"×1  @ 480
+uneven   usage     div.k-sent.u > span.us-srcs: "Ranked ladder"×1 "Online tournaments"×2 "Showdown ladder"×2  @ 480
+uneven   weekly    div.ra-sub > nav.ra-seg: "Winning Teams"×2 "Events"×1 "Archetypes"×1 "This Week"×2  @ 320
+lone     box       section.bx2.mb > div.mb-grid: 7 items, rows 3+2+2  @ 1280-2560
+lone     build     div.pl-win.pl-big > div.pl-wr: 3 items, rows 2+1  @ 320,720-1120
+lone     build     div.pl-win > div.pl-wr: 3 items, rows 2+1  @ 320,720-1120
+lone     build     div.pl-sent.u > span.pl-ln: 3 items, rows 2+1  @ 400-480
+lone     build     ol.pl-cores.bd-clist > li.pl-core.pl-c2: 3 items, rows 2+1  @ 400-640,800-1120,1440-2560
+lone     build     div.pl-step.pl-s6 > div.pl-ctl: 4 items, rows 2+1+1  @ 480-560,800-880
+lone     build     div.pl-step.pl-s6 > div.pl-ctl: 4 items, rows 3+1  @ 640,1040-1520,2000-2560
+lone     calc      section.k-step > section.pc-board: 3 items, rows 2+1  @ 320-640,1120-2560
+lone     calc      div.pc-blk.pc-turn > div.pc-sws.arn-sw: 5 items, rows 3+2  @ 320-640,1120-1200
+lone     calc      li > button.pc-kr.ko: 3 items, rows 2+1  @ 320,720-880,1120,1280-2560
+lone     calc      div.dc2.arn > div.k-sent.u: 5 items, rows 2+1+1+1  @ 560,720
+lone     calc      div.dc2.arn > div.k-sent.u: 5 items, rows 2+2+1  @ 640,800-1040
+lone     calc      div.pc-blk.pc-sky > div.pc-five: 5 items, rows 3+2  @ 720-880
+lone     calc      div.pc-blk.pc-gnd > div.pc-five: 5 items, rows 3+2  @ 720-1040
+lone     calc      div.dc2.arn > div.k-sent.u: 5 items, rows 4+1  @ 1120-1440
+lone     events    div.ev-counts > p.ev-ns: 4 items, rows 3+1  @ 320-2560
+lone     events    section.k-step.ev-plate > div.k-sec: 3 items, rows 2+1  @ 560-1200,1440-2560
+lone     events    section.k-step.ev-plate > p.ev-cpast: 4 items, rows 2+1+1  @ 720-960
+lone     events    section.k-step.ev-plate > p.ev-cpast: 4 items, rows 3+1  @ 1040-1200,1440-2560
+lone     gauntlet  section.k-step > p.dr-key: 5 items, rows 2+2+1  @ 320
+lone     gauntlet  section.k-step > p.dr-key: 5 items, rows 3+1+1  @ 400
+lone     gauntlet  section.k-step > p.dr-key: 5 items, rows 3+2  @ 480-560
+lone     gauntlet  section.k-step > p.dr-key: 5 items, rows 4+1  @ 640
+lone     gauntlet  section.k-step > p.dr-key: 6 items, rows 4+2  @ 720-800
+lone     gauntlet  section.k-step > p.dr-key: 6 items, rows 5+1  @ 880-1040,1200
+lone     home      div.sds-rc > ol.sds-bands: 5 items, rows 4+1  @ 560-640
+lone     home      article.sdt-p.sdt-speed > div.sdt-race: 7 items, rows 5+2  @ 720-800
+lone     home      article.sdt-p.sdt-speed > div.sdt-race: 7 items, rows 6+1  @ 880-960
+lone     home      div.sds-rc > ol.sds-bands: 5 items, rows 3+2  @ 960-1040,1200,1600-1920
+lone     home      div.sds-rc > ol.sds-bands: 5 items, rows 2+2+1  @ 1120,2000-2560
+lone     home      section.sd-band.sd-tools > div.sdt-grid: 5 items, rows 4+1  @ 1120-2560
+lone     home      article.sdt-p.sdt-ra > div.sdt-pod: 3 items, rows 2+1  @ 1120-2560
+lone     home      nav.sdt-chips > ul: 7 items, rows 4+3  @ 1120-1200
+lone     home      section.sd-top > ol: 10 items, rows 2+1+1+1+1+1+1+1+1  @ 1360-2560
+lone     home      div.sd > section.sd-top: 3 items, rows 2+1  @ 2480-2560
+lone     meta      div.gs-sinfo > div.gs-facts: 3 items, rows 2+1  @ 320,1120-1280
+lone     meta      div.ra.gsp > div.gs-top: 3 items, rows 2+1  @ 1120
+lone     method    div.nplrow > div.npbands: 5 items, rows 2+2+1  @ 400
+lone     method    div.nplrow > div.npbands: 5 items, rows 3+2  @ 480,1120-1280
+lone     method    div.nplrow > div.npbands: 5 items, rows 4+1  @ 560-800,1360-1680
+lone     method    div.inf-legend.mth-legend > #np-legend.nplegend: 3 items, rows 2+1  @ 1120-2560
+lone     news      section.nw2-lead > ol.nw2-ser: 7 items, rows 4+3  @ 320-640
+lone     news      section.k-step > div.k-sec: 3 items, rows 2+1  @ 880-1040
+lone     pokemon=Garchomp div.ra.pk > nav.pk-trail: 3 items, rows 2+1  @ 320-2560
+lone     pokemon=Garchomp li > button.k-move: 3 items, rows 2+1  @ 320-720,960-1280
+lone     pokemon=Garchomp ul.pk-wins > li.pk-win: 3 items, rows 2+1  @ 320-2560
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 4+3+3+1  @ 320
+lone     pokemon=Garchomp div.k-hero-card > p.pk-basics: 4 items, rows 3+1  @ 400
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 5+4+2  @ 400
+lone     pokemon=Garchomp section.k-step > div.pk-sw: 3 items, rows 2+1  @ 480-720
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 6+5  @ 480
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 7+4  @ 560,720-800
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 8+3  @ 640,880
+lone     pokemon=Garchomp div.pk-setc > div.pk-acts: 3 items, rows 2+1  @ 720
+lone     pokemon=Garchomp div.pk-rap.pk-rapsw > #pk-pst.pk-pane.pk-pst: 3 items, rows 2+1  @ 720-2560
+lone     pokemon=Garchomp section.k-step > div.k-sec: 3 items, rows 2+1  @ 880-1040
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 9+2  @ 960
+lone     pokemon=Garchomp section.k-step > p.pk-typeline: 11 items, rows 10+1  @ 1040
+lone     sets      li > button.k-move: 3 items, rows 2+1  @ 320-800,960-1200
+lone     sets      div.lo-ctl > div.k-sent.u: 4 items, rows 2+1+1  @ 560-640,800-1840
+lone     sets      section.k-step.st-how > div.k-sec: 3 items, rows 2+1  @ 640,800-1040
+lone     sets      div.lo-set > div.st-side.lo-kv: 4 items, rows 2+1+1  @ 720-800,960,1200
+lone     sets      div.k-sent.u > span.us-srcs.lo-srcs: 3 items, rows 2+1  @ 800-1040
+lone     sets      div.lo-set > div.st-side.lo-kv: 4 items, rows 3+1  @ 880,1040-1120,1280-2560
+lone     sheet     div.mtf-head.tmk-head > nav.tm-jump.tmk-jump: 3 items, rows 2+1  @ 320
+lone     sheet     div.mtf-inf > p.mtf-do: 5 items, rows 3+2  @ 320-480,960-1280
+lone     sheet     li > button.mu-row.mu-nk: 4 items, rows 2+1+1  @ 320-960
+lone     sheet     li > button.mu-row.mu-nk: 3 items, rows 2+1  @ 320-2560
+lone     sheet     div.ms-tyr > div: 3 items, rows 2+1  @ 320,720-800,1200-2560
+lone     sheet     div.ms-sp > div.main: 3 items, rows 2+1  @ 320-2560
+lone     sheet     div.ms-sp > div: 3 items, rows 2+1  @ 320-2560
+lone     sheet     div.np-sheet > div.ms2: 5 items, rows 2+1+1+1  @ 1040-2560
+lone     speed     button.sp2-m.me > span.nm: 3 items, rows 2+1  @ 400
+lone     speed     section.sp2-h > div.sp2-ctl: 3 items, rows 2+1  @ 720-1600
+lone     speed     section.k-step > div.k-sec: 3 items, rows 2+1  @ 1280-2560
+lone     speed     li.sp2-cut > button.sp2-m.me: 3 items, rows 2+1  @ 1280-1360
+lone     team      div.mtf-head.tmk-head > nav.tm-jump.tmk-jump: 3 items, rows 2+1  @ 320
+lone     team      div.mtf-inf > p.mtf-do: 5 items, rows 3+2  @ 320-480,960-1280
+lone     team      li > button.mu-row.mu-nk: 4 items, rows 2+1+1  @ 320-960
+lone     team      li > button.mu-row.mu-nk: 3 items, rows 2+1  @ 320-2560
+lone     tournaments article.wt2-top > p.wt2-pl.big: 3 items, rows 2+1  @ 480-560,800-2560
+lone     tournaments section.k-step > div.k-sec: 3 items, rows 2+1  @ 880-1040
+lone     tournaments div.wt2-ctl > div.k-sent.u: 3 items, rows 2+1  @ 1200
+lone     types     div.tc-og > div.ts: 3 items, rows 2+1  @ 320
+lone     usage     li.us-bar > button.k-move: 3 items, rows 2+1  @ 320-800,1120-1920
+lone     usage     li.us-bar.us-x > button.k-move: 3 items, rows 2+1  @ 720,1120-1760
+lone     usage     div.k-sent.u > span.us-srcs: 3 items, rows 2+1  @ 880-1200
+lone     usage     section.k-step.us-how > div.us-groups: 4 items, rows 3+1  @ 1120-1200
+lone     weekly    li > button.wk2-r: 3 items, rows 2+1  @ 320-2560
+lone     weekly    li.wk2-up > button.wk2-rc: 3 items, rows 2+1  @ 320-2560
+lone     weekly    li.wk2-dn > button.wk2-rc: 3 items, rows 2+1  @ 320-880,1280-2560
+lone     weekly    div.wk-move > p.wk2-key: 3 items, rows 2+1  @ 400
+lone     weekly    li > button.wk-fr: 3 items, rows 2+1  @ 400-880,1040-2560
+tap      battle    26px (p.bt-lsay > button.bt-lfour "0 of 4 picked")  @ 390,820,390d,820d
+tap      build     18px (p.pl-chint.bd-hint > button.np-link "How Cores Are Rank")  @ 390,820,390d,820d
+tap      home      25px (h3.u.sdt-t > a.sdt-go "Speed Tiers")  @ 390,820,390d,820d
+tap      home      19px (h3.u.sdt-t > a.sdt-go "Ratings")  @ 390,820,390d,820d
+tap      home      37px (h3.u.sdt-t > a.sdt-go "Damage Calculator")  @ 390,390d
+tap      home      21px (h3.u.sdt-t > a.sdt-go "Winning Teams")  @ 390,390d
+tap      home      21px (h3.u.sdt-t > a.sdt-go "Type Chart")  @ 820,820d
+tap      pokemon=Garchomp 33px (b > button. "Choice Scarf")  @ 390,820,390d,820d
+tap      pokemon=Garchomp 30px (small > button. "Life Orb")  @ 390,820,390d,820d
+tap      sets      42px (span.lo-vr > button. "Modest")  @ 390,820,390d,820d
+bodyhead calc      20px (div.pc-ans > p.pc-l1 "Fire Heat Wave d")  @ 1440,1440d
+bodyhead events    20px (span > small.ev2-n "115")  @ 820,1440,820d,1440d
+bodyhead track     20px (div.trk-say2 > p.trk-sl "The ratings call")  @ 1440,1440d
+lineh    archetypes 1.3 (li > span)  @ 390,390d
+lineh    archetypes 1.4 (section.k-step > p.k-hint.ar-note)  @ 390,390d
+lineh    build     1.4 (span.pl-cwho > small)  @ 390,820,1440,390d,820d,1440d
+lineh    calc      1.3 (div.pc-ans > p.pc-l2)  @ 820,820d
+lineh    gifts     1.4 (div.gr2-lab > p.gr2-when)  @ 390,1440,390d,1440d
+lineh    gifts     1.4 (div.gr2-lab > p.gr2-src)  @ 820,820d
+lineh    meta      1.4 (span > small)  @ 390,390d
+lineh    news      1.35 (h3 > a.dp-hl)  @ 390,820,390d,820d
+lineh    news      1.3 (span > small)  @ 820,820d
+lineh    pokemon=Garchomp 1.4 (p.pk-trend > span)  @ 390,1440,390d,1440d
+lineh    pokemon=Garchomp 1.3 (p.pk-run > span)  @ 390,820,1440,390d,820d,1440d
+lineh    pokemon=Garchomp 1.4 (span > small)  @ 820,820d
+lineh    practice  1 (div.hm-mp > p.np-eyebrow)  @ 820,820d
+lineh    sheet     1.3 (span > small)  @ 390,820,1440,390d,820d,1440d
+lineh    tournaments 1.4 (div.wt2-ctl > p.k-hint.wt-src)  @ 390,390d
+lineh    weekly    1.4 (span.wk2-tw > p)  @ 390,820,1440,390d,820d,1440d
+lineh    weekly    1.3 (span > small)  @ 390,1440,390d,1440d
+glow     weekly    li.wk-tile.wx > b.u "Tailwind"  @ 390,820,1440,390d,820d,1440d
+glow     weekly    li.wk-tile.wx > span.u "56%"  @ 390,820,1440,390d,820d,1440d
+glow     weekly    li.wk-tile.wx > b.u "Grassy Terrain"  @ 390,820,1440,390d,820d,1440d
+glow     weekly    li.wk-tile.wx > span.u "35%"  @ 390,820,1440,390d,820d,1440d
+glow     weekly    li.wk-tile.wx > b.u "Trick Room"  @ 390,820,1440,390d,820d,1440d
+glow     weekly    li.wk-tile.wx > span.u "31%"  @ 390,820,1440,390d,820d,1440d
+glow     weekly    li.wk-tile.wx > b.u "Sun"  @ 390,820,1440,390d,820d,1440d
+glow     weekly    li.wk-tile.wx > span.u "28%"  @ 390,820,1440,390d,820d,1440d
+boxes    calc      div.pc-ph.a > span.pc-pic (4 shades)  @ 390,820,1440,390d,820d,1440d
+boxes    calc      div.pc-ph.d > span.pc-pic (4 shades)  @ 390,820,1440,390d,820d,1440d
+boxes    gifts     div.gr2-lab > button.k-go.u (4 shades)  @ 390,820,1440,390d,820d,1440d
+boxes    home      #sdh-h.u.sdh-h > span.k-kicker.sdh-k (4 shades)  @ 390,820,1440,390d,820d,1440d
+boxes    home      div.sds-rc > a.np-btn.sds-rb (4 shades)  @ 390,820,1440,390d,820d,1440d
+boxes    home      button.sds-tk.you > span.sds-tg.u (4 shades)  @ 390,820,1440,390d,820d,1440d
+boxes    sets      button.k-move > span.k-mt (4 shades)  @ 390,820,1440
+boxes    sheet     button.k-move > span.k-mt (4 shades)  @ 390,820,1440
+boxes    sheet     li > button.k-move (4 shades)  @ 390d,820d,1440d
+boxes    sheet     button.k-move > span.k-mt (5 shades)  @ 390d,820d,1440d
+boxes    team      button.k-move > span.k-mt (4 shades)  @ 390,820,1440
+boxes    team      li > button.k-move (4 shades)  @ 390d,820d,1440d
+boxes    team      button.k-move > span.k-mt (5 shades)  @ 390d,820d,1440d
+space    about     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    about     24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    about     118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    archetypes 57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    archetypes 24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    archetypes 118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    battle    57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    battle    12.2px (p.bt-sub > a.np-link marginTop)  @ 390,820,1440,390d,820d,1440d
+space    battle    12.3px (p.bt-sub > a.np-link paddingTop)  @ 390,820,1440,390d,820d,1440d
+space    battle    24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    battle    118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    box       57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    box       24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    box       118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    build     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    build     2.8px (div.pl-sw > div.pl-sent.u rowGap)  @ 390,390d
+space    build     4.8px (div.pl-sent.u > span.pl-ln columnGap)  @ 390,390d
+space    build     0.8px (span.pl-grp > button.pl-pl paddingTop)  @ 390,390d
+space    build     1.2px (span.pl-grp > button.pl-pl paddingBottom)  @ 390,390d
+space    build     3.6px (span.pl-grp > button.pl-pl rowGap)  @ 390,390d
+space    build     6.4px (span.pl-ln > button.pl-go paddingLeft)  @ 390,390d
+space    build     24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    build     4.5px (div.pl-sw > div.pl-sent.u rowGap)  @ 820,820d
+space    build     7.7px (div.pl-sent.u > span.pl-ln columnGap)  @ 820,820d
+space    build     1.3px (span.pl-grp > button.pl-pl paddingTop)  @ 820,820d
+space    build     1.9px (span.pl-grp > button.pl-pl paddingBottom)  @ 820,820d
+space    build     9.6px (span.pl-grp > button.pl-pl paddingLeft)  @ 820,820d
+space    build     5.8px (span.pl-grp > button.pl-pl rowGap)  @ 820,820d
+space    build     10.2px (span.pl-ln > button.pl-go paddingLeft)  @ 820,820d
+space    build     285.1px (div.pl-wr > button.pl-out2.u marginLeft)  @ 820
+space    build     118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    build     13.7px (div.pl-sent.u > span.pl-ln columnGap)  @ 1440
+space    build     2.3px (span.pl-grp > button.pl-pl paddingTop)  @ 1440,1440d
+space    build     3.4px (span.pl-grp > button.pl-pl paddingBottom)  @ 1440
+space    build     17.1px (span.pl-grp > button.pl-pl paddingLeft)  @ 1440
+space    build     10.3px (span.pl-grp > button.pl-pl rowGap)  @ 1440
+space    build     18.2px (span.pl-ln > button.pl-go paddingLeft)  @ 1440
+space    build     809.1px (div.pl-wr > button.pl-out2.u marginLeft)  @ 1440
+space    build     176.1px (div.pl-wr > button.pl-out2.u marginLeft)  @ 1440
+space    build     286.1px (div.pl-wr > button.pl-out2.u marginLeft)  @ 820d
+space    build     8.1px (div.pl-sw > div.pl-sent.u rowGap)  @ 1440d
+space    build     13.9px (div.pl-sent.u > span.pl-ln columnGap)  @ 1440d
+space    build     3.5px (span.pl-grp > button.pl-pl paddingBottom)  @ 1440d
+space    build     17.4px (span.pl-grp > button.pl-pl paddingLeft)  @ 1440d
+space    build     10.4px (span.pl-grp > button.pl-pl rowGap)  @ 1440d
+space    build     18.6px (span.pl-ln > button.pl-go paddingLeft)  @ 1440d
+space    build     810.1px (div.pl-wr > button.pl-out2.u marginLeft)  @ 1440d
+space    build     177.1px (div.pl-wr > button.pl-out2.u marginLeft)  @ 1440d
+space    calc      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    calc      24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    calc      118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    compare   57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    compare   17.2px (div.np-mon > div.st marginLeft)  @ 390,390d
+space    compare   24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    compare   19.8px (div.np-mon > div.st marginLeft)  @ 820,820d
+space    compare   118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    compare   27.4px (div.np-mon > div.st marginLeft)  @ 1440,1440d
+space    events    57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    events    24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    events    118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    feedback  57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    feedback  12.2px (#abtMail.abtmail > button.np-link.k-link marginTop)  @ 390,820,1440,390d,820d,1440d
+space    feedback  24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    feedback  118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    gauntlet  57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    gauntlet  24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    gauntlet  118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    gifts     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    gifts     24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    gifts     118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    home      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    home      4.4px (div.np-mon > div.st marginLeft)  @ 390,390d
+space    home      37.5px (article.sdt-p.sdt-ra > div.sdt-tx marginTop)  @ 390,390d
+space    home      1.4px (div.np-mon > div.st marginLeft)  @ 390,390d
+space    home      17.1px (div.np-mon > div.st marginLeft)  @ 390,390d
+space    home      17.9px (div.sdt-vs > div.sdt-side.you paddingTop)  @ 390,390d
+space    home      24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    home      12.1px (div.np-mon > div.st marginLeft)  @ 820,820d
+space    home      16.1px (div.np-mon > div.st marginLeft)  @ 820,820d
+space    home      29.1px (div.np-mon > div.st marginLeft)  @ 820,820d
+space    home      18px (div.np-mon > div.st marginLeft)  @ 820,820d
+space    home      26.9px (div.sdt-vs > div.sdt-side.you paddingTop)  @ 820,820d
+space    home      68.9px (article.sdt-p.sdt-sm > div.sdt-tx marginTop)  @ 820,820d
+space    home      36.3px (article.sdt-p.sdt-sm > div.sdt-tx marginTop)  @ 820,820d
+space    home      118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    home      92.5px (div.sd > section.sd-top paddingLeft)  @ 1440,1440d
+space    home      0.2px (div.np-mon > div.st marginLeft)  @ 1440,1440d
+space    meta      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    meta      10px (span.ra-nw > button.sg2-tip marginTop)  @ 390,820,1440,390d,820d,1440d
+space    meta      24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    meta      118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    method    57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    method    24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    method    118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    natures   57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    natures   24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    natures   118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    news      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    news      66px (div.k-sec > button.k-link.nw2-earl marginLeft)  @ 390,390d
+space    news      24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    news      510px (div.k-sec > a.k-link marginLeft)  @ 820
+space    news      118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    news      422.2px (div.k-sec > button.k-link.nw2-earl marginLeft)  @ 1440
+space    news      5.4px (div.k-sec > a.k-link marginLeft)  @ 820d
+space    news      425.2px (div.k-sec > button.k-link.nw2-earl marginLeft)  @ 1440d
+space    pokemon=Garchomp 57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    pokemon=Garchomp 163px (div.k-sec > a.k-link marginLeft)  @ 390,390d
+space    pokemon=Garchomp 155px (div.k-sec > a.k-link marginLeft)  @ 390,390d
+space    pokemon=Garchomp 198px (div.k-sec > a.k-link marginLeft)  @ 390,390d
+space    pokemon=Garchomp 24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    pokemon=Garchomp 497px (div.k-sec > a.k-link marginLeft)  @ 820
+space    pokemon=Garchomp 115px (div.k-sec > a.k-link marginLeft)  @ 820,820d
+space    pokemon=Garchomp 67px (div.k-sec > a.k-link marginLeft)  @ 820,820d
+space    pokemon=Garchomp 118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    pokemon=Garchomp 421.2px (div.k-sec > a.k-link marginLeft)  @ 1440
+space    pokemon=Garchomp 146.6px (div.k-sec > a.k-link marginLeft)  @ 1440
+space    pokemon=Garchomp 591px (div.k-sec > a.k-link marginLeft)  @ 1440,1440d
+space    pokemon=Garchomp 4.8px (div.k-sec > a.k-link marginLeft)  @ 820d
+space    pokemon=Garchomp 420.2px (div.k-sec > a.k-link marginLeft)  @ 1440d
+space    pokemon=Garchomp 150.6px (div.k-sec > a.k-link marginLeft)  @ 1440d
+space    practice  57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    practice  24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    practice  118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    sets      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    sets      24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    sets      74.7px (div.k-sec > button.k-link.lo-pg marginLeft)  @ 820
+space    sets      118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    sets      509.6px (div.k-sec > button.k-link.lo-pg marginLeft)  @ 1440
+space    sets      82.7px (div.k-sec > button.k-link.lo-pg marginLeft)  @ 820d
+space    sets      510.6px (div.k-sec > button.k-link.lo-pg marginLeft)  @ 1440d
+space    sheet     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    sheet     11px (p.tm-sub > button.sg2-tip marginTop)  @ 390,820,1440,390d,820d,1440d
+space    sheet     10px (p.tm-sub > button.sg2-tip marginRight)  @ 390,820,1440,390d,820d,1440d
+space    sheet     24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    sheet     277.8px (div.mtf-bar.mtf-nav > button.mtf-step marginLeft)  @ 820
+space    sheet     118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    sheet     92.5px (#main.np-main > section.tm-hero.mt paddingLeft)  @ 1440,1440d
+space    sheet     8.4px (h1.tm-name.k-h1 > span.mtf-smp marginLeft)  @ 1440,1440d
+space    sheet     29.1px (div.mtf-bar.mtf-nav > button.mtf-step marginLeft)  @ 1440
+space    sheet     278.8px (div.mtf-bar.mtf-nav > button.mtf-step marginLeft)  @ 820d
+space    sheet     30.1px (div.mtf-bar.mtf-nav > button.mtf-step marginLeft)  @ 1440d
+space    speed     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    speed     175.5px (li.sp2-fr.solo > button.sp2-m paddingRight)  @ 390,390d
+space    speed     24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    speed     118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    speed     600.5px (li.sp2-fr.solo > button.sp2-m paddingRight)  @ 1440,1440d
+space    team      57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    team      11px (p.tm-sub > button.sg2-tip marginTop)  @ 390,820,1440,390d,820d,1440d
+space    team      10px (p.tm-sub > button.sg2-tip marginRight)  @ 390,820,1440,390d,820d,1440d
+space    team      24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    team      277.8px (div.mtf-bar.mtf-nav > button.mtf-step marginLeft)  @ 820
+space    team      118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    team      92.5px (#main.np-main > section.tm-hero.mt paddingLeft)  @ 1440,1440d
+space    team      8.4px (h1.tm-name.k-h1 > span.mtf-smp marginLeft)  @ 1440,1440d
+space    team      29.1px (div.mtf-bar.mtf-nav > button.mtf-step marginLeft)  @ 1440
+space    team      278.8px (div.mtf-bar.mtf-nav > button.mtf-step marginLeft)  @ 820d
+space    team      30.1px (div.mtf-bar.mtf-nav > button.mtf-step marginLeft)  @ 1440d
+space    team-empty 57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    team-empty 24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    team-empty 118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    tournaments 57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    tournaments 24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    tournaments 118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    track     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    track     60.9px (p.trk-tot > b.u marginLeft)  @ 390,390d
+space    track     10px (span.nw > button.sg2-tip marginTop)  @ 390,820,1440,390d,820d,1440d
+space    track     12.2px (p.trk-links > a.np-link marginTop)  @ 390,820,1440,390d,820d,1440d
+space    track     12.3px (p.trk-links > a.np-link paddingTop)  @ 390,820,1440,390d,820d,1440d
+space    track     24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    track     301.9px (p.trk-tot > b.u marginLeft)  @ 820,820d
+space    track     118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    track     144.9px (p.trk-tot > b.u marginLeft)  @ 1440,1440d
+space    types     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    types     24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    types     118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    usage     57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    usage     24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    usage     118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    weekly    57.2px (header.np-head > div.tools marginLeft)  @ 390,390d
+space    weekly    10px (h3.wk2-sub.u > button.sg2-tip marginTop)  @ 390,820,1440,390d,820d,1440d
+space    weekly    42px (div.k-sec > a.k-link.k-link marginLeft)  @ 390,390d
+space    weekly    24.1px (header.np-head > nav.np-nav marginLeft)  @ 820,820d
+space    weekly    118.8px (header.np-head > nav.np-nav marginLeft)  @ 1440,1440d
+space    weekly    101.6px (div.k-sec > a.k-link.k-link marginLeft)  @ 1440
+space    weekly    103.6px (div.k-sec > a.k-link.k-link marginLeft)  @ 1440d
+
+polish check: spill 27, uneven 23, lone 93, tap 10, bodyhead 3, lineh 17, glow 8, boxes 13, space 185; page errors 0; 561s

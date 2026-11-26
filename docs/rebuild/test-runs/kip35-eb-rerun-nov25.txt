@@ -1,0 +1,18 @@
+=== kip35-zero-center-eb (ITERS=160, matches=49250, updated=2026-11-25T10:41:02.976Z) ===
+  2026-10-28..2026-11-04 (3283g): base ll=0.67778 acc=57.66% (cal=0.973) | var ll=0.67758 acc=57.48% (cal=0.916) | delta=-0.00019
+  2026-11-04..2026-11-11 (4302g): base ll=0.68648 acc=54.51% (cal=0.957) | var ll=0.68565 acc=54.51% (cal=0.926) | delta=-0.00083
+  2026-11-11..2026-11-18 (4932g): base ll=0.68163 acc=55.88% (cal=0.785) | var ll=0.68112 acc=56.06% (cal=0.787) | delta=-0.00051
+  2026-11-18..2026-11-26 (4703g): base ll=0.67764 acc=56.69% (cal=0.759) | var ll=0.67737 acc=56.79% (cal=0.767) | delta=-0.00026
+
+--- Pooled 4-Week Walk-Forward Result ---
+  Games: 17220 across 217 tournament events
+  Baseline: ll=0.68101, acc=56.10%
+  Variant:  ll=0.68055, acc=56.14%
+  Delta (var - base): -0.00046  [95% event-clustered CI: -0.00072 to -0.00021]
+  Rule 21 verdict: KEEP (95% CI strictly better)
+  Unseen 6-mon team Strength Score (should be ~80): baseline=70.6 (meanX=0.4089) vs variant=78.3 (meanX=0.0730)
+
+--- Cold-Start / Reg M-D Week-1 Stress Test (404 train -> 353 test games) ---
+  Baseline (evidK=1000): ll=0.68548, acc=51.84%, max|b|=0.0174
+  Variant  (EB Ridge):   ll=0.68171, acc=56.37%, max|b|=0.0675
+EXIT 0

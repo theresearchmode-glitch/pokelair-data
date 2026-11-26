@@ -9,10 +9,12 @@
 //                         under the same limit (the best-graded exact six with 30+ games or 3+ players)
 // Usage: node experiments/golden.mjs [out.json]     (exit code 1 if a case fails; build the page first)
 import fs from 'node:fs'; import {createRequire} from 'node:module'; import {offFormat} from '../formats.mjs';
+import {withFixtures} from './md-fixtures.mjs';
 const {chromium} = createRequire(import.meta.url)('playwright');
 const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1'), OUT = process.env.GOLDEN_OUT || ROOT + 'out/', rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
 const L = rd('limitless.json');
 const D = {'meta/results': L.results, 'meta/perf': {adj: L.adj, updated: L.updated.slice(0, 10)}, 'meta/doubles_tour': rd('meta_tour.json'), 'meta/teams': rd('teams.json'), 'meta/model': process.env.GOLDEN_MODEL ? JSON.parse(fs.readFileSync(process.env.GOLDEN_MODEL, 'utf8')) : rd('model.json'), 'meta/doubles': rd('meta_ladder.json'), 'meta/doubles_ingame': rd('meta_ingame.json'), 'meta/events': rd('events.json'), 'meta/history': rd('history.json')};
+withFixtures(D); /* Reg M-D day (gap G11): no real teams yet -> the fixture teams, with a "fixture teams" line (experiments/md-fixtures.mjs) */
 // Nov 9 (Sim: "if top teams are not scoring well the grade is off"): grade each top-4 team with ITS OWN team sheet (items, Abilities,
 // moves from its games in out/matches.json), as the site grades a team loaded from an event; default sets only when no sheet exists.
 /* GOLDEN_FROM=<date> (forward test): only events on or after it, graded with a model trained before it (GOLDEN_MODEL from

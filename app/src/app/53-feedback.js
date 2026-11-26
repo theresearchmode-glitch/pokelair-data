@@ -6,11 +6,11 @@
 // time); its key is random. The box never asks for contact details. Only the owner can read everyone's.
 // The button only shows for viewers whose sharing level can save data (Contributor and up).
 var FB = {ref: null, ok: false, from: null, kind: 'idea', busy: false};
-(async () => { try { const c = window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
+if (window.__NP_PUBLIC) { window.__npTurnstileCb = tok => { window.__npTurnstileToken = typeof tok === 'string' ? tok : ''; }; }
+(async () => { try { if (window.__NP_PUBLIC) { FB.ok = true; document.querySelectorAll('.fbbtn,.fbmis').forEach(b => b.hidden = false); return; } const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
   const own = !!(u.isOwner && u.isOwner()); if (typeof u.can === 'function' && u.can('data.write') === false && !own) return;
   const id = await u.id(); if (!id) return; FB.ref = d.doc('feedback/' + id); FB.ok = true; FB.db = d;
   document.querySelectorAll('.fbbtn,.fbmis').forEach(b => b.hidden = false); if (view === 'home') safe('home', renderHome); } catch (e) {} })();
-const FB_KINDS = [['bug', 'Something broke'], ['confusing', 'Confusing'], ['idea', 'Idea'], ['like', 'I like this'], ['mistake', 'Wrong info']];
 /* ---------- report a mistake (trust pass): one tap on a Pokémon sheet or a damage calc result opens the feedback sheet as
    "Wrong info" with what was on screen filled in (which Pokémon and its numbers, or the whole calc and its result), so the
    person only says what's wrong, if they want to. Saved in the same feedback/<id> doc with the context as field c.
@@ -37,13 +37,7 @@ function fbOpen(fromMenu) { if (fromMenu) FB.ctx = null; if (!FB.ctx && FB.kind 
     <textarea id="fbText" maxlength="1000" rows="${C ? 3 : 4}" placeholder="${C ? 'What looks wrong? (optional)' : 'What happened, or what would help?'}" aria-describedby="fbAnon"></textarea>${FB_ANON.replace('<p ', '<p id="fbAnon" ')}
     <div class="fbfoot"><span class="t2" id="fbMsg" role="status"></span><button type="button" class="btn go sm" id="fbSend">Send</button></div></div>`;
   setTimeout(() => { const t = $('fbText'); if (t) t.focus(); }, 30); }
-/* personal details typed by mistake are removed before saving: email addresses, phone numbers (9+ digits, so damage
-   ranges like "45.2 - 53.1%" and EV spreads stay) and @handles (not Showdown's "Mon @ Item", which has a space) */
-function fbScrub(t) { let n = 0; t = String(t || '')
-  .replace(/[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}/g, () => { n++; return '[email removed]'; })
-  .replace(/\+?\d[\d\s().-]{7,}\d/g, m => (m.match(/\d/g) || []).length >= 9 ? (n++, '[number removed]') : m)
-  .replace(/(^|[\s(])@[A-Za-z0-9_.]{2,}/g, (m, a) => { n++; return a + '[handle removed]'; });
-  return {t, n}; }
+/* fbScrub and FB_KINDS live in 53-feedback-data.js (shared with the new build, Nov 15) */
 const FB_ANON = '<p class="fbanon">Anonymous — please don\'t include personal info like your name or email.</p>';
 function fbClose() { const w = $('fbSheet'); if (w) w.hidden = true; }
 async function fbSend() { const ta = $('fbText'), msg = $('fbMsg'), btn = $('fbSend'); if (!ta || FB.busy) return; const t = ta.value.trim();
@@ -51,7 +45,8 @@ async function fbSend() { const ta = $('fbText'), msg = $('fbMsg'), btn = $('fbS
   if (!FB.ok) { msg.textContent = "Can't send from here: your access level can't save data."; return; }
   FB.busy = true; btn.disabled = true; msg.textContent = 'Sending…'; const k = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6), sc = fbScrub(t.slice(0, 1000));
   const entry = {t: sc.t, k: FB.kind, v: FB.from || view, w: innerWidth < 760 ? 'phone' : 'desktop', d: new Date().toISOString().slice(0, 10)}; if (C) entry.c = String(C.title + '\n' + C.text).slice(0, 1200);
-  try { const s = await FB.ref.get(); if (s.exists) await FB.ref.update({m: {[k]: entry}}); else await FB.ref.set({m: {[k]: entry}});
+  try { if (window.__NP_PUBLIC) { const tok = window.__npTurnstileToken || (document.querySelector('[name="cf-turnstile-response"]') || {}).value || ''; const r = await fetch(window.NP_FEEDBACK_URL || '/api/feedback', {method: 'POST', headers: {'Content-Type': 'application/json', 'CF-Turnstile-Response': tok}, body: JSON.stringify({text: sc.t, page: String(FB.from || view || 'home').slice(0, 40), kind: String(FB.kind).slice(0, 20)})}); if (!r.ok) throw new Error('HTTP ' + r.status); }
+    else { const s = await FB.ref.get(); if (s.exists) await FB.ref.update({m: {[k]: entry}}); else await FB.ref.set({m: {[k]: entry}}); }
     track('feedback:' + FB.kind); fbClose(); toast((C ? 'Thanks! Mistake reported.' : 'Thanks! Feedback sent.') + (sc.n ? ' Personal details were removed.' : '')); if (C) { FB.ctx = null; FB.kind = 'idea'; } }
   catch (e) { msg.textContent = "Couldn't send. Try again in a moment."; btn.disabled = false; }
   finally { FB.busy = false; } }
@@ -75,13 +70,7 @@ document.addEventListener('toggle', e => { const d = e.target; if (d && d.id ===
 // ---------- what's new: a short note shown once after each update ----------
 // Bump WHATS_NEW.id with each release worth announcing. First-time visitors get the welcome card instead, so they're
 // marked as having seen this one.
-const WHATS_NEW = {id: '2026-10-28b', items: [
-  ['Threat prep', 'Your scouting report now shows how many of the top meta threats your team is ready for, with a check, counter or warning for each. No more win odds.'],
-  ['Move accuracy', 'A move that can miss is never counted as a sure answer. Weather, No Guard, Compound Eyes and Wide Lens are included.'],
-  ['New ratings', 'Ratings now weigh top-cut finishes, strong players and recent events most.'],
-  ['Team checks', 'Item Clause clashes, items that do nothing, and Trick Room teams without enough slow attackers are now caught.'],
-  ['Game mechanics', 'Damage, turn order and field effects were checked against the battle simulator and thousands of real battles, and every mismatch was fixed.'],
-  ['Feedback', 'Tell us what\'s off with the Feedback button at the bottom of any page.']]};
+// WHATS_NEW: moved unchanged to 05-home-data.js (Nov 12; shared with the new build)
 function whatsNewCard() { let seen = '', welcomed = ''; try { seen = LS.get('cc2.seenNew', ''); welcomed = LS.get('cc2.welcomed', ''); } catch (e) {}
   if (!welcomed) { try { LS.set('cc2.seenNew', WHATS_NEW.id); } catch (e) {} return ''; }
   // shown for the visit right after an update only (Sim, Nov 5): the first Home of that visit marks it seen, and it stays for

@@ -5,6 +5,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import {execFileSync} from 'node:child_process';
+import {pathToFileURL} from 'node:url';
 import {fileURLToPath} from 'node:url';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
@@ -254,7 +255,7 @@ wr(d3, 'out/matches.json', {
 });
 
 await test('15. regstate buildRegState on day 3 with 5 events reports day=3, events=5, players=220, games=40', async () => {
-  const {buildRegState} = await import(path.join(TMP, 'regstate.mjs'));
+  const {buildRegState} = await import(pathToFileURL(path.join(TMP, 'regstate.mjs')).href); /* a file URL works on Windows too (Dos's PC run, Nov 25) */
   const rs = buildRegState({regObj: {id: 'M-D', since: '2026-12-02'}, rawReg: null, matches: rd(d3, 'out/matches.json'), today: '2026-12-04'});
   assert.equal(rs.reg, 'M-D');
   assert.equal(rs.day, 3);

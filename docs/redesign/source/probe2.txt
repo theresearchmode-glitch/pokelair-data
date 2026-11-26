@@ -1,0 +1,1 @@
+(() => { try { const x = CH.metaSix(); return JSON.stringify((x||[]).map(p => p && (p.n || p))); } catch (e) { return 'ERR ' + e.message; } })()

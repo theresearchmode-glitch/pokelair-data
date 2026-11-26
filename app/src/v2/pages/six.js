@@ -1,0 +1,177 @@
+// Nov 15 (audit #26): the shared note says 'most run'; the new site says 'most used' everywhere (Edit Set's tags, Home, Usage)
+V2.noteWord = n => n === 'most run' ? 'most used' : n;
+// ---------- My Team's six tiles and the set card (R4 group "six", Nov 11) ----------
+// The working-out is today's shared logic (src/app/05-six-data.js: teamLineup, PLAN_VS); this file only draws it.
+// Approved look: docs/rebuild/mocks/myteam.tpl.html (the six in three pairs: Lead, Back, Bench, each name over its item).
+
+// the six in three pairs, in plan order, then the game plan line (today's AR.plan words)
+// The Hand (Sim's pick, Nov 14; brief docs/rebuild/mocks/my-team-hand/BRIEF.md, section 2), piece 2: a full team's six as Cards (the info
+// sheet's ms-card) in Lead / Back / Bench, each with its rating plate and, under it, the item, the Ability and the four moves as bars.
+// Tapping a Card picks it (data-tmsel, as today's tiles). Teams of one to five keep today's tiles until Sim has seen pictures (brief s7).
+V2.handHtml = (D, sel, strip) => { const {ms, L} = D, E = V2.esc, F = V2.mvFitOf(ms) /* the move lists' last fit (review Nov 18, C7; monsheet.js) */, role = m => ms.length < 6 ? `spot ${m.i + 1}` : L.lead.includes(m) ? 'Lead' : L.back.includes(m) ? 'Back' : 'Bench'; /* no role is said until all six are in */
+  const card = m => { const k = ms.indexOf(m), on = m === sel, lk = !!(S.slots[m.i] && S.slots[m.i].lock), R = monRating(m.p), it = m.heldItem || m.item || 'No item';
+    const lock = lk ? '<svg class="sx-lk" viewBox="0 0 24 24" role="img" aria-label="Locked"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M9 11V8a3 3 0 0 1 6 0v3"/></svg>' : '';
+    const mv = m.moves.filter(Boolean).map(v => { const ty = V2.TYPES.includes(v.type) ? v.type : 'Normal'; return `<li style="--tc:var(--ty-${ty})"${F.b.includes(v.name) ? ' class="np-brk"' : ''}>${E(v.name)}</li>`; }).join('');
+    return `<div class="sx-slot mh-slot${on ? ' on' : ''}${lk ? ' locked' : ''}"><button type="button" class="tm-pick mh-pick" data-tmsel="${k}" aria-pressed="${on}" aria-label="${E(m.d)}, ${role(m)}${R ? `, rated ${R.n}${R.tier ? ' ' + E(R.tier) + ' tier' : ''}` : ''}, ${E(it)}${lk ? ', locked' : ''}">
+      ${R ? `<span class="mh-rate" aria-hidden="true"><b class="u">${R.n}</b>${R.tier ? ` ${E(R.tier)} tier<span class="vh"> rating</span>` : ''}${lock}</span> ` : lock}
+      ${V2.msCard(m.p, m.p.n, `<h3 class="u">${V2.nameHtml(V2.disp(m.p.n))}</h3>`, `<div class="ms-ty">${(m.p.t || []).map(V2.typeChip).join('')}</div>`, 150)}</button>
+      <div class="mh-set"><div class="ms-ty mh-ty">${(m.p.t || []).map(V2.typeChip).join('')}</div><p class="mh-it"><span class="vh">Item </span><b>${V2.keepForm(E(it))}</b> <small><span class="vh">Ability </span>${E(m.ability || 'None')}</small></p><ul class="mh-mv${F.c ? ' ' + F.c : ''}">${mv}</ul></div></div>`; };
+  // Sim, Nov 15 (night, 2nd): while the team is being built (one to five) nothing is labelled Lead / Back / Bench: the six spots in the
+  // player's own order, empty ones as 'Add' Cards (the same name box, data-v2addto); the roles are worked out once all six are in
+  /* Sim, Nov 18 (Q9 C): on tablets (700-1099), Remove keeps Lead / Back / Bench where they were, with an Add Card in the removed Card's
+     place, until the player adds a sixth or leaves My Team (V2.ui.holdRoles, set by Remove below); no other Card moves. Changes the Nov 15
+     rule (roles only once all six are in) for this case only, as Sim chose. */
+  const HR = V2.ui.holdRoles, holdOK = HR && ms.length < 6 && innerWidth >= 700 && innerWidth < 1100 && ms.length > 0 && ms.every(m => HR.n[m.i] === m.p.n); /* the same Pokémon in the same slots: a cleared or newly loaded team never inherits held roles */
+  if (!holdOK && HR && ms.length >= 6) V2.ui.holdRoles = null;
+  if (false && holdOK) { const at = i => ms.find(m => m.i === i), add = i => `<div class="sx-slot mh-slot mh-empty"><button type="button" class="sx-add mh-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="mh-addart" aria-hidden="true">+</span><b class="u">Add</b><small>Spot ${i + 1}</small></button></div>`;
+    const G = [['Lead', 'start the battle', HR.lead], ['Back', 'come in next', HR.back], ['Bench', 'stay out this game', HR.bench]];
+    return `<div class="mh-hand">${G.map(([name, note, g]) => `<div class="sx-grp mh-grp${name === 'Lead' ? ' lead' : ''}" role="group" aria-label="${name}"><p class="mh-gh" role="heading" aria-level="2"><b class="u">${name}</b><span>${note}</span></p><div class="mh-pair">${g.map(i => at(i) ? card(at(i)) : add(i)).join('')}</div></div>${strip && sel && g.includes(sel.i) ? strip : ''}`).join('')}</div>`; }
+  if (ms.length < 6) { const at = i => ms.find(m => m.i === i), add = i => `<div class="sx-slot mh-slot mh-empty"><button type="button" class="sx-add mh-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="mh-addart" aria-hidden="true">+</span><b class="u">Add</b><small>Spot ${i + 1}</small></button></div>`;
+    return `<div class="mh-hand mh-build"><div class="sx-grp mh-grp" role="group" aria-label="Your six"><p class="mh-gh"><b class="u">Your Six</b><span>${ms.length} of 6 in.</span></p><div class="mh-pair mh-six">${(() => { const cols = innerWidth < 360 ? 2 : 3 /* Sim, Nov 18 (C): three across from 360 */, si = strip && sel ? sel.i : -1, end = si < 0 ? -1 : Math.min(5, Math.floor(si / cols) * cols + cols - 1); return [0, 1, 2, 3, 4, 5].map(i => (at(i) ? card(at(i)) : add(i)) + (i === end ? strip : '')).join(''); })()}</div></div></div>`; }
+  /* (no "Your Six" heading on a full team: approved mock-up, Nov 11) Sim, Nov 20 (9:55 PM): no Lead / Back / Bench on My Team: who leads depends on the opponent, so Battle decides it. The six stay in the
+     team's own order, the same 'Your Six' view as while building; Battle's planner is one tap away. */
+  { const at = i => ms.find(m => m.i === i), ord = [0, 1, 2, 3, 4, 5].map(at).filter(Boolean);
+    return `<div class="mh-hand mh-build mh-full"><div class="sx-grp mh-grp" role="group" aria-label="Your six"><p class="mh-gh mh-ghx"><span>Who leads depends on who you face. <a class="np-link" href="#battle">Plan it in Battle ›</a></span></p><div class="mh-pair mh-six">${(() => { const cols = innerWidth < 360 ? 2 : 3, si = strip && sel ? ord.indexOf(sel) : -1, end = si < 0 ? -1 : Math.min(5, Math.floor(si / cols) * cols + cols - 1); return ord.map((m, k) => card(m) + (k === end ? strip : '')).join(''); })()}</div></div></div>`; } };
+// The Hand, piece 3 (brief section 3): the editing strip replaces the Set section. Only what the Card does not show: its place in the plan,
+// nature and stat points with their "most run" notes; then Edit Set, Info Sheet, Set as Lead / Use NastyPlot's pick (today's buttons, not
+// drawn in the brief: picture for Sim), Lock, Remove. Same hooks as today (data-v2edit, data-v2mon, data-v2lead, data-v2lock, data-v2rm).
+V2.editStripHtml = (D, sel) => { const {ms, L} = D, E = V2.esc; if (!sel || !ms.includes(sel)) return ''; const N = natInfo(sel), lk = !!(S.slots[sel.i] && S.slots[sel.i].lock), lead = false; /* Sim, Nov 20: leads are Battle's call */
+  const rt = '';
+  return `<section class="mt-edit" id="tm-set" aria-label="Editing ${E(sel.d)}"><div class="mt-ename"><p class="mt-ek">Editing</p> <h2 class="u">${V2.nameHtml(sel.d)}</h2> ${rt ? `<p class="sx-rt">${rt}</p>` : ''}</div>
+    <dl class="sx-kv mt-ekv">${N.nat ? `<div><dt>Nature</dt> <dd>${V2.kNat(N.nat)}${N.natNote ? ` <small>${V2.noteWord(N.natNote)}</small>` : ''}</dd></div>` : ''}${N.words ? `<div><dt>Stat points</dt> <dd>${E(N.words)}${N.ptsNote ? ` <small>${V2.noteWord(N.ptsNote)}</small>` : ''}</dd></div>` : ''}</dl>
+    ${(() => { const mv = sel.moves.filter(Boolean), F = V2.mvFitOf(ms); return mv.length ? `<ul class="mh-mv mt-emv${F.c ? ' ' + F.c : ''}" aria-label="Moves">${mv.map(v => { const ty = V2.TYPES.includes(v.type) ? v.type : 'Normal'; return `<li style="--tc:var(--ty-${ty})"${F.b.includes(v.name) ? ' class="np-brk"' : ''}>${E(v.name)}</li>`; }).join('')}</ul>` : ''; })()}<div class="mt-eacts"><button type="button" class="np-btn2 k-btn" data-v2rep="${sel.i}" aria-label="Replace ${E(sel.d)}: pick the Pokémon to take its place"><span>Replace</span></button><button type="button" class="np-btn2 k-btn" data-v2edit="${sel.i}"><span>Edit Set</span></button><button type="button" class="np-link sx-info" data-v2mon="${E(sel.p.n)}">Pokémon Page ›</button>${lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : ''}
+      <button type="button" class="sx-a${lk ? ' on' : ''}" data-v2lock="${sel.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(sel.d)}: suggestions never swap out a locked Pokémon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg>${lk ? 'Unlock' : 'Lock'}</button><button type="button" class="sx-a" data-v2rm="${sel.i}" aria-label="Remove ${E(sel.d)} from your team"><i aria-hidden="true">−</i>Remove</button></div></section>`; };
+V2.sixHtml = (D, sel) => { const {ms, L} = D, E = V2.esc;
+  const ord = [...L.lead, ...L.back, ...L.bench], role = m => L.lead.includes(m) ? 'Lead' : L.back.includes(m) ? 'Back' : 'Bench';
+  const tile = m => { const k = ms.indexOf(m), on = m === sel;
+    const lk = !!(S.slots[m.i] && S.slots[m.i].lock); // a locked Pokémon shows a small padlock before its item, so the tile keeps its height (Sim, Nov 11: no controls on the art)
+    return `<div class="sx-slot${on ? ' on' : ''}${lk ? ' locked' : ''}"><button type="button" class="tm-pick" data-tmsel="${k}" aria-pressed="${on}" aria-label="${E(m.d)}, ${role(m)}${lk ? ', locked' : ''}">${lk ? V2.mon(m.p.n, {sel: on, sub: V2.keepForm(m.heldItem || m.item || 'No item')}).replace('<small>', '<small><svg class="sx-lk" viewBox="0 0 24 24" role="img" aria-label="Locked"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="M9 11V8a3 3 0 0 1 6 0v3"/></svg>') : V2.mon(m.p.n, {sel: on, sub: V2.keepForm(m.heldItem || m.item || 'No item')})}</button></div>`; };
+  // empty spots (TEAM-20): "+ Add a Pokémon" tiles after the team, each opens the name box for its own spot (as today)
+  const used = new Set(ms.map(m => m.i)), open = [0, 1, 2, 3, 4, 5].filter(i => !used.has(i)).slice(0, 6 - ord.length);
+  // Sim, Nov 13 (Empty My Team Q1 B): the tile says "Add" with "Spot N" under it (six two-line "Add a Pokémon" read as a wrap); the spoken label keeps "Add a Pokémon to slot N"
+  const add = i => `<div class="sx-slot sx-empty"><button type="button" class="sx-add" data-v2addto="${i}" aria-label="Add a Pokémon to slot ${i + 1}"><span class="sx-addart" aria-hidden="true"><i>+</i></span><b>Add</b><small>Spot ${i + 1}</small></button></div>`;
+  const cells = ord.map(tile).concat(open.map(add)), grp = (name, j) => cells.slice(j * 2, j * 2 + 2).length ? `<div class="sx-grp" role="group" aria-label="${name}"><p class="sx-gl u" aria-hidden="true">${name}</p><div class="sx-tiles">${cells.slice(j * 2, j * 2 + 2).join('')}</div></div>` : '';
+  const pair = g => g.map(m => escName(m.d)).join(' + '), vs = PLAN_VS[L.by];
+  /* Sim, Nov 20: no lead / back / bench words on My Team (Battle decides who leads); the Game Plan sheet (which of the six covers each job) stays one tap away */
+  const plan = ms.length === 6 ? `<p class="sx-plan"><span class="sx-pl"><button type="button" class="np-link sx-gpl" data-v2gplan aria-label="Game plan: which of your six covers each job">Game Plan ›</button> Which of your six covers each job.</span></p>` : '';
+  // the action strip (Sim, Nov 11: pictures stay clean; today's "−" to remove): one slim row under the six for the picked Pokémon
+  const act = sel && ms.includes(sel) ? (() => { const lk = !!(S.slots[sel.i] && S.slots[sel.i].lock), lead = L.lead.length && !L.lead.includes(sel);
+    const rt = L.lead.length && ms.length === 6 ? roleText(sel, L, x => escName(x.d)) : ''; // its place in the plan, said once here (Sim's review, Nov 11, item 5)
+    return `<div class="sx-act" role="group" aria-label="${E(sel.d)}"><p class="sx-an"><b>${V2.nameHtml(sel.d)}</b>${rt ? `<span class="sx-rt">${rt}</span>` : ''}</p><div class="sx-ab">`
+      + `<button type="button" class="sx-a" data-v2rm="${sel.i}" aria-label="Remove ${E(sel.d)} from your team"><i aria-hidden="true">−</i>Remove</button>`
+      + `<button type="button" class="sx-a${lk ? ' on' : ''}" data-v2lock="${sel.i}" aria-pressed="${lk}" aria-label="${lk ? 'Unlock' : 'Lock'} ${E(sel.d)}: suggestions never swap out a locked Pokémon"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="6" y="11" width="12" height="9" rx="2"/><path d="${lk ? 'M9 11V8a3 3 0 0 1 6 0v3' : 'M9 11V8a3 3 0 0 1 5.8-1'}"/></svg>${lk ? 'Unlock' : 'Lock'}</button>`
+      + (lead ? `<button type="button" class="sx-a" data-v2lead="${E(sel.p.n)}">Set as Lead</button>` : '')
+      + `</div></div>`; })() : ''; // Edit Set lives only in the Set section (Sim, Nov 12: "your recommendation"; rule C3, nothing twice)
+  // Sim, Nov 18 (C): on phones the editing panel stays shut until a Card is tapped; a line says the Cards can be tapped
+  const es = V2.mtShut() ? null : sel, hint = V2.isHand(D) && !es ? '<p class="mt-hint">Tap a Card to edit, replace or remove it</p>' : '';
+  const inl = ms.length < 6 ? V2.mtInline() : V2.mtInline() && !V2.mtHand3(); /* the Hand three across (360-699): the panel opens under the whole Hand */
+  return `<div class="tm-six sx${V2.isHand(D) ? ' mh' : ''}">${V2.isHand(D) ? (inl ? V2.handHtml(D, es, V2.editStripHtml(D, es)) : V2.handHtml(D, es) + V2.editStripHtml(D, es)) + hint : `<div class="sx-grps">${['Lead', 'Back', 'Bench'].map(grp).join('')}</div>${act}`}${plan}</div>`; };
+// Sim (Nov 17, B): under 1100px the Cards stack, so the editing panel opens right under the tapped Card's pair (full team) or row
+// (team being built) instead of under all six; from 1100px the six sit in one row and the panel stays right under it
+V2.mtInline = () => innerWidth < 1100;
+// Sim, Nov 18 (C, phone length): phones 360-699 show the Hand three across (Lead | Back | Bench), so the panel opens under the whole Hand;
+// under 700 the panel stays shut until a Card is tapped (V2.ui.picked; a new team, Remove or Clear shut it again)
+V2.mtHand3 = () => innerWidth >= 360 && innerWidth < 700;
+// Sim, Nov 18 (Q5 A): desktop (1100+) works like phones: the panel stays shut until a Card is tapped (tablets 700-1099 unchanged, not asked)
+V2.mtShut = () => (innerWidth < 700 || innerWidth >= 1100) && !V2.ui.picked;
+(() => { const band = () => innerWidth >= 1100 ? 3 : innerWidth >= 700 ? 2 : innerWidth >= 360 ? 1 : 0; let b = band(), tm = 0; addEventListener('resize', () => { clearTimeout(tm); tm = setTimeout(() => { if (band() === b) return; b = band(); if (V2.route && V2.route() === 'team') V2.redraw(); }, 120); }); })();
+// Replace: the Add box on a filled spot; picking swaps it in one step (Undo brings the old one back)
+V2.openReplace = i => { const m = memberOf(S.slots[i], i); if (!m) return V2.openAdd(i); V2.ed.i = i; V2.ed.rep = i; V2.sheet(V2.addHtml(i, m.d), {label: 'Replace ' + m.d, focus: '[data-adq]'}); };
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2rep]'); if (b) V2.openReplace(+b.dataset.v2rep); });
+V2.isHand = D => D.ms.length >= 1 && !!D.L; /* any team of one to six (Sim, Nov 15 night); an empty team keeps its own empty screen */
+
+// the set card (TEAM-10; Sim, Nov 11: no second big picture, the six above already shows it on its floor ring): its place in the plan, the rating with its tier, item, Ability, nature and stat points (yours or what
+// most players run), the four moves, then Edit Set, Set as Lead (not already a lead) and its Info Sheet. Today's words throughout.
+V2.setSecHtml = (D, sel) => { const m = sel, P = m.p, E = V2.esc, L = D.ms.length >= 4 ? D.L : null, R = monRating(P), N = natInfo(m);
+  const lead = ''; // Set as Lead lives only in the strip under the six (Sim, Nov 12: team actions there, build actions here; C3)
+  const row = (k, v, note) => `<div><dt>${k}</dt><dd>${v}${note ? ` <small>${note}</small>` : ''}</dd></div>`;
+  return `<section class="tm-sec tm-set" id="tm-set"><h2 class="u">Set</h2><div class="tm-setgrid sx-noart"><div>
+    <h3 class="u">${V2.nameHtml(m.d)}</h3><div class="tm-types">${(P.t || []).map(V2.typeChip).join('')}${R ? `<span class="sx-rate2"><b class="u">${R.n}</b> ${R.tier ? E(R.tier) + ' tier rating' : 'Rating'}</span>` : ''}</div>
+    <dl class="sx-kv">${row('Item', E(m.heldItem || m.item || 'No item'))}${row('Ability', E(m.ability || 'None'))}${N.nat ? row('Nature', E(N.nat), V2.noteWord(N.natNote)) : ''}${N.words ? row('Stat points', E(N.words), V2.noteWord(N.ptsNote)) : ''}</dl>
+    <div class="tm-moves">${m.moves.filter(Boolean).map(v => `<span class="np-type" style="--tc:var(--ty-${V2.TYPES.includes(v.type) ? v.type : 'Normal'});--tcn:var(--tyn-${V2.TYPES.includes(v.type) ? v.type : 'Normal'})">${E(v.name)}</span>`).join('')}</div>
+    <div class="tm-setacts"><button type="button" class="np-btn2 k-btn" data-v2edit="${m.i}"><span>Edit Set</span></button>${lead}<button type="button" class="np-link sx-info" data-v2mon="${E(P.n)}">Pokémon Page ›</button></div></div></div></section>`; };
+
+// Set as Lead / Use NastyPlot's pick (TEAM-11): today's setLeadPick and words; the pick is saved with the team (S.leads)
+document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2lead]'); if (!b) return;
+  const pk = setLeadPick(b.dataset.v2lead); if (pk === false) return; render(); toast(leadMsg(pk)); });
+
+// Remove and Lock in the action strip (TEAM-09): today's toggleLock and clearSlot (31-set-edits.js); Remove keeps Undo, as today
+document.addEventListener('click', e => { const t = e.target.closest && e.target.closest('[data-v2lock],[data-v2rm]'); if (!t) return;
+  if (t.dataset.v2lock != null) { toggleLock(+t.dataset.v2lock); render(); const b = document.querySelector(`[data-v2lock="${t.dataset.v2lock}"]`); if (b) b.focus({preventScroll: true}); return; }
+  if (innerWidth >= 700 && innerWidth < 1100) { try { const D = V2.teamData(); if (D && D.L && D.ms.length === 6) V2.ui.holdRoles = {lead: D.L.lead.map(m => m.i), back: D.L.back.map(m => m.i), bench: D.L.bench.map(m => m.i), n: Object.fromEntries(D.ms.map(m => [m.i, m.p.n]))}; } catch (e) {} } /* Q9 C */
+  const c0 = (() => { const c = document.querySelector('#main .mh-slot.on'); return c ? c.getBoundingClientRect().top : null; })(); /* Q9 C: where the removed Card sat */
+  const i = +t.dataset.v2rm, was = clearSlot(i); V2.ui.picked = false; /* Sim, Nov 18 (C): on phones the panel shuts with the Card it was editing */
+  /* Sim, Nov 21 (Q101 A): on tablets (700-1099) the panel stays under the same row and edits the nearest Card left in that row, so nothing
+     below moves (it used to follow the next Card into the row below: rows jumped 197 px at 820). V2.ui.sel is a place in the members list. */
+  if (innerWidth >= 700 && innerWidth < 1100) { try { const ms = V2.teamData().ms || [], row = Math.floor(i / 3), same = ms.map((m, k) => [m, k]).filter(([m]) => Math.floor(m.i / 3) === row);
+    if (same.length) V2.ui.sel = same.sort((a, b) => Math.abs(a[0].i - i) - Math.abs(b[0].i - i) || a[0].i - b[0].i)[0][1]; } catch (e) {} }
+  /* Nov 21 (v2-rmjump 820): the line under the score went from the 2-line "Teams scoring like this win about 61%..." to "5 of 6 picked", so
+     the header shrank and every Card moved up 15px. The line keeps its height while the team stays this size (team.js, mtfHead). Not on phones (under 480): there the label above
+     wraps to 2 lines as well and the Nov 17 rule brings the Add spot into view anyway */
+  { const w = innerWidth >= 480 && document.querySelector('#main .mtf-score .win'); V2.ui.winHold = w ? {h: w.offsetHeight, n: S.slots.filter(x => x && x.n).length} : null; }
+  /* phones under 480 (Nov 21): the band words change too ('Top tier' -> 'Tournament ready', 2 lines), so the whole score block keeps its height */
+  { const sc = innerWidth < 480 && document.querySelector('#main .mtf-score'); V2.ui.scoreHold = sc ? {h: sc.offsetHeight, n: S.slots.filter(x => x && x.n).length} : null; }
+  render(); if (was) toast(`Removed ${was.d}`, true);
+  // Sim, Nov 17: after Remove the new Add spot was 685px above the screen (390 wide); bring it into view and give it the focus
+  // Sim, Nov 18 (desktop): centring it made the page jump up 400-500px every time even when the Add spot was already on screen.
+  // Now it moves only when less than a tap's height (44px) of the Add spot is on screen, and then the least that brings it fully in
+  // (below the sticky header); test v2-rmjump.mjs
+  requestAnimationFrame(() => { const a = document.querySelector(`[data-v2addto="${i}"]`); if (!a) return;
+    const hd = (document.querySelector('.np-head') || {}).offsetHeight || 0, q = a.getBoundingClientRect();
+    /* Q9 C (tablets, roles held): the Add Card takes the removed Card's place on screen, so nothing appears to move */
+    if (V2.ui.holdRoles && c0 != null && innerWidth >= 700 && innerWidth < 1100) { scrollBy(0, q.top - c0); a.focus({preventScroll: true}); V2.rmHold(i, a.getBoundingClientRect().top); return; }
+    /* visible enough to tap (44px of it on screen): leave the page still; else bring it fully in, the least distance */
+    if (q.bottom - hd < 44) scrollBy(0, q.top - hd - 16); else if (innerHeight - q.top < 44) scrollBy(0, q.bottom - innerHeight + 16);
+    a.focus({preventScroll: true}); V2.rmHold(i, a.getBoundingClientRect().top); }); }); /* instant: a smooth scroll was cut short by the redraw's late layout (stopped at 9px, under the header) */
+// Nov 18: the Add spot then stays where it landed. Under load the Card tap's smooth scroll (team.js) could still land after this one
+// (Add at -76, under the header). Held at least 3 s, while the suggestions are worked out and 1 s after (20 s at most), and let go
+// the moment the player scrolls, taps or presses a key (their own move always wins), as Apply's hold in sugs.js does.
+// Review Nov 18 (C1): a scroll the hold didn't make itself (a screen reader, find-in-page, a script) lets go too (V2.holdGuard, shell.js)
+V2.rmHold = (i, top) => { const t0 = performance.now(); let t1 = t0; const G = V2.holdGuard(() => document.querySelector(`[data-v2addto="${i}"]`));
+  const keep = () => { if (!G.on()) return; const a = document.querySelector(`[data-v2addto="${i}"]`); if (!a) return G.stop();
+    const d = a.getBoundingClientRect().top - top; if (Math.abs(d) > 1) scrollBy(0, d); G.mark(); if (document.querySelector('#main .sg2-wait')) t1 = performance.now();
+    const t = performance.now(); if ((t - t0 < 3000 || t - t1 < 1000) && t - t0 < 20000) requestAnimationFrame(keep); else G.stop(); };
+  requestAnimationFrame(keep); };
+
+// ---------- adding into a spot (ADD-01, ADD-02): the name box opens in the Edit Set sheet, focused ----------
+// Live search with today's monChoices (base names, "mega sal", "hisuian arc"; Species Clause for this spot), each row with its
+// type, "In your box" and its share of tournament teams (useText). Arrow keys move, Enter adds, Escape closes the list only.
+// Picking adds it (today's addMon) and the sheet turns into that Pokémon's Edit Set. The sheet sits outside the page, so a redraw
+// while typing (the day's data arriving) never touches the text.
+V2.addHtml = (i, rep) => `<div class="ed2 sx-addsh"><div class="np-eyebrow">Spot ${i + 1}</div><h2 class="u">${rep ? 'Replace ' + V2.esc(rep) : 'Add a Pokémon'}</h2>
+  <label class="np-field">${V2.ICON.search}<input type="search" data-adq="${i}" placeholder="Name, e.g. garch or mega sal" aria-label="Pokémon for spot ${i + 1}" autocomplete="off" spellcheck="false" role="combobox" aria-autocomplete="list" aria-expanded="false" aria-controls="sx-hits">${V2.CLR}</label>
+  <div class="hits sx-hits" id="sx-hits" role="listbox" aria-label="Matches" data-adhits></div>
+  <p class="fine sx-addhint">${rep ? 'Pick the Pokémon to take its place. Undo brings ' + V2.esc(rep) + ' back.' : 'Type part of a name: a base name lists its forms and Mega too.'}</p></div>`;
+V2.openAdd = i => { V2.ed.i = i; V2.ed.rep = null; V2.sheet(V2.editHtml(), {label: 'Add a Pokémon', focus: '[data-adq]'}); };
+V2.ad = {list: [], k: 0};
+V2.adDraw = inp => { const out = document.querySelector('[data-adhits]'); if (!out) return; const q = inp.value.trim(), E = V2.esc;
+  if (!q) { V2.ad = {list: [], k: 0}; out.innerHTML = ''; inp.setAttribute('aria-expanded', 'false'); return; }
+  const C = monChoices(inp.value, slotPool(+inp.dataset.adq)); V2.ad = {list: C.list, k: 0};
+  out.innerHTML = C.list.length ? C.list.map((p, k) => `<button type="button" class="np-hit sx-hit" role="option" id="sx-o${k}" data-adpick="${E(p.n)}" aria-selected="${k === 0}" tabindex="-1"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><b>${V2.nameHtml(p.d)}</b><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span><span class="sx-meta">${inBox(p) ? '<span class="sx-inbox">In your box</span>' : ''}<span class="sx-use" title="Share of tournament teams">${useText(p)}</span></span></button>`).join('')
+    : `<p class="fine sx-none">${E(C.note || 'No matches. Try fewer letters.')}</p>`;
+  inp.setAttribute('aria-expanded', C.list.length ? 'true' : 'false'); if (C.list.length) inp.setAttribute('aria-activedescendant', 'sx-o0'); else inp.removeAttribute('aria-activedescendant'); };
+V2.adMove = (inp, d) => { const n = V2.ad.list.length; if (!n) return; V2.ad.k = (V2.ad.k + d + n) % n;
+  document.querySelectorAll('[data-adhits] .sx-hit').forEach((o, k) => o.setAttribute('aria-selected', k === V2.ad.k)); inp.setAttribute('aria-activedescendant', 'sx-o' + V2.ad.k);
+  const o = document.getElementById('sx-o' + V2.ad.k); if (o) o.scrollIntoView({block: 'nearest'}); };
+V2.adPick = (i, n) => { const p = byName.get(n), was = memberOf(S.slots[i], i), rep = V2.ed.rep === i; if (!p || !slotPool(i)(p) || (was && !rep)) return; keepUndo(); addMon(i, p); V2.ed.rep = null; render(); toast(rep && was ? `Replaced ${was.d} with ${p.d}` : p.d + ' added', true); /* code review C8: Undo, as adding from the Box has */ V2.ed.i = i; V2.edRefresh(); };
+document.addEventListener('click', e => { const a = e.target.closest && e.target.closest('[data-v2addto]'); if (a) { V2.openAdd(+a.dataset.v2addto); return; }
+  const o = e.target.closest && e.target.closest('[data-adpick]'), inp = document.querySelector('[data-adq]'); if (o && inp) V2.adPick(+inp.dataset.adq, o.dataset.adpick); });
+document.addEventListener('input', e => { if (e.target.matches && e.target.matches('[data-adq]')) V2.adDraw(e.target); });
+document.addEventListener('keydown', e => { const inp = e.target; if (!inp.matches || !inp.matches('[data-adq]')) return;
+  if (e.key === 'ArrowDown' || e.key === 'ArrowUp') { e.preventDefault(); V2.adMove(inp, e.key === 'ArrowDown' ? 1 : -1); }
+  else if (e.key === 'Enter') { e.preventDefault(); const p = V2.ad.list[V2.ad.k]; if (p) V2.adPick(+inp.dataset.adq, p.n); }
+  // Escape closes the list first (the sheet stays open, as today); a second Escape closes the sheet
+  else if (e.key === 'Escape' && document.querySelector('[data-adhits]').innerHTML) { e.preventDefault(); e.stopPropagation(); V2.ad = {list: [], k: 0}; document.querySelector('[data-adhits]').innerHTML = ''; inp.setAttribute('aria-expanded', 'false'); } }, true); // capture: runs before the sheet's own Escape
+
+// ---------- Game Plan (Nov 12, today's "Game Plan" fold, every row kept): the plan line's "Game plan" opens it as a sheet ----------
+// rows from today's gamePlan() (11-game-plan.js): Speed control, Backup speed, Weather, Terrain, Lead support... each Covered /
+// Partly / Missing / Optional with who does it and a note; the team's archetype on top (teamArchetype, as today)
+const GP2 = {ok: ['ok', 'Covered'], part: ['mid', 'Partly'], miss: ['hi', 'Missing'], opt: ['', 'Optional']};
+V2.openGamePlan = () => { const ms = members(); if (!ms.length) return; let gp = {rows: []}, lb = ''; try { gp = gamePlan(ms); } catch (e) {} try { const a = teamArchetype(ms); lb = a ? a.label : ''; } catch (e) {}
+  const rows = gp.rows.map(r => { const [c, t] = GP2[r.st] || GP2.opt; return `<li><span class="gp2-l">${V2.esc(r.label)}</span><span class="sg2-sev ${c}">${t}</span><span class="gp2-w">${r.who ? V2.esc(r.who) : ''}${r.note ? `<small>${V2.esc(r.note)}</small>` : ''}</span></li>`; }).join('');
+  V2.sheet(`<div class="gp2"><div class="np-eyebrow"><span>My Team${lb ? ' · ' + V2.esc(lb) : ''}</span></div><h2 class="u">Game Plan</h2>
+    <p class="tm-sub">Leads, backups and what to watch: which of your Pokémon covers each job.</p><ul class="gp2-rows">${rows}</ul></div>`, {label: 'Game Plan', fit: true}); };
+document.addEventListener('click', e => { if (e.target.closest('[data-v2gplan]')) V2.openGamePlan(); });
+
+/* Q9 C: the held roles end when the player leaves My Team */
+addEventListener('hashchange', () => { if (V2.route && V2.route() !== 'team' && V2.ui) V2.ui.holdRoles = null; });

@@ -1,0 +1,128 @@
+/* Home, The Stampede: the post band (classes sdp-*; shared .sd-* in sd-shared.css). Brief section 4: "The post is in."
+   The band draws its red on ::before (the same slanted edge as sd-shared), so the Pelipper can fly in over the edge instead of being
+   cut by the band's clip. The parcel, stamps and small paper are the Post Room's and the Dispatch's own pieces; this file only places
+   them (this layer comes after sd-postroom and sd-dispatch, so a placement here wins without !important). No motion. */
+.sd-band.sdp{--bw:clamp(248px,20vw,340px);isolation:isolate;clip-path:none;background:none;color:var(--sd-on-band)}
+.sdp::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--sd-flag);clip-path:polygon(0 var(--sd-cut),100% 0,100% 100%,0 100%)}
+
+/* the top row: heading | the Pelipper's cell | one line. The bird sits on the cell's foot and rises over the band's top edge into the
+   tools band's empty foot (no text there: v2-minors SDP-3); it never covers the heading or the line beside it */
+.sdp-top{position:relative;display:grid;grid-template-columns:auto minmax(calc(var(--bw) * .8),1fr) minmax(0,26ch);align-items:end;gap:var(--s8);margin-bottom:var(--s12)}
+.sdp-bird{position:relative;align-self:stretch;pointer-events:none}
+.sdp-bird .np-mon{--iw:var(--bw);position:absolute;bottom:var(--s8);left:50%;width:var(--bw);margin:0;translate:-50% 0}.sdp-bird .np-mon .pool{display:none}
+.sdp-bird .np-mon img{transform:rotate(-8deg)}
+.sdp-ln{position:absolute;height:4px;border-radius:var(--r-s);background:linear-gradient(90deg,var(--sd-post-line),transparent);transform:rotate(var(--sd-tilt));transform-origin:left center}
+.sdp-ln.l1{bottom:calc(var(--bw) * .72);left:calc(50% + var(--bw) * .42);width:calc(var(--bw) * .6)}.sdp-ln.l2{bottom:calc(var(--bw) * .6);left:calc(50% + var(--bw) * .36);width:calc(var(--bw) * .44)}.sdp-ln.l3{bottom:calc(var(--bw) * .48);left:calc(50% + var(--bw) * .4);width:calc(var(--bw) * .7)}
+/* the heading (tilted with the band) and, on desktop, one line beside it */
+.sdp-h{position:relative;z-index:2;margin:0;font-size:var(--d-sdpost);line-height:1;rotate:var(--sd-tilt);transform-origin:left bottom;color:var(--sd-on-band)}
+.sdp-h span{color:var(--sd-flag-num);white-space:nowrap}
+@media (min-width:1100px){.sdp-h{white-space:nowrap}}
+.sdp-lede{position:relative;z-index:2;margin:0;padding-bottom:var(--s2);font:500 var(--t17)/1.5 var(--b);color:var(--sd-on-band);rotate:var(--sd-tilt)}
+.sdp-ls{display:none} /* the short line, for phones (Sim's Q23 A, Nov 19) */
+/* two columns, ending together on desktop; one under 1280 (gifts first) */
+.sdp-cols{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s12) var(--s16);align-items:stretch}
+.sdp-cols.sdp-solo{grid-template-columns:minmax(0,1fr)}
+.sdp-col{display:flex;flex-direction:column;min-width:0;container-type:inline-size}
+.sdp-ch{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:var(--s2) var(--s6);margin-bottom:var(--s4)}
+.sdp-ch h3{margin:0;font-size:var(--t34);line-height:1.2;color:var(--sd-on-band)}
+.sdp-all{display:inline-flex;align-items:center;min-height:var(--tap);font:700 var(--t16)/1.2 var(--b);color:var(--sd-on-band);text-decoration:underline;text-decoration-thickness:2px;text-underline-offset:6px}
+.sdp-all:focus-visible,.sdp-none a:focus-visible{outline:3px solid var(--sd-on-band);outline-offset:2px}
+
+/* gifts: the parcel, the stamps over its foot, then the code slip */
+.sdp-gb{display:flex;flex-direction:column;flex:1;gap:var(--s6)}
+.sdp-stack{display:flex;flex-direction:column}
+.sdp-stack .pr-parcel{padding-bottom:var(--s16)}
+.sdp-stamps{position:relative;z-index:1;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:var(--s4);margin:calc(var(--s12) * -1) 0 0;padding:0 var(--s3);list-style:none}
+/* the postmark at band size: the small round mark with its date (as the Post Room draws it on phones), clear of the month */
+.sdp-stamps .pr-pm{width:52px;height:52px;top:calc(var(--s3) * -1);right:calc(var(--s3) * -1)}.sdp-stamps .pr-pm>span{width:min-content;line-height:1.05}.sdp-stamps .pr-pmw,.sdp-stamps .pr-pm svg{display:none}
+.sdp-stamps.sdp-free{margin-top:0;padding:var(--s3) 0 0}
+.sdp-stamps .pr-sw:nth-child(odd){rotate:-2deg}.sdp-stamps .pr-sw:nth-child(even){rotate:1.5deg}
+@container (max-width:479.98px){.sdp-stamps{grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s3);padding:0}.sdp-stamps .pr-sw:nth-child(4){display:none}}
+.sdp-other{margin-top:auto}
+.sdp-slip{display:grid;grid-template-columns:minmax(0,1fr) auto auto;align-items:stretch;gap:var(--s2) var(--s4);padding:var(--s3) var(--s3) var(--s3) var(--s5);border-radius:var(--r-s);background:var(--pr-paper);color:var(--pr-ink);rotate:-.6deg;box-shadow:0 1px 2px var(--pr-shadow),0 12px 24px -12px var(--sd-post-shadow)}
+.sdp-sw{min-width:0;margin:0;font:500 var(--t15)/1.5 var(--b)}.sdp-sw b{font-weight:600;white-space:nowrap}.sdp-sw i{font-style:normal;color:var(--pr-ink2);white-space:nowrap}
+.sdp-sw,.sdp-sc{display:flex;align-items:center} /* the slip's three parts share one row top (stretched), their contents centred */
+.sdp-sc{min-width:0}.sdp-sc .pr-cv{font-size:var(--t22)}
+.sdp-slip .np-btn.pr-copy,.sdp-gifts .pr-label .np-btn.pr-copy{min-height:var(--tap);background:var(--pr-ink);color:var(--pr-paper);box-shadow:none}
+.sdp-slip :focus-visible{outline-color:var(--pr-num)}
+@container (max-width:559.98px){.sdp-slip{grid-template-columns:minmax(0,1fr) auto}.sdp-sw{grid-column:1/-1}.sdp-ch h3{font-size:var(--t28)}}
+@container (max-width:479.98px){.sdp-slip{padding:var(--s3)}.sdp-slip{grid-template-columns:minmax(0,1fr)}.sdp-sc .pr-cv{font-size:var(--t20)}.sdp-slip .np-btn.pr-copy{width:100%}}
+.sdp-none{margin:0;font:500 var(--t17)/1.5 var(--b);color:var(--sd-on-band)}
+.sdp-none a{display:inline-flex;align-items:center;min-height:var(--tap);color:var(--sd-on-band);font-weight:700;text-decoration:underline;text-underline-offset:4px}
+/* no news: the gifts take the width as two parcels side by side (or the parcel and How to collect) */
+.sdp-gb.sdp-two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s12);align-items:start}
+.sdp-two .sdp-other{margin:0;height:100%}.sdp-two .sdp-other>*{height:100%}
+@container (max-width:759.98px){.sdp-gb.sdp-two{grid-template-columns:minmax(0,1fr)}}
+
+/* news: the small paper, tilted; it grows to end level with the gifts and keeps its Next event bar at its foot */
+.sdp-tilt{display:flex;flex:1;padding:0 var(--s2)}
+.sdp-tilt .dp-paper{display:flex;flex-direction:column;width:100%;rotate:1.2deg}
+.sdp-tilt .dp-nbar{margin-top:auto}.sdp-tilt .dp-more{flex:1;margin-bottom:var(--s4)} /* when the gifts column is taller, the stories share the extra height (evenly spaced rules), not one hole */
+
+/* widths: one column under 1360 (gifts first); under 1100 the line beside the heading goes under it and the bird keeps the top right;
+   on phones a short line stays under it (Sim's Q23 A, Nov 19; it was hidden there: brief "on desktop, one line beside it") */
+@media (max-width:1359.98px){.sdp-cols{grid-template-columns:minmax(0,1fr)}.sdp-tilt .dp-paper{rotate:.8deg}} /* two columns only where the small paper keeps its two story columns (a column of 550+), so both end level without a hole */
+@media (max-width:1099.98px){.sd-band.sdp{--bw:clamp(150px,26vw,240px)}.sdp-top{grid-template-columns:minmax(0,1fr) var(--bw)}.sdp-lede{grid-column:1;rotate:none;max-width:48ch}.sdp-bird{grid-column:2;grid-row:1/span 2;align-self:start}
+  .sdp-bird .np-mon{bottom:auto;top:calc((var(--s16) + var(--sd-cut) + var(--bw) * .3) * -1)}.sdp-ln{display:none}} /* under 1100 the bird hangs from the band top: 30% of it over the edge, clear of the heading */
+@media (max-width:699.98px){.sdp-ll{display:none}.sdp-ls{display:inline}.sdp-top{grid-template-columns:minmax(0,1fr) calc(var(--bw) * .5);gap:var(--s4);margin-bottom:var(--s8)}.sd-band.sdp{--bw:clamp(132px,40vw,176px)}
+  .sdp-bird .np-mon{left:auto;right:calc(var(--s2) - var(--gut));top:calc((var(--s16) + var(--s4) + var(--sd-cut) + var(--bw) * .3) * -1);translate:none}.sdp-ln{display:none}
+  .sdp-ch h3{font-size:var(--t24)}
+  .sdp-h{margin-top:var(--s6)}} /* phones: the tilt lifts the heading's right end under the Pelipper's feet (two lines at 360-390, one line at 500-530);
+     the heading drops 24px and the bird rises 16px more over the edge (still clear of the tools band's words), so nothing covers it (v2-minors SDP-3) */
+/* stamps in a narrow column: the names and kinds as the Post Room sets them on phones (whole words stay inside the stamp) */
+@container (max-width:559.98px){.sdp-stamps .pr-nm{margin-top:var(--s2);font:700 var(--t13)/1.5 var(--b)}.sdp-stamps .pr-how{letter-spacing:0;text-transform:none}.sdp-stamps .pr-my{font:700 var(--t13)/1.5 var(--b)}.sdp-stamps .pr-st{padding:var(--s3) var(--s3) var(--s4)}}
+/* What's New (Sim Q4d A): a paper slip in the Post Room's paper colours, tilted like the code slip; after an update only */
+.sdp-nw{position:relative;z-index:2;margin:0 0 var(--s10);padding:var(--s4) var(--s12) var(--s4) var(--s5);border-radius:var(--r-s);background:var(--pr-paper);color:var(--pr-ink);rotate:-.6deg;
+  box-shadow:0 1px 2px var(--pr-shadow),0 12px 24px -12px var(--sd-post-shadow)}
+.sdp-nf summary{display:flex;flex-wrap:wrap;align-items:baseline;gap:var(--s1) var(--s4);min-height:var(--tap);cursor:pointer;list-style:none}
+.sdp-nf summary::-webkit-details-marker{display:none}
+.sdp-nt{font-size:var(--t26);line-height:1.2}.sdp-ns{font:600 var(--t15)/1.5 var(--b);color:var(--pr-ink2)}
+.sdp-nf ul{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,300px),1fr));gap:var(--s3) var(--s8);margin:var(--s3) 0 0;padding:0;list-style:none;font:500 var(--t15)/1.5 var(--b)}
+@media (min-width:1100px){.sdp-nf ul{grid-template-columns:repeat(3,minmax(0,1fr))}}
+/* Q77 (Nov 20): 7 items in a grid left one alone on the last row; balanced columns instead (3 / 2 / 2 at 1100+, 4 / 3 from 700) */
+@media (min-width:700px){.sdp-nf ul{display:block;columns:2;column-gap:var(--s8)}.sdp-nf ul>li{break-inside:avoid;margin-bottom:var(--s3)}}
+@media (min-width:1100px){.sdp-nf ul{columns:3}}
+.sdp-nf li b{display:block;font-weight:700}.sdp-nf li span{color:var(--pr-ink2)}
+.sdp-nx{position:absolute;top:var(--s2);right:var(--s2);display:grid;place-items:center;width:var(--tap);height:var(--tap);border:0;border-radius:var(--r-s);background:none;color:var(--pr-ink);font:400 var(--t28)/1 var(--b);cursor:pointer}
+.sdp-nx:focus-visible,.sdp-nf summary:focus-visible{outline:3px solid var(--pr-ink);outline-offset:2px}
+@media (max-width:699.98px){.sdp-nt{font-size:var(--t22)}}
+/* Shorter phone Home, Post X (Sim, Nov 18: "one parcel, one front page"; docs/rebuild/short-home-options.md): under 700 the band shows the
+   parcel for the soonest-ending gift and the Dispatch's masthead, lead story and Next event. The past-gift stamps, the second gift's
+   code slip, the label's Sent line and the paper's more stories leave phone Home only (all on Gifts / News, one tap away) */
+@media (max-width:699.98px){
+  .sdp .sdp-stamps,.sdp .sdp-other,.sdp .pr-sent,.sdp .dp-more{display:none}
+  .sdp-cols{gap:var(--s8)}
+  .sdp .pr-parcel.pr-cpt{padding-bottom:var(--s5)}
+  .sdp-top{margin-bottom:var(--s5)}
+}
+/* Home length (Nov 23, hX): the small paper in a desktop column (1100+; phones and iPads as they were). Its display sizes follow the
+   paper's width (cqi), so in a 380-540px column they fell between the kit's steps (qcheck: SIZE 28.7 / 30.1px "A New Mystery Gift" at
+   1280): the lead headline now steps 34 / 28 / 24 and the name 34 / 28 below its display range. The name's two stacked lines keep
+   their tight newspaper leading, with 16px between them so the lines' letters never touch (qcheck: OVERLAP "The Champions" x "Dispatch") */
+@media (min-width:1100px){
+  @container dp (max-width:699.98px){.sdp .dp-small .dp-name span+span{margin-top:var(--s4)}}
+  @container dp (max-width:521.98px){.sdp .dp-small .dp-lead:not(.dp-long) .dp-lh{font-size:var(--t28)}}
+  @container dp (max-width:437.98px){.sdp .dp-small .dp-lead:not(.dp-long) .dp-lh{font-size:var(--t24)}}
+  @container dp (max-width:443.98px){.sdp .dp-small .dp-name{font-size:var(--t34)}}
+  @container dp (max-width:377.98px){.sdp .dp-small .dp-name{font-size:var(--t28)}}
+  /* Home length (Nov 23, hY): Home at 1440x900 was 3,610 (A) / 3,613 (B) px, just over the 4-screen cap of 3,600. The name's own margins
+     8 above / 12 below become 2 / 4 (14px; the 16px between its stacked lines stays: at 12 qcheck's OVERLAP "The Champions" x "Dispatch"
+     came back at 1440; 0 above would put its ascenders on the masthead rule). Measured on the untilted paper at 1280 and 1440: about 3px
+     clear between the masthead rule and the tallest letters, 3px between the "p" of Dispatch and the lead's rule (was 8 / 11) */
+  .sdp .dp-small .dp-name{margin:2px 0 var(--s1)}
+}
+/* Home length, option B (Nov 23, direction for Sim): the stampede keeps its whole first screen, and at 1100+ the post joins the tools band
+   as its last row: Post X (the phone's "one parcel, one front page", Sim Nov 18) on the same beige, the gift parcel beside the Dispatch's
+   front page. The red band's heading row (The post is in., the Pelipper, its line) steps aside; the past-gift stamps, the second slip,
+   the Sent line and the paper's more stories are on Gifts / News, one tap away (All 10 Gifts, All 69 Stories) */
+@media (min-width:1100px){
+  .sd-band.sdp{margin-top:calc(var(--sd-cut) * -1 - var(--s8));padding-top:0;color:var(--ink)}
+  .sdp::before{background:var(--sd-beige);clip-path:none}
+  .sdp-top{display:none}
+  .sdp-ch h3{color:var(--ink)}.sdp-all{color:var(--ink)}.sdp-all:focus-visible{outline-color:var(--plot)}
+  .sdp .sdp-stamps,.sdp .sdp-other,.sdp .pr-sent,.sdp .dp-more{display:none}
+  .sdp .sdp-two>.sdp-other{display:block} /* with no news (sdp-solo) the gifts keep the whole width as two parcels side by side (v2-minors SDP-6) */
+  .sdp .pr-parcel.pr-cpt{padding-bottom:var(--s5)}
+  .sdp-cols{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s5)}
+  .sdp-ch{margin-bottom:var(--s2)}.sd-band.sdp:last-child{padding-bottom:var(--s6)}
+}

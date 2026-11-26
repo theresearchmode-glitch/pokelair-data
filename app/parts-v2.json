@@ -1,0 +1,142 @@
+{
+  "_": "The rebuild (R3, Nov 11): a second build of NastyPlot beside today's page. node app/build.mjs --v2 writes dist/v2.html. Shares today's data and, step by step, today's logic; none of today's CSS or reskin code. Plan: docs/rebuild/r3-foundation.md",
+  "head": "src/v2/head.html",
+  "css": [
+    [
+      "tokens",
+      "src/v2/css/tokens.css"
+    ],
+    [
+      "base",
+      "src/v2/css/base.css"
+    ],
+    [
+      "components",
+      "src/v2/css/components.css"
+    ],
+    [
+      "shell",
+      "src/v2/css/shell.css"
+    ],
+    ["kit", "src/v2/css/kit.css"],
+    [
+      "pages",
+      "src/v2/css/pages.css"
+    ],
+    [
+      "six",
+      "src/v2/css/six.css"
+    ],
+    [
+      "matchups",
+      "src/v2/css/matchups.css"
+    ],
+    [
+      "sugs",
+      "src/v2/css/sugs.css"
+    ],
+    ["plot", "src/v2/css/plot.css"], ["sd-shared", "src/v2/css/sd-shared.css"], ["sd-hero", "src/v2/css/sd-hero.css"], ["sd-six", "src/v2/css/sd-six.css"], ["sd-tools", "src/v2/css/sd-tools.css"], ["sd-postroom", "src/v2/css/sd-postroom.css"], ["sd-dispatch", "src/v2/css/sd-dispatch.css"], ["sd-post", "src/v2/css/sd-post.css"], ["sd-motion", "src/v2/css/sd-motion.css"], ["arena-calc", "src/v2/css/arena-calc.css"], ["team-frame", "src/v2/css/team-frame.css"], ["plot-calc", "src/v2/css/plot-calc.css"], ["battle-target", "src/v2/css/battle-target.css"], ["infosheet", "src/v2/css/infosheet.css"], ["ratings", "src/v2/css/ratings.css"], ["box", "src/v2/css/box.css"], ["natures", "src/v2/css/natures.css"]
+  ],
+  "body": "src/v2/body.html",
+  "data": [
+    "src/data/data.js",
+    
+    "src/data/logo-sly.js",
+    "src/data/items-list.js",
+    "src/data/post.js",
+    "src/data/move-acc.js",
+    "src/data/move-meta.js",
+    "src/data/info-text.js",
+    "src/engine/types.js"
+  ],
+  "scripts": [
+    "src/v2/test-hook.js",
+    "src/v2/bridge.js",
+    "src/v2/shell.js",
+    "src/v2/type-icons.js",
+    "src/v2/kit.js",
+    "src/v2/item-art.js",
+    "src/v2/pages/guide.js",
+    "src/v2/pages/team.js",
+    "src/v2/pages/six.js",
+    "src/v2/pages/team-frame.js",
+    "src/v2/pages/matchups.js",
+    "src/v2/pages/sugs.js",
+    "src/v2/pages/monsheet.js",
+    "src/v2/pages/infosheet.js",
+    "src/v2/pages/box.js",
+    "src/v2/pages/record.js",
+    "src/v2/pages/compare.js", "src/v2/pages/compare-faceoff.js",
+    "src/v2/pages/home.js", "src/v2/pages/stampede.js", "src/v2/pages/stampede-hero.js", "src/v2/pages/stampede-six.js", "src/v2/pages/stampede-tools.js", "src/v2/pages/stampede-post.js", "src/v2/pages/post-data.js", "src/v2/pages/postroom.js", "src/v2/pages/dispatch.js",
+    "src/v2/pages/build.js",
+    "src/v2/pages/build-sheet.js", "src/v2/pages/build-plot.js", "src/v2/pages/winning.js", "src/v2/pages/events.js", "src/v2/pages/archetypes.js", "src/v2/pages/thisweek.js", "src/v2/pages/track.js", "src/v2/pages/share-slab.js", "src/v2/pages/share-tape.js", "src/v2/pages/method.js", "src/v2/pages/about.js", "src/v2/pages/feedback.js", "src/v2/pages/owner.js", "src/v2/pages/pokemon.js",
+    "src/v2/pages/battle.js", "src/v2/pages/battle-pbp.js", "src/v2/pages/battle-target.js",
+    "src/v2/pages/speed.js",
+    "src/v2/pages/calc.js",
+    "src/v2/pages/calc-plot.js",
+    "src/v2/pages/types.js",
+    "src/v2/pages/practice.js",
+    "src/v2/pages/gauntlet.js", "src/v2/pages/test-piles.js",
+    "src/v2/pages/meta.js",
+    "src/v2/pages/usage.js",
+    "src/v2/pages/sets.js",
+    "src/v2/pages/natures.js",
+    "src/v2/pages/coming.js"
+  ],
+  "logic": [
+    "src/app/00-main.js",
+    "src/app/01-state.js",
+    "src/app/02-set-data.js",
+    "src/app/03-persistence.js",
+    "src/app/04-search.js",
+    "src/app/05-icons.js",
+    "src/app/05-data-clean.js",
+    "src/app/05-six-data.js",
+    "src/app/05-home-data.js",
+    "src/app/06-helpers.js",
+    "src/app/08-render-all.js",
+    "src/app/09-quick-add.js",
+    "src/app/10-team-strategy.js",
+    "src/app/11-game-plan.js",
+    "src/app/12-meta-threats.js",
+    "src/app/13-rating.js",
+    "src/app/14-outside-tier-lists.js",
+    "src/app/15-visual-helpers.js",
+    "src/app/16-outside-performance-data.js",
+    "src/app/17-matchup-threats-teams.js",
+    "src/app/18-archetypes.js", "src/app/42-guide-data.js",
+    "src/app/19-showdown-paste.js",
+    "src/app/21-sets.js",
+    "src/app/22-auto-build.js",
+    "src/app/47-core-data.js",
+    "src/app/23-coverage.js",
+    "src/app/24-sheet-data.js", "src/app/43-data-health.js",
+    "src/app/44-share-images.js",
+    "src/app/45-team-links.js",
+    "src/app/29-fix-planner.js",
+    "src/app/30-saved-data.js",
+    "src/app/31-set-edits.js",
+    "src/app/31-box-data.js",
+    "src/app/26-log-data.js",
+    "src/app/41-replay-data.js",
+    "src/app/49-event-data.js",
+    "src/app/62-compare-data.js",
+    "src/app/33-move-edits.js",
+    "src/app/35-win-model.js",
+    "src/app/36-lanes.js",
+    "src/app/36-sug-data.js",
+    "src/app/36-confidence.js",
+    "src/app/39-damage-calc-speed.js",
+    "src/app/40-turn-one-data.js",
+    "src/app/46-battle-data.js",
+    "src/app/38-gauntlet-data.js",
+    "src/app/63-practice-data.js", "src/app/63-calendar-data.js", "src/app/63-method-data.js", "src/app/56-about-data.js", "src/app/53-feedback-data.js", "src/app/51-usage-data.js", "src/app/63-weekly-data.js",
+    "src/app/64-track-data.js",
+    "src/app/20-types-data.js",
+    "src/app/54-items.js",
+    "src/app/57-set-tips.js",
+    "src/app/55-threats.js",
+    "src/app/58-strength.js",
+    "src/app/59-matchup-data.js"
+  ]
+}

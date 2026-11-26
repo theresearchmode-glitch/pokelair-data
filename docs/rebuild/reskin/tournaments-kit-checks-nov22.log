@@ -1,0 +1,83 @@
+# hW1 Winning Teams on the kit: checks (Nov 22). Builds: --v2 --art (kitpage, overlap, behaviour), --v2 --preview-data --art (qcheck, tap-size, unbounded, folds, pictures), --v2 --preview-data (q83, minors)
+## BEFORE (untouched copy 90a13157)
+== kitpage 14:47:38
+   exit 0 :   ok   2560 day   ok   2560 night kit-page: all 14 views passed (7 widths x day and night) 
+== overlap 14:48:02
+   exit 0 :   self-test: 8 planted bugs caught, 7 deliberate look-alikes passed v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 43s) 
+== qcheck 14:48:46
+   exit 0 : qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 31s 
+== tapsize 14:49:17
+   exit 0 : tap-size: all passed 
+== unbounded 14:50:50
+   exit 0 : v2-unbounded: none outside the named exception across 28 pages 
+== folds 14:51:52
+   exit 0 : v2-folds: all passed 
+== tokens 14:52:07
+   exit 0 : tokens-doc: up to date (572 tokens) 
+== q83 14:52:07
+   exit 0 : v2-q83: all passed 
+== dmeta 14:54:01
+   exit 0 :   pass  SETS-01  Look up a Pokémon: its sets show and stay after reload (B SETS-02) behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 538s  (adapter v2) 
+== cnav 15:02:59
+   exit 0 : behaviour: 1 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 5s  (adapter v2) 
+== bcores 15:03:04
+   exit 0 : behaviour: 1 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 5s  (adapter v2) 
+== minors-main1 15:03:10
+   exit 0 :   pass  X-05 (Nov 18): the site's own × in search boxes (Build around, Cores, Search, Winning Teams, Meta; phone tap and mouse): hidden when empty, a 44px tap, the browser's own × hidden, the box no taller; one tap empties the box, keeps focus (keyboard up) and the list goes back (390 build: ok 45x45; 390 cores: ok 44x46; 390 search: ok 45x45; 390 tournaments: ok 45x45; 390 meta: ok 45x45; 1280 
+== minors-main2 15:15:24
+   exit 0 :   pass  Sim, Nov 18 (C): six long names (Paldean Tauros (Combat), Squawkabilly (Yellow), Mega Crabominable...) fit their Cards at 320/360/390 (three across from 360): none past the edge or over two lines, none under 13px (320: ok | 360: ok | 390: ok)   pass  NPR-4: a gift with no start shows at the counter while its end hasn't passed ({"live":1,"shown":true}) v2-minors (main2):all passed 
+== minors-groups 15:21:44
+   exit 0 : v2-minors (groups):all passed 
+== done 15:29:50
+
+## AFTER (first full run; qcheck found 2 sizes on 'or search' at 820, minors groups died on a closed browser in Home's HQ test)
+== kitpage 15:29:56
+   exit 0 :   ok   2560 day   ok   2560 night kit-page: all 14 views passed (7 widths x day and night) 
+== overlap 15:30:21
+   exit 0 :   self-test: 8 planted bugs caught, 7 deliberate look-alikes passed v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 43s) 
+== qcheck 15:31:05
+   exit 1 : qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 2 findings, 2 new; 31s 
+== tapsize 15:31:36
+   exit 0 : tap-size: all passed 
+== unbounded 15:33:10
+   exit 0 : v2-unbounded: none outside the named exception across 28 pages 
+== folds 15:34:11
+   exit 0 : v2-folds: all passed 
+== tokens 15:34:26
+   exit 0 : tokens-doc: up to date (572 tokens) 
+== q83 15:34:26
+   exit 0 : v2-q83: all passed 
+== dmeta 15:36:20
+   exit 0 :   pass  SETS-01  Look up a Pokémon: its sets show and stay after reload (B SETS-02) behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 491s  (adapter v2) 
+== cnav 15:44:32
+   exit 0 : behaviour: 1 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 4s  (adapter v2) 
+== bcores 15:44:36
+   exit 0 : behaviour: 1 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 5s  (adapter v2) 
+== minors-main1 15:44:41
+   exit 0 :   pass  X-05 (Nov 18): the site's own × in search boxes (Build around, Cores, Search, Winning Teams, Meta; phone tap and mouse): hidden when empty, a 44px tap, the browser's own × hidden, the box no taller; one tap empties the box, keeps focus (keyboard up) and the list goes back (390 build: ok 45x45; 390 cores: ok 44x46; 390 search: ok 45x45; 390 tournaments: ok 45x45; 390 meta: ok 45x45; 1280 
+== minors-main2 15:56:40
+   exit 0 :   pass  Sim, Nov 18 (C): six long names (Paldean Tauros (Combat), Squawkabilly (Yellow), Mega Crabominable...) fit their Cards at 320/360/390 (three across from 360): none past the edge or over two lines, none under 13px (320: ok | 360: ok | 390: ok)   pass  NPR-4: a gift with no start shows at the counter while its end hasn't passed ({"live":1,"shown":true}) v2-minors (main2):all passed 
+== minors-groups 16:02:56
+   exit 1 : 
+== done 16:08:17
+
+## FINAL (after the 'or search' fix; re-run of the checks it can touch, plus TOP tests and minors main1 + groups)
+== kitpage 16:08:49
+   exit 0 : kit-page: all 14 views passed (7 widths x day and night)
+== overlap 16:09:20
+   exit 0 : v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 44s)
+== qcheck 16:10:05
+   exit 0 : qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 31s
+== tapsize 16:10:36
+   exit 0 : tap-size: all passed
+== unbounded 16:12:12
+   exit 0 : v2-unbounded: none outside the named exception across 28 pages
+== tokens 16:13:14
+   exit 0 : tokens-doc: up to date (572 tokens)
+== top 16:13:14
+   exit 0 : behaviour: 10 pass, 0 FAIL, 0 known bugs, 0 fixed?, 0 skipped; 30s  (adapter v2)
+== minors-main1 16:13:45
+   exit 0 : v2-minors (main1):all passed
+== minors-groups 16:25:44
+   exit 0 : v2-minors (groups):all passed
+== done 16:33:34

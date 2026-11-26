@@ -1,1 +1,2 @@
 Frozen 2026-11-10T23:13:10.403Z from out/ (12 files)
+Frozen perf.json added Nov 16 8:25 PM from out/perf.json (updated 2026-11-10, same commit as the other fixture files)
