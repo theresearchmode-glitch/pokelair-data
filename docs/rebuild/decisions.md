@@ -2630,3 +2630,5 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:53 PM: Kip job 37 back (bands): today 76% of played team-games at 80+; A percentile (all gaps significant, but most band flips 9.7%, day-1 forces 15% into 90+); B 58/53/48/43 (90+ still 18%); C 60/54/48/42 = 73.33 + 166.67*(e-0.5): 90+ 9.1% at 56.6% win, all bands significantly separated, flips 4.3%, unseen team 73 (Solid). Kip + HH recommend C; Sim decides.
 - 6:54 PM: Sim: yes to bands option C (60/54/48/42 win chance vs the field = 90/80/70/60; SS_MID 73.33, SS_K 166.67). Built on top of the new-Pokemon fix; before/after pictures + 2 wording changes to Sim before live.
 - 6:56 PM: Sim approved the 4 score wording changes; in alt/bands-c (plus the How It Works line 'Each point is about 0.6 points of win chance', same meaning).
+- 6:57 PM: Sim: keep going nonstop; if the queue finishes before 8 AM, keep pulling more work forward; no stop until Sim says.
+- 7:02 PM: Design call (HH authority): Pokemon page 960+ hero card sticky beside How to build it (iPad #4), only on windows 680+ tall.
