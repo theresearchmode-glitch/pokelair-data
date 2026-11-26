@@ -2029,6 +2029,16 @@ if (part('main2')) { /* Sim, Nov 25 (MacBook, Claude app, about 1000x650): on a 
     const big = w >= 1440 && h >= 900;
     if (r.none || !r.crowd || r.fr.length < 4 || r.fr.some(f => f.h < 88) || r.fr.filter(f => f.k === 'f1' || f.k === 'f2').some(f => f.cov > 45) || (big && r.inl)) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); }
   await ctx.close(); ok(!bad.length, `Home hero on short desktop windows (Sim, Nov 25): crowd showing, front four 88px+, #1/#2 plates cover 45% at most, tall windows unchanged (${bad.join(' | ') || 'all as planned'})`); }
+/* Nov 26 (HH, small touches): My Team's move pills narrow before they cut (V2.kFit, data-kmax=2). 44 of 510 moves were cut with "..."
+   at 1440 (Kowtow Cleave on the sample team); fails on the old pills (no data-kmax: Stomping Tantrum stays cut) */
+if (part('groups')) { const bad = []; for (const W of [1280, 1440]) { const c = await b.newContext({viewport: {width: W, height: 900}}), q = await c.newPage();
+    await q.addInitScript(() => { window.__PL_TEST = 1; }); await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2000);
+    const r = await q.evaluate(async () => { await document.fonts.ready; const all = [...document.querySelectorAll('.pty2-mv i')]; if (!all.length) return {n: 0};
+      for (const [i, t] of [[0, 'Stomping Tantrum'], [1, 'Parabolic Charge'], [2, 'Population Bomb']]) if (all[i]) all[i].textContent = t;
+      if (V2.kFit) V2.kFit(document.querySelector('#main .k-roster') || document); await new Promise(f => requestAnimationFrame(() => requestAnimationFrame(f)));
+      return {n: all.length, cut: all.filter(i => i.scrollWidth > i.clientWidth + 1).map(i => i.textContent)}; });
+    if (!r.n || r.cut.length) bad.push(`${W}: ${JSON.stringify(r)}`); await c.close(); }
+  ok(!bad.length, `My Team move pills: the longest move names narrow to fit, none cut with "..." at 1280/1440 (${bad.join(' | ') || 'all fit'})`); }
 if (part('groups')) { await HQ(); await wkPair(b, 'file://' + PAGE, ok); }
 await b.close();
 console.log(`v2-minors${PART === 'all' ? '' : ' (' + PART + ')'}:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

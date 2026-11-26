@@ -304,6 +304,10 @@
 .pty2-set{grid-column:2;grid-row:3;font-size:var(--t13);line-height:1.5;color:var(--pty-sub)}
 .pty2-mv{grid-column:3;grid-row:1/4;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s1)}
 .pty2-mv i{overflow:hidden;padding:0 var(--s2);background:color-mix(in srgb,var(--mc) 65%,var(--pty-ink));border-left:4px solid var(--mc);font-size:var(--t13);font-style:normal;font-weight:700;line-height:1.5;white-space:nowrap;text-overflow:ellipsis;color:var(--pty-on)}
+/* Nov 26 (HH): a long move name narrows before it is cut (kit.js V2.kFit, the same steps as a card name): 44 of 510 moves were
+   cut with "..." at 1440 and 65 at 1280 (Stomping Tantrum 115px in an 86px pill); at the second step all 510 fit at 1280 */
+.pty2-mv i[data-kf="1"]{font-stretch:87.5%}
+.pty2-mv i[data-kf="2"]{font-stretch:75%;letter-spacing:-.02em}
 .pty2-bar{grid-column:4;grid-row:3;display:block;height:12px;background:var(--pty-row2);transform:skewX(-14deg);overflow:hidden}
 .pty2-bar i{display:block;width:var(--w);height:100%;background:var(--pty-sky)}
 .pty2 .mtf-row.on{outline:3px solid var(--pty-gold);outline-offset:2px}
