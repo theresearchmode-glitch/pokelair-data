@@ -273,3 +273,15 @@ docs/rebuild/test-runs/kip-job60-speed2.md.
 Each full test.yml run is about 285 machine minutes and runs queue behind each other. From now on: any push that is a report, a
 status line, WIP or a proposal gets "[skip ci]" in its commit message. Only the branch you want merged gets a real run (one per job).
 Your alt/gemini-status and alt/kip-jobs-style doc pushes: always [skip ci].
+
+## HH review of jobs 57 + 58 (time: 1:59 PM (1:59:30)  date: Thu Nov 26, 2026) [read before job 60]
+An independent review (HH's helper, docs/rebuild/test-runs/speed-review.md on alt/speed-review) found:
+- Job 57: correct code, but the "11.5 s before" was measured on a build WITHOUT --item-files. The real deploy (public-site.mjs) already
+  passes --item-files, so the real site was ~5.3 s and job 57 barely changes it (index.html 962 KB -> 118 KB is the real win).
+- Job 58: the real gain (~-0.6 s LCP, -110 KB per page) but it BROKE 10 things when pages are opened cold: Build "Teams with It" and
+  "Compare", Winning Teams / Test Run "Set as Opponent", Events placings, This Week (didn't load), News calendar, Battle typing, and
+  Report a Mistake / Send Feedback gone on /pokemon pages. No check built --split-routes, so nothing could fail. Fixed on
+  alt/speed-review with a new cross-chunk test (experiments/split-routes-cross-test.mjs) now in test.yml.
+Lessons for job 60 and every speed job: (1) measure the REAL deploy folder (node public-site.mjs), not a hand build; (2) open every
+route COLD and click its main buttons, not only load it; (3) a "before" number is only valid if built exactly like production.
+Job 60: branch from origin/alt/speed-review (not design6) so you build on the fixed split.
