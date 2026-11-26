@@ -1,12 +1,13 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 10:22 PM (10:22:48)  date: Wed Nov 25, 2026
-NOW: HH: merge-check of alt/phone-speed2 into design6 (worktree mgps, merge 37d4d67a; GitHub green on 0c897a0d); push when ALL PASSED.
-NOW (helper): score batch prep: alt/score-ebfix2 onto main + alt/bands-c2 onto design6, tests + pictures. NOW (Kip): job 40 switch audit.
-IN GITHUB: design6 603be872 (tonight's push); alt/no-rk9-2 156129e0 (then main fast-forward; same tree as green d53d3932).
-NEXT: main fast-forward to alt/no-rk9-2 when green (no merge commit, no stamp needed).
-NEXT: score batch: score fix to main (+ accuracy baseline only with Sim's OK), bands C to design6 with pictures.
-NEXT: /pokemon + 404 (alt/pokemon-index f6afa25a): waiting for Sim (screens A/B/C, breadcrumb); then its GitHub run + gate.
-NEXT: Kip job 40 report -> review + merge its checked fixes; Game Plan; Preview after merges; 7:55 AM morning report.
+Updated: time: 9:05 AM (9:05:16)  date: Thu Nov 26, 2026
+NOW: HH: alt/rack-batch 9c0ce26f (kl-batch2 + home rack + calc 3-digit fix + Pick 4 tag + webkit report): full v2-minors on frozen out/
+  (pid in .main-running); failure proof of the new calc check (old layout, today's data, PART=main1) running.
+NOW (helper): Job Q, WebKit recheck of alt/rack-batch (calc 3-digit, VS, Pick 4, Spicy pill, My Team 390) -> alt/webkit-rack2.
+NOW (Kip): job 45 in progress; 48 queued.
+DONE today: main chain (Kip 46, reg-test, Kip 44) on main 03cd5e41; Preview v264; Sim approved the phone/tablet Home rack.
+NEXT: commit the slant-aware calc check, rerun main1 on frozen data, push alt/rack-batch, gate into design6 (gate.sh).
+NEXT: republish the Preview with daily-data.sh, then pictures of the final rack to Sim.
+NEXT: review Kip 45 / 48 as they land (run + failure proofs); Game Plan update after the merge.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
