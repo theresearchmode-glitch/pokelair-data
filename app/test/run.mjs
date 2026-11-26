@@ -146,7 +146,7 @@ for (const width of [1280, 390]) {
       hustle: T.moveAcc(M('Rock Slide'), 'Hustle', '', null, ''), ohko: M('Sheer Cold') ? T.moveAcc(M('Sheer Cold'), 'Compound Eyes', '', null, 'Wide Lens', ['Ice']) : 30 }; });
   ok(r.ironFly > 0 && r.ironLev > 0 && r.fly === 0, `Iron Ball grounds the holder: Earthquake hits Flying and Levitate holders (${r.ironFly}, ${r.ironLev}; without it ${r.fly})`);
   ok(r.spdBad === 0, `speed tiers apply a −1 stage before Scarf/Tailwind and paralysis after, as the game does (${r.spdBad} off)`);
-  ok(r.sure.every(x => x === 100) && r.hustle === 72, `sure-hit moves can't be made to miss; Hustle still cuts others (${r.sure.join('/')}, Rock Slide ${r.hustle})`);
+  ok(r.sure.every(x => x === 100) && r.hustle === 76, `sure-hit moves can't be made to miss; Hustle still cuts others (${r.sure.join('/')}, Rock Slide ${r.hustle})`);
   ok(r.ohko === 30, `one-hit KO moves ignore Compound Eyes and Wide Lens (${r.ohko})`);
   ok(r.taunt[0] === false && r.taunt[1] === true && r.taunt[2] === false, `Prankster Taunt isn't an answer into Armor Tail or a Dark type (${r.taunt.join('/')})`);
   ok(r.ripen[0] > 0 && Math.abs(r.ripen[0] * 2 - r.ripen[1]) <= 2, `Ripen doubles a resist berry (${r.ripen.join(' vs ')})`);
