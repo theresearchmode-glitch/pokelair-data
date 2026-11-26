@@ -1,1 +1,2 @@
-24815 gate.sh alt/day-batch (waits GitHub green, merge-check, push design6)
+24815
+gate.sh alt/day-batch (waits GitHub green, merge-check, push design6)
