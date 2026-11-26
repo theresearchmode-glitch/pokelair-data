@@ -62,7 +62,7 @@ const FILES = [
   ['crosscheck.json', 'Cross-check', 2, d => d.updated, [200, 2e6], d => Array.isArray(d.checks) || 'no checks', [20, d => Array.isArray(d.checks)], 'daily crosscheck.mjs + 1d buffer'],
   ['ratings_log.json', 'Ratings snapshots', 2, d => d.updated, [200, 5e6], d => arr(rlDays(d)) || 'no snapshots', [20, d => Array.isArray(rlDays(d))], 'daily ratings-snapshot.mjs + 1d buffer', {skipRegCheck: true}],
   ['scoreboard.json', 'Ratings scoreboard', 3, d => d.updated, [200, 2e6], () => true, [20, () => true], 'daily scoreboard.mjs (2d+1d buffer)', {skipRegCheck: true}],
-  ['post.json', 'News & Mystery Gifts', 3, d => d.checked || d.updated, [40, 1e6], d => typeof d === 'object' || 'unreadable', [40, d => typeof d === 'object'], 'daily post-news.mjs (on branches with post-news)', {optional: true, skipRegCheck: true, noAgeCheck: !fs.existsSync(new URL('./post-news.mjs', import.meta.url))} /* Nov 25: no job writes post.json on main yet, so its age can't fail the daily run until post-news.mjs is in this job */],
+  ['post.json', 'News & Mystery Gifts', 3, d => d.ran || d.updated, [40, 1e6], d => typeof d === 'object' || 'unreadable', [40, d => typeof d === 'object'], 'daily post-news.mjs (on branches with post-news)', {optional: true, skipRegCheck: true, noAgeCheck: !fs.existsSync(new URL('./post-news.mjs', import.meta.url))} /* Nov 25: no job writes post.json on main yet, so its age can't fail the daily run until post-news.mjs is in this job; date by ran/updated, never checked (human gift-check date) */],
   ['skips.json', 'Skipped-step log', 9999, (d, f) => d.updated || mtimeIso(f), [2, 1e6], d => Array.isArray(d.runs) || 'no runs list', null, 'written only when a step skips', {optional: true, noAgeCheck: true, skipRegCheck: true}],
 ];
 
