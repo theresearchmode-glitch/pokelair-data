@@ -177,7 +177,7 @@
 
 /* desktop order: Winning Teams, Battle, then Damage Calc (it follows Ratings in the page, as phones show them side by side) */
 /* desktop (Sim, Nov 18: A): Speed Tiers; Type Chart | Ratings | Damage Calc; Winning Teams | Battle as halves; the small plates */
-@media (min-width:700px){.sdt-speed{order:-4}.sdt-tc{order:-3}.sdt-ra{order:-2}.sdt-dc{order:-1;grid-column:span 4}.sdt-wt,.sdt-bt{grid-column:span 6}.sdt-sm{order:2}}
+@media all{.sdt-speed{order:-4}.sdt-tc{order:-3}.sdt-ra{order:-2}.sdt-dc{order:-1;grid-column:span 4}.sdt-wt,.sdt-bt{grid-column:span 6}.sdt-sm{order:2}}
 @media (min-width:700px) and (max-width:1379.98px){.sdt-speed{grid-template-columns:minmax(180px,220px) minmax(0,1fr)}.sdt-race{gap:0}.sdt-run .np-mon{--iw:112px}}
 
 /* tablets: Type Chart full width, Ratings beside Damage Calc, Winning Teams beside Battle; seven runners, the words above them */
@@ -333,7 +333,7 @@
 /* ---- Home length (Nov 23, direction for Sim): the desktop rack, 1100 and wider. Tools B (the phone and iPad layout Sim chose, Nov 18)
    laid out for a wide screen: the Speed Tiers race, then Ratings, Damage Calc, Winning Teams and Battle in one row with their short lines,
    then the other seven tools as picture chips in one row (Practice joins them here), then More tools ---- */
-@media (min-width:700px){
+@media all{ /* Nov 26 (Sim: phones get the desktop rack too): was min-width:700px */
   .sdt-tc,.sdt-grid>.sdt-sm,.sdt-ends{display:none}
   .sdt-grid{gap:var(--s5)}
   .sdt-ra,.sdt-dc,.sdt-wt,.sdt-bt{grid-column:span 3;display:flex;flex-direction:column;row-gap:var(--s3)}.sdt-dc{grid-column:span 2}.sdt-wt{grid-column:span 4}
@@ -369,7 +369,7 @@
    the HP bar. Then four big white cards (Ratings, Battle, Archetypes, Team Preview Practice), each Pokémon picture standing on a
    slanted ground in its tool's colour (no black cards: Sim, "it looks like its missing its background"). Speed Tiers and Winning
    Teams join the chips ---- */
-@media (min-width:700px){
+@media all{ /* Nov 26 (Sim: phones get the desktop rack too): was min-width:700px */
   .sdt-grid>.sdt-speed{display:none}
   .sdt-grid>.sdt-dc{--k:24px;order:-5;grid-column:1/-1;display:grid;grid-template-columns:minmax(200px,260px) minmax(0,1fr);align-items:end;column-gap:var(--s10);
     margin-top:var(--s4);padding:var(--s4) calc(var(--s10) + var(--k)) var(--s4) calc(var(--s12) + var(--k));color:var(--sd-on-band)}
@@ -447,3 +447,31 @@
   .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{grid-column:span 6;margin-top:var(--s12)}
   .sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t24)}
 }
+
+
+/* ---- Phone rack (Nov 26, Sim: "yes do that": phones get the same tools rack as desktop and tablets, Damage Calculator band first, then
+   Ratings / Battle / Archetypes / Team Preview Practice as cards 2 by 2, then the picture chips 2 across (the seventh full width, no lone
+   tile), then More tools. Same parts and order as desktop; nothing leaves ---- */
+@media (max-width:699.98px){
+  .sdt-grid>.sdt-dc{grid-template-columns:minmax(0,1fr);row-gap:var(--s3);padding:var(--s5) calc(var(--s4) + var(--k));--k:16px}
+  .sdt-grid>.sdt-dc .sdt-t{font-size:var(--t26)}
+  .sdt-grid>.sdt-dc>.sdt-hit{grid-template-columns:minmax(0,1fr);grid-template-areas:"duel" "words" "bar";row-gap:var(--s2);column-gap:0}
+  .sdt-grid>.sdt-dc .sdt-duel{margin-top:0;grid-template-columns:minmax(0,1fr) var(--s10) minmax(0,1fr)}.sdt-grid>.sdt-dc .sdt-duel .np-mon{--iw:88px}
+  .sdt-grid>.sdt-dc .sdt-strike{width:var(--s10);height:var(--s8)}
+  .sdt-grid>.sdt-dc .sdt-pct{font-size:var(--d-calc)}
+  .sdt-grid>.sdt-dc .sdt-hpw{font-size:var(--t15)}
+  /* the old phone stack hid the small plates but Practice (.sdt-grid>.sdt-sm:not(.sdt-pr)); Archetypes is a rack card again */
+  .sdt-grid>.sdt-ar.sdt-sm{display:flex}
+  /* the podium's names don't fit three across in a half-width card: sprites and ratings stay, names go to the card's screen-reader text */
+  .sdt-ra .sdt-blk span,.sdt-ra .sdt-blk small,.sdt-ra .sdt-step .sdt-mn{display:none}
+  /* Archetypes in a half-width card: smaller sprites so the two style tags stay inside the 96px stage, above the title */
+  .sdt-ar .sdt-art .np-mon{--iw:56px}.sdt-ar .sdt-wxi{gap:0;justify-content:flex-end}
+  .sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{--k:10px;grid-column:span 6;margin-top:var(--s10);padding-inline:calc(var(--s2) + var(--k))}
+  .sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t17)}
+  .sdt-ra>.sdt-pod,.sdt-bt>.sdt-vs,.sdt-pr>.sdt-pp,.sdt-ar>.sdt-wx{flex-basis:96px;height:96px}
+  .sdt-chips ul{grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}
+  .sdt-chips li:last-child{grid-column:1/-1}
+}
+@media (max-width:379.98px){.sdt-grid>.sdt-dc .sdt-pct{font-size:var(--t34)}.sdt-grid>.sdt-dc .sdt-t{font-size:var(--t22)}} /* 320-379: the hit and the title stay inside the band */
+@media (max-width:389.98px){.sdt-ra .sdt-t,.sdt-bt .sdt-t,.sdt-pr .sdt-t,.sdt-ar .sdt-t{font-size:var(--t15)}} /* 320-389: all four card titles one step down together ("Archetypes" fits its half-width card) */
+@media (max-width:359.98px){.sdt-grid>.sdt-ra,.sdt-grid>.sdt-bt,.sdt-grid>.sdt-pr,.sdt-grid>.sdt-ar{grid-column:1/-1}} /* 320-359: a half-width card is too narrow for its title; one card per row */
