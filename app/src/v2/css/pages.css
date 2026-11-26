@@ -3632,8 +3632,11 @@ button.k-link{margin:0;padding:0;border:0;background:none;font-family:var(--b);t
 
 .pk-setc .ms-add{margin:var(--s3) 0 0}
 
-@media (min-width:960px){.pkf .k-hero{grid-template-columns:minmax(0,420px) minmax(0,1fr);grid-template-areas:'card ver' 'card fac' 'card set' 'lst set';grid-template-rows:auto auto auto 1fr;gap:var(--s5) var(--s10)}
-  .pkf .k-hero-side,.pkf .pk-is{display:contents}.pkf .k-hero-card{grid-area:card}.pk-verdict{grid-area:ver}.pkf .pk-is>.k-facts{grid-area:fac}.pk-setc{grid-area:set;align-self:start}
+/* only where the whole card fits below the header while it stays (220px + the card's 405px) */
+@media (min-width:960px) and (min-height:680px){.pkf .k-hero-card{position:sticky;top:calc(76px + 128px + var(--s4))}} /* 128px: the art stands that far above the card, so it never slides under the header */
+@media (min-width:960px){.pkf .k-hero{grid-template-columns:minmax(0,420px) minmax(0,1fr);grid-template-areas:'card ver' 'card fac' 'card set' 'card set';grid-template-rows:auto auto auto 1fr;gap:var(--s5) var(--s10)}
+  /* iPad check #4 (Nov 25): How to build it runs 260-410px below the card; the card now keeps its place beside it while you read (sticky in its own column) instead of leaving an empty strip */
+  .pkf .k-hero-side,.pkf .pk-is{display:contents}.pkf .k-hero-card{grid-area:card;align-self:start}.pk-verdict{grid-area:ver}.pkf .pk-is>.k-facts{grid-area:fac}.pk-setc{grid-area:set;align-self:start}
 }
 /* Option A (pkhero, Nov 24): 700-959 the hero stacked with an empty strip beside the 520px card; the four facts stand in a column beside it
    (the 960+ layout's idea: the facts next to the card), the verdict and How to build it full width under them */
