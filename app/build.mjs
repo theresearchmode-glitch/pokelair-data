@@ -262,6 +262,24 @@ if (process.argv.includes('--v2')) {
           return g('.np-skip') + g('.np-head') + '<main class="np-main" id="main">' + (window.V2 && V2.loadingHtml ? V2.loadingHtml() : '') + '</main>' + g('.np-bar'); }); /* pre-launch 2b (Nov 17): the loading panel from the first paint (slow 4G showed an empty page for ~3 s) */
         if (parts.includes('np-head') && page.includes('<div id="app"></div>')) { fs.writeFileSync(dir + 'dist/v2.html', page.replace('<div id="app"></div>', `<div id="app">${parts}</div>`)); console.log(`v2: static first screen ${(parts.length / 1024).toFixed(0)} KB`); }
       } catch (e) { console.log('v2: static first screen skipped (' + String(e.message).slice(0, 80) + ')'); } finally { await b.close(); } } }
+  /* Job W (Nov 26, SEO): each public page's words in its static HTML (shell.js V2.preBlock). The build opens the page once with the day's data
+     (out/, the same documents public-site.mjs publishes as /data/*.json), waits for the first real draw of Home, and asks V2.preBlock for
+     every page in the SEO map. The blocks go into the static #main of index.html and the tool pages below (never v2.html, 404 or the
+     Pokémon pages); they are visually hidden beside today's loading panel, and the first draw replaces #main as before. */
+  const PRE = {};
+  if (PUBLIC && !process.argv.includes('--no-static')) { let chromium = null; try { ({chromium} = await import('playwright')); } catch (e) {}
+    if (chromium) { const cwd = process.cwd(); let docs = null;
+      try { process.chdir(dir + '..'); const {DOC_SOURCES} = await import(dir + '../split-docs.mjs'), {perfDoc} = await import(dir + 'data-docs.mjs');
+        const rdo = f => { try { return JSON.parse(fs.readFileSync(dir + '../out/' + f, 'utf8')); } catch (e) { return null; } };
+        docs = Object.fromEntries(Object.entries(DOC_SOURCES).map(([k, get]) => [k, get()])); docs.perf = perfDoc(rdo('limitless.json'), rdo('perf.json')); } catch (e) { docs = null; } finally { process.chdir(cwd); }
+      if (!docs || !docs.results) console.log('public: no out/ data, pages keep only the loading panel in their static HTML');
+      else { const b = await chromium.launch(), pg = await b.newPage({viewport: {width: 1280, height: 900}});
+        try { await pg.addInitScript(D => { const snap = v => ({exists: v != null, data: () => v}); window.__NP_CLAUDE = {use: async n => n === 'db' ? {doc: p => ({onSnapshot: cb => { const k = p.startsWith('meta/') ? p.slice(5) : ''; setTimeout(() => cb(snap(k && !k.endsWith('_2') ? D[k] : null)), 0); return () => {}; }, get: async () => snap(null), set: async () => {}, update: async () => {}})} : null}; }, docs);
+          await pg.goto('file://' + dir + 'dist/v2.html#home'); await pg.waitForFunction(() => window.V2 && V2._dataOk && document.querySelector('#main h1'), null, {timeout: 30000});
+          const keys = seoRows.map(r => r.key); Object.assign(PRE, await pg.evaluate(ks => Object.fromEntries(ks.map(k => [k, V2.preBlock ? V2.preBlock(k) : ''])), keys));
+          console.log(`public: static words for ${Object.values(PRE).filter(Boolean).length} pages (home: ${(String(PRE.home || '').match(/<h1>([^<]*)/) || [])[1] || 'none'})`);
+        } catch (e) { console.log('public: static words skipped (' + String(e.message).slice(0, 80) + ')'); } finally { await b.close(); } } } }
+  const addPre = (html, key) => PRE[key] ? html.replace('<main class="np-main" id="main">', m => m + PRE[key]) : html;
   /* Public site, Nov 25 (Sim: quiet launch Dec 2-3; Kip job 31: one page per Pokémon is the fastest Google win).
      1. The page's own files load from the site root: on a two-level address (/pokemon/garchomp) a relative "v2.js" asked for
         /pokemon/v2.js and got the page back ("This page didn't load"). Done after the static first screen, which opens the file locally.
@@ -316,13 +334,13 @@ if (process.argv.includes('--v2')) {
       fs.writeFileSync(dir + `dist/pokemon/${s}.html`, page);
     }
     /* SEO fix 2 (Nov 25): one file per tool page (dist/team.html at /team) with its own words from the SEO map, on the shared stylesheet */
-    for (const r of ownFileRows) fs.writeFileSync(dir + `dist${r.path}.html`, ownHead(ph, r.title, r.desc, `https://nastyplot.org${r.path}`));
+    for (const r of ownFileRows) fs.writeFileSync(dir + `dist${r.path}.html`, addPre(ownHead(ph, r.title, r.desc, `https://nastyplot.org${r.path}`), r.key)); /* Job W: + its static words */
     const urls = [...seen.keys()].map(s => `  <url><loc>https://nastyplot.org/pokemon/${s}</loc><lastmod>${lastmod}</lastmod></url>`).join('\n');
     fs.writeFileSync(dir + 'dist/sitemap.xml', fs.readFileSync(dir + 'dist/sitemap.xml', 'utf8').replace('</urlset>', urls + '\n</urlset>'));
     /* No /pokemon/:name rule (Nov 25): Pages serves dist/pokemon/<slug>.html at /pokemon/<slug> by itself (docs: Serving Pages, route
        matching), and a rule would also catch unknown names. An unknown Pokémon has no file, so it gets 404.html with status 404.
        "/" is index.html, the same page; 404.html is the same page with noindex, so the site's own not-found view draws there. */
-    fs.writeFileSync(dir + 'dist/index.html', h);
+    fs.writeFileSync(dir + 'dist/index.html', addPre(h, 'home')); /* Job W: Home's static words */
     /* night queue 8 (Nov 26; SEO audit #9, #10): /pokemon, the A-to-Z page of every Pokémon page (plain links, in the sitemap), and a light
        static 404 with today's underdog; a wrong /pokemon/<name> keeps the app's own "No Pokémon here." view (dist/pokemon/404.html:
        Cloudflare serves the nearest 404.html). app/static-pages.mjs; checked by experiments/static-pages-test.mjs */

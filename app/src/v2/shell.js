@@ -425,6 +425,21 @@ V2.nfHtml = () => `<div class="ra gsp nf-pg nf2" data-v2nf><div class="nf2-two">
 V2.pages.notfound = {place: '', draw: () => V2.nfHtml()};
 /* own keys only: '#constructor' or '#toString' found the object's built-ins and broke the draw */
 V2.PUB_PATHS = {home: '/', team: '/team', build: '/build', battle: '/battle', calc: '/calc', speed: '/speed', types: '/types', practice: '/practice', gauntlet: '/test-run', meta: '/meta', usage: '/usage', sets: '/sets', tournaments: '/winning-teams', weekly: '/this-week', events: '/events', archetypes: '/archetypes', natures: '/natures', track: '/track-record', method: '/how-it-works', gifts: '/gifts', news: '/gifts', compare: '/compare', box: '/box', about: '/about', 'about=priv': '/privacy'};
+/* Job W (Nov 26, SEO; public build only): the words a page carries in its static HTML, for search engines and link previews that don't
+   run scripts. The build (app/build.mjs, --public) calls V2.preBlock(route) once with the day's data and writes the result into that page's
+   static #main, as a visually hidden block beside today's loading panel: before the script runs the screen is exactly today's, and the first
+   draw replaces #main as it always has, so nothing a player sees changes. ONE writer for every page: a page may give its own words with
+   V2.pages[route].seo() -> {h1, intro} (Home does: its drawn headline and line; a new front page supplies its own), else the page's SEO
+   title and description are used. Home and Ratings add the top 10 as real /pokemon/ links. Every link is a real public address. */
+V2.PRE_LINKS = [['Score My Team', 'team'], ['Build Me a Team', 'build'], ['Ratings and tier list', 'meta'], ['Damage Calc', 'calc'], ['Speed Tiers', 'speed'], ['Usage Stats', 'usage'], ['Winning Teams', 'tournaments'], ['Test Run', 'gauntlet'], ['Mystery Gifts', 'gifts']];
+V2.preBlock = route => { const E = V2.esc, P = V2.pages[route], S = (window.__NP_SEO || {})[route] || {}, sq = t => String(t || '').replace(/\s+/g, ' ').trim();
+  let o = null; try { o = P && typeof P.seo === 'function' ? P.seo() : null; } catch (e) { o = null; }
+  const h1 = sq(o && o.h1) || sq(S.title).replace(/\s*·\s*NastyPlot\s*$/, '').replace(/^NastyPlot\s*·\s*/, ''), intro = sq(o && o.intro) || sq(S.desc);
+  if (!h1) return '';
+  const links = V2.PRE_LINKS.filter(([, r]) => r !== route && V2.PUB_PATHS[r]).map(([w, r]) => `<li><a href="${V2.PUB_PATHS[r]}">${E(w)}</a></li>`).join('');
+  let top = ''; if (route === 'home' || route === 'meta') { try { const rows = V2.ratedRows().slice(0, 10), slug = typeof V2.pubSlug === 'function' ? V2.pubSlug : null;
+    if (rows.length && slug) top = `<h2>The top 10 Pokémon right now</h2><ol>${rows.map(x => { const k = lairRank(x.p); return `<li><a href="/pokemon/${slug(x.p.n)}">${E(x.p.d)}</a>, rated ${RS(x.r.total)}${k ? `, number ${k.rank}` : ''}</li>`; }).join('')}</ol>`; } catch (e) { top = ''; } }
+  return `<section class="vh" data-v2pre><h1>${E(h1)}</h1>${intro ? `<p>${E(intro)}</p>` : ''}${top}<nav aria-label="NastyPlot tools"><ul>${links}</ul></nav></section>`; };
 V2.PUB_FROM_PATH = p => { const c = String(p || '/').replace(/\/+$/, '') || '/';
   if (c === '/privacy') return {r: 'about', sub: 'priv'};
   if (c === '/gifts') return {r: V2.pages.gifts ? 'gifts' : (V2.pages.news ? 'news' : 'home'), sub: ''};
