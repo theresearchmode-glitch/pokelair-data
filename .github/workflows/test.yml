@@ -438,6 +438,9 @@ jobs:
       # Search-ready public pages (Kip job 50): titles, descriptions, canonicals, noindex, lang, img alt, h1, JSON-LD, sitemap.xml, robots.txt
       - run: node app/test/seo-check.mjs
         if: ${{ !cancelled() }}
+      # Job W (Nov 26): what a crawler that runs no script reads on /, /team and /meta: one h1 with real words, an intro, real links, the top 10
+      - run: node app/test/prerender-test.mjs
+        if: ${{ !cancelled() }}
       # Public site build invariants (job 19: SEO draft titles <=60, clean routes, robots/sitemap/_redirects/_headers, Claude build untouched)
       - run: node experiments/public-build-test.mjs
         if: ${{ !cancelled() }}
