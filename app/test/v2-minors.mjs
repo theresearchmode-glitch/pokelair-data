@@ -315,7 +315,13 @@ const HQ = async () => {
       /* Nov 19: the words are the letters themselves; the tagline's halo (Q19) or sticker outline (Q30) reaches 5-24px around them, and a
          front-row head near that edge is not on the words. All three shots take the letters without it (run 44568079657: 0.22-0.82% was halo) */
       await q.addStyleTag({content: '#main .sdh-h{text-shadow:none!important;filter:none!important;-webkit-text-stroke:0!important}#main .sdh-chv{display:none!important}'});
-      const sh = async () => (await q.screenshot({clip: r})).toString('base64'); const C = await sh(); await set(false, true); const A = await sh(); await set(false, false); const B = await sh(); await ctx.close();
+      const sh = async () => (await q.screenshot({clip: r})).toString('base64');
+      /* Nov 25: the crowd (.sdh-herd) stands BEHIND the tagline, so it can't cover the words; only its anti-aliased letter edges changed
+         when the tie-break moved a different Pokémon behind them (0.16% at 320-412). C now shows only what is in front (front row + tags),
+         and the crowd must stay behind the tagline (checked here, so this can still fail if it ever moves in front) */
+      const zz = await q.evaluate(() => { const hd = document.querySelector('#main .sdh-herd'), t = document.querySelector('#main .sdh-h'); return !hd || (+getComputedStyle(hd).zIndex || 0) < (+getComputedStyle(t).zIndex || 0); });
+      if (!zz) cv.push(`${wh}: the crowd is not behind the tagline`);
+      await q.evaluate(() => { const hd = document.querySelector('#main .sdh-herd'); if (hd) hd.style.visibility = 'hidden'; }); const C = await sh(); await set(false, true); const A = await sh(); await set(false, false); const B = await sh(); await ctx.close();
       const x = await cmp.evaluate(async ([A, B, C]) => { const ld = s => new Promise(r => { const i = new Image(); i.onload = () => { const c = document.createElement('canvas'); c.width = i.width; c.height = i.height; const g = c.getContext('2d'); g.drawImage(i, 0, 0); r(g.getImageData(0, 0, i.width, i.height).data); }; i.src = 'data:image/png;base64,' + s; });
         const [a, bb, c] = await Promise.all([ld(A), ld(B), ld(C)]), d = (p, q, i) => Math.abs(p[i] - q[i]) + Math.abs(p[i + 1] - q[i + 1]) + Math.abs(p[i + 2] - q[i + 2]); let m = 0, k = 0;
         for (let i = 0; i < a.length; i += 4) if (d(a, bb, i) > 60) { m++; if (d(c, a, i) > 60) k++; } return {m, pct: +(100 * k / Math.max(1, m)).toFixed(2)}; }, [A, B, C]);
@@ -2011,6 +2017,18 @@ if (part('main2')) { /* iPhone review Nov 25. #2: Home's two hero buttons come b
       return {tops: row.map(top), right: Math.round(O.right - L.right), mon: Math.round(M.top - L.top)}; });
     if (r.none || (!r.nolast && (new Set(r.tops).size !== 1 || r.right > 1 || r.mon > 4))) bad.push(`news ${w}: ${JSON.stringify(r)}`); }
   await ctx.close(); ok(!bad.length, `iPhone review #2/#3 (Nov 25): Home's buttons before the line and clear of the bottom bar on phones, beside it from 900; News' latest gift round lines up with its row (${bad.join(' | ') || 'all as planned'})`); }
+if (part('main2')) { /* Sim, Nov 25 (MacBook, Claude app, about 1000x650): on a short desktop window the hero's tagline ate the scene: the front
+     four were 80px, the crowd was gone, and #1/#2's plates covered 60-70% of them. Now, from 900 up: the crowd shows, the front four are at
+     least 88px, the middle plates cover 45% of their Pokémon at most, and 1440x900 / 1920x1080 keep the full tagline (no override). Fails on the old code (crowd 0). */
+  const bad = [], ctx = await b.newContext(); const q = await ctx.newPage();
+  for (const [w, h] of [[1000, 650], [1100, 700], [1280, 720], [1366, 768], [1440, 900], [1920, 1080]]) {
+    await q.setViewportSize({width: w, height: h}); await q.goto('file://' + PAGE + '#home'); await q.waitForTimeout(2500); await q.evaluate(() => document.fonts.ready); await q.waitForTimeout(600);
+    const r = await q.evaluate(() => { const S = document.querySelector('#main .sdh'); if (!S) return {none: 1}; const th = S.querySelector('.sdh-h');
+      const fr = ['f1', 'f2', 'f3', 'f4'].map(k => { const im = S.querySelector('.sdh-f.' + k + ' img'), li = S.querySelector('.sdh-plates li.' + k); if (!im || !li) return null; const a = im.getBoundingClientRect(), c = li.getBoundingClientRect(); return {k, h: Math.round(a.height), cov: Math.round(Math.max(0, a.bottom - c.top) / a.height * 100)}; }).filter(Boolean);
+      return {crowd: [...S.querySelectorAll('.sdh-m')].filter(e => e.getBoundingClientRect().width > 0).length, inl: th.style.fontSize, fr}; });
+    const big = w >= 1440 && h >= 900;
+    if (r.none || !r.crowd || r.fr.length < 4 || r.fr.some(f => f.h < 88) || r.fr.filter(f => f.k === 'f1' || f.k === 'f2').some(f => f.cov > 45) || (big && r.inl)) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); }
+  await ctx.close(); ok(!bad.length, `Home hero on short desktop windows (Sim, Nov 25): crowd showing, front four 88px+, #1/#2 plates cover 45% at most, tall windows unchanged (${bad.join(' | ') || 'all as planned'})`); }
 if (part('groups')) { await HQ(); await wkPair(b, 'file://' + PAGE, ok); }
 await b.close();
 console.log(`v2-minors${PART === 'all' ? '' : ' (' + PART + ')'}:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);

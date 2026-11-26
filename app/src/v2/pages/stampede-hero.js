@@ -121,7 +121,8 @@ V2.sdhChvPlace = () => { const S = document.querySelector('#main .sdh-scene'), h
   const B = m.getBoundingClientRect(), Sb = S.getBoundingClientRect(), fs = parseFloat(getComputedStyle(h).fontSize); m.remove(); h.querySelector('.l1').normalize();
   const ht = fs * (wd ? .62 : .66), up = fs * (wd ? .1 : .4); c.style.height = ht + 'px'; c.style.left = (B.left - Sb.left + fs * .06) + 'px'; c.style.top = (B.top - Sb.top - up - ht) + 'px'; c.hidden = false; };
 V2.SDH_ROOM = 150;
-V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) return; if (!V2._sdhGrow) { const fd = S.querySelector('.sdh-fold'); if (fd) fd.style.minHeight = ''; } try { V2.sdhChvPlace(); } catch (e) {}
+V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) return; if (!V2._sdhGrow) { const fd = S.querySelector('.sdh-fold'); if (fd) fd.style.minHeight = ''; }
+  if (!V2._sdhShrink) { const th = S.querySelector('.sdh-h'); if (th) th.style.fontSize = ''; } try { V2.sdhChvPlace(); } catch (e) {}
   // the first screen: the window height less everything above the hero (header, a data note) and the phone tab bar
   const bar = document.querySelector('.np-bar'), bh = bar && getComputedStyle(bar).position === 'fixed' ? bar.offsetHeight : 0, t0 = Math.round(S.getBoundingClientRect().top + scrollY + bh);
   if (S.style.getPropertyValue('--sdh-top') !== t0 + 'px') S.style.setProperty('--sdh-top', t0 + 'px');
@@ -136,6 +137,11 @@ V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) r
     /* Sim, Nov 23 (iPhone in the Claude app, a short window): the front two climbed over 'win rate.' because the room under the tagline was
        under the 80px floor. On phones the scene now grows until they have SDH_ROOM px, so they never cover the words (the buttons may then
        sit just under the first screen on a very short window) */
+    /* Sim, Nov 25 (MacBook, Claude app, about 1000x650): on a short desktop window the tagline (sized by width) left the front four 80px,
+       hidden behind their name plates, and the crowd gone. From 900 up the tagline now steps down (to 64px at least) until the four have
+       SDH_ROOM px; tall windows are unchanged */
+    if (row && room < V2.SDH_ROOM && !V2._sdhShrink) { const th = S.querySelector('.sdh-h'), cur = parseFloat(getComputedStyle(th).fontSize) || 0, nf = Math.max(64, Math.floor(cur - (V2.SDH_ROOM - room) / 1.9));
+      if (nf < cur - 1) { V2._sdhShrink = 1; th.style.fontSize = nf + 'px'; try { V2.sdhLayout(); } finally { V2._sdhShrink = 0; } return; } }
     if (!row && fd && room < V2.SDH_ROOM && !V2._sdhGrow) { V2._sdhGrow = 1; fd.style.minHeight = (fd.offsetHeight + V2.SDH_ROOM - room) + 'px'; try { V2.sdhLayout(); } finally { V2._sdhGrow = 0; } return; }
     fr.style.setProperty('--fcap', Math.max(80, room) + 'px'); } /* Q13f B: clear of the words, the tilt's rise at the outer columns counted */
   const named = new Set(row ? [0, 1, 2, 3] : [0, 1]);
@@ -144,6 +150,12 @@ V2.sdhLayout = () => { const S = document.querySelector('#main .sdh'); if (!S) r
   const go = S.querySelector('.sdh-go'); if (go) { go.classList.remove('sm'); if ([...go.querySelectorAll('a')].some(a => { const t = a.querySelector('span') || a, rg = document.createRange(); rg.selectNodeContents(t); return new Set([...rg.getClientRects()].map(x => Math.round(x.top))).size > 1; })) go.classList.add('sm'); }
   // plates: if one plate's number has to drop under its name, all four do, so the row stays even
   const pl = S.querySelector('.sdh-plates'); if (pl) { pl.classList.remove('stk'); if ([...pl.querySelectorAll('.sdh-plate')].some(b => b.getClientRects().length && b.lastElementChild.offsetTop > b.firstElementChild.offsetTop + 4)) pl.classList.add('stk'); }
+  /* Sim, Nov 25 (MacBook, short window): #1 and #2's plates sit higher than the outer two and, on a short window, covered 60-70% of their
+     Pokémon. From 900 up each of the middle two plates drops just enough that it covers 40% at most (1440x900 is 35%: unchanged), and never
+     more than 60% of its own height */
+  if (pl) for (const k of ['f1', 'f2']) { const li = pl.querySelector('li.' + k), im = S.querySelector('.sdh-f.' + k + ' img'); if (!li) continue; li.style.translate = '';
+    if (!row || !im) continue; const a = im.getBoundingClientRect(), c = li.getBoundingClientRect(), d = Math.round(a.bottom - c.top - .4 * a.height);
+    if (a.height > 0 && d > 2) li.style.translate = '0 ' + Math.min(d, Math.round(c.height * .6)) + 'px'; }
   const C = V2.sdhUi.crowd; if (C) for (const im of C.children) V2.sdhPut(im, P[+im.dataset.sdhi]);
   V2.sdhLines(S.querySelector('.sdh-lines'), w, h, row);
   V2.sdhTick(S, true); // motion: set the moving ticker up (or take it down) before its names are measured
