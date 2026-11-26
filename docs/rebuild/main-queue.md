@@ -1,10 +1,12 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 9:38 PM (9:38:08)  date: Wed Nov 25, 2026
-NOW: HH: full local suite on t2 (ttrun.sh, started 9:20 PM) then follow.sh (page tests + A-team behaviour, for the How-sure change); then push t2 -> claude/design6, Preview, tell Marketing + Dos.
-NOW (helper): alt/phone-speed2 = phone-speed onto design6 + tests + LCP. NOW (Kip, Antigravity): job 40 = Dec 1-2 switch audit (git), if Sim sent it.
-IN GITHUB: alt/no-rk9 d53d3932 (main merged in; local tests pass) -> main fast-forward via merge-check when green.
-DONE tonight: launch batch merged; ranks + Tiebreak; podium; iPhone #2/#3; short-window hero; How-sure word dropped (Sim A); Kip job 39 test merged + 2 fixes; Dos night baseline read (3 known Windows-only fails).
-NEXT: bands C + score fix batch (alt/bands-c 15cc8a42 + alt/score-ebfix); night queue item 8 (/pokemon list + 404, pictures first); Game Plan; 7:55 AM report.
+Updated: time: 10:22 PM (10:22:48)  date: Wed Nov 25, 2026
+NOW: HH: merge-check of alt/phone-speed2 into design6 (worktree mgps, merge 37d4d67a; GitHub green on 0c897a0d); push when ALL PASSED.
+NOW (helper): score batch prep: alt/score-ebfix2 onto main + alt/bands-c2 onto design6, tests + pictures. NOW (Kip): job 40 switch audit.
+IN GITHUB: design6 603be872 (tonight's push); alt/no-rk9-2 156129e0 (then main fast-forward; same tree as green d53d3932).
+NEXT: main fast-forward to alt/no-rk9-2 when green (no merge commit, no stamp needed).
+NEXT: score batch: score fix to main (+ accuracy baseline only with Sim's OK), bands C to design6 with pictures.
+NEXT: /pokemon + 404 (alt/pokemon-index f6afa25a): waiting for Sim (screens A/B/C, breadcrumb); then its GitHub run + gate.
+NEXT: Kip job 40 report -> review + merge its checked fixes; Game Plan; Preview after merges; 7:55 AM morning report.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.

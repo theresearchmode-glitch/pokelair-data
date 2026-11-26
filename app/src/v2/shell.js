@@ -326,7 +326,8 @@ V2.mdCountdown = (now = Date.now(), short = false) => { try { const r = typeof r
    tournament teams" (same line and length: 0px added at 320-2560, measured). Days count in UTC because a regulation starts 02:00 UTC (Dec 2), still Dec 1 evening in the Americas. */
 V2.regDay = (now = Date.now()) => { try { const r = typeof regInfo === 'function' && regInfo(); if (!r || r.now || !r.since || !isFinite(now)) return '';
   const d = Math.floor((now - Date.parse(r.since + 'T00:00:00Z')) / 864e5) + 1; if (!(d >= 1 && d <= 28)) return ''; const today = new Date(now).toISOString().slice(0, 10);
-  const ev = (typeof META === 'object' && META.events && Array.isArray(META.events.events)) ? META.events.events.filter(e => { const x = String((e && e.date) || ''); return x >= r.since && x <= today; }).length : 0;
+  const prevDay = new Date(Date.parse(r.since + 'T00:00:00Z') - 864e5).toISOString().slice(0, 10);
+  const ev = (typeof META === 'object' && META.events && Array.isArray(META.events.events)) ? META.events.events.filter(e => { const x = String((e && e.date) || ''); return x >= prevDay && x <= today; }).length : 0;
   return `Day ${d} of Reg ${String(r.id).replace('-', '\u2011')} · ${ev} event${ev === 1 ? '' : 's'}`; } catch (e) { return ''; } };
 /* Strength Score source (Sim, Wed Nov 25, 6:52 AM): before a new regulation has results, the score falls back to the old check
    (CH.gradeOf v1) against the built-in usage snapshot (app/src/data/data.js, built on Reg M-C). It stays, with one line saying so.
