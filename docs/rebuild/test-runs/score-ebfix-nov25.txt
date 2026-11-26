@@ -1,0 +1,77 @@
+STRENGTH SCORE FIX (Kip job 35, Sim's yes Nov 25) IN THE REAL model.mjs: branch alt/score-ebfix
+Run: Wed Nov 25 2026, 6:48 to 7:15 PM Eastern (clock: date). Data: out/matches.json of origin/main 7b567771, updated 2026-11-25T10:41:02.976Z.
+
+SETTINGS (model-settings.json): evidK 0, evidKp 0, lb 100, lp 225 (fit multiplies lp by pairShrink 4: 900), zeroCenter true.
+
+SAME-OUTPUT CHECKS (each model.mjs run: MATCHES=<copy of out/matches.json> MODEL_OUT=<file>, exit 0, about 160 s):
+ A main's model.mjs + old settings  vs  B this branch's model.mjs + old settings: 1 differing field (updated). Byte-identical otherwise.
+ C this branch + new settings  vs  D experiments/kip35-model-variant.mjs MODEL_VARIANT=kip (alt/kip35-check): 2 differing fields: updated, pairSd0 .047 vs .058
+   (pairSd0 = sqrt(1/(2*LAM.lp)); LAM.lp is 225 now, the variant kept 150. It is the spread of an unshipped pair, used only by the 'how sure' word.)
+ old model (A + six.mjs + ctr.mjs + today's leads) vs today's deployed out/model.json: only updated and reg differ.
+ C: ships true, no NaN, 319 Pokemon, 700 pairs, 957 set features, calib .925 -> .909, meanX .4584 -> .0846,
+    held-out calibrated log-loss .68025 -> .67977 (raw win rates .6867). File 252,624 bytes after six.mjs + ctr.mjs (page limit 256 KB).
+ model-guard.mjs (new as today, old as GUARD_PREV): "model guard: 319 Pokémon · log-loss 0.68025 → 0.67977 · calib 0.909 · rank correlation 0.990" / ok, exit 0.
+
+PAGE SCORES: node experiments/score-ebfix-table.mjs (built page, today's out/, META.model = old or new file; gradeTeam, default sets)
+=== score-ebfix-table (matches updated 2026-11-25T10:41:02.976Z, last event 2026-11-25) old=/tmp/claude-0/-home-user-pokelair-data/204a9d61-5900-570f-b954-256bbb6b60d7/scratchpad/runs/old-full.json (meanX 0.4584) new=/tmp/claude-0/-home-user-pokelair-data/204a9d61-5900-570f-b954-256bbb6b60d7/scratchpad/runs/new-full.json (meanX 0.0846)
+group  | team | old | new | change
+top20  | Swampert-Mega, Archaludon, Politoed, Incineroar, Rillaboom, Gengar-Mega |  81.9 Tournament ready |  81.7 Tournament ready | -0.2 | 2027 Latin America Pokémon International Championships · 652 players #1 · official
+top20  | Garchomp-Mega-Z, Delphox-Mega, Venusaur, Kingambit, Farigiraf, Torkoal |  90.0 Top tier |  89.4 Tournament ready | -0.6 | 2027 Latin America Pokémon International Championships · 652 players #2 · official
+top20  | Salamence-Mega, Milotic, Tyranitar-Mega, Sinistcha, Sneasler, Excadrill |  82.0 Tournament ready |  81.3 Tournament ready | -0.7 | 2027 Latin America Pokémon International Championships · 652 players #3 · official
+top20  | Arcanine-Hisui, Staraptor-Mega, Milotic, Raichu-Mega-Y, Rillaboom, Gholdengo |  88.9 Tournament ready |  88.3 Tournament ready | -0.6 | 2027 Latin America Pokémon International Championships · 652 players #4 · official
+top20  | Basculegion, Floette-Mega, Salamence-Mega, Sneasler, Incineroar, Rillaboom |  83.0 Tournament ready |  83.0 Tournament ready | +0.0 | 2027 Latin America Pokémon International Championships · 652 players #5 · official
+top20  | Basculegion, Floette-Mega, Incineroar, Raichu-Mega-Y, Rillaboom, Volcarona |  85.1 Tournament ready |  84.7 Tournament ready | -0.4 | 2027 Latin America Pokémon International Championships · 652 players #6 · official
+top20  | Dragonite-Mega, Kingambit, Raichu-Mega-Y, Garchomp, Basculegion, Sylveon |  85.5 Tournament ready |  85.1 Tournament ready | -0.4 | 2027 Latin America Pokémon International Championships · 652 players #7 · official
+top20  | Gholdengo, Arcanine-Hisui, Rillaboom, Raichu-Mega-Y, Staraptor-Mega, Milotic |  88.9 Tournament ready |  88.3 Tournament ready | -0.6 | 2027 Latin America Pokémon International Championships · 652 players #8 · official
+top20  | Baxcalibur-Mega, Raichu-Mega-Y, Volcarona, Milotic, Incineroar, Rillaboom |  79.6 Solid |  79.2 Solid | -0.4 | 2027 Buenos Aires Pokémon Special Championships · 128 players #1 · official
+top20  | Charizard-Mega-Y, Aerodactyl-Mega, Garchomp, Sylveon, Kingambit, Farigiraf |  87.5 Tournament ready |  87.5 Tournament ready | +0.0 | 2027 Buenos Aires Pokémon Special Championships · 128 players #2 · official
+top20  | Staraptor-Mega, Raichu-Mega-Y, Arcanine-Hisui, Gholdengo, Rillaboom, Milotic |  88.9 Tournament ready |  88.3 Tournament ready | -0.6 | 2027 Buenos Aires Pokémon Special Championships · 128 players #3 · official
+top20  | Kingambit, Armarouge, Rillaboom, Indeedee-F, Staraptor-Mega, Torkoal |  82.7 Tournament ready |  83.3 Tournament ready | +0.6 | 2027 Buenos Aires Pokémon Special Championships · 128 players #4 · official
+top20  | Tyranitar-Mega, Excadrill, Sneasler, Clefable, Salamence-Mega, Gholdengo |  80.2 Tournament ready |  79.7 Solid | -0.5 | 2027 Buenos Aires Pokémon Special Championships · 128 players #5 · official
+top20  | Charizard-Mega-Y, Garchomp, Whimsicott, Floette-Mega, Basculegion, Kingambit |  92.4 Top tier |  92.1 Top tier | -0.3 | 2027 Buenos Aires Pokémon Special Championships · 128 players #6 · official
+top20  | Hippowdon, Staraptor-Mega, Whimsicott, Glimmora-Mega, Kingambit, Houndstone |  77.6 Solid |  78.8 Solid | +1.2 | 2027 Buenos Aires Pokémon Special Championships · 128 players #7 · official
+top20  | Raichu-Mega-Y, Armarouge, Indeedee-F, Basculegion, Kingambit, Staraptor-Mega |  84.0 Tournament ready |  84.0 Tournament ready | +0.0 | 2027 Buenos Aires Pokémon Special Championships · 128 players #8 · official
+top20  | Gholdengo, Excadrill, Tyranitar-Mega, Staraptor-Mega, Sinistcha, Milotic |  85.0 Tournament ready |  84.4 Tournament ready | -0.6 | 2027 Gdańsk Pokémon Regional Championships · 758 players #1 · official
+top20  | Garchomp-Mega, Sneasler, Floette-Mega, Incineroar, Rillaboom, Kingambit |  83.6 Tournament ready |  83.5 Tournament ready | -0.1 | 2027 Gdańsk Pokémon Regional Championships · 758 players #2 · official
+top20  | Kingambit, Sneasler, Salamence-Mega, Basculegion, Charizard-Mega-Y, Whimsicott |  87.3 Tournament ready |  87.1 Tournament ready | -0.2 | 2027 Gdańsk Pokémon Regional Championships · 758 players #3 · official
+top20  | Charizard-Mega-Y, Sneasler, Kingambit, Garchomp, Basculegion, Whimsicott |  92.5 Top tier |  92.1 Top tier | -0.4 | 2027 Gdańsk Pokémon Regional Championships · 758 players #4 · official
+recent | Aerodactyl-Mega, Basculegion, Charizard-Mega-Y, Garchomp, Kingambit, Sylveon |  86.4 Tournament ready |  86.4 Tournament ready | +0.0 | played 2026-11-18
+recent | Armarouge, Charizard-Mega-Y, Indeedee-F, Milotic, Raichu-Mega-Y, Sneasler |  83.6 Tournament ready |  83.4 Tournament ready | -0.2 | played 2026-11-23
+recent | Incineroar, Malamar-Mega, Milotic, Rillaboom, Salamence-Mega, Sneasler |  78.4 Solid |  79.4 Solid | +1.0 | played 2026-11-20
+recent | Charizard-Mega-Y, Garchomp, Kingambit, Sneasler, Staraptor-Mega, Whimsicott |  85.4 Tournament ready |  85.3 Tournament ready | -0.1 | played 2026-11-23
+recent | Basculegion, Incineroar, Lucario-Mega-Z, Rillaboom, Salamence-Mega, Sylveon |  72.4 Solid |  72.5 Solid | +0.1 | played 2026-11-18
+recent | Aggron, Arcanine, Basculegion, Tyranitar, Whimsicott, Zoroark-Hisui |  53.2 Missing a basic |  53.4 Missing a basic | +0.2 | played 2026-11-22
+recent | Charizard-Mega-Y, Hydreigon, Incineroar, Mamoswine, Sneasler, Toxapex |  74.7 Solid |  74.5 Solid | -0.2 | played 2026-11-20
+recent | Delphox-Mega, Floette-Mega, Incineroar, Maushold, Sinistcha, Sneasler |  78.0 Solid |  77.5 Solid | -0.5 | played 2026-11-23
+recent | Archaludon, Gengar-Mega, Incineroar, Politoed, Rillaboom, Sneasler |  77.1 Solid |  76.9 Solid | -0.2 | played 2026-11-21
+recent | Araquanid, Clefable-Mega, Excadrill, Salamence-Mega, Sneasler, Tyranitar |  76.2 Solid |  77.3 Solid | +1.1 | played 2026-11-24
+rare   | Alcremie, Arbok, Chimecho-Mega, Farfetch’d, Farigiraf, Torterra |  70.5 Solid |  71.4 Solid | +0.9 | real team; rarest member on 1 team(s)
+rare   | Absol, Gardevoir-Mega, Goodra, Sableye, Scrafty, Serperior |  66.9 Needs work |  67.1 Needs work | +0.2 | real team; rarest member on 1 team(s)
+rare   | Swampert-Mega, Pyroar, Politoed, Incineroar, Rillaboom, Gengar-Mega |  73.4 Solid |  75.9 Solid | +2.5 | constructed: Archaludon swapped for Pyroar (no games)
+
+Band shares, 7639 distinct real team sheets of the last 45 days (since 2026-10-11), page scores (old n=7639, new n=7639; not scorable old 0, new 0):
+  Top tier          old  10.9%   new  10.5%
+  Tournament ready  old  44.1%   new  44.6%
+  Solid             old  34.3%   new  34.3%
+  Needs work        old   9.5%   new   9.4%
+  Missing a basic   old   1.2%   new   1.3%
+  median old 81 new 81; change per sheet: min -3.7, 5% -1.0, median -0.1, 95% 1.2, max 4.9
+  outside 0-100 or not finite: old 0, new 0; page errors: old 0, new 0
+exit 0
+
+ACCURACY GATE, same data, both settings (node experiments/accuracy-gate.mjs; old = EVID_K=1000 EVID_KP=300 LB=40 LP=150 ZERO_CENTER=0):
+ new: gate: 7953 later games over 2 weeks · log-loss 0.68049 (coin flip 0.6931) · higher grade wins 56.24% · calibration gap 0.6 pts
+        top-4 teams scoring 80+ (Tournament ready) before their event: 150 of 176 (85%)
+ old: gate: 7953 later games over 2 weeks · log-loss 0.68085 (coin flip 0.6931) · higher grade wins 56% · calibration gap 1.02 pts
+        top-4 teams scoring 80+ (Tournament ready) before their event: 151 of 176 (86%)
+ both: GATE PASSED, exit 0.
+
+OTHER TESTS (last line, exit code):
+ node experiments/golden.mjs (today's out/, new model as out/model.json): "10 of 10 known-answer cases pass", exit 0. Old model (GOLDEN_MODEL): same 10 of 10.
+   Numbers that moved old -> new: top-cut median 88.3 -> 88.7 (162 of 176 at 80+ both); weakest six 49.8 -> 50.6; Build for Me 0 Megas 63 -> 61.2,
+   1 Mega 92.5 -> 92.1, 2 Megas 92.4 -> 92.1; box 1 85 -> 87, box 3 81 -> 83; around: Gholdengo 89 -> 88, Sinistcha 85 -> 84, Volcarona 90 -> 88, Torkoal 90 -> 89.
+ node experiments/shadow-model-test.mjs: "shadow-model-test: PASS (byte-identical live model, valid combo shadow + bc d=4, paired scoreboard across 2 days)", exit 0.
+ experiments/strength-invariants.mjs and experiments/syntax-check.mjs: not on main (not run). node --check model.mjs: ok.
+ node app/test/run.mjs after node app/build.mjs, frozen out/ (0c992f69): "ALL PASSED", exit 0.
+   Frozen out/ with today's model.json swapped in: old and new both "1 FAILED" (health: no banner with fresh data: today's model next to
+   frozen files); the only other difference old vs new: coverage renders 2286 vs 2285 chars.
