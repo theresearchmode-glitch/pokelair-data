@@ -22,9 +22,9 @@
 @media (max-width:899.98px){.np-head .tools{gap:var(--s2)}}
 .np-foot{display:flex;align-items:center;gap:var(--s10);padding:var(--s8) var(--gut);border-top:1px solid var(--rule);font-size:var(--t15);color:var(--ink-2)}
 .np-foot svg{height:24px;width:auto;flex:none}.np-foot>span{flex:1;min-width:0}.np-foot nav{margin-left:auto;display:flex;gap:var(--s8)}.np-foot nav a{display:inline-flex;align-items:center;min-height:var(--tap);white-space:nowrap}
-.np-main{min-height:60vh}
+.np-main{display:flow-root;min-height:60vh} /* Job Y (Nov 26): flow-root keeps a first child's top margin (the data note's 24px) inside #main, so #main itself never moves when the loading panel gives way to the page (CLS 0.025 at 390); content lands where it did */
 /* pre-launch check 1 (Nov 17): the loading panel until today's numbers are in; it fades in after 300 ms, so a fast load never flashes it */
-.np-loading{display:grid;place-items:center;align-content:center;gap:var(--s4);min-height:60vh;padding:var(--s12) var(--s4);text-align:center;animation:np-ldin var(--dur-2) ease-out .3s both}
+.np-loading{display:grid;place-items:center;align-content:center;gap:var(--s4);min-height:100vh;min-height:100svh; /* Job Y (Nov 26): at least a screen, so the footer is never on screen while the numbers load (the swap moved it 566 -> off screen: CLS 0.89 at 390) */ padding:var(--s12) var(--s4);text-align:center;animation:np-ldin var(--dur-2) ease-out .3s both}
 .np-ldlogo svg{display:block;height:48px;width:auto}.np-ldtxt{margin:0;font:500 var(--t17)/1.5 var(--b);color:var(--ink-2)}
 @keyframes np-ldin{from{opacity:0}to{opacity:1}}
 /* Sim, Nov 17 ("so it doesn't look like a stuck page"): the logo floats gently and a thin blue bar glides under the line. Slow and soft;
