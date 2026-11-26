@@ -223,6 +223,9 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci && npx playwright install --with-deps chromium
+      # md-switch-page-gaps-test check 3a reads Showdown's built data (Nov 26 fix: wired here at c062acf1 without this build step,
+      # so every run since failed "3a pokemon-showdown dist missing")
+      - run: cd node_modules/pokemon-showdown && node build
       # the rebuild's guard rails (R3): no !important, no id selectors, type/spacing on the scale, colours only in tokens.css
       - run: node app/test/v2-guard.mjs
         if: ${{ !cancelled() }}
