@@ -1,11 +1,10 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 8:49 PM (8:49:59)  date: Wed Nov 25, 2026
-NOW: HH: full local suite on t2 (= design6 f90cd2ce + ranks/podium, iPhone #2/#3, short-window hero fix, tests), ttrun.sh; then push t2 -> claude/design6.
-NOW (helper): alt/phone-speed2 = phone-speed onto design6, tests + LCP re-measure.
-DONE tonight: alt/kip36a merged into design6 (f90cd2ce, gate ALL PASSED). Sim OK: ranks, podium, gift row, hero fix.
-NEXT: Sim's call on the "How sure" word (A games count recommended). Bands option C + "Tested on 1,580 later single games" sentence + "(against an average team)" wording idea.
-NEXT: Dec 2 data note 90px on iPhone 15 pushes Home's buttons 23px under the bar in launch week: options for Sim.
-NEXT: Dos's v2-q33 (320px Events ticket 57 vs 60px) Windows-only: mark known. bands-c re-run; alt/no-rk9 to main; Preview after the design6 push; 7:55 AM morning report.
+Updated: time: 9:38 PM (9:38:08)  date: Wed Nov 25, 2026
+NOW: HH: full local suite on t2 (ttrun.sh, started 9:20 PM) then follow.sh (page tests + A-team behaviour, for the How-sure change); then push t2 -> claude/design6, Preview, tell Marketing + Dos.
+NOW (helper): alt/phone-speed2 = phone-speed onto design6 + tests + LCP. NOW (Kip, Antigravity): job 40 = Dec 1-2 switch audit (git), if Sim sent it.
+IN GITHUB: alt/no-rk9 d53d3932 (main merged in; local tests pass) -> main fast-forward via merge-check when green.
+DONE tonight: launch batch merged; ranks + Tiebreak; podium; iPhone #2/#3; short-window hero; How-sure word dropped (Sim A); Kip job 39 test merged + 2 fixes; Dos night baseline read (3 known Windows-only fails).
+NEXT: bands C + score fix batch (alt/bands-c 15cc8a42 + alt/score-ebfix); night queue item 8 (/pokemon list + 404, pictures first); Game Plan; 7:55 AM report.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
