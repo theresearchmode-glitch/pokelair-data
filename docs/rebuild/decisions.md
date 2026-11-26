@@ -2753,3 +2753,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 12:19 PM: Sim: raise phone Home cap 7.8 -> 7.85 for the footer copyright line (one line, 23 px; GitHub had 7.82).
 - 12:20 PM: Sim told Kip (job 57 start).
 - 12:36 PM: Hourly check: Game Plan v99 published; disk 9 GB; helper on Job X; day-batch4 gate waiting on GitHub.
+- 1:01 PM: Helper Job X: a1 It prints (helper rec), a2 Your turn, a3 Long receipt on alt/public-home-v2 e445a51a; HH viewed: a3 strongest still picture, a1 the motion; stamp collides with text in a1 (NOV 25) and a3 (players); HH rec to Sim: mix a3 look + a1 print + a2 later. Job W paused WIP alt/prerender-home c853295e. Found: public site draws Nov 1 built-in numbers first (V2.dataReady ignores public /data loader).
