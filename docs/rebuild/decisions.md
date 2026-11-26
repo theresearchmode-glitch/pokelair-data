@@ -2796,3 +2796,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 3:36 PM: Hourly check: disk 4 GB -> 8.3 GB (removed b5 + tm worktrees, both pushed). Game Plan v102.
 - 3:52 PM: batch7 candidate full v2-minors: 1 FAIL 'BR-C1 control ... tops 401, 488, 402...' (timing); rerunning ONLY=BR x3.
 - 3:56 PM: batch7 BR-C1 control: 3 of 3 reruns pass (one earlier fail = timing under load while 3 test runs shared the machine). batch7 candidate = clean; waits for batch6 to merge it in before its one GitHub run.
+- 3:58 PM: Correction: first batch7 WebKit static-page pass 'all ok' was INVALID (python http.server served a directory listing for /pokemon; no Cloudflare routing). Rerun on real file names with an unstyled/listing check.
