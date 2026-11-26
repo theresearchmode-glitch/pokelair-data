@@ -14,6 +14,7 @@
 //   Stampede tiles 2-5 + tags (Nov 18 night): Battle's VS clear, Test Run filled, Damage Calc balanced, equal band bars, board tags inside
 //   HQ Q4a-Q13f (Nov 18): Sim's answers for Home (morning questions), one check each (ONLY=HQ runs these alone)
 //   AS-1..9 (Nov 18): the All Suggestions sheet, option C (Sim's Q5): Suggest from, sections, card facts, Show 6 More, notes, height (ONLY=AS)
+//   TF-1, TF-2 (Nov 26): Test Run and Track Record at most 3 screens at 1440x900 (ONLY=TF runs them alone)
 //   BR-C1..C7 (Nov 18): behaviour review: the Apply and Remove holds end on any scroll they didn't make and on leaving My Team,
 //              redraws at 1100-1439 don't move My Team, keyboard Apply keeps the focus (ONLY=BR runs these alone)
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
@@ -286,6 +287,18 @@ const AS = async () => {
     const bad = all.filter(t => /tell it apart|no clear edge/.test(t) || !/^(Add fills your empty spot|Fix )/.test(t)); /* W1a (Sim, Nov 19): 'Add · fills your empty spot' (a Fix line stays) */
     ok(mtL.length >= 1 && shL.length >= 1 && !bad.length, `AS-11 (audit Nov 19 #3): with 5 of 6, ${mtL.length} My Team and ${shL.length} sheet card(s) fill the empty spot; none says it's a small change real games can't tell apart (${[...new Set(bad.length ? bad : all)].slice(0, 3).join(' | ')})`); await c.close(); } };
 if (process.env.ONLY === 'AS') { await AS(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// TF-1, TF-2 (HH's Job G, Nov 26; rule 15: tools and lists at most 3 screens at 1440x900). Both failed on design6 b96f3a5e:
+//   TF-1 Test Run: 3.23 screens at 1440x900 (light and dark), and 4.93 at 1180x820 (rows beside the open team gave the event name 160px).
+//   TF-2 Track Record: 3.08 screens at 1440x900 (128px of space under its last link).
+const TF = async () => {
+  const hgt = async (route, W, H, dark) => { const c = await b.newContext({viewport: {width: W, height: H}, colorScheme: dark ? 'dark' : 'light'}), q = await c.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+    await q.goto('file://' + PAGE + '#' + route); await q.waitForTimeout(3500); await q.evaluate(() => document.fonts.ready); await q.waitForTimeout(300);
+    const r = await q.evaluate(() => ({H: document.documentElement.scrollHeight, scr: +(document.documentElement.scrollHeight / innerHeight).toFixed(3), sw: document.documentElement.scrollWidth > innerWidth, rows: document.querySelectorAll('#main .tp-cards .dr-row').length})); await c.close(); return r; };
+  const t1 = await hgt('gauntlet', 1440, 900), t1d = await hgt('gauntlet', 1440, 900, true), t2 = await hgt('gauntlet', 1180, 820);
+  ok(t1.scr <= 3 && t1d.scr <= 3 && t2.scr <= 4.5 && t1.rows === 20 && t2.rows === 20 && !t1.sw && !t2.sw, `TF-1: Test Run is at most 3 screens at 1440x900 (light ${t1.scr}, dark ${t1d.scr}) and well under 5 at 1180x820 (${t2.scr}, at most 4.5), all ${t1.rows} rows kept, no sideways scroll`);
+  const k = await hgt('track', 1440, 900);
+  ok(k.scr <= 3 && !k.sw, `TF-2: Track Record is at most 3 screens at 1440x900 (${k.scr}, ${k.H}px), no sideways scroll`); };
+if (process.env.ONLY === 'TF') { await TF(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- AS end
 // ---- MQ end ----
 // ---- BR end (run with the rest just before the browser closes) ----
@@ -1788,6 +1801,7 @@ if (part('groups')) {
 await BR(); /* behaviour review (Nov 18), above */
 await MQ(); /* Sim's Nov 18 answers, above */
 await AS(); /* All Suggestions sheet, option C, above */
+await TF(); /* Test Run and Track Record fit (Job G, Nov 26), above */
 }
 // WebKit pair (Nov 18, docs/rebuild/test-runs/webkit-new-pages-nov18.md): two Safari defects, measured the same way in any engine. This file runs
 // them in Chromium; for Safari's engine the same function (between the wk-pair markers) runs with playwright.webkit, over http (WebKit blocks
