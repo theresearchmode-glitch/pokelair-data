@@ -14,6 +14,8 @@
 //   Stampede tiles 2-5 + tags (Nov 18 night): Battle's VS clear, Test Run filled, Damage Calc balanced, equal band bars, board tags inside
 //   HQ Q4a-Q13f (Nov 18): Sim's answers for Home (morning questions), one check each (ONLY=HQ runs these alone)
 //   AS-1..9 (Nov 18): the All Suggestions sheet, option C (Sim's Q5): Suggest from, sections, card facts, Show 6 More, notes, height (ONLY=AS)
+//   TP3-1 (Nov 26): long event names are cut at a whole word, never mid-word (ONLY=TP3 runs it alone)
+//   TF-1, TF-2 (Nov 26): Test Run and Track Record at most 3 screens at 1440x900 (ONLY=TF runs them alone)
 //   BR-C1..C7 (Nov 18): behaviour review: the Apply and Remove holds end on any scroll they didn't make and on leaving My Team,
 //              redraws at 1100-1439 don't move My Team, keyboard Apply keeps the focus (ONLY=BR runs these alone)
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
@@ -286,6 +288,32 @@ const AS = async () => {
     const bad = all.filter(t => /tell it apart|no clear edge/.test(t) || !/^(Add fills your empty spot|Fix )/.test(t)); /* W1a (Sim, Nov 19): 'Add · fills your empty spot' (a Fix line stays) */
     ok(mtL.length >= 1 && shL.length >= 1 && !bad.length, `AS-11 (audit Nov 19 #3): with 5 of 6, ${mtL.length} My Team and ${shL.length} sheet card(s) fill the empty spot; none says it's a small change real games can't tell apart (${[...new Set(bad.length ? bad : all)].slice(0, 3).join(' | ')})`); await c.close(); } };
 if (process.env.ONLY === 'AS') { await AS(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+const TP3 = async () => { /* TP3-1 (small touches pass 3, Nov 26): a long event name is cut at a whole word. evShort cut every name over 28 letters at
+  letter 27, so Test Run's rows read "Buenos Aires Special Champi…" (and 13 more names mid-word, in the rows' screen-reader labels too, and in
+  Battle's opponent line). Checked over every event in the tournament data and on Test Run's rows at 1100x800. Failed on design6 b96f3a5e. */
+  const c = await b.newContext({viewport: {width: 1100, height: 800}}), q = await c.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+  await q.goto('file://' + PAGE + '#gauntlet'); await q.waitForTimeout(4000);
+  const r = JSON.parse(await q.evaluate(() => window.__ev(`(() => { const ev = [...new Set(((META.teams || {}).teams || []).map(t => t.event))], esc = x => x.replace(/[.*+?^\${}()|[\\]\\\\]/g, '\\\\$&');
+    const whole = stem => { const w = stem.replace(/[\\s|·;,:–-]+$/, '').trim().split(' ').pop(); return !!w && ev.some(e => new RegExp(esc(w) + '(?=[\\\\s|·;,:–-]|$)').test(e)); };
+    const cut = ev.map(e => evShort(e)).filter(s => s.includes('…')), bad = cut.filter(s => !whole(s.split('…')[0]));
+    const rows = [...document.querySelectorAll('#main .tp-card .dr-id small')].map(e => e.textContent.split(' · ')[0]).filter(s => s.includes('…')), badRows = rows.filter(s => !whole(s.split('…')[0]));
+    const lab = [...document.querySelectorAll('#main .tp-card[aria-label]')].map(e => e.getAttribute('aria-label')).filter(s => s.includes('…')).map(s => s.split('…')[0].split(', ').pop() + '…'), badLab = lab.filter(s => !whole(s.split('…')[0]));
+    return JSON.stringify({n: cut.length, bad, rows: rows.length, badRows, labs: lab.length, badLab}); })()`)));
+  ok(r.n >= 1 && !r.bad.length && !r.badRows.length && !r.badLab.length, `TP3-1: long event names end at a whole word (${r.n} cut names, ${r.rows} on Test Run's rows, ${r.labs} in their labels; mid-word: ${[...r.bad, ...r.badRows, ...r.badLab].slice(0, 4).join(' | ') || 'none'})`);
+  await c.close(); };
+if (process.env.ONLY === 'TP3') { await TP3(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// TF-1, TF-2 (HH's Job G, Nov 26; rule 15: tools and lists at most 3 screens at 1440x900). Both failed on design6 b96f3a5e:
+//   TF-1 Test Run: 3.23 screens at 1440x900 (light and dark), and 4.93 at 1180x820 (rows beside the open team gave the event name 160px).
+//   TF-2 Track Record: 3.08 screens at 1440x900 (128px of space under its last link).
+const TF = async () => {
+  const hgt = async (route, W, H, dark) => { const c = await b.newContext({viewport: {width: W, height: H}, colorScheme: dark ? 'dark' : 'light'}), q = await c.newPage(); await q.addInitScript(() => { window.__PL_TEST = 1; });
+    await q.goto('file://' + PAGE + '#' + route); await q.waitForTimeout(3500); await q.evaluate(() => document.fonts.ready); await q.waitForTimeout(300);
+    const r = await q.evaluate(() => ({H: document.documentElement.scrollHeight, scr: +(document.documentElement.scrollHeight / innerHeight).toFixed(3), sw: document.documentElement.scrollWidth > innerWidth, rows: document.querySelectorAll('#main .tp-cards .dr-row').length})); await c.close(); return r; };
+  const t1 = await hgt('gauntlet', 1440, 900), t1d = await hgt('gauntlet', 1440, 900, true), t2 = await hgt('gauntlet', 1180, 820);
+  ok(t1.scr <= 3 && t1d.scr <= 3 && t2.scr <= 4.5 && t1.rows === 20 && t2.rows === 20 && !t1.sw && !t2.sw, `TF-1: Test Run is at most 3 screens at 1440x900 (light ${t1.scr}, dark ${t1d.scr}) and well under 5 at 1180x820 (${t2.scr}, at most 4.5), all ${t1.rows} rows kept, no sideways scroll`);
+  const k = await hgt('track', 1440, 900);
+  ok(k.scr <= 3 && !k.sw, `TF-2: Track Record is at most 3 screens at 1440x900 (${k.scr}, ${k.H}px), no sideways scroll`); };
+if (process.env.ONLY === 'TF') { await TF(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- AS end
 // ---- MQ end ----
 // ---- BR end (run with the rest just before the browser closes) ----
@@ -1788,6 +1816,7 @@ if (part('groups')) {
 await BR(); /* behaviour review (Nov 18), above */
 await MQ(); /* Sim's Nov 18 answers, above */
 await AS(); /* All Suggestions sheet, option C, above */
+await TF(); /* Test Run and Track Record fit (Job G, Nov 26), above */
 }
 // WebKit pair (Nov 18, docs/rebuild/test-runs/webkit-new-pages-nov18.md): two Safari defects, measured the same way in any engine. This file runs
 // them in Chromium; for Safari's engine the same function (between the wk-pair markers) runs with playwright.webkit, over http (WebKit blocks
@@ -2050,6 +2079,7 @@ if (part('groups')) { const bad = [];
       return {end: li ? Math.round(li.getBoundingClientRect().bottom) : null, scrollY: Math.round(scrollY), chips: ch.length, lab}; });
     if (r.end == null || r.end > h || r.scrollY !== 0 || r.chips !== 12 || !r.lab) bad.push(`${w}x${h}: ${JSON.stringify(r)}`); await ctx.close(); }
   ok(!bad.length, `Speed Tiers on short laptop windows (Nov 26): the track's first row is on the first screen at 1280x720, 1366x768 and 1440x900, all 12 condition chips kept (${bad.join(' | ') || 'all three'})`); }
+if (part('main2')) await TP3(); /* small touches pass 3 (Nov 26), defined above; ONLY=TP3 runs it alone */
 if (part('groups')) { await HQ(); await wkPair(b, 'file://' + PAGE, ok); }
 await b.close();
 console.log(`v2-minors${PART === 'all' ? '' : ' (' + PART + ')'}:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0);
