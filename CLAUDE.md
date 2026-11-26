@@ -5,7 +5,7 @@ sim-workflow-archive-nov24.txt. If something here seems missing, check the archi
 ## Right now (update this block as it changes)
 - **Authority:** HH has design AND executive authority until **10:00 PM Eastern, Sun Nov 29** (Sim, Nov 24; extended from Sat by Sim, Nov 25). Each visual decision
   is told to Sim in chat with before/after pictures; every decision logged with its time; summary at 10 PM Sun.
-- **The switch** (redesign goes live): **Sat Nov 28, done together with Sim** (his yes on the day).
+- **The switch** (redesign goes live): **FRIDAY Nov 27, done together with Sim** (moved up from Sat; Sim's yes Thu Nov 26, 5:36 PM). Runbook: docs/rebuild/switch-runbook-nov28.md (Friday evidence section; preflight: experiments/switch-preflight.mjs).
 - **Plan:** docs/rebuild/gameplan-nov25-dec2.md (Sim's simple version; HH's detail: gameplan-detail-nov25.md) (to Dec 2 and December → January launch). Public site: docs/rebuild/public-site-plan.md
   (all on Cloudflare, nastyplot.org, bought by Sim; goes live QUIETLY Dec 2-3 (moved from Dec 7 to catch Reg M-D launch-week searches, Sim Nov 25), announced about Dec 18 — moved up from January, Sim Nov 24). Launch with today's score; after the design work, all focus on the Strength
   Score and analytics; best-of-3 data later (Sim, Nov 24).
