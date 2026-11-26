@@ -1,0 +1,542 @@
+GEMINI JOB 12 — ACCESSIBILITY IN THE CODE: SCREEN READERS & KEYBOARDS (WCAG 2.2 AA, CODE ONLY)
+Target branch/commit: claude/design6 @ 18a525cb
+Scope: app/src/v2/shell.js, app/src/v2/kit.js, all 51 files in app/src/v2/pages/*.js, app/test/v2-minors.mjs, CLAUDE.md.
+Constraint check: ZERO visual, CSS, colour, layout, or visible-text changes.
+Execution status: Exhaustive static code audit across all 53 v2 JS files; Playwright script
+experiments/a11y-code.mjs syntax-checked with Node v18.20.4 (`node --check`). Browser execution
+against app/dist/v2.html: not run (no built dist HTML or Playwright browser binary in VM).
+
+================================================================================
+1. VERDICT
+================================================================================
+
+STRONG BASELINE — 4 SURGICAL, ZERO-VISUAL-CHANGE CODE FIXES + 3 ORDER QUESTIONS FOR HH.
+
+The v2 shell (`shell.js`) and shared kit (`kit.js`) already do the hard accessibility work right:
+- `V2.sheet` sets `role="dialog"`, `aria-modal="true"`, `aria-label`, `app.inert = true`, full `Tab` /
+  `Shift+Tab` focus trapping (including Safari/WebKit), `Escape` close, and focus return to opener
+  (or `#main h1` if the opener was redrawn away).
+- `V2.smooth()` respects `prefers-reduced-motion: reduce` across all JS smooth scrolls (verified across
+  all 53 files, including `monsheet.js:155`).
+- Zero `<img>` tags lack `alt` attributes across all 53 files; all decorative `<svg>` icons are
+  wrapped in or marked `aria-hidden="true"`.
+- Zero positive `tabindex` values across all 53 files.
+- Live regions (`role="status"` / `aria-live="polite"`) are present for toasts, search result counts,
+  damage calc verdicts, build progress, matchups details, and share-image status.
+- All 3 live production `role="tablist"` widgets (`calc.js:80`, `monsheet.js:81`, `team.js:515`) have
+  `aria-label`, `role="tabpanel"`, roving `tabindex`, and `ArrowLeft`/`ArrowRight`/`Home`/`End` handlers.
+
+Real WCAG 2.2 AA code issues found (all fixed with zero visual change in Part B):
+1. [BLOCKS] `shell.js:600`: Global Search `V2.ARROW_LISTS` matches `.np-hit` including non-focusable
+   `<p class="np-hit np-hitx">` (non-Champions items like Choice Band), stalling `ArrowDown`.
+2. [CONFUSING] `shell.js:600-602`: 6 search/picker inputs (`calc.js` `[data-arnq]` & `[data-arnmq]`,
+   `record.js` `[data-ygq]`, `sugs.js` `[data-exq]`, `types.js` `[data-tcfind]`, `sets.js` `[data-stq]`)
+   are missing from `V2.ARROW_LISTS`, so `ArrowDown`/`ArrowUp` do nothing in those pickers.
+3. [CONFUSING] `pages/sets.js:56`: `<div class="st-hits" role="listbox">` wraps `<button class="k-chip">`
+   elements without `role="option"` (invalid ARIA required owned elements, WCAG 4.1.2).
+4. [BLOCKS / CONFUSING] `pages/guide.js:32, 36, 55`: Preview style-guide page has invalid `role="tablist"`
+   on a static `<div class="r">` with non-tab `<div class="np-mon">` children (line 55), an unlabeled
+   `role="tablist"` with no arrow-key handler or roving `tabindex` (line 36), and 7 `<button>` tags
+   missing `type="button"` (lines 32, 36).
+5. [MINOR] `pages/winning.js:63`: `aria-controls="wt-sug"` points to a nonexistent ID when `U.q` is empty.
+6. [MINOR] `pages/sugs.js:344`: `[data-exhits]` has `aria-live="polite"` on the hits container itself,
+   re-announcing every button on each keystroke (flagged as an Order Question since `shell.js:229` fixed
+   the same pattern with a `.vh` count status).
+
+================================================================================
+2. PART A — TABLE PER PAGE / MODULE
+================================================================================
+
+Format: Page/File | Issue | WCAG ref | Severity | file:line | Status
+
+Page / File                | Issue                                                      | WCAG ref     | Severity  | file:line              | Status
+-------------------------- | ---------------------------------------------------------- | ------------ | --------- | ---------------------- | ------------------------
+shell.js                   | `[data-v2q]` ARROW_LISTS includes non-focusable `.np-hitx` | 2.1.1, 2.4.3 | BLOCKS    | shell.js:600, 228      | checked (code) -> Diff 1
+shell.js                   | 6 search pickers omitted from `V2.ARROW_LISTS`             | 2.1.1        | CONFUSING | shell.js:600-602       | checked (code) -> Diff 1
+shell.js                   | Two `<nav aria-label="Main">` (.np-nav & .np-bar); CSS     | 1.3.1, 2.4.1 | MINOR     | shell.js:493, 499      | checked (code); runtime
+                           | hides one per width (verify single visible nav in browser) |              |           |                        | display: none not run
+kit.js                     | `kCard` emits `aria-pressed="true"` when `o.sel` is truthy | 4.1.2        | MINOR     | kit.js:39              | checked (code) -> OQ 3
+                           | but omits `aria-pressed="false"` on unselected toggle cards|              |           |                        |
+pages/calc.js              | Pokémon picker `[data-arnq]` & Move picker `[data-arnmq]`  | 2.1.1        | CONFUSING | pages/calc.js:259, 304 | checked (code) -> Diff 1
+                           | ignore `ArrowDown`/`ArrowUp` (not in `V2.ARROW_LISTS`)     |              |           |                        |
+pages/calc-plot.js         | `aria-controls="arn-kbfull"` on `<summary>` when closed    | 4.1.2        | MINOR     | pages/calc-plot.js:79  | checked (code); valid
+                           | (target `#arn-kbfull` renders only when `open`)            |              |           |                        | when open
+pages/guide.js             | `role="tablist"` on `.r` wraps non-tab `<div class="np-mon">`| 4.1.2      | BLOCKS    | pages/guide.js:55      | checked (code) -> Diff 2
+pages/guide.js             | `role="tablist"` missing `aria-label`, roving `tabindex`,  | 2.1.1, 4.1.2 | CONFUSING | pages/guide.js:36      | checked (code) -> Diff 2
+                           | `type="button"`, and `ArrowLeft`/`ArrowRight` handler      |              |           |                        |
+pages/guide.js             | 3 `<button class="np-chip">` missing `type="button"`       | 4.1.2        | MINOR     | pages/guide.js:32      | checked (code) -> Diff 2
+pages/record.js            | Opponent picker `[data-ygq]` ignores `ArrowDown`/`ArrowUp` | 2.1.1        | CONFUSING | pages/record.js:26     | checked (code) -> Diff 1
+pages/sets.js              | `<div class="st-hits" role="listbox">` wraps `<button>`    | 4.1.2        | CONFUSING | pages/sets.js:56       | checked (code) -> Diff 3
+                           | chips without `role="option"` (invalid ARIA listbox)       |              |           |                        |
+pages/sets.js              | Look-up box `[data-stq]` ignores `ArrowDown`/`ArrowUp`     | 2.1.1        | CONFUSING | pages/sets.js:55       | checked (code) -> Diff 1
+pages/sugs.js              | Never Suggest picker `[data-exq]` ignores `ArrowDown`/`Up` | 2.1.1        | CONFUSING | pages/sugs.js:344      | checked (code) -> Diff 1
+pages/sugs.js              | `[data-exhits]` has `aria-live="polite"` on button list    | 4.1.3        | MINOR     | pages/sugs.js:344      | checked (code) -> OQ 1
+                           | (re-announces every hit on each keystroke)                 |              |           |                        |
+pages/types.js             | Pokémon lookup `[data-tcfind]` ignores `ArrowDown`/`Up`    | 2.1.1        | CONFUSING | pages/types.js:63      | checked (code) -> Diff 1
+pages/winning.js           | `aria-controls="wt-sug"` present when `#wt-sug` not in DOM | 4.1.2        | MINOR     | pages/winning.js:63    | checked (code) -> Diff 4
+pages/winning.js           | `tourTabs` rendered in both `head` and `top` (CSS hides    | 1.3.1        | MINOR     | pages/winning.js:89,91 | checked (code); runtime
+                           | one per breakpoint; verify only one visible in browser)    |              |           |                        | display: none not run
+pages/about.js             | No WCAG 2.2 AA code issues found (h1/h2, links, alt OK)    | —            | —         | —                      | checked (code)
+pages/archetypes.js        | No WCAG 2.2 AA code issues found (h1-h3, nav labeled)      | —            | —         | —                      | checked (code)
+pages/battle.js            | No WCAG 2.2 AA code issues found (`btfind` in ARROW_LISTS) | —            | —         | —                      | checked (code)
+pages/battle-pbp.js        | No WCAG 2.2 AA code issues found (helper under battle.js)  | —            | —         | —                      | checked (code)
+pages/battle-target.js     | No WCAG 2.2 AA code issues found (helper under battle.js)  | —            | —         | —                      | checked (code)
+pages/box.js               | No WCAG 2.2 AA code issues found (`bxq` in ARROW_LISTS)    | —            | —         | —                      | checked (code)
+pages/build.js             | No WCAG 2.2 AA code issues found (`bdfind`/`bdcfind` OK)   | —            | —         | —                      | checked (code)
+pages/build-plot.js        | No WCAG 2.2 AA code issues found (kHead h1, kStep h2, live)| —            | —         | —                      | checked (code)
+pages/build-sheet.js       | No WCAG 2.2 AA code issues found (live regions, aria-busy) | —            | —         | —                      | checked (code)
+pages/coming.js            | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+pages/compare.js           | No WCAG 2.2 AA code issues found (`cxTop` uses `kHead` h1) | —            | —         | —                      | checked (code)
+pages/compare-faceoff.js   | No WCAG 2.2 AA code issues found (helper under compare.js) | —            | —         | —                      | checked (code)
+pages/dispatch.js          | No WCAG 2.2 AA code issues found (`dp-briefl` in old vs    | —            | —         | pages/dispatch.js:114, | checked (code); verify
+                           | new draw functions, mutually exclusive per route)          |              |           | 188                    | via A2 in browser
+pages/events.js            | No WCAG 2.2 AA code issues found (h1-h3, tourTabs)         | —            | —         | —                      | checked (code)
+pages/feedback.js          | No WCAG 2.2 AA code issues found (role="status", labels)   | —            | —         | —                      | checked (code)
+pages/gauntlet.js          | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+pages/home.js              | No WCAG 2.2 AA code issues found (h1-h4, no skips)         | —            | —         | —                      | checked (code)
+pages/infosheet.js         | No WCAG 2.2 AA code issues found (all sheets labeled)      | —            | —         | —                      | checked (code)
+pages/matchups.js          | No WCAG 2.2 AA code issues found (aria-live, sheet label)  | —            | —         | —                      | checked (code)
+pages/meta.js              | No WCAG 2.2 AA code issues found (h1-h2, labeled navs)     | —            | —         | —                      | checked (code)
+pages/method.js            | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+pages/monsheet.js          | No WCAG 2.2 AA code issues found (tablist + arrows +       | —            | —         | pages/monsheet.js:81,  | checked (code)
+                           | Home/End + prefers-reduced-motion on line 155)             |              |           | 155-158                |
+pages/natures.js           | No WCAG 2.2 AA code issues found (all buttons type="button"| —            | —         | —                      | checked (code)
+                           | with full aria-label)                                      |              |           |                        |
+pages/owner.js             | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+pages/pokemon.js           | No WCAG 2.2 AA code issues found (h1-h4, labeled navs)     | —            | —         | —                      | checked (code)
+pages/post-data.js         | Data/helper only (no UI markup)                            | —            | —         | —                      | checked (code)
+pages/postroom.js          | No WCAG 2.2 AA code issues found (svgs inside aria-hidden) | —            | —         | —                      | checked (code)
+pages/practice.js          | No WCAG 2.2 AA code issues found (`ppHead` h1, aria-live)  | —            | —         | —                      | checked (code)
+pages/share-slab.js        | Canvas renderer (no DOM controls)                          | —            | —         | —                      | checked (code)
+pages/share-tape.js        | Canvas renderer (no DOM controls)                          | —            | —         | —                      | checked (code)
+pages/six.js               | No WCAG 2.2 AA code issues found (own ArrowDown/Up handler)| —            | —         | —                      | checked (code)
+pages/speed.js             | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+pages/stampede.js          | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+pages/stampede-hero.js     | No WCAG 2.2 AA code issues found (chevron aria-hidden)     | —            | —         | —                      | checked (code)
+pages/stampede-post.js     | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+pages/stampede-six.js      | No WCAG 2.2 AA code issues found (chevrons aria-hidden)    | —            | —         | —                      | checked (code)
+pages/stampede-tools.js    | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+pages/team.js              | No WCAG 2.2 AA code issues found (all 9 V2.sheet calls     | —            | —         | pages/team.js:84, 118, | checked (code)
+                           | have `label`; `.tm-tabs` has arrows/Home/End; `sh-file`    |              |           | 314, 357, 515-585      |
+                           | contains real `<button>` inside)                           |              |           |                        |
+pages/team-frame.js        | No WCAG 2.2 AA code issues found (helper under team.js)    | —            | —         | —                      | checked (code)
+pages/test-piles.js        | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+pages/thisweek.js          | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+pages/track.js             | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+pages/usage.js             | No WCAG 2.2 AA code issues found                           | —            | —         | —                      | checked (code)
+
+================================================================================
+3. PART B — SURGICAL DIFFS (ZERO VISUAL CHANGE, EACH WITH S3 PROOF)
+================================================================================
+
+--- DIFF 1 (BLOCKS / CONFUSING): Skip non-focusable `.np-hitx` + wire 6 missing pickers into `V2.ARROW_LISTS` ---
+
+File: app/src/v2/shell.js (lines 600-602)
+Rule (S1): WCAG 2.1.1 (Keyboard), WCAG 2.4.3 (Focus Order), and `shell.js:598`
+("One rule for every box: Down from the box moves focus to the first suggestion, Up/Down move between
+them, Up from the first goes back to the box.").
+
+```diff
+--- a/app/src/v2/shell.js
++++ b/app/src/v2/shell.js
+@@ -597,9 +597,11 @@
+ // ---------- ↑/↓ through a name box's suggestions (audit JUMP-04 / X-09; today's search and name boxes have it) ----------
+ // One rule for every box: ↓ from the box moves focus to the first suggestion, ↑/↓ move between them, ↑ from the first goes back to
+ // the box. Focus shows the site's usual focus ring, Enter/Space picks (they are buttons and links). The add box (six.js) keeps its own.
+-V2.ARROW_LISTS = [['[data-v2q]', () => '[data-v2hits] .np-hit'], ['[data-bxq]', () => '[data-bxhits] .np-hit:not([aria-disabled])'],
++V2.ARROW_LISTS = [['[data-v2q]', () => '[data-v2hits] .np-hit:not(.np-hitx)'], ['[data-bxq]', () => '[data-bxhits] .np-hit:not([aria-disabled])'],
+   ['[data-bdfind]', () => '[data-bdhits] [data-bdpick]'], ['[data-bdcfind]', () => '[data-bdchits] [data-bdcpick]'],
+-  ['[data-btfind]', i => `[data-bthits="${i.dataset.btfind}"] [data-btpick]`]];
++  ['[data-btfind]', i => `[data-bthits="${i.dataset.btfind}"] [data-btpick]`],
++  ['[data-arnq]', () => '[data-arnhits] .np-hit'], ['[data-arnmq]', () => '[data-arnhits] .np-hit'],
++  ['[data-ygq]', () => '.yg2-hits .np-hit'], ['[data-exq]', () => '[data-exhits] .np-hit'],
++  ['[data-tcfind]', () => '[data-tchits] button'], ['[data-stq]', () => '.st-hits [data-v2setmon]']];
+ document.addEventListener('keydown', e => { if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp' || e.altKey || e.ctrlKey || e.metaKey || !e.target.closest) return;
+```
+
+S3 Proof:
+- Input 1 (Global Search, user types "choice band" or "choice", presses ArrowDown):
+  - OLD: `[data-v2hits] .np-hit` matches `<p class="np-hit np-hitx np-ith">` (non-focusable `<p>`).
+    `items[0].focus()` is a no-op; keyboard focus stays trapped in `[data-v2q]` and never reaches results.
+  - NEW: `[data-v2hits] .np-hit:not(.np-hitx)` skips the `<p>` and moves focus to the first actionable
+    `<button>`/`<a>` result; ArrowUp from the first result returns focus to `[data-v2q]`.
+- Input 2 (Damage Calc attacker/defender picker `[data-arnq]`, move picker `[data-arnmq]`, Log a Game
+  `[data-ygq]`, Never Suggest `[data-exq]`, Type Chart `[data-tcfind]`, Sets `[data-stq]`, user presses ArrowDown):
+  - OLD: ArrowDown does nothing (not registered in `V2.ARROW_LISTS` and no local arrow handler).
+  - NEW: ArrowDown moves focus to the first matching suggestion button; ArrowUp/ArrowDown navigate the list.
+
+--- DIFF 2 (BLOCKS / CONFUSING): Fix invalid ARIA tablists & missing button types in `pages/guide.js` ---
+
+File: app/src/v2/pages/guide.js (lines 32, 36, 55, 72)
+Rule (S1): WCAG 4.1.2 (Name, Role, Value — ARIA `tablist` requires `tab` children and an accessible name),
+WCAG 2.1.1 (Keyboard — `tablist` must respond to ArrowLeft/ArrowRight).
+
+```diff
+--- a/app/src/v2/pages/guide.js
++++ b/app/src/v2/pages/guide.js
+@@ -29,11 +29,11 @@
+   <p class="fine" style="margin-top:12px">One filled main action per block (black by day, the blue action at night); outline buttons and links for the rest.</p>
+ 
+   <h2 class="u">Chips and types</h2>
+-  <div class="row"><button class="np-chip" aria-pressed="true">Top 10</button><button class="np-chip" aria-pressed="false">Grid</button><button class="np-chip" aria-pressed="false">All 30</button>
++  <div class="row"><button type="button" class="np-chip" aria-pressed="true">Top 10</button><button type="button" class="np-chip" aria-pressed="false">Grid</button><button type="button" class="np-chip" aria-pressed="false">All 30</button>
+   ${['Dragon', 'Ground', 'Fire', 'Flying', 'Water', 'Electric', 'Fairy', 'Steel'].map(V2.typeChip).join('')}</div>
+ 
+   <h2 class="u">Tabs</h2>
+-  <div class="np-tabs" role="tablist"><button role="tab" aria-selected="true">Set</button><button role="tab" aria-selected="false">Matchups <small>30</small></button><button role="tab" aria-selected="false">Suggestions</button><button role="tab" aria-selected="false">Team Sheet <small>6</small></button></div>
++  <div class="np-tabs" role="tablist" aria-label="Example tabs"><button type="button" role="tab" aria-selected="true" tabindex="0">Set</button><button type="button" role="tab" aria-selected="false" tabindex="-1">Matchups <small>30</small></button><button type="button" role="tab" aria-selected="false" tabindex="-1">Suggestions</button><button type="button" role="tab" aria-selected="false" tabindex="-1">Team Sheet <small>6</small></button></div>
+ 
+   <h2 class="u">Score</h2>
+   <div class="row" style="gap:48px"><div class="np-score" style="--band:var(--band-top)"><b>91</b><div class="w"><span>Top tier</span><small>Strength Score</small></div></div>
+@@ -52,7 +52,7 @@
+ 
+   <h2 class="u">Forms strip</h2>
+   <div class="np-forms" style="max-width:560px"><div class="k"><span>Forms · tap one to open it</span><a class="np-link" href="#guide">Compare all 3 ›</a></div>
+-  <div class="r" role="tablist">${V2.mon('Garchomp', {sel: true, sub: 'S tier'})}${V2.mon('Garchomp-Mega', {sub: 'D tier'})}${V2.mon('Garchomp-Mega-Z', {sub: 'A tier'})}</div></div>
++  <div class="r" role="group" aria-label="Forms">${V2.mon('Garchomp', {sel: true, sub: 'S tier'})}${V2.mon('Garchomp-Mega', {sub: 'D tier'})}${V2.mon('Garchomp-Mega-Z', {sub: 'A tier'})}</div></div>
+ 
+   <h2 class="u">Sheet and toast</h2>
+   <div class="row"><button type="button" class="np-btn2" data-v2sheet><span>Open a sheet</span></button><button type="button" class="np-btn2" data-v2toast><span>Show a toast</span></button></div>
+@@ -69,6 +69,11 @@
+ document.addEventListener('click', e => {
+   if (e.target.closest('[data-v2sheet]')) V2.sheet(`<div style="padding:var(--s8)"><h2 class="u" style="font-size:var(--t28)">A sheet</h2><p style="margin-top:var(--s3);color:var(--ink-2)">A solid surface over the page. Close it with ✕, Escape or a tap outside; the keyboard returns to the button that opened it.</p></div>`, {label: 'Example sheet'});
+   if (e.target.closest('[data-v2toast]')) V2.toast('Garchomp added to your team <button type="button">Undo</button>');
++  const t = e.target.closest('.sg-pg .np-tabs[role="tablist"] [role="tab"]'); if (!t) return;
++  for (const x of t.parentElement.querySelectorAll('[role="tab"]')) { const on = x === t; x.setAttribute('aria-selected', String(on)); x.tabIndex = on ? 0 : -1; }
++});
++document.addEventListener('keydown', e => { const t = e.target.closest && e.target.closest('.sg-pg .np-tabs[role="tablist"] [role="tab"]'); if (!t) return;
++  const L = [...t.parentElement.querySelectorAll('[role="tab"]')], i = L.indexOf(t), j = e.key === 'ArrowRight' ? (i + 1) % L.length : e.key === 'ArrowLeft' ? (i + L.length - 1) % L.length : e.key === 'Home' ? 0 : e.key === 'End' ? L.length - 1 : -1;
++  if (j < 0) return; e.preventDefault(); for (const x of L) { const on = x === L[j]; x.setAttribute('aria-selected', String(on)); x.tabIndex = on ? 0 : -1; } L[j].focus();
+ });
+ // the style guide is a Preview-only page (code review A1-M5; Sim, Nov 16: hide it at launch): its dock and Undo are demos, not real data
+```
+
+S3 Proof:
+- Input 1 (Screen reader lands on `#guide` Forms strip, line 55):
+  - OLD: Announced as `tab list` with 0 tabs (contains `<div class="np-mon">`).
+  - NEW: Announced as `Forms, group` containing the three form cards.
+- Input 2 (Keyboard user focuses "Set" tab on `#guide`, line 36, presses ArrowRight):
+  - OLD: Tablist had no name, all 4 tabs were in Tab order, and ArrowRight did nothing.
+  - NEW: Announced as `Example tabs, tab list; Set, tab, selected, 1 of 4`; ArrowRight moves focus and
+    `aria-selected="true"` to "Matchups 30".
+
+--- DIFF 3 (CONFUSING): Replace invalid `role="listbox"` on button chips in `pages/sets.js` ---
+
+File: app/src/v2/pages/sets.js (line 56)
+Rule (S1): WCAG 4.1.2 (Name, Role, Value — ARIA `listbox` requires `role="option"` children, not `button`).
+
+```diff
+--- a/app/src/v2/pages/sets.js
++++ b/app/src/v2/pages/sets.js
+@@ -53,7 +53,7 @@
+   const sent = `<div class="k-sent u lo-sent"><span>Show me</span> ${p ? `<button type="button" class="k-w k-menu" data-stfind aria-controls="st-q" aria-label="${E(p.d)}: look up another Pokémon"><span>${E(p.d)}${V2.K_CHEV}</span></button> ` : ''}<span>from</span> <span class="us-srcs lo-srcs" role="group" aria-label="Doubles data source">${Object.keys(SET_SRC).map(k => `<button type="button" class="k-w" data-v2setsrc="${k}" aria-pressed="${src === k}"><span>${V2.setSrcName[k] || SET_SRC[k]}</span></button>`).join('')}</span></div>
+     ${S2 ? `<p class="fine us-src">${S2.line}</p>` : ''}`;
+   const find = `<div class="ra-find st-find"><label class="np-field ra-q">${V2.ICON.search}<input type="search" id="st-q" data-stq value="${E(U.q)}" placeholder="Look up a Pokémon" aria-label="Look up a Pokémon" autocomplete="off">${V2.CLR}</label>
+-      ${q ? `<div class="st-hits" role="listbox" aria-label="Matches">${hits.length ? hits.map(x => V2.kChip(x.d, {attrs: {'data-v2setmon': x.n}}) /* Wave 2 part 2: the kit chip (was the grey ra-chip) */).join('') : '<p class="k-none">No Pokémon matches that.</p>'}</div>` : ''}</div>`;
++      ${q ? `<div class="st-hits" role="group" aria-label="Matches">${hits.length ? hits.map(x => V2.kChip(x.d, {attrs: {'data-v2setmon': x.n}}) /* Wave 2 part 2: the kit chip (was the grey ra-chip) */).join('') : '<p class="k-none">No Pokémon matches that.</p>'}</div>` : ''}</div>`;
+   const yours = p && team.length ? `<section class="st-team"><h2 class="lo-lab"><span class="u">Your team</span> <small>tap one to see its loadout</small></h2>${(innerWidth < 700 && team.length > 3 ? [team.slice(0, 3), team.slice(3)] : [team]).map(r => V2.stBench(r.map(m => V2.stFig(m.p, '', m.p.n === p.n)), 'st-six')).join('')}</section>` : '';
+```
+
+S3 Proof:
+- Input (User types "incin" in `#sets` lookup box `[data-stq]`):
+  - OLD: Screen reader enters `Matches, list box` containing `<button>` chips (0 `option` children -> ARIA violation).
+  - NEW: Screen reader enters `Matches, group` containing `<button>` chips, and ArrowDown moves into them via Diff 1.
+
+--- DIFF 4 (MINOR): Only set `aria-controls="wt-sug"` on `#tsIn` when `#wt-sug` exists in the DOM ---
+
+File: app/src/v2/pages/winning.js (lines 63, 132, 141)
+Rule (S1): WCAG 4.1.2 (valid ARIA IDREF — avoid pointing `aria-controls` at a missing ID).
+
+```diff
+--- a/app/src/v2/pages/winning.js
++++ b/app/src/v2/pages/winning.js
+@@ -60,7 +60,7 @@
+ // team search (today's TOP-02 / TOP-03): suggestions by kind and count, chips, "Often with", matching teams
+ V2.wtSearch = () => { const E = V2.esc, U = V2.wtUi, label = f => f.k === 'mon' ? (byName.get(f.v) || {}).d || f.v : f.v;
+   const chips = U.f.length ? `<div class="wt-chipsrow">${U.f.map((f, i) => `<span class="k-chip k-on wt-f"><span>${f.k === 'mon' ? '' : `<i>${TS_KIND[f.k]}</i> `}${E(label(f))}<button type="button" data-tsx="${i}" aria-label="Remove ${E(label(f))}">×</button></span></span>` /* Wave 2 part 2: a chosen filter is the kit chip, filled */).join('')}<button type="button" class="np-link" data-tsx="*">Clear</button></div>` : '';
+-  return `<div class="wt-find"><label class="np-field wt-q">${V2.ICON.search}<input type="search" id="tsIn" data-wtq value="${E(U.q)}" placeholder="Search winning teams" aria-label="Search winning teams by Pokémon, item, move or ability" autocomplete="off" role="combobox" aria-expanded="${!!U.q}" aria-controls="wt-sug">${V2.CLR}</label>${V2.wtSug()}</div>${chips}`; };
++  return `<div class="wt-find"><label class="np-field wt-q">${V2.ICON.search}<input type="search" id="tsIn" data-wtq value="${E(U.q)}" placeholder="Search winning teams" aria-label="Search winning teams by Pokémon, item, move or ability" autocomplete="off" role="combobox" aria-expanded="${!!U.q}"${U.q ? ' aria-controls="wt-sug"' : ''}>${V2.CLR}</label>${V2.wtSug()}</div>${chips}`; };
+ V2.wtSug = () => { const E = V2.esc, U = V2.wtUi, q = norm(U.q || ''); if (!q) return '';
+@@ -129,7 +129,7 @@
+   else if (d.tsmore != null) U.fmore++;
+   V2.redraw(); });
+ document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-wtq]'); if (!i) return; V2.wtUi.q = i.value; const s = document.querySelector('.wt-sug'), w = i.closest('.wt-find');
+-  if (s) s.remove(); if (w) w.insertAdjacentHTML('beforeend', V2.wtSug()); V2.wtK = 0; i.setAttribute('aria-expanded', String(!!i.value)); V2.wtMark(i); });
++  if (s) s.remove(); if (w) w.insertAdjacentHTML('beforeend', V2.wtSug()); V2.wtK = 0; i.setAttribute('aria-expanded', String(!!i.value)); if (i.value) i.setAttribute('aria-controls', 'wt-sug'); else i.removeAttribute('aria-controls'); V2.wtMark(i); });
+ /* audit Nov 16 (keyboard): a real combobox: Up/Down move the highlighted match (screen readers follow it), Enter picks it, Escape closes;
+@@ -138,5 +138,5 @@
+   const os = [...document.querySelectorAll('.wt-sug .wt-opt')];
+   if ((e.key === 'ArrowDown' || e.key === 'ArrowUp') && os.length) { e.preventDefault(); i.setAttribute('aria-expanded', 'true'); V2.wtK = ((V2.wtK || 0) + (e.key === 'ArrowDown' ? 1 : -1) + os.length) % os.length; V2.wtMark(i); }
+   else if (e.key === 'Enter') { const o = os[V2.wtK || 0] || os[0]; if (o) { e.preventDefault(); o.click(); } }
+-  else if (e.key === 'Escape') { V2.wtUi.q = ''; i.value = ''; V2.wtK = 0; const s = document.querySelector('.wt-sug'); if (s) s.remove(); i.setAttribute('aria-expanded', 'false'); i.removeAttribute('aria-activedescendant'); } });
++  else if (e.key === 'Escape') { V2.wtUi.q = ''; i.value = ''; V2.wtK = 0; const s = document.querySelector('.wt-sug'); if (s) s.remove(); i.setAttribute('aria-expanded', 'false'); i.removeAttribute('aria-controls'); i.removeAttribute('aria-activedescendant'); } });
+```
+
+S3 Proof:
+- Input (`#tournaments` initial load with empty `#tsIn`):
+  - OLD: `#tsIn` has `aria-controls="wt-sug"` while `#wt-sug` is not in the DOM.
+  - NEW: `aria-controls="wt-sug"` is added only while `#wt-sug` is rendered and removed on empty input / Escape.
+
+================================================================================
+4. PART C — PLAYWRIGHT TEST `experiments/a11y-code.mjs` + CASE TABLE (S7)
+================================================================================
+
+Syntax-checked with `node --check`: PASSED.
+Browser execution (`PAGE=app/dist/v2.html node experiments/a11y-code.mjs`): not run (no dist build in VM).
+
+Case Table (S7 — every case can fail):
+Case | What it checks                                           | S7 (fails if...)
+---- | -------------------------------------------------------- | -----------------------------------------------------------
+A1   | Every visible `<button>` and `<a href>` on all 29 routes | Any visible button or link has an empty accessible name.
+A2   | Unique `id` attributes across all 29 routes              | Any two elements in the DOM share the same `id`.
+A3   | Heading hierarchy across all 29 routes                   | A route lacks `<h1>` or skips a level (e.g. `h1` -> `h3`).
+A4a  | Dialog role, modal flag, accessible name, initial focus  | `.np-sheet` lacks `role="dialog"`, `aria-modal`, `aria-label`, or focus.
+A4b  | Dialog `Tab` / `Shift+Tab` focus trap                    | Focus escapes `.np-sheet` during 15 Tab presses.
+A4c  | Dialog `Escape` close & focus return                     | `Escape` leaves `.np-sheet` open or drops focus to `<body>`.
+A5a  | Valid `role="tablist"` structure on all 29 routes        | A `tablist` lacks a name or has 0 `role="tab"` children (fails on unpatched `guide.js:55`).
+A5b  | `#guide` tablist arrow-key navigation                    | `ArrowRight` fails to move focus & `aria-selected="true"` (fails before Diff 2).
+A5c  | `#team` (390px) `.tm-tabs` arrow-key navigation          | `ArrowRight` fails to move focus & `aria-selected="true"`.
+A6a  | Global Search `ArrowDown` skips `.np-hitx`               | `ArrowDown` on `"choice"` stalls on `<p class="np-hitx">` (fails before Diff 1).
+A6b  | `#calc` picker `[data-arnq]` `ArrowDown` navigation      | `ArrowDown` leaves focus in `[data-arnq]` (fails before Diff 1).
+A7   | No `role="listbox"` wrapping non-option `<button>`s      | A `listbox` contains `<button>` without `role="option"` (fails on unpatched `sets.js:56`).
+A8   | Every `<img>` has `alt`; every `<button>` has `type`     | Any `<img>` lacks `alt` or `<button>` lacks `type` (fails on unpatched `guide.js:32,36`).
+
+Full file `experiments/a11y-code.mjs`:
+
+```js
+// WCAG 2.2 AA code-level accessibility checks across every v2 route, dialog, tablist, and search picker.
+// Modeled on app/test/v2-minors.mjs. Exit 1 on any failure.
+// Run: PAGE=app/dist/v2.html node experiments/a11y-code.mjs
+import { chromium } from 'playwright';
+import path from 'node:path';
+import fs from 'node:fs';
+
+const PAGE = path.resolve(process.env.PAGE || 'app/dist/v2.html');
+const fails = [];
+const ok = (cond, msg) => {
+  console.log((cond ? '  pass  ' : '  FAIL  ') + msg);
+  if (!cond) fails.push(msg);
+};
+
+if (fs.existsSync(PAGE) && !/window\.NP_ART=/.test(fs.readFileSync(PAGE, 'utf8'))) {
+  for (const d of ['art', 'art-s']) {
+    const to = path.join(path.dirname(PAGE), d);
+    const from = path.resolve(import.meta.dirname, '../app/src/v2', d);
+    if (!fs.existsSync(to) && fs.existsSync(from)) {
+      try { fs.symlinkSync(from, to, 'dir'); } catch (e) {}
+    }
+  }
+}
+
+const ROUTES = [
+  '#home', '#team', '#build', '#battle', '#calc', '#meta', '#tournaments',
+  '#events', '#archetypes', '#weekly', '#usage', '#sets', '#types', '#speed',
+  '#natures', '#compare', '#box', '#practice', '#gauntlet', '#gifts', '#news',
+  '#pokemon=Incineroar', '#method', '#about', '#track', '#feedback', '#owner',
+  '#guide', '#notfound'
+];
+
+const browser = await chromium.launch();
+const page = await browser.newPage({ viewport: { width: 1280, height: 900 } });
+await page.addInitScript(() => { window.__PL_TEST = 1; });
+
+for (const hash of ROUTES) {
+  await page.goto('file://' + PAGE + hash);
+  await page.waitForTimeout(800);
+
+  const res = await page.evaluate(() => {
+    const visible = el => {
+      if (!el || el.closest('[hidden],[inert],[aria-hidden="true"]')) return false;
+      const cs = getComputedStyle(el);
+      if (cs.display === 'none' || cs.visibility === 'hidden') return false;
+      return el.getClientRects().length > 0;
+    };
+    const accName = el => {
+      const al = (el.getAttribute('aria-label') || '').trim();
+      if (al) return al;
+      const alb = (el.getAttribute('aria-labelledby') || '').trim();
+      if (alb) {
+        const txt = alb.split(/\s+/).map(id => (document.getElementById(id)?.textContent || '').trim()).join(' ').trim();
+        if (txt) return txt;
+      }
+      const imgAlt = [...el.querySelectorAll('img[alt]')].map(i => i.getAttribute('alt').trim()).filter(Boolean).join(' ');
+      const text = (el.textContent || '').replace(/\s+/g, ' ').trim();
+      return (text || imgAlt || el.getAttribute('title') || '').trim();
+    };
+
+    const unnamed = [...document.querySelectorAll('button, a[href]')]
+      .filter(visible)
+      .filter(el => !accName(el))
+      .map(el => el.outerHTML.slice(0, 100));
+
+    const seen = new Map(), dups = [];
+    for (const el of document.querySelectorAll('[id]')) {
+      const id = el.id;
+      if (!id) continue;
+      seen.set(id, (seen.get(id) || 0) + 1);
+      if (seen.get(id) === 2) dups.push(id);
+    }
+
+    const hs = [...document.querySelectorAll('#main h1, #main h2, #main h3, #main h4, #main h5, #main h6')]
+      .filter(el => !el.closest('[hidden],[aria-hidden="true"]'))
+      .map(el => +el.tagName[1]);
+    const skips = [];
+    for (let i = 1; i < hs.length; i++) {
+      if (hs[i] - hs[i - 1] > 1) skips.push(`h${hs[i - 1]}->h${hs[i]}`);
+    }
+
+    const badTablists = [...document.querySelectorAll('[role="tablist"]')].filter(visible).map(tl => {
+      const tabs = [...tl.querySelectorAll('[role="tab"]')];
+      const name = accName(tl);
+      const errs = [];
+      if (!name) errs.push('no-name');
+      if (!tabs.length) errs.push('no-tab-children');
+      return errs.length ? { html: tl.outerHTML.slice(0, 90), errs } : null;
+    }).filter(Boolean);
+
+    const badListboxes = [...document.querySelectorAll('[role="listbox"]')].filter(visible).filter(lb => {
+      const btns = [...lb.querySelectorAll('button')];
+      return btns.length > 0 && btns.some(b => b.getAttribute('role') !== 'option');
+    }).map(lb => lb.outerHTML.slice(0, 90));
+
+    const imgNoAlt = [...document.querySelectorAll('img')].filter(i => !i.hasAttribute('alt')).length;
+    const btnNoType = [...document.querySelectorAll('button')].filter(b => !b.hasAttribute('type')).map(b => b.outerHTML.slice(0, 80));
+
+    return { unnamed, dups, hasH1: hs.includes(1), skips, badTablists, badListboxes, imgNoAlt, btnNoType };
+  });
+
+  ok(res.unnamed.length === 0, `A1 ${hash}: all buttons/links have accessible names (${res.unnamed.length} unnamed)`);
+  ok(res.dups.length === 0, `A2 ${hash}: no duplicate IDs (${res.dups.join(', ')})`);
+  ok(res.hasH1 && res.skips.length === 0, `A3 ${hash}: has h1 (${res.hasH1}) and no heading skips (${res.skips.join(', ')})`);
+  ok(res.badTablists.length === 0, `A5a ${hash}: all role="tablist" valid (${JSON.stringify(res.badTablists)})`);
+  ok(res.badListboxes.length === 0, `A7 ${hash}: no role="listbox" with non-option buttons (${res.badListboxes.length})`);
+  ok(res.imgNoAlt === 0 && res.btnNoType.length === 0, `A8 ${hash}: all <img> have alt (${res.imgNoAlt} missing) and all <button> have type (${res.btnNoType.length} missing)`);
+}
+
+await page.goto('file://' + PAGE + '#team');
+await page.waitForTimeout(800);
+{
+  const opener = page.locator('[data-v2search]').first();
+  await opener.focus();
+  await page.keyboard.press('Enter');
+  await page.waitForTimeout(250);
+  const inDialog = await page.evaluate(() => {
+    const dlg = document.querySelector('.np-sheet[role="dialog"]');
+    return !!(dlg && dlg.getAttribute('aria-modal') === 'true' && (dlg.getAttribute('aria-label') || '').trim() && dlg.contains(document.activeElement));
+  });
+  ok(inDialog, 'A4a: opening Search moves focus into named role="dialog" aria-modal="true"');
+
+  let escaped = false;
+  await page.keyboard.press('Shift+Tab');
+  for (let i = 0; i < 15; i++) {
+    await page.keyboard.press('Tab');
+    const inside = await page.evaluate(() => !!document.querySelector('.np-sheet')?.contains(document.activeElement));
+    if (!inside) { escaped = true; break; }
+  }
+  ok(!escaped, 'A4b: Tab/Shift+Tab stay trapped inside .np-sheet dialog');
+
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(200);
+  const closedAndReturned = await page.evaluate(() => {
+    return !document.querySelector('.np-sheet') && !!document.activeElement?.matches('[data-v2search]');
+  });
+  ok(closedAndReturned, 'A4c: Escape closes sheet and returns focus to [data-v2search] opener');
+}
+
+await page.goto('file://' + PAGE + '#guide');
+await page.waitForTimeout(600);
+{
+  const tabMoved = await page.evaluate(() => {
+    const t0 = document.querySelector('[role="tablist"] [role="tab"]');
+    if (!t0) return 'no-tab';
+    t0.focus();
+    t0.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+    const active = document.activeElement;
+    return active && active !== t0 && active.getAttribute('role') === 'tab' && active.getAttribute('aria-selected') === 'true' ? 'ok' : 'stuck';
+  });
+  ok(tabMoved === 'ok', `A5b #guide: ArrowRight moves focus and aria-selected across role="tablist" (${tabMoved})`);
+}
+
+await page.setViewportSize({ width: 390, height: 844 });
+await page.goto('file://' + PAGE + '#team');
+await page.waitForTimeout(800);
+{
+  const tabMoved = await page.evaluate(() => {
+    const t0 = document.querySelector('.tm-tabs [role="tab"][aria-selected="true"]');
+    if (!t0) return 'no-tab';
+    t0.focus();
+    t0.dispatchEvent(new KeyboardEvent('keydown', { key: 'ArrowRight', bubbles: true, cancelable: true }));
+    const active = document.activeElement;
+    return active && active !== t0 && active.getAttribute('role') === 'tab' && active.getAttribute('aria-selected') === 'true' ? 'ok' : 'stuck';
+  });
+  ok(tabMoved === 'ok', `A5c #team (390px): ArrowRight moves focus and aria-selected across .tm-tabs (${tabMoved})`);
+}
+await page.setViewportSize({ width: 1280, height: 900 });
+
+await page.goto('file://' + PAGE + '#calc');
+await page.waitForTimeout(800);
+{
+  await page.locator('[data-v2search]').first().click();
+  await page.waitForTimeout(200);
+  await page.fill('[data-v2q]', 'choice');
+  await page.waitForTimeout(200);
+  await page.keyboard.press('ArrowDown');
+  const searchFocusOk = await page.evaluate(() => {
+    const a = document.activeElement;
+    return !!(a && a.matches('[data-v2hits] .np-hit:not(.np-hitx)'));
+  });
+  ok(searchFocusOk, 'A6a Global Search: ArrowDown skips non-focusable .np-hitx and focuses first actionable hit');
+  await page.keyboard.press('Escape');
+  await page.waitForTimeout(150);
+
+  await page.locator('[data-pcpick="dcA"]').first().click();
+  await page.waitForTimeout(250);
+  await page.keyboard.press('ArrowDown');
+  const calcPickOk = await page.evaluate(() => !!document.activeElement?.matches('[data-arnhits] .np-hit'));
+  ok(calcPickOk, 'A6b #calc picker: ArrowDown moves focus from [data-arnq] to first hit');
+  await page.keyboard.press('Escape');
+}
+
+await browser.close();
+console.log(`a11y-code: ${fails.length ? fails.length + ' failed' : 'all passed'}`);
+process.exit(fails.length ? 1 : 0);
+```
+
+================================================================================
+5. ORDER QUESTIONS FOR HH
+================================================================================
+
+1. `pages/sugs.js:344` (`[data-exhits]` live region):
+   `shell.js:229` removed `aria-live="polite"` from the Global Search hits list and replaced it with a
+   `.vh` status count (`role="status"`) because reading the whole button list on every keystroke was noisy.
+   Should `[data-exhits]` in `sugs.js:344` follow that same pattern (remove `aria-live="polite"` from
+   `[data-exhits]` and add a `.vh` `role="status"` count)? Not patched without HH's go-ahead since it
+   adds a `.vh` status string.
+2. `pages/winning.js:89, 91` & `shell.js:493, 499` (breakpoint-duplicated `<nav>` landmarks):
+   Both `winning.js` (`.ra-tabs` / `.ra-seg`) and `shell.js` (`.np-nav` / `.np-bar` with `aria-label="Main"`)
+   place two `<nav>` landmarks in the DOM and rely on CSS `display: none` to hide one per breakpoint.
+   Confirm in CSS that at every width (320-2560px) only one copy is visible; if both are ever visible
+   simultaneously, they need distinct `aria-label`s (WCAG 1.3.1 / 2.4.1).
+3. `kit.js:39` (`V2.kCard` `aria-pressed`):
+   `V2.kCard` sets `aria-pressed="true"` when `o.sel` is truthy on a `<button>` card, and omits
+   `aria-pressed` when `o.sel` is false. Should toggle-style cards emit `aria-pressed="false"` when
+   `'sel' in o` so screen readers announce toggle state on unselected cards too?
+
+================================================================================
+6. "I'M UNSURE" (S6) & WHAT WAS NOT LOOKED AT
+================================================================================
+
+I'm unsure (S6):
+- Because `app/dist/v2.html` and CSS files (`components.css`, `kit.css`, etc.) were not in Job 12's
+  bundle, I cannot verify at runtime whether CSS `display: none` cleanly hides the duplicate `<nav>`
+  blocks in `shell.js:493/499` and `winning.js:89/91` across all widths, or whether any dynamic route
+  state produces an unnamed button or skipped heading only under specific live data. Running
+  `PAGE=app/dist/v2.html node experiments/a11y-code.mjs` will catch any of those immediately.
+- `pages/guide.js` is Preview-only (`if (!window.__NP_PREVIEW) delete V2.pages.guide;`), so Diff 2
+  only affects Preview builds, not the public Dec 18 launch.
+
+Not looked at (not included in Job 12 bundle):
+- CSS files (focus indicators `:focus-visible`, contrast, touch target sizes, `prefers-reduced-motion`
+  CSS rules — intentionally out of scope per Job 12 "code only, NO visual change").
+- Legacy v1 `app/src/app/*.js` DOM rendering.
+- Live browser execution of `experiments/a11y-code.mjs` against `app/dist/v2.html` (`not run`).

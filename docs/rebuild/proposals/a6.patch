@@ -1,0 +1,48 @@
+diff --git a/app/src/v2/pages/matchups.js b/app/src/v2/pages/matchups.js
+index 31950ad..5d76f35 100644
+--- a/app/src/v2/pages/matchups.js
++++ b/app/src/v2/pages/matchups.js
+@@ -108,7 +108,7 @@ document.addEventListener('click', e => { const t = e.target.closest && e.target
+   if (t.closest('[data-mumore]')) { ui.tlMore = !ui.tlMore; V2.redraw(); const b = document.querySelector('[data-mumore]'); if (b && e.detail === 0) b.focus({preventScroll: true}); return; } // keyboard: focus stays on the button
+   if (t.closest('[data-muall]')) { ui.threatsAll = true; V2.redraw(); return; }
+   if (t.closest('[data-mufull]')) { V2.closeSheet(true); LS.set('np2.seg.thr', 'all'); V2.redraw(); const m = document.getElementById('tm-mu'); if (m) m.scrollIntoView({block: 'start'}); return; }
+-  if (t.closest('[data-mufix]')) { const pl = (ui.planList || [])[0]; if (!pl) return; V2.closeSheet(true); applyPlan(pl); persist(); V2.redraw(); toast(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`, true); } });
++  if (t.closest('[data-mufix]')) { const pl = (ui.planList || [])[0]; if (!pl) return; V2.closeSheet(true); applyPlan(pl); persist(); V2.redraw(); V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`); } });
+ // the view switch (the shared slider) and the remembered open threats in All 30 (today's ui.thrOpen)
+ document.addEventListener('v2slide', e => { if (e.detail.key !== 'thr') return; LS.set('np2.seg.thr', e.detail.value); V2.redraw(); });
+ // "See all 30" from the stand-outs
+diff --git a/app/src/v2/pages/sugs.js b/app/src/v2/pages/sugs.js
+index 9e1c3b9..aadfdba 100644
+--- a/app/src/v2/pages/sugs.js
++++ b/app/src/v2/pages/sugs.js
+@@ -73,6 +73,12 @@ V2.noneCard = () => { const N = LANE.NONE;
+   return `<div class="sg2-nwrap"><p class="sg2-none"><b>${N.head}</b> ${N.body} ${N.edge}</p><p class="sg2-nact"><a class="np-link" href="#battle">Battle</a><a class="np-link" href="#sets">Sets</a></p></div>`; };
+ // the Undo bar: the last suggestion (or Quick add) applied, until the team is changed some other way; Undo steps back one at a
+ // time, up to 8 (today's undo stack and its [data-undobar] handler, 06-helpers.js)
++// A6 proposal (Sim's fix plan: one message per action, one Undo): after an Apply, the "Applied … Undo" bar in Suggestions is the
++// message when it is on screen; the toast (with its Undo) shows only when that bar is out of sight (applied from a sheet, Matchups)
++// "on screen" means clear of the sticky header and jump bar above and the phone bar below (Nov 12: under the header it counted as seen)
++V2.appliedSay = (t) => { const b = document.querySelector('.sg2-undo'), r = b && b.getBoundingClientRect(), rs = s => [...document.querySelectorAll(s)].map(e => e.getBoundingClientRect()).filter(q => q.height);
++  const top = Math.max(0, ...rs('.np-head,.tm-jump').filter(q => q.top < innerHeight / 2).map(q => q.bottom)), bot = Math.min(innerHeight, ...rs('.np-bar,.np-dock').filter(q => q.top > innerHeight / 2).map(q => q.top));
++  if (r && r.height && r.top >= top && r.bottom <= bot) return; toast(t, true); };
+ V2.undoBar = () => { const t = undoTop(); return t ? `<div class="sg2-undo" role="status"><span>Applied <b>${V2.esc(t.label)}</b></span><button type="button" class="np-btn2" data-undobar><span>Undo</span></button></div>` : ''; };
+ 
+ // Show more: the next suggestions open in place (already worked out) and the link becomes See all suggestions (as today)
+@@ -99,7 +105,7 @@ document.addEventListener('click', e => { if (!e.target.closest) return;
+ // a second tap within half a second is ignored, as on today's page (a double tap can't apply two suggestions)
+ document.addEventListener('click', e => { const b = e.target.closest && e.target.closest('[data-v2plan],[data-v2plana]'); if (!b) return; const now = Date.now(); if (now - (V2._sgTap || 0) < 450) return; V2._sgTap = now;
+   const fromAll = b.dataset.v2plana != null, pl = fromAll ? V2.sgAll.list[+b.dataset.v2plana] : (ui.planList || [])[+b.dataset.v2plan]; if (!pl) return;
+-  if (fromAll) V2.closeSheet(true); applyPlan(pl); render(); toast(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`, true); });
++  if (fromAll) V2.closeSheet(true); applyPlan(pl); render(); V2.appliedSay(`Applied: ${pl.ch.map(x => x.c.p.d).join(' and ')}`); });
+ 
+ // ---------- Problems and Team Checks (in the Team Checks section): a fold, closed until opened, remembered per device ----------
+ // Today's rows (problemRows), Quick add picks (quickList / quickInfo), the team checks (proChecks, ckState, CK_TXT) and the verdict
+@@ -146,7 +152,7 @@ document.addEventListener('toggle', e => { const d = e.target; if (!d || !d.matc
+ document.addEventListener('click', e => { if (!e.target.closest) return;
+   if (e.target.closest('[data-v2needs]')) { ui.needsAll = !ui.needsAll; V2.redraw(); return; }
+   const b = e.target.closest('[data-v2qa]'); if (!b) return; const now = Date.now(); if (now - (V2._sgTap || 0) < 450) return; V2._sgTap = now;
+-  const pl = V2.fx.qa[+b.dataset.v2qa]; if (!pl) return; const say = applyQuick(pl); render(); toast(say, true); });
++  const pl = V2.fx.qa[+b.dataset.v2qa]; if (!pl) return; const say = applyQuick(pl); render(); V2.appliedSay(say); });
+ 
+ // ---------- "?" explainers (today's TIPS words, 36-sug-data.js): tap for a small bubble; tap outside, Escape or scrolling closes it ----------
+ V2.tip = k => { const T = TIPS[k]; return T ? `<button type="button" class="sg2-tip" data-v2tip="${k}" aria-expanded="false" aria-label="${V2.esc(/^(What|How)\b/.test(T[0]) ? T[0] : `What is ${T[0]}?`)}">?</button>` : ''; };

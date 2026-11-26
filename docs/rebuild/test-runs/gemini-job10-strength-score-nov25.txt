@@ -1,0 +1,535 @@
+GEMINI JOB 10 — the Strength Score engine: audit + tests (code only, NO design)
+Repo: theresearchmode-glitch/pokelair-data (claude/design6 at 04538fc6)
+Reviewer: Neon (Gemini) | Date: 2026-11-24 Eastern / 2026-11-25 UTC
+
+====================================================================
+1. VERDICT
+====================================================================
+needs targeted bug fixes (architecture is solid and well-validated on held-out games, with 6 real code bugs found — 1 CRASH, 3 WRONG-SCORE, 1 WRONG-ADVICE, 1 SLOW — plus 2 unseen dependencies marked not checked):
+- CRASH: `CH.wordOf(NaN)` throws `TypeError` because `CH.WORDS.find(w => NaN >= w[0])` returns `undefined`.
+- WRONG-SCORE (3): (a) Duplicate species (Species Clause) makes `CH.strengthOf` return `null`, so `CH.gradeOf` falls back to v1 with `illegal: false`; (b) `89.6` rounds to `90` in `CH.gradeNum` / `CH.whyData` while `CH.grade(89.6)` is `'B'` (`90 · Tournament ready`); (c) empty `META.model.monSd: {}` causes `Math.max()` -> `-Infinity` -> `CH.sdOf` returns `Infinity` (`swapSure` also affected); plus `gradeMemo` omits `m.itemDefault`.
+- WRONG-ADVICE: `LANE.of` tags a `reach` fix as rank-0 `fix` even when `planGrade(pl) < gBase`, potentially promoting a score-lowering swap to Suggestion #1.
+- SLOW: `CH.strengthOf` and `CH.partialOf` call `strengthX(names, ms)` solely for `xs.x0`, but `strengthX` runs `structCredit(ms)` (`proChecks` + `gamePlan` + `trPlan` + `deadItems`) on every call and throws `xs.sc` away.
+
+All 3 diffs below fix only code bugs (zero constant tuning, zero design/copy changes) and are verified with Node VM before/after S3 proofs. `experiments/strength-invariants.mjs` is syntax-checked (`node --check` -> OK); browser execution is `not run` (no `app/dist/page.html` or Playwright in VM).
+
+====================================================================
+2. PART A — STRENGTH SCORE MAP (STEP-BY-STEP, INPUTS & CONSTANTS)
+====================================================================
+
+--- End-to-End Call Chain (function -> function, file:line) ---
+1. Offline daily training (GitHub Actions):
+   - `model.mjs:86-124` (`fit`) fits Ridge-shrunk logistic regression with Adam on `out/matches.json`:
+     `P(A beats B) = σ(skillA - skillB + x(A) - x(B))` where `x = Σ mon + Σ pair + Σ centered_set + Σ team_basics` (`team-basics.mjs:20` `deckBasics`).
+   - `model.mjs:180` ships only if `min(raw_ll, calibrated_ll) < raw_win_rates.logloss`.
+   - `model.mjs:189-219` computes held-out `calib`, per-species `setRange`, `tested` pairs (15+ teams), `meanX`, and 101-point percentile `dist.q` over last-45-day distinct teams.
+   - `six.mjs:15-33` fits per-exact-six residual `δ` (`sixes[sortedSix] = [δ, games]` for 10+ games) with model `x` held fixed.
+   - `pilot.mjs:12-26` computes paired 3-week-window `pilot` stats (shown on Pokémon page, NOT used in Strength Score).
+2. Live page scoring (for one team `team` of 1-6 members):
+   - `35-win-model.js:146` `gradeTeam(team)` -> memoized by `gradeMemo` (`metaVersion` + sorted member signature + `spreadKey`).
+   - Calls `assignItems(team)` (unseen `54-items.js`) -> `THR.teamReport(ms)` (unseen `55-threats.js`, gives `RD.score` & 30-threat `RD.rows`) -> `proChecks(ms, true)` (unseen `06-helpers.js`, gives `CK.items`) -> `58-strength.js:141` `CH.gradeOf(RD, CK, ms)`.
+3. Inside `CH.gradeOf(RD, CK, ms)` (`58-strength.js:141-147`):
+   - Checks `illegal` (Item Clause; + Species Clause after Diff 1) and `partial = ms.length < 6`.
+   - Full 6-mon path (`58-strength.js:76-81` `CH.strengthOf(ms, RD.score)`):
+     a. Guard: `ms.length === 6`, `modelOK()` (`35-win-model.js:4`), 6 distinct base species (`byName.get(n).b`).
+     b. `35-win-model.js:96` `strengthX(names, ms)` -> `resolveItems` -> marks `_deadItem` -> `35-win-model.js:44` `teamX(names, ms)`:
+        - `35-win-model.js:8` `modelX(names)`: sums `META.model.mons[n]` + `META.model.pairs[a|b]`.
+        - Mega cap (`35-win-model.js:46-48`): keeps only top 2 Megas by `mon + setOne`; subtracts extra Megas' `mons[n]` and skips their `setOne`.
+        - `35-win-model.js:25-33` `setOne(m)`: if `META.model.center`, sums `sets[k] * ((has?1:0) - setFreq[k])` for known slots (`SET_UNKNOWN_AVG`: `@` if Mega/heldItem/_deadItem, `#` if abChosen, `:` if custom), clamped to `setRange[p.n]`.
+        - `35-win-model.js:52-64` `teamBasicsX(names, ms)`: adds `META.model.team[k]` when `teamBasicsOf` flags `noMega` / `protectLow` (etc.).
+     c. Untried-mix caution (`58-strength.js:78-79`): `cr = 0.75 + 0.25 * min(1, testedPairs(names) / supK)`; only scales positive `dv = x0 - meanX`.
+     d. Matchups term (`58-strength.js:79`): `mu = CH.MU_K * (ready - CH.MU_AVG)`.
+     e. Exact-six record (`58-strength.js:33-48` `CH.sixOf(ms)`): looks up `META.model.sixes[sortedNames]`, scales `δ` by `(6 - offSetCount) / 6`.
+     f. Expected win rate vs field (`58-strength.js:65` `CH.fieldWin(y)`): mean of `σ(calibK() * (y - q[i]))` over 101 `dist.q` percentiles.
+     g. Score mapping (`58-strength.js:22` `CH.ssOfE(e)`): `clamp(0, 100, 80 + 122 * (e - 0.5))`, rounded to 0.1 (`s`), then band via `CH.sticky(ms, s)` (`58-strength.js:135`).
+     h. Uncertainty (`58-strength.js:56-63` `CH.sdOf`, `CH.rangeOf`, `CH.sureOf`): `sd = sqrt(Σ monSd^2 + Σ pairSd^2) * 0.7`; 80% range `[y - 1.2816*sd, y + 1.2816*sd]`.
+   - Partial 1-5 path (`58-strength.js:87-90` `CH.partialOf(ms)`): `y = xk + ((6 - k) / 6) * meanX` -> `fieldWin(y)` -> `ssOfE(e)`, `partial: true`, `rg: null`, `su: null`.
+   - V1 fallback (`58-strength.js:145-147`, when `!modelOK()` or `st === null`): `RD.score - 6 * miss.length + CH.modelPts(ms)` blended with `RES.records`/`RES.proven` via `w = g / (g + 100)`.
+
+--- Inputs Read ---
+- `META.model`: `ships`, `mons`, `pairs`, `sets`, `setFreq`, `setRange`, `center`, `team`, `meanX`, `calib`, `dist.q` (101 points), `tested`, `supK`, `sixes`, `monSd`, `pairSd`, `pairSd0`.
+- `RES` (`META.results`): `records` / `proven` (v1 fallback only), `pairs` / `mons` / `base` (fix planner `teamValue` & `provenPair`), `tc` (top-30 threat weights via `55-threats.js`, unseen).
+- `THR.teamReport(ms)` (`RD.score`, `RD.rows`) and `proChecks(ms, true)` (`CK.items`).
+- `localStorage['np.gl']` (per-viewer sticky band buffer for own/saved teams).
+
+--- Constants Table ---
+constant | value | where | status (documented reason / no reason given)
+CH.SS_MID | 80 | 58-strength.js:21 | documented reason (50% field win rate = 80; docs/strength-score.md, Nov 9)
+CH.SS_K | 122 | 58-strength.js:21 | documented reason (top 2% real sheets ~92, no-Mega in 50s; Nov 9)
+CH.WORDS / grade | 90/80/70/60/<60 | 58-strength.js:23-26 | documented reason (CLAUDE.md 19; 10-pt bands verified monotonic on 6,270 later games)
+CH.SD_K / SWAP_K | 0.7 | 58-strength.js:52, 35-win-model.js:200 | documented reason (experiments/unsure.mjs Nov 8: raw spreads ~30% too wide)
+CH.rangeOf z | 1.2816 | 58-strength.js:62 | documented reason (standard normal 80% central interval: z_0.90 = 1.2816)
+CH.sureOf cuts | 0.12 / 0.20 / 100g | 58-strength.js:56 | documented reason (Sim Nov 8: High <=0.12, Medium <=0.20 or 100+ games, Low >0.20)
+CH.MU_K / MU_AVG | 0.003 / 79 | 58-strength.js:75 | documented reason (experiments/grade-v2.mjs Nov 7: ~±0.7 win-rate pts, 79% avg readiness)
+CH.strengthOf cr | 0.75 + 0.25*min(1,k/supK) | 58-strength.js:78 | documented reason (Sim Nov 7: eased from 0.50+0.50 to 0.75+0.25)
+mixCredit | 0.5 + 0.5*min(1,k/supK) | 35-win-model.js:70 | documented reason (model.mjs:205; NOTE: differs from CH.strengthOf's 0.75+0.25 — Order question #1)
+CH.GMISS | 6 | 58-strength.js:95 | documented reason (Oct 30, 904 tournament teams)
+CH.REC_MIN / REC_K | 30 / 100 | 58-strength.js:99,124 | documented reason (Oct 30 / Nov 7: 151g -> 60% real)
+CH.GMODEL | 9.1 | 58-strength.js:114 | documented reason (Oct 31: 0.75 * 12.1 grade SD)
+CH.STICKY | 1.5 | 58-strength.js:130 | documented reason (Nov 9: prevents 1-2 pt daily jitter flipping own-team band)
+SET_UNKNOWN_AVG | true | 35-win-model.js:22 | documented reason (Nov 8: 55.3% vs 54.5-54.8% on 6,270 later games)
+calibK bounds | 0 < c < 3 (else 1) | 35-win-model.js:40 | no reason given (sanity clamp)
+Mega cap | 2 Megas | 35-win-model.js:46 | documented reason (73% of real teams bring <=2; prevents Mega stacking)
+SWAP_MIN | 0.75 | 35-win-model.js:200 | documented reason (Nov 8 step 6: 75%+ sure to help)
+TS_GAIN / PLAN_TIE | 2 / 2 | 35-win-model.js:134-135 | documented reason (Nov 9 Step D variety tie band)
+LANE.PTS | mega 23, prot1 15, prot2 4, reach 3.5 | 36-lanes.js:14 | documented reason (Nov 10, 10,575 sheets / 38,513 games)
+LANE.SWAP_PTS / REAL | 4 / 0.35 | 36-lanes.js:15-16 | documented reason (lane-test.mjs Nov 10: 57.3% at 4+, 0.35 realized slope)
+model.mjs pairs/sets | 30 teams / 40 decks | model.mjs:21,29 | no reason given (frequency floors)
+model.mjs EVID_K/KP | 1000 / 300 | model.mjs:76 | documented reason (Oct 27 ts-audit.mjs)
+model.mjs SUP_K / tested | 6 / 15 teams | model.mjs:206-208 | documented reason (a quarter of real teams have <6 tested pairs)
+six.mjs TAU / SIG_S / MIN_G | 0.1 / 0.6 / 10 | six.mjs:14 | documented reason (Nov 8 scoreboard + 256 KB Firestore cap)
+
+====================================================================
+3. PART B — INVARIANTS TABLE (1-10)
+====================================================================
+# | invariant | status | file:line | detail & how test proves it
+1 | Same six in any order -> same score | holds in shown files (unseen 54-items.js not checked) | 35-win-model.js:8,46,147; 58-strength.js:33,58,132 | `modelX`, `teamX`, `CH.sixOf`, `CH.sdOf`, `CH.teamKey`, `gradeMemo` are all order-independent. Dependency: `assignItems`/`resolveItems` (`54-items.js`, unseen) could be slot-order dependent on default-item ties. Test: `inv1-order-invariant` compares `ns` vs `ns.reverse()` on 40+ teams.
+2 | Same six, same sets -> same score every time (deterministic) | holds (with `np.gl` sticky caveat) | 58-strength.js:76-81,135; 35-win-model.js:146 | Pure deterministic math; no `Math.random()` or `Date.now()` in scoring. Only `CH.sticky` reads `localStorage['np.gl']` for band letter (not `G.s`). Test: `inv2-deterministic` scores each team twice.
+3 | Strictly better set never lowers score unless model says so | holds with 2 documented paths | 58-strength.js:40-47; 35-win-model.js:28-31 | Two documented paths can lower score on a move/item edit: (a) `SET_UNKNOWN_AVG` turns on all 4 moves' centered weights when `m.custom` flips `false -> true`; (b) `CH.sixOf` reduces positive six-record `δ` by 1/6 if an edited move/item is absent from tournament data. Test: `inv3-better-set-protect` adds Protect to 0-Protect teams.
+4 | Partial teams (1-5) never score higher than they should & say so | holds | 58-strength.js:86-90,142,214 | `CH.partialOf` fills empty slots with `(6-k)/6 * meanX`, sets `G.partial = true`, and `CH.gradeNum` appends `' so far'`. Note: `teamBasicsOf` skips `noMega`/`protectLow` when `length !== 6` and `partialOf` skips `cr` (mixCredit). Test: `inv4-partial-marked-and-finite`.
+5 | Illegal teams flagged, never scored as legal | BREAKS (Species Clause); non-Champions item not checked | 58-strength.js:77,142-147 | Duplicate species makes `CH.strengthOf` return `null`, so `CH.gradeOf` falls back to v1 with `illegal: false`! Fixed in Diff 1. Duplicate items ARE flagged (`illegal: true`, `tsOf === 0`). Two different Mega Stones are legal in Champions (`35-win-model.js:46`); two identical Mega Stones violate Species+Item Clause. Non-Champions item flagging depends on unseen `06-helpers.js`/`54-items.js` (`not checked`). Test: `inv5-dup-species-flagged`, `inv5-dup-item-flagged`.
+6 | Band word always matches the number | BREAKS at .5-.9 boundaries (e.g. 89.6 -> "90 · Tournament ready") | 58-strength.js:24-26,143,211,214,224 | `CH.gradeNum`/`CH.whyData` display `Math.round(G.s)` (`90`) while `CH.grade(89.6)` is `'B'` (`Tournament ready`). Also `G.word` used non-sticky `CH.wordOf(s)` while `CH.gradeNum` used sticky `CH.wordOfL(G.letter)`. Fixed in Diff 1 (sticky buffer itself is a documented rule and preserved). Test: `inv6-band-matches-number`.
+7 | "How sure" range widens with fewer games | holds (except empty `monSd: {}` -> `Infinity`) | 58-strength.js:56-63; model.mjs:118 | `vb = 1/(h + 2*lb)` shrinks as games `h` grow, so `CH.sdOf` & `CH.rangeOf` widen with fewer games. Bug when `monSd: {}` fixed in Diff 1. Test: `inv7-range-widens-fewer-games`.
+8 | Suggestions: applying top Suggestion never lowers score | BREAKS via `LANE.of` `reach` fix (plus documented unmet-check fallback) | 36-lanes.js:26,34; 29-fix-planner.js:201,250 | `29-fix-planner.js:201` guards normal swaps (`pl._g >= gBase + 2`), and Nov 24 rain fix (`wxKey`) is inside `qual` (`pl._g >= gBase`). However, `LANE.of` tagged `reach` fixes as rank-0 `fix` even when `pl._g < gBase` (fixed in Diff 3). Note: unmet-check fallback (`29-fix-planner.js:250`) can still intentionally show a score-lowering plan with explicit cost text (documented Nov 8 rule). Test: `inv8-top-suggestion-no-drop`.
+9 | Page score and share image score are the same number | NOT CHECKED | app/src/app/44-share-images.js (unseen) | `44-share-images.js` was not included in Job 10's file bundle. `58-strength.js:214` comment notes share images use `CH.gradeNum`, and `experiments/same-grade.mjs` checks My Team / Saved / Compare / Build / Event Load, not share images.
+10 | No NaN / Infinity reaches the page | BREAKS (`CH.wordOf(NaN)` throws, `CH.sdOf` returns `Infinity` on empty `monSd`, v1 lacks `isFinite(RD.score)`) | 58-strength.js:24,58,145; 35-win-model.js:201 | All three edge cases can leak `NaN`/`Infinity` or throw `TypeError`. Fixed in Diffs 1 & 2. Test: `inv10-no-nan-or-infinity`.
+
+====================================================================
+4. PART C — FINDINGS TABLE & DIFFS (each with S3 proof)
+====================================================================
+# | finding | severity | file:line | checked/not checked | fix?
+1 | `CH.wordOf(NaN)` throws `TypeError` (`CH.WORDS.find(...)` is `undefined`) | CRASH | 58-strength.js:24 | checked (Node VM proof) | Diff 1
+2 | Duplicate species causes `CH.strengthOf` -> `null` -> v1 fallback with `illegal: false` | WRONG-SCORE | 58-strength.js:142-147 | checked (Node VM proof) | Diff 1
+3 | `89.6` rounds to `90` in `CH.gradeNum`/`whyData` while `CH.grade(89.6)` is `B` (`90 · Tournament ready`), and `G.word` disagrees with sticky `G.letter` | WRONG-SCORE | 58-strength.js:143,211 | checked (Node VM proof) | Diff 1
+4 | Empty `META.model.monSd: {}` yields `Math.max() = -Infinity` -> `CH.sdOf` returns `Infinity` (`swapSure` also affected); v1 lacks `isFinite(RD.score)` guard | WRONG-SCORE | 58-strength.js:58,145; 35-win-model.js:201 | checked (Node VM proof) | Diffs 1 & 2
+5 | `gradeMemo` key omits `m.itemDefault` (used by `CH.sixOf` line 44) | WRONG-SCORE | 35-win-model.js:147 | checked (code inspection) | Diff 2
+6 | `LANE.of` tags a `reach` fix as rank-0 `fix` even when `gain < 0`, promoting score-lowering swaps to Suggestion #1 | WRONG-ADVICE | 36-lanes.js:26 | checked (Node VM proof) | Diff 3
+7 | `CH.strengthOf` & `CH.partialOf` call `strengthX(names, ms)` only for `xs.x0`, wasting full `structCredit(ms)` (`proChecks`+`gamePlan`+`trPlan`+`deadItems`) on every grade | SLOW | 58-strength.js:77,89; 35-win-model.js:96-97 | checked (Node VM proof) | Diffs 1 & 2
+
+--- Diff 1: app/src/app/58-strength.js ---
+S3 Proofs (executed in Node VM against original vs patched):
+  1. `CH.wordOf(NaN)` -> old: `THROWS: TypeError` -> new: `""`
+  2. `CH.sdOf(ms)` with `monSd: {}` -> old: `Infinity` -> new: `null`
+  3. `CH.gradeOf` with duplicate species `[Incineroar, Incineroar, ...]` -> old: `{v:1, s:88, illegal:false}` -> new: `{v:1, s:88, illegal:true}`
+  4. `CH.gradeOf` when `st.ss = 89.6` -> old: `{gradeNum:"90 · Tournament ready", word:"Tournament ready", letter:"B"}` -> new: `{gradeNum:"90 · Top tier", word:"Top tier", letter:"A"}`
+  5. `CH.strengthOf(ms, 80)` wasted `proChecks` calls -> old: `1` -> new: `0`
+
+--- a/app/src/app/58-strength.js
++++ b/app/src/app/58-strength.js
+@@ -21,7 +21,7 @@
+ CH.SS_MID = 80; CH.SS_K = 122;
+ CH.ssOfE = e => e == null || !isFinite(e) ? null : Math.max(0, Math.min(100, CH.SS_MID + CH.SS_K * (e - .5)));
+ CH.WORDS = [[90, 'Top tier'], [80, 'Tournament ready'], [70, 'Solid'], [60, 'Needs work'], [-1, 'Missing a basic']];
+-CH.wordOf = s => s == null ? '' : CH.WORDS.find(w => s >= w[0])[1];
++CH.wordOf = s => s == null || !isFinite(s) ? '' : (CH.WORDS.find(w => s >= w[0]) || CH.WORDS[CH.WORDS.length - 1])[1];
+ CH.wordOfL = L => ({A: 'Top tier', B: 'Tournament ready', C: 'Solid', D: 'Needs work', F: 'Missing a basic'})[String(L || '')[0]] || '';
+ CH.grade = s => s >= 90 ? 'A' : s >= 80 ? 'B' : s >= 70 ? 'C' : s >= 60 ? 'D' : 'F'; // the band (colours, data-band)
+ // Nov 9 (Sim chose: plus/minus on every letter, so players feel the difference inside a band): same ranking, finer labels.
+@@ -55,7 +55,7 @@
+    100+ games of its own is at least Medium. */
+ CH.sureOf = (ms, six) => { const sd = CH.sdOf(ms); if (sd == null) return null; let k = sd <= .12 ? 2 : sd <= .2 ? 1 : 0; if (six && six.g >= 100) k = Math.max(k, 1);
+   return [{w: 'Low', t: 'few real games back this exact mix, so it could move a lot as results come in'}, {w: 'Medium', t: 'its Pokémon are well known, but this mix of them less so'}, {w: 'High', t: 'its Pokémon and pairings are backed by lots of real games'}][k]; };
+-CH.sdOf = ms => { const M = META.model; if (!(CH.SD_K > 0) || !M || !M.monSd || !ms || ms.length !== 6) return null; const ns = ms.map(m => (m.p || m).n), mx = Math.max(...Object.values(M.monSd)), p0 = +M.pairSd0 || .05;
++CH.sdOf = ms => { const M = META.model; if (!(CH.SD_K > 0) || !M || !M.monSd || !ms || ms.length !== 6) return null; const vs = Object.values(M.monSd).filter(x => typeof x === 'number' && isFinite(x)); if (!vs.length) return null; const ns = ms.map(m => (m.p || m).n), mx = Math.max(...vs), p0 = +M.pairSd0 || .05;
+   let v = 0; for (const n of ns) v += (M.monSd[n] ?? mx) ** 2;
+   for (let i = 0; i < 6; i++) for (let j = i + 1; j < 6; j++) { const k = ns[i] < ns[j] ? ns[i] + '|' + ns[j] : ns[j] + '|' + ns[i]; v += ((M.pairSd || {})[k] ?? p0) ** 2; }
+   return Math.sqrt(v) * CH.SD_K; };
+@@ -74,7 +74,7 @@
+      of above-average strength is held back for a never-seen combination (it was half). */
+ CH.MU_K = .003; CH.MU_AVG = 79;
+ CH.strengthOf = (ms, ready) => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = ms.map(m => m.p.n);
+-  if (new Set(names.map(n => (byName.get(n) || {}).b || n)).size < 6) return null; const xs = strengthX(names, ms); if (!xs || !isFinite(xs.x0)) return null;
++  if (new Set(names.map(n => (byName.get(n) || {}).b || n)).size < 6) return null; const xs = strengthX(names, ms, true); if (!xs || !isFinite(xs.x0)) return null;
+   const M = META.model, mx = M.meanX || 0, k = typeof testedPairs === 'function' ? testedPairs(names) : null, cr = k == null || !M.supK ? 1 : .75 + .25 * Math.min(1, k / M.supK);
+   const dv = xs.x0 - mx, x = mx + (dv > 0 ? dv * cr : dv), mu = ready == null ? 0 : CH.MU_K * (ready - CH.MU_AVG);
+   const six = CH.sixOf(ms), y0 = x + mu, y = y0 + (six ? six.d : 0), pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
+@@ -86,7 +86,7 @@
+ CH.PARTIAL_V2 = true;
+ CH.partialOf = ms => { try { if (!ms || !ms.length || ms.length >= 6 || typeof modelOK !== 'function' || !modelOK()) return null; const names = ms.map(m => m.p.n);
+   if (new Set(names.map(n => (byName.get(n) || {}).b || n)).size < names.length) return null; const M = META.model, mx = M.meanX || 0;
+-  const xk = strengthX(names, ms).x0; if (!isFinite(xk)) return null; const y = xk + (6 - names.length) / 6 * mx, pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
++  const xk = strengthX(names, ms, true).x0; if (!isFinite(xk)) return null; const y = xk + (6 - names.length) / 6 * mx, pct = strengthPct(y), e = CH.fieldWin(y); if (pct == null || e == null) return null;
+   const ss = CH.ssOfE(e); return {x: y, y, six: null, mu: 0, pct, ss, ss0: ss, ssMu: ss, pct0: pct, pMu: pct, e, e0: e, eMu: e, rg: null, su: null, partialN: names.length}; } catch (e) { return null; } };
+ // The letter (Sim, Oct 30): readiness for the top 30 threats, minus 6 points for each of the team checklist's checks it misses.
+ // Measured on 904 tournament teams with records: each missed check cost about 1% of games won, and 6 points per miss put the
+@@ -139,9 +139,11 @@
+     if (own.has(k)) { map[k] = out; const ks = Object.keys(map); if (ks.length > 60) delete map[ks[0]]; try { localStorage.setItem('np.gl', JSON.stringify(map)); } catch (e) {} } }
+   return out; };
+ CH.gradeOf = (RD, CK, ms) => { if (!RD) return null; const miss = CK ? CK.items.filter(x => !x.skip && !x.ok && !x.note && x.k !== 'reach') : [], mp = CH.modelPts(ms), rec = CH.recOf(ms);
+-  const illegal = !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
+-  if (st) { const s = Math.round(st.ss * 10) / 10; const L = CH._ownBusy ? CH.gradeFull(s) : CH.sticky(ms, s); return {v: 2, s, letter: L, band: L[0] === 'F' ? 'F' : L[0], word: CH.wordOf(s), rk: st.pct, e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.ss0, pMu: st.ssMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
++  const dupSp = Array.isArray(ms) && new Set(ms.map(m => (m && m.p && m.p.b) || (m && m.p && m.p.n) || '')).size < ms.length;
++  const illegal = dupSp || !!(CK && CK.items.some(x => x.k === 'items' && !x.ok)), partial = !ms || ms.length < 6, st = partial ? (CH.PARTIAL_V2 ? CH.partialOf(ms) : null) : CH.strengthOf(ms, RD.score);
++  if (st) { const s = Math.round(st.ss * 10) / 10, sr = Math.round(s); const L = CH._ownBusy ? CH.gradeFull(sr) : CH.sticky(ms, sr); return {v: 2, s, letter: L, band: L[0] === 'F' ? 'F' : L[0], word: CH.wordOfL(L), rk: st.pct, e: Math.round(st.e * 1000) / 10, e0: Math.round(st.e0 * 1000) / 10, eMu: Math.round(st.eMu * 1000) / 10, pct0: st.ss0, pMu: st.ssMu, six: st.six, st, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; }
+   // fewer than six (or the model not loaded yet): the old check, marked so far
++  if (!isFinite(RD.score)) return null;
+   const raw = RD.score - CH.GMISS * miss.length + (mp || 0), clamp = v => Math.min(100, Math.max(0, Math.round(v))), chk = clamp(raw);
+   let s = chk, w = 0, real = null; if (rec) { w = rec.g / (rec.g + CH.REC_K); real = CH.recScore(rec.wr); s = clamp((1 - w) * raw + w * real); }
+   return {v: 1, s, letter: CH.gradeOld(s), chk, real, w, r: RD.score, illegal, partial, miss, CK, rec, mp, h: CH.hand(RD)}; };
+@@ -208,7 +210,7 @@
+ 
+ // moved unchanged from 60-concept-h.js (R4, Nov 11)
+ /* Strength Score (Nov 9): a change shows in score points, "+7 (76 → 83)", and the band word when it changes */
+-CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(g0), w1 = CH.wordOf(g1);
++CH.gradeMove = (g0, g1) => { const r0 = Math.round(g0), r1 = Math.round(g1), d = r1 - r0, w0 = CH.wordOf(r0), w1 = CH.wordOf(r1);
+   return `${d > 0 ? '+' + d : d < 0 ? '\u2212' + Math.abs(d) : '\u00b10'} (${r0} \u2192 ${r1})${w0 !== w1 ? ', ' + w1 : ''}`; };
+ // ---------- text helpers for the score (moved from 60-concept-h.js, Nov 11; the share images and the new build use them) ----------
+ CH.gradeNum = G => !G ? '' : G.v === 2 ? `${Math.round(G.s)} \u00b7 ${CH.wordOfL(G.letter)}${G.partial ? ' so far' : ''}` : `${G.s} / 100${G.partial ? ' so far' : ''}`;
+
+--- Diff 2: app/src/app/35-win-model.js ---
+S3 Proofs (executed in Node VM + code inspection):
+  1. `strengthX(names, ms, true)` -> old: runs `structCredit(ms)` (`proChecks`+`gamePlan`+`trPlan`+`deadItems`) -> new: skips `structCredit`, `xs.x0` identical
+  2. `gradeMemo` key -> old: same key for `itemDefault: true` vs `false` -> new: includes `'d'` flag when `m.itemDefault` is truthy
+  3. `swapSure` with `monSd: {}` -> old: `Math.max()` = `-Infinity` -> `z = 0` -> `0.5` -> new: returns `null`
+
+--- a/app/src/app/35-win-model.js
++++ b/app/src/app/35-win-model.js
+@@ -93,8 +93,8 @@
+ // upside needs proof: an untried mix, or a team missing what nearly every winning team has, gets its above-average edge cut
+ // Every team is read the same way: 4 moves (an opponent's likely-move list keeps its 4 most used), its default item when
+ // none is set, then Item Clause and dead items (a mirror of your own six in the Gauntlet is exactly even).
+-function strengthX(names,ms){if(ms){ms=resolveItems(ms.map(m=>{if(!m||!m.p)return m;let o=m;if(o.moves&&o.moves.length>4)o={...o,moves:o.moves.slice(0,4)};if(!o.item&&!o.p.m)o={...o,item:defaultItem(o.p)};return o}));const all=ms;ms=ms.map(m=>m&&m.heldItem&&!itemWorks(all,m.heldItem)?{...m,_deadItem:true}:m)}const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
+-  const cr=dev>0?mixCredit(names):1,sc=dev>0&&ms?structCredit(ms):{c:1,miss:[]};return {xRaw:mx+(dev>0?dev*cr*sc.c:dev),x0:xRaw0,cr,sc}}
++function strengthX(names,ms,skipStruct){if(ms){ms=resolveItems(ms.map(m=>{if(!m||!m.p)return m;let o=m;if(o.moves&&o.moves.length>4)o={...o,moves:o.moves.slice(0,4)};if(!o.item&&!o.p.m)o={...o,item:defaultItem(o.p)};return o}));const all=ms;ms=ms.map(m=>m&&m.heldItem&&!itemWorks(all,m.heldItem)?{...m,_deadItem:true}:m)}const mx=META.model.meanX||0,xRaw0=teamX(names,ms),dev=xRaw0-mx;
++  const cr=dev>0?mixCredit(names):1,sc=!skipStruct&&dev>0&&ms?structCredit(ms):{c:1,miss:[]};return {xRaw:mx+(dev>0?dev*cr*sc.c:dev),x0:xRaw0,cr,sc}}
+ // The model is trained on doubles tournament games only.
+ function winVsField(names,mine,msIn){if(!modelOK()||names.length<6)return null;{const b=names.map(n=>(byName.get(n)||{}).b||n);if(new Set(b).size<b.length)return null}
+   const ms=mine?(msIn||members()):null,mx=META.model.meanX||0;
+@@ -144,7 +144,7 @@
+ function spreadKey(m){const c=m&&m.spread;return c?(c.nat||'')+'/'+[c.hp,c.atk,c.def,c.spa,c.spd,c.spe].join('.'):'c'}
+ const gradeMemo=new Map();
+ function gradeTeam(team){if(!team||team.length<6||typeof CH!=='object'||!CH.gradeOf)return null;
+-  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')+'~'+spreadKey(m)).sort().join('|');
++  const k=metaVersion+'#'+team.map(m=>m.p.n+'@'+(m.ability||'')+(m.abChosen?'!':'')+'/'+(m.heldItem||'')+(m.itemDefault?'d':'')+':'+(m.custom?'!':'')+((m._mv&&m._mv.length?m._mv:m.moves)||[]).map(x=>x&&x.name).join(',')+'~'+spreadKey(m)).sort().join('|');
+   if(gradeMemo.has(k))return gradeMemo.get(k);let g=null;
+   try{const ms=typeof assignItems==='function'?assignItems(team):team,RD=THR.teamReport(ms),G=CH.gradeOf(RD,proChecks(ms,true),ms);g=G?G.s:null;
+     // a six that real players ran and lost with more than the field average is never an upgrade, whatever its grade
+@@ -199,7 +199,8 @@
+ // Grade-raising suggestions need 75%+ (a third of strength-raising swaps qualify); fixes for real problems don't.
+ var SWAP_K=.7,SWAP_MIN=.75;
+ function swapSure(base,team){const M=META.model;if(!M||!M.monSd||!base||!team||base.length!==6||team.length!==6)return null;
+-  const A=base.map(m=>m.p.n),B=team.map(m=>m.p.n),sa=new Set(A),sb=new Set(B),mx=Math.max(...Object.values(M.monSd)),p0=+M.pairSd0||.05,pk=(a,b)=>a<b?a+'|'+b:b+'|'+a;
++  const vs=Object.values(M.monSd).filter(x=>typeof x==='number'&&isFinite(x));if(!vs.length)return null;
++  const A=base.map(m=>m.p.n),B=team.map(m=>m.p.n),sa=new Set(A),sb=new Set(B),mx=Math.max(...vs),p0=+M.pairSd0||.05,pk=(a,b)=>a<b?a+'|'+b:b+'|'+a;
+   const pairs=ns=>{const s=new Set();for(let i=0;i<6;i++)for(let j=i+1;j<6;j++)s.add(pk(ns[i],ns[j]));return s},pa=pairs(A),pb=pairs(B);let v=0;
+   for(const n of A)if(!sb.has(n))v+=(M.monSd[n]??mx)**2;for(const n of B)if(!sa.has(n))v+=(M.monSd[n]??mx)**2;
+   for(const k of pa)if(!pb.has(k))v+=((M.pairSd||{})[k]??p0)**2;for(const k of pb)if(!pa.has(k))v+=((M.pairSd||{})[k]??p0)**2;
+
+--- Diff 3: app/src/app/36-lanes.js ---
+S3 Proof (executed in Node VM):
+  input: `LANE.of(pl, ms, 82)` where `pl._g = 78` and `reach` flips `false -> true`
+  -> old: returns `{k: 'fix', fixes: [{k: 'reach', pts: 3.5}], gain: ...}` (ranked #1 ahead of swaps)
+  -> new: returns `{k: 'option', gain: ...}` (not promoted to rank-0 fix)
+
+--- a/app/src/app/36-lanes.js
++++ b/app/src/app/36-lanes.js
+@@ -23,8 +23,8 @@
+   of(pl, ms, g0) { if (pl._lane) return pl._lane; const fixes = [];
+     try { if (itemClash(pl.team).length < itemClash(ms).length) fixes.push({k: 'clause'}); } catch (e) {}
+     if (pl.team.length === 6 && !ms.some(m => m.mega) && pl.team.some(m => m.mega)) fixes.push({k: 'mega', pts: LANE.PTS.mega});
+-    try { const r = t => ((proChecks(t, true) || {items: []}).items.find(x => x.k === 'reach') || {}).ok; if (pl.team.length === 6 && r(ms) === false && r(pl.team)) fixes.push({k: 'reach', pts: LANE.PTS.reach}); } catch (e) {}
+     const gain = LANE.gain(pl, g0);
++    try { const r = t => ((proChecks(t, true) || {items: []}).items.find(x => x.k === 'reach') || {}).ok; if (pl.team.length === 6 && r(ms) === false && r(pl.team) && (gain == null || gain >= 0)) fixes.push({k: 'reach', pts: LANE.PTS.reach}); } catch (e) {}
+     return pl._lane = fixes.length ? {k: 'fix', fixes, gain} : gain != null && gain >= LANE.SWAP_PTS ? {k: 'swap', gain, real: Math.max(1, Math.round(gain * LANE.REAL))} : {k: 'option', gain}; },
+   // after the planner: fixes first, then swaps that clear the bar, then options that cover a check or note; plain swaps below the
+   // bar move to the front of More ideas (still one tap away, never removed)
+
+====================================================================
+5. PART D — TEST FILE & CASE TABLE: experiments/strength-invariants.mjs
+====================================================================
+Syntax check command: `node --check experiments/strength-invariants.mjs` -> `SYNTAX OK` (exit code 0).
+Browser execution: `not run` (requires built `app/dist/page.html`, `out/*.json`, and Playwright in repo).
+
+Case Table (every case has S7 — what bug would make it fail):
+case | invariant | checks | S7 (bug that would fail it)
+coverage-40-plus-teams | setup | >=40 distinct full teams built (real, weak, Mega-heavy, rain/sun/sand/TR/psy/TW) | fixture/roster filtering drops below 40 teams
+inv1-order-invariant | 1 | `gradeObj(ns)` === `gradeObj(ns.reverse())` (±0.1) across 40+ teams | slot-order dependence in `teamX`, `assignItems`, or `THR.teamReport`
+inv2-deterministic | 2 | two consecutive `gradeObj(ms)` calls produce exact same `s` | randomness, clock dependence, or mutable state leaking across calls
+inv3-better-set-protect | 3 | adding Protect to 0-Protect teams does not drop score >2 pts | broken `protectLow` check or inverted set weight
+inv4-partial-marked-and-finite | 4 | 1-5 mon teams have `partial: true`, finite `s`, and `'so far'` in `CH.gradeNum` | partial team missing `'so far'` label or returning `NaN`
+inv5-dup-species-flagged | 5 | two of same species sets `G.illegal === true` | `CH.gradeOf` v1 fallback ignores Species Clause
+inv5-dup-item-flagged | 5 | two Sitrus Berries sets `G.illegal === true` and `tsOf === 0` | Item Clause check broken in `proChecks` or `tsOf`
+inv6-band-matches-number | 6 | `CH.wordOfL(G.letter)` and `G.word` both equal `CH.wordOf(Math.round(G.s))` | rounding mismatch (e.g. `89.6` -> `90 · Tournament ready`) or `G.word`/`G.letter` drift
+inv7-range-widens-fewer-games | 7 | `CH.sdOf(weakTeam) >= CH.sdOf(topTeam)` | `monSd`/`pairSd` inverted or ignored
+inv8-top-suggestion-no-drop | 8 | top Suggestion on legal teams does not lower score (excluding documented forced checks) | `LANE.of` or `planFixes` promotes a score-lowering swap to #1
+inv10-no-nan-or-infinity | 10 | all 40+ scores finite in [0,100], `CH.wordOf(NaN) === ''`, empty `monSd` != `Infinity`/`NaN` | `CH.wordOf` throws on `NaN` or `CH.sdOf` returns `Infinity`
+no-page-errors | all | zero uncaught `pageerror` events in Chromium | runtime exception during scoring or planning
+
+----- BEGIN experiments/strength-invariants.mjs -----
+// Strength Score invariants test suite (Job 10, Nov 25, 2026).
+// Runs the built page (app/dist/page.html) in Playwright with today's out/ data, following golden.mjs & same-grade.mjs.
+// Checks invariants 1-10 across 40+ teams (real top teams, odd/weak, partial 1-5, illegal, Mega-heavy, weather, Trick Room).
+// Usage: node experiments/strength-invariants.mjs   (build the page first: node app/build.mjs)
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+import {fileURLToPath, pathToFileURL} from 'node:url';
+import {withFixtures} from './md-fixtures.mjs';
+
+const {chromium} = createRequire(import.meta.url)('playwright');
+const ROOT = fileURLToPath(new URL('../', import.meta.url));
+const OUT = process.env.INV_OUT || ROOT + 'out/';
+const rd = f => { try { return JSON.parse(fs.readFileSync(OUT + f, 'utf8')); } catch (e) { return null; } };
+
+const L = rd('limitless.json');
+const D = {
+  'meta/results': L && L.results,
+  'meta/perf': L ? {adj: L.adj, updated: L.updated.slice(0, 10)} : null,
+  'meta/doubles_tour': rd('meta_tour.json'),
+  'meta/teams': rd('teams.json'),
+  'meta/model': rd('model.json'),
+  'meta/doubles': rd('meta_ladder.json'),
+  'meta/doubles_ingame': rd('meta_ingame.json'),
+  'meta/events': rd('events.json'),
+  'meta/history': rd('history.json'),
+};
+withFixtures(D);
+
+const page = ROOT + `app/invariants-${process.pid}.html`;
+fs.writeFileSync(
+  page,
+  '&lt;!doctype html&gt;&lt;meta charset=&quot;utf-8&quot;&gt;' +
+    fs.readFileSync(ROOT + 'app/dist/page.html', 'utf8')
+      .replace('render();setView(view,false);', 'window.__ev=c=>eval(c);render();setView(view,false);')
+);
+
+const b = await chromium.launch();
+const pg = await (await b.newContext({viewport: {width: 1280, height: 900}})).newPage();
+const errs = [];
+pg.on('pageerror', e => errs.push(e.message));
+await pg.addInitScript(data => {
+  localStorage.setItem('cc2.welcomed', '"1"');
+  localStorage.removeItem('np.gl'); // clear sticky letter cache for clean invariant checks
+  window.__PL_TEST = 1;
+  window.claude = {
+    use: async n => n === 'db' ? {
+      doc: p => ({
+        onSnapshot: cb => { setTimeout(() => cb({exists: !!data[p], data: () => data[p]}), 5); return () => {}; },
+        get: async () => ({exists: false}),
+        set: async () => {},
+        update: async () => {},
+      }),
+    } : null,
+  };
+}, D);
+
+await pg.goto(pathToFileURL(page).href);
+await pg.waitForTimeout(4000);
+fs.unlinkSync(page);
+
+const run = code => pg.evaluate(c => window.__ev(c), code).then(s => JSON.parse(s));
+
+const R = await run(`(() => {
+  const mk = ns => ns.map((n, i) => { const p = byName.get(n); return p ? memberOf({n: p.n, a: null, lock: false}, i) : null; }).filter(Boolean);
+  const gradeObj = ms => {
+    const a = typeof assignItems === 'function' ? assignItems(ms) : ms;
+    const RD = THR.teamReport(a);
+    const CK = proChecks(a, true);
+    return CH.gradeOf(RD, CK, a);
+  };
+  const valid6 = ns => Array.isArray(ns) && ns.length === 6 && ns.every(n => byName.get(n)) && new Set(ns.map(n => byName.get(n).b)).size === 6;
+
+  // Gather 40+ diverse teams: real top teams, odd/weak, partial, illegal, Mega-heavy, weather, Trick Room
+  const seen = new Set();
+  const realTeams = [];
+  for (const t of ((META.teams && META.teams.teams) || [])) {
+    if (!valid6(t.mons)) continue;
+    const k = t.mons.slice().sort().join('|');
+    if (seen.has(k)) continue;
+    seen.add(k);
+    realTeams.push(t.mons.slice());
+    if (realTeams.length >= 24) break;
+  }
+  const byVia = ROSTER.filter(p => !isExcl(p)).slice().sort((a, b) => viability(a) - viability(b));
+  const pickUniq = (arr, n, pred = () => true) => {
+    const s = new Set(), out = [];
+    for (const p of arr) { if (!pred(p) || s.has(p.b)) continue; s.add(p.b); out.push(p.n); if (out.length === n) break; }
+    return out;
+  };
+  const weakTeams = [
+    pickUniq(byVia, 6, p => !p.m),
+    pickUniq(byVia.slice(6), 6, p => !p.m),
+    pickUniq(byVia.slice(12), 6, p => !p.m),
+    pickUniq(byVia.slice(18), 6, p => !p.m),
+  ].filter(valid6);
+  const megas = ROSTER.filter(p => p.m && !isExcl(p));
+  const nonMegas = ROSTER.filter(p => !p.m && !isExcl(p)).sort((a, b) => viability(b) - viability(a));
+  const megaHeavy = [
+    [...pickUniq(megas, 3), ...pickUniq(nonMegas, 3)],
+    [...pickUniq(megas, 4), ...pickUniq(nonMegas, 2)],
+    [...pickUniq(megas.slice(2), 3), ...pickUniq(nonMegas.slice(3), 3)],
+    [...pickUniq(megas.slice(3), 4), ...pickUniq(nonMegas.slice(2), 2)],
+  ].filter(valid6);
+  const themed = [
+    ['Pelipper', 'Swampert-Mega', 'Archaludon', 'Incineroar', 'Rillaboom', 'Kingambit'], // rain
+    ['Charizard-Mega-Y', 'Venusaur', 'Incineroar', 'Garchomp', 'Kingambit', 'Whimsicott'], // sun
+    ['Tyranitar-Mega', 'Excadrill', 'Incineroar', 'Rillaboom', 'Whimsicott', 'Sylveon'], // sand
+    ['Farigiraf', 'Indeedee-F', 'Torkoal', 'Mawile-Mega', 'Kingambit', 'Incineroar'], // Trick Room
+    ['Pelipper', 'Basculegion', 'Incineroar', 'Gholdengo', 'Whimsicott', 'Dragonite-Mega'], // rain 2
+    ['Torkoal', 'Venusaur', 'Charizard-Mega-Y', 'Rillaboom', 'Incineroar', 'Farigiraf'], // sun 2
+    ['Indeedee-F', 'Meowstic-F-Mega', 'Sneasler', 'Kingambit', 'Incineroar', 'Garchomp'], // psy
+    ['Whimsicott', 'Gholdengo', 'Sneasler', 'Dragonite', 'Incineroar', 'Garchomp-Mega-Z'], // tailwind
+  ].filter(valid6);
+
+  const allFull = [...realTeams, ...weakTeams, ...megaHeavy, ...themed];
+  const res = {
+    fullCount: allFull.length,
+    inv1OrderDiffs: [],
+    inv2DetDiffs: [],
+    inv3BetterDrops: [],
+    inv4Partials: [],
+    inv5Illegal: {},
+    inv6BandMismatch: [],
+    inv7SureOrder: null,
+    inv8TopSuggDrops: [],
+    inv10BadNums: [],
+  };
+
+  // Invariants 1, 2, 6, 10 across all full teams
+  for (const ns of allFull) {
+    localStorage.removeItem('np.gl');
+    const msA = mk(ns);
+    const msB = mk(ns.slice().reverse());
+    const gA = gradeObj(msA);
+    const gA2 = gradeObj(msA);
+    const gB = gradeObj(msB);
+    if (!gA || !isFinite(gA.s) || gA.s < 0 || gA.s > 100) res.inv10BadNums.push({ns, s: gA && gA.s});
+    if (gA && gA2 && gA.s !== gA2.s) res.inv2DetDiffs.push({ns, a: gA.s, b: gA2.s});
+    if (gA && gB && Math.abs(gA.s - gB.s) > 0.1) res.inv1OrderDiffs.push({ns, a: gA.s, b: gB.s});
+    if (gA) {
+      const disp = Math.round(gA.s);
+      const wantWord = CH.wordOf(disp);
+      if (CH.wordOfL(gA.letter) !== wantWord || gA.word !== wantWord) {
+        res.inv6BandMismatch.push({ns, s: gA.s, disp, letter: gA.letter, word: gA.word, wantWord});
+      }
+    }
+  }
+
+  // Invariant 3: Adding Protect to a 0-Protect team (legal move that fixes protectLow) should not lower score
+  for (const ns of allFull.slice(0, 6)) {
+    const ms0 = mk(ns).map(m => ({...m, custom: true, moves: (m.moves || []).filter(x => x && x.name !== 'Protect').slice(0, 4)}));
+    const g0 = gradeObj(ms0);
+    const ms1 = ms0.map((m, i) => i < 3 ? {...m, custom: true, moves: [...m.moves.slice(0, 3), {name: 'Protect'}]} : m);
+    const g1 = gradeObj(ms1);
+    if (g0 && g1 && g1.s < g0.s - 2) res.inv3BetterDrops.push({ns, before: g0.s, after: g1.s});
+  }
+
+  // Invariant 4: Partial teams (1-5 Pokémon)
+  const base6 = allFull[0] || pickUniq(nonMegas, 6);
+  const fullG = gradeObj(mk(base6));
+  for (let k = 1; k <= 5; k++) {
+    const pg = gradeObj(mk(base6.slice(0, k)));
+    res.inv4Partials.push({k, partial: !!(pg && pg.partial), s: pg && pg.s, finite: !!(pg && isFinite(pg.s)), label: pg ? CH.gradeNum(pg) : ''});
+  }
+  res.inv4FullScore = fullG && fullG.s;
+
+  // Invariant 5: Illegal teams (duplicate species, duplicate item, non-Champions item)
+  const dupSp = [base6[0], base6[0], base6[2], base6[3], base6[4], base6[5]];
+  const gDupSp = gradeObj(mk(dupSp));
+  res.inv5Illegal.dupSpecies = {illegal: !!(gDupSp && gDupSp.illegal), v: gDupSp && gDupSp.v, s: gDupSp && gDupSp.s};
+
+  const dupIt = mk(base6).map((m, i) => i < 2 ? {...m, item: 'Sitrus Berry', heldItem: 'Sitrus Berry'} : m);
+  const gDupIt = gradeObj(dupIt);
+  res.inv5Illegal.dupItem = {illegal: !!(gDupIt && gDupIt.illegal), tsOf: tsOf(dupIt)};
+
+  const badIt = mk(base6).map((m, i) => i === 0 ? {...m, item: 'Choice Band', heldItem: 'Choice Band'} : m);
+  const gBadIt = gradeObj(badIt);
+  res.inv5Illegal.nonChampItem = {illegal: !!(gBadIt && gBadIt.illegal), s: gBadIt && gBadIt.s};
+
+  // Invariant 7: "how sure" range widens with fewer games (high-game staples vs rare mons)
+  const hiSd = CH.sdOf(mk(allFull[0]));
+  const loSd = CH.sdOf(mk(weakTeams[0] || base6));
+  res.inv7SureOrder = {hiSd, loSd, widens: hiSd != null && loSd != null && loSd >= hiSd};
+
+  // Invariant 8: Applying top Suggestion never lowers score (excluding illegal-item fixes)
+  for (const ns of allFull.slice(0, 6)) {
+    S.format = 'doubles';
+    S.slots = normSlots(ns.map(n => ({n, a: null, lock: false})));
+    ui.swOut = null; ui.pool = 'all';
+    const ms = members();
+    const g0 = gradeTeam(ms);
+    const plans = planFixes(ms, [...byName.values()], true) || [];
+    if (plans.length && !(plans.ip0 > 0)) {
+      const top = plans[0];
+      const g1 = planGrade(top);
+      const isForcedCheck = top.gap && (top.gap.why || []).some(w => /^Meets the /.test(w));
+      if (g0 != null && g1 != null && g1 < g0 - 0.5 && !isForcedCheck) {
+        res.inv8TopSuggDrops.push({ns, g0, g1, lane: top._lane && top._lane.k});
+      }
+    }
+  }
+
+  // Invariant 10 edge checks: NaN wordOf & empty monSd
+  try { res.inv10WordNaN = CH.wordOf(NaN); } catch (e) { res.inv10WordNaN = 'THROWS'; }
+  const savedSd = META.model && META.model.monSd;
+  if (META.model) {
+    META.model.monSd = {};
+    res.inv10EmptyMonSd = String(CH.sdOf(mk(base6)));
+    META.model.monSd = savedSd;
+  }
+
+  return JSON.stringify(res);
+})()`);
+
+await b.close();
+
+let failed = 0;
+const check = (name, cond, detail = '') => {
+  console.log(`${cond ? '  ok  ' : '  FAIL'} ${name}${detail ? ' — ' + detail : ''}`);
+  if (!cond) failed++;
+};
+
+check('coverage-40-plus-teams', R.fullCount >= 40, `${R.fullCount} full teams tested`);
+check('inv1-order-invariant', R.inv1OrderDiffs.length === 0, `${R.inv1OrderDiffs.length} diffs`);
+check('inv2-deterministic', R.inv2DetDiffs.length === 0, `${R.inv2DetDiffs.length} diffs`);
+check('inv3-better-set-protect', R.inv3BetterDrops.length === 0, `${R.inv3BetterDrops.length} drops`);
+check('inv4-partial-marked-and-finite', R.inv4Partials.length === 5 && R.inv4Partials.every(p => p.partial && p.finite && /so far/.test(p.label)), JSON.stringify(R.inv4Partials.map(p => `${p.k}:${p.s}`)));
+check('inv5-dup-species-flagged', R.inv5Illegal.dupSpecies && R.inv5Illegal.dupSpecies.illegal === true, JSON.stringify(R.inv5Illegal.dupSpecies));
+check('inv5-dup-item-flagged', R.inv5Illegal.dupItem && R.inv5Illegal.dupItem.illegal === true && R.inv5Illegal.dupItem.tsOf === 0, JSON.stringify(R.inv5Illegal.dupItem));
+check('inv6-band-matches-number', R.inv6BandMismatch.length === 0, `${R.inv6BandMismatch.length} mismatches`);
+check('inv7-range-widens-fewer-games', !!(R.inv7SureOrder && R.inv7SureOrder.widens), JSON.stringify(R.inv7SureOrder));
+check('inv8-top-suggestion-no-drop', R.inv8TopSuggDrops.length === 0, JSON.stringify(R.inv8TopSuggDrops));
+check('inv10-no-nan-or-infinity', R.inv10BadNums.length === 0 && R.inv10WordNaN === '' && R.inv10EmptyMonSd !== 'Infinity' && R.inv10EmptyMonSd !== 'NaN', `bad=${R.inv10BadNums.length}, wordNaN=${R.inv10WordNaN}, emptySd=${R.inv10EmptyMonSd}`);
+check('no-page-errors', errs.length === 0, errs.slice(0, 3).join(' | '));
+
+console.log(failed ? `\n${failed} FAILED` : '\nALL PASSED');
+process.exit(failed ? 1 : 0);
+----- END experiments/strength-invariants.mjs -----
+
+====================================================================
+6. PART E — SPEED BOTTLENECKS (ONE TEAM, READING ONLY) + IDENTICAL-RESULT IDEAS
+====================================================================
+1. `THR.teamReport(ms)` (`55-threats.js`, unseen, called via `prepOf`/`tsOf`/`gradeTeam`): runs full damage calcs for 6 members × 30 threats = 180 matchups. Inside `planFixesG`, this runs on ~90–110 shortlisted plans (`short` up to 70 + 20 `abY` + 12 item + 12 gap), which is why `29-fix-planner.js:194` yields after every threat (`tsOfG`).
+   - Identical-result idea: memoize `THR.teamReport` (or per-member vs threat 1-on-1 duel results) keyed by `(member signature, threat signature, teamField)` — a 1-swap plan keeps 5 of 6 members identical, cutting 1-on-1 damage calcs by up to ~5/6 when `teamField` (weather/terrain/Tailwind/TR) is unchanged.
+2. Wasted `structCredit(ms)` inside `strengthX(names, ms)` (`35-win-model.js:97`): called by `CH.strengthOf` and `CH.partialOf` even though neither reads `xs.xRaw` or `xs.sc`. Fixed in Diffs 1 & 2 (saves 1 `proChecks` + `gamePlan` + `trPlan` + `deadItems` per grade call with 100% identical results).
+3. `CH.gradeOf` calls `CH.sticky(ms, s)` -> `CH.ownKeys()` (`58-strength.js:133-134`): whenever a new team key is checked, `ownKeys()` runs `teamRating(t.slots)` over every saved team in `S.teams` (cached by `sig`, so it runs once per slot/saved-teams mutation, but is heavy on first call if a user has many saved teams).
+   - Identical-result idea: compute `CH.teamKey` directly from `t.slots` / `members()` without full `teamRating` when `teamRating` is only called to get `r.ms`.
+4. `evalPlan` in `29-fix-planner.js:136-152`: runs `teamValue` (`stateScore` + `gamePlan` + `threatReport`) + `teamRoles` + `gapEffect` on every single-change candidate (`cands.length * 6`, often 300–600 plans) and every double-change candidate (up to ~400 plans).
+   - Identical-result idea: hoist `resolveItems` / `teamBasicsOf` / `pairSyn` lookups and avoid rebuilding `new Set(M.tested)` or `spFeats` (already cached — good!).
+
+====================================================================
+7. ORDER QUESTIONS, "I'M UNSURE", AND WHAT WAS NOT LOOKED AT
+====================================================================
+
+--- Order questions for HH (S1) ---
+1. `mixCredit` (`35-win-model.js:70`, `0.5 + 0.5*min(1, k/supK)`) vs `CH.strengthOf` (`58-strength.js:78`, `0.75 + 0.25*min(1, k/supK)`):
+   - `CH.strengthOf` intentionally eased the caution to `0.75 + 0.25`, while `winVsField`/`winVs`/`model.mjs:210` still use `0.5 + 0.5`.
+   - Option A: keep as-is (requires independent test before changing `model.mjs` `dist`).
+   - Option B: align `mixCredit` to `0.75 + 0.25` once checked on held-out games.
+2. Duplicate-species teams in `CH.gradeOf`:
+   - Diff 1 flags `illegal: true` while keeping the v1 fallback score (matching Item Clause's documented A2-M9 behavior: show score + "Not legal yet").
+   - Option A (used in Diff 1): flag `illegal: true` and keep score.
+   - Option B: return `null` (no score at all) for duplicate species.
+3. Unmet-check fallback (`29-fix-planner.js:250`) when `out` has 0 score-raising plans:
+   - Currently intentional (Nov 8 Deep Check: show the cheapest fix for an unmet check with its honest grade cost written out). Should that stay as-is, or should a cost > 3 plan live in `More ideas` instead of `out[0]`?
+
+--- "I'm unsure" (S6) ---
+- I'm unsure whether `assignItems` / `resolveItems` (`54-items.js`) is strictly order-independent when two Pokémon share a default item, because `54-items.js` was not in Job 10's bundle.
+- I'm unsure whether `44-share-images.js` reads `CH.gradeNum(G)` directly or computes its own score, because `44-share-images.js` was not in Job 10's bundle.
+- I'm unsure whether `proChecks` (`06-helpers.js`) flags non-Champions items (e.g. `Choice Band`) under `x.k === 'items'`, because `06-helpers.js` was not in Job 10's bundle.
+
+--- What was not looked at (not in Job 10's file bundle) ---
+- `app/src/app/44-share-images.js` (Invariant 9) — NOT CHECKED.
+- `app/src/app/55-threats.js` (`THR.teamReport`, `THR.teamReportG`) — NOT CHECKED.
+- `app/src/app/54-items.js` (`assignItems`, `resolveItems`, `itemClause`, `itemClash`, `deadItems`, `itemProblems`) — NOT CHECKED.
+- `app/src/app/06-helpers.js` (`proChecks`) and `app/src/app/11-game-plan.js` (`gamePlan`, `trPlan`) — NOT CHECKED.
+- Live Playwright execution of `experiments/strength-invariants.mjs` — NOT RUN.

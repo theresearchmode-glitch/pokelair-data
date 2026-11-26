@@ -72,6 +72,7 @@ export function activeReg(file) { const r = readReg(file);
 // Nov 17: events listed from Dec 3 tagged "Regulation Set M-C"), so an event dated at or after the end never counts for it,
 // whatever its tag: it counts for the next regulation. M-C ends Dec 1, 5:59 PM PST (pokemon.com "Get Ready for Regulation Set
 // M-C"). Each regulation's end lives in regulation.json ("end"), added when it is official.
+// (switch, Nov 28: M-C ends Dec 2 01:59 UTC, M-D runs to Mar 3 2027 01:59 UTC, source Pokémon HOME news 878; reg-switch-test pins it)
 export const REG_END = Object.fromEntries(Object.entries(REG_FILE.regs).filter(([, r]) => r.end).map(([id, r]) => [id, r.end])); /* from regulation.json */
 export const regAt = (f, date) => { let id = f; for (let i = 0; i < 4; i++) { const end = REG_END[id], t = Date.parse(String(date || ''));
   if (!end || !isFinite(t) || t < Date.parse(end)) break; const nx = nextRegIds(id)[0]; if (!nx) break; id = nx; } return id; };

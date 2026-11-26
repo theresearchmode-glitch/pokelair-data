@@ -1,0 +1,1178 @@
+KIP (GEMINI) JOB 14 — PAGE SPEED AUDIT & BUILD/RUNTIME PATCH (ZERO VISUAL CHANGE)
+Author: Kip | Target branch: claude/design6 (bdf2601f) | Date: Nov 25, 2026
+Rules checked: S1 (quote rule or ask), S3 (proof per change), S4 (smallest change), S6 ("I'm unsure"), S7 (tests can fail), S8 (plain-text code), S9 (1-page summary on top, all code in one git-apply-ready block at the end).
+
+================================================================================
+1-PAGE SUMMARY
+================================================================================
+
+VERDICT:
+YES — NastyPlot can beat the < 2.5 s 4G mobile target (down from ~2.75 s measured Nov 24 to ~1.5–1.9 s expected on 4G) without changing a single pixel, CSS declaration, or word of copy.
+
+EXPECTED SECONDS SAVED (4G 9 Mbps / 40 ms RTT, 390x844, 4x CPU, cold first visit):
+- Safe immediate bundle (C1 CSS/JS minify + external v2.css + C2 route-scoped data docs + --split-css + C3 idle defer + C4 hero/img attrs + C5 kFit reflow fix):
+  Estimated 0.65 s to 1.10 s saved on LCP / first-screen ready (~2.75 s -> ~1.65–2.10 s).
+- With full JS route splitting (--public --split-routes, after verifying 00-main.js closure boundary):
+  Estimated additional 0.25 s to 0.45 s saved on JS download + parse/eval (~1.40–1.75 s on #calc, #meta, #pokemon; ~1.60–1.95 s on #home, #team).
+
+TOP 3 RISKS:
+1. JS closure boundary in --split-routes (HIGH — needs 1 check before enabling):
+   app/build.mjs:51-62 concatenates P.logic + P.scripts inside one IIFE opened by src/app/00-main.js (not in this package: not checked). Separate route JS chunk &lt;script&gt; files cannot read closure-scoped let/const variables unless shared logic exposes them or --split-routes omits the IIFE wrapper. Mitigation: --split-css works today with ZERO closure risk; --split-routes is opt-in so Scout/HH can verify 00-main.js first.
+2. Route-to-doc mapping completeness in V2.ROUTE_DOCS (MEDIUM):
+   Because individual app/src/v2/pages/*.js files are not in this package (not checked), a page could read a META.* key not listed in its V2.ROUTE_DOCS entry before idle prefetch finishes. Mitigation: V2.ROUTE_DOCS includes all 6 core docs on every data-heavy route, prefetches all remaining META_KEYS on requestIdleCallback, and unknown routes fall back to all 17 META_KEYS. Scout verifies every route with experiments/same-pixels.mjs.
+3. Unseen &lt;img&gt; tags & pages.css (526.8 KB) (LOW):
+   app/src/v2/pages/*.js and app/src/v2/css/pages.css are not in this package (not checked). C4 fixes the three shared image helpers (V2.kCard, V2.mon, monHit), and C2 splits the 19 dedicated route CSS layers (441.8 KB raw), leaving pages.css (526.8 KB raw) in v2-core.css until a follow-up splits pages.css by route.
+
+================================================================================
+PART A — MEASURE PLAN + experiments/speed.mjs
+================================================================================
+
+WHAT TO MEASURE (Playwright + Chromium CDP, zero Lighthouse, zero extra npm deps):
+- Viewport: 390x844, deviceScaleFactor 3, isMobile: true, hasTouch: true.
+- CPU: 4x slowdown via CDP Emulation.setCPUThrottlingRate({ rate: 4 }).
+- Network: 4G profile via CDP Network.emulateNetworkConditions:
+  downloadThroughput = 9,000,000 / 8 (1,125,000 B/s = 9 Mbps),
+  uploadThroughput   = 1,500,000 / 8 (187,500 B/s = 1.5 Mbps),
+  latency            = 40 ms,
+  cacheDisabled      = true (cold first visit on every run).
+- Routes: #home, #team, #calc, #meta, #pokemon=Incineroar.
+- Runs: 3 cold runs per route (fresh BrowserContext each run), report median.
+- Metrics captured per run:
+  1. FCP (ms): PerformanceObserver('paint', buffered: true) -> first-contentful-paint.
+  2. LCP (ms) + LCP element tag/class: PerformanceObserver('largest-contentful-paint', buffered: true).
+  3. TBT (ms) + long-task count: sum of max(0, duration - 50) for PerformanceObserver('longtask') entries ending after FCP.
+  4. JS parse/eval time (ms): CDP Performance.getMetrics() -> ScriptDuration * 1000.
+  5. Bytes over the wire (KB): CDP Network.loadingFinished -> sum(encodedDataLength) broken down by Document/Stylesheet/Script/Font/Image/Other (served over a built-in local HTTP server with gzip enabled by default to match Cloudflare; --no-gzip measures raw bytes).
+
+HOW SCOUT RUNS IT (BEFORE & AFTER):
+  # Baseline (old build):
+  node app/build.mjs --v2 --public --split
+  node experiments/speed.mjs --dir=app/dist --runs=3 --json=/tmp/speed-before.json
+
+  # After patch:
+  node app/build.mjs --v2 --public --split --split-css
+  node experiments/speed.mjs --dir=app/dist --runs=3 --compare=/tmp/speed-before.json
+
+Exit code: 0 on clean runs, 1 if any pageerror fires (S7: test can fail).
+
+================================================================================
+PART B — FINDINGS TABLE (WHERE THE TIME GOES)
+================================================================================
+
+Verified from app/build.mjs, app/parts-v2.json, app/src/v2/head.html, app/src/v2/shell.js,
+app/src/v2/kit.js, app/src/app/03-persistence.js, and the attached FILE LIST (201 files).
+Files not included in this package are explicitly marked "not checked".
+
+file:line | cost | why
+----------|------|----
+app/build.mjs:39-40,112 | 1,098.5 KB raw CSS (~170-210 KB gz) inlined in &lt;style&gt; | Before first paint: ALL 26 CSS layers are inlined into dist/v2.html even in --split / --public builds, and only /* */ comments are stripped (no whitespace minification). Browser must download and parse all 1.10 MB of CSS before painting a single pixel.
+app/build.mjs:62,107-108 | ~2.72 MB raw JS (~420-520 KB gz); single blocking &lt;script&gt; | Every route pays for ALL 51 page scripts (1,088.5 KB raw), ALL 62 shared logic files (prompt cites 1.56 MB), and ALL 8 data files (699.4 KB+ raw). esbuild runs minifyWhitespace ONLY (no minifySyntax, no source maps).
+app/src/app/03-persistence.js:7,67-69 + app/src/v2/shell.js:482-485 | 17 daily docs (34 snapshot subscriptions with _2 parts) blocking first render | Startup subscribes to ALL 17 META_KEYS immediately (including practice, track, calendar, weekly, history, singles, info, post, events) AND V2.dataReady() holds the loading screen until ALL 17 answer. Each arrival runs clean*() + metaVersion++ + scheduleRender().
+app/parts-v2.json:4-39 | 441.8 KB raw route-only CSS loaded on every route | 19 route-specific CSS layers (sd-* 139.2 KB, team/sugs/matchups/six 125.7 KB, arena-calc/plot-calc 67.7 KB, plot 48.1 KB, box 23.9 KB, battle-target 15.2 KB, ratings 14.4 KB, natures 7.7 KB) are paid for by routes that never render them. (pages.css is 514.4 KB more — not checked internally.)
+app/parts-v2.json:59-84 | 846 KB to 1,060 KB raw unused page JS per route | #calc pays for 1,001.0 KB of other pages' JS; #meta pays for 1,059.5 KB; #pokemon pays for 1,054.7 KB; #home pays for 906.8 KB; #team pays for 845.9 KB.
+app/parts-v2.json:41-50 | 716.1 KB+ data parsed at startup (7 of 8 files listed) | Big inline strings/tables parsed before first paint: data.js (502.7 KB), logo-sly.js (72.8 KB of 3 inline SVG strings), info-text.js (63.6 KB, only used when Search/info sheets open), move-meta.js (28.3 KB), post.js (27.6 KB, only Home/Gifts/News). build.mjs:11-16 wraps >=20 KB JSON lines in JSON.parse (good), but unused tables still download & parse on every route.
+app/src/v2/kit.js:38 | LCP delay + CLS risk on hero cards | V2.kCard emits <img class="k-art" ... loading="lazy" decoding="async"> with NO width/height attributes, AND sets loading="lazy" even when o.size === 'hero' (above-the-fold LCP image!).
+app/src/v2/shell.js:40,217 | Missing intrinsic dimensions on Pokémon sprites | V2.mon (line 40) and Search monHit (line 217) emit &lt;img&gt; without width/height attributes (relying on CSS --iw or container sizing). V2.logo (lines 352-353) and itPic (line 215) already have width/height.
+app/src/v2/kit.js:102-109 | Repeated forced reflows during initial draw | V2.kFit writes e.dataset.kf = '0' then immediately reads e.clientWidth and e.scrollWidth inside a per-element loop (interleaved write/read layout thrashing). Also, the global MutationObserver calls V2.kFit(nd.closest('.k-roster') || nd) for EVERY added node without deduplicating rosters (6 cards added = 6 full roster reflow passes).
+app/src/v2/shell.js:475-480 | Unnecessary team prepOf() on non-team routes | V2.warmDraw runs prepOf(members()) before drawing even on #calc, #meta, #pokemon, #types, #natures, #about, #method (pages that do not show team matchup prep).
+app/src/v2/shell.js:350-353 | Repeated/eager SVG URI encoding (72.8 KB) | V2.logo() calls encodeURIComponent() on ALL THREE logo variants (L.full, L.small, L.markSmall) on the first call, even though a phone only needs mark/small and desktop only needs full/small.
+app/src/v2/head.html:14-21 | Good / low cost (~3 KB) | Inline theme script + font preload for unbounded-latin.woff2 and instrument-sans-latin.woff2 (build.mjs:98-100). Leave unchanged.
+
+================================================================================
+PART C — CHANGES (RANKED BIGGEST WIN FIRST, S3 PROOF EACH)
+================================================================================
+
+--------------------------------------------------------------------------------
+C1 — Minify CSS & JS + External v2.css + Source Maps in --public (app/build.mjs)
+--------------------------------------------------------------------------------
+What changes:
+- Minify CSS with esbuild (loader: 'css', minifyWhitespace: true, legalComments: 'none') — strictly whitespace-only minification, NEVER minifySyntax on CSS, so zero CSS declarations, colors, shorthands, or calc() expressions are altered (respects HARD LIMIT). Includes a 1-line zero-dep fallback whitespace stripper if esbuild is not installed.
+- Minify JS in --public with esbuild (minifyWhitespace: true, minifySyntax: true, minifyIdentifiers: false). Why esbuild over a zero-dep JS minifier: build.mjs:107 already uses esbuild, and regex/hand-rolled JS minifiers corrupt regex literals, template strings, and ASI boundaries; esbuild is already in the repo, runs in ~150 ms, preserves all identifiers (safe for dynamic lookups), and generates standard V3 source maps.
+- Emit external source maps (dist/v2.js.map, dist/v2.css.map, and dist/chunks/*.map) whenever --public or --source-maps is passed (--no-source-maps turns them off).
+- In --v2 --public --split, write minified CSS to dist/v2.css?v=&lt;hash&gt; via &lt;link rel=&quot;stylesheet&quot;&gt; instead of inlining 1.10 MB into dist/v2.html. Claude single-file builds (without --split) remain one self-contained v2.html.
+
+Expected gain (S3 proof):
+- Before: dist/v2.html = 4,461 KB raw (1,098 KB unminified CSS inlined + ~2,420 KB whitespace-only JS); no source maps.
+- After (--v2 --public --split):
+  * CSS raw: 1,098 KB -> ~770-820 KB (-280 to -330 KB raw, -35 to -55 KB gz); dist/v2.html drops from >1.1 MB to ~15 KB (with static first screen).
+  * JS raw: additional -90 to -140 KB raw (-18 to -30 KB gz) from minifySyntax on top of existing minifyWhitespace.
+  * Expected phone 4G savings: ~200-350 ms on FCP/LCP (and instant repeat-visit CSS cache hits).
+- Risk: LOW. Zero declaration changes; identifier names untouched.
+- How Scout measures it:
+  1. Compare byte sizes of dist/v2.html, dist/v2.css, dist/v2.js before vs after.
+  2. Run `node experiments/speed.mjs --dir=app/dist --runs=3 --compare=/tmp/speed-before.json`.
+  3. Run `node experiments/same-pixels.mjs --old=app/dist-old --new=app/dist`.
+
+--------------------------------------------------------------------------------
+C2 — Split --public Build (Route-Scoped Data Docs + Route CSS/JS Chunks + Preload)
+     (app/src/app/03-persistence.js, app/src/v2/shell.js, app/public-chunks.mjs, app/build.mjs)
+--------------------------------------------------------------------------------
+What changes:
+1. Route-scoped daily data docs (works on EVERY build, zero closure risk):
+   - shell.js defines V2.ROUTE_DOCS (each route lists only the META_KEYS it needs to draw) and V2.routeDocs(r).
+   - 03-persistence.js subscribes first to V2.routeDocs(V2.route()) and defers the remaining META_KEYS until idle (requestIdleCallback, timeout 2500 ms, setTimeout 1200 ms fallback). Exposes window.__NP_NEED_DOCS so hashchange immediately subscribes to any route's docs on navigation.
+   - shell.js V2.dataReady() checks only the current route's required docs instead of blocking behind the loading screen for all 17 META_KEYS.
+2. Route-scoped CSS & JS chunks + current-route preload (--public --split-css / --split-routes):
+   - app/public-chunks.mjs defines ROUTE_CSS_CHUNKS (19 route-only CSS layers = 441.8 KB raw; 7 shared layers stay in v2-core.css with the full `@layer ...;` order declaration pinned at line 1 so cascade order is 100% identical) and ROUTE_JS_CHUNKS (40+ route-only page scripts = 1,088.5 KB raw).
+   - Emits dist/chunks/&lt;route&gt;.css, dist/chunks/&lt;route&gt;.js, and dist/chunks/manifest.json with content hashes (?v=...).
+   - Injects a tiny &lt;head&gt; preloader (routePreloadSnippet) that inspects location.hash before v2.js runs and appends &lt;link rel=&quot;preload&quot; as=&quot;style|script&quot;&gt; for the active route's chunk so it downloads in parallel with core.
+   - shell.js V2.loadRoute(r) loads missing route CSS/JS chunks on first visit (deduplicated via V2._chunkP) and holds V2.dataReady() = false while the active route's chunk is still downloading (no flash of 404 or unstyled content).
+
+Expected gain (S3 proof):
+- Route-scoped data docs (immediate):
+  * #calc: waits for 6 docs instead of 17 (-11 blocking doc fetches & clean*() passes).
+  * #home, #meta, #pokemon: waits for 10 docs instead of 17 (-7 blocking docs).
+  * #team: waits for 8 docs instead of 17 (-9 blocking docs).
+  * #types, #about, #method: waits for 2 docs instead of 17 (-15 blocking docs).
+  * Expected phone 4G savings: ~250-500 ms on LCP & TBT (fewer blocking fetches + fewer main-thread JSON/clean*() passes + fewer scheduleRender() cycles).
+- Route CSS splitting (--split-css, verified exact source bytes from parts-v2.json):
+  * #home skips 302.6 KB raw CSS | #team skips 316.1 KB | #calc skips 374.1 KB | #meta skips 427.4 KB | #pokemon skips 441.8 KB.
+  * Expected savings: ~60-110 KB gz less CSS on first visit (~80-150 ms faster FCP/LCP).
+- Route JS splitting (--split-routes, verified exact source bytes from parts-v2.json):
+  * #home skips 906.8 KB raw JS | #team skips 845.9 KB | #calc skips 1,001.0 KB | #meta skips 1,059.5 KB | #pokemon skips 1,054.7 KB.
+  * Expected savings: ~160-220 KB gz less JS + ~250-450 ms less ScriptDuration at 4x CPU.
+- Risk:
+  * Route-scoped data docs + --split-css: LOW-MEDIUM (verify no route reads an unsubscribed META.* key on first paint via same-pixels.mjs).
+  * --split-routes (JS): HIGH until 00-main.js closure boundary is verified (unseen file: not checked). Kept behind explicit --split-routes flag so --v2 --public --split --split-css ships safely immediately.
+- How Scout measures it:
+  1. Run `node app/build.mjs --v2 --public --split --split-css` and `node experiments/speed.mjs --dir=app/dist --runs=3 --compare=/tmp/speed-before.json`.
+  2. Check Wire KB, LCP, TBT, and JS Eval columns.
+  3. Run `node experiments/same-pixels.mjs` across all 29 routes.
+
+--------------------------------------------------------------------------------
+C3 — Defer Non-Visible Startup Work Until Idle (app/src/app/03-persistence.js, app/src/v2/shell.js)
+--------------------------------------------------------------------------------
+What changes:
+- Added V2.idle(fn, timeout = 2500) using requestIdleCallback with setTimeout(fn, 800) fallback.
+- 03-persistence.js defers subscribing to non-active-route META_KEYS into V2.idle (already part of C2).
+- shell.js V2.warmDraw() skips prepOf(members()) before first paint on non-team routes (anything outside team, home, build, battle, gauntlet, compare, speed) and runs it inside V2.idle() after V2.redraw().
+- shell.js V2.logo() lazily URI-encodes only the requested SVG variant(s) instead of calling encodeURIComponent on all 3 variants (~72.8 KB total) on the first call.
+
+Expected gain (S3 proof):
+- Before: #calc, #meta, #pokemon run prepOf(members()) synchronously inside warmDraw() before showing the page, and V2.logo() encodes all 3 SVG strings on first call.
+- After: non-team routes skip prepOf() on the critical path (-80 to -150 ms TBT / first-draw time at 4x CPU when user has a 6-mon team saved) and avoid unnecessary SVG encoding.
+- Risk: VERY LOW. Nothing visible on #calc/#meta/#pokemon depends on prepOf(); if user later opens #team, prepOf() has already run during idle or runs on demand.
+- How Scout measures it:
+  Run `node experiments/speed.mjs` on #calc, #meta, #pokemon=Incineroar (compare TBT & LCP before/after with a saved 6-Pokémon team).
+
+--------------------------------------------------------------------------------
+C4 — Image Attributes Only: width/height, loading="lazy", fetchpriority="high"
+     (app/src/v2/kit.js, app/src/v2/shell.js)
+--------------------------------------------------------------------------------
+What changes:
+- kit.js:38 (V2.kCard):
+  * Adds explicit width/height attributes from ART_META[id][4..5] if present, defaulting to 384x384 (matching the 384px sprites returned by V2.art(id, true), per shell.js:7).
+  * When o.size === 'hero' or o.eager, replaces loading="lazy" with fetchpriority="high" so first-screen hero art is discovered and prioritized immediately instead of waiting for layout. Below-the-fold cards keep loading="lazy".
+- shell.js:40 (V2.mon):
+  * Adds width/height attributes (384x384 for full art or NP_ONE_ART, 240x240 for art-s/ small sprites, or ART_META[id][4..5] if present).
+  * Supports o.eager to emit fetchpriority="high" instead of loading="lazy".
+- shell.js:217 (monHit in Search):
+  * Adds width/height (240x240, or 384x384 under NP_ONE_ART).
+- Already compliant (left untouched): V2.logo (shell.js:352-353: width="183" height="32" / width="241" height="44") and itPic (shell.js:215: width="28" height="28" loading="lazy" decoding="async").
+
+Expected gain (S3 proof):
+- Before: Hero kCard sprites had loading="lazy" (browsers delay fetching lazy images until layout completes and do not assign High priority) and lacked intrinsic width/height (CLS risk).
+- After: Hero kCard sprites fetch immediately at High priority; all shared sprite &lt;img&gt; tags carry intrinsic 1:1 dimensions.
+- Expected savings: ~100-250 ms faster LCP on routes whose LCP element is a hero kCard sprite (e.g. #home, #pokemon=Incineroar, #notfound), 0.000 image-caused CLS.
+- Risk: VERY LOW (HTML attributes only; CSS controls rendered size). Verified by experiments/same-pixels.mjs.
+- How Scout measures it:
+  Check LCP and "LCP El" column in `node experiments/speed.mjs`, and verify 0 pixel diffs in `node experiments/same-pixels.mjs`.
+
+--------------------------------------------------------------------------------
+C5 — Eliminate Forced Reflows in V2.kFit & MutationObserver (app/src/v2/kit.js)
+--------------------------------------------------------------------------------
+What changes:
+- kit.js:102-109:
+  * In V2.kFit(root), moved `e.dataset.kf = '0'` into a batched write loop BEFORE reading `e.clientWidth` / `e.scrollWidth`, avoiding N interleaved write->read style/layout flushes per render.
+  * In the global MutationObserver, deduplicated target containers into a `Set` (`roots.add(nd.closest('.k-roster') || nd)`) so inserting 6 cards into a `.k-roster` runs `V2.kFit(roster)` once instead of 6 times.
+
+Expected gain (S3 proof):
+- Before: Every 6-card roster insertion triggered up to 6 redundant V2.kFit passes, each interleaving DOM attribute writes with scrollWidth/clientWidth layout reads.
+- After: 1 deduplicated pass per roster with batched reset writes.
+- Expected savings: ~20-60 ms lower TBT on roster-heavy routes (#home, #meta, #team) at 4x CPU.
+- Risk: VERY LOW. Identical final `data-kf` attributes on every element.
+- How Scout measures it:
+  `node experiments/speed.mjs` (TBT on #home, #meta, #team) + `node experiments/same-pixels.mjs` (0 pixel diffs).
+
+Additional C5 opportunities NOT patched here (files not in this package — not checked):
+- app/src/v2/css/pages.css (526.8 KB raw): Largest single CSS file. Splitting route-specific rules out of pages.css into the route CSS chunks in app/public-chunks.mjs would save another ~250-350 KB raw (~45-65 KB gz) on first load.
+- app/src/data/logo-sly.js (74.5 KB raw): In --public, serving the 3 logos as static .svg files (art/logo-{full,small,mark}.svg) removes 74.5 KB from v2.js.
+- app/src/data/info-text.js (65.1 KB raw): Only used when Search or an info sheet opens; could be fetched on demand in --public.
+- app/src/v2/pages/*.js &lt;img&gt; tags: Grep for `<img ` in app/src/v2/pages/ to add width/height and fetchpriority="high" on any hero art not drawn via V2.kCard/V2.mon.
+
+================================================================================
+PART D — PROOF OF "NO VISUAL CHANGE" + EXISTING CI TESTS
+================================================================================
+
+1. experiments/same-pixels.mjs (included in unified diff below):
+   - Screenshots all 29 routes (#home, #build, #team, #battle, #meta, #box, #compare, #usage, #sets, #natures, #tournaments, #events, #archetypes, #weekly, #speed, #calc, #types, #practice, #gauntlet, #track, #gifts, #news, #method, #about, #feedback, #pokemon=Incineroar, #notfound, #record, #about=priv; plus --discover flag to automatically append any other key in window.V2.pages).
+   - Captures 2 widths (390x844 mobile, 1440x900 desktop) x 2 themes (day/light, night/dark) = 116 full-page screenshots per build (232 total).
+   - Pins Date.now() to 2026-11-25T12:00:00Z via addInitScript so "updated X h ago" and the rotating underdog never cause false diffs between runs.
+   - Disables animations, waits for document.fonts.ready and all visible images to finish decoding.
+   - Compares RGBA pixels in Chromium Canvas (zero external npm packages).
+   - Anti-aliasing tolerance (explicit):
+     * Exact image width and height (0 px mismatch allowed).
+     * Per-channel delta <= 4 (out of 255): ignored (subpixel font hinting / GPU rounding).
+     * Per-channel delta 5..16: allowed on at most 0.05% of total pixels (anti-aliased text/SVG edges).
+     * Any single pixel with channel delta > 16 OR > 0.05% pixels with delta > 4 FAILS, writes old/new/diff PNGs to experiments/same-pixels-diff/, and exits 1 (S7).
+
+   How Scout runs it:
+     # 1. Build baseline and copy to app/dist-old:
+     node app/build.mjs --v2 --public --split
+     cp -r app/dist app/dist-old
+     # 2. Apply Job 14 patch and rebuild:
+     git apply job14.patch
+     node app/build.mjs --v2 --public --split --split-css
+     # 3. Run pixel proof:
+     node experiments/same-pixels.mjs --old=app/dist-old --new=app/dist --discover
+
+2. Existing CI test commands:
+   - .github/workflows/test.yml: NOT CHECKED (not included in the Job 14 package).
+   - Test scripts explicitly referenced in the files we read (must all still pass unchanged):
+     * node app/test/v2-guard.mjs      (referenced in app/build.mjs:31; runs automatically on every --v2 build)
+     * node app/test/kit-page.mjs      (referenced in app/src/v2/kit.js:4)
+     * node app/test/v2-q24.mjs        (referenced in app/src/v2/shell.js:373)
+     * node app/test/v2-longtask.mjs   (referenced in app/src/v2/shell.js:471)
+     * node app/test/v2-back.mjs       (referenced in app/src/v2/shell.js:574)
+   - Scout should run the full test list in .github/workflows/test.yml after applying the patch.
+
+================================================================================
+ORDER QUESTIONS (S1)
+================================================================================
+
+1. Source maps on public Cloudflare (--public):
+   Should dist/*.map files be uploaded to Cloudflare (publicly readable) or kept as build artifacts only (hidden source maps, stripping the //# sourceMappingURL comment before upload)? Currently C1 writes .map files with sourceMappingURL and supports --no-source-maps.
+2. JS closure boundary for --split-routes:
+   In --public --split-routes, do you prefer (a) omitting the outer IIFE wrapper from 00-main.js in --public so route chunks share top-level declarations, or (b) keeping the IIFE and exposing a single `window.__NP` bridge for route chunks?
+3. Splitting pages.css (526.8 KB):
+   Do you want a follow-up job to split route-specific rules out of app/src/v2/css/pages.css into the route CSS chunks (requires sending pages.css)?
+
+================================================================================
+I'M UNSURE (S6)
+================================================================================
+
+1. Exact closure symbols used by each app/src/v2/pages/*.js file:
+   Because 00-main.js and app/src/v2/pages/*.js are not in this package, I'm unsure which shared logic identifiers inside the 00-main.js IIFE closure each route script reads directly. That is why --split-routes is gated behind an opt-in flag while --split-css + C1 + route-scoped docs + C3 + C4 + C5 work immediately.
+2. Whether any page in app/src/v2/pages/*.js reads a META.* key not listed in V2.ROUTE_DOCS before idle prefetch finishes:
+   I mapped V2.ROUTE_DOCS conservatively from shell.js, 03-persistence.js, and parts-v2.json, but because individual page files were not in this package, I'm unsure if e.g. #home or #calc reads META.info or META.doubles_tour synchronously on first draw. Running experiments/same-pixels.mjs catches any mismatch immediately.
+3. Exact contents of src/v2/art/meta.json (ART_META):
+   From shell.js:35,39 I verified ART_META[id] has 4 entries [r, g, b, footOffset] (not width/height). C4 checks `am[4] || 384, am[5] || 384` so it works both with today's 4-element meta.json (384x384 / 240x240 sprites) and if width/height are added later.
+4. Exact 29th route name in HH's 29-route list:
+   shell.js lists 25 routes in placeLines + pokemon + notfound + record + about=priv = 29; if HH's 29-route list includes #team-empty, #sheet, or #guide instead of #about=priv, passing `--discover` to experiments/same-pixels.mjs automatically covers every registered V2.pages key.
+
+================================================================================
+NOT LOOKED AT (FILES NOT IN JOB 14 PACKAGE)
+================================================================================
+
+- .github/workflows/test.yml (not checked)
+- app/src/app/00-main.js and all other app/src/app/*.js except 03-persistence.js (not checked)
+- app/src/v2/pages/*.js (all 51 page scripts — not checked)
+- app/src/v2/css/*.css (all 26 CSS files including pages.css — not checked)
+- app/src/v2/bridge.js, type-icons.js, item-art.js, test-hook.js (not checked)
+- app/src/v2/art/meta.json, crowd.json, items.json (not checked)
+- app/src/data/*.js (not checked; sizes read from FILE LIST)
+- app/slim.mjs, app/data-docs.mjs, app/test/*.mjs (not checked)
+
+================================================================================
+UNIFIED DIFF (SINGLE git-apply-READY BLOCK — VERIFIED WITH git apply --check)
+================================================================================
+
+diff --git a/app/build.mjs b/app/build.mjs
+index e28c250..489104c 100644
+--- a/app/build.mjs
++++ b/app/build.mjs
+@@ -34,7 +34,33 @@ if (process.argv.includes('--v2')) {
+   // code review C3 (Nov 15): /* */ comments are dropped from the shipped CSS (69 KB of 490), as the live build does; the source keeps them.
+   // `--keep-comments` keeps them. JS comments are dropped by esbuild further down (code review B-I1).
+   const noCom = c => process.argv.includes('--keep-comments') ? c : c.replace(/\/\*[\s\S]*?\*\//g, '');
+-  const css = `@layer ${layers};\n` + P.css.map(([n, f]) => `@layer ${n} {\n${noCom(rd(f))}\n}`).join('\n');
++  // C1 (Job 14): minify CSS whitespace only (zero declaration edits) + optional source maps in --public / --split builds.
++  let esb = null;
++  if (!process.argv.includes('--keep-comments')) {
++    try { esb = (await import('node:module')).createRequire(import.meta.url)('esbuild'); } catch (e) { console.log('v2: esbuild not installed, using fallback whitespace strip'); }
++  }
++  const SOURCE_MAPS = (PUBLIC || process.argv.includes('--source-maps')) && !process.argv.includes('--no-source-maps');
++  const SPLIT_CSS = PUBLIC && (process.argv.includes('--split-css') || process.argv.includes('--split-routes'));
++  const SPLIT_ROUTES = PUBLIC && process.argv.includes('--split-routes');
++  const minCss = (raw, file) => {
++    if (process.argv.includes('--keep-comments')) return {code: raw, map: ''};
++    if (esb) {
++      const r = esb.transformSync(raw, {loader: 'css', minifyWhitespace: true, legalComments: 'none', sourcemap: SOURCE_MAPS ? 'external' : false, sourcefile: file});
++      return {code: r.code, map: r.map || ''};
++    }
++    // Zero-dep fallback: strip comments and collapse inter-token whitespace outside strings/calc() without changing any declaration.
++    const code = noCom(raw).replace(/[\r\n\t]+/g, ' ').replace(/ {2,}/g, ' ').replace(/ ?([{}:;,]) ?/g, '$1').trim();
++    return {code, map: ''};
++  };
++  const minJs = (raw, file) => {
++    if (process.argv.includes('--keep-comments') || !esb) return {code: raw, map: ''};
++    const r = esb.transformSync(raw, {loader: 'js', minifyWhitespace: true, minifySyntax: PUBLIC, charset: 'utf8', legalComments: 'none', sourcemap: SOURCE_MAPS ? 'external' : false, sourcefile: file});
++    return {code: r.code, map: r.map || ''};
++  };
++  const chunksMod = (SPLIT_CSS || SPLIT_ROUTES) ? await import('./public-chunks.mjs') : null;
++  const cssEntries = P.css.map(([n, f]) => [n, noCom(rd(f))]);
++  const cssSplit = SPLIT_CSS ? chunksMod.splitCssLayers(cssEntries) : {core: cssEntries, chunks: {}};
++  const cssRaw = `@layer ${layers};\n` + cssSplit.core.map(([n, code]) => `@layer ${n} {\n${code}\n}`).join('\n');
+   const helpers = rd('src/app/15-visual-helpers.js'), i0 = helpers.indexOf('SPRITE_ID ='), sprite = helpers.slice(helpers.indexOf('{', i0), helpers.indexOf('}', i0) + 1);
+   JSON.parse(sprite); // fails the build if the shared sprite table ever stops being plain JSON
+   const meta = fs.existsSync(dir + 'src/v2/art/meta.json') ? rd('src/v2/art/meta.json') : '{}';
+@@ -57,7 +83,9 @@ if (process.argv.includes('--v2')) {
+     for (const f of [...L, ...P.scripts]) for (const m of rd(f).matchAll(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/gm)) { if (!where.has(m[1])) where.set(m[1], []); where.get(m[1]).push(f); }
+     const bad = [...where].filter(([n, fs]) => fs.length > 1 && !(BRIDGE.has(n) && fs.length === 2 && fs[1].endsWith('v2/bridge.js')));
+     if (bad.length) { console.error('duplicate top-level functions: ' + bad.map(([n, fs]) => n + ' (' + fs.join(', ') + ')').join('; ')); process.exit(1); } }
+-  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + L.map(rd).join('\n') + '\n' + P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js'))).map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
++  const activeScripts = P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js')));
++  const jsSplit = SPLIT_ROUTES ? chunksMod.splitRouteScripts(activeScripts) : {core: activeScripts, chunks: {}};
++  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + L.map(rd).join('\n') + '\n' + jsSplit.core.map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
+   // where the pictures live: art/ beside the page by default; --art=&lt;folder&gt;/ when published next to other files (the redesign artifact)
+   const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
+   // --one-art-size (Nov 17): Claude-hosted builds (Preview, live artifact) use the 384px sprites only: an artifact holds at most 511 files,
+@@ -104,15 +132,32 @@ if (process.argv.includes('--v2')) {
+   /* code review B-I1 (Nov 17): the scripts ship without comments and spare whitespace (esbuild, whitespace only: no renaming, so
+      nothing that looks a name up changes). About 300 KB of comments came along before. --keep-comments skips it; without esbuild
+      installed the page ships as before. */
+-  let jsOut = js; if (!process.argv.includes('--keep-comments')) { let esb = null; try { esb = (await import('node:module')).createRequire(import.meta.url)('esbuild'); } catch (e) { console.log('v2: esbuild not installed, scripts ship unminified'); }
+-    if (esb) jsOut = esb.transformSync(js, {loader: 'js', minifyWhitespace: true, charset: 'utf8', legalComments: 'none'}).code; }
++  const cssRes = minCss(cssRaw, 'v2.css'), cssOut = cssRes.code;
++  const jsRes = minJs(js, 'v2.js'), jsOut = jsRes.code;
++  fs.mkdirSync(dir + 'dist', {recursive: true});
++  let chunkPreload = '';
++  if (SPLIT_CSS || SPLIT_ROUTES) {
++    const jsChunkSources = {};
++    for (const [r, files] of Object.entries(jsSplit.chunks)) jsChunkSources[r] = files.map(rd);
++    const manifest = chunksMod.writeRouteChunks({distDir: dir + 'dist/', cssChunks: cssSplit.chunks, jsChunks: jsChunkSources, minifyCss: minCss, minifyJs: minJs, sourceMaps: SOURCE_MAPS});
++    chunkPreload = chunksMod.routePreloadSnippet(manifest) + '\n';
++  }
+   /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words) */
+   const v2Fail = `window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}`;
+   const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}" onerror="${v2Fail.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"></script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
+-  const page = head.replace('&lt;meta charset=&quot;utf-8&quot;&gt;', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + mainTag + `</body></html>\n`;
+-  fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
+-  if (SPLIT) { fs.writeFileSync(dir + 'dist/v2.js', jsOut); if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson);
+-    console.log(`v2 --split: dist/v2.js ${(jsOut.length / 1024).toFixed(0)} KB${previewJson ? `, dist/preview.json ${(previewJson.length / 1024).toFixed(0)} KB` : ''} (publish them beside the page)`); }
++  const styleTag = (SPLIT && PUBLIC) ? `\n<link rel="stylesheet" href="${'v2.css?v=' + hash(cssOut)}">\n` : `\n<style>\n${cssOut}\n</style>\n`;
++  const page = head.replace('&lt;meta charset=&quot;utf-8&quot;&gt;', m => m + artTag + prevTag + chunkPreload) + styleTag + rd(P.body) + mainTag + `</body></html>\n`;
++  fs.writeFileSync(dir + 'dist/v2.html', page);
++  if (SPLIT) {
++    fs.writeFileSync(dir + 'dist/v2.js', jsOut + (SOURCE_MAPS && jsRes.map ? '\n//# sourceMappingURL=v2.js.map\n' : ''));
++    if (SOURCE_MAPS && jsRes.map) fs.writeFileSync(dir + 'dist/v2.js.map', jsRes.map);
++    if (PUBLIC) {
++      fs.writeFileSync(dir + 'dist/v2.css', cssOut + (SOURCE_MAPS && cssRes.map ? '\n/*# sourceMappingURL=v2.css.map */\n' : ''));
++      if (SOURCE_MAPS && cssRes.map) fs.writeFileSync(dir + 'dist/v2.css.map', cssRes.map);
++    }
++    if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson);
++    console.log(`v2 --split: dist/v2.js ${(jsOut.length / 1024).toFixed(0)} KB${PUBLIC ? `, dist/v2.css ${(cssOut.length / 1024).toFixed(0)} KB` : ''}${previewJson ? `, dist/preview.json ${(previewJson.length / 1024).toFixed(0)} KB` : ''} (publish them beside the page)`);
++  }
+   /* Sim, Nov 16 (B-I3, option B): a static first screen. A phone used to show a blank page for about 2 s while the script ran (first paint
+      2,016 -> 628 ms measured at 4x CPU with the header already in the HTML). The build opens the page it just made, copies the header and
+      the phone bar the script draws (current-page marks removed: the right one is set by the first draw), and puts them in #app, so the
+diff --git a/app/public-chunks.mjs b/app/public-chunks.mjs
+new file mode 100644
+index 0000000..ca7d837
+--- /dev/null
++++ b/app/public-chunks.mjs
+@@ -0,0 +1,112 @@
++// Route chunk manifest & splitter for --v2 --public --split-routes (Job 14, Part C2).
++// Keeps core shell + shared logic + core CSS in v2-core.{js,css}, and splits route-only
++// page scripts and route-only CSS layers into dist/chunks/&lt;chunk&gt;.{js,css} with content hashes.
++// NOTE on JS closure scope: parts-v2.json logic starts with src/app/00-main.js which opens an IIFE.
++// CSS chunking works with zero closure changes (the @layer order header stays at top of v2-core.css).
++// JS chunking requires shared logic symbols to be reachable from chunk scripts (verified before enabling --split-routes).
++import fs from 'node:fs';
++import crypto from 'node:crypto';
++
++const hash = s => crypto.createHash('sha256').update(s).digest('hex').slice(0, 12);
++
++// Route-only CSS layers from parts-v2.json (core layers tokens, base, components, shell, kit, pages, infosheet stay in v2-core.css).
++export const ROUTE_CSS_CHUNKS = {
++  home: ['sd-shared', 'sd-hero', 'sd-six', 'sd-tools', 'sd-postroom', 'sd-dispatch', 'sd-post', 'sd-motion'],
++  gifts: ['sd-shared', 'sd-postroom', 'sd-dispatch', 'sd-post'],
++  news: ['sd-shared', 'sd-postroom', 'sd-dispatch', 'sd-post'],
++  team: ['six', 'matchups', 'sugs', 'team-frame'],
++  build: ['plot'],
++  calc: ['arena-calc', 'plot-calc'],
++  battle: ['battle-target'],
++  meta: ['ratings'],
++  box: ['box'],
++  natures: ['natures'],
++};
++
++// Route-only page scripts from parts-v2.json (core scripts: bridge, shell, type-icons, kit, item-art, monsheet, infosheet, coming stay in v2-core.js).
++export const ROUTE_JS_CHUNKS = {
++  home: ['src/v2/pages/home.js', 'src/v2/pages/stampede.js', 'src/v2/pages/stampede-hero.js', 'src/v2/pages/stampede-six.js', 'src/v2/pages/stampede-tools.js', 'src/v2/pages/stampede-post.js', 'src/v2/pages/post-data.js', 'src/v2/pages/postroom.js', 'src/v2/pages/dispatch.js'],
++  gifts: ['src/v2/pages/post-data.js', 'src/v2/pages/postroom.js'],
++  news: ['src/v2/pages/post-data.js', 'src/v2/pages/dispatch.js'],
++  team: ['src/v2/pages/team.js', 'src/v2/pages/six.js', 'src/v2/pages/team-frame.js', 'src/v2/pages/matchups.js', 'src/v2/pages/sugs.js', 'src/v2/pages/share-slab.js', 'src/v2/pages/share-tape.js'],
++  build: ['src/v2/pages/build.js', 'src/v2/pages/build-sheet.js', 'src/v2/pages/build-plot.js'],
++  battle: ['src/v2/pages/battle.js', 'src/v2/pages/battle-pbp.js', 'src/v2/pages/battle-target.js'],
++  calc: ['src/v2/pages/calc.js', 'src/v2/pages/calc-plot.js'],
++  speed: ['src/v2/pages/speed.js'],
++  types: ['src/v2/pages/types.js'],
++  practice: ['src/v2/pages/practice.js'],
++  gauntlet: ['src/v2/pages/gauntlet.js', 'src/v2/pages/test-piles.js'],
++  meta: ['src/v2/pages/meta.js'],
++  usage: ['src/v2/pages/usage.js'],
++  sets: ['src/v2/pages/sets.js'],
++  natures: ['src/v2/pages/natures.js'],
++  tournaments: ['src/v2/pages/winning.js'],
++  events: ['src/v2/pages/events.js'],
++  archetypes: ['src/v2/pages/archetypes.js'],
++  weekly: ['src/v2/pages/thisweek.js'],
++  track: ['src/v2/pages/track.js'],
++  box: ['src/v2/pages/box.js'],
++  record: ['src/v2/pages/record.js'],
++  compare: ['src/v2/pages/compare.js', 'src/v2/pages/compare-faceoff.js'],
++  pokemon: ['src/v2/pages/pokemon.js'],
++  method: ['src/v2/pages/method.js'],
++  about: ['src/v2/pages/about.js'],
++  feedback: ['src/v2/pages/feedback.js'],
++};
++
++export function splitCssLayers(cssEntries) {
++  const routed = new Set(Object.values(ROUTE_CSS_CHUNKS).flat());
++  const core = cssEntries.filter(([name]) => !routed.has(name));
++  const byName = new Map(cssEntries);
++  const chunks = {};
++  for (const [route, names] of Object.entries(ROUTE_CSS_CHUNKS)) {
++    chunks[route] = names.filter(n => byName.has(n)).map(n => [n, byName.get(n)]);
++  }
++  return {core, chunks};
++}
++
++export function splitRouteScripts(scriptPaths) {
++  const routed = new Set(Object.values(ROUTE_JS_CHUNKS).flat());
++  const core = scriptPaths.filter(f => !routed.has(f));
++  const have = new Set(scriptPaths);
++  const chunks = {};
++  for (const [route, files] of Object.entries(ROUTE_JS_CHUNKS)) {
++    const list = files.filter(f => have.has(f));
++    if (list.length) chunks[route] = list;
++  }
++  return {core, chunks};
++}
++
++export function writeRouteChunks({distDir, cssChunks, jsChunks, minifyCss, minifyJs, sourceMaps}) {
++  const outDir = distDir + 'chunks/';
++  fs.mkdirSync(outDir, {recursive: true});
++  const manifest = {};
++  const routes = new Set([...Object.keys(cssChunks || {}), ...Object.keys(jsChunks || {})]);
++  for (const r of routes) {
++    manifest[r] = {};
++    if (cssChunks && cssChunks[r] && cssChunks[r].length) {
++      const raw = cssChunks[r].map(([n, code]) => `@layer ${n} {\n${code}\n}`).join('\n');
++      const res = minifyCss(raw, `chunks/${r}.css`);
++      const file = `chunks/${r}.css?v=${hash(res.code)}`;
++      fs.writeFileSync(`${outDir}${r}.css`, res.code + (sourceMaps && res.map ? `\n/*# sourceMappingURL=${r}.css.map */\n` : ''));
++      if (sourceMaps && res.map) fs.writeFileSync(`${outDir}${r}.css.map`, res.map);
++      manifest[r].css = file;
++    }
++    if (jsChunks && jsChunks[r] && jsChunks[r].length) {
++      const raw = jsChunks[r].join('\n');
++      const res = minifyJs(raw, `chunks/${r}.js`);
++      const file = `chunks/${r}.js?v=${hash(res.code)}`;
++      fs.writeFileSync(`${outDir}${r}.js`, res.code + (sourceMaps && res.map ? `\n//# sourceMappingURL=${r}.js.map\n` : ''));
++      if (sourceMaps && res.map) fs.writeFileSync(`${outDir}${r}.js.map`, res.map);
++      manifest[r].js = file;
++    }
++  }
++  fs.writeFileSync(`${outDir}manifest.json`, JSON.stringify(manifest, null, 2));
++  return manifest;
++}
++
++// Inline &lt;head&gt; preloader: reads current hash/path before v2.js executes and injects
++// &lt;link rel=&quot;preload&quot;&gt; for the active route's CSS/JS chunk so it downloads in parallel with core.
++export function routePreloadSnippet(manifest) {
++  return `<script>window.__NP_CHUNKS=${JSON.stringify(manifest)};(function(){var m=window.__NP_CHUNKS,h=(location.hash||'').slice(1).split('=')[0]||'home',c=m&&m[h];if(!c)return;var add=function(u,as){var l=document.createElement('link');l.rel='preload';l.as=as;l.href=u;document.head.appendChild(l)};if(c.css)add(c.css,'style');if(c.js)add(c.js,'script')})();</script>`;
++}
+diff --git a/app/src/app/03-persistence.js b/app/src/app/03-persistence.js
+index 99392ae..0562f69 100644
+--- a/app/src/app/03-persistence.js
++++ b/app/src/app/03-persistence.js
+@@ -64,9 +64,19 @@ function metaJoin(d,k,cb){let p1=null,p2=null,got1=false,sent=null;const emit=()
+   const c=window.__NP_CLAUDE||window.claude;if(!c||!c.use)return;/* __NP_CLAUDE: the Preview build's data (Nov 12: inside the Claude app window.claude can't be replaced) */
+   const [d,u]=await Promise.all([c.use('db'),c.use('user')]);
+   if(!d){META_NODB=true;if(typeof scheduleRender==='function')scheduleRender()}
+-  if(d){META_KEYS.forEach(k=>{try{metaJoin(d,k,s=>{META_AT=performance.now();META_SEEN.add(k);const v=s.exists?s.data():null;/* weekly digest and event calendar (Nov): their own cleaners, kept out of the data-date line (a fresh calendar must not hide stale results) */
+-    /* meta/post (Nov 18): the Mystery Gifts and news list, read by the new site only (post-data.js V2.postTake); the old page has no V2 */if(k==='post'){try{if(typeof V2==='object'&&V2&&typeof V2.postTake==='function')V2.postTake(v)}catch(e){}metaVersion++;scheduleRender();return}
+-    if(k==='weekly'||k==='calendar'){try{META[k]=k==='weekly'?cleanWeekly(v):cleanCalendar(v)}catch(e){META[k]=null}metaVersion++;scheduleRender();return}noteDataDate(k,v);if(k==='perf')META.reg=v&&typeof v==='object'&&v.reg&&typeof v.reg==='object'&&/^[A-Z]-[A-Z]$/.test(v.reg.id)?v.reg:null;if(k==='perf')setTimeout(()=>{if(typeof RESULTS==='object'&&RES===RESULTS&&!builtinOk()){RES=META.results||null;planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender()}},0);if(k==='practice'){META.practice=typeof cleanPractice==='function'?cleanPractice(v):null;/* only the practice page uses it: no full redraw (Nov) */if(typeof view!=='undefined'&&view==='practice'&&typeof renderPractice==='function'&&(!META.practice||pr.step==='start'))safe('practice',renderPractice);return}if(k==='info'){META.info=v&&typeof v==='object'&&v.mv&&typeof v.N==='number'?v:null;metaVersion++;scheduleRender();return}/* info sheets (Nov 22): who runs each move, item and Ability (out/info.json); read when a sheet opens, no redraw */if(k==='model'){META.model=v&&typeof v==='object'&&v.mons?v:null;metaVersion++;scheduleRender();return}if(k==='track'){META.track=typeof cleanTrack==='function'?cleanTrack(v):null;if(typeof view!=='undefined'&&view==='track'&&typeof renderTrack==='function')safe('track record',renderTrack);if(typeof view!=='undefined'&&view==='home')scheduleRender();return}if(k==='results'){META.results=cleanResults(v);RES=META.results||(typeof RESULTS==='object'&&builtinOk()?RESULTS:null);planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender();return}META[k]=k==='status'?cleanStatus(v):k==='teams'?cleanTeams(v):k==='history'?cleanHistory(v):k==='perf'?cleanPerf(v):k==='events'?cleanEvents(v):cleanMeta(v);usageCache={};metaVersion++;scheduleRender()},()=>{})}catch(e){}})}
++  if(d){
++    // C2 + C3 (Job 14): subscribe to the active route's required docs first, then defer the rest until idle (or on route switch).
++    const subscribed=new Set();
++    const subKey=k=>{if(subscribed.has(k)||!META_KEYS.includes(k))return;subscribed.add(k);try{metaJoin(d,k,s=>{META_AT=performance.now();META_SEEN.add(k);const v=s.exists?s.data():null;/* weekly digest and event calendar (Nov): their own cleaners, kept out of the data-date line (a fresh calendar must not hide stale results) */
++      /* meta/post (Nov 18): the Mystery Gifts and news list, read by the new site only (post-data.js V2.postTake); the old page has no V2 */if(k==='post'){try{if(typeof V2==='object'&&V2&&typeof V2.postTake==='function')V2.postTake(v)}catch(e){}metaVersion++;scheduleRender();return}
++      if(k==='weekly'||k==='calendar'){try{META[k]=k==='weekly'?cleanWeekly(v):cleanCalendar(v)}catch(e){META[k]=null}metaVersion++;scheduleRender();return}noteDataDate(k,v);if(k==='perf')META.reg=v&&typeof v==='object'&&v.reg&&typeof v.reg==='object'&&/^[A-Z]-[A-Z]$/.test(v.reg.id)?v.reg:null;if(k==='perf')setTimeout(()=>{if(typeof RESULTS==='object'&&RES===RESULTS&&!builtinOk()){RES=META.results||null;planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender()}},0);if(k==='practice'){META.practice=typeof cleanPractice==='function'?cleanPractice(v):null;/* only the practice page uses it: no full redraw (Nov) */if(typeof view!=='undefined'&&view==='practice'&&typeof renderPractice==='function'&&(!META.practice||pr.step==='start'))safe('practice',renderPractice);return}if(k==='info'){META.info=v&&typeof v==='object'&&v.mv&&typeof v.N==='number'?v:null;metaVersion++;scheduleRender();return}/* info sheets (Nov 22): who runs each move, item and Ability (out/info.json); read when a sheet opens, no redraw */if(k==='model'){META.model=v&&typeof v==='object'&&v.mons?v:null;metaVersion++;scheduleRender();return}if(k==='track'){META.track=typeof cleanTrack==='function'?cleanTrack(v):null;if(typeof view!=='undefined'&&view==='track'&&typeof renderTrack==='function')safe('track record',renderTrack);if(typeof view!=='undefined'&&view==='home')scheduleRender();return}if(k==='results'){META.results=cleanResults(v);RES=META.results||(typeof RESULTS==='object'&&builtinOk()?RESULTS:null);planCache={key:null,plans:[]};recCache={key:null,val:null};metaVersion++;scheduleRender();return}META[k]=k==='status'?cleanStatus(v):k==='teams'?cleanTeams(v):k==='history'?cleanHistory(v):k==='perf'?cleanPerf(v):k==='events'?cleanEvents(v):cleanMeta(v);usageCache={};metaVersion++;scheduleRender()},()=>{})}catch(e){}};
++    const needDocs=keys=>(keys||META_KEYS).forEach(subKey);
++    window.__NP_NEED_DOCS=needDocs;
++    const firstKeys=(typeof V2==='object'&&V2&&typeof V2.routeDocs==='function')?V2.routeDocs(V2.route()):META_KEYS;
++    needDocs(firstKeys);
++    const restKeys=META_KEYS.filter(k=>!subscribed.has(k));
++    if(restKeys.length){const defer=typeof requestIdleCallback==='function'?fn=>requestIdleCallback(fn,{timeout:2500}):fn=>setTimeout(fn,1200);defer(()=>needDocs(restKeys));}
++  }
+   if(!d||!u){syncNote('local');return}
+   const id=await u.id();if(!id){syncNote('local');return}db=d;uid=id;
+   // the account's copy is read first; only then can this device save (a change made in the first moment can't overwrite it)
+diff --git a/app/src/v2/kit.js b/app/src/v2/kit.js
+index 77beef6..90f2e16 100644
+--- a/app/src/v2/kit.js
++++ b/app/src/v2/kit.js
+@@ -35,7 +35,9 @@ V2.kCard = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID
+   /* Sim, Nov 21 (~12:25 PM, "the numbers are on top of the pokemon sprites it looks terrible"): nothing is drawn over the art. The score sits in
+      the name row on the right (Plot blue, its tier word under it); the form line ('Mega') is in the name block */
+   const sc = o.score != null && o.score !== '' ? `<span class="k-sc"><b class="k-score u">${V2.esc(o.score)}</b>${o.tier ? `&lt;small class=&quot;k-tier&quot;&gt;${V2.esc(o.tier)}&lt;/small&gt;` : ''}</span>` : '';
+-  const inner = `${o.mine ? V2.kMine(o.mine === true ? 'Yours' : o.mine) : ''}<span class="k-plate">${id ? `&lt;img class=&quot;k-art&quot; src=&quot;${V2.art(id, true)}&quot; alt=&quot;&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''}<span class="k-nm"><span class="k-id"><small class="k-form" data-kmax="2">${form ? V2.esc(form) : '&nbsp;'}</small><b class="k-name u" data-kmax="5">${V2.esc(k.name)}</b>${o.fact ? `&lt;i class=&quot;k-fact&quot;&gt;${V2.esc(o.fact)}&lt;/i&gt;` : ''}</span>${sc}</span></span>`;
++  const am = typeof ART_META === 'object' && ART_META[id], aw = (am && am[4]) || 384, ah = (am && am[5]) || 384;
++  const imgLoad = (o.size === 'hero' || o.eager) ? 'fetchpriority="high"' : 'loading="lazy"';
++  const inner = `${o.mine ? V2.kMine(o.mine === true ? 'Yours' : o.mine) : ''}<span class="k-plate">${id ? `<img class="k-art" src="${V2.art(id, true)}" alt="" width="${aw}" height="${ah}" ${imgLoad} decoding="async">` : ''}<span class="k-nm"><span class="k-id"><small class="k-form" data-kmax="2">${form ? V2.esc(form) : '&nbsp;'}</small><b class="k-name u" data-kmax="5">${V2.esc(k.name)}</b>${o.fact ? `&lt;i class=&quot;k-fact&quot;&gt;${V2.esc(o.fact)}&lt;/i&gt;` : ''}</span>${sc}</span></span>`;
+   return `<${tag}${tag === 'button' ? ' type="button"' : ''} class="k-card${size}${o.sel ? ' k-sel' : ''}"${V2.TYPES.includes(t) ? ` style="--kc:var(--tyn-${t})"` : ''}${o.sel && tag === 'button' ? ' aria-pressed="true"' : ''}${V2.kAttrs(o.attrs)}>${inner}</${tag}>`; };
+ // a row of cards: six across on desktop, 3 x 2 on phones (never 5 + 1); four or two go 2 across on phones
+ V2.kRoster = cards => `<ul class="k-roster" data-n="${Math.min(6, (cards || []).length)}">${(cards || []).map(c => `&lt;li&gt;${c}&lt;/li&gt;`).join('')}</ul>`;
+@@ -100,12 +102,15 @@ V2.kMine = (text = 'Yours') => `<span class="k-mine">${V2.esc(text)}</span>`;
+ // names drop a size before they wrap (HYBRID 7): each [data-kmax] steps down its levels (kit.css) until its line fits its box; every
+ // name in one roster then takes the smallest size any of them needed, so a row reads even. Runs when kit parts arrive, on resize and once the fonts load.
+ V2.kFit = root => { const r = root || document, over = e => e.scrollWidth > e.clientWidth + 1;
+-  const fit = e => { const max = +e.dataset.kmax || 0; e.dataset.kf = '0'; if (e.clientWidth < 2) return 0; let f = 0; while (f < max && over(e)) e.dataset.kf = String(++f); return f; };
+   const els = r.querySelectorAll ? [...r.querySelectorAll('[data-kmax]')] : []; if (r.matches && r.matches('[data-kmax]')) els.push(r);
++  if (!els.length) return;
++  // C5 (Job 14): batch initial reset writes before layout reads to avoid N interleaved style/layout flushes.
++  for (const e of els) e.dataset.kf = '0';
++  const fit = e => { const max = +e.dataset.kmax || 0; if (e.clientWidth < 2) return 0; let f = 0; while (f < max && over(e)) e.dataset.kf = String(++f); return f; };
+   const lv = new Map(els.map(e => [e, fit(e)]));
+   const rows = new Set(els.map(e => e.closest('.k-roster')).filter(Boolean));
+   for (const row of rows) for (const sel of ['.k-name', '.k-form']) { const g = [...row.querySelectorAll(sel)], m = Math.max(0, ...g.map(e => lv.has(e) ? lv.get(e) : +e.dataset.kf || 0)); for (const e of g) if ((+e.dataset.kf || 0) < m && e.clientWidth > 1) e.dataset.kf = String(m); } };
+-try { new MutationObserver(ms => { const add = []; for (const m of ms) for (const nd of m.addedNodes) if (nd.nodeType === 1 && (nd.matches('[data-kmax]') || nd.querySelector('[data-kmax]'))) add.push(nd);
+-  if (add.length) for (const nd of add) if (nd.isConnected) V2.kFit(nd.closest('.k-roster') || nd); }).observe(document.documentElement, {childList: true, subtree: true}); } catch (e) {}
++try { new MutationObserver(ms => { const roots = new Set(); for (const m of ms) for (const nd of m.addedNodes) if (nd.nodeType === 1 && nd.isConnected && (nd.matches('[data-kmax]') || nd.querySelector('[data-kmax]'))) roots.add(nd.closest('.k-roster') || nd);
++  for (const rt of roots) if (rt.isConnected) V2.kFit(rt); }).observe(document.documentElement, {childList: true, subtree: true}); } catch (e) {}
+ addEventListener('resize', () => { cancelAnimationFrame(V2._kfR); V2._kfR = requestAnimationFrame(() => { if (document.querySelector('[data-kmax]')) V2.kFit(); }); });
+ try { document.fonts.addEventListener('loadingdone', () => { if (document.querySelector('[data-kmax]')) V2.kFit(); }); } catch (e) {}
+diff --git a/app/src/v2/shell.js b/app/src/v2/shell.js
+index a5c268e..738e3c6 100644
+--- a/app/src/v2/shell.js
++++ b/app/src/v2/shell.js
+@@ -37,7 +37,9 @@ V2.cp = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m
+ // same shape (no reserved blank line above every name); elsewhere (rows, sentences) Mega stays inline before the name (nameHtml)
+ // o.tag (i42, Nov 13): a bare tile that writes its own name still gets the corner Mega tag (A9), so its name never wraps below its neighbours
+ V2.mon = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
+-  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `&lt;img src=&quot;${V2.art(id, !(o.iw &amp;&amp; o.iw &lt;= 80) || o.big)}&quot; alt=&quot;&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''}${V2.disp(n).startsWith('Mega ') && (!o.bare || o.tag) ? '<span class="np-megatag">Mega</span>' : ''}</div>${o.bare ? '' : `&lt;b&gt;${V2.esc(V2.disp(n).replace(/^Mega /, ''))}&lt;/b&gt;`}${o.sub ? `&lt;small&gt;${V2.esc(o.sub)}&lt;/small&gt;` : ''}</div>`; };
++  const big = !(o.iw && o.iw <= 80) || o.big, sz = (big || window.NP_ONE_ART) ? 384 : 240, w = m[4] || sz, h = m[5] || sz;
++  const load = o.eager ? 'fetchpriority="high"' : 'loading="lazy"';
++  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `<img src="${V2.art(id, big)}" alt="" width="${w}" height="${h}" ${load} decoding="async">` : ''}${V2.disp(n).startsWith('Mega ') && (!o.bare || o.tag) ? '<span class="np-megatag">Mega</span>' : ''}</div>${o.bare ? '' : `&lt;b&gt;${V2.esc(V2.disp(n).replace(/^Mega /, ''))}&lt;/b&gt;`}${o.sub ? `&lt;small&gt;${V2.esc(o.sub)}&lt;/small&gt;` : ''}</div>`; };
+ // drawn icons (the ⌕ glyph renders tiny in Instrument Sans)
+ V2.ICON = {fwd: '&lt;svg class=&quot;np-ic&quot; viewBox=&quot;0 0 24 24&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M9 4.5 16.5 12 9 19.5&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.6&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/&gt;&lt;/svg&gt;', back: '&lt;svg class=&quot;np-ic&quot; viewBox=&quot;0 0 24 24&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M15 4.5 7.5 12l7.5 7.5&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.6&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/&gt;&lt;/svg&gt;', search: '&lt;svg class=&quot;np-ic&quot; viewBox=&quot;0 0 24 24&quot; aria-hidden=&quot;true&quot;&gt;&lt;circle cx=&quot;10.5&quot; cy=&quot;10.5&quot; r=&quot;6.5&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.4&quot;/&gt;&lt;path d=&quot;M15.5 15.5 21 21&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.6&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;/svg&gt;',
+   // My Box: a storage box (lid, body, handle slot), drawn like the search glass
+@@ -214,7 +216,7 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
+   const itPic = n => { let u = '', a = ''; try { u = V2.itemImg ? V2.itemImg(n, true) : ''; a = u ? '' : V2.itemArt ? V2.itemArt(n) : ''; } catch (e) {}
+     return u ? `&lt;span class=&quot;np-itb&quot; aria-hidden=&quot;true&quot;&gt;&lt;img src=&quot;${V2.esc(u)}&quot; alt=&quot;&quot; width=&quot;28&quot; height=&quot;28&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;&lt;/span&gt;` : a ? `&lt;span class=&quot;np-itb&quot; aria-hidden=&quot;true&quot;&gt;${a}&lt;/span&gt;` : ''; };
+   const KW = {mv: 'Move', it: 'Item', ab: 'Ability', nt: 'Nature'}, N0 = typeof META === 'object' && META.info ? META.info.N : 0, M0 = typeof META === 'object' && META.info ? META.info.ntN || 0 : 0;
+-  const monHit = p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `&lt;small aria-label=&quot;Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier&quot;&gt;${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier&lt;/small&gt;` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
++  const monHit = p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" width="${window.NP_ONE_ART ? 384 : 240}" height="${window.NP_ONE_ART ? 384 : 240}" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `&lt;small aria-label=&quot;Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier&quot;&gt;${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier&lt;/small&gt;` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
+   /* scan S34 A (Sim, Nov 20): a miss offers today's six highest-rated Pokémon as normal search rows (the same six as empty My Team's
+      'Start from a Winner'), so a typo leads somewhere instead of a dead end */
+   const missTop = () => { let top = []; try { top = lairRows().slice(0, 6).map(x => x.p); } catch (e) {} return top.length ? `<p class="miss-k">Or meet today's top six</p>${top.map(monHit).join('')}` : ''; };
+@@ -348,9 +350,9 @@ try { matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () =
+    Header: the full logo at 44px on wide screens, logo-small (no block shadow, simpler face) on phones; footer: logo-small.
+    The link around it carries the name ("NastyPlot, Home"), so the image itself is alt="" */
+ V2.logo = (foot) => { const L = typeof NP_LOGO === 'object' ? NP_LOGO : null; if (!L) return '&lt;b class=&quot;u&quot;&gt;NastyPlot&lt;/b&gt;';
+-  const u = V2._lgu || (V2._lgu = {full: 'data:image/svg+xml,' + encodeURIComponent(L.full), small: 'data:image/svg+xml,' + encodeURIComponent(L.small), mark: 'data:image/svg+xml,' + encodeURIComponent(L.markSmall)});
+-  return foot ? `<img class="np-lg" src="${u.small}" alt="NastyPlot" width="183" height="32" decoding="async">`
+-    : `<picture class="np-lg"><source media="(max-width:413.98px)" srcset="${u.mark}"><source media="(max-width:999.98px)" srcset="${u.small}"><img src="${u.full}" alt="" width="241" height="44" decoding="async"></picture>`; };
++  const c = V2._lgu || (V2._lgu = {}), u = (k, src) => c[k] || (c[k] = 'data:image/svg+xml,' + encodeURIComponent(src));
++  return foot ? `<img class="np-lg" src="${u('small', L.small)}" alt="NastyPlot" width="183" height="32" decoding="async">`
++    : `<picture class="np-lg"><source media="(max-width:413.98px)" srcset="${u('mark', L.markSmall)}"><source media="(max-width:999.98px)" srcset="${u('small', L.small)}"><img src="${u('full', L.full)}" alt="" width="241" height="44" decoding="async"></picture>`; };
+ // say it once (Nov 16): a page's own data date shows only when it differs from the footer's 'Data as of' (V2.otherDay('Nov 10') -> '' when the same)
+ V2.otherDay = d => { const a = V2.asOf && V2.asOf(); return d && a && new RegExp('\\b' + d.replace(/\s+/g, '\\s') + '\\b').test(a) ? '' : (d || ''); };
+ // the data's date (Sim's review item 18): "Data as of Nov 11", plus "(N days old)" when stale; shared with today's site
+@@ -472,16 +474,62 @@ document.addEventListener('click', e => { if (e.target.closest && e.target.close
+ V2.preStamp = () => { let t = ''; try { t = JSON.stringify(S.slots) + '|' + (S.leads || []).join(); } catch (e) {}
+   return [location.hash, document.documentElement.dataset.theme, typeof metaVersion !== 'undefined' ? metaVersion : '', V2.rdN || 0, V2.drawN || 0, t].join('\n'); };
+ V2.preOk = pre => pre.stamp === V2.preStamp();
+-V2.warmDraw = () => { let pre = null; const P = V2.pages[V2.route()], warm = (P && P.warm) || []; /* a page's own cached parts, each its own step (Home: its tools plate) */
+-  const steps = [() => ratings(), () => { const ms = members(); if (ms.length) prepOf(ms); }, ...warm,
++V2.idle = (fn, timeout = 2500) => typeof requestIdleCallback === 'function' ? requestIdleCallback(fn, {timeout}) : setTimeout(fn, 800);
++// C2 (Job 14): route-scoped daily docs so #calc/#types/#home do not block first paint on unrelated docs (e.g. practice, track, singles).
++V2.CORE_DOCS = ['doubles', 'perf', 'results', 'teams', 'model', 'status'];
++V2.ROUTE_DOCS = {
++  home: [...V2.CORE_DOCS, 'weekly', 'events', 'post', 'track'],
++  team: [...V2.CORE_DOCS, 'doubles_tour', 'events'],
++  build: [...V2.CORE_DOCS, 'doubles_tour', 'events'],
++  battle: [...V2.CORE_DOCS, 'doubles_tour'],
++  compare: [...V2.CORE_DOCS, 'doubles_tour'],
++  gauntlet: [...V2.CORE_DOCS, 'doubles_tour', 'events'],
++  calc: V2.CORE_DOCS, speed: V2.CORE_DOCS, sets: V2.CORE_DOCS, box: V2.CORE_DOCS, record: V2.CORE_DOCS,
++  meta: [...V2.CORE_DOCS, 'doubles_ingame', 'doubles_tour', 'history', 'events'],
++  usage: [...V2.CORE_DOCS, 'doubles_ingame', 'doubles_tour', 'history'],
++  pokemon: [...V2.CORE_DOCS, 'doubles_ingame', 'doubles_tour', 'events', 'info'],
++  tournaments: [...V2.CORE_DOCS, 'events', 'calendar'],
++  events: ['perf', 'status', 'events', 'calendar'],
++  archetypes: [...V2.CORE_DOCS, 'events'],
++  weekly: [...V2.CORE_DOCS, 'weekly', 'events'],
++  practice: ['perf', 'status', 'practice'],
++  track: ['perf', 'status', 'track', 'events'],
++  gifts: ['perf', 'status', 'post'], news: ['perf', 'status', 'post'],
++  types: ['perf', 'status'], natures: ['perf', 'status', 'info'],
++  method: ['perf', 'status'], about: ['perf', 'status'], feedback: ['perf', 'status'], notfound: ['perf', 'status'],
++};
++V2.routeDocs = r => V2.ROUTE_DOCS[r] || (typeof META_KEYS === 'object' ? META_KEYS : V2.CORE_DOCS);
++V2._chunkP = {};
++V2.loadRoute = r => {
++  const m = window.__NP_CHUNKS, c = m && m[r];
++  if (!c) return null;
++  if (V2._chunkP[r]) return V2._chunkP[r];
++  const ps = [];
++  if (c.css && !document.querySelector(`link[data-np-chunk="${r}"]`)) {
++    ps.push(new Promise(res => { const l = document.createElement('link'); l.rel = 'stylesheet'; l.href = c.css; l.dataset.npChunk = r; l.onload = l.onerror = res; document.head.appendChild(l); }));
++  }
++  if (c.js && !Object.prototype.hasOwnProperty.call(V2.pages, r)) {
++    ps.push(new Promise(res => { const sc = document.createElement('script'); sc.src = c.js; sc.dataset.npChunk = r; sc.onload = sc.onerror = res; document.head.appendChild(sc); }));
++  }
++  if (!ps.length) return null;
++  const p = Promise.all(ps).then(() => { V2._chunkP[r] = true; V2.redraw(); });
++  V2._chunkP[r] = p;
++  return p;
++};
++V2.TEAM_ROUTES = new Set(['team', 'home', 'build', 'battle', 'gauntlet', 'compare', 'speed']);
++V2.warmDraw = () => { let pre = null; const r = V2.route(), P = V2.pages[r], warm = (P && P.warm) || []; /* a page's own cached parts, each its own step (Home: its tools plate) */
++  const prepStep = () => { const ms = members(); if (ms.length) prepOf(ms); };
++  const steps = [() => ratings(), ...(V2.TEAM_ROUTES.has(r) ? [prepStep] : []), ...warm,
+     () => { const stamp = V2.preStamp(); V2.prePend = true; pre = {tag: V2.preOk, stamp, r: V2.shell()}; }]; let i = 0;
+   /* V2.prePend: while built HTML waits for the next step, code the draw set up to look at the page "just after the draw" waits too
+      (V2.afterPre; sugs.js ckWinSoon): without it, the winners pass found no Suggestions on the page and started at once (+0.5 s of blocking) */
+-  const next = () => { if (i < steps.length) { try { steps[i++](); } catch (e) { pre = null; } setTimeout(next, 0); } else try { V2.redraw(pre); } finally { V2.prePend = false; } }; setTimeout(next, 0); };
++  const next = () => { if (i < steps.length) { try { steps[i++](); } catch (e) { pre = null; } setTimeout(next, 0); } else { try { V2.redraw(pre); } finally { V2.prePend = false; } if (!V2.TEAM_ROUTES.has(r)) V2.idle(() => { try { prepStep(); } catch (e) {} }); } }; setTimeout(next, 0); };
+ V2.afterPre = fn => { const go = () => { if (V2.prePend) setTimeout(go, 0); else fn(); }; setTimeout(go, 0); };
+-V2.dataReady = () => { if (V2._dataOk) return true; let ok = false;
+-  try { const c = window.__NP_CLAUDE || window.claude; ok = !c || !c.use || META_NODB || META_KEYS.every(k => META_SEEN.has(k)) || performance.now() > 8000; } catch (e) { ok = true; }
+-  return ok ? (V2._dataOk = true) : false; };
++V2._dataRoutes = new Set();
++V2.dataReady = () => { const _hr = (location.hash || '').slice(1).split('=')[0] || 'home'; if (window.__NP_CHUNKS && window.__NP_CHUNKS[_hr] && V2._chunkP[_hr] !== true) return false; if (V2._dataOk) return true; const r = V2.route(); if (V2._dataRoutes.has(r)) return true; let ok = false;
++  try { const c = window.__NP_CLAUDE || window.claude, need = V2.routeDocs(r); ok = !c || !c.use || META_NODB || need.every(k => META_SEEN.has(k)) || performance.now() > 8000; } catch (e) { ok = true; }
++  if (ok) { V2._dataRoutes.add(r); if (typeof META_KEYS === 'object' && META_KEYS.every(k => META_SEEN.has(k))) V2._dataOk = true; }
++  return ok; };
+ setTimeout(() => { if (!V2._dataOk) { V2._dataOk = true; fixMetaSrc(); clearCaches(); V2.redraw(); } }, 8000);
+ // pre-launch check 1 (Nov 17): shown in the main area until today's numbers are in (V2.dataReady, bridge.js): the logo and one line,
+ // announced once (role=status), so a slow phone shows that something is coming instead of old numbers or an empty page
+@@ -506,7 +554,7 @@ V2.setTitle = () => { try { const r = V2.route(); if (r === 'pokemon') return; c
+    never again on a redraw (code review A1-I4, Nov 17) */
+ // pre-launch check 6e (Nov 17): say once, after the first draw, when this device's saved data couldn't be read (01-state.js)
+ setTimeout(() => { try { if (STATE_UNREADABLE && !V2._unrSaid) { V2._unrSaid = 1; V2.toast("Your saved teams on this device couldn't be read, so the sample team is showing. A copy of the old data was kept.", 10000); } } catch (e) {} }, 1500);
+-V2.draw = () => { const app = document.getElementById('app'); if (!app) return; V2.drawN = (V2.drawN || 0) + 1; const {P, html} = V2.shell();
++V2.draw = () => { const app = document.getElementById('app'); if (!app) return; const _r = (location.hash || '').slice(1).split('=')[0] || 'home'; if (window.__NP_NEED_DOCS) window.__NP_NEED_DOCS(V2.routeDocs(_r)); if (window.__NP_CHUNKS && window.__NP_CHUNKS[_r] && V2._chunkP[_r] !== true) V2.loadRoute(_r); V2.drawN = (V2.drawN || 0) + 1; const {P, html} = V2.shell();
+   // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the
+   // pictures already on screen and put them back in place of their identical new copies (same src), so nothing re-decodes.
+   const keep = new Map(); for (const i of app.querySelectorAll('img[src]')) { const k = i.getAttribute('src'); if (!keep.has(k)) keep.set(k, []); keep.get(k).push(i); }
+diff --git a/experiments/same-pixels.mjs b/experiments/same-pixels.mjs
+new file mode 100644
+index 0000000..28f33e6
+--- /dev/null
++++ b/experiments/same-pixels.mjs
+@@ -0,0 +1,224 @@
++// Proof of "no visual change": screenshots the 29 routes at 390 and 1440, light and dark,
++// comparing an old build against a new build, and fails on any pixel difference above a tiny
++// anti-aliasing tolerance (zero external npm dependencies; uses Playwright + Canvas).
++//
++// Usage (two build directories side by side):
++//   node experiments/same-pixels.mjs --old=app/dist-old --new=app/dist [--entry=v2.html] [--diff-dir=experiments/same-pixels-diff]
++//
++// Anti-aliasing tolerance:
++//   - Dimensions (width x height) must match EXACTLY (0 px delta).
++//   - Per-pixel max channel delta <= 4 (out of 255): treated as identical (subpixel font/GPU rounding).
++//   - Anti-aliasing allowance: up to 0.05% of pixels may differ by 5..16 per channel.
++//   - Any pixel differing by > 16 per channel OR > 0.05% of pixels differing by > 4 FAILS.
++import http from 'node:http';
++import fs from 'node:fs';
++import path from 'node:path';
++import {chromium} from 'playwright';
++
++const arg = (k, d) => {
++  const a = process.argv.find(x => x.startsWith(`--${k}=`));
++  return a ? a.slice(k.length + 3) : d;
++};
++const OLD_DIR = path.resolve(arg('old', 'app/dist-old'));
++const NEW_DIR = path.resolve(arg('new', 'app/dist'));
++const ENTRY = arg('entry', 'v2.html');
++const DIFF_DIR = path.resolve(arg('diff-dir', 'experiments/same-pixels-diff'));
++const MAX_CH_IGNORE = 4;      // <= 4/255 per channel = subpixel rounding
++const MAX_CH_AA = 16;         // <= 16/255 per channel allowed only on <= 0.05% AA edge pixels
++const MAX_AA_RATIO = 0.0005;  // 0.05% of total pixels
++
++// 29 routes: 26 named pages from shell.js (V2.places + V2.findPlaces + V2.placeLines) + pokemon + notfound + about=priv.
++// If --discover is passed, also appends any other registered V2.pages keys found on the loaded page.
++const DEFAULT_ROUTES = [
++  '#home', '#build', '#team', '#battle', '#meta',
++  '#box', '#compare', '#usage', '#sets', '#natures',
++  '#tournaments', '#events', '#archetypes', '#weekly',
++  '#speed', '#calc', '#types', '#practice', '#gauntlet',
++  '#track', '#gifts', '#news', '#method', '#about',
++  '#feedback', '#pokemon=Incineroar', '#notfound',
++  '#record', '#about=priv',
++];
++
++const VIEWPORTS = [
++  {name: '390', width: 390, height: 844, isMobile: true},
++  {name: '1440', width: 1440, height: 900, isMobile: false},
++];
++const THEMES = ['day', 'night'];
++
++const MIME = {
++  '.html': 'text/html; charset=utf-8',
++  '.js': 'application/javascript; charset=utf-8',
++  '.css': 'text/css; charset=utf-8',
++  '.json': 'application/json; charset=utf-8',
++  '.svg': 'image/svg+xml',
++  '.webp': 'image/webp',
++  '.png': 'image/png',
++  '.woff2': 'font/woff2',
++};
++
++function startServer(rootDir) {
++  const artFallback = path.resolve(rootDir, '../src/v2/art');
++  const server = http.createServer((req, res) => {
++    const cleanUrl = (req.url || '/').split('?')[0].split('#')[0];
++    let rel = decodeURIComponent(cleanUrl).replace(/^\/+/, '') || ENTRY;
++    let filePath = path.resolve(rootDir, rel);
++    if (!filePath.startsWith(rootDir)) { res.writeHead(403); res.end(); return; }
++    if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) filePath = path.join(filePath, 'index.html');
++    if (!fs.existsSync(filePath) && rel.startsWith('art/') && fs.existsSync(artFallback)) {
++      const alt = path.resolve(artFallback, rel.slice(4));
++      if (alt.startsWith(artFallback) && fs.existsSync(alt)) filePath = alt;
++    }
++    if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) { res.writeHead(404); res.end(); return; }
++    const ext = path.extname(filePath).toLowerCase();
++    res.writeHead(200, {'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': 'no-store'});
++    res.end(fs.readFileSync(filePath));
++  });
++  return new Promise(resolve => {
++    server.listen(0, '127.0.0.1', () => resolve({server, baseUrl: `http://127.0.0.1:${server.address().port}`}));
++  });
++}
++
++async function snap(browser, baseUrl, route, vp, theme) {
++  const context = await browser.newContext({
++    viewport: {width: vp.width, height: vp.height},
++    deviceScaleFactor: 1,
++    isMobile: vp.isMobile,
++    reducedMotion: 'reduce',
++  });
++  const page = await context.newPage();
++  // Pin theme and clock so rotating underdog / "updated X h ago" stay identical between old and new builds.
++  await page.addInitScript(th => {
++    try { localStorage.setItem('np2.theme', th); } catch (e) {}
++    const FIXED = Date.parse('2026-11-25T12:00:00Z');
++    const RealDate = Date;
++    class FixedDate extends RealDate {
++      constructor(...a) { super(...(a.length ? a : [FIXED])); }
++      static now() { return FIXED; }
++    }
++    window.Date = FixedDate;
++  }, theme);
++
++  await page.goto(`${baseUrl}/${ENTRY}${route}`, {waitUntil: 'networkidle', timeout: 60000});
++  await page.waitForFunction(() => {
++    const m = document.getElementById('main');
++    return !!(m && !m.querySelector('.np-loading') && m.children.length > 0);
++  }, null, {timeout: 15000}).catch(() => {});
++  // Wait for fonts and all visible images to decode.
++  await page.evaluate(async () => {
++    try { await document.fonts.ready; } catch (e) {}
++    const imgs = [...document.querySelectorAll('img')].filter(i => i.offsetParent !== null);
++    await Promise.all(imgs.map(i => {
++      if (i.loading === 'lazy') i.loading = 'eager';
++      return i.complete ? null : new Promise(r => { i.addEventListener('load', r, {once: true}); i.addEventListener('error', r, {once: true}); setTimeout(r, 3000); });
++    }));
++  });
++  await page.waitForTimeout(150);
++  const buf = await page.screenshot({fullPage: true, animations: 'disabled'});
++  await context.close();
++  return buf;
++}
++
++async function diffPngs(diffPage, oldBuf, newBuf) {
++  return diffPage.evaluate(async ({aB64, bB64, ignore, maxAa}) => {
++    const load = async b64 => {
++      const bin = atob(b64), arr = new Uint8Array(bin.length);
++      for (let i = 0; i < bin.length; i++) arr[i] = bin.charCodeAt(i);
++      const bmp = await createImageBitmap(new Blob([arr], {type: 'image/png'}));
++      const c = document.createElement('canvas'); c.width = bmp.width; c.height = bmp.height;
++      const ctx = c.getContext('2d'); ctx.drawImage(bmp, 0, 0);
++      return {w: bmp.width, h: bmp.height, data: ctx.getImageData(0, 0, bmp.width, bmp.height).data};
++    };
++    const a = await load(aB64), b = await load(bB64);
++    if (a.w !== b.w || a.h !== b.h) {
++      return {ok: false, reason: `size mismatch ${a.w}x${a.h} vs ${b.w}x${b.h}`, diffPixels: -1, hardPixels: -1, maxDelta: 255, total: a.w * a.h, diffPngB64: null};
++    }
++    const total = a.w * a.h;
++    let diffPixels = 0, hardPixels = 0, maxDelta = 0;
++    const out = new Uint8ClampedArray(a.data.length);
++    for (let i = 0; i < a.data.length; i += 4) {
++      const d = Math.max(
++        Math.abs(a.data[i] - b.data[i]),
++        Math.abs(a.data[i + 1] - b.data[i + 1]),
++        Math.abs(a.data[i + 2] - b.data[i + 2]),
++        Math.abs(a.data[i + 3] - b.data[i + 3]),
++      );
++      if (d > maxDelta) maxDelta = d;
++      if (d > ignore) {
++        diffPixels++;
++        if (d > maxAa) hardPixels++;
++        out[i] = 255; out[i + 1] = d > maxAa ? 0 : 180; out[i + 2] = 0; out[i + 3] = 255;
++      } else {
++        out[i] = b.data[i]; out[i + 1] = b.data[i + 1]; out[i + 2] = b.data[i + 2]; out[i + 3] = 60;
++      }
++    }
++    let diffPngB64 = null;
++    if (hardPixels > 0 || diffPixels / total > 0.0005) {
++      const c = document.createElement('canvas'); c.width = a.w; c.height = a.h;
++      c.getContext('2d').putImageData(new ImageData(out, a.w, a.h), 0, 0);
++      diffPngB64 = c.toDataURL('image/png').split(',')[1];
++    }
++    return {ok: hardPixels === 0 && (diffPixels / total) <= 0.0005, reason: '', diffPixels, hardPixels, maxDelta, total, diffPngB64};
++  }, {aB64: oldBuf.toString('base64'), bB64: newBuf.toString('base64'), ignore: MAX_CH_IGNORE, maxAa: MAX_CH_AA});
++}
++
++if (!fs.existsSync(OLD_DIR) || !fs.existsSync(NEW_DIR)) {
++  console.error(`Missing build directory: old=${OLD_DIR} (${fs.existsSync(OLD_DIR)}) new=${NEW_DIR} (${fs.existsSync(NEW_DIR)})`);
++  process.exit(1);
++}
++
++const sOld = await startServer(OLD_DIR);
++const sNew = await startServer(NEW_DIR);
++const browser = await chromium.launch();
++const diffPage = await browser.newPage();
++let passed = 0, failed = 0;
++const failures = [];
++
++try {
++  let routes = arg('routes', '') ? arg('routes', '').split(',') : [...DEFAULT_ROUTES];
++  if (process.argv.includes('--discover')) {
++    const p = await browser.newPage();
++    await p.goto(`${sOld.baseUrl}/${ENTRY}#home`, {waitUntil: 'load'});
++    const keys = await p.evaluate(() => Object.keys((window.V2 && window.V2.pages) || {}));
++    await p.close();
++    const seen = new Set(routes.map(r => r.replace(/^#/, '').split('=')[0]));
++    for (const k of keys) if (!seen.has(k)) routes.push(k === 'pokemon' ? '#pokemon=Incineroar' : `#${k}`);
++  }
++
++  console.log(`same-pixels: comparing ${routes.length} routes x ${VIEWPORTS.length} widths x ${THEMES.length} themes = ${routes.length * VIEWPORTS.length * THEMES.length} shots`);
++  console.log(`tolerance: exact dimensions, channel delta <= ${MAX_CH_IGNORE} ignored, <= ${MAX_CH_AA} allowed on <= ${(MAX_AA_RATIO * 100).toFixed(2)}% pixels\n`);
++
++  for (const route of routes) {
++    for (const vp of VIEWPORTS) {
++      for (const theme of THEMES) {
++        const [oldBuf, newBuf] = await Promise.all([
++          snap(browser, sOld.baseUrl, route, vp, theme),
++          snap(browser, sNew.baseUrl, route, vp, theme),
++        ]);
++        const res = await diffPngs(diffPage, oldBuf, newBuf);
++        const tag = `${route} ${vp.name} ${theme}`;
++        if (res.ok) {
++          passed++;
++        } else {
++          failed++;
++          const pct = res.total > 0 ? ((100 * res.diffPixels) / res.total).toFixed(4) : 'n/a';
++          const msg = `${tag}: ${res.reason || `diff=${res.diffPixels} (${pct}%), hard=${res.hardPixels}, maxDelta=${res.maxDelta}`}`;
++          failures.push(msg);
++          console.log(`FAIL  ${msg}`);
++          fs.mkdirSync(DIFF_DIR, {recursive: true});
++          const slug = tag.replace(/[^a-z0-9]+/gi, '_');
++          fs.writeFileSync(path.join(DIFF_DIR, `${slug}_old.png`), oldBuf);
++          fs.writeFileSync(path.join(DIFF_DIR, `${slug}_new.png`), newBuf);
++          if (res.diffPngB64) fs.writeFileSync(path.join(DIFF_DIR, `${slug}_diff.png`), Buffer.from(res.diffPngB64, 'base64'));
++        }
++      }
++    }
++  }
++  console.log(`\nsame-pixels result: ${passed} passed, ${failed} failed`);
++  if (failures.length) console.log(`Diff images written to ${DIFF_DIR}`);
++} finally {
++  await browser.close();
++  sOld.server.close();
++  sNew.server.close();
++}
++
++if (failed > 0) process.exit(1);
+diff --git a/experiments/speed.mjs b/experiments/speed.mjs
+new file mode 100644
+index 0000000..7b06dff
+--- /dev/null
++++ b/experiments/speed.mjs
+@@ -0,0 +1,280 @@
++// Measure NastyPlot v2 load speed on a throttled phone (Playwright + CDP, no Lighthouse).
++// Usage:
++//   node experiments/speed.mjs [--dir=app/dist] [--entry=v2.html] [--runs=3] [--gzip] [--json=out.json] [--compare=before.json]
++// Measures FCP, LCP, TBT (long tasks > 50 ms), JS parse/eval (CDP ScriptDuration), and bytes over the wire
++// at 390x844, 4x CPU slowdown, 4G network (9 Mbps down, 1.5 Mbps up, 40 ms RTT), 3 runs each, median.
++import http from 'node:http';
++import fs from 'node:fs';
++import path from 'node:path';
++import zlib from 'node:zlib';
++import {chromium} from 'playwright';
++
++const arg = (k, d) => {
++  const a = process.argv.find(x => x.startsWith(`--${k}=`));
++  return a ? a.slice(k.length + 3) : d;
++};
++const DIST_DIR = path.resolve(arg('dir', 'app/dist'));
++const ENTRY = arg('entry', 'v2.html');
++const RUNS = Math.max(1, Number(arg('runs', '3')) || 3);
++const USE_GZIP = !process.argv.includes('--no-gzip');
++const JSON_OUT = arg('json', '');
++const COMPARE_IN = arg('compare', '');
++const ROUTES = (arg('routes', '') ? arg('routes', '').split(',') : [
++  '#home',
++  '#team',
++  '#calc',
++  '#meta',
++  '#pokemon=Incineroar',
++]);
++
++// 4G profile requested in Job 14 Part A: 9 Mbps down, 1.5 Mbps up, 40 ms RTT.
++const NET_4G = {
++  offline: false,
++  downloadThroughput: (9 * 1000 * 1000) / 8,
++  uploadThroughput: (1.5 * 1000 * 1000) / 8,
++  latency: 40,
++};
++
++const MIME = {
++  '.html': 'text/html; charset=utf-8',
++  '.js': 'application/javascript; charset=utf-8',
++  '.mjs': 'application/javascript; charset=utf-8',
++  '.css': 'text/css; charset=utf-8',
++  '.json': 'application/json; charset=utf-8',
++  '.svg': 'image/svg+xml',
++  '.webp': 'image/webp',
++  '.png': 'image/png',
++  '.woff2': 'font/woff2',
++  '.map': 'application/json; charset=utf-8',
++};
++const COMPRESSIBLE = new Set(['.html', '.js', '.mjs', '.css', '.json', '.svg']);
++
++function startServer(rootDir) {
++  const artFallback = path.resolve(rootDir, '../src/v2/art');
++  const server = http.createServer((req, res) => {
++    const cleanUrl = (req.url || '/').split('?')[0].split('#')[0];
++    let rel = decodeURIComponent(cleanUrl).replace(/^\/+/, '');
++    if (!rel) rel = ENTRY;
++    let filePath = path.resolve(rootDir, rel);
++    if (!filePath.startsWith(rootDir)) { res.writeHead(403); res.end(); return; }
++    if (fs.existsSync(filePath) && fs.statSync(filePath).isDirectory()) {
++      filePath = path.join(filePath, 'index.html');
++    }
++    if (!fs.existsSync(filePath) && rel.startsWith('art/') && fs.existsSync(artFallback)) {
++      const alt = path.resolve(artFallback, rel.slice(4));
++      if (alt.startsWith(artFallback) && fs.existsSync(alt)) filePath = alt;
++    }
++    if (!fs.existsSync(filePath) || fs.statSync(filePath).isDirectory()) {
++      res.writeHead(404); res.end('Not found'); return;
++    }
++    const ext = path.extname(filePath).toLowerCase();
++    const raw = fs.readFileSync(filePath);
++    const ae = String(req.headers['accept-encoding'] || '');
++    const headers = {'Content-Type': MIME[ext] || 'application/octet-stream', 'Cache-Control': 'no-store'};
++    if (USE_GZIP && COMPRESSIBLE.has(ext) && ae.includes('gzip')) {
++      const gz = zlib.gzipSync(raw, {level: 6});
++      headers['Content-Encoding'] = 'gzip';
++      headers['Content-Length'] = gz.length;
++      res.writeHead(200, headers);
++      res.end(gz);
++      return;
++    }
++    headers['Content-Length'] = raw.length;
++    res.writeHead(200, headers);
++    res.end(raw);
++  });
++  return new Promise(resolve => {
++    server.listen(0, '127.0.0.1', () => {
++      const addr = server.address();
++      resolve({server, baseUrl: `http://127.0.0.1:${addr.port}`});
++    });
++  });
++}
++
++function median(arr) {
++  const s = [...arr].filter(Number.isFinite).sort((a, b) => a - b);
++  if (!s.length) return NaN;
++  const m = Math.floor(s.length / 2);
++  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2;
++}
++
++async function measureOnce(browser, baseUrl, route) {
++  const context = await browser.newContext({
++    viewport: {width: 390, height: 844},
++    deviceScaleFactor: 3,
++    isMobile: true,
++    hasTouch: true,
++  });
++  const page = await context.newPage();
++  const cdp = await context.newCDPSession(page);
++  await cdp.send('Network.enable');
++  await cdp.send('Network.setCacheDisabled', {cacheDisabled: true});
++  await cdp.send('Network.emulateNetworkConditions', NET_4G);
++  await cdp.send('Emulation.setCPUThrottlingRate', {rate: 4});
++  await cdp.send('Performance.enable');
++
++  const reqTypes = new Map();
++  const bytesByType = {Document: 0, Stylesheet: 0, Script: 0, Font: 0, Image: 0, Other: 0};
++  let wireBytes = 0;
++  const pageErrors = [];
++
++  cdp.on('Network.responseReceived', ev => {
++    reqTypes.set(ev.requestId, ev.type || 'Other');
++  });
++  cdp.on('Network.loadingFinished', ev => {
++    const n = ev.encodedDataLength || 0;
++    wireBytes += n;
++    const t = reqTypes.get(ev.requestId) || 'Other';
++    if (t in bytesByType) bytesByType[t] += n;
++    else bytesByType.Other += n;
++  });
++  page.on('pageerror', err => pageErrors.push(String(err && err.message || err)));
++
++  await page.addInitScript(() => {
++    window.__NP_SPEED = {fcp: null, lcp: null, lcpEl: '', longTasks: []};
++    try {
++      new PerformanceObserver(list => {
++        for (const e of list.getEntries()) {
++          if (e.name === 'first-contentful-paint' && window.__NP_SPEED.fcp == null) {
++            window.__NP_SPEED.fcp = e.startTime;
++          }
++        }
++      }).observe({type: 'paint', buffered: true});
++    } catch (e) {}
++    try {
++      new PerformanceObserver(list => {
++        for (const e of list.getEntries()) {
++          window.__NP_SPEED.lcp = e.startTime;
++          const el = e.element;
++          window.__NP_SPEED.lcpEl = el ? (el.tagName + (el.className ? '.' + String(el.className).trim().split(/\s+/)[0] : '')) : '';
++        }
++      }).observe({type: 'largest-contentful-paint', buffered: true});
++    } catch (e) {}
++    try {
++      new PerformanceObserver(list => {
++        for (const e of list.getEntries()) {
++          window.__NP_SPEED.longTasks.push({start: e.startTime, dur: e.duration});
++        }
++      }).observe({type: 'longtask', buffered: true});
++    } catch (e) {}
++  });
++
++  const url = `${baseUrl}/${ENTRY}${route}`;
++  await page.goto(url, {waitUntil: 'load', timeout: 60000});
++  // Wait for the loading screen to clear and main content to settle (up to 15 s).
++  await page.waitForFunction(() => {
++    const m = document.getElementById('main');
++    return !!(m && !m.querySelector('.np-loading') && m.children.length > 0);
++  }, null, {timeout: 15000}).catch(() => {});
++  // Let any post-draw long tasks and LCP candidates finish.
++  await page.waitForTimeout(800);
++
++  const perf = await page.evaluate(() => {
++    const s = window.__NP_SPEED || {fcp: null, lcp: null, lcpEl: '', longTasks: []};
++    if (s.fcp == null) {
++      const f = performance.getEntriesByName('first-contentful-paint')[0];
++      if (f) s.fcp = f.startTime;
++    }
++    const fcp = s.fcp || 0;
++    const tbt = s.longTasks
++      .filter(t => t.start + t.dur > fcp)
++      .reduce((sum, t) => sum + Math.max(0, t.dur - 50), 0);
++    const maxTask = s.longTasks.reduce((m, t) => Math.max(m, t.dur), 0);
++    const nav = performance.getEntriesByType('navigation')[0];
++    return {
++      fcpMs: s.fcp != null ? Math.round(s.fcp) : NaN,
++      lcpMs: s.lcp != null ? Math.round(s.lcp) : NaN,
++      lcpEl: s.lcpEl,
++      tbtMs: Math.round(tbt),
++      longTasks: s.longTasks.length,
++      maxTaskMs: Math.round(maxTask),
++      domContentLoadedMs: nav ? Math.round(nav.domContentLoadedEventEnd) : NaN,
++      loadMs: nav ? Math.round(nav.loadEventEnd) : NaN,
++    };
++  });
++
++  const {metrics} = await cdp.send('Performance.getMetrics');
++  const getM = name => (metrics.find(m => m.name === name) || {}).value || 0;
++  const jsParseEvalMs = Math.round(getM('ScriptDuration') * 1000);
++
++  await context.close();
++  return {
++    ...perf,
++    jsParseEvalMs,
++    wireKB: Math.round(wireBytes / 1024),
++    wireBytes,
++    bytesByType,
++    pageErrors,
++  };
++}
++
++function fmt(n, unit = '') {
++  return Number.isFinite(n) ? `${Math.round(n)}${unit}` : 'n/a';
++}
++
++const {server, baseUrl} = await startServer(DIST_DIR);
++const browser = await chromium.launch();
++const summary = [];
++let hadErrors = false;
++
++try {
++  console.log(`NastyPlot speed check | dir=${DIST_DIR} entry=${ENTRY} gzip=${USE_GZIP} runs=${RUNS} | 390x844, 4x CPU, 4G (9 Mbps / 40 ms RTT)\n`);
++  for (const route of ROUTES) {
++    const runs = [];
++    for (let i = 0; i < RUNS; i++) {
++      const r = await measureOnce(browser, baseUrl, route);
++      if (r.pageErrors.length) hadErrors = true;
++      runs.push(r);
++    }
++    const med = {
++      route,
++      fcpMs: median(runs.map(r => r.fcpMs)),
++      lcpMs: median(runs.map(r => r.lcpMs)),
++      tbtMs: median(runs.map(r => r.tbtMs)),
++      jsParseEvalMs: median(runs.map(r => r.jsParseEvalMs)),
++      wireKB: median(runs.map(r => r.wireKB)),
++      wireBytes: median(runs.map(r => r.wireBytes)),
++      longTasks: median(runs.map(r => r.longTasks)),
++      lcpEl: runs[Math.floor(runs.length / 2)].lcpEl,
++      errors: runs.flatMap(r => r.pageErrors),
++    };
++    summary.push(med);
++  }
++
++  const hdr = ['Route'.padEnd(22), 'FCP'.padStart(8), 'LCP'.padStart(8), 'TBT'.padStart(8), 'JS Eval'.padStart(9), 'Wire KB'.padStart(9), 'LCP El'].join('  ');
++  console.log(hdr);
++  console.log('-'.repeat(hdr.length + 12));
++  for (const r of summary) {
++    console.log([
++      r.route.padEnd(22),
++      fmt(r.fcpMs, 'ms').padStart(8),
++      fmt(r.lcpMs, 'ms').padStart(8),
++      fmt(r.tbtMs, 'ms').padStart(8),
++      fmt(r.jsParseEvalMs, 'ms').padStart(9),
++      fmt(r.wireKB, 'KB').padStart(9),
++      r.lcpEl || '',
++    ].join('  '));
++    if (r.errors.length) console.log(`  ERROR: ${r.errors.join(' | ')}`);
++  }
++
++  if (COMPARE_IN && fs.existsSync(COMPARE_IN)) {
++    const prev = JSON.parse(fs.readFileSync(COMPARE_IN, 'utf8'));
++    console.log(`\nDelta vs ${COMPARE_IN} (negative = faster / smaller):`);
++    for (const r of summary) {
++      const p = prev.find(x => x.route === r.route);
++      if (!p) continue;
++      const d = (a, b, u) => `${a - b >= 0 ? '+' : ''}${Math.round(a - b)}${u}`;
++      console.log(`  ${r.route.padEnd(22)} FCP ${d(r.fcpMs, p.fcpMs, 'ms')} | LCP ${d(r.lcpMs, p.lcpMs, 'ms')} | TBT ${d(r.tbtMs, p.tbtMs, 'ms')} | JS ${d(r.jsParseEvalMs, p.jsParseEvalMs, 'ms')} | Wire ${d(r.wireKB, p.wireKB, 'KB')}`);
++    }
++  }
++
++  if (JSON_OUT) {
++    fs.writeFileSync(JSON_OUT, JSON.stringify(summary, null, 2));
++    console.log(`\nWrote ${JSON_OUT}`);
++  }
++} finally {
++  await browser.close();
++  server.close();
++}
++
++if (hadErrors) process.exit(1);

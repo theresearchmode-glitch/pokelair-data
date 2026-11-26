@@ -1,0 +1,17 @@
+/* Home, The Stampede (Sim, Nov 18): shared band rules. Brief: docs/rebuild/stampede/BRIEF.md. Bands overlap at their slanted edges.
+   Owned by the hero builder; the other bands add only to their own files.
+   The edge: each band after the first starts with a slanted top edge, low on the left and high on the right (as the mock-ups: 72px over
+   1440 on desktop, 36px on a phone), and slides up over the band before it by the same amount (--sd-cut). So:
+   - every band keeps --sd-cut of empty room at its bottom (the next band's corner covers its bottom-left); the last band doesn't;
+   - every band after the first keeps --sd-cut of room at its top (its own slanted corner);
+   - headings tilt with the bands: use rotate:var(--sd-tilt) (the same angle as the edges on desktop). */
+.sd{display:block;overflow-x:clip;--sd-cut:round(up,max(36px,5vw),4px);--sd-tilt:-2.862deg}
+.sd-band{position:relative;padding:var(--s16) var(--gut) calc(var(--s16) + var(--sd-cut))}
+.sd-band+.sd-band{margin-top:calc(var(--sd-cut) * -1);padding-top:calc(var(--s16) + var(--sd-cut));clip-path:polygon(0 var(--sd-cut),100% 0,100% 100%,0 100%)}
+.sd-band:last-child{padding-bottom:var(--s16)}
+.sd-hero{background:var(--sd-ink);color:var(--sd-on-band)} /* the hero's blue is its scene; its ledge and ticker sit on ink, like the six band */
+.sd-six{background:var(--sd-ink);color:var(--sd-on-band)}
+.sd-tools{background:var(--sd-tools-bg);color:var(--ink)}
+.sd-post{background:var(--sd-flag);color:var(--sd-on-band)}
+/* Home length (Nov 23, direction for Sim): at 1100+ the bands keep 40px of room above and below their content, not 64 (the slanted cut stays) */
+@media (min-width:1100px){.sd-band{padding-top:var(--s10);padding-bottom:calc(var(--s10) + var(--sd-cut))}.sd-band+.sd-band{padding-top:calc(var(--s10) + var(--sd-cut))}.sd-band:last-child{padding-bottom:var(--s10)}}

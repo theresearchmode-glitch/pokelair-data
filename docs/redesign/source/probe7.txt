@@ -1,0 +1,3 @@
+(() => { const b = document.querySelector('.sidenav [data-view="box"]') || document.querySelector('[data-view="box"]'); if (b) { b.click(); return 'box'; } return 'no box button: ' + [...document.querySelectorAll('[data-view]')].map(x => x.getAttribute('data-view')).filter((v, i, a) => a.indexOf(v) === i).join(','); })()
+//---
+JSON.stringify({pg: document.documentElement.getAttribute('data-pg'), box: typeof S !== 'undefined' ? JSON.stringify(S.box).slice(0, 600) : null, txt: (document.querySelector('main') || document.body).innerText.replace(/[ \t]+/g, ' ').replace(/\n\s*\n+/g, '\n').slice(0, 4500)})

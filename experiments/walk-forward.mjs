@@ -57,9 +57,9 @@ const cal = bands.filter(B => B.n >= 30).map(B => ({band: `${Math.round(B.a * 10
 const calGap = cal.reduce((a, c) => a + c.n * Math.abs(c.said - c.won), 0) / Math.max(1, cal.reduce((a, c) => a + c.n, 0));
 const tops = weeks.filter(w => w.top), tn = tops.reduce((a, w) => a + w.top.n, 0), tg = tops.reduce((a, w) => a + w.top.good, 0);
 const S = {tag, made: new Date().toISOString(), row: ROW, cuts, games: p.length, ll: +ll.toFixed(5), pick: +(r / n * 100).toFixed(2), calGap: +calGap.toFixed(2), cal,
-  topCut: tn ? {n: tn, good: tg, share: +(tg / tn).toFixed(4)} : null, coinFlipLL: 0.69315, weeks};
+  topCut: tn ? {n: tn, good: tg, share: +(tg / tn).toFixed(4), even: tops[0].top.even != null ? tops[0].top.even : 80} : null, coinFlipLL: 0.69315, weeks};
 fs.writeFileSync(DIR + 'summary.json', JSON.stringify(S, null, 1));
 console.log(`\n${tag}: ${p.length} later games over ${cuts.length} weeks · log-loss ${S.ll} (coin flip 0.6931) · higher grade wins ${S.pick}% · calibration gap ${S.calGap} pts`);
 console.log(`  calibration: ${cal.map(c => `said ${c.said}% → won ${c.won}% (${c.n})`).join(' · ')}`);
-if (S.topCut) console.log(`  top-4 teams scoring 80+ (Tournament ready) before their event: ${tg} of ${tn} (${Math.round(tg / tn * 100)}%)`);
+if (S.topCut) console.log(`  top-4 teams favoured before their event (scoring ${S.topCut.even}+, a 50%+ win chance): ${tg} of ${tn} (${Math.round(tg / tn * 100)}%)`);
 console.log(`  saved ${DIR}summary.json and pred.json`);

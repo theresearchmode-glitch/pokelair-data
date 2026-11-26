@@ -1,0 +1,131 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><title>NastyPlot home concept: room to breathe</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,200..800&family=Instrument+Sans:wght@400..700&display=swap">
+<style>
+:root{--bg:#FBFAF7;--ink:#17161A;--ink2:#5B5862;--ink3:#8B8892;--rule:rgba(23,22,26,.1);--d:"Bricolage Grotesque",system-ui,sans-serif;--b:"Instrument Sans",system-ui,sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1440px;overflow-x:hidden;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--b);-webkit-font-smoothing:antialiased}
+section{position:relative}
+.wash{position:absolute;border-radius:50%;pointer-events:none;filter:blur(40px)}
+.eyebrow{font:500 13px/1 var(--b);letter-spacing:.08em;color:var(--ink3)}
+h1,h2,.num{font-family:var(--d);font-variation-settings:"opsz" 96;letter-spacing:-.04em}
+h1{font-size:92px;line-height:.96;font-weight:300}h1 b{font-weight:600;display:block}
+h2{font-size:60px;line-height:1;font-weight:300}h2 b{font-weight:600}
+p.lede{font-size:19px;line-height:1.5;color:var(--ink2);max-width:430px}
+.pill{display:inline-flex;align-items:center;height:54px;padding:0 26px;border-radius:999px;background:var(--ink);color:#fff;font:600 16px/1 var(--b)}
+.link{font:600 16px/1 var(--b);color:var(--ink);border-bottom:1.5px solid currentColor;padding-bottom:3px}
+.mon{position:absolute;display:block}
+.shadow{position:absolute;border-radius:50%;background:radial-gradient(closest-side,rgba(30,20,50,.3),transparent);filter:blur(4px)}
+.cap{font:600 14px/1.25 var(--b);text-align:center;white-space:nowrap}.cap i{font-style:normal;font-weight:500;color:var(--ink3);margin-left:5px}
+/* header */
+header{position:absolute;z-index:9;left:0;right:0;top:0;height:76px;display:flex;align-items:center;padding:0 96px}
+header .wm{font:700 22px/1 var(--d);letter-spacing:-.04em}header .wm span{font-weight:300}
+nav{display:flex;gap:38px;margin:0 auto}nav a{font:500 15px/1 var(--b);color:var(--ink2)}
+header .s{display:flex;align-items:center;gap:22px;color:var(--ink2);font:500 15px/1 var(--b)}
+/* hero */
+.hero{height:980px}
+.hero .txt{position:absolute;z-index:5;left:96px;top:214px;width:560px}
+.hero h1{margin:26px 0 30px}
+.acts{display:flex;align-items:center;gap:26px;margin-top:36px}
+.spec{position:absolute;z-index:5;left:1238px;width:180px}
+.spec .num{font-size:66px;line-height:1;font-weight:200}.spec .num small{font-size:30px;font-weight:300;margin-left:2px}
+.spec span{display:block;font-size:14px;line-height:1.35;color:var(--ink2);margin-top:6px}
+.spec::before{content:"";position:absolute;right:100%;top:34px;width:52px;height:1px;background:var(--ink);opacity:.35;margin-right:12px}
+.spec::after{content:"";position:absolute;right:100%;top:31px;width:7px;height:7px;border-radius:50%;background:var(--ink);margin-right:62px}
+.rail{position:absolute;z-index:5;left:96px;right:96px;top:860px;padding-top:20px;border-top:1px solid var(--rule);display:flex;align-items:center;justify-content:space-between}
+.rail .lab{width:150px;font-size:14px;line-height:1.35;color:var(--ink2)}.rail .lab b{display:block;color:var(--ink);font-weight:600}
+.rail .it{display:flex;align-items:center;gap:10px;font:600 14px/1.25 var(--b)}.rail .it img{width:58px;height:58px}
+.rail .it small{display:block;font:500 13px/1.2 var(--b);color:var(--ink3)}
+.rail .it.on{position:relative}.rail .it.on::after{content:"";position:absolute;left:0;right:0;bottom:-12px;height:2px;background:var(--ink)}
+.path{position:absolute;z-index:2}
+/* pairs */
+.pairs{height:760px}
+.pairs .txt{position:absolute;z-index:5;left:96px;top:250px;width:470px}
+.pairs h2{margin:22px 0 24px}
+.pairs .big{position:absolute;z-index:1;left:560px;top:96px;width:820px;text-align:center;font-family:var(--d);font-variation-settings:"opsz" 96;font-weight:700;font-size:300px;line-height:1;letter-spacing:-.06em}
+.pairs .plus{position:absolute;z-index:4;left:948px;top:520px;width:44px;height:44px;border-radius:50%;background:#fff;display:grid;place-items:center;font:300 28px/1 var(--d);box-shadow:0 10px 30px -10px rgba(30,20,50,.35)}
+/* six */
+.six{height:770px}
+.six .txt{position:absolute;z-index:5;left:96px;top:110px;right:96px;display:flex;justify-content:space-between;align-items:flex-end}
+.six .txt p{max-width:440px}
+.floor{position:absolute;left:96px;right:96px;height:1px;background:linear-gradient(90deg,transparent,var(--rule) 12%,var(--rule) 88%,transparent)}
+/* week */
+.week{height:680px}
+.week .txt{position:absolute;z-index:5;left:96px;top:130px;width:420px}
+.week h2{margin:22px 0 24px}
+.week .v{position:absolute;font:300 34px/1 var(--d);letter-spacing:-.03em;text-align:center;width:160px;margin-left:-80px}
+.week .stem{position:absolute;width:1px;background:var(--ink);opacity:.35}
+/* tools */
+.tools{padding:110px 96px 120px;display:grid;grid-template-columns:repeat(4,1fr);gap:0 56px;border-top:1px solid var(--rule)}
+.tools .col img{width:92px;height:92px;margin-left:-10px}
+.tools h3{font:600 26px/1.1 var(--d);letter-spacing:-.03em;margin:10px 0 8px}
+.tools p{font-size:15px;line-height:1.45;color:var(--ink2);min-height:66px}
+.tools ul{list-style:none;margin-top:14px}.tools li{font-size:16px;font-weight:500;padding:11px 0;border-top:1px solid var(--rule);display:flex;justify-content:space-between}.tools li span{color:var(--ink3)}
+footer{display:flex;align-items:center;gap:40px;padding:0 96px;height:110px;border-top:1px solid var(--rule);font-size:15px;color:var(--ink2)}
+footer .wm{font:700 20px/1 var(--d);letter-spacing:-.04em;color:var(--ink)}footer .wm span{font-weight:300}footer .r{margin-left:auto;display:flex;gap:32px}
+.page{width:1440px;overflow:hidden;position:relative}</style></head><body><div class="page">
+<header><div class="wm">Nasty<span>Plot</span></div><nav><a>Build</a><a>My team</a><a>Battle</a><a>Meta</a></nav>
+  <div class="s"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="7"/><path d="M20 20l-4-4"/></svg><span>Search</span></div></header>
+<section class="hero" id="hero"></section>
+<section class="pairs" id="pairs"></section>
+<section class="six" id="six"></section>
+<section class="week" id="week"></section>
+<section class="tools" id="tools"></section>
+<footer><div class="wm">Nasty<span>Plot</span></div><span>Team building for Pokémon Champions, from real tournament results.</span><div class="r"><span>How the ratings work</span><span>About</span><span>Send feedback</span></div></footer>
+</div><script>
+/*DATA*/
+const N=n=>n.toLocaleString('en-US'),$=id=>document.getElementById(id);
+// every scene borrows its colours from the Pokemon standing in it
+function hsl(r,g,b){r/=255;g/=255;b/=255;const mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let h=0,s=0;if(d){s=d/(1-Math.abs(2*l-1));h=mx==r?((g-b)/d)%6:mx==g?(b-r)/d+2:(r-g)/d+4;h=(h*60+360)%360;}return[h,s,l];}
+async function pal(src){const im=new Image();im.src=src;await im.decode();const c=document.createElement('canvas');c.width=c.height=48;const x=c.getContext('2d');x.drawImage(im,0,0,48,48);const d=x.getImageData(0,0,48,48).data,B=Array.from({length:18},()=>[0,0,0,0]);
+  for(let i=0;i<d.length;i+=4){if(d[i+3]<200)continue;const[h,s,l]=hsl(d[i],d[i+1],d[i+2]);if(s<.28||l<.2||l>.86)continue;const b=B[Math.floor(h/20)%18],w=s*s;b[0]+=d[i]*w;b[1]+=d[i+1]*w;b[2]+=d[i+2]*w;b[3]+=w;}
+  const o=B.map((b,i)=>({i,w:b[3],c:b[3]?b.slice(0,3).map(v=>Math.round(v/b[3])):[200,200,210]})).sort((a,b)=>b.w-a.w),a=o[0],b2=o.find(q=>q.w>a.w*.12&&Math.min(Math.abs(q.i-a.i),18-Math.abs(q.i-a.i))>=3)||a;return[a.c,b2.c];}
+const sat=c=>hsl(c[0],c[1],c[2])[1],vivid=(a,b)=>sat(b)>sat(a)+.08?b:a;const rgb=(c,a)=>`rgba(${c[0]},${c[1]},${c[2]},${a})`,deep=c=>{const k=.62;return `rgb(${c.map(v=>Math.round(v*k)).join(',')})`;};
+const wash=(c,x,y,w,h,a)=>`<i class="wash" style="left:${x-w/2}px;top:${y-h/2}px;width:${w}px;height:${h}px;background:radial-gradient(closest-side,${rgb(c,a)},${rgb(c,0)})"></i>`;
+const img=(m,x,y,z,st='')=>`<img class="mon" src="${m.img}" style="left:${x}px;top:${y}px;width:${z}px;height:${z}px;${st}">`;
+const sh=(cx,cy,w,h=w*.13,o=1)=>`<i class="shadow" style="left:${cx-w/2}px;top:${cy-h/2}px;width:${w}px;height:${h}px;opacity:${o}"></i>`;
+(async()=>{
+  // ---------- hero ----------
+  const H=D.hero,[a,b]=await pal(H.img);window.__pal=a.join(',');
+  $('hero').innerHTML=wash(a,1000,480,1100,860,.42)+wash(b,1280,760,620,460,.3)+wash(a,240,900,700,400,.16)
+    +img(D.back[0],1030,150,300,'z-index:1;filter:blur(5px) saturate(.85) opacity(.5)')+img(D.back[1],560,360,250,'z-index:1;filter:blur(6px) saturate(.85) opacity(.42)')
+    +sh(980,748,380)+img(H,730,256,500,'z-index:3')
+    +img(D.extra[0],640,120,124,'z-index:4;transform:rotate(-8deg)')+`<svg class="path" style="left:520px;top:150px" width="150" height="60"><path d="M4 50C40 10 90 60 140 20" fill="none" stroke="rgba(23,22,26,.3)" stroke-width="1.5" stroke-dasharray="1 7" stroke-linecap="round"/></svg>`
+    +sh(712,792,110)+img(D.extra[1],652,676,120,'z-index:4')
+    +`<div class="txt"><div class="eyebrow">Pokémon Champions · Reg M-C doubles</div><h1>Sharply raise<b style="color:${deep(vivid(a,b))}">your win rate.</b></h1>
+      <p class="lede">Every good team starts as a plot. NastyPlot plans yours from ${N(D.teams)} real tournament teams: who wins, who they win with, and what stops them.</p>
+      <div class="acts"><span class="pill">Build me a team</span><span class="link">Check the team I have</span></div></div>`
+    +[[H.r,'','NastyPlot rating. The highest of any Pokémon right now.',470],[H.u,'%',`of teams bring ${H.d}.`,600],[H.w,'%','of its games end in a win.',716]].map(s=>`<div class="spec" style="top:${s[3]}px"><div class="num">${s[0]}<small>${s[1]}</small></div><span>${s[2]}</span></div>`).join('')
+    +`<div class="rail"><div class="lab"><b>Top of the meta</b>Pick one to meet it</div>${D.rail.map((m,i)=>`<div class="it ${i?'':'on'}"><img src="${m.img}"><div>${m.d}<small>${m.r}</small></div></div>`).join('')}</div>`;
+  // ---------- pairs ----------
+  const P=D.pair,[pa]=await pal(P.a.img),[pb]=await pal(P.b.img);
+  $('pairs').innerHTML=wash(pa,1180,430,760,700,.4)+wash(pb,760,460,760,700,.4)
+    +`<div class="big" style="background:linear-gradient(90deg,${rgb(pb,.5)},${rgb(pa,.5)});-webkit-background-clip:text;color:transparent">${P.w}</div>`
+    +sh(790,690,300)+sh(1160,690,300)+img(P.b,610,330,370,'z-index:3;transform:scaleX(-1)')+img(P.a,980,330,370,'z-index:3')+`<div class="plus">+</div>`
+    +`<div class="cap" style="position:absolute;z-index:5;left:690px;top:716px;width:200px">${P.b.d}<i>${P.b.r}</i></div><div class="cap" style="position:absolute;z-index:5;left:1060px;top:716px;width:200px">${P.a.d}<i>${P.a.r}</i></div>`
+    +`<div class="txt"><div class="eyebrow">Build · Winning cores</div><h2>Doubles is played <b>in pairs.</b></h2>
+      <p class="lede">${P.a.d} and ${P.b.d} win ${P.w}% of their games together, across ${N(P.n)} teams. The average team wins ${D.base}%. NastyPlot knows every pairing like this one.</p>
+      <div class="acts"><span class="link">Find the best partner for my six</span></div></div>`;
+  // ---------- six ----------
+  const sp=await Promise.all(D.six.map(m=>pal(m.img))),X0=96,CW=208;
+  let s6=sp.map((p,i)=>wash(p[0],X0+CW*i+CW/2,520,330,420,.42)).join('')+`<div class="floor" style="top:640px"></div>`;
+  D.six.forEach((m,i)=>{const z=[214,196,226,206,186,214][i],cx=X0+CW*i+CW/2;s6+=sh(cx,638,z*.72)+img(m,cx-z/2,640-z+z*.06,z,'z-index:3')+`<div class="cap" style="position:absolute;left:${cx-100}px;top:662px;width:200px">${m.d}<i>${m.r}</i></div>`;});
+  const ev=D.sixE.split(' · ');
+  $('six').innerHTML=s6+`<div class="txt"><div><div class="eyebrow">Battle · Team preview</div><h2 style="margin-top:22px">See their six.<br><b>Pick your four.</b></h2></div>
+    <p class="lede">This is ${D.sixP}'s six, the team that won the ${ev[0].replace(' Pokémon','').replace('Championships','').trim()} against ${ev[1]}. Show NastyPlot any six and it tells you which four to bring, who leads, and what to do on turn 1.</p></div>
+    <div style="position:absolute;left:96px;top:728px"><span class="link">Open Battle mode</span></div>`;
+  // ---------- week ----------
+  const all=[...D.up,...D.down],wp=await Promise.all(all.map(m=>pal(m.img))),BX=620,BW=126,BY=390;let wk='';
+  all.forEach((m,i)=>{const cx=BX+BW*i+BW/2+(i>2?40:0),lift=m.v*17,z=118,cy=BY-lift;wk+=wash(wp[i][0],cx,cy,260,260,.4)
+    +`<i class="stem" style="left:${cx}px;top:${Math.min(BY,cy)}px;height:${Math.abs(lift)}px"></i>`+img(m,cx-z/2,cy-z/2-(m.v>0?z*.5:-z*.5),z,'z-index:3')
+    +`<div class="v" style="left:${cx}px;top:${m.v>0?cy-z-46:cy+z+12}px;color:${deep(wp[i][0])}">${m.v>0?'+':'−'}${Math.abs(m.v)}</div>`
+    +`<div class="cap" style="position:absolute;left:${cx-80}px;top:${m.v>0?BY+14:BY-34}px;width:160px">${m.d}</div>`;});
+  const fd=s=>new Date(s+'T00:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric'});
+  $('week').innerHTML=wk+`<div class="floor" style="top:${BY}px;left:600px"></div>
+    <div class="txt"><div class="eyebrow">Meta · ${fd(D.wk.from)} to ${fd(D.wk.to)}</div><h2>What moved <b>this week.</b></h2>
+    <p class="lede">Across ${N(D.wk.n)} teams, these six changed the most. The number is how many points of usage each one gained or lost.</p><div class="acts"><span class="link">See the whole meta</span></div></div>`;
+  // ---------- tools ----------
+  const T=[['Build','A full six drafted from real winning teams, or built your own way.',[['Build me a team','➜'],['Winning cores',''],['Popular sets','']]],['My team','Your six graded out of 100, with the reasons and the fixes.',[['Check my team','➜'],['Coverage',''],['Saved teams','']]],['Battle','Their six in. Your four, the leads and turn 1 out.',[['Battle mode','➜'],['Damage calc',''],['Speed tiers','']]],['Meta','Every recent tournament, every winning team, every Pokémon rated.',[['Ratings','➜'],['Teams',''],['Events','']]]];
+  $('tools').innerHTML=T.map((t,i)=>`<div class="col"><img src="${D.doors[i].img}"><h3>${t[0]}</h3><p>${t[1]}</p><ul>${t[2].map(l=>`<li>${l[0]}<span>${l[1]||'›'}</span></li>`).join('')}</ul></div>`).join('');
+  document.body.dataset.ready=1;
+})();
+</script></body></html>

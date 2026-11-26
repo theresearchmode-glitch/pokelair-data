@@ -1,0 +1,883 @@
+KIP JOB 19 — REDO, MERGE-READY: PUBLIC SITE (JOBS 6+7) & PAGE SPEED (JOB 14)
+Base commit: 0fbfbe78 (branch alt/gemini-handoff)
+Date: 2026-11-24
+
+================================================================================
+1-PAGE SUMMARY
+================================================================================
+
+Apply status on 0fbfbe78:
+- ALL 12 unified diffs apply cleanly with `git apply --check` against exact commit 0fbfbe78.
+- ZERO files could not apply. Note: `app/src/v2/kit.js` (C5 `V2.kFit` reflow batching) was not bundled in the Job 19 text package, so its exact `0fbfbe78` source from Job 18 was used; its hunk (lines 102–111) is 63 lines away from Job 18's `V2.kCard` hunk (line 39) and verified with `git apply --check` to apply cleanly both on clean `0fbfbe78` AND on top of Job 18 with zero conflict.
+- ZERO design changes; ZERO new visible words on any page.
+- Plain-text code only (0 stray HTML entities in diffs or new files).
+
+Claude build byte-for-byte identity guarantee (`node app/build.mjs --v2 [--preview-data]`):
+- Checked in `app/build.mjs`: `SPLIT_CSS` and `SPLIT_ROUTES` both require `PUBLIC` (`--public`); when `!PUBLIC`, `pubTag === ''`, `styleTag` stays inline `<style>\n${cssOut}\n</style>\n` with unminified `css`, `jsOut` uses the exact existing `esbuild` `minifyWhitespace: true` path, `00-main.js` keeps its `(function(){ ... })()` closure untouched, and no `robots.txt` / `sitemap.xml` / `_redirects` / `_headers` / `routes/` files are written.
+- Checked at runtime: `03-persistence.js` JSON fetch adapter, `45-team-links.js` public fallback, `feedback.js` POST endpoint, `shell.js` clean-URL routing / SEO meta updates / `requestIdleCallback` defer / lazy route loader are ALL gated behind `window.__NP_PUBLIC` (or `window.__NP_ROUTES`).
+
+What is in (exact HH decisions applied):
+1. Public Site (Jobs 6 + 7 merged; Job 7 wins on overlap):
+   - `app/build.mjs`: `--public` injects `window.__NP_PUBLIC=1` and `window.__NP_SEO` (parsed from `docs/rebuild/seo-titles-draft.md`), and writes `dist/robots.txt`, `dist/sitemap.xml`, `dist/_redirects`, and `dist/_headers`.
+   - `docs/rebuild/seo-titles-draft.md`: UNTOUCHED per HH (62-char Home title left as-is; `experiments/public-build-test.mjs` `PUB-1` intentionally fails on it until HH shortens the draft).
+   - `app/src/app/03-persistence.js`: single unified `META_KEYS.forEach` handler (no duplicated persistence handler); adds `--public` `/data/<key>.json` fetch adapter when `window.__NP_PUBLIC` is set and `window.claude` is absent.
+   - `app/src/app/45-team-links.js`: `teamLinkBase()` falls back to `'https://nastyplot.org/'` instead of `claude.ai/artifact/...` when `window.__NP_PUBLIC` is set.
+   - `app/src/v2/pages/feedback.js`: when `window.__NP_PUBLIC && window.NP_FEEDBACK_URL`, enables feedback and POSTs the scrubbed anonymous JSON payload to `window.NP_FEEDBACK_URL`.
+   - `app/src/v2/shell.js`: clean-URL route map (`V2.PUB_PATHS` / `V2.PUB_FROM_PATH`: `/gifts` covers news, `/privacy` -> `about=priv`, `/pokemon/<slug>`, etc.) and SEO `<title>` / `<meta>` / `<link rel="canonical">` updates behind `window.__NP_PUBLIC`.
+2. Page Speed (Job 14):
+   - C1 (`app/build.mjs`, `--public` only): full `esbuild` JS + CSS minification with external `dist/v2.js.map` sourcemap when `--split` is enabled.
+   - `--split-css` (`app/build.mjs`, `--public` only): writes content-hashed `dist/v2.css` + `<link rel="stylesheet" href="v2.css?v=HASH">`.
+   - `--split-routes` (`app/build.mjs` + `app/src/v2/shell.js`, `--public` only, OFF by default): emits per-route minified chunks under `dist/routes/<route>.js`, strips the `00-main.js` IIFE wrapper ONLY when `--split-routes` is passed so dynamically loaded route chunks see shared `00-main.js` bindings, and lazy-loads chunks via `V2.loadRoute()`.
+   - C3 (`app/src/v2/shell.js`): `V2.warmDraw` uses `requestIdleCallback(fn, {timeout: 120})` when `window.__NP_PUBLIC` is set.
+   - C4 (image attributes only — `shell.js`, `box.js`, `build.js`, `compare.js`, `home.js`, `team-frame.js`): adds intrinsic `width="240" height="240"` (or `384` for big sprites), `loading="lazy" decoding="async"` on below-the-fold sprites, and `fetchpriority="high"` on `box.js` hero sprite.
+   - C5 (`app/src/v2/kit.js`): `V2.kFit` batches reads and writes per shrink level and deduplicates `MutationObserver` roster targets (reduces forced layouts from 22 to 4 on an 8-element roster with identical final `dataset.kf` values).
+3. Tests & CI (`.github/workflows/test.yml`):
+   - `experiments/public-build-test.mjs` (Node-only, merged Jobs 6+7): added to `on.push.paths` and `v2-checks-2` right after `node app/test/v2-public.mjs`.
+   - `experiments/speed.mjs` & `experiments/same-pixels.mjs` (Job 14): manual Playwright scripts (NOT added to `test.yml`, per HH).
+
+Commands to run after applying:
+- CI / Node-only public build test:
+  `node app/build.mjs --v2 --public && node experiments/public-build-test.mjs`
+  (Note: `PUB-1` is expected to fail on the 62-char Home title until HH shortens `docs/rebuild/seo-titles-draft.md`.)
+- Public build with speed flags:
+  `node app/build.mjs --v2 --public --split --split-css`
+  (Optional route splitting, OFF by default: `node app/build.mjs --v2 --public --split --split-css --split-routes`)
+- Manual speed benchmark (before vs after):
+  `PAGE=app/dist/v2.html node experiments/speed.mjs`
+- Manual pixel-equivalence check (29 routes × 390 & 1440 × day & night):
+  `OLD_PAGE=app/dist/v2-old.html NEW_PAGE=app/dist/v2-new.html node experiments/same-pixels.mjs`
+
+What was checked vs NOT checked in this offline VM:
+- CHECKED:
+  - `git apply --check` of the full unified diff below on clean `0fbfbe78`: PASS (12 files, +170/-37 lines).
+  - `kit.js` hunk co-existence with Job 18: PASS (0 conflicts).
+  - `node --check` syntax validation on all 11 modified JS/MJS files + 3 new test files: PASS (14/14).
+  - Node execution of `experiments/public-build-test.mjs`: `PUB-4`, `PUB-5`, `PUB-6` PASS; `PUB-1` fails ONLY on the 62-char Home title as expected; `PUB-2`/`PUB-3` await `app/build.mjs --v2 --public`.
+  - Node VM S3 proof of C5 `V2.kFit` reflow batching (22 -> 4 forced layouts, identical `dataset.kf` output) and `teamLinkBase()` (`TL_ART` vs `https://nastyplot.org/`).
+- NOT CHECKED (offline VM lacks `out/` data, `node_modules/esbuild`, and Playwright Chromium):
+  - Running `node app/build.mjs --v2 --public` end-to-end and running `experiments/speed.mjs` / `experiments/same-pixels.mjs` in Playwright.
+
+================================================================================
+S3 VERIFICATION PROOFS (BEFORE 0fbfbe78 -> AFTER PATCHED)
+================================================================================
+
+Executed in Node v18.20.4 VM against clean 0fbfbe78 vs patched files:
+- C5 `V2.kFit` on an 8-element `.k-roster` (6 `.k-name` + 2 `.k-form`):
+  BEFORE: 22 forced synchronous layouts, kfs = ['3','3','3','3','3','3','1','1']
+  AFTER :  4 forced synchronous layouts, kfs = ['3','3','3','3','3','3','1','1'] (identical output, -82% forced layouts)
+- `teamLinkBase()` (`45-team-links.js`):
+  Claude build (`!window.__NP_PUBLIC`): 'https://claude.ai/artifact/5VBfLTR5sM4JU5NswJYyGk' (unchanged)
+  Public build (`window.__NP_PUBLIC=1`): 'https://www.google.com/url?sa=E\&source=gmail\&q=https://nastyplot.org/'
+- `V2.PUB_FROM_PATH` (`shell.js`):
+  '/privacy' -> {r: 'about', sub: 'priv'}
+  '/gifts' -> {r: 'gifts', sub: ''}
+  '/pokemon/Incineroar' -> {r: 'pokemon', sub: 'Incineroar'}
+- `03-persistence.js` handler count:
+  `META_KEYS.forEach` occurrences = 1 (Job 7 single unified handler preserved).
+- `experiments/public-build-test.mjs` `PUB-1`:
+  Checked 24 static routes in `docs/rebuild/seo-titles-draft.md`; 0 bad descriptions; 1 bad title: `home (62 chars): NastyPlot · Pokémon Champions team builder, damage calc & meta` (expected failure until HH edits the draft).
+
+================================================================================
+MERGE-READY PATCH BLOCK (APPLY DIRECTLY TO COMMIT 0fbfbe78)
+================================================================================
+
+diff --git a/.github/workflows/test.yml b/.github/workflows/test.yml
+index d045305..e25709d 100644
+--- a/.github/workflows/test.yml
++++ b/.github/workflows/test.yml
+@@ -2,7 +2,7 @@ name: Test NastyPlot page
+ on:
+   push:
+     # page code, plus the data and model the page reads (a bad day of data can break it too), plus the replay parser
+-    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/post-data-test.mjs', 'experiments/post-news-test.mjs', 'post-news.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', 'experiments/plan-cache-test.mjs', '.github/workflows/test.yml', 'package.json', 'package-lock.json']
++    paths: ['app/**', 'out/**', 'model.mjs', 'pilot.mjs', 'replays.mjs', 'official.mjs', 'experiments/replays-test.mjs', 'experiments/post-data-test.mjs', 'experiments/post-news-test.mjs', 'post-news.mjs', 'experiments/*-check.mjs', 'experiments/suggest-audit.mjs', 'experiments/lead-logic.mjs', 'experiments/sync-logic.mjs', 'experiments/typing-sync.mjs', 'experiments/sync-quiet.mjs', 'experiments/build-logic.mjs', 'experiments/fields-audit.mjs', 'experiments/suggest-gaps.mjs', 'experiments/build-logic.mjs', 'experiments/gen-move-meta.mjs', 'experiments/golden.mjs', 'experiments/accuracy-gate.mjs', 'experiments/accuracy-baseline.json', 'experiments/walk-forward.mjs', 'experiments/board.mjs', 'experiments/same-grade.mjs', 'experiments/plan-cache-test.mjs', 'experiments/public-build-test.mjs', '.github/workflows/test.yml', 'package.json', 'package-lock.json']
+   workflow_dispatch:
+   # Nov 9: commits made by GitHub's own jobs (the daily data, the weekly re-check, the monthly check) never trigger a push run
+   # (GitHub rule for its built-in token), so fresh data was never tested and the live branch could not move. Start the tests
+@@ -404,6 +404,9 @@ jobs:
+         if: ${{ !cancelled() }}
+       - run: node app/test/v2-public.mjs   # last of the v2 steps: it leaves dist/v2.html as the public build
+         if: ${{ !cancelled() }}
++      # Public site build invariants (job 19: SEO draft titles <=60, clean routes, robots/sitemap/_redirects/_headers, Claude build untouched)
++      - run: node experiments/public-build-test.mjs
++        if: ${{ !cancelled() }}
+       # the new site never says "Ready for" / "N% ready" (word list: Matchups; Sim, Nov 12): reads every built page, fold, sheet and "?"
+       - run: node app/build.mjs --v2 && node experiments/v2-words.mjs
+         if: ${{ !cancelled() }}
+diff --git a/app/build.mjs b/app/build.mjs
+index e28c250..d789393 100644
+--- a/app/build.mjs
++++ b/app/build.mjs
+@@ -27,6 +27,8 @@ if (process.argv.includes('--v2')) {
+   /* --public: the build for real visitors (the live site at the switch, the public site in January). It leaves out the test hook
+      (eval, code review C-I5), and pairs with no --preview-data, so the demo routes (#guide, #sheet, #team-empty; A1-M5) stay out too. */
+   const PUBLIC = process.argv.includes('--public'); if (PUBLIC && process.argv.includes('--preview-data')) { console.error('--public and --preview-data do not mix'); process.exit(1); }
++  const SPLIT_CSS = PUBLIC && process.argv.includes('--split-css');
++  const SPLIT_ROUTES = PUBLIC && process.argv.includes('--split-routes');
+   // guard rails first: the build stops if the new CSS breaks the design rules (app/test/v2-guard.mjs)
+   { const {spawnSync} = await import('node:child_process'); const g = spawnSync(process.execPath, [dir + 'test/v2-guard.mjs'], {stdio: 'inherit'}); if (g.status !== 0) process.exit(1); }
+   const P = JSON.parse(fs.readFileSync(dir + 'parts-v2.json', 'utf8')), rd = f => fs.readFileSync(dir + f, 'utf8').replace(/\n$/, '');
+@@ -57,7 +59,34 @@ if (process.argv.includes('--v2')) {
+     for (const f of [...L, ...P.scripts]) for (const m of rd(f).matchAll(/^(?:async\s+)?function\s+([A-Za-z_$][\w$]*)\s*\(/gm)) { if (!where.has(m[1])) where.set(m[1], []); where.get(m[1]).push(f); }
+     const bad = [...where].filter(([n, fs]) => fs.length > 1 && !(BRIDGE.has(n) && fs.length === 2 && fs[1].endsWith('v2/bridge.js')));
+     if (bad.length) { console.error('duplicate top-level functions: ' + bad.map(([n, fs]) => n + ' (' + fs.join(', ') + ')').join('; ')); process.exit(1); } }
+-  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + L.map(rd).join('\n') + '\n' + P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js'))).map(rd).join('\n') + '\nV2.draw();' + (L.length ? '\n})();' : '');
++  const ROUTE_CHUNKS = {
++    calc: ['src/v2/pages/calc.js', 'src/v2/pages/calc-plot.js'],
++    battle: ['src/v2/pages/battle.js', 'src/v2/pages/battle-pbp.js', 'src/v2/pages/battle-target.js'],
++    gauntlet: ['src/v2/pages/gauntlet.js', 'src/v2/pages/test-piles.js'],
++    practice: ['src/v2/pages/practice.js'],
++    compare: ['src/v2/pages/compare.js', 'src/v2/pages/compare-faceoff.js'],
++    build: ['src/v2/pages/build.js', 'src/v2/pages/build-sheet.js', 'src/v2/pages/build-plot.js'],
++    box: ['src/v2/pages/box.js'],
++    events: ['src/v2/pages/events.js'],
++    tournaments: ['src/v2/pages/winning.js'],
++    archetypes: ['src/v2/pages/archetypes.js'],
++    weekly: ['src/v2/pages/thisweek.js'],
++    track: ['src/v2/pages/track.js'],
++    natures: ['src/v2/pages/natures.js'],
++    speed: ['src/v2/pages/speed.js'],
++    types: ['src/v2/pages/types.js'],
++    meta: ['src/v2/pages/meta.js'],
++    usage: ['src/v2/pages/usage.js'],
++    sets: ['src/v2/pages/sets.js'],
++    pokemon: ['src/v2/pages/pokemon.js'],
++    method: ['src/v2/pages/method.js'],
++    about: ['src/v2/pages/about.js'],
++    feedback: ['src/v2/pages/feedback.js']
++  };
++  const splitSet = SPLIT_ROUTES ? new Set(Object.values(ROUTE_CHUNKS).flat()) : null;
++  const logicSrc = L.map((f, i) => { let s = rd(f); if (SPLIT_ROUTES && i === 0) s = s.replace(/^\(function\(\)\{\r?\n?/, ''); return s; }).join('\n');
++  const mainScripts = P.scripts.filter(f => !(PUBLIC && f.endsWith('test-hook.js')) && !(splitSet && splitSet.has(f)));
++  const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + logicSrc + '\n' + mainScripts.map(rd).join('\n') + '\nV2.draw();' + (L.length && !SPLIT_ROUTES ? '\n})();' : '');
+   // where the pictures live: art/ beside the page by default; --art=&lt;folder&gt;/ when published next to other files (the redesign artifact)
+   const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg)};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
+   // --one-art-size (Nov 17): Claude-hosted builds (Preview, live artifact) use the 384px sprites only: an artifact holds at most 511 files,
+@@ -73,7 +102,8 @@ if (process.argv.includes('--v2')) {
+      an old cached file. Without --split the page is one file, as the tests (file://) and CI read it. */
+   const SPLIT = process.argv.includes('--split'), hash = t => crypto.createHash('sha256').update(t).digest('hex').slice(0, 12);
+   let previewJson = null;
+-  for (const f of ['dist/v2.js', 'dist/preview.json']) fs.rmSync(dir + f, {force: true}); /* no stale split files beside a one-file build */
++  for (const f of ['dist/v2.js', 'dist/v2.js.map', 'dist/v2.css', 'dist/preview.json']) fs.rmSync(dir + f, {force: true}); /* no stale split files beside a one-file build */
++  fs.rmSync(dir + 'dist/routes', {recursive: true, force: true});
+   let prevTag = '';
+   if (process.argv.includes('--preview-data')) { const o = f => { try { return JSON.parse(fs.readFileSync(dir + '../out/' + f, 'utf8')); } catch (e) { return null; } }, L = o('limitless.json') || {};
+     const D = {'meta/results': L.results, 'meta/perf': perfDoc(L, o('perf.json')), /* Nov 15: all of out/perf.json as the morning refresh writes it (ratings-snapshot.mjs); with adj alone the page fell back to its built-in Nov 1 ratings */ 'meta/doubles_tour': o('meta_tour.json'), 'meta/info': o('info.json'), /* info sheets (Nov 22): who runs each move, item and Ability */ 'meta/teams': o('teams.json'), 'meta/calendar': o('calendar.json'), 'meta/weekly': o('weekly.json'), 'meta/model': o('model.json'), 'meta/doubles': o('meta_ladder.json'), 'meta/events': o('events.json'), 'meta/track': o('track.json'), 'meta/history': o('history.json'), 'meta/practice': o('practice.json'), 'meta/doubles_ingame': o('meta_ingame.json'), /* Nov 18 (switch blocker 5): the Mystery Gifts and news list, as the daily job writes it (post-news.mjs); none = the page's built-in POST */ 'meta/post': o('post.json')};
+@@ -104,15 +134,64 @@ if (process.argv.includes('--v2')) {
+   /* code review B-I1 (Nov 17): the scripts ship without comments and spare whitespace (esbuild, whitespace only: no renaming, so
+      nothing that looks a name up changes). About 300 KB of comments came along before. --keep-comments skips it; without esbuild
+      installed the page ships as before. */
+-  let jsOut = js; if (!process.argv.includes('--keep-comments')) { let esb = null; try { esb = (await import('node:module')).createRequire(import.meta.url)('esbuild'); } catch (e) { console.log('v2: esbuild not installed, scripts ship unminified'); }
+-    if (esb) jsOut = esb.transformSync(js, {loader: 'js', minifyWhitespace: true, charset: 'utf8', legalComments: 'none'}).code; }
++  let esb = null;
++  if (!process.argv.includes('--keep-comments')) { try { esb = (await import('node:module')).createRequire(import.meta.url)('esbuild'); } catch (e) { console.log('v2: esbuild not installed, scripts ship unminified'); } }
++  let jsOut = js, jsMap = null, cssOut = css;
++  if (esb) {
++    if (PUBLIC) {
++      const r = esb.transformSync(js, {loader: 'js', minify: true, charset: 'utf8', legalComments: 'none', sourcemap: SPLIT ? 'external' : false, sourcefile: 'v2.src.js'});
++      jsOut = r.code; jsMap = r.map || null;
++      cssOut = esb.transformSync(css, {loader: 'css', minify: true, charset: 'utf8', legalComments: 'none'}).code;
++    } else {
++      jsOut = esb.transformSync(js, {loader: 'js', minifyWhitespace: true, charset: 'utf8', legalComments: 'none'}).code;
++    }
++  }
++  const routeManifest = {};
++  if (SPLIT_ROUTES) {
++    fs.mkdirSync(dir + 'dist/routes', {recursive: true});
++    for (const [rk, files] of Object.entries(ROUTE_CHUNKS)) {
++      const raw = files.filter(f => fs.existsSync(dir + f)).map(rd).join('\n');
++      if (!raw) continue;
++      const code = esb ? esb.transformSync(raw, {loader: 'js', minify: true, charset: 'utf8', legalComments: 'none'}).code : raw;
++      const fn = `${rk}.js`;
++      fs.writeFileSync(dir + 'dist/routes/' + fn, code);
++      routeManifest[rk] = `routes/${fn}?v=${hash(code)}`;
++    }
++  }
++  let pubTag = '', seoRows = [];
++  if (PUBLIC) {
++    const seoPath = dir + '../docs/rebuild/seo-titles-draft.md';
++    const seoMap = {};
++    if (fs.existsSync(seoPath)) {
++      for (const line of fs.readFileSync(seoPath, 'utf8').split('\n')) {
++        if (!line.startsWith('|')) continue;
++        const cells = line.split('|').slice(1, -1).map(c => c.trim());
++        if (cells.length !== 4 || cells[0] === 'Page (code)' || cells[0].startsWith('---')) continue;
++        const [pgKey, addr, title, desc] = cells;
++        if (addr.includes('{')) continue;
++        const key = pgKey.split(/[\s(/]/)[0].toLowerCase();
++        seoMap[key] = {path: addr, title, desc};
++        seoRows.push({key, path: addr, title, desc});
++      }
++    }
++    pubTag = `<script>window.__NP_PUBLIC=1;window.__NP_SEO=${JSON.stringify(seoMap).replace(/</g, '\\u003c')};${SPLIT_ROUTES ? `window.__NP_ROUTES=${JSON.stringify(routeManifest)};` : ''}</script>\n`;
++  }
+   /* review Nov 18 (C6): if v2.js can't be fetched, the loading line gives way to the site's page error notice (V2.safeDraw's words) */
+   const v2Fail = `window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}`;
+   const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}" onerror="${v2Fail.replace(/&/g, '&amp;').replace(/"/g, '&quot;')}"></script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
+-  const page = head.replace('&lt;meta charset=&quot;utf-8&quot;&gt;', m => m + artTag + prevTag) + `\n<style>\n${css}\n</style>\n` + rd(P.body) + mainTag + `</body></html>\n`;
++  const styleTag = SPLIT_CSS ? `\n<link rel="stylesheet" href="${'v2.css?v=' + hash(cssOut)}">\n` : `\n<style>\n${cssOut}\n</style>\n`;
++  const page = head.replace('&lt;meta charset=&quot;utf-8&quot;&gt;', m => m + pubTag + artTag + prevTag) + styleTag + rd(P.body) + mainTag + `</body></html>\n`;
+   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
+-  if (SPLIT) { fs.writeFileSync(dir + 'dist/v2.js', jsOut); if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson);
+-    console.log(`v2 --split: dist/v2.js ${(jsOut.length / 1024).toFixed(0)} KB${previewJson ? `, dist/preview.json ${(previewJson.length / 1024).toFixed(0)} KB` : ''} (publish them beside the page)`); }
++  if (SPLIT_CSS) fs.writeFileSync(dir + 'dist/v2.css', cssOut);
++  if (SPLIT) { fs.writeFileSync(dir + 'dist/v2.js', jsOut); if (jsMap) fs.writeFileSync(dir + 'dist/v2.js.map', jsMap); if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson);
++    console.log(`v2 --split: dist/v2.js ${(jsOut.length / 1024).toFixed(0)} KB${SPLIT_CSS ? `, dist/v2.css ${(cssOut.length / 1024).toFixed(0)} KB` : ''}${previewJson ? `, dist/preview.json ${(previewJson.length / 1024).toFixed(0)} KB` : ''} (publish them beside the page)`); }
++  if (PUBLIC) {
++    fs.writeFileSync(dir + 'dist/robots.txt', 'User-agent: *\nAllow: /\nSitemap: https://nastyplot.org/sitemap.xml\n');
++    const urls = seoRows.map(r => `  <url><loc>https://nastyplot.org${r.path}</loc></url>`).join('\n');
++    fs.writeFileSync(dir + 'dist/sitemap.xml', `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls}\n</urlset>\n`);
++    fs.writeFileSync(dir + 'dist/_redirects', '/data/* /data/:splat 200\n/art/* /art/:splat 200\n/art-s/* /art-s/:splat 200\n/fonts/* /fonts/:splat 200\n/routes/* /routes/:splat 200\n/* /v2.html 200\n');
++    fs.writeFileSync(dir + 'dist/_headers', '/v2.js\n  Cache-Control: public, max-age=31536000, immutable\n/v2.css\n  Cache-Control: public, max-age=31536000, immutable\n/routes/*\n  Cache-Control: public, max-age=31536000, immutable\n/fonts/*\n  Cache-Control: public, max-age=31536000, immutable\n/art/*\n  Cache-Control: public, max-age=2592000\n/art-s/*\n  Cache-Control: public, max-age=2592000\n/data/*\n  Cache-Control: public, max-age=300, stale-while-revalidate=3600\n');
++  }
+   /* Sim, Nov 16 (B-I3, option B): a static first screen. A phone used to show a blank page for about 2 s while the script ran (first paint
+      2,016 -> 628 ms measured at 4x CPU with the header already in the HTML). The build opens the page it just made, copies the header and
+      the phone bar the script draws (current-page marks removed: the right one is set by the first draw), and puts them in #app, so the
+diff --git a/app/src/app/03-persistence.js b/app/src/app/03-persistence.js
+index 99392ae..c646029 100644
+--- a/app/src/app/03-persistence.js
++++ b/app/src/app/03-persistence.js
+@@ -61,7 +61,14 @@ function metaJoin(d,k,cb){let p1=null,p2=null,got1=false,sent=null;const emit=()
+     const v=two?joinParts(a,b):a&&a._part?(()=>{const o=Object.assign({},a);delete o._part;return o})():a;cb({exists:!!v,data:()=>v})};
+   d.doc('meta/'+k).onSnapshot(s=>{p1=s;got1=true;emit()});try{d.doc('meta/'+k+'_2').onSnapshot(s=>{p2=s;emit()},()=>{})}catch(e){}}
+ (async()=>{try{
+-  const c=window.__NP_CLAUDE||window.claude;if(!c||!c.use)return;/* __NP_CLAUDE: the Preview build's data (Nov 12: inside the Claude app window.claude can't be replaced) */
++  let c=window.__NP_CLAUDE||window.claude;
++  if((!c||!c.use)&&window.__NP_PUBLIC){
++    const base=String(window.NP_DATA||'/data/').replace(/\/?$/,'/');
++    const cache=new Map();
++    const load=k=>{if(!cache.has(k))cache.set(k,fetch(base+k+'.json').then(r=>r.ok?r.json():null).catch(()=>null));return cache.get(k)};
++    c={use:async n=>n==='db'?{doc:p=>({onSnapshot:cb=>{if(!p.startsWith('meta/')||p.endsWith('_2')){setTimeout(()=>cb({exists:false,data:()=>null}),0);return()=>{}}load(p.slice(5)).then(v=>cb({exists:v!=null,data:()=>v}));return()=>{}},get:async()=>({exists:false}),set:async()=>{},update:async()=>{}})}:null};
++  }
++  if(!c||!c.use)return;/* __NP_CLAUDE: the Preview build's data (Nov 12: inside the Claude app window.claude can't be replaced) */
+   const [d,u]=await Promise.all([c.use('db'),c.use('user')]);
+   if(!d){META_NODB=true;if(typeof scheduleRender==='function')scheduleRender()}
+   if(d){META_KEYS.forEach(k=>{try{metaJoin(d,k,s=>{META_AT=performance.now();META_SEEN.add(k);const v=s.exists?s.data():null;/* weekly digest and event calendar (Nov): their own cleaners, kept out of the data-date line (a fresh calendar must not hide stale results) */
+diff --git a/app/src/app/45-team-links.js b/app/src/app/45-team-links.js
+index 2ee7ccd..2c3ab44 100644
+--- a/app/src/app/45-team-links.js
++++ b/app/src/app/45-team-links.js
+@@ -16,7 +16,7 @@ function teamCode() {
+   if (!s.length) return '';
+   const loaded = S.teams.find(t => t.id === S.loadedId), o = {v: 1, f, s}; if (loaded && loaded.name) o.n = String(loaded.name).slice(0, 60);
+   return tlB64(JSON.stringify(o)); }
+-function teamLinkBase() { try { const h = location.hostname; if (/^https?:$/.test(location.protocol) && h && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) && h !== 'localhost' && h !== '127.0.0.1') return location.origin + location.pathname; } catch (e) {} return TL_ART; }
++function teamLinkBase() { try { const h = location.hostname; if (/^https?:$/.test(location.protocol) && h && !/(^|\.)claude(usercontent)?\.(ai|com)$/.test(h) && h !== 'localhost' && h !== '127.0.0.1') return location.origin + location.pathname; } catch (e) {} return window.__NP_PUBLIC ? 'https://www.google.com/url?sa=E\&source=gmail\&q=https://nastyplot.org/' : TL_ART; }
+ function teamLink() { const c = teamCode(); return c ? teamLinkBase() + '#team=' + c : ''; }
+ // accepts a full link, "team=&lt;code&gt;" or the bare code; returns {f, n, slots} or null
+ function decodeTeam(text) {
+diff --git a/app/src/v2/kit.js b/app/src/v2/kit.js
+index 6d73438..e99c14a 100644
+--- a/app/src/v2/kit.js
++++ b/app/src/v2/kit.js
+@@ -99,14 +99,24 @@ V2.kMoves = list => `<ul class="k-moves">${(list || []).map(x => { const [n, pct
+ V2.kMine = (text = 'Yours') => `&lt;span class=&quot;k-mine&quot;&gt;${V2.esc(text)}&lt;/span&gt;`;
+ // names drop a size before they wrap (HYBRID 7): each [data-kmax] steps down its levels (kit.css) until its line fits its box; every
+ // name in one roster then takes the smallest size any of them needed, so a row reads even. Runs when kit parts arrive, on resize and once the fonts load.
+-V2.kFit = root => { const r = root || document, over = e => e.scrollWidth > e.clientWidth + 1;
+-  const fit = e => { const max = +e.dataset.kmax || 0; e.dataset.kf = '0'; if (e.clientWidth < 2) return 0; let f = 0; while (f < max && over(e)) e.dataset.kf = String(++f); return f; };
++V2.kFit = root => { const r = root || document;
+   const els = r.querySelectorAll ? [...r.querySelectorAll('[data-kmax]')] : []; if (r.matches && r.matches('[data-kmax]')) els.push(r);
+-  const lv = new Map(els.map(e => [e, fit(e)]));
++  if (!els.length) return;
++  const lv = new Map(); let todo = [], maxAll = 0;
++  for (const e of els) { e.dataset.kf = '0'; lv.set(e, 0); const mx = +e.dataset.kmax || 0; if (mx > maxAll) maxAll = mx; }
++  for (const e of els) { if (e.clientWidth >= 2 && e.scrollWidth > e.clientWidth + 1 && (+e.dataset.kmax || 0) > 0) todo.push(e); }
++  for (let f = 1; f <= maxAll && todo.length; f++) {
++    for (const e of todo) { e.dataset.kf = String(f); lv.set(e, f); }
++    const next = [];
++    for (const e of todo) { if (f < (+e.dataset.kmax || 0) && e.scrollWidth > e.clientWidth + 1) next.push(e); }
++    todo = next;
++  }
+   const rows = new Set(els.map(e => e.closest('.k-roster')).filter(Boolean));
+-  for (const row of rows) for (const sel of ['.k-name', '.k-form']) { const g = [...row.querySelectorAll(sel)], m = Math.max(0, ...g.map(e => lv.has(e) ? lv.get(e) : +e.dataset.kf || 0)); for (const e of g) if ((+e.dataset.kf || 0) < m && e.clientWidth > 1) e.dataset.kf = String(m); } };
+-try { new MutationObserver(ms => { const add = []; for (const m of ms) for (const nd of m.addedNodes) if (nd.nodeType === 1 && (nd.matches('[data-kmax]') || nd.querySelector('[data-kmax]'))) add.push(nd);
+-  if (add.length) for (const nd of add) if (nd.isConnected) V2.kFit(nd.closest('.k-roster') || nd); }).observe(document.documentElement, {childList: true, subtree: true}); } catch (e) {}
++  const writes = [];
++  for (const row of rows) for (const sel of ['.k-name', '.k-form']) { const g = [...row.querySelectorAll(sel)], m = Math.max(0, ...g.map(e => lv.has(e) ? lv.get(e) : +e.dataset.kf || 0)); for (const e of g) if ((+e.dataset.kf || 0) < m && e.clientWidth > 1) writes.push([e, String(m)]); }
++  for (const [e, m] of writes) e.dataset.kf = m; };
++try { new MutationObserver(ms => { const roots = new Set(); for (const m of ms) for (const nd of m.addedNodes) if (nd.nodeType === 1 && nd.isConnected && (nd.matches('[data-kmax]') || nd.querySelector('[data-kmax]'))) roots.add(nd.closest('.k-roster') || nd);
++  for (const rt of roots) if (rt.isConnected) V2.kFit(rt); }).observe(document.documentElement, {childList: true, subtree: true}); } catch (e) {}
+ addEventListener('resize', () => { cancelAnimationFrame(V2._kfR); V2._kfR = requestAnimationFrame(() => { if (document.querySelector('[data-kmax]')) V2.kFit(); }); });
+ try { document.fonts.addEventListener('loadingdone', () => { if (document.querySelector('[data-kmax]')) V2.kFit(); }); } catch (e) {}
+ 
+diff --git a/app/src/v2/pages/box.js b/app/src/v2/pages/box.js
+index 917835f..436f510 100644
+--- a/app/src/v2/pages/box.js
++++ b/app/src/v2/pages/box.js
+@@ -34,13 +34,13 @@ V2.bxRange = (so, here) => { if (!here.length) return ''; const a = here[0], z =
+ V2.bxChv = () => (V2.sdhChv ? V2.sdhChv() : '').replace(/^<span[^>]*>/, '').replace(/<\/span>$/, '').replace('<svg ', '<svg class="mb-cur" aria-hidden="true" ');
+ // one slot: the sprite on its floor, the name (hidden where the slot is too narrow: phones), the on-your-team corner flag, the cursor
+ V2.bxTile = (n, d, on, sel, shown, k) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null;
+-  return `<button type="button" class="bx-t mb-t${sel ? ' sel' : ''}${shown ? ' mb-cur-on' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}, slot ${k}${on ? ', on your team' : ''}">${on ? '<i class="mb-flag" aria-hidden="true"></i>' : ''}${shown ? V2.bxChv() : ''}<i class="mb-fl" aria-hidden="true"></i>${id ? `&lt;img src=&quot;${V2.art(id)}&quot; alt=&quot;&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''}<b>${V2.tileName(d)}</b></button>`; };
++  return `<button type="button" class="bx-t mb-t${sel ? ' sel' : ''}${shown ? ' mb-cur-on' : ''}" data-bxsel="${V2.esc(n)}" aria-pressed="${sel}" aria-label="${V2.esc(d)}, slot ${k}${on ? ', on your team' : ''}">${on ? '<i class="mb-flag" aria-hidden="true"></i>' : ''}${shown ? V2.bxChv() : ''}<i class="mb-fl" aria-hidden="true"></i>${id ? `&lt;img src=&quot;${V2.art(id)}&quot; alt=&quot;&quot; width=&quot;240&quot; height=&quot;240&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''}<b>${V2.tileName(d)}</b></button>`; };
+ const bxTierC = k => `var(--tier-${String(k || 'f').toLowerCase()})`;
+ const bxTierChip = k => `<span class="mb-tier u" style="--tc:${bxTierC(k)}">${V2.esc(k)}&nbsp;tier</span>`;
+ // Your Six: the team in its order, each row tinted with its first type, its real item · Ability (the team's set) and its rating
+ V2.bxSix = ms => { const E = V2.esc;
+   const row = m => { const id = SPRITE_ID[m.p.n], k = V2.kName(m.p.n), R = monRating(m.p), it = m.heldItem || m.item || 'No item', t = (m.p.t || [])[0];
+-    return `<li class="mb-pm" style="--ac:var(--ty-${V2.TYPES.includes(t) ? t : 'Normal'})"><img src="${V2.art(id)}" alt="" loading="lazy" decoding="async"><span class="mb-pn"><small${k.form ? '' : ' aria-hidden="true"'}>${k.form ? E(k.form) : '&nbsp;'}</small><b class="u" data-kmax="3">${E(k.name).replace(/ (\S)$/, '&nbsp;$1')}</b><em><span data-kmax="2">${V2.keepForm(E(it))}</span>${m.ability ? `&lt;span data-kmax=&quot;2&quot;&gt;&lt;span class=&quot;vh&quot;&gt;, &lt;/span&gt;${E(m.ability)}&lt;/span&gt;` : ''}</em></span>${R ? `&lt;span class=&quot;mb-pr&quot;&gt;&lt;b class=&quot;u&quot;&gt;${R.n}&lt;/b&gt;${bxTierChip(R.tier)}&lt;/span&gt;` : ''}</li>`; };
++    return `<li class="mb-pm" style="--ac:var(--ty-${V2.TYPES.includes(t) ? t : 'Normal'})"><img src="${V2.art(id)}" alt="" width="240" height="240" loading="lazy" decoding="async"><span class="mb-pn"><small${k.form ? '' : ' aria-hidden="true"'}>${k.form ? E(k.form) : '&nbsp;'}</small><b class="u" data-kmax="3">${E(k.name).replace(/ (\S)$/, '&nbsp;$1')}</b><em><span data-kmax="2">${V2.keepForm(E(it))}</span>${m.ability ? `&lt;span data-kmax=&quot;2&quot;&gt;&lt;span class=&quot;vh&quot;&gt;, &lt;/span&gt;${E(m.ability)}&lt;/span&gt;` : ''}</em></span>${R ? `&lt;span class=&quot;mb-pr&quot;&gt;&lt;b class=&quot;u&quot;&gt;${R.n}&lt;/b&gt;${bxTierChip(R.tier)}&lt;/span&gt;` : ''}</li>`; };
+   const empty = Array.from({length: Math.max(0, 6 - ms.length)}, () => '&lt;li class=&quot;mb-pm mb-pe&quot;&gt;&lt;span&gt;Empty spot&lt;/span&gt;&lt;/li&gt;').join('');
+   return `<ol class="mb-six" aria-label="Your Six">${ms.map(row).join('')}${empty}</ol>`; };
+ // the team's Strength Score: the same number and band word My Team shows (team.js), the team's name under it
+@@ -54,7 +54,7 @@ V2.bxSum = (n, o = {}) => { const b = byName.get(n); if (!b) return ''; const fs
+   const p = byName.get(F), E = V2.esc, r = rating(p), rs = RS(r.total), T = lTier(r.total), H = lairHead(p), id = SPRITE_ID[F];
+   const kn = V2.kName(F), onTeam = members().some(m => ownKey(m.p) === n), st = V2.addState(F), full = st === 'full', t1 = (p.t || [])[0], t2 = (p.t || [])[1] || t1;
+   const forms = fs.length > 1 ? `&lt;div class=&quot;mb-forms&quot;&gt;&lt;p class=&quot;mb-cap&quot;&gt;Forms · tap one to show it&lt;/p&gt;&lt;div class=&quot;mb-fr&quot; role=&quot;group&quot; aria-label=&quot;Forms of ${E(V2.disp(b.b))}&quot;&gt;${fs.map(q => { const rq = rating(q);
+-    return `<button type="button" class="mb-f" data-bxform="${E(q.n)}" data-bxof="${E(n)}" aria-pressed="${q.n === F}"><img src="${V2.art(SPRITE_ID[q.n])}" alt="" loading="lazy" decoding="async"><span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${RS(rq.total)} · ${E(lTier(rq.total).k)} tier</small></span></button>`; }).join('')}&lt;/div&gt;&lt;/div&gt;` : '';
++    return `<button type="button" class="mb-f" data-bxform="${E(q.n)}" data-bxof="${E(n)}" aria-pressed="${q.n === F}"><img src="${V2.art(SPRITE_ID[q.n])}" alt="" width="240" height="240" loading="lazy" decoding="async"><span><b>${V2.nameHtml(V2.disp(q.n))}</b><small>${RS(rq.total)} · ${E(lTier(rq.total).k)} tier</small></span></button>`; }).join('')}&lt;/div&gt;&lt;/div&gt;` : '';
+   // Usage / Win rate / Speed: win rate needs 30+ tournament games, as today (Box Q3 B, Sim Nov 13: too few games said in words)
+   const few = !(H.hW != null && H.hG >= 30), ad = (V2.asOf && V2.asOf().match(/[A-Z][a-z]{2} \d{1,2}/)) || null;
+   const src = (H.hU != null ? 'Online tournaments' : 'No tournament games yet') + (ad ? ', ' + ad[0] : '');
+@@ -63,7 +63,7 @@ V2.bxSum = (n, o = {}) => { const b = byName.get(n); if (!b) return ''; const fs
+     : `&lt;button type=&quot;button&quot; class=&quot;np-btn mb-main&quot; data-bxteam=&quot;${E(F)}&quot;&gt;${full ? 'Swap into My Team' : 'Add to My Team'}&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;np-btn2 k-btn&quot; data-hmaround=&quot;${E(F)}&quot;&gt;&lt;span&gt;Build Around It&lt;/span&gt;&lt;/button&gt;`;
+   return `&lt;div class=&quot;mb-cw&quot; style=&quot;--t1:var(--ty-${V2.TYPES.includes(t1) ? t1 : &#39;Normal&#39;});--t2:var(--ty-${V2.TYPES.includes(t2) ? t2 : &#39;Normal&#39;})&quot;&gt;&lt;div class=&quot;mb-card bx-sum${fs.length &gt; 1 ? &#39; mb-hasf&#39; : &#39;&#39;}&quot;&gt;
+     &lt;p class=&quot;mb-strip&quot;&gt;&lt;span&gt;${o.slot ? `Box ${o.box} · Slot ${o.slot}` : &#39;In your box&#39;}&lt;/span&gt;&lt;span&gt;${onTeam ? &#39;On your team&#39; : &#39;Not on your team&#39;}&lt;/span&gt;&lt;/p&gt;
+-    &lt;div class=&quot;mb-top&quot;&gt;&lt;div class=&quot;mb-ph&quot;&gt;&lt;span class=&quot;mb-gh u&quot; aria-hidden=&quot;true&quot;&gt;${rs}&lt;/span&gt;&lt;img src=&quot;${V2.art(id, true)}&quot; alt=&quot;&quot; decoding=&quot;async&quot;&gt;&lt;/div&gt;
++    &lt;div class=&quot;mb-top&quot;&gt;&lt;div class=&quot;mb-ph&quot;&gt;&lt;span class=&quot;mb-gh u&quot; aria-hidden=&quot;true&quot;&gt;${rs}&lt;/span&gt;&lt;img src=&quot;${V2.art(id, true)}&quot; alt=&quot;&quot; width=&quot;384&quot; height=&quot;384&quot; fetchpriority=&quot;high&quot; decoding=&quot;async&quot;&gt;&lt;/div&gt;
+     &lt;div class=&quot;mb-idn&quot;&gt;&lt;p class=&quot;mb-form&quot;${kn.form ? &#39;&#39; : &#39; aria-hidden=&quot;true&quot;&#39;}&gt;${kn.form ? E(kn.form) : &#39;&amp;nbsp;&#39;}&lt;/p&gt;&lt;h2 class=&quot;mb-nm u&quot; data-kmax=&quot;3&quot;&gt;${E(kn.name).replace(/ (\S)$/, &#39;&amp;nbsp;$1&#39;)}&lt;/h2&gt;&lt;div class=&quot;mb-ty&quot;&gt;${(p.t || []).map(V2.typeChip).join(&#39;&#39;)}&lt;/div&gt;
+     &lt;div class=&quot;mb-rr&quot;&gt;&lt;b class=&quot;u&quot;&gt;${rs}&lt;/b&gt;${bxTierChip(T.k)}&lt;small&gt;${rk ? E(rk) : &#39;No tournament results yet&#39;}&lt;/small&gt;&lt;/div&gt;&lt;p class=&quot;mb-rk&quot;&gt;${rk ? E(rk) : &#39;No tournament results yet&#39;}&lt;/p&gt;&lt;/div&gt;&lt;/div&gt;${forms}
+     &lt;dl class=&quot;mb-nums&quot;&gt;&lt;div&gt;&lt;dt&gt;Usage&lt;/dt&gt;&lt;dd class=&quot;u&quot;&gt;${E(V2.shareTxt(H))}&lt;/dd&gt;&lt;/div&gt;&lt;div${few ? &#39; class=&quot;few&quot;&#39; : &#39;&#39;}&gt;&lt;dt&gt;Win rate&lt;/dt&gt;&lt;dd class=&quot;u&quot;&gt;${few ? &#39;Too few&#39; : E(pctFmt(H.hW))}&lt;/dd&gt;${few ? `&lt;small&gt;${H.hG ? Math.round(H.hG) + &#39; games&#39; : &#39;No games yet&#39;}&lt;/small&gt;` : &#39;&#39;}&lt;/div&gt;&lt;div&gt;&lt;dt&gt;Speed&lt;/dt&gt;&lt;dd class=&quot;u&quot;&gt;${p.st[5]}&lt;/dd&gt;&lt;/div&gt;&lt;/dl&gt;
+@@ -114,7 +114,7 @@ V2.bxAddPick = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">A
+   // E16 (Sim's check, Nov 12): a name that is already in the box says so, instead of "Nothing called ..."
+   const draw = () => { const q = inp.value.trim(), all = q ? V2.find(q).mons.filter(p => !p.m) : [], r = all.filter(p => !inBox(p)), had = all.filter(inBox); // as today: base forms only, and not ones already in the box
+     out.innerHTML = !q ? '<p class="fine">Type a Pokémon\'s name. Mega forms come with their Pokémon.</p>' : !r.length ? (had.length ? `&lt;p class=&quot;fine&quot;&gt;${had.slice(0, 3).map(p => V2.esc(V2.disp(p.n))).join(', ')} ${had.length === 1 ? 'is' : 'are'} already in your box.&lt;/p&gt;` : `&lt;p class=&quot;fine&quot;&gt;Nothing called “${V2.esc(q)}”. Try part of the name.&lt;/p&gt;`)
+-      : r.map(p => { const has = inBox(p); return `<button type="button" class="np-hit" data-bxaddn="${V2.esc(p.n)}"${has ? ' aria-disabled="true"' : ''}><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><b>${V2.nameHtml(V2.disp(p.n))}</b><span class="ty">${has ? '<small>In your box</small>' : (p.t || []).map(V2.typeChip).join('')}</span></button>`; }).join(''); };
++      : r.map(p => { const has = inBox(p); return `<button type="button" class="np-hit" data-bxaddn="${V2.esc(p.n)}"${has ? ' aria-disabled="true"' : ''}><img src="${V2.art(SPRITE_ID[p.n])}" alt="" width="240" height="240" loading="lazy" decoding="async"><b>${V2.nameHtml(V2.disp(p.n))}</b><span class="ty">${has ? '<small>In your box</small>' : (p.t || []).map(V2.typeChip).join('')}</span></button>`; }).join(''); };
+   inp.addEventListener('input', draw); inp.addEventListener('keydown', e => { if (e.key === 'Enter') { const h = out.querySelector('.np-hit:not([aria-disabled])'); if (h) { e.preventDefault(); h.click(); } } }); draw(); };
+ V2.bxAdd = n => { const p = byName.get(n); if (!p) return; if (!boxAdd(p)) { toast(`${p.d} is already in your box`); return; } V2.closeSheet(true);
+   V2.bx.sel = p.n; const D = V2.bxData(), i = D.rows.findIndex(r => r[0] === p.n); if (i >= 0) V2.bx.page = Math.floor(i / D.per); render(); toast(p.d + ' added to your box'); };
+diff --git a/app/src/v2/pages/build.js b/app/src/v2/pages/build.js
+index 2ec1d83..22d1ba9 100644
+--- a/app/src/v2/pages/build.js
++++ b/app/src/v2/pages/build.js
+@@ -16,7 +16,7 @@ V2.buildHead = () => { V2.bdSrcDefault(); const E = V2.esc, nBox = (S.box || [])
+     &lt;div class=&quot;bd-side&quot;&gt;&lt;p&gt;Winning tournament teams you can field from your box or the whole roster.&lt;/p&gt;&lt;button type=&quot;button&quot; class=&quot;np-link&quot; data-bdhow&gt;How It Works ›&lt;/button&gt;&lt;/div&gt;&lt;/div&gt;`;
+   const src = V2.slide(&#39;bdsrc&#39;, [[&#39;box&#39;, &#39;My Box&#39;], [&#39;all&#39;, &#39;Whole Roster&#39;]], ui.abSrc === &#39;all&#39; ? &#39;all&#39; : &#39;box&#39;, &#39;Build from&#39;);
+   const meg = V2.slide(&#39;sgmega&#39;, [[&#39;0&#39;, &#39;0&#39;], [&#39;1&#39;, &#39;1&#39;], [&#39;2&#39;, &#39;2&#39;]], String(megaGoal()), &#39;Megas on team&#39;);
+-  const around = lk ? `<div class="bd-pick">${SPRITE_ID[lk.n] ? `&lt;img src=&quot;${V2.art(SPRITE_ID[lk.n])}&quot; alt=&quot;&quot;&gt;` : ''}<b>${V2.nameHtml(V2.disp(lk.n))}</b><button type="button" class="bd-x" data-bdx aria-label="Stop building around ${E(V2.disp(lk.n))}">×</button></div>`
++  const around = lk ? `<div class="bd-pick">${SPRITE_ID[lk.n] ? `&lt;img src=&quot;${V2.art(SPRITE_ID[lk.n])}&quot; alt=&quot;&quot; width=&quot;240&quot; height=&quot;240&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''}<b>${V2.nameHtml(V2.disp(lk.n))}</b><button type="button" class="bd-x" data-bdx aria-label="Stop building around ${E(V2.disp(lk.n))}">×</button></div>`
+     : `<label class="np-field bd-find">${V2.ICON.search}<input type="search" data-bdfind value="${E(V2.bdUi.find)}" placeholder="Type a Pokémon" aria-label="Build around a Pokémon (optional): type its name" autocomplete="off">${V2.CLR}</label><div class="bd-hits" data-bdhits></div>`;
+   const busy = !!(ui.ab && ui.ab.busy), label = lk ? `Build Around ${E(V2.disp(lk.n))}` : 'Build Me a Team';
+   const opts = `&lt;div class=&quot;bd-opts&quot;&gt;&lt;div class=&quot;bd-opt bd-src&quot;&gt;&lt;span class=&quot;bd-lab&quot;&gt;Build from&lt;/span&gt;${src}&lt;/div&gt;&lt;div class=&quot;bd-opt bd-meg&quot;&gt;&lt;span class=&quot;bd-lab&quot;&gt;Megas on team&lt;/span&gt;${meg}&lt;/div&gt;
+@@ -25,7 +25,7 @@ V2.buildHead = () => { V2.bdSrcDefault(); const E = V2.esc, nBox = (S.box || [])
+   return head + opts; };
+ V2.buildHits = q => { q = String(q || '').trim().toLowerCase(); if (!q) return '';
+   const r = searchMon(q, 40).slice(0, 6); /* today's search (04-search.js, shared): Megas included, word-start matching (audit AUTO-05) */
+-  return r.length ? r.map(p => `<button type="button" class="np-hit" data-bdpick="${V2.esc(p.n)}">${SPRITE_ID[p.n] ? `&lt;img src=&quot;${V2.art(SPRITE_ID[p.n])}&quot; alt=&quot;&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''}<b>${V2.esc(p.d || p.n)}</b></button>`).join('')
++  return r.length ? r.map(p => `<button type="button" class="np-hit" data-bdpick="${V2.esc(p.n)}">${SPRITE_ID[p.n] ? `&lt;img src=&quot;${V2.art(SPRITE_ID[p.n])}&quot; alt=&quot;&quot; width=&quot;240&quot; height=&quot;240&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''}<b>${V2.esc(p.d || p.n)}</b></button>`).join('')
+     : `<p class="fine">No Pokémon called “${V2.esc(q)}”.</p>`; };
+ V2.pages.build = {place: 'build'}; // code review C2: one draw and one after, set further down (draw ~L146, wrapped by build-sheet.js; after ~L187)
+ // the pool: today's rule (34-events.js): save, and rebuild if results are showing
+@@ -107,7 +107,7 @@ if (V2.CORES_WIDE) { const f = () => { if (V2.route && V2.route() === 'build') V
+ V2.buildCores = bp => { const E = V2.esc, rows = coreRows(), wide = !!(V2.CORES_WIDE && V2.CORES_WIDE.matches), first = wide ? 8 : 7, step = wide ? 16 : 15, shown = rows.slice(0, first + step * (coreUi.more || 0)), base = RES && +RES.base ? +RES.base : .5;
+   const kindW = {pairs: 'pairs', trios: 'trios', teams: 'full teams'}[coreUi.kind] || 'pairs';
+   const row = (r, i) => { const tags = coreTags(r.ns).filter(x => x !== 'Mega') /* Sim, Nov 12 decision 10: the blue Mega in the name says it */, pts = r.tog == null ? null : Math.round(r.tog * 1000) / 10;
+-    return `<li class="bd-core"><i class="bd-cn${bp ? ' u' : ''}"${bp ? ' aria-hidden="true"' : ''}>${bp ? String(i + 1).padStart(2, '0') : i + 1}</i><span class="bd-cp">${r.ns.map(n => SPRITE_ID[n] ? `&lt;img src=&quot;${V2.art(SPRITE_ID[n])}&quot; alt=&quot;&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : '').join('')}&lt;/span&gt;
++    return `<li class="bd-core"><i class="bd-cn${bp ? ' u' : ''}"${bp ? ' aria-hidden="true"' : ''}>${bp ? String(i + 1).padStart(2, '0') : i + 1}</i><span class="bd-cp">${r.ns.map(n => SPRITE_ID[n] ? `&lt;img src=&quot;${V2.art(SPRITE_ID[n])}&quot; alt=&quot;&quot; width=&quot;240&quot; height=&quot;240&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : '').join('')}</span>
+       <span class="bd-cm"><b>${r.ns.map(n => V2.rowName(V2.disp(n))).join('\u00a0+ ')}</b><small>${tags.length ? `&lt;em&gt;${E(tags.slice(0, 2).join(', '))}&lt;/em&gt; · ` : ''}${homeNum(r.n)} teams${r.use != null ? ` (${E(pctTxt(r.use))})` : ''}${pts != null ? ` · ${pts > 0 ? '+' : ''}${pts} point${Math.abs(pts) === 1 ? '' : 's'} together` : ''}</small>${r.ns.length > 3 ? `&lt;span class=&quot;bd-cacts&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;np-link&quot; data-bdcprep=&quot;${E(r.ns.join(&#39;|&#39;))}&quot;&gt;Set as Opponent ›&lt;/button&gt;&lt;button type=&quot;button&quot; class=&quot;np-link&quot; data-bdccopy=&quot;${E(r.ns.join(&#39;|&#39;))}&quot;&gt;Copy for Showdown&lt;/button&gt;&lt;/span&gt;` : `&lt;span class=&quot;bd-cacts&quot;&gt;&lt;button type=&quot;button&quot; class=&quot;np-link&quot; data-bdcteams=&quot;${E(r.ns.join(&#39;|&#39;))}&quot;&gt;Teams with It ›&lt;/button&gt;&lt;/span&gt;`}</span>
+       <span class="bd-cw" title="${E(pctTxt(r.use))} of all tournament teams">${(() => { const use = coreUi.sort === 'use', w = use ? r.wr : r.score, dv = use ? r.d : r.score - base; /* today's 48-cores.js: Top rated shows the win rate pulled toward the average (the number it ranks by); Most used shows the raw rate */
+         return `<b class="u"${use ? '' : ` title="Win rate, pulled toward average until there are enough games (raw: ${E(winFmt(100 * r.wr))})"`}>${E(winFmt(100 * w))}&lt;/b&gt;&lt;small&gt;wins · ${dv >= 0 ? '+' : '−'}${E(ptsTxt(Math.abs(100 * dv)))} vs avg&lt;/small&gt;`; })()}</span><button type="button" class="np-btn2 k-btn bd-add" data-bdcore="${E(r.ns.join('|'))}" aria-label="Add ${E(r.ns.map(n => V2.disp(n)).join(' and '))} to your team"><span>${r.ns.length > 3 ? 'Load Team' : 'Add'}</span></button></li>`; };
+@@ -174,7 +174,7 @@ document.addEventListener('click', e => { const b = e.target.closest && e.target
+ // ---------- Build: cores with a Pokémon (today's CORES-04 filter: "With a Pokémon…", a chip with ×; the same name box as Build around) ----------
+ V2.bdUi.cfind = V2.bdUi.cfind || '';
+ V2.buildCoreFind = () => { const E = V2.esc, m = coreUi.mon && byName.get(coreUi.mon);
+-  if (m) return `<div class="bd-pick bd-cpick">${SPRITE_ID[m.n] ? `&lt;img src=&quot;${V2.art(SPRITE_ID[m.n])}&quot; alt=&quot;&quot;&gt;` : ''}<b>${V2.nameHtml(V2.disp(m.n))}</b><button type="button" class="bd-x" data-bdcmx aria-label="Show cores with any Pokémon">×</button></div>`;
++  if (m) return `<div class="bd-pick bd-cpick">${SPRITE_ID[m.n] ? `&lt;img src=&quot;${V2.art(SPRITE_ID[m.n])}&quot; alt=&quot;&quot; width=&quot;240&quot; height=&quot;240&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''}<b>${V2.nameHtml(V2.disp(m.n))}</b><button type="button" class="bd-x" data-bdcmx aria-label="Show cores with any Pokémon">×</button></div>`;
+   return `<div class="bd-cfind"><label class="np-field bd-find">${V2.ICON.search}<input type="search" data-bdcfind value="${E(V2.bdUi.cfind)}" placeholder="With a Pokémon…" aria-label="Only cores with this Pokémon: type its name" autocomplete="off">${V2.CLR}</label><div class="bd-hits" data-bdchits></div></div>`; };
+ V2.bdCoreHits = q => V2.buildHits(q).replace(/data-bdpick=/g, 'data-bdcpick=');
+ document.addEventListener('input', e => { const i = e.target.closest && e.target.closest('[data-bdcfind]'); if (!i) return; V2.bdUi.cfind = i.value; const h = document.querySelector('[data-bdchits]'); if (h) h.innerHTML = V2.bdCoreHits(i.value); });
+diff --git a/app/src/v2/pages/compare.js b/app/src/v2/pages/compare.js
+index c93a908..9d7ac77 100644
+--- a/app/src/v2/pages/compare.js
++++ b/app/src/v2/pages/compare.js
+@@ -25,7 +25,7 @@ V2.cxHead = (side, R) => { const E = V2.esc;
+ const CX2 = {
+   grade: G => G ? `<div class="np-score sm" style="--band:var(--band-${({A: 'top', B: 'ready', C: 'solid', D: 'work', F: 'miss'})[G.band] || 'solid'})"><b>${Math.round(G.s)}</b><div class="w"><span>${V2.esc(CH.wordOf(G.s))}${G.partial ? ' so far' : ''}</span><small>${G.partial ? `${(G.st && G.st.partialN) || 0} of 6 picked` : V2.esc(CH.recLine(G, true))}</small></div></div>` : '&lt;span class=&quot;fine&quot;&gt;Add Pokémon first&lt;/span&gt;', /* a partial team says so, as My Team does (code review A1-I5) */
+   ready: v => { if (!v) return '–'; const c = [0, 0, 0, 0]; for (const r of v.RD.rows) c[r.level]++; return `<span class="cx2-l"><b>${c[3]}</b> Beats it</span><span class="cx2-l"><b>${c[2]}</b> Handles it</span><span class="cx2-l fine">${c[1]} Shaky · ${c[0]} No answer</span>`; },
+-  thr: L => L.length ? `<span class="cx2-mons">${L.slice(0, 5).map(r => `&lt;span&gt;&lt;img src=&quot;${V2.art(SPRITE_ID[r.t.n])}&quot; alt=&quot;&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;${V2.rowName(r.t.d)}&lt;/span&gt;`).join('')}${L.length > 5 ? `&lt;span class=&quot;fine&quot;&gt;+${L.length - 5} more&lt;/span&gt;` : ''}</span>` : '&lt;span class=&quot;fine&quot;&gt;None&lt;/span&gt;',
++  thr: L => L.length ? `<span class="cx2-mons">${L.slice(0, 5).map(r => `&lt;span&gt;&lt;img src=&quot;${V2.art(SPRITE_ID[r.t.n])}&quot; alt=&quot;&quot; width=&quot;240&quot; height=&quot;240&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;${V2.rowName(r.t.d)}&lt;/span&gt;`).join('')}${L.length > 5 ? `&lt;span class=&quot;fine&quot;&gt;+${L.length - 5} more&lt;/span&gt;` : ''}</span>` : '&lt;span class=&quot;fine&quot;&gt;None&lt;/span&gt;',
+   ck: v => v == null ? '&lt;span class=&quot;cx2-ck un&quot; title=&quot;Not counted&quot;&gt;–&lt;/span&gt;' : v ? '&lt;span class=&quot;cx2-ck ok&quot; aria-label=&quot;Yes&quot;&gt;✓&lt;/span&gt;' : '&lt;span class=&quot;cx2-ck no&quot; aria-label=&quot;No&quot;&gt;✗&lt;/span&gt;',
+   spd: v => { if (!v) return '–'; const os = x => { const r = typeof outspeedOf === 'function' ? outspeedOf(x.v, v.wxS || '', {}) : null; return r ? ` <span class="fine">· outspeeds ${r.pct}% of the top ${r.n}</span>` : ''; }, f = v.spd[0], l = v.spd[v.spd.length - 1];
+     return `<span class="cx2-l">Fastest <b>${V2.esc(f.m.d)}</b> ${f.v}${os(f)}</span><span class="cx2-l">Slowest <b>${V2.esc(l.m.d)}</b> ${l.v}${os(l)}</span>`; },
+@@ -81,7 +81,7 @@ V2.cxWork = () => { if (V2.cxBusy) return; V2.cxBusy = true; const step = () =>
+ // Sim Q10d (Nov 15): titled 'Change Team X' when that side already has a team (the button you tapped says Change), 'Pick Team X' when empty
+ // the picker, as a sheet: My Team, saved teams, event winners (newest first), or a pasted Showdown team
+ // one picker row (also Team B's quick winners, scan S31)
+-V2.cxOpt = (side, other, src, title, sub, names) => { const E = V2.esc; return `<button type="button" class="cx2-opt" data-cxset2="${side}|${E(src)}"${other === src ? ' aria-disabled="true"' : ''}><span class="t"><b>${E(title)}</b>${other === src ? `&lt;span&gt;Already team ${side === 'A' ? 'B' : 'A'}&lt;/span&gt;` : sub ? `&lt;span&gt;${E(sub)}&lt;/span&gt;` : ''}</span><span class="s">${names.map(n => `&lt;img src=&quot;${V2.art(SPRITE_ID[n])}&quot; alt=&quot;&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;`).join('')}</span></button>`; };
++V2.cxOpt = (side, other, src, title, sub, names) => { const E = V2.esc; return `<button type="button" class="cx2-opt" data-cxset2="${side}|${E(src)}"${other === src ? ' aria-disabled="true"' : ''}><span class="t"><b>${E(title)}</b>${other === src ? `&lt;span&gt;Already team ${side === 'A' ? 'B' : 'A'}&lt;/span&gt;` : sub ? `&lt;span&gt;${E(sub)}&lt;/span&gt;` : ''}</span><span class="s">${names.map(n => `&lt;img src=&quot;${V2.art(SPRITE_ID[n])}&quot; alt=&quot;&quot; width=&quot;240&quot; height=&quot;240&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;`).join('')}</span></button>`; };
+ V2.cxPickHtml = side => { const other = ui.cx[side === 'A' ? 'B' : 'A'], E = V2.esc;
+   const opt = (src, title, sub, names) => V2.cxOpt(side, other, src, title, sub, names);
+   const mine = members(), parts = [];
+diff --git a/app/src/v2/pages/feedback.js b/app/src/v2/pages/feedback.js
+index 22411e3..0c528f3 100644
+--- a/app/src/v2/pages/feedback.js
++++ b/app/src/v2/pages/feedback.js
+@@ -4,7 +4,8 @@
+ // v: the page they came from, w: phone or desktop, d: the date only}. No contact field. The Preview only pretends to save
+ // (its stand-in database keeps nothing), so there it says so instead of thanking anyone.
+ V2.FB = {ref: null, ok: false, kind: 'idea', busy: false, from: ''};
+-(async () => { try { const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
++(async () => { try { if (window.__NP_PUBLIC && window.NP_FEEDBACK_URL) { V2.FB.ok = true; if (V2.redraw) V2.redraw(); return; }
++  const c = window.__NP_CLAUDE || window.claude; if (!c || !c.use) return; const [d, u] = await Promise.all([c.use('db'), c.use('user')]); if (!d || !u) return;
+   const own = !!(u.isOwner && u.isOwner()); if (typeof u.can === 'function' && u.can('data.write') === false && !own) return;
+   const id = await u.id(); if (!id) return; V2.FB.ref = d.doc('feedback/' + id); V2.FB.ok = true; if (V2.redraw) V2.redraw(); } catch (e) {} })(); /* feedback links show only where feedback can be saved (Nov 15, SHELL-20c) */
+ // the page they came from: the last page opened before Send Feedback (first read once every page has registered)
+@@ -28,7 +29,8 @@ V2.fbSend = async () => { const F = V2.FB, ta = document.getElementById('fbText2
+   if (!F.ok) { msg.textContent = "Can't send from here: your access level can't save data."; return; }
+   F.busy = true; btn.disabled = true; msg.textContent = 'Sending…'; const k = Math.random().toString(36).slice(2, 10) + Math.random().toString(36).slice(2, 6), sc = fbScrub(t.slice(0, 1000));
+   const entry = {t: sc.t, k: F.kind, v: F.from || 'home', w: innerWidth < 760 ? 'phone' : 'desktop', d: new Date().toISOString().slice(0, 10)}; if (F.ctx) entry.c = fbScrub((F.ctx.slice(0, 300) + (F.ctxNums ? '\n' + F.ctxNums : '')).slice(0, 1200)).t; /* Report a Mistake: what was on screen (Nov 15, CALC-08), plus a Pokémon's numbers (Nov 18, OL-i39) */
+-  try { const s = await F.ref.get(); if (s.exists) await F.ref.update({m: {[k]: entry}}); else await F.ref.set({m: {[k]: entry}});
++  try { if (window.__NP_PUBLIC && window.NP_FEEDBACK_URL) { const res = await fetch(window.NP_FEEDBACK_URL, {method: 'POST', headers: {'content-type': 'application/json'}, body: JSON.stringify(entry)}); if (!res.ok) throw new Error('HTTP ' + res.status); }
++    else { const s = await F.ref.get(); if (s.exists) await F.ref.update({m: {[k]: entry}}); else await F.ref.set({m: {[k]: entry}}); }
+     ta.value = ''; F.draft = ''; F.ctx = ''; F.ctxNums = ''; const cx = document.querySelector('.inf-ctx'); if (cx) cx.remove(); msg.textContent = 'Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : ''); V2.toast('Thanks! Feedback sent.' + (sc.n ? ' Personal details were removed.' : '')); }
+   catch (e) { msg.textContent = "Couldn't send. Try again in a moment."; }
+   finally { F.busy = false; btn.disabled = false; } };
+diff --git a/app/src/v2/pages/home.js b/app/src/v2/pages/home.js
+index edd657d..9842ed2 100644
+--- a/app/src/v2/pages/home.js
++++ b/app/src/v2/pages/home.js
+@@ -125,13 +125,13 @@ V2.hmUi.more = (() => { try { return localStorage.getItem('np2.fold.homemore') =
+ // Say it once (Nov 15 night): 'Doubles is played in pairs' (the pairs most brought together, from real replays) moved from Home's
+ // More on Home fold to Team Preview Practice, the page about choosing what to bring (same markup and numbers)
+ // player review 3g (Nov 17): the % said alone read like a win rate; it says "brought together" beside the number (here and in homeMore)
+-V2.pairsHtml = () => { const E = V2.esc, img = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img src="${V2.art(id)}" alt="" loading="lazy" decoding="async">` : ''; };
++V2.pairsHtml = () => { const E = V2.esc, img = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img src="${V2.art(id)}" alt="" width="240" height="240" loading="lazy" decoding="async">` : ''; };
+   const games = RES && RES.tc && RES.tc.games, pairs = homePairs(CH.metaSix(), 4);
+   const pr = pairs.length >= 2 ? `<div class="hm-mp"><p class="np-eyebrow">Team preview · Showdown replays${games ? ` · ${homeNum(games)} games` : ''}&lt;/p&gt;&lt;h3 class=&quot;u&quot; aria-level=&quot;2&quot;&gt;Doubles is played in &lt;span&gt;pairs.&lt;/span&gt;&lt;/h3&gt;
+     &lt;div class=&quot;hm-pairs&quot;&gt;${pairs.map(x =&gt; `&lt;button type=&quot;button&quot; class=&quot;hm-pair&quot; data-v2mon=&quot;${E(x.b.n)}&quot; aria-label=&quot;${E(x.a.d)} and ${E(x.b.d)}: brought together ${x.pct}%&quot;&gt;&lt;span class=&quot;hm-pi&quot;&gt;${img(x.a.n)}${img(x.b.n)}&lt;/span&gt;&lt;span&gt;&lt;b class=&quot;hm-pp&quot;&gt;${x.pct}&lt;span class=&quot;unit&quot;&gt;% brought together&lt;/span&gt;&lt;/b&gt;&lt;span class=&quot;hm-pn&quot;&gt;${V2.rowName(x.a.d)} + ${V2.rowName(x.b.d)}&lt;/span&gt;&lt;small&gt;${homeNum(x.g)} games&lt;/small&gt;&lt;/span&gt;&lt;/button&gt;`).join(&#39;&#39;)}&lt;/div&gt;
+     &lt;p class=&quot;hm-hint&quot;&gt;% = how often the pair is brought together when both are on the team.&lt;/p&gt;&lt;/div&gt;` : &#39;&#39;;
+   return pr; };
+-V2.homeMore = () => { const E = V2.esc, img = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img src="${V2.art(id)}" alt="" loading="lazy" decoding="async">` : ''; };
++V2.homeMore = () => { const E = V2.esc, img = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `<img src="${V2.art(id)}" alt="" width="240" height="240" loading="lazy" decoding="async">` : ''; };
+   const games = RES && RES.tc && RES.tc.games, pairs = homePairs(CH.metaSix(), 4);
+   const pr = pairs.length >= 2 ? `<div class="hm-mp"><p class="np-eyebrow">Team preview · Showdown replays${games ? ` · ${homeNum(games)} games` : ''}&lt;/p&gt;&lt;h3 class=&quot;u&quot;&gt;Doubles is played in &lt;span&gt;pairs.&lt;/span&gt;&lt;/h3&gt;
+     &lt;div class=&quot;hm-pairs&quot;&gt;${pairs.map(x =&gt; `&amp;lt;button type=&amp;quot;button&amp;quot; class=&amp;quot;hm-pair&amp;quot; data-v2mon=&amp;quot;${E(x.b.n)}&amp;quot; aria-label=&amp;quot;${E(x.a.d)} and ${E(x.b.d)}: brought together ${x.pct}%&amp;quot;&amp;gt;&amp;lt;span class=&amp;quot;hm-pi&amp;quot;&amp;gt;${img(x.a.n)}${img(x.b.n)}&amp;lt;/span&amp;gt;&amp;lt;span&amp;gt;&amp;lt;b class=&amp;quot;hm-pp&amp;quot;&amp;gt;${x.pct}&amp;lt;span class=&amp;quot;unit&amp;quot;&amp;gt;% brought together&amp;lt;/span&amp;gt;&amp;lt;/b&amp;gt;&amp;lt;span class=&amp;quot;hm-pn&amp;quot;&amp;gt;${V2.rowName(x.a.d)} + ${V2.rowName(x.b.d)}&amp;lt;/span&amp;gt;&amp;lt;small&amp;gt;${homeNum(x.g)} games&amp;lt;/small&amp;gt;&amp;lt;/span&amp;gt;&amp;lt;/button&amp;gt;`).join(&#39;&#39;)}&lt;/div&gt;
+diff --git a/app/src/v2/pages/team-frame.js b/app/src/v2/pages/team-frame.js
+index a00ad46..ce5adc1 100644
+--- a/app/src/v2/pages/team-frame.js
++++ b/app/src/v2/pages/team-frame.js
+@@ -5,7 +5,7 @@
+ // (Remove), data-v2lock (Lock), data-v2mon (Pokémon Page), data-v2addto (an empty spot), data-v2gplan (the Game Plan sheet).
+ // Phone (under 1000): the six are one row of six taps and the tapped Pokémon opens right under it; desktop shows all six sets.
+ V2.MTF_W = {six: 'Your six', tap: 'tap one to see it', of: (k, n) => `${k} of ${n}`, add: 'Add a Pokémon', plan: "How to play this six against the meta's top six."};
+-V2.mtfImg = (n, cls = '') => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `&lt;img class=&quot;${cls}&quot; src=&quot;${V2.art(id)}&quot; alt=&quot;&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''; };
++V2.mtfImg = (n, cls = '') => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null; return id ? `&lt;img class=&quot;${cls}&quot; src=&quot;${V2.art(id)}&quot; alt=&quot;&quot; width=&quot;240&quot; height=&quot;240&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''; };
+ V2.mtfTy = t => V2.TYPES.includes(t) ? t : 'Normal';
+ // every width (Sim, Nov 21, 7:05 AM: squeezed names 'really rough'): the form on a small line above, the name one clean line, never squeezed
+ V2.mtfSplit = d => { const q = []; let mg = false; if (d.startsWith('Mega ')) { mg = true; q.push('Mega'); d = d.slice(5); }
+diff --git a/app/src/v2/shell.js b/app/src/v2/shell.js
+index a5c268e..1cc4093 100644
+--- a/app/src/v2/shell.js
++++ b/app/src/v2/shell.js
+@@ -37,7 +37,8 @@ V2.cp = n => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m
+ // same shape (no reserved blank line above every name); elsewhere (rows, sentences) Mega stays inline before the name (nameHtml)
+ // o.tag (i42, Nov 13): a bare tile that writes its own name still gets the corner Mega tag (A9), so its name never wraps below its neighbours
+ V2.mon = (n, o = {}) => { const id = typeof SPRITE_ID === 'object' ? SPRITE_ID[n] : null, m = (typeof ART_META === 'object' && ART_META[id]) || [150, 150, 165, 0];
+-  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `&lt;img src=&quot;${V2.art(id, !(o.iw &amp;&amp; o.iw &lt;= 80) || o.big)}&quot; alt=&quot;&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''}${V2.disp(n).startsWith('Mega ') && (!o.bare || o.tag) ? '<span class="np-megatag">Mega</span>' : ''}</div>${o.bare ? '' : `&lt;b&gt;${V2.esc(V2.disp(n).replace(/^Mega /, ''))}&lt;/b&gt;`}${o.sub ? `&lt;small&gt;${V2.esc(o.sub)}&lt;/small&gt;` : ''}</div>`; };
++  const big = !(o.iw && o.iw <= 80) || o.big, sz = big ? 384 : 240;
++  return `<div class="np-mon${o.sel ? ' sel' : ''}${o.ft ? ' ft' : ''}" style="--cp:${m[0]},${m[1]},${m[2]};--fo:${m[3]}${o.iw ? ';--iw:' + o.iw + 'px' : ''}"><div class="st"><i class="pool" aria-hidden="true"></i>${id ? `&lt;img src=&quot;${V2.art(id, big)}&quot; alt=&quot;&quot; width=&quot;${sz}&quot; height=&quot;${sz}&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;` : ''}${V2.disp(n).startsWith('Mega ') && (!o.bare || o.tag) ? '<span class="np-megatag">Mega</span>' : ''}</div>${o.bare ? '' : `&lt;b&gt;${V2.esc(V2.disp(n).replace(/^Mega /, ''))}&lt;/b&gt;`}${o.sub ? `&lt;small&gt;${V2.esc(o.sub)}&lt;/small&gt;` : ''}</div>`; };
+ // drawn icons (the ⌕ glyph renders tiny in Instrument Sans)
+ V2.ICON = {fwd: '&lt;svg class=&quot;np-ic&quot; viewBox=&quot;0 0 24 24&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M9 4.5 16.5 12 9 19.5&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.6&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/&gt;&lt;/svg&gt;', back: '&lt;svg class=&quot;np-ic&quot; viewBox=&quot;0 0 24 24&quot; aria-hidden=&quot;true&quot;&gt;&lt;path d=&quot;M15 4.5 7.5 12l7.5 7.5&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.6&quot; stroke-linecap=&quot;round&quot; stroke-linejoin=&quot;round&quot;/&gt;&lt;/svg&gt;', search: '&lt;svg class=&quot;np-ic&quot; viewBox=&quot;0 0 24 24&quot; aria-hidden=&quot;true&quot;&gt;&lt;circle cx=&quot;10.5&quot; cy=&quot;10.5&quot; r=&quot;6.5&quot; fill=&quot;none&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.4&quot;/&gt;&lt;path d=&quot;M15.5 15.5 21 21&quot; stroke=&quot;currentColor&quot; stroke-width=&quot;2.6&quot; stroke-linecap=&quot;round&quot;/&gt;&lt;/svg&gt;',
+   // My Box: a storage box (lid, body, handle slot), drawn like the search glass
+@@ -214,7 +215,7 @@ V2.openSearch = () => { const sh = V2.sheet(`<div class="np-find"><h2 class="u">
+   const itPic = n => { let u = '', a = ''; try { u = V2.itemImg ? V2.itemImg(n, true) : ''; a = u ? '' : V2.itemArt ? V2.itemArt(n) : ''; } catch (e) {}
+     return u ? `&lt;span class=&quot;np-itb&quot; aria-hidden=&quot;true&quot;&gt;&lt;img src=&quot;${V2.esc(u)}&quot; alt=&quot;&quot; width=&quot;28&quot; height=&quot;28&quot; loading=&quot;lazy&quot; decoding=&quot;async&quot;&gt;&lt;/span&gt;` : a ? `&lt;span class=&quot;np-itb&quot; aria-hidden=&quot;true&quot;&gt;${a}&lt;/span&gt;` : ''; };
+   const KW = {mv: 'Move', it: 'Item', ab: 'Ability', nt: 'Nature'}, N0 = typeof META === 'object' && META.info ? META.info.N : 0, M0 = typeof META === 'object' && META.info ? META.info.ntN || 0 : 0;
+-  const monHit = p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `&lt;small aria-label=&quot;Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier&quot;&gt;${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier&lt;/small&gt;` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
++  const monHit = p => `<button type="button" class="np-hit" data-v2mon="${V2.esc(p.n)}"><img src="${V2.art(SPRITE_ID[p.n])}" alt="" width="240" height="240" loading="lazy" decoding="async"><span class="nm"><b>${V2.nameHtml(V2.disp(p.n))}</b>${(() => { try { const r = rating(p).total; return r ? `&lt;small aria-label=&quot;Rated ${RS(r)}, ${V2.esc(lTier(r).k)} tier&quot;&gt;${RS(r)}\u00a0·\u00a0${V2.esc(lTier(r).k)}\u00a0tier&lt;/small&gt;` : ''; } catch (e) { return ''; } })()}</span><span class="ty">${(p.t || []).map(V2.typeChip).join('')}</span></button>`;
+   /* scan S34 A (Sim, Nov 20): a miss offers today's six highest-rated Pokémon as normal search rows (the same six as empty My Team's
+      'Start from a Winner'), so a typo leads somewhere instead of a dead end */
+   const missTop = () => { let top = []; try { top = lairRows().slice(0, 6).map(x => x.p); } catch (e) {} return top.length ? `<p class="miss-k">Or meet today's top six</p>${top.map(monHit).join('')}` : ''; };
+@@ -383,7 +384,16 @@ V2.nfDog = () => { const n = V2.underdog ? V2.underdog() : 'Flapple', d = V2.dis
+ V2.nfHtml = () => `<div class="ra gsp nf-pg nf2" data-v2nf><div class="nf2-two"><div class="k-head"><p class="k-kicker np-eyebrow">PAGE NOT FOUND · WRONG TURN</p><h1 class="k-h1 u">Nothing here. <br><em>Wrong turn.</em></h1><p class="k-lead">This address doesn't match a page on NastyPlot. It may be an old or mistyped link.</p>${V2.kGo('GO TO HOME.', {href: '#home'})}</div>${V2.nfDog()}</div></div>`;
+ V2.pages.notfound = {place: '', draw: () => V2.nfHtml()};
+ /* own keys only: '#constructor' or '#toString' found the object's built-ins and broke the draw */
+-V2.route = () => { const h = (location.hash || '').slice(1).split('=')[0]; /* Nov 15: '#method=rating' opens How We Calculate at that part */ return Object.prototype.hasOwnProperty.call(V2.pages, h) ? h : h ? 'notfound' : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
++V2.PUB_PATHS = {home: '/', team: '/team', build: '/build', battle: '/battle', calc: '/calc', speed: '/speed', types: '/types', practice: '/practice', gauntlet: '/test-run', meta: '/meta', usage: '/usage', sets: '/sets', tournaments: '/winning-teams', weekly: '/this-week', events: '/events', archetypes: '/archetypes', natures: '/natures', track: '/track-record', method: '/how-it-works', gifts: '/gifts', news: '/gifts', compare: '/compare', box: '/box', about: '/about', 'about=priv': '/privacy'};
++V2.PUB_FROM_PATH = p => { const c = String(p || '/').replace(/\/+$/, '') || '/';
++  if (c === '/privacy') return {r: 'about', sub: 'priv'};
++  if (c === '/gifts') return {r: V2.pages.gifts ? 'gifts' : (V2.pages.news ? 'news' : 'home'), sub: ''};
++  if (c.startsWith('/pokemon/')) return {r: 'pokemon', sub: decodeURIComponent(c.slice(9))};
++  for (const [k, v] of Object.entries(V2.PUB_PATHS)) if (v === c && !k.includes('=')) return {r: k, sub: ''};
++  return null; };
++V2.route = () => { let h = (location.hash || '').slice(1).split('=')[0];
++  if (!h && window.__NP_PUBLIC) { const m = V2.PUB_FROM_PATH(location.pathname); if (m) h = m.r; else if (location.pathname && location.pathname !== '/' && location.pathname !== '/v2.html' && location.pathname !== '/index.html') return 'notfound'; }
++  /* Nov 15: '#method=rating' opens How We Calculate at that part */ return Object.prototype.hasOwnProperty.call(V2.pages, h) || (window.__NP_ROUTES && Object.prototype.hasOwnProperty.call(window.__NP_ROUTES, h)) ? h : h ? 'notfound' : (V2.pages.home ? 'home' : Object.keys(V2.pages)[0]); };
+ // Word list (Sim, Nov 9; Nov 12: "fix them based on your recommendation"): the idea is Matchups and its levels are Beats it /
+ // Handles it, never "ready". Shared logic (also today's site) still writes "Ready for ..."; the new site says it the word list's way.
+ // The "81%" in "Ready for 81% of the top 30" is a weighted score, not a share of threats, so the plain count is shown instead.
+@@ -477,7 +487,8 @@ V2.warmDraw = () => { let pre = null; const P = V2.pages[V2.route()], warm = (P
+     () => { const stamp = V2.preStamp(); V2.prePend = true; pre = {tag: V2.preOk, stamp, r: V2.shell()}; }]; let i = 0;
+   /* V2.prePend: while built HTML waits for the next step, code the draw set up to look at the page "just after the draw" waits too
+      (V2.afterPre; sugs.js ckWinSoon): without it, the winners pass found no Suggestions on the page and started at once (+0.5 s of blocking) */
+-  const next = () => { if (i < steps.length) { try { steps[i++](); } catch (e) { pre = null; } setTimeout(next, 0); } else try { V2.redraw(pre); } finally { V2.prePend = false; } }; setTimeout(next, 0); };
++  const sched = fn => window.__NP_PUBLIC && typeof requestIdleCallback === 'function' ? requestIdleCallback(fn, {timeout: 120}) : setTimeout(fn, 0);
++  const next = () => { if (i < steps.length) { try { steps[i++](); } catch (e) { pre = null; } sched(next); } else try { V2.redraw(pre); } finally { V2.prePend = false; } }; sched(next); };
+ V2.afterPre = fn => { const go = () => { if (V2.prePend) setTimeout(go, 0); else fn(); }; setTimeout(go, 0); };
+ V2.dataReady = () => { if (V2._dataOk) return true; let ok = false;
+   try { const c = window.__NP_CLAUDE || window.claude; ok = !c || !c.use || META_NODB || META_KEYS.every(k => META_SEEN.has(k)) || performance.now() > 8000; } catch (e) { ok = true; }
+@@ -500,13 +511,34 @@ V2.shell = () => { const r = V2.route(), P = V2.pages[r], place = P && P.place |
+ /* audit Nov 16 (WCAG 2.4.2): each page has its own browser title, its name as the menu and search show it ("Meta · NastyPlot"); Home keeps "NastyPlot";
+    Pokémon pages set their own fuller title (pages/pokemon.js) */
+ V2.setTitle = () => { try { const r = V2.route(); if (r === 'pokemon') return; const h = document.querySelector('#main h1'); if (document.querySelector('#main [data-v2nf]')) { if (document.title !== 'Page not found · NastyPlot') document.title = 'Page not found · NastyPlot'; return; } /* Q24: the not-found page, #owner for visitors included */
++  if (window.__NP_PUBLIC && window.__NP_SEO) {
++    const sk = location.hash === '#about=priv' || location.pathname === '/privacy' ? 'privacy' : r;
++    const seo = window.__NP_SEO[sk];
++    if (seo) {
++      if (document.title !== seo.title) document.title = seo.title;
++      const setM = (sel, val) => { const el = document.querySelector(sel); if (el && el.getAttribute('content') !== val) el.setAttribute('content', val); };
++      setM('meta[name="description"]', seo.desc); setM('meta[property="og:title"]', seo.title); setM('meta[property="og:description"]', seo.desc);
++      let can = document.querySelector('link[rel="canonical"]');
++      if (!can) { can = document.createElement('link'); can.rel = 'canonical'; document.head.appendChild(can); }
++      const url = 'https://nastyplot.org' + seo.path; if (can.getAttribute('href') !== url) can.setAttribute('href', url);
++      return;
++    }
++  }
+   const nm = ((V2.findPlaces || []).find(([k, n]) => k === (r === 'team-empty' ? 'team' : r) && typeof n === 'string') || [])[1]; /* design audit #14: the empty-team view is My Team too */
+   const t = r === 'home' ? 'NastyPlot' : nm ? nm + ' · NastyPlot' : h ? h.textContent.replace(/\s+/g, ' ').trim().slice(0, 60) + ' · NastyPlot' : 'NastyPlot'; if (document.title !== t) document.title = t; } catch (e) {} };
+ /* V2.drawN counts arrivals (a full draw), so a page can do arrival-only things, like scrolling to a linked part, once per arrival and
+    never again on a redraw (code review A1-I4, Nov 17) */
+ // pre-launch check 6e (Nov 17): say once, after the first draw, when this device's saved data couldn't be read (01-state.js)
+ setTimeout(() => { try { if (STATE_UNREADABLE && !V2._unrSaid) { V2._unrSaid = 1; V2.toast("Your saved teams on this device couldn't be read, so the sample team is showing. A copy of the old data was kept.", 10000); } } catch (e) {} }, 1500);
+-V2.draw = () => { const app = document.getElementById('app'); if (!app) return; V2.drawN = (V2.drawN || 0) + 1; const {P, html} = V2.shell();
++V2._routeLoad = {};
++V2.loadRoute = r => { const src = window.__NP_ROUTES && window.__NP_ROUTES[r]; if (!src || V2.pages[r] || V2._routeLoad[r]) return;
++  V2._routeLoad[r] = true; const s = document.createElement('script'); s.src = src;
++  s.onload = () => { V2._routeLoad[r] = false; V2.draw(); };
++  s.onerror = () => { V2._routeLoad[r] = false; V2.pages[r] = {place: '', draw: () => V2.safeDraw({draw(){throw new Error('Route chunk failed: ' + r)}})}; V2.draw(); };
++  document.head.appendChild(s); };
++V2.draw = () => { const app = document.getElementById('app'); if (!app) return;
++  const r0 = V2.route(); if (window.__NP_ROUTES && !V2.pages[r0] && window.__NP_ROUTES[r0]) { V2.loadRoute(r0); const m = document.getElementById('main'); if (m) m.innerHTML = V2.loadingHtml(); return; }
++  V2.drawN = (V2.drawN || 0) + 1; const {P, html} = V2.shell();
+   // Sim, Nov 11 (iPhone recording): a redraw rebuilt every picture, so all six Pokémon blanked for a moment on each tap. Keep the
+   // pictures already on screen and put them back in place of their identical new copies (same src), so nothing re-decodes.
+   const keep = new Map(); for (const i of app.querySelectorAll('img[src]')) { const k = i.getAttribute('src'); if (!keep.has(k)) keep.set(k, []); keep.get(k).push(i); }
+
+----- BEGIN experiments/public-build-test.mjs -----
+// Public site build invariants (job 19: merged jobs 6+7, Node-only).
+// Usage: node experiments/public-build-test.mjs     (run after: node app/build.mjs --v2 --public)
+import fs from 'node:fs';
+import vm from 'node:vm';
+
+const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+const rd = p => fs.readFileSync(ROOT + p, 'utf8');
+const results = [];
+const check = (id, ok, detail) => results.push({id, ok: !!ok, detail: String(detail || '')});
+
+// PUB-1: SEO draft static titles <= 60 chars, descriptions <= 155 chars
+// (HH note: Home title is currently 62 chars in docs/rebuild/seo-titles-draft.md; this check intentionally fails until HH edits it.)
+{
+  const lines = rd('docs/rebuild/seo-titles-draft.md').split('\n');
+  const badTitle = [], badDesc = [];
+  let count = 0;
+  for (const line of lines) {
+    if (!line.startsWith('|')) continue;
+    const c = line.split('|').slice(1, -1).map(x => x.trim());
+    if (c.length !== 4 || c[0] === 'Page (code)' || c[0].startsWith('---')) continue;
+    const [page, addr, title, desc] = c;
+    if (addr.includes('{')) continue;
+    count++;
+    if (title.length > 60) badTitle.push(`${page} (${title.length} chars): ${title}`);
+    if (desc.length > 155) badDesc.push(`${page} (${desc.length} chars)`);
+  }
+  check('PUB-1', count >= 20 && badTitle.length === 0 && badDesc.length === 0,
+    JSON.stringify({checked: count, badTitle, badDesc}));
+}
+
+// PUB-2: Built public dist/v2.html has __NP_PUBLIC, __NP_SEO, no test-hook eval, no Google Fonts
+{
+  const distPath = ROOT + 'app/dist/v2.html';
+  if (!fs.existsSync(distPath)) {
+    check('PUB-2', false, 'app/dist/v2.html not found (run: node app/build.mjs --v2 --public)');
+  } else {
+    const html = fs.readFileSync(distPath, 'utf8');
+    const hasPub = html.includes('window.__NP_PUBLIC=1');
+    const hasSeo = html.includes('window.__NP_SEO=');
+    const noEval = !html.includes('window.__ev=');
+    const noGFonts = !/fonts\.(googleapis|gstatic)\.com/.test(html);
+    check('PUB-2', hasPub && hasSeo && noEval && noGFonts,
+      JSON.stringify({hasPub, hasSeo, noEval, noGFonts}));
+  }
+}
+
+// PUB-3: Public static assets (robots.txt, sitemap.xml, _redirects, _headers)
+{
+  const need = ['app/dist/robots.txt', 'app/dist/sitemap.xml', 'app/dist/_redirects', 'app/dist/_headers'];
+  const missing = need.filter(f => !fs.existsSync(ROOT + f));
+  if (missing.length) {
+    check('PUB-3', false, 'missing: ' + missing.join(', '));
+  } else {
+    const robots = rd('app/dist/robots.txt');
+    const sitemap = rd('app/dist/sitemap.xml');
+    const redirects = rd('app/dist/_redirects');
+    const headers = rd('app/dist/_headers');
+    const ok = robots.includes('Sitemap: https://nastyplot.org/sitemap.xml') &&
+      sitemap.includes('&lt;loc&gt;https://nastyplot.org/gifts&lt;/loc&gt;') &&
+      sitemap.includes('&lt;loc&gt;https://nastyplot.org/privacy&lt;/loc&gt;') &&
+      redirects.includes('/* /v2.html 200') &&
+      headers.includes('Cache-Control:');
+    check('PUB-3', ok, JSON.stringify({robots: robots.length, sitemap: sitemap.length, redirects: redirects.length, headers: headers.length}));
+  }
+}
+
+// PUB-4: Clean-URL routing (/gifts, /privacy -> about=priv) and teamLinkBase() public fallback
+{
+  const sh = rd('app/src/v2/shell.js');
+  const tl = rd('app/src/app/45-team-links.js');
+  const m = sh.match(/V2\.PUB_PATHS = \{[\s\S]*?\};\nV2\.PUB_FROM_PATH = [\s\S]*?return null; \};/);
+  let routeOk = false;
+  if (m) {
+    const ctx = {V2: {pages: {about: {}, gifts: {}, home: {}, pokemon: {}}}};
+    vm.createContext(ctx);
+    vm.runInContext(m[0], ctx);
+    const priv = ctx.V2.PUB_FROM_PATH('/privacy');
+    const gifts = ctx.V2.PUB_FROM_PATH('/gifts');
+    const mon = ctx.V2.PUB_FROM_PATH('/pokemon/Incineroar');
+    routeOk = priv && priv.r === 'about' && priv.sub === 'priv' &&
+      gifts && gifts.r === 'gifts' &&
+      mon && mon.r === 'pokemon' && mon.sub === 'Incineroar';
+  }
+  const tlOk = tl.includes("window.__NP_PUBLIC ? 'https://www.google.com/url?sa=E\&source=gmail\&q=https://nastyplot.org/' : TL_ART");
+  check('PUB-4', routeOk && tlOk, JSON.stringify({routeOk, tlOk}));
+}
+
+// PUB-5: 03-persistence.js has single unified META_KEYS.forEach handler (no duplicated handler)
+{
+  const p = rd('app/src/app/03-persistence.js');
+  const count = (p.match(/META_KEYS\.forEach/g) || []).length;
+  check('PUB-5', count === 1 && p.includes('window.__NP_PUBLIC'), JSON.stringify({metaKeysForEachCount: count}));
+}
+
+// PUB-6: build.mjs gates --split-css, --split-routes, and C1 minify behind PUBLIC
+{
+  const b = rd('app/build.mjs');
+  const ok = b.includes("const SPLIT_CSS = PUBLIC && process.argv.includes('--split-css');") &&
+    b.includes("const SPLIT_ROUTES = PUBLIC && process.argv.includes('--split-routes');") &&
+    b.includes("if (PUBLIC)") &&
+    b.includes("minifyWhitespace: true");
+  check('PUB-6', ok, JSON.stringify({gatedBehindPublic: ok}));
+}
+
+let failed = 0;
+for (const r of results) {
+  console.log(`${r.ok ? 'PASS' : 'FAIL'} ${r.id}: ${r.detail}`);
+  if (!r.ok) failed++;
+}
+if (failed) process.exitCode = 1;
+----- END experiments/public-build-test.mjs -----
+
+----- BEGIN experiments/speed.mjs -----
+// Mobile 4G page-speed benchmark (job 19 / job 14 Part A; manual Playwright run).
+// Measures FCP, LCP, TBT (long tasks > 50 ms), JS parse/eval time, and wire bytes at 390x844, 4x CPU, 4G (9 Mbps / 40 ms RTT).
+// Usage: PAGE=app/dist/v2.html node experiments/speed.mjs
+//    or: URL=http://127.0.0.1:8787/ node experiments/speed.mjs
+import fs from 'node:fs';
+import http from 'node:http';
+import path from 'node:path';
+import {createRequire} from 'node:module';
+
+const {chromium} = createRequire(import.meta.url)('playwright');
+const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+const ROUTES = ['#home', '#team', '#calc', '#meta', '#pokemon=Incineroar'];
+const RUNS = +(process.env.RUNS || 3);
+
+const MIME = {
+  '.html': 'text/html; charset=utf-8',
+  '.js': 'application/javascript; charset=utf-8',
+  '.css': 'text/css; charset=utf-8',
+  '.json': 'application/json; charset=utf-8',
+  '.webp': 'image/webp',
+  '.woff2': 'font/woff2',
+  '.svg': 'image/svg+xml',
+  '.png': 'image/png'
+};
+
+function startStatic(dir) {
+  const srv = http.createServer((req, res) => {
+    const clean = (req.url || '/').split('?')[0];
+    let fp = path.join(dir, clean === '/' ? 'v2.html' : clean);
+    if (!fs.existsSync(fp) || fs.statSync(fp).isDirectory()) fp = path.join(dir, 'v2.html');
+    const ext = path.extname(fp);
+    res.writeHead(200, {'Content-Type': MIME[ext] || 'application/octet-stream'});
+    fs.createReadStream(fp).pipe(res);
+  });
+  return new Promise(resolve => srv.listen(0, '127.0.0.1', () => resolve({srv, url: `http://127.0.0.1:${srv.address().port}/`})));
+}
+
+const median = arr => { const s = arr.slice().sort((a, b) => a - b); const m = s.length >> 1; return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2; };
+
+let server = null;
+let baseUrl = process.env.URL || '';
+if (!baseUrl) {
+  const pagePath = process.env.PAGE ? (process.env.PAGE.startsWith('/') ? process.env.PAGE : ROOT + process.env.PAGE) : ROOT + 'app/dist/v2.html';
+  if (!fs.existsSync(pagePath)) throw new Error(`Page not found: ${pagePath}`);
+  const st = await startStatic(path.dirname(pagePath));
+  server = st.srv;
+  baseUrl = st.url + path.basename(pagePath);
+}
+
+const browser = await chromium.launch();
+try {
+  console.log(`Target: ${baseUrl} (${RUNS} runs/route, 390x844, 4x CPU, 9 Mbps / 40 ms RTT)\n`);
+  console.log('Route                  | FCP ms | LCP ms | TBT ms | Parse ms | Wire KB');
+  console.log('-----------------------+--------+--------+--------+----------+--------');
+
+  for (const route of ROUTES) {
+    const samples = [];
+    for (let i = 0; i < RUNS; i++) {
+      const ctx = await browser.newContext({viewport: {width: 390, height: 844}, deviceScaleFactor: 3});
+      const pg = await ctx.newPage();
+      const cdp = await ctx.newCDPSession(pg);
+      await cdp.send('Network.enable');
+      await cdp.send('Network.setCacheDisabled', {cacheDisabled: true});
+      await cdp.send('Network.emulateNetworkConditions', {
+        offline: false,
+        latency: 40,
+        downloadThroughput: (9 * 1024 * 1024) / 8,
+        uploadThroughput: (1.5 * 1024 * 1024) / 8
+      });
+      await cdp.send('Emulation.setCPUThrottlingRate', {rate: 4});
+
+      let wireBytes = 0;
+      cdp.on('Network.loadingFinished', ev => { wireBytes += ev.encodedDataLength || 0; });
+
+      await pg.addInitScript(() => {
+        localStorage.setItem('cc2.welcomed', '"1"');
+        window.__perf = {lcp: 0, tbt: 0};
+        try {
+          new PerformanceObserver(list => {
+            for (const e of list.getEntries()) window.__perf.lcp = e.startTime;
+          }).observe({type: 'largest-contentful-paint', buffered: true});
+          new PerformanceObserver(list => {
+            for (const e of list.getEntries()) if (e.duration > 50) window.__perf.tbt += e.duration - 50;
+          }).observe({type: 'longtask', buffered: true});
+        } catch (e) {}
+      });
+
+      await pg.goto(baseUrl + route, {waitUntil: 'networkidle', timeout: 30000}).catch(() => {});
+      await pg.waitForTimeout(800);
+
+      const m = await pg.evaluate(() => {
+        const nav = performance.getEntriesByType('navigation')[0] || {};
+        const fcpEntry = performance.getEntriesByName('first-contentful-paint')[0];
+        return {
+          fcp: fcpEntry ? fcpEntry.startTime : 0,
+          lcp: (window.__perf && window.__perf.lcp) || 0,
+          tbt: (window.__perf && window.__perf.tbt) || 0,
+          parse: Math.max(0, (nav.domContentLoadedEventEnd || 0) - (nav.responseEnd || 0))
+        };
+      });
+      samples.push({...m, wireKb: wireBytes / 1024});
+      await ctx.close();
+    }
+
+    const row = {
+      fcp: Math.round(median(samples.map(x => x.fcp))),
+      lcp: Math.round(median(samples.map(x => x.lcp))),
+      tbt: Math.round(median(samples.map(x => x.tbt))),
+      parse: Math.round(median(samples.map(x => x.parse))),
+      wireKb: Math.round(median(samples.map(x => x.wireKb)))
+    };
+    console.log(
+      `${route.padEnd(22)} | ${String(row.fcp).padStart(6)} | ${String(row.lcp).padStart(6)} | ${String(row.tbt).padStart(6)} | ${String(row.parse).padStart(8)} | ${String(row.wireKb).padStart(7)}`
+    );
+  }
+} finally {
+  await browser.close();
+  if (server) server.close();
+}
+----- END experiments/speed.mjs -----
+
+----- BEGIN experiments/same-pixels.mjs -----
+// Zero-visual-change pixel comparator (job 19 / job 14 Part D; manual Playwright run).
+// Screenshots all 29 routes at 390x844 and 1440x900, day and night, from OLD_PAGE vs NEW_PAGE,
+// and fails if any pixel differs beyond anti-aliasing tolerance (channel diff > 2 on > 0.1% of pixels).
+// Usage: OLD_PAGE=app/dist/v2-old.html NEW_PAGE=app/dist/v2-new.html node experiments/same-pixels.mjs
+import fs from 'node:fs';
+import {createRequire} from 'node:module';
+
+const {chromium} = createRequire(import.meta.url)('playwright');
+const ROOT = new URL('../', import.meta.url).pathname.replace(/^\/([A-Za-z]:)/, '$1');
+const resolvePage = p => (p.startsWith('/') ? p : ROOT + p);
+
+const OLD_PAGE = process.env.OLD_PAGE ? resolvePage(process.env.OLD_PAGE) : '';
+const NEW_PAGE = process.env.NEW_PAGE ? resolvePage(process.env.NEW_PAGE) : '';
+if (!OLD_PAGE || !NEW_PAGE || !fs.existsSync(OLD_PAGE) || !fs.existsSync(NEW_PAGE)) {
+  throw new Error('Provide existing OLD_PAGE and NEW_PAGE env vars (e.g. OLD_PAGE=app/dist/v2-old.html NEW_PAGE=app/dist/v2-new.html)');
+}
+
+const ROUTES = [
+  '#home', '#team', '#build', '#battle', '#calc', '#speed', '#types', '#practice', '#gauntlet',
+  '#meta', '#usage', '#sets', '#tournaments', '#weekly', '#events', '#archetypes', '#natures',
+  '#track', '#method', '#gifts', '#compare', '#box', '#about', '#about=priv', '#feedback',
+  '#pokemon=Incineroar', '#pokemon=Garchomp', '#pokemon=Charizard-Mega-Y', '#notfound'
+];
+const VIEWPORTS = [
+  {name: '390', width: 390, height: 844},
+  {name: '1440', width: 1440, height: 900}
+];
+const THEMES = ['day', 'night'];
+const CHANNEL_TOL = +(process.env.CHANNEL_TOL || 2);
+const MAX_DIFF_RATIO = +(process.env.MAX_DIFF_RATIO || 0.001);
+
+const browser = await chromium.launch();
+let failed = 0;
+try {
+  const cmpPage = await browser.newPage();
+
+  async function diffPngs(bufA, bufB) {
+    const a64 = bufA.toString('base64');
+    const b64 = bufB.toString('base64');
+    return cmpPage.evaluate(async ({a64, b64, tol}) => {
+      const load = src => new Promise((res, rej) => { const i = new Image(); i.onload = () => res(i); i.onerror = rej; i.src = 'data:image/png;base64,' + src; });
+      const [ia, ib] = await Promise.all([load(a64), load(b64)]);
+      if (ia.width !== ib.width || ia.height !== ib.height) return {mismatchSize: true, wA: ia.width, hA: ia.height, wB: ib.width, hB: ib.height};
+      const c = document.createElement('canvas'); c.width = ia.width; c.height = ia.height;
+      const g = c.getContext('2d');
+      g.drawImage(ia, 0, 0); const da = g.getImageData(0, 0, c.width, c.height).data;
+      g.clearRect(0, 0, c.width, c.height);
+      g.drawImage(ib, 0, 0); const db = g.getImageData(0, 0, c.width, c.height).data;
+      let diff = 0; const total = c.width * c.height;
+      for (let i = 0; i < da.length; i += 4) {
+        if (Math.abs(da[i] - db[i]) > tol || Math.abs(da[i + 1] - db[i + 1]) > tol || Math.abs(da[i + 2] - db[i + 2]) > tol || Math.abs(da[i + 3] - db[i + 3]) > tol) diff++;
+      }
+      return {diff, total, ratio: diff / total};
+    }, {a64, b64, tol: CHANNEL_TOL});
+  }
+
+  async function snap(filePath, route, vp, theme) {
+    const ctx = await browser.newContext({viewport: {width: vp.width, height: vp.height}, deviceScaleFactor: 1});
+    const pg = await ctx.newPage();
+    await pg.addInitScript(th => {
+      localStorage.setItem('cc2.welcomed', '"1"');
+      localStorage.setItem('np2.theme', th);
+    }, theme);
+    await pg.goto('file://' + filePath + route, {waitUntil: 'load', timeout: 25000});
+    await pg.waitForTimeout(500);
+    await pg.evaluate(() => document.fonts && document.fonts.ready);
+    const buf = await pg.screenshot({fullPage: false});
+    await ctx.close();
+    return buf;
+  }
+
+  for (const vp of VIEWPORTS) {
+    for (const theme of THEMES) {
+      for (const route of ROUTES) {
+        const [a, b] = await Promise.all([snap(OLD_PAGE, route, vp, theme), snap(NEW_PAGE, route, vp, theme)]);
+        const d = await diffPngs(a, b);
+        const ok = !d.mismatchSize && d.ratio <= MAX_DIFF_RATIO;
+        if (!ok) {
+          failed++;
+          console.log(`FAIL ${vp.name} ${theme} ${route}: ${JSON.stringify(d)}`);
+        }
+      }
+    }
+  }
+  console.log(`Checked ${ROUTES.length * VIEWPORTS.length * THEMES.length} views: ${failed ? failed + ' FAILED' : 'ALL PASS'}`);
+  if (failed) process.exitCode = 1;
+} finally {
+  await browser.close();
+}
+----- END experiments/same-pixels.mjs -----

@@ -1,0 +1,309 @@
+SCOUT REPORTS, Wed Nov 25, 2026 (3 reports, newest first)
+Reports in this file:
+  1. Dec 2 balance patch batch + M-D start night (5:53 PM)
+  2. Switch-day runbook review (2:49 PM)
+  3. Feedback worker guard (2:23 PM)
+
+======================================================================
+1. SCOUT REPORT: Dec 2 balance patch batch + M-D start night (Wed Nov 25, 5:53 PM)
+======================================================================
+Branch origin/alt/patch-dec2 47607635 (base claude/design6 3adcb480).
+The 4 patch commits: 8b1a2dd8, a381ae97, 33daaf70, 47607635.
+Report only: nothing merged, nothing pushed. My scratch work copy is deleted.
+
+STEP 1: OFFICIAL PAGE vs OUR DATA
+Checked: I took the text out of patch-dec2-official-877.html and diffed LEARN
+(design6 vs branch) with a script.
+- New moves: 44 pairs added, 0 removed, MOVES unchanged. That is 34 from the official list + 10 Megas:
+  Beedrill, Alakazam, Starmie, Mawile, Altaria, Absol, Absol-Mega-Z, Emboar, Audino, Drampa.
+  Every official name, all 5 Rotom forms included: nothing missing, nothing extra.
+- Megas: right. A Mega keeps its base form's moves, and our data already had every Mega list = its base list.
+- Accuracies: Rock Slide 95; Screech, Steel Wing, Metal Sound and Frost Breath now 100.
+  They leave MOVE_ACC (that table only lists moves under 100) and lose "a" in move-meta.js. Matches.
+- Rock Slide flinch 20%: move-meta s [[20,0,0,1]], info-text.js, infosheet.js. Matches.
+  The other 4 hand-written Rock Slide lines in infosheet.js have no number, so nothing to change.
+- Flash Fire and Stalwart wording matches the meaning, in both data.js ABIL and info-text.js.
+  Flash Fire adds "(its Fire attacks do 1.5x damage)". It isn't on the patch page but is the
+  ability's known effect (not checked in the game).
+
+STEP 3: TEST COMMANDS (frozen out/ 0c992f69; npm ci; Showdown built as in CI)
+  node experiments/patch-dec2-test.mjs     -> "103/103 checks passed" (exit 0)
+  node experiments/rules-fixes-test.mjs    -> "14/14 passed (dist/page.html)" (exit 0)
+  rules-fixes, cutoff moved into the past  -> "14/14 passed"; check 5 PASS (Flash Fire + Stalwart)
+  node experiments/fields-audit.mjs        -> "PASS: every VGC-relevant field is in the data and used by the engine"
+  node experiments/legality-check.mjs      -> 'Mega stones per official team: {"1":110,"2":402}' (exit 0)
+  node experiments/calc-check.mjs 2000     -> "exact or explained: 99.97%" (exit 0)
+  node app/build.mjs + node app/test/run.mjs -> "ALL PASSED" (exit 0, 195 s)
+  How I forced the date: that check runs inside the page, so faking Node's clock doesn't reach it.
+  I used a throwaway copy with the cutoff set to 2020, then deleted it.
+CONTROLS (tests can fail), each on design6's unpatched data, then restored:
+  patch-dec2-test -> "41/103"
+  rules-fixes (forced) -> "FAIL 5 ... Flash Fire text", "13/14"
+  fields-audit -> "acc differs ... Rock Slide 95 (ours 90/90) ..."
+  Running the apply script a 2nd time -> "LEARN: 0 added", no file changed.
+
+FINDINGS
+HIGH 1: Night plan step 4 would send about 44 non-patch commits to main.
+  - Proof: alt/patch-dec2 starts from design6 3adcb480; git log design6..branch shows 48 commits,
+    and only the 4 above are the patch.
+  - After Saturday's switch the gap shrinks, but it covers all design6 work after Nov 28.
+  - Fix: on Dec 1, make the test branch from origin/main and cherry-pick only the 4 commits.
+HIGH 2: The 24 new M-D Pokemon + 4 Megas are in no page data and not in the night plan.
+  - Proof: git grep finds no Heatran in data.js ROSTER on main, design6 or the branch.
+    regulation.json lists them.
+  - The plan says "Wed Dec 2: run the roster generator -> Sim OK".
+    patch-dec2-map.md says data.js is "hand-built in October, no generator". These disagree.
+  - The roster rewrite edits the same one-line LEARN JSON as the patch.
+  Fix:
+  - Add the roster step to the night plan, AFTER the patch.
+  - Confirm a generator exists.
+  - patch-dec2-test must still say 103/103 after the roster change.
+  - Heatran has Flash Fire, which matters if Mega Heatran's Fire Boost wording applies.
+MEDIUM 3: The night order is slow. Data reaches players only around 3-5 AM ET.
+  - Estimate: test branch after 9:05 (41-70 min) + main tests (~70) + data job (up to 150) + tests (~70).
+  - Not measured; built from GitHub times on Nov 25.
+  Fix: get the main+patch test branch green on Dec 1 afternoon. It passes before 01:59Z too,
+  because patch-dec2-test has no date check and the rules-fixes date only adds checks.
+  At 9:00 only:
+  - confirm M-D is live
+  - run merge-check (~6 min)
+  - push main
+  - start the data job at once (its tests include the patch)
+MEDIUM 4: The FAST_DATA 4-hourly time 01:07Z (8:07 PM ET) can turn main red.
+  - If FAST_DATA=1 that night, that run ends after 01:59Z and its tests run on unpatched main.
+    rules-fixes check 5 fails, main goes red, and Promote freezes.
+  - Checked: update.yml cron line 8 and the test.yml workflow_run trigger.
+  - The plan turns on "data every 4 hours" Wed Dec 2.
+  Fix: turn FAST_DATA on only after the patch is on main. Step 1 checks it is still off.
+MEDIUM 5: The patch hour isn't official.
+  - News 877 says only "during scheduled maintenance on Wednesday, December 2", with no hour (checked: page text).
+  - The 01:59Z gate is our assumption, taken from news 878's regulation times.
+  Fix: in step 3, also confirm the balance patch is in the game (in-game notice or news)
+  before step 4. If the hour differs, land the patch at that hour.
+LOW 6: Merging the branch into design6 now conflicts on test.yml.
+  - Only the paths: line (design6 e5d843d2 vs 47607635) is affected.
+  - Fix: keep both added entries.
+  - Checked: git merge-tree.
+LOW 7: Commit 0b3c46a5 replaced the Windows fallback paths with the text "C:/Users/<you>/...".
+  - Without full node_modules, fields-audit and legality crash with ERR_INVALID_ARG_VALUE. I hit this locally.
+  - GitHub is not affected.
+  - Fix: Dos's PC runs need npm ci + "cd node_modules/pokemon-showdown && node build" first.
+    gen-move-meta.mjs now needs its 2 paths given as arguments.
+LOW 8: app/calc-card.html and app/probe.html are committed copies from Oct 30, with the old MOVE_ACC.
+  - The experiments rewrite them when they run.
+  - Not checked: that no build or site serves them.
+LOW 9: fields-audit only checks that a secondary exists, not its chance.
+  - So Rock Slide 20 vs Showdown's 30 is guarded only by patch-dec2-test.
+  - Fix: drop the PATCH_DEC2_ACC override once Showdown has the patch, then re-run the generators.
+
+CORRECT AS WRITTEN (checked):
+- Times: M-C ends 01:59Z = 8:59 PM ET / 5:59 PM PT; M-D starts 02:00Z = 9:00 PM ET / 6:00 PM PT (EST = UTC-5 in December).
+- The calc ignores Flash Fire's 1.5x boost and Substitute, as the patch map says.
+  Checked: Flash Fire is only used as an immunity in 39-, 46- and 55-*.js.
+- Stalwart users here: Skarmory-Mega, Archaludon. Flash Fire Megas: Houndoom-Mega, Chandelure-Mega.
+- The rules-fixes check 5 date gate and the Hustle check (floor(95 x 0.8) = 76) are right.
+
+UNSURE: the patch's maintenance hour (#5). Whether a roster generator exists (#2).
+
+======================================================================
+2. SCOUT REPORT: switch-day runbook review (Wed Nov 25, 2:49 PM)
+======================================================================
+Runbook: origin/alt/switch-dryrun-1 020de065. Compared with origin/claude/design6 3adcb480,
+origin/main 44ea888e and origin/live. Report only: nothing changed, nothing pushed.
+(HH has since fixed #1: commit 004e4be8 on design6.)
+
+1. BLOCKER: P2 stops with an AssertionError on Saturday.
+   What's wrong: the switch-plan.py fix (b1673c79) is ONLY on alt/switch-dryrun-1.
+   design6 still has the old file, with assert len(art)==350, and design6 has 360 art files.
+   Main gets design6's copy, so P2 run on $S/m crashes exactly as in the dry run.
+   Checked: git diff design6..dryrun-1 -- switch-plan.py; art count on design6 = 360.
+   Fix: land b1673c79's switch-plan.py on design6 on Friday (see #2).
+
+2. HIGH: F1 is not a clean merge anymore. Design6 has 49 new commits since the dry run.
+   - Checked (git merge-tree, nothing written):
+     - design6 + alt/gemini-switch = 31 conflicts.
+       4 are code: test.yml, team-frame.css, official.mjs, track.mjs. 27 are out/ and data/.
+     - design6 + alt/switch-dryrun-1 = 30 conflicts.
+       3 are code: test.yml, official.mjs, track.mjs. 27 are out/ and data/.
+   - F1 has no conflict steps.
+   - F1 and G3 both point to "switch-rehearsal-nov25.md shows how", but that file
+     is on no branch (checked: git cat-file on all 3 branches).
+   Fix:
+   - In F1, merge alt/switch-dryrun-1 instead of alt/gemini-switch. It already has
+     gemini-switch, the team-frame.css decision and the switch-plan fix.
+   - Resolve out/ and data/ with git checkout origin/main -- <files>, which is
+     today's data, so G3 stays clean.
+   - Resolve the 3 code files by hand.
+   - Write the real steps into the runbook, or drop the reference.
+   Not checked: a real merge and test run of that resolution.
+
+3. HIGH: Saturday depends on things a fresh container loses.
+   The container is reclaimed when idle. These are all local to it:
+   - $S (session 204a9d61) holds pw1148. Playwright 1.49.1 needs chromium_headless_shell-1148,
+     and /opt/pw-browsers has only 1243 (checked: ls).
+   - $S also holds the F2/F3 undo files.
+   - .git/hooks/pre-push: a fresh clone has none (checked: my clone has none).
+   - git config merge.ff=false.
+   - .git/merge-ok stamps.
+   - node_modules: main has no package.json, so it must come from npm ci on design6's lock (checked: git diff --stat).
+   With node_modules missing, P1 prints "esbuild not installed" and the gate fails.
+   With the hook missing, nothing stops an unstamped push.
+   Fix:
+   - Add a G0 preflight that must pass. It checks:
+     - the hook is present and executable
+     - git config merge.ff prints false
+     - $PW/chromium_headless_shell-1148 exists
+     - node_modules/esbuild exists
+     - sha256 of the saved old page = cb64988486289bd4..., and rollback-mixed.html is there
+   - S = this session's scratchpad, not a hard-coded old path.
+   - Keep the undo page and the old index.html somewhere durable: an alt/ branch, or uploaded.
+   (Note added later: in the patch review I installed chromium_headless_shell-1148 with
+   "npx playwright install chromium" in this container, so it can be downloaded again here.)
+
+4. HIGH (freshness rule): News & Gifts would go live 10 days old.
+   - out/post.json on live says "checked":"2026-11-18", and its gifts ended Nov 22
+     (checked: git show origin/live:out/post.json).
+   - Main's update.yml has no post-news step; only design6's has it (checked: grep).
+   - So P4 copies the Nov 18 list, and it stays until Sunday's data run.
+   Fix: after G7, start update.yml by hand (workflow_dispatch) and wait for its tests and Promote,
+   so live gets a fresh post.json. Then do P4. Or tell Sim it updates on Sunday.
+   Not checked: whether the page hides gifts that have already ended.
+
+5. MEDIUM: the G3 conflicts include update.yml, the daily data job itself.
+   Checked: design6 + main today = 4 code conflicts: test.yml, update.yml, official.mjs, update.mjs.
+   F1 may change that set.
+   - A wrong hand merge of update.yml passes every gate test, since none of them runs the data job.
+     Saturday night's data would then silently drop post-news, ckwin or Track Record bands.
+   - The same holds for main's newer lines: hello@ in the User-Agent and the FAST_DATA condition.
+   Fix: after G3, add a check that each of these lines is in update.yml:
+   - node post-news.mjs
+   - node ckwin-snapshot.mjs
+   - FAST_DATA
+   - main's User-Agent change
+
+6. MEDIUM: "Start after 7:30 AM" is not safe enough.
+   - Nov 25's daily run started at 10:10 UTC (5:10 AM ET), and it may run 150 min,
+     which ends at 7:40 AM ET. Its tests come after that.
+     A data commit landing mid-switch fails the G6 diff check, and you go back to G3 (+41-70 min).
+   - The extra 4-hourly times (8:07 AM and 12:07 PM ET) are off today. Runs show "skipped"
+     (checked: gh api update.yml runs). They would move main if FAST_DATA is set before Saturday.
+   Fix: start only when the newest update.yml run AND main's test.yml on main's tip are
+   completed, by gh api, not by the clock. Confirm FAST_DATA is not 1.
+
+7. MEDIUM: the main rollback (git revert -m 1) is incomplete.
+   (a) Afterwards, merging design6 again will NOT bring the reverted code back.
+       Git counts it as already merged, so the revert itself must be reverted first.
+       The runbook should say so.
+   (b) If the new page stays live while main is reverted, post.json stops updating.
+       So revert main only together with the page undo (section 5, page first).
+   Not checked: not run, since that would need a push to main.
+
+8. MEDIUM: F4 has no undo.
+   The refresh task's current prompt isn't saved before it is edited.
+   Fix: save the get_trigger prompt to a file (durable) in F4, so it can be put back word for word.
+
+9. LOW: F3 fails if $S/undo doesn't exist.
+   switch-mixed-page.py opens the output file with no makedirs.
+   Checked: read the script.
+   Fix: mkdir -p $S/undo before F3.
+
+10. LOW (wording): the test.yml line in G7 is out of date.
+    - G7 quotes test.yml line 26: if: github.event_name != 'workflow_run'.
+    - Main's test.yml now skips only when the data run ended 'skipped' (line 27).
+    - The '!= workflow_run' rule is in design6's behaviour-v2 job.
+    - After G3 merges test.yml by hand, re-check which rule main ends up with.
+    Checked: read both files.
+
+11. LOW: the gate runs neither the feedback-worker tests nor the Pokemon page tests.
+    GitHub does run them: design6's test.yml paths include them (31036f1b).
+    So the "~6 min" gate time is still right, but only GitHub's green covers those tests.
+    For information only.
+
+12. NOT CHECKED: add checks in the runbook for these:
+    - R1 publishes the saved index.html (skeleton included) as the page.
+      Fix: after R1, read it back and check its sha still = cb64988486289bd4.
+    - Whether live's 6 db rules allow the go/no-go feedback/<id> write.
+    - The undo's ver font copy (the runbook already says this).
+
+ROLLBACK COVERAGE, step by step:
+  F1/G5  design6 only. Fix forward or revert. Players are unaffected. OK.
+  F4     Missing an undo (#8).
+  G6/G7  Live doesn't move while main is red. Covered.
+  G6     After green, the revert is incomplete (#7).
+  R1-R4  One publish of rollback-mixed.html works from any of R1-R4.
+         Every old sprite is in v2art from R1 on; switch-plan asserts it.
+         Saved teams are untouched (a publish never touches the database). Covered, if #3's durable copy exists.
+  P4     Harmless to the old page. Covered.
+
+CORRECT AS WRITTEN (checked):
+- The G6 "main first" logic: a merge made on main leaves 1 first-parent merge in range.
+- merge-check.sh needs REPORT_OK and HEAD^2 = the source tip.
+- The page reads exactly 2 new keys: META_KEYS on design6 adds only post and info.
+- Sizes: post.json 22,645 bytes, info.json 85,420 bytes.
+- cb49701 has 345 sprites. The art count is 360 on both branches.
+- gh api works from this container.
+
+======================================================================
+3. SCOUT REPORT: feedback worker guard (Wed Nov 25, 2:23 PM)
+======================================================================
+BRANCH  alt/other-feedback-guard, pushed. It starts from claude/design6 8e0354d5.
+        Checked with: git ls-remote origin alt/other-feedback-guard
+        Result line:  2cc3c9371848ce61a69bbbb5196c087fab30ee46 refs/heads/alt/other-feedback-guard
+        Meaning:      the commit is on GitHub.
+        (HH has since merged it into design6 as e8cc0bde, with CI in 31036f1b.)
+CHANGED worker/feedback.mjs (56 lines changed) and experiments/feedback-guard-test.mjs (new, 136 lines).
+        Nothing else changed. The old test file is untouched.
+
+WHAT IT DOES (the steps run in this order:
+method, origin, size, parse, validate, Turnstile, clean-up, store)
+1. Origin check, originAllowed()
+   - A different site's Origin gets 403. So do look-alike sites and "null".
+   - Sec-Fetch-Site cross-site or same-site gets 403.
+   - Allowed: https://nastyplot.org and https://www.nastyplot.org.
+     The ALLOWED_ORIGINS variable (a comma list) replaces that list.
+   - No Origin at all is allowed by default (Turnstile is still needed),
+     so the existing W8 test stays valid.
+     REQUIRE_ORIGIN=1 refuses requests with no Origin.
+2. Size check, readCapped()
+   - 16 KB cap, giving 413 before the JSON is parsed.
+   - Checks Content-Length, then the real byte count, which catches a body sent without Content-Length.
+   - A non-number Content-Length is refused.
+3. Clean-up, scrubContact(), runs just before storing
+   - Emails become [email removed]. It catches plain addresses and spelled-out ones:
+     at/dot, (at), [at], {at}.
+   - Phone numbers become [phone removed]: runs of 10-15 digits with spaces, dashes,
+     dots, brackets or a +, and also 555-1234.
+   - Kept as typed: 252/4/0, 13,631, 2026-11-25, 6-2, 44.5%, "at Worlds 2025".
+
+TESTS
+- node experiments/feedback-guard-test.mjs gives "ALL PASSED (43)".
+- node experiments/feedback-worker-test.mjs gives "ALL PASSED". That is the existing file, unchanged.
+
+PROOF THE TESTS CAN FAIL
+I broke one thing at a time, ran the tests, then restored the file.
+cmp confirmed the restore ("restored"), and both test files passed again.
+- Clean-up not applied before storing: 1 failure
+- No email clean-up: 4 failures
+- No phone clean-up: 8 failures
+- No size check: 2 failures
+- No byte-count cap: 2 failures
+- No origin check: 8 failures
+- Sec-Fetch-Site ignored: 2 failures
+- REQUIRE_ORIGIN ignored: 1 failure
+- Commas counted as phone separators: 1 failure
+
+RISKS / NOTES FOR HH
+- It can remove too much in rare cases. Up to 10 numbers in a row with only
+  spaces or dots between them (no commas or slashes) look like a phone number
+  and get removed. "name at site dot com" is always removed.
+  I chose this on purpose: losing a number is safer than keeping a phone number.
+  Not checked against real feedback, because there is none yet.
+- The new test was NOT in any .github workflow when I pushed. HH has since added it (31036f1b).
+- Not checked: running it on Cloudflare itself (no wrangler dev here).
+  It uses only standard Request, stream and TextDecoder features.
+- My first combined commit+push command was blocked by the session's
+  safety check. Your repo's commit hook also refused a commit trailer that
+  named the AI model, so I left it out. I committed and pushed again
+  separately. Nothing went to main or claude/design6.
+
+— Scout

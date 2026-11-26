@@ -1,0 +1,49 @@
+News on the kit (hW2, Nov 22). Frozen data out/ @0c992f69. BEFORE = untouched HEAD 7d017857 build + untouched tests; AFTER = this commit's build + updated tests. Log stamps are the machine clock (UTC).
+
+== BEFORE (nwB)
+### guard exit 0 20:11:57 :: v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+### dms exit 0 20:21:01 :: behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 544s  (adapter v2)
+### kitpage exit 0 20:21:25 :: kit-page: all 14 views passed (7 widths x day and night)
+### overlap exit 0 20:22:10 :: v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 45s)
+### qcheck exit 0 20:22:41 :: qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 6 findings, 0 new; 31s
+### tap exit 0 20:24:16 :: tap-size: all passed
+### unb exit 0 20:25:18 :: v2-unbounded: none outside the named exception across 28 pages
+### min-main1 exit 1 20:37:32 :: v2-minors (main1):1 failed
+### min-main2 exit 1 20:43:59 :: v2-minors (main2):1 failed
+### min-groups exit 1 20:53:05 :: v2-minors (groups):1 failed
+### tokens exit 0 20:53:05 :: tokens-doc: up to date (585 tokens)
+### q41 exit 0 20:54:06 :: v2-q41: all passed
+### q69 exit 0 20:56:14 :: v2-q69: all passed
+### w5 exit 0 20:56:24 :: v2-w5: all passed
+### post-doc exit 0 20:56:57 :: ALL PASS
+(the before guard/tokens lines read the copy's source, already edited; HEAD's guard was clean in the This Week run)
+
+== AFTER (nwA, build 'aft')
+### guard exit 0 21:07:57 :: v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+### dms exit 0 21:17:13 :: behaviour: 117 pass, 0 FAIL, 42 known bugs, 0 fixed?, 7 skipped; 555s  (adapter v2)
+### kitpage exit 0 21:17:34 :: kit-page: all 14 views passed (7 widths x day and night)
+### overlap exit 0 21:18:19 :: v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 45s)
+### qcheck exit 0 21:18:50 :: qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 31s
+### tap exit 1 21:20:23 :: tap-size: 3 failed
+### unb exit 0 21:21:24 :: v2-unbounded: none outside the named exception across 28 pages
+### min-main1 exit 1 21:33:30 :: v2-minors (main1):1 failed
+### min-main2 exit 1 21:39:53 :: v2-minors (main2):4 failed
+### min-groups exit 1 21:47:40 :: v2-minors (groups):1 failed
+### tokens exit 0 21:47:40 :: tokens-doc: up to date (585 tokens)
+### q41 exit 0 21:48:40 :: v2-q41: all passed
+### q69 exit 1 21:50:37 :: v2-q69: 16 failed
+### w5 exit 0 21:50:46 :: v2-w5: all passed
+### post-doc exit 0 21:51:17 :: ALL PASS
+tap-size rerun with the News selector updated (.nw2 .k-link): tap-size: all passed
+
+== FINAL build 'aft2' (+ the headings' position for Q70's touch layer; NPR-6/12/13 updated)
+guard :: v2 guard: clean (no !important outside reduced motion, no id selectors, type and spacing on the scale, colours only in tokens.css)
+overlap :: v2-overlap: 0 findings, 0 known, 0 new (1 pages x 4 widths x 2 themes; 47s)
+qcheck :: qcheck-all: 1 pages + 0 views x 5 widths x 2 themes, 0 findings, 0 new; 31s
+tap :: tap-size: all passed
+unb :: v2-unbounded: none outside the named exception across 28 pages
+q41 :: v2-q41: all passed
+min-main2 :: v2-minors (main2):all passed
+q69 :: v2-q69: all passed
+
+== minors failures before and after (none on News): main1 Review Nov 17 evening #4 (feedback); main2 Stampede motion 3 (2560) in the first after run, passed in the final run; groups HQ Tools B

@@ -14,4 +14,5 @@ export async function pace(url) { let h = ''; try { h = new URL(url).host; } cat
 // fetch() with the NastyPlot User-Agent and per-host pacing; any other headers or options pass straight through
 export async function politeFetch(url, opt = {}) { await pace(url);
   const headers = {...(opt.headers || {})}; for (const k of Object.keys(headers)) if (k.toLowerCase() === 'user-agent') delete headers[k];
-  return fetch(url, {...opt, headers: {'User-Agent': UA, ...headers}}); }
+  /* a stalled site can't hang the whole data job (Kip job 36 A #5): 60 s unless the caller passes its own signal */
+  return fetch(url, {...opt, signal: opt.signal || AbortSignal.timeout(60000), headers: {'User-Agent': UA, ...headers}}); }

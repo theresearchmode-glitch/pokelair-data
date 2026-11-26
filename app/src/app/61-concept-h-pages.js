@@ -128,14 +128,13 @@ CH.wrap('lairSheet', n => { const sh = $('lairSheet'), p = byName.get(n); if (!s
   // the header uses the same results the rating is built from (r.tc), so it matches "Why it rates" below (Oct 30 audit)
   // the header shows real totals, the same numbers as this Pokémon's row in the Ratings list (sweep, Oct 31: it used the
   // recency-weighted figures, so the same Pokémon showed two usage shares and a weighted game count); weighted ones are under Why it rates
-  const tOK = src.tour && +src.tour[2] > 0, tcOK = !tOK && r.tc && r.tc.g >= 30, hU = tOK ? +src.tour[0] : tcOK ? r.tc.field : null, hW = tOK ? +src.tour[1] : tcOK ? r.tc.wr : null, hG = tOK ? +src.tour[2] : tcOK ? r.tc.g : null;
+  const {tOK, hU, hW, hG, tot, thinR} = lairHead(p);
   const pc = v => pctFmt(v);
   /* the data behind each number (trust pass): the teams the share is out of, the games behind the win rate; few games read "Early read" */
-  const tot = tOK && RES && +RES.teams > 0 ? +RES.teams : null, thinR = (hG != null && CH.thin(hG, 'rating')) || r.band >= 10;
   const stats = `<div class="chlstats"><div class="chlsr" style="--tc:${T.c}"><b${bandAt(r.total)}>${RS(r.total)}</b><span>rating${typeof tip === 'function' ? tip('rating') : ''}<i>${tierChip(T)} tier${rankTxt(p) ? ' · ' + rankTxt(p, 1) : ''}</i>${thinR ? `<i class="basis thin" title="${esc(hG ? 'Rated from ' + Math.round(hG).toLocaleString('en-US') + ' games: a small sample, so the score can still move' : 'Few results so far, so the score can still move')}"><i>Early read</i></i>` : ''}</span></div><div><b>${pc(hU)}</b><span>of teams${tot ? `<i>of ${basisNum(tot, true)}</i>` : ''}</span></div><div><b${hG != null && hG >= 30 && hW != null ? ` class="wrv" data-wr="${+hW - 50 >= .5 ? 'up' : +hW - 50 <= -.5 ? 'down' : 'even'}"` : ''}>${hG != null && hG >= 30 ? winFmt(hW) : '–'}</b><span>win rate${hG ? `<i>${CH.thin(hG, 'games') && hG >= 30 ? 'Early read · ' : ''}${Math.round(hG).toLocaleString('en-US')} games</i>` : ''}</span></div></div>`;
   const ab = st.ab && st.ab[0] ? `Ability: ${esc(st.ab[0][0])}${st.ab[0][1] == null ? '' : ' ' + pctFmt(+st.ab[0][1])}` : '';
   const sbM = setBasis(p, st, 'mv'), sbI = setBasis(p, st, 'it');
-  const mv = st.mv && st.mv.length ? `<div class="chk">Moves${sbM ? ' · ' + sbM.html : ''}</div>${bars(st.mv, 'b', 5)}` : '', it = (() => { const megas = ROSTER.filter(q => q.m && q.b === p.b && q.n !== p.n), top = (st.itStones || [])[0], mg = (top && megas.find(q => stoneFor(q) === top[0])) || megas[0], stn = st.itStone || 0, /* the Mega players actually pick, for species with two (sweep, Oct 31) */ rest = (st.it || []).reduce((a, [, v]) => a + (+v || 0), 0);
+  const mv = st.mv && st.mv.length ? `<div class="chk">Moves${sbM ? ' · ' + sbM.html : ''}</div>${bars(st.mv, 'b', 5)}` : '', it = (() => { const {megas, top, mg, stn, rest} = lairStones(p, st);
     const lab = `<div class="chk" style="margin-top:12px">Items${ab ? ' · ' + ab : ''}${sbI && (!sbM || sbI.html !== sbM.html) ? ' · ' + sbI.html : ''}</div>`;
     // most players Mega Evolve it: say so and point to the Mega, instead of near-empty bars
     if (mg && stn >= 50) return lab + `<p class="chlsnote">${Math.round(stn)}% hold ${megas.length > 1 ? 'a Mega Stone' : esc(stoneFor(mg) || 'its Mega Stone')} to Mega Evolve${megas.length > 1 && top ? `, most often ${esc(top[0])}` : ''}.${rest >= 5 ? ' The rest mostly run ' + esc(st.it[0][0]) + '.' : ''} <button type="button" class="linkbtn" data-lt="${esc(mg.n)}">See ${esc(mg.d)} ›</button></p>`;
@@ -226,9 +225,8 @@ CH.wrap('renderGuides', () => CH.pagehead($('guides'), 'Archetypes · the team s
 CH.wrap('renderBox', () => CH.more($('boxList'), ':scope > .boxchip', PHONE() ? 24 : 40, 'box', 'in your box'));
 // Home: your six (columns) against the top 12 threats by top-cut share (rows, worst first)
 // colour plus a shape (colour-blind check, Nov 1): ✓ answers, ~ partial, ✗ loses, – nothing direct
-CH.LVC = {win: ['var(--chok)', 'answers it', '✓', 'ok'], trade: ['var(--chshaky)', 'partial answer', '~', 'part'], lose: ['var(--chbad)', 'loses 1-on-1', '✗', 'bad'], none: ['var(--line2)', 'no direct matchup', '–', 'none']};
-CH.cellOf = (r, m) => { const n = m.p.n, has = a => (a || []).some(x => x.m && x.m.n === n); return has(r.solid) ? 'win' : has(r.soft) ? 'trade' : has(r.losers) ? 'lose' : 'none'; };
-CH.chart = (RD, ms, k = 12) => { if (!RD || !ms.length) return ''; const rows = RD.rows.slice().sort((a, b) => b.t.w - a.t.w).slice(0, k).sort((a, b) => a.level - b.level || b.t.w - a.t.w);
+/* the cells (CH.LVC, CH.cellOf) and the rows (CH.gridRows) are worked out in 59-matchup-data.js, shared with the new build */
+CH.chart = (RD, ms, k = 12) => { if (!RD || !ms.length) return ''; const rows = CH.gridRows(RD, k);
   return `<div class="chchart" role="table" aria-label="Your six against the top ${k} threats"><div class="chcr chch" role="row"><span role="columnheader"></span>${ms.map(m => `<span role="columnheader" title="${esc(m.d)}">${sprite(m.p) || esc(m.d.slice(0, 3))}</span>`).join('')}</div>
     ${rows.map(r => `<button type="button" class="chcr" role="row" data-chhthr="${esc(r.t.n)}" aria-label="${esc(r.t.d)}: ${CH.LV[r.level]}"><span class="th l${r.level}" role="rowheader">${sprite(byName.get(r.t.n)) || ''}<i>${esc(r.t.d)}</i></span>${ms.map(m => { const c = CH.cellOf(r, m); return `<span role="cell" class="cc ${c}" title="${esc(m.d)} vs ${esc(r.t.d)}: ${CH.LVC[c][1]}" aria-label="${esc(m.d)}: ${CH.LVC[c][1]}">${CH.LVC[c][2]}</span>`; }).join('')}</button>`).join('')}</div>
     <div class="chleg">${Object.entries(CH.LVC).map(([, [c, t, g, k]]) => `<span><i class="g-${k}" style="background:${c}" aria-hidden="true">${g}</i>${t}</span>`).join('')}</div><p class="t2" style="margin:2px 0 0">Rows are the top ${k} threats by top-cut share, worst first. Tap one for the full matchup.</p>`; };
@@ -243,7 +241,7 @@ buildShareCard = async function () { const ms = members(); if (!ms.length) retur
   if (dark) { const g = x.createRadialGradient(600, -120, 0, 600, -120, 760); g.addColorStop(0, 'rgba(255,232,0,.10)'); g.addColorStop(1, 'rgba(255,232,0,0)'); x.fillStyle = g; x.fillRect(0, 0, W, H); }
   // logo tile + wordmark
   const logo = new Image(); logo.src = 'data:image/svg+xml;utf8,' + encodeURIComponent(npLogoSvg(dark));
-  await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 44, 34, 290, 290 * 196 / 761.34); } catch (e) {}
+  await new Promise(r => { logo.onload = r; logo.onerror = r; }); try { x.drawImage(logo, 44, 34, npLogoW(logo, 290), 290 * 196 / 761.34); } catch (e) {}
   x.textBaseline = 'alphabetic';
   // readiness, top right
   const RD = prepOf(ms); x.textAlign = 'right';

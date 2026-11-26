@@ -1,0 +1,276 @@
+/* ---------- Damage Calc "The Arena" (Sim's prompt Nov 19; mock-ups docs/redesign/arena/) ----------
+   The battle is the control panel: the sky is the weather switch, the ground the terrain switch, the defender's HP bar the answer.
+   Phone: the scene full width on top, the controls under it. Desktop (1024+): the scene on the left, the controls on the right, one screen.
+   The scene is a grid of named areas, so a plate, the verdict, the tag or the swap button can never sit on a Pokemon (each has its own area);
+   the scene's colours are the same picture in day and night (tokens --arn-*). */
+.arn{padding-bottom:var(--s8)}
+.arn .bt-tools{margin-bottom:var(--s4)}
+.arn-grid{display:grid;gap:var(--s3)}
+.arn-scene{--arn-hz:54%;--arn-padh:20px;--arn-padw:150px;position:relative;isolation:isolate;overflow:hidden;container-type:inline-size;display:grid;
+  grid-template-columns:minmax(0,1.12fr) minmax(0,1fr) 56px;grid-template-rows:64px auto minmax(0,1fr) auto 64px 64px;
+  grid-template-areas:"wx wx wx" "dp ds ds" "as ds ds" "as ap ap" "vd vd sw" "tr tr tr";
+  height:440px;margin:0 calc(var(--gut) * -1);padding:0 var(--s2);color:var(--arn-on-plate)}
+/* the art: sky over ground, the hills on the horizon; marks for each weather and terrain */
+.arn-bg{position:absolute;inset:0;z-index:-1;overflow:hidden}
+/* the scene's art (Nov 21): a sky picture anchored to the horizon from above, a ground picture from below (V2.arnArt); its own wrappers, so no old .arn-ground rule reaches it */
+.arn-skw{position:absolute;left:0;right:0;top:0;height:var(--arn-hz)}.arn-gdw{position:absolute;left:0;right:0;bottom:0;top:var(--arn-hz)}
+.arn-skw svg,.arn-gdw svg{position:absolute;inset:0;width:100%;height:100%;display:block}
+.arn-w-clear{--arn-row:var(--arn-row-clear)}
+.arn-w-sun{--arn-row:var(--arn-row-sun)}
+.arn-w-rain{--arn-row:var(--arn-row-rain)}
+.arn-w-sand{--arn-row:var(--arn-row-sand)}
+.arn-w-snow{--arn-row:var(--arn-row-snow)}
+/* the two rows of five: weather across the top (its tint follows the sky), terrain across the bottom; chosen = white pill */
+.arn-pills{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));align-self:center;padding:var(--s1);border-radius:999px;background:var(--arn-row)}
+.arn-pills.arn-wxr{grid-area:wx}.arn-pills.arn-trr{grid-area:tr;--arn-row:var(--arn-row-tr)}
+.arn-pills button{display:flex;align-items:center;justify-content:center;gap:var(--s1);min-width:0;min-height:var(--tap);padding:0 2px;border:0;border-radius:999px;background:none;color:var(--arn-on-plate);font:700 var(--t15)/1.15 var(--b);cursor:pointer}
+.arn-pills button[aria-pressed="true"]{background:var(--arn-pill);color:var(--arn-on-pill)}
+.arn-pills .dot{flex:none;width:8px;height:8px;border-radius:50%}
+.dot.t-grassy{background:var(--arn-dot-grassy)}.dot.t-electric{background:var(--arn-dot-electric)}.dot.t-psychic{background:var(--arn-dot-psychic)}.dot.t-misty{background:var(--arn-dot-misty)}
+.arn-pills button:focus-visible,.arn-swap:focus-visible{outline:3px solid var(--arn-arw);outline-offset:2px}
+/* the name plates (a tap opens today's Pokemon picker, laid over the plate) */
+.arn-plate{position:relative;z-index:1;min-width:0;min-height:var(--tap);padding:var(--s2) var(--s3);border-radius:var(--r-l);background:var(--arn-plate);color:var(--arn-on-plate)}
+.arn-plate b{display:flex;flex-wrap:wrap;align-items:baseline;column-gap:var(--s2);font-size:var(--t16);line-height:1.2}
+.arn-plate .mg{flex-basis:100%;font:700 var(--t13)/1.2 var(--b);font-style:normal;color:var(--arn-arw)}
+.arn-plate .arw,.arn-mv.all .arw{flex:none;width:10px;height:8px;background:var(--arn-arw);clip-path:polygon(0 0,100% 0,50% 100%)}
+.arn-plate.arn-dp{grid-area:dp;align-self:start;justify-self:start;width:min(100%,232px);margin-top:var(--s1)}
+.arn-plate.arn-ap{grid-area:ap;align-self:center;justify-self:end;display:flex;align-items:center;max-width:100%;margin:var(--s1) 0}
+.arn-hpb{position:relative;display:block;height:8px;margin:var(--s2) 0 var(--s1);border-radius:var(--r-s);overflow:hidden;background:var(--arn-hp-dmg)}
+.arn-hpb i{position:absolute;top:0;bottom:0;left:0}.arn-hpb .l{background:var(--arn-hp-left)}.arn-hpb .r{background:repeating-linear-gradient(135deg,var(--arn-hp-left) 0 3px,var(--arn-hp-dmg) 3px 6px)}
+.arn-hpt{display:block;font:700 var(--t13)/1.2 var(--b);color:var(--arn-hp-txt)}
+.arn-pick{position:absolute;inset:0;z-index:2;width:100%;height:100%;margin:0;opacity:0;cursor:pointer;font-size:var(--t16)}
+.arn-plate:has(.arn-pick:focus-visible),.arn-mv.all:has(.arn-pick:focus-visible),.arn-f:has(.arn-pick:focus-visible){outline:3px solid var(--plot);outline-offset:2px}
+/* the Pokemon, each standing on its pad (blue attacker, pink defender); the area is the picture's box, nothing else is placed in it */
+.arn-spr{position:relative;display:flex;align-items:flex-end;justify-content:center;min-width:0;min-height:0;contain:size;padding-bottom:calc(var(--arn-padh) / 2);pointer-events:none}
+.arn-spr.d{grid-area:ds}.arn-spr.a{grid-area:as}
+.arn-spr::before{content:"";position:absolute;left:50%;bottom:var(--s1);width:min(92%,var(--arn-padw));height:var(--arn-padh);translate:-50% 0;border:3px solid var(--arn-pad-a);border-radius:50%;background:radial-gradient(ellipse at 50% 40%,var(--arn-pad-hi),var(--arn-pad) 70%);box-shadow:0 0 16px var(--arn-glow-a)}
+.arn-spr.d::before{border-color:var(--arn-pad-d);box-shadow:0 0 16px var(--arn-glow-d)}
+.arn-spr img{position:relative;display:block;width:auto;height:100%;max-width:100%;object-fit:contain;object-position:50% 100%} /* the box is the picture (its own shape), so the overlap check measures the Pokemon, not its area */
+.arn-spr.d img{transform:scaleX(-1)} /* faces the attacker */
+/* the verdict (white slanted plate) and the swap button */
+.arn-verdict{grid-area:vd;align-self:center;min-width:0;margin-right:var(--s2);padding:var(--s1) var(--s5) var(--s1) var(--s3);background:var(--arn-verdict);color:var(--arn-verdict-ink);clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%)}
+.arn-verdict p{margin:0}.arn-verdict .l1{font:500 var(--t13)/1.3 var(--b);color:var(--arn-verdict-ink2)}.arn-verdict .l1 b{color:var(--arn-verdict-ink)}
+.arn-verdict .l2{font-size:var(--t16);line-height:1.15;text-wrap:balance}.arn-verdict em{font-style:inherit;color:var(--arn-verdict-em)}
+.arn-verdict .l3{font:500 var(--t13)/1.3 var(--b)}
+.arn-swap{grid-area:sw;align-self:center;justify-self:end;display:grid;place-items:center;width:48px;height:48px;padding:0;border:0;border-radius:50%;background:var(--arn-pill);color:var(--arn-on-pill);box-shadow:0 4px 12px var(--arn-shadow);cursor:pointer}
+.arn-swap svg{width:24px;height:24px}.arn-swap path{fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.arn-tag{display:none}
+/* ---------- under the scene ---------- */
+.arn-side{display:grid;gap:var(--s3);align-content:start;min-width:0}
+/* five on/off switches: phone three then two */
+.arn-sw{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:var(--s2)}
+.arn-sw button{grid-column:span 2;display:flex;align-items:center;justify-content:center;gap:var(--s2);min-width:0;min-height:var(--tap);padding:0 var(--s2);border:0;border-radius:999px;background:var(--surface);box-shadow:inset 0 0 0 1px var(--arn-line);color:var(--ink);font:600 var(--t15)/1.15 var(--b);font-stretch:87.5%;cursor:pointer}
+.arn-sw button:nth-child(n+4){grid-column:span 3}
+.arn-sw i{flex:none;width:14px;height:14px;border:2px solid currentColor;border-radius:50%;opacity:.8}
+.arn-sw button[aria-pressed="true"]{background:var(--arn-fill);box-shadow:none;color:var(--arn-on-fill)}.arn-sw button[aria-pressed="true"] i{border-color:var(--arn-kb-ko);background:var(--arn-kb-ko);opacity:1}
+/* moves 2x2: three of its usual moves and All moves */
+.arn-mvs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s2)}.arn-mvs.odd>:last-child{grid-column:1/-1}
+.arn-mv{position:relative;display:flex;flex-direction:column;justify-content:center;gap:2px;min-width:0;min-height:64px;padding:var(--s2) var(--s3) var(--s2) var(--s5);border:0;border-radius:var(--r-l);background:var(--surface);box-shadow:inset 6px 0 0 var(--tc),inset 0 0 0 1px var(--arn-line);color:var(--ink);text-align:left;cursor:pointer}
+.arn-mv .r1,.arn-mv .r2{display:flex;flex-wrap:wrap;align-items:baseline;justify-content:space-between;column-gap:var(--s2);width:100%;min-width:0} /* width: a flex column inside a button let the row grow to its words */
+.arn-mv .nm{padding-right:var(--s1);font-size:var(--t16);line-height:1.15;white-space:nowrap;max-width:100%} /* the slanted letters lean past their box; the 4px keeps the last one inside */
+.arn-mv .ty,.arn-mv .d1{display:none}.arn-mv .ty{font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.arn-mv .dm{padding-right:2px;font:600 var(--t15)/1.15 var(--b);color:var(--arn-hit);white-space:nowrap}.arn-mv .dm.u{font-family:var(--u);font-size:var(--t17);font-style:italic;font-weight:900}
+.arn-mv .ko{margin-left:auto;font:600 var(--t13)/1.2 var(--b);color:var(--ink-2);text-align:right;white-space:nowrap}
+.arn-mv.on{background:var(--arn-fill);box-shadow:inset 6px 0 0 var(--tc);color:var(--arn-on-fill)}.arn-mv.on .dm{color:var(--arn-hit-on)}.arn-mv.on .ko,.arn-mv.on .ty{color:inherit}
+.arn-mv.all{display:flex;align-items:center;justify-content:center;background:none;box-shadow:none;border:2px dashed var(--arn-dash);padding:var(--s2);font:600 var(--t15)/1.2 var(--b);color:var(--ink-2)}
+.arn-mv.all span{display:flex;align-items:center;gap:var(--s2)}.arn-mv.all .arw{width:8px;height:6px;background:currentColor}
+.arn-mv:focus-visible,.arn-sw button:focus-visible,.arn-kbbar:focus-visible,.arn-st button:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+/* the two set cards: Attacker (blue top edge), Defender (pink), headed "most used set" */
+.arn-sets{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:var(--s3);align-items:start}
+.arn-set{container-type:inline-size;display:grid;gap:6px;min-width:0;padding:var(--s3);border-top:4px solid var(--arn-edge-a);border-radius:var(--r-l);background:var(--surface)}.arn-set.d{border-top-color:var(--arn-edge-d)}
+.arn-set header{display:flex;align-items:center;gap:var(--s2);min-height:40px}.arn-set header img{flex:none;width:36px;height:36px;object-fit:contain}
+.arn-set header span{display:grid;min-width:0}.arn-set header b{font-size:var(--t17)}.arn-set header small{font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.arn-f{position:relative;display:flex;align-items:center;gap:var(--s2);min-width:0;min-height:var(--tap);padding:0 var(--s3);border-radius:var(--r-m);box-shadow:inset 0 0 0 1.5px var(--arn-line);font:600 var(--t15)/1.2 var(--b);color:var(--ink)}
+.arn-f>.arw{position:absolute;right:var(--s3);top:50%;width:8px;height:6px;translate:0 -50%;background:var(--ink-3);clip-path:polygon(0 0,100% 0,50% 100%);pointer-events:none}
+.arn-f:has(.arn-sel){padding:0}.arn-sel{appearance:none;-webkit-appearance:none;width:100%;min-width:0;min-height:var(--tap);margin:0;padding:0 var(--s6) 0 var(--s3);border:0;border-radius:var(--r-m);background:none;color:inherit;font:inherit;text-overflow:ellipsis;cursor:pointer}
+.arn-sel:disabled{opacity:1;padding-right:var(--s2);cursor:default}.arn-f:has(.arn-sel:disabled)>.arw{display:none}
+.arn-sel:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+.arn-f .lb{flex:1;min-width:0}.arn-f small{font:500 var(--t13)/1.2 var(--b);color:var(--ink-2)}.arn-ov .v{margin-right:var(--s5);font-size:var(--t15)}
+.arn-pts summary{padding-right:var(--s6);list-style:none;cursor:pointer}.arn-pts summary::-webkit-details-marker{display:none}.arn-pts summary:focus-visible{outline:3px solid var(--plot);outline-offset:2px}
+.arn-pts[open] summary>.arw{rotate:180deg}
+.arn-ptsbox{display:grid;gap:var(--s2);padding-top:var(--s2)}
+.arn-box{display:grid;gap:var(--s1);font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.arn-box select{width:100%;min-height:var(--tap);padding:0 var(--s3);border:0;border-radius:var(--r-m);box-shadow:inset 0 0 0 1.5px var(--arn-line);background:var(--surface);color:var(--ink);font:600 var(--t15)/1 var(--b)}
+.arn-ptsbox .fine{margin:0}
+.arn-st{padding-right:var(--s1)}.arn-st .ctl{display:flex;align-items:center;gap:var(--s1)}
+.arn-st button{display:grid;place-items:center;width:var(--tap);height:var(--tap);padding:0;border:0;border-radius:var(--r-m);background:color-mix(in srgb,var(--ink) 8%,transparent);color:var(--ink);font:700 var(--t20)/1 var(--b);cursor:pointer}
+.arn-st button:disabled{opacity:.35;cursor:default}
+.arn-st output{min-width:32px;text-align:center;font-size:var(--t17)}
+/* a card narrower than the stage row: its name on its own line over minus, value, plus */
+@container (max-width:247.98px){.arn-st{flex-wrap:wrap;row-gap:0;padding:var(--s1) var(--s1) var(--s1) var(--s3)}.arn-st .lb{flex-basis:100%;padding-top:var(--s1)}.arn-st .ctl{flex:1;justify-content:space-between}}
+/* the KO Board bar: one tap opens today's board under it */
+.arn-kb>summary{list-style:none}.arn-kb>summary::-webkit-details-marker{display:none}
+.arn-kbbar{display:grid;grid-template-columns:minmax(0,1fr) auto;grid-template-areas:"t chev" "c chev" "bar chev";column-gap:var(--s4);row-gap:var(--s1);min-height:var(--tap);padding:var(--s3) var(--s4);border-radius:var(--r-l);background:var(--arn-fill);color:var(--arn-on-fill);cursor:pointer}
+.arn-kbbar .t{grid-area:t;font-size:var(--t17);text-wrap:balance}.arn-kbbar .c{grid-area:c;font:500 var(--t13)/1.5 var(--b)}
+.arn-kbbar .bar{grid-area:bar;display:flex;height:6px;margin-top:var(--s1);border-radius:var(--r-s);overflow:hidden}
+.arn-kbbar .bar .ko{background:var(--arn-kb-ko)}.arn-kbbar .bar .can{background:repeating-linear-gradient(135deg,var(--arn-kb-ko) 0 4px,var(--arn-kb-sv) 4px 8px)}.arn-kbbar .bar .sv{background:var(--arn-kb-sv)}
+.arn-kbbar .chev{grid-area:chev;align-self:center;font:700 var(--t24)/1 var(--b);font-style:normal}.arn-kb[open] .chev{rotate:90deg}
+.arn-kbin .dc2-kb{margin-top:var(--s2)}.arn-kbin .dc2-kbh h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+/* the links and the notes on this hit (today's Details) */
+.arn-links{display:flex;flex-wrap:wrap;align-items:center;column-gap:var(--s6)}
+.arn-links .np-link{display:inline-flex;align-items:center;min-height:var(--tap)}
+.arn-notes{flex:0 1 auto}.arn-notes[open]{flex-basis:100%}.arn-notes summary{display:flex;align-items:center;gap:var(--s2);min-height:var(--tap);list-style:none;cursor:pointer;font:600 var(--t15)/1.3 var(--b);color:var(--ink-2)}
+.arn-notes summary::-webkit-details-marker{display:none}.arn-notes .chev{font:700 var(--t20)/1 var(--b);font-style:normal}.arn-notes[open] .chev{rotate:90deg}
+.arn-notesin p{margin:0 0 var(--s2);font:400 var(--t15)/1.5 var(--b);color:var(--ink-2)}.arn-notesin p b{color:var(--ink)}.arn-notesin .dc2-set span{display:inline}
+/* narrow phones (under 380): the rows' words one step smaller so five fit across; the switches may wrap to two lines */
+@media (max-width:439.98px){.arn-sw button{gap:6px;padding:0 6px;font-size:var(--t13)}.arn-sw i{width:12px;height:12px}}
+/* narrow phones (under 380): the set cards' own padding and picture give way so every row and the stage steps stay inside the card */
+@media (max-width:379.98px){.arn-set{padding:var(--s2)}.arn-set header img{display:none}.arn-set header b{font-size:var(--t15)}.arn-st .ctl{gap:0}.arn-st output{min-width:24px}.arn-f{padding:0 var(--s2)}.arn-sel{padding-left:var(--s2)}.arn-f .lb{font-size:var(--t13)}}
+@media (max-width:379.98px){.arn-mv .dm.u{font-size:var(--t15)}}
+@media (max-width:359.98px){.arn-sw i{display:none}} /* 320-359: the pressed fill alone says on; the label keeps one line beside its neighbours */
+@media (max-width:379.98px){.arn-pills button{font-size:var(--t13)}.arn-pills .dot{width:6px;height:6px}.arn-sw button{font-size:var(--t13);gap:var(--s1);padding:0 var(--s1)}.arn-sw i{width:12px;height:12px}
+  .arn-plate b{font-size:var(--t15)}.arn-mv{padding-left:var(--s4)}.arn-mv .nm{font-size:var(--t15)}}
+/* tablets (700-1023): the phone's arrangement with more room; the scene keeps the page's gutters and round corners */
+@media (min-width:700px){.arn-scene{--arn-padh:28px;--arn-padw:220px;height:540px;margin:0;padding:0 var(--s3);border-radius:var(--r-xl);grid-template-columns:minmax(0,1.12fr) minmax(0,1fr) 64px;grid-template-rows:72px auto minmax(0,1fr) auto 72px 72px}
+  .arn-plate b{font-size:var(--t20)}.arn-plate.arn-dp{width:min(100%,280px)}.arn-verdict .l2{font-size:var(--t22)}.arn-verdict .l1{font-size:var(--t15)}
+  .arn-pills{justify-self:start;width:min(100%,560px)}.arn-sw button{padding:0 var(--s3);font-stretch:normal}} /* tablets and desktop keep the phone's 3 then 2 (as drawn): a wrapping row left one alone (4+1, 2+2+1) */
+/* desktop (1024+): the scene left, the controls right, the whole calculator on one 1440x900 screen. In the scene the KO words get the
+   plate upper left, the damage a separate black tilted tag in open sky (its own row, clear of both Pokemon), the swap beside the
+   attacker's plate */
+@media (min-width:1024px){
+  .arn-grid{grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:var(--s8);align-items:start}
+  .arn-scene{--arn-hz:58%;--arn-padh:36px;--arn-padw:280px;height:clamp(560px,calc(100svh - 176px),720px);padding:0 var(--s4);
+    grid-template-columns:minmax(0,1.1fr) minmax(0,1fr) 64px;grid-template-rows:80px auto auto minmax(0,1fr) auto 80px;
+    grid-template-areas:"wx wx wx" "vd dp dp" "tg tg tg" "as ds ds" "as ap sw" "tr tr tr"} /* the tag has its own row: it never reaches either Pokemon whatever the width or the Pokemon */
+  .arn-plate.arn-dp{justify-self:end;width:min(100%,264px);margin-top:0}.arn-plate b{font-size:var(--t22)}
+  .arn-verdict{align-self:start;margin:0;padding:var(--s3) var(--s8) var(--s3) var(--s5)}.arn-verdict .l1{display:none}.arn-verdict.notag .l1{display:block}.arn-verdict .l2{font-size:var(--t26);line-height:1.1}
+  .arn-tag{grid-area:tg;display:grid;justify-self:start;align-self:center;margin:var(--s6) 0 var(--s6) var(--s6);padding:var(--s2) var(--s5) var(--s3);background:var(--arn-tag);color:var(--arn-on-tag);rotate:var(--tilt);box-shadow:0 8px 24px var(--arn-shadow)}
+  .arn-tag small{font:700 var(--t17)/1.2 var(--b);color:var(--arn-tag-mv)}.arn-tag b{font-size:var(--d-arntag);line-height:1;white-space:nowrap}
+  .arn-swap{align-self:center}
+  .arn-side{gap:var(--s2)}
+  .arn-mv .d1,.arn-mv .ty{display:inline}.arn-mv .d2{display:none}.arn-mv .ko{margin-left:0}
+  .arn-spr.d img{max-height:var(--arn-dmax)}.arn-scene{--arn-dmax:min(100%,300px)}
+  .arn-mv{min-height:64px}.arn-set{padding:var(--s3) var(--s3) var(--s3)}.arn-set{gap:6px}
+  .arn-kbbar .t{font-size:var(--t20)}}
+@media (min-width:1024px) and (max-width:1279.98px){.arn-grid{gap:var(--s5)}.arn-sw button{gap:6px;padding:0 6px;font-stretch:87.5%}.arn-mv .nm{font-size:var(--t15)}.arn-plate b{font-size:var(--t20)}.arn-verdict .l2{font-size:var(--t22)}}
+/* desktop with a mouse (C8's 44x44 is for touch): the stage steps 36 wide, so the stage row keeps one line in a 220px card */
+@media (min-width:1024px) and (pointer:fine){.arn-st button{width:36px}.arn-st output{min-width:28px}
+  @container (min-width:220px){.arn-st{flex-wrap:nowrap;padding:0 var(--s1) 0 var(--s3)}.arn-st .lb{flex-basis:auto;padding-top:0}.arn-st .ctl{flex:none}}}
+/* Q38 B (Sim, Nov 19, 7:09 PM): our slanted shapes, not rounded pills (design-system: "No rounded pills anywhere"). The rows take the
+   segmented control's slant (.np-slide); the chosen option is a slanted plate drawn BEHIND its words (::before), so no word is clipped;
+   the five switches are slanted chips with a flat fill (chip rule: one style, clip-path parallelogram, no outline) */
+.arn-pills{border-radius:0;clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+.arn-pills button{position:relative;isolation:isolate;border-radius:0}
+.arn-pills button[aria-pressed="true"]{background:none}
+.arn-pills button[aria-pressed="true"]::before{content:"";position:absolute;inset:0;z-index:-1;background:var(--arn-pill);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.arn-sw button{border-radius:0;box-shadow:none;background:var(--wash);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%)}
+/* Q40 B (Sim, Nov 19, 7:59 PM): on iPads and narrow desktops (700-1099) the weather and terrain rows run the scene's full width, as on
+   phones (they stopped at 560 of 738px at 834, an empty strip beside them); 1100 and up keep the narrower rows of the mock-up */
+@media (min-width:700px) and (max-width:1099.98px){.arn-pills{justify-self:stretch;width:auto}}
+/* Sim Q46 A (Nov 19, 8:33 PM): the name plate is a button that opens the "Choose the ..." sheet; today's picker stays hidden behind it */
+.arn-pickbtn{position:absolute;inset:0;z-index:3;width:100%;height:100%;margin:0;padding:0;border:0;background:none;cursor:pointer}
+.arn-pick.arn-pickhid{z-index:1;pointer-events:none}
+.arn-plate:has(.arn-pickbtn:focus-visible){outline:3px solid var(--plot);outline-offset:2px}
+/* Sim Q47 A (Nov 19, 8:33 PM): All moves and each set row are buttons that open sheets in the search sheet's style; today's selects stay behind them */
+.arn-mv.all:has(.arn-pickbtn:focus-visible),.arn-f:has(.arn-pickbtn:focus-visible){outline:3px solid var(--plot);outline-offset:2px}
+.arn-f .arn-pickbtn,.arn-mv.all .arn-pickbtn{border-radius:inherit}.arn-f:has(.arn-pickbtn) .arn-sel{pointer-events:none}
+.arn-grp{margin-top:var(--s4);padding:var(--s2) 0;border-bottom:1px solid var(--rule);font:600 var(--t13)/1.3 var(--b);color:var(--ink-2)}.arn-grp:first-child{margin-top:0}
+.np-hit.arn-mvhit,.np-hit.arn-opt{grid-template-columns:minmax(0,1fr) auto}
+.np-hit.arn-mvhit{padding-left:var(--s5);box-shadow:inset 6px 0 0 var(--tc)}
+.arn-mvhit .nm b{padding-right:var(--s1);font-size:var(--t16);line-height:1.15}
+.arn-mvd{display:grid;justify-items:end;gap:2px;text-align:right}
+.arn-mvd b{font:600 var(--t15)/1.15 var(--b);color:var(--arn-hit);white-space:nowrap}.arn-mvd b.u{padding-right:2px;font-family:var(--u);font-size:var(--t17);font-style:italic;font-weight:900}
+.arn-mvd small{font:600 var(--t13)/1.2 var(--b);color:var(--ink-2);white-space:nowrap}
+.np-hit.arn-mvhit[aria-current="true"],.np-hit.arn-opt[aria-current="true"]{background:var(--wash)}
+.arn-tags{display:flex;flex-wrap:wrap;justify-content:flex-end;gap:var(--s1)}
+.arn-tags small{padding:2px var(--s2);border-radius:var(--r-s);font:600 var(--t13)/1.3 var(--b);white-space:nowrap}
+.arn-mu{box-shadow:inset 0 0 0 1px var(--arn-line);color:var(--ink-2)}.arn-cur{background:var(--ink);color:var(--bg)}
+/* Sim Q52 B (Nov 19, 10:25 PM) + Q53 A (10:30 PM): the KO Board bar's title at 17 on 1024-1449 (20 from 1450), so it sits on one line from
+   1280 up; at 1440 the light theme's heavier title (900) needed 1px more than 20 allows */
+@media (min-width:1024px) and (max-width:1449.98px){.arn-kbbar .t{font-size:var(--t17)}}
+/* Sim Q57 A (Nov 19): under 1024 the opened KO Board shows one group at a time, chosen by three count tabs in the bar's colours (a 6px base:
+   red, striped, green; the chosen tab takes the bar's fill). Counts on one line, labels start on one line under them (top-aligned), so
+   the three read evenly even when a label wraps on a narrow phone. Tiles unchanged (4 across on touch phones, names under them). */
+.kob-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:var(--s1);margin-top:var(--s4)}
+.kob-t{--gb:linear-gradient(var(--arn-kb-ko),var(--arn-kb-ko));display:grid;grid-template-rows:auto 1fr;align-content:start;justify-items:start;min-width:0;min-height:var(--s16);margin:0;padding:var(--s2) var(--s2) var(--s4) var(--s3);border:0;border-radius:0;background:var(--gb) bottom/100% 6px no-repeat,var(--wash);color:var(--ink);text-align:left;cursor:pointer;clip-path:polygon(0 0,calc(100% - 8px) 0,100% 8px,100% 100%,8px 100%,0 calc(100% - 8px))}
+.kob-t.can{--gb:repeating-linear-gradient(135deg,var(--arn-kb-ko) 0 4px,var(--arn-kb-sv) 4px 8px)}.kob-t.sv{--gb:linear-gradient(var(--arn-kb-sv),var(--arn-kb-sv))}
+.kob-t b{font-size:var(--t28);line-height:1.15}
+.kob-t span{font:600 var(--t13)/1.3 var(--b);color:var(--ink-2);text-wrap:balance}
+.kob-t[aria-selected="true"]{background:var(--gb) bottom/100% 6px no-repeat,var(--arn-fill);color:var(--arn-on-fill)}.kob-t[aria-selected="true"] span{color:var(--arn-on-fill)}
+.kob-t:focus-visible{outline:3px solid var(--plot);outline-offset:-3px}
+.kob-p .dc2-kts{margin-top:var(--s2)}.kob-p[hidden]{display:none}
+.kob-none{margin:var(--s3) var(--s1) 0} /* Wave 2 part 4: the kit empty line */
+/* Sim Q58 C (Nov 19): from 1024 the opened board leaves the right column and spans the page under the Arena: the three groups side by
+   side, each a big slanted count over a 6px rule in the bar's colour, then one row per threat (attacker, threat, its name, the move,
+   the damage in numbers, the HP it has left). A row does what a tile does: it puts that hit on the table. */
+.arn-kbfull{margin-top:var(--s6)}.arn-kbfull .dc2-kb{margin-top:0}.arn-kbfull[hidden]{display:none}
+.kob-c .dc2-kbh{justify-content:flex-start}.kob-c .dc2-kbh h2{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.kob-cols{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:var(--s8);align-items:start;margin-top:var(--s4)}
+.kob-col h3{--gb:linear-gradient(var(--arn-kb-ko),var(--arn-kb-ko));display:flex;align-items:baseline;gap:var(--s2);margin:0;padding-bottom:var(--s4);background:var(--gb) bottom/100% 6px no-repeat;font:600 var(--t15)/1.3 var(--b);color:var(--ink-2)}
+.kob-col[data-g="can"] h3{--gb:repeating-linear-gradient(135deg,var(--arn-kb-ko) 0 4px,var(--arn-kb-sv) 4px 8px)}.kob-col[data-g="sv"] h3{--gb:linear-gradient(var(--arn-kb-sv),var(--arn-kb-sv))}
+.kob-col h3 b{font-size:var(--t34);line-height:1;color:var(--ink)}
+.kob-rows{display:grid}
+.kob-r{display:grid;grid-template-columns:24px 40px minmax(0,1fr) auto;grid-template-rows:auto auto;align-items:center;column-gap:var(--s2);min-height:var(--s12);margin:0;padding:var(--s1) 0;border:0;border-bottom:1px solid var(--rule);border-radius:0;background:none;color:var(--ink);text-align:left;cursor:pointer;font:inherit}
+.kob-r .by{grid-row:1/3;grid-column:1;display:grid;place-items:center}.kob-r .th{grid-row:1/3;grid-column:2;display:grid;place-items:center}
+.kob-r .nm{grid-column:3;grid-row:1;min-width:0;font:600 var(--t15)/1.3 var(--b)}
+.kob-r .mv{grid-column:3/5;grid-row:2;min-width:0;max-width:100%;margin-right:calc(var(--s16) + var(--s2));overflow:hidden;white-space:nowrap;text-overflow:ellipsis;font:500 var(--t13)/1.3 var(--b);color:var(--ink-2)}
+.kob-r .pc{grid-column:4;grid-row:1;justify-self:end;padding-right:2px;font-size:var(--t20);line-height:1.2;white-space:nowrap}
+.kob-r.ko .pc{color:var(--bad-text)}
+.kob-r .hp{grid-column:4;grid-row:2;justify-self:end;position:relative;display:block;width:var(--s16);height:4px;background:color-mix(in srgb,var(--ink) 12%,transparent)}
+.kob-r .hp i{position:absolute;top:0;bottom:0;left:0;background:var(--hp-left)}.kob-r .hp .r{background:var(--bad)}
+.kob-r:hover{background:var(--wash)}.kob-r.on{outline:2px solid var(--plot);outline-offset:-2px}
+.kob-r:focus-visible{outline:3px solid var(--plot);outline-offset:-3px}
+/* Q68 A (Nov 20): the move line holds only the move's name and runs on under the damage figure, stopping a gap short of the
+   HP bar (both var(--s16) wide), so a long move ("Expanding Force" at 1024) is not cut */
+/* 1024-1279: three columns of about 290px; the damage one step smaller and the columns closer, so the full name keeps about 90px (the longest
+   top-30 name, Basculegion, needs 86); a name that still cannot fit breaks rather than spills (never an ellipsis on the name) */
+.kob-r .nm{overflow-wrap:anywhere}
+@media (min-width:1024px) and (max-width:1279.98px){.kob-cols{column-gap:var(--s4)}.kob-r .pc{font-size:var(--t17)}.kob-r{column-gap:var(--s2)}}
+
+/* ---------- the Arena polish (Sim, Nov 21; from the designer's mock-up, sizes snapped to the type scale and the 4px grid) ----------
+   every colour means something: each weather/terrain its own colour, the defender pink and the attacker blue, the move its type,
+   the HP bar green for what is left and pink for the damage with stripes for the roll; everything else neutral */
+/* the rows: an icon per option (over the word on phones, beside it from 700); the chosen one a white slanted plate with a 4px foot in its colour */
+.arn-scene .arn-pills{background:var(--arn-rowbg);box-shadow:inset 0 1px 0 var(--arn-rim)}
+.arn-scene .arn-pills button{flex-direction:column;gap:2px;font:700 var(--t13)/1.1 var(--b);color:var(--arn-on-plate);min-height:var(--s12)}
+.arn-scene .arn-pills .arn-ic{flex:none;width:18px;height:18px;color:var(--k);fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 1px 1px var(--arn-ic-shadow))}
+.arn-scene .arn-pills button[aria-pressed="true"]{color:var(--arn-on-pill)}
+.arn-scene .arn-pills button[aria-pressed="true"]::before{background:linear-gradient(180deg,var(--arn-pill) 0 calc(100% - 4px),var(--k) calc(100% - 4px))}
+.arn-scene .arn-pills button[aria-pressed="true"] .arn-ic{filter:none}
+.arn-scene .arn-pills button[aria-pressed="true"][data-dcw=""] .arn-ic,.arn-scene .arn-pills button[aria-pressed="true"][data-dcterr=""] .arn-ic{color:var(--arn-on-pill)}
+/* light icons on the white plate get a thin dark edge so they still read */
+.arn-scene .arn-pills button[aria-pressed="true"]:is([data-dcterr="electric"],[data-dcw="snow"],[data-dcterr="misty"],[data-dcw="rain"],[data-dcw="sand"]) .arn-ic{filter:drop-shadow(0 0 1px var(--arn-ic-edge))}
+/* the name plates: one slanted shape; the defender's pink edge, the attacker's blue (as the pads and the set cards) */
+.arn-scene .arn-plate{border-radius:0;background:linear-gradient(180deg,var(--arn-plate-hi),var(--arn-plate-lo));box-shadow:inset 0 1px 0 var(--arn-plate-rim);clip-path:polygon(0 0,100% 0,calc(100% - 12px) 100%,0 100%);padding:var(--s2) var(--s6) var(--s2) var(--s4)}
+.arn-scene .arn-plate::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--e)}
+.arn-scene .arn-dp{--e:var(--arn-pad-d)}.arn-scene .arn-ap{--e:var(--arn-pad-a)}
+.arn-scene .arn-plate b.u{font-size:var(--t17)}
+/* the HP bar: a white HP tag, then a slanted track with quarter ticks; green = left, stripes = the roll, pink = the damage */
+.arn-scene .arn-hprow{display:flex;align-items:center;gap:6px;margin:var(--s2) 0 var(--s1)}
+.arn-scene .arn-hpl{flex:none;padding:0 var(--s2);background:var(--arn-hpl);color:var(--arn-on-hpl);font:900 var(--t13)/1.2 var(--u);font-style:italic;clip-path:polygon(3px 0,100% 0,calc(100% - 3px) 100%,0 100%)}
+.arn-scene .arn-hpb{flex:1;height:12px;margin:0;border-radius:0;background:var(--arn-track);clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+.arn-scene .arn-hpb .l{background:linear-gradient(180deg,var(--arn-hp-hi) 0 42%,var(--arn-hp-left) 42%)}
+.arn-scene .arn-hpb .r{background:repeating-linear-gradient(135deg,var(--arn-hp-left) 0 3px,var(--arn-hp-dmg) 3px 6px)}
+.arn-scene .arn-hpb .x{right:0;background:linear-gradient(180deg,var(--arn-hp-dmg-hi) 0 42%,var(--arn-hp-dmg) 42%)}
+.arn-scene .arn-hpb::after{content:"";position:absolute;inset:0;background:linear-gradient(90deg,transparent calc(25% - 1px),var(--arn-tick) calc(25% - 1px) calc(25% + 1px),transparent calc(25% + 1px) calc(50% - 1px),var(--arn-tick) calc(50% - 1px) calc(50% + 1px),transparent calc(50% + 1px) calc(75% - 1px),var(--arn-tick) calc(75% - 1px) calc(75% + 1px),transparent calc(75% + 1px))}
+.arn-scene .arn-hpt{font:600 var(--t13)/1.2 var(--b);color:var(--arn-hp-sub);white-space:nowrap}.arn-scene .arn-hpv{font-size:var(--t15);line-height:1;font-weight:900;font-style:italic;color:var(--arn-on-plate);margin-right:var(--s1)}
+/* the verdict: the move as a chip in its type's colour; the desktop tag gets the same chip */
+.arn-scene .arn-verdict{padding:var(--s1) var(--s6) 6px var(--s4);clip-path:polygon(0 0,100% 0,calc(100% - 14px) 100%,0 100%)}
+.arn-scene .arn-verdict .l1{display:flex;align-items:center;gap:6px;flex-wrap:wrap;font-size:var(--t13);line-height:1.3}
+.arn-scene .arn-mvc{display:inline-block;padding:0 var(--s2);background:var(--tc,var(--type-none));color:var(--on-type);font:700 var(--t13)/1.3 var(--b);font-style:normal;clip-path:polygon(4px 0,100% 0,calc(100% - 4px) 100%,0 100%)}
+.arn-scene .arn-verdict .l2{font-size:var(--t17);margin-top:1px;line-height:1.08}
+/* swap: a slanted white key */
+.arn-scene .arn-swap{border-radius:0;width:54px;height:var(--s12);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%);box-shadow:none}
+/* the pads: a contact shadow under the feet */
+.arn-scene .arn-spr::before{border-width:2.5px;background:radial-gradient(ellipse at 50% 45%,var(--arn-contact-1),var(--arn-contact-2) 55%,var(--arn-contact-3) 75%)}
+/* calm bands behind the two rows */
+.arn-bg .arn-shade{position:absolute;inset:0;pointer-events:none;background:linear-gradient(180deg,var(--arn-shade-t) 0,transparent 96px),linear-gradient(0deg,var(--arn-shade-b) 0,transparent 160px)}
+@media (min-width:700px){.arn-scene .arn-pills button{flex-direction:row;gap:var(--s2);font-size:var(--t15)}.arn-scene .arn-plate b.u{font-size:var(--t22)}.arn-scene .arn-hpb{height:14px}
+  .arn-scene .arn-hpt{font-size:var(--t15)}.arn-scene .arn-hpv{font-size:var(--t17)}.arn-scene .arn-verdict{padding-top:var(--s2);padding-bottom:var(--s2)}.arn-scene .arn-verdict .l1{font-size:var(--t15)}
+  .arn-scene .arn-verdict .l2{font-size:var(--t26);margin-top:2px}.arn-scene .arn-plate{padding:var(--s2) var(--s6) var(--s3) var(--s4)}}
+@media (min-width:1024px){.arn-scene .arn-verdict .l1{display:none}.arn-scene .arn-verdict.notag .l1{display:flex}
+  .arn-scene .arn-tag small.arn-mvc{justify-self:start;font-size:var(--t15);padding:2px var(--s3);color:var(--on-type);margin-bottom:6px}
+  .arn-scene .arn-tag{clip-path:polygon(12px 0,100% 0,calc(100% - 12px) 100%,0 100%);padding:var(--s3) var(--s8) var(--s3) var(--s6);box-shadow:none}}
+@media (min-width:1024px) and (max-width:1279.98px){.arn-scene .arn-plate b.u{font-size:var(--t20)}.arn-scene .arn-verdict .l2{font-size:var(--t22)}}
+/* 320-379 (today's bug: the verdict overlapped the attacker plate and the terrain row in Sun at 320): a taller verdict row, smaller verdict words, "HP left" may wrap */
+@media (max-width:379.98px){.arn-scene{grid-template-rows:64px auto minmax(0,1fr) auto minmax(64px,auto) 64px}.arn-scene .arn-verdict{margin-block:var(--s1)}
+  .arn-scene .arn-hpt{white-space:normal}.arn-scene .arn-hpv{white-space:nowrap}.arn-scene .arn-verdict .l2{font-size:var(--t15)}.arn-scene .arn-plate{padding:var(--s2) var(--s4) var(--s2) var(--s3)}.arn-scene .arn-plate b.u{font-size:var(--t15)}.arn-scene .arn-dp b.u{flex-wrap:nowrap;white-space:nowrap}
+  .arn-scene .arn-plate.arn-dp{width:calc(100% + var(--s6));max-width:none}} /* 320-379: the defender plate may reach 24px into the sprite column so its name and arrow stay on one line */
+/* Sim, Nov 21 (Q100 A): real HP numbers lead, the percent small beside them (what the game shows for a foe's HP) */
+.arn-scene .arn-hpv{margin-right:0}
+.arn-scene .arn-pct{font:600 var(--t13)/1.2 var(--b);font-style:normal;color:var(--arn-hp-sub);white-space:nowrap}
+.arn-scene .arn-verdict .arn-pct{color:var(--arn-verdict-ink2)}
+.arn-scene .arn-tag .arn-hpu{margin-left:var(--s1);font-size:var(--t22)}
+.arn-scene .arn-tag .arn-pct{margin-top:2px;font-size:var(--t15)}
+@media (max-width:699.98px){.arn-scene .arn-hpt{white-space:normal}.arn-scene .arn-hpv{white-space:nowrap}}
+.arn-scene .arn-tk,.arn-scene .arn-hpof{white-space:nowrap} /* "takes 45–54 HP" and "/ 157 HP left" each stay whole when a line wraps */

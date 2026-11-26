@@ -1,0 +1,26 @@
+<!doctype html><html lang=en><head><meta charset=utf-8><meta name=viewport content="width=device-width,initial-scale=1"><title>Move design options</title>
+<style>
+@font-face{font-family:U;src:url(../../../../app/src/v2/fonts/unbounded-latin.woff2) format('woff2');font-weight:200 900}
+@font-face{font-family:I;src:url(../../../../app/src/v2/fonts/instrument-sans-latin.woff2) format('woff2');font-weight:400 700}
+:root{--paper:#FBFAF7;--ink:#17161A;--ink2:#5E5A66;--rule:rgba(23,22,26,.13);--fire:#EE8130;--dark:#705746;--water:#6390F0;--ghost:#735797;--normal:#A8A77A}
+*{box-sizing:border-box}body{margin:0;padding:24px 16px;background:var(--paper);color:var(--ink);font:400 16px/1.5 I,system-ui}
+.u{font-family:U;font-style:italic;font-synthesis:style;font-weight:800}
+section{max-width:640px;margin:0 auto 28px;padding:18px;background:#fff;box-shadow:0 1px 0 var(--rule)}
+h2{margin:0 0 12px;font:800 17px U;font-style:italic}
+ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+@media (max-width:480px){ul{grid-template-columns:1fr}}
+/* C: today */
+.mC{display:flex;justify-content:space-between;align-items:center;min-height:44px;padding:0 14px;color:#fff;font:800 15px I;background:color-mix(in srgb,var(--tc) 70%,#000);clip-path:polygon(8px 0,100% 0,calc(100% - 8px) 100%,0 100%)}.mC small{font:700 13px I}
+/* A: move ticket. type block, name, what it is */
+.mA{display:grid;grid-template-columns:80px minmax(0,1fr) auto;align-items:center;gap:12px;min-height:52px;padding-right:12px;background:var(--paper);box-shadow:inset 0 0 0 1px var(--rule);clip-path:polygon(0 0,100% 0,calc(100% - 8px) 100%,0 100%)}
+.mA .tt{align-self:stretch;display:grid;place-items:center;background:color-mix(in srgb,var(--tc) 72%,#000);color:#fff;font:800 13px/1 I;letter-spacing:.04em;text-transform:uppercase;clip-path:polygon(0 0,100% 0,calc(100% - 10px) 100%,0 100%);padding-right:6px}
+.mA .nm{display:grid;line-height:1.25;min-width:0}.mA .nm b{font:700 16px I}.mA .nm small{font:500 13px I;color:var(--ink2)}
+.mA>b{font-size:17px}
+/* B: game button. the whole thing in the type colour, name in the logo font */
+.mB{display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:52px;padding:0 16px;color:#fff;background:color-mix(in srgb,var(--tc) 72%,#000);clip-path:polygon(10px 0,100% 0,calc(100% - 10px) 100%,0 100%);box-shadow:inset 0 -4px 0 rgba(0,0,0,.25)}
+.mB .nm{font:800 16px U;font-style:italic}.mB .side{display:grid;justify-items:end;line-height:1.2}.mB .side small{font:600 13px I;opacity:.9}.mB .side b{font-size:15px}
+</style></head><body>
+<section id=C><h2>C · today: name in a flat colour box</h2><ul><li class=mC style="--tc:var(--normal)">Fake Out <small>99%</small></li><li class=mC style="--tc:var(--dark)">Parting Shot <small>96%</small></li><li class=mC style="--tc:var(--fire)">Flare Blitz <small>95%</small></li><li class=mC style="--tc:var(--dark)">Darkest Lariat <small>41%</small></li><li class=mC style="--tc:var(--water)">Wave Crash</li><li class=mC style="--tc:var(--ghost)">Shadow Ball</li></ul></section>
+<section id=A><h2>A · move ticket: type, name, what it does</h2><ul><li class=mA style="--tc:var(--normal)"><span class=tt>Normal</span><span class=nm><b>Fake Out</b><small>Physical · 40 power</small></span><b class=u>99%</b></li><li class=mA style="--tc:var(--dark)"><span class=tt>Dark</span><span class=nm><b>Parting Shot</b><small>Status</small></span><b class=u>96%</b></li><li class=mA style="--tc:var(--fire)"><span class=tt>Fire</span><span class=nm><b>Flare Blitz</b><small>Physical · 120 power</small></span><b class=u>95%</b></li><li class=mA style="--tc:var(--dark)"><span class=tt>Dark</span><span class=nm><b>Darkest Lariat</b><small>Physical · 85 power</small></span><b class=u>41%</b></li><li class=mA style="--tc:var(--water)"><span class=tt>Water</span><span class=nm><b>Wave Crash</b><small>Physical · 120 power</small></span></li><li class=mA style="--tc:var(--ghost)"><span class=tt>Ghost</span><span class=nm><b>Shadow Ball</b><small>Special · 80 power</small></span></li></ul></section>
+<section id=B><h2>B · game button: the type colour, name in the logo font</h2><ul style="grid-template-columns:1fr"><li class=mB style="--tc:var(--normal)"><span class=nm>Fake Out</span><span class=side><small>Normal · Physical · 40 power</small><b class=u>99%</b></span></li><li class=mB style="--tc:var(--dark)"><span class=nm>Parting Shot</span><span class=side><small>Dark · Status</small><b class=u>96%</b></span></li><li class=mB style="--tc:var(--fire)"><span class=nm>Flare Blitz</span><span class=side><small>Fire · Physical · 120 power</small><b class=u>95%</b></span></li><li class=mB style="--tc:var(--dark)"><span class=nm>Darkest Lariat</span><span class=side><small>Dark · Physical · 85 power</small><b class=u>41%</b></span></li><li class=mB style="--tc:var(--water)"><span class=nm>Wave Crash</span><span class=side><small>Water · Physical · 120 power</small></span></li><li class=mB style="--tc:var(--ghost)"><span class=nm>Shadow Ball</span><span class=side><small>Ghost · Special · 80 power</small></span></li></ul></section>
+</body></html>
