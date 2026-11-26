@@ -149,7 +149,7 @@ function gradeTeam(team){if(!team||team.length<6||typeof CH!=='object'||!CH.grad
   try{const ms=typeof assignItems==='function'?assignItems(team):team,RD=THR.teamReport(ms),G=CH.gradeOf(RD,proChecks(ms,true),ms);g=G?G.s:null;
     // a six that real players ran and lost with more than the field average is never an upgrade, whatever its grade
     // (Nov 7, Sim: the top suggestion took a 93 (A) to a C) a six that is a real tournament team is graded by its real win rate
-    // on My team, so it is judged on that same scale here: 60% wins = 90 (A), 55% = 80 (B), 50% = 70 (C), 45% = 60 (D)
+    // on My team, so it is judged on that same scale here (CH.recScore, the Strength Score's own formula: 60% wins = 90, 54% = 80)
     }catch(e){}
   if(gradeMemo.size>500)gradeMemo.clear();gradeMemo.set(k,g);return g}
 function planGrade(pl){if(!pl||!pl.team||pl.team.length!==6)return null;if(pl._g===undefined)pl._g=gradeTeam(pl.team);return pl._g}

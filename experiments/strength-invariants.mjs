@@ -77,6 +77,11 @@ try {
       JSON.stringify([CH.wordOf(NaN), CH.wordOf(Infinity), CH.wordOf(null), CH.wordOf(89.6), CH.wordOf(90)])
     );
 
+    // J-REC (Nov 26, bands C): the old check's real-win-rate scale (CH.recScore) is the Strength Score's own (CH.ssOfE), so a real
+    // record and the model's win chance read the same number and band word (it was 70 + 200 x: 54% = 78 Solid while the score said 80)
+    { const ws = [.4, .42, .45, .48, .5, .52, .54, .57, .6, .66], bad = ws.filter(w => CH.recScore(w) !== Math.round(CH.ssOfE(w)) || CH.wordOf(CH.recScore(w)) !== CH.wordOf(Math.round(CH.ssOfE(w))));
+      check('J-REC', bad.length === 0, JSON.stringify(ws.map(w => [w, CH.recScore(w), Math.round(CH.ssOfE(w))]))); }
+
     // J10-2: CH.sdOf and swapSure return null when monSd is empty or non-finite
     {
       const saved = META.model && META.model.monSd;
