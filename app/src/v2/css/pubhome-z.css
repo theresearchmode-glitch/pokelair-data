@@ -1,0 +1,86 @@
+/* The receipt in Pokémon colour (Job Z, Nov 26; pages/pubhome-z.js). PROPOSAL ONLY: drawn only with --home=c1|c2|c3. Type colours
+   are the type tokens (--ty-* for fills under white words, --tyn-* for the big bands); every one that means something is named on screen. */
+.ph-tyc{display:inline-flex;align-items:center;gap:var(--s1);margin-left:var(--s2);padding:2px var(--s2);background:var(--tc);color:var(--on-type);font-size:var(--t13);font-weight:700;line-height:1.4;vertical-align:middle;transform:skewX(-8deg)}
+.ph-tyc .k-tyi,.ph-ink-n .k-tyi,.ph-pl-hd .k-tyi{width:14px;height:14px;fill:currentColor}
+
+/* ---- c1. The crew behind the counter ---- */
+.ph-crs{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:stretch;padding-top:0;padding-bottom:0;gap:var(--s6)}
+.ph-c1 .ph-a-copy{align-self:center;padding:var(--s10) 0}
+.ph-crew{position:relative;min-height:780px;margin-right:calc(-1 * var(--gut));overflow:hidden}
+.ph-crew-band{position:absolute;top:0;right:0;bottom:0;left:0;background:linear-gradient(115deg,var(--t1) 0 58%,var(--t2) 58% 100%);clip-path:polygon(22% 0,100% 0,100% 100%,0 100%)}
+.ph-crew-six{position:absolute;top:0;right:0;bottom:0;left:0}
+.ph-cr{position:absolute;left:var(--l);bottom:var(--b);z-index:var(--z);height:var(--h);width:auto;max-width:none;filter:drop-shadow(0 16px 12px var(--k-art-shadow))}
+.ph-cr-rc{position:absolute;z-index:4;left:4%;bottom:var(--s6);width:330px;margin:0;padding:var(--s4) var(--s5) var(--s5);background:var(--dp-paper);color:var(--dp-ink);box-shadow:var(--dp-shadow);transform:rotate(-5deg)}
+.ph-cr-rc .ph-rl,.ph-pl .ph-rl{min-height:36px;padding:0;grid-template-columns:32px minmax(0,max-content) minmax(8px,1fr) auto}
+.ph-cr-rc .ph-rl-a,.ph-pl .ph-rl-a{width:32px;height:32px}
+.ph-cr-rc .ph-rl-n small,.ph-pl .ph-rl-n small{display:none}
+.ph-cr-tot{display:flex;justify-content:space-between;align-items:flex-end;gap:var(--s3);margin:var(--s2) 0 0}
+.ph-cr-tot>span.u{padding-bottom:var(--s2);font-size:var(--t17)}
+.ph-cr-tot b{font-size:var(--d-phn);line-height:1;color:var(--dp-plot)}
+.ph-cr-stamp,.ph-pl-stamp,.ph-ink-stamp{display:table;margin:var(--s3) 0 0 var(--s2);padding:var(--s1) var(--s3);border:4px solid var(--dp-pick-rule);background:var(--dp-paper);color:var(--dp-pick);font-size:var(--t17);transform:rotate(-6deg)} /* HH: the stamp lands on empty paper, never on words: its own line at the foot */
+.ph-crew-leg{position:absolute;z-index:5;top:var(--s4);right:var(--gut);margin:0;padding:var(--s1) var(--s3);background:var(--k-card);color:var(--k-ink);font-size:var(--t13);font-weight:700}
+
+/* ---- c2. Type ink ---- */
+.ph-inks{position:relative;grid-template-columns:minmax(0,5fr) minmax(0,7fr);gap:var(--s10);align-items:center;padding:var(--s10) var(--gut) var(--s12);background:linear-gradient(105deg,var(--t1) 0 50%,var(--t2) 50% 100%)}
+.ph-ink-copy{padding:var(--s8);background:var(--k-paper);color:var(--k-ink);box-shadow:10px 10px 0 var(--k-ink);transform:skewX(-4deg)}
+.ph-ink-copy>*{transform:skewX(4deg)}
+.ph-ink-copy .ph-a-copy{padding:0}
+.ph-ink-leg{position:absolute;top:var(--s3);right:var(--gut);margin:0;padding:var(--s1) var(--s3);background:var(--k-card);color:var(--k-ink);font-size:var(--t13);font-weight:700;line-height:1.8}
+.ph-ink-leg .ph-tyc{margin:0 var(--s2) 0 0}
+.ph-ink-rc{position:relative;justify-self:end;width:min(100%,540px);margin:0;padding:var(--s5) var(--s6) var(--s6);border-left:8px solid var(--t1);border-right:8px solid var(--t2);background:var(--dp-paper);color:var(--dp-ink);box-shadow:var(--dp-shadow);transform:rotate(2deg)}
+.ph-ink-ls{display:grid;gap:var(--s3);margin:var(--s4) 0 0;padding:0;list-style:none}
+.ph-ink{display:grid;grid-template-columns:72px minmax(0,1fr) auto;align-items:center;gap:var(--s3);width:100%;min-height:52px;padding:0 var(--s4) 0 0;border:0;background:var(--tc);color:var(--on-type);font:inherit;text-align:left;text-decoration:none;cursor:pointer;transform:skewX(-10deg)}
+.ph-ink>*{transform:skewX(10deg)}
+.ph-ink:hover .ph-ink-n b,.ph-ink:focus-visible .ph-ink-n b{text-decoration:underline}
+.ph-ink:focus-visible{outline:3px solid var(--dp-ink);outline-offset:2px}
+.ph-ink-a{display:block;width:72px;height:72px;margin:-20px 0 -8px;object-fit:contain;filter:drop-shadow(0 4px 0 var(--sd-shade))}
+.ph-ink-n{min-width:0}
+.ph-ink-n b{display:block;font-size:var(--t17);line-height:1.2}
+.ph-ink-n small{display:flex;align-items:center;gap:var(--s1);font-size:var(--t13);line-height:1.3}
+.ph-ink-r{font-size:var(--t34);line-height:1;color:var(--on-type);text-shadow:3px 3px 0 var(--sd-shade)}
+.ph-ink-foot{display:grid;grid-template-columns:minmax(0,1fr) auto;align-items:end;gap:var(--s5);margin-top:var(--s5)}
+.ph-ink-bars{display:flex;align-items:flex-end;gap:var(--s1);height:72px}
+.ph-ink-bars i{flex:1;height:var(--h);background:var(--tc);transform:skewX(-12deg)}
+.ph-ink-sc{position:relative;display:grid;place-items:center;align-content:center;width:184px;height:184px;margin:-16px -24px -32px 0}
+.ph-burst{position:absolute;top:0;right:0;bottom:0;left:0;background:var(--k-ink);clip-path:polygon(50.0% 0.0%,57.4% 12.7%,69.1% 3.8%,71.1% 18.4%,85.4% 14.6%,81.6% 28.9%,96.2% 30.9%,87.3% 42.6%,100.0% 50.0%,87.3% 57.4%,96.2% 69.1%,81.6% 71.1%,85.4% 85.4%,71.1% 81.6%,69.1% 96.2%,57.4% 87.3%,50.0% 100.0%,42.6% 87.3%,30.9% 96.2%,28.9% 81.6%,14.6% 85.4%,18.4% 71.1%,3.8% 69.1%,12.7% 57.4%,0.0% 50.0%,12.7% 42.6%,3.8% 30.9%,18.4% 28.9%,14.6% 14.6%,28.9% 18.4%,30.9% 3.8%,42.6% 12.7%);transform:rotate(-8deg)}
+.ph-ink-sc b{position:relative;font-size:var(--d-phx);line-height:.9;color:var(--k-go)}
+.ph-ink-sc small{position:relative;max-width:112px;font-size:var(--t13);line-height:1.1;text-align:center;color:var(--k-paper)}
+
+/* ---- c3. Receipt pile ---- */
+.ph-pls{grid-template-columns:minmax(0,5fr) minmax(0,7fr);align-items:center}
+.ph-pile{position:relative;min-height:880px}
+.ph-pl{position:absolute;left:var(--l);top:var(--top);width:300px;margin:0;padding:0 var(--s5) var(--s6);border-top:12px solid var(--tc);background:var(--dp-paper);color:var(--dp-ink);box-shadow:var(--dp-shadow);transform:rotate(var(--r))}
+.ph-pl-peek{display:flex;justify-content:center;height:56px;margin:-48px 0 var(--s2)}
+.ph-pl-peek>*{flex:none;width:56px;height:56px;margin:0 -4px}
+.ph-pl-hd{display:flex;align-items:center;gap:var(--s2);margin:0 calc(-1 * var(--s5));padding:var(--s2) var(--s5);background:var(--tc);color:var(--on-type);font-size:var(--t13);font-weight:700}
+.ph-pl-hd b{margin-left:auto;font-size:var(--t17)}
+.ph-pl-ev{margin:var(--s2) 0 0;font-size:var(--t13);color:var(--dp-ink2)}
+.ph-pl-lines{display:block;height:160px;margin-top:var(--s3);background:repeating-linear-gradient(180deg,var(--dp-rule) 0 2px,transparent 2px 24px)}
+.ph-pl-top{z-index:6;left:20%;top:184px;width:420px;padding-bottom:var(--s5)}
+.ph-pl-peek-big{height:72px;margin-top:-64px}
+.ph-pl-peek-big>*{width:72px;height:72px;margin:0 -6px}
+.ph-pl-top .ph-rc-h{margin-top:var(--s3)}
+.ph-pile-leg{position:absolute;right:0;top:var(--s4);z-index:7;margin:0;padding:var(--s1) var(--s3);background:var(--k-card);color:var(--k-ink);font-size:var(--t13);font-weight:700}
+
+@media (max-width:1179.98px){
+  .ph-crs,.ph-inks,.ph-pls{grid-template-columns:minmax(0,1fr)}
+  .ph-crew{margin-left:calc(-1 * var(--gut))}
+  .ph-ink-rc{justify-self:start}
+}
+@media (max-width:699.98px){
+  .ph-crew{min-height:600px}
+  .ph-cr{height:calc(var(--h) * .6)}
+  .ph-cr-rc{left:var(--s4);right:var(--s4);bottom:var(--s4);width:auto;transform:rotate(-3deg)}
+  .ph-crew-leg{right:var(--s4)}
+  .ph-inks{gap:var(--s8);padding:var(--s6) var(--gut) var(--s10)}
+  .ph-ink-copy{padding:var(--s5)}
+  .ph-ink-rc{padding:var(--s4) var(--s3) var(--s5);transform:rotate(1deg)}
+  .ph-ink{grid-template-columns:56px minmax(0,1fr) auto}
+  .ph-ink-a{width:56px;height:56px}
+  .ph-ink-r{font-size:var(--t28)}
+  .ph-ink-sc{width:136px;height:136px;margin-top:-32px}
+  .ph-pile{min-height:780px}
+  .ph-pl{width:62%}
+  .ph-pl-top{left:var(--s2);right:var(--s2);width:auto;top:152px}
+  .ph-ink-leg{position:static;justify-self:start}
+}

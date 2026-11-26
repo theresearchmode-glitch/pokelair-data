@@ -100,7 +100,7 @@ if (process.argv.includes('--v2')) {
   // where the pictures live: art/ beside the page by default; --art=<folder>/ when published next to other files (the redesign artifact)
   const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg).replace(/</g, '\\u003c')};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
   /* --home=a|b (Job V, Nov 26, PROPOSAL ONLY): which front-page proposal Home draws (pages/pubhome.js); without it Home is The Stampede */
-  const homeArg = (process.argv.find(x => x.startsWith('--home=')) || '').slice(7); if (homeArg && !/^(a|b|a1|a2|a3)$/.test(homeArg)) { console.error('--home=a, b, a1, a2 or a3'); process.exit(1); } /* a1-a3: Job X, The Receipt with WOW (pubhome-x.js) */
+  const homeArg = (process.argv.find(x => x.startsWith('--home=')) || '').slice(7); if (homeArg && !/^(a|b|a1|a2|a3|c1|c2|c3)$/.test(homeArg)) { console.error('--home=a, b, a1, a2 or a3'); process.exit(1); } /* a1-a3: Job X, The Receipt with WOW (pubhome-x.js) */
   // --one-art-size (Nov 17): Claude-hosted builds (Preview, live artifact) use the 384px sprites only: an artifact holds at most 511 files,
   // too few for both sizes (346 + 346). The public site (January) keeps both sizes (sprites A).
   // --preview-data (redesign artifact only): a copy of today's daily data (out/*.json) answers the page's data requests, so a
