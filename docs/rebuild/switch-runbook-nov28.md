@@ -17,6 +17,11 @@ Sim says yes on the day; nothing here runs before that.
 5. experiments/reg-test.mjs: 3 failures once main's regulation.json meets design6 (Kip job 40 MEDIUM-3; job 41 section 5 has the
    proposed change). It is not in test.yml, so it doesn't block; decide with Sim whether to update it.
 
+## Rehearsal 2 (Thu Nov 26, night): PASSED
+alt/switch-rehearsal2 1039d5ea = main + design6 b96f3a5e + Kip 46 data half: the 5 conflicts resolved exactly as step 2 below says;
+merge-check's main list + design6 list locally 48 of 48; GitHub's full test.yml run on it: success (run 45785844537).
+Report: docs/rebuild/test-runs/switch-rehearsal2-nov26.md. On Saturday, redo the same merge on the day's tips (design6 will have moved).
+
 ## Saturday, in order
 1. **Preflight (from GitHub, not the clock):** no update.yml run in progress; main's latest test.yml run is green; FAST_DATA is not
    `1`. Save the live artifact's index.html (sha256 prefix, version id) for the undo.

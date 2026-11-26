@@ -69,3 +69,6 @@ REHEARSAL DONE: 0 failed
   waits for Sim's OK). Added on top of the rehearsal as 1039d5ea (only conflict: test.yml paths, union); news-freshness-test,
   freshness-test, post-news-ran-test, post-news-test all exit 0 on the merged tree.
 - GitHub's full run on this merged tree (with Kip 46 data): alt/switch-rehearsal2 1039d5ea (first push af6c40e0 time: 3:44 AM (3:44:47)  date: Thu Nov 26, 2026).
+
+## GitHub
+Full test.yml run on 1039d5ea: completed, success (run 45785844537).
