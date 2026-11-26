@@ -1,8 +1,7 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
 Updated: time: 1:04 AM (1:04:14)  date: Thu Nov 26, 2026
-NOW: HH: chain.sh (pid in .main-running) gates into design6 one at a time: alt/pokemon-index (conflict fixed, fdc829b5), alt/gemini-news-ran-page
-  (Kip 46), alt/gemini-merge-gate (Kip 43), alt/gemini-md-roster (Kip 42); then chain2.sh: alt/bands-c2 3d5a5801 (option C + recScore + J-REC).
-NOW: HH: proving the new My Team move-pill check fails on old pills (local branch touch-moves in scratchpad/st); then push alt/touch-moves.
+NOW: HH: gate.sh alt/night-batch (pid in .main-running): design6 + Showdown-build fix for test.yml + the 6 checked branches in one batch
+  (c062acf1 broke every GitHub run: md-switch-page-gaps 3a needs Showdown built). Local pre-check nbrun.sh running alongside.
 NOW (helper): Job D, Speed Tiers at 1280x720 (alt/speed-1280). Job C (tablet Home) done: pictures for Sim.
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
