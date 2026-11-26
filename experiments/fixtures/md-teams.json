@@ -1,1165 +1,679 @@
 {
- "about": "Fixture teams for checks that read real tournament teams (Reg M-D plan, gap G11, Nov 24). Used ONLY when out/ has no real teams (Reg M-D day); a check that uses them prints a \"fixture teams\" line. MC01-MC12: real Reg M-C top-4 sheets from out/events.json (Limitless events of 139-230 players; species and sets only, no player names). MD01-MD02: made-up Mega Heatran teams, used only when the roster has Heatran-Mega.",
- "teams": [
-  {
-   "id": "MC01",
-   "from": {
-    "event": "6acba9c9115c12b73a5a14c3",
-    "date": "2026-10-24",
-    "players": 230,
-    "place": 1
-   },
-   "mons": [
+  "reg": "M-D",
+  "format": "gen9championsvgc2026regmd",
+  "note": "12 realistic Regulation M-D VGC doubles fixture teams (6 Pokemon each, Champions 0-32 stat points, total <= 66, Species Clause, Item Clause).",
+  "teams": [
     {
-     "n": "Salamence-Mega",
-     "i": "Salamencite",
-     "a": "Intimidate",
-     "nt": "Hasty",
-     "mv": [
-      "Hyper Voice",
-      "Double-Edge",
-      "Tailwind",
-      "Protect"
-     ]
+      "id": "mega-heatran-balance",
+      "name": "Mega Heatran Balance",
+      "archetype": "Mega Heatran",
+      "tags": ["mega-heatran", "balance", "tailwind"],
+      "mons": [
+        {
+          "name": "Heatran-Mega",
+          "item": "Heatranite",
+          "ability": "Water Compaction",
+          "moves": ["Heat Wave", "Earth Power", "Flash Cannon", "Protect"],
+          "nature": "Modest",
+          "points": [32, 0, 0, 32, 2, 0]
+        },
+        {
+          "name": "Rillaboom",
+          "item": "Miracle Seed",
+          "ability": "Grassy Surge",
+          "moves": ["Fake Out", "Grassy Glide", "Wood Hammer", "U-turn"],
+          "nature": "Adamant",
+          "points": [32, 32, 0, 0, 2, 0]
+        },
+        {
+          "name": "Milotic",
+          "item": "Sitrus Berry",
+          "ability": "Competitive",
+          "moves": ["Scald", "Icy Wind", "Recover", "Protect"],
+          "nature": "Calm",
+          "points": [32, 0, 20, 0, 14, 0]
+        },
+        {
+          "name": "Whimsicott",
+          "item": "Focus Sash",
+          "ability": "Prankster",
+          "moves": ["Tailwind", "Moonblast", "Encore", "Protect"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Garchomp",
+          "item": "Life Orb",
+          "ability": "Rough Skin",
+          "moves": ["Earthquake", "Dragon Claw", "Stomping Tantrum", "Protect"],
+          "nature": "Jolly",
+          "points": [0, 32, 0, 0, 2, 32]
+        },
+        {
+          "name": "Kingambit",
+          "item": "Black Glasses",
+          "ability": "Defiant",
+          "moves": ["Kowtow Cleave", "Sucker Punch", "Iron Head", "Protect"],
+          "nature": "Adamant",
+          "points": [32, 32, 0, 0, 2, 0]
+        }
+      ]
     },
     {
-     "n": "Raichu-Mega-Y",
-     "i": "Raichunite Y",
-     "a": "Lightning Rod",
-     "nt": "Timid",
-     "mv": [
-      "Zap Cannon",
-      "Encore",
-      "Fake Out",
-      "Protect"
-     ]
+      "id": "dondozo-tatsugiri-commander",
+      "name": "Dondozo + Tatsugiri Commander",
+      "archetype": "Dondozo + Tatsugiri",
+      "tags": ["dondozo-tatsugiri", "commander"],
+      "mons": [
+        {
+          "name": "Dondozo",
+          "item": "Leftovers",
+          "ability": "Unaware",
+          "moves": ["Wave Crash", "Order Up", "Earthquake", "Protect"],
+          "nature": "Adamant",
+          "points": [2, 32, 0, 0, 0, 32]
+        },
+        {
+          "name": "Tatsugiri",
+          "item": "Choice Scarf",
+          "ability": "Commander",
+          "moves": ["Muddy Water", "Draco Meteor", "Icy Wind", "Helping Hand"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Glimmora",
+          "item": "Focus Sash",
+          "ability": "Toxic Debris",
+          "moves": ["Mortal Spin", "Power Gem", "Earth Power", "Spiky Shield"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Dragonite",
+          "item": "Silk Scarf",
+          "ability": "Inner Focus",
+          "moves": ["Extreme Speed", "Scale Shot", "Stomping Tantrum", "Protect"],
+          "nature": "Adamant",
+          "points": [12, 32, 0, 0, 0, 22]
+        },
+        {
+          "name": "Floette-Mega",
+          "item": "Floettite",
+          "ability": "Fairy Aura",
+          "moves": ["Light of Ruin", "Dazzling Gleam", "Helping Hand", "Protect"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Incineroar",
+          "item": "Sitrus Berry",
+          "ability": "Intimidate",
+          "moves": ["Fake Out", "Flare Blitz", "Darkest Lariat", "Parting Shot"],
+          "nature": "Careful",
+          "points": [32, 0, 14, 0, 20, 0]
+        }
+      ]
     },
     {
-     "n": "Sylveon",
-     "i": "Fairy Feather",
-     "a": "Pixilate",
-     "nt": "Modest",
-     "mv": [
-      "Hyper Voice",
-      "Hyper Beam",
-      "Quick Attack",
-      "Detect"
-     ]
+      "id": "hard-trick-room",
+      "name": "Hard Trick Room",
+      "archetype": "Trick Room",
+      "tags": ["trick-room", "sun"],
+      "mons": [
+        {
+          "name": "Torkoal",
+          "item": "Charcoal",
+          "ability": "Drought",
+          "moves": ["Eruption", "Heat Wave", "Earth Power", "Protect"],
+          "nature": "Quiet",
+          "points": [32, 0, 2, 32, 0, 0]
+        },
+        {
+          "name": "Farigiraf",
+          "item": "Sitrus Berry",
+          "ability": "Armor Tail",
+          "moves": ["Trick Room", "Psychic", "Helping Hand", "Protect"],
+          "nature": "Quiet",
+          "points": [32, 0, 14, 20, 0, 0]
+        },
+        {
+          "name": "Indeedee-F",
+          "item": "Psychic Seed",
+          "ability": "Psychic Surge",
+          "moves": ["Follow Me", "Trick Room", "Helping Hand", "Psychic"],
+          "nature": "Relaxed",
+          "points": [32, 0, 32, 0, 2, 0]
+        },
+        {
+          "name": "Camerupt-Mega",
+          "item": "Cameruptite",
+          "ability": "Sheer Force",
+          "moves": ["Heat Wave", "Earth Power", "Flash Cannon", "Protect"],
+          "nature": "Quiet",
+          "points": [32, 0, 0, 32, 2, 0]
+        },
+        {
+          "name": "Hatterene",
+          "item": "Life Orb",
+          "ability": "Magic Bounce",
+          "moves": ["Expanding Force", "Dazzling Gleam", "Trick Room", "Protect"],
+          "nature": "Quiet",
+          "points": [32, 0, 0, 32, 2, 0]
+        },
+        {
+          "name": "Kingambit",
+          "item": "Black Glasses",
+          "ability": "Defiant",
+          "moves": ["Kowtow Cleave", "Sucker Punch", "Iron Head", "Protect"],
+          "nature": "Brave",
+          "points": [32, 32, 0, 0, 2, 0]
+        }
+      ]
     },
     {
-     "n": "Basculegion",
-     "i": "Focus Sash",
-     "a": "Adaptability",
-     "nt": "Jolly",
-     "mv": [
-      "Liquidation",
-      "Last Respects",
-      "Aqua Jet",
-      "Protect"
-     ]
+      "id": "tailwind-hyper-offense",
+      "name": "Tailwind Hyper Offense",
+      "archetype": "Tailwind",
+      "tags": ["tailwind", "offense"],
+      "mons": [
+        {
+          "name": "Whimsicott",
+          "item": "Focus Sash",
+          "ability": "Prankster",
+          "moves": ["Tailwind", "Moonblast", "Helping Hand", "Protect"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Salamence-Mega",
+          "item": "Salamencite",
+          "ability": "Aerilate",
+          "moves": ["Hyper Voice", "Draco Meteor", "Tailwind", "Protect"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Garchomp",
+          "item": "Life Orb",
+          "ability": "Rough Skin",
+          "moves": ["Earthquake", "Dragon Claw", "Stomping Tantrum", "Protect"],
+          "nature": "Jolly",
+          "points": [0, 32, 0, 0, 2, 32]
+        },
+        {
+          "name": "Heatran",
+          "item": "Shuca Berry",
+          "ability": "Flash Fire",
+          "moves": ["Heat Wave", "Earth Power", "Flash Cannon", "Protect"],
+          "nature": "Modest",
+          "points": [24, 0, 0, 32, 0, 10]
+        },
+        {
+          "name": "Annihilape",
+          "item": "Sitrus Berry",
+          "ability": "Defiant",
+          "moves": ["Rage Fist", "Drain Punch", "Bulk Up", "Protect"],
+          "nature": "Adamant",
+          "points": [32, 18, 0, 0, 16, 0]
+        },
+        {
+          "name": "Incineroar",
+          "item": "Rocky Helmet",
+          "ability": "Intimidate",
+          "moves": ["Fake Out", "Flare Blitz", "Darkest Lariat", "Parting Shot"],
+          "nature": "Careful",
+          "points": [32, 0, 20, 0, 14, 0]
+        }
+      ]
     },
     {
-     "n": "Kingambit",
-     "i": "Chople Berry",
-     "a": "Defiant",
-     "nt": "Adamant",
-     "mv": [
-      "Kowtow Cleave",
-      "Iron Head",
-      "Low Kick",
-      "Sucker Punch"
-     ]
+      "id": "sun-charizard-y",
+      "name": "Sun Charizard Y",
+      "archetype": "Sun",
+      "tags": ["sun", "weather"],
+      "mons": [
+        {
+          "name": "Charizard-Mega-Y",
+          "item": "Charizardite Y",
+          "ability": "Drought",
+          "moves": ["Heat Wave", "Solar Beam", "Air Slash", "Protect"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Venusaur",
+          "item": "Life Orb",
+          "ability": "Chlorophyll",
+          "moves": ["Sludge Bomb", "Leaf Storm", "Sleep Powder", "Protect"],
+          "nature": "Modest",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Torkoal",
+          "item": "Charcoal",
+          "ability": "Drought",
+          "moves": ["Eruption", "Heat Wave", "Earth Power", "Protect"],
+          "nature": "Quiet",
+          "points": [32, 0, 2, 32, 0, 0]
+        },
+        {
+          "name": "Heatran",
+          "item": "Air Balloon",
+          "ability": "Flash Fire",
+          "moves": ["Heat Wave", "Earth Power", "Flash Cannon", "Protect"],
+          "nature": "Modest",
+          "points": [32, 0, 0, 32, 2, 0]
+        },
+        {
+          "name": "Farigiraf",
+          "item": "Sitrus Berry",
+          "ability": "Armor Tail",
+          "moves": ["Trick Room", "Psychic", "Helping Hand", "Protect"],
+          "nature": "Bold",
+          "points": [32, 0, 20, 0, 14, 0]
+        },
+        {
+          "name": "Incineroar",
+          "item": "Lum Berry",
+          "ability": "Intimidate",
+          "moves": ["Fake Out", "Flare Blitz", "Darkest Lariat", "Parting Shot"],
+          "nature": "Careful",
+          "points": [32, 0, 14, 0, 20, 0]
+        }
+      ]
     },
     {
-     "n": "Incineroar",
-     "i": "Life Orb",
-     "a": "Intimidate",
-     "nt": "Adamant",
-     "mv": [
-      "Fake Out",
-      "Flare Blitz",
-      "Darkest Lariat",
-      "Close Combat"
-     ]
+      "id": "rain-archaludon",
+      "name": "Rain Archaludon",
+      "archetype": "Rain",
+      "tags": ["rain", "weather", "tailwind"],
+      "mons": [
+        {
+          "name": "Pelipper",
+          "item": "Focus Sash",
+          "ability": "Drizzle",
+          "moves": ["Hurricane", "Weather Ball", "Tailwind", "Wide Guard"],
+          "nature": "Modest",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Archaludon",
+          "item": "Leftovers",
+          "ability": "Stamina",
+          "moves": ["Electro Shot", "Flash Cannon", "Draco Meteor", "Protect"],
+          "nature": "Modest",
+          "points": [32, 0, 0, 24, 10, 0]
+        },
+        {
+          "name": "Basculegion-F",
+          "item": "Choice Scarf",
+          "ability": "Swift Swim",
+          "moves": ["Muddy Water", "Shadow Ball", "Ice Beam", "Surf"],
+          "nature": "Modest",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Swampert-Mega",
+          "item": "Swampertite",
+          "ability": "Swift Swim",
+          "moves": ["Waterfall", "High Horsepower", "Ice Punch", "Protect"],
+          "nature": "Adamant",
+          "points": [2, 32, 0, 0, 0, 32]
+        },
+        {
+          "name": "Rillaboom",
+          "item": "Miracle Seed",
+          "ability": "Grassy Surge",
+          "moves": ["Fake Out", "Grassy Glide", "Wood Hammer", "U-turn"],
+          "nature": "Adamant",
+          "points": [32, 32, 0, 0, 2, 0]
+        },
+        {
+          "name": "Incineroar",
+          "item": "Sitrus Berry",
+          "ability": "Intimidate",
+          "moves": ["Fake Out", "Flare Blitz", "Darkest Lariat", "Parting Shot"],
+          "nature": "Careful",
+          "points": [32, 0, 14, 0, 20, 0]
+        }
+      ]
+    },
+    {
+      "id": "dec2-psych-up-alakazam",
+      "name": "Dec 2 Psych Up Alakazam + Dozo",
+      "archetype": "Dec 2 Psych Up",
+      "tags": ["dec2-patch", "psych-up", "dondozo-tatsugiri"],
+      "mons": [
+        {
+          "name": "Alakazam-Mega",
+          "item": "Alakazite",
+          "ability": "Trace",
+          "moves": ["Expanding Force", "Dazzling Gleam", "Psych Up", "Protect"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Indeedee-F",
+          "item": "Psychic Seed",
+          "ability": "Psychic Surge",
+          "moves": ["Follow Me", "Helping Hand", "Trick Room", "Dazzling Gleam"],
+          "nature": "Bold",
+          "points": [32, 0, 32, 0, 2, 0]
+        },
+        {
+          "name": "Dondozo",
+          "item": "Leftovers",
+          "ability": "Unaware",
+          "moves": ["Wave Crash", "Order Up", "Earthquake", "Protect"],
+          "nature": "Adamant",
+          "points": [2, 32, 0, 0, 0, 32]
+        },
+        {
+          "name": "Tatsugiri",
+          "item": "Focus Sash",
+          "ability": "Commander",
+          "moves": ["Muddy Water", "Draco Meteor", "Icy Wind", "Protect"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Incineroar",
+          "item": "Sitrus Berry",
+          "ability": "Intimidate",
+          "moves": ["Fake Out", "Flare Blitz", "Darkest Lariat", "Parting Shot"],
+          "nature": "Careful",
+          "points": [32, 0, 14, 0, 20, 0]
+        },
+        {
+          "name": "Rillaboom",
+          "item": "Miracle Seed",
+          "ability": "Grassy Surge",
+          "moves": ["Fake Out", "Grassy Glide", "Wood Hammer", "U-turn"],
+          "nature": "Adamant",
+          "points": [32, 32, 0, 0, 2, 0]
+        }
+      ]
+    },
+    {
+      "id": "dec2-roost-hydreigon",
+      "name": "Dec 2 Roost Hydreigon + Mega Heatran",
+      "archetype": "Dec 2 Roost Hydreigon",
+      "tags": ["dec2-patch", "roost-hydreigon", "mega-heatran"],
+      "mons": [
+        {
+          "name": "Hydreigon",
+          "item": "Life Orb",
+          "ability": "Levitate",
+          "moves": ["Draco Meteor", "Dark Pulse", "Heat Wave", "Roost"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Heatran-Mega",
+          "item": "Heatranite",
+          "ability": "Water Compaction",
+          "moves": ["Heat Wave", "Earth Power", "Flash Cannon", "Protect"],
+          "nature": "Modest",
+          "points": [32, 0, 0, 32, 2, 0]
+        },
+        {
+          "name": "Whimsicott",
+          "item": "Focus Sash",
+          "ability": "Prankster",
+          "moves": ["Tailwind", "Moonblast", "Encore", "Protect"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Rillaboom",
+          "item": "Miracle Seed",
+          "ability": "Grassy Surge",
+          "moves": ["Fake Out", "Grassy Glide", "Wood Hammer", "U-turn"],
+          "nature": "Adamant",
+          "points": [32, 32, 0, 0, 2, 0]
+        },
+        {
+          "name": "Milotic",
+          "item": "Sitrus Berry",
+          "ability": "Competitive",
+          "moves": ["Scald", "Icy Wind", "Recover", "Protect"],
+          "nature": "Calm",
+          "points": [32, 0, 20, 0, 14, 0]
+        },
+        {
+          "name": "Sneasler",
+          "item": "Grassy Seed",
+          "ability": "Unburden",
+          "moves": ["Close Combat", "Dire Claw", "Fake Out", "Protect"],
+          "nature": "Adamant",
+          "points": [10, 32, 0, 0, 0, 24]
+        }
+      ]
+    },
+    {
+      "id": "sand-tyranitar-excadrill",
+      "name": "Sand Tyranitar + Excadrill",
+      "archetype": "Sand",
+      "tags": ["sand", "weather"],
+      "mons": [
+        {
+          "name": "Tyranitar-Mega",
+          "item": "Tyranitarite",
+          "ability": "Sand Stream",
+          "moves": ["Rock Slide", "Crunch", "Low Kick", "Protect"],
+          "nature": "Adamant",
+          "points": [14, 32, 0, 0, 0, 20]
+        },
+        {
+          "name": "Excadrill",
+          "item": "Focus Sash",
+          "ability": "Sand Rush",
+          "moves": ["High Horsepower", "Iron Head", "Rock Slide", "Protect"],
+          "nature": "Adamant",
+          "points": [2, 32, 0, 0, 0, 32]
+        },
+        {
+          "name": "Garchomp",
+          "item": "Soft Sand",
+          "ability": "Rough Skin",
+          "moves": ["Earthquake", "Dragon Claw", "Stomping Tantrum", "Protect"],
+          "nature": "Jolly",
+          "points": [0, 32, 0, 0, 2, 32]
+        },
+        {
+          "name": "Corviknight",
+          "item": "Sitrus Berry",
+          "ability": "Mirror Armor",
+          "moves": ["Brave Bird", "Iron Head", "Tailwind", "Roost"],
+          "nature": "Impish",
+          "points": [32, 0, 20, 0, 14, 0]
+        },
+        {
+          "name": "Incineroar",
+          "item": "Rocky Helmet",
+          "ability": "Intimidate",
+          "moves": ["Fake Out", "Flare Blitz", "Darkest Lariat", "Parting Shot"],
+          "nature": "Careful",
+          "points": [32, 0, 20, 0, 14, 0]
+        },
+        {
+          "name": "Primarina",
+          "item": "Leftovers",
+          "ability": "Liquid Voice",
+          "moves": ["Hyper Voice", "Moonblast", "Haze", "Protect"],
+          "nature": "Modest",
+          "points": [32, 0, 14, 20, 0, 0]
+        }
+      ]
+    },
+    {
+      "id": "snow-aurora-veil",
+      "name": "Snow Aurora Veil",
+      "archetype": "Snow",
+      "tags": ["snow", "weather"],
+      "mons": [
+        {
+          "name": "Ninetales-Alola",
+          "item": "Light Clay",
+          "ability": "Snow Warning",
+          "moves": ["Blizzard", "Moonblast", "Aurora Veil", "Protect"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Froslass-Mega",
+          "item": "Froslassite",
+          "ability": "Snow Warning",
+          "moves": ["Blizzard", "Shadow Ball", "Icy Wind", "Protect"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        },
+        {
+          "name": "Baxcalibur",
+          "item": "Life Orb",
+          "ability": "Thermal Exchange",
+          "moves": ["Glaive Rush", "Icicle Crash", "Ice Shard", "Protect"],
+          "nature": "Adamant",
+          "points": [14, 32, 0, 0, 0, 20]
+        },
+        {
+          "name": "Heatran",
+          "item": "Leftovers",
+          "ability": "Flash Fire",
+          "moves": ["Heat Wave", "Earth Power", "Flash Cannon", "Protect"],
+          "nature": "Modest",
+          "points": [32, 0, 0, 32, 2, 0]
+        },
+        {
+          "name": "Incineroar",
+          "item": "Sitrus Berry",
+          "ability": "Intimidate",
+          "moves": ["Fake Out", "Flare Blitz", "Darkest Lariat", "Parting Shot"],
+          "nature": "Careful",
+          "points": [32, 0, 14, 0, 20, 0]
+        },
+        {
+          "name": "Whimsicott",
+          "item": "Focus Sash",
+          "ability": "Prankster",
+          "moves": ["Tailwind", "Moonblast", "Encore", "Protect"],
+          "nature": "Timid",
+          "points": [0, 0, 2, 32, 0, 32]
+        }
+      ]
+    },
+    {
+      "id": "psyspam-gardevoir-armarouge",
+      "name": "Psyspam Gardevoir + Armarouge",
+      "archetype": "Psychic Terrain",
+      "tags": ["psyspam", "trick-room"],
+      "mons": [
+        {
+          "name": "Indeedee-F",
+          "item": "Psychic Seed",
+          "ability": "Psychic Surge",
+          "moves": ["Follow Me", "Helping Hand", "Trick Room", "Psychic"],
+          "nature": "Relaxed",
+          "points": [32, 0, 32, 0, 2, 0]
+        },
+        {
+          "name": "Gardevoir-Mega",
+          "item": "Gardevoirite",
+          "ability": "Pixilate",
+          "moves": ["Hyper Voice", "Expanding Force", "Trick Room", "Protect"],
+          "nature": "Modest",
+          "points": [24, 0, 10, 32, 0, 0]
+        },
+        {
+          "name": "Armarouge",
+          "item": "Life Orb",
+          "ability": "Flash Fire",
+          "moves": ["Expanding Force", "Heat Wave", "Wide Guard", "Protect"],
+          "nature": "Modest",
+          "points": [32, 0, 2, 32, 0, 0]
+        },
+        {
+          "name": "Heatran",
+          "item": "Shuca Berry",
+          "ability": "Flash Fire",
+          "moves": ["Heat Wave", "Earth Power", "Flash Cannon", "Protect"],
+          "nature": "Modest",
+          "points": [32, 0, 0, 32, 2, 0]
+        },
+        {
+          "name": "Sneasler",
+          "item": "Focus Sash",
+          "ability": "Unburden",
+          "moves": ["Close Combat", "Dire Claw", "Fake Out", "Protect"],
+          "nature": "Jolly",
+          "points": [0, 32, 0, 0, 2, 32]
+        },
+        {
+          "name": "Kingambit",
+          "item": "Black Glasses",
+          "ability": "Defiant",
+          "moves": ["Kowtow Cleave", "Sucker Punch", "Iron Head", "Protect"],
+          "nature": "Adamant",
+          "points": [32, 32, 0, 0, 2, 0]
+        }
+      ]
+    },
+    {
+      "id": "maushape-metagross-balance",
+      "name": "MaushApe + Mega Metagross Balance",
+      "archetype": "Balance",
+      "tags": ["balance", "tailwind"],
+      "mons": [
+        {
+          "name": "Metagross-Mega",
+          "item": "Metagrossite",
+          "ability": "Tough Claws",
+          "moves": ["Iron Head", "Stomping Tantrum", "Bullet Punch", "Protect"],
+          "nature": "Jolly",
+          "points": [0, 32, 0, 0, 2, 32]
+        },
+        {
+          "name": "Annihilape",
+          "item": "Leftovers",
+          "ability": "Defiant",
+          "moves": ["Rage Fist", "Drain Punch", "Bulk Up", "Protect"],
+          "nature": "Careful",
+          "points": [32, 0, 14, 0, 20, 0]
+        },
+        {
+          "name": "Maushold",
+          "item": "Focus Sash",
+          "ability": "Friend Guard",
+          "moves": ["Beat Up", "Follow Me", "Feint", "Protect"],
+          "nature": "Jolly",
+          "points": [32, 0, 2, 0, 0, 32]
+        },
+        {
+          "name": "Talonflame",
+          "item": "Sharp Beak",
+          "ability": "Gale Wings",
+          "moves": ["Brave Bird", "Flare Blitz", "Tailwind", "Protect"],
+          "nature": "Jolly",
+          "points": [0, 32, 0, 0, 2, 32]
+        },
+        {
+          "name": "Primarina",
+          "item": "Sitrus Berry",
+          "ability": "Liquid Voice",
+          "moves": ["Hyper Voice", "Moonblast", "Haze", "Protect"],
+          "nature": "Modest",
+          "points": [32, 0, 14, 20, 0, 0]
+        },
+        {
+          "name": "Rillaboom",
+          "item": "Miracle Seed",
+          "ability": "Grassy Surge",
+          "moves": ["Fake Out", "Grassy Glide", "Wood Hammer", "U-turn"],
+          "nature": "Adamant",
+          "points": [32, 32, 0, 0, 2, 0]
+        }
+      ]
     }
-   ]
-  },
-  {
-   "id": "MC02",
-   "from": {
-    "event": "6acba9c9115c12b73a5a14c3",
-    "date": "2026-10-24",
-    "players": 230,
-    "place": 2
-   },
-   "mons": [
-    {
-     "n": "Salamence-Mega",
-     "i": "Salamencite",
-     "a": "Intimidate",
-     "nt": "Modest",
-     "mv": [
-      "Draco Meteor",
-      "Hyper Voice",
-      "Tailwind",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Floette-Mega",
-     "i": "Floettite",
-     "a": "Flower Veil",
-     "nt": "Modest",
-     "mv": [
-      "Moonblast",
-      "Dazzling Gleam",
-      "Calm Mind",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Incineroar",
-     "i": "Sitrus Berry",
-     "a": "Intimidate",
-     "nt": "Careful",
-     "mv": [
-      "Fake Out",
-      "Helping Hand",
-      "Flare Blitz",
-      "Parting Shot"
-     ]
-    },
-    {
-     "n": "Rillaboom",
-     "i": "Life Orb",
-     "a": "Grassy Surge",
-     "nt": "Adamant",
-     "mv": [
-      "Fake Out",
-      "Wood Hammer",
-      "High Horsepower",
-      "Grassy Glide"
-     ]
-    },
-    {
-     "n": "Sneasler",
-     "i": "White Herb",
-     "a": "Unburden",
-     "nt": "Jolly",
-     "mv": [
-      "Fake Out",
-      "Dire Claw",
-      "Close Combat",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Basculegion",
-     "i": "Focus Sash",
-     "a": "Adaptability",
-     "nt": "Adamant",
-     "mv": [
-      "Aqua Jet",
-      "Liquidation",
-      "Last Respects",
-      "Protect"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MC03",
-   "from": {
-    "event": "6acba9c9115c12b73a5a14c3",
-    "date": "2026-10-24",
-    "players": 230,
-    "place": 3
-   },
-   "mons": [
-    {
-     "n": "Floette-Mega",
-     "i": "Floettite",
-     "a": "Flower Veil",
-     "nt": "Timid",
-     "mv": [
-      "Moonblast",
-      "Dazzling Gleam",
-      "Light of Ruin",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Golisopod-Mega",
-     "i": "Golisopite",
-     "a": "Emergency Exit",
-     "nt": "Adamant",
-     "mv": [
-      "Leech Life",
-      "Iron Head",
-      "Sucker Punch",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Pelipper",
-     "i": "Damp Rock",
-     "a": "Drizzle",
-     "nt": "Bold",
-     "mv": [
-      "Weather Ball",
-      "Hurricane",
-      "Helping Hand",
-      "Wide Guard"
-     ]
-    },
-    {
-     "n": "Basculegion-F",
-     "i": "Focus Sash",
-     "a": "Swift Swim",
-     "nt": "Modest",
-     "mv": [
-      "Muddy Water",
-      "Shadow Ball",
-      "Ice Beam",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Archaludon",
-     "i": "Leftovers",
-     "a": "Stamina",
-     "nt": "Bold",
-     "mv": [
-      "Dragon Pulse",
-      "Electro Shot",
-      "Aura Sphere",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Sneasler",
-     "i": "White Herb",
-     "a": "Unburden",
-     "nt": "Adamant",
-     "mv": [
-      "Close Combat",
-      "Dire Claw",
-      "Rock Slide",
-      "Protect"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MC04",
-   "from": {
-    "event": "6acba9c9115c12b73a5a14c3",
-    "date": "2026-10-24",
-    "players": 230,
-    "place": 4
-   },
-   "mons": [
-    {
-     "n": "Floette-Mega",
-     "i": "Floettite",
-     "a": "Flower Veil",
-     "nt": "Timid",
-     "mv": [
-      "Moonblast",
-      "Dazzling Gleam",
-      "Light of Ruin",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Sneasler",
-     "i": "Psychic Seed",
-     "a": "Unburden",
-     "nt": "Adamant",
-     "mv": [
-      "Dire Claw",
-      "Close Combat",
-      "Rock Slide",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Indeedee",
-     "i": "Focus Sash",
-     "a": "Psychic Surge",
-     "nt": "Timid",
-     "mv": [
-      "Expanding Force",
-      "Helping Hand",
-      "Protect",
-      "Trick Room"
-     ]
-    },
-    {
-     "n": "Basculegion",
-     "i": "Choice Scarf",
-     "a": "Adaptability",
-     "nt": "Jolly",
-     "mv": [
-      "Wave Crash",
-      "Last Respects",
-      "Flip Turn",
-      "Aqua Jet"
-     ]
-    },
-    {
-     "n": "Dragonite-Mega",
-     "i": "Dragoninite",
-     "a": "Multiscale",
-     "nt": "Modest",
-     "mv": [
-      "Dragon Pulse",
-      "Heat Wave",
-      "Tailwind",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Kingambit",
-     "i": "Chople Berry",
-     "a": "Defiant",
-     "nt": "Adamant",
-     "mv": [
-      "Kowtow Cleave",
-      "Sucker Punch",
-      "Iron Head",
-      "Low Kick"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MC05",
-   "from": {
-    "event": "6ac02d2b85920e4d2536238f",
-    "date": "2026-11-04",
-    "players": 170,
-    "place": 1
-   },
-   "mons": [
-    {
-     "n": "Torkoal",
-     "i": "Leftovers",
-     "a": "Drought",
-     "nt": "Quiet",
-     "mv": [
-      "Eruption",
-      "Burning Jealousy",
-      "Helping Hand",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Venusaur",
-     "i": "Life Orb",
-     "a": "Chlorophyll",
-     "nt": "Modest",
-     "mv": [
-      "Leaf Storm",
-      "Sludge Bomb",
-      "Sleep Powder",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Raichu-Mega-Y",
-     "i": "Raichunite Y",
-     "a": "Lightning Rod",
-     "nt": "Timid",
-     "mv": [
-      "Zap Cannon",
-      "Focus Blast",
-      "Fake Out",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Gardevoir-Mega",
-     "i": "Gardevoirite",
-     "a": "Telepathy",
-     "nt": "Modest",
-     "mv": [
-      "Hyper Voice",
-      "Thunderbolt",
-      "Trick Room",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Incineroar",
-     "i": "Sitrus Berry",
-     "a": "Intimidate",
-     "nt": "Impish",
-     "mv": [
-      "Flare Blitz",
-      "Throat Chop",
-      "Fake Out",
-      "Parting Shot"
-     ]
-    },
-    {
-     "n": "Garchomp",
-     "i": "Choice Scarf",
-     "a": "Rough Skin",
-     "nt": "Adamant",
-     "mv": [
-      "Earthquake",
-      "Dragon Claw",
-      "Stomping Tantrum",
-      "Rock Slide"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MC06",
-   "from": {
-    "event": "6ac02d2b85920e4d2536238f",
-    "date": "2026-11-04",
-    "players": 170,
-    "place": 2
-   },
-   "mons": [
-    {
-     "n": "Grimmsnarl",
-     "i": "Light Clay",
-     "a": "Prankster",
-     "nt": "Careful",
-     "mv": [
-      "Spirit Break",
-      "Reflect",
-      "Light Screen",
-      "Parting Shot"
-     ]
-    },
-    {
-     "n": "Pelipper",
-     "i": "Sitrus Berry",
-     "a": "Drizzle",
-     "nt": "Modest",
-     "mv": [
-      "Tailwind",
-      "Wide Guard",
-      "Weather Ball",
-      "Hurricane"
-     ]
-    },
-    {
-     "n": "Archaludon",
-     "i": "Leftovers",
-     "a": "Levitate",
-     "nt": "Calm",
-     "mv": [
-      "Electro Shot",
-      "Flash Cannon",
-      "Dragon Pulse",
-      "Snarl"
-     ]
-    },
-    {
-     "n": "Scovillain-Mega",
-     "i": "Scovillainite",
-     "a": "Chlorophyll",
-     "nt": "Calm",
-     "mv": [
-      "Flamethrower",
-      "Leech Seed",
-      "Rage Powder",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Raichu-Mega-Y",
-     "i": "Raichunite Y",
-     "a": "Lightning Rod",
-     "nt": "Timid",
-     "mv": [
-      "Fake Out",
-      "Zap Cannon",
-      "Focus Blast",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Gholdengo",
-     "i": "Life Orb",
-     "a": "Good as Gold",
-     "nt": "Timid",
-     "mv": [
-      "Make It Rain",
-      "Nasty Plot",
-      "Shadow Ball",
-      "Protect"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MC07",
-   "from": {
-    "event": "6ac02d2b85920e4d2536238f",
-    "date": "2026-11-04",
-    "players": 170,
-    "place": 3
-   },
-   "mons": [
-    {
-     "n": "Charizard-Mega-Y",
-     "i": "Charizardite Y",
-     "a": "Blaze",
-     "nt": "Modest",
-     "mv": [
-      "Heat Wave",
-      "Weather Ball",
-      "Solar Beam",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Farigiraf",
-     "i": "Sitrus Berry",
-     "a": "Armor Tail",
-     "nt": "Bold",
-     "mv": [
-      "Thunderbolt",
-      "Psychic",
-      "Trick Room",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Aerodactyl-Mega",
-     "i": "Aerodactylite",
-     "a": "Unnerve",
-     "nt": "Jolly",
-     "mv": [
-      "Rock Slide",
-      "Dual Wingbeat",
-      "Tailwind",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Kingambit",
-     "i": "Focus Sash",
-     "a": "Defiant",
-     "nt": "Adamant",
-     "mv": [
-      "Kowtow Cleave",
-      "Sucker Punch",
-      "Iron Head",
-      "Low Kick"
-     ]
-    },
-    {
-     "n": "Garchomp",
-     "i": "Life Orb",
-     "a": "Rough Skin",
-     "nt": "Jolly",
-     "mv": [
-      "Dragon Claw",
-      "Stomping Tantrum",
-      "Earthquake",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Sylveon",
-     "i": "Fairy Feather",
-     "a": "Pixilate",
-     "nt": "Modest",
-     "mv": [
-      "Hyper Voice",
-      "Hyper Beam",
-      "Quick Attack",
-      "Detect"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MC08",
-   "from": {
-    "event": "6ac02d2b85920e4d2536238f",
-    "date": "2026-11-04",
-    "players": 170,
-    "place": 4
-   },
-   "mons": [
-    {
-     "n": "Farigiraf",
-     "i": "Sitrus Berry",
-     "a": "Armor Tail",
-     "nt": "Bold",
-     "mv": [
-      "Helping Hand",
-      "Twin beam",
-      "Trick Room",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Sneasler",
-     "i": "Focus Sash",
-     "a": "Poison Touch",
-     "nt": "Jolly",
-     "mv": [
-      "Dire Claw",
-      "Close Combat",
-      "Rock Slide",
-      "Fake Out"
-     ]
-    },
-    {
-     "n": "Kingambit",
-     "i": "Life Orb",
-     "a": "Defiant",
-     "nt": "Adamant",
-     "mv": [
-      "Kowtow Cleave",
-      "Protect",
-      "Sucker Punch",
-      "Iron Head"
-     ]
-    },
-    {
-     "n": "Charizard-Mega-Y",
-     "i": "Charizardite Y",
-     "a": "Blaze",
-     "nt": "Modest",
-     "mv": [
-      "Heat Wave",
-      "Weather Ball",
-      "Ancient Power",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Sylveon",
-     "i": "Fairy Feather",
-     "a": "Pixilate",
-     "nt": "Rash",
-     "mv": [
-      "Hyper Voice",
-      "Quick Attack",
-      "Moonblast",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Staraptor-Mega",
-     "i": "Staraptite",
-     "a": "Intimidate",
-     "nt": "Jolly",
-     "mv": [
-      "Close Combat",
-      "Brave Bird",
-      "Protect",
-      "Tailwind"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MC09",
-   "from": {
-    "event": "6ab540f5e905c1db6874962b",
-    "date": "2026-10-11",
-    "players": 155,
-    "place": 1
-   },
-   "mons": [
-    {
-     "n": "Rillaboom",
-     "i": "Miracle Seed",
-     "a": "Grassy Surge",
-     "nt": "Adamant",
-     "mv": [
-      "Wood Hammer",
-      "Fake Out",
-      "High Horsepower",
-      "Grassy Glide"
-     ]
-    },
-    {
-     "n": "Kingambit",
-     "i": "Life Orb",
-     "a": "Defiant",
-     "nt": "Adamant",
-     "mv": [
-      "Swords Dance",
-      "Sucker Punch",
-      "Kowtow Cleave",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Sneasler",
-     "i": "Grassy Seed",
-     "a": "Unburden",
-     "nt": "Adamant",
-     "mv": [
-      "Dire Claw",
-      "Close Combat",
-      "Rock Slide",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Arcanine-Hisui",
-     "i": "Focus Sash",
-     "a": "Rock Head",
-     "nt": "Jolly",
-     "mv": [
-      "Flare Blitz",
-      "Head Smash",
-      "Extreme Speed",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Froslass-Mega",
-     "i": "Froslassite",
-     "a": "Cursed Body",
-     "nt": "Timid",
-     "mv": [
-      "Blizzard",
-      "Shadow Ball",
-      "Aurora Veil",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Raichu-Mega-Y",
-     "i": "Raichunite Y",
-     "a": "Lightning Rod",
-     "nt": "Timid",
-     "mv": [
-      "Zap Cannon",
-      "Focus Blast",
-      "Fake Out",
-      "Protect"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MC10",
-   "from": {
-    "event": "6ab540f5e905c1db6874962b",
-    "date": "2026-10-11",
-    "players": 155,
-    "place": 3
-   },
-   "mons": [
-    {
-     "n": "Indeedee-F",
-     "i": "Psychic Seed",
-     "a": "Psychic Surge",
-     "nt": "Relaxed",
-     "mv": [
-      "Psychic",
-      "Trick Room",
-      "Follow Me",
-      "Baton Pass"
-     ]
-    },
-    {
-     "n": "Hatterene",
-     "i": "Life Orb",
-     "a": "Magic Bounce",
-     "nt": "Quiet",
-     "mv": [
-      "Dazzling Gleam",
-      "Expanding Force",
-      "Trick Room",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Blaziken-Mega",
-     "i": "Blazikenite",
-     "a": "Speed Boost",
-     "nt": "Adamant",
-     "mv": [
-      "Flare Blitz",
-      "Close Combat",
-      "Rock Slide",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Venusaur",
-     "i": "Focus Sash",
-     "a": "Chlorophyll",
-     "nt": "Modest",
-     "mv": [
-      "Leaf Storm",
-      "Sludge Bomb",
-      "Earth Power",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Torkoal",
-     "i": "Charcoal",
-     "a": "Drought",
-     "nt": "Modest",
-     "mv": [
-      "Eruption",
-      "Heat Wave",
-      "Earth Power",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Kingambit",
-     "i": "Occa Berry",
-     "a": "Defiant",
-     "nt": "Brave",
-     "mv": [
-      "Kowtow Cleave",
-      "Sucker Punch",
-      "Iron Head",
-      "Low Kick"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MC11",
-   "from": {
-    "event": "6ab540f5e905c1db6874962b",
-    "date": "2026-10-11",
-    "players": 155,
-    "place": 4
-   },
-   "mons": [
-    {
-     "n": "Torkoal",
-     "i": "Charcoal",
-     "a": "Drought",
-     "nt": "Quiet",
-     "mv": [
-      "Eruption",
-      "Weather Ball",
-      "Earth Power",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Garchomp-Mega-Z",
-     "i": "Garchompite Z",
-     "a": "Rough Skin",
-     "nt": "Modest",
-     "mv": [
-      "Power Gem",
-      "Dragon Pulse",
-      "Flamethrower",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Sneasler",
-     "i": "White Herb",
-     "a": "Unburden",
-     "nt": "Adamant",
-     "mv": [
-      "Gunk Shot",
-      "Close Combat",
-      "Fake Out",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Farigiraf",
-     "i": "Sitrus Berry",
-     "a": "Armor Tail",
-     "nt": "Sassy",
-     "mv": [
-      "Psychic",
-      "Trick Room",
-      "Protect",
-      "Helping Hand"
-     ]
-    },
-    {
-     "n": "Incineroar",
-     "i": "Chople Berry",
-     "a": "Intimidate",
-     "nt": "Adamant",
-     "mv": [
-      "Fake Out",
-      "Flare Blitz",
-      "Darkest Lariat",
-      "Parting Shot"
-     ]
-    },
-    {
-     "n": "Sylveon",
-     "i": "Fairy Feather",
-     "a": "Pixilate",
-     "nt": "Modest",
-     "mv": [
-      "Hyper Voice",
-      "Hyper Beam",
-      "Yawn",
-      "Detect"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MC12",
-   "from": {
-    "event": "6ae575670d00101b48bf316a",
-    "date": "2026-11-06",
-    "players": 139,
-    "place": 1
-   },
-   "mons": [
-    {
-     "n": "Staraptor-Mega",
-     "i": "Staraptite",
-     "a": "Intimidate",
-     "nt": "Jolly",
-     "mv": [
-      "Close Combat",
-      "Brave Bird",
-      "Tailwind",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Raichu-Mega-Y",
-     "i": "Raichunite Y",
-     "a": "Lightning Rod",
-     "nt": "Timid",
-     "mv": [
-      "Zap Cannon",
-      "Focus Blast",
-      "Fake Out",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Rillaboom",
-     "i": "Miracle Seed",
-     "a": "Grassy Surge",
-     "nt": "Adamant",
-     "mv": [
-      "Wood Hammer",
-      "High Horsepower",
-      "Grassy Glide",
-      "Fake Out"
-     ]
-    },
-    {
-     "n": "Arcanine-Hisui",
-     "i": "Focus Sash",
-     "a": "Rock Head",
-     "nt": "Jolly",
-     "mv": [
-      "Head Smash",
-      "Extreme Speed",
-      "Flare Blitz",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Primarina",
-     "i": "Leftovers",
-     "a": "Liquid Voice",
-     "nt": "Modest",
-     "mv": [
-      "Hyper Voice",
-      "Calm Mind",
-      "Moonblast",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Gholdengo",
-     "i": "Life Orb",
-     "a": "Good as Gold",
-     "nt": "Timid",
-     "mv": [
-      "Make It Rain",
-      "Shadow Ball",
-      "Nasty Plot",
-      "Protect"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MD01",
-   "madeUp": "Mega Heatran (M-D dry run: experiments/gen-roster.mjs --add); its item, Ability and moves are stand-ins",
-   "from": {
-    "copyOf": "MC07",
-    "replaced": "Charizard-Mega-Y"
-   },
-   "mons": [
-    {
-     "n": "Heatran-Mega",
-     "i": "Heatranite",
-     "a": "not announced yet",
-     "nt": "Modest",
-     "mv": [
-      "Heat Wave",
-      "Flash Cannon",
-      "Earth Power",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Farigiraf",
-     "i": "Sitrus Berry",
-     "a": "Armor Tail",
-     "nt": "Bold",
-     "mv": [
-      "Thunderbolt",
-      "Psychic",
-      "Trick Room",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Aerodactyl-Mega",
-     "i": "Aerodactylite",
-     "a": "Unnerve",
-     "nt": "Jolly",
-     "mv": [
-      "Rock Slide",
-      "Dual Wingbeat",
-      "Tailwind",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Kingambit",
-     "i": "Focus Sash",
-     "a": "Defiant",
-     "nt": "Adamant",
-     "mv": [
-      "Kowtow Cleave",
-      "Sucker Punch",
-      "Iron Head",
-      "Low Kick"
-     ]
-    },
-    {
-     "n": "Garchomp",
-     "i": "Life Orb",
-     "a": "Rough Skin",
-     "nt": "Jolly",
-     "mv": [
-      "Dragon Claw",
-      "Stomping Tantrum",
-      "Earthquake",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Sylveon",
-     "i": "Fairy Feather",
-     "a": "Pixilate",
-     "nt": "Modest",
-     "mv": [
-      "Hyper Voice",
-      "Hyper Beam",
-      "Quick Attack",
-      "Detect"
-     ]
-    }
-   ]
-  },
-  {
-   "id": "MD02",
-   "madeUp": "Mega Heatran (M-D dry run: experiments/gen-roster.mjs --add); its item, Ability and moves are stand-ins",
-   "from": {
-    "copyOf": "MC05",
-    "replaced": "Gardevoir-Mega"
-   },
-   "mons": [
-    {
-     "n": "Torkoal",
-     "i": "Leftovers",
-     "a": "Drought",
-     "nt": "Quiet",
-     "mv": [
-      "Eruption",
-      "Burning Jealousy",
-      "Helping Hand",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Venusaur",
-     "i": "Life Orb",
-     "a": "Chlorophyll",
-     "nt": "Modest",
-     "mv": [
-      "Leaf Storm",
-      "Sludge Bomb",
-      "Sleep Powder",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Raichu-Mega-Y",
-     "i": "Raichunite Y",
-     "a": "Lightning Rod",
-     "nt": "Timid",
-     "mv": [
-      "Zap Cannon",
-      "Focus Blast",
-      "Fake Out",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Heatran-Mega",
-     "i": "Heatranite",
-     "a": "not announced yet",
-     "nt": "Modest",
-     "mv": [
-      "Heat Wave",
-      "Flash Cannon",
-      "Earth Power",
-      "Protect"
-     ]
-    },
-    {
-     "n": "Incineroar",
-     "i": "Sitrus Berry",
-     "a": "Intimidate",
-     "nt": "Impish",
-     "mv": [
-      "Flare Blitz",
-      "Throat Chop",
-      "Fake Out",
-      "Parting Shot"
-     ]
-    },
-    {
-     "n": "Garchomp",
-     "i": "Choice Scarf",
-     "a": "Rough Skin",
-     "nt": "Adamant",
-     "mv": [
-      "Earthquake",
-      "Dragon Claw",
-      "Stomping Tantrum",
-      "Rock Slide"
-     ]
-    }
-   ]
-  }
- ]
+  ]
 }
