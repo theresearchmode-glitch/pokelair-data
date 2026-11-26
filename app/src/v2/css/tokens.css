@@ -158,6 +158,8 @@
   --k-chip:#17161A;--k-on-chip:#FFFFFF;--k-art-shadow:rgba(23,22,26,.25);--k-card-shadow:rgba(23,22,26,.16);--k-neutral:rgba(23,22,26,.5);
   --d-khead:clamp(34px,min(10.4vw,4vw + 32px),84px);--d-ksent:clamp(22px,2.8vw,34px);--d-ksec:40px;--d-kgo:clamp(17px,min(5.2vw,2.6vw + 12px),36px);
   --d-kscore:clamp(48px,6vw,72px);
+  /* nastyplot.org front-page proposals (Job V, Nov 26; pubhome.css): A's headline, B's headline, the receipt's score */
+  --d-pha:clamp(34px,2.2vw + 24px,60px);--d-phb:clamp(34px,2.4vw + 22px,64px);--d-phn:clamp(48px,3vw + 24px,72px);
   /* My Team, the war room (reskin page 1, Nov 21): the Strength Score number, a long team name's headline, the Night frame's own words
      (measured on --mtf-night #14131C, Nov 21: ink 15.8:1, quiet 9.4:1, Plot 10.4:1; on the card #1D1C26 14.4 / 8.6 / 9.5) and the frame's card shadow */
   --d-tmscore:clamp(80px,9vw + 40px,168px);--d-tmlong:clamp(28px,3vw + 20px,60px);

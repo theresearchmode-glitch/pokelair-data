@@ -99,6 +99,8 @@ if (process.argv.includes('--v2')) {
   const js = P.data.map(f => asJsonParse(rd(f))).join('\n') + (hasIds ? '' : `\nconst SPRITE_ID=${sprite};`) + `\nconst ART_META=${meta};\nconst ART_CROWD=${crowd};\nconst ITEM_IMG=${itemImgOut};\n` + logicSrc + '\n' + mainScripts.map(rd).join('\n') + '\nV2.draw();' + (L.length && !SPLIT_ROUTES ? '\n})();' : '');
   // where the pictures live: art/ beside the page by default; --art=<folder>/ when published next to other files (the redesign artifact)
   const artArg = (process.argv.find(x => x.startsWith('--art=')) || '').slice(6), artTag = artArg ? `<script>window.NP_ART=${JSON.stringify(artArg).replace(/</g, '\\u003c')};${process.argv.includes('--one-art-size') ? 'window.NP_ONE_ART=1;' : ''}</script>\n` : '';
+  /* --home=a|b (Job V, Nov 26, PROPOSAL ONLY): which front-page proposal Home draws (pages/pubhome.js); without it Home is The Stampede */
+  const homeArg = (process.argv.find(x => x.startsWith('--home=')) || '').slice(7); if (homeArg && !/^[ab]$/.test(homeArg)) { console.error('--home=a or --home=b'); process.exit(1); }
   // --one-art-size (Nov 17): Claude-hosted builds (Preview, live artifact) use the 384px sprites only: an artifact holds at most 511 files,
   // too few for both sizes (346 + 346). The public site (January) keeps both sizes (sprites A).
   // --preview-data (redesign artifact only): a copy of today's daily data (out/*.json) answers the page's data requests, so a
@@ -196,7 +198,7 @@ if (process.argv.includes('--v2')) {
   const v2Fail = `if(!window.V2){window.__NP_V2FAIL=1;var m=document.getElementById('main');if(m)m.innerHTML=${JSON.stringify('<section class="cm2"><div class="cm2-t"><h1 class="u">This page didn\u2019t load.</h1><p class="tm-sub">Part of the site didn\u2019t arrive. Reload to try again.</p></div></section>')}}`;
   const mainTag = SPLIT ? `\n<script src="${'v2.js?v=' + hash(jsOut)}"></script>\n<script>${v2Fail}</script>\n` : `\n<script>\n${jsOut}\n</script>\n`;
   const styleTag = SPLIT_CSS ? `\n<link rel="stylesheet" href="${'v2.css?v=' + hash(cssOut)}">\n` : `\n<style>\n${cssOut}\n</style>\n`;
-  const page = head.replace('<meta charset="utf-8">', m => m + pubTag + artTag + prevTag) + styleTag + rd(P.body) + mainTag + `</body></html>\n`;
+  const page = head.replace('<meta charset="utf-8">', m => m + pubTag + artTag + (homeArg ? `<script>window.NP_HOME=${JSON.stringify(homeArg)};</script>\n` : '') + prevTag) + styleTag + rd(P.body) + mainTag + `</body></html>\n`;
   fs.mkdirSync(dir + 'dist', {recursive: true}); fs.writeFileSync(dir + 'dist/v2.html', page);
   if (SPLIT_CSS) fs.writeFileSync(dir + 'dist/v2.css', cssOut);
   if (SPLIT) { fs.writeFileSync(dir + 'dist/v2.js', jsOut); if (jsMap) fs.writeFileSync(dir + 'dist/v2.js.map', jsMap); if (previewJson) fs.writeFileSync(dir + 'dist/preview.json', previewJson);
