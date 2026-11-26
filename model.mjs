@@ -159,19 +159,24 @@ const fitPart = train.filter(g => !vcut.has(g[3])), val = train.filter(g => vcut
 // grid again, for the monthly check; FAST=… still overrides for experiments.
 const LOCK = (() => { if (process.env.RETUNE === '1' || process.env.K_GRID) return null; try { const L = JSON.parse(fs.readFileSync('model-settings.json', 'utf8')); return [L.shrink, L.half, L.skill, L.sets]; } catch (e) { return null; } })();
 const FAST = process.env.FAST ? process.env.FAST.split(',').map(Number) : LOCK;
-let bestL = FAST ? {k: FAST[0], sc: 0} : null; if (!FAST) for (const k of (process.env.K_GRID ? process.env.K_GRID.split(',').map(Number) : [1, 3, 10, 30, 100])) { const m = fit(fitPart, {lb: 4 * k, lp: 15 * k, ls: 1.5 * k}); const sc = score(m, val, false).logloss; console.log('shrink', k, sc); if (!bestL || sc < bestL.sc) bestL = {k, sc}; }
+// v8 (Nov 25, HH + Sim): the Pokémon and pair ridge (lb, lp) are LOCKED in model-settings.json, in the daily run AND in the re-tune
+// (RETUNE=1 / K_GRID): every fit below takes them from there, so a monthly re-tune can't quietly undo the Strength Score fix. The grid
+// still searches the player-skill, recency and set settings. FAST=… is locked too: weekly-recheck.mjs and walk-forward.mjs build
+// "today's settings" with FAST, and without the lock they would score the old 4K / 15K ridge, not the model the site runs.
+// LB / LP env override (LB=40 LP=150 gives the ridge before Nov 25). lp is the value before pairShrink (x4 in the fit: 225 -> 900).
+const RIDGE_LOCK = SETTINGS.lb != null && SETTINGS.lp != null;
+const lbOf = k => envNum('LB', RIDGE_LOCK ? SETTINGS.lb : null, 4 * k), lpOf = k => envNum('LP', RIDGE_LOCK ? SETTINGS.lp : null, 15 * k);
+let bestL = FAST ? {k: FAST[0], sc: 0} : null; if (!FAST) for (const k of (process.env.K_GRID ? process.env.K_GRID.split(',').map(Number) : [1, 3, 10, 30, 100])) { const m = fit(fitPart, {lb: lbOf(k), lp: lpOf(k), ls: 1.5 * k}); const sc = score(m, val, false).logloss; console.log('shrink', k, sc); if (!bestL || sc < bestL.sc) bestL = {k, sc}; }
 // recency half-life, picked on the validation slice (0 = no recency, kept if nothing beats it)
-let bestH = {half: FAST ? FAST[1] : 0, sc: bestL.sc}; if (!FAST) for (const half of [14, 21, 30]) { const m = fit(fitPart, {lb: 4 * bestL.k, lp: 15 * bestL.k, ls: 1.5 * bestL.k, half}); const sc = score(m, val, false).logloss; console.log('recency half-life', half, sc); if (sc < bestH.sc) bestH = {half, sc}; }
+let bestH = {half: FAST ? FAST[1] : 0, sc: bestL.sc}; if (!FAST) for (const half of [14, 21, 30]) { const m = fit(fitPart, {lb: lbOf(bestL.k), lp: lpOf(bestL.k), ls: 1.5 * bestL.k, half}); const sc = score(m, val, false).logloss; console.log('recency half-life', half, sc); if (sc < bestH.sc) bestH = {half, sc}; }
 // v4 (Oct 27): how much of a result to put down to the player rather than the team, picked on the validation slice.
 // Fitting player skill stops a top player's wins inflating their Pokémon, but strong players also pick strong teams, so
 // separating them too hard throws away real signal. 0 = no player term at all. The full adjustment stays unless another
 // setting is clearly better (by 0.002 log-loss): tested Oct 27, a 10x lighter one gained only 0.0009 (noise) while letting
 // rare Pokémon that strong players brought rate higher (an odd six rose from below 90 to 92), so it was not shipped.
-let bestS = {sm: FAST ? FAST[2] : 1, sc: bestH.sc}; if (!FAST) for (const sm of [.3, 3, 10, 0]) { const m = fit(fitPart, {lb: 4 * bestL.k, lp: 15 * bestL.k, ls: 1.5 * bestL.k * sm, useSkill: sm > 0, half: bestH.half}); const sc = score(m, val, false).logloss; console.log('player-skill shrink', sm, sc); if (sc < bestH.sc - .002 && sc < bestS.sc) bestS = {sm, sc}; }
-// v8 (Nov 25): with the locked settings, the Pokémon and pair ridge come from model-settings.json (lb, lp) when set; lp is the value
-// before pairShrink (fit multiplies it by pairShrink, so lp 225 x 4 = 900). RETUNE / K_GRID / FAST keep the 4K / 15K ladder. LB / LP env override.
-const LOCKED = !process.env.FAST && LOCK != null;
-const K = bestL.k, HALF = bestH.half, LAM = {lb: envNum('LB', LOCKED ? SETTINGS.lb : null, 4 * K), lp: envNum('LP', LOCKED ? SETTINGS.lp : null, 15 * K), ls: 1.5 * K * (bestS.sm || 1), useSkill: bestS.sm > 0, half: HALF};
+let bestS = {sm: FAST ? FAST[2] : 1, sc: bestH.sc}; if (!FAST) for (const sm of [.3, 3, 10, 0]) { const m = fit(fitPart, {lb: lbOf(bestL.k), lp: lpOf(bestL.k), ls: 1.5 * bestL.k * sm, useSkill: sm > 0, half: bestH.half}); const sc = score(m, val, false).logloss; console.log('player-skill shrink', sm, sc); if (sc < bestH.sc - .002 && sc < bestS.sc) bestS = {sm, sc}; }
+const K = bestL.k, HALF = bestH.half, LAM = {lb: lbOf(K), lp: lpOf(K), ls: 1.5 * K * (bestS.sm || 1), useSkill: bestS.sm > 0, half: HALF};
+console.log(`ridge lb ${LAM.lb} lp ${LAM.lp} (x pairShrink ${+(process.env.PAIR_SHRINK || PAIR_SHRINK_LOCK)} in the fit)${RIDGE_LOCK ? ', locked in model-settings.json' : ''}`);
 bestH.sc = bestS.sc;
 let LC = FAST && FAST[3] ? {lc: FAST[3], sc: 0} : null; if (!FAST && hasSets && setNames.length) for (const lc of [20, 60, 200]) { const m = fit(fitPart, {...LAM, useSets: true, lc}); const sc = score(m, val, false).logloss; console.log('sets shrink', lc, sc); if (sc < bestH.sc && (!LC || sc < LC.sc)) LC = {lc, sc}; }
 const species = FAST && LC ? null : fit(train, LAM), withSets = LC ? fit(train, {...LAM, useSets: true, lc: LC.lc}) : null;
@@ -268,7 +273,7 @@ if (process.env.MODEL_SHADOW === '1' && ships && F) {
   const sig = z => 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, z))));
   const makeRng = (seed = 99) => { let st = seed >>> 0; return () => { st = (st * 1664525 + 1013904223) >>> 0; return st / 4294967296; }; };
   const fitCombo = (games, D = 4, lbc = 15) => {
-    const base = fit(games, {...LAM, lb: 4 * K * 2.5, lp: 15 * K * 1.5, useSets, lc: LC ? LC.lc : 40, evidK: 0, evidKp: 0}); // the combo's base = the v8 ridge (same as LAM.lb * 2.5 before Nov 25)
+    const base = fit(games, {...LAM, lb: RIDGE_LOCK ? LAM.lb : LAM.lb * 2.5, lp: RIDGE_LOCK ? LAM.lp : LAM.lp * 1.5, useSets, lc: LC ? LC.lc : 40, evidK: 0, evidKp: 0}); // the combo's base = the v8 ridge (LAM.lb x 2.5 / LAM.lp x 1.5 without the lock, as before Nov 25)
     let last = -Infinity; for (const g of games) last = Math.max(last, day(evDates[g[3]]));
     const W = games.map(g => HALF ? Math.pow(.5, (last - day(evDates[g[3]])) / HALF) : 1), Wn = games.length / (W.reduce((a, x) => a + x, 0) || 1);
     const dl = new Float64Array(teams.length), md = new Float64Array(teams.length), vd = new Float64Array(teams.length), tau2 = .01;
