@@ -2820,3 +2820,4 @@ Sim's own decisions are marked "Sim". Newest first.
 - 6:06 PM: Disk 5 GB: removed worktrees fp (alt/f3-public-rest, superseded) and d6 (old batch6). No process was using either. Disk is now 9.9 GB.
 - 6:17 PM: alt/f3-claude 99e172ba failed HQ Q7a on GitHub. The check's own browser context lacked the __NP_SDHERO hook; it was a test fault, not an app fault. The helper added one test line (3948dbc0). Old run 45907429763 cancelled; new run 45910019991. The iPhone SE fix (alt/f3-se-12 782da120, kicker top margin 16 to 4px on phones under 700x700) waits for pictures to Sim after the gate.
 - 6:17 PM: CORRECTION to 6:17 PM: run 45907429763 was not cancelled. GitHub answered 409: it had already finished, with conclusion failure.
+- 6:17 PM: CORRECTION to my 6:17 PM correction: GitHub shows run 45907429763 as completed/cancelled, not failure. It was already cancelled before my request (by the helper, I think; not checked).
