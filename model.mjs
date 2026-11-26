@@ -19,7 +19,14 @@ const teams = (M.teams || []).map(k => k.split('|')), G = (M.m || []).filter(g =
   const prevReg = prev && (prev.reg || SITE_REG.id);
   if (G.length === 0 || (M.events || []).length < 5) {
     if (prev && prev.ships && prev.mons && prevReg === curReg) { console.log(`model: NOT shipped today (${G.length} games), so ${dest} keeps the previous ${curReg} model`); process.exit(1); }
-    fs.writeFileSync(dest, JSON.stringify({reg: curReg, updated: new Date().toISOString(), ships: false, games: G.length, events: (M.events || []).length, v: 3, mons: {}, pairs: {}, sets: {}, note: 'too few games to fit model yet'}));
+    const emptyModel = {reg: curReg, updated: new Date().toISOString(), ships: false, games: G.length, events: (M.events || []).length, v: 3, mons: {}, pairs: {}, sets: {}, note: 'too few games to fit model yet'};
+    fs.writeFileSync(dest, JSON.stringify(emptyModel));
+    if (process.env.MODEL_SHADOW === '1') {
+      const sDest = process.env.MODEL_SHADOW_OUT || 'out/model_shadow.json';
+      let sPrev = null; try { sPrev = JSON.parse(fs.readFileSync(sDest, 'utf8')); } catch (e) {}
+      const sPrevReg = sPrev && (sPrev.reg || SITE_REG.id);
+      if (!(sPrev && sPrev.ships && sPrev.mons && sPrevReg === curReg)) fs.writeFileSync(sDest, JSON.stringify({...emptyModel, shadow: 'combo'}));
+    }
     console.log(`model: ${curReg} not ready (${G.length} games, ${(M.events || []).length} events); wrote stamped not-ready model`); process.exit(0); } }
 const monIx = new Map(), mons = [];
 teams.flat().forEach(n => { if (!monIx.has(n)) { monIx.set(n, mons.length); mons.push(n); } });
@@ -251,6 +258,14 @@ console.log(`model: ${ships ? 'ships' : 'NOT shipped (no better than raw win rat
 
 // Opt-in shadow mode (Kip job 24, Part 3; rule 21 gate 3): when MODEL_SHADOW=1, also fit the lab-winning "combo"
 // (no-evid-hier + Blade-Chest d=4) and write out/model_shadow.json (same shape + "bc" + "sixDelta"), never touching out/model.json.
+if (process.env.MODEL_SHADOW === '1' && (!ships || !F)) {
+  const sDest = process.env.MODEL_SHADOW_OUT || 'out/model_shadow.json';
+  let sPrev = null; try { sPrev = JSON.parse(fs.readFileSync(sDest, 'utf8')); } catch (e) {}
+  const sPrevReg = sPrev && (sPrev.reg || SITE_REG.id);
+  if (!(sPrev && sPrev.ships && sPrev.mons && sPrevReg === curReg)) {
+    fs.writeFileSync(sDest, JSON.stringify({reg: curReg, updated: new Date().toISOString(), ships: false, games: G.length, events: (M.events || []).length, v: 3, shadow: 'combo', mons: {}, pairs: {}, sets: {}, note: 'model did not ship yet'}));
+  }
+}
 if (process.env.MODEL_SHADOW === '1' && ships && F) {
   const sig = z => 1 / (1 + Math.exp(-Math.max(-30, Math.min(30, z))));
   const makeRng = (seed = 99) => { let st = seed >>> 0; return () => { st = (st * 1664525 + 1013904223) >>> 0; return st / 4294967296; }; };
