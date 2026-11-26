@@ -14,6 +14,7 @@
 //   Stampede tiles 2-5 + tags (Nov 18 night): Battle's VS clear, Test Run filled, Damage Calc balanced, equal band bars, board tags inside
 //   HQ Q4a-Q13f (Nov 18): Sim's answers for Home (morning questions), one check each (ONLY=HQ runs these alone)
 //   AS-1..9 (Nov 18): the All Suggestions sheet, option C (Sim's Q5): Suggest from, sections, card facts, Show 6 More, notes, height (ONLY=AS)
+//   SP-1..6 (Nov 26): Spicy picks in Suggestions: off by default with no rare pick anywhere, on by keyboard with each rare pick labelled, Apply graded as shown, Search finds it
 //   BR-C1..C7 (Nov 18): behaviour review: the Apply and Remove holds end on any scroll they didn't make and on leaving My Team,
 //              redraws at 1100-1439 don't move My Team, keyboard Apply keeps the focus (ONLY=BR runs these alone)
 // Exit 1 on any failure.   PAGE=app/dist/v2.html node app/test/v2-minors.mjs   (a --v2 --preview-data build)
@@ -23,7 +24,7 @@ const fails = [], ok = (c, msg) => { console.log((c ? '  pass  ' : '  FAIL  ') +
 /* Parts (Nov 18): the whole file took 18-21 min on GitHub, which pushed the code-tests job past its 35-min limit (runs 1331-1351
    cancelled; golden, same-grade and the logic checks never ran). test.yml runs it as parallel jobs, one per PART; together they run every
    check once. PART=all (the default) runs everything in one go, as before. Parts: main1 (Build ... the Dispatch), main2 (Home's bands, My
-   Team height, NPR, Base Stats), groups (BR, MQ, AS, HQ, WebKit pair). ONLY=BR|MQ|AS|HQ still runs one group alone. */
+   Team height, NPR, Base Stats), groups (BR, MQ, AS, SP, HQ, WebKit pair). ONLY=BR|MQ|AS|SP|HQ still runs one group alone. */
 const PART = process.env.PART || 'all', part = k => PART === 'all' || PART.split(',').includes(k);
 if (!['all', 'main1', 'main2', 'groups'].includes(PART)) { console.log('v2-minors: unknown PART ' + PART + ' (all, main1, main2, groups)'); process.exit(1); }
 /* q59 (Sim's yes, Nov 20): under 700 My Team's Matchups / Suggestions / Team Checks are tabs, one shown at a time. A check of something
@@ -230,7 +231,7 @@ const AS = async () => {
   // AS-4b (Sim, Nov 18, Q3 B): with two or more Bigger Plans the section shows the first, then "Show N More" (Showing 1 of M);
   // the strip opens the rest in place with the focus on the first new card's Apply; the end line waits until everything is open
   { const {q, c} = await openAS(); const r = await q.evaluate(() => window.__ev(`(() => { const s = document.querySelector('.np-sheet .sga2'), n = s.querySelectorAll('.sga2-big > li').length,
-      st = s.querySelector('[data-v2sgbmore]'); return {n, strip: st ? st.innerText.replace(/\\s+/g, ' ').trim() : '', end: !!s.querySelector('.sga2-end'), multi: [...(V2.plan.plans || []), ...((V2.plan.plans || {}).more || [])].filter(pl => pl.ch.length > 1).length}; })()`));
+      st = s.querySelector('[data-v2sgbmore]'); return {n, strip: st ? st.innerText.replace(/\\s+/g, ' ').trim() : '', end: !!s.querySelector('.sga2-end'), multi: [...(V2.plan.plans || []), ...((V2.plan.plans || {}).more || [])].filter(pl => pl.ch.length > 1 && !(V2.spRarePl && V2.spRarePl(pl))).length}; })()`)); /* Spicy picks (Job E, Nov 26): plans that bring in a Pokémon under 5% of teams show only in the labelled Spicy picks group, not in the sheet */
     if (r.multi >= 2) { await q.click('.np-sheet [data-v2sgbmore]'); await q.waitForTimeout(500);
       const r2 = await q.evaluate(() => ({n: document.querySelectorAll('.np-sheet .sga2-big > li').length, f: document.activeElement && document.activeElement.closest('.sga2-big > li') === document.querySelectorAll('.np-sheet .sga2-big > li')[1]}));
       ok(r.n === 1 && r.strip === `Show ${Math.min(3, r.multi - 1)} more Showing 1 of ${r.multi}` /* Wave 2 finish (Nov 23): kit show-more casing */ && !r.end && r2.n === Math.min(4, r.multi) && r2.f,
@@ -286,6 +287,65 @@ const AS = async () => {
     const bad = all.filter(t => /tell it apart|no clear edge/.test(t) || !/^(Add fills your empty spot|Fix )/.test(t)); /* W1a (Sim, Nov 19): 'Add · fills your empty spot' (a Fix line stays) */
     ok(mtL.length >= 1 && shL.length >= 1 && !bad.length, `AS-11 (audit Nov 19 #3): with 5 of 6, ${mtL.length} My Team and ${shL.length} sheet card(s) fill the empty spot; none says it's a small change real games can't tell apart (${[...new Set(bad.length ? bad : all)].slice(0, 3).join(' | ')})`); await c.close(); } };
 if (process.env.ONLY === 'AS') { await AS(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
+// SP-1..6 (HH's Job E, Nov 26): Spicy picks (sugs.js V2.sgSpicy; research docs/rebuild/research/spicy-picks-nov26.md). Usage, games and the
+// PROVEN rule are worked out here from activePerf() (the tournament numbers in use), not from the page's own helpers. All failed on design6
+// c062acf1 (the README team's normal list brought in Mega Dragonite, 4.8% of teams, unlabelled; there was no toggle).
+const SP = async () => {
+  const BOXA = ['Absol', 'Archaludon', 'Azumarill', 'Basculegion', 'Garchomp', 'Incineroar', 'Kingambit', 'Sneasler', 'Whimsicott', 'Rillaboom', 'Charizard', 'Gengar', 'Dragonite', 'Tyranitar', 'Hydreigon', 'Amoonguss', 'Talonflame', 'Pelipper', 'Torkoal', 'Farigiraf'];
+  const T68 = ['Garchomp', 'Kingambit', 'Sneasler', 'Basculegion', 'Archaludon', 'Azumarill'];
+  const st = {slots: T68.map(n => ({n, a: null, lock: false})), box: BOXA, teams: [], loadedId: null, format: 'doubles', maxMega: 1, opp: [], excl: [], log: []};
+  const c = await b.newContext({viewport: {width: 1440, height: 900}}), q = await c.newPage();
+  await q.addInitScript(([S]) => { window.__PL_TEST = 1; if (sessionStorage.getItem('sp1')) return; sessionStorage.setItem('sp1', 1); localStorage.setItem('cc2.welcomed', '"1"'); localStorage.setItem('cc2.state', JSON.stringify(S)); localStorage.setItem('cc2.pool', '"all"'); }, [st]);
+  await q.goto('file://' + PAGE + '#team'); await q.waitForTimeout(2000);
+  const idle = () => q.waitForFunction(() => window.V2 && V2.plan && V2.plan.plans && !document.querySelector('#main .sg2-wait'), null, {timeout: 120000}).catch(() => {});
+  await idle(); await q.waitForTimeout(500);
+  // the cards on My Team (and in the All Suggestions sheet): each incoming Pokémon with its share of teams, and the card's labels
+  const cards = () => q.evaluate(() => JSON.parse(window.__ev(`(() => { const d = (activePerf() || {}).doubles || {}, us = p => d[p.n] ? d[p.n][0] : U(p), z = 1.96;
+    const lo = (w, n) => { const k = 1 + z * z / n; return ((w + z * z / (2 * n)) - z * Math.sqrt(w * (1 - w) / n + z * z / (4 * n * n))) / k; };
+    const sure = p => { const r = d[p.n]; return !!r && r[2] >= 300 && lo(r[1] / 100, r[2] / 3) > .5; };
+    const one = (b, pl) => ({el: b.tagName, ins: pl ? pl.ch.map(x => ({n: x.c.p.n, u: us(x.c.p), sure: sure(x.c.p)})) : null, tags: [...b.closest('li').querySelectorAll('.k-tag')].map(t => t.textContent.trim())});
+    const norm = [...document.querySelectorAll('#main [data-v2plan]')].map(b => one(b, (ui.planList || [])[+b.dataset.v2plan]));
+    const sp = [...document.querySelectorAll('#main [data-v2spl]')].map(b => one(b, (V2.spShown || [])[+b.dataset.v2spl]));
+    const t = document.querySelector('#main [data-v2spicy]');
+    return JSON.stringify({norm, sp, tog: t ? {tag: t.tagName, type: t.type, pressed: t.getAttribute('aria-pressed'), text: t.textContent.trim(), inAdj: !!t.closest('[data-v2adj]')} : null}); })()`)));
+  const rare = x => x.ins && x.ins.some(i => i.u < 5);
+  const r0 = await cards();
+  ok(r0.tog && r0.tog.tag === 'BUTTON' && r0.tog.pressed === 'false' && r0.tog.inAdj && /Spicy picks/.test(r0.tog.text) && r0.norm.length >= 1 && !r0.norm.some(rare) && !r0.sp.length,
+    `SP-1: Spicy picks is off by default (a button in Adjust Suggestions: ${r0.tog && r0.tog.inAdj}, aria-pressed ${r0.tog && r0.tog.pressed}); off, none of the ${r0.norm.length} card(s) brings in a Pokémon under 5% of teams (${r0.norm.map(x => (x.ins || []).map(i => i.n + ' ' + i.u).join('+')).join(' | ')}) and no spicy card shows`);
+  await q.evaluate(() => window.__ev('V2.openAllSugs()')); await q.waitForTimeout(1000);
+  const sh = await q.evaluate(() => JSON.parse(window.__ev(`(() => { const d = (activePerf() || {}).doubles || {}, us = p => d[p.n] ? d[p.n][0] : U(p); return JSON.stringify([...document.querySelectorAll('.np-sheet [data-v2plana]')].map(b => (V2.sgAll.list[+b.dataset.v2plana] || {ch: []}).ch.map(x => x.c.p.n + ' ' + us(x.c.p)))); })()`)));
+  ok(sh.length >= 1 && !sh.some(x => x.some(s => +s.split(' ').pop() < 5)), `SP-2: the All Suggestions sheet (${sh.length} cards) has no unlabelled rare pick either (${sh.filter(x => x.some(s => +s.split(' ').pop() < 5)).map(x => x.join('+')).join(' | ') || 'none'})`);
+  await q.keyboard.press('Escape'); await q.waitForTimeout(600);
+  // on, by keyboard: open Adjust Suggestions (the toggle sits there while off), focus the toggle and press Enter
+  await q.evaluate(() => { const d = document.querySelector('#main [data-v2adj]'); if (d && !d.open) d.querySelector('summary').click(); }); await q.waitForTimeout(300);
+  await q.evaluate(() => { const t = document.querySelector('#main [data-v2spicy]'); if (t) t.focus(); }); await q.keyboard.press('Enter'); await q.waitForTimeout(800);
+  await q.waitForFunction(() => document.querySelector('#main .sg2-sp') && !document.querySelector('#main .sg2-spwait'), null, {timeout: 120000}).catch(() => {}); await q.waitForTimeout(500);
+  const r1 = await cards(), LAB = {true: 'Rare pick: about as good as the usual one', false: 'Spicy: too few games to tell'};
+  const bad1 = r1.sp.filter(x => !rare(x) || x.ins.filter(i => i.u < 5).some(i => !x.tags.includes(LAB[i.sure])) || x.tags.some(t => /better/i.test(t)));
+  const foc = await q.evaluate(() => !!(document.activeElement && document.activeElement.matches('[data-v2spicy]')));
+  ok(r1.tog && r1.tog.pressed === 'true' && !r1.tog.inAdj && foc && r1.sp.length >= 1 && !bad1.length && !r1.norm.some(rare),
+    `SP-3: Enter on the toggle turns it on (aria-pressed ${r1.tog && r1.tog.pressed}, now heading its group: ${r1.tog && !r1.tog.inAdj}, focus kept ${foc}); ${r1.sp.length} spicy card(s), each bringing in a rare Pokémon with its label (proven: "${LAB.true}", else "${LAB.false}"), never "better"; the normal list stays free of them (${r1.sp.map(x => x.ins.map(i => i.n + ' ' + i.u + (i.sure ? ' proven' : '')).join('+') + ' [' + x.tags.join('; ') + ']').join(' | ')})`);
+  // rule 20: Apply on a spicy card gives exactly that six, and its Strength Score is the one the card showed
+  const ap = await q.evaluate(() => JSON.parse(window.__ev(`(() => { const pl = (V2.spShown || [])[0]; if (!pl) return '{}'; const want = Math.round(planGrade(pl)), ins = pl.ch.map(x => x.c.p.n), shown = (document.querySelector('#main [data-v2spl="0"]').closest('li').querySelector('.tm-mv span') || {}).textContent || '';
+    document.querySelector('#main [data-v2spl="0"]').click(); const ms = members(); return JSON.stringify({want, shown, ins, now: ms.map(m => m.p.n), got: ms.length === 6 ? Math.round(gradeTeam(ms)) : null}); })()`)));
+  ok(ap.ins && ap.ins.every(n => ap.now.includes(n)) && ap.got === ap.want && new RegExp('→ ' + ap.want + '$').test(ap.shown.trim()),
+    `SP-4 (rule 20): Apply on Spicy pick 1 brings in ${(ap.ins || []).join(' and ')}; the new six scores ${ap.got}, as the card said (${ap.shown})`);
+  await q.waitForTimeout(800); await idle();
+  // off again by keyboard (Space); the choice is kept in this browser
+  await q.evaluate(() => { const t = document.querySelector('#main [data-v2spicy]'); if (t) t.focus(); }); await q.keyboard.press('Space'); await q.waitForTimeout(800); await idle();
+  const r2 = await cards(), kept = await q.evaluate(() => localStorage.getItem('np2.spicy'));
+  ok(r2.tog && r2.tog.pressed === 'false' && !r2.sp.length && !r2.norm.some(rare) && kept === '0', `SP-5: Space turns it off again (aria-pressed ${r2.tog && r2.tog.pressed}, kept as ${kept}); no spicy card, no rare pick in the ${r2.norm.length} normal card(s)`);
+  // rule 16: Search finds it ("spicy", and "rare picks"), and the result turns it on with the toggle in view (from another page, at 390 too)
+  const fd = [];
+  for (const [W, word] of [[1440, 'spicy'], [390, 'rare picks']]) { await q.setViewportSize({width: W, height: W < 700 ? 844 : 900}); await q.evaluate(() => { location.hash = '#meta'; }); await q.waitForTimeout(1500);
+    const r = await q.evaluate(w => JSON.parse(window.__ev(`(() => { const f = V2.find(${JSON.stringify(w)}), k = V2.findPlaces.findIndex(p => p[1] === 'Spicy Picks'); const hit = !!(f && f.places.some(p => p[1] === 'Spicy Picks')); if (k >= 0) V2.goPlace(k); return JSON.stringify({hit, k}); })()`)), word);
+    await q.waitForTimeout(2500); await q.waitForFunction(() => document.querySelector('#main .sg2-sp') && !document.querySelector('#main .sg2-spwait'), null, {timeout: 120000}).catch(() => {}); await q.waitForTimeout(400);
+    const v = await q.evaluate(() => { const t = document.querySelector('#main [data-v2spicy]'), r = t && t.getBoundingClientRect(); return {on: t && t.getAttribute('aria-pressed'), seen: !!r && r.width > 0 && r.top >= 0 && r.bottom <= innerHeight, foc: document.activeElement === t, hash: location.hash}; });
+    if (!r.hit || v.on !== 'true' || !v.seen || !v.foc || v.hash !== '#team') fd.push(`${W} "${word}": ${JSON.stringify({...r, ...v})}`);
+    await q.evaluate(() => { const t = document.querySelector('#main [data-v2spicy]'); if (t && t.getAttribute('aria-pressed') === 'true') t.click(); }); await q.waitForTimeout(800); }
+  ok(!fd.length, `SP-6 (rule 16): Search finds Spicy Picks ("spicy" at 1440, "rare picks" at 390); the result opens My Team with it on, the toggle in view and focused (${fd.join(' | ') || 'both'})`);
+  await c.close(); };
+if (process.env.ONLY === 'SP') { await SP(); await b.close(); console.log(`v2-minors:${fails.length ? fails.length + ' failed' : 'all passed'}`); process.exit(fails.length ? 1 : 0); }
 // ---- AS end
 // ---- MQ end ----
 // ---- BR end (run with the rest just before the browser closes) ----
@@ -1788,6 +1848,7 @@ if (part('groups')) {
 await BR(); /* behaviour review (Nov 18), above */
 await MQ(); /* Sim's Nov 18 answers, above */
 await AS(); /* All Suggestions sheet, option C, above */
+await SP(); /* Spicy picks (Job E, Nov 26), above */
 }
 // WebKit pair (Nov 18, docs/rebuild/test-runs/webkit-new-pages-nov18.md): two Safari defects, measured the same way in any engine. This file runs
 // them in Chromium; for Safari's engine the same function (between the wk-pair markers) runs with playwright.webkit, over http (WebKit blocks
