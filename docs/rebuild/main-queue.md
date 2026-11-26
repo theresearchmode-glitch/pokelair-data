@@ -3,7 +3,7 @@ Updated: time: 6:54 AM (6:54:08)  date: Thu Nov 26, 2026
 NOW: HH: Home rack (Sim approved phones + tablets): full v2-minors on frozen out/ for alt/home-rack (hrrun.sh, pid in .main-running), then
   update the old-layout checks (each proven to fail on a break) + a phone-rack check, push, gate. Also running: regland (reg-test -> main),
   kipland (Kip 44 -> main). DONE: Preview v264 (info counts restored), today's data run succeeded.
-NOW (helper): Job K (My Team 390 fit), then L (Spicy rebuild to Sim's yes), then M (tablet Home in, checks updated).
+NOW (helper): Job N, combine K (My Team 390) + L (Spicy picks) into alt/kl-batch, tested; then HH adds the Home rack and gates the batch.
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
   small touches v1; bands-c2 updated + J-REC proven; Game Plan v89.
