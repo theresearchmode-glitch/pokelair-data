@@ -1,19 +1,13 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 6:54 AM (6:54:08)  date: Thu Nov 26, 2026
-NOW: HH: Home rack (Sim approved phones + tablets): full v2-minors on frozen out/ for alt/home-rack (hrrun.sh, pid in .main-running), then
-  update the old-layout checks (each proven to fail on a break) + a phone-rack check, push, gate. Also running: regland (reg-test -> main),
-  kipland (Kip 44 -> main). DONE: Preview v264 (info counts restored), today's data run succeeded.
-NOW (helper): Job P, Spicy pill inside its card when it wraps (alt/kl-batch2). Job O (WebKit) done: calc number fix is HH's.
-NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
-DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
-  small touches v1; bands-c2 updated + J-REC proven; Game Plan v89.
-WAITING ON SIM: main push of Kip 46 data half (alt/gemini-news-ran-data c78d15e2, green); reg-test change (Kip's "Better" option);
-  tablet Home proposal; lone "Saved" button proposal.
-NEXT: Kip at 3 AM: review jobs 44, 45, 47, 48 as they land (run + failure proofs), batch them.
-NEXT: (done) main chain: Kip 46, reg-test, Kip 44 all on main by 7:48 AM (03cd5e41). Next main item: nothing queued.
-NEXT: reg-test lands on main via regland.sh after the Kip 46 fast-forward.
-NEXT: 6:15 AM: check the first daily data run on main (scheduled task), shadow model numbers to Sim.
-NEXT: 7:55 AM morning report (merges with checks, pictures, Sim's decisions, research write-ups).
+Updated: time: 9:05 AM (9:05:16)  date: Thu Nov 26, 2026
+NOW: HH: alt/rack-batch 9c0ce26f (kl-batch2 + home rack + calc 3-digit fix + Pick 4 tag + webkit report): full v2-minors on frozen out/
+  (pid in .main-running); failure proof of the new calc check (old layout, today's data, PART=main1) running.
+NOW (helper): Job Q, WebKit recheck of alt/rack-batch (calc 3-digit, VS, Pick 4, Spicy pill, My Team 390) -> alt/webkit-rack2.
+NOW (Kip): job 45 in progress; 48 queued.
+DONE today: main chain (Kip 46, reg-test, Kip 44) on main 03cd5e41; Preview v264; Sim approved the phone/tablet Home rack.
+NEXT: commit the slant-aware calc check, rerun main1 on frozen data, push alt/rack-batch, gate into design6 (gate.sh).
+NEXT: republish the Preview with daily-data.sh, then pictures of the final rack to Sim.
+NEXT: review Kip 45 / 48 as they land (run + failure proofs); Game Plan update after the merge.
 
 ## Nov 24 morning (Sim: live data fix + Preview daily data)
 - NOW: GitHub run 1516 on main c565e865 (threat-check fix) -> Promote to live.
