@@ -24,8 +24,9 @@ merge-check's main list + design6 list locally 48 of 48; GitHub's full test.yml 
 Report: docs/rebuild/test-runs/switch-rehearsal2-nov26.md. On Saturday, redo the same merge on the day's tips (design6 will have moved).
 
 ## Saturday, in order
-1. **Preflight (from GitHub, not the clock):** no update.yml run in progress; main's latest test.yml run is green; FAST_DATA is not
-   `1`. Save the live artifact's index.html (sha256 prefix, version id) for the undo.
+1. **Preflight (from GitHub, not the clock):** run `node experiments/switch-preflight.mjs` (checks no update.yml run in progress,
+   main + design6 test.yml green, live == main or green, FAST_DATA != `1`, and out/regstate.json + out/post.json state). Save the
+   live artifact's index.html (sha256 prefix, version id) for the undo.
 2. **Merge** `origin/claude/design6` into main on a scratch branch. Expect these 5 conflicts (job 41 section 1):
    - test.yml: union of both `paths:` lists (keep main's regulation/no-rk9/date-switch/freshness/bo3/shadow/dec2 tests and
      design6's syntax-check + public tests); keep every run step from both.
