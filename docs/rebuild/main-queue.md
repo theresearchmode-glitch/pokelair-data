@@ -1,8 +1,7 @@
 # Main-thread queue (Sim, Nov 22: the main thread never stops while helpers work)
-Updated: time: 3:20 AM (3:20:32)  date: Thu Nov 26, 2026
-NOW: HH: Saturday rehearsal 2 (swrun.sh, pid in .main-running): main + design6 b96f3a5e merged on scratch branch switch-rehearsal2
-  (5 runbook conflicts resolved), then main's list (frozen + today) and design6's list, 48 steps by exit code. DONE before it: night batch
-  merged into design6 (b96f3a5e), new pre-push hook installed, Preview v263.
+Updated: time: 3:45 AM (3:45:41)  date: Thu Nov 26, 2026
+NOW: HH: watching GitHub's full run on alt/switch-rehearsal2 1039d5ea (main + design6 b96f3a5e + Kip 46 data; pid in .main-running).
+  Local: 48 of 48 steps passed (docs/rebuild/test-runs/switch-rehearsal2-nov26.md).
 NOW (helper): Job F, small-touches pass 3 (look + measure, fixes only for clear bugs; alt/touches-pass3). Jobs C, D (merged), E (Spicy proposal, for Sim) done.
 NOW (Kip): back at 3 AM: job 44, then 45, 47, 48 (48 = Saturday merge runs both test lists).
 DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json ran check, both lists); forecast backtest (unknown: 3 weeks);
