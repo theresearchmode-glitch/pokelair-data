@@ -9,7 +9,7 @@ DONE (overnight): Kip 42/43/46 verified with failure proofs; runbook (post.json 
 WAITING ON SIM: main push of Kip 46 data half (alt/gemini-news-ran-data c78d15e2, green); reg-test change (Kip's "Better" option);
   tablet Home proposal; lone "Saved" button proposal.
 NEXT: Kip at 3 AM: review jobs 44, 45, 47, 48 as they land (run + failure proofs), batch them.
-NEXT: review Kip job 44 (alt/gemini-quiet-alarms 91911b8d, main-based): run + failure proofs, then main path.
+NEXT: main chain: Kip 46 (mainff-nr) -> reg-test (regland) -> Kip 44 (kipland), each green then fast-forward.
 NEXT: reg-test lands on main via regland.sh after the Kip 46 fast-forward.
 NEXT: 6:15 AM: check the first daily data run on main (scheduled task), shadow model numbers to Sim.
 NEXT: 7:55 AM morning report (merges with checks, pictures, Sim's decisions, research write-ups).
