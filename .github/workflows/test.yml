@@ -266,6 +266,7 @@ jobs:
       - run: PAGE=app/dist/v2.html node experiments/score-src-test.mjs
       # Not rated yet (Sim, Nov 25): no number/tier/rank for a Pokémon without results in a new regulation's early days
       - run: PAGE=app/dist/v2.html node experiments/unrated-test.mjs
+      - run: PAGE=app/dist/v2.html node experiments/rank-tiebreak-test.mjs
         if: ${{ !cancelled() }}
       - run: PAGE=app/dist/v2.html node app/test/v2-q25.mjs
         if: ${{ !cancelled() }}
