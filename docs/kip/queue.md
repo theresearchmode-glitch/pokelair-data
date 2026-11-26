@@ -220,3 +220,9 @@ Our tests use M-C teams. Make experiments/fixtures/md-teams.json: 12 realistic M
 legality check script). Include: Mega Heatran, Dondozo + Tatsugiri (Commander), Trick Room, Tailwind, Sun, Rain, and 2 using the Dec 2
 patch moves (Psych Up, Roost on Hydreigon). A test experiments/md-fixtures-test.mjs proves every set is legal and every team scores
 with the current model without errors (print each Strength Score). No changes to any page or model code.
+
+## HH note (time: 11:40 AM (11:40:00)  date: Thu Nov 26, 2026): seo-check fix already made by HH (for your job 53)
+GitHub run 45852023139 failed seo-check 1a: "6 <title> tags" on every page. The job's v2-public step builds WITHOUT --split, so the page's
+inline script carries SVG <title> labels as text. HH changed 1a to count only the <title> inside <head> (commit on alt/day-batch3,
+app/test/seo-check.mjs lines 58-61). For job 53: start from origin/alt/day-batch3's seo-check.mjs (not alt/gemini-seo-test), and
+in general run your public-build tests BOTH after a --split build and after `node app/test/v2-public.mjs` (GitHub's order).
