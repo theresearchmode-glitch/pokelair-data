@@ -119,10 +119,13 @@ CH.modelPts = ms => { try { if (!ms || ms.length !== 6 || typeof modelOK !== 'fu
 /* ONE GRADE (Nov 7, Sim: "why are we not able to make this simple?"). Every team has one grade out of 100, always 0-100, and
    its letter comes only from that number (A 90+, B 80+, C 70+, D 60+, F). It blends our own check with how this exact six did
    in real tournaments, gradually: the more real games, the more they count (151 games: 60% real results, 40% our check; no
-   games: our check alone). A real win rate is put on the same scale: 60% wins = 90, 55% = 80, 50% = 70, 45% = 60.
+   games: our check alone). A real win rate is put on the same scale as the Strength Score (CH.recScore = CH.ssOfE: 60% wins = 90, 54% = 80).
    The real win rate itself is shown as its own line under the grade, never as a second grade. */
 CH.REC_K = 100;
-CH.recScore = wr => Math.min(100, Math.max(0, Math.round(70 + (wr - .5) * 200)));
+/* Nov 26 (bands C): one scale. A real win rate goes through the same formula as the Strength Score's win chance (CH.ssOfE:
+   CH.SS_MID + CH.SS_K x (win rate - 50%)), so 54% real wins = 80 and 60% = 90 here too; it was 70 + 200 x (win rate - 50%): 55% = 80.
+   Checked by experiments/strength-invariants.mjs (J-REC) */
+CH.recScore = wr => { const s = CH.ssOfE(wr); return s == null ? NaN : Math.round(s); };
 /* Letter buffer (Nov 9, Sim asked): the daily data update moves an unchanged team's grade by ~1-2 points, which with plus/minus
    letters would flip a team sitting on a line (B / B+) with nothing changed. For the player's own teams (My Team and saved teams),
    the letter they last saw is kept until the grade clearly crosses into another letter (by 1.5 points). Editing the team makes a new
